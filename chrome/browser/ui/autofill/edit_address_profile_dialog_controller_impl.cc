@@ -20,7 +20,9 @@ namespace autofill {
 
 EditAddressProfileDialogControllerImpl::EditAddressProfileDialogControllerImpl(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<EditAddressProfileDialogControllerImpl>(
+          *web_contents) {
   DCHECK(base::FeatureList::IsEnabled(
       features::kAutofillAddressProfileSavePrompt));
 }
@@ -35,6 +37,13 @@ void EditAddressProfileDialogControllerImpl::OfferEdit(
     const AutofillProfile* original_profile,
     AutofillClient::AddressProfileSavePromptCallback
         address_profile_save_prompt_callback) {
+  // Don't show the bubble if it's already visible, and inform the backend.
+  if (dialog_view_) {
+    std::move(address_profile_save_prompt_callback)
+        .Run(AutofillClient::SaveAddressProfileOfferUserDecision::kAutoDeclined,
+             profile);
+    return;
+  }
   address_profile_to_edit_ = profile;
   original_profile_ = base::OptionalFromPtr(original_profile);
   address_profile_save_prompt_callback_ =

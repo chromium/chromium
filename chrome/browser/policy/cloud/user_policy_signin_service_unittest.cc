@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -56,7 +57,7 @@
 #include "chromeos/lacros/lacros_test_helper.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/policy/cloud/user_policy_signin_service_mobile.h"
 #else
 #include "chrome/browser/policy/cloud/user_policy_signin_service.h"
@@ -153,6 +154,8 @@ class UserPolicySigninServiceTest : public testing::Test {
     profile_ = IdentityTestEnvironmentProfileAdaptor::
         CreateProfileForIdentityTestEnvironment(builder);
 
+    UserPolicySigninServiceFactory::GetForProfile(profile_.get())
+        ->set_profile_can_be_managed_for_testing(true);
     identity_test_env_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_.get());
 
@@ -278,9 +281,9 @@ class UserPolicySigninServiceTest : public testing::Test {
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_env_adaptor_;
-  MockUserCloudPolicyStore* mock_store_ = nullptr;  // Not owned.
+  raw_ptr<MockUserCloudPolicyStore> mock_store_ = nullptr;  // Not owned.
   SchemaRegistry schema_registry_;
-  UserCloudPolicyManager* manager_ = nullptr;  // Not owned.
+  raw_ptr<UserCloudPolicyManager> manager_ = nullptr;  // Not owned.
 
   // BrowserPolicyConnector and UrlFetcherFactory want to initialize and free
   // various components asynchronously via tasks, so create fake threads here.
@@ -335,7 +338,7 @@ TEST_F(UserPolicySigninServiceTest, InitWhileSignedOut) {
   ASSERT_FALSE(manager_->core()->service());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   // Make sure user is not signed in.
   ASSERT_FALSE(identity_test_env()->identity_manager()->HasPrimaryAccount(
@@ -362,12 +365,12 @@ TEST_F(UserPolicySigninServiceTest, InitRefreshTokenAvailableBeforeSignin) {
   EXPECT_EQ(mock_store_->signin_account_id(), test_account_id_);
   ASSERT_TRUE(IsRequestActive());
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // TODO(joaodasilva): these tests rely on issuing the OAuth2 login refresh
 // token after signin. Revisit this after figuring how to handle that on
 // Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UserPolicySigninServiceSignedInTest, InitWhileSignedIn) {
   // UserCloudPolicyManager should be initialized.
@@ -528,7 +531,7 @@ TEST_F(UserPolicySigninServiceTest, RegisteredClient) {
             job_type);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(UserPolicySigninServiceSignedInTest, SignOutAfterInit) {
   // UserCloudPolicyManager should be initialized.

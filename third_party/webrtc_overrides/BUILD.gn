@@ -5,6 +5,10 @@
 import("//build/config/chromecast_build.gni")
 import("//third_party/webrtc/webrtc.gni")
 
+if (is_android) {
+  import("//build/config/android/rules.gni")
+}
+
 webrtc_configs = [ "//third_party/webrtc:common_config" ]
 
 webrtc_public_configs = [ "//third_party/webrtc:common_inherited_config" ]
@@ -44,7 +48,9 @@ webrtc_public_deps = [
   "//third_party/webrtc/api/audio_codecs/opus:audio_decoder_opus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_multiopus",
   "//third_party/webrtc/api/audio_codecs/opus:audio_encoder_opus",
+  "//third_party/webrtc/api/metronome",
   "//third_party/webrtc/api/rtc_event_log:rtc_event_log_factory",
+  "//third_party/webrtc/api/task_queue:task_queue",
   "//third_party/webrtc/api/transport:enums",
   "//third_party/webrtc/api/transport/rtp:rtp_source",
   "//third_party/webrtc/api/video:recordable_encoded_frame",
@@ -75,11 +81,13 @@ webrtc_public_deps = [
   "//third_party/webrtc/modules/video_coding:webrtc_h264",
   "//third_party/webrtc/p2p:libstunprober",
   "//third_party/webrtc/p2p:rtc_p2p",
+  "//third_party/webrtc/pc:ice_server_parsing",
   "//third_party/webrtc/pc:libjingle_peerconnection",
   "//third_party/webrtc/pc:peerconnection",
   "//third_party/webrtc/pc:rtc_pc",
   "//third_party/webrtc/pc:rtc_pc_base",
   "//third_party/webrtc/pc:session_description",
+  "//third_party/webrtc/pc:webrtc_sdp",
   "//third_party/webrtc/rtc_base",
   "//third_party/webrtc/rtc_base:async_resolver_interface",
   "//third_party/webrtc/rtc_base:ip_address",
@@ -91,6 +99,8 @@ webrtc_public_deps = [
   "//third_party/webrtc/rtc_base:socket_address",
   "//third_party/webrtc/rtc_base:threading",
   "//third_party/webrtc/rtc_base:timeutils",
+  "//third_party/webrtc/rtc_base/system:rtc_export",
+  "//third_party/webrtc/rtc_base/task_utils:to_queued_task",
   "//third_party/webrtc/rtc_base/third_party/base64",
   "//third_party/webrtc/rtc_base/third_party/sigslot",
   "//third_party/webrtc/rtc_base/third_party/sigslot:sigslot",
@@ -106,7 +116,6 @@ if (is_chromecast) {
   webrtc_public_deps += [
     "//third_party/webrtc/api:network_state_predictor_api",
     "//third_party/webrtc/api/audio:audio_frame_api",
-    "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/api/transport:goog_cc",
     "//third_party/webrtc/api/transport:network_control",
     "//third_party/webrtc/api/units:time_delta",
@@ -133,54 +142,6 @@ component("webrtc_component") {
   configs += webrtc_configs
   public_configs = webrtc_public_configs
   public_deps = webrtc_public_deps
-}
-
-if (rtc_include_tests) {
-  component("webrtc_test_component") {
-    configs += webrtc_configs
-    public_configs = webrtc_public_configs
-
-    testonly = true
-
-    public_deps = webrtc_public_deps
-
-    public_deps += [
-      "//third_party/webrtc/api:audio_quality_analyzer_api",
-      "//third_party/webrtc/api:create_frame_generator",
-      "//third_party/webrtc/api:create_network_emulation_manager",
-      "//third_party/webrtc/api:create_peer_connection_quality_test_frame_generator",
-      "//third_party/webrtc/api:create_simulcast_test_fixture_api",
-      "//third_party/webrtc/api:create_time_controller",
-      "//third_party/webrtc/api:create_videocodec_test_fixture_api",
-      "//third_party/webrtc/api:dummy_peer_connection",
-      "//third_party/webrtc/api:fake_frame_decryptor",
-      "//third_party/webrtc/api:fake_frame_encryptor",
-      "//third_party/webrtc/api:frame_generator_api",
-      "//third_party/webrtc/api:mock_audio_mixer",
-      "//third_party/webrtc/api:mock_data_channel",
-      "//third_party/webrtc/api:mock_fec_controller_override",
-      "//third_party/webrtc/api:mock_frame_decryptor",
-      "//third_party/webrtc/api:mock_frame_encryptor",
-      "//third_party/webrtc/api:mock_media_stream_interface",
-      "//third_party/webrtc/api:mock_peer_connection_factory_interface",
-      "//third_party/webrtc/api:mock_peerconnectioninterface",
-      "//third_party/webrtc/api:mock_rtp",
-      "//third_party/webrtc/api:mock_transformable_video_frame",
-      "//third_party/webrtc/api:mock_video_bitrate_allocator",
-      "//third_party/webrtc/api:mock_video_bitrate_allocator_factory",
-      "//third_party/webrtc/api:mock_video_codec_factory",
-      "//third_party/webrtc/api:mock_video_decoder",
-      "//third_party/webrtc/api:mock_video_encoder",
-      "//third_party/webrtc/api:peer_connection_quality_test_fixture_api",
-      "//third_party/webrtc/api:simulcast_test_fixture_api",
-      "//third_party/webrtc/api:stats_observer_interface",
-      "//third_party/webrtc/api:test_dependency_factory",
-      "//third_party/webrtc/api:video_quality_analyzer_api",
-      "//third_party/webrtc/api:video_quality_test_fixture_api",
-      "//third_party/webrtc/api:videocodec_test_fixture_api",
-      "//third_party/webrtc/media:rtc_media_tests_utils",
-    ]
-  }
 }
 
 source_set("init_webrtc") {
@@ -225,9 +186,15 @@ source_set("field_trial") {
   deps = [ "//base" ]
 }
 
+# If you want to depend on this target you should depend on :webrtc_component
+# instead (which has a public dependency on this target).
 source_set("task_queue_factory") {
   visibility = [ ":*" ]
   sources = [
+    # Tested in
+    # third_party/blink/renderer/platform/peerconnection/coalesced_tasks_test.cc
+    "coalesced_tasks.cc",
+    "coalesced_tasks.h",
     "metronome_provider.cc",
     "metronome_provider.h",
 
@@ -254,14 +221,29 @@ source_set("task_queue_factory") {
   configs += [ "//third_party/webrtc:library_impl_config" ]
   deps = [
     "//base",
+    "//third_party/webrtc/api/metronome",
     "//third_party/webrtc/api/task_queue",
     "//third_party/webrtc/rtc_base/system:rtc_export",
+    "//third_party/webrtc/rtc_base/task_utils:to_queued_task",
   ]
+}
 
-  # If you want to use a WebRTC task queue you may want to have access to
-  # webrtc::ToQueuedTask, but it has limited visibility within WebRTC so we
-  # depend on it publically here.
-  public_deps = [ "//third_party/webrtc/rtc_base/task_utils:to_queued_task" ]
+source_set("metronome_like_task_queue_test") {
+  configs += webrtc_configs
+  public_configs = webrtc_public_configs
+
+  testonly = true
+
+  sources = [
+    "test/metronome_like_task_queue_test.cc",
+    "test/metronome_like_task_queue_test.h",
+  ]
+  deps = [
+    ":webrtc_component",
+    "//base",
+    "//base/test:test_support",
+    "//testing/gtest:gtest",
+  ]
 }
 
 source_set("system_time") {
@@ -269,4 +251,17 @@ source_set("system_time") {
   # visibility = [ ":*" ]
   sources = [ "rtc_base/system_time.cc" ]
   deps = [ "//base" ]
+}
+
+if (is_android) {
+  java_cpp_features("java_features_srcjar") {
+    # External code should depend on ":webrtc_overrides_java" instead.
+    visibility = [ ":*" ]
+    sources =
+        [ "//third_party/webrtc_overrides/metronome_task_queue_factory.cc" ]
+    template = "//third_party/webrtc_overrides/java_templates/WebRtcOverridesFeatures.java.tmpl"
+  }
+  android_library("webrtc_overrides_java") {
+    srcjar_deps = [ ":java_features_srcjar" ]
+  }
 }

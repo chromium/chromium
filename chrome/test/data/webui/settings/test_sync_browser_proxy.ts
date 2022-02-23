@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-import { PageStatus, StatusAction, StoredAccount, SyncBrowserProxy,SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
+import {PageStatus, StatusAction, StoredAccount, SyncBrowserProxy, SyncPrefs, SyncStatus} from 'chrome://settings/settings.js';
 import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 
 // clang-format on
@@ -11,18 +11,20 @@ import {TestBrowserProxy} from 'chrome://webui-test/test_browser_proxy.js';
 export class TestSyncBrowserProxy extends TestBrowserProxy implements
     SyncBrowserProxy {
   private impressionCount_: number = 0;
-
-  // Settable fake data.
-  private encryptionPassphraseSuccess: boolean = false;
-  private decryptionPassphraseSuccess: boolean = false;
-  storedAccounts: StoredAccount[] = [];
-  syncStatus: SyncStatus = {
+  private resolveGetSyncStatus_: Function|null = null;
+  private syncStatus_: SyncStatus|null = {
     signedIn: true,
     signedInUsername: 'fakeUsername',
     statusAction: StatusAction.NO_ACTION
   };
 
+  // Settable fake data.
+  encryptionPassphraseSuccess: boolean = false;
+  decryptionPassphraseSuccess: boolean = false;
+  storedAccounts: StoredAccount[] = [];
+
   constructor() {
+    // clang-format off
     super([
       'didNavigateAwayFromSyncPage',
       'didNavigateToSyncPage',
@@ -34,7 +36,7 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'setEncryptionPassphrase',
       'setDecryptionPassphrase',
       'sendSyncPrefsChanged',
-      'sendOfferTrustedVaultOptInChanged',
+      'sendTrustedVaultBannerStateChanged',
       'startSyncingWithEmail',
 
       // <if expr="not chromeos">
@@ -48,11 +50,30 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
       'turnOffSync',
       // </if>
     ]);
+    // clang-format on
   }
 
-  getSyncStatus() {
+  get testSyncStatus(): SyncStatus|null {
+    return this.syncStatus_;
+  }
+
+  set testSyncStatus(syncStatus: SyncStatus|null) {
+    this.syncStatus_ = syncStatus;
+    if (this.syncStatus_ && this.resolveGetSyncStatus_) {
+      this.resolveGetSyncStatus_(this.syncStatus_!);
+      this.resolveGetSyncStatus_ = null;
+    }
+  }
+
+  getSyncStatus(): Promise<SyncStatus> {
     this.methodCalled('getSyncStatus');
-    return Promise.resolve(this.syncStatus);
+    if (this.syncStatus_) {
+      return Promise.resolve(this.syncStatus_!);
+    } else {
+      return new Promise((resolve) => {
+        this.resolveGetSyncStatus_ = resolve;
+      });
+    }
   }
 
   getStoredAccounts() {
@@ -118,8 +139,8 @@ export class TestSyncBrowserProxy extends TestBrowserProxy implements
     this.methodCalled('sendSyncPrefsChanged');
   }
 
-  sendOfferTrustedVaultOptInChanged() {
-    this.methodCalled('sendOfferTrustedVaultOptInChanged');
+  sendTrustedVaultBannerStateChanged() {
+    this.methodCalled('sendTrustedVaultBannerStateChanged');
   }
 
   openActivityControlsUrl() {}

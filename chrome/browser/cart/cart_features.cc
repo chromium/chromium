@@ -5,7 +5,7 @@
 #include "chrome/browser/cart/cart_features.h"
 
 #include "base/no_destructor.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "third_party/re2/src/re2/re2.h"
 
 namespace cart_features {
@@ -43,6 +43,13 @@ bool IsFakeDataEnabled() {
   return base::GetFieldTrialParamValueByFeature(
              ntp_features::kNtpChromeCartModule,
              ntp_features::kNtpChromeCartModuleDataParam) == "fake";
+}
+
+bool IsCartDiscountFeatureEnabled() {
+  return base::GetFieldTrialParamValueByFeature(
+             ntp_features::kNtpChromeCartModule,
+             ntp_features::kNtpChromeCartModuleAbandonedCartDiscountParam) ==
+         "true";
 }
 
 }  // namespace cart_features

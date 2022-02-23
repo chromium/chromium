@@ -6,14 +6,14 @@
 
 #include "base/containers/contains.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "chrome/browser/web_applications/os_integration/url_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_file_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/test/fake_url_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_file_handler_manager.h"
 #include "chrome/browser/web_applications/test/fake_web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/url_handler_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_app_file_handler_manager.h"
-#include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
-#include "chrome/browser/web_applications/web_app_shortcut_manager.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 
 namespace web_app {
@@ -56,7 +56,7 @@ void FakeOsIntegrationManager::SetNextCreateShortcutsResult(const AppId& app_id,
 void FakeOsIntegrationManager::InstallOsHooks(
     const AppId& app_id,
     InstallOsHooksCallback callback,
-    std::unique_ptr<WebApplicationInfo> web_app_info,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
     InstallOsHooksOptions options) {
   OsHooksErrors os_hooks_errors;
 
@@ -100,6 +100,9 @@ void FakeOsIntegrationManager::UninstallOsHooks(
     const AppId& app_id,
     const OsHooksOptions& os_hooks,
     UninstallOsHooksCallback callback) {
+  if (os_hooks[OsHookType::kRunOnOsLogin]) {
+    ++num_unregister_run_on_os_login_calls_;
+  }
   OsHooksErrors os_hooks_errors;
   base::SequencedTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
@@ -117,9 +120,14 @@ void FakeOsIntegrationManager::UpdateOsHooks(
     const AppId& app_id,
     base::StringPiece old_name,
     FileHandlerUpdateAction file_handlers_need_os_update,
-    const WebApplicationInfo& web_app_info) {
+    const WebAppInstallInfo& web_app_info,
+    UninstallOsHooksCallback callback) {
   if (file_handlers_need_os_update != FileHandlerUpdateAction::kNoUpdate)
     ++num_update_file_handlers_calls_;
+
+  OsHooksErrors os_hooks_errors;
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(std::move(callback), os_hooks_errors));
 }
 
 void FakeOsIntegrationManager::SetFileHandlerManager(

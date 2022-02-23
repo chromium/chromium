@@ -140,6 +140,30 @@ dump both an ignored and an unignored axnode
         value : StaticText
     }
 }
+{
+    backendDOMNodeId : <number>
+    childIds : <object>
+    ignored : true
+    ignoredReasons : [
+        [0] : {
+            name : notRendered
+            value : {
+                type : boolean
+                value : true
+            }
+        }
+    ]
+    name : {
+        type : computedString
+        value : title
+    }
+    nodeId : <string>
+    parentId : <string>
+    role : {
+        type : internalRole
+        value : StaticText
+    }
+}
 
 Running test: testGetNodesForSubtreeByAccessibleName
 find all elements with accessible name "foo"

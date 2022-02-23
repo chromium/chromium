@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/threading/platform_thread.h"
@@ -136,15 +137,14 @@ class HostContentSettingsMap : public content_settings::Observer,
   // allowlisted. For allowlisted schemes the |source| field of |info| is set
   // the |SETTING_SOURCE_ALLOWLIST| and the |primary_pattern| and
   // |secondary_pattern| are set to a wildcard pattern.  If there is no content
-  // setting, NULL is returned and the |source| field of |info| is set to
-  // |SETTING_SOURCE_NONE|. The pattern fields of |info| are set to empty
+  // setting, a NONE-type value is returned and the |source| field of |info| is
+  // set to |SETTING_SOURCE_NONE|. The pattern fields of |info| are set to empty
   // patterns.
   // May be called on any thread.
-  std::unique_ptr<base::Value> GetWebsiteSetting(
-      const GURL& primary_url,
-      const GURL& secondary_url,
-      ContentSettingsType content_type,
-      content_settings::SettingInfo* info) const;
+  base::Value GetWebsiteSetting(const GURL& primary_url,
+                                const GURL& secondary_url,
+                                ContentSettingsType content_type,
+                                content_settings::SettingInfo* info) const;
 
   // For a given content type, returns all patterns with a non-default setting,
   // mapped to their actual settings, in the precedence order of the rules.
@@ -211,7 +211,8 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Sets the |value| for the default scope of the url that is appropriate for
   // the given |content_type| applying any provided |constraints|. Setting the
-  // value to null removes the default pattern pair for this content type.
+  // value to NONE (base::Value()) removes the default pattern pair for this
+  // content type.
   //
   // Internally this will call SetWebsiteSettingCustomScope() with the default
   // scope patterns for the given |content_type|. Developers will generally want
@@ -221,18 +222,18 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& requesting_url,
       const GURL& top_level_url,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value> value,
+      base::Value value,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Sets a rule to apply the |value| for all sites matching |pattern|,
   // |content_type| applying any provided |constraints|. Setting the value to
-  // null removes the given pattern pair. Unless adding a custom-scoped setting,
+  // NONE removes the given pattern pair. Unless adding a custom-scoped setting,
   // most developers will want to use SetWebsiteSettingDefaultScope() instead.
   void SetWebsiteSettingCustomScope(
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      std::unique_ptr<base::Value> value,
+      base::Value value,
       const content_settings::ContentSettingConstraints& constraints = {});
 
   // Check if a call to SetNarrowestContentSetting would succeed or if it would
@@ -377,7 +378,7 @@ class HostContentSettingsMap : public content_settings::Observer,
 
   // Returns the single content setting |value| with a toggle for if it
   // takes the global on/off switch into account.
-  std::unique_ptr<base::Value> GetWebsiteSettingInternal(
+  base::Value GetWebsiteSettingInternal(
       const GURL& primary_url,
       const GURL& secondary_url,
       ContentSettingsType content_type,
@@ -389,7 +390,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const GURL& secondary_url,
       ContentSettingsType type) const;
 
-  static std::unique_ptr<base::Value> GetContentSettingValueAndPatterns(
+  static base::Value GetContentSettingValueAndPatterns(
       const content_settings::ProviderInterface* provider,
       const GURL& primary_url,
       const GURL& secondary_url,
@@ -399,7 +400,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       ContentSettingsPattern* secondary_pattern,
       content_settings::SessionModel* session_model);
 
-  static std::unique_ptr<base::Value> GetContentSettingValueAndPatterns(
+  static base::Value GetContentSettingValueAndPatterns(
       content_settings::RuleIterator* rule_iterator,
       const GURL& primary_url,
       const GURL& secondary_url,
@@ -424,7 +425,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       const ContentSettingsPattern& primary_pattern,
       const ContentSettingsPattern& secondary_pattern,
       ContentSettingsType content_type,
-      base::Value* value);
+      const base::Value& value);
 
 #ifndef NDEBUG
   // This starts as the thread ID of the thread that constructs this
@@ -437,7 +438,7 @@ class HostContentSettingsMap : public content_settings::Observer,
 #endif
 
   // Weak; owned by the Profile.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Whether this settings map is for an incognito or guest session.
   bool is_off_the_record_;
@@ -459,7 +460,7 @@ class HostContentSettingsMap : public content_settings::Observer,
       user_modifiable_providers_;
 
   // content_settings_providers_[PREF_PROVIDER] but specialized.
-  content_settings::PrefProvider* pref_provider_ = nullptr;
+  raw_ptr<content_settings::PrefProvider> pref_provider_ = nullptr;
 
   base::ThreadChecker thread_checker_;
 

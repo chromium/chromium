@@ -98,6 +98,12 @@ static_library("browser") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
     ]
+    sources += [
+      "consistency_cookie_manager.cc",
+      "consistency_cookie_manager.h",
+      "mirror_landing_account_reconcilor_delegate.cc",
+      "mirror_landing_account_reconcilor_delegate.h",
+    ]
   }
 
   if (!enable_dice_support) {
@@ -161,6 +167,10 @@ source_set("unit_tests") {
       "//chromeos/crosapi/mojom",
       "//chromeos/lacros",
       "//chromeos/lacros:test_support",
+    ]
+    sources += [
+      "consistency_cookie_manager_unittest.cc",
+      "mirror_landing_account_reconcilor_delegate_unittest.cc",
     ]
   }
 

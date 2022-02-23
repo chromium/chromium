@@ -8,6 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
+
 namespace network {
 class NetworkConnectionTracker;
 }
@@ -19,7 +21,7 @@ class SyncManager;
 // Helper class to allow dependency injection of the SyncManager in tests.
 class SyncManagerFactory {
  public:
-  SyncManagerFactory(
+  explicit SyncManagerFactory(
       network::NetworkConnectionTracker* network_connection_tracker);
 
   SyncManagerFactory(const SyncManagerFactory&) = delete;
@@ -31,7 +33,7 @@ class SyncManagerFactory {
       const std::string& name);
 
  private:
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 };
 
 }  // namespace syncer

@@ -26,6 +26,33 @@ Scheduling an async task with no argument should fail
     }
     sessionId : <string>
 }
+Scheduling an async task with a bad recurring flag should fail
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : Unexpected arguments
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 27
+                    functionName : 
+                    lineNumber : 2
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+        }
+        timestamp : <number>
+        type : log
+    }
+    sessionId : <string>
+}
 Scheduling an async task with too many arguments should fail
 {
     method : Runtime.consoleAPICalled
@@ -432,6 +459,33 @@ Cancelling an already cancelled async task should fail
     sessionId : <string>
 }
 Scheduling an async task with no argument should fail
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : Unexpected arguments
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 27
+                    functionName : 
+                    lineNumber : 2
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+        }
+        timestamp : <number>
+        type : log
+    }
+    sessionId : <string>
+}
+Scheduling an async task with a bad recurring flag should fail
 {
     method : Runtime.consoleAPICalled
     params : {

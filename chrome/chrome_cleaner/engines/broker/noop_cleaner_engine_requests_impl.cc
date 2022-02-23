@@ -22,9 +22,7 @@ CleanerEngineRequestsImpl::CleanerEngineRequestsImpl(
     std::unique_ptr<chrome_cleaner::FileRemoverAPI> file_remover)
     : mojo_task_runner_(mojo_task_runner),
       metadata_observer_(metadata_observer),
-      file_remover_(std::move(file_remover)) {
-  ANALYZER_ALLOW_UNUSED(metadata_observer_);
-}
+      file_remover_(std::move(file_remover)) {}
 
 CleanerEngineRequestsImpl::~CleanerEngineRequestsImpl() = default;
 

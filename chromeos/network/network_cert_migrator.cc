@@ -81,33 +81,31 @@ class NetworkCertMigrator::MigrationTask
       return;
     }
 
-    base::DictionaryValue new_properties;
-    MigrateClientCertProperties(service_path,
-                                base::Value::AsDictionaryValue(*properties),
-                                &new_properties);
-
+    base::Value new_properties =
+        MigrateClientCertProperties(service_path, *properties);
     if (new_properties.DictEmpty())
       return;
     SendPropertiesToShill(service_path, new_properties);
   }
 
-  void MigrateClientCertProperties(const std::string& service_path,
-                                   const base::DictionaryValue& properties,
-                                   base::DictionaryValue* new_properties) {
+  base::Value MigrateClientCertProperties(const std::string& service_path,
+                                          const base::Value& properties) {
+    base::Value result(base::Value::Type::DICTIONARY);
+
     int configured_slot_id = -1;
     std::string pkcs11_id;
     chromeos::client_cert::ConfigType config_type =
-        chromeos::client_cert::CONFIG_TYPE_NONE;
+        chromeos::client_cert::ConfigType::kNone;
     chromeos::client_cert::GetClientCertFromShillProperties(
         properties, &config_type, &configured_slot_id, &pkcs11_id);
-    if (config_type == chromeos::client_cert::CONFIG_TYPE_NONE ||
+    if (config_type == chromeos::client_cert::ConfigType::kNone ||
         pkcs11_id.empty()) {
-      return;
+      return result;
     }
 
     // OpenVPN configuration doesn't have a slot id to migrate.
-    if (config_type == chromeos::client_cert::CONFIG_TYPE_OPENVPN)
-      return;
+    if (config_type == chromeos::client_cert::ConfigType::kOpenVpn)
+      return result;
 
     int real_slot_id = -1;
     CERTCertificate* cert =
@@ -115,21 +113,21 @@ class NetworkCertMigrator::MigrationTask
     if (!cert) {
       LOG(WARNING) << "No matching cert found, removing the certificate "
                       "configuration from network " << service_path;
-      chromeos::client_cert::SetEmptyShillProperties(config_type,
-                                                     new_properties);
-      return;
+      chromeos::client_cert::SetEmptyShillProperties(config_type, &result);
+      return result;
     }
     if (real_slot_id == -1) {
       LOG(WARNING) << "Found a certificate without slot id.";
-      return;
+      return result;
     }
 
     if (cert && real_slot_id != configured_slot_id) {
       VLOG(1) << "Network " << service_path
               << " is configured with no or an incorrect slot id.";
-      chromeos::client_cert::SetShillProperties(
-          config_type, real_slot_id, pkcs11_id, new_properties);
+      chromeos::client_cert::SetShillProperties(config_type, real_slot_id,
+                                                pkcs11_id, &result);
     }
+    return result;
   }
 
   CERTCertificate* FindCertificateWithPkcs11Id(const std::string& pkcs11_id,
@@ -149,7 +147,7 @@ class NetworkCertMigrator::MigrationTask
   }
 
   void SendPropertiesToShill(const std::string& service_path,
-                             const base::DictionaryValue& properties) {
+                             const base::Value& properties) {
     ShillServiceClient::Get()->SetProperties(
         dbus::ObjectPath(service_path), properties, base::DoNothing(),
         base::BindOnce(&LogError, service_path));

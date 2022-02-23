@@ -8,7 +8,6 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "chromecast/media/cma/backend/proxy/media_pipeline_buffer_extension.h"
 #include "chromecast/media/cma/backend/proxy/multizone_audio_decoder_proxy_impl.h"

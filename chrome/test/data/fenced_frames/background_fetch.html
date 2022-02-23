@@ -1,0 +1,33 @@
+<!doctype html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>BackgroundFetchBrowserTest helper page</title>
+    <script src="../result_queue.js"></script>
+    <script>
+    const kBackgroundFetchId = 'bg-fetch-id';
+    const kBackgroundFetchResource = [ '/background_fetch/types_of_cheese.txt' ];
+
+    function RegisterServiceWorker() {
+      navigator.serviceWorker.register('sw.js').then(() => {
+        sendResultToTest('ok - service worker registered');
+      }).catch(sendErrorToTest);
+    }
+
+    // Starts a Background Fetch request for a single to-be-downloaded file.
+    function StartSingleFileDownload() {
+      navigator.serviceWorker.ready.then(swRegistration => {
+        const options = {
+          title: 'Single-file Background Fetch'
+        };
+        return swRegistration.backgroundFetch.fetch(
+            kBackgroundFetchId, kBackgroundFetchResource, options);
+      }).then(bgFetchRegistration => {
+        sendResultToTest('ok');
+      }).catch(sendErrorToTest);
+    }
+    </script>
+  </head>
+  <body>
+  </body>
+</html>

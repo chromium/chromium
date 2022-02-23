@@ -103,7 +103,7 @@ TEST(BloomFilterTest, EverythingMatches) {
 }
 
 // Disable this test in configurations that don't print CHECK failures.
-#if !defined(OS_IOS) && !(defined(OFFICIAL_BUILD) && defined(NDEBUG))
+#if !BUILDFLAG(IS_IOS) && !(defined(OFFICIAL_BUILD) && defined(NDEBUG))
 TEST(BloomFilterTest, ByteVectorTooSmall) {
   std::string data(1023, 0xff);
   EXPECT_DEATH(

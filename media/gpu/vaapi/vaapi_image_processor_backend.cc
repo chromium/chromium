@@ -27,7 +27,7 @@
 
 namespace media {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 namespace {
 bool IsSupported(const ImageProcessorBackend::PortConfig& config) {
   if (!config.fourcc.ToVAFourCC())
@@ -62,12 +62,14 @@ bool IsSupported(const ImageProcessorBackend::PortConfig& config) {
 std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
-    const std::vector<OutputMode>& preferred_output_modes,
+    OutputMode output_mode,
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
+  DCHECK_EQ(output_mode, OutputMode::IMPORT)
+      << "Only OutputMode::IMPORT supported";
 // VaapiImageProcessorBackend supports ChromeOS only.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   return nullptr;
 #else
   if (!IsSupported(input_config) || !IsSupported(output_config))
@@ -87,11 +89,6 @@ std::unique_ptr<ImageProcessorBackend> VaapiImageProcessorBackend::Create(
                       VideoFrame::STORAGE_GPU_MEMORY_BUFFER)) {
     VLOGF(2) << "VaapiImageProcessorBackend supports Dmabuf-backed or "
                 "GpuMemoryBuffer based VideoFrame only for output";
-    return nullptr;
-  }
-
-  if (!base::Contains(preferred_output_modes, OutputMode::IMPORT)) {
-    VLOGF(2) << "VaapiImageProcessorBackend only supports IMPORT mode.";
     return nullptr;
   }
 
@@ -271,6 +268,7 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
       // the compositor should not try to render the frame we output here
       // anyway.
       output_frame->set_timestamp(input_frame->timestamp());
+      output_frame->set_color_space(input_frame->ColorSpace());
       std::move(cb).Run(std::move(output_frame));
       return;
     }
@@ -280,6 +278,8 @@ void VaapiImageProcessorBackend::Process(scoped_refptr<VideoFrame> input_frame,
   }
 
   output_frame->set_timestamp(input_frame->timestamp());
+  output_frame->set_color_space(input_frame->ColorSpace());
+
   std::move(cb).Run(std::move(output_frame));
 }
 

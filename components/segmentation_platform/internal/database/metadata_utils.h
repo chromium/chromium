@@ -31,7 +31,10 @@ enum class ValidationResult {
   kFeatureAggregationNotFound = 7,
   kFeatureTensorLengthInvalid = 8,
   kFeatureNameHashDoesNotMatchName = 9,
-  kMaxValue = kFeatureNameHashDoesNotMatchName,
+  kVersionNotSupported = 10,
+  kFeatureListInvalid = 11,
+  kCustomInputInvalid = 12,
+  kMaxValue = kCustomInputInvalid,
 };
 
 // Whether the given SegmentInfo and its metadata is valid to be used for the
@@ -45,7 +48,12 @@ ValidationResult ValidateMetadata(
 
 // Whether the given feature metadata is valid to be used for the current
 // segmentation platform.
-ValidationResult ValidateMetadataFeature(const proto::Feature& feature);
+ValidationResult ValidateMetadataUmaFeature(const proto::UMAFeature& feature);
+
+// Whether the given custom input metadata is valid to be used for the current
+// segmentation platform.
+ValidationResult ValidateMetadataCustomInput(
+    const proto::CustomInput& custom_input);
 
 // Whether the given metadata and feature metadata is valid to be used for the
 // current segmentation platform.
@@ -83,6 +91,16 @@ SignalKey::Kind SignalTypeToSignalKind(proto::SignalType signal_type);
 int ConvertToDiscreteScore(const std::string& mapping_key,
                            float input_score,
                            const proto::SegmentationModelMetadata& metadata);
+
+std::string SegmetationModelMetadataToString(
+    const proto::SegmentationModelMetadata& model_metadata);
+
+// Helper method to get all UMAFeatures from a segmentation model's metadata.
+// When |include_outputs| is true, the UMA features for training outputs will be
+// included. Otherwise only input UMA features are included.
+std::vector<proto::UMAFeature> GetAllUmaFeatures(
+    const proto::SegmentationModelMetadata& model_metadata,
+    bool include_outputs);
 
 }  // namespace metadata_utils
 }  // namespace segmentation_platform

@@ -4,13 +4,11 @@
 
 // https://github.com/ivansandrk/multi-apps/blob/main/explainer.md
 
-enum SubAppsError {
-    "success",
-    "failure",
-};
-
 [
-  SecureContext
+  Exposed=Window,
+  SecureContext,
+  RuntimeEnabled=DesktopPWAsSubApps
 ] interface SubApps {
-  [CallWith=ScriptState] Promise<SubAppsError> add(DOMString install_url);
+  [CallWith=ScriptState, RaisesException] Promise<void> add(DOMString install_url);
+  [CallWith=ScriptState, RaisesException] Promise<FrozenArray<DOMString>> list();
 };

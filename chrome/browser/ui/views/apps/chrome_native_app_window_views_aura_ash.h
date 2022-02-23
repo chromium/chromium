@@ -17,7 +17,7 @@
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_aura.h"
 #include "chrome/browser/ui/views/exclusive_access_bubble_views_context.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/base/accelerators/accelerator.h"
@@ -188,7 +188,7 @@ class ChromeNativeAppWindowViewsAuraAsh
   // Helper function to call AppServiceProxy to load icon.
   void LoadAppIcon(bool allow_placeholder_icon);
   // Invoked when the icon is loaded.
-  void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
 
   gfx::ImageSkia app_icon_image_skia_;
 

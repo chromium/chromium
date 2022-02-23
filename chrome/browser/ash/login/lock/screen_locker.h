@@ -10,6 +10,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
+#include "ash/components/login/auth/challenge_response_key.h"
+#include "ash/components/login/auth/user_context.h"
 #include "ash/public/cpp/login_types.h"
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
@@ -19,15 +22,8 @@
 #include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/ash/login/challenge_response_auth_keys_loader.h"
 #include "chrome/browser/ash/login/help_app_launcher.h"
-#include "chrome/browser/ash/login/security_token_pin_dialog_host_impl.h"
+#include "chrome/browser/ash/login/security_token_pin_dialog_host_login_impl.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/authenticator.h"
-#include "chromeos/login/auth/challenge_response_key.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -36,7 +32,12 @@
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/ime/ash/input_method_manager.h"
 
+class PrefChangeRegistrar;
+
 namespace ash {
+
+class Authenticator;
+class ExtendedAuthenticator;
 class ViewsScreenLocker;
 
 // ScreenLocker displays the lock UI and takes care of authenticating the user
@@ -85,7 +86,7 @@ class ScreenLocker
   void Init();
 
   // AuthStatusConsumer:
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
+  void OnAuthFailure(const AuthFailure& error) override;
   void OnAuthSuccess(const UserContext& user_context) override;
 
   // Called when an account password (not PIN/quick unlock) has been used to
@@ -139,7 +140,7 @@ class ScreenLocker
 
   // Allow a AuthStatusConsumer to listen for
   // the same login events that ScreenLocker does.
-  void SetLoginStatusConsumer(chromeos::AuthStatusConsumer* consumer);
+  void SetLoginStatusConsumer(AuthStatusConsumer* consumer);
 
   // Initialize or uninitialize the ScreenLocker class. It observes
   // SessionManager so that the screen locker accepts lock requests only after a
@@ -181,7 +182,7 @@ class ScreenLocker
                         bool is_complete,
                         int32_t percent_complete) override;
   void OnAuthScanDone(
-      device::mojom::ScanResult scan_result,
+      const device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override;
   void OnSessionFailed() override;
@@ -220,6 +221,8 @@ class ScreenLocker
 
   void OnFingerprintAuthFailure(const user_manager::User& user);
 
+  void MaybeStartFingerprintAuthSession(const user_manager::User* primary_user);
+
   // Called when the screen lock is ready.
   void ScreenLockReady();
 
@@ -257,6 +260,8 @@ class ScreenLocker
                                                 const AccountId& account_id);
 
   void OnPinCanAuthenticate(const AccountId& account_id, bool can_authenticate);
+
+  void UpdateFingerprintStateForUser(const user_manager::User* user);
 
   // Delegate used to talk to the view.
   Delegate* delegate_ = nullptr;
@@ -322,7 +327,10 @@ class ScreenLocker
 
   ChallengeResponseAuthKeysLoader challenge_response_auth_keys_loader_;
 
-  SecurityTokenPinDialogHostImpl security_token_pin_dialog_host_impl_;
+  SecurityTokenPinDialogHostLoginImpl
+      security_token_pin_dialog_host_login_impl_;
+
+  std::unique_ptr<PrefChangeRegistrar> fingerprint_pref_change_registrar_;
 
   base::WeakPtrFactory<ScreenLocker> weak_factory_{this};
 };

@@ -12,7 +12,7 @@
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/paint/first_meaningful_paint_detector.h"
 #include "third_party/blink/renderer/core/paint/paint_event.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 
@@ -107,6 +107,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
     return first_contentful_paint_presentation_;
   }
 
+  base::TimeTicks FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+      const {
+    return first_contentful_paint_;
+  }
+
   // FirstImagePaint returns the first time that image content was painted.
   base::TimeTicks FirstImagePaint() const {
     return first_image_paint_presentation_;
@@ -153,6 +158,11 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   void OnRestoredFromBackForwardCache();
 
+  // Indicates whether a mouseover event was recently dispatched over an
+  // HTMLImageElement LCP element.
+  bool IsLCPMouseoverDispatchedRecently();
+  void SetLCPMouseoverDispatched();
+
   void Trace(Visitor*) const override;
 
  private:
@@ -197,10 +207,6 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
 
   base::TimeTicks FirstPaintRendered() const { return first_paint_; }
 
-  base::TimeTicks FirstContentfulPaintRendered() const {
-    return first_contentful_paint_;
-  }
-
   // TODO(crbug/738235): Non first_*_presentation_ variables are only being
   // tracked to compute deltas for reporting histograms and should be removed
   // once we confirm the deltas and discrepancies look reasonable.
@@ -219,6 +225,8 @@ class CORE_EXPORT PaintTiming final : public GarbageCollected<PaintTiming>,
   base::TimeTicks first_eligible_to_paint_;
 
   base::TimeTicks last_portal_activated_presentation_;
+
+  base::TimeTicks lcp_mouse_over_dispatch_time_;
 
   Member<FirstMeaningfulPaintDetector> fmp_detector_;
 

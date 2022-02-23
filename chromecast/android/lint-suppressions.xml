@@ -58,6 +58,9 @@
     <!-- 1 resource used by android tv to generate MediaShell.apk file -->
     <ignore regexp="chromecast/internal/android/prebuilt/google-play-services-first-party"/>
   </issue>
+  <issue id="UnusedResources">
+    <ignore regexp="chromecast/browser/android/apk/res"/>
+  </issue>
   <issue id="UselessParent">
     <ignore regexp="chromecast/internal"/>
   </issue>

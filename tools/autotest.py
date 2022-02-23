@@ -368,7 +368,7 @@ def RunTestTargets(out_dir, targets, gtest_filter, extra_args, dry_run,
 
 def BuildCppTestFilter(filenames, line):
   make_filter_command = [
-      sys.executable, SRC_DIR / 'tools' / 'make-gtest-filter.py'
+      sys.executable, SRC_DIR / 'tools' / 'make_gtest_filter.py'
   ]
   if line:
     make_filter_command += ['--line', str(line)]
@@ -426,10 +426,6 @@ def main():
                       help='test suite file (eg. FooTest.java)')
 
   args, _extras = parser.parse_known_args()
-
-  # Use CWD as out_dir when build.ninja exists.
-  if not args.out_dir and os.path.exists('build.ninja'):
-    args.out_dir = '.'
 
   if args.out_dir:
     constants.SetOutputDirectory(args.out_dir)

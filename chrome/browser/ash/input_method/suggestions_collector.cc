@@ -36,13 +36,13 @@ SuggestionsCollector::SuggestionsCollector(
 SuggestionsCollector::~SuggestionsCollector() = default;
 
 void SuggestionsCollector::GatherSuggestions(
-    chromeos::ime::mojom::SuggestionsRequestPtr request,
+    ime::mojom::SuggestionsRequestPtr request,
     GatherSuggestionsCallback callback) {
   std::vector<TextSuggestion> assistive_suggestions =
       assistive_suggester_->GetSuggestions();
 
   if (!suggestions_service_client_->IsAvailable()) {
-    auto response = chromeos::ime::mojom::SuggestionsResponse::New(
+    auto response = ime::mojom::SuggestionsResponse::New(
         /*candidates=*/assistive_suggestions);
     std::move(callback).Run(std::move(response));
     return;
@@ -59,7 +59,7 @@ void SuggestionsCollector::OnSuggestionsGathered(
     GatherSuggestionsCallback callback,
     const std::vector<TextSuggestion>& assistive_suggestions,
     const std::vector<TextSuggestion>& system_suggestions) {
-  auto response = chromeos::ime::mojom::SuggestionsResponse::New(
+  auto response = ime::mojom::SuggestionsResponse::New(
       /*candidates=*/CombineResults(assistive_suggestions, system_suggestions));
   std::move(callback).Run(std::move(response));
 }

@@ -2,3 +2,9 @@ include_rules = [
   "+third_party/blink/public/platform/web_vector.h",
   "+third_party/blink/renderer/platform/wtf",
 ]
+
+specific_include_rules = {
+  "array_traits_protobuf.h": [
+    "+third_party/protobuf/src/google/protobuf/repeated_field.h",
+  ],
+}

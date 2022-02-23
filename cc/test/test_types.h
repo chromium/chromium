@@ -33,7 +33,6 @@ struct PrintTupleToStringParamName {
 enum class TestRasterType {
   kBitmap,
   kGpu,
-  kOop,
   kOneCopy,
   kZeroCopy,
 };

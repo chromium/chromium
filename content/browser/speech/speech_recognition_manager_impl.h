@@ -7,9 +7,10 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/speech_recognition_event_listener.h"
 #include "content/public/browser/speech_recognition_manager.h"
@@ -174,8 +175,8 @@ class CONTENT_EXPORT SpeechRecognitionManagerImpl
 
   static int next_requester_id_;
 
-  media::AudioSystem* audio_system_;
-  MediaStreamManager* media_stream_manager_;
+  raw_ptr<media::AudioSystem> audio_system_;
+  raw_ptr<MediaStreamManager> media_stream_manager_;
   base::flat_map<int, std::unique_ptr<Session>> sessions_;
   int primary_session_id_;
   int last_session_id_;

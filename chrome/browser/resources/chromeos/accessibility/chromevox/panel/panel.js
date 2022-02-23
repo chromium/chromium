@@ -143,6 +143,16 @@ Panel = class {
 
     /** @private {boolean} */
     Panel.tutorialReadyForTesting_ = false;
+
+    /** @private {boolean} */
+    Panel.mockTouchGestureSourceForTesting_ = false;
+  }
+
+  /**
+   * Enables touch gesture mode for testing.
+   */
+  static setTouchGestureSourceForTesting() {
+    Panel.mockTouchGestureSourceForTesting_ = true;
   }
 
   /**
@@ -308,11 +318,17 @@ Panel = class {
       const bkgnd = chrome.extension.getBackgroundPage();
       const range = bkgnd.ChromeVoxState.instance.getCurrentRange();
       const node = range ? range.start.node : null;
+      const touchScreen =
+          (bkgnd['EventSourceState']['get']() ===
+               EventSourceType.TOUCH_GESTURE ||
+           this.mockTouchGestureSourceForTesting_);
 
       // Build the top-level menus.
       const searchMenu = Panel.addSearchMenu('panel_search_menu');
       const jumpMenu = Panel.addMenu('panel_menu_jump');
       const speechMenu = Panel.addMenu('panel_menu_speech');
+      const touchMenu =
+          touchScreen ? Panel.addMenu('panel_menu_touchgestures') : null;
       const tabsMenu = Panel.addMenu('panel_menu_tabs');
       const chromevoxMenu = Panel.addMenu('panel_menu_chromevox');
       const actionsMenu = Panel.addMenu('panel_menu_actions');
@@ -392,12 +408,11 @@ Panel = class {
         sawBindingSet[command] = true;
         const category = CommandStore.categoryForCommand(binding.command);
         const menu = category ? categoryToMenu[category] : null;
-        const eventSource = bkgnd['EventSourceState']['get']();
         if (binding.title && menu) {
           let keyText;
           let brailleText;
           let gestureText;
-          if (eventSource === EventSourceType.TOUCH_GESTURE) {
+          if (touchScreen) {
             for (let i = 0, gesture; gesture = gestures[i]; i++) {
               const data = GestureCommandData.GESTURE_COMMAND_MAP[gesture];
               if (data && data.command === command) {
@@ -419,6 +434,40 @@ Panel = class {
               }, binding.command);
         }
       });
+
+      // Add Touch Gestures menu items.
+      if (touchScreen) {
+        const touchGestureItems = [];
+        for (const key in GestureCommandData.GESTURE_COMMAND_MAP) {
+          const command =
+              GestureCommandData.GESTURE_COMMAND_MAP[key]['command'];
+          if (!command) {
+            continue;
+          }
+
+          const gestureText =
+              Msgs.getMsg(GestureCommandData.GESTURE_COMMAND_MAP[key]['msgId']);
+          const msgForCmd =
+              GestureCommandData
+                  .GESTURE_COMMAND_MAP[key]['commandDescriptionMsgId'] ||
+              CommandStore.messageForCommand(command);
+          const titleText = Msgs.getMsg(msgForCmd);
+          touchGestureItems.push({titleText, gestureText, command});
+        }
+
+        touchGestureItems.sort(function(item1, item2) {
+          return item1.titleText.localeCompare(item2.titleText);
+        });
+
+        for (const item of touchGestureItems) {
+          touchMenu.addMenuItem(
+              item.titleText, '', '', item.gestureText, function() {
+                const CommandHandler =
+                    chrome.extension.getBackgroundPage()['CommandHandler'];
+                CommandHandler['onCommand'](item.command);
+              }, item.command);
+        }
+      }
 
       // Add all open tabs to the Tabs menu.
       bkgnd.chrome.windows.getLastFocused(function(lastFocusedWindow) {

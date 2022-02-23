@@ -12,8 +12,10 @@ group("sync") {
     "//components/sync/engine",
     "//components/sync/model",
     "//components/sync/nigori",
-    "//components/sync/trusted_vault",
   ]
+  if (!is_android) {
+    public_deps += [ "//components/sync/trusted_vault" ]
+  }
 }
 
 group("test_support") {
@@ -26,6 +28,9 @@ group("test_support") {
     "//components/sync/base:test_support",
     "//components/sync/driver:test_support",
   ]
+  if (!is_android) {
+    public_deps += [ "//components/sync/trusted_vault:test_support" ]
+  }
 }
 
 static_library("test_support_engine") {
@@ -124,7 +129,6 @@ source_set("unit_tests") {
   sources = [
     "base/client_tag_hash_unittest.cc",
     "base/model_type_unittest.cc",
-    "base/node_ordinal_unittest.cc",
     "base/ordinal_unittest.cc",
     "base/protobuf_unittest.cc",
     "base/sync_prefs_unittest.cc",
@@ -153,11 +157,11 @@ source_set("unit_tests") {
     "engine/cancelation_signal_unittest.cc",
     "engine/commit_contribution_impl_unittest.cc",
     "engine/commit_processor_unittest.cc",
+    "engine/cycle/commit_quota_unittest.cc",
     "engine/cycle/nudge_tracker_unittest.cc",
     "engine/cycle/status_controller_unittest.cc",
     "engine/cycle/sync_cycle_snapshot_unittest.cc",
     "engine/debug_info_event_listener_unittest.cc",
-    "engine/entity_data_unittest.cc",
     "engine/events/protocol_event_buffer_unittest.cc",
     "engine/get_updates_processor_unittest.cc",
     "engine/loopback_server/loopback_server_unittest.cc",
@@ -169,6 +173,7 @@ source_set("unit_tests") {
     "engine/model_type_worker_unittest.cc",
     "engine/net/http_bridge_unittest.cc",
     "engine/net/sync_server_connection_manager_unittest.cc",
+    "engine/nigori/nigori_unittest.cc",
     "engine/sync_manager_impl_unittest.cc",
     "engine/sync_scheduler_impl_unittest.cc",
     "engine/syncer_proto_util_unittest.cc",
@@ -196,18 +201,23 @@ source_set("unit_tests") {
     "nigori/nigori_state_unittest.cc",
     "nigori/nigori_storage_impl_unittest.cc",
     "nigori/nigori_sync_bridge_impl_unittest.cc",
-    "nigori/nigori_unittest.cc",
+    "protocol/entity_data_unittest.cc",
     "protocol/proto_enum_conversions_unittest.cc",
     "protocol/proto_value_conversions_unittest.cc",
-    "trusted_vault/download_keys_response_handler_unittest.cc",
-    "trusted_vault/proto_string_bytes_conversion_unittest.cc",
-    "trusted_vault/securebox_unittest.cc",
-    "trusted_vault/standalone_trusted_vault_backend_unittest.cc",
-    "trusted_vault/trusted_vault_access_token_fetcher_frontend_unittest.cc",
-    "trusted_vault/trusted_vault_connection_impl_unittest.cc",
-    "trusted_vault/trusted_vault_crypto_unittest.cc",
-    "trusted_vault/trusted_vault_request_unittest.cc",
   ]
+
+  if (!is_android) {
+    sources += [
+      "trusted_vault/download_keys_response_handler_unittest.cc",
+      "trusted_vault/proto_string_bytes_conversion_unittest.cc",
+      "trusted_vault/securebox_unittest.cc",
+      "trusted_vault/standalone_trusted_vault_backend_unittest.cc",
+      "trusted_vault/trusted_vault_access_token_fetcher_frontend_unittest.cc",
+      "trusted_vault/trusted_vault_connection_impl_unittest.cc",
+      "trusted_vault/trusted_vault_crypto_unittest.cc",
+      "trusted_vault/trusted_vault_request_unittest.cc",
+    ]
+  }
 
   configs += [ "//build/config:precompiled_headers" ]
 

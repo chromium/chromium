@@ -504,8 +504,8 @@ bool EventTarget::AddEventListenerInternal(
     AddedEventListener(event_type, registered_listener);
     if (IsA<JSBasedEventListener>(listener) &&
         IsInstrumentedForAsyncStack(event_type)) {
-      probe::AsyncTaskScheduled(GetExecutionContext(), event_type,
-                                listener->async_task_id());
+      listener->async_task_context()->Schedule(GetExecutionContext(),
+                                               event_type);
     }
   }
   return added;
@@ -660,8 +660,8 @@ bool EventTarget::SetAttributeEventListener(const AtomicString& event_type,
   if (registered_listener) {
     if (IsA<JSBasedEventListener>(listener) &&
         IsInstrumentedForAsyncStack(event_type)) {
-      probe::AsyncTaskScheduled(GetExecutionContext(), event_type,
-                                listener->async_task_id());
+      listener->async_task_context()->Schedule(GetExecutionContext(),
+                                               event_type);
     }
     registered_listener->SetCallback(listener);
     return true;
@@ -888,7 +888,8 @@ bool EventTarget::FireEventListeners(Event& event,
     event.SetHandlingPassive(EventPassiveMode(registered_listener));
 
     probe::UserCallback probe(context, nullptr, event.type(), false, this);
-    probe::AsyncTask async_task(context, listener->async_task_id(), "event",
+    probe::AsyncTask async_task(context, listener->async_task_context(),
+                                "event",
                                 IsInstrumentedForAsyncStack(event.type()));
 
     // To match Mozilla, the AT_TARGET phase fires both capturing and bubbling
@@ -961,7 +962,7 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
   ExecutionContext* context = GetExecutionContext();
   if (!context)
     return;
-  probe::AsyncTaskScheduled(context, event.type(), event.async_task_id());
+  event.async_task_context()->Schedule(context, event.type());
   context->GetTaskRunner(task_type)->PostTask(
       FROM_HERE,
       WTF::Bind(&EventTarget::DispatchEnqueuedEvent, WrapPersistent(this),
@@ -971,10 +972,10 @@ void EventTarget::EnqueueEvent(Event& event, TaskType task_type) {
 void EventTarget::DispatchEnqueuedEvent(Event* event,
                                         ExecutionContext* context) {
   if (!GetExecutionContext()) {
-    probe::AsyncTaskCanceled(context, event->async_task_id());
+    event->async_task_context()->Cancel();
     return;
   }
-  probe::AsyncTask async_task(context, event->async_task_id());
+  probe::AsyncTask async_task(context, event->async_task_context());
   DispatchEvent(*event);
 }
 

@@ -52,6 +52,10 @@ VaapiPictureFactory::VaapiPictureFactory() {
   vaapi_impl_pairs_.insert(
       std::make_pair(gl::kGLImplementationDesktopGL,
                      VaapiPictureFactory::kVaapiImplementationX11));
+#elif defined(USE_OZONE)
+  vaapi_impl_pairs_.insert(
+      std::make_pair(gl::kGLImplementationEGLANGLE,
+                     VaapiPictureFactory::kVaapiImplementationDrm));
 #endif
 
   DeterminePictureCreationAndDownloadingMechanism();
@@ -145,7 +149,7 @@ void VaapiPictureFactory::DeterminePictureCreationAndDownloadingMechanism() {
       break;
 #else
       // ozone or egl must be used to use the DRM implementation.
-      FALLTHROUGH;
+      [[fallthrough]];
 #endif
     default:
       NOTREACHED();

@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <cstdint>
 #include <memory>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -48,13 +49,13 @@ base::span<const uint8_t> StringToBytes(base::StringPiece str) {
 std::vector<uint8_t> ConcatBytes(
     const std::vector<base::span<const uint8_t>>& bytes_spans) {
   size_t total_size = 0;
-  for (const auto& span : bytes_spans) {
+  for (const base::span<const uint8_t>& span : bytes_spans) {
     total_size += span.size();
   }
 
   std::vector<uint8_t> result(total_size);
   auto output_it = result.begin();
-  for (const auto& span : bytes_spans) {
+  for (const base::span<const uint8_t>& span : bytes_spans) {
     output_it = std::copy(span.begin(), span.end(), output_it);
   }
   return result;

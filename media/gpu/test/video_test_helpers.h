@@ -105,8 +105,7 @@ class IvfWriter {
 // Helper to extract fragments from encoded video stream.
 class EncodedDataHelper {
  public:
-  EncodedDataHelper(const std::vector<uint8_t>& stream,
-                    VideoCodecProfile profile);
+  EncodedDataHelper(const std::vector<uint8_t>& stream, VideoCodec codec);
   ~EncodedDataHelper();
 
   // Compute and return the next fragment to be sent to the decoder, starting
@@ -137,7 +136,7 @@ class EncodedDataHelper {
   bool LookForSPS(size_t* skipped_fragments_count);
 
   std::string data_;
-  VideoCodecProfile profile_;
+  const VideoCodec codec_;
   size_t next_pos_to_decode_ = 0;
   size_t num_skipped_fragments_ = 0;
 };

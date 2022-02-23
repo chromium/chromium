@@ -17,8 +17,8 @@ js_type_check("closure_compile_module") {
 
 js_library("os_files_page") {
   deps = [
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
   ]
@@ -26,7 +26,7 @@ js_library("os_files_page") {
 
 js_library("smb_shares_page") {
   deps = [
-    "..:os_route.m",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",

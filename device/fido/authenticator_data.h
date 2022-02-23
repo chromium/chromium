@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"

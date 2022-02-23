@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "cc/paint/paint_flags.h"
@@ -183,7 +184,7 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
   void AnimationProgressed(const gfx::Animation* animation) override;
   void AnimationCanceled(const gfx::Animation* animation) override;
 
-  GestureNavSimple* const owner_;
+  const raw_ptr<GestureNavSimple> owner_;
 
   const OverscrollMode mode_;
 
@@ -199,7 +200,7 @@ class Affordance : public ui::LayerDelegate, public gfx::AnimationDelegate {
   ui::Layer painted_layer_;
 
   // Image icon of the arrow inside the affordance.
-  const gfx::VectorIcon* arrow_icon_ = nullptr;
+  raw_ptr<const gfx::VectorIcon> arrow_icon_ = nullptr;
 
   // Values that determine current state of the affordance.
   State state_ = State::DRAGGING;

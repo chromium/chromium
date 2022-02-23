@@ -45,7 +45,7 @@
 #include "ash/constants/ash_features.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #endif
 
@@ -65,11 +65,12 @@ const AccountKey kAccountKeyAlpha = {"alpha"};
 const AccountKey kAccountKeyBeta = {"beta"};
 const AccountKey kAccountKeyGamma = {"gamma"};
 const AccountKey kAccountKeyChild = {"child"};
+const AccountKey kAccountKeyEdu = {"EDU"};
 const AccountKey kAccountKeyIncomplete = {"incomplete"};
 const AccountKey kAccountKeyFooBar = {"foobar"};
 const AccountKey kAccountKeyFooDotBar = {"foo.bar"};
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
 const AccountKey kAccountKeyAdvancedProtection = {"advanced_protection"};
 #endif
 
@@ -201,7 +202,7 @@ class AccountTrackerServiceTest : public testing::Test {
   AccountTrackerServiceTest()
       : signin_client_(&pref_service_),
         fake_oauth2_token_service_(&pref_service_) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Mock AccountManagerFacade in java code for tests that require its
     // initialization.
     signin::SetUpMockAccountManagerFacade();
@@ -242,7 +243,8 @@ class AccountTrackerServiceTest : public testing::Test {
 
   void SimulateTokenAvailable(AccountKey account_key) {
     fake_oauth2_token_service_.UpdateCredentials(
-        AccountKeyToAccountId(account_key), "fake-refresh-token");
+        AccountKeyToAccountId(account_key),
+        base::StringPrintf("fake-refresh-token-%s", account_key.value));
   }
 
   void SimulateTokenRevoked(AccountKey account_key) {
@@ -705,14 +707,9 @@ TEST_F(AccountTrackerServiceTest,
   CheckAccountCapabilities(kAccountKeyAlpha, account_info);
 }
 
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(AccountTrackerServiceTest,
        TokenAvailable_AccountCapabilitiesFetcherDisabled) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      ash::features::kMinorModeRestriction);
-#endif
-
   account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
   SimulateTokenAvailable(kAccountKeyAlpha);
   EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
@@ -721,6 +718,26 @@ TEST_F(AccountTrackerServiceTest,
       AccountKeyToAccountId(kAccountKeyAlpha));
   EXPECT_FALSE(account_info.capabilities.AreAllCapabilitiesKnown());
 }
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS)
+TEST_F(AccountTrackerServiceTest,
+       TokenAvailable_AccountCapabilitiesFetcherEnabled) {
+  account_fetcher()->EnableAccountCapabilitiesFetcherForTest(false);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      switches::kEnableFetchingAccountCapabilities);
+  SimulateTokenAvailable(kAccountKeyAlpha);
+  EXPECT_FALSE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+
+  ReturnAccountInfoFetchSuccess(kAccountKeyAlpha);
+  ClearAccountTrackerEvents();
+
+  ReturnAccountCapabilitiesFetchSuccess(kAccountKeyAlpha);
+  EXPECT_TRUE(account_fetcher()->AreAllAccountCapabilitiesFetched());
+}
+#endif
 
 TEST_F(AccountTrackerServiceTest, TokenAvailableTwice_UserInfoOnce) {
   SimulateTokenAvailable(kAccountKeyAlpha);
@@ -970,7 +987,7 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   // This will allow testing removal as well as child accounts which is only
   // allowed for a single account.
   SimulateTokenRevoked(kAccountKeyAlpha);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyBeta),
                                        true);
 #else
@@ -978,7 +995,7 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
                                        true);
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   account_tracker()->SetIsAdvancedProtectionAccount(
       AccountKeyToAccountId(kAccountKeyBeta), true);
 #endif
@@ -992,7 +1009,7 @@ TEST_F(AccountTrackerServiceTest, Persistence) {
   CheckAccountDetails(kAccountKeyBeta, infos[0]);
   CheckAccountCapabilities(kAccountKeyBeta, infos[0]);
   EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   EXPECT_TRUE(infos[0].is_under_advanced_protection);
 #else
   EXPECT_FALSE(infos[0].is_under_advanced_protection);
@@ -1026,17 +1043,17 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
                 ->GetAccountInfo(AccountKeyToAccountId(kAccountKeyAlpha))
                 .is_child_account);
   ListPrefUpdate update(prefs(), prefs::kAccountInfo);
-  base::Value* dict = nullptr;
-  update->Get(0, &dict);
-  ASSERT_TRUE(dict && dict->is_dict());
+  ASSERT_FALSE(update->GetListDeprecated().empty());
+  base::Value& dict = update->GetListDeprecated()[0];
+  ASSERT_TRUE(dict.is_dict());
   const char kDeprecatedChildKey[] = "is_child_account";
   const char kNewChildKey[] = "is_supervised_child";
   // The deprecated key is not set.
-  EXPECT_FALSE(dict->FindBoolKey(kDeprecatedChildKey));
+  EXPECT_FALSE(dict.FindBoolKey(kDeprecatedChildKey));
 
   // Set the child status using the deprecated key, and reload the account.
-  dict->SetBoolKey(kDeprecatedChildKey, true);
-  dict->RemoveKey(kNewChildKey);
+  dict.SetBoolKey(kDeprecatedChildKey, true);
+  dict.RemoveKey(kNewChildKey);
   ClearAccountTrackerEvents();
   ResetAccountTrackerWithPersistence(scoped_user_data_dir.GetPath());
   EXPECT_TRUE(CheckAccountTrackerEvents(
@@ -1051,9 +1068,9 @@ TEST_F(AccountTrackerServiceTest, ChildStatusMigration) {
   // The deprecated key has been read.
   EXPECT_EQ(signin::Tribool::kTrue, infos[0].is_child_account);
   // The deprecated key has been removed.
-  EXPECT_FALSE(dict->FindBoolKey(kDeprecatedChildKey));
+  EXPECT_FALSE(dict.FindBoolKey(kDeprecatedChildKey));
   // The new key has been written.
-  absl::optional<int> new_key = dict->FindIntKey(kNewChildKey);
+  absl::optional<int> new_key = dict.FindIntKey(kNewChildKey);
   ASSERT_TRUE(new_key.has_value());
   EXPECT_EQ(static_cast<int>(signin::Tribool::kTrue), new_key.value());
 }
@@ -1447,15 +1464,15 @@ TEST_F(AccountTrackerServiceTest, GaiaIdMigrationCrashInTheMiddle) {
 TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
   SimulateTokenAvailable(kAccountKeyChild);
   IssueAccessToken(kAccountKeyChild);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        true);
 #else
   account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        true);
 #endif
-  // Response was processed but observer is not notified as the account
-  // state is invalid.
+  // Response was processed but observer is not notified as fetch results
+  // haven't been returned yet.
   EXPECT_TRUE(CheckAccountTrackerEvents({}));
   AccountInfo info = account_tracker()->GetAccountInfo(
       AccountKeyToAccountId(kAccountKeyChild));
@@ -1463,10 +1480,44 @@ TEST_F(AccountTrackerServiceTest, ChildAccountBasic) {
   SimulateTokenRevoked(kAccountKeyChild);
 }
 
+TEST_F(AccountTrackerServiceTest, ChildAccountWithSecondaryEdu) {
+  SimulateTokenAvailable(kAccountKeyChild);
+  IssueAccessToken(kAccountKeyChild);
+#if BUILDFLAG(IS_ANDROID)
+  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
+                                       true);
+#else
+  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
+                                       true);
+#endif
+
+  SimulateTokenAvailable(kAccountKeyEdu);
+  IssueAccessToken(kAccountKeyEdu);
+#if BUILDFLAG(IS_ANDROID)
+  account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyEdu),
+                                       false);
+#else
+  account_tracker()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyEdu),
+                                       false);
+#endif
+
+  // Response was processed but observer is not notified as fetch results
+  // haven't been returned yet.
+  EXPECT_TRUE(CheckAccountTrackerEvents({}));
+  AccountInfo info = account_tracker()->GetAccountInfo(
+      AccountKeyToAccountId(kAccountKeyChild));
+  EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
+  info =
+      account_tracker()->GetAccountInfo(AccountKeyToAccountId(kAccountKeyEdu));
+  EXPECT_NE(signin::Tribool::kTrue, info.is_child_account);
+  SimulateTokenRevoked(kAccountKeyChild);
+  SimulateTokenRevoked(kAccountKeyEdu);
+}
+
 TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
   SimulateTokenAvailable(kAccountKeyChild);
   IssueAccessToken(kAccountKeyChild);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        false);
 #else
@@ -1495,7 +1546,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevoked) {
 TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevokedWithUpdate) {
   SimulateTokenAvailable(kAccountKeyChild);
   IssueAccessToken(kAccountKeyChild);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        true);
 #else
@@ -1514,7 +1565,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedAndRevokedWithUpdate) {
       AccountKeyToAccountId(kAccountKeyChild));
   EXPECT_EQ(signin::Tribool::kTrue, info.is_child_account);
   SimulateTokenRevoked(kAccountKeyChild);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, is_child_account is set to false before removing it.
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
@@ -1539,7 +1590,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedTwiceThenRevoked) {
 
   // Since the account state is already valid, this will notify the
   // observers for the second time.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        true);
 #else
@@ -1555,7 +1606,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountUpdatedTwiceThenRevoked) {
                     AccountKeyToEmail(kAccountKeyChild)),
   }));
   SimulateTokenRevoked(kAccountKeyChild);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, is_child_account is set to false before removing it.
   EXPECT_TRUE(CheckAccountTrackerEvents({
       TrackingEvent(UPDATED, AccountKeyToAccountId(kAccountKeyChild),
@@ -1579,7 +1630,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
   IssueAccessToken(kAccountKeyChild);
 
   // Set and verify this is a child account.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        true);
 #else
@@ -1599,7 +1650,7 @@ TEST_F(AccountTrackerServiceTest, ChildAccountGraduation) {
   }));
 
   // Now simulate child account graduation.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   account_fetcher()->SetIsChildAccount(AccountKeyToAccountId(kAccountKeyChild),
                                        false);
 #else
@@ -1642,7 +1693,7 @@ TEST_F(AccountTrackerServiceTest, RemoveAccountBeforeImageFetchDone) {
   }));
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_IOS)
 TEST_F(AccountTrackerServiceTest, AdvancedProtectionAccountBasic) {
   SimulateTokenAvailable(kAccountKeyAdvancedProtection);
   IssueAccessToken(kAccountKeyAdvancedProtection);

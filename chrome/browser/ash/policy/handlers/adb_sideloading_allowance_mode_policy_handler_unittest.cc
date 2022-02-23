@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/policy/handlers/adb_sideloading_allowance_mode_policy_handler.h"
 
+#include <memory>
+#include <utility>
+
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/timer/mock_timer.h"
@@ -44,7 +47,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
     chromeos::PowerManagerClient::InitializeFake();
 
     adb_sideloading_allowance_mode_policy_handler_ =
-        new AdbSideloadingAllowanceModePolicyHandler(
+        std::make_unique<AdbSideloadingAllowanceModePolicyHandler>(
             ash::CrosSettings::Get(), local_state_.Get(),
             chromeos::PowerManagerClient::Get(), mock_notification_);
 
@@ -56,6 +59,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
   }
 
   ~AdbSideloadingAllowanceModePolicyHandlerTest() override {
+    adb_sideloading_allowance_mode_policy_handler_.reset();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -117,7 +121,7 @@ class AdbSideloadingAllowanceModePolicyHandlerTest : public testing::Test {
   ash::ScopedTestingCrosSettings scoped_testing_cros_settings_;
 
   ash::MockAdbSideloadingPolicyChangeNotification* mock_notification_;
-  AdbSideloadingAllowanceModePolicyHandler*
+  std::unique_ptr<AdbSideloadingAllowanceModePolicyHandler>
       adb_sideloading_allowance_mode_policy_handler_;
 
   base::WeakPtrFactory<AdbSideloadingAllowanceModePolicyHandlerTest>

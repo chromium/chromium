@@ -49,6 +49,10 @@ const char kPendingHintsProcessingVersion[] =
 const char kPreviouslyRegisteredOptimizationTypes[] =
     "optimization_guide.previously_registered_optimization_types";
 
+// A boolean pref that stores whether fetching is enabled. True by default.
+const char kOptimizationGuideFetchingEnabled[] =
+    "optimization_guide.fetching_enabled";
+
 void RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterInt64Pref(
       kHintsFetcherLastFetchAttempt,
@@ -67,6 +71,7 @@ void RegisterProfilePrefs(PrefRegistrySimple* registry) {
                                PrefRegistry::LOSSY_PREF);
   registry->RegisterDictionaryPref(kPreviouslyRegisteredOptimizationTypes,
                                    PrefRegistry::LOSSY_PREF);
+  registry->RegisterBooleanPref(kOptimizationGuideFetchingEnabled, true);
 }
 
 }  // namespace prefs

@@ -1,0 +1,5 @@
+CONSOLE WARNING: A <selectmenu>'s default button was removed and a new one was not provided. This <selectmenu> will not be fully functional.
+This is a testharness.js-based test.
+PASS selectmenu-slot-warning-button
+Harness: the test ran to completion.
+

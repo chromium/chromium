@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 #include "components/crx_file/id_util.h"
 #include "components/sync/model/string_ordinal.h"
@@ -582,10 +583,9 @@ class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
  public:
   ChromeAppSortingPreinstalledAppsBase() {
     base::DictionaryValue simple_dict;
-    simple_dict.SetString(keys::kVersion, "1.0.0.0");
-    simple_dict.SetString(keys::kName, "unused");
-    simple_dict.SetString(keys::kApp, "true");
-    simple_dict.SetString(keys::kLaunchLocalPath, "fake.html");
+    simple_dict.SetStringPath(keys::kVersion, "1.0.0.0");
+    simple_dict.SetStringPath(keys::kName, "unused");
+    simple_dict.SetStringPath(keys::kLaunchLocalPath, "fake.html");
 
     std::string error;
     app1_scoped_ = Extension::Create(prefs_.temp_dir().AppendASCII("app1_"),
@@ -611,8 +611,8 @@ class ChromeAppSortingPreinstalledAppsBase : public PrefsPrepopulatedTestBase {
 
  protected:
   // Weak references, for convenience.
-  Extension* app1_;
-  Extension* app2_;
+  raw_ptr<Extension> app1_;
+  raw_ptr<Extension> app2_;
 
  private:
   scoped_refptr<Extension> app1_scoped_;
@@ -751,10 +751,9 @@ class ChromeAppSortingDefaultOrdinalsBase : public ExtensionPrefsTest {
  protected:
   scoped_refptr<Extension> CreateApp(const std::string& name) {
     base::DictionaryValue simple_dict;
-    simple_dict.SetString(keys::kVersion, "1.0.0.0");
-    simple_dict.SetString(keys::kName, name);
-    simple_dict.SetString(keys::kApp, "true");
-    simple_dict.SetString(keys::kLaunchLocalPath, "fake.html");
+    simple_dict.SetStringPath(keys::kVersion, "1.0.0.0");
+    simple_dict.SetStringPath(keys::kName, name);
+    simple_dict.SetStringPath(keys::kLaunchLocalPath, "fake.html");
 
     std::string errors;
     scoped_refptr<Extension> app = Extension::Create(

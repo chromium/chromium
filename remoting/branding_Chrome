@@ -18,3 +18,4 @@ MAC_UNINSTALLER_BUNDLE_ID=com.google.chromeremotedesktop.me2me-host-uninstaller
 MAC_UNINSTALLER_BUNDLE_PREFIX=com.google.pkg
 MAC_UNINSTALLER_NAME=Chrome Remote Desktop Host Uninstaller
 ME2ME_HOST_DESCRIPTION=Chrome Remote Desktop Host
+REMOTE_WEBAUTHN_DESCRIPTION=Remote Web Authentication Process for Chrome Remote Desktop

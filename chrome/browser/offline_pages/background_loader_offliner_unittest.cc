@@ -10,13 +10,14 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_mock_time_message_loop_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/offline_pages/offliner_helper.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
@@ -171,7 +172,7 @@ class TestBackgroundLoaderOffliner : public BackgroundLoaderOffliner {
       content::WebContents* web_contents) override;
   content::PageType GetPageType(content::WebContents* web_contents) override;
 
-  background_loader::BackgroundLoaderContentsStub* stub_;
+  raw_ptr<background_loader::BackgroundLoaderContentsStub> stub_;
   std::unique_ptr<VisibleSecurityState> custom_visible_security_state_;
   content::PageType page_type_ = content::PageType::PAGE_TYPE_NORMAL;
 };
@@ -262,9 +263,8 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
     offliner_->SetBackgroundSnapshotControllerForTest(
         std::move(snapshot_controller));
     // Call complete loading.
-    auto* main_frame = offliner()->web_contents()->GetMainFrame();
-    offliner()->DocumentAvailableInMainFrame(main_frame);
-    offliner()->DocumentOnLoadCompletedInMainFrame(main_frame);
+    offliner()->PrimaryMainDocumentElementAvailable();
+    offliner()->DocumentOnLoadCompletedInPrimaryMainFrame();
     PumpLoop();
   }
 
@@ -293,9 +293,9 @@ class BackgroundLoaderOfflinerTest : public testing::Test {
   content::RenderViewHostTestEnabler rvhte_;
   TestingProfile profile_;
   std::unique_ptr<OfflinerPolicy> policy_;
-  TestLoadTerminationListener* load_termination_listener_;
+  raw_ptr<TestLoadTerminationListener> load_termination_listener_;
   std::unique_ptr<TestBackgroundLoaderOffliner> offliner_;
-  MockOfflinePageModel* model_;
+  raw_ptr<MockOfflinePageModel> model_;
   bool completion_callback_called_;
   bool cancel_callback_called_;
   bool can_download_callback_called_;
@@ -383,9 +383,8 @@ TEST_F(BackgroundLoaderOfflinerTest,
   SavePageRequest request(kRequestId, GURL(kHttpUrl), custom_tabs_client_id,
                           creation_time, kUserRequested);
 
-  profile()->GetPrefs()->SetInteger(
-      prefs::kNetworkPredictionOptions,
-      chrome_browser_net::NETWORK_PREDICTION_NEVER);
+  prefetch::SetPreloadPagesState(profile()->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
   EXPECT_FALSE(offliner()->LoadAndSave(request, completion_callback(),
                                        progress_callback()));
 }
@@ -842,8 +841,7 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarStartedTriesMet) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Guarantees low bar for saving is met.
-  auto* main_frame = offliner()->web_contents()->GetMainFrame();
-  offliner()->DocumentAvailableInMainFrame(main_frame);
+  offliner()->PrimaryMainDocumentElementAvailable();
   // Timeout
   EXPECT_TRUE(offliner()->HandleTimeout(kRequestId));
   EXPECT_TRUE(SaveInProgress());
@@ -860,8 +858,7 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarCompletedTriesMet) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Guarantees low bar for saving is met.
-  auto* main_frame = offliner()->web_contents()->GetMainFrame();
-  offliner()->DocumentAvailableInMainFrame(main_frame);
+  offliner()->PrimaryMainDocumentElementAvailable();
   // Timeout
   EXPECT_TRUE(offliner()->HandleTimeout(kRequestId));
   EXPECT_TRUE(SaveInProgress());
@@ -902,8 +899,7 @@ TEST_F(BackgroundLoaderOfflinerTest, HandleTimeoutWithLowBarNoRetryLimit) {
   EXPECT_TRUE(offliner()->LoadAndSave(request, completion_callback(),
                                       progress_callback()));
   // Sets lowbar.
-  auto* main_frame = offliner()->web_contents()->GetMainFrame();
-  offliner()->DocumentAvailableInMainFrame(main_frame);
+  offliner()->PrimaryMainDocumentElementAvailable();
   // Timeout
   EXPECT_FALSE(offliner()->HandleTimeout(kRequestId));
   EXPECT_FALSE(SaveInProgress());

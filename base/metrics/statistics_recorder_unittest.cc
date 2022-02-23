@@ -94,26 +94,11 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
   // NotInitialized to ensure a clean global state.
   void UninitializeStatisticsRecorder() {
     statistics_recorder_.reset();
-
-    // Grab the lock, so we can access |top_| to satisfy locking annotations.
-    // Normally, this wouldn't be OK (we're taking a pointer to |top_| and then
-    // freeing it outside the lock), but in this case, it's benign because the
-    // test is single-threaded.
-    //
-    // Note: We can't clear |top_| in the locked block, because the
-    // StatitisticsRecorder destructor expects |this == top_|.
-    {
-      const absl::MutexLock auto_lock(StatisticsRecorder::lock_.Pointer());
-      statistics_recorder_.reset(StatisticsRecorder::top_);
-    }
-    statistics_recorder_.reset();
-    DCHECK(!HasGlobalRecorder());
+    delete StatisticsRecorder::top_;
+    DCHECK(!StatisticsRecorder::top_);
   }
 
-  bool HasGlobalRecorder() {
-    const absl::ReaderMutexLock auto_lock(StatisticsRecorder::lock_.Pointer());
-    return StatisticsRecorder::top_ != nullptr;
-  }
+  bool HasGlobalRecorder() { return StatisticsRecorder::top_ != nullptr; }
 
   Histogram* CreateHistogram(const char* name,
                              HistogramBase::Sample min,
@@ -388,10 +373,10 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
   const Value* histogram_list = root->FindListKey("histograms");
 
   ASSERT_TRUE(histogram_list);
-  ASSERT_EQ(2u, histogram_list->GetList().size());
+  ASSERT_EQ(2u, histogram_list->GetListDeprecated().size());
 
   // Examine the first histogram.
-  const Value& histogram_dict = histogram_list->GetList()[0];
+  const Value& histogram_dict = histogram_list->GetListDeprecated()[0];
   ASSERT_TRUE(histogram_dict.is_dict());
 
   auto sample_count = histogram_dict.FindIntKey("count");
@@ -400,7 +385,7 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
 
   const Value* buckets_list = histogram_dict.FindListKey("buckets");
   ASSERT_TRUE(buckets_list);
-  EXPECT_EQ(2u, buckets_list->GetList().size());
+  EXPECT_EQ(2u, buckets_list->GetListDeprecated().size());
 
   // Check the serialized JSON with a different verbosity level.
   json = StatisticsRecorder::ToJSON(JSON_VERBOSITY_LEVEL_OMIT_BUCKETS);
@@ -409,8 +394,8 @@ TEST_P(StatisticsRecorderTest, ToJSON) {
   ASSERT_TRUE(root->is_dict());
   histogram_list = root->FindListKey("histograms");
   ASSERT_TRUE(histogram_list);
-  ASSERT_EQ(2u, histogram_list->GetList().size());
-  const Value& histogram_dict2 = histogram_list->GetList()[0];
+  ASSERT_EQ(2u, histogram_list->GetListDeprecated().size());
+  const Value& histogram_dict2 = histogram_list->GetListDeprecated()[0];
   ASSERT_TRUE(histogram_dict2.is_dict());
   sample_count = histogram_dict2.FindIntKey("count");
   ASSERT_TRUE(sample_count);

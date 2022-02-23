@@ -223,7 +223,7 @@ TEST(DisplayUtilTest, GetColorSpaceFromEdid) {
   const std::vector<uint8_t> hdr_edid(kHDR, kHDR + base::size(kHDR) - 1);
   const gfx::ColorSpace expected_hdr_color_space =
       gfx::ColorSpace::CreateCustom(expected_hdr_toXYZ50_matrix,
-                                    gfx::ColorSpace::TransferID::SMPTEST2084);
+                                    gfx::ColorSpace::TransferID::PQ);
   EXPECT_TRUE(expected_hdr_color_space.IsHDR());
   EXPECT_EQ(expected_hdr_color_space.ToString(),
             GetColorSpaceFromEdid(display::EdidParser(hdr_edid)).ToString());

@@ -63,7 +63,8 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
     }
   } else if (new_state == SPEECH_RECOGNIZER_RECOGNIZING) {
     DCHECK(!on_start_callback_.is_null());
-    std::move(on_start_callback_).Run(/*error=*/absl::optional<std::string>());
+    std::move(on_start_callback_)
+        .Run(/*type=*/type_, /*error=*/absl::optional<std::string>());
   } else if (new_state == SPEECH_RECOGNIZER_ERROR) {
     // When a speech recognition error occurs, ask the delegate to handle both
     // error and stop events.
@@ -78,9 +79,10 @@ void SpeechRecognitionPrivateRecognizer::OnSpeechRecognitionStateChanged(
 void SpeechRecognitionPrivateRecognizer::HandleStart(
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    ApiCallback callback) {
+    OnStartCallback callback) {
   if (speech_recognizer_) {
     std::move(callback).Run(
+        /*type=*/type_,
         /*error=*/absl::optional<std::string>(kSpeechRecognitionStartError));
     RecognizerOff();
     return;
@@ -91,10 +93,12 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   // Choose which type of speech recognition, either on-device or network.
   Profile* profile = Profile::FromBrowserContext(context_);
   if (OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(locale_)) {
+    type_ = speech::SpeechRecognitionType::kOnDevice;
     speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
         GetWeakPtr(), profile, locale_,
         /*recognition_mode_ime=*/true, /*enable_formatting=*/false);
   } else {
+    type_ = speech::SpeechRecognitionType::kNetwork;
     speech_recognizer_ = std::make_unique<NetworkSpeechRecognizer>(
         GetWeakPtr(),
         profile->GetDefaultStoragePartition()
@@ -104,7 +108,7 @@ void SpeechRecognitionPrivateRecognizer::HandleStart(
   }
 }
 
-void SpeechRecognitionPrivateRecognizer::HandleStop(ApiCallback callback) {
+void SpeechRecognitionPrivateRecognizer::HandleStop(OnStopCallback callback) {
   if (current_state_ == SPEECH_RECOGNIZER_OFF) {
     // If speech recognition is already off, trigger the callback with an error
     // message.
@@ -130,7 +134,7 @@ void SpeechRecognitionPrivateRecognizer::RecognizerOff() {
 void SpeechRecognitionPrivateRecognizer::MaybeUpdateProperties(
     absl::optional<std::string> locale,
     absl::optional<bool> interim_results,
-    ApiCallback callback) {
+    OnStartCallback callback) {
   if (locale.has_value())
     locale_ = locale.value();
   if (interim_results.has_value())

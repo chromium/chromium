@@ -21,11 +21,11 @@
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 base::TimeTicks GetTime() {
   return ui::EventTimeForNow();
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 }
 
 namespace wm {
@@ -112,7 +112,7 @@ TEST_F(CompoundEventFilterTest, CursorVisibilityChange) {
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 // Touch visually hides the cursor on ChromeOS and Windows.
 TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
   std::unique_ptr<CompoundEventFilter> compound_filter(new CompoundEventFilter);
@@ -167,7 +167,7 @@ TEST_F(CompoundEventFilterTest, TouchHidesCursor) {
   EXPECT_FALSE(cursor_client.IsCursorVisible());
   aura::Env::GetInstance()->RemovePreTargetHandler(compound_filter.get());
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_WIN)
 
 // Tests that if an event filter consumes a gesture, then it doesn't focus the
 // window.
@@ -224,7 +224,7 @@ TEST_F(CompoundEventFilterTest, DontHideWhenMouseDown) {
   aura::Env::GetInstance()->RemovePreTargetHandler(compound_filter.get());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows synthesizes mouse messages for touch events. We should not be
 // showing the cursor when we receive such messages.
 TEST_F(CompoundEventFilterTest, DontShowCursorOnMouseMovesFromTouch) {

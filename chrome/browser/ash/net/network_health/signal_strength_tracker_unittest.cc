@@ -14,8 +14,7 @@ namespace network_health {
 
 namespace {
 
-constexpr std::array<uint8_t, 3> samples = {71, 74, 80};
-
+constexpr std::array<uint8_t, 3> kSamples = {71, 74, 80};
 }
 
 class SignalStrengthTrackerTest : public ::testing::Test {
@@ -28,7 +27,7 @@ class SignalStrengthTrackerTest : public ::testing::Test {
 
  protected:
   void PopulateSamples() {
-    for (auto s : samples) {
+    for (auto s : kSamples) {
       tracker_->AddSample(s);
     }
   }
@@ -57,17 +56,17 @@ TEST_F(SignalStrengthTrackerTest, Samples) {
   PopulateSamples();
   auto stored_samples = tracker()->Samples();
   auto size = stored_samples.size();
-  ASSERT_EQ(samples.size(), size);
-  for (int i = 0; i < samples.size(); i++) {
-    ASSERT_EQ(samples[i], stored_samples[size - i - 1]);
+  ASSERT_EQ(kSamples.size(), size);
+  for (size_t i = 0; i < kSamples.size(); i++) {
+    ASSERT_EQ(kSamples[i], stored_samples[size - i - 1]);
   }
 }
 
 // Verify that the size of the samples in the tracker do not exceed the max
 // size.
 TEST_F(SignalStrengthTrackerTest, SamplesSize) {
-  auto num_samples = kSignalStrengthListSize + 10;
-  for (int i = 0; i < num_samples; i++) {
+  size_t num_samples = kSignalStrengthListSize + 10;
+  for (size_t i = 0; i < num_samples; i++) {
     tracker()->AddSample(i);
   }
 

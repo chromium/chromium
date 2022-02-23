@@ -80,6 +80,12 @@ const char kNumberOfLoadedReportingEndpointsHistogramName[] =
     "ReportingAndNEL.NumberOfLoadedReportingEndpoints";
 const char kNumberOfLoadedReportingEndpointGroupsHistogramName[] =
     "ReportingAndNEL.NumberOfLoadedReportingEndpointGroups";
+const char kNumberOfLoadedNelPolicies2HistogramName[] =
+    "ReportingAndNEL.NumberOfLoadedNELPolicies2";
+const char kNumberOfLoadedReportingEndpoints2HistogramName[] =
+    "ReportingAndNEL.NumberOfLoadedReportingEndpoints2";
+const char kNumberOfLoadedReportingEndpointGroups2HistogramName[] =
+    "ReportingAndNEL.NumberOfLoadedReportingEndpointGroups2";
 }  // namespace
 
 base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
@@ -89,9 +95,9 @@ base::TaskPriority GetReportingAndNelStoreBackgroundSequencePriority() {
 // Converts a NetworkIsolationKey to a string for serializing to disk. Returns
 // false on failure, which happens for transient keys that should not be
 // serialized to disk.
-bool WARN_UNUSED_RESULT
-NetworkIsolationKeyToString(const NetworkIsolationKey& network_isolation_key,
-                            std::string* out_string) {
+[[nodiscard]] bool NetworkIsolationKeyToString(
+    const NetworkIsolationKey& network_isolation_key,
+    std::string* out_string) {
   base::Value value;
   if (!network_isolation_key.ToValue(&value))
     return false;
@@ -100,9 +106,9 @@ NetworkIsolationKeyToString(const NetworkIsolationKey& network_isolation_key,
 
 // Attempts to convert a string returned by NetworkIsolationKeyToString() to
 // a NetworkIsolationKey. Returns false on failure.
-bool WARN_UNUSED_RESULT
-NetworkIsolationKeyFromString(const std::string& string,
-                              NetworkIsolationKey* out_network_isolation_key) {
+[[nodiscard]] bool NetworkIsolationKeyFromString(
+    const std::string& string,
+    NetworkIsolationKey* out_network_isolation_key) {
   absl::optional<base::Value> value = base::JSONReader::Read(string);
   if (!value)
     return false;
@@ -1526,6 +1532,8 @@ void SQLitePersistentReportingAndNelStore::Backend::
     RecordNumberOfLoadedNelPolicies(size_t count) {
   // The NetworkErrorLoggingService stores up to 1000 policies.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedNelPoliciesHistogramName, count);
+  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  UMA_HISTOGRAM_COUNTS_10000(kNumberOfLoadedNelPolicies2HistogramName, count);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::
@@ -1533,6 +1541,9 @@ void SQLitePersistentReportingAndNelStore::Backend::
   // The ReportingCache stores up to 1000 endpoints.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedReportingEndpointsHistogramName,
                             count);
+  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  UMA_HISTOGRAM_COUNTS_10000(kNumberOfLoadedReportingEndpoints2HistogramName,
+                             count);
 }
 
 void SQLitePersistentReportingAndNelStore::Backend::
@@ -1541,6 +1552,9 @@ void SQLitePersistentReportingAndNelStore::Backend::
   // endpoint per group.
   UMA_HISTOGRAM_COUNTS_1000(kNumberOfLoadedReportingEndpointGroupsHistogramName,
                             count);
+  // TODO(crbug.com/1165308): Remove this metric once the investigation is done.
+  UMA_HISTOGRAM_COUNTS_10000(
+      kNumberOfLoadedReportingEndpointGroups2HistogramName, count);
 }
 
 SQLitePersistentReportingAndNelStore::SQLitePersistentReportingAndNelStore(

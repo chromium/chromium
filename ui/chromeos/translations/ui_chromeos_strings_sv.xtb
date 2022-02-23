@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">katalanska</translation>
 <translation id="1168100932582989117">Googles namnservrar</translation>
+<translation id="1171082344678443012">XZ-komprimerat arkiv</translation>
 <translation id="1172970565351728681">Cirka <ph name="REMAINING_TIME" /> kvar</translation>
 <translation id="1173894706177603556">Ändra namn</translation>
 <translation id="1173916544412572294">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, telefonens batterinivå <ph name="BATTERY_STATUS" /> %, information</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Om du formaterar en enhet raderas all data som lagras på den. Det går inte att ångra åtgärden.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2028997212275086731">RAR-arkiv</translation>
+<translation id="2036414735548252477">LZMA-komprimerat tar-arkiv</translation>
 <translation id="2037845485764049925">ryska</translation>
 <translation id="2044023416777079300">Modemet har inte registrerats</translation>
 <translation id="2046702855113914483">Ramen (nudelsoppa)</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Dela med <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit-modeller</translation>
 <translation id="3085752524577180175">SOCKS-värd</translation>
+<translation id="3104793765551262433">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, blockerat av administratören, information</translation>
 <translation id="3113153474486991170">Det gick inte att öppna <ph name="PATH" /> från den här platsen. Kopiera den till Mina filer innan du öppnar.</translation>
 <translation id="3113592018909187986">Du har 1 försök kvar Du kan inte använda det här nätverket förrän du har ställt in en ny pinkod.</translation>
 <translation id="3124404833828281817">Någon som dagdrömmer</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">engelska (USA) med internationellt PC-tangentbord</translation>
 <translation id="3567221313191587603">Välj en fil och aktivera <ph name="OFFLINE_CHECKBOX_NAME" /> för att få offlineåtkomst till filer.</translation>
 <translation id="357479282490346887">litauiska</translation>
+<translation id="3587482841069643663">Alla</translation>
 <translation id="3592251141500063301">Det gick inte att göra <ph name="FILE_NAME" /> tillgänglig offline</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Kanadensisk franska</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Allt har säkerhetskopierats!</translation>
 <translation id="3634507049637220048">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, hanteras av administratören, information</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> objekt flyttades.</translation>
-<translation id="3645531960514756307">Lossa mapp</translation>
 <translation id="3685122418104378273">Google Drive-synkronisering inaktiveras som standard när mobildata används.</translation>
 <translation id="3689865792480713551">Avbryt <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, inaktiverat, <ph name="CONNECTION_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, information</translation>
 <translation id="3691184985318546178">singalesiska</translation>
 <translation id="3726463242007121105">Enheten kan inte öppnas eftersom dess filsystem inte stöds.</translation>
 <translation id="3727148787322499904">Om du ändrar denna inställning påverkas alla delade nätverk</translation>
+<translation id="3737576078404241332">Ta bort från sidofältet</translation>
 <translation id="3741243925913727067">Säkerhetskopiera foton och videor från mediaenheten till Google Drive.</translation>
 <translation id="3749289110408117711">Filnamn</translation>
 <translation id="3780536599611287598">Du har inte behörighet att flytta filer till <ph name="FOLDER_NAME" />.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Botaniker</translation>
 <translation id="4326192123064055915">Kaffe</translation>
 <translation id="4336032328163998280">Kopieringen misslyckades. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Lägg till i sidofältet</translation>
 <translation id="4348495354623233847">sorani/kurdiska med arabiskt tangentbord</translation>
 <translation id="4363958938297989186">ryskt fonetiskt tangentbord</translation>
 <translation id="4364327530094270451">Melon</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Volymreglage</translation>
 <translation id="4881695831933465202">Öppna</translation>
+<translation id="4886199584824489598">Bzip2-komprimerat arkiv</translation>
 <translation id="4900532980794411603">Dela med Parallels Desktop</translation>
 <translation id="4902546322522096650">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, anslut</translation>
 <translation id="4905417359854579806">Klar att säkerhetskopiera <ph name="FILE_COUNT" /></translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013">Nätverkstyp: <ph name="NETWORK_TYPE" />, inte anslutet</translation>
 <translation id="6074825444536523002">Formulär från Google</translation>
 <translation id="6079871810119356840">ungerska med QWERTY-tangentbord</translation>
+<translation id="6082256976217156453">LZMA-komprimerat arkiv</translation>
 <translation id="6096979789310008754">Söktexten har tagits bort och alla filer och mappar visas.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> flyttas till <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Blanksteg</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Uppochned</translation>
 <translation id="6943836128787782965">HTTP GET misslyckades</translation>
 <translation id="6949408524333579394">serbiska, translitterering</translation>
+<translation id="6954309393500027528">Möjligheten att klistra in den här filen här blockeras av administratören</translation>
 <translation id="6960565108681981554">Inte aktiverat. Kontakta operatören.</translation>
 <translation id="696203921837389374">Aktivera synkronisering via mobildata</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (utan skift)</translation>
 <translation id="8299269255470343364">japanska</translation>
 <translation id="8300849813060516376">Det gick inte att etablera tjänsten over-the-air.</translation>
+<translation id="8308481408797647857">XZ-komprimerat tar-arkiv</translation>
 <translation id="8312871300878166382">Klistra in i mapp</translation>
 <translation id="8329978297633540474">Oformaterad text</translation>
 <translation id="8335587457941836791">Ta bort från hyllan</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">lettiska</translation>
 <translation id="8560515948038859357">kantonesiska</translation>
 <translation id="8561206103590473338">Elefant</translation>
+<translation id="8566466896628108558">Nätverk <ph name="NETWORK_INDEX" /> av <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signalstyrka <ph name="SIGNAL_STRENGTH" /> %, blockerat av administratören, information</translation>
 <translation id="8569764466147087991">Välj fil att öppna</translation>
 <translation id="8577897833047451336">kroatiska</translation>
 <translation id="8578308463707544055">indonesiska</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Vi strävar hela tiden efter att göra det säkrare för dig att surfa. Tidigare kunde du uppmanas att lägga till ett tillägg i webbläsaren på vilken webbplats som helst. I de senaste versionerna av Google Chrome måste du uttryckligen tala om för Chrome att du vill installera dessa tillägg genom att lägga till dem via sidan Tillägg. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Lås upp</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Fäst mapp</translation>
 <translation id="9130775360844693113">De som använder <ph name="DESTINATION_NAME" /> får åtkomst till dessa objekt.</translation>
 <translation id="9131598836763251128">Välj en eller flera filer</translation>
 <translation id="9133055936679483811">Komprimeringen misslyckades. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Ändrades av</translation>
 <translation id="945522503751344254">Skicka feedback</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> poster har markerats från och med <ph name="FROM_ENTRY_NAME" /> till och med <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Gzip-komprimerat arkiv</translation>
 <translation id="965477715979482472">engelska (Sydafrika)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Det finns redan en fil med namnet <ph name="FILE_NAME" />. Vill du ersätta den?</translation>

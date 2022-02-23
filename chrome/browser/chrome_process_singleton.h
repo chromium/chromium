@@ -39,6 +39,9 @@ class ChromeProcessSingleton {
   // instance. Callers are guaranteed to either have notified an existing
   // process or have grabbed the singleton (unless the profile is locked by an
   // unreachable process).
+  // The guarantee is a bit different if we're running in Native Headless mode,
+  // in which case an existing process is not notified and this method returns
+  // PROFILE_IN_USE if it happens to use the same profile directory.
   ProcessSingleton::NotifyResult NotifyOtherProcessOrCreate();
 
   // Clear any lock state during shutdown.

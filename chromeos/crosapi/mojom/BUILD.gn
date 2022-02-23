@@ -11,6 +11,7 @@ mojom("mojom") {
     "app_service.mojom",
     "app_service_types.mojom",
     "app_window_tracker.mojom",
+    "arc.mojom",
     "authentication.mojom",
     "automation.mojom",
     "bitmap.mojom",
@@ -23,6 +24,7 @@ mojom("mojom") {
     "crosapi.mojom",
     "device_attributes.mojom",
     "device_settings_service.mojom",
+    "dlp.mojom",
     "download_controller.mojom",
     "drive_integration_service.mojom",
     "feedback.mojom",
@@ -37,7 +39,10 @@ mojom("mojom") {
     "keystore_error.mojom",
     "keystore_service.mojom",
     "kiosk_session_service.mojom",
+    "launcher_search.mojom",
     "local_printer.mojom",
+    "login.mojom",
+    "login_screen_storage.mojom",
     "login_state.mojom",
     "message_center.mojom",
     "metrics_reporting.mojom",
@@ -52,13 +57,17 @@ mojom("mojom") {
     "resource_manager.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
+    "sharesheet.mojom",
     "structured_metrics_service.mojom",
+    "sync.mojom",
     "system_display.mojom",
     "task_manager.mojom",
     "test_controller.mojom",
+    "timezone.mojom",
     "tts.mojom",
     "url_handler.mojom",
     "video_capture.mojom",
+    "web_app_types.mojom",
     "web_page_info.mojom",
   ]
   disable_variants = true
@@ -90,7 +99,7 @@ mojom("mojom") {
       types = [
         {
           mojom = "crosapi.mojom.App"
-          cpp = "::apps::mojom::AppPtr"
+          cpp = "::apps::AppPtr"
           move_only = true
           nullable_is_same_type = true
         },
@@ -114,20 +123,28 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.IconKey"
-          cpp = "::apps::mojom::IconKeyPtr"
+          cpp = "::apps::IconKeyPtr"
           move_only = true
         },
         {
           mojom = "crosapi.mojom.WindowMode"
-          cpp = "::apps::mojom::WindowMode"
+          cpp = "::apps::WindowMode"
         },
         {
           mojom = "crosapi.mojom.AppType"
-          cpp = "::apps::mojom::AppType"
+          cpp = "::apps::AppType"
         },
         {
           mojom = "crosapi.mojom.LaunchSource"
           cpp = "::apps::mojom::LaunchSource"
+        },
+        {
+          mojom = "crosapi.mojom.SharesheetLaunchSource"
+          cpp = "::sharesheet::LaunchSource"
+        },
+        {
+          mojom = "crosapi.mojom.SharesheetResult"
+          cpp = "::sharesheet::SharesheetResult"
         },
         {
           mojom = "crosapi.mojom.BrowserWindowInstanceUpdate"
@@ -145,7 +162,7 @@ mojom("mojom") {
         },
         {
           mojom = "crosapi.mojom.Permission"
-          cpp = "::apps::mojom::PermissionPtr"
+          cpp = "::apps::PermissionPtr"
           move_only = true
         },
         {
@@ -158,21 +175,32 @@ mojom("mojom") {
           cpp = "::apps::mojom::PreferredAppChangesPtr"
           move_only = true
         },
+        {
+          mojom = "crosapi.mojom.WebAppInstallResultCode"
+          cpp = "::webapps::InstallResultCode"
+        },
       ]
       traits_headers = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.h",
+        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.h",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.h",
+        "//components/services/app_service/public/cpp/app_types.h",
+        "//chromeos/crosapi/mojom/sharesheet_mojom_traits.h",
         "//components/services/app_service/public/cpp/icon_types.h",
         "//components/services/app_service/public/mojom/types.mojom.h",
       ]
       traits_sources = [
         "//chromeos/crosapi/mojom/app_service_types_mojom_traits.cc",
         "//chromeos/crosapi/mojom/browser_app_instance_registry_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/sharesheet_mojom_traits.cc",
+        "//chromeos/crosapi/mojom/web_app_types_mojom_traits.cc",
       ]
       traits_public_deps = [
+        "//components/services/app_service/public/cpp:app_types",
         "//components/services/app_service/public/cpp:browser_app_instance_registry_update",
         "//components/services/app_service/public/cpp:icon_types",
         "//components/services/app_service/public/mojom:mojom",
+        "//components/webapps/browser:constants",
       ]
     },
   ]
@@ -180,7 +208,10 @@ mojom("mojom") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "app_service_types_traits_unittest.cc" ]
+  sources = [
+    "app_service_types_traits_unittest.cc",
+    "sharesheet_mojom_traits_unittest.cc",
+  ]
 
   deps = [
     ":mojom",

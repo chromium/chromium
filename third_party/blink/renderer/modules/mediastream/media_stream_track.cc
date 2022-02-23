@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/modules/imagecapture/image_capture.h"
 #include "third_party/blink/renderer/modules/mediastream/apply_constraints_request.h"
+#include "third_party/blink/renderer/modules/mediastream/capture_handle_change_event.h"
 #include "third_party/blink/renderer/modules/mediastream/media_constraints_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_error_state.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
@@ -59,8 +60,8 @@
 #include "third_party/blink/renderer/modules/mediastream/processed_local_audio_source.h"
 #include "third_party/blink/renderer/modules/mediastream/user_media_controller.h"
 #include "third_party/blink/renderer/modules/mediastream/webaudio_media_stream_audio_sink.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_audio_source.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_component.h"
 #include "third_party/blink/renderer/platform/mediastream/media_stream_web_audio_source.h"
@@ -110,7 +111,7 @@ bool ConstraintSetHasNonImageCapture(
          constraint_set->hasFrameRate() || constraint_set->hasGroupId() ||
          constraint_set->hasHeight() || constraint_set->hasLatency() ||
          constraint_set->hasSampleRate() || constraint_set->hasSampleSize() ||
-         constraint_set->hasVideoKind() || constraint_set->hasWidth();
+         constraint_set->hasWidth();
 }
 
 bool ConstraintSetHasImageAndNonImageCapture(
@@ -219,6 +220,15 @@ void DidCloneMediaStreamTrack(MediaStreamComponent* original,
 
 }  // namespace
 
+MediaStreamTrack* MediaStreamTrack::Create(ExecutionContext* context) {
+  MediaStreamSource* source = MakeGarbageCollected<MediaStreamSource>(
+      "dummy", MediaStreamSource::StreamType::kTypeVideo, "dummy",
+      false /* remote */);
+  MediaStreamComponent* component =
+      MakeGarbageCollected<MediaStreamComponent>(source);
+  return MakeGarbageCollected<MediaStreamTrack>(context, component);
+}
+
 MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
                                    MediaStreamComponent* component)
     : MediaStreamTrack(context,
@@ -276,8 +286,8 @@ MediaStreamTrack::MediaStreamTrack(ExecutionContext* context,
 MediaStreamTrack::~MediaStreamTrack() = default;
 
 String MediaStreamTrack::kind() const {
-  DEFINE_STATIC_LOCAL(String, audio_kind, ("audio"));
-  DEFINE_STATIC_LOCAL(String, video_kind, ("video"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(String, audio_kind, ("audio"));
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(String, video_kind, ("video"));
 
   switch (component_->Source()->GetType()) {
     case MediaStreamSource::kTypeAudio:
@@ -608,11 +618,6 @@ MediaTrackSettings* MediaStreamTrack::getSettings() const {
     settings->setHeight(platform_settings.height);
   if (platform_settings.HasAspectRatio())
     settings->setAspectRatio(platform_settings.aspect_ratio);
-  if (RuntimeEnabledFeatures::MediaCaptureDepthVideoKindEnabled() &&
-      component_->Source()->GetType() == MediaStreamSource::kTypeVideo) {
-    if (platform_settings.HasVideoKind())
-      settings->setVideoKind(platform_settings.video_kind);
-  }
   settings->setDeviceId(platform_settings.device_id);
   if (!platform_settings.group_id.IsNull())
     settings->setGroupId(platform_settings.group_id);
@@ -876,7 +881,7 @@ std::unique_ptr<AudioSourceProvider> MediaStreamTrack::CreateWebAudioSource(
                                                context_sample_rate));
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamTrack::CloseFocusWindowOfOpportunity() {}
 #endif
 

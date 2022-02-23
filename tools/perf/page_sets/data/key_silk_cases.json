@@ -62,9 +62,6 @@
         },
         "gws_boogie_expansion": {
             "DEFAULT": "key_silk_cases_017.wprgo"
-        },
-        "polymer_topeka": {
-            "DEFAULT": "key_silk_cases_018.wprgo"
         }
     },
     "description": "Describes the Web Page Replay archives for a story set. Don't edit by hand! Use record_wpr for updating.",

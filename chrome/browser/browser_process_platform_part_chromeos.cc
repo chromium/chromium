@@ -8,11 +8,14 @@
 #include <utility>
 
 #include "ash/components/account_manager/account_manager_factory.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/arc/enterprise/snapshot_hours_policy_service.h"
 #include "ash/components/geolocation/simple_geolocation_provider.h"
 #include "ash/components/timezone/timezone_resolver.h"
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/singleton.h"
+#include "base/time/default_clock.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
@@ -34,7 +37,6 @@
 #include "chrome/browser/ash/system/timezone_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/component_updater/metadata_table_chromeos.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/profile.h"
@@ -45,13 +47,12 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/chrome_switches.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/app_restore/features.h"
-#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "components/arc/enterprise/snapshot_hours_policy_service.h"
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "components/keyed_service/content/browser_context_keyed_service_shutdown_notifier_factory.h"
@@ -105,16 +106,44 @@ void BrowserProcessPlatformPart::BrowserRestoreObserver::OnBrowserAdded(
     Browser* browser) {
   // If |browser| is the only browser, restores urls based on the on startup
   // setting.
-  if (BrowserList::GetInstance()->size() == 1)
-    RestoreUrls(browser);
+  if (BrowserList::GetInstance()->size() == 1 && ShouldRestoreUrls(browser)) {
+    if (ShouldOpenUrlsInNewBrowser(browser)) {
+      // Delay creating a new browser until |browser| is activated.
+      on_session_restored_callback_subscription_ =
+          SessionRestore::RegisterOnSessionRestoredCallback(base::BindRepeating(
+              &BrowserProcessPlatformPart::BrowserRestoreObserver::
+                  OnSessionRestoreDone,
+              base::Unretained(this)));
+    } else {
+      RestoreUrls(browser);
+    }
+  }
+
+  // If the startup urls from LAST_AND_URLS pref are already opened in a new
+  // browser, skip opening the same browser.
+  if (browser->creation_source() ==
+      Browser::CreationSource::kLastAndUrlsStartupPref) {
+    DCHECK(on_session_restored_callback_subscription_);
+    on_session_restored_callback_subscription_ = {};
+  }
+}
+
+void BrowserProcessPlatformPart::BrowserRestoreObserver::OnSessionRestoreDone(
+    Profile* profile,
+    int num_tabs_restored) {
+  // Ensure this callback to be called exactly once.
+  on_session_restored_callback_subscription_ = {};
+
+  // All browser windows are created. Open startup urls in a new browser.
+  auto create_params = Browser::CreateParams(profile, /*user_gesture*/ false);
+  Browser* browser = Browser::Create(create_params);
+  RestoreUrls(browser);
+  browser->window()->Show();
+  browser->window()->Activate();
 }
 
 bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
-    Browser* browser) {
-  // If the full restore feature is not enabled, don't open urls.
-  if (!full_restore::features::IsFullRestoreEnabled())
-    return false;
-
+    Browser* browser) const {
   Profile* profile = browser->profile();
 
   // Only open urls for regular sign in users.
@@ -126,8 +155,15 @@ bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
   }
 
   // If during the restore process, or restore from a crash, don't launch urls.
-  if (SessionRestore::IsRestoring(profile) || HasPendingUncleanExit(profile))
+  // However, in case of LAST_AND_URLS startup setting, urls should be opened
+  // even when the restore session is in progress.
+  SessionStartupPref pref =
+      SessionStartupPref::GetStartupPref(browser->profile()->GetPrefs());
+  if ((SessionRestore::IsRestoring(profile) &&
+       pref.type != SessionStartupPref::LAST_AND_URLS) ||
+      HasPendingUncleanExit(profile)) {
     return false;
+  }
 
   // App windows should not be restored.
   auto window_type = WindowTypeForBrowserType(browser->type());
@@ -142,26 +178,33 @@ bool BrowserProcessPlatformPart::BrowserRestoreObserver::ShouldRestoreUrls(
   if (browser->creation_source() == Browser::CreationSource::kStartupCreator)
     return false;
 
+  // If the startup setting is not open urls, don't launch urls.
+  if (!pref.ShouldOpenUrls() || pref.urls.empty())
+    return false;
+
   return true;
+}
+
+// If the startup setting is both the restore last session and the open urls,
+// those should be opened in a new browser.
+bool BrowserProcessPlatformPart::BrowserRestoreObserver::
+    ShouldOpenUrlsInNewBrowser(Browser* browser) const {
+  SessionStartupPref pref =
+      SessionStartupPref::GetStartupPref(browser->profile()->GetPrefs());
+  return pref.type == SessionStartupPref::LAST_AND_URLS;
 }
 
 void BrowserProcessPlatformPart::BrowserRestoreObserver::RestoreUrls(
     Browser* browser) {
   DCHECK(browser);
-  if (!ShouldRestoreUrls(browser))
-    return;
 
-  // If the startup setting is not open urls, don't launch urls.
   SessionStartupPref pref =
       SessionStartupPref::GetStartupPref(browser->profile()->GetPrefs());
-  if (pref.type != SessionStartupPref::Type::URLS || pref.urls.empty())
-    return;
-
   std::vector<GURL> urls;
   for (const auto& url : pref.urls)
     urls.push_back(url);
 
-  ProtocolHandlerRegistry* registry =
+  custom_handlers::ProtocolHandlerRegistry* registry =
       ProtocolHandlerRegistryFactory::GetForBrowserContext(browser->profile());
   for (const GURL& url : urls) {
     // We skip URLs that we'd have to launch an external protocol handler for.
@@ -196,6 +239,7 @@ void BrowserProcessPlatformPart::InitializeAutomaticRebootManager() {
 
   automatic_reboot_manager_ =
       std::make_unique<ash::system::AutomaticRebootManager>(
+          base::DefaultClock::GetInstance(),
           base::DefaultTickClock::GetInstance());
 }
 

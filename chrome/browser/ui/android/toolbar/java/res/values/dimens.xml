@@ -18,6 +18,9 @@
     <!-- Toolbar Phone - padding of the optional button when menu button is present -->
     <dimen name="toolbar_phone_optional_button_padding">12dp</dimen>
 
+    <!-- Home Button Menu dimensions-->
+    <dimen name="home_button_list_menu_width">222dp</dimen>
+
     <dimen name="menu_badge_translation_y">6dp</dimen>
 
     <!-- Bottom controls dimensions -->
@@ -34,6 +37,8 @@
     <!-- Start surface toolbar dimensions -->
     <dimen name="start_surface_toolbar_button_padding_to_button">8dp</dimen>
     <dimen name="start_surface_toolbar_button_padding_to_edge">16dp</dimen>
+    <dimen name="start_surface_fake_search_box_top_margin">0dp</dimen>
+    <dimen name="identity_disc_button_margin_start">16dp</dimen>
 
     <!-- Navigation history popup dimensions -->
     <dimen name="navigation_popup_width">312dp</dimen>

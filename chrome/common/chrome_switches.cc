@@ -21,6 +21,10 @@ namespace switches {
 // comments. Imagine "This switch..." at the beginning of the phrase, and it'll
 // all work out.
 // -----------------------------------------------------------------------------
+// Specifies Accept-Language to send to servers and expose to JavaScript via the
+// navigator.language DOM property. language[-country] where language is the 2
+// letter code from ISO-639.
+const char kAcceptLang[] = "accept-lang";
 
 // Allows third-party content included on a page to prompt for a HTTP basic
 // auth username/password pair.
@@ -126,17 +130,6 @@ const char kCloudPrintJobTitle[]            = "cloud-print-job-title";
 // Used with kCloudPrintFile to specify a JSON print ticket for the resulting
 // print job. Defaults to null if unspecified.
 const char kCloudPrintPrintTicket[]         = "cloud-print-print-ticket";
-
-// The process type value which causes a process to run as a cloud print service
-// process.
-//
-// DO NOT CHANGE THIS VALUE. Cloud printing relies on an external binary
-// launching Chrome with this process type.
-const char kCloudPrintServiceProcess[]      = "service";
-
-// Setup cloud print proxy for provided printers. This does not start
-// service or register proxy for autostart.
-const char kCloudPrintSetupProxy[]          = "cloud-print-setup-proxy";
 
 // Comma-separated list of BrowserThreads that cause browser process to crash if
 // the given browser thread is not responsive. UI/IO are the BrowserThreads that
@@ -560,6 +553,13 @@ const char kUnlimitedStorage[]              = "unlimited-storage";
 // all of its state.
 const char kUserDataDir[]                   = "user-data-dir";
 
+// Uses WinHttp to resolve proxies instead of using Chromium's normal proxy
+// resolution logic. This is only supported in Windows.
+//
+// TODO(https://crbug.com/1032820): Only use WinHttp whenever Chrome is
+// exclusively using system proxy configs.
+const char kUseSystemProxyResolver[] = "use-system-proxy-resolver";
+
 // Examines a .crx for validity and prints the result.
 const char kValidateCrx[]                   = "validate-crx";
 
@@ -601,7 +601,7 @@ const char kWinHttpProxyResolver[]          = "winhttp-proxy-resolver";
 // resulted in a browser startup.
 const char kWinJumplistAction[]             = "win-jumplist-action";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android authentication account type for SPNEGO authentication
 const char kAuthAndroidNegotiateAccountType[] = "auth-spnego-account-type";
 
@@ -637,7 +637,7 @@ const char kForceShowUpdateMenuItemCustomSummary[] = "custom_summary";
 
 // Sets the market URL for Chrome for use in testing.
 const char kMarketUrlForTesting[] = "market-url-for-testing";
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Custom crosh command.
@@ -664,7 +664,7 @@ const char kSchedulerConfigurationPerformance[] = "performance";
 const char kSchedulerConfigurationDefault[] = "scheduler-configuration-default";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_POSIX) && !defined(OS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_CHROMEOS_ASH)
 // These flags show the man page on Linux. They are equivalent to each
 // other.
 const char kHelp[]                          = "help";
@@ -689,7 +689,7 @@ const char kEnableEncryptionSelection[] = "enable-encryption-selection";
 const char kWmClass[]                       = "class";
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Prevents Chrome from quitting when Chrome Apps are open.
 const char kAppsKeepChromeAliveInTests[]    = "apps-keep-chrome-alive-in-tests";
 
@@ -714,9 +714,9 @@ const char kRelauncherProcessDMGDevice[]    = "dmg-device";
 // Indicates whether Chrome should be set as the default browser during
 // installation.
 const char kMakeChromeDefault[] = "make-chrome-default";
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Disables custom-drawing the window titlebar on Windows 10.
 const char kDisableWindows10CustomTitlebar[] =
     "disable-windows10-custom-titlebar";
@@ -772,7 +772,7 @@ const char kUninstallAppId[] = "uninstall-app-id";
 // method, as older PWA launchers still using this switch will rely on Chrome to
 // update them to use the new method.
 const char kPwaLauncherVersion[] = "pwa-launcher-version";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !defined(OFFICIAL_BUILD)
 // Enables support to debug printing subsystem.
@@ -793,20 +793,32 @@ const char kAllowNaClFileHandleAPI[]        = "allow-nacl-file-handle-api";
 const char kAllowNaClSocketAPI[]            = "allow-nacl-socket-api";
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_MAC) || \
-    defined(OS_WIN) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA)
 const char kEnableNewAppMenuIcon[] = "enable-new-app-menu-icon";
 
 // Causes the browser to launch directly in guest mode.
 const char kGuest[] = "guest";
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN)
+// Writes open and installed web apps for each profile to the specified file
+// without launching a new browser window or tab. Pass a absolute file path to
+// specify where to output the information. Can be used together with optional
+// --profile-base-name switch to only write information for a given profile.
+const char kListApps[] = "list-apps";
+
+// Pass the basename of the profile directory to specify which profile to get
+// information. Only relevant when used with --list-apps switch.
+const char kProfileBaseName[] = "profile-base-name";
+#endif
+
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 // Custom WebAPK server URL for the sake of testing.
 const char kWebApkServerUrl[] = "webapk-server-url";
 #endif
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_ANDROID)
 // Uses the system default printer as the initially selected destination in
 // print preview, instead of the most recently used destination.
 const char kUseSystemDefaultPrinter[] = "use-system-default-printer";

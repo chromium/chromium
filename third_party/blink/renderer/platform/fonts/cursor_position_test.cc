@@ -45,8 +45,8 @@ class CursorPositionTest : public ::testing::Test {
     DCHECK_LE(start, static_cast<int>(text_run.length()));
     DCHECK_GE(end, -1);
     DCHECK_LE(end, static_cast<int>(text_run.length()));
-    FloatRect rect =
-        font.SelectionRectForText(text_run, FloatPoint(), 12, start, end);
+    gfx::RectF rect =
+        font.SelectionRectForText(text_run, gfx::PointF(), 12, start, end);
     return rect.width();
   }
 

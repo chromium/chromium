@@ -13,9 +13,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/time/time.h"
 #include "base/unguessable_token.h"
@@ -62,6 +63,8 @@ class ReportingCacheImpl : public ReportingCache {
       const std::vector<const ReportingReport*>& reports) override;
   void IncrementReportsAttempts(
       const std::vector<const ReportingReport*>& reports) override;
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+  GetV1ReportingEndpointsByOrigin() const override;
   void IncrementEndpointDeliveries(const ReportingEndpointGroupKey& group_key,
                                    const GURL& url,
                                    int reports_delivered,
@@ -342,7 +345,7 @@ class ReportingCacheImpl : public ReportingCache {
   const base::TickClock& tick_clock() const { return context_->tick_clock(); }
   PersistentReportingStore* store() { return context_->store(); }
 
-  ReportingContext* context_;
+  raw_ptr<ReportingContext> context_;
 
   // Reports that have not yet been successfully uploaded.
   ReportSet reports_;

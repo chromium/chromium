@@ -123,7 +123,7 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
     NOTREACHED();
   }
 
-  void ReportChildWorkers(bool report,
+  void ReportChildTargets(bool report,
                           bool wait_for_debugger,
                           base::OnceClosure callback) override {
     DCHECK(io_task_runner_->RunsTasksInCurrentSequence());
@@ -134,7 +134,7 @@ class DevToolsAgent::IOAgent : public mojom::blink::DevToolsAgent {
     auto split_callback = base::SplitOnceCallback(std::move(callback));
     bool did_append_task =
         inspector_task_runner_->AppendTask(CrossThreadBindOnce(
-            &::blink::DevToolsAgent::ReportChildWorkersPostCallbackToIO, agent_,
+            &blink::DevToolsAgent::ReportChildTargetsPostCallbackToIO, agent_,
             report, wait_for_debugger,
             CrossThreadBindOnce(std::move(split_callback.first))));
 
@@ -274,42 +274,42 @@ void DevToolsAgent::FlushProtocolNotifications() {
     session->FlushProtocolNotifications();
 }
 
-void DevToolsAgent::ReportChildWorkersPostCallbackToIO(
+void DevToolsAgent::ReportChildTargetsPostCallbackToIO(
     bool report,
     bool wait_for_debugger,
     CrossThreadOnceClosure callback) {
-  TRACE_EVENT0("devtools", "Agent::ReportChildWorkersPostCallbackToIO");
-  ReportChildWorkersImpl(report, wait_for_debugger, base::DoNothing());
+  TRACE_EVENT0("devtools", "Agent::ReportChildTargetsPostCallbackToIO");
+  ReportChildTargetsImpl(report, wait_for_debugger, base::DoNothing());
   // This message originally came from the IOAgent for a worker which means the
   // response needs to be sent on the IO thread as well, so we post the callback
   // task back there to be run. In the non-IO case, this callback would be run
-  // synchronously at the end of ReportChildWorkersImpl, so the ordering between
-  // ReportChildWorkers and running the callback is preserved.
+  // synchronously at the end of ReportChildTargetsImpl, so the ordering between
+  // ReportChildTargets and running the callback is preserved.
   PostCrossThreadTask(*io_task_runner_, FROM_HERE, std::move(callback));
 }
 
-void DevToolsAgent::ReportChildWorkersImpl(bool report,
+void DevToolsAgent::ReportChildTargetsImpl(bool report,
                                            bool wait_for_debugger,
                                            base::OnceClosure callback) {
-  TRACE_EVENT0("devtools", "Agent::ReportChildWorkersImpl");
+  TRACE_EVENT0("devtools", "Agent::ReportChildTargetsImpl");
   report_child_workers_ = report;
   pause_child_workers_on_start_ = wait_for_debugger;
   if (report_child_workers_) {
     auto workers = std::move(unreported_child_worker_threads_);
     for (auto& it : workers)
-      ReportChildWorker(std::move(it.value));
+      ReportChildTarget(std::move(it.value));
   }
   std::move(callback).Run();
 }
 
-void DevToolsAgent::ReportChildWorkers(bool report,
+void DevToolsAgent::ReportChildTargets(bool report,
                                        bool wait_for_debugger,
                                        base::OnceClosure callback) {
-  TRACE_EVENT0("devtools", "Agent::ReportChildWorkers");
+  TRACE_EVENT0("devtools", "Agent::ReportChildTargets");
   if (associated_receiver_.is_bound()) {
-    ReportChildWorkersImpl(report, wait_for_debugger, std::move(callback));
+    ReportChildTargetsImpl(report, wait_for_debugger, std::move(callback));
   } else {
-    io_agent_->ReportChildWorkers(report, wait_for_debugger,
+    io_agent_->ReportChildTargets(report, wait_for_debugger,
                                   std::move(callback));
   }
 }
@@ -331,6 +331,11 @@ std::unique_ptr<WorkerDevToolsParams> DevToolsAgent::WorkerThreadCreated(
   if (!agent)
     return result;
 
+  mojom::blink::DevToolsExecutionContextType context_type =
+      token.has_value()
+          ? mojom::blink::DevToolsExecutionContextType::kDedicatedWorker
+          : mojom::blink::DevToolsExecutionContextType::kWorklet;
+
   auto data = std::make_unique<WorkerData>();
   data->url = url;
   result->agent_receiver = data->agent_remote.InitWithNewPipeAndPassReceiver();
@@ -339,10 +344,11 @@ std::unique_ptr<WorkerDevToolsParams> DevToolsAgent::WorkerThreadCreated(
   data->devtools_worker_token = result->devtools_worker_token;
   data->waiting_for_debugger = agent->pause_child_workers_on_start_;
   data->name = global_scope_name;
+  data->context_type = context_type;
   result->wait_for_debugger = agent->pause_child_workers_on_start_;
 
   if (agent->report_child_workers_) {
-    agent->ReportChildWorker(std::move(data));
+    agent->ReportChildTarget(std::move(data));
   } else {
     agent->unreported_child_worker_threads_.insert(worker_thread,
                                                    std::move(data));
@@ -357,17 +363,19 @@ void DevToolsAgent::WorkerThreadTerminated(ExecutionContext* parent_context,
     agent->unreported_child_worker_threads_.erase(worker_thread);
 }
 
-void DevToolsAgent::ReportChildWorker(std::unique_ptr<WorkerData> data) {
+void DevToolsAgent::ReportChildTarget(std::unique_ptr<WorkerData> data) {
   if (host_remote_.is_bound()) {
-    host_remote_->ChildWorkerCreated(
+    host_remote_->ChildTargetCreated(
         std::move(data->agent_remote), std::move(data->host_receiver),
         std::move(data->url), std::move(data->name),
-        data->devtools_worker_token, data->waiting_for_debugger);
+        data->devtools_worker_token, data->waiting_for_debugger,
+        data->context_type);
   } else if (associated_host_remote_.is_bound()) {
-    associated_host_remote_->ChildWorkerCreated(
+    associated_host_remote_->ChildTargetCreated(
         std::move(data->agent_remote), std::move(data->host_receiver),
         std::move(data->url), std::move(data->name),
-        data->devtools_worker_token, data->waiting_for_debugger);
+        data->devtools_worker_token, data->waiting_for_debugger,
+        data->context_type);
   }
 }
 

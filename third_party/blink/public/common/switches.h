@@ -50,7 +50,6 @@ BLINK_COMMON_EXPORT extern const char kSharedArrayBufferAllowedOrigins[];
 BLINK_COMMON_EXPORT extern const char kShowLayoutShiftRegions[];
 BLINK_COMMON_EXPORT extern const char kShowPaintRects[];
 BLINK_COMMON_EXPORT extern const char kTouchTextSelectionStrategy[];
-BLINK_COMMON_EXPORT extern const char kWebSQLInThirdPartyContextEnabled[];
 
 }  // namespace switches
 }  // namespace blink

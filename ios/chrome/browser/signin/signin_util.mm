@@ -5,7 +5,9 @@
 #include "ios/chrome/browser/signin/signin_util.h"
 
 #include "base/strings/sys_string_conversions.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #include "google_apis/gaia/gaia_auth_util.h"
+#include "ios/chrome/browser/signin/signin_util_internal.h"
 #import "ios/public/provider/chrome/browser/signin/chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/signin_error_api.h"
 
@@ -41,4 +43,15 @@ CGSize GetSizeForIdentityAvatarSize(IdentityAvatarSize avatar_size) {
   }
   DCHECK_NE(size, 0);
   return CGSizeMake(size, size);
+}
+
+signin::Tribool IsFirstSessionAfterDeviceRestore() {
+  static signin::Tribool is_first_session_after_device_restore =
+      signin::Tribool::kUnknown;
+  static dispatch_once_t once;
+  dispatch_once(&once, ^{
+    is_first_session_after_device_restore =
+        IsFirstSessionAfterDeviceRestoreInternal();
+  });
+  return is_first_session_after_device_restore;
 }

@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/power_monitor/power_monitor_source.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
@@ -27,7 +28,7 @@ void PowerMonitor::Initialize(std::unique_ptr<PowerMonitorSource> source) {
       PowerMonitor::Source()->GetCurrentThermalState());
 
   PowerMonitor::PowerMonitor::NotifySpeedLimitChange(
-      PowerMonitor::Source()->GetCurrentSpeedLimit());
+      PowerMonitor::Source()->GetInitialSpeedLimit());
 }
 
 bool PowerMonitor::IsInitialized() {
@@ -136,12 +137,12 @@ void PowerMonitor::SetCurrentThermalState(
   GetInstance()->source_->SetCurrentThermalState(state);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int PowerMonitor::GetRemainingBatteryCapacity() {
   DCHECK(IsInitialized());
   return PowerMonitor::Source()->GetRemainingBatteryCapacity();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void PowerMonitor::NotifyPowerStateChange(bool on_battery_power) {
   DCHECK(IsInitialized());

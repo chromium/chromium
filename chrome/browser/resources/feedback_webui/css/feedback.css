@@ -8,7 +8,6 @@ html {
 }
 
 body {
-  background-color: #fbfbfb;
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -24,9 +23,9 @@ body {
 .title-bar {
   -webkit-align-items: center;
   -webkit-app-region: drag;
-  background-color: #fff;
-  box-shadow: 0 1px #d0d0d0;
-  color: rgb(80, 80, 82);
+  background-color: var(--feedback-bg-color);
+  box-shadow: 0 1px var(--feedback-box-shadow-color);
+  color: var(--feedback-primary-color);
   display: flex;
   flex-grow: 0;
   font-size: 15px;
@@ -50,7 +49,7 @@ body {
 }
 
 .content {
-  color: #444;
+  color: var(--feedback-primary-color);
   font-size: 12px;
 }
 
@@ -59,7 +58,7 @@ body {
 }
 
 .content #description-text {
-  border-color: #c8c8c8;
+  border-color: var(--feedback-separator-color);
   box-sizing: border-box;
   height: 120px;
   line-height: 18px;
@@ -80,26 +79,40 @@ body {
   padding-inline-start: 10px;
 }
 
+:is(input:not([type=file]), select, textarea) {
+  background-color: var(--feedback-textfield-bg-color);
+}
+
+:is(input, select, textarea):active,
+:is(input, select, textarea):focus {
+  caret-color: var(--feedback-prominent-color);
+  outline: 2px solid var(--feedback-focus-color);
+}
+
 .content .text-field-container > label {
   flex: 0 1 auto;
   width: 100px;
 }
 
 .content .text-field-container > select {
-  border: 1px solid #c8c8c8;
-  color: #585858;
+  border: 1px solid var(--feedback-separator-color);
+  color: var(--feedback-primary-color);
   flex: 1 1 auto;
   height: 100%;
   padding-inline-start: 5px;
 }
 
 .content .text-field-container > input[type=text] {
-  flex: 1 1 auto;
   border: 1px solid;
-  border-color: #c8c8c8;
-  color: #585858;
+  border-color: var(--feedback-separator-color);
+  color: var(--feedback-secondary-color);
+  flex: 1 1 auto;
   height: 100%;
   padding-inline-start: 5px;
+}
+
+.content .text-field-container > input:focus {
+  color: var(--feedback-primary-color);
 }
 
 .content .text-field-container > input[type=checkbox] {
@@ -107,7 +120,7 @@ body {
 }
 
 .content .description-empty-notification {
-  color: rgb(204, 0, 0);
+  color: var(--feedback-alert-color);
   font-weight: bold;
 }
 
@@ -228,7 +241,7 @@ body {
 }
 
 .content .attach-file-notification {
-  color: rgb(204, 0, 0);
+  color: var(--feedback-alert-color);
   font-weight: bold;
 }
 
@@ -239,15 +252,21 @@ button.white-button {
 
 button.blue-button {
   color: #fff;
-  text-shadow: 1px sharp drop shadow rgb(45, 106, 218);
+  text-shadow: 1px sharp drop shadow var(--feedback-prominent-color);
 }
 
 /* Used for elements that are hidden but not ignored by screen reader. */
 .off-screen {
   height: 1px;
-  left: -10000px;
   overflow: hidden;
   position: absolute;
-  top: auto;
+  top: -1000px;
   width: 1px;
+}
+
+option {
+  background: var(--feedback-bg-color) linear-gradient(
+      rgba(255,255,255, 0.06),rgba(255,255,255, 0.06));
+  box-shadow: 0 1px 2px rgba(var(--feedback-box-shadow-color), 0.3),
+              0 1px 6px rgba(var(--feedback-box-shadow-color), 0.15);
 }

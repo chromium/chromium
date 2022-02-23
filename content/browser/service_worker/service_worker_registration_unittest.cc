@@ -12,6 +12,7 @@
 #include "base/check.h"
 #include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -34,7 +35,6 @@
 #include "content/browser/service_worker/service_worker_test_utils.h"
 #include "content/browser/service_worker/test_service_worker_observer.h"
 #include "content/browser/storage_partition_impl.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_browser_context.h"
@@ -557,10 +557,10 @@ class ServiceWorkerActivationTest : public ServiceWorkerRegistrationTest,
 
   // Mojo implementation fakes for the renderer-side service workers. Their
   // lifetime is bound to the Mojo connection.
-  FakeEmbeddedWorkerInstanceClient* version_1_client_ = nullptr;
-  FakeServiceWorker* version_1_service_worker_ = nullptr;
-  FakeEmbeddedWorkerInstanceClient* version_2_client_ = nullptr;
-  FakeServiceWorker* version_2_service_worker_ = nullptr;
+  raw_ptr<FakeEmbeddedWorkerInstanceClient> version_1_client_ = nullptr;
+  raw_ptr<FakeServiceWorker> version_1_service_worker_ = nullptr;
+  raw_ptr<FakeEmbeddedWorkerInstanceClient> version_2_client_ = nullptr;
+  raw_ptr<FakeServiceWorker> version_2_service_worker_ = nullptr;
 
   base::WeakPtr<ServiceWorkerContainerHost> container_host_;
   ServiceWorkerRemoteContainerEndpoint remote_endpoint_;

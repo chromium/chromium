@@ -13,21 +13,29 @@ namespace blink {
 class DOMRectInit;
 class ExceptionState;
 
-// Convert a DOMRectInit to a gfx::Rect. Validates that all values (including
-// the computed |right| and |bottom|) are nonnegative and fit in an int32_t.
-// Additionally validates that |rect| fits within |coded_size|. |name|
-// is the variable name in error messages, eg. "name.x".
-gfx::Rect ToGfxRect(DOMRectInit* rect,
+// Converts DOMRectInit to gfx::Rect. Validates that all values (including the
+// computed |right| and |bottom|) are nonnegative and fit into |coded_size|, and
+// that the result is nonempty. |rect_name| is the variable name in error
+// messages, eg. "name.x".
+gfx::Rect ToGfxRect(const DOMRectInit* rect,
+                    const char* rect_name,
                     const gfx::Size& coded_size,
-                    const char* name,
-                    ExceptionState&);
+                    ExceptionState& exception_state);
 
-// Checks |rect| x, y, width, and height for sample alignment in all planes for
-// given |format|. Throws exception to |exception_state| if misalignment is
-// detected.
-void VerifyRectSampleAlignment(const gfx::Rect& rect,
-                               media::VideoPixelFormat format,
-                               ExceptionState& exception_state);
+// Checks |rect| x, y, width, and height for sample alignment in all planes.
+bool ValidateCropAlignment(media::VideoPixelFormat format,
+                           const gfx::Rect& rect,
+                           const char* rect_name,
+                           ExceptionState& exception_state);
+
+// Checks |rect| x and y for sample alignment in all planes.
+bool ValidateOffsetAlignment(media::VideoPixelFormat format,
+                             const gfx::Rect& rect,
+                             const char* rect_name,
+                             ExceptionState& exception_state);
+
+// Aligns a crop by expanding the size if necessary.
+gfx::Rect AlignCrop(media::VideoPixelFormat format, const gfx::Rect& rect);
 
 }  // namespace blink
 

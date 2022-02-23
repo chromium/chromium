@@ -47,9 +47,9 @@ const base::Feature kInterestFeedV2ClicksAndViewsConditionalUpload{
     "InterestFeedV2ClickAndViewActionsConditionalUpload",
     base::FEATURE_DISABLED_BY_DEFAULT};
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 const base::Feature kInterestFeedNoticeCardAutoDismiss{
-    "InterestFeedNoticeCardAutoDismiss", base::FEATURE_DISABLED_BY_DEFAULT};
+    "InterestFeedNoticeCardAutoDismiss", base::FEATURE_ENABLED_BY_DEFAULT};
 #endif
 
 const base::Feature kInterestFeedSpinnerAlwaysAnimate{
@@ -61,9 +61,9 @@ const base::Feature kDiscoFeedEndpoint{"DiscoFeedEndpoint",
 const base::Feature kXsurfaceMetricsReporting{
     "XsurfaceMetricsReporting", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kReliabilityLogging{"FeedReliabilityLogging",
-                                        base::FEATURE_DISABLED_BY_DEFAULT};
+                                        base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kFeedInteractiveRefresh{"FeedInteractiveRefresh",
-                                            base::FEATURE_DISABLED_BY_DEFAULT};
+                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kFeedLoadingPlaceholder{"FeedLoadingPlaceholder",
                                             base::FEATURE_DISABLED_BY_DEFAULT};
 const base::FeatureParam<bool>
@@ -75,8 +75,6 @@ const base::Feature kFeedClearImageMemoryCache{
     "FeedClearImageMemoryCache", base::FEATURE_DISABLED_BY_DEFAULT};
 const base::Feature kFeedBackToTop{"FeedBackToTop",
                                    base::FEATURE_DISABLED_BY_DEFAULT};
-const base::Feature kFeedSignInPromoDismiss{"FeedSignInPromoDismiss",
-                                            base::FEATURE_ENABLED_BY_DEFAULT};
 const base::Feature kFeedStamp{"FeedStamp", base::FEATURE_DISABLED_BY_DEFAULT};
 
 const char kDefaultReferrerUrl[] = "https://www.google.com/";
@@ -87,6 +85,12 @@ const base::Feature kWebFeedSort{"WebFeedSort",
 const base::Feature kEnableOpenInNewTabFromStartSurfaceFeed{
     "EnableOpenInNewTabFromStartSurfaceFeed",
     base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kWebUiFeed{"FeedWebUi", base::FEATURE_DISABLED_BY_DEFAULT};
+const base::FeatureParam<std::string> kWebUiScriptFetchUrl{
+    &kWebUiFeed, "scripturl", "chrome-untrusted://feed/feed.js"};
+const base::FeatureParam<bool> kWebUiDisableContentSecurityPolicy{
+    &kWebUiFeed, "disableCsp", false};
 
 std::string GetFeedReferrerUrl() {
   const base::Feature* feature = base::FeatureList::IsEnabled(kInterestFeedV2)

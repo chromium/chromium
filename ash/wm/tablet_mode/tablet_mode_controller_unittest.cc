@@ -6,6 +6,8 @@
 
 #include <math.h>
 
+#include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,8 +16,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/accessibility/test_accessibility_controller_client.h"
 #include "ash/app_list/app_list_controller_impl.h"
-#include "ash/app_list/test/app_list_test_helper.h"
-#include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/app_types.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller.h"
@@ -28,6 +28,7 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/test_widget_builder.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -37,7 +38,6 @@
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/numerics/math_constants.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -63,6 +63,7 @@
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/vector3d_f.h"
 #include "ui/message_center/message_center.h"
+#include "ui/views/test/native_widget_factory.h"
 #include "ui/wm/core/cursor_manager.h"
 #include "ui/wm/core/window_util.h"
 
@@ -229,12 +230,12 @@ class TabletModeControllerTest : public AshTestBase {
   }
 
   // Wait one more frame presented for the metrics to get recorded.
-  // ignore_result() and timeout is because the frame could already be
+  // std::ignore and timeout is because the frame could already be
   // presented.
   void WaitForSmoothnessMetrics() {
-    ignore_result(ui::WaitForNextFrameToBePresented(
+    std::ignore = ui::WaitForNextFrameToBePresented(
         Shell::GetPrimaryRootWindow()->layer()->GetCompositor(),
-        base::Milliseconds(100)));
+        base::Milliseconds(100));
   }
 
  private:
@@ -1270,9 +1271,11 @@ TEST_F(TabletModeControllerTest, StartTabletActiveTransientChildOfLeftSnap) {
 // previous window on the left.
 TEST_F(TabletModeControllerTest, StartTabletActiveAppListPreviousLeftSnap) {
   std::unique_ptr<aura::Window> window = CreateDesktopWindowSnappedLeft();
-  Shell::Get()->app_list_controller()->ShowAppList();
-  ASSERT_TRUE(wm::IsActiveWindow(
-      GetAppListTestHelper()->GetAppListView()->GetWidget()->GetNativeView()));
+  auto* app_list_controller = Shell::Get()->app_list_controller();
+  app_list_controller->ShowAppList();
+  aura::Window* app_list_window = app_list_controller->GetWindow();
+  ASSERT_TRUE(app_list_window);
+  ASSERT_TRUE(wm::IsActiveWindow(app_list_window));
   tablet_mode_controller()->SetEnabledForTest(true);
   EXPECT_EQ(SplitViewController::State::kLeftSnapped,
             split_view_controller()->state());
@@ -1667,6 +1670,112 @@ TEST_F(TabletModeControllerTest, CloseWindowDuringExitAnimation) {
   window.reset();
 }
 
+TEST_F(TabletModeControllerTest, TabletModeUsageMetricsTest) {
+  // We haven't seen any accelerometer data or tablet mode event yet, so
+  // no metrics should be logged.
+  base::HistogramTester histogram_tester;
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 0);
+
+  // Start in clamshell mode by accelerometer data.
+  OpenLidToAngle(60.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 0);
+
+  // Enter in tablet mode by accelerometer data.
+  OpenLidToAngle(300.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 0);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 1);
+
+  // Exit tablet mode by accelerometer data.
+  OpenLidToAngle(60.0f);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 1);
+
+  // Enter tablet mode by tablet mode event.
+  SetTabletMode(true);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 1);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 2);
+
+  // Exit tablet mode by tablet mode event.
+  SetTabletMode(false);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletActiveTimeHistogramName, 2);
+  histogram_tester.ExpectTotalCount(
+      TabletModeController::kTabletInactiveTimeHistogramName, 2);
+}
+
+// Tests that a title bar of a window should be auto hidden if the window is
+// maximized or snapped.
+TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebars) {
+  tablet_mode_controller()->SetEnabledForTest(true);
+  TestWidgetBuilder widget_builder;
+  std::unique_ptr<views::Widget> widget =
+      widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_WINDOW)
+          .SetBounds(gfx::Rect(500, 300))
+          .SetContext(GetContext())
+          .SetShow(true)
+          .BuildOwnsNativeWidget();
+  auto* window = widget->GetNativeWindow();
+  auto* window_state = WindowState::Get(window);
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorCanResize |
+                          aura::client::kResizeBehaviorCanMaximize);
+
+  // If the window is not maximized nor snapped, `ShouldAutoHideTitlebars()`
+  // should return true.
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+  EXPECT_TRUE(window_state->CanSnap());
+
+  // Snap the window and check that `ShouldAutoHideTitlebars()` is true.
+  WMEvent snap_to_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_to_left);
+  EXPECT_TRUE(window_state->IsSnapped());
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+
+  // Minimize the window and check that `ShouldAutoHideTitlebars()` is false.
+  WMEvent minimize(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimize);
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+
+  // Maximize the window and check that `ShouldAutoHideTitlebars()` is true.
+  window_state->Maximize();
+  EXPECT_TRUE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+}
+
+// Tests that `ShouldAutoHideTitlebars()` should not crash if the window state
+// does not exist (crbug.com/1267778).
+TEST_F(TabletModeControllerTest, ShouldAutoHideTitlebarsNoWindowState) {
+  TestWidgetBuilder widget_builder;
+  // Create a window type control which is an example of a window that its
+  // state does not exist to test that `ShouldAutoHideTitlebars()` works.
+  std::unique_ptr<views::Widget> widget =
+      widget_builder.SetWidgetType(views::Widget::InitParams::TYPE_CONTROL)
+          .SetBounds(gfx::Rect(500, 300))
+          .SetContext(GetContext())
+          .SetShow(true)
+          .BuildOwnsNativeWidget();
+  auto* window = widget->GetNativeWindow();
+  tablet_mode_controller()->SetEnabledForTest(true);
+  EXPECT_FALSE(WindowState::Get(window));
+  EXPECT_FALSE(Shell::Get()->tablet_mode_controller()->ShouldAutoHideTitlebars(
+      widget.get()));
+}
+
 class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
  public:
   TabletModeControllerOnDeviceTest() = default;
@@ -1680,7 +1789,7 @@ class TabletModeControllerOnDeviceTest : public TabletModeControllerTest {
   void SetUp() override {
     // We need to simulate the real on-device behavior for some tests.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kForceSystemCompositorMode);
+        switches::kForceSystemCompositorMode);
     TabletModeControllerTest::SetUp();
     // PowerManagerClient callback is a posted task.
     base::RunLoop().RunUntilIdle();

@@ -8,7 +8,6 @@
 
 #include <memory>
 
-#include "base/no_destructor.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_constants.h"
 #include "chrome/browser/extensions/api/web_navigation/web_navigation_api_helpers.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
@@ -57,7 +56,7 @@ void WebNavigationEventRouter::PendingWebContents::Set(
 }
 
 void WebNavigationEventRouter::PendingWebContents::WebContentsDestroyed() {
-  std::move(on_destroy_).Run(target_web_contents_);
+  std::move(on_destroy_).Run(target_web_contents_.get());
   // |this| is deleted!
 }
 
@@ -88,8 +87,10 @@ void WebNavigationEventRouter::OnTabStripModelChanged(
              mojom::ViewType::kTabContents);
       return;
     }
-    if (!FrameNavigationState::IsValidUrl(replace->old_contents->GetURL()) ||
-        !FrameNavigationState::IsValidUrl(replace->new_contents->GetURL()))
+    if (!FrameNavigationState::IsValidUrl(
+            replace->old_contents->GetLastCommittedURL()) ||
+        !FrameNavigationState::IsValidUrl(
+            replace->new_contents->GetLastCommittedURL()))
       return;
 
     web_navigation_api_helpers::DispatchOnTabReplaced(
@@ -169,7 +170,8 @@ void WebNavigationEventRouter::PendingWebContentsDestroyed(
 
 WebNavigationTabObserver::WebNavigationTabObserver(
     content::WebContents* web_contents)
-    : WebContentsObserver(web_contents) {}
+    : WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebNavigationTabObserver>(*web_contents) {}
 
 WebNavigationTabObserver::~WebNavigationTabObserver() {}
 
@@ -486,7 +488,20 @@ ExtensionFunction::ResponseAction WebNavigationGetFrameFunction::Run() {
   frame_details.error_occurred =
       frame_navigation_state->GetErrorOccurredInFrame();
   frame_details.parent_frame_id =
-      ExtensionApiFrameIdMap::GetFrameId(render_frame_host->GetParent());
+      ExtensionApiFrameIdMap::GetParentFrameId(render_frame_host);
+  frame_details.document_id =
+      ExtensionApiFrameIdMap::GetDocumentId(render_frame_host).ToString();
+  // Only set the parentDocumentId value if we have a parent.
+  if (content::RenderFrameHost* parent_frame_host =
+          render_frame_host->GetParentOrOuterDocument()) {
+    frame_details.parent_document_id = std::make_unique<std::string>(
+        ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host).ToString());
+  }
+  frame_details.frame_type =
+      ToString(ExtensionApiFrameIdMap::GetFrameType(render_frame_host));
+  frame_details.document_lifecycle =
+      ToString(ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host));
+
   return RespondNow(ArgumentList(GetFrame::Results::Create(frame_details)));
 }
 
@@ -510,7 +525,10 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
 
   std::vector<GetAllFrames::Results::DetailsType> result_list;
 
-  web_contents->ForEachFrame(base::BindRepeating(
+  // We only iterate the frames in the active page. We currently do not
+  // expose back/forward cached frames or prerender frames in the GetAllFrames
+  // API.
+  web_contents->GetMainFrame()->ForEachRenderFrameHost(base::BindRepeating(
       [](std::vector<GetAllFrames::Results::DetailsType>& result_list,
          content::RenderFrameHost* render_frame_host) {
         auto* navigation_state =
@@ -525,7 +543,20 @@ ExtensionFunction::ResponseAction WebNavigationGetAllFramesFunction::Run() {
         frame.url = navigation_state->GetUrl().spec();
         frame.frame_id = ExtensionApiFrameIdMap::GetFrameId(render_frame_host);
         frame.parent_frame_id =
-            ExtensionApiFrameIdMap::GetFrameId(render_frame_host->GetParent());
+            ExtensionApiFrameIdMap::GetParentFrameId(render_frame_host);
+        frame.document_id =
+            ExtensionApiFrameIdMap::GetDocumentId(render_frame_host).ToString();
+        // Only set the parentDocumentId value if we have a parent.
+        if (content::RenderFrameHost* parent_frame_host =
+                render_frame_host->GetParentOrOuterDocument()) {
+          frame.parent_document_id = std::make_unique<std::string>(
+              ExtensionApiFrameIdMap::GetDocumentId(parent_frame_host)
+                  .ToString());
+        }
+        frame.frame_type =
+            ToString(ExtensionApiFrameIdMap::GetFrameType(render_frame_host));
+        frame.document_lifecycle = ToString(
+            ExtensionApiFrameIdMap::GetDocumentLifecycle(render_frame_host));
         frame.process_id = render_frame_host->GetProcess()->GetID();
         frame.error_occurred = navigation_state->GetErrorOccurredInFrame();
         result_list.push_back(std::move(frame));

@@ -353,6 +353,44 @@ ResponseAction PasswordsPrivateRemoveInsecureCredentialFunction::Run() {
   return RespondNow(NoArguments());
 }
 
+// PasswordsPrivateMuteInsecureCredentialFunction:
+PasswordsPrivateMuteInsecureCredentialFunction::
+    ~PasswordsPrivateMuteInsecureCredentialFunction() = default;
+
+ResponseAction PasswordsPrivateMuteInsecureCredentialFunction::Run() {
+  auto parameters =
+      api::passwords_private::MuteInsecureCredential::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  if (!GetDelegate(browser_context())
+           ->MuteInsecureCredential(parameters->credential)) {
+    return RespondNow(
+        Error("Could not mute the insecure credential. Probably no matching "
+              "password could be found."));
+  }
+
+  return RespondNow(NoArguments());
+}
+
+// PasswordsPrivateUnmuteInsecureCredentialFunction:
+PasswordsPrivateUnmuteInsecureCredentialFunction::
+    ~PasswordsPrivateUnmuteInsecureCredentialFunction() = default;
+
+ResponseAction PasswordsPrivateUnmuteInsecureCredentialFunction::Run() {
+  auto parameters =
+      api::passwords_private::UnmuteInsecureCredential::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(parameters);
+
+  if (!GetDelegate(browser_context())
+           ->UnmuteInsecureCredential(parameters->credential)) {
+    return RespondNow(
+        Error("Could not unmute the insecure credential. Probably no matching "
+              "password could be found."));
+  }
+
+  return RespondNow(NoArguments());
+}
+
 // PasswordsPrivateStartPasswordCheckFunction:
 PasswordsPrivateStartPasswordCheckFunction::
     ~PasswordsPrivateStartPasswordCheckFunction() = default;

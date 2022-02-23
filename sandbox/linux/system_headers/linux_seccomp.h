@@ -6,12 +6,9 @@
 #define SANDBOX_LINUX_SYSTEM_HEADERS_LINUX_SECCOMP_H_
 
 #include <stdint.h>
+#include <sys/ioctl.h>
 
 #include "build/build_config.h"
-
-#if !defined(OS_NACL_NONSFI)
-#include <sys/ioctl.h>
-#endif
 
 // The Seccomp2 kernel ABI is not part of older versions of glibc.
 // As we can't break compilation with these versions of the library,
@@ -184,8 +181,6 @@ struct seccomp_notif_addfd {
   uint32_t newfd_flags;
 };
 
-// sys/ioctl.h is not available in pnacl toolchain.
-#if !defined(OS_NACL_NONSFI)
 #define SECCOMP_IOC_MAGIC '!'
 #define SECCOMP_IO(nr) _IO(SECCOMP_IOC_MAGIC, nr)
 #define SECCOMP_IOR(nr, type) _IOR(SECCOMP_IOC_MAGIC, nr, type)
@@ -201,7 +196,6 @@ struct seccomp_notif_addfd {
 #define SECCOMP_IOCTL_NOTIF_ID_VALID SECCOMP_IOR(2, uint64_t)
 // On success, the return value is the remote process's added fd number
 #define SECCOMP_IOCTL_NOTIF_ADDFD SECCOMP_IOW(3, struct seccomp_notif_addfd)
-#endif  // !defined(OS_NACL_NONSFI)
 
 #ifndef SECCOMP_RET_KILL
 // Return values supported for BPF filter programs. Please note that the

@@ -5,14 +5,10 @@
 import("//build/config/linux/pkg_config.gni")
 
 if (is_linux || is_chromeos) {
-  # This is a dependency on NSS with no libssl. On Linux we use a built-in SSL
-  # library but the system NSS libraries. Non-Linux platforms using NSS use the
-  # hermetic one in //third_party/nss.
-  #
-  # Generally you should depend on //crypto:platform instead of using this
-  # config since that will properly pick up NSS or OpenSSL depending on
-  # platform and build config.
-  pkg_config("system_nss_no_ssl_config") {
+  # This is a dependency on NSS with no libssl3. On Linux and Chrome OS, we use
+  # NSS for platform certificate integration. We use our own TLS library, so
+  # exclude the one from NSS.
+  pkg_config("nss") {
     packages = [ "nss" ]
     extra_args = [
       "-v",

@@ -13,14 +13,18 @@ class FilePath;
 
 namespace ash {
 
+struct NewScreencastPrecondition;
+
 // Creates interface to access Browser side functionalities for the
 // ProjectorControllerImpl.
 class ASH_PUBLIC_EXPORT ProjectorClient {
  public:
-  ProjectorClient() = default;
+  static ProjectorClient* Get();
+
+  ProjectorClient();
   ProjectorClient(const ProjectorClient&) = delete;
   ProjectorClient& operator=(const ProjectorClient&) = delete;
-  virtual ~ProjectorClient() = default;
+  virtual ~ProjectorClient();
 
   virtual void StartSpeechRecognition() = 0;
   virtual void StopSpeechRecognition() = 0;
@@ -29,6 +33,8 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   virtual bool IsDriveFsMounted() const = 0;
   // Opens Projector SWA. The app by default showing the Projector Gallery view.
   virtual void OpenProjectorApp() const = 0;
+  // Minimizes Projector SWA.
+  virtual void MinimizeProjectorApp() const = 0;
 
   // TODO(crbug/1199396): Migrate to IPC after Lacros launch and ash-chrome
   // deprecation.
@@ -37,7 +43,8 @@ class ASH_PUBLIC_EXPORT ProjectorClient {
   virtual bool IsSelfieCamVisible() const = 0;
 
   // Notifies the Projector SWA if it can trigger a new Projector session.
-  virtual void OnNewScreencastPreconditionChanged(bool can_start) const = 0;
+  virtual void OnNewScreencastPreconditionChanged(
+      const NewScreencastPrecondition& precondition) const = 0;
 };
 
 }  // namespace ash

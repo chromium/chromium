@@ -5,12 +5,13 @@
 #ifndef MOJO_CORE_PORTS_PORT_H_
 #define MOJO_CORE_PORTS_PORT_H_
 
+#include <map>
 #include <memory>
 #include <queue>
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/containers/queue.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/ports/event.h"
@@ -106,6 +107,21 @@ class Port : public base::RefCountedThreadSafe<Port> {
   NodeName peer_node_name;
   PortName peer_port_name;
 
+  // We keep track of the port that is currently sending messages to this port.
+  // This allows us to verify that the sender node is allowed to send messages
+  // to this port as a mitigation against info leak vulnerabilities.
+  // Tracking the previous port has the nice side effect of keeping received
+  // messages in order.
+  NodeName prev_node_name;
+  PortName prev_port_name;
+
+  // Mark this port as to be merged.
+  bool pending_merge_peer;
+
+  // Next sequence number to send for all event messages.
+  uint64_t next_control_sequence_num_to_send;
+  uint64_t next_control_sequence_num_to_receive;
+
   // The next available sequence number to use for outgoing user message events
   // originating from this port.
   uint64_t next_sequence_num_to_send;
@@ -146,6 +162,9 @@ class Port : public base::RefCountedThreadSafe<Port> {
   // in strict sequential order.
   MessageQueue message_queue;
 
+  // Buffer outgoing control messages while this port is in kBuffering state.
+  base::queue<std::pair<NodeName, ScopedEvent>> control_message_queue;
+
   // In some edge cases, a Node may need to remember to route a single special
   // event upon destruction of this (proxying) Port. That event is stashed here
   // in the interim.
@@ -185,7 +204,27 @@ class Port : public base::RefCountedThreadSafe<Port> {
 #endif
   }
 
+  // Check if the given event should be handled next based on the sequence
+  // number and sender peer.
+  bool IsNextEvent(const NodeName& from_node, const Event& event);
+
+  // Get the next buffered event to be processed. If none is available, |event|
+  // will not be modified.
+  void NextEvent(NodeName* from_node, ScopedEvent* event);
+
+  // Buffer the event for later processing.
+  void BufferEvent(const NodeName& from_node, ScopedEvent event);
+
+  // Flushes the queue of events pending peer verification and returns all user
+  // events
+  void TakePendingMessages(
+      std::vector<std::unique_ptr<UserMessageEvent>>& messages);
+
  private:
+  using NodePortPair = std::pair<NodeName, PortName>;
+  using EventQueue = std::vector<std::unique_ptr<Event>>;
+  std::map<NodePortPair, EventQueue> control_event_queues_;
+
   friend class base::RefCountedThreadSafe<Port>;
   friend class PortLocker;
 

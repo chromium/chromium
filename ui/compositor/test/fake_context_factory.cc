@@ -17,14 +17,14 @@
 #include "ui/display/display_switches.h"
 #include "ui/gfx/switches.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/accelerated_widget_mac/ca_transaction_observer.h"
 #endif
 
 namespace ui {
 
 FakeContextFactory::FakeContextFactory() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   renderer_settings_.release_overlay_resources_after_gpu_query = true;
   // Ensure that tests don't wait for frames that will never come.
   ui::CATransactionCoordinator::Get().DisableForTesting();

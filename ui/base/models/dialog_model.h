@@ -10,7 +10,9 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/dialog_model_field.h"
 #include "ui/base/models/dialog_model_host.h"
 #include "ui/base/models/image_model.h"
@@ -99,7 +101,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
     ~Builder();
 
-    std::unique_ptr<DialogModel> Build() WARN_UNUSED_RESULT;
+    [[nodiscard]] std::unique_ptr<DialogModel> Build();
 
     // Gets the DialogModel. Used for setting up callbacks that make use of the
     // model later once it's fully constructed. This is useful for dialogs or
@@ -365,7 +367,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
   void AddField(std::unique_ptr<DialogModelField> field);
 
   std::unique_ptr<DialogModelDelegate> delegate_;
-  DialogModelHost* host_ = nullptr;
+  raw_ptr<DialogModelHost> host_ = nullptr;
 
   absl::optional<bool> override_show_close_button_;
   bool close_on_deactivate_ = true;

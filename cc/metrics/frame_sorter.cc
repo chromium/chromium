@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "cc/metrics/frame_info.h"
+
 namespace cc {
 
 using FrameState = FrameSorter::FrameState;
@@ -62,12 +64,13 @@ void FrameSorter::AddNewFrame(const viz::BeginFrameArgs& args) {
   while (pending_frames_.size() > kPendingFramesMaxSize) {
     const auto& first = pending_frames_.front();
     frame_states_.erase(first.frame_id);
+    frame_infos_.erase(first.frame_id);
     pending_frames_.pop_front();
   }
 }
 
 void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
-                                 bool is_dropped) {
+                                 const FrameInfo& frame_info) {
   if (pending_frames_.empty() || current_source_id_ > args.frame_id.source_id) {
     // The change in source_id can be as a result of crash on gpu process,
     // and as a result the corresponding frame to result does not exist.
@@ -79,6 +82,15 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   // - When the frame was in pending_frames_ and was removed because of reset.
   if (!frame_states_.count(args.frame_id))
     return;
+
+  const auto f = frame_infos_.find(args.frame_id);
+  if (f != frame_infos_.end()) {
+    f->second.MergeWith(frame_info);
+  } else {
+    frame_infos_[args.frame_id] = frame_info;
+  }
+
+  const bool is_dropped = frame_info.IsDroppedAffectingSmoothness();
   auto& frame_state = frame_states_[args.frame_id];
   frame_state.OnAck(is_dropped);
   if (!frame_state.IsComplete()) {
@@ -87,6 +99,7 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   if (frame_state.should_ignore()) {
     // The associated frame in pending_frames_ was already removed in Reset().
     frame_states_.erase(args.frame_id);
+    frame_infos_.erase(args.frame_id);
     return;
   }
 
@@ -107,7 +120,7 @@ void FrameSorter::AddFrameResult(const viz::BeginFrameArgs& args,
   }
 }
 
-bool FrameSorter::IsFrameDropped(const viz::BeginFrameId& id) const {
+bool FrameSorter::IsAlreadyReportedDropped(const viz::BeginFrameId& id) const {
   auto it = frame_states_.find(id);
   if (it == frame_states_.end())
     return false;
@@ -116,10 +129,12 @@ bool FrameSorter::IsFrameDropped(const viz::BeginFrameId& id) const {
 
 void FrameSorter::Reset() {
   for (auto pending_frame : pending_frames_) {
-    auto& frame_state = frame_states_[pending_frame.frame_id];
+    const auto& frame_id = pending_frame.frame_id;
+    auto& frame_state = frame_states_[frame_id];
     if (frame_state.IsComplete() && !frame_state.should_ignore()) {
-      flush_callback_.Run(pending_frame, frame_state.is_dropped());
-      frame_states_.erase(pending_frame.frame_id);
+      flush_callback_.Run(pending_frame, frame_infos_[frame_id]);
+      frame_states_.erase(frame_id);
+      frame_infos_.erase(frame_id);
       continue;
     }
     frame_state.OnReset();
@@ -132,12 +147,14 @@ void FrameSorter::FlushFrames() {
   size_t flushed_count = 0;
   while (!pending_frames_.empty()) {
     const auto& first = pending_frames_.front();
-    auto& frame_state = frame_states_[first.frame_id];
+    const auto& frame_id = first.frame_id;
+    auto& frame_state = frame_states_[frame_id];
     if (!frame_state.IsComplete())
       break;
     ++flushed_count;
-    flush_callback_.Run(first, frame_state.is_dropped());
-    frame_states_.erase(first.frame_id);
+    flush_callback_.Run(first, frame_infos_[frame_id]);
+    frame_states_.erase(frame_id);
+    frame_infos_.erase(frame_id);
     pending_frames_.pop_front();
   }
   DCHECK_GT(flushed_count, 0u);

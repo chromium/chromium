@@ -41,7 +41,8 @@ namespace {
 
 bool NodeIsUserSelectAll(const Node* node) {
   return node && node->GetLayoutObject() &&
-         node->GetLayoutObject()->Style()->UserSelect() == EUserSelect::kAll;
+         node->GetLayoutObject()->Style()->UsedUserSelect() ==
+             EUserSelect::kAll;
 }
 
 template <typename Strategy>

@@ -172,50 +172,35 @@ std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict) {
   return ::testing::AssertionSuccess();
 }
 
-::testing::AssertionResult ReadJsonTestFileToList(const char* test_file_name,
-                                                  base::ListValue* list) {
+::testing::AssertionResult ReadJsonTestFileAsList(const char* test_file_name,
+                                                  base::Value* value) {
   // Read the JSON.
   base::Value json;
   ::testing::AssertionResult result = ReadJsonTestFile(test_file_name, &json);
   if (!result)
     return result;
 
-  // Cast to an ListValue.
-  base::ListValue* json_as_list = nullptr;
-  if (!json.GetAsList(&json_as_list))
+  if (!json.is_list())
     return ::testing::AssertionFailure() << "The JSON was not a list";
 
-  *list = std::move(*json_as_list);
+  *value = std::move(json);
   return ::testing::AssertionSuccess();
 }
 
-::testing::AssertionResult ReadJsonTestFileToDictionary(
-    const char* test_file_name,
-    base::DictionaryValue* dict) {
-  // Read the JSON.
-  base::Value json;
-  ::testing::AssertionResult result = ReadJsonTestFile(test_file_name, &json);
-  if (!result)
-    return result;
-
-  // Cast to an DictionaryValue.
-  base::DictionaryValue* json_as_dict = nullptr;
-  if (!json.GetAsDictionary(&json_as_dict))
-    return ::testing::AssertionFailure() << "The JSON was not a dictionary";
-
-  *dict = std::move(*json_as_dict);
-  return ::testing::AssertionSuccess();
-}
-
-std::vector<uint8_t> GetBytesFromHexString(const base::DictionaryValue* dict,
+std::vector<uint8_t> GetBytesFromHexString(const base::Value* dict,
                                            const std::string& property_name) {
-  std::string hex_string;
-  if (!dict->GetString(property_name, &hex_string)) {
+  if (!dict->is_dict()) {
+    ADD_FAILURE() << "Value is not a dictionary";
+    return std::vector<uint8_t>();
+  }
+
+  const std::string* hex_string = dict->FindStringPath(property_name);
+  if (!hex_string) {
     ADD_FAILURE() << "Couldn't get string property: " << property_name;
     return std::vector<uint8_t>();
   }
 
-  return HexStringToBytes(hex_string);
+  return HexStringToBytes(*hex_string);
 }
 
 blink::WebCryptoAlgorithm GetDigestAlgorithm(const base::DictionaryValue* dict,

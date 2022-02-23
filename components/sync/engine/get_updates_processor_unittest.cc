@@ -11,6 +11,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "components/sync/base/model_type_test_util.h"
 #include "components/sync/engine/cycle/debug_info_getter.h"
 #include "components/sync/engine/cycle/mock_debug_info_getter.h"
@@ -27,7 +28,7 @@ namespace syncer {
 
 namespace {
 
-std::unique_ptr<InvalidationInterface> BuildInvalidation(
+std::unique_ptr<SyncInvalidation> BuildInvalidation(
     int64_t version,
     const std::string& payload) {
   return MockInvalidation::Build(version, payload);
@@ -37,8 +38,8 @@ std::unique_ptr<InvalidationInterface> BuildInvalidation(
 
 // A test fixture for tests exercising download updates functions.
 class GetUpdatesProcessorTest : public ::testing::Test {
- protected:
-  GetUpdatesProcessorTest() : kTestStartTime(base::TimeTicks::Now()) {}
+ public:
+  GetUpdatesProcessorTest() = default;
 
   GetUpdatesProcessorTest(const GetUpdatesProcessorTest&) = delete;
   GetUpdatesProcessorTest& operator=(const GetUpdatesProcessorTest&) = delete;
@@ -74,9 +75,6 @@ class GetUpdatesProcessorTest : public ::testing::Test {
     response->set_changes_remaining(0);
   }
 
-  const base::TimeTicks kTestStartTime;
-
- protected:
   MockUpdateHandler* AddUpdateHandler(ModelType type) {
     enabled_types_.Put(type);
 
@@ -88,6 +86,8 @@ class GetUpdatesProcessorTest : public ::testing::Test {
     update_handlers_.insert(std::move(handler));
     return handler_ptr;
   }
+
+  const base::TimeTicks kTestStartTime = base::TimeTicks::Now();
 
  private:
   ModelTypeSet enabled_types_;
@@ -392,8 +392,8 @@ class GetUpdatesProcessorApplyUpdatesTest : public GetUpdatesProcessorTest {
   MockUpdateHandler* GetAppliedHandler() { return autofill_handler_; }
 
  private:
-  MockUpdateHandler* bookmarks_handler_;
-  MockUpdateHandler* autofill_handler_;
+  raw_ptr<MockUpdateHandler> bookmarks_handler_;
+  raw_ptr<MockUpdateHandler> autofill_handler_;
 };
 
 // Verify that a normal cycle applies updates to the specified types.

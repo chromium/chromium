@@ -53,6 +53,9 @@ const size_t kPage2NodeCount = 190;
 const size_t kInitialRangeValue = 51;
 const size_t kStepSize = 3;
 
+// Simulated screen bounds to use when testing the SemanticsManager.
+constexpr gfx::Size kTestWindowSize = {720, 640};
+
 fuchsia::math::PointF GetCenterOfBox(fuchsia::ui::gfx::BoundingBox box) {
   fuchsia::math::PointF center;
   center.x = (box.min.x + box.max.x) / 2;
@@ -131,6 +134,11 @@ class AccessibilityBridgeTest : public cr_fuchsia::WebEngineBrowserTest {
 
     frame_impl_ = context_impl()->GetFrameImplForTest(&frame_.ptr());
     frame_impl_->set_semantics_manager_for_test(&semantics_manager_);
+    frame_impl_->set_window_size_for_test(kTestWindowSize);
+
+    // TODO(crbug.com/1291330): Remove uses of
+    // set_use_v2_accessibility_bridge().
+    frame_impl_->set_use_v2_accessibility_bridge(false);
     frame_->EnableHeadlessRendering();
 
     semantics_manager_.WaitUntilViewRegistered();

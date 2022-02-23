@@ -1230,11 +1230,11 @@
 -CookiePartitionKeyTest.FromWire/0
 -CookiePartitionKeyTest.FromWire/1
 -CookiePartitionKeyTest.Serialization/1
--CookiePartitionKeychainTest.ContainsAll
--CookiePartitionKeychainTest.EmptySet
--CookiePartitionKeychainTest.FromOptional
--CookiePartitionKeychainTest.MultipleElements
--CookiePartitionKeychainTest.SingletonSet
+-CookiePartitionKeyCollectionTest.ContainsAll
+-CookiePartitionKeyCollectionTest.EmptySet
+-CookiePartitionKeyCollectionTest.FromOptional
+-CookiePartitionKeyCollectionTest.MultipleElements
+-CookiePartitionKeyCollectionTest.SingletonSet
 -CookieUtilComputeSameSiteContextTest.ForRequest/0
 -CookieUtilComputeSameSiteContextTest.ForRequest/1
 -CookieUtilComputeSameSiteContextTest.ForRequest/2

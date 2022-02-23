@@ -11,15 +11,10 @@
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-#include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/extensions/api/printing/print_job_controller.h"
-#include "chrome/browser/extensions/api/printing/print_job_submitter.h"
 #include "chrome/common/extensions/api/printing.h"
 #include "chrome/services/printing/public/mojom/pdf_flattener.mojom.h"
 #include "chromeos/crosapi/mojom/local_printer.mojom.h"
-#include "content/public/browser/notification_observer.h"
-#include "content/public/browser/notification_registrar.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
 #include "extensions/browser/event_router_factory.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -40,20 +35,21 @@ class BrowserContext;
 
 namespace printing {
 struct PrinterStatus;
+class PrintJob;
+class PrintedDocument;
 }  // namespace printing
 
 namespace extensions {
 
-class PrintJobSubmitter;
 class ExtensionRegistry;
+class PrintJobController;
 
 // Handles chrome.printing API functions calls, observes NotificationService,
 // and generates OnJobStatusChanged() events of chrome.printing API.
 // The callback function is never run directly - it is posted to
 // base::SequencedTaskRunnerHandle::Get().
 class PrintingAPIHandler : public BrowserContextKeyedAPI,
-                           public crosapi::mojom::PrintJobObserver,
-                           public content::NotificationObserver {
+                           public crosapi::mojom::PrintJobObserver {
  public:
   using SubmitJobCallback = base::OnceCallback<void(
       absl::optional<api::printing::SubmitJobStatus> status,
@@ -87,21 +83,12 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
 
   static std::string CreateUniqueId(const std::string& printer_id, int job_id);
 
-  // NotificationObserver:
-  void Observe(int type,
-               const content::NotificationSource& source,
-               const content::NotificationDetails& details) override;
   // BrowserContextKeyedAPI:
   static BrowserContextKeyedAPIFactory<PrintingAPIHandler>*
   GetFactoryInstance();
 
   // Returns the current instance for |browser_context|.
   static PrintingAPIHandler* Get(content::BrowserContext* browser_context);
-
-  // Print jobs should be registered before OnPrintJobUpdate() is called.
-  void RegisterPrintJob(const std::string& printer_id,
-                        int job_id,
-                        const std::string& extension_id);
 
   // crosapi::mojom::PrintJobObserver:
   void OnPrintJobUpdate(const std::string& printer_id,
@@ -119,7 +106,7 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   void SubmitJob(gfx::NativeWindow native_window,
                  scoped_refptr<const extensions::Extension> extension,
                  std::unique_ptr<api::printing::SubmitJob::Params> params,
-                 PrintJobSubmitter::SubmitJobCallback callback);
+                 SubmitJobCallback callback);
 
   // Returns an error message if an error occurred.
   absl::optional<std::string> CancelJob(const std::string& extension_id,
@@ -143,14 +130,11 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
     std::string extension_id;
   };
 
-  // This is needed to save ownership of |print_job_submitter| object which
-  // could be destructed because of asynchronous work otherwise.
-  void OnPrintJobSubmitted(
-      std::unique_ptr<PrintJobSubmitter> print_job_submitter,
-      PrintJobSubmitter::SubmitJobCallback callback,
-      absl::optional<api::printing::SubmitJobStatus> status,
-      std::unique_ptr<std::string> job_id,
-      absl::optional<std::string> error);
+  void OnPrintJobSubmitted(SubmitJobCallback callback,
+                           absl::optional<int> job_id,
+                           printing::PrintJob* print_job,
+                           printing::PrintedDocument* document,
+                           absl::optional<std::string> error);
 
   void OnPrintersRetrieved(
       GetPrintersCallback callback,
@@ -177,7 +161,6 @@ class PrintingAPIHandler : public BrowserContextKeyedAPI,
   ExtensionRegistry* const extension_registry_;
   std::unique_ptr<PrintJobController> print_job_controller_;
   std::unique_ptr<chromeos::CupsWrapper> cups_wrapper_;
-  content::NotificationRegistrar registrar_;
 
   // Remote interface used to flatten a PDF.
   mojo::Remote<printing::mojom::PdfFlattener> pdf_flattener_;

@@ -616,10 +616,10 @@ TEST_F(FrameTreeTest, ObserverWalksTreeAfterCrash) {
   // Crash the renderer
   main_test_rfh()->GetProcess()->SimulateCrash();
   EXPECT_EQ(
-      "RenderProcessGone -> 1*: [22*: [], 23*: []]\n"
       "RenderFrameDeleted(23) -> 1*: []\n"
       "RenderFrameDeleted(22) -> 1*: []\n"
-      "RenderFrameDeleted(1) -> 1*: []",
+      "RenderFrameDeleted(1) -> 1*: []\n"
+      "RenderProcessGone -> 1*: []",
       activity.GetLog());
 }
 

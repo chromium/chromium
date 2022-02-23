@@ -5,6 +5,7 @@
 #include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
 
 #include "base/time/time.h"
+#include "chromeos/assistant/internal/proto/shared/proto/timer_params.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/v2/delegate/event_handler_interface.pb.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
 
@@ -48,10 +49,9 @@ CreateOnAlarmTimerEventRequestProtoForV1(
 }
 
 std::vector<AssistantTimer> ConstructAssistantTimersFromProto(
-    const ::assistant::api::OnAlarmTimerEventRequest& input) {
+    const ::assistant::api::params::TimerParams& timer_params) {
   std::vector<AssistantTimer> assistant_timers;
-  for (const auto& proto_timer :
-       input.event().on_timer_state_changed().timer_params().timer()) {
+  for (const auto& proto_timer : timer_params.timer()) {
     AssistantTimer assistant_timer;
     ConvertProtoTimerToAssistantTimer(proto_timer, &assistant_timer);
     assistant_timers.emplace_back(std::move(assistant_timer));

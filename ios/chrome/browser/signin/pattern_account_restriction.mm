@@ -77,17 +77,31 @@ bool PatternAccountRestriction::IsAccountRestricted(
   return true;
 }
 
-absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
-    const base::ListValue* value) {
-  DCHECK(value->is_list());
-  std::vector<Pattern> patterns;
-  patterns.reserve(value->GetList().size());
-  for (const base::Value& item : value->GetList()) {
+bool ArePatternsValid(const base::Value* value) {
+  // TODO(crbug.com/1271066): Check if we can use regex instead.
+  if (!value->is_list())
+    return false;
+
+  for (const base::Value& item : value->GetListDeprecated()) {
     if (!item.is_string())
-      return absl::nullopt;
+      return false;
     auto maybe_pattern = PatternFromString(item.GetString());
     if (!maybe_pattern)
-      return absl::nullopt;
+      return false;
+  }
+  return true;
+}
+
+absl::optional<PatternAccountRestriction> PatternAccountRestrictionFromValue(
+    const base::Value::ConstListView& value) {
+  std::vector<Pattern> patterns;
+  patterns.reserve(value.size());
+  for (const base::Value& item : value) {
+    if (!item.is_string())
+      continue;
+    auto maybe_pattern = PatternFromString(item.GetString());
+    if (!maybe_pattern)
+      continue;
     patterns.push_back(*std::move(maybe_pattern));
   }
   return PatternAccountRestriction(std::move(patterns));

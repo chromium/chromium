@@ -211,7 +211,8 @@ LoginTabHelper::WillProcessMainFrameUnauthorizedResponse(
 }
 
 LoginTabHelper::LoginTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LoginTabHelper>(*web_contents) {}
 
 void LoginTabHelper::HandleCredentials(
     const absl::optional<net::AuthCredentials>& credentials) {

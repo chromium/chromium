@@ -366,10 +366,10 @@ enum CSSSampleId {
     kWebkitRubyPosition = 314,
     kWebkitTextCombine = 315,
     kWebkitTextDecorationsInEffect = 316,
-    kWebkitTextEmphasis = 317,
-    kWebkitTextEmphasisColor = 318,
-    kWebkitTextEmphasisPosition = 319,
-    kWebkitTextEmphasisStyle = 320,
+    kAliasWebkitTextEmphasis = 317,
+    kAliasWebkitTextEmphasisColor = 318,
+    kAliasWebkitTextEmphasisPosition = 319,
+    kAliasWebkitTextEmphasisStyle = 320,
     kWebkitTextFillColor = 321,
     kWebkitTextSecurity = 322,
     kWebkitTextStroke = 323,
@@ -755,6 +755,13 @@ enum CSSSampleId {
     kAppRegion = 702,
     kFontSynthesisSmallCaps = 703,
     kFontSynthesis = 704,
+    kTextEmphasis = 705,
+    kTextEmphasisColor = 706,
+    kTextEmphasisPosition = 707,
+    kTextEmphasisStyle = 708,
+    kFontPalette = 709,
+    kBasePalette = 710,
+    kOverrideColors = 711,
     // 1. Add new features above this line (don't change the assigned numbers of
     //    the existing items).
     // 2. Run the src/tools/metrics/histograms/update_use_counter_css.py script

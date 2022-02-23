@@ -7,11 +7,24 @@
  * 'nearby-share-contact-visibility-dialog' allows editing of the users contact
  * visibility settings.
  */
+
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../shared/nearby_contact_visibility.m.js';
+import '../../shared/nearby_onboarding_page.m.js';
+import '../../shared/nearby_visibility_page.m.js';
+
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-share-contact-visibility-dialog',
 
   properties: {
-    /** @type {nearby_share.NearbySettings} */
+    /** @type {NearbySettings} */
     settings: {
       type: Object,
       value: {},

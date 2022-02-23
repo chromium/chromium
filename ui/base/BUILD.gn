@@ -98,6 +98,7 @@ component("base") {
     "interaction/element_identifier.h",
     "interaction/element_tracker.cc",
     "interaction/element_tracker.h",
+    "interaction/framework_specific_implementation.h",
     "interaction/interaction_sequence.cc",
     "interaction/interaction_sequence.h",
     "l10n/formatter.cc",
@@ -204,8 +205,6 @@ component("base") {
       "resource/resource_data_dll_win.cc",
       "resource/resource_data_dll_win.h",
       "win/accessibility_ids_win.h",
-      "win/accessibility_misc_utils.cc",
-      "win/accessibility_misc_utils.h",
       "win/atl_module.h",
       "win/event_creation_utils.cc",
       "win/event_creation_utils.h",
@@ -235,6 +234,10 @@ component("base") {
       "win/shell.h",
       "win/touch_input.cc",
       "win/touch_input.h",
+      "win/win_cursor.cc",
+      "win/win_cursor.h",
+      "win/win_cursor_factory.cc",
+      "win/win_cursor_factory.h",
       "win/window_event_target.cc",
       "win/window_event_target.h",
     ]
@@ -358,6 +361,8 @@ component("base") {
         "linux/linux_desktop.h",
         "linux/linux_ui_delegate.cc",
         "linux/linux_ui_delegate.h",
+        "linux/linux_ui_delegate_stub.cc",
+        "linux/linux_ui_delegate_stub.h",
       ]
     }
 
@@ -487,6 +492,14 @@ component("base") {
       "//ui/events",
       "//ui/events/devices",
     ]
+  }
+
+  if (is_win) {
+    public_deps += [
+      "//ui/base/cursor",
+      "//ui/base/cursor/mojom:cursor_type_shared",
+    ]
+    deps += [ "//ui/resources:ui_unscaled_resources_grd" ]
   }
 
   if (toolkit_views) {
@@ -658,7 +671,10 @@ if (!is_ios) {
     if (is_win) {
       data += [ "//tools/skia_goldctl/win/goldctl.exe" ]
     } else if (is_mac) {
-      data += [ "//tools/skia_goldctl/mac/goldctl" ]
+      data += [
+        "//tools/skia_goldctl/mac_amd64/goldctl",
+        "//tools/skia_goldctl/mac_arm64/goldctl",
+      ]
     } else {
       data += [ "//tools/skia_goldctl/linux/goldctl" ]
     }
@@ -671,12 +687,16 @@ static_library("test_support") {
     "interaction/element_test_util.cc",
     "interaction/element_test_util.h",
     "interaction/expect_call_in_scope.h",
+    "interaction/interaction_test_util.cc",
+    "interaction/interaction_test_util.h",
     "resource/mock_resource_bundle_delegate.cc",
     "resource/mock_resource_bundle_delegate.h",
   ]
 
   if (is_mac) {
     sources += [
+      "interaction/interaction_test_util_mac.h",
+      "interaction/interaction_test_util_mac.mm",
       "test/cocoa_helper.h",
       "test/cocoa_helper.mm",
       "test/menu_test_observer.h",
@@ -867,7 +887,9 @@ test("ui_base_unittests") {
     "ime/utf_offset_unittest.cc",
     "interaction/element_identifier_unittest.cc",
     "interaction/element_tracker_unittest.cc",
+    "interaction/framework_specific_implementation_unittest.cc",
     "interaction/interaction_sequence_unittest.cc",
+    "interaction/interaction_test_util_unittest.cc",
     "l10n/l10n_util_unittest.cc",
     "l10n/time_format_unittest.cc",
     "layout_unittest.cc",
@@ -901,6 +923,7 @@ test("ui_base_unittests") {
   ]
   if (is_mac) {
     sources += [
+      "cocoa/defaults_utils_unittest.mm",
       "cocoa/nsmenuitem_additions_unittest.mm",
       "interaction/element_tracker_mac_unittest.mm",
       "l10n/l10n_util_mac_unittest.mm",
@@ -918,7 +941,7 @@ test("ui_base_unittests") {
   }
 
   data = []
-  data_deps = []
+  data_deps = [ "//testing/buildbot/filters:ui_base_unittests_filters" ]
   deps = [
     ":ui_base_test_resources_grit",
     ":ui_base_unittests_bundle_data",
@@ -1096,6 +1119,11 @@ test("ui_base_unittests") {
       "dragdrop/os_exchange_data_win_unittest.cc",
       "view_prop_unittest.cc",
       "win/hwnd_subclass_unittest.cc",
+      "win/win_cursor_factory_unittest.cc",
+    ]
+    deps += [
+      "//ui/base/cursor",
+      "//ui/base/cursor/mojom:cursor_type_shared",
     ]
   }
 
@@ -1155,7 +1183,12 @@ test("ui_base_unittests") {
 
   if (skia_support_skottie && !is_ios) {
     sources += [ "//ui/lottie/animation_unittest.cc" ]
-    deps += [ "//ui/lottie" ]
+    deps += [
+      "//cc:test_support",
+      "//cc/paint",
+      "//third_party/abseil-cpp:absl",
+      "//ui/lottie",
+    ]
   }
 }
 
@@ -1226,7 +1259,7 @@ fuzzer_test("file_info_fuzzer") {
 # "en-US" in the list as the |ResourceBundle::GetLocaleFilePath| implementations
 # in ui/base/resource/resource_bundle_{mac,ios}.mm return a valid path for
 # "en-US" (as they internally rewrite it as "en" instead).
-locales_for_platform_list = locales
+locales_for_platform_list = platform_pak_locales
 if (is_apple) {
   locales_for_platform_list += [ "en" ]
 }

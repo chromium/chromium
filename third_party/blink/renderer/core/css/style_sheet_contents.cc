@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/dom/node.h"
 #include "third_party/blink/renderer/core/inspector/inspector_trace_events.h"
 #include "third_party/blink/renderer/core/loader/resource/css_style_sheet_resource.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 
@@ -560,6 +560,7 @@ static bool ChildRulesHaveFailedOrCanceledSubresources(
       case StyleRuleBase::kScrollTimeline:
       case StyleRuleBase::kSupports:
       case StyleRuleBase::kViewport:
+      case StyleRuleBase::kFontPaletteValues:
         break;
       case StyleRuleBase::kCounterStyle:
         if (To<StyleRuleCounterStyle>(rule)->HasFailedOrCanceledSubresources())

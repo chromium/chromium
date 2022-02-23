@@ -13,6 +13,8 @@
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -97,6 +99,17 @@ std::string small_text() {
   return "random small text";
 }
 
+base::ReadOnlySharedMemoryRegion create_page(size_t size) {
+  base::MappedReadOnlyRegion page =
+      base::ReadOnlySharedMemoryRegion::Create(size);
+  memset(page.mapping.memory(), 'a', size);
+  return std::move(page.region);
+}
+
+base::ReadOnlySharedMemoryRegion normal_page() {
+  return create_page(1024);
+}
+
 class ScopedSetDMToken {
  public:
   explicit ScopedSetDMToken(const policy::DMToken& dm_token) {
@@ -178,7 +191,7 @@ class BaseTest : public testing::Test {
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingPrefServiceSimple pref_service_;
   TestingProfileManager profile_manager_;
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   base::ScopedTempDir temp_dir_;
   std::unique_ptr<content::WebContents> web_contents_;
   base::RunLoop run_loop_;
@@ -593,7 +606,7 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
     include_dlp_ = dlp;
     include_malware_ = malware;
 
-    for (auto connector : {FILE_ATTACHED, BULK_DATA_ENTRY}) {
+    for (auto connector : {FILE_ATTACHED, BULK_DATA_ENTRY, PRINT}) {
       if (include_dlp_ && include_malware_) {
         safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), connector,
                                             kBlockingScansForDlpAndMalware);
@@ -617,6 +630,8 @@ class ContentAnalysisDelegateAuditOnlyTest : public BaseTest {
     safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), FILE_ATTACHED,
                                         kBlockingScansForDlpAndMalware);
     safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), BULK_DATA_ENTRY,
+                                        kBlockingScansForDlpAndMalware);
+    safe_browsing::SetAnalysisConnector(profile_->GetPrefs(), PRINT,
                                         kBlockingScansForDlpAndMalware);
 
     ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
@@ -781,6 +796,69 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, StringData3) {
   RunUntilDone();
   EXPECT_TRUE(called);
 }
+
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintAllowed) {
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data, PRINT));
+
+  data.page = normal_page();
+  ASSERT_TRUE(data.page.IsValid());
+
+  bool called = false;
+  ContentAnalysisDelegate::CreateForWebContents(
+      contents(), std::move(data),
+      base::BindOnce(
+          [](bool* called, const ContentAnalysisDelegate::Data& data,
+             const ContentAnalysisDelegate::Result& result) {
+            EXPECT_EQ(0u, data.text.size());
+            EXPECT_EQ(0u, data.paths.size());
+            // The page data should no longer be valid since it's moved
+            // to be uploaded in a request.
+            EXPECT_FALSE(data.page.IsValid());
+            ASSERT_EQ(0u, result.text_results.size());
+            EXPECT_EQ(0u, result.paths_results.size());
+            EXPECT_TRUE(result.page_result);
+            *called = true;
+          },
+          &called),
+      safe_browsing::DeepScanAccessPoint::PRINT);
+  RunUntilDone();
+  EXPECT_TRUE(called);
+}
+
+TEST_F(ContentAnalysisDelegateAuditOnlyTest, PagePrintBlocked) {
+  GURL url(kTestUrl);
+  ContentAnalysisDelegate::Data data;
+  ASSERT_TRUE(ContentAnalysisDelegate::IsEnabled(profile(), url, &data, PRINT));
+
+  data.page = normal_page();
+  ASSERT_TRUE(data.page.IsValid());
+  SetDLPResponse(FakeContentAnalysisDelegate::DlpResponse(
+      ContentAnalysisResponse::Result::SUCCESS, "rule", TriggeredRule::BLOCK));
+
+  bool called = false;
+  ContentAnalysisDelegate::CreateForWebContents(
+      contents(), std::move(data),
+      base::BindOnce(
+          [](bool* called, const ContentAnalysisDelegate::Data& data,
+             const ContentAnalysisDelegate::Result& result) {
+            EXPECT_EQ(0u, data.text.size());
+            EXPECT_EQ(0u, data.paths.size());
+            // The page data should no longer be valid since it's moved
+            // to be uploaded in a request.
+            EXPECT_FALSE(data.page.IsValid());
+            ASSERT_EQ(0u, result.text_results.size());
+            EXPECT_EQ(0u, result.paths_results.size());
+            EXPECT_FALSE(result.page_result);
+            *called = true;
+          },
+          &called),
+      safe_browsing::DeepScanAccessPoint::PRINT);
+  RunUntilDone();
+  EXPECT_TRUE(called);
+}
+
 TEST_F(ContentAnalysisDelegateAuditOnlyTest,
        FileDataPositiveMalwareAndDlpVerdicts) {
   GURL url(kTestUrl);
@@ -908,7 +986,7 @@ TEST_F(ContentAnalysisDelegateAuditOnlyTest, FileIsEncrypted) {
 }
 
 // Flaky on Mac: https://crbug.com/1143782:
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FileIsEncrypted_PolicyAllows DISABLED_FileIsEncrypted_PolicyAllows
 #else
 #define MAYBE_FileIsEncrypted_PolicyAllows FileIsEncrypted_PolicyAllows

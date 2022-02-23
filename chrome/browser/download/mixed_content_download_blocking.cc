@@ -6,6 +6,7 @@
 
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_split.h"
@@ -195,7 +196,7 @@ struct MixedContentDownloadData {
     }
 
     // Extract extension.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     extension_ = base::WideToUTF8(path.FinalExtension());
 #else
     extension_ = path.FinalExtension();
@@ -280,7 +281,7 @@ struct MixedContentDownloadData {
 
   absl::optional<url::Origin> initiator_;
   std::string extension_;
-  const download::DownloadItem* item_;
+  raw_ptr<const download::DownloadItem> item_;
   bool is_redirect_chain_secure_;
   bool is_mixed_content_;
 };
@@ -338,7 +339,7 @@ bool IsDownloadPermittedByContentSettings(
     const absl::optional<url::Origin>& initiator) {
   // TODO(crbug.com/1048957): Checking content settings crashes unit tests on
   // Android. It shouldn't.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ContentSettingsForOneType settings;
   HostContentSettingsMap* host_content_settings_map =
       HostContentSettingsMapFactory::GetForProfile(profile);

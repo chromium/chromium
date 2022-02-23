@@ -10,10 +10,11 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "build/build_config.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/accelerators/accelerator_map.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "ui/base/ui_base_features.h"
 #endif
 
@@ -84,12 +85,12 @@ class COMPONENT_EXPORT(UI_BASE) AcceleratorManager {
   // Whether the given |accelerator| has a priority handler associated with it.
   bool HasPriorityHandler(const Accelerator& accelerator) const;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   void SetUsePositionalLookup(bool use_positional_lookup) {
     DCHECK(::features::IsImprovedKeyboardShortcutsEnabled());
     accelerators_.set_use_positional_lookup(use_positional_lookup);
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
  private:
   // Private helper class to manage the accelerator targets and priority. Each

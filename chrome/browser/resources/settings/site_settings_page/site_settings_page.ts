@@ -17,14 +17,15 @@ import './recent_site_permissions.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
-import {Route, Router} from '../router.js';
+import {Router} from '../router.js';
 import {ContentSettingsTypes} from '../site_settings/constants.js';
 
 import {CategoryListItem} from './site_settings_list.js';
+import {getTemplate} from './site_settings_page.html.js';
 
 const Id = ContentSettingsTypes;
 
@@ -183,14 +184,6 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       disabledLabel: 'siteSettingsInsecureContentBlock',
     },
     {
-      route: routes.SITE_SETTINGS_FILE_HANDLING,
-      id: Id.FILE_HANDLING,
-      label: 'siteSettingsFileHandling',
-      icon: 'settings:file-handling',
-      enabledLabel: 'siteSettingsFileHandlingAsk',
-      disabledLabel: 'siteSettingsFileHandlingBlock',
-    },
-    {
       route: routes.SITE_SETTINGS_FILE_SYSTEM_WRITE,
       id: Id.FILE_SYSTEM_WRITE,
       label: 'siteSettingsFileSystemWrite',
@@ -303,7 +296,7 @@ function getCategoryItemMap(): Map<ContentSettingsTypes, CategoryListItem> {
       label: 'siteSettingsWindowPlacement',
       icon: 'settings:window-placement',
       enabledLabel: 'siteSettingsWindowPlacementAsk',
-      disabledLabel: 'siteSettingsWindowPlacementBlock',
+      disabledLabel: 'siteSettingsWindowPlacementBlocked',
     },
     {
       route: routes.SITE_SETTINGS_ZOOM_LEVELS,
@@ -336,7 +329,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -378,7 +371,6 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
               Id.IDLE_DETECTION,
               Id.WINDOW_PLACEMENT,
               Id.FONT_ACCESS,
-              Id.FILE_HANDLING,
             ]),
             contentBasic: buildItemListFromIds([
               Id.COOKIES,
@@ -409,6 +401,7 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
     };
   }
 
+  prefs: Object;
   focusConfig: FocusConfig;
   private permissionsExpanded_: boolean;
   private contentExpanded_: boolean;
@@ -438,6 +431,12 @@ export class SettingsSiteSettingsPageElement extends PolymerElement {
   /** @return Class for the all site settings link */
   private getClassForSiteSettingsAllLink_(): string {
     return this.noRecentSitePermissions_ ? '' : 'hr';
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-site-settings-page': SettingsSiteSettingsPageElement;
   }
 }
 

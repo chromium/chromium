@@ -45,6 +45,7 @@ import org.chromium.content_public.browser.NavigationEntry;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.test.EmbeddedTestServer;
+import org.chromium.net.test.util.TestWebServer;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -286,6 +287,22 @@ public class BrowsingDataBridgeTest {
         assertEquals(0, controller.getLastCommittedEntryIndex());
         assertThat(getUrls(controller), Matchers.contains(url2));
         assertNull(frozen[0].getWebContents());
+    }
+
+    /**
+     * Tests that calling getContentsStateAsByteBuffer on a tab that has never
+     * committed a navigation results in a null ByteBuffer.
+     * Regression test for https://crbug.com/1240138.
+     */
+    @Test
+    @MediumTest
+    public void testInitialNavigationEntryNotPersisted() throws Exception {
+        TestWebServer webServer = TestWebServer.start();
+        final String noContentUrl = webServer.setResponseWithNoContentStatus("/nocontent.html");
+        Tab tab = sActivityTestRule.loadUrlInNewTab(noContentUrl);
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            assertNull(WebContentsStateBridge.getContentsStateAsByteBuffer(tab.getWebContents()));
+        });
     }
 
     /**

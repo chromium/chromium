@@ -7,6 +7,8 @@ import("//mojo/public/tools/bindings/mojom.gni")
 mojom("mojom") {
   sources = [ "image.mojom" ]
 
+  webui_module_path = "chrome://resources/mojo/ui/gfx/image/mojom"
+
   public_deps = [ "//skia/public/mojom" ]
 
   cpp_typemaps = [

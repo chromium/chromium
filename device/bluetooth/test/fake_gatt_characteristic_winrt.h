@@ -15,7 +15,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece_forward.h"
 #include "device/bluetooth/bluetooth_gatt_service.h"
 
@@ -167,7 +167,7 @@ class FakeGattCharacteristicWinrt
   void SimulateGattCharacteristicChanged(const std::vector<uint8_t>& value);
 
  private:
-  BluetoothTestWinrt* bluetooth_test_winrt_;
+  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_;
   ABI::Windows::Devices::Bluetooth::GenericAttributeProfile::
       GattCharacteristicProperties properties_;
   GUID uuid_;

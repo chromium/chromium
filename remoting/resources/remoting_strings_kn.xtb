@@ -26,7 +26,6 @@
 <translation id="225614027745146050">ಸ್ವಾಗತ</translation>
 <translation id="2320166752086256636">ಕೀಬೋರ್ಡ್ ಮರೆಮಾಡಿ</translation>
 <translation id="2329392777730037872">ಕ್ಲೈಂಟ್‌ನಲ್ಲಿ <ph name="URL" /> ತೆರೆಯಲು ವಿಫಲವಾಗಿದೆ.</translation>
-<translation id="2333212046079545895">ಕೃತಿಸ್ವಾಮ್ಯ 2021 Google LLC. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="2359808026110333948">ಮುಂದುವರೆಸಿ</translation>
 <translation id="2366718077645204424">ಹೋಸ್ಟ್‌ ಅನ್ನು ತಲುಪಲು ಸಾಧ್ಯವಿಲ್ಲ. ಇದಕ್ಕೆ ಬಹುಶಃ ನೀವು ಬಳಸುತ್ತಿರುವ ಕಾನ್ಫಿಗರೇಶನ್ ನೆಟ್‌ವರ್ಕ್ ಕಾರಣವಾಗಿರಬಹುದು.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  ಆನ್‌ಲೈನ್‌ನಲ್ಲಿನ ಕೊನೆಯ ವೀಕ್ಷಣೆ <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">ಈ ಸೇವೆಯು Chrome ರಿಮೋಟ್ ಡೆಸ್ಕ್‌ಟಾಪ್ ಕ್ಲೈಂಟ್‌ಗಳಿಂದ ಒಳಬರುವ ಸಂಪರ್ಕಗಳನ್ನು ಸಕ್ರಿಯಗೊಳಿಸುತ್ತದೆ.</translation>
 <translation id="2647232381348739934">ಕ್ರೊಮೋಟಿಂಗ್ ಸೇವೆ</translation>
 <translation id="2676780859508944670">ಕಾರ್ಯನಿರ್ವಹಿಸುತ್ತಿದೆ...</translation>
+<translation id="2692522824157224199">ಕೃತಿಸ್ವಾಮ್ಯ 2022 Google LLC. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="2699970397166997657">ಕ್ರೊಮೋಟಿಂಗ್</translation>
 <translation id="2758123043070977469">ಸಮಸ್ಯೆಯನ್ನು ಪ್ರಮಾಣೀಕರಿಸಲಾಗುತ್ತಿದೆ, ಪುನಃ ಲಾಗಿನ್ ಮಾಡಿ.</translation>
 <translation id="2803375539583399270">ಪಿನ್ ನಮೂದಿಸಿ</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> URL ಫಾರ್ವರ್ಡ್ ಮಾಡುವವರು</translation>
 <translation id="4277736576214464567">ಪ್ರವೇಶ ಕೋಡ್ ಅಮಾನ್ಯವಾಗಿದೆ. ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="4281844954008187215">ಸೇವೆಯ ನಿಯಮಗಳು</translation>
+<translation id="4372650392690220936">ಕೃತಿಸ್ವಾಮ್ಯ 2022 Chromium ಲೇಖಕರು. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="4405930547258349619">ಮುಖ್ಯ ಲೈಬ್ರರಿ</translation>
 <translation id="443560535555262820">ಪ್ರವೇಶಿಸುವಿಕೆ ಆದ್ಯತೆಗಳನ್ನು ತೆರೆಯಿರಿ</translation>
 <translation id="4450893287417543264">ಮತ್ತೊಮ್ಮೆ ತೋರಿಸಬೇಡಿ</translation>
-<translation id="4512952200932940229">ಹಕ್ಕುಸ್ವಾಮ್ಯ 2021 Chromium ಲೇಖಕರು. ಎಲ್ಲಾ ಹಕ್ಕುಗಳನ್ನು ಕಾಯ್ದಿರಿಸಲಾಗಿದೆ.</translation>
 <translation id="4513946894732546136">ಪ್ರತಿಕ್ರಿಯೆ</translation>
 <translation id="4563926062592110512">ಕ್ಲೈಂಟ್ ಸಂಪರ್ಕ ರದ್ದುಮಾಡಲಾಗಿದೆ: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> ಅನ್ನು ಸರಿಯಾಗಿ ಕಾನ್ಫಿಗರ್ ಮಾಡಿಲ್ಲ. ಬೇರೆ ಡೀಫಾಲ್ಟ್ ವೆಬ್ ಬ್ರೌಸರ್ ಅನ್ನು ಆಯ್ಕೆ ಮಾಡಿ ಹಾಗೂ ನಂತರದಲ್ಲಿ ಪುನಃ URL ಫಾರ್ವರ್ಡ್ ಮಾಡುವಿಕೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಿ.</translation>

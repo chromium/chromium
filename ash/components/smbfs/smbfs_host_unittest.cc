@@ -4,12 +4,12 @@
 
 #include "ash/components/smbfs/smbfs_host.h"
 
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/task_environment.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,7 +43,7 @@ class SmbFsHostTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
 
   MockDelegate mock_delegate_;
-  chromeos::disks::MockDiskMountManager mock_disk_mount_manager_;
+  ash::disks::MockDiskMountManager mock_disk_mount_manager_;
 
   mojo::Remote<mojom::SmbFs> smbfs_remote_;
   mojo::PendingReceiver<mojom::SmbFs> smbfs_pending_receiver_;
@@ -59,8 +59,8 @@ TEST_F(SmbFsHostTest, DisconnectDelegate) {
       .WillOnce(base::test::RunOnceCallback<1>(chromeos::MOUNT_ERROR_NONE));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
-      std::make_unique<chromeos::disks::MountPoint>(base::FilePath(kMountPath),
-                                                    &mock_disk_mount_manager_),
+      std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
+                                               &mock_disk_mount_manager_),
       &mock_delegate_, std::move(smbfs_remote_),
       std::move(delegate_pending_receiver_));
   delegate_remote_.reset();
@@ -76,8 +76,8 @@ TEST_F(SmbFsHostTest, DisconnectSmbFs) {
       .WillOnce(base::test::RunOnceCallback<1>(chromeos::MOUNT_ERROR_NONE));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
-      std::make_unique<chromeos::disks::MountPoint>(base::FilePath(kMountPath),
-                                                    &mock_disk_mount_manager_),
+      std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
+                                               &mock_disk_mount_manager_),
       &mock_delegate_, std::move(smbfs_remote_),
       std::move(delegate_pending_receiver_));
   smbfs_pending_receiver_.reset();
@@ -92,8 +92,8 @@ TEST_F(SmbFsHostTest, UnmountOnDestruction) {
 
   base::RunLoop run_loop;
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
-      std::make_unique<chromeos::disks::MountPoint>(base::FilePath(kMountPath),
-                                                    &mock_disk_mount_manager_),
+      std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
+                                               &mock_disk_mount_manager_),
       &mock_delegate_, std::move(smbfs_remote_),
       std::move(delegate_pending_receiver_));
   run_loop.RunUntilIdle();
@@ -105,8 +105,8 @@ TEST_F(SmbFsHostTest, RequestCredentials_ProvideCredentials) {
       .WillOnce(base::test::RunOnceCallback<1>(chromeos::MOUNT_ERROR_NONE));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
-      std::make_unique<chromeos::disks::MountPoint>(base::FilePath(kMountPath),
-                                                    &mock_disk_mount_manager_),
+      std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
+                                               &mock_disk_mount_manager_),
       &mock_delegate_, std::move(smbfs_remote_),
       std::move(delegate_pending_receiver_));
   EXPECT_CALL(mock_delegate_, RequestCredentials(_))
@@ -139,8 +139,8 @@ TEST_F(SmbFsHostTest, RequestCredentials_Cancel) {
       .WillOnce(base::test::RunOnceCallback<1>(chromeos::MOUNT_ERROR_NONE));
 
   std::unique_ptr<SmbFsHost> host = std::make_unique<SmbFsHost>(
-      std::make_unique<chromeos::disks::MountPoint>(base::FilePath(kMountPath),
-                                                    &mock_disk_mount_manager_),
+      std::make_unique<ash::disks::MountPoint>(base::FilePath(kMountPath),
+                                               &mock_disk_mount_manager_),
       &mock_delegate_, std::move(smbfs_remote_),
       std::move(delegate_pending_receiver_));
   EXPECT_CALL(mock_delegate_, RequestCredentials(_))

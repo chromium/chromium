@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/chrome_browser_main_extra_parts_views.h"
 #include "ui/display/display_observer.h"

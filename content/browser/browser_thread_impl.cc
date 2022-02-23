@@ -114,7 +114,7 @@ BrowserThreadImpl::BrowserThreadImpl(
   globals.task_runners[identifier_] = std::move(task_runner);
 
   if (identifier_ == BrowserThread::ID::UI) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     // Allow usage of the FileDescriptorWatcher API on the UI thread, using the
     // IO thread to watch the file descriptors.
     //

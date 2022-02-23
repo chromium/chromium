@@ -42,8 +42,9 @@ protocol_request::Request MakeProtocolRequest(
     const std::string& channel,
     const std::string& os_long_name,
     const std::string& download_preference,
+    absl::optional<bool> domain_joined,
     const base::flat_map<std::string, std::string>& additional_attributes,
-    const std::map<std::string, std::string>* updater_state_attributes,
+    const base::flat_map<std::string, std::string>& updater_state_attributes,
     std::vector<protocol_request::App> apps);
 
 protocol_request::App MakeProtocolApp(
@@ -67,7 +68,8 @@ protocol_request::App MakeProtocolApp(
 protocol_request::UpdateCheck MakeProtocolUpdateCheck(
     bool is_update_disabled,
     const std::string& target_version_prefix,
-    bool rollback_allowed);
+    bool rollback_allowed,
+    bool same_version_update_allowed);
 
 protocol_request::Ping MakeProtocolPing(const std::string& app_id,
                                         const PersistedData* metadata,

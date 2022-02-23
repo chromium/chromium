@@ -5,6 +5,8 @@
 #ifndef ASH_ASSISTANT_MODEL_ASSISTANT_UI_MODEL_H_
 #define ASH_ASSISTANT_MODEL_ASSISTANT_UI_MODEL_H_
 
+#include <ostream>
+
 #include "base/component_export.h"
 #include "base/observer_list.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
@@ -26,6 +28,9 @@ enum class AssistantVisibility {
   kClosing,  // Assistant UI is transitioning from `kVisible` to `kClosed`.
   kVisible,  // Assistant UI is visible and a session is in progress.
 };
+
+COMPONENT_EXPORT(ASSISTANT_MODEL)
+std::ostream& operator<<(std::ostream& os, AssistantVisibility visibility);
 
 // Enumeration of Assistant button ID. These values are persisted to logs.
 // Entries should not be renumbered and numeric values should never be reused.

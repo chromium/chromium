@@ -1,9 +1,11 @@
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "cc_library_with_tflite")
+
 package(
-    default_visibility = ["//tensorflow_lite_support:users"],
+    default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
 
-cc_library(
+cc_library_with_tflite(
     name = "jni_utils",
     srcs = [
         "jni_utils.cc",
@@ -11,8 +13,23 @@ cc_library(
     hdrs = [
         "jni_utils.h",
     ],
+    tflite_deps = [
+        "@org_tensorflow//tensorflow/lite/core/shims:delegate_plugin",
+        "@org_tensorflow//tensorflow/lite/core/shims:delegate_registry",
+        "@org_tensorflow//tensorflow/lite/experimental/acceleration/configuration:delegate_plugin_converter",
+    ],
+    visibility = [
+        "//tensorflow_lite_support:internal",
+    ],
     deps = [
+        "//tensorflow_lite_support/cc:common",
+        "//tensorflow_lite_support/cc/port:configuration_proto_inc",
+        "//tensorflow_lite_support/cc/port:status_macros",
+        "//tensorflow_lite_support/cc/port:statusor",
+        "@com_google_absl//absl/memory",
+        "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
+        "@com_google_absl//absl/strings:str_format",
         "@org_tensorflow//tensorflow/lite/java/jni",
     ],
 )
@@ -24,6 +41,9 @@ cc_library(
     ],
     hdrs = [
         "common_utils.h",
+    ],
+    visibility = [
+        "//tensorflow_lite_support:internal",
     ],
     deps = [
         "@com_google_absl//absl/container:node_hash_map",

@@ -7,11 +7,12 @@
 
 #include <stddef.h>
 
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
+#include <utility>
 
+#include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
@@ -23,7 +24,13 @@
 
 namespace policy {
 
-// This class implementens a RemoteCommandJob that captures a screenshot from
+// The first element represents screen index, the second presents the PNG data.
+using ScreenshotData = std::pair<size_t, scoped_refptr<base::RefCountedMemory>>;
+
+using OnScreenshotTakenCallback =
+    base::OnceCallback<void(scoped_refptr<base::RefCountedMemory>)>;
+
+// This class implements a RemoteCommandJob that captures a screenshot from
 // each attached screen and uploads the collected PNG data using UploadJob to
 // the url specified in the "fileUploadUrl" field of the CommandPayload. Only
 // one instance of this command will be running at a time. The
@@ -72,10 +79,9 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
     // Acquires a snapshot of |source_rect| in |window| and invokes |callback|
     // with the PNG data. The passed-in callback will not be invoked after the
     // delegate has been destroyed. See e.g. ScreenshotDelegate.
-    virtual void TakeSnapshot(
-        gfx::NativeWindow window,
-        const gfx::Rect& source_rect,
-        ui::GrabWindowSnapshotAsyncPNGCallback callback) = 0;
+    virtual void TakeSnapshot(gfx::NativeWindow window,
+                              const gfx::Rect& source_rect,
+                              OnScreenshotTakenCallback callback) = 0;
 
     // Creates a new fully configured instance of an UploadJob. This method
     // may be called any number of times.
@@ -109,10 +115,11 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
                CallbackWithResult failed_callback) override;
   void TerminateImpl() override;
 
-  void StoreScreenshot(size_t screen,
-                       scoped_refptr<base::RefCountedMemory> png_data);
+  // Posts `StartScreenshotUpload` job on |task_runner|.
+  void OnScreenshotsReady(scoped_refptr<base::TaskRunner> task_runner,
+                          std::vector<ScreenshotData> upload_data);
 
-  void StartScreenshotUpload();
+  void StartScreenshotUpload(std::vector<ScreenshotData> upload_data);
 
   // The URL to which the POST request should be directed.
   GURL upload_url_;
@@ -123,12 +130,6 @@ class DeviceCommandScreenshotJob : public RemoteCommandJob,
 
   // The callback that will be called when this command failed.
   CallbackWithResult failed_callback_;
-
-  // Tracks the number of pending screenshots.
-  int num_pending_screenshots_;
-
-  // Caches the already completed screenshots for the different displays.
-  std::map<int, scoped_refptr<base::RefCountedMemory>> screenshots_;
 
   // The Delegate is used to acquire screenshots and create UploadJobs.
   std::unique_ptr<Delegate> screenshot_delegate_;

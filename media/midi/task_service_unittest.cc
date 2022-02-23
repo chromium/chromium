@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -117,7 +118,7 @@ class TaskServiceClient {
   }
 
   base::Lock lock_;
-  TaskService* task_service_;
+  raw_ptr<TaskService> task_service_;
   std::unique_ptr<base::WaitableEvent> wait_task_event_;
   size_t count_;
 };

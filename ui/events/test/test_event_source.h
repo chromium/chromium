@@ -5,6 +5,7 @@
 #ifndef UI_EVENTS_TEST_TEST_EVENT_SOURCE_H_
 #define UI_EVENTS_TEST_TEST_EVENT_SOURCE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_sink.h"
 #include "ui/events/event_source.h"
 
@@ -31,7 +32,7 @@ class TestEventSource : public EventSource, public EventSink {
   EventDispatchDetails OnEventFromSource(Event* event) override;
 
  private:
-  EventSink* sink_;
+  raw_ptr<EventSink> sink_;
   int events_sent_ = 0;
   int events_sunk_ = 0;
 };

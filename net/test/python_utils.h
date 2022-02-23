@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/environment.h"
 
 namespace base {
@@ -26,9 +25,9 @@ bool GetPyProtoPath(base::FilePath* dir);
 bool IsInPythonVirtualEnv();
 
 // Returns the command that should be used to launch Python.
-bool GetPythonCommand(base::CommandLine* python_cmd) WARN_UNUSED_RESULT;
+[[nodiscard]] bool GetPythonCommand(base::CommandLine* python_cmd);
 
 // Returns the command that should be used to launch Python 3.
-bool GetPython3Command(base::CommandLine* python_cmd) WARN_UNUSED_RESULT;
+[[nodiscard]] bool GetPython3Command(base::CommandLine* python_cmd);
 
 #endif  // NET_TEST_PYTHON_UTILS_H_

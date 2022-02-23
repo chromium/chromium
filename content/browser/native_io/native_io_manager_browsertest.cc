@@ -97,7 +97,7 @@ IN_PROC_BROWSER_TEST_F(NativeIOManagerBrowserTest, ReadFromDeletedFile) {
 
 // This test depends on POSIX file permissions, which do not work on Windows,
 // Android, or Fuchsia.
-#if !defined(OS_WIN) && !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(NativeIOManagerBrowserTest, TryOpenProtectedFileTest) {
   const GURL& test_url = embedded_test_server()->GetURL(
       "/native_io/try_open_protected_file_test.html");
@@ -116,11 +116,12 @@ IN_PROC_BROWSER_TEST_F(NativeIOManagerBrowserTest, TryOpenProtectedFileTest) {
   EXPECT_EQ(EvalJs(browser, "tryOpeningFile()").ExtractString(),
             expected_caught_error);
 }
-#endif  // !defined(OS_WIN) && !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_ANDROID) &&
+        // !BUILDFLAG(IS_FUCHSIA)
 
 // TODO(http://crbug.com/1177307): This test might be flaky on some Windows
 // configurations.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FileUsageAfterOriginRemoval DISABLED_FileUsageAfterOriginRemoval
 #else
 #define MAYBE_FileUsageAfterOriginRemoval FileUsageAfterOriginRemoval

@@ -8,12 +8,12 @@
 #include <memory>
 #include <utility>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_window_info_data_wrapper.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_test_util.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/browser/ash/arc/accessibility/ax_tree_source_arc.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"

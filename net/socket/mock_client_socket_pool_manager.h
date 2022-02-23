@@ -9,7 +9,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/proxy_server.h"
 #include "net/socket/client_socket_pool_manager.h"
 #include "net/socket/client_socket_pool_manager_impl.h"

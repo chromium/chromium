@@ -13,13 +13,14 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/net_export.h"
+#include "net/base/network_change_notifier.h"
 #include "net/base/request_priority.h"
 #include "net/log/net_log_source.h"
 #include "net/net_buildflags.h"
@@ -81,7 +82,8 @@ class NET_EXPORT URLRequestContext {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if !defined(OS_WIN) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_WIN) && \
+    !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // This function should not be used in Chromium, please use the version with
   // NetworkTrafficAnnotationTag in the future.
   //
@@ -301,6 +303,15 @@ class NET_EXPORT URLRequestContext {
     return require_network_isolation_key_;
   }
 
+  // If != NetworkChangeNotifier::kInvalidNetworkHandle, the network which this
+  // context has been bound to.
+  NetworkChangeNotifier::NetworkHandle bound_network() const {
+    return bound_network_;
+  }
+  void set_bound_network(NetworkChangeNotifier::NetworkHandle network) {
+    bound_network_ = network;
+  }
+
   void AssertCalledOnValidThread() {
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   }
@@ -308,28 +319,28 @@ class NET_EXPORT URLRequestContext {
  private:
   // Ownership for these members are not defined here. Clients should either
   // provide storage elsewhere or have a subclass take ownership.
-  NetLog* net_log_;
-  HostResolver* host_resolver_;
-  CertVerifier* cert_verifier_;
-  HttpAuthHandlerFactory* http_auth_handler_factory_;
-  ProxyResolutionService* proxy_resolution_service_;
-  ProxyDelegate* proxy_delegate_;
-  SSLConfigService* ssl_config_service_;
-  NetworkDelegate* network_delegate_;
-  HttpServerProperties* http_server_properties_;
-  const HttpUserAgentSettings* http_user_agent_settings_;
-  CookieStore* cookie_store_;
-  TransportSecurityState* transport_security_state_;
-  CTPolicyEnforcer* ct_policy_enforcer_;
-  SCTAuditingDelegate* sct_auditing_delegate_;
-  HttpTransactionFactory* http_transaction_factory_;
-  const URLRequestJobFactory* job_factory_;
-  URLRequestThrottlerManager* throttler_manager_;
-  QuicContext* quic_context_;
-  NetworkQualityEstimator* network_quality_estimator_;
+  raw_ptr<NetLog> net_log_;
+  raw_ptr<HostResolver> host_resolver_;
+  raw_ptr<CertVerifier> cert_verifier_;
+  raw_ptr<HttpAuthHandlerFactory> http_auth_handler_factory_;
+  raw_ptr<ProxyResolutionService> proxy_resolution_service_;
+  raw_ptr<ProxyDelegate> proxy_delegate_;
+  raw_ptr<SSLConfigService> ssl_config_service_;
+  raw_ptr<NetworkDelegate> network_delegate_;
+  raw_ptr<HttpServerProperties> http_server_properties_;
+  raw_ptr<const HttpUserAgentSettings> http_user_agent_settings_;
+  raw_ptr<CookieStore> cookie_store_;
+  raw_ptr<TransportSecurityState> transport_security_state_;
+  raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
+  raw_ptr<SCTAuditingDelegate> sct_auditing_delegate_;
+  raw_ptr<HttpTransactionFactory> http_transaction_factory_;
+  raw_ptr<const URLRequestJobFactory> job_factory_;
+  raw_ptr<URLRequestThrottlerManager> throttler_manager_;
+  raw_ptr<QuicContext> quic_context_;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 #if BUILDFLAG(ENABLE_REPORTING)
-  ReportingService* reporting_service_;
-  NetworkErrorLoggingService* network_error_logging_service_;
+  raw_ptr<ReportingService> reporting_service_;
+  raw_ptr<NetworkErrorLoggingService> network_error_logging_service_;
 #endif  // BUILDFLAG(ENABLE_REPORTING)
 
   std::unique_ptr<std::set<const URLRequest*>> url_requests_;
@@ -343,6 +354,8 @@ class NET_EXPORT URLRequestContext {
   // Triggers a DCHECK if a NetworkIsolationKey/IsolationInfo is not provided to
   // a request when true.
   bool require_network_isolation_key_;
+
+  NetworkChangeNotifier::NetworkHandle bound_network_;
 
   THREAD_CHECKER(thread_checker_);
 };

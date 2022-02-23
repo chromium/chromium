@@ -337,7 +337,6 @@ const CGFloat kActionViewBackgroundColorBrightnessIncognito = 80.0 / 256.0;
 
 - (void)dealloc {
   [self.snapshotView removeFromSuperview];
-  ;
 }
 
 - (BOOL)selectionCroppingEnabled {

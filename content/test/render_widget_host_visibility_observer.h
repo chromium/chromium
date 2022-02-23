@@ -5,6 +5,7 @@
 #ifndef CONTENT_TEST_RENDER_WIDGET_HOST_VISIBILITY_OBSERVER_H_
 #define CONTENT_TEST_RENDER_WIDGET_HOST_VISIBILITY_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/render_widget_host_observer.h"
 
 #include "base/scoped_observation.h"
@@ -41,7 +42,7 @@ class RenderWidgetHostVisibilityObserver : public RenderWidgetHostObserver {
       observation_{this};
   bool was_observed_;
   bool did_fail_;
-  RenderWidgetHost* render_widget_;
+  raw_ptr<RenderWidgetHost> render_widget_;
 };
 
 }  // namespace content

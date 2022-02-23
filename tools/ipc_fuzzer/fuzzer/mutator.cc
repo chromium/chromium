@@ -29,8 +29,8 @@ void FuzzStringType(T* value, unsigned int frequency,
                     const T& literal1, const T& literal2) {
   if (RandEvent(frequency)) {
     switch (RandInRange(5)) {
-      case 4: (*value) = (*value) + (*value); FALLTHROUGH;
-      case 3: (*value) = (*value) + (*value); FALLTHROUGH;
+      case 4: (*value) = (*value) + (*value); [[fallthrough]];
+      case 3: (*value) = (*value) + (*value); [[fallthrough]];
       case 2: (*value) = (*value) + (*value); break;
       case 1: (*value) += literal1; break;
       case 0: (*value) = literal2; break;

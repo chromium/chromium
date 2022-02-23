@@ -116,7 +116,7 @@ class AmbientModeHandlerTest : public testing::TestWithParam<bool> {
   void RequestAlbums(ash::AmbientModeTopicSource topic_source) {
     base::Value args(base::Value::Type::LIST);
     args.Append(static_cast<int>(topic_source));
-    handler_->HandleRequestAlbums(args.GetList());
+    handler_->HandleRequestAlbums(args.GetListDeprecated());
   }
 
   void HandleSetSelectedTemperatureUnit(base::Value::ConstListView args) {
@@ -241,14 +241,14 @@ class AmbientModeHandlerTest : public testing::TestWithParam<bool> {
     EXPECT_EQ(static_cast<int>(topic_source), topic_source_value->GetInt());
 
     const base::Value* albums = dictionary->FindKey("albums");
-    EXPECT_EQ(2U, albums->GetList().size());
+    EXPECT_EQ(2U, albums->GetListDeprecated().size());
 
     const base::DictionaryValue* album0;
-    albums->GetList()[0].GetAsDictionary(&album0);
+    albums->GetListDeprecated()[0].GetAsDictionary(&album0);
     EXPECT_EQ("0", album0->FindKey("albumId")->GetString());
 
     const base::DictionaryValue* album1;
-    albums->GetList()[1].GetAsDictionary(&album1);
+    albums->GetListDeprecated()[1].GetAsDictionary(&album1);
     EXPECT_EQ("1", album1->FindKey("albumId")->GetString());
 
     if (topic_source == ash::AmbientModeTopicSource::kGooglePhotos) {
@@ -785,7 +785,7 @@ TEST_P(AmbientModeHandlerTest, TestAlbumNumbersAreRecorded) {
   dictionary.SetKey("albums", std::move(albums));
 
   args.Append(std::move(dictionary));
-  HandleSetSelectedAlbums(args.GetList());
+  HandleSetSelectedAlbums(args.GetListDeprecated());
 
   histogram_tester().ExpectTotalCount("Ash.AmbientMode.TotalNumberOfAlbums",
                                       /*count=*/1);
@@ -802,7 +802,7 @@ TEST_P(AmbientModeHandlerTest, TestTemperatureUnitChangeUpdatesSettings) {
   base::Value args(base::Value::Type::LIST);
   args.Append("fahrenheit");
 
-  HandleSetSelectedTemperatureUnit(args.GetList());
+  HandleSetSelectedTemperatureUnit(args.GetListDeprecated());
 
   EXPECT_TRUE(IsUpdateSettingsPendingAtHandler());
   EXPECT_TRUE(IsUpdateSettingsPendingAtBackend());
@@ -822,7 +822,7 @@ TEST_P(AmbientModeHandlerTest, TestSameTemperatureUnitSkipsUpdate) {
   base::Value args(base::Value::Type::LIST);
   args.Append("celsius");
 
-  HandleSetSelectedTemperatureUnit(args.GetList());
+  HandleSetSelectedTemperatureUnit(args.GetListDeprecated());
 
   EXPECT_FALSE(IsUpdateSettingsPendingAtHandler());
   EXPECT_FALSE(IsUpdateSettingsPendingAtBackend());

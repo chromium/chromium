@@ -61,6 +61,7 @@ PopupOpenerTabHelper::PopupOpenerTabHelper(content::WebContents* web_contents,
                                            const base::TickClock* tick_clock,
                                            HostContentSettingsMap* settings_map)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<PopupOpenerTabHelper>(*web_contents),
       tick_clock_(tick_clock),
       settings_map_(settings_map) {
   visibility_tracker_ = std::make_unique<ui::ScopedVisibilityTracker>(
@@ -85,8 +86,14 @@ void PopupOpenerTabHelper::DidGetUserInteraction(
 void PopupOpenerTabHelper::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   // Treat browser-initiated navigations as user interactions.
-  if (!navigation_handle->IsRendererInitiated())
+  // Note that |HasUserGesture| does not capture browser-initiated navigations.
+  // The negation of |IsRendererInitiated| tells us whether the navigation is
+  // browser-generated.
+  if (navigation_handle->IsInPrimaryMainFrame() &&
+      (navigation_handle->HasUserGesture() ||
+       !navigation_handle->IsRendererInitiated())) {
     has_opened_popup_since_last_user_gesture_ = false;
+  }
 }
 
 void PopupOpenerTabHelper::MaybeLogPagePopupContentSettings() {

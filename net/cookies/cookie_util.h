@@ -6,7 +6,6 @@
 #define NET_COOKIES_COOKIE_UTIL_H_
 
 #include <string>
-#include <utility>
 #include <vector>
 
 #include "base/callback_forward.h"
@@ -16,6 +15,7 @@
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
 #include "net/cookies/cookie_options.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
@@ -238,30 +238,32 @@ ComputeSameSiteContextForSubresource(const GURL& url,
 
 // Returns whether the respective feature is enabled.
 NET_EXPORT bool IsSchemefulSameSiteEnabled();
-NET_EXPORT bool IsFirstPartySetsEnabled();
 
-// Computes the SameParty context bundle, determining which of the cookies for
+// Computes the First-Party Sets metadata, determining which of the cookies for
 // `request_site` can be accessed. `isolation_info` must be fully populated.  If
 // `force_ignore_top_frame_party` is true, the top frame from `isolation_info`
 // will be assumed to be same-party with `request_site`, regardless of what it
 // is.
-NET_EXPORT SamePartyContext
-ComputeSamePartyContext(const SchemefulSite& request_site,
-                        const IsolationInfo& isolation_info,
-                        const CookieAccessDelegate* cookie_access_delegate,
-                        bool force_ignore_top_frame_party);
-
-NET_EXPORT FirstPartySetsContextType ComputeFirstPartySetsContextType(
+//
+// The result may be returned synchronously, or `callback` may be invoked
+// asynchronously with the result. The callback will be invoked iff the return
+// value is nullopt; i.e. a result will be provided via return value or
+// callback, but not both, and not neither.
+[[nodiscard]] NET_EXPORT absl::optional<FirstPartySetMetadata>
+ComputeFirstPartySetMetadataMaybeAsync(
     const SchemefulSite& request_site,
     const IsolationInfo& isolation_info,
     const CookieAccessDelegate* cookie_access_delegate,
-    bool force_ignore_top_frame_party);
+    bool force_ignore_top_frame_party,
+    base::OnceCallback<void(FirstPartySetMetadata)> callback);
 
 // Get the SameParty inclusion status. If the cookie is not SameParty, returns
 // kNoSamePartyEnforcement; if the cookie is SameParty but does not have a
 // valid context, returns kEnforceSamePartyExclude.
 NET_EXPORT CookieSamePartyStatus
-GetSamePartyStatus(const CanonicalCookie& cookie, const CookieOptions& options);
+GetSamePartyStatus(const CanonicalCookie& cookie,
+                   const CookieOptions& options,
+                   bool first_party_sets_enabled);
 
 // Takes a callback accepting a CookieAccessResult and returns a callback
 // that accepts a bool, setting the bool to true if the CookieInclusionStatus

@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/process/process.h"
 #include "chrome/test/chromedriver/chrome/chrome_impl.h"
 #include "chrome/test/chromedriver/chrome/scoped_temp_dir_with_retry.h"

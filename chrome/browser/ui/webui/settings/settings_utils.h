@@ -41,7 +41,7 @@ base::RefCountedMemory* GetFaviconResourceBytes(
 base::RefCountedMemory* GetPrivacySandboxFaviconResourceBytes(
     ui::ResourceScaleFactor scale_factor);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void ValidateSavedFonts(PrefService* prefs);
 #endif
 

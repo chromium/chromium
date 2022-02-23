@@ -25,6 +25,7 @@ import org.chromium.chrome.browser.webauthn.CableAuthenticatorModuleProvider;
  *      is pending.
  *   2. A USB host telling the device that it wishes to speak CTAP2 over AOA.
  *      (See https://source.android.com/devices/accessories/aoa.)
+ *   3. Intents from Play Services when a FIDO QR code has been scanned.
  *
  * It hosts the {@link Fragment} that drives the security key process, which
  * pulls in the dynamic feature module containing the needed code.
@@ -71,6 +72,8 @@ public class CableAuthenticatorActivity extends ChromeBaseAppCompatActivity {
             arguments.putParcelable(UsbManager.EXTRA_ACCESSORY, accessory);
         } else if (intent.getAction() != null && intent.getAction().equals(Intent.ACTION_VIEW)
                 && intent.getData() != null) {
+            // This is from Play Services and contains a FIDO URL scanned from a
+            // QR code.
             arguments = new Bundle();
             arguments.putParcelable(QR_EXTRA, intent.getData());
         } else if (intent.hasExtra(SERVER_LINK_EXTRA)) {

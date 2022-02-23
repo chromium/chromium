@@ -37,8 +37,8 @@ bool AllProfilesHaveSameAppList() {
 
 // Returns true if sync items from |service| all have non-empty names.
 bool SyncItemsHaveNames(const app_list::AppListSyncableService* service) {
-  for (const auto& it : service->sync_items()) {
-    if (it.second->item_name.empty()) {
+  for (const auto& [item_id, item] : service->sync_items()) {
+    if (item->item_name.empty()) {
       return false;
     }
   }
@@ -51,10 +51,9 @@ bool SyncItemsMatch(const app_list::AppListSyncableService* service1,
   if (service1->sync_items().size() != service2->sync_items().size())
     return false;
 
-  for (const auto& it : service1->sync_items()) {
-    const app_list::AppListSyncableService::SyncItem* item1 = it.second.get();
+  for (const auto& [item_id, item1] : service1->sync_items()) {
     const app_list::AppListSyncableService::SyncItem* item2 =
-        service2->GetSyncItem(it.first);
+        service2->GetSyncItem(item_id);
     if (!item2)
       return false;
     if (item1->item_id != item2->item_id ||
@@ -236,7 +235,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientAppListSyncTest, LocalStorage) {
   }
 
   // Change data when sync is off.
-  for (const auto& app_id : app_ids) {
+  for (const std::string& app_id : app_ids) {
     service->SetPinPosition(app_id, pin_position);
     pin_position = pin_position.CreateAfter();
   }

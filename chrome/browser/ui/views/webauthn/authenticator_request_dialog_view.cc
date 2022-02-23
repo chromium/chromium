@@ -24,6 +24,7 @@
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/views/border.h"
+#include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
 
@@ -101,7 +102,9 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Whether to show the `Choose another option` button, or other dialog
   // configuration is delegated to the |sheet_|, and the new sheet likely wants
   // to provide a new configuration.
-  ToggleOtherMechanismsButtonVisibility();
+  other_mechanisms_button_->SetVisible(ShouldOtherMechanismsButtonBeVisible());
+  manage_devices_button_->SetVisible(
+      sheet_->model()->IsManageDevicesButtonVisible());
   DialogModelChanged();
 
   // If the widget is not yet shown or already being torn down, we are done. In
@@ -139,10 +142,6 @@ void AuthenticatorRequestDialogView::UpdateUIForCurrentSheet() {
   // Reset focus to the highest priority control on the new/updated sheet.
   if (GetInitiallyFocusedView())
     GetInitiallyFocusedView()->RequestFocus();
-}
-
-void AuthenticatorRequestDialogView::ToggleOtherMechanismsButtonVisibility() {
-  other_mechanisms_button_->SetVisible(ShouldOtherMechanismsButtonBeVisible());
 }
 
 bool AuthenticatorRequestDialogView::ShouldOtherMechanismsButtonBeVisible()
@@ -258,17 +257,34 @@ AuthenticatorRequestDialogView::AuthenticatorRequestDialogView(
     std::unique_ptr<AuthenticatorRequestDialogModel> model)
     : content::WebContentsObserver(web_contents),
       model_(std::move(model)),
-      other_mechanisms_button_(
-          SetExtraView(std::make_unique<views::MdTextButtonWithDownArrow>(
-              base::BindRepeating(
-                  &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
-                  base::Unretained(this)),
-              l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL)))),
       web_contents_hidden_(web_contents->GetVisibility() ==
                            content::Visibility::HIDDEN) {
   SetShowTitle(false);
   DCHECK(!model_->should_dialog_be_closed());
   model_->AddObserver(this);
+
+  // This View contains buttons that can appear at the bottom left of the
+  // dialog. Only a single button is expected to be visible at a time so the
+  // padding between them is zero.
+  auto hbox = std::make_unique<views::View>();
+  hbox->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal, gfx::Insets(), 0));
+
+  other_mechanisms_button_ = new views::MdTextButtonWithDownArrow(
+      base::BindRepeating(
+          &AuthenticatorRequestDialogView::OtherMechanismsButtonPressed,
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_TRANSPORT_POPUP_LABEL));
+  hbox->AddChildView(other_mechanisms_button_.get());
+
+  manage_devices_button_ = new views::MdTextButton(
+      base::BindRepeating(
+          &AuthenticatorRequestDialogView::ManageDevicesButtonPressed,
+          base::Unretained(this)),
+      l10n_util::GetStringUTF16(IDS_WEBAUTHN_MANAGE_DEVICES));
+  hbox->AddChildView(manage_devices_button_.get());
+
+  SetExtraView(std::move(hbox));
 
   SetCloseCallback(
       base::BindOnce(&AuthenticatorRequestDialogView::OnDialogClosing,
@@ -319,6 +335,10 @@ void AuthenticatorRequestDialogView::OtherMechanismsButtonPressed() {
       other_mechanisms_button_->GetWidget(), nullptr /* MenuButtonController */,
       anchor_bounds, views::MenuAnchorPosition::kTopLeft,
       ui::MENU_SOURCE_MOUSE);
+}
+
+void AuthenticatorRequestDialogView::ManageDevicesButtonPressed() {
+  sheet_->model()->OnManageDevices();
 }
 
 void AuthenticatorRequestDialogView::OnDialogClosing() {

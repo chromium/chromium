@@ -155,8 +155,7 @@ absl::optional<std::wstring> GetOsVolume() {
   base::FilePath windows_dir;
   if (base::PathService::Get(base::DIR_WINDOWS, &windows_dir) &&
       windows_dir.IsAbsolute()) {
-    std::vector<std::wstring> components;
-    windows_dir.GetComponents(&components);
+    std::vector<std::wstring> components = windows_dir.GetComponents();
     DCHECK(components.size());
     volume = components[0];
   }

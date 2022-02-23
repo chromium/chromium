@@ -31,7 +31,7 @@
             android:layout_weight="1"
             android:orientation="vertical">
 
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/cc_number"
                 android:gravity="center_vertical|start"
                 android:layout_width="wrap_content"
@@ -46,7 +46,7 @@
                 android:layout_width="match_parent"
                 android:orientation="horizontal">
 
-                <org.chromium.ui.widget.ChipView
+                <org.chromium.components.browser_ui.widget.chips.ChipView
                     android:id="@+id/exp_month"
                     android:gravity="center_vertical|start"
                     android:layout_width="wrap_content"
@@ -62,7 +62,7 @@
                     android:layout_marginEnd="@dimen/keyboard_accessory_sheet_padding"
                     android:textAppearance="@style/TextAppearance.DividerText"/>
 
-                <org.chromium.ui.widget.ChipView
+                <org.chromium.components.browser_ui.widget.chips.ChipView
                     android:id="@+id/exp_year"
                     android:gravity="center_vertical|start"
                     android:layout_width="wrap_content"
@@ -72,14 +72,14 @@
             </LinearLayout>
 
 
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/cardholder"
                 android:gravity="center_vertical|start"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 style="@style/InputChip" />
 
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/cvc"
                 android:gravity="center_vertical|start"
                 android:layout_width="wrap_content"

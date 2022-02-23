@@ -5,7 +5,6 @@
 #ifndef DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_ADVERTISEMENT_H_
 #define DEVICE_BLUETOOTH_TEST_MOCK_BLUETOOTH_ADVERTISEMENT_H_
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
 namespace device {

@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "base/memory/singleton.h"
 #include "content/common/content_export.h"
 #include "content/public/common/font_cache_win.mojom.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

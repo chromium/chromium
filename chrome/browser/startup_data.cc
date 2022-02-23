@@ -6,6 +6,7 @@
 
 #include "base/files/file_path.h"
 #include "base/task/thread_pool.h"
+#include "build/build_config.h"
 #include "chrome/browser/metrics/chrome_feature_list_creator.h"
 #include "chrome/browser/prefs/profile_pref_store_manager.h"
 #include "chrome/common/channel_info.h"
@@ -17,9 +18,8 @@
 #include "components/metrics/version_utils.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/files/file_util.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "chrome/browser/android/profile_key_startup_accessor.h"
@@ -98,7 +98,7 @@ void StartupData::RecordCoreSystemProfile() {
       system_profile, /* complete */ false);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void StartupData::CreateProfilePrefService() {
   key_ = std::make_unique<ProfileKey>(GetProfilePath());
   PreProfilePrefServiceInit();

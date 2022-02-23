@@ -50,6 +50,14 @@ Polymer({
 
     /** @private */
     showSearchSelectionDialog_: Boolean,
+
+    /** @private */
+    syncSettingsCategorizationEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.getBoolean('syncSettingsCategorizationEnabled');
+      },
+    },
   },
 
   /** @private {?SearchEnginesBrowserProxy} */
@@ -72,7 +80,11 @@ Polymer({
 
   /** @override */
   focus() {
-    this.$$('#searchSelectionDialogButton').focus();
+    if (loadTimeData.getBoolean('syncSettingsCategorizationEnabled')) {
+      this.$$('#browserSearchSettingsLink').focus();
+    } else {
+      this.$$('#searchSelectionDialogButton').focus();
+    }
   },
 
   /** @private */
@@ -89,6 +101,11 @@ Polymer({
   onSearchSelectionDialogClose_() {
     this.showSearchSelectionDialog_ = false;
     focusWithoutInk(assert(this.$$('#searchSelectionDialogButton')));
+  },
+
+  /** @private */
+  onSearchEngineLinkClick_() {
+    window.open('chrome://settings/search');
   },
 
   /**

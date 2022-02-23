@@ -22,7 +22,7 @@ namespace media {
 // Status states for pipeline.  All codes except PIPELINE_OK indicate errors.
 // Logged to UMA, so never reuse a value, always add new/greater ones!
 // When adding a new one, also update enums.xml.
-enum PipelineStatus {
+enum PipelineStatusCodes : StatusCodeType {
   PIPELINE_OK = 0,
   // Deprecated: PIPELINE_ERROR_URL_NOT_FOUND = 1,
   PIPELINE_ERROR_NETWORK = 2,
@@ -63,20 +63,29 @@ enum PipelineStatus {
   // https://crbug.com/1208618
   PIPELINE_ERROR_HARDWARE_CONTEXT_RESET = 23,
 
+  // The remote media component was disconnected unexpectedly, e.g. crash.
+  PIPELINE_ERROR_DISCONNECTED = 24,
+
   // Must be equal to the largest value ever logged.
-  PIPELINE_STATUS_MAX = PIPELINE_ERROR_HARDWARE_CONTEXT_RESET,
+  PIPELINE_STATUS_MAX = PIPELINE_ERROR_DISCONNECTED,
 };
 
-MEDIA_EXPORT absl::optional<PipelineStatus> StatusCodeToPipelineStatus(
-    StatusCode status);
-MEDIA_EXPORT StatusCode PipelineStatusToStatusCode(PipelineStatus status);
+struct PipelineStatusTraits {
+  using Codes = PipelineStatusCodes;
+
+  static constexpr StatusGroupType Group() { return "PipelineStatus"; }
+  static constexpr Codes DefaultEnumValue() { return PIPELINE_OK; }
+};
+
+using PipelineStatus = TypedStatus<PipelineStatusTraits>;
 
 // Returns a string version of the status, unique to each PipelineStatus, and
 // not including any ':'. This makes it suitable for usage in
 // MediaError.message as the UA-specific-error-code.
-MEDIA_EXPORT std::string PipelineStatusToString(PipelineStatus status);
+MEDIA_EXPORT std::string PipelineStatusToString(const PipelineStatus& status);
 
-MEDIA_EXPORT std::ostream& operator<<(std::ostream& out, PipelineStatus status);
+MEDIA_EXPORT std::ostream& operator<<(std::ostream& out,
+                                      const PipelineStatus& status);
 
 // TODO(crbug.com/1007799): Delete PipelineStatusCB once all callbacks are
 //                          converted to PipelineStatusCallback.
@@ -139,6 +148,12 @@ MEDIA_EXPORT inline std::ostream& operator<<(
              << "}";
 }
 
+// Statistics for the media pipeline.
+// Note: Different classes may have different interpretation on the fields.
+// RendererClient.OnStatisticsUpdate() expects *_decoded*, *_dropped and
+// *memory_usage to be the delta since the last OnStatisticsUpdate() call.
+// WebMediaPlayerImpl expects them to be cumulation since playback start.
+// TODO(crbug.com/1275794): Make the meaning consistent.
 struct MEDIA_EXPORT PipelineStatistics {
   PipelineStatistics();
   PipelineStatistics(const PipelineStatistics& other);

@@ -16,8 +16,9 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/input_method_configuration.h"
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine.h"
 #include "chrome/browser/ash/input_method/mock_input_method_manager_impl.h"
+#include "chrome/browser/ash/input_method/stub_input_method_engine_observer.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client_test_helper.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -77,14 +78,11 @@ void InitInputMethod() {
   InitializeForTesting(manager);
 }
 
-// TODO(crbug.com/1148157): Use StubInputMethodEngineObserver.
-class TestObserver : public InputMethodEngineBase::Observer {
+class TestObserver : public StubInputMethodEngineObserver {
  public:
   TestObserver() : calls_bitmap_(NONE) {}
-
   TestObserver(const TestObserver&) = delete;
   TestObserver& operator=(const TestObserver&) = delete;
-
   ~TestObserver() override = default;
 
   void OnActivate(const std::string& engine_id) override {
@@ -110,26 +108,10 @@ class TestObserver : public InputMethodEngineBase::Observer {
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {
     std::move(callback).Run(/* handled */ true);
   }
-  void OnCandidateClicked(
-      const std::string& engine_id,
-      int candidate_id,
-      InputMethodEngineBase::MouseButtonEvent button) override {}
-  void OnMenuItemActivated(const std::string& engine_id,
-                           const std::string& menu_id) override {}
-  void OnSurroundingTextChanged(const std::string& engine_id,
-                                const std::u16string& text,
-                                int cursor_pos,
-                                int anchor_pos,
-                                int offset) override {}
   void OnCompositionBoundsChanged(
       const std::vector<gfx::Rect>& bounds) override {
     calls_bitmap_ |= ONCOMPOSITIONBOUNDSCHANGED;
   }
-  void OnScreenProjectionChanged(bool is_projected) override {}
-
-  void OnSuggestionsChanged(
-      const std::vector<std::string>& suggestions) override {}
-  void OnInputMethodOptionsChanged(const std::string& engine_id) override {}
 
   void OnReset(const std::string& engine_id) override {
     calls_bitmap_ |= RESET;
@@ -159,7 +141,6 @@ class InputMethodEngineTest : public testing::Test {
     languages_.emplace_back("en-US");
     layouts_.emplace_back("us");
     InitInputMethod();
-    ui::IMEBridge::Initialize();
     mock_ime_input_context_handler_ =
         std::make_unique<ui::MockIMEInputContextHandler>();
     ui::IMEBridge::Get()->SetInputContextHandler(
@@ -183,7 +164,7 @@ class InputMethodEngineTest : public testing::Test {
   void CreateEngine(bool allowlisted) {
     engine_ = std::make_unique<InputMethodEngine>();
     observer_ = new TestObserver();
-    std::unique_ptr<InputMethodEngineBase::Observer> observer_ptr(observer_);
+    std::unique_ptr<InputMethodEngineObserver> observer_ptr(observer_);
     engine_->Initialize(std::move(observer_ptr),
                         allowlisted ? kTestExtensionId : kTestExtensionId2,
                         nullptr);
@@ -318,7 +299,7 @@ TEST_F(InputMethodEngineTest, TestHistograms) {
   CreateEngine(true);
   FocusIn(ui::TEXT_INPUT_TYPE_TEXT);
   engine_->Enable(kTestImeComponentId);
-  std::vector<InputMethodEngineBase::SegmentInfo> segments;
+  std::vector<InputMethodEngine::SegmentInfo> segments;
   int context = engine_->GetContextIdForTesting();
   std::string error;
   base::HistogramTester histograms;
@@ -350,30 +331,30 @@ TEST_F(InputMethodEngineTest, TestSetSelectionRange) {
   CreateEngine(true);
   const int context = engine_->GetContextIdForTesting();
   std::string error;
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
-                                                    /* end */ 0, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
+                                                /* end */ 0, &error);
   EXPECT_EQ(kErrorNotActive, error);
   EXPECT_EQ(0,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
   engine_->Enable(kTestImeComponentId);
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
-                                                    /* end */ 0, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
+                                                /* end */ 0, &error);
   EXPECT_EQ("", error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ -1,
-                                                    /* end */ 0, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ -1,
+                                                /* end */ 0, &error);
   EXPECT_EQ(base::StringPrintf(kErrorInvalidValue, "start", -1), error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
   error = "";
 
-  engine_->InputMethodEngineBase::SetSelectionRange(context, /* start */ 0,
-                                                    /* end */ -1, &error);
+  engine_->InputMethodEngine::SetSelectionRange(context, /* start */ 0,
+                                                /* end */ -1, &error);
   EXPECT_EQ(base::StringPrintf(kErrorInvalidValue, "end", -1), error);
   EXPECT_EQ(1,
             mock_ime_input_context_handler_->set_selection_range_call_count());
@@ -394,8 +375,7 @@ TEST_F(InputMethodEngineTest, TestDisableAfterSetCompositionRange) {
   EXPECT_EQ(u"text", mock_ime_input_context_handler_->last_commit_text());
 
   // Change composition range to include "text".
-  engine_->InputMethodEngineBase::SetCompositionRange(context, 0, 4, {},
-                                                      &error);
+  engine_->InputMethodEngine::SetCompositionRange(context, 0, 4, {}, &error);
   EXPECT_EQ("", error);
 
   // Disable to commit

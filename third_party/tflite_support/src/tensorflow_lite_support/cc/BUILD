@@ -1,5 +1,5 @@
 package(
-    default_visibility = ["//tensorflow_lite_support:users"],
+    default_visibility = ["//tensorflow_lite_support:internal"],
     licenses = ["notice"],  # Apache 2.0
 )
 
@@ -9,17 +9,12 @@ cc_library(
         "common.cc",
     ],
     hdrs = ["common.h"],
+    visibility = [
+        "//tensorflow_lite_support:internal",
+    ],
     deps = [
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings",
         "@com_google_absl//absl/strings:cord",
     ],
-)
-
-config_setting(
-    name = "tflite_use_c_api",
-    values = {
-        "copt": "-DTFLITE_USE_C_API",
-    },
-    visibility = ["//tensorflow_lite_support:__subpackages__"],
 )

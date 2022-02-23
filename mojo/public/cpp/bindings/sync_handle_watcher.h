@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_BINDINGS_SYNC_HANDLE_WATCHER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "mojo/public/cpp/bindings/sync_handle_registry.h"

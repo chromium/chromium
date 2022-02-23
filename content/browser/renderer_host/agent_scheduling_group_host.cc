@@ -55,10 +55,10 @@ struct AgentSchedulingGroupHostUserData : public base::SupportsUserData::Data {
 
   std::set<std::unique_ptr<AgentSchedulingGroupHost>, base::UniquePtrComparator>
       owned_host_set;
-  // This is used solely to DCHECK the invariant that a SiteInstance cannot
+  // This is used solely to DCHECK the invariant that a SiteInstanceGroup cannot
   // request an AgentSchedulingGroup twice from the same RenderProcessHost.
 #if DCHECK_IS_ON()
-  std::set<const SiteInstance*> site_instances;
+  std::set<const SiteInstanceGroup*> site_instance_groups;
 #endif
 };
 
@@ -72,7 +72,7 @@ static features::MBIMode GetMBIMode() {
 
 // static
 AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
-    const SiteInstance& instance,
+    const SiteInstanceGroup& site_instance_group,
     RenderProcessHost& process) {
   AgentSchedulingGroupHostUserData* data =
       static_cast<AgentSchedulingGroupHostUserData*>(
@@ -89,10 +89,10 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
 
   if (GetMBIMode() == features::MBIMode::kLegacy ||
       GetMBIMode() == features::MBIMode::kEnabledPerRenderProcessHost) {
-    // We don't use |data->site_instances| at all when AgentSchedulingGroupHost
-    // is 1:1 with RenderProcessHost.
+    // We don't use |data->site_instance_groups| at all when
+    // AgentSchedulingGroupHost is 1:1 with RenderProcessHost.
 #if DCHECK_IS_ON()
-    DCHECK(data->site_instances.empty());
+    DCHECK(data->site_instance_groups.empty());
 #endif
 
     if (data->owned_host_set.empty()) {
@@ -121,13 +121,13 @@ AgentSchedulingGroupHost* AgentSchedulingGroupHost::GetOrCreate(
       std::make_unique<AgentSchedulingGroupHost>(process);
   AgentSchedulingGroupHost* return_host = host.get();
 
-  // In the MBI mode where we AgentSchedulingGroupHosts are 1:1 with
-  // SiteInstances, a SiteInstance may see different RenderProcessHosts
-  // throughout its lifetime, but it should only ever see a single
-  // AgentSchedulingGroupHost for a given RenderProcessHost.
+  // In the MBI mode where AgentSchedulingGroupHosts are 1:1 with
+  // SiteInstanceGroups, a SiteInstanceGroup may see different
+  // RenderProcessHosts throughout its lifetime, but it should only ever see a
+  // single AgentSchedulingGroupHost for a given RenderProcessHost.
 #if DCHECK_IS_ON()
-  DCHECK(!base::Contains(data->site_instances, &instance));
-  data->site_instances.insert(&instance);
+  DCHECK(!base::Contains(data->site_instance_groups, &site_instance_group));
+  data->site_instance_groups.insert(&site_instance_group);
 #endif
 
   data->owned_host_set.insert(std::move(host));

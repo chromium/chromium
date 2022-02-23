@@ -14,8 +14,12 @@
 #include "base/containers/fixed_flat_map.h"
 #include "base/files/file_util.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -26,6 +30,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "chrome/browser/browser_features.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -60,6 +65,7 @@
 #include "extensions/common/extension_set.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/layout.h"
+#include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -77,16 +83,39 @@ namespace {
 // Removing unused themes is done after a delay because there is no
 // reason to do it at startup.
 // ExtensionService::GarbageCollectExtensions() does something similar.
-const int kRemoveUnusedThemesStartupDelay = 30;
+constexpr base::TimeDelta kRemoveUnusedThemesStartupDelay = base::Seconds(30);
 
 bool g_dont_write_theme_pack_for_testing = false;
 
 absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
+  // clang-format off
   static constexpr const auto kMap = base::MakeFixedFlatMap<int, ui::ColorId>({
+#if BUILDFLAG(IS_WIN)
+      {TP::COLOR_ACCENT_BORDER_ACTIVE, kColorAccentBorderActive},
+      {TP::COLOR_ACCENT_BORDER_INACTIVE, kColorAccentBorderInactive},
+#endif  // BUILDFLAG(IS_WIN)
+      {TP::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_LOW,
+       kColorAppMenuHighlightSeverityLow},
+      {TP::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_HIGH,
+       kColorAppMenuHighlightSeverityHigh},
+      {TP::COLOR_APP_MENU_HIGHLIGHT_SEVERITY_MEDIUM,
+       kColorAppMenuHighlightSeverityMedium},
+      {TP::COLOR_AVATAR_BUTTON_HIGHLIGHT_NORMAL,
+       kColorAvatarButtonHighlightNormal},
+      {TP::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_ERROR,
+       kColorAvatarButtonHighlightSyncError},
+      {TP::COLOR_AVATAR_BUTTON_HIGHLIGHT_SYNC_PAUSED,
+       kColorAvatarButtonHighlightSyncPaused},
+      {TP::COLOR_BOOKMARK_BAR_BACKGROUND, kColorBookmarkBarBackground},
+      {TP::COLOR_BOOKMARK_BUTTON_ICON, kColorBookmarkButtonIcon},
+      {TP::COLOR_BOOKMARK_FAVICON, kColorBookmarkFavicon},
+      {TP::COLOR_BOOKMARK_SEPARATOR, kColorBookmarkBarSeparator},
+      {TP::COLOR_BOOKMARK_TEXT, kColorBookmarkBarForeground},
       {TP::COLOR_DOWNLOAD_SHELF, kColorDownloadShelf},
       {TP::COLOR_DOWNLOAD_SHELF_BUTTON_BACKGROUND,
        kColorDownloadShelfButtonBackground},
       {TP::COLOR_DOWNLOAD_SHELF_BUTTON_TEXT, kColorDownloadShelfButtonText},
+      {TP::COLOR_LOCATION_BAR_BORDER, kColorLocationBarBorder},
       {TP::COLOR_OMNIBOX_BACKGROUND, kColorOmniboxBackground},
       {TP::COLOR_OMNIBOX_BACKGROUND_HOVERED, kColorOmniboxBackgroundHovered},
       {TP::COLOR_OMNIBOX_BUBBLE_OUTLINE, kColorOmniboxBubbleOutline},
@@ -115,8 +144,56 @@ absl::optional<ui::ColorId> ThemeProviderColorIdToColorId(int color_id) {
       {TP::COLOR_OMNIBOX_SECURITY_CHIP_SECURE, kColorOmniboxSecurityChipSecure},
       {TP::COLOR_OMNIBOX_TEXT, kColorOmniboxText},
       {TP::COLOR_OMNIBOX_TEXT_DIMMED, kColorOmniboxTextDimmed},
+      {TP::COLOR_FRAME_CAPTION_ACTIVE, kColorFrameCaptionActive},
+      {TP::COLOR_FRAME_CAPTION_INACTIVE, kColorFrameCaptionInactive},
+      {TP::COLOR_FRAME_ACTIVE, ui::kColorFrameActive},
+      {TP::COLOR_FRAME_INACTIVE, ui::kColorFrameInactive},
+      {TP::COLOR_READ_LATER_BUTTON_HIGHLIGHT, kColorReadLaterButtonHighlight},
+      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_ACTIVE,
+       kColorTabBackgroundActiveFrameActive},
+      {TP::COLOR_TAB_BACKGROUND_ACTIVE_FRAME_INACTIVE,
+       kColorTabBackgroundActiveFrameInactive},
+      {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_ACTIVE,
+       kColorTabBackgroundInactiveFrameActive},
+      {TP::COLOR_TAB_BACKGROUND_INACTIVE_FRAME_INACTIVE,
+       kColorTabBackgroundInactiveFrameInactive},
+      {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
+       kColorTabForegroundActiveFrameActive},
+      {TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_INACTIVE,
+       kColorTabForegroundActiveFrameInactive},
+      {TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_ACTIVE,
+       kColorTabForegroundInactiveFrameActive},
+      {TP::COLOR_TAB_FOREGROUND_INACTIVE_FRAME_INACTIVE,
+       kColorTabForegroundInactiveFrameInactive},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_BLUE, kColorTabGroupContextMenuBlue},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN, kColorTabGroupContextMenuCyan},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREEN, kColorTabGroupContextMenuGreen},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY, kColorTabGroupContextMenuGrey},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_PINK, kColorTabGroupContextMenuPink},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE,
+       kColorTabGroupContextMenuPurple},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE,
+       kColorTabGroupContextMenuOrange},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_RED, kColorTabGroupContextMenuRed},
+      {TP::COLOR_TAB_GROUP_CONTEXT_MENU_YELLOW,
+       kColorTabGroupContextMenuYellow},
       {TP::COLOR_TOOLBAR, kColorToolbar},
+      {TP::COLOR_TOOLBAR_BUTTON_BACKGROUND, kColorToolbarButtonBackground},
+      {TP::COLOR_TOOLBAR_BUTTON_BORDER, kColorToolbarButtonBorder},
+      {TP::COLOR_TOOLBAR_BUTTON_ICON, kColorToolbarButtonIcon},
+      {TP::COLOR_TOOLBAR_BUTTON_ICON_HOVERED, kColorToolbarButtonIconHovered},
+      {TP::COLOR_TOOLBAR_BUTTON_ICON_INACTIVE, kColorToolbarButtonIconInactive},
+      {TP::COLOR_TOOLBAR_BUTTON_ICON_PRESSED, kColorToolbarButtonIconPressed},
+      {TP::COLOR_TOOLBAR_BUTTON_TEXT, kColorToolbarButtonText},
+      {TP::COLOR_TOOLBAR_CONTENT_AREA_SEPARATOR,
+       kColorToolbarContentAreaSeparator},
+      {TP::COLOR_TOOLBAR_FEATURE_PROMO_HIGHLIGHT,
+       kColorToolbarFeaturePromoHighlight},
+      {TP::COLOR_TOOLBAR_INK_DROP, kColorToolbarInkDrop},
+      {TP::COLOR_TOOLBAR_TEXT, kColorToolbarText},
+      {TP::COLOR_TOOLBAR_VERTICAL_SEPARATOR, kColorToolbarSeparator},
   });
+  // clang-format on
   auto* color_it = kMap.find(color_id);
   if (color_it != kMap.cend()) {
     return color_it->second;
@@ -129,7 +206,16 @@ void WritePackToDiskCallback(BrowserThemePack* pack,
                              const base::FilePath& directory) {
   if (g_dont_write_theme_pack_for_testing)
     return;
-  pack->WriteToDisk(directory.Append(chrome::kThemePackFilename));
+
+  const bool success =
+      pack->WriteToDisk(directory.Append(chrome::kThemePackFilename));
+  base::UmaHistogramBoolean("Browser.ThemeService.WritePackToDisk", success);
+}
+
+void ReportHistogramBooleanUsesColorProvider(bool uses_color_provider) {
+  UMA_HISTOGRAM_BOOLEAN(
+      "Browser.ThemeService.BrowserThemeProvider.GetColor.UsesColorProvider",
+      uses_color_provider);
 }
 
 }  // namespace
@@ -197,7 +283,7 @@ class ThemeService::ThemeObserver
     }
   }
 
-  ThemeService* theme_service_;
+  raw_ptr<ThemeService> theme_service_;
 
   base::ScopedObservation<extensions::ExtensionRegistry,
                           extensions::ExtensionRegistryObserver>
@@ -243,9 +329,14 @@ gfx::ImageSkia* ThemeService::BrowserThemeProvider::GetImageSkiaNamed(
 }
 
 SkColor ThemeService::BrowserThemeProvider::GetColor(int id) const {
-  if (auto color = GetColorProviderColor(id))
+  SCOPED_UMA_HISTOGRAM_TIMER(
+      "Browser.ThemeService.BrowserThemeProvider.GetColor");
+  if (auto color = GetColorProviderColor(id)) {
+    ReportHistogramBooleanUsesColorProvider(true);
     return color.value();
+  }
 
+  ReportHistogramBooleanUsesColorProvider(false);
   return theme_helper_.GetColor(id, incognito_, GetThemeSupplier());
 }
 
@@ -263,23 +354,6 @@ bool ThemeService::BrowserThemeProvider::ShouldUseNativeFrame() const {
 
 bool ThemeService::BrowserThemeProvider::HasCustomImage(int id) const {
   return theme_helper_.HasCustomImage(id, GetThemeSupplier());
-}
-
-bool ThemeService::BrowserThemeProvider::HasCustomColor(int id) const {
-  // COLOR_TOOLBAR_BUTTON_ICON has custom value if it is explicitly specified or
-  // calclated from non {-1, -1, -1} tint (means "no change"). Note that, tint
-  // can have a value other than {-1, -1, -1} even if it is not explicitly
-  // specified (e.g incognito and dark mode).
-  if (id == TP::COLOR_TOOLBAR_BUTTON_ICON) {
-    color_utils::HSL hsl =
-        theme_helper_.GetTint(TP::TINT_BUTTONS, incognito_, GetThemeSupplier());
-    if (hsl.h != -1 || hsl.s != -1 || hsl.l != -1)
-      return true;
-  }
-
-  bool has_custom_color = false;
-  theme_helper_.GetColor(id, incognito_, GetThemeSupplier(), &has_custom_color);
-  return has_custom_color;
 }
 
 base::RefCountedMemory* ThemeService::BrowserThemeProvider::GetRawData(
@@ -307,10 +381,7 @@ ThemeService::BrowserThemeProvider::GetColorProviderColor(int id) const {
 
 CustomThemeSupplier* ThemeService::BrowserThemeProvider::GetThemeSupplier()
     const {
-  bool should_ignore_theme_supplier =
-      incognito_ && base::FeatureList::IsEnabled(
-                        features::kIncognitoBrandConsistencyForDesktop);
-  return should_ignore_theme_supplier ? nullptr : delegate_->GetThemeSupplier();
+  return incognito_ ? nullptr : delegate_->GetThemeSupplier();
 }
 
 // ThemeService ---------------------------------------------------------------
@@ -517,7 +588,7 @@ void ThemeService::RemoveUnusedThemes() {
     }
   }
   // TODO: Garbage collect all unused themes. This method misses themes which
-  // are installed but not loaded because they are blacklisted by a management
+  // are installed but not loaded because they are blocked by a management
   // policy provider.
 
   for (size_t i = 0; i < remove_list.size(); ++i) {
@@ -688,21 +759,16 @@ void ThemeService::InitFromPrefs() {
     return;
   }
 
-  bool loaded_pack = false;
-
   PrefService* prefs = profile_->GetPrefs();
   base::FilePath path = prefs->GetFilePath(prefs::kCurrentThemePackFilename);
   // If we don't have a file pack, we're updating from an old version.
   if (!path.empty()) {
     path = path.Append(chrome::kThemePackFilename);
     SwapThemeSupplier(BrowserThemePack::BuildFromDataPack(path, current_id));
-    if (theme_supplier_)
-      loaded_pack = true;
-  }
-
-  if (loaded_pack) {
-    base::RecordAction(base::UserMetricsAction("Themes.Loaded"));
-    set_ready();
+    if (theme_supplier_) {
+      base::RecordAction(base::UserMetricsAction("Themes.Loaded"));
+      set_ready();
+    }
   }
   // Else: wait for the extension service to be ready so that the theme pack
   // can be recreated from the extension.
@@ -741,10 +807,12 @@ void ThemeService::OnExtensionServiceReady() {
       FROM_HERE,
       base::BindOnce(&ThemeService::RemoveUnusedThemes,
                      weak_ptr_factory_.GetWeakPtr()),
-      base::Seconds(kRemoveUnusedThemesStartupDelay));
+      kRemoveUnusedThemesStartupDelay);
 }
 
 void ThemeService::MigrateTheme() {
+  TRACE_EVENT0("browser", "ThemeService::MigrateTheme");
+
   extensions::ExtensionRegistry* registry =
       extensions::ExtensionRegistry::Get(profile_);
   const extensions::Extension* extension =
@@ -752,10 +820,12 @@ void ThemeService::MigrateTheme() {
                      GetThemeID(), extensions::ExtensionRegistry::ENABLED)
                : nullptr;
   if (extension) {
-    DLOG(ERROR) << "Migrating theme";
     // Theme migration is done on the UI thread. Blocking the UI from appearing
     // until it's ready is deemed better than showing a blip of the default
     // theme.
+    TRACE_EVENT0("browser", "ThemeService::MigrateTheme - BuildFromExtension");
+    DLOG(ERROR) << "Migrating theme";
+
     scoped_refptr<BrowserThemePack> pack(
         new BrowserThemePack(CustomThemeSupplier::ThemeType::EXTENSION));
     BrowserThemePack::BuildFromExtension(extension, pack.get());
@@ -822,7 +892,7 @@ void ThemeService::OnThemeBuiltFromExtension(
   if (!extension)
     return;
 
-  // Write the packed file to disk.
+  // Schedule the writing of the packed file to disk.
   extensions::GetExtensionFileTaskRunner()->PostTask(
       FROM_HERE, base::BindOnce(&WritePackToDiskCallback,
                                 base::RetainedRef(pack), extension->path()));

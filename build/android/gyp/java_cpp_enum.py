@@ -28,7 +28,7 @@ ENUM_FIXED_TYPE_ALLOWLIST = [
 ]
 
 
-class EnumDefinition(object):
+class EnumDefinition:
   def __init__(self, original_enum_name=None, class_name_override=None,
                enum_package=None, entries=None, comments=None, fixed_type=None):
     self.original_enum_name = original_enum_name
@@ -79,9 +79,9 @@ class EnumDefinition(object):
         else:
           try:
             self.entries[key] = int(value)
-          except ValueError:
+          except ValueError as e:
             raise Exception('Could not interpret integer from enum value "%s" '
-                            'for key %s.' % (value, key))
+                            'for key %s.' % (value, key)) from e
         prev_enum_value = self.entries[key]
 
 
@@ -96,7 +96,7 @@ class EnumDefinition(object):
                   'k' + self.original_enum_name]
 
       for prefix in prefixes:
-        if all([w.startswith(prefix) for w in self.entries.keys()]):
+        if all(w.startswith(prefix) for w in self.entries.keys()):
           prefix_to_strip = prefix
           break
       else:
@@ -141,7 +141,7 @@ def _TransformKeys(d, func):
   return ret
 
 
-class DirectiveSet(object):
+class DirectiveSet:
   class_name_override_key = 'CLASS_NAME_OVERRIDE'
   enum_package_key = 'ENUM_PACKAGE'
   prefix_to_strip_key = 'PREFIX_TO_STRIP'
@@ -169,7 +169,7 @@ class DirectiveSet(object):
         DirectiveSet.prefix_to_strip_key)
 
 
-class HeaderParser(object):
+class HeaderParser:
   single_line_comment_re = re.compile(r'\s*//\s*([^\n]*)')
   multi_line_comment_start_re = re.compile(r'\s*/\*')
   enum_line_re = re.compile(r'^\s*(\w+)(\s*\=\s*([^,\n]+))?,?')
@@ -305,7 +305,7 @@ class HeaderParser(object):
                       '. Use () for multi-line directives. E.g.\n' +
                       '// GENERATED_JAVA_ENUM_PACKAGE: (\n' +
                       '//   foo.package)')
-    elif generator_directive:
+    if generator_directive:
       directive_name = generator_directive.groups()[0]
       directive_value = generator_directive.groups()[1]
       self._generator_directives.Update(directive_name, directive_value)

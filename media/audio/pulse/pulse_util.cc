@@ -134,8 +134,8 @@ void InputBusCallback(pa_context* context,
   }
 
   if (strcmp(info->name, data->name_.c_str()) == 0 &&
-      pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS)) {
-    data->bus_ = pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS);
+      pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH)) {
+    data->bus_ = pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH);
   }
 }
 
@@ -151,8 +151,8 @@ void OutputBusCallback(pa_context* context,
     return;
   }
 
-  if (pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS) &&
-      strcmp(pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS),
+  if (pa_proplist_contains(info->proplist, PA_PROP_DEVICE_BUS_PATH) &&
+      strcmp(pa_proplist_gets(info->proplist, PA_PROP_DEVICE_BUS_PATH),
              data->bus_.c_str()) == 0) {
     data->name_ = info->name;
   }

@@ -266,7 +266,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultiplePlayersPlayPause) {
 }
 
 // Flaky on Mac. See https://crbug.com/980663
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_WebContents_Muted DISABLED_WebContents_Muted
 #else
 #define MAYBE_WebContents_Muted WebContents_Muted
@@ -294,7 +294,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MAYBE_WebContents_Muted) {
                    ->is_controllable);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // On Android, System Audio Focus would break this test.
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, MultipleTabsPlayPause) {
   EXPECT_TRUE(IsPlaying(shell(), "long-video"));
   EXPECT_TRUE(IsPlaying(other_shell, "long-video"));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 IN_PROC_BROWSER_TEST_F(MediaSessionBrowserTest, GetMediaImageBitmap) {
   ASSERT_TRUE(embedded_test_server()->Start());

@@ -1,0 +1,9 @@
+// Combobox input with active descendant.
+combobox.accessibilityAttributeNames.has(AXOwns)='yes'
+combobox.accessibilityAttributeValue(AXOwns)=[:3]
+// Combobox input with no selection container
+combobox_no_descendant.accessibilityAttributeValue(AXOwns)=NULL
+// Div with role combobox (does not support AXOwns).
+div.accessibilityAttributeNames.has(AXOwns)='no'
+// Input without role combobox (does support AXOwns)
+input_not_combobox.accessibilityAttributeNames.has(AXOwns)='yes'

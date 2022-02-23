@@ -20,6 +20,7 @@
 #include "ash/app_list/views/search_result_list_view.h"
 #include "ash/app_list/views/search_result_page_view.h"
 #include "ash/app_list/views/search_result_tile_item_list_view.h"
+#include "ash/constants/ash_features.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "ash/public/cpp/app_list/app_list_features.h"
@@ -339,10 +340,11 @@ void ContentsView::ShowSearchResults(bool show) {
   DCHECK_GE(search_page, 0);
 
   // Hide or Show results
-  GetPageView(search_page)->SetVisible(show);
-
+  search_result_page_view()->SetVisible(show);
   SetActiveStateInternal(show ? search_page : page_before_search_,
                          true /*animate*/);
+  if (show)
+    search_result_page_view()->UpdateResultContainersVisibility();
 }
 
 bool ContentsView::IsShowingSearchResults() const {
@@ -436,6 +438,15 @@ void ContentsView::UpdateSearchBoxAnimation(double progress,
         static_cast<float>(current_bounds.height()) / target_bounds.height());
   }
   search_box->GetWidget()->GetLayer()->SetTransform(transform);
+
+  // Update search box view layer.
+  const float current_radius =
+      search_box->GetSearchBoxBorderCornerRadiusForState(current_state);
+  const float target_radius =
+      search_box->GetSearchBoxBorderCornerRadiusForState(target_state);
+  search_box->layer()->SetClipRect(search_box->GetContentsBounds());
+  search_box->layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(
+      gfx::Tween::FloatValueBetween(progress, current_radius, target_radius)));
 }
 
 void ContentsView::UpdateExpandArrowBehavior(AppListViewState target_state) {
@@ -554,7 +565,8 @@ gfx::Size ContentsView::GetSearchBoxSize(AppListState state) const {
   // Reduce the search box size in fullscreen view state when the work area
   // height is less than 600 dip - the goal is to increase the amount of space
   // available to the apps grid.
-  if (GetContentsBounds().height() < kDenseLayoutHeightThreshold) {
+  if (!features::IsProductivityLauncherEnabled() &&
+      GetContentsBounds().height() < kDenseLayoutHeightThreshold) {
     preferred_size.set_height(kSearchBoxHeightForDenseLayout);
   } else {
     preferred_size.set_height(kSearchBoxHeight);

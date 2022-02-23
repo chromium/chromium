@@ -12,6 +12,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace signin_metrics {
 
@@ -133,6 +134,7 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_FORCED_SIGNIN:
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       NOTREACHED() << "Access point " << static_cast<int>(access_point)
                    << " is not supposed to log signin user actions.";
       break;
@@ -215,6 +217,7 @@ void RecordSigninWithDefaultUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       NOTREACHED() << "Signin_SigninWithDefault_From* user actions"
                    << " are not recorded for access_point "
                    << static_cast<int>(access_point)
@@ -295,6 +298,7 @@ void RecordSigninNotDefaultUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       NOTREACHED() << "Signin_SigninNotDefault_From* user actions"
                    << " are not recorded for access point "
                    << static_cast<int>(access_point)
@@ -379,6 +383,7 @@ void RecordSigninNewAccountNoExistingAccountUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       // These access points do not support personalized sign-in promos, so
       // |Signin_SigninNewAccountNoExistingAccount_From*| user actions should
       // not be recorded for them. Note: To avoid bloating the sign-in APIs, the
@@ -466,6 +471,7 @@ void RecordSigninNewAccountExistingAccountUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       // These access points do not support personalized sign-in promos, so
       // |Signin_SigninNewAccountExistingAccount_From*| user actions should not
       // be recorded for them. Note: To avoid bloating the sign-in APIs, the
@@ -651,7 +657,7 @@ void LogAuthError(const GoogleServiceAuthError& auth_error) {
 
 void LogAccountReconcilorStateOnGaiaResponse(AccountReconcilorState state) {
   UMA_HISTOGRAM_ENUMERATION("Signin.AccountReconcilorState.OnGaiaResponse",
-                            state, ACCOUNT_RECONCILOR_HISTOGRAM_COUNT);
+                            state);
 }
 
 void LogAccountEquality(AccountEquality equality) {
@@ -879,6 +885,7 @@ void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
     case AccessPoint::ACCESS_POINT_ACCOUNT_RENAMED:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       NOTREACHED() << "Signin_Impression_From* user actions"
                    << " are not recorded for access point "
                    << static_cast<int>(access_point);
@@ -1014,6 +1021,7 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
     case AccessPoint::ACCESS_POINT_SAFETY_CHECK:
     case AccessPoint::ACCESS_POINT_KALEIDOSCOPE:
+    case AccessPoint::ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE:
       NOTREACHED() << "Signin_Impression{With|WithNo}Account_From* user actions"
                    << " are not recorded for access point "
                    << static_cast<int>(access_point)
@@ -1025,12 +1033,12 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
   }
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action) {
   UMA_HISTOGRAM_ENUMERATION(
       "Signin.AccountConsistencyPromoAction", static_cast<int>(action),
       static_cast<int>(AccountConsistencyPromoAction::MAX));
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace signin_metrics

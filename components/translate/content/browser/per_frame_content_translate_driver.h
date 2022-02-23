@@ -22,7 +22,6 @@
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 
 namespace content {
-class NavigationController;
 class WebContents;
 }  // namespace content
 
@@ -40,7 +39,6 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
  public:
   PerFrameContentTranslateDriver(
       content::WebContents& web_contents,
-      content::NavigationController* nav_controller,
       language::UrlLanguageHistogram* url_language_histogram);
 
   PerFrameContentTranslateDriver(const PerFrameContentTranslateDriver&) =
@@ -61,8 +59,7 @@ class PerFrameContentTranslateDriver : public ContentTranslateDriver {
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   void OnPageLanguageDetermined(const LanguageDetectionDetails& details,
                                 bool page_level_translation_critiera_met);

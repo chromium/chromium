@@ -234,6 +234,10 @@ void HttpServer::OnWebSocketRequest(int connection_id,
 void HttpServer::OnWebSocketMessage(int connection_id, std::string data) {
   // TODO: Make use of WebSocket data
   VLOG(0) << "HttpServer::OnWebSocketMessage received: " << data;
+  // https://crbug.com/chromedriver/3974
+  // Response "not supported" to avoid WebSocket tests timeout.
+  server_->SendOverWebSocket(connection_id, "not supported",
+                             TRAFFIC_ANNOTATION_FOR_TESTS);
 }
 
 void HttpServer::OnClose(int connection_id) {

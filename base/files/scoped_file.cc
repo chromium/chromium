@@ -7,7 +7,7 @@
 #include "base/check.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <errno.h>
 #include <unistd.h>
 
@@ -17,7 +17,7 @@
 namespace base {
 namespace internal {
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // static
 void ScopedFDCloseTraits::Free(int fd) {
@@ -30,8 +30,8 @@ void ScopedFDCloseTraits::Free(int fd) {
   // a single open directory would bypass the entire security model.
   int ret = IGNORE_EINTR(close(fd));
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_APPLE) || \
-    defined(OS_FUCHSIA) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_APPLE) || \
+    BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
   // NB: Some file descriptors can return errors from close() e.g. network
   // filesystems such as NFS and Linux input devices. On Linux, macOS, and
   // Fuchsia's POSIX layer, errors from close other than EBADF do not indicate
@@ -43,7 +43,7 @@ void ScopedFDCloseTraits::Free(int fd) {
   PCHECK(0 == ret);
 }
 
-#endif  // OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace internal
 }  // namespace base

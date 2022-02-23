@@ -1,0 +1,79 @@
+// Copyright 2018 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module app_management.mojom;
+
+import "components/services/app_service/public/mojom/types.mojom";
+
+struct App {
+  string id;
+
+  apps.mojom.AppType type;
+
+  // The fields below may be omitted because this struct is also used to signal
+  // updates.
+  string? title;
+
+  string? description;
+  apps.mojom.OptionalBool is_pinned;
+  apps.mojom.OptionalBool is_policy_pinned;
+  string? version;
+  string? size;
+  map<apps.mojom.PermissionType, apps.mojom.Permission> permissions;
+  apps.mojom.InstallReason install_reason;
+  bool hide_more_settings;
+  bool hide_pin_to_shelf;
+  bool is_preferred_app;
+  apps.mojom.WindowMode window_mode;
+  bool resize_locked;
+  bool hide_resize_locked;
+  array<string> supported_links;
+  apps.mojom.RunOnOsLogin? run_on_os_login;
+};
+
+// Extension-based apps primarily use install-time permissions that cannot be
+// changed after installation. This struct is used for the page to receive
+// string descriptions of those permissions to display to the user.
+struct ExtensionAppPermissionMessage {
+  string message;
+  array<string> submessages;
+};
+
+interface PageHandlerFactory {
+  CreatePageHandler(pending_remote<Page> page,
+                    pending_receiver<PageHandler> handler);
+};
+
+// Browser interface.
+interface PageHandler {
+  GetApps() => (array<App> apps);
+  // Returns null if the app is not found.
+  GetApp(string app_id) => (App? app);
+  GetExtensionAppPermissionMessages(string app_id) =>
+      (array<ExtensionAppPermissionMessage> messages);
+  SetPinned(string app_id, apps.mojom.OptionalBool pinned);
+  SetPermission(string app_id,
+                apps.mojom.Permission permission);
+  SetResizeLocked(string app_id, bool locked);
+  Uninstall(string app_id);
+  OpenNativeSettings(string app_id);
+  SetPreferredApp(string app_id, bool is_preferred_app);
+  // Returns a list of |app_ids| that are currently set as preferred apps
+  // and have overlapping intent filters with |app_id|.
+  GetOverlappingPreferredApps(string app_id) => (array<string> app_ids);
+  // Used to set the Window Mode from the frontend inside
+  // app_management_page_handler.
+  SetWindowMode(string app_id, apps.mojom.WindowMode window_mode);
+  // Used to set the Run On OS Login Modes from the frontend
+  // of an app via app_management_page_handler.
+  SetRunOnOsLoginMode(string app_id,
+    apps.mojom.RunOnOsLoginMode run_on_os_login_mode);
+};
+
+// Frontend interface.
+interface Page {
+  OnAppAdded(App app);
+  OnAppChanged(App update);
+  OnAppRemoved(string app_id);
+};

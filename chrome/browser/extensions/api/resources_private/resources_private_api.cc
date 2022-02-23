@@ -39,8 +39,8 @@ namespace extensions {
 namespace {
 
 void AddStringsForIdentity(base::DictionaryValue* dict) {
-  dict->SetString("window-title",
-                  l10n_util::GetStringUTF16(IDS_EXTENSION_CONFIRM_PERMISSIONS));
+  dict->SetStringKey("window-title", l10n_util::GetStringUTF16(
+                                         IDS_EXTENSION_CONFIRM_PERMISSIONS));
 }
 
 #if BUILDFLAG(ENABLE_PDF)

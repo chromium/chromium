@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "build/build_config.h"
 #include "pdf/pdf_transform.h"
 #include "pdf/pdfium/pdfium_engine.h"
 #include "pdf/pdfium/pdfium_mem_buffer_file_write.h"
@@ -26,7 +27,7 @@
 #include "ui/gfx/geometry/size_f.h"
 
 using printing::ConvertUnit;
-using printing::ConvertUnitDouble;
+using printing::ConvertUnitFloat;
 using printing::kPointsPerInch;
 
 namespace chrome_pdf {
@@ -193,9 +194,8 @@ ScopedFPDFDocument CreateNupPdfDocument(ScopedFPDFDocument doc,
   int page_size_width = page_size.width();
   int page_size_height = page_size.height();
 
-  printing::NupParameters nup_params;
-  bool is_landscape = PDFiumPrint::IsSourcePdfLandscape(doc.get());
-  nup_params.SetParameters(pages_per_sheet, is_landscape);
+  printing::NupParameters nup_params(
+      pages_per_sheet, PDFiumPrint::IsSourcePdfLandscape(doc.get()));
   bool paper_is_landscape = page_size_width > page_size_height;
   if (nup_params.landscape() != paper_is_landscape)
     std::swap(page_size_width, page_size_height);
@@ -250,14 +250,14 @@ PDFiumPrint::PDFiumPrint(PDFiumEngine* engine) : engine_(engine) {}
 
 PDFiumPrint::~PDFiumPrint() = default;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 std::vector<uint8_t> PDFiumPrint::CreateFlattenedPdf(ScopedFPDFDocument doc) {
   if (!FlattenPrintData(doc.get()))
     return std::vector<uint8_t>();
   return ConvertDocToBuffer(std::move(doc));
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 std::vector<uint8_t> PDFiumPrint::CreateNupPdf(
@@ -393,10 +393,12 @@ ScopedFPDFDocument PDFiumPrint::CreateSinglePageRasterPdf(
                       bitmap_size.height(), 0xFFFFFFFF);
 
   FPDF_RenderPageBitmap(bitmap.get(), page_to_print, 0, 0, bitmap_size.width(),
-                        bitmap_size.height(), /*rotate=*/0, FPDF_PRINTING);
+                        bitmap_size.height(),
+                        ToPDFiumRotation(PageOrientation::kOriginal),
+                        FPDF_PRINTING);
 
-  double ratio_x = ConvertUnitDouble(bitmap_size.width(), dpi, kPointsPerInch);
-  double ratio_y = ConvertUnitDouble(bitmap_size.height(), dpi, kPointsPerInch);
+  float ratio_x = ConvertUnitFloat(bitmap_size.width(), dpi, kPointsPerInch);
+  float ratio_y = ConvertUnitFloat(bitmap_size.height(), dpi, kPointsPerInch);
 
   // Add the bitmap to an image object and add the image object to the output
   // page.

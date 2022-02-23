@@ -10,9 +10,9 @@
 #include "base/logging.h"
 #include "base/version.h"
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/installer/util/install_util.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace component_updater {
 
@@ -42,7 +42,7 @@ void DeleteFilesAndParentDirectory(const base::FilePath& file_path) {
 }
 
 bool IsPerUserInstall() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The installer computes and caches this value in memory during the
   // process start up.
   return InstallUtil::IsPerUserInstall();

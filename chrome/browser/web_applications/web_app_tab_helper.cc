@@ -10,7 +10,7 @@
 #include "base/unguessable_token.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/manifest_update_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_audio_focus_id_map.h"
@@ -31,11 +31,12 @@ void WebAppTabHelper::CreateForWebContents(content::WebContents* contents) {
 }
 
 WebAppTabHelper::WebAppTabHelper(content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<WebAppTabHelper>(*web_contents),
+      content::WebContentsObserver(web_contents),
       provider_(WebAppProvider::GetForLocalAppsUnchecked(
           Profile::FromBrowserContext(web_contents->GetBrowserContext()))) {
   DCHECK(provider_);
-  observation_.Observe(&provider_->registrar());
+  observation_.Observe(&provider_->install_manager());
   SetAppId(
       FindAppIdWithUrlInScope(web_contents->GetSiteInstance()->GetSiteURL()));
 }
@@ -106,21 +107,6 @@ void WebAppTabHelper::DidFinishNavigation(
   ReinstallPlaceholderAppIfNecessary(navigation_handle->GetURL());
 }
 
-void WebAppTabHelper::DOMContentLoaded(
-    content::RenderFrameHost* render_frame_host) {
-  if (render_frame_host != web_contents()->GetMainFrame())
-    return;
-
-  // Don't try and update the expiry time if this is an error page.
-  if (is_error_page_)
-    return;
-
-  // Don't try and manage file handlers unless this page is for an installed
-  // app.
-  if (app_id_.empty())
-    return;
-}
-
 void WebAppTabHelper::DidCloneToNewWebContents(
     content::WebContents* old_web_contents,
     content::WebContents* new_web_contents) {
@@ -152,12 +138,9 @@ void WebAppTabHelper::OnWebAppWillBeUninstalled(
     ResetAppId();
 }
 
-void WebAppTabHelper::OnAppRegistrarShutdown() {
-  ResetAppId();
-}
-
-void WebAppTabHelper::OnAppRegistrarDestroyed() {
+void WebAppTabHelper::OnWebAppInstallManagerDestroyed() {
   observation_.Reset();
+  ResetAppId();
 }
 
 void WebAppTabHelper::ResetAppId() {

@@ -1,0 +1,3 @@
+Tests that async stack tagging API (recurring) works as expected.
+Skipping: async stack tagging API not enabled.
+

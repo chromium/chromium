@@ -10,12 +10,13 @@
 #include <cstdint>
 #include <string>
 
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "base/callback_forward.h"
 #include "base/time/time.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom.h"
 #include "chromeos/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -29,11 +30,12 @@ class ServiceConnection {
  public:
   static ServiceConnection* GetInstance();
 
-  using BindNetworkHealthServiceCallback = base::RepeatingCallback<
-      mojo::PendingRemote<ash::network_health::mojom::NetworkHealthService>()>;
+  using BindNetworkHealthServiceCallback =
+      base::RepeatingCallback<mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkHealthService>()>;
   using BindNetworkDiagnosticsRoutinesCallback =
       base::RepeatingCallback<mojo::PendingRemote<
-          ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>()>;
 
   // Retrieve a list of available diagnostic routines. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
@@ -304,7 +306,8 @@ class ServiceConnection {
   // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void AddNetworkObserver(
-      mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
+      mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkEventsObserver>
           pending_observer) = 0;
 
   // Subscribes to cros_healthd's audio-related events. See
@@ -320,6 +323,12 @@ class ServiceConnection {
   virtual void AddThunderboltObserver(
       mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver>
           pending_observer) = 0;
+
+  // Subscribes to cros_healthd's USB-related events. See
+  // src/chromeos/services/cros_healthd/public/mojom/cros_healthd.mojom for
+  // details.
+  virtual void AddUsbObserver(
+      mojo::PendingRemote<mojom::CrosHealthdUsbObserver> pending_observer) = 0;
 
   // Gathers pieces of information about the platform. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
@@ -340,14 +349,14 @@ class ServiceConnection {
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void GetDiagnosticsService(
-      mojom::CrosHealthdDiagnosticsServiceRequest service) = 0;
+      mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) = 0;
 
   // Binds |service| to an implementation of CrosHealthdProbeService. In
   // production, this implementation is provided by cros_healthd. See
   // src/chromeos/service/cros_healthd/public/mojom/cros_healthd.mojom for
   // details.
   virtual void GetProbeService(
-      mojom::CrosHealthdProbeServiceRequest service) = 0;
+      mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) = 0;
 
   // Sets a callback to request binding a PendingRemote to the
   // NetworkHealthService. This callback is invoked once when it is set, and

@@ -11,6 +11,7 @@
 #include "extensions/browser/app_window/app_window.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 TestAppWindowIconObserver::TestAppWindowIconObserver(

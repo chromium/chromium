@@ -12,12 +12,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/web_app_id.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/buildflags.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "components/services/app_service/public/cpp/url_handler_info.h"
 #endif
 
@@ -45,13 +45,13 @@ AppId InstallDummyWebApp(Profile* profile,
 // Synchronous version of WebAppInstallManager::InstallWebAppFromInfo. May be
 // used in unit tests and browser tests.
 AppId InstallWebApp(Profile* profile,
-                    std::unique_ptr<WebApplicationInfo> web_app_info,
+                    std::unique_ptr<WebAppInstallInfo> web_app_info,
                     bool overwrite_existing_manifest_fields = false,
                     webapps::WebappInstallSource install_source =
                         webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
 
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS))
 // Install a web app with url_handlers then register it with the
 // UrlHandlerManager. This is sufficient for testing URL matching and launch
 // at startup.

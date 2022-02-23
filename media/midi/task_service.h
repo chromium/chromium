@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/synchronization/condition_variable.h"
@@ -46,8 +45,8 @@ class MIDI_EXPORT TaskService final {
   // false, that happens when the BindInstance() is called twice without
   // unbinding the previous instance, or the UnbindInstance() is called without
   // any successful BindInstance() call.
-  bool BindInstance() WARN_UNUSED_RESULT;
-  bool UnbindInstance() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool BindInstance();
+  [[nodiscard]] bool UnbindInstance();
 
   // Checks if the current thread belongs to the specified runner.
   bool IsOnTaskRunner(RunnerId runner_id);

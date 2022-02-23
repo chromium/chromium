@@ -148,6 +148,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   void EnsureSurfaceSynchronizedForWebTest() override;
   void FocusedNodeChanged(bool is_editable_node,
                           const gfx::Rect& node_bounds_in_screen) override;
+  void ClearFallbackSurfaceForCommitPending() override;
   void ResetFallbackToFirstNavigationSurface() override;
   bool RequestRepaintForTesting() override;
   gfx::NativeViewAccessible AccessibilityGetNativeViewAccessible() override;
@@ -259,8 +260,10 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
   gfx::Rect GetFirstRectForCompositionRange(const gfx::Range& range,
                                             gfx::Range* actual_range);
 
-  // Converts from given whole character range to composition oriented range. If
-  // the conversion failed, return gfx::Range::InvalidRange.
+  // Converts from given whole character range to composition oriented range.
+  // If `request_range` is beyond the end of composition range, return an empty
+  // range at the composition end as a heuristic result.
+  // If the conversion failed, return gfx::Range::InvalidRange.
   gfx::Range ConvertCharacterRangeToCompositionRange(
       const gfx::Range& request_range);
 
@@ -370,7 +373,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                      const gfx::Range& replacement_range) override;
   void ImeFinishComposingText() override;
   void ImeCancelCompositionFromCocoa() override;
-  void LookUpDictionaryOverlayAtPoint(const gfx::PointF& root_point) override;
+  void LookUpDictionaryOverlayAtPoint(
+      const gfx::PointF& root_point_in_dips) override;
   void LookUpDictionaryOverlayFromRange(const gfx::Range& range) override;
   void SyncGetCharacterIndexAtPoint(
       const gfx::PointF& root_point,
@@ -379,12 +383,8 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
                                     uint32_t* index) override;
   void SyncGetFirstRectForRange(
       const gfx::Range& requested_range,
-      const gfx::Rect& rect,
-      const gfx::Range& actual_range,
       SyncGetFirstRectForRangeCallback callback) override;
   bool SyncGetFirstRectForRange(const gfx::Range& requested_range,
-                                const gfx::Rect& rect,
-                                const gfx::Range& actual_range,
                                 gfx::Rect* out_rect,
                                 gfx::Range* out_actual_range,
                                 bool* out_success) override;
@@ -517,7 +517,7 @@ class CONTENT_EXPORT RenderWidgetHostViewMac
       int32_t targetWidgetProcessId,
       int32_t targetWidgetRoutingId,
       ui::mojom::AttributedStringPtr attributed_string,
-      const gfx::Point& baselinePoint);
+      const gfx::Point& baseline_point_in_layout_space);
 
   // RenderWidgetHostViewBase:
   void UpdateBackgroundColor() override;

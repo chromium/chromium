@@ -41,8 +41,9 @@ public class BookmarkFolderRow extends BookmarkRow {
     }
 
     @Override
-    BookmarkItem setBookmarkId(BookmarkId bookmarkId, @Location int location) {
-        BookmarkItem item = super.setBookmarkId(bookmarkId, location);
+    BookmarkItem setBookmarkId(
+            BookmarkId bookmarkId, @Location int location, boolean fromFilterView) {
+        BookmarkItem item = super.setBookmarkId(bookmarkId, location, fromFilterView);
         mTitleView.setText(item.getTitle());
 
         // Set description and icon.

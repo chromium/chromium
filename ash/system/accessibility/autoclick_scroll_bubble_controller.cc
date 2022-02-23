@@ -4,6 +4,7 @@
 
 #include "ash/system/accessibility/autoclick_scroll_bubble_controller.h"
 
+#include "ash/bubble/bubble_constants.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -39,7 +40,7 @@ bool comparePositions(Position first, Position second) {
 }
 }  // namespace
 
-AutoclickScrollBubbleController::AutoclickScrollBubbleController() {}
+AutoclickScrollBubbleController::AutoclickScrollBubbleController() = default;
 
 AutoclickScrollBubbleController::~AutoclickScrollBubbleController() {
   if (bubble_widget_ && !bubble_widget_->IsClosed())
@@ -67,7 +68,7 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   // Adjust the insets to be the same on all sides, so that when the bubble
   // lays out it isn't too close on the top or bottom.
   bubble_view_->UpdateInsets(
-      gfx::Insets(kUnifiedMenuPadding, kUnifiedMenuPadding));
+      gfx::Insets(kBubbleMenuPadding, kBubbleMenuPadding));
 
   aura::Window* window = Shell::GetPrimaryRootWindow();
   gfx::Rect work_area =
@@ -153,7 +154,7 @@ void AutoclickScrollBubbleController::SetScrollPosition(
   set_scroll_rect_ = !positions.empty();
   if (!set_scroll_rect_) {
     bubble_view_->UpdateInsets(gfx::Insets(
-        0, kUnifiedMenuPadding, kUnifiedMenuPadding, kUnifiedMenuPadding));
+        0, kBubbleMenuPadding, kBubbleMenuPadding, kBubbleMenuPadding));
     UpdateAnchorRect(menu_bubble_rect_, menu_bubble_alignment_);
     return;
   }
@@ -197,12 +198,12 @@ void AutoclickScrollBubbleController::ShowBubble(
   // The widget's shadow is drawn below and on the sides of the scroll view.
   // Do not inset the top, so that when the scroll bubble is shown below the
   // menu bubble it lays out directly below the menu bubble's shadow, at a
-  // height of kUnifiedMenuPadding.
-  init_params.insets = gfx::Insets(0, kUnifiedMenuPadding, kUnifiedMenuPadding,
-                                   kUnifiedMenuPadding);
+  // height of kBubbleMenuPadding.
+  init_params.insets = gfx::Insets(0, kBubbleMenuPadding, kBubbleMenuPadding,
+                                   kBubbleMenuPadding);
   init_params.preferred_width = kAutoclickScrollMenuSizeDips;
   init_params.max_height = kAutoclickScrollMenuSizeDips;
-  init_params.corner_radius = kUnifiedTrayCornerRadius;
+  init_params.corner_radius = kBubbleCornerRadius;
   init_params.has_shadow = false;
   init_params.translucent = true;
   bubble_view_ = new AutoclickScrollBubbleView(init_params);

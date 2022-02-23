@@ -5,37 +5,50 @@
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_color_params.h"
 
 #include "build/build_config.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_color_params.h"
 
 namespace blink {
 
 namespace {
 
-SerializedColorSpace SerializeColorSpace(CanvasColorSpace color_space) {
+SerializedColorSpace SerializeColorSpace(PredefinedColorSpace color_space) {
   switch (color_space) {
-    case CanvasColorSpace::kSRGB:
+    case PredefinedColorSpace::kSRGB:
       return SerializedColorSpace::kSRGB;
-    case CanvasColorSpace::kRec2020:
+    case PredefinedColorSpace::kRec2020:
       return SerializedColorSpace::kRec2020;
-    case CanvasColorSpace::kP3:
+    case PredefinedColorSpace::kP3:
       return SerializedColorSpace::kP3;
+    case PredefinedColorSpace::kRec2100HLG:
+      return SerializedColorSpace::kRec2100HLG;
+    case PredefinedColorSpace::kRec2100PQ:
+      return SerializedColorSpace::kRec2100PQ;
+    case PredefinedColorSpace::kSRGBLinear:
+      return SerializedColorSpace::kSRGBLinear;
   }
   NOTREACHED();
   return SerializedColorSpace::kSRGB;
 }
 
-CanvasColorSpace DeserializeColorSpace(
+PredefinedColorSpace DeserializeColorSpace(
     SerializedColorSpace serialized_color_space) {
   switch (serialized_color_space) {
     case SerializedColorSpace::kLegacyObsolete:
     case SerializedColorSpace::kSRGB:
-      return CanvasColorSpace::kSRGB;
+      return PredefinedColorSpace::kSRGB;
     case SerializedColorSpace::kRec2020:
-      return CanvasColorSpace::kRec2020;
+      return PredefinedColorSpace::kRec2020;
     case SerializedColorSpace::kP3:
-      return CanvasColorSpace::kP3;
+      return PredefinedColorSpace::kP3;
+    case SerializedColorSpace::kRec2100HLG:
+      return PredefinedColorSpace::kRec2100HLG;
+    case SerializedColorSpace::kRec2100PQ:
+      return PredefinedColorSpace::kRec2100PQ;
+    case SerializedColorSpace::kSRGBLinear:
+      return PredefinedColorSpace::kSRGBLinear;
   }
   NOTREACHED();
-  return CanvasColorSpace::kSRGB;
+  return PredefinedColorSpace::kSRGB;
 }
 
 }  // namespace
@@ -44,17 +57,17 @@ CanvasColorSpace DeserializeColorSpace(
 // SerializedImageDataSettings
 
 SerializedImageDataSettings::SerializedImageDataSettings(
-    CanvasColorSpace color_space,
+    PredefinedColorSpace color_space,
     ImageDataStorageFormat storage_format)
     : color_space_(SerializeColorSpace(color_space)) {
   switch (storage_format) {
-    case kUint8ClampedArrayStorageFormat:
+    case ImageDataStorageFormat::kUint8:
       storage_format_ = SerializedImageDataStorageFormat::kUint8Clamped;
       break;
-    case kUint16ArrayStorageFormat:
+    case ImageDataStorageFormat::kUint16:
       storage_format_ = SerializedImageDataStorageFormat::kUint16;
       break;
-    case kFloat32ArrayStorageFormat:
+    case ImageDataStorageFormat::kFloat32:
       storage_format_ = SerializedImageDataStorageFormat::kFloat32;
       break;
   }
@@ -65,47 +78,27 @@ SerializedImageDataSettings::SerializedImageDataSettings(
     SerializedImageDataStorageFormat storage_format)
     : color_space_(color_space), storage_format_(storage_format) {}
 
-CanvasColorSpace SerializedImageDataSettings::GetColorSpace() const {
+PredefinedColorSpace SerializedImageDataSettings::GetColorSpace() const {
   return DeserializeColorSpace(color_space_);
 }
 
 ImageDataStorageFormat SerializedImageDataSettings::GetStorageFormat() const {
   switch (storage_format_) {
     case SerializedImageDataStorageFormat::kUint8Clamped:
-      return kUint8ClampedArrayStorageFormat;
+      return ImageDataStorageFormat::kUint8;
     case SerializedImageDataStorageFormat::kUint16:
-      return kUint16ArrayStorageFormat;
+      return ImageDataStorageFormat::kUint16;
     case SerializedImageDataStorageFormat::kFloat32:
-      return kFloat32ArrayStorageFormat;
+      return ImageDataStorageFormat::kFloat32;
   }
   NOTREACHED();
-  return kUint8ClampedArrayStorageFormat;
+  return ImageDataStorageFormat::kUint8;
 }
 
 ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
   ImageDataSettings* settings = ImageDataSettings::Create();
-  switch (DeserializeColorSpace(color_space_)) {
-    case CanvasColorSpace::kSRGB:
-      settings->setColorSpace(kSRGBCanvasColorSpaceName);
-      break;
-    case CanvasColorSpace::kRec2020:
-      settings->setColorSpace(kRec2020CanvasColorSpaceName);
-      break;
-    case CanvasColorSpace::kP3:
-      settings->setColorSpace(kP3CanvasColorSpaceName);
-      break;
-  }
-  switch (storage_format_) {
-    case SerializedImageDataStorageFormat::kUint8Clamped:
-      settings->setStorageFormat(kUint8ClampedArrayStorageFormatName);
-      break;
-    case SerializedImageDataStorageFormat::kUint16:
-      settings->setStorageFormat(kUint16ArrayStorageFormatName);
-      break;
-    case SerializedImageDataStorageFormat::kFloat32:
-      settings->setStorageFormat(kFloat32ArrayStorageFormatName);
-      break;
-  }
+  settings->setColorSpace(PredefinedColorSpaceName(GetColorSpace()));
+  settings->setStorageFormat(ImageDataStorageFormatName(GetStorageFormat()));
   return settings;
 }
 
@@ -115,8 +108,8 @@ ImageDataSettings* SerializedImageDataSettings::GetImageDataSettings() const {
 SerializedImageBitmapSettings::SerializedImageBitmapSettings() = default;
 
 SerializedImageBitmapSettings::SerializedImageBitmapSettings(SkImageInfo info) {
-  color_space_ =
-      SerializeColorSpace(CanvasColorSpaceFromSkColorSpace(info.colorSpace()));
+  color_space_ = SerializeColorSpace(
+      PredefinedColorSpaceFromSkColorSpace(info.colorSpace()));
 
   switch (info.colorType()) {
     default:
@@ -165,7 +158,7 @@ SkImageInfo SerializedImageBitmapSettings::GetSkImageInfo(
     uint32_t width,
     uint32_t height) const {
   sk_sp<SkColorSpace> sk_color_space =
-      CanvasColorSpaceToSkColorSpace(DeserializeColorSpace(color_space_));
+      PredefinedColorSpaceToSkColorSpace(DeserializeColorSpace(color_space_));
 
   SkColorType sk_color_type = kRGBA_8888_SkColorType;
   switch (pixel_format_) {

@@ -63,7 +63,7 @@ void SnapshotController::PendingSnapshotCompleted() {
   state_ = State::READY;
 }
 
-void SnapshotController::DocumentAvailableInMainFrame() {
+void SnapshotController::PrimaryMainDocumentElementAvailable() {
   DCHECK_EQ(PageQuality::POOR, current_page_quality_);
   // Post a delayed task to snapshot.
   task_runner_->PostDelayedTask(
@@ -74,7 +74,7 @@ void SnapshotController::DocumentAvailableInMainFrame() {
       base::Milliseconds(delay_after_document_available_ms_));
 }
 
-void SnapshotController::DocumentOnLoadCompletedInMainFrame() {
+void SnapshotController::DocumentOnLoadCompletedInPrimaryMainFrame() {
   // Post a delayed task to snapshot and then stop this controller.
   task_runner_->PostDelayedTask(
       FROM_HERE,

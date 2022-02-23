@@ -17,6 +17,7 @@ _CF_BUNDLE_EXE = 'CFBundleExecutable'
 _CF_BUNDLE_ID = 'CFBundleIdentifier'
 _CF_BUNDLE_NAME = 'CFBundleName'
 _ENT_APP_ID = 'com.apple.application-identifier'
+_ENT_GET_TASK_ALLOW = 'com.apple.security.get-task-allow'
 _KS_BRAND_ID = 'KSBrandID'
 _KS_CHANNEL_ID = 'KSChannelID'
 _KS_PRODUCT_ID = 'KSProductID'
@@ -186,14 +187,16 @@ def _process_entitlements(paths, dist, config):
         commands.copy_files(
             os.path.join(packaging_dir, entitlements_name), entitlements_file)
 
-        if dist.channel_customize:
+        if dist.channel_customize or config.inject_get_task_allow_entitlement:
             with commands.PlistContext(
                     entitlements_file, rewrite=True) as entitlements:
-                if _ENT_APP_ID in entitlements:
+                if dist.channel_customize and _ENT_APP_ID in entitlements:
                     app_id = entitlements[_ENT_APP_ID]
                     entitlements[_ENT_APP_ID] = app_id.replace(
                         config.base_config.base_bundle_id,
                         config.base_bundle_id)
+                if config.inject_get_task_allow_entitlement:
+                    entitlements[_ENT_GET_TASK_ALLOW] = True
 
 
 def customize_distribution(paths, dist, config):

@@ -17,6 +17,7 @@
 #include "base/cxx17_backports.h"
 #include "base/synchronization/lock.h"
 #include "device/vr/openxr/openxr_defs.h"
+#include "device/vr/openxr/openxr_view_configuration.h"
 #include "device/vr/test/test_hook.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/openxr/src/include/openxr/openxr.h"
@@ -52,27 +53,41 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrSystemId GetSystemId();
   XrSystemProperties GetSystemProperties();
 
-  XrSwapchain GetSwapchain();
+  XrSwapchain CreateSwapchain();
+  XrResult DestroySwapchain(XrSwapchain);
   XrInstance CreateInstance();
+  XrResult DestroyInstance(XrInstance instance);
+  XrResult CreateSession(XrSession* session);
+  XrResult DestroySession(XrSession session);
   XrResult GetActionStateFloat(XrAction action, XrActionStateFloat* data) const;
   XrResult GetActionStateBoolean(XrAction action,
                                  XrActionStateBoolean* data) const;
   XrResult GetActionStateVector2f(XrAction action,
                                   XrActionStateVector2f* data) const;
   XrResult GetActionStatePose(XrAction action, XrActionStatePose* data) const;
-  XrSpace CreateReferenceSpace(XrReferenceSpaceType type);
-  XrResult CreateAction(XrActionSet action_set,
-                        const XrActionCreateInfo& create_info,
-                        XrAction* action);
-  XrActionSet CreateActionSet(const XrActionSetCreateInfo& createInfo);
   XrResult CreateActionSpace(
       const XrActionSpaceCreateInfo& action_space_create_info,
       XrSpace* space);
+  XrSpace CreateReferenceSpace(XrReferenceSpaceType type);
+  XrResult DestroySpace(XrSpace space);
+  XrResult CreateAction(XrActionSet action_set,
+                        const XrActionCreateInfo& create_info,
+                        XrAction* action);
+  XrActionSet CreateActionSet(const XrActionSetCreateInfo& create_info);
+  XrResult DestroyActionSet(XrActionSet action_set);
   XrPath GetPath(std::string path_string);
   XrPath GetCurrentInteractionProfile();
 
-  XrResult GetSession(XrSession* session);
-  XrResult BeginSession();
+  device::OpenXrViewConfiguration& GetViewConfigInfo(
+      XrViewConfigurationType view_config);
+  std::vector<XrViewConfigurationType> SupportedViewConfigs() const;
+  XrResult GetSecondaryConfigStates(
+      uint32_t count,
+      XrSecondaryViewConfigurationStateMSFT* states) const;
+  XrViewConfigurationType PrimaryViewConfig() const;
+
+  XrResult BeginSession(
+      const std::vector<XrViewConfigurationType>& view_configs);
   XrResult EndSession();
   XrResult BeginFrame();
   XrResult EndFrame();
@@ -90,7 +105,9 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   void LocateSpace(XrSpace space, XrPosef* pose);
   std::string PathToString(XrPath path) const;
   bool UpdateData();
-  bool UpdateViewFOV(XrView views[], uint32_t size);
+  bool UpdateViews(XrViewConfigurationType view_config_type,
+                   XrView views[],
+                   uint32_t size);
 
   uint32_t NextSwapchainImageIndex();
   XrTime NextPredictedDisplayTime();
@@ -116,11 +133,11 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrResult ValidatePath(XrPath path) const;
   XrResult ValidatePredictedDisplayTime(XrTime time) const;
   XrResult ValidateXrCompositionLayerProjection(
-      const XrCompositionLayerProjection& projection_layer) const;
-  XrResult ValidateXrCompositionLayerProjectionView(
-      const XrCompositionLayerProjectionView& projection_view) const;
+      XrViewConfigurationType view_config,
+      const XrCompositionLayerProjection& projection_layer);
   XrResult ValidateXrPosefIsIdentity(const XrPosef& pose) const;
   XrResult ValidateViews(uint32_t view_capacity_input, XrView* views) const;
+  XrResult ValidateViewConfigType(XrViewConfigurationType view_config) const;
 
   // Properties of the mock OpenXR runtime that do not change are created
   static constexpr const char* const kExtensions[] = {
@@ -129,24 +146,16 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       device::kExtSamsungOdysseyControllerExtensionName,
       device::kExtHPMixedRealityControllerExtensionName,
       device::kMSFTHandInteractionExtensionName,
+      XR_HTC_VIVE_COSMOS_CONTROLLER_INTERACTION_EXTENSION_NAME,
+      XR_MSFT_SECONDARY_VIEW_CONFIGURATION_EXTENSION_NAME,
   };
-  static constexpr uint32_t kDimension = 128;
+
+  static constexpr uint32_t kPrimaryViewDimension = 128;
+  static constexpr uint32_t kSecondaryViewDimension = 64;
+
   static constexpr uint32_t kSwapCount = 1;
   static constexpr uint32_t kMinSwapchainBuffering = 3;
-  static constexpr uint32_t kViewCount = 2;
-  static constexpr XrViewConfigurationView kViewConfigView = {
-      XR_TYPE_VIEW_CONFIGURATION_VIEW,
-      nullptr,
-      kDimension,
-      kDimension,
-      kDimension,
-      kDimension,
-      kSwapCount,
-      kSwapCount};
-  static constexpr XrViewConfigurationView kViewConfigurationViews[] = {
-      kViewConfigView, kViewConfigView};
-  static constexpr XrViewConfigurationType kViewConfigurationType =
-      XR_VIEW_CONFIGURATION_TYPE_PRIMARY_STEREO;
+
   static constexpr XrEnvironmentBlendMode kEnvironmentBlendMode =
       XR_ENVIRONMENT_BLEND_MODE_OPAQUE;
   static constexpr const char* kLocalReferenceSpacePath =
@@ -162,7 +171,6 @@ class OpenXrTestHelper : public device::ServiceTestHook {
       {2048, 2048, 1},           {XR_TRUE, XR_TRUE}};
 
   static constexpr uint32_t kNumExtensionsSupported = base::size(kExtensions);
-  static constexpr uint32_t kNumViews = base::size(kViewConfigurationViews);
 
  private:
   struct ActionProperties {
@@ -173,16 +181,25 @@ class OpenXrTestHelper : public device::ServiceTestHook {
     ActionProperties(const ActionProperties& other);
   };
 
-  void CopyTextureDataIntoFrameData(device::SubmittedFrameData* data,
-                                    bool left);
+  void CopyTextureDataIntoFrameData(uint32_t x_start, device::ViewData& data);
+  void ReinitializeTextures();
+  void CreateTextures(uint32_t width, uint32_t height);
+  void AddDimensions(const device::OpenXrViewConfiguration& view_config,
+                     uint32_t& width,
+                     uint32_t& height) const;
   XrResult UpdateAction(XrAction action);
   void SetSessionState(XrSessionState state);
   absl::optional<gfx::Transform> GetPose();
+  absl::optional<device::DeviceConfig> GetDeviceConfig();
   device::ControllerFrameData GetControllerDataFromPath(
       std::string path_string) const;
   void UpdateInteractionProfile(
       device_test::mojom::InteractionProfileType type);
   bool IsSessionRunning() const;
+  XrResult ValidateXrCompositionLayerProjectionView(
+      const XrCompositionLayerProjectionView& projection_view,
+      uint32_t view_count,
+      uint32_t index);
 
   // Properties of the mock OpenXR runtime that doesn't change throughout the
   // lifetime of the instance. However, these aren't static because they are
@@ -194,12 +211,13 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   XrSwapchain swapchain_;
 
   // Properties that changes depending on the state of the runtime.
+  uint32_t frame_count_ = 0;
   XrSessionState session_state_;
   bool frame_begin_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d_device_;
   std::vector<Microsoft::WRL::ComPtr<ID3D11Texture2D>> textures_arr_;
   uint32_t acquired_swapchain_texture_;
-  uint32_t next_space_;
+  uint32_t next_handle_;
   XrTime next_predicted_display_time_;
   std::string interaction_profile_;
 
@@ -226,6 +244,18 @@ class OpenXrTestHelper : public device::ServiceTestHook {
   std::unordered_set<std::string> action_localized_names_;
   std::unordered_set<std::string> action_set_names_;
   std::unordered_set<std::string> action_set_localized_names_;
+
+  // View configurations that were requested by the client when the session
+  // begins. There should only be one supported primary view configurations and
+  // any number of secondary view configurations.
+  std::vector<XrViewConfigurationType> view_configs_enabled_;
+
+  // All view configurations that we currently support, including ones not
+  // requested by the client.
+  std::unordered_map<XrViewConfigurationType, device::OpenXrViewConfiguration>
+      primary_configs_supported_;
+  std::unordered_map<XrViewConfigurationType, device::OpenXrViewConfiguration>
+      secondary_configs_supported_;
 
   std::array<device::ControllerFrameData, device::kMaxTrackedDevices> data_arr_;
 

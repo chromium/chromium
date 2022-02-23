@@ -14,8 +14,8 @@
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_controller_test.h"
 #include "ios/chrome/browser/voice/speech_input_locale_config_impl.h"
 #include "ios/chrome/browser/voice/voice_search_prefs.h"
@@ -54,9 +54,11 @@ class VoiceSearchTableViewControllerTest
     return std::unique_ptr<PrefService>(prefs);
   }
 
-  SettingsSwitchCell* GetSwitchCell() {
-    return base::mac::ObjCCastStrict<SettingsSwitchCell>([controller().tableView
-        cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0 inSection:0]]);
+  TableViewSwitchCell* GetSwitchCell() {
+    return base::mac::ObjCCastStrict<TableViewSwitchCell>(
+        [controller().tableView
+            cellForRowAtIndexPath:[NSIndexPath indexPathForItem:0
+                                                      inSection:0]]);
   }
 
   base::test::TaskEnvironment task_environment_;
@@ -98,7 +100,7 @@ TEST_F(VoiceSearchTableViewControllerTest, TapTheLastItemInTheList) {
 TEST_F(VoiceSearchTableViewControllerTest,
        TestModel_TextToSpeechOff_TTSSupported) {
   CreateController();
-  SettingsSwitchItem* switchItem = GetTableViewItem(0, 0);
+  TableViewSwitchItem* switchItem = GetTableViewItem(0, 0);
   EXPECT_FALSE(switchItem.isOn);
   EXPECT_TRUE(switchItem.isEnabled);
 }
@@ -111,7 +113,7 @@ TEST_F(VoiceSearchTableViewControllerTest,
   textToSpeechEnabled.SetValue(true);
 
   CreateController();
-  SettingsSwitchItem* switchItem = GetTableViewItem(0, 0);
+  TableViewSwitchItem* switchItem = GetTableViewItem(0, 0);
   EXPECT_TRUE(switchItem.isOn);
   EXPECT_TRUE(switchItem.isEnabled);
 }
@@ -124,7 +126,7 @@ TEST_F(VoiceSearchTableViewControllerTest,
   selectedLanguage.SetValue("af-ZA");
 
   CreateController();
-  SettingsSwitchItem* switchItem = GetTableViewItem(0, 0);
+  TableViewSwitchItem* switchItem = GetTableViewItem(0, 0);
   EXPECT_FALSE(switchItem.isOn);
   EXPECT_FALSE(switchItem.isEnabled);
 }
@@ -142,7 +144,7 @@ TEST_F(VoiceSearchTableViewControllerTest,
   textToSpeechEnabled.SetValue(true);
 
   CreateController();
-  SettingsSwitchItem* switchItem = GetTableViewItem(0, 0);
+  TableViewSwitchItem* switchItem = GetTableViewItem(0, 0);
   EXPECT_FALSE(switchItem.isOn);
   EXPECT_FALSE(switchItem.isEnabled);
 }

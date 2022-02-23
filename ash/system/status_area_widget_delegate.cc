@@ -5,6 +5,9 @@
 #include "ash/system/status_area_widget_delegate.h"
 
 #include "ash/focus_cycler.h"
+#include "ash/login/ui/lock_screen.h"
+#include "ash/public/cpp/login_screen.h"
+#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_layout_manager.h"
@@ -18,6 +21,7 @@
 #include "ui/gfx/animation/tween.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/skia_paint_util.h"
+#include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/accessible_pane_view.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -126,6 +130,22 @@ void StatusAreaWidgetDelegate::Shutdown() {
   // TODO(pbos): This really shouldn't be necessary. It's a deficiency in
   // GridLayout.
   SetLayoutManager(nullptr);
+}
+
+void StatusAreaWidgetDelegate::GetAccessibleNodeData(
+    ui::AXNodeData* node_data) {
+  AccessiblePaneView::GetAccessibleNodeData(node_data);
+  // If OOBE dialog is visible it should be the next accessible widget,
+  // otherwise it should be LockScreen.
+  if (!!LoginScreen::Get()->GetLoginWindowWidget() &&
+      LoginScreen::Get()->GetLoginWindowWidget()->IsVisible()) {
+    GetViewAccessibility().OverrideNextFocus(
+        LoginScreen::Get()->GetLoginWindowWidget());
+  } else if (LockScreen::HasInstance()) {
+    GetViewAccessibility().OverrideNextFocus(LockScreen::Get()->widget());
+  }
+  Shelf* shelf = Shelf::ForWindow(GetWidget()->GetNativeWindow());
+  GetViewAccessibility().OverridePreviousFocus(shelf->shelf_widget());
 }
 
 views::View* StatusAreaWidgetDelegate::GetDefaultFocusableChild() {

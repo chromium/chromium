@@ -108,6 +108,9 @@ class CC_EXPORT FrameSequenceTracker {
   // |metrics_| to report.
   void CleanUp();
 
+  void AddSortedFrame(const viz::BeginFrameArgs& args,
+                      const FrameInfo& frame_info);
+
  private:
   friend class FrameSequenceTrackerCollection;
   friend class FrameSequenceTrackerTest;

@@ -4,7 +4,8 @@
 
 import {FakeObservables} from 'chrome://resources/ash/common/fake_observables.js';
 
-import {FirmwareUpdate, UpdateObserver, UpdateProviderInterface} from './firmware_update_types.js';
+import {FakeInstallControllerInterface, FirmwareUpdate, InstallControllerInterface, UpdateObserver, UpdateProviderInterface} from './firmware_update_types.js';
+import {getUpdateController, getUpdateProvider, setUseFakeProviders} from './mojo_interface_provider.js';
 
 // Method names.
 export const ON_UPDATE_LIST_CHANGED = 'UpdateObserver_onUpdateListChanged';
@@ -17,10 +18,14 @@ export const ON_UPDATE_LIST_CHANGED = 'UpdateObserver_onUpdateListChanged';
 /** @implements {UpdateProviderInterface} */
 export class FakeUpdateProvider {
   constructor() {
+    setUseFakeProviders(true);
     this.observables_ = new FakeObservables();
 
     /** @private {?Promise} */
     this.observePeripheralUpdatesPromise_ = null;
+
+    /** @private {?FirmwareUpdate} */
+    this.inflight_update_ = null;
 
     this.registerObservables();
   }
@@ -37,6 +42,21 @@ export class FakeUpdateProvider {
         });
   }
 
+  fetchInProgressUpdate() {
+    return new Promise((resolve) => resolve({update: this.inflight_update_}));
+  }
+
+  /**
+   * @param {string} deviceId
+   * @return {!Promise}
+   */
+  prepareForUpdate(deviceId) {
+    /** @type {InstallControllerInterface|FakeInstallControllerInterface} */
+    const controller = getUpdateController();
+    controller.setDeviceIdForUpdateInProgress(deviceId);
+    return new Promise((resolve) => resolve({controller}));
+  }
+
   /**
    * Sets the values that will be observed from observePeripheralUpdates.
    * @param {!Array<!Array<!FirmwareUpdate>>} firmwareUpdates
@@ -44,6 +64,14 @@ export class FakeUpdateProvider {
   setFakeFirmwareUpdates(firmwareUpdates) {
     this.observables_.setObservableData(
         ON_UPDATE_LIST_CHANGED, [firmwareUpdates]);
+  }
+
+  /**
+   * Sets the inflight update.
+   * @param {!FirmwareUpdate} update
+   */
+  setInflightUpdate(update) {
+    this.inflight_update_ = update;
   }
 
   /**

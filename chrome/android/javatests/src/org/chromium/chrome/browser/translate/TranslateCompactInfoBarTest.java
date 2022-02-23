@@ -33,6 +33,7 @@ import org.chromium.chrome.test.util.InfoBarTestAnimationListener;
 import org.chromium.chrome.test.util.InfoBarUtil;
 import org.chromium.chrome.test.util.MenuUtils;
 import org.chromium.chrome.test.util.TranslateUtil;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
@@ -93,6 +94,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarAppears() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -109,6 +111,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarOverflowMenus() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -132,6 +135,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTabMenuDismissedOnOrientationChange() throws Exception {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -162,6 +166,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateCompactInfoBarReopenOnTarget() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));
@@ -210,6 +215,7 @@ public class TranslateCompactInfoBarTest {
     @MediumTest
     @Feature({"Browser", "Main"})
     @Restriction({Restriction.RESTRICTION_TYPE_INTERNET})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testManualInitiationWithBarOpen() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         sActivityTestRule.loadUrl(sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE));

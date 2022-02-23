@@ -168,12 +168,9 @@ testcase.fileDisplayDriveOffline = async () => {
 
 /**
  * Tests file display rendering in online Google Drive.
+ * @param {string} appId the id for the window to check the file display.
  */
-testcase.fileDisplayDriveOnline = async () => {
-  // Open Files app on Drive.
-  const appId =
-      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
-
+async function checkDriveOnlineDisplay(appId) {
   // Retrieve all file list row entries.
   const fileEntry = '#file-list .table-row';
   const elements = await remoteCall.callRemoteTestUtil(
@@ -184,6 +181,35 @@ testcase.fileDisplayDriveOnline = async () => {
   for (let i = 0; i < elements.length; ++i) {
     chrome.test.assertEq('1', elements[i].styles.opacity);
   }
+}
+
+/**
+ * Tests file display rendering in online Google Drive.
+ */
+testcase.fileDisplayDriveOnline = async () => {
+  // Open Files app on Drive.
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DRIVE, [], BASIC_DRIVE_ENTRY_SET);
+
+  await checkDriveOnlineDisplay(appId);
+};
+
+/**
+ * Tests file display rendering in online Google Drive when opening via OpenItem
+ * function.
+ */
+testcase.fileDisplayDriveOnlineNewWindow = async () => {
+  // Open Files app on the Drive directory.
+  await addEntries(['drive'], BASIC_DRIVE_ENTRY_SET);
+  await sendTestMessage({name: 'launchAppOnDrive'});
+
+  // Wait for app window to open.
+  const appId = await remoteCall.waitForWindow('files#');
+
+  // Wait for Files app to finish loading.
+  await remoteCall.waitFor('isFileManagerLoaded', appId, true);
+
+  await checkDriveOnlineDisplay(appId);
 };
 
 /**
@@ -676,6 +702,47 @@ testcase.fileDisplayWithoutDriveThenDisable = async () => {
 
   // Wait for the fake drive to reappear.
   await remoteCall.waitForElement(appId, ['[root-type-icon=\'drive\']']);
+};
+
+/**
+ * Tests that mounting a hidden Volume does not mount the volume in file
+ * manager.
+ */
+testcase.fileDisplayWithHiddenVolume = async () => {
+  const initialVolumeCount = await sendTestMessage({name: 'getVolumesCount'});
+
+  const appId =
+      await setupAndWaitUntilReady(RootPath.DOWNLOADS, [ENTRIES.beautiful], []);
+
+  // Get the directory tree elements.
+  const dirTreeQuery = ['#directory-tree [dir-type]'];
+  const elementsBefore = await remoteCall.callRemoteTestUtil(
+      'queryAllElements', appId, dirTreeQuery);
+  const visibleElementsBefore = [];
+  for (const element of elementsBefore) {
+    if (!element.hidden) {  // Ignore hidden elements.
+      visibleElementsBefore.push(element.attributes['entry-label']);
+    }
+  }
+
+  // Mount a hidden volume.
+  await sendTestMessage({name: 'mountHidden'});
+
+  const elementsAfter = await remoteCall.callRemoteTestUtil(
+      'queryAllElements', appId, dirTreeQuery);
+  const visibleElementsAfter = [];
+  for (const element of elementsAfter) {
+    if (!element.hidden) {  // Ignore hidden elements.
+      visibleElementsAfter.push(element.attributes['entry-label']);
+    }
+  }
+
+  // The directory tree should NOT display the hidden volume.
+  chrome.test.assertEq(elementsBefore, elementsAfter);
+
+  // The hidden volume should not be counted in the number of volumes.
+  chrome.test.assertEq(
+      initialVolumeCount, await sendTestMessage({name: 'getVolumesCount'}));
 };
 
 /**

@@ -10,9 +10,9 @@
 #include "content/browser/service_worker/service_worker_cache_writer.h"
 #include "content/browser/service_worker/service_worker_context_core.h"
 #include "content/browser/service_worker/service_worker_version.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "net/base/ip_endpoint.h"
 #include "net/cert/cert_status_flags.h"
+#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 
@@ -74,11 +74,17 @@ void ServiceWorkerInstalledScriptLoader::OnStarted(
             *response_head));
   }
 
-  client_->OnReceiveResponse(std::move(response_head));
+  client_->OnReceiveResponse(
+      std::move(response_head),
+      base::FeatureList::IsEnabled(network::features::kCombineResponseBody)
+          ? std::move(body_handle_)
+          : mojo::ScopedDataPipeConsumerHandle());
   if (metadata) {
     client_->OnReceiveCachedMetadata(std::move(*metadata));
   }
-  client_->OnStartLoadingResponseBody(std::move(body_handle_));
+
+  if (!base::FeatureList::IsEnabled(network::features::kCombineResponseBody))
+    client_->OnStartLoadingResponseBody(std::move(body_handle_));
   // We continue in OnFinished().
 }
 

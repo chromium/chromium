@@ -53,7 +53,7 @@ content::BrowserContext* SharesheetServiceFactory::GetBrowserContextToUse(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     return nullptr;
   }
 

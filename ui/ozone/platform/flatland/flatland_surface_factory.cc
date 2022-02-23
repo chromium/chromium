@@ -35,56 +35,9 @@ namespace ui {
 
 namespace {
 
-struct FuchsiaEGLWindowDeleter {
-  void operator()(fuchsia_egl_window* egl_window) {
-    fuchsia_egl_window_destroy(egl_window);
-  }
-};
-
-class GLSurfaceFuchsiaImagePipe : public gl::NativeViewGLSurfaceEGL {
- public:
-  explicit GLSurfaceFuchsiaImagePipe(
-      FlatlandSurfaceFactory* flatland_surface_factory,
-      gfx::AcceleratedWidget widget)
-      : NativeViewGLSurfaceEGL(0, nullptr),
-        flatland_surface_factory_(flatland_surface_factory),
-        widget_(widget) {
-    CHECK(widget_);
-    CHECK(flatland_surface_factory_);
-  }
-  GLSurfaceFuchsiaImagePipe(const GLSurfaceFuchsiaImagePipe&) = delete;
-  GLSurfaceFuchsiaImagePipe& operator=(const GLSurfaceFuchsiaImagePipe&) =
-      delete;
-
-  // gl::NativeViewGLSurfaceEGL:
-  bool InitializeNativeWindow() override {
-    // TODO(crbug.com/1230150): Create EGLNativeWindowType that consumes channel
-    // required by the upcoming flatland vulkan extension.
-    NOTREACHED();
-    return false;
-  }
-
-  bool Resize(const gfx::Size& size,
-              float scale_factor,
-              const gfx::ColorSpace& color_space,
-              bool has_alpha) override {
-    fuchsia_egl_window_resize(egl_window_.get(), size.width(), size.height());
-    return gl::NativeViewGLSurfaceEGL::Resize(size, scale_factor, color_space,
-                                              has_alpha);
-  }
-
- private:
-  ~GLSurfaceFuchsiaImagePipe() override {}
-
-  FlatlandSurfaceFactory* const flatland_surface_factory_;
-  gfx::AcceleratedWidget widget_ = gfx::kNullAcceleratedWidget;
-  std::unique_ptr<fuchsia_egl_window, FuchsiaEGLWindowDeleter> egl_window_;
-};
-
 class GLOzoneEGLFlatland : public GLOzoneEGL {
  public:
-  explicit GLOzoneEGLFlatland(FlatlandSurfaceFactory* flatland_surface_factory)
-      : flatland_surface_factory_(flatland_surface_factory) {}
+  GLOzoneEGLFlatland() = default;
   ~GLOzoneEGLFlatland() override = default;
   GLOzoneEGLFlatland(const GLOzoneEGLFlatland&) = delete;
   GLOzoneEGLFlatland& operator=(const GLOzoneEGLFlatland&) = delete;
@@ -92,9 +45,11 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
   // GLOzone:
   scoped_refptr<gl::GLSurface> CreateViewGLSurface(
       gfx::AcceleratedWidget window) override {
+    // GL rendering to Flatland views is not supported. This function is
+    // used only for unittests. Return an off-screen surface, so the tests pass.
+    // TODO(crbug.com/1271760): Use Vulkan in unittests and remove this hack.
     return gl::InitializeGLSurface(
-        base::MakeRefCounted<GLSurfaceFuchsiaImagePipe>(
-            flatland_surface_factory_, window));
+        base::MakeRefCounted<gl::SurfacelessEGL>(gfx::Size(100, 100)));
   }
 
   scoped_refptr<gl::GLSurface> CreateOffscreenGLSurface(
@@ -112,9 +67,6 @@ class GLOzoneEGLFlatland : public GLOzoneEGL {
       const gl::GLImplementationParts& implementation) override {
     return LoadDefaultEGLGLES2Bindings(implementation);
   }
-
- private:
-  FlatlandSurfaceFactory* const flatland_surface_factory_;
 };
 
 fuchsia::sysmem::AllocatorHandle ConnectSysmemAllocator() {
@@ -132,7 +84,7 @@ fuchsia::ui::composition::AllocatorHandle ConnectFlatlandAllocator() {
 }  // namespace
 
 FlatlandSurfaceFactory::FlatlandSurfaceFactory()
-    : egl_implementation_(std::make_unique<GLOzoneEGLFlatland>(this)),
+    : egl_implementation_(std::make_unique<GLOzoneEGLFlatland>()),
       flatland_sysmem_buffer_manager_(this),
       weak_ptr_factory_(this) {}
 
@@ -169,7 +121,7 @@ std::vector<gl::GLImplementationParts>
 FlatlandSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE),
-      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader),
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
       gl::GLImplementationParts(gl::kGLImplementationStubGL),
   };
@@ -178,7 +130,6 @@ FlatlandSurfaceFactory::GetAllowedGLImplementations() {
 GLOzone* FlatlandSurfaceFactory::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   switch (implementation.gl) {
-    case gl::kGLImplementationSwiftShaderGL:
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
@@ -201,7 +152,7 @@ FlatlandSurfaceFactory::CreatePlatformWindowSurface(
 
 std::unique_ptr<SurfaceOzoneCanvas>
 FlatlandSurfaceFactory::CreateCanvasForWidget(gfx::AcceleratedWidget widget) {
-  // TODO(crbug.com/1230150): Add FlatlandWindowCanvas implementation.
+  // TODO(fxbug.dev/93998): Add FlatlandWindowCanvas implementation.
   NOTREACHED();
   return nullptr;
 }
@@ -232,6 +183,20 @@ void FlatlandSurfaceFactory::CreateNativePixmapAsync(
     NativePixmapCallback callback) {
   std::move(callback).Run(
       CreateNativePixmap(widget, vk_device, size, format, usage));
+}
+
+scoped_refptr<gfx::NativePixmap>
+FlatlandSurfaceFactory::CreateNativePixmapFromHandle(
+    gfx::AcceleratedWidget widget,
+    gfx::Size size,
+    gfx::BufferFormat format,
+    gfx::NativePixmapHandle handle) {
+  auto collection = flatland_sysmem_buffer_manager_.GetCollectionById(
+      handle.buffer_collection_id.value());
+  if (!collection)
+    return nullptr;
+
+  return collection->CreateNativePixmap(handle.buffer_index);
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)

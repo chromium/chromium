@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/modules/webgl/webgl_context_object.h"
 #include "third_party/blink/renderer/modules/webgl/webgl_program.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 
 namespace blink {
 
@@ -17,9 +18,9 @@ class WebGLTransformFeedback : public WebGLContextObject {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  enum TFType {
-    TFTypeDefault,
-    TFTypeUser,
+  enum class TFType {
+    kDefault,
+    kUser,
   };
 
   explicit WebGLTransformFeedback(WebGL2RenderingContextBase*, TFType);
@@ -27,7 +28,7 @@ class WebGLTransformFeedback : public WebGLContextObject {
 
   GLuint Object() const { return object_; }
 
-  bool IsDefaultObject() const { return type_ == TFTypeDefault; }
+  bool IsDefaultObject() const { return type_ == TFType::kDefault; }
 
   GLenum GetTarget() const { return target_; }
   void SetTarget(GLenum);

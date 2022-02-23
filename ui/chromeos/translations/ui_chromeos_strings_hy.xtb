@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Հանգուլ Անմատա</translation>
 <translation id="1155759005174418845">Կատալոնական</translation>
 <translation id="1168100932582989117">Google-ի DNS-սերվերներ</translation>
+<translation id="1171082344678443012">XZ սեղմված արխիվ</translation>
 <translation id="1172970565351728681">Մնացել է մոտ <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Վերանվանել</translation>
 <translation id="1173916544412572294">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, մարտկոցի լիցքը՝ <ph name="BATTERY_STATUS" />%, մանրամասներ</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">Այս պանակը հասանելի է Լինուքսին</translation>
 <translation id="1864756863218646478">Ֆայլը չգտնվեց:</translation>
 <translation id="1884013283844450420">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, կապակցում</translation>
+<translation id="1914901738028575085">CloudReady 2.0 սարք</translation>
 <translation id="1920670151694390848">մալայալամ տառադարձում</translation>
 <translation id="1920798810075583923">Ձմերուկ</translation>
 <translation id="1924372192547904021">«<ph name="DRIVE_NAME" />» կրիչը ձևաչափվեց</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">Ֆորմատավորման արդյունքում կրիչի վրա պահված բոլոր տվյալները կջնջվեն: Այս գործողությունը հնարավոր չէ հետարկել:</translation>
 <translation id="2025955442973426285">տիգրինյա</translation>
 <translation id="2028997212275086731">RAR արխիվ</translation>
+<translation id="2036414735548252477">LZMA սեղմված tar-արխիվ</translation>
 <translation id="2037845485764049925">ռուսերեն</translation>
 <translation id="2044023416777079300">Մոդեմը գրանցված չէ</translation>
 <translation id="2046702855113914483">Ռամեն</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476">Ուղարկել <ph name="EXTENSION_NAME" />-ի միջոցով</translation>
 <translation id="3083975830683400843">Chromebit սարքեր</translation>
 <translation id="3085752524577180175">SOCKS խնամորդ</translation>
+<translation id="3104793765551262433">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="3113153474486991170">Չհաջողվեց բացել «<ph name="PATH" />» ֆայլն այս պանակից։ Ֆայլը բացելու համար այն պատճենեք «Իմ ֆայլերը» պանակում։</translation>
 <translation id="3113592018909187986">Մնաց 1 փորձ։ Դուք չեք կարողանա օգտագործել այս ցանցը, մինչև չսահմանեք նոր PIN կոդ։</translation>
 <translation id="3124404833828281817">Երազկոտ մարդ</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">անգլերեն (ԱՄՆ)՝ միջազգային համակարգչային ստեղնաշարով</translation>
 <translation id="3567221313191587603">Ընտրեք ֆայլը և միացրեք «<ph name="OFFLINE_CHECKBOX_NAME" />» կարգավորումը՝ ձեր ֆայլն առանց ինտերնետի օգտագործելու համար։</translation>
 <translation id="357479282490346887">Լիտվական</translation>
+<translation id="3587482841069643663">Բոլորը</translation>
 <translation id="3592251141500063301">Չհաջողվեց ներբեռնել «<ph name="FILE_NAME" />» ֆայլը՝ անցանց ռեժիմում օգտագործելու համար</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Կանադական (ֆրանսիական)</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">Բոլորը ֆայլերը կրկնօրինակվեցին:</translation>
 <translation id="3634507049637220048">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, կառավարվում է ձեր ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="3645233063072417428">Տեղափոխվեց <ph name="NUMBER_OF_ITEMS" /> տարր։</translation>
-<translation id="3645531960514756307">Ապամրացնել պանակը</translation>
 <translation id="3685122418104378273">Շարժական տվյալներն օգտագործելիս Google Drive համաժամացումը ըստ կանխադրման անջատվում է:</translation>
 <translation id="3689865792480713551">Չեղարկել՝ <ph name="ACTIVITY_DESCRIPTION" />։</translation>
 <translation id="3690128548376345212">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, ակտիվացված չէ, <ph name="CONNECTION_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" /> տոկոս, մանրամասներ</translation>
 <translation id="3691184985318546178">սինհալերեն</translation>
 <translation id="3726463242007121105">Հնարավոր չէ բացել սարքը, քանի որ նրա ֆայլային համակարգը չի աջակցվում:</translation>
 <translation id="3727148787322499904">Եթե փոխեք այս կարգավորումը, այն կազդի բոլոր ընդհանուր ցանցերի վրա</translation>
+<translation id="3737576078404241332">Հեռացնել կողագոտուց</translation>
 <translation id="3741243925913727067">Կրկնօրինակեք ձեր մեդիա սարքի լուսանկարներն ու տեսանյութերը Google Drive-ում:</translation>
 <translation id="3749289110408117711">Ֆայլի անունը</translation>
 <translation id="3780536599611287598">Դուք այս ֆայլերը «<ph name="FOLDER_NAME" />» պանակ տեղափոխելու թույլտվություն չունեք։</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">Բուսաբան</translation>
 <translation id="4326192123064055915">Սուրճ</translation>
 <translation id="4336032328163998280">Պատճենումը չհաջողվեց: <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Ավելացնել կողագոտում</translation>
 <translation id="4348495354623233847">սորանի (արաբական այբուբեն)</translation>
 <translation id="4363958938297989186">ռուսերեն (հնչյունային ստեղնաշար)</translation>
 <translation id="4364327530094270451">Սեխ</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> բայթ</translation>
 <translation id="4880214202172289027">Ձայնի սահիչ</translation>
 <translation id="4881695831933465202">Բացել</translation>
+<translation id="4886199584824489598">Bzip2 սեղմված արխիվ</translation>
 <translation id="4900532980794411603">Հասանելի դարձնել Parallels Desktop-ին</translation>
 <translation id="4902546322522096650">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կապակցում</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ֆայլ պատրաստ է պահուստավորման</translation>
@@ -583,6 +590,7 @@
 <translation id="6055907707645252013">Կապը <ph name="NETWORK_TYPE" /> ցանցի հետ հաստատված չէ</translation>
 <translation id="6074825444536523002">Google ձևաթուղթ</translation>
 <translation id="6079871810119356840">հունգարերեն (QWERTY ստեղնաշար)</translation>
+<translation id="6082256976217156453">LZMA սեղմված արխիվ</translation>
 <translation id="6096979789310008754">Որոնման տեքստը մաքրվեց: Ցուցադրվում են բոլոր ֆայլերն ու պանակները:</translation>
 <translation id="610101264611565198">«<ph name="FILE_NAME" />» ֆայլը տեղափոխվում է «<ph name="FOLDER_NAME" />» պանակ</translation>
 <translation id="6129953537138746214">Բացատ</translation>
@@ -678,6 +686,7 @@
 <translation id="6935521024859866267">Գլխիվայր</translation>
 <translation id="6943836128787782965">HTTP GET-ի սխալ</translation>
 <translation id="6949408524333579394">սերբերեն (տառադարձություն)</translation>
+<translation id="6954309393500027528">Ադմինիստրատորն արգելափակել է այս ֆայլի տեղադրումը</translation>
 <translation id="6960565108681981554">Ակտիվացված չէ։ Դիմեք ձեր կապի օպերատորին։</translation>
 <translation id="696203921837389374">Թույլատրել շարժական տվյալների միջոցով համաժամացումը</translation>
 <translation id="6965382102122355670">Եղավ</translation>
@@ -838,6 +847,7 @@
 <translation id="8297012244086013755">Հանգուլ 3 Set (առանց Shift-ի)</translation>
 <translation id="8299269255470343364">Ճապոնական</translation>
 <translation id="8300849813060516376">OTASP-ի խափանում</translation>
+<translation id="8308481408797647857">XZ սեղմված արխիվ</translation>
 <translation id="8312871300878166382">Տեղադրել պանակում</translation>
 <translation id="8329978297633540474">Պարզ տեքստ</translation>
 <translation id="8335587457941836791">Ապամրացնել դարակից</translation>
@@ -874,6 +884,7 @@
 <translation id="8551494947769799688">Լատվիական</translation>
 <translation id="8560515948038859357">կանտոներեն</translation>
 <translation id="8561206103590473338">Փիղ</translation>
+<translation id="8566466896628108558">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, արգելափակված է ադմինիստրատորի կողմից, մանրամասներ</translation>
 <translation id="8569764466147087991">Ընտրեք ֆայլ</translation>
 <translation id="8577897833047451336">խորվաթերեն</translation>
 <translation id="8578308463707544055">ինդոնեզերեն</translation>
@@ -891,6 +902,7 @@
 <translation id="8714406895390098252">Հեծանիվ</translation>
 <translation id="8719721339511222681">Ընտրվեց «<ph name="ENTRY_NAME" />» գրառումը:</translation>
 <translation id="872537912056138402">Խորվաթական</translation>
+<translation id="873847021056608403">CloudReady 2.0 սարքեր</translation>
 <translation id="8743164338060742337">Ցանց <ph name="NETWORK_INDEX" />՝ <ph name="NETWORK_COUNT" />-ից, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />-ի ազդանշանի ուժգնությունը՝ <ph name="SIGNAL_STRENGTH" />%, կառավարվում է ձեր ադմինիստրատորի կողմից, միացում</translation>
 <translation id="8750438273876807512">Սեղմեք որևէ ֆայլի վրա և պահեք, ապա սեղմեք <ph name="ICON" /> և ընտրեք «Ամրացնել դարակին»։</translation>
 <translation id="8787254343425541995">Օգտագործել պրոքսի-սերվերներ՝ համօգտագործվող ցանցերի համար</translation>
@@ -926,7 +938,6 @@
 <translation id="9110990317705400362">Մենք մշտապես փորձում ենք ձեր զննարկումն ավելի ապահով դարձնել: Նախկինում ցանկացած վեբկայք կարող էր առաջարկել ձեզ ընդլայնում ավելացնել ձեր դիտարկիչին: Google Chrome-ի վերջին տարբերակներում Chrome-ը ձեզանից հստակորեն պետք է հրաման ստանա, եթե դուք ցանկանաք տեղադրել որևէ ընդլայնում՝ ավելացնելով դրանք Ընդլայնումների էջի միջոցով: <ph name="BEGIN_LINK" />Իմանալ ավելին<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Ապակողպել</translation>
 <translation id="912419004897138677">Կոդեկ</translation>
-<translation id="9129931661813833980">Ամրացնել պանակը</translation>
 <translation id="9130775360844693113">«<ph name="DESTINATION_NAME" />»-ի անդամներին այս տարրերը հասանելի կդառնան։</translation>
 <translation id="9131598836763251128">Ընտրեք մեկ կամ ավելի ֆայլեր</translation>
 <translation id="9133055936679483811">Արխիվացումը չհաջողվեց: <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +958,7 @@
 <translation id="943972244133411984">Ով է փոփոխել</translation>
 <translation id="945522503751344254">Կարծիք հայտնել</translation>
 <translation id="947144732524271678">Դուք ընտրեցիք <ph name="ENTRY_COUNT" /> գրառում՝ «<ph name="FROM_ENTRY_NAME" />»-ից «<ph name="TO_ENTRY_NAME" />»:</translation>
+<translation id="961973045258256291">Gzip սեղմված արխիվ</translation>
 <translation id="965477715979482472">Անգլերեն (Հարավային Աֆրիկա)</translation>
 <translation id="981121421437150478">Անցանց</translation>
 <translation id="988685240266037636">«<ph name="FILE_NAME" />» անունով ֆայլ արդեն գոյություն ունի: Ուզո՞ւմ եք փոխարինել այն:</translation>

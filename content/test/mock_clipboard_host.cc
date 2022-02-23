@@ -9,6 +9,7 @@
 #include "base/containers/contains.h"
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/clipboard/clipboard.h"
@@ -197,7 +198,7 @@ void MockClipboardHost::WriteUnsanitizedCustomFormat(
   unsanitized_custom_data_map_[format] = data_copy;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void MockClipboardHost::WriteStringToFindPboard(const std::u16string& text) {}
 #endif
 

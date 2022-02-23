@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/environment.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -32,6 +31,7 @@
 #include "components/variations/variations_associated_data.h"
 #include "components/version_info/version_info.h"
 #include "ios/components/io_thread/leak_tracker.h"
+#include "ios/net/cookies/cookie_store_ios.h"
 #include "ios/web/common/user_agent.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
@@ -254,8 +254,8 @@ void IOSIOThread::Init() {
       std::make_unique<net::HttpServerProperties>();
   // In-memory cookie store.
   // TODO(crbug.com/801910): Hook up logging by passing in a non-null netlog.
-  globals_->system_cookie_store.reset(
-      new net::CookieMonster(nullptr /* store */, nullptr /* netlog */));
+  globals_->system_cookie_store.reset(new net::CookieMonster(
+      nullptr /* store */, nullptr /* netlog */, net::kFirstPartySetsEnabled));
   globals_->http_user_agent_settings.reset(new net::StaticHttpUserAgentSettings(
       std::string(),
       web::GetWebClient()->GetUserAgent(web::UserAgentType::MOBILE)));
@@ -313,9 +313,11 @@ void IOSIOThread::CreateDefaultAuthHandlerFactory() {
                         base::SPLIT_WANT_NONEMPTY);
   globals_->http_auth_preferences =
       std::make_unique<net::HttpAuthPreferences>();
+  globals_->http_auth_preferences->set_allowed_schemes(std::set<std::string>(
+      supported_schemes.begin(), supported_schemes.end()));
   globals_->http_auth_handler_factory =
       net::HttpAuthHandlerRegistryFactory::Create(
-          globals_->http_auth_preferences.get(), supported_schemes);
+          globals_->http_auth_preferences.get());
 }
 
 void IOSIOThread::ClearHostCache() {

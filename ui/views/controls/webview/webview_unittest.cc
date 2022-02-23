@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/common/content_client.h"
@@ -96,7 +97,7 @@ class WebViewTestWebContentsObserver : public content::WebContentsObserver {
   bool valid_root_while_shown() const { return valid_root_while_shown_; }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   bool was_shown_;
   int32_t shown_count_;
   int32_t hidden_count_;
@@ -173,7 +174,7 @@ class WebViewUnitTest : public views::test::WidgetTest {
         top_level_widget_->SetContentsView(std::make_unique<View>());
     web_view_ = new WebView(browser_context_.get());
     web_view_->SetBoundsRect(gfx::Rect(contents_view->size()));
-    contents_view->AddChildView(web_view_);
+    contents_view->AddChildView(web_view_.get());
     top_level_widget_->Show();
     ASSERT_EQ(gfx::Rect(0, 0, 100, 100), web_view_->bounds());
   }
@@ -214,8 +215,8 @@ class WebViewUnitTest : public views::test::WidgetTest {
   std::unique_ptr<views::WebView::ScopedWebContentsCreatorForTesting>
       scoped_web_contents_creator_;
 
-  Widget* top_level_widget_ = nullptr;
-  WebView* web_view_ = nullptr;
+  raw_ptr<Widget> top_level_widget_ = nullptr;
+  raw_ptr<WebView> web_view_ = nullptr;
 };
 
 // Tests that attaching and detaching a WebContents to a WebView makes the
@@ -270,7 +271,14 @@ TEST_F(WebViewUnitTest, TestWebViewAttachDetachWebContents) {
   web_view()->SetWebContents(web_contents1.get());
   // Layout() is normally async, call it now to ensure visibility is updated.
   web_view()->Layout();
+#if defined(USE_AURA)
   EXPECT_EQ(1, observer1.shown_count());
+#else
+  // On Mac, setting the web contents adds a WebContentsViewCocoa
+  // to the view hierarchy. The window change (from nil to non-nil)
+  // generates one more web contents visibility update that Aura.
+  EXPECT_EQ(2, observer1.shown_count());
+#endif
 
   // Nothing else should change.
   EXPECT_EQ(1, observer1.hidden_count());

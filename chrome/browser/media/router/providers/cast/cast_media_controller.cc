@@ -27,29 +27,30 @@ void SetIfValid(std::string* out, const base::Value* value) {
   if (value && value->is_string())
     *out = value->GetString();
 }
-void SetIfValid(float* out, const base::Value* value) {
-  if (!value)
-    return;
-  if (value->is_double()) {
-    *out = value->GetDouble();
-  } else if (value->is_int()) {
-    *out = value->GetInt();
-  }
-}
-void SetIfValid(int* out, const base::Value* value) {
-  if (value && value->is_int())
-    *out = value->GetInt();
-}
 void SetIfValid(bool* out, const base::Value* value) {
   if (value && value->is_bool())
     *out = value->GetBool();
 }
-void SetIfValid(base::TimeDelta* out, const base::Value* value) {
+
+void SetIfNonNegative(float* out, const base::Value* value) {
   if (!value)
     return;
-  if (value->is_double()) {
+  if (value->is_double() && value->GetDouble() >= 0) {
+    *out = value->GetDouble();
+  } else if (value->is_int() && value->GetInt() >= 0) {
+    *out = value->GetInt();
+  }
+}
+void SetIfNonNegative(int* out, const base::Value* value) {
+  if (value && value->is_int() && value->GetInt() >= 0)
+    *out = value->GetInt();
+}
+void SetIfNonNegative(base::TimeDelta* out, const base::Value* value) {
+  if (!value)
+    return;
+  if (value->is_double() && value->GetDouble() >= 0) {
     *out = base::Seconds(value->GetDouble());
-  } else if (value->is_int()) {
+  } else if (value->is_int() && value->GetInt() >= 0) {
     *out = base::Seconds(value->GetInt());
   }
 }
@@ -61,8 +62,8 @@ absl::optional<gfx::Size> GetValidSize(const base::Value* value) {
     return absl::nullopt;
   int width = 0;
   int height = 0;
-  SetIfValid(&width, value->FindPath("width"));
-  SetIfValid(&height, value->FindPath("height"));
+  SetIfNonNegative(&width, value->FindPath("width"));
+  SetIfNonNegative(&height, value->FindPath("height"));
   if (width <= 0 || height <= 0)
     return absl::nullopt;
   return absl::make_optional<gfx::Size>(width, height);
@@ -155,7 +156,7 @@ void CastMediaController::SetSession(const CastSession& session) {
   const base::Value* volume = session.value().FindPath("receiver.volume");
   if (!volume || !volume->is_dict())
     return;
-  SetIfValid(&media_status_.volume, volume->FindKey("level"));
+  SetIfNonNegative(&media_status_.volume, volume->FindKey("level"));
   SetIfValid(&media_status_.is_muted, volume->FindKey("muted"));
   const base::Value* volume_type = volume->FindKey("controlType");
   if (volume_type && volume_type->is_string()) {
@@ -199,24 +200,27 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
   const base::Value* status_list_value = message_value.FindKey("status");
   if (!status_list_value || !status_list_value->is_list())
     return;
-  base::Value::ConstListView status_list = status_list_value->GetList();
+  base::Value::ConstListView status_list =
+      status_list_value->GetListDeprecated();
   if (status_list.empty())
     return;
   const base::Value& status_value = status_list[0];
   if (!status_value.is_dict())
     return;
-  SetIfValid(&media_session_id_, status_value.FindKey("mediaSessionId"));
+  SetIfNonNegative(&media_session_id_, status_value.FindKey("mediaSessionId"));
   SetIfValid(&media_status_.title,
              status_value.FindPath("media.metadata.title"));
   SetIfValid(&media_status_.secondary_title,
              status_value.FindPath("media.metadata.subtitle"));
-  SetIfValid(&media_status_.current_time, status_value.FindKey("currentTime"));
-  SetIfValid(&media_status_.duration, status_value.FindPath("media.duration"));
+  SetIfNonNegative(&media_status_.current_time,
+                   status_value.FindKey("currentTime"));
+  SetIfNonNegative(&media_status_.duration,
+                   status_value.FindPath("media.duration"));
 
   const base::Value* images = status_value.FindPath("media.metadata.images");
   if (images && images->is_list()) {
     media_status_.images.clear();
-    for (const base::Value& image_value : images->GetList()) {
+    for (const base::Value& image_value : images->GetListDeprecated()) {
       if (!image_value.is_dict())
         continue;
       const std::string* url_string = image_value.FindStringKey("url");
@@ -235,13 +239,13 @@ void CastMediaController::UpdateMediaStatus(const base::Value& message_value) {
     // |can_set_volume| and |can_mute| are not used, because the receiver volume
     // info obtained in SetSession() is used instead.
     media_status_.can_play_pause = base::Contains(
-        commands_list.GetList(), base::Value(kMediaCommandPause));
-    media_status_.can_seek =
-        base::Contains(commands_list.GetList(), base::Value(kMediaCommandSeek));
+        commands_list.GetListDeprecated(), base::Value(kMediaCommandPause));
+    media_status_.can_seek = base::Contains(commands_list.GetListDeprecated(),
+                                            base::Value(kMediaCommandSeek));
     media_status_.can_skip_to_next_track = base::Contains(
-        commands_list.GetList(), base::Value(kMediaCommandQueueNext));
+        commands_list.GetListDeprecated(), base::Value(kMediaCommandQueueNext));
     media_status_.can_skip_to_previous_track = base::Contains(
-        commands_list.GetList(), base::Value(kMediaCommandQueuePrev));
+        commands_list.GetListDeprecated(), base::Value(kMediaCommandQueuePrev));
   }
 
   const base::Value* player_state = status_value.FindKey("playerState");

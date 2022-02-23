@@ -6,14 +6,18 @@
 
 #include <string>
 
+#include "base/base_paths.h"
 #include "base/command_line.h"
+#include "base/files/file_path.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/path_service.h"
 #include "base/strings/pattern.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/timer/elapsed_timer.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
@@ -29,6 +33,7 @@
 #include "gpu/config/gpu_switching.h"
 #include "gpu/config/gpu_util.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/gfx/switches.h"
 #include "ui/gl/buildflags.h"
@@ -38,7 +43,7 @@
 #include "ui/gl/gl_utils.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <GLES2/gl2.h>
 #endif
 
@@ -47,13 +52,13 @@
 #include "ui/ozone/public/surface_factory_ozone.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "ui/gl/direct_composition_surface_win.h"
 #include "ui/gl/gl_surface_egl.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_image_reader_compat.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #endif
@@ -65,7 +70,7 @@
 #include "gpu/vulkan/vulkan_util.h"
 #endif
 
-#if defined(USE_EGL) && !defined(OS_MAC)
+#if defined(USE_EGL) && !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_fence_egl.h"
 #endif
 
@@ -75,22 +80,21 @@ namespace {
 bool CollectGraphicsInfo(GPUInfo* gpu_info) {
   DCHECK(gpu_info);
   TRACE_EVENT0("gpu,startup", "Collect Graphics Info");
-  base::TimeTicks before_collect_context_graphics_info = base::TimeTicks::Now();
+  base::ElapsedTimer elapsed_timer;
   bool success = CollectContextGraphicsInfo(gpu_info);
   if (!success)
     LOG(ERROR) << "CollectGraphicsInfo failed.";
 
   if (success) {
-    base::TimeDelta collect_context_time =
-        base::TimeTicks::Now() - before_collect_context_graphics_info;
-    UMA_HISTOGRAM_TIMES("GPU.CollectContextGraphicsInfo", collect_context_time);
+    UMA_HISTOGRAM_TIMES("GPU.CollectContextGraphicsInfo",
+                        elapsed_timer.Elapsed());
   }
   return success;
 }
 
 void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
                                        const GpuFeatureInfo& gpu_feature_info) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This has to be called after a context is created, active GPU is identified,
   // and GPU driver bug workarounds are computed again. Otherwise the workaround
   // |disable_direct_composition| may not be correctly applied.
@@ -115,26 +119,31 @@ void InitializePlatformOverlaySettings(GPUInfo* gpu_info,
 
   DCHECK(gpu_info);
   CollectHardwareOverlayInfo(&gpu_info->overlay_info);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (gpu_info->gpu.vendor_string == "Qualcomm")
     gfx::SurfaceControl::EnableQualcommUBWC();
 #endif
 }
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
-    (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
-bool CanAccessNvidiaDeviceFile() {
-  bool res = true;
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+bool CanAccessDeviceFile(const GPUInfo& gpu_info) {
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (gpu_info.gpu.vendor_id != 0x10de ||  // NVIDIA
+      gpu_info.gpu.driver_vendor != "NVIDIA")
+    return true;
+
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
   if (access("/dev/nvidiactl", R_OK) != 0) {
     DVLOG(1) << "NVIDIA device file /dev/nvidiactl access denied";
-    res = false;
+    return false;
   }
-  return res;
+  return true;
+#else
+  return true;
+#endif
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || (defined(OS_LINUX)  &&
-        // !BUILDFLAG(IS_CHROMECAST))
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
 
 class GpuWatchdogInit {
  public:
@@ -156,13 +165,13 @@ class GpuWatchdogInit {
 void DisableInProcessGpuVulkan(GpuFeatureInfo* gpu_feature_info,
                                GpuPreferences* gpu_preferences) {
   if (gpu_feature_info->status_values[GPU_FEATURE_TYPE_VULKAN] ==
-      kGpuFeatureStatusEnabled) {
+          kGpuFeatureStatusEnabled ||
+      gpu_preferences->gr_context_type == GrContextType::kVulkan) {
     LOG(ERROR) << "Vulkan not supported with in process gpu";
     gpu_preferences->use_vulkan = VulkanImplementationName::kNone;
     gpu_feature_info->status_values[GPU_FEATURE_TYPE_VULKAN] =
         kGpuFeatureStatusDisabled;
-    if (gpu_preferences->gr_context_type == GrContextType::kVulkan)
-      gpu_preferences->gr_context_type = GrContextType::kGL;
+    gpu_preferences->gr_context_type = GrContextType::kGL;
   }
 }
 
@@ -193,16 +202,15 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   // need more context based GPUInfo. In such situations, switching to
   // SwiftShader needs to wait until creating a context.
   bool needs_more_info = true;
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
   needs_more_info = false;
   if (!PopGPUInfoCache(&gpu_info_)) {
     CollectBasicGraphicsInfo(command_line, &gpu_info_);
   }
-#if defined(OS_WIN)
+
   IntelGpuSeriesType intel_gpu_series_type = GetIntelGpuSeriesType(
       gpu_info_.active_gpu().vendor_id, gpu_info_.active_gpu().device_id);
   UMA_HISTOGRAM_ENUMERATION("GPU.IntelGpuSeriesType", intel_gpu_series_type);
-#endif  // OS_WIN
 
   // Set keys for crash logging based on preliminary gpu info, in case we
   // crash during feature collection.
@@ -220,18 +228,17 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     device_perf_info_ = device_perf_info;
   }
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  if (gpu_info_.gpu.vendor_id == 0x10de &&  // NVIDIA
-      gpu_info_.gpu.driver_vendor == "NVIDIA" && !CanAccessNvidiaDeviceFile())
+  if (!CanAccessDeviceFile(gpu_info_))
     return false;
-#endif
+
+  // GpuFeatureInfo is cached for the GPU service thread with WebView.
   if (!PopGpuFeatureInfoCache(&gpu_feature_info_)) {
     // Compute blocklist and driver bug workaround decisions based on basic GPU
     // info.
     gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
                                               command_line, &needs_more_info);
   }
-#endif  // !OS_ANDROID && !BUILDFLAG(IS_CHROMECAST)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMECAST)
 
   gpu_info_.in_process_gpu = false;
   gl_use_swiftshader_ = false;
@@ -244,22 +251,21 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       InitializeSwitchableGPUs(
           gpu_feature_info_.enabled_gpu_driver_bug_workarounds);
     }
-  // If SwiftShader/SwANGLE is in use, set the flag gl_use_swiftshader so GPU
-  // initialization will take a software rendering path. Do not do this if
-  // SwiftShader/SwANGLE are explicitly requested via flags, because the flags
-  // are meant to specify running SwiftShader/SwANGLE on the hardware GPU path.
-  } else if (gl::GetGLImplementationParts() ==
-                 gl::GetLegacySoftwareGLImplementation() &&
-             command_line->GetSwitchValueASCII(switches::kUseGL) !=
-                 gl::kGLImplementationSwiftShaderName) {
-    gl_use_swiftshader_ = true;
-  } else if (gl::GetGLImplementationParts() ==
-                 gl::GetSoftwareGLImplementation() &&
-             (command_line->GetSwitchValueASCII(switches::kUseGL) !=
-                  gl::kGLImplementationANGLEName ||
-              command_line->GetSwitchValueASCII(switches::kUseANGLE) !=
-                  gl::kANGLEImplementationSwiftShaderName)) {
-    gl_use_swiftshader_ = true;
+  } else {
+    // If SwiftShader/SwANGLE is in use, set the flag gl_use_swiftshader_ so GPU
+    // initialization will take a software rendering path. Do not do this if
+    // SwiftShader/SwANGLE are explicitly requested via flags, because the flags
+    // are meant to specify running SwiftShader/SwANGLE on the hardware GPU
+    // path.
+    gl::GLImplementationParts impl = gl::GetGLImplementationParts();
+    bool fallback_to_software_gl = false;
+    absl::optional<gl::GLImplementationParts> requested_impl =
+        gl::GetRequestedGLImplementationFromCommandLine(
+            command_line, &fallback_to_software_gl);
+    if (gl::IsSoftwareGLImplementation(impl) &&
+        !(requested_impl && gl::IsSoftwareGLImplementation(*requested_impl))) {
+      gl_use_swiftshader_ = true;
+    }
   }
 
   bool enable_watchdog = !gpu_preferences_.disable_gpu_watchdog &&
@@ -272,34 +278,32 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   enable_watchdog = false;
 #endif
 
-  // watchdog_init will call watchdog OnInitComplete() at the end of this
-  // function.
-  GpuWatchdogInit watchdog_init;
-
-  bool delayed_watchdog_enable = false;
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // Don't start watchdog immediately, to allow developers to switch to VT2 on
-  // startup.
-  delayed_watchdog_enable = true;
-#endif
-
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // PreSandbox is mainly for resource handling and not related to the GPU
-  // driver, it doesn't need the GPU watchdog. The loadLibrary may take long
-  // time that killing and restarting the GPU process will not help.
-  if (gpu_preferences_.gpu_sandbox_start_early) {
-    // The sandbox will be started earlier than usual (i.e. before GL) so
-    // execute the pre-sandbox steps now.
-    sandbox_helper_->PreSandboxStartup(gpu_preferences);
-  }
-#else
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  bool gpu_sandbox_start_early = gpu_preferences_.gpu_sandbox_start_early;
+#else   // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
   // For some reasons MacOSX's VideoToolbox might crash when called after
   // initializing GL, see crbug.com/1047643 and crbug.com/871280. On other
   // operating systems like Windows and Android the pre-sandbox steps have
   // always been executed before initializing GL so keep it this way.
-  sandbox_helper_->PreSandboxStartup(gpu_preferences);
-#endif
+  bool gpu_sandbox_start_early = true;
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+  // PreSandbox is mainly for resource handling and not related to the GPU
+  // driver, it doesn't need the GPU watchdog. The loadLibrary may take long
+  // time that killing and restarting the GPU process will not help.
+  if (gpu_sandbox_start_early) {
+    // The sandbox will be started earlier than usual (i.e. before GL) so
+    // execute the pre-sandbox steps now.
+    sandbox_helper_->PreSandboxStartup(gpu_preferences);
+  }
+
+  // watchdog_init will call watchdog OnInitComplete() at the end of this
+  // function.
+  GpuWatchdogInit watchdog_init;
+
+  // Don't start watchdog immediately, to allow developers to switch to VT2 on
+  // startup.
+  constexpr bool delayed_watchdog_enable = BUILDFLAG(IS_CHROMEOS_ASH);
 
   // Start the GPU watchdog only after anything that is expected to be time
   // consuming has completed, otherwise the process is liable to be aborted.
@@ -308,7 +312,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         gpu_preferences_.watchdog_starts_backgrounded, "GpuWatchdog");
     watchdog_init.SetGpuWatchdogPtr(watchdog_thread_.get());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // This is a workaround for an occasional deadlock between watchdog and
     // current thread. Watchdog hangs at thread initialization in
     // __acrt_thread_attach() and current thread in std::setlocale(...)
@@ -318,13 +322,13 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     // References:
     // https://bugs.python.org/issue26624
     // http://stackoverflow.com/questions/35572792/setlocale-stuck-on-windows
-    auto watchdog_started = watchdog_thread_->WaitUntilThreadStarted();
+    bool watchdog_started = watchdog_thread_->WaitUntilThreadStarted();
     DCHECK(watchdog_started);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   }
 
   bool attempted_startsandbox = false;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Chrome OS ARM Mali, GPU driver userspace creates threads when
   // initializing a GL context, so start the sandbox early.
   // TODO(zmo): Need to collect OS version before this.
@@ -333,18 +337,17 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
         watchdog_thread_.get(), &gpu_info_, gpu_preferences_);
     attempted_startsandbox = true;
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-  base::TimeTicks before_initialize_one_off = base::TimeTicks::Now();
+  base::ElapsedTimer elapsed_timer;
 
 #if defined(USE_OZONE)
   // Initialize Ozone GPU after the watchdog in case it hangs. The sandbox
   // may also have started at this point.
-  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing;
   ui::OzonePlatform::InitParams params;
   params.single_process = false;
   params.enable_native_gpu_memory_buffers =
-      gpu_preferences.enable_native_gpu_memory_buffers;
+      gpu_preferences_.enable_native_gpu_memory_buffers;
 
   // Page flip testing will only happen in ash-chrome, not in lacros-chrome.
   // Therefore, we only allow or disallow sync and real buffer page flip
@@ -360,28 +363,29 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   ui::OzonePlatform::InitializeForGPU(params);
   // We need to get supported formats before sandboxing to avoid an known
   // issue which breaks the camera preview. (b/166850715)
-  supported_buffer_formats_for_texturing =
+  std::vector<gfx::BufferFormat> supported_buffer_formats_for_texturing =
       ui::OzonePlatform::GetInstance()
           ->GetSurfaceFactoryOzone()
           ->GetSupportedFormatsForTexturing();
-#endif
+#endif  // defined(USE_OZONE)
 
   if (!gl_use_swiftshader_) {
     gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
         command_line, gpu_feature_info_,
         gpu_preferences_.disable_software_rasterizer, needs_more_info);
   }
+
   if (gl_initialized && gl_use_swiftshader_ &&
       !gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
             << "on Linux";
     return false;
-#else
+#else   // !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS))
     SaveHardwareGpuInfoAndGpuFeatureInfo();
     gl::init::ShutdownGL(true);
     gl_initialized = false;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   }
 
   if (!gl_initialized) {
@@ -389,7 +393,6 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     if (watchdog_thread_)
       watchdog_thread_->PauseWatchdog();
     gl_initialized = gl::init::InitializeStaticGLBindingsOneOff();
-
     if (!gl_initialized) {
       VLOG(1) << "gl::init::InitializeStaticGLBindingsOneOff failed";
       return false;
@@ -407,7 +410,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The ContentSandboxHelper is currently the only one implementation of
   // GpuSandboxHelper and it has no dependency. Except on Linux where
   // VaapiWrapper checks the GL implementation to determine which display
@@ -426,28 +429,17 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 #endif
 
-  // On MacOS, the default texture target for native GpuMemoryBuffers is
-  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
-  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
-  // it's necessary to use GL_TEXTURE_2D instead.
-  // TODO(crbug.com/1056312): The proper behavior is to check the config
-  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
-#if defined(OS_MAC)
-  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
-      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
-       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
-    SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
-  }
-#endif  // defined(OS_MAC)
-
-  bool gl_disabled = gl::GetGLImplementation() == gl::kGLImplementationDisabled;
+  auto impl = gl::GetGLImplementationParts();
+  bool gl_disabled = impl == gl::kGLImplementationDisabled;
+  bool is_swangle = impl == gl::ANGLEImplementation::kSwiftShader;
 
   // Compute passthrough decoder status before ComputeGpuFeatureInfo below.
   // Do this after GL is initialized so extensions can be queried.
-  if (gles2::UsePassthroughCommandDecoder(command_line)) {
+  // Using SwANGLE forces the passthrough command decoder.
+  if (gpu_preferences_.use_passthrough_cmd_decoder || is_swangle) {
     gpu_info_.passthrough_cmd_decoder =
         gles2::PassthroughCommandDecoderSupported();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // We never use swiftshader on Android
     LOG_IF(DFATAL, !gpu_info_.passthrough_cmd_decoder)
 #else
@@ -460,12 +452,15 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   } else {
     gpu_info_.passthrough_cmd_decoder = false;
   }
+  gpu_preferences_.use_passthrough_cmd_decoder =
+      gpu_info_.passthrough_cmd_decoder;
 
   // We need to collect GL strings (VENDOR, RENDERER) for blocklisting purposes.
   if (!gl_disabled) {
     if (!gl_use_swiftshader_) {
-      if (!CollectGraphicsInfo(&gpu_info_))
+      if (!CollectGraphicsInfo(&gpu_info_)) {
         return false;
+      }
 
       SetKeysForCrashLogging(gpu_info_);
       gpu_feature_info_ = ComputeGpuFeatureInfo(gpu_info_, gpu_preferences_,
@@ -474,7 +469,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
           command_line, gpu_feature_info_,
           gpu_preferences_.disable_software_rasterizer, false);
       if (gl_use_swiftshader_) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
         VLOG(1) << "Quit GPU process launch to fallback to SwiftShader cleanly "
                 << "on Linux";
         return false;
@@ -489,7 +484,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
               << "failed";
           return false;
         }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       }
     } else {  // gl_use_swiftshader_ == true
       switch (gpu_preferences_.use_vulkan) {
@@ -518,6 +513,37 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     }
   }
 
+  // On MacOS, the default texture target for native GpuMemoryBuffers is
+  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
+  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
+  // it's necessary to use GL_TEXTURE_2D instead.
+  // TODO(crbug.com/1056312): The proper behavior is to check the config
+  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
+#if BUILDFLAG(IS_MAC)
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
+       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
+    SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
+    gpu_info_.macos_specific_texture_target = GL_TEXTURE_2D;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_WIN)
+  {
+    // On Windows, MITIGATION_FORCE_MS_SIGNED_BINS is used which disallows
+    // loading any .dll that is not signed by Microsoft. Preload the SwiftShader
+    // .dll so it may be accessed later. This is needed for WebGPU to
+    // initialize a software fallback adapter.
+    // Don't handle errors as failure here is non-fatal. Loading SwiftShader
+    // again at a later point will fail as well.
+    base::FilePath module_path;
+    if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+      base::LoadNativeLibrary(module_path.Append(L"vk_swiftshader.dll"),
+                              nullptr);
+    }
+  }
+#endif  // BUILDFLAG(IS_WIN)
+
   if (gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] !=
           kGpuFeatureStatusEnabled ||
       !InitializeVulkan()) {
@@ -525,7 +551,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN] =
         kGpuFeatureStatusDisabled;
     if (gpu_preferences_.gr_context_type == GrContextType::kVulkan) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
       // Fuchsia uses ANGLE for GL which requires Vulkan, so don't fall
       // back to GL if Vulkan init fails.
       LOG(FATAL) << "Vulkan initialization failed";
@@ -565,7 +591,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
 
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Driver may create a compatibility profile context when collect graphics
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
@@ -584,7 +610,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
       return false;
     }
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
@@ -596,10 +622,14 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
     gpu_preferences_.disable_accelerated_video_decode = true;
   }
 
-  base::TimeDelta initialize_one_off_time =
-      base::TimeTicks::Now() - before_initialize_one_off;
+  if (kGpuFeatureStatusEnabled !=
+      gpu_feature_info_
+          .status_values[GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE]) {
+    gpu_preferences_.disable_accelerated_video_encode = true;
+  }
+
   UMA_HISTOGRAM_MEDIUM_TIMES("GPU.InitializeOneOffMediumTime",
-                             initialize_one_off_time);
+                             elapsed_timer.Elapsed());
 
   // Software GL is expected to run slowly, so disable the watchdog
   // in that case.
@@ -649,7 +679,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   if (!watchdog_thread_)
     watchdog_init.SetGpuWatchdogPtr(nullptr);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu_feature_info_.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN))
     gl::DirectCompositionSurfaceWin::DisableDecodeSwapChain();
   if (gpu_feature_info_.IsWorkaroundEnabled(
@@ -658,7 +688,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   }
 #endif
 
-#if defined(USE_EGL) && !defined(OS_MAC)
+#if defined(USE_EGL) && !BUILDFLAG(IS_MAC)
   if (gpu_feature_info_.IsWorkaroundEnabled(CHECK_EGL_FENCE_BEFORE_WAIT))
     gl::GLFenceEGL::CheckEGLFenceBeforeWait();
 #endif
@@ -666,7 +696,7 @@ bool GpuInit::InitializeAndStartSandbox(base::CommandLine* command_line,
   return true;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void GpuInit::InitializeInProcess(base::CommandLine* command_line,
                                   const GpuPreferences& gpu_preferences) {
   gpu_preferences_ = gpu_preferences;
@@ -733,26 +763,6 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
   }
 #endif  // !BUILDFLAG(IS_CHROMECAST)
 
-  // On MacOS, the default texture target for native GpuMemoryBuffers is
-  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
-  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
-  // it's necessary to use GL_TEXTURE_2D instead.
-  // TODO(crbug.com/1056312): The proper behavior is to check the config
-  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
-#if defined(OS_MAC)
-  if (command_line->HasSwitch(switches::kUseGL)) {
-    std::string use_gl = command_line->GetSwitchValueASCII(switches::kUseGL);
-    std::string use_angle =
-        command_line->GetSwitchValueASCII(switches::kUseANGLE);
-    if (use_gl == gl::kGLImplementationANGLEName &&
-        (use_angle == gl::kANGLEImplementationSwiftShaderName ||
-         use_angle == gl::kANGLEImplementationSwiftShaderForWebGLName ||
-         use_angle == gl::kANGLEImplementationMetalName)) {
-      SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
-    }
-  }
-#endif  // defined(OS_MAC)
-
   gl_use_swiftshader_ = EnableSwiftShaderIfNeeded(
       command_line, gpu_feature_info_,
       gpu_preferences_.disable_software_rasterizer, needs_more_info);
@@ -780,6 +790,21 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
     }
   }
 
+  // On MacOS, the default texture target for native GpuMemoryBuffers is
+  // GL_TEXTURE_RECTANGLE_ARB. This is due to CGL's requirements for creating
+  // a GL surface. However, when ANGLE is used on top of SwiftShader or Metal,
+  // it's necessary to use GL_TEXTURE_2D instead.
+  // TODO(crbug.com/1056312): The proper behavior is to check the config
+  // parameter set by the EGL_ANGLE_iosurface_client_buffer extension
+#if BUILDFLAG(IS_MAC)
+  if (gl::GetGLImplementation() == gl::kGLImplementationEGLANGLE &&
+      (gl::GetANGLEImplementation() == gl::ANGLEImplementation::kSwiftShader ||
+       gl::GetANGLEImplementation() == gl::ANGLEImplementation::kMetal)) {
+    SetMacOSSpecificTextureTarget(GL_TEXTURE_2D);
+    gpu_info_.macos_specific_texture_target = GL_TEXTURE_2D;
+  }
+#endif  // BUILDFLAG(IS_MAC)
+
   if (!gl_disabled) {
     if (!gpu_feature_info_.disabled_extensions.empty()) {
       gl::init::SetDisabledExtensionsPlatform(
@@ -797,7 +822,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   InitializePlatformOverlaySettings(&gpu_info_, gpu_feature_info_);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // Driver may create a compatibility profile context when collect graphics
   // information on Linux platform. Try to collect graphics information
   // based on core profile context after disabling platform extensions.
@@ -818,7 +843,7 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
       }
     }
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if (gl_use_swiftshader_) {
     AdjustInfoToSwiftShader();
@@ -835,14 +860,14 @@ void GpuInit::InitializeInProcess(base::CommandLine* command_line,
 
   DisableInProcessGpuVulkan(&gpu_feature_info_, &gpu_preferences_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gpu_feature_info_.IsWorkaroundEnabled(DISABLE_DECODE_SWAP_CHAIN))
     gl::DirectCompositionSurfaceWin::DisableDecodeSwapChain();
 #endif
 
   UMA_HISTOGRAM_ENUMERATION("GPU.GLImplementation", gl::GetGLImplementation());
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void GpuInit::SaveHardwareGpuInfoAndGpuFeatureInfo() {
   gpu_info_for_hardware_gpu_ = gpu_info_;
@@ -861,8 +886,8 @@ scoped_refptr<gl::GLSurface> GpuInit::TakeDefaultOffscreenSurface() {
   return std::move(default_offscreen_surface_);
 }
 
-#if BUILDFLAG(ENABLE_VULKAN)
 bool GpuInit::InitializeVulkan() {
+#if BUILDFLAG(ENABLE_VULKAN)
   DCHECK_EQ(gpu_feature_info_.status_values[GPU_FEATURE_TYPE_VULKAN],
             kGpuFeatureStatusEnabled);
   DCHECK_NE(gpu_preferences_.use_vulkan, VulkanImplementationName::kNone);
@@ -896,15 +921,16 @@ bool GpuInit::InitializeVulkan() {
   if (MatchGLRenderer(gpu_info_, disable_patterns.Get()))
     return false;
 
-  auto enable_patterns = base::GetFieldTrialParamValueByFeature(
-      features::kVulkan, "force_enable_by_gl_renderer");
-  forced_native |= MatchGLRenderer(gpu_info_, enable_patterns);
+  const base::FeatureParam<std::string> force_enable_patterns(
+      &features::kVulkan, "force_enable_by_gl_renderer", "");
+  forced_native |= MatchGLRenderer(gpu_info_, force_enable_patterns.Get());
 
+  const base::FeatureParam<std::string> enable_by_device_name(
+      &features::kVulkan, "enable_by_device_name", "");
   if (!use_swiftshader && !forced_native &&
       !CheckVulkanCompabilities(
           vulkan_implementation_->GetVulkanInstance()->vulkan_info(), gpu_info_,
-          base::GetFieldTrialParamValueByFeature(features::kVulkan,
-                                                 "enable_by_device_name"))) {
+          enable_by_device_name.Get())) {
     vulkan_implementation_.reset();
     return false;
   }
@@ -912,11 +938,9 @@ bool GpuInit::InitializeVulkan() {
   gpu_info_.vulkan_info =
       vulkan_implementation_->GetVulkanInstance()->vulkan_info();
   return true;
-}
-#else   // BUILDFLAG(ENABLE_VULKAN)
-bool GpuInit::InitializeVulkan() {
+#else   // !BUILDFLAG(ENABLE_VULKAN)
   return false;
+#endif  // BUILDFLAG(ENABLE_VULKAN)
 }
-#endif  // !BUILDFLAG(ENABLE_VULKAN)
 
 }  // namespace gpu

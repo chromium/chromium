@@ -6,7 +6,6 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_util.h"
 #include "base/win/current_module.h"
 #include "base/win/wrapped_window_proc.h"

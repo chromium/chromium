@@ -34,8 +34,9 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) BlobURLStoreImpl
   void Register(
       mojo::PendingRemote<blink::mojom::Blob> blob,
       const GURL& url,
-      // TODO(https://crbug.com/1224926): Remove this once experiment is over.
+      // TODO(https://crbug.com/1224926): Remove these once experiment is over.
       const base::UnguessableToken& unsafe_agent_cluster_id,
+      const absl::optional<net::SchemefulSite>& unsafe_top_level_site,
       RegisterCallback callback) override;
   void Revoke(const GURL& url) override;
   void Resolve(const GURL& url, ResolveCallback callback) override;

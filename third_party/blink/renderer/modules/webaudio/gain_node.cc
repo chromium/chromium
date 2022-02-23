@@ -164,8 +164,9 @@ GainNode* GainNode::Create(BaseAudioContext* context,
                            ExceptionState& exception_state) {
   GainNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

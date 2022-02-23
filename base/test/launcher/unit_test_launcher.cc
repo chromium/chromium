@@ -34,7 +34,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
@@ -45,7 +45,7 @@ namespace {
 // This constant controls how many tests are run in a single batch by default.
 const size_t kDefaultTestBatchLimit = 10;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void PrintUsage() {
   fprintf(
       stdout,
@@ -147,7 +147,7 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
                             size_t retry_limit,
                             bool use_job_objects,
                             OnceClosure gtest_init) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // We can't easily fork on Android, just run the test suite directly.
   return std::move(run_test_suite).Run();
 #else
@@ -199,7 +199,7 @@ int LaunchUnitTestsInternal(RunTestSuiteCallback run_test_suite,
   fflush(stdout);
 
   base::SingleThreadTaskExecutor executor(base::MessagePumpType::IO);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   FileDescriptorWatcher file_descriptor_watcher(executor.task_runner());
 #endif
   use_job_objects =
@@ -224,11 +224,11 @@ void InitGoogleTestChar(int* argc, char** argv) {
   testing::InitGoogleTest(argc, argv);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void InitGoogleTestWChar(int* argc, wchar_t** argv) {
   testing::InitGoogleTest(argc, argv);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -245,7 +245,7 @@ void MergeTestFilterSwitchHandler::ResolveDuplicate(
     return;
   }
   if (!out_value.empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     StrAppend(&out_value, {L";"});
 #else
     StrAppend(&out_value, {";"});
@@ -291,7 +291,7 @@ int LaunchUnitTestsWithOptions(int argc,
                                  BindOnce(&InitGoogleTestChar, &argc, argv));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 int LaunchUnitTests(int argc,
                     wchar_t** argv,
                     bool use_job_objects,
@@ -306,7 +306,7 @@ int LaunchUnitTests(int argc,
                                  kDefaultTestBatchLimit, 1U, use_job_objects,
                                  BindOnce(&InitGoogleTestWChar, &argc, argv));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 DefaultUnitTestPlatformDelegate::DefaultUnitTestPlatformDelegate() = default;
 

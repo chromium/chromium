@@ -10,10 +10,10 @@
 #include <algorithm>
 #include <functional>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,11 +62,11 @@ bool IsBinaryDownloadForCurrentOS(
                 "Update logic below");
 
 // Platform-specific types are relevant only for their own platforms.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (download_type == ClientDownloadRequest::MAC_EXECUTABLE ||
       download_type == ClientDownloadRequest::MAC_ARCHIVE_FAILED_PARSING)
     return true;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (download_type == ClientDownloadRequest::ANDROID_APK)
     return true;
 #endif
@@ -187,7 +187,7 @@ void PopulateDetailsFromRow(const history::DownloadRow& download,
   download_request->set_url(download.url_chain.back().spec());
   // digests is a required field, so force it to exist.
   // TODO(grt): Include digests in reports; http://crbug.com/389123.
-  ignore_result(download_request->mutable_digests());
+  std::ignore = download_request->mutable_digests();
   download_request->set_length(download.received_bytes);
   for (size_t i = 0; i < download.url_chain.size(); ++i) {
     const GURL& url = download.url_chain[i];

@@ -29,14 +29,14 @@ namespace {
 // Callers should use ASSERT_NO_FATAL_FAILURE with this function, to
 // ensure that execution is aborted if the function has assertion failure.
 void CreateSocketPair(int fds[2]) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Mac OS does not support SOCK_SEQPACKET.
   int flags = SOCK_STREAM;
 #else
   int flags = SOCK_SEQPACKET;
 #endif
   ASSERT_EQ(0, socketpair(AF_UNIX, flags, 0, fds));
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // On OSX an attempt to read or write to a closed socket may generate a
   // SIGPIPE rather than returning -1, corrected with SO_NOSIGPIPE option.
   int nosigpipe = 1;

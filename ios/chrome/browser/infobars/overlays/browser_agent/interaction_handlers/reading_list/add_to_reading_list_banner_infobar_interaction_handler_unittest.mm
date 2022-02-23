@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/reading_list/add_to_reading_list_infobar_banner_interaction_handler.h"
 
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_ios_add_to_reading_list_infobar_delegate.h"
 #import "ios/chrome/browser/infobars/overlays/infobar_overlay_request_inserter.h"
@@ -28,11 +29,13 @@
 // Test fixture for ReadingListInfobarBannerInteractionHandler.
 class ReadingListInfobarBannerInteractionHandlerTest : public PlatformTest {
  public:
-  ReadingListInfobarBannerInteractionHandlerTest()
-      : test_browser_(std::make_unique<TestBrowser>()),
-        mock_command_receiver_(
-            OCMStrictProtocolMock(@protocol(BrowserCommands))),
-        handler_(test_browser_.get()) {
+  ReadingListInfobarBannerInteractionHandlerTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    test_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    mock_command_receiver_ = OCMStrictProtocolMock(@protocol(BrowserCommands));
+    handler_ =
+        std::make_unique<AddToReadingListInfobarBannerInteractionHandler>(
+            test_browser_.get());
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
     InfobarOverlayRequestInserter::CreateForWebState(&web_state_);
@@ -66,9 +69,10 @@ class ReadingListInfobarBannerInteractionHandlerTest : public PlatformTest {
 
  protected:
   base::test::TaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> test_browser_;
   id mock_command_receiver_ = nil;
-  AddToReadingListInfobarBannerInteractionHandler handler_;
+  std::unique_ptr<AddToReadingListInfobarBannerInteractionHandler> handler_;
   web::FakeWebState web_state_;
   std::unique_ptr<FakeReadingListModel> fake_reading_list_model_;
   InfoBarIOS* infobar_;
@@ -80,6 +84,6 @@ TEST_F(ReadingListInfobarBannerInteractionHandlerTest, MainButton) {
   ASSERT_FALSE(infobar_->accepted());
   OCMExpect([mock_command_receiver_ showReadingListIPH]);
   EXPECT_CALL(mock_delegate(), Accept()).WillOnce(testing::Return(true));
-  handler_.MainButtonTapped(infobar_);
+  handler_->MainButtonTapped(infobar_);
   EXPECT_TRUE(infobar_->accepted());
 }

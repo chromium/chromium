@@ -20,6 +20,7 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "base/command_line.h"
+#include "base/test/scoped_feature_list.h"
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/animation/linear_animation.h"
@@ -65,7 +66,8 @@ class TestMessagePopupCollection : public AshMessagePopupCollection {
 
 }  // namespace
 
-class AshMessagePopupCollectionTest : public AshTestBase {
+class AshMessagePopupCollectionTest : public AshTestBase,
+                                      public testing::WithParamInterface<bool> {
  public:
   AshMessagePopupCollectionTest() = default;
 
@@ -76,6 +78,10 @@ class AshMessagePopupCollectionTest : public AshTestBase {
   ~AshMessagePopupCollectionTest() override = default;
 
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         keyboard::switches::kEnableVirtualKeyboard);
     AshTestBase::SetUp();
@@ -87,6 +93,8 @@ class AshMessagePopupCollectionTest : public AshTestBase {
     popup_collection_.reset();
     AshTestBase::TearDown();
   }
+
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
  protected:
   enum Position { TOP_LEFT, TOP_RIGHT, BOTTOM_LEFT, BOTTOM_RIGHT, OUTSIDE };
@@ -149,9 +157,14 @@ class AshMessagePopupCollectionTest : public AshTestBase {
  private:
   int notification_id_ = 0;
   std::unique_ptr<AshMessagePopupCollection> popup_collection_;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(AshMessagePopupCollectionTest, ShelfAlignment) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         AshMessagePopupCollectionTest,
+                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+
+TEST_P(AshMessagePopupCollectionTest, ShelfAlignment) {
   const gfx::Rect toast_size(0, 0, 10, 10);
   UpdateDisplay("601x600");
   gfx::Point toast_point;
@@ -176,7 +189,7 @@ TEST_F(AshMessagePopupCollectionTest, ShelfAlignment) {
   EXPECT_TRUE(popup_collection()->IsFromLeft());
 }
 
-TEST_F(AshMessagePopupCollectionTest, LockScreen) {
+TEST_P(AshMessagePopupCollectionTest, LockScreen) {
   const gfx::Rect toast_size(0, 0, 10, 10);
 
   GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
@@ -195,7 +208,7 @@ TEST_F(AshMessagePopupCollectionTest, LockScreen) {
   EXPECT_FALSE(popup_collection()->IsFromLeft());
 }
 
-TEST_F(AshMessagePopupCollectionTest, AutoHide) {
+TEST_P(AshMessagePopupCollectionTest, AutoHide) {
   const gfx::Rect toast_size(0, 0, 10, 10);
   UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
@@ -210,7 +223,7 @@ TEST_F(AshMessagePopupCollectionTest, AutoHide) {
   EXPECT_LT(baseline, popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, DisplayResize) {
+TEST_P(AshMessagePopupCollectionTest, DisplayResize) {
   const gfx::Rect toast_size(0, 0, 10, 10);
   UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
@@ -225,7 +238,7 @@ TEST_F(AshMessagePopupCollectionTest, DisplayResize) {
   EXPECT_GT(baseline, popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, DockedMode) {
+TEST_P(AshMessagePopupCollectionTest, DockedMode) {
   const gfx::Rect toast_size(0, 0, 10, 10);
   UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
@@ -244,7 +257,7 @@ TEST_F(AshMessagePopupCollectionTest, DockedMode) {
   EXPECT_LT(baseline, popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, TrayHeight) {
+TEST_P(AshMessagePopupCollectionTest, TrayHeight) {
   const gfx::Rect toast_size(0, 0, 10, 10);
   UpdateDisplay("601x600");
   int origin_x = popup_collection()->GetToastOriginX(toast_size);
@@ -259,7 +272,7 @@ TEST_F(AshMessagePopupCollectionTest, TrayHeight) {
             popup_collection()->GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, Extended) {
+TEST_P(AshMessagePopupCollectionTest, Extended) {
   UpdateDisplay("601x600,801x800");
   SetPopupCollection(
       std::make_unique<AshMessagePopupCollection>(GetPrimaryShelf()));
@@ -275,7 +288,7 @@ TEST_F(AshMessagePopupCollectionTest, Extended) {
   EXPECT_LT(700, for_2nd_display.GetBaseline());
 }
 
-TEST_F(AshMessagePopupCollectionTest, MixedFullscreenNone) {
+TEST_P(AshMessagePopupCollectionTest, MixedFullscreenNone) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
@@ -300,7 +313,7 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenNone) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_F(AshMessagePopupCollectionTest, MixedFullscreenSome) {
+TEST_P(AshMessagePopupCollectionTest, MixedFullscreenSome) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
@@ -325,7 +338,7 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenSome) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_F(AshMessagePopupCollectionTest, MixedFullscreenAll) {
+TEST_P(AshMessagePopupCollectionTest, MixedFullscreenAll) {
   UpdateDisplay("601x600,801x800");
   Shelf* shelf1 = GetPrimaryShelf();
   TestMessagePopupCollection collection1(shelf1);
@@ -358,7 +371,7 @@ TEST_F(AshMessagePopupCollectionTest, MixedFullscreenAll) {
   EXPECT_TRUE(collection2.popup_shown());
 }
 
-TEST_F(AshMessagePopupCollectionTest, Unified) {
+TEST_P(AshMessagePopupCollectionTest, Unified) {
   display_manager()->SetUnifiedDesktopEnabled(true);
 
   // Reset the delegate as the primary display's shelf will be destroyed during
@@ -374,7 +387,7 @@ TEST_F(AshMessagePopupCollectionTest, Unified) {
 
 // Tests that when the keyboard is showing that notifications appear above it,
 // and that they return to normal once the keyboard is gone.
-TEST_F(AshMessagePopupCollectionTest, KeyboardShowing) {
+TEST_P(AshMessagePopupCollectionTest, KeyboardShowing) {
   ASSERT_TRUE(keyboard::IsKeyboardEnabled());
   ASSERT_TRUE(
       keyboard::KeyboardUIController::Get()->IsKeyboardOverscrollEnabled());
@@ -395,7 +408,7 @@ TEST_F(AshMessagePopupCollectionTest, KeyboardShowing) {
 
 // Tests that notification bubble baseline is correct when entering and exiting
 // overview with a full screen window.
-TEST_F(AshMessagePopupCollectionTest, BaselineInOverview) {
+TEST_P(AshMessagePopupCollectionTest, BaselineInOverview) {
   UpdateDisplay("800x600");
 
   ASSERT_TRUE(GetPrimaryShelf()->IsHorizontalAlignment());

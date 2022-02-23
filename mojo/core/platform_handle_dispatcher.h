@@ -5,7 +5,6 @@
 #ifndef MOJO_CORE_PLATFORM_HANDLE_DISPATCHER_H_
 #define MOJO_CORE_PLATFORM_HANDLE_DISPATCHER_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "mojo/core/dispatcher.h"

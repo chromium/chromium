@@ -155,7 +155,7 @@ struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::PpapiPermissions> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 template <>
 struct ParamTraits<ppapi::PepperFilePath> {
   typedef ppapi::PepperFilePath param_type;
@@ -166,7 +166,7 @@ struct ParamTraits<ppapi::PepperFilePath> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 template<>
 struct PPAPI_PROXY_EXPORT ParamTraits<ppapi::PPB_X509Certificate_Fields> {

@@ -21,6 +21,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.ContextUtils;
@@ -47,6 +48,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
         shadows = {ShadowRecordHistogram.class, BackgroundShadowAsyncTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public final class JourneyManagerTest {
     private static final int LAST_ENGAGEMENT_ELAPSED_MS = 5000;
     private static final int LAST_ENGAGEMENT_ELAPSED_S = 5;

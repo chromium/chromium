@@ -12,7 +12,7 @@ namespace base {
 
 DelayedTaskHandle::DelayedTaskHandle() = default;
 
-DelayedTaskHandle::DelayedTaskHandle(scoped_refptr<Delegate> delegate)
+DelayedTaskHandle::DelayedTaskHandle(std::unique_ptr<Delegate> delegate)
     : delegate_(std::move(delegate)) {
   DCHECK(IsValid());
 }
@@ -41,6 +41,7 @@ void DelayedTaskHandle::CancelTask() {
   if (delegate_) {
     delegate_->CancelTask();
     DCHECK(!delegate_->IsValid());
+    delegate_.reset();
   }
 }
 

@@ -181,20 +181,24 @@ TEST_F(WaitForDomActionTest, ReportMatchesToServer) {
   auto* condition1 = any_of->add_conditions();
   *condition1->mutable_match() = ToSelectorProto("#element1");
   condition1->set_payload("1");
+  condition1->set_tag("1tag");
 
   auto* condition2 = any_of->add_conditions();
   *condition2->mutable_none_of()->add_conditions()->mutable_match() =
       ToSelectorProto("#element2");
   condition2->set_payload("2");
+  condition2->set_tag("2tag");
 
   auto* condition3 = any_of->add_conditions();
   *condition3->mutable_match() = ToSelectorProto("#element3");
   condition3->set_payload("3");
+  condition3->set_tag("3tag");
 
   auto* condition4 = any_of->add_conditions();
   *condition4->mutable_none_of()->add_conditions()->mutable_match() =
       ToSelectorProto("#element4");
   condition4->set_payload("4");
+  condition4->set_tag("4tag");
 
   // Condition 1 and 2 are met, conditions 3 and 4 are not.
 
@@ -204,6 +208,8 @@ TEST_F(WaitForDomActionTest, ReportMatchesToServer) {
 
   EXPECT_THAT(capture.wait_for_dom_result().matching_condition_payloads(),
               ElementsAre("1", "2"));
+  EXPECT_THAT(capture.wait_for_dom_result().matching_condition_tags(),
+              ElementsAre("1tag", "2tag"));
 }
 
 TEST_F(WaitForDomActionTest, StoreMatchForLater) {

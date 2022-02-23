@@ -298,6 +298,21 @@ Polymer({
       value: false,
     },
 
+    /** @private */
+    isDictationCommandsFeatureEnabled_: {
+      type: Boolean,
+      readOnly: true,
+      value() {
+        return loadTimeData.getBoolean('isDictationCommandsFeatureEnabled');
+      }
+    },
+
+    /** @private */
+    dictationLearnMoreUrl_: {
+      type: String,
+      value: 'https://support.google.com/chromebook?p=text_dictation_m100',
+    },
+
     /**
      * |hasKeyboard_|, |hasMouse_|, |hasPointingStick_|, and |hasTouchpad_|
      * start undefined so observers don't trigger until they have been
@@ -425,13 +440,13 @@ Polymer({
     this.manageBrowserProxy_.manageA11yPageReady();
 
     const r = routes;
-    this.addFocusConfig_(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
-    this.addFocusConfig_(r.MANAGE_CAPTION_SETTINGS, '#captionsSubpageButton');
-    this.addFocusConfig_(
+    this.addFocusConfig(r.MANAGE_TTS_SETTINGS, '#ttsSubpageButton');
+    this.addFocusConfig(r.MANAGE_CAPTION_SETTINGS, '#captionsSubpageButton');
+    this.addFocusConfig(
         r.MANAGE_SWITCH_ACCESS_SETTINGS, '#switchAccessSubpageButton');
-    this.addFocusConfig_(r.DISPLAY, '#displaySubpageButton');
-    this.addFocusConfig_(r.KEYBOARD, '#keyboardSubpageButton');
-    this.addFocusConfig_(r.POINTERS, '#pointerSubpageButton');
+    this.addFocusConfig(r.DISPLAY, '#displaySubpageButton');
+    this.addFocusConfig(r.KEYBOARD, '#keyboardSubpageButton');
+    this.addFocusConfig(r.POINTERS, '#pointerSubpageButton');
   },
 
   /**

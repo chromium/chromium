@@ -33,7 +33,7 @@ NetworkStatus ToNetworkStatus(network::mojom::ConnectionType type) {
     case network::mojom::ConnectionType::CONNECTION_BLUETOOTH:
       return NetworkStatus::DISCONNECTED;
     case network::mojom::ConnectionType::CONNECTION_UNKNOWN:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return NetworkStatus::DISCONNECTED;
 #else
       return NetworkStatus::UNMETERED;

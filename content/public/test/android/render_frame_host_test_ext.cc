@@ -54,12 +54,17 @@ void RenderFrameHostTestExt::ExecuteJavaScript(
     JNIEnv* env,
     const JavaParamRef<jobject>& obj,
     const JavaParamRef<jstring>& jscript,
-    const JavaParamRef<jobject>& jcallback) {
+    const JavaParamRef<jobject>& jcallback,
+    jboolean with_user_gesture) {
   std::u16string script(ConvertJavaStringToUTF16(env, jscript));
   auto callback = base::BindOnce(
       &OnExecuteJavaScriptResult,
       base::android::ScopedJavaGlobalRef<jobject>(env, jcallback));
-  render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback));
+  if (with_user_gesture) {
+    render_frame_host_->ExecuteJavaScriptWithUserGestureForTests(script);
+  } else {
+    render_frame_host_->ExecuteJavaScriptForTests(script, std::move(callback));
+  }
 }
 
 void RenderFrameHostTestExt::UpdateVisualState(

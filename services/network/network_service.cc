@@ -9,6 +9,8 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/check.h"
+#include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/cxx17_backports.h"
@@ -16,14 +18,17 @@
 #include "base/debug/dump_without_crashing.h"
 #include "base/environment.h"
 #include "base/feature_list.h"
+#include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/timer/timer.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/network_session_configurator/common/network_features.h"
@@ -43,6 +48,9 @@
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/dns/public/dns_config_overrides.h"
+#include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/system_dns_config_change_notifier.h"
+#include "net/dns/test_dns_config_service.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/transport_security_state.h"
 #include "net/log/file_net_log_observer.h"
@@ -69,17 +77,17 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "services/network/url_loader.h"
 
-#if defined(OS_ANDROID) && defined(ARCH_CPU_ARMEL)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
 #include "crypto/openssl_util.h"
 #include "third_party/boringssl/src/include/openssl/cpu.h"
 #endif
 
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     !BUILDFLAG(IS_CHROMECAST)
 #include "components/os_crypt/key_storage_config_linux.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #include "net/android/http_auth_negotiate_android.h"
 #endif
@@ -118,7 +126,7 @@ void OnGetNetworkList(std::unique_ptr<net::NetworkInterfaceList> networks,
   }
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(USE_KERBEROS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_KERBEROS)
 // Used for Negotiate authentication on Android, which needs to generate tokens
 // in the browser process.
 class NetworkServiceAuthNegotiateAndroid : public net::HttpAuthMechanism {
@@ -174,7 +182,7 @@ class NetworkServiceAuthNegotiateAndroid : public net::HttpAuthMechanism {
     std::move(callback).Run(result);
   }
 
-  NetworkContext* network_context_ = nullptr;
+  raw_ptr<NetworkContext> network_context_ = nullptr;
   net::android::HttpAuthNegotiateAndroid auth_negotiate_;
   base::WeakPtrFactory<NetworkServiceAuthNegotiateAndroid> weak_factory_{this};
 };
@@ -243,7 +251,7 @@ class NetworkService::DelayedDohProbeActivator {
   }
 
  private:
-  NetworkService* const network_service_;
+  const raw_ptr<NetworkService> network_service_;
 
   // If running, DoH probes will be started on completion. If not running, DoH
   // probes may be started at any time.
@@ -277,7 +285,7 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
 
   initialized_ = true;
 
-#if defined(OS_ANDROID) && defined(ARCH_CPU_ARMEL)
+#if BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_ARMEL)
   // Make sure OpenSSL is initialized before using it to histogram data.
   crypto::EnsureOpenSSLInit();
 
@@ -343,8 +351,9 @@ void NetworkService::Initialize(mojom::NetworkServiceParamsPtr params,
         std::move(params->default_observer));
   }
 
-  first_party_sets_ = std::make_unique<FirstPartySets>();
-  if (net::cookie_util::IsFirstPartySetsEnabled()) {
+  first_party_sets_ =
+      std::make_unique<FirstPartySets>(params->first_party_sets_enabled);
+  if (first_party_sets_->is_enabled()) {
     first_party_sets_->SetManuallySpecifiedSet(
         command_line->GetSwitchValueASCII(switches::kUseFirstPartySet));
   }
@@ -378,8 +387,39 @@ NetworkService::~NetworkService() {
     trace_net_log_observer_.StopWatchForTraceStart();
 }
 
-void NetworkService::set_os_crypt_is_configured() {
-  os_crypt_config_set_ = true;
+void NetworkService::ReplaceSystemDnsConfigForTesting() {
+  // Create a test `net::DnsConfigService` that will yield a dummy config once.
+  auto config_service = std::make_unique<net::TestDnsConfigService>();
+  config_service->SetConfigForRefresh(
+      net::DnsConfig({net::IPEndPoint(net::IPAddress::IPv4Localhost(), 1234)}));
+
+  // Replace the existing `net::DnsConfigService` and flush the lines once to
+  // replace the system DNS config, in case we already received it.
+  auto* notifier = net::NetworkChangeNotifier::GetSystemDnsConfigNotifier();
+  DCHECK(notifier);
+  notifier->SetDnsConfigServiceForTesting(  // IN-TEST
+      std::move(config_service));
+  notifier->RefreshConfig();
+
+  // Force-disable the system resolver so that HostResolverManager will actually
+  // use the replacement config.
+  host_resolver_manager_->DisableSystemResolverForTesting();  // IN-TEST
+}
+
+void NetworkService::SetTestDohConfigForTesting(
+    const net::DnsOverHttpsConfig& doh_config) {
+  DCHECK_EQ(dns_config_overrides_set_by_, FunctionTag::None);
+  dns_config_overrides_set_by_ = FunctionTag::SetTestDohConfigForTesting;
+
+  // Overlay DoH settings on top of the system config, whenever it is received.
+  net::DnsConfigOverrides overrides;
+  overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
+  overrides.dns_over_https_config = doh_config;
+  host_resolver_manager_->SetDnsConfigOverrides(std::move(overrides));
+
+  // Force-disable the system resolver so that HostResolverManager will actually
+  // query the test DoH server.
+  host_resolver_manager_->DisableSystemResolverForTesting();  // IN-TEST
 }
 
 std::unique_ptr<NetworkService> NetworkService::Create(
@@ -387,9 +427,12 @@ std::unique_ptr<NetworkService> NetworkService::Create(
   return std::make_unique<NetworkService>(nullptr, std::move(receiver));
 }
 
+// static
 std::unique_ptr<NetworkService> NetworkService::CreateForTesting() {
-  return std::make_unique<NetworkService>(
+  auto network_service = std::make_unique<NetworkService>(
       std::make_unique<service_manager::BinderRegistry>());
+  network_service->InitMockNetworkChangeNotifierForTesting();  // IN-TEST
+  return network_service;
 }
 
 void NetworkService::RegisterNetworkContext(NetworkContext* network_context) {
@@ -483,25 +526,20 @@ void NetworkService::CreateNetworkContext(
 void NetworkService::ConfigureStubHostResolver(
     bool insecure_dns_client_enabled,
     net::SecureDnsMode secure_dns_mode,
-    absl::optional<std::vector<mojom::DnsOverHttpsServerPtr>>
-        dns_over_https_servers,
+    const net::DnsOverHttpsConfig& dns_over_https_config,
     bool additional_dns_types_enabled) {
-  DCHECK(!dns_over_https_servers || !dns_over_https_servers->empty());
-
   // Enable or disable the insecure part of DnsClient. "DnsClient" is the class
   // that implements the stub resolver.
   host_resolver_manager_->SetInsecureDnsClientEnabled(
       insecure_dns_client_enabled, additional_dns_types_enabled);
 
   // Configure DNS over HTTPS.
+  DCHECK(dns_config_overrides_set_by_ == FunctionTag::None ||
+         dns_config_overrides_set_by_ ==
+             FunctionTag::ConfigureStubHostResolver);
+  dns_config_overrides_set_by_ = FunctionTag::ConfigureStubHostResolver;
   net::DnsConfigOverrides overrides;
-  if (dns_over_https_servers && !dns_over_https_servers.value().empty()) {
-    overrides.dns_over_https_servers.emplace();
-    for (const auto& doh_server : *dns_over_https_servers) {
-      overrides.dns_over_https_servers.value().emplace_back(
-          doh_server->server_template, doh_server->use_post);
-    }
-  }
+  overrides.dns_over_https_config = dns_over_https_config;
   overrides.secure_dns_mode = secure_dns_mode;
   overrides.allow_dns_over_https_upgrade =
       base::FeatureList::IsEnabled(features::kDnsOverHttpsUpgrade);
@@ -623,28 +661,9 @@ void NetworkService::OnCertDBChanged() {
   net::CertDatabase::GetInstance()->NotifyObserversCertDBChanged();
 }
 
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-void NetworkService::SetCryptConfig(mojom::CryptConfigPtr crypt_config) {
-#if !BUILDFLAG(IS_CHROMECAST)
-  DCHECK(!os_crypt_config_set_);
-  auto config = std::make_unique<os_crypt::Config>();
-  config->store = crypt_config->store;
-  config->product_name = crypt_config->product_name;
-  config->application_name = crypt_config->application_name;
-  config->main_thread_runner = base::ThreadTaskRunnerHandle::Get();
-  config->should_use_preference = crypt_config->should_use_preference;
-  config->user_data_path = crypt_config->user_data_path;
-  OSCrypt::SetConfig(std::move(config));
-  os_crypt_config_set_ = true;
-#endif
-}
-#endif
-
-#if defined(OS_WIN) || defined(OS_MAC)
 void NetworkService::SetEncryptionKey(const std::string& encryption_key) {
   OSCrypt::SetRawEncryptionKey(encryption_key);
 }
-#endif
 
 void NetworkService::AddAllowedRequestInitiatorForPlugin(
     int32_t process_id,
@@ -683,7 +702,7 @@ void NetworkService::OnPeerToPeerConnectionsCountChange(uint32_t count) {
       ->OnPeerToPeerConnectionsCountChange(count);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NetworkService::OnApplicationStateChange(
     base::android::ApplicationState state) {
   for (auto* network_context : network_contexts_)
@@ -718,16 +737,24 @@ void NetworkService::ClearSCTAuditingCache() {
 }
 
 void NetworkService::ConfigureSCTAuditing(
-    bool enabled,
     double sampling_rate,
+    base::TimeDelta log_expected_ingestion_delay,
+    base::TimeDelta log_max_ingestion_random_delay,
     const GURL& reporting_uri,
+    const GURL& hashdance_lookup_uri,
     const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-    mojo::PendingRemote<mojom::URLLoaderFactory> factory) {
-  sct_auditing_cache_->set_enabled(enabled);
+    const net::MutableNetworkTrafficAnnotationTag&
+        hashdance_traffic_annotation) {
   sct_auditing_cache_->set_sampling_rate(sampling_rate);
+  sct_auditing_cache_->set_log_expected_ingestion_delay(
+      log_expected_ingestion_delay);
+  sct_auditing_cache_->set_log_max_ingestion_random_delay(
+      log_max_ingestion_random_delay);
   sct_auditing_cache_->set_report_uri(reporting_uri);
+  sct_auditing_cache_->set_hashdance_lookup_uri(hashdance_lookup_uri);
   sct_auditing_cache_->set_traffic_annotation(traffic_annotation);
-  sct_auditing_cache_->set_url_loader_factory(std::move(factory));
+  sct_auditing_cache_->set_hashdance_traffic_annotation(
+      hashdance_traffic_annotation);
 }
 
 void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
@@ -748,6 +775,11 @@ void NetworkService::UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
   }
 }
 
+void NetworkService::UpdateCtKnownPopularSCTs(
+    const std::vector<std::vector<uint8_t>>& sct_hashes) {
+  sct_auditing_cache_->set_popular_scts(std::move(sct_hashes));
+}
+
 void NetworkService::SetCtEnforcementEnabled(bool enabled) {
   DCHECK(base::FeatureList::IsEnabled(
       certificate_transparency::features::
@@ -761,7 +793,7 @@ void NetworkService::SetCtEnforcementEnabled(bool enabled) {
 
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void NetworkService::DumpWithoutCrashing(base::Time dump_request_time) {
   static base::debug::CrashKeyString* time_key =
       base::debug::AllocateCrashKeyString("time_since_dump_request_ms",
@@ -781,19 +813,8 @@ void NetworkService::BindTestInterface(
   }
 }
 
-void NetworkService::SetFirstPartySets(const std::string& raw_sets) {
-  bool is_v1_format = raw_sets.find('[') < raw_sets.find('{');
-  if (is_v1_format) {
-    // The file is a single list of records; V1 format.
-    first_party_sets_->ParseAndSet(raw_sets);
-  } else {
-    // The file is invalid, or is a newline-delimited sequence of
-    // records; V2 format.
-    std::istringstream stream(raw_sets);
-    first_party_sets_->ParseAndSetFromStream(stream);
-  }
-  base::UmaHistogramBoolean("Cookie.FirstPartySets.ComponentIsV1Format",
-                            is_v1_format);
+void NetworkService::SetFirstPartySets(base::File sets_file) {
+  first_party_sets_->ParseAndSet(std::move(sets_file));
 }
 
 void NetworkService::SetPersistedFirstPartySetsAndGetCurrentSets(
@@ -814,7 +835,7 @@ NetworkService::CreateHttpAuthHandlerFactory(NetworkContext* network_context) {
   if (!http_auth_static_network_service_params_) {
     return net::HttpAuthHandlerFactory::CreateDefault(
         network_context->GetHttpAuthPreferences()
-#if defined(OS_ANDROID) && BUILDFLAG(USE_KERBEROS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_KERBEROS)
             ,
         base::BindRepeating(&CreateAuthSystem, network_context)
 #endif
@@ -822,17 +843,21 @@ NetworkService::CreateHttpAuthHandlerFactory(NetworkContext* network_context) {
   }
 
   return net::HttpAuthHandlerRegistryFactory::Create(
-      network_context->GetHttpAuthPreferences(),
-      http_auth_static_network_service_params_->supported_schemes
+      network_context->GetHttpAuthPreferences()
 #if BUILDFLAG(USE_EXTERNAL_GSSAPI)
-      ,
+          ,
       http_auth_static_network_service_params_->gssapi_library_name
 #endif
-#if defined(OS_ANDROID) && BUILDFLAG(USE_KERBEROS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_KERBEROS)
       ,
       base::BindRepeating(&CreateAuthSystem, network_context)
 #endif
   );
+}
+
+void NetworkService::InitMockNetworkChangeNotifierForTesting() {
+  mock_network_change_notifier_ =
+      net::NetworkChangeNotifier::CreateMockIfNeeded();
 }
 
 void NetworkService::DestroyNetworkContexts() {

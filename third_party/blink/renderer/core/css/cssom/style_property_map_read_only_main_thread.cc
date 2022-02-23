@@ -24,7 +24,10 @@ namespace blink {
 namespace {
 
 class StylePropertyMapIterationSource final
-    : public PairIterable<String, CSSStyleValueVector>::IterationSource {
+    : public PairIterable<String,
+                          IDLString,
+                          CSSStyleValueVector,
+                          IDLSequence<CSSStyleValue>>::IterationSource {
  public:
   explicit StylePropertyMapIterationSource(
       HeapVector<StylePropertyMapReadOnlyMainThread::StylePropertyMapEntry>
@@ -47,7 +50,8 @@ class StylePropertyMapIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(values_);
-    PairIterable<String, CSSStyleValueVector>::IterationSource::Trace(visitor);
+    PairIterable<String, IDLString, CSSStyleValueVector,
+                 IDLSequence<CSSStyleValue>>::IterationSource::Trace(visitor);
   }
 
  private:

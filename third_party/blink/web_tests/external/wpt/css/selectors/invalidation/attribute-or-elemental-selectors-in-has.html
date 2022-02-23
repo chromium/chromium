@@ -68,17 +68,82 @@ div, main { color: grey }
   div_descendant.id = 'div_grandchild';
   test_div('change #div_descendant to #div_grandchild', div_subject, grey);
 
-  descendant = document.createElement('descendant');
-  div_subject.appendChild(descendant);
-  test_div('add descendant to #div_subject', div_subject, yellowgreen);
-  div_subject.removeChild(descendant);
-  test_div('remove descendant from #div_subject', div_subject, grey);
+  {
+    const descendant = document.createElement('descendant');
+    div_subject.appendChild(descendant);
+    test_div('add descendant to #div_subject', div_subject, yellowgreen);
+    div_subject.removeChild(descendant);
+    test_div('remove descendant from #div_subject', div_subject, grey);
+  }
 
-  div = document.createElement('div');
-  div.appendChild(descendant);
-  div_subject.appendChild(div);
-  test_div('add "div > descendant" to #div_subject', div_subject, yellowgreen);
-  div_subject.removeChild(div);
-  test_div('remove "div > descendant" from #div_subject', div_subject, grey);
+  {
+    const div = document.createElement('div');
+    const descendant = document.createElement('descendant');
+    div.appendChild(descendant);
+    div_subject.appendChild(div);
+    test_div('add "div > descendant" to #div_subject', div_subject, yellowgreen);
+    div_subject.removeChild(div);
+    test_div('remove "div > descendant" from #div_subject', div_subject, grey);
+  }
+
+  {
+    const child = document.createElement('div');
+    child.classList.add('child');
+    div_subject.appendChild(child);
+    test_div('add div.child to #div_subject', div_subject, red);
+    div_subject.removeChild(child);
+    test_div('remove div.child from #div_subject', div_subject, grey);
+  }
+
+  {
+    const descendant = document.createElement('div');
+    descendant.classList.add('descendant');
+    const div = document.createElement('div');
+    div.appendChild(descendant);
+    div_subject.appendChild(div);
+    test_div('add "div > div.descendant" to #div_subject', div_subject, green);
+    div_subject.removeChild(div);
+    test_div('remove "div > div.descendant" from #div_subject', div_subject, grey);
+  }
+
+  {
+    const child = document.createElement('div');
+    child.id = 'div_descendant';
+    div_subject.appendChild(child);
+    test_div('add div#div_descendant to #div_subject', div_subject, yellow);
+    div_subject.removeChild(child);
+    test_div('remove div#div_descendant from #div_subject', div_subject, grey);
+  }
+
+  {
+    const descendant = document.createElement('div');
+    descendant.id = 'div_descendant';
+    const div = document.createElement('div');
+    div.appendChild(descendant);
+    div_subject.appendChild(div);
+    test_div('add "div#div_descendant" to #div_subject', div_subject, yellow);
+    div_subject.removeChild(div);
+    test_div('remove "div#div_descendant" from #div_subject', div_subject, grey);
+  }
+
+  {
+    const child = document.createElement('div');
+    child.setAttribute('attrname', 'descendant');
+    div_subject.appendChild(child);
+    test_div('add div[attrname] to #div_subject', div_subject, blue);
+    div_subject.removeChild(child);
+    test_div('remove div[attrname] from #div_subject', div_subject, grey);
+  }
+
+  {
+    const descendant = document.createElement('div');
+    descendant.setAttribute('attrname', 'descendant');
+    const div = document.createElement('div');
+    div.appendChild(descendant);
+    div_subject.appendChild(div);
+    test_div('add "div > div[attrname]" to #div_subject', div_subject, blue);
+    div_subject.removeChild(div);
+    test_div('remove "div > div[attrname]" from #div_subject', div_subject, grey);
+  }
 
 </script>

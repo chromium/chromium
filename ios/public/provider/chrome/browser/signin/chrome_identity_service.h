@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 
 @class ChromeIdentity;
@@ -106,10 +105,10 @@ class ChromeIdentityService {
     virtual ~Observer() {}
 
     // Handles identity list changed events.
-    // |keychainReload| is true if the identity list is updated by reloading the
-    // keychain. This means that a first party Google app had added or removed
-    // identities.
-    virtual void OnIdentityListChanged(bool keychainReload) {}
+    // |notify_user| is true if the identity list is updated by an external
+    // source than Chrome. This means that a first party Google app had added or
+    // removed identities, or the identity token is invalid.
+    virtual void OnIdentityListChanged(bool notify_user) {}
 
     // Handles access token refresh failed events.
     // |identity| is the the identity for which the access token refresh failed.
@@ -235,6 +234,11 @@ class ChromeIdentityService {
   void CanOfferExtendedSyncPromos(ChromeIdentity* identity,
                                   CapabilitiesCallback callback);
 
+  // Asynchronously returns the value of the account capability that determines
+  // whether parental controls should be applied to |identity|.
+  void IsSubjectToParentalControls(ChromeIdentity* identity,
+                                   CapabilitiesCallback callback);
+
   // Returns true if the service can be used, and supports ChromeIdentity list.
   virtual bool IsServiceSupported();
 
@@ -269,10 +273,10 @@ class ChromeIdentityService {
       ChromeIdentity* identity,
       ChromeIdentityCapabilitiesFetchCompletionBlock completion);
   // Fires |OnIdentityListChanged| on all observers.
-  // |keychainReload| is true if the identity list is updated by reloading the
-  // keychain. This means that a first party Google app had added or removed
-  // identities.
-  void FireIdentityListChanged(bool keychainReload);
+  // |notify_user| is true if the identity list is updated by an external source
+  // than Chrome. This means that a first party Google app had added or removed
+  // identities, or the identity token is invalid.
+  void FireIdentityListChanged(bool notify_user);
 
   // Fires |OnAccessTokenRefreshFailed| on all observers, with the corresponding
   // identity and user info.
@@ -283,6 +287,11 @@ class ChromeIdentityService {
   void FireProfileDidUpdate(ChromeIdentity* identity);
 
  private:
+  // Asynchronously retrieves the specified capability for the Chrome identity.
+  void FetchCapability(ChromeIdentity* identity,
+                       NSString* capability_name,
+                       CapabilitiesCallback completion);
+
   base::ObserverList<Observer, true>::Unchecked observer_list_;
 };
 

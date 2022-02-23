@@ -7,6 +7,8 @@
 #import <Foundation/Foundation.h>
 
 #include "base/metrics/histogram_functions.h"
+#include "base/run_loop.h"
+#include "base/task/post_task.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/pref_names.h"
@@ -20,6 +22,7 @@
 #import "ios/chrome/browser/ui/commands/policy_change_commands.h"
 #import "ios/chrome/browser/ui/main/scene_state.h"
 #import "ios/chrome/browser/ui/main/scene_state_browser_agent.h"
+#include "ios/web/public/thread/web_task_traits.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -43,7 +46,7 @@ void PolicyWatcherBrowserAgent::SignInUIDismissed() {
   if (sign_out_in_progress_)
     return;
 
-  [handler_ showPolicySignoutPrompt];
+  [handler_ showForceSignedOutPrompt];
 }
 
 void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
@@ -72,11 +75,14 @@ void PolicyWatcherBrowserAgent::Initialize(id<PolicyChangeCommands> handler) {
   browser_prefs_change_observer_.Add(
       syncer::prefs::kSyncManaged,
       base::BindRepeating(
-          &PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded,
+          &PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
           base::Unretained(this)));
 
   // Try to show the alert in case the policy changed since last time.
-  ShowSyncDisabledAlertIfNeeded();
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded,
+                     weak_factory_.GetWeakPtr()));
 }
 
 void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
@@ -105,7 +111,7 @@ void PolicyWatcherBrowserAgent::ForceSignOutIfSigninDisabled() {
   }
 }
 
-void PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded() {
+void PolicyWatcherBrowserAgent::ShowSyncDisabledPromptIfNeeded() {
   NSUserDefaults* standard_defaults = [NSUserDefaults standardUserDefaults];
   BOOL syncDisabledAlertShown =
       [standard_defaults boolForKey:kSyncDisabledAlertShownKey];
@@ -114,9 +120,15 @@ void PolicyWatcherBrowserAgent::ShowSyncDisabledAlertIfNeeded() {
           syncer::prefs::kSyncManaged);
 
   if (!syncDisabledAlertShown && isSyncDisabledByAdministrator) {
-    [handler_ showSyncDisabledAlert];
-    // Will never trigger again unless policy changes.
-    [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+    SceneState* scene_state =
+        SceneStateBrowserAgent::FromBrowser(browser_)->GetSceneState();
+    BOOL scene_is_active =
+        scene_state.activationLevel >= SceneActivationLevelForegroundActive;
+    if (scene_is_active) {
+      [handler_ showSyncDisabledPrompt];
+      // Will never trigger again unless policy changes.
+      [standard_defaults setBool:YES forKey:kSyncDisabledAlertShownKey];
+    }
   } else if (syncDisabledAlertShown && !isSyncDisabledByAdministrator) {
     // Will trigger again, if policy is turned back on.
     [standard_defaults setBool:NO forKey:kSyncDisabledAlertShownKey];
@@ -142,12 +154,12 @@ void PolicyWatcherBrowserAgent::OnSignOutComplete() {
   if (sceneIsActive) {
     // Try to show the signout prompt in all cases: if there is a sign
     // in in progress, the UI will prevent the prompt from showing.
-    [handler_ showPolicySignoutPrompt];
+    [handler_ showForceSignedOutPrompt];
   } else {
-    scene_state.appState.shouldShowPolicySignoutPrompt = YES;
+    scene_state.appState.shouldShowForceSignOutPrompt = YES;
   }
 }
 
 void PolicyWatcherBrowserAgent::OnPrimaryAccountRestricted() {
-  [handler_ showEnterpriseSignout];
+  [handler_ showRestrictAccountSignedOutPrompt];
 }

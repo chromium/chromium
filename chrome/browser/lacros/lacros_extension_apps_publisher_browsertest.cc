@@ -7,7 +7,7 @@
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/chrome_test_extension_loader.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
-#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/lacros/window_utility.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/app_service_types.mojom.h"
@@ -20,7 +20,7 @@
 
 namespace {
 
-using Apps = std::vector<apps::mojom::AppPtr>;
+using Apps = std::vector<apps::AppPtr>;
 
 // This fake intercepts and tracks all calls to Publish().
 class LacrosExtensionAppsPublisherFake : public LacrosExtensionAppsPublisher {
@@ -134,14 +134,14 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Unload) {
   {
     Apps& apps = publisher->apps_history()[0];
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kReady);
+    ASSERT_EQ(apps[0]->readiness, apps::Readiness::kReady);
   }
 
   // The last event should be an unload event.
   {
     Apps& apps = publisher->apps_history().back();
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kDisabledByUser);
+    ASSERT_EQ(apps[0]->readiness, apps::Readiness::kDisabledByUser);
   }
 }
 
@@ -160,14 +160,14 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Uninstall) {
   {
     Apps& apps = publisher->apps_history()[0];
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kReady);
+    ASSERT_EQ(apps[0]->readiness, apps::Readiness::kReady);
   }
 
   // The last event should be an uninstall event.
   {
     Apps& apps = publisher->apps_history().back();
     ASSERT_EQ(1u, apps.size());
-    ASSERT_EQ(apps[0]->readiness, apps::mojom::Readiness::kUninstalledByUser);
+    ASSERT_EQ(apps[0]->readiness, apps::Readiness::kUninstalledByUser);
   }
 }
 
@@ -197,7 +197,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, LaunchAppWindow) {
     auto& app_windows = publisher->app_windows();
     ASSERT_EQ(1u, app_windows.size());
     EXPECT_EQ(app_windows.begin()->second,
-              lacros_extension_apps_utility::MuxId(profile(), extension));
+              lacros_extensions_util::MuxId(profile(), extension));
     EXPECT_EQ(app_windows.begin()->first,
               lacros_window_utility::GetRootWindowUniqueId(
                   app_window->GetNativeWindow()));
@@ -233,7 +233,7 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, PreLaunchAppWindow) {
     auto& app_windows = publisher->app_windows();
     ASSERT_EQ(1u, app_windows.size());
     EXPECT_EQ(app_windows.begin()->second,
-              lacros_extension_apps_utility::MuxId(profile(), extension));
+              lacros_extensions_util::MuxId(profile(), extension));
     EXPECT_EQ(app_windows.begin()->first,
               lacros_window_utility::GetRootWindowUniqueId(
                   app_window->GetNativeWindow()));
@@ -254,12 +254,11 @@ IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, PreLaunchAppWindow) {
 IN_PROC_BROWSER_TEST_F(LacrosExtensionAppsPublisherTest, Mux) {
   const extensions::Extension* extension =
       LoadExtension(test_data_dir_.AppendASCII("platform_apps/minimal"));
-  std::string muxed_id1 =
-      lacros_extension_apps_utility::MuxId(profile(), extension);
+  std::string muxed_id1 = lacros_extensions_util::MuxId(profile(), extension);
   ASSERT_FALSE(muxed_id1.empty());
   Profile* demuxed_profile = nullptr;
   const extensions::Extension* demuxed_extension = nullptr;
-  bool success = lacros_extension_apps_utility::DemuxId(
+  bool success = lacros_extensions_util::DemuxPlatformAppId(
       muxed_id1, &demuxed_profile, &demuxed_extension);
   ASSERT_TRUE(success);
   EXPECT_EQ(demuxed_profile, profile());

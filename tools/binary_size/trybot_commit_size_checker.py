@@ -138,11 +138,16 @@ def _CreateBaseModuleResourceSizesDelta(before_dir, after_dir):
       sizes_diff.CombinedSizeChangeForSection('base'))
 
 
-def _CreateSupersizeDiff(main_file_name, before_dir, after_dir):
+def _CreateSupersizeDiff(main_file_name, before_dir, after_dir, review_subject,
+                         review_url):
   before_size_path = os.path.join(before_dir, main_file_name + '.size')
   after_size_path = os.path.join(after_dir, main_file_name + '.size')
   before = archive.LoadAndPostProcessSizeInfo(before_size_path)
   after = archive.LoadAndPostProcessSizeInfo(after_size_path)
+  if review_subject:
+    after.build_config[models.BUILD_CONFIG_TITLE] = review_subject
+  if review_url:
+    after.build_config[models.BUILD_CONFIG_URL] = review_url
   size_info_delta = diff.Diff(before, after, sort=True)
 
   lines = list(describe.GenerateLines(size_info_delta))
@@ -262,6 +267,8 @@ def _FormatNumber(number):
 def main():
   parser = argparse.ArgumentParser()
   parser.add_argument('--author', required=True, help='CL author')
+  parser.add_argument('--review-subject', help='Review subject')
+  parser.add_argument('--review-url', help='Review URL')
   parser.add_argument('--size-config-json-name',
                       required=True,
                       help='Filename of JSON with configs for '
@@ -299,7 +306,8 @@ def main():
 
   logging.info('Creating Supersize diff')
   supersize_diff_lines, delta_size_info = _CreateSupersizeDiff(
-      supersize_input_name, args.before_dir, args.after_dir)
+      supersize_input_name, args.before_dir, args.after_dir,
+      args.review_subject, args.review_url)
 
   changed_symbols = delta_size_info.raw_symbols.WhereDiffStatusIs(
       models.DIFF_STATUS_UNCHANGED).Inverted()

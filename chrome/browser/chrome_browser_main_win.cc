@@ -36,7 +36,7 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "base/trace_event/trace_event.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/version.h"
 #include "base/win/pe_image.h"
 #include "base/win/registry.h"
@@ -60,9 +60,9 @@
 #include "chrome/browser/web_applications/chrome_pwa_launcher/last_browser_file_util.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_log_reporter.h"
 #include "chrome/browser/web_applications/chrome_pwa_launcher/launcher_update.h"
-#include "chrome/browser/web_applications/web_app_handler_registration_utils_win.h"
+#include "chrome/browser/web_applications/os_integration/web_app_handler_registration_utils_win.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_shortcut.h"
 #include "chrome/browser/win/browser_util.h"
 #include "chrome/browser/win/chrome_elf_init.h"
 #include "chrome/browser/win/conflicts/enumerate_input_method_editors.h"
@@ -389,40 +389,46 @@ bool TryGetModuleTimeDateStamp(void* module_load_address,
 //       task scheduler, under the loader lock, directly on the thread where the
 //       DLL is currently loading.
 void OnModuleEvent(const ModuleWatcher::ModuleEvent& event) {
-  TRACE_EVENT1("browser", "OnModuleEvent", "module_path",
-               event.module_path.BaseName().AsUTF8Unsafe());
+  {
+    TRACE_EVENT1("browser", "OnModuleEvent", "module_path",
+                 event.module_path.BaseName().AsUTF8Unsafe());
 
-  switch (event.event_type) {
-    case ModuleWatcher::ModuleEventType::kModuleAlreadyLoaded: {
-      // kModuleAlreadyLoaded comes from the enumeration of loaded modules
-      // using CreateToolhelp32Snapshot().
-      uint32_t time_date_stamp = 0;
-      if (TryGetModuleTimeDateStamp(event.module_load_address,
-                                    event.module_path, event.module_size,
-                                    &time_date_stamp)) {
+    switch (event.event_type) {
+      case ModuleWatcher::ModuleEventType::kModuleAlreadyLoaded: {
+        // kModuleAlreadyLoaded comes from the enumeration of loaded modules
+        // using CreateToolhelp32Snapshot().
+        uint32_t time_date_stamp = 0;
+        if (TryGetModuleTimeDateStamp(event.module_load_address,
+                                      event.module_path, event.module_size,
+                                      &time_date_stamp)) {
+          ModuleDatabase::HandleModuleLoadEvent(
+              content::PROCESS_TYPE_BROWSER, event.module_path,
+              event.module_size, time_date_stamp);
+        } else {
+          // Failed to get the TimeDateStamp directly from memory. The next step
+          // to try is to read the file on disk. This must be done in a blocking
+          // task.
+          base::ThreadPool::PostTask(
+              FROM_HERE,
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
+               base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
+              base::BindOnce(&HandleModuleLoadEventWithoutTimeDateStamp,
+                             event.module_path, event.module_size));
+        }
+        break;
+      }
+      case ModuleWatcher::ModuleEventType::kModuleLoaded: {
         ModuleDatabase::HandleModuleLoadEvent(
             content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
-            time_date_stamp);
-      } else {
-        // Failed to get the TimeDateStamp directly from memory. The next step
-        // to try is to read the file on disk. This must be done in a blocking
-        // task.
-        base::ThreadPool::PostTask(
-            FROM_HERE,
-            {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-             base::TaskShutdownBehavior::CONTINUE_ON_SHUTDOWN},
-            base::BindOnce(&HandleModuleLoadEventWithoutTimeDateStamp,
-                           event.module_path, event.module_size));
+            GetModuleTimeDateStamp(event.module_load_address));
+        break;
       }
-      break;
-    }
-    case ModuleWatcher::ModuleEventType::kModuleLoaded: {
-      ModuleDatabase::HandleModuleLoadEvent(
-          content::PROCESS_TYPE_BROWSER, event.module_path, event.module_size,
-          GetModuleTimeDateStamp(event.module_load_address));
-      break;
     }
   }
+  // Since OnModuleEvent can be invoked from any thread, the above trace event's
+  // END might be the last event on this thread, emit an empty event to force
+  // the END to be flushed. TODO(crbug.com/1021571): Remove this once fixed.
+  PERFETTO_INTERNAL_ADD_EMPTY_EVENT();
 }
 
 // Helper function for initializing the module database subsystem and populating
@@ -630,8 +636,13 @@ void ChromeBrowserMainPartsWin::ShowMissingLocaleMessageBox() {
                  MB_OK | MB_ICONERROR | MB_TOPMOST);
 }
 
-void ChromeBrowserMainPartsWin::PostProfileInit() {
-  ChromeBrowserMainParts::PostProfileInit();
+void ChromeBrowserMainPartsWin::PostProfileInit(Profile* profile,
+                                                bool is_initial_profile) {
+  ChromeBrowserMainParts::PostProfileInit(profile, is_initial_profile);
+
+  // The setup below is intended to run for only the initial profile.
+  if (!is_initial_profile)
+    return;
 
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Explicitly disable the third-party modules blocking.
@@ -657,13 +668,20 @@ void ChromeBrowserMainPartsWin::PostProfileInit() {
   // needs to be done before any child processes are initialized as the
   // ModuleDatabase is an endpoint for IPC from child processes.
   SetupModuleDatabase(&module_watcher_);
+
+  // If Chrome was launched by a Progressive Web App launcher that needs to be
+  // updated, update all launchers for this profile.
+  if (parsed_command_line().HasSwitch(switches::kAppId) &&
+      parsed_command_line().GetSwitchValueASCII(
+          switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
+    content::BrowserThread::PostBestEffortTask(
+        FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
+        base::BindOnce(&UpdatePwaLaunchersForProfile, profile->GetPath()));
+  }
 }
 
 void ChromeBrowserMainPartsWin::PostBrowserStart() {
   ChromeBrowserMainParts::PostBrowserStart();
-
-  UMA_HISTOGRAM_BOOLEAN("Windows.Tablet",
-      base::win::IsTabletDevice(nullptr, ui::GetHiddenWindow()));
 
   InitializeChromeElf();
 
@@ -708,16 +726,6 @@ void ChromeBrowserMainPartsWin::PostBrowserStart() {
       FROM_HERE, {base::TaskPriority::BEST_EFFORT, base::MayBlock()},
       base::BindOnce(&web_app::WriteChromePathToLastBrowserFile,
                      user_data_dir()));
-
-  // If Chrome was launched by a Progressive Web App launcher that needs to be
-  // updated, update all launchers for this profile.
-  if (parsed_command_line().HasSwitch(switches::kAppId) &&
-      parsed_command_line().GetSwitchValueASCII(
-          switches::kPwaLauncherVersion) != chrome::kChromeVersion) {
-    content::BrowserThread::PostBestEffortTask(
-        FROM_HERE, base::SequencedTaskRunnerHandle::Get(),
-        base::BindOnce(&UpdatePwaLaunchersForProfile, profile()->GetPath()));
-  }
 
   // Record the result of the latest Progressive Web App launcher launch.
   base::ThreadPool::PostTask(

@@ -56,7 +56,7 @@ import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 import org.chromium.components.signin.identitymanager.IdentityManagerJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.widget.ChromeImageView;
 
 import java.io.IOException;
@@ -69,7 +69,7 @@ import java.util.List;
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(ChromeJUnit4RunnerDelegate.class)
 @Batch(ProfileDataCacheRenderTest.PROFILE_DATA_BATCH_NAME)
-public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
+public class ProfileDataCacheRenderTest extends BlankUiTestActivityTestCase {
     public static final String PROFILE_DATA_BATCH_NAME = "profile_data";
     public static final String ACCOUNT_EMAIL = "test@gmail.com";
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -160,7 +160,8 @@ public class ProfileDataCacheRenderTest extends DummyUiActivityTestCase {
         when(mIdentityManagerNativeMock.findExtendedAccountInfoByEmailAddress(
                      anyLong(), eq(ACCOUNT_EMAIL)))
                 .thenReturn(mAccountInfoWithAvatar);
-        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL);
+        mAccountManagerTestRule.addAccount(ACCOUNT_EMAIL, mAccountInfoWithAvatar.getFullName(),
+                mAccountInfoWithAvatar.getGivenName(), mAccountInfoWithAvatar.getAccountImage());
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             mProfileDataCache =

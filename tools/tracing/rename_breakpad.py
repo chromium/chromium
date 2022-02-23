@@ -1,14 +1,16 @@
 # Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
-"""
-Renames breakpad file to the standard module id format. See
-perfetto::profiling::BreakpadSymbolizer for more naming information.
+"""Renames breakpad file to the standard module id format.
+
+See perfetto::profiling::BreakpadSymbolizer for more naming information.
 """
 
-import os
 import logging
+import os
 import shutil
+
+import flag_utils
 
 
 def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
@@ -32,18 +34,20 @@ def RenameBreakpadFiles(breakpad_dir, breakpad_output_dir):
   # Runs on every directory in the subtree. Scans directories from top-down
   # (root to leaves) so that we don't rename files multiple times in the common
   # case where |breakpad_dir| = |breakpad_output_dir|.
-  logging.debug('Renaming breakpad files.')
+  flag_utils.GetTracingLogger().debug('Renaming breakpad files.')
   for subdir_path, _, filenames in os.walk(breakpad_dir, topdown=True):
     for filename in filenames:
       file_path = os.path.abspath(os.path.join(subdir_path, filename))
 
-      if not '.breakpad' in filename:
-        logging.debug("File is not a breakpad file: " + file_path)
+      if '.breakpad' not in filename:
+        flag_utils.GetTracingLogger().debug('File is not a breakpad file: %s',
+                                            file_path)
         continue
 
       module_id = ExtractModuleIdIfValidBreakpad(file_path)
       if module_id is None:
-        logging.debug("Failed to extract file module id: " + file_path)
+        flag_utils.GetTracingLogger().debug(
+            'Failed to extract file module id: %s', file_path)
         continue
 
       new_filename = module_id + '.breakpad'

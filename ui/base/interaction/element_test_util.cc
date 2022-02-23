@@ -5,8 +5,9 @@
 #include "ui/base/interaction/element_test_util.h"
 
 #include "base/test/bind.h"
+#include "ui/base/interaction/element_tracker.h"
 
-namespace ui {
+namespace ui::test {
 
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kTestFrameworkIdentifier);
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kOtherFrameworkIdentifier);
@@ -44,6 +45,11 @@ void TestElementBase::Hide() {
   ElementTracker::GetFrameworkDelegate()->NotifyElementHidden(this);
 }
 
+void TestElementBase::SendCustomEvent(CustomElementEventType event_type) {
+  DCHECK(visible_);
+  ElementTracker::GetFrameworkDelegate()->NotifyCustomEvent(this, event_type);
+}
+
 // static
 TrackedElement::FrameworkIdentifier TestElement::GetFrameworkIdentifier() {
   return kTestFrameworkIdentifier;
@@ -65,4 +71,4 @@ TestElementOtherFramework::GetInstanceFrameworkIdentifier() const {
   return kOtherFrameworkIdentifier;
 }
 
-}  // namespace ui
+}  // namespace ui::test

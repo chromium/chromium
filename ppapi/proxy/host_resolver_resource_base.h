@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "ppapi/c/private/ppb_host_resolver_private.h"
 #include "ppapi/proxy/plugin_resource.h"

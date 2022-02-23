@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -10,7 +10,6 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/authpolicy/authpolicy_helper.h"
@@ -52,7 +51,8 @@ class EnrollmentScreen
     BACK,
     SKIPPED_FOR_TESTS,
     TPM_ERROR,
-    TPM_DBUS_ERROR
+    TPM_DBUS_ERROR,
+    BACK_TO_AUTO_ENROLLMENT_CHECK,
   };
 
   static std::string GetResultString(Result result);
@@ -225,6 +225,19 @@ class EnrollmentScreen
   void TakeTpmOwnership();
   // Processes a reply from tpm_manager.
   void OnTpmStatusResponse(const ::tpm_manager::TakeOwnershipReply& reply);
+  // Checks install attribute status to make sure that it is FIRST_INSTALL, in
+  // this case we proceed with the enrollment. In other cases we either try to
+  // wait for the FIRST_INSTALL status, or show a TpmErrorScreen with an ability
+  // to reboot the device.
+  void CheckInstallAttributesState();
+
+  // Updates the local variable, according to the existence of the Chromad
+  // migration flag file.
+  void UpdateChromadMigrationOobeFlow(bool exists);
+
+  // Indicates whether this is an automatic enrollment as part of Zero-Touch
+  // Hands Off flow or Chromad Migration.
+  bool IsAutomaticEnrollmentFlow();
 
   EnrollmentScreenView* view_;
   ScreenExitCallback exit_callback_;
@@ -238,8 +251,19 @@ class EnrollmentScreen
 
   bool enrollment_failed_once_ = false;
   bool enrollment_succeeded_ = false;
+
   // Check tpm before enrollment starts if --tpm-is-dynamic switch is enabled.
   bool tpm_checked_ = false;
+  // Number of retries to get other than TPM_NOT_OWNED install attributes state.
+  int install_state_retries_ = 0;
+  // Timer for install attribute to resolve.
+  base::OneShotTimer wait_state_timer_;
+
+  // This local flag should be true if the OOBE flow is operating as part of the
+  // Chromad to cloud device migration. If so, "Enterprise enrollment complete"
+  // screen should be skipped.
+  bool is_chromad_migration_oobe_flow_ = false;
+
   std::string enrolling_user_domain_;
   std::unique_ptr<base::ElapsedTimer> elapsed_timer_;
   net::BackoffEntry::Policy retry_policy_;

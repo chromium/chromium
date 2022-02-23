@@ -7,6 +7,7 @@
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
 #include "base/scoped_environment_variable_override.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
@@ -38,6 +39,7 @@
 #include "content/public/test/commit_message_delayer.h"
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_utils.h"
+#include "content/public/test/frame_test_utils.h"
 #include "content/public/test/simple_url_loader_test_helper.h"
 #include "content/public/test/test_utils.h"
 #include "content/shell/browser/shell.h"
@@ -47,13 +49,17 @@
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
+#include "net/cookies/canonical_cookie_test_helpers.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "services/cert_verifier/public/mojom/cert_verifier_service_factory.mojom.h"
+#include "services/network/public/cpp/network_switches.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 #include "services/network/public/mojom/network_service_test.mojom.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/blink/public/common/features.h"
 
 #if BUILDFLAG(ENABLE_PLUGINS)
@@ -63,6 +69,9 @@
 namespace content {
 
 namespace {
+
+const char kHostA[] = "a.test";
+const char kSamePartyCookieName[] = "SamePartyCookie";
 
 using SharedURLLoaderFactoryGetterCallback =
     base::OnceCallback<scoped_refptr<network::SharedURLLoaderFactory>()>;
@@ -558,7 +567,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 // |StoragePartition::GetURLLoaderFactoryForBrowserProcessIOThread()| can be
 // used after crashes.
 // Flaky on Windows. https://crbug.com/840127
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserIOPendingFactory DISABLED_BrowserIOPendingFactory
 #else
 #define MAYBE_BrowserIOPendingFactory BrowserIOPendingFactory
@@ -894,7 +903,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, ServiceWorkerFetch) {
 }
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
 #define MAYBE_SharedWorker SharedWorker
@@ -947,7 +956,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, SSLKeyLogFileMetrics) {
   base::FilePath log_file_path;
   base::CreateTemporaryFile(&log_file_path);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, FilePath::value() returns std::wstring, so convert.
   std::string log_file_path_str = base::WideToUTF8(log_file_path.value());
 #else
@@ -1094,7 +1103,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest, Plugin) {
 #endif
 
 // TODO(crbug.com/901026): Fix deadlock on process startup on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
                        DISABLED_SyncCallDuringRestart) {
   if (IsInProcessNetworkService())
@@ -1126,7 +1135,7 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
 //
 // TODO(lukasza): https://crbug.com/1129592: Flaky on Android and Mac.  No
 // flakiness observed whatsoever on Windows, Linux or CrOS.
-#if defined(OS_ANDROID) || defined(OS_MAC)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
 #define MAYBE_BetweenCommitNavigationAndDidCommit \
   DISABLED_BetweenCommitNavigationAndDidCommit
 #else
@@ -1177,5 +1186,104 @@ IN_PROC_BROWSER_TEST_F(NetworkServiceRestartBrowserTest,
       EvalJs(shell(), JsReplace("fetch($1).then(response => response.text())",
                                 final_resource_url)));
 }
+
+class NetworkServiceRestartWithFirstPartySetBrowserTest
+    : public NetworkServiceRestartBrowserTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  NetworkServiceRestartWithFirstPartySetBrowserTest()
+      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+    if (IsFirstPartySetsEnabled()) {
+      scoped_feature_list_.InitAndEnableFeature(features::kFirstPartySets);
+    } else {
+      scoped_feature_list_.InitAndDisableFeature(features::kFirstPartySets);
+    }
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    NetworkServiceRestartBrowserTest::SetUpCommandLine(command_line);
+    if (IsFirstPartySetsEnabled()) {
+      command_line->AppendSwitchASCII(
+          network::switches::kUseFirstPartySet,
+          "https://a.test,https://b.test,https://c.test");
+    }
+  }
+
+  void SetUpOnMainThread() override {
+    NetworkServiceRestartBrowserTest::SetUpOnMainThread();
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server()->SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server()->AddDefaultHandlers(GetTestDataFilePath());
+    ASSERT_TRUE(https_server()->Start());
+  }
+
+  GURL EchoCookiesUrl(const std::string& host) {
+    return https_server_.GetURL(host, "/echoheader?Cookie");
+  }
+
+  GURL HostURL(const std::string& host) {
+    return https_server()->GetURL(host, "/");
+  }
+
+  std::vector<std::string> ExpectedSamePartyCookieNames() const {
+    // This function assumes that it is used with a cross-site context which may
+    // or may not be same-party, depending on whether First-Party Sets is
+    // enabled or not.
+    if (IsFirstPartySetsEnabled())
+      return {kSamePartyCookieName};
+    return {};
+  }
+
+  void SetSamePartyCookie(const std::string& host) {
+    ASSERT_TRUE(content::SetCookie(
+        web_contents()->GetBrowserContext(), HostURL(host),
+        base::StrCat(
+            {kSamePartyCookieName, "=1; samesite=lax; secure; sameparty"})));
+  }
+
+  std::string EmbedFrameAndGetCookieString() {
+    return ArrangeFramesAndGetContentFromLeaf(web_contents(), https_server(),
+                                              "b.test(%s)", {0},
+                                              EchoCookiesUrl(kHostA));
+  }
+
+  net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  WebContents* web_contents() { return shell()->web_contents(); }
+
+  bool IsFirstPartySetsEnabled() const { return GetParam(); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  net::test_server::EmbeddedTestServer https_server_;
+};
+
+IN_PROC_BROWSER_TEST_P(NetworkServiceRestartWithFirstPartySetBrowserTest,
+                       GetsUseFirstPartySetSwitch) {
+  // Network service is not running out of process, so cannot be crashed.
+  if (!content::IsOutOfProcessNetworkService())
+    return;
+
+  SetSamePartyCookie(kHostA);
+
+  EXPECT_THAT(EmbedFrameAndGetCookieString(),
+              net::CookieStringIs(testing::UnorderedPointwise(
+                  net::NameIs(), ExpectedSamePartyCookieNames())));
+
+  SimulateNetworkServiceCrash();
+
+  // content_shell uses an in-memory cookie store, so cookies are not persisted,
+  // but that's ok. What matters is that the command-line set is re-plumbed to
+  // the network service upon restart.
+  SetSamePartyCookie(kHostA);
+
+  EXPECT_THAT(EmbedFrameAndGetCookieString(),
+              net::CookieStringIs(testing::UnorderedPointwise(
+                  net::NameIs(), ExpectedSamePartyCookieNames())));
+}
+
+INSTANTIATE_TEST_SUITE_P(/* no prefix */,
+                         NetworkServiceRestartWithFirstPartySetBrowserTest,
+                         testing::Bool());
 
 }  // namespace content

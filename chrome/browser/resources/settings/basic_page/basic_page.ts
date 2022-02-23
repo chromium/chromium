@@ -6,14 +6,13 @@
  * @fileoverview
  * 'settings-basic-page' is the settings page containing the actual settings.
  */
-import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/hidden_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/cr_elements/shared_vars_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import '../appearance_page/appearance_page.js';
+import '../privacy_page/privacy_guide_promo.js';
 import '../privacy_page/privacy_page.js';
-import '../privacy_page/privacy_review_promo.js';
 import '../safety_check_page/safety_check_page.js';
 import '../autofill_page/autofill_page.js';
 import '../controls/settings_idle_load.js';
@@ -23,7 +22,7 @@ import '../reset_page/reset_profile_banner.js';
 import '../search_page/search_page.js';
 import '../settings_page/settings_section.js';
 import '../settings_page_css.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 // </if>
 
@@ -33,20 +32,23 @@ import '../default_browser_page/default_browser_page.js';
 // </if>
 
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {beforeNextRender, html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
+import {beforeNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsIdleLoadElement} from '../controls/settings_idle_load.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {PageVisibility} from '../page_visibility.js';
-// <if expr="chromeos or lacros">
+import {SyncStatus} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin, PrefsMixinInterface} from '../prefs/prefs_mixin.js';
-// </if>
+import {MAX_PRIVACY_GUIDE_PROMO_IMPRESSION, PrivacyGuideBrowserProxy, PrivacyGuideBrowserProxyImpl} from '../privacy_page/privacy_guide/privacy_guide_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 import {getSearchManager, SearchResult} from '../search_settings.js';
 import {MainPageMixin, MainPageMixinInterface} from '../settings_page/main_page_mixin.js';
 
-// <if expr="chromeos or lacros">
+import {getTemplate} from './basic_page.html.js';
+
+// <if expr="chromeos_ash or chromeos_lacros">
 const OS_BANNER_INTERACTION_METRIC_NAME =
     'ChromeOS.Settings.OsBannerInteraction';
 
@@ -67,23 +69,13 @@ const CrosSettingsOsBannerInteraction = {
 // TypeScript.
 type Constructor<T> = new (...args: any[]) => T;
 
-// <if expr="chromeos or lacros">
 const SettingsBasicPageElementBase =
     PrefsMixin(MainPageMixin(
-        RouteObserverMixin(PolymerElement) as unknown as
+        RouteObserverMixin(WebUIListenerMixin(PolymerElement)) as unknown as
         Constructor<PolymerElement>)) as unknown as {
-      new (): PolymerElement & PrefsMixinInterface &
-      RouteObserverMixinInterface & MainPageMixinInterface
+      new (): PolymerElement & WebUIListenerMixinInterface &
+      PrefsMixinInterface & RouteObserverMixinInterface & MainPageMixinInterface
     };
-// </if>
-// <if expr="not chromeos and not lacros">
-const SettingsBasicPageElementBase = MainPageMixin(
-                                         RouteObserverMixin(PolymerElement) as
-                                         unknown as
-                                         Constructor<PolymerElement>) as {
-  new (): PolymerElement & RouteObserverMixinInterface & MainPageMixinInterface
-};
-// </if>
 
 export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   static get is() {
@@ -91,7 +83,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -110,6 +102,16 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         value() {
           return {};
         },
+      },
+
+      /**
+       * Whether a search operation is in progress or previous search
+       * results are being displayed.
+       */
+      inSearchMode: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
       },
 
       advancedToggleExpanded: {
@@ -139,7 +141,26 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         },
       },
 
-      // <if expr="chromeos or lacros">
+      /**
+       * True if the basic page should currently display the privacy guide
+       * promo.
+       */
+      showPrivacyGuidePromo_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isManaged_: {
+        type: Boolean,
+        value: false,
+      },
+
+      isChildUser_: {
+        type: Boolean,
+        value: false,
+      },
+
+      // <if expr="chromeos_ash or chromeos_lacros">
       showOSSettingsBanner_: {
         type: Boolean,
         computed: 'computeShowOSSettingsBanner_(' +
@@ -160,18 +181,32 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     };
   }
 
+  static get observers() {
+    return [
+      'updatePrivacyGuidePromoVisibility_(isManaged_, isChildUser_, prefs.privacy_guide.viewed.value)',
+    ];
+  }
+
   pageVisibility: PageVisibility;
+  inSearchMode: boolean;
   advancedToggleExpanded: boolean;
   private hasExpandedSection_: boolean;
   private showResetProfileBanner_: boolean;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private showOSSettingsBanner_: boolean;
   private osBannerShowMetricRecorded_: boolean = false;
   // </if>
 
   private currentRoute_: Route;
   private advancedTogglingInProgress_: boolean;
+
+  private showPrivacyGuidePromo_: boolean;
+  private privacyGuidePromoWasShown_: boolean;
+  private isManaged_: boolean;
+  private isChildUser_: boolean;
+  private privacyGuideBrowserProxy_: PrivacyGuideBrowserProxy =
+      PrivacyGuideBrowserProxyImpl.getInstance();
 
   ready() {
     super.ready();
@@ -183,6 +218,10 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   connectedCallback() {
     super.connectedCallback();
+    this.addWebUIListener(
+        'is-managed-changed', this.onIsManagedChanged_.bind(this));
+    this.addWebUIListener(
+        'sync-status-changed', this.onSyncStatusChanged_.bind(this));
 
     this.currentRoute_ = Router.getInstance().getCurrentRoute();
   }
@@ -205,6 +244,9 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     }
 
     super.currentRouteChanged(newRoute, oldRoute);
+    if (newRoute === routes.PRIVACY) {
+      this.updatePrivacyGuidePromoVisibility_();
+    }
   }
 
   /**
@@ -225,10 +267,40 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         .get();
   }
 
-  private showPrivacyReviewPromo_(visibility: boolean|undefined): boolean {
-    // TODO(crbug/1215630): Only show on the first look at the privacy page.
-    return this.showPage_(visibility) &&
-        loadTimeData.getBoolean('privacyReviewEnabled');
+  private updatePrivacyGuidePromoVisibility_() {
+    if (this.pageVisibility.privacy === false ||
+        !loadTimeData.getBoolean('privacyGuideEnabled') || this.isManaged_ ||
+        this.isChildUser_ || this.prefs === undefined ||
+        this.getPref('privacy_guide.viewed').value ||
+        this.privacyGuideBrowserProxy_.getPromoImpressionCount() >=
+            MAX_PRIVACY_GUIDE_PROMO_IMPRESSION ||
+        this.currentRoute_ !== routes.PRIVACY) {
+      this.showPrivacyGuidePromo_ = false;
+      return;
+    }
+    this.showPrivacyGuidePromo_ = true;
+    if (!this.privacyGuidePromoWasShown_) {
+      this.privacyGuideBrowserProxy_.incrementPromoImpressionCount();
+      this.privacyGuidePromoWasShown_ = true;
+    }
+  }
+
+  private onIsManagedChanged_(isManaged: boolean) {
+    // If the user became managed, then update the variable to trigger a change
+    // to privacy guide promo's visibility. However, if the user was managed
+    // before and is no longer now, then keep the managed state as true, because
+    // the Settings route for privacy guide would still be unavailable until
+    // the page is reloaded.
+    this.isManaged_ = this.isManaged_ || isManaged;
+  }
+
+  private onSyncStatusChanged_(syncStatus: SyncStatus) {
+    // If the user signed in to a child user account, then update the variable
+    // to trigger a change to privacy guide promo's visibility. However, if the
+    // user was a child user before and is no longer now then keep the childUser
+    // state as true, because the Settings route for privacy guide would still
+    // be unavailable until the page is reloaded.
+    this.isChildUser_ = this.isChildUser_ || !!syncStatus.childUser;
   }
 
   /**
@@ -266,7 +338,7 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
     });
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private computeShowOSSettingsBanner_(): boolean|undefined {
     // this.prefs is implicitly used by this.getPref() below.
     if (!this.prefs || !this.currentRoute_) {
@@ -348,43 +420,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
         new CustomEvent(eventName, {bubbles: true, composed: true, detail}));
   }
 
-  private advancedToggleClicked_() {
-    if (this.advancedTogglingInProgress_) {
-      return;
-    }
-
-    this.advancedTogglingInProgress_ = true;
-    const toggle =
-        this.shadowRoot!.querySelector('#toggleContainer') as HTMLElement;
-    if (!this.advancedToggleExpanded) {
-      this.advancedToggleExpanded = true;
-      microTask.run(() => {
-        this.getIdleLoad_().then(() => {
-          this.fire_('scroll-to-top', {
-            top: toggle.offsetTop,
-            callback: () => {
-              this.advancedTogglingInProgress_ = false;
-            }
-          });
-        });
-      });
-    } else {
-      this.fire_('scroll-to-bottom', {
-        bottom: toggle.offsetTop + toggle.offsetHeight + 24,
-        callback: () => {
-          this.advancedToggleExpanded = false;
-          this.advancedTogglingInProgress_ = false;
-        }
-      });
-    }
-  }
-
-  private showAdvancedToggle_(
-      inSearchMode: boolean, hasExpandedSection: boolean): boolean {
-    return !inSearchMode && !hasExpandedSection &&
-        !loadTimeData.getBoolean('enableLandingPageRedesign');
-  }
-
   /**
    * @return Whether to show the basic page, taking into account both routing
    *     and search state.
@@ -409,14 +444,6 @@ export class SettingsBasicPageElement extends SettingsBasicPageElementBase {
 
   private showAdvancedSettings_(visibility?: boolean): boolean {
     return visibility !== false;
-  }
-
-  private getArrowIcon_(opened: boolean): string {
-    return opened ? 'cr:arrow-drop-up' : 'cr:arrow-drop-down';
-  }
-
-  private boolToString_(bool: boolean): string {
-    return bool.toString();
   }
 }
 

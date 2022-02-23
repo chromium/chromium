@@ -10,9 +10,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "chrome/browser/net/prediction_options.h"
 #include "chrome/browser/predictors/loading_test_util.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -100,7 +101,7 @@ class LoadingPredictorTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoadingPredictor> predictor_;
-  StrictMock<MockResourcePrefetchPredictor>* mock_predictor_;
+  raw_ptr<StrictMock<MockResourcePrefetchPredictor>> mock_predictor_;
 };
 
 LoadingPredictorTest::~LoadingPredictorTest() = default;
@@ -132,9 +133,8 @@ void LoadingPredictorTest::TearDown() {
 }
 
 void LoadingPredictorTest::SetPreference() {
-  profile_->GetPrefs()->SetInteger(
-      prefs::kNetworkPredictionOptions,
-      chrome_browser_net::NETWORK_PREDICTION_NEVER);
+  prefetch::SetPreloadPagesState(profile_->GetPrefs(),
+                                 prefetch::PreloadPagesState::kNoPreloading);
 }
 
 class LoadingPredictorPreconnectTest : public LoadingPredictorTest {
@@ -144,7 +144,7 @@ class LoadingPredictorPreconnectTest : public LoadingPredictorTest {
  protected:
   void SetPreference() override;
 
-  StrictMock<MockPreconnectManager>* mock_preconnect_manager_;
+  raw_ptr<StrictMock<MockPreconnectManager>> mock_preconnect_manager_;
 };
 
 void LoadingPredictorPreconnectTest::SetUp() {
@@ -157,9 +157,8 @@ void LoadingPredictorPreconnectTest::SetUp() {
 }
 
 void LoadingPredictorPreconnectTest::SetPreference() {
-  profile_->GetPrefs()->SetInteger(
-      prefs::kNetworkPredictionOptions,
-      chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+  prefetch::SetPreloadPagesState(
+      profile_->GetPrefs(), prefetch::PreloadPagesState::kStandardPreloading);
 }
 
 TEST_F(LoadingPredictorTest, TestOnNavigationStarted) {

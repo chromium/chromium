@@ -7,9 +7,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "content/public/browser/browser_url_handler.h"
-#include "content/public/browser/render_view_host.h"
 #include "content/public/browser/site_instance.h"
-#include "content/public/browser/web_contents.h"
 #include "extensions/buildflags/buildflags.h"
 #include "url/gurl.h"
 
@@ -17,20 +15,9 @@
 #include "extensions/browser/extension_registry.h"
 #endif
 
-using content::RenderViewHost;
 using content::SiteInstance;
-using content::WebContents;
 
 namespace tab_util {
-
-content::WebContents* GetWebContentsByID(int render_process_id,
-                                         int render_view_id) {
-  RenderViewHost* render_view_host =
-      RenderViewHost::FromID(render_process_id, render_view_id);
-  if (!render_view_host)
-    return NULL;
-  return WebContents::FromRenderViewHost(render_view_host);
-}
 
 scoped_refptr<SiteInstance> GetSiteInstanceForNewTab(Profile* profile,
                                                      GURL url) {

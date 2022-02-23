@@ -5,6 +5,7 @@
 #import "chrome/browser/ui/cocoa/main_menu_builder.h"
 
 #include "base/feature_list.h"
+#include "base/mac/mac_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/ui/cocoa/accelerators_cocoa.h"
@@ -219,6 +220,14 @@ base::scoped_nsobject<NSMenuItem> BuildEditMenu(
                       Item(IDS_EDIT_TEXT_REPLACEMENT_MAC)
                           .action(@selector(toggleAutomaticTextReplacement:)),
                 }),
+                Item(IDS_EDIT_TRANSFORMATIONS_MAC).submenu({
+                  Item(IDS_EDIT_MAKE_UPPERCASE_MAC)
+                      .action(@selector(uppercaseWord:)),
+                  Item(IDS_EDIT_MAKE_LOWERCASE_MAC)
+                      .action(@selector(lowercaseWord:)),
+                  Item(IDS_EDIT_CAPITALIZE_MAC)
+                      .action(@selector(capitalizeWord:)),
+                }),
                 Item(IDS_SPEECH_MAC).tag(50158).submenu({
                   Item(IDS_SPEECH_START_SPEAKING_MAC)
                       .action(@selector(startSpeaking:)),
@@ -262,6 +271,12 @@ base::scoped_nsobject<NSMenuItem> BuildViewMenu(
                 Item(IDS_ENTER_FULLSCREEN_MAC)
                     .tag(IDC_FULLSCREEN)
                     .action(@selector(toggleFullScreen:)),
+                Item(IDS_ENTER_FULLSCREEN_MAC)
+                    .action(@selector(toggleFullScreen:))
+                    .is_alternate()
+                    .remove_if(base::mac::IsAtMostOS11())
+                    .key_equivalent(@"f", NSEventModifierFlagCommand |
+                                              NSEventModifierFlagControl),
                 Item(IDS_TEXT_DEFAULT_MAC).command_id(IDC_ZOOM_NORMAL),
                 Item(IDS_TEXT_BIGGER_MAC).command_id(IDC_ZOOM_PLUS),
                 Item(IDS_TEXT_SMALLER_MAC).command_id(IDC_ZOOM_MINUS),

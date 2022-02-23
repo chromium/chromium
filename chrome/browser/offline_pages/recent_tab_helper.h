@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/offline_pages/core/offline_page_model.h"
 #include "components/offline_pages/core/snapshot_controller.h"
@@ -55,10 +56,8 @@ class RecentTabHelper
   // content::WebContentsObserver
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
   void WebContentsDestroyed() override;
   void OnVisibilityChanged(content::Visibility visibility) override;
 
@@ -137,7 +136,7 @@ class RecentTabHelper
 
   // Page model is a service, no ownership. Can be null - for example, in
   // case when tab is in incognito profile.
-  OfflinePageModel* page_model_ = nullptr;
+  raw_ptr<OfflinePageModel> page_model_ = nullptr;
 
   // If false, never make snapshots off the attached WebContents.
   // Not page-specific.

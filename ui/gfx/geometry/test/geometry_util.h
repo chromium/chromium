@@ -69,6 +69,16 @@ Transform InvertAndCheck(const Transform& transform);
                                                const BoxF& lhs,
                                                const BoxF& rhs);
 
+#define EXPECT_BOXF_NEAR(a, b, abs_error) \
+  EXPECT_PRED_FORMAT3(::gfx::AssertBoxFloatNear, a, b, abs_error)
+
+::testing::AssertionResult AssertBoxFloatNear(const char* lhs_expr,
+                                              const char* rhs_expr,
+                                              const char* abs_error_expr,
+                                              const BoxF& lhs,
+                                              const BoxF& rhs,
+                                              float abs_error);
+
 #define EXPECT_POINTF_EQ(a, b) \
   EXPECT_PRED_FORMAT2(::gfx::AssertPointFloatEqual, a, b)
 

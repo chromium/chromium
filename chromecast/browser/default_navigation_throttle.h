@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_DEFAULT_NAVIGATION_THROTTLE_H_
 #define CHROMECAST_BROWSER_DEFAULT_NAVIGATION_THROTTLE_H_
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {

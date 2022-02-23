@@ -15,14 +15,12 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/task/core/external_file_handler.h"
 
-#include <errno.h>
-#include <fcntl.h>
 #include <stddef.h>
 #include <memory>
 #include <string>
 
-#include "absl/memory/memory.h"
-#include "absl/strings/str_format.h"
+#include "absl/memory/memory.h"       // from @com_google_absl
+#include "absl/strings/str_format.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/port/statusor.h"
@@ -30,14 +28,11 @@ limitations under the License.
 namespace tflite {
 namespace task {
 namespace core {
-namespace {
 
 using ::absl::StatusCode;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
-
-}  // namespace
 
 /* static */
 StatusOr<std::unique_ptr<ExternalFileHandler>>
@@ -56,21 +51,15 @@ absl::Status ExternalFileHandler::MapExternalFile() {
   if (!external_file_.file_content().empty()) {
     return absl::OkStatus();
   }
-  return CreateStatusWithPayload(
-      StatusCode::kInvalidArgument,
-      "ExternalFile must have 'file_content' set, loading from"
-      "'file_name' is not supported.",
-      TfLiteSupportStatus::kInvalidArgumentError);
+
+  return CreateStatusWithPayload(StatusCode::kInvalidArgument,
+                                 "ExternalFile must specify 'file_content' "
+                                 "to be compatible with Chromium.",
+                                 TfLiteSupportStatus::kInvalidArgumentError);
 }
 
 absl::string_view ExternalFileHandler::GetFileContent() {
-  if (!external_file_.file_content().empty()) {
-    return external_file_.file_content();
-  } else {
-    return absl::string_view(static_cast<const char*>(buffer_) +
-                                 buffer_offset_ - buffer_aligned_offset_,
-                             buffer_size_);
-  }
+  return external_file_.file_content();
 }
 
 ExternalFileHandler::~ExternalFileHandler() = default;

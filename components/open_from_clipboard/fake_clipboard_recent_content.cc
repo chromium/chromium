@@ -66,6 +66,22 @@ void FakeClipboardRecentContent::HasRecentContentFromClipboard(
   std::move(callback).Run(matching_types);
 }
 
+absl::optional<std::set<ClipboardContentType>>
+FakeClipboardRecentContent::GetCachedClipboardContentTypes() {
+  std::set<ClipboardContentType> clipboard_content_types;
+
+  if (clipboard_image_content_)
+    clipboard_content_types.insert(ClipboardContentType::Image);
+
+  if (clipboard_text_content_)
+    clipboard_content_types.insert(ClipboardContentType::Text);
+
+  if (clipboard_url_content_)
+    clipboard_content_types.insert(ClipboardContentType::URL);
+
+  return clipboard_content_types;
+}
+
 void FakeClipboardRecentContent::GetRecentURLFromClipboard(
     GetRecentURLCallback callback) {
   std::move(callback).Run(GetRecentURLFromClipboard());

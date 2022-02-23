@@ -76,16 +76,6 @@ CordRepSubstring* Substring(CordRep* rep) {
   return substring;
 }
 
-// Creates a concat on the provided reps
-CordRepConcat* Concat(CordRep* left, CordRep* right) {
-  auto* concat = new CordRepConcat;
-  concat->length = left->length + right->length;
-  concat->tag = CONCAT;
-  concat->left = left;
-  concat->right = right;
-  return concat;
-}
-
 // Reference count helper
 struct RefHelper {
   std::vector<CordRep*> refs;
@@ -158,10 +148,6 @@ double FairShareImpl(CordRep* rep, size_t ref) {
     rep->ring()->ForEach([&](CordRepRing::index_type i) {
       self += FairShareImpl(rep->ring()->entry_child(i), 1);
     });
-  } else if (rep->tag == CONCAT) {
-    self = SizeOf(rep->concat());
-    children = FairShareImpl(rep->concat()->left, ref) +
-               FairShareImpl(rep->concat()->right, ref);
   } else {
     assert(false);
   }
@@ -307,80 +293,6 @@ TEST(CordzInfoStatisticsTest, SharedSubstring) {
   EXPECT_THAT(SampleCord(substring), EqStatistics(expected));
 }
 
-TEST(CordzInfoStatisticsTest, Concat) {
-  RefHelper ref;
-  auto* flat1 = Flat(300);
-  auto* flat2 = Flat(2000);
-  auto* concat = ref.NeedsUnref(Concat(flat1, flat2));
-
-  CordzStatistics expected;
-  expected.size = concat->length;
-  expected.estimated_memory_usage =
-      SizeOf(concat) + SizeOf(flat1) + SizeOf(flat2);
-  expected.estimated_fair_share_memory_usage = expected.estimated_memory_usage;
-  expected.node_count = 3;
-  expected.node_counts.flat = 2;
-  expected.node_counts.flat_512 = 1;
-  expected.node_counts.concat = 1;
-
-  EXPECT_THAT(SampleCord(concat), EqStatistics(expected));
-}
-
-TEST(CordzInfoStatisticsTest, DeepConcat) {
-  RefHelper ref;
-  auto* flat1 = Flat(300);
-  auto* flat2 = Flat(2000);
-  auto* flat3 = Flat(400);
-  auto* external = External(3000);
-  auto* substring = Substring(external);
-  auto* concat1 = Concat(flat1, flat2);
-  auto* concat2 = Concat(flat3, substring);
-  auto* concat = ref.NeedsUnref(Concat(concat1, concat2));
-
-  CordzStatistics expected;
-  expected.size = concat->length;
-  expected.estimated_memory_usage = SizeOf(concat) * 3 + SizeOf(flat1) +
-                                    SizeOf(flat2) + SizeOf(flat3) +
-                                    SizeOf(external) + SizeOf(substring);
-  expected.estimated_fair_share_memory_usage = expected.estimated_memory_usage;
-
-  expected.node_count = 8;
-  expected.node_counts.flat = 3;
-  expected.node_counts.flat_512 = 2;
-  expected.node_counts.external = 1;
-  expected.node_counts.concat = 3;
-  expected.node_counts.substring = 1;
-
-  EXPECT_THAT(SampleCord(concat), EqStatistics(expected));
-}
-
-TEST(CordzInfoStatisticsTest, DeepSharedConcat) {
-  RefHelper ref;
-  auto* flat1 = Flat(40);
-  auto* flat2 = ref.Ref(Flat(2000), 4);
-  auto* flat3 = Flat(70);
-  auto* external = ref.Ref(External(3000));
-  auto* substring = ref.Ref(Substring(external), 3);
-  auto* concat1 = Concat(flat1, flat2);
-  auto* concat2 = Concat(flat3, substring);
-  auto* concat = ref.Ref(ref.NeedsUnref(Concat(concat1, concat2)));
-
-  CordzStatistics expected;
-  expected.size = concat->length;
-  expected.estimated_memory_usage = SizeOf(concat) * 3 + SizeOf(flat1) +
-                                    SizeOf(flat2) + SizeOf(flat3) +
-                                    SizeOf(external) + SizeOf(substring);
-  expected.estimated_fair_share_memory_usage = FairShare(concat);
-  expected.node_count = 8;
-  expected.node_counts.flat = 3;
-  expected.node_counts.flat_64 = 1;
-  expected.node_counts.flat_128 = 1;
-  expected.node_counts.external = 1;
-  expected.node_counts.concat = 3;
-  expected.node_counts.substring = 1;
-
-  EXPECT_THAT(SampleCord(concat), EqStatistics(expected));
-}
 
 TEST(CordzInfoStatisticsTest, Ring) {
   RefHelper ref;
@@ -539,19 +451,15 @@ TEST(CordzInfoStatisticsTest, BtreeNodeShared) {
 TEST(CordzInfoStatisticsTest, Crc) {
   RefHelper ref;
   auto* left = Flat(1000);
-  auto* right = Flat(1000);
-  auto* concat = Concat(left, right);
-  auto* crc = ref.NeedsUnref(CordRepCrc::New(concat, 12345));
+  auto* crc = ref.NeedsUnref(CordRepCrc::New(left, 12345));
 
   CordzStatistics expected;
-  expected.size = concat->length;
-  expected.estimated_memory_usage =
-      SizeOf(crc) + SizeOf(concat) + SizeOf(left) + SizeOf(right);
+  expected.size = left->length;
+  expected.estimated_memory_usage = SizeOf(crc) + SizeOf(left);
   expected.estimated_fair_share_memory_usage = expected.estimated_memory_usage;
-  expected.node_count = 4;
-  expected.node_counts.flat = 2;
-  expected.node_counts.flat_1k = 2;
-  expected.node_counts.concat = 1;
+  expected.node_count = 2;
+  expected.node_counts.flat = 1;
+  expected.node_counts.flat_1k = 1;
   expected.node_counts.crc = 1;
 
   EXPECT_THAT(SampleCord(crc), EqStatistics(expected));

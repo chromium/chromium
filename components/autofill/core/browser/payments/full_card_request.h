@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -80,7 +81,7 @@ class FullCardRequest final : public CardUnmaskDelegate {
     virtual void OnUnmaskVerificationResult(
         AutofillClient::PaymentsRpcResult result) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Returns whether or not the user, while on the CVC prompt, should be
     // offered to switch to FIDO authentication for card unmasking. This will
     // always be false for Desktop since FIDO authentication is offered as a
@@ -129,9 +130,9 @@ class FullCardRequest final : public CardUnmaskDelegate {
   // Delegate::OnFullCardRequestFailed(). Only one request should be active at a
   // time. |last_committed_url_origin| is the full origin of the url where the
   // card retrieval happens. |context_token| is used for providing context of
-  // the request to the server to link related
-  // requests. |last_committed_url_origin| and |context_token| are populated if
-  // the full card request is for a virtual card.
+  // the request to the server to link related requests.
+  // |last_committed_url_origin| and |context_token| are populated if the full
+  // card request is for a virtual card.
   //
   // If the card is local, has a non-empty GUID, and the user has updated its
   // expiration date, then this function will write the new information to
@@ -205,13 +206,13 @@ class FullCardRequest final : public CardUnmaskDelegate {
   void Reset();
 
   // Used to fetch risk data for this request.
-  RiskDataLoader* const risk_data_loader_;
+  const raw_ptr<RiskDataLoader> risk_data_loader_;
 
   // Responsible for unmasking a masked server card.
-  payments::PaymentsClient* const payments_client_;
+  const raw_ptr<payments::PaymentsClient> payments_client_;
 
   // Responsible for updating the server card on disk after it's been unmasked.
-  PersonalDataManager* const personal_data_manager_;
+  const raw_ptr<PersonalDataManager> personal_data_manager_;
 
   // Receiver of the full PAN and CVC.
   base::WeakPtr<ResultDelegate> result_delegate_;

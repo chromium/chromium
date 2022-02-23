@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/strong_alias.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/cors/preflight_cache.h"
@@ -33,26 +33,41 @@ class NetworkService;
 
 namespace cors {
 
+// Name of a histogram that records preflight errors (CorsError values).
+extern const char kPreflightErrorHistogramName[];
+
+// Name of a histogram that records suppressed preflight errors, aka warnings.
+extern const char kPreflightWarningHistogramName[];
+
 // A class to manage CORS-preflight, making a CORS-preflight request, checking
 // its result, and owning a CORS-preflight cache.
 class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
  public:
   using CompletionCallback = base::OnceCallback<
       void(int net_error, absl::optional<CorsErrorStatus>, bool)>;
+
   using WithTrustedHeaderClient =
       base::StrongAlias<class WithTrustedHeaderClientTag, bool>;
-  // Creates a CORS-preflight ResourceRequest for a specified |request| for a
+
+  // TODO(https://crbug.com/1268378): Remove this once enforcement is always on.
+  using EnforcePrivateNetworkAccessHeader =
+      base::StrongAlias<class EnforcePrivateNetworkAccessHeaderTag, bool>;
+
+  // Creates a CORS-preflight ResourceRequest for a specified `request` for a
   // URL that is originally requested.
   static std::unique_ptr<ResourceRequest> CreatePreflightRequestForTesting(
       const ResourceRequest& request,
       bool tainted = false);
+
   // Creates a PreflightResult for a specified response parameters for testing.
   static std::unique_ptr<PreflightResult> CreatePreflightResultForTesting(
       const GURL& final_url,
       const mojom::URLResponseHead& head,
       const ResourceRequest& original_request,
       bool tainted,
+      EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
       absl::optional<CorsErrorStatus>* detected_error_status);
+
   // Checks CORS aceess on the CORS-preflight response parameters for testing.
   static absl::optional<CorsErrorStatus> CheckPreflightAccessForTesting(
       const GURL& response_url,
@@ -61,10 +76,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const absl::optional<std::string>& allow_credentials_header,
       mojom::CredentialsMode actual_credentials_mode,
       const url::Origin& origin);
-  // Checks errors for the currently experimental
-  // "Access-Control-Allow-External" header for testing.
-  static absl::optional<CorsErrorStatus> CheckExternalPreflightForTesting(
-      const absl::optional<std::string>& allow_external);
 
   explicit PreflightController(NetworkService* network_service);
 
@@ -81,10 +92,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
       const ResourceRequest& resource_request,
       WithTrustedHeaderClient with_trusted_header_client,
       NonWildcardRequestHeadersSupport non_wildcard_request_headers_support,
+      EnforcePrivateNetworkAccessHeader enforce_private_network_access_header,
       bool tainted,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       mojom::URLLoaderFactory* loader_factory,
       const net::IsolationInfo& isolation_info,
+      mojom::ClientSecurityStatePtr client_security_state,
       mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
       const net::NetLogWithSource& net_log);
 
@@ -103,7 +116,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) PreflightController final {
   std::set<std::unique_ptr<PreflightLoader>, base::UniquePtrComparator>
       loaders_;
 
-  NetworkService* const network_service_;
+  const raw_ptr<NetworkService> network_service_;
 };
 
 }  // namespace cors

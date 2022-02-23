@@ -53,7 +53,7 @@ std::string GetPrivateFootprintHistogramName(HistogramProcessType type) {
 }
 
 base::TimeDelta GetDelayForNextMemoryLog() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::TimeDelta mean_time = base::Minutes(5);
 #else
   base::TimeDelta mean_time = base::Minutes(30);

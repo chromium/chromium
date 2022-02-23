@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/win/atl.h"
 #include "chrome/updater/win/install_progress_observer.h"
@@ -87,7 +88,7 @@ class InstallStoppedWnd : public CAxDialogImpl<InstallStoppedWnd>,
 
   THREAD_CHECKER(thread_checker_);
 
-  WTL::CMessageLoop* message_loop_ = nullptr;
+  raw_ptr<WTL::CMessageLoop> message_loop_ = nullptr;
   HWND parent_ = nullptr;
 
   WTL::CFont default_font_;
@@ -192,7 +193,7 @@ class ProgressWnd : public CompleteWnd, public InstallProgressObserver {
 
   std::unique_ptr<InstallStoppedWnd> install_stopped_wnd_;
 
-  ProgressWndEvents* events_sink_ = nullptr;
+  raw_ptr<ProgressWndEvents> events_sink_ = nullptr;
   std::vector<std::u16string> post_install_urls_;
   bool is_canceled_ = false;
 

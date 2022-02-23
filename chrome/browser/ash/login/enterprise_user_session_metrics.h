@@ -7,12 +7,13 @@
 
 #include "base/time/time.h"
 #include "components/user_manager/user_type.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.h
-#include "chromeos/login/auth/user_context.h"
 
 class PrefRegistrySimple;
 
 namespace ash {
+
+class UserContext;
+
 namespace enterprise_user_session_metrics {
 
 // Enum for logins metrics on an enrolled device.

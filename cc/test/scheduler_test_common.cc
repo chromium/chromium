@@ -148,8 +148,6 @@ TestScheduler::TestScheduler(
                 layer_tree_host_id,
                 task_runner,
                 std::move(compositor_timing_history),
-                nullptr,
-                nullptr,
                 compositor_frame_reporting_controller,
                 power_mode_arbiter),
       now_src_(now_src) {}

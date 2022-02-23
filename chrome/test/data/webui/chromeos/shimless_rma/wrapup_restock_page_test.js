@@ -5,21 +5,21 @@
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
 import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interface_provider.js';
-import {ShimlessRmaElement} from 'chrome://shimless-rma/shimless_rma.js';
-import {WrapupRestockPageElement} from 'chrome://shimless-rma/wrapup_restock_page.js';
+import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
+import {WrapupRestockPage} from 'chrome://shimless-rma/wrapup_restock_page.js';
 
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from '../../chai_assert.js';
 import {flushTasks} from '../../test_util.js';
 
 export function wrapupRestockPageTest() {
   /**
-   * ShimlessRmaElement is needed to handle the 'transition-state' event used by
+   * ShimlessRma is needed to handle the 'transition-state' event used by
    * the shutdown button.
-   * @type {?ShimlessRmaElement}
+   * @type {?ShimlessRma}
    */
   let shimless_rma_component = null;
 
-  /** @type {?WrapupRestockPageElement} */
+  /** @type {?WrapupRestockPage} */
   let component = null;
 
   /** @type {?FakeShimlessRmaService} */
@@ -48,12 +48,12 @@ export function wrapupRestockPageTest() {
   function initializeRestockPage() {
     assertFalse(!!component);
 
-    shimless_rma_component = /** @type {!ShimlessRmaElement} */ (
-        document.createElement('shimless-rma'));
+    shimless_rma_component =
+        /** @type {!ShimlessRma} */ (document.createElement('shimless-rma'));
     assertTrue(!!shimless_rma_component);
     document.body.appendChild(shimless_rma_component);
 
-    component = /** @type {!WrapupRestockPageElement} */ (
+    component = /** @type {!WrapupRestockPage} */ (
         document.createElement('wrapup-restock-page'));
     assertTrue(!!component);
     document.body.appendChild(component);
@@ -88,15 +88,10 @@ export function wrapupRestockPageTest() {
       return resolver.promise;
     };
 
-    let expectedResult = {foo: 'bar'};
-    let savedResult;
-    component.onNextButtonClick().then((result) => savedResult = result);
-    // Resolve to a distinct result to confirm it was not modified.
-    resolver.resolve(expectedResult);
-    await flushTasks();
+    component.shadowRoot.querySelector('#continue').click();
+    await resolver;
 
     assertEquals(1, callCounter);
-    assertDeepEquals(expectedResult, savedResult);
   });
 
   test('RestockPageOnShutdownCallsShutdownForRestock', async () => {
@@ -111,5 +106,17 @@ export function wrapupRestockPageTest() {
     await clickShutdownButton();
 
     assertEquals(1, restockCallCounter);
+  });
+
+  test('RestockPageButtonsDisabled', async () => {
+    await initializeRestockPage();
+
+    const continueButton = component.shadowRoot.querySelector('#continue');
+    const shutdownButton = component.shadowRoot.querySelector('#shutdown');
+    assertFalse(continueButton.disabled);
+    assertFalse(shutdownButton.disabled);
+    component.allButtonsDisabled = true;
+    assertTrue(continueButton.disabled);
+    assertTrue(shutdownButton.disabled);
   });
 }

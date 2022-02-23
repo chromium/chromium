@@ -121,9 +121,9 @@ Polymer({
 
   ready() {
     const r = routes;
-    this.addFocusConfig_(r.CROSTINI_DETAILS, '#crostiniSize');
-    this.addFocusConfig_(r.ACCOUNTS, '#otherUsersSize');
-    this.addFocusConfig_(
+    this.addFocusConfig(r.CROSTINI_DETAILS, '#crostiniSize');
+    this.addFocusConfig(r.ACCOUNTS, '#otherUsersSize');
+    this.addFocusConfig(
         r.EXTERNAL_STORAGE_PREFERENCES, '#externalStoragePreferences');
     this.browserProxy_ = DevicePageBrowserProxyImpl.getInstance();
   },

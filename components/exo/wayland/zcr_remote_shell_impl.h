@@ -12,6 +12,8 @@
 #include "components/exo/client_controlled_shell_surface.h"
 #include "components/exo/input_method_surface.h"
 #include "components/exo/notification_surface.h"
+#include "components/exo/seat.h"
+#include "components/exo/seat_observer.h"
 #include "components/exo/surface.h"
 #include "components/exo/toast_surface.h"
 #include "components/exo/wayland/wayland_display_observer.h"
@@ -46,7 +48,8 @@ class WaylandRemoteOutput : public WaylandDisplayObserver {
 // Implements remote shell interface and monitors workspace state needed
 // for the remote shell interface.
 class WaylandRemoteShell : public ash::TabletModeObserver,
-                           public display::DisplayObserver {
+                           public display::DisplayObserver,
+                           public SeatObserver {
  public:
   using OutputResourceProvider = base::RepeatingCallback<wl_resource*(int64_t)>;
 
@@ -84,10 +87,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void SetUseDefaultScaleCancellation(bool use_default_scale);
 
   void OnRemoteSurfaceDestroyed(wl_resource* resource);
+
   // Overridden from display::DisplayObserver:
   void OnDisplayAdded(const display::Display& new_display) override;
   void OnDisplayRemoved(const display::Display& old_display) override;
-
+  void OnDisplayTabletStateChanged(display::TabletState state) override;
   void OnDisplayMetricsChanged(const display::Display& display,
                                uint32_t changed_metrics) override;
 
@@ -95,6 +99,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
   void OnTabletModeStarted() override;
   void OnTabletModeEnding() override;
   void OnTabletModeEnded() override;
+
+  // Overridden from SeatObserver:
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override;
 
   WaylandRemoteShellEventMapping const event_mapping_;
 
@@ -162,7 +171,11 @@ class WaylandRemoteShell : public ash::TabletModeObserver,
 
   base::flat_map<wl_resource*, BoundsChangeData> pending_bounds_changes_;
 
+  bool last_has_focused_client_ = false;
+
   display::ScopedDisplayObserver display_observer_{this};
+
+  Seat* const seat_;
 
   base::WeakPtrFactory<WaylandRemoteShell> weak_ptr_factory_{this};
 

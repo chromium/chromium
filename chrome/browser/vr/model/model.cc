@@ -4,6 +4,8 @@
 
 #include "chrome/browser/vr/model/model.h"
 
+#include "base/containers/adapters.h"
+
 namespace vr {
 
 namespace {
@@ -70,9 +72,9 @@ UiMode Model::get_mode() const {
 }
 
 UiMode Model::get_last_opaque_mode() const {
-  for (auto iter = ui_modes.rbegin(); iter != ui_modes.rend(); ++iter) {
-    if (IsOpaqueUiMode(*iter))
-      return *iter;
+  for (const UiMode& ui_mode : base::Reversed(ui_modes)) {
+    if (IsOpaqueUiMode(ui_mode))
+      return ui_mode;
   }
   DCHECK(false) << "get_last_opaque_mode should only be called with at least "
                    "one opaque mode.";

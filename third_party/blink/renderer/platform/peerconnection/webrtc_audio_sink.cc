@@ -275,7 +275,8 @@ rtc::scoped_refptr<webrtc::AudioProcessorInterface>
 WebRtcAudioSink::Adapter::GetAudioProcessor() {
   DCHECK(!signaling_task_runner_ ||
          signaling_task_runner_->RunsTasksInCurrentSequence());
-  return audio_processor_.get();
+  return rtc::scoped_refptr<webrtc::AudioProcessorInterface>(
+      audio_processor_.get());
 }
 
 webrtc::AudioSourceInterface* WebRtcAudioSink::Adapter::GetSource() const {

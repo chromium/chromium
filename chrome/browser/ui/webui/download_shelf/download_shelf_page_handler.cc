@@ -119,7 +119,7 @@ DownloadShelfPageHandler::GetDownloadItemFromUIModel(
   download_item->should_promote_origin = download_model->ShouldPromoteOrigin();
   download_item->show_download_start_time =
       (download_shelf_ui_->GetShowDownloadTime(download->GetId()) -
-       base::TimeTicks::UnixEpoch())
+       base::Time::UnixEpoch())
           .InMilliseconds();
   download_item->state = download->GetState();
   download_item->status_text =

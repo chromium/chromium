@@ -1,35 +1,9 @@
-import("//third_party/protobuf/proto_library.gni")
-
 if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
-proto_library("proto") {
-  proto_in_dir = "//"
-  sources = [ "proto/about_this_site_metadata.proto" ]
-
-  deps = [ "//components/optimization_guide/proto:optimization_guide_proto" ]
-}
-
-if (is_android) {
-  proto_java_library("proto_java") {
-    proto_path = "//"
-    sources = [ "proto/about_this_site_metadata.proto" ]
-
-    deps = [
-      "//components/optimization_guide/proto:optimization_guide_proto_java",
-    ]
-  }
-}
-
 static_library("page_info") {
   sources = [
-    "about_this_site_service.cc",
-    "about_this_site_service.h",
-    "about_this_site_validation.cc",
-    "about_this_site_validation.h",
-    "features.cc",
-    "features.h",
     "page_info.cc",
     "page_info.h",
     "page_info_delegate.h",
@@ -47,7 +21,7 @@ static_library("page_info") {
     "//components/keyed_service/core",
     "//components/omnibox/common",
     "//components/optimization_guide/core",
-    "//components/page_info:proto",
+    "//components/page_info/core",
     "//components/password_manager/core/browser",
     "//components/permissions",
     "//components/prefs",
@@ -86,23 +60,4 @@ if (is_android) {
   java_cpp_enum("page_info_action_javagen") {
     sources = [ "page_info.h" ]
   }
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [
-    "about_this_site_service_unittest.cc",
-    "about_this_site_validation_unittest.cc",
-  ]
-
-  deps = [
-    ":page_info",
-    ":proto",
-    "//base",
-    "//base/test:test_support",
-    "//components/optimization_guide/proto:optimization_guide_proto",
-    "//services/metrics/public/cpp:metrics_cpp",
-    "//testing/gtest",
-    "//url:url",
-  ]
 }

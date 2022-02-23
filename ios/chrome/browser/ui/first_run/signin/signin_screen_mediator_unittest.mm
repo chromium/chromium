@@ -257,9 +257,8 @@ TEST_F(SigninScreenMediatorTest, TestSignIn) {
   mediator_.consumer = consumer_;
 
   // Set browser UI objects.
-  WebStateList* web_state_list = nullptr;
   std::unique_ptr<Browser> browser =
-      std::make_unique<TestBrowser>(browser_state_.get(), web_state_list);
+      std::make_unique<TestBrowser>(browser_state_.get());
   UIViewController* presenting_view_controller_mock =
       OCMStrictClassMock([UIViewController class]);
 
@@ -270,7 +269,6 @@ TEST_F(SigninScreenMediatorTest, TestSignIn) {
   AuthenticationFlow* authentication_flow = [[AuthenticationFlow alloc]
                initWithBrowser:browser.get()
                       identity:identity_
-               shouldClearData:SHOULD_CLEAR_DATA_USER_CHOICE
               postSignInAction:POST_SIGNIN_ACTION_NONE
       presentingViewController:presenting_view_controller_mock];
   [authentication_flow setPerformerForTesting:performer_mock];
@@ -286,9 +284,12 @@ TEST_F(SigninScreenMediatorTest, TestSignIn) {
       });
   OCMExpect([performer_mock signInIdentity:identity_
                           withHostedDomain:nil
-                            toBrowserState:browser_state_.get()])
-      .andDo(^(NSInvocation*) {
-        auth_service->SignIn(identity_);
+                            toBrowserState:browser_state_.get()
+                                completion:[OCMArg any]])
+      .andDo(^(NSInvocation* invocation) {
+        signin_ui::CompletionCallback callback;
+        [invocation getArgument:&callback atIndex:5];
+        auth_service->SignIn(identity_, callback);
       });
   OCMExpect([performer_mock
                 shouldHandleMergeCaseForIdentity:identity_

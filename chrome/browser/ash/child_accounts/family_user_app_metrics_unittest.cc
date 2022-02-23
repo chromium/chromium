@@ -18,6 +18,7 @@
 #include "chrome/browser/supervised_user/supervised_user_service.h"
 #include "chrome/browser/supervised_user/supervised_user_service_factory.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/services/app_service/public/cpp/instance_registry.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
@@ -35,9 +36,8 @@ namespace {
 
 constexpr base::TimeDelta kOneDay = base::Days(1);
 constexpr char kStartTime[] = "1 Jan 2020 21:15";
-constexpr int kStart = static_cast<int>(apps::mojom::AppType::kUnknown);  // 0
-constexpr int kEnd =
-    static_cast<int>(apps::mojom::AppType::kSystemWeb);  // max_value
+constexpr int kStart = static_cast<int>(apps::AppType::kUnknown);  // 0
+constexpr int kEnd = static_cast<int>(apps::AppType::kSystemWeb);  // max_value
 
 apps::mojom::AppPtr MakeApp(const char* app_id,
                             const char* name,
@@ -63,10 +63,10 @@ class FamilyUserAppMetricsDerivedForTest : public FamilyUserAppMetrics {
 
   void InitializeAppTypes() {
     for (int app_type = kStart; app_type <= kEnd; app_type++)
-      InitializeAppType(static_cast<apps::mojom::AppType>(app_type));
+      InitializeAppType(static_cast<apps::AppType>(app_type));
   }
 
-  void InitializeAppType(apps::mojom::AppType app_type) {
+  void InitializeAppType(apps::AppType app_type) {
     if (!IsAppTypeReady(app_type))
       OnAppTypeInitialized(app_type);
   }
@@ -161,7 +161,7 @@ class FamilyUserAppMetricsTest
                              apps::mojom::AppType::kCrostini));
     deltas.push_back(MakeApp(/*app_id=*/"e", /*app_name=*/"extension",
                              /*last_launch_time=*/base::Time::Now(),
-                             apps::mojom::AppType::kExtension));
+                             apps::mojom::AppType::kChromeApp));
     deltas.push_back(MakeApp(/*app_id=*/"w", /*app_name=*/"web",
                              /*last_launch_time=*/base::Time::Now(),
                              apps::mojom::AppType::kWeb));
@@ -180,7 +180,7 @@ class FamilyUserAppMetricsTest
     deltas.push_back(MakeApp(
         /*app_id=*/"lca", /*app_name=*/"lacros chrome app",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
-        apps::mojom::AppType::kStandaloneBrowserExtension));
+        apps::mojom::AppType::kStandaloneBrowserChromeApp));
     deltas.push_back(MakeApp(
         /*app_id=*/"r", /*app_name=*/"remote",
         /*last_launch_time=*/base::Time::Now() - kOneDay,
@@ -194,16 +194,13 @@ class FamilyUserAppMetricsTest
     cache.OnApps(std::move(deltas), apps::mojom::AppType::kUnknown,
                  false /* should_notify_initialized */);
 
-    apps::InstanceRegistry::Instances instances;
     apps::InstanceRegistry& instance_registry =
         apps::AppServiceProxyFactory::GetForProfile(profile())
             ->InstanceRegistry();
     window_ = std::make_unique<aura::Window>(nullptr);
     window_->Init(ui::LAYER_NOT_DRAWN);
-    instances.push_back(std::make_unique<apps::Instance>(
-        /*app_id=*/"a",
-        apps::Instance::InstanceKey::ForWindowBasedApp(window_.get())));
-    instance_registry.OnInstances(instances);
+    instance_registry.CreateOrUpdateInstance(
+        apps::InstanceParams(/*app_id=*/"a", window_.get()));
   }
 
   SupervisedUserService* supervised_user_service() {
@@ -254,7 +251,7 @@ TEST_P(FamilyUserAppMetricsTest, CountRecentlyUsedApps) {
   family_user_app_metrics_->InitializeAppTypes();
 
   for (int i = kStart; i <= kEnd; i++) {
-    apps::mojom::AppType app_type = static_cast<apps::mojom::AppType>(i);
+    apps::AppType app_type = static_cast<apps::AppType>(i);
     const std::string histogram_name =
         FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
     histogram_tester.ExpectUniqueSample(histogram_name, /*sample=*/1,
@@ -270,7 +267,7 @@ TEST_P(FamilyUserAppMetricsTest, UninitializedAppTypeNotReportedOnNewDay) {
   family_user_app_metrics_->OnNewDay();
 
   for (int i = kStart; i <= kEnd; i++) {
-    apps::mojom::AppType app_type = static_cast<apps::mojom::AppType>(i);
+    apps::AppType app_type = static_cast<apps::AppType>(i);
     const std::string histogram_name =
         FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
     histogram_tester.ExpectTotalCount(histogram_name, /*expected_count=*/0);
@@ -306,26 +303,26 @@ TEST_P(FamilyUserAppMetricsTest, FastForwardOneDay) {
         /*sample=*/3, /*expected_count=*/1);
   }
 
-  const apps::mojom::AppType fresh_app_types[7] = {
-      apps::mojom::AppType::kUnknown,   apps::mojom::AppType::kArc,
-      apps::mojom::AppType::kBuiltIn,   apps::mojom::AppType::kCrostini,
-      apps::mojom::AppType::kExtension, apps::mojom::AppType::kWeb,
-      apps::mojom::AppType::kBorealis,
+  const apps::AppType fresh_app_types[7] = {
+      apps::AppType::kUnknown,   apps::AppType::kArc,
+      apps::AppType::kBuiltIn,   apps::AppType::kCrostini,
+      apps::AppType::kChromeApp, apps::AppType::kWeb,
+      apps::AppType::kBorealis,
   };
   // Launched over 28 days ago and dropped from the count.
-  const apps::mojom::AppType stale_app_types[4] = {
-      apps::mojom::AppType::kMacOs,
-      apps::mojom::AppType::kPluginVm,
-      apps::mojom::AppType::kStandaloneBrowser,
-      apps::mojom::AppType::kRemote,
+  const apps::AppType stale_app_types[4] = {
+      apps::AppType::kMacOs,
+      apps::AppType::kPluginVm,
+      apps::AppType::kStandaloneBrowser,
+      apps::AppType::kRemote,
   };
-  for (apps::mojom::AppType app_type : fresh_app_types) {
+  for (apps::AppType app_type : fresh_app_types) {
     histogram_tester.ExpectUniqueSample(
         FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type),
         /*sample=*/1,
         /*expected_count=*/1);
   }
-  for (apps::mojom::AppType app_type : stale_app_types) {
+  for (apps::AppType app_type : stale_app_types) {
     histogram_tester.ExpectUniqueSample(
         FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type),
         /*sample=*/0,
@@ -342,8 +339,7 @@ TEST_P(FamilyUserAppMetricsTest, OnlyReportSingleInitilizedAppTypeOnNewDay) {
   for (int curr_app_type = kStart; curr_app_type <= kEnd; curr_app_type++) {
     base::HistogramTester histogram_tester;
     // Only report one app type.
-    apps::mojom::AppType app_type =
-        static_cast<apps::mojom::AppType>(curr_app_type);
+    apps::AppType app_type = static_cast<apps::AppType>(curr_app_type);
     family_user_app_metrics_->InitializeAppType(app_type);
     std::string reported_app_type =
         FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
@@ -353,7 +349,7 @@ TEST_P(FamilyUserAppMetricsTest, OnlyReportSingleInitilizedAppTypeOnNewDay) {
     for (int other_app_type = kStart;
          other_app_type <= kEnd && other_app_type != curr_app_type;
          other_app_type++) {
-      app_type = static_cast<apps::mojom::AppType>(other_app_type);
+      app_type = static_cast<apps::AppType>(other_app_type);
       reported_app_type =
           FamilyUserAppMetrics::GetAppsCountHistogramNameForTest(app_type);
       ASSERT_FALSE(reported_app_type.empty());

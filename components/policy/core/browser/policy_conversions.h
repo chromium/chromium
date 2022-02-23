@@ -62,13 +62,13 @@ class POLICY_EXPORT PolicyConversions {
   // Enabled by default.
   PolicyConversions& EnableUserPolicies(bool enabled);
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Sets the updater policies.
   PolicyConversions& WithUpdaterPolicies(std::unique_ptr<PolicyMap> policies);
 
   // Sets the updater policy schemas.
   PolicyConversions& WithUpdaterPolicySchemas(PolicyToSchemaMap schemas);
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Returns the policy data as a base::Value object.
   virtual base::Value ToValue() = 0;
@@ -112,13 +112,23 @@ class POLICY_EXPORT ArrayPolicyConversions : public PolicyConversions {
 
   base::Value ToValue() override;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Additional Chrome policies that need to be displayed, though not available
+  // through policy service.
+  void WithAdditionalChromePolicies(base::Value&& policies);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
  private:
   base::Value GetChromePolicies();
   base::Value GetPrecedencePolicies();
 
-#if defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
   base::Value GetUpdaterPolicies();
-#endif  // defined(OS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  base::Value additional_chrome_policies_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 }  // namespace policy

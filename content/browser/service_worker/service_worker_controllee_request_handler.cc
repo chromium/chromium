@@ -18,7 +18,6 @@
 #include "content/browser/service_worker/service_worker_main_resource_loader.h"
 #include "content/browser/service_worker/service_worker_metrics.h"
 #include "content/browser/service_worker/service_worker_registration.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/browser/allow_service_worker_result.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/content_browser_client.h"
@@ -30,6 +29,7 @@
 #include "services/network/public/cpp/resource_request_body.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/resource_type_util.h"
+#include "third_party/blink/public/common/service_worker/service_worker_loader_helpers.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
@@ -79,7 +79,8 @@ ServiceWorkerControlleeRequestHandler::ServiceWorkerControlleeRequestHandler(
       frame_tree_node_id_(frame_tree_node_id),
       service_worker_accessed_callback_(
           std::move(service_worker_accessed_callback)) {
-  DCHECK(ServiceWorkerUtils::IsMainRequestDestination(destination));
+  DCHECK(
+      blink::ServiceWorkerLoaderHelpers::IsMainRequestDestination(destination));
   TRACE_EVENT_WITH_FLOW0("ServiceWorker",
                          "ServiceWorkerControlleeRequestHandler::"
                          "ServiceWorkerControlleeRequestHandler",
@@ -137,9 +138,13 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
   // request interception, or if the context is gone so we have to bypass
   // anyway.
   if (skip_service_worker_ || !context_) {
+    ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+        true);
     std::move(loader_callback).Run({});
     return;
   }
+  ServiceWorkerMetrics::RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+      false);
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
   // Fall back for the subsequent offline page interceptor to load the offline
@@ -175,7 +180,7 @@ void ServiceWorkerControlleeRequestHandler::MaybeCreateLoader(
       stripped_url_, storage_key_,
       base::BindOnce(
           &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-          weak_factory_.GetWeakPtr()));
+          weak_factory_.GetWeakPtr(), base::TimeTicks::Now()));
 }
 
 void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
@@ -202,8 +207,15 @@ void ServiceWorkerControlleeRequestHandler::InitializeContainerHost(
 }
 
 void ServiceWorkerControlleeRequestHandler::ContinueWithRegistration(
+    base::TimeTicks start_time,
     blink::ServiceWorkerStatusCode status,
     scoped_refptr<ServiceWorkerRegistration> registration) {
+  if (!start_time.is_null()) {
+    ServiceWorkerMetrics::
+        RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
+            base::TimeTicks::Now() - start_time);
+  }
+
   if (status != blink::ServiceWorkerStatusCode::kOk) {
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
@@ -452,7 +464,7 @@ void ServiceWorkerControlleeRequestHandler::DidUpdateRegistration(
         stripped_url_, storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-            weak_factory_.GetWeakPtr()));
+            weak_factory_.GetWeakPtr(), base::TimeTicks()));
     TRACE_EVENT_WITH_FLOW1(
         "ServiceWorker",
         "ServiceWorkerControlleeRequestHandler::DidUpdateRegistration",
@@ -508,7 +520,7 @@ void ServiceWorkerControlleeRequestHandler::OnUpdatedVersionStatusChanged(
         stripped_url_, storage_key_,
         base::BindOnce(
             &ServiceWorkerControlleeRequestHandler::ContinueWithRegistration,
-            weak_factory_.GetWeakPtr()));
+            weak_factory_.GetWeakPtr(), base::TimeTicks()));
     return;
   }
   version->RegisterStatusChangeCallback(base::BindOnce(

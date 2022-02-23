@@ -43,7 +43,7 @@ class MediaRemotingInterstitial final : public HTMLDivElement {
   void OnPosterImageChanged();
 
   // Query for whether the remoting interstitial is visible.
-  bool IsVisible() const { return state_ == VISIBLE; }
+  bool IsVisible() const { return state_ == kVisible; }
 
   HTMLVideoElement& GetVideoElement() const { return *video_element_; }
 
@@ -59,11 +59,11 @@ class MediaRemotingInterstitial final : public HTMLDivElement {
   // Indicates whether the interstitial should be visible. It is set/changed
   // when Show()/Hide() is called.
   enum State {
-    HIDDEN,   // The interstitial is currently not showing.
-    VISIBLE,  // The interstitial is currently visible except the toast.
-    TOAST,    // Only the toast is visible.
+    kHidden,   // The interstitial is currently not showing.
+    kVisible,  // The interstitial is currently visible except the toast.
+    kToast,    // Only the toast is visible.
   };
-  State state_ = HIDDEN;
+  State state_ = kHidden;
 
   HeapTaskRunnerTimer<MediaRemotingInterstitial> toggle_interstitial_timer_;
   Member<HTMLVideoElement> video_element_;

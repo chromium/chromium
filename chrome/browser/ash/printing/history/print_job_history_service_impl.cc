@@ -8,8 +8,8 @@
 #include "base/guid.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info_proto_conversions.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/history/print_job_info_proto_conversions.h"
 #include "chrome/browser/printing/print_job.h"
 #include "components/prefs/pref_service.h"
 
@@ -17,7 +17,7 @@ namespace ash {
 
 PrintJobHistoryServiceImpl::PrintJobHistoryServiceImpl(
     std::unique_ptr<PrintJobDatabase> print_job_database,
-    chromeos::CupsPrintJobManager* print_job_manager,
+    CupsPrintJobManager* print_job_manager,
     PrefService* pref_service)
     : print_job_database_(std::move(print_job_database)),
       print_job_manager_(print_job_manager),
@@ -55,22 +55,21 @@ void PrintJobHistoryServiceImpl::OnClearDone(
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobDone(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<CupsPrintJob> job) {
   SavePrintJob(job);
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobError(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<CupsPrintJob> job) {
   SavePrintJob(job);
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobCancelled(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+    base::WeakPtr<CupsPrintJob> job) {
   SavePrintJob(job);
 }
 
-void PrintJobHistoryServiceImpl::SavePrintJob(
-    base::WeakPtr<chromeos::CupsPrintJob> job) {
+void PrintJobHistoryServiceImpl::SavePrintJob(base::WeakPtr<CupsPrintJob> job) {
   if (!job)
     return;
 
@@ -80,7 +79,7 @@ void PrintJobHistoryServiceImpl::SavePrintJob(
   if (job->source() == ::printing::PrintJob::Source::PRINT_PREVIEW_INCOGNITO)
     return;
 
-  chromeos::printing::proto::PrintJobInfo print_job_info =
+  printing::proto::PrintJobInfo print_job_info =
       CupsPrintJobToProto(*job, /*id=*/base::GenerateGUID(), base::Time::Now());
   print_job_database_->SavePrintJob(
       print_job_info,
@@ -94,7 +93,7 @@ void PrintJobHistoryServiceImpl::OnPrintJobDatabaseInitialized(bool success) {
 }
 
 void PrintJobHistoryServiceImpl::OnPrintJobSaved(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info,
+    const printing::proto::PrintJobInfo& print_job_info,
     bool success) {
   for (auto& observer : observers_) {
     observer.OnPrintJobFinished(print_job_info);
@@ -111,7 +110,7 @@ void PrintJobHistoryServiceImpl::OnPrintJobsCleanedUp(
 void PrintJobHistoryServiceImpl::OnGetPrintJobsDone(
     PrintJobDatabase::GetPrintJobsCallback callback,
     bool success,
-    std::vector<chromeos::printing::proto::PrintJobInfo> entries) {
+    std::vector<printing::proto::PrintJobInfo> entries) {
   std::move(callback).Run(success, entries);
 }
 

@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/compiler_specific.h"
 #include "components/flags_ui/pref_service_flags_storage.h"
 
 class PrefService;

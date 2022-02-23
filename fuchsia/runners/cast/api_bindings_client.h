@@ -8,7 +8,6 @@
 #include <fuchsia/web/cpp/fidl.h>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/cast/message_port/message_port.h"
 #include "components/cast/named_message_port_connector/named_message_port_connector.h"
 #include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"

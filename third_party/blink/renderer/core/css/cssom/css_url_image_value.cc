@@ -14,7 +14,7 @@ const String& CSSURLImageValue::url() const {
   return value_->RelativeUrl();
 }
 
-absl::optional<IntSize> CSSURLImageValue::IntrinsicSize() const {
+absl::optional<gfx::Size> CSSURLImageValue::IntrinsicSize() const {
   if (Status() != ResourceStatus::kCached)
     return absl::nullopt;
 
@@ -23,7 +23,7 @@ absl::optional<IntSize> CSSURLImageValue::IntrinsicSize() const {
 
   return resource_content
              ? resource_content->IntrinsicSize(kRespectImageOrientation)
-             : IntSize(0, 0);
+             : gfx::Size(0, 0);
 }
 
 ResourceStatus CSSURLImageValue::Status() const {
@@ -34,7 +34,7 @@ ResourceStatus CSSURLImageValue::Status() const {
 
 scoped_refptr<Image> CSSURLImageValue::GetSourceImageForCanvas(
     SourceImageStatus*,
-    const FloatSize&,
+    const gfx::SizeF&,
     const AlphaDisposition alpha_disposition) {
   // UnpremultiplyAlpha is not implemented yet.
   DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);

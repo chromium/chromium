@@ -9,7 +9,6 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
@@ -135,7 +134,7 @@ void NetExportMessageHandler::OnEnableNotifyUIWithState(
 void NetExportMessageHandler::OnStartNetLog(const base::ListValue* list) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
-  base::Value::ConstListView params = list->GetList();
+  base::Value::ConstListView params = list->GetListDeprecated();
 
   // Determine the capture mode.
   net::NetLogCaptureMode capture_mode = net::NetLogCaptureMode::kDefault;

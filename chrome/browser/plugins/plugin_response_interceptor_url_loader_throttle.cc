@@ -4,12 +4,12 @@
 
 #include "chrome/browser/plugins/plugin_response_interceptor_url_loader_throttle.h"
 
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/guid.h"
-#include "base/macros.h"
 #include "chrome/browser/extensions/api/streams_private/streams_private_api.h"
 #include "chrome/browser/plugins/plugin_utils.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -131,7 +131,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   std::string payload = view_id;
 
   mojo::PendingRemote<network::mojom::URLLoader> dummy_new_loader;
-  ignore_result(dummy_new_loader.InitWithNewPipeAndPassReceiver());
+  std::ignore = dummy_new_loader.InitWithNewPipeAndPassReceiver();
   mojo::Remote<network::mojom::URLLoaderClient> new_client;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver =
       new_client.BindNewPipeAndPassReceiver();
@@ -166,9 +166,10 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
 
   mojo::PendingRemote<network::mojom::URLLoader> original_loader;
   mojo::PendingReceiver<network::mojom::URLLoaderClient> original_client;
+  mojo::ScopedDataPipeConsumerHandle body;
   delegate_->InterceptResponse(std::move(dummy_new_loader),
                                std::move(new_client_receiver), &original_loader,
-                               &original_client);
+                               &original_client, &body);
 
   // Make a deep copy of URLResponseHead before passing it cross-thread.
   auto deep_copied_response = response_head->Clone();
@@ -186,6 +187,7 @@ void PluginResponseInterceptorURLLoaderThrottle::WillProcessResponse(
   transferrable_loader->url_loader_client = std::move(original_client);
   transferrable_loader->head = std::move(deep_copied_response);
   transferrable_loader->head->intercepted_by_plugin = true;
+  transferrable_loader->body = std::move(body);
 
   bool embedded =
       request_destination_ != network::mojom::RequestDestination::kDocument;

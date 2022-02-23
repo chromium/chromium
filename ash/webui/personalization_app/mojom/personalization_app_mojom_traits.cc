@@ -4,8 +4,14 @@
 
 #include "ash/webui/personalization_app/mojom/personalization_app_mojom_traits.h"
 
+#include <string>
+#include <vector>
+
+#include "ash/public/cpp/ambient/common/ambient_settings.h"
+#include "ash/public/cpp/default_user_image.h"
+#include "ash/public/cpp/personalization_app/user_display_info.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
-#include "ash/webui/personalization_app/mojom/personalization_app.mojom-shared.h"
+#include "ash/webui/personalization_app/mojom/personalization_app.mojom.h"
 #include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
@@ -13,6 +19,9 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 #include "url/mojom/url_gurl_mojom_traits.h"
 
 namespace mojo {
@@ -20,6 +29,8 @@ namespace mojo {
 using MojomWallpaperLayout = ash::personalization_app::mojom::WallpaperLayout;
 using MojomWallpaperType = ash::personalization_app::mojom::WallpaperType;
 using MojomOnlineImageType = ash::personalization_app::mojom::OnlineImageType;
+using MojomTopicSource = ash::personalization_app::mojom::TopicSource;
+using MojomTemperatureUnit = ash::personalization_app::mojom::TemperatureUnit;
 
 MojomWallpaperLayout
 EnumTraits<MojomWallpaperLayout, ash::WallpaperLayout>::ToMojom(
@@ -79,6 +90,8 @@ MojomWallpaperType EnumTraits<MojomWallpaperType, ash::WallpaperType>::ToMojom(
       return MojomWallpaperType::kDevice;
     case ash::WallpaperType::kOneShot:
       return MojomWallpaperType::kOneShot;
+    case ash::WallpaperType::kGooglePhotos:
+      return MojomWallpaperType::kGooglePhotos;
     case ash::WallpaperType::kCount:
       NOTREACHED();
       return MojomWallpaperType::kDefault;
@@ -112,6 +125,9 @@ bool EnumTraits<MojomWallpaperType, ash::WallpaperType>::FromMojom(
       return true;
     case MojomWallpaperType::kOneShot:
       *output = ash::WallpaperType::kOneShot;
+      return true;
+    case MojomWallpaperType::kGooglePhotos:
+      *output = ash::WallpaperType::kGooglePhotos;
       return true;
   }
   NOTREACHED();
@@ -202,10 +218,9 @@ uint64_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
   return image.asset_id();
 }
 
-int32_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
-                     backdrop::Image>::unit_id(const backdrop::Image& image) {
-  // TODO(b/202859390): remove condition once unit_id is available.
-  return image.has_unit_id() ? image.unit_id() : image.asset_id();
+uint64_t StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
+                      backdrop::Image>::unit_id(const backdrop::Image& image) {
+  return image.unit_id();
 }
 
 ::backdrop::Image::ImageType
@@ -231,6 +246,110 @@ bool StructTraits<ash::personalization_app::mojom::WallpaperImageDataView,
   GURL image_url(image.image_url());
   if (!image_url.is_valid())
     return true;
+  return false;
+}
+
+const std::string&
+StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+             ash::personalization_app::UserDisplayInfo>::
+    email(const ash::personalization_app::UserDisplayInfo& user_display_info) {
+  return user_display_info.email;
+}
+
+const std::string&
+StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+             ash::personalization_app::UserDisplayInfo>::
+    name(const ash::personalization_app::UserDisplayInfo& user_display_info) {
+  return user_display_info.name;
+}
+
+bool StructTraits<ash::personalization_app::mojom::UserInfoDataView,
+                  ash::personalization_app::UserDisplayInfo>::
+    Read(ash::personalization_app::mojom::UserInfoDataView data,
+         ash::personalization_app::UserDisplayInfo* out) {
+  return data.ReadEmail(&out->email) && data.ReadName(&out->name);
+}
+
+int StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+                 ash::default_user_image::DefaultUserImage>::
+    index(const ash::default_user_image::DefaultUserImage& default_user_image) {
+  return default_user_image.index;
+}
+
+const std::u16string&
+StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+             ash::default_user_image::DefaultUserImage>::
+    title(const ash::default_user_image::DefaultUserImage& default_user_image) {
+  return default_user_image.title;
+}
+
+const GURL&
+StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+             ash::default_user_image::DefaultUserImage>::
+    url(const ash::default_user_image::DefaultUserImage& default_user_image) {
+  return default_user_image.url;
+}
+
+bool StructTraits<ash::personalization_app::mojom::DefaultUserImageDataView,
+                  ash::default_user_image::DefaultUserImage>::
+    Read(ash::personalization_app::mojom::DefaultUserImageDataView data,
+         ash::default_user_image::DefaultUserImage* out) {
+  out->index = data.index();
+
+  return data.ReadTitle(&out->title) && data.ReadUrl(&out->url);
+}
+
+// TODO (b/220933864): remove ash::AmbientModeTopicSource and
+// ash::AmbientModeTemperatureUnit enums.
+MojomTopicSource
+EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::ToMojom(
+    ash::AmbientModeTopicSource input) {
+  switch (input) {
+    case ash::AmbientModeTopicSource::kGooglePhotos:
+      return MojomTopicSource::kGooglePhotos;
+    case ash::AmbientModeTopicSource::kArtGallery:
+      return MojomTopicSource::kArtGallery;
+  }
+}
+
+bool EnumTraits<MojomTopicSource, ash::AmbientModeTopicSource>::FromMojom(
+    MojomTopicSource input,
+    ash::AmbientModeTopicSource* output) {
+  switch (input) {
+    case MojomTopicSource::kGooglePhotos:
+      *output = ash::AmbientModeTopicSource::kGooglePhotos;
+      return true;
+    case MojomTopicSource::kArtGallery:
+      *output = ash::AmbientModeTopicSource::kArtGallery;
+      return true;
+  }
+  NOTREACHED();
+  return false;
+}
+
+MojomTemperatureUnit
+EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::ToMojom(
+    ash::AmbientModeTemperatureUnit input) {
+  switch (input) {
+    case ash::AmbientModeTemperatureUnit::kFahrenheit:
+      return MojomTemperatureUnit::kFahrenheit;
+    case ash::AmbientModeTemperatureUnit::kCelsius:
+      return MojomTemperatureUnit::kCelsius;
+  }
+}
+
+bool EnumTraits<MojomTemperatureUnit, ash::AmbientModeTemperatureUnit>::
+    FromMojom(MojomTemperatureUnit input,
+              ash::AmbientModeTemperatureUnit* output) {
+  switch (input) {
+    case MojomTemperatureUnit::kFahrenheit:
+      *output = ash::AmbientModeTemperatureUnit::kFahrenheit;
+      return true;
+    case MojomTemperatureUnit::kCelsius:
+      *output = ash::AmbientModeTemperatureUnit::kCelsius;
+      return true;
+  }
+  NOTREACHED();
   return false;
 }
 

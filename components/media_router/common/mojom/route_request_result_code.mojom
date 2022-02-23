@@ -7,7 +7,6 @@ module media_router.mojom;
 // Keep in sync with:
 // - RouteRequestResult::ResultCode in route_request_result.h
 // - MediaRouteProviderResult enum in tools/metrics/histograms.xml.
-// - mr.RouteRequestResultCode in route_request_error.js
 // - media_router_mojom_traits.h
 enum RouteRequestResultCode {
   UNKNOWN_ERROR,
@@ -16,7 +15,7 @@ enum RouteRequestResultCode {
   ROUTE_NOT_FOUND,
   SINK_NOT_FOUND,
   INVALID_ORIGIN,
-  OFF_THE_RECORD_MISMATCH,
+  DEPRECATED_OFF_THE_RECORD_MISMATCH,  // Deprecated.
   NO_SUPPORTED_PROVIDER,
   CANCELLED,
   ROUTE_ALREADY_EXISTS,

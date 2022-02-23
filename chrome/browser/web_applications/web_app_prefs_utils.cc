@@ -8,7 +8,7 @@
 
 #include "base/json/values_util.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -24,11 +24,13 @@ namespace web_app {
 
 namespace {
 
+const char kLatestWebAppInstallSource[] = "latest_web_app_install_source";
+
 const base::DictionaryValue* GetWebAppDictionary(
     const PrefService* pref_service,
     const AppId& app_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  const base::DictionaryValue* web_apps_prefs =
+  const base::Value* web_apps_prefs =
       pref_service->GetDictionary(prefs::kWebAppsPreferences);
   if (!web_apps_prefs)
     return nullptr;
@@ -59,18 +61,44 @@ bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
   return time && (base::Time::Now() - time.value()).InDays() < days;
 }
 
+// Removes all the empty app ID dictionaries from the `web_app_ids` dictionary.
+// That is, this dictionary:
+//
+//   "web_app_ids": {
+//     "<app_id_1>": {},
+//     "<app_id_2>": { "foo": true }
+//   }
+//
+// will become this dictionary:
+//
+//   "web_app_ids": {
+//     "<app_id_2>": { "foo": true }
+//   }
+void RemoveEmptyWebAppPrefs(PrefService* pref_service) {
+  prefs::ScopedDictionaryPrefUpdate update(pref_service,
+                                           prefs::kWebAppsPreferences);
+
+  std::vector<AppId> apps_to_remove;
+  for (auto item : update.Get()->AsDictionary()->DictItems()) {
+    const AppId& app_id = item.first;
+    const base::Value& dict = item.second;
+    if (dict.is_dict() && dict.DictEmpty())
+      apps_to_remove.push_back(app_id);
+  }
+
+  for (const AppId& app_id : apps_to_remove)
+    update.Get()->Remove(app_id);
+}
+
 }  // namespace
 
 // The stored preferences look like:
-// "web_apps": {
 //   "web_app_ids": {
 //     "<app_id_1>": {
 //       "was_external_app_uninstalled_by_user": true,
-//       "file_handlers_enabled": true,
 //       A double representing the number of seconds since epoch, in local time.
 //       Convert from/to using base::Time::FromDoubleT() and
 //       base::Time::ToDoubleT().
-//       "file_handling_origin_trial_expiry_time": 1580475600000,
 //       "IPH_num_of_consecutive_ignore": 2,
 //       A string-flavored base::value representing the int64_t number of
 //       microseconds since the Windows epoch, using base::TimeToValue().
@@ -78,8 +106,6 @@ bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
 //     },
 //     "<app_id_N>": {
 //       "was_external_app_uninstalled_by_user": false,
-//       "file_handlers_enabled": false,
-//       "file_handling_origin_trial_expiry_time": 0
 //     }
 //   },
 //   "app_agnostic_iph_state": {
@@ -93,18 +119,10 @@ bool TimeOccurredWithinDays(absl::optional<base::Time> time, int days) {
 //     "<origin>": {
 //       "storage_isolation_key": "abc123",
 //     },
-//   },
-// }
+//   }
 //
 const char kWasExternalAppUninstalledByUser[] =
     "was_external_app_uninstalled_by_user";
-
-const char kFileHandlersEnabled[] = "file_handlers_enabled";
-
-const char kFileHandlingOriginTrialExpiryTime[] =
-    "file_handling_origin_trial_expiry_time";
-
-const char kLatestWebAppInstallSource[] = "latest_web_app_install_source";
 
 const char kIphIgnoreCount[] = "IPH_num_of_consecutive_ignore";
 
@@ -119,12 +137,11 @@ void WebAppPrefsUtilsRegisterProfilePrefs(
 bool GetBoolWebAppPref(const PrefService* pref_service,
                        const AppId& app_id,
                        base::StringPiece path) {
-  const base::DictionaryValue* web_app_prefs =
-      GetWebAppDictionary(pref_service, app_id);
-  bool pref_value = false;
-  if (web_app_prefs)
-    web_app_prefs->GetBoolean(path, &pref_value);
-  return pref_value;
+  if (const base::DictionaryValue* web_app_prefs =
+          GetWebAppDictionary(pref_service, app_id)) {
+    return web_app_prefs->FindBoolPath(path).value_or(false);
+  }
+  return false;
 }
 
 void UpdateBoolWebAppPref(PrefService* pref_service,
@@ -217,24 +234,35 @@ void RemoveWebAppPref(PrefService* pref_service,
   web_app_prefs->Remove(path);
 }
 
-absl::optional<int> GetWebAppInstallSource(PrefService* prefs,
-                                           const AppId& app_id) {
+absl::optional<int> GetWebAppInstallSourceDeprecated(PrefService* prefs,
+                                                     const AppId& app_id) {
   absl::optional<int> value =
       GetIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource);
-  DCHECK_GE(value.value_or(0), 0);
-  DCHECK_LT(value.value_or(0),
-            static_cast<int>(webapps::WebappInstallSource::COUNT));
   return value;
 }
 
-void UpdateWebAppInstallSource(PrefService* prefs,
-                               const AppId& app_id,
-                               int install_source) {
-  DCHECK_GE(install_source, 0);
-  DCHECK_LT(install_source,
-            static_cast<int>(webapps::WebappInstallSource::COUNT));
-  UpdateIntWebAppPref(prefs, app_id, kLatestWebAppInstallSource,
-                      install_source);
+std::map<AppId, int> TakeAllWebAppInstallSources(PrefService* pref_service) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  const base::Value* web_apps_prefs =
+      pref_service->GetUserPrefValue(prefs::kWebAppsPreferences);
+  if (!web_apps_prefs || !web_apps_prefs->is_dict())
+    return {};
+
+  std::map<AppId, int> return_value;
+  for (auto item : web_apps_prefs->DictItems()) {
+    const AppId& app_id = item.first;
+    absl::optional<int> install_source =
+        item.second.FindIntPath(kLatestWebAppInstallSource);
+    if (install_source)
+      return_value.insert(std::make_pair(app_id, *install_source));
+  }
+
+  for (const auto& item : return_value)
+    RemoveWebAppPref(pref_service, item.first, kLatestWebAppInstallSource);
+
+  RemoveEmptyWebAppPrefs(pref_service);
+
+  return return_value;
 }
 
 void RecordInstallIphIgnored(PrefService* pref_service,

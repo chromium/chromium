@@ -20,6 +20,10 @@ enum CorsPreflightPolicy {
 enum CorsError {
   // Access control
   kDisallowedByMode,
+
+  // This value is only used in warnings reported to DevTools. It indicates that
+  // the preflight request failed due to a non-CORS net error (for example,
+  // `net::ERR_EMPTY_RESPONSE`).
   kInvalidResponse,
 
   // Not allowed wildcard origin was found in Access-Control-Allow-Origin
@@ -76,14 +80,19 @@ enum CorsError {
   // response header.
   kPreflightInvalidAllowCredentials,
 
-  // "Access-Control-Allow-External:"
-  // ( https://wicg.github.io/cors-rfc1918/#headers ) specific error
-  // conditions:
+  // The Access-Control-Allow-Private-Network header was missing from the
+  // response to a preflight request with the
+  // Access-Control-Request-Private-Network header set.
   //
-  // TODO(https://crbug.com/1252295): Rename these to reflect the evolution of
-  // the spec. See https://wicg.github.io/private-network-access/#headers.
-  kPreflightMissingAllowExternal,
-  kPreflightInvalidAllowExternal,
+  // Spec: https://wicg.github.io/private-network-access/#headers
+  kPreflightMissingAllowPrivateNetwork,
+
+  // The Access-Control-Allow-Private-Network header on a preflight response
+  // had a invalid value. This error is only raised when the preflight request
+  // had the Access-Control-Request-Private-Network header set.
+  //
+  // Spec: https://wicg.github.io/private-network-access/#headers
+  kPreflightInvalidAllowPrivateNetwork,
 
   // Failed to parse Access-Control-Allow-Methods response header field in
   // CORS-preflight response.
@@ -130,7 +139,12 @@ struct CorsErrorStatus {
 
   // The target IP address space set on the URL request.
   // See `ResourceRequest::target_ip_address_space`.
-  // Set if (but not only if) `cors_error == kInvalidPrivateNetworkAccess`.
+  // Set if (but not only if) `cors_error` is one of:
+  //
+  // - `kInvalidPrivateNetworkAccess`
+  // - `kPreflightMissingAllowPrivateNetwork`
+  // - `kPreflightInvalidAllowPrivateNetwork`
+  //
   IPAddressSpace target_address_space = IPAddressSpace.kUnknown;
 
   // The address space of the requested resource.

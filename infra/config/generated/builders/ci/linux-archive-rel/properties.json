@@ -1,0 +1,27 @@
+{
+  "$build/archive": {
+    "source_side_spec_path": [
+      "src",
+      "infra",
+      "archive_config",
+      "linux-archive-rel.json"
+    ]
+  },
+  "$build/reclient": {
+    "instance": "rbe-chromium-trusted",
+    "jobs": 250,
+    "metrics_project": "chromium-reclient-metrics"
+  },
+  "$recipe_engine/resultdb/test_presentation": {
+    "column_keys": [],
+    "grouping_keys": [
+      "status",
+      "v.test_suite"
+    ]
+  },
+  "builder_group": "chromium",
+  "recipe": "chromium",
+  "sheriff_rotations": [
+    "chromium"
+  ]
+}

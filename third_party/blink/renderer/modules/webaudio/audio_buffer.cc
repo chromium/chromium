@@ -44,14 +44,16 @@ AudioBuffer* AudioBuffer::Create(unsigned number_of_channels,
                                  float sample_rate) {
   if (!audio_utilities::IsValidAudioBufferSampleRate(sample_rate) ||
       number_of_channels > BaseAudioContext::MaxNumberOfChannels() ||
-      !number_of_channels || !number_of_frames)
+      !number_of_channels || !number_of_frames) {
     return nullptr;
+  }
 
   AudioBuffer* buffer = MakeGarbageCollected<AudioBuffer>(
       number_of_channels, number_of_frames, sample_rate);
 
-  if (!buffer->CreatedSuccessfully(number_of_channels))
+  if (!buffer->CreatedSuccessfully(number_of_channels)) {
     return nullptr;
+  }
   return buffer;
 }
 
@@ -116,23 +118,27 @@ AudioBuffer* AudioBuffer::CreateUninitialized(unsigned number_of_channels,
                                               float sample_rate) {
   if (!audio_utilities::IsValidAudioBufferSampleRate(sample_rate) ||
       number_of_channels > BaseAudioContext::MaxNumberOfChannels() ||
-      !number_of_channels || !number_of_frames)
+      !number_of_channels || !number_of_frames) {
     return nullptr;
+  }
 
   AudioBuffer* buffer = MakeGarbageCollected<AudioBuffer>(
       number_of_channels, number_of_frames, sample_rate, kDontInitialize);
 
-  if (!buffer->CreatedSuccessfully(number_of_channels))
+  if (!buffer->CreatedSuccessfully(number_of_channels)) {
     return nullptr;
+  }
   return buffer;
 }
 
 AudioBuffer* AudioBuffer::CreateFromAudioBus(AudioBus* bus) {
-  if (!bus)
+  if (!bus) {
     return nullptr;
+  }
   AudioBuffer* buffer = MakeGarbageCollected<AudioBuffer>(bus);
-  if (buffer->CreatedSuccessfully(bus->NumberOfChannels()))
+  if (buffer->CreatedSuccessfully(bus->NumberOfChannels())) {
     return buffer;
+  }
   return nullptr;
 }
 
@@ -161,8 +167,9 @@ AudioBuffer::AudioBuffer(unsigned number_of_channels,
         CreateFloat32ArrayOrNull(length_, policy);
     // If the channel data array could not be created, just return. The caller
     // will need to check that the desired number of channels were created.
-    if (!channel_data_array)
+    if (!channel_data_array) {
       return;
+    }
 
     channels_.push_back(channel_data_array);
   }
@@ -178,8 +185,9 @@ AudioBuffer::AudioBuffer(AudioBus* bus)
         CreateFloat32ArrayOrNull(length_, kDontInitialize);
     // If the channel data array could not be created, just return. The caller
     // will need to check that the desired number of channels were created.
-    if (!channel_data_array)
+    if (!channel_data_array) {
       return;
+    }
 
     const float* src = bus->Channel(i)->Data();
     float* dst = channel_data_array->Data();
@@ -204,8 +212,9 @@ NotShared<DOMFloat32Array> AudioBuffer::getChannelData(
 }
 
 NotShared<DOMFloat32Array> AudioBuffer::getChannelData(unsigned channel_index) {
-  if (channel_index >= channels_.size())
+  if (channel_index >= channels_.size()) {
     return NotShared<DOMFloat32Array>(nullptr);
+  }
 
   return NotShared<DOMFloat32Array>(channels_[channel_index].Get());
 }
@@ -323,8 +332,8 @@ SharedAudioBuffer::SharedAudioBuffer(AudioBuffer* buffer)
 }
 
 void SharedAudioBuffer::Zero() {
-  for (unsigned i = 0; i < channels_.size(); ++i) {
-    float* data = static_cast<float*>(channels_[i].Data());
+  for (auto& channel : channels_) {
+    float* data = static_cast<float*>(channel.Data());
     memset(data, 0, length() * sizeof(*data));
   }
 }

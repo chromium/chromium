@@ -14,7 +14,6 @@
 #include <stdint.h>
 
 #include "base/files/platform_file.h"
-#include "base/macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
@@ -28,13 +27,13 @@
 
 namespace mojo {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const MojoPlatformHandleType kPlatformFileHandleType =
     MOJO_PLATFORM_HANDLE_TYPE_WINDOWS_HANDLE;
 #else
 const MojoPlatformHandleType kPlatformFileHandleType =
     MOJO_PLATFORM_HANDLE_TYPE_FILE_DESCRIPTOR;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Wraps and unwraps base::subtle::PlatformSharedMemoryRegions. This should be
 // used only while transitioning from the legacy shared memory API. In new code

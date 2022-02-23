@@ -27,9 +27,9 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
 #include "chrome/browser/ui/webui/signin/signin_ui_error.h"
 #include "chrome/browser/ui/webui/signin/signin_utils_desktop.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #include "chrome/credential_provider/common/gcp_strings.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/about_signin_internals.h"
@@ -42,9 +42,9 @@ namespace signin_util {
 
 namespace {
 
-std::unique_ptr<DiceTurnSyncOnHelper::Delegate>*
-GetDiceTurnSyncOnHelperDelegateForTestingStorage() {
-  static base::NoDestructor<std::unique_ptr<DiceTurnSyncOnHelper::Delegate>>
+std::unique_ptr<TurnSyncOnHelper::Delegate>*
+GetTurnSyncOnHelperDelegateForTestingStorage() {
+  static base::NoDestructor<std::unique_ptr<TurnSyncOnHelper::Delegate>>
       delegate;
   return delegate.get();
 }
@@ -72,27 +72,26 @@ std::string DecryptRefreshToken(const std::string& cipher_text) {
 // already available or is delayed until a browser can first be opened.
 void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
                                          Browser* browser,
-                                         Profile* profile,
-                                         Profile::CreateStatus status) {
-  // DiceTurnSyncOnHelper deletes itself once done.
-  if (GetDiceTurnSyncOnHelperDelegateForTestingStorage()->get()) {
-    new DiceTurnSyncOnHelper(
+                                         Profile* profile) {
+  // TurnSyncOnHelper deletes itself once done.
+  if (GetTurnSyncOnHelperDelegateForTestingStorage()->get()) {
+    new TurnSyncOnHelper(
         profile, signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
         signin_metrics::Reason::kSigninPrimaryAccount, account_id,
-        DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
-        std::move(*GetDiceTurnSyncOnHelperDelegateForTestingStorage()),
+        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
+        std::move(*GetTurnSyncOnHelperDelegateForTestingStorage()),
         base::DoNothing());
   } else {
     if (!browser)
       browser = chrome::FindLastActiveWithProfile(profile);
 
-    new DiceTurnSyncOnHelper(
+    new TurnSyncOnHelper(
         profile, browser,
         signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
         signin_metrics::Reason::kSigninPrimaryAccount, account_id,
-        DiceTurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   }
 }
 
@@ -125,15 +124,14 @@ void ImportCredentialsFromProvider(Profile* profile,
   if (turn_on_sync) {
     Browser* browser = chrome::FindLastActiveWithProfile(profile);
     if (browser) {
-      FinishImportCredentialsFromProvider(account_id, browser, profile,
-                                          Profile::CREATE_STATUS_CREATED);
+      FinishImportCredentialsFromProvider(account_id, browser, profile);
     } else {
       // If no active browser exists yet, this profile is in the process of
       // being created.  Wait for the browser to be created before finishing the
       // sign in.  This object deletes itself when done.
       new profiles::BrowserAddedForProfileObserver(
-          profile, base::BindRepeating(&FinishImportCredentialsFromProvider,
-                                       account_id, nullptr));
+          profile, base::BindOnce(&FinishImportCredentialsFromProvider,
+                                  account_id, nullptr, profile));
     }
   }
 
@@ -242,9 +240,9 @@ bool TrySigninWithCredentialProvider(Profile* profile,
 
 }  // namespace
 
-void SetDiceTurnSyncOnHelperDelegateForTesting(
-    std::unique_ptr<DiceTurnSyncOnHelper::Delegate> delegate) {
-  GetDiceTurnSyncOnHelperDelegateForTestingStorage()->swap(delegate);
+void SetTurnSyncOnHelperDelegateForTesting(
+    std::unique_ptr<TurnSyncOnHelper::Delegate> delegate) {
+  GetTurnSyncOnHelperDelegateForTestingStorage()->swap(delegate);  // IN-TEST
 }
 
 // Credential provider needs to stick to profile it previously used to import

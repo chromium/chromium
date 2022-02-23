@@ -100,8 +100,8 @@ TEST(FileTest, ReadOnlyFile) {
 }
 
 // This dies only if we can interrogate the underlying platform handle.
-#if defined(OS_WIN) || defined(OS_POSIX) || defined(OS_FUCHSIA)
-#if !defined(OS_NACL) && !defined(OS_AIX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
 TEST(FileTest, ReadOnlyFileDeath) {
 #if defined(OFFICIAL_BUILD)
   const char kReadOnlyFileCheckFailedRegex[] = "";
@@ -131,8 +131,8 @@ TEST(FileTest, ReadOnlyFileDeath) {
                                                                file_out),
       kReadOnlyFileCheckFailedRegex);
 }
-#endif  // !defined(OS_NACL) && !defined(OS_AIX)
-#endif  // defined(OS_WIN) || defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_NACL) && !BUILDFLAG(IS_AIX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // This should work on all platforms. This check might be relaxed in which case
 // this test can be removed.

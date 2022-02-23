@@ -68,6 +68,10 @@ void ShouldNeverRun(T t) {
 // is copied. (BarrierCallback does not support `T`s that are neither movable
 // nor copyable.) If T is a reference, the reference is removed, and the
 // callback moves or copies the underlying value per the previously stated rule.
+// Beware of creating dangling references. Types that contain references but are
+// not references themselves are not modified for callback storage, e.g.
+// `std::pair<int, const Foo&>`. Dangling references will be passed to
+// `done_callback` if the referenced `Foo` objects have already been deleted.
 //
 // If `num_callbacks` is 0, `done_callback` is executed immediately.
 //
@@ -79,8 +83,13 @@ void ShouldNeverRun(T t) {
 // Run() on the returned callbacks, or the thread that constructed the
 // BarrierCallback (in the case where `num_callbacks` is 0).
 //
+// BarrierCallback is copyable. Copies share state.
+//
 // `done_callback` is also cleared on the thread that runs it (by virtue of
 // being a OnceCallback).
+//
+// See also
+// https://chromium.googlesource.com/chromium/src/+/HEAD/docs/callback.md
 template <typename T,
           typename RawArg = base::remove_cvref_t<T>,
           typename DoneArg = std::vector<RawArg>,

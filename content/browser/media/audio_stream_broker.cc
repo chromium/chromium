@@ -14,6 +14,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_process_host.h"
+#include "media/mojo/mojom/audio_processing.mojom.h"
 
 namespace content {
 
@@ -32,12 +33,14 @@ class AudioStreamBrokerFactoryImpl final : public AudioStreamBrokerFactory {
       uint32_t shared_memory_count,
       media::UserInputMonitorBase* user_input_monitor,
       bool enable_agc,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       AudioStreamBroker::DeleterCallback deleter,
       mojo::PendingRemote<blink::mojom::RendererAudioInputStreamFactoryClient>
           renderer_factory_client) final {
     return std::make_unique<AudioInputStreamBroker>(
         render_process_id, render_frame_id, device_id, params,
-        shared_memory_count, user_input_monitor, enable_agc, std::move(deleter),
+        shared_memory_count, user_input_monitor, enable_agc,
+        std::move(processing_config), std::move(deleter),
         std::move(renderer_factory_client));
   }
 

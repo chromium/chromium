@@ -28,9 +28,6 @@ if (enable_nacl) {
         "//native_client/src/trusted/service_runtime:sel_ldr",
         "//native_client/src/trusted/validator/driver:ncval_new",
       ]
-      if (is_linux || is_chromeos) {
-        deps += [ "//native_client/src/nonsfi/loader:nonsfi_loader" ]
-      }
     }
     if (nacl_sdk_untrusted) {
       deps += [

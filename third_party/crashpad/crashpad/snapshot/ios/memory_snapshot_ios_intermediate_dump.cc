@@ -50,12 +50,37 @@ bool MemorySnapshotIOSIntermediateDump::Read(Delegate* delegate) const {
 
 const MemorySnapshot* MemorySnapshotIOSIntermediateDump::MergeWithOtherSnapshot(
     const MemorySnapshot* other) const {
+  INITIALIZATION_STATE_DCHECK_VALID(initialized_);
+  auto other_snapshot =
+      reinterpret_cast<const MemorySnapshotIOSIntermediateDump*>(other);
+
+  INITIALIZATION_STATE_DCHECK_VALID(other_snapshot->initialized_);
+  if (other_snapshot->address_ < address_) {
+    return other_snapshot->MergeWithOtherSnapshot(this);
+  }
+
   CheckedRange<uint64_t, size_t> merged(0, 0);
   if (!LoggingDetermineMergedRange(this, other, &merged))
     return nullptr;
 
   auto result = std::make_unique<MemorySnapshotIOSIntermediateDump>();
   result->Initialize(merged.base(), data_, merged.size());
+  if (size_ == merged.size()) {
+    return result.release();
+  }
+
+  const uint8_t* data = reinterpret_cast<const uint8_t*>(data_);
+  const uint8_t* other_data =
+      reinterpret_cast<const uint8_t*>(other_snapshot->data_);
+  vm_size_t overlap = merged.size() - other_snapshot->size_;
+  result->merged_data_.reserve(merged.size());
+  result->merged_data_.insert(result->merged_data_.end(), data, data + overlap);
+  result->merged_data_.insert(result->merged_data_.end(),
+                              other_data,
+                              other_data + other_snapshot->size_);
+  result->data_ =
+      reinterpret_cast<const vm_address_t>(result->merged_data_.data());
+  DCHECK_EQ(result->merged_data_.size(), merged.size());
   return result.release();
 }
 

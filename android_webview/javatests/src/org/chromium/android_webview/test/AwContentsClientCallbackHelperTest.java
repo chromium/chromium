@@ -38,7 +38,7 @@ import java.util.concurrent.Callable;
  */
 @RunWith(AwJUnit4ClassRunner.class)
 @OnlyRunIn(SINGLE_PROCESS) // These are unit tests. No need to repeat for multiprocess.
-@Batch(Batch.UNIT_TESTS)
+@Batch(Batch.PER_CLASS)
 public class AwContentsClientCallbackHelperTest {
     @Rule
     public AwActivityTestRule mActivityTestRule = new AwActivityTestRule();

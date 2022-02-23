@@ -115,7 +115,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   capabilities_.uses_default_gl_framebuffer = true;
   capabilities_.output_surface_origin = gl_surface_->GetOrigin();
   capabilities_.supports_post_sub_buffer = gl_surface_->SupportsPostSubBuffer();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (gl_surface_->SupportsDCLayers()) {
     // We need to set this bit to allow viz to track the previous damage rect
     // of a backbuffer in a multiple backbuffer system, so backbuffers always
@@ -126,7 +126,7 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
         gl::DirectCompositionRootSurfaceBufferCount();
     capabilities_.supports_delegated_ink = gl_surface_->SupportsDelegatedInk();
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   if (feature_info->workarounds()
           .disable_post_sub_buffers_for_onscreen_surfaces) {
     capabilities_.supports_post_sub_buffer = false;
@@ -134,12 +134,13 @@ SkiaOutputDeviceGL::SkiaOutputDeviceGL(
   if (feature_info->workarounds().supports_two_yuv_hardware_overlays) {
     capabilities_.supports_two_yuv_hardware_overlays = true;
   }
-  capabilities_.max_frames_pending = gl_surface_->GetBufferCount() - 1;
+  capabilities_.pending_swap_params.max_pending_swaps =
+      gl_surface_->GetBufferCount() - 1;
   capabilities_.supports_commit_overlay_planes =
       gl_surface_->SupportsCommitOverlayPlanes();
   capabilities_.supports_gpu_vsync = gl_surface_->SupportsGpuVSync();
   capabilities_.supports_dc_layers = gl_surface_->SupportsDCLayers();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(weiliangc): This capability is used to check whether we should do
   // overlay. Since currently none of the other overlay system is implemented,
   // only update this for Android.
@@ -232,8 +233,7 @@ bool SkiaOutputDeviceGL::Reshape(const gfx::Size& size,
     base::debug::Alias(nullptr);
     return false;
   }
-  SkSurfaceProps surface_props =
-      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
 
   GrGLFramebufferInfo framebuffer_info;
   framebuffer_info.fFBOID = 0;
@@ -403,7 +403,7 @@ void SkiaOutputDeviceGL::SetEnableDCLayers(bool enable) {
 
 void SkiaOutputDeviceGL::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   for (auto& dc_layer : overlays) {
     auto params = std::make_unique<ui::DCRendererLayerParams>();
     // Get GLImages for DC layer textures.
@@ -442,7 +442,7 @@ void SkiaOutputDeviceGL::ScheduleOverlays(
     if (!gl_surface_->ScheduleDCLayer(std::move(params)))
       DLOG(ERROR) << "ScheduleDCLayer failed";
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void SkiaOutputDeviceGL::EnsureBackbuffer() {

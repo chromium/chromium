@@ -13,6 +13,7 @@ js_type_check("closure_compile_module") {
   is_polymer3 = true
   deps = [
     ":multidevice_browser_proxy.m",
+    ":multidevice_combined_setup_item.m",
     ":multidevice_constants.m",
     ":multidevice_feature_behavior.m",
     ":multidevice_feature_item.m",
@@ -63,8 +64,8 @@ js_library("multidevice_feature_item.m") {
     ":multidevice_constants.m",
     ":multidevice_feature_behavior.m",
     ":multidevice_feature_toggle.m",
-    "..:os_route.m",
-    "..:route_origin_behavior.m",
+    "..:os_route",
+    "..:route_origin_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
@@ -91,9 +92,9 @@ js_library("multidevice_page.m") {
     ":multidevice_feature_behavior.m",
     ":multidevice_notification_access_setup_dialog.m",
     ":multidevice_permissions_setup_dialog.m",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
@@ -142,10 +143,10 @@ js_library("multidevice_smartlock_subpage.m") {
   deps = [
     ":multidevice_constants.m",
     ":multidevice_feature_behavior.m",
-    "..:deep_linking_behavior.m",
-    "..:metrics_recorder.m",
-    "..:os_route.m",
-    "..:os_settings_routes.m",
+    "..:deep_linking_behavior",
+    "..:metrics_recorder",
+    "..:os_route",
+    "..:os_settings_routes",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
@@ -161,12 +162,13 @@ js_library("multidevice_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_subpage.m.js" ]
   deps = [
     ":multidevice_browser_proxy.m",
+    ":multidevice_combined_setup_item.m",
     ":multidevice_constants.m",
     ":multidevice_task_continuation_item.m",
     ":multidevice_wifi_sync_item.m",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
-    "..:os_settings_routes.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
+    "..:os_settings_routes",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -175,12 +177,25 @@ js_library("multidevice_subpage.m") {
   extra_deps = [ ":multidevice_subpage_module" ]
 }
 
+js_library("multidevice_combined_setup_item.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_combined_setup_item.m.js" ]
+  deps = [
+    ":multidevice_constants.m",
+    ":multidevice_feature_behavior.m",
+    ":multidevice_feature_item.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:web_ui_listener_behavior.m",
+  ]
+  extra_deps = [ ":multidevice_combined_setup_item_module" ]
+  externs_list = [ "../settings_controls_types.js" ]
+}
+
 js_library("multidevice_tether_item.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_tether_item.m.js" ]
   deps = [
     ":multidevice_feature_behavior.m",
-    "..:os_route.m",
-    "..:os_settings_routes.m",
+    "..:os_route",
+    "..:os_settings_routes",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/network:mojo_interface_provider.m",
     "//ui/webui/resources/cr_components/chromeos/network:network_listener_behavior.m",
@@ -209,8 +224,8 @@ js_library("multidevice_wifi_sync_item.m") {
     ":multidevice_feature_behavior.m",
     ":multidevice_feature_item.m",
     ":multidevice_wifi_sync_disabled_link.m",
-    "..:os_route.m",
-    "..:route_origin_behavior.m",
+    "..:os_route",
+    "..:route_origin_behavior",
     "../..:router",
     "../os_people_page:os_sync_browser_proxy.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
@@ -225,7 +240,7 @@ js_library("multidevice_wifi_sync_item.m") {
 js_library("multidevice_task_continuation_disabled_link.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_task_continuation_disabled_link.m.js" ]
   deps = [
-    "..:os_route.m",
+    "..:os_route",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -238,8 +253,8 @@ js_library("multidevice_wifi_sync_disabled_link.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_wifi_sync_disabled_link.m.js" ]
   deps = [
     ":multidevice_feature_behavior.m",
-    "..:os_route.m",
-    "..:route_origin_behavior.m",
+    "..:os_route",
+    "..:route_origin_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:i18n_behavior.m",
@@ -251,7 +266,7 @@ js_library("multidevice_wifi_sync_disabled_link.m") {
 js_library("multidevice_screen_lock_subpage.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/settings/chromeos/multidevice_page/multidevice_screen_lock_subpage.m.js" ]
   deps = [
-    "../os_people_page:lock_screen_password_prompt_dialog.m",
+    "../os_people_page:lock_screen_password_prompt_dialog",
     "../os_people_page:lock_state_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/cr_components/chromeos/quick_unlock:lock_screen_constants.m",
@@ -271,7 +286,7 @@ js_library("multidevice_smartlock_item.m") {
     ":multidevice_constants.m",
     ":multidevice_feature_behavior.m",
     ":multidevice_feature_item.m",
-    "..:metrics_recorder.m",
+    "..:metrics_recorder",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
     "//ui/webui/resources/js:web_ui_listener_behavior.m",
   ]
@@ -281,6 +296,7 @@ js_library("multidevice_smartlock_item.m") {
 group("polymer3_elements") {
   public_deps = [
     ":modulize",
+    ":multidevice_combined_setup_item_module",
     ":multidevice_feature_item_module",
     ":multidevice_feature_toggle_module",
     ":multidevice_notification_access_setup_dialog_module",
@@ -384,6 +400,15 @@ polymer_modulizer("multidevice_smartlock_subpage") {
 polymer_modulizer("multidevice_subpage") {
   js_file = "multidevice_subpage.js"
   html_file = "multidevice_subpage.html"
+  html_type = "dom-module"
+  migrated_imports = os_settings_migrated_imports
+  namespace_rewrites = os_settings_namespace_rewrites
+  auto_imports = os_settings_auto_imports
+}
+
+polymer_modulizer("multidevice_combined_setup_item") {
+  js_file = "multidevice_combined_setup_item.js"
+  html_file = "multidevice_combined_setup_item.html"
   html_type = "dom-module"
   migrated_imports = os_settings_migrated_imports
   namespace_rewrites = os_settings_namespace_rewrites

@@ -83,8 +83,6 @@ LegendEntry::LegendEntry(const Legend::Entry& data)
   value_->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_RIGHT);
   value_->SetBorder(views::CreateEmptyBorder(0, kLabelToValueSpece, 0, 0));
   value_->SetEnabledColor(kHUDDefaultColor);
-
-  ALLOW_UNUSED_LOCAL(formatter_);
 }
 
 LegendEntry::~LegendEntry() = default;

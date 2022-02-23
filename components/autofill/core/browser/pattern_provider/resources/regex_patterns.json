@@ -6,8 +6,8 @@
         "positive_pattern": "street",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "de" : [
@@ -16,8 +16,8 @@
         "positive_pattern": "stra(ss|ß)e",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "es" : [
@@ -26,8 +26,8 @@
         "positive_pattern": "calle",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "ru" : [
@@ -36,8 +36,8 @@
         "positive_pattern": "улица|название.?улицы",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "pt" : [
@@ -46,8 +46,8 @@
         "positive_pattern": "rua|avenida|((?<!do |de )endereço)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ]
   },
@@ -58,8 +58,8 @@
         "positive_pattern": "apartment",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
 	],
     "es": [
@@ -68,8 +68,8 @@
         "positive_pattern": "interior|número.*apartamento",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
 	],
     "de": [
@@ -78,8 +78,8 @@
         "positive_pattern": "wohnung",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
 	],
     "ru": [
@@ -88,8 +88,8 @@
         "positive_pattern": "квартир",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
 	],
     "it": [
@@ -98,8 +98,8 @@
         "positive_pattern": "numero.*appartamento",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
 	],
     "fr": [
@@ -108,8 +108,8 @@
         "positive_pattern": "numéro.*appartement",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
 	]
   },
@@ -120,8 +120,8 @@
         "positive_pattern": "(house.?|street.?|^)number",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "de": [
@@ -130,8 +130,8 @@
         "positive_pattern": "(haus|^)(nummer|nr\\.?)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "pt": [
@@ -140,8 +140,8 @@
         "positive_pattern": "^\\*?.?número(.?\\*?$| da residência)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "es": [
@@ -150,8 +150,8 @@
         "positive_pattern": "n(u|ú)mero.*apartamento|exterior",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
 	],
     "ru": [
@@ -160,8 +160,8 @@
         "positive_pattern": "дом|номер.?дома",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -172,8 +172,8 @@
         "positive_pattern": "attention|attn",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -184,8 +184,8 @@
         "positive_pattern": "province|region|other",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -194,8 +194,8 @@
         "positive_pattern": "provincia",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "pt": [
@@ -204,8 +204,8 @@
         "positive_pattern": "bairro|suburb",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -216,8 +216,8 @@
         "positive_pattern": "address.*nickname|address.*label",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "tr": [
@@ -226,8 +226,8 @@
         "positive_pattern": "adres ([İi]sim|başlığı|adı)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "pt": [
@@ -236,8 +236,8 @@
         "positive_pattern": "identificação do endereço",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "id": [
@@ -246,8 +246,8 @@
         "positive_pattern": "(label|judul|nama) alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -258,8 +258,8 @@
         "positive_pattern": "company|business|organization|organisation",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "de": [
@@ -268,8 +268,8 @@
         "positive_pattern": "(?<!con)firma|firmenname",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -278,8 +278,8 @@
         "positive_pattern": "empresa",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -288,8 +288,8 @@
         "positive_pattern": "societe|société",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "it": [
@@ -298,8 +298,8 @@
         "positive_pattern": "ragione.?sociale",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -308,8 +308,8 @@
         "positive_pattern": "会社",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ru": [
@@ -318,8 +318,8 @@
         "positive_pattern": "название.?компании",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "zh-CN": [
@@ -328,8 +328,8 @@
         "positive_pattern": "单位|公司",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fa": [
@@ -338,8 +338,8 @@
         "positive_pattern": "شرکت",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ko": [
@@ -348,8 +348,8 @@
         "positive_pattern": "회사|직장",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "id": [
@@ -358,8 +358,8 @@
         "positive_pattern": "(nama.?)?perusahaan",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -370,16 +370,16 @@
         "positive_pattern": "^address$|address[_-]?line(one)?|address1|addr1|street|(?:shipping|billing)address$|house.?name",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       },
       {
         "pattern_identifier": "en_address_line_1_label_preserving",
         "positive_pattern": "(^\\W*address)|(address\\W*$)|(?:shipping|billing|mailing|pick.?up|drop.?off|delivery|sender|postal|recipient|home|work|office|school|business|mail)[\\s\\-]+address|address\\s+(of|for|to|from)|street.*(house|building|apartment|floor)|(house|building|apartment|floor).*street",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ],
     "de": [
@@ -388,8 +388,8 @@
         "positive_pattern": "strasse|straße",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "es": [
@@ -398,8 +398,8 @@
         "positive_pattern": "direccion|dirección",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "fr": [
@@ -408,16 +408,16 @@
         "positive_pattern": "adresse",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       },
       {
         "pattern_identifier": "fr_address_line_1_label_preserving",
         "positive_pattern": "adresse",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ],
     "it": [
@@ -426,16 +426,16 @@
         "positive_pattern": "indirizzo",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       },
       {
         "pattern_identifier": "it_address_line_1_label_preserving",
         "positive_pattern": "indirizzo",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ],
     "ja": [
@@ -444,16 +444,16 @@
         "positive_pattern": "^住所$|住所1",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       },
       {
         "pattern_identifier": "ja_address_line_1_label_preserving",
         "positive_pattern": "住所",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ],
     "pt": [
@@ -462,8 +462,8 @@
         "positive_pattern": "morada|((?<!do |de )endereço)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "ru": [
@@ -472,16 +472,16 @@
         "positive_pattern": "Адрес",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       },
       {
         "pattern_identifier": "ru_address_line_1_label_preserving",
         "positive_pattern": "улиц.*(дом|корпус|квартир|этаж)|(дом|корпус|квартир|этаж).*улиц",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ],
     "zh-CN": [
@@ -490,8 +490,8 @@
         "positive_pattern": "地址",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ],
     "tr": [
@@ -500,16 +500,16 @@
         "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       },
       {
         "pattern_identifier": "tr_address_line_1_label_preserving",
         "positive_pattern": "(\\b|_)adres(?! tarifi)(\\b|_)|(sokak|cadde).*(apartman|bina|daire|mahalle)|(apartman|bina|daire|mahalle).*(sokak|cadde)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ],
     "ko": [
@@ -518,8 +518,8 @@
         "positive_pattern": "^주소.?$|주소.?1",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ,
       {
@@ -527,8 +527,8 @@
         "positive_pattern": "주소",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ],
     "id": [
@@ -537,8 +537,8 @@
         "positive_pattern": "^alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 129
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 7]
       }
     ,
       {
@@ -546,8 +546,8 @@
         "positive_pattern": "^alamat",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 129
+        "match_field_attributes": [0],
+        "match_field_input_types": [0, 7]
       }
     ]
   },
@@ -558,16 +558,16 @@
         "positive_pattern": "address[_-]?line(2|two)|address2|addr2|street|suite|unit",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       },
       {
         "pattern_identifier": "en_address_line_2_label_preserving",
         "positive_pattern": "address|line",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 1
+        "match_field_attributes": [0],
+        "match_field_input_types": [0]
       }
     ],
     "de": [
@@ -576,8 +576,8 @@
         "positive_pattern": "adresszusatz|ergänzende.?angaben",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -586,8 +586,8 @@
         "positive_pattern": "direccion2|colonia|adicional",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -596,16 +596,16 @@
         "positive_pattern": "addresssuppl|complementnom|appartement",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       },
       {
         "pattern_identifier": "fr_address_line_2_label_preserving",
         "positive_pattern": "adresse",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 1
+        "match_field_attributes": [0],
+        "match_field_input_types": [0]
       }
     ],
     "it": [
@@ -614,16 +614,16 @@
         "positive_pattern": "indirizzo2",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       },
       {
         "pattern_identifier": "it_address_line_2_label_preserving",
         "positive_pattern": "indirizzo",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 1
+        "match_field_attributes": [0],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -632,8 +632,8 @@
         "positive_pattern": "住所2",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "pt": [
@@ -642,8 +642,8 @@
         "positive_pattern": "complemento|addrcomplement",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ru": [
@@ -652,8 +652,8 @@
         "positive_pattern": "Улица",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "zh-CN": [
@@ -662,16 +662,16 @@
         "positive_pattern": "地址2",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       },
       {
         "pattern_identifier": "zh_address_line_2_label_preserving",
         "positive_pattern": "地址",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 1
+        "match_field_attributes": [0],
+        "match_field_input_types": [0]
       }
     ],
     "ko": [
@@ -680,16 +680,16 @@
         "positive_pattern": "주소.?2",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       },
       {
         "pattern_identifier": "ko_address_line_2_label_preserving",
         "positive_pattern": "주소",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 1,
-        "match_field_input_types": 1
+        "match_field_attributes": [0],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -700,8 +700,8 @@
         "positive_pattern": "address.*line[3-9]|address[3-9]|addr[3-9]|street|line[3-9]",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -710,8 +710,8 @@
         "positive_pattern": "municipio",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -720,8 +720,8 @@
         "positive_pattern": "batiment|residence",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "it": [
@@ -730,8 +730,8 @@
         "positive_pattern": "indirizzo[3-9]",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -742,8 +742,8 @@
         "positive_pattern": "lookup",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -754,8 +754,8 @@
         "positive_pattern": "country|countries",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "es": [
@@ -764,8 +764,8 @@
         "positive_pattern": "país|pais",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "de": [
@@ -774,8 +774,8 @@
         "positive_pattern": "(\\b|_)land(\\b|_)(?!.*(mark.*))",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ja": [
@@ -784,8 +784,8 @@
         "positive_pattern": "(?<!(入|出))国",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "zh-CN": [
@@ -794,8 +794,8 @@
         "positive_pattern": "国家",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ko": [
@@ -804,8 +804,8 @@
         "positive_pattern": "국가|나라",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "tr": [
@@ -814,8 +814,8 @@
         "positive_pattern": "(\\b|_)(ülke|ulce|ulke)(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "fa": [
@@ -824,8 +824,8 @@
         "positive_pattern": "کشور",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "id": [
@@ -834,8 +834,8 @@
         "positive_pattern": "negara",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ]
   },
@@ -846,8 +846,8 @@
         "positive_pattern": "location",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 136
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [3, 7]
       }
     ]
   },
@@ -857,10 +857,19 @@
         "pattern_identifier": "en_zip_code_preserving",
         "positive_pattern": "zip|postal|post.*code|pcode|pin.?code",
         "positive_score": 1.1,
-        "negative_pattern": "\\.zip",
-        "negative_patterns_explainer": ".zip refers to a file extension",
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "negative_pattern": "\\.zip\\b",
+        "negative_patterns_explainer": ".zip refers to a file extension. However, there are field billingAddress.zip",
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
+      },
+      {
+        "pattern_identifier": "en_zip_code_preserving",
+        "positive_pattern": "address\\.zip",
+        "positive_score": 1.1,
+        "negative_pattern": null,
+        "negative_patterns_explainer": "",
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "de": [
@@ -869,8 +878,8 @@
         "positive_pattern": "postleitzahl",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "es": [
@@ -879,8 +888,8 @@
         "positive_pattern": "\\bcp\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "fr": [
@@ -889,8 +898,8 @@
         "positive_pattern": "\\bcdp\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "it": [
@@ -899,8 +908,8 @@
         "positive_pattern": "\\bcap\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ja": [
@@ -909,8 +918,8 @@
         "positive_pattern": "郵便番号",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "pt": [
@@ -919,8 +928,8 @@
         "positive_pattern": "codigo|codpos|\\bcep\\b",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ru": [
@@ -929,8 +938,8 @@
         "positive_pattern": "Почтовый.?Индекс",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "hi": [
@@ -939,8 +948,8 @@
         "positive_pattern": "पिन.?कोड",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ml": [
@@ -949,8 +958,8 @@
         "positive_pattern": "പിന്‍കോഡ്",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "zh-CN": [
@@ -959,8 +968,8 @@
         "positive_pattern": "邮政编码|邮编",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "zh-TW": [
@@ -969,8 +978,8 @@
         "positive_pattern": "郵遞區號",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "tr": [
@@ -979,8 +988,8 @@
         "positive_pattern": "(\\b|_)posta kodu(\\b|_)",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ko": [
@@ -989,8 +998,8 @@
         "positive_pattern": "우편.?번호",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "id": [
@@ -999,8 +1008,8 @@
         "positive_pattern": "kode.?pos",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -1012,8 +1021,8 @@
         "positive_score": 1.1,
         "negative_pattern": "\\.zip",
         "negative_patterns_explainer": ".zip refers to a file extension",
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "pt": [
@@ -1022,8 +1031,8 @@
         "positive_pattern": "codpos2",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -1034,8 +1043,8 @@
         "positive_pattern": "neighbo(u)?rhood",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "pt": [
@@ -1044,8 +1053,8 @@
         "positive_pattern": "bairro",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "tr": [
@@ -1054,8 +1063,8 @@
         "positive_pattern": "mahalle|köy",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "id": [
@@ -1064,8 +1073,8 @@
         "positive_pattern": "kecamatan",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ]
   },
@@ -1076,8 +1085,8 @@
         "positive_pattern": "city|town|suburb",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "de": [
@@ -1086,8 +1095,8 @@
         "positive_pattern": "\\bort\\b|stadt",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "es": [
@@ -1096,8 +1105,8 @@
         "positive_pattern": "ciudad|provincia|localidad|poblacion",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "fr": [
@@ -1106,8 +1115,8 @@
         "positive_pattern": "ville|commune",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "it": [
@@ -1116,8 +1125,8 @@
         "positive_pattern": "localita",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ja": [
@@ -1126,8 +1135,8 @@
         "positive_pattern": "市区町村",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "pt": [
@@ -1136,8 +1145,8 @@
         "positive_pattern": "cidade|município",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ru": [
@@ -1146,8 +1155,8 @@
         "positive_pattern": "Город|Насел(е|ё)нный.?пункт",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "zh-TW": [
@@ -1156,8 +1165,8 @@
         "positive_pattern": "市|分區",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "fa": [
@@ -1166,8 +1175,8 @@
         "positive_pattern": "شهر",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "hi": [
@@ -1176,8 +1185,8 @@
         "positive_pattern": "शहर|ग्राम|गाँव",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ml": [
@@ -1186,8 +1195,8 @@
         "positive_pattern": "നഗരം|ഗ്രാമം",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "tr": [
@@ -1196,8 +1205,8 @@
         "positive_pattern": "((\\b|_|\\*)([İii̇]l[cç]e(miz|niz)?)(\\b|_|\\*))",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ko": [
@@ -1206,8 +1215,8 @@
         "positive_pattern": "^시[^도·・]|시[·・]?군[·・]?구",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "id": [
@@ -1216,8 +1225,8 @@
         "positive_pattern": "kota|kabupaten",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ]
   },
@@ -1228,8 +1237,8 @@
         "positive_pattern": "(?<!(united|hist|history).?)state|county|region|province|county|principality",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ja": [
@@ -1238,8 +1247,8 @@
         "positive_pattern": "都道府県",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "pt": [
@@ -1248,8 +1257,8 @@
         "positive_pattern": "estado|provincia",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ru": [
@@ -1258,8 +1267,8 @@
         "positive_pattern": "область",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "zh-TW": [
@@ -1268,8 +1277,8 @@
         "positive_pattern": "省|地區",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ml": [
@@ -1278,8 +1287,8 @@
         "positive_pattern": "സംസ്ഥാനം",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "fa": [
@@ -1288,8 +1297,8 @@
         "positive_pattern": "استان",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "hi": [
@@ -1298,8 +1307,8 @@
         "positive_pattern": "राज्य",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "tr": [
@@ -1308,8 +1317,8 @@
         "positive_pattern": "((\\b|_|\\*)(eyalet|[şs]ehir|[İii̇]l(imiz)?|kent)(\\b|_|\\*))",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ko": [
@@ -1318,8 +1327,8 @@
         "positive_pattern": "^시[·・]?도",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "id": [
@@ -1328,8 +1337,8 @@
         "positive_pattern": "provinci",
         "positive_score": 1.1,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ]
   },
@@ -1340,8 +1349,8 @@
         "positive_pattern": "^q$|search|query|qry",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ],
     "de": [
@@ -1350,8 +1359,8 @@
         "positive_pattern": "suche.*",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ],
     "zh-CN": [
@@ -1360,8 +1369,8 @@
         "positive_pattern": "搜索",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ],
     "ja": [
@@ -1370,8 +1379,8 @@
         "positive_pattern": "探す|検索",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ],
     "fr": [
@@ -1380,8 +1389,8 @@
         "positive_pattern": "recherch.*",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ],
     "pt": [
@@ -1390,8 +1399,8 @@
         "positive_pattern": "busca",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ],
     "fa": [
@@ -1400,8 +1409,8 @@
         "positive_pattern": "جستجو",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ],
     "ru": [
@@ -1410,8 +1419,8 @@
         "positive_pattern": "искать|найти|поиск",
         "positive_score": 0.8,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 145
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 4, 7]
       }
     ]
   },
@@ -1422,8 +1431,8 @@
         "positive_pattern": "\\bprice\\b|\\brate\\b|\\bcost\\b",
         "positive_score": 0.95,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 217
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 4, 6, 7]
       }
     ],
     "ar": [
@@ -1432,8 +1441,8 @@
         "positive_pattern": "قیمة‎|سعر‎",
         "positive_score": 0.95,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 217
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 4, 6, 7]
       }
     ],
     "fa": [
@@ -1442,8 +1451,8 @@
         "positive_pattern": "قیمت",
         "positive_score": 0.95,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 217
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 4, 6, 7]
       }
     ],
     "fr": [
@@ -1452,8 +1461,8 @@
         "positive_pattern": "\\bprix\\b|\\bcoût\\b|\\bcout\\b|\\btarif\\b",
         "positive_score": 0.95,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 217
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 4, 6, 7]
       }
     ]
   },
@@ -1464,8 +1473,8 @@
         "positive_pattern": "card.?(?:holder|owner)|name.*(\\b)?on(\\b)?.*card|(?:card|cc).?name|cc.?full.?name",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "de": [
@@ -1474,8 +1483,8 @@
         "positive_pattern": "karteninhaber",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -1484,8 +1493,8 @@
         "positive_pattern": "nombre.*tarjeta",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -1494,8 +1503,8 @@
         "positive_pattern": "nom.*carte",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "it": [
@@ -1504,8 +1513,8 @@
         "positive_pattern": "nome.*cart",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -1514,8 +1523,8 @@
         "positive_pattern": "名前",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ru": [
@@ -1524,8 +1533,8 @@
         "positive_pattern": "Имя.*карты",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "zh-CN": [
@@ -1534,8 +1543,8 @@
         "positive_pattern": "信用卡开户名|开户名|持卡人姓名|持卡人姓名",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "id": [
@@ -1544,8 +1553,8 @@
         "positive_pattern": "nama.*kartu",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -1556,8 +1565,8 @@
         "positive_pattern": "name",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -1568,8 +1577,8 @@
         "positive_pattern": "(add)?(?:card|cc|acct).?(?:number|#|no|num|field|pan)",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "de": [
@@ -1578,8 +1587,8 @@
         "positive_pattern": "(?<!telefon|haus|person|fødsels|kunden)nummer",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "ja": [
@@ -1588,8 +1597,8 @@
         "positive_pattern": "カード番号",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "ru": [
@@ -1598,8 +1607,8 @@
         "positive_pattern": "Номер.*карты",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "zh-CN": [
@@ -1608,8 +1617,8 @@
         "positive_pattern": "信用卡号|信用卡号码",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "zh-TW": [
@@ -1618,8 +1627,8 @@
         "positive_pattern": "信用卡卡號",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "ko": [
@@ -1628,8 +1637,8 @@
         "positive_pattern": "카드",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "es": [
@@ -1638,8 +1647,8 @@
         "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "pt": [
@@ -1648,8 +1657,8 @@
         "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "fr": [
@@ -1658,8 +1667,8 @@
         "positive_pattern": "(numero|número|numéro)(?!.*(document|fono|phone|réservation))",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ],
     "id": [
@@ -1668,8 +1677,8 @@
         "positive_pattern": "no.*kartu",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ]
   },
@@ -1680,8 +1689,8 @@
         "positive_pattern": "verification|card.?identification|security.?code|card.?code|security.?value|security.?number|card.?pin|c-v-v|(cvn|cvv|cvc|csc|cvd|cid|ccv)(field)?|\\bcid\\b",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 101
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 5, 6]
       }
     ]
   },
@@ -1692,8 +1701,8 @@
         "positive_pattern": "expir|exp.*mo|exp.*date|ccmonth|cardmonth|addmonth",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "de": [
@@ -1702,8 +1711,8 @@
         "positive_pattern": "gueltig|gültig|monat",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "es": [
@@ -1712,8 +1721,8 @@
         "positive_pattern": "fecha",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "fr": [
@@ -1722,8 +1731,8 @@
         "positive_pattern": "date.*exp",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "it": [
@@ -1732,8 +1741,8 @@
         "positive_pattern": "scadenza",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "ja": [
@@ -1742,8 +1751,8 @@
         "positive_pattern": "有効期限",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "pt": [
@@ -1752,8 +1761,8 @@
         "positive_pattern": "validade",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "ru": [
@@ -1762,8 +1771,8 @@
         "positive_pattern": "Срок действия карты",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "zh-CN": [
@@ -1772,8 +1781,8 @@
         "positive_pattern": "月",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "id": [
@@ -1782,8 +1791,8 @@
         "positive_pattern": "masa berlaku|berlaku hingga",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ]
   },
@@ -1794,8 +1803,8 @@
         "positive_pattern": "exp|^/|(add)?year",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "de": [
@@ -1804,8 +1813,8 @@
         "positive_pattern": "ablaufdatum|gueltig|gültig|jahr",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "es": [
@@ -1814,8 +1823,8 @@
         "positive_pattern": "fecha",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "it": [
@@ -1824,8 +1833,8 @@
         "positive_pattern": "scadenza",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "ja": [
@@ -1834,8 +1843,8 @@
         "positive_pattern": "有効期限",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "pt": [
@@ -1844,8 +1853,8 @@
         "positive_pattern": "validade",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "ru": [
@@ -1854,8 +1863,8 @@
         "positive_pattern": "Срок действия карты",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "zh-CN": [
@@ -1864,8 +1873,18 @@
         "positive_pattern": "年|有效期",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
+      }
+    ],
+    "id": [
+      {
+        "pattern_identifier": "id_card_exp_date_preserving",
+        "positive_pattern": "masa berlaku|berlaku hingga",
+        "positive_score": 1.0,
+        "negative_pattern": null,
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ]
   },
@@ -1876,8 +1895,8 @@
         "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yy(?:[^y]|$)",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ]
   },
@@ -1888,8 +1907,8 @@
         "positive_pattern": "(?:exp.*date[^y\\n\\r]*|mm\\s*[-/]?\\s*)yyyy(?:[^y]|$)",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ]
   },
@@ -1900,8 +1919,8 @@
         "positive_pattern": "expir|exp.*date|^expfield$",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "de": [
@@ -1910,8 +1929,8 @@
         "positive_pattern": "gueltig|gültig",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "es": [
@@ -1920,8 +1939,8 @@
         "positive_pattern": "fecha",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "fr": [
@@ -1930,8 +1949,8 @@
         "positive_pattern": "date.*exp",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "it": [
@@ -1940,8 +1959,8 @@
         "positive_pattern": "scadenza",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "ja": [
@@ -1950,8 +1969,8 @@
         "positive_pattern": "有効期限",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "pt": [
@@ -1960,8 +1979,8 @@
         "positive_pattern": "validade",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ],
     "ru": [
@@ -1970,18 +1989,8 @@
         "positive_pattern": "Срок действия карты",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
-      }
-    ],
-    "id": [
-      {
-        "pattern_identifier": "id_card_exp_date_preserving",
-        "positive_pattern": "masa berlaku|berlaku hingga",
-        "positive_score": 1.0,
-        "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ]
   },
@@ -1992,8 +2001,8 @@
         "positive_pattern": "^mm$",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ]
   },
@@ -2004,8 +2013,8 @@
         "positive_pattern": "^(yy|yyyy)$",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 205
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6, 7]
       }
     ]
   },
@@ -2016,8 +2025,8 @@
         "positive_pattern": "gift.?(card|cert)",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 197
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6, 7]
       }
     ]
   },
@@ -2028,8 +2037,8 @@
         "positive_pattern": "(?:visa|mastercard|discover|amex|american express).*gift.?card",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 197
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6, 7]
       }
     ]
   },
@@ -2040,8 +2049,8 @@
         "positive_pattern": "debit.*card",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 197
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6, 7]
       }
     ]
   },
@@ -2052,8 +2061,8 @@
         "positive_pattern": "day",
         "positive_score": 1.0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 9
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3]
       }
     ]
   },
@@ -2064,8 +2073,8 @@
         "positive_pattern": "e.?mail",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "fr": [
@@ -2074,8 +2083,8 @@
         "positive_pattern": "courriel",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "es": [
@@ -2084,8 +2093,8 @@
         "positive_pattern": "correo.*electr(o|ó)nico",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "ja": [
@@ -2094,8 +2103,8 @@
         "positive_pattern": "メールアドレス",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "ru": [
@@ -2104,8 +2113,8 @@
         "positive_pattern": "Электронн(ая|ой).?Почт(а|ы)",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "zh-CN": [
@@ -2114,8 +2123,8 @@
         "positive_pattern": "邮件|邮箱|電子郵件",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "zh-TW": [
@@ -2124,8 +2133,8 @@
         "positive_pattern": "電郵地址|電子信箱",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "ml": [
@@ -2134,8 +2143,8 @@
         "positive_pattern": "ഇ-മെയില്‍|ഇലക്ട്രോണിക്.?മെയിൽ",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "fa": [
@@ -2144,8 +2153,8 @@
         "positive_pattern": "ایمیل|پست.*الکترونیک",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "hi": [
@@ -2154,8 +2163,8 @@
         "positive_pattern": "ईमेल|इलॅक्ट्रॉनिक.?मेल",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "tr": [
@@ -2164,8 +2173,8 @@
         "positive_pattern": "(\\b|_)eposta(\\b|_)",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ],
     "ko": [
@@ -2174,8 +2183,8 @@
         "positive_pattern": "(?:이메일|전자.?우편|[Ee]-?mail)(.?주소)?",
         "positive_score": 1.4,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 3
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 1]
       }
     ]
   },
@@ -2183,11 +2192,11 @@
     "en": [
       {
         "pattern_identifier": "en_name_ignored_preserving",
-        "positive_pattern": "user.?name|user.?id|nickname|maiden name|title|prefix|suffix",
+        "positive_pattern": "user.?name|user.?id|nickname|maiden name|title|prefix|suffix|mail",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "de": [
@@ -2196,8 +2205,8 @@
         "positive_pattern": "vollständiger.?name",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "zh-CN": [
@@ -2206,8 +2215,8 @@
         "positive_pattern": "用户名",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ],
     "ko": [
@@ -2216,8 +2225,8 @@
         "positive_pattern": "(?:사용자.?)?아이디|사용자.?ID",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 137
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 3, 7]
       }
     ]
   },
@@ -2228,8 +2237,8 @@
         "positive_pattern": "^name|full.?name|your.?name|customer.?name|bill.?name|ship.?name|name.*first.*last|firstandlastname|contact.?(name|person)",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -2238,8 +2247,8 @@
         "positive_pattern": "nombre.*y.*apellidos",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -2248,8 +2257,8 @@
         "positive_pattern": "^nom(?![a-zA-Z])",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -2258,8 +2267,8 @@
         "positive_pattern": "お名前|氏名",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "pt": [
@@ -2268,8 +2277,8 @@
         "positive_pattern": "^nome",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fa": [
@@ -2278,8 +2287,8 @@
         "positive_pattern": "نام.*نام.*خانوادگی",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "zh-CN": [
@@ -2288,8 +2297,8 @@
         "positive_pattern": "姓\\s*名",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ru": [
@@ -2298,8 +2307,8 @@
         "positive_pattern": "контактное.?лицо",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "tr": [
@@ -2308,8 +2317,8 @@
         "positive_pattern": "(\\b|_|\\*)ad[ı]? soyad[ı]?(\\b|_|\\*)",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ko": [
@@ -2318,8 +2327,8 @@
         "positive_pattern": "성명",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "id": [
@@ -2328,20 +2337,20 @@
         "positive_pattern": "nama.?(lengkap|penerima|kamu)",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
-  "NAME_SPECIFIC": {
+  "NAME_GENERIC": {
     "en": [
       {
         "pattern_identifier": "en_name_specific_preserving",
         "positive_pattern": "^name",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -2350,8 +2359,8 @@
         "positive_pattern": "^nom",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "pt": [
@@ -2360,8 +2369,8 @@
         "positive_pattern": "^nome",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2372,8 +2381,8 @@
         "positive_pattern": "first.*name|initials|fname|first$|given.*name",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "de": [
@@ -2382,8 +2391,8 @@
         "positive_pattern": "vorname",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -2392,8 +2401,8 @@
         "positive_pattern": "nombre",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -2402,8 +2411,8 @@
         "positive_pattern": "forename|prénom|prenom",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -2412,8 +2421,8 @@
         "positive_pattern": "名",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "pt": [
@@ -2422,8 +2431,8 @@
         "positive_pattern": "nome",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ru": [
@@ -2432,8 +2441,8 @@
         "positive_pattern": "Имя",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fa": [
@@ -2442,8 +2451,8 @@
         "positive_pattern": "نام",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ko": [
@@ -2452,8 +2461,8 @@
         "positive_pattern": "이름",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ml": [
@@ -2462,8 +2471,8 @@
         "positive_pattern": "പേര്",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "tr": [
@@ -2472,8 +2481,8 @@
         "positive_pattern": "(\\b|_|\\*)(isim|ad|ad(i|ı|iniz|ınız)?)(\\b|_|\\*)",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "hi": [
@@ -2482,8 +2491,8 @@
         "positive_pattern": "नाम",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "id": [
@@ -2492,8 +2501,8 @@
         "positive_pattern": "nama depan",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2504,8 +2513,8 @@
         "positive_pattern": "middle.*initial|m\\.i\\.|mi$|\\bmi\\b",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2516,8 +2525,8 @@
         "positive_pattern": "middle.*name|mname|middle$",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2528,8 +2537,8 @@
         "positive_pattern": "last.*name|lname|surname(?!\\d)|last$|secondname|family.*name",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "de": [
@@ -2538,8 +2547,8 @@
         "positive_pattern": "nachname",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -2548,8 +2557,8 @@
         "positive_pattern": "apellidos?",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -2558,8 +2567,8 @@
         "positive_pattern": "famille|^nom(?![a-zA-Z])",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "it": [
@@ -2568,8 +2577,8 @@
         "positive_pattern": "cognome",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -2578,8 +2587,8 @@
         "positive_pattern": "姓",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "pt": [
@@ -2588,8 +2597,8 @@
         "positive_pattern": "apelidos|surename|sobrenome",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ru": [
@@ -2598,8 +2607,8 @@
         "positive_pattern": "Фамилия",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fa": [
@@ -2608,8 +2617,8 @@
         "positive_pattern": "نام.*خانوادگی",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "hi": [
@@ -2618,8 +2627,8 @@
         "positive_pattern": "उपनाम",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ml": [
@@ -2628,8 +2637,8 @@
         "positive_pattern": "മറുപേര്",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "tr": [
@@ -2638,8 +2647,8 @@
         "positive_pattern": "(\\b|_|\\*)(soyisim|soyad(i|ı|iniz|ınız)?)(\\b|_|\\*)",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ko": [
@@ -2648,8 +2657,8 @@
         "positive_pattern": "\\b성(?:[^명]|\\b)",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "id": [
@@ -2658,8 +2667,8 @@
         "positive_pattern": "nama belakang",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2670,8 +2679,8 @@
         "positive_pattern": "(primer.*apellido)|(apellido1)|(apellido.*paterno)|surname_?1|first(\\s|_)?surname",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2682,8 +2691,8 @@
         "positive_pattern": "(segund.*apellido)|(apellido2)|(apellido.*materno)|surname_?2|second(\\s|_)?surname",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2694,8 +2703,8 @@
         "positive_pattern": "^title:?$|(salutation(?! and given name))",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "de": [
@@ -2704,8 +2713,8 @@
         "positive_pattern": "anrede|titel",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -2714,8 +2723,8 @@
         "positive_pattern": "tratamiento|encabezamiento",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "it": [
@@ -2724,8 +2733,8 @@
         "positive_pattern": "titolo",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -2734,8 +2743,8 @@
         "positive_pattern": "titre",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ru": [
@@ -2744,8 +2753,8 @@
         "positive_pattern": "обращение|звание",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "el": [
@@ -2754,8 +2763,8 @@
         "positive_pattern": "προσφώνηση",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "tr": [
@@ -2764,8 +2773,8 @@
         "positive_pattern": "hitap",
         "positive_score": 0.9,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2776,8 +2785,8 @@
         "positive_pattern": "phone|mobile|contact.?number",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "de": [
@@ -2786,8 +2795,8 @@
         "positive_pattern": "telefonnummer",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "es": [
@@ -2796,8 +2805,8 @@
         "positive_pattern": "telefono|teléfono",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "fr": [
@@ -2806,8 +2815,8 @@
         "positive_pattern": "telfixe",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ja": [
@@ -2816,8 +2825,8 @@
         "positive_pattern": "電話",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "pt": [
@@ -2826,8 +2835,8 @@
         "positive_pattern": "telefone|telemovel",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ru": [
@@ -2836,8 +2845,8 @@
         "positive_pattern": "телефон",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "hi": [
@@ -2846,8 +2855,8 @@
         "positive_pattern": "मोबाइल",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "tr": [
@@ -2856,8 +2865,8 @@
         "positive_pattern": "(\\b|_|\\*)telefon(\\b|_|\\*)",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "zh-CN": [
@@ -2866,8 +2875,8 @@
         "positive_pattern": "电话",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ml": [
@@ -2876,8 +2885,8 @@
         "positive_pattern": "മൊബൈല്‍",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ko": [
@@ -2886,8 +2895,8 @@
         "positive_pattern": "(?:전화|핸드폰|휴대폰|휴대전화)(?:.?번호)?",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "id": [
@@ -2896,8 +2905,8 @@
         "positive_pattern": "telepon|ponsel|(nomor|no\\.?).?(hp|handphone)",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -2908,8 +2917,8 @@
         "positive_pattern": "^[^0-9+]*(?:\\+|00)\\s*([1-9]\\d{0,3})\\D*$",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -2920,8 +2929,8 @@
         "positive_pattern": "country.*code|ccode|_cc|phone.*code|user.*phone.*code",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 77
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 3, 6]
       }
     ]
   },
@@ -2932,8 +2941,8 @@
         "positive_pattern": "^\\($",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -2944,8 +2953,8 @@
         "positive_pattern": "area.*code|acode|area",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "ko": [
@@ -2954,8 +2963,8 @@
         "positive_pattern": "지역.?번호",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -2966,8 +2975,8 @@
         "positive_pattern": "^-$|^\\)$",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -2978,8 +2987,8 @@
         "positive_pattern": "^-$",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -2990,8 +2999,8 @@
         "positive_pattern": "prefix|exchange",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "fr": [
@@ -3000,8 +3009,8 @@
         "positive_pattern": "preselection",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "pt": [
@@ -3010,8 +3019,8 @@
         "positive_pattern": "ddd",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -3022,8 +3031,8 @@
         "positive_pattern": "suffix",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -3034,8 +3043,8 @@
         "positive_pattern": "\\bext|ext\\b|extension",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ],
     "pt": [
@@ -3044,8 +3053,8 @@
         "positive_pattern": "ramal",
         "positive_score": 1.3,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 69
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0, 2, 6]
       }
     ]
   },
@@ -3056,8 +3065,8 @@
         "positive_pattern": "document.*number|passport",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "fr": [
@@ -3066,8 +3075,8 @@
         "positive_pattern": "passeport",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -3076,8 +3085,8 @@
         "positive_pattern": "numero.*documento|pasaporte",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -3086,8 +3095,8 @@
         "positive_pattern": "書類",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3098,8 +3107,8 @@
         "positive_pattern": "point.*of.*entry|arrival",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -3108,8 +3117,8 @@
         "positive_pattern": "punto.*internaci(o|ó)n|fecha.*llegada",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -3118,8 +3127,8 @@
         "positive_pattern": "入国",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3130,8 +3139,8 @@
         "positive_pattern": "departure",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -3140,8 +3149,8 @@
         "positive_pattern": "fecha.*salida|destino",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -3150,8 +3159,8 @@
         "positive_pattern": "出国",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3162,8 +3171,8 @@
         "positive_pattern": "airline|flight",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "es": [
@@ -3172,8 +3181,8 @@
         "positive_pattern": "aerol(i|í)nea|n(u|ú)mero.*vuelo",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ],
     "ja": [
@@ -3182,8 +3191,8 @@
         "positive_pattern": "便名|航空会社",
         "positive_score": 1.2,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3194,16 +3203,16 @@
         "positive_pattern": "^[\\w.+-_]+@(\\w+\\.ifsc\\.npci|aadhaar\\.npci|mobile\\.npci|rupay\\.npci)$",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       },
       {
         "pattern_identifier": "en_upi_virtual_payment_address_user@(bank_list)_preserving",
         "positive_pattern": "^[\\w.+-_]+@(airtel|airtelpaymentsbank|albk|allahabadbank|allbank|andb|apb|apl|axis|axisbank|axisgo|bandhan|barodampay|birla|boi|cbin|cboi|centralbank|cmsidfc|cnrb|csbcash|csbpay|cub|dbs|dcb|dcbbank|denabank|dlb|eazypay|equitas|ezeepay|fbl|federal|finobank|hdfcbank|hsbc|icici|idbi|idbibank|idfc|idfcbank|idfcnetc|ikwik|imobile|indbank|indianbank|indianbk|indus|iob|jkb|jsb|jsbp|karb|karurvysyabank|kaypay|kbl|kbl052|kmb|kmbl|kotak|kvb|kvbank|lime|lvb|lvbank|mahb|obc|okaxis|okbizaxis|okhdfcbank|okicici|oksbi|paytm|payzapp|pingpay|pnb|pockets|psb|purz|rajgovhdfcbank|rbl|sbi|sc|scb|scbl|scmobile|sib|srcb|synd|syndbank|syndicate|tjsb|tjsp|ubi|uboi|uco|unionbank|unionbankofindia|united|upi|utbi|vijayabank|vijb|vjb|ybl|yesbank|yesbankltd)$",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3214,8 +3223,8 @@
         "positive_pattern": "^[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}$",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3226,8 +3235,8 @@
         "positive_pattern": "^\\d{3,4}$",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3238,8 +3247,8 @@
         "positive_pattern": "^[2][0][1-9][0-9]$",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3250,8 +3259,8 @@
         "positive_pattern": "/search(/|((\\w*\\.\\w+)?$))",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3262,8 +3271,8 @@
         "positive_pattern": "ssn|social.?security.?(num(ber)?|#)*",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3274,8 +3283,8 @@
         "positive_pattern": "one.?time|sms.?(code|token|password|pwd|pass)",
         "positive_score": 0,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   },
@@ -3283,11 +3292,11 @@
     "en": [
       {
         "pattern_identifier": "en_merchant_promo_code_preserving",
-        "positive_pattern": "\\bpromo.*code\\b|\\bcoupon code\\b|\\bgift code\\b",
+        "positive_pattern": "(promo(tion|tional)?|gift|discount|coupon)[-_. ]*code",
         "positive_score": 0.85,
         "negative_pattern": null,
-        "match_field_attributes": 3,
-        "match_field_input_types": 1
+        "match_field_attributes": [0, 1],
+        "match_field_input_types": [0]
       }
     ]
   }

@@ -11,7 +11,6 @@ source_set("browser") {
     "chrome_browser_provider.mm",
   ]
   deps = [
-    ":font_size_java_script_feature",
     "//base",
     "//components/metrics",
     "//ios/public/provider/chrome/browser/mailto",
@@ -23,32 +22,23 @@ source_set("browser") {
   frameworks = [ "CoreLocation.framework" ]
 }
 
-source_set("font_size_java_script_feature") {
-  configs += [ "//build/config/compiler:enable_arc" ]
-  sources = [
-    "font_size_java_script_feature.h",
-    "font_size_java_script_feature.mm",
-  ]
-  deps = [
-    "//base",
-    "//ios/web/public",
-  ]
-  public_deps = [ "//ios/web/public/js_messaging" ]
-}
-
 group("provider_api") {
   deps = [
     # The individual APIs.
     "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
+    "//ios/public/provider/chrome/browser/app_utils:app_utils_api",
     "//ios/public/provider/chrome/browser/branded_images:branded_images_api",
     "//ios/public/provider/chrome/browser/lens:lens_api",
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ios/public/provider/chrome/browser/omaha:omaha_api",
     "//ios/public/provider/chrome/browser/overrides:overrides_api",
+    "//ios/public/provider/chrome/browser/password_auto_fill:password_auto_fill_api",
     "//ios/public/provider/chrome/browser/risk_data:risk_data_api",
     "//ios/public/provider/chrome/browser/signin:signin_error_api",
     "//ios/public/provider/chrome/browser/signin:signin_resources_api",
+    "//ios/public/provider/chrome/browser/signin:signin_sso_api",
     "//ios/public/provider/chrome/browser/text_zoom:text_zoom_api",
+    "//ios/public/provider/chrome/browser/ui_utils:ui_utils_api",
     "//ios/public/provider/chrome/browser/url_rewriters:url_rewriters_api",
     "//ios/public/provider/chrome/browser/voice_search:voice_search_api",
   ]
@@ -66,6 +56,7 @@ source_set("test_support") {
     "//base",
     "//ios/chrome/browser/ui/ntp:logo",
     "//ios/public/provider/chrome/browser/discover_feed",
+    "//ios/public/provider/chrome/browser/follow",
     "//ios/public/provider/chrome/browser/mailto:test_support",
     "//ios/public/provider/chrome/browser/signin",
     "//ios/public/provider/chrome/browser/signin:test_support",
@@ -81,32 +72,5 @@ source_set("test_provider_factory") {
   deps = [
     ":browser",
     ":test_support",
-  ]
-}
-
-group("test_providers") {
-  testonly = true
-  deps = [
-    # The target providing the ChromeBrowserProvider factory.
-    ":test_provider_factory",
-
-    # The individual API implementations.
-    "//ios/public/provider/chrome/browser/app_distribution:test_app_distribution",
-    "//ios/public/provider/chrome/browser/branded_images:test_branded_images",
-    "//ios/public/provider/chrome/browser/lens:test_lens",
-    "//ios/public/provider/chrome/browser/modals:test_modals",
-    "//ios/public/provider/chrome/browser/omaha:test_omaha",
-    "//ios/public/provider/chrome/browser/overrides:test_overrides",
-    "//ios/public/provider/chrome/browser/risk_data:test_risk_data",
-    "//ios/public/provider/chrome/browser/signin:test_signin_error",
-    "//ios/public/provider/chrome/browser/signin:test_signin_resources",
-    "//ios/public/provider/chrome/browser/text_zoom:test_text_zoom",
-    "//ios/public/provider/chrome/browser/url_rewriters:test_url_rewriters",
-    "//ios/public/provider/chrome/browser/voice_search:test_voice_search",
-
-    # The provider API needs to provide MaterialDesignComponent API (as the
-    # internal provider provides an alternate implementation).
-    "//ios/third_party/material_components_ios:material_components_ios+bundle",
-    "//ios/third_party/material_components_ios:material_components_ios+link",
   ]
 }

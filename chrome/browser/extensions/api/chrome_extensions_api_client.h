@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_CHROME_EXTENSIONS_API_CLIENT_H_
 #define CHROME_BROWSER_EXTENSIONS_API_CHROME_EXTENSIONS_API_CLIENT_H_
 
-#include "base/compiler_specific.h"
 #include "build/chromeos_buildflags.h"
 #include "extensions/browser/api/extensions_api_client.h"
 

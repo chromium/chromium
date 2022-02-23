@@ -11,7 +11,6 @@
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/values.h"
 #include "content/public/browser/browser_context.h"
@@ -114,11 +113,11 @@ scoped_refptr<const Extension> CreateExtension(bool component,
   ExtensionBuilder builder;
   std::unique_ptr<base::DictionaryValue> manifest =
       std::make_unique<base::DictionaryValue>();
-  manifest->SetString("name", "foo");
-  manifest->SetString("version", "1.0.0");
-  manifest->SetInteger("manifest_version", 2);
-  manifest->SetString("background.page", "background.html");
-  manifest->SetBoolean("background.persistent", persistent);
+  manifest->SetStringKey("name", "foo");
+  manifest->SetStringKey("version", "1.0.0");
+  manifest->SetIntKey("manifest_version", 2);
+  manifest->SetStringPath("background.page", "background.html");
+  manifest->SetBoolPath("background.persistent", persistent);
   builder.SetManifest(std::move(manifest));
   if (component)
     builder.SetLocation(mojom::ManifestLocation::kComponent);
@@ -129,10 +128,10 @@ scoped_refptr<const Extension> CreateExtension(bool component,
 scoped_refptr<const Extension> CreateServiceWorkerExtension() {
   ExtensionBuilder builder;
   auto manifest = std::make_unique<base::DictionaryValue>();
-  manifest->SetString("name", "foo");
-  manifest->SetString("version", "1.0.0");
-  manifest->SetInteger("manifest_version", 2);
-  manifest->SetString("background.service_worker", "worker.js");
+  manifest->SetStringKey("name", "foo");
+  manifest->SetStringKey("version", "1.0.0");
+  manifest->SetIntKey("manifest_version", 2);
+  manifest->SetStringPath("background.service_worker", "worker.js");
   builder.SetManifest(std::move(manifest));
   return builder.Build();
 }
@@ -231,18 +230,18 @@ class EventRouterFilterTest : public ExtensionsTest,
   bool ContainsFilter(const std::string& extension_id,
                       const std::string& event_name,
                       const DictionaryValue& to_check) {
-    const ListValue* filter_list = GetFilterList(extension_id, event_name);
+    const Value* filter_list = GetFilterList(extension_id, event_name);
     if (!filter_list) {
       ADD_FAILURE();
       return false;
     }
 
-    for (const base::Value& filter : filter_list->GetList()) {
+    for (const base::Value& filter : filter_list->GetListDeprecated()) {
       if (!filter.is_dict()) {
         ADD_FAILURE();
         return false;
       }
-      if (filter.Equals(&to_check))
+      if (filter == to_check)
         return true;
     }
     return false;
@@ -251,17 +250,15 @@ class EventRouterFilterTest : public ExtensionsTest,
   bool is_for_service_worker() const { return GetParam(); }
 
  private:
-  const ListValue* GetFilterList(const std::string& extension_id,
-                                 const std::string& event_name) {
+  const Value* GetFilterList(const std::string& extension_id,
+                             const std::string& event_name) {
     const base::DictionaryValue* filtered_events =
         GetFilteredEvents(extension_id);
     DictionaryValue::Iterator iter(*filtered_events);
     if (iter.key() != event_name)
       return nullptr;
 
-    const base::ListValue* filter_list = nullptr;
-    iter.value().GetAsList(&filter_list);
-    return filter_list;
+    return iter.value().is_list() ? &iter.value() : nullptr;
   }
 
   std::unique_ptr<content::RenderProcessHost> render_process_host_;
@@ -463,10 +460,8 @@ TEST_P(EventRouterFilterTest, Basic) {
 
   DictionaryValue::Iterator iter(*filtered_events);
   ASSERT_EQ(kEventName, iter.key());
-  const base::ListValue* filter_list = nullptr;
-  ASSERT_TRUE(iter.value().GetAsList(&filter_list));
-  ASSERT_TRUE(filter_list);
-  ASSERT_EQ(3u, filter_list->GetList().size());
+  ASSERT_TRUE(iter.value().is_list());
+  ASSERT_EQ(3u, iter.value().GetListDeprecated().size());
 
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[0]));
   ASSERT_TRUE(ContainsFilter(kExtensionId, kEventName, *filters[1]));

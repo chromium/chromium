@@ -30,8 +30,8 @@ plugins::PluginPlaceholder* CreateNonLoadablePlaceholderHelper(
           IDR_BLOCKED_PLUGIN_HTML);
 
   base::DictionaryValue values;
-  values.SetString("name", "");
-  values.SetString("message", message);
+  values.SetStringKey("name", "");
+  values.SetStringKey("message", message);
 
   std::string html_data = webui::GetI18nTemplateHtml(template_html, &values);
 
@@ -60,14 +60,15 @@ NonLoadablePluginPlaceholder::CreateFlashDeprecatedPlaceholder(
       l10n_util::GetStringFUTF8(IDS_PLUGIN_DEPRECATED, u"Adobe Flash Player"));
 }
 
+#if BUILDFLAG(ENABLE_PLUGINS)
 // static
 plugins::PluginPlaceholder* NonLoadablePluginPlaceholder::CreateErrorPlugin(
     content::RenderFrame* render_frame,
     const base::FilePath& file_path) {
   base::DictionaryValue values;
-  values.SetString("name", "");
-  values.SetString("message",
-                   l10n_util::GetStringUTF8(IDS_PLUGIN_INITIALIZATION_ERROR));
+  values.SetStringKey("name", "");
+  values.SetStringKey(
+      "message", l10n_util::GetStringUTF8(IDS_PLUGIN_INITIALIZATION_ERROR));
 
   std::string template_html =
       ui::ResourceBundle::GetSharedInstance().LoadDataResourceString(
@@ -85,3 +86,4 @@ plugins::PluginPlaceholder* NonLoadablePluginPlaceholder::CreateErrorPlugin(
 
   return plugin;
 }
+#endif  // BUILDFLAG(ENABLE_PLUGINS)

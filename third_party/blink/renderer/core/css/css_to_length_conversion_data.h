@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/layout/geometry/axis.h"
-#include "third_party/blink/renderer/platform/geometry/double_size.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
@@ -78,14 +77,42 @@ class CORE_EXPORT CSSToLengthConversionData {
 
    public:
     ViewportSize() = default;
-    ViewportSize(double width, double height) : size_(width, height) {}
+    ViewportSize(double width, double height)
+        : large_width_(width),
+          large_height_(height),
+          small_width_(width),
+          small_height_(height),
+          dynamic_width_(width),
+          dynamic_height_(height) {}
+
     explicit ViewportSize(const LayoutView*);
 
-    double Width() const { return size_.Width(); }
-    double Height() const { return size_.Height(); }
+    // v*
+    double Width() const { return LargeWidth(); }
+    double Height() const { return LargeHeight(); }
+
+    // lv*
+    double LargeWidth() const { return large_width_; }
+    double LargeHeight() const { return large_height_; }
+
+    // sv*
+    double SmallWidth() const { return small_width_; }
+    double SmallHeight() const { return small_height_; }
+
+    // dv*
+    double DynamicWidth() const { return dynamic_width_; }
+    double DynamicHeight() const { return dynamic_height_; }
 
    private:
-    DoubleSize size_;
+    // v*, lv*
+    double large_width_ = 0;
+    double large_height_ = 0;
+    // sv*
+    double small_width_ = 0;
+    double small_height_ = 0;
+    // dv*
+    double dynamic_width_ = 0;
+    double dynamic_height_ = 0;
   };
 
   class CORE_EXPORT ContainerSizes {
@@ -98,24 +125,19 @@ class CORE_EXPORT CSSToLengthConversionData {
 
     absl::optional<double> Width() const;
     absl::optional<double> Height() const;
-    absl::optional<double> InlineSize() const;
-    absl::optional<double> BlockSize() const;
 
    private:
-    void CacheSizeIfNeeded(LogicalAxes, absl::optional<double>& cache) const;
     void CacheSizeIfNeeded(PhysicalAxes, absl::optional<double>& cache) const;
 
     Element* nearest_container_{nullptr};
     mutable PhysicalAxes cached_physical_axes_{kPhysicalAxisNone};
-    mutable LogicalAxes cached_logical_axes_{kLogicalAxisNone};
     mutable absl::optional<double> cached_width_;
     mutable absl::optional<double> cached_height_;
-    mutable absl::optional<double> cached_inline_size_;
-    mutable absl::optional<double> cached_block_size_;
   };
 
   CSSToLengthConversionData() : style_(nullptr), zoom_(1) {}
   CSSToLengthConversionData(const ComputedStyle*,
+                            WritingMode,
                             const FontSizes&,
                             const ViewportSize&,
                             const ContainerSizes&,
@@ -137,8 +159,28 @@ class CORE_EXPORT CSSToLengthConversionData {
   // Accessing these marks the style as having viewport units
   double ViewportWidthPercent() const;
   double ViewportHeightPercent() const;
+  double ViewportInlineSizePercent() const;
+  double ViewportBlockSizePercent() const;
   double ViewportMinPercent() const;
   double ViewportMaxPercent() const;
+  double SmallViewportWidthPercent() const;
+  double SmallViewportHeightPercent() const;
+  double SmallViewportInlineSizePercent() const;
+  double SmallViewportBlockSizePercent() const;
+  double SmallViewportMinPercent() const;
+  double SmallViewportMaxPercent() const;
+  double LargeViewportWidthPercent() const;
+  double LargeViewportHeightPercent() const;
+  double LargeViewportInlineSizePercent() const;
+  double LargeViewportBlockSizePercent() const;
+  double LargeViewportMinPercent() const;
+  double LargeViewportMaxPercent() const;
+  double DynamicViewportWidthPercent() const;
+  double DynamicViewportHeightPercent() const;
+  double DynamicViewportInlineSizePercent() const;
+  double DynamicViewportBlockSizePercent() const;
+  double DynamicViewportMinPercent() const;
+  double DynamicViewportMaxPercent() const;
 
   // Accessing these marks the style as having container relative units.
   double ContainerWidthPercent() const;
@@ -159,14 +201,20 @@ class CORE_EXPORT CSSToLengthConversionData {
   }
 
   CSSToLengthConversionData CopyWithAdjustedZoom(float new_zoom) const {
-    return CSSToLengthConversionData(style_, font_sizes_, viewport_size_,
-                                     container_sizes_, new_zoom);
+    return CSSToLengthConversionData(style_, writing_mode_, font_sizes_,
+                                     viewport_size_, container_sizes_,
+                                     new_zoom);
   }
 
   double ZoomedComputedPixels(double value, CSSPrimitiveValue::UnitType) const;
 
  private:
+  bool IsHorizontalWritingMode() const {
+    return blink::IsHorizontalWritingMode(writing_mode_);
+  }
+
   const ComputedStyle* style_;
+  WritingMode writing_mode_;
   FontSizes font_sizes_;
   ViewportSize viewport_size_;
   ContainerSizes container_sizes_;

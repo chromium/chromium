@@ -3,10 +3,10 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
@@ -58,7 +58,7 @@ class SyntheticInputTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     // Wait for the hit test data to be ready after initiating URL loading
     // before returning
@@ -214,7 +214,7 @@ IN_PROC_BROWSER_TEST_F(SyntheticInputTest, DISABLED_SlowSmoothScrollWheel) {
   float device_scale_factor =
       web_contents->GetRenderWidgetHostView()->GetDeviceScaleFactor();
   scroll_offset_wait.WaitForScrollOffset(
-      gfx::Vector2dF(0.f, 1024.f * device_scale_factor));
+      gfx::PointF(0.f, 1024.f * device_scale_factor));
 
   EXPECT_EQ(1024, EvalJs(shell()->web_contents(),
                          "document.scrollingElement.scrollTop"));

@@ -320,14 +320,14 @@ void VideoCaptureDeviceClient::OnIncomingCapturedData(
 // see http://linuxtv.org/downloads/v4l-dvb-apis/packed-rgb.html.
 // Windows RGB24 defines blue at lowest byte,
 // see https://msdn.microsoft.com/en-us/library/windows/desktop/dd407253
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       fourcc_format = libyuv::FOURCC_RAW;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
       fourcc_format = libyuv::FOURCC_24BG;
 #else
       NOTREACHED() << "RGB24 is only available in Linux and Windows platforms";
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       // TODO(wjia): Currently, for RGB24 on WIN, capture device always passes
       // in positive src_width and src_height. Remove this hardcoded value when
       // negative src_height is supported. The negative src_height indicates
@@ -571,7 +571,16 @@ VideoCaptureDeviceClient::ReserveOutputBuffer(const gfx::Size& frame_size,
   if (!base::Contains(buffer_ids_known_by_receiver_, buffer_id)) {
     media::mojom::VideoBufferHandlePtr buffer_handle =
         media::mojom::VideoBufferHandle::New();
-    switch (target_buffer_type_) {
+    VideoCaptureBufferType target_buffer_type = target_buffer_type_;
+#if BUILDFLAG(IS_WIN)
+    // If MediaFoundationD3D11VideoCapture fails, a shared memory buffer may be
+    // sent instead.
+    if (target_buffer_type == VideoCaptureBufferType::kGpuMemoryBuffer &&
+        pixel_format != PIXEL_FORMAT_NV12) {
+      target_buffer_type = VideoCaptureBufferType::kSharedMemory;
+    }
+#endif
+    switch (target_buffer_type) {
       case VideoCaptureBufferType::kSharedMemory:
         buffer_handle->set_shared_buffer_handle(
             buffer_pool_->DuplicateAsMojoBuffer(buffer_id));

@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/test/task_environment.h"
@@ -165,7 +166,7 @@ class FCMInvalidationServiceTestDelegate {
   void InitializeInvalidationService() {
     fake_listener_ = new FakeFCMInvalidationListener(
         std::make_unique<TestFCMSyncNetworkChannel>());
-    invalidation_service_->InitForTest(base::WrapUnique(fake_listener_));
+    invalidation_service_->InitForTest(base::WrapUnique(fake_listener_.get()));
   }
 
   FCMInvalidationService* GetInvalidationService() {
@@ -190,7 +191,7 @@ class FCMInvalidationServiceTestDelegate {
   std::unique_ptr<MockInstanceID> mock_instance_id_;
   signin::IdentityTestEnvironment identity_test_env_;
   std::unique_ptr<IdentityProvider> identity_provider_;
-  FCMInvalidationListener* fake_listener_;  // Owned by the service.
+  raw_ptr<FCMInvalidationListener> fake_listener_;  // Owned by the service.
   network::TestURLLoaderFactory url_loader_factory_;
   TestingPrefServiceSimple pref_service_;
 

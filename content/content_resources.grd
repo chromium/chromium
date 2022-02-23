@@ -25,23 +25,30 @@ Other resources that belong in this file:
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON" file="browser/resources/devtools/devtools_touch_cursor.png" type="BINDATA" />
       <include name="IDR_DEVTOOLS_TOUCH_CURSOR_ICON_2X" file="browser/resources/devtools/devtools_touch_cursor_2x.png" type="BINDATA" />
       <include name="IDR_GEOMETRY_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/gfx/geometry/mojom/geometry.mojom-webui.js" resource_path="mojo/ui/gfx/geometry/mojom/geometry.mojom-webui.js" use_base_dir="false" type="BINDATA" />
+      <include name="IDR_IMAGE_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/gfx/image/mojom/image.mojom-webui.js" resource_path="mojo/ui/gfx/image/mojom/image.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_HTML" file="browser/resources/histograms/histograms_internals.html" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_JS" file="browser/resources/histograms/histograms_internals.js" type="BINDATA" />
       <include name="IDR_HISTOGRAMS_INTERNALS_CSS" file="browser/resources/histograms/histograms_internals.css" type="BINDATA" />
-      <include name="IDR_ORIGIN_MOJO_HTML" file="${root_gen_dir}/url/mojom/origin.mojom.html" resource_path="mojo/url/mojom/origin.mojom.html" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}/url/mojom/origin.mojom-lite.js" resource_path="mojo/url/mojom/origin.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <if expr="chromeos_ash">
+        <include name="IDR_ORIGIN_MOJO_HTML" file="${root_gen_dir}/url/mojom/origin.mojom.html" resource_path="mojo/url/mojom/origin.mojom.html" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_ORIGIN_MOJO_JS" file="${root_gen_dir}/url/mojom/origin.mojom-lite.js" resource_path="mojo/url/mojom/origin.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      </if>
       <include name="IDR_ORIGIN_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/origin.mojom-webui.js" resource_path="mojo/url/mojom/origin.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_RANGE_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/gfx/range/mojom/range.mojom-webui.js" resource_path="mojo/ui/gfx/range/mojom/range.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_TOKEN_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/mojo/public/mojom/base/token.mojom-webui.js" resource_path="mojo/mojo/public/mojom/base/token.mojom-webui.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_JS" file="${root_gen_dir}/ui/base/mojom/window_open_disposition.mojom-lite.js" resource_path="mojo/ui/base/mojom/window_open_disposition.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <if expr="chromeos_ash">
+        <include name="IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_JS" file="${root_gen_dir}/ui/base/mojom/window_open_disposition.mojom-lite.js" resource_path="mojo/ui/base/mojom/window_open_disposition.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+    </if>
       <include name="IDR_UI_WINDOW_OPEN_DISPOSITION_MOJO_WEBUI_JS" file="${root_gen_dir}/mojom-webui/ui/base/mojom/window_open_disposition.mojom-webui.js" resource_path="mojo/ui/base/mojom/window_open_disposition.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_HTML" file="../components/ukm/debug/ukm_internals.html" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_JS" file="../components/ukm/debug/ukm_internals.js" preprocess="true" type="BINDATA" />
       <include name="IDR_UKM_INTERNALS_CSS" file="../components/ukm/debug/ukm_internals.css" type="BINDATA" />
-      <include name="IDR_UNGUESSABLE_TOKEN_MOJO_HTML" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom.html" resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom.html" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_UNGUESSABLE_TOKEN_MOJO_JS" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom-lite.js" resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_URL_MOJO_HTML" file="${root_gen_dir}/url/mojom/url.mojom.html" resource_path="mojo/url/mojom/url.mojom.html" use_base_dir="false" type="BINDATA" />
-      <include name="IDR_URL_MOJO_JS" file="${root_gen_dir}/url/mojom/url.mojom-lite.js" resource_path="mojo/url/mojom/url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      <if expr="chromeos_ash">
+        <include name="IDR_UNGUESSABLE_TOKEN_MOJO_HTML" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom.html" resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom.html" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_UNGUESSABLE_TOKEN_MOJO_JS" file="${root_gen_dir}/mojo/public/mojom/base/unguessable_token.mojom-lite.js" resource_path="mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_URL_MOJO_HTML" file="${root_gen_dir}/url/mojom/url.mojom.html" resource_path="mojo/url/mojom/url.mojom.html" use_base_dir="false" type="BINDATA" />
+        <include name="IDR_URL_MOJO_JS" file="${root_gen_dir}/url/mojom/url.mojom-lite.js" resource_path="mojo/url/mojom/url.mojom-lite.js" use_base_dir="false" type="BINDATA" />
+      </if>
       <include name="IDR_URL_MOJOM_WEBUI_JS" file="${root_gen_dir}/mojom-webui/url/mojom/url.mojom-webui.js" resource_path="mojo/url/mojom/url.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_VULKAN_INFO_MOJO_JS" file="${root_gen_dir}/mojom-webui/gpu/ipc/common/vulkan_info.mojom-webui.js" resource_path="gpu/ipc/common/vulkan_info.mojom-webui.js" use_base_dir="false" type="BINDATA" />
       <include name="IDR_VULKAN_TYPES_MOJO_JS" file="${root_gen_dir}/mojom-webui/gpu/ipc/common/vulkan_types.mojom-webui.js" resource_path="gpu/ipc/common/vulkan_types.mojom-webui.js" use_base_dir="false" type="BINDATA" />

@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/server/web_socket.h"
 #include "net/websockets/websocket_deflater.h"

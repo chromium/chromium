@@ -5,6 +5,7 @@
 #ifndef UI_GFX_SCOPED_CANVAS_H_
 #define UI_GFX_SCOPED_CANVAS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/gfx_export.h"
 
@@ -23,7 +24,7 @@ class GFX_EXPORT ScopedCanvas {
   void FlipIfRTL(int width);
 
  private:
-  gfx::Canvas* canvas_;
+  raw_ptr<gfx::Canvas> canvas_;
 };
 
 }  // namespace gfx

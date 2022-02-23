@@ -1,0 +1,74 @@
+<style>
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. . userpreview . .'
+      '. . middle      . .'
+      '. . .           . .';
+    grid-template-columns: 1fr minmax(24px, 72px) minmax(480px, 960px) minmax(24px, 72px) 1fr;
+    grid-template-rows: 108px 1fr 12px;
+    height: 100%;
+    position: relative;
+    width: 100%;
+  }
+
+  user-preview {
+    grid-area: userpreview;
+  }
+
+  #middle {
+    display: grid;
+    gap: 16px;
+    grid-area: middle;
+    grid-template-columns: repeat(auto-fill, minmax(400px, 1fr));
+  }
+
+  iron-icon {
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+  }
+
+  #ambientSubpageLink {
+    border: 0;
+    border-radius: 0;
+    height: 48px;
+    /* Make the arrow align with the thumbnail image */
+    margin-inline-end: -18px;
+    min-width: 0;
+    padding: 0;
+    width: 48px;
+  }
+
+  #ambientLabel > p {
+    color: var(--cros-text-color-primary);
+    font: var(--personalization-app-label-font);
+  }
+
+  cr-icon-button {
+    --cr-icon-button-fill-color: var(--cros-button-label-color-primary);
+    --cr-icon-button-icon-size: 16px;
+    --cr-icon-button-size: 24px;
+    background-color: var(--cros-button-background-color-primary);
+  }
+</style>
+<div id="container">
+  <user-preview clickable="[[clickable_]]">
+    <cr-icon-button id="userSubpageLink" iron-icon="personalization:pencil"
+        on-click="onClickUserSubpageLink_"></cr-icon-button>
+  </user-preview>
+  <div id="middle">
+    <wallpaper-preview>
+      <template is="dom-if" if="[[isDarkLightModeEnabled_()]]">
+        <personalization-theme></personalization-theme>
+      </template>
+    </wallpaper-preview>
+    <ambient-preview>
+      <div id="ambientLabel">
+        <p>$i18n{screensaverLabel}</p>
+        <cr-button id="ambientSubpageLink" on-click="onClickAmbientSubpageLink_">
+          <iron-icon icon="cr:chevron-right" aria-hidden="true"></iron-icon>
+        </cr-button>
+      </div>
+    </ambient-preview>
+  </div>
+</div>

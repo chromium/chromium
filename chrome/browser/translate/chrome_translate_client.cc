@@ -32,7 +32,6 @@
 #include "components/language/core/browser/language_model_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/prefs/pref_service.h"
-#include "components/translate/content/browser/translate_model_service.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/page_translated_details.h"
 #include "components/translate/core/browser/translate_accept_languages.h"
@@ -41,6 +40,7 @@
 #include "components/translate/core/browser/translate_infobar_delegate.h"
 #include "components/translate/core/browser/translate_manager.h"
 #include "components/translate/core/browser/translate_metrics_logger.h"
+#include "components/translate/core/browser/translate_model_service.h"
 #include "components/translate/core/browser/translate_prefs.h"
 #include "components/translate/core/common/language_detection_details.h"
 #include "components/translate/core/common/translate_util.h"
@@ -51,7 +51,7 @@
 #include "ui/base/ui_base_features.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -65,7 +65,7 @@ namespace {
 using base::FeatureList;
 using metrics::TranslateEventProto;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TranslateEventProto::EventType BubbleResultToTranslateEvent(
     ShowTranslateBubbleResult result) {
   switch (result) {
@@ -95,12 +95,11 @@ ChromeTranslateClient::ChromeTranslateClient(content::WebContents* web_contents)
   if (translate::IsSubFrameTranslationEnabled()) {
     per_frame_translate_driver_ =
         std::make_unique<translate::PerFrameContentTranslateDriver>(
-            *web_contents, &web_contents->GetController(),
-            UrlLanguageHistogramFactory::GetForBrowserContext(
-                web_contents->GetBrowserContext()));
+            *web_contents, UrlLanguageHistogramFactory::GetForBrowserContext(
+                               web_contents->GetBrowserContext()));
   } else {
     translate_driver_ = std::make_unique<translate::ContentTranslateDriver>(
-        *web_contents, &web_contents->GetController(),
+        *web_contents,
         UrlLanguageHistogramFactory::GetForBrowserContext(
             web_contents->GetBrowserContext()),
         TranslateModelServiceFactory::GetForProfile(
@@ -251,7 +250,7 @@ bool ChromeTranslateClient::ShowTranslateUI(
 
 // Translate uses a bubble UI on desktop and an infobar on Android (here)
 // and iOS (in ios/chrome/browser/translate/chrome_ios_translate_client.mm).
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Infobar UI.
   DCHECK(!TranslateService::IsTranslateBubbleEnabled());
   translate::TranslateInfoBarDelegate::Create(
@@ -304,7 +303,7 @@ ChromeTranslateClient::GetTranslateAcceptLanguages() {
   return GetTranslateAcceptLanguages(web_contents()->GetBrowserContext());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 int ChromeTranslateClient::GetInfobarIconID() const {
   return IDR_ANDROID_INFOBAR_TRANSLATE;
 }
@@ -368,7 +367,7 @@ void ChromeTranslateClient::OnLanguageDetermined(
     GetTranslateManager()->NotifyLanguageDetected(details);
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // See ChromeTranslateClient::ManualTranslateOnReady
   if (manual_translate_on_ready_) {
     GetTranslateManager()->ShowTranslateUI(/*auto_translate=*/true);
@@ -378,7 +377,7 @@ void ChromeTranslateClient::OnLanguageDetermined(
 }
 
 // The bubble is implemented only on the desktop platforms.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 ShowTranslateBubbleResult ChromeTranslateClient::ShowBubble(
     translate::TranslateStep step,
     const std::string& source_language,

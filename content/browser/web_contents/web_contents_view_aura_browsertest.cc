@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -291,7 +292,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
     ContentBrowserTest::PostRunTestOnMainThread();
   }
 
-  RenderWidgetHostImpl* drop_target_widget_;
+  raw_ptr<RenderWidgetHostImpl> drop_target_widget_;
 
   // A closure indicating that async drop operation has completed.
   base::OnceClosure async_drop_closure_;
@@ -304,7 +305,7 @@ class WebContentsViewAuraTest : public ContentBrowserTest {
 
 // Flaky on Windows: http://crbug.com/305722
 // The test frequently times out on Linux, too. See crbug.com/440043.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_OverscrollNavigation DISABLED_OverscrollNavigation
 #else
 #define MAYBE_OverscrollNavigation OverscrollNavigation
@@ -317,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, MAYBE_OverscrollNavigation) {
 // Flaky on Windows (might be related to the above test):
 // http://crbug.com/305722
 // On Linux, the test frequently times out. (See crbug.com/440043).
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_OverscrollNavigationWithTouchHandler \
   DISABLED_OverscrollNavigationWithTouchHandler
 #else
@@ -354,7 +355,7 @@ class SpuriousMouseMoveEventObserver
   }
 
  private:
-  RenderWidgetHost* host_;
+  raw_ptr<RenderWidgetHost> host_;
 };
 }  // namespace
 
@@ -435,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // Disabled because the test always fails the first time it runs on the Win Aura
 // bots, and usually but not always passes second-try (See crbug.com/179532).
 // Flaky on CrOS as well: https://crbug.com/856079
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
 #define MAYBE_QuickOverscrollDirectionChange \
   DISABLED_QuickOverscrollDirectionChange
 #else
@@ -581,7 +582,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
                               ui::DragDropTypes::DRAG_COPY);
     view->OnDragEntered(event);
     EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-    view->OnPerformDrop(event, std::move(data));
+    auto drop_cb = view->GetDropCallback(event);
+    ASSERT_TRUE(drop_cb);
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(std::move(data), output_drag_op);
 
     run_loop.Run();
 
@@ -614,7 +618,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, DragDropOnOopif) {
                               ui::DragDropTypes::DRAG_COPY);
     view->OnDragEntered(event);
     EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-    view->OnPerformDrop(event, std::move(data));
+    auto drop_cb = view->GetDropCallback(event);
+    ASSERT_TRUE(drop_cb);
+    ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(std::move(data), output_drag_op);
 
     run_loop.Run();
 
@@ -654,7 +661,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanOK) {
                             ui::DragDropTypes::DRAG_COPY);
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
 
   // The user should be able to drag other content over Chrome while the scan is
   // occurring without affecting it.
@@ -708,7 +718,10 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, OnPerformDrop_DeepScanBad) {
                             ui::DragDropTypes::DRAG_COPY);
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
-  view->OnPerformDrop(event, std::move(data));
+  auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
+  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
 
   // The user should be able to drag other content over Chrome while the scan is
   // occurring without affecting it.
@@ -754,7 +767,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, ContentWindowClose) {
   delete web_contents->GetContentNativeView();
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // This appears to be flaky in the same was as the other overscroll
 // tests. Enabling for non-Windows platforms.
 // See http://crbug.com/369871.
@@ -836,7 +849,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest,
 // crbug.com/410280.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #define MAYBE_OverscrollNavigationTouchThrottling \
         DISABLED_OverscrollNavigationTouchThrottling
 #else
@@ -966,8 +979,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Run) {
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
   auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
   ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, std::move(data), output_drag_op);
+  std::move(drop_cb).Run(std::move(data), output_drag_op);
 
   run_loop.Run();
 
@@ -1002,6 +1016,7 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewAuraTest, GetDropCallback_Cancelled) {
   view->OnDragEntered(event);
   EXPECT_TRUE(drag_dest_delegate_.GetDragInitializeCalled());
   auto drop_cb = view->GetDropCallback(event);
+  ASSERT_TRUE(drop_cb);
   drop_cb.Reset();
 
   EXPECT_FALSE(drag_dest_delegate_.GetOnDropCalled());

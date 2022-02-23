@@ -25,7 +25,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsRadioGroupElement} from '../controls/settings_radio_group.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -37,15 +37,17 @@ import {ContentSetting, ContentSettingsTypes} from '../site_settings/constants.j
 import {CookiePrimarySetting} from '../site_settings/site_settings_prefs_browser_proxy.js';
 
 import {SettingsCollapseRadioButtonElement} from './collapse_radio_button.js';
+import {getTemplate} from './cookies_page.html.js';
 
 /**
  * Must be kept in sync with the C++ enum of the same name (see
- * chrome/browser/net/prediction_options.h).
+ * chrome/browser/prefetch/prefetch_prefs.h).
  */
 enum NetworkPredictionOptions {
-  ALWAYS = 0,
-  WIFI_ONLY = 1,
-  NEVER = 2,
+  STANDARD = 0,
+  WIFI_ONLY_DEPRECATED = 1,
+  DISABLED = 2,
+  EXTENDED = 3,
   DEFAULT = 1,
 }
 
@@ -76,7 +78,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -114,7 +116,7 @@ export class SettingsCookiesPageElement extends SettingsCookiesPageElementBase {
        */
       networkPredictionUncheckedValue_: {
         type: Number,
-        value: NetworkPredictionOptions.NEVER,
+        value: NetworkPredictionOptions.DISABLED,
       },
 
       contentSetting_: {

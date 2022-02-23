@@ -26,8 +26,8 @@ import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
 import org.chromium.components.page_info.PermissionParamsListBuilder;
-import org.chromium.ui.base.AndroidPermissionDelegate;
-import org.chromium.ui.base.PermissionCallback;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.PermissionCallback;
 
 import java.util.ArrayList;
 import java.util.List;

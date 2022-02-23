@@ -11,12 +11,10 @@ import time
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
+
+import gpu_path_util
 
 from telemetry.core import exceptions
-
-data_path = os.path.join(path_util.GetChromiumSrcDir(), 'content', 'test',
-                         'data', 'gpu')
 
 wait_timeout = 60  # seconds
 
@@ -109,20 +107,9 @@ vendor_id_query_script = """
 
 class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
 
-  _is_asan = False
-
   @classmethod
   def Name(cls):
     return 'context_lost'
-
-  @classmethod
-  def AddCommandlineArgs(cls, parser):
-    super(ContextLostIntegrationTest, cls).AddCommandlineArgs(parser)
-    parser.add_option(
-        '--is-asan',
-        help='Indicates whether currently running an ASAN build',
-        action='store_true',
-        default=False)
 
   @classmethod
   def GenerateBrowserArgs(cls, additional_args):
@@ -147,7 +134,6 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   # yapf: disable
   @classmethod
   def GenerateGpuTests(cls, options):
-    cls._is_asan = options.is_asan
     tests = (('GpuCrash_GPUProcessCrashesExactlyOncePerVisitToAboutGpuCrash',
               'gpu_process_crash.html'),
              ('ContextLost_WebGPUContextLostFromGPUProcessExit',
@@ -209,7 +195,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # number of browser restarts between tests.
     cls.CustomizeBrowserArgs([cba.DISABLE_DOMAIN_BLOCKING_FOR_3D_APIS])
     cls.StartBrowser()
-    cls.SetStaticServerDirs([data_path])
+    cls.SetStaticServerDirs([gpu_path_util.GPU_DATA_DIR])
 
   def _KillGPUProcess(self,
                       number_of_gpu_process_kills,
@@ -247,7 +233,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
         self._CheckCrashCount(tab, expected_kills)
 
       if not completed:
-        self.fail('Test didn\'t complete (no context lost event?)')
+        self.fail("Test didn't complete (no context lost event?)")
       if not tab.EvaluateJavaScript(
           'window.domAutomationController._succeeded'):
         self.fail('Test failed (context not restored properly?)')
@@ -258,7 +244,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       self.fail('Browser must support system info')
 
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
-      self.fail('Test failed (didn\'t render content properly?)')
+      self.fail("Test failed (didn't render content properly?)")
 
     number_of_crashes = -1
     if expected_kills > 0:
@@ -319,7 +305,7 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     tab = self.tab
     completed = _WaitForPageToFinish(tab, timeout=timeout)
     if not completed:
-      self.fail('Test didn\'t complete (no context lost / restored event?)')
+      self.fail("Test didn't complete (no context lost / restored event?)")
     if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
       self.fail('Test failed (context not restored properly?)')
 
@@ -641,50 +627,53 @@ class ContextLostIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _ContextLost_WebGPUUnblockedAfterUserInitiatedReload(self, test_path):
+    """Tests that user initiated reload unblocks WebGPU crashes.
+
+    The corresponding test page has two non-failure meaningful state:
+      - Loaded:  Page was loaded and a WebGPU device was successfully acquired.
+      - Success: GPU crash occurred and verified that WebGPU is blocked.
+    After the 'Loaded' state, the page waits until a GPU crash occurs and does
+    nothing otherwise.
+
+    The test runs the test page twice, verifying that the first run can reach
+    'Success' state while the second run only needs to reach 'Loaded' state to
+    verify that a WebGPU has been unblocked.
+    """
     self.RestartBrowserIfNecessaryWithArgs([
         '--enable-unsafe-webgpu',
     ])
+    # Make sure the tab loaded and initially got a WebGPU device.
     self._NavigateAndWaitForLoad(test_path)
-
     tab = self.tab
-    # Make sure the tab initially got a WebGPU device.
-    if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
-      self.fail('Tab failed to get an initial WebGPU device')
-    # Kill the GPU process in order to get WebGL blocked.
+
+    # Kill the GPU process in order to get WebGPU blocked.
     tab.EvaluateJavaScript('chrome.gpuBenchmarking.crashGpuProcess()')
 
-    # Wait for the page to receive a device loss event.
-    tab.WaitForJavaScriptCondition('window.deviceLostReceived',
-                                   timeout=wait_timeout)
-    # Make sure WebGL is still blocked.
-    if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
-      self.fail('WebGPU should have been blocked after a device loss')
+    # Wait for GPU process to crash and verify that WebGPU is now blocked.
+    self._WaitForTabAndCheckCompletion()
+
     # Reload the page via Telemetry / DevTools. This is treated as a
-    # user-initiated navigation, so WebGPU is unblocked.
+    # user-initiated navigation, so WebGPU is unblocked, and we should be able
+    # to get a new WebGPU device on load.
     self._NavigateAndWaitForLoad(test_path)
-    # Ensure WebGPU is unblocked.
-    if not tab.EvaluateJavaScript('window.domAutomationController._succeeded'):
-      self.fail(
-          'WebGPU should have been unblocked after a user-initiated navigation')
     self._RestartBrowser('must restart after tests that kill the GPU process')
 
   def _GpuNormalTermination_WebGPUNotBlocked(self, test_path):
+    """Tests that normal GPU process termination does not block WebGPU.
+    """
     self.RestartBrowserIfNecessaryWithArgs([
         '--enable-unsafe-webgpu',
     ])
     self._NavigateAndWaitForLoad(test_path)
-
     tab = self.tab
+
+    # Terminate the GPU process.
     tab.EvaluateJavaScript(
         'chrome.gpuBenchmarking.terminateGpuProcessNormally()')
+
+    # Wait for GPU process to terminate and verify that WebGPU is NOT blocked.
     self._WaitForTabAndCheckCompletion()
     self._RestartBrowser('must restart after tests that kill the GPU process')
-
-  @classmethod
-  def GetPlatformTags(cls, browser):
-    tags = super(ContextLostIntegrationTest, cls).GetPlatformTags(browser)
-    tags.extend([['no-asan', 'asan'][cls._is_asan]])
-    return tags
 
   @classmethod
   def ExpectationsFiles(cls):

@@ -23,6 +23,7 @@ class TestNativeTheme : public NativeTheme {
                         State state,
                         const ExtraParams& extra) const override;
   void Paint(cc::PaintCanvas* canvas,
+             const ui::ColorProvider* color_provider,
              Part part,
              State state,
              const gfx::Rect& rect,
@@ -45,11 +46,6 @@ class TestNativeTheme : public NativeTheme {
     is_platform_high_contrast_ = is_platform_high_contrast;
   }
   void AddColorSchemeNativeThemeObserver(NativeTheme* theme_to_update);
-
- protected:
-  SkColor GetSystemColorDeprecated(ColorId color_id,
-                                   ColorScheme color_scheme,
-                                   bool apply_processing) const override;
 
  private:
   bool dark_mode_ = false;

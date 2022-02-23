@@ -4,6 +4,7 @@
 
 #include "content/browser/cache_storage/cache_storage_quota_client.h"
 
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "storage/browser/quota/quota_client_type.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -22,19 +23,27 @@ CacheStorageQuotaClient::~CacheStorageQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void CacheStorageQuotaClient::GetStorageKeyUsage(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
-    GetStorageKeyUsageCallback callback) {
+void CacheStorageQuotaClient::GetBucketUsage(
+    const storage::BucketLocator& bucket,
+    GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  if (!CacheStorageManager::IsValidQuotaStorageKey(storage_key)) {
+  // Skip non-default buckets until Storage Buckets are supported for
+  // CacheStorage.
+  // TODO(crbug.com/1218097): Integrate CacheStorage with StorageBuckets.
+  if (!bucket.is_default) {
     std::move(callback).Run(0);
     return;
   }
 
-  cache_manager_->GetStorageKeyUsage(storage_key, owner_, std::move(callback));
+  if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  cache_manager_->GetStorageKeyUsage(bucket.storage_key, owner_,
+                                     std::move(callback));
 }
 
 void CacheStorageQuotaClient::GetStorageKeysForType(
@@ -46,29 +55,26 @@ void CacheStorageQuotaClient::GetStorageKeysForType(
   cache_manager_->GetStorageKeys(owner_, std::move(callback));
 }
 
-void CacheStorageQuotaClient::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
+void CacheStorageQuotaClient::DeleteBucketData(
+    const storage::BucketLocator& bucket,
+    DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  cache_manager_->GetStorageKeysForHost(host, owner_, std::move(callback));
-}
-
-void CacheStorageQuotaClient::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
-    DeleteStorageKeyDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
-
-  if (!CacheStorageManager::IsValidQuotaStorageKey(storage_key)) {
+  // Skip non-default buckets until Storage Buckets are supported for
+  // CacheStorage.
+  // TODO(crbug.com/1218097): Integrate CacheStorage with StorageBuckets.
+  if (!bucket.is_default) {
     std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
     return;
   }
 
-  cache_manager_->DeleteStorageKeyData(storage_key, owner_,
+  if (!CacheStorageManager::IsValidQuotaStorageKey(bucket.storage_key)) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
+
+  cache_manager_->DeleteStorageKeyData(bucket.storage_key, owner_,
                                        std::move(callback));
 }
 

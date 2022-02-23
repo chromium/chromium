@@ -450,10 +450,6 @@ void ResourceResponse::SetResourceLoadTiming(
   resource_load_timing_ = std::move(resource_load_timing);
 }
 
-void ResourceResponse::SetCTPolicyCompliance(CTPolicyCompliance compliance) {
-  ct_policy_compliance_ = compliance;
-}
-
 AtomicString ResourceResponse::ConnectionInfoString() const {
   std::string connection_info_string =
       net::HttpResponseInfo::ConnectionInfoToString(connection_info_);

@@ -7,9 +7,14 @@
 #include <algorithm>
 
 #include "base/containers/contains.h"
+#include "base/containers/flat_set.h"
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/version.h"
+#include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/extension_prefs.h"
@@ -57,14 +62,6 @@ const PendingExtensionInfo* PendingExtensionManager::GetById(
 }
 
 bool PendingExtensionManager::Remove(const std::string& id) {
-  if (base::Contains(expected_reinstalls_, id)) {
-    base::TimeDelta latency = base::TimeTicks::Now() - expected_reinstalls_[id];
-    base::UmaHistogramLongTimes("Extensions.CorruptPolicyExtensionResolved",
-                             latency);
-    LOG(ERROR) << "Corrupted extension " << id << " reinstalled with latency "
-               << latency;
-    expected_reinstalls_.erase(id);
-  }
   PendingExtensionList::iterator iter;
   for (iter = pending_extension_list_.begin();
        iter != pending_extension_list_.end();
@@ -109,39 +106,6 @@ bool PendingExtensionManager::HasHighPriorityPendingExtension() const {
                       }) != pending_extension_list_.end();
 }
 
-void PendingExtensionManager::RecordPolicyReinstallReason(
-    PolicyReinstallReason reason_for_uma) {
-  base::UmaHistogramEnumeration("Extensions.CorruptPolicyExtensionDetected3",
-                                reason_for_uma);
-}
-
-void PendingExtensionManager::RecordExtensionReinstallManifestLocation(
-    mojom::ManifestLocation manifest_location_for_uma) {
-  base::UmaHistogramEnumeration("Extensions.CorruptedExtensionLocation",
-                                manifest_location_for_uma);
-}
-
-void PendingExtensionManager::ExpectReinstallForCorruption(
-    const ExtensionId& id,
-    absl::optional<PolicyReinstallReason> reason_for_uma,
-    mojom::ManifestLocation manifest_location_for_uma) {
-  if (base::Contains(expected_reinstalls_, id))
-    return;
-  expected_reinstalls_[id] = base::TimeTicks::Now();
-  if (reason_for_uma)
-    RecordPolicyReinstallReason(*reason_for_uma);
-  RecordExtensionReinstallManifestLocation(manifest_location_for_uma);
-}
-
-bool PendingExtensionManager::IsReinstallForCorruptionExpected(
-    const ExtensionId& id) const {
-  return base::Contains(expected_reinstalls_, id);
-}
-
-bool PendingExtensionManager::HasAnyReinstallForCorruption() const {
-  return !expected_reinstalls_.empty();
-}
-
 bool PendingExtensionManager::AddFromSync(
     const std::string& id,
     const GURL& update_url,
@@ -163,6 +127,16 @@ bool PendingExtensionManager::AddFromSync(
   if (id == extensions::kWebStoreAppId) {
     NOTREACHED();
     return false;
+  }
+
+  if (base::FeatureList::IsEnabled(
+          features::kBlockMigratedDefaultChromeAppSync)) {
+    EnsureMigratedDefaultChromeAppIdsCachePopulated();
+    if (migrating_default_chrome_app_ids_cache_->contains(id)) {
+      base::UmaHistogramBoolean(
+          "Extensions.SyncBlockedByDefaultWebAppMigration", true);
+      return false;
+    }
   }
 
   static const bool kIsFromSync = true;
@@ -281,11 +255,6 @@ std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
     const {
   std::list<std::string> result;
 
-  // Add the extensions that need repairing but are not necessarily from an
-  // external loader.
-  for (const auto& iter : expected_reinstalls_)
-    result.push_back(iter.first);
-
   for (PendingExtensionList::const_iterator iter =
            pending_extension_list_.begin();
        iter != pending_extension_list_.end(); ++iter) {
@@ -300,8 +269,7 @@ std::list<std::string> PendingExtensionManager::GetPendingIdsForUpdateCheck()
       continue;
     }
 
-    if (!base::Contains(expected_reinstalls_, iter->id()))
-      result.push_back(iter->id());
+    result.push_back(iter->id());
   }
 
   return result;
@@ -357,6 +325,23 @@ bool PendingExtensionManager::AddExtensionImpl(
   }
 
   return true;
+}
+
+void PendingExtensionManager::
+    EnsureMigratedDefaultChromeAppIdsCachePopulated() {
+  if (migrating_default_chrome_app_ids_cache_)
+    return;
+
+  std::vector<web_app::PreinstalledWebAppMigration> migrations =
+      web_app::GetPreinstalledWebAppMigrations(
+          *Profile::FromBrowserContext(context_.get()));
+
+  std::vector<std::string> chrome_app_ids;
+  chrome_app_ids.reserve(migrations.size());
+  for (const web_app::PreinstalledWebAppMigration& migration : migrations)
+    chrome_app_ids.push_back(migration.old_chrome_app_id);
+
+  migrating_default_chrome_app_ids_cache_.emplace(std::move(chrome_app_ids));
 }
 
 void PendingExtensionManager::AddForTesting(

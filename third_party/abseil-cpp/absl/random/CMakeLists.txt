@@ -121,6 +121,7 @@ absl_cc_library(
     absl::variant
     GTest::gmock
     GTest::gtest
+  PUBLIC
   TESTONLY
 )
 
@@ -1210,5 +1211,6 @@ absl_cc_test(
     absl::random_internal_wide_multiply
     absl::bits
     absl::int128
+    GTest::gmock
     GTest::gtest_main
 )

@@ -16,7 +16,6 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/single_thread_task_runner.h"
@@ -116,7 +115,7 @@ class TestThroughputAnalyzer : public internal::ThroughputAnalyzer {
 
 using ThroughputAnalyzerTest = TestWithTaskEnvironment;
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
 // Flaky on iOS: crbug.com/672917.
 // Flaky on Android: crbug.com/1223950.
 #define MAYBE_MaximumRequests DISABLED_MaximumRequests
@@ -169,7 +168,7 @@ TEST_F(ThroughputAnalyzerTest, MAYBE_MaximumRequests) {
   }
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_MaximumRequestsWithNetworkIsolationKey \
   DISABLED_MaximumRequestsWithNetworkIsolationKey
@@ -603,7 +602,7 @@ TEST_F(ThroughputAnalyzerTest, TestRequestDeletedImmediately) {
   EXPECT_EQ(0u, throughput_analyzer.CountActiveInFlightRequests());
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Flaky on iOS: crbug.com/672917.
 #define MAYBE_TestThroughputWithMultipleRequestsOverlap \
   DISABLED_TestThroughputWithMultipleRequestsOverlap

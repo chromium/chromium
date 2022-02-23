@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/check.h"
 #include "base/time/time.h"
 #include "components/feed/core/proto/v2/store.pb.h"
 #include "components/feed/core/proto/v2/wire/reliability_logging_enums.pb.h"
@@ -65,6 +66,26 @@ void LoadStreamFromStoreTask::LoadStreamDone(
              feedwire::DiscoverCardReadCacheResult::EMPTY_SESSION);
     return;
   }
+  if (!ignore_account_) {
+    const AccountInfo& account_info = feed_stream_.GetAccountInfo();
+    if (result.stream_data.signed_in() && result.stream_data.gaia().empty()) {
+      // TODO(crbug.com/1268575): For backward compatibility, set the gaia in
+      // stream_data if it is unset. Remove this code after it's been in at
+      // least one Chrome release.
+      result.stream_data.set_gaia(account_info.gaia);
+      result.stream_data.set_email(account_info.email);
+    }
+
+    if (result.stream_data.signed_in()) {
+      if (result.stream_data.gaia() != account_info.gaia ||
+          result.stream_data.email() != account_info.email) {
+        Complete(LoadStreamStatus::kDataInStoreIsForAnotherUser,
+                 feedwire::DiscoverCardReadCacheResult::FAILED);
+        return;
+      }
+    }
+  }
+
   content_ids_ = feedstore::GetContentIds(result.stream_data);
   if (!ignore_staleness_) {
     content_age_ =

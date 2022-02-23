@@ -21,7 +21,7 @@ namespace ui {
 // and could perhaps be kept alive for the duration of the program, custom
 // cursors might incur in high memory usage. Because of this, all types of
 // cursors are expected to be ref-counted.
-class COMPONENT_EXPORT(UI_BASE_CURSOR_BASE) PlatformCursor
+class COMPONENT_EXPORT(UI_BASE_CURSOR) PlatformCursor
     : public base::RefCounted<PlatformCursor> {
  public:
   REQUIRE_ADOPTION_FOR_REFCOUNTED_TYPE();

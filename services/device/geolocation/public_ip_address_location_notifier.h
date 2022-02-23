@@ -10,7 +10,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/device/geolocation/geolocation_provider.h"
@@ -102,7 +102,7 @@ class PublicIpAddressLocationNotifier
 
   // Used to listen to network connection changes.
   // Must outlive this object.
-  network::NetworkConnectionTracker* network_connection_tracker_;
+  raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
 
   // Used to make calls to the Maps geolocate API.
   // Empty unless a call is currently in progress.

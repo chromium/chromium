@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sync/test/integration/apps_helper.h"
 #include "chrome/browser/sync/test/integration/web_apps_sync_test_base.h"
@@ -19,15 +20,20 @@
 #include "components/sync/protocol/extension_specifics.pb.h"
 #include "components/sync/test/fake_server/fake_server_verifier.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
-#include "chrome/browser/sync/test/integration/sync_consent_optional_sync_test.h"
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 using syncer::UserSelectableType;
 using syncer::UserSelectableTypeSet;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+using syncer::UserSelectableOsType;
+using syncer::UserSelectableOsTypeSet;
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace web_app {
 namespace {
@@ -37,36 +43,6 @@ const int64_t kDefaultTime = 1234L;
 
 // Default version used when creating extension entities.
 const char kVersion[] = "1.0.0.1";
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-
-// These tests test the new Web Apps system with next generation sync.
-//
-// Chrome OS syncs Web apps as a browser type, so it shouldn't be affected by
-// the OS sync feature.
-class SingleClientWebAppsOsSyncTest : public SyncConsentOptionalSyncTest {
- public:
-  SingleClientWebAppsOsSyncTest()
-      : SyncConsentOptionalSyncTest(SINGLE_CLIENT) {}
-  ~SingleClientWebAppsOsSyncTest() override = default;
-};
-
-IN_PROC_BROWSER_TEST_F(SingleClientWebAppsOsSyncTest,
-                       DisablingOsSyncFeatureKeepsWebAppsEnabled) {
-  ASSERT_TRUE(chromeos::features::IsSyncConsentOptionalEnabled());
-  ASSERT_TRUE(SetupSync());
-  syncer::SyncServiceImpl* service = GetSyncService(0);
-  syncer::SyncUserSettings* settings = service->GetUserSettings();
-
-  EXPECT_TRUE(settings->IsOsSyncFeatureEnabled());
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
-
-  settings->SetOsSyncFeatureEnabled(false);
-  EXPECT_FALSE(settings->IsOsSyncFeatureEnabled());
-  // WEB_APPS is a browser type, so they shouldn't be affected by the OS sync.
-  EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
-}
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
  public:
@@ -90,6 +66,12 @@ class SingleClientWebAppsSyncTest : public WebAppsSyncTestBase {
   void AwaitWebAppQuiescence() {
     ASSERT_TRUE(AwaitQuiescence());
     apps_helper::AwaitWebAppQuiescence(GetAllProfiles());
+    content::RunAllTasksUntilIdle();
+    base::RunLoop run_loop;
+    internals::GetShortcutIOTaskRunner()->PostTask(
+        FROM_HERE, base::BindLambdaForTesting([&] { run_loop.Quit(); }));
+    run_loop.Run();
+    content::RunAllTasksUntilIdle();
   }
 
   void InjectWebAppEntityToFakeServer(
@@ -140,6 +122,22 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
   ASSERT_TRUE(SetupSync());
   syncer::SyncServiceImpl* service = GetSyncService(0);
   syncer::SyncUserSettings* settings = service->GetUserSettings();
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Apps is an OS type on Ash if SyncSettingsCategorization is enabled.
+  if (ash::features::IsSyncSettingsCategorizationEnabled()) {
+    ASSERT_TRUE(
+        settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+    EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
+
+    settings->SetSelectedOsTypes(false, UserSelectableOsTypeSet());
+    ASSERT_FALSE(
+        settings->GetSelectedOsTypes().Has(UserSelectableOsType::kOsApps));
+    EXPECT_FALSE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
+    return;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
   ASSERT_TRUE(settings->GetSelectedTypes().Has(UserSelectableType::kApps));
   EXPECT_TRUE(service->GetActiveDataTypes().Has(syncer::WEB_APPS));
 
@@ -194,7 +192,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
                        AppInstallDoNotSyncBookmarkApp) {
   ASSERT_TRUE(SetupSync());
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(name);
   info.description = u"Test description";
@@ -239,7 +237,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(app_id);
   info.description = u"Test description";
@@ -269,7 +267,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientWebAppsSyncTest,
 
   EXPECT_TRUE(web_app_registrar.IsInstalled(app_id));
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   std::string name = "Test name";
   info.title = base::UTF8ToUTF16(app_id);
   info.description = u"Test description";

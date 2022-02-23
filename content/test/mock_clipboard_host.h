@@ -68,7 +68,7 @@ class MockClipboardHost : public blink::mojom::ClipboardHost {
       ReadUnsanitizedCustomFormatCallback callback) override;
   void WriteUnsanitizedCustomFormat(const std::u16string& format,
                                     mojo_base::BigBuffer data) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void WriteStringToFindPboard(const std::u16string& text) override;
 #endif
  private:

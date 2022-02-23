@@ -24,6 +24,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/values.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
 #include "components/services/storage/indexed_db/leveldb/leveldb_factory.h"
@@ -44,7 +45,6 @@
 #include "content/browser/indexed_db/indexed_db_quota_client.h"
 #include "content/browser/indexed_db/indexed_db_storage_key_state.h"
 #include "content/browser/indexed_db/indexed_db_storage_key_state_handle.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "content/browser/indexed_db/mock_browsertest_indexed_db_class_factory.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -156,7 +156,7 @@ IndexedDBContextImpl::IndexedDBContextImpl(
               quota_client_.get())),
       quota_client_receiver_(quota_client_wrapper_.get()),
       filesystem_proxy_(storage::CreateFilesystemProxy()) {
-  IDB_TRACE("init");
+  TRACE_EVENT0("IndexedDB", "init");
 
   // QuotaManagerProxy::RegisterClient() must be called during construction
   // until crbug.com/1182630 is fixed.
@@ -870,8 +870,10 @@ void IndexedDBContextImpl::BindIndexedDBWithBucket(
     const blink::StorageKey& storage_key,
     mojo::PendingReceiver<blink::mojom::IDBFactory> receiver,
     storage::QuotaErrorOr<storage::BucketInfo> result) {
-  DCHECK(result.ok());
-  dispatcher_host_.AddReceiver(storage_key, std::move(receiver));
+  absl::optional<storage::BucketLocator> bucket =
+      result.ok() ? absl::make_optional(result->ToBucketLocator())
+                  : absl::nullopt;
+  dispatcher_host_.AddReceiver(storage_key, bucket, std::move(receiver));
 }
 
 void IndexedDBContextImpl::ShutdownOnIDBSequence() {
@@ -953,7 +955,8 @@ void IndexedDBContextImpl::QueryDiskAndUpdateQuotaUsage(
     storage_key_size_map_[storage_key] = current_disk_usage;
     quota_manager_proxy()->NotifyStorageModified(
         storage::QuotaClientType::kIndexedDatabase, storage_key,
-        blink::mojom::StorageType::kTemporary, difference, base::Time::Now());
+        blink::mojom::StorageType::kTemporary, difference, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
     NotifyIndexedDBListChanged(storage_key);
   }
 }

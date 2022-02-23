@@ -10,6 +10,7 @@
 #include <string>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/strings/string_split.h"
@@ -183,7 +184,7 @@ BreadcrumbPersistentStorageManager::BreadcrumbPersistentStorageManager(
       FROM_HERE,
       base::BindOnce(&DoGetStoredEventsLength, breadcrumbs_file_path_),
       base::BindOnce(
-          &BreadcrumbPersistentStorageManager::SetCurrentMappedFilePosition,
+          &BreadcrumbPersistentStorageManager::InitializeFilePosition,
           weak_ptr_factory_.GetWeakPtr()));
 }
 
@@ -221,28 +222,24 @@ void BreadcrumbPersistentStorageManager::CombineEventsAndRewriteAllBreadcrumbs(
     const std::vector<std::string> pending_breadcrumbs,
     std::vector<std::string> existing_events) {
   // Add events which had not yet been written.
-  for (const auto& event : pending_breadcrumbs) {
+  for (const std::string& event : pending_breadcrumbs) {
     existing_events.push_back(event);
   }
 
   std::vector<std::string> breadcrumbs;
-  for (auto event_it = existing_events.rbegin();
-       event_it != existing_events.rend(); ++event_it) {
+  for (const std::string& event : base::Reversed(existing_events)) {
     // Reduce saved events to only fill the amount which would be included on
     // a crash log. This allows future events to be appended individually up
     // to |kPersistedFilesizeInBytes|, which is more efficient than writing
     // out the
     const int event_with_seperator_size =
-        event_it->size() + strlen(kEventSeparator);
-    if (event_with_seperator_size + current_mapped_file_position_.value() >=
-        kMaxDataLength) {
+        event.size() + strlen(kEventSeparator);
+    if (event_with_seperator_size + file_position_.value() >= kMaxDataLength)
       break;
-    }
 
     breadcrumbs.push_back(kEventSeparator);
-    breadcrumbs.push_back(*event_it);
-    current_mapped_file_position_ =
-        current_mapped_file_position_.value() + event_with_seperator_size;
+    breadcrumbs.push_back(event);
+    file_position_ = file_position_.value() + event_with_seperator_size;
   }
 
   std::reverse(breadcrumbs.begin(), breadcrumbs.end());
@@ -267,7 +264,7 @@ void BreadcrumbPersistentStorageManager::RewriteAllExistingBreadcrumbs() {
   write_timer_.Stop();
 
   last_written_time_ = base::TimeTicks::Now();
-  current_mapped_file_position_ = 0;
+  file_position_ = 0;
 
   // Load persisted events directly from file because the correct order can not
   // be reconstructed from the multiple BreadcrumbManagers with the partial
@@ -287,14 +284,12 @@ void BreadcrumbPersistentStorageManager::WritePendingBreadcrumbs() {
   // DoInsertEventsIntoMemoryMappedFile() callback, since |pending_breadcrumbs_|
   // is about to be cleared.
   const std::string pending_breadcrumbs = pending_breadcrumbs_;
-  task_runner_->PostTask(FROM_HERE,
-                         base::BindOnce(&DoInsertEventsIntoMemoryMappedFile,
-                                        breadcrumbs_file_path_,
-                                        current_mapped_file_position_.value(),
-                                        pending_breadcrumbs));
+  task_runner_->PostTask(
+      FROM_HERE, base::BindOnce(&DoInsertEventsIntoMemoryMappedFile,
+                                breadcrumbs_file_path_, file_position_.value(),
+                                pending_breadcrumbs));
 
-  current_mapped_file_position_ =
-      current_mapped_file_position_.value() + pending_breadcrumbs_.size();
+  file_position_ = file_position_.value() + pending_breadcrumbs_.size();
   last_written_time_ = base::TimeTicks::Now();
 
   pending_breadcrumbs_.clear();
@@ -311,27 +306,34 @@ void BreadcrumbPersistentStorageManager::WriteEvent(const std::string& event) {
   WriteEvents();
 }
 
-void BreadcrumbPersistentStorageManager::SetCurrentMappedFilePosition(
+void BreadcrumbPersistentStorageManager::InitializeFilePosition(
     size_t file_size) {
-  current_mapped_file_position_ = file_size;
+  file_position_ = file_size;
+  // Write any startup events that have accumulated while waiting for this
+  // function to run.
+  WriteEvents();
 }
 
 void BreadcrumbPersistentStorageManager::WriteEvents() {
+  // No events can be written to the file until the size of existing breadcrumbs
+  // is known.
+  if (!file_position_)
+    return;
+
   write_timer_.Stop();
 
   const base::TimeDelta time_delta_since_last_write =
       base::TimeTicks::Now() - last_written_time_;
-  // Delay writing the event to disk if an event was just written or if the size
-  // of exisiting breadcrumbs is not yet known.
-  if (time_delta_since_last_write < kMinDelayBetweenWrites ||
-      !current_mapped_file_position_) {
+  if (time_delta_since_last_write < kMinDelayBetweenWrites) {
+    // If an event was just written, delay writing the event to disk in order to
+    // limit overhead.
     write_timer_.Start(FROM_HERE,
                        kMinDelayBetweenWrites - time_delta_since_last_write,
                        this, &BreadcrumbPersistentStorageManager::WriteEvents);
   } else {
     // If the event does not fit within |kPersistedFilesizeInBytes|, rewrite the
     // file to trim old events.
-    if ((current_mapped_file_position_.value() + pending_breadcrumbs_.size())
+    if ((file_position_.value() + pending_breadcrumbs_.size())
         // Use >= here instead of > to allow space for \0 to terminate file.
         >= kPersistedFilesizeInBytes) {
       RewriteAllExistingBreadcrumbs();

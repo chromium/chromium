@@ -11,14 +11,9 @@ executable("goobsdiff") {
   sources = [ "goobsdiff.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//chrome/installer/mac:fat_binary_config"
-  ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  deps = [
-    "//chrome/installer/mac/third_party/xz:lzma",
-  ]
+  deps = [ "//chrome/installer/mac/third_party/xz:lzma" ]
 
   cflags = [ "-Os" ]
 
@@ -37,14 +32,9 @@ executable("goobspatch") {
   sources = [ "goobspatch.c" ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
-  configs += [
-    "//build/config/compiler:no_chromium_code",
-    "//chrome/installer/mac:fat_binary_config"
-  ]
+  configs += [ "//build/config/compiler:no_chromium_code" ]
 
-  deps = [
-    "//chrome/installer/mac/third_party/xz:lzma_decompress",
-  ]
+  deps = [ "//chrome/installer/mac/third_party/xz:lzma_decompress" ]
 
   cflags = [ "-Os" ]
 

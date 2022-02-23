@@ -1,8 +1,6 @@
 # https://crbug.com/1241502
 -All/ImageTransferCacheEntryTest.*
--OopImagePixelTest.*
 -OopPixelTest.*
 -P/OopClearPixelTest.*
--P/OopImagePixelTest.*
 -P/OopPathPixelTest.*
 -P/OopTextBlobPixelTest.*

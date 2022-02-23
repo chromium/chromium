@@ -79,7 +79,7 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
     base::Time time_now) {
   if (!serialized.is_list())
     return nullptr;
-  const base::Value::ConstListView& list_view = serialized.GetList();
+  const base::Value::ConstListView& list_view = serialized.GetListDeprecated();
 
   if (list_view.size() != 4)
     return nullptr;
@@ -166,8 +166,12 @@ std::unique_ptr<BackoffEntry> BackoffEntrySerializer::DeserializeFromValue(
   }
   if (!BackoffDurationSafeToSerialize(backoff_duration))
     return nullptr;
-  entry->SetCustomReleaseTime(
-      entry->BackoffDurationToReleaseTime(backoff_duration));
+
+  const base::TimeTicks release_time =
+      entry->BackoffDurationToReleaseTime(backoff_duration);
+  if (release_time.is_inf())
+    return nullptr;
+  entry->SetCustomReleaseTime(release_time);
 
   return entry;
 }

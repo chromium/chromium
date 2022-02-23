@@ -14,7 +14,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/trust_tokens.mojom.h"
-#include "services/network/trust_tokens/test/trust_token_test_util.h"
+#include "services/network/test/trust_token_test_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"

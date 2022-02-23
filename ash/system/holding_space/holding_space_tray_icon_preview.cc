@@ -10,11 +10,15 @@
 #include "ash/public/cpp/holding_space/holding_space_constants.h"
 #include "ash/public/cpp/holding_space/holding_space_image.h"
 #include "ash/public/cpp/holding_space/holding_space_item.h"
+#include "ash/public/cpp/holding_space/holding_space_model.h"
+#include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/shelf/shelf.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/system/holding_space/holding_space_progress_ring.h"
+#include "ash/system/holding_space/holding_space_animation_registry.h"
+#include "ash/system/holding_space/holding_space_progress_indicator_util.h"
 #include "ash/system/holding_space/holding_space_tray_icon.h"
+#include "ash/system/progress_indicator/progress_indicator.h"
 #include "ash/system/tray/tray_constants.h"
 #include "base/bind.h"
 #include "base/i18n/rtl.h"
@@ -23,6 +27,7 @@
 #include "ui/compositor/paint_recorder.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/canvas.h"
+#include "ui/gfx/geometry/transform_util.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/image/image_skia_source.h"
@@ -36,6 +41,11 @@ namespace {
 // Appearance.
 constexpr int kElevation = 1;
 
+// In-progress animation.
+constexpr base::TimeDelta kInProgressAnimationDuration =
+    base::Milliseconds(150);
+constexpr float kInProgressAnimationScaleFactor = 0.7f;
+
 // The duration of each of the preview icon bounce animation.
 constexpr base::TimeDelta kBounceAnimationSegmentDuration =
     base::Milliseconds(250);
@@ -48,6 +58,13 @@ constexpr base::TimeDelta kBounceAnimationBaseDelay = base::Milliseconds(150);
 constexpr base::TimeDelta kShiftAnimationDuration = base::Milliseconds(250);
 
 // Helpers ---------------------------------------------------------------------
+
+// Convenience helper to allow a `closure` to be used in a context which is
+// expecting a callback with arguments.
+template <typename... T>
+base::RepeatingCallback<void(T...)> IgnoreArgs(base::RepeatingClosure closure) {
+  return base::BindRepeating([](T...) {}).Then(std::move(closure));
+}
 
 // Returns true if small previews should be used given the current shelf
 // configuration, false otherwise.
@@ -117,41 +134,272 @@ void SetUpAnimation(ui::ScopedLayerAnimationSettings* animation_settings) {
   animation_settings->SetTweenType(gfx::Tween::EASE_OUT);
 }
 
-// ContentsImageSource ---------------------------------------------------------
+// OneShotLayerAnimationObserver -----------------------------------------------
 
-class ContentsImageSource : public gfx::ImageSkiaSource {
+// A `ui::LayerAnimationObserver` which invokes a callback on animation
+// completion. The callback will be run whether the animation ends or aborts.
+class CallbackLayerAnimationObserver : public ui::LayerAnimationObserver {
  public:
-  explicit ContentsImageSource(gfx::ImageSkia item_image)
-      : item_image_(item_image) {}
-  ContentsImageSource(const ContentsImageSource&) = delete;
-  ContentsImageSource& operator=(const ContentsImageSource&) = delete;
-  ~ContentsImageSource() override = default;
+  CallbackLayerAnimationObserver() = default;
+  CallbackLayerAnimationObserver(const CallbackLayerAnimationObserver&) =
+      delete;
+  CallbackLayerAnimationObserver& operator=(
+      const CallbackLayerAnimationObserver&) = delete;
+  ~CallbackLayerAnimationObserver() override = default;
 
- private:
-  // gfx::ImageSkiaSource:
-  gfx::ImageSkiaRep GetImageForScale(float scale) override {
-    gfx::ImageSkia image = item_image_;
-
-    // The `image` should already be sized appropriately.
-    DCHECK_EQ(image.size(), GetPreviewSize());
-
-    // Clip to circle.
-    // NOTE: Since `image` is a square, the center x-coordinate, center
-    // y-coordinate, and radius all equal the same value.
-    const int radius = image.width() / 2;
-    gfx::Canvas canvas(image.size(), scale, /*is_opaque=*/false);
-    canvas.ClipPath(SkPath::Circle(/*cx=*/radius, /*cy=*/radius, radius),
-                    /*anti_alias=*/true);
-    canvas.DrawImageInt(image, /*x=*/0, /*y=*/0);
-    return gfx::ImageSkiaRep(canvas.GetBitmap(), scale);
+  // Sets the callback to invoke on animation completion. The callback will be
+  // run whether the animation ends or aborts.
+  // NOTE: It is safe to delete `this` from callback.
+  void SetAnimationCompletedCallback(
+      base::OnceClosure animation_completed_callback) {
+    animation_completed_callback_ = std::move(animation_completed_callback);
   }
 
-  const gfx::ImageSkia item_image_;
+ private:
+  // ui::LayerAnimationObserver:
+  bool RequiresNotificationWhenAnimatorDestroyed() const override {
+    // Ensure that `OnLayerAnimationAborted()` is invoked on animator
+    // destruction if an observed animation sequence is in progress.
+    return true;
+  }
+
+  void OnLayerAnimationScheduled(ui::LayerAnimationSequence*) override {}
+
+  void OnLayerAnimationEnded(ui::LayerAnimationSequence*) override {
+    OnLayerAnimationCompleted();
+  }
+
+  void OnLayerAnimationAborted(ui::LayerAnimationSequence*) override {
+    OnLayerAnimationCompleted();
+  }
+
+  void OnLayerAnimationCompleted() {
+    // NOTE: `this` may be deleted by running `animation_completed_callback_`.
+    if (animation_completed_callback_)
+      std::move(animation_completed_callback_).Run();
+  }
+
+  base::OnceClosure animation_completed_callback_;
 };
 
 }  // namespace
 
+// HoldingSpaceTrayIconPreview::ImageLayerOwner --------------------------------
+
+// Class which owns the `layer()` to which the image representation for the
+// associated holding space `item_` is painted.
+class HoldingSpaceTrayIconPreview::ImageLayerOwner
+    : public ui::LayerOwner,
+      public ui::LayerDelegate,
+      public HoldingSpaceModelObserver {
+ public:
+  explicit ImageLayerOwner(const HoldingSpaceItem* item) : item_(item) {
+    item_deletion_subscription_ = item->AddDeletionCallback(base::BindRepeating(
+        &ImageLayerOwner::OnHoldingSpaceItemDeleted, base::Unretained(this)));
+
+    item_image_skia_subscription_ =
+        item->image().AddImageSkiaChangedCallback(base::BindRepeating(
+            &ImageLayerOwner::OnHoldingSpaceItemImageSkiaChanged,
+            base::Unretained(this)));
+
+    progress_ring_animation_changed_subscription_ =
+        HoldingSpaceAnimationRegistry::GetInstance()
+            ->AddProgressRingAnimationChangedCallbackForKey(
+                /*animation_key=*/item_,
+                IgnoreArgs<ProgressRingAnimation*>(
+                    base::BindRepeating(&ImageLayerOwner::UpdateTransform,
+                                        base::Unretained(this))));
+
+    model_observer_.Observe(HoldingSpaceController::Get()->model());
+  }
+
+  ImageLayerOwner(const ImageLayerOwner&) = delete;
+  ImageLayerOwner& operator=(const ImageLayerOwner&) = delete;
+  ~ImageLayerOwner() override = default;
+
+  // Creates and returns the `layer()` owned by this class. Note that this may
+  // only be called if `layer()` does not already exist.
+  ui::Layer* CreateLayer() {
+    DCHECK(!layer());
+
+    auto layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
+    layer->set_delegate(this);
+    layer->SetFillsBoundsOpaquely(false);
+    layer->SetName(HoldingSpaceTrayIconPreview::kImageLayerName);
+    Reset(std::move(layer));
+
+    UpdateOpacity();
+    UpdateTransform();
+
+    return this->layer();
+  }
+
+  // Destroys the `layer()` which is owned by this class. Note that this will
+  // no-op if `layer()` does not exist.
+  void DestroyLayer() {
+    if (layer())
+      ReleaseLayer();
+  }
+
+  // Invoke to schedule repaint of the entire `layer()`.
+  void InvalidateLayer() {
+    // Clear cache.
+    image_skia_ = gfx::ImageSkia();
+
+    // Schedule repaint.
+    if (layer())
+      layer()->SchedulePaint(gfx::Rect(layer()->size()));
+  }
+
+ private:
+  // ui::LayerDelegate:
+  void OnPaintLayer(const ui::PaintContext& context) override {
+    if (image_skia_.isNull())
+      return;
+
+    // Copy `image_skia_` since retrieving a representation at the appropriate
+    // scale may result in a series of events in which `image_skia_` is deleted.
+    // Note that `gfx::ImageSkia`'s shared storage makes this a cheap copy.
+    gfx::ImageSkia image_skia(image_skia_);
+
+    // Paint `image_skia`.
+    ui::PaintRecorder recorder(context, layer()->size());
+    gfx::Canvas* canvas = recorder.canvas();
+    canvas->DrawImageInt(image_skia, 0, 0);
+  }
+
+  void OnDeviceScaleFactorChanged(float old_device_scale_factor,
+                                  float new_device_scale_factor) override {
+    // Clear cache and schedule repaint.
+    InvalidateLayer();
+  }
+
+  void OnLayerBoundsChanged(const gfx::Rect& old_bounds,
+                            ui::PropertyChangeReason reason) override {
+    // Corner radius.
+    const gfx::Size& size = layer()->size();
+    const float corner_radius = std::min(size.width(), size.height()) / 2.f;
+    layer()->SetRoundedCornerRadius(gfx::RoundedCornersF(corner_radius));
+
+    // Transform.
+    UpdateTransform();
+
+    // Clear cache and schedule repaint.
+    InvalidateLayer();
+  }
+
+  void UpdateVisualState() override {
+    if (item_ && image_skia_.isNull()) {
+      image_skia_ = item_->image().GetImageSkia(
+          layer()->size(), AshColorProvider::Get()->IsDarkModeEnabled());
+    }
+  }
+
+  // HoldingSpaceModelObserver:
+  void OnHoldingSpaceItemUpdated(const HoldingSpaceItem* item,
+                                 uint32_t updated_fields) override {
+    if (item_ != item)
+      return;
+
+    if (updated_fields & HoldingSpaceModelObserver::UpdatedField::kProgress) {
+      UpdateOpacity();
+      UpdateTransform();
+    }
+  }
+
+  void OnHoldingSpaceItemDeleted() { item_ = nullptr; }
+
+  void OnHoldingSpaceItemImageSkiaChanged() { InvalidateLayer(); }
+
+  void UpdateOpacity() {
+    // Opacity need not be updated if:
+    // * `item_` is destroyed and is being animated out,
+    // * `layer()` does not exist, or
+    // * in-progress animations v2 is disabled since in that case there is no
+    //   progress indicator inner icon which would otherwise result in overlap.
+    if (!item_ || !layer() ||
+        !features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
+      return;
+    }
+
+    const bool is_item_visibly_in_progress =
+        !item_->progress().IsHidden() && !item_->progress().IsComplete();
+
+    const float target_opacity = is_item_visibly_in_progress ? 0.f : 1.f;
+    if (layer()->GetTargetOpacity() == target_opacity)
+      return;
+
+    // If `layer()` should be hidden, do so immediately without animation so as
+    // to avoid clashing with other UI elements.
+    if (target_opacity == 0.f) {
+      layer()->SetOpacity(0.f);
+      return;
+    }
+
+    // If `layer()` should be visible, animate the transition.
+    ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
+    settings.SetTransitionDuration(kInProgressAnimationDuration);
+    settings.SetTweenType(gfx::Tween::Type::LINEAR_OUT_SLOW_IN);
+    layer()->SetOpacity(1.f);
+  }
+
+  void UpdateTransform() {
+    // Transform need not be updated if:
+    // * `item_` is destroyed and is being animated out,
+    // * `layer()` does not exist, or
+    // * in-progress animations v2 is disabled since in that case there is no
+    //   progress indicator inner icon which would otherwise result in overlap.
+    if (!item_ || !layer() ||
+        !features::IsHoldingSpaceInProgressAnimationV2Enabled()) {
+      return;
+    }
+
+    const bool is_item_visibly_in_progress =
+        !item_->progress().IsHidden() && !item_->progress().IsComplete();
+    const bool is_item_animating_progress_ring =
+        HoldingSpaceAnimationRegistry::GetInstance()
+            ->GetProgressRingAnimationForKey(item_);
+
+    const gfx::Transform target_transform =
+        is_item_visibly_in_progress || is_item_animating_progress_ring
+            ? gfx::GetScaleTransform(gfx::Rect(layer()->size()).CenterPoint(),
+                                     kInProgressAnimationScaleFactor)
+            : gfx::Transform();
+    if (layer()->GetTargetTransform() == target_transform)
+      return;
+
+    // If `layer()` should be scaled, do so immediately without animation so as
+    // to avoid clashing with other UI elements.
+    if (!target_transform.IsIdentity()) {
+      layer()->SetTransform(target_transform);
+      return;
+    }
+
+    // If `layer()` should not be scaled, animate the transition.
+    ui::ScopedLayerAnimationSettings settings(layer()->GetAnimator());
+    settings.SetTransitionDuration(kInProgressAnimationDuration);
+    settings.SetTweenType(gfx::Tween::Type::LINEAR_OUT_SLOW_IN);
+    layer()->SetTransform(target_transform);
+  }
+
+  const HoldingSpaceItem* item_ = nullptr;
+  base::CallbackListSubscription item_deletion_subscription_;
+  base::CallbackListSubscription item_image_skia_subscription_;
+  base::CallbackListSubscription progress_ring_animation_changed_subscription_;
+
+  // Cached image representation of the associated holding space `item_` that is
+  // painted to the `layer()` owned by this class.
+  gfx::ImageSkia image_skia_;
+
+  base::ScopedObservation<HoldingSpaceModel, HoldingSpaceModelObserver>
+      model_observer_{this};
+};
+
 // HoldingSpaceTrayIconPreview -------------------------------------------------
+
+// static
+constexpr char HoldingSpaceTrayIconPreview::kClassName[];
+constexpr char HoldingSpaceTrayIconPreview::kImageLayerName[];
 
 HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     Shelf* shelf,
@@ -159,21 +407,10 @@ HoldingSpaceTrayIconPreview::HoldingSpaceTrayIconPreview(
     const HoldingSpaceItem* item)
     : shelf_(shelf),
       container_(container),
-      item_(item),
-      progress_ring_(HoldingSpaceProgressRing::CreateForItem(item_)),
+      image_layer_owner_(std::make_unique<ImageLayerOwner>(item)),
+      progress_indicator_(
+          holding_space_util::CreateProgressIndicatorForItem(item)),
       use_small_previews_(ShouldUseSmallPreviews()) {
-  // Initialize the `contents_image_`.
-  OnHoldingSpaceItemImageChanged();
-
-  item_deletion_subscription_ = item->AddDeletionCallback(base::BindRepeating(
-      &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted,
-      base::Unretained(this)));
-
-  image_subscription_ =
-      item->image().AddImageSkiaChangedCallback(base::BindRepeating(
-          &HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged,
-          base::Unretained(this)));
-
   container_observer_.Observe(container_);
 }
 
@@ -194,8 +431,18 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
     transform_.Translate(translation);
   }
 
-  if (!NeedsLayer())
+  if (!NeedsLayer()) {
+    // Since the holding space tray icon preview will not be animated, any
+    // associated progress icon animation can `Start()` immediately.
+    if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+      auto* key = progress_indicator_->animation_key();
+      auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+      auto* animation = registry->GetProgressIconAnimationForKey(key);
+      if (animation && !animation->HasAnimated())
+        animation->Start();
+    }
     return;
+  }
 
   int pre_translate_y = -preview_size.height();
   if (IsHorizontal(shelf_->alignment())) {
@@ -233,6 +480,22 @@ void HoldingSpaceTrayIconPreview::AnimateIn(base::TimeDelta additional_delay) {
           transform_, kBounceAnimationSegmentDuration);
   rebound->set_tween_type(gfx::Tween::FAST_OUT_SLOW_IN_3);
   sequence->AddElement(std::move(rebound));
+
+  // Any associated progress icon animation should `Start()` only after
+  // completion of the holding space tray icon preview animation.
+  if (features::IsHoldingSpaceInProgressAnimationV2DelayEnabled()) {
+    auto observer = std::make_unique<CallbackLayerAnimationObserver>();
+    sequence->AddObserver(observer.get());
+    observer->SetAnimationCompletedCallback(base::BindOnce(
+        [](CallbackLayerAnimationObserver* observer, const void* key) {
+          auto* registry = HoldingSpaceAnimationRegistry::GetInstance();
+          auto* animation = registry->GetProgressIconAnimationForKey(key);
+          if (animation && !animation->HasAnimated())
+            animation->Start();
+        },
+        base::Owned(std::move(observer)),
+        progress_indicator_->animation_key()));
+  }
 
   layer()->GetAnimator()->StartAnimation(sequence.release());
 }
@@ -405,21 +668,12 @@ void HoldingSpaceTrayIconPreview::OnShelfConfigChanged() {
     UpdateLayerBounds();
     layer()->SetTransform(transform_);
   }
-
-  // Invalidate `contents_image_` so it is resized.
-  OnHoldingSpaceItemImageChanged();
 }
 
 void HoldingSpaceTrayIconPreview::OnThemeChanged() {
-  // Invalidate `contents_image_` so that file type icons will use the correct
-  // foreground color to contrast the preview's background. Note that this will
-  // trigger `layer()` invalidation at which time the background will be painted
-  // in the appropriate color for the current theme.
-  OnHoldingSpaceItemImageChanged();
-
-  // Invalidate the `progress_ring_` layer so that it gets repainted with colors
-  // that are appropriately themed.
-  progress_ring_->InvalidateLayer();
+  InvalidateLayer();
+  image_layer_owner_->InvalidateLayer();
+  progress_indicator_->InvalidateLayer();
 }
 
 void HoldingSpaceTrayIconPreview::OnPaintLayer(
@@ -434,8 +688,8 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
 
   // Background.
   // NOTE: The background radius is shrunk by a single pixel to avoid being
-  // painted outside `contents_image_` bounds as might otherwise occur due to
-  // pixel rounding. Failure to do so could result in paint artifacts.
+  // painted outside `image_layer_owner_` layer bounds as might otherwise occur
+  // due to pixel rounding. Failure to do so could result in paint artifacts.
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setColor(AshColorProvider::Get()->GetBaseLayerColor(
@@ -445,14 +699,6 @@ void HoldingSpaceTrayIconPreview::OnPaintLayer(
       gfx::PointF(contents_bounds.CenterPoint()),
       std::min(contents_bounds.width(), contents_bounds.height()) / 2.f - 0.5f,
       flags);
-
-  // Contents.
-  // NOTE: The `contents_image_` should already be resized.
-  if (!contents_image_.isNull()) {
-    DCHECK_EQ(contents_image_.size(), contents_bounds.size());
-    canvas->DrawImageInt(contents_image_, contents_bounds.x(),
-                         contents_bounds.y());
-  }
 }
 
 void HoldingSpaceTrayIconPreview::OnDeviceScaleFactorChanged(
@@ -481,23 +727,6 @@ void HoldingSpaceTrayIconPreview::OnViewIsDeleting(views::View* view) {
   container_observer_.Reset();
 }
 
-void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemImageChanged() {
-  if (item_) {
-    const gfx::Size size(GetPreviewSize());
-    contents_image_ = gfx::ImageSkia(
-        std::make_unique<ContentsImageSource>(item_->image().GetImageSkia(
-            size, AshColorProvider::Get()->IsDarkModeEnabled())),
-        size);
-  } else {
-    contents_image_ = gfx::ImageSkia();
-  }
-  InvalidateLayer();
-}
-
-void HoldingSpaceTrayIconPreview::OnHoldingSpaceItemDeleted() {
-  item_ = nullptr;
-}
-
 void HoldingSpaceTrayIconPreview::CreateLayer(
     const gfx::Transform& initial_transform) {
   DCHECK(!layer());
@@ -506,8 +735,10 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
   auto new_layer = std::make_unique<ui::Layer>(ui::LAYER_TEXTURED);
   new_layer->set_delegate(this);
   new_layer->SetFillsBoundsOpaquely(false);
+  new_layer->SetName(kClassName);
   new_layer->SetTransform(initial_transform);
-  new_layer->Add(progress_ring_->layer());
+  new_layer->Add(image_layer_owner_->CreateLayer());
+  new_layer->Add(progress_indicator_->CreateLayer());
   layer_owner_.Reset(std::move(new_layer));
 
   UpdateLayerBounds();
@@ -517,6 +748,8 @@ void HoldingSpaceTrayIconPreview::CreateLayer(
 void HoldingSpaceTrayIconPreview::DestroyLayer() {
   if (layer())
     layer_owner_.ReleaseLayer();
+  image_layer_owner_->DestroyLayer();
+  progress_indicator_->DestroyLayer();
 }
 
 bool HoldingSpaceTrayIconPreview::NeedsLayer() const {
@@ -569,10 +802,12 @@ void HoldingSpaceTrayIconPreview::UpdateLayerBounds() {
   layer()->SetBounds(bounds);
 
   // The `layer()` was enlarged so that the shadow would be painted outside of
-  // desired preview bounds. Progress ring bounds are clamped to preview size.
-  gfx::Rect progress_ring_bounds(layer()->size());
-  progress_ring_bounds.ClampToCenteredSize(GetPreviewSize());
-  progress_ring_->layer()->SetBounds(progress_ring_bounds);
+  // desired preview bounds. The image layer and progress indicator bounds are
+  // clamped to preview size.
+  bounds = gfx::Rect(layer()->size());
+  bounds.ClampToCenteredSize(GetPreviewSize());
+  image_layer_owner_->layer()->SetBounds(bounds);
+  progress_indicator_->layer()->SetBounds(bounds);
 }
 
 }  // namespace ash

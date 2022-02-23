@@ -30,6 +30,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mockito;
 
 import org.chromium.base.FeatureList;
+import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -49,10 +50,9 @@ import org.chromium.payments.mojom.PaymentAddress;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
 import org.chromium.ui.test.util.RenderTestRule;
-import org.chromium.ui.test.util.ThemedDummyUiActivityTestRule;
 
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
@@ -71,9 +71,8 @@ public class ContactsPickerDialogTest
     public static DisableAnimationsTestRule mDisableAnimationsTestRule =
             new DisableAnimationsTestRule();
     @ClassRule
-    public static ThemedDummyUiActivityTestRule<DummyUiActivity> activityTestRule =
-            new ThemedDummyUiActivityTestRule<>(
-                    DummyUiActivity.class, R.style.ColorOverlay_BrowserUi);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private Activity mActivity;
     private WindowAndroid mWindowAndroid;

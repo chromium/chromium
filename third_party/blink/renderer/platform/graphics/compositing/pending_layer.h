@@ -7,30 +7,10 @@
 
 #include "third_party/blink/renderer/platform/graphics/paint/paint_chunk_subset.h"
 #include "third_party/blink/renderer/platform/graphics/paint/property_tree_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace blink {
-
-class GraphicsLayer;
-
-// Information of a composited layer that is created during compositing update
-// in pre-CompositeAfterPaint. In CompositeAfterPaint, this is expected to
-// contain all paint chunks, as if we created one root layer that needs to be
-// future layerized.
-struct PLATFORM_EXPORT PreCompositedLayerInfo {
-  DISALLOW_NEW();
-  // For now this is used only when graphics_layer == nullptr. This will also
-  // contain the paint chunks for the graphics layer when we unify
-  // PaintController for pre-CAP and CAP.
-  PaintChunkSubset chunks;
-  // If this is not nullptr, we should use the composited layer created by the
-  // GraphicsLayer. Otherwise we should layerize |chunks|. A GraphicsLayer with
-  // ShouldCreateLayersAfterPaint() == true should set this field to nullptr.
-  Member<GraphicsLayer> graphics_layer = nullptr;
-  void Trace(Visitor* visitor) const;
-};
 
 // A pending layer is a collection of paint chunks that will end up in the same
 // cc::Layer.
@@ -38,7 +18,6 @@ class PLATFORM_EXPORT PendingLayer {
  public:
   enum CompositingType {
     kScrollHitTestLayer,
-    kPreCompositedLayer,
     kForeignLayer,
     kScrollbarLayer,
     kOverlap,
@@ -46,7 +25,6 @@ class PLATFORM_EXPORT PendingLayer {
   };
 
   PendingLayer(const PaintChunkSubset&, const PaintChunkIterator&);
-  explicit PendingLayer(const PreCompositedLayerInfo&);
 
   // Returns the offset/bounds for the final cc::Layer, rounded if needed.
   gfx::Vector2dF LayerOffset() const;
@@ -70,7 +48,6 @@ class PLATFORM_EXPORT PendingLayer {
   PaintPropertyChangeType ChangeOfDecompositedTransforms() const {
     return change_of_decomposited_transforms_;
   }
-  const GraphicsLayer* GetGraphicsLayer() const { return graphics_layer_; }
   CompositingType GetCompositingType() const { return compositing_type_; }
 
   void SetCompositingType(CompositingType new_type) {
@@ -116,7 +93,7 @@ class PLATFORM_EXPORT PendingLayer {
 
   std::unique_ptr<JSONObject> ToJSON() const;
 
-  bool MayDrawContent() const;
+  bool DrawsContent() const { return draws_content_; }
 
   bool RequiresOwnLayer() const {
     return compositing_type_ != kOverlap && compositing_type_ != kOther;
@@ -147,17 +124,15 @@ class PLATFORM_EXPORT PendingLayer {
   gfx::RectF bounds_;
   gfx::RectF rect_known_to_be_opaque_;
   bool has_text_ = false;
+  bool draws_content_ = false;
   bool text_known_to_be_on_opaque_background_ = false;
   PaintChunkSubset chunks_;
   PropertyTreeState property_tree_state_;
   gfx::Vector2dF offset_of_decomposited_transforms_;
   PaintPropertyChangeType change_of_decomposited_transforms_ =
       PaintPropertyChangeType::kUnchanged;
-  const WeakPersistent<GraphicsLayer> graphics_layer_ = nullptr;
   CompositingType compositing_type_;
 };
 }  // namespace blink
-
-WTF_ALLOW_CLEAR_UNUSED_SLOTS_WITH_MEM_FUNCTIONS(blink::PreCompositedLayerInfo)
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_COMPOSITING_PENDING_LAYER_H_

@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
 #include "build/chromeos_buildflags.h"
@@ -34,7 +33,6 @@
 #include "chrome/common/url_constants.h"
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/download/public/common/quarantine_connection.h"
-#include "components/guest_view/browser/guest_view_message_filter.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/browser_url_handler.h"
@@ -48,6 +46,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
+#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/api/web_request/web_request_api_helpers.h"
 #include "extensions/browser/bad_message.h"
@@ -57,7 +56,7 @@
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_service_worker_message_filter.h"
 #include "extensions/browser/extension_system.h"
-#include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"
+#include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/guest_view/web_view/web_view_renderer_state.h"
 #include "extensions/browser/info_map.h"
 #include "extensions/browser/process_map.h"
@@ -65,7 +64,6 @@
 #include "extensions/browser/url_request_util.h"
 #include "extensions/browser/view_type_utils.h"
 #include "extensions/common/constants.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/common/extension_urls.h"
 #include "extensions/common/manifest_constants.h"
 #include "extensions/common/manifest_handlers/app_isolation_info.h"
@@ -247,12 +245,9 @@ GURL ChromeContentBrowserClientExtensionsPart::GetEffectiveURL(
   // also that we must not return an invalid effective URL here, since that
   // might lead to incorrect security decisions - see
   // https://crbug.com/1016954.
-  //
-  // Bookmark apps do not use the hosted app process model, and should be
-  // treated as normal URLs.
   const Extension* hosted_app =
       registry->enabled_extensions().GetHostedAppByURL(url);
-  if (hosted_app && !hosted_app->from_bookmark())
+  if (hosted_app)
     return hosted_app->url();
 
   // If this is a chrome-extension: URL, check whether a corresponding
@@ -351,46 +346,6 @@ bool ChromeContentBrowserClientExtensionsPart::DoesSiteRequireDedicatedProcess(
 }
 
 // static
-bool ChromeContentBrowserClientExtensionsPart::ShouldLockProcessToSite(
-    content::BrowserContext* browser_context,
-    const GURL& effective_site_url) {
-  // When strict extension isolation is enabled, all extension processes should
-  // be locked.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kStrictExtensionIsolation)) {
-    return true;
-  }
-
-  if (!effective_site_url.SchemeIs(kExtensionScheme))
-    return true;
-
-  const Extension* extension = ExtensionRegistry::Get(browser_context)
-                                   ->enabled_extensions()
-                                   .GetExtensionOrAppByURL(effective_site_url);
-  // Avoid locking renderer processes for disabled or non-existent extension
-  // URLs, to be consistent with the enabled non-hosted-app cases below.  It's
-  // ok for URLs from multiple disabled/non-existent extensions to share a
-  // process. Some context for this is in https://crbug.com/1197360.
-  if (!extension)
-    return false;
-
-  // Hosted apps should be locked to their web origin. See
-  // https://crbug.com/794315.
-  if (extension->is_hosted_app())
-    return true;
-
-  // Other extensions are allowed to share processes, even in
-  // --site-per-process currently. See https://crbug.com/600441#c1 for some
-  // background on the intersection of extension process reuse and site
-  // isolation.
-  //
-  // TODO(nick): Fix this, possibly by revamping the extensions process model
-  // so that sharing is determined by privilege level, as described in
-  // https://crbug.com/766267.
-  return false;
-}
-
-// static
 bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
     content::RenderProcessHost* process_host, const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
@@ -439,26 +394,12 @@ bool ChromeContentBrowserClientExtensionsPart::CanCommitURL(
   if (extension->is_hosted_app())
     return extension->id() != kWebStoreAppId;
 
-  // Some special case extension URLs must be allowed to load in any guest. Note
-  // that CanCommitURL may be called for validating origins as well, so do not
-  // enforce a path comparison in the special cases unless there is a real path
-  // (more than just "/").
-  // TODO(creis): Remove this call when bugs 688565 and 778021 are resolved.
-  base::StringPiece url_path = url.path_piece();
-  bool is_guest =
-      WebViewRendererState::GetInstance()->IsGuest(process_host->GetID());
-  if (is_guest &&
-      url_request_util::AllowSpecialCaseExtensionURLInGuest(
-          extension, url_path.length() > 1
-                         ? absl::make_optional<base::StringPiece>(url_path)
-                         : absl::nullopt)) {
-    return true;
-  }
-
   // Platform app URLs may commit in their own guest processes, when they have
   // the webview permission.  (Some extensions are allowlisted for webviews as
   // well, but their pages load in their own extension process and are allowed
   // through above.)
+  bool is_guest =
+      WebViewRendererState::GetInstance()->IsGuest(process_host->GetID());
   if (is_guest) {
     std::string owner_extension_id;
     int owner_process_id = -1;
@@ -498,53 +439,12 @@ bool ChromeContentBrowserClientExtensionsPart::IsSuitableHost(
          privilege_required;
 }
 
-// static
-bool
-ChromeContentBrowserClientExtensionsPart::ShouldTryToUseExistingProcessHost(
-    Profile* profile, const GURL& url) {
-  // When strict extension isolation is enabled, no extensions need to reuse an
-  // existing process.
-  if (base::FeatureList::IsEnabled(
-          extensions_features::kStrictExtensionIsolation)) {
-    return false;
-  }
-
-  // This function is trying to limit the amount of processes used by extensions
-  // with background pages. It uses a globally set percentage of processes to
-  // run such extensions and if the limit is exceeded, it returns true, to
-  // indicate to the content module to group extensions together.
-  ExtensionRegistry* registry =
-      profile ? ExtensionRegistry::Get(profile) : NULL;
-  if (!registry)
-    return false;
-
-  // We have to have a valid extension with background page to proceed.
-  const Extension* extension =
-      registry->enabled_extensions().GetExtensionOrAppByURL(url);
-  if (!extension)
-    return false;
-  if (!BackgroundInfo::HasBackgroundPage(extension))
-    return false;
-
-  size_t max_process_count =
-      content::RenderProcessHost::GetMaxRendererProcessCount();
-  return (GetExtensionBackgroundProcessCount() >
-          (max_process_count * chrome::kMaxShareOfExtensionProcesses));
-}
-
 size_t
 ChromeContentBrowserClientExtensionsPart::GetProcessCountToIgnoreForLimit() {
-  // If strict extension isolation is enabled, ignore any extension processes
-  // that are beyond the extension-specific process limit when considering
-  // whether processes should be reused for other types of pages.
-
-  // If this is a unit test with no profile manager, or if strict extension
-  // isolation is disabled, there is no need to ignore any processes.
-  if (!g_browser_process->profile_manager() ||
-      !base::FeatureList::IsEnabled(
-          extensions_features::kStrictExtensionIsolation)) {
+  // If this is a unit test with no profile manager, there is no need to ignore
+  // any processes.
+  if (!g_browser_process->profile_manager())
     return 0;
-  }
 
   size_t max_process_count =
       content::RenderProcessHost::GetMaxRendererProcessCount();
@@ -708,9 +608,9 @@ void ChromeContentBrowserClientExtensionsPart::RenderProcessWillLaunch(
 
   host->AddFilter(new ChromeExtensionMessageFilter(profile));
   host->AddFilter(new ExtensionMessageFilter(id, profile));
-  host->AddFilter(new ExtensionsGuestViewMessageFilter(id, profile));
   host->AddFilter(new ExtensionServiceWorkerMessageFilter(
       id, profile, host->GetStoragePartition()->GetServiceWorkerContext()));
+  host->AddFilter(new MessagingAPIMessageFilter(id, profile));
 }
 
 void ChromeContentBrowserClientExtensionsPart::SiteInstanceGotProcess(
@@ -835,6 +735,10 @@ void ChromeContentBrowserClientExtensionsPart::ExposeInterfacesToRenderer(
     content::RenderProcessHost* host) {
   associated_registry->AddInterface(
       base::BindRepeating(&EventRouter::BindForRenderer, host->GetID()));
+  associated_registry->AddInterface(base::BindRepeating(
+      &ExtensionsGuestView::CreateForComponents, host->GetID()));
+  associated_registry->AddInterface(base::BindRepeating(
+      &ExtensionsGuestView::CreateForExtensions, host->GetID()));
 }
 
 }  // namespace extensions

@@ -6,7 +6,7 @@
 #define SERVICES_NETWORK_SOCKET_DATA_PUMP_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/system/data_pipe.h"
@@ -84,8 +84,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SocketDataPump {
   void OnNetworkWriteCompleted(int result);
   void ShutdownSend();
 
-  net::StreamSocket* const socket_;
-  Delegate* const delegate_;
+  const raw_ptr<net::StreamSocket> socket_;
+  const raw_ptr<Delegate> delegate_;
 
   // The *stream handles will be null when there's a pending read from |socket_|
   // to |pending_receive_buffer_|, or while there is a pending write from

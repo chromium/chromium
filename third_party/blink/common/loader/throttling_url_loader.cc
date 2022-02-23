@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -180,14 +181,15 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
           new_client_receiver,
       mojo::PendingRemote<network::mojom::URLLoader>* original_loader,
       mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-          original_client_receiver) override {
+          original_client_receiver,
+      mojo::ScopedDataPipeConsumerHandle* body) override {
     if (!loader_)
       return;
 
     ScopedDelegateCall scoped_delegate_call(this);
     loader_->InterceptResponse(std::move(new_loader),
                                std::move(new_client_receiver), original_loader,
-                               original_client_receiver);
+                               original_client_receiver, body);
   }
 
   void RestartWithFlags(int additional_load_flags) override {
@@ -241,11 +243,11 @@ class ThrottlingURLLoader::ForwardingThrottleDelegate
     }
 
    private:
-    ForwardingThrottleDelegate* const owner_;
+    const raw_ptr<ForwardingThrottleDelegate> owner_;
   };
 
-  ThrottlingURLLoader* loader_;
-  URLLoaderThrottle* const throttle_;
+  raw_ptr<ThrottlingURLLoader> loader_;
+  const raw_ptr<URLLoaderThrottle> throttle_;
 };
 
 ThrottlingURLLoader::StartInfo::StartInfo(
@@ -359,6 +361,7 @@ void ThrottlingURLLoader::RestartWithFactory(
   client_receiver_.reset();
   start_info_->url_loader_factory = std::move(factory);
   start_info_->options = url_loader_options;
+  body_.reset();
   StartNow();
 }
 
@@ -657,13 +660,15 @@ void ThrottlingURLLoader::OnReceiveEarlyHints(
 }
 
 void ThrottlingURLLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response_head) {
+    network::mojom::URLResponseHeadPtr response_head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK_EQ(DEFERRED_NONE, deferred_stage_);
   DCHECK(!loader_completed_);
   DCHECK(deferring_throttles_.empty());
   TRACE_EVENT1("loading", "ThrottlingURLLoader::OnReceiveResponse", "url",
                response_url_.possibly_invalid_spec());
   did_receive_response_ = true;
+  body_ = std::move(body);
 
   // Dispatch BeforeWillProcessResponse().
   if (!throttles_.empty()) {
@@ -717,7 +722,8 @@ void ThrottlingURLLoader::OnReceiveResponse(
     }
   }
 
-  forwarding_client_->OnReceiveResponse(std::move(response_head));
+  forwarding_client_->OnReceiveResponse(std::move(response_head),
+                                        std::move(body_));
 }
 
 void ThrottlingURLLoader::OnReceiveRedirect(
@@ -935,7 +941,7 @@ void ThrottlingURLLoader::Resume() {
     case DEFERRED_RESPONSE: {
       client_receiver_.Resume();
       forwarding_client_->OnReceiveResponse(
-          std::move(response_info_->response_head));
+          std::move(response_info_->response_head), std::move(body_));
       // Note: |this| may be deleted here.
       break;
     }
@@ -1018,9 +1024,11 @@ void ThrottlingURLLoader::InterceptResponse(
     mojo::PendingReceiver<network::mojom::URLLoaderClient> new_client_receiver,
     mojo::PendingRemote<network::mojom::URLLoader>* original_loader,
     mojo::PendingReceiver<network::mojom::URLLoaderClient>*
-        original_client_receiver) {
+        original_client_receiver,
+    mojo::ScopedDataPipeConsumerHandle* body) {
   response_intercepted_ = true;
 
+  *body = std::move(body_);
   if (original_loader) {
     url_loader_->ResumeReadingBodyFromNet();
     *original_loader = url_loader_.Unbind();

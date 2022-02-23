@@ -8,11 +8,11 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/models/simple_menu_model.h"
 
 class Browser;
-class GURL;
 class Profile;
 
 namespace content {
@@ -68,6 +68,9 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
     kMaxValue = kPageAccessLearnMore,
   };
 
+  // Location where the context menu is open from.
+  enum class ContextMenuSource { kToolbarAction = 0, kMenuItem = 1 };
+
   // The current visibility of the extension; this affects the "pin" / "unpin"
   // strings in the menu.
   // TODO(devlin): Rename this "PinState" when we finish removing the old UI
@@ -102,7 +105,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
                             Browser* browser,
                             ButtonVisibility visibility,
                             PopupDelegate* delegate,
-                            bool can_show_icon_in_toolbar);
+                            bool can_show_icon_in_toolbar,
+                            ContextMenuSource source);
 
   ExtensionContextMenuModel(const ExtensionContextMenuModel&) = delete;
   ExtensionContextMenuModel& operator=(const ExtensionContextMenuModel&) =
@@ -127,12 +131,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   void CreatePageAccessSubmenu(const Extension* extension);
 
-  MenuEntries GetCurrentPageAccess(const Extension* extension,
-                                   content::WebContents* web_contents) const;
-
   // Returns true if the given page access command is enabled in the menu.
   bool IsPageAccessCommandEnabled(const Extension& extension,
-                                  const GURL& url,
                                   int command_id) const;
 
   void HandlePageAccessCommand(int command_id,
@@ -160,14 +160,14 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
 
   // The extension action of the extension we are displaying the menu for (if
   // it has one, otherwise NULL).
-  ExtensionAction* extension_action_;
+  raw_ptr<ExtensionAction> extension_action_;
 
-  Browser* const browser_;
+  const raw_ptr<Browser> browser_;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // The delegate which handles the 'inspect popup' menu command (or NULL).
-  PopupDelegate* delegate_;
+  raw_ptr<PopupDelegate> delegate_;
 
   // The visibility of the button at the time the menu opened.
   ButtonVisibility button_visibility_;
@@ -182,6 +182,8 @@ class ExtensionContextMenuModel : public ui::SimpleMenuModel,
   // The action taken by the menu. Has a valid value when the menu is being
   // shown.
   absl::optional<ContextMenuAction> action_taken_;
+
+  ContextMenuSource source_;
 };
 
 }  // namespace extensions

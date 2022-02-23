@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_BROWSER_CONTEXT_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_BROWSER_CONTEXT_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "storage/browser/quota/special_storage_policy.h"

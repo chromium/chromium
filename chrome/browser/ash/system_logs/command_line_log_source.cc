@@ -63,6 +63,7 @@ void ExecuteCommandLines(system_logs::SystemLogsResponse* response) {
 
   // Get disk space usage information
   command = base::CommandLine(base::FilePath("/bin/df"));
+  command.AppendArg("--human-readable");
   commands.emplace_back("disk_usage", command);
 
   for (const auto& command : commands) {

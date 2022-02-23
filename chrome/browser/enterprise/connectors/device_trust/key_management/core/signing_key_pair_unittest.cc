@@ -23,7 +23,7 @@ namespace enterprise_connectors {
 
 namespace {
 
-void ValidateSigningKey(const absl::optional<SigningKeyPair>& key_pair,
+void ValidateSigningKey(SigningKeyPair* key_pair,
                         BPKUR::KeyTrustLevel expected_trust_level) {
   ASSERT_TRUE(key_pair);
 
@@ -43,9 +43,14 @@ void ValidateSigningKey(const absl::optional<SigningKeyPair>& key_pair,
 
 }  // namespace
 
+class SigningKeyPairTest : public testing::Test {
+ protected:
+  test::ScopedKeyPersistenceDelegateFactory factory_;
+};
+
 // Tests that the SigningKeyPair::Create factory function returns nothing if no
 // key was persisted.
-TEST(SigningKeyPairTest, Create_NoKey) {
+TEST_F(SigningKeyPairTest, Create_NoKey) {
   testing::StrictMock<test::MockKeyPersistenceDelegate>
       mock_persistence_delegate;
   EXPECT_CALL(mock_persistence_delegate, LoadKeyPair())
@@ -56,39 +61,27 @@ TEST(SigningKeyPairTest, Create_NoKey) {
 
 // Tests that the SigningKeyPair::Create factory function returns a properly
 // initialized TPM-backed SigningKeyPair if a TPM-backed key was available.
-TEST(SigningKeyPairTest, Create_WithTpmKey) {
-  // The mocked factory returns mock delegates setup with TPM key pairs by
-  // default.
-  test::ScopedKeyPersistenceDelegateFactory factory;
-  auto mocked_delegate = factory.CreateMockedDelegate();
+TEST_F(SigningKeyPairTest, Create_WithTpmKey) {
+  auto mocked_delegate = factory_.CreateMockedTpmDelegate();
 
   EXPECT_CALL(*mocked_delegate, LoadKeyPair());
   EXPECT_CALL(*mocked_delegate, GetTpmBackedKeyProvider());
 
-  absl::optional<SigningKeyPair> key_pair =
-      SigningKeyPair::Create(mocked_delegate.get());
+  auto key_pair = SigningKeyPair::Create(mocked_delegate.get());
 
-  ValidateSigningKey(key_pair, BPKUR::CHROME_BROWSER_TPM_KEY);
+  ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_TPM_KEY);
 }
 
 // Tests that the SigningKeyPair::Create factory function returns a properly
 // initialized crypto::ECPrivateKey-backed SigningKeyPair if that is what was
 // available.
-TEST(SigningKeyPairTest, Create_WithECPrivateKey) {
-  ECSigningKeyProvider ec_key_provider;
-  auto acceptable_algorithms = {crypto::SignatureVerifier::ECDSA_SHA256};
-  auto key = ec_key_provider.GenerateSigningKeySlowly(acceptable_algorithms);
+TEST_F(SigningKeyPairTest, Create_WithECPrivateKey) {
+  auto mocked_delegate = factory_.CreateMockedECDelegate();
+  EXPECT_CALL(*mocked_delegate, LoadKeyPair);
 
-  testing::StrictMock<test::MockKeyPersistenceDelegate>
-      mock_persistence_delegate;
-  EXPECT_CALL(mock_persistence_delegate, LoadKeyPair)
-      .WillOnce(Return(KeyPersistenceDelegate::KeyInfo(
-          BPKUR::CHROME_BROWSER_OS_KEY, key->GetWrappedKey())));
+  auto key_pair = SigningKeyPair::Create(mocked_delegate.get());
 
-  absl::optional<SigningKeyPair> key_pair =
-      SigningKeyPair::Create(&mock_persistence_delegate);
-
-  ValidateSigningKey(key_pair, BPKUR::CHROME_BROWSER_OS_KEY);
+  ValidateSigningKey(key_pair.get(), BPKUR::CHROME_BROWSER_OS_KEY);
 }
 
 }  // namespace enterprise_connectors

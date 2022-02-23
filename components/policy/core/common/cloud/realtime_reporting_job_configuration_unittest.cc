@@ -82,15 +82,15 @@ class RealtimeReportingJobConfigurationTest : public testing::Test {
         /*include_device_info=*/true, /*add_connector_url_params=*/false,
         base::BindOnce(&MockCallbackObserver::OnURLLoadComplete,
                        base::Unretained(&callback_observer_)));
-    base::Value context(base::Value::Type::DICTIONARY);
-    context.SetStringPath("browser.userAgent", "dummyAgent");
-    base::Value events(base::Value::Type::LIST);
+    base::Value::Dict context;
+    context.SetByDottedPath("browser.userAgent", "dummyAgent");
+    base::Value::List events;
     for (size_t i = 0; i < ids.size(); ++i) {
       base::Value event = CreateEvent(ids[i], i);
       events.Append(std::move(event));
     }
 
-    base::Value report = RealtimeReportingJobConfiguration::BuildReport(
+    base::Value::Dict report = RealtimeReportingJobConfiguration::BuildReport(
         std::move(events), std::move(context));
     configuration_->AddReport(std::move(report));
   }
@@ -209,9 +209,9 @@ TEST_F(RealtimeReportingJobConfigurationTest, ValidatePayload) {
 
   base::Value* events =
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
-  EXPECT_EQ(ids.size(), events->GetList().size());
+  EXPECT_EQ(ids.size(), events->GetListDeprecated().size());
   int i = -1;
-  for (const auto& event : events->GetList()) {
+  for (const auto& event : events->GetListDeprecated()) {
     auto* id = event.FindStringKey(kEventId);
     EXPECT_EQ(ids[++i], *id);
     auto type = event.FindKey(kAppInstallEvent)->FindIntKey(kEventType);
@@ -326,8 +326,8 @@ TEST_F(RealtimeReportingJobConfigurationTest, OnBeforeRetry_PartialBatch) {
       base::JSONReader::Read(configuration_->GetPayload());
   base::Value* events =
       payload->FindListKey(RealtimeReportingJobConfiguration::kEventListKey);
-  EXPECT_EQ(1u, events->GetList().size());
-  auto& event = events->GetList()[0];
+  EXPECT_EQ(1u, events->GetListDeprecated().size());
+  auto& event = events->GetListDeprecated()[0];
   EXPECT_EQ(ids[1], *event.FindStringKey(kEventId));
 }
 

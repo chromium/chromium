@@ -4,7 +4,9 @@
 
 #include "chrome/browser/ash/android_sms/android_sms_service_factory.h"
 
-#include "chrome/browser/ash/android_sms/pairing_lost_notifier.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/multidevice_setup/multidevice_setup_client_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -14,8 +16,6 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_provider_factory.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
@@ -100,7 +100,6 @@ bool AndroidSmsServiceFactory::ServiceIsNULLWhileTesting() const {
 
 void AndroidSmsServiceFactory::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  PairingLostNotifier::RegisterProfilePrefs(registry);
   AndroidSmsAppManagerImpl::RegisterProfilePrefs(registry);
 }
 

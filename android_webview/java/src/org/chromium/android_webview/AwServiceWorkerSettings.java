@@ -9,6 +9,7 @@ import android.content.pm.PackageManager;
 import android.os.Process;
 import android.webkit.WebSettings;
 
+import org.chromium.android_webview.settings.RequestedWithHeaderMode;
 import org.chromium.base.Log;
 import org.chromium.base.annotations.JNINamespace;
 
@@ -20,7 +21,8 @@ import org.chromium.base.annotations.JNINamespace;
  */
 @JNINamespace("android_webview")
 public class AwServiceWorkerSettings {
-    private static final String LOGTAG = AwServiceWorkerSettings.class.getSimpleName();
+    // Must be maximum 20 characters, hence the abbreviation
+    private static final String TAG = "AwSWSettings";
     private static final boolean TRACE = false;
 
     private int mCacheMode = WebSettings.LOAD_DEFAULT;
@@ -28,6 +30,9 @@ public class AwServiceWorkerSettings {
     private boolean mAllowFileUrlAccess = true;
     private boolean mBlockNetworkLoads;  // Default depends on permission of the embedding APK
     private boolean mAcceptThirdPartyCookies;
+
+    @RequestedWithHeaderMode
+    private int mRequestedWithHeaderMode;
 
     // Lock to protect all settings.
     private final Object mAwServiceWorkerSettingsLock = new Object();
@@ -43,6 +48,7 @@ public class AwServiceWorkerSettings {
         synchronized (mAwServiceWorkerSettingsLock) {
             mHasInternetPermission = hasInternetPermission;
             mBlockNetworkLoads = !hasInternetPermission;
+            mRequestedWithHeaderMode = AwSettings.getDefaultXRequestedWithHeaderMode();
         }
     }
 
@@ -50,7 +56,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setCacheMode}.
      */
     public void setCacheMode(int mode) {
-        if (TRACE) Log.d(LOGTAG, "setCacheMode=" + mode);
+        if (TRACE) Log.d(TAG, "setCacheMode=" + mode);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mCacheMode != mode) {
                 mCacheMode = mode;
@@ -71,7 +77,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setAllowContentAccess}.
      */
     public void setAllowContentAccess(boolean allow) {
-        if (TRACE) Log.d(LOGTAG, "setAllowContentAccess=" + allow);
+        if (TRACE) Log.d(TAG, "setAllowContentAccess=" + allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowContentUrlAccess != allow) {
                 mAllowContentUrlAccess = allow;
@@ -92,7 +98,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setAllowFileAccess}.
      */
     public void setAllowFileAccess(boolean allow) {
-        if (TRACE) Log.d(LOGTAG, "setAllowFileAccess=" + allow);
+        if (TRACE) Log.d(TAG, "setAllowFileAccess=" + allow);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (mAllowFileUrlAccess != allow) {
                 mAllowFileUrlAccess = allow;
@@ -113,7 +119,7 @@ public class AwServiceWorkerSettings {
      * See {@link android.webkit.ServiceWorkerWebSettings#setBlockNetworkLoads}.
      */
     public void setBlockNetworkLoads(boolean flag) {
-        if (TRACE) Log.d(LOGTAG, "setBlockNetworkLoads=" + flag);
+        if (TRACE) Log.d(TAG, "setBlockNetworkLoads=" + flag);
         synchronized (mAwServiceWorkerSettingsLock) {
             if (!flag && !mHasInternetPermission) {
                 throw new SecurityException("Permission denied - "
@@ -129,6 +135,26 @@ public class AwServiceWorkerSettings {
     public boolean getBlockNetworkLoads() {
         synchronized (mAwServiceWorkerSettingsLock) {
             return mBlockNetworkLoads;
+        }
+    }
+
+    /**
+     * See {@link androidx.webkit.ServiceWorkerWebSettingsCompat#setRequestedWithHeaderMode}
+     */
+    public void setRequestedWithHeaderMode(@RequestedWithHeaderMode int mode) {
+        if (TRACE) Log.i(TAG, "setRequestedWithHeaderMode=" + mode);
+        synchronized (mAwServiceWorkerSettingsLock) {
+            mRequestedWithHeaderMode = mode;
+        }
+    }
+
+    /**
+     * See {@link androidx.webkit.ServiceWorkerWebSettingsCompat#getRequestedWithHeaderMode}
+     */
+    @RequestedWithHeaderMode
+    public int getRequestedWithHeaderMode() {
+        synchronized (mAwServiceWorkerSettingsLock) {
+            return mRequestedWithHeaderMode;
         }
     }
 }

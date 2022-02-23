@@ -29,8 +29,6 @@ class ChromeMediaRouterFactory : public MediaRouterFactory {
 
  private:
   friend struct base::LazyInstanceTraitsBase<ChromeMediaRouterFactory>;
-  FRIEND_TEST_ALL_PREFIXES(MediaRouterFactoryTest,
-                           IncognitoBrowserContextShutdown);
 
   ChromeMediaRouterFactory();
   ~ChromeMediaRouterFactory() override;
@@ -40,7 +38,6 @@ class ChromeMediaRouterFactory : public MediaRouterFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-  void BrowserContextShutdown(content::BrowserContext* context) override;
 };
 
 }  // namespace media_router

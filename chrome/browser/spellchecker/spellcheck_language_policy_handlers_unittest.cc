@@ -87,9 +87,9 @@ class SpellcheckLanguagePolicyHandlersTest
 
       EXPECT_TRUE(prefs.GetValue(key, &languages_list));
       EXPECT_TRUE(languages_list->is_list());
-      EXPECT_EQ(expected.size(), languages_list->GetList().size());
+      EXPECT_EQ(expected.size(), languages_list->GetListDeprecated().size());
 
-      for (const auto& language : languages_list->GetList()) {
+      for (const auto& language : languages_list->GetListDeprecated()) {
         EXPECT_TRUE(language.is_string());
         EXPECT_TRUE(std::find(expected.begin(), expected.end(),
                               language.GetString()) != expected.end());
@@ -103,7 +103,7 @@ class SpellcheckLanguagePolicyHandlersTest
 };
 
 TEST_P(SpellcheckLanguagePolicyHandlersTest, ApplyPolicySettings) {
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   base::test::ScopedFeatureList feature_list;
   if (GetParam().windows_spellchecker_enabled) {
     if (!spellcheck::WindowsVersionSupportsSpellchecker())
@@ -115,7 +115,7 @@ TEST_P(SpellcheckLanguagePolicyHandlersTest, ApplyPolicySettings) {
     // Hunspell-only spellcheck languages will be used.
     feature_list.InitAndDisableFeature(spellcheck::kWinUseBrowserSpellChecker);
   }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   PrefValueMap prefs;
   policy::PolicyMap policy;
@@ -167,7 +167,7 @@ INSTANTIATE_TEST_SUITE_P(
     TestCases,
     SpellcheckLanguagePolicyHandlersTest,
     testing::Values(
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
         // Test cases for Windows spellchecker (policy languages not restricted
         // to Hunspell).
         TestCase({"ar-SA", "es-MX", "fi", "fr",
@@ -183,7 +183,7 @@ INSTANTIATE_TEST_SUITE_P(
                  {""} /* expected forced languages */,
                  false /* spellcheck enabled */,
                  true /* windows spellchecker enabled */),
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
         // Test cases for Hunspell only spellchecker. ar-SA and fi are
         // non-Hunspell languages so are ignored for policy enforcement. If they
         // ever obtain Hunspell support, the first test case below will fail.

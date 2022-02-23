@@ -5,7 +5,6 @@
 #ifndef FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_
 #define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_CONTENT_RENDERER_CLIENT_H_
 
-#include "base/macros.h"
 #include "components/cast_streaming/renderer/public/demuxer_provider.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "fuchsia/engine/renderer/web_engine_audio_device_factory.h"
@@ -39,9 +38,7 @@ class WebEngineContentRendererClient : public content::ContentRendererClient {
   // content::ContentRendererClient overrides.
   void RenderThreadStarted() override;
   void RenderFrameCreated(content::RenderFrame* render_frame) override;
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems)
-      override;
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
   bool IsSupportedVideoType(const media::VideoType& type) override;
   std::unique_ptr<blink::URLLoaderThrottleProvider>
   CreateURLLoaderThrottleProvider(

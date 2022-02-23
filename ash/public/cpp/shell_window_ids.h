@@ -208,13 +208,33 @@ enum NonContainerWindowId {
   // |SelectFileDialogExtension| from favoring to parent the dialog to a browser
   // window (if one exists).
   kShellWindowId_CaptureModeFolderSelectionDialogOwner,
+
+  // The window that shows the "Save Desk as Template" button below the Virtual
+  // Desks bar. There's only one such window on each display when overview mode
+  // is active.
+  kShellWindowId_SaveDeskAsTemplateWindow,
+
+  // The window that shows the Desks Templates grid in overview.
+  kShellWindowId_DesksTemplatesGridWindow,
 };
 
 // A list of system modal container IDs. The order of the list is important that
 // the more restrictive container appears before the less restrictive ones.
-constexpr int kSystemModalContainerIds[] = {
+inline constexpr int kSystemModalContainerIds[] = {
     kShellWindowId_LockSystemModalContainer,
     kShellWindowId_SystemModalContainer};
+
+// Normally if a window gains focus the app list will be closed. Windows in
+// these containers are exceptions to that rule.
+inline constexpr int kContainersThatWontHideAppListOnFocus[] = {
+    kShellWindowId_AppListContainer,       kShellWindowId_HomeScreenContainer,
+    kShellWindowId_MenuContainer,          kShellWindowId_PowerMenuContainer,
+    kShellWindowId_SettingBubbleContainer, kShellWindowId_ShelfBubbleContainer,
+    kShellWindowId_ShelfContainer};
+
+// Returns true if `id` is a shell window container id such that a window in
+// that container gaining focus should close the app list.
+ASH_PUBLIC_EXPORT bool ShouldCloseAppListForFocusInContainer(int id);
 
 // Returns the list of container ids of containers which may contain windows
 // that need to be activated. this list is ordered by the activation order; that

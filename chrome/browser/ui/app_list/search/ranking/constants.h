@@ -11,18 +11,16 @@ namespace app_list {
 // can fit in the UI.
 constexpr int kMaxOmniboxResults = 3;
 
-// The maximum number of top matches to show.
-constexpr size_t kNumTopMatches = 3u;
+// The maximum number of best matches to show.
+constexpr size_t kNumBestMatches = 3u;
 
-// The score threshold before we consider a result a top match.
-constexpr double kTopMatchThreshold = 0.9;
+// The number of top-ranked best match results to stabilize during the
+// post-burn-in period. Stabilized results retain their rank and are not
+// displaced by later-arriving results
+constexpr size_t kNumBestMatchesToStabilize = 1u;
 
-// String to add to the details text of top match results. Keep the char[] and
-// char16_t versions in sync.
-// TODO(crbug.com/1199206): Once the UI has support for categories these can be
-// removed.
-constexpr char kTopMatchDetails[] = "(top match) ";
-constexpr char16_t kTopMatchDetailsUTF16[] = u"(top match) ";
+// The score threshold before we consider a result a best match.
+constexpr double kBestMatchThreshold = 0.8;
 
 }  // namespace app_list
 

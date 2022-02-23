@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_GEOLOCATION_GEOLOCATION_SERVICE_IMPL_H_
 #define CONTENT_BROWSER_GEOLOCATION_GEOLOCATION_SERVICE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -40,7 +41,7 @@ class GeolocationServiceImplContext {
                          PermissionCallback callback);
 
  private:
-  PermissionControllerImpl* permission_controller_;
+  raw_ptr<PermissionControllerImpl> permission_controller_;
   bool has_pending_permission_request_ = false;
 
   void HandlePermissionStatus(PermissionCallback callback,
@@ -78,9 +79,9 @@ class CONTENT_EXPORT GeolocationServiceImpl
       CreateGeolocationCallback callback,
       blink::mojom::PermissionStatus permission_status);
 
-  device::mojom::GeolocationContext* geolocation_context_;
-  PermissionControllerImpl* permission_controller_;
-  RenderFrameHost* render_frame_host_;
+  raw_ptr<device::mojom::GeolocationContext> geolocation_context_;
+  raw_ptr<PermissionControllerImpl> permission_controller_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 
   // Along with each GeolocationService, we store a
   // GeolocationServiceImplContext which primarily exists to manage a

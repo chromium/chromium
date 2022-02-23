@@ -26,7 +26,23 @@ import java.util.Set;
  * Browser contains any number of Tabs, with one active Tab. The active Tab is visible to the user,
  * all other Tabs are hidden.
  *
- * By default Browser has a single active Tab.
+ * Newly created Browsers have a single active Tab.
+ *
+ * Browser provides for two distinct ways to save state, which impacts the state of the Browser at
+ * various points in the lifecycle.
+ *
+ * Asynchronously to the file system. This is used if a {@link persistenceId} was supplied when the
+ * Browser was created. The {@link persistenceId} uniquely identifies the Browser for saving the
+ * set of tabs and navigations. This is intended for long term persistence.
+ *
+ * For Browsers created with a {@link persistenceId}, restore happens asynchronously. As a result,
+ * the Browser will not have any tabs until restore completes (which may be after the Fragment has
+ * started).
+ *
+ * If a {@link persistenceId} is not supplied, then a minimal amount of state is saved to the
+ * fragment (instance state). During recreation, if instance state is available, the state is
+ * restored in {@link onStart}. Restore happens during start so that callbacks can be attached. As
+ *  a result of this, the Browser has no tabs until the Fragment is started.
  */
 public class Browser {
     // Set to null once destroyed (or for tests).
@@ -39,6 +55,31 @@ public class Browser {
 
     private final ObserverList<BrowserControlsOffsetCallback> mBrowserControlsOffsetCallbacks;
     private final ObserverList<BrowserRestoreCallback> mBrowserRestoreCallbacks;
+
+    private static int sMaxNavigationsPerTabForInstanceState;
+
+    /**
+     * Sets the maximum number of navigations saved when persisting a Browsers instance state. The
+     * max applies to each Tab in the Browser. For example, if a value of 6 is supplied and the
+     * Browser has 4 tabs, then up to 24 navigation entries may be saved. The supplied value is
+     * a recommendation, for various reasons it may not be honored. A value of 0 results in
+     * using the default.
+     *
+     * @param value The maximum number of navigations to persist.
+     *
+     * @throws IllegalArgumentException If {@code value} is less than 0.
+     *
+     * @since 98
+     */
+    public static void setMaxNavigationsPerTabForInstanceState(int value) {
+        ThreadCheck.ensureOnUiThread();
+        if (value < 0) throw new IllegalArgumentException("Max must be >= 0");
+        sMaxNavigationsPerTabForInstanceState = value;
+    }
+
+    static int getMaxNavigationsPerTabForInstanceState() {
+        return sMaxNavigationsPerTabForInstanceState;
+    }
 
     // Constructor for test mocking.
     protected Browser() {

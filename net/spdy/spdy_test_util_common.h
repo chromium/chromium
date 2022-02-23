@@ -15,6 +15,7 @@
 
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_piece.h"
 #include "crypto/ec_private_key.h"
@@ -124,7 +125,9 @@ base::WeakPtr<SpdyStream> CreateStreamSynchronously(
     const base::WeakPtr<SpdySession>& session,
     const GURL& url,
     RequestPriority priority,
-    const NetLogWithSource& net_log);
+    const NetLogWithSource& net_log,
+    bool detect_broken_connection = false,
+    base::TimeDelta heartbeat_interval = base::Seconds(0));
 
 // Helper class used by some tests to release a stream as soon as it's
 // created.
@@ -151,7 +154,11 @@ struct SpdySessionDependencies {
   explicit SpdySessionDependencies(
       std::unique_ptr<ProxyResolutionService> proxy_resolution_service);
 
+  SpdySessionDependencies(SpdySessionDependencies&&);
+
   ~SpdySessionDependencies();
+
+  SpdySessionDependencies& operator=(SpdySessionDependencies&&);
 
   HostResolver* GetHostResolver() {
     return alternate_host_resolver ? alternate_host_resolver.get()
@@ -203,12 +210,13 @@ struct SpdySessionDependencies {
   bool enable_http2_settings_grease;
   absl::optional<SpdySessionPool::GreasedHttp2Frame> greased_http2_frame;
   bool http2_end_stream_with_data_frame;
-  NetLog* net_log;
+  raw_ptr<NetLog> net_log;
   bool disable_idle_sockets_close_on_memory_pressure;
   bool enable_early_data;
   bool key_auth_cache_server_entries_by_network_isolation_key;
   bool enable_priority_update;
   bool go_away_on_ip_change;
+  bool ignore_ip_address_changes;
 };
 
 class SpdyURLRequestContext : public URLRequestContext {
@@ -258,7 +266,7 @@ class SpdySessionPoolPeer {
   void SetEnableSendingInitialData(bool enabled);
 
  private:
-  SpdySessionPool* const pool_;
+  const raw_ptr<SpdySessionPool> pool_;
 };
 
 class SpdyTestUtil {

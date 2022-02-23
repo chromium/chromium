@@ -57,7 +57,7 @@ public class ChromeImageViewPreferenceTest {
         SettingsLauncher settingsLauncher = new SettingsLauncherImpl();
         Intent intent = settingsLauncher.createSettingsActivityIntent(
                 InstrumentationRegistry.getInstrumentation().getContext(),
-                DummySettingsForTest.class.getName());
+                PlaceholderSettingsForTest.class.getName());
         mRule.launchActivity(intent);
 
         PreferenceFragmentCompat fragment =

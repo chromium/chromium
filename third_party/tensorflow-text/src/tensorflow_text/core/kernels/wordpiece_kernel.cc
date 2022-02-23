@@ -17,6 +17,7 @@
 #include <string>
 #include <vector>
 
+#include "tensorflow/core/framework/dataset_stateful_op_allowlist.h"
 #include "tensorflow/core/framework/lookup_interface.h"
 #include "tensorflow/core/framework/op_kernel.h"
 #include "tensorflow/core/framework/resource_mgr.h"
@@ -304,6 +305,7 @@ class WordpieceTokenizeWithOffsetsOp : public OpKernel {
 
 REGISTER_KERNEL_BUILDER(Name("WordpieceTokenizeWithOffsets").Device(DEVICE_CPU),
                         WordpieceTokenizeWithOffsetsOp);
+ALLOW_STATEFUL_OP_FOR_DATASET_FUNCTIONS("WordpieceTokenizeWithOffsets");
 
 }  // namespace text
 }  // namespace tensorflow

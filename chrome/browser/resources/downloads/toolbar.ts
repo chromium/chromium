@@ -16,7 +16,7 @@ import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu
 import {CrIconButtonElement} from 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {CrToolbarElement} from 'chrome://resources/cr_elements/cr_toolbar/cr_toolbar.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -24,6 +24,7 @@ import {BrowserProxy} from './browser_proxy.js';
 import {MojomData} from './data.js';
 import {PageHandlerInterface} from './downloads.mojom-webui.js';
 import {SearchService} from './search_service.js';
+import {getTemplate} from './toolbar.html.js';
 
 export interface DownloadsToolbarElement {
   $: {
@@ -36,6 +37,10 @@ export interface DownloadsToolbarElement {
 export class DownloadsToolbarElement extends PolymerElement {
   static get is() {
     return 'downloads-toolbar';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -122,10 +127,6 @@ export class DownloadsToolbarElement extends PolymerElement {
   private updateClearAll_() {
     this.shadowRoot!.querySelector<HTMLButtonElement>('.clear-all')!.hidden =
         !this.canClearAll();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

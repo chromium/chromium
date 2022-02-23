@@ -1556,7 +1556,7 @@ TEST_F(V8DetailedMemoryDecoratorDeathTest, EnforceObserversRemoved) {
   });
 }
 
-TEST_F(V8DetailedMemoryDecoratorDeathTest, InvalidParameters) {
+TEST_F(V8DetailedMemoryDecoratorDeathTest, InvalidEagerModeConfig) {
   // Not allowed to use kEagerForTesting mode without calling
   // SetEagerMemoryMeasurementEnabledForTesting.
   EXPECT_DCHECK_DEATH({
@@ -1567,19 +1567,26 @@ TEST_F(V8DetailedMemoryDecoratorDeathTest, InvalidParameters) {
     V8DetailedMemoryRequestAnySeq memory_request(
         kMinTimeBetweenRequests, MeasurementMode::kEagerForTesting);
   });
-  // Zero, negative and infinite TimeDelta's are disallowed.
+}
+
+TEST_F(V8DetailedMemoryDecoratorDeathTest, NonPositiveTimeDeltas) {
+  // Zero and negative.
   EXPECT_DCHECK_DEATH({
     base::TimeDelta zero;
     V8DetailedMemoryRequestAnySeq memory_request(zero);
   });
   EXPECT_DCHECK_DEATH({
+    V8DetailedMemoryRequestAnySeq memory_request(kMinTimeBetweenRequests * -1);
+  });
+}
+
+TEST_F(V8DetailedMemoryDecoratorDeathTest, ExtremeTImeDeltas) {
+  // Infinite TimeDelta's are disallowed.
+  EXPECT_DCHECK_DEATH({
     V8DetailedMemoryRequestAnySeq memory_request(base::TimeDelta::Min());
   });
   EXPECT_DCHECK_DEATH({
     V8DetailedMemoryRequestAnySeq memory_request(base::TimeDelta::Max());
-  });
-  EXPECT_DCHECK_DEATH({
-    V8DetailedMemoryRequestAnySeq memory_request(kMinTimeBetweenRequests * -1);
   });
 }
 
@@ -1687,7 +1694,7 @@ TEST_F(V8DetailedMemoryRequestAnySeqTest, RequestIsSequenceSafe) {
 }
 
 // TODO(crbug.com/1203439) Sometimes timing out on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SingleProcessRequest DISABLED_SingleProcessRequest
 #else
 #define MAYBE_SingleProcessRequest SingleProcessRequest

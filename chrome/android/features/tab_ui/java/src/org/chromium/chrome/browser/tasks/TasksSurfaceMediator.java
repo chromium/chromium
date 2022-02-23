@@ -15,6 +15,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.INCOGNITO
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_FAKE_SEARCH_BOX_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_SURFACE_BODY_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
@@ -37,6 +38,8 @@ import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher.OverviewMode
 import org.chromium.components.content_settings.CookieControlsEnforcement;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.List;
+
 /**
  * Mediator for handling {@link TasksSurface}-related logic.
  */
@@ -51,6 +54,7 @@ class TasksSurfaceMediator implements OverviewModeObserver {
             IncognitoCookieControlsManager incognitoCookieControlsManager, boolean isTabCarousel) {
         mModel = model;
         mModel.set(IS_TAB_CAROUSEL_VISIBLE, isTabCarousel);
+        mModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, isTabCarousel);
 
         model.set(INCOGNITO_LEARN_MORE_CLICK_LISTENER, incognitoLearnMoreClickListener);
 
@@ -143,4 +147,15 @@ class TasksSurfaceMediator implements OverviewModeObserver {
 
     @Override
     public void finishedHiding() {}
+
+    /**
+     * Called to send the search query and params to omnibox to kick off a search.
+     * @param queryText Text of the search query to perform.
+     * @param searchParams A list of params to sent along with the search query.
+     */
+    void performSearchQuery(String queryText, List<String> searchParams) {
+        if (mOmniboxStub != null) {
+            mOmniboxStub.performSearchQuery(queryText, searchParams);
+        }
+    }
 }

@@ -8,11 +8,11 @@
 
 #include "ash/components/drivefs/drivefs_util.h"
 #include "ash/components/drivefs/mojom/drivefs.mojom.h"
+#include "ash/public/cpp/new_window_delegate.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -20,32 +20,22 @@
 #include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/fileapi/external_file_url_util.h"
-#include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/browser.h"
-#include "chrome/browser/ui/browser_tabstrip.h"
-#include "chrome/browser/ui/browser_window.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "components/drive/drive_api_util.h"
 #include "components/drive/file_system_core_util.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/plugin_service.h"
-#include "content/public/common/pepper_plugin_info.h"
 #include "net/base/filename_util.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 
 using content::BrowserThread;
-using content::PluginService;
 
 namespace file_manager {
 namespace util {
 namespace {
-
-const base::FilePath::CharType kPdfExtension[] = FILE_PATH_LITERAL(".pdf");
 
 // List of file extensions viewable in the browser.
 constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
@@ -57,6 +47,9 @@ constexpr const base::FilePath::CharType* kFileExtensionsViewableInBrowser[] = {
     FILE_PATH_LITERAL(".mhtml"), FILE_PATH_LITERAL(".mht"),
     FILE_PATH_LITERAL(".xhtml"), FILE_PATH_LITERAL(".xht"),
     FILE_PATH_LITERAL(".shtml"), FILE_PATH_LITERAL(".svg"),
+#if BUILDFLAG(ENABLE_PDF)
+    FILE_PATH_LITERAL(".pdf"),
+#endif  // BUILDFLAG(ENABLE_PDF)
 };
 
 // Returns true if |file_path| is viewable in the browser (ex. HTML file).
@@ -68,46 +61,14 @@ bool IsViewableInBrowser(const base::FilePath& file_path) {
   return false;
 }
 
-bool IsPepperPluginEnabled(Profile* profile,
-                           const base::FilePath& plugin_path) {
-  DCHECK(profile);
-
-  const content::PepperPluginInfo* pepper_info =
-      PluginService::GetInstance()->GetRegisteredPpapiPluginInfo(plugin_path);
-  if (!pepper_info)
-    return false;
-
-  scoped_refptr<PluginPrefs> plugin_prefs = PluginPrefs::GetForProfile(profile);
-  if (!plugin_prefs.get())
-    return false;
-
-  return plugin_prefs->IsPluginEnabled(pepper_info->ToWebPluginInfo());
-}
-
-bool IsPdfPluginEnabled(Profile* profile) {
-  DCHECK(profile);
-
-  static const base::NoDestructor<base::FilePath> plugin_path(
-      ChromeContentClient::kPDFPluginPath);
-  return IsPepperPluginEnabled(profile, *plugin_path);
-}
-
-void OpenNewTab(Profile* profile, const GURL& url) {
+void OpenNewTab(const GURL& url) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  // Check the validity of the pointer so that the closure from
-  // base::BindOnce(&OpenNewTab, profile) can be passed between threads.
-  if (!g_browser_process->profile_manager()->IsValidProfile(profile))
+  if (!ash::NewWindowDelegate::GetPrimary()) {
     return;
-
-  chrome::ScopedTabbedBrowserDisplayer displayer(profile);
-  chrome::AddSelectedTabWithURL(displayer.browser(), url,
-      ui::PAGE_TRANSITION_LINK);
-
-  // Since the ScopedTabbedBrowserDisplayer does not guarantee that the
-  // browser will be shown on the active desktop, we ensure the visibility.
-  multi_user_util::MoveWindowToCurrentDesktop(
-      displayer.browser()->window()->GetNativeWindow());
+  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
 }
 
 // Reads the alternate URL from a GDoc file. When it fails, returns a file URL
@@ -121,29 +82,41 @@ GURL ReadUrlFromGDocAsync(const base::FilePath& file_path) {
 }
 
 // Parse a local file to extract the Docs url and open this url.
-void OpenGDocUrlFromFile(const base::FilePath& file_path, Profile* profile) {
+void OpenGDocUrlFromFile(const base::FilePath& file_path) {
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock()},
       base::BindOnce(&ReadUrlFromGDocAsync, file_path),
-      base::BindOnce(&OpenNewTab, profile));
+      base::BindOnce(&OpenNewTab));
 }
 
 // Open a hosted GDoc, from a path hosted in DriveFS.
 void OpenHostedDriveFsFile(const base::FilePath& file_path,
-                           Profile* profile,
                            drive::FileError error,
                            drivefs::mojom::FileMetadataPtr metadata) {
   if (error != drive::FILE_ERROR_OK)
     return;
   if (drivefs::IsLocal(metadata->type)) {
-    OpenGDocUrlFromFile(file_path, profile);
+    OpenGDocUrlFromFile(file_path);
     return;
   }
   GURL hosted_url(metadata->alternate_url);
   if (!hosted_url.is_valid())
     return;
 
-  OpenNewTab(profile, hosted_url);
+  OpenNewTab(hosted_url);
+}
+
+// Open a hosted MS Office file e.g. .docx, from a path hosted in DriveFS.
+void OpenHostedOfficeFile(const base::FilePath& file_path,
+                          drive::FileError error,
+                          drivefs::mojom::FileMetadataPtr metadata) {
+  if (error != drive::FILE_ERROR_OK)
+    return;
+  GURL hosted_url(metadata->alternate_url);
+  if (!hosted_url.is_valid())
+    return;
+
+  OpenNewTab(hosted_url);
 }
 
 }  // namespace
@@ -156,17 +129,15 @@ bool OpenFileWithBrowser(Profile* profile,
 
   const base::FilePath file_path = file_system_url.path();
 
-  // For things supported natively by the browser, we should open it
-  // in a tab.
-  if (IsViewableInBrowser(file_path) ||
-      ShouldBeOpenedWithPlugin(profile, file_path.Extension(), action_id) ||
+  // For things supported natively by the browser, we should open it in a tab.
+  if (IsViewableInBrowser(file_path) || action_id == "view-pdf" ||
       (action_id == "view-in-browser" && file_path.Extension() == "")) {
     // Use external file URL if it is provided for the file system.
     GURL page_url = chromeos::FileSystemURLToExternalFileURL(file_system_url);
     if (page_url.is_empty())
       page_url = net::FilePathToFileURL(file_path);
 
-    OpenNewTab(profile, page_url);
+    OpenNewTab(page_url);
     return true;
   }
 
@@ -179,7 +150,7 @@ bool OpenFileWithBrowser(Profile* profile,
       const GURL url =
           chromeos::FileSystemURLToExternalFileURL(file_system_url);
       DCHECK(!url.is_empty());
-      OpenNewTab(profile, url);
+      OpenNewTab(url);
     } else {
       drive::DriveIntegrationService* integration_service =
           drive::DriveIntegrationServiceFactory::FindForProfile(profile);
@@ -188,29 +159,30 @@ bool OpenFileWithBrowser(Profile* profile,
           integration_service->GetDriveFsInterface() &&
           integration_service->GetRelativeDrivePath(file_path, &path)) {
         integration_service->GetDriveFsInterface()->GetMetadata(
-            path, base::BindOnce(&OpenHostedDriveFsFile, file_path, profile));
+            path, base::BindOnce(&OpenHostedDriveFsFile, file_path));
         return true;
       }
-      OpenGDocUrlFromFile(file_path, profile);
+      OpenGDocUrlFromFile(file_path);
     }
     return true;
   }
 
+  if (action_id == "open-web-drive-office") {
+    drive::DriveIntegrationService* integration_service =
+        drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+    base::FilePath path;
+    if (integration_service && integration_service->IsMounted() &&
+        integration_service->GetDriveFsInterface() &&
+        integration_service->GetRelativeDrivePath(file_path, &path)) {
+      integration_service->GetDriveFsInterface()->GetMetadata(
+          path, base::BindOnce(&OpenHostedOfficeFile, file_path));
+      return true;
+    }
+    return false;
+  }
+
   // Failed to open the file of unknown type.
   LOG(WARNING) << "Unknown file type: " << file_path.value();
-  return false;
-}
-
-// If a bundled plugin is enabled, we should open pdf/swf files in a tab.
-bool ShouldBeOpenedWithPlugin(Profile* profile,
-                              const base::FilePath::StringType& file_extension,
-                              const std::string& action_id) {
-  DCHECK(profile);
-
-  const base::FilePath file_path =
-      base::FilePath::FromUTF8Unsafe("dummy").AddExtension(file_extension);
-  if (file_path.MatchesExtension(kPdfExtension) || action_id == "view-pdf")
-    return IsPdfPluginEnabled(profile);
   return false;
 }
 

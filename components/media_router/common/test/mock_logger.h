@@ -40,6 +40,8 @@ class MockLogger : public media_router::mojom::Logger {
                     const std::string&,
                     const std::string&));
 
+  MOCK_METHOD1(BindReceiver, void(mojo::PendingReceiver<mojom::Logger>));
+
  private:
   mojo::Receiver<media_router::mojom::Logger> receiver_{this};
 };

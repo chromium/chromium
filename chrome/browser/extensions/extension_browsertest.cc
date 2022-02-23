@@ -127,8 +127,8 @@ void ExtensionProtocolTestResourcesHandler(const base::FilePath& test_dir_root,
   }
 
   // Strip the '_test_resources/' prefix from |relative_path|.
-  std::vector<base::FilePath::StringType> components;
-  relative_path->GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      relative_path->GetComponents();
   DCHECK_GT(components.size(), 1u);
   base::FilePath new_relative_path;
   for (size_t i = 1u; i < components.size(); ++i)
@@ -207,7 +207,7 @@ bool ModifyManifestForManifestVersion3(base::DictionaryValue& manifest_dict) {
     return false;
   }
 
-  manifest_dict.SetInteger(manifest_keys::kManifestVersion, 3);
+  manifest_dict.SetIntPath(manifest_keys::kManifestVersion, 3);
   return true;
 }
 
@@ -251,7 +251,8 @@ bool ModifyExtensionForServiceWorker(const base::FilePath& extension_root,
   }
 
   // Number of JS scripts must be >= 1.
-  base::Value::ConstListView scripts_list = background_scripts_list->GetList();
+  base::Value::ConstListView scripts_list =
+      background_scripts_list->GetListDeprecated();
   if (scripts_list.size() < 1) {
     ADD_FAILURE() << extension_root.value()
                   << ": Only event pages with JS script(s) can be loaded "
@@ -307,7 +308,7 @@ ExtensionBrowserTest::ExtensionBrowserTest(ContextType context_type)
       override_prompt_for_external_extensions_(
           FeatureSwitch::prompt_for_external_extensions(),
           false),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       user_desktop_override_(base::DIR_USER_DESKTOP),
       common_desktop_override_(base::DIR_COMMON_DESKTOP),
       user_quick_launch_override_(base::DIR_USER_QUICK_LAUNCH),
@@ -392,9 +393,9 @@ void ExtensionBrowserTest::SetUpCommandLine(base::CommandLine* command_line) {
     // This makes sure that we create the Default profile first, with no
     // ExtensionService and then the real profile with one, as we do when
     // running on chromeos.
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginUser,
+    command_line->AppendSwitchASCII(ash::switches::kLoginUser,
                                     "testuser@gmail.com");
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
   }
 #endif
 }
@@ -506,13 +507,13 @@ const Extension* ExtensionBrowserTest::LoadAndLaunchApp(
   content::WindowedNotificationObserver app_loaded_observer(
       content::NOTIFICATION_LOAD_COMPLETED_MAIN_FRAME,
       content::NotificationService::AllSources());
-  apps::AppLaunchParams params(app->id(), LaunchContainer::kLaunchContainerNone,
-                               WindowOpenDisposition::NEW_WINDOW,
-                               apps::mojom::LaunchSource::kFromTest);
+  apps::AppLaunchParams params(
+      app->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+      WindowOpenDisposition::NEW_WINDOW, apps::mojom::LaunchSource::kFromTest);
   params.command_line = *base::CommandLine::ForCurrentProcess();
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(std::move(params));
+      ->LaunchAppWithParamsForTesting(std::move(params));
   app_loaded_observer.Wait();
 
   return app;
@@ -798,14 +799,15 @@ void ExtensionBrowserTest::OpenWindow(content::WebContents* contents,
     *newtab_result = newtab;
 }
 
-void ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
+bool ExtensionBrowserTest::NavigateInRenderer(content::WebContents* contents,
                                               const GURL& url) {
   // Note: We use ExecuteScript instead of ExecJS here, because ExecuteScript
   // works on pages with a Content Security Policy.
   EXPECT_TRUE(content::ExecuteScript(
       contents, "window.location = '" + url.spec() + "';"));
-  content::WaitForLoadStop(contents);
+  bool result = content::WaitForLoadStop(contents);
   EXPECT_EQ(url, contents->GetController().GetLastCommittedEntry()->GetURL());
+  return result;
 }
 
 ExtensionHost* ExtensionBrowserTest::FindHostWithPath(ProcessManager* manager,

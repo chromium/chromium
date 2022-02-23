@@ -8,9 +8,11 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_item_details.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_purchase_details.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_service.h"
 #include "third_party/blink/renderer/modules/payments/goods/digital_goods_type_converters.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -25,12 +27,17 @@ void OnGetDetailsResponse(
     BillingResponseCode code,
     Vector<payments::mojom::blink::ItemDetailsPtr> item_details_list) {
   if (code != BillingResponseCode::kOk) {
-    resolver->Reject(mojo::ConvertTo<String>(code));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, mojo::ConvertTo<String>(code)));
     return;
   }
   HeapVector<Member<ItemDetails>> blink_item_details_list;
-  for (const auto& detail : item_details_list)
-    blink_item_details_list.push_back(detail.To<blink::ItemDetails*>());
+  for (const auto& details : item_details_list) {
+    blink::ItemDetails* blink_details = details.To<blink::ItemDetails*>();
+    if (blink_details) {
+      blink_item_details_list.push_back(blink_details);
+    }
+  }
 
   resolver->Resolve(std::move(blink_item_details_list));
 }
@@ -40,12 +47,18 @@ void OnListPurchasesResponse(
     BillingResponseCode code,
     Vector<payments::mojom::blink::PurchaseDetailsPtr> purchase_details_list) {
   if (code != BillingResponseCode::kOk) {
-    resolver->Reject(mojo::ConvertTo<String>(code));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, mojo::ConvertTo<String>(code)));
     return;
   }
   HeapVector<Member<PurchaseDetails>> blink_purchase_details_list;
-  for (const auto& detail : purchase_details_list)
-    blink_purchase_details_list.push_back(detail.To<blink::PurchaseDetails*>());
+  for (const auto& details : purchase_details_list) {
+    blink::PurchaseDetails* blink_details =
+        details.To<blink::PurchaseDetails*>();
+    if (blink_details) {
+      blink_purchase_details_list.push_back(blink_details);
+    }
+  }
 
   resolver->Resolve(std::move(blink_purchase_details_list));
 }
@@ -53,7 +66,8 @@ void OnListPurchasesResponse(
 void OnConsumeResponse(ScriptPromiseResolver* resolver,
                        BillingResponseCode code) {
   if (code != BillingResponseCode::kOk) {
-    resolver->Reject(mojo::ConvertTo<String>(code));
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kOperationError, mojo::ConvertTo<String>(code)));
     return;
   }
   resolver->Resolve();

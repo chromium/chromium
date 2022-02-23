@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <memory>
+#include <tuple>
 
 #include "base/android/apk_assets.h"
 #include "base/android/application_status_listener.h"
@@ -10,7 +11,6 @@
 #include "base/bind.h"
 #include "base/i18n/icu_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/task/post_task.h"
 #include "content/browser/child_process_launcher.h"
@@ -26,6 +26,7 @@
 #include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_descriptors.h"
 #include "content/public/common/content_switches.h"
+#include "sandbox/policy/features.h"
 #include "sandbox/policy/switches.h"
 
 using base::android::AttachCurrentThread;
@@ -133,7 +134,7 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     const auto& region = files_to_register->GetRegionAt(i);
     bool auto_close = files_to_register->OwnsFD(fd);
     if (auto_close) {
-      ignore_result(files_to_register->ReleaseFD(fd).release());
+      std::ignore = files_to_register->ReleaseFD(fd).release();
     }
 
     ScopedJavaLocalRef<jobject> j_file_info =
@@ -143,10 +144,11 @@ ChildProcessLauncherHelper::LaunchProcessOnLauncherThread(
     env->SetObjectArrayElement(j_file_infos.obj(), i, j_file_info.obj());
   }
 
+  AddRef();  // Balanced by OnChildProcessStarted.
   java_peer_.Reset(Java_ChildProcessLauncherHelperImpl_createAndStart(
       env, reinterpret_cast<intptr_t>(this), j_argv, j_file_infos,
       can_use_warm_up_connection));
-  AddRef();  // Balanced by OnChildProcessStarted.
+
   client_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
@@ -214,6 +216,15 @@ JNI_ChildProcessLauncherHelperImpl_ServiceGroupImportanceEnabled(JNIEnv* env) {
          SiteIsolationPolicy::UseDedicatedProcessesForAllSites() ||
          SiteIsolationPolicy::AreDynamicIsolatedOriginsEnabled() ||
          SiteIsolationPolicy::ArePreloadedIsolatedOriginsEnabled();
+}
+
+static jboolean JNI_ChildProcessLauncherHelperImpl_IsNetworkSandboxEnabled(
+    JNIEnv* env) {
+  // We may want to call ContentBrowserClient::ShouldSandboxNetworkService,
+  // but that needs to be called on the UI thread. This function is called on
+  // the launcher thread, not UI thread. Hence we use
+  // sandbox::policy::features::IsNetworkSandboxEnabled.
+  return sandbox::policy::features::IsNetworkSandboxEnabled();
 }
 
 // static

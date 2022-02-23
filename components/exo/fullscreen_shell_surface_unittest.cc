@@ -58,7 +58,7 @@ TEST_F(FullscreenShellSurfaceTest, SurfaceDestroyedCallback) {
 
   // Change the surface so the commit has an actual change otherwise it triggers
   // a DCHECK during frame submission.
-  surface->SetViewport(gfx::Size(64, 64));
+  surface->SetViewport(gfx::SizeF(64, 64));
   surface->Commit();
 
   EXPECT_TRUE(fullscreen_surface.get());
@@ -217,7 +217,7 @@ TEST_F(FullscreenShellSurfaceTest, BoundsWithPartiallyOffscreenSubSurface) {
   auto surface = std::make_unique<Surface>();
   auto sub_surface = std::make_unique<SubSurface>(surface.get(), parent.get());
   surface->Attach(buffer.get());
-  sub_surface->SetPosition(gfx::Point(-50, -50));
+  sub_surface->SetPosition(gfx::PointF(-50, -50));
 
   parent->Commit();
   // Make sure the sub-surface doesn't affect the Fullscreen Shell's Window

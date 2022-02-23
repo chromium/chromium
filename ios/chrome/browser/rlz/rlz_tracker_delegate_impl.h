@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "components/rlz/rlz_tracker_delegate.h"
 
 class ChromeBrowserState;

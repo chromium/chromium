@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -92,7 +93,7 @@ class POLICY_EXPORT ComponentCloudPolicyService
       SchemaRegistry* schema_registry,
       CloudPolicyCore* core,
       CloudPolicyClient* client,
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
       std::unique_ptr<ResourceCache> cache,
 #endif
       scoped_refptr<base::SequencedTaskRunner> backend_task_runner);
@@ -133,7 +134,7 @@ class POLICY_EXPORT ComponentCloudPolicyService
   void OnClientError(CloudPolicyClient* client) override;
 
  private:
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   class Backend;
 
   void UpdateFromSuperiorStore();
@@ -144,9 +145,9 @@ class POLICY_EXPORT ComponentCloudPolicyService
   void FilterAndInstallPolicy();
 
   std::string policy_type_;
-  Delegate* delegate_;
-  SchemaRegistry* schema_registry_;
-  CloudPolicyCore* core_;
+  raw_ptr<Delegate> delegate_;
+  raw_ptr<SchemaRegistry> schema_registry_;
+  raw_ptr<CloudPolicyCore> core_;
   scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
 
   // The |backend_| handles all download scheduling, validation and caching of
@@ -158,7 +159,7 @@ class POLICY_EXPORT ComponentCloudPolicyService
   // The currently registered components for each policy domain. Used for
   // filtering and validation of the component policies.
   scoped_refptr<SchemaMap> current_schema_map_;
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
   // Contains all the policies loaded from the store, before having been
   // filtered and validated by the |current_schema_map_|.

@@ -66,7 +66,7 @@
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
@@ -879,11 +879,10 @@ Element* HTMLFormElement::ElementFromPastNamesMap(
   SECURITY_DCHECK(To<HTMLElement>(element)->formOwner() == this);
   if (IsA<HTMLImageElement>(*element)) {
     SECURITY_DCHECK(ImageElements().Find(element) != kNotFound);
-  } else if (auto* html_image_element = DynamicTo<HTMLObjectElement>(element)) {
-    SECURITY_DCHECK(ListedElements().Find(html_image_element) != kNotFound);
   } else {
-    SECURITY_DCHECK(ListedElements().Find(
-                        To<HTMLFormControlElement>(element)) != kNotFound);
+    auto* listed_element = ListedElement::From(*element);
+    SECURITY_DCHECK(listed_element &&
+                    ListedElements().Find(listed_element) != kNotFound);
   }
 #endif
   return element;

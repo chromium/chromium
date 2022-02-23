@@ -62,16 +62,12 @@ class MetricsRenderFrameObserver
   void DidObserveLayoutNg(uint32_t all_block_count,
                           uint32_t ng_block_count,
                           uint32_t all_call_count,
-                          uint32_t ng_call_count,
-                          uint32_t flexbox_ng_block_count,
-                          uint32_t grid_ng_block_count) override;
-  void DidObserveLazyLoadBehavior(
-      blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) override;
-  void DidStartResponse(const GURL& response_url,
-                        int request_id,
-                        const network::mojom::URLResponseHead& response_head,
-                        network::mojom::RequestDestination request_destination,
-                        blink::PreviewsState previews_state) override;
+                          uint32_t ng_call_count) override;
+  void DidStartResponse(
+      const GURL& response_url,
+      int request_id,
+      const network::mojom::URLResponseHead& response_head,
+      network::mojom::RequestDestination request_destination) override;
   void DidReceiveTransferSizeUpdate(int request_id,
                                     int received_data_length) override;
   void DidCompleteResponse(

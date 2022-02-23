@@ -56,7 +56,7 @@ std::unique_ptr<base::Value> ToValueImpl(const std::string& value, T*) {
 
 template <typename T>
 std::unique_ptr<base::Value> ToValueImpl(const base::Value& value, T*) {
-  return value.CreateDeepCopy();
+  return std::make_unique<base::Value>(value.Clone());
 }
 
 template <typename T>
@@ -157,7 +157,7 @@ struct FromValue<std::vector<T>> {
       return result;
     }
     errors->Push();
-    for (const auto& item : value.GetList())
+    for (const auto& item : value.GetListDeprecated())
       result.push_back(FromValue<T>::Parse(item, errors));
     errors->Pop();
     return result;

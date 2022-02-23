@@ -17,10 +17,10 @@ bool ShouldBeEnabledForLoginStatus(LoginStatus status) {
     case LoginStatus::NOT_LOGGED_IN:
     case LoginStatus::LOCKED:
     case LoginStatus::KIOSK_APP:
+    case LoginStatus::PUBLIC:
       return false;
     case LoginStatus::USER:
     case LoginStatus::GUEST:
-    case LoginStatus::PUBLIC:
     case LoginStatus::CHILD:
     default:
       return true;

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/bookmarks/browser/base_bookmark_model_observer.h"
 #include "components/bookmarks/browser/bookmark_client.h"
 #include "components/bookmarks/browser/bookmark_node.h"
@@ -76,17 +77,17 @@ class ManagedBookmarkService : public KeyedService,
   void Cleanup();
 
   // Pointer to the PrefService. Must outlive ManagedBookmarkService.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 
   // Pointer to the BookmarkModel; may be null. Only valid between the calls to
   // BookmarkModelCreated() and to BookmarkModelBeingDestroyed().
-  BookmarkModel* bookmark_model_;
+  raw_ptr<BookmarkModel> bookmark_model_;
 
   // Managed bookmarks are defined by an enterprise policy. The lifetime of the
   // BookmarkPermanentNode is controlled by BookmarkModel.
   std::unique_ptr<ManagedBookmarksTracker> managed_bookmarks_tracker_;
   GetManagementDomainCallback managed_domain_callback_;
-  BookmarkPermanentNode* managed_node_;
+  raw_ptr<BookmarkPermanentNode> managed_node_;
 };
 
 }  // namespace bookmarks

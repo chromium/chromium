@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.vr;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.graphics.Color;
@@ -24,6 +23,7 @@ import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.widget.FrameLayout;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import com.google.vr.ndk.base.AndroidCompat;
@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.fullscreen.BrowserControlsManager;
 import org.chromium.chrome.browser.fullscreen.FullscreenManager;
 import org.chromium.chrome.browser.omnibox.voice.VoiceRecognitionUtil;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
 import org.chromium.chrome.browser.tab.RedirectHandlerTabHelper;
 import org.chromium.chrome.browser.tab.Tab;
@@ -67,19 +68,18 @@ import org.chromium.chrome.browser.toolbar.ToolbarManager;
 import org.chromium.chrome.browser.vr.keyboard.VrInputMethodManagerWrapper;
 import org.chromium.components.browser_ui.widget.MenuOrKeyboardActionController;
 import org.chromium.components.external_intents.RedirectHandler;
-import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.ViewEventSink;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.VirtualDisplayAndroid;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
 import org.chromium.ui.modaldialog.ModalDialogManager;
+import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.ui.widget.UiWidgetFactory;
 
 import java.util.ArrayList;
@@ -424,7 +424,7 @@ public class VrShell extends GvrLayout
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public void initializeNative(boolean forWebVr, boolean isStandaloneVrDevice) {
         Tab tab = mCurrentTabSupplier.get();
         if (mIsInOverviewModeSupplier.get() || tab == null) {
@@ -604,7 +604,7 @@ public class VrShell extends GvrLayout
         if (tab == null) return;
         new ChromePageInfo(mModalDialogManagerSupplier, null, OpenedFromSource.VR,
                 /*storeInfoActionHandlerSupplier=*/null)
-                .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION, /*fromStoreIcon=*/false);
+                .show(tab, ChromePageInfoHighlight.noHighlight());
     }
 
     // Called because showing audio permission dialog isn't supported in VR. This happens when

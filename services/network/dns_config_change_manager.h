@@ -6,7 +6,6 @@
 #define SERVICES_NETWORK_DNS_CONFIG_CHANGE_MANAGER_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/remote_set.h"

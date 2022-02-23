@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/signin/core/browser/account_reconcilor_delegate.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -55,9 +56,7 @@ class MirrorAccountReconcilorDelegate : public AccountReconcilorDelegate,
   // IdentityManager::Observer:
   void OnPrimaryAccountChanged(const PrimaryAccountChangeEvent& event) override;
 
-  void UpdateReconcilorStatus();
-
-  IdentityManager* identity_manager_;
+  raw_ptr<IdentityManager> identity_manager_;
   bool reconcile_enabled_;
 };
 

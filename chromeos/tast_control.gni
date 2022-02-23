@@ -45,8 +45,14 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1263234
   "quicksettings.ManagedDeviceInfo",
 
-  # b/201197372
-  "crostini.AppEmacs",
+  # crbug.com/1273743
+  "crostini.Launcher.local_wayland_bullseye_stable",
+  "crostini.Launcher.local_wayland_buster_stable",
+  "crostini.Launcher.local_x11_bullseye_stable",
+  "crostini.Launcher.system_wayland_bullseye_stable",
+  "crostini.Launcher.system_wayland_buster_stable",
+  "crostini.Launcher.system_x11_bullseye_stable",
+  "crostini.Launcher.system_x11_buster_stable",
 
   # crbug.com/1259127
   "ui.TabletOperations",
@@ -60,19 +66,82 @@ tast_disabled_tests_from_chrome_all = [
   # crbug.com/1186991
   "launcher.SearchBuiltInApps",
 
-  # crbug.com/1263561
-  "camera.CCAUILauncher",
-
   # crbug.com/1263233
   "security.SharedFilesystemState",
 
-  # https://crbug.com/1267943: Flaky.
-  "ui.DesktopControl",
-  "ui.WindowControl",
+  # https://crbug.com/1269880: Flaky.
+  "ui.ChromeCrashReporterMetrics.success_crashpad",
 
-  # https://crbug.com/1269113: Flaky.
-  "graphics.KmsvncConnect",
-  "graphics.Smoke.chrome",
+  # https://crbug.com/1276549: Flaky.
+  "ui.ChromeCrashLoop.breakpad",
+  "ui.ChromeCrashLoop.breakpad_mock_consent",
+  "ui.ChromeCrashReporterMetrics.success_breakpad",
+  "ui.ChromeCrashReporterMetrics.miss_breakpad",
+
+  # https://crbug.com/1269075: Flaky.
+  "shelf.AutoHideSmoke.clamshell_mode",
+
+  # https://crbug.com/1269124: Flaky.
+  "quicksettings.LockScreen.no_battery",
+
+  # https://crbug.com/1273485: Flaky.
+  "printer.ProxyAdd.epson_software_collate",
+  "printer.ProxyAdd.epson_software_uncollated",
+
+  # https://crbug.com/1279285: Flaky.
+  "policy.AllowWakeLocks",
+
+  # https://crbug.com/1285206
+  "policy.DeveloperToolsAvailability",
+
+  # https://crbug.com/1281645
+  "quicksettings.LockScreen",
+
+  # https://crbug.com/1282372
+  "security.SELinuxFilesARC",
+  "security.NetworkListenersARC",
+  "security.SELinuxProcessesARC",
+
+  # https://crbug.com/1282369
+  "apps.LaunchHelpAppOffline",
+
+  # https://crbug.com/1282366
+  "inputs.VirtualKeyboardDeadKeys.french",
+  "inputs.VirtualKeyboardSystemLanguages.es",
+  "inputs.VirtualKeyboardFloat.clamshell",
+
+  # https://crbug.com/1282370
+  "arc.Boot.vm_with_per_vcpu_core_scheduling",
+
+  # https://crbug.com/1282481
+  "quicksettings.OpenSettings",
+
+  # http://b/212644512
+  "security.SELinuxFilesDataDir",
+
+  # https://crbug.com/1283300 (http://b/212637568)
+  "inputs.PhysicalKeyboardCapsLock",
+  "inputs.PhysicalKeyboardChangeInput",
+  "inputs.PhysicalKeyboardAutocorrect.en_us_1",
+  "inputs.PhysicalKeyboardDeadKeys.us_intl_acute",
+
+  # https://crbug.com/1260046
+  "wmp.WindowCycle",
+
+  # b/217362120
+  "security.SELinuxFilesARC.vm",
+
+  # https://crbug.com/1297028
+  "arc.StandardizedKeyboardCopyPaste",
+  "arc.StandardizedKeyboardCopyPaste.tablet_mode",
+
+  # https://crbug.com/1297581
+  "policy.ImagesForURLCheck.blocklist",
+  "policy.ImagesForURLCheck.default",
+  "policy.Disable3DAPIs",
+  "policy.JavaScriptAllowedForUrls",
+  "policy.JavaScriptBlockedForUrls",
+  "policy.ImagesForURLCheck.default",
 ]
 
 # To disable a specific test in lacros_all_tast_tests, add it the following

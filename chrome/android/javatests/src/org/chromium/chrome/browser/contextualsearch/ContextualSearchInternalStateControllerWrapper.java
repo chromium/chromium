@@ -18,13 +18,14 @@ class ContextualSearchInternalStateControllerWrapper
             Arrays.asList(InternalState.TAP_RECOGNIZED, InternalState.TAP_GESTURE_COMMIT,
                     InternalState.GATHERING_SURROUNDINGS, InternalState.DECIDING_SUPPRESSION,
                     InternalState.START_SHOWING_TAP_UI, InternalState.SHOW_RESOLVING_UI,
-                    InternalState.RESOLVING);
+                    InternalState.RESOLVING, InternalState.SHOWING_TAP_SEARCH);
     static final List<Integer> EXPECTED_LONGPRESS_SEQUENCE =
             Arrays.asList(InternalState.LONG_PRESS_RECOGNIZED, InternalState.GATHERING_SURROUNDINGS,
                     InternalState.SHOWING_LITERAL_SEARCH);
-    static final List<Integer> EXPECTED_LONGPRESS_RESOLVE_SEQUENCE = Arrays.asList(
-            InternalState.RESOLVING_LONG_PRESS_RECOGNIZED, InternalState.GATHERING_SURROUNDINGS,
-            InternalState.SHOW_RESOLVING_UI, InternalState.RESOLVING);
+    static final List<Integer> EXPECTED_LONGPRESS_RESOLVE_SEQUENCE =
+            Arrays.asList(InternalState.RESOLVING_LONG_PRESS_RECOGNIZED,
+                    InternalState.GATHERING_SURROUNDINGS, InternalState.SHOW_RESOLVING_UI,
+                    InternalState.RESOLVING, InternalState.SHOWING_RESOLVED_LONG_PRESS_SEARCH);
 
     private List<Integer> mStartedStates = new ArrayList<Integer>();
     private List<Integer> mFinishedStates = new ArrayList<Integer>();

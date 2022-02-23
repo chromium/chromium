@@ -17,6 +17,8 @@ source_set("messaging") {
     "message_port.h",
     "message_service.cc",
     "message_service.h",
+    "messaging_api_message_filter.cc",
+    "messaging_api_message_filter.h",
     "messaging_delegate.cc",
     "messaging_delegate.h",
   ]
@@ -25,6 +27,8 @@ source_set("messaging") {
     ":native_messaging",
     "//base",
     "//components/back_forward_cache",
+    "//components/crx_file:crx_file",
+    "//components/keyed_service/content:content",
     "//content/public/browser",
     "//content/public/common",
     "//extensions/browser/api",
@@ -33,8 +37,6 @@ source_set("messaging") {
   ]
 
   public_deps = [ "//extensions/browser:browser_sources" ]
-
-  allow_circular_includes_from = [ "//extensions/browser:browser_sources" ]
 }
 
 # Split up from messaging to avoid circular dependency.

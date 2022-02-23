@@ -19,4 +19,8 @@ void ShowCertificateViewer(content::WebContents* web_contents,
                            gfx::NativeWindow parent,
                            net::X509Certificate* cert);
 
+// Go through the motions but do not invoke the native API showing a modal
+// interactive dialog on platforms where that results in hanging tests.
+void MockCertificateViewerForTesting();
+
 #endif  // CHROME_BROWSER_CERTIFICATE_VIEWER_H_

@@ -74,7 +74,7 @@ void LCDTextMetricsReporter::NotifyPauseFrameProduction() {
 
   for (const auto* layer :
        layer_tree_host_impl_->active_tree()->picture_layers()) {
-    if (!layer->DrawsContent() || !layer->GetRasterSource())
+    if (!layer->draws_content() || !layer->GetRasterSource())
       continue;
     const scoped_refptr<DisplayItemList>& display_item_list =
         layer->GetRasterSource()->GetDisplayItemList();

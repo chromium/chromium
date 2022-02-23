@@ -38,7 +38,8 @@ enum class ErrorStorageType {
   kStorageGetAllMatchedEntriesBackendClosed = 23,
   kStorageHandleNull = 24,
   kWriteSideDataDidWriteMetadataWrongBytes = 25,
-  kMaxValue = kWriteSideDataDidWriteMetadataWrongBytes,
+  kDefaultBucketError = 26,
+  kMaxValue = kDefaultBucketError,
 };
 
 blink::mojom::CacheStorageError MakeErrorStorage(ErrorStorageType type);

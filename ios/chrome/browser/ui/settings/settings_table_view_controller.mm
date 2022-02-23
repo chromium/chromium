@@ -15,6 +15,7 @@
 #include "components/autofill/core/common/autofill_prefs.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #import "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_member.h"
@@ -30,6 +31,7 @@
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #include "ios/chrome/browser/main/browser.h"
+#include "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_store_factory.h"
@@ -57,13 +59,11 @@
 #import "ios/chrome/browser/ui/settings/about_chrome_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_credit_card_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_table_view_controller.h"
-#import "ios/chrome/browser/ui/settings/bandwidth_management_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/bandwidth/bandwidth_management_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/cells/account_sign_in_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
-#import "ios/chrome/browser/ui/settings/content_settings_table_view_controller.h"
+#import "ios/chrome/browser/ui/settings/content_settings/content_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/default_browser/default_browser_settings_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
@@ -87,6 +87,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/table_view_model.h"
 #import "ios/chrome/browser/ui/table_view/table_view_utils.h"
@@ -118,7 +120,9 @@ NSString* const kSyncAndGoogleServicesSyncOnImageName =
     @"sync_and_google_services_sync_on";
 NSString* const kSettingsGoogleServicesImageName = @"settings_google_services";
 NSString* const kSettingsSearchEngineImageName = @"settings_search_engine";
-NSString* const kSettingsPasswordsImageName = @"settings_passwords";
+NSString* const kLegacySettingsPasswordsImageName = @"legacy_settings_passwords";
+NSString* const kSettingsPasswordsImageName =
+    @"settings_passwords";
 NSString* const kSettingsAutofillCreditCardImageName =
     @"settings_payment_methods";
 NSString* const kSettingsAutofillProfileImageName = @"settings_addresses";
@@ -224,7 +228,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   // PrefBackedBoolean for ArticlesForYou switch enabling.
   PrefBackedBoolean* _contentSuggestionPolicyEnabled;
   // The item related to the switch for the show suggestions setting.
-  SettingsSwitchItem* _showMemoryDebugToolsItem;
+  TableViewSwitchItem* _showMemoryDebugToolsItem;
   // The item related to the safety check.
   SettingsCheckItem* _safetyCheckItem;
 
@@ -271,7 +275,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 }
 
 // The item related to the switch for the show suggestions setting.
-@property(nonatomic, strong, readonly) SettingsSwitchItem* articlesForYouItem;
+@property(nonatomic, strong, readonly) TableViewSwitchItem* articlesForYouItem;
 // The item related to the enterprise managed show suggestions setting.
 @property(nonatomic, strong, readonly)
     TableViewInfoButtonItem* managedArticlesForYouItem;
@@ -774,15 +778,27 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (TableViewItem*)passwordsDetailItem {
   BOOL passwordsEnabled = _browserState->GetPrefs()->GetBoolean(
       password_manager::prefs::kCredentialsEnableService);
+  BOOL passwordsRebrandingEnabled = base::FeatureList::IsEnabled(
+      password_manager::features::kIOSEnablePasswordManagerBrandingUpdate);
+
   NSString* passwordsDetail = passwordsEnabled
                                   ? l10n_util::GetNSString(IDS_IOS_SETTING_ON)
                                   : l10n_util::GetNSString(IDS_IOS_SETTING_OFF);
-  _passwordsDetailItem =
-      [self detailItemWithType:SettingsItemTypePasswords
-                             text:l10n_util::GetNSString(IDS_IOS_PASSWORDS)
-                       detailText:passwordsDetail
-                    iconImageName:kSettingsPasswordsImageName
-          accessibilityIdentifier:kSettingsPasswordsCellId];
+
+  NSString* passwordsSectionTitle =
+      passwordsRebrandingEnabled
+          ? l10n_util::GetNSString(IDS_IOS_PASSWORD_MANAGER)
+          : l10n_util::GetNSString(IDS_IOS_PASSWORDS);
+
+  NSString* passwordsIconImageName = passwordsRebrandingEnabled
+                                         ? kSettingsPasswordsImageName
+                                         : kLegacySettingsPasswordsImageName;
+
+  _passwordsDetailItem = [self detailItemWithType:SettingsItemTypePasswords
+                                             text:passwordsSectionTitle
+                                       detailText:passwordsDetail
+                                    iconImageName:passwordsIconImageName
+                          accessibilityIdentifier:kSettingsPasswordsCellId];
 
   return _passwordsDetailItem;
 }
@@ -909,8 +925,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
           accessibilityIdentifier:kSettingsAboutCellId];
 }
 
-- (SettingsSwitchItem*)showMemoryDebugSwitchItem {
-  SettingsSwitchItem* showMemoryDebugSwitchItem =
+- (TableViewSwitchItem*)showMemoryDebugSwitchItem {
+  TableViewSwitchItem* showMemoryDebugSwitchItem =
       [self switchItemWithType:SettingsItemTypeMemoryDebugging
                             title:@"Show memory debug tools"
                     iconImageName:kSettingsDebugImageName
@@ -921,7 +937,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return showMemoryDebugSwitchItem;
 }
 
-- (SettingsSwitchItem*)articlesForYouItem {
+- (TableViewSwitchItem*)articlesForYouItem {
   if (!_articlesForYouItem) {
     NSString* settingTitle =
         IsDiscoverFeedEnabled()
@@ -964,7 +980,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
 
-- (SettingsSwitchItem*)viewSourceSwitchItem {
+- (TableViewSwitchItem*)viewSourceSwitchItem {
   return [self switchItemWithType:SettingsItemTypeViewSource
                             title:@"View source menu"
                     iconImageName:kSettingsDebugImageName
@@ -1001,13 +1017,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   return detailItem;
 }
 
-- (SettingsSwitchItem*)switchItemWithType:(NSInteger)type
-                                    title:(NSString*)title
-                            iconImageName:(NSString*)iconImageName
-                          withDefaultsKey:(NSString*)key
-                  accessibilityIdentifier:(NSString*)accessibilityIdentifier {
-  SettingsSwitchItem* switchItem =
-      [[SettingsSwitchItem alloc] initWithType:type];
+- (TableViewSwitchItem*)switchItemWithType:(NSInteger)type
+                                     title:(NSString*)title
+                             iconImageName:(NSString*)iconImageName
+                           withDefaultsKey:(NSString*)key
+                   accessibilityIdentifier:(NSString*)accessibilityIdentifier {
+  TableViewSwitchItem* switchItem =
+      [[TableViewSwitchItem alloc] initWithType:type];
   switchItem.text = title;
   switchItem.iconImageName = iconImageName;
   switchItem.accessibilityIdentifier = accessibilityIdentifier;
@@ -1054,16 +1070,16 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
   switch (itemType) {
     case SettingsItemTypeMemoryDebugging: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(memorySwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
       break;
     }
     case SettingsItemTypeArticlesForYou: {
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(articlesForYouSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -1071,8 +1087,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     }
     case SettingsItemTypeViewSource: {
 #if BUILDFLAG(CHROMIUM_BRANDING) && !defined(NDEBUG)
-      SettingsSwitchCell* switchCell =
-          base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+      TableViewSwitchCell* switchCell =
+          base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
       [switchCell.switchView addTarget:self
                                 action:@selector(viewSourceSwitchToggled:)
                       forControlEvents:UIControlEventValueChanged];
@@ -1241,8 +1257,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
     }
     case SettingsItemTypeContentSettings:
       base::RecordAction(base::UserMetricsAction("Settings.ContentSettings"));
-      controller = [[ContentSettingsTableViewController alloc]
-          initWithBrowserState:_browserState];
+      controller =
+          [[ContentSettingsTableViewController alloc] initWithBrowser:_browser];
       break;
     case SettingsItemTypeBandwidth:
       base::RecordAction(base::UserMetricsAction("Settings.Bandwidth"));
@@ -1338,8 +1354,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       [self.tableViewModel indexPathForItemType:SettingsItemTypeMemoryDebugging
                               sectionIdentifier:SettingsSectionIdentifierDebug];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1352,8 +1368,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       indexPathForItemType:SettingsItemTypeArticlesForYou
          sectionIdentifier:SettingsSectionIdentifierAdvanced];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1367,8 +1383,8 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
       [self.tableViewModel indexPathForItemType:SettingsItemTypeViewSource
                               sectionIdentifier:SettingsSectionIdentifierDebug];
 
-  SettingsSwitchItem* switchItem =
-      base::mac::ObjCCastStrict<SettingsSwitchItem>(
+  TableViewSwitchItem* switchItem =
+      base::mac::ObjCCastStrict<TableViewSwitchItem>(
           [self.tableViewModel itemAtIndexPath:switchPath]);
 
   BOOL newSwitchValue = sender.isOn;
@@ -1423,10 +1439,10 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [_safetyCheckCoordinator start];
 }
 
-// Checks if there are any remaining password issues from the last time password
-// check was run.
+// Checks if there are any remaining password issues that are not muted from the
+// last time password check was run.
 - (BOOL)hasPasswordIssuesRemaining {
-  return !_passwordCheckManager->GetCompromisedCredentials().empty();
+  return !_passwordCheckManager->GetUnmutedCompromisedCredentials().empty();
 }
 
 // Displays a red issue state on |_safetyCheckItem| if there is a reamining
@@ -1625,7 +1641,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 // Check if the default search engine is managed by policy.
 - (BOOL)isDefaultSearchEngineManagedByPolicy {
-  const base::DictionaryValue* dict = _browserState->GetPrefs()->GetDictionary(
+  const base::Value* dict = _browserState->GetPrefs()->GetDictionary(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
 
   if (dict) {
@@ -1638,7 +1654,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 
 // Returns the text to be displayed by the managed Search Engine item.
 - (NSString*)managedSearchEngineDetailText {
-  const base::DictionaryValue* dict = _browserState->GetPrefs()->GetDictionary(
+  const base::Value* dict = _browserState->GetPrefs()->GetDictionary(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
   if (dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy)) {
     // Default search engine is disabled by policy.
@@ -1725,6 +1741,21 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
   [_signinPromoViewMediator disconnect];
   _signinPromoViewMediator = nil;
   [self stopBrowserStateServiceObservers];
+
+  // Stop observing preferences.
+  [_showMemoryDebugToolsEnabled stop];
+  _showMemoryDebugToolsEnabled = nil;
+  [_articlesEnabled stop];
+  _articlesEnabled = nil;
+  [_allowChromeSigninPreference stop];
+  _allowChromeSigninPreference = nil;
+  [_contentSuggestionPolicyEnabled stop];
+  _contentSuggestionPolicyEnabled = nil;
+
+  _voiceLocaleCode.Destroy();
+
+  _prefChangeRegistrar.RemoveAll();
+  _prefObserverBridge.reset();
 }
 
 #pragma mark SyncObserverModelBridge
@@ -1878,10 +1909,13 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 - (void)configureSigninPromoWithConfigurator:
             (SigninPromoViewConfigurator*)configurator
                              identityChanged:(BOOL)identityChanged {
-  DCHECK(!self.isSigninInProgress);
-  if (![self.tableViewModel
+  if (self.isSigninInProgress ||
+      ![self.tableViewModel
           hasItemForItemType:SettingsItemTypeSigninPromo
            sectionIdentifier:SettingsSectionIdentifierSignIn]) {
+    // Don't reload the sign-in promo if sign-in is in progress, to avoid having
+    // UI glitches. The table view should be reloaded once the sign-in is
+    // finished.
     return;
   }
   NSIndexPath* signinPromoCellIndexPath = [self.tableViewModel
@@ -1981,8 +2015,7 @@ SyncState GetSyncStateFromBrowserState(ChromeBrowserState* browserState) {
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
-  GURL convertedURL = net::GURLWithNSURL(URL);
-  [self view:nil didTapLinkURL:convertedURL];
+  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
 #pragma mark - ManageSyncSettingsCoordinatorDelegate

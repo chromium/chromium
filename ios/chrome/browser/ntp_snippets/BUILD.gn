@@ -7,8 +7,8 @@ source_set("ntp_snippets") {
   sources = [
     "ios_chrome_content_suggestions_service_factory.cc",
     "ios_chrome_content_suggestions_service_factory.h",
-    "ios_chrome_content_suggestions_service_factory_util.cc",
     "ios_chrome_content_suggestions_service_factory_util.h",
+    "ios_chrome_content_suggestions_service_factory_util.mm",
   ]
   deps = [
     "//base",

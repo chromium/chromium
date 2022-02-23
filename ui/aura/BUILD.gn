@@ -31,6 +31,7 @@ component("aura") {
     "env_input_state_controller.h",
     "env_observer.h",
     "event_injector.h",
+    "host_frame_rate_throttler.h",
     "input_state_lookup.h",
     "layout_manager.h",
     "null_window_targeter.h",
@@ -73,6 +74,7 @@ component("aura") {
     "env.cc",
     "env_input_state_controller.cc",
     "event_injector.cc",
+    "host_frame_rate_throttler.cc",
     "input_state_lookup.cc",
     "layout_manager.cc",
     "native_window_occlusion_tracker.cc",
@@ -134,7 +136,7 @@ component("aura") {
   ]
 
   public_deps = [
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/dragdrop:types",
     "//ui/base/dragdrop/mojom:mojom_headers",
     "//ui/base/ime",
@@ -156,7 +158,6 @@ component("aura") {
 
     deps += [
       "//ipc",
-      "//ui/base/cursor",
       "//ui/platform_window/win",
     ]
   }
@@ -173,8 +174,6 @@ component("aura") {
     public += [ "screen_ozone.h" ]
     sources += [ "screen_ozone.cc" ]
   }
-
-  configs += [ "//build/config/compiler:noshadowing" ]
 }
 
 static_library("test_support") {
@@ -229,7 +228,7 @@ static_library("test_support") {
     "//skia",
     "//testing/gtest",
     "//ui/base:test_support",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type",
     "//ui/base/ime/init",
     "//ui/compositor:test_support",
@@ -323,6 +322,7 @@ test("aura_unittests") {
     "//mojo/core/embedder",
     "//skia",
     "//testing/gtest",
+    "//ui/aura/cursor:unittests",
     "//ui/aura_extra",
     "//ui/aura_extra:tests",
     "//ui/base:test_support",
@@ -345,6 +345,7 @@ test("aura_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/present_view_capabilities.test-cmx" ]
   }

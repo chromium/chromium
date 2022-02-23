@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <ostream>
 #include <utility>
 #include <vector>
 
@@ -20,6 +21,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/cloud_devices/common/cloud_device_description_consts.h"
 #include "components/cloud_devices/common/description_items_inl.h"
@@ -63,9 +65,9 @@ extern constexpr char kOptionRangeCapability[] = "range_cap";
 extern constexpr char kOptionSelectCapability[] = "select_cap";
 extern constexpr char kOptionTypedValueCapability[] = "typed_value_cap";
 extern constexpr char kOptionVendorCapability[] = "vendor_capability";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 extern constexpr char kOptionPin[] = "pin";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kMarginBottom[] = "bottom_microns";
 constexpr char kMarginLeft[] = "left_microns";
@@ -92,9 +94,9 @@ constexpr char kMinValue[] = "min";
 constexpr char kMaxValue[] = "max";
 constexpr char kDefaultValue[] = "default";
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 constexpr char kPinSupported[] = "supported";
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 constexpr char kTypeRangeVendorCapabilityFloat[] = "FLOAT";
 constexpr char kTypeRangeVendorCapabilityInteger[] = "INTEGER";
@@ -1056,7 +1058,8 @@ class PwgRasterConfigTraits : public NoValueValidation,
     if (document_types_supported) {
       if (!document_types_supported->is_list())
         return false;
-      for (const auto& type_value : document_types_supported->GetList()) {
+      for (const auto& type_value :
+           document_types_supported->GetListDeprecated()) {
         if (!type_value.is_string())
           return false;
 
@@ -1331,7 +1334,7 @@ class PageRangeTraits : public ItemsTraits<kOptionPageRange> {
         dict.FindKeyOfType(kPageRangeInterval, base::Value::Type::LIST);
     if (!list_value)
       return false;
-    for (const base::Value& interval : list_value->GetList()) {
+    for (const base::Value& interval : list_value->GetListDeprecated()) {
       int page_range_start = interval.FindIntKey(kPageRangeStart).value_or(1);
       int page_range_end =
           interval.FindIntKey(kPageRangeEnd).value_or(kMaxPageNumber);
@@ -1440,7 +1443,7 @@ class ReverseTraits : public NoValueValidation,
   }
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 class PinTraits : public NoValueValidation, public ItemsTraits<kOptionPin> {
  public:
   static bool Load(const base::Value& dict, bool* option) {
@@ -1455,7 +1458,7 @@ class PinTraits : public NoValueValidation, public ItemsTraits<kOptionPin> {
     dict->SetKey(kPinSupported, base::Value(option));
   }
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace printer
 
@@ -1480,9 +1483,9 @@ template class ValueCapability<printer::Copies,
 template class EmptyCapability<printer::PageRangeTraits>;
 template class BooleanCapability<printer::CollateTraits>;
 template class BooleanCapability<printer::ReverseTraits>;
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 template class ValueCapability<bool, printer::PinTraits>;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 template class TicketItem<printer::PwgRasterConfig,
                           printer::PwgRasterConfigTraits>;

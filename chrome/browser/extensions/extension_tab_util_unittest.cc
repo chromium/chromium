@@ -5,7 +5,6 @@
 #include "chrome/browser/extensions/extension_tab_util.h"
 
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
-#include "chrome/common/extensions/api/tabs.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/extension_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -201,6 +200,16 @@ TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnDevtools) {
     EXPECT_EQ(kDevtoolsURL, url);
     EXPECT_TRUE(error.empty());
   }
+}
+
+TEST(ExtensionTabUtilTest, PrepareURLForNavigationOnChromeUntrusted) {
+  const std::string kChromeUntrustedURL("chrome-untrusted://terminal/");
+  auto extension = ExtensionBuilder("none").Build();
+  std::string error;
+  GURL url;
+  EXPECT_FALSE(ExtensionTabUtil::PrepareURLForNavigation(
+      kChromeUntrustedURL, extension.get(), &url, &error));
+  EXPECT_EQ(tabs_constants::kCannotNavigateToChromeUntrusted, error);
 }
 
 }  // namespace extensions

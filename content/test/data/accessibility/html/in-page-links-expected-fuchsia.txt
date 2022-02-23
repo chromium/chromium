@@ -1,0 +1,54 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++LINK focusable label='Empty anchor' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Empty anchor'
+++++++++++UNKNOWN label='Empty anchor'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++LINK focusable label='Anchor with content' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Anchor with content'
+++++++++++UNKNOWN label='Anchor with content'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++LINK focusable label='Anchor with ID' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Anchor with ID'
+++++++++++UNKNOWN label='Anchor with ID'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++LINK focusable label='Empty span' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Empty span'
+++++++++++UNKNOWN label='Empty span'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++LINK focusable label='Span with content' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Span with content'
+++++++++++UNKNOWN label='Span with content'
+++++++STATIC_TEXT label=' '
+++++++++UNKNOWN label=' '
+++++++LINK focusable label='Paragraph with content' actions='{DEFAULT}'
+++++++++STATIC_TEXT label='Paragraph with content'
+++++++++++UNKNOWN label='Paragraph with content'
+++++++PARAGRAPH
+++++++++UNKNOWN
+++++++++STATIC_TEXT label='After empty anchor'
+++++++++++UNKNOWN label='After empty anchor'
+++++++PARAGRAPH
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Anchor with content'
+++++++++++++UNKNOWN label='Anchor with content'
+++++++PARAGRAPH
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Anchor with ID'
+++++++++++++UNKNOWN label='Anchor with ID'
+++++++PARAGRAPH
+++++++++UNKNOWN
+++++++++STATIC_TEXT label='After empty span'
+++++++++++UNKNOWN label='After empty span'
+++++++PARAGRAPH
+++++++++UNKNOWN
+++++++++++STATIC_TEXT label='Span with content'
+++++++++++++UNKNOWN label='Span with content'
+++++++PARAGRAPH
+++++++++STATIC_TEXT label='Paragraph with content'
+++++++++++UNKNOWN label='Paragraph with content'

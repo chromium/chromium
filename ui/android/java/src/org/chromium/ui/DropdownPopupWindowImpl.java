@@ -20,7 +20,8 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.PopupWindow;
 
-import org.chromium.base.ApiCompatibilityUtils;
+import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.ui.widget.AnchoredPopupWindow;
 import org.chromium.ui.widget.ViewRectProvider;
 
@@ -82,8 +83,7 @@ class DropdownPopupWindowImpl
 
         ViewRectProvider rectProvider = new ViewRectProvider(mAnchorView);
         rectProvider.setIncludePadding(true);
-        mBackground = ApiCompatibilityUtils.getDrawable(
-                context.getResources(), R.drawable.menu_bg_tinted);
+        mBackground = AppCompatResources.getDrawable(context, R.drawable.menu_bg_tinted);
         mAnchoredPopupWindow = new AnchoredPopupWindow(
                 context, mAnchorView, mBackground, mContentView, rectProvider);
         mAnchoredPopupWindow.addOnDismissListener(onDismissLitener);
@@ -117,8 +117,8 @@ class DropdownPopupWindowImpl
     public void onPreLayoutChange(
             boolean positionBelow, int x, int y, int width, int height, Rect anchorRect) {
         mBackground.setBounds(anchorRect);
-        mAnchoredPopupWindow.setBackgroundDrawable(ApiCompatibilityUtils.getDrawable(
-                mContext.getResources(), R.drawable.menu_bg_tinted));
+        mAnchoredPopupWindow.setBackgroundDrawable(
+                AppCompatResources.getDrawable(mContext, R.drawable.menu_bg_tinted));
     }
 
     /**

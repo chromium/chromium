@@ -178,12 +178,12 @@
 
     debug("");
     debug("Test getting and setting 'grid' shorthand through JS");
-    testGridDefinitionsSetJSValues("20px / 10px", "10px", "20px", "none", "row", "auto", "auto", "10px", "20px", "none", "initial", "initial", "initial");
-    testGridDefinitionsSetJSValues("[line] 'a' 20px / 10px", "10px", "[line] 20px", "\"a\"", "row", "auto", "auto", "10px", "[line] 20px", "\"a\"", "initial", "initial", "initial");
-    testGridDefinitionsSetJSValues("auto-flow dense 20px / none", "none", "none", "none", "dense", "auto", "20px", "none", "initial", "initial", "row dense", "initial", "20px");
-    testGridDefinitionsSetJSValues("20px / auto-flow 10px", "none", "20px", "none", "column", "10px", "auto", "initial", "20px", "initial", "column", "10px", "initial");
-    testGridDefinitionsSetJSValues("none / auto-flow dense 20px", "none", "none", "none", "column dense", "20px", "auto", "initial", "none", "initial", "column dense", "20px", "initial");
-    testGridDefinitionsSetJSValues("10px / auto-flow 20px", "none", "10px", "none", "column", "20px", "auto", "initial", "10px", "initial", "column", "20px", "initial");
+    testGridDefinitionsSetJSValues("20px / 10px", "10px", "20px", "none", "row", "auto", "auto", "10px", "20px", "none", "row", "auto", "auto");
+    testGridDefinitionsSetJSValues("[line] 'a' 20px / 10px", "10px", "[line] 20px", "\"a\"", "row", "auto", "auto", "10px", "[line] 20px", "\"a\"", "row", "auto", "auto");
+    testGridDefinitionsSetJSValues("auto-flow dense 20px / none", "none", "none", "none", "dense", "auto", "20px", "none", "none", "none", "dense", "auto", "20px");
+    testGridDefinitionsSetJSValues("20px / auto-flow 10px", "none", "20px", "none", "column", "10px", "auto", "none", "20px", "none", "column", "10px", "auto");
+    testGridDefinitionsSetJSValues("none / auto-flow dense 20px", "none", "none", "none", "column dense", "20px", "auto", "none", "none", "none", "column dense", "20px", "auto");
+    testGridDefinitionsSetJSValues("10px / auto-flow 20px", "none", "10px", "none", "column", "20px", "auto", "none", "10px", "none", "column", "20px", "auto");
 
     debug("");
     debug("Test the initial value");
@@ -199,10 +199,10 @@
 
     debug("");
     debug("Test setting grid-template-columns and grid-template-rows back to 'none' through JS");
-    testGridDefinitionsSetJSValues("10px / auto-flow 20px", "none", "10px", "none", "column", "20px", "auto", "initial", "10px", "initial", "column", "20px", "initial");
-    testGridDefinitionsSetJSValues("none", "none", "none", "none", "row", "auto", "auto", "none", "none", "none", "initial", "initial", "initial");
-    testGridDefinitionsSetJSValues("20px / auto-flow 10px", "none", "20px", "none", "column", "10px", "auto", "initial", "20px", "initial", "column", "10px", "initial");
-    testGridDefinitionsSetJSValues("none", "none", "none", "none", "row", "auto", "auto", "none", "none", "none", "initial", "initial", "initial");
+    testGridDefinitionsSetJSValues("10px / auto-flow 20px", "none", "10px", "none", "column", "20px", "auto", "none", "10px", "none", "column", "20px", "auto");
+    testGridDefinitionsSetJSValues("none", "none", "none", "none", "row", "auto", "auto", "none", "none", "none", "row", "auto", "auto");
+    testGridDefinitionsSetJSValues("20px / auto-flow 10px", "none", "20px", "none", "column", "10px", "auto", "none", "20px", "none", "column", "10px", "auto");
+    testGridDefinitionsSetJSValues("none", "none", "none", "none", "row", "auto", "auto", "none", "none", "none", "row", "auto", "auto");
 
     debug("");
     debug("Test the inherit value does not affect gutter properties (grid-*-gap)");

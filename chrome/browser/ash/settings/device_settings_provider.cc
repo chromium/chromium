@@ -29,6 +29,7 @@
 #include "chrome/browser/ash/policy/off_hours/off_hours_proto_parser.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
 #include "chrome/browser/ash/settings/device_settings_cache.h"
+#include "chrome/browser/ash/settings/hardware_data_usage_controller.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/ash/tpm_firmware_update.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
@@ -80,6 +81,7 @@ const char* const kKnownSettings[] = {
     kDeviceDisabledMessage,
     kDeviceDisplayResolution,
     kDeviceDockMacAddressSource,
+    kDeviceEncryptedReportingPipelineEnabled,
     kDeviceHostnameTemplate,
     kDeviceHostnameUserConfigurable,
     kDeviceLoginScreenInputMethods,
@@ -124,6 +126,7 @@ const char* const kKnownSettings[] = {
     kDeviceChannelDowngradeBehavior,
     kReportDeviceActivityTimes,
     kReportDeviceAudioStatus,
+    kReportDeviceAudioStatusCheckingRateMs,
     kReportDeviceBluetoothInfo,
     kReportDeviceBoardStatus,
     kReportDeviceBootMode,
@@ -132,6 +135,7 @@ const char* const kKnownSettings[] = {
     kReportDeviceFanInfo,
     kReportDeviceHardwareStatus,
     kReportDeviceLocation,
+    kReportDevicePeripherals,
     kReportDevicePowerStatus,
     kReportDeviceStorageStatus,
     kReportDeviceNetworkConfiguration,
@@ -152,9 +156,11 @@ const char* const kKnownSettings[] = {
     kReportDeviceSystemInfo,
     kReportDevicePrintJobs,
     kReportDeviceLoginLogout,
+    kReportCRDSessions,
     kReportOsUpdateStatus,
     kReportRunningKioskApp,
     kReportUploadFrequency,
+    kRevenEnableDeviceHWDataUsage,
     kSamlLoginAuthenticationType,
     kServiceAccountIdentity,
     kSignedDataRoamingEnabled,
@@ -223,18 +229,24 @@ absl::optional<bool> GetAllowNewUsers(
 }
 
 // Returns:
-// - an empty absl::optional if the user_allowlist outer wrapper message is
-//   not present
+// - an empty absl::optional if the user_allowlist and user_whitelist
+// outer wrapper message is not present.
 // - true if the user_allowlist outer wrapper message is present and the
-//   user_allowlist inner list is empty
+//   user_allowlist inner list is empty, or when it's not present,
+//   if the user_whitelist is non-empty.
 // - false if the user_allowlist outer wrapper message is present and the
-//   user_allowlist inner list has at least one element.
+//   user_allowlist inner list has at least one element, or when it's not
+//   present, and the user_whitelist has at least one element.
 absl::optional<bool> GetIsEmptyAllowList(
     const em::ChromeDeviceSettingsProto& policy) {
-  if (!policy.has_user_allowlist())
+  if (!policy.has_user_whitelist() && !policy.has_user_allowlist())
     return absl::nullopt;
-  return absl::optional<bool>{policy.user_allowlist().user_allowlist_size() ==
-                              0};
+  // use user_whitelist only if user_allowlist is not present
+  return !policy.has_user_allowlist()
+             ? absl::optional<bool>{policy.user_whitelist()
+                                        .user_whitelist_size() == 0}
+             : absl::optional<bool>{
+                   policy.user_allowlist().user_allowlist_size() == 0};
 }
 
 // Decodes the allow_new_users (DeviceAllowNewUsers) and user_allowlist
@@ -314,8 +326,8 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
   DecodeAllowedUsers(policy, new_values_cache);
 
   bool user_allowlist_enforced =
-      ((policy.has_user_whitelist() &&
-        policy.user_whitelist().user_whitelist_size() > 0) ||
+      ((policy.has_user_whitelist() &&                         // nocheck
+        policy.user_whitelist().user_whitelist_size() > 0) ||  // nocheck
        (policy.has_user_allowlist() &&
         policy.user_allowlist().user_allowlist_size() > 0));
   new_values_cache->SetBoolean(
@@ -354,10 +366,11 @@ void DecodeLoginPolicies(const em::ChromeDeviceSettingsProto& policy,
       list.push_back(base::Value(value));
     }
   } else {
-    const em::UserWhitelistProto& whitelist_proto = policy.user_whitelist();
-    const RepeatedPtrField<std::string>& whitelist =
-        whitelist_proto.user_whitelist();
-    for (const std::string& value : whitelist) {
+    const em::UserWhitelistProto& whitelist_proto =   // nocheck
+        policy.user_whitelist();                      // nocheck
+    const RepeatedPtrField<std::string>& whitelist =  // nocheck
+        whitelist_proto.user_whitelist();             // nocheck
+    for (const std::string& value : whitelist) {      // nocheck
       list.push_back(base::Value(value));
     }
   }
@@ -684,9 +697,8 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
           reporting_policy.report_network_interfaces());
     }
     if (reporting_policy.has_report_network_status()) {
-      new_values_cache->SetBoolean(
-          kReportDeviceNetworkStatus,
-          reporting_policy.report_network_status());
+      new_values_cache->SetBoolean(kReportDeviceNetworkStatus,
+                                   reporting_policy.report_network_status());
     }
     if (reporting_policy.has_report_users()) {
       new_values_cache->SetBoolean(kReportDeviceUsers,
@@ -715,6 +727,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
     if (reporting_policy.has_report_running_kiosk_app()) {
       new_values_cache->SetBoolean(kReportRunningKioskApp,
                                    reporting_policy.report_running_kiosk_app());
+    }
+    if (reporting_policy.has_report_peripherals()) {
+      new_values_cache->SetBoolean(kReportDevicePeripherals,
+                                   reporting_policy.report_peripherals());
     }
     if (reporting_policy.has_report_power_status()) {
       new_values_cache->SetBoolean(kReportDevicePowerStatus,
@@ -776,6 +792,10 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetBoolean(kReportDeviceLoginLogout,
                                    reporting_policy.report_login_logout());
     }
+    if (reporting_policy.has_report_crd_sessions()) {
+      new_values_cache->SetBoolean(kReportCRDSessions,
+                                   reporting_policy.report_crd_sessions());
+    }
     if (reporting_policy.has_report_network_telemetry_collection_rate_ms()) {
       new_values_cache->SetInteger(
           kReportDeviceNetworkTelemetryCollectionRateMs,
@@ -786,6 +806,11 @@ void DecodeReportingPolicies(const em::ChromeDeviceSettingsProto& policy,
       new_values_cache->SetInteger(
           kReportDeviceNetworkTelemetryEventCheckingRateMs,
           reporting_policy.report_network_telemetry_event_checking_rate_ms());
+    }
+    if (reporting_policy.has_report_device_audio_status_checking_rate_ms()) {
+      new_values_cache->SetInteger(
+          kReportDeviceAudioStatusCheckingRateMs,
+          reporting_policy.report_device_audio_status_checking_rate_ms());
     }
   }
 }
@@ -1064,7 +1089,7 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
   }
   new_values_cache->SetInteger(kDevicePrintersAccessMode, access_mode);
 
-  // Use Blocklist policy if present, otherwise Blacklist version.
+  // Use Blocklist policy if present, otherwise Blacklist version.  // nocheck
   if (policy.has_device_printers_blocklist()) {
     base::Value list(base::Value::Type::LIST);
     const em::DevicePrintersBlocklistProto& proto(
@@ -1072,16 +1097,16 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     for (const auto& id : proto.blocklist())
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersBlocklist, std::move(list));
-  } else if (policy.has_native_device_printers_blacklist()) {
+  } else if (policy.has_native_device_printers_blacklist()) {  // nocheck
     base::Value list(base::Value::Type::LIST);
-    const em::DeviceNativePrintersBlacklistProto& proto(
-        policy.native_device_printers_blacklist());
-    for (const auto& id : proto.blacklist())
+    const em::DeviceNativePrintersBlacklistProto& proto(  // nocheck
+        policy.native_device_printers_blacklist());       // nocheck
+    for (const auto& id : proto.blacklist())              // nocheck
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersBlocklist, std::move(list));
   }
 
-  // Use Allowlist policy if present, otherwise Whitelist version.
+  // Use Allowlist policy if present, otherwise Whitelist version.  // nocheck
   if (policy.has_device_printers_allowlist()) {
     base::Value list(base::Value::Type::LIST);
     const em::DevicePrintersAllowlistProto& proto(
@@ -1089,11 +1114,11 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
     for (const auto& id : proto.allowlist())
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersAllowlist, std::move(list));
-  } else if (policy.has_native_device_printers_whitelist()) {
+  } else if (policy.has_native_device_printers_whitelist()) {  // nocheck
     base::Value list(base::Value::Type::LIST);
-    const em::DeviceNativePrintersWhitelistProto& proto(
-        policy.native_device_printers_whitelist());
-    for (const auto& id : proto.whitelist())
+    const em::DeviceNativePrintersWhitelistProto& proto(  // nocheck
+        policy.native_device_printers_whitelist());       // nocheck
+    for (const auto& id : proto.whitelist())              // nocheck
       list.Append(id);
     new_values_cache->SetValue(kDevicePrintersAllowlist, std::move(list));
   }
@@ -1184,9 +1209,9 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
       allowlist.Append(std::move(ids));
     }
     new_values_cache->SetValue(kUsbDetachableAllowlist, std::move(allowlist));
-  } else if (policy.has_usb_detachable_whitelist()) {
-    const em::UsbDetachableWhitelistProto& container =
-        policy.usb_detachable_whitelist();
+  } else if (policy.has_usb_detachable_whitelist()) {   // nocheck
+    const em::UsbDetachableWhitelistProto& container =  // nocheck
+        policy.usb_detachable_whitelist();              // nocheck
     base::Value allowlist(base::Value::Type::LIST);
     for (const auto& entry : container.id()) {
       base::Value ids(base::Value::Type::DICTIONARY);
@@ -1234,6 +1259,22 @@ void DecodeGenericPolicies(const em::ChromeDeviceSettingsProto& policy,
         policy.device_restricted_managed_guest_session_enabled());
     if (container.has_enabled()) {
       new_values_cache->SetValue(kDeviceRestrictedManagedGuestSessionEnabled,
+                                 base::Value(container.enabled()));
+    }
+  }
+
+  bool reven_enable_device_hw_data_usage =
+      policy.has_hardware_data_usage_enabled() &&
+      policy.hardware_data_usage_enabled().has_hardware_data_usage_enabled() &&
+      policy.hardware_data_usage_enabled().hardware_data_usage_enabled();
+  new_values_cache->SetBoolean(kRevenEnableDeviceHWDataUsage,
+                               reven_enable_device_hw_data_usage);
+
+  if (policy.has_device_encrypted_reporting_pipeline_enabled()) {
+    const em::EncryptedReportingPipelineConfigurationProto& container(
+        policy.device_encrypted_reporting_pipeline_enabled());
+    if (container.has_enabled()) {
+      new_values_cache->SetValue(kDeviceEncryptedReportingPipelineEnabled,
                                  base::Value(container.enabled()));
     }
   }
@@ -1395,18 +1436,21 @@ void DeviceSettingsProvider::OwnershipStatusChanged() {
 
       // TODO(https://crbug.com/433840): Some of the above code can be
       // simplified or removed, once the DoSet function is removed - then there
-      // will be no pending writes. This is because the only value that needs to
-      // be written as a pending write is kStatsReportingPref, and this is now
-      // handled by the StatsReportingController - see below. Once DoSet is
-      // removed and there are no pending writes that are being maintained by
-      // DeviceSettingsProvider, this code for updating the signed settings for
-      // the new owner should probably be moved outside of
-      // DeviceSettingsProvider.
+      // will be no pending writes. This is because the only values that need to
+      // be written as a pending write is kStatsReportingPref and
+      // kEnableDeviceHWDataUsage, and those are now handled by the Controllers
+      // - see below. Once DoSet is removed and there are no pending writes that
+      // are being maintained by DeviceSettingsProvider, this code for updating
+      // the signed settings for the new owner should probably be moved outside
+      // of DeviceSettingsProvider.
 
       StatsReportingController::Get()->OnOwnershipTaken(
           device_settings_service_->GetOwnerSettingsService());
+      HWDataUsageController::Get()->OnOwnershipTaken(
+          device_settings_service_->GetOwnerSettingsService());
     } else if (chromeos::InstallAttributes::Get()->IsEnterpriseManaged()) {
       StatsReportingController::Get()->ClearPendingValue();
+      HWDataUsageController::Get()->ClearPendingValue();
     }
   }
 
@@ -1585,7 +1629,7 @@ bool DeviceSettingsProvider::UpdateFromService() {
     case DeviceSettingsService::STORE_NO_POLICY:
       if (MitigateMissingPolicy())
         break;
-      FALLTHROUGH;
+      [[fallthrough]];
     case DeviceSettingsService::STORE_KEY_UNAVAILABLE:
       VLOG(1) << "No policies present yet, will use the temp storage.";
       trusted_status_ = PERMANENTLY_UNTRUSTED;

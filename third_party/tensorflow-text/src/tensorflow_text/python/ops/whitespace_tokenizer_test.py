@@ -20,6 +20,11 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import print_function
 
+import numpy as np
+import tensorflow as tf
+import tensorflow_text as tf_text
+
+from tensorflow.lite.python import interpreter
 from tensorflow.python.framework import constant_op
 from tensorflow.python.framework import test_util
 from tensorflow.python.ops.ragged import ragged_factory_ops
@@ -261,6 +266,46 @@ class WhitespaceTokenizerOpTest(test_util.TensorFlowTestCase):
     self.assertAllEqual(tokens, expected_tokens)
     self.assertAllEqual(starts, expected_offset_starts)
     self.assertAllEqual(ends, expected_offset_ends)
+
+  def testTfLite(self):
+    """Checks TFLite conversion and inference."""
+
+    class TokenizerModel(tf.keras.Model):
+
+      def __init__(self, **kwargs):
+        super().__init__(**kwargs)
+        self.tokenizer = WhitespaceTokenizer()
+
+      def call(self, input_tensor, **kwargs):
+        return self.tokenizer.tokenize(input_tensor).flat_values
+
+    # Test input data.
+    input_data = np.array(['Some minds are better kept apart'])
+
+    # Define a Keras model.
+    model = TokenizerModel()
+    # Do TF.Text inference.
+    tf_result = model(tf.constant(input_data))
+
+    # Convert to TFLite.
+    converter = tf.lite.TFLiteConverter.from_keras_model(model)
+    converter.target_spec.supported_ops = [tf.lite.OpsSet.TFLITE_BUILTINS]
+    converter.allow_custom_ops = True
+    tflite_model = converter.convert()
+
+    # Do TFLite inference.
+    interp = interpreter.InterpreterWithCustomOps(
+        model_content=tflite_model,
+        custom_op_registerers=tf_text.tflite_registrar.SELECT_TFTEXT_OPS)
+    interp.allocate_tensors()
+    input_details = interp.get_input_details()
+    interp.set_tensor(input_details[0]['index'], input_data)
+    interp.invoke()
+    output_details = interp.get_output_details()
+    tflite_result = interp.get_tensor(output_details[0]['index'])
+
+    # Assert the results are identical.
+    self.assertAllEqual(tflite_result, tf_result)
 
 
 if __name__ == '__main__':

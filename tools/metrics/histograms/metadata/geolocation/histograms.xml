@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="Geolocation.AuthorizationActionExistingUser"
-    enum="GeolocationAuthorizationAction" expires_after="2022-04-10">
+    enum="GeolocationAuthorizationAction" expires_after="2022-08-14">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -87,7 +87,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.LocationUpdate.ErrorCode"
-    enum="GeopositionErrorCode" expires_after="2022-04-17">
+    enum="GeopositionErrorCode" expires_after="2022-07-11">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>Error code for the geoposition sent to the renderers.</summary>
@@ -103,7 +103,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.Event"
-    enum="NetworkLocationRequestEvent" expires_after="2022-05-22">
+    enum="NetworkLocationRequestEvent" expires_after="2022-07-31">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -115,14 +115,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.NetError"
-    enum="NetErrorCodes" expires_after="2022-05-22">
+    enum="NetErrorCodes" expires_after="2022-07-24">
   <owner>JamesHollyer@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>Network errors in NetworkLocationRequest.</summary>
 </histogram>
 
 <histogram name="Geolocation.NetworkLocationRequest.ResponseCode"
-    enum="HttpResponseCode" expires_after="2022-05-22">
+    enum="HttpResponseCode" expires_after="2022-07-24">
   <owner>mattreynolds@chromium.org</owner>
   <owner>device-dev@chromium.org</owner>
   <summary>
@@ -134,7 +134,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Geolocation.PositionCache.CacheHit" enum="BooleanCacheHit"
-    expires_after="2022-05-22">
+    expires_after="2022-07-24">
   <owner>mattreynolds@chromium.org</owner>
   <owner>deviceapi-team@google.com</owner>
   <summary>

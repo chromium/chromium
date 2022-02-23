@@ -54,12 +54,11 @@ void FakeSoftwareVideoEncoder::Encode(
       RtpTimeTicks::FromTimeDelta(video_frame->timestamp(), kVideoFrequency);
   encoded_frame->reference_time = reference_time;
 
-  base::DictionaryValue values;
-  values.SetBoolean("key",
-                    encoded_frame->dependency == EncodedFrame::KEY);
-  values.SetInteger("ref", encoded_frame->referenced_frame_id.lower_32_bits());
-  values.SetInteger("id", encoded_frame->frame_id.lower_32_bits());
-  values.SetInteger("size", frame_size_);
+  base::Value values(base::Value::Type::DICTIONARY);
+  values.SetBoolKey("key", encoded_frame->dependency == EncodedFrame::KEY);
+  values.SetIntKey("ref", encoded_frame->referenced_frame_id.lower_32_bits());
+  values.SetIntKey("id", encoded_frame->frame_id.lower_32_bits());
+  values.SetIntKey("size", frame_size_);
   base::JSONWriter::Write(values, &encoded_frame->data);
   encoded_frame->data.resize(
       std::max<size_t>(encoded_frame->data.size(), frame_size_), ' ');

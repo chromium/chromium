@@ -22,7 +22,6 @@
 #include "net/http/http_status_code.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using std::find;
 using std::map;
 using std::string;
 using sync_pb::ClientToServerMessage;
@@ -572,7 +571,7 @@ bool MockConnectionManager::ProcessCommit(
         id_string = base::GenerateGUID();
       } else {
         ADD_FAILURE() << " for specifics type "
-                      << ModelTypeToString(model_type);
+                      << ModelTypeToDebugString(model_type);
         return false;
       }
     }

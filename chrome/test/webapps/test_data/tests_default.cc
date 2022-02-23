@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_WebAppIntegration_ChngAMode1_ChckAMode1_ChckBMode1 \
   DISABLED_WebAppIntegration_ChngAMode1_ChckAMode1_ChckBMode1
 #else

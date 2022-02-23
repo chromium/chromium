@@ -13,7 +13,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "base/memory/weak_ptr.h"
-#include "content/browser/devtools/protocol/forward.h"
+#include "content/browser/devtools/protocol/protocol.h"
 #include "content/public/browser/devtools_agent_host_client_channel.h"
 #include "content/public/browser/devtools_external_agent_proxy.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

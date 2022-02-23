@@ -1,4 +1,4 @@
-Test that clicking an attribution link in insecure contexts triggers an issue.
+Test that an attribution redirect with invalid trigger data triggers an issue.
 Issue reported: {
     code : AttributionReportingIssue
     details : {

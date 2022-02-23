@@ -1,0 +1,15 @@
+{
+  "name": "Manifest test app",
+  "scope": "/",
+  "icons": [
+    {
+      "src": "image-512px.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "isolated/simple.html",
+  "display": "standalone",
+  "orientation": "landscape",
+  "isolated_storage": true
+}

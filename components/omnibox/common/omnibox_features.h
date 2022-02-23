@@ -6,6 +6,7 @@
 #define COMPONENTS_OMNIBOX_COMMON_OMNIBOX_FEATURES_H_
 
 #include "base/feature_list.h"
+#include "base/metrics/field_trial_params.h"
 
 namespace omnibox {
 
@@ -43,6 +44,7 @@ extern const base::Feature kOnFocusSuggestionsContextualWeb;
 extern const base::Feature kOnFocusSuggestionsContextualWebAllowSRP;
 extern const base::Feature kOnFocusSuggestionsContextualWebOnContent;
 extern const base::Feature kLocalHistoryZeroSuggest;
+extern const base::Feature kZeroSuggestPrefetching;
 // Related, kMaxZeroSuggestMatches.
 
 // On Device Head Suggest.
@@ -56,6 +58,7 @@ extern const base::Feature kDisableCGIParamMatching;
 extern const base::Feature kShortBookmarkSuggestions;
 extern const base::Feature kShortBookmarkSuggestionsByTotalInputLength;
 extern const base::Feature kPreserveLongerShortcutsText;
+extern const base::Feature kAggregateShortcuts;
 extern const base::Feature kBookmarkPaths;
 
 // Document provider
@@ -70,21 +73,27 @@ extern const base::Feature kMostVisitedTiles;
 extern const base::Feature kRichAutocompletion;
 extern const base::Feature kNtpRealboxPedals;
 extern const base::Feature kNtpRealboxSuggestionAnswers;
+extern const base::Feature kNtpRealboxTailSuggest;
+extern const base::Feature kOmniboxFuzzyUrlSuggestions;
+extern const base::Feature kOmniboxPedalsAndroidBatch1;
 extern const base::Feature kOmniboxPedalsBatch2NonEnglish;
-extern const base::Feature kOmniboxPedalsBatch3;
 extern const base::Feature kOmniboxPedalsBatch3NonEnglish;
 extern const base::Feature kOmniboxPedalsTranslationConsole;
-extern const base::Feature kOmniboxKeywordSearchButton;
 extern const base::Feature kWebUIOmniboxPopup;
 
 // Omnibox UI - these affect the UI or function of the location bar (not the
 // popup).
 extern const base::Feature kOmniboxAssistantVoiceSearch;
 
+// Omnibox & Suggestions UI - these affect both the omnibox and the suggestions
+// popup.
+extern const base::Feature kClosePopupWithEscape;
+extern const base::Feature kBlurWithEscape;
+
 // Settings Page - these affect the appearance of the Search Engines settings
 // page
-extern const base::Feature kKeywordSpaceTriggeringSetting;
 extern const base::Feature kActiveSearchEngines;
+extern const base::Feature kSiteSearchStarterPack;
 
 // Experiment to introduce new security indicators for HTTPS.
 extern const base::Feature kUpdatedConnectionSecurityIndicators;

@@ -15,9 +15,9 @@ namespace device {
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const uint64_t kTestDeviceId = 42;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const wchar_t* kTestDeviceId = L"device1";
 #else
 const char* kTestDeviceId = "device1";

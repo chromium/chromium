@@ -176,7 +176,6 @@ cast_test_group("cast_tests") {
       ":cast_shell_browsertests",
       ":cast_shell_unittests",
       "//ipc:ipc_tests",
-      "//jingle:jingle_unittests",
       "//url:url_unittests",
     ]
 
@@ -550,6 +549,7 @@ repack("cast_shell_pak") {
     "$root_gen_dir/ui/resources/webui_generated_resources.pak",
     "$root_gen_dir/ui/resources/webui_resources.pak",
     "$root_gen_dir/ui/strings/app_locale_settings_en-US.pak",
+    "$root_gen_dir/ui/strings/ax_strings_en-US.pak",
     "$root_gen_dir/ui/strings/ui_strings_en-US.pak",
   ]
 
@@ -636,6 +636,7 @@ buildflag_header("chromecast_buildflags") {
     "DISABLE_SECURE_FLAC_OPUS_DECODING=$disable_secure_flac_and_opus_decoding",
     "ENABLE_ASSISTANT=$enable_assistant",
     "ENABLE_CHROMECAST_EXTENSIONS=$enable_chromecast_extensions",
+    "ENABLE_CHROMECAST_WEBUI=$enable_chromecast_webui",
     "ENABLE_EXTERNAL_MOJO_SERVICES=$enable_external_mojo_services",
     "ENABLE_PLAYREADY=$enable_playready",
     "ENABLE_VIDEO_CAPTURE_SERVICE=$enable_video_capture_service",

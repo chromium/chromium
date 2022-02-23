@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<svg width="200" height="400">
+    <defs>
+        <linearGradient id="gradient" x1="0%" y1="0%" x2="0%" y2="100%">
+            <stop offset="0" style="stop-color:white"></stop>
+            <stop offset="1" style="stop-color:blue"></stop>
+        </linearGradient>
+        <linearGradient id="optOutGradient" x1="0%" y1="0%" x2="0%" y2="100%" style="color-scheme: light only;">
+            <stop offset="0" stop-color="white"></stop>
+            <stop offset="1" stop-color="blue"></stop>
+        </linearGradient>
+    </defs>
+    <rect y="0"  width="200" height="100" stroke="blue" stroke-width="3" fill="url(#optOutGradient)"/>
+    <rect y="110" width="200" height="100" stroke="blue" stroke-width="3" fill="url(#gradient)" style="color-scheme: light only;" />
+    <rect y="220" width="200" height="100" stroke="blue" stroke-width="3" fill="url(#optOutGradient)" style="color-scheme: light only;"/>
+</svg>

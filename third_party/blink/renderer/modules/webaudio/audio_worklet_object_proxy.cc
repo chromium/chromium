@@ -34,15 +34,17 @@ void AudioWorkletObjectProxy::DidCreateWorkerGlobalScope(
 void AudioWorkletObjectProxy::SynchronizeProcessorInfoList() {
   DCHECK(global_scope_);
 
-  if (global_scope_->NumberOfRegisteredDefinitions() == 0)
+  if (global_scope_->NumberOfRegisteredDefinitions() == 0) {
     return;
+  }
 
   std::unique_ptr<Vector<CrossThreadAudioWorkletProcessorInfo>>
       processor_info_list =
           global_scope_->WorkletProcessorInfoListForSynchronization();
 
-  if (processor_info_list->size() == 0)
+  if (processor_info_list->size() == 0) {
     return;
+  }
 
   PostCrossThreadTask(
       *GetParentExecutionContextTaskRunners()->Get(TaskType::kInternalLoading),

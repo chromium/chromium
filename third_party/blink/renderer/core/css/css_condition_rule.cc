@@ -15,6 +15,10 @@ CSSConditionRule::CSSConditionRule(StyleRuleCondition* condition_rule,
 CSSConditionRule::~CSSConditionRule() = default;
 
 String CSSConditionRule::conditionText() const {
+  return ConditionTextInternal();
+}
+
+String CSSConditionRule::ConditionTextInternal() const {
   return static_cast<StyleRuleCondition*>(group_rule_.Get())->ConditionText();
 }
 

@@ -5,7 +5,6 @@
 #ifndef GOOGLE_APIS_GCM_ENGINE_GCM_REQUEST_TEST_BASE_H_
 #define GOOGLE_APIS_GCM_ENGINE_GCM_REQUEST_TEST_BASE_H_
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"

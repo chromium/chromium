@@ -5,11 +5,12 @@
 #include "chrome/browser/ash/browser_accelerator_configuration.h"
 
 #include "ash/public/cpp/accelerator_configuration.h"
+#include "ash/public/mojom/accelerator_keys.mojom.h"
 
 namespace ash {
 
 BrowserAcceleratorConfiguration::BrowserAcceleratorConfiguration()
-    : AcceleratorConfiguration(AcceleratorSource::kBrowser) {}
+    : AcceleratorConfiguration(ash::mojom::AcceleratorSource::kBrowser) {}
 
 BrowserAcceleratorConfiguration::~BrowserAcceleratorConfiguration() = default;
 

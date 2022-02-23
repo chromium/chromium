@@ -7,9 +7,10 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "chromecast/browser/webui/mojom/webui.mojom.h"
 #include "content/public/browser/url_data_source.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace chromecast {

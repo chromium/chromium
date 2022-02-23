@@ -9,6 +9,7 @@
 #include "ash/components/phonehub/fake_phone_hub_manager.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/eche_app_ui/fake_feature_status_provider.h"
+#include "ash/webui/eche_app_ui/fake_launch_app_helper.h"
 #include "ash/webui/eche_app_ui/launch_app_helper.h"
 #include "base/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -17,31 +18,6 @@
 
 namespace ash {
 namespace eche_app {
-
-class TestableLaunchAppHelper : public LaunchAppHelper {
- public:
-  TestableLaunchAppHelper(
-      phonehub::PhoneHubManager* phone_hub_manager,
-      LaunchEcheAppFunction launch_eche_app_function,
-      CloseEcheAppFunction close_eche_app_function,
-      LaunchNotificationFunction launch_notification_function)
-      : LaunchAppHelper(phone_hub_manager,
-                        launch_eche_app_function,
-                        close_eche_app_function,
-                        launch_notification_function) {}
-
-  ~TestableLaunchAppHelper() override = default;
-  TestableLaunchAppHelper(const TestableLaunchAppHelper&) = delete;
-  TestableLaunchAppHelper& operator=(const TestableLaunchAppHelper&) = delete;
-
-  // LaunchAppHelper:
-  bool IsAppLaunchAllowed() const override { return true; }
-  void ShowNotification(const absl::optional<std::u16string>& title,
-                        const absl::optional<std::u16string>& message,
-                        std::unique_ptr<NotificationInfo> info) const override {
-    // Do nothing.
-  }
-};
 
 class EcheRecentAppClickHandlerTest : public testing::Test {
  protected:
@@ -60,7 +36,7 @@ class EcheRecentAppClickHandlerTest : public testing::Test {
         /*enabled_features=*/{features::kEcheSWA,
                               features::kPhoneHubRecentApps},
         /*disabled_features=*/{});
-    launch_app_helper_ = std::make_unique<TestableLaunchAppHelper>(
+    launch_app_helper_ = std::make_unique<FakeLaunchAppHelper>(
         &fake_phone_hub_manager_,
         base::BindRepeating(
             &EcheRecentAppClickHandlerTest::FakeLaunchEcheAppFunction,
@@ -168,6 +144,8 @@ TEST_F(EcheRecentAppClickHandlerTest, StatusChangeTransitions) {
   EXPECT_EQ(1u, GetNumberOfRecentAppsInteractionHandlers());
   SetStatus(FeatureStatus::kDependentFeaturePending);
   EXPECT_EQ(0u, GetNumberOfRecentAppsInteractionHandlers());
+  SetStatus(FeatureStatus::kNotEnabledByPhone);
+  EXPECT_EQ(1u, GetNumberOfRecentAppsInteractionHandlers());
 }
 
 TEST_F(EcheRecentAppClickHandlerTest, LaunchEcheAppFunction) {

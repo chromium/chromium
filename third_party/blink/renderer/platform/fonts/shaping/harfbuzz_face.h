@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_FONTS_SHAPING_HARFBUZZ_FACE_H_
 
 #include "base/memory/scoped_refptr.h"
+#include "third_party/blink/renderer/platform/fonts/glyph.h"
 #include "third_party/blink/renderer/platform/fonts/typesetting_features.h"
 #include "third_party/blink/renderer/platform/fonts/unicode_range_set.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -71,17 +72,17 @@ class HarfBuzzFace : public RefCounted<HarfBuzzFace> {
 
   bool HasSpaceInLigaturesOrKerning(TypesettingFeatures);
   unsigned UnitsPerEmFromHeadTable();
+  Glyph HbGlyphForCharacter(UChar32 character);
 
   bool ShouldSubpixelPosition();
 
  private:
   HarfBuzzFace(FontPlatformData*, uint64_t);
 
-  HbScoped<hb_face_t> CreateFace();
   void PrepareHarfBuzzFontData();
 
-  FontPlatformData* platform_data_;
-  uint64_t unique_id_;
+  FontPlatformData* const platform_data_;
+  const uint64_t unique_id_;
   hb_font_t* unscaled_font_;
   HarfBuzzFontData* harfbuzz_font_data_;
 };

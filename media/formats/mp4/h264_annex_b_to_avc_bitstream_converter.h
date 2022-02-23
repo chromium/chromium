@@ -12,8 +12,8 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/span.h"
 #include "media/base/media_export.h"
-#include "media/base/status.h"
 #include "media/formats/mp4/box_definitions.h"
+#include "media/formats/mp4/mp4_status.h"
 #include "media/video/h264_parser.h"
 
 namespace media {
@@ -45,10 +45,10 @@ class MEDIA_EXPORT H264AnnexBToAvcBitstreamConverter {
   // from GetCurrentConfig().
   // |size_out| - number of bytes written to |output|, or desired size of
   // |output| if it's too small.
-  Status ConvertChunk(base::span<const uint8_t> input,
-                      base::span<uint8_t> output,
-                      bool* config_changed_out,
-                      size_t* size_out);
+  MP4Status ConvertChunk(base::span<const uint8_t> input,
+                         base::span<uint8_t> output,
+                         bool* config_changed_out,
+                         size_t* size_out);
 
   // Returns the latest version of decoder configuration, found in converted
   // video chunks.

@@ -8,12 +8,14 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
@@ -21,6 +23,7 @@
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/env.h"
+#include "ui/aura/host_frame_rate_throttler.h"
 #include "ui/aura/native_window_occlusion_tracker.h"
 #include "ui/aura/scoped_keyboard_hook.h"
 #include "ui/aura/scoped_simple_keyboard_hook.h"
@@ -82,7 +85,7 @@ class ScopedLocalSurfaceIdValidator {
   }
 
  private:
-  Window* const window_;
+  const raw_ptr<Window> window_;
   const viz::LocalSurfaceId local_surface_id_;
 };
 #else
@@ -92,49 +95,6 @@ class ScopedLocalSurfaceIdValidator {
   ~ScopedLocalSurfaceIdValidator() {}
 };
 #endif
-
-// Used to throttle the frame rate of hosts that are occluded.
-class HostThrottler {
- public:
-  static HostThrottler& GetInstance() {
-    static base::NoDestructor<HostThrottler> instance;
-    return *instance;
-  }
-
-  void AddHost(WindowTreeHost* host) {
-    if (base::Contains(hosts_, host))
-      return;
-    hosts_.insert(host);
-    UpdateHostFrameSinkManager();
-  }
-
-  void RemoveHost(WindowTreeHost* host) {
-    if (!base::Contains(hosts_, host))
-      return;
-    hosts_.erase(host);
-    UpdateHostFrameSinkManager();
-  }
-
-  const base::flat_set<WindowTreeHost*>& hosts() const { return hosts_; }
-
- private:
-  friend class base::NoDestructor<HostThrottler>;
-
-  HostThrottler() = default;
-  ~HostThrottler() = default;
-
-  void UpdateHostFrameSinkManager() {
-    std::vector<viz::FrameSinkId> ids;
-    ids.reserve(hosts_.size());
-    for (WindowTreeHost* host : hosts_)
-      ids.push_back(host->compositor()->frame_sink_id());
-    Env::GetInstance()->context_factory()->GetHostFrameSinkManager()->Throttle(
-        ids, base::Seconds(1));
-  }
-
-  // Set of hosts that are currently throttled.
-  base::flat_set<WindowTreeHost*> hosts_;
-};
 
 }  // namespace
 
@@ -151,16 +111,24 @@ class WindowTreeHost::HideHelper {
   explicit HideHelper(WindowTreeHost* host)
       : host_(host),
         compositor_root_layer_(
-            ccLayerFromUiLayer(host->window()->layer())->parent()),
+            ccLayerFromUiLayer(host->window()->layer())->mutable_parent()),
         layer_for_transition_(
             std::make_unique<ui::Layer>(ui::LAYER_SOLID_COLOR)) {
     layer_for_transition_->SetColor(SK_ColorWHITE);
     aura::Window* host_window = host_->window();
+    ui::Layer* host_window_layer = host_window->layer();
+    ui::Compositor* compositor = host_->compositor();
     // SetRootLayer() resets the `compositor_` member in Layer. If
     // SetRootLayer() were used, it would mean the existing layer hierarchy
     // would no longer think it is in a compositor. As this state is temporary,
     // and purely to release resources, SetRootLayer() is not used.
-    ccLayerFromUiLayer(host_window->layer())->RemoveFromParent();
+
+    // We do need to disable ticking of animations since the animation code
+    // expects that its callers ensure that any ticking animations reference
+    // element IDs for layers that are currently in the layer tree.
+    DCHECK_EQ(host_window_layer, compositor->root_layer());
+    compositor->DisableAnimations();
+    ccLayerFromUiLayer(host_window_layer)->RemoveFromParent();
     layer_for_transition_->SetBounds(host_window->bounds());
     compositor_root_layer_->AddChild(
         ccLayerFromUiLayer(layer_for_transition_.get()));
@@ -168,7 +136,7 @@ class WindowTreeHost::HideHelper {
         host_window->layer()->device_scale_factor());
     // Request a presentation frame. Once the frame is generated the real root
     // layer is added back (from the destructor).
-    host_->compositor()->RequestPresentationTimeForNextFrame(base::BindOnce(
+    compositor->RequestPresentationTimeForNextFrame(base::BindOnce(
         &HideHelper::OnFramePresented, weak_ptr_factory_.GetWeakPtr()));
   }
 
@@ -177,6 +145,8 @@ class WindowTreeHost::HideHelper {
     compositor_root_layer_->AddChild(ccLayerFromUiLayer(host_window_layer));
     host_window_layer->OnDeviceScaleFactorChanged(
         layer_for_transition_->device_scale_factor());
+    DCHECK_EQ(host_window_layer, host_->compositor()->root_layer());
+    host_->compositor()->EnableAnimations();
   }
 
  private:
@@ -185,7 +155,7 @@ class WindowTreeHost::HideHelper {
     // WARNING: this has been deleted.
   }
 
-  WindowTreeHost* host_;
+  raw_ptr<WindowTreeHost> host_;
   scoped_refptr<cc::Layer> compositor_root_layer_;
   std::unique_ptr<ui::Layer> layer_for_transition_;
   base::WeakPtrFactory<HideHelper> weak_ptr_factory_{this};
@@ -203,7 +173,6 @@ WindowTreeHost::VideoCaptureLock::VideoCaptureLock(WindowTreeHost* host)
 // WindowTreeHost, public:
 
 WindowTreeHost::~WindowTreeHost() {
-  if (display::Screen::GetScreen())
   DCHECK(!compositor_) << "compositor must be destroyed before root window";
   if (owned_input_method_) {
     delete input_method_;
@@ -468,9 +437,9 @@ void WindowTreeHost::SetNativeWindowOcclusionState(
     if (ShouldThrottleWhenOccluded()) {
       // Throttling doesn't update the visibility.
       if (occlusion_state_ == Window::OcclusionState::OCCLUDED)
-        HostThrottler::GetInstance().AddHost(this);
+        HostFrameRateThrottler::GetInstance().AddHost(this);
       else
-        HostThrottler::GetInstance().RemoveHost(this);
+        HostFrameRateThrottler::GetInstance().RemoveHost(this);
     } else {
       const bool visible = CalculateCompositorVisibilityFromOcclusionState();
       // Transitioning to hidden means the compositor state hasn't been updated
@@ -545,8 +514,8 @@ WindowTreeHost::WindowTreeHost(std::unique_ptr<Window> window)
     window_ = new Window(nullptr);
   auto display = display::Screen::GetScreen()->GetDisplayNearestWindow(window_);
   device_scale_factor_ = display.device_scale_factor();
-#if defined(OS_WIN)
-  // The feature state is neccessary but not sufficient for checking if
+#if BUILDFLAG(IS_WIN)
+  // The feature state is necessary but not sufficient for checking if
   // occlusion is enabled. It may be disabled by other means (e.g., policy).
   native_window_occlusion_enabled_ =
       !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless) &&
@@ -570,7 +539,7 @@ void WindowTreeHost::UpdateCompositorVisibility(bool visible) {
     // disabled. For the most part, if ShouldThrottleWhenOccluded() is true,
     // the handling of occlusion changing is done in
     // SetNativeWindowOcclusionState().
-    HostThrottler::GetInstance().RemoveHost(this);
+    HostFrameRateThrottler::GetInstance().RemoveHost(this);
   }
 
   if (visible) {
@@ -592,8 +561,7 @@ void WindowTreeHost::DestroyCompositor() {
   if (!compositor_)
     return;
 
-  if (ShouldThrottleWhenOccluded())
-    HostThrottler::GetInstance().RemoveHost(this);
+  HostFrameRateThrottler::GetInstance().RemoveHost(this);
 
   // Explicitly delete the HideHelper early as it makes use of `compositor_`
   // and `window_`.
@@ -697,7 +665,11 @@ void WindowTreeHost::OnHostResizedInPixels(
 
   display::Display display =
       display::Screen::GetScreen()->GetDisplayNearestWindow(window());
-  device_scale_factor_ = display.device_scale_factor();
+  // If we don't have the actual display, don't overwrite the scale factor with
+  // the default value. See https://crbug.com/1285476 for details.
+  if (display.is_valid())
+    device_scale_factor_ = display.device_scale_factor();
+
   UpdateRootWindowSizeInPixels();
 
   // Passing |new_size_in_pixels| to set compositor size. It could be different
@@ -812,7 +784,7 @@ bool WindowTreeHost::CalculateCompositorVisibilityFromOcclusionState() const {
 }
 
 bool WindowTreeHost::ShouldReleaseResourcesWhenHidden() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {
@@ -829,7 +801,7 @@ bool WindowTreeHost::ShouldReleaseResourcesWhenHidden() const {
 }
 
 bool WindowTreeHost::ShouldThrottleWhenOccluded() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!base::FeatureList::IsEnabled(
           features::kApplyNativeOcclusionToCompositor) ||
       !IsNativeWindowOcclusionEnabled()) {
@@ -859,7 +831,7 @@ void WindowTreeHost::FinishHideTransition() {
 // static
 const base::flat_set<WindowTreeHost*>&
 WindowTreeHost::GetThrottledHostsForTesting() {
-  return HostThrottler::GetInstance().hosts();
+  return HostFrameRateThrottler::GetInstance().hosts();
 }
 
 void WindowTreeHost::StartReleasingResourcesForHide() {

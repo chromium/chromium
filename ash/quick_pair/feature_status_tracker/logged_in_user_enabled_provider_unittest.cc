@@ -71,7 +71,7 @@ TEST_F(LoggedInUserEnabledProviderTest, GuestLoggedIn) {
 
 TEST_F(LoggedInUserEnabledProviderTest, PublicAccountLoggedIn) {
   Login(user_manager::UserType::USER_TYPE_PUBLIC_ACCOUNT);
-  EXPECT_TRUE(provider_->is_enabled());
+  EXPECT_FALSE(provider_->is_enabled());
 }
 
 TEST_F(LoggedInUserEnabledProviderTest, ChildLoggedIn) {

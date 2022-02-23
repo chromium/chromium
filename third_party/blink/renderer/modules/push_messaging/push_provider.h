@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom-blink.h"

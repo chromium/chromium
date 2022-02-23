@@ -39,7 +39,7 @@ struct MediaLogRecord {
     // See media/base/media_log_events.h for info.
     kMediaEventTriggered,
 
-    // TODO(tmathmeyer) use media::Status eventually instead of PipelineStatus
+    // Represents the contents some TypedStatus<T>
     kMediaStatus,
 
     kMaxValue = kMediaStatus,

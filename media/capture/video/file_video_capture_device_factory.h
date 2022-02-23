@@ -21,7 +21,7 @@ class CAPTURE_EXPORT FileVideoCaptureDeviceFactory
   FileVideoCaptureDeviceFactory() {}
   ~FileVideoCaptureDeviceFactory() override {}
 
-  std::unique_ptr<VideoCaptureDevice> CreateDevice(
+  VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;
   void GetDevicesInfo(GetDevicesInfoCallback callback) override;
 };

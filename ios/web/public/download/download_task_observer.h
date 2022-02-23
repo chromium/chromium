@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_PUBLIC_DOWNLOAD_DOWNLOAD_TASK_OBSERVER_H_
 #define IOS_WEB_PUBLIC_DOWNLOAD_DOWNLOAD_TASK_OBSERVER_H_
 
-#include "base/macros.h"
-
 namespace web {
 
 class DownloadTask;

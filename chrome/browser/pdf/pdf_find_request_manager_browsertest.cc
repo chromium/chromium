@@ -4,6 +4,7 @@
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -87,7 +88,7 @@ class PdfFindRequestManagerTest : public base::test::WithFeatureOverride,
 
  private:
   FindTestWebContentsDelegate test_delegate_;
-  WebContentsDelegate* normal_delegate_ = nullptr;
+  raw_ptr<WebContentsDelegate> normal_delegate_ = nullptr;
 
   // The ID of the last find request requested.
   int last_request_id_ = 0;
@@ -114,7 +115,7 @@ INSTANTIATE_FEATURE_OVERRIDE_TEST_SUITE(
 
 // Tests searching in a full-page PDF.
 // Flaky on Windows ASAN: crbug.com/1030368.
-#if defined(OS_WIN) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER)
 #define MAYBE_FindInPDF DISABLED_FindInPDF
 #else
 #define MAYBE_FindInPDF FindInPDF

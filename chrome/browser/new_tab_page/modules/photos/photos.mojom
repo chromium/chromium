@@ -33,4 +33,11 @@ interface PhotosHandler {
   OnUserOptIn(bool accept);
   // Stores the last time the user opened a memory.
   OnMemoryOpen();
+  // Returns whether to show the soft opt out button.
+  ShouldShowSoftOptOutButton() => (bool show_soft_opt_out_button);
+  // Dismisses the module for fixed amount of time before asking the user
+  // to opt in again.
+  SoftOptOut();
+  // Returns the string which should be shown as the opt-in card title.
+  GetOptInTitleText(array<Memory> memories) => (string opt_in_title_text);
 };

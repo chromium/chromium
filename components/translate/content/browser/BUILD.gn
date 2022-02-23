@@ -14,8 +14,6 @@ static_library("browser") {
     "content_translate_util.h",
     "per_frame_content_translate_driver.cc",
     "per_frame_content_translate_driver.h",
-    "translate_model_service.cc",
-    "translate_model_service.h",
   ]
 
   public_deps = [
@@ -34,6 +32,7 @@ static_library("browser") {
     "//components/search_engines:search_engines",
     "//components/services/language_detection/public/cpp",
     "//components/services/language_detection/public/mojom",
+    "//components/translate/core/browser:translate_model_service",
     "//components/translate/core/language_detection:language_detection",
     "//components/ukm/content",
     "//content/public/common",

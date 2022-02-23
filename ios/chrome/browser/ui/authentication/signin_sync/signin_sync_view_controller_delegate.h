@@ -7,11 +7,24 @@
 
 #import "ios/chrome/common/ui/promo_style/promo_style_view_controller.h"
 
+@class SigninSyncViewController;
+
 // Delegate of sign-in screen view controller.
 @protocol SigninSyncViewControllerDelegate <PromoStyleViewControllerDelegate>
 
 // Called when the user taps to see the account picker.
-- (void)showAccountPickerFromPoint:(CGPoint)point;
+- (void)signinSyncViewController:
+            (SigninSyncViewController*)signinSyncViewController
+      showAccountPickerFromPoint:(CGPoint)point;
+
+// Called when the user taps to see sync settings.
+- (void)signinSyncViewControllerDidTapOnSettings:
+    (SigninSyncViewController*)signinSyncViewController;
+
+// Adds consent string ID.
+- (void)signinSyncViewController:
+            (SigninSyncViewController*)signinSyncViewController
+              addConsentStringID:(const int)stringID;
 
 @end
 

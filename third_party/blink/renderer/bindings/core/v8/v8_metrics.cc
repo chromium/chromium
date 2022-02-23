@@ -158,10 +158,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
   // Report throughput metrics:
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.Full.Cpp",
-      base::Microseconds(event.total_cpp.mark_wall_clock_duration_in_us +
-                         event.total_cpp.weak_wall_clock_duration_in_us +
-                         event.total_cpp.compact_wall_clock_duration_in_us +
-                         event.total_cpp.sweep_wall_clock_duration_in_us));
+      base::Microseconds(event.total_cpp.total_wall_clock_duration_in_us));
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.Full.Mark.Cpp",
       base::Microseconds(event.total_cpp.mark_wall_clock_duration_in_us));
@@ -178,10 +175,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Cpp",
       base::Microseconds(
-          event.main_thread_cpp.mark_wall_clock_duration_in_us +
-          event.main_thread_cpp.weak_wall_clock_duration_in_us +
-          event.main_thread_cpp.compact_wall_clock_duration_in_us +
-          event.main_thread_cpp.sweep_wall_clock_duration_in_us));
+          event.main_thread_cpp.total_wall_clock_duration_in_us));
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Mark.Cpp",
       base::Microseconds(event.main_thread_cpp.mark_wall_clock_duration_in_us));
@@ -199,6 +193,10 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
   // Report atomic pause metrics:
   UMA_HISTOGRAM_TIMES(
+      "V8.GC.Cycle.MainThread.Full.Atomic.Cpp",
+      base::Microseconds(
+          event.main_thread_atomic_cpp.total_wall_clock_duration_in_us));
+  UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Atomic.Mark.Cpp",
       base::Microseconds(
           event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us));
@@ -213,13 +211,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.MainThread.Full.Atomic.Sweep.Cpp",
       base::Microseconds(
-          event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us));
-  UMA_HISTOGRAM_TIMES(
-      "V8.GC.Cycle.MainThread.Full.Atomic.Cpp",
-      base::Microseconds(
-          event.main_thread_atomic_cpp.mark_wall_clock_duration_in_us +
-          event.main_thread_atomic_cpp.weak_wall_clock_duration_in_us +
-          event.main_thread_atomic_cpp.compact_wall_clock_duration_in_us +
           event.main_thread_atomic_cpp.sweep_wall_clock_duration_in_us));
 
   // Report size metrics:
@@ -267,7 +258,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, collection_rate_histogram,
-      ("V8.GC.Cycle.CollectionRate.Full.Cpp", 0, 100, 20));
+      ("V8.GC.Cycle.CollectionRate.Full.Cpp", 1, 100, 20));
   collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
       100 * event.collection_rate_cpp_in_percent));
 }
@@ -327,13 +318,16 @@ void V8MetricsRecorder::AddMainThreadEvent(
     const v8::metrics::GarbageCollectionYoungCycle& event,
     ContextId context_id) {
   // Check that all used values have been initialized.
+  DCHECK_LE(0, event.reason);
   DCHECK_LE(0, event.total_wall_clock_duration_in_us);
   DCHECK_LE(0, event.main_thread_wall_clock_duration_in_us);
   DCHECK_LE(0, event.collection_rate_in_percent);
   DCHECK_LE(0, event.efficiency_in_bytes_per_us);
   DCHECK_LE(0, event.main_thread_efficiency_in_bytes_per_us);
 
-  // Report throughput metrics:
+  UMA_HISTOGRAM_ENUMERATION("V8.GC.Cycle.Reason.Young", event.reason,
+                            v8::internal::kGarbageCollectionReasonMaxValue);
+
   UMA_HISTOGRAM_TIMES(
       "V8.GC.Cycle.Young",
       base::Microseconds(event.total_wall_clock_duration_in_us));
@@ -341,7 +335,6 @@ void V8MetricsRecorder::AddMainThreadEvent(
       "V8.GC.Cycle.MainThread.Young",
       base::Microseconds(event.main_thread_wall_clock_duration_in_us));
 
-  // Report efficacy metrics:
   static constexpr size_t kMinSize = 1;
   static constexpr size_t kMaxSize = 4 * 1024 * 1024;
   static constexpr size_t kNumBuckets = 50;
@@ -361,7 +354,7 @@ void V8MetricsRecorder::AddMainThreadEvent(
 
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, collection_rate_histogram,
-      ("V8.GC.Cycle.CollectionRate.Young", 0, 100, 20));
+      ("V8.GC.Cycle.CollectionRate.Young", 1, 100, 20));
   collection_rate_histogram.Count(base::saturated_cast<base::Histogram::Sample>(
       100 * event.collection_rate_in_percent));
 }

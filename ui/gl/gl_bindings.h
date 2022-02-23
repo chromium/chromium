@@ -13,7 +13,7 @@
 // __STDC_FORMAT_MACROS is defined in order for //base/format_macros.h to
 // function correctly. See comment and #error message in //base/format_macros.h
 // for details.
-#if defined(OS_POSIX) && !defined(__STDC_FORMAT_MACROS)
+#if BUILDFLAG(IS_POSIX) && !defined(__STDC_FORMAT_MACROS)
 #define __STDC_FORMAT_MACROS
 #endif
 
@@ -32,9 +32,9 @@
 #include "ui/gl/gl_export.h"
 
 // The standard OpenGL native extension headers are also included.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <GL/wglext.h>
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <OpenGL/OpenGL.h>
 #elif defined(USE_GLX)
 using Display = struct _XDisplay;
@@ -141,6 +141,9 @@ struct XVisualInfo;
 
 // GL_ANGLE_memory_size
 #define GL_MEMORY_SIZE_ANGLE 0x93AD
+
+// GL_ANGLE_rgbx_internal_format
+#define GL_RGBX8_ANGLE 0x96BA
 
 // GL_EXT_occlusion_query_boolean
 #define GL_ANY_SAMPLES_PASSED_EXT                        0x8C2F
@@ -483,7 +486,7 @@ struct XVisualInfo;
 
 #define GL_GLEXT_PROTOTYPES 1
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define GL_BINDING_CALL WINAPI
 #else
 #define GL_BINDING_CALL

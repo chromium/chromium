@@ -16,7 +16,7 @@ ReportSchedulerIOS::ReportSchedulerIOS() = default;
 
 ReportSchedulerIOS::~ReportSchedulerIOS() = default;
 
-PrefService* ReportSchedulerIOS::GetLocalState() {
+PrefService* ReportSchedulerIOS::GetPrefService() {
   return GetApplicationContext()->GetLocalState();
 }
 

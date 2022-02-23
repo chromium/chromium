@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -48,6 +49,8 @@
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -223,7 +226,7 @@ class MockTestCastSocket : public TestCastSocketBase {
 
   void SetupMockTransport() {
     mock_transport_ = new MockCastTransport;
-    SetTransportForTesting(base::WrapUnique(mock_transport_));
+    SetTransportForTesting(base::WrapUnique(mock_transport_.get()));
   }
 
   bool TestVerifyChannelPolicyAudioOnly() {
@@ -238,7 +241,7 @@ class MockTestCastSocket : public TestCastSocketBase {
   }
 
  private:
-  MockCastTransport* mock_transport_ = nullptr;
+  raw_ptr<MockCastTransport> mock_transport_ = nullptr;
 };
 
 // TODO(https://crbug.com/928467):  Remove this class.
@@ -348,20 +351,6 @@ class TestSocketFactory : public net::ClientSocketFactory {
         std::move(nested_socket), net::HostPortPair(), net::SSLConfig(),
         ssl_socket_data_provider_.get());
   }
-  std::unique_ptr<net::ProxyClientSocket> CreateProxyClientSocket(
-      std::unique_ptr<net::StreamSocket> stream_socket,
-      const std::string& user_agent,
-      const net::HostPortPair& endpoint,
-      const net::ProxyServer& proxy_server,
-      net::HttpAuthController* http_auth_controller,
-      bool tunnel,
-      bool using_spdy,
-      net::NextProto negotiated_protocol,
-      net::ProxyDelegate* proxy_delegate,
-      const net::NetworkTrafficAnnotationTag& traffic_annotation) override {
-    NOTIMPLEMENTED();
-    return nullptr;
-  }
 
   net::IPEndPoint ip_;
   // Simulated connect data
@@ -383,7 +372,6 @@ class CastSocketTestBase : public testing::Test {
  protected:
   CastSocketTestBase()
       : task_environment_(content::BrowserTaskEnvironment::IO_MAINLOOP),
-        url_request_context_(true),
         logger_(new Logger()),
         observer_(new MockCastSocketObserver()),
         socket_open_params_(CreateIPEndPointForTest(),
@@ -398,11 +386,13 @@ class CastSocketTestBase : public testing::Test {
   void SetUp() override {
     EXPECT_CALL(*observer_, OnMessage(_, _)).Times(0);
 
-    url_request_context_.set_client_socket_factory(&client_socket_factory_);
-    url_request_context_.Init();
+    auto context_builder = net::CreateTestURLRequestContextBuilder();
+    context_builder->set_client_socket_factory_for_testing(
+        &client_socket_factory_);
+    url_request_context_ = context_builder->Build();
     network_context_ = std::make_unique<network::NetworkContext>(
         nullptr, network_context_remote_.BindNewPipeAndPassReceiver(),
-        &url_request_context_,
+        url_request_context_.get(),
         /*cors_exempt_header_list=*/std::vector<std::string>());
   }
 
@@ -415,10 +405,10 @@ class CastSocketTestBase : public testing::Test {
   TestSocketFactory* client_socket_factory() { return &client_socket_factory_; }
 
   content::BrowserTaskEnvironment task_environment_;
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   std::unique_ptr<network::NetworkContext> network_context_;
   mojo::Remote<network::mojom::NetworkContext> network_context_remote_;
-  Logger* logger_;
+  raw_ptr<Logger> logger_;
   CompleteHandler handler_;
   std::unique_ptr<MockCastSocketObserver> observer_;
   CastSocketOpenParams socket_open_params_;
@@ -1065,7 +1055,7 @@ TEST_F(MockCastSocketTest, TestOpenChannelClosedSocket) {
 }
 
 // https://crbug.com/874491, flaky on Win and Mac
-#if defined(OS_WIN) || defined(OS_APPLE)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE)
 #define MAYBE_TestConnectEndToEndWithRealSSL \
   DISABLED_TestConnectEndToEndWithRealSSL
 #else

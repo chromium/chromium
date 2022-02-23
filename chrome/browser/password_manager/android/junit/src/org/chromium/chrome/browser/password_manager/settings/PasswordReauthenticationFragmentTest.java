@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -29,6 +30,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class PasswordReauthenticationFragmentTest {
     // All reauthentication scopes to be checked in the tests.
     private static final int[] ALL_SCOPES = {ReauthenticationManager.ReauthScope.ONE_AT_A_TIME,
@@ -50,9 +52,9 @@ public class PasswordReauthenticationFragmentTest {
         args.putSerializable(PasswordReauthenticationFragment.SCOPE_ID, scope);
         passwordReauthentication.setArguments(args);
 
-        // Replacement fragment for PasswordEntryViewer, which is the fragment that
+        // Replacement fragment for CredentialEntryFragment, which is the fragment that
         // replaces PasswordReauthentication after popBackStack is called.
-        Fragment mockPasswordEntryViewer = new Fragment();
+        Fragment mockCredentialEntryFragment = new Fragment();
 
         FragmentActivity testActivity = Robolectric.setupActivity(FragmentActivity.class);
         Intent returnIntent = new Intent();
@@ -61,8 +63,8 @@ public class PasswordReauthenticationFragmentTest {
 
         FragmentManager fragmentManager = testActivity.getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-        fragmentTransaction.add(mockPasswordEntryViewer, "password_entry_viewer");
-        fragmentTransaction.addToBackStack("add_password_entry_viewer");
+        fragmentTransaction.add(mockCredentialEntryFragment, "credential_edit_fragment");
+        fragmentTransaction.addToBackStack("add_credential_edit_fragment");
         fragmentTransaction.commit();
 
         FragmentTransaction fragmentTransaction2 = fragmentManager.beginTransaction();
@@ -79,8 +81,9 @@ public class PasswordReauthenticationFragmentTest {
         // reauthentication, as PasswordReauthenticationFragment is popped.
         assertEquals(1, fragmentManager.getBackStackEntryCount());
 
-        // Assert that the remaining fragment in the Back Stack is PasswordEntryViewer.
-        assertEquals("add_password_entry_viewer", fragmentManager.getBackStackEntryAt(0).getName());
+        // Assert that the remaining fragment in the Back Stack is CredentialEntryFragment.
+        assertEquals(
+                "add_credential_edit_fragment", fragmentManager.getBackStackEntryAt(0).getName());
     }
 
     /**

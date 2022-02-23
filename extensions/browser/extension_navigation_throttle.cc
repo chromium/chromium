@@ -145,6 +145,11 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     }
   }
 
+  // Some checks below will need to know whether this navigation is in a
+  // <webview> guest.
+  guest_view::GuestViewBase* guest =
+      guest_view::GuestViewBase::FromWebContents(web_contents);
+
   // Is this navigation targeting an extension resource?
   ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context);
   const GURL& url = navigation_handle()->GetURL();
@@ -161,8 +166,19 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     target_extension =
         registry->enabled_extensions().GetByID(target_origin.host());
   } else {
-    // If the navigation is not to a chrome-extension resource, no need to
-    // perform any more checks; it's outside of the purview of this throttle.
+    // If this navigation is in a guest, check if the URL maps to the Chrome
+    // Web Store hosted app. If so, block the navigation to avoid a renderer
+    // kill later, see https://crbug.com/1197674.
+    if (guest) {
+      const Extension* hosted_app =
+          registry->enabled_extensions().GetHostedAppByURL(url);
+      if (hosted_app && hosted_app->id() == kWebStoreAppId)
+        return content::NavigationThrottle::BLOCK_REQUEST;
+    }
+
+    // Otherwise, the navigation is not to a chrome-extension resource, and
+    // there is no need to perform any more checks; it's outside of the purview
+    // of this throttle.
     return content::NavigationThrottle::PROCEED;
   }
 
@@ -212,8 +228,6 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
     }
   }
 
-  guest_view::GuestViewBase* guest =
-      guest_view::GuestViewBase::FromWebContents(web_contents);
   if (url_has_extension_scheme && guest) {
     // Check whether the guest is allowed to load the extension URL. This is
     // usually allowed only for the guest's owner extension resources, and only
@@ -229,10 +243,9 @@ ExtensionNavigationThrottle::WillStartOrRedirectRequest() {
         content::StoragePartitionConfig::CreateDefault(browser_context);
     bool is_guest = navigation_handle()->GetStartingSiteInstance()->IsGuest();
     if (is_guest) {
-      is_guest = WebViewGuest::GetGuestPartitionConfigForSite(
-          browser_context,
-          navigation_handle()->GetStartingSiteInstance()->GetSiteURL(),
-          &storage_partition_config);
+      storage_partition_config = navigation_handle()
+                                     ->GetStartingSiteInstance()
+                                     ->GetStoragePartitionConfig();
     }
     CHECK_EQ(is_guest,
              navigation_handle()->GetStartingSiteInstance()->IsGuest());

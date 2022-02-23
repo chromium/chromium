@@ -18,18 +18,17 @@
     flex: 1;
     grid-template-areas: 'arrow folder label';
     grid-template-columns: 24px 24px auto;
-    min-height: 40px;
+    min-height: 0;
     min-width: fit-content;
     overflow: hidden;
     padding-inline-start: calc(var(--node-depth, 0) * 15px + 14px);
   }
 
   #arrow {
+    --cr-icon-button-size: 40px;
     grid-area: arrow;
     justify-self: center;
     margin: 0;
-    --cr-icon-button-size: 40px;
-    margin-inline-end: 10px;
   }
 
   #arrow:not([is-open]) {
@@ -49,13 +48,9 @@
     white-space: nowrap;
   }
 
-  :host([is-selected-folder_]) .cr-nav-menu-item {
-    color: var(--interactive-color);
-  }
-
   @media (prefers-color-scheme: dark) {
     .cr-nav-menu-item.drag-on {
-      color: var(--google-grey-refresh-700);
+      color: var(--google-grey-700);
     }
   }
 
@@ -67,40 +62,24 @@
     transform: initial;
   }
 
-  :host-context([enable-branding-update]) .cr-vertical-tab::before {
+  .cr-vertical-tab::before {
     display: none;
   }
 
-  :host-context([enable-branding-update]) #inner-container {
-    min-height: 0;
-  }
-
-  :host-context([enable-branding-update]) #container {
+  #container {
     min-width: fit-content;
     padding-inline-end: 10px;
   }
 
-  :host-context([enable-branding-update]) #arrow {
-    margin: 0;
-  }
-  
-  paper-ripple {
-    display: none;
-  }
-
-  :host-context([enable-branding-update]) paper-ripple {
-    display: block;
-  }
-
   @media (prefers-color-scheme: dark) {
-    :host-context([enable-branding-update]) .cr-nav-menu-item[selected] #arrow,
-    :host-context([enable-branding-update]) .cr-nav-menu-item.drag-on #arrow {
+    .cr-nav-menu-item[selected] #arrow,
+    .cr-nav-menu-item.drag-on #arrow {
       --cr-icon-button-fill-color: black;
     }
 
-    :host-context([enable-branding-update]) .cr-nav-menu-item.drag-on {
+    .cr-nav-menu-item.drag-on {
       --iron-icon-fill-color: black;
-      background: var(--google-blue-refresh-300);
+      background: var(--google-blue-300);
       color: var(--google-grey-900);
     }
   }

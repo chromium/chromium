@@ -8,15 +8,17 @@
 #include "base/cxx17_backports.h"
 #include "base/strings/stringprintf.h"
 #include "base/supports_user_data.h"
+#include "extensions/renderer/bindings/api_binding_util.h"
 #include "extensions/renderer/bindings/get_per_context_data.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/converter.h"
+#include "gin/handle.h"
 #include "gin/per_context_data.h"
+#include "gin/wrappable.h"
 
 namespace extensions {
 
 namespace {
-
 
 struct ExceptionHandlerPerContextData : public base::SupportsUserData::Data {
   static constexpr char kPerContextDataKey[] = "extension_exception_handler";
@@ -26,12 +28,36 @@ struct ExceptionHandlerPerContextData : public base::SupportsUserData::Data {
 
 constexpr char ExceptionHandlerPerContextData::kPerContextDataKey[];
 
+// A helper class to wrap an ExceptionHandler WeakPtr in a v8::Value.
+class WrappedExceptionHandler : public gin::Wrappable<WrappedExceptionHandler> {
+ public:
+  static gin::WrapperInfo kWrapperInfo;
+  base::WeakPtr<ExceptionHandler> exception_handler;
+};
+
+gin::WrapperInfo WrappedExceptionHandler::kWrapperInfo = {
+    gin::kEmbedderNativeGin};
+
 }  // namespace
 
 ExceptionHandler::ExceptionHandler(
     const binding::AddConsoleError& add_console_error)
     : add_console_error_(add_console_error) {}
 ExceptionHandler::~ExceptionHandler() {}
+
+v8::Local<v8::Value> ExceptionHandler::GetV8Wrapper(v8::Isolate* isolate) {
+  auto handle = gin::CreateHandle(isolate, new WrappedExceptionHandler);
+  handle->exception_handler = weak_factory_.GetWeakPtr();
+  return handle.ToV8();
+}
+
+ExceptionHandler* ExceptionHandler::FromV8Wrapper(v8::Isolate* isolate,
+                                                  v8::Local<v8::Value> value) {
+  WrappedExceptionHandler* handler;
+  if (!gin::ConvertFromV8(isolate, value, &handler))
+    return nullptr;
+  return handler->exception_handler.get();
+}
 
 void ExceptionHandler::HandleException(v8::Local<v8::Context> context,
                                        const std::string& message,
@@ -91,6 +117,29 @@ void ExceptionHandler::SetHandlerForContext(v8::Local<v8::Context> context,
                                                         kCreateIfMissing);
   DCHECK(data);
   data->custom_handler.Reset(context->GetIsolate(), handler);
+}
+
+void ExceptionHandler::RunExtensionCallback(
+    v8::Local<v8::Context> context,
+    v8::Local<v8::Function> extension_callback,
+    std::vector<v8::Local<v8::Value>> callback_arguments,
+    const std::string& message) {
+  v8::TryCatch try_catch(context->GetIsolate());
+
+  // TODO(devlin): JSRunner::RunJSFunction() isn't guaranteed to run
+  // synchronously, so if JS is suspended at this moment, the `try_catch` here
+  // is insufficient.
+  JSRunner::Get(context)->RunJSFunction(extension_callback, context,
+                                        callback_arguments.size(),
+                                        callback_arguments.data());
+
+  // Since arbitrary JS has ran, the context may have been invalidated. If it
+  // was, bail.
+  if (!binding::IsContextValid(context))
+    return;
+
+  if (try_catch.HasCaught())
+    HandleException(context, message, &try_catch);
 }
 
 v8::Local<v8::Function> ExceptionHandler::GetCustomHandler(

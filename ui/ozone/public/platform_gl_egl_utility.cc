@@ -17,4 +17,9 @@ bool PlatformGLEGLUtility::HasVisualManager() {
   return false;
 }
 
+absl::optional<base::ScopedEnvironmentVariableOverride>
+PlatformGLEGLUtility::MaybeGetScopedDisplayUnsetForVulkan() {
+  return absl::nullopt;
+}
+
 }  // namespace ui

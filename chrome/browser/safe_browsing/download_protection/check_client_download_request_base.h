@@ -15,6 +15,7 @@
 #include "base/callback_list.h"
 #include "base/cancelable_callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -32,7 +33,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/safe_browsing/disk_image_type_sniffer_mac.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_dmg_analyzer_mac.h"
 #endif
@@ -159,7 +160,7 @@ class CheckClientDownloadRequestBase {
   std::unique_ptr<ClientDownloadRequest> client_download_request_;
   std::string client_download_request_data_;
 
-  DownloadProtectionService* const service_;
+  const raw_ptr<DownloadProtectionService> service_;
   const scoped_refptr<SafeBrowsingDatabaseManager> database_manager_;
   const bool pingback_enabled_;
   base::CancelableTaskTracker request_tracker_;  // For HistoryService lookup.

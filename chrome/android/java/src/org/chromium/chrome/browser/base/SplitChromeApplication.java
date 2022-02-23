@@ -4,11 +4,10 @@
 
 package org.chromium.chrome.browser.base;
 
-import static org.chromium.chrome.browser.base.SplitCompatUtils.CHROME_SPLIT_NAME;
-
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
@@ -17,6 +16,7 @@ import android.os.SystemClock;
 import org.chromium.base.BundleUtils;
 import org.chromium.base.JNIUtils;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.base.metrics.RecordHistogram;
 
 /**
@@ -30,14 +30,18 @@ import org.chromium.base.metrics.RecordHistogram;
 public class SplitChromeApplication extends SplitCompatApplication {
     private static final String TAG = "SplitChromeApp";
 
+    @IdentifierNameString
+    private static String sImplClassName = "org.chromium.chrome.browser.ChromeApplicationImpl";
+
     @SuppressLint("StaticFieldLeak")
     private static SplitPreloader sSplitPreloader;
 
     private String mChromeApplicationClassName;
 
+    private Resources mResources;
+
     public SplitChromeApplication() {
-        this(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.ChromeApplicationImpl"));
+        this(sImplClassName);
     }
 
     public SplitChromeApplication(String chromeApplicationClassName) {
@@ -58,9 +62,8 @@ public class SplitChromeApplication extends SplitCompatApplication {
                 DexFixer.setHasIsolatedSplits(true);
             }
             setImplSupplier(() -> {
-                Context chromeContext = SplitCompatUtils.createChromeContext(this);
-                return (Impl) SplitCompatUtils.newInstance(
-                        chromeContext, mChromeApplicationClassName);
+                Context chromeContext = createChromeContext(this);
+                return (Impl) BundleUtils.newInstance(chromeContext, mChromeApplicationClassName);
             });
         } else {
             setImplSupplier(() -> createNonBrowserApplication());
@@ -130,9 +133,27 @@ public class SplitChromeApplication extends SplitCompatApplication {
                     BundleUtils.replaceClassLoader(
                             SplitChromeApplication.this, chromeContext.getClassLoader());
                     JNIUtils.setClassLoader(chromeContext.getClassLoader());
+                    // Resources holds a reference to a ClassLoader. Make our Application's
+                    // getResources() return a reference to the Chrome split's resources since there
+                    // are a spots where ContextUtils.getApplicationContext() is used to retrieve
+                    // resources (https://crbug.com/1287000).
+                    mResources = chromeContext.getResources();
                 }
             }
         });
+    }
+
+    @Override
+    public Resources getResources() {
+        // If the cached resources from the Chrome split are available use those. Note that
+        // retrieving resources will use resources from the base split until the Chrome split is
+        // fully loaded. We don't want to ensure the Chrome split is loaded here because resources
+        // may be accessed early in startup, and forcing a load here will reduce the benefits of
+        // preloading the Chrome split in the background.
+        if (mResources != null) {
+            return mResources;
+        }
+        return getBaseContext().getResources();
     }
 
     /** Waits for the specified split to finish preloading if necessary. */

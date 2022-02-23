@@ -28,7 +28,6 @@
 #include "third_party/blink/public/platform/web_worker_fetch_context.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
-#include "third_party/blink/renderer/core/loader/worker_fetch_context.h"
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
@@ -42,12 +41,9 @@ WorkerNavigator::WorkerNavigator(ExecutionContext* execution_context)
 WorkerNavigator::~WorkerNavigator() = default;
 
 String WorkerNavigator::GetAcceptLanguages() {
-  WorkerOrWorkletGlobalScope* global_scope =
-      To<WorkerOrWorkletGlobalScope>(GetExecutionContext());
-  auto* web_worker_fetch_context =
-      static_cast<WorkerFetchContext*>((&global_scope->Fetcher()->Context()))
-          ->GetWebWorkerFetchContext();
-  return web_worker_fetch_context->GetAcceptLanguages();
+  auto* global_scope = To<WorkerOrWorkletGlobalScope>(GetExecutionContext());
+
+  return global_scope->GetAcceptLanguages();
 }
 
 void WorkerNavigator::NotifyUpdate() {

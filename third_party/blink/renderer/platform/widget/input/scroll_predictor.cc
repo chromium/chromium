@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/trace_event/trace_event.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/input/predictor_factory.h"
+#include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/ui_base_features.h"
 
 namespace blink {
@@ -80,9 +80,12 @@ std::unique_ptr<EventWithCallback> ScrollPredictor::ResampleScrollEvents(
       UpdatePrediction(coalesced_event.event_->Event(), frame_time);
 
     if (should_resample_scroll_events_) {
+      auto* metrics = event_with_callback->metrics()
+                          ? event_with_callback->metrics()->AsScrollUpdate()
+                          : nullptr;
       ResampleEvent(frame_time, frame_interval,
                     event_with_callback->event_pointer(),
-                    &event_with_callback->latency_info());
+                    &event_with_callback->latency_info(), metrics);
     }
 
     metrics_handler_.EvaluatePrediction();
@@ -132,7 +135,8 @@ void ScrollPredictor::UpdatePrediction(const WebInputEvent& event,
 void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
                                     base::TimeDelta frame_interval,
                                     WebInputEvent* event,
-                                    ui::LatencyInfo* latency_info) {
+                                    ui::LatencyInfo* latency_info,
+                                    cc::ScrollUpdateEventMetrics* metrics) {
   DCHECK(event->GetType() == WebInputEvent::Type::kGestureScrollUpdate);
   WebGestureEvent* gesture_event = static_cast<WebGestureEvent*>(event);
 
@@ -183,8 +187,9 @@ void ScrollPredictor::ResampleEvent(base::TimeTicks frame_time,
           ? 0
           : new_delta.y();
 
-  // Sync the predicted delta_y to latency_info for AverageLag metric.
-  latency_info->set_predicted_scroll_update_delta(new_delta.y());
+  // Sync the predicted `delta_y` to `metrics` for AverageLag metric.
+  if (metrics)
+    metrics->set_predicted_delta(new_delta.y());
 
   TRACE_EVENT_END1("input", "ScrollPredictor::ResampleScrollEvents",
                    "PredictedDelta",

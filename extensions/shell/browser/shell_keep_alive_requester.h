@@ -7,7 +7,6 @@
 
 #include "apps/app_lifetime_monitor.h"
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"

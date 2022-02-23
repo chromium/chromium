@@ -8,10 +8,11 @@ import './number_settings_section.js';
 import './print_preview_shared_css.js';
 import './settings_section.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ScalingType} from '../data/scaling.js';
 
+import {getTemplate} from './scaling_settings.html.js';
 import {SelectMixin} from './select_mixin.js';
 import {SettingsMixin} from './settings_mixin.js';
 
@@ -31,7 +32,7 @@ export class PrintPreviewScalingSettingsElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -207,6 +208,12 @@ export class PrintPreviewScalingSettingsElement extends
     }
     this.customScalingSettingSet_ = false;
     this.userSelectedCustomScaling_ = false;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'print-preview-scaling-settings': PrintPreviewScalingSettingsElement;
   }
 }
 

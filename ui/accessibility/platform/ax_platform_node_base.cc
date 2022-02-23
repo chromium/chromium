@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_action_data.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -68,7 +69,9 @@ using UniqueIdMap = std::unordered_map<int32_t, AXPlatformNode*>;
 base::LazyInstance<UniqueIdMap>::Leaky g_unique_id_map =
     LAZY_INSTANCE_INITIALIZER;
 
-#if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY()
+// TODO(fxbug.dev/91030): Remove the !BUILDFLAG(IS_FUCHSIA) condition once
+// fuchsia has native accessibility.
+#if !BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_FUCHSIA)
 // static
 AXPlatformNode* AXPlatformNode::Create(AXPlatformNodeDelegate* delegate) {
   AXPlatformNodeBase* node = new AXPlatformNodeBase();
@@ -126,6 +129,18 @@ gfx::NativeViewAccessible AXPlatformNodeBase::GetFocus() const {
 gfx::NativeViewAccessible AXPlatformNodeBase::GetParent() const {
   if (delegate_)
     return delegate_->GetParent();
+  return nullptr;
+}
+
+AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformParent() const {
+  if (delegate_)
+    return FromNativeViewAccessible(delegate_->GetParent());
+  return nullptr;
+}
+
+AXPlatformNodeBase* AXPlatformNodeBase::GetPlatformTextFieldAncestor() const {
+  if (delegate_)
+    return FromNativeViewAccessible(delegate_->GetTextFieldAncestor());
   return nullptr;
 }
 
@@ -282,6 +297,51 @@ absl::optional<int> AXPlatformNodeBase::CompareTo(AXPlatformNodeBase& other) {
   return absl::nullopt;
 }
 
+AXNodeID AXPlatformNodeBase::GetNodeId() const {
+  if (!delegate_)
+    return kInvalidAXNodeID;
+
+  return delegate_->GetData().id;
+}
+
+AXPlatformNodeBase* AXPlatformNodeBase::GetActiveDescendant() const {
+  if (!delegate_)
+    return nullptr;
+
+  AXNodeID active_descendant_id;
+  AXPlatformNodeBase* active_descendant = nullptr;
+  if (GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                      &active_descendant_id)) {
+    active_descendant = static_cast<AXPlatformNodeBase*>(
+        delegate_->GetFromNodeID(active_descendant_id));
+  }
+
+  if (GetRole() == ax::mojom::Role::kPopUpButton) {
+    AXPlatformNodeBase* child = GetFirstChild();
+    if (child && child->GetRole() == ax::mojom::Role::kMenuListPopup &&
+        !child->IsInvisibleOrIgnored()) {
+      // The active descendant is found on the menu list popup, i.e. on the
+      // actual list and not on the button that opens it.
+      // If there is no active descendant, focus should stay on the button so
+      // that Windows screen readers would enable their virtual cursor.
+      // Do not expose an activedescendant in a hidden/collapsed list, as
+      // screen readers expect the focus event to go to the button itself.
+      // Note that the AX hierarchy in this case is strange -- the active
+      // option is the only visible option, and is inside an invisible list.
+      if (child->GetIntAttribute(ax::mojom::IntAttribute::kActivedescendantId,
+                                 &active_descendant_id)) {
+        active_descendant = static_cast<AXPlatformNodeBase*>(
+            child->delegate_->GetFromNodeID(active_descendant_id));
+      }
+    }
+  }
+
+  if (active_descendant && !active_descendant->IsInvisibleOrIgnored())
+    return active_descendant;
+
+  return nullptr;
+}
+
 // AXPlatformNode overrides.
 
 void AXPlatformNodeBase::Destroy() {
@@ -307,7 +367,7 @@ void AXPlatformNodeBase::NotifyAccessibilityEvent(ax::mojom::Event event_type) {
   }
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void AXPlatformNodeBase::AnnounceText(const std::u16string& text) {}
 #endif
 
@@ -641,6 +701,12 @@ bool AXPlatformNodeBase::GetStringListAttribute(
   return delegate_->GetStringListAttribute(attribute, value);
 }
 
+bool AXPlatformNodeBase::HasHtmlAttribute(const char* attribute) const {
+  if (!delegate_)
+    return false;
+  return delegate_->HasHtmlAttribute(attribute);
+}
+
 const base::StringPairs& AXPlatformNodeBase::GetHtmlAttributes() const {
   static const base::NoDestructor<base::StringPairs> empty_data;
   if (!delegate_)
@@ -791,20 +857,20 @@ std::u16string AXPlatformNodeBase::GetHypertext() const {
     return std::u16string();
 
   // Hypertext of platform leaves, which internally are composite objects, are
-  // represented with the inner text of the internal composite object. These
+  // represented with the text content of the internal composite object. These
   // don't exist on non-web content.
   if (IsChildOfLeaf())
-    return GetInnerText();
+    return GetTextContentUTF16();
 
   if (hypertext_.needs_update)
     UpdateComputedHypertext();
   return hypertext_.hypertext;
 }
 
-std::u16string AXPlatformNodeBase::GetInnerText() const {
+std::u16string AXPlatformNodeBase::GetTextContentUTF16() const {
   if (!delegate_)
     return std::u16string();
-  return delegate_->GetInnerText();
+  return delegate_->GetTextContentUTF16();
 }
 
 std::u16string
@@ -1495,7 +1561,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
   hypertext_ = AXLegacyHypertext();
 
   if (IsLeaf()) {
-    hypertext_.hypertext = GetInnerText();
+    hypertext_.hypertext = GetTextContentUTF16();
     hypertext_.needs_update = false;
     return;
   }
@@ -1512,7 +1578,7 @@ void AXPlatformNodeBase::UpdateComputedHypertext() const {
     // hypertext with the embedded object character. We copy all of their text
     // instead.
     if (child_iter->IsText()) {
-      hypertext_.hypertext += child_iter->GetInnerText();
+      hypertext_.hypertext += child_iter->GetTextContentUTF16();
     } else {
       int32_t char_offset = static_cast<int32_t>(hypertext_.hypertext.size());
       int32_t child_unique_id = child_iter->GetUniqueId();
@@ -2004,17 +2070,27 @@ int AXPlatformNodeBase::FindTextBoundary(
     ax::mojom::MoveDirection direction,
     ax::mojom::TextAffinity affinity) const {
   DCHECK_NE(boundary, ax::mojom::TextBoundary::kNone);
-  if (boundary != ax::mojom::TextBoundary::kSentenceStart) {
-    absl::optional<int> boundary_offset =
-        GetDelegate()->FindTextBoundary(boundary, offset, direction, affinity);
-    if (boundary_offset.has_value())
-      return *boundary_offset;
+  if (!delegate_)
+    return offset;  // Unable to compute text boundary.
+
+  const AXPosition position = delegate_->CreateTextPositionAt(offset, affinity);
+  // On Windows and Linux ATK, searching for a text boundary should always stop
+  // at the boundary of the current object.
+  auto boundary_behavior = AXBoundaryBehavior::kStopAtAnchorBoundary;
+  // On Windows and Linux ATK, it is standard text navigation behavior to stop
+  // if we are searching in the backwards direction and the current position is
+  // already at the required text boundary.
+  if (direction == ax::mojom::MoveDirection::kBackward) {
+    boundary_behavior =
+        AXBoundaryBehavior::kStopAtAnchorBoundaryOrIfAlreadyAtBoundary;
   }
 
-  std::vector<int32_t> unused_line_start_offsets;
-  return static_cast<int>(
-      FindAccessibleTextBoundary(GetHypertext(), unused_line_start_offsets,
-                                 boundary, offset, direction, affinity));
+  const AXPosition boundary_position = position->CreatePositionAtTextBoundary(
+      boundary, direction, boundary_behavior);
+  if (boundary_position->IsNullPosition())
+    return -1;
+  DCHECK_GE(boundary_position->text_offset(), 0);
+  return boundary_position->text_offset();
 }
 
 AXPlatformNodeBase* AXPlatformNodeBase::NearestLeafToPoint(
@@ -2084,7 +2160,8 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
                                 ->GetInnerTextRangeBoundsRect(
                                     0, 1, coordinate_system, clipping_behavior)
                                 .ManhattanDistanceToPoint(point);
-  for (int i = 1, text_length = GetInnerText().length(); i < text_length; ++i) {
+  for (int i = 1, text_length = GetTextContentUTF16().length(); i < text_length;
+       ++i) {
     float current_distance =
         GetDelegate()
             ->GetInnerTextRangeBoundsRect(i, i + 1, coordinate_system,
@@ -2096,38 +2173,6 @@ int AXPlatformNodeBase::NearestTextIndexToPoint(gfx::Point point) {
     }
   }
   return nearest_index;
-}
-
-std::string AXPlatformNodeBase::GetInvalidValue() const {
-  const AXPlatformNodeBase* target = this;
-  // The aria-invalid=spelling/grammar need to be exposed as text attributes for
-  // a range matching the visual underline representing the error.
-  if (static_cast<ax::mojom::InvalidState>(
-          target->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState)) ==
-          ax::mojom::InvalidState::kNone &&
-      target->IsText() && target->GetParent()) {
-    // Text nodes need to reflect the invalid state of their parent object,
-    // otherwise spelling and grammar errors communicated through aria-invalid
-    // won't be reflected in text attributes.
-    target = static_cast<AXPlatformNodeBase*>(
-        FromNativeViewAccessible(target->GetParent()));
-  }
-
-  std::string invalid_value("");
-  // Note: spelling+grammar errors case is disallowed and not supported. It
-  // could possibly arise with aria-invalid on the ancestor of a spelling error,
-  // but this is not currently described in any spec and no real-world use cases
-  // have been found.
-  switch (static_cast<ax::mojom::InvalidState>(
-      target->GetIntAttribute(ax::mojom::IntAttribute::kInvalidState))) {
-    case ax::mojom::InvalidState::kNone:
-    case ax::mojom::InvalidState::kFalse:
-      break;
-    case ax::mojom::InvalidState::kTrue:
-      invalid_value = "true";
-      break;
-  }
-  return invalid_value;
 }
 
 ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
@@ -2155,14 +2200,11 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
     unsigned int red = SkColorGetR(color);
     unsigned int green = SkColorGetG(color);
     unsigned int blue = SkColorGetB(color);
-    // Don't expose default value of black.
-    if (red || green || blue) {
-      std::string color_value = "rgb(" + base::NumberToString(red) + ',' +
-                                base::NumberToString(green) + ',' +
-                                base::NumberToString(blue) + ')';
-      SanitizeTextAttributeValue(color_value, &color_value);
-      attributes.push_back(std::make_pair("color", color_value));
-    }
+    std::string color_value = "rgb(" + base::NumberToString(red) + ',' +
+                              base::NumberToString(green) + ',' +
+                              base::NumberToString(blue) + ')';
+    SanitizeTextAttributeValue(color_value, &color_value);
+    attributes.push_back(std::make_pair("color", color_value));
   }
 
   // First try to get the inherited font family name from the delegate. If we
@@ -2206,13 +2248,6 @@ ui::TextAttributeList AXPlatformNodeBase::ComputeTextAttributes() const {
       attributes.push_back(std::make_pair("text-underline-style", "solid"));
     }
   }
-
-  // Screen readers look at the text attributes to determine if something is
-  // misspelled, so we need to propagate any spelling attributes from immediate
-  // parents of text-only objects.
-  std::string invalid_value = GetInvalidValue();
-  if (!invalid_value.empty())
-    attributes.push_back(std::make_pair("invalid", invalid_value));
 
   std::string language = GetDelegate()->GetLanguage();
   if (!language.empty()) {
@@ -2359,7 +2394,7 @@ std::string AXPlatformNodeBase::ComputeDetailsRoles() const {
           details_roles_set.insert("comment");
           break;
         }
-        FALLTHROUGH;
+        [[fallthrough]];
       }
       default:
         // Use * to indicate some other role.

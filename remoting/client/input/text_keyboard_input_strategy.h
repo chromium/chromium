@@ -7,7 +7,7 @@
 
 #include <queue>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/client/input/keyboard_input_strategy.h"
 
 namespace remoting {
@@ -31,7 +31,7 @@ class TextKeyboardInputStrategy : public KeyboardInputStrategy {
  private:
   base::queue<KeyEvent> ConvertDeleteEvent(uint8_t modifiers);
 
-  ClientInputInjector* input_injector_;
+  raw_ptr<ClientInputInjector> input_injector_;
 };
 
 }  // namespace remoting

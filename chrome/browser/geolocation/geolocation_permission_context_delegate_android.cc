@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "chrome/browser/android/search_permissions/search_geolocation_disclosure_tab_helper.h"
 #include "chrome/browser/android/tab_android.h"
 #include "chrome/browser/installable/installed_webapp_bridge.h"
 #include "chrome/browser/permissions/permission_update_infobar_delegate_android.h"
@@ -82,28 +81,4 @@ bool GeolocationPermissionContextDelegateAndroid::IsRequestingOriginDSE(
   }
 
   return url::IsSameOriginWith(requesting_origin, dse_url);
-}
-
-void GeolocationPermissionContextDelegateAndroid::FinishNotifyPermissionSet(
-    const permissions::PermissionRequestID& id,
-    const GURL& requesting_origin,
-    const GURL& embedding_origin) {
-  if (requesting_origin != embedding_origin)
-    return;
-
-  // If this is the default search origin, and the DSE Geolocation setting is
-  // being used, potentially show the disclosure.
-  content::RenderFrameHost* rfh = content::RenderFrameHost::FromID(
-      id.render_process_id(), id.render_frame_id());
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
-  if (!web_contents)
-    return;
-
-  SearchGeolocationDisclosureTabHelper* disclosure_helper =
-      SearchGeolocationDisclosureTabHelper::FromWebContents(web_contents);
-
-  // The tab helper can be null in tests.
-  if (disclosure_helper)
-    disclosure_helper->MaybeShowDisclosureForAPIAccess(rfh, requesting_origin);
 }

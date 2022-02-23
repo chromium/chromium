@@ -26,19 +26,19 @@ import java.util.List;
  */
 public interface AccountManagerFacade {
     /**
-     * Listener for {@link ChildAccountStatus.Status}.
+     * Listener for whether the account is a child one.
      */
     interface ChildAccountStatusListener {
         /**
-         * The method is called when child account status is ready.
+         * The method is called when the status of the account (whether it is a child one) is ready.
          *
-         * @param status The status of the account.
-         * @param childAccount The child account if status != {@link Status.NOT_CHILD}; null
+         * @param isChild If account is a child account.
+         * @param childAccount The child account if isChild != false; null
          *         otherwise.
          *
          * TODO(crbug.com/1258563): consider refactoring this interface to use Promises.
          */
-        void onStatusReady(@ChildAccountStatus.Status int status, @Nullable Account childAccount);
+        void onStatusReady(boolean isChild, @Nullable Account childAccount);
     }
 
     /**
@@ -96,7 +96,8 @@ public interface AccountManagerFacade {
      * Checks the child account status of the given account.
      *
      * @param account The account to check the child account status.
-     * @param listener The listener is called when the {@link ChildAccountStatus.Status} is ready.
+     * @param listener The listener is called when the status of the account
+     *                 (whether it is a child one) is ready.
      */
     @MainThread
     void checkChildAccountStatus(Account account, ChildAccountStatusListener listener);

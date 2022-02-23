@@ -18,6 +18,7 @@
 #ifndef MEDIA_AUDIO_AUDIO_OUTPUT_DISPATCHER_H_
 #define MEDIA_AUDIO_AUDIO_OUTPUT_DISPATCHER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "media/audio/audio_io.h"
 
 namespace media {
@@ -71,7 +72,7 @@ class MEDIA_EXPORT AudioOutputDispatcher {
  private:
   // A no-reference-held pointer (we don't want circular references) back to the
   // AudioManager that owns this object.
-  AudioManager* const audio_manager_;
+  const raw_ptr<AudioManager> audio_manager_;
 };
 
 }  // namespace media

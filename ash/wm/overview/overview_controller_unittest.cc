@@ -24,6 +24,7 @@
 #include "ash/wm/desks/desks_test_util.h"
 #include "ash/wm/overview/overview_observer.h"
 #include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/overview/overview_wallpaper_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
 #include "ash/wm/window_resizer.h"
@@ -32,6 +33,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/run_loop.h"
+#include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
 #include "ui/base/hit_test.h"
 #include "ui/compositor/layer.h"
@@ -693,6 +695,33 @@ TEST_F(OverviewControllerTest, OverviewEnterExitWhileDeskAnimation) {
   // animation.
   ActivateDesk(desk1);
   EXPECT_FALSE(Shell::Get()->overview_controller()->InOverviewSession());
+}
+
+// Tests that clipping the window to remove the top view inset (header) works as
+// expected.
+TEST_F(OverviewControllerTest, WindowClipping) {
+  std::unique_ptr<aura::Window> window = CreateTestWindow();
+  window->SetBounds(gfx::Rect(300, 300));
+  window->SetProperty(aura::client::kTopViewInset, 20);
+  ASSERT_EQ(gfx::Rect(), window->layer()->GetTargetClipRect());
+
+  ui::ScopedAnimationDurationScaleMode non_zero(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Tests that the clipping bounds in overview will clip away the top inset.
+  // There is a extra pixel added to account for what seems to be a rounding
+  // error.
+  EnterOverview();
+  WaitForOverviewEnterAnimation();
+  EXPECT_EQ(gfx::Rect(0, 21, 300, 279), window->layer()->GetTargetClipRect());
+
+  // Tests that we animate to the window size from the overview clip on exit.
+  ExitOverview();
+  EXPECT_EQ(gfx::Rect(300, 300), window->layer()->GetTargetClipRect());
+
+  // Tests that the clipping is removed after the animation ends.
+  WaitForOverviewExitAnimation();
+  EXPECT_EQ(gfx::Rect(), window->layer()->GetTargetClipRect());
 }
 
 class OverviewVirtualKeyboardTest : public OverviewControllerTest {

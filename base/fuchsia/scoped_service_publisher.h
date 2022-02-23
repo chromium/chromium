@@ -17,7 +17,6 @@
 #include <lib/zx/channel.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace base {

@@ -491,9 +491,7 @@ UIViewController* TopPresentedViewController() {
                         true /* menu should appear */)];
   [[EarlGrey selectElementWithMatcher:
                  chrome_test_util::StaticTextWithAccessibilityLabelId(
-                     web::features::UseWebViewNativeContextMenuSystem()
-                         ? IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE
-                         : IDS_IOS_CONTENT_CONTEXT_OPENLINKNEWINCOGNITOTAB)]
+                     IDS_IOS_OPEN_IN_INCOGNITO_ACTION_TITLE)]
       performAction:grey_tap()];
 
   // Check the buttons status.

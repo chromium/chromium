@@ -31,7 +31,6 @@
 #ifndef THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 #define THIRD_PARTY_BLINK_PUBLIC_WEB_WEB_FRAME_H_
 
-#include "cc/paint/paint_canvas.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/tree_scope_type.mojom-shared.h"
 #include "third_party/blink/public/mojom/security_context/insecure_request_policy.mojom-shared.h"

@@ -12,7 +12,6 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/path_service.h"
@@ -67,6 +66,8 @@
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service_impl.h"
 #include "ios/chrome/browser/update_client/ios_chrome_update_query_params_delegate.h"
 #include "ios/chrome/common/channel_info.h"
+#include "ios/public/provider/chrome/browser/app_distribution/app_distribution_api.h"
+#include "ios/public/provider/chrome/browser/signin/signin_sso_api.h"
 #include "ios/web/public/thread/web_task_traits.h"
 #include "ios/web/public/thread/web_thread.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -113,10 +114,6 @@ void BindNetworkChangeManagerReceiver(
     mojo::PendingReceiver<network::mojom::NetworkChangeManager> receiver) {
   network_change_manager->AddReceiver(std::move(receiver));
 }
-
-// If enabled, keep logging and reporting UMA while chrome is backgrounded.
-const base::Feature kUmaBackgroundSessions{"IOSUMABackgroundSessions",
-                                           base::FEATURE_DISABLED_BY_DEFAULT};
 
 }  // namespace
 
@@ -282,9 +279,8 @@ void ApplicationContextImpl::OnAppEnterBackground() {
   // Tell the metrics services they were cleanly shutdown.
   metrics::MetricsService* metrics_service = GetMetricsService();
   if (metrics_service) {
-    const bool keep_reporting =
-        base::FeatureList::IsEnabled(kUmaBackgroundSessions);
-    metrics_service->OnAppEnterBackground(keep_reporting);
+    metrics_service->OnAppEnterBackground(
+        /*keep_recording_in_background=*/true);
   }
   ukm::UkmService* ukm_service = GetMetricsServicesManager()->GetUkmService();
   if (ukm_service)
@@ -414,7 +410,8 @@ ApplicationContextImpl::GetComponentUpdateService() {
     component_updater_ = component_updater::ComponentUpdateServiceFactory(
         component_updater::MakeIOSComponentUpdaterConfigurator(
             base::CommandLine::ForCurrentProcess()),
-        std::make_unique<component_updater::TimerUpdateScheduler>());
+        std::make_unique<component_updater::TimerUpdateScheduler>(),
+        ios::provider::GetBrandCode());
   }
   return component_updater_.get();
 }
@@ -485,6 +482,14 @@ ApplicationContextImpl::GetBreadcrumbPersistentStorageManager() {
   return application_breadcrumbs_logger_
              ? application_breadcrumbs_logger_->GetPersistentStorageManager()
              : nullptr;
+}
+
+id<SingleSignOnService> ApplicationContextImpl::GetSSOService() {
+  if (!single_sign_on_service_) {
+    single_sign_on_service_ = ios::provider::CreateSSOService();
+    DCHECK(single_sign_on_service_);
+  }
+  return single_sign_on_service_;
 }
 
 void ApplicationContextImpl::SetApplicationLocale(const std::string& locale) {

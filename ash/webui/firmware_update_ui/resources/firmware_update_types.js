@@ -2,76 +2,116 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
+import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
+import '/file_path.mojom-lite.js';
+import './mojom/firmware_update.mojom-lite.js';
+
 /**
  * @fileoverview
  * Type aliases for the mojo API.
- *
- * TODO(michaelcheco): When the fake API is replaced by mojo these can be
- * re-aliased to the corresponding mojo types, or replaced by them.
  */
 
 /**
- * The priority of an update.
- * @enum {number}
+ * Type alias for UpdatePriority.
+ * @typedef {ash.firmwareUpdate.mojom.UpdatePriority}
  */
-export const UpdatePriority = {
-  kLow: 0,
-  kMedium: 1,
-  kHigh: 2,
-  kCritical: 3,
-};
+export const UpdatePriority = ash.firmwareUpdate.mojom.UpdatePriority;
 
 /**
- * @typedef {{
- *   deviceId: string,
- *   deviceName: string,
- *   version: string,
- *   description: string,
- *   priority: !UpdatePriority,
- *   updateModeInstructions: ?string,
- *   screenshotUrl: ?string,
- * }}
+ * Type alias for FirmwareUpdate.
+ * @typedef {ash.firmwareUpdate.mojom.FirmwareUpdate}
  */
-export let FirmwareUpdate;
+export const FirmwareUpdate = ash.firmwareUpdate.mojom.FirmwareUpdate;
 
 /**
  * Type alias for UpdateObserver.
- * @typedef {{
- *   onUpdateListChanged: !function(!Array<!FirmwareUpdate>)
- * }}
+ * @typedef {ash.firmwareUpdate.mojom.UpdateObserver}
  */
-export let UpdateObserver;
+export const UpdateObserver = ash.firmwareUpdate.mojom.UpdateObserver;
 
 /**
- * Type of UpdateProviderInterface.ObservePeripheralUpdatesFunction function.
- * @typedef {!function(!UpdateObserver): void}
+ * Type alias for UpdateObserverRemote.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateObserverRemote}
  */
-export let ObservePeripheralUpdatesFunction;
+export const UpdateObserverRemote =
+    ash.firmwareUpdate.mojom.UpdateObserverRemote;
+
+/**
+ * Type alias for UpdateProvider.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProvider}
+ */
+export const UpdateProvider = ash.firmwareUpdate.mojom.UpdateProvider;
 
 /**
  * Type alias for the UpdateProviderInterface.
- * TODO(michaelcheco): Replace with a real mojo type when implemented.
- * @typedef {{
- *   observePeripheralUpdates: !ObservePeripheralUpdatesFunction,
- * }}
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProviderInterface}
  */
-export let UpdateProviderInterface;
+export const UpdateProviderInterface =
+    ash.firmwareUpdate.mojom.UpdateProviderInterface;
 
 /**
- * @typedef {{
- *   status: string,
- *   percentage: number,
- * }}
+ * Type alias for the UpdateState.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateState}
  */
-export let InstallationProgress;
+export const UpdateState = ash.firmwareUpdate.mojom.UpdateState;
 
 /**
- * Type alias for UpdateProgressObserver.
+ * Type alias for the UpdateProgressObserver.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserver}
+ */
+export const UpdateProgressObserver =
+    ash.firmwareUpdate.mojom.UpdateProgressObserver;
+
+/**
+ * Type alias for UpdateProgressObserverRemote.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserverRemote}
+ */
+export const UpdateProgressObserverRemote =
+    ash.firmwareUpdate.mojom.UpdateProgressObserverRemote;
+
+/**
+ * Type alias for InstallController.
+ * @typedef {ash.firmwareUpdate.mojom.InstallController}
+ */
+export const InstallController = ash.firmwareUpdate.mojom.InstallController;
+
+/**
+ * Type alias for the InstallControllerInterface.
+ * @typedef {ash.firmwareUpdate.mojom.InstallControllerInterface}
+ */
+export const InstallControllerInterface =
+    ash.firmwareUpdate.mojom.InstallControllerInterface;
+
+/**
+ * Type alias for the UpdateProgressObserverInterface.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserverInterface}
+ */
+export const UpdateProgressObserverInterface =
+    ash.firmwareUpdate.mojom.UpdateProgressObserverInterface;
+
+/**
+ * Type for methods needed for the fake UpdateProvider implementation.
  * @typedef {{
- *   onProgressChanged: !function(!InstallationProgress)
+ *   setDeviceIdForUpdateInProgress: !function(string),
  * }}
  */
-export let UpdateProgressObserver;
+export let FakeInstallControllerInterface;
+
+/**
+ * Type alias for InstallControllerRemote.
+ * @typedef {ash.firmwareUpdate.mojom.InstallControllerRemote}
+ */
+export const InstallControllerRemote =
+    ash.firmwareUpdate.mojom.InstallControllerRemote;
+
+/**
+ * Type alias for UpdateProgressObserverReceiver.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateProgressObserverReceiver}
+ */
+export const UpdateProgressObserverReceiver =
+    ash.firmwareUpdate.mojom.UpdateProgressObserverReceiver;
 
 /**
  * Type of UpdateControllerInterface.startUpdateFunction function.
@@ -80,10 +120,40 @@ export let UpdateProgressObserver;
 export let startUpdateFunction;
 
 /**
- * Type alias for the UpdateControllerInterface.
- * TODO(michaelcheco): Replace with a real mojo type when implemented.
+ * Type alias for UpdateObserverReceiver.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateObserverReceiver}
+ */
+export const UpdateObserverReceiver =
+    ash.firmwareUpdate.mojom.UpdateObserverReceiver;
+
+/**
+ * Type alias for UpdateObserverInterface.
+ * @typedef {ash.firmwareUpdate.mojom.UpdateObserverInterface}
+ */
+export const UpdateObserverInterface =
+    ash.firmwareUpdate.mojom.UpdateObserverInterface;
+
+/**
+ * Type for methods needed for the fake UpdateProvider implementation.
  * @typedef {{
- *   startUpdate: !startUpdateFunction,
+ *   setFakeFirmwareUpdates: !function(!Array<FirmwareUpdate>),
+ *   triggerDeviceAddedObserver: !function(): void,
  * }}
  */
-export let UpdateControllerInterface;
+export let FakeUpdateProviderInterface;
+
+/**
+ * Type alias for InstallationProgress.
+ * @typedef {ash.firmwareUpdate.mojom.InstallationProgress}
+ */
+export const InstallationProgress =
+    ash.firmwareUpdate.mojom.InstallationProgress;
+
+/**
+ * @typedef {{
+ *   title: string,
+ *   body: string,
+ *   footer: string,
+ * }}
+ */
+export let DialogContent;

@@ -44,9 +44,10 @@ import org.chromium.chrome.browser.browserservices.intents.CustomButtonParams;
 import org.chromium.chrome.browser.flags.ActivityType;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.chrome.browser.flags.StringCachedFieldTrialParameter;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
 import org.chromium.components.embedder_support.util.UrlConstants;
+import org.chromium.components.version_info.VersionInfo;
 import org.chromium.device.mojom.ScreenOrientationLockType;
 
 import java.lang.annotation.Retention;
@@ -162,11 +163,27 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
             "org.chromium.chrome.browser.customtabs.AGA_EXPERIMENT_IDS";
 
     /**
-     * Extra that, if set, makes the Custom Tab activity's height x% of the screen height. The value
-     * is an integer, range from 1 to 100.
+     * Extra that, if set, makes the Custom Tab Activity's height to be x pixels, the Custom Tab
+     * will behave as a bottom sheet. x will be clamped between 50% and 100% of screen height.
      */
     public static final String EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL =
             "androidx.browser.customtabs.extra.INITIAL_ACTIVITY_HEIGHT_IN_PIXEL";
+
+    private static final String DEFAULT_POLICY_PARAM_NAME = "default_policy";
+    private static final String DEFAULT_POLICY_USE_DENYLIST = "use-denylist";
+    private static final String DEFAULT_POLICY_USE_ALLOWLIST = "use-allowlist";
+    private static final String ALLOWLIST_ENTRIES_PARAM_NAME = "allowlist_entries";
+    private static final String DENYLIST_ENTRIES_PARAM_NAME = "denylist_entries";
+
+    public static final StringCachedFieldTrialParameter THIRD_PARTIES_DEFAULT_POLICY =
+            new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+                    DEFAULT_POLICY_PARAM_NAME, DEFAULT_POLICY_USE_DENYLIST);
+    public static final StringCachedFieldTrialParameter DENYLIST_ENTRIES =
+            new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+                    DENYLIST_ENTRIES_PARAM_NAME, "");
+    public static final StringCachedFieldTrialParameter ALLOWLIST_ENTRIES =
+            new StringCachedFieldTrialParameter(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES,
+                    ALLOWLIST_ENTRIES_PARAM_NAME, "");
 
     private final Intent mIntent;
     private final CustomTabsSessionToken mSession;
@@ -402,7 +419,7 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
      */
     private int verifiedUiType(int requestedUiType) {
         if (!isTrustedIntent()) {
-            if (ChromeVersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
+            if (VersionInfo.isLocalBuild()) Log.w(TAG, FIRST_PARTY_PITFALL_MSG);
             return CustomTabsUiType.DEFAULT;
         }
 
@@ -573,10 +590,15 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
         return mAnimationBundle != null && getClientPackageName() != null;
     }
 
-    @Override
-    public String getClientPackageName() {
+    public String getInsecureClientPackageNameForOnFinishAnimation() {
         if (mAnimationBundle == null) return null;
         return mAnimationBundle.getString(BUNDLE_PACKAGE_NAME);
+    }
+
+    @Override
+    @Nullable
+    public String getClientPackageName() {
+        return CustomTabsConnection.getInstance().getClientPackageNameForSession(mSession);
     }
 
     @Override
@@ -796,15 +818,36 @@ public class CustomTabIntentDataProvider extends BrowserServicesIntentDataProvid
 
     @Override
     public @Px int getInitialActivityHeight() {
-        boolean enabledForAll =
-                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES);
         boolean enabledDueToFirstParty = mIsTrustedIntent
                 && CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_FIRST_PARTIES);
-
-        if (enabledForAll || enabledDueToFirstParty) {
+        boolean enabledDueToThirdParty =
+                CachedFeatureFlags.isEnabled(ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES)
+                && isAllowedThirdParty(getClientPackageName());
+        if (enabledDueToThirdParty || enabledDueToFirstParty) {
             return mInitialActivityHeight;
-        } else {
-            return 0;
         }
+        return 0;
+    }
+
+    boolean isAllowedThirdParty(String packageName) {
+        if (packageName == null) return false;
+        String defaultPolicy = THIRD_PARTIES_DEFAULT_POLICY.getValue();
+        if (defaultPolicy.equals(DEFAULT_POLICY_USE_ALLOWLIST)) {
+            String allowList = ALLOWLIST_ENTRIES.getValue();
+            if (TextUtils.isEmpty(allowList)) return false;
+            for (String p : allowList.split("\\|")) {
+                if (packageName.equals(p)) return true;
+            }
+            return false;
+        } else if (defaultPolicy.equals(DEFAULT_POLICY_USE_DENYLIST)) {
+            String denyList = DENYLIST_ENTRIES.getValue();
+            if (TextUtils.isEmpty(denyList)) return true;
+            for (String p : denyList.split("\\|")) {
+                if (packageName.equals(p)) return false;
+            }
+            return true;
+        }
+        assert false : "We can't get here since the default policy is use denylist.";
+        return false;
     }
 }

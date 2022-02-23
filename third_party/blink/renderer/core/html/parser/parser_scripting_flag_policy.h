@@ -8,7 +8,7 @@
 namespace blink {
 
 // Decides whether the scripting flag of the parser should be set to enabled.
-// https://html.spec.whatwg.org/#scripting-flag
+// https://html.spec.whatwg.org/C/#scripting-flag
 enum class ParserScriptingFlagPolicy { kOnlyIfScriptIsEnabled, kEnabled };
 
 }  // namespace blink

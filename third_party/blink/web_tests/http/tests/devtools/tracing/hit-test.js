@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Tests instrumentation for Timeline HitTest event.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
   await TestRunner.loadHTML(`<p>A text</p>`);
   await TestRunner.evaluateInPagePromise(`

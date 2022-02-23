@@ -18,6 +18,8 @@ else:
 from pyfakefs import fake_filesystem_unittest
 
 from unexpected_passes_common import builders
+from unexpected_passes_common import constants
+from unexpected_passes_common import data_types
 from unexpected_passes_common import multiprocessing_utils
 from unexpected_passes_common import unittest_utils
 
@@ -82,7 +84,14 @@ class GetCiBuildersUnittest(fake_filesystem_unittest.TestCase):
     self.assertEqual(
         gpu_builders,
         set([
-            'Android Release (Nexus 5X)', 'ANGLE GPU Android Release (Nexus 5X)'
+            data_types.BuilderEntry('Android Release (Nexus 5X)',
+                                    constants.BuilderTypes.CI, False),
+            data_types.BuilderEntry('ANGLE GPU Android Release (Nexus 5X)',
+                                    constants.BuilderTypes.CI, False),
+            data_types.BuilderEntry('GPU Linux Builder',
+                                    constants.BuilderTypes.CI, False),
+            data_types.BuilderEntry('GPU FYI Linux Builder',
+                                    constants.BuilderTypes.CI, False),
         ]))
 
   def testFilterBySuite(self):
@@ -139,7 +148,12 @@ class GetCiBuildersUnittest(fake_filesystem_unittest.TestCase):
                            '_BuilderRunsTestOfInterest',
                            side_effect=SideEffect):
       gpu_builders = self._builders_instance.GetCiBuilders('bar_conformance')
-    self.assertEqual(gpu_builders, set(['Windows Tester']))
+    self.assertEqual(
+        gpu_builders,
+        set([
+            data_types.BuilderEntry('Windows Tester', constants.BuilderTypes.CI,
+                                    False)
+        ]))
 
   def testRealContentCanBeLoaded(self):
     """Tests that *something* from the real JSON files can be loaded."""
@@ -153,7 +167,7 @@ class GetCiBuildersUnittest(fake_filesystem_unittest.TestCase):
 
 class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
   def setUp(self):
-    self._builders_instance = builders.Builders()
+    self._builders_instance = builders.Builders(False)
     self._bb_patcher = mock.patch.object(self._builders_instance,
                                          '_GetBuildbucketOutputForCiBuilder')
     self._bb_mock = self._bb_patcher.start()
@@ -172,20 +186,32 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
 
   def testFakeCiBuilder(self):
     """Tests that a fake CI builder gets properly mapped."""
-    self._fake_ci_mock.return_value = {'foo_ci': {'foo_try'}}
+    self._fake_ci_mock.return_value = {
+        data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI, False):
+        {data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY, False)}
+    }
     try_builder, found_mirror = (
-        self._builders_instance._GetMirroredBuildersForCiBuilder('foo_ci'))
+        self._builders_instance._GetMirroredBuildersForCiBuilder(
+            data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI,
+                                    False)))
     self.assertTrue(found_mirror)
-    self.assertEqual(try_builder, set(['foo_try']))
+    self.assertEqual(
+        try_builder,
+        set([
+            data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY,
+                                    False)
+        ]))
     self._bb_mock.assert_not_called()
 
   def testNoBuildbucketOutput(self):
     """Tests that a failure to get Buildbucket output is surfaced."""
     self._bb_mock.return_value = ''
+    builder_entry = data_types.BuilderEntry('nonexistent',
+                                            constants.BuilderTypes.CI, False)
     try_builder, found_mirror = (
-        self._builders_instance._GetMirroredBuildersForCiBuilder('nonexistent'))
+        self._builders_instance._GetMirroredBuildersForCiBuilder(builder_entry))
     self.assertFalse(found_mirror)
-    self.assertEqual(try_builder, set(['nonexistent']))
+    self.assertEqual(try_builder, set([builder_entry]))
 
   def testBuildbucketOutput(self):
     """Tests that Buildbucket output is parsed correctly."""
@@ -200,14 +226,47 @@ class GetMirroredBuildersForCiBuilderUnittest(unittest.TestCase):
         }
     })
     try_builders, found_mirror = (
-        self._builders_instance._GetMirroredBuildersForCiBuilder('foo_ci'))
+        self._builders_instance._GetMirroredBuildersForCiBuilder(
+            data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI,
+                                    False)))
     self.assertTrue(found_mirror)
-    self.assertEqual(try_builders, set(['foo_try', 'bar_try']))
+    self.assertEqual(
+        try_builders,
+        set([
+            data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY,
+                                    False),
+            data_types.BuilderEntry('bar_try', constants.BuilderTypes.TRY,
+                                    False)
+        ]))
+
+  def testBuildbucketOutputInternal(self):
+    """Tests that internal Buildbucket output is parsed correctly."""
+    self._bb_mock.return_value = json.dumps({
+        'output': {
+            'properties': {
+                'mirrored_builders': [
+                    'try:foo_try',
+                    'try:bar_try',
+                ]
+            }
+        }
+    })
+    try_builders, found_mirror = (
+        self._builders_instance._GetMirroredBuildersForCiBuilder(
+            data_types.BuilderEntry('foo_ci', constants.BuilderTypes.CI, True)))
+    self.assertTrue(found_mirror)
+    self.assertEqual(
+        try_builders,
+        set([
+            data_types.BuilderEntry('foo_try', constants.BuilderTypes.TRY,
+                                    True),
+            data_types.BuilderEntry('bar_try', constants.BuilderTypes.TRY, True)
+        ]))
 
 
 class GetTryBuildersUnittest(unittest.TestCase):
   def setUp(self):
-    self._builders_instance = builders.Builders()
+    self._builders_instance = builders.Builders(False)
     self._get_patcher = mock.patch.object(self._builders_instance,
                                           '_GetMirroredBuildersForCiBuilder')
     self._get_mock = self._get_patcher.start()

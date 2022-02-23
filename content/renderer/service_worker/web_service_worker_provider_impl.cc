@@ -10,11 +10,11 @@
 #include "base/bind.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/trace_event.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/renderer/service_worker/service_worker_provider_context.h"
 #include "content/renderer/service_worker/service_worker_type_converters.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"
 #include "third_party/blink/public/common/messaging/message_port_channel.h"
+#include "third_party/blink/public/common/service_worker/service_worker_scope_match.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_container_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration_options.mojom.h"
@@ -30,6 +30,13 @@ namespace {
 
 const char kLostConnectionErrorMessage[] =
     "Lost connection to the service worker system.";
+
+template <typename T>
+static std::string MojoEnumToString(T mojo_enum) {
+  std::ostringstream oss;
+  oss << mojo_enum;
+  return oss.str();
+}
 
 }  // anonymous namespace
 
@@ -178,8 +185,9 @@ bool WebServiceWorkerProviderImpl::ValidateScopeAndScriptURL(
     const blink::WebURL& script_url,
     blink::WebString* error_message) {
   std::string error;
-  bool has_error = ServiceWorkerUtils::ContainsDisallowedCharacter(
-      scope, script_url, &error);
+  bool has_error =
+      blink::ServiceWorkerScopeOrScriptUrlContainsDisallowedCharacter(
+          scope, script_url, &error);
   if (has_error)
     *error_message = blink::WebString::FromUTF8(error);
   return !has_error;
@@ -224,8 +232,7 @@ void WebServiceWorkerProviderImpl::OnRegistered(
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::RegisterServiceWorker",
-      TRACE_ID_LOCAL(this), "Error",
-      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
       error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
@@ -251,8 +258,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistration(
     blink::mojom::ServiceWorkerRegistrationObjectInfoPtr registration) {
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistration",
-      TRACE_ID_LOCAL(this), "Error",
-      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
       error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);
@@ -282,8 +288,7 @@ void WebServiceWorkerProviderImpl::OnDidGetRegistrations(
         infos) {
   TRACE_EVENT_NESTABLE_ASYNC_END2(
       "ServiceWorker", "WebServiceWorkerProviderImpl::GetRegistrations",
-      TRACE_ID_LOCAL(this), "Error",
-      ServiceWorkerUtils::MojoEnumToString(error), "Message",
+      TRACE_ID_LOCAL(this), "Error", MojoEnumToString(error), "Message",
       error_msg ? *error_msg : "Success");
   if (error != blink::mojom::ServiceWorkerErrorType::kNone) {
     DCHECK(error_msg);

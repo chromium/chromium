@@ -30,10 +30,11 @@ constexpr char kSafeSearchApiUrl[] =
     "https://safesearch.googleapis.com/v1:classify";
 
 std::string BuildResponse(bool is_porn) {
-  base::DictionaryValue dict;
-  auto classification_dict = std::make_unique<base::DictionaryValue>();
+  base::Value dict(base::Value::Type::DICTIONARY);
+  auto classification_dict =
+      std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
   if (is_porn)
-    classification_dict->SetBoolean("pornography", is_porn);
+    classification_dict->SetBoolKey("pornography", is_porn);
   auto classifications_list = std::make_unique<base::ListValue>();
   classifications_list->Append(std::move(classification_dict));
   dict.SetKey("classifications",

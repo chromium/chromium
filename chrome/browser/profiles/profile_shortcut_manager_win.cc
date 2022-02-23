@@ -18,6 +18,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -27,6 +28,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "base/win/shortcut.h"
+#include "base/win/windows_version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/policy_path_parser.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
@@ -75,7 +77,7 @@ const int kMaxProfileShortcutFileNameLength = 64;
 // Incrementing this number will cause profile icons to be regenerated on
 // profile startup (it should be incremented whenever the product/avatar icons
 // change, etc).
-const int kCurrentProfileIconVersion = 7;
+const int kCurrentProfileIconVersion = 9;
 
 bool disabled_for_unit_tests = false;
 bool disable_unpinning_for_unit_tests = false;
@@ -165,9 +167,23 @@ base::FilePath CreateOrUpdateShortcutIconForProfile(
     // This invalidates the Windows icon cache and causes the icon changes to
     // register with the taskbar and desktop. SHCNE_ASSOCCHANGED will cause a
     // desktop flash and we would like to avoid that if possible.
-    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, NULL, NULL);
+    SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, nullptr, nullptr);
+    // On Win 11, SHCNE_ASSOCCHANGED doesn't update the taskbar icons, so find
+    // the affected shortcuts and tell Windows they've changed.
+    // TODO:(crbug.com/1287111) Find all affected shortcuts, e.g., desktop, and
+    // remove the SHCNE_ASSOCCHANGED notification, to avoid flashing the
+    // desktop (and taskbar on Win 10). Remove Win 11 version check.
+    if (base::win::GetVersion() >= base::win::Version::WIN11) {
+      std::vector<base::FilePath> pinned_shortcuts =
+          profiles::internal::GetPinnedShortCutsForProfile(profile_path);
+      for (const auto& shortcut : pinned_shortcuts) {
+        SHChangeNotify(SHCNE_UPDATEITEM, SHCNF_PATH, shortcut.value().c_str(),
+                       nullptr);
+      }
+    }
   } else {
-    SHChangeNotify(SHCNE_CREATE, SHCNF_PATH, icon_path.value().c_str(), NULL);
+    SHChangeNotify(SHCNE_CREATE, SHCNF_PATH, icon_path.value().c_str(),
+                   nullptr);
   }
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&OnProfileIconCreateSuccess, profile_path));
@@ -196,20 +212,6 @@ bool GetDesktopShortcutsDirectories(
   return true;
 }
 
-// Returns the long form of |path|, which will expand any shortened components
-// like "foo~2" to their full names.
-base::FilePath ConvertToLongPath(const base::FilePath& path) {
-  const size_t length = GetLongPathName(path.value().c_str(), NULL, 0);
-  if (length != 0 && length != path.value().length()) {
-    std::vector<wchar_t> long_path(length);
-    if (GetLongPathName(path.value().c_str(), &long_path[0], length) != 0)
-      return base::FilePath(&long_path[0]);
-  }
-  return path;
-}
-
-// Returns true if the file at |path| is a Chrome shortcut and returns its
-// command line in output parameter |command_line|.
 bool IsChromeShortcut(const base::FilePath& path,
                       const base::FilePath& chrome_exe,
                       std::wstring* command_line) {
@@ -222,9 +224,10 @@ bool IsChromeShortcut(const base::FilePath& path,
   base::FilePath target_path;
   if (!base::win::ResolveShortcut(path, &target_path, command_line))
     return false;
+
   // One of the paths may be in short (elided) form. Compare long paths to
   // ensure these are still properly matched.
-  return ConvertToLongPath(target_path) == ConvertToLongPath(chrome_exe);
+  return MakeLongFilePath(target_path) == MakeLongFilePath(chrome_exe);
 }
 
 // A functor checks if |path| is the Chrome desktop shortcut (|chrome_exe|)
@@ -509,14 +512,14 @@ void CreateOrUpdateDesktopShortcutsAndIconForProfile(
 // regardless of their command line arguments.
 bool ChromeDesktopShortcutsExist(const base::FilePath& chrome_exe) {
   base::FilePath user_shortcuts_directory;
-  if (!GetDesktopShortcutsDirectories(&user_shortcuts_directory, NULL))
+  if (!GetDesktopShortcutsDirectories(&user_shortcuts_directory, nullptr))
     return false;
 
   base::FileEnumerator enumerator(user_shortcuts_directory, false,
                                   base::FileEnumerator::FILES);
   for (base::FilePath path = enumerator.Next(); !path.empty();
        path = enumerator.Next()) {
-    if (IsChromeShortcut(path, chrome_exe, NULL))
+    if (IsChromeShortcut(path, chrome_exe, nullptr))
       return true;
   }
 
@@ -730,6 +733,75 @@ std::wstring CreateProfileShortcutFlags(const base::FilePath& profile_path,
   }
 
   return flags;
+}
+
+// Returns true iff `shortcut` is a shortcut to the currently running version
+// of Chrome.exe, and specifies `profile_path` as its profile_dir.
+bool IsChromeShortcutForProfile(const base::FilePath& shortcut,
+                                const base::FilePath& profile_path) {
+  base::FilePath chrome_exe;
+  if (!base::PathService::Get(base::FILE_EXE, &chrome_exe)) {
+    NOTREACHED();
+    return false;
+  }
+
+  std::wstring cmd_line_string;
+  if (!IsChromeShortcut(shortcut, chrome_exe, &cmd_line_string))
+    return false;
+  cmd_line_string.insert(0, chrome_exe.value() + L" ");
+  base::CommandLine shortcut_cmd_line =
+      base::CommandLine::FromString(cmd_line_string);
+  return shortcut_cmd_line.HasSwitch(switches::kProfileDirectory) &&
+         shortcut_cmd_line.GetSwitchValuePath(switches::kProfileDirectory) ==
+             profile_path.BaseName();
+}
+
+// Returns a vector of Chrome.exe shortcuts for profile `profile_path` in the
+// directory `shortcut_dir`.
+const std::vector<base::FilePath> FindChromeShortcutsForProfile(
+    const base::FilePath& shortcut_dir,
+    const base::FilePath& profile_path) {
+  std::vector<base::FilePath> shortcut_paths;
+
+  // Find all shortcuts for this profile.
+  base::FileEnumerator files(shortcut_dir, false, base::FileEnumerator::FILES,
+                             FILE_PATH_LITERAL("*.lnk"));
+  base::FilePath shortcut_file = files.Next();
+  while (!shortcut_file.empty()) {
+    if (IsChromeShortcutForProfile(shortcut_file, profile_path))
+      shortcut_paths.push_back(shortcut_file);
+    shortcut_file = files.Next();
+  }
+  return shortcut_paths;
+}
+
+const std::vector<base::FilePath> GetPinnedShortCutsForProfile(
+    const base::FilePath& profile_path) {
+  std::vector<base::FilePath> pinned_shortcuts;
+  // Find matching shortcuts in taskbar pin directories.
+  base::FilePath taskbar_pins_dir;
+  if (base::PathService::Get(base::DIR_TASKBAR_PINS, &taskbar_pins_dir)) {
+    const std::vector<base::FilePath> shortcut_files =
+        FindChromeShortcutsForProfile(taskbar_pins_dir, profile_path);
+    pinned_shortcuts.insert(pinned_shortcuts.end(), shortcut_files.begin(),
+                            shortcut_files.end());
+  }
+
+  // Check all folders in ImplicitAppShortcuts.
+  base::FilePath implicit_app_shortcuts_dir;
+  if (base::PathService::Get(base::DIR_IMPLICIT_APP_SHORTCUTS,
+                             &implicit_app_shortcuts_dir)) {
+    base::FileEnumerator directory_enum(implicit_app_shortcuts_dir, false,
+                                        base::FileEnumerator::DIRECTORIES);
+    for (base::FilePath directory = directory_enum.Next(); !directory.empty();
+         directory = directory_enum.Next()) {
+      const std::vector<base::FilePath> shortcut_files =
+          FindChromeShortcutsForProfile(directory, profile_path);
+      pinned_shortcuts.insert(pinned_shortcuts.end(), shortcut_files.begin(),
+                              shortcut_files.end());
+    }
+  }
+  return pinned_shortcuts;
 }
 
 }  // namespace internal

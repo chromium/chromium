@@ -7,6 +7,7 @@
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "components/global_media_controls/public/media_item_manager_observer.h"
 #include "components/global_media_controls/public/media_item_producer.h"
@@ -156,7 +157,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
 
     void MarkActiveIfNecessary();
 
-    MediaSessionItemProducer* const owner_;
+    const raw_ptr<MediaSessionItemProducer> owner_;
     const std::string id_;
     std::unique_ptr<MediaSessionNotificationItem> item_;
 
@@ -221,7 +222,7 @@ class COMPONENT_EXPORT(GLOBAL_MEDIA_CONTROLS) MediaSessionItemProducer
   mojo::Receiver<media_session::mojom::AudioFocusObserver>
       audio_focus_observer_receiver_{this};
 
-  MediaItemManager* const item_manager_;
+  const raw_ptr<MediaItemManager> item_manager_;
 
   // Keeps track of all the items we're currently observing.
   MediaItemUIObserverSet item_ui_observer_set_;

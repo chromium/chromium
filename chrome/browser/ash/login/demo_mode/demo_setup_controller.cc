@@ -4,8 +4,11 @@
 
 #include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 
+#include <algorithm>
+#include <cctype>
 #include <utility>
 
+#include "ash/components/arc/arc_util.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -35,7 +38,6 @@
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/system/statistics_provider.h"
 #include "chromeos/tpm/install_attributes.h"
-#include "components/arc/arc_util.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -300,6 +302,9 @@ DemoSetupController::DemoSetupError::CreateFromEnrollmentStatus(
     case policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED:
       return DemoSetupError(ErrorCode::kOfflinePolicyError,
                             RecoveryMethod::kOnlineOnly, debug_message);
+    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+      return DemoSetupError(ErrorCode::kUnexpectedError,
+                            RecoveryMethod::kUnknown, debug_message);
   }
   NOTREACHED() << "Demo mode setup received unsupported enrollment status";
   return DemoSetupError(ErrorCode::kUnexpectedError, RecoveryMethod::kUnknown,
@@ -497,12 +502,15 @@ std::string DemoSetupController::GetSubOrganizationEmail() {
   const std::string country =
       g_browser_process->local_state()->GetString(prefs::kDemoModeCountry);
 
+  std::string country_uppercase = base::ToUpperASCII(country);
+  std::string country_lowercase = base::ToLowerASCII(country);
+
   // Exclude US as it is the default country.
-  if (country != "us" &&
-      std::find(std::begin(DemoSession::kSupportedCountries),
+  if (std::find(std::begin(DemoSession::kSupportedCountries),
                 std::end(DemoSession::kSupportedCountries),
-                country) != std::end(DemoSession::kSupportedCountries)) {
-    return "admin-" + country + "@" + policy::kDemoModeDomain;
+                country_uppercase) !=
+      std::end(DemoSession::kSupportedCountries)) {
+    return "admin-" + country_lowercase + "@" + policy::kDemoModeDomain;
   }
   return std::string();
 }
@@ -572,23 +580,6 @@ void DemoSetupController::Enroll(
     case DemoSession::DemoModeConfig::kNone:
       NOTREACHED() << "No valid demo mode config specified";
   }
-}
-
-void DemoSetupController::TryMountPreinstalledDemoResources(
-    HasPreinstalledDemoResourcesCallback callback) {
-  if (!preinstalled_demo_resources_) {
-    preinstalled_demo_resources_ =
-        std::make_unique<DemoResources>(DemoSession::DemoModeConfig::kOffline);
-  }
-
-  if (DBusThreadManager::Get()->IsUsingFakes()) {
-    preinstalled_demo_resources_
-        ->SetPreinstalledOfflineResourcesLoadedForTesting(
-            preinstalled_offline_resources_path_for_tests_);
-  }
-  preinstalled_demo_resources_->EnsureLoaded(
-      base::BindOnce(&DemoSetupController::OnPreinstalledDemoResourcesLoaded,
-                     base::Unretained(this), std::move(callback)));
 }
 
 base::FilePath DemoSetupController::GetPreinstalledDemoResourcesPath(

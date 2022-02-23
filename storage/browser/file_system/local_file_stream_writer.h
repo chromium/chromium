@@ -14,7 +14,6 @@
 #include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/task_runner.h"
 #include "storage/browser/file_system/file_stream_writer.h"

@@ -144,7 +144,7 @@ class UserMediaRequestEntry {
 
 static const int64_t FAKE_TIME_STAMP = 3600000;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // All tests are flaky on Windows: crbug.com/277322.
 #define MAYBE_WebRtcInternalsBrowserTest DISABLED_WebRtcInternalsBrowserTest
 #else
@@ -253,10 +253,10 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
 
     base::ListValue* list_request =
         static_cast<base::ListValue*>(value_requests.get());
-    EXPECT_EQ(requests.size(), list_request->GetList().size());
+    EXPECT_EQ(requests.size(), list_request->GetListDeprecated().size());
 
     for (size_t i = 0; i < requests.size(); ++i) {
-      const base::Value& value = list_request->GetList()[i];
+      const base::Value& value = list_request->GetListDeprecated()[i];
       ASSERT_TRUE(value.is_dict());
       absl::optional<int> rid = value.FindIntKey("rid");
       absl::optional<int> pid = value.FindIntKey("pid");
@@ -460,33 +460,22 @@ class MAYBE_WebRtcInternalsBrowserTest: public ContentBrowserTest {
                                int update_number,
                                int stats_number) {
     EXPECT_NE((base::Value*)nullptr, dump);
-    EXPECT_EQ(base::Value::Type::DICTIONARY, dump->type());
+    ASSERT_EQ(base::Value::Type::DICTIONARY, dump->type());
 
-    base::DictionaryValue* dict_dump =
-        static_cast<base::DictionaryValue*>(dump);
-    EXPECT_EQ((size_t)peer_connection_number, dict_dump->DictSize());
-
-    base::DictionaryValue::Iterator it(*dict_dump);
-    for (; !it.IsAtEnd(); it.Advance()) {
-      base::Value* value = nullptr;
-      dict_dump->Get(it.key(), &value);
-      EXPECT_EQ(base::Value::Type::DICTIONARY, value->type());
-      base::DictionaryValue* pc_dump =
-          static_cast<base::DictionaryValue*>(value);
-      EXPECT_TRUE(pc_dump->HasKey("updateLog"));
-      EXPECT_TRUE(pc_dump->HasKey("stats"));
+    EXPECT_EQ((size_t)peer_connection_number, dump->DictSize());
+    for (auto kv : dump->DictItems()) {
+      const base::Value& pc_dump = kv.second;
+      ASSERT_EQ(base::Value::Type::DICTIONARY, pc_dump.type());
 
       // Verifies the number of updates.
-      pc_dump->Get("updateLog", &value);
-      EXPECT_EQ(base::Value::Type::LIST, value->type());
-      base::ListValue* list = static_cast<base::ListValue*>(value);
-      EXPECT_EQ((size_t)update_number, list->GetList().size());
+      const base::Value* value = pc_dump.FindListKey("updateLog");
+      ASSERT_TRUE(value);
+      EXPECT_EQ((size_t)update_number, value->GetListDeprecated().size());
 
       // Verifies the number of stats tables.
-      pc_dump->Get("stats", &value);
-      EXPECT_EQ(base::Value::Type::DICTIONARY, value->type());
-      base::DictionaryValue* dict = static_cast<base::DictionaryValue*>(value);
-      EXPECT_EQ((size_t)stats_number, dict->DictSize());
+      value = pc_dump.FindDictKey("stats");
+      ASSERT_TRUE(value);
+      EXPECT_EQ((size_t)stats_number, value->DictSize());
     }
   }
 

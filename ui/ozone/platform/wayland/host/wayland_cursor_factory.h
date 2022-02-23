@@ -13,7 +13,7 @@
 #include "base/scoped_observation.h"
 #include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/cursor/cursor_theme_manager_observer.h"
-#include "ui/base/cursor/ozone/bitmap_cursor_factory_ozone.h"
+#include "ui/ozone/common/bitmap_cursor_factory.h"
 #include "ui/ozone/platform/wayland/common/wayland_object.h"
 #include "ui/ozone/platform/wayland/host/wayland_cursor.h"
 
@@ -21,10 +21,11 @@ struct wl_cursor_theme;
 
 namespace ui {
 
+class BitmapCursor;
 class WaylandConnection;
 
 // CursorFactory implementation for Wayland.
-class WaylandCursorFactory : public BitmapCursorFactoryOzone,
+class WaylandCursorFactory : public BitmapCursorFactory,
                              public CursorThemeManagerObserver,
                              public WaylandCursorBufferListener {
  public:
@@ -54,7 +55,7 @@ class WaylandCursorFactory : public BitmapCursorFactoryOzone,
     ThemeData();
     ~ThemeData();
     wl::Object<wl_cursor_theme> theme;
-    base::flat_map<mojom::CursorType, scoped_refptr<BitmapCursorOzone>> cache;
+    base::flat_map<mojom::CursorType, scoped_refptr<BitmapCursor>> cache;
   };
 
   // CusorThemeManagerObserver:

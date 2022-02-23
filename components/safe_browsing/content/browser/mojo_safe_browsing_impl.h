@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_MOJO_SAFE_BROWSING_IMPL_H_
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_MOJO_SAFE_BROWSING_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/content/common/safe_browsing.mojom.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
@@ -61,7 +62,7 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
 
   // This is an instance of SafeBrowserUserData that is set as user-data on
   // |resource_context_|. SafeBrowserUserData owns |this|.
-  const void* user_data_key_ = nullptr;
+  raw_ptr<const void> user_data_key_ = nullptr;
 
   mojo::ReceiverSet<mojom::SafeBrowsing> receivers_;
   scoped_refptr<UrlCheckerDelegate> delegate_;
@@ -69,7 +70,7 @@ class MojoSafeBrowsingImpl : public mojom::SafeBrowsing {
 
   // Not owned by this object. It is always valid during the lifetime of this
   // object.
-  content::ResourceContext* resource_context_;
+  raw_ptr<content::ResourceContext> resource_context_;
 };
 
 }  // namespace safe_browsing

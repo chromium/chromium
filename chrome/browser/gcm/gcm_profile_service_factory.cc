@@ -23,7 +23,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/gcm/gcm_product_util.h"
 #include "chrome/common/channel_info.h"
 #include "components/gcm_driver/gcm_client_factory.h"
@@ -44,7 +44,7 @@ namespace gcm {
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Requests a ProxyResolvingSocketFactory on the UI thread. Note that a WeakPtr
 // of GCMProfileService is needed to detect when the KeyedService shuts down,
 // and avoid calling into |profile| which might have also been destroyed.
@@ -136,7 +136,7 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
            base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN}));
   std::unique_ptr<GCMProfileService> service;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   service = std::make_unique<GCMProfileService>(profile->GetPath(),
                                                 blocking_task_runner);
 #else

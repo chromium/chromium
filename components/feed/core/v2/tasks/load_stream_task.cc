@@ -22,13 +22,16 @@
 #include "components/feed/core/v2/feed_network.h"
 #include "components/feed/core/v2/feed_stream.h"
 #include "components/feed/core/v2/feedstore_util.h"
+#include "components/feed/core/v2/ios_shared_prefs.h"
 #include "components/feed/core/v2/metrics_reporter.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/public/types.h"
 #include "components/feed/core/v2/stream_model.h"
 #include "components/feed/core/v2/tasks/upload_actions_task.h"
 #include "components/feed/core/v2/types.h"
 #include "components/feed/feed_feature_list.h"
+#include "net/base/net_errors.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feed {
@@ -63,6 +66,47 @@ Result::Result(const StreamType& a_stream_type, LoadStreamStatus status)
 Result::~Result() = default;
 Result::Result(Result&&) = default;
 Result& Result::operator=(Result&&) = default;
+
+// static
+LaunchResult LoadStreamTask::LaunchResultFromNetworkInfo(
+    const NetworkResponseInfo& response_info,
+    bool has_parsed_body) {
+  if (response_info.status_code == 200) {
+    if (has_parsed_body) {
+      // Success.
+      return {LoadStreamStatus::kNoStatus,
+              feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED};
+    }
+    if (response_info.response_body_bytes > 0) {
+      return {
+          LoadStreamStatus::kCannotParseNetworkResponseBody,
+          feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS};
+    }
+    return {LoadStreamStatus::kNoResponseBody,
+            feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS};
+  }
+
+  switch (response_info.account_token_fetch_status) {
+    case AccountTokenFetchStatus::kUnspecified:
+      if (response_info.status_code == net::ERR_TIMED_OUT) {
+        return {LoadStreamStatus::kNetworkFetchTimedOut,
+                feedwire::DiscoverLaunchResult::NO_CARDS_REQUEST_ERROR_OTHER};
+      }
+      break;
+    case AccountTokenFetchStatus::kSuccess:
+      break;
+    case AccountTokenFetchStatus::kUnexpectedAccount:
+      return {
+          LoadStreamStatus::kAccountTokenFetchFailedWrongAccount,
+          feedwire::DiscoverLaunchResult::NO_CARDS_FAILED_TO_GET_AUTH_TOKEN};
+    case AccountTokenFetchStatus::kTimedOut:
+      return {
+          LoadStreamStatus::kAccountTokenFetchTimedOut,
+          feedwire::DiscoverLaunchResult::NO_CARDS_FAILED_TO_GET_AUTH_TOKEN};
+  }
+  return {LoadStreamStatus::kNetworkFetchFailed,
+          feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_NON_200};
+}
 
 LoadStreamTask::LoadStreamTask(const Options& options,
                                FeedStream* stream,
@@ -243,7 +287,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
     else if (options_.stream_type.IsWebFeed())
       network_request_id_ = launch_reliability_logger_.LogWebFeedRequestStart();
   }
-  const feed::RequestMetadata request_metadata =
+  RequestMetadata request_metadata =
       stream_.GetRequestMetadata(options_.stream_type,
                                  /*is_for_next_page=*/false);
 
@@ -252,9 +296,8 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       GetRequestReason(options_.stream_type, options_.load_type),
       request_metadata, stream_.GetMetadata().consistency_token());
 
-  const std::string gaia =
-      force_signed_out_request ? std::string() : stream_.GetSyncSignedInGaia();
-
+  const AccountInfo account_info =
+      force_signed_out_request ? AccountInfo{} : stream_.GetAccountInfo();
   stream_.GetMetricsReporter().NetworkRefreshRequestStarted(
       options_.stream_type, request_metadata.content_order);
 
@@ -265,7 +308,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
     // Special case: web feed that is not using Feed Query requests go to
     // WebFeedListContentsDiscoverApi.
     network.SendApiRequest<WebFeedListContentsDiscoverApi>(
-        std::move(request), gaia,
+        std::move(request), account_info, std::move(request_metadata),
         base::BindOnce(&LoadStreamTask::QueryApiRequestComplete, GetWeakPtr()));
   } else if (options_.stream_type.IsForYou() &&
              base::FeatureList::IsEnabled(kDiscoFeedEndpoint)) {
@@ -275,13 +318,13 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
       case LoadType::kInitialLoad:
       case LoadType::kManualRefresh:
         network.SendApiRequest<QueryInteractiveFeedDiscoverApi>(
-            request, gaia,
+            request, account_info, std::move(request_metadata),
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
         break;
       case LoadType::kBackgroundRefresh:
         network.SendApiRequest<QueryBackgroundFeedDiscoverApi>(
-            request, gaia,
+            request, account_info, std::move(request_metadata),
             base::BindOnce(&LoadStreamTask::QueryApiRequestComplete,
                            GetWeakPtr()));
         break;
@@ -292,7 +335,7 @@ void LoadStreamTask::UploadActionsComplete(UploadActionsTask::Result result) {
   } else {
     // Other requests use GWS.
     network.SendQueryRequest(
-        NetworkRequestType::kFeedQuery, request, gaia,
+        NetworkRequestType::kFeedQuery, request, account_info,
         base::BindOnce(&LoadStreamTask::QueryRequestComplete, GetWeakPtr()));
   }
 }
@@ -321,28 +364,15 @@ void LoadStreamTask::ProcessNetworkResponse(
 
   network_response_info_ = response_info;
 
-  if (response_info.status_code != 200) {
-    return RequestFinished(
-        {LoadStreamStatus::kNetworkFetchFailed,
-         feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_NON_200});
-  }
-
-  if (!response_body) {
-    if (response_info.response_body_bytes > 0) {
-      return RequestFinished(
-          {LoadStreamStatus::kCannotParseNetworkResponseBody,
-           feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS});
-    } else {
-      return RequestFinished(
-          {LoadStreamStatus::kNoResponseBody,
-           feedwire::DiscoverLaunchResult::NO_CARDS_RESPONSE_ERROR_ZERO_CARDS});
-    }
-  }
+  LaunchResult network_status =
+      LaunchResultFromNetworkInfo(response_info, response_body != nullptr);
+  if (network_status.load_stream_status != LoadStreamStatus::kNoStatus)
+    return RequestFinished(network_status);
 
   RefreshResponseData response_data =
       stream_.GetWireResponseTranslator().TranslateWireResponse(
           *response_body, StreamModelUpdateRequest::Source::kNetworkUpdate,
-          response_info.was_signed_in, base::Time::Now());
+          response_info.account_info, base::Time::Now());
   server_send_timestamp_ns_ =
       response_data.server_request_received_timestamp_ns;
   server_receive_timestamp_ns_ =
@@ -363,14 +393,19 @@ void LoadStreamTask::ProcessNetworkResponse(
                                          *response_data.model_update_request),
                                      base::DoNothing());
 
-  fetched_content_has_notice_card_ =
+  const bool fetched_content_has_notice_card =
       response_data.model_update_request->stream_data
           .privacy_notice_fulfilled();
+  feed::prefs::SetLastFetchHadNoticeCard(*stream_.profile_prefs(),
+                                         fetched_content_has_notice_card);
+  MetricsReporter::NoticeCardFulfilled(fetched_content_has_notice_card);
 
-  MetricsReporter::NoticeCardFulfilled(*fetched_content_has_notice_card_);
-
-  auto updated_metadata = stream_.GetMetadata();
+  feedstore::Metadata updated_metadata = stream_.GetMetadata();
   SetLastFetchTime(updated_metadata, options_.stream_type, base::Time::Now());
+  updated_metadata.set_web_and_app_activity_enabled(
+      response_data.web_and_app_activity_enabled);
+  updated_metadata.set_discover_personalization_enabled(
+      response_data.discover_personalization_enabled);
   feedstore::MaybeUpdateSessionId(updated_metadata, response_data.session_id);
   if (response_data.content_lifetime) {
     feedstore::SetContentLifetime(updated_metadata, options_.stream_type,
@@ -424,7 +459,6 @@ void LoadStreamTask::Done(LaunchResult launch_result) {
   result.network_response_info = network_response_info_;
   result.loaded_new_content_from_network = loaded_new_content_from_network_;
   result.latencies = std::move(latencies_);
-  result.fetched_content_has_notice_card = fetched_content_has_notice_card_;
   result.upload_actions_result = std::move(upload_actions_result_);
   result.experiments = experiments_;
   result.launch_result = launch_result.launch_result;

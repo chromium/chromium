@@ -15,7 +15,7 @@ class Browser;
 
 namespace base {
 class CommandLine;
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace gfx {
@@ -36,7 +36,7 @@ std::unique_ptr<DictionaryPrefUpdate> GetWindowPlacementDictionaryReadWrite(
     PrefService* prefs);
 // Returns NULL if the window corresponds to an app that doesn't have placement
 // information stored in the preferences system.
-const base::DictionaryValue* GetWindowPlacementDictionaryReadOnly(
+const base::Value* GetWindowPlacementDictionaryReadOnly(
     const std::string& window_name,
     PrefService* prefs);
 

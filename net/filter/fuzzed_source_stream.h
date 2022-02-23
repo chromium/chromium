@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "net/base/completion_once_callback.h"
 #include "net/filter/source_stream.h"

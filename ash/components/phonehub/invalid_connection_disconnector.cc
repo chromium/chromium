@@ -9,7 +9,7 @@
 #include "base/timer/timer.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -72,4 +72,4 @@ bool InvalidConnectionDisconnector::DoesPhoneStatusModelExist() const {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

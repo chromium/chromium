@@ -7,16 +7,17 @@
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/common/content_client.h"
 #include "device/fido/features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
+#include "content/public/browser/content_browser_client.h"
 #include "device/fido/mac/authenticator.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
+#include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/win/authenticator.h"
 #endif
 
@@ -26,7 +27,7 @@
 
 namespace content {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void IsUVPlatformAuthenticatorAvailable(
     BrowserContext* browser_context,
     IsUVPlatformAuthenticatorAvailableCallback callback) {
@@ -43,7 +44,7 @@ void IsUVPlatformAuthenticatorAvailable(
                                                        std::move(callback));
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback callback) {
   device::WinWebAuthnApiAuthenticator::

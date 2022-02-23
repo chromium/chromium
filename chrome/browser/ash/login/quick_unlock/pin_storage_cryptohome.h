@@ -6,17 +6,21 @@
 #define CHROME_BROWSER_ASH_LOGIN_QUICK_UNLOCK_PIN_STORAGE_CRYPTOHOME_H_
 
 #include <string>
+#include <vector>
 
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/login/auth/user_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class AccountId;
 
 namespace ash {
+
+class Key;
+class UserContext;
+
 namespace quick_unlock {
+enum class Purpose;
 
 class PinStorageCryptohome {
  public:
@@ -46,9 +50,12 @@ class PinStorageCryptohome {
               const absl::optional<std::string>& pin_salt,
               BoolCallback did_set);
   void RemovePin(const UserContext& user_context, BoolCallback did_remove);
-  void CanAuthenticate(const AccountId& account_id, BoolCallback result) const;
+  void CanAuthenticate(const AccountId& account_id,
+                       Purpose purpose,
+                       BoolCallback result) const;
   void TryAuthenticate(const AccountId& account_id,
                        const Key& key,
+                       Purpose purpose,
                        BoolCallback result);
 
  private:

@@ -13,7 +13,6 @@
 #include <set>
 #include <vector>
 
-#include "content/common/content_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "media/video/video_decode_accelerator.h"
 #include "ppapi/c/pp_codecs.h"
@@ -26,9 +25,8 @@ namespace content {
 class RendererPpapiHost;
 class VideoDecoderShim;
 
-class CONTENT_EXPORT PepperVideoDecoderHost
-    : public ppapi::host::ResourceHost,
-      public media::VideoDecodeAccelerator::Client {
+class PepperVideoDecoderHost : public ppapi::host::ResourceHost,
+                               public media::VideoDecodeAccelerator::Client {
  public:
   PepperVideoDecoderHost(RendererPpapiHost* host,
                          PP_Instance instance,

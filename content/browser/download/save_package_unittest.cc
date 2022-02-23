@@ -28,19 +28,19 @@ namespace content {
 
 #define FPL FILE_PATH_LITERAL
 #define HTML_EXTENSION ".html"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define FPL_HTML_EXTENSION L".html"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #define FPL_HTML_EXTENSION ".html"
 #endif
 
 namespace {
 
 // This constant copied from save_package.cc.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const uint32_t kMaxFilePathLength = MAX_PATH - 1;
 const uint32_t kMaxFileNameLength = MAX_PATH - 1;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 const uint32_t kMaxFilePathLength = PATH_MAX - 1;
 const uint32_t kMaxFileNameLength = NAME_MAX;
 #endif
@@ -212,7 +212,7 @@ TEST_F(SavePackageTest, TestUnSuccessfullyGenerateSavePackageFilename) {
 }
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLongSavePackageFilename DISABLED_TestLongSavePackageFilename
 #else
 #define MAYBE_TestLongSavePackageFilename TestLongSavePackageFilename
@@ -247,7 +247,7 @@ TEST_F(SavePackageTest, MAYBE_TestLongSavePackageFilename) {
 }
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLongSafePureFilename DISABLED_TestLongSafePureFilename
 #else
 #define MAYBE_TestLongSafePureFilename TestLongSafePureFilename

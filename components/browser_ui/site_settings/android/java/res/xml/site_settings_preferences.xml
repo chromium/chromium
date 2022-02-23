@@ -12,7 +12,7 @@
         android:key="all_sites"
         android:title="@string/all_sites"
         android:icon="@drawable/settings_all_sites"
-        app:iconTint="@color/default_icon_color" />
+        app:iconTint="@macro/default_icon_color" />
     <!-- Cookies -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:key="cookies"
@@ -72,7 +72,7 @@
         android:key="use_storage"
         android:title="@string/website_settings_storage"
         android:icon="@drawable/ic_storage"
-        app:iconTint="@color/default_icon_color" />
+        app:iconTint="@macro/default_icon_color" />
     <!-- NFC -->
     <org.chromium.components.browser_ui.settings.ChromeBasePreference
         android:fragment="org.chromium.components.browser_ui.site_settings.SingleCategorySettings"

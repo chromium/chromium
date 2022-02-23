@@ -16,6 +16,7 @@ const char kMobileConfigFilePath[] =
 const char kPkPassFilePath[] =
     "ios/testing/data/http_server_files/generic.pkpass";
 const char kUsdzFilePath[] = "ios/testing/data/http_server_files/redchair.usdz";
+const char kVcardFilePath[] = "ios/testing/data/http_server_files/vcard.vcf";
 
 std::string GetTestFileContents(const char* file_path) {
   base::FilePath path;

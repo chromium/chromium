@@ -155,8 +155,8 @@ void RandomlyReadWrite(std::atomic<bool>* should_stop,
         static_cast<char*>(base::AlignedAlloc(kPageSize, kPageSize)));
 
     while (!should_stop->load()) {
-      int i = dist(engine);
-      int offset = i * kPageSize;
+      int random = dist(engine);
+      int offset = random * kPageSize;
       int size_read = f.Read(offset, page_buffer.get(), kPageSize);
       CHECK_EQ(size_read, kPageSize);
 

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -62,11 +63,11 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   FRIEND_TEST_ALL_PREFIXES(ProfileInfoHandlerTest, PushProfileInfo);
 
   // Callbacks from the page.
-  void HandleGetProfileInfo(const base::ListValue* args);
+  void HandleGetProfileInfo(base::Value::ConstListView args);
   void PushProfileInfo();
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  void HandleGetProfileStats(const base::ListValue* args);
+  void HandleGetProfileStats(base::Value::ConstListView args);
 
   // Returns the sum of the counts of individual profile states. Returns 0 if
   // there exists a stat that was not successfully retrieved.
@@ -76,7 +77,7 @@ class ProfileInfoHandler : public SettingsPageUIHandler,
   std::unique_ptr<base::DictionaryValue> GetAccountNameAndIcon();
 
   // Weak pointer.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::ScopedObservation<user_manager::UserManager,

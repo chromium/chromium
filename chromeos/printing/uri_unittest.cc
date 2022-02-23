@@ -184,9 +184,6 @@ TEST(UriTest, UriWithAllPrintableASCII) {
     if (c >= 'A' && c <= 'Z')
       c += 'a' - 'A';
   });
-  // In Query, all occurrences of '+' on the input are treated as ' ' (space).
-  std::replace(query[0].first.begin(), query[0].first.end(), '+', ' ');
-  std::replace(query[0].second.begin(), query[0].second.end(), '+', ' ');
 
   EXPECT_EQ(uri.GetUserinfo(), kPrintableASCII);
   EXPECT_EQ(uri.GetHost(), host);

@@ -110,8 +110,13 @@ CastGpuFactoryImpl::CreateVideoEncoder() {
   return CreateVideoEncodeAccelerator();
 }
 
-// Return whether GPU encoding/decoding is enabled.
-bool CastGpuFactoryImpl::IsGpuVideoAcceleratorEnabled() {
+// Return whether GPU decoding is enabled.
+bool CastGpuFactoryImpl::IsGpuVideoDecodeAcceleratorEnabled() {
+  return true;
+}
+
+// Return whether GPU encoding is enabled.
+bool CastGpuFactoryImpl::IsGpuVideoEncodeAcceleratorEnabled() {
   return true;
 }
 

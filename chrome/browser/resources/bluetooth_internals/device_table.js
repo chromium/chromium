@@ -9,6 +9,7 @@ import {assert} from 'chrome://resources/js/assert.m.js';
 import {define as crUiDefine} from 'chrome://resources/js/cr/ui.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
 
+import {DeviceInfo} from './device.mojom-webui.js';
 import {DeviceCollection} from './device_collection.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
 
@@ -48,7 +49,7 @@ DeviceTable.prototype = {
     this.body_ = this.tBodies[0];
     /** @private */
     this.headers_ = this.tHead.rows[0].cells;
-    /** @private {!Map<!bluetooth.mojom.DeviceInfo, boolean>} */
+    /** @private {!Map<!DeviceInfo, boolean>} */
     this.inspectionMap_ = new Map();
   },
 
@@ -71,7 +72,7 @@ DeviceTable.prototype = {
    * Updates the inspect status of the row matching the given |deviceInfo|.
    * If |isInspecting| is true, the forget link is enabled otherwise it's
    * disabled.
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    * @param {boolean} isInspecting
    */
   setInspecting(deviceInfo, isInspecting) {
@@ -101,8 +102,7 @@ DeviceTable.prototype = {
    */
   handleChange_(event) {
     this.updateRow_(
-        /** @type {!bluetooth.mojom.DeviceInfo} */ (
-            this.devices_.item(event.index)),
+        /** @type {!DeviceInfo} */ (this.devices_.item(event.index)),
         event.index);
   },
 
@@ -138,7 +138,7 @@ DeviceTable.prototype = {
 
   /**
    * Inserts a new row at |index| and updates it with info from |device|.
-   * @param {!bluetooth.mojom.DeviceInfo} device
+   * @param {!DeviceInfo} device
    * @param {?number} index
    * @private
    */
@@ -188,14 +188,13 @@ DeviceTable.prototype = {
 
     for (let i = 0; i < this.devices_.length; i++) {
       this.insertRow_(
-          /** @type {!bluetooth.mojom.DeviceInfo} */ (this.devices_.item(i)),
-          null);
+          /** @type {!DeviceInfo} */ (this.devices_.item(i)), null);
     }
   },
 
   /**
    * Updates the row at |index| with the info from |device|.
-   * @param {!bluetooth.mojom.DeviceInfo} device
+   * @param {!DeviceInfo} device
    * @param {number} index
    * @private
    */

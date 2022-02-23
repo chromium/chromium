@@ -294,11 +294,17 @@ void WebEngineAudioRenderer::SetLatencyHint(
     absl::optional<base::TimeDelta> latency_hint) {
   // TODO(crbug.com/1131116): Implement at some later date after we've vetted
   // the API shape and usefulness outside of fuchsia.
+  NOTIMPLEMENTED();
 }
 
-void WebEngineAudioRenderer::SetPreservesPitch(bool preserves_pitch) {}
+void WebEngineAudioRenderer::SetPreservesPitch(bool preserves_pitch) {
+  NOTIMPLEMENTED();
+}
 
-void WebEngineAudioRenderer::SetAutoplayInitiated(bool autoplay_initiated) {}
+void WebEngineAudioRenderer::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
+  NOTIMPLEMENTED();
+}
 
 void WebEngineAudioRenderer::StartTicking() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);

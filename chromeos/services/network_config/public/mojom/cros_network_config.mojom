@@ -135,7 +135,9 @@ enum InhibitReason {
   // checking with an SMDS server.
   kRefreshingProfileList,
   // Inhibited because the EUICC memory is being reset.
-  kResettingEuiccMemory
+  kResettingEuiccMemory,
+  // Inhibited because an eSIM profile is being disabled.
+  kDisablingProfile
 };
 
 // Always-on VPN operating mode.
@@ -355,7 +357,7 @@ struct IPConfigProperties {
   array<string>? name_servers;
   array<string>? search_domains;
   int32 routing_prefix = kNoRoutingPrefix;
-  string? type;
+  IPConfigType type;
   string? web_proxy_auto_discovery_url;
 };
 
@@ -488,7 +490,7 @@ struct ManagedIPConfigProperties {
   ManagedString? ip_address;
   ManagedStringList? name_servers;
   ManagedInt32? routing_prefix;
-  ManagedString? type;
+  IPConfigType type;
   ManagedString? web_proxy_auto_discovery_url;
 };
 
@@ -686,6 +688,22 @@ union NetworkTypeManagedProperties {
   ManagedWiFiProperties wifi;
 };
 
+struct UInt32Value {
+  uint32 value;
+};
+
+struct TrafficCounterProperties {
+  // Time when the traffic counters for a Service were last reset.
+  mojo_base.mojom.Time? last_reset_time;
+  // A friendly formatted sentence representing the |last_reset_time| as a
+  // date, e.g., Monday, March 6, 2008. This value takes locale into account.
+  string? friendly_date;
+  // Whether traffic counters are reset automatically.
+  bool auto_reset;
+  // User selected day of month when traffic counters are reset.
+  uint32 user_specified_reset_day;
+};
+
 // Managed properties provided by getManagedProperties. See onc_spec.md for
 // details about each property.
 struct ManagedProperties {
@@ -710,8 +728,8 @@ struct ManagedProperties {
   // match the type of |type_properties|, which will always be provided.
   NetworkType type;
   NetworkTypeManagedProperties type_properties;
-  // Represents when the traffic counters for a Service were last reset.
-  mojo_base.mojom.Time? traffic_counter_reset_time;
+  // Contains traffic counter related information for this network.
+  TrafficCounterProperties traffic_counter_properties;
 };
 
 // Properties for SetProperties and ConfigureNetwork. All of the top level
@@ -1141,6 +1159,12 @@ interface CrosNetworkConfig {
 
   // Resets traffic counters for a service with ID |guid|.
   ResetTrafficCounters(string guid);
+
+  // Sets whether traffic counters should be automatically reset and the day of
+  // the month on which traffic counters are automatically reset. In order for
+  // |day| to be valid, it must be within the limit 1 <= |day| <= 31.
+  SetTrafficCountersAutoReset(string guid, bool auto_reset, UInt32Value? day) =>
+    (bool success);
 };
 
 interface CrosNetworkConfigObserver {

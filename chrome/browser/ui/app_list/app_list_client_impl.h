@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "ash/public/cpp/app_list/app_list_client.h"
+#include "ash/public/cpp/app_list/app_list_metrics.h"
 #include "ash/public/cpp/shelf_types.h"
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
@@ -32,7 +33,7 @@ class SearchController;
 }  // namespace app_list
 
 class AppListClientWithProfileTest;
-class AppListNotifierImpl;
+class AppListNotifier;
 class AppListModelUpdater;
 class AppSyncUIStateWatcher;
 class Profile;
@@ -74,10 +75,11 @@ class AppListClientImpl
 
   // ash::AppListClient:
   void OnAppListControllerDestroyed() override;
+  void StartZeroStateSearch(base::OnceClosure on_done,
+                            base::TimeDelta timeout) override;
   void StartSearch(const std::u16string& trimmed_query) override;
   void OpenSearchResult(int profile_id,
                         const std::string& result_id,
-                        ash::AppListSearchResultType result_type,
                         int event_flags,
                         ash::AppListLaunchedFrom launched_from,
                         ash::AppListLaunchType launch_type,
@@ -92,9 +94,11 @@ class AppListClientImpl
   void ViewShown(int64_t display_id) override;
   void ActivateItem(int profile_id,
                     const std::string& id,
-                    int event_flags) override;
+                    int event_flags,
+                    ash::AppListLaunchedFrom launched_from) override;
   void GetContextMenuModel(int profile_id,
                            const std::string& id,
+                           bool add_sort_options,
                            GetContextMenuModelCallback callback) override;
   void OnAppListVisibilityWillChange(bool visible) override;
   void OnAppListVisibilityChanged(bool visible) override;
@@ -109,9 +113,7 @@ class AppListClientImpl
       int position_index) override;
   ash::AppListNotifier* GetNotifier() override;
   void LoadIcon(int profile_id, const std::string& app_id) override;
-  void OnAppListSortRequested(int profile_id,
-                              ash::AppListSortOrder order) override;
-  void OnAppListSortRevertRequested(int profile_id) override;
+  ash::AppListSortOrder GetPermanentSortingOrder() const override;
 
   // user_manager::UserManager::UserSessionStateObserver:
   void ActiveUserChanged(user_manager::User* active_user) override;
@@ -151,6 +153,9 @@ class AppListClientImpl
 
   app_list::SearchController* search_controller();
 
+  void SetSearchControllerForTest(
+      std::unique_ptr<app_list::SearchController> test_controller);
+
   AppListModelUpdater* GetModelUpdaterForTest();
 
   // Initializes as if a new user logged in for testing.
@@ -162,9 +167,20 @@ class AppListClientImpl
   struct StateForNewUser {
     // Indicates whether showing the app list has been recorded.
     bool showing_recorded = false;
+    bool shown_in_tablet_mode = false;
 
     // Indicates whether any launcher action has been recorded.
     bool action_recorded = false;
+
+    // Indicates whether the metric to track whether the user took action when
+    // the launcher was first shown was recorded.
+    bool first_open_success_recorded = false;
+
+    // Whether the user entered a query into the search box.
+    bool started_search = false;
+    // Whether the result that the user launched during their first search
+    // attempt got recorder.
+    bool first_search_result_recorded = false;
   };
 
   // session_manager::SessionManagerObserver:
@@ -184,8 +200,7 @@ class AppListClientImpl
 
   // Records the browser window status + the opened search result type when
   // the result is opened from the search box.
-  void RecordOpenedResultFromSearchBox(
-      ash::AppListSearchResultType result_type);
+  void RecordOpenedResultFromSearchBox(ash::SearchResultType result_type);
 
   // Maybe records the launcher action. Launcher actions include activating an
   // app and opening a search result from either a suggestion chip or the search
@@ -220,7 +235,7 @@ class AppListClientImpl
 
   ash::AppListController* app_list_controller_ = nullptr;
 
-  std::unique_ptr<AppListNotifierImpl> app_list_notifier_;
+  std::unique_ptr<ash::AppListNotifier> app_list_notifier_;
 
   // Records the app list state for the session started by a new user. It
   // gets reset when:

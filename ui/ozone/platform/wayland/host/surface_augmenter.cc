@@ -13,7 +13,8 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxSurfaceAugmenterVersion = 1;
+constexpr uint32_t kMinVersion = 1;
+constexpr uint32_t kMaxVersion = 2;
 }
 
 // static
@@ -27,13 +28,15 @@ void SurfaceAugmenter::Instantiate(WaylandConnection* connection,
                                    uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->surface_augmenter_)
+  if (connection->surface_augmenter_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMaxVersion)) {
     return;
+  }
 
-  auto augmenter = wl::Bind<surface_augmenter>(
-      registry, name, std::min(version, kMaxSurfaceAugmenterVersion));
+  auto augmenter = wl::Bind<surface_augmenter>(registry, name,
+                                               std::min(version, kMaxVersion));
   if (!augmenter) {
-    LOG(ERROR) << "Failed to bind overlay_prioritizer";
+    LOG(ERROR) << "Failed to bind surface_augmenter";
     return;
   }
   connection->surface_augmenter_ =
@@ -46,10 +49,24 @@ SurfaceAugmenter::SurfaceAugmenter(surface_augmenter* surface_augmenter,
 
 SurfaceAugmenter::~SurfaceAugmenter() = default;
 
+bool SurfaceAugmenter::SupportsSubpixelAccuratePosition() const {
+  return surface_augmenter_get_version(augmenter_.get()) >=
+         SURFACE_AUGMENTER_GET_AUGMENTED_SUBSURFACE_SINCE_VERSION;
+}
+
 wl::Object<augmented_surface> SurfaceAugmenter::CreateAugmentedSurface(
     wl_surface* surface) {
   return wl::Object<augmented_surface>(
       surface_augmenter_get_augmented_surface(augmenter_.get(), surface));
+}
+
+wl::Object<augmented_sub_surface> SurfaceAugmenter::CreateAugmentedSubSurface(
+    wl_subsurface* subsurface) {
+  if (!SupportsSubpixelAccuratePosition())
+    return {};
+
+  return wl::Object<augmented_sub_surface>(
+      surface_augmenter_get_augmented_subsurface(augmenter_.get(), subsurface));
 }
 
 wl::Object<wl_buffer> SurfaceAugmenter::CreateSolidColorBuffer(

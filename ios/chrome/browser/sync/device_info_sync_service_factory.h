@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "components/keyed_service/ios/browser_state_keyed_service_factory.h"
 
 class ChromeBrowserState;

@@ -5,13 +5,13 @@
 #include "base/memory/ptr_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_cache.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_activity_logger.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -89,14 +89,14 @@ class ActivityLoggerTest : public testing::Test {
   }
 
   void ExecuteScriptInMainWorld(const String& script) const {
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(script))
-        ->RunScript(local_frame_->DomWindow());
+    ClassicScript::CreateUnspecifiedScript(script)->RunScript(
+        local_frame_->DomWindow());
     PumpPendingRequestsForFrameToLoad(web_view_helper_.LocalMainFrame());
   }
 
   void ExecuteScriptInIsolatedWorld(const String& script) const {
     v8::HandleScope scope(v8::Isolate::GetCurrent());
-    ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(script))
+    ClassicScript::CreateUnspecifiedScript(script)
         ->RunScriptInIsolatedWorldAndReturnValue(local_frame_->DomWindow(),
                                                  kIsolatedWorldId);
     PumpPendingRequestsForFrameToLoad(web_view_helper_.LocalMainFrame());

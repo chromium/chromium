@@ -75,6 +75,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Details'
 ++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark ignored invisible
+++++++++++++staticText ignored invisible name='This should NOT header role.'
 ++++++group
 ++++++++headerAsNonLandmark
 ++++++++++staticText name='This should NOT have banner role.'
@@ -128,6 +129,8 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Details'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
+++++++++++++headerAsNonLandmark ignored invisible
+++++++++++++++staticText ignored invisible name='This should NOT header role.'
 ++++++group
 ++++++++genericContainer ignored
 ++++++++++headerAsNonLandmark
@@ -180,6 +183,7 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Details'
 ++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark ignored invisible
+++++++++++++staticText ignored invisible name='This should NOT footer role.'
 ++++++group
 ++++++++footerAsNonLandmark
 ++++++++++staticText name='This should NOT have footer role.'
@@ -233,6 +237,8 @@ rootWebArea
 ++++++++++++++inlineTextBox name='Details'
 ++++++++genericContainer ignored
 ++++++++++genericContainer ignored invisible
+++++++++++++footerAsNonLandmark ignored invisible
+++++++++++++++staticText ignored invisible name='This should NOT footer role.'
 ++++++group
 ++++++++genericContainer ignored
 ++++++++++footerAsNonLandmark

@@ -21,8 +21,8 @@
 #include "base/bind.h"
 #include "base/bits.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/numerics/safe_math.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -33,6 +33,7 @@
 #include "cc/paint/display_item_list.h"
 #include "cc/paint/paint_cache.h"
 #include "cc/paint/paint_op_buffer_serializer.h"
+#include "cc/paint/skottie_serialization_history.h"
 #include "cc/paint/transfer_cache_entry.h"
 #include "cc/paint/transfer_cache_serialize_helper.h"
 #include "gpu/command_buffer/client/gpu_control.h"
@@ -41,6 +42,7 @@
 #include "gpu/command_buffer/client/raster_cmd_helper.h"
 #include "gpu/command_buffer/client/shared_memory_limits.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -222,7 +224,7 @@ class RasterImplementation::TransferCacheSerializeHelperImpl final
     return bytes_to_write;
   }
 
-  RasterImplementation* const ri_;
+  const raw_ptr<RasterImplementation> ri_;
   uint32_t end_offset_of_last_inlined_entry_ = 0u;
 };
 
@@ -340,16 +342,16 @@ class RasterImplementation::PaintOpSerializer {
   bool valid() const { return !!buffer_; }
 
  private:
-  RasterImplementation* const ri_;
-  char* buffer_;
-  cc::DecodeStashingImageProvider* const stashing_image_provider_;
-  TransferCacheSerializeHelperImpl* const transfer_cache_helper_;
-  ClientFontManager* font_manager_;
+  const raw_ptr<RasterImplementation> ri_;
+  raw_ptr<char> buffer_;
+  const raw_ptr<cc::DecodeStashingImageProvider> stashing_image_provider_;
+  const raw_ptr<TransferCacheSerializeHelperImpl> transfer_cache_helper_;
+  raw_ptr<ClientFontManager> font_manager_;
 
   uint32_t written_bytes_ = 0;
   uint32_t free_bytes_ = 0;
 
-  size_t* max_op_size_hint_;
+  raw_ptr<size_t> max_op_size_hint_;
 };
 
 RasterImplementation::SingleThreadChecker::SingleThreadChecker(
@@ -386,7 +388,7 @@ struct RasterImplementation::AsyncARGBReadbackRequest {
     std::move(callback).Run(kTopLeft_GrSurfaceOrigin, readback_successful);
   }
 
-  void* dst_pixels;
+  raw_ptr<void> dst_pixels;
   GLuint dst_size;
   GLuint pixels_offset;
   std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
@@ -455,15 +457,15 @@ struct RasterImplementation::AsyncYUVReadbackRequest {
 
   int y_plane_stride;
   GLuint y_plane_offset;
-  uint8_t* y_plane_data;
+  raw_ptr<uint8_t> y_plane_data;
 
   int u_plane_stride;
   GLuint u_plane_offset;
-  uint8_t* u_plane_data;
+  raw_ptr<uint8_t> u_plane_data;
 
   int v_plane_stride;
   GLuint v_plane_offset;
-  uint8_t* v_plane_data;
+  raw_ptr<uint8_t> v_plane_data;
 
   std::unique_ptr<ScopedMappedMemoryPtr> shared_memory;
   base::OnceCallback<void()> release_mailbox;
@@ -503,7 +505,8 @@ RasterImplementation::RasterImplementation(
       lost_(false),
       max_inlined_entry_size_(kMaxTransferCacheEntrySizeForTransferBuffer),
       transfer_cache_(this),
-      image_decode_accelerator_(image_decode_accelerator) {
+      image_decode_accelerator_(image_decode_accelerator),
+      raw_draw_(features::IsUsingRawDraw()) {
   DCHECK(helper);
   DCHECK(transfer_buffer);
   DCHECK(gpu_control);
@@ -1257,6 +1260,7 @@ void RasterImplementation::WritePixels(const gpu::Mailbox& dest_mailbox,
                                        GLuint row_bytes,
                                        const SkImageInfo& src_info,
                                        const void* src_pixels) {
+  TRACE_EVENT0("gpu", "RasterImplementation::WritePixels");
   DCHECK_GE(row_bytes, src_info.minRowBytes());
 
   // Get the size of the SkColorSpace while maintaining 8-byte alignment.
@@ -1401,9 +1405,10 @@ void RasterImplementation::RasterCHROMIUM(const cc::DisplayItemList* list,
       cc::PaintOp::SerializeOptions(
           &stashing_image_provider, &transfer_cache_serialize_helper,
           GetOrCreatePaintCache(), font_manager_.strike_server(),
-          raster_properties_->color_space, raster_properties_->can_use_lcd_text,
+          raster_properties_->color_space, &skottie_serialization_history_,
+          raster_properties_->can_use_lcd_text,
           capabilities().context_supports_distance_field_text,
-          capabilities().max_texture_size));
+          capabilities().max_texture_size, raw_draw_));
   if (preserve_recording) {
     serializer.Serialize(&list->paint_op_buffer_, &temp_raster_offsets_,
                          preamble);
@@ -1425,6 +1430,8 @@ void RasterImplementation::EndRasterCHROMIUM() {
     ClearPaintCache();
   else
     FlushPaintCachePurgedEntries();
+
+  skottie_serialization_history_.RequestInactiveAnimationsPurge();
 }
 
 SyncToken RasterImplementation::ScheduleImageDecode(
@@ -1479,6 +1486,14 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
   std::unique_ptr<ScopedMappedMemoryPtr> scoped_shared_memory =
       std::make_unique<ScopedMappedMemoryPtr>(total_size, helper(),
                                               mapped_memory_.get());
+
+  if (!scoped_shared_memory->valid()) {
+    // Note, that this runs callback out of order.
+    if (readback_done)
+      std::move(readback_done).Run(kTopLeft_GrSurfaceOrigin, /*success=*/false);
+    return;
+  }
+
   GLint shm_id = scoped_shared_memory->shm_id();
   GLuint shm_offset = scoped_shared_memory->offset();
   void* shm_address = scoped_shared_memory->address();
@@ -1537,6 +1552,7 @@ void RasterImplementation::ReadbackImagePixelsINTERNAL(
 
 void RasterImplementation::OnAsyncARGBReadbackDone(
     AsyncARGBReadbackRequest* finished_request) {
+  TRACE_EVENT0("gpu", "RasterImplementation::OnAsyncARGBReadbackDone");
   finished_request->done = true;
 
   // Only process requests in the order they were sent, regardless of when they
@@ -1590,6 +1606,7 @@ void RasterImplementation::ReadbackARGBPixelsAsync(
     GLuint dst_row_bytes,
     unsigned char* out,
     base::OnceCallback<void(GrSurfaceOrigin, bool)> readback_done) {
+  TRACE_EVENT0("gpu", "RasterImplementation::ReadbackARGBPixelsAsync");
   DCHECK(!!readback_done);
   // Note: It's possible the GL implementation supports other readback
   // types. However, as of this writing, no caller of this method will
@@ -1613,6 +1630,7 @@ void RasterImplementation::ReadbackImagePixels(
     int src_x,
     int src_y,
     void* dst_pixels) {
+  TRACE_EVENT0("gpu", "RasterImplementation::ReadbackImagePixels");
   ReadbackImagePixelsINTERNAL(
       source_mailbox, dst_info, dst_row_bytes, src_x, src_y,
       base::OnceCallback<void(GrSurfaceOrigin, bool)>(), dst_pixels);
@@ -1633,6 +1651,7 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
     const gfx::Point& paste_location,
     base::OnceCallback<void()> release_mailbox,
     base::OnceCallback<void(bool)> readback_done) {
+  TRACE_EVENT0("gpu", "RasterImplementation::ReadbackYUVPixelsAsync");
   DCHECK(!!release_mailbox);
   DCHECK(!!readback_done);
 
@@ -1721,6 +1740,7 @@ void RasterImplementation::ReadbackYUVPixelsAsync(
 
 void RasterImplementation::OnAsyncYUVReadbackDone(
     AsyncYUVReadbackRequest* finished_request) {
+  TRACE_EVENT0("gpu", "RasterImplementation::OnAsyncYUVReadbackDone");
   finished_request->done = true;
 
   while (!yuv_request_queue_.empty()) {

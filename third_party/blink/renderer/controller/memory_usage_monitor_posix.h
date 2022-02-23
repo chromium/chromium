@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/controller/controller_export.h"
 #include "third_party/blink/renderer/controller/memory_usage_monitor.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "third_party/blink/public/mojom/memory_usage_monitor_linux.mojom-blink.h"
 #endif
 
@@ -22,7 +22,7 @@ namespace blink {
 // MemoryUsageMonitor implementation for Android and Linux.
 class CONTROLLER_EXPORT MemoryUsageMonitorPosix
     : public MemoryUsageMonitor
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     ,
       public mojom::blink::MemoryUsageMonitorLinux
 #endif
@@ -30,7 +30,7 @@ class CONTROLLER_EXPORT MemoryUsageMonitorPosix
  public:
   MemoryUsageMonitorPosix() = default;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   static void Bind(
       mojo::PendingReceiver<mojom::blink::MemoryUsageMonitorLinux> receiver);
 #endif
@@ -48,12 +48,12 @@ class CONTROLLER_EXPORT MemoryUsageMonitorPosix
                                               uint64_t* vm_size,
                                               uint64_t* vm_hwm_size);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // mojom::MemoryUsageMonitorLinux implementations:
   void SetProcFiles(base::File statm_file, base::File status_file) override;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ResetFileDescriptors();
   // For Android, SetProcFiles is used only for testing.
   void SetProcFiles(base::File statm_file, base::File status_file);
@@ -66,7 +66,7 @@ class CONTROLLER_EXPORT MemoryUsageMonitorPosix
   base::ScopedFD statm_fd_;
   base::ScopedFD status_fd_;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   mojo::Receiver<mojom::blink::MemoryUsageMonitorLinux> receiver_{this};
 #endif
 };

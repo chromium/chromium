@@ -9,7 +9,6 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "ui/base/resource/resource_bundle.h"
 

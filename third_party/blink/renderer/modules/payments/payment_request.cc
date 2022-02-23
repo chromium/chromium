@@ -56,7 +56,7 @@
 #include "third_party/blink/renderer/modules/payments/update_payment_details_function.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/mojo/mojo_helper.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -600,8 +600,6 @@ void ValidateAndConvertPaymentDetailsUpdate(const PaymentDetailsUpdate* input,
   if (exception_state.HadException())
     return;
   if (input->hasTotal()) {
-    DCHECK(!RuntimeEnabledFeatures::DigitalGoodsEnabled(&execution_context) ||
-           !ignore_total);
     if (ignore_total) {
       output->total =
           CreateTotalPlaceHolderForAppStoreBilling(execution_context);
@@ -812,8 +810,8 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
       local_frame->IsPaymentRequestTokenActive();
 
   if (!has_transient_user_activation) {
-    UseCounter::Count(GetExecutionContext(),
-                      WebFeature::kPaymentRequestShowWithoutGesture);
+    Deprecation::CountDeprecation(
+        GetExecutionContext(), WebFeature::kPaymentRequestShowWithoutGesture);
 
     if (!payment_request_token_active) {
       UseCounter::Count(GetExecutionContext(),
@@ -826,7 +824,13 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
   if (RuntimeEnabledFeatures::CapabilityDelegationPaymentRequestEnabled(
           GetExecutionContext())) {
     payment_request_allowed |= payment_request_token_active;
-    if (!payment_request_allowed) {
+    local_frame->ConsumePaymentRequestToken();
+  }
+  if (RuntimeEnabledFeatures::PaymentRequestRequiresUserActivationEnabled(
+          GetExecutionContext())) {
+    if (payment_request_allowed) {
+      LocalFrame::ConsumeTransientUserActivation(local_frame);
+    } else {
       String message =
           "PaymentRequest.show() requires either transient user activation or "
           "delegated payment request capability";
@@ -837,8 +841,6 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
       exception_state.ThrowSecurityError(message);
       return ScriptPromise();
     }
-    LocalFrame::ConsumeTransientUserActivation(local_frame);
-    local_frame->ConsumePaymentRequestToken();
   }
 
   // TODO(crbug.com/779126): add support for handling payment requests in
@@ -861,12 +863,14 @@ ScriptPromise PaymentRequest::show(ScriptState* script_state,
     // 10 seconds, abort payment.
     update_payment_details_timer_.StartOneShot(base::Seconds(10), FROM_HERE);
     details_promise.Then(
-        UpdatePaymentDetailsFunction::CreateFunction(
-            script_state, this,
-            UpdatePaymentDetailsFunction::ResolveType::kFulfill),
-        UpdatePaymentDetailsFunction::CreateFunction(
-            script_state, this,
-            UpdatePaymentDetailsFunction::ResolveType::kReject));
+        MakeGarbageCollected<ScriptFunction>(
+            script_state,
+            MakeGarbageCollected<UpdatePaymentDetailsFunction>(
+                this, UpdatePaymentDetailsFunction::ResolveType::kFulfill)),
+        MakeGarbageCollected<ScriptFunction>(
+            script_state,
+            MakeGarbageCollected<UpdatePaymentDetailsFunction>(
+                this, UpdatePaymentDetailsFunction::ResolveType::kReject)));
   }
 
   accept_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
@@ -1238,7 +1242,7 @@ PaymentRequest::PaymentRequest(
   if (!AllowedToUsePaymentRequest(execution_context)) {
     exception_state.ThrowSecurityError(
         "Must be in a top-level browsing context or an iframe needs to specify "
-        "'allowpaymentrequest' explicitly");
+        "allow=\"payment\" explicitly");
     return;
   }
 
@@ -1616,14 +1620,14 @@ void PaymentRequest::OnHasEnrolledInstrument(
     case HasEnrolledInstrumentQueryResult::WARNING_HAS_ENROLLED_INSTRUMENT:
       WarnIgnoringQueryQuotaForCanMakePayment(*GetExecutionContext(),
                                               kHasEnrolledInstrumentDebugName);
-      FALLTHROUGH;
+      [[fallthrough]];
     case HasEnrolledInstrumentQueryResult::HAS_ENROLLED_INSTRUMENT:
       has_enrolled_instrument_resolver_->Resolve(true);
       break;
     case HasEnrolledInstrumentQueryResult::WARNING_HAS_NO_ENROLLED_INSTRUMENT:
       WarnIgnoringQueryQuotaForCanMakePayment(*GetExecutionContext(),
                                               kHasEnrolledInstrumentDebugName);
-      FALLTHROUGH;
+      [[fallthrough]];
     case HasEnrolledInstrumentQueryResult::HAS_NO_ENROLLED_INSTRUMENT:
       has_enrolled_instrument_resolver_->Resolve(false);
       break;

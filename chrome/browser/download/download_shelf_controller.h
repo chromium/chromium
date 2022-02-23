@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTROLLER_H_
 #define CHROME_BROWSER_DOWNLOAD_DOWNLOAD_SHELF_CONTROLLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/download/offline_item_model.h"
 #include "components/offline_items_collection/core/offline_content_aggregator.h"
@@ -41,8 +42,8 @@ class DownloadShelfController : public OfflineContentProvider::Observer {
   // Called when a new OfflineItem is to be displayed on UI.
   void OnNewOfflineItemReady(DownloadUIModel::DownloadUIModelPtr model);
 
-  Profile* profile_;
-  OfflineContentAggregator* aggregator_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<OfflineContentAggregator> aggregator_;
   base::ScopedObservation<OfflineContentProvider,
                           OfflineContentProvider::Observer>
       observation_{this};

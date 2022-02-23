@@ -33,7 +33,7 @@ namespace {
 
 class MockInstantServiceObserver : public InstantServiceObserver {
  public:
-  MOCK_METHOD1(NtpThemeChanged, void(const NtpTheme&));
+  MOCK_METHOD1(NtpThemeChanged, void(NtpTheme));
   MOCK_METHOD1(MostVisitedInfoChanged, void(const InstantMostVisitedInfo&));
 };
 
@@ -88,14 +88,8 @@ class InstantServiceThemeTest : public InstantServiceTest {
 };
 
 TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {
-  const auto& theme_provider =
-      ThemeService::GetThemeProviderForProfile(profile());
-  SkColor default_text_color =
-      theme_provider.GetColor(ThemeProperties::COLOR_NTP_TEXT);
-
   // Check defaults when no theme and no custom backgrounds is set.
   NtpTheme* theme = instant_service_->GetInitializedNtpTheme();
-  EXPECT_EQ(default_text_color, theme->text_color);
   EXPECT_FALSE(theme->logo_alternate);
 
   // Install colors, theme update should trigger SetNTPElementsNtpTheme() and
@@ -106,14 +100,5 @@ TEST_F(InstantServiceTest, SetNTPElementsNtpTheme) {
   waiter.WaitForThemeChanged();
 
   theme = instant_service_->GetInitializedNtpTheme();
-  EXPECT_NE(default_text_color, theme->text_color);
-  EXPECT_TRUE(theme->logo_alternate);
-
-  // Setting a custom background should call SetNTPElementsNtpTheme() and
-  // update NTP themed elements info.
-  const GURL kUrl("https://www.foo.com");
-
-  theme = instant_service_->GetInitializedNtpTheme();
-  EXPECT_NE(default_text_color, theme->text_color);
   EXPECT_TRUE(theme->logo_alternate);
 }

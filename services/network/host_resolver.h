@@ -12,7 +12,7 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -86,8 +86,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) HostResolver
   std::set<std::unique_ptr<HostResolverMdnsListener>, base::UniquePtrComparator>
       listeners_;
 
-  net::HostResolver* const internal_resolver_;
-  net::NetLog* const net_log_;
+  const raw_ptr<net::HostResolver> internal_resolver_;
+  const raw_ptr<net::NetLog> net_log_;
 
   base::WeakPtrFactory<HostResolver> weak_factory_{this};
 };

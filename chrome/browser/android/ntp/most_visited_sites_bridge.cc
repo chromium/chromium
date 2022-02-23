@@ -15,6 +15,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSitesBridge_jni.h"
 #include "chrome/android/chrome_jni_headers/MostVisitedSites_jni.h"
@@ -67,7 +68,7 @@ class JavaHomepageClient : public MostVisitedSites::HomepageClient {
                          history::QueryURLResult result);
 
   ScopedJavaGlobalRef<jobject> client_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Used in loading titles.
   base::CancelableTaskTracker task_tracker_;

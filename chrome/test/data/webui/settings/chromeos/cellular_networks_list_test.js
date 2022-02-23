@@ -29,6 +29,9 @@ suite('CellularNetworksList', function() {
   let browserProxy;
 
   setup(function() {
+    loadTimeData.overrideValues({
+      esimPolicyEnabled: true,
+    });
     mojom = chromeos.networkConfig.mojom;
     mojoApi_ = new FakeNetworkConfig();
     network_config.MojoInterfaceProviderImpl.getInstance().remote_ = mojoApi_;
@@ -298,7 +301,37 @@ suite('CellularNetworksList', function() {
   });
 
   test(
-      'Fire show toast event if download profile clicked without' +
+      'Allow only managed cellular networks should hide pending eSIM networks',
+      async () => {
+        eSimManagerRemote.addEuiccForTest(1);
+        init();
+        addESimSlot();
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: false,
+        };
+        await flushAsync();
+        let eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        assertTrue(!!eSimNetworkList);
+
+        Polymer.dom.flush();
+
+        const listItem = eSimNetworkList.$$('network-list-item');
+        assertTrue(!!listItem);
+        const installButton = listItem.$$('#installButton');
+        assertTrue(!!installButton);
+
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: true,
+        };
+        eSimManagerRemote.addEuiccForTest(1);
+        addESimSlot();
+        await flushAsync();
+        eSimNetworkList = cellularNetworkList.$$('#esimNetworkList');
+        assertFalse(!!eSimNetworkList);
+      });
+
+  test(
+      'Fire show toast event if download profile clicked without ' +
           'non-cellular connection.',
       async () => {
         eSimManagerRemote.addEuiccForTest(1);
@@ -327,6 +360,48 @@ suite('CellularNetworksList', function() {
             cellularNetworkList.i18n('eSimNoConnectionErrorToast'));
       });
 
+  test(
+      'Hide download eSIM link when installing new profile or restrict ' +
+          'cellular network',
+      async () => {
+        eSimManagerRemote.addEuiccForTest(0);
+        init();
+        cellularNetworkList.deviceState = {
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kNotInhibited
+        };
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: true,
+        };
+        addESimSlot();
+        await flushAsync();
+        const esimLocalizedLink = cellularNetworkList.$$('#eSimNoNetworkFound')
+                                      .querySelector('localized-link');
+        const noESimFoundMessage =
+            cellularNetworkList.$$('#eSimNoNetworkFound').querySelector('div');
+        assertTrue(!!esimLocalizedLink);
+        assertTrue(!!noESimFoundMessage);
+        assertTrue(esimLocalizedLink.hidden);
+        assertFalse(noESimFoundMessage.hidden);
+
+        cellularNetworkList.globalPolicy = {
+          allowOnlyPolicyCellularNetworks: false,
+        };
+        await flushAsync();
+        assertFalse(esimLocalizedLink.hidden);
+        assertTrue(noESimFoundMessage.hidden);
+
+        cellularNetworkList.cellularDeviceState = {
+          type: mojom.NetworkType.kCellular,
+          deviceState: mojom.DeviceStateType.kEnabled,
+          inhibitReason: mojom.InhibitReason.kInstallingProfile
+        };
+        addESimSlot();
+        await flushAsync();
+        assertFalse(!!cellularNetworkList.$$('#eSimNoNetworkFound'));
+      });
+
   test('Fire show cellular setup event on add cellular clicked', async () => {
     eSimManagerRemote.addEuiccForTest(1);
     init();
@@ -350,9 +425,14 @@ suite('CellularNetworksList', function() {
     };
     await flushAsync();
 
-    // When policy is enabled add cellular button should not be shown.
+    // When policy is enabled add cellular button should be disabled, and policy
+    // indicator should be shown.
     let addESimButton = cellularNetworkList.$$('#addESimButton');
-    assertFalse(!!addESimButton);
+    assertTrue(!!addESimButton);
+    assertTrue(addESimButton.disabled);
+    let policyIcon = cellularNetworkList.$$('cr-policy-indicator');
+    assertTrue(!!policyIcon);
+    assertFalse(policyIcon.hidden);
 
     cellularNetworkList.globalPolicy = {
       allowOnlyPolicyCellularNetworks: false,
@@ -362,6 +442,9 @@ suite('CellularNetworksList', function() {
     addESimButton = cellularNetworkList.$$('#addESimButton');
     assertTrue(!!addESimButton);
     assertFalse(addESimButton.disabled);
+    policyIcon = cellularNetworkList.$$('cr-policy-indicator');
+    assertTrue(!!policyIcon);
+    assertTrue(policyIcon.hidden);
 
     // When device is inhibited add cellular button should be disabled.
     cellularNetworkList.cellularDeviceState = {
@@ -411,7 +494,7 @@ suite('CellularNetworksList', function() {
     cellularNetworkList.cellularDeviceState = {
       type: mojom.NetworkType.kCellular,
       deviceState: mojom.DeviceStateType.kEnabled,
-      inhibitReason: mojom.InhibitReason.kInstallingProfile
+      inhibitReason: mojom.InhibitReason.kRefreshingProfileList,
     };
     addESimSlot();
     await flushAsync();

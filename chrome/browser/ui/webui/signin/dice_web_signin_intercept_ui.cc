@@ -12,6 +12,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/signin_resources.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
@@ -20,6 +21,41 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/resources/grit/webui_generated_resources.h"
 #include "ui/resources/grit/webui_resources.h"
+#include "url/gurl.h"
+
+namespace {
+
+// Helper to create parameters used for testing, when loading the intercept
+// bubble directly with the `debug` query param set.
+DiceWebSigninInterceptor::Delegate::BubbleParameters
+CreateSampleBubbleParameters() {
+  // Looks like the transparent checkerboard.
+  std::string small_png =
+      "data:image/"
+      "png;base64,iVBORw0KGgoAAAANSUhEUgAAAAgAAAAIAQMAAAD+wSzIAAAABlBMVEX///"
+      "+/v7+jQ3Y5AAAADklEQVQI12P4AIX8EAgALgAD/aNpbtEAAAAASUVORK5CYII";
+
+  AccountInfo intercepted_account;
+  intercepted_account.account_id = CoreAccountId::FromGaiaId("intercepted_ID");
+  intercepted_account.given_name = "Sam";
+  intercepted_account.full_name = "Sam Sample";
+  intercepted_account.email = "sam.sample@intercepted.com";
+  intercepted_account.picture_url = small_png;
+  intercepted_account.hosted_domain = kNoHostedDomainFound;
+
+  AccountInfo primary_account;
+  primary_account.account_id = CoreAccountId::FromGaiaId("primary_ID");
+  primary_account.given_name = "Tessa";
+  primary_account.full_name = "Tessa Tester";
+  primary_account.email = "tessa.tester@primary.com";
+  primary_account.picture_url = small_png;
+  primary_account.hosted_domain = kNoHostedDomainFound;
+
+  return {DiceWebSigninInterceptor::SigninInterceptionType::kMultiUser,
+          intercepted_account, primary_account, SkColors::kMagenta.toSkColor()};
+}
+
+}  // namespace
 
 DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
     : content::WebUIController(web_ui) {
@@ -51,6 +87,12 @@ DiceWebSigninInterceptUI::DiceWebSigninInterceptUI(content::WebUI* web_ui)
       "script-src chrome://resources chrome://test chrome://webui-test "
       "'self';");
   source->DisableTrustedTypesCSP();
+
+  if (web_ui->GetWebContents()->GetVisibleURL().query() == "debug") {
+    // Not intended to be hooked to anything. The bubble will not initialize it
+    // so we force it here.
+    Initialize(CreateSampleBubbleParameters(), base::DoNothing());
+  }
 
   content::WebUIDataSource::Add(Profile::FromWebUI(web_ui), source);
 }

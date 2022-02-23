@@ -21,11 +21,11 @@
 
 namespace blink {
 
-class LayoutWorkletTest : public PageTestBase, public ParametrizedModuleTest {
+class LayoutWorkletTest : public PageTestBase, public ModuleTestBase {
  public:
   void SetUp() override {
-    ParametrizedModuleTest::SetUp();
-    PageTestBase::SetUp(IntSize());
+    ModuleTestBase::SetUp();
+    PageTestBase::SetUp(gfx::Size());
     layout_worklet_ =
         MakeGarbageCollected<LayoutWorklet>(*GetDocument().domWindow());
     proxy_ = layout_worklet_->CreateGlobalScope();
@@ -33,7 +33,7 @@ class LayoutWorkletTest : public PageTestBase, public ParametrizedModuleTest {
 
   void TearDown() override {
     PageTestBase::TearDown();
-    ParametrizedModuleTest::TearDown();
+    ModuleTestBase::TearDown();
   }
 
   LayoutWorkletGlobalScopeProxy* GetProxy() {
@@ -78,7 +78,7 @@ class LayoutWorkletTest : public PageTestBase, public ParametrizedModuleTest {
   Persistent<LayoutWorklet> layout_worklet_;
 };
 
-TEST_P(LayoutWorkletTest, ParseProperties) {
+TEST_F(LayoutWorkletTest, ParseProperties) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -114,7 +114,7 @@ TEST_P(LayoutWorkletTest, ParseProperties) {
 // TODO(ikilpatrick): Move all the tests below to wpt tests once we have the
 // layout API actually have effects that we can test in script.
 
-TEST_P(LayoutWorkletTest, RegisterLayout) {
+TEST_F(LayoutWorkletTest, RegisterLayout) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -137,7 +137,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout) {
   EXPECT_FALSE(GetResult(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_EmptyName) {
+TEST_F(LayoutWorkletTest, RegisterLayout_EmptyName) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('', class {
@@ -148,7 +148,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_EmptyName) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_Duplicate) {
+TEST_F(LayoutWorkletTest, RegisterLayout_Duplicate) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -165,7 +165,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_Duplicate) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_NoIntrinsicSizes) {
+TEST_F(LayoutWorkletTest, RegisterLayout_NoIntrinsicSizes) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -176,7 +176,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_NoIntrinsicSizes) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_ThrowingPropertyGetter) {
+TEST_F(LayoutWorkletTest, RegisterLayout_ThrowingPropertyGetter) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -188,7 +188,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_ThrowingPropertyGetter) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_BadPropertyGetter) {
+TEST_F(LayoutWorkletTest, RegisterLayout_BadPropertyGetter) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -200,7 +200,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_BadPropertyGetter) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_NoPrototype) {
+TEST_F(LayoutWorkletTest, RegisterLayout_NoPrototype) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     const foo = function() { };
@@ -212,7 +212,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_NoPrototype) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_BadPrototype) {
+TEST_F(LayoutWorkletTest, RegisterLayout_BadPrototype) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     const foo = function() { };
@@ -224,7 +224,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_BadPrototype) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_BadIntrinsicSizes) {
+TEST_F(LayoutWorkletTest, RegisterLayout_BadIntrinsicSizes) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -236,7 +236,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_BadIntrinsicSizes) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_NoLayout) {
+TEST_F(LayoutWorkletTest, RegisterLayout_NoLayout) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -248,7 +248,7 @@ TEST_P(LayoutWorkletTest, RegisterLayout_NoLayout) {
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
 
-TEST_P(LayoutWorkletTest, RegisterLayout_BadLayout) {
+TEST_F(LayoutWorkletTest, RegisterLayout_BadLayout) {
   ScriptState::Scope scope(GetScriptState());
   ScriptEvaluationResult result = EvaluateScriptModule(R"JS(
     registerLayout('foo', class {
@@ -260,11 +260,5 @@ TEST_P(LayoutWorkletTest, RegisterLayout_BadLayout) {
   // "The 'layout' property on the prototype is not a function."
   EXPECT_FALSE(GetException(GetScriptState(), result).IsEmpty());
 }
-
-// Instantiate tests once with TLA and once without:
-INSTANTIATE_TEST_SUITE_P(LayoutWorkletTestGroup,
-                         LayoutWorkletTest,
-                         testing::Bool(),
-                         ParametrizedModuleTestParamName());
 
 }  // namespace blink

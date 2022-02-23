@@ -90,9 +90,13 @@ void TextPainter::PaintDecorationsExceptLineThrough(
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
         decorations[applied_decoration_index];
-    TextDecoration lines = decoration.Lines();
-    bool has_underline = EnumHasFlags(lines, TextDecoration::kUnderline);
-    bool has_overline = EnumHasFlags(lines, TextDecoration::kOverline);
+    TextDecorationLine lines = decoration.Lines();
+    bool has_underline = EnumHasFlags(lines, TextDecorationLine::kUnderline);
+    bool has_overline = EnumHasFlags(lines, TextDecorationLine::kOverline);
+    bool is_spelling_error =
+        EnumHasFlags(lines, TextDecorationLine::kSpellingError);
+    bool is_grammar_error =
+        EnumHasFlags(lines, TextDecorationLine::kGrammarError);
     if (flip_underline_and_overline)
       std::swap(has_underline, has_overline);
 
@@ -100,6 +104,25 @@ void TextPainter::PaintDecorationsExceptLineThrough(
 
     float resolved_thickness = decoration_info.ResolvedThickness();
     context.SetStrokeThickness(resolved_thickness);
+
+    if (is_spelling_error || is_grammar_error) {
+      DCHECK(!has_underline && !has_overline &&
+             !EnumHasFlags(lines, TextDecorationLine::kLineThrough));
+      const int paint_underline_offset =
+          decoration_offset.ComputeUnderlineOffset(
+              underline_position, decoration_info.Style().ComputedFontSize(),
+              decoration_info.FontData(), decoration.UnderlineOffset(),
+              resolved_thickness);
+      decoration_info.SetLineData(is_spelling_error
+                                      ? TextDecorationLine::kSpellingError
+                                      : TextDecorationLine::kGrammarError,
+                                  paint_underline_offset);
+      // We ignore "text-decoration-skip-ink: auto" for spelling and grammar
+      // error markers.
+      AppliedDecorationPainter decoration_painter(context, decoration_info);
+      decoration_painter.Paint();
+      continue;
+    }
 
     if (has_underline && decoration_info.FontData()) {
       // Don't apply text-underline-offset to overline.
@@ -110,10 +133,10 @@ void TextPainter::PaintDecorationsExceptLineThrough(
           decoration_offset.ComputeUnderlineOffset(
               underline_position, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), line_offset, resolved_thickness);
-      decoration_info.SetPerLineData(TextDecoration::kUnderline,
-                                     paint_underline_offset);
+      decoration_info.SetLineData(TextDecorationLine::kUnderline,
+                                  paint_underline_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecoration::kUnderline);
+                                     TextDecorationLine::kUnderline);
     }
 
     if (has_overline && decoration_info.FontData()) {
@@ -128,16 +151,17 @@ void TextPainter::PaintDecorationsExceptLineThrough(
           decoration_offset.ComputeUnderlineOffsetForUnder(
               line_offset, decoration_info.Style().ComputedFontSize(),
               decoration_info.FontData(), resolved_thickness, position);
-      decoration_info.SetPerLineData(TextDecoration::kOverline,
-                                     paint_overline_offset);
+      decoration_info.SetLineData(TextDecorationLine::kOverline,
+                                  paint_overline_offset);
       PaintDecorationUnderOrOverLine(context, decoration_info,
-                                     TextDecoration::kOverline);
+                                     TextDecorationLine::kOverline);
     }
 
-    // We could instead build a vector of the TextDecoration instances needing
-    // line-through but this is a rare case so better to avoid vector overhead.
+    // We could instead build a vector of the TextDecorationLine instances
+    // needing line-through but this is a rare case so better to avoid vector
+    // overhead.
     *has_line_through_decoration |=
-        EnumHasFlags(lines, TextDecoration::kLineThrough);
+        EnumHasFlags(lines, TextDecorationLine::kLineThrough);
   }
 
   // Restore rotation as needed.
@@ -162,8 +186,8 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
        ++applied_decoration_index) {
     const AppliedTextDecoration& decoration =
         decorations[applied_decoration_index];
-    TextDecoration lines = decoration.Lines();
-    if (EnumHasFlags(lines, TextDecoration::kLineThrough)) {
+    TextDecorationLine lines = decoration.Lines();
+    if (EnumHasFlags(lines, TextDecorationLine::kLineThrough)) {
       decoration_info.SetDecorationIndex(applied_decoration_index);
 
       float resolved_thickness = decoration_info.ResolvedThickness();
@@ -174,10 +198,9 @@ void TextPainter::PaintDecorationsOnlyLineThrough(
       // it centered at the same origin.
       const float line_through_offset =
           2 * decoration_info.Baseline() / 3 - resolved_thickness / 2;
-      decoration_info.SetPerLineData(TextDecoration::kLineThrough,
-                                     line_through_offset);
-      AppliedDecorationPainter decoration_painter(context, decoration_info,
-                                                  TextDecoration::kLineThrough);
+      decoration_info.SetLineData(TextDecorationLine::kLineThrough,
+                                  line_through_offset);
+      AppliedDecorationPainter decoration_painter(context, decoration_info);
       // No skip: ink for line-through,
       // compare https://github.com/w3c/csswg-drafts/issues/711
       decoration_painter.Paint();
@@ -204,12 +227,12 @@ void TextPainter::PaintInternalRun(TextRunPaintInfo& text_run_paint_info,
   if (step == kPaintEmphasisMark) {
     graphics_context_.DrawEmphasisMarks(
         font_, text_run_paint_info, emphasis_mark_,
-        FloatPoint(text_origin_) + IntSize(0, emphasis_mark_offset_),
+        gfx::PointF(text_origin_) + gfx::Vector2dF(0, emphasis_mark_offset_),
         auto_dark_mode);
   } else {
     DCHECK(step == kPaintText);
     graphics_context_.DrawText(font_, text_run_paint_info,
-                               FloatPoint(text_origin_), node_id,
+                               gfx::PointF(text_origin_), node_id,
                                auto_dark_mode);
   }
 }

@@ -19,10 +19,10 @@
 #include "chrome/common/chrome_switches.h"
 #include "ui/base/ui_base_paths.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <stdio.h>
 #include <unistd.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -57,7 +57,7 @@ class SimpleConsole {
   static SimpleConsole* Create();
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace {
 
 // Wrapper for the windows console operating in high-level IO mode.
@@ -132,7 +132,7 @@ class WinConsole : public SimpleConsole {
 
 SimpleConsole* SimpleConsole::Create() { return new WinConsole(); }
 
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 namespace {
 
 class PosixConsole : public SimpleConsole {
@@ -189,7 +189,7 @@ class PosixConsole : public SimpleConsole {
 
 SimpleConsole* SimpleConsole::Create() { return new PosixConsole(); }
 
-#else  // !defined(OS_WIN) && !defined(OS_POSIX)
+#else  // !BUILDFLAG(IS_WIN) && !BUILDFLAG(IS_POSIX)
 SimpleConsole* SimpleConsole::Create() { return NULL; }
 #endif
 

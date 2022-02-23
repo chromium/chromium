@@ -1,4 +1,12 @@
 include_rules = [
+  "+components/content_settings/core",
+  "+components/keyed_service/core",
   "+components/pref_registry",
   "+components/prefs",
+  "+components/strings/grit/components_strings.h",
+  "+components/sync_preferences/testing_pref_service_syncable.h",
+  "+net/base",
+  "+net/cookies/site_for_cookies.h",
+  "+content/public/test",
+  "+ui/base",
 ]

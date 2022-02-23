@@ -10,12 +10,13 @@ import 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
 import {Annotation, PageHandlerRemote, URLVisit} from './history_clusters.mojom-webui.js';
 import {ClusterAction, MetricsProxyImpl, VisitAction, VisitType} from './metrics_proxy.js';
 import {OpenWindowProxyImpl} from './open_window_proxy.js';
+import {getTemplate} from './url_visit.html.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a visit to a
@@ -50,7 +51,7 @@ class VisitRowElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -224,13 +225,16 @@ class VisitRowElement extends PolymerElement {
   }
 
   /**
-   * Returns the domain name without the leading 'www.', if applicable.
+   * Returns the visible url stripped of the scheme, common prefixes, username,
+   * password, port, queries, and hashes for simpler more descriptive urls.
+   * TODO(crbug.com/1294350): Move this logic to a cross-platform location to
+   * be shared by various surfaces.
    */
-  private getHostname_(_visit: URLVisit): string {
+  private getVisibleUrl_(_visit: URLVisit): string {
     try {
-      return new URL(this.visit.normalizedUrl.url)
-          .hostname.replace(/^(www\.)/, '')
-          .trim();
+      const url = new URL(this.visit.normalizedUrl.url);
+      return url.hostname.replace(/^(www\.|m\.|mobile\.|touch\.)/, '').trim() +
+          url.pathname.trim();
     } catch (err) {
       return '';
     }

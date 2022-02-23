@@ -28,16 +28,6 @@ AutofillField::AutofillField(const FormFieldData& field)
       CalculateFieldSignatureByNameAndType(name, form_control_type);
 }
 
-AutofillField::AutofillField(const FormFieldData& field,
-                             const std::u16string& unique_name)
-    : FormFieldData(field),
-      unique_name_(unique_name),
-      parseable_name_(field.name),
-      parseable_label_(field.label) {
-  field_signature_ =
-      CalculateFieldSignatureByNameAndType(name, form_control_type);
-}
-
 AutofillField::~AutofillField() = default;
 
 std::unique_ptr<AutofillField> AutofillField::CreateForPasswordManagerUpload(
@@ -193,6 +183,9 @@ AutofillType AutofillField::ComputedType() const {
               features::kAutofillEnableSupportForMoreStructureInAddresses) &&
           (heuristic_type_ == ADDRESS_HOME_STREET_NAME ||
            heuristic_type_ == ADDRESS_HOME_HOUSE_NUMBER));
+
+    believe_server =
+        believe_server && !(heuristic_type_ == MERCHANT_PROMO_CODE);
 
     if (believe_server)
       return AutofillType(server_type());

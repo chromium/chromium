@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/metrics/histogram_functions.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_event.pb.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -16,10 +17,18 @@
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "components/reporting/client/report_queue.h"
+#include "components/reporting/client/report_queue_factory.h"
 #include "components/reporting/util/status.h"
+#include "url/gurl.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
-#include "url/gurl.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace policy {
 // TODO(1187477, marcgrimme): revisit if this should be refactored.
@@ -78,6 +87,7 @@ DlpRulesManager::Restriction DlpEventRestriction2DlpRulesManagerRestriction(
 }
 
 DlpPolicyEvent_UserType GetCurrentUserType() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // Could be not initialized in tests.
   if (!user_manager::UserManager::IsInitialized() ||
       !user_manager::UserManager::Get()->GetPrimaryUser()) {
@@ -95,14 +105,33 @@ DlpPolicyEvent_UserType GetCurrentUserType() {
     case user_manager::USER_TYPE_ARC_KIOSK_APP:
     case user_manager::USER_TYPE_WEB_KIOSK_APP:
       return DlpPolicyEvent_UserType_KIOSK;
-    default:
+    case user_manager::USER_TYPE_GUEST:
+    case user_manager::USER_TYPE_CHILD:
+    case user_manager::USER_TYPE_ACTIVE_DIRECTORY:
+      return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
+    case user_manager::NUM_USER_TYPES:
       NOTREACHED();
       return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
   }
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  DCHECK(chromeos::LacrosService::Get());
+  switch (chromeos::LacrosService::Get()->init_params()->session_type) {
+    case crosapi::mojom::SessionType::kRegularSession:
+      return DlpPolicyEvent_UserType_REGULAR;
+    case crosapi::mojom::SessionType::kPublicSession:
+      return DlpPolicyEvent_UserType_MANAGED_GUEST;
+    case crosapi::mojom::SessionType::kWebKioskSession:
+      return DlpPolicyEvent_UserType_KIOSK;
+    case crosapi::mojom::SessionType::kUnknown:
+    case crosapi::mojom::SessionType::kGuestSession:
+      return DlpPolicyEvent_UserType_UNDEFINED_USER_TYPE;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Restriction restriction) {
+                                    DlpRulesManager::Restriction restriction,
+                                    DlpRulesManager::Level level) {
   DlpPolicyEvent event;
 
   DlpPolicyEventSource* event_source = new DlpPolicyEventSource;
@@ -113,15 +142,8 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
       DlpRulesManagerRestriction2DlpEventRestriction(restriction));
   event.set_timestamp_micro(base::Time::Now().ToTimeT());
   event.set_user_type(GetCurrentUserType());
-
-  return event;
-}
-
-DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
-                                    DlpRulesManager::Restriction restriction,
-                                    DlpRulesManager::Level level) {
-  auto event = CreateDlpPolicyEvent(src_pattern, restriction);
   event.set_mode(DlpRulesManagerLevel2DlpEventMode(level));
+
   return event;
 }
 
@@ -157,6 +179,13 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
       event_destination->set_component(
           DlpPolicyEventDestination_Component_PLUGIN_VM);
       break;
+    case (DlpRulesManager::Component::kUsb):
+      event_destination->set_component(DlpPolicyEventDestination_Component_USB);
+      break;
+    case (DlpRulesManager::Component::kDrive):
+      event_destination->set_component(
+          DlpPolicyEventDestination_Component_DRIVE);
+      break;
     case (DlpRulesManager::Component::kUnknownComponent):
       event_destination->set_component(
           DlpPolicyEventDestination_Component_UNDEFINED_COMPONENT);
@@ -167,17 +196,18 @@ DlpPolicyEvent CreateDlpPolicyEvent(const std::string& src_pattern,
   return event;
 }
 
-DlpReportingManager::DlpReportingManager() : report_queue_{nullptr} {}
+DlpReportingManager::DlpReportingManager()
+    : report_queue_(
+          ::reporting::ReportQueueFactory::CreateSpeculativeReportQueue(
+              ::reporting::EventType::kUser,
+              ::reporting::Destination::DLP_EVENTS)) {}
+
 DlpReportingManager::~DlpReportingManager() = default;
 
-DlpReportingManager::ReportQueueSetterCallback
-DlpReportingManager::GetReportQueueSetter() {
-  return base::BindOnce(&DlpReportingManager::SetReportQueue,
-                        weak_factory_.GetWeakPtr());
-}
-
-void DlpReportingManager::SetReportQueue(
-    std::unique_ptr<reporting::ReportQueue> report_queue) {
+void DlpReportingManager::SetReportQueueForTest(
+    std::unique_ptr<::reporting::ReportQueue, base::OnTaskRunnerDeleter>
+        report_queue) {
+  report_queue_.reset();
   report_queue_ = std::move(report_queue);
 }
 
@@ -204,14 +234,6 @@ void DlpReportingManager::ReportEvent(
     DlpRulesManager::Level level) {
   auto event =
       CreateDlpPolicyEvent(src_pattern, dst_component, restriction, level);
-  ReportEvent(std::move(event));
-}
-
-void DlpReportingManager::ReportWarningProceededEvent(
-    const std::string& src_pattern,
-    DlpRulesManager::Restriction restriction) {
-  auto event = CreateDlpPolicyEvent(src_pattern, restriction);
-  event.set_mode(DlpPolicyEvent_Mode_WARN_PROCEED);
   ReportEvent(std::move(event));
 }
 

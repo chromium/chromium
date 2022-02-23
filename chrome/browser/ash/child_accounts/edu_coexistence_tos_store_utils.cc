@@ -45,7 +45,7 @@ void UpdateAcceptedToSVersionPref(Profile* profile,
                                   const UserConsentInfo& user_consent_info) {
   DictionaryPrefUpdate update(profile->GetPrefs(),
                               prefs::kEduCoexistenceToSAcceptedVersion);
-  base::DictionaryValue* dict = update.Get();
+  base::Value* dict = update.Get();
 
   dict->SetStringPath(user_consent_info.edu_account_gaia_id,
                       user_consent_info.edu_coexistence_tos_version);

@@ -11,12 +11,17 @@ static_library("os_feedback_ui") {
   sources = [
     "os_feedback_ui.cc",
     "os_feedback_ui.h",
+    "os_feedback_untrusted_ui.cc",
+    "os_feedback_untrusted_ui.h",
     "url_constants.cc",
     "url_constants.h",
   ]
 
   deps = [
+    "//ash/webui/os_feedback_ui/backend",
+    "//ash/webui/os_feedback_ui/mojom",
     "//ash/webui/resources:os_feedback_resources",
+    "//ash/webui/resources:os_feedback_untrusted_resources",
     "//content/public/browser",
     "//ui/resources",
     "//ui/webui",

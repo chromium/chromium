@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/profile_resetter/profile_resetter.h"
 #include "chrome/browser/profile_resetter/resettable_settings_snapshot.h"
@@ -111,7 +112,7 @@ class SettingsResetPromptModel {
 
   bool SomeSettingIsManaged() const;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   SettingsResetPromptPrefsManager prefs_manager_;
   std::unique_ptr<SettingsResetPromptConfig> prompt_config_;

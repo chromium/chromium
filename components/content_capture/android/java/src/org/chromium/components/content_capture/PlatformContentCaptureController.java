@@ -4,7 +4,6 @@
 
 package org.chromium.components.content_capture;
 
-import android.annotation.TargetApi;
 import android.content.ComponentName;
 import android.content.Context;
 import android.content.LocusId;
@@ -13,6 +12,7 @@ import android.view.contentcapture.ContentCaptureCondition;
 import android.view.contentcapture.ContentCaptureManager;
 import android.view.contentcapture.DataRemovalRequest;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.BuildInfo;
@@ -29,7 +29,7 @@ import java.util.regex.Pattern;
  * the methods to check if the given urls shall be captured and delete the ContentCapture history.
  */
 @VerifiesOnQ
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformContentCaptureController {
     private static final String TAG = "ContentCapture";
     private static final String AIAI_PACKAGE_NAME = "com.google.android.as";
@@ -65,7 +65,12 @@ public class PlatformContentCaptureController {
             return;
         }
 
-        ComponentName componentName = mContentCaptureManager.getServiceComponentName();
+        ComponentName componentName = null;
+        try {
+            componentName = mContentCaptureManager.getServiceComponentName();
+        } catch (RuntimeException e) {
+            Log.e(TAG, "Error to get component name", e);
+        }
         if (componentName == null) {
             log("Service isn't available.");
             return;

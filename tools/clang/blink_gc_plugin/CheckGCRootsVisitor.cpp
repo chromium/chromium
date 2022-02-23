@@ -3,8 +3,10 @@
 // found in the LICENSE file.
 
 #include "CheckGCRootsVisitor.h"
+#include "BlinkGCPluginOptions.h"
 
-CheckGCRootsVisitor::CheckGCRootsVisitor() {
+CheckGCRootsVisitor::CheckGCRootsVisitor(const BlinkGCPluginOptions& options)
+    : should_check_unique_ptrs_(options.enable_persistent_in_unique_ptr_check) {
 }
 
 CheckGCRootsVisitor::Errors& CheckGCRootsVisitor::gc_roots() {
@@ -41,6 +43,12 @@ void CheckGCRootsVisitor::VisitValue(Value* edge) {
   }
   ContainsGCRoots(edge->value());
   visiting_set_.erase(edge->value());
+}
+
+void CheckGCRootsVisitor::VisitUniquePtr(UniquePtr* edge) {
+  if (!should_check_unique_ptrs_)
+    return;
+  edge->ptr()->Accept(this);
 }
 
 void CheckGCRootsVisitor::VisitPersistent(Persistent* edge) {

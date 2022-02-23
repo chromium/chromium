@@ -113,16 +113,8 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                                        0, 1);
 }
 
-// TODO(https://crbug.com/1267299): Re-enable.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DiagnosticsAppRecordsInitialScreenSystem \
-  DISABLED_DiagnosticsAppRecordsInitialScreenSystem
-#else
-#define MAYBE_DiagnosticsAppRecordsInitialScreenSystem \
-  DiagnosticsAppRecordsInitialScreenSystem
-#endif
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
-                       MAYBE_DiagnosticsAppRecordsInitialScreenSystem) {
+                       DiagnosticsAppRecordsInitialScreenSystem) {
   // Launch Diagnostics at System UI.
   LaunchDiagnosticsApp("chrome://diagnostics/?system");
 
@@ -131,16 +123,8 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                                        0, 1);
 }
 
-// TODO(https://crbug.com/1267299): Re-enable.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DiagnosticsAppRecordsInitialScreenConnectivity \
-  DISABLED_DiagnosticsAppRecordsInitialScreenConnectivity
-#else
-#define MAYBE_DiagnosticsAppRecordsInitialScreenConnectivity \
-  DiagnosticsAppRecordsInitialScreenConnectivity
-#endif
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
-                       MAYBE_DiagnosticsAppRecordsInitialScreenConnectivity) {
+                       DiagnosticsAppRecordsInitialScreenConnectivity) {
   // Launch Diagnostics at Connectivity UI.
   LaunchDiagnosticsApp("chrome://diagnostics/?connectivity");
 
@@ -149,16 +133,8 @@ IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
                                        1, 1);
 }
 
-// TODO(https://crbug.com/1267299): Re-enable.
-#if defined(ADDRESS_SANITIZER)
-#define MAYBE_DiagnosticsAppRecordsInitialScreenInput \
-  DISABLED_DiagnosticsAppRecordsInitialScreenInput
-#else
-#define MAYBE_DiagnosticsAppRecordsInitialScreenInput \
-  DiagnosticsAppRecordsInitialScreenInput
-#endif
 IN_PROC_BROWSER_TEST_P(DiagnosticsAppIntegrationTest,
-                       MAYBE_DiagnosticsAppRecordsInitialScreenInput) {
+                       DiagnosticsAppRecordsInitialScreenInput) {
   // Launch Diagnostics at Input UI.
   LaunchDiagnosticsApp("chrome://diagnostics/?input");
 

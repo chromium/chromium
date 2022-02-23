@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_uninstall_dialog.h"
@@ -75,12 +76,12 @@ class AppInfoFooterPanel
                               const extensions::Extension* app);
 
   // UI elements on the dialog. Elements are null if they are not displayed.
-  views::View* create_shortcuts_button_ = nullptr;
+  raw_ptr<views::View> create_shortcuts_button_ = nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   views::View* pin_to_shelf_button_ = nullptr;
   views::View* unpin_from_shelf_button_ = nullptr;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-  views::View* remove_button_ = nullptr;
+  raw_ptr<views::View> remove_button_ = nullptr;
 
   std::unique_ptr<extensions::ExtensionUninstallDialog>
       extension_uninstall_dialog_;

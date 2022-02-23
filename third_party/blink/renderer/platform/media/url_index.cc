@@ -117,6 +117,10 @@ void UrlData::set_has_access_control() {
   has_access_control_ = true;
 }
 
+void UrlData::set_mime_type(std::string mime_type) {
+  mime_type_ = std::move(mime_type);
+}
+
 void UrlData::RedirectTo(const scoped_refptr<UrlData>& url_data) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // Copy any cached data over to the new location.

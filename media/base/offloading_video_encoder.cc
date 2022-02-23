@@ -37,7 +37,7 @@ OffloadingVideoEncoder::OffloadingVideoEncoder(
 void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
                                         const Options& options,
                                         OutputCB output_cb,
-                                        StatusCB done_cb) {
+                                        EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE,
@@ -49,7 +49,7 @@ void OffloadingVideoEncoder::Initialize(VideoCodecProfile profile,
 
 void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
                                     bool key_frame,
-                                    StatusCB done_cb) {
+                                    EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE,
@@ -60,7 +60,7 @@ void OffloadingVideoEncoder::Encode(scoped_refptr<VideoFrame> frame,
 
 void OffloadingVideoEncoder::ChangeOptions(const Options& options,
                                            OutputCB output_cb,
-                                           StatusCB done_cb) {
+                                           EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoEncoder::ChangeOptions,
@@ -69,7 +69,7 @@ void OffloadingVideoEncoder::ChangeOptions(const Options& options,
                                 WrapCallback(std::move(done_cb))));
 }
 
-void OffloadingVideoEncoder::Flush(StatusCB done_cb) {
+void OffloadingVideoEncoder::Flush(EncoderStatusCB done_cb) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   work_runner_->PostTask(
       FROM_HERE, base::BindOnce(&VideoEncoder::Flush,

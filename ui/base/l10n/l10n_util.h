@@ -17,9 +17,9 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "ui/base/l10n/l10n_util_mac.h"
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
 namespace l10n_util {
 

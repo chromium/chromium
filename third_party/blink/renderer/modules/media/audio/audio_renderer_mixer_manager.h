@@ -11,7 +11,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "base/unguessable_token.h"
 #include "media/audio/audio_device_description.h"

@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "extensions/browser/api/execute_code_function.h"
 #include "extensions/browser/api/web_contents_capture_client.h"
@@ -34,7 +34,7 @@ class WebViewInternalExtensionFunction : public ExtensionFunction {
   ~WebViewInternalExtensionFunction() override {}
   bool PreRunValidation(std::string* error) override;
 
-  WebViewGuest* guest_ = nullptr;
+  raw_ptr<WebViewGuest> guest_ = nullptr;
 };
 
 class WebViewInternalCaptureVisibleRegionFunction

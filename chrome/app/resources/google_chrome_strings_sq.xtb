@@ -13,6 +13,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1142745911746664600">Chrome nuk mund të përditësohet</translation>
 <translation id="1154147086299354128">&amp;Hape në Chrome</translation>
 <translation id="1182414570724401860">Chrome rekomandon që të mos e shkarkosh apo hapësh këtë skedar</translation>
+<translation id="1201241595274620956">Kushtet e CloudReady 2.0</translation>
 <translation id="1278833599417554002">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh Kushtet e shërbimit më poshtë para se ta përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë apo kufizojnë kushtet e sistemit operativ të Google Chrome.</translation>
 <translation id="1302523850133262269">Prit ndërsa Chrome instalon përditësimet më të fundit të sistemit.</translation>
@@ -39,11 +40,15 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Sigurohu që të jesh identifikuar në Chrome në pajisjen tënde <ph name="TARGET_DEVICE_NAME" /> dhe më pas provo ta dërgosh përsëri.</translation>
 <translation id="1812689907177901597">Duke çaktivizuar këtë, mund të identifikohesh në sajtet e Google si Gmail pa u identifikuar në Chrome</translation>
+<translation id="1847459800604232346">Rinis CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome ka nevojë për leje për t'u qasur te kamera jote për këtë sajt</translation>
+<translation id="1865667134297225786">CloudReady 2.0 nuk mund t'i sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë janë të papërditësuara.</translation>
 <translation id="1873233029667955273">Google Chrome nuk është shfletuesi i parazgjedhur</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome nuk është i përditësuar</translation>
+<translation id="1887927549935943139">CloudReady 2.0 nuk mund t'i sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk ofrohet për domenin tënd.</translation>
 <translation id="1919130412786645364">Lejo identifikimin në Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Secili profil duhet të zotërojë informacionin e vet të Chrome, si: faqeshënuesit, historikun, fjalëkalimet etj.</translation>
 <translation id="2063848847527508675">Chrome OS ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="2094919256425865063">Dëshiron ta mbyllësh Chrome gjithsesi?</translation>
@@ -51,18 +56,23 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2121284319307530122">Nise përsëri për të përditësuar &amp;Chrome</translation>
 <translation id="2123055963409958220">Ndihmo në përmirësimin e Chrome duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Rinise Chrome tani</translation>
-<translation id="2189289170880510015">Personalizo disa nga zgjedhjet më të rëndësishme të privatësisë të Chrome</translation>
+<translation id="2258103955319320201">Për t'u qasur te gjërat e shfletuesit Chrome nëpër të gjitha pajisjet e tua, identifikohu dhe më pas aktivizo sinkronizimin</translation>
 <translation id="2290014774651636340">Çelësat API të Google mungojnë. Disa funksione të Chrome do të çaktivizohen.</translation>
 <translation id="2290095356545025170">Je i sigurt që dëshiron ta çinstalosh Google Chrome?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Ky është instalim dytësor i Google Chrome dhe nuk mund të bëhet shfletuesi yt i parazgjedhur.</translation>
 <translation id="2345992953227471816">Chrome vuri re se këto shtesa përmbajnë softuer keqdashës:</translation>
 <translation id="2348335408836342058">Chrome ka nevojë për leje për t'u qasur te kamera dhe mikrofoni yt për këtë sajt</translation>
 <translation id="234869673307233423">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri më vonë.</translation>
 <translation id="235650106824528204">Çdo e dhënë e Chrome që krijohet gjatë përdorimit të këtij profili (si p.sh. krijimi i faqeshënuesve, historikut, fjalëkalimeve dhe cilësimeve të tjera) mund të hiqet nga administratori i profilit të punës. <ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">Vazhdo</translation>
+<translation id="2371517829376452747">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
+        cilësimet e CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome nuk mund t'i sinkronizonte të dhënat për shkak se sinkronizimi nuk ofrohet për domenin tënd.</translation>
 <translation id="2467438592969358367">Google Chrome dëshiron të eksportojë fjalëkalimet e tua. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="2485422356828889247">Çinstalo</translation>
 <translation id="2534507159460261402">Google Pay (kopjuar në Chrome)</translation>
+<translation id="2563121210305478421">Të niset sërish Chrome?</translation>
 <translation id="2574930892358684005"><ph name="EXISTING_USER" /> është i identifikuar tashmë në këtë profil të Chrome. Për ta mbajtur shfletimin tënd të ndarë, Chrome mund të krijojë profilin tënd personal për ty.</translation>
 <translation id="2580411288591421699">Nuk mund të instalohet i njëjti version i Google Chrome që po ekzekutohet aktualisht. Mbylle Google Chrome dhe provo përsëri.</translation>
 <translation id="2586406160782125153">Kjo do të fshijë të dhënat e shfletimit nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
@@ -86,7 +96,9 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="2926676257163822632">Fjalëkalimet e dobëta mund të gjenden me lehtësi. Lejoje Chrome <ph name="BEGIN_LINK" />të krijojë dhe mbajë mend fjalëkalime të forta për ty<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chrome ka nevojë për lejen e kamerës për këtë sajt</translation>
 <translation id="2929907241665500097">Chrome nuk u përditësua. Ndodhi një gabim. <ph name="BEGIN_LINK" />Rregullo problemet e përditësimit të Chrome dhe përditësimet e dështuara.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Nis sërish për të përditësuar &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chrome</translation>
+<translation id="303514781271618814">Chrome po eksploron veçori të reja që u lejojnë sajteve të ofrojnë të njëjtën përvojë shfletimi duke përdorur më pak nga të dhënat e tua</translation>
 <translation id="3037838751736561277">Google Chrome është në modalitetin e sfondit.</translation>
 <translation id="3059710691562604940">"Shfletimi i sigurt" është joaktiv. Chrome rekomandon aktivizimin e tij.</translation>
 <translation id="3065168410429928842">Skeda Chrome</translation>
@@ -97,6 +109,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3114643501466072395">Për të kontrolluar nëse fjalëkalimet e tjera janë të sigurta nga nxjerrjet e paautorizuara të të dhënave dhe probleme të tjera të sigurisë, <ph name="BEGIN_LINK" />identifikohu në Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Ndryshimet e tua do të hyjnë në fuqi herën tjetër kur të rinisësh Google Chrome.</translation>
 <translation id="3149510190863420837">Aplikacionet e Chrome</translation>
+<translation id="3245429137663807393">Nëse ndan edhe raportet e përdorimit të Chrome, ato raporte përfshijnë URL-të që viziton</translation>
 <translation id="3360895254066713204">Ndihmësi i Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome do të hapet përsëri tani}=1{Chrome do të hapet përsëri për 1 sekondë}other{Chrome do të hapet përsëri për # sekonda}}</translation>
 <translation id="3395323229510056640">Merr ndihmë për Chrome OS</translation>
@@ -110,11 +123,11 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="3533694711092285624">Nuk ka asnjë fjalëkalim të ruajtur. Chrome mund t'i kontrollojë fjalëkalimet e tua kur ti i ruan ato.</translation>
 <translation id="3541482654983822893">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh.</translation>
 <translation id="3576528680708590453">Administratori i sistemit ka konfiguruar Google Chrome që të hapë një shfletues alternativ për t'u qasur te <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3582634744482121096">Opsionale: Ndihmo në përmirësimin e veçorive dhe performancës së CloudReady 2.0 duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
 <translation id="3582972582564653026">Sinkronizo dhe personalizo Chrome nëpër pajisjet e tua</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="3622797965165704966">Tani është më e lehtë të përdorësh Chrome me llogarinë tënde të Google dhe në kompjuterët e ndarë.</translation>
 <translation id="3673813398384385993">Chrome vuri re se "<ph name="EXTENSION_NAME" />" përmban softuer keqdashës</translation>
-<translation id="3678552270983184277">Cilësimet e parazgjedhura funksionojnë për shumicën e njerëzve, por mund t'i personalizosh ato për t'u përshtatur me mënyrën që dëshiron të përdorësh Chrome</translation>
 <translation id="3718181793972440140">Kjo do të fshijë 1 artikull nga kjo pajisje. Për t'i marrë më vonë të dhënat, identifikohu te Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Shtesa "<ph name="EXTENSION_NAME" />" ka ndryshuar se cila faqe shfaqet kur nis Chrome.</translation>
 <translation id="3779473566290487688">Për të marrë përditësimet e ardhshme të Google Chrome, do të të duhet versioni OS X 10.11 ose një version i mëvonshëm. Ky kompjuter përdor versionin OS X 10.10.</translation>
@@ -131,6 +144,7 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4149882025268051530">Instaluesi nuk arriti ta nxjerrë arkivin. Shkarko përsëri Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Hap përsëri Chrome brenda një dite}other{Hap përsëri Chrome brenda # ditësh}}</translation>
 <translation id="4205939740494406371">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua. Provo përsëri pas 24 orësh ose <ph name="BEGIN_LINK" />kontrollo fjalëkalimet në "Llogarinë tënde të Google"<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Sistemi CloudReady 2.0</translation>
 <translation id="4242034826641750751">Chrome ka nevojë për lejet e kamerës dhe të mikrofonit për këtë sajt</translation>
 <translation id="424864128008805179">Do të dalësh nga Chrome?</translation>
 <translation id="4251615635259297716">Të lidhen të dhënat e tua të Chrome me këtë llogari?</translation>
@@ -143,21 +157,24 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> është shtuar te Chrome</translation>
 <translation id="4384570495110188418">Chrome nuk mund t'i kontrollojë fjalëkalimet e tua sepse nuk je identifikuar</translation>
 <translation id="4407807842708586359">Sistemi operativ Google Chrome</translation>
+<translation id="4427306783828095590">Mbrojtja e përmirësuar bën edhe më shumë për bllokimin e mashtrimeve dhe softuerëve keqdashës</translation>
 <translation id="4450664632294415862">Chrome - identifikimi në rrjet - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Një veprim tjetër në Google Chrome është në vazhdim. Provo përsëri më vonë.</translation>
 <translation id="4480040274068703980">Sistemi operativ Chrome nuk mundi t'i sinkronizonte të dhënat e tua për shkak të një gabimi në identifikim.</translation>
 <translation id="4521185804071812304">Opsionale: Ndihmo në përmirësimin e veçorive dhe cilësisë së funksionimit të sistemit operativ Chrome duke dërguar automatikisht te Google të dhëna përdorimi dhe diagnostikuese.</translation>
+<translation id="4539063627668028557">Versioni CloudReady 2.0</translation>
 <translation id="4561051373932531560">Google Chrome të lejon të klikosh një numër telefoni në ueb dhe ta telefonosh me Skype!</translation>
+<translation id="4562712242781620537">Sistemi CloudReady 2.0</translation>
 <translation id="4567424176335768812">Je identifikuar si <ph name="USER_EMAIL_ADDRESS" />. Tani mund të qasesh te faqeshënuesit, historiku dhe cilësime të tjera në të gjitha pajisjet ku je identifikuar.</translation>
 <translation id="4571503333518166079">Shko te "Cilësimet e njoftimeve" të Chrome</translation>
 <translation id="459622048091363950">Pasi Chrome të ketë qasje, sajtet e uebit do të jenë në gjendje të kërkojnë prej teje qasje.</translation>
 <translation id="4600710005438004015">Chrome nuk mund të përditësohej me versionin më të fundit, kështu që të mungojnë rregullimet e sigurisë dhe funksionet e reja.</translation>
 <translation id="4633000520311261472">Për ta bërë më të sigurt Chrome, çaktivizuam disa shtesa që nuk janë të listuara në <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> dhe që mund të jenë shtuar pa dijeninë tënde.</translation>
-<translation id="4666328473657283332">Për t'u qasur te gjërat e Chrome nëpër të gjitha pajisjet, identifikohu që të mund të aktivizosh sinkronizimin.</translation>
 <translation id="4728575227883772061">Instalimi dështoi për shkak të një gabimi të paspecifikuar. Nëse Google Chrome është aktualisht në ekzekutim, mbylle dhe provo përsëri.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ky skedar mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
+<translation id="4873783916118289636">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chrome</translation>
 <translation id="4891791193823137474">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="4895437082222824641">Hape lidhjen në një &amp;skedë të re të Chrome</translation>
 <translation id="4953650215774548573">Caktoje Google Chrome si shfletuesin tënd të parazgjedhur</translation>
@@ -171,10 +188,9 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="5170938038195470297">Profili yt nuk mund të përdoret sepse është nga një version më i ri i Google Chrome.
 
 Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profilit ose përdor një version më të ri të Chrome.</translation>
-<translation id="5193136243808726294">Sistemi operativ Google Chrome nuk mund ta hapë këtë faqe.</translation>
 <translation id="521447420733633466">Nëse e ndan një pajisje, miqtë dhe familja mund të shfletojnë veçmas dhe ta konfigurojnë Chrome pikërisht ashtu si dëshirojnë.</translation>
 <translation id="5251420635869119124">Vizitorët mund të përdorin Chrome pa lënë asgjë prapa.</translation>
-<translation id="5251679006894510177">Pothuajse u përditësua! Rihap Chrome për të përfunduar përditësimin. Dritaret "e fshehta" nuk do të hapen.</translation>
+<translation id="5307623274346663914">CloudReady 2.0 ka nevojë të riniset për të zbatuar përditësimin.</translation>
 <translation id="5334487786912937552">Chrome ka nevojë për leje qasjeje te hapësira ruajtëse për të shkarkuar skedarë</translation>
 <translation id="5386244825306882791">Kontrollon po ashtu se cila faqe shfaqet kur nis Chrome ose kur kërkon nga Omnibox.</translation>
 <translation id="5394833366792865639">Ndaj një skedë të Chrome</translation>
@@ -183,13 +199,14 @@ Disa funksione mund të mos ofrohen. Specifiko një direktori tjetër të profil
 Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</translation>
 <translation id="556024056938947818">Google Chrome po përpiqet të shfaqë fjalëkalimet.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5657226924540934362">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
-      cilësimet e sistemit operativ të Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598"><ph name="FILE_NAME" /> mund të jetë i rrezikshëm, prandaj Chrome e ka bllokuar.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim. Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chrome për të zbatuar këtë përditësim. # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5686916850681061684">Personalizo dhe kontrollo Google Chrome. Diçka ka nevojë për vëmendjen tënde - kliko për detaje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 nuk mund t'i sinkronizonte të dhënat e tua për shkak të një gabimi në identifikim.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome do të riniset për 1 sekondë}other{Google Chrome do të riniset për # sekonda}}</translation>
+<translation id="5736850870166430177">Nëse një sajt përpiqet të vjedhë fjalëkalimin tënd ose kur shkarkon një skedar të dëmshëm, Chrome mund t'i dërgojë gjithashtu URL-të, duke përfshirë pjesë të përmbajtjes së faqeve, te "Shfletimi i sigurt".</translation>
 <translation id="573759479754913123">Rreth sistemit operativ Chrome</translation>
 <translation id="5756509061973259733">Një profil i Chrome me këtë llogari ekziston tashmë në këtë pajisje</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
@@ -202,6 +219,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="5941830788786076944">Bëje Google Chrome shfletuesin e parazgjedhur</translation>
 <translation id="6070348360322141662">Për më shumë siguri, Google Chrome do t'i enkriptojë të dhënat e tua</translation>
 <translation id="608006075545470555">Shto profilin e punës në këtë shfletues</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome sapo është përmirësuar</translation>
 <translation id="6145313976051292476">Hap PDF-të në Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -219,16 +237,22 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="6679975945624592337">Lejo që Google Chrome të ekzekutohet në sfond</translation>
 <translation id="6696915334902295848">Chrome ka nevojë për lejen e mikrofonit për këtë sajt</translation>
 <translation id="6739177684496155661">Të vazhdohet te një profil i ri Chrome?</translation>
+<translation id="6749459139769042303">Merr ndihmë për CloudReady 2.0</translation>
 <translation id="6750954913813541382">Për të rregulluar gabimet drejtshkrimore, Chrome e dërgon tekstin që shkruan në shfletues te Google</translation>
 <translation id="677276454032249905">Dëshiron të dalësh nga Chrome gjithsesi?</translation>
+<translation id="6814748008107187409">Nëse cilësimi nuk shfaqet në këtë faqe, shiko te <ph name="LINK_BEGIN" />
+        cilësimet e Chrome OS<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Rregulli hyrës për Google Chrome për të lejuar trafikun mDNS.</translation>
 <translation id="6881299373831449287">Po përditëson Chrome</translation>
 <translation id="6885412569789873916">Aplikacionet e Chrome Beta</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> kërkon që të lexosh dhe të pranosh "Kushtet e shërbimit" më poshtë para se të përdorësh këtë pajisje. Këto kushte nuk i zgjerojnë, modifikojnë ose kufizojnë "Kushtet e Google CloudReady 2.0".</translation>
 <translation id="6943584222992551122">Të dhënat e shfletimit të këtij personi do të fshihen nga kjo pajisje. Për të rikuperuar të dhënat, identifikohu në Chrome si <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Rregulli hyrës për Google Chrome Beta për të lejuar trafikun mDNS.</translation>
 <translation id="6989339256997917931">Google Chrome është përditësuar, por nuk e ke përdorur për të paktën 30 ditë.</translation>
+<translation id="700644001690392105">Informacione rreth CloudReady 2.0</translation>
 <translation id="7025800014283535195">Këtu mund të kalosh nga një profil i Chrome te një tjetër</translation>
 <translation id="7062128746136194023">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet shtimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
+<translation id="7085332316435785646">Zgjidh nëse do të përfshish historikun e Chrome për përvoja më të personalizuara në shërbimet e Google</translation>
 <translation id="7088681679121566888">Chrome është i përditësuar</translation>
 <translation id="7098166902387133879">Google Chrome po përdor mikrofonin tënd.</translation>
 <translation id="7106741999175697885">Menaxheri i detyrave - Google Chrome</translation>
@@ -243,9 +267,11 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7398801000654795464">Ishe i identifikuar në Chrome si <ph name="USER_EMAIL_ADDRESS" />. Përdor të njëjtën llogari për t'u identifikuar sërish.</translation>
 <translation id="7408085963519505752">Kushtet e sistemit operativ Chrome</translation>
 <translation id="7419046106786626209">Sistemi operativ Chrome nuk mund të sinkronizonte të dhënat e tua sepse "Sinkronizimi" nuk mundësohet për domenin tënd.</translation>
+<translation id="7481213027396403996">Merr sigurinë më të fortë të Chrome</translation>
 <translation id="7486227612705979895">Chrome do të ketë qasje te "Disku" yt për të dhënë sugjerime në shiritin e adresës</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Për të parë nëse pajisja jote është e përditësuar, shko te <ph name="LINK_BEGIN" />Cilësimet e sistemit operativ Chrome<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Për të parë nëse pajisja jote është e përditësuar, shko te <ph name="LINK_BEGIN" />Cilësimet e CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>
 <translation id="7626032353295482388">Mirë se vjen në Chrome</translation>
 <translation id="7629695634924605473">Chrome të informon nëse fjalëkalimet e tua komprometohen ndonjëherë</translation>
@@ -253,6 +279,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="7651907282515937834">Logoja e Chrome Enterprise</translation>
 <translation id="7665553140559834626">Nise përsëri për të përditësuar &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Instaluesi nuk mund të krijonte një direktori të përkohshme. Kontrollo për hapësirë të lirë në disk dhe për lejen për të instaluar softuerin.</translation>
+<translation id="7748512868279796735">Llogaritë e mëposhtme janë të disponueshme për këtë profil të Chrome</translation>
 <translation id="7761834446675418963">Kliko tek emri yt për të hapur Chrome dhe fillo shfletimin.</translation>
 <translation id="7777080907402804672">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google. Këtë mund ta çaktivizosh te cilësimet në çdo moment.</translation>
 <translation id="7781002470561365167">Ofrohet një version i ri i Google Chrome.</translation>
@@ -270,13 +297,13 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8008534537613507642">Instalo përsëri Chrome</translation>
 <translation id="8013993649590906847">Nëse një imazh nuk ka një përshkrim të dobishëm, Chrome do të përpiqet të të japë një përshkrim. Për të krijuar përshkrime, imazhet dërgohen te Google.</translation>
 <translation id="8129812357326543296">Informacion rreth &amp;Google Chrome</translation>
-<translation id="822971176939352383">Llogaritë e mëposhtme nuk janë të identifikuara në ndonjë profil të Chrome. Nëse do të përdorësh një llogari në një profil tjetër, hiq atë profil përpara.</translation>
 <translation id="8255190535488645436">Google Chrome po përdor kamerën dhe mikrofonin tënd.</translation>
 <translation id="8286862437124483331">Google Chrome po përpiqet të shfaqë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
 <translation id="828798499196665338">Prindi yt ka çaktivizuar "Lejet për sajtet, aplikacionet dhe shtesat" për Chrome. Nuk lejohet aktivizimi për këtë <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome pësoi një ndërprerje aksidentale. Dëshiron ta rinisësh tani?</translation>
 <translation id="8342675569599923794">Ky skedar është i rrezikshëm, prandaj Chrome e ka bllokuar atë.</translation>
 <translation id="8370517070665726704">Të drejtat e autorit <ph name="YEAR" /> Google LLC. Të gjitha të drejtat e rezervuara.</translation>
+<translation id="8394720698884623075">Kontrollon URL-të kundrejt një liste sajtesh të pasigurta të ruajtur në Chrome</translation>
 <translation id="840084489713044809">Google Chrome dëshiron të eksportojë fjalëkalimet e tua.</translation>
 <translation id="8433638294851456451">Për të dërguar një numër nga këtu te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
 <translation id="8498858610309223613">Sapo është zbatuar një përditësim special i sigurisë për Google Chrome. Rinise tani dhe do të restaurojmë skedat e tua.</translation>
@@ -284,6 +311,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Ky profil pune është plotësisht i veçuar nga profili yt personal.</translation>
 <translation id="8556340503434111824">Ofrohet një version i ri i Google Chrome dhe është më i shpejtë se kurrë.</translation>
+<translation id="8571790202382503603">Me profilet e Chrome mund t'i mbash veçmas të gjitha gjërat e tua të Chrome. Kjo e bën më të lehtë ta ndash punën nga argëtimi.</translation>
 <translation id="8614913330719544658">Google Chrome nuk përgjigjet. Dëshiron ta hapësh sërish tani?</translation>
 <translation id="861702415419836452">Chrome ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome do të hapet përsëri për 1 minutë}other{Chrome do të hapet përsëri për # minuta}}</translation>
@@ -292,6 +320,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8669527147644353129">Ndihmësi i Google Chrome</translation>
 <translation id="8679801911857917785">Kontrollon gjithashtu se cila faqe shfaqet kur fillon Chrome.</translation>
 <translation id="8686817260976772516">Me profilet e Chrome mund t'i mbash të ndara të gjitha gjërat e tua të Chrome. Krijo profile për miqtë dhe familjen ose ndaje punën nga argëtimi.</translation>
+<translation id="8712767363896337380">Pothuajse u përditësua! Nis Chrome sërish për të përfunduar përditësimin.</translation>
 <translation id="873133009373065397">Google Chrome nuk mund të përcaktojë ose të vendosë shfletuesin e parazgjedhur</translation>
 <translation id="8823341990149967727">Sistemi operativ Chrome nuk është i përditësuar</translation>
 <translation id="8834965163890861871">Google Chrome po përpiqet t'i modifikojë fjalëkalimet. Shkruaj fjalëkalimin tënd të Windows për ta lejuar këtë.</translation>
@@ -299,6 +328,7 @@ Google Chrome nuk është në gjendje të rikuperojë cilësimet e tua.</transla
 <translation id="8862326446509486874">Nuk ke të drejtat e duhura për instalimin në nivel sistemi. Provo ta ekzekutosh përsëri instaluesin si Administrator.</translation>
 <translation id="8914504000324227558">Rinis Chrome</translation>
 <translation id="8922193594870374009">Për të dërguar një numër nga <ph name="ORIGIN" /> te telefoni yt Android, identifikohu në Chrome në të dyja pajisjet.</translation>
+<translation id="8983720963221508955">Ke aktivizuar "Shfletimin e sigurt të përmirësuar" në llogarinë tënde. Tani merre për Chrome.</translation>
 <translation id="8986207147630327271">Po shton një profil pune në këtë shfletues dhe po i jep administratorit tënd kontrollin vetëm mbi profilin e punës.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Ofrohet një përditësim i Chrome}=1{Ofrohet një përditësim i Chrome}other{Një përditësim i Chrome ofrohet prej # ditësh}}</translation>
 <translation id="9026991721384951619">Sistemi operativ Chrome nuk mund të sinkronizonte të dhënat e tua sepse detajet e identifikimit të llogarisë nuk janë të përditësuara.</translation>

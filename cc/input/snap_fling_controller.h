@@ -7,8 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
 namespace cc {
@@ -25,9 +27,9 @@ class SnapFlingClient {
  public:
   virtual bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement,
-      gfx::Vector2dF* out_initial_position,
-      gfx::Vector2dF* out_target_position) const = 0;
-  virtual gfx::Vector2dF ScrollByForSnapFling(const gfx::Vector2dF& delta) = 0;
+      gfx::PointF* out_initial_position,
+      gfx::PointF* out_target_position) const = 0;
+  virtual gfx::PointF ScrollByForSnapFling(const gfx::Vector2dF& delta) = 0;
   virtual void ScrollEndForSnapFling(bool did_finish) = 0;
   virtual void RequestAnimationForSnapFling() = 0;
 };
@@ -98,7 +100,7 @@ class CC_EXPORT SnapFlingController {
 
   void SetActiveStateForTest() { state_ = State::kActive; }
 
-  SnapFlingClient* client_;
+  raw_ptr<SnapFlingClient> client_;
   State state_ = State::kIdle;
   std::unique_ptr<SnapFlingCurve> curve_;
 };

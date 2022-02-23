@@ -1,0 +1,984 @@
+Tests that async stack tagging API (recurring) works as expected.
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 1
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 83
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : fooTask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 2
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 83
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : fooTask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 3
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [6] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [7] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 83
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : fooTask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 4
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [6] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [7] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 84
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : barBask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 5
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [6] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [7] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [8] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [9] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 84
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : barBask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 1
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 83
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : fooTask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 2
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 83
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : fooTask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 3
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [6] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [7] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 83
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : fooTask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 4
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [6] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [7] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 84
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : barBask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+{
+    method : Runtime.consoleAPICalled
+    params : {
+        args : [
+            [0] : {
+                type : string
+                value : completeWork: job 5
+            }
+        ]
+        executionContextId : <number>
+        stackTrace : {
+            callFrames : [
+                [0] : {
+                    columnNumber : 14
+                    functionName : someJob
+                    lineNumber : 76
+                    scriptId : <string>
+                    url : 
+                }
+                [1] : {
+                    columnNumber : 8
+                    functionName : runNextJob
+                    lineNumber : 28
+                    scriptId : <string>
+                    url : 
+                }
+                [2] : {
+                    columnNumber : 30
+                    functionName : workLoop
+                    lineNumber : 47
+                    scriptId : <string>
+                    url : 
+                }
+                [3] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [4] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [5] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [6] : {
+                    columnNumber : 8
+                    functionName : workLoop
+                    lineNumber : 54
+                    scriptId : <string>
+                    url : 
+                }
+                [7] : {
+                    columnNumber : 4
+                    functionName : fakeRequestIdleCallback
+                    lineNumber : 18
+                    scriptId : <string>
+                    url : 
+                }
+                [8] : {
+                    columnNumber : 8
+                    functionName : scheduleWorkLoop
+                    lineNumber : 67
+                    scriptId : <string>
+                    url : 
+                }
+                [9] : {
+                    columnNumber : 12
+                    functionName : 
+                    lineNumber : 88
+                    scriptId : <string>
+                    url : 
+                }
+            ]
+            parent : {
+                callFrames : [
+                    [0] : {
+                        columnNumber : 27
+                        functionName : scheduleTask
+                        lineNumber : 62
+                        scriptId : <string>
+                        url : 
+                    }
+                    [1] : {
+                        columnNumber : 14
+                        functionName : businessLogic
+                        lineNumber : 84
+                        scriptId : <string>
+                        url : 
+                    }
+                    [2] : {
+                        columnNumber : 2
+                        functionName : 
+                        lineNumber : 87
+                        scriptId : <string>
+                        url : 
+                    }
+                ]
+                description : barBask
+            }
+        }
+        timestamp : <number>
+        type : trace
+    }
+    sessionId : <string>
+}
+

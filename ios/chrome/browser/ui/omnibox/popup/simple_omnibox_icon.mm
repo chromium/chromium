@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/omnibox/popup/simple_omnibox_icon.h"
 
+#import "base/notreached.h"
 #import "ios/chrome/browser/ui/colors/MDCPalette+CrAdditions.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_suggestion_icon_util.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"

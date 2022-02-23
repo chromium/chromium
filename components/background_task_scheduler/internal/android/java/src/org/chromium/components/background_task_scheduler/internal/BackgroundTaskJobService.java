@@ -4,10 +4,8 @@
 
 package org.chromium.components.background_task_scheduler.internal;
 
-import android.annotation.TargetApi;
 import android.app.job.JobParameters;
 import android.app.job.JobService;
-import android.os.Build;
 
 import androidx.annotation.VisibleForTesting;
 
@@ -21,7 +19,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 /** Delegates calls out to various tasks that need to run in the background. */
-@TargetApi(Build.VERSION_CODES.LOLLIPOP_MR1)
 public class BackgroundTaskJobService extends JobService {
     private static final String TAG = "BkgrdTaskJS";
 

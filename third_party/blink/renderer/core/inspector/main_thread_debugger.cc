@@ -32,6 +32,7 @@
 
 #include <memory>
 
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
@@ -292,7 +293,7 @@ v8::Local<v8::Context> MainThreadDebugger::ensureDefaultContextInGroup(
   // CrOS and this check failed when tested on an experimental builder. Revert
   // https://crrev.com/c/2727867 to enable it.
   // See go/chrome-dcheck-on-cros or http://crbug.com/1113456 for more details.
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
   DCHECK(!frame->IsProvisional());
 #endif
   if (frame->IsProvisional())
@@ -358,7 +359,7 @@ v8::MaybeLocal<v8::Value> MainThreadDebugger::memoryInfo(
     v8::Local<v8::Context> context) {
   DCHECK(ToLocalDOMWindow(context));
   return ToV8(
-      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::Bucketized),
+      MakeGarbageCollected<MemoryInfo>(MemoryInfo::Precision::kBucketized),
       context->Global(), isolate);
 }
 

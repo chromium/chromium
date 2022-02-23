@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_location.h"
@@ -145,6 +146,18 @@ bool CanAccessWindowInternal(
         accessing_window->document(),
         can_access ? WebFeature::kDocumentDomainEnabledCrossOriginAccess
                    : WebFeature::kDocumentDomainBlockedCrossOriginAccess);
+    // Handle deprecation warnings for OriginAgentCluster default:
+    // If the new default is not (yet) enabled, but warnings are, and
+    // access gets allowed for domain-setting reasons (reasons checked in
+    // the if clause above).
+    if (accessing_window->GetAgent()->IsOriginOrSiteKeyedBasedOnDefault() &&
+        base::FeatureList::IsEnabled(
+            blink::features::kOriginAgentClusterDefaultWarning) &&
+        can_access) {
+      UseCounter::CountDeprecation(
+          accessing_window->document(),
+          WebFeature::kCrossOriginAccessBasedOnDocumentDomain);
+    }
   }
   if (!can_access) {
     // Ensure that if we got a cluster mismatch that it was due to a permissions
@@ -156,8 +169,8 @@ bool CanAccessWindowInternal(
       // being explicitly origin keyed.
       SECURITY_CHECK(
           !IsSameWindowAgentFactory(accessing_window, local_target_window) ||
-          (accessing_window->GetAgent()->IsExplicitlyOriginKeyed() !=
-           local_target_window->GetAgent()->IsExplicitlyOriginKeyed()) ||
+          (accessing_window->GetAgent()->IsOriginKeyedForInheritance() !=
+           local_target_window->GetAgent()->IsOriginKeyedForInheritance()) ||
           (WebTestSupport::IsRunningWebTest() &&
            local_target_window->GetFrame()->PagePopupOwner()));
 
@@ -365,23 +378,23 @@ namespace {
 template <typename ExceptionStateOrErrorReportOption>
 bool ShouldAllowAccessToV8ContextInternal(
     v8::Local<v8::Context> accessing_context,
-    v8::Local<v8::Context> target_context,
+    v8::MaybeLocal<v8::Context> maybe_target_context,
     ExceptionStateOrErrorReportOption& error_report) {
-  // Fast path for the most likely case.
-  if (accessing_context == target_context)
-    return true;
-
   // Workers and worklets do not support multiple contexts, so both of
   // |accessing_context| and |target_context| must be windows at this point.
 
-  // remote_object->CreationContext() returns the empty handle. Remote contexts
-  // are unconditionally treated as cross origin.
-  if (target_context.IsEmpty()) {
+  // remote_object->GetCreationContext() returns the empty handle. Remote
+  // contexts are unconditionally treated as cross origin.
+  v8::Local<v8::Context> target_context;
+  if (!maybe_target_context.ToLocal(&target_context)) {
     ReportOrThrowSecurityError(ToLocalDOMWindow(accessing_context), nullptr,
                                DOMWindow::CrossDocumentAccessPolicy::kAllowed,
                                error_report);
     return false;
   }
+  // Fast path for the most likely case.
+  if (accessing_context == target_context)
+    return true;
 
   LocalFrame* target_frame = ToLocalFrameIfNotDetached(target_context);
   // TODO(dcheng): Why doesn't this code just use DOMWindows throughout? Can't
@@ -413,7 +426,7 @@ bool ShouldAllowAccessToV8ContextInternal(
 
 bool BindingSecurity::ShouldAllowAccessToV8Context(
     v8::Local<v8::Context> accessing_context,
-    v8::Local<v8::Context> target_context,
+    v8::MaybeLocal<v8::Context> target_context,
     ExceptionState& exception_state) {
   return ShouldAllowAccessToV8ContextInternal(accessing_context, target_context,
                                               exception_state);
@@ -421,7 +434,7 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
 
 bool BindingSecurity::ShouldAllowAccessToV8Context(
     v8::Local<v8::Context> accessing_context,
-    v8::Local<v8::Context> target_context,
+    v8::MaybeLocal<v8::Context> target_context,
     ErrorReportOption reporting_option) {
   return ShouldAllowAccessToV8ContextInternal(accessing_context, target_context,
                                               reporting_option);
@@ -429,10 +442,11 @@ bool BindingSecurity::ShouldAllowAccessToV8Context(
 
 bool BindingSecurity::ShouldAllowWrapperCreationOrThrowException(
     v8::Local<v8::Context> accessing_context,
-    v8::Local<v8::Context> creation_context,
+    v8::MaybeLocal<v8::Context> creation_context,
     const WrapperTypeInfo* wrapper_type_info) {
   // Fast path for the most likely case.
-  if (accessing_context == creation_context)
+  if (!creation_context.IsEmpty() &&
+      accessing_context == creation_context.ToLocalChecked())
     return true;
 
   // According to
@@ -451,11 +465,11 @@ bool BindingSecurity::ShouldAllowWrapperCreationOrThrowException(
 
 void BindingSecurity::RethrowWrapperCreationException(
     v8::Local<v8::Context> accessing_context,
-    v8::Local<v8::Context> creation_context,
+    v8::MaybeLocal<v8::Context> creation_context,
     const WrapperTypeInfo* wrapper_type_info,
     v8::Local<v8::Value> cross_context_exception) {
   DCHECK(!cross_context_exception.IsEmpty());
-  v8::Isolate* isolate = creation_context->GetIsolate();
+  v8::Isolate* isolate = creation_context.ToLocalChecked()->GetIsolate();
   ExceptionState exception_state(isolate, ExceptionState::kConstructionContext,
                                  wrapper_type_info->interface_name);
   if (!ShouldAllowAccessToV8Context(accessing_context, creation_context,

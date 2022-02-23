@@ -7,7 +7,6 @@
 
 #include <CoreFoundation/CoreFoundation.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #import "components/prefs/pref_change_registrar.h"
@@ -53,8 +52,8 @@ class PolicyWatcherBrowserAgent
   void ForceSignOutIfSigninDisabled();
 
   // Handler for change to kSyncManaged. When the pref changes to |true|,
-  // sends a command to the handler to show an alert.
-  void ShowSyncDisabledAlertIfNeeded();
+  // sends a command to the handler to show a prompt.
+  void ShowSyncDisabledPromptIfNeeded();
 
   // Callback called when the sign out is complete.
   void OnSignOutComplete();

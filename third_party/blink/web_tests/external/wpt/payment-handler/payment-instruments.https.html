@@ -203,7 +203,7 @@ function runTests(registration) {
           {
             src: '/images/rgrg-256x256.png',
             sizes: '256x256',
-            type: 'image/pn' + 'g'.repeat(1000),
+            type: 'image/pn' + 'g'.repeat(100000),
           },
         ],
         method: 'basic-card',
@@ -226,6 +226,34 @@ function runTests(registration) {
       method: 'basic-card',
     });
   }, "Don't crash when registering an instrument with a very long icon size 888...x888...");
+
+  promise_test(async t => {
+    await registration.paymentManager.instruments.clear();
+    return registration.paymentManager.instruments.set('instrument-key', {
+      name: 'Instrument Name',
+      icons: [
+        {
+          src: '/images/rgrg-256x256.png',
+          type: 'image/png',
+        },
+      ],
+      method: 'basic-card',
+    });
+  }, "Don't crash when 'sizes' missing from icon definition");
+
+  promise_test(async t => {
+    await registration.paymentManager.instruments.clear();
+    return registration.paymentManager.instruments.set('instrument-key', {
+      name: 'Instrument Name',
+      icons: [
+        {
+          src: '/images/rgrg-256x256.png',
+          sizes: '256x256',
+        },
+      ],
+      method: 'basic-card',
+    });
+  }, "Don't crash when 'type' missing from icon definition");
 
   promise_test(async t => {
     await registration.paymentManager.instruments.clear();

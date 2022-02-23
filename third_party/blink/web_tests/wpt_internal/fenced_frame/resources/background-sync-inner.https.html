@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="utils.js"></script>
+<title>Fenced frame content to report the result of background sync's register</title>
+
+<body>
+<script>
+(async function() {
+  const [background_sync_register_key] = parseKeylist();
+
+  navigator.serviceWorker.register("empty-worker.js", { scope: location.href });
+  const registration = await navigator.serviceWorker.ready;
+
+  // This test verifies that one-shot syncs can not be registered from a
+  // fenced frame.
+  registration.sync.register('fencedframe-oneshot').then(() => {
+    writeValueToServer(background_sync_register_key, "unexpectedly registered");
+  })
+  .catch((e) => {
+    writeValueToServer(background_sync_register_key, "failed");
+  })
+  .finally(() => {
+    registration.unregister();
+  });
+})();
+</script>
+</body>

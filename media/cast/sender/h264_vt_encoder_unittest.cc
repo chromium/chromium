@@ -59,7 +59,7 @@ namespace cast {
 // See comment in end2end_unittest.cc for details on this value.
 const double kVideoAcceptedPSNR = 38.0;
 
-void SaveDecoderInitResult(bool* out_result, ::media::Status in_result) {
+void SaveDecoderInitResult(bool* out_result, DecoderStatus in_result) {
   *out_result = in_result.is_ok();
 }
 
@@ -160,7 +160,7 @@ class EndToEndFrameChecker
     ++count_frames_checked_;
   }
 
-  void DecodeDone(Status status) { EXPECT_TRUE(status.is_ok()); }
+  void DecodeDone(DecoderStatus status) { EXPECT_TRUE(status.is_ok()); }
 
   int count_frames_checked() const { return count_frames_checked_; }
 

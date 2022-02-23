@@ -26,9 +26,11 @@ class MockSimpleDownloadManager : public SimpleDownloadManager {
   // Notifies observers that downloads is initialized.
   void NotifyOnDownloadInitialized();
 
-  void DownloadUrl(std::unique_ptr<DownloadUrlParameters> params) override {
-    DownloadUrlMock(params.get());
-  }
+  // Get the DownloadUrlParameters passed to |DownloadUrl|.
+  const DownloadUrlParameters* GetDownloadUrlParameters();
+
+  // SimpleDownloadManager implementation.
+  void DownloadUrl(std::unique_ptr<DownloadUrlParameters> params) override;
 
   MOCK_METHOD1(CanDownload, bool(DownloadUrlParameters*));
   MOCK_METHOD1(DownloadUrlMock, void(DownloadUrlParameters*));
@@ -37,6 +39,7 @@ class MockSimpleDownloadManager : public SimpleDownloadManager {
 
  private:
   base::ObserverList<Observer>::Unchecked observers_;
+  std::unique_ptr<DownloadUrlParameters> params_;
 };
 
 }  // namespace download

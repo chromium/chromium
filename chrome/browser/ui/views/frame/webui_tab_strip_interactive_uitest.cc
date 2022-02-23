@@ -15,7 +15,6 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -151,7 +150,8 @@ IN_PROC_BROWSER_TEST_F(WebUITabStripInteractiveTest, CanUseInImmersiveMode) {
   ASSERT_NE(nullptr, container);
 
   // IPH may cause a reveal. Stop it.
-  browser_view->feature_promo_controller()->BlockPromosForTesting();
+  auto lock =
+      browser_view->GetFeaturePromoController()->BlockPromosForTesting();
 
   EXPECT_FALSE(immersive_mode_controller->IsRevealed());
 

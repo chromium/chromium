@@ -1,0 +1,21 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++UNKNOWN label='Heading 1'
+++++++++STATIC_TEXT label='Heading 1'
+++++++++++UNKNOWN label='Heading 1'
+++++++UNKNOWN label='Heading 2'
+++++++++STATIC_TEXT label='Heading 2'
+++++++++++UNKNOWN label='Heading 2'
+++++++UNKNOWN label='Heading 3'
+++++++++STATIC_TEXT label='Heading 3'
+++++++++++UNKNOWN label='Heading 3'
+++++++UNKNOWN label='Heading 4'
+++++++++STATIC_TEXT label='Heading 4'
+++++++++++UNKNOWN label='Heading 4'
+++++++UNKNOWN label='Heading 5'
+++++++++STATIC_TEXT label='Heading 5'
+++++++++++UNKNOWN label='Heading 5'
+++++++UNKNOWN label='Heading 6'
+++++++++STATIC_TEXT label='Heading 6'
+++++++++++UNKNOWN label='Heading 6'

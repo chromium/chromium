@@ -39,13 +39,19 @@ namespace content {
 class AgentSchedulingGroupHostFactory;
 class BrowserMessageFilter;
 class RenderProcessHost;
-class SiteInstance;
+class SiteInstanceGroup;
 
 // Browser-side host of an AgentSchedulingGroup, used for
 // AgentSchedulingGroup-bound messaging. AgentSchedulingGroup is Blink's unit of
 // scheduling and performance isolation, which is the only way to obtain
 // ordering guarantees between different Mojo (associated) interfaces and legacy
 // IPC messages.
+//
+// AgentSchedulingGroups can be assigned at various granularities, as coarse as
+// process-wide or as specific as SiteInstanceGroup. There cannot be more than
+// one AgentSchedulingGroup per SiteInstanceGroup without breaking IPC ordering
+// for RenderWidgetHost. (SiteInstanceGroups themselves can be tuned to contain
+// one or more SiteInstances, depending on platform and policy.)
 //
 // An AgentSchedulingGroupHost is stored as (and owned by) UserData on the
 // RenderProcessHost.
@@ -57,13 +63,15 @@ class CONTENT_EXPORT AgentSchedulingGroupHost
       public mojom::RouteProvider,
       public blink::mojom::AssociatedInterfaceProvider {
  public:
-  // Get the appropriate AgentSchedulingGroupHost for the given `instance` and
-  // `process`. Depending on the value of `features::kMBIModeParam`, there may
-  // be a single AgentSchedulingGroupHost per RenderProcessHost, or a single one
-  // per SiteInstance, which may lead to multiple AgentSchedulingGroupHosts per
-  // RenderProcessHost. This method will never return null.
-  static AgentSchedulingGroupHost* GetOrCreate(const SiteInstance& instance,
-                                               RenderProcessHost& process);
+  // Get the appropriate AgentSchedulingGroupHost for the given
+  // `site_instance_group` and `process`. Depending on the value of
+  // `features::kMBIModeParam`, there may be a single AgentSchedulingGroupHost
+  // per RenderProcessHost, or a single one per SiteInstanceGroup, which may
+  // lead to multiple AgentSchedulingGroupHosts per RenderProcessHost. This
+  // method will never return null.
+  static AgentSchedulingGroupHost* GetOrCreate(
+      const SiteInstanceGroup& site_instance_group,
+      RenderProcessHost& process);
 
   // Should not be called explicitly. Use `CreateIfNeeded()` instead.
   explicit AgentSchedulingGroupHost(RenderProcessHost& process);

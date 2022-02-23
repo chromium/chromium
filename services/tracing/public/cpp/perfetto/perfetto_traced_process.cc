@@ -24,7 +24,7 @@
 #include "services/tracing/public/mojom/tracing_service.mojom.h"
 #include "third_party/perfetto/include/perfetto/tracing/tracing.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // As per 'gn help check':
 /*
   If you have conditional includes, make sure the build conditions and the
@@ -35,11 +35,11 @@
 // non-android builds.
 #include "services/tracing/public/cpp/perfetto/posix_system_producer.h"  // nogncheck
 #include "third_party/perfetto/include/perfetto/ext/tracing/ipc/default_socket.h"  // nogncheck
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 namespace tracing {
 namespace {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Set to use the dummy producer for Chrome OS browser_tests and
 // content_browsertests to keep the system producer from causing flakes.
 static bool g_system_producer_enabled = true;
@@ -48,20 +48,20 @@ static bool g_system_producer_enabled = true;
 std::unique_ptr<SystemProducer> NewSystemProducer(
     base::tracing::PerfettoTaskRunner* runner,
     const char* socket_name) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   DCHECK(socket_name);
   if (g_system_producer_enabled)
     return std::make_unique<PosixSystemProducer>(socket_name, runner);
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
   return std::make_unique<DummyProducer>(runner);
 }
 
 const char* MaybeSocket() {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return perfetto::GetProducerSocket();
 #else
   return nullptr;
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 void OnPerfettoLogMessage(perfetto::base::LogMessageCallbackArgs args) {
@@ -268,7 +268,8 @@ PerfettoTracedProcess::SetupForTesting(
   Get()->ClearDataSourcesForTesting();  // IN-TEST
   // On the first call within the process's lifetime, this will call
   // PerfettoTracedProcess::Get(), ensuring PerfettoTracedProcess is created.
-  InitTracingPostThreadPoolStartAndFeatureList();
+  InitTracingPostThreadPoolStartAndFeatureList(
+      /* enable_consumer */ true);
   // Disassociate the PerfettoTracedProcess from any prior task runner.
   DETACH_FROM_SEQUENCE(PerfettoTracedProcess::Get()->sequence_checker_);
   PerfettoTracedProcess::GetTaskRunner()->GetOrCreateTaskRunner()->PostTask(
@@ -338,15 +339,20 @@ bool PerfettoTracedProcess::SetupStartupTracing(
   return true;
 }
 
-void PerfettoTracedProcess::SetupClientLibrary() {
+void PerfettoTracedProcess::SetupClientLibrary(bool enable_consumer) {
   perfetto::TracingInitArgs init_args;
   init_args.platform = platform_.get();
   init_args.custom_backend = tracing_backend_.get();
   init_args.backends |= perfetto::kCustomBackend;
 // TODO(eseckler): Not yet supported on Android to avoid binary size regression
 // of the consumer IPC messages. We'll need a way to exclude them.
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
-  if (ShouldSetupSystemTracing()) {
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
+  // We currently only use the client library system backend for the consumer
+  // side, which is only allowed in the browser process. Furthermore, on
+  // non-Android platforms, sandboxed processes need to delegate the socket
+  // connections to the browser, but this delegation hasn't been hooked up in
+  // the client library yet.
+  if (ShouldSetupSystemTracing() && enable_consumer) {
     init_args.backends |= perfetto::kSystemBackend;
     init_args.tracing_policy = this;
   }
@@ -356,10 +362,13 @@ void PerfettoTracedProcess::SetupClientLibrary() {
   // not reliabe.
   init_args.log_message_callback = &OnPerfettoLogMessage;
   perfetto::Tracing::Initialize(init_args);
+#if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
+  perfetto::TrackEvent::Register();
+#endif  // BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
 }
 
-void PerfettoTracedProcess::OnThreadPoolAvailable() {
-  SetupClientLibrary();
+void PerfettoTracedProcess::OnThreadPoolAvailable(bool enable_consumer) {
+  SetupClientLibrary(enable_consumer);
 
   // Create our task runner now, so that ProducerClient/SystemProducer are
   // notified about future data source registrations and schedule any necessary
@@ -432,7 +441,7 @@ void PerfettoTracedProcess::ShouldAllowSystemConsumerSession(
 }
 
 void PerfettoTracedProcess::SetSystemProducerEnabledForTesting(bool enabled) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // If set to disabled, use the dummy implementation to prevent the real system
   // producer from interfering with browser tests.
   g_system_producer_enabled = enabled;

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/dcheck_is_on.h"
 
 // SELECT, UPDATE, and DELETE SQL statements should document the indexes
@@ -33,13 +32,13 @@ class Origin;
 
 namespace content {
 
-std::string SerializeOrigin(const url::Origin& origin) WARN_UNUSED_RESULT;
+std::string SerializeOrigin(const url::Origin& origin);
 
-url::Origin DeserializeOrigin(const std::string& origin) WARN_UNUSED_RESULT;
+url::Origin DeserializeOrigin(const std::string& origin);
 
-int64_t SerializeUint64(uint64_t data) WARN_UNUSED_RESULT;
+int64_t SerializeUint64(uint64_t data);
 
-uint64_t DeserializeUint64(int64_t data) WARN_UNUSED_RESULT;
+uint64_t DeserializeUint64(int64_t data);
 
 // Prevent these functions from being called in the wrong direction.
 int64_t SerializeUint64(int64_t data) = delete;

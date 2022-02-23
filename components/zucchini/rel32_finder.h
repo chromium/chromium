@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include <vector>
+#include <deque>
 
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/arm_utils.h"
@@ -47,7 +47,7 @@ class Abs32GapFinder {
   // which must be part of |image|.
   Abs32GapFinder(ConstBufferView image,
                  ConstBufferView region,
-                 const std::vector<offset_t>& abs32_locations,
+                 const std::deque<offset_t>& abs32_locations,
                  size_t abs32_width);
   Abs32GapFinder(const Abs32GapFinder&) = delete;
   const Abs32GapFinder& operator=(const Abs32GapFinder&) = delete;
@@ -63,8 +63,8 @@ class Abs32GapFinder {
   const ConstBufferView::const_iterator base_;
   const ConstBufferView::const_iterator region_end_;
   ConstBufferView::const_iterator cur_lo_;
-  const std::vector<offset_t>::const_iterator abs32_end_;
-  std::vector<offset_t>::const_iterator abs32_cur_;
+  const std::deque<offset_t>::const_iterator abs32_end_;
+  std::deque<offset_t>::const_iterator abs32_cur_;
   const size_t abs32_width_;
   ConstBufferView gap_;
 };

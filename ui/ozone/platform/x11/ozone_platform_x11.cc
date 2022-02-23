@@ -34,6 +34,7 @@
 #include "ui/gfx/switches.h"
 #include "ui/ozone/common/stub_overlay_manager.h"
 #include "ui/ozone/platform/x11/gl_egl_utility_x11.h"
+#include "ui/ozone/platform/x11/linux_ui_delegate_x11.h"
 #include "ui/ozone/platform/x11/x11_clipboard_ozone.h"
 #include "ui/ozone/platform/x11/x11_global_shortcut_listener_ozone.h"
 #include "ui/ozone/platform/x11/x11_keyboard_hook_ozone.h"
@@ -42,33 +43,25 @@
 #include "ui/ozone/platform/x11/x11_surface_factory.h"
 #include "ui/ozone/platform/x11/x11_user_input_monitor.h"
 #include "ui/ozone/platform/x11/x11_utils.h"
+#include "ui/ozone/platform/x11/x11_window.h"
 #include "ui/ozone/public/gpu_platform_support_host.h"
 #include "ui/ozone/public/input_controller.h"
 #include "ui/ozone/public/ozone_platform.h"
 #include "ui/ozone/public/system_input_injector.h"
 #include "ui/platform_window/platform_window.h"
 #include "ui/platform_window/platform_window_init_properties.h"
-#include "ui/platform_window/x11/x11_window.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ui/base/dragdrop/os_exchange_data_provider_non_backed.h"
 #include "ui/base/ime/ash/input_method_ash.h"
 #else
 #include "ui/base/ime/linux/input_method_auralinux.h"
-#include "ui/platform_window/x11/os_exchange_data_provider_x11.h"
+#include "ui/ozone/platform/x11/os_exchange_data_provider_x11.h"
 #endif
 
 namespace ui {
 
 namespace {
-
-class LinuxUiDelegateX11 : public LinuxUiDelegate {
- public:
-  ~LinuxUiDelegateX11() override = default;
-
-  // LinuxUiDelegate:
-  LinuxUiBackend GetBackend() const override { return LinuxUiBackend::kX11; }
-};
 
 // Singleton OzonePlatform implementation for X11 platform.
 class OzonePlatformX11 : public OzonePlatform,
@@ -211,7 +204,7 @@ class OzonePlatformX11 : public OzonePlatform,
       properties->supports_global_application_menus = true;
       properties->app_modal_dialogs_use_event_blocker = true;
       properties->fetch_buffer_formats_for_gmb_on_gpu = true;
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
       properties->supports_vaapi = true;
 #endif
 
@@ -221,6 +214,19 @@ class OzonePlatformX11 : public OzonePlatform,
     return *properties;
   }
 
+  const PlatformRuntimeProperties& GetPlatformRuntimeProperties() override {
+    static OzonePlatform::PlatformRuntimeProperties properties;
+
+    if (has_initialized_gpu() &&
+        ui::GpuMemoryBufferSupportX11::GetInstance()->has_gbm_device()) {
+      // This property is set when the GetPlatformRuntimeProperties is
+      // called on the gpu process side.
+      properties.supports_native_pixmaps = true;
+    }
+
+    return properties;
+  }
+
   bool IsNativePixmapConfigSupported(gfx::BufferFormat format,
                                      gfx::BufferUsage usage) const override {
     // Native pixmap support is determined on gpu process via gpu extra info
@@ -228,14 +234,19 @@ class OzonePlatformX11 : public OzonePlatform,
     return false;
   }
 
-  void InitializeUI(const InitParams& params) override {
-    // If opening the connection failed there is nothing we can do. Crash here
-    // instead of crashing later. If you are crashing here, make sure there is
-    // an X server running and $DISPLAY is set.
-    // In case of non-Ozone/X11, the very same check happens during the
-    // BrowserMainLoop::InitializeToolkit call.
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kHeadless))
-      CHECK(x11::Connection::Get()->Ready()) << "Missing X server or $DISPLAY";
+  bool InitializeUI(const InitParams& params) override {
+    if (ShouldFailInitializeUIForTest()) {
+      LOG(ERROR) << "Failing for test";
+      return false;
+    }
+    // If opening the connection failed, we can not do anything.  The platform
+    // cannot initialise.
+    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
+            switches::kHeadless) &&
+        !x11::Connection::Get()->Ready()) {
+      LOG(ERROR) << "Missing X server or $DISPLAY";
+      return false;
+    }
 
     InitializeCommon(params);
     CreatePlatformEventSource();
@@ -260,6 +271,8 @@ class OzonePlatformX11 : public OzonePlatform,
     x11_utils_ = std::make_unique<X11Utils>();
 
     base::UmaHistogramEnumeration("Linux.WindowManager", GetWindowManagerUMA());
+
+    return true;
   }
 
   void InitializeGPU(const InitParams& params) override {

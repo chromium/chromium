@@ -14,6 +14,7 @@ import android.os.RemoteException;
 
 import org.chromium.IsReadyToPayService;
 import org.chromium.IsReadyToPayServiceCallback;
+import org.chromium.base.metrics.RecordHistogram;
 
 /** A helper to query the payment app's IsReadyToPay service. */
 public class IsReadyToPayServiceHelper
@@ -131,6 +132,8 @@ public class IsReadyToPayServiceHelper
     @Override
     public void handleIsReadyToPay(boolean isReadyToPay) throws RemoteException {
         if (mResultHandler == null) return;
+        RecordHistogram.recordBooleanHistogram(
+                "PaymentRequest.EventResponse.IsReadyToPay", isReadyToPay);
         mResultHandler.onIsReadyToPayServiceResponse(isReadyToPay);
         mResultHandler = null;
         destroy();

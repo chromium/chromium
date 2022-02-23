@@ -40,16 +40,19 @@ class CONTENT_EXPORT AXInspectFactory {
   // formatter, which is used to dump the Blink accessibility tree to a string
   static std::unique_ptr<ui::AXTreeFormatter> CreateBlinkFormatter();
 
-  // Creates a tree formatter of a given inspect type if supported by platform.
+  // Creates a tree formatter of a given API type if supported by platform.
   static std::unique_ptr<ui::AXTreeFormatter> CreateFormatter(
       ui::AXApiType::Type);
 
-  // Creates an event recorder of a given inspect type if supported by platform.
+  // Creates an event recorder of a given API type if supported by platform.
   static std::unique_ptr<ui::AXEventRecorder> CreateRecorder(
       ui::AXApiType::Type,
       BrowserAccessibilityManager* manager = nullptr,
       base::ProcessId pid = 0,
       const ui::AXTreeSelector& selector = {});
+
+  // Returns a list of APIs supported by the current platform
+  static std::vector<ui::AXApiType::Type> SupportedApis();
 };
 
 }  // namespace content

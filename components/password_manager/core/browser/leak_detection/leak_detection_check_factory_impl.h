@@ -20,8 +20,8 @@ class LeakDetectionCheckFactoryImpl : public LeakDetectionCheckFactory {
   std::unique_ptr<LeakDetectionCheck> TryCreateLeakCheck(
       LeakDetectionDelegateInterface* delegate,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
-      const override;
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      version_info::Channel channel) const override;
 
   std::unique_ptr<BulkLeakCheck> TryCreateBulkLeakCheck(
       BulkLeakCheckDelegateInterface* delegate,

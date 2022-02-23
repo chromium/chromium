@@ -56,12 +56,16 @@ class FakeSecurityDomainsServer {
   std::vector<uint8_t> RotateTrustedVaultKey(
       const std::vector<uint8_t>& last_trusted_vault_key);
 
+  // Resets |state_| to the initial one.
+  void ResetData();
+
   // Causes the security domain to enter the degraded recoverability state
   // unless the provided |public_key| matches a member's public key.
   void RequirePublicKeyToAvoidRecoverabilityDegraded(
       const std::vector<uint8_t>& public_key);
 
   int GetMemberCount() const;
+  std::vector<std::vector<uint8_t>> GetAllTrustedVaultKeys() const;
   bool AllMembersHaveKey(const std::vector<uint8_t>& trusted_vault_key) const;
   int GetCurrentEpoch() const;
   bool IsRecoverabilityDegraded() const;
@@ -86,7 +90,9 @@ class FakeSecurityDomainsServer {
    public:
     State();
     State(const State& other) = delete;
+    State(State&& other);
     State& operator=(const State& other) = delete;
+    State& operator=(State&& other);
     ~State();
 
     bool received_invalid_request = false;
@@ -104,6 +110,9 @@ class FakeSecurityDomainsServer {
     // |constant_key_allowed_| set to true.
     int current_epoch = 0;
     bool constant_key_allowed = true;
+
+    // All trusted vault keys ordered by increasing epoch.
+    std::vector<std::vector<uint8_t>> trusted_vault_keys;
 
     std::string required_public_key_to_avoid_recoverability_degraded;
   };

@@ -9,7 +9,7 @@
 
 #include "android_webview/browser/gfx/child_frame.h"
 #include "android_webview/browser/gfx/output_surface_provider_webview.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/gfx/android/android_surface_control_compat.h"
 #include "ui/gfx/color_space.h"
 
@@ -88,7 +88,7 @@ class HardwareRenderer {
   virtual void DrawAndSwap(const HardwareRendererDrawParams& params,
                            const OverlaysParams& overlays_params) = 0;
 
-  RenderThreadManager* const render_thread_manager_;
+  const raw_ptr<RenderThreadManager> render_thread_manager_;
 
   typedef void* EGLContext;
   EGLContext last_egl_context_;
@@ -105,7 +105,7 @@ class HardwareRenderer {
   bool did_submit_compositor_frame_ = false;
 
   // Information from UI on last commit.
-  gfx::Vector2d scroll_offset_;
+  gfx::Point scroll_offset_;
 
   // HardwareRendererSingleThread guarantees resources are returned in the order
   // of layer_tree_frame_sink_id, and resources for old output surfaces are

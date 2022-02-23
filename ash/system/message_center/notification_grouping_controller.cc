@@ -133,6 +133,19 @@ void NotificationGroupingController::PopulateGroupParent(
       GetActiveNotificationViewController()->GetMessageViewForNotificationId(
           notification_id);
 
+  // TODO(crbug/1277765) Need this check to fix crbug/1275765. However, this
+  // should not be necessary if the message center bubble is initialized
+  // properly. Need to monitor for empty group notifications if this check is
+  // hit and fix the root cause.
+  if (!parent_view) {
+    LOG(WARNING) << "MessageView does not exist for notification: "
+                 << notification_id;
+    return;
+  }
+
+  if (!parent_view->IsManuallyExpandedOrCollapsed())
+    parent_view->SetExpanded(false);
+
   std::vector<const Notification*> notifications;
   for (const auto* notification : MessageCenter::Get()->GetNotifications()) {
     if (notification->notifier_id() == parent_view->notifier_id() &&
@@ -213,6 +226,10 @@ void NotificationGroupingController::
   if (!parent_view || !new_single_notification)
     return;
 
+  message_center->FindNotificationById(group_parent_id)->ClearGroupParent();
+  new_single_notification->ClearGroupChild();
+  grouped_notification_list_->ClearGroupedNotification(group_parent_id);
+
   parent_view->RemoveGroupNotification(new_single_notification_id);
   parent_view->UpdateWithNotification(*new_single_notification);
 
@@ -220,11 +237,6 @@ void NotificationGroupingController::
       ->ConvertGroupedNotificationViewToNotificationView(
           /*grouped_notification_id=*/group_parent_id,
           /*new_single_notification_id=*/new_single_notification_id);
-
-  message_center->FindNotificationById(group_parent_id)->ClearGroupParent();
-  new_single_notification->ClearGroupChild();
-
-  grouped_notification_list_->ClearGroupedNotification(group_parent_id);
 
   message_center->RemoveNotification(group_parent_id, /*by_user=*/false);
 }
@@ -235,7 +247,7 @@ NotificationGroupingController::CreateCopyForParentNotification(
   // Create a copy with a timestamp that is older than the copied notification.
   // We need to set an older timestamp so that this notification will become
   // the parent notification for it's notifier_id.
-  auto child_copy = std::make_unique<Notification>(
+  auto copy = std::make_unique<Notification>(
       message_center::NotificationType::NOTIFICATION_TYPE_SIMPLE,
       parent_notification.id() +
           message_center::kIdSuffixForGroupContainerNotification,
@@ -243,11 +255,15 @@ NotificationGroupingController::CreateCopyForParentNotification(
       std::u16string(), parent_notification.origin_url(),
       parent_notification.notifier_id(), message_center::RichNotificationData(),
       /*delegate=*/nullptr);
-  child_copy->set_timestamp(parent_notification.timestamp() -
-                            base::Milliseconds(1));
-  child_copy->SetGroupChild();
+  copy->set_timestamp(parent_notification.timestamp() - base::Milliseconds(1));
+  copy->set_settings_button_handler(
+      parent_notification.rich_notification_data().settings_button_handler);
+  copy->set_delegate(parent_notification.delegate());
 
-  return child_copy;
+  // After copying, set to be a group parent.
+  copy->SetGroupParent();
+
+  return copy;
 }
 
 void NotificationGroupingController::RemoveGroupedChild(

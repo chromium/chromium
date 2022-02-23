@@ -4,7 +4,6 @@
 
 #include "components/reporting/encryption/encryption_module.h"
 
-#include <atomic>
 #include <string>
 #include <utility>
 

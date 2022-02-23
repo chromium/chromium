@@ -12,7 +12,6 @@
 #include "base/values.h"
 #include "build/branding_buildflags.h"
 #include "build/build_config.h"
-#include "components/update_client/updater_state.h"
 
 namespace update_client {
 
@@ -40,10 +39,10 @@ std::string ProtocolSerializerJSON::Serialize(
   request_node->SetKey("@os", Value(request.operating_system));
   request_node->SetKey("arch", Value(request.arch));
   request_node->SetKey("nacl_arch", Value(request.nacl_arch));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (request.is_wow64)
     request_node->SetKey("wow64", Value(request.is_wow64));
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   if (!request.updaterchannel.empty())
     request_node->SetKey("updaterchannel", Value(request.updaterchannel));
   if (!request.prodchannel.empty())
@@ -51,13 +50,19 @@ std::string ProtocolSerializerJSON::Serialize(
   if (!request.dlpref.empty())
     request_node->SetKey("dlpref", Value(request.dlpref));
   if (request.domain_joined) {
-    request_node->SetKey(UpdaterState::kIsEnterpriseManaged,
-                         Value(*request.domain_joined));
+    request_node->SetKey("domainjoined", Value(*request.domain_joined));
   }
 
   // HW platform information.
   auto* hw_node = request_node->SetKey("hw", Value(Value::Type::DICTIONARY));
   hw_node->SetKey("physmemory", Value(static_cast<int>(request.hw.physmemory)));
+  hw_node->SetKey("sse", Value(request.hw.sse));
+  hw_node->SetKey("sse2", Value(request.hw.sse2));
+  hw_node->SetKey("sse3", Value(request.hw.sse3));
+  hw_node->SetKey("sse41", Value(request.hw.sse41));
+  hw_node->SetKey("sse42", Value(request.hw.sse42));
+  hw_node->SetKey("ssse3", Value(request.hw.ssse3));
+  hw_node->SetKey("avx", Value(request.hw.avx));
 
   // OS version and platform information.
   auto* os_node = request_node->SetKey("os", Value(Value::Type::DICTIONARY));
@@ -133,6 +138,8 @@ std::string ProtocolSerializerJSON::Serialize(
         update_check_node->SetKey("updatedisabled", Value(true));
       if (app.update_check->rollback_allowed)
         update_check_node->SetKey("rollback_allowed", Value(true));
+      if (app.update_check->same_version_update_allowed)
+        update_check_node->SetKey("sameversionupdate", Value(true));
       if (!app.update_check->target_version_prefix.empty()) {
         update_check_node->SetKey(
             "targetversionprefix",

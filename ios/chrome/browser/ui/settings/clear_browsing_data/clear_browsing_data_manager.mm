@@ -15,6 +15,7 @@
 #include "components/feature_engagement/public/tracker.h"
 #include "components/google/core/common/google_util.h"
 #include "components/history/core/browser/web_history_service.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/prefs/ios/pref_observer_bridge.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
@@ -35,6 +36,7 @@
 #include "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #include "ios/chrome/browser/history/web_history_service_factory.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/signin/authentication_service.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -96,7 +98,11 @@ static NSDictionary* _imageNamesByItemTypes = @{
       @"clear_browsing_data_cookies",
   [NSNumber numberWithInteger:ItemTypeDataTypeCache] :
       @"clear_browsing_data_cached_images",
-  [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] : @"password_key",
+  [NSNumber numberWithInteger:ItemTypeDataTypeSavedPasswords] :
+      (base::FeatureList::IsEnabled(
+           password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+           ? @"password_key"
+           : @"legacy_password_key"),
   [NSNumber numberWithInteger:ItemTypeDataTypeAutofill] :
       @"clear_browsing_data_autofill",
 };
@@ -495,26 +501,32 @@ static NSDictionary* _imageNamesByItemTypes = @{
     if (isDefaultSearchEngineGoogle) {
       footerItem.text =
           l10n_util::GetNSString(IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_GOOGLE_DSE);
-      footerItem.urls = std::vector<GURL>{
-          google_util::AppendGoogleLocaleParam(
-              GURL(kClearBrowsingDataDSESearchUrlInFooterURL),
-              GetApplicationContext()->GetApplicationLocale()),
-          google_util::AppendGoogleLocaleParam(
-              GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
-              GetApplicationContext()->GetApplicationLocale())};
+      footerItem.urls = @[
+        [[CrURL alloc]
+            initWithGURL:google_util::AppendGoogleLocaleParam(
+                             GURL(kClearBrowsingDataDSESearchUrlInFooterURL),
+                             GetApplicationContext()->GetApplicationLocale())],
+        [[CrURL alloc]
+            initWithGURL:google_util::AppendGoogleLocaleParam(
+                             GURL(
+                                 kClearBrowsingDataDSEMyActivityUrlInFooterURL),
+                             GetApplicationContext()->GetApplicationLocale())]
+      ];
     } else if (defaultSearchEngine->prepopulate_id() > 0) {
       footerItem.text = l10n_util::GetNSStringF(
           IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_KNOWN_DSE_SIGNED_IN,
           defaultSearchEngine->short_name());
-      footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-          GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
-          GetApplicationContext()->GetApplicationLocale())};
+      footerItem.urls = @[ [[CrURL alloc]
+          initWithGURL:google_util::AppendGoogleLocaleParam(
+                           GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
+                           GetApplicationContext()->GetApplicationLocale())] ];
     } else {
       footerItem.text = l10n_util::GetNSString(
           IDS_IOS_CLEAR_BROWSING_DATA_FOOTER_UNKOWN_DSE_SIGNED_IN);
-      footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-          GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
-          GetApplicationContext()->GetApplicationLocale())};
+      footerItem.urls = @[ [[CrURL alloc]
+          initWithGURL:google_util::AppendGoogleLocaleParam(
+                           GURL(kClearBrowsingDataDSEMyActivityUrlInFooterURL),
+                           GetApplicationContext()->GetApplicationLocale())] ];
     }
   } else {
     // Logged Out with Google DSE is handled in calling function since there
@@ -581,8 +593,10 @@ static NSDictionary* _imageNamesByItemTypes = @{
   TableViewLinkHeaderFooterItem* footerItem =
       [[TableViewLinkHeaderFooterItem alloc] initWithType:itemType];
   footerItem.text = l10n_util::GetNSString(titleMessageID);
-  footerItem.urls = std::vector<GURL>{google_util::AppendGoogleLocaleParam(
-      GURL(URL), GetApplicationContext()->GetApplicationLocale())};
+  footerItem.urls = @[ [[CrURL alloc]
+      initWithGURL:google_util::AppendGoogleLocaleParam(
+                       GURL(URL),
+                       GetApplicationContext()->GetApplicationLocale())] ];
   return footerItem;
 }
 

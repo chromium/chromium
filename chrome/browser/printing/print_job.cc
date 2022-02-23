@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/observer_list.h"
 #include "base/run_loop.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_restrictions.h"
@@ -24,7 +25,7 @@
 #include "printing/mojom/print.mojom.h"
 #include "printing/printed_document.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/command_line.h"
 #include "chrome/browser/printing/pdf_to_emf_converter.h"
 #include "chrome/browser/profiles/profile.h"
@@ -47,7 +48,7 @@ void HoldRefCallback(scoped_refptr<PrintJob> job, base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Those must be kept in sync with the values defined in policy_templates.json.
 enum class PrintPostScriptMode {
   // Do normal PostScript generation. Text is always rendered with Type 3 fonts.
@@ -97,7 +98,7 @@ PrefService* GetPrefsForWebContents(content::WebContents* web_contents) {
   return context ? Profile::FromBrowserContext(context)->GetPrefs() : nullptr;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -125,7 +126,7 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
   worker_->SetPrintJob(this);
   std::unique_ptr<PrintSettings> settings = query->ExtractSettings();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   pdf_page_mapping_ = PageRange::GetPages(settings->ranges());
   if (pdf_page_mapping_.empty()) {
     for (uint32_t i = 0; i < page_count; i++)
@@ -137,13 +138,9 @@ void PrintJob::Initialize(std::unique_ptr<PrinterQuery> query,
                                                        name, query->cookie());
   new_doc->set_page_count(page_count);
   UpdatePrintedDocument(new_doc);
-
-  // Don't forget to register to our own messages.
-  registrar_.Add(this, chrome::NOTIFICATION_PRINT_JOB_EVENT,
-                 content::Source<PrintJob>(this));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 std::vector<uint32_t> PrintJob::GetFullPageMapping(
     const std::vector<uint32_t>& pages,
@@ -191,16 +188,7 @@ void PrintJob::ResetPageMapping() {
   pdf_page_mapping_ =
       GetFullPageMapping(pdf_page_mapping_, document_->page_count());
 }
-#endif  // defined(OS_WIN)
-
-void PrintJob::Observe(int type,
-                       const content::NotificationSource& source,
-                       const content::NotificationDetails& details) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK_EQ(chrome::NOTIFICATION_PRINT_JOB_EVENT, type);
-
-  OnNotifyPrintJobEvent(*content::Details<JobEventDetails>(details).ptr());
-}
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJob::StartPrinting() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
@@ -262,14 +250,7 @@ void PrintJob::Cancel() {
     // InvokeLater since it would take too much time.
     worker_->Cancel();
   }
-  // Make sure a `Cancel()` is broadcast.
-  auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::FAILED,
-                                                       0, nullptr);
-  content::NotificationService::current()->Notify(
-      chrome::NOTIFICATION_PRINT_JOB_EVENT,
-      content::Source<PrintJob>(this),
-      content::Details<JobEventDetails>(details.get()));
-  Stop();
+  OnFailed();
   is_canceling_ = false;
 }
 
@@ -301,7 +282,7 @@ const PrintSettings& PrintJob::settings() const {
   return document()->settings();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 void PrintJob::SetSource(PrintJob::Source source,
                          const std::string& source_id) {
   source_ = source;
@@ -315,9 +296,9 @@ PrintJob::Source PrintJob::source() const {
 const std::string& PrintJob::source_id() const {
   return source_id_;
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PrintJob::PdfConversionState {
  public:
   PdfConversionState(const gfx::Size& page_size, const gfx::Rect& content_area)
@@ -373,28 +354,15 @@ void PrintJob::StartPdfToEmfConversion(
   pdf_conversion_state_ =
       std::make_unique<PdfConversionState>(page_size, content_area);
 
-  // TODO(thestig): Figure out why rendering text with GDI results in random
-  // missing characters for some users. https://crbug.com/658606
-  // Update : The missing letters seem to have been caused by the same
-  // problem as https://crbug.com/659604 which was resolved. GDI printing
-  // seems to work with the fix for this bug applied.
   const PrintSettings& settings = document()->settings();
-  bool print_text_with_gdi =
-      settings.print_text_with_gdi() && !settings.printer_language_is_xps() &&
-      base::FeatureList::IsEnabled(::features::kGdiTextPrinting);
 
   PrefService* prefs = GetPrefsForWebContents(worker_->GetWebContents());
   bool print_with_reduced_rasterization = PrintWithReducedRasterization(prefs);
 
   using RenderMode = PdfRenderSettings::Mode;
-  RenderMode mode;
-  if (print_with_reduced_rasterization) {
-    mode = print_text_with_gdi
-               ? RenderMode::EMF_WITH_REDUCED_RASTERIZATION_AND_GDI_TEXT
-               : RenderMode::EMF_WITH_REDUCED_RASTERIZATION;
-  } else {
-    mode = print_text_with_gdi ? RenderMode::GDI_TEXT : RenderMode::NORMAL;
-  }
+  RenderMode mode = print_with_reduced_rasterization
+                        ? RenderMode::EMF_WITH_REDUCED_RASTERIZATION
+                        : RenderMode::NORMAL;
 
   PdfRenderSettings render_settings(
       content_area, gfx::Point(0, 0), settings.dpi_size(),
@@ -491,7 +459,7 @@ void PrintJob::StartPdfToPostScriptConversion(
       bytes, render_settings,
       base::BindOnce(&PrintJob::OnPdfConversionStarted, this));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void PrintJob::UpdatePrintedDocument(
     scoped_refptr<PrintedDocument> new_document) {
@@ -526,31 +494,50 @@ void PrintJob::SyncPrintedDocumentToWorker() {
                                     base::RetainedRef(document_))));
 }
 
-void PrintJob::OnNotifyPrintJobEvent(const JobEventDetails& event_details) {
+#if BUILDFLAG(IS_WIN)
+void PrintJob::OnPageDone(PrintedPage* page) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  if (pdf_conversion_state_) {
+    pdf_conversion_state_->OnPageProcessed(
+        base::BindRepeating(&PrintJob::OnPdfPageConverted, this));
+  }
+  document_->RemovePage(page);
+}
+#endif  // BUILDFLAG(IS_WIN)
+
+void PrintJob::OnFailed() {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-  switch (event_details.type()) {
-    case JobEventDetails::FAILED:
-      // No need to cancel since the worker already canceled itself.
-      Stop();
-      break;
-    case JobEventDetails::DOC_DONE:
-      // This will call `Stop()` and broadcast a `JOB_DONE` message.
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE, base::BindOnce(&PrintJob::OnDocumentDone, this));
-      break;
-#if defined(OS_WIN)
-    case JobEventDetails::PAGE_DONE:
-      if (pdf_conversion_state_) {
-        pdf_conversion_state_->OnPageProcessed(
-            base::BindRepeating(&PrintJob::OnPdfPageConverted, this));
-      }
-      document_->DropPage(event_details.page());
-      break;
-#endif  // defined(OS_WIN)
-    default:
-      break;
+  Stop();
+
+  // Make sure a `Cancel()` is broadcast.
+  auto details = base::MakeRefCounted<JobEventDetails>(JobEventDetails::FAILED,
+                                                       0, nullptr);
+  content::NotificationService::current()->Notify(
+      chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
+      content::Details<JobEventDetails>(details.get()));
+
+  for (auto& observer : observers_) {
+    observer.OnFailed();
   }
+}
+
+void PrintJob::OnDocDone(int job_id, PrintedDocument* document) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  auto details = base::MakeRefCounted<JobEventDetails>(
+      JobEventDetails::DOC_DONE, job_id, document);
+  content::NotificationService::current()->Notify(
+      chrome::NOTIFICATION_PRINT_JOB_EVENT, content::Source<PrintJob>(this),
+      content::Details<JobEventDetails>(details.get()));
+
+  for (auto& observer : observers_) {
+    observer.OnDocDone(job_id, document);
+  }
+
+  // This will call `Stop()` and broadcast a `JOB_DONE` message.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE, base::BindOnce(&PrintJob::OnDocumentDone, this));
 }
 
 void PrintJob::OnDocumentDone() {
@@ -569,6 +556,10 @@ void PrintJob::OnDocumentDone() {
       chrome::NOTIFICATION_PRINT_JOB_EVENT,
       content::Source<PrintJob>(this),
       content::Details<JobEventDetails>(details.get()));
+
+  for (auto& observer : observers_) {
+    observer.OnJobDone();
+  }
 }
 
 void PrintJob::ControlledWorkerShutdown() {
@@ -576,7 +567,7 @@ void PrintJob::ControlledWorkerShutdown() {
 
   // The deadlock this code works around is specific to window messaging on
   // Windows, so we aren't likely to need it on any other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // We could easily get into a deadlock case if worker_->Stop() is used; the
   // printer driver created a window as a child of the browser window. By
   // canceling the job, the printer driver initiated dialog box is destroyed,
@@ -609,7 +600,6 @@ void PrintJob::ControlledWorkerShutdown() {
       base::BindOnce(&PrintJob::HoldUntilStopIsCalled, this));
 
   is_job_pending_ = false;
-  registrar_.RemoveAll();
   ClearPrintedDocument();
 }
 
@@ -626,13 +616,13 @@ void PrintJob::set_job_pending(bool pending) {
   is_job_pending_ = pending;
 }
 
-#if defined(OS_WIN)
-JobEventDetails::JobEventDetails(Type type,
-                                 int job_id,
-                                 PrintedDocument* document,
-                                 PrintedPage* page)
-    : document_(document), page_(page), type_(type), job_id_(job_id) {}
-#endif
+void PrintJob::AddObserver(Observer& observer) {
+  observers_.AddObserver(&observer);
+}
+
+void PrintJob::RemoveObserver(Observer& observer) {
+  observers_.RemoveObserver(&observer);
+}
 
 JobEventDetails::JobEventDetails(Type type,
                                  int job_id,
@@ -643,9 +633,5 @@ JobEventDetails::~JobEventDetails() {
 }
 
 PrintedDocument* JobEventDetails::document() const { return document_.get(); }
-
-#if defined(OS_WIN)
-PrintedPage* JobEventDetails::page() const { return page_.get(); }
-#endif
 
 }  // namespace printing

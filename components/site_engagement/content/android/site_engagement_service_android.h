@@ -6,6 +6,7 @@
 #define COMPONENTS_SITE_ENGAGEMENT_CONTENT_ANDROID_SITE_ENGAGEMENT_SERVICE_ANDROID_H_
 
 #include "base/android/scoped_java_ref.h"
+#include "base/memory/raw_ptr.h"
 
 namespace site_engagement {
 
@@ -44,7 +45,7 @@ class SiteEngagementServiceAndroid {
 
  private:
   base::android::ScopedJavaGlobalRef<jobject> java_service_;
-  SiteEngagementService* service_;
+  raw_ptr<SiteEngagementService> service_;
 };
 
 }  // namespace site_engagement

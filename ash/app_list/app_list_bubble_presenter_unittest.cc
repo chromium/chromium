@@ -8,14 +8,21 @@
 
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/test/app_list_test_helper.h"
+#include "ash/app_list/test_app_list_client.h"
+#include "ash/app_list/views/app_list_bubble_apps_page.h"
 #include "ash/app_list/views/app_list_bubble_view.h"
+#include "ash/app_list/views/search_box_view.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
+#include "ash/public/cpp/test/app_list_test_api.h"
+#include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shelf/shelf_navigation_widget.h"
 #include "ash/shell.h"
+#include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/layer_animation_stopped_waiter.h"
 #include "ash/test/test_widget_builder.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
@@ -25,12 +32,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/gfx/geometry/vector2d.h"
-#include "ui/views/test/widget_test.h"
+#include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/widget/widget.h"
 
 using views::Widget;
-using views::test::WidgetDestroyedWaiter;
 
 namespace ash {
 namespace {
@@ -58,11 +65,11 @@ gfx::Rect GetShelfBounds() {
       ->GetWindowBoundsInScreen();
 }
 
-// Returns the number of widgets in the app list container on the primary
-// display.
-size_t NumberOfWidgetsInAppListContainer() {
-  aura::Window* container = Shell::GetContainer(
-      Shell::GetPrimaryRootWindow(), kShellWindowId_AppListContainer);
+// Returns the number of widgets in the app list container for `display_id`.
+size_t NumberOfWidgetsInAppListContainer(int64_t display_id) {
+  aura::Window* root = Shell::GetRootWindowForDisplayId(display_id);
+  aura::Window* container =
+      Shell::GetContainer(root, kShellWindowId_AppListContainer);
   std::set<views::Widget*> widgets;
   views::Widget::GetAllChildWidgets(container, &widgets);
   return widgets.size();
@@ -70,7 +77,8 @@ size_t NumberOfWidgetsInAppListContainer() {
 
 class AppListBubblePresenterTest : public AshTestBase {
  public:
-  AppListBubblePresenterTest() {
+  AppListBubblePresenterTest()
+      : assistant_test_api_(AssistantTestApi::Create()) {
     scoped_features_.InitAndEnableFeature(features::kProductivityLauncher);
   }
   ~AppListBubblePresenterTest() override = default;
@@ -91,16 +99,32 @@ class AppListBubblePresenterTest : public AshTestBase {
 
   void AddAppItems(int num_items) {
     GetAppListTestHelper()->AddAppItems(num_items);
+    auto* presenter = GetBubblePresenter();
+    if (presenter->bubble_widget_for_test()) {
+      // Widget is cached between shows, so adding apps may require layout.
+      presenter->bubble_widget_for_test()->LayoutRootViewIfNecessary();
+    }
   }
 
   base::test::ScopedFeatureList scoped_features_;
+  std::unique_ptr<AssistantTestApi> assistant_test_api_;
 };
 
 TEST_F(AppListBubblePresenterTest, ShowOpensOneWidgetInAppListContainer) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
-  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
+  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetPrimaryDisplay().id()));
+}
+
+TEST_F(AppListBubblePresenterTest, ShowStartsZeroStateSearch) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
+
+  presenter->Dismiss();
+  presenter->Show(GetPrimaryDisplay().id());
+  EXPECT_EQ(2, GetTestAppListClient()->start_zero_state_search_count());
 }
 
 TEST_F(AppListBubblePresenterTest, ShowRecordsCreationTimeHistogram) {
@@ -112,18 +136,84 @@ TEST_F(AppListBubblePresenterTest, ShowRecordsCreationTimeHistogram) {
 
   presenter->Dismiss();
   presenter->Show(GetPrimaryDisplay().id());
-  histogram_tester.ExpectTotalCount("Apps.AppListBubbleCreationTime", 2);
+  // The widget is cached, so the metric was not recorded again.
+  histogram_tester.ExpectTotalCount("Apps.AppListBubbleCreationTime", 1);
 }
 
-TEST_F(AppListBubblePresenterTest, DismissClosesWidget) {
+TEST_F(AppListBubblePresenterTest, ShowOnSecondaryDisplay) {
+  UpdateDisplay("1600x1200,1366x768");
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  presenter->Dismiss();
+
+  presenter->Show(GetSecondaryDisplay().id());
+  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer(GetPrimaryDisplay().id()));
+  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetSecondaryDisplay().id()));
+}
+
+TEST_F(AppListBubblePresenterTest, ToggleWithHomeButtonOnSecondaryDisplay) {
+  // Set up 2 displays.
+  UpdateDisplay("1366x768,1920x1080");
+
+  // Show and hide the widget on the primary display. This forces it to be
+  // cached.
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  presenter->Dismiss();
+  ASSERT_EQ(1u, NumberOfWidgetsInAppListContainer(GetPrimaryDisplay().id()));
+
+  // Click the home button on the secondary display.
+  aura::Window* root =
+      Shell::GetRootWindowForDisplayId(GetSecondaryDisplay().id());
+  HomeButton* home_button =
+      Shelf::ForWindow(root)->navigation_widget()->GetHomeButton();
+  LeftClickOn(home_button);
+
+  // Widget is shown.
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetSecondaryDisplay().id()));
+
+  // Click the home button again.
+  LeftClickOn(home_button);
+
+  // Widget is hidden.
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetSecondaryDisplay().id()));
+}
+
+TEST_F(AppListBubblePresenterTest, ShowAfterDisconnectingDisplay) {
+  // Set up 2 displays.
+  UpdateDisplay("1366x768,1920x1080");
+
+  // Show and hide the widget on the secondary display. This forces it to be
+  // cached.
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetSecondaryDisplay().id());
+  presenter->Dismiss();
+  ASSERT_EQ(1u, NumberOfWidgetsInAppListContainer(GetSecondaryDisplay().id()));
+
+  // Disconnect the secondary monitor.
+  UpdateDisplay("1366x768");
+
+  // Show the widget on the primary display.
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Widget is shown (and no crash).
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetPrimaryDisplay().id()));
+}
+
+TEST_F(AppListBubblePresenterTest, DismissHidesWidget) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
-  WidgetDestroyedWaiter waiter(presenter->bubble_widget_for_test());
   presenter->Dismiss();
-  waiter.Wait();
 
-  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+  // The widget still exists. It was cached for performance.
+  views::Widget* widget = presenter->bubble_widget_for_test();
+  ASSERT_TRUE(widget);
+  EXPECT_FALSE(widget->IsVisible());
 }
 
 TEST_F(AppListBubblePresenterTest, DismissWhenNotShowingDoesNotCrash) {
@@ -138,18 +228,19 @@ TEST_F(AppListBubblePresenterTest, ToggleOpensOneWidgetInAppListContainer) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Toggle(GetPrimaryDisplay().id());
 
-  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer());
+  EXPECT_EQ(1u, NumberOfWidgetsInAppListContainer(GetPrimaryDisplay().id()));
 }
 
-TEST_F(AppListBubblePresenterTest, ToggleClosesWidgetInAppListContainer) {
+TEST_F(AppListBubblePresenterTest, ToggleHidesWidgetInAppListContainer) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Toggle(GetPrimaryDisplay().id());
+  ASSERT_EQ(1u, NumberOfWidgetsInAppListContainer(GetPrimaryDisplay().id()));
 
-  WidgetDestroyedWaiter waiter(presenter->bubble_widget_for_test());
   presenter->Toggle(GetPrimaryDisplay().id());
-  waiter.Wait();
 
-  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+  views::Widget* widget = presenter->bubble_widget_for_test();
+  ASSERT_TRUE(widget);
+  EXPECT_FALSE(widget->IsVisible());
 }
 
 TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingByDefault) {
@@ -176,27 +267,171 @@ TEST_F(AppListBubblePresenterTest, BubbleIsNotShowingAfterDismiss) {
   EXPECT_FALSE(presenter->GetWindow());
 }
 
-TEST_F(AppListBubblePresenterTest, CannotShowWhileAnimatingClosed) {
+TEST_F(AppListBubblePresenterTest, CanShowWhileAnimatingClosed) {
   AppListBubblePresenter* presenter = GetBubblePresenter();
   presenter->Show(GetPrimaryDisplay().id());
 
   // Enable animations.
-  base::test::ScopedFeatureList features(
-      features::kProductivityLauncherAnimation);
   ui::ScopedAnimationDurationScaleMode duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  WidgetDestroyedWaiter waiter(presenter->bubble_widget_for_test());
   presenter->Dismiss();
-  // Widget is still showing because it is animating closed.
-  EXPECT_TRUE(presenter->IsShowing());
+  // Widget is not considered showing because it is animating closed.
+  EXPECT_FALSE(presenter->IsShowing());
+  // Widget is still visible because the animation is still playing.
+  EXPECT_TRUE(presenter->bubble_widget_for_test()->IsVisible());
 
   // Attempt to abort the dismiss by showing again.
   presenter->Show(GetPrimaryDisplay().id());
 
-  // Widget closes anyway.
-  waiter.Wait();
-  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+  // Widget shows.
+  EXPECT_TRUE(presenter->IsShowing());
+}
+
+TEST_F(AppListBubblePresenterTest, DismissWhileWaitingForZeroStateSearch) {
+  // Simulate production behavior for animations and zero-state search results.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  EXPECT_EQ(1, GetTestAppListClient()->start_zero_state_search_count());
+
+  // Dismiss while the code is waiting for the zero-state results. The widget
+  // is not created.
+  presenter->Dismiss();
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_FALSE(presenter->bubble_widget_for_test());
+
+  // Show and wait for the show to finish.
+  presenter->Show(GetPrimaryDisplay().id());
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(presenter->bubble_widget_for_test());
+}
+
+TEST_F(AppListBubblePresenterTest, DismissOnFocusLoss) {
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Creating a window in these containers should not dismiss the launcher.
+  for (int id : kContainersThatWontHideAppListOnFocus) {
+    std::unique_ptr<views::Widget> widget = CreateTestWidget(nullptr, id);
+    EXPECT_TRUE(presenter->IsShowing());
+  }
+
+  // Creating a window in the default window container dismisses the launcher.
+  std::unique_ptr<views::Widget> widget = CreateTestWidget();
+  EXPECT_FALSE(presenter->IsShowing());
+}
+
+// Regression test for https://crbug.com/1275755
+TEST_F(AppListBubblePresenterTest, AssistantKeyOpensToAssistantPage) {
+  // Simulate production behavior for animations, assistant, and zero-state
+  // search results.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  assistant_test_api_->EnableAssistantAndWait();
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  PressAndReleaseKey(ui::VKEY_ASSISTANT);
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_FALSE(
+      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
+  EXPECT_TRUE(presenter->IsShowingEmbeddedAssistantUI());
+}
+
+TEST_F(AppListBubblePresenterTest, AssistantKeyOpensAssistantPageWhenCached) {
+  // Show and hide the widget to force it to be cached.
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  presenter->Dismiss();
+
+  // Simulate production behavior for animations, assistant, and zero-state
+  // search results.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  assistant_test_api_->EnableAssistantAndWait();
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  PressAndReleaseKey(ui::VKEY_ASSISTANT);
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
+
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_FALSE(
+      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
+  EXPECT_TRUE(presenter->IsShowingEmbeddedAssistantUI());
+}
+
+TEST_F(AppListBubblePresenterTest, AppsPageVisibleAfterShowingAssistant) {
+  // Simulate production behavior for animations, assistant, and zero-state
+  // search results.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  assistant_test_api_->EnableAssistantAndWait();
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  // Show the assistant.
+  PressAndReleaseKey(ui::VKEY_ASSISTANT);
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Hide the assistant.
+  PressAndReleaseKey(ui::VKEY_ASSISTANT);
+  base::RunLoop().RunUntilIdle();
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  ASSERT_FALSE(presenter->IsShowing());
+
+  // Show the launcher.
+  PressAndReleaseKey(ui::VKEY_BROWSER_SEARCH);
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/true);
+
+  // Apps page is visible, even though it was hidden when showing assistant.
+  EXPECT_TRUE(
+      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
+  EXPECT_FALSE(presenter->IsShowingEmbeddedAssistantUI());
+}
+
+TEST_F(AppListBubblePresenterTest, SearchKeyOpensToAppsPage) {
+  // Simulate production behavior for animations, assistant, and zero-state
+  // search results.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+  assistant_test_api_->EnableAssistantAndWait();
+  GetTestAppListClient()->set_run_zero_state_callback_immediately(false);
+
+  PressAndReleaseKey(ui::VKEY_LWIN);  // Search key.
+  AppListTestApi().WaitForBubbleWindow(/*wait_for_opening_animation=*/false);
+
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  EXPECT_TRUE(presenter->IsShowing());
+  EXPECT_TRUE(
+      presenter->bubble_view_for_test()->apps_page_for_test()->GetVisible());
+  EXPECT_FALSE(presenter->IsShowingEmbeddedAssistantUI());
+}
+
+TEST_F(AppListBubblePresenterTest, SearchFieldHasFocusAfterAssistantPageShown) {
+  // Search box takes focus on show.
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+  auto* search_box_view = GetAppListTestHelper()->GetBubbleSearchBoxView();
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
+
+  // Switch to assistant page. Search box loses focus.
+  presenter->ShowEmbeddedAssistantUI();
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+
+  // The widget is still open, but hidden.
+  presenter->Dismiss();
+  EXPECT_FALSE(search_box_view->search_box()->HasFocus());
+
+  // Focus returns to the main search box on show.
+  presenter->Show(GetPrimaryDisplay().id());
+  EXPECT_TRUE(search_box_view->search_box()->HasFocus());
 }
 
 TEST_F(AppListBubblePresenterTest, DoesNotCrashWhenNativeWidgetDestroyed) {
@@ -221,13 +456,11 @@ TEST_F(AppListBubblePresenterTest, ClickInTopLeftOfScreenClosesBubble) {
   presenter->Show(GetPrimaryDisplay().id());
 
   Widget* widget = presenter->bubble_widget_for_test();
-  WidgetDestroyedWaiter waiter(widget);
   ASSERT_FALSE(widget->GetWindowBoundsInScreen().Contains(0, 0));
   GetEventGenerator()->MoveMouseTo(0, 0);
   GetEventGenerator()->ClickLeftButton();
-  waiter.Wait();
 
-  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+  EXPECT_FALSE(presenter->IsShowing());
 }
 
 // Verifies that the launcher does not reopen when it's closed by a click on the
@@ -237,13 +470,9 @@ TEST_F(AppListBubblePresenterTest, ClickOnHomeButtonClosesBubble) {
   presenter->Show(GetPrimaryDisplay().id());
 
   // Click the home button.
-  WidgetDestroyedWaiter waiter(presenter->bubble_widget_for_test());
-  HomeButton* button = GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-  GetEventGenerator()->MoveMouseTo(button->GetBoundsInScreen().CenterPoint());
-  GetEventGenerator()->ClickLeftButton();
-  waiter.Wait();
+  LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
 
-  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+  EXPECT_FALSE(presenter->IsShowing());
 }
 
 // Regression test for https://crbug.com/1237264.
@@ -252,13 +481,11 @@ TEST_F(AppListBubblePresenterTest, ClickInCornerOfScreenClosesBubble) {
   presenter->Show(GetPrimaryDisplay().id());
 
   // Click the bottom left corner of the screen.
-  WidgetDestroyedWaiter waiter(presenter->bubble_widget_for_test());
   GetEventGenerator()->MoveMouseTo(GetPrimaryDisplay().bounds().bottom_left());
   GetEventGenerator()->ClickLeftButton();
-  waiter.Wait();
 
   // Bubble is closed (and did not reopen).
-  EXPECT_EQ(0u, NumberOfWidgetsInAppListContainer());
+  EXPECT_FALSE(presenter->IsShowing());
 }
 
 // Regression test for https://crbug.com/1268220.
@@ -297,6 +524,32 @@ TEST_F(AppListBubblePresenterTest, CreatingChildWidgetDoesNotCloseBubble) {
 
   // Bubble stays open.
   EXPECT_TRUE(presenter->IsShowing());
+}
+
+// Regression test for https://crbug.com/1285443.
+TEST_F(AppListBubblePresenterTest, CanOpenBubbleThenOpenSystemTray) {
+  // Enable animations.
+  ui::ScopedAnimationDurationScaleMode duration(
+      ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
+
+  // Create a widget, which will activate itself when the launcher closes.
+  std::unique_ptr<views::Widget> widget =
+      TestWidgetBuilder().SetShow(true).BuildOwnsNativeWidget();
+
+  // Show the launcher.
+  AppListBubblePresenter* presenter = GetBubblePresenter();
+  presenter->Show(GetPrimaryDisplay().id());
+
+  // Click on the system tray.
+  LeftClickOn(GetPrimaryUnifiedSystemTray());
+
+  // Wait for launcher animations to end.
+  LayerAnimationStoppedWaiter().Wait(
+      presenter->bubble_view_for_test()->layer());
+
+  // Launcher is closed and system tray is open.
+  EXPECT_FALSE(presenter->IsShowing());
+  EXPECT_TRUE(GetPrimaryUnifiedSystemTray()->IsBubbleShown());
 }
 
 TEST_F(AppListBubblePresenterTest, BubbleOpensInBottomLeftForBottomShelf) {

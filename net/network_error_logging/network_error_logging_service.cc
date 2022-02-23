@@ -14,6 +14,7 @@
 #include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/time/clock.h"
@@ -319,7 +320,7 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
   // null. If |store_| is null, then NEL policies will be in-memory only.
   // The store is owned by the URLRequestContext because Reporting also needs
   // access to it.
-  PersistentNelStore* store_;
+  raw_ptr<PersistentNelStore> store_;
 
   // Set to true when we have told the store to load NEL policies. This is to
   // make sure we don't try to load policies multiple times.
@@ -806,7 +807,8 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     body->SetInteger(kStatusCodeKey, details.status_code);
     body->SetInteger(kElapsedTimeKey, details.elapsed_time.InMilliseconds());
 
-    auto sxg_body = std::make_unique<base::DictionaryValue>();
+    auto* sxg_body = body->SetKey(kSignedExchangeBodyKey,
+                                  base::Value(base::Value::Type::DICTIONARY));
     sxg_body->SetKey(kOuterUrlKey, base::Value(details.outer_url.spec()));
     if (details.inner_url.is_valid())
       sxg_body->SetKey(kInnerUrlKey, base::Value(details.inner_url.spec()));
@@ -815,7 +817,6 @@ class NetworkErrorLoggingServiceImpl : public NetworkErrorLoggingService {
     if (details.cert_url.is_valid())
       cert_url_list.Append(base::Value(details.cert_url.spec()));
     sxg_body->SetKey(kCertUrlKey, std::move(cert_url_list));
-    body->SetDictionary(kSignedExchangeBodyKey, std::move(sxg_body));
 
     return std::move(body);
   }

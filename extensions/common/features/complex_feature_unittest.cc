@@ -45,17 +45,18 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
                 ->IsAvailableToManifest(kIdFoo, Manifest::TYPE_EXTENSION,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform())
+                                        Feature::GetCurrentPlatform(),
+                                        kUnspecifiedContextId)
                 .result());
 
   // Test match 2nd rule.
   EXPECT_EQ(
       Feature::IS_AVAILABLE,
       feature
-          ->IsAvailableToManifest(kIdBar, Manifest::TYPE_LEGACY_PACKAGED_APP,
-                                  ManifestLocation::kInvalidLocation,
-                                  Feature::UNSPECIFIED_PLATFORM,
-                                  Feature::GetCurrentPlatform())
+          ->IsAvailableToManifest(
+              kIdBar, Manifest::TYPE_LEGACY_PACKAGED_APP,
+              ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
+              Feature::GetCurrentPlatform(), kUnspecifiedContextId)
           .result());
 
   // Test allowlist with wrong extension type.
@@ -64,15 +65,16 @@ TEST(ComplexFeatureTest, MultipleRulesAllowlist) {
                 ->IsAvailableToManifest(kIdBar, Manifest::TYPE_EXTENSION,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform())
+                                        Feature::GetCurrentPlatform(),
+                                        kUnspecifiedContextId)
                 .result());
   EXPECT_NE(
       Feature::IS_AVAILABLE,
       feature
-          ->IsAvailableToManifest(kIdFoo, Manifest::TYPE_LEGACY_PACKAGED_APP,
-                                  ManifestLocation::kInvalidLocation,
-                                  Feature::UNSPECIFIED_PLATFORM,
-                                  Feature::GetCurrentPlatform())
+          ->IsAvailableToManifest(
+              kIdFoo, Manifest::TYPE_LEGACY_PACKAGED_APP,
+              ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
+              Feature::GetCurrentPlatform(), kUnspecifiedContextId)
           .result());
 }
 
@@ -98,14 +100,14 @@ TEST(ComplexFeatureTest, Dependencies) {
   std::unique_ptr<ComplexFeature> feature(new ComplexFeature(&features));
 
   // Available to extensions because of the content_security_policy rule.
-  EXPECT_EQ(Feature::IS_AVAILABLE,
-            feature
-                ->IsAvailableToManifest(HashedExtensionId(std::string(32, 'a')),
-                                        Manifest::TYPE_EXTENSION,
-                                        ManifestLocation::kInvalidLocation,
-                                        Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform())
-                .result());
+  EXPECT_EQ(
+      Feature::IS_AVAILABLE,
+      feature
+          ->IsAvailableToManifest(
+              HashedExtensionId(std::string(32, 'a')), Manifest::TYPE_EXTENSION,
+              ManifestLocation::kInvalidLocation, Feature::UNSPECIFIED_PLATFORM,
+              Feature::GetCurrentPlatform(), kUnspecifiedContextId)
+          .result());
 
   // Available to platform apps because of the serial rule.
   EXPECT_EQ(Feature::IS_AVAILABLE,
@@ -114,7 +116,8 @@ TEST(ComplexFeatureTest, Dependencies) {
                                         Manifest::TYPE_PLATFORM_APP,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform())
+                                        Feature::GetCurrentPlatform(),
+                                        kUnspecifiedContextId)
                 .result());
 
   // Not available to hosted apps.
@@ -124,7 +127,8 @@ TEST(ComplexFeatureTest, Dependencies) {
                                         Manifest::TYPE_HOSTED_APP,
                                         ManifestLocation::kInvalidLocation,
                                         Feature::UNSPECIFIED_PLATFORM,
-                                        Feature::GetCurrentPlatform())
+                                        Feature::GetCurrentPlatform(),
+                                        kUnspecifiedContextId)
                 .result());
 }
 

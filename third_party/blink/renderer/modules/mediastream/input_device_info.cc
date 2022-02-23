@@ -8,6 +8,7 @@
 
 #include "build/build_config.h"
 #include "media/base/sample_format.h"
+#include "media/webrtc/constants.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom-blink.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_double_range.h"
@@ -61,9 +62,9 @@ void InputDeviceInfo::SetAudioInputCapabilities(
                                             audio_input_capabilities->channels};
 
     platform_capabilities_.sample_rate = {
-        std::min(kAudioProcessingSampleRate,
+        std::min(media::kAudioProcessingSampleRateHz,
                  audio_input_capabilities->sample_rate),
-        std::max(kAudioProcessingSampleRate,
+        std::max(media::kAudioProcessingSampleRateHz,
                  audio_input_capabilities->sample_rate)};
     double fallback_latency = kFallbackAudioLatencyMs / 1000;
     platform_capabilities_.latency = {

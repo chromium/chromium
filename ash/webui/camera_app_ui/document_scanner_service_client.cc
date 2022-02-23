@@ -17,27 +17,33 @@ using chromeos::machine_learning::mojom::DetectCornersResultPtr;
 using chromeos::machine_learning::mojom::DocumentScannerResultStatus;
 using chromeos::machine_learning::mojom::DoPostProcessingResultPtr;
 using chromeos::machine_learning::mojom::LoadModelResult;
+using chromeos::machine_learning::mojom::Rotation;
 
 constexpr char kOndeviceDocumentScanner[] = "ondevice_document_scanner";
+constexpr char kMLService[] = "ml_service";
 
 // Returns whether the `value` is set for command line switch
 // kOndeviceDocumentScanner.
-bool DocumentScannerSwitchHasValue(const std::string& value) {
+bool HasCommandLineSwitch(const std::string& key, const std::string& value) {
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  return command_line->HasSwitch(kOndeviceDocumentScanner) &&
-         command_line->GetSwitchValueASCII(kOndeviceDocumentScanner) == value;
+  return command_line->HasSwitch(key) &&
+         command_line->GetSwitchValueASCII(key) == value;
 }
 
 // Returns true if switch kOndeviceDocumentScanner is set to use_rootfs.
 bool IsEnabledOnRootfs() {
-  return DocumentScannerSwitchHasValue("use_rootfs");
+  return HasCommandLineSwitch(kOndeviceDocumentScanner, "use_rootfs");
+}
+
+bool IsMachineLearningServiceAvailable() {
+  return HasCommandLineSwitch(kMLService, "enabled");
 }
 
 }  // namespace
 
 // static
 bool DocumentScannerServiceClient::IsSupported() {
-  return IsEnabledOnRootfs();
+  return IsMachineLearningServiceAvailable() && IsEnabledOnRootfs();
 }
 
 // static
@@ -101,6 +107,7 @@ void DocumentScannerServiceClient::DetectCornersFromJPEGImage(
 void DocumentScannerServiceClient::DoPostProcessing(
     base::ReadOnlySharedMemoryRegion jpeg_image,
     const std::vector<gfx::PointF>& corners,
+    Rotation rotation,
     DoPostProcessingCallback callback) {
   DCHECK(IsSupported());
 
@@ -110,7 +117,7 @@ void DocumentScannerServiceClient::DoPostProcessing(
   }
 
   document_scanner_->DoPostProcessing(
-      std::move(jpeg_image), corners,
+      std::move(jpeg_image), corners, rotation,
       base::BindOnce(
           [](DoPostProcessingCallback callback,
              DoPostProcessingResultPtr result) {

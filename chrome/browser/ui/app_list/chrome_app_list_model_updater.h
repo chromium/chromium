@@ -19,7 +19,10 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 
 namespace app_list {
+namespace reorder {
 class AppListReorderDelegate;
+struct ReorderParam;
+}  // namespace reorder
 }  // namespace app_list
 
 class ChromeAppListItem;
@@ -29,8 +32,10 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                                   public ash::AppListModelDelegate,
                                   public ash::AppListModelObserver {
  public:
-  ChromeAppListModelUpdater(Profile* profile,
-                            app_list::AppListReorderDelegate* order_delegate);
+  ChromeAppListModelUpdater(
+      Profile* profile,
+      app_list::reorder::AppListReorderDelegate* order_delegate,
+      app_list::AppListSyncModelSanitizer* sync_model_sanitizer);
   ChromeAppListModelUpdater(const ChromeAppListModelUpdater&) = delete;
   ChromeAppListModelUpdater& operator=(const ChromeAppListModelUpdater&) =
       delete;
@@ -40,10 +45,10 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
 
   // AppListModelUpdater:
   void AddItem(std::unique_ptr<ChromeAppListItem> app_item) override;
-  void AddItemToFolder(std::unique_ptr<ChromeAppListItem> app_item,
-                       const std::string& folder_id) override;
-  void RemoveItem(const std::string& id) override;
-  void RemoveUninstalledItem(const std::string& id) override;
+  void AddAppItemToFolder(std::unique_ptr<ChromeAppListItem> app_item,
+                          const std::string& folder_id,
+                          bool add_from_local) override;
+  void RemoveItem(const std::string& id, bool is_uninstall) override;
   void SetStatus(ash::AppListModelStatus status) override;
   void SetSearchEngineIsGoogle(bool is_google) override;
   void UpdateSearchBox(const std::u16string& text,
@@ -51,23 +56,24 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void PublishSearchResults(
       const std::vector<ChromeSearchResult*>& results,
       const std::vector<ash::AppListSearchResultCategory>& categories) override;
+  void ClearSearchResults() override;
   std::vector<ChromeSearchResult*> GetPublishedSearchResultsForTest() override;
 
   // Methods only used by ChromeAppListItem that talk to ash directly.
   void SetItemIconVersion(const std::string& id, int icon_version) override;
   void SetItemIcon(const std::string& id, const gfx::ImageSkia& icon) override;
   void SetItemName(const std::string& id, const std::string& name) override;
-  void SetItemNameAndShortName(const std::string& id,
-                               const std::string& name,
-                               const std::string& short_name) override;
   void SetAppStatus(const std::string& id, ash::AppStatus app_status) override;
   void SetItemPosition(const std::string& id,
                        const syncer::StringOrdinal& new_position) override;
   void SetItemIsPersistent(const std::string& id, bool is_persistent) override;
+  void SetIsNewInstall(const std::string& id, bool is_new_install) override;
   void SetItemFolderId(const std::string& id,
                        const std::string& folder_id) override;
   void SetNotificationBadgeColor(const std::string& id,
                                  const SkColor color) override;
+  void SetIconColor(const std::string& id,
+                    const ash::IconColor icon_color) override;
 
   // Methods only used by ChromeSearchResult that talk to ash directly.
   void SetSearchResultMetadata(
@@ -80,6 +86,7 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   // Methods for item querying.
   ChromeAppListItem* FindItem(const std::string& id) override;
   std::vector<const ChromeAppListItem*> GetItems() const override;
+  std::set<std::string> GetTopLevelItemIds() const override;
   size_t ItemCount() override;
   std::vector<ChromeAppListItem*> GetTopLevelItems() const override;
   ChromeAppListItem* ItemAtForTest(size_t index) override;
@@ -89,9 +96,8 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   void GetIdToAppListIndexMap(GetIdToAppListIndexMapCallback callback) override;
   size_t BadgedItemCount() override;
   void GetContextMenuModel(const std::string& id,
+                           bool add_sort_options,
                            GetMenuModelCallback callback) override;
-  syncer::StringOrdinal CalculatePositionForNewItem(
-      const ChromeAppListItem& new_item) override;
   syncer::StringOrdinal GetPositionBeforeFirstItem() const override;
 
   // Methods for AppListSyncableService:
@@ -100,10 +106,6 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
       bool update_name,
       bool update_folder) override;
   void NotifyProcessSyncChangesFinished() override;
-
-  // Methods to handle model update from ash:
-  void OnSortRequested(ash::AppListSortOrder order) override;
-  void OnSortRevertRequested() override;
 
   void OnAppListHidden() override;
 
@@ -120,16 +122,23 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
                              const syncer::StringOrdinal& new_position,
                              ash::RequestPositionUpdateReason reason) override;
   void RequestMoveItemToFolder(std::string id,
-                               const std::string& folder_id,
-                               ash::RequestMoveToFolderReason reason) override;
+                               const std::string& folder_id) override;
   void RequestMoveItemToRoot(std::string id,
                              syncer::StringOrdinal target_position) override;
+  std::string RequestFolderCreation(std::string target_merge_id,
+                                    std::string item_to_merge_id) override;
+  void RequestFolderRename(std::string folder_id,
+                           const std::string& new_name) override;
+  void RequestAppListSort(ash::AppListSortOrder order) override;
+  void RequestAppListSortRevert() override;
 
   // Returns the temporary sort order.
   ash::AppListSortOrder GetTemporarySortOrderForTest() const;
 
   // Returns true if the app list is under temporary sort.
   bool is_under_temporary_sort() const { return !!temporary_sort_manager_; }
+
+  ash::AppListModel* model_for_test() { return &model_; }
 
  private:
   friend class TemporaryAppListSortTest;
@@ -169,23 +178,32 @@ class ChromeAppListModelUpdater : public AppListModelUpdater,
   // Ends temporary sort status and performs the specified action.
   void EndTemporarySortAndTakeAction(EndAction action);
 
-  // Reverts item positions under the temporary sort.
-  void RevertTemporaryPositions();
-
   // Commits item positions under the temporary sort.
   void CommitTemporaryPositions();
 
-  // Commits the temporary sort order.
-  void CommitOrder();
+  // Calculates the reorder params for reverting the temporary order.
+  std::vector<app_list::reorder::ReorderParam>
+  CalculateReorderParamsForRevertOrder() const;
 
-  // Clears the permanent sort order.
-  void ClearOrder();
+  // If folder with the provided ID has a single child, it reparents the child
+  // to the root app list.
+  void ClearFolderIfItHasSingleChild(const std::string& folder_id);
+
+  // Updates the item positions in the ash side. `reorder_params` specifies
+  // target positions.
+  void UpdateItemPositionWithReorderParam(
+      const std::vector<app_list::reorder::ReorderParam>& reorder_params);
+
+  // Resets the pref sort order to be kCustom when the app list is not under
+  // temporary sorting. `event` indicates the reason leading to reset.
+  void ResetPrefSortOrderInNonTemporaryMode(ash::AppListOrderUpdateEvent event);
 
   // Indicates the profile that the model updater is associated with.
   Profile* const profile_ = nullptr;
 
   // Provides the access to the methods for ordering app list items.
-  app_list::AppListReorderDelegate* const order_delegate_;
+  app_list::reorder::AppListReorderDelegate* const order_delegate_;
+  app_list::AppListSyncModelSanitizer* const sync_model_sanitizer_;
 
   // A helper class to manage app list items. It never talks to ash.
   std::unique_ptr<ChromeAppListItemManager> item_manager_;

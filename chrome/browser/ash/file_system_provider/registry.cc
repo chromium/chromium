@@ -114,9 +114,9 @@ void Registry::ForgetFileSystem(const ProviderId& provider_id,
   DictionaryPrefUpdate dict_update(pref_service,
                                    prefs::kFileSystemProviderMounted);
 
-  base::DictionaryValue* file_systems_per_extension = NULL;
-  if (!dict_update->GetDictionaryWithoutPathExpansion(
-          provider_id.ToString(), &file_systems_per_extension))
+  base::Value* file_systems_per_extension =
+      dict_update->FindDictKey(provider_id.ToString());
+  if (!file_systems_per_extension)
     return;  // Nothing to forget.
 
   file_systems_per_extension->RemoveKey(file_system_id);
@@ -129,28 +129,24 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
   PrefService* const pref_service = profile_->GetPrefs();
   DCHECK(pref_service);
 
-  const base::DictionaryValue* const file_systems =
+  const base::Value* const file_systems =
       pref_service->GetDictionary(prefs::kFileSystemProviderMounted);
   DCHECK(file_systems);
 
-  const base::DictionaryValue* file_systems_per_extension = NULL;
-  if (!file_systems->GetDictionaryWithoutPathExpansion(
-          provider_id.ToString(), &file_systems_per_extension)) {
+  const base::Value* file_systems_per_extension =
+      file_systems->FindDictKey(provider_id.ToString());
+  if (!file_systems_per_extension) {
     return base::WrapUnique(new RestoredFileSystems);  // Nothing to restore.
   }
 
   std::unique_ptr<RestoredFileSystems> restored_file_systems(
       new RestoredFileSystems);
 
-  for (base::DictionaryValue::Iterator it(*file_systems_per_extension);
-       !it.IsAtEnd();
-       it.Advance()) {
-    const base::DictionaryValue* file_system = NULL;
-    const base::Value* file_system_value =
-        file_systems_per_extension->FindKey(it.key());
-    DCHECK(file_system_value);
+  for (const auto it : file_systems_per_extension->DictItems()) {
+    const base::Value* file_system =
+        file_systems_per_extension->FindDictKey(it.first);
 
-    if (!file_system_value->GetAsDictionary(&file_system)) {
+    if (!file_system) {
       LOG(ERROR)
           << "Malformed provided file system information in preferences.";
       continue;
@@ -190,16 +186,11 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
     restored_file_system.options = options;
 
     // Restore watchers. It's optional, since this field is new.
-    const base::DictionaryValue* watchers = NULL;
-    if (file_system->GetDictionaryWithoutPathExpansion(kPrefKeyWatchers,
-                                                       &watchers)) {
-      for (base::DictionaryValue::Iterator it(*watchers); !it.IsAtEnd();
-           it.Advance()) {
-        const base::DictionaryValue* watcher = NULL;
-        const base::Value* watcher_value = watchers->FindKey(it.key());
-        DCHECK(watcher_value);
-
-        if (!watcher_value->GetAsDictionary(&watcher)) {
+    const base::Value* watchers = file_system->FindDictKey(kPrefKeyWatchers);
+    if (watchers) {
+      for (const auto it : watchers->DictItems()) {
+        const base::Value* watcher = watchers->FindDictKey(it.first);
+        if (!watcher) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }
@@ -210,14 +201,14 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
             watcher->FindBoolKey(kPrefKeyWatcherRecursive);
         const std::string* last_tag =
             watcher->FindStringKey(kPrefKeyWatcherLastTag);
-        const base::ListValue* persistent_origins = NULL;
+        const base::Value* persistent_origins =
+            watcher->FindListKey(kPrefKeyWatcherPersistentOrigins);
 
-        if (!entry_path || !recursive || !last_tag ||
-            !watcher->GetListWithoutPathExpansion(
-                kPrefKeyWatcherPersistentOrigins, &persistent_origins) ||
-            it.key() != *entry_path || entry_path->empty() ||
+        if (!entry_path || !recursive || !last_tag || !persistent_origins ||
+            it.first != *entry_path || entry_path->empty() ||
             (!options.supports_notify_tag &&
-             (!last_tag->empty() || persistent_origins->GetList().size()))) {
+             (!last_tag->empty() ||
+              persistent_origins->GetListDeprecated().size()))) {
           LOG(ERROR) << "Malformed watcher information in preferences.";
           continue;
         }
@@ -227,7 +218,8 @@ std::unique_ptr<Registry::RestoredFileSystems> Registry::RestoreFileSystems(
             base::FilePath::FromUTF8Unsafe(*entry_path);
         restored_watcher.recursive = recursive.value();
         restored_watcher.last_tag = *last_tag;
-        for (const auto& persistent_origin : persistent_origins->GetList()) {
+        for (const auto& persistent_origin :
+             persistent_origins->GetListDeprecated()) {
           if (!persistent_origin.is_string()) {
             LOG(ERROR) << "Malformed subscriber information in preferences.";
             continue;
@@ -259,19 +251,22 @@ void Registry::UpdateWatcherTag(const ProvidedFileSystemInfo& file_system_info,
 
   // All of the following checks should not happen in healthy environment.
   // However, since they rely on storage, DCHECKs can't be used.
-  base::DictionaryValue* file_systems_per_extension = NULL;
-  base::DictionaryValue* file_system = NULL;
-  base::DictionaryValue* watchers = NULL;
-  base::DictionaryValue* watcher_value = NULL;
-  if (!dict_update->GetDictionaryWithoutPathExpansion(
-          file_system_info.provider_id().ToString(),
-          &file_systems_per_extension) ||
-      !file_systems_per_extension->GetDictionaryWithoutPathExpansion(
-          file_system_info.file_system_id(), &file_system) ||
-      !file_system->GetDictionaryWithoutPathExpansion(kPrefKeyWatchers,
-                                                      &watchers) ||
-      !watchers->GetDictionaryWithoutPathExpansion(watcher.entry_path.value(),
-                                                   &watcher_value)) {
+  base::Value* file_systems_per_extension =
+      dict_update->FindDictKey(file_system_info.provider_id().ToString());
+  base::Value* file_system = nullptr;
+  base::Value* watchers = nullptr;
+  base::Value* watcher_value = nullptr;
+
+  if (file_systems_per_extension) {
+    file_system = file_systems_per_extension->FindDictKey(
+        file_system_info.file_system_id());
+  }
+  if (file_system)
+    watchers = file_system->FindDictKey(kPrefKeyWatchers);
+  if (watchers)
+    watcher_value = watchers->FindDictKey(watcher.entry_path.value());
+
+  if (!watcher_value) {
     // Broken preferences.
     LOG(ERROR) << "Broken preferences detected while updating a tag.";
     return;

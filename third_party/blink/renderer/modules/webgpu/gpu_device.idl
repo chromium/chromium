@@ -5,7 +5,8 @@
 // https://gpuweb.github.io/gpuweb/
 
 [
-    Exposed(Window WebGPU, Worker WebGPU)
+    Exposed(Window WebGPU, DedicatedWorker WebGPU),
+    SecureContext
 ] interface GPUDevice : EventTarget {
     [SameObject] readonly attribute GPUSupportedFeatures features;
     [SameObject] readonly attribute GPUSupportedLimits limits;
@@ -13,6 +14,8 @@
     [CallWith=ScriptState] readonly attribute Promise<GPUDeviceLostInfo> lost;
 
     [SameObject] readonly attribute GPUQueue queue;
+
+    void destroy();
 
     GPUBuffer createBuffer(GPUBufferDescriptor descriptor);
     [RaisesException] GPUTexture createTexture(GPUTextureDescriptor descriptor);

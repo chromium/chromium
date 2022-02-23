@@ -13,6 +13,7 @@ import time
 import subprocess
 
 from aemu_target import AemuTarget
+from exit_on_sig_term import ExitOnSigTerm
 from fvdl_target import FvdlTarget
 
 
@@ -29,7 +30,8 @@ def main():
   args.device = 'fvdl'
   args.cpu_cores = 4
   common_args.ConfigureLogging(args)
-  with common_args.GetDeploymentTargetForArgs(args) as fvdl_target:
+  with ExitOnSigTerm(), \
+       common_args.GetDeploymentTargetForArgs(args) as fvdl_target:
     if fvdl_target._with_network:
       logging.info('If you haven\'t set up tuntap, you may be prompted '
                    'for your sudo password to set up tuntap.')

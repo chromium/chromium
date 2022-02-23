@@ -29,12 +29,11 @@ ClientFrameSinkVideoCapturer::~ClientFrameSinkVideoCapturer() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void ClientFrameSinkVideoCapturer::SetFormat(media::VideoPixelFormat format,
-                                             gfx::ColorSpace color_space) {
+void ClientFrameSinkVideoCapturer::SetFormat(media::VideoPixelFormat format) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  format_.emplace(format, color_space);
-  capturer_remote_->SetFormat(format, color_space);
+  format_.emplace(format);
+  capturer_remote_->SetFormat(format);
 }
 
 void ClientFrameSinkVideoCapturer::SetMinCapturePeriod(
@@ -72,23 +71,32 @@ void ClientFrameSinkVideoCapturer::SetAutoThrottlingEnabled(bool enabled) {
 }
 
 void ClientFrameSinkVideoCapturer::ChangeTarget(
-    const absl::optional<FrameSinkId>& frame_sink_id,
-    mojom::SubTargetPtr sub_target) {
+    const absl::optional<VideoCaptureTarget>& target) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  target_ = frame_sink_id;
-  sub_target_ = std::move(sub_target);
+  ChangeTarget(target, crop_version_);
+}
 
-  capturer_remote_->ChangeTarget(frame_sink_id,
-                                 sub_target_ ? sub_target_.Clone() : nullptr);
+void ClientFrameSinkVideoCapturer::ChangeTarget(
+    const absl::optional<VideoCaptureTarget>& target,
+    uint32_t crop_version) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK_GE(crop_version, crop_version_);
+
+  target_ = target;
+  crop_version_ = crop_version;
+
+  capturer_remote_->ChangeTarget(target, crop_version);
 }
 
 void ClientFrameSinkVideoCapturer::Start(
-    mojom::FrameSinkVideoConsumer* consumer) {
+    mojom::FrameSinkVideoConsumer* consumer,
+    mojom::BufferFormatPreference buffer_format_preference) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(consumer);
 
   is_started_ = true;
+  buffer_format_preference_ = buffer_format_preference;
   consumer_ = consumer;
   StartInternal();
 }
@@ -97,6 +105,7 @@ void ClientFrameSinkVideoCapturer::Stop() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   is_started_ = false;
+  buffer_format_preference_ = mojom::BufferFormatPreference::kDefault;
   capturer_remote_->Stop();
 }
 
@@ -136,11 +145,6 @@ ClientFrameSinkVideoCapturer::CreateOverlay(int32_t stacking_index) {
   return overlay;
 }
 
-ClientFrameSinkVideoCapturer::Format::Format(
-    media::VideoPixelFormat pixel_format,
-    gfx::ColorSpace color_space)
-    : pixel_format(pixel_format), color_space(color_space) {}
-
 ClientFrameSinkVideoCapturer::ResolutionConstraints::ResolutionConstraints(
     const gfx::Size& min_size,
     const gfx::Size& max_size,
@@ -150,7 +154,7 @@ ClientFrameSinkVideoCapturer::ResolutionConstraints::ResolutionConstraints(
       use_fixed_aspect_ratio(use_fixed_aspect_ratio) {}
 
 void ClientFrameSinkVideoCapturer::OnFrameCaptured(
-    base::ReadOnlySharedMemoryRegion data,
+    media::mojom::VideoBufferHandlePtr data,
     media::mojom::VideoFrameInfoPtr info,
     const gfx::Rect& content_rect,
     mojo::PendingRemote<mojom::FrameSinkVideoConsumerFrameCallbacks>
@@ -159,6 +163,12 @@ void ClientFrameSinkVideoCapturer::OnFrameCaptured(
 
   consumer_->OnFrameCaptured(std::move(data), std::move(info), content_rect,
                              std::move(callbacks));
+}
+
+void ClientFrameSinkVideoCapturer::OnFrameWithEmptyRegionCapture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  consumer_->OnFrameWithEmptyRegionCapture();
 }
 
 void ClientFrameSinkVideoCapturer::OnLog(const std::string& message) {
@@ -183,7 +193,7 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
       base::BindOnce(&ClientFrameSinkVideoCapturer::OnConnectionError,
                      base::Unretained(this)));
   if (format_)
-    capturer_remote_->SetFormat(format_->pixel_format, format_->color_space);
+    capturer_remote_->SetFormat(*format_);
   if (min_capture_period_)
     capturer_remote_->SetMinCapturePeriod(*min_capture_period_);
   if (min_size_change_period_)
@@ -196,8 +206,7 @@ void ClientFrameSinkVideoCapturer::EstablishConnection() {
   if (auto_throttling_enabled_)
     capturer_remote_->SetAutoThrottlingEnabled(*auto_throttling_enabled_);
   if (target_) {
-    capturer_remote_->ChangeTarget(
-        target_, sub_target_ ? sub_target_->Clone() : nullptr);
+    capturer_remote_->ChangeTarget(target_.value(), crop_version_);
   }
   for (Overlay* overlay : overlays_)
     overlay->EstablishConnection(capturer_remote_.get());
@@ -216,9 +225,12 @@ void ClientFrameSinkVideoCapturer::OnConnectionError() {
 }
 
 void ClientFrameSinkVideoCapturer::StartInternal() {
+  DCHECK(is_started_);
+
   if (consumer_receiver_.is_bound())
     consumer_receiver_.reset();
-  capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote());
+  capturer_remote_->Start(consumer_receiver_.BindNewPipeAndPassRemote(),
+                          buffer_format_preference_);
 }
 
 void ClientFrameSinkVideoCapturer::OnOverlayDestroyed(Overlay* overlay) {

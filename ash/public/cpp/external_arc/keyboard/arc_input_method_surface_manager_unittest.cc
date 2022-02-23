@@ -79,7 +79,7 @@ TEST_F(ArcInputMethodSurfaceManagerTest, Observer) {
   auto surface = std::make_unique<exo::Surface>();
   auto input_method_surface = std::make_unique<exo::InputMethodSurface>(
       &manager, surface.get(), /*default_scale_cancellation=*/false);
-  surface->SetViewport(gfx::Size(500, 500));
+  surface->SetViewport(gfx::SizeF(500, 500));
   surface->Commit();
 
   gfx::Rect test_bounds(10, 10, 100, 100);

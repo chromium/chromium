@@ -72,7 +72,7 @@ void PrefetchImagesTask::LoadStreamComplete(
   // surfaces to update. For this reason, we're not going to retain the loaded
   // model for use outside of this task.
   StreamModel::Context model_context;
-  StreamModel model(&model_context);
+  StreamModel model(&model_context, LoggingParameters{});
   model.Update(std::move(result.update_request));
   PrefetchImagesFromModel(model);
 }

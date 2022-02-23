@@ -56,8 +56,9 @@ void AudioNodeInput::UpdateInternalBus() {
 
   unsigned number_of_input_channels = NumberOfChannels();
 
-  if (number_of_input_channels == internal_summing_bus_->NumberOfChannels())
+  if (number_of_input_channels == internal_summing_bus_->NumberOfChannels()) {
     return;
+  }
 
   internal_summing_bus_ = AudioBus::Create(
       number_of_input_channels, GetDeferredTaskHandler().RenderQuantumFrames());
@@ -65,8 +66,9 @@ void AudioNodeInput::UpdateInternalBus() {
 
 unsigned AudioNodeInput::NumberOfChannels() const {
   AudioHandler::ChannelCountMode mode = Handler().InternalChannelCountMode();
-  if (mode == AudioHandler::kExplicit)
+  if (mode == AudioHandler::kExplicit) {
     return Handler().ChannelCount();
+  }
 
   // Find the number of channels of the connection with the largest number of
   // channels.
@@ -79,9 +81,10 @@ unsigned AudioNodeInput::NumberOfChannels() const {
     max_channels = std::max(max_channels, output->NumberOfChannels());
   }
 
-  if (mode == AudioHandler::kClampedMax)
+  if (mode == AudioHandler::kClampedMax) {
     max_channels =
         std::min(max_channels, static_cast<unsigned>(Handler().ChannelCount()));
+  }
 
   return max_channels;
 }
@@ -91,8 +94,9 @@ scoped_refptr<AudioBus> AudioNodeInput::Bus() {
 
   // Handle single connection specially to allow for in-place processing.
   if (NumberOfRenderingConnections() == 1 &&
-      Handler().InternalChannelCountMode() == AudioHandler::kMax)
+      Handler().InternalChannelCountMode() == AudioHandler::kMax) {
     return RenderingOutput(0)->Bus();
+  }
 
   // Multiple connections case or complex ChannelCountMode (or no connections).
   return InternalSummingBus();

@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state_callback.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -45,7 +45,7 @@ class ViewportScrollCallback : public ScrollStateCallback {
 
  private:
   bool ShouldScrollBrowserControls(const ScrollOffset&,
-                                   ScrollGranularity) const;
+                                   ui::ScrollGranularity) const;
   bool ScrollBrowserControls(ScrollState&);
 
   ScrollResult PerformNativeScroll(ScrollState&);

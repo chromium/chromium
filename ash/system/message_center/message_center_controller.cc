@@ -104,6 +104,12 @@ MessageCenterController::MessageCenterController() {
         std::make_unique<PhoneHubNotificationController>();
   }
 
+  // When adding other notification blockers, ensure that they are initialized
+  // before the shell's `HpsNotifyController`. The notification blocker that it
+  // adds during its construction must be the last blocker, since it observes
+  // the states of all the others.
+  DCHECK(!Shell::Get()->hps_notify_controller());
+
   // Set the system notification source display name ("Chrome OS" or "Chromium
   // OS").
   message_center::MessageCenter::Get()->SetSystemNotificationAppName(

@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/files/file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/lock.h"
 #include "net/base/net_export.h"
@@ -67,10 +67,10 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
                base::File* file);
 
     // All the pointer fields are nullptr in the default/moved away from form.
-    SimpleFileTracker* file_tracker_ = nullptr;
-    const SimpleSynchronousEntry* entry_ = nullptr;
+    raw_ptr<SimpleFileTracker> file_tracker_ = nullptr;
+    raw_ptr<const SimpleSynchronousEntry> entry_ = nullptr;
     SimpleFileTracker::SubFile subfile_;
-    base::File* file_ = nullptr;
+    raw_ptr<base::File> file_ = nullptr;
   };
 
   struct EntryFileKey {
@@ -167,7 +167,7 @@ class NET_EXPORT_PRIVATE SimpleFileTracker {
     // 2) To get info on the caller of our operation.
     //    Accessing |owner| from any other TrackedFiles would be unsafe (as it
     //    may be doing its own thing in a different thread).
-    const SimpleSynchronousEntry* owner;
+    raw_ptr<const SimpleSynchronousEntry> owner;
     EntryFileKey key;
 
     // Some of these may be nullptr, if they are not open. Non-null pointers

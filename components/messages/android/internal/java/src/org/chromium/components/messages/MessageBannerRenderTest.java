@@ -5,7 +5,10 @@
 package org.chromium.components.messages;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.text.SpannableString;
 import android.text.Spanned;
@@ -29,7 +32,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -39,7 +42,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-public class MessageBannerRenderTest extends DummyUiActivityTestCase {
+public class MessageBannerRenderTest extends BlankUiTestActivityTestCase {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -48,7 +51,7 @@ public class MessageBannerRenderTest extends DummyUiActivityTestCase {
     public RenderTestRule mRenderTestRule = RenderTestRule.Builder.withPublicCorpus().build();
 
     public MessageBannerRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
@@ -187,5 +190,155 @@ public class MessageBannerRenderTest extends DummyUiActivityTestCase {
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { getActivity().setContentView(view, params); });
         mRenderTestRule.render(view, "message_banner_layout_after_clearing_description");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    public void testLargeIcon() throws Exception {
+        Activity activity = getActivity();
+        Drawable drawable = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), android.R.drawable.ic_delete);
+        PropertyModel model = new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                                      .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                              MessageIdentifier.TEST_MESSAGE)
+                                      .with(MessageBannerProperties.ICON, drawable)
+                                      .with(MessageBannerProperties.TITLE, "Primary Title")
+                                      .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
+                                      .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                                      .with(MessageBannerProperties.LARGE_ICON, true)
+                                      .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                activity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_large_icon");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    public void testLargeIconWithRadius() throws Exception {
+        Activity activity = getActivity();
+        Bitmap.Config conf = Bitmap.Config.ARGB_8888;
+        int w = activity.getResources().getDimensionPixelSize(R.dimen.message_icon_size_large);
+        Bitmap bmp = Bitmap.createBitmap(w, w, conf);
+        bmp.eraseColor(Color.RED);
+        BitmapDrawable drawable = new BitmapDrawable(bmp);
+        int radius = activity.getResources().getDimensionPixelSize(R.dimen.message_icon_size) / 2;
+        PropertyModel model =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
+                        .with(MessageBannerProperties.ICON, drawable)
+                        .with(MessageBannerProperties.TITLE, "Primary Title")
+                        .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                        .with(MessageBannerProperties.LARGE_ICON, true)
+                        .with(MessageBannerProperties.ICON_ROUNDED_CORNER_RADIUS_PX, radius)
+                        .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                activity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_large_icon_with_radius");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    public void testDescriptionIconWithDefaultSize() throws Exception {
+        Activity activity = getActivity();
+        Drawable messageIcon = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), android.R.drawable.ic_delete);
+        Drawable descriptionIcon = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), R.drawable.ic_photo_camera_black);
+        PropertyModel model =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
+                        .with(MessageBannerProperties.ICON, messageIcon)
+                        .with(MessageBannerProperties.TITLE, "Primary Title")
+                        .with(MessageBannerProperties.DESCRIPTION_ICON, descriptionIcon)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                        .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                activity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_description_icon_with_default_size");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    public void testDescriptionIconWithResizing() throws Exception {
+        Activity activity = getActivity();
+        Drawable messageIcon = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), android.R.drawable.ic_delete);
+        Drawable descriptionIcon = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), R.drawable.ic_photo_camera_black);
+        PropertyModel model =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
+                        .with(MessageBannerProperties.ICON, messageIcon)
+                        .with(MessageBannerProperties.TITLE, "Primary Title")
+                        .with(MessageBannerProperties.DESCRIPTION_ICON, descriptionIcon)
+                        .with(MessageBannerProperties.RESIZE_DESCRIPTION_ICON, true)
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                        .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                activity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_description_icon_with_resizing");
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"RenderTest", "Messages"})
+    public void testDescriptionIconWithText() throws Exception {
+        Activity activity = getActivity();
+        Drawable messageIcon = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), android.R.drawable.ic_delete);
+        Drawable descriptionIcon = ApiCompatibilityUtils.getDrawable(
+                activity.getResources(), R.drawable.ic_photo_camera_black);
+        PropertyModel model =
+                new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                        .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                                MessageIdentifier.TEST_MESSAGE)
+                        .with(MessageBannerProperties.ICON, messageIcon)
+                        .with(MessageBannerProperties.TITLE, "Primary Title")
+                        .with(MessageBannerProperties.DESCRIPTION_ICON, descriptionIcon)
+                        .with(MessageBannerProperties.RESIZE_DESCRIPTION_ICON, true)
+                        .with(MessageBannerProperties.DESCRIPTION, "Secondary Title")
+                        .with(MessageBannerProperties.PRIMARY_BUTTON_TEXT, "Action")
+                        .build();
+        MessageBannerView view = (MessageBannerView) LayoutInflater.from(activity).inflate(
+                R.layout.message_banner_view, null, false);
+        PropertyModelChangeProcessor.create(model, view, MessageBannerViewBinder::bind);
+        LayoutParams params = new LayoutParams(LayoutParams.MATCH_PARENT,
+                activity.getResources().getDimensionPixelSize(R.dimen.message_banner_height));
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> { getActivity().setContentView(view, params); });
+        mRenderTestRule.render(view, "message_banner_description_icon_with_text");
     }
 }

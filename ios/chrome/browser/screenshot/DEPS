@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^screenshot_delegate.mm": [
+    "+ios/chrome/browser/ui/main/browser_interface_provider.h",
+  ],
+}
+

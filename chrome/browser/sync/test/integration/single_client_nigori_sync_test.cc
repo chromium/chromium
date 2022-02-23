@@ -7,6 +7,7 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
+#include "chrome/browser/sync/test/integration/sync_disabled_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "chrome/browser/ui/browser.h"
@@ -31,13 +33,12 @@
 #include "components/password_manager/core/browser/password_manager_features_util.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
-#include "components/sync/base/sync_base_switches.h"
+#include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/engine/sync_engine_switches.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/nigori_test_utils.h"
 #include "components/sync/test/fake_server/fake_server_nigori_helper.h"
@@ -289,7 +290,7 @@ class FakeSecurityDomainsServerMemberStatusChecker
 
   int expected_member_count_;
   std::vector<uint8_t> expected_trusted_vault_key_;
-  syncer::FakeSecurityDomainsServer* const server_;
+  const raw_ptr<syncer::FakeSecurityDomainsServer> server_;
 };
 
 class SingleClientNigoriSyncTest : public SyncTest {
@@ -605,7 +606,7 @@ class SingleClientNigoriWithWebApiTest : public SyncTest {
     const GURL& base_url = embedded_test_server()->base_url();
     command_line->AppendSwitchASCII(switches::kGaiaUrl, base_url.spec());
     command_line->AppendSwitchASCII(
-        switches::kTrustedVaultServiceURL,
+        syncer::kTrustedVaultServiceURL,
         syncer::FakeSecurityDomainsServer::GetServerURL(
             embedded_test_server()->base_url())
             .spec());
@@ -1104,7 +1105,7 @@ class SingleClientNigoriWithRecoverySyncTest
  public:
   SingleClientNigoriWithRecoverySyncTest() {
     override_features_.InitAndEnableFeature(
-        switches::kSyncTrustedVaultPassphraseRecovery);
+        syncer::kSyncTrustedVaultPassphraseRecovery);
   }
 
   ~SingleClientNigoriWithRecoverySyncTest() override = default;
@@ -1133,7 +1134,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                         GetFakeServer());
   ASSERT_TRUE(SetupClients());
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
-      kGaiaId, {trusted_vault_key},
+      kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
   ASSERT_TRUE(SetupSync());
 
@@ -1215,7 +1216,7 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
   GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
       kTestRecoveryMethodPublicKey);
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
-      kGaiaId, {trusted_vault_key},
+      kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
 
   // Mimic a recovery method being added before or during sign-in, which should
@@ -1237,6 +1238,55 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
                                                              /*degraded=*/false)
                   .Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriWithRecoverySyncTest,
+    ShouldReportDegradedTrustedVaultRecoverabilityUponResolvedAuthError) {
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  const GURL recoverability_url = GetTrustedVaultRecoverabilityURL(
+      *embedded_test_server(), kTestRecoveryMethodPublicKey);
+
+  // Mimic the key being available upon startup and recoverability good (not
+  // degraded).
+  const std::vector<uint8_t> trusted_vault_key =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{trusted_vault_key}),
+                        GetFakeServer());
+  ASSERT_TRUE(SetupClients());
+  GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
+      kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
+      /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
+  ASSERT_TRUE(SetupSync());
+  ASSERT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+  ASSERT_FALSE(ShouldShowTrustedVaultDegradedRecoverabilityError(
+      GetSyncService(0), GetProfile(0)->GetPrefs()));
+
+  // Mimic a server-side persistent auth error together with a degraded
+  // recoverability, such as an account recovery flow that resets the account
+  // password.
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)),
+      GetSyncService(0)->GetAccountInfo().account_id,
+      GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
+          GoogleServiceAuthError::InvalidGaiaCredentialsReason::
+              CREDENTIALS_REJECTED_BY_SERVER));
+
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+
+  // Mimic resolving the auth error (e.g. user reauth).
+  signin::UpdatePersistentErrorOfRefreshTokenForAccount(
+      IdentityManagerFactory::GetForProfile(GetProfile(0)),
+      GetSyncService(0)->GetAccountInfo().account_id, GoogleServiceAuthError());
+
+  // The recoverability state should be immediately refreshed.
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
 }
 
 // Device registration attempt should be taken upon sign in into primary
@@ -1289,6 +1339,127 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
       password_form, trusted_vault_key_params.password,
       trusted_vault_key_params.derivation_params, GetFakeServer());
   EXPECT_TRUE(PasswordFormsChecker(0, {password_form}).Wait());
+  EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
+}
+
+// Regression test for crbug.com/1267391: after following key rotation the
+// client should still send all trusted vault keys (including keys that predate
+// key rotation) to the server when adding recovery method.
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
+                       ShouldFollowKeyRotationAndAddRecoveryMethod) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      FakeSecurityDomainsServerMemberStatusChecker(
+          /*expected_member_count=*/1,
+          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
+          GetSecurityDomainsServer())
+          .Wait());
+
+  std::vector<uint8_t> new_trusted_vault_key =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  // Trigger following key rotation client-side.
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{new_trusted_vault_key}),
+                        GetFakeServer());
+
+  const std::vector<uint8_t> kTestRecoveryMethodPublicKey =
+      syncer::SecureBoxKeyPair::GenerateRandom()->public_key().ExportToBytes();
+  const int kTestMethodTypeHint = 8;
+
+  // Enter degraded recoverability state.
+  GetSecurityDomainsServer()->RequirePublicKeyToAvoidRecoverabilityDegraded(
+      kTestRecoveryMethodPublicKey);
+  ASSERT_TRUE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+  ASSERT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/true)
+                  .Wait());
+
+  // Mimic a recovery method being added.
+  base::RunLoop run_loop;
+  GetSyncService(0)->AddTrustedVaultRecoveryMethodFromWeb(
+      kGaiaId, kTestRecoveryMethodPublicKey, kTestMethodTypeHint,
+      run_loop.QuitClosure());
+  run_loop.Run();
+
+  // Verify that recovery method was added. Server rejects the request if client
+  // didn't send all keys.
+  EXPECT_TRUE(TrustedVaultRecoverabilityDegradedStateChecker(GetSyncService(0),
+                                                             /*degraded=*/false)
+                  .Wait());
+  EXPECT_FALSE(GetSecurityDomainsServer()->IsRecoverabilityDegraded());
+}
+
+// This test verifies that client handles security domain reset and able to
+// register again after that and follow key rotation.
+IN_PROC_BROWSER_TEST_F(SingleClientNigoriWithRecoverySyncTest,
+                       ShouldFollowKeyRotationAfterSecurityDomainReset) {
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      FakeSecurityDomainsServerMemberStatusChecker(
+          /*expected_member_count=*/1,
+          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
+          GetSecurityDomainsServer())
+          .Wait());
+
+  // Rotate trusted vault key and mimic transition to trusted vault passphrase
+  // type.
+  std::vector<uint8_t> trusted_vault_key1 =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{trusted_vault_key1}),
+                        GetFakeServer());
+
+  // Ensure that client has finished following key rotation by verifying
+  // passwords are decryptable.
+  const KeyParamsForTesting trusted_vault_key_params1 =
+      TrustedVaultKeyParamsForTesting(trusted_vault_key1);
+  const password_manager::PasswordForm password_form1 =
+      passwords_helper::CreateTestPasswordForm(1);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form1, trusted_vault_key_params1.password,
+      trusted_vault_key_params1.derivation_params, GetFakeServer());
+  ASSERT_TRUE(PasswordFormsChecker(0, {password_form1}).Wait());
+
+  // Reset security domain state and mimic sync data reset.
+  GetSecurityDomainsServer()->ResetData();
+  GetFakeServer()->ClearServerData();
+
+  // Make change to trigger sync cycle.
+  bookmarks_helper::AddURL(/*profile=*/0, /*title=*/"title",
+                           GURL("http://www.google.com"));
+
+  // Wait until sync gets disabled to ensure client is aware of reset.
+  ASSERT_TRUE(SyncDisabledChecker(GetSyncService(0)).Wait());
+
+  // Make sure that client is able to follow key rotation with fresh security
+  // domain state.
+  ASSERT_TRUE(SetupSync());
+  ASSERT_TRUE(
+      FakeSecurityDomainsServerMemberStatusChecker(
+          /*expected_member_count=*/1,
+          /*expected_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey(),
+          GetSecurityDomainsServer())
+          .Wait());
+
+  std::vector<uint8_t> trusted_vault_key2 =
+      GetSecurityDomainsServer()->RotateTrustedVaultKey(
+          /*last_trusted_vault_key=*/syncer::GetConstantTrustedVaultKey());
+  SetNigoriInFakeServer(BuildTrustedVaultNigoriSpecifics(
+                            /*trusted_vault_keys=*/{trusted_vault_key2}),
+                        GetFakeServer());
+
+  const KeyParamsForTesting trusted_vault_key_params2 =
+      TrustedVaultKeyParamsForTesting(trusted_vault_key2);
+  const password_manager::PasswordForm password_form2 =
+      passwords_helper::CreateTestPasswordForm(2);
+  passwords_helper::InjectEncryptedServerPassword(
+      password_form2, trusted_vault_key_params2.password,
+      trusted_vault_key_params2.derivation_params, GetFakeServer());
+  // |password_form1| has never been deleted locally, so client should have both
+  // forms now.
+  EXPECT_TRUE(PasswordFormsChecker(0, {password_form1, password_form2}).Wait());
   EXPECT_FALSE(GetSecurityDomainsServer()->ReceivedInvalidRequest());
 }
 
@@ -1383,7 +1554,7 @@ IN_PROC_BROWSER_TEST_F(
                         GetFakeServer());
   ASSERT_TRUE(SetupClients());
   GetSyncService(0)->AddTrustedVaultDecryptionKeysFromWeb(
-      kGaiaId, {trusted_vault_key},
+      kGaiaId, GetSecurityDomainsServer()->GetAllTrustedVaultKeys(),
       /*last_key_version=*/GetSecurityDomainsServer()->GetCurrentEpoch());
 
   SetupSyncTransport();

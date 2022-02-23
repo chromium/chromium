@@ -7,17 +7,17 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/auth_status_consumer.h"
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
 #include "content/public/browser/browser_thread.h"
 
 class Profile;
 
-namespace chromeos {
+namespace ash {
 class ExtendedAuthenticator;
 class UserContext;
-}  // namespace chromeos
+}  // namespace ash
 
 namespace extensions {
 
@@ -28,21 +28,21 @@ struct TokenInfo;
 }  // namespace api
 
 // A single-use adaptor to make calls to
-//   chromeos::ExtendedAuthenticator::AuthenticateToCheck()
+//   ash::ExtendedAuthenticator::AuthenticateToCheck()
 // and pass result back to a single callback. Re. object lifetime, caller just
 // have to call:
 //
 //   scoped_refptr<QuickUnlockPrivateGetAuthTokenHelper> helper =
 //      base::MakeRefCounted<QuickUnlockPrivateGetAuthTokenHelper>(...);
 //   ...
-//   // Attach |helper| to a chromeos::ExtendedAuthenticator.
+//   // Attach |helper| to a ash::ExtendedAuthenticator.
 //   ...
 //   // Bind callback and pass as argument.
 //   helper->Run(...);
 //
 // Hereafter, the caller need not worry about |helper|'s lifetime.
 class QuickUnlockPrivateGetAuthTokenHelper
-    : public chromeos::AuthStatusConsumer,
+    : public ash::AuthStatusConsumer,
       public base::RefCountedThreadSafe<
           QuickUnlockPrivateGetAuthTokenHelper,
           content::BrowserThread::DeleteOnUIThread> {
@@ -62,7 +62,7 @@ class QuickUnlockPrivateGetAuthTokenHelper
   QuickUnlockPrivateGetAuthTokenHelper& operator=(
       const QuickUnlockPrivateGetAuthTokenHelper&) = delete;
 
-  void Run(chromeos::ExtendedAuthenticator* extended_authenticator,
+  void Run(ash::ExtendedAuthenticator* extended_authenticator,
            const std::string& password,
            ResultCallback callback);
 
@@ -76,8 +76,8 @@ class QuickUnlockPrivateGetAuthTokenHelper
       content::BrowserThread::UI>;
 
   // AuthStatusConsumer overrides.
-  void OnAuthFailure(const chromeos::AuthFailure& error) override;
-  void OnAuthSuccess(const chromeos::UserContext& user_context) override;
+  void OnAuthFailure(const ash::AuthFailure& error) override;
+  void OnAuthSuccess(const ash::UserContext& user_context) override;
 
   Profile* profile_;
   ResultCallback callback_;

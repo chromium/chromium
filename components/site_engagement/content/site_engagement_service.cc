@@ -14,11 +14,13 @@
 #include "base/metrics/field_trial.h"
 #include "base/strings/string_util.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_restrictions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
@@ -37,7 +39,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/site_engagement/content/android/site_engagement_service_android.h"
 #endif
 
@@ -220,6 +222,7 @@ SiteEngagementService::GetAllDetailsInBackground(
     base::Time now,
     scoped_refptr<HostContentSettingsMap> map) {
   StoppedClock clock(now);
+  base::AssertLongCPUWorkAllowed();
   return GetAllDetailsImpl(browsing_data::TimePeriod::ALL_TIME, &clock,
                            map.get());
 }
@@ -255,7 +258,6 @@ std::vector<mojom::SiteEngagementDetails> SiteEngagementService::GetAllDetails()
     const {
   if (IsLastEngagementStale())
     CleanupEngagementScores(true);
-
   return GetAllDetailsImpl(
       browsing_data::TimePeriod::ALL_TIME, clock_,
       permissions::PermissionsClient::Get()->GetSettingsMap(browser_context_));
@@ -378,7 +380,7 @@ void SiteEngagementService::AddPointsForTesting(const GURL& url,
   AddPoints(url, points);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 SiteEngagementServiceAndroid* SiteEngagementService::GetAndroidService() const {
   return android_service_.get();
 }
@@ -482,7 +484,7 @@ void SiteEngagementService::CleanupEngagementScores(
 
     // This origin has a score of 0. Wipe it from content settings.
     settings_map->SetWebsiteSettingDefaultScope(
-        origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, nullptr);
+        origin, GURL(), ContentSettingsType::SITE_ENGAGEMENT, base::Value());
   }
 
   // Set the last engagement time to be consistent with the scores. This will

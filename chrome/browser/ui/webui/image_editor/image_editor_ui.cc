@@ -9,15 +9,18 @@
 #include "chrome/browser/ui/webui/image_editor/editor_untrusted_source.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/image_editor_resources.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
 
+namespace image_editor {
+
 ImageEditorUI::ImageEditorUI(content::WebUI* web_ui)
-    : WebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
+    : content::WebUIController(web_ui), profile_(Profile::FromWebUI(web_ui)) {
   // Set up the chrome://image-editor source.
   content::WebUIDataSource* html_source =
       content::WebUIDataSource::Create(chrome::kChromeUIImageEditorHost);
-  html_source->SetDefaultResource(IDR_IMAGE_EDITOR_HTML);
+  html_source->SetDefaultResource(IDR_IMAGE_EDITOR_IMAGE_EDITOR_HTML);
   html_source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::FrameSrc,
       base::StringPrintf("frame-src %s;",
@@ -27,3 +30,7 @@ ImageEditorUI::ImageEditorUI(content::WebUI* web_ui)
       profile_, std::make_unique<EditorUntrustedSource>(profile_));
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
 }
+
+ImageEditorUI::~ImageEditorUI() = default;
+WEB_UI_CONTROLLER_TYPE_IMPL(ImageEditorUI)
+}  // namespace image_editor

@@ -31,6 +31,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_STRING_LIST_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_STRING_LIST_H_
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/properties/svg_property_helper.h"
 #include "third_party/blink/renderer/core/svg/svg_parsing_error.h"
 

@@ -6,8 +6,6 @@ package org.chromium.chrome.browser.infobar;
 
 import static org.chromium.chrome.browser.preferences.ChromePreferenceKeys.SYNC_ERROR_PROMPT_SHOWN_AT_TIME;
 
-import android.os.Build;
-
 import androidx.test.filters.LargeTest;
 
 import org.junit.Assert;
@@ -18,7 +16,6 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
-import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.browser.SyncFirstSetupCompleteSource;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -232,11 +229,7 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N, supported_abis_includes = "x86",
-            message = "Flaky, see crbug.com/1264954")
-    public void
-    testSyncErrorInfoBarForAuthErrorView() throws IOException {
+    public void testSyncErrorInfoBarForAuthErrorView() throws IOException {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeSyncServiceImpl.setAuthError(GoogleServiceAuthError.State.INVALID_GAIA_CREDENTIALS);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
@@ -247,11 +240,7 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N, supported_abis_includes = "x86",
-            message = "Flaky, see crbug.com/1264954")
-    public void
-    testSyncErrorInfoBarForSyncSetupIncompleteView() throws IOException {
+    public void testSyncErrorInfoBarForSyncSetupIncompleteView() throws IOException {
         mSyncTestRule.setUpTestAccountAndSignInWithSyncSetupAsIncomplete();
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);
         mRenderTestRule.render(mSyncTestRule.getInfoBarContainer().getContainerViewForTesting(),
@@ -261,11 +250,7 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N, supported_abis_includes = "x86",
-            message = "Flaky, see crbug.com/1264954")
-    public void
-    testSyncErrorInfoBarForPassphraseRequiredView() throws IOException {
+    public void testSyncErrorInfoBarForPassphraseRequiredView() throws IOException {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeSyncServiceImpl.setEngineInitialized(true);
         mFakeSyncServiceImpl.setPassphraseRequiredForPreferredDataTypes(true);
@@ -277,11 +262,7 @@ public class SyncErrorInfoBarTest {
     @Test
     @LargeTest
     @Feature("RenderTest")
-    @DisableIf.Build(sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP_MR1,
-            sdk_is_less_than = Build.VERSION_CODES.N, supported_abis_includes = "x86",
-            message = "Flaky, see crbug.com/1264954")
-    public void
-    testSyncErrorInfoBarForClientOutOfDateView() throws IOException {
+    public void testSyncErrorInfoBarForClientOutOfDateView() throws IOException {
         mSyncTestRule.setUpAccountAndEnableSyncForTesting();
         mFakeSyncServiceImpl.setRequiresClientUpgrade(true);
         mSyncTestRule.loadUrl(UrlConstants.VERSION_URL);

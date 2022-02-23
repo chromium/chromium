@@ -11,7 +11,7 @@
 
 #include "base/callback.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/lib/bindings_internal.h"
 
 namespace mojo {
@@ -71,8 +71,8 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageDispatchContext {
   base::OnceCallback<void(const std::string&)> GetBadMessageCallback();
 
  private:
-  MessageDispatchContext* outer_context_;
-  Message* message_;
+  raw_ptr<MessageDispatchContext> outer_context_;
+  raw_ptr<Message> message_;
 };
 
 COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE)

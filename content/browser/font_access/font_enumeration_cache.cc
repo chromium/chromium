@@ -4,47 +4,55 @@
 
 #include "content/browser/font_access/font_enumeration_cache.h"
 
+#include <algorithm>
+#include <memory>
 #include <string>
 #include <utility>
 
-#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/read_only_shared_memory_region.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequence_bound.h"
 #include "base/types/pass_key.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
+#include "content/browser/font_access/font_enumeration_data_source.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/font_access/font_enumeration_table.pb.h"
+#include "third_party/blink/public/mojom/font_access/font_access.mojom.h"
 
 namespace content {
 
 // static
 base::SequenceBound<FontEnumerationCache> FontEnumerationCache::Create() {
-  return FontEnumerationCache::CreateForTesting(
+  return base::SequenceBound<FontEnumerationCache>(
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::BEST_EFFORT}),
-      absl::nullopt);
+      FontEnumerationDataSource::Create(), absl::nullopt,
+      base::PassKey<FontEnumerationCache>());
 }
-
-#if !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
 
 // static
 base::SequenceBound<FontEnumerationCache>
 FontEnumerationCache::CreateForTesting(
     scoped_refptr<base::SequencedTaskRunner> task_runner,
+    std::unique_ptr<FontEnumerationDataSource> data_source,
     absl::optional<std::string> locale_override) {
-  return base::SequenceBound<FontEnumerationCache>();
+  DCHECK(data_source);
+  return base::SequenceBound<FontEnumerationCache>(
+      std::move(task_runner), std::move(data_source),
+      std::move(locale_override), base::PassKey<FontEnumerationCache>());
 }
 
-#endif  // !defined(PLATFORM_HAS_LOCAL_FONT_ENUMERATION_IMPL)
-
 FontEnumerationCache::FontEnumerationCache(
-    absl::optional<std::string> locale_override)
-    : locale_override_(std::move(locale_override)) {}
+    std::unique_ptr<FontEnumerationDataSource> data_source,
+    absl::optional<std::string> locale_override,
+    base::PassKey<FontEnumerationCache>)
+    : data_source_(std::move(data_source)),
+      locale_override_(std::move(locale_override)) {
+  DCHECK(data_source_);
+}
 
 FontEnumerationCache::~FontEnumerationCache() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -57,7 +65,7 @@ FontEnumerationData FontEnumerationCache::GetFontEnumerationData() {
     std::string locale =
         locale_override_.value_or(base::i18n::GetConfiguredLocale());
 
-    blink::FontEnumerationTable font_data = ComputeFontEnumerationData(locale);
+    blink::FontEnumerationTable font_data = data_source_->GetFonts(locale);
     BuildEnumerationCache(font_data);
     initialized_ = true;
   }

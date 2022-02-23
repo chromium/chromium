@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/app_types.h"
+#include "ash/public/cpp/desks_templates_delegate.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/shell.h"
@@ -30,6 +31,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/stringprintf.h"
 #include "chromeos/ui/base/window_properties.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window_tracker.h"
 #include "ui/compositor/layer.h"
@@ -77,9 +79,12 @@ void UpdateBackdropController(aura::Window* desk_container) {
 bool CanMoveWindowOutOfDeskContainer(aura::Window* window) {
   // The desks bar widget is an activatable window placed in the active desk's
   // container, therefore it should be allowed to move outside of its desk when
-  // its desk is removed.
-  if (window->GetId() == kShellWindowId_DesksBarWindow)
+  // its desk is removed. The save desk as template widget is not activatable
+  // but should also be moved to the next active desk.
+  if (window->GetId() == kShellWindowId_DesksBarWindow ||
+      window->GetId() == kShellWindowId_SaveDeskAsTemplateWindow) {
     return true;
+  }
 
   // We never move transient descendants directly, this is taken care of by
   // `wm::TransientWindowManager::OnWindowHierarchyChanged()`.
@@ -280,6 +285,7 @@ void Desk::OnRootWindowClosing(aura::Window* root) {
 
 void Desk::AddWindowToDesk(aura::Window* window) {
   DCHECK(!base::Contains(windows_, window));
+
   windows_.push_back(window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
   // there in the first place. Also don't refresh for visible on all desks
@@ -302,6 +308,7 @@ void Desk::AddWindowToDesk(aura::Window* window) {
 
 void Desk::RemoveWindowFromDesk(aura::Window* window) {
   DCHECK(base::Contains(windows_, window));
+
   base::Erase(windows_, window);
   // No need to refresh the mini_views if the destroyed window doesn't show up
   // there in the first place. Also don't refresh for visible on all desks
@@ -478,9 +485,6 @@ void Desk::MoveWindowToDesk(aura::Window* window,
   DCHECK(target_root);
   DCHECK(base::Contains(windows_, window));
   DCHECK(this != target_desk);
-  // The desks bar should not be allowed to move individually to another desk.
-  // Only as part of `MoveWindowsToDesk()` when the desk is removed.
-  DCHECK_NE(window->GetId(), kShellWindowId_DesksBarWindow);
 
   {
     ScopedWindowPositionerDisabler window_positioner_disabler;

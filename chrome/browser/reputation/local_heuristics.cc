@@ -11,6 +11,7 @@
 #include "chrome/browser/lookalikes/lookalike_url_blocking_page.h"
 #include "chrome/browser/lookalikes/lookalike_url_navigation_throttle.h"
 #include "chrome/browser/lookalikes/lookalike_url_service.h"
+#include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_features.h"
 #include "components/lookalikes/core/features.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
@@ -126,9 +127,16 @@ bool ShouldTriggerSafetyTipFromLookalike(
       NOTREACHED();
       return false;
     case LookalikeUrlMatchType::kCharacterSwapSiteEngagement:
+      return IsHeuristicEnabledForHostname(
+          config,
+          reputation::HeuristicLaunchConfig::
+              HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES,
+          navigated_domain.domain_and_registry, chrome::GetChannel());
     case LookalikeUrlMatchType::kCharacterSwapTop500:
-      // For now, no UI is shown for character swap matches.
-      return false;
+      return IsHeuristicEnabledForHostname(
+          config,
+          reputation::HeuristicLaunchConfig::HEURISTIC_CHARACTER_SWAP_TOP_SITES,
+          navigated_domain.domain_and_registry, chrome::GetChannel());
     case LookalikeUrlMatchType::kNone:
       NOTREACHED();
   }

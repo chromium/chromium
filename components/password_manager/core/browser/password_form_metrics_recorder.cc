@@ -229,12 +229,6 @@ PasswordFormMetricsRecorder::~PasswordFormMetricsRecorder() {
   if (submitted_form_type_ != SubmittedFormType::kUnspecified) {
     UMA_HISTOGRAM_ENUMERATION("PasswordManager.SubmittedFormType",
                               submitted_form_type_, SubmittedFormType::kCount);
-    if (!is_main_frame_secure_) {
-      UMA_HISTOGRAM_ENUMERATION("PasswordManager.SubmittedNonSecureFormType",
-                                submitted_form_type_,
-                                SubmittedFormType::kCount);
-    }
-
     ukm_entry_builder_.SetSubmission_SubmittedFormType(
         static_cast<int64_t>(submitted_form_type_));
   }
@@ -524,7 +518,7 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
     is_mixed_content_form_ = true;
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   filling_source_ = FillingSource::kNotFilled;
 #endif
   account_storage_usage_level_ = account_storage_usage_level;
@@ -563,7 +557,7 @@ void PasswordFormMetricsRecorder::CalculateFillingAssistanceMetric(
     return;
   }
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // At this point, the password was filled from at least one of the two stores,
   // so compute the filling source now.
   filling_source_ = ComputeFillingSource(

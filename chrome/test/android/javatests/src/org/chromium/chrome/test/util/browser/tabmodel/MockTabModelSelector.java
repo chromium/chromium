@@ -22,6 +22,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
     public static final int ID_OFFSET = 100000;
     public static final int INCOGNITO_ID_OFFSET = 200000;
     private static int sCurTabOffset;
+    private int mTabCount;
 
     public MockTabModelSelector(
             int tabCount, int incognitoTabCount, MockTabModel.MockTabModelDelegate delegate) {
@@ -30,12 +31,13 @@ public class MockTabModelSelector extends TabModelSelectorBase {
         for (int i = 0; i < tabCount; i++) {
             addMockTab();
         }
-        if (tabCount > 0) TabModelUtils.setIndex(getModel(false), 0);
+        if (tabCount > 0) TabModelUtils.setIndex(getModel(false), 0, false);
 
         for (int i = 0; i < incognitoTabCount; i++) {
             addMockIncognitoTab();
         }
-        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0);
+        if (incognitoTabCount > 0) TabModelUtils.setIndex(getModel(true), 0, false);
+        mTabCount = tabCount;
     }
 
     /**
@@ -74,7 +76,7 @@ public class MockTabModelSelector extends TabModelSelectorBase {
 
     @Override
     public int getTotalTabCount() {
-        throw new UnsupportedOperationException();
+        return mTabCount;
     }
 
     @Override

@@ -27,6 +27,7 @@
 #include "base/logging.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
@@ -55,7 +56,7 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "ui/base/page_transition_types.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/critical_closure.h"
 #endif
 
@@ -137,6 +138,15 @@ class HistoryService::BackendDelegate : public HistoryBackend::Delegate {
                        history_service_, url_id));
   }
 
+  void NotifyContentModelAnnotationModified(
+      const URLRow& row,
+      const VisitContentModelAnnotations& model_annotations) override {
+    service_task_runner_->PostTask(
+        FROM_HERE,
+        base::BindOnce(&HistoryService::NotifyContentModelAnnotationModified,
+                       history_service_, row, model_annotations));
+  }
+
   void DBLoaded() override {
     service_task_runner_->PostTask(
         FROM_HERE,
@@ -167,7 +177,7 @@ bool HistoryService::BackendLoaded() {
   return backend_loaded_;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void HistoryService::HandleBackgrounding() {
   TRACE_EVENT0("browser", "HistoryService::HandleBackgrounding");
 
@@ -460,15 +470,15 @@ void HistoryService::UpdateWithPageEndTime(ContextID context_id,
                      context_id, nav_entry_id, url, end_ts));
 }
 
-void HistoryService::SetFlocAllowed(ContextID context_id,
-                                    int nav_entry_id,
-                                    const GURL& url) {
-  TRACE_EVENT0("browser", "HistoryService::SetFlocAllowed");
+void HistoryService::SetBrowsingTopicsAllowed(ContextID context_id,
+                                              int nav_entry_id,
+                                              const GURL& url) {
+  TRACE_EVENT0("browser", "HistoryService::SetBrowsingTopicsAllowed");
   DCHECK(backend_task_runner_) << "History service being called after cleanup";
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   ScheduleTask(PRIORITY_NORMAL,
-               base::BindOnce(&HistoryBackend::SetFlocAllowed, history_backend_,
-                              context_id, nav_entry_id, url));
+               base::BindOnce(&HistoryBackend::SetBrowsingTopicsAllowed,
+                              history_backend_, context_id, nav_entry_id, url));
 }
 
 void HistoryService::AddContentModelAnnotationsForVisit(
@@ -492,6 +502,19 @@ void HistoryService::AddRelatedSearchesForVisit(
   ScheduleTask(PRIORITY_NORMAL,
                base::BindOnce(&HistoryBackend::AddRelatedSearchesForVisit,
                               history_backend_, visit_id, related_searches));
+}
+
+void HistoryService::AddSearchMetadataForVisit(
+    const GURL& search_normalized_url,
+    const std::u16string& search_terms,
+    VisitID visit_id) {
+  TRACE_EVENT0("browser", "HistoryService::AddSearchMetadataForVisit");
+  DCHECK(backend_task_runner_) << "History service being called after cleanup";
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ScheduleTask(PRIORITY_NORMAL,
+               base::BindOnce(&HistoryBackend::AddSearchMetadataForVisit,
+                              history_backend_, visit_id, search_normalized_url,
+                              search_terms));
 }
 
 void HistoryService::AddPageWithDetails(const GURL& url,
@@ -1233,8 +1256,8 @@ void HistoryService::DeleteLocalAndRemoteHistoryBetween(
   // TODO(crbug.com/929111): This should be factored out into a separate class
   // that dispatches deletions to the proper places.
   if (web_history) {
-    delete_directive_handler_->CreateDeleteDirectives(std::set<int64_t>(),
-                                                      begin_time, end_time);
+    delete_directive_handler_->CreateTimeRangeDeleteDirective(begin_time,
+                                                              end_time);
 
     // Attempt online deletion from the history server, but ignore the result.
     // Deletion directives ensure that the results will eventually be deleted.
@@ -1399,6 +1422,14 @@ void HistoryService::NotifyFaviconsChanged(const std::set<GURL>& page_urls,
                                            const GURL& icon_url) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   favicons_changed_callback_list_.Notify(page_urls, icon_url);
+}
+
+void HistoryService::NotifyContentModelAnnotationModified(
+    const URLRow& row,
+    const VisitContentModelAnnotations& model_annotations) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (HistoryServiceObserver& observer : observers_)
+    observer.OnContentModelAnnotationModified(this, row, model_annotations);
 }
 
 }  // namespace history

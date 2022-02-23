@@ -584,8 +584,7 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveSessionOnlyRecords) {
   ContentSettingsForOneType content_settings;
   content_settings.emplace_back(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(content_settings::ContentSettingToValue(
-          CONTENT_SETTING_SESSION_ONLY)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_SESSION_ONLY),
       std::string(), /* incognito */ false);
 
   database()->RemoveSessionOnlyRecords(content_settings);
@@ -600,19 +599,16 @@ TEST_F(AccessContextAuditDatabaseTest, RemoveSessionOnlyRecords) {
   content_settings.emplace_back(
       ContentSettingsPattern::FromString(kManyContextsCookieDomain),
       ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(content_settings::ContentSettingToValue(
-          CONTENT_SETTING_SESSION_ONLY)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_SESSION_ONLY),
       std::string(), /* incognito */ false);
   content_settings.emplace_back(
       ContentSettingsPattern::FromString(kManyContextsStorageAPIOrigin),
       ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(content_settings::ContentSettingToValue(
-          CONTENT_SETTING_SESSION_ONLY)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_SESSION_ONLY),
       std::string(), /* incognito */ false);
   content_settings.emplace_back(
       ContentSettingsPattern::Wildcard(), ContentSettingsPattern::Wildcard(),
-      base::Value::FromUniquePtrValue(
-          content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW)),
+      content_settings::ContentSettingToValue(CONTENT_SETTING_ALLOW),
       std::string(), /* incognito */ false);
   database()->RemoveSessionOnlyRecords(content_settings);
 

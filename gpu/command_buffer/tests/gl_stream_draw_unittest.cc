@@ -6,6 +6,7 @@
 #include <GLES2/gl2ext.h>
 #include <stdint.h>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -88,7 +89,7 @@ TEST_F(GLStreamDrawTest, Basic) {
 }
 
 // http://crbug.com/281565
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(GLStreamDrawTest, DrawElements) {
   static GLfloat float_red[4] = { 1.0f, 0.0f, 0.0f, 1.0f, };
   static GLfloat float_green[4] = { 0.0f, 1.0f, 0.0f, 1.0f, };

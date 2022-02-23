@@ -11,6 +11,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "extensions/browser/api/declarative_net_request/filter_list_converter/converter.h"
 
 namespace {
@@ -59,7 +60,7 @@ int main(int argc, char* argv[]) {
   base::CommandLine::StringType comma_separated_paths =
       command_line.GetSwitchValueNative(kSwitchInputFilterlistFiles);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::CommandLine::StringType separator = L",";
 #else
   base::CommandLine::StringType separator(",");

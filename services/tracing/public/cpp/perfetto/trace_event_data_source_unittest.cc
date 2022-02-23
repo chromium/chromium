@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
@@ -56,7 +57,7 @@
 #include "third_party/perfetto/protos/perfetto/trace/track_event/thread_descriptor.pb.h"
 #include "third_party/perfetto/protos/perfetto/trace/track_event/track_descriptor.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -567,7 +568,7 @@ class TraceEventDataSourceTest
 
     if (absolute_timestamp > 0) {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-      // TODO(skyostil): Implement delta timestamps.
+      // TODO(eseckler): Support microsecond encoding.
       EXPECT_EQ(packet->timestamp(), absolute_timestamp * 1000);
 #else
       EXPECT_EQ(packet->timestamp_clock_id(), kClockIdAbsolute);
@@ -575,9 +576,18 @@ class TraceEventDataSourceTest
 #endif  // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
     } else {
 #if BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
-      // TODO(skyostil): Implement delta timestamps.
-      EXPECT_LE(last_timestamp_, packet->timestamp());
-      last_timestamp_ = packet->timestamp();
+      if (packet->has_clock_snapshot()) {
+        for (auto& clock : packet->clock_snapshot().clocks()) {
+          if (clock.is_incremental()) {
+            EXPECT_LE(last_timestamp_, clock.timestamp());
+            last_timestamp_ = clock.timestamp();
+          }
+        }
+      } else if (!packet->has_timestamp_clock_id()) {
+        // Packets that don't have a timestamp_clock_id default to the
+        // incremental clock.
+        last_timestamp_ += packet->timestamp();
+      }
 #else   // !BUILDFLAG(USE_PERFETTO_CLIENT_LIBRARY)
       // Default to kClockIdIncremental.
       EXPECT_FALSE(packet->has_timestamp_clock_id());
@@ -971,7 +981,7 @@ TEST_F(TraceEventDataSourceTest, MultipleMetadataGenerators) {
   MetadataHasNamedValue(metadata1, "before_int", 42);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(TraceEventDataSourceTest,
        PackageNameNotRecordedPrivacyFilteringDisabledTraceLogNotSet) {
   StartTraceEventDataSource(/* privacy_filtering_enabled = false */);
@@ -1282,7 +1292,7 @@ TEST_F(TraceEventDataSourceTest, EventWithConvertableArgs) {
     }
 
    private:
-    int* num_calls_;
+    raw_ptr<int> num_calls_;
     const char* arg_value_;
   };
 
@@ -1305,6 +1315,96 @@ TEST_F(TraceEventDataSourceTest, EventWithConvertableArgs) {
   EXPECT_EQ(annotations.size(), 2);
   EXPECT_EQ(annotations[0].legacy_json_value(), kArgValue1);
   EXPECT_EQ(annotations[1].legacy_json_value(), kArgValue2);
+}
+
+TEST_F(TraceEventDataSourceTest, NestableAsyncTraceEvent) {
+  constexpr bool kPrivacyFilteringEnabled = true;
+  StartTraceEventDataSource(kPrivacyFilteringEnabled);
+
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategoryGroup, "foo",
+                                    TRACE_ID_WITH_SCOPE("foo", 1));
+  // "foo" is the first name string interned.
+  constexpr uint32_t kFooNameIID = 1u;
+
+  // Same id, different scope.
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategoryGroup, "bar",
+                                    TRACE_ID_WITH_SCOPE("bar", 1));
+  // "bar" is the first name string interned.
+  constexpr uint32_t kBarNameIID = 2u;
+
+  // Same scope, different id.
+  TRACE_EVENT_NESTABLE_ASYNC_BEGIN0(kCategoryGroup, "bar",
+                                    TRACE_ID_WITH_SCOPE("bar", 2));
+
+  TRACE_EVENT_NESTABLE_ASYNC_END0(kCategoryGroup, "bar",
+                                  TRACE_ID_WITH_SCOPE("bar", 2));
+  TRACE_EVENT_NESTABLE_ASYNC_END0(kCategoryGroup, "bar",
+                                  TRACE_ID_WITH_SCOPE("bar", 1));
+  TRACE_EVENT_NESTABLE_ASYNC_END0(kCategoryGroup, "foo",
+                                  TRACE_ID_WITH_SCOPE("foo", 1));
+
+  size_t packet_index = ExpectStandardPreamble(0, kPrivacyFilteringEnabled);
+
+  // Helper function that puts the unscoped_id of the packet's legacy_event in
+  // `id`. This uses an output parameter instead of a return value so that it
+  // can use ASSERT macros for early return.
+  auto get_legacy_event_id =
+      [](const perfetto::protos::TracePacket* packet, uint64_t* id,
+         base::Location from_here = base::Location::Current()) {
+        SCOPED_TRACE(from_here.ToString());
+        // Output 0 on error.
+        *id = 0;
+        ASSERT_TRUE(packet->has_track_event());
+        ASSERT_TRUE(packet->track_event().has_legacy_event());
+        ASSERT_TRUE(packet->track_event().legacy_event().has_unscoped_id());
+        *id = packet->track_event().legacy_event().unscoped_id();
+      };
+
+  // kCategoryGroup is the first (and only) category string interned.
+  constexpr uint32_t kCategoryIID = 1u;
+
+  // Since privacy filtering is enabled, the event id's can be altered to avoid
+  // conflicts when scope names are filtered out. The important thing is that
+  // each begin event has a different id, because of the different scopes, and
+  // each end event's id matches the corresponding begin event.
+  uint64_t id1;
+  auto* e_packet = GetFinalizedPacket(packet_index++);
+  get_legacy_event_id(e_packet, &id1);
+  ExpectTraceEvent(e_packet, kCategoryIID, kFooNameIID,
+                   TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN,
+                   TRACE_EVENT_FLAG_HAS_ID, id1);
+
+  uint64_t id2;
+  e_packet = GetFinalizedPacket(packet_index++);
+  get_legacy_event_id(e_packet, &id2);
+  EXPECT_NE(id2, id1);
+  ExpectTraceEvent(e_packet, kCategoryIID, kBarNameIID,
+                   TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN,
+                   TRACE_EVENT_FLAG_HAS_ID, id2);
+
+  uint64_t id3;
+  e_packet = GetFinalizedPacket(packet_index++);
+  get_legacy_event_id(e_packet, &id3);
+  EXPECT_NE(id3, id1);
+  EXPECT_NE(id3, id2);
+  ExpectTraceEvent(e_packet, kCategoryIID, kBarNameIID,
+                   TRACE_EVENT_PHASE_NESTABLE_ASYNC_BEGIN,
+                   TRACE_EVENT_FLAG_HAS_ID, id3);
+
+  // End events don't include the names.
+  constexpr uint32_t kMissingNameIID = 0u;
+  e_packet = GetFinalizedPacket(packet_index++);
+  ExpectTraceEvent(e_packet, kCategoryIID, kMissingNameIID,
+                   TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
+                   TRACE_EVENT_FLAG_HAS_ID, id3);
+  e_packet = GetFinalizedPacket(packet_index++);
+  ExpectTraceEvent(e_packet, kCategoryIID, kMissingNameIID,
+                   TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
+                   TRACE_EVENT_FLAG_HAS_ID, id2);
+  e_packet = GetFinalizedPacket(packet_index++);
+  ExpectTraceEvent(e_packet, kCategoryIID, kMissingNameIID,
+                   TRACE_EVENT_PHASE_NESTABLE_ASYNC_END,
+                   TRACE_EVENT_FLAG_HAS_ID, id1);
 }
 
 TEST_F(TraceEventDataSourceTest, TaskExecutionEvent) {

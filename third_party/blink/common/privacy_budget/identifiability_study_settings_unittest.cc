@@ -5,6 +5,7 @@
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings_provider.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -49,7 +50,7 @@ class CountingSettingsProvider : public IdentifiabilityStudySettingsProvider {
   }
 
  private:
-  CallCounts* state_ = nullptr;
+  raw_ptr<CallCounts> state_ = nullptr;
 };
 
 }  // namespace

@@ -83,12 +83,26 @@ void InspectorMediaEventHandler::SendQueuedMediaEvents(
         break;
       }
       case media::MediaLogRecord::Type::kMediaStatus: {
-        base::Value* code = event.params.FindKey(media::MediaLog::kStatusText);
-        DCHECK_NE(code, nullptr);
-        blink::InspectorPlayerError error = {
-            blink::InspectorPlayerError::Type::kPipelineError, ToString(*code)};
-        errors.emplace_back(std::move(error));
-        break;
+        const std::string* group =
+            event.params.FindStringKey(media::StatusConstants::kGroupKey);
+        auto code = event.params.FindIntKey(media::StatusConstants::kCodeKey)
+                        .value_or(0);
+        DCHECK_NE(code, 0);
+        DCHECK_NE(group, nullptr);
+        if (group && *group == media::PipelineStatus::Traits::Group()) {
+          blink::InspectorPlayerError error = {
+              blink::InspectorPlayerError::Type::kPipelineError,
+              blink::WebString::FromUTF8(media::PipelineStatusToString(
+                  static_cast<media::PipelineStatusCodes>(code)))};
+          errors.emplace_back(std::move(error));
+        } else {
+          std::stringstream formatted;
+          formatted << *group << ":" << code;
+          blink::InspectorPlayerError error = {
+              blink::InspectorPlayerError::Type::kPipelineError,
+              blink::WebString::FromUTF8(formatted.str())};
+          errors.emplace_back(std::move(error));
+        }
       }
     }
   }

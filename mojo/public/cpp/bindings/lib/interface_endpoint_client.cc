@@ -6,6 +6,8 @@
 
 #include <stdint.h>
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/containers/contains.h"
@@ -13,7 +15,6 @@
 #include "base/cxx17_backports.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/bind_post_task.h"
@@ -158,7 +159,7 @@ class ThreadSafeInterfaceEndpointClientProxy : public ThreadSafeProxy {
     static void CallAcceptAndDeleteResponder(
         std::unique_ptr<MessageReceiver> responder,
         Message message) {
-      ignore_result(responder->Accept(&message));
+      std::ignore = responder->Accept(&message);
     }
 
     std::unique_ptr<MessageReceiver> responder_;
@@ -408,7 +409,7 @@ void ThreadSafeInterfaceEndpointClientProxy::SendMessageWithResponder(
   }
 
   if (response->received)
-    ignore_result(responder->Accept(&response->message));
+    std::ignore = responder->Accept(&response->message);
 }
 
 InterfaceEndpointClient::InterfaceEndpointClient(
@@ -635,7 +636,7 @@ bool InterfaceEndpointClient::SendMessageWithResponder(
     auto iter = sync_responses_.find(request_id);
     DCHECK_EQ(&response_received, iter->second->response_received);
     if (response_received) {
-      ignore_result(responder->Accept(&iter->second->response));
+      std::ignore = responder->Accept(&iter->second->response);
     } else {
       DVLOG(1) << "Mojo sync call returns without receiving a response. "
                << "Typcially it is because the interface has been "

@@ -11,7 +11,7 @@ import("//build/config/ios/ios_sdk.gni")
 # The create_bundle target requires that all asset catalogs are part of an
 # .xcasset bundle. This requirement comes from actool that only receives
 # the path to the .xcasset bundle directory and not to the individual
-# .imageset directories.
+# assets directories.
 #
 # The requirement is a bit problematic as it prevents compiling only a
 # subset of the asset catakig that are contained in a .xcasset. This template
@@ -146,5 +146,11 @@ template("launchimage") {
   asset_catalog(target_name) {
     forward_variables_from(invoker, "*", [ "asset_type" ])
     asset_type = "launchimage"
+  }
+}
+template("symbolset") {
+  asset_catalog(target_name) {
+    forward_variables_from(invoker, "*", [ "asset_type" ])
+    asset_type = "symbolset"
   }
 }

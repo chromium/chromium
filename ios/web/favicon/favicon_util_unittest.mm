@@ -19,26 +19,25 @@ using FaviconUtilTest = PlatformTest;
 
 // Tries to extract multiple favicons url, all should be extracted.
 TEST_F(FaviconUtilTest, ExtractFaviconURLMultipleFavicons) {
-  base::DictionaryValue favicon;
+  base::Value favicon(base::Value::Type::DICTIONARY);
   favicon.SetKey("href", base::Value("http://fav.ico"));
   favicon.SetKey("rel", base::Value("icon"));
   favicon.SetKey("sizes", base::Value("10x20"));
-  base::DictionaryValue favicon2;
+  base::Value favicon2(base::Value::Type::DICTIONARY);
   favicon2.SetKey("href", base::Value("http://fav2.ico"));
   favicon2.SetKey("rel", base::Value("apple-touch-icon"));
   favicon2.SetKey("sizes", base::Value("10x20 30x40"));
-  base::DictionaryValue favicon3;
+  base::Value favicon3(base::Value::Type::DICTIONARY);
   favicon3.SetKey("href", base::Value("http://fav3.ico"));
   favicon3.SetKey("rel", base::Value("apple-touch-icon-precomposed"));
   favicon3.SetKey("sizes", base::Value("werfxw"));
-  std::unique_ptr<base::ListValue> favicons =
-      std::make_unique<base::ListValue>();
-  favicons->Append(std::move(favicon));
-  favicons->Append(std::move(favicon2));
-  favicons->Append(std::move(favicon3));
+  base::Value favicons(base::Value::Type::LIST);
+  favicons.Append(std::move(favicon));
+  favicons.Append(std::move(favicon2));
+  favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.get(),
+  bool result = web::ExtractFaviconURL(favicons.GetListDeprecated(),
                                        GURL("http://chromium.org"), &urls);
 
   EXPECT_TRUE(result);
@@ -62,22 +61,22 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLMultipleFavicons) {
 
 // Tries to extract favicons with the rel attributes missing in one of them.
 TEST_F(FaviconUtilTest, ExtractFaviconURLNoRel) {
-  base::DictionaryValue favicon;
+  base::Value favicon(base::Value::Type::DICTIONARY);
   favicon.SetKey("href", base::Value("http://fav.ico"));
   favicon.SetKey("rel", base::Value("icon"));
-  base::DictionaryValue favicon2;
+  base::Value favicon2(base::Value::Type::DICTIONARY);
   favicon2.SetKey("href", base::Value("http://fav2.ico"));
-  base::DictionaryValue favicon3;
+  base::Value favicon3(base::Value::Type::DICTIONARY);
   favicon3.SetKey("href", base::Value("http://fav3.ico"));
   favicon3.SetKey("rel", base::Value("apple-touch-icon-precomposed"));
-  std::unique_ptr<base::ListValue> favicons =
-      std::make_unique<base::ListValue>();
-  favicons->Append(std::move(favicon));
-  favicons->Append(std::move(favicon2));
-  favicons->Append(std::move(favicon3));
+  base::Value favicons(base::Value::Type::LIST);
+  favicons.Append(std::move(favicon));
+  favicons.Append(std::move(favicon2));
+  favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -87,23 +86,23 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoRel) {
 
 // Tries to extract favicons with the rel attributes being an int.
 TEST_F(FaviconUtilTest, ExtractFaviconURLIntRel) {
-  base::DictionaryValue favicon;
+  base::Value favicon(base::Value::Type::DICTIONARY);
   favicon.SetKey("href", base::Value("http://fav.ico"));
   favicon.SetKey("rel", base::Value("icon"));
-  base::DictionaryValue favicon2;
+  base::Value favicon2(base::Value::Type::DICTIONARY);
   favicon2.SetKey("href", base::Value("http://fav2.ico"));
   favicon2.SetKey("rel", base::Value(12));
-  base::DictionaryValue favicon3;
+  base::Value favicon3(base::Value::Type::DICTIONARY);
   favicon3.SetKey("href", base::Value("http://fav3.ico"));
   favicon3.SetKey("rel", base::Value("apple-touch-icon-precomposed"));
-  std::unique_ptr<base::ListValue> favicons =
-      std::make_unique<base::ListValue>();
-  favicons->Append(std::move(favicon));
-  favicons->Append(std::move(favicon2));
-  favicons->Append(std::move(favicon3));
+  base::Value favicons(base::Value::Type::LIST);
+  favicons.Append(std::move(favicon));
+  favicons.Append(std::move(favicon2));
+  favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -113,22 +112,22 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLIntRel) {
 
 // Tries to extract favicons with the href attributes missing in one of them.
 TEST_F(FaviconUtilTest, ExtractFaviconURLNoHref) {
-  base::DictionaryValue favicon;
+  base::Value favicon(base::Value::Type::DICTIONARY);
   favicon.SetKey("href", base::Value("http://fav.ico"));
   favicon.SetKey("rel", base::Value("icon"));
-  base::DictionaryValue favicon2;
+  base::Value favicon2(base::Value::Type::DICTIONARY);
   favicon2.SetKey("rel", base::Value("apple-touch-icon"));
-  base::DictionaryValue favicon3;
+  base::Value favicon3(base::Value::Type::DICTIONARY);
   favicon3.SetKey("href", base::Value("http://fav3.ico"));
   favicon3.SetKey("rel", base::Value("apple-touch-icon-precomposed"));
-  std::unique_ptr<base::ListValue> favicons =
-      std::make_unique<base::ListValue>();
-  favicons->Append(std::move(favicon));
-  favicons->Append(std::move(favicon2));
-  favicons->Append(std::move(favicon3));
+  base::Value favicons(base::Value::Type::LIST);
+  favicons.Append(std::move(favicon));
+  favicons.Append(std::move(favicon2));
+  favicons.Append(std::move(favicon3));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_FALSE(result);
   ASSERT_EQ(1U, urls.size());
@@ -139,11 +138,10 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoHref) {
 // Tries to extract the default favicon when there are no favicon in the
 // message.
 TEST_F(FaviconUtilTest, ExtractFaviconURLNoFavicons) {
-  std::unique_ptr<base::ListValue> favicons =
-      std::make_unique<base::ListValue>();
+  base::Value favicons(base::Value::Type::LIST);
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.get(),
+  bool result = web::ExtractFaviconURL(favicons.GetListDeprecated(),
                                        GURL("http://chromium.org"), &urls);
 
   EXPECT_TRUE(result);
@@ -156,21 +154,21 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLNoFavicons) {
 // Tries to extract favicons with the sizes attributes containing one correct
 // size and one incorrectly formatted.
 TEST_F(FaviconUtilTest, ExtractFaviconURLSizesCorrectAndGarbage) {
-  base::DictionaryValue favicon;
+  base::Value favicon(base::Value::Type::DICTIONARY);
   favicon.SetKey("href", base::Value("http://fav.ico"));
   favicon.SetKey("rel", base::Value("icon"));
   favicon.SetKey("sizes", base::Value("10x20 sgxer"));
-  base::DictionaryValue favicon2;
+  base::Value favicon2(base::Value::Type::DICTIONARY);
   favicon2.SetKey("href", base::Value("http://fav2.ico"));
   favicon2.SetKey("rel", base::Value("apple-touch-icon"));
   favicon2.SetKey("sizes", base::Value("sgxer 30x40"));
-  std::unique_ptr<base::ListValue> favicons =
-      std::make_unique<base::ListValue>();
-  favicons->Append(std::move(favicon));
-  favicons->Append(std::move(favicon2));
+  base::Value favicons(base::Value::Type::LIST);
+  favicons.Append(std::move(favicon));
+  favicons.Append(std::move(favicon2));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());
@@ -192,21 +190,21 @@ TEST_F(FaviconUtilTest, ExtractFaviconURLSizesCorrectAndGarbage) {
 // Tries to extract favicons with the sizes attributes containing size only
 // partially correctly formatted.
 TEST_F(FaviconUtilTest, ExtractFaviconURLSizesPartiallyCorrect) {
-  base::DictionaryValue favicon;
+  base::Value favicon(base::Value::Type::DICTIONARY);
   favicon.SetKey("href", base::Value("http://fav.ico"));
   favicon.SetKey("rel", base::Value("icon"));
   favicon.SetKey("sizes", base::Value("10x"));
-  base::DictionaryValue favicon2;
+  base::Value favicon2(base::Value::Type::DICTIONARY);
   favicon2.SetKey("href", base::Value("http://fav2.ico"));
   favicon2.SetKey("rel", base::Value("apple-touch-icon"));
   favicon2.SetKey("sizes", base::Value("x40"));
-  std::unique_ptr<base::ListValue> favicons =
-      std::make_unique<base::ListValue>();
-  favicons->Append(std::move(favicon));
-  favicons->Append(std::move(favicon2));
+  base::Value favicons(base::Value::Type::LIST);
+  favicons.Append(std::move(favicon));
+  favicons.Append(std::move(favicon2));
 
   std::vector<web::FaviconURL> urls;
-  bool result = web::ExtractFaviconURL(favicons.get(), GURL(), &urls);
+  bool result =
+      web::ExtractFaviconURL(favicons.GetListDeprecated(), GURL(), &urls);
 
   EXPECT_TRUE(result);
   ASSERT_EQ(2U, urls.size());

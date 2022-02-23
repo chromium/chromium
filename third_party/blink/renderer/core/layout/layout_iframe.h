@@ -49,8 +49,13 @@ class LayoutIFrame final : public LayoutEmbeddedContent {
     NOT_DESTROYED();
     return type == kLayoutObjectIFrame || LayoutEmbeddedContent::IsOfType(type);
   }
+};
 
-  PaintLayerType LayerTypeRequired() const override;
+template <>
+struct DowncastTraits<LayoutIFrame> {
+  static bool AllowFrom(const LayoutObject& object) {
+    return object.IsLayoutIFrame();
+  }
 };
 
 }  // namespace blink

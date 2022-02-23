@@ -6,14 +6,10 @@
 #define CHROME_BROWSER_MEDIA_ROUTER_DISCOVERY_DIAL_DIAL_DEVICE_DATA_H_
 
 #include <string>
-#include <vector>
 
 #include "base/time/time.h"
+#include "net/base/ip_address.h"
 #include "url/gurl.h"
-
-namespace net {
-class IPAddress;
-}
 
 namespace media_router {
 
@@ -49,24 +45,28 @@ class DialDeviceData {
 
   int max_age() const { return max_age_; }
   void set_max_age(int max_age) { max_age_ = max_age; }
-  bool has_max_age() const { return max_age_ >= 0; }
+  bool has_max_age() const { return max_age_ > 0; }
 
   int config_id() const { return config_id_; }
   void set_config_id(int config_id) { config_id_ = config_id; }
   bool has_config_id() const { return config_id_ >= 0; }
 
+  const net::IPAddress& ip_address() const { return ip_address_; }
+  void set_ip_address(const net::IPAddress& ip_address);
+
   // Updates this DeviceData based on information from a new response in
   // |new_data|.  Returns |true| if a field was updated that is visible through
   // the DIAL API.
+  //
+  // TODO(crbug.com/1260555): Merge logic into operator== once we remove the
+  // extension-specific code that needs this.
   bool UpdateFrom(const DialDeviceData& new_data);
 
-  // Validates that the URL is valid for the device description.
-  static bool IsDeviceDescriptionUrl(const GURL& url);
-
-  // Returns true if |app_url| is a valid DIAL Application URL with a hostname
-  // matching |expected_ip_address|.
-  static bool IsValidDialAppUrl(const GURL& url,
-                                const net::IPAddress& expected_ip_address);
+  // Validates that |url| is a valid URL for this device - either a device
+  // description URL, or a DIAL application URL.  The URL host must match the IP
+  // address that the device is advertising SSDP on, and must not be publicly
+  // routable.
+  bool IsValidUrl(const GURL& url) const;
 
  private:
   // Hardware identifier from the DIAL response.  Not exposed to API clients.
@@ -81,6 +81,9 @@ class DialDeviceData {
 
   // The time that the most recent response was received.
   base::Time response_time_;
+
+  // The IP address that the device's SSDP advertisement was sent from.
+  net::IPAddress ip_address_;
 
   // Optional (-1 means unset).
   int max_age_;

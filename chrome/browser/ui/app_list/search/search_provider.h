@@ -31,8 +31,10 @@ class SearchProvider {
 
   virtual ~SearchProvider();
 
-  // Invoked to start a query.
-  virtual void Start(const std::u16string& query) = 0;
+  // Invoked to start a query search. |query| is guaranteed to be non-empty.
+  virtual void Start(const std::u16string& query) {}
+  // Invoked to start a zero-state search.
+  virtual void StartZeroState() {}
   // Invoked when the UI view closes. In response, the |SearchProvider| may
   // clear its caches.
   virtual void ViewClosing() {}
@@ -44,7 +46,12 @@ class SearchProvider {
   // provider to eg. warm up a cache of results.
   virtual void AppListShown() {}
   // Returns the main result type created by this provider.
-  virtual ash::AppListSearchResultType ResultType() = 0;
+  virtual ash::AppListSearchResultType ResultType() const = 0;
+
+  // Returns true if this provider should prevent zero-state results from being
+  // published until it has returned. If this is true, a provider should only
+  // return results once per call to StartZeroState.
+  virtual bool ShouldBlockZeroState() const;
 
   void set_controller(SearchController* controller) {
     search_controller_ = controller;
@@ -75,7 +82,7 @@ class SearchProvider {
   void FireResultChanged();
 
   ResultChangedCallback result_changed_callback_;
-  SearchController* search_controller_;
+  SearchController* search_controller_ = nullptr;
   Results results_;
 };
 

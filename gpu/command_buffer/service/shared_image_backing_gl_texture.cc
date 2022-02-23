@@ -49,12 +49,12 @@
 #include "ui/gl/shared_gl_fence_egl.h"
 #include "ui/gl/trace_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "gpu/command_buffer/service/shared_image_backing_egl_image.h"
 #include "gpu/command_buffer/service/shared_image_batch_access_manager.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
 #endif
 
@@ -85,15 +85,15 @@ SharedImageBackingGLTexture::SharedImageBackingGLTexture(
     SkAlphaType alpha_type,
     uint32_t usage,
     bool is_passthrough)
-    : SharedImageBacking(mailbox,
-                         format,
-                         size,
-                         color_space,
-                         surface_origin,
-                         alpha_type,
-                         usage,
-                         EstimatedSize(format, size),
-                         false /* is_thread_safe */),
+    : ClearTrackingSharedImageBacking(mailbox,
+                                      format,
+                                      size,
+                                      color_space,
+                                      surface_origin,
+                                      alpha_type,
+                                      usage,
+                                      EstimatedSize(format, size),
+                                      false /* is_thread_safe */),
       is_passthrough_(is_passthrough) {}
 
 SharedImageBackingGLTexture::~SharedImageBackingGLTexture() {
@@ -135,19 +135,24 @@ void SharedImageBackingGLTexture::OnMemoryDump(
 }
 
 gfx::Rect SharedImageBackingGLTexture::ClearedRect() const {
-  if (IsPassthrough()) {
-    // This backing is used exclusively with ANGLE which handles clear tracking
-    // internally. Act as though the texture is always cleared.
-    return gfx::Rect(size());
-  } else {
+  if (!IsPassthrough())
     return texture_->GetLevelClearedRect(texture_->target(), 0);
-  }
+
+  // Use shared image based tracking for passthrough, because we don't always
+  // use angle robust initialization.
+  return ClearTrackingSharedImageBacking::ClearedRect();
 }
 
 void SharedImageBackingGLTexture::SetClearedRect(
     const gfx::Rect& cleared_rect) {
-  if (!IsPassthrough())
+  if (!IsPassthrough()) {
     texture_->SetLevelClearedRect(texture_->target(), 0, cleared_rect);
+    return;
+  }
+
+  // Use shared image based tracking for passthrough, because we don't always
+  // use angle robust initialization.
+  ClearTrackingSharedImageBacking::SetClearedRect(cleared_rect);
 }
 
 bool SharedImageBackingGLTexture::ProduceLegacyMailbox(
@@ -221,6 +226,7 @@ void SharedImageBackingGLTexture::InitializeGLTexture(
 
   if (IsPassthrough()) {
     passthrough_texture_->SetEstimatedSize(EstimatedSize(format(), size()));
+    SetClearedRect(params.is_cleared ? gfx::Rect(size()) : gfx::Rect());
   } else {
     texture_->SetLevelInfo(params.target, 0, params.internal_format,
                            size().width(), size().height(), 1, 0, params.format,

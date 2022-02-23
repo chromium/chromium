@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "components/autofill_assistant/browser/service/rpc_type.h"
 #include "url/gurl.h"
 
 namespace autofill_assistant {
@@ -24,7 +25,8 @@ class ServiceRequestSender {
   // response itself.
   virtual void SendRequest(const GURL& url,
                            const std::string& request_body,
-                           ResponseCallback callback) = 0;
+                           ResponseCallback response_callback,
+                           RpcType rpc_type) = 0;
 };
 
 }  // namespace autofill_assistant

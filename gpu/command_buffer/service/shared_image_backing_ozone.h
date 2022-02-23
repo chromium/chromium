@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/viz/common/resources/resource_format.h"
@@ -22,6 +21,7 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/ipc/common/surface_handle.h"
+#include "ui/gfx/buffer_types.h"
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/gpu_fence.h"
@@ -38,6 +38,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   SharedImageBackingOzone(
       const Mailbox& mailbox,
       viz::ResourceFormat format,
+      gfx::BufferPlane plane,
       const gfx::Size& size,
       const gfx::ColorSpace& color_space,
       GrSurfaceOrigin surface_origin,
@@ -90,6 +91,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
  private:
   friend class SharedImageRepresentationGLOzoneShared;
   friend class SharedImageRepresentationDawnOzone;
+  friend class SharedImageRepresentationSkiaVkOzone;
   class SharedImageRepresentationVaapiOzone;
   class SharedImageRepresentationOverlayOzone;
 
@@ -107,6 +109,7 @@ class SharedImageBackingOzone final : public ClearTrackingSharedImageBacking {
   // Indicates if this backing produced a VASurface that may have pending work.
   bool has_pending_va_writes_ = false;
   std::unique_ptr<VaapiDependencies> vaapi_deps_;
+  gfx::BufferPlane plane_;
   scoped_refptr<gfx::NativePixmap> pixmap_;
   scoped_refptr<base::RefCountedData<DawnProcTable>> dawn_procs_;
   gfx::GpuFenceHandle write_fence_;

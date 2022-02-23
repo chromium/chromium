@@ -35,7 +35,7 @@ ScopedWlArray::~ScopedWlArray() {
 }
 
 void ScopedWlArray::AddStateToWlArray(uint32_t state) {
-  *static_cast<uint32_t*>(wl_array_add(&array_, sizeof array_)) = state;
+  *static_cast<uint32_t*>(wl_array_add(&array_, sizeof(uint32_t))) = state;
 }
 
 }  // namespace wl

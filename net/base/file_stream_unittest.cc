@@ -12,7 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -36,7 +36,7 @@
 using net::test::IsError;
 using net::test::IsOk;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/test/test_file_util.h"
 #endif
 
@@ -592,10 +592,10 @@ class TestWriteReadCompletionCallback {
   int result_;
   bool have_result_;
   bool waiting_for_result_;
-  FileStream* stream_;
-  int* total_bytes_written_;
-  int* total_bytes_read_;
-  std::string* data_read_;
+  raw_ptr<FileStream> stream_;
+  raw_ptr<int> total_bytes_written_;
+  raw_ptr<int> total_bytes_read_;
+  raw_ptr<std::string> data_read_;
   scoped_refptr<DrainableIOBuffer> drainable_;
 };
 
@@ -703,8 +703,8 @@ class TestWriteCloseCompletionCallback {
   int result_;
   bool have_result_;
   bool waiting_for_result_;
-  FileStream* stream_;
-  int* total_bytes_written_;
+  raw_ptr<FileStream> stream_;
+  raw_ptr<int> total_bytes_written_;
   scoped_refptr<DrainableIOBuffer> drainable_;
 };
 
@@ -820,7 +820,7 @@ TEST_F(FileStreamTest, ReadError) {
   base::RunLoop().RunUntilIdle();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Verifies that a FileStream will close itself if it receives a File whose
 // async flag doesn't match the async state of the underlying handle.
 TEST_F(FileStreamTest, AsyncFlagMismatch) {
@@ -841,7 +841,7 @@ TEST_F(FileStreamTest, AsyncFlagMismatch) {
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // TODO(https://crbug.com/894599): flaky on both android and cronet bots.
 TEST_F(FileStreamTest, DISABLED_ContentUriRead) {
   base::FilePath test_dir;

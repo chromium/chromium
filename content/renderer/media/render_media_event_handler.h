@@ -15,8 +15,7 @@ namespace content {
 
 // RenderMediaEventHandler is an implementation of
 // BatchingMediaLog::EventHandler that forwards events to the browser process.
-class CONTENT_EXPORT RenderMediaEventHandler
-    : public BatchingMediaLog::EventHandler {
+class RenderMediaEventHandler : public BatchingMediaLog::EventHandler {
  public:
   RenderMediaEventHandler();
   ~RenderMediaEventHandler() override;

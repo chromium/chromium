@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.password_check;
 import android.app.Activity;
 import android.content.Context;
 
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
+
 /**
  * This component allows to check for compromised passwords. It provides a settings page which shows
  * the compromised passwords and exposes actions that will help the users to make safer their

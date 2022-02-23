@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/memory/safe_ref.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/document_user_data.h"
 #include "third_party/blink/public/common/scheduler/web_scheduler_tracked_feature.h"
 
@@ -32,6 +33,12 @@ class CONTENT_EXPORT DedicatedWorkerHostsForDocument
   // Returns the union of the feature sets that disable back-forward cache.
   blink::scheduler::WebSchedulerTrackedFeatures
   GetBackForwardCacheDisablingFeatures() const;
+
+  // Called when the page is put into back/forward cache.
+  void OnEnterBackForwardCache();
+
+  // Called when the page is restored from back/forward cache.
+  void OnRestoreFromBackForwardCache();
 
  private:
   explicit DedicatedWorkerHostsForDocument(RenderFrameHost* rfh);

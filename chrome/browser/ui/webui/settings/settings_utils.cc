@@ -42,7 +42,7 @@ std::string ResolveFontList(const std::string& font_name_or_list) {
   return font_name_or_list;
 }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 std::string MaybeGetLocalizedFontName(const std::string& font_name_or_list) {
   return ResolveFontList(font_name_or_list);
 }

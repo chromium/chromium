@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include <iostream>
+
 #if defined(RUST_ENABLED)
 #include "build/rust/tests/test_mixed_executable/src/lib.rs.h"
 #endif

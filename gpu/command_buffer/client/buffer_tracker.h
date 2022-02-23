@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/common/gles2_cmd_format.h"
 
@@ -84,7 +84,7 @@ class GLES2_IMPL_EXPORT BufferTracker {
     unsigned int size_;
     int32_t shm_id_;
     uint32_t shm_offset_;
-    void* address_;
+    raw_ptr<void> address_;
     bool mapped_;
     int32_t last_usage_token_;
     GLuint last_async_upload_token_;
@@ -110,7 +110,7 @@ class GLES2_IMPL_EXPORT BufferTracker {
  private:
   typedef std::unordered_map<GLuint, Buffer*> BufferMap;
 
-  MappedMemoryManager* mapped_memory_;
+  raw_ptr<MappedMemoryManager> mapped_memory_;
   BufferMap buffers_;
 };
 

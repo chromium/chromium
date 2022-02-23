@@ -8,12 +8,13 @@
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webid/federated_auth_request_impl.h"
 #include "content/browser/webid/webid_utils.h"
+#include "content/public/browser/render_frame_host.h"
 
 namespace content {
 
 // static
 void FederatedAuthRequestService::Create(
-    RenderFrameHost* host,
+    RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver) {
   DCHECK(host);
 
@@ -24,7 +25,8 @@ void FederatedAuthRequestService::Create(
   // but DocumentService::origin() should be used thereafter.
   if (!IsSameOriginWithAncestors(host, host->GetLastCommittedOrigin())) {
     mojo::ReportBadMessage(
-        "navigator.id.get cannot be invoked from within cross-origin iframes.");
+        "navigator.credentials.get() cannot be invoked from within "
+        "cross-origin iframes.");
     return;
   }
 
@@ -35,7 +37,7 @@ void FederatedAuthRequestService::Create(
 }
 
 FederatedAuthRequestService::FederatedAuthRequestService(
-    RenderFrameHost* host,
+    RenderFrameHostImpl* host,
     mojo::PendingReceiver<blink::mojom::FederatedAuthRequest> receiver)
     : DocumentService(host, std::move(receiver)) {
   impl_ = std::make_unique<FederatedAuthRequestImpl>(
@@ -55,10 +57,21 @@ void FederatedAuthRequestService::RequestIdToken(
                         std::move(callback));
 }
 
-void FederatedAuthRequestService::Logout(
-    std::vector<blink::mojom::LogoutRequestPtr> logout_requests,
-    LogoutCallback callback) {
-  impl_->Logout(std::move(logout_requests), std::move(callback));
+void FederatedAuthRequestService::CancelTokenRequest() {
+  impl_->CancelTokenRequest();
+}
+
+void FederatedAuthRequestService::Revoke(const GURL& provider,
+                                         const std::string& client_id,
+                                         const std::string& account_id,
+                                         RevokeCallback callback) {
+  impl_->Revoke(provider, client_id, account_id, std::move(callback));
+}
+
+void FederatedAuthRequestService::LogoutRps(
+    std::vector<blink::mojom::LogoutRpsRequestPtr> logout_requests,
+    LogoutRpsCallback callback) {
+  impl_->LogoutRps(std::move(logout_requests), std::move(callback));
 }
 
 }  // namespace content

@@ -17,7 +17,7 @@
 #include "third_party/skia/include/core/SkPixelRef.h"
 
 // Native drawing context is only used/supported on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace skia {
 
@@ -75,7 +75,7 @@ bool VerifyRect(const SkCanvas& canvas,
   return true;
 }
 
-#if !defined(USE_AURA) && !defined(OS_MAC)
+#if !defined(USE_AURA) && !BUILDFLAG(IS_MAC)
 // Return true if canvas has something that passes for a rounded-corner
 // rectangle. Basically, we're just checking to make sure that the pixels in the
 // middle are of rect_color and pixels in the corners are of canvas_color.
@@ -367,4 +367,4 @@ TEST(PlatformCanvas, TranslateLayer) {
 
 }  // namespace skia
 
-#endif // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

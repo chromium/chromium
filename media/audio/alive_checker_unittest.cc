@@ -6,6 +6,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
@@ -171,7 +172,7 @@ class AliveCheckerTest : public testing::Test {
 
   // Mocks suspend status. Set in CreatePowerObserverHelper, owned by
   // |alive_checker_|.
-  MockPowerObserverHelper* mock_power_observer_helper_;
+  raw_ptr<MockPowerObserverHelper> mock_power_observer_helper_;
 
  private:
   void CreateAliveCheckerOnAliveCheckerThread(

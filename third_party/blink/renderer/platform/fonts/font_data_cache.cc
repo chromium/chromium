@@ -35,7 +35,7 @@
 
 namespace blink {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const unsigned kCMaxInactiveFontData = 250;
 const unsigned kCTargetInactiveFontData = 200;
 #else

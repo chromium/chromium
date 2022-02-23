@@ -16,6 +16,7 @@
 #include "base/cxx17_backports.h"
 #include "base/format_macros.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
@@ -413,7 +414,7 @@ class ScopedResetPixelUnpackBuffer{
   }
 
  private:
-    Buffer* buffer_;
+  raw_ptr<Buffer> buffer_;
 };
 
 class ScopedMemTrackerChange {
@@ -434,8 +435,8 @@ class ScopedMemTrackerChange {
   }
 
  private:
-  Texture* texture_;
-  MemoryTypeTracker* previous_tracker_;
+  raw_ptr<Texture> texture_;
+  raw_ptr<MemoryTypeTracker> previous_tracker_;
   uint32_t previous_size_;
 };
 
@@ -3869,6 +3870,7 @@ GLenum TextureManager::ExtractFormatFromStorageFormat(GLenum internalformat) {
     case GL_ETC1_RGB8_OES:
     case GL_RGB:
     case GL_RGB8:
+    case GL_RGBX8_ANGLE:
     case GL_SRGB8:
     case GL_RGB16:
     case GL_R11F_G11F_B10F:
@@ -4085,6 +4087,8 @@ GLenum TextureManager::ExtractTypeFromStorageFormat(GLenum internalformat) {
     case GL_RGB32I:
       return GL_INT;
     case GL_RGBA8:
+      return GL_UNSIGNED_BYTE;
+    case GL_RGBX8_ANGLE:
       return GL_UNSIGNED_BYTE;
     case GL_SRGB8_ALPHA8:
       return GL_UNSIGNED_BYTE;

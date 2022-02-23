@@ -54,7 +54,6 @@ source_set("reading_list") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/menu",
     "//ios/chrome/browser/ui/reading_list:features",
-    "//ios/chrome/browser/ui/reading_list/context_menu",
     "//ios/chrome/browser/ui/reading_list/resources:distillation_fail_new",
     "//ios/chrome/browser/ui/sharing",
     "//ios/chrome/browser/ui/side_swipe",

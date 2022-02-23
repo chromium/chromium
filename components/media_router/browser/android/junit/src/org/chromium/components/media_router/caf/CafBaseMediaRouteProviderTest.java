@@ -41,6 +41,7 @@ import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
@@ -59,7 +60,10 @@ import java.util.List;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE,
-        shadows = {ShadowMediaRouter.class, ShadowCastContext.class, ShadowLooper.class})
+        shadows = {ShadowMediaRouter.class, ShadowCastContext.class, ShadowLooper.class},
+        // Required to mock final.
+        instrumentedPackages = {"androidx.mediarouter.media.MediaRouteSelector"})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class CafBaseMediaRouteProviderTest {
     private Context mContext;
     private TestMRP mProvider;

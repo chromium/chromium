@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
+#include "base/location.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -35,6 +36,7 @@
 #include "components/feed/core/v2/protocol_translator.h"
 #include "components/feed/core/v2/public/feed_api.h"
 #include "components/feed/core/v2/public/feed_stream_surface.h"
+#include "components/feed/core/v2/public/logging_parameters.h"
 #include "components/feed/core/v2/public/refresh_task_scheduler.h"
 #include "components/feed/core/v2/public/reliability_logging_bridge.h"
 #include "components/feed/core/v2/public/stream_type.h"
@@ -132,7 +134,6 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
       chrome_info_(chrome_info),
       task_queue_(this),
       request_throttler_(profile_prefs),
-      upload_criteria_(profile_prefs),
       privacy_notice_card_tracker_(profile_prefs) {
   DCHECK(persistent_key_value_store_);
   DCHECK(feed_network_);
@@ -157,9 +158,11 @@ FeedStream::FeedStream(RefreshTaskScheduler* refresh_task_scheduler,
 
   // Inserting this task first ensures that |store_| is initialized before
   // it is used.
-  task_queue_.AddTask(std::make_unique<WaitForStoreInitializeTask>(
-      store_, this,
-      base::BindOnce(&FeedStream::InitializeComplete, base::Unretained(this))));
+  task_queue_.AddTask(FROM_HERE,
+                      std::make_unique<WaitForStoreInitializeTask>(
+                          store_, this,
+                          base::BindOnce(&FeedStream::InitializeComplete,
+                                         base::Unretained(this))));
   EnabledPreferencesChanged();
 }
 
@@ -218,9 +221,11 @@ feedwire::DiscoverLaunchResult FeedStream::TriggerStreamLoad(
   stream.surface_updater->LoadStreamStarted(/*manual_refreshing=*/false);
   LoadStreamTask::Options options;
   options.stream_type = stream_type;
-  task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      options, this,
-      base::BindOnce(&FeedStream::StreamLoadComplete, base::Unretained(this))));
+  task_queue_.AddTask(FROM_HERE,
+                      std::make_unique<LoadStreamTask>(
+                          options, this,
+                          base::BindOnce(&FeedStream::StreamLoadComplete,
+                                         base::Unretained(this))));
   return feedwire::DiscoverLaunchResult::CARDS_UNSPECIFIED;
 }
 
@@ -236,6 +241,10 @@ void FeedStream::InitializeComplete(WaitForStoreInitializeTask::Result result) {
     }
   }
   metadata_populated_ = true;
+  metrics_reporter_->OnMetadataInitialized(IsFeedEnabledByEnterprisePolicy(),
+                                           IsArticlesListVisible(),
+                                           IsSignedIn(), metadata_);
+
   web_feed_subscription_coordinator_->Populate(result.web_feed_startup_data);
 
   for (const feedstore::StreamData& stream_data :
@@ -258,8 +267,13 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
   Stream& stream = GetStream(result.stream_type);
   if (result.load_type == LoadType::kManualRefresh)
     UnloadModel(result.stream_type);
+
   if (result.update_request) {
-    auto model = std::make_unique<StreamModel>(&stream_model_context_);
+    auto model = std::make_unique<StreamModel>(
+        &stream_model_context_,
+        feed::MakeLoggingParameters(prefs::GetClientInstanceId(*profile_prefs_),
+
+                                    *result.update_request));
     model->Update(std::move(result.update_request));
 
     if (!model->HasVisibleContent() &&
@@ -286,7 +300,6 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
       content_stats, GetRequestMetadata(stream.type, false),
       std::move(result.latencies));
 
-  UpdateIsActivityLoggingEnabled(result.stream_type);
   stream.model_loading_in_progress = false;
   stream.surface_updater->LoadStreamComplete(
       stream.model != nullptr, result.final_status, result.launch_result);
@@ -303,10 +316,12 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
         options.load_type = LoadType::kBackgroundRefresh;
         options.stream_type = kWebFeedStream;
         options.abort_if_unread_content = true;
-        task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-            options, this,
-            base::BindOnce(&FeedStream::BackgroundRefreshComplete,
-                           base::Unretained(this))));
+        task_queue_.AddTask(
+            FROM_HERE,
+            std::make_unique<LoadStreamTask>(
+                options, this,
+                base::BindOnce(&FeedStream::BackgroundRefreshComplete,
+                               base::Unretained(this))));
       }
     }
   }
@@ -323,26 +338,13 @@ void FeedStream::StreamLoadComplete(LoadStreamTask::Result result) {
 void FeedStream::OnEnterBackground() {
   metrics_reporter_->OnEnterBackground();
   if (GetFeedConfig().upload_actions_on_enter_background) {
-    task_queue_.AddTask(std::make_unique<UploadActionsTask>(
-        this,
-        /*launch_reliability_logger=*/nullptr,
-        base::BindOnce(&FeedStream::UploadActionsComplete,
-                       base::Unretained(this))));
+    task_queue_.AddTask(FROM_HERE,
+                        std::make_unique<UploadActionsTask>(
+                            this,
+                            /*launch_reliability_logger=*/nullptr,
+                            base::BindOnce(&FeedStream::UploadActionsComplete,
+                                           base::Unretained(this))));
   }
-}
-
-bool FeedStream::IsActivityLoggingEnabled(const StreamType& stream_type) const {
-  const Stream* stream = FindStream(stream_type);
-  return stream && stream->is_activity_logging_enabled && CanUploadActions();
-}
-
-void FeedStream::UpdateIsActivityLoggingEnabled(const StreamType& stream_type) {
-  Stream& stream = GetStream(stream_type);
-  stream.is_activity_logging_enabled =
-      stream.model &&
-      ((stream.model->signed_in() && stream.model->logging_enabled()) ||
-       (!stream.model->signed_in() &&
-        GetFeedConfig().send_signed_out_session_logs));
 }
 
 std::string FeedStream::GetSessionId() const {
@@ -409,14 +411,12 @@ void FeedStream::AttachSurface(FeedStreamSurface* surface) {
 
   // Cancel any scheduled model unload task.
   ++stream.unload_on_detach_sequence_number;
-  upload_criteria_.SurfaceOpenedOrClosed();
 }
 
 void FeedStream::DetachSurface(FeedStreamSurface* surface) {
   Stream& stream = GetStream(surface->GetStreamType());
   metrics_reporter_->SurfaceClosed(surface->GetSurfaceId());
   stream.surfaces.SurfaceRemoved(surface);
-  upload_criteria_.SurfaceOpenedOrClosed();
   ScheduleModelUnloadIfNoSurfacesAttached(surface->GetStreamType());
 }
 
@@ -458,8 +458,9 @@ void FeedStream::AddUnloadModelIfNoSurfacesAttachedTask(
   // Don't continue if unload_on_detach_sequence_number_ has changed.
   if (stream.unload_on_detach_sequence_number != sequence_number)
     return;
-  task_queue_.AddTask(std::make_unique<offline_pages::ClosureTask>(
-      base::BindOnce(&FeedStream::UnloadModelIfNoSurfacesAttachedTask,
+  task_queue_.AddTask(
+      FROM_HERE, std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
+                     &FeedStream::UnloadModelIfNoSurfacesAttachedTask,
                      base::Unretained(this), stream_type)));
 }
 
@@ -473,10 +474,6 @@ void FeedStream::UnloadModelIfNoSurfacesAttachedTask(
 
 bool FeedStream::IsArticlesListVisible() {
   return articles_list_visible_.GetValue();
-}
-
-std::string FeedStream::GetClientInstanceId() const {
-  return prefs::GetClientInstanceId(*profile_prefs_);
 }
 
 bool FeedStream::IsFeedEnabledByEnterprisePolicy() {
@@ -516,9 +513,11 @@ void FeedStream::LoadMore(const FeedStreamSurface& surface,
   // to all requestors.
   stream.load_more_complete_callbacks.push_back(std::move(callback));
   if (stream.load_more_complete_callbacks.size() == 1) {
-    task_queue_.AddTask(std::make_unique<LoadMoreTask>(
-        surface.GetStreamType(), this,
-        base::BindOnce(&FeedStream::LoadMoreComplete, base::Unretained(this))));
+    task_queue_.AddTask(FROM_HERE,
+                        std::make_unique<LoadMoreTask>(
+                            surface.GetStreamType(), this,
+                            base::BindOnce(&FeedStream::LoadMoreComplete,
+                                           base::Unretained(this))));
   }
 }
 
@@ -530,7 +529,6 @@ void FeedStream::LoadMoreComplete(LoadMoreTask::Result result) {
   if (result.request_schedule)
     SetRequestSchedule(stream.type, *result.request_schedule);
 
-  UpdateIsActivityLoggingEnabled(stream.type);
   metrics_reporter_->OnLoadMore(
       result.stream_type, result.final_status,
       stream.model ? stream.model->GetContentStats() : ContentStats());
@@ -561,10 +559,11 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
     LoadStreamTask::Options options;
     options.stream_type = stream_type;
     options.load_type = LoadType::kManualRefresh;
-    task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-        options, this,
-        base::BindOnce(&FeedStream::StreamLoadComplete,
-                       base::Unretained(this))));
+    task_queue_.AddTask(FROM_HERE,
+                        std::make_unique<LoadStreamTask>(
+                            options, this,
+                            base::BindOnce(&FeedStream::StreamLoadComplete,
+                                           base::Unretained(this))));
   }
 }
 
@@ -622,26 +621,31 @@ bool FeedStream::RejectEphemeralChange(const StreamType& stream_type,
   return model->RejectEphemeralChange(id);
 }
 
-void FeedStream::ProcessThereAndBackAgain(base::StringPiece data) {
+void FeedStream::ProcessThereAndBackAgain(
+    base::StringPiece data,
+    const LoggingParameters& logging_parameters) {
   feedwire::ThereAndBackAgainData msg;
   msg.ParseFromArray(data.data(), data.size());
   if (msg.has_action_payload()) {
     feedwire::FeedAction action_msg;
     *action_msg.mutable_action_payload() = std::move(msg.action_payload());
-    UploadAction(std::move(action_msg), /*upload_now=*/true,
+    UploadAction(std::move(action_msg), logging_parameters,
+                 /*upload_now=*/true,
                  base::BindOnce(&FeedStream::UploadActionsComplete,
                                 base::Unretained(this)));
   }
 }
 
-void FeedStream::ProcessViewAction(base::StringPiece data) {
-  if (!CanLogViews()) {
+void FeedStream::ProcessViewAction(
+    base::StringPiece data,
+    const LoggingParameters& logging_parameters) {
+  if (!logging_parameters.view_actions_enabled)
     return;
-  }
 
   feedwire::FeedAction msg;
   msg.ParseFromArray(data.data(), data.size());
-  UploadAction(std::move(msg), /*upload_now=*/false,
+  UploadAction(std::move(msg), logging_parameters,
+               /*upload_now=*/false,
                base::BindOnce(&FeedStream::UploadActionsComplete,
                               base::Unretained(this)));
 }
@@ -663,9 +667,10 @@ DebugStreamData FeedStream::GetDebugStreamData() {
 void FeedStream::ForceRefreshForDebugging(const StreamType& stream_type) {
   // Avoid request throttling for debug refreshes.
   feed::prefs::SetThrottlerRequestCounts({}, *profile_prefs_);
-  task_queue_.AddTask(std::make_unique<offline_pages::ClosureTask>(
-      base::BindOnce(&FeedStream::ForceRefreshForDebuggingTask,
-                     base::Unretained(this), stream_type)));
+  task_queue_.AddTask(
+      FROM_HERE, std::make_unique<offline_pages::ClosureTask>(
+                     base::BindOnce(&FeedStream::ForceRefreshForDebuggingTask,
+                                    base::Unretained(this), stream_type)));
 }
 
 void FeedStream::ForceRefreshTask(const StreamType& stream_type) {
@@ -751,6 +756,9 @@ void FeedStream::SubscribedWebFeedCount(
     base::OnceCallback<void(int)> callback) {
   subscriptions().SubscribedWebFeedCount(std::move(callback));
 }
+void FeedStream::RegisterFeedUserSettingsFieldTrial(base::StringPiece group) {
+  delegate_->RegisterFeedUserSettingsFieldTrial(group);
+}
 
 void FeedStream::SetIdleCallbackForTesting(
     base::RepeatingClosure idle_callback) {
@@ -813,7 +821,7 @@ LaunchResult FeedStream::ShouldAttemptLoad(const StreamType& stream_type,
   // be called again from within the LoadStreamTask, and then the metadata
   // will be initialized.
   if (metadata_populated_ &&
-      delegate_->GetSyncSignedInGaia() != metadata_.gaia()) {
+      delegate_->GetAccountInfo().gaia != metadata_.gaia()) {
     return {LoadStreamStatus::kDataInStoreIsForAnotherUser,
             feedwire::DiscoverLaunchResult::DATA_IN_STORE_IS_FOR_ANOTHER_USER};
   }
@@ -880,10 +888,9 @@ bool FeedStream::ShouldForceSignedOutFeedQueryRequest(
          base::TimeTicks::Now() < signed_out_for_you_refreshes_until_;
 }
 
-RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
-                                               bool is_for_next_page) const {
-  const Stream* stream = FindStream(stream_type);
-  DCHECK(stream);
+RequestMetadata FeedStream::GetCommonRequestMetadata(
+    bool signed_in_request,
+    bool allow_expired_session_id) const {
   RequestMetadata result;
   result.chrome_info = chrome_info_;
   result.display_metrics = delegate_->GetDisplayMetrics();
@@ -893,34 +900,51 @@ RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
   result.autoplay_enabled = delegate_->IsAutoplayEnabled();
   result.acknowledged_notice_keys =
       NoticeCardTracker::GetAllAckowledgedKeys(profile_prefs_);
-  if (stream_type.IsWebFeed()) {
-    result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
+
+  if (signed_in_request) {
+    result.client_instance_id = prefs::GetClientInstanceId(*profile_prefs_);
+  } else {
+    std::string session_id = GetSessionId();
+    if (!session_id.empty() &&
+        (allow_expired_session_id ||
+         feedstore::GetSessionIdExpiryTime(metadata_) > base::Time::Now())) {
+      result.session_id = session_id;
+    }
   }
 
+  DCHECK(result.session_id.empty() || result.client_instance_id.empty());
+  return result;
+}
+
+RequestMetadata FeedStream::GetSignedInRequestMetadata() const {
+  return GetCommonRequestMetadata(/*signed_in_request =*/true,
+                                  /*allow_expired_session_id =*/true);
+}
+
+RequestMetadata FeedStream::GetRequestMetadata(const StreamType& stream_type,
+                                               bool is_for_next_page) const {
+  const Stream* stream = FindStream(stream_type);
+  DCHECK(stream);
+  RequestMetadata result;
   if (is_for_next_page) {
     // If we are continuing an existing feed, use whatever session continuity
     // mechanism is currently associated with the stream: client-instance-id
     // for signed-in feed, session_id token for signed-out.
     DCHECK(stream->model);
-    if (stream->model->signed_in()) {
-      result.client_instance_id = GetClientInstanceId();
-    } else {
-      result.session_id = GetSessionId();
-    }
+    result = GetCommonRequestMetadata(stream->model->signed_in(),
+                                      /*allow_expired_session_id =*/true);
   } else {
     // The request is for the first page of the feed. Use client_instance_id
     // for signed in requests and session_id token (if any, and not expired)
     // for signed-out.
-    if (IsSignedIn() && !ShouldForceSignedOutFeedQueryRequest(stream_type)) {
-      result.client_instance_id = GetClientInstanceId();
-    } else if (!GetSessionId().empty() && feedstore::GetSessionIdExpiryTime(
-                                              metadata_) > base::Time::Now()) {
-      result.session_id = GetSessionId();
-    }
+    result = GetCommonRequestMetadata(
+        IsSignedIn() && !ShouldForceSignedOutFeedQueryRequest(stream_type),
+        /*allow_expired_session_id =*/false);
   }
 
-  DCHECK(result.session_id.empty() || result.client_instance_id.empty());
-
+  if (stream_type.IsWebFeed()) {
+    result.content_order = GetValidWebFeedContentOrder(*profile_prefs_);
+  }
   return result;
 }
 
@@ -996,10 +1020,11 @@ void FeedStream::ExecuteRefreshTask(RefreshTaskId task_id) {
   options.stream_type = stream_type;
   options.load_type = LoadType::kBackgroundRefresh;
   options.refresh_even_when_not_stale = true;
-  task_queue_.AddTask(std::make_unique<LoadStreamTask>(
-      options, this,
-      base::BindOnce(&FeedStream::BackgroundRefreshComplete,
-                     base::Unretained(this))));
+  task_queue_.AddTask(FROM_HERE,
+                      std::make_unique<LoadStreamTask>(
+                          options, this,
+                          base::BindOnce(&FeedStream::BackgroundRefreshComplete,
+                                         base::Unretained(this))));
 }
 
 void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
@@ -1011,7 +1036,7 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
   // Add prefetch images to task queue without waiting to finish
   // since we treat them as best-effort.
   if (result.stream_type.IsForYou())
-    task_queue_.AddTask(std::make_unique<PrefetchImagesTask>(this));
+    task_queue_.AddTask(FROM_HERE, std::make_unique<PrefetchImagesTask>(this));
 
   RefreshTaskId task_id;
   if (result.stream_type.GetRefreshTaskId(task_id)) {
@@ -1022,14 +1047,11 @@ void FeedStream::BackgroundRefreshComplete(LoadStreamTask::Result result) {
 // Performs work that is necessary for both background and foreground load
 // tasks.
 void FeedStream::LoadTaskComplete(const LoadStreamTask::Result& result) {
-  if (delegate_->GetSyncSignedInGaia() != metadata_.gaia()) {
+  if (delegate_->GetAccountInfo().gaia != metadata_.gaia()) {
     ClearAll();
     return;
   }
   PopulateDebugStreamData(result, *profile_prefs_);
-  if (result.fetched_content_has_notice_card.has_value())
-    feed::prefs::SetLastFetchHadNoticeCard(
-        *profile_prefs_, *result.fetched_content_has_notice_card);
   if (!result.content_ids.IsEmpty()) {
     GetStream(result.stream_type).content_ids = result.content_ids;
   }
@@ -1066,7 +1088,7 @@ void FeedStream::ClearAll() {
   metrics_reporter_->OnClearAll(base::Time::Now() -
                                 GetLastFetchTime(kForYouStream));
   clear_all_in_progress_ = true;
-  task_queue_.AddTask(std::make_unique<ClearAllTask>(this));
+  task_queue_.AddTask(FROM_HERE, std::make_unique<ClearAllTask>(this));
 }
 
 void FeedStream::FinishClearAll() {
@@ -1074,8 +1096,7 @@ void FeedStream::FinishClearAll() {
   has_stored_data_.SetValue(false);
   feed::prefs::SetExperiments({}, *profile_prefs_);
   feed::prefs::ClearClientInstanceId(*profile_prefs_);
-  upload_criteria_.Clear();
-  SetMetadata(feedstore::MakeMetadata(delegate_->GetSyncSignedInGaia()));
+  SetMetadata(feedstore::MakeMetadata(delegate_->GetAccountInfo().gaia));
 
   delegate_->ClearAll();
 
@@ -1107,24 +1128,24 @@ void FeedStream::CancelImageFetch(ImageFetchId id) {
 
 void FeedStream::UploadAction(
     feedwire::FeedAction action,
+    const LoggingParameters& logging_parameters,
     bool upload_now,
     base::OnceCallback<void(UploadActionsTask::Result)> callback) {
-  if (!IsSignedIn()) {
-    DLOG(WARNING)
-        << "Called UploadActions while user is signed-out, dropping upload";
-    return;
-  }
-  task_queue_.AddTask(std::make_unique<UploadActionsTask>(
-      std::move(action), upload_now, this, std::move(callback)));
+  task_queue_.AddTask(
+      FROM_HERE, std::make_unique<UploadActionsTask>(
+                     std::move(action), upload_now, logging_parameters, this,
+                     std::move(callback)));
 }
 
 void FeedStream::LoadModel(const StreamType& stream_type,
                            std::unique_ptr<StreamModel> model) {
+  DCHECK(model);
   Stream& stream = GetStream(stream_type);
   DCHECK(!stream.model);
   stream.model = std::move(model);
   stream.model->SetStreamType(stream_type);
   stream.model->SetStoreObserver(this);
+
   stream.content_ids = stream.model->GetContentIds();
   stream.surface_updater->SetModel(stream.model.get());
   ScheduleModelUnloadIfNoSurfacesAttached(stream_type);
@@ -1232,16 +1253,6 @@ void FeedStream::ReportSliceViewed(SurfaceId surface_id,
   privacy_notice_card_tracker_.OnCardViewed(
       stream.model->signed_in(),
       stream.model->FindContentId(ToContentRevision(slice_id)));
-}
-
-// TODO(crbug/1147237): Rename this method and related members?
-bool FeedStream::CanUploadActions() const {
-  return upload_criteria_.CanUploadActions();
-}
-
-bool FeedStream::CanLogViews() const {
-  // TODO(crbug/1152592): Determine notice card behavior with web feeds.
-  return CanUploadActions();
 }
 
 // Notifies observers if 'HasUnreadContent' has changed for `stream_type`.
@@ -1359,6 +1370,7 @@ void FeedStream::SetContentOrder(const StreamType& stream_type,
   //   want a full refresh.
   // * it will add quite a bit of complexity to do it right
   task_queue_.AddTask(
+      FROM_HERE,
       std::make_unique<offline_pages::ClosureTask>(base::BindOnce(
           &FeedStream::ForceRefreshTask, base::Unretained(this), stream_type)));
 }

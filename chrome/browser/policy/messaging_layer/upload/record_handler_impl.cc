@@ -11,11 +11,13 @@
 #include "base/callback.h"
 #include "base/containers/queue.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/token.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
 #include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
@@ -106,7 +108,7 @@ class RecordHandlerImpl::ReportUploader
 
   bool need_encryption_key_;
   std::unique_ptr<std::vector<EncryptedRecord>> records_;
-  policy::CloudPolicyClient* client_;
+  raw_ptr<policy::CloudPolicyClient> client_;
 
   // Encryption key delivery callback.
   DmServerUploadService::EncryptionKeyAttachedCallback
@@ -182,6 +184,13 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   for (auto record : *records_) {
     request_builder.AddRecord((std::move(record)));
   }
+
+  // Assign random UUID as the request id for server side log correlation
+  const auto request_id = base::Token::CreateRandom().ToString();
+  LOG(WARNING) << "Processing upload record request with request id: "
+               << request_id;
+  request_builder.SetRequestId(request_id);
+
   auto request_result = request_builder.Build();
   if (!request_result.has_value()) {
     std::move(response_cb).Run(absl::nullopt);
@@ -191,12 +200,10 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
   // Records have been captured in the request, safe to clear the vector.
   records_->clear();
 
-  base::Value request = std::move(request_result.value());
-
   content::GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE,
       base::BindOnce(
-          [](policy::CloudPolicyClient* client, base::Value request,
+          [](policy::CloudPolicyClient* client, base::Value::Dict request,
              base::OnceCallback<void(absl::optional<base::Value>)>
                  response_cb) {
             client->UploadEncryptedReport(
@@ -204,7 +211,7 @@ void RecordHandlerImpl::ReportUploader::StartUpload() {
                 reporting::GetContext(ProfileManager::GetPrimaryUserProfile()),
                 std::move(response_cb));
           },
-          client_, std::move(request), std::move(response_cb)));
+          client_, std::move(request_result.value()), std::move(response_cb)));
 }
 
 void RecordHandlerImpl::ReportUploader::OnUploadComplete(
@@ -382,8 +389,8 @@ RecordHandlerImpl::ReportUploader::SequenceInformationValueToProto(
   // If any of the previous values don't exist, or are malformed, return error.
   int64_t seq_id;
   int64_t gen_id;
-  if (!sequencing_id || generation_id->empty() || !generation_id ||
-      generation_id->empty() || !priority_result.has_value() ||
+  if (!sequencing_id || !generation_id || generation_id->empty() ||
+      !priority_result.has_value() ||
       !Priority_IsValid(priority_result.value())) {
     return Status(error::INVALID_ARGUMENT,
                   base::StrCat({"Provided value lacks some fields required by "

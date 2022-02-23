@@ -10,13 +10,13 @@
 
 #include <memory>
 
-#include "base/files/scoped_temp_dir.h"
 #include "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #include "components/search_engines/template_url_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_favicon_loader_factory.h"
 #include "ios/chrome/browser/favicon/ios_chrome_large_icon_service_factory.h"
+#include "ios/chrome/browser/history/history_service_factory.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/ios_chrome_tab_restore_service_factory.h"
@@ -76,9 +76,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     // Set up a TestChromeBrowserState instance.
     TestChromeBrowserState::Builder test_cbs_builder;
 
-    ASSERT_TRUE(state_dir_.CreateUniqueTempDir());
-    test_cbs_builder.SetPath(state_dir_.GetPath());
-
     test_cbs_builder.AddTestingFactory(
         IOSChromeTabRestoreServiceFactory::GetInstance(),
         IOSChromeTabRestoreServiceFactory::GetDefaultFactory());
@@ -94,9 +91,11 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     test_cbs_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
-    ASSERT_TRUE(chrome_browser_state_->CreateHistoryService());
 
     id passKitController =
         [OCMockObject niceMockForClass:[PKAddPassesViewController class]];
@@ -200,11 +199,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   }
 
   MOCK_METHOD0(OnCompletionCalled, void());
-
-  // A state directory that outlives |task_environment_| is needed because
-  // CreateHistoryService/CreateBookmarkModel use the directory to host
-  // databases. See https://crbug.com/546640 for more details.
-  base::ScopedTempDir state_dir_;
 
   web::WebTaskEnvironment task_environment_;
   IOSChromeScopedTestingLocalState local_state_;

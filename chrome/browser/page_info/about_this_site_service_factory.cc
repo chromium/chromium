@@ -7,14 +7,15 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/page_info/chrome_about_this_site_service_client.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/page_info/about_this_site_service.h"
-#include "components/page_info/features.h"
+#include "components/page_info/core/about_this_site_service.h"
+#include "components/page_info/core/features.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 
@@ -48,7 +49,8 @@ KeyedService* AboutThisSiteServiceFactory::BuildServiceInstanceFor(
   Profile* profile = Profile::FromBrowserContext(browser_context);
   return new page_info::AboutThisSiteService(
       std::make_unique<ChromeAboutThisSiteServiceClient>(
-          OptimizationGuideKeyedServiceFactory::GetForProfile(profile)));
+          OptimizationGuideKeyedServiceFactory::GetForProfile(profile),
+          profile->IsOffTheRecord(), profile->GetPrefs()));
 }
 
 bool AboutThisSiteServiceFactory::ServiceIsCreatedWithBrowserContext() const {

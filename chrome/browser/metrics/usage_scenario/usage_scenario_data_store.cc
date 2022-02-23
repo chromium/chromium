@@ -6,7 +6,6 @@
 
 #include <algorithm>
 
-#include "base/containers/contains.h"
 #include "base/time/default_tick_clock.h"
 #include "base/time/time.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"

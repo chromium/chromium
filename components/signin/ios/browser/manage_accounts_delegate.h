@@ -10,32 +10,40 @@ namespace web {
 class WebState;
 }
 
-@protocol ManageAccountsDelegate<NSObject>
+class ManageAccountsDelegate {
+ public:
+  ManageAccountsDelegate(const ManageAccountsDelegate&) = delete;
+  ManageAccountsDelegate& operator=(const ManageAccountsDelegate&) = delete;
 
-// Called when Gaia cookies have been regenerated for a specific user sign-in.
-// This occurs when a SAPISID cookie has been deleted by the operating system.
-- (void)onRestoreGaiaCookies;
+  virtual ~ManageAccountsDelegate() = default;
 
-// Called when the user taps on a manage accounts button in a Google web
-// property.
-- (void)onManageAccounts;
+  // Called when Gaia cookies have been regenerated for a specific user sign-in.
+  // This occurs when a SAPISID cookie has been deleted by the operating system.
+  virtual void OnRestoreGaiaCookies() = 0;
 
-// Called when the user taps on an add account button in a Google web property.
-- (void)onAddAccount;
+  // Called when the user taps on a manage accounts button in a Google web
+  // property.
+  virtual void OnManageAccounts() = 0;
 
-// Called when the user taps a sign-in or add account button in a Google web
-// property.
-// |url| is the continuation URL received from the server. If it is valid,
-// then this delegate should navigate to |url|.
-- (void)onShowConsistencyPromo:(const GURL&)url
-                      webState:(web::WebState*)webState;
+  // Called when the user taps on an add account button in a Google web
+  // property.
+  virtual void OnAddAccount() = 0;
 
-// Called when the user taps on go incognito button in a Google web property.
-// |url| is the continuation URL received from the server. If it is valid,
-// then this delegate should open an incognito tab and navigate to |url|.
-// If it is not valid, then this delegate should open a new incognito tab.
-- (void)onGoIncognito:(const GURL&)url;
+  // Called when the user taps a sign-in or add account button in a Google web
+  // property.
+  // |url| is the continuation URL received from the server. If it is valid,
+  // then this delegate should navigate to |url|.
+  virtual void OnShowConsistencyPromo(const GURL& url,
+                                      web::WebState* webState) = 0;
 
-@end
+  // Called when the user taps on go incognito button in a Google web property.
+  // |url| is the continuation URL received from the server. If it is valid,
+  // then this delegate should open an incognito tab and navigate to |url|.
+  // If it is not valid, then this delegate should open a new incognito tab.
+  virtual void OnGoIncognito(const GURL& url) = 0;
+
+ protected:
+  ManageAccountsDelegate() = default;
+};
 
 #endif  // COMPONENTS_SIGNIN_IOS_BROWSER_MANAGE_ACCOUNTS_DELEGATE_H_

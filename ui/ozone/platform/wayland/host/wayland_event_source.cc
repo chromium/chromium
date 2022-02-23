@@ -85,7 +85,8 @@ WaylandEventSource::WaylandEventSource(wl_display* display,
     : window_manager_(window_manager),
       connection_(connection),
       event_watcher_(
-          std::make_unique<WaylandEventWatcher>(display, event_queue)) {
+          WaylandEventWatcher::CreateWaylandEventWatcher(display,
+                                                         event_queue)) {
   DCHECK(window_manager_);
 
   // Observes remove changes to know when touch points can be removed.
@@ -100,10 +101,6 @@ void WaylandEventSource::SetShutdownCb(base::OnceCallback<void()> shutdown_cb) {
 
 void WaylandEventSource::StartProcessingEvents() {
   event_watcher_->StartProcessingEvents();
-}
-
-void WaylandEventSource::StopProcessingEvents() {
-  event_watcher_->StopProcessingEvents();
 }
 
 void WaylandEventSource::OnKeyboardFocusChanged(WaylandWindow* window,
@@ -252,6 +249,10 @@ void WaylandEventSource::OnPointerAxisEvent(const gfx::Vector2dF& offset) {
 
 void WaylandEventSource::OnResetPointerFlags() {
   ResetPointerFlags();
+}
+
+void WaylandEventSource::RoundTripQueue() {
+  event_watcher_->RoundTripQueue();
 }
 
 const gfx::PointF& WaylandEventSource::GetPointerLocation() const {
@@ -429,11 +430,11 @@ void WaylandEventSource::OnPinchEvent(EventType event_type,
                                       const gfx::Vector2dF& delta,
                                       base::TimeTicks timestamp,
                                       int device_id,
-                                      absl::optional<float> scale) {
+                                      absl::optional<float> scale_delta) {
   GestureEventDetails details(event_type);
   details.set_device_type(GestureDeviceType::DEVICE_TOUCHPAD);
-  if (scale)
-    details.set_scale(*scale);
+  if (scale_delta)
+    details.set_scale(*scale_delta);
 
   auto location = pointer_location_ + delta;
   GestureEvent event(location.x(), location.y(), 0 /* flags */, timestamp,
@@ -463,10 +464,6 @@ bool WaylandEventSource::IsPointerButtonPressed(EventFlags button) const {
 
 void WaylandEventSource::ResetPointerFlags() {
   pointer_flags_ = 0;
-}
-
-void WaylandEventSource::UseSingleThreadedPollingForTesting() {
-  event_watcher_->UseSingleThreadedPollingForTesting();
 }
 
 void WaylandEventSource::OnDispatcherListChanged() {

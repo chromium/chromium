@@ -3,6 +3,9 @@
 # found in the LICENSE file.
 
 
+# TODO(1262303): After Telemetry is supported by python3 we can remove
+# object inheritance from this script.
+# pylint: disable=useless-object-inheritance
 class Environment(object):
   """An environment in which tests can be run.
 

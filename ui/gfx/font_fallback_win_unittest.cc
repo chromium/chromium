@@ -5,6 +5,7 @@
 #include "ui/gfx/font_fallback_win.h"
 
 #include "base/cxx17_backports.h"
+#include "base/strings/string_piece.h"
 #include "base/test/task_environment.h"
 #include "base/win/windows_version.h"
 #include "testing/gtest/include/gtest/gtest.h"

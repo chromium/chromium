@@ -18,6 +18,7 @@ limitations under the License.
 
 #include <jni.h>
 
+#include "tensorflow_lite_support/cc/port/statusor.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/class_proto_inc.h"
 
@@ -31,6 +32,37 @@ jobject ConvertToCategory(JNIEnv* env, const Class& classification);
 FrameBuffer::Orientation ConvertToFrameBufferOrientation(JNIEnv* env,
                                                          jint jorientation);
 
+// Creates FrameBuffer from a direct ByteBuffer.
+::tflite::support::StatusOr<std::unique_ptr<FrameBuffer>>
+CreateFrameBufferFromByteBuffer(JNIEnv* env,
+                                jobject jimage_byte_buffer,
+                                jint width,
+                                jint height,
+                                jint jorientation,
+                                jint jcolor_space_type);
+
+// Creates FrameBuffer from a byte array.
+::tflite::support::StatusOr<std::unique_ptr<FrameBuffer>>
+CreateFrameBufferFromBytes(JNIEnv* env,
+                           jbyteArray jimage_bytes,
+                           jint width,
+                           jint height,
+                           jint jorientation,
+                           jint jcolor_space_type,
+                           jlongArray jbyte_array_handle);
+
+// Creates FrameBuffer from YUV planes.
+::tflite::support::StatusOr<std::unique_ptr<FrameBuffer>>
+CreateFrameBufferFromYuvPlanes(JNIEnv* env,
+                               jobject jy_plane,
+                               jobject ju_plane,
+                               jobject jv_plane,
+                               jint width,
+                               jint height,
+                               jint row_stride_y,
+                               jint row_stride_uv,
+                               jint pixel_stride_uv,
+                               jint jorientation);
 }  // namespace vision
 }  // namespace task
 }  // namespace tflite

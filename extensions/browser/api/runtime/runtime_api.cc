@@ -655,7 +655,7 @@ void RuntimeRequestUpdateCheckFunction::CheckComplete(
     const RuntimeAPIDelegate::UpdateCheckResult& result) {
   if (result.success) {
     std::unique_ptr<base::DictionaryValue> details(new base::DictionaryValue);
-    details->SetString("version", result.version);
+    details->SetStringKey("version", result.version);
     Respond(TwoArguments(base::Value(result.response),
                          base::Value::FromUniquePtrValue(std::move(details))));
   } else {
@@ -738,8 +738,8 @@ RuntimeGetPackageDirectoryEntryFunction::Run() {
       content::ChildProcessSecurityPolicy::GetInstance();
   policy->GrantReadFileSystem(source_process_id(), filesystem.id());
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("fileSystemId", filesystem.id());
-  dict->SetString("baseName", relative_path);
+  dict->SetStringKey("fileSystemId", filesystem.id());
+  dict->SetStringKey("baseName", relative_path);
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }

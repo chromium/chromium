@@ -12,15 +12,18 @@
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_image_bitmap.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/blink_transferable_message.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "third_party/skia/include/core/SkSurface.h"
 
 namespace blink {
 
@@ -138,7 +141,9 @@ TEST(BlinkTransferableMessageStructTraitsTest,
   {
     V8TestingScope scope;
     ImageBitmap* image_bitmap = CreateBitmap();
-    v8::Local<v8::Value> wrapper = ToV8(image_bitmap, scope.GetScriptState());
+    v8::Local<v8::Value> wrapper =
+        ToV8Traits<ImageBitmap>::ToV8(scope.GetScriptState(), image_bitmap)
+            .ToLocalChecked();
     Transferables transferables;
     transferables.image_bitmaps.push_back(image_bitmap);
     BlinkTransferableMessage msg;

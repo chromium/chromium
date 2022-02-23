@@ -9,7 +9,6 @@
 #include "third_party/blink/renderer/core/layout/layout_replaced.h"
 #include "third_party/blink/renderer/core/layout/svg/layout_svg_root.h"
 #include "third_party/blink/renderer/core/paint/box_painter.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
 #include "third_party/blink/renderer/core/paint/highlight_painting_utils.h"
 #include "third_party/blink/renderer/core/paint/object_painter.h"
 #include "third_party/blink/renderer/core/paint/paint_auto_dark_mode.h"
@@ -209,12 +208,12 @@ void ReplacedPainter::Paint(const PaintInfo& paint_info) {
     PhysicalRect selection_painting_rect =
         layout_replaced_.LocalSelectionVisualRect();
     selection_painting_rect.Move(paint_offset);
-    IntRect selection_painting_int_rect =
-        PixelSnappedIntRect(selection_painting_rect);
+    gfx::Rect selection_painting_int_rect =
+        ToPixelSnappedRect(selection_painting_rect);
 
     DrawingRecorder recorder(local_paint_info.context, layout_replaced_,
                              DisplayItem::kSelectionTint,
-                             ToGfxRect(selection_painting_int_rect));
+                             selection_painting_int_rect);
     Color selection_bg = HighlightPaintingUtils::HighlightBackgroundColor(
         layout_replaced_.GetDocument(), layout_replaced_.StyleRef(),
         layout_replaced_.GetNode(), kPseudoIdSelection);

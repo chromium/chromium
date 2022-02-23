@@ -9,7 +9,7 @@
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "components/sync/base/sync_base_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "google_apis/gaia/gaia_config.h"
 #include "ui/base/device_form_factor.h"
 #include "url/gurl.h"
@@ -21,27 +21,27 @@ std::string GetSystemString() {
   std::string system;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   system = "CROS ";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     system = "ANDROID-TABLET ";
   } else {
     system = "ANDROID-PHONE ";
   }
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
     system = "IOS-TABLET ";
   } else {
     system = "IOS-PHONE ";
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   system = "WIN ";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   system = "LINUX ";
-#elif defined(OS_FREEBSD)
+#elif BUILDFLAG(IS_FREEBSD)
   system = "FREEBSD ";
-#elif defined(OS_OPENBSD)
+#elif BUILDFLAG(IS_OPENBSD)
   system = "OPENBSD ";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   system = "MAC ";
 #endif
   return system;
@@ -51,11 +51,6 @@ std::string GetSystemString() {
 
 namespace syncer {
 namespace internal {
-
-const char* const kSyncServerUrl = "https://clients4.google.com/chrome-sync";
-
-const char* const kSyncDevServerUrl =
-    "https://clients4.google.com/chrome-sync/dev";
 
 std::string FormatUserAgentForSync(const std::string& system,
                                    version_info::Channel channel) {
@@ -84,9 +79,8 @@ GURL GetSyncServiceURL(const base::CommandLine& command_line,
 
   // 1. Get the sync server URL from the --sync-url command-line param, if
   // specified.
-  if (command_line.HasSwitch(switches::kSyncServiceURL)) {
-    std::string value(
-        command_line.GetSwitchValueASCII(switches::kSyncServiceURL));
+  if (command_line.HasSwitch(kSyncServiceURL)) {
+    std::string value(command_line.GetSwitchValueASCII(kSyncServiceURL));
     if (!value.empty()) {
       GURL custom_sync_url(value);
       if (custom_sync_url.is_valid()) {

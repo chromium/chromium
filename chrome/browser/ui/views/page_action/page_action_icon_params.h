@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/page_action/page_action_icon_type.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -31,17 +32,17 @@ struct PageActionIconParams {
   // Leaving these params unset will leave the icon default values untouched.
   // TODO(crbug.com/1061634): Make these fields non-optional.
   absl::optional<SkColor> icon_color;
-  const gfx::FontList* font_list = nullptr;
+  raw_ptr<const gfx::FontList> font_list = nullptr;
 
   int between_icon_spacing = 0;
-  Browser* browser = nullptr;
-  CommandUpdater* command_updater = nullptr;
-  IconLabelBubbleView::Delegate* icon_label_bubble_delegate = nullptr;
-  PageActionIconView::Delegate* page_action_icon_delegate = nullptr;
+  raw_ptr<Browser> browser = nullptr;
+  raw_ptr<CommandUpdater> command_updater = nullptr;
+  raw_ptr<IconLabelBubbleView::Delegate> icon_label_bubble_delegate = nullptr;
+  raw_ptr<PageActionIconView::Delegate> page_action_icon_delegate = nullptr;
   // If in the future another class also wants to observe button changes, this
   // type could be an abstract class that simply exposes an ObserveButton()
   // method.
-  ToolbarIconContainerView* button_observer = nullptr;
+  raw_ptr<ToolbarIconContainerView> button_observer = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_ACTION_PAGE_ACTION_ICON_PARAMS_H_

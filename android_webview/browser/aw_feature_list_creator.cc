@@ -73,7 +73,6 @@ const char* const kPersistentPrefsAllowlist[] = {
     metrics::prefs::kStabilityFileMetricsUnsentSamplesCount,
     metrics::prefs::kStabilityLaunchCount,
     metrics::prefs::kStabilityPageLoadCount,
-    metrics::prefs::kStabilityRendererHangCount,
     metrics::prefs::kStabilityRendererLaunchCount,
     // Unsent logs.
     metrics::prefs::kMetricsInitialLogs,
@@ -219,18 +218,14 @@ void AwFeatureListCreator::SetUpFieldTrials() {
   // Populate FieldTrialList. Since |low_entropy_provider| is null, it will fall
   // back to the provider we previously gave to FieldTrialList, which is a low
   // entropy provider. The X-Client-Data header is not reported on WebView, so
-  // we pass an empty object as the |low_entropy_source_value|. Because WebView
-  // does not use the same Variations Safe Mode mechanism as most other
-  // platforms, pass false for |extend_variations_safe_mode| to opt out of the
-  // Extended Variations Safe Mode experiment. See crbug/1220131 for more info.
+  // we pass an empty object as the |low_entropy_source_value|.
   variations_field_trial_creator_->SetUpFieldTrials(
       variation_ids,
       GetSwitchDependentFeatureOverrides(
           *base::CommandLine::ForCurrentProcess()),
       /*low_entropy_provider=*/nullptr, std::move(feature_list),
       metrics_client->metrics_state_manager(), aw_field_trials_.get(),
-      &ignored_safe_seed_manager, /*low_entropy_source_value=*/absl::nullopt,
-      /*extend_variations_safe_mode=*/false);
+      &ignored_safe_seed_manager, /*low_entropy_source_value=*/absl::nullopt);
 }
 
 void AwFeatureListCreator::CreateLocalState() {

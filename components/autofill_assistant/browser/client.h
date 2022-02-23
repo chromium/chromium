@@ -7,15 +7,23 @@
 
 #include <string>
 
+#include "base/callback.h"
+#include "components/autofill_assistant/browser/client_settings.h"
 #include "components/autofill_assistant/browser/device_context.h"
 #include "components/autofill_assistant/browser/metrics.h"
+#include "components/autofill_assistant/browser/script_executor_ui_delegate.h"
 #include "components/autofill_assistant/browser/service/service.h"
+#include "components/autofill_assistant/browser/web/web_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill {
 class PersonalDataManager;
 }  // namespace autofill
+
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}  // namespace password_manager
 
 namespace version_info {
 enum class Channel;
@@ -58,8 +66,12 @@ class Client {
   // Returns the current active personal data manager.
   virtual autofill::PersonalDataManager* GetPersonalDataManager() const = 0;
 
-  // Returns the currently active login fetcher.
+  // Returns the currently active login manager.
   virtual WebsiteLoginManager* GetWebsiteLoginManager() const = 0;
+
+  // Returns the current password change success tracker.
+  virtual password_manager::PasswordChangeSuccessTracker*
+  GetPasswordChangeSuccessTracker() const = 0;
 
   // Returns the locale.
   virtual std::string GetLocale() const = 0;
@@ -84,6 +96,10 @@ class Client {
   virtual ClientContextProto::ScreenOrientation GetScreenOrientation()
       const = 0;
 
+  // Returns the payments client token through the |callback|.
+  virtual void FetchPaymentsClientToken(
+      base::OnceCallback<void(const std::string&)> callback) = 0;
+
   // Returns current WebContents.
   virtual content::WebContents* GetWebContents() const = 0;
 
@@ -98,6 +114,10 @@ class Client {
 
   // Whether this client has had an UI.
   virtual bool HasHadUI() const = 0;
+
+  // Returns the ScriptExecutorUiDelegate if it exists, otherwise returns
+  // nullptr.
+  virtual ScriptExecutorUiDelegate* GetScriptExecutorUiDelegate() = 0;
 
  protected:
   Client() = default;

@@ -13,10 +13,18 @@
         color: var(--cr-secondary-text-color);
         margin-inline-start: 16px;
       }
+
+      #virtualCardLabel {
+        margin-inline-start: 8px;
+      }
     </style>
     <div class="list-item">
       <div class="type-column">
         <span id="creditCardLabel">[[creditCard.metadata.summaryLabel]]</span>
+        <span id="virtualCardLabel"
+            hidden$="[[!isVirtualCardEnrolled_(creditCard.metadata)]]">
+          $i18n{virtualCardEnabled}
+        </span>
         <span class="payments-label"
             hidden$="[[creditCard.metadata.isLocal]]">
           <span hidden$="[[creditCard.metadata.isCached]]">
@@ -33,7 +41,8 @@
         </div>
         <template is="dom-if" if="[[showDots_(creditCard.metadata)]]">
           <cr-icon-button class="icon-more-vert" id="creditCardMenu"
-              title="$i18n{moreActions}" on-click="onDotsMenuClick_">
+              title="[[moreActionsTitle_(creditCard)]]"
+              on-click="onDotsMenuClick_">
           </cr-icon-button>
         </template>
         <template is="dom-if" if="[[!showDots_(creditCard.metadata)]]">

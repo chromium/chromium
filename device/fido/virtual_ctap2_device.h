@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/cbor/values.h"
 #include "device/fido/attested_credential_data.h"
@@ -74,6 +73,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     bool large_blob_support = false;
     // Support for setting a min PIN length and forcing pin change.
     bool min_pin_length_support = false;
+    // min_pin_length_extension_support, if true, enables support for the
+    // minPinLength extension. See
+    // https://fidoalliance.org/specs/fido-v2.1-ps-20210615/fido-client-to-authenticator-protocol-v2.1-ps-20210615.html#sctn-minpinlength-extension
+    bool min_pin_length_extension_support = false;
     bool always_uv = false;
     // The space available to store a large blob. In real authenticators this
     // may change depending on the number of resident credentials. We treat this
@@ -185,6 +188,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) VirtualCtap2Device
     // and reports in the pinProtocols field of the authenticatorGetInfo
     // response.
     PINUVAuthProtocol pin_protocol = PINUVAuthProtocol::kV1;
+
+    // internal_account_chooser indicates that the authenticator has a screen
+    // and thus presents the account chooser for discoverable credential
+    // assertions itself. This causes userSelected to be asserted on those
+    // responses.
+    bool internal_account_chooser = false;
 
     // override_response_map allows overriding the response for a given command
     // with a given code. The actual command won't be executed.

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_READING_LIST_READING_LIST_WEB_STATE_OBSERVER_H_
 #define IOS_CHROME_BROWSER_READING_LIST_READING_LIST_WEB_STATE_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/timer/timer.h"
 #include "components/reading_list/core/reading_list_model_observer.h"
 #include "ios/web/public/web_state_observer.h"

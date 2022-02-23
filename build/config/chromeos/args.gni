@@ -35,4 +35,7 @@ declare_args() {
 
   # Determines if we're willing to link against libinput
   use_libinput = false
+
+  # Refers to the separate branding required for the reven build.
+  is_reven = false
 }

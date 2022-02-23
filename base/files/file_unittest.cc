@@ -21,7 +21,7 @@
 #include "third_party/perfetto/include/perfetto/test/traced_value_test_support.h"  // no-presubmit-check nogncheck
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -248,7 +248,7 @@ TEST(FileTest, ReadWrite) {
 }
 
 TEST(FileTest, GetLastFileError) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ::SetLastError(ERROR_ACCESS_DENIED);
 #else
   errno = EACCES;
@@ -364,7 +364,7 @@ TEST(FileTest, Length) {
   for (int i = 0; i < file_size; i++)
     EXPECT_EQ(data_to_write[i], data_read[i]);
 
-#if !defined(OS_FUCHSIA)  // Fuchsia doesn't seem to support big files.
+#if !BUILDFLAG(IS_FUCHSIA)  // Fuchsia doesn't seem to support big files.
   // Expand the file past the 4 GB limit.
   const int64_t kBigFileLength = 5'000'000'000;
   EXPECT_TRUE(file.SetLength(kBigFileLength));
@@ -382,7 +382,7 @@ TEST(FileTest, Length) {
 }
 
 // Flakily fails: http://crbug.com/86494
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST(FileTest, TouchGetInfo) {
 #else
 TEST(FileTest, DISABLED_TouchGetInfo) {
@@ -431,7 +431,7 @@ TEST(FileTest, DISABLED_TouchGetInfo) {
   EXPECT_FALSE(info.is_symbolic_link);
 
   // ext2/ext3 and HPS/HPS+ seem to have a timestamp granularity of 1s.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   EXPECT_EQ(info.last_accessed.ToTimeVal().tv_sec,
             new_last_accessed.ToTimeVal().tv_sec);
   EXPECT_EQ(info.last_modified.ToTimeVal().tv_sec,
@@ -595,7 +595,7 @@ TEST(FileTest, TracedValueSupport) {
 }
 #endif  // BUILDFLAG(ENABLE_BASE_TRACING)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Flakily times out on Windows, see http://crbug.com/846276.
 #define MAYBE_WriteDataToLargeOffset DISABLED_WriteDataToLargeOffset
 #else
@@ -622,7 +622,7 @@ TEST(FileTest, MAYBE_WriteDataToLargeOffset) {
   ASSERT_EQ(kDataLen, file.Write(kLargeFileOffset + 1, kData, kDataLen));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 TEST(FileTest, GetInfoForDirectory) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
@@ -812,4 +812,4 @@ TEST(FileTest, UseSyncApiWithAsyncFile) {
 
   ASSERT_EQ(lying_file.WriteAtCurrentPos("12345", 5), -1);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)

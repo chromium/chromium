@@ -8,12 +8,15 @@
 #include "chrome/browser/ash/login/users/chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/ash/login/users/mock_user_manager.h"
+#include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
+#include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/cros_system_api/dbus/login_manager/dbus-constants.h"
 
 namespace policy {
 
@@ -25,6 +28,9 @@ class ManagedSessionServiceTest
 
   void SetUp() override {
     chromeos::PowerManagerClient::InitializeFake();
+    ::ash::SessionManagerClient::InitializeFake();
+    session_termination_manager_ =
+        std::make_unique<::ash::SessionTerminationManager>();
     auto user_manager = std::make_unique<ash::FakeChromeUserManager>();
     user_manager_ = user_manager.get();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
@@ -36,6 +42,7 @@ class ManagedSessionServiceTest
 
   void TearDown() override {
     managed_session_service_.reset();
+    session_termination_manager_.reset();
     chromeos::PowerManagerClient::Shutdown();
   }
 
@@ -54,6 +61,17 @@ class ManagedSessionServiceTest
     return profile;
   }
 
+  void GuestLogin() {
+    user_manager::User* const user = user_manager_->AddGuestUser();
+    TestingProfile::Builder profile_builder;
+    profile_builder.SetProfileName(user->GetAccountId().GetUserEmail());
+    auto profile = profile_builder.Build();
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(user);
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                                 profile.get());
+    user_manager_->LoginUser(user->GetAccountId(), true);
+  }
+
   ManagedSessionService* managed_session_service() {
     return managed_session_service_.get();
   }
@@ -62,25 +80,41 @@ class ManagedSessionServiceTest
     return &session_manager_;
   }
 
+  ash::FakeChromeUserManager* user_manager() { return user_manager_; }
+
   chromeos::FakePowerManagerClient* power_manager_client() {
     return chromeos::FakePowerManagerClient::Get();
   }
 
   base::SimpleTestClock* test_clock() { return &test_clock_; }
 
-  void OnLoginFailure(const chromeos::AuthFailure& error) override {
+  int ObservedLoginCount() { return observed_login_count_; }
+
+  int ObservedGuestLoginCount() { return observed_guest_login_count_; }
+
+  int ObservedSessionTerminationCount() {
+    return observed_session_termination_count_;
+  }
+
+  void OnLoginFailure(const ash::AuthFailure& error) override {
     auth_failure_ = error;
   }
-  void OnLogin(Profile* profile) override { logged_in_ = profile; }
+  void OnLogin(Profile* profile) override {
+    logged_in_ = profile;
+    ++observed_login_count_;
+  }
+  void OnGuestLogin() override { ++observed_guest_login_count_; }
   void OnLogout(Profile* profile) override { logged_out_ = profile; }
+  void OnSessionTerminationStarted(const user_manager::User*) override {
+    ++observed_session_termination_count_;
+  }
   void OnLocked() override { locked_ = true; }
   void OnUnlocked() override { unlocked_ = true; }
   void OnResumeActive(base::Time time) override {
     suspend_time_ = std::make_unique<base::Time>(time);
   }
 
-  chromeos::AuthFailure auth_failure_ =
-      chromeos::AuthFailure::AuthFailureNone();
+  ash::AuthFailure auth_failure_ = ash::AuthFailure::AuthFailureNone();
   Profile* logged_in_ = nullptr;
   Profile* logged_out_ = nullptr;
   bool locked_ = false;
@@ -95,9 +129,18 @@ class ManagedSessionServiceTest
 
   session_manager::SessionManager session_manager_;
 
+  std::unique_ptr<::ash::SessionTerminationManager>
+      session_termination_manager_;
+
   base::SimpleTestClock test_clock_;
 
   std::unique_ptr<ManagedSessionService> managed_session_service_;
+
+  int observed_login_count_ = 0;
+
+  int observed_guest_login_count_ = 0;
+
+  int observed_session_termination_count_ = 0;
 };
 
 TEST_F(ManagedSessionServiceTest, OnSessionStateChanged) {
@@ -244,11 +287,76 @@ TEST_F(ManagedSessionServiceTest, RemoveObserver) {
 TEST_F(ManagedSessionServiceTest, LoginFailure) {
   managed_session_service()->AddObserver(this);
 
-  managed_session_service()->OnAuthFailure(chromeos::AuthFailure(
-      chromeos::AuthFailure::FailureReason::OWNER_REQUIRED));
+  managed_session_service()->OnAuthFailure(
+      ash::AuthFailure(ash::AuthFailure::FailureReason::OWNER_REQUIRED));
 
   EXPECT_EQ(auth_failure_.reason(),
-            chromeos::AuthFailure::FailureReason::OWNER_REQUIRED);
+            ash::AuthFailure::FailureReason::OWNER_REQUIRED);
 }
 
+TEST_F(ManagedSessionServiceTest, LoginBeforeCreate) {
+  AccountId affiliated_account_id =
+      AccountId::FromUserEmail("user0@managed.com");
+  std::unique_ptr<TestingProfile> affiliated_profile = CreateProfile(
+      affiliated_account_id, true /* affiliated */, true /* login */);
+
+  ManagedSessionService managed_session_service;
+  managed_session_service.AddObserver(this);
+
+  ASSERT_EQ(ObservedLoginCount(), 1);
+  EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_in_));
+
+  session_manager()->NotifyUserProfileLoaded(affiliated_account_id);
+
+  EXPECT_EQ(ObservedLoginCount(), 1);
+
+  affiliated_profile->MaybeSendDestroyedNotification();
+
+  EXPECT_TRUE(affiliated_profile->IsSameOrParent(logged_out_));
+  ASSERT_EQ(ObservedSessionTerminationCount(), 0);
+
+  ::ash::SessionTerminationManager::Get()->StopSession(
+      login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
+
+  EXPECT_EQ(ObservedSessionTerminationCount(), 1);
+}
+
+TEST_F(ManagedSessionServiceTest, GuestLogin) {
+  GuestLogin();
+
+  ManagedSessionService managed_session_service;
+  managed_session_service.AddObserver(this);
+
+  EXPECT_EQ(ObservedLoginCount(), 0);
+  ASSERT_EQ(ObservedGuestLoginCount(), 1);
+
+  ::ash::SessionTerminationManager::Get()->StopSession(
+      login_manager::SessionStopReason::REQUEST_FROM_SESSION_MANAGER);
+
+  EXPECT_EQ(ObservedSessionTerminationCount(), 1);
+}
+
+TEST_F(ManagedSessionServiceTest, LoggedInProfileNotCreated) {
+  const AccountId account_id = AccountId::FromUserEmail("user0@managed.com");
+  auto* const user = user_manager()->AddUser(account_id);
+  // User logged in but profile is not created.
+  user_manager()->LoginUser(account_id, /*set_profile_created_flag=*/false);
+
+  ManagedSessionService managed_session_service;
+  managed_session_service.AddObserver(this);
+
+  EXPECT_EQ(ObservedLoginCount(), 0);
+
+  // Simulate user profile loaded.
+  TestingProfile::Builder profile_builder;
+  profile_builder.SetProfileName(account_id.GetUserEmail());
+  auto profile = profile_builder.Build();
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
+                                                               profile.get());
+  user_manager()->SimulateUserProfileLoad(account_id);
+  session_manager()->NotifyUserProfileLoaded(account_id);
+
+  ASSERT_EQ(ObservedLoginCount(), 1);
+  EXPECT_TRUE(profile->IsSameOrParent(logged_in_));
+}
 }  // namespace policy

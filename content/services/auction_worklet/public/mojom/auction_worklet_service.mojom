@@ -21,19 +21,27 @@ struct BrowserSignals {
 // Used by the browser to load and run FLEDGE worklets in a sandboxed utility
 // process.
 // See https://github.com/WICG/turtledove/blob/main/FLEDGE.md
-[ServiceSandbox=sandbox.mojom.Sandbox.kService]
+[ServiceSandbox=sandbox.mojom.Sandbox.kServiceWithJit]
 interface AuctionWorkletService {
   // Attempts to load Javascript at the specified URL and create a BidderWorklet
-  // from the response body. There is no return value - any error loading the
-  // worklet script may only be learned from the BidderWorklet API itself, when
-  // trying to run a script. This reduces roundtrips, and allows fetching
-  // per-auction bidding signals URL in parallel with fetching the bidding
-  // worklet script. It also makes the API more robust, not having any
-  // invocation ordering requirements.
+  // from the response body. A single BidderWorklet object can be used for
+  // multiple different InterestGroups, as long as they share the `bidding_url`
+  // `wasm_helper_url`, and `trusted_scoring_signals_url` that were passed in
+  // when creating the BidderWorklet. A single BidderWorklet can be used in
+  // multiple auctions as long as they share a `top_window_origin`. In practice,
+  // the DevTools hooks restrict sharing to auctions within a single
+  // RenderFrame.
+  //
+  // All methods may be invoked immediately upon creation. If there's a pending
+  // load of the script, callbacks will be delayed until it completes.
+  //
+  // On load error, the worklet will close its pipe with a reason string. The
+  // reason string, and worklet errors messages more generally, are considered
+  // privileged and should not be passed to renderer processes.
   //
   // Arguments:
   // `bidder_worklet` The pipe to communicate with the BidderWorklet. Closing
-  // the pipe will abort any in-progress loads and destroy the worklet.
+  //  the pipe will abort any in-progress loads and destroy the worklet.
   //
   // `pause_for_debugger_on_start` If this is true, the worklet should not
   //  commence any work until it gets a Runtime.runIfWaitingForDebugger debugger
@@ -44,17 +52,38 @@ interface AuctionWorkletService {
   //  restricted to exactly those URLs (keeping in mind query parameter usage
   //  for trusted bidding signals and the allowed coalescing).
   //
-  // `bidding_interest_group` Definition of the interest group to fetch and
-  //  execute the script of for an ad auction (initially added by client JS in
-  //  the renderer, but managed by the browser's interest group store), as well
-  //  as some bidding history collected by the interest group store.
+  // `script_source_url` The URL of the seller worklet script.
+  //
+  // `wasm_helper_url` The URL of the wasm helper to load.
+  //
+  // `trusted_bidding_signals_url` The trusted bidding signals URL to fetch
+  //  for any any `trusted_bidding_signals_keys` provided to the BidderWorklet's
+  //  GenerateBid() method.
+  //
+  // `top_window_origin` The origin of the top-level window running the
+  //  auction(s) the BidderWorklet will be used in.
   LoadBidderWorklet(
       pending_receiver<BidderWorklet> bidder_worklet,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
-      BiddingInterestGroup bidding_interest_group);
+      url.mojom.Url script_source_url,
+      url.mojom.Url? wasm_helper_url,
+      url.mojom.Url? trusted_bidding_signals_url,
+      url.mojom.Origin top_window_origin);
 
   // Attempts to load Javascript at the specified URL and loads a SellerWorklet.
+  // While a single SellerWorklet object can be used in auctions with different
+  // AuctionAdConfigs, the configs of all auctions using a single SellerWorklet
+  // object must share a `script_source_url` and `trusted_scoring_signals_url`,
+  // which match the ones passed in when creating the SellerWorklet. All
+  // auctions sharing a SellerWorklet must also have the same
+  // `top_window_origin`. In practice, the DevTools hooks and URLLoaderFactory
+  // hooks (which make script fetches act as if they were made from the parent
+  // frame) restrict sharing to auctions within a single RenderFrame.
+  //
+  // On load error, the worklet will close its pipe with a reason string. The
+  // reason string, and worklet errors messages more generally, are considered
+  // privileged and should not be passed to renderer processes.
   //
   // Arguments:
   // `seller_worklet` The pipe to communicate with the SellerWorklet. Closing
@@ -73,18 +102,15 @@ interface AuctionWorkletService {
   //
   // `script_source_url` is the URL of the seller worklet script.
   //
-  // Returns:
-  // `success` is true if the worklet was successfully loaded.
+  // `trusted_scoring_signals_url` The trusted scoring signals URL for the
+  //  auction, if there is one.
   //
-  // `errors` The various error messages to be used for debugging. These are too
-  //  sensitive for the renderer to see. There may be errors even when the
-  //  worklet is successfully loaded, and there may be no errors when the load
-  //  fails.
+  // `top_window_origin` The origin of the top-level window running the auction.
   LoadSellerWorklet(
       pending_receiver<SellerWorklet> seller_worklet,
       bool pause_for_debugger_on_start,
       pending_remote<network.mojom.URLLoaderFactory> url_loader_factory,
-      url.mojom.Url script_source_url) => (
-          bool success,
-          array<string> errors);
+      url.mojom.Url script_source_url,
+      url.mojom.Url? trusted_scoring_signals_url,
+      url.mojom.Origin top_window_origin);
 };

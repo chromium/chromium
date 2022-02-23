@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/live_caption_controller_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "chrome/browser/profiles/profile.h"

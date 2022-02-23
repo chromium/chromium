@@ -21,6 +21,9 @@ namespace chromeos {
 // D-Bus client for ambient presence sensing. Communicates with the Chrome OS
 // presence daemon to allow for features that depend on user presence.
 //
+// Use of this API is restricted by policy. Consult
+// go/cros-pdd#bookmark=id.7emuxnhxv638 and Chrome OS Privacy before using.
+//
 // TODO(crbug/1241706): clarify naming.
 class COMPONENT_EXPORT(HPS) HpsDBusClient {
  public:
@@ -28,15 +31,19 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
    public:
     ~Observer() override;
 
-    // See go/cros-hps-notify-ui-impl for event details.
-    virtual void OnHpsNotifyChanged(bool state) = 0;
+    // Called when the presence of a "snooper" looking over the user's shoulder
+    // starts or stops being detected.
+    virtual void OnHpsNotifyChanged(hps::HpsResult state) = 0;
 
-   protected:
-    Observer();
+    // Called when the service starts or restarts.
+    virtual void OnRestart() = 0;
+
+    // Called when the service shuts down.
+    virtual void OnShutdown() = 0;
   };
 
   using GetResultHpsNotifyCallback =
-      base::OnceCallback<void(absl::optional<bool>)>;
+      base::OnceCallback<void(absl::optional<hps::HpsResult>)>;
 
   HpsDBusClient(const HpsDBusClient&) = delete;
   HpsDBusClient& operator=(const HpsDBusClient&) = delete;
@@ -57,6 +64,7 @@ class COMPONENT_EXPORT(HPS) HpsDBusClient {
   virtual void EnableHpsNotify(const hps::FeatureConfig& config) = 0;
   // Disables HpsNotify in HpsService.
   virtual void DisableHpsNotify() = 0;
+
   // Registers |callback| to run when the HpsService becomes available.
   // If the service is already available, or if connecting to the name-owner-
   // changed signal fails, |callback| will be run once asynchronously.

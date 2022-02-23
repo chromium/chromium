@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL Test that the scroll animation is still responsive after moving from 100% assert_equals: expected "100px" but got "50px"
+Harness: the test ran to completion.
+

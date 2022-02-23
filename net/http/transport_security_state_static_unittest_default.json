@@ -53,6 +53,7 @@
     },
 
     { "name": "www.example.org", "policy": "test", "pins": "withoutRejectedPins" },
+    { "name": "test.example.org", "policy": "test", "pins": "withoutRejectedPins" },
     { "name": "mail.example.org", "policy": "test", "pins": "withoutRejectedPins" },
     { "name": "mail.example.com", "policy": "test", "pins": "withoutRejectedPins" },
     { "name": "example.test", "policy": "test", "pins": "withoutRejectedPins" }

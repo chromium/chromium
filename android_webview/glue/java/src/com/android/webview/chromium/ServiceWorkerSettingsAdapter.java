@@ -4,8 +4,9 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwServiceWorkerSettings;
 
@@ -14,7 +15,7 @@ import org.chromium.android_webview.AwServiceWorkerSettings;
  * and {@link org.chromium.android_webview.AwServiceWorkerSettings}.
  */
 @SuppressWarnings("NoSynchronizedMethodCheck")
-@TargetApi(Build.VERSION_CODES.N)
+@RequiresApi(Build.VERSION_CODES.N)
 public class ServiceWorkerSettingsAdapter extends android.webkit.ServiceWorkerWebSettings {
     private AwServiceWorkerSettings mAwServiceWorkerSettings;
 

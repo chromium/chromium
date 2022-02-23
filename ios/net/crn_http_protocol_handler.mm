@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/logging.h"
 #include "base/mac/foundation_util.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_util.h"
 #include "base/strings/sys_string_conversions.h"
@@ -546,7 +545,7 @@ void HttpProtocolHandlerCore::SetLoadFlags() {
   switch ([request_ cachePolicy]) {
     case NSURLRequestReloadIgnoringLocalAndRemoteCacheData:
       load_flags |= LOAD_BYPASS_CACHE;
-      FALLTHROUGH;
+      [[fallthrough]];
     case NSURLRequestReloadIgnoringLocalCacheData:
       load_flags |= LOAD_DISABLE_CACHE;
       break;

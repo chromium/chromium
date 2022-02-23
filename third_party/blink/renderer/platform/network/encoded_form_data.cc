@@ -121,13 +121,6 @@ scoped_refptr<EncodedFormData> EncodedFormData::Create(
   return result;
 }
 
-scoped_refptr<EncodedFormData> EncodedFormData::Create(
-    const Vector<char>& vector) {
-  scoped_refptr<EncodedFormData> result = Create();
-  result->AppendData(vector.data(), vector.size());
-  return result;
-}
-
 scoped_refptr<EncodedFormData> EncodedFormData::Copy() const {
   return base::AdoptRef(new EncodedFormData(*this));
 }

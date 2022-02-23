@@ -25,7 +25,7 @@ export class VolumeInfoImpl {
    * @param {(string|undefined)} error The error if an error is found.
    * @param {(string|undefined)} deviceType The type of device
    *     ('usb'|'sd'|'optical'|'mobile'|'unknown') (as defined in
-   *     chromeos/disks/disk_mount_manager.cc). Can be undefined.
+   *     ash/components/disks/disk_mount_manager.cc). Can be undefined.
    * @param {(string|undefined)} devicePath Identifier of the device that the
    *     volume belongs to. Can be undefined.
    * @param {boolean} isReadOnly True if the volume is read only.

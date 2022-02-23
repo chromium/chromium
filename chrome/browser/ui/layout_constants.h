@@ -18,7 +18,7 @@ enum LayoutConstant {
   // The height of a button within the Bookmarks Bar.
   BOOKMARK_BAR_BUTTON_HEIGHT,
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // This is a little smaller than the bookmarkbar height because of the visual
   // overlap with the main toolbar. This height should not be used when
   // computing the height of the toolbar.
@@ -28,11 +28,17 @@ enum LayoutConstant {
   // The height of Bookmarks Bar, when visible in "New Tab Page" mode.
   BOOKMARK_BAR_NTP_HEIGHT,
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The amount of space between the inner bookmark bar and the outer toolbar on
   // new tab pages.
   BOOKMARK_BAR_NTP_PADDING,
 #endif
+
+  // The size of icons used in Download bubbles.
+  // TODO(crbug/1296323): We should be sourcing the size of the file icon from
+  // the layout
+  // provider rather than relying on hardcoded constants.
+  DOWNLOAD_ICON_SIZE,
 
   // The vertical padding between the edge of a location bar bubble and its
   // contained text.
@@ -109,6 +115,9 @@ enum LayoutConstant {
 };
 
 enum LayoutInset {
+  // The padding around icons used in Download bubbles.
+  DOWNLOAD_ICON,
+
   // The padding used around the icon inside the LocationBar. The full width of
   // the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.width(). The full
   // height of the icon would be LOCATION_BAR_ICON_SIZE + 2 * inset.height().
@@ -128,7 +137,7 @@ enum LayoutInset {
 };
 
 int GetLayoutConstant(LayoutConstant constant);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Use this function instead of GetLayoutConstant() for Cocoa browser.
 // This will handle Cocoa specific layout constants. For non Cocoa specific
 // constants, it will call GetLayoutConstant() anyway.

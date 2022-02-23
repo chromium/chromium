@@ -91,8 +91,7 @@ Users of the Ozone abstraction need to do the following, at minimum:
 * Write a subclass of `SurfaceFactoryOzone` that handles allocating accelerated
   surfaces. I'll call this `SurfaceFactoryOzoneImpl`.
 * Write a subclass of `CursorFactory` to manage cursors, or use the
-  `BitmapCursorFactoryOzone` implementation if only bitmap cursors need to be
-  supported.
+  `BitmapCursorFactory` implementation if only bitmap cursors need to be supported.
 * Write a subclass of `OverlayManagerOzone` or just use `StubOverlayManager` if
   your platform does not support overlays.
 * Write a subclass of `NativeDisplayDelegate` if necessary or just use

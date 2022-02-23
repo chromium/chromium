@@ -208,7 +208,7 @@ TEST_F(PrinterCapabilitiesTest, UserDefinedPapers) {
   const Value* media_option =
       media_size->FindKeyOfType("option", Value::Type::LIST);
   ASSERT_TRUE(media_option);
-  const auto& list = media_option->GetList();
+  const auto& list = media_option->GetListDeprecated();
   ASSERT_EQ(3U, list.size());
 
   // Verify the 3 paper sizes are the ones in |caps->papers|, followed by the

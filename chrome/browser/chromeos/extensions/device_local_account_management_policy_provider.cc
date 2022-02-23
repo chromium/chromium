@@ -682,7 +682,7 @@ bool IsSafeForPublicSession(const extensions::Extension* extension) {
         safe = false;
         continue;
       }
-      for (const auto& entry : it.value().GetList()) {
+      for (const auto& entry : it.value().GetListDeprecated()) {
         // Try to read as dictionary.
         const base::DictionaryValue *dict_value;
         if (entry.GetAsDictionary(&dict_value)) {
@@ -817,7 +817,7 @@ DeviceLocalAccountManagementPolicyProvider::
 // static
 bool DeviceLocalAccountManagementPolicyProvider::IsWhitelisted(
     const std::string& extension_id) {
-  return extensions::IsWhitelistedForPublicSession(extension_id);
+  return extensions::IsAllowlistedForPublicSession(extension_id);
 }
 
 std::string DeviceLocalAccountManagementPolicyProvider::

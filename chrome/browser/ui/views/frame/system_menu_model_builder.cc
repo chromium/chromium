@@ -56,7 +56,7 @@ void SystemMenuModelBuilder::Init() {
   ui::SimpleMenuModel* model = new ui::SimpleMenuModel(&menu_delegate_);
   menu_model_.reset(model);
   BuildMenu(model);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows we put the menu items in the system menu (not at the end). Doing
   // this necessitates adding a trailing separator.
   model->AddSeparator(ui::NORMAL_SEPARATOR);
@@ -77,7 +77,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
     ui::SimpleMenuModel* model) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddItemWithStringId(IDC_MINIMIZE_WINDOW, IDS_MINIMIZE_WINDOW_MENU);
   model->AddItemWithStringId(IDC_MAXIMIZE_WINDOW, IDS_MAXIMIZE_WINDOW_MENU);
   model->AddItemWithStringId(IDC_RESTORE_WINDOW, IDS_RESTORE_WINDOW_MENU);
@@ -93,7 +93,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForBrowserWindow(
   }
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   bool supports_server_side_decorations = true;
 #if defined(USE_OZONE) && \
@@ -148,7 +148,7 @@ void SystemMenuModelBuilder::BuildSystemMenuForAppOrPopupWindow(
   }
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   model->AddSeparator(ui::NORMAL_SEPARATOR);
   model->AddItemWithStringId(IDC_CLOSE_WINDOW, IDS_CLOSE);
 #endif

@@ -7,6 +7,7 @@
 #include <tuple>
 
 #include "base/base64.h"
+#include "base/callback_helpers.h"
 #include "base/json/json_writer.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -16,6 +17,7 @@
 #include "base/test/task_environment.h"
 #include "base/values.h"
 #include "chrome/browser/policy/messaging_layer/upload/dm_server_upload_service.h"
+#include "chrome/browser/policy/messaging_layer/upload/record_upload_request_builder.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -65,52 +67,43 @@ MATCHER_P(ResponseEquals,
 
 using TestEncryptionKeyAttached = MockFunction<void(SignedEncryptionInfo)>;
 
+// TODO(https://crbug.com/1297261): Change the various out params in the helper
+// functions below to return by value instead.
+
 // Helper function for retrieving and processing the SequenceInformation from
 // a request.
-void RetrieveFinalSequenceInformation(const base::Value& request,
-                                      base::Value& sequencing_info) {
-  ASSERT_TRUE(request.is_dict());
-
-  // Retrieve and process sequencing information
-  const base::Value* const encrypted_record_list =
-      request.FindListKey("encryptedRecord");
+void RetrieveFinalSequenceInformation(const base::Value::Dict& request,
+                                      base::Value::Dict& sequence_info) {
+  // Retrieve and process sequence information
+  const base::Value::List* const encrypted_record_list =
+      request.FindList("encryptedRecord");
   ASSERT_TRUE(encrypted_record_list != nullptr);
-  ASSERT_FALSE(encrypted_record_list->GetList().empty());
+  ASSERT_FALSE(encrypted_record_list->empty());
   const auto* const seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequenceInformation");
+      encrypted_record_list->back().GetDict().FindDict("sequenceInformation");
   ASSERT_TRUE(seq_info != nullptr);
-  ASSERT_TRUE(!seq_info->FindStringKey("sequencingId")->empty());
-  ASSERT_TRUE(!seq_info->FindStringKey("generationId")->empty());
-  ASSERT_TRUE(seq_info->FindIntKey("priority"));
-  // For backwards compatibility, we must also have unsigned sequencing info.
-  const auto* const unsigned_seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequencingInformation");
-  ASSERT_TRUE(unsigned_seq_info != nullptr);
-  ASSERT_TRUE(!unsigned_seq_info->FindStringKey("sequencingId")->empty());
-  ASSERT_TRUE(!unsigned_seq_info->FindStringKey("generationId")->empty());
-  ASSERT_TRUE(unsigned_seq_info->FindIntKey("priority"));
+  ASSERT_TRUE(!seq_info->FindString("sequencingId")->empty());
+  ASSERT_TRUE(!seq_info->FindString("generationId")->empty());
+  ASSERT_TRUE(seq_info->FindInt("priority"));
+  sequence_info.Merge(*seq_info);
 
-  sequencing_info.MergeDictionary(seq_info);
-  // Set half of sequencing information to return a string instead of an int for
+  // Set half of sequence information to return a string instead of an int for
   // priority.
   int64_t sequencing_id;
-  ASSERT_TRUE(base::StringToInt64(
-      *sequencing_info.FindStringKey("sequencingId"), &sequencing_id));
+  ASSERT_TRUE(base::StringToInt64(*sequence_info.FindString("sequencingId"),
+                                  &sequencing_id));
   if (sequencing_id % 2) {
-    const auto int_result = sequencing_info.FindIntKey("priority");
+    const auto int_result = sequence_info.FindInt("priority");
     ASSERT_TRUE(int_result.has_value());
-    sequencing_info.RemoveKey("priority");
-    sequencing_info.SetStringKey("priority", Priority_Name(int_result.value()));
+    sequence_info.Set("priority", Priority_Name(int_result.value()));
   }
 }
 
 absl::optional<base::Value> BuildEncryptionSettingsFromRequest(
-    const base::Value& request) {
+    const base::Value::Dict& request) {
   // If attach_encryption_settings it true, process that.
   const auto attach_encryption_settings =
-      request.FindBoolKey("attachEncryptionSettings");
+      request.FindBool("attachEncryptionSettings");
   if (!attach_encryption_settings.has_value() ||
       !attach_encryption_settings.value()) {
     return absl::nullopt;
@@ -130,86 +123,86 @@ absl::optional<base::Value> BuildEncryptionSettingsFromRequest(
 // Immitates the server response for successful record upload. Since additional
 // steps and tests require the response from the server to be accurate, ASSERTS
 // that the |request| must be valid, and on a valid request updates |response|.
-void SucceedResponseFromRequestHelper(const base::Value& request,
+void SucceedResponseFromRequestHelper(const base::Value::Dict& request,
                                       bool force_confirm_by_server,
-                                      base::Value& response,
-                                      base::Value& sequencing_info) {
-  RetrieveFinalSequenceInformation(request, sequencing_info);
+                                      base::Value::Dict& response,
+                                      base::Value::Dict& sequence_info) {
+  RetrieveFinalSequenceInformation(request, sequence_info);
 
   // If force_confirm is true, process that.
   if (force_confirm_by_server) {
-    response.SetPath("forceConfirm", base::Value(true));
+    response.Set("forceConfirm", true);
   }
 
   // If attach_encryption_settings is true, process that.
   auto encryption_settings_result = BuildEncryptionSettingsFromRequest(request);
   if (encryption_settings_result.has_value()) {
-    response.SetPath("encryptionSettings",
-                     std::move(encryption_settings_result.value()));
+    response.Set("encryptionSettings",
+                 std::move(encryption_settings_result.value()));
   }
 }
 
-void SucceedResponseFromRequest(const base::Value& request,
+void SucceedResponseFromRequest(const base::Value::Dict& request,
                                 bool force_confirm_by_server,
-                                base::Value& response) {
-  base::Value sequencing_info{base::Value::Type::DICTIONARY};
+                                base::Value::Dict& response) {
+  base::Value::Dict sequence_info;
   SucceedResponseFromRequestHelper(request, force_confirm_by_server, response,
-                                   sequencing_info);
-  response.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+                                   sequence_info);
+  response.Set("lastSucceedUploadedRecord", std::move(sequence_info));
 }
 
-void SucceedResponseFromRequestMissingPriority(const base::Value& request,
+void SucceedResponseFromRequestMissingPriority(const base::Value::Dict& request,
                                                bool force_confirm_by_server,
-                                               base::Value& response) {
-  base::Value sequencing_info{base::Value::Type::DICTIONARY};
+                                               base::Value::Dict& response) {
+  base::Value::Dict sequence_info;
   SucceedResponseFromRequestHelper(request, force_confirm_by_server, response,
-                                   sequencing_info);
+                                   sequence_info);
   // Remove priority field.
-  sequencing_info.RemoveKey("priority");
-  response.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+  sequence_info.Remove("priority");
+  response.Set("lastSucceedUploadedRecord", std::move(sequence_info));
 }
 
-void SucceedResponseFromRequestInvalidPriority(const base::Value& request,
+void SucceedResponseFromRequestInvalidPriority(const base::Value::Dict& request,
                                                bool force_confirm_by_server,
-                                               base::Value& response) {
-  base::Value sequencing_info{base::Value::Type::DICTIONARY};
+                                               base::Value::Dict& response) {
+  base::Value::Dict sequence_info;
   SucceedResponseFromRequestHelper(request, force_confirm_by_server, response,
-                                   sequencing_info);
-  sequencing_info.RemoveKey("priority");
+                                   sequence_info);
+  sequence_info.Remove("priority");
   // Set priority field to an invalid value.
-  sequencing_info.SetStringKey("priority", "abc");
-  response.SetPath("lastSucceedUploadedRecord", std::move(sequencing_info));
+  sequence_info.Set("priority", "abc");
+  response.Set("lastSucceedUploadedRecord", std::move(sequence_info));
 }
 
 // Immitates the server response for failed record upload. Since additional
 // steps and tests require the response from the server to be accurate, ASSERTS
 // that the |request| must be valid, and on a valid request updates |response|.
-void FailedResponseFromRequest(const base::Value& request,
-                               base::Value& response) {
-  base::Value seq_info{base::Value::Type::DICTIONARY};
+void FailedResponseFromRequest(const base::Value::Dict& request,
+                               base::Value::Dict& response) {
+  base::Value::Dict seq_info;
   RetrieveFinalSequenceInformation(request, seq_info);
 
-  response.SetPath("lastSucceedUploadedRecord", seq_info.Clone());
+  response.Set("lastSucceedUploadedRecord", seq_info.Clone());
   // The lastSucceedUploadedRecord should be the record before the one indicated
-  // in seq_info. |seq_info| has been built by
-  // RetrieveFinalSequencingInforamation and is guaranteed to have this key.
+  // in seq_info. |seq_info| has been built by RetrieveFinalSequenceInforamation
+  // and is guaranteed to have this key.
   int64_t sequencing_id;
-  ASSERT_TRUE(base::StringToInt64(*seq_info.FindStringKey("sequencingId"),
+  ASSERT_TRUE(base::StringToInt64(*seq_info.FindString("sequencingId"),
                                   &sequencing_id));
   // The lastSucceedUploadedRecord should be the record before the one
   // indicated in seq_info.
-  response.SetStringPath("lastSucceedUploadedRecord.sequencingId",
-                         base::NumberToString(sequencing_id - 1u));
+  response.SetByDottedPath("lastSucceedUploadedRecord.sequencingId",
+                           base::NumberToString(sequencing_id - 1u));
 
   // The firstFailedUploadedRecord.failedUploadedRecord should be the one
   // indicated in seq_info.
-  response.SetPath("firstFailedUploadedRecord.failedUploadedRecord",
-                   std::move(seq_info));
+  response.SetByDottedPath("firstFailedUploadedRecord.failedUploadedRecord",
+                           std::move(seq_info));
 
   auto encryption_settings_result = BuildEncryptionSettingsFromRequest(request);
   if (encryption_settings_result.has_value()) {
-    response.SetPath("encryptionSettings",
-                     std::move(encryption_settings_result.value()));
+    response.Set("encryptionSettings",
+                 std::move(encryption_settings_result.value()));
   }
 }
 
@@ -268,12 +261,12 @@ TEST_P(RecordHandlerImplTest, ForwardsRecordsToCloudPolicyClient) {
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
-                     base::Value request,
+                     base::Value::Dict request,
                      policy::CloudPolicyClient::ResponseCallback callback) {
-            base::Value response{base::Value::Type::DICTIONARY};
+            base::Value::Dict response;
             SucceedResponseFromRequest(request, force_confirm_by_server,
                                        response);
-            std::move(callback).Run(std::move(response));
+            std::move(callback).Run(base::Value(std::move(response)));
           })));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -304,12 +297,12 @@ TEST_P(RecordHandlerImplTest, MissingPriorityField) {
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
-                     base::Value request,
+                     base::Value::Dict request,
                      policy::CloudPolicyClient::ResponseCallback callback) {
-            base::Value response{base::Value::Type::DICTIONARY};
+            base::Value::Dict response;
             SucceedResponseFromRequestMissingPriority(
                 request, force_confirm_by_server, response);
-            std::move(callback).Run(std::move(response));
+            std::move(callback).Run(base::Value(std::move(response)));
           })));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -333,12 +326,12 @@ TEST_P(RecordHandlerImplTest, InvalidPriorityField) {
   EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_by_server](
-                     base::Value request,
+                     base::Value::Dict request,
                      policy::CloudPolicyClient::ResponseCallback callback) {
-            base::Value response{base::Value::Type::DICTIONARY};
+            base::Value::Dict response;
             SucceedResponseFromRequestInvalidPriority(
                 request, force_confirm_by_server, response);
-            std::move(callback).Run(std::move(response));
+            std::move(callback).Run(base::Value(std::move(response)));
           })));
 
   test::TestEvent<SignedEncryptionInfo> encryption_key_attached_event;
@@ -399,21 +392,21 @@ TEST_P(RecordHandlerImplTest, UploadsGapRecordOnServerFailure) {
     ::testing::InSequence seq;
     EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
         .WillOnce(WithArgs<0, 2>(
-            Invoke([](base::Value request,
+            Invoke([](base::Value::Dict request,
                       policy::CloudPolicyClient::ResponseCallback callback) {
-              base::Value response{base::Value::Type::DICTIONARY};
+              base::Value::Dict response;
               FailedResponseFromRequest(request, response);
-              std::move(callback).Run(std::move(response));
+              std::move(callback).Run(base::Value(std::move(response)));
             })));
     EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
         .WillOnce(WithArgs<0, 2>(
             Invoke([&force_confirm_by_server](
-                       base::Value request,
+                       base::Value::Dict request,
                        policy::CloudPolicyClient::ResponseCallback callback) {
-              base::Value response{base::Value::Type::DICTIONARY};
+              base::Value::Dict response;
               SucceedResponseFromRequest(request, force_confirm_by_server,
                                          response);
-              std::move(callback).Run(std::move(response));
+              std::move(callback).Run(base::Value(std::move(response)));
             })));
   }
 
@@ -470,6 +463,46 @@ TEST_P(RecordHandlerImplTest, HandleUnknownResponseFromServer) {
   EXPECT_THAT(response,
               Property(&DmServerUploadService::CompletionResponse::status,
                        Property(&Status::error_code, Eq(error::INTERNAL))));
+}
+
+TEST_P(RecordHandlerImplTest, AssignsRequestIdForRecordUploads) {
+  static constexpr int64_t kNumTestRecords = 1;
+  static constexpr int64_t kGenerationId = 1234;
+  auto test_records = BuildTestRecordsVector(kNumTestRecords, kGenerationId);
+  const auto force_confirm_by_server = force_confirm();
+
+  DmServerUploadService::SuccessfulUploadResponse expected_response{
+      .sequence_information = test_records->back().sequence_information(),
+      .force_confirm = force_confirm()};
+
+  EXPECT_CALL(*client_, UploadEncryptedReport(_, _, _))
+      .WillOnce(WithArgs<0, 2>(
+          Invoke([&force_confirm_by_server](
+                     base::Value::Dict request,
+                     policy::CloudPolicyClient::ResponseCallback response_cb) {
+            // Validate request id is set
+            auto* request_id = request.FindString(
+                UploadEncryptedReportingRequestBuilder::kRequestId);
+            ASSERT_NE(request_id, nullptr);
+            EXPECT_THAT(*request_id, Not(IsEmpty()));
+
+            // Trigger response callback to complete flow
+            base::Value::Dict response;
+            SucceedResponseFromRequest(request, force_confirm_by_server,
+                                       response);
+            std::move(response_cb).Run(base::Value(std::move(response)));
+          })));
+
+  test::TestEvent<DmServerUploadService::CompletionResponse> responder_event;
+  RecordHandlerImpl handler(client_.get());
+  handler.HandleRecords(need_encryption_key(), std::move(test_records),
+                        responder_event.cb(), base::DoNothing());
+
+  // We need to wait until the upload operation is marked complete (after it
+  // triggers the response callback) so we can avoid leaking unmanaged
+  // resources.
+  auto response = responder_event.result();
+  EXPECT_THAT(response, ResponseEquals(expected_response));
 }
 
 INSTANTIATE_TEST_SUITE_P(

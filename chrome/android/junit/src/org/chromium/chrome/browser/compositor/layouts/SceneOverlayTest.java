@@ -68,7 +68,7 @@ public class SceneOverlayTest {
         when(mResources.getDisplayMetrics()).thenReturn(mDisplayMetrics);
 
         mLayoutManager = new LayoutManagerImpl(mLayoutManagerHost, mContainerView,
-                mTabContentManagerSupplier, null, () -> mTopUiThemeColorProvider);
+                mTabContentManagerSupplier, () -> mTopUiThemeColorProvider);
     }
 
     @Test

@@ -13,7 +13,7 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation_client.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -117,8 +117,8 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
 
   void ScrollOffsetChanged(const ScrollOffset&, mojom::blink::ScrollType);
 
-  void AdjustImplOnlyScrollOffsetAnimation(const IntSize& adjustment);
-  IntSize ImplOnlyAnimationAdjustmentForTesting() {
+  void AdjustImplOnlyScrollOffsetAnimation(const gfx::Vector2d& adjustment);
+  gfx::Vector2d ImplOnlyAnimationAdjustmentForTesting() {
     return impl_only_animation_adjustment_;
   }
 
@@ -138,8 +138,8 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
   // writing-mode:vertical-rl,
   // and flex-direction:row-reverse), they aren't.  See core/layout/README.md
   // for more info.
-  FloatPoint CompositorOffsetFromBlinkOffset(ScrollOffset);
-  ScrollOffset BlinkOffsetFromCompositorOffset(FloatPoint);
+  gfx::PointF CompositorOffsetFromBlinkOffset(ScrollOffset);
+  ScrollOffset BlinkOffsetFromCompositorOffset(gfx::PointF);
 
   void CompositorAnimationFinished(int group_id);
   // Returns true if the compositor animation was attached to a new layer.
@@ -183,7 +183,7 @@ class CORE_EXPORT ScrollAnimatorCompositorCoordinator
 
   // An adjustment to the scroll offset on the main thread that may affect
   // impl-only scroll offset animations.
-  IntSize impl_only_animation_adjustment_;
+  gfx::Vector2d impl_only_animation_adjustment_;
 
   // If set to true, sends a cc::ScrollOffsetAnimationUpdate to cc which will
   // abort the impl-only scroll offset animation and continue it on main

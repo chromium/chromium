@@ -147,8 +147,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
   ~InputMethodManagerImplTest() override = default;
 
   void SetUp() override {
-    ui::InitializeInputMethodForTesting();
-
     std::vector<ComponentExtensionIME> ime_list;
     InitImeList(ime_list);
 
@@ -181,7 +179,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     keyboard_ = new FakeImeKeyboard;
     manager_->SetImeKeyboardForTesting(keyboard_);
     mock_engine_handler_ = std::make_unique<MockInputMethodEngine>();
-    ui::IMEBridge::Initialize();
     ui::IMEBridge::Get()->SetCurrentEngineHandler(mock_engine_handler_.get());
 
     menu_manager_ = ui::ime::InputMethodMenuManager::GetInstance();
@@ -215,7 +212,6 @@ class InputMethodManagerImplTest :  public BrowserWithTestWindowTest {
     chrome_keyboard_controller_client_test_helper_.reset();
 
     BrowserWithTestWindowTest::TearDown();
-    ui::ShutdownInputMethodForTesting();
 
     candidate_window_controller_ = nullptr;
     keyboard_ = nullptr;
@@ -849,8 +845,7 @@ TEST_F(InputMethodManagerImplTest, TestXkbSetting) {
 TEST_F(InputMethodManagerImplTest, TestActivateInputMethodMenuItem) {
   const std::string kKey = "key";
   ui::ime::InputMethodMenuItemList menu_list;
-  menu_list.push_back(ui::ime::InputMethodMenuItem(
-      kKey, "label", false, false));
+  menu_list.push_back(ui::ime::InputMethodMenuItem(kKey, "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(menu_list);
 
   manager_->ActivateInputMethodMenuItem(kKey);
@@ -874,8 +869,8 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodProperties) {
       ImeIdFromEngineId(kNaclMozcUsId), false /* show_message */);
 
   ui::ime::InputMethodMenuItemList current_property_list;
-  current_property_list.push_back(ui::ime::InputMethodMenuItem(
-      "key", "label", false, false));
+  current_property_list.push_back(
+      ui::ime::InputMethodMenuItem("key", "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(current_property_list);
 
   ASSERT_EQ(1U, menu_manager_->GetCurrentInputMethodMenuItemList().size());
@@ -898,10 +893,8 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
   EXPECT_TRUE(menu_manager_->GetCurrentInputMethodMenuItemList().empty());
 
   ui::ime::InputMethodMenuItemList current_property_list;
-  current_property_list.push_back(ui::ime::InputMethodMenuItem("key-mozc",
-                                                                "label",
-                                                                false,
-                                                                false));
+  current_property_list.push_back(
+      ui::ime::InputMethodMenuItem("key-mozc", "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(current_property_list);
 
   ASSERT_EQ(1U, menu_manager_->GetCurrentInputMethodMenuItemList().size());
@@ -915,8 +908,8 @@ TEST_F(InputMethodManagerImplTest, TestGetCurrentInputMethodPropertiesTwoImes) {
 
   // Asynchronous property update signal from mozc-chewing.
   current_property_list.clear();
-  current_property_list.push_back(ui::ime::InputMethodMenuItem(
-      "key-chewing", "label", false, false));
+  current_property_list.push_back(
+      ui::ime::InputMethodMenuItem("key-chewing", "label", false));
   menu_manager_->SetCurrentInputMethodMenuItemList(current_property_list);
   ASSERT_EQ(1U, menu_manager_->GetCurrentInputMethodMenuItemList().size());
   EXPECT_EQ("key-chewing",
@@ -945,7 +938,7 @@ TEST_F(InputMethodManagerImplTest,
   std::unique_ptr<icu::Collator> collator(
       icu::Collator::createInstance(error_code));
 
-  for (int i = 1; i < result->size(); ++i) {
+  for (size_t i = 1; i < result->size(); ++i) {
     std::string prev_name = util->GetLocalizedDisplayName(result->at(i - 1));
     std::string name = util->GetLocalizedDisplayName(result->at(i));
     ASSERT_EQ(UCOL_LESS, base::i18n::CompareString16WithCollator(

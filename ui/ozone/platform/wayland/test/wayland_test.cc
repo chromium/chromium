@@ -61,7 +61,6 @@ void WaylandTest::SetUp() {
 
   ASSERT_TRUE(server_.Start(GetParam()));
   ASSERT_TRUE(connection_->Initialize());
-  connection_->event_source()->UseSingleThreadedPollingForTesting();
   screen_ = connection_->wayland_output_manager()->CreateWaylandScreen();
   connection_->wayland_output_manager()->InitWaylandScreen(screen_.get());
   EXPECT_CALL(delegate_, OnAcceleratedWidgetAvailable(_))
@@ -143,6 +142,11 @@ void WaylandTest::SendConfigureEvent(wl::MockXdgSurface* xdg_surface,
 void WaylandTest::ActivateSurface(wl::MockXdgSurface* xdg_surface) {
   wl::ScopedWlArray state({XDG_TOPLEVEL_STATE_ACTIVATED});
   SendConfigureEvent(xdg_surface, 0, 0, 1, state.get());
+}
+
+void WaylandTest::InitializeSurfaceAugmenter() {
+  server_.EnsureSurfaceAugmenter();
+  Sync();
 }
 
 }  // namespace ui

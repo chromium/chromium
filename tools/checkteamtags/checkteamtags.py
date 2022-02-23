@@ -106,7 +106,7 @@ def validate_mappings(options, args):
       deleted.append(os.path.dirname(rel))
 
   # Update component mapping with current changes.
-  for rel_path_native, tags in affected.iteritems():
+  for rel_path_native, tags in affected.items():
     # Make the path use forward slashes always.
     rel_path = uniform_path_format(rel_path_native)
     component = tags.get('component')
@@ -132,23 +132,22 @@ def validate_mappings(options, args):
   # For the components affected by this patch, compute the directories that map
   # to it.
   affected_component_to_dirs = {}
-  for d, component in new_dir_to_component.iteritems():
+  for d, component in new_dir_to_component.items():
     if component in affected_components:
       affected_component_to_dirs.setdefault(component, [])
       affected_component_to_dirs[component].append(d)
 
   # Convert component->[dirs], dir->team to component->[teams].
   affected_component_to_teams = {
-      component: list(set([
-          new_dir_to_team[d]
-          for d in dirs
-          if d in new_dir_to_team
-      ])) for component, dirs in affected_component_to_dirs.iteritems()
+      component:
+      list({new_dir_to_team[d]
+            for d in dirs if d in new_dir_to_team})
+      for component, dirs in affected_component_to_dirs.items()
   }
 
   # Perform cardinality check.
   warnings = ''
-  for component, teams in affected_component_to_teams.iteritems():
+  for component, teams in affected_component_to_teams.items():
     if len(teams) > 1:
       warnings += ('\nThe set of all OWNERS files with COMPONENT: %s list '
                    "multiple TEAM's: %s") % (component, ', '.join(teams))
@@ -169,7 +168,7 @@ def check_owners(rel_path, full_path):
     }
 
   if not os.path.exists(full_path):
-    return
+    return None
 
   with open(full_path) as f:
     owners_file_lines = f.readlines()

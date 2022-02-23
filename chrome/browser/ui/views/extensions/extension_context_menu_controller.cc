@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/extension_context_menu_controller.h"
 
+#include "chrome/browser/extensions/extension_context_menu_model.h"
 #include "chrome/browser/ui/toolbar/toolbar_action_view_controller.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -18,8 +19,10 @@
 #include "ui/views/view_class_properties.h"
 
 ExtensionContextMenuController::ExtensionContextMenuController(
-    ToolbarActionViewController* controller)
-    : controller_(controller) {}
+    ToolbarActionViewController* controller,
+    extensions::ExtensionContextMenuModel::ContextMenuSource
+        context_menu_source)
+    : controller_(controller), context_menu_source_(context_menu_source) {}
 
 ExtensionContextMenuController::~ExtensionContextMenuController() = default;
 
@@ -27,7 +30,7 @@ void ExtensionContextMenuController::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  ui::MenuModel* model = controller_->GetContextMenu();
+  ui::MenuModel* model = controller_->GetContextMenu(context_menu_source_);
 
   // It's possible the action doesn't have a context menu.
   if (!model)

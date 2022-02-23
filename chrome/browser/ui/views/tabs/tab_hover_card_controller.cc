@@ -7,14 +7,22 @@
 #include "base/bind.h"
 #include "base/callback_list.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/metrics/tab_count_metrics.h"
 #include "chrome/browser/ui/tabs/tab_style.h"
 #include "chrome/browser/ui/ui_features.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/views/location_bar/location_bar_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_popup_contents_view.h"
+#include "chrome/browser/ui/views/omnibox/omnibox_view_views.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_bubble_view.h"
 #include "chrome/browser/ui/views/tabs/tab_hover_card_thumbnail_observer.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
+#include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_popup_view.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
@@ -24,6 +32,33 @@
 #include "ui/views/widget/widget_observer.h"
 
 namespace {
+
+// Fetches the Omnibox drop-down widget, or returns null if the drop-down is
+// not visible.
+void FixWidgetStackOrder(views::Widget* widget, const Browser* browser) {
+#if BUILDFLAG(IS_LINUX)
+  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
+  // by other secondary UI Widgets (such as the omnibox Widget, see
+  // crbug.com/1226536).
+  widget->StackAtTop();
+#else   // !deifned(OS_LINUX)
+  // Hover card should always render above omnibox (see crbug.com/1272106).
+  if (!browser || !widget)
+    return;
+  BrowserView* const browser_view =
+      BrowserView::GetBrowserViewForBrowser(browser);
+  if (!browser_view)
+    return;
+  auto* const popup_view = browser_view->GetLocationBarView()
+                               ->omnibox_view()
+                               ->model()
+                               ->get_popup_view();
+  if (!popup_view || !popup_view->IsOpen())
+    return;
+  widget->StackAboveWidget(
+      static_cast<OmniboxPopupContentsView*>(popup_view)->GetWidget());
+#endif  // !BUILDFLAG(IS_LINUX)
+}
 
 base::TimeDelta GetPreviewImageCaptureDelay(
     ThumbnailImage::CaptureReadiness readiness) {
@@ -135,7 +170,7 @@ class TabHoverCardController::EventSniffer : public ui::EventObserver {
   }
 
  private:
-  TabHoverCardController* const controller_;
+  const raw_ptr<TabHoverCardController> controller_;
   std::unique_ptr<views::EventMonitor> event_monitor_;
 };
 
@@ -183,11 +218,11 @@ void TabHoverCardController::UpdateHoverCard(
   // then when the fade timer elapses we won't incorrectly try to fade in on the
   // wrong tab.
   if (target_tab_ != tab) {
+    delayed_show_timer_.Stop();
     target_tab_observation_.Reset();
     if (tab)
       target_tab_observation_.Observe(tab);
     target_tab_ = tab;
-    delayed_show_timer_.Stop();
   }
 
   // If there's nothing to attach to then there's no point in creating a card.
@@ -285,6 +320,10 @@ void TabHoverCardController::UpdateOrShowCard(
         base::BindOnce(&TabHoverCardController::ShowHoverCard,
                        base::Unretained(this), true, tab));
   } else {
+    // Just in case, cancel the timer. This shouldn't cancel a delayed capture
+    // since delayed capture only happens when the hover card already exists,
+    // and this code is only invoked if there is no hover card yet.
+    delayed_show_timer_.Stop();
     DCHECK_EQ(target_tab_, tab);
     ShowHoverCard(is_initial, tab);
   }
@@ -294,20 +333,15 @@ void TabHoverCardController::ShowHoverCard(bool is_initial,
                                            const Tab* intended_tab) {
   // Make sure the hover card isn't accidentally shown if it's already visible
   // or if the anchor is gone or changed.
-  if (hover_card_ || !target_tab_ || target_tab_ != intended_tab)
+  if (hover_card_ || !TargetTabIsValid() || target_tab_ != intended_tab)
     return;
 
   CreateHoverCard(target_tab_);
   UpdateCardContent(target_tab_);
   slide_animator_->UpdateTargetBounds();
   MaybeStartThumbnailObservation(target_tab_, is_initial);
-
-#if defined(OS_LINUX)
-  // Ensure the hover card Widget assumes the highest z-order to avoid occlusion
-  // by other secondary UI Widgets (such as the omnibox Widget, see
-  // crbug.com/1226536).
-  hover_card_->GetWidget()->StackAtTop();
-#endif
+  FixWidgetStackOrder(hover_card_->GetWidget(),
+                      tab_strip_->controller()->GetBrowser());
 
   if (!is_initial || !UseAnimations()) {
     OnCardFullyVisible();
@@ -343,6 +377,7 @@ void TabHoverCardController::HideHoverCard() {
 
 void TabHoverCardController::OnViewIsDeleting(views::View* observed_view) {
   if (hover_card_ == observed_view) {
+    delayed_show_timer_.Stop();
     hover_card_observation_.Reset();
     event_sniffer_.reset();
     slide_progressed_subscription_ = base::CallbackListSubscription();
@@ -374,7 +409,7 @@ views::Widget* TabHoverCardController::GetHoverCardWidget() {
 
 void TabHoverCardController::CreateHoverCard(Tab* tab) {
   hover_card_ = new TabHoverCardBubbleView(tab);
-  hover_card_observation_.Observe(hover_card_);
+  hover_card_observation_.Observe(hover_card_.get());
   event_sniffer_ = std::make_unique<EventSniffer>(this);
   slide_animator_ = std::make_unique<views::BubbleSlideAnimator>(hover_card_);
   slide_animator_->SetSlideDuration(
@@ -508,9 +543,17 @@ const views::View* TabHoverCardController::GetTargetAnchorView() const {
   return hover_card_->GetAnchorView();
 }
 
+bool TabHoverCardController::TargetTabIsValid() const {
+  return target_tab_ && tab_strip_->GetModelIndexOf(target_tab_) >= 0 &&
+         !target_tab_->closing();
+}
+
 void TabHoverCardController::OnCardFullyVisible() {
-  const bool has_preview = ArePreviewsEnabled() && !target_tab_->IsActive() &&
-                           !waiting_for_preview();
+  // We have to do a bunch of validity checks here because this happens on a
+  // callback and so the tab may no longer be valid (or part of the original
+  // tabstrip).
+  const bool has_preview = ArePreviewsEnabled() && TargetTabIsValid() &&
+                           !target_tab_->IsActive() && !waiting_for_preview();
   metrics_->CardFullyVisibleOnTab(target_tab_, has_preview);
 }
 

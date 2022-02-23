@@ -25,7 +25,6 @@
 <translation id="225614027745146050">Pozdravljeni</translation>
 <translation id="2320166752086256636">Skrij tipkovnico</translation>
 <translation id="2329392777730037872">Ni bilo mogoče odpreti <ph name="URL" /> v tem odjemalcu.</translation>
-<translation id="2333212046079545895">Copyright 2021 Google LLC. Vse pravice pridržane.</translation>
 <translation id="2359808026110333948">Naprej</translation>
 <translation id="2366718077645204424">Ni mogoče vzpostaviti povezave z gostiteljem; verjetno zaradi konfiguracije omrežja, ki ga uporabljate.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />  Zadnji odziv z vzpostavljeno povezavo: <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -35,6 +34,7 @@
 <translation id="2599300881200251572">Ta storitev omogoča dohodne povezave iz odjemalcev za Oddaljeno namizje za Chrome.</translation>
 <translation id="2647232381348739934">Storitev Oddaljeno povezovanje s Chromom</translation>
 <translation id="2676780859508944670">Obdelava …</translation>
+<translation id="2692522824157224199">Copyright 2022 Google LLC. Vse pravice pridržane.</translation>
 <translation id="2699970397166997657">Oddaljeno povezovanje s Chromom</translation>
 <translation id="2758123043070977469">Pri preverjanju pristnosti je prišlo do napake. Prijavite se znova.</translation>
 <translation id="2803375539583399270">Vnesite kodo PIN</translation>
@@ -71,10 +71,10 @@
 <translation id="4257751272692708833">Aplikacija za posredovanje URL-jev storitve <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Koda za dostop je neveljavna. Poskusite znova.</translation>
 <translation id="4281844954008187215">Pogoji storitve</translation>
+<translation id="4372650392690220936">Copyright 2022 Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="4405930547258349619">Knjižnica jedra</translation>
 <translation id="443560535555262820">Odpri nastavitve dostopnosti</translation>
 <translation id="4450893287417543264">Tega ne prikaži več</translation>
-<translation id="4512952200932940229">Copyright 2021 Ustvarjalci Chromiuma. Vse pravice pridržane.</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4563926062592110512">Povezava z odjemalcem prekinjena: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973">Element <ph name="URL_FORWARDER_NAME" /> ni pravilno konfiguriran. Izberite drug privzeti brskalnik in nato znova omogočite posredovanje URL-jev.</translation>

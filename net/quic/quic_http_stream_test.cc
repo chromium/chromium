@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -137,7 +138,7 @@ bool CheckHeader(const base::Value& params,
   std::string header_prefix = base::StrCat({key, ": "});
   std::string expected_header = base::StrCat({header_prefix, expected_value});
 
-  auto header_list = headers->GetList();
+  auto header_list = headers->GetListDeprecated();
   auto header_it = header_list.begin();
   bool header_found = false;
   while (header_it != header_list.end()) {
@@ -441,11 +442,11 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
     stream_ = std::make_unique<QuicHttpStream>(
         session_->CreateHandle(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443)),
-        std::vector<std::string>() /* dns_aliases */);
+        /*dns_aliases=*/std::set<std::string>());
     promised_stream_ = std::make_unique<QuicHttpStream>(
         session_->CreateHandle(
             url::SchemeHostPort(url::kHttpsScheme, "www.example.org", 443)),
-        std::vector<std::string>() /* dns_aliases */);
+        /*dns_aliases=*/std::set<std::string>());
     push_promise_[":path"] = "/bar";
     push_promise_[":authority"] = "www.example.org";
     push_promise_[":version"] = "HTTP/1.1";
@@ -669,11 +670,11 @@ class QuicHttpStreamTest : public ::testing::TestWithParam<TestParams>,
   NetLogWithSource net_log_with_source_{
       NetLogWithSource::Make(NetLog::Get(), NetLogSourceType::NONE)};
   RecordingNetLogObserver net_log_observer_;
-  quic::test::MockSendAlgorithm* send_algorithm_;
+  raw_ptr<quic::test::MockSendAlgorithm> send_algorithm_;
   scoped_refptr<TestTaskRunner> runner_;
   std::unique_ptr<MockWrite[]> mock_writes_;
   quic::MockClock clock_;
-  TestQuicConnection* connection_;
+  raw_ptr<TestQuicConnection> connection_;
   std::unique_ptr<QuicChromiumConnectionHelper> helper_;
   std::unique_ptr<QuicChromiumAlarmFactory> alarm_factory_;
   testing::StrictMock<quic::test::MockQuicConnectionVisitor> visitor_;
@@ -1054,7 +1055,7 @@ TEST_P(QuicHttpStreamTest, ElideHeadersInNetLog) {
   auto stream = std::make_unique<QuicHttpStream>(
       session_->CreateHandle(
           url::SchemeHostPort(url::kHttpsScheme, "www.example.org/foo", 443)),
-      std::vector<std::string>() /* dns_aliases */);
+      /*dns_aliases=*/std::set<std::string>());
   EXPECT_THAT(
       stream->InitializeStream(&request_, true, DEFAULT_PRIORITY,
                                net_log_with_source_, callback_.callback()),

@@ -7,7 +7,7 @@
 namespace syncer {
 
 void PrintTo(ModelTypeSet model_types, ::std::ostream* os) {
-  *os << ModelTypeSetToString(model_types);
+  *os << ModelTypeSetToDebugString(model_types);
 }
 
 namespace {
@@ -31,11 +31,12 @@ class HasModelTypesMatcher : public ::testing::MatcherInterface<ModelTypeSet> {
   }
 
   void DescribeTo(::std::ostream* os) const override {
-    *os << "has model types " << ModelTypeSetToString(expected_types_);
+    *os << "has model types " << ModelTypeSetToDebugString(expected_types_);
   }
 
   void DescribeNegationTo(::std::ostream* os) const override {
-    *os << "doesn't have model types " << ModelTypeSetToString(expected_types_);
+    *os << "doesn't have model types "
+        << ModelTypeSetToDebugString(expected_types_);
   }
 
  private:

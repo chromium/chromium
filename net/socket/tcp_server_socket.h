@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -10,7 +10,7 @@ import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bu
 import {CloudPrintInterface, CloudPrintInterfaceErrorEventDetail, CloudPrintInterfaceEventType} from '../cloud_print_interface.js';
 import {CloudPrintInterfaceImpl} from '../cloud_print_interface_impl.js';
 
-import {Destination, DestinationOrigin} from './destination.js';
+import {DestinationOrigin} from './destination.js';
 import {DestinationStore} from './destination_store.js';
 
 type UpdateUsersPayload = {
@@ -20,7 +20,7 @@ type UpdateUsersPayload = {
 
 const PrintPreviewUserManagerElementBase = WebUIListenerMixin(PolymerElement);
 
-class PrintPreviewUserManagerElement extends
+export class PrintPreviewUserManagerElement extends
     PrintPreviewUserManagerElementBase {
   static get is() {
     return 'print-preview-user-manager';

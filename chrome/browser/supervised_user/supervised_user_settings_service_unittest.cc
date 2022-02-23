@@ -170,7 +170,9 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessAtomicSetting) {
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
+  EXPECT_TRUE(value->is_string());
+  if (value->is_string())
+    string_value = value->GetString();
   EXPECT_EQ(kSettingsValue, string_value);
 }
 
@@ -182,9 +184,9 @@ TEST_F(SupervisedUserSettingsServiceTest, ProcessSplitSetting) {
   EXPECT_FALSE(value);
 
   base::DictionaryValue dict;
-  dict.SetString("foo", "bar");
-  dict.SetBoolean("awesomesauce", true);
-  dict.SetInteger("eaudecologne", 4711);
+  dict.SetStringKey("foo", "bar");
+  dict.SetBoolKey("awesomesauce", true);
+  dict.SetIntKey("eaudecologne", 4711);
 
   settings_.reset();
   syncer::SyncChangeList change_list;
@@ -270,8 +272,8 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
         kSettingsName, base::Value(kSettingsValue)));
     // Adding 2 SplitSettings from dictionary.
     base::DictionaryValue dict;
-    dict.SetString("foo", "bar");
-    dict.SetInteger("eaudecologne", 4711);
+    dict.SetStringKey("foo", "bar");
+    dict.SetIntKey("eaudecologne", 4711);
     for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd();
          it.Advance()) {
       sync_data.push_back(
@@ -298,8 +300,8 @@ TEST_F(SupervisedUserSettingsServiceTest, Merge) {
     UploadSplitItem("item", "second");
 
     base::DictionaryValue dict;
-    dict.SetString("foo", "burp");
-    dict.SetString("item", "first");
+    dict.SetStringKey("foo", "burp");
+    dict.SetStringKey("item", "first");
     // Adding 2 SplitSettings from dictionary.
     for (base::DictionaryValue::Iterator it(dict); !it.IsAtEnd();
          it.Advance()) {
@@ -329,7 +331,9 @@ TEST_F(SupervisedUserSettingsServiceTest, SetLocalSetting) {
   value = settings_->FindKey(kSettingsName);
   ASSERT_TRUE(value);
   std::string string_value;
-  EXPECT_TRUE(value->GetAsString(&string_value));
+  EXPECT_TRUE(value->is_string());
+  if (value->is_string())
+    string_value = value->GetString();
   EXPECT_EQ(kSettingsValue, string_value);
 }
 

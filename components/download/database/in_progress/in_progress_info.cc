@@ -13,7 +13,9 @@ InProgressInfo::InProgressInfo(const InProgressInfo& other) = default;
 InProgressInfo::~InProgressInfo() = default;
 
 bool InProgressInfo::operator==(const InProgressInfo& other) const {
-  return url_chain == other.url_chain && site_url == other.site_url &&
+  return url_chain == other.url_chain &&
+         serialized_embedder_download_data ==
+             other.serialized_embedder_download_data &&
          referrer_url == other.referrer_url && tab_url == other.tab_url &&
          tab_referrer_url == other.tab_referrer_url &&
          fetch_error_body == other.fetch_error_body &&
@@ -33,7 +35,9 @@ bool InProgressInfo::operator==(const InProgressInfo& other) const {
          auto_resume_count == other.auto_resume_count &&
          download_schedule == other.download_schedule &&
          RerouteInfosEqual(reroute_info, other.reroute_info) &&
-         credentials_mode == other.credentials_mode;
+         credentials_mode == other.credentials_mode &&
+         range_request_from == other.range_request_from &&
+         range_request_to == other.range_request_to;
 }
 
 }  // namespace download

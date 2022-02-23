@@ -40,16 +40,12 @@ const char kAutoDetectionLanguage[] = "auto";
 
 }  // namespace
 
-IOSTranslateDriver::IOSTranslateDriver(
-    web::WebState* web_state,
-    web::NavigationManager* navigation_manager,
-    TranslateManager* translate_manager)
+IOSTranslateDriver::IOSTranslateDriver(web::WebState* web_state,
+                                       TranslateManager* translate_manager)
     : web_state_(web_state),
-      navigation_manager_(navigation_manager),
       translate_manager_(translate_manager->GetWeakPtr()),
       page_seq_no_(0),
       pending_page_seq_no_(0) {
-  DCHECK(navigation_manager_);
   DCHECK(translate_manager_);
   DCHECK(web_state_);
 
@@ -132,10 +128,12 @@ void IOSTranslateDriver::WebStateDestroyed(web::WebState* web_state) {
 // TranslateDriver methods
 
 bool IOSTranslateDriver::IsLinkNavigation() {
-  return navigation_manager_->GetVisibleItem() &&
-         ui::PageTransitionCoreTypeIs(
-             navigation_manager_->GetVisibleItem()->GetTransitionType(),
-             ui::PAGE_TRANSITION_LINK);
+  DCHECK(web_state_->IsRealized());
+  web::NavigationItem* visible_item =
+      web_state_->GetNavigationManager()->GetVisibleItem();
+  return visible_item &&
+         ui::PageTransitionCoreTypeIs(visible_item->GetTransitionType(),
+                                      ui::PAGE_TRANSITION_LINK);
 }
 
 void IOSTranslateDriver::OnTranslateEnabledChanged() {
@@ -163,7 +161,7 @@ void IOSTranslateDriver::RevertTranslation(int page_seq_no) {
 }
 
 bool IOSTranslateDriver::IsIncognito() {
-  return navigation_manager_->GetBrowserState()->IsOffTheRecord();
+  return web_state_->GetBrowserState()->IsOffTheRecord();
 }
 
 const std::string& IOSTranslateDriver::GetContentsMimeType() {
@@ -183,7 +181,8 @@ ukm::SourceId IOSTranslateDriver::GetUkmSourceId() {
 }
 
 bool IOSTranslateDriver::HasCurrentPage() {
-  return (navigation_manager_->GetVisibleItem() != nullptr);
+  DCHECK(web_state_->IsRealized());
+  return (web_state_->GetNavigationManager()->GetVisibleItem() != nullptr);
 }
 
 void IOSTranslateDriver::OpenUrlInNewTab(const GURL& url) {

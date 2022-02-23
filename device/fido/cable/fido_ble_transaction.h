@@ -10,7 +10,6 @@
 
 #include "base/component_export.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "device/fido/cable/fido_ble_frames.h"

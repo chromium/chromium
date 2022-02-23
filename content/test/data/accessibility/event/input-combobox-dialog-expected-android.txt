@@ -1,0 +1,3 @@
+TYPE_VIEW_TEXT_SELECTION_CHANGED - [0, 0]
+TYPE_ANNOUNCEMENT - [expanded, dialog opened.]
+TYPE_WINDOW_STATE_CHANGED - [contentTypes=16]

@@ -12,6 +12,7 @@
 #include "base/debug/crash_logging.h"
 #include "base/debug/profiler.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/memory.h"
 #include "base/strings/string_number_conversions.h"
@@ -79,7 +80,7 @@ void SetNameInternal(PlatformThreadId thread_id, const char* name) {
 }
 
 struct ThreadParams {
-  PlatformThread::Delegate* delegate;
+  raw_ptr<PlatformThread::Delegate> delegate;
   bool joinable;
   ThreadPriority priority;
 };
@@ -113,17 +114,15 @@ DWORD __stdcall ThreadFunc(void* params) {
   if (did_dup) {
     scoped_platform_handle.Set(platform_handle);
     ThreadIdNameManager::GetInstance()->RegisterThread(
-        scoped_platform_handle.Get(),
-        PlatformThread::CurrentId());
+        scoped_platform_handle.get(), PlatformThread::CurrentId());
   }
 
   delete thread_params;
   delegate->ThreadMain();
 
   if (did_dup) {
-    ThreadIdNameManager::GetInstance()->RemoveName(
-        scoped_platform_handle.Get(),
-        PlatformThread::CurrentId());
+    ThreadIdNameManager::GetInstance()->RemoveName(scoped_platform_handle.get(),
+                                                   PlatformThread::CurrentId());
   }
 
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -464,11 +463,11 @@ ThreadPriority PlatformThread::GetCurrentThreadPriority() {
       return ThreadPriority::BACKGROUND;
     case kWin7NormalPriority:
       DCHECK_EQ(win::GetVersion(), win::Version::WIN7);
-      FALLTHROUGH;
+      [[fallthrough]];
     case THREAD_PRIORITY_NORMAL:
       return ThreadPriority::NORMAL;
     case kWinNormalPriority1:
-      FALLTHROUGH;
+      [[fallthrough]];
     case kWinNormalPriority2:
       return ThreadPriority::NORMAL;
     case THREAD_PRIORITY_ABOVE_NORMAL:

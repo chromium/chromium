@@ -113,7 +113,8 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   void SetVolume(double volume) override;
   void SetLatencyHint(double seconds) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetAutoplayInitiated(bool autoplay_initiated) override;
+  void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) override;
   void OnRequestPictureInPicture() override;
   bool SetSinkId(const WebString& sink_id,
                  WebSetSinkIdCompleteCallback completion_callback) override;
@@ -196,12 +197,15 @@ class BLINK_MODULES_EXPORT WebMediaPlayerMS
   std::unique_ptr<WebMediaPlayer::VideoFramePresentationMetadata>
   GetVideoFramePresentationMetadata() override;
 
+  void RegisterFrameSinkHierarchy() override;
+  void UnregisterFrameSinkHierarchy() override;
+
  private:
   friend class WebMediaPlayerMSTest;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static const gfx::Size kUseGpuMemoryBufferVideoFramesMinResolution;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   bool IsInPictureInPicture() const;
 

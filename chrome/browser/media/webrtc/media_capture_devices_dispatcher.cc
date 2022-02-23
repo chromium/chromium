@@ -11,6 +11,7 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/metrics/field_trial.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -37,11 +38,11 @@
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/common/content_features.h"
-#else  // !OS_ANDROID
+#else
 #include "chrome/browser/media/webrtc/display_media_access_handler.h"
-#endif  //  defined(OS_ANDROID)
+#endif  //  BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/media/chromeos_login_media_access_handler.h"
@@ -83,10 +84,10 @@ MediaCaptureDevicesDispatcher::MediaCaptureDevicesDispatcher()
       media_stream_capture_indicator_(new MediaStreamCaptureIndicator()) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   media_access_handlers_.push_back(
       std::make_unique<DisplayMediaAccessHandler>());
-#endif  //  defined(OS_ANDROID)
+#endif  //  BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -141,7 +142,7 @@ void MediaCaptureDevicesDispatcher::ProcessMediaAccessRequest(
     const extensions::Extension* extension) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Kill switch for getDisplayMedia() on browser side to prevent renderer from
   // bypassing blink side checks.
   if (request.video_type ==

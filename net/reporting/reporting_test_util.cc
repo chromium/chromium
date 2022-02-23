@@ -181,8 +181,8 @@ TestReportingContext::TestReportingContext(
       delivery_timer_(new base::MockOneShotTimer()),
       garbage_collection_timer_(new base::MockOneShotTimer()) {
   garbage_collector()->SetTimerForTesting(
-      base::WrapUnique(garbage_collection_timer_));
-  delivery_agent()->SetTimerForTesting(base::WrapUnique(delivery_timer_));
+      base::WrapUnique(garbage_collection_timer_.get()));
+  delivery_agent()->SetTimerForTesting(base::WrapUnique(delivery_timer_.get()));
 }
 
 TestReportingContext::~TestReportingContext() {
@@ -376,6 +376,12 @@ ReportingContext* TestReportingService::GetContextForTesting() const {
 std::vector<const ReportingReport*> TestReportingService::GetReports() const {
   NOTREACHED();
   return std::vector<const ReportingReport*>();
+}
+
+base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+TestReportingService::GetV1ReportingEndpointsByOrigin() const {
+  NOTREACHED();
+  return base::flat_map<url::Origin, std::vector<ReportingEndpoint>>();
 }
 
 void TestReportingService::AddReportingCacheObserver(

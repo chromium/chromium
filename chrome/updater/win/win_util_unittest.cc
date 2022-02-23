@@ -6,6 +6,9 @@
 
 #include <windows.h>
 
+#include <string>
+
+#include "base/files/file_path.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/updater/updater_branding.h"
@@ -61,6 +64,18 @@ TEST(WinUtil, GetServiceName) {
                             kUpdaterVersionUtf16}),
               GetServiceName(is_internal_service));
   }
+}
+
+TEST(WinUtil, BuildMsiCommandLine) {
+  EXPECT_STREQ(L"", BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"),
+                                        base::FilePath(L"NotMsi.exe"))
+                        .c_str());
+  EXPECT_STREQ(
+      L"msiexec arg1 arg2 arg3 REBOOT=ReallySuppress /qn /i \"c:\\my "
+      L"path\\YesMsi.msi\" /log \"c:\\my path\\YesMsi.msi.log\"",
+      BuildMsiCommandLine(std::wstring(L"arg1 arg2 arg3"),
+                          base::FilePath(L"c:\\my path\\YesMsi.msi"))
+          .c_str());
 }
 
 }  // namespace updater

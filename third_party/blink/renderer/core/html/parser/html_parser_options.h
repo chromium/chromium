@@ -37,7 +37,7 @@ class CORE_EXPORT HTMLParserOptions {
   DISALLOW_NEW();
 
  public:
-  // https://html.spec.whatwg.org/#scripting-flag
+  // https://html.spec.whatwg.org/C/#scripting-flag
   bool scripting_flag = false;
 
   // TODO(domfarolino): Remove this when Priority Hints is no longer in an

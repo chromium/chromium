@@ -10,7 +10,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_export.h"
 #include "device/bluetooth/bluetooth_init_win.h"
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"

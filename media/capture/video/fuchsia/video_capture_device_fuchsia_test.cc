@@ -222,7 +222,8 @@ class VideoCaptureDeviceFuchsiaTest : public testing::Test {
   void CreateDevice() {
     auto devices_info = GetDevicesInfo();
     ASSERT_EQ(devices_info.size(), 1U);
-    device_ = device_factory_.CreateDevice(devices_info[0].descriptor);
+    device_ = device_factory_.CreateDevice(devices_info[0].descriptor)
+                  .ReleaseDevice();
   }
 
   FakeCameraStream* GetDefaultCameraStream() {
@@ -404,7 +405,8 @@ TEST_F(VideoCaptureDeviceFuchsiaTest,
   base::RunLoop().RunUntilIdle();
 
   // The factory is expected to reconnect DeviceWatcher.
-  device_ = device_factory_.CreateDevice(devices_info[0].descriptor);
+  device_ =
+      device_factory_.CreateDevice(devices_info[0].descriptor).ReleaseDevice();
 
   StartCapturer();
 

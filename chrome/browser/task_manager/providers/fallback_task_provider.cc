@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/process/process.h"
 #include "base/threading/thread_task_runner_handle.h"

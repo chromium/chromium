@@ -1,0 +1,30 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//mojo/public/tools/bindings/mojom.gni")
+
+static_library("webui") {
+  sources = [
+    "optimization_guide_internals_page_handler_impl.cc",
+    "optimization_guide_internals_page_handler_impl.h",
+    "optimization_guide_internals_ui.cc",
+    "optimization_guide_internals_ui.h",
+    "url_constants.cc",
+    "url_constants.h",
+  ]
+  deps = [
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/optimization_guide_internals/resources:resources",
+    "//components/optimization_guide/optimization_guide_internals/webui:mojo_bindings",
+    "//third_party/abseil-cpp:absl",
+    "//ui/base",
+    "//ui/webui",
+  ]
+}
+mojom("mojo_bindings") {
+  sources = [ "optimization_guide_internals.mojom" ]
+  webui_module_path = "/"
+  public_deps = [ "//mojo/public/mojom/base" ]
+}

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/no_destructor.h"
 #include "base/time/default_clock.h"
 #include "build/build_config.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"  // nogncheck
@@ -16,11 +17,11 @@
 #include "chrome/browser/updates/announcement_notification/empty_announcement_notification_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate_android.h"
 #else
 #include "chrome/browser/updates/announcement_notification/announcement_notification_delegate.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // static
 AnnouncementNotificationServiceFactory*
@@ -44,7 +45,7 @@ KeyedService* AnnouncementNotificationServiceFactory::BuildServiceInstanceFor(
 
   Profile* profile = Profile::FromBrowserContext(context);
   PrefService* pref = profile->GetPrefs();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto delegate = std::make_unique<AnnouncementNotificationDelegateAndroid>();
 #else
   NotificationDisplayService* display_service =
@@ -53,7 +54,7 @@ KeyedService* AnnouncementNotificationServiceFactory::BuildServiceInstanceFor(
               profile));
   auto delegate =
       std::make_unique<AnnouncementNotificationDelegate>(display_service);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   return AnnouncementNotificationService::Create(
       profile, pref, std::move(delegate), base::DefaultClock::GetInstance());
 }

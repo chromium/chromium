@@ -17,7 +17,7 @@ namespace ui {
 COMPONENT_EXPORT(UI_BASE_IME_ASH)
 void RecordUkmNonCompliantApi(
     ukm::SourceId source,
-    chromeos::ime::mojom::InputMethodApiOperation operation);
+    ash::ime::mojom::InputMethodApiOperation operation);
 
 // Records an event in UKM, under the InputMethod.Assistive.Match metric.
 // Ignores invalid sources.

@@ -13,14 +13,13 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.DefaultBrowserInfo;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.share.LensUtils;
 import org.chromium.chrome.browser.tasks.tab_management.TabUiFeatureUtilities;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.text.SpanApplier;
 import org.chromium.ui.text.SpanApplier.SpanInfo;
 
@@ -159,9 +158,7 @@ class ChromeContextMenuItem {
             R.string.contextmenu_open_image_in_ephemeral_tab, // Item.OPEN_IMAGE_IN_EPHEMERAL_TAB:
             R.string.contextmenu_copy_image, // Item.COPY_IMAGE:
             R.string.contextmenu_search_web_for_image, // Item.SEARCH_BY_IMAGE:
-            LensUtils.useSearchImageWithGoogleLensItemName()
-                    ? R.string.contextmenu_search_image_with_google_lens
-                    : R.string.contextmenu_search_with_google_lens, // Item.SEARCH_WITH_GOOGLE_LENS:
+            R.string.contextmenu_search_image_with_google_lens, // Item.SEARCH_WITH_GOOGLE_LENS:
             R.string.contextmenu_shop_image_with_google_lens, // Item.SHOP_IMAGE_WITH_GOOGLE_LENS:
             R.string.contextmenu_share_image, // Item.SHARE_IMAGE
             0, // Item.DIRECT_SHARE_IMAGE is not handled by this mapping.
@@ -259,7 +256,7 @@ class ChromeContextMenuItem {
         }
         return SpanApplier.applySpans(menuTitle,
                 new SpanInfo("<new>", "</new>", new SuperscriptSpan(), new RelativeSizeSpan(0.75f),
-                        new ForegroundColorSpan(ApiCompatibilityUtils.getColor(
-                                context.getResources(), R.color.default_text_color_blue))));
+                        new ForegroundColorSpan(
+                                SemanticColorUtils.getDefaultTextColorAccent1(context))));
     }
 }

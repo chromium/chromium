@@ -186,15 +186,15 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   // Create a local list of keys, so that |jwk_keys| only gets updated on
   // success.
   KeyIdAndKeyPairs local_keys;
-  for (size_t i = 0; i < list_val->GetList().size(); ++i) {
-    base::DictionaryValue* jwk = NULL;
-    if (!list_val->GetDictionary(i, &jwk)) {
+  for (size_t i = 0; i < list_val->GetListDeprecated().size(); ++i) {
+    base::Value& jwk = list_val->GetListDeprecated()[i];
+    if (!jwk.is_dict()) {
       DVLOG(1) << "Unable to access '" << kKeysTag << "'[" << i
                << "] in JWK Set";
       return false;
     }
     KeyIdAndKeyPair key_pair;
-    if (!ConvertJwkToKeyPair(*jwk, &key_pair)) {
+    if (!ConvertJwkToKeyPair(base::Value::AsDictionaryValue(jwk), &key_pair)) {
       DVLOG(1) << "Error from '" << kKeysTag << "'[" << i << "]";
       return false;
     }
@@ -204,20 +204,23 @@ bool ExtractKeysFromJWKSet(const std::string& jwk_set,
   // Successfully processed all JWKs in the set. Now check if "type" is
   // specified.
   base::Value* value = NULL;
-  std::string session_type_id;
   if (!dictionary->Get(kTypeTag, &value)) {
     // Not specified, so use the default type.
     *session_type = CdmSessionType::kTemporary;
-  } else if (!value->GetAsString(&session_type_id)) {
-    DVLOG(1) << "Invalid '" << kTypeTag << "' value";
-    return false;
-  } else if (session_type_id == kTemporarySession) {
-    *session_type = CdmSessionType::kTemporary;
-  } else if (session_type_id == kPersistentLicenseSession) {
-    *session_type = CdmSessionType::kPersistentLicense;
   } else {
-    DVLOG(1) << "Invalid '" << kTypeTag << "' value: " << session_type_id;
-    return false;
+    if (!value->is_string()) {
+      DVLOG(1) << "Invalid '" << kTypeTag << "' value";
+      return false;
+    }
+    const std::string session_type_id = value->GetString();
+    if (session_type_id == kTemporarySession) {
+      *session_type = CdmSessionType::kTemporary;
+    } else if (session_type_id == kPersistentLicenseSession) {
+      *session_type = CdmSessionType::kPersistentLicense;
+    } else {
+      DVLOG(1) << "Invalid '" << kTypeTag << "' value: " << session_type_id;
+      return false;
+    }
   }
 
   // All done.
@@ -242,10 +245,8 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   }
 
   // Locate the set from the dictionary.
-  base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(&root.value());
-  base::ListValue* list_val = NULL;
-  if (!dictionary->GetList(kKeyIdsTag, &list_val)) {
+  const base::Value* list_val = root->FindListKey(kKeyIdsTag);
+  if (!list_val) {
     error_message->assign("Missing '");
     error_message->append(kKeyIdsTag);
     error_message->append("' parameter or not a list");
@@ -255,9 +256,10 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
   // Create a local list of key ids, so that |key_ids| only gets updated on
   // success.
   KeyIdList local_key_ids;
-  for (size_t i = 0; i < list_val->GetList().size(); ++i) {
-    std::string encoded_key_id;
-    if (!list_val->GetString(i, &encoded_key_id)) {
+  base::Value::ConstListView list_val_view = list_val->GetListDeprecated();
+  for (size_t i = 0; i < list_val_view.size(); ++i) {
+    const std::string* encoded_key_id = list_val_view[i].GetIfString();
+    if (!encoded_key_id) {
       error_message->assign("'");
       error_message->append(kKeyIdsTag);
       error_message->append("'[");
@@ -268,7 +270,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
 
     // Key ID is a base64url-encoded string, so decode it.
     std::string raw_key_id;
-    if (!base::Base64UrlDecode(encoded_key_id,
+    if (!base::Base64UrlDecode(*encoded_key_id,
                                base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                                &raw_key_id) ||
         raw_key_id.empty()) {
@@ -277,7 +279,7 @@ bool ExtractKeyIdsFromKeyIdsInitData(const std::string& input,
       error_message->append("'[");
       error_message->append(base::NumberToString(i));
       error_message->append("] is not valid base64url encoded. Value: ");
-      error_message->append(ShortenTo64Characters(encoded_key_id));
+      error_message->append(ShortenTo64Characters(*encoded_key_id));
       return false;
     }
 
@@ -392,32 +394,31 @@ bool ExtractFirstKeyIdFromLicenseRequest(const std::vector<uint8_t>& license,
   }
 
   // Locate the set from the dictionary.
-  base::DictionaryValue* dictionary =
-      static_cast<base::DictionaryValue*>(&root.value());
-  base::ListValue* list_val = NULL;
-  if (!dictionary->GetList(kKeyIdsTag, &list_val)) {
+  const base::Value* list_val = root->FindListKey(kKeyIdsTag);
+  if (!list_val) {
     DVLOG(1) << "Missing '" << kKeyIdsTag << "' parameter or not a list";
     return false;
   }
 
   // Get the first key.
-  if (list_val->GetList().size() < 1) {
+  if (list_val->GetListDeprecated().size() < 1) {
     DVLOG(1) << "Empty '" << kKeyIdsTag << "' list";
     return false;
   }
 
-  std::string encoded_key;
-  if (!list_val->GetString(0, &encoded_key)) {
+  const std::string* encoded_key =
+      list_val->GetListDeprecated()[0].GetIfString();
+  if (!encoded_key) {
     DVLOG(1) << "First entry in '" << kKeyIdsTag << "' not a string";
     return false;
   }
 
   std::string decoded_string;
-  if (!base::Base64UrlDecode(encoded_key,
+  if (!base::Base64UrlDecode(*encoded_key,
                              base::Base64UrlDecodePolicy::DISALLOW_PADDING,
                              &decoded_string) ||
       decoded_string.empty()) {
-    DVLOG(1) << "Invalid '" << kKeyIdsTag << "' value: " << encoded_key;
+    DVLOG(1) << "Invalid '" << kKeyIdsTag << "' value: " << *encoded_key;
     return false;
   }
 

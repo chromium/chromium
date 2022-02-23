@@ -14,8 +14,9 @@
 #include "components/content_settings/core/browser/content_settings_utils.h"
 #include "components/content_settings/core/browser/website_settings_registry.h"
 #include "components/content_settings/core/common/content_settings.h"
+#include "components/content_settings/core/common/features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_drm_bridge.h"
 #endif
 
@@ -125,6 +126,10 @@ void ContentSettingsRegistry::Init() {
 
   // WARNING: The string names of the permissions passed in below are used to
   // generate preference names and should never be changed!
+  //
+  // If a permission is DELETED, please update
+  // PrefProvider::DiscardOrMigrateObsoletePreferences() and
+  // DefaultProvider::DiscardOrMigrateObsoletePreferences() accordingly.
 
   Register(ContentSettingsType::COOKIES, "cookies", CONTENT_SETTING_ALLOW,
            WebsiteSettingsInfo::SYNCABLE,
@@ -263,21 +268,21 @@ void ContentSettingsRegistry::Init() {
   // https://crbug.com/904883).
   // On ChromeOS and Windows the default value is always ALLOW.
   const auto protected_media_identifier_setting =
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       media::MediaDrmBridge::IsPerOriginProvisioningSupported()
           ? CONTENT_SETTING_ALLOW
           : CONTENT_SETTING_ASK;
 #else
       CONTENT_SETTING_ALLOW;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   Register(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER,
            "protected-media-identifier", protected_media_identifier_setting,
            WebsiteSettingsInfo::UNSYNCABLE, AllowlistedSchemes(),
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK,
                          CONTENT_SETTING_ASK),
-#else   // defined(OS_ANDROID)
+#else   // BUILDFLAG(IS_ANDROID)
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
 #endif  // else
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
@@ -498,7 +503,9 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  Register(ContentSettingsType::NFC, "nfc", CONTENT_SETTING_ASK,
+  // The "nfc" name should not be used in the future to avoid name collisions.
+  // See crbug.com/1275576
+  Register(ContentSettingsType::NFC, "nfc-devices", CONTENT_SETTING_ASK,
            WebsiteSettingsInfo::UNSYNCABLE, AllowlistedSchemes(),
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
                          CONTENT_SETTING_BLOCK),
@@ -597,17 +604,6 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
 
-  Register(ContentSettingsType::FILE_HANDLING, "file-handling",
-           CONTENT_SETTING_ASK, WebsiteSettingsInfo::UNSYNCABLE,
-           AllowlistedSchemes(),
-           ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_ASK,
-                         CONTENT_SETTING_BLOCK),
-           WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::DESKTOP,
-           ContentSettingsInfo::INHERIT_IF_LESS_PERMISSIVE,
-           ContentSettingsInfo::PERSISTENT,
-           ContentSettingsInfo::EXCEPTIONS_ON_SECURE_ORIGINS_ONLY);
-
   Register(ContentSettingsType::JAVASCRIPT_JIT, "javascript-jit",
            CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
            AllowlistedSchemes(),
@@ -619,8 +615,17 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
+  const auto auto_dark_web_content_setting =
+#if BUILDFLAG(IS_ANDROID)
+      content_settings::kDarkenWebsitesCheckboxOptOut.Get()
+          ? CONTENT_SETTING_ALLOW
+          : CONTENT_SETTING_BLOCK;
+#else
+      CONTENT_SETTING_ALLOW;
+#endif  // BUILDFLAG(IS_ANDROID)
+
   Register(ContentSettingsType::AUTO_DARK_WEB_CONTENT, "auto-dark-web-content",
-           CONTENT_SETTING_ALLOW, WebsiteSettingsInfo::UNSYNCABLE,
+           auto_dark_web_content_setting, WebsiteSettingsInfo::UNSYNCABLE,
            AllowlistedSchemes(),
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
@@ -634,7 +639,8 @@ void ContentSettingsRegistry::Init() {
            AllowlistedSchemes(),
            ValidSettings(CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK),
            WebsiteSettingsInfo::SINGLE_ORIGIN_ONLY_SCOPE,
-           WebsiteSettingsRegistry::PLATFORM_ANDROID,
+           WebsiteSettingsRegistry::PLATFORM_ANDROID |
+               WebsiteSettingsRegistry::PLATFORM_IOS,
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::PERSISTENT,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
@@ -655,8 +661,7 @@ void ContentSettingsRegistry::Register(
   // Ensure that nothing has been registered yet for the given type.
   DCHECK(!website_settings_registry_->Get(type));
 
-  std::unique_ptr<base::Value> default_value(
-      new base::Value(static_cast<int>(initial_default_value)));
+  base::Value default_value(static_cast<int>(initial_default_value));
   const WebsiteSettingsInfo* website_settings_info =
       website_settings_registry_->Register(
           type, name, std::move(default_value), sync_status,

@@ -5,6 +5,7 @@
 #ifndef MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 #define MEDIA_MOJO_CLIENTS_MOJO_DECODER_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/decoder_factory.h"
 
@@ -40,7 +41,7 @@ class MojoDecoderFactory final : public DecoderFactory {
       std::vector<std::unique_ptr<VideoDecoder>>* video_decoders) final;
 
  private:
-  media::mojom::InterfaceFactory* interface_factory_;
+  raw_ptr<media::mojom::InterfaceFactory> interface_factory_;
 };
 
 }  // namespace media

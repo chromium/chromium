@@ -93,7 +93,7 @@ class InProcessIntermediateDumpHandlerTest : public testing::Test {
 TEST_F(InProcessIntermediateDumpHandlerTest, TestSystem) {
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), {}));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
 
   // Snpahot
   const SystemSnapshot* system = process_snapshot.System();
@@ -145,7 +145,8 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
 
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), {{"after_dump", "post"}}));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(
+      path(), {{"after_dump", "post"}}));
 
   auto process_map = process_snapshot.AnnotationsSimpleMap();
   EXPECT_EQ(process_map.size(), 2u);
@@ -199,7 +200,7 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestAnnotations) {
 TEST_F(InProcessIntermediateDumpHandlerTest, TestThreads) {
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), {}));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
 
   const auto& threads = process_snapshot.Threads();
   ASSERT_GT(threads.size(), 0u);
@@ -217,26 +218,26 @@ TEST_F(InProcessIntermediateDumpHandlerTest, TestThreads) {
 TEST_F(InProcessIntermediateDumpHandlerTest, TestProcess) {
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), {}));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
   EXPECT_EQ(process_snapshot.ProcessID(), getpid());
 }
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestMachException) {
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), {}));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
 }
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestSignalException) {
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), {}));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
 }
 
 TEST_F(InProcessIntermediateDumpHandlerTest, TestNSException) {
   WriteReport();
   internal::ProcessSnapshotIOSIntermediateDump process_snapshot;
-  ASSERT_TRUE(process_snapshot.Initialize(path(), {}));
+  ASSERT_TRUE(process_snapshot.InitializeWithFilePath(path(), {}));
 }
 
 }  // namespace

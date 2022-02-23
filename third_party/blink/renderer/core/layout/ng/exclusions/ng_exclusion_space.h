@@ -13,6 +13,8 @@
 #include "third_party/blink/renderer/core/layout/ng/geometry/ng_bfc_rect.h"
 #include "third_party/blink/renderer/core/style/computed_style_constants.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -93,7 +95,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EFloat::kLeft:
         has_break_before_left_float_ = true;
         break;
@@ -107,7 +109,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EFloat::kLeft:
         has_break_inside_left_float_ = true;
         break;
@@ -122,7 +124,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
     switch (type) {
       default:
         NOTREACHED();
-        FALLTHROUGH;
+        [[fallthrough]];
       case EClear::kNone:
         return false;
       case EClear::kLeft:
@@ -131,7 +133,7 @@ class CORE_EXPORT NGExclusionSpaceInternal final {
             has_break_inside_left_float_ || has_break_before_left_float_;
         if (type == EClear::kLeft)
           break;
-        FALLTHROUGH;
+        [[fallthrough]];
       case EClear::kRight:
         needs_clearance |=
             has_break_inside_right_float_ || has_break_before_right_float_;

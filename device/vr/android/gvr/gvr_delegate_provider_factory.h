@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 #include "device/vr/vr_export.h"
 
 namespace device {

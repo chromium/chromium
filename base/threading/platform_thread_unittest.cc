@@ -14,20 +14,28 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/threading/platform_thread_internal_posix.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/threading/platform_thread_win.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <mach/mach.h>
 #include <mach/mach_time.h>
 #include <mach/thread_policy.h>
 #include "base/mac/mac_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#endif
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#include <pthread.h>
+#include <sys/syscall.h>
+#include <sys/types.h>
+#include <sys/wait.h>
+#include <unistd.h>
 #endif
 
 namespace base {
@@ -295,7 +303,7 @@ TEST(PlatformThreadTest, SetCurrentThreadPriority) {
   TestSetCurrentThreadPriority();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Test changing a created thread's priority in an IDLE_PRIORITY_CLASS process
 // (regression test for https://crbug.com/901483).
 TEST(PlatformThreadTest,
@@ -304,14 +312,14 @@ TEST(PlatformThreadTest,
   TestSetCurrentThreadPriority();
   ::SetPriorityClass(Process::Current().Handle(), NORMAL_PRIORITY_CLASS);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Ideally PlatformThread::CanChangeThreadPriority() would be true on all
 // platforms for all priorities. This not being the case. This test documents
 // and hardcodes what we know. Please inform scheduler-dev@chromium.org if this
 // proprerty changes for a given platform.
 TEST(PlatformThreadTest, CanChangeThreadPriority) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // On Ubuntu, RLIMIT_NICE and RLIMIT_RTPRIO are 0 by default, so we won't be
   // able to increase priority to any level.
   constexpr bool kCanIncreasePriority = false;
@@ -322,7 +330,7 @@ TEST(PlatformThreadTest, CanChangeThreadPriority) {
   for (auto priority : kAllThreadPriorities) {
     EXPECT_TRUE(PlatformThread::CanChangeThreadPriority(priority, priority));
   }
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   EXPECT_FALSE(PlatformThread::CanChangeThreadPriority(
       ThreadPriority::BACKGROUND, ThreadPriority::NORMAL));
 #else
@@ -338,9 +346,9 @@ TEST(PlatformThreadTest, CanChangeThreadPriority) {
             kCanIncreasePriority);
 }
 
-// This tests internal PlatformThread APIs used under some POSIX platforms,
-// with the exception of Mac OS X, iOS and Fuchsia.
-#if defined(OS_POSIX) && !defined(OS_APPLE) && !defined(OS_FUCHSIA)
+// This tests internal PlatformThread APIs used on POSIX platforms except
+// macOS and  iOS.
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 TEST(PlatformThreadTest, GetNiceValueToThreadPriority) {
   using internal::NiceValueToThreadPriority;
   using internal::kThreadPriorityToNiceValueMap;
@@ -395,8 +403,7 @@ TEST(PlatformThreadTest, GetNiceValueToThreadPriority) {
   EXPECT_EQ(ThreadPriority::REALTIME_AUDIO,
             NiceValueToThreadPriority(kLowestNiceValue));
 }
-#endif  // defined(OS_POSIX) && !defined(OS_APPLE) &&
-        // !defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 
 TEST(PlatformThreadTest, SetHugeThreadName) {
   // Construct an excessively long thread name.
@@ -409,10 +416,10 @@ TEST(PlatformThreadTest, SetHugeThreadName) {
 
 TEST(PlatformThreadTest, GetDefaultThreadStackSize) {
   size_t stack_size = PlatformThread::GetDefaultThreadStackSize();
-#if defined(OS_WIN) || defined(OS_IOS) || defined(OS_FUCHSIA) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) &&              \
-     !defined(THREAD_SANITIZER)) ||                              \
-    (defined(OS_ANDROID) && !defined(ADDRESS_SANITIZER))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_IOS) || BUILDFLAG(IS_FUCHSIA) || \
+    ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&                \
+     !defined(THREAD_SANITIZER)) ||                                    \
+    (BUILDFLAG(IS_ANDROID) && !defined(ADDRESS_SANITIZER))
   EXPECT_EQ(0u, stack_size);
 #else
   EXPECT_GT(stack_size, 0u);
@@ -420,7 +427,7 @@ TEST(PlatformThreadTest, GetDefaultThreadStackSize) {
 #endif
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 
 namespace {
 
@@ -466,7 +473,7 @@ class RealtimeTestThread : public FunctionTestThread {
     mach_timebase_info(&tb_info);
 
     if (FeatureList::IsEnabled(kOptimizedRealtimeThreadingMac) &&
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
         !mac::IsOS10_14() &&  // Should not be applied on 10.14.
 #endif
         !realtime_period_.is_zero()) {
@@ -569,6 +576,77 @@ INSTANTIATE_TEST_SUITE_P(
 
 }  // namespace
 
-#endif
+#endif  // BUILDFLAG(IS_APPLE)
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+
+namespace {
+
+bool IsTidCacheCorrect() {
+  return PlatformThread::CurrentId() == syscall(__NR_gettid);
+}
+
+void* CheckTidCacheCorrectWrapper(void*) {
+  CHECK(IsTidCacheCorrect());
+  return nullptr;
+}
+
+void CreatePthreadToCheckCache() {
+  pthread_t thread_id;
+  pthread_create(&thread_id, nullptr, CheckTidCacheCorrectWrapper, nullptr);
+  pthread_join(thread_id, nullptr);
+}
+
+// This test must use raw pthreads and fork() to avoid calls from //base to
+// PlatformThread::CurrentId(), as the ordering of calls is important to the
+// test.
+void TestTidCacheCorrect(bool main_thread_accesses_cache_first) {
+  EXPECT_TRUE(IsTidCacheCorrect());
+
+  CreatePthreadToCheckCache();
+
+  // Now fork a process and make sure the TID cache gets correctly updated on
+  // both its main thread and a child thread.
+  pid_t child_pid = fork();
+  ASSERT_GE(child_pid, 0);
+
+  if (child_pid == 0) {
+    // In the child.
+    if (main_thread_accesses_cache_first) {
+      if (!IsTidCacheCorrect())
+        _exit(1);
+    }
+
+    // Access the TID cache on another thread and make sure the cached value is
+    // correct.
+    CreatePthreadToCheckCache();
+
+    if (!main_thread_accesses_cache_first) {
+      // Make sure the main thread's cache is correct even though another thread
+      // accessed the cache first.
+      if (!IsTidCacheCorrect())
+        _exit(1);
+    }
+
+    _exit(0);
+  }
+
+  int status;
+  ASSERT_EQ(waitpid(child_pid, &status, 0), child_pid);
+  ASSERT_TRUE(WIFEXITED(status));
+  ASSERT_EQ(WEXITSTATUS(status), 0);
+}
+
+TEST(PlatformThreadTidCacheTest, MainThreadFirst) {
+  TestTidCacheCorrect(true);
+}
+
+TEST(PlatformThreadTidCacheTest, MainThreadSecond) {
+  TestTidCacheCorrect(false);
+}
+
+}  // namespace
+
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

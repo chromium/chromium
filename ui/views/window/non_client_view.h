@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -72,7 +73,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   // used.
   virtual bool GetClientMask(const gfx::Size& size, SkPath* mask) const;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the point in screen physical coordinates at which the system menu
   // should be opened.
   virtual gfx::Point GetSystemMenuScreenPixelLocation() const;
@@ -108,7 +109,7 @@ class VIEWS_EXPORT NonClientFrameView : public View,
   virtual void InsertClientView(ClientView* client_view);
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Returns the y coordinate, in local coordinates, at which the system menu
   // should be opened.  Since this is in DIP, it does not include the 1 px
   // offset into the caption area; the caller will take care of this.
@@ -231,7 +232,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
   // A ClientView object or subclass, responsible for sizing the contents view
   // of the window, hit testing and perhaps other tasks depending on the
   // implementation.
-  ClientView* const client_view_;
+  const raw_ptr<ClientView> client_view_;
 
   // The NonClientFrameView that renders the non-client portions of the window.
   // This object is not owned by the view hierarchy because it can be replaced
@@ -240,7 +241,7 @@ class VIEWS_EXPORT NonClientView : public View, public ViewTargeterDelegate {
 
   // The overlay view, when non-NULL and visible, takes up the entire widget and
   // is placed on top of the ClientView and NonClientFrameView.
-  View* overlay_view_ = nullptr;
+  raw_ptr<View> overlay_view_ = nullptr;
 
   // The accessible name of this view.
   std::u16string accessible_name_;

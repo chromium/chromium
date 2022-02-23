@@ -31,7 +31,6 @@ class LockScreenReauthHandler : public content::WebUIMessageHandler {
   void HandleUpdateUserPassword(base::Value::ConstListView);
 
   bool IsAuthenticatorLoaded(base::OnceClosure callback);
-  bool IsJsReadyForTesting(base::OnceClosure js_ready_callback);
 
   void force_saml_redirect_for_testing() {
     force_saml_redirect_for_testing_ = true;

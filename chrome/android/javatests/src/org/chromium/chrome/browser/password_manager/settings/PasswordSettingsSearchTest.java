@@ -69,10 +69,10 @@ import org.mockito.MockitoAnnotations;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.history.HistoryActivity;
 import org.chromium.chrome.browser.history.HistoryContentManager;
@@ -81,7 +81,6 @@ import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
 import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.Date;
@@ -456,7 +455,7 @@ public class PasswordSettingsSearchTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableFeatures({ChromeFeatureList.EDIT_PASSWORDS_IN_SETTINGS})
+    @DisabledTest(message = "crbug/1202907 - The edit UI is now launched via native.")
     @RequiresRestart("crbug/1137002 - Figure out why this flakes as a batched test.")
     public void testSearchResultsPersistAfterEntryInspection() {
         mTestHelper.setPasswordSourceWithMultipleEntries(GREEK_GODS);
@@ -489,7 +488,7 @@ public class PasswordSettingsSearchTest {
         monitor.waitForActivityWithTimeout(UI_UPDATING_TIMEOUT_MS);
         Assert.assertEquals("Monitor for has not been called", 1, monitor.getHits());
         InstrumentationRegistry.getInstrumentation().removeMonitor(monitor);
-        onView(withContentDescription(R.string.password_entry_viewer_view_stored_password))
+        onView(withContentDescription(R.string.password_entry_viewer_show_stored_password))
                 .perform(click());
         InstrumentationRegistry.getInstrumentation().waitForIdleSync();
 

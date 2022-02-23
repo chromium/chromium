@@ -15,6 +15,7 @@
 #include "base/auto_reset.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -35,6 +36,8 @@
 #include "third_party/skia/include/core/SkPicture.h"
 #include "third_party/skia/include/core/SkPictureRecorder.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/point_conversions.h"
+#include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 #include "ui/gfx/geometry/vector2d_f.h"
 
@@ -64,11 +67,11 @@ class BrowserViewRendererUserData : public base::SupportsUserData::Data {
     BrowserViewRendererUserData* data =
         static_cast<BrowserViewRendererUserData*>(
             web_contents->GetUserData(kBrowserViewRendererUserDataKey));
-    return data ? data->bvr_ : NULL;
+    return data ? data->bvr_.get() : NULL;
   }
 
  private:
-  BrowserViewRenderer* bvr_;
+  raw_ptr<BrowserViewRenderer> bvr_;
 };
 
 }  // namespace
@@ -248,7 +251,7 @@ content::SynchronousCompositor* BrowserViewRenderer::FindCompositor(
   return compositor_iterator->second;
 }
 
-void BrowserViewRenderer::PrepareToDraw(const gfx::Vector2d& scroll,
+void BrowserViewRenderer::PrepareToDraw(const gfx::Point& scroll,
                                         const gfx::Rect& global_visible_rect) {
   last_on_draw_scroll_offset_ = scroll;
   last_on_draw_global_visible_rect_ = global_visible_rect;
@@ -432,8 +435,8 @@ sk_sp<SkPicture> BrowserViewRenderer::CapturePicture(int width,
     {
       // Reset scroll back to the origin, will go back to the old
       // value when scroll_reset is out of scope.
-      base::AutoReset<gfx::Vector2dF> scroll_reset(&scroll_offset_unscaled_,
-                                                   gfx::Vector2dF());
+      base::AutoReset<gfx::PointF> scroll_reset(&scroll_offset_unscaled_,
+                                                gfx::PointF());
       compositor_->DidChangeRootLayerScrollOffset(scroll_offset_unscaled_);
       CompositeSW(rec_canvas, /*software_canvas=*/false);
     }
@@ -648,18 +651,18 @@ void BrowserViewRenderer::SetDipScale(float dip_scale) {
   CHECK_GT(dip_scale_, 0.f);
 }
 
-gfx::Vector2d BrowserViewRenderer::max_scroll_offset() const {
+gfx::Point BrowserViewRenderer::max_scroll_offset() const {
   DCHECK_GT(dip_scale_, 0.f);
   float scale = content::IsUseZoomForDSFEnabled()
                     ? page_scale_factor_
                     : dip_scale_ * page_scale_factor_;
-  return gfx::ToCeiledVector2d(
-      gfx::ScaleVector2d(max_scroll_offset_unscaled_, scale));
+  return gfx::ToCeiledPoint(
+      gfx::ScalePoint(max_scroll_offset_unscaled_, scale));
 }
 
-void BrowserViewRenderer::ScrollTo(const gfx::Vector2d& scroll_offset) {
-  gfx::Vector2d max_offset = max_scroll_offset();
-  gfx::Vector2dF scroll_offset_unscaled;
+void BrowserViewRenderer::ScrollTo(const gfx::Point& scroll_offset) {
+  gfx::Point max_offset = max_scroll_offset();
+  gfx::PointF scroll_offset_unscaled;
   // To preserve the invariant that scrolling to the maximum physical pixel
   // value also scrolls to the maximum dip pixel value we transform the physical
   // offset into the dip offset by using a proportion (instead of dividing by
@@ -699,9 +702,9 @@ void BrowserViewRenderer::ScrollTo(const gfx::Vector2d& scroll_offset) {
 }
 
 void BrowserViewRenderer::RestoreScrollAfterTransition(
-    const gfx::Vector2d& scroll_offset) {
+    const gfx::Point& scroll_offset) {
   // Determine if the clipped scroll offset.
-  gfx::Vector2d clipped_offset = scroll_offset;
+  gfx::Point clipped_offset = scroll_offset;
   clipped_offset.SetToMin(max_scroll_offset());
 
   // If the scroll will be clipped due to the max scroll then we haven't
@@ -730,13 +733,13 @@ void BrowserViewRenderer::DidUpdateContent(
 }
 
 void BrowserViewRenderer::SetTotalRootLayerScrollOffset(
-    const gfx::Vector2dF& scroll_offset_unscaled) {
+    const gfx::PointF& scroll_offset_unscaled) {
   if (scroll_offset_unscaled_ == scroll_offset_unscaled)
     return;
   scroll_offset_unscaled_ = scroll_offset_unscaled;
 
-  gfx::Vector2d max_offset = max_scroll_offset();
-  gfx::Vector2d scroll_offset;
+  gfx::Point max_offset = max_scroll_offset();
+  gfx::Point scroll_offset;
   // For an explanation as to why this is done this way see the comment in
   // BrowserViewRenderer::ScrollTo.
   if (max_scroll_offset_unscaled_.x()) {
@@ -761,8 +764,8 @@ void BrowserViewRenderer::SetTotalRootLayerScrollOffset(
 
 void BrowserViewRenderer::UpdateRootLayerState(
     content::SynchronousCompositor* compositor,
-    const gfx::Vector2dF& total_scroll_offset,
-    const gfx::Vector2dF& total_max_scroll_offset,
+    const gfx::PointF& total_scroll_offset,
+    const gfx::PointF& total_max_scroll_offset,
     const gfx::SizeF& scrollable_size,
     float page_scale_factor,
     float min_page_scale_factor,
@@ -813,7 +816,7 @@ void BrowserViewRenderer::UpdateRootLayerState(
 
 std::unique_ptr<base::trace_event::ConvertableToTraceFormat>
 BrowserViewRenderer::RootLayerStateAsValue(
-    const gfx::Vector2dF& total_scroll_offset,
+    const gfx::PointF& total_scroll_offset,
     const gfx::SizeF& scrollable_size_dip) {
   std::unique_ptr<base::trace_event::TracedValue> state(
       new base::trace_event::TracedValue());
@@ -853,7 +856,8 @@ void BrowserViewRenderer::DidOverscroll(
   gfx::Vector2dF fling_velocity_pixels =
       gfx::ScaleVector2d(current_fling_velocity, physical_pixel_scale);
 
-  client_->DidOverscroll(rounded_overscroll_delta, fling_velocity_pixels);
+  client_->DidOverscroll(rounded_overscroll_delta, fling_velocity_pixels,
+                         begin_frame_source_->inside_begin_frame());
 }
 
 ui::TouchHandleDrawable* BrowserViewRenderer::CreateDrawable() {
@@ -901,7 +905,8 @@ void BrowserViewRenderer::PostInvalidate(
     return;
 
   did_invalidate_since_last_draw_ = true;
-  client_->PostInvalidate();
+  client_->PostInvalidate(
+      RootBeginFrameSourceWebView::GetInstance()->inside_begin_frame());
 }
 
 bool BrowserViewRenderer::CompositeSW(SkCanvas* canvas, bool software_canvas) {

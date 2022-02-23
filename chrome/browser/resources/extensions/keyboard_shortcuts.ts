@@ -26,7 +26,7 @@ const ExtensionsKeyboardShortcutsElementBase =
     CrContainerShadowMixin(PolymerElement);
 
 // The UI to display and manage keyboard shortcuts set for extension commands.
-class ExtensionsKeyboardShortcutsElement extends
+export class ExtensionsKeyboardShortcutsElement extends
     ExtensionsKeyboardShortcutsElementBase {
   static get is() {
     return 'extensions-keyboard-shortcuts';
@@ -107,6 +107,13 @@ class ExtensionsKeyboardShortcutsElement extends
          chrome.developerPrivate.CommandScope));
   }
 }
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-keyboard-shortcuts': ExtensionsKeyboardShortcutsElement;
+  }
+}
+
 
 customElements.define(
     ExtensionsKeyboardShortcutsElement.is, ExtensionsKeyboardShortcutsElement);

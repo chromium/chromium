@@ -27,7 +27,7 @@ _fork_params = None
 _fork_kwargs = None
 
 
-class _ImmediateResult(object):
+class _ImmediateResult:
   def __init__(self, value):
     self._value = value
 
@@ -44,7 +44,7 @@ class _ImmediateResult(object):
     return True
 
 
-class _ExceptionWrapper(object):
+class _ExceptionWrapper:
   """Used to marshal exception messages back to main process."""
 
   def __init__(self, msg, exception_type=None):
@@ -57,7 +57,7 @@ class _ExceptionWrapper(object):
                     self.exception_type)('Originally caused by: ' + self.msg)
 
 
-class _FuncWrapper(object):
+class _FuncWrapper:
   """Runs on the fork()'ed side to catch exceptions and spread *args."""
 
   def __init__(self, func):
@@ -66,7 +66,10 @@ class _FuncWrapper(object):
     self._func = func
 
   def __call__(self, index, _=None):
+    global _fork_kwargs
     try:
+      if _fork_kwargs is None:  # Clarifies _fork_kwargs is map for pylint.
+        _fork_kwargs = {}
       return self._func(*_fork_params[index], **_fork_kwargs)
     except Exception as e:
       # Only keep the exception type for builtin exception types or else risk
@@ -81,7 +84,7 @@ class _FuncWrapper(object):
       return _ExceptionWrapper(traceback.format_exc())
 
 
-class _WrappedResult(object):
+class _WrappedResult:
   """Allows for host-side logic to be run after child process has terminated.
 
   * Unregisters associated pool _all_pools.

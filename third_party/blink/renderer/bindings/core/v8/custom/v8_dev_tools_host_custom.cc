@@ -40,6 +40,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_window.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
+#include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/inspector/dev_tools_host.h"
 #include "third_party/blink/renderer/core/inspector/inspector_frontend_client.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -48,9 +49,9 @@ namespace blink {
 
 void V8DevToolsHost::PlatformMethodCustom(
     const v8::FunctionCallbackInfo<v8::Value>& info) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   V8SetReturnValue(info, V8AtomicString(info.GetIsolate(), "mac"));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   V8SetReturnValue(info, V8AtomicString(info.GetIsolate(), "windows"));
 #else  // Unix-like systems
   V8SetReturnValue(info, V8AtomicString(info.GetIsolate(), "linux"));

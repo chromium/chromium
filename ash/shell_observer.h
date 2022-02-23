@@ -32,9 +32,6 @@ class ASH_EXPORT ShellObserver {
   // This notification is not fired when shelf bounds changed.
   virtual void OnUserWorkAreaInsetsChanged(aura::Window* root_window) {}
 
-  // Invoked when the shelf auto-hide behavior in |root_window| is changed.
-  virtual void OnShelfAutoHideBehaviorChanged(aura::Window* root_window) {}
-
   // Invoked when entering or exiting fullscreen mode in |container|.
   // |container| is always the active desk container.
   virtual void OnFullscreenStateChanged(bool is_fullscreen,

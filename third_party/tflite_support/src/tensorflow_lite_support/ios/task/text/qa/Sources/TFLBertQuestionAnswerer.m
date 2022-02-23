@@ -14,7 +14,7 @@ limitations under the License.
 ==============================================================================*/
 #import "tensorflow_lite_support/ios/task/text/qa/Sources/TFLBertQuestionAnswerer.h"
 #import "GTMDefines.h"
-#include "tensorflow_lite_support/cc/task/text/qa/bert_qa_c_api.h"
+#include "tensorflow_lite_support/c/task/text/bert_question_answerer.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -25,25 +25,23 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface TFLBertQuestionAnswerer ()
 /** BertQuestionAnswerer backed by C API */
-@property(nonatomic) BertQuestionAnswerer* bertQuestionAnswerer;
+@property(nonatomic) TfLiteBertQuestionAnswerer *bertQuestionAnswerer;
 @end
 
 @implementation TFLBertQuestionAnswerer
 
 - (void)dealloc {
-  BertQuestionAnswererDelete(_bertQuestionAnswerer);
+  TfLiteBertQuestionAnswererDelete(_bertQuestionAnswerer);
 }
 
-+ (instancetype)questionAnswererWithModelPath:(NSString*)modelPath {
-  BertQuestionAnswerer* bert_qa =
-      BertQuestionAnswererFromFile(modelPath.UTF8String);
++ (instancetype)questionAnswererWithModelPath:(NSString *)modelPath {
+  TfLiteBertQuestionAnswerer *bert_qa = TfLiteBertQuestionAnswererCreate(modelPath.UTF8String);
 
   _GTMDevAssert(bert_qa, @"Failed to create BertQuestionAnswerer");
   return [[TFLBertQuestionAnswerer alloc] initWithBertQuestionAnswerer:bert_qa];
 }
 
-- (instancetype)initWithBertQuestionAnswerer:
-    (BertQuestionAnswerer*)bertQuestionAnswerer {
+- (instancetype)initWithBertQuestionAnswerer:(TfLiteBertQuestionAnswerer *)bertQuestionAnswerer {
   self = [super init];
   if (self) {
     _bertQuestionAnswerer = bertQuestionAnswerer;
@@ -51,22 +49,19 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (NSArray<TFLQAAnswer*>*)answerWithContext:(NSString*)context
-                                   question:(NSString*)question {
-  struct QaAnswers* cAnswers = BertQuestionAnswererAnswer(
+- (NSArray<TFLQAAnswer *> *)answerWithContext:(NSString *)context question:(NSString *)question {
+  TfLiteQaAnswers *cAnswers = TfLiteBertQuestionAnswererAnswer(
       _bertQuestionAnswerer, context.UTF8String, question.UTF8String);
-  NSMutableArray<TFLQAAnswer*>* ret =
-      [NSMutableArray arrayWithCapacity:cAnswers->size];
+  NSMutableArray<TFLQAAnswer *> *ret = [NSMutableArray arrayWithCapacity:cAnswers->size];
   for (int i = 0; i < cAnswers->size; i++) {
-    struct QaAnswer cAnswer = cAnswers->answers[i];
-    TFLQAAnswer* answer = [[TFLQAAnswer alloc] init];
-    struct TFLPos pos = {
-        .start = cAnswer.start, .end = cAnswer.end, .logit = cAnswer.logit};
+    TfLiteQaAnswer cAnswer = cAnswers->answers[i];
+    TFLQAAnswer *answer = [[TFLQAAnswer alloc] init];
+    struct TFLPos pos = {.start = cAnswer.start, .end = cAnswer.end, .logit = cAnswer.logit};
     [answer setPos:pos];
     [answer setText:[NSString stringWithUTF8String:cAnswer.text]];
     [ret addObject:answer];
   }
-  BertQuestionAnswererQaAnswersDelete(cAnswers);
+  TfLiteQaAnswersDelete(cAnswers);
   return ret;
 }
 @end

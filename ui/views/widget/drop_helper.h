@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-forward.h"
 #include "ui/views/view.h"
 #include "ui/views/views_export.h"
@@ -32,9 +33,10 @@ class RootView;
 // then either OnDragExit or OnDrop when the drop is done.
 class VIEWS_EXPORT DropHelper {
  public:
+  // This is expected to match the signature of
+  // aura::client::DragDropDelegate::DropCallback.
   using DropCallback =
-      base::OnceCallback<void(const ui::DropTargetEvent& event,
-                              std::unique_ptr<ui::OSExchangeData> data,
+      base::OnceCallback<void(std::unique_ptr<ui::OSExchangeData> data,
                               ui::mojom::DragOperation& output_drag_op)>;
 
   explicit DropHelper(View* root_view);
@@ -117,10 +119,10 @@ class VIEWS_EXPORT DropHelper {
   void NotifyDragExit();
 
   // RootView we were created for.
-  View* root_view_;
+  raw_ptr<View> root_view_;
 
   // View we're targeting events at.
-  View* target_view_;
+  raw_ptr<View> target_view_;
 
   // The deepest view under the current drop coordinate.
   View* deepest_view_;

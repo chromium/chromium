@@ -14,6 +14,7 @@
 #include "base/callback_forward.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/token.h"
@@ -29,7 +30,7 @@
 #include "media/capture/video/video_capture_device_client.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/browser/compositor/image_transport_factory.h"
 #endif
 
@@ -156,7 +157,7 @@ struct VideoCaptureController::ControllerClient {
 
   // ID used for identifying this object.
   const VideoCaptureControllerID controller_id;
-  VideoCaptureControllerEventHandler* const event_handler;
+  const raw_ptr<VideoCaptureControllerEventHandler> event_handler;
 
   const media::VideoCaptureSessionId session_id;
   const media::VideoCaptureParams parameters;
@@ -657,6 +658,17 @@ void VideoCaptureController::OnFrameDropped(
   LogVideoFrameDrop(reason, stream_type_);
 }
 
+void VideoCaptureController::OnFrameWithEmptyRegionCapture() {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  EmitLogMessage(__func__, 3);
+  for (const auto& client : controller_clients_) {
+    if (client->session_closed) {
+      continue;
+    }
+    client->event_handler->OnFrameWithEmptyRegionCapture(client->controller_id);
+  }
+}
+
 void VideoCaptureController::OnLog(const std::string& message) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   EmitLogMessage(message, 3);
@@ -812,11 +824,12 @@ void VideoCaptureController::Resume() {
 
 void VideoCaptureController::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
   DCHECK(launched_device_);
   EmitLogMessage(__func__, 3);
-  launched_device_->Crop(crop_id, std::move(callback));
+  launched_device_->Crop(crop_id, crop_version, std::move(callback));
 }
 
 void VideoCaptureController::RequestRefreshFrame() {
@@ -912,7 +925,7 @@ void VideoCaptureController::PerformForClientsWithOpenSession(
   for (const auto& client : controller_clients_) {
     if (client->session_closed)
       continue;
-    action.Run(client->event_handler, client->controller_id);
+    action.Run(client->event_handler.get(), client->controller_id);
   }
 }
 

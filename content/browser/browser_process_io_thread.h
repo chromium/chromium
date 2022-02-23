@@ -13,7 +13,7 @@
 #include "content/common/content_export.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace base {
 namespace win {
 class ScopedCOMInitializer;
@@ -81,7 +81,7 @@ class CONTENT_EXPORT BrowserProcessIOThread : public base::Thread {
   // RegisterAsBrowserThread().
   std::unique_ptr<BrowserThreadImpl> browser_thread_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer_;
 #endif
 

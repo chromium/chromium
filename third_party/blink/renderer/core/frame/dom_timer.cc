@@ -92,7 +92,10 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   // Step 11:
   // Note: The implementation uses >= instead of >, contrary to what the spec
   // requires crbug.com/1108877.
-  if (nesting_level_ >= kMaxTimerNestingLevel && timeout < kMinimumInterval)
+  int max_nesting_level = features::IsMaxUnthrottledTimeoutNestingLevelEnabled()
+                              ? features::GetMaxUnthrottledTimeoutNestingLevel()
+                              : kMaxTimerNestingLevel;
+  if (nesting_level_ >= max_nesting_level && timeout < kMinimumInterval)
     timeout = kMinimumInterval;
 
   // Select TaskType based on nesting level.
@@ -120,8 +123,9 @@ DOMTimer::DOMTimer(ExecutionContext* context,
   DEVTOOLS_TIMELINE_TRACE_EVENT_INSTANT(
       "TimerInstall", inspector_timer_install_event::Data, context, timeout_id,
       timeout, single_shot);
-  probe::AsyncTaskScheduledBreakable(
-      context, single_shot ? "setTimeout" : "setInterval", &async_task_id_);
+  const char* name = single_shot ? "setTimeout" : "setInterval";
+  async_task_context_.Schedule(context, name);
+  probe::BreakableLocation(context, name);
 }
 
 DOMTimer::~DOMTimer() = default;
@@ -134,10 +138,10 @@ void DOMTimer::Stop() {
   if (!action_)
     return;
 
+  async_task_context_.Cancel();
   const bool is_interval = !RepeatInterval().is_zero();
-  probe::AsyncTaskCanceledBreakable(
-      GetExecutionContext(), is_interval ? "clearInterval" : "clearTimeout",
-      &async_task_id_);
+  probe::BreakableLocation(GetExecutionContext(),
+                           is_interval ? "clearInterval" : "clearTimeout");
 
   // Need to release JS objects potentially protected by ScheduledAction
   // because they can form circular references back to the ExecutionContext
@@ -165,7 +169,7 @@ void DOMTimer::Fired() {
   const bool is_interval = !RepeatInterval().is_zero();
   probe::UserCallback probe(context, is_interval ? "setInterval" : "setTimeout",
                             g_null_atom, true);
-  probe::AsyncTask async_task(context, &async_task_id_,
+  probe::AsyncTask async_task(context, &async_task_context_,
                               is_interval ? "fired" : nullptr);
 
   // Simple case for non-one-shot timers.

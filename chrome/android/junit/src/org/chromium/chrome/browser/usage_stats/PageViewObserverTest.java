@@ -36,6 +36,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.tab.Tab;
@@ -118,10 +119,13 @@ public final class PageViewObserverTest {
         mDestroyedUserDataHost = new UserDataHost();
         mDestroyedUserDataHost.destroy();
 
+        Activity activity = Robolectric.buildActivity(Activity.class).get();
+        activity.setTheme(R.style.Theme_BrowserUI_DayNight);
+
         doReturn(false).when(mTab).isIncognito();
         doReturn(null).when(mTab).getUrl();
-        doReturn(Robolectric.buildActivity(Activity.class).get()).when(mTab).getContext();
-        doReturn(Robolectric.buildActivity(Activity.class).get()).when(mTab2).getContext();
+        doReturn(activity).when(mTab).getContext();
+        doReturn(activity).when(mTab2).getContext();
         doReturn(new MockTabViewManager()).when(mTab).getTabViewManager();
         doReturn(new MockTabViewManager()).when(mTab2).getTabViewManager();
         doReturn(true).when(mTab).isInitialized();

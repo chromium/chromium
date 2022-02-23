@@ -8,34 +8,23 @@ import android.app.Activity;
 import android.view.View;
 import android.view.ViewGroup;
 
-import androidx.annotation.Nullable;
-
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.autofill.prefeditor.EditorDialog;
-import org.chromium.chrome.browser.autofill.settings.AddressEditor;
-import org.chromium.chrome.browser.autofill.settings.CardEditor;
+import org.chromium.chrome.browser.autofill_assistant.AssistantEditorFactory;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.AddressModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.ContactModel;
+import org.chromium.chrome.browser.autofill_assistant.AssistantOptionModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.generic_ui.AssistantValue;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.AddressModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.ContactModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.LoginChoiceModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel.PaymentInstrumentModel;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSection.Delegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.additional_sections.AssistantAdditionalSectionContainer;
-import org.chromium.chrome.browser.payments.ContactEditor;
-import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
-import org.chromium.components.payments.BasicCardUtils;
-import org.chromium.components.payments.MethodStrings;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.payments.mojom.PaymentMethodData;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 /**
  * This class is responsible for pushing updates to the Autofill Assistant UI for requesting user
@@ -55,8 +44,7 @@ class AssistantCollectUserDataBinder
         private final int mSectionToSectionPadding;
         private final AssistantLoginSection mLoginSection;
         private final AssistantContactDetailsSection mContactDetailsSection;
-        private final AssistantDateSection mDateRangeStartSection;
-        private final AssistantDateSection mDateRangeEndSection;
+        private final AssistantPhoneNumberSection mPhoneNumberSection;
         private final AssistantPaymentMethodSection mPaymentMethodSection;
         private final AssistantShippingAddressSection mShippingAddressSection;
         private final AssistantTermsSection mTermsSection;
@@ -68,12 +56,13 @@ class AssistantCollectUserDataBinder
         private final ViewGroup mGenericUserInterfaceContainerAppended;
         private final Object mDividerTag;
         private final Activity mActivity;
+        private final AssistantEditorFactory mEditorFactory;
+        private final WindowAndroid mWindowAndroid;
 
         public ViewHolder(View rootView, AssistantVerticalExpanderAccordion accordion,
                 int sectionPadding, AssistantLoginSection loginSection,
                 AssistantContactDetailsSection contactDetailsSection,
-                AssistantDateSection dateRangeStartSection,
-                AssistantDateSection dateRangeEndSection,
+                AssistantPhoneNumberSection phoneNumberSection,
                 AssistantPaymentMethodSection paymentMethodSection,
                 AssistantShippingAddressSection shippingAddressSection,
                 AssistantTermsSection termsSection, AssistantTermsSection termsAsCheckboxSection,
@@ -82,14 +71,14 @@ class AssistantCollectUserDataBinder
                 AssistantAdditionalSectionContainer appendedSections,
                 ViewGroup genericUserInterfaceContainerPrepended,
                 ViewGroup genericUserInterfaceContainerAppended, Object dividerTag,
-                Activity activity) {
+                Activity activity, AssistantEditorFactory editorFactory,
+                WindowAndroid windowAndroid) {
             mRootView = rootView;
             mPaymentRequestExpanderAccordion = accordion;
             mSectionToSectionPadding = sectionPadding;
             mLoginSection = loginSection;
             mContactDetailsSection = contactDetailsSection;
-            mDateRangeStartSection = dateRangeStartSection;
-            mDateRangeEndSection = dateRangeEndSection;
+            mPhoneNumberSection = phoneNumberSection;
             mPaymentMethodSection = paymentMethodSection;
             mShippingAddressSection = shippingAddressSection;
             mTermsSection = termsSection;
@@ -101,6 +90,8 @@ class AssistantCollectUserDataBinder
             mGenericUserInterfaceContainerAppended = genericUserInterfaceContainerAppended;
             mDividerTag = dividerTag;
             mActivity = activity;
+            mEditorFactory = editorFactory;
+            mWindowAndroid = windowAndroid;
         }
     }
 
@@ -139,53 +130,26 @@ class AssistantCollectUserDataBinder
                             collectUserDataDelegate.onTextLinkClicked(link);
                         }
                     };
-            AssistantDateSection.Delegate dateStartDelegate =
-                    collectUserDataDelegate == null ? null : new AssistantDateSection.Delegate() {
-                        @Override
-                        public void onDateChanged(@Nullable AssistantDateTime date) {
-                            collectUserDataDelegate.onDateTimeRangeStartDateChanged(date);
-                            // Set new start date as calendar fallback for the end date.
-                            view.mDateRangeEndSection.setCalendarFallbackDate(date);
-                        }
-
-                        @Override
-                        public void onTimeSlotChanged(@Nullable Integer index) {
-                            collectUserDataDelegate.onDateTimeRangeStartTimeSlotChanged(index);
-                        }
-                    };
-            AssistantDateSection.Delegate dateEndDelegate =
-                    collectUserDataDelegate == null ? null : new AssistantDateSection.Delegate() {
-                        @Override
-                        public void onDateChanged(@Nullable AssistantDateTime date) {
-                            collectUserDataDelegate.onDateTimeRangeEndDateChanged(date);
-                            // Set new end date as calendar fallback for the start date.
-                            view.mDateRangeStartSection.setCalendarFallbackDate(date);
-                        }
-
-                        @Override
-                        public void onTimeSlotChanged(@Nullable Integer index) {
-                            collectUserDataDelegate.onDateTimeRangeEndTimeSlotChanged(index);
-                        }
-                    };
             view.mTermsSection.setDelegate(termsDelegate);
             view.mTermsAsCheckboxSection.setDelegate(termsDelegate);
             view.mInfoSection.setListener(collectUserDataDelegate != null
                             ? collectUserDataDelegate::onTextLinkClicked
                             : null);
-            view.mContactDetailsSection.setListener(collectUserDataDelegate == null
+            view.mContactDetailsSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onContactInfoChanged);
-            view.mPaymentMethodSection.setListener(collectUserDataDelegate == null
+            view.mPhoneNumberSection.setDelegate(collectUserDataDelegate == null
+                            ? null
+                            : collectUserDataDelegate::onPhoneNumberChanged);
+            view.mPaymentMethodSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onPaymentMethodChanged);
-            view.mShippingAddressSection.setListener(collectUserDataDelegate == null
+            view.mShippingAddressSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onShippingAddressChanged);
-            view.mLoginSection.setListener(collectUserDataDelegate == null
+            view.mLoginSection.setDelegate(collectUserDataDelegate == null
                             ? null
                             : collectUserDataDelegate::onLoginChoiceChanged);
-            view.mDateRangeStartSection.setDelegate(dateStartDelegate);
-            view.mDateRangeEndSection.setDelegate(dateEndDelegate);
             view.mPrependedSections.setDelegate(collectUserDataDelegate != null
                             ? getAdditionalSectionsDelegate(collectUserDataDelegate)
                             : null);
@@ -218,11 +182,19 @@ class AssistantCollectUserDataBinder
                 || model.get(AssistantCollectUserDataModel.REQUEST_EMAIL);
     }
 
+    private boolean shouldShowPhoneNumberSection(AssistantCollectUserDataModel model) {
+        return model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY);
+    }
+
     private boolean updateSectionTitles(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
         if (propertyKey == AssistantCollectUserDataModel.CONTACT_SECTION_TITLE) {
             view.mContactDetailsSection.setTitle(
                     model.get(AssistantCollectUserDataModel.CONTACT_SECTION_TITLE));
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.PHONE_NUMBER_SECTION_TITLE) {
+            view.mPhoneNumberSection.setTitle(
+                    model.get(AssistantCollectUserDataModel.PHONE_NUMBER_SECTION_TITLE));
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.LOGIN_SECTION_TITLE) {
             view.mLoginSection.setTitle(
@@ -231,22 +203,6 @@ class AssistantCollectUserDataBinder
         } else if (propertyKey == AssistantCollectUserDataModel.SHIPPING_SECTION_TITLE) {
             view.mShippingAddressSection.setTitle(
                     model.get(AssistantCollectUserDataModel.SHIPPING_SECTION_TITLE));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_START_DATE_LABEL) {
-            view.mDateRangeStartSection.setDateTitle(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_START_DATE_LABEL));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_START_TIME_LABEL) {
-            view.mDateRangeStartSection.setTimeTitle(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_START_TIME_LABEL));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_END_DATE_LABEL) {
-            view.mDateRangeEndSection.setDateTitle(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_END_DATE_LABEL));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_END_TIME_LABEL) {
-            view.mDateRangeEndSection.setTimeTitle(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_END_TIME_LABEL));
             return true;
         }
         return false;
@@ -258,23 +214,22 @@ class AssistantCollectUserDataBinder
      */
     private boolean updateSectionContents(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
-        if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS
-                || propertyKey == AssistantCollectUserDataModel.WEB_CONTENTS) {
+        if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS) {
             if (model.get(AssistantCollectUserDataModel.REQUEST_PAYMENT)) {
-                List<PaymentInstrumentModel> paymentInstruments;
-                if (model.get(AssistantCollectUserDataModel.WEB_CONTENTS) == null) {
-                    paymentInstruments = Collections.emptyList();
-                } else {
-                    paymentInstruments =
-                            model.get(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS);
-                }
-                view.mPaymentMethodSection.onAvailablePaymentMethodsChanged(paymentInstruments);
+                view.mPaymentMethodSection.onAvailablePaymentMethodsChanged(
+                        model.get(AssistantCollectUserDataModel.AVAILABLE_PAYMENT_INSTRUMENTS));
             }
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_CONTACTS) {
             if (shouldShowContactDetails(model)) {
                 view.mContactDetailsSection.onContactsChanged(
                         model.get(AssistantCollectUserDataModel.AVAILABLE_CONTACTS));
+            }
+            return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS) {
+            if (shouldShowPhoneNumberSection(model)) {
+                view.mPhoneNumberSection.onPhoneNumbersChanged(
+                        model.get(AssistantCollectUserDataModel.AVAILABLE_PHONE_NUMBERS));
             }
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.AVAILABLE_SHIPPING_ADDRESSES) {
@@ -301,44 +256,6 @@ class AssistantCollectUserDataBinder
                     view.mLoginSection.onLoginsChanged(loginChoiceModels);
                 }
             }
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_START_OPTIONS) {
-            view.mDateRangeStartSection.setDateChoiceOptions(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_START_OPTIONS));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_START_DATE) {
-            view.mDateRangeStartSection.setCurrentDate(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_START_DATE));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_START_TIMESLOT) {
-            view.mDateRangeStartSection.setCurrentTimeSlot(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_START_TIMESLOT));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_END_OPTIONS) {
-            view.mDateRangeEndSection.setDateChoiceOptions(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_END_OPTIONS));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_END_DATE) {
-            view.mDateRangeEndSection.setCurrentDate(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_END_DATE));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.DATE_RANGE_END_TIMESLOT) {
-            view.mDateRangeEndSection.setCurrentTimeSlot(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_END_TIMESLOT));
-            return true;
-        } else if (propertyKey
-                == AssistantCollectUserDataModel.DATE_RANGE_DATE_NOT_SET_ERROR_MESSAGE) {
-            view.mDateRangeStartSection.setDateNotSetErrorMessage(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_DATE_NOT_SET_ERROR_MESSAGE));
-            view.mDateRangeEndSection.setDateNotSetErrorMessage(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_DATE_NOT_SET_ERROR_MESSAGE));
-            return true;
-        } else if (propertyKey
-                == AssistantCollectUserDataModel.DATE_RANGE_TIME_NOT_SET_ERROR_MESSAGE) {
-            view.mDateRangeStartSection.setTimeNotSetErrorMessage(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_TIME_NOT_SET_ERROR_MESSAGE));
-            view.mDateRangeEndSection.setTimeNotSetErrorMessage(
-                    model.get(AssistantCollectUserDataModel.DATE_RANGE_TIME_NOT_SET_ERROR_MESSAGE));
             return true;
         } else if (propertyKey == AssistantCollectUserDataModel.PREPENDED_SECTIONS) {
             view.mPrependedSections.setSections(
@@ -412,6 +329,10 @@ class AssistantCollectUserDataBinder
                 || (propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE)) {
             view.mContactDetailsSection.setVisible(shouldShowContactDetails(model));
             return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY) {
+            view.mPhoneNumberSection.setVisible(
+                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY));
+            return true;
         } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS) {
             view.mShippingAddressSection.setVisible(
                     model.get(AssistantCollectUserDataModel.REQUEST_SHIPPING_ADDRESS));
@@ -432,11 +353,6 @@ class AssistantCollectUserDataBinder
         } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE) {
             view.mLoginSection.setVisible(
                     model.get(AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE));
-            return true;
-        } else if (propertyKey == AssistantCollectUserDataModel.REQUEST_DATE_RANGE) {
-            boolean requestDateRange = model.get(AssistantCollectUserDataModel.REQUEST_DATE_RANGE);
-            view.mDateRangeStartSection.setVisible(requestDateRange);
-            view.mDateRangeEndSection.setVisible(requestDateRange);
             return true;
         }
         return false;
@@ -503,6 +419,18 @@ class AssistantCollectUserDataBinder
             }
             // No need to reset selection if null, this will be handled by setItems().
             return true;
+        } else if (propertyKey == AssistantCollectUserDataModel.SELECTED_PHONE_NUMBER) {
+            if (!model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY)) {
+                return true;
+            }
+            ContactModel phone_number =
+                    model.get(AssistantCollectUserDataModel.SELECTED_PHONE_NUMBER);
+            if (phone_number != null) {
+                view.mPhoneNumberSection.addOrUpdateItem(
+                        phone_number, /* select= */ true, /* notify= */ false);
+            }
+            // No need to reset selection if null, this will be handled by setItems().
+            return true;
         } else if (propertyKey == AssistantCollectUserDataModel.TERMS_STATUS) {
             int termsStatus = model.get(AssistantCollectUserDataModel.TERMS_STATUS);
             view.mTermsSection.setTermsStatus(termsStatus);
@@ -534,9 +462,9 @@ class AssistantCollectUserDataBinder
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_NAME)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE)
+                && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_PAYMENT)
                 && (propertyKey != AssistantCollectUserDataModel.REQUEST_LOGIN_CHOICE)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_DATE_RANGE)
                 && (propertyKey != AssistantCollectUserDataModel.EXPANDED_SECTION)
                 && (propertyKey != AssistantCollectUserDataModel.PREPENDED_SECTIONS)
                 && (propertyKey != AssistantCollectUserDataModel.APPENDED_SECTIONS)) {
@@ -553,9 +481,7 @@ class AssistantCollectUserDataBinder
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mContactDetailsSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
-            view.mDateRangeStartSection.setPaddings(
-                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
-            view.mDateRangeEndSection.setPaddings(
+            view.mPhoneNumberSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mPaymentMethodSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
@@ -567,9 +493,7 @@ class AssistantCollectUserDataBinder
             view.mLoginSection.setPaddings(0, view.mSectionToSectionPadding);
             view.mContactDetailsSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
-            view.mDateRangeStartSection.setPaddings(
-                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
-            view.mDateRangeEndSection.setPaddings(
+            view.mPhoneNumberSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mPaymentMethodSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
@@ -579,9 +503,7 @@ class AssistantCollectUserDataBinder
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
         } else if (shouldShowContactDetails(model)) {
             view.mContactDetailsSection.setPaddings(0, view.mSectionToSectionPadding);
-            view.mDateRangeStartSection.setPaddings(
-                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
-            view.mDateRangeEndSection.setPaddings(
+            view.mPhoneNumberSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mPaymentMethodSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
@@ -589,10 +511,8 @@ class AssistantCollectUserDataBinder
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mAppendedSections.setPaddings(view.mSectionToSectionPadding,
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
-        } else if (model.get(AssistantCollectUserDataModel.REQUEST_DATE_RANGE)) {
-            view.mDateRangeStartSection.setPaddings(0, view.mSectionToSectionPadding);
-            view.mDateRangeEndSection.setPaddings(
-                    view.mSectionToSectionPadding, view.mSectionToSectionPadding);
+        } else if (model.get(AssistantCollectUserDataModel.REQUEST_PHONE_NUMBER_SEPARATELY)) {
+            view.mPhoneNumberSection.setPaddings(0, view.mSectionToSectionPadding);
             view.mPaymentMethodSection.setPaddings(
                     view.mSectionToSectionPadding, view.mSectionToSectionPadding);
             view.mShippingAddressSection.setPaddings(
@@ -622,9 +542,7 @@ class AssistantCollectUserDataBinder
         boolean prevSectionIsExpandedOrInvisible = false;
         for (int i = 0; i < view.mPaymentRequestExpanderAccordion.getChildCount(); i++) {
             View child = view.mPaymentRequestExpanderAccordion.getChildAt(i);
-            if (child instanceof AssistantVerticalExpander
-                    || child == view.mDateRangeStartSection.getView()
-                    || child == view.mDateRangeEndSection.getView()) {
+            if (child instanceof AssistantVerticalExpander) {
                 prevSectionIsExpandedOrInvisible = child.getVisibility() != View.VISIBLE
                         || (child instanceof AssistantVerticalExpander
                                 && ((AssistantVerticalExpander) child).isExpanded());
@@ -643,18 +561,21 @@ class AssistantCollectUserDataBinder
      */
     private boolean updateEditors(
             AssistantCollectUserDataModel model, PropertyKey propertyKey, ViewHolder view) {
-        if ((propertyKey != AssistantCollectUserDataModel.WEB_CONTENTS)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_NAME)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL)
-                && (propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE)
-                && (propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS)
-                && (propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES)) {
+        if (propertyKey != AssistantCollectUserDataModel.WEB_CONTENTS
+                && propertyKey != AssistantCollectUserDataModel.REQUEST_NAME
+                && propertyKey != AssistantCollectUserDataModel.REQUEST_EMAIL
+                && propertyKey != AssistantCollectUserDataModel.REQUEST_PHONE
+                && propertyKey != AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS
+                && propertyKey != AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES
+                && propertyKey != AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS
+                && propertyKey != AssistantCollectUserDataModel.ACCOUNT_EMAIL) {
             return false;
         }
 
         WebContents webContents = model.get(AssistantCollectUserDataModel.WEB_CONTENTS);
         if (webContents == null) {
             view.mContactDetailsSection.setEditor(null);
+            view.mPhoneNumberSection.setEditor(null);
             view.mPaymentMethodSection.setEditor(null);
             view.mShippingAddressSection.setEditor(null);
             return true;
@@ -663,66 +584,54 @@ class AssistantCollectUserDataBinder
         boolean shouldStoreChanges =
                 model.get(AssistantCollectUserDataModel.SHOULD_STORE_USER_DATA_CHANGES);
 
-        Profile profile = Profile.fromWebContents(webContents);
         if (shouldShowContactDetails(model)) {
-            ContactEditor contactEditor =
-                    new ContactEditor(model.get(AssistantCollectUserDataModel.REQUEST_NAME),
-                            model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
-                            model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
-                            /* saveToDisk= */ shouldStoreChanges);
-            contactEditor.setEditorDialog(new EditorDialog(view.mActivity,
-                    /*deleteRunnable =*/null, profile));
-            view.mContactDetailsSection.setEditor(contactEditor);
+            updateContactEditor(model, view, webContents, shouldStoreChanges);
+            updatePhoneNumberEditor(model, view, webContents, shouldStoreChanges);
         }
 
-        AddressEditor addressEditor = new AddressEditor(AddressEditor.Purpose.AUTOFILL_ASSISTANT,
-                /* saveToDisk= */ shouldStoreChanges);
-        addressEditor.setEditorDialog(new EditorDialog(view.mActivity,
-                /* deleteRunnable= */ null, profile));
+        view.mShippingAddressSection.setEditor(view.mEditorFactory.createAddressEditor(
+                webContents, view.mActivity, shouldStoreChanges));
 
-        CardEditor cardEditor = new CardEditor(webContents, addressEditor,
-                /* includeOrgLabel= */ false, /* saveToDisk= */ shouldStoreChanges);
-        List<String> supportedCardNetworks =
-                model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS);
-        if (supportedCardNetworks != null) {
-            cardEditor.addAcceptedPaymentMethodIfRecognized(
-                    getPaymentMethodDataFromNetworks(supportedCardNetworks));
-        }
+        view.mPaymentMethodSection.setEditor(
+                view.mEditorFactory.createPaymentInstrumentEditor(webContents, view.mActivity,
+                        model.get(AssistantCollectUserDataModel.SUPPORTED_BASIC_CARD_NETWORKS),
+                        shouldStoreChanges));
 
-        EditorDialog cardEditorDialog = new EditorDialog(view.mActivity,
-                /*deleteRunnable =*/null, profile);
-        if (ChromeVersionInfo.isBetaBuild() || ChromeVersionInfo.isStableBuild()) {
-            cardEditorDialog.disableScreenshots();
-        }
-        cardEditor.setEditorDialog(cardEditorDialog);
-
-        view.mShippingAddressSection.setEditor(addressEditor);
-        view.mPaymentMethodSection.setEditor(cardEditor);
         return true;
     }
 
-    private PaymentMethodData getPaymentMethodDataFromNetworks(List<String> supportedCardNetworks) {
-        // Only enable 'basic-card' payment method.
-        PaymentMethodData methodData = new PaymentMethodData();
-        methodData.supportedMethod = MethodStrings.BASIC_CARD;
-
-        // Apply basic-card filter if specified
-        if (supportedCardNetworks != null && supportedCardNetworks.size() > 0) {
-            ArrayList<Integer> filteredNetworks = new ArrayList<>();
-            Map<String, Integer> networks = BasicCardUtils.getNetworkIdentifiers();
-            for (String network : supportedCardNetworks) {
-                assert networks.containsKey(network);
-                if (networks.containsKey(network)) {
-                    filteredNetworks.add(networks.get(network));
-                }
-            }
-
-            methodData.supportedNetworks = new int[filteredNetworks.size()];
-            for (int i = 0; i < filteredNetworks.size(); ++i) {
-                methodData.supportedNetworks[i] = filteredNetworks.get(i);
-            }
+    private void updateContactEditor(AssistantCollectUserDataModel model, ViewHolder view,
+            WebContents webContents, boolean shouldStoreChanges) {
+        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mContactDetailsSection.setRequestReloadOnChange(true);
+            view.mContactDetailsSection.setEditor(
+                    view.mEditorFactory.createAccountEditor(view.mActivity, view.mWindowAndroid,
+                            model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                            model.get(AssistantCollectUserDataModel.REQUEST_EMAIL),
+                            /* requestPhone= */ false));
+        } else {
+            view.mContactDetailsSection.setRequestReloadOnChange(false);
+            view.mContactDetailsSection.setEditor(view.mEditorFactory.createContactEditor(
+                    webContents, view.mActivity,
+                    model.get(AssistantCollectUserDataModel.REQUEST_NAME),
+                    model.get(AssistantCollectUserDataModel.REQUEST_PHONE),
+                    model.get(AssistantCollectUserDataModel.REQUEST_EMAIL), shouldStoreChanges));
         }
+    }
 
-        return methodData;
+    private void updatePhoneNumberEditor(AssistantCollectUserDataModel model, ViewHolder view,
+            WebContents webContents, boolean shouldStoreChanges) {
+        if (model.get(AssistantCollectUserDataModel.USE_GMS_CORE_EDIT_DIALOGS)) {
+            view.mPhoneNumberSection.setRequestReloadOnChange(true);
+            view.mPhoneNumberSection.setEditor(
+                    view.mEditorFactory.createAccountEditor(view.mActivity, view.mWindowAndroid,
+                            model.get(AssistantCollectUserDataModel.ACCOUNT_EMAIL),
+                            /* requestEmail= */ false, /* requestPhone= */ true));
+        } else {
+            view.mPhoneNumberSection.setRequestReloadOnChange(false);
+            // Separate phone number section is only supposed to be used with backend data, we
+            // do not offer an Autofill editor in this case.
+            view.mPhoneNumberSection.setEditor(null);
+        }
     }
 }

@@ -168,25 +168,26 @@ bool AppViewGuest::CheckMediaAccessPermission(
 
 void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
                                      WebContentsCreatedCallback callback) {
-  std::string app_id;
-  if (!create_params.GetString(appview::kAppID, &app_id)) {
+  const std::string* app_id = create_params.FindStringKey(appview::kAppID);
+  if (!app_id) {
     std::move(callback).Run(nullptr);
     return;
   }
   // Verifying that the appId is not the same as the host application.
-  if (owner_host() == app_id) {
+  if (owner_host() == *app_id) {
     std::move(callback).Run(nullptr);
     return;
   }
-  const base::DictionaryValue* data = nullptr;
-  if (!create_params.GetDictionary(appview::kData, &data)) {
+
+  const base::Value* data = create_params.FindDictKey(appview::kData);
+  if (!data) {
     std::move(callback).Run(nullptr);
     return;
   }
 
   const ExtensionSet& enabled_extensions =
       ExtensionRegistry::Get(browser_context())->enabled_extensions();
-  const Extension* guest_extension = enabled_extensions.GetByID(app_id);
+  const Extension* guest_extension = enabled_extensions.GetByID(*app_id);
   const Extension* embedder_extension =
       enabled_extensions.GetByID(GetOwnerSiteURL().host());
 
@@ -202,7 +203,8 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
     queue->AddPendingTask(
         context_id,
         base::BindOnce(&AppViewGuest::LaunchAppAndFireEvent,
-                       weak_ptr_factory_.GetWeakPtr(), data->CreateDeepCopy(),
+                       weak_ptr_factory_.GetWeakPtr(),
+                       base::Value::AsDictionaryValue(*data).CreateDeepCopy(),
                        std::move(callback)));
     return;
   }
@@ -212,7 +214,8 @@ void AppViewGuest::CreateWebContents(const base::DictionaryValue& create_params,
       process_manager->GetBackgroundHostForExtension(guest_extension->id());
   DCHECK(host);
   LaunchAppAndFireEvent(
-      data->CreateDeepCopy(), std::move(callback),
+      base::Value::AsDictionaryValue(*data).CreateDeepCopy(),
+      std::move(callback),
       std::make_unique<LazyContextTaskQueue::ContextInfo>(host));
 }
 
@@ -280,8 +283,8 @@ void AppViewGuest::LaunchAppAndFireEvent(
 
   std::unique_ptr<base::DictionaryValue> embed_request(
       new base::DictionaryValue());
-  embed_request->SetInteger(appview::kGuestInstanceID, guest_instance_id());
-  embed_request->SetString(appview::kEmbedderID, owner_host());
+  embed_request->SetIntKey(appview::kGuestInstanceID, guest_instance_id());
+  embed_request->SetStringKey(appview::kEmbedderID, owner_host());
   embed_request->SetKey(appview::kData,
                         base::Value::FromUniquePtrValue(std::move(data)));
   AppRuntimeEventRouter::DispatchOnEmbedRequestedEvent(

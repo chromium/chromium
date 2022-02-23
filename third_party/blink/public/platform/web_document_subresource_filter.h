@@ -27,6 +27,7 @@ class WebDocumentSubresourceFilter {
   virtual LoadPolicy GetLoadPolicy(const WebURL& resource_url,
                                    mojom::RequestContextType) = 0;
   virtual LoadPolicy GetLoadPolicyForWebSocketConnect(const WebURL&) = 0;
+  virtual LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) = 0;
 
   // Report that a resource loaded by the document (not a preload) was
   // disallowed.

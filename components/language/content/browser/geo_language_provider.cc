@@ -73,9 +73,10 @@ void GeoLanguageProvider::StartUp(PrefService* const prefs) {
 
   prefs_ = prefs;
 
-  const base::ListValue* const cached_languages_list =
+  const base::Value* const cached_languages_list =
       prefs_->GetList(kCachedGeoLanguagesPref);
-  for (const auto& language_value : cached_languages_list->GetList()) {
+  for (const auto& language_value :
+       cached_languages_list->GetListDeprecated()) {
     languages_.push_back(language_value.GetString());
   }
 
@@ -198,8 +199,8 @@ void GeoLanguageProvider::SetGeoLanguages(
   languages_ = languages;
 
   base::ListValue cache_list;
-  for (size_t i = 0; i < languages_.size(); ++i) {
-    cache_list.Set(i, std::make_unique<base::Value>(languages_[i]));
+  for (const std::string& language : languages_) {
+    cache_list.Append(language);
   }
   prefs_->Set(kCachedGeoLanguagesPref, cache_list);
 }

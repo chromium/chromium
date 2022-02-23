@@ -248,6 +248,14 @@ class Node(object):
       if not defattr in self.attrs:
         self.attrs[defattr] = self.DefaultAttributes()[defattr]
 
+    # Check that |file| does not point to a TypeScript (.ts) file, as those
+    # files should not be included in the final build.
+    if self.attrs.get('file'):
+      assert not self.attrs.get('file').endswith(
+          '.ts'
+      ), 'TypeScript files should not be added to Grit: Found \'%s\'' % self.attrs.get(
+          'file')
+
   def GetCdata(self):
     '''Returns all CDATA of this element, concatenated into a single
     string.  Note that this ignores any elements embedded in CDATA.'''

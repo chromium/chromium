@@ -5,7 +5,6 @@
 package org.chromium.net;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -26,6 +25,7 @@ import android.os.Process;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApiCompatibilityUtils;
@@ -184,7 +184,7 @@ class AndroidNetworkLibrary {
      * status can't be determined. Requires ACCESS_NETWORK_STATE permission. Only available on
      * Android Marshmallow and later versions. Returns false on earlier versions.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private static boolean getIsCaptivePortal() {
         // NetworkCapabilities.NET_CAPABILITY_CAPTIVE_PORTAL is only available on Marshmallow and
@@ -342,7 +342,7 @@ class AndroidNetworkLibrary {
             sInstance = networkSecurityPolicyProxy;
         }
 
-        @TargetApi(Build.VERSION_CODES.N)
+        @RequiresApi(Build.VERSION_CODES.N)
         public boolean isCleartextTrafficPermitted(String host) {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.N) {
                 // No per-host configuration before N.
@@ -351,7 +351,7 @@ class AndroidNetworkLibrary {
             return ApiHelperForN.isCleartextTrafficPermitted(host);
         }
 
-        @TargetApi(Build.VERSION_CODES.M)
+        @RequiresApi(Build.VERSION_CODES.M)
         public boolean isCleartextTrafficPermitted() {
             if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
                 // Always true before M.
@@ -402,7 +402,7 @@ class AndroidNetworkLibrary {
      * Returns object representing the DNS configuration for the provided
      * network. If |network| is null, uses the active network.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     public static DnsStatus getDnsStatus(Network network) {
         if (!haveAccessNetworkState()) {
@@ -442,7 +442,7 @@ class AndroidNetworkLibrary {
     /**
      * Reports a connectivity issue with the device's current default network.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     @CalledByNative
     private static boolean reportBadDefaultNetwork() {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) return false;

@@ -68,6 +68,13 @@ interface VideoFrameHandler {
   OnError(media.mojom.VideoCaptureError error);
 
   OnFrameDropped(media.mojom.VideoCaptureFrameDropReason reason);
+
+  // Called when a frame is *not* delivered because Region Capture was applied,
+  // but the cropped-to region consists of zero pixels. This is needed because
+  // the blue border that is normally drawn around the cropped-to region should
+  // be updated.
+  OnFrameWithEmptyRegionCapture();
+
   OnLog(string message);
 
   // Indicates that the producer side has started successfully. The producer

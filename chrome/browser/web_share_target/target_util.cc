@@ -49,7 +49,7 @@ void AddFile(const std::string& value_name,
     request_body->AppendDataPipe(std::move(*data_pipe_getter));
   } else {
     request_body->AppendFileRange(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         base::FilePath::FromUTF8Unsafe(file_uri),
 #else
         base::FilePath(file_uri),

@@ -65,7 +65,15 @@ TEST(DelayedCallbackGroup, TimeoutSimple) {
   EXPECT_GE(delta, kTimeout);
 }
 
-TEST(DelayedCallbackGroup, TimeoutAndRun) {
+#if BUILDFLAG(IS_CHROMEOS)
+// Failing on CrOS ASAN: crbug.com/1290874
+#define MAYBE_TimeoutAndRun DISABLED_TimeoutAndRun
+#else
+#define MAYBE_TimeoutAndRun TimeoutAndRun
+#endif
+
+
+TEST(DelayedCallbackGroup, MAYBE_TimeoutAndRun) {
   const base::TimeDelta kTimeout = base::Milliseconds(500);
   base::test::TaskEnvironment task_environment;
   auto callback_group = base::MakeRefCounted<DelayedCallbackGroup>(

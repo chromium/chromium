@@ -57,7 +57,7 @@ bool OAuth2ManifestHandler::Parse(Extension* extension, std::u16string* error) {
       info.auto_approve && *info.auto_approve;
 
   if ((!info.client_id || info.client_id->empty()) && !can_omit_client_id) {
-    *error = base::ASCIIToUTF16(errors::kInvalidOAuth2ClientId);
+    *error = errors::kInvalidOAuth2ClientId;
     return false;
   }
 

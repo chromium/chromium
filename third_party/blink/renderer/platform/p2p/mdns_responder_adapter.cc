@@ -6,7 +6,7 @@
 
 #include <string>
 
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
@@ -55,14 +55,14 @@ MdnsResponderAdapter::~MdnsResponderAdapter() = default;
 void MdnsResponderAdapter::CreateNameForAddress(const rtc::IPAddress& addr,
                                                 NameCreatedCallback callback) {
   shared_remote_client_->CreateNameForAddress(
-      jingle_glue::RtcIPAddressToNetIPAddress(addr),
+      webrtc::RtcIPAddressToNetIPAddress(addr),
       WTF::Bind(&OnNameCreatedForAddress, callback, addr));
 }
 
 void MdnsResponderAdapter::RemoveNameForAddress(const rtc::IPAddress& addr,
                                                 NameRemovedCallback callback) {
   shared_remote_client_->RemoveNameForAddress(
-      jingle_glue::RtcIPAddressToNetIPAddress(addr),
+      webrtc::RtcIPAddressToNetIPAddress(addr),
       WTF::Bind(&OnNameRemovedForAddress, callback));
 }
 

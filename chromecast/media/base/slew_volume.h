@@ -9,8 +9,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
-
 namespace chromecast {
 namespace media {
 

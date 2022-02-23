@@ -6,7 +6,11 @@
 
 namespace variations {
 
-SyntheticTrialGroup::SyntheticTrialGroup(uint32_t trial, uint32_t group) {
+SyntheticTrialGroup::SyntheticTrialGroup(
+    uint32_t trial,
+    uint32_t group,
+    SyntheticTrialAnnotationMode annotation_mode)
+    : annotation_mode(annotation_mode) {
   id.name = trial;
   id.group = group;
 }

@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/chromedriver/chrome/web_view.h"
 
 namespace base {
@@ -123,9 +123,7 @@ class WebViewImpl : public WebView {
       bool async_dispatch_events = false) override;
   Status DispatchKeyEvents(const std::vector<KeyEvent>& events,
                            bool async_dispatch_events = false) override;
-  Status InsertText(const std::string& text,
-                    bool async_dispatch_events = false) override;
-  Status GetCookies(std::unique_ptr<base::ListValue>* cookies,
+  Status GetCookies(base::Value* cookies,
                     const std::string& current_page_url) override;
   Status DeleteCookie(const std::string& name,
                       const std::string& url,
@@ -159,7 +157,7 @@ class WebViewImpl : public WebView {
   Status PrintToPDF(const base::DictionaryValue& params,
                     std::string* pdf) override;
   Status SetFileInputFiles(const std::string& frame,
-                           const base::DictionaryValue& element,
+                           const base::Value& element,
                            const std::vector<base::FilePath>& files,
                            const bool append) override;
   Status TakeHeapSnapshot(std::unique_ptr<base::Value>* snapshot) override;
@@ -174,7 +172,7 @@ class WebViewImpl : public WebView {
                                  int xoffset,
                                  int yoffset) override;
   Status GetNodeIdByElement(const std::string& frame,
-                            const base::DictionaryValue& element,
+                            const base::Value& element,
                             int* node_id) override;
 
   bool IsNonBlocking() const override;
@@ -211,11 +209,11 @@ class WebViewImpl : public WebView {
 
   std::string id_;
   bool w3c_compliant_;
-  const BrowserInfo* browser_info_;
+  raw_ptr<const BrowserInfo> browser_info_;
   // Data for WebViewImplHolder to support delayed destruction of WebViewImpl.
   bool is_locked_;
   bool is_detached_;
-  const WebViewImpl* parent_;
+  raw_ptr<const WebViewImpl> parent_;
   // Many trackers hold pointers to DevToolsClient, so client_ must be declared
   // before the trackers, to ensured trackers are destructed before client_.
   std::unique_ptr<DevToolsClient> client_;

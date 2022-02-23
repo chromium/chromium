@@ -5,13 +5,13 @@
 #include "chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.h"
 
 #include "ash/constants/ash_pref_names.h"
-#include "ash/grit/ash_camera_app_resources.h"
 #include "ash/webui/camera_app_ui/resources/strings/grit/ash_camera_app_strings.h"
 #include "ash/webui/camera_app_ui/url_constants.h"
+#include "ash/webui/grit/ash_camera_app_resources.h"
 #include "chrome/browser/ash/web_applications/camera_app/chrome_camera_app_ui_constants.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/prefs/pref_service.h"
 #include "extensions/common/constants.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -25,8 +25,8 @@ constexpr gfx::Size CAMERA_WINDOW_DEFAULT_SIZE(kChromeCameraAppDefaultWidth,
                                                    32);
 }
 
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForCameraSystemWebApp() {
-  auto info = std::make_unique<WebApplicationInfo>();
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForCameraSystemWebApp() {
+  auto info = std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUICameraAppMainURL);
   info->scope = GURL(ash::kChromeUICameraAppScopeURL);
 
@@ -63,10 +63,12 @@ CameraSystemAppDelegate::CameraSystemAppDelegate(Profile* profile)
           "Camera",
           GURL("chrome://camera-app/views/main.html"),
           profile,
-          web_app::OriginTrialsMap({{web_app::GetOrigin("chrome://camera-app"),
-                                     {"FileHandling"}}})) {}
+          web_app::OriginTrialsMap(
+              {{web_app::GetOrigin("chrome://camera-app"), {"FileHandling"}},
+               {web_app::GetOrigin("chrome-untrusted://camera-app"),
+                {"WebAssemblyDynamicTiering"}}})) {}
 
-std::unique_ptr<WebApplicationInfo> CameraSystemAppDelegate::GetWebAppInfo()
+std::unique_ptr<WebAppInstallInfo> CameraSystemAppDelegate::GetWebAppInfo()
     const {
   return CreateWebAppInfoForCameraSystemWebApp();
 }

@@ -36,8 +36,8 @@ class WaylandSubsurface {
   //   |reference_below| & |reference_above|: this subsurface is taken from the
   //     subsurface stack and inserted back to be immediately below/above the
   //     reference subsurface.
-  void ConfigureAndShowSurface(const gfx::Rect& bounds_px,
-                               const gfx::Rect& parent_bounds_px,
+  void ConfigureAndShowSurface(const gfx::RectF& bounds_px,
+                               const gfx::RectF& parent_bounds_px,
                                float buffer_scale,
                                const WaylandSurface* reference_below,
                                const WaylandSurface* reference_above);
@@ -55,6 +55,7 @@ class WaylandSubsurface {
 
   WaylandSurface wayland_surface_;
   wl::Object<wl_subsurface> subsurface_;
+  wl::Object<augmented_sub_surface> augmented_subsurface_;
 
   WaylandConnection* const connection_;
   // |parent_| refers to the WaylandWindow whose wl_surface is the parent to

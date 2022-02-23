@@ -6,6 +6,7 @@
 #define COMPONENTS_JAVASCRIPT_DIALOGS_APP_MODAL_DIALOG_QUEUE_H_
 
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 
 namespace base {
 template <typename T>
@@ -83,7 +84,7 @@ class AppModalDialogQueue {
 
   // The currently active app-modal dialog box. nullptr if there is no active
   // app-modal dialog box.
-  AppModalDialogController* active_dialog_;
+  raw_ptr<AppModalDialogController> active_dialog_;
 
   // Stores if |ShowModalDialog()| is currently being called on an app-modal
   // dialog.

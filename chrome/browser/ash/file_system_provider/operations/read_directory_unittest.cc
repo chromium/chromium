@@ -96,7 +96,8 @@ void CreateRequestValueFromJSON(const std::string& json,
   ASSERT_TRUE(parsed_json.value) << parsed_json.error_message;
 
   ASSERT_TRUE(parsed_json.value->is_list());
-  std::unique_ptr<Params> params(Params::Create(parsed_json.value->GetList()));
+  std::unique_ptr<Params> params(
+      Params::Create(parsed_json.value->GetListDeprecated()));
   ASSERT_TRUE(params.get());
   *result = RequestValue::CreateForReadDirectorySuccess(std::move(params));
   ASSERT_TRUE(result->get());
@@ -141,9 +142,9 @@ TEST_F(FileSystemProviderOperationsReadDirectoryTest, Execute) {
                 kEventName,
             event->event_name);
   base::ListValue* event_args = event->event_args.get();
-  ASSERT_EQ(1u, event_args->GetList().size());
+  ASSERT_EQ(1u, event_args->GetListDeprecated().size());
 
-  const base::Value* options_as_value = &event_args->GetList()[0];
+  const base::Value* options_as_value = &event_args->GetListDeprecated()[0];
   ASSERT_TRUE(options_as_value->is_dict());
 
   ReadDirectoryRequestedOptions options;

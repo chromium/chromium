@@ -13,6 +13,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/callback.h"
 #include "base/component_export.h"
 #include "base/mac/foundation_util.h"
 #include "device/fido/mac/authenticator_config.h"
@@ -112,26 +113,20 @@ class COMPONENT_EXPORT(DEVICE_FIDO) TouchIdCredentialStore
 
   // PlatformCredentialStore:
 
-  // DeleteCredentials deletes Touch ID authenticator credentials from
-  // the macOS keychain that were created within the given time interval and
-  // with the given metadata secret (which is tied to a browser profile). The
-  // |keychain_access_group| parameter is an identifier tied to Chrome's code
-  // signing identity that identifies the set of all keychain items associated
-  // with the Touch ID WebAuthentication authenticator.
-  //
-  // Returns false if any attempt to delete a credential failed (but others may
-  // still have succeeded), and true otherwise.
-  //
-  // On platforms where Touch ID is not supported, or when the Touch ID WebAuthn
-  // authenticator feature flag is disabled, this method does nothing and
-  // returns true.
-  bool DeleteCredentials(base::Time created_not_before,
-                         base::Time created_not_after) override;
+  void DeleteCredentials(base::Time created_not_before,
+                         base::Time created_not_after,
+                         base::OnceClosure callback) override;
 
-  // CountCredentials returns the number of credentials that would get
-  // deleted by a call to |DeleteWebAuthnCredentials| with identical arguments.
-  size_t CountCredentials(base::Time created_not_before,
-                          base::Time created_not_after) override;
+  void CountCredentials(base::Time created_not_before,
+                        base::Time created_not_after,
+                        base::OnceCallback<void(size_t)> callback) override;
+
+  // Sync versions of the two above APIs.
+  bool DeleteCredentialsSync(base::Time created_not_before,
+                             base::Time created_not_after);
+
+  size_t CountCredentialsSync(base::Time created_not_before,
+                              base::Time created_not_after);
 
  private:
   API_AVAILABLE(macosx(10.12.2))

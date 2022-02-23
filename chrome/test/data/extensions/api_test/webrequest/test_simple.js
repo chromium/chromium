@@ -200,4 +200,238 @@ runTests([
         ["onBeforeRequest", "onErrorOccurred"] ]);
     navigateAndWait(getURL("does_not_exist.html"));
   },
+
+  // Navigates to a page that has a sandboxed iframe.
+  // Initiator will be opaque (serialized as "null").
+  function sandboxedIframeLoad() {
+    var sandboxContainer = getServerURL(
+        'extensions/api_test/webrequest/simpleLoad/sandbox_container.html');
+    var sandboxFrame = getServerURL(
+        'extensions/api_test/webrequest/simpleLoad/sandbox_frame.html');
+    var innerFrame = getURLHttpSimpleLoad();
+    const kOpaqueOrigin = 'null';
+    expect(
+      [  // events
+        { label: "onBeforeRequest-1",
+          event: "onBeforeRequest",
+          details: {
+            url: sandboxContainer,
+            frameUrl: sandboxContainer,
+            initiator: getServerDomain(initiators.BROWSER_INITIATED),
+          }
+        },
+        { label: "onBeforeSendHeaders-1",
+          event: "onBeforeSendHeaders",
+          details: {
+            url: sandboxContainer,
+            requestHeadersValid: true,
+            initiator: getServerDomain(initiators.BROWSER_INITIATED),
+          }
+        },
+        { label: "onSendHeaders-1",
+          event: "onSendHeaders",
+          details: {
+            url: sandboxContainer,
+            requestHeadersValid: true,
+            initiator: getServerDomain(initiators.BROWSER_INITIATED),
+          }
+        },
+        { label: "onHeadersReceived-1",
+          event: "onHeadersReceived",
+          details: {
+            url: sandboxContainer,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            statusCode: 200,
+            initiator: getServerDomain(initiators.BROWSER_INITIATED),
+          }
+        },
+        { label: "onResponseStarted-1",
+          event: "onResponseStarted",
+          details: {
+            url: sandboxContainer,
+            statusCode: 200,
+            responseHeadersExist: true,
+            ip: "127.0.0.1",
+            fromCache: false,
+            statusLine: "HTTP/1.1 200 OK",
+            initiator: getServerDomain(initiators.BROWSER_INITIATED),
+          }
+        },
+        { label: "onCompleted-1",
+          event: "onCompleted",
+          details: {
+            url: sandboxContainer,
+            statusCode: 200,
+            ip: "127.0.0.1",
+            fromCache: false,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            initiator: getServerDomain(initiators.BROWSER_INITIATED),
+          }
+        },
+        { label: "onBeforeRequest-2",
+          event: "onBeforeRequest",
+          details: {
+            frameId: 1,
+            frameUrl: sandboxFrame,
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            parentFrameId: 0,
+            url: sandboxFrame,
+            type: "sub_frame",
+          }
+        },
+        { label: "onBeforeSendHeaders-2",
+          event: "onBeforeSendHeaders",
+          details: {
+            frameId: 1,
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            parentFrameId: 0,
+            requestHeadersValid: true,
+            type: "sub_frame",
+            url: sandboxFrame,
+          }
+        },
+        { label: "onSendHeaders-2",
+          event: "onSendHeaders",
+          details: {
+            frameId: 1,
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            parentFrameId: 0,
+            requestHeadersValid: true,
+            type: "sub_frame",
+            url: sandboxFrame,
+          }
+        },
+        { label: "onHeadersReceived-2",
+          event: "onHeadersReceived",
+          details: {
+            frameId: 1,
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            parentFrameId: 0,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            statusCode: 200,
+            type: "sub_frame",
+            url: sandboxFrame,
+          }
+        },
+        { label: "onResponseStarted-2",
+          event: "onResponseStarted",
+          details: {
+            frameId: 1,
+            fromCache: false,
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            ip: "127.0.0.1",
+            parentFrameId: 0,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            statusCode: 200,
+            type: "sub_frame",
+            url: sandboxFrame,
+          }
+        },
+        { label: "onCompleted-2",
+          event: "onCompleted",
+          details: {
+            frameId: 1,
+            fromCache: false,
+            initiator: getServerDomain(initiators.WEB_INITIATED),
+            ip: "127.0.0.1",
+            parentFrameId: 0,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            statusCode: 200,
+            type: "sub_frame",
+            url: sandboxFrame,
+          }
+        },
+        { label: "onBeforeRequest-3",
+          event: "onBeforeRequest",
+          details: {
+            frameId: 2,
+            frameUrl: innerFrame,
+            initiator: kOpaqueOrigin,
+            parentFrameId: 1,
+            url: innerFrame,
+            type: "sub_frame",
+          }
+        },
+        { label: "onBeforeSendHeaders-3",
+          event: "onBeforeSendHeaders",
+          details: {
+            frameId: 2,
+            initiator: kOpaqueOrigin,
+            parentFrameId: 1,
+            requestHeadersValid: true,
+            type: "sub_frame",
+            url: innerFrame,
+          }
+        },
+        { label: "onSendHeaders-3",
+          event: "onSendHeaders",
+          details: {
+            frameId: 2,
+            initiator: kOpaqueOrigin,
+            parentFrameId: 1,
+            requestHeadersValid: true,
+            type: "sub_frame",
+            url: innerFrame,
+          }
+        },
+        { label: "onHeadersReceived-3",
+          event: "onHeadersReceived",
+          details: {
+            frameId: 2,
+            initiator: kOpaqueOrigin,
+            parentFrameId: 1,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            statusCode: 200,
+            type: "sub_frame",
+            url: innerFrame,
+          }
+        },
+        { label: "onResponseStarted-3",
+          event: "onResponseStarted",
+          details: {
+            frameId: 2,
+            fromCache: false,
+            initiator: kOpaqueOrigin,
+            ip: "127.0.0.1",
+            parentFrameId: 1,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            statusCode: 200,
+            type: "sub_frame",
+            url: innerFrame,
+          }
+        },
+        { label: "onCompleted-3",
+          event: "onCompleted",
+          details: {
+            frameId: 2,
+            fromCache: false,
+            initiator: kOpaqueOrigin,
+            ip: "127.0.0.1",
+            parentFrameId: 1,
+            responseHeadersExist: true,
+            statusLine: "HTTP/1.1 200 OK",
+            statusCode: 200,
+            type: "sub_frame",
+            url: innerFrame,
+          }
+        }
+      ],
+      [  // event order
+        ["onBeforeRequest-1", "onBeforeSendHeaders-1", "onSendHeaders-1",
+         "onHeadersReceived-1", "onResponseStarted-1", "onCompleted-1",
+         "onBeforeRequest-2", "onBeforeSendHeaders-2", "onSendHeaders-2",
+         "onHeadersReceived-2", "onResponseStarted-2", "onCompleted-2",
+         "onBeforeRequest-3", "onBeforeSendHeaders-3", "onSendHeaders-3",
+         "onHeadersReceived-3", "onResponseStarted-3", "onCompleted-3"] ],
+      {urls: ["<all_urls>"]},  // filter
+      ["requestHeaders", "responseHeaders"]);
+    navigateAndWait(sandboxContainer);
+  }
 ]);

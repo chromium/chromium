@@ -18,7 +18,6 @@
 #include <string>
 #include <utility>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/global_routing_id.h"
 

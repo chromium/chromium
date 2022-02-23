@@ -8,7 +8,12 @@
 #include <memory>
 #include <utility>
 
-#if defined(OS_ANDROID)
+#include "base/logging.h"
+#include "build/build_config.h"
+#include "content/public/browser/browser_xr_runtime.h"
+#include "device/vr/public/mojom/vr_service.mojom-shared.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/android_hardware_buffer_compat.h"
 #endif
 
@@ -26,7 +31,7 @@
 #include "ui/gfx/geometry/transform.h"
 #include "ui/gfx/geometry/transform_util.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -103,10 +108,14 @@ device::mojom::XRViewPtr ValidateXRView(const device::mojom::XRView* view) {
   int kMinSize = 2;
   // DCHECK on debug builds to catch legitimate large sizes, but clamp on
   // release builds to ensure valid state.
-  DCHECK_LT(view->viewport.width(), kMaxSize);
-  DCHECK_LT(view->viewport.height(), kMaxSize);
+  DCHECK_LT(view->viewport.width() + view->viewport.x(), kMaxSize);
+  DCHECK_LT(view->viewport.height() + view->viewport.y(), kMaxSize);
+  DCHECK_GT(view->viewport.width() + view->viewport.x(), kMinSize);
+  DCHECK_GT(view->viewport.height() + view->viewport.y(), kMinSize);
   ret->viewport =
-      gfx::Size(base::clamp(view->viewport.width(), kMinSize, kMaxSize),
+      gfx::Rect(base::clamp(view->viewport.x(), 0, kMaxSize),
+                base::clamp(view->viewport.y(), 0, kMaxSize),
+                base::clamp(view->viewport.width(), kMinSize, kMaxSize),
                 base::clamp(view->viewport.height(), kMinSize, kMaxSize));
   return ret;
 }
@@ -150,11 +159,20 @@ BrowserXRRuntimeImpl::BrowserXRRuntimeImpl(
 
   if (integration_client) {
     install_helper_ = integration_client->GetInstallHelper(id_);
+    runtime_observer_ = integration_client->CreateRuntimeObserver();
+
+    if (runtime_observer_) {
+      AddObserver(runtime_observer_.get());
+    }
   }
 }
 
 BrowserXRRuntimeImpl::~BrowserXRRuntimeImpl() {
   DVLOG(2) << __func__ << ": id=" << id_;
+
+  if (runtime_observer_) {
+    RemoveObserver(runtime_observer_.get());
+  }
 
   if (install_finished_callback_) {
     std::move(install_finished_callback_).Run(false);
@@ -238,13 +256,21 @@ void BrowserXRRuntimeImpl::OnDisplayInfoChanged(
 
   // Notify observers of the new display info.
   for (Observer& observer : observers_) {
-    observer.SetVRDisplayInfo(display_info_.Clone());
+    observer.VRDisplayInfoChanged(display_info_.Clone());
   }
 }
 
 void BrowserXRRuntimeImpl::StopImmersiveSession(
     VRServiceImpl::ExitPresentCallback on_exited) {
   DVLOG(2) << __func__;
+
+  if (immersive_session_has_camera_access_) {
+    for (Observer& observer : observers_) {
+      observer.WebXRCameraInUseChanged(nullptr, false);
+    }
+    immersive_session_has_camera_access_ = false;
+  }
+
   if (immersive_session_controller_) {
     immersive_session_controller_.reset();
     if (presenting_service_) {
@@ -253,7 +279,7 @@ void BrowserXRRuntimeImpl::StopImmersiveSession(
     }
 
     for (Observer& observer : observers_) {
-      observer.SetWebXRWebContents(nullptr);
+      observer.WebXRWebContentsChanged(nullptr);
     }
   }
   std::move(on_exited).Run();
@@ -312,7 +338,7 @@ void BrowserXRRuntimeImpl::SetFramesThrottled(const VRServiceImpl* service,
                                               bool throttled) {
   if (service == presenting_service_) {
     for (Observer& observer : observers_) {
-      observer.SetFramesThrottled(throttled);
+      observer.WebXRFramesThrottledChanged(throttled);
     }
   }
 }
@@ -354,7 +380,16 @@ void BrowserXRRuntimeImpl::OnRequestSessionResult(
       // Notify observers that we have started presentation.
       content::WebContents* web_contents = service->GetWebContents();
       for (Observer& observer : observers_) {
-        observer.SetWebXRWebContents(web_contents);
+        observer.WebXRWebContentsChanged(web_contents);
+      }
+
+      immersive_session_has_camera_access_ =
+          base::Contains(session_result->session->enabled_features,
+                         device::mojom::XRSessionFeature::CAMERA_ACCESS);
+      if (immersive_session_has_camera_access_) {
+        for (Observer& observer : observers_) {
+          observer.WebXRCameraInUseChanged(web_contents, true);
+        }
       }
     }
 
@@ -415,7 +450,7 @@ void BrowserXRRuntimeImpl::OnImmersiveSessionError() {
 
 void BrowserXRRuntimeImpl::AddObserver(Observer* observer) {
   observers_.AddObserver(observer);
-  observer->SetVRDisplayInfo(display_info_.Clone());
+  observer->VRDisplayInfoChanged(display_info_.Clone());
 }
 
 void BrowserXRRuntimeImpl::RemoveObserver(Observer* observer) {
@@ -433,7 +468,7 @@ void BrowserXRRuntimeImpl::BeforeRuntimeRemoved() {
   StopImmersiveSession(base::DoNothing());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 absl::optional<CHROME_LUID> BrowserXRRuntimeImpl::GetLuid() const {
   return device_data_->luid;
 }

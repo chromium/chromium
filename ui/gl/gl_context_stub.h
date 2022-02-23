@@ -38,7 +38,7 @@ class GL_EXPORT GLContextStub : public GLContextReal {
   void SetGLVersionString(const char* version_str);
   bool HasRobustness();
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   void FlushForDriverCrashWorkaround() override;
 #endif
 

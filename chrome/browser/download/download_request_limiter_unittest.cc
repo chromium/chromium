@@ -32,7 +32,7 @@
 #include "third_party/blink/public/common/input/web_mouse_event.h"
 #include "third_party/blink/public/common/input/web_touch_event.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #endif
 
@@ -160,8 +160,8 @@ class DownloadRequestLimiterTest : public ChromeRenderViewHostTestHarness {
   }
 
   void LoadCompleted() {
-    mock_permission_prompt_factory_->DocumentOnLoadCompletedInMainFrame(
-        main_rfh());
+    mock_permission_prompt_factory_
+        ->DocumentOnLoadCompletedInPrimaryMainFrame();
   }
 
   int AskAllowCount() { return mock_permission_prompt_factory_->show_count(); }

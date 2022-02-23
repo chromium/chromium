@@ -14,12 +14,17 @@ namespace blink {
 {% for enum in enums %}
 enum class {{enum.type_name}} : unsigned {
   {% for value in enum.values %}
-  {{value}}{{print_if(enum.is_set, " = " ~ (0 if loop.first else 2**(loop.index0 - 1)))}},
+  {% if enum.set_type == 'multi' %}
+    {% set flag = " = " ~ (0 if loop.first else 2**(loop.index0 - 1)) %}
+  {% elif enum.set_type == 'bitset' %}
+    {% set flag = " = " ~ 2**(loop.index0) %}
+  {% endif %}
+  {{value}}{{flag}},
   {% endfor %}
 };
 
-{% if enum.is_set %}
-static const int k{{enum.type_name}}Bits = {{enum.values|length - 1}};
+{% if enum.set_type %}
+static const int k{{enum.type_name}}Bits = {{enum.values|length - (1 if enum.set_type == 'multi' else 0)}};
 
 {% for op in ('|', '^') %}
 inline {{enum.type_name}} operator{{op}}({{enum.type_name}} a, {{enum.type_name}} b) {

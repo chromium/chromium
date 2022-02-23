@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/console_message.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/service_worker_context.h"
@@ -27,6 +28,7 @@
 #include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/process_manager.h"
+#include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/browser/service_worker_task_queue_factory.h"
 #include "extensions/common/constants.h"
 #include "extensions/common/manifest_constants.h"
@@ -220,9 +222,21 @@ void ServiceWorkerTaskQueue::DidInitializeServiceWorkerContext(
     int64_t service_worker_version_id,
     int thread_id) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  util::InitializeFileSchemeAccessForExtension(render_process_id, extension_id,
+                                               browser_context_);
   ProcessManager::Get(browser_context_)
       ->RegisterServiceWorker({extension_id, render_process_id,
                                service_worker_version_id, thread_id});
+
+  ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
+  DCHECK(registry);
+  const Extension* extension =
+      registry->enabled_extensions().GetByID(extension_id);
+  DCHECK(extension);
+
+  RendererStartupHelperFactory::GetForBrowserContext(browser_context_)
+      ->ActivateExtensionInProcess(
+          *extension, content::RenderProcessHost::FromID(render_process_id));
 }
 
 void ServiceWorkerTaskQueue::DidStartServiceWorkerContext(
@@ -408,8 +422,7 @@ void ServiceWorkerTaskQueue::DeactivateExtension(const Extension* extension) {
       GetServiceWorkerContext(extension->id());
 
   service_worker_context->UnregisterServiceWorker(
-      extension->url(),
-      blink::StorageKey(url::Origin::Create(extension->url())),
+      extension->url(), blink::StorageKey(extension->origin()),
       base::BindOnce(&ServiceWorkerTaskQueue::DidUnregisterServiceWorker,
                      weak_factory_.GetWeakPtr(), extension_id, *sequence));
 
@@ -504,7 +517,6 @@ void ServiceWorkerTaskQueue::DidUnregisterServiceWorker(
 
 base::Version ServiceWorkerTaskQueue::RetrieveRegisteredServiceWorkerVersion(
     const ExtensionId& extension_id) {
-  std::string version_string;
   if (browser_context_->IsOffTheRecord()) {
     auto it = off_the_record_registrations_.find(extension_id);
     return it != off_the_record_registrations_.end() ? it->second
@@ -514,11 +526,15 @@ base::Version ServiceWorkerTaskQueue::RetrieveRegisteredServiceWorkerVersion(
   ExtensionPrefs::Get(browser_context_)
       ->ReadPrefAsDictionary(extension_id, kPrefServiceWorkerRegistrationInfo,
                              &info);
-  if (info != nullptr) {
-    info->GetString(kServiceWorkerVersion, &version_string);
+  if (!info) {
+    return base::Version();
   }
 
-  return base::Version(version_string);
+  if (const std::string* version_string =
+          info->FindStringKey(kServiceWorkerVersion)) {
+    return base::Version(*version_string);
+  }
+  return base::Version();
 }
 
 void ServiceWorkerTaskQueue::SetRegisteredServiceWorkerInfo(
@@ -529,7 +545,7 @@ void ServiceWorkerTaskQueue::SetRegisteredServiceWorkerInfo(
     off_the_record_registrations_[extension_id] = version;
   } else {
     auto info = std::make_unique<base::DictionaryValue>();
-    info->SetString(kServiceWorkerVersion, version.GetString());
+    info->SetStringKey(kServiceWorkerVersion, version.GetString());
     ExtensionPrefs::Get(browser_context_)
         ->UpdateExtensionPref(extension_id, kPrefServiceWorkerRegistrationInfo,
                               std::move(info));
@@ -669,7 +685,7 @@ void ServiceWorkerTaskQueue::ActivateIncognitoSplitModeExtensions(
     ServiceWorkerTaskQueue* other) {
   DCHECK(browser_context_->IsOffTheRecord())
       << "Only need to activate split mode extensions for an OTR context";
-  for (const auto& activated : activation_sequences_) {
+  for (const auto& activated : other->activation_sequences_) {
     ExtensionRegistry* registry = ExtensionRegistry::Get(browser_context_);
     DCHECK(registry);
     const Extension* extension =

@@ -185,7 +185,9 @@ namespace http://www.w3.org/1999/xhtml
     property onchange
     property onclick
     property onclose
+    property oncontextlost
     property oncontextmenu
+    property oncontextrestored
     property oncopy
     property oncuechange
     property oncut
@@ -560,8 +562,6 @@ html element embed
     property src
     property type
     property width
-html element fencedframe
-    property src
 html element fieldset
     property checkValidity
     property disabled
@@ -681,6 +681,7 @@ html element iframe
 html element img
     property align
     property alt
+    property attributionSrc
     property border
     property complete
     property crossOrigin
@@ -781,6 +782,7 @@ html element li
     property value
 html element link
     property as
+    property blocking
     property charset
     property crossOrigin
     property disabled
@@ -935,6 +937,7 @@ html element s
 html element samp
 html element script
     property async
+    property blocking
     property charset
     property crossOrigin
     property defer
@@ -973,11 +976,21 @@ html element select
     property value
     property willValidate
 html element selectmenu
+    property checkValidity
+    property disabled
     property form
+    property labels
     property name
     property open
+    property reportValidity
+    property required
+    property selectedOption
+    property setCustomValidity
     property type
+    property validationMessage
+    property validity
     property value
+    property willValidate
 html element slot
     property assign
     property assignedElements
@@ -996,6 +1009,7 @@ html element span
 html element strike
 html element strong
 html element style
+    property blocking
     property disabled
     property media
     property sheet
@@ -1394,7 +1408,9 @@ namespace http://www.w3.org/2000/svg
     property onchange
     property onclick
     property onclose
+    property oncontextlost
     property oncontextmenu
+    property oncontextrestored
     property oncopy
     property oncuechange
     property oncut

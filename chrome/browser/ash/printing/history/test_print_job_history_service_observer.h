@@ -24,7 +24,7 @@ class TestPrintJobHistoryServiceObserver
  private:
   // PrintJobHistoryService::Observer:
   void OnPrintJobFinished(
-      const chromeos::printing::proto::PrintJobInfo& print_job_info) override;
+      const printing::proto::PrintJobInfo& print_job_info) override;
 
   PrintJobHistoryService* print_job_history_service_;
   base::RepeatingClosure run_loop_closure_;

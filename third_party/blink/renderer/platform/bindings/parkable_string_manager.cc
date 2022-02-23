@@ -11,6 +11,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/time/time.h"
 #include "base/trace_event/memory_allocator_dump.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "base/trace_event/trace_event.h"
@@ -80,6 +81,7 @@ void MoveString(ParkableStringImpl* string,
 }  // namespace
 
 const char* ParkableStringManager::kAllocatorDumpName = "parkable_strings";
+const base::TimeDelta ParkableStringManager::kFirstParkingDelay;
 
 // Compares not the pointers, but the arrays. Uses pointers to save space.
 struct ParkableStringManager::SecureDigestHash {
@@ -385,13 +387,20 @@ void ParkableStringManager::ScheduleAgingTaskIfNeeded() {
   if (has_pending_aging_task_)
     return;
 
+  base::TimeDelta delay = base::Seconds(kAgingIntervalInSeconds);
+  if (base::FeatureList::IsEnabled(features::kDelayFirstParkingOfStrings) &&
+      !first_string_aging_was_delayed_) {
+    delay = kFirstParkingDelay;
+    first_string_aging_was_delayed_ = true;
+  }
+
   scoped_refptr<base::SingleThreadTaskRunner> task_runner =
       Thread::Current()->GetTaskRunner();
   task_runner->PostDelayedTask(
       FROM_HERE,
       base::BindOnce(&ParkableStringManager::AgeStringsAndPark,
                      base::Unretained(this)),
-      base::Seconds(kAgingIntervalInSeconds));
+      delay);
   has_pending_aging_task_ = true;
 }
 
@@ -480,6 +489,7 @@ void ParkableStringManager::ResetForTesting() {
   parked_strings_.clear();
   on_disk_strings_.clear();
   allocator_for_testing_ = nullptr;
+  first_string_aging_was_delayed_ = false;
 }
 
 ParkableStringManager::ParkableStringManager()

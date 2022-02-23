@@ -1,0 +1,7 @@
+include_rules = [
+  "-chrome",
+  "-content",
+
+  "+dbus",
+  "+device/bluetooth",
+]

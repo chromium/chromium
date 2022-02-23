@@ -12,10 +12,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
-#include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
@@ -97,7 +96,7 @@ class NET_EXPORT_PRIVATE HttpBasicStream : public HttpStream {
 
   void SetRequestHeadersCallback(RequestHeadersCallback callback) override;
 
-  const std::vector<std::string>& GetDnsAliases() const override;
+  const std::set<std::string>& GetDnsAliases() const override;
 
   base::StringPiece GetAcceptChViaAlps() const override;
 

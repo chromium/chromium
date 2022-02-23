@@ -5,13 +5,15 @@
 #include "chromeos/system/name_value_pairs_parser.h"
 
 #include <stddef.h>
+#include <unistd.h>
 
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/process/launch.h"
-#include "base/strings/string_tokenizer.h"
+#include "base/strings/string_number_conversions.h"
+#include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/system/sys_info.h"
 
@@ -20,6 +22,12 @@ namespace system {
 
 namespace {
 
+// The name of the stable device secret VPD key.
+const char kStableDeviceSecretDoNotShare[] =
+    "stable_device_secret_DO_NOT_SHARE";
+
+// Runs a tool and capture its standard output into |output|. Returns false
+// if the tool cannot be run.
 bool GetToolOutput(int argc, const char* argv[], std::string* output) {
   DCHECK_GE(argc, 1);
 
@@ -39,19 +47,110 @@ bool GetToolOutput(int argc, const char* argv[], std::string* output) {
   return true;
 }
 
+// Assigns a non quoted version of |input| to |unquoted|, and returns
+// whether |input| was actually quoted or not.
+bool GetUnquotedString(const std::string& input, std::string* unquoted) {
+  const size_t input_size = input.size();
+
+  if (input_size >= 2 && input[0] == '"' && input[input_size - 1] == '"')
+    unquoted->assign(input, 1, input_size - 2);
+  else
+    unquoted->assign(input);
+
+  return unquoted->size() != input_size;
+}
+
+// Assigns a non commented version of |input| to |uncommented|. Whitespace
+// before the comment is trimmed.
+void GetUncommentedString(const std::string& input, std::string* uncommented) {
+  const size_t comment_pos = input.find('#');
+  if (comment_pos == std::string::npos) {
+    uncommented->assign(input);
+  } else {
+    uncommented->assign(input, 0, comment_pos);
+    base::TrimWhitespaceASCII(*uncommented, base::TRIM_TRAILING, uncommented);
+  }
+}
+
+// Parse a name from |input|, validating that it is in |format|, and assign it
+// to |name|.
+bool ParseName(const std::string& input,
+               system::NameValuePairsFormat format,
+               std::string* name) {
+  bool parsed_ok = false;
+  switch (format) {
+    case NameValuePairsFormat::kVpdDump:
+      // The name must be quoted, and we unquote it.
+      parsed_ok = GetUnquotedString(input, name);
+      break;
+    case NameValuePairsFormat::kMachineInfo:
+      // The name may be quoted, and we unquote it.
+      GetUnquotedString(input, name);
+      parsed_ok = true;
+      break;
+    case NameValuePairsFormat::kCrossystem:
+      // We trim all ASCII whitespace and the name then must not be quoted.
+      base::TrimWhitespaceASCII(input, base::TRIM_ALL, name);
+      parsed_ok = !GetUnquotedString(*name, name);
+      break;
+  }
+
+  // Names must not be empty in addition to having parsed successfully.
+  return parsed_ok && !name->empty();
+}
+
+// Parse a value from |input|, validating that it is in |format|, and assign it
+// to |name|.
+bool ParseValue(const std::string& input,
+                system::NameValuePairsFormat format,
+                std::string* value) {
+  if (format == NameValuePairsFormat::kCrossystem) {
+    // The crossystem format allows for comments, remove them.
+    GetUncommentedString(input, value);
+    // We trim all ASCII whitespace and preserve the rest as is.
+    base::TrimWhitespaceASCII(*value, base::TRIM_ALL, value);
+    return true;
+  } else {
+    // The value must be quoted, and we unquote it.
+    return GetUnquotedString(input, value);
+  }
+}
+
+// Return a string for logging a value that does not expose data that should
+// not be visible in the logs.
+std::string GetLoggingStringForValue(const std::string& name,
+                                     const std::string& value) {
+  // TODO(crbug.com/1250037): Delete special casing of secret after fixing.
+  if (name == kStableDeviceSecretDoNotShare)
+    return "value edited out for security";
+  return "value: " + value;
+}
+
+const char* GetNameValuePairsFormatName(NameValuePairsFormat format) {
+  switch (format) {
+    case NameValuePairsFormat::kVpdDump:
+      return "VPD dump";
+    case NameValuePairsFormat::kMachineInfo:
+      return "machine info";
+    case NameValuePairsFormat::kCrossystem:
+      return "crossystem";
+  }
+  return "unknown";
+}
+
 }  // namespace
 
 NameValuePairsParser::NameValuePairsParser(NameValueMap* map)
     : map_(map) {
 }
 
-bool NameValuePairsParser::GetNameValuePairsFromFile(
+bool NameValuePairsParser::ParseNameValuePairsFromFile(
     const base::FilePath& file_path,
-    const std::string& eq,
-    const std::string& delim) {
-  std::string contents;
-  if (base::ReadFileToString(file_path, &contents)) {
-    return ParseNameValuePairs(contents, eq, delim);
+    NameValuePairsFormat format) {
+  std::string file_contents;
+  if (base::ReadFileToString(file_path, &file_contents)) {
+    return ParseNameValuePairs(file_contents, format,
+                               /*debug_source=*/file_path.value());
   } else {
     if (base::SysInfo::IsRunningOnChromeOS())
       VLOG(1) << "Statistics file not present: " << file_path.value();
@@ -62,15 +161,14 @@ bool NameValuePairsParser::GetNameValuePairsFromFile(
 bool NameValuePairsParser::ParseNameValuePairsFromTool(
     int argc,
     const char* argv[],
-    const std::string& eq,
-    const std::string& delim,
-    const std::string& comment_delim) {
+    NameValuePairsFormat format) {
+  DCHECK_GE(argc, 1);
+
   std::string output_string;
   if (!GetToolOutput(argc, argv, &output_string))
     return false;
 
-  return ParseNameValuePairsWithComments(output_string, eq, delim,
-                                         comment_delim);
+  return ParseNameValuePairs(output_string, format, /*debug_source=*/argv[0]);
 }
 
 void NameValuePairsParser::DeletePairsWithValue(const std::string& value) {
@@ -84,65 +182,61 @@ void NameValuePairsParser::DeletePairsWithValue(const std::string& value) {
   }
 }
 
-void NameValuePairsParser::AddNameValuePair(const std::string& key,
+void NameValuePairsParser::AddNameValuePair(const std::string& name,
                                             const std::string& value) {
-  const auto it = map_->find(key);
+  const auto it = map_->find(name);
   if (it == map_->end()) {
-    (*map_)[key] = value;
-    VLOG(1) << "name: " << key << ", value: " << value;
+    (*map_)[name] = value;
+    VLOG(1) << "Name: " << name << ", "
+            << GetLoggingStringForValue(name, value);
   } else if (it->second != value) {
-    LOG(WARNING) << "Key " << key << " already has value " << it->second
-                 << ", ignoring new value: " << value;
+    LOG(WARNING) << "Name: " << name << " already has "
+                 << GetLoggingStringForValue(name, it->second)
+                 << ", ignoring new " << GetLoggingStringForValue(name, value);
   }
 }
 
-bool NameValuePairsParser::ParseNameValuePairs(const std::string& in_string,
-                                               const std::string& eq,
-                                               const std::string& delim) {
-  return ParseNameValuePairsWithComments(in_string, eq, delim, "");
-}
-
-bool NameValuePairsParser::ParseNameValuePairsWithComments(
-    const std::string& in_string,
-    const std::string& eq,
-    const std::string& delim,
-    const std::string& comment_delim) {
+bool NameValuePairsParser::ParseNameValuePairs(
+    const std::string& input,
+    NameValuePairsFormat format,
+    const std::string& debug_source) {
   bool all_valid = true;
-  // Set up the pair tokenizer.
-  base::StringTokenizer pair_toks(in_string, delim);
-  pair_toks.set_quote_chars("\"");
-  // Process token pairs.
-  while (pair_toks.GetNext()) {
-    std::string pair(pair_toks.token());
-    // Anything before the first |eq| is the key, anything after is the value.
-    // |eq| must exist.
-    size_t eq_pos = pair.find(eq);
-    if (eq_pos != std::string::npos) {
-      // First |comment_delim| after |eq_pos| starts the comment.
-      // A value of |std::string::npos| means that the value spans to the end
-      // of |pair|.
-      size_t value_size = std::string::npos;
-      if (!comment_delim.empty()) {
-        size_t comment_pos = pair.find(comment_delim, eq_pos + 1);
-        if (comment_pos != std::string::npos)
-          value_size = comment_pos - eq_pos - 1;
-      }
 
-      static const char kTrimChars[] = "\" ";
-      std::string key;
-      std::string value;
-      base::TrimString(pair.substr(0, eq_pos), kTrimChars, &key);
-      base::TrimString(pair.substr(eq_pos + 1, value_size), kTrimChars, &value);
+  // We use StringPairs to parse pairs since this is the class that is also
+  // used to parse machine-info for server backed state keys in Chromium OS.
+  base::StringPairs pairs;
+  // This gives us somewhat more lenient parsing than strictly respecting the
+  // formats we want. For example, whitespace will be removed around the equal
+  // sign regardless of format. That's okay as we care more about consistency
+  // with the server backed state keys parser than the strictness of the format,
+  // and we still preserve our ability to handle the quoted values as we wish.
+  base::SplitStringIntoKeyValuePairs(input, '=', '\n', &pairs);
 
-      if (!key.empty()) {
-        AddNameValuePair(key, value);
-        continue;
-      }
+  for (const auto& pair : pairs) {
+    std::string name;
+    if (!ParseName(pair.first, format, &name)) {
+      LOG(WARNING) << "Could not parse " << GetNameValuePairsFormatName(format)
+                   << " name-value name from: " << pair.first;
+      all_valid = false;
+      continue;
     }
 
-    LOG(WARNING) << "Invalid token pair: " << pair << ". Ignoring.";
-    all_valid = false;
+    std::string value;
+    if (!ParseValue(pair.second, format, &value)) {
+      LOG(WARNING) << "Could not parse " << GetNameValuePairsFormatName(format)
+                   << " name-value value from: " << pair.second;
+      all_valid = false;
+      continue;
+    }
+
+    // TODO(crbug.com/1250037): Delete logging after the bug is fixed.
+    LOG_IF(WARNING, name == kStableDeviceSecretDoNotShare)
+        << "Statistic " << kStableDeviceSecretDoNotShare << " exposed in "
+        << debug_source;
+
+    AddNameValuePair(name, value);
   }
+
   return all_valid;
 }
 

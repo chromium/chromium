@@ -7,6 +7,8 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/web_package/web_bundle_url_loader_factory.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/render_frame_host.h"
@@ -17,9 +19,9 @@
 #include "third_party/blink/public/mojom/devtools/console_message.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "url/url_constants.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 namespace web_bundle_utils {
@@ -62,10 +64,10 @@ const net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 bool IsSupportedFileScheme(const GURL& url) {
   if (url.SchemeIsFile())
     return true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(url::kContentScheme))
     return true;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   return false;
 }
 
@@ -133,12 +135,7 @@ void CompleteWithInvalidWebBundleError(
     mojo::Remote<network::mojom::URLLoaderClient> client,
     int frame_tree_node_id,
     const std::string& error_message) {
-  WebContents* web_contents =
-      WebContents::FromFrameTreeNodeId(frame_tree_node_id);
-  if (web_contents) {
-    web_contents->GetMainFrame()->AddMessageToConsole(
-        blink::mojom::ConsoleMessageLevel::kError, error_message);
-  }
+  LogErrorMessageToConsole(frame_tree_node_id, error_message);
   std::move(client)->OnComplete(
       network::URLLoaderCompletionStatus(net::ERR_INVALID_WEB_BUNDLE));
 }
@@ -147,6 +144,29 @@ std::string GetMetadataParseErrorMessage(
     const web_package::mojom::BundleMetadataParseErrorPtr& metadata_error) {
   return std::string("Failed to read metadata of Web Bundle file: ") +
          metadata_error->message;
+}
+
+void LogErrorMessageToConsole(const int frame_tree_node_id,
+                              const std::string& error_message) {
+  FrameTreeNode* frame_tree_node =
+      FrameTreeNode::GloballyFindByID(frame_tree_node_id);
+  if (!frame_tree_node) {
+    return;
+  }
+
+  // By default, Dev Tools clears all console messages on navigations, and only
+  // preserves them if the 'Preserve Log' option is enabled. Thus, we use
+  // `AddDeferredConsoleMessage` if a `navigation_request` is currently in
+  // progress, so that the the console messages are logged to the console only
+  // after the navigation is finished and developers can see the detailed
+  // error messages. crbug.com/1068481
+  if (auto* navigation_request = frame_tree_node->navigation_request()) {
+    navigation_request->AddDeferredConsoleMessage(
+        blink::mojom::ConsoleMessageLevel::kError, error_message);
+  } else {
+    frame_tree_node->current_frame_host()->AddMessageToConsole(
+        blink::mojom::ConsoleMessageLevel::kError, error_message);
+  }
 }
 
 }  // namespace web_bundle_utils

@@ -19,12 +19,13 @@ import 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_ava
 import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import {AvatarIcon} from 'chrome://resources/cr_elements/cr_profile_avatar_selector/cr_profile_avatar_selector.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {routes} from '../route.js';
 import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router.js';
 
+import {getTemplate} from './manage_profile.html.js';
 import {ManageProfileBrowserProxy, ManageProfileBrowserProxyImpl, ProfileShortcutStatus} from './manage_profile_browser_proxy.js';
 import {SyncStatus} from './sync_browser_proxy.js';
 
@@ -34,13 +35,20 @@ const SettingsManageProfileElementBase =
       RouteObserverMixinInterface
     };
 
-class SettingsManageProfileElement extends SettingsManageProfileElementBase {
+export interface SettingsManageProfileElement {
+  $: {
+    name: CrInputElement,
+  };
+}
+
+export class SettingsManageProfileElement extends
+    SettingsManageProfileElementBase {
   static get is() {
     return 'settings-manage-profile';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -122,8 +130,7 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
   currentRouteChanged() {
     if (Router.getInstance().getCurrentRoute() === routes.MANAGE_PROFILE) {
       if (this.profileName) {
-        const profileNameInput =
-            this.shadowRoot!.querySelector<CrInputElement>('#name');
+        const profileNameInput = this.$.name;
         if (profileNameInput) {
           profileNameInput.value = this.profileName;
         }
@@ -195,6 +202,12 @@ class SettingsManageProfileElement extends SettingsManageProfileElementBase {
     } else {
       this.browserProxy_.removeProfileShortcut();
     }
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-manage-profile': SettingsManageProfileElement;
   }
 }
 

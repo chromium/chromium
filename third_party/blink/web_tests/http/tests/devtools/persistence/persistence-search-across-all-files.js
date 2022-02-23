@@ -10,7 +10,7 @@
   await TestRunner.addScriptTag('resources/foo.js');
 
   var testMapping = BindingsTestRunner.initializeTestMapping();
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   var fsEntry = BindingsTestRunner.addFooJSFile(fs);
   var scope = new Sources.SourcesSearchScope();
   fs.reportCreated(function() {});

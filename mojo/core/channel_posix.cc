@@ -11,12 +11,13 @@
 #include <atomic>
 #include <limits>
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
+#include "base/cpu_reduction_experiment.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,23 +29,23 @@
 #include "mojo/core/core.h"
 #include "mojo/public/cpp/platform/socket_utils_posix.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include <limits.h>
 #include <sys/uio.h>
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
 #include "mojo/core/channel_linux.h"
 #endif
 
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 namespace mojo {
 namespace core {
 
 namespace {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 std::atomic<bool> g_use_writev{false};
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 const size_t kMaxBatchReadCapacity = 256 * 1024;
 }  // namespace
@@ -153,10 +154,17 @@ void ChannelPosix::ShutDownImpl() {
 }
 
 void ChannelPosix::Write(MessagePtr message) {
-  UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
-                              message->data_num_bytes());
-  UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
-                           message->NumHandlesForTransit());
+  bool log_histograms = true;
+#if !defined(MOJO_CORE_SHARED_LIBRARY)
+  static base::CpuReductionExperimentFilter filter;
+  log_histograms = filter.ShouldLogHistograms();
+#endif
+  if (log_histograms) {
+    UMA_HISTOGRAM_COUNTS_100000("Mojo.Channel.WriteMessageSize",
+                                message->data_num_bytes());
+    UMA_HISTOGRAM_COUNTS_100("Mojo.Channel.WriteMessageHandles",
+                             message->NumHandlesForTransit());
+  }
 
   bool write_error = false;
   {
@@ -253,13 +261,13 @@ void ChannelPosix::ShutDownOnIOThread() {
   read_watcher_.reset();
   write_watcher_.reset();
   if (leak_handle_) {
-    ignore_result(socket_.release());
+    std::ignore = socket_.release();
     server_.TakePlatformHandle().release();
   } else {
     socket_.reset();
-    ignore_result(server_.TakePlatformHandle());
+    std::ignore = server_.TakePlatformHandle();
   }
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   fds_to_close_.clear();
 #endif
 
@@ -276,12 +284,12 @@ void ChannelPosix::WillDestroyCurrentMessageLoop() {
 void ChannelPosix::OnFileCanReadWithoutBlocking(int fd) {
   if (server_.is_valid()) {
     CHECK_EQ(fd, server_.platform_handle().GetFD().get());
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
     read_watcher_.reset();
     base::CurrentThread::Get()->RemoveDestructionObserver(this);
 
     AcceptSocketConnection(server_.platform_handle().GetFD().get(), &socket_);
-    ignore_result(server_.TakePlatformHandle());
+    std::ignore = server_.TakePlatformHandle();
     if (!socket_.is_valid()) {
       OnError(Error::kConnectionFailed);
       return;
@@ -379,7 +387,7 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
       // TODO: Handle lots of handles.
       result = SendmsgWithHandles(socket_.get(), &iov, 1, fds);
       if (result >= 0) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
         // There is a bug in XNU which makes it dangerous to close
         // a file descriptor while it is in transit. So instead we
         // store the file descriptor in a set and send a message to
@@ -399,7 +407,7 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
           for (auto& fd : fds)
             fds_to_close_.emplace_back(std::move(fd));
         }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
         handles_written += num_handles_to_send;
         DCHECK_LE(handles_written, num_handles);
         message_view.set_num_handles_sent(handles_written);
@@ -419,7 +427,7 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
     if (result < 0) {
       if (errno != EAGAIN &&
           errno != EWOULDBLOCK
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
           // On iOS if sendmsg() is trying to send fds between processes and
           // there isn't enough room in the output buffer to send the fd
           // structure over atomically then EMSGSIZE is returned.
@@ -452,7 +460,7 @@ bool ChannelPosix::WriteNoLock(MessageView message_view) {
 }
 
 bool ChannelPosix::FlushOutgoingMessagesNoLock() {
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   if (g_use_writev)
     return FlushOutgoingMessagesWritevNoLock();
 #endif
@@ -513,7 +521,7 @@ void ChannelPosix::OnWriteError(Error error) {
   OnError(error);
 }
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 bool ChannelPosix::WriteOutgoingMessagesWithWritev() {
   if (outgoing_messages_.empty())
     return true;
@@ -616,7 +624,7 @@ bool ChannelPosix::FlushOutgoingMessagesWritevNoLock() {
   } while (!outgoing_messages_.empty());
   return true;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
                                     const void* payload,
@@ -630,7 +638,7 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
       RejectUpgradeOffer();
       return true;
     }
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     case Message::MessageType::HANDLES_SENT: {
       if (payload_size == 0)
         break;
@@ -659,7 +667,7 @@ bool ChannelPosix::OnControlMessage(Message::MessageType message_type,
   return false;
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Closes handles referenced by |fds|. Returns false if |num_fds| is 0, or if
 // |fds| does not match a sequence of handles in |fds_to_close_|.
 bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
@@ -692,14 +700,14 @@ bool ChannelPosix::CloseHandles(const int* fds, size_t num_fds) {
   fds_to_close_.erase(start, it);
   return true;
 }
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 // static
 void Channel::set_posix_use_writev(bool use_writev) {
   g_use_writev = use_writev;
 }
-#endif  // !defined(OS_NACL)
+#endif  // !BUILDFLAG(IS_NACL)
 
 // static
 scoped_refptr<Channel> Channel::Create(
@@ -707,8 +715,8 @@ scoped_refptr<Channel> Channel::Create(
     ConnectionParams connection_params,
     HandlePolicy handle_policy,
     scoped_refptr<base::SingleThreadTaskRunner> io_task_runner) {
-#if !defined(OS_NACL) && \
-    (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
+#if !BUILDFLAG(IS_NACL) && \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
   return new ChannelLinux(delegate, std::move(connection_params), handle_policy,
                           io_task_runner);
 #else
@@ -717,8 +725,8 @@ scoped_refptr<Channel> Channel::Create(
 #endif
 }
 
-#if !defined(OS_NACL)
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID))
+#if !BUILDFLAG(IS_NACL)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID))
 // static
 bool Channel::SupportsChannelUpgrade() {
   return ChannelLinux::KernelSupportsUpgradeRequirements() &&
@@ -731,8 +739,9 @@ void Channel::OfferChannelUpgrade() {
   }
   static_cast<ChannelLinux*>(this)->OfferSharedMemUpgrade();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
-#endif  // !defined(OS_NACL)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_NACL)
 
 }  // namespace core
 }  // namespace mojo

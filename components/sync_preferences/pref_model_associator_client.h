@@ -34,7 +34,7 @@ class PrefModelAssociatorClient {
   // strategy to the preference named |pref_name| with local value |local_value|
   // and server-provided value |server_value|. Otherwise, returns |nullptr| and
   // the server's value will be chosen.
-  virtual std::unique_ptr<base::Value> MaybeMergePreferenceValues(
+  virtual base::Value MaybeMergePreferenceValues(
       const std::string& pref_name,
       const base::Value& local_value,
       const base::Value& server_value) const = 0;

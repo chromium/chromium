@@ -6,14 +6,12 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/command_line.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_local_account.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "components/account_id/account_id.h"
-#include "components/policy/core/common/policy_switches.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
@@ -70,14 +68,6 @@ bool IsUserAffiliated(const AffiliationIDSet& user_affiliation_ids,
   }
 
   if (policy::IsDeviceLocalAccountUser(email, NULL)) {
-    return true;
-  }
-
-  // Not all test servers correctly support affiliation ids so far, so
-  // this is a work-around.
-  // TODO(antrim): remove this once all test servers support affiliation ids.
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (command_line->HasSwitch(policy::switches::kUserAlwaysAffiliated)) {
     return true;
   }
 

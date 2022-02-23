@@ -10,14 +10,14 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cell.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
-class GURL;
+@class CrURL;
 @class TableViewTextLinkCell;
 
 // Delegate for TableViewTextLinkCell.
 @protocol TableViewTextLinkCellDelegate<NSObject>
 // Notifies the delegate that |URL| should be opened.
 - (void)tableViewTextLinkCell:(TableViewTextLinkCell*)cell
-            didRequestOpenURL:(const GURL&)URL;
+            didRequestOpenURL:(CrURL*)URL;
 @end
 
 // TableViewTextLinkItem contains the model data for a TableViewTextLinkCell.
@@ -25,7 +25,7 @@ class GURL;
 // Text being stored by this item.
 @property(nonatomic, readwrite, strong) NSString* text;
 // URL link being stored by this item. If empty or not valid no URL will be set.
-@property(nonatomic, assign) GURL linkURL;
+@property(nonatomic, readwrite, strong) CrURL* linkURL;
 @end
 
 // TableViewCell that displays a text label that might contain a link.
@@ -37,9 +37,9 @@ class GURL;
 @property(nonatomic, weak) id<TableViewTextLinkCellDelegate> delegate;
 // Sets the |URL| link on the cell's label if the corresponding item's |linkURL|
 // is valid and |textLabel| contains the proper LINK delimiters.
-- (void)setLinkURL:(const GURL&)URL;
+- (void)setLinkURL:(CrURL*)URL;
 // Sets the |URL| link on the cell's label for |range|.
-- (void)setLinkURL:(const GURL&)URL forRange:(NSRange)range;
+- (void)setLinkURL:(CrURL*)URL forRange:(NSRange)range;
 
 @end
 

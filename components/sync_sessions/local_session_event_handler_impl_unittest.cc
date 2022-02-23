@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/strings/stringprintf.h"
-#include "base/test/scoped_feature_list.h"
 #include "components/sessions/core/serialized_navigation_entry.h"
 #include "components/sessions/core/serialized_navigation_entry_test_helper.h"
 #include "components/sync/base/time.h"
@@ -73,11 +72,11 @@ sync_pb::SessionSpecifics MakeSessionHeaderSpecifics(
     const std::map<int, std::vector<int>>& window_id_to_tabs) {
   sync_pb::SessionSpecifics session_header;
   session_header.set_session_tag(kSessionTag);
-  for (const auto& window_and_tabs : window_id_to_tabs) {
+  for (const auto& [window_id, tabs] : window_id_to_tabs) {
     sync_pb::SessionWindow* mutable_window =
         session_header.mutable_header()->add_window();
-    mutable_window->set_window_id(window_and_tabs.first);
-    for (int tab_id : window_and_tabs.second) {
+    mutable_window->set_window_id(window_id);
+    for (int tab_id : tabs) {
       mutable_window->add_tab(tab_id);
     }
   }
@@ -275,8 +274,8 @@ TEST_F(LocalSessionEventHandlerImplTest,
   ASSERT_EQ(3, session_tab.navigation_size());
 }
 
-// Tests that for supervised users blocked navigations are recorded and marked
-// as such, while regular navigations are marked as allowed.
+// Tests that for child account users blocked navigations are recorded and
+// marked as such, while regular navigations are marked as allowed.
 TEST_F(LocalSessionEventHandlerImplTest, BlockedNavigations) {
   AddWindow(kWindowId1);
   TestSyncedTabDelegate* tab = AddTabWithTime(kWindowId1, kFoo1, kTime1);
@@ -296,7 +295,7 @@ TEST_F(LocalSessionEventHandlerImplTest, BlockedNavigations) {
   blocked_navigations.push_back(std::move(entry2));
   blocked_navigations.push_back(std::move(entry3));
 
-  tab->set_is_supervised(true);
+  tab->set_has_child_account(true);
   tab->set_blocked_navigations(blocked_navigations);
 
   InitHandler();
@@ -622,49 +621,7 @@ TEST_F(LocalSessionEventHandlerImplTest, PropagateNewTab) {
   AddTab(kWindowId1, kBar1, kTabId2);
 }
 
-TEST_F(LocalSessionEventHandlerImplTest,
-       PropagateClosedTabWithoutDeferredRecyclingNorImmediateDeletion) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{},
-      /*disabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,
-                             kTabNodePoolImmediateDeletion});
-
-  AddWindow(kWindowId1);
-  AddTab(kWindowId1, kFoo1, kTabId1);
-  TestSyncedTabDelegate* tab2 = AddTab(kWindowId1, kBar1, kTabId2);
-
-  InitHandler();
-
-  // Closing a tab (later below) is expected to verify if the sync entity is
-  // unsynced.
-  EXPECT_CALL(mock_delegate_, IsTabNodeUnsynced(/*tab_node_id=*/0));
-
-  // Closing a tab is expected to update the header and the remaining tab (this
-  // test issues a navigation for it, but it would have been updated anyway).
-  auto mock_batch = std::make_unique<StrictMock<MockWriteBatch>>();
-  EXPECT_CALL(
-      *mock_batch,
-      Put(Pointee(MatchesHeader(kSessionTag, {kWindowId1}, {kTabId2}))));
-  EXPECT_CALL(*mock_batch,
-              Put(Pointee(MatchesTab(kSessionTag, kWindowId1, kTabId2,
-                                     /*tab_node_id=*/1, /*urls=*/{kBar1}))));
-  EXPECT_CALL(*mock_batch, Commit());
-  EXPECT_CALL(mock_delegate_, CreateLocalSessionWriteBatch())
-      .WillOnce(Return(ByMove(std::move(mock_batch))));
-
-  // Close tab and force reassociation.
-  window_getter_.CloseTab(SessionID::FromSerializedValue(kTabId1));
-  handler_->OnLocalTabModified(tab2);
-}
-
 TEST_F(LocalSessionEventHandlerImplTest, PropagateClosedTab) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      /*enabled_features=*/{kDeferRecyclingOfSyncTabNodesIfUnsynced,
-                            kTabNodePoolImmediateDeletion},
-      /*disabled_features=*/{});
-
   // We start with three tabs.
   AddWindow(kWindowId1);
   AddTab(kWindowId1, kFoo1, kTabId1);

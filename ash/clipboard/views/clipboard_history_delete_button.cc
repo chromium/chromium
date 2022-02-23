@@ -5,7 +5,6 @@
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
-#include "ash/style/element_style.h"
 #include "ash/style/style_util.h"
 #include "base/bind.h"
 #include "ui/base/l10n/l10n_util.h"

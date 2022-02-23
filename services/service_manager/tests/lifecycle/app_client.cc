@@ -4,7 +4,6 @@
 
 #include "services/service_manager/tests/lifecycle/app_client.h"
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/service_manager/public/cpp/service_receiver.h"

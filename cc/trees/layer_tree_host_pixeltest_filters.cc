@@ -15,7 +15,7 @@
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/solid_color_content_layer_client.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -111,7 +111,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRect) {
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 1.09f;  // 436px / (200*200)
   float percentage_pixels_small_error = 0.0f;
@@ -172,7 +172,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurRadius) {
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows and ARM64 have 436 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 1.09f;  // 436px / (200*200)
   float percentage_pixels_small_error = 0.0f;
@@ -260,8 +260,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, BackdropFilterBlurOutsets) {
   gfx::RRectF backdrop_filter_bounds(gfx::RectF(gfx::SizeF(blur->bounds())), 0);
   blur->SetBackdropFilterBounds(backdrop_filter_bounds);
 
-#if defined(OS_WIN) || defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || defined(_MIPS_ARCH_LOONGSON) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
   // Windows has 5.9325% pixels by at most 2: crbug.com/259922
   float percentage_pixels_large_error = 6.0f;
 #else
@@ -370,8 +370,8 @@ GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(
 // See skbug.com/9545
 TEST_P(LayerTreeHostBlurFiltersPixelTestGPULayerList,
        DISABLED_BackdropFilterBlurOffAxis) {
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN)
   // Windows has 116 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3f;  // 116px / (200*200), rounded up
   int large_error_allowed = 2;
@@ -583,9 +583,9 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
   filter->SetBackdropFilters(filters);
   filter->ClearBackdropFilterBounds();
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(_MIPS_ARCH_LOONGSON) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || defined(_MIPS_ARCH_LOONGSON) || \
     defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows has 153 pixels off by at most 2: crbug.com/225027
   float percentage_pixels_large_error = 0.3825f;  // 153px / (200*200)
   int large_error_allowed = 2;
@@ -594,7 +594,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ImageFilterScaled) {
     percentage_pixels_large_error = 0.415f;  // 166px / (200*200)
     large_error_allowed = 1;
   }
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // There's a 1 pixel error on MacOS
   float percentage_pixels_large_error = 0.0025f;  // 1px / (200*200)
   int large_error_allowed = 1;
@@ -795,7 +795,7 @@ TEST_P(LayerTreeHostFiltersPixelTest, ZoomFilter) {
   contained_zoom->SetBackdropFilterBounds(gfx::RRectF(mid_filter_bounds, 0));
   root->AddChild(contained_zoom);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows has 1 pixel off by 1: crbug.com/259915
   float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
   float percentage_pixels_small_error = 0.0f;
@@ -836,14 +836,14 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedFilter) {
 
   background->AddChild(child);
 
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
 #if defined(ARCH_CPU_ARM64)
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference
   // crbug.com/1029728, crbug.com/1048249, crbug.com/1128443
   float percentage_pixels_large_error = 1.f;
   float average_error_allowed_in_bad_pixels = 2.f;
   int large_error_allowed = 3;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Windows has 1 pixel off by 1: crbug.com/259915
   float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
@@ -897,16 +897,16 @@ TEST_P(LayerTreeHostFiltersPixelTest, RotatedDropShadowFilter) {
 
   background->AddChild(child);
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS) || \
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || \
     defined(ARCH_CPU_ARM64) || defined(USE_OZONE)
 #if defined(ARCH_CPU_ARM64) && \
-    (defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC))
+    (BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC))
   // Windows, macOS, and Fuchsia on ARM64 has some pixels difference.
   // crbug.com/1029728, crbug.com/1128443
   float percentage_pixels_large_error = 0.89f;
   float average_error_allowed_in_bad_pixels = 5.f;
   int large_error_allowed = 17;
-#elif defined(OS_MAC) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#elif BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
   // There's a 1 pixel error on MacOS and ChromeOS
   float percentage_pixels_large_error = 0.00111112f;  // 1px / (300*300)
   float average_error_allowed_in_bad_pixels = 1.f;
@@ -1081,8 +1081,8 @@ TEST_P(LayerTreeHostFiltersPixelTest, BlurFilterWithClip) {
   // Force the allocation a larger textures.
   set_enlarge_texture_amount(gfx::Size(50, 50));
 
-#if defined(OS_WIN) || defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN) || defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_WIN)
   // Windows has 1880 pixels off by 1: crbug.com/259915
   float percentage_pixels_large_error = 4.7f;  // 1880px / (200*200)
 #else
@@ -1256,4 +1256,4 @@ TEST_P(BackdropFilterInvertTest, HiDpi) {
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

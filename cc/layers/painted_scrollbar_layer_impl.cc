@@ -51,7 +51,7 @@ PaintedScrollbarLayerImpl::PaintedScrollbarLayerImpl(
 PaintedScrollbarLayerImpl::~PaintedScrollbarLayerImpl() = default;
 
 std::unique_ptr<LayerImpl> PaintedScrollbarLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return PaintedScrollbarLayerImpl::Create(tree_impl, id(), orientation(),
                                            is_left_side_vertical_scrollbar(),
                                            is_overlay_scrollbar());

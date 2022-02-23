@@ -13,6 +13,7 @@
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
 #include "chrome/browser/apps/app_service/app_shortcut_item.h"
 #include "chrome/browser/ui/app_list/app_context_menu.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 class AppContextMenuDelegate;
@@ -29,7 +30,8 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
   AppServiceContextMenu(app_list::AppContextMenuDelegate* delegate,
                         Profile* profile,
                         const std::string& app_id,
-                        AppListControllerDelegate* controller);
+                        AppListControllerDelegate* controller,
+                        bool add_sort_options);
   ~AppServiceContextMenu() override;
 
   AppServiceContextMenu(const AppServiceContextMenu&) = delete;
@@ -54,10 +56,14 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
 
   void ExecutePublisherContextMenuCommand(int command_id);
 
-  apps::mojom::AppType app_type_ = apps::mojom::AppType::kUnknown;
+  apps::AppType app_type_ = apps::AppType::kUnknown;
 
   // The SimpleMenuModel used to hold the submenu items.
   std::unique_ptr<ui::SimpleMenuModel> submenu_;
+
+  // The SimpleMenuModel that contains reorder options. Could be nullptr if
+  // sorting is not available.
+  std::unique_ptr<ui::SimpleMenuModel> reorder_submenu_;
 
   std::unique_ptr<extensions::ContextMenuMatcher> extension_menu_items_;
 
@@ -70,6 +76,9 @@ class AppServiceContextMenu : public app_list::AppContextMenu {
   std::unique_ptr<apps::AppShortcutItems> app_shortcut_items_;
 
   apps::AppServiceProxy* const proxy_;
+
+  // A flag that determines if sort options should be added to the context menu.
+  bool add_sort_options_ = false;
 
   base::WeakPtrFactory<AppServiceContextMenu> weak_ptr_factory_{this};
 };

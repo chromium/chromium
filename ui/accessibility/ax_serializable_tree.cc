@@ -6,6 +6,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/accessibility/ax_node.h"
 
 namespace ui {
@@ -60,7 +61,7 @@ class AX_EXPORT AXTreeSourceAdapter : public AXTreeSource<const AXNode*> {
   }
 
  private:
-  AXTree* tree_;
+  raw_ptr<AXTree> tree_;
 };
 
 AXSerializableTree::AXSerializableTree()

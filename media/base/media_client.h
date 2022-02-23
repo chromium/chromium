@@ -41,12 +41,11 @@ class MEDIA_EXPORT MediaClient {
   virtual ~MediaClient();
 
   // Adds properties for supported key systems.
-  virtual void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<KeySystemProperties>>* key_systems) = 0;
+  virtual void GetSupportedKeySystems(GetSupportedKeySystemsCB cb) = 0;
 
   // Returns whether client key systems properties should be updated.
-  // TODO(chcunningham): Refactor this to a proper change "observer" API that is
-  // less fragile (don't assume AddSupportedKeySystems has just one caller).
+  // TODO(xhwang): Refactor this to a proper change "observer" API that is
+  // less fragile (don't assume GetSupportedKeySystems has just one caller).
   virtual bool IsKeySystemsUpdateNeeded() = 0;
 
   // Returns true if the given audio config is supported.

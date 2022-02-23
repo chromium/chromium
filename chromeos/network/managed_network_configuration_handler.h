@@ -5,7 +5,6 @@
 #ifndef CHROMEOS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_H_
 #define CHROMEOS_NETWORK_MANAGED_NETWORK_CONFIGURATION_HANDLER_H_
 
-#include <map>
 #include <memory>
 #include <string>
 
@@ -17,7 +16,7 @@
 #include "components/onc/onc_constants.h"
 
 namespace base {
-class DictionaryValue;
+class Value;
 }  // namespace base
 
 namespace chromeos {
@@ -55,9 +54,6 @@ class NetworkStateHandler;
 // user consumption.
 class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
  public:
-  using GuidToPolicyMap =
-      std::map<std::string, std::unique_ptr<base::DictionaryValue>>;
-
   ManagedNetworkConfigurationHandler& operator=(
       const ManagedNetworkConfigurationHandler&) = delete;
 
@@ -88,7 +84,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // will be merged with the existing settings, and it won't clear any existing
   // properties.
   virtual void SetProperties(const std::string& service_path,
-                             const base::DictionaryValue& user_settings,
+                             const base::Value& user_settings,
                              base::OnceClosure callback,
                              network_handler::ErrorCallback error_callback) = 0;
 
@@ -99,7 +95,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // |userhash| is empty, the new configuration will be shared.
   virtual void CreateConfiguration(
       const std::string& userhash,
-      const base::DictionaryValue& properties,
+      const base::Value& properties,
       network_handler::ServiceResultCallback callback,
       network_handler::ErrorCallback error_callback) const = 0;
 
@@ -146,23 +142,25 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ManagedNetworkConfigurationHandler {
   // Returns the user policy for user |userhash| or device policy, which has
   // |guid|. If |userhash| is empty, only looks for a device policy. If such
   // doesn't exist, returns NULL. Sets |onc_source| accordingly.
-  virtual const base::DictionaryValue* FindPolicyByGUID(
+  virtual const base::Value* FindPolicyByGUID(
       const std::string userhash,
       const std::string& guid,
       ::onc::ONCSource* onc_source) const = 0;
 
-  virtual const GuidToPolicyMap* GetNetworkConfigsFromPolicy(
-      const std::string& userhash) const = 0;
+  // Returns true if the user policy for |userhash| or device policy if
+  // |userhash| is empty has any policy-configured network.
+  // Returns false if |userhash| does not map to any known network profile.
+  virtual bool HasAnyPolicyNetwork(const std::string& userhash) const = 0;
 
   // Returns the global configuration of the policy of user |userhash| or device
   // policy if |userhash| is empty.
-  virtual const base::DictionaryValue* GetGlobalConfigFromPolicy(
+  virtual const base::Value* GetGlobalConfigFromPolicy(
       const std::string& userhash) const = 0;
 
   // Returns the policy with |guid| for profile |profile_path|. If such
   // doesn't exist, returns nullptr. Sets |onc_source| accordingly if it is not
   // nullptr.
-  virtual const base::DictionaryValue* FindPolicyByGuidAndProfile(
+  virtual const base::Value* FindPolicyByGuidAndProfile(
       const std::string& guid,
       const std::string& profile_path,
       ::onc::ONCSource* onc_source) const = 0;

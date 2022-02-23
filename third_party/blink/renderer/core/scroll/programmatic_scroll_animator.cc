@@ -10,8 +10,7 @@
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/animation/compositor_keyframe_model.h"
 #include "third_party/blink/renderer/platform/animation/compositor_scroll_offset_animation_curve.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -32,12 +31,9 @@ void ProgrammaticScrollAnimator::ResetAnimationState() {
     std::move(on_finish_).Run();
 }
 
-void ProgrammaticScrollAnimator::NotifyOffsetChanged(
-    const ScrollOffset& offset) {
-  mojom::blink::ScrollType scroll_type =
-      is_sequenced_scroll_ ? mojom::blink::ScrollType::kSequenced
-                           : mojom::blink::ScrollType::kProgrammatic;
-  ScrollOffsetChanged(offset, scroll_type);
+mojom::blink::ScrollType ProgrammaticScrollAnimator::GetScrollType() const {
+  return is_sequenced_scroll_ ? mojom::blink::ScrollType::kSequenced
+                              : mojom::blink::ScrollType::kProgrammatic;
 }
 
 void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
@@ -45,7 +41,7 @@ void ProgrammaticScrollAnimator::ScrollToOffsetWithoutAnimation(
     bool is_sequenced_scroll) {
   CancelAnimation();
   is_sequenced_scroll_ = is_sequenced_scroll;
-  NotifyOffsetChanged(offset);
+  ScrollOffsetChanged(offset, GetScrollType());
   is_sequenced_scroll_ = false;
   if (SmoothScrollSequencer* sequencer =
           GetScrollableArea()->GetSmoothScrollSequencer())
@@ -72,7 +68,7 @@ void ProgrammaticScrollAnimator::AnimateToOffset(
   scrollable_area_->RegisterForAnimation();
   if (!scrollable_area_->ScheduleAnimation()) {
     ResetAnimationState();
-    NotifyOffsetChanged(offset);
+    ScrollOffsetChanged(offset, GetScrollType());
   }
   run_state_ = RunState::kWaitingToSendToCompositor;
 }
@@ -94,13 +90,13 @@ void ProgrammaticScrollAnimator::TickAnimation(base::TimeTicks monotonic_time) {
   bool is_finished = (elapsed_time > animation_curve_->Duration());
   ScrollOffset offset = BlinkOffsetFromCompositorOffset(
       animation_curve_->GetValue(elapsed_time.InSecondsF()));
-  NotifyOffsetChanged(offset);
+  ScrollOffsetChanged(offset, GetScrollType());
 
   if (is_finished) {
     run_state_ = RunState::kPostAnimationCleanup;
     AnimationFinished();
   } else if (!scrollable_area_->ScheduleAnimation()) {
-    NotifyOffsetChanged(offset);
+    ScrollOffsetChanged(offset, GetScrollType());
     ResetAnimationState();
   }
 }
@@ -159,7 +155,7 @@ void ProgrammaticScrollAnimator::UpdateCompositorAnimations() {
       animation_curve_->SetInitialValue(
           CompositorOffsetFromBlinkOffset(scrollable_area_->GetScrollOffset()));
       if (!scrollable_area_->ScheduleAnimation()) {
-        NotifyOffsetChanged(target_offset_);
+        ScrollOffsetChanged(target_offset_, GetScrollType());
         ResetAnimationState();
       }
     }
@@ -181,7 +177,7 @@ void ProgrammaticScrollAnimator::MainThreadScrollingDidChange() {
     scrollable_area_->RegisterForAnimation();
     if (!scrollable_area_->ScheduleAnimation()) {
       ResetAnimationState();
-      NotifyOffsetChanged(target_offset_);
+      ScrollOffsetChanged(target_offset_, GetScrollType());
     }
   }
 }

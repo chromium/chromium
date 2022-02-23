@@ -7,16 +7,17 @@
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/prefs/testing_pref_service.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface_provider.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/common/ui/reauthentication/reauthentication_protocol.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
+#include "ios/web/public/test/web_task_environment.h"
 #include "testing/platform_test.h"
 #import "third_party/ocmock/OCMock/OCMock.h"
 
@@ -52,7 +53,8 @@ namespace {
 class IncognitoReauthSceneAgentTest : public PlatformTest {
  public:
   IncognitoReauthSceneAgentTest()
-      : scene_state_([[SceneState alloc] initWithAppState:nil]),
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        scene_state_([[SceneState alloc] initWithAppState:nil]),
         scene_state_mock_(OCMPartialMock(scene_state_)),
         stub_reauth_module_([[StubReauthenticationModule alloc] init]),
         agent_([[IncognitoReauthSceneAgent alloc]
@@ -61,26 +63,17 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   }
 
  protected:
-  // Returns a WebStateList with |tabs_count| WebStates.
-  std::unique_ptr<WebStateList> CreateWebStateList(int tabs_count) {
-    std::unique_ptr<WebStateList> web_state_list =
-        std::make_unique<WebStateList>(&web_state_list_delegate_);
-    for (int i = 0; i < tabs_count; ++i) {
-      web_state_list->InsertWebState(i, std::make_unique<web::FakeWebState>(),
-                                     WebStateList::INSERT_FORCE_INDEX,
-                                     WebStateOpener());
-    }
-    return web_state_list;
-  }
-
   void SetUpTestObjects(int tab_count, bool enable_pref) {
     // Stub all calls to be able to mock the following:
     // 1. sceneState.interfaceProvider.incognitoInterface
     //            .browser->GetWebStateList()->count()
     // 2. sceneState.interfaceProvider.hasIncognitoInterface
-    web_state_list_ = CreateWebStateList(tab_count);
-    test_browser_ = std::make_unique<TestBrowser>(/*BrowserState=*/nullptr,
-                                                  web_state_list_.get());
+    test_browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    for (int i = 0; i < tab_count; ++i) {
+      test_browser_->GetWebStateList()->InsertWebState(
+          i, std::make_unique<web::FakeWebState>(),
+          WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
+    }
 
     stub_browser_interface_provider_ =
         [[StubBrowserInterfaceProvider alloc] init];
@@ -102,6 +95,9 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
     stub_reauth_module_.returnedResult = ReauthenticationResult::kSuccess;
   }
 
+  web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+
   // The scene state that the agent works with.
   SceneState* scene_state_;
   // Partial mock for stubbing scene_state_'s methods
@@ -111,10 +107,8 @@ class IncognitoReauthSceneAgentTest : public PlatformTest {
   IncognitoReauthSceneAgent* agent_;
   StubBrowserInterfaceProvider* stub_browser_interface_provider_;
   std::unique_ptr<TestBrowser> test_browser_;
-  std::unique_ptr<WebStateList> web_state_list_;
   TestingPrefServiceSimple pref_service_;
   base::test::ScopedFeatureList feature_list_;
-  FakeWebStateListDelegate web_state_list_delegate_;
 };
 
 // Test that when the feature pref is disabled, auth isn't required.
@@ -204,9 +198,9 @@ TEST_F(IncognitoReauthSceneAgentTest,
   EXPECT_FALSE(agent_.authenticationRequired);
 
   // Open another tab.
-  web_state_list_->InsertWebState(0, std::make_unique<web::FakeWebState>(),
-                                  WebStateList::INSERT_FORCE_INDEX,
-                                  WebStateOpener());
+  test_browser_->GetWebStateList()->InsertWebState(
+      0, std::make_unique<web::FakeWebState>(),
+      WebStateList::INSERT_FORCE_INDEX, WebStateOpener());
 
   EXPECT_FALSE(agent_.authenticationRequired);
 }

@@ -32,9 +32,9 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/draw_looper_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/skia/include/core/SkColorFilter.h"
@@ -57,11 +57,11 @@ class PLATFORM_EXPORT GraphicsContextState final {
 
   void Copy(const GraphicsContextState&);
 
-  // PaintFlags objects that reflect the current state. If the length of the
+  // cc::PaintFlags objects that reflect the current state. If the length of the
   // path to be stroked is known, pass it in for correct dash or dot placement.
-  const PaintFlags& StrokeFlags(const int stroked_path_length = 0,
-                                const int dash_thickness = 0) const;
-  const PaintFlags& FillFlags() const { return fill_flags_; }
+  const cc::PaintFlags& StrokeFlags(const int stroked_path_length = 0,
+                                    const int dash_thickness = 0) const;
+  const cc::PaintFlags& FillFlags() const { return fill_flags_; }
 
   uint16_t SaveCount() const { return save_count_; }
   void IncrementSaveCount() { ++save_count_; }
@@ -117,8 +117,8 @@ class PLATFORM_EXPORT GraphicsContextState final {
 
   // This is mutable to enable dash path effect updates when the paint is
   // fetched for use.
-  mutable PaintFlags stroke_flags_;
-  PaintFlags fill_flags_;
+  mutable cc::PaintFlags stroke_flags_;
+  cc::PaintFlags fill_flags_;
 
   StrokeData stroke_data_;
 

@@ -124,8 +124,8 @@ class CORE_EXPORT HTMLTextAreaElement final : public TextControlElement {
   bool HasCustomFocusLogic() const override;
   bool MayTriggerVirtualKeyboard() const override;
   bool IsKeyboardFocusable() const override;
-  void UpdateFocusAppearanceWithOptions(SelectionBehaviorOnFocus,
-                                        const FocusOptions*) override;
+  void UpdateSelectionOnFocus(SelectionBehaviorOnFocus,
+                              const FocusOptions*) override;
 
   void AccessKeyAction(SimulatedClickCreationScope creation_scope) override;
 

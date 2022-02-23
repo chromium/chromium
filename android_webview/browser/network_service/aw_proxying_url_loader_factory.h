@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_URL_LOADER_FACTORY_H_
 #define ANDROID_WEBVIEW_BROWSER_NETWORK_SERVICE_AW_PROXYING_URL_LOADER_FACTORY_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "components/embedder_support/android/util/android_stream_reader_url_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

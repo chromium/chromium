@@ -4,13 +4,15 @@
 
 #include "components/viz/common/resources/resource_format_utils.h"
 
+#include <GLES2/gl2.h>
+#include <GLES2/gl2ext.h>
+#include <GLES2/gl2extchromium.h>
+
 #include <ostream>
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
 #include "base/notreached.h"
-#include "third_party/khronos/GLES2/gl2.h"
-#include "third_party/khronos/GLES2/gl2ext.h"
 #include "ui/gfx/buffer_types.h"
 
 namespace viz {
@@ -62,6 +64,7 @@ SkColorType ResourceFormatToClosestSkColorType(bool gpu_compositing,
       return kR16G16_unorm_SkColorType;
     // Use kN32_SkColorType if there is no corresponding SkColorType.
     case LUMINANCE_F16:
+      return kN32_SkColorType;
     case RG_88:
       return kR8G8_unorm_SkColorType;
     case BGRX_8888:
@@ -109,6 +112,8 @@ ResourceFormat SkColorTypeToResourceFormat(SkColorType color_type) {
     case kRGBA_F16Norm_SkColorType:
     case kRGBA_F32_SkColorType:
     case kSRGBA_8888_SkColorType:
+    // Default case is for new color types added to Skia
+    default:
       break;
   }
   NOTREACHED();
@@ -349,7 +354,8 @@ bool IsResourceFormatCompressed(ResourceFormat format) {
   return format == ETC1;
 }
 
-unsigned int TextureStorageFormat(ResourceFormat format) {
+unsigned int TextureStorageFormat(ResourceFormat format,
+                                  bool use_angle_rgbx_format) {
   switch (format) {
     case RGBA_8888:
       return GL_RGBA8_OES;
@@ -377,7 +383,8 @@ unsigned int TextureStorageFormat(ResourceFormat format) {
     case RG16_EXT:
       return GL_RG16_EXT;
     case RGBX_8888:
-      return GL_RGB8_OES;
+    case BGRX_8888:
+      return use_angle_rgbx_format ? GL_RGBX8_ANGLE : GL_RGB8_OES;
     case ETC1:
       return GL_ETC1_RGB8_OES;
     case P010:
@@ -386,8 +393,6 @@ unsigned int TextureStorageFormat(ResourceFormat format) {
       return GL_RGB10_A2_EXT;
     case YVU_420:
     case YUV_420_BIPLANAR:
-      return GL_RGB8_OES;
-    case BGRX_8888:
       return GL_RGB8_OES;
     default:
       break;

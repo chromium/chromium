@@ -14,6 +14,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -49,9 +50,9 @@ using protocol::MockInputStub;
 using protocol::MockVideoStub;
 using protocol::SessionConfig;
 using protocol::test::EqualsClipboardEvent;
+using protocol::test::EqualsKeyEvent;
 using protocol::test::EqualsMouseButtonEvent;
 using protocol::test::EqualsMouseMoveEvent;
-using protocol::test::EqualsKeyEvent;
 
 using testing::_;
 using testing::AtLeast;
@@ -68,12 +69,12 @@ MATCHER_P(IncludesCapabilities, expected_capabilities, "") {
   if (!arg.has_capabilities())
     return false;
 
-  std::vector<std::string> words_args = base::SplitString(
-      arg.capabilities(), " ", base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
-  std::vector<std::string> words_expected = base::SplitString(
-      expected_capabilities, " ", base::KEEP_WHITESPACE,
-      base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> words_args =
+      base::SplitString(arg.capabilities(), " ", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
+  std::vector<std::string> words_expected =
+      base::SplitString(expected_capabilities, " ", base::KEEP_WHITESPACE,
+                        base::SPLIT_WANT_NONEMPTY);
 
   for (const auto& word : words_expected) {
     if (std::find(words_args.begin(), words_args.end(), word) ==
@@ -197,7 +198,7 @@ class ClientSessionTest : public testing::Test {
   MockClientStub client_stub_;
 
   // ClientSession owns |connection_| but tests need it to inject fake events.
-  protocol::FakeConnectionToClient* connection_;
+  raw_ptr<protocol::FakeConnectionToClient> connection_;
 
   std::unique_ptr<FakeDesktopEnvironmentFactory> desktop_environment_factory_;
 
@@ -300,22 +301,22 @@ void ClientSessionTest::NotifyVideoSizeAll() {
 
   int x_min, x_max, y_min, y_max;
   bool initialized = false;
-  for (auto& disp : displays_.displays()) {
-    int disp_x_max = disp->x + disp->width;
-    int disp_y_max = disp->y + disp->height;
+  for (const auto& disp : displays_.displays()) {
+    int disp_x_max = disp.x + disp.width;
+    int disp_y_max = disp.y + disp.height;
     if (!initialized) {
-      x_min = disp->x;
+      x_min = disp.x;
       x_max = disp_x_max;
-      y_min = disp->y;
+      y_min = disp.y;
       y_max = disp_y_max;
       initialized = true;
     } else {
-      if (disp->x < x_min)
-        x_min = disp->x;
+      if (disp.x < x_min)
+        x_min = disp.x;
       if (disp_x_max > x_max)
         x_max = disp_x_max;
-      if (disp->y < y_min)
-        y_min = disp->y;
+      if (disp.y < y_min)
+        y_min = disp.y;
       if (disp_y_max > y_max)
         y_max = disp_y_max;
     }
@@ -599,11 +600,11 @@ TEST_F(ClientSessionTest, LocalInputTest) {
 
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(100, 101));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // The OS echoes the injected event back.
   client_session_->OnLocalPointerMoved(webrtc::DesktopVector(100, 101),
                                        ui::ET_MOUSE_MOVED);
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   // This one should get throught as well.
   connection_->input_stub()->InjectMouseEvent(MakeMouseMoveEvent(200, 201));
@@ -807,35 +808,5 @@ TEST_F(ClientSessionTest, ForwardHostSessionOptions2) {
                    .desktop_capture_options()
                    ->detect_updated_region());
 }
-
-#if defined(OS_WIN)
-TEST_F(ClientSessionTest, ForwardDirectXHostSessionOptions1) {
-  auto session = std::make_unique<protocol::FakeSession>();
-  auto configuration = std::make_unique<jingle_xmpp::XmlElement>(
-      jingle_xmpp::QName(kChromotingXmlNamespace, "host-configuration"));
-  configuration->SetBodyText("DirectX-Capturer:true");
-  session->SetAttachment(0, std::move(configuration));
-  CreateClientSession(std::move(session));
-  ConnectClientSession();
-  ASSERT_TRUE(desktop_environment_factory_->last_desktop_environment()
-                  ->options()
-                  .desktop_capture_options()
-                  ->allow_directx_capturer());
-}
-
-TEST_F(ClientSessionTest, ForwardDirectXHostSessionOptions2) {
-  auto session = std::make_unique<protocol::FakeSession>();
-  auto configuration = std::make_unique<jingle_xmpp::XmlElement>(
-      jingle_xmpp::QName(kChromotingXmlNamespace, "host-configuration"));
-  configuration->SetBodyText("DirectX-Capturer:false");
-  session->SetAttachment(0, std::move(configuration));
-  CreateClientSession(std::move(session));
-  ConnectClientSession();
-  ASSERT_FALSE(desktop_environment_factory_->last_desktop_environment()
-                   ->options()
-                   .desktop_capture_options()
-                   ->allow_directx_capturer());
-}
-#endif
 
 }  // namespace remoting

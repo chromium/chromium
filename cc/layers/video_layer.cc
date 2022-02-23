@@ -18,14 +18,15 @@ VideoLayer::VideoLayer(VideoFrameProvider* provider,
                        media::VideoTransformation transform)
     : provider_(provider), transform_(transform) {
   SetMayContainVideo(true);
-  DCHECK(provider_);
+  DCHECK(provider_.Read(*this));
 }
 
 VideoLayer::~VideoLayer() = default;
 
 std::unique_ptr<LayerImpl> VideoLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
-  return VideoLayerImpl::Create(tree_impl, id(), provider_, transform_);
+    LayerTreeImpl* tree_impl) const {
+  return VideoLayerImpl::Create(tree_impl, id(), provider_.Read(*this),
+                                transform_);
 }
 
 bool VideoLayer::Update() {
@@ -42,8 +43,7 @@ bool VideoLayer::Update() {
 }
 
 void VideoLayer::StopUsingProvider() {
-  DCHECK(IsMutationAllowed());
-  provider_ = nullptr;
+  provider_.Write(*this) = nullptr;
 }
 
 }  // namespace cc

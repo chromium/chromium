@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_video.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
+#include "third_party/blink/renderer/core/layout/ng/ng_fragmentation_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_length_utils.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_physical_box_fragment.h"
 #include "third_party/blink/renderer/core/paint/paint_info.h"
@@ -179,7 +180,7 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
   // information, since the final result does not depend on it.
   if (ShouldApplySizeContainment()) {
     // Reset the size in case it was already populated.
-    intrinsic_sizing_info.size = FloatSize();
+    intrinsic_sizing_info.size = gfx::SizeF();
 
     const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
     if (!aspect_ratio.IsAuto()) {
@@ -213,14 +214,13 @@ void LayoutReplaced::ComputeIntrinsicSizingInfoForReplacedContent(
   // obtained for comparison against min and max widths.
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty() &&
       !intrinsic_sizing_info.size.IsEmpty()) {
-    intrinsic_size_ =
-        LayoutSize(IsHorizontalWritingMode()
-                       ? intrinsic_sizing_info.size
-                       : intrinsic_sizing_info.size.TransposedSize());
+    intrinsic_size_ = LayoutSize(intrinsic_sizing_info.size);
+    if (!IsHorizontalWritingMode())
+      intrinsic_size_ = intrinsic_size_.TransposedSize();
   }
 }
 
-FloatSize LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
+gfx::SizeF LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
     const IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
   // Constrain the intrinsic size along each axis according to minimum and
@@ -230,7 +230,7 @@ FloatSize LayoutReplaced::ConstrainIntrinsicSizeToMinMax(
   // these values independently along each axis, the final returned size may in
   // fact not preserve the aspect ratio.
   // TODO(davve): Investigate using only the intrinsic aspect ratio here.
-  FloatSize constrained_size = intrinsic_sizing_info.size;
+  gfx::SizeF constrained_size = intrinsic_sizing_info.size;
   if (!intrinsic_sizing_info.aspect_ratio.IsEmpty() &&
       !intrinsic_sizing_info.size.IsEmpty() &&
       StyleRef().LogicalWidth().IsAuto() &&
@@ -658,7 +658,7 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
       if (auto* image = DynamicTo<LayoutImage>(this)) {
         scaled_intrinsic_size.Scale(1.0 / image->ImageDevicePixelRatio());
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case EObjectFit::kContain:
     case EObjectFit::kCover:
       final_rect.size = final_rect.size.FitToAspectRatio(
@@ -668,7 +668,7 @@ PhysicalRect LayoutReplaced::ComputeObjectFit(
       if (object_fit != EObjectFit::kScaleDown ||
           final_rect.Width() <= scaled_intrinsic_size.width)
         break;
-      FALLTHROUGH;
+      [[fallthrough]];
     case EObjectFit::kNone:
       final_rect.size = scaled_intrinsic_size;
       break;
@@ -696,15 +696,15 @@ PhysicalRect LayoutReplaced::ReplacedContentRect() const {
 
 PhysicalRect LayoutReplaced::PreSnappedRectForPersistentSizing(
     const PhysicalRect& rect) {
-  return PhysicalRect(rect.offset, PhysicalSize(RoundedIntSize(rect.size)));
+  return PhysicalRect(rect.offset, PhysicalSize(ToRoundedSize(rect.size)));
 }
 
 void LayoutReplaced::ComputeIntrinsicSizingInfo(
     IntrinsicSizingInfo& intrinsic_sizing_info) const {
   NOT_DESTROYED();
   DCHECK(!ShouldApplySizeContainment());
-  intrinsic_sizing_info.size = FloatSize(IntrinsicLogicalWidth().ToFloat(),
-                                         IntrinsicLogicalHeight().ToFloat());
+  intrinsic_sizing_info.size = gfx::SizeF(IntrinsicLogicalWidth().ToFloat(),
+                                          IntrinsicLogicalHeight().ToFloat());
 
   const StyleAspectRatio& aspect_ratio = StyleRef().AspectRatio();
   if (!aspect_ratio.IsAuto()) {
@@ -712,10 +712,8 @@ void LayoutReplaced::ComputeIntrinsicSizingInfo(
         aspect_ratio.GetRatio().width());
     intrinsic_sizing_info.aspect_ratio.set_height(
         aspect_ratio.GetRatio().height());
-    if (!IsHorizontalWritingMode()) {
-      intrinsic_sizing_info.aspect_ratio =
-          intrinsic_sizing_info.aspect_ratio.TransposedSize();
-    }
+    if (!IsHorizontalWritingMode())
+      intrinsic_sizing_info.aspect_ratio.Transpose();
   }
   if (aspect_ratio.GetType() == EAspectRatioType::kRatio)
     return;
@@ -769,7 +767,7 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalWidth(
   IntrinsicSizingInfo intrinsic_sizing_info;
   ComputeIntrinsicSizingInfoForReplacedContent(intrinsic_sizing_info);
 
-  FloatSize constrained_size =
+  gfx::SizeF constrained_size =
       ConstrainIntrinsicSizeToMinMax(intrinsic_sizing_info);
 
   if (StyleRef().LogicalWidth().IsAuto()) {
@@ -872,7 +870,7 @@ LayoutUnit LayoutReplaced::ComputeReplacedLogicalHeight(
   IntrinsicSizingInfo intrinsic_sizing_info;
   ComputeIntrinsicSizingInfoForReplacedContent(intrinsic_sizing_info);
 
-  FloatSize constrained_size =
+  gfx::SizeF constrained_size =
       ConstrainIntrinsicSizeToMinMax(intrinsic_sizing_info);
 
   bool width_is_auto = StyleRef().LogicalWidth().IsAuto();
@@ -1004,8 +1002,11 @@ static std::pair<LayoutUnit, LayoutUnit> SelectionTopAndBottom(
     const auto writing_direction = line_style.GetWritingDirection();
     const WritingModeConverter converter(writing_direction,
                                          line_box.ContainerFragment().Size());
-    const LogicalRect logical_rect =
-        converter.ToLogical(line_box.Current().RectInContainerFragment());
+    PhysicalRect physical_rect = line_box.Current().RectInContainerFragment();
+    // The caller expects it to be in the "stitched" coordinate space.
+    physical_rect.offset +=
+        OffsetInStitchedFragments(line_box.ContainerFragment());
+    const LogicalRect logical_rect = converter.ToLogical(physical_rect);
     return {logical_rect.offset.block_offset, logical_rect.BlockEndOffset()};
   }
 
@@ -1021,9 +1022,7 @@ PositionWithAffinity LayoutReplaced::PositionForPoint(
     const PhysicalOffset& point) const {
   NOT_DESTROYED();
 
-  LayoutUnit top;
-  LayoutUnit bottom;
-  std::tie(top, bottom) = SelectionTopAndBottom(*this);
+  auto [top, bottom] = SelectionTopAndBottom(*this);
 
   LayoutPoint flipped_point_in_container =
       LocationContainer()->FlipForWritingMode(point + PhysicalLocation());

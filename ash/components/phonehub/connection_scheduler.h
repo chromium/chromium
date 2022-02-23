@@ -5,7 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_H_
 #define ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_H_
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 // Responsible for requesting connection from the local device
@@ -26,6 +26,6 @@ class ConnectionScheduler {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CONNECTION_SCHEDULER_H_

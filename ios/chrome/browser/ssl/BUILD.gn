@@ -5,10 +5,11 @@
 source_set("ssl") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "captive_portal_detector_tab_helper.h",
-    "captive_portal_detector_tab_helper.mm",
-    "captive_portal_detector_tab_helper_delegate.h",
+    "captive_portal_metrics.cc",
     "captive_portal_metrics.h",
+    "captive_portal_tab_helper.h",
+    "captive_portal_tab_helper.mm",
+    "captive_portal_tab_helper_delegate.h",
     "ios_captive_portal_blocking_page.h",
     "ios_captive_portal_blocking_page.mm",
     "ios_ssl_blocking_page.h",
@@ -21,6 +22,7 @@ source_set("ssl") {
     "//base:i18n",
     "//components/autofill/ios/form_util",
     "//components/captive_portal/core",
+    "//components/safe_browsing/core/browser:safe_browsing_metrics_collector",
     "//components/security_interstitials/core",
     "//components/security_state/core",
     "//components/security_state/ios",
@@ -29,6 +31,7 @@ source_set("ssl") {
     "//ios/chrome/app/strings",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/safe_browsing",
     "//ios/chrome/browser/tabs",
     "//ios/chrome/browser/ui/util",
     "//ios/components/security_interstitials",

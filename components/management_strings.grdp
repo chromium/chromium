@@ -81,6 +81,11 @@
     </message>
   </if>
 
+  <!--
+  If you are adding or modifying a privacy string to be displayed on
+  chrome://management for managed devices, please add it to
+  go/chrome-policy-privacy-note-mappings
+  -->
   <if expr="chromeos">
     <!-- Strings related to Local trust roots section -->
     <message name="IDS_MANAGEMENT_LOCAL_TRUST_ROOTS" desc="Title of the types of local trust roots section of the page">
@@ -105,6 +110,9 @@
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_ACTIVITY_TIMES" desc="Message stating that administrators see device activity times.">
       Who has used the device recently and when
     </message>
+    <message name="IDS_MANAGEMENT_REPORT_DEVICE_AUDIO_STATUS" desc="Message stating that administrators see attached audio peripherals.">
+      Audio peripherals attached
+    </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_STATUS" desc="Message stating that administrators see device hardware status.">
       Device statistics such as CPU/RAM usage
     </message>
@@ -112,7 +120,7 @@
       Detailed system logs
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_NETWORK_DATA" desc="Message stating that administrators see device network interfaces.">
-      Network addresses
+      Networking information such as addresses, interface configuration, and connection quality
     </message>
     <message name="IDS_MANAGEMENT_REPORT_DEVICE_HARDWARE_DATA" desc="Message stating that administrators see device hardware status.">
       Device statistics such as CPU/RAM usage and hardware specifications
@@ -136,6 +144,9 @@
     </message>
     <message name="IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT" desc="Message stating that administrators can see device Login and Logout events.">
       Device login/logout history, including timestamps and failed attempts
+    </message>
+    <message name="IDS_MANAGEMENT_REPORT_CRD_SESSIONS" desc="Message stating that administrators can see Chrome Remote Desktop events.">
+      Chrome Remote Desktop history, including timestamps, hosts and client session ids
     </message>
     <message name="IDS_MANAGEMENT_CROSTINI" desc="Message stating that administrators can see Crostini usage">
       Linux apps installed and when they were last used
@@ -192,10 +203,10 @@
 
 
   <!-- Strings related to browser reporting section of the management page -->
-  <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page">
+  <message name="IDS_MANAGEMENT_BROWSER_REPORTING" desc="Title of the types of browser reporting section of the page" formatter_data="android_java">
     Browser
   </message>
-  <message name="IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION" desc="Message explaining browser reporting">
+  <message name="IDS_MANAGEMENT_BROWSER_REPORTING_EXPLANATION" desc="Message explaining browser reporting" formatter_data="android_java">
     Your administrator can see:
   </message>
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_MACHINE_NAME" desc="Message explaining that an extension currently reports the user's machine name">
@@ -204,10 +215,10 @@
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_MACHINE_NAME_ADDRESS" desc="Message explaining that an extension currently reports the user's machine name and address">
     Your device name and network address
   </message>
-  <message name="IDS_MANAGEMENT_EXTENSION_REPORT_USERNAME" desc="Message explaining that an extension currently reports the user's username">
+  <message name="IDS_MANAGEMENT_EXTENSION_REPORT_USERNAME" desc="Message explaining that an extension currently reports the user's username" formatter_data="android_java">
     Your device username and Chrome username
   </message>
-  <message name="IDS_MANAGEMENT_EXTENSION_REPORT_VERSION" desc="Message explaining that an extension currently reports the user's browser and machine version">
+  <message name="IDS_MANAGEMENT_EXTENSION_REPORT_VERSION" desc="Message explaining that an extension currently reports the user's browser and machine version" formatter_data="android_java">
     Version information about your device and browser
   </message>
   <message name="IDS_MANAGEMENT_EXTENSION_REPORT_EXTENSIONS_PLUGINS" desc="Message explaining that an extension currently reports the user's exensions and plugins">
@@ -245,6 +256,9 @@
   <message name="IDS_MANAGEMENT_TEXT_ENTERED_EVENT" desc="Event for the text entry scanning feature.">
     Text is entered
   </message>
+  <message name="IDS_MANAGEMENT_PAGE_PRINTED_EVENT" desc="Event for the page print scanning feature.">
+    Page is printed
+  </message>
   <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_EVENT" desc="Event for the enterprise reporting feature">
     Security event occurs
   </message>
@@ -259,6 +273,9 @@
   </message>
   <message name="IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA" desc="Description of the visible data for the text entry scanning feature.">
     Text you paste or attach is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
+  </message>
+  <message name="IDS_MANAGEMENT_PAGE_PRINTED_VISIBLE_DATA" desc="Description of the visible data for the page print scanning feature.">
+    The content of pages you print is sent to Google Cloud or third parties for analysis. For example, it might be scanned for sensitive data.
   </message>
   <message name="IDS_MANAGEMENT_ENTERPRISE_REPORTING_VISIBLE_DATA" desc="Description of the visible data for the Connectors reporting feature">
     When security events are flagged by Chrome, relevant data about the events is sent to your administrator. This can include URLs of pages you visit in Chrome, file names or metadata, and the username that you use to sign in to web based applications, your device and Chrome.

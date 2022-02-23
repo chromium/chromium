@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include <map>
 #include <memory>
 #include <string>
 #include <vector>
@@ -67,14 +68,44 @@ struct ComponentInfo {
   base::Version version;
 };
 
-// The component update service is in charge of installing or upgrading
-// select parts of chrome. Each part is called a component and managed by
-// instances of CrxComponent registered using RegisterComponent(). On the
-// server, each component is packaged as a CRX which is the same format used
-// to package extensions. To the update service each component is identified
-// by its public key hash (CrxComponent::pk_hash). If there is an update
-// available and its version is bigger than (CrxComponent::version), it will
-// be downloaded, verified and unpacked. Then component-specific installer
+struct ComponentRegistration {
+  ComponentRegistration(
+      const std::string& app_id,
+      const std::string& name,
+      std::vector<uint8_t> public_key_hash,
+      const base::Version& version,
+      const std::string& fingerprint,
+      std::map<std::string, std::string> installer_attributes,
+      scoped_refptr<update_client::ActionHandler> action_handler,
+      scoped_refptr<update_client::CrxInstaller> installer,
+      bool requires_network_encryption,
+      bool supports_group_policy_enable_component_updates);
+  ComponentRegistration(const ComponentRegistration& other);
+  ComponentRegistration& operator=(const ComponentRegistration& other);
+  ComponentRegistration(ComponentRegistration&& other);
+  ComponentRegistration& operator=(ComponentRegistration&& other);
+  ~ComponentRegistration();
+
+  std::string app_id;
+  std::string name;
+  std::vector<uint8_t> public_key_hash;
+  base::Version version;
+  std::string fingerprint;
+  std::map<std::string, std::string> installer_attributes;
+  scoped_refptr<update_client::ActionHandler> action_handler;
+  scoped_refptr<update_client::CrxInstaller> installer;
+  bool requires_network_encryption;
+  bool supports_group_policy_enable_component_updates;
+};
+
+// The component update service is in charge of installing or upgrading select
+// parts of chrome. Each part is called a component and managed by instances of
+// ComponentRegistration registered using RegisterComponent(). On the
+// server, each component is packaged as a CRX which is the same format used to
+// package extensions. To the update service each component is identified by
+// its public key hash (CrxComponent::pk_hash). If there is an update available
+// and its version is bigger than (CrxComponent::version), it will be
+// downloaded, verified and unpacked. Then component-specific installer
 // ComponentInstaller::Install (of CrxComponent::installer) will be called.
 //
 // During the normal operation of the component updater some specific
@@ -95,7 +126,7 @@ class ComponentUpdateService {
   virtual void RemoveObserver(Observer* observer) = 0;
 
   // Add component to be checked for updates.
-  virtual bool RegisterComponent(const CrxComponent& component) = 0;
+  virtual bool RegisterComponent(const ComponentRegistration& component) = 0;
 
   // Unregisters the component with the given ID. This means that the component
   // is not going to be included in future update checks. If a download or
@@ -187,7 +218,11 @@ class OnDemandUpdater {
 // Creates the component updater.
 std::unique_ptr<ComponentUpdateService> ComponentUpdateServiceFactory(
     scoped_refptr<Configurator> config,
-    std::unique_ptr<UpdateScheduler> scheduler);
+    std::unique_ptr<UpdateScheduler> scheduler,
+    const std::string& brand);
+
+// Register prefs required by the component update service.
+void RegisterComponentUpdateServicePrefs(PrefRegistrySimple* registry);
 
 }  // namespace component_updater
 

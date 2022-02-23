@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/identity_manager/access_token_fetcher.h"
@@ -197,7 +198,7 @@ class PrimaryAccountAccessTokenFetcher : public IdentityManager::Observer {
                                   AccessTokenInfo access_token_info);
 
   std::string oauth_consumer_name_;
-  IdentityManager* identity_manager_;
+  raw_ptr<IdentityManager> identity_manager_;
   ScopeSet scopes_;
 
   // Per the contract of this class, it is allowed for clients to delete this

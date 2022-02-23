@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/scoped_file.h"
-#include "base/location.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
@@ -231,6 +230,13 @@ class COMPONENT_EXPORT(DBUS_POWER) PowerManagerClient {
   // instead.
   virtual void GetKeyboardBrightnessPercent(
       DBusMethodCallback<double> callback) = 0;
+
+  // Set the toggled-off state of the keyboard backlight.
+  virtual void SetKeyboardBacklightToggledOff(bool toggled_off) = 0;
+
+  // Get the toggled-off state of the keyboard backlight.
+  virtual void GetKeyboardBacklightToggledOff(
+      DBusMethodCallback<bool> callback) = 0;
 
   // Returns the last power status that was received from D-Bus, if any.
   virtual const absl::optional<power_manager::PowerSupplyProperties>&

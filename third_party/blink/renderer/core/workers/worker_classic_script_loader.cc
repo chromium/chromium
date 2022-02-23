@@ -114,10 +114,6 @@ void WorkerClassicScriptLoader::LoadSynchronously(
 
   ResourceRequest request(url);
   request.SetHttpMethod(http_names::kGET);
-  request.SetExternalRequestStateFromRequestorAddressSpace(
-      fetch_client_settings_object_fetcher_->GetProperties()
-          .GetFetchClientSettingsObject()
-          .GetAddressSpace());
   request.SetRequestContext(request_context);
   request.SetRequestDestination(destination);
 
@@ -159,10 +155,6 @@ void WorkerClassicScriptLoader::LoadTopLevelScriptAsynchronously(
   is_top_level_script_ = true;
   ResourceRequest request(url);
   request.SetHttpMethod(http_names::kGET);
-  request.SetExternalRequestStateFromRequestorAddressSpace(
-      fetch_client_settings_object_fetcher_->GetProperties()
-          .GetFetchClientSettingsObject()
-          .GetAddressSpace());
   request.SetRequestContext(request_context);
   request.SetRequestDestination(destination);
   request.SetMode(request_mode);

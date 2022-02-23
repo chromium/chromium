@@ -74,7 +74,7 @@ void BluetoothPolicyHandler::SetBluetoothPolicy(
   // returns an empty list even if the policy did not set.
   if (cros_settings_->GetList(ash::kDeviceAllowedBluetoothServices,
                               &allowed_services_list)) {
-    for (const auto& list_value : allowed_services_list->GetList()) {
+    for (const auto& list_value : allowed_services_list->GetListDeprecated()) {
       if (!list_value.is_string())
         continue;
 

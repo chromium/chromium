@@ -26,7 +26,7 @@
 #include "weblayer/test/weblayer_browser_test.h"
 #include "weblayer/test/weblayer_browser_test_utils.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/ukm/test_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "weblayer/browser/android/metrics/metrics_test_helper.h"
@@ -36,7 +36,7 @@ namespace weblayer {
 
 class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
  public:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetUp() override {
     InstallTestGmsBridge(ConsentType::kConsent);
 
@@ -61,7 +61,7 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
         base::FilePath(FILE_PATH_LITERAL("weblayer/test/data")));
     ASSERT_TRUE(https_server_->Start());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
 #endif
   }
@@ -109,7 +109,7 @@ class NoStatePrefetchBrowserTest : public WebLayerBrowserTest {
   bool script_executed_ = false;
   std::string purpose_header_value_;
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> ukm_recorder_;
 #endif
 };
@@ -177,9 +177,10 @@ IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest,
   EXPECT_TRUE(script_executed_);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Test that no-state-prefetch results in UKM getting recorded.
-IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, UKMRecorded) {
+// TODO(https://crbug.com/1292252): Flaky failures.
+IN_PROC_BROWSER_TEST_F(NoStatePrefetchBrowserTest, DISABLED_UKMRecorded) {
   GetProfile()->SetBooleanSetting(SettingType::UKM_ENABLED, true);
   NavigateAndWaitForCompletion(GURL(https_server_->GetURL("/parent_page.html")),
                                shell());

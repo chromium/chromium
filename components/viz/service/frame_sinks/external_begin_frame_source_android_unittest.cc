@@ -14,7 +14,13 @@ namespace viz {
 class ExternalBeginFrameSourceAndroidTest : public ::testing::Test,
                                             public BeginFrameObserverBase {
  public:
-  ~ExternalBeginFrameSourceAndroidTest() override { thread_->Stop(); }
+  ~ExternalBeginFrameSourceAndroidTest() override {
+    thread_->task_runner()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&ExternalBeginFrameSourceAndroidTest::TeardownOnThread,
+                       base::Unretained(this)));
+    thread_->Stop();
+  }
 
   void CreateThread() {
     thread_ = std::make_unique<base::android::JavaHandlerThread>("TestThread");
@@ -43,8 +49,11 @@ class ExternalBeginFrameSourceAndroidTest : public ::testing::Test,
  private:
   void InitOnThread() {
     begin_frame_source_ = std::make_unique<ExternalBeginFrameSourceAndroid>(
-        BeginFrameSource::kNotRestartableId, 60.f);
+        BeginFrameSource::kNotRestartableId, 60.f,
+        /*requires_align_with_java=*/false);
   }
+
+  void TeardownOnThread() { begin_frame_source_.reset(); }
 
   void AddObserverOnThread(uint32_t frame_count) {
     pending_frames_ = frame_count;

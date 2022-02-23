@@ -35,7 +35,7 @@ FileHandlerLaunchDialogView::FileHandlerLaunchDialogView(
   auto* layout_provider = views::LayoutProvider::Get();
   gfx::Insets dialog_insets = layout_provider->GetDialogInsetsForContentType(
       views::DialogContentType::kControl, views::DialogContentType::kControl);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // The Chrome OS dialog has no title and no need for a top inset.
   dialog_insets.set_top(0);
 #endif
@@ -57,12 +57,11 @@ FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
 
   // Description of permission that's being requested.
   auto description_view = std::make_unique<views::View>();
-  auto* box_layout =
-      description_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kVertical,
-          /*inside_border_insets=*/gfx::Insets(),
-          layout_provider->GetDistanceMetric(
-              views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
+  description_view->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kVertical,
+      /*inside_border_insets=*/gfx::Insets(),
+      layout_provider->GetDistanceMetric(
+          views::DISTANCE_UNRELATED_CONTROL_VERTICAL)));
 
   // Question label.
   auto* question_label = description_view->AddChildView(
@@ -102,8 +101,7 @@ FileHandlerLaunchDialogView::CreateBelowAppInfoView() {
 
   // Additionally, elide very long file names (the max width is the width
   // available for the label).
-  const int available_width = fixed_width() -
-                              box_layout->inside_border_insets().width() -
+  const int available_width = fixed_width() - margins().width() -
                               icon->GetPreferredSize().width() - icon_margin;
   std::transform(file_paths_.begin(),
                  file_paths_.begin() + displayed_file_name_count,

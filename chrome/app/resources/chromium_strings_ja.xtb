@@ -14,6 +14,7 @@
 <translation id="1524282610922162960">Chromium タブの共有</translation>
 <translation id="1553461853655228091">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{管理者が、アップデートを適用するために Chromium を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
+<translation id="1625909126243026060">Chromium のプライバシーとセキュリティに関する重要な設定を確認します</translation>
 <translation id="1708666629004767631">Chromium がさらに安全になりました。最新バージョンをぜひお試しください。</translation>
 <translation id="1774152462503052664">Chromium をバックグラウンドで実行する</translation>
 <translation id="1779356040007214683">Chromium をより安全にご利用いただくため、<ph name="IDS_EXTENSION_WEB_STORE_TITLE" />で提供していない一部の拡張機能を無効にしました。これらは知らないうちに追加された可能性があります。</translation>
@@ -26,6 +27,7 @@
 <translation id="1981611865800294956">再起動して Chromium OS を更新(&amp;C)</translation>
 <translation id="2008474315282236005">このデバイスから 1 件の項目を削除します。後でデータを取得するには、<ph name="USER_EMAIL" /> として Chromium にログインしてください。</translation>
 <translation id="2020032459870799438">他のパスワードにデータ侵害などセキュリティに関する問題がないかどうかを確認するには、<ph name="BEGIN_LINK" />Chromium にログイン<ph name="END_LINK" />してください。</translation>
+<translation id="2049376729098081731">Chromium の履歴を含めて、Google サービスのパーソナライズに使用するかどうかを選択してください</translation>
 <translation id="2174178932569897599">Chromium をカスタマイズ</translation>
 <translation id="2185166961232948079">Chromium - ネットワークにログイン - <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">パソコンを共有している場合、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます。</translation>
@@ -33,6 +35,7 @@
 <translation id="2313870531055795960">Chromium に保存されている安全でないサイトのリストと URL を照合します。サイトがパスワードを不正に取得しようとしている場合や、ユーザーが安全でないファイルをダウンロードしようとした場合は、URL とページ コンテンツの一部をセーフ ブラウジングに送信することがあります。</translation>
 <translation id="2343156876103232566">Android スマートフォンに番号を送信するには、両方のデバイスで Chromium にログインしてください。</translation>
 <translation id="2347108572062610441">この拡張機能により、Chromium の起動時に表示されるページが変更されました。</translation>
+<translation id="2359808026110333948">続行</translation>
 <translation id="2396765026452590966">拡張機能「<ph name="EXTENSION_NAME" />」により、Chromium の起動時に表示されるページが変更されました。</translation>
 <translation id="2401032172288869980">このサイトを利用するには、Chromium でカメラとマイクの使用を許可する必要があります</translation>
 <translation id="2483889755041906834">Chromium 内</translation>
@@ -40,10 +43,8 @@
 <translation id="2535480412977113886">アカウントのログイン情報が最新ではないため、Chromium OS はデータを同期できませんでした。</translation>
 <translation id="2560420686485554789">ファイルをダウンロードするには、Chromium でストレージへのアクセスを許可する必要があります</translation>
 <translation id="2572494885440352020">Chromium Helper</translation>
-<translation id="2577788541081224677">お使いのすべてのデバイスで Chromium の設定やデータを使用するには、ログインしてください。ログインすると同期を有効にできます。</translation>
 <translation id="2583187216237139145">このプロファイルの使用中に生成された Chromium データ（ブックマーク、履歴、パスワード、他の設定など）は、仕事用プロファイルの管理者によって削除される場合があります。<ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">アップデートを適用するには Chromium OS を再起動する必要があります。</translation>
-<translation id="2614883797045469742">ほとんどの場合はデフォルトの設定を使用できますが、Chromium の用途に合わせてカスタマイズすることも可能です</translation>
 <translation id="2648074677641340862">インストール中にオペレーティング システム エラーが発生しました。Chromium をダウンロードし直してください。</translation>
 <translation id="2661879430930417727">デバイスを共有している場合でも、友だちや家族はそれぞれ Chromium を自分専用のブラウザとして自分用の設定をして使うことができます</translation>
 <translation id="2711502716910134313">Chromium タブ</translation>
@@ -109,18 +110,20 @@
 <translation id="4407044323746248786">今すぐ Chromium を終了しますか？</translation>
 <translation id="4415566066719264597">Chromium をバックグラウンドで実行する</translation>
 <translation id="4423735387467980091">Chromium の設定</translation>
+<translation id="4427306783828095590">保護強化機能により、フィッシングを防ぎ、不正なソフトウェアをより強力にブロックします</translation>
 <translation id="452711251841752011">Chromium へようこそ。新しいブラウザ ウィンドウが開いています</translation>
 <translation id="4544142686420020088">エラーが発生したため、Chromium が更新されませんでした。<ph name="BEGIN_LINK" />Chromium の更新に関する問題を解決してください。<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">新しい Chromium プロフィールで続行しますか？</translation>
 <translation id="4567424176335768812"><ph name="USER_EMAIL_ADDRESS" /> としてログインしています。ログインしているすべてのデバイスで、ブックマーク、履歴、その他の設定にアクセスできます。</translation>
 <translation id="459535195905078186">Chromium アプリ</translation>
+<translation id="4621240073146040695">Chromium を再起動して更新を完了してください。</translation>
 <translation id="4665829708273112819">警告: 拡張機能による閲覧履歴の記録を Chromium で停止することはできません。シークレット モードでこの拡張機能を無効にするには、このオプションの選択を解除してください。</translation>
+<translation id="4673151026126227699">Chromium の使用状況レポートを送信する場合は、アクセスした URL がこのレポートに含められます</translation>
 <translation id="4677944499843243528">プロフィールは、別のコンピュータ（<ph name="HOST_NAME" />）の別の Chromium プロセス（<ph name="PROCESS_ID" />）で使用されているようです。Chromium はプロフィールが破損しないようにプロフィールをロックしています。他のプロセスがこのプロフィールを使用していないことが確実であれば、プロフィールのロックを解除して Chromium を再起動できます。</translation>
 <translation id="469338717132742108">Chromium OS のヘルプを見る</translation>
 <translation id="4708774505295300557">前回このパソコンで別のユーザー（<ph name="ACCOUNT_EMAIL_LAST" />）が Chromium にログインしました。情報を個別に保持するには、新しい Chromium ユーザーを作成してください。</translation>
 <translation id="4746050847053251315">今すぐ Chromium を終了しますか？</translation>
 <translation id="4748217263233248895">Chromium の特別なセキュリティ アップデートが適用されました。今すぐ再起動してください。タブは復元されます。</translation>
-<translation id="4750035648288509542">アップデートが適用されました。更新を完了するには Chromium を再起動してください。再起動後、シークレット ウィンドウは自動的に開きません。</translation>
 <translation id="4788777615168560705">Chromium でパスワードを確認できません。24 時間後にもう一度お試しいただくか、<ph name="BEGIN_LINK" />Google アカウントでパスワードをご確認ください<ph name="END_LINK" />。</translation>
 <translation id="479167709087336770">Google 検索と同じスペルチェックが使用されます。ブラウザに入力したテキストは Google に送信されます。この動作はいつでも設定で変更できます。</translation>
 <translation id="4888717733111232871">mDNS トラフィックを許可する Chromium のインバウンド ルールです。</translation>
@@ -137,7 +140,6 @@
 <translation id="5398878173008909840">Chromium の最新バージョンをぜひお試しください。</translation>
 <translation id="5427571867875391349">Chromium をデフォルト ブラウザに設定する</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> - Chromium Beta</translation>
-<translation id="5479196819031988440">Chromium OS ではこのページを開けません。</translation>
 <translation id="5480860683791598150">このサイトで現在地を共有するには、Chromium で位置情報の使用を許可する必要があります</translation>
 <translation id="549669000822060376">Chromium は最新のシステム アップデートをインストールしています。しばらくお待ちください。</translation>
 <translation id="5496810170689441661">Chromium でパスワードを編集しようとしています。続行するには、Windows のパスワードを入力してください。</translation>
@@ -209,7 +211,6 @@
 <translation id="6990124437352146030">このサイトを利用するには、Chromium でマイクの使用を許可する必要があります</translation>
 <translation id="705851970750939768">Chromium を更新</translation>
 <translation id="7067091210845072982">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。</translation>
-<translation id="7147279922647361552">Chromium の最も重要なプライバシー設定をカスタマイズできます</translation>
 <translation id="718435575166326686">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
 <translation id="7196312274710523067">Chromium を起動できませんでした。もう一度お試しください。</translation>
 <translation id="7197677400338048821">Chromium でパスワードを確認できません。24 時間後にもう一度お試しください。</translation>
@@ -223,17 +224,21 @@
 <translation id="7339898014177206373">新しいウィンドウ</translation>
 <translation id="734373864078049451">ウェブ、ブックマーク、その他の Chromium データを好みに設定できます。</translation>
 <translation id="7349591376906416160">システム管理者が、<ph name="TARGET_URL_HOSTNAME" /> へのアクセスに <ph name="ALTERNATIVE_BROWSER_NAME" /> を開くよう Chromium を設定しています。</translation>
+<translation id="7398989605938454041">Chromium プロフィールを使うと、Chromium のあらゆる項目や設定を個別に管理できます。これにより、仕事と遊びの使い分けが簡単になります。</translation>
 <translation id="7448255348454382571">Chromium OS を再起動してください</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> - Chromium Dev</translation>
 <translation id="7451052299415159299">このサイトを利用するには、Chromium でカメラの使用を許可する必要があります</translation>
+<translation id="7467949745582939695">Chromium を再起動しますか？</translation>
 <translation id="7483335560992089831">実行中の Chromium と同じバージョンをインストールすることはできません。Chromium を閉じてからもう一度お試しください。</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium は 1 分後に再起動されます}other{Chromium は # 分後に再起動されます}}</translation>
 <translation id="7549178288319965365">Chromium OS について</translation>
 <translation id="7561906087460245826">Chromium のデータ（<ph name="URL" />）も消去する</translation>
 <translation id="7585853947355360626">このページに設定が表示されない場合は、<ph name="LINK_BEGIN" />
       Chromium OS の設定<ph name="LINK_END" />を確認してください</translation>
+<translation id="7597596667193879455">アカウントでセーフ ブラウジング保護強化機能がオンになっています。Chromium にも適用します。</translation>
 <translation id="761356813943268536">Chromium がカメラとマイクを使用しています。</translation>
 <translation id="7617377681829253106">進化する Chromium</translation>
+<translation id="7682601070171973634">Chromium では、使用されるユーザーデータの量を抑えつつ、同じようにサイトをブラウジングできる新機能をテストしています</translation>
 <translation id="7686590090926151193">Chromium はデフォルトのブラウザとして設定されていません</translation>
 <translation id="7689606757190482937">同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="7729447699958282447">お使いのドメインでは同期を利用できないため、Chromium はデータを同期できませんでした。</translation>
@@ -243,11 +248,11 @@
 <translation id="7828947555739565424">このアカウントの Chromium プロファイルは、このデバイスにすでに存在します</translation>
 <translation id="7857220146454061152">今後、Chromium のアップデートを受信するには、OS X 10.11 以降が必要となります。このパソコンでは OS X 10.10 が実行されています。</translation>
 <translation id="7867198900892795913">Chromium を最新版に更新できませんでした。新しい機能とセキュリティ修正は適用されていません。</translation>
+<translation id="788352880609666695">次のアカウントはこの Chromium プロフィールでは使用できません</translation>
 <translation id="7898472181347242998">デバイスが最新の状態かどうか確認するには、<ph name="LINK_BEGIN" />Chromium OS の設定<ph name="LINK_END" />をご覧ください</translation>
 <translation id="7937630085815544518">Chromium に <ph name="USER_EMAIL_ADDRESS" /> としてログインしていました。再度ログインするには同じアカウントを使用してください。</translation>
 <translation id="7975919845073681630">この Chromium はセカンダリ インストールのため、既定のブラウザには設定できません。</translation>
 <translation id="8013436988911883588">Chromium にアクセスを許可すると、ウェブサイトからアクセスをリクエストできるようになります。</translation>
-<translation id="8045118833343856403">以下のアカウントは Chromium プロファイルにログインしていません。別のプロファイルでアカウントを使用する場合は、最初にそのプロファイルを削除してください。</translation>
 <translation id="8105840573057009683">このサイトを利用するには、Chromium で位置情報の使用を許可する必要があります</translation>
 <translation id="81770708095080097">このファイルは危険なファイルであるため、Chromium でブロックしました。</translation>
 <translation id="8248265253516264921">画像に有効な説明が設定されていない場合に、Chromium で説明を自動的に生成できるよう Google に画像が送信されます。この機能は設定でいつでも無効にできます。</translation>
@@ -256,6 +261,7 @@
 <translation id="8290862415967981663">このファイルは危険なファイルの可能性があるため、Chromium でブロックしました。</translation>
 <translation id="8330519371938183845">ログインすると、同期してカスタマイズした Chromium をどのデバイスでも使用できます</translation>
 <translation id="8340674089072921962">Chromium の前回の使用者は <ph name="USER_EMAIL_ADDRESS" /> です</translation>
+<translation id="8357820681460164151">お使いのすべてのデバイスで Chromium ブラウザの設定やデータを使用するには、ログインして同期を有効にしてください</translation>
 <translation id="8417404458978023919">{0,plural, =1{1 日以内に Chromium を再起動してください}other{# 日以内に Chromium を再起動してください}}</translation>
 <translation id="8453117565092476964">インストーラ アーカイブが壊れているか無効です。Chromium をダウンロードし直してください。</translation>
 <translation id="8493179195440786826">Chromium は古いバージョンです</translation>
@@ -290,5 +296,6 @@
 <translation id="9214764063801632699">Chromium OS システム</translation>
 <translation id="93478295209880648">Windows XP と Windows Vista はサポートされなくなったため、Chromium は正常に機能しない可能性があります</translation>
 <translation id="965162752251293939">Chromium はどなたが使用しますか？</translation>
+<translation id="967427899662692980">Chromium の最高のセキュリティ強度で保護</translation>
 <translation id="985602178874221306">Chromium 開発者</translation>
 </translationbundle>

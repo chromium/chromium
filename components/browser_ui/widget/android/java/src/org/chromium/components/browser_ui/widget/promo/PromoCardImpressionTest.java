@@ -26,8 +26,8 @@ import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.FlakyTest;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
 
 import java.util.concurrent.TimeoutException;
 
@@ -41,8 +41,8 @@ public class PromoCardImpressionTest {
     @ClassRule
     public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
     private static FrameLayout sContent;

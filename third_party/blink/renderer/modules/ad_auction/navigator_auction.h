@@ -10,7 +10,7 @@
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/frame/navigator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -18,6 +18,8 @@
 
 namespace blink {
 
+class AdRequestConfig;
+class Ads;
 class AuctionAdInterestGroup;
 class AuctionAdConfig;
 class ScriptPromiseResolver;
@@ -78,13 +80,31 @@ class MODULES_EXPORT NavigatorAuction final
                                             uint16_t num_ad_components,
                                             ExceptionState& exception_state);
 
-  // TODO(https://crbug.com/1249186): Add full impl of methods.
-  ScriptPromise createAdRequest(ScriptState*, ExceptionState&);
+  ScriptPromise deprecatedURNToURL(ScriptState* script_state,
+                                   const String& uuid_url_string,
+                                   ExceptionState& exception_state);
+
+  static ScriptPromise deprecatedURNToURL(ScriptState* script_state,
+                                          Navigator& navigator,
+                                          const String& uuid_url_string,
+                                          ExceptionState& exception_state);
+
+  ScriptPromise createAdRequest(ScriptState*,
+                                const AdRequestConfig*,
+                                ExceptionState&);
   static ScriptPromise createAdRequest(ScriptState*,
                                        Navigator&,
+                                       const AdRequestConfig*,
                                        ExceptionState&);
-  ScriptPromise finalizeAd(ScriptState*, ExceptionState&);
-  static ScriptPromise finalizeAd(ScriptState*, Navigator&, ExceptionState&);
+  ScriptPromise finalizeAd(ScriptState*,
+                           const Ads*,
+                           const AuctionAdConfig*,
+                           ExceptionState&);
+  static ScriptPromise finalizeAd(ScriptState*,
+                                  Navigator&,
+                                  const Ads*,
+                                  const AuctionAdConfig*,
+                                  ExceptionState&);
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(ad_auction_service_);
@@ -92,8 +112,17 @@ class MODULES_EXPORT NavigatorAuction final
   }
 
  private:
+  // Completion callback for createAdRequest() mojo call.
+  void AdsRequested(ScriptPromiseResolver* resolver,
+                    const WTF::String& ads_guid);
+  // Completion callback for finalizeAd() mojo call.
+  void FinalizeAdComplete(ScriptPromiseResolver* resolver,
+                          const absl::optional<KURL>& creative_url);
   // Completion callback for Mojo call made by runAdAuction().
   void AuctionComplete(ScriptPromiseResolver*, const absl::optional<KURL>&);
+  // Completion callback for Mojo call made by deprecatedURNToURL().
+  void GetURLFromURNComplete(ScriptPromiseResolver*,
+                             const absl::optional<KURL>&);
 
   HeapMojoRemote<mojom::blink::AdAuctionService> ad_auction_service_;
 };

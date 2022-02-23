@@ -223,7 +223,7 @@ void ProfilePolicyConnector::Init(
 #endif
 
   std::vector<std::unique_ptr<PolicyMigrator>> migrators;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   migrators.push_back(
       std::make_unique<browser_switcher::BrowserSwitcherPolicyMigrator>());
 #endif
@@ -232,7 +232,8 @@ void ProfilePolicyConnector::Init(
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
       policy::key::kDeviceNativePrinters, policy::key::kDevicePrinters));
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
-      policy::key::kDeviceUserWhitelist, policy::key::kDeviceUserAllowlist));
+      policy::key::kDeviceUserWhitelist,  // nocheck
+      policy::key::kDeviceUserAllowlist));
   migrators.push_back(std::make_unique<LegacyChromePolicyMigrator>(
       policy::key::kNativePrintersBulkConfiguration,
       policy::key::kPrintersBulkConfiguration));

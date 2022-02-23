@@ -37,7 +37,7 @@ ExtensionFunction::ResponseAction DnsResolveFunction::Run() {
   // hostname you'd like to resolve, even though it doesn't use that value in
   // determining its answer.
   net::HostPortPair host_port_pair(params->hostname, 0);
-  url::Origin origin = url::Origin::Create(extension_->url());
+  url::Origin origin = extension_->origin();
   browser_context()
       ->GetDefaultStoragePartition()
       ->GetNetworkContext()

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_MEDIA_WEBRTC_NATIVE_DESKTOP_MEDIA_LIST_H_
 #define CHROME_BROWSER_MEDIA_WEBRTC_NATIVE_DESKTOP_MEDIA_LIST_H_
 
+#include <map>
 #include <memory>
 
 #include "base/memory/weak_ptr.h"
@@ -24,6 +25,10 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
   // |capturer| must exist.
   NativeDesktopMediaList(DesktopMediaList::Type type,
                          std::unique_ptr<webrtc::DesktopCapturer> capturer);
+
+  NativeDesktopMediaList(DesktopMediaList::Type type,
+                         std::unique_ptr<webrtc::DesktopCapturer> capturer,
+                         bool add_current_process_windows);
 
   NativeDesktopMediaList(const NativeDesktopMediaList&) = delete;
   NativeDesktopMediaList& operator=(const NativeDesktopMediaList&) = delete;
@@ -52,6 +57,10 @@ class NativeDesktopMediaList : public DesktopMediaListBase {
 
   base::Thread thread_;
   std::unique_ptr<Worker> worker_;
+
+  // Whether we need to find and add the windows owned by the current process.
+  // If false, the capturer will do this for us.
+  bool add_current_process_windows_;
 
 #if defined(USE_AURA)
   // previous_aura_thumbnail_hashes_ holds thumbanil hash values of aura windows

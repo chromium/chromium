@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "chromecast/media/audio/mixer_service/mixer_connection.h"
 #include "chromecast/media/audio/mixer_service/mixer_socket.h"

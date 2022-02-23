@@ -58,15 +58,29 @@ const char kClientSideDetectionTagParamName[] = "reporter_omaha_tag";
 // Enables client side detection referrer chain.
 extern const base::Feature kClientSideDetectionReferrerChain;
 
+// Controls the non-blocking scanning UI for Connectors scanning requests. If
+// this is enabled, the downloaded file(s) will be renamed immediately and the
+// scanning will take place without UI when the policy is set to "non-blocking"
+// instead of just showing an "Open Now" button with the blocking UI.
+extern const base::Feature kConnectorsScanningReportOnlyUI;
+
 // Controls whether the delayed warning experiment is enabled.
 extern const base::Feature kDelayedWarnings;
 // True if mouse clicks should undelay the warnings immediately when delayed
 // warnings feature is enabled.
 extern const base::FeatureParam<bool> kDelayedWarningsEnableMouseClicks;
 
-// This gates mime type sniffing for DLP file support until the mime type list
-// and implementation are validated experimentally.
-extern const base::Feature kFileAnalysisMimeTypeSniff;
+// Whether to use download bubble instead of download shelf.
+extern const base::Feature kDownloadBubble;
+
+// Enables Enhanced Safe Browsing.
+extern const base::Feature kEnhancedProtection;
+
+// Enables collection of signals related to extension activity and uploads
+// of telemetry reports to SB servers.
+extern const base::Feature kExtensionTelemetry;
+// Specifies the upload interval for extension telemetry reports.
+extern const base::FeatureParam<int> kExtensionTelemetryUploadIntervalSeconds;
 
 // Determines the tag to pass to Omaha to get a file type policy.
 extern const base::Feature kFileTypePoliciesTag;
@@ -84,6 +98,10 @@ extern const base::Feature kPasswordProtectionForSignedInUsers;
 // Controls whether Chrome prompts Enhanced Safe Browsing users for deep
 // scanning.
 extern const base::Feature kPromptEsbForDeepScanning;
+
+// Controls whether Client Safe Browsing Reports are sent with a GAIA-tied token
+// for Enhanced Safe Browsing users
+extern const base::Feature kSafeBrowsingCsbrrWithToken;
 
 // Controls whether users will see an account compromise specific warning
 // when Safe Browsing determines a file is associated with stealing cookies.
@@ -111,9 +129,9 @@ extern const base::Feature kSafeBrowsingRemoveCookiesInAuthRequests;
 // Controls the daily quota for the suspicious site trigger.
 extern const base::Feature kSuspiciousSiteTriggerQuotaFeature;
 
-// Controls whether the referrer chain is attached to real time requests for
-// enterprise.
-extern const base::Feature kRealTimeUrlLookupReferrerChainForEnterprise;
+// Controls whether to send sample pings of Protego allowlist domains on
+// the allowlist to Safe Browsing.
+extern const base::Feature kSendSampledPingsForProtegoAllowlistDomains;
 
 // Status of the SimplifiedUrlDisplay experiments. This does not control the
 // individual experiments, those are controlled by their own feature flags.

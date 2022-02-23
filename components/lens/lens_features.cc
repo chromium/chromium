@@ -11,10 +11,10 @@ namespace lens {
 namespace features {
 
 const base::Feature kLensStandalone{"LensStandalone",
-                                    base::FEATURE_DISABLED_BY_DEFAULT};
+                                    base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::Feature kLensRegionSearch{"LensRegionSearch",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 const base::FeatureParam<bool> kRegionSearchMacCursorFix{
     &kLensRegionSearch, "region-search-mac-cursor-fix", true};
@@ -32,13 +32,13 @@ const base::FeatureParam<bool> kRegionSearchUseMenuItemAltText4{
     &kLensRegionSearch, "use-menu-item-alt-text-4", true};
 
 const base::FeatureParam<bool> kEnableUKMLoggingForRegionSearch{
-    &kLensRegionSearch, "region-search-enable-ukm-logging", false};
+    &kLensRegionSearch, "region-search-enable-ukm-logging", true};
 
 const base::FeatureParam<bool> kEnableUKMLoggingForImageSearch{
-    &kLensStandalone, "enable-ukm-logging", false};
+    &kLensStandalone, "enable-ukm-logging", true};
 
 const base::FeatureParam<bool> kEnableSidePanelForLensRegionSearch{
-    &kLensRegionSearch, "region-search-enable-side-panel", true};
+    &kLensRegionSearch, "region-search-enable-side-panel", false};
 
 const base::FeatureParam<bool> kEnableSidePanelForLensImageSearch{
     &kLensStandalone, "enable-side-panel", false};

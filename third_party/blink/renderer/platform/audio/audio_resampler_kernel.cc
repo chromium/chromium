@@ -62,8 +62,9 @@ float* AudioResamplerKernel::GetSourcePointer(
   // We need to fill the buffer up to and including endIndex (so add 1) but
   // we've already buffered m_fillIndex frames from last time.
   unsigned frames_needed = 1 + end_index - fill_index_;
-  if (number_of_source_frames_needed_p)
+  if (number_of_source_frames_needed_p) {
     *number_of_source_frames_needed_p = frames_needed;
+  }
 
   // Do bounds checking for the source buffer.
   DCHECK_LT(fill_index_, source_buffer_.size());

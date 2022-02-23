@@ -35,13 +35,7 @@ std::string Channel::GenerateUniqueRandomChannelID() {
   // the creator, an identifier for the child instance, and a strong random
   // component. The strong random component prevents other processes from
   // hijacking or squatting on predictable channel names.
-#if defined(OS_NACL_NONSFI)
-  // The seccomp sandbox disallows use of getpid(), so we provide a
-  // dummy PID.
-  int process_id = -1;
-#else
   int process_id = base::GetCurrentProcId();
-#endif
   return base::StringPrintf("%d.%u.%d",
       process_id,
       g_last_id.GetNext(),

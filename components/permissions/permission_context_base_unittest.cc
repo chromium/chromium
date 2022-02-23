@@ -267,7 +267,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
           "Permissions.Prompt." + decision_string + ".PriorIgnoreCount2." +
               PermissionUtil::GetPermissionString(content_settings_type),
           0, 1);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       histograms.ExpectUniqueSample(
           "Permissions.Action.WithDisposition.ModalDialog",
           static_cast<int>(action.value()), 1);
@@ -307,7 +307,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
       EXPECT_EQ(*ukm_recorder.GetEntryMetric(entry, "Action"),
                 static_cast<int64_t>(action.value()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       EXPECT_EQ(
           *ukm_recorder.GetEntryMetric(entry, "PromptDisposition"),
           static_cast<int64_t>(PermissionPromptDisposition::MODAL_DIALOG));
@@ -721,7 +721,7 @@ class PermissionContextBaseTests : public content::RenderViewHostTestHarness {
 
   void SetUpUrl(const GURL& url) {
     NavigateAndCommit(url);
-    prompt_factory_->DocumentOnLoadCompletedInMainFrame(main_rfh());
+    prompt_factory_->DocumentOnLoadCompletedInPrimaryMainFrame();
   }
 
  private:
@@ -790,7 +790,7 @@ TEST_F(PermissionContextBaseTests, TestGrantAndRevoke) {
                                  CONTENT_SETTING_ASK);
   TestGrantAndRevoke_TestContent(ContentSettingsType::MIDI_SYSEX,
                                  CONTENT_SETTING_ASK);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   TestGrantAndRevoke_TestContent(
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER, CONTENT_SETTING_ASK);
   // TODO(timvolodine): currently no test for
@@ -808,7 +808,7 @@ TEST_F(PermissionContextBaseTests, TestGlobalKillSwitch) {
   TestGlobalPermissionsKillSwitch(ContentSettingsType::NOTIFICATIONS);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::MIDI_SYSEX);
   TestGlobalPermissionsKillSwitch(ContentSettingsType::DURABLE_STORAGE);
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   TestGlobalPermissionsKillSwitch(
       ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER);
 #endif

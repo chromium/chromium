@@ -33,6 +33,7 @@ const char kAppIdImage[] = "gfedcba";
 const char kAppIdAny[] = "hijklmn";
 const char kChromeAppId[] = "chromeappid";
 const char kChromeAppWithVerbsId[] = "chromeappwithverbsid";
+const char kExtensionId[] = "extensionid";
 const char kAppIdTextWild[] = "zxcvbn";
 const char kMimeTypeText[] = "text/plain";
 const char kMimeTypeImage[] = "image/jpeg";
@@ -48,7 +49,8 @@ const char kActivityLabelAny[] = "some_any_file";
 const char kActivityLabelTextWild[] = "some_text_wild_file";
 
 GURL test_url(const std::string& file_name) {
-  GURL url = GURL("filesystem:https://site.com/isolated/" + file_name);
+  GURL url =
+      GURL("filesystem:chrome-extension://extensionid/external/" + file_name);
   EXPECT_TRUE(url.is_valid());
   return url;
 }
@@ -186,7 +188,7 @@ class AppServiceFileTasksTest : public testing::Test {
     auto filters =
         apps_util::CreateChromeAppIntentFilters(baz_app.Build().get());
     AddFakeAppWithIntentFilters(kChromeAppId, std::move(filters),
-                                apps::mojom::AppType::kExtension,
+                                apps::mojom::AppType::kChromeApp,
                                 apps::mojom::OptionalBool::kTrue);
   }
 
@@ -259,44 +261,37 @@ class AppServiceFileTasksTest : public testing::Test {
     auto filters =
         apps_util::CreateChromeAppIntentFilters(foo_app.Build().get());
     AddFakeAppWithIntentFilters(kChromeAppWithVerbsId, std::move(filters),
-                                apps::mojom::AppType::kExtension,
+                                apps::mojom::AppType::kChromeApp,
                                 apps::mojom::OptionalBool::kTrue);
   }
 
-  void AddChromeBookmarkApp() {
-    const char kGraphrId[] = "ppcpljkgngnngojbghcdiojhbneibgdg";
-    extensions::ExtensionBuilder graphr;
-    graphr.SetManifest(
+  // Adds file_browser_handler to handle .txt files.
+  void AddExtension() {
+    extensions::ExtensionBuilder fbh_app;
+    fbh_app.SetManifest(
         extensions::DictionaryBuilder()
-            .Set("name", "Graphr")
+            .Set("name", "Fbh")
             .Set("version", "1.0.0")
             .Set("manifest_version", 2)
-            .Set("app",
-                 extensions::DictionaryBuilder()
-                     .Set("launch", extensions::DictionaryBuilder()
-                                        .Set("web_url", "https://graphr.tld")
-                                        .Build())
-                     .Build())
-            .Set("file_handlers",
-                 extensions::DictionaryBuilder()
-                     .Set("https://graphr.tld/open-files/?name=raw",
-                          extensions::DictionaryBuilder()
-                              .Set("title", "Raw")
-                              .Set("types", extensions::ListBuilder()
-                                                .Append("text/csv")
-                                                .Build())
-                              .Set("extensions", extensions::ListBuilder()
-                                                     .Append("csv")
-                                                     .Build())
-                              .Build())
+            .Set("permissions",
+                 extensions::ListBuilder().Append("fileBrowserHandler").Build())
+            .Set("file_browser_handlers",
+                 extensions::ListBuilder()
+                     .Append(extensions::DictionaryBuilder()
+                                 .Set("id", "open")
+                                 .Set("default_title", "open title")
+                                 .Set("file_filters",
+                                      extensions::ListBuilder()
+                                          .Append("filesystem:*.txt")
+                                          .Build())
+                                 .Build())
                      .Build())
             .Build());
-    graphr.SetID(kGraphrId);
-    graphr.AddFlags(extensions::Extension::InitFromValueFlags::FROM_BOOKMARK);
+    fbh_app.SetID(kExtensionId);
     auto filters =
-        apps_util::CreateChromeAppIntentFilters(graphr.Build().get());
-    AddFakeAppWithIntentFilters(kGraphrId, std::move(filters),
-                                apps::mojom::AppType::kExtension,
+        apps_util::CreateExtensionIntentFilters(fbh_app.Build().get());
+    AddFakeAppWithIntentFilters(kExtensionId, std::move(filters),
+                                apps::mojom::AppType::kChromeApp,
                                 apps::mojom::OptionalBool::kTrue);
   }
 
@@ -584,13 +579,17 @@ TEST_F(AppServiceFileTasksTestEnabled,
   EXPECT_EQ(Verb::VERB_OPEN_WITH, tasks[0].task_verb);
 }
 
-TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceChromeBookmarkApp) {
-  AddChromeBookmarkApp();
+TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
+  AddExtension();
   std::vector<FullTaskDescriptor> tasks =
-      FindAppServiceTasks({{"foo.csv", "text/csv"}});
+      FindAppServiceTasks({{"foo.txt", kMimeTypeText}});
 
-  // No bookmark apps expected.
-  ASSERT_EQ(0U, tasks.size());
+  ASSERT_EQ(1U, tasks.size());
+  EXPECT_EQ(kExtensionId, tasks[0].task_descriptor.app_id);
+  EXPECT_EQ("open title", tasks[0].task_title);
+  EXPECT_EQ("open", tasks[0].task_descriptor.action_id);
+  EXPECT_FALSE(tasks[0].is_generic_file_handler);
+  EXPECT_FALSE(tasks[0].is_file_extension_match);
 }
 
 }  // namespace file_tasks

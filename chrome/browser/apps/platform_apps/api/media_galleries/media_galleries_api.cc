@@ -18,6 +18,7 @@
 #include "base/callback.h"
 #include "base/lazy_instance.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -259,7 +260,7 @@ class SelectDirectoryDialog : public ui::SelectFileDialog::Listener,
   ~SelectDirectoryDialog() override = default;
 
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
-  WebContents* web_contents_;
+  raw_ptr<WebContents> web_contents_;
   Callback callback_;
 };
 
@@ -761,15 +762,16 @@ void MediaGalleriesGetMetadataFunction::ConstructNextBlob(
   base::ListValue* attached_images_list = NULL;
   result_dictionary->GetList(kAttachedImagesBlobInfoKey, &attached_images_list);
   DCHECK(attached_images_list);
-  DCHECK_LT(attached_images_list->GetList().size(), attached_images->size());
+  DCHECK_LT(attached_images_list->GetListDeprecated().size(),
+            attached_images->size());
 
   metadata::AttachedImage* current_image =
       &(*attached_images)[blob_uuids->size()];
   std::unique_ptr<base::DictionaryValue> attached_image(
       new base::DictionaryValue);
-  attached_image->SetString(kBlobUUIDKey, current_blob->GetUUID());
-  attached_image->SetString(kMediaGalleriesApiTypeKey, current_image->type);
-  attached_image->SetInteger(
+  attached_image->SetStringKey(kBlobUUIDKey, current_blob->GetUUID());
+  attached_image->SetStringKey(kMediaGalleriesApiTypeKey, current_image->type);
+  attached_image->SetIntKey(
       kSizeKey, base::checked_cast<int>(current_image->data.size()));
   attached_images_list->Append(std::move(attached_image));
 

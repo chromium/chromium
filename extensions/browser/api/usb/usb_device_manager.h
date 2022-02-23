@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/browser_thread.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"
@@ -73,11 +73,11 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   const device::mojom::UsbDeviceInfo* GetDeviceInfo(const std::string& guid);
   bool UpdateActiveConfig(const std::string& guid, uint8_t config_value);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   void CheckAccess(
       const std::string& guid,
       device::mojom::UsbDeviceManager::CheckAccessCallback callback);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   void EnsureConnectionWithDeviceManager();
 
@@ -112,7 +112,7 @@ class UsbDeviceManager : public BrowserContextKeyedAPI,
   void DispatchEvent(const std::string& event_name,
                      const device::mojom::UsbDeviceInfo& device_info);
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 
   // Legacy integer IDs are used in USB extensions API so we need to maps USB
   // device GUIDs to integer IDs.

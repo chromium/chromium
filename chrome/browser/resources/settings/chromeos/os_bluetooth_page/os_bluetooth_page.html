@@ -1,4 +1,8 @@
 <style include="settings-shared iron-flex">
+  iron-icon[icon='cr:add'] {
+    --iron-icon-fill-color: var(--cros-icon-color-prominent);
+    margin-inline-end: 8px;
+  }
 </style>
 <settings-animated-pages id="pages" section="bluetooth">
   <div route-path="default">
@@ -9,6 +13,18 @@
   </div>
   <template is="dom-if" route-path="/bluetoothDevices">
     <settings-subpage page-title="$i18n{bluetoothPageTitle}">
+      <div slot="subpage-title-extra">
+        <template is="dom-if"
+            if="[[shouldShowPairNewDevice_(systemProperties_.*)]]" restamp>
+          <cr-button id="pairNewDevice"
+              on-click="onStartPairing_"
+              class="cancel-button">
+            <iron-icon icon="cr:add">
+            </iron-icon>
+            $i18n{bluetoothPairNewDevice}
+          </cr-button>
+        </template>
+      </div>
       <os-settings-bluetooth-devices-subpage
           prefs="{{prefs}}"
           system-properties="[[systemProperties_]]">

@@ -10,11 +10,11 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_external_update_validator.h"
-#include "chromeos/disks/disk_mount_manager.h"
 
 namespace ash {
 
@@ -22,7 +22,7 @@ class KioskExternalUpdateNotification;
 
 // Observes the disk mount/unmount events, scans the usb stick for external
 // kiosk app updates, validates the external crx, and updates the cache.
-class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
+class KioskExternalUpdater : public disks::DiskMountManager::Observer,
                              public KioskExternalUpdateValidatorDelegate {
  public:
   enum class ErrorCode {
@@ -56,11 +56,11 @@ class KioskExternalUpdater : public chromeos::disks::DiskMountManager::Observer,
     std::u16string error;
   };
 
-  // chromeos::disks::DiskMountManager::Observer overrides.
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
+  // ash::disks::DiskMountManager::Observer overrides.
+  void OnMountEvent(
+      disks::DiskMountManager::MountEvent event,
+      chromeos::MountError error_code,
+      const disks::DiskMountManager::MountPointInfo& mount_info) override;
 
   // KioskExternalUpdateValidatorDelegate overrides:
   void OnExternalUpdateUnpackSuccess(const std::string& app_id,

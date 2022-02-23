@@ -32,6 +32,7 @@
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/include/core/SkSurface.h"
+#include "ui/gfx/geometry/skia_conversions.h"
 
 namespace blink {
 
@@ -168,11 +169,11 @@ void ImageFrame::SetStatus(Status status) {
   }
 }
 
-void ImageFrame::ZeroFillFrameRect(const IntRect& rect) {
+void ImageFrame::ZeroFillFrameRect(const gfx::Rect& rect) {
   if (rect.IsEmpty())
     return;
 
-  bitmap_.eraseArea(rect, SkColorSetARGB(0, 0, 0, 0));
+  bitmap_.eraseArea(gfx::RectToSkIRect(rect), SkColorSetARGB(0, 0, 0, 0));
   SetHasAlpha(true);
 }
 

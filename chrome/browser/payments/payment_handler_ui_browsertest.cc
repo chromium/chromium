@@ -13,7 +13,7 @@ namespace {
 class PaymentHandlerUiBrowserTest
     : public PaymentRequestPlatformBrowserTestBase {};
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_OpenPaymentTwiceShouldBeSuccessful \
   DISABLED_OpenPaymentTwiceShouldBeSuccessful
 #else

@@ -11,6 +11,7 @@
 
 namespace views {
 class Button;
+class FocusRing;
 class View;
 }  // namespace views
 
@@ -53,6 +54,13 @@ class ASH_EXPORT StyleUtil {
       views::View* view,
       uint32_t attributes,
       SkColor background_color = gfx::kPlaceholderColor);
+
+  // Sets up the focus ring and its color for `view`. `halo_inset` is the
+  // adjustment from the visible border of the host view to render the focus
+  // ring. If it is not given, then the default (-0.5 * thickness) will be used.
+  static views::FocusRing* SetUpFocusRingForView(
+      views::View* view,
+      absl::optional<int> halo_inset = absl::nullopt);
 
  private:
   StyleUtil() = default;

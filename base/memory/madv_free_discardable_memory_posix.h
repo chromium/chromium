@@ -15,6 +15,7 @@
 #include "base/callback.h"
 #include "base/check_op.h"
 #include "base/memory/discardable_memory.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/threading/thread_collision_warner.h"
 #include "build/build_config.h"
@@ -110,9 +111,9 @@ class BASE_EXPORT MadvFreeDiscardableMemoryPosix : public DiscardableMemory {
 
   // Pointer to allocator memory usage metric for updating upon allocation and
   // destruction.
-  std::atomic<size_t>* allocator_byte_count_;
+  raw_ptr<std::atomic<size_t>> allocator_byte_count_;
 
-  void* data_;
+  raw_ptr<void> data_;
   bool is_locked_ = true;
 
   // If true, MADV_FREE will not be set on Unlock().

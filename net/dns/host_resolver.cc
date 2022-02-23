@@ -4,6 +4,7 @@
 
 #include "net/dns/host_resolver.h"
 
+#include <set>
 #include <string>
 #include <utility>
 #include <vector>
@@ -11,9 +12,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/immediate_crash.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "net/base/address_list.h"
@@ -24,8 +25,10 @@
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
 #include "net/dns/host_resolver_manager.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/mapped_host_resolver.h"
 #include "net/dns/resolve_context.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
 
@@ -44,9 +47,10 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
   int Start(CompletionOnceCallback callback) override { return error_; }
   int Start() override { return error_; }
 
-  const absl::optional<AddressList>& GetAddressResults() const override {
-    static base::NoDestructor<absl::optional<AddressList>> nullopt_result;
-    return *nullopt_result;
+  AddressList* GetAddressResults() const override { return nullptr; }
+
+  std::vector<HostResolverEndpointResult>* GetEndpointResults() const override {
+    return nullptr;
   }
 
   const absl::optional<std::vector<std::string>>& GetTextResults()
@@ -63,11 +67,8 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
     return *nullopt_result;
   }
 
-  const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-      const override {
-    static const base::NoDestructor<absl::optional<std::vector<std::string>>>
-        nullopt_result;
-    return *nullopt_result;
+  const std::set<std::string>* GetDnsAliasResults() const override {
+    return nullptr;
   }
 
   ResolveErrorInfo GetResolveErrorInfo() const override {
@@ -84,9 +85,13 @@ class FailingRequestImpl : public HostResolver::ResolveHostRequest,
   const int error_;
 };
 
+bool EndpointResultIsNonProtocol(const HostResolverEndpointResult& result) {
+  return result.metadata.supported_protocol_alpns.empty();
+}
+
 }  // namespace
 
-const absl::optional<std::vector<bool>>&
+const std::vector<bool>*
 HostResolver::ResolveHostRequest::GetExperimentalResultsForTesting() const {
   IMMEDIATE_CRASH();
 }
@@ -219,20 +224,17 @@ HostResolver::CreateStandaloneContextResolver(
 }
 
 // static
-AddressFamily HostResolver::DnsQueryTypeToAddressFamily(
-    DnsQueryType dns_query_type) {
-  switch (dns_query_type) {
-    case DnsQueryType::UNSPECIFIED:
-      return ADDRESS_FAMILY_UNSPECIFIED;
-    case DnsQueryType::A:
-      return ADDRESS_FAMILY_IPV4;
-    case DnsQueryType::AAAA:
-      return ADDRESS_FAMILY_IPV6;
-    default:
-      // |dns_query_type| should be an address type (A or AAAA) or UNSPECIFIED.
-      NOTREACHED();
-      return ADDRESS_FAMILY_UNSPECIFIED;
-  }
+AddressFamily HostResolver::DnsQueryTypeSetToAddressFamily(
+    DnsQueryTypeSet dns_query_types) {
+  DCHECK(HasAddressType(dns_query_types));
+  // If the set of query types contains A and AAAA, defer the choice of address
+  // family. Otherwise, pick the corresponding address family.
+  if (dns_query_types.HasAll({DnsQueryType::A, DnsQueryType::AAAA}))
+    return ADDRESS_FAMILY_UNSPECIFIED;
+  if (dns_query_types.Has(DnsQueryType::AAAA))
+    return ADDRESS_FAMILY_IPV6;
+  DCHECK(dns_query_types.Has(DnsQueryType::A));
+  return ADDRESS_FAMILY_IPV4;
 }
 
 // static
@@ -258,6 +260,36 @@ int HostResolver::SquashErrorCode(int error) {
   } else {
     return ERR_NAME_NOT_RESOLVED;
   }
+}
+
+// static
+std::vector<HostResolverEndpointResult>
+HostResolver::AddressListToEndpointResults(const AddressList& address_list) {
+  HostResolverEndpointResult connection_endpoint;
+  connection_endpoint.ip_endpoints = address_list.endpoints();
+
+  std::vector<HostResolverEndpointResult> list;
+  list.push_back(std::move(connection_endpoint));
+  return list;
+}
+
+// static
+AddressList HostResolver::EndpointResultToAddressList(
+    const std::vector<HostResolverEndpointResult>& endpoints,
+    const std::set<std::string>& aliases) {
+  AddressList list;
+
+  auto non_protocol_endpoint =
+      base::ranges::find_if(endpoints, &EndpointResultIsNonProtocol);
+  if (non_protocol_endpoint == endpoints.end())
+    return list;
+
+  list.endpoints() = non_protocol_endpoint->ip_endpoints;
+
+  std::vector<std::string> aliases_vector(aliases.begin(), aliases.end());
+  list.SetDnsAliases(std::move(aliases_vector));
+
+  return list;
 }
 
 HostResolver::HostResolver() = default;

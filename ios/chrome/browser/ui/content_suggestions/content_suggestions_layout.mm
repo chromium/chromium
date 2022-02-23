@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_layout.h"
 
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_utils.h"
+#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_omnibox_positioning.h"
 #import "ios/chrome/browser/ui/toolbar/public/toolbar_utils.h"
@@ -29,7 +30,6 @@
   CGFloat ntpHeight = collectionViewHeight + headerHeight;
   CGFloat minimumHeight =
       ntpHeight - ntp_header::kScrolledToTopOmniboxBottomMargin;
-  CGFloat topSafeArea = self.collectionView.safeAreaInsets.top;
   if (!IsRegularXRegularSizeClass(self.collectionView)) {
     CGFloat toolbarHeight =
         IsSplitToolbarMode(self.collectionView)
@@ -37,16 +37,16 @@
                                         .preferredContentSizeCategory)
             : 0;
     CGFloat additionalHeight =
-        toolbarHeight + topSafeArea + self.collectionView.contentInset.bottom;
+        toolbarHeight + self.collectionView.contentInset.bottom;
     minimumHeight -= additionalHeight;
-    ntpHeight += additionalHeight;
   }
 
   return minimumHeight;
 }
 
 - (NSArray*)layoutAttributesForElementsInRect:(CGRect)rect {
-  if (IsRegularXRegularSizeClass(self.collectionView))
+  if (IsRegularXRegularSizeClass(self.collectionView) ||
+      IsContentSuggestionsHeaderMigrationEnabled())
     return [super layoutAttributesForElementsInRect:rect];
 
   NSMutableArray* layoutAttributes =
@@ -88,7 +88,8 @@ layoutAttributesForSupplementaryViewOfKind:(NSString*)kind
   UICollectionViewLayoutAttributes* attributes =
       [super layoutAttributesForSupplementaryViewOfKind:kind
                                             atIndexPath:indexPath];
-  if (!IsSplitToolbarMode(self.collectionView))
+  if (!IsSplitToolbarMode(self.collectionView) ||
+      IsContentSuggestionsHeaderMigrationEnabled())
     return attributes;
 
   if ([kind isEqualToString:UICollectionElementKindSectionHeader] &&

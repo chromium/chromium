@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "third_party/pdfium/public/cpp/fpdf_scopers.h"
 #include "third_party/pdfium/public/fpdfview.h"
@@ -31,12 +32,12 @@ class PDFiumPrint {
   PDFiumPrint& operator=(const PDFiumPrint&) = delete;
   ~PDFiumPrint();
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Flattens the `doc`.
   // On success, returns the flattened version of `doc` as a vector.
   // On failure, returns an empty vector.
   static std::vector<uint8_t> CreateFlattenedPdf(ScopedFPDFDocument doc);
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Performs N-up PDF generation for `doc` based on `pages_per_sheet`,
   // `page_size`, and `printable_area`.
@@ -73,7 +74,7 @@ class PDFiumPrint {
   ScopedFPDFDocument CreateSinglePageRasterPdf(FPDF_PAGE page_to_print,
                                                int dpi);
 
-  PDFiumEngine* const engine_;
+  const raw_ptr<PDFiumEngine> engine_;
 };
 
 }  // namespace chrome_pdf

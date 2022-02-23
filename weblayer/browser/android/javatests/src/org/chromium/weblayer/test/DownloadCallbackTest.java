@@ -240,8 +240,10 @@ public class DownloadCallbackTest {
         mCallback.waitForStarted();
         mCallback.waitForCompleted();
 
+        // Location varies depending upon version. See PathUtils.getDownloadsDirectory().
         Assert.assertTrue(mCallback.mLocation.contains(
-                "org.chromium.weblayer.shell/cache/weblayer/Downloads/"));
+                                  "org.chromium.weblayer.shell/cache/weblayer/Downloads/")
+                || mCallback.mLocation.contains("/media/"));
         Assert.assertTrue(mCallback.mFileName.contains("test"));
         Assert.assertEquals(DownloadState.COMPLETE, mCallback.mState);
         Assert.assertEquals(DownloadError.NO_ERROR, mCallback.mError);

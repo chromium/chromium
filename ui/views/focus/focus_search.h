@@ -6,6 +6,7 @@
 #define UI_VIEWS_FOCUS_FOCUS_SEARCH_H_
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 namespace views {
@@ -148,7 +149,7 @@ class VIEWS_EXPORT FocusSearch {
       FocusTraversable** focus_traversable,
       View** focus_traversable_view);
 
-  View* root_;
+  raw_ptr<View> root_;
   bool cycle_;
   bool accessibility_mode_;
 };

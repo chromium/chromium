@@ -27,8 +27,6 @@ class ASH_EXPORT DisplayConfigurationObserver
 
   ~DisplayConfigurationObserver() override;
 
-  bool save_preference() const { return save_preference_; }
-
  protected:
   // WindowTreeHostManager::Observer:
   void OnDisplaysInitialized() override;
@@ -41,8 +39,6 @@ class ASH_EXPORT DisplayConfigurationObserver
  private:
   void StartMirrorMode();
   void EndMirrorMode();
-
-  bool save_preference_ = true;
 
   // True if the device was in mirror mode before siwtching to tablet mode.
   bool was_in_mirror_mode_ = false;

@@ -5,8 +5,8 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_FAKE_PLATFORM_SENSOR_AND_PROVIDER_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_FAKE_PLATFORM_SENSOR_AND_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
+#include "services/device/generic_sensor/platform_sensor.h"
 #include "services/device/generic_sensor/platform_sensor_provider.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -28,6 +28,9 @@ class FakePlatformSensor : public PlatformSensor {
   void set_maximum_supported_frequency(double maximum_supported_frequency) {
     maximum_supported_frequency_ = maximum_supported_frequency;
   }
+
+  // Public interface to UpdateSharedBufferAndNotifyClients().
+  void AddNewReading(const SensorReading& reading);
 
  protected:
   void StopSensor() override {}
@@ -84,6 +87,8 @@ class MockPlatformSensorClient : public PlatformSensor::Client {
   MockPlatformSensorClient& operator=(const MockPlatformSensorClient&) = delete;
 
   ~MockPlatformSensorClient() override;
+
+  scoped_refptr<PlatformSensor> sensor() const { return sensor_; }
 
   // PlatformSensor::Client:
   MOCK_METHOD1(OnSensorReadingChanged, void(mojom::SensorType type));

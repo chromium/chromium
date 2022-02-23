@@ -1671,6 +1671,23 @@ class PortTest(LoggingTestCase):
             self.assertIsNotNone(port_class, port_name)
             self.assertListEqual(versions, list(port_class.SUPPORTED_VERSIONS))
 
+    def test_used_expectations_files_pardir(self):
+        port = self.make_port()
+        original_dir = port.host.filesystem.getcwd()
+        try:
+            subdir = port.host.filesystem.join(port.web_tests_dir(),
+                                               'some_directory')
+            port.host.filesystem.maybe_make_directory(subdir)
+            port.host.filesystem.chdir(subdir)
+            port._options.additional_expectations = [
+                port.host.filesystem.join('..', 'some_file')
+            ]
+            self.assertIn(
+                port.host.filesystem.join(port.web_tests_dir(), 'some_file'),
+                port.used_expectations_files())
+        finally:
+            port.host.filesystem.chdir(original_dir)
+
 
 class NaturalCompareTest(unittest.TestCase):
     def setUp(self):

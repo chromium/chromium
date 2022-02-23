@@ -21,12 +21,13 @@ CallbackFunctionBase::CallbackFunctionBase(
   // Set |callback_relevant_script_state_| iff the creation context and the
   // incumbent context are the same origin-domain. Otherwise, leave it as
   // nullptr.
-  v8::Local<v8::Context> creation_context =
-      callback_function->CreationContext();
+  v8::MaybeLocal<v8::Context> creation_context =
+      callback_function->GetCreationContext();
   if (BindingSecurityForPlatform::ShouldAllowAccessToV8Context(
           incumbent_script_state_->GetContext(), creation_context,
           BindingSecurityForPlatform::ErrorReportOption::kDoNotReport)) {
-    callback_relevant_script_state_ = ScriptState::From(creation_context);
+    callback_relevant_script_state_ =
+        ScriptState::From(creation_context.ToLocalChecked());
   }
 }
 

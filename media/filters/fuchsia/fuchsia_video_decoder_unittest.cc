@@ -302,13 +302,14 @@ class FuchsiaVideoDecoderTest : public testing::Test {
 
   ~FuchsiaVideoDecoderTest() override = default;
 
-  bool InitializeDecoder(VideoDecoderConfig config) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool InitializeDecoder(VideoDecoderConfig config) {
     base::RunLoop run_loop;
     bool init_cb_result = false;
     decoder_->Initialize(
         config, true, /*cdm_context=*/nullptr,
         base::BindRepeating(
-            [](bool* init_cb_result, base::RunLoop* run_loop, Status status) {
+            [](bool* init_cb_result, base::RunLoop* run_loop,
+               DecoderStatus status) {
               *init_cb_result = status.is_ok();
               run_loop->Quit();
             },
@@ -351,7 +352,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
     DecodeBuffer(ReadTestDataFile(name));
   }
 
-  void OnFrameDecoded(size_t frame_pos, Status status) {
+  void OnFrameDecoded(size_t frame_pos, DecoderStatus status) {
     EXPECT_EQ(frame_pos, num_decoded_buffers_);
     num_decoded_buffers_ += 1;
     last_decode_status_ = std::move(status);
@@ -388,7 +389,7 @@ class FuchsiaVideoDecoderTest : public testing::Test {
   std::list<scoped_refptr<VideoFrame>> output_frames_;
   size_t num_output_frames_ = 0;
 
-  Status last_decode_status_;
+  DecoderStatus last_decode_status_;
   base::RunLoop* run_loop_ = nullptr;
 
   // Number of frames that OnVideoFrame() should keep in |output_frames_|.

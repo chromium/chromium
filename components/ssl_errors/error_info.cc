@@ -177,12 +177,6 @@ ErrorInfo ErrorInfo::CreateError(ErrorType error_type,
       short_description = l10n_util::GetStringUTF16(
           IDS_CERT_ERROR_CERTIFICATE_TRANSPARENCY_REQUIRED_DESCRIPTION);
       break;
-    case LEGACY_TLS:
-      details =
-          l10n_util::GetStringUTF16(IDS_SSL_ERROR_OBSOLETE_VERSION_DETAILS);
-      short_description =
-          l10n_util::GetStringUTF16(IDS_SSL_ERROR_OBSOLETE_VERSION_DESCRIPTION);
-      break;
     case UNKNOWN:
       details = l10n_util::GetStringUTF16(IDS_CERT_ERROR_UNKNOWN_ERROR_DETAILS);
       short_description =
@@ -231,8 +225,6 @@ ErrorInfo::ErrorType ErrorInfo::NetErrorToErrorType(int net_error) {
       return CERT_SYMANTEC_LEGACY;
     case net::ERR_CERT_KNOWN_INTERCEPTION_BLOCKED:
       return CERT_KNOWN_INTERCEPTION_BLOCKED;
-    case net::ERR_SSL_OBSOLETE_VERSION:
-      return LEGACY_TLS;
     default:
       NOTREACHED();
       return UNKNOWN;
@@ -260,7 +252,6 @@ void ErrorInfo::GetErrorsForCertStatus(
       net::CERT_STATUS_CERTIFICATE_TRANSPARENCY_REQUIRED,
       net::CERT_STATUS_SYMANTEC_LEGACY,
       net::CERT_STATUS_KNOWN_INTERCEPTION_BLOCKED,
-      net::CERT_STATUS_LEGACY_TLS,
   };
 
   const ErrorType kErrorTypes[] = {
@@ -278,7 +269,6 @@ void ErrorInfo::GetErrorsForCertStatus(
       CERTIFICATE_TRANSPARENCY_REQUIRED,
       CERT_SYMANTEC_LEGACY,
       CERT_KNOWN_INTERCEPTION_BLOCKED,
-      LEGACY_TLS,
   };
   DCHECK(base::size(kErrorFlags) == base::size(kErrorTypes));
 

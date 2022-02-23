@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/diagnostics/diagnostics_metrics.h"
 #include "chrome/browser/diagnostics/diagnostics_model.h"
 

@@ -22,10 +22,10 @@ class SandboxedPagesTest
  public:
   SandboxedPagesTest() = default;
 
-  bool RunTest(const char* extension_name,
-               const char* manifest,
-               const RunOptions& run_options,
-               const LoadOptions& load_options) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool RunTest(const char* extension_name,
+                             const char* manifest,
+                             const RunOptions& run_options,
+                             const LoadOptions& load_options) {
     const char* kCustomArg =
         GetParam() == ManifestVersion::TWO ? "manifest_v2" : "manifest_v3";
     SetCustomArg(kCustomArg);

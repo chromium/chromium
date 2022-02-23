@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/do_not_disturb_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeDoNotDisturbController : public DoNotDisturbController {
@@ -34,6 +34,6 @@ class FakeDoNotDisturbController : public DoNotDisturbController {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_DO_NOT_DISTURB_CONTROLLER_H_

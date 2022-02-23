@@ -13,7 +13,9 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/ref_counted_memory.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/stl_util.h"
 #include "base/supports_user_data.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -372,7 +374,7 @@ class SelfDeletingServiceWorkerPaymentAppFinder
 
   // |owner_| owns this SelfDeletingServiceWorkerPaymentAppFinder, so it is
   // always valid.
-  content::WebContents* owner_;
+  raw_ptr<content::WebContents> owner_;
 
   std::unique_ptr<PaymentManifestDownloader> downloader_;
   std::unique_ptr<PaymentManifestParser> parser_;

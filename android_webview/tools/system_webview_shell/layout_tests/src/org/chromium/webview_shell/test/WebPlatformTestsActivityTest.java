@@ -37,7 +37,7 @@ public class WebPlatformTestsActivityTest {
     private static final int CHILD_LAYOUT_ADDED = 1;
     private static final int CHILD_LAYOUT_REMOVED = 2;
 
-    private static final long TEST_TIMEOUT_IN_SECONDS = scaleTimeout(3);
+    private static final long TEST_TIMEOUT_IN_SECONDS = scaleTimeout(5);
     private static final long ON_CREATE_WINDOW_DELAY_MS = 100;
 
     private static final String OPEN_CLOSE_TEST_WINDOW_SCRIPT =

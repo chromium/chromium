@@ -17,7 +17,7 @@ include_rules = [
   "+third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h",
   "+third_party/blink/public/mojom/service_worker/service_worker_registration.mojom.h",
   "+third_party/blink/public/platform",
-  "+third_party/blink/public/strings/grit/blink_strings.h",
+  "+third_party/blink/public/strings/grit/blink_accessibility_strings.h",
   "+third_party/blink/public/web",
   "+third_party/zlib/google/compression_utils.h",
 
@@ -36,12 +36,6 @@ include_rules = [
 ]
 
 specific_include_rules = {
-  ".*(test|test_util)\.(cc|h)$": [
-    # Temporarily allowed testing includes.  See above.
-    # TODO(devlin): Ideally, we'd remove these (or move the tests into
-    # //chrome). See https://crbug.com/773004.
-    "+chrome/test/base/chrome_render_view_test.h",
-  ],
   "extension_throttle_manager.cc": [
     # For net::IsLocalhost.
     "+net/base/url_util.h",

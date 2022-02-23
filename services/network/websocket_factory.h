@@ -10,6 +10,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/websocket.mojom.h"
@@ -82,7 +83,7 @@ class WebSocketFactory final {
   WebSocketThrottler throttler_;
 
   // |context_| outlives this object.
-  NetworkContext* const context_;
+  const raw_ptr<NetworkContext> context_;
 };
 
 }  // namespace network

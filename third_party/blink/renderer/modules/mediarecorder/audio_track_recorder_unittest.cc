@@ -8,7 +8,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "media/audio/simple_sources.h"
@@ -59,45 +58,45 @@ const ATRTestParams kATRTestParams[] = {
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY, /* input format */
      media::CHANNEL_LAYOUT_STEREO,                  /* channel layout */
      kDefaultSampleRate,                            /* sample rate */
-     AudioTrackRecorder::CodecId::OPUS,             /* codec for encoding */
-     AudioTrackRecorder::BitrateMode::VARIABLE},    /* constant/variable rate */
+     AudioTrackRecorder::CodecId::kOpus,            /* codec for encoding */
+     AudioTrackRecorder::BitrateMode::kVariable},   /* constant/variable rate */
 
     // Change to mono:
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY, media::CHANNEL_LAYOUT_MONO,
-     kDefaultSampleRate, AudioTrackRecorder::CodecId::OPUS,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     kDefaultSampleRate, AudioTrackRecorder::CodecId::kOpus,
+     AudioTrackRecorder::BitrateMode::kVariable},
 
     // Different sampling rate as well:
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY, media::CHANNEL_LAYOUT_MONO,
-     24000, AudioTrackRecorder::CodecId::OPUS,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     24000, AudioTrackRecorder::CodecId::kOpus,
+     AudioTrackRecorder::BitrateMode::kVariable},
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-     media::CHANNEL_LAYOUT_STEREO, 8000, AudioTrackRecorder::CodecId::OPUS,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     media::CHANNEL_LAYOUT_STEREO, 8000, AudioTrackRecorder::CodecId::kOpus,
+     AudioTrackRecorder::BitrateMode::kVariable},
 
     // Using a non-default Opus sampling rate (48, 24, 16, 12, or 8 kHz).
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY, media::CHANNEL_LAYOUT_MONO,
-     22050, AudioTrackRecorder::CodecId::OPUS,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     22050, AudioTrackRecorder::CodecId::kOpus,
+     AudioTrackRecorder::BitrateMode::kVariable},
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-     media::CHANNEL_LAYOUT_STEREO, 44100, AudioTrackRecorder::CodecId::OPUS,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     media::CHANNEL_LAYOUT_STEREO, 44100, AudioTrackRecorder::CodecId::kOpus,
+     AudioTrackRecorder::BitrateMode::kVariable},
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
-     media::CHANNEL_LAYOUT_STEREO, 96000, AudioTrackRecorder::CodecId::OPUS,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     media::CHANNEL_LAYOUT_STEREO, 96000, AudioTrackRecorder::CodecId::kOpus,
+     AudioTrackRecorder::BitrateMode::kVariable},
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY, media::CHANNEL_LAYOUT_MONO,
-     kDefaultSampleRate, AudioTrackRecorder::CodecId::PCM,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     kDefaultSampleRate, AudioTrackRecorder::CodecId::kPcm,
+     AudioTrackRecorder::BitrateMode::kVariable},
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
      media::CHANNEL_LAYOUT_STEREO, kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::PCM,
-     AudioTrackRecorder::BitrateMode::VARIABLE},
+     AudioTrackRecorder::CodecId::kPcm,
+     AudioTrackRecorder::BitrateMode::kVariable},
 
     // Use Opus in constatnt bitrate mode:
     {media::AudioParameters::AUDIO_PCM_LOW_LATENCY,
      media::CHANNEL_LAYOUT_STEREO, kDefaultSampleRate,
-     AudioTrackRecorder::CodecId::OPUS,
-     AudioTrackRecorder::BitrateMode::CONSTANT},
+     AudioTrackRecorder::CodecId::kOpus,
+     AudioTrackRecorder::BitrateMode::kConstant},
 };
 
 int FramesPerBuffer(int sample_rate) {
@@ -205,7 +204,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
                       base::TimeTicks timestamp) {
     EXPECT_TRUE(!encoded_data.empty());
 
-    if (codec_ == AudioTrackRecorder::CodecId::OPUS) {
+    if (codec_ == AudioTrackRecorder::CodecId::kOpus) {
       // Decode |encoded_data| and check we get the expected number of frames
       // per buffer.
       EXPECT_EQ(kDefaultSampleRate * kOpusBufferDurationMs / 1000,
@@ -214,7 +213,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
                     reinterpret_cast<uint8_t*>(base::data(encoded_data)),
                     static_cast<wtf_size_t>(encoded_data.size()),
                     opus_buffer_.get(), kFramesPerBuffer, 0));
-    } else if (codec_ == AudioTrackRecorder::CodecId::PCM) {
+    } else if (codec_ == AudioTrackRecorder::CodecId::kPcm) {
       // Manually confirm that we're getting the same data out as what we
       // generated from the sine wave.
       for (size_t b = 0; b + 3 < encoded_data.size() &&
@@ -273,7 +272,7 @@ class AudioTrackRecorderTest : public testing::TestWithParam<ATRTestParams> {
 };
 
 TEST_P(AudioTrackRecorderTest, OnDataOpus) {
-  if (codec_ != AudioTrackRecorder::CodecId::OPUS)
+  if (codec_ != AudioTrackRecorder::CodecId::kOpus)
     return;
 
   testing::InSequence s;
@@ -348,7 +347,7 @@ TEST_P(AudioTrackRecorderTest, OnDataOpus) {
 
   // Check that in CBR mode, all the packets are the same size, to confirm it
   // actually made a CBR recording.
-  if (GetParam().bitrateMode == AudioTrackRecorder::BitrateMode::CONSTANT) {
+  if (GetParam().bitrateMode == AudioTrackRecorder::BitrateMode::kConstant) {
     if (!encodedPacketSizes.empty()) {
       EXPECT_THAT(encodedPacketSizes, testing::Each(encodedPacketSizes[0]));
     }
@@ -359,7 +358,7 @@ TEST_P(AudioTrackRecorderTest, OnDataOpus) {
 }
 
 TEST_P(AudioTrackRecorderTest, OnDataPcm) {
-  if (codec_ != AudioTrackRecorder::CodecId::PCM)
+  if (codec_ != AudioTrackRecorder::CodecId::kPcm)
     return;
 
   testing::InSequence s;
@@ -384,7 +383,7 @@ TEST_P(AudioTrackRecorderTest, OnDataPcm) {
 }
 
 TEST_P(AudioTrackRecorderTest, PauseResume) {
-  if (codec_ != AudioTrackRecorder::CodecId::OPUS)
+  if (codec_ != AudioTrackRecorder::CodecId::kOpus)
     return;
 
   testing::InSequence s;

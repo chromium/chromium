@@ -56,7 +56,7 @@ Operation::Operation(base::WeakPtr<OperationManager> manager,
                      const base::FilePath& download_folder)
     : manager_(manager),
       extension_id_(extension_id),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       device_path_(base::FilePath::FromUTF8Unsafe(device_path)),
 #else
       device_path_(device_path),

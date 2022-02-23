@@ -3,16 +3,19 @@
 // found in the LICENSE file.
 
 #include "net/cert/internal/system_trust_store.h"
+
+#include "build/build_config.h"
+#include "crypto/crypto_buildflags.h"
 #include "net/net_buildflags.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "net/cert/internal/system_trust_store_nss.h"
-#endif  // defined(USE_NSS_CERTS)
+#endif  // BUILDFLAG(USE_NSS_CERTS)
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include <cert.h>
 #include <pk11pub.h>
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include <Security/Security.h>
 #endif
 
@@ -32,19 +35,19 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 #include "crypto/nss_util.h"
 #include "net/cert/internal/trust_store_nss.h"
 #include "net/cert/known_roots_nss.h"
 #include "net/cert/scoped_nss_types.h"
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "net/base/features.h"
 #include "net/cert/internal/trust_store_mac.h"
 #include "net/cert/x509_util_mac.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "base/lazy_instance.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "net/cert/internal/trust_store_win.h"
 #endif
 #if BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
@@ -100,7 +103,7 @@ class SystemTrustStoreChrome : public SystemTrustStore {
 };
 #endif  // CHROME_ROOT_STORE_SUPPORTED
 
-#if defined(USE_NSS_CERTS)
+#if BUILDFLAG(USE_NSS_CERTS)
 namespace {
 
 class SystemTrustStoreNSS : public SystemTrustStore {
@@ -175,7 +178,7 @@ CreateSslSystemTrustStoreNSSWithNoUserSlots() {
       trustSSL, TrustStoreNSS::DisallowTrustForCertsOnUserSlots()));
 }
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 
 class SystemTrustStoreMac : public SystemTrustStore {
  public:
@@ -258,7 +261,7 @@ void InitializeTrustStoreMacCache() {
       base::BindOnce(&SystemTrustStoreMac::InitializeTrustCacheOnWorkerThread));
 }
 
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 
 namespace {
 
@@ -323,7 +326,7 @@ std::unique_ptr<SystemTrustStore> CreateSslSystemTrustStoreChromeRoot() {
   return std::make_unique<DummySystemTrustStore>();
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 // Using the Builtin Verifier w/o the Chrome Root Store is unsupported on
 // Windows.

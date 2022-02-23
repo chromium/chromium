@@ -17,6 +17,12 @@ TestExtensionService::pending_extension_manager() {
   return NULL;
 }
 
+extensions::CorruptedExtensionReinstaller*
+TestExtensionService::corrupted_extension_reinstaller() {
+  ADD_FAILURE();
+  return nullptr;
+}
+
 bool TestExtensionService::UpdateExtension(
     const extensions::CRXFileInfo& file,
     bool file_ownership_passed,

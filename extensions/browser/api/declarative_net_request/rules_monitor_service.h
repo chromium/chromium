@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -229,11 +229,11 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   std::unique_ptr<const FileSequenceBridge> file_sequence_bridge_;
 
   // Guaranteed to be valid through-out the lifetime of this instance.
-  ExtensionPrefs* const prefs_;
-  ExtensionRegistry* const extension_registry_;
-  WarningService* const warning_service_;
+  const raw_ptr<ExtensionPrefs> prefs_;
+  const raw_ptr<ExtensionRegistry> extension_registry_;
+  const raw_ptr<WarningService> warning_service_;
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   declarative_net_request::RulesetManager ruleset_manager_;
 
@@ -242,7 +242,7 @@ class RulesMonitorService : public BrowserContextKeyedAPI,
   GlobalRulesTracker global_rules_tracker_;
 
   // Non-owned pointer.
-  TestObserver* test_observer_ = nullptr;
+  raw_ptr<TestObserver> test_observer_ = nullptr;
 
   // Api call queues to ensure only one api call of the given type proceeds at a
   // time. Only maintained for enabled extensions.

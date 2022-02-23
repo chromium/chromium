@@ -7,6 +7,7 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 /* eslint-disable no-var */
@@ -34,7 +35,7 @@ TEST_F('CrComponentsCustomizeThemesTest', 'All', function() {
 var CrComponentsMostVisitedTest = class extends CrComponentsMojoBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_test.js';
+    return 'chrome://new-tab-page/test_loader.html?module=cr_components/most_visited_test.js&host=webui-test';
   }
 };
 
@@ -43,7 +44,7 @@ TEST_F('CrComponentsMostVisitedTest', 'General', function() {
 });
 
 // crbug.com/1226996
-GEN('#if defined(OS_LINUX) && !defined(NDEBUG)');
+GEN('#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)');
 GEN('#define MAYBE_Modification DISABLED_Modification');
 GEN('#else');
 GEN('#define MAYBE_Modification Modification');

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -271,6 +271,8 @@ class AutomationWebContentsObserver
 
   explicit AutomationWebContentsObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents),
+        content::WebContentsUserData<AutomationWebContentsObserver>(
+            *web_contents),
         browser_context_(web_contents->GetBrowserContext()) {
     if (web_contents->IsCurrentlyAudible()) {
       content::RenderFrameHost* rfh = web_contents->GetMainFrame();
@@ -289,7 +291,7 @@ class AutomationWebContentsObserver
         AutomationEventRouter::GetInstance());
   }
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   base::ScopedObservation<extensions::AutomationEventRouter,
                           extensions::AutomationEventRouterObserver>

@@ -70,7 +70,7 @@ TEST_F(RenderProcessHostUnitTest, GuestsAreNotSuitableHosts) {
             RenderProcessHostImpl::GetExistingProcessHost(site_instance.get()));
 }
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
   // This test shouldn't run with --site-per-process mode, which prohibits
   // the renderer process reuse this test explicitly exercises.
@@ -99,7 +99,7 @@ TEST_F(RenderProcessHostUnitTest, RendererProcessLimit) {
 }
 #endif
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(RenderProcessHostUnitTest, NoRendererProcessLimitOnAndroidOrChromeOS) {
   // Add a few dummy process hosts.
   static constexpr size_t kMaxRendererProcessCountForTesting = 82;
@@ -124,7 +124,7 @@ TEST_F(RenderProcessHostUnitTest, ReuseCommittedSite) {
   // cached and reused after the navigation to |kUrl2| with BFCache enabled. The
   // test expects that a new process (either spare or created) is used instead.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
-      BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // At first, trying to get a RenderProcessHost with the
   // REUSE_PENDING_OR_COMMITTED_SITE policy should return a new process.
@@ -436,7 +436,7 @@ TEST_F(RenderProcessHostUnitTest, DoNotReuseError) {
   // This cannot happen if the page is restored from the back-forward
   // cache, because no network requests would be made.
   contents()->GetController().GetBackForwardCache().DisableForTesting(
-      BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      BackForwardCache::TEST_REQUIRES_NO_CACHING);
   const GURL kUrl1("http://foo.com");
   const GURL kUrl2("http://bar.com");
 

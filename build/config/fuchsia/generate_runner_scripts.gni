@@ -30,6 +30,10 @@ declare_args() {
 
   # A list of additional Fuchsia boot images to include in the test isolates.
   fuchsia_additional_boot_images = []
+
+  # This variable controls the browser included in the Telemetry based test
+  # targets.
+  fuchsia_browser_type = "web_engine_shell"
 }
 
 # Generates a wrapper script under root_build_dir/bin that performs an
@@ -87,7 +91,6 @@ template("fuchsia_run_script_with_packages") {
                                ])
 
     wrapper_script = _generated_script_path
-    use_vpython3 = true
 
     deps = [ invoker.package ]
 
@@ -152,6 +155,17 @@ template("fuchsia_run_script_with_packages") {
       ]
     }
   }
+
+  # Create a wrapper script rather than using a group() in order to ensure
+  # "ninja $target_name" always works.
+  if (defined(invoker.executable_wrapper)) {
+    generate_wrapper(invoker.executable_wrapper) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      executable = _generated_script_path
+      wrapper_script = "$root_build_dir/${invoker.executable_wrapper}"
+      deps = [ ":${invoker._run_target}" ]
+    }
+  }
 }
 
 # Generates a script which deploys a package to the TUF repo of a Fuchsia
@@ -204,6 +218,7 @@ template("fuchsia_test_runner") {
       executable_args = []
     }
     output_name_format = "run_%package%"
+    executable_wrapper = invoker.target_name
 
     # Populate the arguments used by the test runner, defined at build-time.
     executable_args += [
@@ -219,7 +234,18 @@ template("fuchsia_test_runner") {
     }
 
     if (defined(invoker.use_test_server) && invoker.use_test_server) {
-      executable_args += [ "--enable-test-server" ]
+      # TODO(crbug.com/1254563): Tests that needs the test server need access
+      # to the network and run-test-component doesn't support it. Provide the
+      # necessary access via capability routing once the tests are running via
+      # CFv2.
+      executable_args += [
+        "--enable-test-server",
+        "--use-run",
+      ]
+    }
+
+    if (!defined(invoker.use_cfv2) || invoker.use_cfv2) {
+      executable_args += [ "--component-version=2" ]
     }
 
     if (default_fuchsia_device_node_name != "") {
@@ -251,14 +277,6 @@ template("fuchsia_test_runner") {
                                ])
     testonly = invoker.testonly
     include_fuchsia_build_dir = true
-  }
-
-  group(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-    deps = [
-      ":${_install_target}",
-      ":${_run_target}",
-    ]
   }
 }
 

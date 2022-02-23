@@ -24,6 +24,7 @@ using ::device::BluetoothDevice;
 using ::device::BluetoothDiscoverySession;
 using ::device::MockPairingDelegate;
 using ::device::TestBluetoothAdapterObserver;
+using ::testing::_;
 using ::testing::StrictMock;
 
 }  // namespace
@@ -131,6 +132,126 @@ TEST_F(BluetoothFlossTest, PairJustWorks) {
   EXPECT_TRUE(device->IsPaired());
 }
 
+TEST_F(BluetoothFlossTest, PairConfirmPasskey) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kPhoneAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate,
+              ConfirmPasskey(_, FakeFlossAdapterClient::kPasskey))
+      .WillOnce([](BluetoothDevice* device, uint32_t passkey) {
+        device->ConfirmPairing();
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(device->IsPaired());
+}
+
+TEST_F(BluetoothFlossTest, PairDisplayPasskey) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kKeyboardAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate,
+              DisplayPasskey(_, FakeFlossAdapterClient::kPasskey))
+      .WillOnce([this](BluetoothDevice* device, uint32_t passkey) {
+        // Pretend that the remote device has completed passkey entry.
+        fake_floss_adapter_client_->NotifyObservers(base::BindLambdaForTesting(
+            [device](FlossAdapterClient::Observer* observer) {
+              observer->DeviceBondStateChanged(
+                  FlossDeviceId({.address = device->GetAddress(), .name = ""}),
+                  /*status=*/0, FlossAdapterClient::BondState::kBonded);
+            }));
+      });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(device->IsPaired());
+}
+
+TEST_F(BluetoothFlossTest, PairPasskeyEntry) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kOldDeviceAddress);
+  ASSERT_TRUE(device != nullptr);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  EXPECT_CALL(pairing_delegate, RequestPinCode(_))
+      .WillOnce([](BluetoothDevice* device) { device->SetPinCode("pin123"); });
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(device->IsPaired());
+}
+
+TEST_F(BluetoothFlossTest, RemoveBonding) {
+  InitializeAdapter();
+  DiscoverDevices();
+
+  BluetoothDevice* device =
+      adapter_->GetDevice(FakeFlossAdapterClient::kJustWorksAddress);
+  ASSERT_TRUE(device);
+  ASSERT_FALSE(device->IsPaired());
+
+  StrictMock<MockPairingDelegate> pairing_delegate;
+  base::RunLoop run_loop;
+  device->Connect(
+      &pairing_delegate,
+      base::BindLambdaForTesting(
+          [&run_loop](absl::optional<BluetoothDevice::ConnectErrorCode> error) {
+            EXPECT_FALSE(error.has_value());
+            run_loop.Quit();
+          }));
+  run_loop.Run();
+
+  EXPECT_TRUE(device->IsPaired());
+
+  base::RunLoop run_loop2;
+  device->Forget(base::BindLambdaForTesting([&run_loop2]() {
+                   SUCCEED();
+                   run_loop2.Quit();
+                 }),
+                 base::BindLambdaForTesting([]() { FAIL(); }));
+  run_loop2.Run();
+
+  EXPECT_FALSE(device->IsPaired());
+}
+
 TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
   InitializeAdapter();
   DiscoverDevices();
@@ -153,6 +274,33 @@ TEST_F(BluetoothFlossTest, UpdatesDeviceConnectionState) {
             .address = FakeFlossAdapterClient::kJustWorksAddress, .name = ""});
       }));
   EXPECT_FALSE(device->IsConnected());
+}
+
+TEST_F(BluetoothFlossTest, AdapterInitialDevices) {
+  InitializeAdapter();
+
+  // Before adapter is enabled, there are no known devices.
+  EXPECT_FALSE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1));
+  EXPECT_FALSE(adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2));
+
+  // Simulate adapter enabled event.
+  fake_floss_manager_client_->NotifyObservers(
+      base::BindLambdaForTesting([](FlossManagerClient::Observer* observer) {
+        observer->AdapterEnabledChanged(/*hci=*/0, /*enabled=*/true);
+      }));
+  base::RunLoop().RunUntilIdle();
+
+  // After adapter is enabled, there are known devices.
+  BluetoothDevice* device1 =
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress1);
+  BluetoothDevice* device2 =
+      adapter_->GetDevice(FakeFlossAdapterClient::kBondedAddress2);
+  ASSERT_TRUE(device1);
+  ASSERT_TRUE(device2);
+  EXPECT_TRUE(device1->IsPaired());
+  EXPECT_TRUE(device2->IsPaired());
+  EXPECT_TRUE(device1->IsConnected());
+  EXPECT_FALSE(device2->IsConnected());
 }
 
 }  // namespace floss

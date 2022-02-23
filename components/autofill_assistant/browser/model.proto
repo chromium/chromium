@@ -231,6 +231,14 @@ enum ProcessedActionStatusProto {
   // The requested value expression resulted in an empty string.
   EMPTY_VALUE_EXPRESSION_RESULT = 35;
 
+  // The collect user data action has detected a change and requires the user
+  // data to be resent.
+  RESEND_USER_DATA = 36;
+
+  // The RenderFrameHost does not have a corresponding live RenderFrame, e.g.
+  // the renderer process may have crashed.
+  NO_RENDER_FRAME = 37;
+
   reserved 15, 23, 25, 32;
 }
 
@@ -401,5 +409,14 @@ message AutofillProfileProto {
 message LoginOptionProto {
   optional string label = 1;
   optional string sublabel = 2;
-  optional bytes payload = 3;
+
+  oneof payload_or_tag {
+    // A payload to be echoed back to the caller when the option is selected.
+    //
+    // Prefer using tag.
+    bytes payload = 3;
+
+    // A tag to be echoed back to the caller when the option is selected.
+    string tag = 4;
+  }
 }

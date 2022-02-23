@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "services/network/public/cpp/origin_policy.h"
 
@@ -16,6 +15,7 @@ class GURL;
 
 namespace content {
 class NavigationHandle;
+class StoragePartition;
 
 // The OriginPolicyThrottle is responsible for deciding whether an origin
 // policy should be fetched, and doing so when that is positive.
@@ -42,7 +42,8 @@ class CONTENT_EXPORT OriginPolicyThrottle : public NavigationThrottle {
   // otherwise invalid) policy. This is meant to be called by the security
   // interstitial.
   // This will exempt the entire origin, rather than only the given URL.
-  static void AddExceptionFor(BrowserContext* browser_context, const GURL& url);
+  static void AddExceptionFor(StoragePartition* storage_partition,
+                              const GURL& url);
 
   OriginPolicyThrottle(const OriginPolicyThrottle&) = delete;
   OriginPolicyThrottle& operator=(const OriginPolicyThrottle&) = delete;

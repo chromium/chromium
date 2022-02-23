@@ -270,7 +270,7 @@ class DatabaseTracker_TestHelper_Test {
               base::TouchFile(tracker->GetFullDBFilePath(kOrigin2, kDB3),
                               three_days_ago, three_days_ago));
 
-          // Delete databases modified since yesterday. db2 is whitelisted.
+          // Delete databases modified since yesterday. db2 is in the allowlist.
           base::Time yesterday = base::Time::Now();
           yesterday -= base::Days(1);
 

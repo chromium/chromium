@@ -48,8 +48,7 @@ class BLINK_COMMON_EXPORT WebCoalescedInputEvent {
   const ui::LatencyInfo& latency_info() const { return latency_; }
   ui::LatencyInfo& latency_info() { return latency_; }
 
-  bool CanCoalesceWith(const WebCoalescedInputEvent& other) const
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool CanCoalesceWith(const WebCoalescedInputEvent& other) const;
 
   // Coalesce with the |newer_event|. This object will be updated to take into
   // account |newer_event|'s fields.

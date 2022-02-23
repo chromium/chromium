@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
@@ -42,7 +42,7 @@ class IpcVideoFrameCapturer : public webrtc::DesktopCapturer {
 
  private:
   // Points to the callback passed to webrtc::DesktopCapturer::Start().
-  webrtc::DesktopCapturer::Callback* callback_;
+  raw_ptr<webrtc::DesktopCapturer::Callback> callback_;
 
   // Wraps the IPC channel to the desktop session agent.
   scoped_refptr<DesktopSessionProxy> desktop_session_proxy_;

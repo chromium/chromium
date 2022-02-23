@@ -601,6 +601,17 @@ export const ENTRIES = {
     typeText: 'JPEG image'
   }),
 
+  webpImage: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'image.webp',
+    // No mime type.
+    targetPath: 'image.webp',
+    lastModifiedTime: 'Jan 19, 2021, 1:10 PM',
+    nameText: 'image.webp',
+    sizeText: '5 KB',
+    typeText: 'WebP image'
+  }),
+
   rawImage: new TestEntryInfo({
     type: EntryType.FILE,
     sourceFileName: 'raw.orf',
@@ -796,6 +807,18 @@ export const ENTRIES = {
     nameText: 'imgpdf',
     sizeText: '1608 bytes',
     typeText: 'PDF document'
+  }),
+
+  smallDocx: new TestEntryInfo({
+    type: EntryType.FILE,
+    sourceFileName: 'text.docx',
+    targetPath: 'text.docx',
+    mimeType: `application/vnd.openxmlformats-officedocument.wordprocessingml\
+.document`,
+    lastModifiedTime: 'Jan 4, 2019, 10:57 AM',
+    nameText: 'text.docx',
+    sizeText: '8.7 KB',
+    typeText: 'Office document'
   }),
 
   pinned: new TestEntryInfo({
@@ -1350,6 +1373,27 @@ export const ENTRIES = {
   }),
 };
 
+
+/**
+ * Creates a test file, which can be inside folders, however parent folders
+ * have to be created by the caller using |createTestFolder|.
+ * @param {string} path File path to be created,
+ * @return {TestEntryInfo}
+ */
+export function createTestFile(path) {
+  const name = path.split('/').pop();
+  return new TestEntryInfo({
+    targetPath: path,
+    nameText: name,
+    type: EntryType.FILE,
+    lastModifiedTime: 'Sep 4, 1998, 12:34 PM',
+    sizeText: '51 bytes',
+    typeText: 'Plain text',
+    sourceFileName: 'text.txt',
+    mimeType: 'text/plain'
+  });
+}
+
 /**
  * Returns the count for |value| for the histogram |name|.
  * @param {string} name The histogram to be queried.
@@ -1363,6 +1407,19 @@ export async function getHistogramCount(name, value) {
     'value': value,
   });
   return /** @type {number} */ (JSON.parse(result));
+}
+
+/**
+ * Returns the sum for for the histogram |name|.
+ * @param {string} name The histogram to be queried.
+ * @return {!Promise<number>} A promise fulfilled with the sum.
+ */
+export async function getHistogramSum(name) {
+  const result = await sendTestMessage({
+    'name': 'getHistogramSum',
+    'histogramName': name,
+  });
+  return /** @type {number} */ (parseInt(JSON.parse(result), 10));
 }
 
 /**

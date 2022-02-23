@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "components/policy/policy_constants.h"
+#include "components/policy/proto/cloud_policy.pb.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/notification_service.h"
@@ -27,6 +28,7 @@
 
 namespace policy {
 
+// TODO(crbug.com/1110548): Enable and modify for lacros.
 class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
  public:
   ForceMaximizeOnFirstRunTest(const ForceMaximizeOnFirstRunTest&) = delete;
@@ -36,8 +38,9 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
  protected:
   ForceMaximizeOnFirstRunTest() {}
 
-  void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override {
-    policy->SetBoolean(key::kForceMaximizeOnFirstRun, true);
+  void GetPolicySettings(
+      enterprise_management::CloudPolicySettings* policy) const override {
+    policy->mutable_forcemaximizeonfirstrun()->set_value(true);
   }
 
   void SetUpResolution() {
@@ -51,8 +54,7 @@ class ForceMaximizeOnFirstRunTest : public LoginPolicyTestBase {
   const Browser* OpenNewBrowserWindow() {
     const user_manager::User* const user =
         user_manager::UserManager::Get()->GetActiveUser();
-    Profile* const profile =
-        chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+    Profile* const profile = ash::ProfileHelper::Get()->GetProfileByUser(user);
     return CreateBrowser(profile);
   }
 };
@@ -100,8 +102,9 @@ class ForceMaximizePolicyFalseTest : public ForceMaximizeOnFirstRunTest {
  protected:
   ForceMaximizePolicyFalseTest() : ForceMaximizeOnFirstRunTest() {}
 
-  void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const override {
-    policy->SetBoolean(key::kForceMaximizeOnFirstRun, false);
+  void GetPolicySettings(
+      enterprise_management::CloudPolicySettings* policy) const override {
+    policy->mutable_forcemaximizeonfirstrun()->set_value(false);
   }
 };
 

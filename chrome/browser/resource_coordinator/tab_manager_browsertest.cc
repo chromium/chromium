@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
@@ -55,8 +56,8 @@
 
 using content::OpenURLParams;
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
 
 namespace resource_coordinator {
 
@@ -110,7 +111,7 @@ class ExpectStateTransitionObserver : public LifecycleUnitObserver {
     }
   }
 
-  LifecycleUnit* const lifecycle_unit_;
+  const raw_ptr<LifecycleUnit> lifecycle_unit_;
   const LifecycleUnitState expected_state_;
   std::set<LifecycleUnitState> allowed_states_;
   base::RunLoop run_loop_;
@@ -482,7 +483,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, ProtectVideoTabs) {
   std::unique_ptr<content::MediaStreamUI> video_stream_ui =
       dispatcher->GetMediaStreamCaptureIndicator()->RegisterMediaStream(
           tab, video_devices);
-  video_stream_ui->OnStarted(base::OnceClosure(),
+  video_stream_ui->OnStarted(base::RepeatingClosure(),
                              content::MediaStreamUI::SourceCallback(),
                              /*label=*/std::string(), /*screen_capture_ids=*/{},
                              content::MediaStreamUI::StateChangeCallback());
@@ -970,7 +971,7 @@ IN_PROC_BROWSER_TEST_F(TabManagerTest, MAYBE_DiscardTabsWithOccludedWindow) {
 }
 
 // On Linux, memory pressure listener is not implemented yet.
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 class TabManagerMemoryPressureTest : public TabManagerTest {
  public:
@@ -1090,8 +1091,9 @@ IN_PROC_BROWSER_TEST_F(TabManagerMemoryPressureTest,
   EXPECT_TRUE(IsTabDiscarded(GetWebContentsAt(2)));
 }
 
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace resource_coordinator
 
-#endif  // OS_WIN || OS_MAXOSX || OS_LINUX || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)

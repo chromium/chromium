@@ -7,16 +7,16 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/policy.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/mojom/policy.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_policy_instance.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "content/public/test/browser_task_environment.h"
 #include "crypto/rsa_private_key.h"

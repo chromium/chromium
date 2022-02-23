@@ -34,7 +34,8 @@ void Renderer::SetPreservesPitch(bool preserves_pitch) {
   // Not supported by most renderers.
 }
 
-void Renderer::SetAutoplayInitiated(bool autoplay_initiated) {
+void Renderer::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {
   // Not supported by most renderers.
 }
 

@@ -27,15 +27,15 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivity;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivity;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Tests for ContextMenu item view, {@link ContextMenuItemViewBinder}, and {@link
  * ContextMenuItemWithIconButtonViewBinder}.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class ContextMenuItemViewTest extends DummyUiActivityTestCase {
+public class ContextMenuItemViewTest extends BlankUiTestActivityTestCase {
     private static final String TEXT = "Useful menu item";
     private static final String APP = "Some app";
 
@@ -49,7 +49,7 @@ public class ContextMenuItemViewTest extends DummyUiActivityTestCase {
 
     @BeforeClass
     public static void setUpBeforeActivityLaunched() {
-        DummyUiActivity.setTestLayout(org.chromium.chrome.R.layout.context_menu_share_row);
+        BlankUiTestActivity.setTestLayout(org.chromium.chrome.R.layout.context_menu_share_row);
     }
 
     @Override

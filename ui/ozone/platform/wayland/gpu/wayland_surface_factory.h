@@ -58,6 +58,8 @@ class WaylandSurfaceFactory : public SurfaceFactoryOzone {
       gfx::BufferFormat format,
       gfx::NativePixmapHandle handle) override;
 
+  bool SupportsNativePixmaps() const;
+
  private:
   WaylandConnection* const connection_;
   WaylandBufferManagerGpu* const buffer_manager_;

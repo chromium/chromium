@@ -224,7 +224,7 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'Selection', function() {
   obj.changed(new TextChangeEvent('Hello, world.', 2, 5));
   assertEqualStringArrays(['llo', 'selected'], tts.get());
   obj.changed(new TextChangeEvent('Hello, world.', 2, 2));
-  assertEqualStringArrays(['Unselected'], tts.get());
+  assertEqualStringArrays(['llo', 'removed_from_selection'], tts.get());
 });
 
 
@@ -256,7 +256,7 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
 
   // The user presses right-arrow, which fully unselects the remaining text.
   obj.changed(new TextChangeEvent('google.com', 10, 10));
-  assertEqualStringArrays(['Unselected'], tts.get());
+  assertEqualStringArrays(['le.com', 'removed_from_selection'], tts.get());
 
   // The user types '/'
   obj.changed(new TextChangeEvent('google.com/', 11, 11));
@@ -276,7 +276,7 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'Autocomplete', function() {
 
   // The user presses right-arrow to accept the completion.
   obj.changed(new TextChangeEvent('google.com/firefox', 18, 18));
-  assertEqualStringArrays(['Unselected'], tts.get());
+  assertEqualStringArrays(['efox', 'removed_from_selection'], tts.get());
 });
 
 
@@ -306,7 +306,7 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'ReplacingText', function() {
 
   // Click between 'r' and 'i'.
   obj.changed(new TextChangeEvent('Arizona', 2, 2));
-  assertEqualStringArrays(['Unselected'], tts.get());
+  assertEqualStringArrays(['Arizona', 'removed_from_selection'], tts.get());
 
   // Next character removed from selection.
   obj.changed(new TextChangeEvent('Arizona', 2, 7));
@@ -459,4 +459,14 @@ TEST_F('ChromeVoxEditableTextUnitTest', 'TypingNonBreakingSpaces', function() {
   obj.changed(new TextChangeEvent('hi\u00a0', 3, 3));
   obj.changed(new TextChangeEvent('hi t', 4, 4));
   assertEqualStringArrays(['h', 'i', 'hi ', 't'], tts.get());
+});
+TEST_F('ChromeVoxEditableTextUnitTest', 'DoesNotSpeakDeleted', function() {
+  var tts = new TestTts();
+  var obj = new ChromeVoxEditableTextBase('Hello', 0, 0, false, tts);
+  obj.multiline = true;
+
+  obj.changed(new TextChangeEvent('wor', 0, 0));
+
+  // This was once ['text_deleted'], but that is undesirable and mostly noise.
+  assertEqualStringArrays([], tts.get());
 });

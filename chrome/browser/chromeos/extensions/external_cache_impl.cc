@@ -92,7 +92,7 @@ void ExternalCacheImpl::UpdateExtensionsList(
     // If list of know extensions is empty, don't init cache on disk. It is
     // important shortcut for test to don't wait forever for cache dir
     // initialization that should happen outside of Chrome on real device.
-    cached_extensions_->Clear();
+    cached_extensions_->DictClear();
     UpdateExtensionLoader();
     return;
   }
@@ -159,7 +159,7 @@ bool ExternalCacheImpl::GetExtension(const extensions::ExtensionId& id,
 
 bool ExternalCacheImpl::ExtensionFetchPending(
     const extensions::ExtensionId& id) {
-  return extensions_->HasKey(id) && !cached_extensions_->HasKey(id);
+  return extensions_->FindKey(id) && !cached_extensions_->FindKey(id);
 }
 
 void ExternalCacheImpl::PutExternalExtension(
@@ -190,7 +190,7 @@ void ExternalCacheImpl::OnExtensionDownloadFailed(
     const std::set<int>& request_ids,
     const FailureData& data) {
   if (error == Error::NO_UPDATE_AVAILABLE) {
-    if (!cached_extensions_->HasKey(id)) {
+    if (!cached_extensions_->FindKey(id)) {
       LOG(ERROR) << "ExternalCacheImpl extension " << id
                  << " not found on update server";
       delegate_->OnExtensionDownloadFailed(id);
@@ -259,7 +259,7 @@ void ExternalCacheImpl::CheckCache() {
         url_loader_factory_, this, extensions::GetExternalVerifierFormat());
   }
 
-  cached_extensions_->Clear();
+  cached_extensions_->DictClear();
   for (const auto entry : extensions_->DictItems()) {
     if (!entry.second.is_dict()) {
       LOG(ERROR) << "ExternalCacheImpl found bad entry with type "
@@ -279,12 +279,12 @@ void ExternalCacheImpl::CheckCache() {
           GetExtensionUpdateUrl(entry.second, always_check_updates_);
 
       if (update_url.is_valid()) {
-        downloader_->AddPendingExtensionWithVersion(
+        downloader_->AddPendingExtension(extensions::ExtensionDownloaderTask(
             entry.first, update_url,
             extensions::mojom::ManifestLocation::kExternalPolicy, false, 0,
             extensions::ManifestFetchData::FetchPriority::BACKGROUND,
             base::Version(version), extensions::Manifest::TYPE_UNKNOWN,
-            std::string());
+            std::string()));
       }
     }
     if (is_cached) {

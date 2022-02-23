@@ -9,6 +9,7 @@
 
 #include <memory>
 
+#include "build/build_config.h"
 #include "gpu/command_buffer/tests/gl_manager.h"
 #include "gpu/command_buffer/tests/gl_test_utils.h"
 #include "gpu/config/gpu_test_config.h"
@@ -200,7 +201,7 @@ TEST_F(EXTMultisampleCompatibilityTest, DrawAlphaOneAndResolve) {
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO: Figure out why this fails on NVIDIA Shield. crbug.com/700060.
   std::string renderer(gl_.context()->GetGLRenderer());
   std::string version(gl_.context()->GetGLVersion());

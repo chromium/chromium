@@ -738,9 +738,12 @@ class IDLParser(object):
     p[0] = self.BuildError(p, 'NamespaceMembers')
 
   def p_NamespaceMember(self, p):
-    """NamespaceMember : ExtendedAttributeList ReturnType OperationRest
-                       | ExtendedAttributeList READONLY AttributeRest"""
-    if p[2] != 'readonly':
+    """NamespaceMember : Const
+                       | ExtendedAttributeList READONLY AttributeRest
+                       | ExtendedAttributeList ReturnType OperationRest"""
+    if len(p) == 2:
+      p[0] = p[1]
+    elif p[2] != 'readonly':
       applicable_to_types, non_applicable_to_types = \
           DivideExtAttrsIntoApplicableAndNonApplicable(p[1])
       if applicable_to_types:
@@ -752,10 +755,11 @@ class IDLParser(object):
         attributes = self.BuildProduction('ExtAttributes', p, 1,
             non_applicable_to_types)
         p[3].AddChildren(attributes)
+      p[0] = p[3]
     else:
       p[3].AddChildren(self.BuildTrue('READONLY'))
       p[3].AddChildren(p[1])
-    p[0] = p[3]
+      p[0] = p[3]
 
   def p_Dictionary(self, p):
     """Dictionary : DICTIONARY identifier Inheritance '{' DictionaryMembers '}' ';'"""

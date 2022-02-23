@@ -16,22 +16,6 @@ class TestNativeThemeMac : public NativeThemeMac {
   ~TestNativeThemeMac() override = default;
 };
 
-// Test to ensure any system colors that are looked up by name exist on all Mac
-// platforms Chrome supports, and that their colorspace and component count is
-// sane.
-TEST(NativeThemeMacTest, SystemColorsExist) {
-  NativeTheme* native_theme = NativeTheme::GetInstanceForNativeUi();
-  ASSERT_TRUE(native_theme);
-  for (int i = 0; i < NativeTheme::kColorId_NumColors; ++i) {
-    // While 0 is a valid color, no system color should be fully transparent.
-    // This is also to probe for CHECKs.
-    EXPECT_NE(
-        static_cast<SkColor>(0),
-        native_theme->GetSystemColor(static_cast<NativeTheme::ColorId>(i)))
-        << "GetSystemColor() unexpectedly gave a fully transparent color.";
-  }
-}
-
 TEST(NativeThemeMacTest, GetPlatformHighContrastColorScheme) {
   using PrefScheme = NativeTheme::PreferredColorScheme;
   using PrefContrast = NativeTheme::PreferredContrast;

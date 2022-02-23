@@ -18,4 +18,7 @@ AuthenticationServiceDelegateFake::~AuthenticationServiceDelegateFake() =
 void AuthenticationServiceDelegateFake::ClearBrowsingData(
     ProceduralBlock completion) {
   ++clear_browsing_data_counter_;
+  if (completion) {
+    completion();
+  }
 }

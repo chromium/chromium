@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "storage/common/file_system/file_system_types.h"

@@ -1,0 +1,588 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# Actalis Authentication Root CA
+trust_anchors {
+  sha256_hex: "55926084ec963a64b96e2abe01ce0ba86a64fbfebcc7aab5afc155b37fd76066"
+}
+
+# Amazon Root CA 3
+trust_anchors {
+  sha256_hex: "18ce6cfe7bf14e60b2e347b8dfe868cb31d02ebb3ada271569f50343b46db3a4"
+}
+
+# Amazon Root CA 2
+trust_anchors {
+  sha256_hex: "1ba5b2aa8c65401a82960118f80bec4f62304d83cec4713a19c39c011ea46db4"
+}
+
+# Starfield Services Root Certificate Authority - G2
+trust_anchors {
+  sha256_hex: "568d6905a2c88708a4b3025190edcfedb1974a606a13c6e5290fcb2ae63edab5"
+}
+
+# Amazon Root CA 1
+trust_anchors {
+  sha256_hex: "8ecde6884f3d87b1125ba31ac3fcb13d7016de7f57cc904fe1cb97c6ae98196e"
+}
+
+# Amazon Root CA 4
+trust_anchors {
+  sha256_hex: "e35d28419ed02025cfa69038cd623962458da5c695fbdea3c22b0bfb25897092"
+}
+
+# Certum Trusted Network CA
+trust_anchors {
+  sha256_hex: "5c58468d55f58e497e743982d2b50010b6d165374acf83a7d4a32db768c4408e"
+}
+
+# Certum Trusted Network CA 2
+trust_anchors {
+  sha256_hex: "b676f2eddae8775cd36cb0f63cd1d4603961f49e6265ba013a2f0307b6d0b804"
+}
+
+# Atos TrustedRoot 2011
+trust_anchors {
+  sha256_hex: "f356bea244b7a91eb35d53ca9ad7864ace018e2d35d5f8f96ddf68a6f41aa474"
+}
+
+# Autoridad de Certificacion Firmaprofesional CIF A62634068
+trust_anchors {
+  sha256_hex: "04048028bf1f2864d48f9ad4d83294366a828856553f3b14303f90147f5d40ef"
+}
+
+# Buypass Class 2 Root CA
+trust_anchors {
+  sha256_hex: "9a114025197c5bb95d94e63d55cd43790847b646b23cdf11ada4a00eff15fb48"
+}
+
+# Buypass Class 3 Root CA
+trust_anchors {
+  sha256_hex: "edf7ebbca27a2a384d387b7d4010c666e2edb4843e4c29b4ae1d5b9332e6b24d"
+}
+
+# certSIGN Root CA G2
+trust_anchors {
+  sha256_hex: "657cfe2fa73faa38462571f332a2363a46fce7020951710702cdfbb6eeda3305"
+}
+
+# certSIGN ROOT CA
+trust_anchors {
+  sha256_hex: "eaa962c4fa4a6bafebe415196d351ccd888d4f53f3fa8ae6d7c466a94e6042bb"
+}
+
+# CFCA EV ROOT
+trust_anchors {
+  sha256_hex: "5cc3d78e4e1d5e45547a04e6873e64f90cf9536d1ccc2ef800f355c4c5fd70fd"
+}
+
+# Chunghwa Telecom Co., Ltd. - ePKI Root Certification Authority
+trust_anchors {
+  sha256_hex: "c0a6f4dc63a24bfdcf54ef2a6a082a0a72de35803e2ff5ff527ae5d87206dfd5"
+}
+
+# SecureSign RootCA11
+trust_anchors {
+  sha256_hex: "bf0feefb9e3a581ad5f9e9db7589985743d261085c4d314f6f5d7259aa421612"
+}
+
+# D-TRUST Root Class 3 CA 2 2009
+trust_anchors {
+  sha256_hex: "49e7a442acf0ea6287050054b52564b650e4f49e42e348d6aa38e039e957b1c1"
+}
+
+# D-TRUST Root Class 3 CA 2 EV 2009
+trust_anchors {
+  sha256_hex: "eec5496b988ce98625b934092eec2908bed0b0f316c2d4730c84eaf1f3d34881"
+}
+
+# T-TeleSec GlobalRoot Class 2
+trust_anchors {
+  sha256_hex: "91e2f5788d5810eba7ba58737de1548a8ecacd014598bc0b143e041b17052552"
+}
+
+# T-TeleSec GlobalRoot Class 3
+trust_anchors {
+  sha256_hex: "fd73dad31c644ff1b43bef0ccdda96710b9cd9875eca7e31707af3e96d522bbd"
+}
+
+# Certigna Root CA
+trust_anchors {
+  sha256_hex: "d48d3d23eedb50a459e55197601c27774b9d7b18c94d5a059511a10250b93168"
+}
+
+# Certigna
+trust_anchors {
+  sha256_hex: "e3b6a2db2ed7ce48842f7ac53241c7b71d54144bfb40c11f3f1d0b42f5eea12d"
+}
+
+# Baltimore CyberTrust Root
+trust_anchors {
+  sha256_hex: "16af57a9f676b0ab126095aa5ebadef22ab31119d644ac95cd4b93dbf3f26aeb"
+}
+
+# DigiCert Global Root G3
+trust_anchors {
+  sha256_hex: "31ad6648f8104138c738f39ea4320133393e3a18cc02296ef97c2ac9ef6731d0"
+}
+
+# DigiCert Assured ID Root CA
+trust_anchors {
+  sha256_hex: "3e9099b5015e8f486c00bcea9d111ee721faba355a89bcf1df69561e3dc6325c"
+}
+
+# DigiCert Global Root CA
+trust_anchors {
+  sha256_hex: "4348a0e9444c78cb265e058d5e8944b4d84f9662bd26db257f8934a443c70161"
+}
+
+# DigiCert Trusted Root G4
+trust_anchors {
+  sha256_hex: "552f7bdcf1a7af9e6ce672017f4f12abf77240c78e761ac203d1d9d20ac89988"
+}
+
+# DigiCert High Assurance EV Root CA
+trust_anchors {
+  sha256_hex: "7431e5f4c3c1ce4690774f0b61e05440883ba9a01ed00ba6abd7806ed3b118cf"
+}
+
+# DigiCert Assured ID Root G2
+trust_anchors {
+  sha256_hex: "7d05ebb682339f8c9451ee094eebfefa7953a114edb2f44949452fab7d2fc185"
+}
+
+# DigiCert Assured ID Root G3
+trust_anchors {
+  sha256_hex: "7e37cb8b4c47090cab36551ba6f45db840680fba166a952db100717f43053fc2"
+}
+
+# DigiCert Global Root G2
+trust_anchors {
+  sha256_hex: "cb3ccbb76031e5e0138f8dd39a23f9de47ffc35e43c1144cea27d46a5ab1cb5f"
+}
+
+# CA Disig Root R2
+trust_anchors {
+  sha256_hex: "e23d4a036d7b70e9f595b1422079d2b91edfbb1fb651a0633eaa8a9dc5f80703"
+}
+
+# E-Tugra Certification Authority
+trust_anchors {
+  sha256_hex: "b0bfd52bb0d7d9bd92bf5d4dc13da255c02c542f378365ea893911f55e55f23c"
+}
+
+# emSign Root CA - C1
+trust_anchors {
+  sha256_hex: "125609aa301da0a249b97a8239cb6a34216f44dcac9f3954b14292f2e8c8608f"
+}
+
+# emSign Root CA - G1
+trust_anchors {
+  sha256_hex: "40f6af0346a99aa1cd1d555a4e9cce62c7f9634603ee406615833dc8c8d00367"
+}
+
+# emSign ECC Root CA - G3
+trust_anchors {
+  sha256_hex: "86a1ecba089c4a8d3bbe2734c612ba341d813e043cf9e8a862cd5c57a36bbe6b"
+}
+
+# emSign ECC Root CA - C3
+trust_anchors {
+  sha256_hex: "bc4d809b15189d78db3e1d8cf4f9726a795da1643ca5f1358e1ddb0edc0d7eb3"
+}
+
+# Entrust Root Certification Authority - EC1
+trust_anchors {
+  sha256_hex: "02ed0eb28c14da45165c566791700d6451d7fb56f0b2ab1d3b8eb070e56edff5"
+}
+
+# AffirmTrust Commercial
+trust_anchors {
+  sha256_hex: "0376ab1d54c5f9803ce4b2e201a0ee7eef7b57b636e8a93c9b8d4860c96f5fa7"
+}
+
+# AffirmTrust Networking
+trust_anchors {
+  sha256_hex: "0a81ec5a929777f145904af38d5d509f66b5e2c58fcdb531058b0e17f3f0b41b"
+}
+
+# Entrust Root Certification Authority - G2
+trust_anchors {
+  sha256_hex: "43df5774b03e7fef5fe40d931a7bedf1bb2e6b42738c4e6d3841103d3aa7f339"
+}
+
+# Entrust.net Certification Authority (2048)
+trust_anchors {
+  sha256_hex: "6dc47172e01cbcb0bf62580d895fe2b8ac9ad4f873801e0c10b9c837d21eb177"
+}
+
+# AffirmTrust Premium
+trust_anchors {
+  sha256_hex: "70a73f7f376b60074248904534b11482d5bf0e698ecc498df52577ebf2e93b9a"
+}
+
+# Entrust Root Certification Authority
+trust_anchors {
+  sha256_hex: "73c176434f1bc6d5adf45b0e76e727287c8de57616c1e6e6141a2b2cbc7d8e4c"
+}
+
+# AffirmTrust Premium ECC
+trust_anchors {
+  sha256_hex: "bd71fdf6da97e4cf62d1647add2581b07d79adf8397eb4ecba9c5e8488821423"
+}
+
+# Entrust Root Certification Authority - G4
+trust_anchors {
+  sha256_hex: "db3517d1f6732a2d5ab97c533ec70779ee3270a62fb4ac4238372460e6f01e88"
+}
+
+# GDCA TrustAUTH R5 ROOT
+trust_anchors {
+  sha256_hex: "bfff8fd04433487d6a8aa60c1a29767a9fc2bbb05e420f713a13b992891d3893"
+}
+
+# GlobalSign
+trust_anchors {
+  sha256_hex: "179fbc148a3dd00fd24ea13458cc43bfa7f59c8182d783a513f6ebec100c8924"
+}
+
+# GlobalSign
+trust_anchors {
+  sha256_hex: "2cabeafe37d06ca22aba7391c0033d25982952c453647349763a3ab5ad6ccf69"
+}
+
+# GlobalSign
+trust_anchors {
+  sha256_hex: "cbb522d7b7f127ad6a0113865bdf1cd4102e7d0759af635a7cf4720dc963c53b"
+}
+
+# GlobalSign Root CA
+trust_anchors {
+  sha256_hex: "ebd41040e4bb3ec742c9e381d31ef2a41a48b6685c96e7cef3c1df6cd4331c99"
+}
+
+# Starfield Class 2 CA
+trust_anchors {
+  sha256_hex: "1465fa205397b876faa6f0a9958e5590e40fcc7faa4fb7c2c8677521fb5fb658"
+}
+
+# Starfield Root Certificate Authority - G2
+trust_anchors {
+  sha256_hex: "2ce1cb0bf9d2f9e102993fbe215152c3b2dd0cabde1c68e5319b839154dbb7f5"
+}
+
+# Go Daddy Root Certificate Authority - G2
+trust_anchors {
+  sha256_hex: "45140b3247eb9cc8c5b4f0d7b53091f73292089e6e5a63e2749dd3aca9198eda"
+}
+
+# Go Daddy Class 2 CA
+trust_anchors {
+  sha256_hex: "c3846bf24b9e93ca64274c0ec67c1ecc5e024ffcacd2d74019350e81fe546ae4"
+}
+
+# GTS Root R3
+trust_anchors {
+  sha256_hex: "15d5b8774619ea7d54ce1ca6d0b0c403e037a917f131e8a04e1e6b7a71babce5"
+}
+
+# GTS Root R1
+trust_anchors {
+  sha256_hex: "2a575471e31340bc21581cbd2cf13e158463203ece94bcf9d3cc196bf09a5472"
+}
+
+# GTS Root R4
+trust_anchors {
+  sha256_hex: "71cca5391f9e794b04802530b363e121da8a3043bb26662fea4dca7fc951a4bd"
+}
+
+# GlobalSign
+trust_anchors {
+  sha256_hex: "bec94911c2955676db6c0a550986d76e3ba005667c442c9762b4fbb773de228c"
+}
+
+# GTS Root R2
+trust_anchors {
+  sha256_hex: "c45d7bb08e6d67e62e4235110b564e5f78fd92ef058c840aea4e6455d7585c60"
+}
+
+# Hongkong Post Root CA 3
+trust_anchors {
+  sha256_hex: "5a2fc03f0c83b090bbfa40604b0988446c7636183df9846e17101a447fb8efd6"
+}
+
+# Hongkong Post Root CA 1
+trust_anchors {
+  sha256_hex: "f9e67d336c51002ac054c632022d66dda2e7e3fff10ad061ed31d8bbb410cfb2"
+}
+
+# ACCVRAIZ1
+trust_anchors {
+  sha256_hex: "9a6ec012e1a7da9dbe34194d478ad7c0db1822fb071df12981496ed104384113"
+}
+
+# FNMT-RCM - SHA256
+trust_anchors {
+  sha256_hex: "ebc5570c29018c4d67b1aa127baf12f703b4611ebc17b7dab5573894179b93fa"
+}
+
+# Staat der Nederlanden Root CA - G3
+trust_anchors {
+  sha256_hex: "3c4fb0b95ab8b30032f432b86f535fe172c185d0fd39865837cf36187fa6f428"
+}
+
+# Staat der Nederlanden EV Root CA
+trust_anchors {
+  sha256_hex: "4d2491414cfe956746ec4cefa6cf6f72e28a1329432f9d8a907ac4cb5dadc15a"
+}
+
+# TUBITAK Kamu SM SSL Kok Sertifikasi - Surum 1
+trust_anchors {
+  sha256_hex: "46edc3689046d53a453fb3104ab80dcaec658b2660ea1629dd7e867990648716"
+}
+
+# Hellenic Academic and Research Institutions ECC RootCA 2015
+trust_anchors {
+  sha256_hex: "44b545aa8a25e65a73ca15dc27fc36d24c1cb9953a066539b11582dc487b4833"
+}
+
+# Hellenic Academic and Research Institutions RootCA 2015
+trust_anchors {
+  sha256_hex: "a040929a02ce53b4acf4f2ffc6981ce4496f755e6d45fe0b2a692bcd52523f36"
+}
+
+# Hellenic Academic and Research Institutions RootCA 2011
+trust_anchors {
+  sha256_hex: "bc104f15a48be709dca542a7e1d4b9df6f054527e802eaa92d595444258afe71"
+}
+
+# IdenTrust Public Sector Root CA 1
+trust_anchors {
+  sha256_hex: "30d0895a9a448a262091635522d1f52010b5867acae12c78ef958fd4f4389f2f"
+}
+
+# IdenTrust Commercial Root CA 1
+trust_anchors {
+  sha256_hex: "5d56499be4d2e08bcfcad08a3e38723d50503bde706948e42f55603019e528ae"
+}
+
+# ISRG Root X1
+trust_anchors {
+  sha256_hex: "96bcec06264976f37460779acf28c5a7cfe8a3c0aae11a8ffcee05c0bddf08c6"
+}
+
+# Izenpe.com
+trust_anchors {
+  sha256_hex: "2530cc8e98321502bad96f9b1fba1b099e2d299e0f4548bb914f363bc0d4531f"
+}
+
+# SZAFIR ROOT CA2
+trust_anchors {
+  sha256_hex: "a1339d33281a0b56e557d3d32b1ce7f9367eb094bd5fa72a7e5004c8ded7cafe"
+}
+
+# Microsec e-Szigno Root CA 2009
+trust_anchors {
+  sha256_hex: "3c5f81fea5fab82c64bfa2eaecafcde8e077fc8620a7cae537163df36edbf378"
+}
+
+# e-Szigno Root CA 2017
+trust_anchors {
+  sha256_hex: "beb00b30839b9bc32c32e4447905950641f26421b15ed089198b518ae2ea1b99"
+}
+
+# Microsoft ECC Root Certificate Authority 2017
+trust_anchors {
+  sha256_hex: "358df39d764af9e1b766e9c972df352ee15cfac227af6ad1d70e8e4a6edcba02"
+}
+
+# Microsoft RSA Root Certificate Authority 2017
+trust_anchors {
+  sha256_hex: "c741f70f4b2a8d88bf2e71c14122ef53ef10eba0cfa5e64cfa20f418853073e0"
+}
+
+# NetLock Arany (Class Gold) Főtanúsítvány
+trust_anchors {
+  sha256_hex: "6c61dac3a2def031506be036d2a6fe401994fbd13df9c8d466599274c446ec98"
+}
+
+# OISTE WISeKey Global Root GB CA
+trust_anchors {
+  sha256_hex: "6b9c08e86eb0f767cfad65cd98b62149e5494a67f5845e7bd1ed019f27b86bd6"
+}
+
+# OISTE WISeKey Global Root GC CA
+trust_anchors {
+  sha256_hex: "8560f91c3624daba9570b5fea0dbe36ff11a8323be9486854fb3f34a5571198d"
+}
+
+# QuoVadis Root CA 3
+trust_anchors {
+  sha256_hex: "18f1fc7f205df8adddeb7fe007dd57e3af375a9c4d8d73546bf4f1fed1e18d35"
+}
+
+# QuoVadis Root CA 2
+trust_anchors {
+  sha256_hex: "85a0dd7dd720adb7ff05f83d542b209dc7ff4528f7d677b18389fea5e5c49e86"
+}
+
+# QuoVadis Root CA 3 G3
+trust_anchors {
+  sha256_hex: "88ef81de202eb018452e43f864725cea5fbd1fc2d9d205730709c5d8b8690f46"
+}
+
+# QuoVadis Root CA 1 G3
+trust_anchors {
+  sha256_hex: "8a866fd1b276b57e578e921c65828a2bed58e9f2f288054134b7f1f4bfc9cc74"
+}
+
+# QuoVadis Root CA 2 G3
+trust_anchors {
+  sha256_hex: "8fe4fb0af93a4d0d67db0bebb23e37c71bf325dcbcdd240ea04daf58b47e1840"
+}
+
+# Security Communication RootCA2
+trust_anchors {
+  sha256_hex: "513b2cecb810d4cde5dd85391adfc6c2dd60d87bb736d2b521484aa47a0ebef6"
+}
+
+# SECOM Trust.net - Security Communication RootCA1
+trust_anchors {
+  sha256_hex: "e75e72ed9f560eec6eb4800073a43fc3ad19195a392282017895974a99026b6c"
+}
+
+# COMODO Certification Authority
+trust_anchors {
+  sha256_hex: "0c2cd63df7806fa399ede809116b575bf87989f06518f9808c860503178baf66"
+}
+
+# COMODO ECC Certification Authority
+trust_anchors {
+  sha256_hex: "1793927a0614549789adce2f8f34f7f0b66d0f3ae3a3b84d21ec15dbba4fadc7"
+}
+
+# USERTrust ECC Certification Authority
+trust_anchors {
+  sha256_hex: "4ff460d54b9c86dabfbcfc5712e0400d2bed3fbc4d4fbdaa86e06adcd2a9ad7a"
+}
+
+# COMODO RSA Certification Authority
+trust_anchors {
+  sha256_hex: "52f0e1c4e58ec629291b60317f074671b85d7ea80d5b07273463534b32b40234"
+}
+
+# AAA Certificate Services
+trust_anchors {
+  sha256_hex: "d7a7a0fb5d7e2731d771e9484ebcdef71d5f0c3e0a2948782bc83ee0ea699ef4"
+}
+
+# USERTrust RSA Certification Authority
+trust_anchors {
+  sha256_hex: "e793c9b02fd8aa13e21c31228accb08119643b749c898964b1746d46c3d4cbd2"
+}
+
+# Secure Global CA
+trust_anchors {
+  sha256_hex: "4200f5043ac8590ebb527d209ed1503029fbcbd41ca1b506ec27f15ade7dac69"
+}
+
+# Trustwave Global ECC P384 Certification Authority
+trust_anchors {
+  sha256_hex: "55903859c8c0c3ebb8759ece4e2557225ff5758bbd38ebd48276601e1bd58097"
+}
+
+# Trustwave Global ECC P256 Certification Authority
+trust_anchors {
+  sha256_hex: "945bbc825ea554f489d1fd51a73ddf2ea624ac7019a05205225c22a78ccfa8b4"
+}
+
+# Trustwave Global Certification Authority
+trust_anchors {
+  sha256_hex: "97552015f5ddfc3c8788c006944555408894450084f100867086bc1a2bb58dc8"
+}
+
+# XRamp Global Certification Authority
+trust_anchors {
+  sha256_hex: "cecddc905099d8dadfc5b1d209b737cbe2c18cfb2c10c0ff0bcf0d3286fc1aa2"
+}
+
+# SecureTrust CA
+trust_anchors {
+  sha256_hex: "f1c1b50ae5a20dd8030ec9f6bc24823dd367b5255759b4e71b61fce9f7375d73"
+}
+
+# UCA Global G2 Root
+trust_anchors {
+  sha256_hex: "9bea11c976fe014764c1be56a6f914b5a560317abd9988393382e5161aa0493c"
+}
+
+# UCA Extended Validation Root
+trust_anchors {
+  sha256_hex: "d43af9b35473755c9684fc06d7d8cb70ee5c28e773fb294eb41ee71722924d24"
+}
+
+# SSL.com EV Root Certification Authority ECC
+trust_anchors {
+  sha256_hex: "22a2c1f7bded704cc1e701b5f408c310880fe956b5de2a4a44f99c873a25a7c8"
+}
+
+# SSL.com EV Root Certification Authority RSA R2
+trust_anchors {
+  sha256_hex: "2e7bf16cc22485a7bbe2aa8696750761b0ae39be3b2fe9d0cc6d4ef73491425c"
+}
+
+# SSL.com Root Certification Authority ECC
+trust_anchors {
+  sha256_hex: "3417bb06cc6007da1b961c920b8ab4ce3fad820e4aa30b9acbc4a74ebdcebc65"
+}
+
+# SSL.com Root Certification Authority RSA
+trust_anchors {
+  sha256_hex: "85666a562ee0be5ce925c1d8890a6f76a87ec16d4d7d5f29ea7419cf20123b69"
+}
+
+# SwissSign Gold CA - G2
+trust_anchors {
+  sha256_hex: "62dd0be9b9f50a163ea0f8e75c053b1eca57ea55c8688f647c6881f2c8357b95"
+}
+
+# SwissSign Silver CA - G2
+trust_anchors {
+  sha256_hex: "be6c4da2bbb9ba59b6f3939768374246c3c005993fa98f020d1dedbed48a81d5"
+}
+
+# TWCA Global Root CA
+trust_anchors {
+  sha256_hex: "59769007f7685d0fcd50872f9f95d5755a5b2b457d81f3692b610a98672f0e1b"
+}
+
+# TWCA Root Certification Authority
+trust_anchors {
+  sha256_hex: "bfd88fe1101c41ae3e801bf8be56350ee9bad1a6b9bd515edc5c6d5b8711ac44"
+}
+
+# TeliaSonera Root CA v1
+trust_anchors {
+  sha256_hex: "dd6936fe21f8f077c123a1a521c12224f72255b73e03a7260693e8a24b0fa389"
+}
+
+# TrustCor RootCert CA-2
+trust_anchors {
+  sha256_hex: "0753e940378c1bd5e3836e395daea5cb839e5046f1bd0eae1951cf10fec7c965"
+}
+
+# TrustCor ECA-1
+trust_anchors {
+  sha256_hex: "5a885db19c01d912c5759388938cafbbdf031ab2d48e91ee15589b42971d039c"
+}
+
+# TrustCor RootCert CA-1
+trust_anchors {
+  sha256_hex: "d40e9c86cd8fe468c1776959f49ea774fa548684b6c406f3909261f4dce2575c"
+}
+
+# Network Solutions Certificate Authority
+trust_anchors {
+  sha256_hex: "15f0ba00a3ac7af3ac884c072b1011a077bd77c097f40164b2f8598abd83860c"
+}

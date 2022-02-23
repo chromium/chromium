@@ -50,7 +50,7 @@ class PLATFORM_EXPORT FEMorphology final : public FilterEffect {
                                           int indention) const override;
 
  private:
-  FloatRect MapEffect(const FloatRect&) const override;
+  gfx::RectF MapEffect(const gfx::RectF&) const override;
 
   sk_sp<PaintFilter> CreateImageFilter() override;
 

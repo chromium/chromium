@@ -116,15 +116,6 @@ pnacl_toolchain("newlib_pnacl") {
   strip = "finalize"
 }
 
-pnacl_toolchain("newlib_pnacl_nonsfi") {
-  executable_extension = ""
-  strip = "strip"
-
-  # This macro is embedded on nonsfi toolchains but reclient can't figure
-  # that out itself, so we make it explicit.
-  extra_cppflags = "-D__native_client_nonsfi__"
-}
-
 template("nacl_glibc_toolchain") {
   toolchain_cpu = target_name
   assert(defined(invoker.toolchain_tuple), "Must define toolchain_tuple")

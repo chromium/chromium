@@ -20,7 +20,6 @@
 #include "base/base_paths.h"
 #include "base/command_line.h"
 #include "base/environment.h"
-#include "base/feature_list.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -44,15 +43,16 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/shell_integration.h"
-#include "chrome/browser/web_applications/web_app_shortcut.h"
+#include "chrome/browser/web_applications/os_integration/web_app_shortcut.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/common/buildflags.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/chrome_constants.h"
-#include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/grit/chrome_unscaled_resources.h"
 #include "components/version_info/version_info.h"
 #include "third_party/libxml/chromium/xml_writer.h"
+#include "third_party/re2/src/re2/re2.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/image/image_family.h"
 #include "ui/ozone/public/ozone_platform.h"
@@ -279,9 +279,12 @@ void SetActionsForDesktopApplication(
     g_key_file_set_string(key_file, section_title.c_str(), "Name",
                           info.name.c_str());
 
+    std::string launch_url_str = info.exec_launch_url.spec();
+    // Escape % as %%.
+    RE2::GlobalReplace(&launch_url_str, "%", "%%");
     base::CommandLine current_cmd(command_line);
     current_cmd.AppendSwitchASCII(switches::kAppLaunchUrlForShortcutsMenuItem,
-                                  info.exec_launch_url.spec());
+                                  launch_url_str);
 
     g_key_file_set_string(
         key_file, section_title.c_str(), "Exec",
@@ -323,6 +326,14 @@ std::string GetWMClassFromAppName(std::string app_name) {
   base::i18n::ReplaceIllegalCharactersInPath(&app_name, '_');
   base::TrimString(app_name, "_", &app_name);
   return app_name;
+}
+
+std::string GetXdgAppIdForWebApp(std::string app_name,
+                                 const base::FilePath& profile_path) {
+  if (base::StartsWith(app_name, web_app::kCrxAppPrefix))
+    app_name = app_name.substr(strlen(web_app::kCrxAppPrefix));
+  return GetDesktopBaseName(
+      web_app::GetAppShortcutFilename(profile_path, app_name).AsUTF8Unsafe());
 }
 
 base::FilePath GetDataWriteLocation(base::Environment* env) {
@@ -631,11 +642,8 @@ std::string GetDesktopFileContentsForCommand(
   g_key_file_set_string(key_file, kDesktopEntry, "StartupWMClass",
                         wmclass.c_str());
 
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsAppIconShortcutsMenuUI)) {
-    SetActionsForDesktopApplication(command_line, key_file,
-                                    std::move(action_info));
-  }
+  SetActionsForDesktopApplication(command_line, key_file,
+                                  std::move(action_info));
 
   gsize length = 0;
   gchar* data_dump = g_key_file_to_data(key_file, &length, NULL);

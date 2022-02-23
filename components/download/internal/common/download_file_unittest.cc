@@ -30,7 +30,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -122,7 +122,7 @@ class TestDownloadFileImpl : public DownloadFileImpl {
     return base::Milliseconds(0);
   }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // On Posix, we don't encounter transient errors during renames, except
   // possibly EAGAIN, which is difficult to replicate reliably. So we resort to
   // simulating a transient error using ACCESS_DENIED instead.
@@ -174,7 +174,7 @@ class DownloadFileTest : public testing::Test {
   }
 
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(com_initializer_.Succeeded());
 #endif
     EXPECT_CALL(*(observer_.get()), DestinationUpdate(_, _, _))
@@ -483,7 +483,7 @@ class DownloadFileTest : public testing::Test {
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This must occur early in the member list to ensure COM is initialized first
   // and uninitialized last.
   base::win::ScopedCOMInitializer com_initializer_;
@@ -800,7 +800,7 @@ TEST_P(DownloadFileTestWithRename, RenameWithErrorRetry) {
   base::RunLoop succeeding_run;
   {
 // (Scope for the base::File or base::FilePermissionRestorer below.)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows we test with an actual transient error, a sharing violation.
     // The rename will fail because we are holding the file open for READ. On
     // Posix this doesn't cause a failure.

@@ -12,6 +12,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "build/build_config.h"
@@ -181,10 +182,11 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // InputMethod shared between multiple WindowTreeHost instances.
   //
   // This is used for Ash only. There are 2 reasons:
-  // 1) ChromeOS virtual keyboard needs to receive ShowVirtualKeyboardIfEnabled
-  // notification from InputMethod. Multiple InputMethod instances makes it hard
-  // to register/unregister the observer for that notification. 2) For Ozone,
-  // there is no native focus state for the root window and WindowTreeHost. See
+  // 1) ChromeOS virtual keyboard needs to receive
+  // SetVirtualKeyboardVisibilityIfEnabled() notification from InputMethod.
+  // Multiple InputMethod instances makes it hard to register/unregister the
+  // observer for that notification. 2) For Ozone, there is no native focus
+  // state for the root window and WindowTreeHost. See
   // DrmWindowHost::CanDispatchEvent, the key events always goes to the primary
   // WindowTreeHost. And after InputMethod processed the key event and continue
   // dispatching it, WindowTargeter::FindTargetForEvent may re-dispatch it to a
@@ -427,7 +429,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // valid during its deletion. (Window's dtor notifies observers that may
   // attempt to reach back up to access this object which will be valid until
   // the end of the dtor).
-  Window* window_;  // Owning.
+  raw_ptr<Window> window_;  // Owning.
 
   // Keeps track of the occlusion state of the host, and used to send
   // notifications to observers when it changes.
@@ -461,7 +463,7 @@ class AURA_EXPORT WindowTreeHost : public ui::internal::InputMethodDelegate,
   // The InputMethod instance used to process key events.
   // If owned it, it is created in GetInputMethod() method;
   // If not owned it, it is passed in through SetSharedInputMethod() method.
-  ui::InputMethod* input_method_ = nullptr;
+  raw_ptr<ui::InputMethod> input_method_ = nullptr;
 
   // Whether the InputMethod instance is owned by this WindowTreeHost.
   bool owned_input_method_ = false;

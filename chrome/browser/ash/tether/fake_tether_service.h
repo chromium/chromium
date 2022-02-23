@@ -12,7 +12,7 @@ namespace tether {
 
 // A stub of TetherService that provides an easy way to develop for Tether on
 // non-Chromebooks or without a Tether host. To use, see
-// chromeos::switches::kTetherStub for more details.
+// `switches::kTetherStub` for more details.
 class FakeTetherService : public TetherService {
  public:
   FakeTetherService(

@@ -37,7 +37,7 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
                                      uint64_t stable_id)
     : layer_tree_impl_(layer_tree_impl),
       stable_id_(stable_id),
-      effect_tree_index_(EffectTree::kInvalidNodeId),
+      effect_tree_index_(kInvalidPropertyNodeId),
       num_contributors_(0),
       has_contributing_layer_that_escapes_clip_(false),
       surface_property_changed_(false),
@@ -52,9 +52,10 @@ RenderSurfaceImpl::RenderSurfaceImpl(LayerTreeImpl* layer_tree_impl,
 RenderSurfaceImpl::~RenderSurfaceImpl() = default;
 
 RenderSurfaceImpl* RenderSurfaceImpl::render_target() {
-  EffectTree& effect_tree = layer_tree_impl_->property_trees()->effect_tree;
+  EffectTree& effect_tree =
+      layer_tree_impl_->property_trees()->effect_tree_mutable();
   EffectNode* node = effect_tree.Node(EffectTreeIndex());
-  if (node->target_id != EffectTree::kRootNodeId)
+  if (node->target_id != kRootPropertyNodeId)
     return effect_tree.GetRenderSurface(node->target_id);
   else
     return this;
@@ -62,9 +63,9 @@ RenderSurfaceImpl* RenderSurfaceImpl::render_target() {
 
 const RenderSurfaceImpl* RenderSurfaceImpl::render_target() const {
   const EffectTree& effect_tree =
-      layer_tree_impl_->property_trees()->effect_tree;
+      layer_tree_impl_->property_trees()->effect_tree();
   const EffectNode* node = effect_tree.Node(EffectTreeIndex());
-  if (node->target_id != EffectTree::kRootNodeId)
+  if (node->target_id != kRootPropertyNodeId)
     return effect_tree.GetRenderSurface(node->target_id);
   else
     return this;
@@ -170,7 +171,8 @@ bool RenderSurfaceImpl::ShouldCacheRenderSurface() const {
 
 bool RenderSurfaceImpl::CopyOfOutputRequired() const {
   return HasCopyRequest() || ShouldCacheRenderSurface() ||
-         SubtreeCaptureId().is_valid();
+         SubtreeCaptureId().is_valid() ||
+         OwningEffectNode()->shared_element_resource_id.IsValid();
 }
 
 int RenderSurfaceImpl::TransformTreeIndex() const {
@@ -186,7 +188,7 @@ int RenderSurfaceImpl::EffectTreeIndex() const {
 }
 
 const EffectNode* RenderSurfaceImpl::OwningEffectNode() const {
-  return layer_tree_impl_->property_trees()->effect_tree.Node(
+  return layer_tree_impl_->property_trees()->effect_tree().Node(
       EffectTreeIndex());
 }
 
@@ -298,7 +300,7 @@ void RenderSurfaceImpl::SetContentRectToViewport() {
   // Only root render surface use viewport as content rect.
   DCHECK_EQ(render_target(), this);
   gfx::Rect viewport = gfx::ToEnclosingRect(
-      layer_tree_impl_->property_trees()->clip_tree.ViewportClip());
+      layer_tree_impl_->property_trees()->clip_tree().ViewportClip());
   SetContentRect(viewport);
 }
 
@@ -308,7 +310,7 @@ void RenderSurfaceImpl::ClearAccumulatedContentRect() {
 
 void RenderSurfaceImpl::AccumulateContentRectFromContributingLayer(
     LayerImpl* layer) {
-  DCHECK(layer->DrawsContent());
+  DCHECK(layer->draws_content());
   DCHECK_EQ(this, layer->render_target());
 
   // Root render surface doesn't accumulate content rect, it always uses
@@ -355,10 +357,11 @@ bool RenderSurfaceImpl::SurfacePropertyChangedOnlyFromDescendant() const {
 
 bool RenderSurfaceImpl::AncestorPropertyChanged() const {
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();
-  return ancestor_property_changed_ || property_trees->full_tree_damaged ||
-         property_trees->transform_tree.Node(TransformTreeIndex())
+  return ancestor_property_changed_ || property_trees->full_tree_damaged() ||
+         property_trees->transform_tree()
+             .Node(TransformTreeIndex())
              ->transform_changed ||
-         property_trees->effect_tree.Node(EffectTreeIndex())->effect_changed;
+         property_trees->effect_tree().Node(EffectTreeIndex())->effect_changed;
 }
 
 void RenderSurfaceImpl::NoteAncestorPropertyChanged() {
@@ -375,6 +378,17 @@ gfx::Rect RenderSurfaceImpl::GetDamageRect() const {
   if (!is_valid_rect)
     return content_rect();
   return damage_rect;
+}
+
+RenderSurfacePropertyChangedFlags RenderSurfaceImpl::GetPropertyChangeFlags()
+    const {
+  return {surface_property_changed_, ancestor_property_changed_};
+}
+
+void RenderSurfaceImpl::ApplyPropertyChangeFlags(
+    const RenderSurfacePropertyChangedFlags& flags) {
+  surface_property_changed_ = flags.self_changed();
+  ancestor_property_changed_ = flags.ancestor_changed();
 }
 
 void RenderSurfaceImpl::ResetPropertyChangedFlags() {
@@ -422,9 +436,9 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
     return;
 
   const PropertyTrees* property_trees = layer_tree_impl_->property_trees();
-  int sorting_context_id =
-      property_trees->transform_tree.Node(TransformTreeIndex())
-          ->sorting_context_id;
+  int sorting_context_id = property_trees->transform_tree()
+                               .Node(TransformTreeIndex())
+                               ->sorting_context_id;
   bool contents_opaque = false;
   viz::SharedQuadState* shared_quad_state =
       render_pass->CreateAndAppendSharedQuadState();
@@ -454,7 +468,7 @@ void RenderSurfaceImpl::AppendQuads(DrawMode draw_mode,
       OwningEffectNode()->surface_contents_scale;
   // Resourceless mode does not support masks.
   if (draw_mode != DRAW_MODE_RESOURCELESS_SOFTWARE && mask_layer &&
-      mask_layer->DrawsContent() && !mask_layer->bounds().IsEmpty()) {
+      mask_layer->draws_content() && !mask_layer->bounds().IsEmpty()) {
     // The software renderer applies mask layer and blending in the wrong
     // order but kDstIn doesn't commute with masking. It is okay to not
     // support this configuration because kDstIn was introduced to replace

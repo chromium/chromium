@@ -9,13 +9,14 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 template <typename T>
-class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
+class MIDIPortMap : public ScriptWrappable,
+                    public Maplike<String, IDLString, T*, T> {
  public:
   explicit MIDIPortMap(const HeapVector<Member<T>>& entries)
       : entries_(entries) {}
@@ -33,9 +34,8 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
   using Entries = HeapVector<Member<T>>;
   using IteratorType = typename Entries::const_iterator;
 
-  typename PairIterable<String, T*>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override {
+  typename PairIterable<String, IDLString, T*, T>::IterationSource*
+  StartIteration(ScriptState*, ExceptionState&) override {
     return MakeGarbageCollected<MapIterationSource>(this, entries_.begin(),
                                                     entries_.end());
   }
@@ -58,7 +58,7 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
   // Note: This template class relies on the fact that m_map.m_entries will
   // never be modified once it is created.
   class MapIterationSource final
-      : public PairIterable<String, T*>::IterationSource {
+      : public PairIterable<String, IDLString, T*, T>::IterationSource {
    public:
     MapIterationSource(MIDIPortMap<T>* map,
                        IteratorType iterator,
@@ -79,7 +79,7 @@ class MIDIPortMap : public ScriptWrappable, public Maplike<String, T*> {
 
     void Trace(Visitor* visitor) const override {
       visitor->Trace(map_);
-      PairIterable<String, T*>::IterationSource::Trace(visitor);
+      PairIterable<String, IDLString, T*, T>::IterationSource::Trace(visitor);
     }
 
    private:

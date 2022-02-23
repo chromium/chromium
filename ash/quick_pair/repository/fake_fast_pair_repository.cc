@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/proto/fastpair.pb.h"
 #include "base/strings/string_util.h"
+#include "chromeos/services/bluetooth_config/public/cpp/device_image_info.h"
 #include "device/bluetooth/bluetooth_device.h"
 
 namespace ash {
@@ -42,13 +43,19 @@ bool FakeFastPairRepository::HasKeyForDevice(const std::string& mac_address) {
 void FakeFastPairRepository::GetDeviceMetadata(
     const std::string& hex_model_id,
     DeviceMetadataCallback callback) {
-  std::string normalized_id = base::ToUpperASCII(hex_model_id);
-  if (data_.contains(normalized_id)) {
-    std::move(callback).Run(data_[normalized_id].get());
+  if (!is_network_connected_) {
+    std::move(callback).Run(/*device=*/nullptr, /*has_retryable_error=*/true);
     return;
   }
 
-  std::move(callback).Run(nullptr);
+  std::string normalized_id = base::ToUpperASCII(hex_model_id);
+  if (data_.contains(normalized_id)) {
+    std::move(callback).Run(data_[normalized_id].get(),
+                            /*has_retryable_error=*/false);
+    return;
+  }
+
+  std::move(callback).Run(nullptr, /*has_retryable_error=*/true);
 }
 
 void FakeFastPairRepository::IsValidModelId(
@@ -72,6 +79,28 @@ void FakeFastPairRepository::AssociateAccountKey(
 bool FakeFastPairRepository::DeleteAssociatedDevice(
     const device::BluetoothDevice* device) {
   return saved_account_keys_.erase(device->GetAddress()) == 1;
+}
+
+// Unimplemented.
+void FakeFastPairRepository::FetchDeviceImages(scoped_refptr<Device> device) {
+  return;
+}
+
+// Unimplemented.
+bool FakeFastPairRepository::PersistDeviceImages(scoped_refptr<Device> device) {
+  return true;
+}
+
+// Unimplemented.
+bool FakeFastPairRepository::EvictDeviceImages(
+    const device::BluetoothDevice* device) {
+  return true;
+}
+
+// Unimplemented.
+absl::optional<chromeos::bluetooth_config::DeviceImageInfo>
+FakeFastPairRepository::GetImagesForDevice(const std::string& device_id) {
+  return absl::nullopt;
 }
 
 }  // namespace quick_pair

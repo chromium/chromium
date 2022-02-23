@@ -854,7 +854,8 @@ IN_PROC_BROWSER_TEST_F(ContentScriptApiTest,
   ASSERT_TRUE(injector);
 
   ExtensionTestMessageListener listener("done", false);
-  AddTabAtIndex(0, GURL("chrome://newtab"), ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL("chrome://newtab"), ui::PAGE_TRANSITION_LINK));
   browser()->tab_strip_model()->ActivateTabAt(0);
   content::WebContents* tab_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
@@ -1331,7 +1332,7 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
   constexpr char kContentScriptManifest[] =
       R"({
            "name": "Content Script injection in related frames",
-           "manifest_version": 2,
+           "manifest_version": 3,
            "version": "0.1",
            "content_scripts": [{
              "matches": ["http://example.com/*"],
@@ -1348,15 +1349,14 @@ void ContentScriptRelatedFrameTest::SetUpOnMainThread() {
              "js": ["script.js"],
              "run_at": "document_end",
              "all_frames": true,
-             %s
              "match_about_blank": true
            }]
          })";
   const char* extra_property = "";
   if (IncludeMatchOriginAsFallback())
     extra_property = R"("match_origin_as_fallback": true,)";
-  std::string manifest = base::StringPrintf(kContentScriptManifest,
-                                            extra_property, extra_property);
+  std::string manifest =
+      base::StringPrintf(kContentScriptManifest, extra_property);
   test_extension_dir_.WriteManifest(manifest);
 
   std::string script = base::StringPrintf(
@@ -1868,65 +1868,6 @@ IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
     // related frame. https://crbug.com/1111028.
     EXPECT_TRUE(DidScriptRunInFrame(data_url_host));
   }
-}
-
-// Test content script injection into iframes when the script has a
-// path-specific pattern and the parent frame does match.
-IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
-                       PathSpecificMatchPattern_ParentFrameMatches) {
-  // Open a page to the page that matches the content script's pattern.
-  content::WebContents* tab = NavigateTab(matching_path_specific_iframe_url());
-  // Navigate the iframe to a data URL.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
-
-  content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
-
-  EXPECT_EQ(data_url(), child_frame->GetLastCommittedURL());
-
-  // The script should have ran in the parent frame.
-  EXPECT_TRUE(DidScriptRunInFrame(tab->GetMainFrame()));
-
-  // Subtle: When using match_origin_as_fallback, the URL we use for matching
-  // the frame is the precursor origin. As such, here, it won't inject (since
-  // it doesn't match the path component).
-  // TODO(devlin): Adjust the matching logic for these frames to inject if they
-  // are same-origin with a matching pattern, and change this to
-  // EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(child_frame));
-}
-
-// Test content script injection into iframes when the script has a
-// path-specific pattern and the parent frame does *not* match.
-IN_PROC_BROWSER_TEST_F(ContentScriptMatchOriginAsFallbackTest,
-                       PathSpecificMatchPattern_ParentFrameDoesntMatch) {
-  // Open a page to the page that's same-origin with the match pattern, but
-  // doesn't match.
-  content::WebContents* tab =
-      NavigateTab(non_matching_path_specific_iframe_url());
-  // Navigate the child frame to the URL that matches the path requirement.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", path_specific_allowed_url());
-
-  content::RenderFrameHost* child_frame =
-      content::ChildFrameAt(tab->GetMainFrame(), 0);
-
-  EXPECT_EQ(path_specific_allowed_url(), child_frame->GetLastCommittedURL());
-  // The script should have ran in the child frame (which matches the pattern),
-  // but not the parent frame (which doesn't match the path component).
-  EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(tab->GetMainFrame()));
-
-  // Now, navigate the iframe to a data URL.
-  NavigateIframe(tab->GetMainFrame(), "frames[0]", data_url());
-  EXPECT_EQ(data_url(), child_frame->GetLastCommittedURL());
-
-  // Subtle: When using match_origin_as_fallback, the URL we use for matching
-  // the frame is the precursor origin. As such, here, it won't inject (since
-  // it doesn't match the path component).
-  // TODO(devlin): Adjust the matching logic for these frames to inject if they
-  // are same-origin with a matching pattern, and change this to
-  // EXPECT_TRUE(DidScriptRunInFrame(child_frame));
-  EXPECT_FALSE(DidScriptRunInFrame(child_frame));
 }
 
 // Test fixture which sets a custom NTP Page.

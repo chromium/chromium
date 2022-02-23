@@ -137,7 +137,8 @@ CookieStore CreateCookieStore(Profile* profile,
   DCHECK(profile);
   DCHECK(tab_ids);
   base::DictionaryValue dict;
-  dict.SetString(cookies_api_constants::kIdKey, GetStoreIdFromProfile(profile));
+  dict.SetStringKey(cookies_api_constants::kIdKey,
+                    GetStoreIdFromProfile(profile));
   dict.SetKey(cookies_api_constants::kTabIdsKey,
               base::Value::FromUniquePtrValue(std::move(tab_ids)));
 
@@ -152,7 +153,7 @@ void GetCookieListFromManager(
     const GURL& url,
     network::mojom::CookieManager::GetCookieListCallback callback) {
   manager->GetCookieList(url, net::CookieOptions::MakeAllInclusive(),
-                         net::CookiePartitionKeychain::Todo(),
+                         net::CookiePartitionKeyCollection::Todo(),
                          std::move(callback));
 }
 

@@ -11,6 +11,7 @@ import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+import("extensions.gni")
 
 assert(enable_extensions, "enable extensions check failed")
 
@@ -51,103 +52,20 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "drag_and_drop_handler.ts",
-    "extensions.ts",
-    "item_mixin.ts",
-    "item_util.ts",
-    "keyboard_shortcut_delegate.ts",
-    "navigation_helper.ts",
-    "service.ts",
-    "shortcut_util.ts",
-  ]
-
-  if (is_chromeos_ash) {
-    in_files += [ "kiosk_browser_proxy.ts" ]
-  }
+  in_files = non_web_component_files
 }
 
 preprocess_if_expr("preprocess_generated") {
   public_deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "code_section.ts",
-    "activity_log/activity_log_history_item.ts",
-    "activity_log/activity_log_history.ts",
-    "activity_log/activity_log.ts",
-    "activity_log/activity_log_stream_item.ts",
-    "activity_log/activity_log_stream.ts",
-    "detail_view.ts",
-    "drop_overlay.ts",
-    "error_page.ts",
-    "host_permissions_toggle_list.ts",
-    "icons.ts",
-    "install_warnings_dialog.ts",
-    "item.ts",
-    "item_list.ts",
-    "keyboard_shortcuts.ts",
-    "load_error.ts",
-    "manager.ts",
-    "options_dialog.ts",
-    "pack_dialog_alert.ts",
-    "pack_dialog.ts",
-    "runtime_host_permissions.ts",
-    "runtime_hosts_dialog.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "shortcut_input.ts",
-    "sidebar.ts",
-    "site_access.ts",
-    "toggle_row.ts",
-    "toolbar.ts",
-  ]
-
-  if (is_chromeos_ash) {
-    in_files += [ "kiosk_dialog.ts" ]
-  }
+  in_files = web_component_files
 }
 
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "activity_log:web_components",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "code_section.ts",
-    "detail_view.ts",
-    "drop_overlay.ts",
-    "error_page.ts",
-    "host_permissions_toggle_list.ts",
-    "icons.ts",
-    "install_warnings_dialog.ts",
-    "item.ts",
-    "item_list.ts",
-    "keyboard_shortcuts.ts",
-    "load_error.ts",
-    "manager.ts",
-    "options_dialog.ts",
-    "pack_dialog.ts",
-    "pack_dialog_alert.ts",
-    "runtime_host_permissions.ts",
-    "runtime_hosts_dialog.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "shortcut_input.ts",
-    "sidebar.ts",
-    "site_access.ts",
-    "toggle_row.ts",
-    "toolbar.ts",
-  ]
-
-  if (is_chromeos_ash) {
-    js_files += [ "kiosk_dialog.ts" ]
-  }
+html_to_js("web_components") {
+  js_files = web_component_files
 }
 
 grit("resources") {
@@ -170,60 +88,20 @@ grit("resources") {
 ts_library("build_ts") {
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
+  composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "activity_log/activity_log_history_item.ts",
-    "activity_log/activity_log_history.ts",
-    "activity_log/activity_log.ts",
-    "activity_log/activity_log_stream_item.ts",
-    "activity_log/activity_log_stream.ts",
-    "code_section.ts",
-    "detail_view.ts",
-    "drag_and_drop_handler.ts",
-    "drop_overlay.ts",
-    "error_page.ts",
-    "extensions.ts",
-    "host_permissions_toggle_list.ts",
-    "icons.ts",
-    "install_warnings_dialog.ts",
-    "item_mixin.ts",
-    "item.ts",
-    "item_list.ts",
-    "item_util.ts",
-    "keyboard_shortcut_delegate.ts",
-    "keyboard_shortcuts.ts",
-    "load_error.ts",
-    "manager.ts",
-    "navigation_helper.ts",
-    "options_dialog.ts",
-    "pack_dialog_alert.ts",
-    "pack_dialog.ts",
-    "runtime_host_permissions.ts",
-    "runtime_hosts_dialog.ts",
-    "service.ts",
-    "shared_style.ts",
-    "shared_vars.ts",
-    "shortcut_input.ts",
-    "shortcut_util.ts",
-    "sidebar.ts",
-    "site_access.ts",
-    "toggle_row.ts",
-    "toolbar.ts",
-  ]
+  in_files = web_component_files + non_web_component_files
   definitions = [
     "//tools/typescript/definitions/activity_log_private.d.ts",
     "//tools/typescript/definitions/chrome_event.d.ts",
     "//tools/typescript/definitions/developer_private.d.ts",
     "//tools/typescript/definitions/management.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
     "//tools/typescript/definitions/runtime.d.ts",
   ]
 
   if (is_chromeos_ash) {
-    in_files += [
-      "kiosk_browser_proxy.ts",
-      "kiosk_dialog.ts",
-    ]
     definitions += [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   }
 

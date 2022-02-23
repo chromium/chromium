@@ -318,7 +318,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   EXPECT_TRUE(notification.never_timeout());
   EXPECT_DOUBLE_EQ(621046800000., notification.timestamp().ToJsTime());
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(notification.image().IsEmpty());
   EXPECT_EQ(kIconWidth, notification.image().Width());
   EXPECT_EQ(kIconHeight, notification.image().Height());
@@ -419,7 +419,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
   // The js-provided tag should be part of the id.
   EXPECT_FALSE(all_options_notification.id().find("replace-id") ==
                std::string::npos);
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(all_options_notification.image().IsEmpty());
   EXPECT_EQ(kIconWidth, all_options_notification.image().Width());
   EXPECT_EQ(kIconHeight, all_options_notification.image().Height());
@@ -923,10 +923,10 @@ IN_PROC_BROWSER_TEST_F(
 
 // Mac OS X exclusively uses native notifications, so the decision on whether to
 // display notifications whilst fullscreen is deferred to the operating system.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // TODO(https://crbug.com/1086169) Test is flaky on Linux TSan.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && \
     defined(THREAD_SANITIZER)
 #define MAYBE_TestShouldDisplayFullscreen DISABLED_TestShouldDisplayFullscreen
 #else
@@ -1007,7 +1007,7 @@ IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,
             notifications[0].fullscreen_visibility());
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if BUILDFLAG(ENABLE_BACKGROUND_MODE)
 IN_PROC_BROWSER_TEST_F(PlatformNotificationServiceBrowserTest,

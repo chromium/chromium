@@ -32,12 +32,17 @@ mojom("mojom") {
     "transform.mojom",
   ]
 
+  if (is_mac) {
+    sources += [ "ca_layer_result.mojom" ]
+  }
+
   public_deps = [
     ":native_handle_types",
     "//mojo/public/mojom/base",
     "//skia/public/mojom",
     "//ui/gfx/geometry/mojom",
   ]
+  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   enabled_features = []
   if (ozone_platform_x11) {
@@ -207,6 +212,17 @@ mojom("mojom") {
     {
       types = [
         {
+          mojom = "gfx.mojom.CALayerResult"
+          cpp = "::gfx::CALayerResult"
+        },
+      ]
+      traits_sources = [ "ca_layer_result_mojom_traits.cc" ]
+      traits_headers = [ "ca_layer_result_mojom_traits.h" ]
+      traits_public_deps = [ "//ui/gfx" ]
+    },
+    {
+      types = [
+        {
           mojom = "gfx.mojom.DelegatedInkMetadata"
           cpp = "::std::unique_ptr<::gfx::DelegatedInkMetadata>"
           move_only = true
@@ -335,6 +351,7 @@ mojom("native_handle_types") {
   }
   public_deps = [ "//mojo/public/mojom/base" ]
   generate_java = true
+  webui_module_path = "chrome://resources/mojo/ui/gfx/mojom"
 
   shared_cpp_typemap = {
     types = [

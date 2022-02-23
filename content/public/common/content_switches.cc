@@ -22,10 +22,6 @@ const char kAllowInsecureLocalhost[] = "allow-insecure-localhost";
 const char kAllowLoopbackInPeerConnection[] =
     "allow-loopback-in-peer-connection";
 
-// Allow a page to send synchronus XHR during its unloading.
-// TODO(https://crbug.com/1003101): Remove this in Chrome 88.
-const char kAllowSyncXHRInPageDismissal[] = "allow-sync-xhr-in-page-dimissal";
-
 // Uses the android SkFontManager on linux. The specified directory should
 // include the configuration xml file with the name "fonts.xml".
 // This is used in blimp to emulate android fonts on linux.
@@ -59,11 +55,10 @@ const char kChangeStackGuardOnForkDisabled[] = "disable";
 // Causes the Conversion Measurement API to run without delays or noise.
 const char kConversionsDebugMode[] = "conversions-debug-mode";
 
-// Enables cross-origin sharing of WebAssembly modules. This switch supports the
-// deprecation of cross-origin WebAssembly module sharing as it allows admins to
-// re-enable cross-origin module sharing temporarily with an enterprise policy.
-const char kCrossOriginWebAssemblyModuleSharingAllowed[] =
-    "cross-origin-webassembly-module-sharing-allowed";
+// Enable restricted APIs for a set of origins, specified as a
+// comma-separated list. For example:
+//   --restricted-api-origins=https://www.foo.com,https://www.bar.com
+const char kRestrictedApiOrigins[] = "restricted-api-origins";
 
 // Enables gating of getDisplayMedia by the display-capture permissions-policy.
 // This switch supports the shipping of display-capture, as it allows admins to
@@ -90,12 +85,9 @@ const char kDisableAccelerated2dCanvas[]    = "disable-accelerated-2d-canvas";
 // Enable in-progress canvas 2d API methods BeginLayer and EndLayer.
 const char kEnableCanvas2DLayers[] = "canvas-2d-layers";
 
-// Enables canvas to clear its context when it is running in background.
-const char kEnableCanvasContextLostInBackground[] =
-    "enable-canvas-context-lost-in-background";
-
-// Enable in-progress canvas 2d API features.
-const char kEnableNewCanvas2DAPI[] = "new-canvas-2d-api";
+// Disables hardware acceleration of video decode, where available.
+const char kDisableAcceleratedVideoDecode[] =
+    "disable-accelerated-video-decode";
 
 // Disables hardware acceleration of video encode, where available.
 const char kDisableAcceleratedVideoEncode[] =
@@ -216,6 +208,9 @@ const char kDisableLogging[]                = "disable-logging";
 // Disables using CODECAPI_AVLowLatencyMode when creating DXVA decoders.
 const char kDisableLowLatencyDxva[]         = "disable-low-latency-dxva";
 
+// Disables Mojo broker capabilities in the browser during Mojo initialization.
+const char kDisableMojoBroker[] = "disable-mojo-broker";
+
 // Disables clearing the rendering output of a renderer when it didn't commit
 // new output for a while after a top-frame navigation.
 const char kDisableNewContentRenderingTimeout[] =
@@ -318,6 +313,10 @@ const char kDisable2dCanvasClipAntialiasing[] = "disable-2d-canvas-clip-aa";
 // Disable YUV image decoding for those formats and cases where it's supported.
 // Has no effect unless GPU rasterization is enabled.
 const char kDisableYUVImageDecoding[] = "disable-yuv-image-decoding";
+
+// Enables the Accept-CH cache for client hints to be durable past browser
+// restarts.
+const char kDurableClientHintsCache[] = "durable-client-hints-cache";
 
 // Enables LCD text.
 const char kEnableLCDText[]                 = "enable-lcd-text";
@@ -478,15 +477,9 @@ const char kEnableWebGLImageChromium[] = "enable-webgl-image-chromium";
 // file:///alias/some/path.html into file:///replacement/some/path.html.
 const char kFileUrlPathAlias[] = "file-url-path-alias";
 
-// Disables OOP rasterization.  Takes precedence over the enable flag.
-const char kDisableOopRasterization[] = "disable-oop-rasterization";
-
-// Turns on out of process raster for the renderer whenever gpu raster
-// would have been used.  Enables the chromium_raster_transport extension.
-const char kEnableOopRasterization[] = "enable-oop-rasterization";
-
-// Forces the Chrome major version to 100 in the User-Agent string.
-const char kForceMajorVersionTo100[] = "force-major-version-to-100";
+// Forces the Chrome major version to the minor position in the User-Agent
+// string. Locks major version to 99.
+const char kForceMajorVersionToMinorPosition[] = "force-major-version-to-minor";
 
 // Forces use of hardware overlay for fullscreen video playback. Useful for
 // testing the Android overlay fullscreen functionality on other platforms.
@@ -553,7 +546,7 @@ const char kEnableUnsafeFastJSCalls[] = "enable-unsafe-fast-js-calls";
 // Flag to launch tests in the browser process.
 const char kLaunchAsBrowser[] = "as-browser";
 
-// Logs GPU control list decisions when enforcing blacklist rules.
+// Logs GPU control list decisions when enforcing blocklist rules.
 const char kLogGpuControlListDecisions[]    = "log-gpu-control-list-decisions";
 
 // Sets the minimum log level. Valid values are from 0 to 3:
@@ -563,11 +556,6 @@ const char kLoggingLevel[]                  = "log-level";
 // Overrides the default file name to use for general-purpose logging (does not
 // affect which events are logged).
 const char kLogFile[] = "log-file";
-
-// Resizes of the main frame are caused by changing between landscape and
-// portrait mode (i.e. Android) so the page should be rescaled to fit.
-const char kMainFrameResizesAreOrientationChanges[] =
-    "main-frame-resizes-are-orientation-changes";
 
 // Allows user to override maximum number of active WebGL contexts per
 // renderer process.
@@ -611,6 +599,9 @@ const char kNumRasterThreads[]              = "num-raster-threads";
 // Overrides the language detection result determined based on the page
 // contents.
 const char kOverrideLanguageDetection[] = "override-language-detection";
+
+// Renderer process that runs the non-PPAPI PDF plugin.
+const char kPdfRenderer[] = "pdf-renderer";
 
 // Runs PPAPI (Pepper) plugins in-process.
 const char kPpapiInProcess[]                = "ppapi-in-process";
@@ -691,6 +682,9 @@ const char kRendererCmdPrefix[]             = "renderer-cmd-prefix";
 // Causes the process to run as renderer instead of as browser.
 const char kRendererProcess[]               = "renderer";
 
+// Time the browser launched the renderer process (in TimeTicks).
+const char kRendererProcessLaunchTimeTicks[] = "launch-time-ticks";
+
 // Overrides the default/calculated limit to the number of renderer processes.
 // Very high values for this setting can lead to high memory/resource usage
 // or instability.
@@ -712,7 +706,7 @@ const char kSandboxIPCProcess[]             = "sandbox-ipc";
 
 // Enables shared array buffer on desktop, gated by an Enterprise Policy.
 // TODO(crbug.com/1144104) Remove when migration to COOP+COEP is complete.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kSharedArrayBufferUnrestrictedAccessAllowed[] =
     "shared-array-buffer-unrestricted-access-allowed";
 #endif
@@ -814,13 +808,6 @@ const char kUseFakeUIForMediaStream[]     = "use-fake-ui-for-media-stream";
 
 // Texture target for CHROMIUM_image backed video frame textures.
 const char kVideoImageTextureTarget[] = "video-image-texture-target";
-
-#if defined(OS_ANDROID) && defined(INCLUDE_BOTH_V8_SNAPSHOTS)
-// Switch supplied to the renderer if the feature `kUseContextSnapshot` is
-// enabled. A switch is used as at the time the renderer needs this information
-// features have not yet been loaded.
-const char kUseContextSnapshotSwitch[] = "use-context-snapshot";
-#endif
 
 // Set when Chromium should use a mobile user agent.
 const char kUseMobileUserAgent[] = "use-mobile-user-agent";
@@ -943,11 +930,7 @@ const char kWebXrRuntimeOrientationSensors[] = "orientation-sensors";
 const char kWebXrRuntimeOpenXr[] = "openxr";
 const char kWebXrRuntimeWMR[] = "windows-mixed-reality";
 
-// Disables hardware acceleration of video decode, where available.
-const char kDisableAcceleratedVideoDecode[] =
-    "disable-accelerated-video-decode";
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Disable Media Session API
 const char kDisableMediaSessionAPI[] = "disable-media-session-api";
 
@@ -995,14 +978,14 @@ const char kEnableAutomation[] = "enable-automation";
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 // Allows sending text-to-speech requests to speech-dispatcher, a common
 // Linux speech service. Because it's buggy, the user must explicitly
 // enable it so that visiting a random webpage can't cause instability.
 const char kEnableSpeechDispatcher[] = "enable-speech-dispatcher";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // /prefetch:# arguments to use when launching various process types. It has
 // been observed that when file reads are consistent for 3 process launches with
 // the same /prefetch:# argument, the Windows prefetcher starts issuing reads in
@@ -1040,9 +1023,6 @@ const char kEnableWin7WebRtcHWH264Decoding[] =
 // DirectWrite FontCache is shared by browser to renderers using shared memory.
 // This switch allows us to pass the shared memory handle to the renderer.
 const char kFontCacheSharedHandle[] = "font-cache-shared-handle";
-
-// Renderer process that runs the non-PPAPI PDF plugin.
-const char kPdfRenderer[] = "pdf-renderer";
 
 // The boolean value (0/1) of FontRenderParams::antialiasing to be passed to
 // Ppapi processes.

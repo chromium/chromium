@@ -77,7 +77,7 @@
 #include "third_party/blink/renderer/core/timing/profiler.h"
 #include "third_party/blink/renderer/core/timing/profiler_group.h"
 #include "third_party/blink/renderer/core/timing/time_clamper.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_load_timing.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_response.h"
@@ -118,6 +118,7 @@ void RecordLongTaskUkm(ExecutionContext* execution_context,
                        base::TimeDelta duration) {
   v8::metrics::LongTaskStats stats =
       v8::metrics::LongTaskStats::Get(execution_context->GetIsolate());
+  // TODO(cbruni, 1275056): Filter out stats without v8_execute_us.
   ukm::builders::PerformanceAPI_LongTask(execution_context->UkmSourceID())
       .SetStartTime(start_time.InMilliseconds())
       .SetDuration(duration.InMicroseconds())
@@ -129,6 +130,7 @@ void RecordLongTaskUkm(ExecutionContext* execution_context,
       .SetDuration_V8_GC_Full_Incremental(
           stats.gc_full_incremental_wall_clock_duration_us)
       .SetDuration_V8_GC_Young(stats.gc_young_wall_clock_duration_us)
+      .SetDuration_V8_Execute(stats.v8_execute_us)
       .Record(execution_context->UkmRecorder());
 }
 
@@ -561,16 +563,6 @@ mojom::blink::ResourceTimingInfoPtr Performance::GenerateResourceTiming(
     } else {
       result->allow_redirect_details = false;
       result->last_redirect_end_time = base::TimeTicks();
-    }
-    if (!result->allow_redirect_details) {
-      // TODO(https://crbug.com/817691): There was previously a DCHECK that
-      // |final_timing| is non-null. However, it clearly can be null: removing
-      // this check caused https://crbug.com/803811. Figure out how this can
-      // happen so test coverage can be added.
-      if (ResourceLoadTiming* final_timing =
-              final_response.GetResourceLoadTiming()) {
-        result->start_time = final_timing->RequestTime();
-      }
     }
   } else {
     result->allow_redirect_details = false;

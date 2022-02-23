@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "components/signin/core/browser/about_signin_internals.h"
 #include "ios/web/public/webui/web_ui_ios_controller.h"
@@ -35,7 +34,7 @@ class SignInInternalsHandlerIOS : public web::WebUIIOSMessageHandler,
   // web::WebUIIOSMessageHandler:
   void RegisterMessages() override;
 
-  void HandleGetSignInInfo(const base::ListValue* args);
+  void HandleGetSignInInfo(base::Value::ConstListView args);
 
   // AboutSigninInternals::Observer::OnSigninStateChanged implementation.
   void OnSigninStateChanged(const base::Value* info) override;

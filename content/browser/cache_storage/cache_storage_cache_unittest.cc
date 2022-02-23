@@ -15,6 +15,7 @@
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
@@ -253,7 +254,7 @@ class FailableCacheEntry : public disk_cache::Entry {
   }
 
  private:
-  disk_cache::Entry* const entry_;
+  const raw_ptr<disk_cache::Entry> entry_;
 };
 
 class FailableBackend : public disk_cache::Backend {
@@ -2457,7 +2458,7 @@ TEST_P(CacheStorageCacheTestP, VerifySerialScheduling) {
   EXPECT_EQ(2, sequence_out);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/936129): Flaky on Windows.
 #define MAYBE_KeysWithManyCacheEntries DISABLED_KeysWithManyCacheEntries
 #else

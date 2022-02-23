@@ -78,21 +78,14 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
   void GetStorageKeyUsage(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetStorageKeyUsageCallback callback)
-      override;
+      storage::mojom::QuotaClient::GetBucketUsageCallback callback) override;
   void GetStorageKeys(storage::mojom::CacheStorageOwner owner,
                       storage::mojom::QuotaClient::GetStorageKeysForTypeCallback
                           callback) override;
-  void GetStorageKeysForHost(
-      const std::string& host,
-      storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::GetStorageKeysForHostCallback callback)
-      override;
   void DeleteStorageKeyData(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback)
-      override;
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback) override;
   void DeleteStorageKeyData(const blink::StorageKey& storage_key,
                             storage::mojom::CacheStorageOwner owner) override;
   void AddObserver(mojo::PendingRemote<storage::mojom::CacheStorageObserver>
@@ -133,10 +126,22 @@ class CONTENT_EXPORT LegacyCacheStorageManager : public CacheStorageManager {
           callback,
       std::vector<storage::mojom::StorageUsageInfoPtr> usage_info);
 
+  void GetStorageKeyUsageDidGetExists(
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::GetBucketUsageCallback callback,
+      bool exists);
+
+  void DeleteStorageKeyDataDidGetExists(
+      const blink::StorageKey& storage_key,
+      storage::mojom::CacheStorageOwner owner,
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
+      bool exists);
+
   void DeleteStorageKeyDidClose(
       const blink::StorageKey& storage_key,
       storage::mojom::CacheStorageOwner owner,
-      storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback,
+      storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
       std::unique_ptr<LegacyCacheStorage> cache_storage,
       int64_t origin_size);
 

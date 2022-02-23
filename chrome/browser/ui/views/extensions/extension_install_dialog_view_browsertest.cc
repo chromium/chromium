@@ -10,6 +10,7 @@
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -90,8 +91,8 @@ class ExtensionInstallDialogViewTestBase
   content::WebContents* web_contents() { return web_contents_; }
 
  private:
-  const extensions::Extension* extension_;
-  content::WebContents* web_contents_;
+  raw_ptr<const extensions::Extension> extension_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 ExtensionInstallDialogViewTestBase::ExtensionInstallDialogViewTestBase()
@@ -174,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(ScrollbarTest, LongPromptScrollbar) {
 // Tests that a scrollbar isn't shown for this regression case.
 // See crbug.com/385570 for details.
 // TODO(http://crbug.com/988934): Flaky on some Mac release bots.
-#if defined(OS_MAC) && defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && defined(NDEBUG)
 #define MAYBE_ScrollbarRegression DISABLED_ScrollbarRegression
 #else
 #define MAYBE_ScrollbarRegression ScrollbarRegression
@@ -499,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 }
 
 // crbug.com/1166152
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_ManyPermissions DISABLED_InvokeUi_ManyPermissions
 #else
 #define MAYBE_InvokeUi_ManyPermissions InvokeUi_ManyPermissions
@@ -512,7 +513,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 }
 
 // TODO(https://crbug.com/1126736): Flaky on Win10.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_DetailedPermission DISABLED_InvokeUi_DetailedPermission
 #else
 #define MAYBE_InvokeUi_DetailedPermission InvokeUi_DetailedPermission
@@ -548,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionInstallDialogViewInteractiveBrowserTest,
 }
 
 // TODO(https://crbug.com/1126741): Flaky on Win10.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_InvokeUi_WithWithholdingOption \
   DISABLED_InvokeUi_WithWithholdingOption
 #else

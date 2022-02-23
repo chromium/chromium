@@ -12,6 +12,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
@@ -127,6 +128,18 @@ class VIZ_COMMON_EXPORT DynamicBeginFrameDeadlineOffsetSource {
   virtual base::TimeDelta GetDeadlineOffset(base::TimeDelta interval) const = 0;
 };
 
+// For observing the state of a BeginFrameSource, not for receiving BeginFrame
+// signals from the BeginFrameSource.
+class VIZ_COMMON_EXPORT BeginFrameSourceObserver {
+ public:
+  virtual ~BeginFrameSourceObserver() = default;
+
+  // Called when this BeginFrameSource is requested to start or stop sending
+  // BeginFrames. This usually happens when the first `BeginFrameObserver` is
+  // added or the last one is removed.
+  virtual void BeginFrameRequestedChanged(bool requested) = 0;
+};
+
 // Interface for a class which produces BeginFrame calls to a
 // BeginFrameObserver.
 //
@@ -214,6 +227,11 @@ class VIZ_COMMON_EXPORT BeginFrameSource {
   virtual void AddObserver(BeginFrameObserver* obs) = 0;
   virtual void RemoveObserver(BeginFrameObserver* obs) = 0;
 
+  // Add/Remove observer that observes the state of this BeginFrameSource, not
+  // for receiving begin frame signals.
+  virtual void AddStateObserver(BeginFrameSourceObserver* obs) = 0;
+  virtual void RemoveStateObserver(BeginFrameSourceObserver* obs) = 0;
+
   virtual void AsProtozeroInto(
       perfetto::EventContext& ctx,
       perfetto::protos::pbzero::BeginFrameSourceState* state) const;
@@ -264,6 +282,8 @@ class VIZ_COMMON_EXPORT StubBeginFrameSource : public BeginFrameSource {
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void AddObserver(BeginFrameObserver* obs) override {}
   void RemoveObserver(BeginFrameObserver* obs) override {}
+  void AddStateObserver(BeginFrameSourceObserver* obs) override {}
+  void RemoveStateObserver(BeginFrameSourceObserver* obs) override {}
   void OnGpuNoLongerBusy() override {}
 };
 
@@ -295,6 +315,8 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   // BeginFrameSource implementation.
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
+  void AddStateObserver(BeginFrameSourceObserver* obs) override;
+  void RemoveStateObserver(BeginFrameSourceObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override;
   void OnGpuNoLongerBusy() override;
 
@@ -306,9 +328,12 @@ class VIZ_COMMON_EXPORT BackToBackBeginFrameSource
   void OnTimerTick() override;
 
  private:
+  void SetActive(bool active);
+
   std::unique_ptr<DelayBasedTimeSource> time_source_;
   base::flat_set<BeginFrameObserver*> observers_;
   base::flat_set<BeginFrameObserver*> pending_begin_frame_observers_;
+  base::flat_set<BeginFrameSourceObserver*> state_observers_;
   uint64_t next_sequence_number_;
   base::WeakPtrFactory<BackToBackBeginFrameSource> weak_factory_{this};
 };
@@ -331,6 +356,8 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   // BeginFrameSource implementation.
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
+  void AddStateObserver(BeginFrameSourceObserver* obs) override;
+  void RemoveStateObserver(BeginFrameSourceObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void OnGpuNoLongerBusy() override;
   void SetDynamicBeginFrameDeadlineOffsetSource(
@@ -353,9 +380,11 @@ class VIZ_COMMON_EXPORT DelayBasedBeginFrameSource
   BeginFrameArgs CreateBeginFrameArgs(base::TimeTicks frame_time);
   void IssueBeginFrameToObserver(BeginFrameObserver* obs,
                                  const BeginFrameArgs& args);
+  void SetActive(bool active);
 
   std::unique_ptr<DelayBasedTimeSource> time_source_;
   base::flat_set<BeginFrameObserver*> observers_;
+  base::flat_set<BeginFrameSourceObserver*> state_observers_;
   base::TimeTicks last_timebase_;
   BeginFrameArgs last_begin_frame_args_;
 
@@ -388,6 +417,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   // BeginFrameSource implementation.
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
+  void AddStateObserver(BeginFrameSourceObserver* obs) override;
+  void RemoveStateObserver(BeginFrameSourceObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override {}
   void AsProtozeroInto(
       perfetto::EventContext& ctx,
@@ -397,7 +428,7 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
   void OnSetBeginFrameSourcePaused(bool paused);
   void OnBeginFrame(const BeginFrameArgs& args);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Notifies when the refresh rate of the display is updated. |refresh_rate| is
   // the rate in frames per second.
   virtual void UpdateRefreshRate(float refresh_rate) {}
@@ -415,7 +446,8 @@ class VIZ_COMMON_EXPORT ExternalBeginFrameSource : public BeginFrameSource {
 
   BeginFrameArgs last_begin_frame_args_;
   base::flat_set<BeginFrameObserver*> observers_;
-  ExternalBeginFrameSourceClient* client_;
+  base::flat_set<BeginFrameSourceObserver*> state_observers_;
+  raw_ptr<ExternalBeginFrameSourceClient> client_;
   bool paused_ = false;
 
  private:

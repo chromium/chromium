@@ -63,10 +63,16 @@ cr.define('wallpapers', function() {
       var self = this;
       this.itemConstructor = function(entry) {
         var li = self.ownerDocument.createElement('li');
-        cr.defineProperty(li, 'custom', cr.PropertyKind.BOOL_ATTR);
+        Object.defineProperty(
+            li, 'custom',
+            cr.getPropertyDescriptor('custom', cr.PropertyKind.BOOL_ATTR));
         li.custom = (entry == loadTimeData.getString('customCategoryLabel'));
-        cr.defineProperty(li, 'lead', cr.PropertyKind.BOOL_ATTR);
-        cr.defineProperty(li, 'selected', cr.PropertyKind.BOOL_ATTR);
+        Object.defineProperty(
+            li, 'lead',
+            cr.getPropertyDescriptor('lead', cr.PropertyKind.BOOL_ATTR));
+        Object.defineProperty(
+            li, 'selected',
+            cr.getPropertyDescriptor('selected', cr.PropertyKind.BOOL_ATTR));
         var div = self.ownerDocument.createElement('div');
         div.textContent = entry;
         var inkEl = self.ownerDocument.createElement('span');

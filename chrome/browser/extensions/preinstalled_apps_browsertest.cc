@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 
 #include "base/json/json_reader.h"
@@ -13,6 +14,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_path_override.h"
 #include "build/branding_buildflags.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/pending_extension_manager.h"
 #include "chrome/browser/web_applications/extension_status_utils.h"
@@ -32,6 +34,7 @@
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_system.h"
@@ -235,7 +238,7 @@ class PreinstalledAppsMigrationBrowserTest
   bool WasWebAppInstalledInThisRun() {
     auto iter = install_results_.find(GetAppUrl());
     return iter != install_results_.end() &&
-           iter->second.code == web_app::InstallResultCode::kSuccessNewInstall;
+           iter->second.code == webapps::InstallResultCode::kSuccessNewInstall;
   }
 
   // Returns true if the web app is currently installed in this profile (even if
@@ -260,8 +263,8 @@ class PreinstalledAppsMigrationBrowserTest
   ExtensionRegistry* registry() { return ExtensionRegistry::Get(profile()); }
 
  protected:
-  web_app::TestShortcutManager* shortcut_manager_;
-  web_app::FakeOsIntegrationManager* os_integration_manager_;
+  raw_ptr<web_app::TestShortcutManager> shortcut_manager_;
+  raw_ptr<web_app::FakeOsIntegrationManager> os_integration_manager_;
 
  private:
   std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {

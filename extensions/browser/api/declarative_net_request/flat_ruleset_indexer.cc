@@ -243,10 +243,11 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
 
   ++indexed_rules_count_;
 
-  FlatStringListOffset domains_included_offset =
-      BuildVectorOfSharedStrings(&builder_, indexed_rule.domains);
-  FlatStringListOffset domains_excluded_offset =
-      BuildVectorOfSharedStrings(&builder_, indexed_rule.excluded_domains);
+  FlatStringListOffset initiator_domains_included_offset =
+      BuildVectorOfSharedStrings(&builder_, indexed_rule.initiator_domains);
+  FlatStringListOffset initiator_domains_excluded_offset =
+      BuildVectorOfSharedStrings(&builder_,
+                                 indexed_rule.excluded_initiator_domains);
   FlatStringOffset url_pattern_offset =
       builder_.CreateSharedString(indexed_rule.url_pattern);
   auto embedder_conditions_offset =
@@ -256,8 +257,8 @@ void FlatRulesetIndexer::AddUrlRule(const IndexedRule& indexed_rule) {
       builder_, indexed_rule.options, indexed_rule.element_types,
       indexed_rule.request_methods, indexed_rule.activation_types,
       indexed_rule.url_pattern_type, indexed_rule.anchor_left,
-      indexed_rule.anchor_right, domains_included_offset,
-      domains_excluded_offset, url_pattern_offset, indexed_rule.id,
+      indexed_rule.anchor_right, initiator_domains_included_offset,
+      initiator_domains_excluded_offset, url_pattern_offset, indexed_rule.id,
       indexed_rule.priority, embedder_conditions_offset);
 
   if (indexed_rule.url_pattern_type !=

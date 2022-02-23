@@ -51,7 +51,8 @@ namespace {
 constexpr char kMaxParallelActiveRequests[] = "wp-max-parallel-active-requests";
 constexpr int kDefaultMaxParallelActiveRequests = 5;
 
-const int kScanningTimeoutSeconds = 5 * 60;  // 5 minutes
+constexpr base::TimeDelta kAuthTimeout = base::Seconds(10);
+constexpr base::TimeDelta kScanningTimeout = base::Minutes(5);
 
 const char kSbEnterpriseUploadUrl[] =
     "https://safebrowsing.google.com/safebrowsing/uploads/scan";
@@ -225,6 +226,7 @@ void BinaryUploadService::MaybeUploadForDeepScanning(
     std::unique_ptr<BinaryUploadService::Request> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (IsConsumerScanRequest(*request)) {
+    DCHECK(!request->IsAuthRequest());
     const bool is_advanced_protection =
         safe_browsing::AdvancedProtectionStatusManagerFactory::GetForProfile(
             profile_)
@@ -291,6 +293,7 @@ void BinaryUploadService::UploadForDeepScanning(
     std::unique_ptr<BinaryUploadService::Request> request) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
+  bool is_auth_request = request->IsAuthRequest();
   Request* raw_request = request.get();
   active_requests_[raw_request] = std::move(request);
   start_times_[raw_request] = base::TimeTicks::Now();
@@ -300,7 +303,8 @@ void BinaryUploadService::UploadForDeepScanning(
   active_tokens_[raw_request] = token;
   raw_request->set_request_token(token);
 
-  if (!binary_fcm_service_ || !binary_fcm_service_->Connected()) {
+  if ((!binary_fcm_service_ || !binary_fcm_service_->Connected()) &&
+      !is_auth_request) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BinaryUploadService::FinishRequest,
@@ -310,15 +314,24 @@ void BinaryUploadService::UploadForDeepScanning(
     return;
   }
 
-  binary_fcm_service_->SetCallbackForToken(
-      token, base::BindRepeating(&BinaryUploadService::OnGetResponse,
-                                 weakptr_factory_.GetWeakPtr(), raw_request));
-  binary_fcm_service_->GetInstanceID(
-      base::BindOnce(&BinaryUploadService::OnGetInstanceID,
-                     weakptr_factory_.GetWeakPtr(), raw_request));
+  // Auth requests are never going to need waiting for an async response, so
+  // don't bother getting a token from `binary_fcm_service_`.
+  if (is_auth_request) {
+    raw_request->GetRequestData(
+        base::BindOnce(&BinaryUploadService::OnGetRequestData,
+                       weakptr_factory_.GetWeakPtr(), raw_request));
+  } else {
+    binary_fcm_service_->SetCallbackForToken(
+        token, base::BindRepeating(&BinaryUploadService::OnGetResponse,
+                                   weakptr_factory_.GetWeakPtr(), raw_request));
+    binary_fcm_service_->GetInstanceID(
+        base::BindOnce(&BinaryUploadService::OnGetInstanceID,
+                       weakptr_factory_.GetWeakPtr(), raw_request));
+  }
+
   active_timers_[raw_request] = std::make_unique<base::OneShotTimer>();
   active_timers_[raw_request]->Start(
-      FROM_HERE, base::Seconds(kScanningTimeoutSeconds),
+      FROM_HERE, is_auth_request ? kAuthTimeout : kScanningTimeout,
       base::BindOnce(&BinaryUploadService::OnTimeout,
                      weakptr_factory_.GetWeakPtr(), raw_request));
 }
@@ -347,12 +360,21 @@ void BinaryUploadService::OnGetInstanceID(Request* request,
 
 void BinaryUploadService::OnGetRequestData(Request* request,
                                            Result result,
-                                           const Request::Data& data) {
+                                           Request::Data data) {
   if (!IsActive(request))
     return;
 
   if (result != Result::SUCCESS) {
     FinishRequest(request, result,
+                  enterprise_connectors::ContentAnalysisResponse());
+    return;
+  }
+
+  if (!request->IsAuthRequest() && data.size == 0) {
+    // A size of 0 implies an edge case like an empty file being uploaded. In
+    // such a case, the file doesn't need to scan so the request can simply
+    // finish early.
+    FinishRequest(request, Result::SUCCESS,
                   enterprise_connectors::ContentAnalysisResponse());
     return;
   }
@@ -368,14 +390,25 @@ void BinaryUploadService::OnGetRequestData(Request* request,
       GetTrafficAnnotationTag(IsConsumerScanRequest(*request));
   auto callback = base::BindOnce(&BinaryUploadService::OnUploadComplete,
                                  weakptr_factory_.GetWeakPtr(), request);
-  auto upload_request =
-      data.contents.empty()
-          ? MultipartUploadRequest::CreateFileRequest(
-                url_loader_factory_, std::move(url), metadata, data.path,
-                std::move(traffic_annotation), std::move(callback))
-          : MultipartUploadRequest::CreateStringRequest(
-                url_loader_factory_, std::move(url), metadata, data.contents,
-                std::move(traffic_annotation), std::move(callback));
+  std::unique_ptr<MultipartUploadRequest> upload_request;
+  if (request->IsAuthRequest() || !data.contents.empty()) {
+    upload_request = MultipartUploadRequest::CreateStringRequest(
+        url_loader_factory_, std::move(url), metadata, data.contents,
+        std::move(traffic_annotation), std::move(callback));
+  } else if (!data.path.empty()) {
+    upload_request = MultipartUploadRequest::CreateFileRequest(
+        url_loader_factory_, std::move(url), metadata, data.path,
+        std::move(traffic_annotation), std::move(callback));
+  } else if (data.page.IsValid()) {
+    upload_request = MultipartUploadRequest::CreatePageRequest(
+        url_loader_factory_, std::move(url), metadata, std::move(data.page),
+        std::move(traffic_annotation), std::move(callback));
+  } else {
+    NOTREACHED();
+    FinishRequest(request, Result::UNKNOWN,
+                  enterprise_connectors::ContentAnalysisResponse());
+    return;
+  }
 
   WebUIInfoSingleton::GetInstance()->AddToDeepScanRequests(
       request->tab_url(), request->per_profile_request(),
@@ -509,14 +542,19 @@ void BinaryUploadService::FinishRequestCleanup(Request* request,
                        weakptr_factory_.GetWeakPtr(), dm_token, connector));
   } else {
     // `binary_fcm_service_` can be null in tests and `instance_id` can be
-    // invalid if getting an FCM token failed or timed out, but
+    // invalid if getting an FCM token failed, timed out or for an auth request.
     // InstanceIDUnregisteredCallback should be called anyway so the requests
     // waiting on authentication can complete.
     InstanceIDUnregisteredCallback(dm_token, connector, true);
   }
 
-  if (token_it != active_tokens_.end())
+  // Re-obtain `token_it` as auth requests calls to
+  // InstanceIDUnregisteredCallback can result in new requests that invalidate
+  // the iterator.
+  token_it = active_tokens_.find(request);
+  if (token_it != active_tokens_.end()) {
     active_tokens_.erase(token_it);
+  }
 }
 
 void BinaryUploadService::InstanceIDUnregisteredCallback(
@@ -565,7 +603,10 @@ void BinaryUploadService::RecordRequestMetrics(
 }
 
 BinaryUploadService::Request::Data::Data() = default;
-BinaryUploadService::Request::Data::Data(const Data&) = default;
+BinaryUploadService::Request::Data::Data(Data&&) = default;
+BinaryUploadService::Request::Data&
+BinaryUploadService::Request::Data::operator=(
+    BinaryUploadService::Request::Data&& other) = default;
 BinaryUploadService::Request::Data::~Data() = default;
 
 BinaryUploadService::Request::Request(ContentAnalysisCallback callback,
@@ -707,6 +748,9 @@ GURL BinaryUploadService::Request::GetUrlWithParams() const {
     case enterprise_connectors::BULK_DATA_ENTRY:
       connector = "OnBulkDataEntry";
       break;
+    case enterprise_connectors::PRINT:
+      connector = "OnPrint";
+      break;
     case enterprise_connectors::ANALYSIS_CONNECTOR_UNSPECIFIED:
       break;
   }
@@ -719,6 +763,10 @@ GURL BinaryUploadService::Request::GetUrlWithParams() const {
     url = net::AppendQueryParameter(url, enterprise::kUrlParamTag, tag);
 
   return url;
+}
+
+bool BinaryUploadService::Request::IsAuthRequest() const {
+  return false;
 }
 
 bool BinaryUploadService::IsActive(Request* request) {
@@ -739,11 +787,17 @@ class ValidateDataUploadRequest : public BinaryUploadService::Request {
  private:
   // BinaryUploadService::Request implementation.
   void GetRequestData(DataCallback callback) override;
+
+  bool IsAuthRequest() const override;
 };
 
 inline void ValidateDataUploadRequest::GetRequestData(DataCallback callback) {
   std::move(callback).Run(BinaryUploadService::Result::SUCCESS,
                           BinaryUploadService::Request::Data());
+}
+
+bool ValidateDataUploadRequest::IsAuthRequest() const {
+  return true;
 }
 
 void BinaryUploadService::IsAuthorized(
@@ -834,7 +888,8 @@ void BinaryUploadService::SetAuthForTesting(const std::string& dm_token,
             ANALYSIS_CONNECTOR_UNSPECIFIED,
         enterprise_connectors::AnalysisConnector::FILE_DOWNLOADED,
         enterprise_connectors::AnalysisConnector::FILE_ATTACHED,
-        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY}) {
+        enterprise_connectors::AnalysisConnector::BULK_DATA_ENTRY,
+        enterprise_connectors::AnalysisConnector::PRINT}) {
     TokenAndConnector token_and_connector = {dm_token, connector};
     can_upload_enterprise_data_[token_and_connector] = authorized;
   }

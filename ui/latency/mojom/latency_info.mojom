@@ -29,8 +29,6 @@ enum LatencyComponentType {
   // This is special component indicating there is rendering scheduled for
   // the event associated with this LatencyInfo on impl thread.
   INPUT_EVENT_LATENCY_RENDERING_SCHEDULED_IMPL_COMPONENT,
-  // Timestamp for last event that has been coalesced into this one.
-  INPUT_EVENT_LATENCY_SCROLL_UPDATE_LAST_EVENT_COMPONENT,
   // Timestamp when the frame is swapped in renderer.
   INPUT_EVENT_LATENCY_RENDERER_SWAP_COMPONENT,
   // Timestamp of when the display compositor receives a compositor frame.
@@ -65,8 +63,6 @@ struct LatencyInfo {
   bool began;
   bool terminated;
   SourceEventType source_event_type;
-  float scroll_update_delta;
-  float predicted_scroll_update_delta;
   // optional: only valid on GestureScroll events.
   int64 gesture_scroll_id;
   // optional: only valid on Touch events.

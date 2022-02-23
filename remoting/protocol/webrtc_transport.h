@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
@@ -192,7 +192,7 @@ class WebrtcTransport : public Transport,
 
   // Returns the min (first element) and max (second element) bitrate for this
   // connection, taking into account any relay bitrate cap and client overrides.
-  // The default range is [0, default max bixrate]. Client overrides that go
+  // The default range is [0, default max bitrate]. Client overrides that go
   // beyond this bound or exceed the relay server's max bitrate will be ignored.
   std::tuple<int, int> BitratesForConnection();
 
@@ -231,7 +231,7 @@ class WebrtcTransport : public Transport,
   base::ThreadChecker thread_checker_;
 
   scoped_refptr<TransportContext> transport_context_;
-  EventHandler* event_handler_ = nullptr;
+  raw_ptr<EventHandler> event_handler_ = nullptr;
   SendTransportInfoCallback send_transport_info_callback_;
 
   crypto::HMAC handshake_hmac_;

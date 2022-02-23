@@ -41,6 +41,13 @@ class FakeWebFrameImpl : public FakeWebFrame, public WebFrameInternal {
       const std::vector<base::Value>& parameters,
       base::OnceCallback<void(const base::Value*)> callback,
       base::TimeDelta timeout) override;
+  bool ExecuteJavaScript(const std::string& script) override;
+  bool ExecuteJavaScript(
+      const std::string& script,
+      base::OnceCallback<void(const base::Value*)> callback) override;
+  bool ExecuteJavaScript(
+      const std::string& script,
+      base::OnceCallback<void(const base::Value*, bool)> callback) override;
 
   // FakeWebFrame:
   std::string GetLastJavaScriptCall() const override;

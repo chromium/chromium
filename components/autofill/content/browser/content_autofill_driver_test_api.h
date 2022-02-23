@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_TEST_API_H_
 #define COMPONENTS_AUTOFILL_CONTENT_BROWSER_CONTENT_AUTOFILL_DRIVER_TEST_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
 
 namespace autofill {
@@ -31,9 +32,13 @@ class ContentAutofillDriverTestApi {
     return driver_->GetFormWithFrameAndFormMetaData(form);
   }
 
+  const mojo::AssociatedReceiver<mojom::AutofillDriver>& receiver() const {
+    return driver_->receiver_;
+  }
+
  private:
   // Non-null pointer to wrapped ContentAutofillDriver.
-  ContentAutofillDriver* driver_;
+  raw_ptr<ContentAutofillDriver> driver_;
 };
 
 }  // namespace autofill

@@ -31,6 +31,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/css_color.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
@@ -42,15 +43,15 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/dom/text_link_colors.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/color_blend.h"
 #include "third_party/blink/renderer/platform/graphics/gradient.h"
 #include "third_party/blink/renderer/platform/graphics/gradient_generated_image.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 namespace cssvalue {
@@ -93,7 +94,7 @@ bool AppendPosition(StringBuilder& result,
   return true;
 }
 
-}  // anonymous ns
+}  // namespace
 
 bool CSSGradientColorStop::IsCacheable() const {
   if (!IsHint()) {
@@ -117,7 +118,7 @@ scoped_refptr<Image> CSSGradientValue::GetImage(
     const ImageResourceObserver& client,
     const Document& document,
     const ComputedStyle& style,
-    const FloatSize& size) const {
+    const gfx::SizeF& size) const {
   if (size.IsEmpty())
     return nullptr;
 
@@ -184,19 +185,19 @@ struct CSSGradientValue::GradientDesc {
   STACK_ALLOCATED();
 
  public:
-  GradientDesc(const FloatPoint& p0,
-               const FloatPoint& p1,
+  GradientDesc(const gfx::PointF& p0,
+               const gfx::PointF& p1,
                GradientSpreadMethod spread_method)
       : p0(p0), p1(p1), spread_method(spread_method) {}
-  GradientDesc(const FloatPoint& p0,
-               const FloatPoint& p1,
+  GradientDesc(const gfx::PointF& p0,
+               const gfx::PointF& p1,
                float r0,
                float r1,
                GradientSpreadMethod spread_method)
       : p0(p0), p1(p1), r0(r0), r1(r1), spread_method(spread_method) {}
 
   Vector<Gradient::ColorStop> stops;
-  FloatPoint p0, p1;
+  gfx::PointF p0, p1;
   float r0 = 0, r1 = 0;
   float start_angle = 0, end_angle = 360;
   GradientSpreadMethod spread_method;
@@ -456,6 +457,12 @@ void ClampNegativeOffsets(Vector<GradientStop>& stops) {
   }
 }
 
+// Used in AdjustedGradientDomainForOffsetRange when the type of v1 - v0 is
+// gfx::Vector2dF.
+gfx::Vector2dF operator*(const gfx::Vector2dF& v, float scale) {
+  return gfx::ScaleVector2d(v, scale);
+}
+
 template <typename T>
 std::tuple<T, T> AdjustedGradientDomainForOffsetRange(const T& v0,
                                                       const T& v1,
@@ -476,8 +483,8 @@ void AdjustGradientRadiiForOffsetRange(CSSGradientValue::GradientDesc& desc,
   DCHECK_LE(first_offset, last_offset);
 
   // Radial offsets are relative to the [0 , endRadius] segment.
-  float adjusted_r0 = desc.r1 * first_offset;
-  float adjusted_r1 = desc.r1 * last_offset;
+  float adjusted_r0 = ClampTo<float>(desc.r1 * first_offset);
+  float adjusted_r1 = ClampTo<float>(desc.r1 * last_offset);
   DCHECK_LE(adjusted_r0, adjusted_r1);
   // Unlike linear gradients (where we can adjust the points arbitrarily),
   // we cannot let our radii turn negative here.
@@ -504,7 +511,7 @@ void AdjustGradientRadiiForOffsetRange(CSSGradientValue::GradientDesc& desc,
   desc.r1 = adjusted_r1;
 }
 
-}  // anonymous ns
+}  // namespace
 
 void CSSGradientValue::AddStops(
     CSSGradientValue::GradientDesc& desc,
@@ -524,7 +531,7 @@ void CSSGradientValue::AddStops(
   float gradient_length;
   switch (GetClassType()) {
     case kLinearGradientClass:
-      gradient_length = FloatSize(desc.p1 - desc.p0).DiagonalLength();
+      gradient_length = (desc.p1 - desc.p0).Length();
       break;
     case kRadialGradientClass:
       gradient_length = desc.r1;
@@ -680,7 +687,7 @@ void CSSGradientValue::AddStops(
 
 static float PositionFromValue(const CSSValue* value,
                                const CSSToLengthConversionData& conversion_data,
-                               const FloatSize& size,
+                               const gfx::SizeF& size,
                                bool is_horizontal) {
   float origin = 0;
   int sign = 1;
@@ -740,12 +747,12 @@ static float PositionFromValue(const CSSValue* value,
 }
 
 // Resolve points/radii to front end values.
-static FloatPoint ComputeEndPoint(
+static gfx::PointF ComputeEndPoint(
     const CSSValue* horizontal,
     const CSSValue* vertical,
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size) {
-  FloatPoint result;
+    const gfx::SizeF& size) {
+  gfx::PointF result;
 
   if (horizontal)
     result.set_x(PositionFromValue(horizontal, conversion_data, size, true));
@@ -874,9 +881,9 @@ String CSSLinearGradientValue::CustomCSSText() const {
 // Compute the endpoints so that a gradient of the given angle covers a box of
 // the given size.
 static void EndPointsFromAngle(float angle_deg,
-                               const FloatSize& size,
-                               FloatPoint& first_point,
-                               FloatPoint& second_point,
+                               const gfx::SizeF& size,
+                               gfx::PointF& first_point,
+                               gfx::PointF& second_point,
                                CSSGradientType type) {
   // Prefixed gradients use "polar coordinate" angles, rather than "bearing"
   // angles.
@@ -922,7 +929,7 @@ static void EndPointsFromAngle(float angle_deg,
   // Compute start corner relative to center, in Cartesian space (+y = up).
   float half_height = size.height() / 2;
   float half_width = size.width() / 2;
-  FloatPoint end_corner;
+  gfx::PointF end_corner;
   if (angle_deg < 90)
     end_corner.SetPoint(half_width, half_height);
   else if (angle_deg < 180)
@@ -946,13 +953,13 @@ static void EndPointsFromAngle(float angle_deg,
 
 scoped_refptr<Gradient> CSSLinearGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const Document& document,
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
 
-  FloatPoint first_point;
-  FloatPoint second_point;
+  gfx::PointF first_point;
+  gfx::PointF second_point;
   if (angle_) {
     float angle = angle_->ComputeDegrees();
     EndPointsFromAngle(angle, size, first_point, second_point, gradient_type_);
@@ -1033,29 +1040,34 @@ bool CSSLinearGradientValue::Equals(const CSSLinearGradientValue& other) const {
     return false;
 
   if (gradient_type_ == kCSSDeprecatedLinearGradient) {
-    return DataEquivalent(first_x_, other.first_x_) &&
-           DataEquivalent(first_y_, other.first_y_) &&
-           DataEquivalent(second_x_, other.second_x_) &&
-           DataEquivalent(second_y_, other.second_y_) && stops_ == other.stops_;
+    return base::ValuesEquivalent(first_x_, other.first_x_) &&
+           base::ValuesEquivalent(first_y_, other.first_y_) &&
+           base::ValuesEquivalent(second_x_, other.second_x_) &&
+           base::ValuesEquivalent(second_y_, other.second_y_) &&
+           stops_ == other.stops_;
   }
 
   if (repeating_ != other.repeating_)
     return false;
 
-  if (angle_)
-    return DataEquivalent(angle_, other.angle_) && stops_ == other.stops_;
+  if (angle_) {
+    return base::ValuesEquivalent(angle_, other.angle_) &&
+           stops_ == other.stops_;
+  }
 
   if (other.angle_)
     return false;
 
   bool equal_xand_y = false;
   if (first_x_ && first_y_) {
-    equal_xand_y = DataEquivalent(first_x_, other.first_x_) &&
-                   DataEquivalent(first_y_, other.first_y_);
+    equal_xand_y = base::ValuesEquivalent(first_x_, other.first_x_) &&
+                   base::ValuesEquivalent(first_y_, other.first_y_);
   } else if (first_x_) {
-    equal_xand_y = DataEquivalent(first_x_, other.first_x_) && !other.first_y_;
+    equal_xand_y =
+        base::ValuesEquivalent(first_x_, other.first_x_) && !other.first_y_;
   } else if (first_y_) {
-    equal_xand_y = DataEquivalent(first_y_, other.first_y_) && !other.first_x_;
+    equal_xand_y =
+        base::ValuesEquivalent(first_y_, other.first_y_) && !other.first_x_;
   } else {
     equal_xand_y = !other.first_x_ && !other.first_y_;
   }
@@ -1071,6 +1083,22 @@ CSSLinearGradientValue* CSSLinearGradientValue::ComputedCSSValue(
       repeating_ ? kRepeating : kNonRepeating, GradientType());
   result->AddComputedStops(style, allow_visited_style, stops_);
   return result;
+}
+
+static bool IsUsingCurrentColor(
+    const HeapVector<CSSGradientColorStop, 2>& stops) {
+  for (const CSSGradientColorStop& stop : stops) {
+    auto* identifier_value = DynamicTo<CSSIdentifierValue>(stop.color_.Get());
+    if (identifier_value &&
+        identifier_value->GetValueID() == CSSValueID::kCurrentcolor) {
+      return true;
+    }
+  }
+  return false;
+}
+
+bool CSSLinearGradientValue::IsUsingCurrentColor() const {
+  return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
 void CSSLinearGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
@@ -1245,10 +1273,10 @@ enum EndShapeType { kCircleEndShape, kEllipseEndShape };
 
 // Compute the radius to the closest/farthest side (depending on the compare
 // functor).
-FloatSize RadiusToSide(const FloatPoint& point,
-                       const FloatSize& size,
-                       EndShapeType shape,
-                       bool (*compare)(float, float)) {
+gfx::SizeF RadiusToSide(const gfx::PointF& point,
+                        const gfx::SizeF& size,
+                        EndShapeType shape,
+                        bool (*compare)(float, float)) {
   float dx1 = ClampTo<float>(fabs(point.x()));
   float dy1 = ClampTo<float>(fabs(point.y()));
   float dx2 = ClampTo<float>(fabs(point.x() - size.width()));
@@ -1258,41 +1286,44 @@ FloatSize RadiusToSide(const FloatPoint& point,
   float dy = compare(dy1, dy2) ? dy1 : dy2;
 
   if (shape == kCircleEndShape)
-    return compare(dx, dy) ? FloatSize(dx, dx) : FloatSize(dy, dy);
+    return compare(dx, dy) ? gfx::SizeF(dx, dx) : gfx::SizeF(dy, dy);
 
   DCHECK_EQ(shape, kEllipseEndShape);
-  return FloatSize(dx, dy);
+  return gfx::SizeF(dx, dy);
 }
 
-// Compute the radius of an ellipse with center at 0,0 which passes through p,
-// and has width/height given by aspectRatio.
-inline FloatSize EllipseRadius(const FloatPoint& p, float aspect_ratio) {
+// Compute the radius of an ellipse which passes through a point at
+// |offset_from_center|, and has width/height given by aspectRatio.
+inline gfx::SizeF EllipseRadius(const gfx::Vector2dF& offset_from_center,
+                                float aspect_ratio) {
   // If the aspectRatio is 0 or infinite, the ellipse is completely flat.
   // TODO(sashab): Implement Degenerate Radial Gradients, see crbug.com/635727.
   if (aspect_ratio == 0 || std::isinf(aspect_ratio))
-    return FloatSize(0, 0);
+    return gfx::SizeF(0, 0);
 
   // x^2/a^2 + y^2/b^2 = 1
   // a/b = aspectRatio, b = a/aspectRatio
-  // a = sqrt(x^2 + y^2/(1/r^2))
-  float a = sqrtf(p.x() * p.x() + p.y() * p.y() * aspect_ratio * aspect_ratio);
-  return FloatSize(ClampTo<float>(a), ClampTo<float>(a / aspect_ratio));
+  // a = sqrt(x^2 + y^2/(1/aspect_ratio^2))
+  float a = sqrtf(offset_from_center.x() * offset_from_center.x() +
+                  offset_from_center.y() * offset_from_center.y() *
+                      aspect_ratio * aspect_ratio);
+  return gfx::SizeF(ClampTo<float>(a), ClampTo<float>(a / aspect_ratio));
 }
 
 // Compute the radius to the closest/farthest corner (depending on the compare
 // functor).
-FloatSize RadiusToCorner(const FloatPoint& point,
-                         const FloatSize& size,
-                         EndShapeType shape,
-                         bool (*compare)(float, float)) {
-  const FloatRect rect(FloatPoint(), size);
-  const FloatPoint corners[] = {rect.origin(), rect.top_right(),
-                                rect.bottom_right(), rect.bottom_left()};
+gfx::SizeF RadiusToCorner(const gfx::PointF& point,
+                          const gfx::SizeF& size,
+                          EndShapeType shape,
+                          bool (*compare)(float, float)) {
+  const gfx::RectF rect(size);
+  const gfx::PointF corners[] = {rect.origin(), rect.top_right(),
+                                 rect.bottom_right(), rect.bottom_left()};
 
   unsigned corner_index = 0;
-  float distance = (point - corners[corner_index]).DiagonalLength();
+  float distance = (point - corners[corner_index]).Length();
   for (unsigned i = 1; i < base::size(corners); ++i) {
-    float new_distance = (point - corners[i]).DiagonalLength();
+    float new_distance = (point - corners[i]).Length();
     if (compare(new_distance, distance)) {
       corner_index = i;
       distance = new_distance;
@@ -1301,17 +1332,17 @@ FloatSize RadiusToCorner(const FloatPoint& point,
 
   if (shape == kCircleEndShape) {
     distance = ClampTo<float>(distance);
-    return FloatSize(distance, distance);
+    return gfx::SizeF(distance, distance);
   }
 
   DCHECK_EQ(shape, kEllipseEndShape);
   // If the end shape is an ellipse, the gradient-shape has the same ratio of
   // width to height that it would if closest-side or farthest-side were
   // specified, as appropriate.
-  const FloatSize side_radius =
+  const gfx::SizeF side_radius =
       RadiusToSide(point, size, kEllipseEndShape, compare);
 
-  return EllipseRadius(FloatPoint(corners[corner_index] - point),
+  return EllipseRadius(corners[corner_index] - point,
                        side_radius.AspectRatio());
 }
 
@@ -1319,19 +1350,19 @@ FloatSize RadiusToCorner(const FloatPoint& point,
 
 scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const Document& document,
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
 
-  FloatPoint first_point =
+  gfx::PointF first_point =
       ComputeEndPoint(first_x_.Get(), first_y_.Get(), conversion_data, size);
   if (!first_x_)
     first_point.set_x(size.width() / 2);
   if (!first_y_)
     first_point.set_y(size.height() / 2);
 
-  FloatPoint second_point =
+  gfx::PointF second_point =
       ComputeEndPoint(second_x_.Get(), second_y_.Get(), conversion_data, size);
   if (!second_x_)
     second_point.set_x(size.width() / 2);
@@ -1342,7 +1373,7 @@ scoped_refptr<Gradient> CSSRadialGradientValue::CreateGradient(
   if (first_radius_)
     first_radius = ResolveRadius(first_radius_.Get(), conversion_data);
 
-  FloatSize second_radius(0, 0);
+  gfx::SizeF second_radius(0, 0);
   if (second_radius_) {
     second_radius.set_width(
         ResolveRadius(second_radius_.Get(), conversion_data));
@@ -1422,27 +1453,28 @@ bool EqualIdentifiersWithDefault(const CSSIdentifierValue* id_a,
 bool CSSRadialGradientValue::Equals(const CSSRadialGradientValue& other) const {
   if (gradient_type_ == kCSSDeprecatedRadialGradient)
     return other.gradient_type_ == gradient_type_ &&
-           DataEquivalent(first_x_, other.first_x_) &&
-           DataEquivalent(first_y_, other.first_y_) &&
-           DataEquivalent(second_x_, other.second_x_) &&
-           DataEquivalent(second_y_, other.second_y_) &&
-           DataEquivalent(first_radius_, other.first_radius_) &&
-           DataEquivalent(second_radius_, other.second_radius_) &&
+           base::ValuesEquivalent(first_x_, other.first_x_) &&
+           base::ValuesEquivalent(first_y_, other.first_y_) &&
+           base::ValuesEquivalent(second_x_, other.second_x_) &&
+           base::ValuesEquivalent(second_y_, other.second_y_) &&
+           base::ValuesEquivalent(first_radius_, other.first_radius_) &&
+           base::ValuesEquivalent(second_radius_, other.second_radius_) &&
            stops_ == other.stops_;
 
   if (repeating_ != other.repeating_)
     return false;
 
-  if (!DataEquivalent(first_x_, other.first_x_) ||
-      !DataEquivalent(first_y_, other.first_y_))
+  if (!base::ValuesEquivalent(first_x_, other.first_x_) ||
+      !base::ValuesEquivalent(first_y_, other.first_y_))
     return false;
 
   // There's either a size keyword or an explicit size specification.
   if (end_horizontal_size_) {
     // Explicit size specification. One <length> or two <length-percentage>.
-    if (!DataEquivalent(end_horizontal_size_, other.end_horizontal_size_))
+    if (!base::ValuesEquivalent(end_horizontal_size_,
+                                other.end_horizontal_size_))
       return false;
-    if (!DataEquivalent(end_vertical_size_, other.end_vertical_size_))
+    if (!base::ValuesEquivalent(end_vertical_size_, other.end_vertical_size_))
       return false;
   } else {
     if (other.end_horizontal_size_)
@@ -1468,6 +1500,10 @@ CSSRadialGradientValue* CSSRadialGradientValue::ComputedCSSValue(
       repeating_ ? kRepeating : kNonRepeating, GradientType());
   result->AddComputedStops(style, allow_visited_style, stops_);
   return result;
+}
+
+bool CSSRadialGradientValue::IsUsingCurrentColor() const {
+  return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
 void CSSRadialGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {
@@ -1509,14 +1545,14 @@ String CSSConicGradientValue::CustomCSSText() const {
 
 scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
     const CSSToLengthConversionData& conversion_data,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const Document& document,
     const ComputedStyle& style) const {
   DCHECK(!size.IsEmpty());
 
   const float angle = from_angle_ ? from_angle_->ComputeDegrees() : 0;
 
-  const FloatPoint position(
+  const gfx::PointF position(
       x_ ? PositionFromValue(x_, conversion_data, size, true)
          : size.width() / 2,
       y_ ? PositionFromValue(y_, conversion_data, size, false)
@@ -1535,9 +1571,10 @@ scoped_refptr<Gradient> CSSConicGradientValue::CreateGradient(
 }
 
 bool CSSConicGradientValue::Equals(const CSSConicGradientValue& other) const {
-  return repeating_ == other.repeating_ && DataEquivalent(x_, other.x_) &&
-         DataEquivalent(y_, other.y_) &&
-         DataEquivalent(from_angle_, other.from_angle_) &&
+  return repeating_ == other.repeating_ &&
+         base::ValuesEquivalent(x_, other.x_) &&
+         base::ValuesEquivalent(y_, other.y_) &&
+         base::ValuesEquivalent(from_angle_, other.from_angle_) &&
          stops_ == other.stops_;
 }
 
@@ -1548,6 +1585,10 @@ CSSConicGradientValue* CSSConicGradientValue::ComputedCSSValue(
       x_, y_, from_angle_, repeating_ ? kRepeating : kNonRepeating);
   result->AddComputedStops(style, allow_visited_style, stops_);
   return result;
+}
+
+bool CSSConicGradientValue::IsUsingCurrentColor() const {
+  return blink::cssvalue::IsUsingCurrentColor(stops_);
 }
 
 void CSSConicGradientValue::TraceAfterDispatch(blink::Visitor* visitor) const {

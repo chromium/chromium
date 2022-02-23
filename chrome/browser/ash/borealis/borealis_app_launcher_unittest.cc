@@ -74,7 +74,7 @@ TEST_F(BorealisAppLauncherTest, LauncherAppLaunchesMainApp) {
   // We add the main app to the registry, so that it will be launched.
   std::string desktop_file_id;
   ASSERT_TRUE(base::Base64Decode("c3RlYW0=", &desktop_file_id));
-  ASSERT_EQ(SetDummyApp(desktop_file_id), kBorealisMainAppId);
+  ASSERT_EQ(SetDummyApp(desktop_file_id), kClientAppId);
 
   EXPECT_CALL(callback_check,
               Call(BorealisAppLauncher::LaunchResult::kSuccess));
@@ -89,7 +89,7 @@ TEST_F(BorealisAppLauncherTest, LauncherAppLaunchesMainApp) {
             response.set_success(true);
             std::move(callback).Run(response);
           }));
-  BorealisAppLauncher::Launch(Context(), kBorealisAppId,
+  BorealisAppLauncher::Launch(Context(), kInstallerAppId,
                               callback_check.BindOnce());
 }
 

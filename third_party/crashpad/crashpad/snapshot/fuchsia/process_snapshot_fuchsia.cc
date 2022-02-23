@@ -36,6 +36,7 @@ bool ProcessSnapshotFuchsia::Initialize(const zx::process& process) {
     return false;
   }
 
+  client_id_.InitializeToZero();
   system_.Initialize(&snapshot_time_);
 
   InitializeThreads();

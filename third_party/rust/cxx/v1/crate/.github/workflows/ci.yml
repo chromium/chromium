@@ -90,6 +90,8 @@ jobs:
           chmod +x install.sh
           ./install.sh --user
           echo $HOME/bin >> $GITHUB_PATH
+      - name: Install lld
+        run: sudo apt-get install lld
       - run: bazel run demo --verbose_failures --noshow_progress
       - run: bazel test ... --verbose_failures --noshow_progress
 
@@ -112,3 +114,12 @@ jobs:
         run: sudo apt-get install clang-tidy-11
       - name: Run clang-tidy
         run: clang-tidy-11 src/cxx.cc --warnings-as-errors=*
+
+  outdated:
+    name: Outdated
+    runs-on: ubuntu-latest
+    if: github.event_name != 'pull_request'
+    steps:
+      - uses: actions/checkout@v2
+      - uses: dtolnay/install@cargo-outdated
+      - run: cargo outdated --exit-code 1

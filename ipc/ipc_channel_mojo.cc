@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/process/process_handle.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -113,15 +112,15 @@ class ThreadSafeChannelProxy : public mojo::ThreadSafeProxy {
 };
 
 base::ProcessId GetSelfPID() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (int global_pid = Channel::GetGlobalPid())
     return global_pid;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(OS_NACL)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_NACL)
   return -1;
 #else
   return base::GetCurrentProcId();
-#endif  // defined(OS_NACL)
+#endif  // BUILDFLAG(IS_NACL)
 }
 
 }  // namespace

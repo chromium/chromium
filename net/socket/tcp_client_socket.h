@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/timer/timer.h"
@@ -27,7 +27,7 @@
 
 // PowerMonitor doesn't get suspend mode signals on Android, so don't use it to
 // watch for suspend events.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Define SOCKETS_OBSERVE_SUSPEND if sockets should watch for suspend events so
 // they can fail pending socket operations on suspend. Otherwise, connections
 // hang for varying lengths of time when leaving suspend mode before failing
@@ -50,15 +50,20 @@ class NetworkQualityEstimator;
 class NET_EXPORT TCPClientSocket : public TransportClientSocket,
                                    public base::PowerSuspendObserver {
  public:
-  // The IP address(es) and port number to connect to.  The TCP socket will try
+  // The IP address(es) and port number to connect to. The TCP socket will try
   // each IP address in the list until it succeeds in establishing a
   // connection.
+  // If `network` is specified, the socket will be bound to it. All data traffic
+  // on the socket will be sent and received via `network`. Communication using
+  // this socket will fail if `network` disconnects.
   TCPClientSocket(
       const AddressList& addresses,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
       NetworkQualityEstimator* network_quality_estimator,
       net::NetLog* net_log,
-      const net::NetLogSource& source);
+      const net::NetLogSource& source,
+      NetworkChangeNotifier::NetworkHandle network =
+          NetworkChangeNotifier::kInvalidNetworkHandle);
 
   // Adopts the given, connected socket and then acts as if Connect() had been
   // called. This function is used by TCPServerSocket and for testing.
@@ -134,15 +139,17 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
     CONNECT_STATE_NONE,
   };
 
-  // Main constructor. |socket| must be non-null. |current_address_index| is the
-  // address index in |addresses| of the server |socket| is connected to, or -1
-  // if not connected. |bind_address|, if present, is the address |socket| is
-  // bound to.
+  // Main constructor. `socket` must be non-null. `current_address_index` is the
+  // address index in `addresses` of the server `socket` is connected to, or -1
+  // if not connected. `bind_address`, if present, is the address `socket` is
+  // bound to. `network` is the network the socket is required to be bound to,
+  // or NetworkChangeNotifier::kInvalidNetworkHandle if no binding is required.
   TCPClientSocket(std::unique_ptr<TCPSocket> socket,
                   const AddressList& addresses,
                   int current_address_index,
                   std::unique_ptr<IPEndPoint> bind_address,
-                  NetworkQualityEstimator* network_quality_estimator);
+                  NetworkQualityEstimator* network_quality_estimator,
+                  NetworkChangeNotifier::NetworkHandle network);
 
   // A helper method shared by Read() and ReadIfReady(). If |read_if_ready| is
   // set to true, ReadIfReady() will be used instead of Read().
@@ -231,9 +238,11 @@ class NET_EXPORT TCPClientSocket : public TransportClientSocket,
 
   // The NetworkQualityEstimator for the context this socket is associated with.
   // Can be nullptr.
-  NetworkQualityEstimator* network_quality_estimator_;
+  raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 
   base::OneShotTimer connect_attempt_timer_;
+
+  NetworkChangeNotifier::NetworkHandle network_;
 
   base::WeakPtrFactory<TCPClientSocket> weak_ptr_factory_{this};
 };

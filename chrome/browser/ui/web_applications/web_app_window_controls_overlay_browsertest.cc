@@ -8,7 +8,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/test/web_app_navigation_browsertest.h"
 #include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/page_load_metrics/browser/page_load_metrics_test_waiter.h"
 #include "content/public/common/content_features.h"
@@ -30,12 +30,7 @@ namespace web_app {
 class WebAppWindowControlsOverlayBrowserTest
     : public WebAppNavigationBrowserTest {
  public:
-  WebAppWindowControlsOverlayBrowserTest() {
-    os_hooks_supress_ = OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-    scoped_feature_list_.InitAndEnableFeature(
-        features::kWebAppWindowControlsOverlay);
-  }
-
+  WebAppWindowControlsOverlayBrowserTest() = default;
   ~WebAppWindowControlsOverlayBrowserTest() override = default;
 
   void SetUpOnMainThread() override {
@@ -67,8 +62,9 @@ class WebAppWindowControlsOverlayBrowserTest
   base::HistogramTester histogram_tester_;
 
  private:
-  ScopedOsHooksSuppress os_hooks_supress_;
-  base::test::ScopedFeatureList scoped_feature_list_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_supress_;
+  base::test::ScopedFeatureList scoped_feature_list_{
+      features::kWebAppWindowControlsOverlay};
 };
 
 IN_PROC_BROWSER_TEST_F(WebAppWindowControlsOverlayBrowserTest,

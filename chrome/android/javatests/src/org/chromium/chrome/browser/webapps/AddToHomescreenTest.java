@@ -316,7 +316,7 @@ public class AddToHomescreenTest {
     @DisabledTest(message = "https://crbug.com/1269022")
     public void testAddWebappShortcutWithEmptyPage() {
         Tab spawnedPopup = spawnPopupInBackground("");
-        addShortcutToTab(spawnedPopup, "", false);
+        addShortcutToTab(spawnedPopup, "", true /* expectAdded */);
 
         Assert.assertEquals(
                 0, RecordHistogram.getHistogramTotalCountForTesting(INSTALL_PATH_HISTOGRAM_NAME));

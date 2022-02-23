@@ -22,7 +22,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_SVG_TEXT_POSITIONING_ELEMENT_H_
 
 #include "third_party/blink/renderer/core/svg/svg_text_content_element.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

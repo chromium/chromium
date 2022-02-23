@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.net.connectivitydetector;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.Network;
@@ -15,6 +14,7 @@ import android.os.SystemClock;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
@@ -23,8 +23,10 @@ import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.content.ContentUtils;
+import org.chromium.net.ChromiumNetworkAdapter;
 import org.chromium.net.ConnectionType;
 import org.chromium.net.NetworkChangeNotifier;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.io.IOException;
 import java.lang.annotation.Retention;
@@ -139,7 +141,7 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
      * Implementation that talks with the Android connectivity manager service.
      */
     public class DelegateImpl implements Delegate {
-        @TargetApi(Build.VERSION_CODES.M)
+        @RequiresApi(Build.VERSION_CODES.M)
         @Override
         public @ConnectionState int inferConnectionStateFromSystem() {
             // NET_CAPABILITY_VALIDATED and NET_CAPABILITY_CAPTIVE_PORTAL are only available on
@@ -399,7 +401,8 @@ public class ConnectivityDetector implements NetworkChangeNotifier.ConnectionTyp
                     Log.i(TAG, "Sending HTTP Probe now to url:" + urlString);
 
                     URL url = new URL(urlString);
-                    urlConnection = (HttpURLConnection) url.openConnection();
+                    urlConnection = (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
+                            url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
                     urlConnection.setInstanceFollowRedirects(false);
                     urlConnection.setRequestMethod(sProbeMethod);
                     urlConnection.setConnectTimeout(timeoutMs);

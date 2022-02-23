@@ -1,0 +1,7 @@
+specific_include_rules = {
+  # TODO(crbug.com/1294160): Remove this dependency.
+  "^web_state_list_metrics_browser_agent.mm": [
+    "+ios/chrome/browser/ui/util/uikit_ui_util.h",
+  ],
+}
+

@@ -75,7 +75,6 @@ class Plugin : public pp::Instance {
   // mechanism(s) take over.
   // This function takes over ownership of the file_info.
   void LoadNaClModule(PP_NaClFileInfo file_info,
-                      bool uses_nonsfi_mode,
                       PP_NaClAppProcessType process_type);
 
   // Load support.
@@ -125,8 +124,6 @@ class Plugin : public pp::Instance {
 
   // Keep track of the NaCl module subprocess that was spun up in the plugin.
   NaClSubprocess main_subprocess_;
-
-  bool uses_nonsfi_mode_;
 
   pp::CompletionCallbackFactory<Plugin> callback_factory_;
 

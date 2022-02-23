@@ -5,6 +5,8 @@
 #ifndef PDF_PDFIUM_PDFIUM_PERMISSIONS_H_
 #define PDF_PDFIUM_PDFIUM_PERMISSIONS_H_
 
+#include <stdint.h>
+
 #include "pdf/pdf_engine.h"
 #include "third_party/pdfium/public/fpdfview.h"
 
@@ -21,7 +23,7 @@ constexpr uint32_t kPDFPermissionCopyAccessibleMask = 1 << 9;
 class PDFiumPermissions final {
  public:
   static PDFiumPermissions CreateForTesting(int permissions_handler_revision,
-                                            unsigned long permission_bits);
+                                            uint32_t permission_bits);
 
   explicit PDFiumPermissions(FPDF_DOCUMENT doc);
 
@@ -29,14 +31,17 @@ class PDFiumPermissions final {
 
  private:
   // For unit tests.
-  PDFiumPermissions(int permissions_handler_revision,
-                    unsigned long permission_bits);
+  PDFiumPermissions(int permissions_handler_revision, uint32_t permission_bits);
+
+  bool HasPermissionBits(uint32_t mask) const {
+    return (permission_bits_ & mask) == mask;
+  }
 
   // Permissions security handler revision number. -1 for unknown.
   const int permissions_handler_revision_;
 
   // Permissions bitfield.
-  const unsigned long permission_bits_;
+  const uint32_t permission_bits_;
 };
 
 }  // namespace chrome_pdf

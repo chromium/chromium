@@ -10,9 +10,11 @@
 #include "ash/ambient/ui/ambient_info_view.h"
 #include "ash/ambient/ui/ambient_shield_view.h"
 #include "ash/ambient/ui/ambient_view_ids.h"
+#include "ash/ambient/ui/jitter_calculator.h"
 #include "ash/ambient/ui/media_string_view.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/shell.h"
+#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
@@ -22,6 +24,7 @@
 #include "ui/display/screen.h"
 #include "ui/events/event.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/vector2d.h"
 #include "ui/gfx/image/image_skia_operations.h"
 #include "ui/gfx/skbitmap_operations.h"
 #include "ui/views/controls/image_view.h"
@@ -37,14 +40,6 @@ namespace {
 
 // Appearance.
 constexpr int kMediaStringMarginDip = 32;
-
-// The dicretion to translate glanceable info views in the x/y coordinates.  `1`
-// means positive translate, `-1` negative.
-int translate_x_direction = 1;
-int translate_y_direction = -1;
-// The current x/y translation of glanceable info views in Dip.
-int current_x_translation = 0;
-int current_y_translation = 0;
 
 gfx::ImageSkia ResizeImage(const gfx::ImageSkia& image,
                            const gfx::Size& view_size) {
@@ -125,9 +120,12 @@ gfx::ImageSkia MaybeRotateImage(const gfx::ImageSkia& image,
 }  // namespace
 
 AmbientBackgroundImageView::AmbientBackgroundImageView(
-    AmbientViewDelegate* delegate)
-    : delegate_(delegate) {
+    AmbientViewDelegate* delegate,
+    JitterCalculator* glanceable_info_jitter_calculator)
+    : delegate_(delegate),
+      glanceable_info_jitter_calculator_(glanceable_info_jitter_calculator) {
   DCHECK(delegate_);
+  DCHECK(glanceable_info_jitter_calculator_);
   SetID(AmbientViewID::kAmbientBackgroundImageView);
   InitLayout();
 }
@@ -271,41 +269,14 @@ void AmbientBackgroundImageView::InitLayout() {
 }
 
 void AmbientBackgroundImageView::UpdateGlanceableInfoPosition() {
-  constexpr int kStepDP = 5;
-  constexpr int kMaxTranslationDip = 20;
-
-  // Move the translation point randomly one step on each x/y direction.
-  int x_increment = kStepDP * base::RandInt(0, 1);
-  int y_increment = x_increment == 0 ? kStepDP : kStepDP * base::RandInt(0, 1);
-  current_x_translation += translate_x_direction * x_increment;
-  current_y_translation += translate_y_direction * y_increment;
-
-  // If the translation point is out of bounds, reset it within bounds and
-  // reverse the direction.
-  if (current_x_translation < 0) {
-    translate_x_direction = 1;
-    current_x_translation = 0;
-  } else if (current_x_translation > kMaxTranslationDip) {
-    translate_x_direction = -1;
-    current_x_translation = kMaxTranslationDip;
-  }
-
-  if (current_y_translation > 0) {
-    translate_y_direction = -1;
-    current_y_translation = 0;
-  } else if (current_y_translation < -kMaxTranslationDip) {
-    translate_y_direction = 1;
-    current_y_translation = -kMaxTranslationDip;
-  }
-
+  gfx::Vector2d jitter = glanceable_info_jitter_calculator_->Calculate();
   gfx::Transform transform;
-  transform.Translate(current_x_translation, current_y_translation);
+  transform.Translate(jitter);
   ambient_info_view_->SetTextTransform(transform);
 
   if (media_string_view_->GetVisible()) {
     gfx::Transform media_string_transform;
-    media_string_transform.Translate(-current_x_translation,
-                                     -current_y_translation);
+    media_string_transform.Translate(-jitter.x(), -jitter.y());
     media_string_view_->layer()->SetTransform(media_string_transform);
   }
 }

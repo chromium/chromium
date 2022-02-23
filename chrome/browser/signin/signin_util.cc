@@ -7,20 +7,21 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/supports_user_data.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_internal.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
 #include "chrome/browser/ui/simple_message_box.h"
 #include "chrome/browser/ui/startup/startup_types.h"
 #include "chrome/browser/ui/webui/profile_helper.h"
@@ -37,8 +38,8 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_MAC)
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -63,12 +64,9 @@ class DeleteProfileDialogManager : public BrowserListObserver {
     virtual void OnProfileDeleted(DeleteProfileDialogManager* manager) = 0;
   };
 
-  DeleteProfileDialogManager(Profile* profile,
-                             std::string primary_account_email,
+  DeleteProfileDialogManager(std::string primary_account_email,
                              Delegate* delegate)
-      : profile_(profile),
-        primary_account_email_(primary_account_email),
-        delegate_(delegate) {}
+      : primary_account_email_(primary_account_email), delegate_(delegate) {}
 
   DeleteProfileDialogManager(const DeleteProfileDialogManager&) = delete;
   DeleteProfileDialogManager& operator=(const DeleteProfileDialogManager&) =
@@ -76,20 +74,68 @@ class DeleteProfileDialogManager : public BrowserListObserver {
 
   ~DeleteProfileDialogManager() override { BrowserList::RemoveObserver(this); }
 
-  void PresentDialogOnAllBrowserWindows() {
+  void PresentDialogOnAllBrowserWindows(Profile* profile) {
+    DCHECK(profile);
+    DCHECK(profile_path_.empty());
+    profile_path_ = profile->GetPath();
+
     BrowserList::AddObserver(this);
-    Browser* active_browser = chrome::FindLastActiveWithProfile(profile_);
+    Browser* active_browser = chrome::FindLastActiveWithProfile(profile);
     if (active_browser)
       OnBrowserSetLastActive(active_browser);
   }
 
   void OnBrowserSetLastActive(Browser* browser) override {
-    DCHECK(profile_);
-    if (browser->profile() != profile_)
+    DCHECK(!profile_path_.empty());
+
+    if (profile_path_ != browser->profile()->GetPath())
       return;
 
+    active_browser_ = browser;
+
+    // Display the dialog on the next run loop as otherwise the dialog can block
+    // browser from displaying because the dialog creates a nested run loop.
+    //
+    // This happens because the browser window is not fully created yet when
+    // OnBrowserSetLastActive() is called. To finish the creation, the code
+    // needs to return from OnBrowserSetLastActive().
+    //
+    // However, if we open a warning dialog from OnBrowserSetLastActive()
+    // synchronously, it will create a nested run loop that will not return
+    // from OnBrowserSetLastActive() until the dialog is dismissed. But the user
+    // cannot dismiss the dialog because the browser is not even shown!
+    base::ThreadTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE,
+        base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
+                       weak_factory_.GetWeakPtr(), browser));
+  }
+
+  // Called immediately after a browser becomes not active.
+  void OnBrowserNoLongerActive(Browser* browser) override {
+    if (active_browser_ == browser)
+      active_browser_ = nullptr;
+  }
+
+  void OnBrowserRemoved(Browser* browser) override {
+    if (active_browser_ == browser)
+      active_browser_ = nullptr;
+  }
+
+ private:
+  void ShowDeleteProfileDialog(Browser* browser) {
+    // Block opening dialog from nested task.
+    static bool is_dialog_shown = false;
+    if (is_dialog_shown)
+      return;
+    base::AutoReset<bool> auto_reset(&is_dialog_shown, true);
+
+    // Check that |browser| is still active.
+    if (!active_browser_ || active_browser_ != browser)
+      return;
+
+    // Show the dialog.
     DCHECK(browser->window()->GetNativeWindow());
-    chrome::ShowWarningMessageBox(
+    chrome::MessageBoxResult result = chrome::ShowWarningMessageBox(
         browser->window()->GetNativeWindow(),
         l10n_util::GetStringUTF16(IDS_PROFILE_WILL_BE_DELETED_DIALOG_TITLE),
         l10n_util::GetStringFUTF16(
@@ -98,16 +144,37 @@ class DeleteProfileDialogManager : public BrowserListObserver {
             base::ASCIIToUTF16(
                 gaia::ExtractDomainName(primary_account_email_))));
 
-    webui::DeleteProfileAtPath(
-        profile_->GetPath(),
-        ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
-    delegate_->OnProfileDeleted(this);
+    switch (result) {
+      case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_NO: {
+        // If the warning dialog is automatically dismissed or the user closed
+        // the dialog by clicking on the close "X" button, then re-present the
+        // dialog (the user should not be able to interact with the browser
+        // window as the profile must be deleted).
+        base::ThreadTaskRunnerHandle::Get()->PostTask(
+            FROM_HERE,
+            base::BindOnce(&DeleteProfileDialogManager::ShowDeleteProfileDialog,
+                           weak_factory_.GetWeakPtr(), browser));
+        break;
+      }
+      case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_YES:
+        webui::DeleteProfileAtPath(
+            profile_path_,
+            ProfileMetrics::DELETE_PROFILE_PRIMARY_ACCOUNT_NOT_ALLOWED);
+        delegate_->OnProfileDeleted(this);
+        // |this| may be destroyed at this point. Avoid using it.
+        break;
+      case chrome::MessageBoxResult::MESSAGE_BOX_RESULT_DEFERRED:
+        NOTREACHED() << "Message box must not return deferred result when run "
+                        "synchronously";
+        break;
+    }
   }
 
- private:
-  Profile* profile_;
   std::string primary_account_email_;
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
+  base::FilePath profile_path_;
+  raw_ptr<Browser> active_browser_;
+  base::WeakPtrFactory<DeleteProfileDialogManager> weak_factory_{this};
 };
 #endif  // defined(CAN_DELETE_PROFILE)
 
@@ -145,8 +212,8 @@ class UserSignoutSetting : public base::SupportsUserData::Data {
     if (delete_profile_dialog_manager_)
       return;
     delete_profile_dialog_manager_ =
-        std::make_unique<DeleteProfileDialogManager>(profile, email, this);
-    delete_profile_dialog_manager_->PresentDialogOnAllBrowserWindows();
+        std::make_unique<DeleteProfileDialogManager>(email, this);
+    delete_profile_dialog_manager_->PresentDialogOnAllBrowserWindows(profile);
   }
 
   void OnProfileDeleted(DeleteProfileDialogManager* dialog_manager) override {
@@ -274,12 +341,10 @@ void EnsurePrimaryAccountAllowedForProfile(Profile* profile) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool ProfileSeparationEnforcedByPolicy(
     Profile* profile,
     const std::string& intercepted_account_level_policy_value) {
-  if (!base::FeatureList::IsEnabled(kAccountPoliciesLoadedWithoutSync))
-    return false;
   std::string current_profile_account_restriction =
       profile->GetPrefs()->GetString(prefs::kManagedAccountsSigninRestriction);
 

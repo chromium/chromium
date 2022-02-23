@@ -23,8 +23,8 @@ class DriveNotificationManagerFactoryLoginScreenBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
   }
 };
 
@@ -33,7 +33,7 @@ class DriveNotificationManagerFactoryLoginScreenBrowserTest
 IN_PROC_BROWSER_TEST_F(DriveNotificationManagerFactoryLoginScreenBrowserTest,
                        NoDriveNotificationManager) {
   Profile* signin_profile =
-      chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+      ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
   EXPECT_FALSE(DriveNotificationManagerFactory::FindForBrowserContext(
       signin_profile));
 }
@@ -42,11 +42,11 @@ class DriveNotificationManagerFactoryGuestBrowserTest
     : public InProcessBrowserTest {
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kGuestSession);
+    command_line->AppendSwitch(ash::switches::kGuestSession);
     command_line->AppendSwitch(::switches::kIncognito);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
     command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
+        ash::switches::kLoginUser,
         user_manager::GuestAccountId().GetUserEmail());
   }
 };
@@ -58,11 +58,11 @@ IN_PROC_BROWSER_TEST_F(DriveNotificationManagerFactoryGuestBrowserTest,
   user_manager::UserManager* user_manager = user_manager::UserManager::Get();
   EXPECT_TRUE(user_manager->IsLoggedInAsGuest());
   Profile* guest_profile =
-      chromeos::ProfileHelper::Get()
+      ash::ProfileHelper::Get()
           ->GetProfileByUserUnsafe(user_manager->GetActiveUser())
           ->GetOriginalProfile();
   Profile* signin_profile =
-      chromeos::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
+      ash::ProfileHelper::GetSigninProfile()->GetOriginalProfile();
   EXPECT_FALSE(DriveNotificationManagerFactory::FindForBrowserContext(
       guest_profile));
   EXPECT_FALSE(DriveNotificationManagerFactory::FindForBrowserContext(

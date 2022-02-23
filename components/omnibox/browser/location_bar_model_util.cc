@@ -11,7 +11,7 @@
 #include "components/omnibox/common/omnibox_features.h"
 #include "ui/gfx/vector_icon_types.h"
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "components/vector_icons/vector_icons.h"     // nogncheck
 #endif
@@ -21,7 +21,7 @@ namespace location_bar_model {
 const gfx::VectorIcon& GetSecurityVectorIcon(
     security_state::SecurityLevel security_level,
     bool use_updated_connection_security_indicators) {
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if (!BUILDFLAG(IS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !BUILDFLAG(IS_IOS)
   switch (security_level) {
     case security_state::NONE:
       return omnibox::kHttpIcon;

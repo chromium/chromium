@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_OBSERVER_H_
 #define IOS_CHROME_BROWSER_BROWSING_DATA_BROWSING_DATA_REMOVER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 
 class BrowsingDataRemover;

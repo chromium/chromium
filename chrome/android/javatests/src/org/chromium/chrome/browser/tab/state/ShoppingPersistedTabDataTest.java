@@ -93,8 +93,10 @@ public class ShoppingPersistedTabDataTest {
                 mOptimizationGuideBridgeJniMock,
                 HintsProto.OptimizationType.SHOPPING_PAGE_PREDICTOR.getNumber(),
                 OptimizationGuideDecision.TRUE, null);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> PersistedTabDataConfiguration.setUseTestConfig(true));
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            ShoppingPersistedTabData.onDeferredStartup();
+            PersistedTabDataConfiguration.setUseTestConfig(true);
+        });
         Profile.setLastUsedProfileForTesting(mProfileMock);
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
     }
@@ -577,7 +579,8 @@ public class ShoppingPersistedTabDataTest {
         doReturn(true).when(navigationHandle).isInPrimaryMainFrame();
         doReturn(false).when(navigationHandle).isSameDocument();
         doReturn(false).when(navigationHandle).isValidSearchFormUrl();
-        Integer reloadFromAddressBar = PageTransition.FROM_ADDRESS_BAR | PageTransition.RELOAD;
+        doReturn(true).when(navigationHandle).hasCommitted();
+        int reloadFromAddressBar = PageTransition.FROM_ADDRESS_BAR | PageTransition.RELOAD;
         doReturn(reloadFromAddressBar).when(navigationHandle).pageTransition();
         ShoppingPersistedTabData shoppingPersistedTabData = new ShoppingPersistedTabData(tab);
         shoppingPersistedTabData.setPriceMicros(42_000_000L);
@@ -730,6 +733,7 @@ public class ShoppingPersistedTabDataTest {
         doReturn(true).when(mNavigationHandle).isInPrimaryMainFrame();
         GURL gurl = new GURL("https://www.google.com");
         doReturn(gurl).when(mNavigationHandle).getUrl();
+        doReturn(true).when(mNavigationHandle).hasCommitted();
         shoppingPersistedTabData.getUrlUpdatedObserverForTesting().onDidFinishNavigation(
                 tab, mNavigationHandle);
         ShoppingPersistedTabDataTestUtils.verifyOptimizationGuideCalledWithNavigationHandle(
@@ -1135,7 +1139,7 @@ public class ShoppingPersistedTabDataTest {
         }
 
         @Override
-        protected void deserializeAndLog(@Nullable ByteBuffer bytes) {
+        public void deserializeAndLog(@Nullable ByteBuffer bytes) {
             ThreadUtils.assertOnBackgroundThread();
             super.deserializeAndLog(bytes);
         }

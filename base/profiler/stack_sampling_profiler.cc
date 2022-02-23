@@ -15,8 +15,8 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/profiler/profiler_buildflags.h"
 #include "base/profiler/stack_buffer.h"
@@ -32,11 +32,11 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/static_constants.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -136,7 +136,8 @@ class StackSamplingProfiler::SamplingThread : public Thread {
     const int collection_id;
 
     const SamplingParams params;    // Information about how to sample.
-    WaitableEvent* const finished;  // Signaled when all sampling complete.
+    const raw_ptr<WaitableEvent>
+        finished;  // Signaled when all sampling complete.
 
     // Receives the sampling data and builds a CallStackProfile.
     std::unique_ptr<ProfileBuilder> profile_builder;
@@ -747,21 +748,13 @@ TimeTicks StackSamplingProfiler::TestPeer::GetNextSampleTime(
 }
 
 // static
-// The profiler is currently supported for Windows x64, MacOSX x64, and Android
-// ARM32.
+// The profiler is currently supported for Windows x64, macOS, iOS 64-bit, and
+// Android ARM32.
 bool StackSamplingProfiler::IsSupportedForCurrentPlatform() {
-#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) ||  \
-    (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) ||  \
-    (defined(OS_IOS) && defined(ARCH_CPU_64_BITS)) || \
-    (defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
-#if defined(OS_MAC)
-  // TODO(https://crbug.com/1098119): Fix unwinding on macOS 11. The OS has
-  // moved all system libraries into the dyld shared cache and this seems to
-  // break the sampling profiler.
-  if (base::mac::IsAtLeastOS11())
-    return false;
-#endif
-#if defined(OS_WIN)
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) ||  \
+    (BUILDFLAG(IS_IOS) && defined(ARCH_CPU_64_BITS)) ||                      \
+    (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
+#if BUILDFLAG(IS_WIN)
   // Do not start the profiler when Application Verifier is in use; running them
   // simultaneously can cause crashes and has no known use case.
   if (GetModuleHandleA(base::win::kApplicationVerifierDllName))

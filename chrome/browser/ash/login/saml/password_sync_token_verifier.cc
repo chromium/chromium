@@ -9,6 +9,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "content/public/browser/storage_partition.h"
@@ -126,8 +127,8 @@ void PasswordSyncTokenVerifier::OnTokenCreated(const std::string& sync_token) {
   // Set token value in prefs for in-session operations and ephemeral users and
   // local settings for login screen sync.
   prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
-  user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
-                                                 sync_token);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), sync_token);
   password_sync_token_fetcher_.reset();
   RecordTokenPollingStart();
   RecheckAfter(retry_backoff_.GetTimeUntilRelease());
@@ -139,8 +140,8 @@ void PasswordSyncTokenVerifier::OnTokenFetched(const std::string& sync_token) {
     // Set token fetched from the endpoint in prefs and local settings.
     PrefService* prefs = primary_profile_->GetPrefs();
     prefs->SetString(prefs::kSamlPasswordSyncToken, sync_token);
-    user_manager::known_user::SetPasswordSyncToken(
-        primary_user_->GetAccountId(), sync_token);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), sync_token);
     RecordTokenPollingStart();
     RecheckAfter(retry_backoff_.GetTimeUntilRelease());
   } else {

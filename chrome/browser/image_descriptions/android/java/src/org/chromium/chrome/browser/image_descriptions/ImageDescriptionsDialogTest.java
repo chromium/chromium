@@ -54,14 +54,14 @@ import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.net.ConnectionType;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  *  Unit tests for {@link ImageDescriptionsDialog}
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-public class ImageDescriptionsDialogTest extends DummyUiActivityTestCase {
+public class ImageDescriptionsDialogTest extends BlankUiTestActivityTestCase {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 

@@ -10,7 +10,6 @@
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/properties/css_direction_aware_resolver.h"
 #include "third_party/blink/renderer/core/css/properties/css_unresolved_property.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/text/writing_mode.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -39,6 +38,7 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   virtual CSSPropertyName GetCSSPropertyName() const {
     return CSSPropertyName(PropertyID());
   }
+  virtual bool HasEqualCSSPropertyName(const CSSProperty& other) const;
 
   bool IDEquals(CSSPropertyID id) const { return PropertyID() == id; }
   bool IsResolvedProperty() const override { return true; }

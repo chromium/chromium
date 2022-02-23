@@ -77,11 +77,11 @@ enum class DeviceNotificationUserActionUmaType {
 };
 
 // Histogram name for Notification.Show.
-constexpr char kNotificationShowHistogramName[] =
+inline constexpr char kNotificationShowHistogramName[] =
     "FileBrowser.Notification.Show";
 
 // Histogram name for Notification.UserAction.
-constexpr char kNotificationUserActionHistogramName[] =
+inline constexpr char kNotificationUserActionHistogramName[] =
     "FileBrowser.Notification.UserAction";
 
 // Manages creation/deletion and update of system notifications on behalf

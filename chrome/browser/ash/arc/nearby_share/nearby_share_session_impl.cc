@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/bind.h"
 #include "base/callback_forward.h"
@@ -17,6 +18,7 @@
 #include "base/system/sys_info.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/time/time.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/nearby_share/arc_nearby_share_uma.h"
@@ -26,14 +28,12 @@
 #include "chrome/browser/ash/arc/nearby_share/ui/progress_bar_dialog_view.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/sharesheet/sharesheet_service.h"
 #include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
 #include "chrome/common/chrome_paths_internal.h"
-#include "components/arc/arc_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/cros_system_api/constants/cryptohome.h"
@@ -69,8 +69,8 @@ void DeletePathAndFiles(const base::FilePath& file_path) {
 
 // Calculate the amount of disk space, in bytes, needed in |share_dir| to
 // stream |total_file_size| bytes from Android to the Chrome OS file system.
-static const int64_t CalculateRequiredSpace(const base::FilePath share_dir,
-                                            const uint64_t total_file_size) {
+static int64_t CalculateRequiredSpace(const base::FilePath share_dir,
+                                      const uint64_t total_file_size) {
   DVLOG(1) << __func__;
   int64_t free_disk_space = base::SysInfo::AmountOfFreeDiskSpace(share_dir);
   VLOG(1) << "Free disk space: " << free_disk_space;
@@ -78,6 +78,12 @@ static const int64_t CalculateRequiredSpace(const base::FilePath share_dir,
       static_cast<int64_t>(cryptohome::kMinFreeSpaceInBytes + total_file_size);
   VLOG(1) << "Shared file size: " << shared_files_size;
   return shared_files_size - free_disk_space;
+}
+
+base::FilePath GetUserCacheFilePath(Profile* const profile) {
+  DCHECK(profile);
+  base::FilePath file_path = file_manager::util::GetShareCacheFilePath(profile);
+  return file_path.Append(kArcNearbyShareDirname);
 }
 
 }  // namespace
@@ -124,12 +130,17 @@ NearbyShareSessionImpl::NearbyShareSessionImpl(
 NearbyShareSessionImpl::~NearbyShareSessionImpl() = default;
 
 // static
-base::FilePath NearbyShareSessionImpl::GetUserCacheFilePath(
-    const Profile* profile) {
+void NearbyShareSessionImpl::DeleteShareCacheFilePaths(Profile* const profile) {
   DCHECK(profile);
+
+  // Up until M99, shared files were stored in <user_cache_dir>/.NearbyShare.
+  // We should remove this obsolete directory path if it is still present.
   base::FilePath cache_base_path;
   chrome::GetUserCacheDirectory(profile->GetPath(), &cache_base_path);
-  return cache_base_path.Append(kArcNearbyShareDirname);
+  DeletePathAndFiles(cache_base_path.Append(kArcNearbyShareDirname));
+
+  // Delete the current user cache file path.
+  DeletePathAndFiles(GetUserCacheFilePath(profile));
 }
 
 void NearbyShareSessionImpl::OnNearbyShareClosed(
@@ -152,10 +163,16 @@ void NearbyShareSessionImpl::OnWindowInitialized(aura::Window* const window) {
   DCHECK(window);
 
   DVLOG(1) << __func__;
-  if (ash::IsArcWindow(window) && (arc::GetWindowTaskId(window) == task_id_)) {
-    env_observation_.Reset();
-    arc_window_observation_.Observe(window);
+  if (!ash::IsArcWindow(window))
+    return;
+
+  absl::optional<int> maybe_id = arc::GetWindowTaskId(window);
+  if (!maybe_id.has_value() || maybe_id.value() < 0 ||
+      static_cast<uint32_t>(maybe_id.value()) != task_id_) {
+    return;
   }
+  env_observation_.Reset();
+  arc_window_observation_.Observe(window);
 }
 
 // Overridden from aura::WindowObserver
@@ -214,10 +231,10 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
   // Sharing files
   if (share_info_->files.has_value()) {
     const auto share_file_paths = file_handler_->GetFilePaths();
-    DCHECK_GT(share_file_paths.size(), 0);
+    DCHECK_GT(share_file_paths.size(), 0u);
     const auto share_file_mime_types = file_handler_->GetMimeTypes();
     const size_t expected_total_files = file_handler_->GetNumberOfFiles();
-    DCHECK_GT(expected_total_files, 0);
+    DCHECK_GT(expected_total_files, 0u);
 
     if (share_file_paths.size() != expected_total_files) {
       LOG(ERROR)
@@ -226,7 +243,7 @@ apps::mojom::IntentPtr NearbyShareSessionImpl::ConvertShareIntentInfoToIntent()
       return nullptr;
     }
     return apps_util::CreateShareIntentFromFiles(
-        absl::nullopt, share_file_paths, share_file_mime_types, std::string(),
+        profile_, share_file_paths, share_file_mime_types, std::string(),
         share_info_->title);
   }
 
@@ -350,21 +367,8 @@ void NearbyShareSessionImpl::ShowNearbyShareBubbleInArcWindow(
     return;
   }
 
-  backend_task_runner_->PostTaskAndReplyWithResult(
-      FROM_HERE,
-      base::BindOnce(&NearbyShareSessionImpl::ConvertShareIntentInfoToIntent,
-                     base::Unretained(this)),
-      base::BindOnce(
-          &NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent,
-          weak_ptr_factory_.GetWeakPtr()));
-}
+  auto intent = ConvertShareIntentInfoToIntent();
 
-void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
-    apps::mojom::IntentPtr intent) {
-  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
-  DCHECK(arc_window_);
-
-  DVLOG(1) << __func__;
   if (!intent) {
     LOG(ERROR) << "No share info found.";
     ShowErrorDialog();
@@ -384,8 +388,7 @@ void NearbyShareSessionImpl::OnConvertedShareIntentInfoToIntent(
     share_path = file_handler_->GetShareDirectory();
   }
   sharesheet_service->ShowNearbyShareBubbleForArc(
-      arc_window_, std::move(intent),
-      sharesheet::SharesheetMetrics::LaunchSource::kArcNearbyShare,
+      arc_window_, std::move(intent), sharesheet::LaunchSource::kArcNearbyShare,
       /*delivered_callback=*/
       base::BindOnce(&NearbyShareSessionImpl::OnNearbyShareBubbleShown,
                      weak_ptr_factory_.GetWeakPtr()),

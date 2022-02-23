@@ -10,6 +10,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/wm/desks/desks_controller.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "base/callback_list.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/view.h"
@@ -43,8 +44,9 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   static constexpr int kZeroStateBarHeight = 40;
 
-  // Returns the height of the desks bar that exists on |root|.
-  static int GetBarHeightForWidth(aura::Window* root);
+  // Returns the height of the expanded desks bar that exists on `root`. The
+  // height of zero state desks bar is `kZeroStateBarHeight`.
+  static int GetExpandedBarHeight(aura::Window* root);
 
   // Creates and returns the widget that contains the DeskBarView in overview
   // mode. The returned widget has no content view yet, and hasn't been shown
@@ -53,7 +55,9 @@ class ASH_EXPORT DesksBarView : public views::View,
       aura::Window* root,
       const gfx::Rect& bounds);
 
-  views::View* background_view() const { return background_view_; }
+  void set_is_bounds_animation_on_going(bool value) {
+    is_bounds_animation_on_going_ = value;
+  }
 
   ZeroStateDefaultDeskButton* zero_state_default_desk_button() const {
     return zero_state_default_desk_button_;
@@ -132,9 +136,11 @@ class ASH_EXPORT DesksBarView : public views::View,
   // Finalize any unfinished drag & drop. Initialize a new drag proxy.
   void InitDragDesk(DeskMiniView* mini_view,
                     const gfx::PointF& location_in_screen);
-  // Start to drag. Scale up the drag proxy.
+  // Start to drag. Scale up the drag proxy. `is_mouse_dragging` is true when
+  // triggered by mouse/trackpad, false when triggered by touch.
   void StartDragDesk(DeskMiniView* mini_view,
-                     const gfx::PointF& location_in_screen);
+                     const gfx::PointF& location_in_screen,
+                     bool is_mouse_dragging);
   // Reorder desks according to the drag proxy's location.
   void ContinueDragDesk(DeskMiniView* mini_view,
                         const gfx::PointF& location_in_screen);
@@ -202,6 +208,9 @@ class ASH_EXPORT DesksBarView : public views::View,
   // has been created for it yet.
   DeskMiniView* FindMiniViewForDesk(const Desk* desk) const;
 
+  // Animates the bar from expanded state to zero state. Clears `mini_views_`.
+  void SwitchToZeroState();
+
  private:
   friend class DesksBarScrollViewLayout;
   friend class DesksTestApi;
@@ -249,16 +258,9 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   void OnDesksTemplatesButtonPressed();
 
-  // Animates the bar from expanded state to zero state. Clears `mini_views_`.
-  void SwitchToZeroState();
-
   // Scrollview callbacks.
   void OnContentsScrolled();
   void OnContentsScrollEnded();
-
-  // A view that shows a dark gary transparent background that can be animated
-  // when the very first mini_views are created.
-  views::View* background_view_;
 
   // The views representing desks mini_views. They're owned by views hierarchy.
   std::vector<DeskMiniView*> mini_views_;
@@ -291,6 +293,13 @@ class ASH_EXPORT DesksBarView : public views::View,
   // reset.
   bool should_name_nudge_ = false;
 
+  // True if the `DesksBarBoundsAnimation` is started and hasn't finished yet.
+  // It will be used to hold `Layout` until the bounds animation is completed.
+  // `Layout` is expensive and will be called on bounds changes, which means it
+  // will be called lots of times during the bounds changes animation. This is
+  // done to eliminate the unnecessary `Layout` calls during the animation.
+  bool is_bounds_animation_on_going_ = false;
+
   ZeroStateDefaultDeskButton* zero_state_default_desk_button_ = nullptr;
   ZeroStateIconButton* zero_state_new_desk_button_ = nullptr;
   ExpandedDesksBarButton* expanded_state_new_desk_button_ = nullptr;
@@ -312,7 +321,7 @@ class ASH_EXPORT DesksBarView : public views::View,
 
   // A circular button which when clicked will open the context menu of the
   // persistent desks bar. Note that this button will only be created when
-  // BentoBar is enabled.
+  // persistent desks bar should be shown.
   PersistentDesksBarVerticalDotsButton* vertical_dots_button_ = nullptr;
 
   // ScrollView callback subscriptions.

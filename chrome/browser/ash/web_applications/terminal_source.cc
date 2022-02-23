@@ -20,6 +20,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/content_settings/core/common/content_settings_types.h"
 #include "components/prefs/pref_service.h"
 #include "net/base/escape.h"
 #include "net/base/mime_util.h"
@@ -95,9 +96,10 @@ TerminalSource::TerminalSource(Profile* profile,
   const url::Origin terminal_origin = url::Origin::Create(GURL(source));
   CHECK(!terminal_origin.opaque());
   for (auto permission :
-       {ContentSettingsType::JAVASCRIPT, ContentSettingsType::NOTIFICATIONS,
-        ContentSettingsType::CLIPBOARD_READ_WRITE, ContentSettingsType::COOKIES,
-        ContentSettingsType::IMAGES, ContentSettingsType::SOUND}) {
+       {ContentSettingsType::CLIPBOARD_READ_WRITE, ContentSettingsType::COOKIES,
+        ContentSettingsType::IMAGES, ContentSettingsType::JAVASCRIPT,
+        ContentSettingsType::NOTIFICATIONS, ContentSettingsType::POPUPS,
+        ContentSettingsType::SOUND}) {
     webui_allowlist->RegisterAutoGrantedPermission(terminal_origin, permission);
   }
 }
@@ -123,8 +125,8 @@ void TerminalSource::StartDataRequest(
   if (path.empty())
     path = default_file_;
 
-  // Replace $i8n{themeColor} in *.html.
-  if (base::EndsWith(path, ".html", base::CompareCase::INSENSITIVE_ASCII)) {
+  // Refresh the $i8n{themeColor} replacement for css files.
+  if (base::EndsWith(path, ".css", base::CompareCase::INSENSITIVE_ASCII)) {
     replacements_["themeColor"] = net::EscapeForHTML(
         crostini::GetTerminalSettingBackgroundColor(profile_));
   }
@@ -171,7 +173,7 @@ std::string TerminalSource::GetContentSecurityPolicy(
     case network::mojom::CSPDirectiveName::StyleSrc:
       return "style-src * 'unsafe-inline'; font-src *;";
     case network::mojom::CSPDirectiveName::RequireTrustedTypesFor:
-      FALLTHROUGH;
+      [[fallthrough]];
     case network::mojom::CSPDirectiveName::TrustedTypes:
       // TODO(crbug.com/1098685): Trusted Type remaining WebUI
       // This removes require-trusted-types-for and trusted-types directives

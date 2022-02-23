@@ -551,6 +551,7 @@ public class NotificationPlatformBridgeTest {
     @Test
     @MediumTest
     @Feature({"Browser", "Notifications"})
+    @SuppressWarnings("UseNetworkAnnotations")
     public void testShowNotificationWithBadge() throws Exception {
         mNotificationTestRule.setNotificationContentSettingForOrigin(
                 ContentSettingValues.ALLOW, mPermissionTestRule.getOrigin());

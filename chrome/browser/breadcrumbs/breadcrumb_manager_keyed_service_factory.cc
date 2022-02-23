@@ -4,6 +4,7 @@
 
 #include "chrome/browser/breadcrumbs/breadcrumb_manager_keyed_service_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/profiles/incognito_helpers.h"
 #include "components/breadcrumbs/core/breadcrumb_manager_keyed_service.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"

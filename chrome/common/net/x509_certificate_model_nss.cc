@@ -6,7 +6,6 @@
 
 #include <cert.h>
 #include <certt.h>
-#include <cms.h>
 #include <hasht.h>
 #include <keyhi.h>  // SECKEY_DestroyPrivateKey
 #include <keythi.h>  // SECKEYPrivateKey
@@ -20,17 +19,15 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/third_party/mozilla_security_manager/nsNSSCertHelper.h"
 #include "chrome/third_party/mozilla_security_manager/nsNSSCertificate.h"
-#include "chrome/third_party/mozilla_security_manager/nsUsageArrayHelper.h"
-#include "components/url_formatter/url_formatter.h"
 #include "crypto/nss_key_util.h"
 #include "crypto/nss_util.h"
 #include "crypto/scoped_nss_types.h"
@@ -97,25 +94,6 @@ std::string GetNickname(CERTCertificate* cert_handle) {
   return name;
 }
 
-////////////////////////////////////////////////////////////////////////////////
-// NSS certificate export functions.
-
-struct NSSCMSMessageDeleter {
-  inline void operator()(NSSCMSMessage* x) const {
-    NSS_CMSMessage_Destroy(x);
-  }
-};
-typedef std::unique_ptr<NSSCMSMessage, NSSCMSMessageDeleter>
-    ScopedNSSCMSMessage;
-
-struct FreeNSSCMSSignedData {
-  inline void operator()(NSSCMSSignedData* x) const {
-    NSS_CMSSignedData_Destroy(x);
-  }
-};
-typedef std::unique_ptr<NSSCMSSignedData, FreeNSSCMSSignedData>
-    ScopedNSSCMSSignedData;
-
 }  // namespace
 
 namespace x509_certificate_model {
@@ -143,11 +121,6 @@ string GetVersion(CERTCertificate* cert_handle) {
 
 net::CertType GetType(CERTCertificate* cert_handle) {
   return psm::GetCertType(cert_handle);
-}
-
-void GetUsageStrings(CERTCertificate* cert_handle,
-                     std::vector<string>* usages) {
-  psm::GetCertUsageStrings(cert_handle, usages);
 }
 
 string GetSerialNumberHexified(CERTCertificate* cert_handle,
@@ -236,58 +209,6 @@ string HashCertSHA1(CERTCertificate* cert_handle) {
   return HashCert(cert_handle, HASH_AlgSHA1, SHA1_LENGTH);
 }
 
-string GetCMSString(const net::ScopedCERTCertificateList& cert_chain,
-                    size_t start,
-                    size_t end) {
-  crypto::ScopedPLArenaPool arena(PORT_NewArena(1024));
-  DCHECK(arena.get());
-
-  ScopedNSSCMSMessage message(NSS_CMSMessage_Create(arena.get()));
-  DCHECK(message.get());
-
-  // First, create SignedData with the certificate only (no chain).
-  ScopedNSSCMSSignedData signed_data(NSS_CMSSignedData_CreateCertsOnly(
-      message.get(), cert_chain[start].get(), PR_FALSE));
-  if (!signed_data.get()) {
-    DLOG(ERROR) << "NSS_CMSSignedData_Create failed";
-    return std::string();
-  }
-  // Add the rest of the chain (if any).
-  for (size_t i = start + 1; i < end; ++i) {
-    if (NSS_CMSSignedData_AddCertificate(signed_data.get(),
-                                         cert_chain[i].get()) != SECSuccess) {
-      DLOG(ERROR) << "NSS_CMSSignedData_AddCertificate failed on " << i;
-      return std::string();
-    }
-  }
-
-  NSSCMSContentInfo *cinfo = NSS_CMSMessage_GetContentInfo(message.get());
-  if (NSS_CMSContentInfo_SetContent_SignedData(
-      message.get(), cinfo, signed_data.get()) == SECSuccess) {
-    ignore_result(signed_data.release());
-  } else {
-    DLOG(ERROR) << "NSS_CMSMessage_GetContentInfo failed";
-    return std::string();
-  }
-
-  SECItem cert_p7 = { siBuffer, NULL, 0 };
-  NSSCMSEncoderContext *ecx = NSS_CMSEncoder_Start(message.get(), NULL, NULL,
-                                                   &cert_p7, arena.get(), NULL,
-                                                   NULL, NULL, NULL, NULL,
-                                                   NULL);
-  if (!ecx) {
-    DLOG(ERROR) << "NSS_CMSEncoder_Start failed";
-    return std::string();
-  }
-
-  if (NSS_CMSEncoder_Finish(ecx) != SECSuccess) {
-    DLOG(ERROR) << "NSS_CMSEncoder_Finish failed";
-    return std::string();
-  }
-
-  return string(reinterpret_cast<const char*>(cert_p7.data), cert_p7.len);
-}
-
 string ProcessSecAlgorithmSignature(CERTCertificate* cert_handle) {
   return ProcessSecAlgorithmInternal(&cert_handle->signature);
 }
@@ -317,60 +238,6 @@ string ProcessRawSubjectPublicKeyInfo(base::span<const uint8_t> spki_der) {
 string ProcessRawBitsSignatureWrap(CERTCertificate* cert_handle) {
   return ProcessRawBits(cert_handle->signatureWrap.signature.data,
                         cert_handle->signatureWrap.signature.len);
-}
-
-std::string ProcessIDN(const std::string& input) {
-  // Convert the ASCII input to a string16 for ICU.
-  std::u16string input16;
-  input16.reserve(input.length());
-  input16.insert(input16.end(), input.begin(), input.end());
-
-  std::u16string output16 = url_formatter::IDNToUnicode(input);
-  if (input16 == output16)
-    return input;  // Input did not contain any encoded data.
-
-  // Input contained encoded data, return formatted string showing original and
-  // decoded forms.
-  return l10n_util::GetStringFUTF8(IDS_CERT_INFO_IDN_VALUE_FORMAT, input16,
-                                   output16);
-}
-
-std::string ProcessRawBytesWithSeparators(const unsigned char* data,
-                                          size_t data_length,
-                                          char hex_separator,
-                                          char line_separator) {
-  static const char kHexChars[] = "0123456789ABCDEF";
-
-  // Each input byte creates two output hex characters + a space or newline,
-  // except for the last byte.
-  std::string ret;
-  size_t kMin = 0U;
-
-  if (!data_length)
-    return std::string();
-
-  ret.reserve(std::max(kMin, data_length * 3 - 1));
-
-  for (size_t i = 0; i < data_length; ++i) {
-    unsigned char b = data[i];
-    ret.push_back(kHexChars[(b >> 4) & 0xf]);
-    ret.push_back(kHexChars[b & 0xf]);
-    if (i + 1 < data_length) {
-      if ((i + 1) % 16 == 0)
-        ret.push_back(line_separator);
-      else
-        ret.push_back(hex_separator);
-    }
-  }
-  return ret;
-}
-
-std::string ProcessRawBytes(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytesWithSeparators(data, data_length, ' ', '\n');
-}
-
-std::string ProcessRawBits(const unsigned char* data, size_t data_length) {
-  return ProcessRawBytes(data, (data_length + 7) / 8);
 }
 
 }  // namespace x509_certificate_model

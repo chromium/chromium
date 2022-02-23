@@ -5,8 +5,8 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INTRINSIC_SIZING_INFO_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_INTRINSIC_SIZING_INFO_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -18,14 +18,14 @@ struct IntrinsicSizingInfo {
   // Both size and aspect_ratio use logical coordinates.
   // Because they are using float instead of LayoutUnit, we can't use
   // LogicalSize here.
-  FloatSize size;
-  FloatSize aspect_ratio;
+  gfx::SizeF size;
+  gfx::SizeF aspect_ratio;
   bool has_width;
   bool has_height;
 
   void Transpose() {
-    size = size.TransposedSize();
-    aspect_ratio = aspect_ratio.TransposedSize();
+    size.Transpose();
+    aspect_ratio.Transpose();
     std::swap(has_width, has_height);
   }
 };

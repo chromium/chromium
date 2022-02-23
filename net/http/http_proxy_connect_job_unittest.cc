@@ -36,10 +36,14 @@
 #include "net/socket/ssl_connect_job.h"
 #include "net/socket/transport_connect_job.h"
 #include "net/spdy/spdy_test_util_common.h"
+#include "net/test/cert_test_util.h"
 #include "net/test/gtest_util.h"
+#include "net/test/test_data_directory.h"
 #include "net/test/test_with_task_environment.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -114,7 +118,8 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
       return nullptr;
     return base::MakeRefCounted<TransportSocketParams>(
         HostPortPair(kHttpProxyHost, 80), NetworkIsolationKey(),
-        secure_dns_policy, OnHostResolutionCallback());
+        secure_dns_policy, OnHostResolutionCallback(),
+        /*supported_alpns=*/base::flat_set<std::string>());
   }
 
   scoped_refptr<SSLSocketParams> CreateHttpsProxyParams(
@@ -124,7 +129,8 @@ class HttpProxyConnectJobTest : public ::testing::TestWithParam<HttpProxyType>,
     return base::MakeRefCounted<SSLSocketParams>(
         base::MakeRefCounted<TransportSocketParams>(
             HostPortPair(kHttpsProxyHost, 443), NetworkIsolationKey(),
-            secure_dns_policy, OnHostResolutionCallback()),
+            secure_dns_policy, OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>()),
         nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
         PRIVACY_MODE_DISABLED, NetworkIsolationKey());
   }
@@ -405,6 +411,9 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
   SequencedSocketData* sequenced_data = nullptr;
 
   SSLSocketDataProvider ssl_data(ASYNC, OK);
+  ssl_data.ssl_info.cert =
+      ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
+  ASSERT_TRUE(ssl_data.ssl_info.cert);
 
   switch (GetParam()) {
     case HTTP:
@@ -412,6 +421,7 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
       break;
     case HTTPS:
       sequenced_data = &http1_data;
+      ssl_data.next_proto = NextProto::kProtoHTTP11;
       session_deps_.socket_factory->AddSSLSocketDataProvider(&ssl_data);
       break;
     case SPDY:
@@ -453,6 +463,15 @@ TEST_P(HttpProxyConnectJobTest, HasEstablishedConnectionTunnel) {
 
   // Proxies should not set any DNS aliases.
   EXPECT_TRUE(test_delegate.socket()->GetDnsAliases().empty());
+
+  // Although the underlying proxy connection may use TLS or negotiate ALPN, the
+  // tunnel itself is a TCP connection to the origin and should not report these
+  // values.
+  SSLInfo ssl_info;
+  EXPECT_FALSE(test_delegate.socket()->GetSSLInfo(&ssl_info));
+  EXPECT_FALSE(test_delegate.socket()->WasAlpnNegotiated());
+  EXPECT_EQ(test_delegate.socket()->GetNegotiatedProtocol(),
+            NextProto::kProtoUnknown);
 }
 
 TEST_P(HttpProxyConnectJobTest, ProxyDelegateExtraHeaders) {
@@ -770,13 +789,13 @@ TEST_P(HttpProxyConnectJobTest, HaveAuth) {
   // Prepopulate auth cache.
   const std::u16string kFoo(u"foo");
   const std::u16string kBar(u"bar");
-  GURL proxy_url(GetParam() == HTTP
-                     ? (std::string("http://") + kHttpProxyHost)
-                     : (std::string("https://") + kHttpsProxyHost));
+  url::SchemeHostPort proxy_scheme_host_port(
+      GetParam() == HTTP ? GURL(std::string("http://") + kHttpProxyHost)
+                         : GURL(std::string("https://") + kHttpsProxyHost));
   session_->http_auth_cache()->Add(
-      proxy_url, HttpAuth::AUTH_PROXY, "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC,
-      NetworkIsolationKey(), "Basic realm=MyRealm1",
-      AuthCredentials(kFoo, kBar), "/");
+      proxy_scheme_host_port, HttpAuth::AUTH_PROXY, "MyRealm1",
+      HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+      "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
 
   for (IoMode io_mode : {SYNCHRONOUS, ASYNC}) {
     SCOPED_TRACE(io_mode);
@@ -918,7 +937,8 @@ TEST_P(HttpProxyConnectJobTest, SpdySessionKeyDisableSecureDns) {
   auto ssl_params = base::MakeRefCounted<SSLSocketParams>(
       base::MakeRefCounted<TransportSocketParams>(
           HostPortPair(kHttpsProxyHost, 443), NetworkIsolationKey(),
-          SecureDnsPolicy::kDisable, OnHostResolutionCallback()),
+          SecureDnsPolicy::kDisable, OnHostResolutionCallback(),
+          /*supported_alpns=*/base::flat_set<std::string>()),
       nullptr, nullptr, HostPortPair(kHttpsProxyHost, 443), SSLConfig(),
       PRIVACY_MODE_DISABLED, NetworkIsolationKey());
   auto http_proxy_params = base::MakeRefCounted<HttpProxySocketParams>(
@@ -1633,7 +1653,7 @@ TEST_P(HttpProxyConnectJobTest, ConnectionTimeoutNoNQE) {
           *CreateParams(true /* tunnel */, SecureDnsPolicy::kAllow),
           nullptr /* network_quality_estimator */);
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // On Android and iOS, when there's no NQE, there's a hard-coded alternate
   // proxy timeout.
   EXPECT_EQ(base::Seconds(10), alternate_connection_timeout);

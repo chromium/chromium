@@ -101,7 +101,7 @@ WebViewSyncClient::WebViewSyncClient(
       invalidation_service_(invalidation_service),
       sync_invalidations_service_(sync_invalidations_service) {
   component_factory_ =
-      std::make_unique<browser_sync::ProfileSyncComponentsFactoryImpl>(
+      std::make_unique<browser_sync::SyncApiComponentFactoryImpl>(
           this, version_info::Channel::STABLE,
           base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
           profile_web_data_service_->GetDBTaskRunner(),
@@ -135,10 +135,6 @@ syncer::DeviceInfoSyncService* WebViewSyncClient::GetDeviceInfoSyncService() {
   return device_info_sync_service_;
 }
 
-bookmarks::BookmarkModel* WebViewSyncClient::GetBookmarkModel() {
-  return nullptr;
-}
-
 favicon::FaviconService* WebViewSyncClient::GetFaviconService() {
   return nullptr;
 }
@@ -166,10 +162,6 @@ WebViewSyncClient::CreateDataTypeControllers(
     syncer::SyncService* sync_service) {
   return component_factory_->CreateCommonDataTypeControllers(GetDisabledTypes(),
                                                              sync_service);
-}
-
-BookmarkUndoService* WebViewSyncClient::GetBookmarkUndoService() {
-  return nullptr;
 }
 
 invalidation::InvalidationService* WebViewSyncClient::GetInvalidationService() {

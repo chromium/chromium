@@ -5,6 +5,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include <cstdint>
 #include <list>
 #include <utility>
 #include <vector>
@@ -23,8 +24,12 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
+#include "components/services/storage/public/cpp/quota_error_or.h"
 #include "components/services/storage/public/mojom/cache_storage_control.mojom.h"
 #include "components/services/storage/public/mojom/storage_usage_info.mojom.h"
 #include "content/browser/blob_storage/chrome_blob_storage_context.h"
@@ -2373,14 +2378,10 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
     run_loop->Quit();
   }
 
-  int64_t QuotaGetStorageKeyUsage(const blink::StorageKey& storage_key) {
-    base::RunLoop loop;
-    quota_client_->GetStorageKeyUsage(
-        storage_key, StorageType::kTemporary,
-        base::BindOnce(&CacheStorageQuotaClientTest::QuotaUsageCallback,
-                       base::Unretained(this), base::Unretained(&loop)));
-    loop.Run();
-    return callback_quota_usage_;
+  int64_t QuotaGetBucketUsage(const storage::BucketLocator& bucket) {
+    base::test::TestFuture<int64_t> future;
+    quota_client_->GetBucketUsage(bucket, future.GetCallback());
+    return future.Get();
   }
 
   size_t QuotaGetStorageKeysForType() {
@@ -2393,24 +2394,21 @@ class CacheStorageQuotaClientTest : public CacheStorageManagerTest {
     return callback_storage_keys_.size();
   }
 
-  size_t QuotaGetStorageKeysForHost(const std::string& host) {
-    base::RunLoop loop;
-    quota_client_->GetStorageKeysForHost(
-        StorageType::kTemporary, host,
-        base::BindOnce(&CacheStorageQuotaClientTest::StorageKeysCallback,
-                       base::Unretained(this), base::Unretained(&loop)));
-    loop.Run();
-    return callback_storage_keys_.size();
+  bool QuotaDeleteBucketData(const storage::BucketLocator& bucket) {
+    base::test::TestFuture<blink::mojom::QuotaStatusCode> future;
+    quota_client_->DeleteBucketData(bucket, future.GetCallback());
+    return future.Get() == blink::mojom::QuotaStatusCode::kOk;
   }
 
-  bool QuotaDeleteStorageKeyData(const blink::StorageKey& storage_key) {
-    base::RunLoop loop;
-    quota_client_->DeleteStorageKeyData(
-        storage_key, StorageType::kTemporary,
-        base::BindOnce(&CacheStorageQuotaClientTest::DeleteStorageKeyCallback,
-                       base::Unretained(this), base::Unretained(&loop)));
-    loop.Run();
-    return callback_status_ == blink::mojom::QuotaStatusCode::kOk;
+  storage::BucketLocator GetOrCreateBucket(const blink::StorageKey& storage_key,
+                                           const std::string& name) {
+    base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
+    quota_manager_proxy_->GetOrCreateBucket(storage_key, name,
+                                            base::ThreadTaskRunnerHandle::Get(),
+                                            future.GetCallback());
+    auto bucket = future.Take();
+    EXPECT_TRUE(bucket.ok());
+    return bucket->ToBucketLocator();
   }
 
   std::unique_ptr<CacheStorageQuotaClient> quota_client_;
@@ -2431,12 +2429,13 @@ class CacheStorageQuotaClientTestP
   bool MemoryOnly() override { return GetParam() == TestStorage::kMemory; }
 };
 
-TEST_P(CacheStorageQuotaClientTestP, QuotaGetStorageKeyUsage) {
-  EXPECT_EQ(0, QuotaGetStorageKeyUsage(storage_key1_));
-  EXPECT_TRUE(Open(storage_key1_, "foo"));
+TEST_P(CacheStorageQuotaClientTestP, QuotaGetBucketUsage) {
+  auto bucket1 = GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName);
+  EXPECT_EQ(0, QuotaGetBucketUsage(bucket1));
+  EXPECT_TRUE(Open(bucket1.storage_key, "foo"));
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  EXPECT_LT(0, QuotaGetStorageKeyUsage(storage_key1_));
+  EXPECT_LT(0, QuotaGetBucketUsage(bucket1));
 }
 
 TEST_P(CacheStorageQuotaClientTestP, QuotaGetStorageKeysForType) {
@@ -2458,57 +2457,45 @@ TEST_P(CacheStorageQuotaClientTestP,
   EXPECT_EQ(1u, QuotaGetStorageKeysForType());
 }
 
-TEST_P(CacheStorageQuotaClientTestP, QuotaGetStorageKeysForHost) {
-  EXPECT_EQ(0u, QuotaGetStorageKeysForHost("example.com"));
-  EXPECT_TRUE(Open(
-      blink::StorageKey(url::Origin::Create(GURL("http://example.com:8080"))),
-      "foo"));
-  EXPECT_TRUE(Open(
-      blink::StorageKey(url::Origin::Create(GURL("http://example.com:9000"))),
-      "foo"));
-  EXPECT_TRUE(
-      Open(blink::StorageKey(url::Origin::Create(GURL("ftp://example.com"))),
-           "foo"));
-  EXPECT_TRUE(
-      Open(blink::StorageKey(url::Origin::Create(GURL("http://example2.com"))),
-           "foo"));
-  EXPECT_EQ(3u, QuotaGetStorageKeysForHost("example.com"));
-  EXPECT_EQ(1u, QuotaGetStorageKeysForHost("example2.com"));
-  EXPECT_THAT(callback_storage_keys_,
-              testing::Contains(blink::StorageKey::CreateFromStringForTesting(
-                  "http://example2.com")));
-  EXPECT_EQ(0u, QuotaGetStorageKeysForHost("unknown.com"));
-}
-
-TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteStorageKeyData) {
-  EXPECT_EQ(0, QuotaGetStorageKeyUsage(storage_key1_));
-  EXPECT_TRUE(Open(storage_key1_, "foo"));
+TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteBucketData) {
+  auto bucket1 = GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName);
+  auto bucket2 = GetOrCreateBucket(storage_key2_, storage::kDefaultBucketName);
+  EXPECT_EQ(0, QuotaGetBucketUsage(bucket1));
+  EXPECT_TRUE(Open(bucket1.storage_key, "foo"));
   // Call put to test that initialized caches are properly deleted too.
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
-  EXPECT_TRUE(Open(storage_key1_, "bar"));
-  EXPECT_TRUE(Open(storage_key2_, "baz"));
+  EXPECT_TRUE(Open(bucket1.storage_key, "bar"));
+  EXPECT_TRUE(Open(bucket2.storage_key, "baz"));
 
-  int64_t storage_key1_size = QuotaGetStorageKeyUsage(storage_key1_);
+  int64_t storage_key1_size = QuotaGetBucketUsage(bucket1);
   EXPECT_LT(0, storage_key1_size);
 
-  EXPECT_TRUE(QuotaDeleteStorageKeyData(storage_key1_));
+  EXPECT_TRUE(QuotaDeleteBucketData(bucket1));
 
   EXPECT_EQ(-1 * storage_key1_size,
             quota_manager_proxy_->last_notified_delta());
-  EXPECT_EQ(0, QuotaGetStorageKeyUsage(storage_key1_));
-  EXPECT_FALSE(Has(storage_key1_, "foo"));
-  EXPECT_FALSE(Has(storage_key1_, "bar"));
-  EXPECT_TRUE(Has(storage_key2_, "baz"));
-  EXPECT_TRUE(Open(storage_key1_, "foo"));
+  EXPECT_EQ(0, QuotaGetBucketUsage(bucket1));
+  EXPECT_FALSE(Has(bucket1.storage_key, "foo"));
+  EXPECT_FALSE(Has(bucket1.storage_key, "bar"));
+  EXPECT_TRUE(Has(bucket2.storage_key, "baz"));
+  EXPECT_TRUE(Open(bucket1.storage_key, "foo"));
 }
 
-TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteEmptyOrigin) {
-  EXPECT_TRUE(QuotaDeleteStorageKeyData(storage_key1_));
+TEST_P(CacheStorageQuotaClientTestP, QuotaNonDefaultBucket) {
+  auto bucket = GetOrCreateBucket(storage_key1_, "logs_bucket");
+  EXPECT_EQ(0, QuotaGetBucketUsage(bucket));
+  EXPECT_TRUE(QuotaDeleteBucketData(bucket));
+}
+
+TEST_P(CacheStorageQuotaClientTestP, QuotaDeleteEmptyBucket) {
+  auto bucket1 = GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName);
+  EXPECT_TRUE(QuotaDeleteBucketData(bucket1));
 }
 
 TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
-  EXPECT_TRUE(Open(storage_key1_, "foo"));
+  auto bucket1 = GetOrCreateBucket(storage_key1_, storage::kDefaultBucketName);
+  EXPECT_TRUE(Open(bucket1.storage_key, "foo"));
   // Call put to test that initialized caches are properly deleted too.
   EXPECT_TRUE(
       CachePut(callback_cache_handle_.value(), GURL("http://example.com/foo")));
@@ -2524,8 +2511,8 @@ TEST_F(CacheStorageQuotaClientDiskOnlyTest, QuotaDeleteUnloadedKeyData) {
   quota_client_ = std::make_unique<CacheStorageQuotaClient>(
       cache_manager_, storage::mojom::CacheStorageOwner::kCacheAPI);
 
-  EXPECT_TRUE(QuotaDeleteStorageKeyData(storage_key1_));
-  EXPECT_EQ(0, QuotaGetStorageKeyUsage(storage_key1_));
+  EXPECT_TRUE(QuotaDeleteBucketData(bucket1));
+  EXPECT_EQ(0, QuotaGetBucketUsage(bucket1));
 }
 
 TEST_F(CacheStorageManagerTest, UpgradePaddingVersion) {

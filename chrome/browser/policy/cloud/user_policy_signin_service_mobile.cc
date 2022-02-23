@@ -32,7 +32,7 @@ namespace policy {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const em::DeviceRegisterRequest::Type kCloudPolicyRegistrationType =
     em::DeviceRegisterRequest::ANDROID_BROWSER;
 #else

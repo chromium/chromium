@@ -86,7 +86,7 @@ void AppLaunchSplashScreenHandler::Show() {
   is_shown_ = true;
 
   base::DictionaryValue data;
-  data.SetBoolean("shortcutEnabled",
+  data.SetBoolKey("shortcutEnabled",
                   !KioskAppManager::Get()->GetDisableBailoutShortcut());
 
   base::DictionaryValue app_info;
@@ -243,9 +243,10 @@ void AppLaunchSplashScreenHandler::PopulateAppInfo(
     app.url = app.url.DeprecatedGetOriginAsURL();
   }
 
-  out_info->SetString("name", app.name);
-  out_info->SetString("iconURL", webui::GetBitmapDataUrl(*app.icon.bitmap()));
-  out_info->SetString("url", app.url.spec());
+  out_info->SetStringKey("name", app.name);
+  out_info->SetStringKey("iconURL",
+                         webui::GetBitmapDataUrl(*app.icon.bitmap()));
+  out_info->SetStringKey("url", app.url.spec());
 }
 
 void AppLaunchSplashScreenHandler::SetLaunchText(const std::string& text) {

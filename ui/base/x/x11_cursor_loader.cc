@@ -20,7 +20,7 @@
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
-#include "base/strings/string_piece_forward.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/sys_byteorder.h"
@@ -199,8 +199,7 @@ std::vector<std::string> GetBaseThemes(const base::FilePath& abspath) {
 }
 
 base::FilePath CanonicalizePath(base::FilePath path) {
-  std::vector<std::string> components;
-  path.GetComponents(&components);
+  std::vector<std::string> components = path.GetComponents();
   if (components[0] == "~") {
     path = base::GetHomeDir();
     for (size_t i = 1; i < components.size(); i++)

@@ -9,14 +9,15 @@
 #include <utility>
 
 #include "ash/constants/ash_features.h"
+#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/keyboard/ui/keyboard_ui_controller.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/resources/vector_icons/vector_icons.h"
-#include "ash/shelf/gradient_layer_delegate.h"
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk_drag_proxy.h"
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desk_mini_view_animations.h"
@@ -25,7 +26,9 @@
 #include "ash/wm/desks/desks_util.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
 #include "ash/wm/desks/persistent_desks_bar_button.h"
+#include "ash/wm/desks/persistent_desks_bar_controller.h"
 #include "ash/wm/desks/scroll_arrow_button.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
 #include "ash/wm/desks/templates/desks_templates_presenter.h"
 #include "ash/wm/desks/templates/desks_templates_util.h"
 #include "ash/wm/desks/zero_state_button.h"
@@ -41,9 +44,11 @@
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/events/devices/device_data_manager.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/event_observer.h"
 #include "ui/events/types/event_type.h"
+#include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/event_monitor.h"
 #include "ui/views/widget/unique_widget_ptr.h"
@@ -249,14 +254,6 @@ class DesksBarScrollViewLayout : public views::LayoutManager {
                       zero_state_desks_templates_button_size));
         zero_state_desks_templates_button->SetVisible(should_show_templates_ui);
       }
-
-      // Keep the background view's translation updated while the height of bar
-      // changes. E.g, it could happens while zooming in/out the bar. Note, the
-      // background view is only translated while in zero state.
-      gfx::Transform transform;
-      transform.Translate(
-          0, -(scroll_bounds.height() - DesksBarView::kZeroStateBarHeight));
-      bar_view_->background_view()->layer()->SetTransform(transform);
       return;
     }
 
@@ -325,10 +322,9 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   SetPaintToLayer();
   layer()->SetFillsBoundsOpaquely(false);
 
-  background_view_ = AddChildView(std::make_unique<views::View>());
-  background_view_->SetPaintToLayer(ui::LAYER_SOLID_COLOR);
-  background_view_->layer()->SetFillsBoundsOpaquely(false);
-
+  SetBackground(
+      views::CreateSolidBackground(AshColorProvider::Get()->GetShieldLayerColor(
+          AshColorProvider::ShieldLayerType::kShield80)));
   scroll_view_ = AddChildView(std::make_unique<views::ScrollView>());
   scroll_view_->SetPaintToLayer();
   scroll_view_->layer()->SetFillsBoundsOpaquely(false);
@@ -347,7 +343,7 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
                           base::Unretained(this)),
       /*is_left_arrow=*/false, this));
 
-  if (features::IsBentoBarEnabled()) {
+  if (PersistentDesksBarController::ShouldPersistentDesksBarBeVisible()) {
     vertical_dots_button_ =
         AddChildView(std::make_unique<PersistentDesksBarVerticalDotsButton>());
     vertical_dots_button_->SetPaintToLayer();
@@ -397,7 +393,8 @@ DesksBarView::DesksBarView(OverviewGrid* overview_grid)
   scroll_view_contents_->SetLayoutManager(
       std::make_unique<DesksBarScrollViewLayout>(this));
 
-  gradient_layer_delegate_ = std::make_unique<GradientLayerDelegate>();
+  gradient_layer_delegate_ =
+      std::make_unique<GradientLayerDelegate>(/*animate_in=*/false);
   scroll_view_->layer()->SetMaskLayer(gradient_layer_delegate_->layer());
 
   on_contents_scrolled_subscription_ =
@@ -417,7 +414,10 @@ DesksBarView::~DesksBarView() {
 }
 
 // static
-int DesksBarView::GetBarHeightForWidth(aura::Window* root) {
+constexpr int DesksBarView::kZeroStateBarHeight;
+
+// static
+int DesksBarView::GetExpandedBarHeight(aura::Window* root) {
   return DeskPreviewView::GetHeight(root) + kNonPreviewAllocatedHeight;
 }
 
@@ -521,6 +521,9 @@ bool DesksBarView::IsZeroState() const {
 
 void DesksBarView::HandlePressEvent(DeskMiniView* mini_view,
                                     const ui::LocatedEvent& event) {
+  if (mini_view->is_animating_to_remove())
+    return;
+
   DeskNameView::CommitChanges(GetWidget());
 
   gfx::PointF location = event.target()->GetScreenLocationF(event);
@@ -529,18 +532,22 @@ void DesksBarView::HandlePressEvent(DeskMiniView* mini_view,
 
 void DesksBarView::HandleLongPressEvent(DeskMiniView* mini_view,
                                         const ui::LocatedEvent& event) {
+  if (mini_view->is_animating_to_remove())
+    return;
+
   DeskNameView::CommitChanges(GetWidget());
 
   // Initialize and start drag.
   gfx::PointF location = event.target()->GetScreenLocationF(event);
   InitDragDesk(mini_view, location);
-  StartDragDesk(mini_view, location);
+  StartDragDesk(mini_view, location, event.IsMouseEvent());
 }
 
 void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
                                    const ui::LocatedEvent& event) {
-  // Do not perform drag if drag proxy is not initialized.
-  if (!drag_proxy_)
+  // Do not perform drag if drag proxy is not initialized, or the mini view is
+  // animating to be removed.
+  if (!drag_proxy_ || mini_view->is_animating_to_remove())
     return;
 
   gfx::PointF location = event.target()->GetScreenLocationF(event);
@@ -549,7 +556,7 @@ void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
   // continue drag.
   switch (drag_proxy_->state()) {
     case DeskDragProxy::State::kInitialized:
-      StartDragDesk(mini_view, location);
+      StartDragDesk(mini_view, location, event.IsMouseEvent());
       break;
     case DeskDragProxy::State::kStarted:
       ContinueDragDesk(mini_view, location);
@@ -561,8 +568,9 @@ void DesksBarView::HandleDragEvent(DeskMiniView* mini_view,
 
 bool DesksBarView::HandleReleaseEvent(DeskMiniView* mini_view,
                                       const ui::LocatedEvent& event) {
-  // Do not end drag if the proxy is not initialized.
-  if (!drag_proxy_)
+  // Do not end drag if the proxy is not initialized, or the mini view is
+  // animating to be removed.
+  if (!drag_proxy_ || mini_view->is_animating_to_remove())
     return false;
 
   // If the drag didn't start, finalize the drag. Otherwise, end the drag and
@@ -582,6 +590,8 @@ bool DesksBarView::HandleReleaseEvent(DeskMiniView* mini_view,
 
 void DesksBarView::InitDragDesk(DeskMiniView* mini_view,
                                 const gfx::PointF& location_in_screen) {
+  DCHECK(!mini_view->is_animating_to_remove());
+
   // If another view is being dragged, then end the drag.
   if (drag_view_)
     EndDragDesk(drag_view_, /*end_by_user=*/false);
@@ -599,10 +609,12 @@ void DesksBarView::InitDragDesk(DeskMiniView* mini_view,
 }
 
 void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
-                                 const gfx::PointF& location_in_screen) {
+                                 const gfx::PointF& location_in_screen,
+                                 bool is_mouse_dragging) {
   DCHECK(drag_view_);
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
+  DCHECK(!mini_view->is_animating_to_remove());
 
   // Hide the dragged mini view.
   drag_view_->layer()->SetOpacity(0.0f);
@@ -612,6 +624,13 @@ void DesksBarView::StartDragDesk(DeskMiniView* mini_view,
   drag_proxy_->InitAndScaleAndMoveToX(location_in_screen.x());
 
   Shell::Get()->cursor_manager()->SetCursor(ui::mojom::CursorType::kGrabbing);
+
+  // Fire a haptic event if necessary.
+  if (is_mouse_dragging) {
+    haptics_util::PlayHapticTouchpadEffect(
+        ui::HapticTouchpadEffect::kTick,
+        ui::HapticTouchpadEffectStrength::kMedium);
+  }
 }
 
 void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
@@ -619,6 +638,7 @@ void DesksBarView::ContinueDragDesk(DeskMiniView* mini_view,
   DCHECK(drag_view_);
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
+  DCHECK(!mini_view->is_animating_to_remove());
 
   drag_proxy_->DragToX(location_in_screen.x());
 
@@ -647,6 +667,7 @@ void DesksBarView::EndDragDesk(DeskMiniView* mini_view, bool end_by_user) {
   DCHECK(drag_view_);
   DCHECK(drag_proxy_);
   DCHECK_EQ(mini_view, drag_view_);
+  DCHECK(!mini_view->is_animating_to_remove());
 
   // Update default desk names after dropping.
   Shell::Get()->desks_controller()->UpdateDesksDefaultNames();
@@ -690,7 +711,9 @@ const char* DesksBarView::GetClassName() const {
 }
 
 void DesksBarView::Layout() {
-  background_view()->SetBoundsRect(bounds());
+  if (is_bounds_animation_on_going_)
+    return;
+
   // Scroll buttons are kept |kScrollViewMinimumHorizontalPadding| away from
   // the edge of the scroll view. So the horizontal padding of the scroll view
   // is set to guarantee enough space for the scroll buttons.
@@ -751,10 +774,10 @@ void DesksBarView::OnGestureEvent(ui::GestureEvent* event) {
 
 void DesksBarView::OnThemeChanged() {
   views::View::OnThemeChanged();
-  DCHECK_EQ(ui::LAYER_SOLID_COLOR, background_view_->layer()->type());
-  background_view_->layer()->SetColor(
+  background()->SetNativeControlColor(
       AshColorProvider::Get()->GetShieldLayerColor(
           AshColorProvider::ShieldLayerType::kShield80));
+  SchedulePaint();
 }
 
 void DesksBarView::OnDeskAdded(const Desk* desk) {
@@ -853,7 +876,6 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
   // This should not be called when a desk is removed.
   DCHECK_LE(mini_views_.size(), desks.size());
 
-  const bool first_time_mini_views = mini_views_.empty();
   const int begin_x = GetFirstMiniViewXOffset();
   std::vector<DeskMiniView*> new_mini_views;
 
@@ -894,20 +916,19 @@ void DesksBarView::UpdateNewMiniViews(bool initializing_bar_view,
     should_name_nudge_ = false;
   }
 
-  Layout();
-
   if (expanding_bar_view) {
     UpdateDeskButtonsVisibility();
     PerformZeroStateToExpandedStateMiniViewAnimation(this);
     return;
   }
 
+  Layout();
+
   if (initializing_bar_view)
     return;
 
   PerformNewDeskMiniViewAnimation(this, new_mini_views,
-                                  begin_x - GetFirstMiniViewXOffset(),
-                                  first_time_mini_views);
+                                  begin_x - GetFirstMiniViewXOffset());
 }
 
 void DesksBarView::ScrollToShowMiniViewIfNecessary(
@@ -944,7 +965,7 @@ void DesksBarView::UpdateButtonsForDesksTemplatesGrid() {
   FindMiniViewForDesk(Shell::Get()->desks_controller()->active_desk())
       ->UpdateBorderColor();
   expanded_state_desks_templates_button_->set_active(
-      !!overview_grid_->desks_templates_grid_widget());
+      overview_grid_->IsShowingDesksTemplatesGrid());
   expanded_state_desks_templates_button_->UpdateBorderColor();
 }
 
@@ -968,6 +989,28 @@ DeskMiniView* DesksBarView::FindMiniViewForDesk(const Desk* desk) const {
   }
 
   return nullptr;
+}
+
+void DesksBarView::SwitchToZeroState() {
+  // Hiding the button immediately instead of the ends of the animation while
+  // switching from expanded state to zero state.
+  if (vertical_dots_button_)
+    vertical_dots_button_->SetVisible(false);
+
+  // In zero state, if the only desk is being dragged, we should end dragging.
+  // Because the dragged desk's mini view is removed, the mouse released or
+  // gesture ended events cannot be received. |drag_view_| will keep the stale
+  // reference of removed mini view and |drag_proxy_| will not be reset.
+  if (drag_view_)
+    EndDragDesk(drag_view_, /*end_by_user=*/false);
+
+  std::vector<DeskMiniView*> removed_mini_views = mini_views_;
+  mini_views_.clear();
+
+  // Keep current layout until the animation is completed since the animation
+  // for going back to zero state is based on the expanded bar's current
+  // layout.
+  PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
 }
 
 int DesksBarView::DetermineMoveIndex(int location_screen_x) const {
@@ -1160,31 +1203,8 @@ int DesksBarView::GetAdjustedUncroppedScrollPosition(int position) const {
 }
 
 void DesksBarView::OnDesksTemplatesButtonPressed() {
-  // TODO(sammiequon): The button might be changed to be a toggle and this
-  // callback will need to be updated to reflect that.
+  RecordLoadTemplateHistogram();
   overview_grid_->overview_session()->ShowDesksTemplatesGrids(IsZeroState());
-}
-
-void DesksBarView::SwitchToZeroState() {
-  // Hiding the button immediately instead of the ends of the animation while
-  // switching from expanded state to zero state.
-  if (vertical_dots_button_)
-    vertical_dots_button_->SetVisible(false);
-
-  // In zero state, if the only desk is being dragged, we should end dragging.
-  // Because the dragged desk's mini view is removed, the mouse released or
-  // gesture ended events cannot be received. |drag_view_| will keep the stale
-  // reference of removed mini view and |drag_proxy_| will not be reset.
-  if (drag_view_)
-    EndDragDesk(drag_view_, /*end_by_user=*/false);
-
-  std::vector<DeskMiniView*> removed_mini_views = mini_views_;
-  mini_views_.clear();
-
-  // Keep current layout until the animation is completed since the animation
-  // for going back to zero state is based on the expanded bar's current
-  // layout.
-  PerformExpandedStateToZeroStateMiniViewAnimation(this, removed_mini_views);
 }
 
 void DesksBarView::OnContentsScrolled() {

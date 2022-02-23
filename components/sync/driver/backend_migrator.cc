@@ -41,9 +41,10 @@ BackendMigrator::~BackendMigrator() = default;
 void BackendMigrator::MigrateTypes(ModelTypeSet types) {
   const ModelTypeSet old_to_migrate = to_migrate_;
   to_migrate_.PutAll(types);
-  SDVLOG(1) << "MigrateTypes called with " << ModelTypeSetToString(types)
-            << ", old_to_migrate = " << ModelTypeSetToString(old_to_migrate)
-            << ", to_migrate_ = " << ModelTypeSetToString(to_migrate_);
+  SDVLOG(1) << "MigrateTypes called with " << ModelTypeSetToDebugString(types)
+            << ", old_to_migrate = "
+            << ModelTypeSetToDebugString(old_to_migrate)
+            << ", to_migrate_ = " << ModelTypeSetToDebugString(to_migrate_);
   if (old_to_migrate == to_migrate_) {
     SDVLOG(1) << "MigrateTypes called with no new types; ignoring";
     return;
@@ -73,7 +74,7 @@ void BackendMigrator::RemoveMigrationObserver(MigrationObserver* observer) {
 
 void BackendMigrator::ChangeState(State new_state) {
   state_ = new_state;
-  for (auto& observer : migration_observers_)
+  for (MigrationObserver& observer : migration_observers_)
     observer.OnMigrationStateChange();
 }
 
@@ -90,7 +91,7 @@ void BackendMigrator::RestartMigration() {
   // We'll now disable any running types that need to be migrated.
   ChangeState(DISABLING_TYPES);
   SDVLOG(1) << "BackendMigrator disabling types "
-            << ModelTypeSetToString(to_migrate_);
+            << ModelTypeSetToDebugString(to_migrate_);
 
   manager_->PurgeForMigration(to_migrate_);
 }
@@ -111,9 +112,9 @@ void BackendMigrator::OnConfigureDone(
 void BackendMigrator::OnConfigureDoneImpl(
     const DataTypeManager::ConfigureResult& result) {
   SDVLOG(1) << "OnConfigureDone with requested types "
-            << ModelTypeSetToString(result.requested_types) << ", status "
+            << ModelTypeSetToDebugString(result.requested_types) << ", status "
             << result.status
-            << ", and to_migrate_ = " << ModelTypeSetToString(to_migrate_);
+            << ", and to_migrate_ = " << ModelTypeSetToDebugString(to_migrate_);
   if (state_ == WAITING_TO_START) {
     if (!TryStart())
       SDVLOG(1) << "Manager still not configured; still waiting";
@@ -157,11 +158,11 @@ void BackendMigrator::OnConfigureDoneImpl(
 
     if (!purged_types.HasAll(to_migrate_)) {
       SLOG(WARNING) << "Set of purged types: "
-                    << ModelTypeSetToString(purged_types)
+                    << ModelTypeSetToDebugString(purged_types)
                     << " does not contain types to migrate: "
-                    << ModelTypeSetToString(to_migrate_)
+                    << ModelTypeSetToDebugString(to_migrate_)
                     << "; not re-enabling yet due to "
-                    << ModelTypeSetToString(
+                    << ModelTypeSetToDebugString(
                            Difference(to_migrate_, purged_types));
       return;
     }
@@ -174,7 +175,7 @@ void BackendMigrator::OnConfigureDoneImpl(
     ChangeState(IDLE);
 
     SDVLOG(1) << "BackendMigrator: Migration complete for: "
-              << ModelTypeSetToString(to_migrate_);
+              << ModelTypeSetToDebugString(to_migrate_);
     to_migrate_.Clear();
     migration_done_callback_.Run();
   }

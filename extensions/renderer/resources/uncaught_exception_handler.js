@@ -22,11 +22,11 @@ function handle(message, e, priorStackTrace) {
 }
 
 // Runs a user-supplied callback safely.
-function safeCallbackApply(name, request, callback, args) {
+function safeCallbackApply(name, callback, args, priorStackTrace) {
   try {
-    $Function.apply(callback, request, args);
+    $Function.apply(callback, null, args);
   } catch (e) {
-    handle('Error in response to ' + name, e, request.stack);
+    handle('Error in response to ' + name, e, priorStackTrace);
   }
 }
 

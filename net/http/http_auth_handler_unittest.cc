@@ -19,13 +19,15 @@
 #include "net/log/test_net_log_util.h"
 #include "net/ssl/ssl_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
 TEST(HttpAuthHandlerTest, NetLog) {
   base::test::TaskEnvironment task_environment;
 
-  GURL origin("http://www.example.com");
+  url::SchemeHostPort scheme_host_port(GURL("http://www.example.com"));
   std::string challenge = "Mock asdf";
   AuthCredentials credentials(u"user", u"pass");
   std::string auth_token;
@@ -43,8 +45,8 @@ TEST(HttpAuthHandlerTest, NetLog) {
       // AUTHORIZATION_RESULT_REJECT.
       mock_handler.set_connection_based(true);
       mock_handler.InitFromChallenge(
-          &tokenizer, target, SSLInfo(), NetworkIsolationKey(), origin,
-          NetLogWithSource::Make(NetLogSourceType::NONE));
+          &tokenizer, target, SSLInfo(), NetworkIsolationKey(),
+          scheme_host_port, NetLogWithSource::Make(NetLogSourceType::NONE));
       mock_handler.SetGenerateExpectation(async, OK);
       mock_handler.GenerateAuthToken(&credentials, &request,
                                      test_callback.callback(), &auth_token);

@@ -20,7 +20,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/gfx/color_palette.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/pdf/adobe_reader_info_win.h"
 #endif
 
@@ -171,11 +171,11 @@ std::u16string DownloadShelfContextMenu::GetLabelForCommandId(
             download_commands_->CanOpenPdfInSystemViewer();
         if (can_open_pdf_in_system_viewer) {
           id = IDS_DOWNLOAD_MENU_PLATFORM_OPEN_ALWAYS;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           if (IsAdobeReaderDefaultPDFViewer())
             id = IDS_DOWNLOAD_MENU_ALWAYS_OPEN_PDF_IN_READER;
-#endif  // defined(_OS_WIN)
-                break;
+#endif  // BUILDFLAG(IS_WIN)
+          break;
         }
       }
       id = IDS_DOWNLOAD_MENU_ALWAYS_OPEN_TYPE;
@@ -337,7 +337,7 @@ ui::SimpleMenuModel* DownloadShelfContextMenu::GetInterruptedMenuModel(
 
   interrupted_download_menu_model_->AddItem(
       DownloadCommands::RESUME, GetLabelForCommandId(DownloadCommands::RESUME));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The Help Center article is currently Windows specific.
   // TODO(asanka): Enable this for other platforms when the article is expanded
   // for other platforms.

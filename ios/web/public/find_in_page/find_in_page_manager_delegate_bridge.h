@@ -7,7 +7,6 @@
 
 #import <Foundation/Foundation.h>
 
-#include "base/macros.h"
 #import "ios/web/public/find_in_page/find_in_page_manager_delegate.h"
 
 namespace web {

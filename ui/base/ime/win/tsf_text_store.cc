@@ -1455,6 +1455,12 @@ void TSFTextStore::CommitTextAndEndCompositionIfAny(size_t old_size,
   } else {
     text_input_client_->ClearCompositionText();
   }
+
+  if (!selection_.is_empty() && !is_selection_interim_char_ &&
+      selection_.GetMax() <= string_buffer_document_.size()) {
+    text_input_client_->SetEditableSelectionRange(selection_);
+  }
+
   // Notify accessibility about this committed composition
   text_input_client_->SetActiveCompositionForAccessibility(
       replace_text_range_, new_committed_string,

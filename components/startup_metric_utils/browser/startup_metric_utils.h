@@ -16,6 +16,10 @@
 
 namespace startup_metric_utils {
 
+// Resets this process's session to allow recording one-time-only metrics again
+// when a process is reused for multiple tests.
+void ResetSessionForTesting();
+
 // Returns true when browser UI was not launched normally: some other UI was
 // shown first or browser was launched in background mode.
 bool WasMainWindowStartupInterrupted();
@@ -97,7 +101,11 @@ base::TimeTicks MainEntryPointTicks();
 // would be skewed and will not be recorded.
 // This function must be called after RecordApplicationStartTime(), because it
 // computes time deltas based on application start time.
-void RecordExternalStartupMetric(const std::string& histogram_name,
+// `histogram_name` must point to a statically allocated string (such as a
+// string literal) since the pointer will be stored for an indefinite amount of
+// time before being written to a trace (see the "Memory scoping note" in
+// base/trace_event/common/trace_event_common.h.)
+void RecordExternalStartupMetric(const char* histogram_name,
                                  base::TimeTicks completion_ticks,
                                  bool set_non_browser_ui_displayed);
 

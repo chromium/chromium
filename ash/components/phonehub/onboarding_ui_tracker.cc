@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/onboarding_ui_tracker.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 OnboardingUiTracker::OnboardingUiTracker() = default;
@@ -25,4 +25,4 @@ void OnboardingUiTracker::NotifyShouldShowOnboardingUiChanged() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

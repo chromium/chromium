@@ -26,15 +26,17 @@ group("deps") {
       ":default_sanitizer_ldflags",
     ]
     deps = [ ":options_sources" ]
-    if (is_win) {
-      exe = ".exe"
-    } else {
-      exe = ""
+    if (!is_fuchsia) {
+      if (is_win) {
+        exe = ".exe"
+      } else {
+        exe = ""
+      }
+      data = [
+        "//tools/valgrind/asan/",
+        "$clang_base_path/bin/llvm-symbolizer${exe}",
+      ]
     }
-    data = [
-      "//tools/valgrind/asan/",
-      "$clang_base_path/bin/llvm-symbolizer${exe}",
-    ]
     if (use_prebuilt_instrumented_libraries ||
         use_locally_built_instrumented_libraries) {
       deps += [ "//third_party/instrumented_libraries:deps" ]

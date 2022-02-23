@@ -45,7 +45,7 @@ class FakeVideoDecoderTest
         num_decoded_frames_(0),
         num_bytes_decoded_(0),
         total_bytes_in_buffers_(0),
-        last_decode_status_(DecodeStatus::OK),
+        last_decode_status_(DecoderStatus::Codes::kOk),
         pending_decode_requests_(0),
         is_reset_pending_(false) {}
 
@@ -60,7 +60,7 @@ class FakeVideoDecoderTest
                                            bool success) {
     decoder_->Initialize(config, false, nullptr,
                          base::BindOnce(
-                             [](bool success, Status status) {
+                             [](bool success, DecoderStatus status) {
                                EXPECT_EQ(status.is_ok(), success);
                              },
                              success),
@@ -86,7 +86,7 @@ class FakeVideoDecoderTest
   }
 
   // Callback for VideoDecoder::Decode().
-  void DecodeDone(Status status) {
+  void DecodeDone(DecoderStatus status) {
     DCHECK_GT(pending_decode_requests_, 0);
     --pending_decode_requests_;
     last_decode_status_ = std::move(status);
@@ -126,7 +126,7 @@ class FakeVideoDecoderTest
         break;
       case ABORTED:
         EXPECT_EQ(0, pending_decode_requests_);
-        ASSERT_EQ(StatusCode::kAborted, last_decode_status_.code());
+        ASSERT_EQ(DecoderStatus::Codes::kAborted, last_decode_status_.code());
         EXPECT_FALSE(last_decoded_frame_.get());
         break;
     }
@@ -241,7 +241,7 @@ class FakeVideoDecoderTest
   int total_bytes_in_buffers_;
 
   // Callback result/status.
-  Status last_decode_status_;
+  DecoderStatus last_decode_status_;
   scoped_refptr<VideoFrame> last_decoded_frame_;
   int pending_decode_requests_;
   bool is_reset_pending_;

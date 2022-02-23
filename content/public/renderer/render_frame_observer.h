@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "build/build_config.h"
 #include "content/common/content_export.h"
@@ -20,7 +19,6 @@
 #include "services/network/public/mojom/url_response_head.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"
 #include "third_party/blink/public/common/use_counter/use_counter_feature.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
@@ -126,6 +124,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidCommitProvisionalLoad(ui::PageTransition transition) {}
   virtual void DidFailProvisionalLoad() {}
   virtual void DidFinishLoad() {}
+  virtual void DidFinishLoadForPrinting() {}
   virtual void DidDispatchDOMContentLoadedEvent() {}
   virtual void DidHandleOnloadEvents() {}
   virtual void DidCreateScriptContext(v8::Local<v8::Context> context,
@@ -219,9 +218,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveLayoutNg(uint32_t all_block_count,
                                   uint32_t ng_block_count,
                                   uint32_t all_call_count,
-                                  uint32_t ng_call_count,
-                                  uint32_t flexbox_ng_block_count,
-                                  uint32_t grid_ng_block_count) {}
+                                  uint32_t ng_call_count) {}
 
   // Reports lazy loaded behavior when the frame or image is fully deferred or
   // if the frame or image is loaded after being deferred by lazy load.
@@ -230,7 +227,7 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   virtual void DidObserveLazyLoadBehavior(
       blink::WebLocalFrameClient::LazyLoadBehavior lazy_load_behavior) {}
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Reports that a resource will be requested.
   virtual void WillSendRequest(const blink::WebURLRequest& request) {}
 #endif
@@ -238,14 +235,11 @@ class CONTENT_EXPORT RenderFrameObserver : public IPC::Listener,
   // Notification when the renderer a response started, completed or canceled.
   // Complete or Cancel is guaranteed to be called for a response that started.
   // |request_id| uniquely identifies the request within this render frame.
-  // |previews_state| is the PreviewsState if the request is a sub-resource. For
-  // Document resources, |previews_state| should be reported as PREVIEWS_OFF.
   virtual void DidStartResponse(
       const GURL& response_url,
       int request_id,
       const network::mojom::URLResponseHead& response_head,
-      network::mojom::RequestDestination request_destination,
-      blink::PreviewsState previews_state) {}
+      network::mojom::RequestDestination request_destination) {}
   virtual void DidCompleteResponse(
       int request_id,
       const network::URLLoaderCompletionStatus& status) {}

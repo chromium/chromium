@@ -6,6 +6,10 @@
 
 #include <stddef.h>
 
+#include <limits>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -70,7 +74,7 @@ class ResourcePoolTest : public testing::Test {
   }
 
   viz::TestSharedBitmapManager shared_bitmap_manager_;
-  MockContextSupport* context_support_;
+  raw_ptr<MockContextSupport> context_support_;
   scoped_refptr<viz::TestContextProvider> context_provider_;
   std::unique_ptr<viz::ClientResourceProvider> resource_provider_;
   scoped_refptr<base::TestMockTimeTaskRunner> test_task_runner_;
@@ -164,6 +168,7 @@ TEST_F(ResourcePoolTest, AccountingSingleResource) {
       viz::ResourceSizes::UncheckedSizeInBytes<size_t>(size, format);
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
+  SetBackingOnResource(resource);
 
   EXPECT_EQ(resource_bytes, resource_pool_->GetTotalMemoryUsageForTesting());
   EXPECT_EQ(resource_bytes, resource_pool_->memory_usage_bytes());
@@ -270,10 +275,11 @@ TEST_F(ResourcePoolTest, BusyResourcesNotFreed) {
 
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
+  SetBackingOnResource(resource);
+
   EXPECT_EQ(40000u, resource_pool_->GetTotalMemoryUsageForTesting());
   EXPECT_EQ(1u, resource_pool_->resource_count());
 
-  SetBackingOnResource(resource);
   EXPECT_TRUE(resource_pool_->PrepareForExport(resource));
 
   std::vector<viz::TransferableResource> transfers;
@@ -309,13 +315,13 @@ TEST_F(ResourcePoolTest, UnusedResourcesEventuallyFreed) {
 
   ResourcePool::InUsePoolResource resource =
       resource_pool_->AcquireResource(size, format, color_space);
+  SetBackingOnResource(resource);
   EXPECT_EQ(40000u, resource_pool_->GetTotalMemoryUsageForTesting());
   EXPECT_EQ(1u, resource_pool_->GetTotalResourceCountForTesting());
   EXPECT_EQ(1u, resource_pool_->resource_count());
   EXPECT_EQ(0u, resource_pool_->GetBusyResourceCountForTesting());
 
   // Export the resource to the display compositor.
-  SetBackingOnResource(resource);
   EXPECT_TRUE(resource_pool_->PrepareForExport(resource));
   std::vector<viz::TransferableResource> transfers;
   resource_provider_->PrepareSendToParent(

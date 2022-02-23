@@ -199,6 +199,17 @@ class TerminalPrivateOpenOptionsPageFunction : public ExtensionFunction {
   ExtensionFunction::ResponseAction Run() override;
 };
 
+class TerminalPrivateGetOSInfoFunction : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("terminalPrivate.getOSInfo",
+                             TERMINALPRIVATE_GETOSINFO)
+
+ protected:
+  ~TerminalPrivateGetOSInfoFunction() override;
+
+  ExtensionFunction::ResponseAction Run() override;
+};
+
 class TerminalPrivateGetSettingsFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("terminalPrivate.getSettings",

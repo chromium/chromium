@@ -43,6 +43,8 @@ class DesktopUI(perf_benchmark.PerfBenchmark):
     options.AppendExtraBrowserArgs('--enable-benchmarking')
     # UIDevtools is used for driving native UI.
     options.AppendExtraBrowserArgs('--enable-ui-devtools=0')
+    options.AppendExtraBrowserArgs(
+        '--enable-features=ui-debug-tools-enable-synthetic-events')
 
   @classmethod
   def Name(cls):

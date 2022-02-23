@@ -30,10 +30,7 @@ specific_include_rules = {
   "BaseCustomTabActivity\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
-  "DisplayCutoutTabHelper\.java": [
-    "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
-  ],
-  "DownloadInfoBarController\.java": [
+  "DownloadMessageUiDelegate\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java",
   ],
   "ScreenshotTask\.java": [
@@ -99,10 +96,10 @@ specific_include_rules = {
   "ContextualSearchQuickActionControl\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "DownloadInfoBarController\.java": [
+  "DownloadUtils\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
-  "DownloadUtils\.java": [
+  "FeatureNotificationGuideDelegate\.java": [
     "+chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
   ],
   "HistoryContentManager\.java": [

@@ -23,10 +23,10 @@ class VulkanCXXTest : public testing::Test {
     use_swiftshader_ =
         base::CommandLine::ForCurrentProcess()->HasSwitch("use-swiftshader");
     base::FilePath path;
-#if defined(OS_LINUX) || defined(OS_ANDROID) || defined(OS_CHROMEOS) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA)
     if (use_swiftshader_) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &path));
       path = path.Append("libvk_swiftshader.so");
 #else
@@ -35,7 +35,7 @@ class VulkanCXXTest : public testing::Test {
     } else {
       path = base::FilePath("libvulkan.so.1");
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     if (use_swiftshader_) {
       EXPECT_TRUE(base::PathService::Get(base::DIR_MODULE, &path));
       path = path.Append(L"vk_swiftshader.dll");
@@ -66,9 +66,7 @@ TEST_F(VulkanCXXTest, CreateInstanceUnique) {
   auto* vulkan_function_pointers = GetVulkanFunctionPointers();
   EXPECT_TRUE(vulkan_function_pointers->BindUnassociatedFunctionPointers());
 
-  vk::Result result;
-  uint32_t api_version;
-  std::tie(result, api_version) = vk::enumerateInstanceVersion();
+  auto [result, api_version] = vk::enumerateInstanceVersion();
   EXPECT_EQ(result, vk::Result::eSuccess);
   EXPECT_GE(api_version, kVulkanRequiredApiVersion);
 

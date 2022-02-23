@@ -36,6 +36,10 @@ bool MenuButton::Activate(const ui::Event* event) {
   return button_controller()->Activate(event);
 }
 
+void MenuButton::SetCallback(PressedCallback callback) {
+  menu_button_controller_->SetCallback(std::move(callback));
+}
+
 void MenuButton::NotifyClick(const ui::Event& event) {
   // Run pressed callback via MenuButtonController, instead of directly.
   button_controller()->Activate(&event);

@@ -13,16 +13,22 @@
 
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/synchronization/lock.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
+#include "base/test/task_environment.h"
+#include "base/threading/thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/webrtc/desktop_media_list.h"
 #include "chrome/test/views/chrome_views_test_base.h"
+#include "content/public/browser/desktop_capture.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/webrtc/modules/desktop_capture/desktop_capture_options.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_capturer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_frame.h"
 #include "ui/views/widget/widget.h"
@@ -31,6 +37,10 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
 #endif
 
 using content::DesktopMediaID;
@@ -49,6 +59,48 @@ static const int kDefaultAuraCount = 1;
 #else
 static const int kDefaultAuraCount = 0;
 #endif
+
+#if BUILDFLAG(IS_WIN)
+constexpr char kWindowTitle[] = "NativeDesktopMediaList Test Window";
+constexpr wchar_t kWideWindowTitle[] = L"NativeDesktopMediaList Test Window";
+constexpr wchar_t kWindowClass[] = L"NativeDesktopMediaListTestWindowClass";
+
+struct WindowInfo {
+  HWND hwnd;
+  HINSTANCE window_instance;
+  ATOM window_class;
+};
+
+WindowInfo CreateTestWindow() {
+  WindowInfo info;
+  ::GetModuleHandleEx(GET_MODULE_HANDLE_EX_FLAG_FROM_ADDRESS |
+                          GET_MODULE_HANDLE_EX_FLAG_UNCHANGED_REFCOUNT,
+                      reinterpret_cast<LPCWSTR>(&DefWindowProc),
+                      &info.window_instance);
+
+  WNDCLASS window_class = {};
+  window_class.hInstance = info.window_instance;
+  window_class.lpfnWndProc = &DefWindowProc;
+  window_class.lpszClassName = kWindowClass;
+  info.window_class = ::RegisterClass(&window_class);
+
+  info.hwnd =
+      ::CreateWindow(kWindowClass, kWideWindowTitle, WS_OVERLAPPEDWINDOW,
+                     CW_USEDEFAULT, CW_USEDEFAULT, /*width=*/100,
+                     /*height=*/100, /*parent_window=*/nullptr,
+                     /*menu_bar=*/nullptr, info.window_instance,
+                     /*additional_params=*/nullptr);
+
+  ::ShowWindow(info.hwnd, SW_SHOWNORMAL);
+  ::UpdateWindow(info.hwnd);
+  return info;
+}
+
+void DestroyTestWindow(WindowInfo info) {
+  ::DestroyWindow(info.hwnd);
+  ::UnregisterClass(MAKEINTATOM(info.window_class), info.window_instance);
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 // Returns the given index, offset by a fixed value such that it does not
 // collide with Aura window IDs. Intended for usage with indices that are passed
@@ -105,12 +157,14 @@ class FakeScreenCapturer : public webrtc::DesktopCapturer {
   }
 
  protected:
-  Callback* callback_;
+  raw_ptr<Callback> callback_;
 };
 
 class FakeWindowCapturer : public webrtc::DesktopCapturer {
  public:
-  FakeWindowCapturer() : callback_(nullptr) {}
+  FakeWindowCapturer() = default;
+  explicit FakeWindowCapturer(const webrtc::DesktopCaptureOptions& options)
+      : options_(options) {}
 
   FakeWindowCapturer(const FakeWindowCapturer&) = delete;
   FakeWindowCapturer& operator=(const FakeWindowCapturer&) = delete;
@@ -147,6 +201,22 @@ class FakeWindowCapturer : public webrtc::DesktopCapturer {
   }
 
   bool GetSourceList(SourceList* windows) override {
+#if BUILDFLAG(IS_WIN)
+    // WebRTC calls `GetWindowTextLength` and `GetWindowText` to get the title
+    // of every window. If the window is owned by the current process, these
+    // functions will send a `WM_GETTEXT` message to the window. This can cause
+    // a deadlock if the message loop is waiting on `GetSourceList`. To avoid
+    // this issue, WebRTC exposes the `enumerate_current_process_windows` which,
+    // when set to false, prevents these APIs from being called on windows from
+    // the current process.
+    if (options_.enumerate_current_process_windows()) {
+      for (const Source& source : window_list_) {
+        HWND hwnd = reinterpret_cast<HWND>(source.id);
+        ::GetWindowTextLength(hwnd);  // Side-effect: Sends WM_GETTEXT message.
+      }
+    }
+#endif  // BUILDFLAG(IS_WIN)
+
     base::AutoLock lock(window_list_lock_);
     *windows = window_list_;
     return true;
@@ -160,7 +230,9 @@ class FakeWindowCapturer : public webrtc::DesktopCapturer {
   bool FocusOnSelectedSource() override { return true; }
 
  private:
-  Callback* callback_;
+  raw_ptr<Callback> callback_;
+  webrtc::DesktopCaptureOptions options_ =
+      webrtc::DesktopCaptureOptions::CreateDefault();
   SourceList window_list_;
   base::Lock window_list_lock_;
 
@@ -229,7 +301,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
 
     // Get the native window's id.
     gfx::AcceleratedWidget widget = host->GetAcceleratedWidget();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     window.id = reinterpret_cast<DesktopMediaID::Id>(widget);
 #else
     window.id = widget;
@@ -250,7 +322,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
     aura::Window* aura_window = desktop_widgets_[index]->GetNativeWindow();
     gfx::AcceleratedWidget widget =
         aura_window->GetHost()->GetAcceleratedWidget();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     int native_id = reinterpret_cast<DesktopMediaID::Id>(widget);
 #else
     int native_id = widget;
@@ -273,7 +345,8 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   void AddWindowsAndVerify(bool has_view_dialog) {
     window_capturer_ = new FakeWindowCapturer();
     model_ = std::make_unique<NativeDesktopMediaList>(
-        DesktopMediaList::Type::kWindow, base::WrapUnique(window_capturer_));
+        DesktopMediaList::Type::kWindow,
+        base::WrapUnique(window_capturer_.get()));
 
     // Set update period to reduce the time it takes to run tests.
     model_->SetUpdatePeriod(base::Milliseconds(20));
@@ -342,7 +415,7 @@ class NativeDesktopMediaListTest : public ChromeViewsTestBase {
   MockObserver observer_;
 
   // Owned by |model_|;
-  FakeWindowCapturer* window_capturer_;
+  raw_ptr<FakeWindowCapturer> window_capturer_;
 
   webrtc::DesktopCapturer::SourceList window_list_;
   std::vector<std::unique_ptr<views::Widget>> desktop_widgets_;
@@ -543,7 +616,8 @@ TEST_F(NativeDesktopMediaListTest, MoveWindow) {
 TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
   window_capturer_ = new FakeWindowCapturer();
   model_ = std::make_unique<NativeDesktopMediaList>(
-      DesktopMediaList::Type::kWindow, base::WrapUnique(window_capturer_));
+      DesktopMediaList::Type::kWindow,
+      base::WrapUnique(window_capturer_.get()));
   model_->SetThumbnailSize(gfx::Size());
 
   // Set update period to reduce the time it takes to run tests.
@@ -570,3 +644,46 @@ TEST_F(NativeDesktopMediaListTest, EmptyThumbnail) {
   EXPECT_EQ(model_->GetSource(0).id.id, WindowIndex(0));
   EXPECT_EQ(model_->GetSource(0).thumbnail.size(), gfx::Size());
 }
+
+#if BUILDFLAG(IS_WIN)
+TEST_F(NativeDesktopMediaListTest, GetSourceListAvoidsDeadlock) {
+  // We need a real window so we can send a message and reproduce the deadlock
+  // scenario. This window must be created on a different thread than from where
+  // `GetSourceList` will be called. Otherwise, it can directly invoke the
+  // window procedure and avoid the deadlock.
+  base::Thread window_thread("GetSourceListDeadlockTestWindowThread");
+  window_thread.Start();
+  base::RunLoop run_loop;
+  WindowInfo info;
+  window_thread.task_runner()->PostTaskAndReplyWithResult(
+      FROM_HERE, base::BindOnce(&CreateTestWindow),
+      base::BindLambdaForTesting([&](WindowInfo window_info) {
+        info = window_info;
+        run_loop.Quit();
+      }));
+  // After this point, the window will be unresponsive because we've quit its
+  // message loop. This means any messages sent to the window will cause a
+  // deadlock.
+  run_loop.Run();
+  EXPECT_NE(info.hwnd, static_cast<HWND>(0));
+
+  // These `options` should have the `enumerate_current_process_windows`
+  // option set to false, so that `GetSourceList` won't send a `WM_GETTEXT`
+  // message to our window.
+  webrtc::DesktopCaptureOptions options =
+      content::desktop_capture::CreateDesktopCaptureOptions();
+  EXPECT_FALSE(options.enumerate_current_process_windows());
+  auto window_capturer = std::make_unique<FakeWindowCapturer>(options);
+  window_capturer->SetWindowList(
+      {{reinterpret_cast<intptr_t>(info.hwnd), kWindowTitle}});
+
+  // This should not hang, because we told it to ignore windows owned by the
+  // current process.
+  webrtc::DesktopCapturer::SourceList source_list;
+  EXPECT_TRUE(window_capturer->GetSourceList(&source_list));
+
+  window_thread.task_runner()->PostTask(
+      FROM_HERE, base::BindOnce(&DestroyTestWindow, info));
+  window_thread.Stop();
+}
+#endif  // BUILDFLAG(IS_WIN)

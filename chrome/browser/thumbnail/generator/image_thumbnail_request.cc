@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/files/file_util.h"
+#include "base/logging.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
 #include "build/build_config.h"
@@ -17,9 +18,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "skia/ext/image_operations.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -33,13 +34,13 @@ std::vector<uint8_t> LoadImageData(const base::FilePath& path) {
   std::vector<uint8_t> data;
   // Confirm that the file's size is within our threshold.
   base::File file;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (path.IsContentUri()) {
     file = base::OpenContentUriForRead(path);
     if (!file.IsValid())
       return data;
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   if (!file.IsValid())
     file = base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ);
 

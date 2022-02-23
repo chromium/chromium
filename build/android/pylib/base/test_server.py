@@ -2,7 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-class TestServer(object):
+
+class TestServer:
   """Base class for any server that needs to be set up for the tests."""
 
   def __init__(self, *args, **kwargs):

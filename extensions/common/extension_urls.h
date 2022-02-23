@@ -67,8 +67,8 @@ GURL GetWebstoreReportAbuseUrl(const std::string& extension_id,
 // and path, not scheme, query, etc.)
 bool IsWebstoreUpdateUrl(const GURL& update_url);
 
-// Returns true if the URL points to an extension blacklist.
-bool IsBlacklistUpdateUrl(const GURL& url);
+// Returns true if the URL points to an extension blocklist.
+bool IsBlocklistUpdateUrl(const GURL& url);
 
 // Returns true if the origin points to an URL used for safebrowsing.
 // TODO(devlin): Update other methods to also take an url::Origin?

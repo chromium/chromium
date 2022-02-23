@@ -15,7 +15,7 @@ import org.chromium.components.location.LocationUtils;
 import org.chromium.components.page_info.PageInfoPermissionsController.PermissionObject;
 import org.chromium.components.permissions.AndroidPermissionRequester;
 import org.chromium.components.permissions.nfc.NfcSystemLevelSetting;
-import org.chromium.ui.base.AndroidPermissionDelegate;
+import org.chromium.ui.permissions.AndroidPermissionDelegate;
 
 import java.util.ArrayList;
 import java.util.List;

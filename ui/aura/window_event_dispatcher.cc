@@ -327,8 +327,8 @@ ui::EventDispatchDetails WindowEventDispatcher::DispatchMouseEnterOrExit(
   // coordinate system.
   if (!target)
     target = window();
-  ui::MouseEvent translated_event(event, target, mouse_moved_handler_, type,
-                                  event.flags() | ui::EF_IS_SYNTHESIZED);
+  ui::MouseEvent translated_event(event, target, mouse_moved_handler_.get(),
+                                  type, event.flags() | ui::EF_IS_SYNTHESIZED);
   return DispatchEvent(mouse_moved_handler_, &translated_event);
 }
 
@@ -449,7 +449,7 @@ void WindowEventDispatcher::OnOtherRootGotCapture() {
   // root window, in which case this function will get called whenever those
   // windows grab mouse capture. Sending mouse exit messages in these cases
   // causes subtle bugs like (crbug.com/394672).
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   if (mouse_moved_handler_) {
     // Dispatch a mouse exit to reset any state associated with hover. This is
     // important when going from no window having capture to a window having
@@ -515,11 +515,6 @@ ui::EventDispatchDetails WindowEventDispatcher::PreDispatchEvent(
     ui::Event* event) {
   Window* target_window = static_cast<Window*>(target);
   CHECK(window()->Contains(target_window));
-
-  if (!(event->flags() & ui::EF_IS_SYNTHESIZED)) {
-    fraction_of_time_without_user_input_recorder_.RecordEventAtTime(
-        event->time_stamp());
-  }
 
   WindowTracker target_window_tracker;
   target_window_tracker.Add(target_window);

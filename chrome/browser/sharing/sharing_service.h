@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -22,9 +23,9 @@
 #include "components/sync/protocol/device_info_specifics.pb.h"
 #include "net/base/backoff_entry.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/sharing/sharing_service_proxy_android.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace syncer {
 class DeviceInfo;
@@ -160,14 +161,14 @@ class SharingService : public KeyedService, public syncer::SyncServiceObserver {
   std::unique_ptr<SharingHandlerRegistry> handler_registry_;
   std::unique_ptr<SharingFCMHandler> fcm_handler_;
 
-  syncer::SyncService* sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
 
   net::BackoffEntry backoff_entry_;
   State state_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   SharingServiceProxyAndroid sharing_service_proxy_android_{this};
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Map of notification id to notification handler callback.
   std::map<std::string, NotificationActionCallback>

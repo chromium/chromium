@@ -259,14 +259,14 @@ Polymer({
 
   ready() {
     const r = routes;
-    this.addFocusConfig_(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
-    this.addFocusConfig_(
+    this.addFocusConfig(r.CROSTINI_SHARED_PATHS, '#crostini-shared-paths');
+    this.addFocusConfig(
         r.CROSTINI_SHARED_USB_DEVICES, '#crostini-shared-usb-devices');
-    this.addFocusConfig_(r.CROSTINI_EXPORT_IMPORT, '#crostini-export-import');
-    this.addFocusConfig_(r.CROSTINI_ANDROID_ADB, '#crostini-enable-arc-adb');
-    this.addFocusConfig_(
+    this.addFocusConfig(r.CROSTINI_EXPORT_IMPORT, '#crostini-export-import');
+    this.addFocusConfig(r.CROSTINI_ANDROID_ADB, '#crostini-enable-arc-adb');
+    this.addFocusConfig(
         r.CROSTINI_PORT_FORWARDING, '#crostini-port-forwarding');
-    this.addFocusConfig_(
+    this.addFocusConfig(
         r.CROSTINI_EXTRA_CONTAINERS, '#crostini-extra-containers');
   },
 

@@ -21,7 +21,6 @@
 #include "net/url_request/url_request_context.h"
 #include "net/url_request/url_request_test_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "url/gurl.h"
 
 const int kNonInstantRendererPID = 0;
@@ -115,7 +114,6 @@ class MostVisitedIframeSourceTest : public testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
 
-  net::TestURLRequestContext test_url_request_context_;
   TestingProfile profile_;
   std::unique_ptr<TestMostVisitedIframeSource> source_;
   scoped_refptr<base::RefCountedMemory> response_;

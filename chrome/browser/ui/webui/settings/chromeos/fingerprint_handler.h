@@ -16,10 +16,6 @@
 
 class Profile;
 
-namespace base {
-class ListValue;
-}  // namespace base
-
 namespace chromeos {
 namespace settings {
 
@@ -46,7 +42,7 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
                         bool enroll_session_complete,
                         int percent_complete) override;
   void OnAuthScanDone(
-      device::mojom::ScanResult scan_result,
+      const device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override;
   void OnSessionFailed() override;
@@ -55,15 +51,15 @@ class FingerprintHandler : public ::settings::SettingsPageUIHandler,
   void OnSessionStateChanged() override;
 
  private:
-  void HandleGetFingerprintsList(const base::ListValue* args);
-  void HandleGetNumFingerprints(const base::ListValue* args);
-  void HandleStartEnroll(const base::ListValue* args);
-  void HandleCancelCurrentEnroll(const base::ListValue* args);
-  void HandleGetEnrollmentLabel(const base::ListValue* args);
-  void HandleRemoveEnrollment(const base::ListValue* args);
-  void HandleChangeEnrollmentLabel(const base::ListValue* args);
-  void HandleStartAuthentication(const base::ListValue* args);
-  void HandleEndCurrentAuthentication(const base::ListValue* args);
+  void HandleGetFingerprintsList(base::Value::ConstListView args);
+  void HandleGetNumFingerprints(base::Value::ConstListView args);
+  void HandleStartEnroll(base::Value::ConstListView args);
+  void HandleCancelCurrentEnroll(base::Value::ConstListView args);
+  void HandleGetEnrollmentLabel(base::Value::ConstListView args);
+  void HandleRemoveEnrollment(base::Value::ConstListView args);
+  void HandleChangeEnrollmentLabel(base::Value::ConstListView args);
+  void HandleStartAuthentication(base::Value::ConstListView args);
+  void HandleEndCurrentAuthentication(base::Value::ConstListView args);
 
   void OnGetFingerprintsList(const std::string& callback_id,
                              const base::flat_map<std::string, std::string>&

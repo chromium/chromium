@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_WEBAUTHN_WEBAUTHN_ICON_VIEW_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_view.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -49,7 +50,7 @@ class WebAuthnIconView : public PageActionIconView,
       dialog_models_;
 
   // The bubble is owned by its widget.
-  WebAuthnBubbleView* webauthn_bubble_ = nullptr;
+  raw_ptr<WebAuthnBubbleView> webauthn_bubble_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_WEBAUTHN_WEBAUTHN_ICON_VIEW_H_

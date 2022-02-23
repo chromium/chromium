@@ -7,7 +7,6 @@
 
 #include <windows.h>
 
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 
 namespace remoting {

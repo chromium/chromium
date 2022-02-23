@@ -2,12 +2,12 @@ include_rules = [
   "+ash/public",
   "+chromeos/ui/base/window_state_type.h",
   "+components/account_id/account_id.h",
+  "+components/app_constants/constants.h",
   "+components/app_restore",
   "+components/keyed_service/core",
   "+components/services/app_service/public/cpp",
   "+components/sync",
   "+components/version_info",
-  "+extensions/common/constants.h",
   "+third_party/re2",
   "+ui/base/ui_base_types.h",
   "+ui/gfx/geometry"

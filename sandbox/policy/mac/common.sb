@@ -111,6 +111,40 @@
 ; All processes can read the bundle contents.
 (allow file-read* (subpath (param bundle-path)))
 
+; A sandbox bug on macOS 11 and 12 causes the sandbox to see any paths within
+; the data volume (/System/Volumes/Data) outside of system firm link locations
+; (listed in /usr/share/firmlinks) as though they were not on the data volume,
+; causing it to deny access to user paths containing the data volume mount point
+; as a prefix. This is filed as https://openradar.appspot.com/FB9738355 and
+; tracked at https://crbug.com/1266490. Although macOS 10.15 also has the root
+; volume split, this bug does not appear to affect that OS version.
+;
+; When the bundle path appears in the data volume, this causes the sandbox to
+; deny access to the bundle.
+;
+; This is not a problem in normal use, as typical bundle paths, while on the
+; data volume, will be in system firm link locations such as /Applications or
+; /Users. As a workaround for other cases where the bundle may be present on the
+; data volume but not in a system firm link location, configure the sandbox with
+; an alternate bundle path so that it permits access to the bundle.
+(define (string-prefix? str prefix)
+  (let ((l (string-length prefix)))
+    (if (< (string-length str) l)
+      #f
+      (equal? (substring str 0 l) prefix)
+    )
+  )
+)
+(define data-volume-root "/System/Volumes/Data/")
+(when (string-prefix? (param bundle-path) data-volume-root)
+  (define (strip-leading-chars str count)
+    (substring str count (string-length str))
+  )
+  (allow file-read*
+         (subpath (strip-leading-chars (param bundle-path)
+                                       (- (string-length data-volume-root) 1))))
+)
+
 ; Allow reads of system libraries and frameworks.
 (allow file-read*
   (subpath "/System/Library/CoreServices/CoreTypes.bundle")

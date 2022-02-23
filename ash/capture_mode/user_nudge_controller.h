@@ -26,7 +26,8 @@ namespace ash {
 // user's attention towards the given `view_to_be_highlighted`. In the current
 // iteration, this view is the settings button on the capture mode bar, and the
 // desire to inform the users about the newly added ability to change where
-// captured images and videos are saved.
+// captured images and videos are saved. In upcoming iteration, the camera nudge
+// will be shown instead once the selfie camera feature is enabled.
 class UserNudgeController {
  public:
   explicit UserNudgeController(views::View* view_to_be_highlighted);

@@ -104,19 +104,20 @@
 #pragma mark - PasswordListNavigator
 
 - (void)openAllPasswordsList {
-  __weak id<PasswordCoordinatorDelegate> delegate = self.delegate;
+  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [delegate openAllPasswordsPicker];
+    [weakDelegate openAllPasswordsPicker];
   }];
 }
 
 - (void)openPasswordSettings {
-  __weak id<PasswordCoordinatorDelegate> delegate = self.delegate;
+  __weak id<PasswordCoordinatorDelegate> weakDelegate = self.delegate;
+  __weak __typeof(self) weakSelf = self;
   [self dismissIfNecessaryThenDoCompletion:^{
-    [delegate openPasswordSettings];
+    [weakDelegate openPasswordSettings];
     if (ui::GetDeviceFormFactor() == ui::DEVICE_FORM_FACTOR_TABLET) {
       // Settings close the popover but don't send a message to reopen it.
-      [delegate fallbackCoordinatorDidDismissPopover:self];
+      [weakDelegate fallbackCoordinatorDidDismissPopover:weakSelf];
     }
   }];
 }

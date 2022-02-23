@@ -262,10 +262,7 @@ void TestPasswordsPrivateDelegate::GetPlaintextInsecurePassword(
 bool TestPasswordsPrivateDelegate::ChangeInsecureCredential(
     const api::passwords_private::InsecureCredential& credential,
     base::StringPiece new_password) {
-  return std::any_of(insecure_credentials_.begin(), insecure_credentials_.end(),
-                     [&credential](const auto& insecure_credential) {
-                       return insecure_credential.id == credential.id;
-                     });
+  return IsCredentialPresentInInsecureCredentialsList(credential);
 }
 
 // Fake implementation of RemoveInsecureCredential. This succeeds if the
@@ -276,6 +273,20 @@ bool TestPasswordsPrivateDelegate::RemoveInsecureCredential(
                        [&credential](const auto& insecure_credential) {
                          return insecure_credential.id == credential.id;
                        }) != 0;
+}
+
+// Fake implementation of MuteInsecureCredential. This succeeds if the
+// delegate knows of a insecure credential with the same id.
+bool TestPasswordsPrivateDelegate::MuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  return IsCredentialPresentInInsecureCredentialsList(credential);
+}
+
+// Fake implementation of UnmuteInsecureCredential. This succeeds if the
+// delegate knows of a insecure credential with the same id.
+bool TestPasswordsPrivateDelegate::UnmuteInsecureCredential(
+    const api::passwords_private::InsecureCredential& credential) {
+  return IsCredentialPresentInInsecureCredentialsList(credential);
 }
 
 void TestPasswordsPrivateDelegate::StartPasswordCheck(
@@ -336,6 +347,14 @@ void TestPasswordsPrivateDelegate::SendPasswordExceptionsList() {
       PasswordsPrivateEventRouterFactory::GetForProfile(profile_);
   if (router)
     router->OnPasswordExceptionsListChanged(current_exceptions_);
+}
+
+bool TestPasswordsPrivateDelegate::IsCredentialPresentInInsecureCredentialsList(
+    const api::passwords_private::InsecureCredential& credential) {
+  return std::any_of(insecure_credentials_.begin(), insecure_credentials_.end(),
+                     [&credential](const auto& insecure_credential) {
+                       return insecure_credential.id == credential.id;
+                     });
 }
 
 }  // namespace extensions

@@ -10,15 +10,24 @@
  * Launches the PaymentRequest UI that requests contact details.
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([
+    {supportedMethods: 'https://bobpay.com'},
+    {
+      supportedMethods: 'basic-card',
+      data: {supportedNetworks: ['amex', 'visa']},
+    },
+  ]);
+}
+
+/**
+ * Launches the PaymentRequest UI that requests contact details.
+ * @param {sequence<PaymentMethodData>} methodData An array of payment method
+ *        objects.
+ */
+function buyWithMethods(methodData) {
   try {
     new PaymentRequest(
-        [
-          {supportedMethods: 'https://bobpay.com'},
-          {
-            supportedMethods: 'basic-card',
-            data: {supportedNetworks: ['amex', 'visa']},
-          },
-        ],
+        methodData,
         {total: {label: 'Total', amount: {currency: 'USD', value: '5.00'}}}, {
           requestPayerName: true,
           requestPayerEmail: true,

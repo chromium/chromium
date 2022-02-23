@@ -66,12 +66,12 @@ bool NetworkDelegateImpl::OnCanSetCookie(const URLRequest& request,
   return allowed_from_caller;
 }
 
-bool NetworkDelegateImpl::OnForcePrivacyMode(
+NetworkDelegate::PrivacySetting NetworkDelegateImpl::OnForcePrivacyMode(
     const GURL& url,
     const SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     SamePartyContext::Type same_party_context_type) const {
-  return false;
+  return NetworkDelegate::PrivacySetting::kStateAllowed;
 }
 
 bool NetworkDelegateImpl::OnCancelURLRequestWithPolicyViolatingReferrerHeader(

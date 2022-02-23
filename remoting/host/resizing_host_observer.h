@@ -9,12 +9,12 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
-#include "remoting/host/screen_controls.h"
-#include "remoting/host/screen_resolution.h"
+#include "remoting/host/base/screen_controls.h"
+#include "remoting/host/base/screen_resolution.h"
 
 namespace base {
 class TickClock;
@@ -59,7 +59,7 @@ class ResizingHostObserver : public ScreenControls {
   // State to manage rate-limiting of desktop resizes.
   base::OneShotTimer deferred_resize_timer_;
   base::TimeTicks previous_resize_time_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   base::WeakPtrFactory<ResizingHostObserver> weak_factory_{this};
 };

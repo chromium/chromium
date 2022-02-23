@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -148,9 +149,9 @@ class BookmarkBubbleView::BookmarkBubbleDelegate
   BubbleSyncPromoDelegate* delegate() { return delegate_.get(); }
 
  private:
-  bookmarks::BookmarkBubbleObserver* const observer_;
+  const raw_ptr<bookmarks::BookmarkBubbleObserver> observer_;
   std::unique_ptr<BubbleSyncPromoDelegate> delegate_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   const GURL url_;
 
   bool should_apply_edits_ = true;

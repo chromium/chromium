@@ -6,6 +6,7 @@
 
 #include "absl/types/optional.h"
 #include "components/account_manager_core/account.h"
+#include "components/account_manager_core/account_addition_options.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 
@@ -304,6 +305,20 @@ crosapi::mojom::AccountAdditionResultPtr ToMojoAccountAdditionResult(
     mojo_result->error = ToMojoGoogleServiceAuthError(result.error());
   }
   return mojo_result;
+}
+
+absl::optional<account_manager::AccountAdditionOptions>
+FromMojoAccountAdditionOptions(
+    const crosapi::mojom::AccountAdditionOptionsPtr& mojo_options) {
+  if (!mojo_options)
+    return absl::nullopt;
+
+  account_manager::AccountAdditionOptions result;
+  result.is_available_in_arc = mojo_options->is_available_in_arc;
+  result.show_arc_availability_picker =
+      mojo_options->show_arc_availability_picker;
+
+  return result;
 }
 
 }  // namespace account_manager

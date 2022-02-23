@@ -65,6 +65,7 @@ void CursorController::SetCursorConfigForWindow(
 
 void CursorController::ClearCursorConfigForWindow(
     gfx::AcceleratedWidget widget) {
+  base::AutoLock lock(window_to_cursor_configuration_map_lock_);
   window_to_cursor_configuration_map_.erase(widget);
 }
 

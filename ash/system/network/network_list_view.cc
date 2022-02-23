@@ -102,12 +102,11 @@ gfx::ImageSkia GetNetworkImageForNetwork(const NetworkInfo& info) {
     network_image = info.image;
   }
 
-  // When the cellular network is disabled, its appearance should be grayed out
-  // to indicate users that these networks are unavailable. We must change the
+  // When the network is disabled, its appearance should be grayed out to
+  // indicate users that these networks are unavailable. We must change the
   // image before we add it to the view, and then alter the label and sub-label
-  // if they exist after it is added to the view. TODO(crbug.com/1254917): Gray
-  // out disabled WiFi networks in quick setting page.
-  if (info.type == NetworkType::kCellular && info.disable) {
+  // if they exist after it is added to the view.
+  if (info.disable) {
     network_image = gfx::ImageSkiaOperations::CreateTransparentImage(
         network_image, kAlphaValueForInhibitedIconOpacity);
   }
@@ -142,9 +141,9 @@ SkColor GetCellularNetworkSubTextColor(const NetworkInfo& info) {
       AshColorProvider::ContentLayerType::kTextColorWarning);
 }
 
-// Updates the cellular list item's label text colors to disabled if the item is
-// disabled.
-void UpdateCellularListItemTextColor(HoverHighlightView* view,
+// Updates the disabled network item's label text colors to grey if the item
+// is disabled.
+void UpdateDisabledListItemTextColor(HoverHighlightView* view,
                                      const NetworkInfo& info) {
   // The network row is disabled if blocked by policy, device is inhibited or
   // when SIM is locked and user is not logged in.
@@ -173,7 +172,6 @@ void SetupCellularListItemWithSubtext(HoverHighlightView* view,
   }
   view->SetSubText(l10n_util::GetStringUTF16(cellular_subtext_message_id));
   view->sub_text_label()->SetEnabledColor(GetCellularNetworkSubTextColor(info));
-  UpdateCellularListItemTextColor(view, info);
 }
 
 bool ComputeNetworkDisabledProperty(const NetworkStatePropertiesPtr& network,
@@ -185,8 +183,8 @@ bool ComputeNetworkDisabledProperty(const NetworkStatePropertiesPtr& network,
       ShouldShowUnlockCellularNetwork(info)) {
     return info.sim_locked;
   }
-  // If the device is inhibited or network is blocked by policy, we want to
-  // have the cellular network rows disabled.
+  // If the device is inhibited or network is blocked by policy, the network
+  // row should be disabled.
   return activation_state == ActivationStateType::kActivating ||
          network->prohibited_by_policy || inhibited;
 }
@@ -493,10 +491,8 @@ void NetworkListView::UpdateViewForNetwork(HoverHighlightView* view,
     } else if (info.connection_state == ConnectionStateType::kConnecting) {
       SetupConnectingScrollListItem(view);
     }
-    if (NetworkTypeMatchesType(info.type, NetworkType::kCellular)) {
-      UpdateCellularListItemTextColor(view, info);
-    }
   }
+  UpdateDisabledListItemTextColor(view, info);
   view->SetTooltipText(info.tooltip);
 
   // Add an additional icon to the right of the label for networks
@@ -558,9 +554,8 @@ std::u16string NetworkListView::GenerateAccessibilityDescription(
         return connection_status;
       }
       if (IsManagedByPolicy(info)) {
-        return l10n_util::GetStringFUTF16(
-            IDS_ASH_STATUS_TRAY_ETHERNET_A11Y_DESC_MANAGED, info.label,
-            connection_status);
+        return l10n_util::GetStringUTF16(
+            IDS_ASH_STATUS_TRAY_ETHERNET_A11Y_DESC_MANAGED);
       }
       return info.label;
     case NetworkType::kWiFi: {

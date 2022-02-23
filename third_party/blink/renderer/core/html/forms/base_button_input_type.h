@@ -60,8 +60,6 @@ class BaseButtonInputType : public InputType,
                 TextFieldEventBehavior,
                 TextControlSetValueSelection) override;
   bool MatchesDefaultPseudoClass() override;
-
-  String DisplayValue() const;
 };
 
 }  // namespace blink

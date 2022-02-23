@@ -7,6 +7,7 @@
 
 #include "base/check.h"
 #include "device/vr/public/mojom/browser_test_interfaces.mojom.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/transform.h"
 
 #include <cstdint>
@@ -32,6 +33,7 @@ enum XrButtonId {
   kX = 9,
   kY = 10,
   kThumbRest = 11,
+  kShoulder = 12,
   kProximitySensor = 31,
   kAxisTrackpad = 32,
   kAxisTrigger = 33,
@@ -46,6 +48,12 @@ enum XrAxisType {
   kTrackpad = 1,
   kJoystick = 2,
   kTrigger = 3,
+};
+
+enum class XrEye {
+  kLeft = 0,
+  kRight = 1,
+  kNone = 2,
 };
 
 inline uint64_t XrButtonMaskFromId(XrButtonId id) {
@@ -66,19 +74,10 @@ struct Color {
   unsigned char a;
 };
 
-struct Viewport {
-  float left, right, top, bottom;
-};
-
-struct SubmittedFrameData {
+struct ViewData {
   Color color;
-
-  bool left_eye;
-
-  Viewport viewport;
-  unsigned int image_width;
-  unsigned int image_height;
-
+  XrEye eye;
+  gfx::Rect viewport;
   char raw_buffer[256];  // Can encode raw data here.
 };
 
@@ -141,7 +140,7 @@ inline gfx::Transform PoseFrameDataToTransform(PoseFrameData data) {
 // Tests may implement this, and register it to control behavior of VR runtime.
 class VRTestHook {
  public:
-  virtual void OnFrameSubmitted(SubmittedFrameData frame_data) = 0;
+  virtual void OnFrameSubmitted(const std::vector<ViewData>& frame_data) = 0;
   virtual DeviceConfig WaitGetDeviceConfig() = 0;
   virtual PoseFrameData WaitGetPresentingPose() = 0;
   virtual PoseFrameData WaitGetMagicWindowPose() = 0;

@@ -169,7 +169,7 @@ IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
 IN_PROC_BROWSER_TEST_F(ToolbarViewTest,
                        MAYBE_ExtensionsToolbarContainerForGuest) {
   // Verify guest browser does not have an extensions toolbar container.
-  profiles::SwitchToGuestProfile(ProfileManager::CreateCallback());
+  profiles::SwitchToGuestProfile();
   ui_test_utils::WaitForBrowserToOpen();
   Profile* guest = g_browser_process->profile_manager()->GetProfileByPath(
       ProfileManager::GetGuestProfilePath());

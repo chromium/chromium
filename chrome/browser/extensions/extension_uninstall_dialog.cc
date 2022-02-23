@@ -77,7 +77,7 @@ ExtensionUninstallDialog::ExtensionUninstallDialog(
   DCHECK(delegate_);
   if (parent)
     parent_window_tracker_ = NativeWindowTracker::Create(parent);
-  profile_observation_.Observe(profile_);
+  profile_observation_.Observe(profile_.get());
 }
 
 ExtensionUninstallDialog::~ExtensionUninstallDialog() = default;
@@ -115,8 +115,6 @@ void ExtensionUninstallDialog::ConfirmUninstall(
       ExtensionManagementFactory::GetForBrowserContext(profile_);
   show_report_abuse_checkbox_ =
       extension_management->UpdatesFromWebstore(*extension_);
-
-  show_remove_data_checkbox_ = extension_->from_bookmark();
 
   // Track that extension uninstalled externally.
   registry_observation_.Observe(ExtensionRegistry::Get(profile_));
@@ -197,43 +195,24 @@ GURL ExtensionUninstallDialog::GetLaunchURL() const {
 }
 
 bool ExtensionUninstallDialog::ShouldShowCheckbox() const {
-  return show_report_abuse_checkbox_ || show_remove_data_checkbox_;
+  return show_report_abuse_checkbox_;
 }
 
 std::u16string ExtensionUninstallDialog::GetCheckboxLabel() const {
   DCHECK(ShouldShowCheckbox());
 
-  if (show_report_abuse_checkbox_) {
-    return triggering_extension_.get()
-               ? l10n_util::GetStringFUTF16(
-                     IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE_FROM_EXTENSION,
-                     base::UTF8ToUTF16(extension_->name()))
-               : l10n_util::GetStringUTF16(
-                     IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE);
-  }
-
-  DCHECK(show_remove_data_checkbox_);
-  return l10n_util::GetStringFUTF16(
-      IDS_EXTENSION_UNINSTALL_PROMPT_REMOVE_DATA_CHECKBOX,
-      url_formatter::FormatUrlForSecurityDisplay(
-          GetLaunchURL(), url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+  return triggering_extension_.get()
+             ? l10n_util::GetStringFUTF16(
+                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE_FROM_EXTENSION,
+                   base::UTF8ToUTF16(extension_->name()))
+             : l10n_util::GetStringUTF16(
+                   IDS_EXTENSION_PROMPT_UNINSTALL_REPORT_ABUSE);
 }
 
 void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
   // Ensure the dialog isn't notified of an uninstallation after the dialog was
   // closed.
   registry_observation_.Reset();
-
-  // We don't want to artificially weight any of the options, so only record if
-  // a checkbox was shown.
-  if (show_report_abuse_checkbox_) {
-    UMA_HISTOGRAM_ENUMERATION("Extensions.UninstallDialogAction", action,
-                              CLOSE_ACTION_LAST);
-  } else if (show_remove_data_checkbox_) {
-    // TODO(crbug.com/1065748): Delete Webapp recording in extensions dialog.
-    UMA_HISTOGRAM_ENUMERATION("Webapp.UninstallDialogAction", action,
-                              CLOSE_ACTION_LAST);
-  }
 
   bool success = false;
   std::u16string error;
@@ -245,24 +224,12 @@ void ExtensionUninstallDialog::OnDialogClosed(CloseAction action) {
           "Extensions.UninstallDialogReportAbuseChecked"));
       base::RecordAction(
           base::UserMetricsAction("Extensions.UninstallDialogRemoveClick"));
-      if (show_remove_data_checkbox_) {
-        content::ClearSiteData(
-            base::BindRepeating(
-                [](content::BrowserContext* browser_context) {
-                  return browser_context;
-                },
-                base::Unretained(profile_)),
-            url::Origin::Create(GetLaunchURL()), true /*clear_cookies*/,
-            true /*clear_storage*/, true /*clear_cache*/,
-            false /*avoid_closing_connections*/, base::DoNothing());
-      } else {
-        // If the extension specifies a custom uninstall page via
-        // chrome.runtime.setUninstallURL, then at uninstallation its uninstall
-        // page opens. To ensure that the CWS Report Abuse page is the active
-        // tab at uninstallation, HandleReportAbuse() is called after
-        // Uninstall().
-        HandleReportAbuse();
-      }
+      // If the extension specifies a custom uninstall page via
+      // chrome.runtime.setUninstallURL, then at uninstallation its uninstall
+      // page opens. To ensure that the CWS Report Abuse page is the active
+      // tab at uninstallation, HandleReportAbuse() is called after
+      // Uninstall().
+      HandleReportAbuse();
       break;
     case CLOSE_ACTION_UNINSTALL:
       base::RecordAction(

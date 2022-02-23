@@ -6,6 +6,7 @@
 
 #include "base/base_paths.h"
 #include "base/callback_forward.h"
+#include "base/containers/adapters.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
@@ -29,12 +30,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/pool.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/ranges/algorithm.h"
 #include "base/win/wincrypt_shim.h"
 #include "crypto/scoped_capi_types.h"
 #include "net/cert/internal/trust_store_win.h"
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace net {
 
@@ -172,7 +173,7 @@ TEST(PathBuilderResultUserDataTest, ModifyUserDataInConstructor) {
   // crash or fail on ASAN bots).
   CertPathBuilder path_builder(
       a_by_b, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
-      InitialExplicitPolicy::kFalse, {AnyPolicy()},
+      InitialExplicitPolicy::kFalse, {der::Input(kAnyPolicyOid)},
       InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
   CertPathBuilder::Result result = path_builder.Run();
   auto* data = static_cast<TrustStoreThatStoresUserData::Data*>(
@@ -207,7 +208,8 @@ class PathBuilderMultiRootTest : public ::testing::Test {
 
   const InitialExplicitPolicy initial_explicit_policy_ =
       InitialExplicitPolicy::kFalse;
-  const std::set<der::Input> user_initial_policy_set_ = {AnyPolicy()};
+  const std::set<der::Input> user_initial_policy_set_ = {
+      der::Input(kAnyPolicyOid)};
   const InitialPolicyMappingInhibit initial_policy_mapping_inhibit_ =
       InitialPolicyMappingInhibit::kFalse;
   const InitialAnyPolicyInhibit initial_any_policy_inhibit_ =
@@ -616,8 +618,8 @@ TEST_F(PathBuilderMultiRootTest, TestCertIssuerOrdering) {
         b_by_c_, b_by_f_, f_by_e_, c_by_d_, c_by_e_};
     CertIssuerSourceStatic sync_certs;
     if (reverse_order) {
-      for (auto it = certs.rbegin(); it != certs.rend(); ++it)
-        sync_certs.AddCert(*it);
+      for (const auto& cert : base::Reversed(certs))
+        sync_certs.AddCert(cert);
     } else {
       for (const auto& cert : certs)
         sync_certs.AddCert(cert);
@@ -793,7 +795,7 @@ TEST_F(PathBuilderMultiRootTest, TestDeadline) {
       result.paths[0]->errors.ContainsError(cert_errors::kDeadlineExceeded));
 }
 
-#if defined(OS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 void AddToStoreWithEKURestriction(HCERTSTORE store,
                                   const scoped_refptr<ParsedCertificate>& cert,
@@ -892,7 +894,7 @@ TEST_F(PathBuilderMultiRootTest, TrustStoreWinNoPathEKURestrictions) {
   auto result = path_builder.Run();
   ASSERT_FALSE(result.HasValidPath());
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(CHROME_ROOT_STORE_SUPPORTED)
 
 class PathBuilderKeyRolloverTest : public ::testing::Test {
  public:
@@ -954,7 +956,8 @@ class PathBuilderKeyRolloverTest : public ::testing::Test {
 
   const InitialExplicitPolicy initial_explicit_policy_ =
       InitialExplicitPolicy::kFalse;
-  const std::set<der::Input> user_initial_policy_set_ = {AnyPolicy()};
+  const std::set<der::Input> user_initial_policy_set_ = {
+      der::Input(kAnyPolicyOid)};
   const InitialPolicyMappingInhibit initial_policy_mapping_inhibit_ =
       InitialPolicyMappingInhibit::kFalse;
   const InitialAnyPolicyInhibit initial_any_policy_inhibit_ =
@@ -1761,7 +1764,8 @@ class PathBuilderSimpleChainTest : public ::testing::Test {
 
     const InitialExplicitPolicy initial_explicit_policy =
         InitialExplicitPolicy::kFalse;
-    const std::set<der::Input> user_initial_policy_set = {AnyPolicy()};
+    const std::set<der::Input> user_initial_policy_set = {
+        der::Input(kAnyPolicyOid)};
     const InitialPolicyMappingInhibit initial_policy_mapping_inhibit =
         InitialPolicyMappingInhibit::kFalse;
     const InitialAnyPolicyInhibit initial_any_policy_inhibit =
@@ -2025,7 +2029,7 @@ TEST(PathBuilderPrioritizationTest, DatePrioritization) {
 
     CertPathBuilder path_builder(
         target, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
-        InitialExplicitPolicy::kFalse, {AnyPolicy()},
+        InitialExplicitPolicy::kFalse, {der::Input(kAnyPolicyOid)},
         InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
     path_builder.AddCertIssuerSource(&intermediates);
 
@@ -2123,7 +2127,7 @@ TEST(PathBuilderPrioritizationTest, KeyIdPrioritization) {
 
     CertPathBuilder path_builder(
         target, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
-        InitialExplicitPolicy::kFalse, {AnyPolicy()},
+        InitialExplicitPolicy::kFalse, {der::Input(kAnyPolicyOid)},
         InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
     path_builder.AddCertIssuerSource(&intermediates);
 
@@ -2247,7 +2251,7 @@ TEST(PathBuilderPrioritizationTest, TrustAndKeyIdPrioritization) {
 
     CertPathBuilder path_builder(
         target, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
-        InitialExplicitPolicy::kFalse, {AnyPolicy()},
+        InitialExplicitPolicy::kFalse, {der::Input(kAnyPolicyOid)},
         InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
     path_builder.SetExploreAllPaths(true);
 
@@ -2366,7 +2370,7 @@ TEST(PathBuilderPrioritizationTest, KeyIdNameAndSerialPrioritization) {
 
     CertPathBuilder path_builder(
         target, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
-        InitialExplicitPolicy::kFalse, {AnyPolicy()},
+        InitialExplicitPolicy::kFalse, {der::Input(kAnyPolicyOid)},
         InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
     path_builder.AddCertIssuerSource(&intermediates);
 
@@ -2423,7 +2427,7 @@ TEST(PathBuilderPrioritizationTest, SelfIssuedPrioritization) {
   trust_store.AddTrustAnchor(root1_cross);
   CertPathBuilder path_builder(
       target, &trust_store, &delegate, verify_time, KeyPurpose::ANY_EKU,
-      InitialExplicitPolicy::kFalse, {AnyPolicy()},
+      InitialExplicitPolicy::kFalse, {der::Input(kAnyPolicyOid)},
       InitialPolicyMappingInhibit::kFalse, InitialAnyPolicyInhibit::kFalse);
   path_builder.SetExploreAllPaths(true);
 

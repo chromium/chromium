@@ -8,13 +8,13 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/intent_helper.mojom-forward.h"
+#include "ash/components/arc/mojom/process.mojom-forward.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ash/arc/process/arc_process.h"
 #include "chrome/browser/task_manager/providers/task.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom-forward.h"
-#include "components/arc/mojom/process.mojom-forward.h"
-#include "components/arc/session/connection_observer.h"
 
 namespace task_manager {
 

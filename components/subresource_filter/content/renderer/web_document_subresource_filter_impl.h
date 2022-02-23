@@ -73,6 +73,8 @@ class WebDocumentSubresourceFilterImpl
                            blink::mojom::RequestContextType) override;
   LoadPolicy GetLoadPolicyForWebSocketConnect(
       const blink::WebURL& url) override;
+  LoadPolicy GetLoadPolicyForWebTransportConnect(
+      const blink::WebURL& url) override;
   void ReportDisallowedLoad() override;
   bool ShouldLogToConsole() override;
   void ReportAdRequestId(int request_id) override;

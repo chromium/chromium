@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> ጣቢያ ተክሏል</translation>
 <translation id="1383876407941801731">ፍለጋ </translation>
 <translation id="1384959399684842514">የሚወርደው ላፍታ ቆሟል</translation>
+<translation id="1409426117486808224">ለክፍት ትሮች የተቃለለ እይታ</translation>
 <translation id="1415402041810619267">ዩአርኤል እንዲያጥር ተደርጓል</translation>
 <translation id="1446450296470737166">ሙሉ የMIDI መሣሪያዎች መቆጣጠርን ያስችላል</translation>
 <translation id="1620510694547887537">ካሜራ</translation>
@@ -49,10 +50,13 @@
 <translation id="2212565012507486665">ኩኪዎችን ፍቀድ</translation>
 <translation id="2228071138934252756">የእርስዎን ካሜራ <ph name="APP_NAME" /> እንዲደርስበት ለማድረግ፣ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ካሜራን በተጨማሪ ያብሩ።</translation>
 <translation id="2241634353105152135">አንድ ጊዜ ብቻ</translation>
+<translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />ን አስወግድ</translation>
 <translation id="2289270750774289114">አንድ ጣቢያ በአቅራቢያ ያሉ ብሉቱዝ መሣሪያዎችን ፈልጎ ለማግኘት ሲፈልግ ጠይቅ (የሚመከር)</translation>
 <translation id="2315043854645842844">የደንበኛ ወገን ዕውቅና ማረጋገጫ ምርጫ በስርዓተ-ክወናው አይደገፍም።</translation>
+<translation id="2321958826496381788">ይህን በሚመች ሁኔታ ማንበብ እስኪችሉ ድረስ ተንሸራታቹን ይጎትቱት። በአንድ አንቀጽ ላይ ሁለቴ መታ ካደረጉ በኋላ ጽሑፍ ቢያንስ የዚህ ያህል ትልቀት ሊኖረው ይገባል።</translation>
 <translation id="2359808026110333948">ቀጥል</translation>
 <translation id="2379925928934107488">በሚቻልበት ጊዜ Chrome ጠቆር ያለ ገጽታ ሲጠቀም ጠቆር ያለ ገጽታን ጣቢያዎች ላይ ተግብር</translation>
+<translation id="2387895666653383613">የጽሑፍ ልኬት</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> ሜባ</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" />፣ እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}one{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}other{<ph name="PERMISSION_1" />፣ <ph name="PERMISSION_2" /> እና <ph name="NUM_MORE" /> ተጨማሪ ተፈቅደዋል}}</translation>
 <translation id="2434158240863470628">ማውረድ ተጠናቅቋል <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -89,6 +93,7 @@
 <translation id="3115898365077584848">መረጃ አሳይ</translation>
 <translation id="3123473560110926937">በአንዳንድ ጣቢያዎች ላይ ታግዷል</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> የተከማቸ ውሂብ</translation>
+<translation id="3203366800380907218">ከድሩ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> ማሳወቂያዎችን እንዲልክልዎት ለማድረግ፣ በተጨማሪ በ <ph name="BEGIN_LINK" />Android ቅንብሮች<ph name="END_LINK" /> ውስጥ ማሳወቂያዎችን ያብሩ።</translation>
 <translation id="3227137524299004712">ማይክሮፎን</translation>
 <translation id="3277252321222022663">ጣቢያዎች ዳሳሾችን እንዲደርሱ ይፍቀዱላቸው (የሚመከር)</translation>
@@ -110,14 +115,18 @@
 <translation id="3835233591525155343">የእርስዎ መሣሪያ አጠቃቀም</translation>
 <translation id="385051799172605136">ተመለስ</translation>
 <translation id="3859306556332390985">ወደፊት ፈልግ</translation>
+<translation id="3895926599014793903">ማጉላት አንቃን ያስገድዱ</translation>
 <translation id="3955193568934677022">ጥበቃ የሚደረግበትን ይዘት እንዲያጫውቱ ለጣቢያዎች ፍቀድ (የሚመከር)</translation>
 <translation id="3967822245660637423">ማውረድ ተጠናቅቋል</translation>
 <translation id="3987993985790029246">አገናኝ ቅዳ</translation>
 <translation id="3991845972263764475"><ph name="BYTES_DOWNLOADED_WITH_UNITS" /> / ?</translation>
 <translation id="4002066346123236978">ርዕስ</translation>
 <translation id="4008040567710660924">የተወሰነ ጣቢያ ኩኪዎችን ፍቀድ።</translation>
+<translation id="4040330681741629921">አንድ ጣቢያ ቀላል በሆነ እይታ ውስጥ መታየት ሲችል ማሳወቂያ ያግኙ</translation>
 <translation id="4046123991198612571">ቀጣይ ትራክ</translation>
+<translation id="4149994727733219643">ለድረ-ገጾች የተቃለለ እይታ</translation>
 <translation id="4165986682804962316">የጣቢያ ቅንብሮች</translation>
+<translation id="4194328954146351878">ጣቢያዎች በኤንኤፍሲ መሣሪያዎች ላይ መረጃ እንዲያዩ እና እንዲቀይሩ ከመፈቀዱ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="4200726100658658164">የአካባቢ ቅንብሮችን ክፈት</translation>
 <translation id="4226663524361240545">ማሳወቂያዎች መሣሪያውን እንዲነዝር ሊያደርጉት ይችላሉ</translation>
 <translation id="4259722352634471385">ዳሰሳ ታግዷል፦ <ph name="URL" /></translation>
@@ -126,6 +135,7 @@
 <translation id="42981349822642051">ዘርጋ</translation>
 <translation id="4336434711095810371">ሁሉንም ውሂብ አጽዳ</translation>
 <translation id="4402755511846832236">እርስዎ ይህን መሣሪያ በንቃት ሲጠቀሙ ጣቢያዎች እንዳያውቁ ያግዱ</translation>
+<translation id="4428065317363009941">ማስታወቂያን ግላዊነት ማላበስ</translation>
 <translation id="4434045419905280838">ብቅ-ባዮች እና አቅጣጫ ማዞሮች</translation>
 <translation id="445467742685312942">ጣቢያዎች የተጠበቀ ይዘትን እንዲያጫውት ይፍቀዱ</translation>
 <translation id="4468959413250150279">በአንድ የተወሰነ ጣቢያ ላይ ድምጸ-ከል አድርግ።</translation>
@@ -149,11 +159,14 @@
 <translation id="5048398596102334565">ጣቢያዎች የእንቅስቃሴ ዳሳሾችን እንዲደርሱባቸው ይፍቀዱ (የሚመከር)</translation>
 <translation id="5050380848339752099">ይህ ጣቢያ ማንነት ከማያሳውቅ ሁነታ ውጭ ላለ መተግበሪያ መረጃ ሊያጋራ ነው።</translation>
 <translation id="5063480226653192405">አጠቃቀም</translation>
+<translation id="509133520954049755">የዴስክቶፕ እይታን ይጠይቁ</translation>
 <translation id="5100237604440890931">ተሰብስቧል - ለመዘርጋት ጠቅ ያድርጉ</translation>
 <translation id="5123685120097942451">ማንነት የማያሳውቅ ትር</translation>
+<translation id="5134599672855298214">የሞባይል እይታ ይጠይቁ (የሚመከር)</translation>
 <translation id="5186036860380548585">አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
 <translation id="5197729504361054390">የመረጧቸው እውቂያዎች ለ<ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ይጋራሉ።</translation>
 <translation id="5216942107514965959">መጨረሻ የተጎበኘው ዛሬ</translation>
+<translation id="5264323282659631142">«<ph name="CHIP_LABEL" />»ን ያስወግዱ</translation>
 <translation id="528192093759286357">ከሙሉ ማያ ገጽ ለመውጣት ከላይ ይጎትቱ እና የተመለስ አዝራሩን ይንኩ።</translation>
 <translation id="5300589172476337783">አሳይ</translation>
 <translation id="5301954838959518834">እሺ፣ ገባኝ</translation>
@@ -164,6 +177,7 @@
 <translation id="5354152178998424783">ይህ በጣቢያዎች የተከማቹ <ph name="DATASIZE" /> ውሂብ እና ኩኪዎችን ያጸዳል።</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ 1 ተጨማሪ)}one{(+ # ተጨማሪ)}other{(+ # ተጨማሪ)}}</translation>
 <translation id="5403592356182871684">ስሞች</translation>
+<translation id="5412236728747081950">ይህ ጣቢያ ይበልጥ አግባብነት ያላቸውን ማስታወቂያዎች ለእርስዎ ለማሳየት የእርስዎን ዝንባሌዎች ከChrome ያገኛል</translation>
 <translation id="5438097262470833822">ይህ ምርጫ ፈቃዶችን ለ<ph name="WEBSITE" /> ዳግም ያስጀምራል</translation>
 <translation id="5489227211564503167">የጠፋው ጊዜ <ph name="ELAPSED_TIME" /> ከ<ph name="TOTAL_TIME" />።</translation>
 <translation id="5494752089476963479">ረባሽ ወይም አሳሳች ማስታወቂያዎችን ከሚያሳዩ ጣቢያዎች የሚመጡ ማስታወቂያዎችን አግድ</translation>
@@ -175,10 +189,10 @@
 <translation id="5556459405103347317">ዳግም ጫን</translation>
 <translation id="5596627076506792578">ተጨማሪ አማራጮች</translation>
 <translation id="5649053991847567735">ራስ-ሰር ውርዶች</translation>
+<translation id="5668404140385795438">የአንድ ድር ጣቢያ ማጉላትን መከልከል ጥያቄ ሻር</translation>
 <translation id="5677928146339483299">ታግዷል</translation>
 <translation id="5689516760719285838">አካባቢ</translation>
 <translation id="5690795753582697420">ካሜራ በAndroid ቅንብሮች ውስጥ ጠፍቷል</translation>
-<translation id="5710871682236653961">የNFC መሣሪያዎችን መታ ሲያደርጉ ጣቢያዎች መረጃን እንዲልኩ እና እንዲቀበሉ ከመፍቀድዎ በፊት ይጠይቁ (የሚመከር)</translation>
 <translation id="5719847187258001597">ይህ በ<ph name="ORIGIN" /> ወይም በመነሻ ገጽዎ ላይ በመተግበሪያው የተከማቹ ሁሉንም ውሂብ እና ኩኪዎች ያጸዳል።</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ታግዷል</translation>
 <translation id="5804241973901381774">ፍቃዶች</translation>
@@ -228,16 +242,16 @@
 <translation id="6790428901817661496">አጫውት</translation>
 <translation id="6818926723028410516">ንጥሎችን ይምረጡ</translation>
 <translation id="6864395892908308021">ይህ መሣሪያ NFCን ማንበብ አይችልም</translation>
-<translation id="6910211073230771657">ተሰርዟል</translation>
 <translation id="6912998170423641340">ጣቢያዎች ከቅንጥብ ሰሌዳ ጽሑፍን እና ምስሎችን እንዳያነብቡ አግድ</translation>
 <translation id="6945221475159498467">ይምረጡ</translation>
 <translation id="6965382102122355670">እሺ</translation>
+<translation id="6981982820502123353">ተደራሽነት</translation>
 <translation id="6992289844737586249">ጣቢያዎች ማይክሮፎንዎን እንዲጠቀሙ ከመፍቀድዎ በፊት ይጠይቅ (የሚመከር)</translation>
 <translation id="7000754031042624318">በAndroid ቅንብሮች ውስጥ ጠፍቷል</translation>
 <translation id="7016516562562142042">ለአሁኑ የፍለጋ ፕሮግራም ተፈቅዷል</translation>
+<translation id="702463548815491781">TalkBack ወይም መዳረሻ ቀይር ሲበሩ የሚመከር</translation>
 <translation id="7053983685419859001">አግድ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ተመርጧል}one{# ተመርጠዋል}other{# ተመርጠዋል}}</translation>
-<translation id="7070090581017165256">ስለዚህ ጣቢያ</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ተመርጠዋል።  አማራጮች ከማያ ገጹ አናት አጠገብ ይገኛሉ</translation>
 <translation id="7141896414559753902">ጣቢያዎች ብቅ-ባዮችን እንዳያሳዩ ያግዱ (የሚመከር)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ኪባ</translation>
@@ -252,8 +266,8 @@
 <translation id="7521387064766892559">ጃቫስክሪፕት</translation>
 <translation id="7554752735887601236">አንድ ጣቢያ የእርስዎን ማይክሮፎን እየተጠቀመ ነው</translation>
 <translation id="7561196759112975576">ሁልጊዜ</translation>
-<translation id="7572498721684305250">የNFC መሣሪያዎችን መታ ሲያደርጉ ጣቢያዎች መረጃን እንዳይልኩ እና እንዳይቀበሉ ያግዷቸው</translation>
 <translation id="757524316907819857">ጣቢያዎች ጥበቃ የሚደረግለትን ይዘት እንዳያጫውቱ ያግዱ</translation>
+<translation id="7577900504646297215">ፍላጎቶችን አቀናብር</translation>
 <translation id="7649070708921625228">እገዛ</translation>
 <translation id="7658239707568436148">ይቅር</translation>
 <translation id="7781829728241885113">ትናንት</translation>
@@ -286,6 +300,7 @@
 <translation id="8211406090763984747">ግንኙነት ደኅንነቱ የተጠበቀ ነው</translation>
 <translation id="8249310407154411074">ወደ ላይ ውሰድ</translation>
 <translation id="8261506727792406068">ሰርዝ</translation>
+<translation id="8284326494547611709">መግለጫ ጽሑፎች</translation>
 <translation id="8300705686683892304">በመተግበሪያ የሚተዳደር</translation>
 <translation id="8324158725704657629">ዳግም አትጠይቅ</translation>
 <translation id="8372893542064058268">ለአንድ የተወሰነ ጣቢያ የጀርባ ስምረትን ይፍቀዱ።</translation>
@@ -319,6 +334,7 @@
 <translation id="8903921497873541725">አጉላ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">NFC ለዚህ መሣሪያ ጠፍቷል። በ<ph name="BEGIN_LINK" />Android ቅንበሮች<ph name="END_LINK" /> ውስጥ ያብሩት።</translation>
+<translation id="8928445016601307354">ጣቢያዎች በኤንኤፍሲ መሣሪያዎች ላይ መረጃን እንዳያዩ እና እንዳይቀይሩ ያግዱ</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">የአንድ የተወሰነ ጣቢያ ኩኪዎችን ያግዱ።</translation>
 <translation id="8959122750345127698">ዳሰሳ ሊደረስበት አይችልም፦ <ph name="URL" /></translation>

@@ -9,12 +9,11 @@
 #include "third_party/blink/renderer/core/frame/root_frame_viewport.h"
 #include "third_party/blink/renderer/core/frame/visual_viewport.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/geometry/double_rect.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
-void ResizeViewportAnchor::ResizeFrameView(const IntSize& size) {
+void ResizeViewportAnchor::ResizeFrameView(const gfx::Size& size) {
   LocalFrameView* frame_view = RootFrameView();
   if (!frame_view)
     return;

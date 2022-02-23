@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "fuchsia/runners/cast/fidl/fidl/chromium/cast/cpp/fidl.h"
 #include "url/gurl.h"
 

@@ -66,6 +66,15 @@ void DrmOverlayManager::CheckOverlaySupport(
   TRACE_EVENT0("hwoverlays", "DrmOverlayManager::CheckOverlaySupport");
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
+  // Check if another display has an overlay requirement, and if so do not
+  // allow overlays. Some ChromeOS boards only support one overlay across all
+  // displays so we want the overlay to go somewhere that requires it first vs.
+  // a display that will just be using it as an optimization.
+  if (!widgets_with_required_overlays_.empty() &&
+      !widgets_with_required_overlays_.contains(widget)) {
+    return;
+  }
+
   std::vector<OverlaySurfaceCandidate> result_candidates;
   for (auto& candidate : *candidates) {
     bool can_handle = CanHandleCandidate(candidate, widget);
@@ -138,6 +147,15 @@ void DrmOverlayManager::CheckOverlaySupport(
   }
   UMA_HISTOGRAM_BOOLEAN("Compositing.Display.DrmOverlayManager.CacheHit",
                         cache_hit);
+}
+
+void DrmOverlayManager::RegisterOverlayRequirement(
+    gfx::AcceleratedWidget widget,
+    bool requires_overlay) {
+  if (requires_overlay)
+    widgets_with_required_overlays_.insert(widget);
+  else
+    widgets_with_required_overlays_.erase(widget);
 }
 
 bool DrmOverlayManager::CanHandleCandidate(

@@ -50,15 +50,4 @@ TEST_F(ChromeMediaRouterFactoryTest, CreateForIncognitoProfile) {
   ASSERT_EQ(router, MediaRouterFactory::GetApiForBrowserContext(profile()));
 }
 
-TEST_F(ChromeMediaRouterFactoryTest, IncognitoBrowserContextShutdown) {
-  // Creates an incognito profile.
-  Profile* incognito =
-      profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
-  MockMediaRouter* router = static_cast<MockMediaRouter*>(
-      MediaRouterFactory::GetApiForBrowserContext(profile()));
-  ASSERT_TRUE(router);
-  EXPECT_CALL(*router, OnIncognitoProfileShutdown());
-  profile()->DestroyOffTheRecordProfile(incognito);
-}
-
 }  // namespace media_router

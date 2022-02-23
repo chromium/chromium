@@ -11,50 +11,39 @@
 
 namespace blink {
 
-// Common subclass for PromiseHandlers.
-class CORE_EXPORT PromiseHandlerBase : public ScriptFunction {
- public:
-  explicit PromiseHandlerBase(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
-
-  // Exposed for use by StreamThenPromise.
-  using ScriptFunction::BindToV8Function;
-};
-
 // A variant of ScriptFunction that avoids the conversion to and from a
 // ScriptValue. Use this when the reaction doesn't need to return a value other
 // than undefined.
-class CORE_EXPORT PromiseHandler : public PromiseHandlerBase {
+class CORE_EXPORT PromiseHandler : public ScriptFunction::Callable {
  public:
-  explicit PromiseHandler(ScriptState* script_state);
+  PromiseHandler();
 
-  virtual void CallWithLocal(v8::Local<v8::Value>) = 0;
+  virtual void CallWithLocal(ScriptState*, v8::Local<v8::Value>) = 0;
 
- private:
-  void CallRaw(const v8::FunctionCallbackInfo<v8::Value>&) final;
+  void CallRaw(ScriptState*, const v8::FunctionCallbackInfo<v8::Value>&) final;
 };
 
 // A variant of PromiseHandler for when the reaction does need to return a
 // value.
-class CORE_EXPORT PromiseHandlerWithValue : public PromiseHandlerBase {
+class CORE_EXPORT PromiseHandlerWithValue : public ScriptFunction::Callable {
  public:
-  explicit PromiseHandlerWithValue(ScriptState* script_state);
+  PromiseHandlerWithValue();
 
-  virtual v8::Local<v8::Value> CallWithLocal(v8::Local<v8::Value>) = 0;
+  virtual v8::Local<v8::Value> CallWithLocal(ScriptState*,
+                                             v8::Local<v8::Value>) = 0;
 
- private:
-  void CallRaw(const v8::FunctionCallbackInfo<v8::Value>&) final;
+  void CallRaw(ScriptState*, const v8::FunctionCallbackInfo<v8::Value>&) final;
 };
 
 // A convenience wrapper for promise->Then() for when all paths are
 // PromiseHandlers. It avoids having to call BindToV8Function()
 // explicitly. If |on_rejected| is null then behaves like single-argument
 // Then(). If |on_fulfilled| is null then it behaves like Catch().
-v8::Local<v8::Promise> StreamThenPromise(
+CORE_EXPORT v8::Local<v8::Promise> StreamThenPromise(
     v8::Local<v8::Context>,
     v8::Local<v8::Promise>,
-    PromiseHandlerBase* on_fulfilled,
-    PromiseHandlerBase* on_rejected = nullptr);
+    ScriptFunction* on_fulfilled,
+    ScriptFunction* on_rejected = nullptr);
 
 }  // namespace blink
 

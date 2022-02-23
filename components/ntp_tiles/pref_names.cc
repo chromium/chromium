@@ -35,5 +35,10 @@ const char kPopularSitesVersionPref[] = "suggested_sites_version";
 const char kCustomLinksList[] = "custom_links.list";
 const char kCustomLinksInitialized[] = "custom_links.initialized";
 
+// Pref used to verify whether custom links have been removed
+// for preinstalled default chrome apps
+const char kCustomLinksForPreinstalledAppsRemoved[] =
+    "custom_links.preinstalledremoved";
+
 }  // namespace prefs
 }  // namespace ntp_tiles

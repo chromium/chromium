@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test search in Timeline FlameChart View.\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   var sessionId = '4.20';

@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/pattern.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,6 +31,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/browsing_data_remover.h"
+#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/test/browser_test.h"
@@ -341,18 +343,18 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   prerender_helper().WaitForRequest(icon_url, 1);
 }
 
-class NoCommittedEntryWebContentsObserver
+class NoCommittedNavigationWebContentsObserver
     : public content::WebContentsObserver {
  public:
-  explicit NoCommittedEntryWebContentsObserver(
+  explicit NoCommittedNavigationWebContentsObserver(
       content::WebContents* web_contents) {
     Observe(web_contents);
   }
 
-  ~NoCommittedEntryWebContentsObserver() override = default;
+  ~NoCommittedNavigationWebContentsObserver() override = default;
 
-  bool DidUpdateFaviconURLWithNoCommittedEntry() const {
-    return did_update_favicon_url_with_no_committed_entry_;
+  bool DidUpdateFaviconURLWithNoCommittedNavigation() const {
+    return did_update_favicon_url_with_no_committed_navigation_;
   }
 
  protected:
@@ -361,28 +363,29 @@ class NoCommittedEntryWebContentsObserver
       content::RenderFrameHost* rfh,
       const std::vector<blink::mojom::FaviconURLPtr>& candidates) override {
     auto* web_contents = content::WebContents::FromRenderFrameHost(rfh);
-    if (!web_contents->GetController().GetLastCommittedEntry()) {
-      did_update_favicon_url_with_no_committed_entry_ = true;
+    content::NavigationEntry* current_entry =
+        web_contents->GetController().GetLastCommittedEntry();
+    if (!current_entry || current_entry->IsInitialEntry()) {
+      did_update_favicon_url_with_no_committed_navigation_ = true;
     }
   }
 
  private:
-  bool did_update_favicon_url_with_no_committed_entry_ = false;
+  bool did_update_favicon_url_with_no_committed_navigation_ = false;
 };
 
 // Observes the creation of new tabs and, upon creation, sets up both a pending
 // task waiter (to ensure that ContentFaviconDriver tasks complete) and a
-// NoCommittedEntryWebContentsObserver (to ensure that we observe the expected
-// function calls).
-class FaviconUpdateNoLastCommittedEntryTabStripObserver
+// NoCommittedNavigationWebContentsObserver (to ensure that we observe the
+// expected function calls).
+class FaviconUpdateOnlyInitialEntryTabStripObserver
     : public TabStripModelObserver {
  public:
-  explicit FaviconUpdateNoLastCommittedEntryTabStripObserver(
-      TabStripModel* model)
+  explicit FaviconUpdateOnlyInitialEntryTabStripObserver(TabStripModel* model)
       : model_(model) {
     model_->AddObserver(this);
   }
-  ~FaviconUpdateNoLastCommittedEntryTabStripObserver() override {
+  ~FaviconUpdateOnlyInitialEntryTabStripObserver() override {
     model_->RemoveObserver(this);
   }
 
@@ -391,8 +394,8 @@ class FaviconUpdateNoLastCommittedEntryTabStripObserver
       run_loop_.Run();
   }
 
-  bool DidUpdateFaviconURLWithNoCommittedEntry() const {
-    return observer_->DidUpdateFaviconURLWithNoCommittedEntry();
+  bool DidUpdateFaviconURLWithNoCommittedNavigation() const {
+    return observer_->DidUpdateFaviconURLWithNoCommittedNavigation();
   }
 
   PendingTaskWaiter* pending_task_waiter() {
@@ -409,24 +412,24 @@ class FaviconUpdateNoLastCommittedEntryTabStripObserver
       return;
     auto* web_contents = model_->GetActiveWebContents();
     pending_task_waiter_ = std::make_unique<PendingTaskWaiter>(web_contents);
-    observer_ =
-        std::make_unique<NoCommittedEntryWebContentsObserver>(web_contents);
+    observer_ = std::make_unique<NoCommittedNavigationWebContentsObserver>(
+        web_contents);
     run_loop_.Quit();
   }
 
  private:
   base::RunLoop run_loop_;
-  TabStripModel* model_ = nullptr;
+  raw_ptr<TabStripModel> model_ = nullptr;
   std::unique_ptr<PendingTaskWaiter> pending_task_waiter_;
-  std::unique_ptr<NoCommittedEntryWebContentsObserver> observer_;
+  std::unique_ptr<NoCommittedNavigationWebContentsObserver> observer_;
 };
 
 // Tests that ContentFaviconDriver can handle being sent updated favicon URLs
-// if there is no last committed entry. This occurs when script is injected in
-// about:blank in a newly created window. See crbug.com/520759 for more
-// details.
+// if there is no committed navigation, so it will use the initial
+// NavigationEntry. This occurs when script is injected in the initial empty
+// document of a newly created window. See crbug.com/520759 for more details.
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
-                       FaviconUpdateNoLastCommittedEntry) {
+                       FaviconUpdateOnlyInitialEntry) {
   const char kNoContentPath[] = "/nocontent";
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(&NoContentResponseHandler, kNoContentPath));
@@ -435,7 +438,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   GURL empty_url = embedded_test_server()->GetURL("/empty.html");
   GURL no_content_url = embedded_test_server()->GetURL("/nocontent");
 
-  FaviconUpdateNoLastCommittedEntryTabStripObserver observer(
+  FaviconUpdateOnlyInitialEntryTabStripObserver observer(
       browser()->tab_strip_model());
 
   auto* rfh = ui_test_utils::NavigateToURLWithDisposition(
@@ -443,7 +446,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       ui_test_utils::BROWSER_TEST_WAIT_FOR_LOAD_STOP);
 
   EXPECT_TRUE(content::ExecJs(rfh, content::JsReplace(R"(
-        let w = window.open();
+        let w = window.open('/page204.html');
         w.document.write('abc');
         w.document.close();
         w.location.href = $1;)",
@@ -458,7 +461,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
   observer.pending_task_waiter()->Wait();
 
   // We expect DidUpdateFaviconURL to be called and for no crash to ensue.
-  EXPECT_TRUE(observer.DidUpdateFaviconURLWithNoCommittedEntry());
+  EXPECT_TRUE(observer.DidUpdateFaviconURLWithNoCommittedNavigation());
 }
 
 // Test that when a user reloads a page ignoring the cache that the favicon is
@@ -565,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, ChangeTouchIconViaJavascript) {
 
 // Test that favicon mappings are removed if the page initially lists a touch
 // icon and later uses Javascript to remove it.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, RemoveTouchIconViaJavascript) {
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url = embedded_test_server()->GetURL(
@@ -643,7 +646,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest, LoadIconFromWebManifest) {
       ui_test_utils::BROWSER_TEST_NONE);
   waiter.Wait();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(url_loader_interceptor.was_loaded(icon_url));
   ASSERT_EQ(network::mojom::RequestDestination::kImage,
             url_loader_interceptor.destination(icon_url));
@@ -906,7 +909,7 @@ IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
       GetFaviconForPageURL(url, favicon_base::IconType::kFavicon).bitmap_data);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(ContentFaviconDriverTest,
                        LoadIconFromWebManifestDespitePushState) {
   ASSERT_TRUE(embedded_test_server()->Start());

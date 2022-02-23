@@ -6,11 +6,13 @@
 
 #include <string>
 
+#include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_controller.h"
 #include "ash/public/cpp/assistant/test_support/mock_assistant_state.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/app_list/app_list_test_util.h"
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
+#include "chrome/browser/ui/app_list/search/test/test_search_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/gurl.h"
 
@@ -21,7 +23,9 @@ using chromeos::assistant::AssistantAllowedState;
 
 class AssistantTextSearchProviderTest : public AppListTestBase {
  public:
-  AssistantTextSearchProviderTest() = default;
+  AssistantTextSearchProviderTest() {
+    search_provider_.set_controller(&search_controller_);
+  }
   AssistantTextSearchProviderTest(const AssistantTextSearchProviderTest&) =
       delete;
   AssistantTextSearchProviderTest& operator=(
@@ -40,9 +44,17 @@ class AssistantTextSearchProviderTest : public AppListTestBase {
     return assistant_controller_;
   }
 
+  const SearchProvider::Results& LastResults() {
+    if (app_list_features::IsCategoricalSearchEnabled()) {
+      return search_controller_.last_results();
+    } else {
+      return search_provider_.results();
+    }
+  }
+
   void VerifyResultAt(size_t index, const std::string& text) {
-    EXPECT_LT(index, search_provider().results().size());
-    auto* result = search_provider().results().at(0).get();
+    EXPECT_LT(index, LastResults().size());
+    auto* result = LastResults().at(0).get();
     EXPECT_EQ(result->title(), base::UTF8ToUTF16(text));
     EXPECT_EQ(result->id(), "googleassistant_text://" + text);
     EXPECT_EQ(result->accessible_name(),
@@ -55,34 +67,35 @@ class AssistantTextSearchProviderTest : public AppListTestBase {
  private:
   ash::MockAssistantState assistant_state_;
   testing::NiceMock<ash::MockAssistantController> assistant_controller_;
+  TestSearchController search_controller_;
   AssistantTextSearchProvider search_provider_;
 };
 
 // Tests -----------------------------------------------------------------------
 
 TEST_F(AssistantTextSearchProviderTest, ShouldNotProvideResultForEmptyQuery) {
-  EXPECT_TRUE(search_provider().results().empty());
+  EXPECT_TRUE(LastResults().empty());
 
   SendText("testing");
   // Should now have a search result with title "testing".
-  EXPECT_EQ(search_provider().results().size(), 1u);
+  EXPECT_EQ(LastResults().size(), 1u);
   VerifyResultAt(0, "testing");
 
   SendText("");
   // Should have no search results.
-  EXPECT_TRUE(search_provider().results().empty());
+  EXPECT_TRUE(LastResults().empty());
 }
 
 TEST_F(AssistantTextSearchProviderTest,
        ShouldUpdateResultsWhenAssistantSettingsChange) {
   SendText("testing");
-  EXPECT_EQ(search_provider().results().size(), 1u);
+  EXPECT_EQ(LastResults().size(), 1u);
 
   assistant_state().SetSettingsEnabled(false);
-  EXPECT_TRUE(search_provider().results().empty());
+  EXPECT_TRUE(LastResults().empty());
 
   assistant_state().SetSettingsEnabled(true);
-  EXPECT_EQ(search_provider().results().size(), 1u);
+  EXPECT_EQ(LastResults().size(), 1u);
 }
 
 TEST_F(AssistantTextSearchProviderTest,
@@ -96,11 +109,11 @@ TEST_F(AssistantTextSearchProviderTest,
 
     // When Assistant becomes not-allowed, results should be cleared.
     assistant_state().SetAllowedState(static_cast<AssistantAllowedState>(i));
-    EXPECT_TRUE(search_provider().results().empty());
+    EXPECT_TRUE(LastResults().empty());
 
     // When Assistant becomes allowed, we should again have a single result.
     assistant_state().SetAllowedState(AssistantAllowedState::ALLOWED);
-    EXPECT_EQ(1u, search_provider().results().size());
+    EXPECT_EQ(1u, LastResults().size());
   }
 }
 TEST_F(AssistantTextSearchProviderTest, ShouldDeepLinkAssistantQuery) {
@@ -114,7 +127,7 @@ TEST_F(AssistantTextSearchProviderTest, ShouldDeepLinkAssistantQuery) {
                                testing::SaveArg<1>(&in_background),
                                testing::SaveArg<2>(&from_user)));
 
-  search_provider().results().at(0)->Open(/*event_flags=*/0);
+  LastResults().at(0)->Open(/*event_flags=*/0);
   EXPECT_EQ(url, GURL("googleassistant://send-query?q=testing+query"));
   EXPECT_FALSE(in_background);
   EXPECT_FALSE(from_user);

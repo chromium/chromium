@@ -107,12 +107,6 @@ void WebSettingsImpl::SetFantasyFontFamily(const WebString& font,
     settings_->NotifyGenericFontFamilyChange();
 }
 
-void WebSettingsImpl::SetPictographFontFamily(const WebString& font,
-                                              UScriptCode script) {
-  if (settings_->GetGenericFontFamilySettings().UpdatePictograph(font, script))
-    settings_->NotifyGenericFontFamilyChange();
-}
-
 void WebSettingsImpl::SetDefaultFontSize(int size) {
   settings_->SetDefaultFontSize(size);
 }
@@ -432,10 +426,6 @@ void WebSettingsImpl::SetBarrelButtonForDragEnabled(bool enabled) {
   settings_->SetBarrelButtonForDragEnabled(enabled);
 }
 
-void WebSettingsImpl::SetOfflineWebApplicationCacheEnabled(bool enabled) {
-  settings_->SetOfflineWebApplicationCacheEnabled(enabled);
-}
-
 void WebSettingsImpl::SetWebGL1Enabled(bool enabled) {
   settings_->SetWebGL1Enabled(enabled);
 }
@@ -747,26 +737,6 @@ void WebSettingsImpl::SetLazyImageLoadingDistanceThresholdPx3G(
 void WebSettingsImpl::SetLazyImageLoadingDistanceThresholdPx4G(
     int distance_px) {
   settings_->SetLazyImageLoadingDistanceThresholdPx4G(distance_px);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoadUnknown(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoadUnknown(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoadSlow2G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoadSlow2G(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoad2G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoad2G(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoad3G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoad3G(num_images);
-}
-
-void WebSettingsImpl::SetLazyImageFirstKFullyLoad4G(int num_images) {
-  settings_->SetLazyImageFirstKFullyLoad4G(num_images);
 }
 
 void WebSettingsImpl::SetForceDarkModeEnabled(bool enabled) {

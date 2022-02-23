@@ -25,7 +25,7 @@ namespace gfx {
 namespace {
 
 gfx::AcceleratedWidget CastToAcceleratedWidget(int i) {
-#if defined(USE_OZONE) || defined(OS_APPLE)
+#if defined(USE_OZONE) || BUILDFLAG(IS_APPLE)
   return static_cast<gfx::AcceleratedWidget>(i);
 #else
   return reinterpret_cast<gfx::AcceleratedWidget>(i);
@@ -118,22 +118,22 @@ TEST_F(StructTraitsTest, Transform) {
   mojo::Remote<mojom::TraitsTestService> remote = GetTraitsTestRemote();
   gfx::Transform output;
   remote->EchoTransform(input, &output);
-  EXPECT_EQ(col1row1, output.matrix().get(0, 0));
-  EXPECT_EQ(col2row1, output.matrix().get(0, 1));
-  EXPECT_EQ(col3row1, output.matrix().get(0, 2));
-  EXPECT_EQ(col4row1, output.matrix().get(0, 3));
-  EXPECT_EQ(col1row2, output.matrix().get(1, 0));
-  EXPECT_EQ(col2row2, output.matrix().get(1, 1));
-  EXPECT_EQ(col3row2, output.matrix().get(1, 2));
-  EXPECT_EQ(col4row2, output.matrix().get(1, 3));
-  EXPECT_EQ(col1row3, output.matrix().get(2, 0));
-  EXPECT_EQ(col2row3, output.matrix().get(2, 1));
-  EXPECT_EQ(col3row3, output.matrix().get(2, 2));
-  EXPECT_EQ(col4row3, output.matrix().get(2, 3));
-  EXPECT_EQ(col1row4, output.matrix().get(3, 0));
-  EXPECT_EQ(col2row4, output.matrix().get(3, 1));
-  EXPECT_EQ(col3row4, output.matrix().get(3, 2));
-  EXPECT_EQ(col4row4, output.matrix().get(3, 3));
+  EXPECT_EQ(col1row1, output.matrix().rc(0, 0));
+  EXPECT_EQ(col2row1, output.matrix().rc(0, 1));
+  EXPECT_EQ(col3row1, output.matrix().rc(0, 2));
+  EXPECT_EQ(col4row1, output.matrix().rc(0, 3));
+  EXPECT_EQ(col1row2, output.matrix().rc(1, 0));
+  EXPECT_EQ(col2row2, output.matrix().rc(1, 1));
+  EXPECT_EQ(col3row2, output.matrix().rc(1, 2));
+  EXPECT_EQ(col4row2, output.matrix().rc(1, 3));
+  EXPECT_EQ(col1row3, output.matrix().rc(2, 0));
+  EXPECT_EQ(col2row3, output.matrix().rc(2, 1));
+  EXPECT_EQ(col3row3, output.matrix().rc(2, 2));
+  EXPECT_EQ(col4row3, output.matrix().rc(2, 3));
+  EXPECT_EQ(col1row4, output.matrix().rc(3, 0));
+  EXPECT_EQ(col2row4, output.matrix().rc(3, 1));
+  EXPECT_EQ(col3row4, output.matrix().rc(3, 2));
+  EXPECT_EQ(col4row4, output.matrix().rc(3, 3));
 }
 
 TEST_F(StructTraitsTest, AcceleratedWidget) {
@@ -171,18 +171,18 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
   base::UnsafeSharedMemoryRegion output_memory = std::move(output.region);
   EXPECT_TRUE(output_memory.Map().IsValid());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(USE_OZONE)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || defined(USE_OZONE)
   gfx::GpuMemoryBufferHandle handle2;
   const uint64_t kSize = kOffset + kStride;
   handle2.type = gfx::NATIVE_PIXMAP;
   handle2.id = kId;
   handle2.offset = kOffset;
   handle2.stride = kStride;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const uint64_t kModifier = 2;
   base::ScopedFD buffer_handle;
   handle2.native_pixmap_handle.modifier = kModifier;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo buffer_handle;
   handle2.native_pixmap_handle.buffer_collection_id =
       gfx::SysmemBufferCollectionId::Create();
@@ -193,9 +193,9 @@ TEST_F(StructTraitsTest, GpuMemoryBufferHandle) {
                                                    std::move(buffer_handle));
   remote->EchoGpuMemoryBufferHandle(std::move(handle2), &output);
   EXPECT_EQ(gfx::NATIVE_PIXMAP, output.type);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(kModifier, output.native_pixmap_handle.modifier);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   EXPECT_EQ(handle2.native_pixmap_handle.buffer_collection_id,
             output.native_pixmap_handle.buffer_collection_id);
   EXPECT_EQ(handle2.native_pixmap_handle.buffer_index,
@@ -245,6 +245,10 @@ TEST_F(StructTraitsTest, PresentationFeedback) {
   uint32_t flags =
       PresentationFeedback::kVSync | PresentationFeedback::kZeroCopy;
   PresentationFeedback input{timestamp, interval, flags};
+#if BUILDFLAG(IS_MAC)
+  input.ca_layer_error_code = kCALayerFailedPictureContent;
+#endif
+
   input.available_timestamp = base::TimeTicks() + base::Milliseconds(20);
   input.ready_timestamp = base::TimeTicks() + base::Milliseconds(21);
   input.latch_timestamp = base::TimeTicks() + base::Milliseconds(22);
@@ -257,6 +261,9 @@ TEST_F(StructTraitsTest, PresentationFeedback) {
   EXPECT_EQ(input.available_timestamp, output.available_timestamp);
   EXPECT_EQ(input.ready_timestamp, output.ready_timestamp);
   EXPECT_EQ(input.latch_timestamp, output.latch_timestamp);
+#if BUILDFLAG(IS_MAC)
+  EXPECT_EQ(input.ca_layer_error_code, output.ca_layer_error_code);
+#endif
 }
 
 TEST_F(StructTraitsTest, RRectF) {

@@ -13,6 +13,8 @@
 #import "base/numerics/safe_conversions.h"
 #include "base/strings/sys_string_conversions.h"
 #include "components/prefs/pref_service.h"
+#include "components/search_engines/template_url_service.h"
+#include "components/sessions/core/session_id.h"
 #include "components/sessions/core/tab_restore_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync_sessions/open_tabs_ui_delegate.h"
@@ -23,6 +25,8 @@
 #import "ios/chrome/browser/drag_and_drop/table_view_url_drag_drop_handler.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/metrics/new_tab_page_uma.h"
+#import "ios/chrome/browser/net/crurl.h"
+#include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #include "ios/chrome/browser/sessions/live_tab_context_browser_agent.h"
 #include "ios/chrome/browser/sessions/session_util.h"
 #include "ios/chrome/browser/signin/authentication_service_factory.h"
@@ -30,6 +34,8 @@
 #include "ios/chrome/browser/sync/session_sync_service_factory.h"
 #include "ios/chrome/browser/sync/sync_observer_bridge.h"
 #include "ios/chrome/browser/sync/sync_service_factory.h"
+#import "ios/chrome/browser/tabs_search/tabs_search_service.h"
+#import "ios/chrome/browser/tabs_search/tabs_search_service_factory.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
@@ -48,12 +54,15 @@
 #include "ios/chrome/browser/ui/recent_tabs/synced_sessions.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_presenter.h"
 #import "ios/chrome/browser/ui/settings/sync/utils/sync_util.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/features.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_activity_indicator_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_cells_constants.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_disclosure_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_illustrated_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_image_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_url_item.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
@@ -86,6 +95,7 @@ namespace {
 typedef NS_ENUM(NSInteger, SectionIdentifier) {
   SectionIdentifierRecentlyClosedTabs = kSectionIdentifierEnumZero,
   SectionIdentifierOtherDevices,
+  SectionIdentifierSuggestedActions,
   // The first SessionsSectionIdentifier index.
   kFirstSessionSectionIdentifier,
 };
@@ -103,6 +113,10 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeSessionTabData,
   ItemTypeShowFullHistory,
   ItemTypeSigninDisabled,
+  ItemTypeSuggestedActionsHeader,
+  ItemTypeSuggestedActionSearchOpenTabs,
+  ItemTypeSuggestedActionSearchWeb,
+  ItemTypeSuggestedActionSearchHistory,
 };
 
 // Key for saving whether the Other Device section is collapsed.
@@ -117,6 +131,11 @@ const CGFloat kEstimatedRowHeight = 56;
 const CGFloat kSeparationSpaceBetweenSections = 9;
 // Section index for recently closed tabs.
 const int kRecentlyClosedTabsSectionIndex = 0;
+
+// A pair representing a single recently closed item. The |TableViewURLItem| is
+// used to display the item and the |SessionID| is used to restore the item if
+// selected by the user.
+typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 
 }  // namespace
 
@@ -133,7 +152,16 @@ const int kRecentlyClosedTabsSectionIndex = 0;
                                              TableViewURLDragDataSource,
                                              UIContextMenuInteractionDelegate,
                                              UIGestureRecognizerDelegate> {
+  // The displayed recently closed tabs.
+  std::vector<RecentlyClosedTableViewItemPair> _recentlyClosedItems;
+
+  // The instance which owns the DistantTabs to display.
   std::unique_ptr<synced_sessions::SyncedSessions> _syncedSessions;
+  // The displayed sessions and tabs. The sessions and tabs are owned by
+  // |_syncedSessions|, but |_displayedTabs| allows for filtering to display
+  // only particular tabs.
+  std::vector<synced_sessions::DistantTabsSet> _displayedTabs;
+
   std::unique_ptr<SyncObserverBridge> _syncObserver;
 }
 // The service that manages the recently closed tabs
@@ -204,10 +232,6 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   }
 }
 
-- (void)viewWillDisappear:(BOOL)animated {
-  [super viewWillDisappear:animated];
-}
-
 #pragma mark - Setters & Getters
 
 - (void)setBrowser:(Browser*)browser {
@@ -261,7 +285,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 #pragma mark - SyncObserverModelBridge
 
 - (void)onSyncStateChanged {
-  if (self.preventUpdates ||
+  if (self.preventUpdates || self.searchTerms.length ||
       ![self.tableViewModel
           hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
     return;
@@ -294,11 +318,20 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   } else {
     [self addOtherDevicesSectionForState:self.sessionState];
   }
+
+  if (IsTabsSearchEnabled() && self.searchTerms.length) {
+    [self addSuggestedActionsSection];
+  }
 }
 
 #pragma mark Recently Closed Section
 
 - (void)addRecentlyClosedSection {
+  // Hide section during search if empty.
+  if (![self recentlyClosedTabsSectionExists]) {
+    return;
+  }
+
   TableViewModel* model = self.tableViewModel;
 
   // Recently Closed Section.
@@ -322,6 +355,12 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   // Add Recently Closed Tabs Cells.
   [self addRecentlyClosedTabItems];
 
+  if (self.searchTerms.length) {
+    // Hide the show full history item in the recently closed section while
+    // searching.
+    return;
+  }
+
   // Add show full history item last.
   TableViewImageItem* historyItem =
       [[TableViewImageItem alloc] initWithType:ItemTypeShowFullHistory];
@@ -343,29 +382,47 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (void)addRecentlyClosedTabItems {
   if (!self.tabRestoreService)
     return;
-  for (auto iter = self.tabRestoreService->entries().begin();
-       iter != self.tabRestoreService->entries().end(); ++iter) {
-    const sessions::TabRestoreService::Entry* entry = iter->get();
-    DCHECK(entry);
-    DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
-    const sessions::TabRestoreService::Tab* tab =
-        static_cast<const sessions::TabRestoreService::Tab*>(entry);
-    const sessions::SerializedNavigationEntry& navigationEntry =
-        tab->navigations[tab->current_navigation_index];
 
-    // Configure and add the Item.
-    TableViewURLItem* recentlyClosedTab =
-        [[TableViewURLItem alloc] initWithType:ItemTypeRecentlyClosed];
-    recentlyClosedTab.title = base::SysUTF16ToNSString(navigationEntry.title());
-    recentlyClosedTab.URL = navigationEntry.virtual_url();
-    [self.tableViewModel addItem:recentlyClosedTab
+  if (!IsTabsSearchEnabled() || !self.searchTerms.length) {
+    // A manual item refresh is necessary when tab search is disabled or when
+    // there is no search term.
+
+    std::vector<RecentlyClosedTableViewItemPair> recentlyClosedItems;
+    for (auto iter = self.tabRestoreService->entries().begin();
+         iter != self.tabRestoreService->entries().end(); ++iter) {
+      const sessions::TabRestoreService::Entry* entry = iter->get();
+      DCHECK(entry);
+      // Only TAB type is handled.
+      // TODO(crbug.com/1056596) : Support WINDOW restoration under
+      // multi-window.
+      DCHECK_EQ(sessions::TabRestoreService::TAB, entry->type);
+
+      const sessions::TabRestoreService::Tab* tab =
+          static_cast<const sessions::TabRestoreService::Tab*>(entry);
+      const sessions::SerializedNavigationEntry& navigationEntry =
+          tab->navigations[tab->current_navigation_index];
+
+      TableViewURLItem* recentlyClosedTab =
+          [[TableViewURLItem alloc] initWithType:ItemTypeRecentlyClosed];
+      recentlyClosedTab.title =
+          base::SysUTF16ToNSString(navigationEntry.title());
+      recentlyClosedTab.URL =
+          [[CrURL alloc] initWithGURL:navigationEntry.virtual_url()];
+
+      RecentlyClosedTableViewItemPair item(entry->id, recentlyClosedTab);
+      recentlyClosedItems.push_back(item);
+    }
+    _recentlyClosedItems = recentlyClosedItems;
+  }
+
+  for (const RecentlyClosedTableViewItemPair& item : _recentlyClosedItems) {
+    [self.tableViewModel addItem:item.second
          toSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
   }
 }
 
 // Updates the recently closed tabs section by clobbering and reinserting
-// section. Needs to be called inside a [UITableView beginUpdates] block on
-// iOS10, or performBatchUpdates on iOS11+.
+// section. Needs to be called inside a performBatchUpdates block.
 - (void)updateRecentlyClosedSection {
   [self.tableViewModel
       removeSectionWithIdentifier:SectionIdentifierRecentlyClosedTabs];
@@ -379,8 +436,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 #pragma mark Sessions Section
 
 // Cleans up the model in order to update the Session sections. Needs to be
-// called inside a [UITableView beginUpdates] block on iOS10, or
-// performBatchUpdates on iOS11+.
+// called inside a performBatchUpdates block.
 - (void)updateSessionSections {
   SessionsSyncUserState previousState = self.sessionState;
   if (previousState !=
@@ -407,7 +463,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   TableViewModel* model = self.tableViewModel;
   for (NSUInteger i = 0; i < [self numberOfSessions]; i++) {
     synced_sessions::DistantSession const* session =
-        _syncedSessions->GetSession(i);
+        _syncedSessions->GetSessionWithTag(_displayedTabs[i].session_tag);
     NSInteger sessionIdentifier = [self sectionIdentifierForSession:session];
     [model addSectionWithIdentifier:sessionIdentifier];
     NSString* sessionCollapsedKey = base::SysUTF8ToNSString(session->tag);
@@ -427,51 +483,108 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 }
 
 - (void)addItemsForSession:(synced_sessions::DistantSession const*)session {
-  TableViewModel* model = self.tableViewModel;
-  NSInteger numberOfTabs = base::checked_cast<NSInteger>(session->tabs.size());
-  for (int i = 0; i < numberOfTabs; i++) {
-    synced_sessions::DistantTab const* sessionTab = session->tabs[i].get();
-    NSString* title = base::SysUTF16ToNSString(sessionTab->title);
+  const synced_sessions::DistantTabsSet* session_tabs_set =
+      [self distantTabsSetForSessionWithTag:session->tag];
 
-    TableViewURLItem* sessionTabItem =
-        [[TableViewURLItem alloc] initWithType:ItemTypeSessionTabData];
-    sessionTabItem.title = title;
-    sessionTabItem.URL = sessionTab->virtual_url;
-    [model addItem:sessionTabItem
-        toSectionWithIdentifier:[self sectionIdentifierForSession:session]];
+  if (!session_tabs_set) {
+    return;
+  }
+
+  NSInteger sectionIdentifier = [self sectionIdentifierForSession:session];
+  if (session_tabs_set->filtered_tabs) {
+    // Only add the items from |filtered_tabs|.
+    for (synced_sessions::DistantTab* sessionTab :
+         session_tabs_set->filtered_tabs.value()) {
+      [self addItemForDistantTab:sessionTab
+          toSectionWithIdentifier:sectionIdentifier];
+    }
+  } else {
+    // When |filtered_tabs| is null, all tabs in the session are included
+    // in the set.
+    for (auto&& sessionTab : session->tabs) {
+      [self addItemForDistantTab:sessionTab.get()
+          toSectionWithIdentifier:sectionIdentifier];
+    }
   }
 }
 
+- (void)addItemForDistantTab:(synced_sessions::DistantTab*)sessionTab
+     toSectionWithIdentifier:(NSInteger)sectionIdentifier {
+  NSString* title = base::SysUTF16ToNSString(sessionTab->title);
+
+  TableViewURLItem* sessionTabItem =
+      [[TableViewURLItem alloc] initWithType:ItemTypeSessionTabData];
+  sessionTabItem.title = title;
+  sessionTabItem.URL = [[CrURL alloc] initWithGURL:sessionTab->virtual_url];
+  [self.tableViewModel addItem:sessionTabItem
+       toSectionWithIdentifier:sectionIdentifier];
+}
+
 // Remove all SessionSections from |self.tableViewModel| and |self.tableView|
-// Needs to be called inside a [UITableView beginUpdates] block on iOS10, or
-// performBatchUpdates on iOS11+.
+// Needs to be called inside a performBatchUpdates block.
 - (void)removeSessionSections {
-  // |_syncedSessions| has been updated by now, that means that
-  // |self.tableViewModel| does not reflect |_syncedSessions| data.
-  NSInteger sectionIdentifierToRemove = kFirstSessionSectionIdentifier;
-  NSInteger sectionToDelete = kNumberOfSectionsBeforeSessions;
-  while ([self.tableViewModel numberOfSections] >
-         kNumberOfSectionsBeforeSessions) {
+  if (!IsTabsSearchEnabled()) {
+    // |_displayedTabs| has been updated by now, that means that
+    // |self.tableViewModel| does not reflect |_displayedTabs| data.
+    NSInteger sectionIdentifierToRemove = kFirstSessionSectionIdentifier;
+    NSInteger sectionToDelete = kNumberOfSectionsBeforeSessions;
+    while ([self.tableViewModel numberOfSections] >
+           kNumberOfSectionsBeforeSessions) {
+      // A SectionIdentifier could've been deleted previously, do not rely on
+      // these being in sequential order at this point.
+      if ([self.tableViewModel
+              hasSectionForSectionIdentifier:sectionIdentifierToRemove]) {
+        [self.tableView
+              deleteSections:[NSIndexSet indexSetWithIndex:sectionToDelete]
+            withRowAnimation:UITableViewRowAnimationNone];
+        sectionToDelete++;
+        [self.tableViewModel
+            removeSectionWithIdentifier:sectionIdentifierToRemove];
+      }
+      sectionIdentifierToRemove++;
+    }
+    return;
+  }
+
+  // |_displayedTabs| has been updated by now, that means that
+  // |self.tableViewModel| does not reflect |_displayedTabs| data.
+  NSInteger firstSessionSectionIndex = 0;
+  NSInteger sectionCountToRemove = [self.tableViewModel numberOfSections];
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierRecentlyClosedTabs]) {
+    sectionCountToRemove--;
+    // Recently closed section is before the remote session sections, do not
+    // remove it.
+    firstSessionSectionIndex++;
+  }
+  if ([self.tableViewModel
+          hasSectionForSectionIdentifier:SectionIdentifierSuggestedActions]) {
+    sectionCountToRemove--;
+  }
+
+  NSInteger sectionIndexToDelete = firstSessionSectionIndex;
+  for (NSInteger sessionSection = 0; sessionSection < sectionCountToRemove;
+       sessionSection++) {
+    NSInteger sectionIdentifierToRemove =
+        kFirstSessionSectionIdentifier + sessionSection;
     // A SectionIdentifier could've been deleted previously, do not rely on
     // these being in sequential order at this point.
     if ([self.tableViewModel
             hasSectionForSectionIdentifier:sectionIdentifierToRemove]) {
       [self.tableView
-            deleteSections:[NSIndexSet indexSetWithIndex:sectionToDelete]
+            deleteSections:[NSIndexSet indexSetWithIndex:sectionIndexToDelete]
           withRowAnimation:UITableViewRowAnimationNone];
-      sectionToDelete++;
+      sectionIndexToDelete++;
       [self.tableViewModel
           removeSectionWithIdentifier:sectionIdentifierToRemove];
     }
-    sectionIdentifierToRemove++;
   }
 }
 
 #pragma mark Other Devices Section
 
 // Cleans up the model in order to update the Other devices section. Needs to be
-// called inside a [UITableView beginUpdates] block on iOS10, or
-// performBatchUpdates on iOS11+.
+// called inside a performBatchUpdates block.
 - (void)updateOtherDevicesSectionForState:(SessionsSyncUserState)newState {
   DCHECK_NE(newState,
             SessionsSyncUserState::USER_SIGNED_IN_SYNC_ON_WITH_SESSIONS);
@@ -633,6 +746,48 @@ const int kRecentlyClosedTabsSectionIndex = 0;
        toSectionWithIdentifier:SectionIdentifierOtherDevices];
 }
 
+#pragma mark Suggested Actions Section
+
+- (void)addSuggestedActionsSection {
+  DCHECK(IsTabsSearchEnabled());
+
+  TableViewModel* model = self.tableViewModel;
+
+  [model addSectionWithIdentifier:SectionIdentifierSuggestedActions];
+  TableViewTextHeaderFooterItem* header = [[TableViewTextHeaderFooterItem alloc]
+      initWithType:ItemTypeSuggestedActionsHeader];
+  header.text = l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTIONS);
+  [model setHeader:header
+      forSectionWithIdentifier:SectionIdentifierSuggestedActions];
+
+  TableViewImageItem* searchWebItem = [[TableViewImageItem alloc]
+      initWithType:ItemTypeSuggestedActionSearchWeb];
+  searchWebItem.title =
+      l10n_util::GetNSString(IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_WEB);
+  searchWebItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+      imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+  [model addItem:searchWebItem
+      toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+
+  if ([self.presentationDelegate
+          respondsToSelector:@selector(showRegularTabGridFromRecentTabs)]) {
+    TableViewImageItem* searchOpenTabsItem = [[TableViewImageItem alloc]
+        initWithType:ItemTypeSuggestedActionSearchOpenTabs];
+    searchOpenTabsItem.title = l10n_util::GetNSString(
+        IDS_IOS_TABS_SEARCH_SUGGESTED_ACTION_SEARCH_OPEN_TABS);
+    searchOpenTabsItem.image = [[UIImage imageNamed:@"popup_menu_search"]
+        imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+    [model addItem:searchOpenTabsItem
+        toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+  }
+
+  TableViewTabsSearchSuggestedHistoryItem* searchHistoryItem =
+      [[TableViewTabsSearchSuggestedHistoryItem alloc]
+          initWithType:ItemTypeSuggestedActionSearchHistory];
+  [model addItem:searchHistoryItem
+      toSectionWithIdentifier:SectionIdentifierSuggestedActions];
+}
+
 #pragma mark - TableViewModel Helpers
 
 // Ordered array of all section identifiers.
@@ -650,9 +805,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (NSInteger)sectionIdentifierForSession:
     (synced_sessions::DistantSession const*)distantSession {
   for (NSUInteger i = 0; i < [self numberOfSessions]; i++) {
-    synced_sessions::DistantSession const* session =
-        _syncedSessions->GetSession(i);
-    if (session->tag == distantSession->tag)
+    if (_displayedTabs[i].session_tag == distantSession->tag)
       return i + kFirstSessionSectionIdentifier;
   }
   NOTREACHED();
@@ -666,14 +819,26 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   return [NSIndexSet indexSetWithIndex:otherDevicesSection];
 }
 
-// Returns an IndexSet containing the all the Session Sections.
+// Returns an IndexSet containing all the Session Sections.
 - (NSIndexSet*)sessionSectionIndexSet {
   // Create a range of all Session Sections.
   NSRange rangeOfSessionSections =
-      NSMakeRange(kNumberOfSectionsBeforeSessions, [self numberOfSessions]);
+      NSMakeRange([self firstSessionSectionIndex], [self numberOfSessions]);
   NSIndexSet* sessionSectionIndexes =
       [NSIndexSet indexSetWithIndexesInRange:rangeOfSessionSections];
   return sessionSectionIndexes;
+}
+
+- (NSInteger)firstSessionSectionIndex {
+  if (!IsTabsSearchEnabled()) {
+    return kNumberOfSectionsBeforeSessions;
+  }
+
+  NSInteger firstSessionSectionIndex = 0;
+  if ([self recentlyClosedTabsSectionExists]) {
+    firstSessionSectionIndex++;
+  }
+  return firstSessionSectionIndex;
 }
 
 #pragma mark - Public
@@ -683,7 +848,9 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   NSInteger section =
       [self.tableViewModel sectionForSectionIdentifier:sectionIdentifer];
   DCHECK([self isSessionSectionIdentifier:sectionIdentifer]);
-  return _syncedSessions->GetSession(section - kNumberOfSectionsBeforeSessions);
+  const synced_sessions::DistantTabsSet& tabsSet =
+      _displayedTabs[section - [self firstSessionSectionIndex]];
+  return _syncedSessions->GetSessionWithTag(tabsSet.session_tag);
 }
 
 - (void)removeSessionAtTableSectionWithIdentifier:(NSInteger)sectionIdentifier {
@@ -699,19 +866,107 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   __weak __typeof(self) weakSelf = self;
   [self.tableView
       performBatchUpdates:^{
-        [weakSelf removeSection:sectionIdentifier];
+        [weakSelf removeSection:sectionIdentifier forSessionWithTag:sessionTag];
       }
       completion:^(BOOL) {
         [weakSelf deleteSession:sessionTag];
       }];
 }
 
+- (void)setSearchTerms:(NSString*)searchTerms {
+  DCHECK(IsTabsSearchEnabled());
+
+  if (_searchTerms == searchTerms ||
+      // No need for an update if transitioning between nil and empty string.
+      // (Length of both |_searchTerms| and |searchTerms| will be zero.)
+      (!_searchTerms.length && !searchTerms.length)) {
+    return;
+  }
+
+  _searchTerms = searchTerms;
+
+  if (self.preventUpdates)
+    return;
+
+  TabsSearchService* search_service =
+      TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+  __weak RecentTabsTableViewController* weakSelf = self;
+  const std::u16string& search_terms =
+      base::SysNSStringToUTF16(self.searchTerms);
+
+  search_service->SearchRecentlyClosed(
+      search_terms,
+      base::BindOnce(^(
+          std::vector<TabsSearchService::RecentlyClosedItemPair> results) {
+        RecentTabsTableViewController* strongSelf = weakSelf;
+        if (!strongSelf) {
+          return;
+        }
+
+        std::vector<RecentlyClosedTableViewItemPair> matchedItems;
+        for (TabsSearchService::RecentlyClosedItemPair item_pair : results) {
+          const sessions::SerializedNavigationEntry& navigationEntry =
+              item_pair.second;
+
+          TableViewURLItem* recentlyClosedTab =
+              [[TableViewURLItem alloc] initWithType:ItemTypeRecentlyClosed];
+          recentlyClosedTab.title =
+              base::SysUTF16ToNSString(navigationEntry.title());
+          recentlyClosedTab.URL =
+              [[CrURL alloc] initWithGURL:navigationEntry.virtual_url()];
+
+          RecentlyClosedTableViewItemPair item(item_pair.first,
+                                               recentlyClosedTab);
+          matchedItems.push_back(item);
+        }
+
+        [strongSelf setRecentlyClosedItems:matchedItems];
+      }));
+
+  search_service->SearchRemoteTabs(
+      search_terms,
+      base::BindOnce(^(
+          std::unique_ptr<synced_sessions::SyncedSessions> synced_sessions,
+          std::vector<synced_sessions::DistantTabsSet> matching_distant_tabs) {
+        [weakSelf setSyncedSessions:std::move(synced_sessions)
+                 distantSessionTabs:matching_distant_tabs];
+      }));
+
+  [self loadModel];
+  [self.tableView reloadData];
+}
+
+// Helper to set the distant tabs to be displayed. The tabs referenced in
+// |displayedTabs| must be owned by |syncedSessions|.
+- (void)setSyncedSessions:
+            (std::unique_ptr<synced_sessions::SyncedSessions>)syncedSessions
+       distantSessionTabs:
+           (std::vector<synced_sessions::DistantTabsSet>)displayedTabs {
+  _syncedSessions = std::move(syncedSessions);
+  _displayedTabs = displayedTabs;
+}
+
+// Helper to set the recently closed items vector.
+- (void)setRecentlyClosedItems:
+    (std::vector<RecentlyClosedTableViewItemPair>)recentlyClosedItems {
+  _recentlyClosedItems = recentlyClosedItems;
+}
+
 // Helper for removeSessionAtTableSectionWithIdentifier
-- (void)removeSection:(NSInteger)sectionIdentifier {
+- (void)removeSection:(NSInteger)sectionIdentifier
+    forSessionWithTag:(std::string)sessionTag {
   NSInteger sectionIndex =
       [self.tableViewModel sectionForSectionIdentifier:sectionIdentifier];
   [self.tableViewModel removeSectionWithIdentifier:sectionIdentifier];
-  _syncedSessions->EraseSession(sectionIndex - kNumberOfSectionsBeforeSessions);
+
+  for (NSUInteger i = 0; i < _displayedTabs.size(); i++) {
+    if (sessionTag == _displayedTabs[i].session_tag) {
+      _displayedTabs.erase(_displayedTabs.begin() + i);
+      break;
+    }
+  }
+  _syncedSessions->EraseSessionWithTag(sessionTag);
+
   [self.tableView deleteSections:[NSIndexSet indexSetWithIndex:sectionIndex]
                 withRowAnimation:UITableViewRowAnimationLeft];
 }
@@ -745,11 +1000,31 @@ const int kRecentlyClosedTabsSectionIndex = 0;
     // won't change.
     return;
   }
-  sync_sessions::SessionSyncService* syncService =
-      SessionSyncServiceFactory::GetForBrowserState(self.browserState);
-  _syncedSessions.reset(new synced_sessions::SyncedSessions(syncService));
 
-  if (!self.preventUpdates) {
+  if (!IsTabsSearchEnabled() || !self.searchTerms.length) {
+    // A manual item refresh is necessary when tab search is disabled or there
+    // is no search term.
+    sync_sessions::SessionSyncService* syncService =
+        SessionSyncServiceFactory::GetForBrowserState(self.browserState);
+    auto syncedSessions =
+        std::make_unique<synced_sessions::SyncedSessions>(syncService);
+
+    std::vector<synced_sessions::DistantTabsSet> displayedTabs;
+    for (size_t s = 0; s < syncedSessions->GetSessionCount(); s++) {
+      const synced_sessions::DistantSession* session =
+          syncedSessions->GetSession(s);
+
+      synced_sessions::DistantTabsSet distant_tabs;
+      distant_tabs.session_tag = session->tag;
+      displayedTabs.push_back(distant_tabs);
+    }
+
+    // Reset |_displayedTabs| to contain all sessions and tabs.
+    [self setSyncedSessions:std::move(syncedSessions)
+         distantSessionTabs:displayedTabs];
+  }
+
+  if (!self.preventUpdates && !self.searchTerms.length) {
     // Update the TableView and TableViewModel sections to match the new
     // sessionState.
     // Turn Off animations since UITableViewRowAnimationNone still animates.
@@ -784,6 +1059,11 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   if (self.preventUpdates)
     return;
 
+  // Do not try to reload section if it doesn't exist.
+  if (![self recentlyClosedTabsSectionExists]) {
+    return;
+  }
+
   [self.tableView performBatchUpdates:^{
     [self updateRecentlyClosedSection];
   }
@@ -811,9 +1091,8 @@ const int kRecentlyClosedTabsSectionIndex = 0;
       [self.tableViewModel itemTypeForIndexPath:indexPath];
   switch (itemTypeSelected) {
     case ItemTypeRecentlyClosed:
-      [self
-          openTabWithTabRestoreEntry:[self
-                                         tabRestoreEntryAtIndexPath:indexPath]];
+      [self openTabWithTabRestoreEntryId:
+                [self tabRestoreEntryIdAtIndexPath:indexPath]];
       break;
     case ItemTypeSessionTabData:
       [self
@@ -831,13 +1110,43 @@ const int kRecentlyClosedTabsSectionIndex = 0;
       // taps "show full history" and "enable sync". The sync settings UI
       // appears first and we should not dismiss it to display history.
       if (!self.presentedViewController) {
-        [self.presentationDelegate showHistoryFromRecentTabs];
+        [self.presentationDelegate
+            showHistoryFromRecentTabsFilteredBySearchTerms:nil];
       }
       break;
-    case ItemTypeOtherDevicesSyncOff:
-    case ItemTypeOtherDevicesNoSessions:
-    case ItemTypeOtherDevicesSigninPromo:
-    case ItemTypeSigninDisabled:
+    case ItemTypeSuggestedActionSearchHistory:
+      base::RecordAction(
+          base::UserMetricsAction("TabsSearch.SuggestedActions.SearchHistory"));
+      [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+      // Tapping "show full history" attempts to dismiss recent tabs to show the
+      // history UI. It is reasonable to ignore this if a modal UI is already
+      // showing above recent tabs. This can happen when a user simultaneously
+      // taps "show full history" and "enable sync". The sync settings UI
+      // appears first and we should not dismiss it to display history.
+      if (!self.presentedViewController) {
+        [self.presentationDelegate
+            showHistoryFromRecentTabsFilteredBySearchTerms:self.searchTerms];
+      }
+      break;
+    case ItemTypeSuggestedActionSearchOpenTabs:
+      base::RecordAction(
+          base::UserMetricsAction("TabsSearch.SuggestedActions.OpenTabs"));
+      [tableView deselectRowAtIndexPath:indexPath animated:NO];
+
+      // Tapping "show full history" attempts to dismiss recent tabs to show the
+      // history UI. It is reasonable to ignore this if a modal UI is already
+      // showing above recent tabs. This can happen when a user simultaneously
+      // taps "show full history" and "enable sync". The sync settings UI
+      // appears first and we should not dismiss it to display history.
+      if (!self.presentedViewController &&
+          [self.presentationDelegate
+              respondsToSelector:@selector(showRegularTabGridFromRecentTabs)]) {
+        [self.presentationDelegate showRegularTabGridFromRecentTabs];
+      }
+      break;
+    case ItemTypeSuggestedActionSearchWeb:
+      [self openNewTabWithCurrentSearchTerm];
       break;
   }
 }
@@ -899,6 +1208,26 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   if (itemTypeSelected == ItemTypeOtherDevicesSignedOut) {
     cell.separatorInset =
         UIEdgeInsetsMake(0, self.tableView.bounds.size.width, 0, 0);
+  }
+  // Update the history search result count once available.
+  if (itemTypeSelected == ItemTypeSuggestedActionSearchHistory) {
+    TabsSearchService* search_service =
+        TabsSearchServiceFactory::GetForBrowserState(self.browserState);
+    __weak TableViewTabsSearchSuggestedHistoryCell* weakCell =
+        base::mac::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
+            cell);
+
+    NSString* currentSearchTerm = self.searchTerms;
+    weakCell.searchTerm = currentSearchTerm;
+
+    const std::u16string& search_terms =
+        base::SysNSStringToUTF16(currentSearchTerm);
+    search_service->SearchHistory(
+        search_terms, base::BindOnce(^(size_t resultCount) {
+          if ([weakCell.searchTerm isEqualToString:currentSearchTerm]) {
+            [weakCell updateHistoryResultsCount:resultCount];
+          }
+        }));
   }
   return cell;
 }
@@ -969,7 +1298,10 @@ const int kRecentlyClosedTabsSectionIndex = 0;
       TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
       TableViewURLItem* URLItem =
           base::mac::ObjCCastStrict<TableViewURLItem>(item);
-      return [[URLInfo alloc] initWithURL:URLItem.URL title:URLItem.title];
+      GURL gurl;
+      if (URLItem.URL)
+        gurl = URLItem.URL.gurl;
+      return [[URLInfo alloc] initWithURL:gurl title:URLItem.title];
     }
 
     case ItemTypeRecentlyClosedHeader:
@@ -988,31 +1320,36 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 
 #pragma mark - Recently closed tab helpers
 
+- (BOOL)recentlyClosedTabsSectionExists {
+  // Recently closed section always exists when tab search is disabled.
+  if (!IsTabsSearchEnabled()) {
+    return YES;
+  }
+
+  // The recently closed section does not exist if the user is searching and
+  // there are no matching recently closed items.
+  if (self.searchTerms.length && [self numberOfRecentlyClosedTabs] == 0) {
+    return NO;
+  }
+
+  return YES;
+}
+
 - (NSInteger)numberOfRecentlyClosedTabs {
   if (!self.tabRestoreService)
     return 0;
-  return base::checked_cast<NSInteger>(
-      self.tabRestoreService->entries().size());
+  return _recentlyClosedItems.size();
 }
 
-- (const sessions::TabRestoreService::Entry*)tabRestoreEntryAtIndexPath:
-    (NSIndexPath*)indexPath {
+- (const SessionID)tabRestoreEntryIdAtIndexPath:(NSIndexPath*)indexPath {
   DCHECK_EQ([self.tableViewModel sectionIdentifierForSection:indexPath.section],
             SectionIdentifierRecentlyClosedTabs);
   NSInteger index = indexPath.row;
   DCHECK_LE(index, [self numberOfRecentlyClosedTabs]);
   if (!self.tabRestoreService)
-    return nullptr;
+    return SessionID::InvalidValue();
 
-  // Advance the entry iterator to the correct index.
-  // Note that std:list<> can only be accessed sequentially, which is
-  // suboptimal when using Cocoa table APIs. This list doesn't appear
-  // to get very long, so it probably won't matter for perf.
-  sessions::TabRestoreService::Entries::const_iterator iter =
-      self.tabRestoreService->entries().begin();
-  std::advance(iter, index);
-  CHECK(*iter);
-  return iter->get();
+  return _recentlyClosedItems[index].first;
 }
 
 // Retrieves favicon from FaviconLoader and sets image in URLCell.
@@ -1042,7 +1379,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
 - (NSUInteger)numberOfSessions {
   if (!_syncedSessions)
     return 0;
-  return _syncedSessions->GetSessionCount();
+  return _displayedTabs.size();
 }
 
 // Returns the Session Index for a given Session Tab |indexPath|.
@@ -1055,14 +1392,15 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   // Get the index of this sectionIdentifier.
   size_t indexOfSession = [[self allSessionSectionIdentifiers]
       indexOfObject:sectionIdentifierForIndexPath];
-  DCHECK_LT(indexOfSession, _syncedSessions->GetSessionCount());
+  DCHECK_LT(indexOfSession, _displayedTabs.size());
   return indexOfSession;
 }
 
 - (synced_sessions::DistantSession const*)sessionForTabAtIndexPath:
     (NSIndexPath*)indexPath {
-  return _syncedSessions->GetSession(
-      [self indexOfSessionForTabAtIndexPath:indexPath]);
+  const synced_sessions::DistantTabsSet& tabs_set =
+      _displayedTabs[[self indexOfSessionForTabAtIndexPath:indexPath]];
+  return _syncedSessions->GetSessionWithTag(tabs_set.session_tag);
 }
 
 - (synced_sessions::DistantTab const*)distantTabAtIndexPath:
@@ -1072,8 +1410,26 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   size_t indexOfDistantTab = indexPath.row;
   synced_sessions::DistantSession const* session =
       [self sessionForTabAtIndexPath:indexPath];
+  const synced_sessions::DistantTabsSet* tabs_set =
+      [self distantTabsSetForSessionWithTag:session->tag];
+  if (tabs_set->filtered_tabs) {
+    DCHECK_LT(indexOfDistantTab, tabs_set->filtered_tabs->size());
+    return tabs_set->filtered_tabs.value()[indexOfDistantTab];
+  }
+
+  // If filtered_tabs is null, all tabs in |session| should be used.
   DCHECK_LT(indexOfDistantTab, session->tabs.size());
   return session->tabs[indexOfDistantTab].get();
+}
+
+- (const synced_sessions::DistantTabsSet*)distantTabsSetForSessionWithTag:
+    (const std::string&)sessionTag {
+  for (const synced_sessions::DistantTabsSet& tabs_set : _displayedTabs) {
+    if (sessionTag == tabs_set.session_tag) {
+      return &tabs_set;
+    }
+  }
+  return nullptr;
 }
 
 - (NSString*)lastSyncStringForSesssion:
@@ -1147,6 +1503,10 @@ const int kRecentlyClosedTabsSectionIndex = 0;
                               &toLoad)) {
     base::RecordAction(base::UserMetricsAction(
         "MobileRecentTabManagerTabFromOtherDeviceOpened"));
+    if (IsTabsSearchEnabled() && self.searchTerms.length) {
+      base::RecordAction(base::UserMetricsAction(
+          "MobileRecentTabManagerTabFromOtherDeviceOpenedSearchResult"));
+    }
     new_tab_page_uma::RecordAction(
         self.browserState, self.webStateList->GetActiveWebState(),
         new_tab_page_uma::ACTION_OPENED_FOREIGN_SESSION);
@@ -1173,8 +1533,7 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
-- (void)openTabWithTabRestoreEntry:
-    (const sessions::TabRestoreService::Entry*)entry {
+- (void)openTabWithTabRestoreEntryId:(const SessionID)entry_id {
   // It is reasonable to ignore this request if a modal UI is already showing
   // above recent tabs. This can happen when a user simultaneously taps a
   // recently closed tab and "enable sync". The sync settings UI appears first
@@ -1182,11 +1541,12 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   if (self.presentedViewController)
     return;
 
-  // Only TAB type is handled.
-  // TODO(crbug.com/1056596) : Support WINDOW restoration under multi-window.
-  DCHECK_EQ(entry->type, sessions::TabRestoreService::TAB);
   base::RecordAction(
       base::UserMetricsAction("MobileRecentTabManagerRecentTabOpened"));
+  if (IsTabsSearchEnabled() && self.searchTerms.length) {
+    base::RecordAction(base::UserMetricsAction(
+        "MobileRecentTabManagerRecentTabOpenedSearchResult"));
+  }
   new_tab_page_uma::RecordAction(
       self.browserState, self.webStateList->GetActiveWebState(),
       new_tab_page_uma::ACTION_OPENED_RECENTLY_CLOSED_ENTRY);
@@ -1197,7 +1557,45 @@ const int kRecentlyClosedTabsSectionIndex = 0;
   WindowOpenDisposition disposition =
       self.isIncognito ? WindowOpenDisposition::NEW_FOREGROUND_TAB
                        : self.restoredTabDisposition;
-  RestoreTab(entry->id, disposition, self.browser);
+  RestoreTab(entry_id, disposition, self.browser);
+  [self.presentationDelegate showActiveRegularTabFromRecentTabs];
+}
+
+- (void)openNewTabWithCurrentSearchTerm {
+  // It is reasonable to ignore this request if a modal UI is already showing
+  // above recent tabs. This can happen when a user simultaneously taps a
+  // recently closed tab and "enable sync". The sync settings UI appears first
+  // and we should not dismiss it to restore a recently closed tab.
+  if (self.presentedViewController)
+    return;
+
+  base::RecordAction(
+      base::UserMetricsAction("TabsSearch.SuggestedActions.SearchOnWeb"));
+
+  TemplateURLService* templateURLService =
+      ios::TemplateURLServiceFactory::GetForBrowserState(self.browserState);
+
+  const TemplateURL* defaultURL =
+      templateURLService->GetDefaultSearchProvider();
+
+  TemplateURLRef::SearchTermsArgs search_args(
+      base::SysNSStringToUTF16(self.searchTerms));
+
+  GURL searchUrl(defaultURL->url_ref().ReplaceSearchTerms(
+      search_args, templateURLService->search_terms_data()));
+
+  web::WebState::CreateParams params(self.browserState);
+  auto webState = web::WebState::Create(params);
+  web::WebState* webStatePtr = webState.get();
+
+  self.webStateList->InsertWebState(
+      self.webStateList->count(), std::move(webState),
+      (WebStateList::INSERT_FORCE_INDEX | WebStateList::INSERT_ACTIVATE),
+      WebStateOpener());
+  webStatePtr->OpenURL(web::WebState::OpenURLParams(
+      searchUrl, web::Referrer(), WindowOpenDisposition::CURRENT_TAB,
+      ui::PAGE_TRANSITION_GENERATED, /*is_renderer_initiated=*/false));
+
   [self.presentationDelegate showActiveRegularTabFromRecentTabs];
 }
 
@@ -1349,32 +1747,40 @@ const int kRecentlyClosedTabsSectionIndex = 0;
                              identityChanged:(BOOL)identityChanged {
   DCHECK(self.signinPromoViewMediator);
   if (![self.tableViewModel
-          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices]) {
+          hasSectionForSectionIdentifier:SectionIdentifierOtherDevices] ||
+      ![self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
+                             sectionIdentifier:SectionIdentifierOtherDevices]) {
     // Need to remove the sign-in promo view mediator when the section doesn't
     // exist anymore. The mediator should not be removed each time the section
     // is removed since the section is replaced at each reload.
     // Metrics would be recorded too often.
+    // The other device section can be present even without the sync promo. This
+    // happens when sync is disabled.
     [self.signinPromoViewMediator disconnect];
     self.signinPromoViewMediator = nil;
     return;
   }
-  // Update the TableViewSigninPromoItem configurator. It will be used by the
-  // item to configure the cell once |self.tableView| requests a cell on
-  // cellForRowAtIndexPath.
-  NSIndexPath* indexPath =
-      [self.tableViewModel indexPathForItemType:ItemTypeOtherDevicesSigninPromo
-                              sectionIdentifier:SectionIdentifierOtherDevices];
-  TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
-  TableViewSigninPromoItem* signInItem =
-      base::mac::ObjCCastStrict<TableViewSigninPromoItem>(item);
-  signInItem.configurator = configurator;
-  // If section is collapsed no tableView update is needed.
-  if ([self.tableViewModel sectionIsCollapsed:SectionIdentifierOtherDevices]) {
-    return;
+  if ([self.tableViewModel hasItemForItemType:ItemTypeOtherDevicesSigninPromo
+                            sectionIdentifier:SectionIdentifierOtherDevices]) {
+    // Update the TableViewSigninPromoItem configurator. It will be used by the
+    // item to configure the cell once |self.tableView| requests a cell on
+    // cellForRowAtIndexPath.
+    NSIndexPath* indexPath = [self.tableViewModel
+        indexPathForItemType:ItemTypeOtherDevicesSigninPromo
+           sectionIdentifier:SectionIdentifierOtherDevices];
+    TableViewItem* item = [self.tableViewModel itemAtIndexPath:indexPath];
+    TableViewSigninPromoItem* signInItem =
+        base::mac::ObjCCastStrict<TableViewSigninPromoItem>(item);
+    signInItem.configurator = configurator;
+    // If section is collapsed no tableView update is needed.
+    if ([self.tableViewModel
+            sectionIsCollapsed:SectionIdentifierOtherDevices]) {
+      return;
+    }
+    // After setting the new configurator to the item, reload the item's Cell.
+    [self reloadCellsForItems:@[ signInItem ]
+             withRowAnimation:UITableViewRowAnimationNone];
   }
-  // After setting the new configurator to the item, reload the item's Cell.
-  [self reloadCellsForItems:@[ signInItem ]
-           withRowAnimation:UITableViewRowAnimationNone];
 }
 
 - (void)signinDidFinish {

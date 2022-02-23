@@ -23,7 +23,7 @@ void FontPerformance::MarkFirstContentfulPaint() {
                       FontPerformance::PrimaryFontTimeInStyle());
   UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.FCP",
                       FontPerformance::SystemFallbackFontTime());
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   UMA_HISTOGRAM_TIMES("Renderer.Font.Shaping.FCP", shaping_);
 #endif
 }
@@ -36,7 +36,7 @@ void FontPerformance::MarkDomContentLoaded() {
                       FontPerformance::PrimaryFontTimeInStyle());
   UMA_HISTOGRAM_TIMES("Renderer.Font.SystemFallback.DomContentLoaded",
                       FontPerformance::SystemFallbackFontTime());
-#if !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
   UMA_HISTOGRAM_TIMES("Renderer.Font.Shaping.DomContentLoaded", shaping_);
 #endif
 }

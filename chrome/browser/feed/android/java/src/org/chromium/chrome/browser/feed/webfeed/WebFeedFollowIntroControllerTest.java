@@ -8,6 +8,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
 import static org.mockito.Mockito.when;
@@ -23,13 +24,12 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLog;
 
 import org.chromium.base.Callback;
@@ -51,6 +51,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
 import org.chromium.chrome.browser.ui.messages.snackbar.SnackbarManager;
 import org.chromium.components.feature_engagement.FeatureConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.components.prefs.PrefService;
 import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
@@ -65,6 +66,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {ShadowPostTask.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public final class WebFeedFollowIntroControllerTest {
     private static final long SAFE_INTRO_WAIT_TIME_MILLIS = 3 * 1000 + 100;
     private static final GURL sTestUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.EXAMPLE_URL);
@@ -98,8 +100,6 @@ public final class WebFeedFollowIntroControllerTest {
     private PrefService mPrefService;
     @Mock
     private UserPrefs.Natives mUserPrefsJniMock;
-    @Captor
-    private ArgumentCaptor<WebFeedBridge.WebFeedPageInformation> mPageInformationCaptor;
 
     private Activity mActivity;
     private EmptyTabObserver mEmptyTabObserver;
@@ -125,6 +125,8 @@ public final class WebFeedFollowIntroControllerTest {
         mClock = new FakeClock();
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(true);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+                .thenReturn(new TriggerDetails(true, false));
         doAnswer(invocation -> {
             Callback<Boolean> callback = invocation.getArgument(0);
             callback.onResult(true);
@@ -186,6 +188,7 @@ public final class WebFeedFollowIntroControllerTest {
         mBaseTestValues.addFieldTrialParamOverride(
                 ChromeFeatureList.WEB_FEED, "intro_style", "IPH");
         mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.SNOOZABLE_IPH, false);
+        mBaseTestValues.addFeatureFlagOverride(ChromeFeatureList.ENABLE_AUTOMATIC_SNOOZE, false);
         FeatureList.setTestValues(mBaseTestValues);
         resetWebFeedFollowIntroController();
 
@@ -347,6 +350,8 @@ public final class WebFeedFollowIntroControllerTest {
         invokePageLoad(WebFeedSubscriptionStatus.NOT_SUBSCRIBED, /*isRecommended=*/true);
         when(mTracker.shouldTriggerHelpUI(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
                 .thenReturn(false);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(FeatureConstants.IPH_WEB_FEED_FOLLOW_FEATURE))
+                .thenReturn(new TriggerDetails(false, false));
         advanceClockByMs(SAFE_INTRO_WAIT_TIME_MILLIS);
 
         assertFalse("Intro should not be shown.",
@@ -453,13 +458,18 @@ public final class WebFeedFollowIntroControllerTest {
         WebFeedBridge.WebFeedMetadata webFeedMetadata =
                 new WebFeedBridge.WebFeedMetadata(sWebFeedId, "title", sTestUrl, subscriptionStatus,
                         WebFeedAvailabilityStatus.ACTIVE, isRecommended, sFaviconUrl);
+
         doAnswer(invocation -> {
-            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(1).onResult(
+            assertEquals("Incorrect WebFeedPageInformationRequestReason was used.",
+                    WebFeedPageInformationRequestReason.FOLLOW_RECOMMENDATION,
+                    invocation.<Integer>getArgument(1).intValue());
+            invocation.<Callback<WebFeedBridge.WebFeedMetadata>>getArgument(2).onResult(
                     webFeedMetadata);
             return null;
         })
                 .when(mWebFeedBridgeJniMock)
-                .findWebFeedInfoForPage(mPageInformationCaptor.capture(), any(Callback.class));
+                .findWebFeedInfoForPage(any(WebFeedBridge.WebFeedPageInformation.class), anyInt(),
+                        any(Callback.class));
 
         mEmptyTabObserver.onPageLoadStarted(mTab, sTestUrl);
         mEmptyTabObserver.didFirstVisuallyNonEmptyPaint(mTab);

@@ -7,7 +7,8 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_ui_controller.h"
 
@@ -44,7 +45,7 @@ class AboutUIHTMLSource : public content::URLDataSource {
 
  private:
   std::string source_name_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 class AboutUI : public content::WebUIController {
@@ -54,7 +55,13 @@ class AboutUI : public content::WebUIController {
   AboutUI(const AboutUI&) = delete;
   AboutUI& operator=(const AboutUI&) = delete;
 
-  ~AboutUI() override {}
+  ~AboutUI() override = default;
+
+#if BUILDFLAG(IS_CHROMEOS)
+  bool OverrideHandleWebUIMessage(const GURL& source_url,
+                                  const std::string& message,
+                                  const base::ListValue& args) override;
+#endif
 };
 
 namespace about_ui {

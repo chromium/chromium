@@ -29,6 +29,7 @@
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/trust_tokens.mojom-blink.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
+#include "third_party/blink/public/mojom/frame/frame.mojom-blink.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_html_iframe_element.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -37,6 +38,7 @@
 #include "third_party/blink/renderer/core/fetch/trust_token_issuance_authorization.h"
 #include "third_party/blink/renderer/core/frame/csp/content_security_policy.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/html_document.h"
 #include "third_party/blink/renderer/core/html/trust_token_attribute_parsing.h"
 #include "third_party/blink/renderer/core/html_names.h"
@@ -46,7 +48,7 @@
 #include "third_party/blink/renderer/core/permissions_policy/document_policy_parser.h"
 #include "third_party/blink/renderer/core/permissions_policy/iframe_policy.h"
 #include "third_party/blink/renderer/core/permissions_policy/permissions_policy_parser.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_parser.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -151,6 +153,10 @@ void HTMLIFrameElement::ParseAttribute(
     name_ = value;
     if (name_ != old_name)
       FrameOwnerPropertiesChanged();
+    if (name_.Contains('\n'))
+      UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsNewline);
+    if (name_.Contains('<'))
+      UseCounter::Count(GetDocument(), WebFeature::kFrameNameContainsBrace);
   } else if (name == html_names::kSandboxAttr) {
     sandbox_->DidUpdateAttributeValue(params.old_value, value);
 
@@ -356,11 +362,20 @@ ParsedPermissionsPolicy HTMLIFrameElement::ConstructContainerPolicy() const {
   if (AllowPaymentRequest()) {
     bool policy_changed = AllowFeatureEverywhereIfNotPresent(
         mojom::blink::PermissionsPolicyFeature::kPayment, container_policy);
-    if (!policy_changed) {
+    // Measure cases where allowpaymentrequest had an actual effect, to see if
+    // we can deprecate it. See https://crbug.com/1127988
+    if (policy_changed) {
+      UseCounter::Count(GetDocument(),
+                        WebFeature::kAllowPaymentRequestAttributeHasEffect);
+    } else {
       logger.Warn(
           "Allow attribute will take precedence over 'allowpaymentrequest'.");
     }
   }
+
+  // Factor in changes in client hint permissions.
+  UpdateIFrameContainerPolicyWithDelegationSupportForClientHints(
+      container_policy, GetDocument().domWindow());
 
   // Update the JavaScript policy object associated with this iframe, if it
   // exists.
@@ -503,6 +518,13 @@ void HTMLIFrameElement::DidChangeAttributes() {
   GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeIframeAttributes(
       ContentFrame()->GetFrameToken(),
       csp.IsEmpty() ? nullptr : std::move(csp[0]), anonymous_);
+
+  // Make sure we update the srcdoc value, if any, in the browser.
+  String srcdoc_value = "";
+  if (FastHasAttribute(html_names::kSrcdocAttr))
+    srcdoc_value = FastGetAttribute(html_names::kSrcdocAttr).GetString();
+  GetDocument().GetFrame()->GetLocalFrameHostRemote().DidChangeSrcDoc(
+      ContentFrame()->GetFrameToken(), srcdoc_value);
 }
 
 }  // namespace blink

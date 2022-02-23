@@ -48,6 +48,9 @@ enum class DeepScanAccessPoint {
 
   // A deep scan was initiated from pasting text.
   PASTE,
+
+  // A deep scan was initiated from printing a page.
+  PRINT,
 };
 std::string DeepScanAccessPointToString(DeepScanAccessPoint access_point);
 
@@ -101,7 +104,8 @@ void ReportAnalysisConnectorWarningBypass(
     const std::string& trigger,
     DeepScanAccessPoint access_point,
     const int64_t content_size,
-    const enterprise_connectors::ContentAnalysisResponse& response);
+    const enterprise_connectors::ContentAnalysisResponse& response,
+    absl::optional<std::u16string> user_justification = absl::nullopt);
 
 // Helper functions to record DeepScanning UMA metrics for the duration of the
 // request split by its result and bytes/sec for successful requests.
@@ -156,9 +160,11 @@ enum class ScanningCrashKey {
   PENDING_FILE_UPLOADS,
   PENDING_TEXT_UPLOADS,
   PENDING_FILE_DOWNLOADS,
+  PENDING_PRINTS,
   TOTAL_FILE_UPLOADS,
   TOTAL_TEXT_UPLOADS,
-  TOTAL_FILE_DOWNLOADS
+  TOTAL_FILE_DOWNLOADS,
+  TOTAL_PRINTS
 };
 void IncrementCrashKey(ScanningCrashKey key, int delta = 1);
 void DecrementCrashKey(ScanningCrashKey key, int delta = 1);

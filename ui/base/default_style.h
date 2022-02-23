@@ -20,7 +20,7 @@ namespace ui {
 const int kMessageFontSizeDelta = 0;
 
 // Default font size delta for dialog buttons, textfields, and labels.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 // Aim for 12pt for Cocoa labels ([NSFont systemFontSize] is typically 13pt).
 const int kLabelFontSizeDelta = -1;
 #else
@@ -28,7 +28,7 @@ const int kLabelFontSizeDelta = 0;
 #endif
 
 // Font size delta for dialog titles.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 const int kTitleFontSizeDelta = 1;
 #else
 const int kTitleFontSizeDelta = 3;

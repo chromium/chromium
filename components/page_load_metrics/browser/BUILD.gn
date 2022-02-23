@@ -8,6 +8,8 @@ source_set("browser") {
   sources = [
     "layout_shift_normalization.cc",
     "layout_shift_normalization.h",
+    "metrics_lifecycle_observer.cc",
+    "metrics_lifecycle_observer.h",
     "metrics_navigation_throttle.cc",
     "metrics_navigation_throttle.h",
     "metrics_web_contents_observer.cc",

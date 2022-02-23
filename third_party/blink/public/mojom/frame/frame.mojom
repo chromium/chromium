@@ -53,6 +53,7 @@ import "third_party/blink/public/mojom/frame/user_activation_update_types.mojom"
 import "third_party/blink/public/mojom/frame/viewport_intersection_state.mojom";
 import "third_party/blink/public/mojom/input/focus_type.mojom";
 import "third_party/blink/public/mojom/input/scroll_direction.mojom";
+import "third_party/blink/public/mojom/navigation/app_history_entry_arrays.mojom";
 import "third_party/blink/public/mojom/navigation/navigation_policy.mojom";
 import "third_party/blink/public/mojom/loader/referrer.mojom";
 import "third_party/blink/public/mojom/widget/platform_widget.mojom";
@@ -250,7 +251,7 @@ interface LocalFrameHost {
   // Indicates that the document element is available for the top-level frame.
   // This happens after the page starts loading, but before all resources are
   // finished.
-  DocumentAvailableInMainFrame(bool uses_temporary_zoom_level);
+  MainDocumentElementAvailable(bool uses_temporary_zoom_level);
 
   // Indicates that a child frame requires its parent frame to send it
   // information about whether it is occluded or has visual effects applied,
@@ -553,6 +554,14 @@ interface LocalFrameHost {
   // Notifies the frame that the document preferred color scheme has changed
   // due to DevTools media emulation.
   DidUpdatePreferredColorScheme(PreferredColorScheme preferred_color_scheme);
+
+  // Notifies the frame that the document's color scheme has been inferred.
+  DidInferColorScheme(PreferredColorScheme color_scheme);
+
+  // Notifies the browser that a subframe's srcdoc attribute has changed, and
+  // sends the new value to the browser. Also sent when a subframe's content
+  // frame is changed.
+  DidChangeSrcDoc(blink.mojom.FrameToken child_frame_token, string srcdoc_value);
 };
 
 // Implemented in Blink, this interface defines frame-specific methods that will
@@ -827,6 +836,13 @@ interface LocalFrame {
   // Requests the link-rel calnonical URL. The canonical url could be null if
   // the document of this frame doesn't have the HTMLLinkElement.
   GetCanonicalUrlForSharing() => (url.mojom.Url? canonical_url);
+
+  // Updates appHistory.entries() when restoring from bfcache.
+  // appHistory.entries() represents a subset of the back/forward list visible
+  // to this frame, and that subset may have changed while the page was in
+  // bfcache.
+  SetAppHistoryEntriesForRestore(
+      AppHistoryEntryArrays app_history_entry_arrays);
 };
 
 // Also implemented in Blink, this interface defines frame-specific methods

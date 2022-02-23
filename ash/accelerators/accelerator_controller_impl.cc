@@ -43,7 +43,8 @@
 #include "ash/public/cpp/accelerators.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
 #include "ash/public/cpp/new_window_delegate.h"
-#include "ash/public/cpp/toast_data.h"
+#include "ash/public/cpp/system/toast_catalog.h"
+#include "ash/public/cpp/system/toast_data.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/window_rotation.h"
 #include "ash/shelf/home_button.h"
@@ -91,6 +92,7 @@
 #include "base/system/sys_info.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/ui/base/display_util.h"
+#include "chromeos/ui/wm/desks/chromeos_desks_histogram_enums.h"
 #include "components/user_manager/user_type.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/client/aura_constants.h"
@@ -134,7 +136,6 @@ using input_method::InputMethodManager;
 
 // Toast id and duration for Assistant shortcuts.
 constexpr char kAssistantErrorToastId[] = "assistant_error";
-constexpr int kToastDurationMs = 2500;
 
 constexpr char kVirtualDesksToastId[] = "virtual_desks_toast";
 
@@ -218,8 +219,10 @@ void NotifyShortcutChangesInRelease(PrefService* pref_service) {
   IncrementStartupNotificationCount(pref_service);
 }
 
-void ShowToast(std::string id, const std::u16string& text) {
-  ToastData toast(id, text, kToastDurationMs, absl::nullopt,
+void ShowToast(std::string id,
+               ToastCatalogName catalog_name,
+               const std::u16string& text) {
+  ToastData toast(id, catalog_name, text, ToastData::kDefaultToastDuration,
                   /*visible_on_lock_screen=*/true);
   Shell::Get()->toast_manager()->Show(toast);
 }
@@ -328,7 +331,7 @@ void HandleMoveActiveItem(const ui::Accelerator& accelerator, bool going_left) {
 void HandleNewDesk() {
   auto* desks_controller = DesksController::Get();
   if (!desks_controller->CanCreateDesks()) {
-    ShowToast(kVirtualDesksToastId,
+    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMax,
               l10n_util::GetStringUTF16(IDS_ASH_DESKS_MAX_NUM_REACHED));
     return;
   }
@@ -350,7 +353,7 @@ void HandleRemoveCurrentDesk() {
 
   auto* desks_controller = DesksController::Get();
   if (!desks_controller->CanRemoveDesks()) {
-    ShowToast(kVirtualDesksToastId,
+    ShowToast(kVirtualDesksToastId, ToastCatalogName::kVirtualDesksLimitMin,
               l10n_util::GetStringUTF16(IDS_ASH_DESKS_MIN_NUM_REACHED));
     return;
   }
@@ -390,13 +393,21 @@ void HandleToggleAssignToAllDesks() {
   if (!active_window)
     return;
 
+  // Only children of the desk container should have their assigned to all
+  // desks state toggled to avoid interfering with special windows like
+  // always-on-top windows, floated windows, etc.
   if (desks_util::IsActiveDeskContainer(active_window->parent())) {
-    // Only children of the desk container should have their assigned to all
-    // desks state toggled to avoid interfering with special windows like
-    // always-on-top windows, floated windows, etc.
+    const bool is_already_visible_on_all_desks =
+        desks_util::IsWindowVisibleOnAllWorkspaces(active_window);
+    if (!is_already_visible_on_all_desks) {
+      UMA_HISTOGRAM_ENUMERATION(
+          chromeos::kDesksAssignToAllDesksSourceHistogramName,
+          chromeos::DesksAssignToAllDesksSource::kKeyboardShortcut);
+    }
+
     active_window->SetProperty(
         aura::client::kWindowWorkspaceKey,
-        desks_util::IsWindowVisibleOnAllWorkspaces(active_window)
+        is_already_visible_on_all_desks
             ? aura::client::kWindowWorkspaceUnassignedWorkspace
             : aura::client::kWindowWorkspaceVisibleOnAllWorkspaces);
   }
@@ -909,15 +920,20 @@ void HandleShowEmojiPicker() {
   ui::ShowEmojiPanel();
 }
 
-void HandleShowImeMenuBubble() {
+void HandleToggleImeMenuBubble() {
   base::RecordAction(UserMetricsAction("Accel_Show_Ime_Menu_Bubble"));
 
   StatusAreaWidget* status_area_widget =
       Shelf::ForWindow(Shell::GetPrimaryRootWindow())->GetStatusAreaWidget();
   if (status_area_widget) {
     ImeMenuTray* ime_menu_tray = status_area_widget->ime_menu_tray();
-    if (ime_menu_tray && ime_menu_tray->GetVisible() &&
-        !ime_menu_tray->GetBubbleView()) {
+    if (!ime_menu_tray || !ime_menu_tray->GetVisible()) {
+      // Do nothing when Ime tray is not being shown.
+      return;
+    }
+    if (ime_menu_tray->GetBubbleView()) {
+      ime_menu_tray->CloseBubble();
+    } else {
       ime_menu_tray->ShowBubble();
     }
   }
@@ -990,44 +1006,44 @@ void HandleToggleAssistant(const ui::Accelerator& accelerator) {
       AssistantAllowedState::ALLOWED)) {
     case AssistantAllowedState::DISALLOWED_BY_NONPRIMARY_USER:
       // Show a toast if the active user is not primary.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_SECONDARY_USER_TOAST_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_LOCALE:
       // Show a toast if the Assistant is disabled due to unsupported
       // locales.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_LOCALE_UNSUPPORTED_TOAST_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_POLICY:
       // Show a toast if the Assistant is disabled due to enterprise policy.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_BY_POLICY_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_DEMO_MODE:
       // Show a toast if the Assistant is disabled due to being in Demo
       // Mode.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_IN_DEMO_MODE_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_PUBLIC_SESSION:
       // Show a toast if the Assistant is disabled due to being in public
       // session.
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_IN_PUBLIC_SESSION_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_INCOGNITO:
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_IN_GUEST_MESSAGE));
       return;
     case AssistantAllowedState::DISALLOWED_BY_ACCOUNT_TYPE:
-      ShowToast(kAssistantErrorToastId,
+      ShowToast(kAssistantErrorToastId, ToastCatalogName::kAssistantError,
                 l10n_util::GetStringUTF16(
                     IDS_ASH_ASSISTANT_DISABLED_BY_ACCOUNT_MESSAGE));
       return;
@@ -1842,6 +1858,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case DESKS_ACTIVATE_7:
     case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
       return true;
+    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:
@@ -1905,6 +1922,8 @@ bool AcceleratorControllerImpl::CanPerformAction(
       return CanHandleToggleAppList(
           accelerator, previous_accelerator,
           accelerator_history_->currently_pressed_keys());
+    case TOGGLE_CALENDAR:
+      return features::IsCalendarViewEnabled();
     case TOGGLE_CAPS_LOCK:
       return CanHandleToggleCapsLock(
           accelerator, previous_accelerator,
@@ -1951,6 +1970,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case FOCUS_NEXT_PANE:
     case FOCUS_PREVIOUS_PANE:
     case FOCUS_SHELF:
+    case KEYBOARD_BACKLIGHT_TOGGLE:
     case KEYBOARD_BRIGHTNESS_DOWN:
     case KEYBOARD_BRIGHTNESS_UP:
     case LAUNCH_APP_0:
@@ -1986,7 +2006,7 @@ bool AcceleratorControllerImpl::CanPerformAction(
     case RESTORE_TAB:
     case ROTATE_WINDOW:
     case SHOW_EMOJI_PICKER:
-    case SHOW_IME_MENU_BUBBLE:
+    case TOGGLE_IME_MENU_BUBBLE:
     case SHOW_SHORTCUT_VIEWER:
     case SHOW_TASK_MANAGER:
     case SUSPEND:
@@ -2077,10 +2097,8 @@ void AcceleratorControllerImpl::PerformAction(
     case DESKS_TOGGLE_ASSIGN_TO_ALL_DESKS:
       HandleToggleAssignToAllDesks();
       break;
+    case DEBUG_KEYBOARD_BACKLIGHT_TOGGLE:
     case DEBUG_MICROPHONE_MUTE_TOGGLE:
-      base::RecordAction(base::UserMetricsAction("Accel_Microphone_Mute"));
-      accelerators::MicrophoneMuteToggle();
-      break;
     case DEBUG_PRINT_LAYER_HIERARCHY:
     case DEBUG_PRINT_VIEW_HIERARCHY:
     case DEBUG_PRINT_WINDOW_HIERARCHY:
@@ -2133,6 +2151,12 @@ void AcceleratorControllerImpl::PerformAction(
     case FOCUS_PIP:
       base::RecordAction(base::UserMetricsAction("Accel_Focus_Pip"));
       accelerators::FocusPip();
+      break;
+    case KEYBOARD_BACKLIGHT_TOGGLE:
+      if (ash::features::IsKeyboardBacklightToggleEnabled()) {
+        base::RecordAction(base::UserMetricsAction("Accel_Keyboard_Backlight"));
+        accelerators::ToggleKeyboardBacklight();
+      }
       break;
     case KEYBOARD_BRIGHTNESS_DOWN: {
       KeyboardBrightnessControlDelegate* delegate =
@@ -2313,8 +2337,8 @@ void AcceleratorControllerImpl::PerformAction(
     case SHOW_EMOJI_PICKER:
       HandleShowEmojiPicker();
       break;
-    case SHOW_IME_MENU_BUBBLE:
-      HandleShowImeMenuBubble();
+    case TOGGLE_IME_MENU_BUBBLE:
+      HandleToggleImeMenuBubble();
       break;
     case SHOW_SHORTCUT_VIEWER:
       HandleShowKeyboardShortcutViewer();
@@ -2366,6 +2390,9 @@ void AcceleratorControllerImpl::PerformAction(
       break;
     case TOGGLE_APP_LIST_FULLSCREEN:
       HandleToggleAppList(accelerator, kSearchKeyFullscreen);
+      break;
+    case TOGGLE_CALENDAR:
+      accelerators::ToggleCalendar();
       break;
     case TOGGLE_CAPS_LOCK:
       HandleToggleCapsLock();
@@ -2654,10 +2681,14 @@ void AcceleratorControllerImpl::ParseSideVolumeButtonLocationInfo() {
                << location_info;
     return;
   }
-  info_in_dict->GetString(kVolumeButtonRegion,
-                          &side_volume_button_location_.region);
-  info_in_dict->GetString(kVolumeButtonSide,
-                          &side_volume_button_location_.side);
+
+  const std::string* region = info_in_dict->FindStringKey(kVolumeButtonRegion);
+  if (region)
+    side_volume_button_location_.region = *region;
+
+  const std::string* side = info_in_dict->FindStringKey(kVolumeButtonSide);
+  if (side)
+    side_volume_button_location_.side = *side;
 }
 
 void AcceleratorControllerImpl::UpdateTabletModeVolumeAdjustHistogram() {

@@ -25,6 +25,8 @@ namespace ash {
 class AppListController;
 }
 
+// This AppListNotifier subclass is only used for the productivity launcher.
+//
 // Chrome implementation of the AppListNotifier. This is mainly responsible for
 // translating notifications about launcher UI events - eg. launcher opened,
 // results changed, etc. - into impression, launch, and abandon notifications
@@ -88,10 +90,8 @@ class AppListController;
 //                     |
 //  kShown -> kSeen    | Notify of an impression, as impression timer finished.
 //                     |
-//  kShown -> kShown   | Restart impression timer. Only possible for the app
-//                     | tiles or results list, when the search query is
-//                     | updated. This should not be triggered unless the
-//                     | displayed results change.
+//  kShown -> kShown   | Restart impression timer. Should only be triggered for
+//                     | the list view, when the displayed results change.
 //                     |
 //                     |
 //  kSeen -> kLaunch   | Notify of a launch and immediately set state to kNone,
@@ -110,7 +110,7 @@ class AppListController;
 //                     | launched a result in a different view.
 //                     |
 //                     |
-//  kSeen -> kNone     | Notify of an abandon, as user closed launcher.
+//  kSeen -> kNone     | Notify of an abandon, as user closed the launcher.
 //                     |
 //  kSeen -> kShown    | Notify of an abandon and restart timer, as user saw
 //                     | results but changed view or updated the search query.
@@ -141,7 +141,6 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   void NotifyResultsUpdated(Location location,
                             const std::vector<Result>& results) override;
   void NotifySearchQueryChanged(const std::u16string& query) override;
-  void NotifyUIStateChanged(ash::AppListViewState view) override;
 
   // AppListControllerObserver:
   void OnAppListVisibilityWillChange(bool shown, int64_t display_id) override;
@@ -168,6 +167,9 @@ class AppListNotifierImpl : public ash::AppListNotifier,
   // Handles a finished impression timer for |location|.
   void OnTimerFinished(Location location);
 
+  // Returns the stored results for |location|.
+  std::vector<Result> ResultsForLocation(Location location);
+
   ash::AppListController* const app_list_controller_;
 
   base::ObserverList<Observer> observers_;
@@ -179,15 +181,21 @@ class AppListNotifierImpl : public ash::AppListNotifier,
 
   // Whether or not the app list is shown.
   bool shown_ = false;
-  // The current UI view. Can have a non-kClosed value when the app list is not
-  // |shown_| due to tablet mode.
-  ash::AppListViewState view_ = ash::AppListViewState::kClosed;
   // The currently shown results for each UI view.
   base::flat_map<Location, std::vector<Result>> results_;
   // The current search query, may be empty.
   std::u16string query_;
   // The most recently launched result.
   absl::optional<Result> launched_result_;
+
+  // Special-case for the results at Location::kList. These need to be
+  // accumulated until the query changes, rather than set like other result
+  // types. The keys are result IDs, and the values are wrapped in an optional
+  // because Result is not default-constructable.
+  //
+  // TODO(crbug.com/1216097): This can be removed once SearchResultListView has
+  // its notifier calls updated.
+  base::flat_map<std::string, absl::optional<Result>> list_results_;
 
   base::WeakPtrFactory<AppListNotifierImpl> weak_ptr_factory_{this};
 };

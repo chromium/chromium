@@ -95,6 +95,27 @@ class DlpClientImpl : public DlpClient {
                        weak_factory_.GetWeakPtr(), std::move(callback)));
   }
 
+  void GetFilesSources(const dlp::GetFilesSourcesRequest request,
+                       GetFilesSourcesCallback callback) const override {
+    dbus::MethodCall method_call(dlp::kDlpInterface,
+                                 dlp::kGetFilesSourcesMethod);
+    dbus::MessageWriter writer(&method_call);
+
+    if (!writer.AppendProtoAsArrayOfBytes(request)) {
+      dlp::GetFilesSourcesResponse response;
+      response.set_error_message(base::StrCat(
+          {"Failure to call d-bus method: ", dlp::kGetFilesSourcesMethod}));
+      base::ThreadTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(std::move(callback), response));
+      return;
+    }
+
+    proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&DlpClientImpl::HandleGetFilesSourcesResponse,
+                       weak_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
   bool IsAlive() const override { return is_alive_; }
 
  private:
@@ -116,6 +137,16 @@ class DlpClientImpl : public DlpClient {
   void HandleAddFileResponse(AddFileCallback callback,
                              dbus::Response* response) {
     dlp::AddFileResponse response_proto;
+    const char* error_message = DeserializeProto(response, &response_proto);
+    if (error_message) {
+      response_proto.set_error_message(error_message);
+    }
+    std::move(callback).Run(response_proto);
+  }
+
+  void HandleGetFilesSourcesResponse(GetFilesSourcesCallback callback,
+                                     dbus::Response* response) {
+    dlp::GetFilesSourcesResponse response_proto;
     const char* error_message = DeserializeProto(response, &response_proto);
     if (error_message) {
       response_proto.set_error_message(error_message);

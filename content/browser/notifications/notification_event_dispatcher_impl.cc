@@ -45,7 +45,7 @@ using NotificationOperationCallbackWithContext =
 // Derives a PersistentNotificationStatus from the ServiceWorkerStatusCode.
 PersistentNotificationStatus ConvertServiceWorkerStatus(
     blink::ServiceWorkerStatusCode service_worker_status) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This LOG(INFO) deliberately exists to help track down the cause of
   // https://crbug.com/534537, where notifications sometimes do not react to
   // the user clicking on them. It should be removed once that's fixed.
@@ -104,7 +104,7 @@ void DispatchNotificationEventOnRegistration(
     blink::ServiceWorkerStatusCode service_worker_status,
     scoped_refptr<ServiceWorkerRegistration> service_worker_registration) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This LOG(INFO) deliberately exists to help track down the cause of
   // https://crbug.com/534537, where notifications sometimes do not react to
   // the user clicking on them. It should be removed once that's fixed.
@@ -166,7 +166,7 @@ void FindServiceWorkerRegistration(
     bool success,
     const NotificationDatabaseData& notification_database_data) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This LOG(INFO) deliberately exists to help track down the cause of
   // https://crbug.com/534537, where notifications sometimes do not react to
   // the user clicking on them. It should be removed once that's fixed.

@@ -20,7 +20,7 @@ namespace {
 
 class XRCanvasInputEventListener : public NativeEventListener {
  public:
-  XRCanvasInputEventListener(XRCanvasInputProvider* input_provider)
+  explicit XRCanvasInputEventListener(XRCanvasInputProvider* input_provider)
       : input_provider_(input_provider) {}
 
   void Invoke(ExecutionContext* execution_context, Event* event) override {

@@ -36,14 +36,17 @@
   }
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
+<base-page>
+  <iron-icon slot="optional-icon" icon="shimless-icon:wifi">
+  </iron-icon>
+  <div slot="left-pane">
     <h1>[[i18n('connectNetworkTitleText')]]</h1>
-    <div>[[i18n('connectNetworkDescriptionText')]]</div>
+    <div class="instructions">[[i18n('connectNetworkDescriptionText')]]</div>
   </div>
-  <div slot="body" id="container">
+  <div id="container" slot="right-pane">
     <network-list id="networkList" show-technology-badge
-        networks="[[networks_]]" on-selected="onNetworkSelected_">
+        networks="[[networks_]]" on-selected="onNetworkSelected_"
+        disabled="[[allButtonsDisabled]]">
     </network-list>
   </div>
 </base-page>

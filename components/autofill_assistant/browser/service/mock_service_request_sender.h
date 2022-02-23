@@ -20,14 +20,16 @@ class MockServiceRequestSender : public ServiceRequestSender {
 
   void SendRequest(const GURL& url,
                    const std::string& request_body,
-                   ResponseCallback callback) override {
-    OnSendRequest(url, request_body, callback);
+                   ResponseCallback callback,
+                   RpcType rpc_type) override {
+    OnSendRequest(url, request_body, callback, rpc_type);
   }
 
-  MOCK_METHOD3(OnSendRequest,
+  MOCK_METHOD4(OnSendRequest,
                void(const GURL& url,
                     const std::string& request_body,
-                    ResponseCallback& callback));
+                    ResponseCallback& callback,
+                    RpcType rpc_type));
 };
 
 }  // namespace autofill_assistant

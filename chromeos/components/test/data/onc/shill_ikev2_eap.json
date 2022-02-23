@@ -1,0 +1,14 @@
+{ "GUID": "guid",
+  "Type": "vpn",
+  "Name": "MyIKEv2VPN",
+  "Provider.Host": "some.host.org",
+  "Provider.Type": "ikev2",
+  "IKEv2.AuthenticationType": "EAP",
+  "IKEv2.CACertPEM": ["1234"],
+  "IKEv2.LocalIdentity": "local-id",
+  "IKEv2.RemoteIdentity": "remote-id",
+  "EAP.EAP": "MSCHAPV2",
+  "EAP.Identity": "my_identity",
+  "EAP.Password": "my_password",
+  "SaveCredentials": true
+}

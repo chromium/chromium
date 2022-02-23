@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ui/webui/print_preview/pdf_printer_handler.h"
 
+#include <sys/stat.h>
+#include <sys/types.h>
+
 #include <ios>
 #include <memory>
 
@@ -33,6 +36,21 @@ namespace {
 
 // Data content used as fake PDF doesn't matter, just can not be empty.
 constexpr uint8_t kDummyData[] = {'d', 'u', 'm', 'm', 'y'};
+
+// Set a umask and restore the old mask on destruction.  Cribbed from
+// sql/database_unittest.cc.
+class ScopedUmaskSetter {
+ public:
+  explicit ScopedUmaskSetter(mode_t target_mask)
+      : old_umask_(umask(target_mask)) {}
+  ~ScopedUmaskSetter() { umask(old_umask_); }
+
+  ScopedUmaskSetter(const ScopedUmaskSetter&) = delete;
+  ScopedUmaskSetter& operator=(const ScopedUmaskSetter&) = delete;
+
+ private:
+  const mode_t old_umask_;
+};
 
 class FakePdfPrinterHandler : public PdfPrinterHandler {
  public:
@@ -116,6 +134,8 @@ class PdfPrinterHandlerPosixTest : public BrowserWithTestWindowTest {
 };
 
 TEST_F(PdfPrinterHandlerPosixTest, SaveAsPdfFilePermissions) {
+  ScopedUmaskSetter permissive_umask(0022);
+
   // Saved PDF files are not executable files, and should be readable/writeable
   // for the user.  It should also have group readable permissions to match the
   // behavior seen for downloaded files.  Note that this is the desired case

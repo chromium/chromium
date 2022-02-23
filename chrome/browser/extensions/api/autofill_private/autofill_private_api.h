@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_EXTENSIONS_API_AUTOFILL_PRIVATE_AUTOFILL_PRIVATE_API_H_
 
 #include "extensions/browser/extension_function.h"
+#include "extensions/browser/extension_function_histogram_value.h"
 
 namespace extensions {
 
@@ -229,6 +230,40 @@ class AutofillPrivateGetUpiIdListFunction : public ExtensionFunction {
 
  protected:
   ~AutofillPrivateGetUpiIdListFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
+class AutofillPrivateAddVirtualCardFunction : public ExtensionFunction {
+ public:
+  AutofillPrivateAddVirtualCardFunction() = default;
+  AutofillPrivateAddVirtualCardFunction(
+      const AutofillPrivateAddVirtualCardFunction&) = delete;
+  AutofillPrivateAddVirtualCardFunction& operator=(
+      const AutofillPrivateAddVirtualCardFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.addVirtualCard",
+                             AUTOFILLPRIVATE_ADDVIRTUALCARD)
+
+ protected:
+  ~AutofillPrivateAddVirtualCardFunction() override = default;
+
+  // ExtensionFunction overrides.
+  ResponseAction Run() override;
+};
+
+class AutofillPrivateRemoveVirtualCardFunction : public ExtensionFunction {
+ public:
+  AutofillPrivateRemoveVirtualCardFunction() = default;
+  AutofillPrivateRemoveVirtualCardFunction(
+      const AutofillPrivateRemoveVirtualCardFunction&) = delete;
+  AutofillPrivateRemoveVirtualCardFunction& operator=(
+      const AutofillPrivateRemoveVirtualCardFunction&) = delete;
+  DECLARE_EXTENSION_FUNCTION("autofillPrivate.removeVirtualCard",
+                             AUTOFILLPRIVATE_REMOVEVIRTUALCARD)
+
+ protected:
+  ~AutofillPrivateRemoveVirtualCardFunction() override = default;
 
   // ExtensionFunction overrides.
   ResponseAction Run() override;

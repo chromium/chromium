@@ -16,7 +16,7 @@
       title="$i18n{moreActions}"
       id="moreNetworkDetail"
       on-click="onDotsClick_"
-      disabled="[[isDotsMenuButtonDisabled_(deviceState.*)]]">
+      disabled="[[isDotsMenuButtonDisabled_(eSimNetworkState_, deviceState.*)]]">
   </cr-icon-button>
 </template>
 <cr-lazy-render id="menu">

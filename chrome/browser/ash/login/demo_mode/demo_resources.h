@@ -88,9 +88,6 @@ class DemoResources {
       component_updater::CrOSComponentManager::Error error,
       const base::FilePath& path);
 
-  // Loads the preinstalled offline resources image.
-  void LoadPreinstalledOfflineResources();
-
   // Callback for the component or image loader request to load demo resources.
   // `mount_path` is the path at which the resources were loaded.
   void OnDemoResourcesLoaded(absl::optional<base::FilePath> mounted_path);

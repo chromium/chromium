@@ -51,6 +51,7 @@
 
 namespace base {
 class SingleThreadTaskRunner;
+class WaitableEvent;
 }
 
 namespace network {

@@ -18,6 +18,8 @@ option optimize_for = LITE_RUNTIME;
 
 package private_membership;
 
+option go_package = "github.com/google/private-membership";
+
 // An enum describing different types of available hash functions.
 enum HashType {
   HASH_TYPE_UNDEFINED = 0;

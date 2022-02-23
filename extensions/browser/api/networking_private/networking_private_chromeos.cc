@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/logging.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_signature.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
@@ -23,9 +24,8 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_util.h"
-#include "chromeos/network/onc/onc_signature.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/onc/onc_translator.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/portal_detector/network_portal_detector.h"
 #include "components/onc/onc_constants.h"
 #include "components/proxy_config/proxy_prefs.h"
@@ -168,8 +168,7 @@ void AppendDeviceState(
 
 void NetworkHandlerFailureCallback(
     NetworkingPrivateDelegate::FailureCallback callback,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& error_name) {
   std::move(callback).Run(error_name);
 }
 
@@ -339,16 +338,16 @@ void NetworkingPrivateChromeOS::GetState(const std::string& guid,
     return;
   }
 
-  std::unique_ptr<base::DictionaryValue> network_properties =
+  base::Value network_properties =
       chromeos::network_util::TranslateNetworkStateToONC(network_state);
-  AppendThirdPartyProviderName(network_properties.get());
+  AppendThirdPartyProviderName(&network_properties);
 
   std::move(success_callback).Run(std::move(network_properties));
 }
 
 void NetworkingPrivateChromeOS::SetProperties(
     const std::string& guid,
-    std::unique_ptr<base::DictionaryValue> properties,
+    base::Value properties,
     bool allow_set_shared_config,
     VoidCallback success_callback,
     FailureCallback failure_callback) {
@@ -383,7 +382,8 @@ void NetworkingPrivateChromeOS::SetProperties(
   NET_LOG(USER) << "networkingPrivate.setProperties for: "
                 << NetworkId(network);
   GetManagedConfigurationHandler()->SetProperties(
-      network->path(), *properties, std::move(success_callback),
+      network->path(), static_cast<base::DictionaryValue&>(properties),
+      std::move(success_callback),
       base::BindOnce(&NetworkHandlerFailureCallback,
                      std::move(failure_callback)));
 }
@@ -397,7 +397,7 @@ void NetworkHandlerCreateCallback(
 
 void NetworkingPrivateChromeOS::CreateNetwork(
     bool shared,
-    std::unique_ptr<base::DictionaryValue> properties,
+    base::Value properties,
     StringCallback success_callback,
     FailureCallback failure_callback) {
   std::string user_id_hash, error;
@@ -409,10 +409,10 @@ void NetworkingPrivateChromeOS::CreateNetwork(
   }
 
   const std::string guid =
-      GetStringFromDictionary(*properties, ::onc::network_config::kGUID);
+      GetStringFromDictionary(properties, ::onc::network_config::kGUID);
   NET_LOG(USER) << "networkingPrivate.CreateNetwork. GUID=" << guid;
   GetManagedConfigurationHandler()->CreateConfiguration(
-      user_id_hash, *properties,
+      user_id_hash, static_cast<base::DictionaryValue&>(properties),
       base::BindOnce(&NetworkHandlerCreateCallback,
                      std::move(success_callback)),
       base::BindOnce(&NetworkHandlerFailureCallback,
@@ -493,11 +493,11 @@ void NetworkingPrivateChromeOS::GetNetworks(
       (!visible_only && network_type == ::onc::network_type::kEthernet)
           ? NetworkTypePattern::EthernetOrEthernetEAP()
           : chromeos::onc::NetworkTypePatternFromOncType(network_type);
-  std::unique_ptr<base::ListValue> network_properties_list =
+  base::Value network_properties_list =
       chromeos::network_util::TranslateNetworkListToONC(
           pattern, configured_only, visible_only, limit);
 
-  for (auto& value : network_properties_list->GetList()) {
+  for (auto& value : network_properties_list.GetListDeprecated()) {
     base::DictionaryValue* network_dict = nullptr;
     value.GetAsDictionary(&network_dict);
     DCHECK(network_dict);
@@ -505,7 +505,9 @@ void NetworkingPrivateChromeOS::GetNetworks(
       AppendThirdPartyProviderName(network_dict);
   }
 
-  std::move(success_callback).Run(std::move(network_properties_list));
+  std::move(success_callback)
+      .Run(base::ListValue::From(
+          base::Value::ToUniquePtrValue(std::move(network_properties_list))));
 }
 
 void NetworkingPrivateChromeOS::StartConnect(const std::string& guid,
@@ -721,19 +723,17 @@ NetworkingPrivateChromeOS::GetDeviceStateList() {
   return device_state_list;
 }
 
-std::unique_ptr<base::DictionaryValue>
-NetworkingPrivateChromeOS::GetGlobalPolicy() {
-  auto result = std::make_unique<base::DictionaryValue>();
-  const base::DictionaryValue* global_network_config =
+base::Value NetworkingPrivateChromeOS::GetGlobalPolicy() {
+  base::Value result(base::Value::Type::DICTIONARY);
+  const base::Value* global_network_config =
       GetManagedConfigurationHandler()->GetGlobalConfigFromPolicy(
           std::string() /* no username hash, device policy */);
   if (global_network_config)
-    result->MergeDictionary(global_network_config);
+    result.MergeDictionary(global_network_config);
   return result;
 }
 
-std::unique_ptr<base::DictionaryValue>
-NetworkingPrivateChromeOS::GetCertificateLists() {
+base::Value NetworkingPrivateChromeOS::GetCertificateLists() {
   private_api::CertificateLists result;
   const std::vector<NetworkCertificateHandler::Certificate>& server_cas =
       NetworkHandler::Get()
@@ -750,7 +750,7 @@ NetworkingPrivateChromeOS::GetCertificateLists() {
   for (const auto& cert : user_certs)
     result.user_certificates.push_back(GetCertDictionary(cert));
 
-  return result.ToValue();
+  return base::Value::FromUniquePtrValue(result.ToValue());
 }
 
 bool NetworkingPrivateChromeOS::EnableNetworkType(const std::string& type) {

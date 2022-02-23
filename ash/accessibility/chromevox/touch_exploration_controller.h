@@ -276,6 +276,9 @@ class ASH_EXPORT TouchExplorationController
   void OnGestureEvent(ui::GestureConsumer* raw_input_consumer,
                       ui::GestureEvent* gesture) override;
 
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
+
   // Process the gesture events that have been created.
   void ProcessGestureEvents();
 

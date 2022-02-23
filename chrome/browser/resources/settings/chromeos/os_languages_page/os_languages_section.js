@@ -12,7 +12,27 @@ const ACCESSIBILITY_COMMON_IME_ID =
  * 'os-settings-languages-section' is the top-level settings section for
  * languages.
  */
+import {afterNextRender, Polymer, html, flush, Templatizer, TemplateInstanceBase} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/shared_vars_css.m.js';
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import './input_page.js';
+import './os_languages_page_v2.js';
+import './smart_inputs_page.js';
+import './input_method_options_page.js';
+import {loadTimeData} from '../../i18n_setup.js';
+import './languages.js';
+import {routes} from '../os_route.m.js';
+import {Router, Route} from '../../router.js';
+import '../../settings_page/settings_animated_pages.js';
+import '../../settings_page/settings_subpage.js';
+import '../../settings_shared_css.js';
+import '../../settings_vars_css.js';
+import {LanguageHelper, LanguagesModel} from './languages_types.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'os-settings-languages-section',
 
   behaviors: [
@@ -36,9 +56,9 @@ Polymer({
       type: Object,
       value() {
         const map = new Map();
-        if (settings.routes.OS_LANGUAGES_SMART_INPUTS) {
+        if (routes.OS_LANGUAGES_SMART_INPUTS) {
           map.set(
-              settings.routes.OS_LANGUAGES_SMART_INPUTS.path,
+              routes.OS_LANGUAGES_SMART_INPUTS.path,
               '#smartInputsSubpageTrigger');
         }
         return map;
@@ -63,28 +83,24 @@ Polymer({
       type: Boolean,
       value() {
         return loadTimeData.getBoolean('allowAssistivePersonalInfo') ||
-            loadTimeData.getBoolean('allowEmojiSuggestion') ||
-            loadTimeData.getBoolean('allowPredictiveWriting');
+            loadTimeData.getBoolean('allowEmojiSuggestion');
       },
     }
   },
 
   /** @private */
   onLanguagesV2Click_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_LANGUAGES_LANGUAGES);
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_LANGUAGES);
   },
 
   /** @private */
   onInputClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_LANGUAGES_INPUT);
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_INPUT);
   },
 
   /** @private */
   onSmartInputsClick_() {
-    settings.Router.getInstance().navigateTo(
-        settings.routes.OS_LANGUAGES_SMART_INPUTS);
+    Router.getInstance().navigateTo(routes.OS_LANGUAGES_SMART_INPUTS);
   },
 
   /**

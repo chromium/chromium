@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/web_applications/web_app_ui_manager_impl.h"
 
 #include "base/barrier_closure.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
@@ -20,8 +21,8 @@
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/test/browser_test.h"
@@ -55,7 +56,7 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
   Profile* profile() { return browser()->profile(); }
 
   const AppId InstallWebApp(const GURL& start_url) {
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->user_display_mode = DisplayMode::kStandalone;
     return web_app::test::InstallWebApp(profile(), std::move(web_app_info));
@@ -74,8 +75,8 @@ class WebAppUiManagerImplBrowserTest : public InProcessBrowserTest {
     return WebAppProvider::GetForTest(profile())->ui_manager();
   }
 
-  TestShortcutManager* shortcut_manager_;
-  FakeOsIntegrationManager* os_integration_manager_;
+  raw_ptr<TestShortcutManager> shortcut_manager_;
+  raw_ptr<FakeOsIntegrationManager> os_integration_manager_;
 
  private:
   std::unique_ptr<KeyedService> CreateFakeWebAppProvider(Profile* profile) {
@@ -132,7 +133,7 @@ IN_PROC_BROWSER_TEST_F(WebAppUiManagerImplBrowserTest,
         run_loop.Quit();
       }));
   run_loop.Run();
-  web_app::WaitForBrowserToBeClosed(app_browser);
+  web_app::BrowserWaiter(app_browser).AwaitRemoved();
 
   EXPECT_EQ(0u, BrowserList::GetInstance()->size());
 }

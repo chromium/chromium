@@ -9,7 +9,6 @@
 #include "cc/layers/content_layer_client.h"
 #include "cc/layers/picture_layer.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
-#include "third_party/blink/renderer/platform/graphics/graphics_layer_client.h"
 #include "third_party/blink/renderer/platform/graphics/paint/raster_invalidator.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -19,7 +18,7 @@ namespace blink {
 
 class JSONArray;
 class JSONObject;
-class PaintChunkSubset;
+class PendingLayer;
 
 class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
                                                public LayerAsJSONClient {
@@ -52,11 +51,7 @@ class PLATFORM_EXPORT ContentLayerClientImpl : public cc::ContentLayerClient,
     return id_ && paint_chunk.Matches(*id_);
   }
 
-  scoped_refptr<cc::PictureLayer> UpdateCcPictureLayer(
-      const PaintChunkSubset&,
-      const gfx::Vector2dF& layer_offset,
-      const gfx::Size& layer_bounds,
-      const PropertyTreeState&);
+  scoped_refptr<cc::PictureLayer> UpdateCcPictureLayer(const PendingLayer&);
 
   RasterInvalidator& GetRasterInvalidator() { return raster_invalidator_; }
 

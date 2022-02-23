@@ -149,6 +149,7 @@ TEST_F(CommanderEntityMatchTest, GroupReturnsAllWithNoInput) {
 }
 
 TEST_F(CommanderEntityMatchTest, GroupExcludeWithNoInput) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   CreateGroups({u"Foo", u"Bar", u"Baz"});
 
   auto second_group = browser()->tab_strip_model()->GetTabGroupForTab(1);
@@ -157,6 +158,7 @@ TEST_F(CommanderEntityMatchTest, GroupExcludeWithNoInput) {
 }
 
 TEST_F(CommanderEntityMatchTest, GroupOnlyIncludesMatches) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   CreateGroups({u"Orange juice", u"Aqua Regia"});
 
   auto matches = GroupsMatchingInput(browser(), u"Orange");
@@ -165,6 +167,7 @@ TEST_F(CommanderEntityMatchTest, GroupOnlyIncludesMatches) {
 }
 
 TEST_F(CommanderEntityMatchTest, GroupRanksMatches) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   CreateGroups({u"Oracular Nouns Gesture Electrically", u"Orange juice"});
 
   auto matches = GroupsMatchingInput(browser(), u"orange");
@@ -174,6 +177,7 @@ TEST_F(CommanderEntityMatchTest, GroupRanksMatches) {
 }
 
 TEST_F(CommanderEntityMatchTest, GroupExcludeWithInput) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   CreateGroups({u"William of Orange", u"Orange juice"});
 
   auto first_group = browser()->tab_strip_model()->GetTabGroupForTab(0);
@@ -211,6 +215,7 @@ TEST_F(CommanderEntityMatchTest, TabOnlyUnpinnedExcludesPinned) {
 }
 
 TEST_F(CommanderEntityMatchTest, TabExcludeTabGroupExcludes) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   CreateTabs({u"A", u"B", u"C"});
   browser()->tab_strip_model()->AddToNewGroup({1});
   browser()->tab_strip_model()->AddToNewGroup({2});
@@ -225,6 +230,7 @@ TEST_F(CommanderEntityMatchTest, TabExcludeTabGroupExcludes) {
 }
 
 TEST_F(CommanderEntityMatchTest, TabOnlyTabGroupExcludesOthers) {
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
   CreateTabs({u"A", u"B", u"C"});
   browser()->tab_strip_model()->AddToNewGroup({1});
   browser()->tab_strip_model()->AddToNewGroup({2});

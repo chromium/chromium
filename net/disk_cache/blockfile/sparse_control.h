@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/disk_cache/blockfile/bitmap.h"
 #include "net/disk_cache/blockfile/disk_format.h"
@@ -155,7 +155,7 @@ class SparseControl {
   void DoUserCallback();
   void DoAbortCallbacks();
 
-  EntryImpl* entry_;  // The sparse entry.
+  raw_ptr<EntryImpl> entry_;        // The sparse entry.
   scoped_refptr<EntryImpl> child_;  // The current child entry.
   SparseOperation operation_;
   bool pending_;  // True if any child IO operation returned pending.

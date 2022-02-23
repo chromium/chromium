@@ -12,11 +12,11 @@
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/scoped_temp_dir.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/test/test_reg_util_win.h"
 #endif
 
@@ -33,11 +33,11 @@ class RlzLibTestNoMachineStateHelper {
   void TearDown();
   void Reset();
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   base::ScopedTempDir temp_dir_;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   registry_util::RegistryOverrideManager override_manager_;
 #endif
 };

@@ -98,6 +98,7 @@ export function createSampleSearchEngine(override?: Partial<SearchEngine>):
         keyword: 'google.com',
         modelIndex: 0,
         name: 'Google',
+        shouldConfirmDeletion: false,
         url: 'https://search.foo.com/search?p=%s',
         urlLocked: false,
       },

@@ -23,7 +23,7 @@ class VideoLayout;
 // temporarily if the local mouse movements are detected).
 class ClientSessionControl {
  public:
-  virtual ~ClientSessionControl() {}
+  virtual ~ClientSessionControl() = default;
 
   // Returns the authenticated JID of the client session.
   virtual const std::string& client_jid() const = 0;
@@ -43,6 +43,7 @@ class ClientSessionControl {
   virtual void SetDisableInputs(bool disable_inputs) = 0;
 
   // Called when the host desktop displays are changed.
+  // TODO(yuweih): Move this to ClientSessionEvents.
   virtual void OnDesktopDisplayChanged(
       std::unique_ptr<protocol::VideoLayout> layout) = 0;
 };

@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "content/public/test/content_mock_cert_verifier.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"

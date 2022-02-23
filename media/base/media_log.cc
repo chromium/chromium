@@ -7,15 +7,16 @@
 #include <utility>
 
 #include "base/atomic_sequence_num.h"
-#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/values.h"
 
 namespace media {
 
+// Static declaration for dictionary keys that we expect to be used inside
+// different |MediaLogRecord|s. We declare them here so if they change, its
+// only in one spot.
 const char MediaLog::kEventKey[] = "event";
-const char MediaLog::kStatusText[] = "pipeline_error";
 
 // A count of all MediaLogs created in the current process. Used to generate
 // unique IDs.
@@ -54,20 +55,6 @@ void MediaLog::AddMessage(MediaLogMessageLevel level, std::string message) {
   record->params.SetStringPath(MediaLogMessageLevelToString(level),
                                std::move(message));
   AddLogRecord(std::move(record));
-}
-
-void MediaLog::NotifyError(PipelineStatus status) {
-  std::unique_ptr<MediaLogRecord> record(
-      CreateRecord(MediaLogRecord::Type::kMediaStatus));
-  record->params.SetIntPath(MediaLog::kStatusText, status);
-  AddLogRecord(std::move(record));
-}
-
-void MediaLog::NotifyError(Status status) {
-  DCHECK(!status.is_ok());
-  std::string output_str;
-  base::JSONWriter::Write(MediaSerialize(status), &output_str);
-  AddMessage(MediaLogMessageLevel::kERROR, output_str);
 }
 
 void MediaLog::OnWebMediaPlayerDestroyedLocked() {}

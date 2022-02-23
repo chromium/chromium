@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
 #include "base/memory/weak_ptr.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 
 namespace smbfs {
@@ -81,7 +81,7 @@ class SmbFsDelegateImpl : public mojom::SmbFsDelegate {
 SmbFsHost::Delegate::~Delegate() = default;
 
 SmbFsHost::SmbFsHost(
-    std::unique_ptr<chromeos::disks::MountPoint> mount_point,
+    std::unique_ptr<ash::disks::MountPoint> mount_point,
     Delegate* delegate,
     mojo::Remote<mojom::SmbFs> smbfs_remote,
     mojo::PendingReceiver<mojom::SmbFsDelegate> delegate_receiver)

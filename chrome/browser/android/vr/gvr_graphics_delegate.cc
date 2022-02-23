@@ -91,14 +91,14 @@ gfx::Transform PerspectiveMatrixFromView(const gvr::Rectf& fov,
 
   // The gfx::Transform default ctor initializes the transform to the identity,
   // so we must zero out a few values along the diagonal here.
-  result.matrix().set(0, 0, X);
-  result.matrix().set(0, 2, A);
-  result.matrix().set(1, 1, Y);
-  result.matrix().set(1, 2, B);
-  result.matrix().set(2, 2, C);
-  result.matrix().set(2, 3, D);
-  result.matrix().set(3, 2, -1);
-  result.matrix().set(3, 3, 0);
+  result.matrix().setRC(0, 0, X);
+  result.matrix().setRC(0, 2, A);
+  result.matrix().setRC(1, 1, Y);
+  result.matrix().setRC(1, 2, B);
+  result.matrix().setRC(2, 2, C);
+  result.matrix().setRC(2, 3, D);
+  result.matrix().setRC(3, 2, -1);
+  result.matrix().setRC(3, 3, 0);
 
   return result;
 }

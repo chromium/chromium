@@ -79,7 +79,7 @@ GuestViewEvents.prototype.setupEvents = function() {
           listenersToBeRemoved[i].listener);
       listenersToBeRemoved[i] = null;
     }
-  }, undefined, this.listenersToBeRemoved), -1 /* portId */);
+  }, undefined, this.listenersToBeRemoved));
 
   // Set up the GuestView events.
   for (var eventName in GuestViewEvents.EVENTS) {

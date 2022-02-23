@@ -21,10 +21,11 @@ namespace auction_worklet {
 
 class AuctionV8Helper;
 
-// The official Javascript and JSON MIME types. These are not the only supported
-// MIME types for either, however.
+// The official Javascript, JSON, and WASM MIME types. For JS and JSON there are
+// also other supported MIME types.
 extern const char kJavascriptMimeType[];
 extern const char kJsonMimeType[];
+extern const char kWasmMimeType[];
 
 // "X-Allow-Fledge: true" header.
 extern const char kAllowFledgeHeader[];
@@ -52,6 +53,10 @@ void AddJavascriptResponse(network::TestURLLoaderFactory* url_loader_factory,
 void AddJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
                      const GURL& url,
                      const std::string content);
+void AddVersionedJsonResponse(network::TestURLLoaderFactory* url_loader_factory,
+                              const GURL& url,
+                              const std::string content,
+                              uint32_t data_version);
 
 // Adds a task to `v8_helper->v8_runner()` that blocks until the return value
 // is signaled. The returned event will be deleted afterwards.

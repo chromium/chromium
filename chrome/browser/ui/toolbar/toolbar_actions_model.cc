@@ -14,10 +14,11 @@
 #include "base/location.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/one_shot_event.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -70,7 +71,7 @@ ToolbarActionsModel::ToolbarActionsModel(
 
   notification_registrar_.Add(
       this, extensions::NOTIFICATION_EXTENSION_PERMISSIONS_UPDATED,
-      content::Source<Profile>(profile_));
+      content::Source<Profile>(profile_.get()));
 }
 
 ToolbarActionsModel::~ToolbarActionsModel() {}
@@ -168,8 +169,8 @@ void ToolbarActionsModel::OnReady() {
   // Wait until the extension system is ready before observing any further
   // changes so that the toolbar buttons can be shown in their stable ordering
   // taken from prefs.
-  extension_registry_observation_.Observe(extension_registry_);
-  extension_action_observation_.Observe(extension_action_api_);
+  extension_registry_observation_.Observe(extension_registry_.get());
+  extension_action_observation_.Observe(extension_action_api_.get());
 
   auto* management =
       extensions::ExtensionManagementFactory::GetForBrowserContext(profile_);
@@ -227,6 +228,12 @@ ToolbarActionsModel::GetExtensionMessageBubbleController(Browser* browser) {
   return controller;
 }
 
+const std::u16string ToolbarActionsModel::GetExtensionName(
+    const ActionId& action_id) const {
+  return base::UTF8ToUTF16(
+      extension_registry_->enabled_extensions().GetByID(action_id)->name());
+}
+
 bool ToolbarActionsModel::IsActionPinned(const ActionId& action_id) const {
   return base::Contains(pinned_action_ids_, action_id);
 }
@@ -239,9 +246,15 @@ bool ToolbarActionsModel::IsActionForcePinned(const ActionId& action_id) const {
 
 void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
                                            size_t target_index) {
+  // TODO(crbug.com/1266952): This code assumes all actions are in
+  // stored_pinned_actions, which force-pinned actions aren't; so, always keep
+  // them 'to the right' of other actions. Remove this guard if we ever add
+  // force-pinned actions to the pref.
+  if (IsActionForcePinned(action_id))
+    return;
+
   // If pinned actions are empty, we're going to have a real bad time (with
-  // out-of-bounds access, size_t wraps, etc). Keep this a hard CHECK (not a
-  // DCHECK).
+  // out Keep this a hard CHECK (not a DCHECK).
   CHECK(!pinned_action_ids_.empty());
   DCHECK(!profile_->IsOffTheRecord())
       << "Changing action position is disallowed in incognito.";
@@ -257,9 +270,6 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
 
   bool is_left_to_right_move = target_index > current_index_on_toolbar;
 
-  auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
-  auto target_position = stored_pinned_actions.end();
-
   // Moving pinned actions is a bit tricky (unless we move it to the end - in
   // which case it's trivial). We need to store the updated state in prefs, but
   // the prefs also contain pin state information for unloaded (but still
@@ -270,6 +280,11 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // find the ID of the action to its right (if any). Then in the stored prefs,
   // find that action, and insert the moved action to its left.
   //
+  // To further complicate things, force-pinned actions are stored in
+  // |pinned_action_ids_| but not in the pref (crbug.com/1266952). So we have to
+  // find the ID not just of the action to its right, but the first action to
+  // its right that is *not* force-pinned.
+  //
   // For example:
   // Consider the pinned extension order in prefs is "A [B C] D E", where
   // B and C are unloaded extensions. Assume we want to A to index 1 on the
@@ -277,17 +292,44 @@ void ToolbarActionsModel::MovePinnedAction(const ActionId& action_id,
   // right (E), and insert it in prefs to the left of it. Thus, the new pref
   // order would be "[B C] D A E".
 
-  const bool move_to_end = target_index >= pinned_action_ids_.size() - 1;
-  if (!move_to_end) {
-    size_t new_index_to_right =
-        is_left_to_right_move ? target_index + 1 : target_index;
-    DCHECK_LT(new_index_to_right, pinned_action_ids_.size());
+  // Force-pinned neighbors aren't saved in the pref, so find the preceding,
+  // non-force-pinned neighbor. This basically keeps force-pinned actions on the
+  // right at all times.
+  //
+  // TODO(crbug.com/1266952): Simplify this logic when force-pinned extensions
+  // are saved in the pref.
+  std::vector<ActionId>::iterator non_force_pinned_neighbor =
+      pinned_action_ids_.end();
+  if (is_left_to_right_move) {
+    // LTR move. Starting with the extension to the right of the desired
+    // location, do an RTL search for the first non-force-pinned extension.
+    // Note: there's always an extension that matches these criteria (this
+    // one!).
 
-    target_position =
-        std::find(stored_pinned_actions.begin(), stored_pinned_actions.end(),
-                  pinned_action_ids_[new_index_to_right]);
-    DCHECK(target_position != stored_pinned_actions.end());
+    // Avoid array bounds shenanigans when target_index >= n.
+    auto search_start = std::max(pinned_action_ids_.rend() - target_index - 1,
+                                 pinned_action_ids_.rbegin());
+    auto reverse_iter = std::find_if(
+        search_start, pinned_action_ids_.rend(),
+        [this](const ActionId& id) { return !this->IsActionForcePinned(id); });
+    non_force_pinned_neighbor = reverse_iter.base();
+  } else {
+    // RTL move. Starting with the extension to the left of the desired
+    // location, do an LTR search for the first non-force-pinned extension.
+    // Note: there's always an extension that matches these criteria (this
+    // one!).
+    non_force_pinned_neighbor = std::find_if(
+        pinned_action_ids_.begin() + target_index, pinned_action_ids_.end(),
+        [this](const ActionId& id) { return !this->IsActionForcePinned(id); });
   }
+
+  auto stored_pinned_actions = extension_prefs_->GetPinnedExtensions();
+  const bool move_to_end =
+      non_force_pinned_neighbor == pinned_action_ids_.end();
+  auto target_position = move_to_end ? stored_pinned_actions.end()
+                                     : std::find(stored_pinned_actions.begin(),
+                                                 stored_pinned_actions.end(),
+                                                 *non_force_pinned_neighbor);
 
   auto current_position_in_prefs = std::find(
       stored_pinned_actions.begin(), stored_pinned_actions.end(), action_id);
@@ -327,14 +369,21 @@ void ToolbarActionsModel::InitializeActionList() {
   // have changed even though they haven't.
   pinned_action_ids_ = GetFilteredPinnedActionIds();
 
-  if (!profile_->IsOffTheRecord() && !action_ids_.empty()) {
-    base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
-                                pinned_action_ids_.size());
-    double percentage_double = static_cast<double>(pinned_action_ids_.size()) /
-                               action_ids_.size() * 100.0;
-    base::UmaHistogramPercentageObsoleteDoNotUse(
-        "Extensions.Toolbar.PinnedExtensionPercentage3",
-        base::ClampRound(percentage_double));
+  if (!profile_->IsOffTheRecord()) {
+    // Prefixed with "ExtensionToolbarModel" rather than
+    // "Extensions.Toolbar" for historical reasons.
+    base::UmaHistogramCounts100("ExtensionToolbarModel.BrowserActionsCount",
+                                action_ids_.size());
+    if (!action_ids_.empty()) {
+      base::UmaHistogramCounts100("Extensions.Toolbar.PinnedExtensionCount2",
+                                  pinned_action_ids_.size());
+      double percentage_double =
+          static_cast<double>(pinned_action_ids_.size()) / action_ids_.size() *
+          100.0;
+      base::UmaHistogramPercentageObsoleteDoNotUse(
+          "Extensions.Toolbar.PinnedExtensionPercentage3",
+          base::ClampRound(percentage_double));
+    }
   }
 }
 
@@ -349,19 +398,6 @@ void ToolbarActionsModel::Populate() {
     if (!ShouldAddExtension(extension.get()))
       continue;
     action_ids_.insert(extension->id());
-  }
-
-  // Histogram names are prefixed with "ExtensionToolbarModel" rather than
-  // "ToolbarActionsModel" for historical reasons.
-  UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsCount",
-                           action_ids_.size());
-
-  if (!action_ids_.empty()) {
-    // If all actions are pinned, report kSampleType_MAX.
-    UMA_HISTOGRAM_COUNTS_100("ExtensionToolbarModel.BrowserActionsVisible",
-                             pinned_action_ids_.size() == action_ids_.size()
-                                 ? base::HistogramBase::kSampleType_MAX
-                                 : pinned_action_ids_.size());
   }
 }
 

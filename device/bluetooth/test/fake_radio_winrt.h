@@ -12,7 +12,6 @@
 
 #include "base/callback.h"
 #include "base/cancelable_callback.h"
-#include "base/macros.h"
 
 namespace device {
 

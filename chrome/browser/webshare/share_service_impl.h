@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/webshare/chromeos/sharesheet_client.h"
 #endif
 
@@ -69,7 +69,7 @@ class ShareServiceImpl
 
   absl::optional<SafeBrowsingRequest> safe_browsing_request_;
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   webshare::SharesheetClient sharesheet_client_;
 #endif
 

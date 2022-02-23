@@ -17,6 +17,7 @@
 #include "skia/ext/image_operations.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/insets.h"
@@ -142,11 +143,11 @@ PhoneHubInterstitialView::PhoneHubInterstitialView(bool show_progress,
 
 PhoneHubInterstitialView::~PhoneHubInterstitialView() = default;
 
-void PhoneHubInterstitialView::SetImage(const gfx::ImageSkia& image) {
-  // Expect an initialized |image_| view and a non-empty image.
+void PhoneHubInterstitialView::SetImage(const ui::ImageModel& image_model) {
+  // Expect a non-null |image_| view and a nonempty |image_model|.
   DCHECK(image_);
-  DCHECK(!image.isNull());
-  image_->SetImage(image);
+  DCHECK(!image_model.IsEmpty());
+  image_->SetImage(image_model);
 }
 
 void PhoneHubInterstitialView::SetTitle(const std::u16string& title) {

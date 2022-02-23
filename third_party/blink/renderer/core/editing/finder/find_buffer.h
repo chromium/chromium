@@ -150,6 +150,9 @@ class CORE_EXPORT FindBuffer {
   // another LayoutBlockFlow or after |end_position|) to |node_after_block_|.
   void CollectTextUntilBlockBoundary(const EphemeralRangeInFlatTree& range);
 
+  // Replaces nodes that should be ignored with appropriate char constants.
+  void ReplaceNodeWithCharConstants(const Node& node);
+
   // Mapping for position in buffer -> actual node where the text came from,
   // along with the offset in the NGOffsetMapping of this find_buffer.
   // This is needed because when we find a match in the buffer, we want to know

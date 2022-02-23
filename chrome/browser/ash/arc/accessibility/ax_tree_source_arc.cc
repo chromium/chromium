@@ -247,21 +247,6 @@ void AXTreeSourceArc::NotifyAccessibilityEventInternal(
 
   update_ids.push_back(node_id_to_clear);
 
-  {
-    // TODO(crbug/1211039): This block is added temporary to debug
-    // http://crbug/1211039. Once the issue is resolved, this block should be
-    // removed.
-    std::string error_string;
-    ui::AXTreeSourceChecker<AccessibilityInfoDataWrapper*> checker(this);
-    if (!checker.CheckAndGetErrorString(&error_string)) {
-      LOG(ERROR) << "Failed to validate the tree source\n"
-                 << "Event: " << events[0].ToString() << "\n"
-                 << "window size: " << event_data.window_data->size() << ", "
-                 << "node size: " << event_data.node_data.size() << "\n"
-                 << "Error: " << error_string;
-    }
-  }
-
   for (const int32_t update_id : update_ids)
     current_tree_serializer_->InvalidateSubtree(GetFromId(update_id));
 
@@ -366,7 +351,6 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
     }
   }
 
-  // TODO(hirokisato): Handle CLEAR_ACCESSIBILITY_FOCUS event.
   if (event_data.event_type == AXEventType::VIEW_FOCUSED) {
     if (source_node && source_node->IsVisibleToUser() &&
         GetBooleanProperty(source_node->GetNode(),
@@ -383,6 +367,19 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
              UseFullFocusMode()) {
     if (source_node && source_node->IsVisibleToUser())
       android_focused_id_ = source_node->GetId();
+  } else if (event_data.event_type ==
+                 AXEventType::VIEW_ACCESSIBILITY_FOCUS_CLEARED &&
+             UseFullFocusMode()) {
+    int event_from_action;
+    GetProperty(event_data.int_properties,
+                mojom::AccessibilityEventIntProperty::ACTION,
+                &event_from_action);
+    const mojom::AccessibilityActionType action =
+        static_cast<mojom::AccessibilityActionType>(event_from_action);
+    if (action != mojom::AccessibilityActionType::FOCUS &&
+        action != mojom::AccessibilityActionType::ACCESSIBILITY_FOCUS) {
+      android_focused_id_.reset();
+    }
   } else if (event_data.event_type == AXEventType::VIEW_SELECTED) {
     // In Android, VIEW_SELECTED event is dispatched in the two cases below:
     // 1. Changing a value in ProgressBar or TimePicker in ARC P.
@@ -429,6 +426,8 @@ bool AXTreeSourceArc::UpdateAndroidFocusedId(const AXEventData& event_data) {
   }
 
   if (!android_focused_id_ || !GetFromId(*android_focused_id_)) {
+    // Because we only handle events from the focused window, let's reset the
+    // focus to the root window.
     AccessibilityInfoDataWrapper* root = GetRoot();
     DCHECK(IsValid(root));
     android_focused_id_ = root_id_;

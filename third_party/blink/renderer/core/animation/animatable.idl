@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://drafts.csswg.org/web-animations/#the-animatable-interface-mixin
+// https://w3.org/TR/web-animations-1/#the-animatable-interface-mixin
 interface mixin Animatable {
     [CallWith=ScriptState, Measure, RaisesException] Animation animate(object? keyframes, optional (unrestricted double or KeyframeAnimationOptions) options);
     [RuntimeEnabled=WebAnimationsAPI] sequence<Animation> getAnimations(optional GetAnimationsOptions options = {});

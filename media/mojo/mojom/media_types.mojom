@@ -30,14 +30,6 @@ enum BufferingStateChangeReason;
 [Native]
 enum ChannelLayout;
 
-// See media/base/decode_status.h for descriptions.
-[Native]
-enum DecodeStatus;
-
-// See media/base/status_codes.h for descriptions.
-[Native]
-enum StatusCode;
-
 // See media/base/media_content_type.h for descriptions.
 [Native]
 enum MediaContentType;
@@ -49,10 +41,6 @@ struct MediaLogRecord;
 // See media/base/output_device_info.h for descriptions.
 [Native]
 enum OutputDeviceStatus;
-
-// See media/base/pipeline_status.h for descriptions.
-[Native]
-enum PipelineStatus;
 
 // See media/base/sample_format.h for descriptions.
 [Native]
@@ -316,6 +304,9 @@ struct VideoFrameMetadata {
 
   gfx.mojom.Rect? capture_update_rect;
 
+  gfx.mojom.Rect? region_capture_rect;
+  uint32 crop_version;
+
   bool has_copy_mode;
   CopyMode copy_mode;
 
@@ -494,11 +485,19 @@ struct StatusData {
   uint16 code;
   string message;
   array<mojo_base.mojom.Value> frames;
-  array<StatusData> causes;
+  StatusData? cause;
   mojo_base.mojom.Value data;
 };
 
-struct Status {
+struct EncoderStatus {
+  StatusData? internal;
+};
+
+struct DecoderStatus {
+  StatusData? internal;
+};
+
+struct PipelineStatus {
   StatusData? internal;
 };
 

@@ -192,7 +192,7 @@ TEST(Abs32UtilsTest, Win32Read32) {
   constexpr uint32_t kRvaBegin = 0x00C00000U;
   struct {
     std::vector<uint8_t> data32;
-    std::vector<offset_t> abs32_locations;  // Assumtion: Sorted.
+    std::deque<offset_t> abs32_locations;  // Assumption: Sorted.
     offset_t lo;  // Assumption: In range, does not straddle |abs32_location|.
     offset_t hi;  // Assumption: Also >= |lo|.
     std::vector<Reference> expected_refs;
@@ -230,7 +230,7 @@ TEST(Abs32UtilsTest, Win32Read32) {
        {{0x3U, 0x9U}}},
       // No location given.
       {ParseHexString("FF FF FF FF 0C 00 C0 A0 00 00 C0 A0 FF FF FF FF"),
-       std::vector<offset_t>(), 0x0U, 0x10U, std::vector<Reference>()},
+       std::deque<offset_t>(), 0x0U, 0x10U, std::vector<Reference>()},
       // Simple alternation.
       {ParseHexString("04 00 C0 A0 FF FF FF FF 0C 00 C0 A0 FF FF FF FF "
                       "14 00 C0 A0 FF FF FF FF 1C 00 C0 A0 FF FF FF FF"),
@@ -308,8 +308,8 @@ TEST(Abs32UtilsTest, Win32Read64) {
       "06 00 C0 A0 26 59 41 31 02 00 C0 A0 26 59 41 31 "
       "FF FF FF BF 26 59 41 31 FF FF FF FF FF FF FF FF "
       "02 00 C0 A0 26 59 41 31 07 00 C0 A0 26 59 41 31");
-  std::vector<offset_t> abs32_locations = {0x8U,  0x10U, 0x18U, 0x20U,
-                                           0x28U, 0x30U, 0x38U, 0x40U};
+  std::deque<offset_t> abs32_locations = {0x8U,  0x10U, 0x18U, 0x20U,
+                                          0x28U, 0x30U, 0x38U, 0x40U};
   offset_t lo = 0x10U;
   offset_t hi = 0x38U;
   std::vector<Reference> expected_refs = {
@@ -336,7 +336,7 @@ TEST(Abs32UtilsTest, Win32ReadFail) {
   std::vector<uint8_t> data(32U, 0xFFU);
   ConstBufferView image(data.data(), data.size());
 
-  auto try_make = [&](std::vector<offset_t>&& abs32_locations, offset_t lo,
+  auto try_make = [&](std::deque<offset_t>&& abs32_locations, offset_t lo,
                       offset_t hi) {
     Abs32RvaExtractorWin32 extractor(image, {bitness, kImageBase},
                                      abs32_locations, lo, hi);
@@ -359,7 +359,7 @@ TEST(Abs32UtilsTest, Win32ReadFail) {
   bitness = kBit64;
   try_make({6U, 22U}, 0U, 32U);
   // |lo| > |hi|.
-  EXPECT_DEATH(try_make(std::vector<offset_t>(), 32U, 31U), "");
+  EXPECT_DEATH(try_make(std::deque<offset_t>(), 32U, 31U), "");
   try_make({6U, 22U}, 0U, 14U);
   try_make({6U, 22U}, 0U, 30U);
   try_make({6U, 22U}, 6U, 32U);
@@ -468,10 +468,10 @@ TEST(Abs32UtilsTest, RemoveUntranslatableAbs32) {
   const offset_t kAbsB = 0x54;  // a:00000000 (bad: underflow)
   const offset_t kAbsC = 0x58;  // a:2BCD1A18 = r:1A18 = 0x1C
 
-  std::vector<offset_t> locations = {kAbs1, kAbs2, kAbs3, kAbs4, kAbs5, kAbs6,
-                                     kAbs7, kAbs8, kAbs9, kAbsA, kAbsB, kAbsC};
-  std::vector<offset_t> exp_locations = {kAbs1, kAbs2, kAbs3, kAbs4,
-                                         kAbs5, kAbs6, kAbs9, kAbsC};
+  std::deque<offset_t> locations = {kAbs1, kAbs2, kAbs3, kAbs4, kAbs5, kAbs6,
+                                    kAbs7, kAbs8, kAbs9, kAbsA, kAbsB, kAbsC};
+  std::deque<offset_t> exp_locations = {kAbs1, kAbs2, kAbs3, kAbs4,
+                                        kAbs5, kAbs6, kAbs9, kAbsC};
   size_t exp_num_removed = locations.size() - exp_locations.size();
   size_t num_removed = RemoveUntranslatableAbs32(image, {kBitness, kImageBase},
                                                  translator, &locations);
@@ -483,8 +483,8 @@ TEST(Abs32UtilsTest, RemoveOverlappingAbs32Locations) {
   // Make |width| a state to reduce repetition.
   uint32_t width = WidthOf(kBit32);
 
-  auto run_test = [&width](const std::vector<offset_t>& expected_locations,
-                           std::vector<offset_t>&& locations) {
+  auto run_test = [&width](const std::deque<offset_t>& expected_locations,
+                           std::deque<offset_t>&& locations) {
     ASSERT_TRUE(std::is_sorted(locations.begin(), locations.end()));
     size_t expected_removals = locations.size() - expected_locations.size();
     size_t removals = RemoveOverlappingAbs32Locations(width, &locations);
@@ -494,7 +494,7 @@ TEST(Abs32UtilsTest, RemoveOverlappingAbs32Locations) {
 
   // 32-bit tests.
   width = WidthOf(kBit32);
-  run_test(std::vector<offset_t>(), std::vector<offset_t>());
+  run_test(std::deque<offset_t>(), std::deque<offset_t>());
   run_test({4U}, {4U});
   run_test({4U, 10U}, {4U, 10U});
   run_test({4U, 8U}, {4U, 8U});
@@ -518,7 +518,7 @@ TEST(Abs32UtilsTest, RemoveOverlappingAbs32Locations) {
 
   // 64-bit tests.
   width = WidthOf(kBit64);
-  run_test(std::vector<offset_t>(), std::vector<offset_t>());
+  run_test(std::deque<offset_t>(), std::deque<offset_t>());
   run_test({4U}, {4U});
   run_test({4U, 20U}, {4U, 20U});
   run_test({4U, 12U}, {4U, 12U});

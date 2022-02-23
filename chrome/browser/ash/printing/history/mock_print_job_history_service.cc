@@ -11,7 +11,7 @@ MockPrintJobHistoryService::MockPrintJobHistoryService() = default;
 MockPrintJobHistoryService::~MockPrintJobHistoryService() = default;
 
 void MockPrintJobHistoryService::SavePrintJobProto(
-    const chromeos::printing::proto::PrintJobInfo& print_job_info) {
+    const printing::proto::PrintJobInfo& print_job_info) {
   for (auto& observer : observers_) {
     observer.OnPrintJobFinished(print_job_info);
   }

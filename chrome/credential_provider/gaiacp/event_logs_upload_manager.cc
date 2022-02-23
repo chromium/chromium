@@ -458,7 +458,8 @@ HRESULT EventLogsUploadManager::UploadEventViewerLogs(
     }
   }
 
-  if (log_entry_value_list && log_entry_value_list->GetList().size() > 0) {
+  if (log_entry_value_list &&
+      log_entry_value_list->GetListDeprecated().size() > 0) {
     upload_status_ = MakeUploadLogChunkRequest(access_token, chunk_id,
                                                std::move(log_entry_value_list));
     if (FAILED(upload_status_)) {
@@ -487,7 +488,8 @@ HRESULT EventLogsUploadManager::MakeUploadLogChunkRequest(
     return hr;
   }
 
-  size_t num_events_to_upload = log_entries_value_list->GetList().size();
+  size_t num_events_to_upload =
+      log_entries_value_list->GetListDeprecated().size();
 
   base::Value request_dict(base::Value::Type::DICTIONARY);
   request_dict.SetStringKey(kRequestSerialNumberParameterName,

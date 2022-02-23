@@ -12,40 +12,40 @@
 #include "base/logging.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX) && !defined(OS_NACL)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_NACL)
 #include <errno.h>
 #include <string.h>
 #include <sys/mman.h>
 #include <unistd.h>
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/vmar.h>
 #include <zircon/rights.h>
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <mach/mach_vm.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <aclapi.h>
 #endif
 
 namespace base {
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 
 static const size_t kDataSize = 1024;
 
 // Common routine used with Posix file descriptors. Check that shared memory
 // file descriptor |fd| does not allow writable mappings. Return true on
 // success, false otherwise.
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 static bool CheckReadOnlySharedMemoryFdPosix(int fd) {
 // Note that the error on Android is EPERM, unlike other platforms where
 // it will be EACCES.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const int kExpectedErrno = EPERM;
 #else
   const int kExpectedErrno = EACCES;
@@ -66,9 +66,9 @@ static bool CheckReadOnlySharedMemoryFdPosix(int fd) {
   }
   return true;
 }
-#endif  // OS_POSIX && !defined(OS_MAC)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Fuchsia specific implementation.
 bool CheckReadOnlySharedMemoryFuchsiaHandle(zx::unowned_vmo handle) {
   const uint32_t flags = ZX_VM_PERM_READ | ZX_VM_PERM_WRITE;
@@ -88,7 +88,7 @@ bool CheckReadOnlySharedMemoryFuchsiaHandle(zx::unowned_vmo handle) {
   return true;
 }
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 bool CheckReadOnlySharedMemoryMachPort(mach_port_t memory_object) {
   mach_vm_address_t memory;
   const kern_return_t kr = mach_vm_map(
@@ -103,7 +103,7 @@ bool CheckReadOnlySharedMemoryMachPort(mach_port_t memory_object) {
   return true;
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 bool CheckReadOnlySharedMemoryWindowsHandle(HANDLE handle) {
   void* memory =
       MapViewOfFile(handle, FILE_MAP_READ | FILE_MAP_WRITE, 0, 0, kDataSize);
@@ -126,20 +126,20 @@ bool CheckReadOnlyPlatformSharedMemoryRegionForTesting(
     return false;
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return CheckReadOnlySharedMemoryMachPort(region.GetPlatformHandle());
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return CheckReadOnlySharedMemoryFuchsiaHandle(region.GetPlatformHandle());
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return CheckReadOnlySharedMemoryWindowsHandle(region.GetPlatformHandle());
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return CheckReadOnlySharedMemoryFdPosix(region.GetPlatformHandle());
 #else
   return CheckReadOnlySharedMemoryFdPosix(region.GetPlatformHandle().fd);
 #endif
 }
 
-#endif  // !OS_NACL
+#endif  // !BUILDFLAG(IS_NACL)
 
 WritableSharedMemoryMapping MapForTesting(
     subtle::PlatformSharedMemoryRegion* region) {

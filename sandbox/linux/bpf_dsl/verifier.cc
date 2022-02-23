@@ -7,7 +7,6 @@
 #include <stdint.h>
 #include <string.h>
 
-#include "base/macros.h"
 #include "sandbox/linux/bpf_dsl/seccomp_macros.h"
 #include "sandbox/linux/bpf_dsl/trap_registry.h"
 #include "sandbox/linux/system_headers/linux_filter.h"

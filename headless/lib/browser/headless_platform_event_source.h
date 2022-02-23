@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_PLATFORM_EVENT_SOURCE_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_PLATFORM_EVENT_SOURCE_H_
 
-#include "base/macros.h"
 #include "ui/events/platform/platform_event_source.h"
 
 namespace headless {

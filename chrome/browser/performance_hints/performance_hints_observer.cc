@@ -4,12 +4,9 @@
 
 #include "chrome/browser/performance_hints/performance_hints_observer.h"
 
-#include <string>
-
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/strcat.h"
-#include "build/build_config.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/performance_hints/performance_hints_features.h"
@@ -17,15 +14,12 @@
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/url_pattern_with_wildcards.h"
 #include "components/optimization_guide/proto/performance_hints_metadata.pb.h"
-#include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/web_contents.h"
-#include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "chrome/browser/performance_hints/android/jni_headers/PerformanceHintsObserver_jni.h"
 #include "url/android/gurl_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 using optimization_guide::OptimizationGuideDecision;
 using optimization_guide::URLPatternWithWildcards;
@@ -83,7 +77,7 @@ const char* ToString(HintLookupSource source) {
 }
 }  // namespace
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jint JNI_PerformanceHintsObserver_GetPerformanceClassForURL(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& java_web_contents,
@@ -99,11 +93,11 @@ static jboolean
 JNI_PerformanceHintsObserver_IsContextMenuPerformanceInfoEnabled(JNIEnv* env) {
   return features::IsContextMenuPerformanceInfoEnabled();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 PerformanceHintsObserver::PerformanceHintsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsUserData<PerformanceHintsObserver>(*web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
 
@@ -301,33 +295,35 @@ PerformanceHintsObserver::HintForURLResult PerformanceHintsObserver::HintForURL(
 }
 
 bool PerformanceHintsObserver::DoesPageSupportHints() {
-  // page_url_ is not set for error pages.
-  return page_url_.has_value() && page_url_->is_valid() &&
-         page_url_->SchemeIsHTTPOrHTTPS();
+  // The error pages do not support hints.
+  const GURL page_url = GetWebContents().GetLastCommittedURL();
+  return page_url.is_valid() && page_url.SchemeIsHTTPOrHTTPS() &&
+         !GetWebContents().GetMainFrame()->IsErrorDocument();
 }
 
-void PerformanceHintsObserver::PopulateLinkHints() {
-  DCHECK(page_url_);
-  if (!page_url_)
+void PerformanceHintsObserver::PopulateLinkHints(PageData& page_data) {
+  if (!optimization_guide_decider_ || !DoesPageSupportHints())
     return;
 
+  const GURL& page_url = GetWebContents().GetLastCommittedURL();
   const google::protobuf::RepeatedPtrField<PerformanceHint>* link_hints =
       nullptr;
+
   // Metadata variables are scoped here to share the same scope as link_hints.
   optimization_guide::OptimizationMetadata metadata;
   absl::optional<LinkPerformanceMetadata> link_metadata;
   if (features::AreLinkPerformanceHintsEnabled()) {
-    link_hints_decision_ = optimization_guide_decider_->CanApplyOptimization(
-        page_url_.value(), optimization_guide::proto::LINK_PERFORMANCE,
-        &metadata);
+    page_data.SetLinkHintDecision(
+        optimization_guide_decider_->CanApplyOptimization(
+            page_url, optimization_guide::proto::LINK_PERFORMANCE, &metadata));
     link_metadata = metadata.ParsedMetadata<LinkPerformanceMetadata>();
     if (!link_metadata)
       return;
     link_hints = &link_metadata->link_hints();
   } else {
-    link_hints_decision_ = optimization_guide_decider_->CanApplyOptimization(
-        page_url_.value(), optimization_guide::proto::PERFORMANCE_HINTS,
-        &metadata);
+    page_data.SetLinkHintDecision(
+        optimization_guide_decider_->CanApplyOptimization(
+            page_url, optimization_guide::proto::PERFORMANCE_HINTS, &metadata));
     if (!metadata.performance_hints_metadata())
       return;
     link_hints =
@@ -335,12 +331,7 @@ void PerformanceHintsObserver::PopulateLinkHints() {
   }
 
   DCHECK(link_hints);
-  if (link_hints_decision_ == OptimizationGuideDecision::kTrue) {
-    for (const PerformanceHint& link_hint : *link_hints) {
-      link_hints_.emplace_back(
-          URLPatternWithWildcards(link_hint.wildcard_pattern()), link_hint);
-    }
-  }
+  page_data.SetLinkHints(*link_hints);
 }
 
 std::tuple<PerformanceHintsObserver::SourceLookupStatus,
@@ -350,10 +341,14 @@ PerformanceHintsObserver::LinkHintForURL(const GURL& url) {
     return {SourceLookupStatus::kNoMatch, absl::nullopt};
   }
 
-  if (link_hints_decision_ == OptimizationGuideDecision::kUnknown) {
-    PopulateLinkHints();
+  PerformanceHintsObserver::PageData* page_data =
+      PageData::GetOrCreateForPage(GetWebContents().GetPrimaryPage());
+
+  if (page_data->GetLinkHintDecision() == OptimizationGuideDecision::kUnknown) {
+    PopulateLinkHints(*page_data);
   }
-  switch (link_hints_decision_) {
+
+  switch (page_data->GetLinkHintDecision()) {
     case OptimizationGuideDecision::kUnknown:
       return {SourceLookupStatus::kNotReady, absl::nullopt};
     case OptimizationGuideDecision::kFalse:
@@ -367,14 +362,7 @@ PerformanceHintsObserver::LinkHintForURL(const GURL& url) {
       replacements.ClearQuery();
       replacements.ClearPort();
       replacements.ClearRef();
-      GURL scheme_host_path = url.ReplaceComponents(replacements);
-
-      for (const auto& pattern_hint : link_hints_) {
-        if (pattern_hint.first.Matches(scheme_host_path.spec())) {
-          return {SourceLookupStatus::kHintFound, pattern_hint.second};
-        }
-      }
-      return {SourceLookupStatus::kNoMatch, absl::nullopt};
+      return page_data->GetLinkHintForURL(url.ReplaceComponents(replacements));
     }
   }
 }
@@ -428,36 +416,35 @@ PerformanceHintsObserver::FastHostHintForURL(const GURL& url) const {
   }
 }
 
-void PerformanceHintsObserver::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK(navigation_handle);
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      navigation_handle->IsSameDocument() ||
-      !navigation_handle->HasCommitted()) {
-    // Use the same hints if the main frame hasn't changed.
-    return;
-  }
+PerformanceHintsObserver::PageData::PageData(content::Page& page)
+    : PageUserData(page) {}
 
-  // We've navigated to a new page, so clear out any existing cached hints.
-  link_hints_.clear();
-  link_hints_decision_ = OptimizationGuideDecision::kUnknown;
-  page_url_.reset();
+PerformanceHintsObserver::PageData::~PageData() = default;
 
-  if (!optimization_guide_decider_) {
-    return;
+void PerformanceHintsObserver::PageData::SetLinkHints(
+    const google::protobuf::RepeatedPtrField<PerformanceHint>& link_hints) {
+  DCHECK(link_hints_.empty());
+  if (link_hints_decision_ == OptimizationGuideDecision::kTrue) {
+    for (const PerformanceHint& link_hint : link_hints) {
+      link_hints_.emplace_back(
+          URLPatternWithWildcards(link_hint.wildcard_pattern()), link_hint);
+    }
   }
-  if (navigation_handle->IsErrorPage()) {
-    // Don't provide hints on Chrome error pages.
-    return;
-  }
-
-  page_url_ = navigation_handle->GetURL();
 }
 
+std::tuple<PerformanceHintsObserver::SourceLookupStatus,
+           absl::optional<PerformanceHint>>
+PerformanceHintsObserver::PageData::GetLinkHintForURL(const GURL& url) const {
+  for (const auto& pattern_hint : link_hints_) {
+    if (pattern_hint.first.Matches(url.spec())) {
+      return {PerformanceHintsObserver::SourceLookupStatus::kHintFound,
+              pattern_hint.second};
+    }
+  }
+  return {SourceLookupStatus::kNoMatch, absl::nullopt};
+}
+
+PAGE_USER_DATA_KEY_IMPL(PerformanceHintsObserver::PageData);
 WEB_CONTENTS_USER_DATA_KEY_IMPL(PerformanceHintsObserver);
 
 }  // namespace performance_hints

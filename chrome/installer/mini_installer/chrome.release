@@ -33,6 +33,7 @@ nacl64.exe: %(VersionDir)s\
 nacl_irt_x86_32.nexe: %(VersionDir)s\
 nacl_irt_x86_64.nexe: %(VersionDir)s\
 notification_helper.exe: %(VersionDir)s\
+optimization_guide_internal.dll: %(VersionDir)s\
 resources.pak: %(VersionDir)s\
 vk_swiftshader.dll: %(VersionDir)s\
 vk_swiftshader_icd.json: %(VersionDir)s\

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/login/screens/network_screen.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/location.h"
@@ -26,7 +27,6 @@ constexpr base::TimeDelta kConnectionTimeout = base::Seconds(40);
 
 constexpr char kUserActionBackButtonClicked[] = "back";
 constexpr char kUserActionContinueButtonClicked[] = "continue";
-constexpr char kUserActionOfflineDemoSetup[] = "offline-demo-setup";
 
 }  // namespace
 
@@ -35,13 +35,18 @@ std::string NetworkScreen::GetResultString(Result result) {
   switch (result) {
     case Result::CONNECTED_REGULAR:
     case Result::CONNECTED_DEMO:
+    case Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT:
+    case Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT:
       return "Connected";
-    case Result::OFFLINE_DEMO_SETUP:
+    case Result::OFFLINE_DEMO:
       return "OfflineDemoSetup";
     case Result::BACK_REGULAR:
     case Result::BACK_DEMO:
     case Result::BACK_OS_INSTALL:
       return "Back";
+    case Result::NOT_APPLICABLE:
+    case Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT:
+      return BaseScreen::kNotApplicable;
   }
 }
 
@@ -71,17 +76,25 @@ void NetworkScreen::OnViewDestroyed(NetworkScreenView* view) {
   }
 }
 
-void NetworkScreen::ShowImpl() {
-  if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
-    // Check if preinstalled resources are available. If so, we can allow
-    // offline Demo Mode during Demo Mode network selection.
-    DemoSetupController* demo_setup_controller =
-        WizardController::default_controller()->demo_setup_controller();
-    demo_setup_controller->TryMountPreinstalledDemoResources(
-        base::BindOnce(&NetworkScreen::OnHasPreinstalledDemoResources,
-                       weak_ptr_factory_.GetWeakPtr()));
+bool NetworkScreen::MaybeSkip(WizardContext* context) {
+  if (!first_time_shown_)
+    return false;
+  first_time_shown_ = false;
+
+  if (features::IsOobeNetworkScreenSkipEnabled() &&
+      !switches::IsOOBENetworkScreenSkippingDisabledForTesting() &&
+      network_state_helper_->IsConnectedToEthernet()) {
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+      exit_callback_.Run(Result::NOT_APPLICABLE_CONSOLIDATED_CONSENT);
+    else
+      exit_callback_.Run(Result::NOT_APPLICABLE);
+    return true;
   }
 
+  return false;
+}
+
+void NetworkScreen::ShowImpl() {
   Refresh();
   if (view_)
     view_->Show();
@@ -99,8 +112,6 @@ void NetworkScreen::OnUserAction(const std::string& action_id) {
     OnContinueButtonClicked();
   } else if (action_id == kUserActionBackButtonClicked) {
     OnBackButtonClicked();
-  } else if (action_id == kUserActionOfflineDemoSetup) {
-    OnOfflineDemoModeSetupSelected();
   } else {
     BaseScreen::OnUserAction(action_id);
   }
@@ -150,10 +161,17 @@ void NetworkScreen::UnsubscribeNetworkNotification() {
 }
 
 void NetworkScreen::NotifyOnConnection() {
-  if (DemoSetupController::IsOobeDemoSetupFlowInProgress())
-    exit_callback_.Run(Result::CONNECTED_DEMO);
-  else
-    exit_callback_.Run(Result::CONNECTED_REGULAR);
+  if (DemoSetupController::IsOobeDemoSetupFlowInProgress()) {
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+      exit_callback_.Run(Result::CONNECTED_DEMO_CONSOLIDATED_CONSENT);
+    else
+      exit_callback_.Run(Result::CONNECTED_DEMO);
+  } else {
+    if (chromeos::features::IsOobeConsolidatedConsentEnabled())
+      exit_callback_.Run(Result::CONNECTED_REGULAR_CONSOLIDATED_CONSENT);
+    else
+      exit_callback_.Run(Result::CONNECTED_REGULAR);
+  }
 }
 
 void NetworkScreen::OnConnectionTimeout() {
@@ -194,9 +212,9 @@ void NetworkScreen::StopWaitingForConnection(const std::u16string& network_id) {
 
   network_id_ = network_id;
 
-  // Automatically continue if we are using Hands-Off Enrollment.
+  // Automatically continue if we are using Zero-Touch Hands-Off Enrollment.
   if (is_connected && continue_attempts_ == 0 &&
-      WizardController::UsingHandsOffEnrollment()) {
+      WizardController::IsZeroTouchHandsOffOobeFlow()) {
     OnContinueButtonClicked();
   }
 }
@@ -235,18 +253,4 @@ void NetworkScreen::OnContinueButtonClicked() {
   continue_pressed_ = true;
   WaitForConnection(network_id_);
 }
-
-void NetworkScreen::OnHasPreinstalledDemoResources(
-    bool has_preinstalled_demo_resources) {
-  if (view_)
-    view_->SetOfflineDemoModeEnabled(has_preinstalled_demo_resources);
-}
-
-void NetworkScreen::OnOfflineDemoModeSetupSelected() {
-  DCHECK(DemoSetupController::IsOobeDemoSetupFlowInProgress());
-  if (view_)
-    view_->ClearErrors();
-  exit_callback_.Run(Result::OFFLINE_DEMO_SETUP);
-}
-
 }  // namespace ash

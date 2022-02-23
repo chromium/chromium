@@ -10,13 +10,13 @@
 namespace gpu {
 namespace webgpu {
 
-class DawnPlatform : public dawn_platform::Platform {
+class DawnPlatform : public dawn::platform::Platform {
  public:
   DawnPlatform();
   ~DawnPlatform() override;
 
   const unsigned char* GetTraceCategoryEnabledFlag(
-      dawn_platform::TraceCategory category) override;
+      dawn::platform::TraceCategory category) override;
 
   double MonotonicallyIncreasingTime() override;
 
@@ -31,7 +31,7 @@ class DawnPlatform : public dawn_platform::Platform {
                          const uint64_t* arg_values,
                          unsigned char flags) override;
 
-  std::unique_ptr<dawn_platform::WorkerTaskPool> CreateWorkerTaskPool()
+  std::unique_ptr<dawn::platform::WorkerTaskPool> CreateWorkerTaskPool()
       override;
 };
 

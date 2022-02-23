@@ -5,8 +5,11 @@
 #include "media/base/win/dxgi_device_manager.h"
 
 #include <mfcaptureengine.h>
+#include <mferror.h>
 #include <mfreadwrite.h>
 
+#include "base/check.h"
+#include "base/logging.h"
 #include "base/win/windows_version.h"
 #include "media/base/win/mf_helpers.h"
 
@@ -71,7 +74,10 @@ scoped_refptr<DXGIDeviceManager> DXGIDeviceManager::Create() {
   RETURN_ON_HR_FAILURE(hr, "Failed to create MF DXGI device manager", nullptr);
   auto dxgi_device_manager = base::WrapRefCounted(new DXGIDeviceManager(
       std::move(mf_dxgi_device_manager), d3d_device_reset_token));
-  if (dxgi_device_manager && FAILED(dxgi_device_manager->ResetDevice())) {
+
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d_device;
+  if (dxgi_device_manager &&
+      FAILED(dxgi_device_manager->ResetDevice(d3d_device))) {
     // If setting a device failed, ensure that an empty scoped_refptr is
     // returned as the dxgi_device_manager is not usable without a device.
     return nullptr;
@@ -87,8 +93,8 @@ DXGIDeviceManager::DXGIDeviceManager(
 
 DXGIDeviceManager::~DXGIDeviceManager() = default;
 
-HRESULT DXGIDeviceManager::ResetDevice() {
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d_device;
+HRESULT DXGIDeviceManager::ResetDevice(
+    Microsoft::WRL::ComPtr<ID3D11Device>& d3d_device) {
   constexpr uint32_t kDeviceFlags =
       D3D11_CREATE_DEVICE_VIDEO_SUPPORT | D3D11_CREATE_DEVICE_BGRA_SUPPORT;
   HRESULT hr = D3D11CreateDevice(nullptr, D3D_DRIVER_TYPE_HARDWARE, nullptr,
@@ -111,6 +117,27 @@ HRESULT DXGIDeviceManager::ResetDevice() {
   RETURN_ON_HR_FAILURE(hr, "Failed to reset device on MF DXGI device manager",
                        hr);
   return S_OK;
+}
+
+HRESULT DXGIDeviceManager::CheckDeviceRemovedAndGetDevice(
+    Microsoft::WRL::ComPtr<ID3D11Device>* new_device) {
+  Microsoft::WRL::ComPtr<ID3D11Device> device = GetDevice();
+  HRESULT hr = device ? device->GetDeviceRemovedReason() : MF_E_UNEXPECTED;
+  if (FAILED(hr)) {
+    HRESULT reset_hr = ResetDevice(device);
+    if (FAILED(reset_hr)) {
+      LOG(ERROR) << "Failed to recreate the device: "
+                 << logging::SystemErrorCodeToString(reset_hr);
+      if (new_device) {
+        *new_device = nullptr;
+      }
+      return hr;
+    }
+  }
+  if (new_device) {
+    *new_device = std::move(device);
+  }
+  return hr;
 }
 
 HRESULT DXGIDeviceManager::RegisterInCaptureEngineAttributes(

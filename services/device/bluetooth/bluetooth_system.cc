@@ -16,6 +16,7 @@
 #include "dbus/object_path.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/dbus/bluetooth_adapter_client.h"
+#include "device/bluetooth/dbus/bluetooth_admin_policy_client.h"
 #include "device/bluetooth/dbus/bluetooth_device_client.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/public/cpp/bluetooth_address.h"
@@ -23,6 +24,23 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace device {
+namespace {
+
+bool GetDeviceIsBlockedByPolicy(const dbus::ObjectPath& device_path) {
+  bluez::BluetoothAdminPolicyClient::Properties* properties =
+      bluez::BluezDBusManager::Get()
+          ->GetAlternateBluetoothAdminPolicyClient()
+          ->GetProperties(device_path);
+  if (!properties)
+    return false;
+
+  if (!properties->is_blocked_by_policy.is_valid())
+    return false;
+
+  return properties->is_blocked_by_policy.value();
+}
+
+}  // namespace
 
 void BluetoothSystem::Create(
     mojo::PendingReceiver<mojom::BluetoothSystem> receiver,
@@ -227,8 +245,7 @@ void BluetoothSystem::GetAvailableDevices(
             ? mojom::BluetoothDeviceInfo::ConnectionState::kConnected
             : mojom::BluetoothDeviceInfo::ConnectionState::kNotConnected;
     device_info->is_paired = properties->paired.value();
-    device_info->is_blocked_by_policy =
-        properties->is_blocked_by_policy.value();
+    device_info->is_blocked_by_policy = GetDeviceIsBlockedByPolicy(device_path);
 
     // TODO(ortuno): Get the DeviceType from the device Class and Appearance.
     devices.push_back(std::move(device_info));

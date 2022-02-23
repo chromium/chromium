@@ -25,8 +25,9 @@ interface ProgressClient {
 // references to existing blobs.
 interface BlobRegistry {
   // Registers a new blob with the blob registry.
-  // TODO(mek): Make this method non-sync and get rid of the UUID parameter once
-  // enough of the rest of the system doesn't rely on the UUID anymore.
+  // TODO(crbug.com/974616): Make this method non-sync and get rid of the UUID
+  // parameter once enough of the rest of the system doesn't rely on the UUID
+  // anymore.
   [Sync] Register(pending_receiver<blink.mojom.Blob> blob, string uuid,
                   string content_type, string content_disposition,
                   array<DataElement> elements) => ();

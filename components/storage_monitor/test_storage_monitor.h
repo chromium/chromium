@@ -46,7 +46,7 @@ class TestStorageMonitor : public StorageMonitor {
   bool GetStorageInfoForPath(const base::FilePath& path,
                              StorageInfo* device_info) const override;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool GetMTPStorageInfoFromDeviceId(
       const std::string& storage_device_id,
       std::wstring* device_location,

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "content/browser/devtools/devtools_throttle_handle.h"
+#include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/global_routing_id.h"
@@ -53,6 +54,7 @@ namespace content {
 class BackForwardCacheCanStoreDocumentResult;
 class BrowserContext;
 class DevToolsAgentHostImpl;
+class FencedFrame;
 class FrameTreeNode;
 class NavigationHandle;
 class NavigationRequest;
@@ -155,7 +157,8 @@ void WillBeginDownload(download::DownloadCreateInfo* info,
 
 void BackForwardCacheNotUsed(
     const NavigationRequest* nav_request,
-    const BackForwardCacheCanStoreDocumentResult* result);
+    const BackForwardCacheCanStoreDocumentResult* result,
+    const BackForwardCacheCanStoreTreeResult* tree_result);
 
 void OnSignedExchangeReceived(
     FrameTreeNode* frame_tree_node,
@@ -233,6 +236,10 @@ void PortalAttached(RenderFrameHostImpl* render_frame_host_impl);
 void PortalDetached(RenderFrameHostImpl* render_frame_host_impl);
 void PortalActivated(RenderFrameHostImpl* render_frame_host_impl);
 
+void FencedFrameCreated(
+    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
+    FencedFrame* fenced_frame);
+
 void ReportSameSiteCookieIssue(
     RenderFrameHostImpl* render_frame_host_impl,
     const network::mojom::CookieOrLineWithAccessResultPtr& excluded_cookie,
@@ -285,6 +292,10 @@ void OnWebTransportHandshakeFailed(
 void OnServiceWorkerMainScriptFetchingFailed(
     const GlobalRenderFrameHostId& requesting_frame_id,
     const std::string& error);
+void OnServiceWorkerMainScriptRequestWillBeSent(
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const base::UnguessableToken& token,
+    const network::ResourceRequest& request);
 
 // Fires `Network.onLoadingFailed` event for a dedicated worker main script.
 // Used for PlzDedicatedWorker.

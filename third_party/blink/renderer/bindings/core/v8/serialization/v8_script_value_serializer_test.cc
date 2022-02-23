@@ -9,9 +9,9 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/platform/web_blob_info.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/unpacked_serialized_script_value.h"
 #include "third_party/blink/renderer/bindings/core/v8/serialization/v8_script_value_deserializer.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_blob.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_readable_stream.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_string_resource.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_float32array_uint16array_uint8clampedarray.h"
+#include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/fileapi/blob.h"
 #include "third_party/blink/renderer/core/fileapi/file.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
@@ -46,6 +47,7 @@
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/canvas/image_data.h"
+#include "third_party/blink/renderer/core/imagebitmap/image_bitmap.h"
 #include "third_party/blink/renderer/core/messaging/message_port.h"
 #include "third_party/blink/renderer/core/mojo/mojo_handle.h"
 #include "third_party/blink/renderer/core/offscreencanvas/offscreen_canvas.h"
@@ -53,9 +55,10 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/transform_stream.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/blob/blob_data.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 #include "third_party/skia/include/core/SkCanvas.h"
 #include "third_party/skia/include/core/SkImage.h"
@@ -109,7 +112,7 @@ v8::Local<v8::Value> RoundTrip(
 }
 
 v8::Local<v8::Value> Eval(const String& source, V8TestingScope& scope) {
-  return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(source))
+  return ClassicScript::CreateUnspecifiedScript(source)
       ->RunScriptAndReturnValue(&scope.GetWindow());
 }
 
@@ -237,7 +240,8 @@ TEST(V8ScriptValueSerializerTest, RoundTripDOMPoint) {
   V8TestingScope scope;
   DOMPoint* point = DOMPoint::Create(1, 2, 3, 4);
   v8::Local<v8::Value> wrapper =
-      ToV8(point, scope.GetContext()->Global(), scope.GetIsolate());
+      ToV8Traits<DOMPoint>::ToV8(scope.GetScriptState(), point)
+          .ToLocalChecked();
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ASSERT_TRUE(V8DOMPoint::HasInstance(result, scope.GetIsolate()));
   DOMPoint* new_point = V8DOMPoint::ToImpl(result.As<v8::Object>());
@@ -837,7 +841,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV9) {
       V8ScriptValueDeserializer(script_state, input).Deserialize();
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
+  EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
   EXPECT_EQ(8u, new_pm.computeByteSize());
   EXPECT_EQ(200u, new_pm.addr32()[0]);
@@ -853,7 +857,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV16) {
       V8ScriptValueDeserializer(script_state, input).Deserialize();
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
+  EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   SkPixmap new_pm = new_image_data->GetSkPixmap();
   EXPECT_EQ(kRGBA_8888_SkColorType, new_pm.info().colorType());
   EXPECT_EQ(8u, new_pm.computeByteSize());
@@ -872,7 +876,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageDataV18) {
       V8ScriptValueDeserializer(script_state, input).Deserialize();
   ASSERT_TRUE(V8ImageData::HasInstance(result, scope.GetIsolate()));
   ImageData* new_image_data = V8ImageData::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(2, 1), new_image_data->Size());
+  EXPECT_EQ(gfx::Size(2, 1), new_image_data->Size());
   ImageDataSettings* new_image_data_settings = new_image_data->getSettings();
   EXPECT_EQ("display-p3", new_image_data_settings->colorSpace());
   EXPECT_EQ("float32", new_image_data_settings->storageFormat());
@@ -1051,7 +1055,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmap) {
   ImageBitmap* new_image_bitmap =
       V8ImageBitmap::ToImpl(result.As<v8::Object>());
   ASSERT_TRUE(new_image_bitmap->BitmapImage());
-  ASSERT_EQ(IntSize(10, 7), new_image_bitmap->Size());
+  ASSERT_EQ(gfx::Size(10, 7), new_image_bitmap->Size());
 
   // Check that the pixel at (3, 3) is red.
   uint8_t pixel[4] = {};
@@ -1082,7 +1086,7 @@ TEST(V8ScriptValueSerializerTest, RoundTripImageBitmapWithColorSpaceInfo) {
   ImageBitmap* new_image_bitmap =
       V8ImageBitmap::ToImpl(result.As<v8::Object>());
   ASSERT_TRUE(new_image_bitmap->BitmapImage());
-  ASSERT_EQ(IntSize(10, 7), new_image_bitmap->Size());
+  ASSERT_EQ(gfx::Size(10, 7), new_image_bitmap->Size());
 
   // Check the color settings.
   SkImageInfo bitmap_info = new_image_bitmap->GetBitmapSkImageInfo();
@@ -1121,7 +1125,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmap) {
 // this test intends to ensure that a platform can decode images it has
 // previously written. At format version 9, Android writes RGBA and every
 // other platform writes BGRA.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   scoped_refptr<SerializedScriptValue> input =
       SerializedValue({0xff, 0x09, 0x3f, 0x00, 0x67, 0x01, 0x01, 0x02, 0x01,
                        0x08, 0xff, 0x00, 0x00, 0xff, 0x00, 0xff, 0x00, 0xff});
@@ -1136,7 +1140,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmap) {
   ASSERT_TRUE(V8ImageBitmap::HasInstance(result, scope.GetIsolate()));
   ImageBitmap* new_image_bitmap =
       V8ImageBitmap::ToImpl(result.As<v8::Object>());
-  ASSERT_EQ(IntSize(2, 1), new_image_bitmap->Size());
+  ASSERT_EQ(gfx::Size(2, 1), new_image_bitmap->Size());
 
   // Check that the pixels are opaque red and green, respectively.
   uint8_t pixels[8] = {};
@@ -1162,7 +1166,7 @@ TEST(V8ScriptValueSerializerTest, DecodeImageBitmapV18) {
   ASSERT_TRUE(V8ImageBitmap::HasInstance(result, scope.GetIsolate()));
   ImageBitmap* new_image_bitmap =
       V8ImageBitmap::ToImpl(result.As<v8::Object>());
-  ASSERT_EQ(IntSize(2, 1), new_image_bitmap->Size());
+  ASSERT_EQ(gfx::Size(2, 1), new_image_bitmap->Size());
 
   // Check the color settings.
   SkImageInfo bitmap_info = new_image_bitmap->GetBitmapSkImageInfo();
@@ -1317,7 +1321,7 @@ TEST(V8ScriptValueSerializerTest, TransferImageBitmap) {
   ImageBitmap* new_image_bitmap =
       V8ImageBitmap::ToImpl(result.As<v8::Object>());
   ASSERT_TRUE(new_image_bitmap->BitmapImage());
-  ASSERT_EQ(IntSize(10, 7), new_image_bitmap->Size());
+  ASSERT_EQ(gfx::Size(10, 7), new_image_bitmap->Size());
 
   // Check that the pixel at (3, 3) is red.
   uint8_t pixel[4] = {};
@@ -1348,7 +1352,7 @@ TEST(V8ScriptValueSerializerTest, TransferOffscreenCanvas) {
   ASSERT_TRUE(V8OffscreenCanvas::HasInstance(result, scope.GetIsolate()));
   OffscreenCanvas* new_canvas =
       V8OffscreenCanvas::ToImpl(result.As<v8::Object>());
-  EXPECT_EQ(IntSize(10, 7), new_canvas->Size());
+  EXPECT_EQ(gfx::Size(10, 7), new_canvas->Size());
   EXPECT_EQ(519, new_canvas->PlaceholderCanvasId());
   EXPECT_TRUE(canvas->IsNeutered());
   EXPECT_FALSE(new_canvas->IsNeutered());
@@ -1501,12 +1505,12 @@ TEST(V8ScriptValueSerializerTest, RoundTripFileNativeSnapshot) {
 
 TEST(V8ScriptValueSerializerTest, RoundTripFileNonNativeSnapshot) {
   // Preserving behavior, filesystem URL is not preserved across cloning.
-  V8TestingScope scope;
   KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
+  V8TestingScope scope;
   FileMetadata metadata;
   metadata.length = 0;
-  File* file =
-      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible);
+  File* file = File::CreateForFileSystemFile(
+      url, metadata, File::kIsUserVisible, BlobDataHandle::Create());
   v8::Local<v8::Value> wrapper = ToV8(file, scope.GetScriptState());
   v8::Local<v8::Value> result = RoundTrip(wrapper, scope);
   ASSERT_TRUE(V8File::HasInstance(result, scope.GetIsolate()));

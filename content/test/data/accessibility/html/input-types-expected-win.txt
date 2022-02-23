@@ -20,7 +20,7 @@ ROLE_SYSTEM_DOCUMENT READONLY FOCUSABLE
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Image: '
 ++++++ROLE_SYSTEM_PUSHBUTTON name='Image:' FOCUSABLE
-++++++++ROLE_SYSTEM_GRAPHIC name='To get missing image descriptions, open the context menu.' READONLY
+++++++++ROLE_SYSTEM_GRAPHIC READONLY
 ++++++++ROLE_SYSTEM_STATICTEXT name='Submit'
 ++++IA2_ROLE_LABEL
 ++++++ROLE_SYSTEM_STATICTEXT name='Number: '

@@ -61,8 +61,9 @@ IN_PROC_BROWSER_TEST_F(WebContentsViewMacInteractiveTest,
   EXPECT_TRUE(ui_test_utils::BringBrowserWindowToFront(browser()));
   EXPECT_TRUE(embedded_test_server()->Start());
 
-  AddTabAtIndex(1, GURL(embedded_test_server()->GetURL("/select.html")),
-                ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(embedded_test_server()->GetURL("/select.html")),
+                    ui::PAGE_TRANSITION_LINK));
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();
 

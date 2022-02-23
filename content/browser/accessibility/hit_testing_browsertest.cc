@@ -48,9 +48,7 @@ AccessibilityHitTestingBrowserTest::~AccessibilityHitTestingBrowserTest() =
 
 void AccessibilityHitTestingBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {
-  double device_scale_factor;
-  bool use_zoom_for_dsf;
-  std::tie(device_scale_factor, use_zoom_for_dsf) = GetParam();
+  auto [device_scale_factor, use_zoom_for_dsf] = GetParam();
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kForceDeviceScaleFactor,
       base::StringPrintf("%.2f", device_scale_factor));
@@ -62,9 +60,7 @@ void AccessibilityHitTestingBrowserTest::SetUpCommandLine(
 
 std::string AccessibilityHitTestingBrowserTest::TestPassToString::operator()(
     const ::testing::TestParamInfo<AccessibilityZoomTestParam>& info) const {
-  double device_scale_factor;
-  bool use_zoom_for_dsf;
-  std::tie(device_scale_factor, use_zoom_for_dsf) = info.param;
+  auto [device_scale_factor, use_zoom_for_dsf] = info.param;
   std::string name =
       base::StringPrintf("ZoomFactor%g_UseZoomForDSF%s", device_scale_factor,
                          use_zoom_for_dsf ? "On" : "Off");
@@ -110,13 +106,13 @@ gfx::Point AccessibilityHitTestingBrowserTest::CSSToFramePoint(
   else
     page_point = css_point;
 
-  gfx::Point frame_point = page_point - scroll_offset_;
+  gfx::Point frame_point = page_point - scroll_offset_.OffsetFromOrigin();
   return frame_point;
 }
 
 gfx::Point AccessibilityHitTestingBrowserTest::FrameToCSSPoint(
     gfx::Point frame_point) {
-  gfx::Point page_point = frame_point + scroll_offset_;
+  gfx::Point page_point = frame_point + scroll_offset_.OffsetFromOrigin();
 
   gfx::Point css_point;
   if (IsUseZoomForDSFEnabled())
@@ -272,11 +268,12 @@ void AccessibilityHitTestingBrowserTest::SimulatePinchZoom(
   const cc::RenderFrameMetadata& render_frame_metadata =
       observer.LastRenderFrameMetadata();
   DCHECK(render_frame_metadata.page_scale_factor == desired_page_scale);
-  if (render_frame_metadata.root_scroll_offset)
-    scroll_offset_ = gfx::ToRoundedVector2d(
-        render_frame_metadata.root_scroll_offset.value());
-  else
-    scroll_offset_ = gfx::Vector2d();
+  if (render_frame_metadata.root_scroll_offset) {
+    scroll_offset_ =
+        gfx::ToRoundedPoint(render_frame_metadata.root_scroll_offset.value());
+  } else {
+    scroll_offset_ = gfx::Point();
+  }
 
   // Ensure we get an accessibility update reflecting the new scale factor.
   accessibility_waiter.WaitForNotification();
@@ -596,10 +593,10 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
-#if !defined(OS_ANDROID) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 // Fails flakily with compared ID differences. TODO(crbug.com/1121099): Re-nable
 // this test.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CachingAsyncHitTest_WithPinchZoom \
   DISABLED_CachingAsyncHitTest_WithPinchZoom
 #else
@@ -703,7 +700,7 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
 }
 
 // Timeouts on Linux. TODO(crbug.com/1083805): Enable this test.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CachingAsyncHitTestMissesElement_WithPinchZoom \
   DISABLED_CachingAsyncHitTestMissesElement_WithPinchZoom
 #else
@@ -766,11 +763,11 @@ IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
   }
 }
 
-#endif  // !defined(OS_ANDROID) && !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_MAC)
 
 // GetAXPlatformNode is currently only supported on windows and linux (excluding
 // Chrome OS or Chromecast)
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST))
 IN_PROC_BROWSER_TEST_P(AccessibilityHitTestingBrowserTest,
                        NearestLeafInIframes) {
   ASSERT_TRUE(embedded_test_server()->Start());

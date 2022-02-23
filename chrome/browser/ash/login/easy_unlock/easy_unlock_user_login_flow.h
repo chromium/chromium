@@ -6,12 +6,12 @@
 #define CHROME_BROWSER_ASH_LOGIN_EASY_UNLOCK_EASY_UNLOCK_USER_LOGIN_FLOW_H_
 
 #include "chrome/browser/ash/login/user_flow.h"
-// TODO(https://crbug.com/1164001): move to forward declaration
-#include "chromeos/login/auth/user_context.h"
 
 class AccountId;
 
 namespace ash {
+
+class UserContext;
 
 // Handler for login flow initiazted by Easy Signin login attempt.
 // The only difference to the default login flow is hanlding of the auth

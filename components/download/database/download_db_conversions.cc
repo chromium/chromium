@@ -166,7 +166,8 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
   for (size_t i = 0; i < in_progress_info.url_chain.size(); ++i)
     proto.add_url_chain(in_progress_info.url_chain[i].spec());
   proto.set_referrer_url(in_progress_info.referrer_url.spec());
-  proto.set_site_url(in_progress_info.site_url.spec());
+  proto.set_serialized_embedder_download_data(
+      in_progress_info.serialized_embedder_download_data);
   proto.set_tab_url(in_progress_info.tab_url.spec());
   proto.set_tab_referrer_url(in_progress_info.tab_referrer_url.spec());
   proto.set_fetch_error_body(in_progress_info.fetch_error_body);
@@ -226,6 +227,8 @@ download_pb::InProgressInfo DownloadDBConversions::InProgressInfoToProto(
   }
   proto.set_credentials_mode(
       static_cast<int32_t>(in_progress_info.credentials_mode));
+  proto.set_range_request_from(in_progress_info.range_request_from);
+  proto.set_range_request_to(in_progress_info.range_request_to);
   return proto;
 }
 
@@ -236,7 +239,8 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
   for (const auto& url : proto.url_chain())
     info.url_chain.emplace_back(url);
   info.referrer_url = GURL(proto.referrer_url());
-  info.site_url = GURL(proto.site_url());
+  info.serialized_embedder_download_data =
+      proto.serialized_embedder_download_data();
   info.tab_url = GURL(proto.tab_url());
   info.tab_referrer_url = GURL(proto.tab_referrer_url());
   info.fetch_error_body = proto.fetch_error_body();
@@ -289,6 +293,10 @@ InProgressInfo DownloadDBConversions::InProgressInfoFromProto(
     info.credentials_mode = static_cast<::network::mojom::CredentialsMode>(
         proto.credentials_mode());
   }
+  if (proto.has_range_request_from())
+    info.range_request_from = proto.range_request_from();
+  if (proto.has_range_request_to())
+    info.range_request_to = proto.range_request_to();
 
   return info;
 }

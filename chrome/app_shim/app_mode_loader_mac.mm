@@ -12,6 +12,7 @@
 
 #import <Cocoa/Cocoa.h>
 
+#include "base/allocator/early_zone_registration_mac.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -28,95 +29,125 @@
 
 namespace {
 
+const int kErrorReturnValue = 1;
+
 typedef int (*StartFun)(const app_mode::ChromeAppModeInfo*);
 
 int LoadFrameworkAndStart(int argc, char** argv) {
   using base::SysNSStringToUTF8;
-  using base::SysNSStringToUTF16;
-  using base::mac::CFToNSCast;
-  using base::mac::CFCastStrict;
-  using base::mac::NSToCFCast;
+  base::CommandLine command_line(argc, argv);
 
   @autoreleasepool {
     // Get the current main bundle, i.e., that of the app loader that's running.
     NSBundle* app_bundle = [NSBundle mainBundle];
-    CHECK(app_bundle) << "couldn't get loader bundle";
+    if (!app_bundle) {
+      NSLog(@"Couldn't get loader bundle");
+      return kErrorReturnValue;
+    }
+    const base::FilePath app_mode_bundle_path =
+        base::mac::NSStringToFilePath([app_bundle bundlePath]);
 
-    // ** 1: Get path to outer Chrome bundle.
     // Get the bundle ID of the browser that created this app bundle.
     NSString* cr_bundle_id = base::mac::ObjCCast<NSString>(
         [app_bundle objectForInfoDictionaryKey:app_mode::kBrowserBundleIDKey]);
-    CHECK(cr_bundle_id) << "couldn't get browser bundle ID";
+    if (!cr_bundle_id) {
+      NSLog(@"Couldn't get browser bundle ID");
+      return kErrorReturnValue;
+    }
 
-    // First check if Chrome exists at the last known location.
+    // ** 1: Get path to outer Chrome bundle.
     base::FilePath cr_bundle_path;
-    NSString* cr_bundle_path_ns =
-        [CFToNSCast(CFCastStrict<CFStringRef>(CFPreferencesCopyAppValue(
-            NSToCFCast(app_mode::kLastRunAppBundlePathPrefsKey),
-            NSToCFCast(cr_bundle_id)))) autorelease];
-    cr_bundle_path = base::mac::NSStringToFilePath(cr_bundle_path_ns);
-    bool found_bundle =
-        !cr_bundle_path.empty() && base::DirectoryExists(cr_bundle_path);
-
-    if (!found_bundle) {
-      // If no such bundle path exists, try to search by bundle ID.
-      if (!app_mode::FindBundleById(cr_bundle_id, &cr_bundle_path)) {
-        // TODO(jeremy): Display UI to allow user to manually locate the Chrome
-        // bundle.
-        LOG(FATAL) << "Failed to locate bundle by identifier";
+    if (command_line.HasSwitch(app_mode::kLaunchedByChromeBundlePath)) {
+      // If Chrome launched this app shim, and specified its bundle path on the
+      // command line, use that.
+      cr_bundle_path = command_line.GetSwitchValuePath(
+          app_mode::kLaunchedByChromeBundlePath);
+    } else {
+      // Otherwise, search for a Chrome bundle to use.
+      if (!app_mode::FindChromeBundle(cr_bundle_id, &cr_bundle_path)) {
+        // TODO(https://crbug.com/944312): Display UI to inform the user of the
+        // reason for failure.
+        NSLog(@"Failed to locate browser bundle");
+        return kErrorReturnValue;
+      }
+      if (cr_bundle_path.empty()) {
+        NSLog(@"Browser bundle path unexpectedly empty");
+        return kErrorReturnValue;
       }
     }
 
-    // ** 2: Read the running Chrome version.
-    // The user_data_dir for shims actually contains the app_data_path.
-    // I.e. <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/
-    base::FilePath app_data_dir = base::mac::NSStringToFilePath([app_bundle
-        objectForInfoDictionaryKey:app_mode::kCrAppModeUserDataDirKey]);
-    base::FilePath user_data_dir = app_data_dir.DirName().DirName().DirName();
-    LOG(INFO) << "Using user data dir " << user_data_dir.value();
-    CHECK(!user_data_dir.empty());
-
-    // If the version file does not exist, |cr_version_str| will be empty and
-    // app_mode::GetChromeBundleInfo will default to the latest version.
-    base::FilePath cr_version_str;
-    base::ReadSymbolicLink(
-        user_data_dir.Append(app_mode::kRunningChromeVersionSymlinkName),
-        &cr_version_str);
-
-    // If the version file does exist, it may have been left by a crashed Chrome
-    // process. Ensure the process is still running.
-    if (!cr_version_str.empty()) {
-      NSArray* existing_chrome = [NSRunningApplication
-          runningApplicationsWithBundleIdentifier:cr_bundle_id];
-      if ([existing_chrome count] == 0) {
-        LOG(INFO) << "Disregarding framework version from symlink";
-        cr_version_str.clear();
-      } else {
-        LOG(INFO) << "Framework version from symlink " << cr_version_str;
-      }
+    // ** 2: Read the user data dir.
+    base::FilePath user_data_dir;
+    {
+      // The user_data_dir for shims actually contains the app_data_path.
+      // I.e. <user_data_dir>/<profile_dir>/Web Applications/_crx_extensionid/
+      base::FilePath app_data_dir = base::mac::NSStringToFilePath([app_bundle
+          objectForInfoDictionaryKey:app_mode::kCrAppModeUserDataDirKey]);
+      user_data_dir = app_data_dir.DirName().DirName().DirName();
+      NSLog(@"Using user data dir %s", user_data_dir.value().c_str());
+      if (user_data_dir.empty())
+        return kErrorReturnValue;
     }
 
-    // ** 3: Read information from the Chrome bundle.
+    // ** 3: Read the Chrome executable, Chrome framework, and Chrome framework
+    // dylib paths.
     base::FilePath executable_path;
     base::FilePath framework_path;
     base::FilePath framework_dylib_path;
-    if (!app_mode::GetChromeBundleInfo(cr_bundle_path, cr_version_str.value(),
-                                       &executable_path, &framework_path,
-                                       &framework_dylib_path)) {
-      LOG(FATAL) << "Couldn't ready Chrome bundle info";
+    if (command_line.HasSwitch(
+            app_mode::kLaunchedByChromeFrameworkBundlePath) &&
+        command_line.HasSwitch(app_mode::kLaunchedByChromeFrameworkDylibPath)) {
+      // If Chrome launched this app shim, then it will specify the framework
+      // path and version. Do not populate `executable_path` (it is used to
+      // launch Chrome if Chrome is not running, which is inapplicable here).
+      framework_path = command_line.GetSwitchValuePath(
+          app_mode::kLaunchedByChromeFrameworkBundlePath);
+      framework_dylib_path = command_line.GetSwitchValuePath(
+          app_mode::kLaunchedByChromeFrameworkDylibPath);
+    } else {
+      // Otherwise, read the version from the symbolic link in the user data
+      // dir. If the version file does not exist, |cr_version_str| will be empty
+      // and app_mode::GetChromeBundleInfo will default to the latest version.
+      base::FilePath cr_version_str;
+      base::ReadSymbolicLink(
+          user_data_dir.Append(app_mode::kRunningChromeVersionSymlinkName),
+          &cr_version_str);
+      // If the version file does exist, it may have been left by a crashed
+      // Chrome process. Ensure the process is still running.
+      if (!cr_version_str.empty()) {
+        NSArray* existing_chrome = [NSRunningApplication
+            runningApplicationsWithBundleIdentifier:cr_bundle_id];
+        if ([existing_chrome count] == 0) {
+          NSLog(@"Disregarding framework version from symlink");
+          cr_version_str.clear();
+        } else {
+          NSLog(@"Framework version from symlink %s",
+                cr_version_str.value().c_str());
+        }
+      }
+      if (!app_mode::GetChromeBundleInfo(
+              cr_bundle_path, cr_version_str.value().c_str(), &executable_path,
+              &framework_path, &framework_dylib_path)) {
+        NSLog(@"Couldn't ready Chrome bundle info");
+        return kErrorReturnValue;
+      }
     }
-    base::FilePath app_mode_bundle_path =
-        base::mac::NSStringToFilePath([app_bundle bundlePath]);
 
     // ** 4: Read information from the Info.plist.
     // Read information about the this app shortcut from the Info.plist.
     // Don't check for null-ness on optional items.
     NSDictionary* info_plist = [app_bundle infoDictionary];
-    CHECK(info_plist) << "couldn't get loader Info.plist";
+    if (!info_plist) {
+      NSLog(@"Couldn't get loader Info.plist");
+      return kErrorReturnValue;
+    }
 
     const std::string app_mode_id =
         SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutIDKey]);
-    CHECK(app_mode_id.size()) << "couldn't get app shortcut ID";
+    if (!app_mode_id.size()) {
+      NSLog(@"Couldn't get app shortcut ID");
+      return kErrorReturnValue;
+    }
 
     const std::string app_mode_name =
         SysNSStringToUTF8(info_plist[app_mode::kCrAppModeShortcutNameKey]);
@@ -131,16 +162,17 @@ int LoadFrameworkAndStart(int argc, char** argv) {
 
     // ** 5: Open the framework.
     StartFun ChromeAppModeStart = NULL;
-    LOG(INFO) << "Loading framework " << framework_dylib_path.value();
+    NSLog(@"Using framework path %s", framework_path.value().c_str());
+    NSLog(@"Loading framework dylib %s", framework_dylib_path.value().c_str());
     void* cr_dylib = dlopen(framework_dylib_path.value().c_str(), RTLD_LAZY);
     if (cr_dylib) {
       // Find the entry point.
       ChromeAppModeStart =
           (StartFun)dlsym(cr_dylib, APP_SHIM_ENTRY_POINT_NAME_STRING);
       if (!ChromeAppModeStart)
-        LOG(ERROR) << "Couldn't get entry point: " << dlerror();
+        NSLog(@"Couldn't get entry point: %s", dlerror());
     } else {
-      LOG(ERROR) << "Couldn't load framework: " << dlerror();
+      NSLog(@"Couldn't load framework: %s", dlerror());
     }
 
     // ** 6: Fill in ChromeAppModeInfo and call into Chrome's framework.
@@ -167,10 +199,10 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       return ChromeAppModeStart(&info);
     }
 
-    LOG(ERROR) << "Loading Chrome failed, launching Chrome with command line";
-    base::CommandLine command_line(executable_path);
+    NSLog(@"Loading Chrome failed, launching Chrome with command line");
+    base::CommandLine cr_command_line(executable_path);
     // The user_data_dir from the plist is actually the app data dir.
-    command_line.AppendSwitchPath(
+    cr_command_line.AppendSwitchPath(
         switches::kUserDataDir,
         plist_user_data_dir.DirName().DirName().DirName());
     if (base::CommandLine::ForCurrentProcess()->HasSwitch(
@@ -180,8 +212,8 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       // fix the problem, so don't try again.
       if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
               app_mode::kLaunchedAfterRebuild)) {
-        command_line.AppendSwitchPath(app_mode::kAppShimError,
-                                      app_mode_bundle_path);
+        cr_command_line.AppendSwitchPath(app_mode::kAppShimError,
+                                         app_mode_bundle_path);
       }
     } else {
       // If the shim was launched directly (instead of by Chrome), first ask
@@ -189,16 +221,18 @@ int LoadFrameworkAndStart(int argc, char** argv) {
       // error will occur and be handled above. This approach allows the app to
       // be started without blocking on fixing the shim and guarantees that the
       // profile is loaded when Chrome receives --app-shim-error.
-      command_line.AppendSwitchPath(switches::kProfileDirectory, profile_dir);
-      command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
+      cr_command_line.AppendSwitchPath(switches::kProfileDirectory,
+                                       profile_dir);
+      cr_command_line.AppendSwitchASCII(switches::kAppId, app_mode_id);
     }
     // Launch the executable directly since base::mac::OpenApplicationWithPath
     // doesn't pass command line arguments if the application is already
     // running.
-    if (!base::LaunchProcess(command_line, base::LaunchOptions()).IsValid()) {
-      LOG(ERROR) << "Could not launch Chrome: "
-                 << command_line.GetCommandLineString();
-      return 1;
+    if (!base::LaunchProcess(cr_command_line, base::LaunchOptions())
+             .IsValid()) {
+      NSLog(@"Could not launch Chrome: %s",
+            cr_command_line.GetCommandLineString().c_str());
+      return kErrorReturnValue;
     }
 
     return 0;
@@ -209,6 +243,12 @@ int LoadFrameworkAndStart(int argc, char** argv) {
 
 __attribute__((visibility("default")))
 int main(int argc, char** argv) {
+  // The static constructor in //base will have registered PartitionAlloc as the
+  // default zone. Allow the //base instance in the main library to register it
+  // as well. Otherwise we end up passing memory to free() which was allocated
+  // by an unknown zone. See crbug.com/1274236 for details.
+  partition_alloc::AllowDoublePartitionAllocZoneRegistration();
+
   base::CommandLine::Init(argc, argv);
 
   // Exit instead of returning to avoid the the removal of |main()| from stack

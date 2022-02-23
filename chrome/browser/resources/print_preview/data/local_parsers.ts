@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {isChromeOS, isLacros} from 'chrome://resources/js/cr.m.js';
 
 import {Destination, DestinationConnectionStatus, DestinationOptionalParams, DestinationOrigin, DestinationProvisionalType, DestinationType} from './destination.js';
@@ -39,8 +39,7 @@ export type ProvisionalDestinationInfo = {
  */
 export function parseDestination(
     type: PrinterType,
-    printer: (LocalDestinationInfo|ProvisionalDestinationInfo)): (Destination|
-                                                                  null) {
+    printer: (LocalDestinationInfo|ProvisionalDestinationInfo)): Destination {
   if (type === PrinterType.LOCAL_PRINTER) {
     return parseLocalDestination(printer as LocalDestinationInfo);
   }
@@ -48,7 +47,6 @@ export function parseDestination(
     return parseExtensionDestination(printer as ProvisionalDestinationInfo);
   }
   assertNotReached('Unknown printer type ' + type);
-  return null;
 }
 
 /**

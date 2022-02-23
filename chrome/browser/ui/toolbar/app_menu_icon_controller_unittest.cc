@@ -16,7 +16,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/install_static/install_modes.h"
 #include "chrome/install_static/test/scoped_install_details.h"
 #endif
@@ -74,7 +74,7 @@ bool operator==(const AppMenuIconController::TypeAndSeverity& a,
 class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
  protected:
   AppMenuIconControllerTest()
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       : install_details_(false, GetParam())
 #endif
   {
@@ -92,7 +92,7 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
 #if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
     // Dev and canary channels are specific to Google Chrome branding.
     return false;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     // Windows supports specifying the channel via ScopedInstallDetails.
     return GetParam() >= install_static::DEV_INDEX;
 #else
@@ -109,7 +109,7 @@ class AppMenuIconControllerTest : public ::testing::TestWithParam<int> {
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   install_static::ScopedInstallDetails install_details_;
 #endif
   FakeUpgradeDetector upgrade_detector_;
@@ -178,7 +178,7 @@ TEST_P(AppMenuIconControllerTest, UpgradeNotification) {
   BroadcastLevel(UpgradeDetector::UPGRADE_ANNOYANCE_NONE);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 INSTANTIATE_TEST_SUITE_P(
     All,
     AppMenuIconControllerTest,

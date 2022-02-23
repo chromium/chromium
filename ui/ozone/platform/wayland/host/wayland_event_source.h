@@ -17,7 +17,6 @@
 #include "ui/events/pointer_details.h"
 #include "ui/events/types/event_type.h"
 #include "ui/gfx/geometry/point_f.h"
-#include "ui/ozone/platform/wayland/host/wayland_event_watcher.h"
 #include "ui/ozone/platform/wayland/host/wayland_input_method_context.h"
 #include "ui/ozone/platform/wayland/host/wayland_keyboard.h"
 #include "ui/ozone/platform/wayland/host/wayland_pointer.h"
@@ -37,6 +36,7 @@ namespace ui {
 class WaylandConnection;
 class WaylandWindow;
 class WaylandWindowManager;
+class WaylandEventWatcher;
 
 // Wayland implementation of ui::PlatformEventSource. It polls for events
 // through WaylandEventWatcher and centralizes the input and focus handling
@@ -75,16 +75,15 @@ class WaylandEventSource : public PlatformEventSource,
   // This method assumes connection is already estabilished and input objects
   // are already bound and properly initialized.
   void StartProcessingEvents();
-  // Stops polling for events from input devices.
-  void StopProcessingEvents();
 
   // Allow to explicitly reset pointer flags. Required in cases where the
   // pointer state is modified by a button pressed event, but the respective
   // button released event is not delivered (e.g: window moving, drag and drop).
   void ResetPointerFlags();
 
-  // See the comment near WaylandEventWatcher::use_dedicated_polling_thread_.
-  void UseSingleThreadedPollingForTesting();
+  // Forwards the call to WaylandEventWatcher, which calls
+  // wl_display_roundtrip_queue.
+  void RoundTripQueue();
 
  protected:
   // WaylandKeyboard::Delegate
@@ -130,7 +129,7 @@ class WaylandEventSource : public PlatformEventSource,
                     const gfx::Vector2dF& delta,
                     base::TimeTicks timestamp,
                     int device_id,
-                    absl::optional<float> scale) override;
+                    absl::optional<float> scale_delta) override;
 
   // WaylandZwpRelativePointerManager::Delegate:
   void SetRelativePointerMotionEnabled(bool enabled) override;

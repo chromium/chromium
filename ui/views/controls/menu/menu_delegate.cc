@@ -107,14 +107,6 @@ ui::mojom::DragOperation MenuDelegate::GetDropOperation(
   return ui::mojom::DragOperation::kNone;
 }
 
-ui::mojom::DragOperation MenuDelegate::OnPerformDrop(
-    MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
-  NOTREACHED() << "If you override CanDrop, you need to override this too";
-  return ui::mojom::DragOperation::kNone;
-}
-
 views::View::DropCallback MenuDelegate::GetDropCallback(
     MenuItemView* menu,
     DropPosition position,

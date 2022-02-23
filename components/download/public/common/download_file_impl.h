@@ -79,7 +79,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   void Pause() override;
   void Resume() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void RenameToIntermediateUri(const GURL& original_url,
                                const GURL& referrer_url,
                                const base::FilePath& file_name,
@@ -88,7 +88,7 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
                                RenameCompletionCallback callback) override;
   void PublishDownload(RenameCompletionCallback callback) override;
   base::FilePath GetDisplayName() override;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Wrapper of a ByteStreamReader or ScopedDataPipeConsumerHandle, and the meta
   // data needed to write to a slice of the target file.
@@ -387,9 +387,9 @@ class COMPONENTS_DOWNLOAD_EXPORT DownloadFileImpl : public DownloadFile {
   // TaskRunner this object lives on after initialization.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::FilePath display_name_;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   SEQUENCE_CHECKER(sequence_checker_);
 

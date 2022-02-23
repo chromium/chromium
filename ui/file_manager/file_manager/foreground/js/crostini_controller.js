@@ -5,10 +5,9 @@
 import {assert} from 'chrome://resources/js/assert.m.js';
 
 import {FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
-import {str, strf, util} from '../../common/js/util.js';
+import {str, strf} from '../../common/js/util.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
 import {Crostini} from '../../externs/background/crostini.js';
-import {FilesMessage} from '../elements/files_message.js';
 import {FilesToast} from '../elements/files_toast.js';
 
 import {constants} from './constants.js';
@@ -23,16 +22,12 @@ import {DirectoryTree} from './ui/directory_tree.js';
 export class CrostiniController {
   /**
    * @param {!Crostini} crostini Crostini background object.
-   * @param {!FilesMessage} filesMessage FilesMessage.
    * @param {!DirectoryModel} directoryModel DirectoryModel.
    * @param {!DirectoryTree} directoryTree DirectoryTree.
    */
-  constructor(crostini, filesMessage, directoryModel, directoryTree) {
+  constructor(crostini, directoryModel, directoryTree) {
     /** @private @const */
     this.crostini_ = crostini;
-
-    /** @private @const */
-    this.filesMessage_ = filesMessage;
 
     /** @private @const */
     this.directoryModel_ = directoryModel;
@@ -45,13 +40,6 @@ export class CrostiniController {
 
     /** @private */
     this.entrySharedWithPluginVm_ = false;
-
-    // TODO(crbug.com/1228128): Remove this once migrated to the new banner
-    // framework.
-    if (!util.isBannerFrameworkEnabled()) {
-      directoryModel.addEventListener(
-          'directory-changed', () => this.maybeShowSharedMessage());
-    }
   }
 
   /**
@@ -129,50 +117,5 @@ export class CrostiniController {
         'app-management/pluginVm/sharedPaths',
         CommandHandler.MenuCommandsForUMA
             .MANAGE_PLUGIN_VM_SHARING_TOAST_STARTUP);
-  }
-
-  // TODO(crbug.com/1228128): Remove this once migrated to the new banner
-  // framework.
-  maybeShowSharedMessage() {
-    const entry =
-        /** @type {Entry} */ (this.directoryModel_.getCurrentDirEntry());
-    if (!entry) {
-      return;
-    }
-    const sharedWithCrostini = this.crostini_.isPathShared('termina', entry);
-    const sharedWithPluginVm = this.crostini_.isPathShared('PvmDefault', entry);
-    if (sharedWithCrostini == this.entrySharedWithCrostini_ &&
-        sharedWithPluginVm == this.entrySharedWithPluginVm_) {
-      return;
-    }
-    this.entrySharedWithCrostini_ = sharedWithCrostini;
-    this.entrySharedWithPluginVm_ = sharedWithPluginVm;
-
-    let msg = '';
-    let subpage = '';
-    if (sharedWithCrostini && sharedWithPluginVm) {
-      msg = 'MESSAGE_FOLDER_SHARED_WITH_CROSTINI_AND_PLUGIN_VM';
-      subpage = 'app-management/pluginVm/sharedPaths';
-    } else if (sharedWithCrostini) {
-      msg = 'MESSAGE_FOLDER_SHARED_WITH_CROSTINI';
-      subpage = 'crostini/sharedPaths';
-    } else if (sharedWithPluginVm) {
-      msg = 'MESSAGE_FOLDER_SHARED_WITH_PLUGIN_VM';
-      subpage = 'app-management/pluginVm/sharedPaths';
-    } else {
-      this.filesMessage_.hidden = true;
-      return;
-    }
-
-    this.filesMessage_.setContent({
-      message: str(msg),
-      action: str('MANAGE_TOAST_BUTTON_LABEL'),
-      hidden: false,
-    });
-    this.filesMessage_.setSignalCallback((signal) => {
-      if (signal === 'action') {
-        chrome.fileManagerPrivate.openSettingsSubpage(subpage);
-      }
-    });
   }
 }

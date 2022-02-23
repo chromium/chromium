@@ -14,7 +14,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
@@ -192,7 +192,7 @@ class DevicePermissionsManager : public KeyedService {
   DevicePermissions* GetInternal(const std::string& extension_id) const;
 
   base::ThreadChecker thread_checker_;
-  content::BrowserContext* context_;
+  raw_ptr<content::BrowserContext> context_;
   std::map<std::string, DevicePermissions*> extension_id_to_device_permissions_;
 };
 

@@ -2,7 +2,8 @@
   "facets": {
     "fuchsia.test": {
       "injected-services": {
-        "fuchsia.intl.PropertyProvider": "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager.cmx"
+        "fuchsia.buildinfo.Provider": "fuchsia-pkg://fuchsia.com/build-info-service#meta/build-info.cmx",
+        "fuchsia.intl.PropertyProvider": "fuchsia-pkg://fuchsia.com/intl_property_manager#meta/intl_property_manager_v1.cmx"
       },
       "system-services": [
         "fuchsia.boot.ReadOnlyLog",
@@ -11,15 +12,13 @@
     }
   },
   "sandbox": {
-    "dev": [
-      "zero"
-    ],
     "features": [
       "isolated-persistent-storage",
       "isolated-temp",
       "config-data"
     ],
     "services": [
+      "fuchsia.buildinfo.Provider",
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.media.ProfileProvider",

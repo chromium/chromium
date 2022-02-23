@@ -14,13 +14,10 @@
 
 namespace signin {
 
-#if defined(OS_ANDROID)
-// Feature flag for FRE related changes as part of MICE.
-extern const base::Feature kMobileIdentityConsistencyFRE;
-
+#if BUILDFLAG(IS_ANDROID)
 // Feature flag for promo-related changes of `kMobileIdentityConsistency`.
 extern const base::Feature kMobileIdentityConsistencyPromos;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 enum class AccountConsistencyMethod : int {
   // No account consistency.

@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/check.h"
+#include "base/guid.h"
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
@@ -35,9 +36,8 @@ namespace {
 AggregationServicePayloadContents::Operation ConvertToOperation(
     TestAggregationService::Operation operation) {
   switch (operation) {
-    case TestAggregationService::Operation::kHierarchicalHistogram:
-      return AggregationServicePayloadContents::Operation::
-          kHierarchicalHistogram;
+    case TestAggregationService::Operation::kHistogram:
+      return AggregationServicePayloadContents::Operation::kHistogram;
   }
 }
 
@@ -62,7 +62,7 @@ void HandleAggregatableReportCallback(
     return;
   }
 
-  std::move(callback).Run(std::move(report.value()).GetAsJson());
+  std::move(callback).Run(report->GetAsJson());
 }
 
 }  // namespace
@@ -97,7 +97,7 @@ void TestAggregationServiceImpl::SetDisablePayloadEncryption(
 }
 
 void TestAggregationServiceImpl::SetPublicKeys(
-    const url::Origin& origin,
+    const GURL& url,
     const std::string& json_string,
     base::OnceCallback<void(bool)> callback) {
   JSONStringValueDeserializer deserializer(json_string);
@@ -121,7 +121,7 @@ void TestAggregationServiceImpl::SetPublicKeys(
                       /*fetch_time=*/clock_.Now(),
                       /*expiry_time=*/base::Time::Max());
   storage_.AsyncCall(&AggregationServiceKeyStorage::SetPublicKeys)
-      .WithArgs(origin, std::move(keyset))
+      .WithArgs(url, std::move(keyset))
       .Then(base::BindOnce(std::move(callback), true));
 }
 
@@ -130,17 +130,21 @@ void TestAggregationServiceImpl::AssembleReport(
     base::OnceCallback<void(base::Value::DictStorage)> callback) {
   AggregationServicePayloadContents payload_contents(
       ConvertToOperation(request.operation), request.bucket, request.value,
-      ConvertToProcessingType(request.processing_type),
-      std::move(request.reporting_origin));
+      ConvertToProcessingType(request.processing_type));
 
   AggregatableReportSharedInfo shared_info(
       /*scheduled_report_time=*/base::Time::Now() + base::Seconds(30),
-      std::move(request.privacy_budget_key));
+      std::move(request.privacy_budget_key),
+      /*report_id=*/base::GUID::GenerateRandomV4(),
+      std::move(request.reporting_origin),
+      request.is_debug_mode_enabled
+          ? AggregatableReportSharedInfo::DebugMode::kEnabled
+          : AggregatableReportSharedInfo::DebugMode::kDisabled);
 
   absl::optional<AggregatableReportRequest> report_request =
-      AggregatableReportRequest::Create(std::move(request.processing_origins),
-                                        std::move(payload_contents),
-                                        std::move(shared_info));
+      AggregatableReportRequest::CreateForTesting(
+          std::move(request.processing_urls), std::move(payload_contents),
+          std::move(shared_info));
   if (!report_request.has_value()) {
     std::move(callback).Run(base::Value::DictStorage());
     return;
@@ -167,10 +171,10 @@ void TestAggregationServiceImpl::SendReport(
 }
 
 void TestAggregationServiceImpl::GetPublicKeys(
-    const url::Origin& origin,
+    const GURL& url,
     base::OnceCallback<void(std::vector<PublicKey>)> callback) const {
   storage_.AsyncCall(&AggregationServiceKeyStorage::GetPublicKeys)
-      .WithArgs(origin)
+      .WithArgs(url)
       .Then(std::move(callback));
 }
 

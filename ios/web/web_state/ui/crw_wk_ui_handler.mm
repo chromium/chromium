@@ -11,7 +11,6 @@
 #import "ios/web/public/ui/context_menu_params.h"
 #import "ios/web/public/ui/java_script_dialog_type.h"
 #import "ios/web/public/web_client.h"
-#import "ios/web/web_state/ui/crw_legacy_context_menu_controller.h"
 #import "ios/web/web_state/ui/crw_wk_ui_handler_delegate.h"
 #import "ios/web/web_state/user_interaction_state.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -110,8 +109,22 @@
 }
 
 - (void)webViewDidClose:(WKWebView*)webView {
-  if (self.webStateImpl && self.webStateImpl->HasOpener())
-    self.webStateImpl->CloseWebState();
+  // This is triggered by a JavaScript |close()| method call, only if the tab
+  // was opened using |window.open|. WebKit is checking that this is the case,
+  // so we can close the tab unconditionally here.
+  if (self.webStateImpl) {
+    __weak __typeof(self) weakSelf = self;
+    // -webViewDidClose will typically trigger another webState to activate,
+    // which may in turn also close. To prevent reentrant modificationre in
+    // WebStateList, trigger a PostTask here.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(^{
+          web::WebStateImpl* webStateImpl = weakSelf.webStateImpl;
+          if (webStateImpl) {
+            webStateImpl->CloseWebState();
+          }
+        }));
+  }
 }
 
 - (void)webView:(WKWebView*)webView

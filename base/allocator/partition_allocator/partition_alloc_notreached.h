@@ -33,7 +33,7 @@
 //     ...
 //     case X:
 //       PA_DCHECK(false);
-//       FALLTHROUGH; // The compiler knows "not reached".
+//       [[fallthrough]]; // The compiler knows "not reached".
 //     case Y:
 //     ...
 // So define PA_NOTREACHED() by using async-signal-safe RawCheck().
@@ -46,7 +46,7 @@
 #else
 
 // PA_CHECK() uses RawCheck() for error reporting. So "PA_DCHECK(false);
-// FALLTHROUGH;" doesn't cause compile failure.
+// [[fallthrough]];" doesn't cause compile failure.
 #define PA_NOTREACHED() PA_DCHECK(false)
 
 #endif

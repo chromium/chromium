@@ -12,7 +12,6 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/time/time.h"
-#include "net/base/features.h"
 #include "net/base/net_export.h"
 #include "net/cookies/cookie_access_result.h"
 #include "net/cookies/cookie_constants.h"
@@ -340,11 +339,16 @@ class NET_EXPORT CanonicalCookie {
 
   // Returns if the cookie with given attributes can be set in context described
   // by |options| and |params|, and if no, describes why.
+  //
+  // |cookie_access_result| is an optional input status, to allow for status
+  // chaining from callers. It helps callers provide the status of a
+  // canonical cookie that may have warnings associated with it.
   CookieAccessResult IsSetPermittedInContext(
       const GURL& source_url,
       const CookieOptions& options,
       const CookieAccessParams& params,
-      const std::vector<std::string>& cookieable_schemes) const;
+      const std::vector<std::string>& cookieable_schemes,
+      const CookieAccessResult* cookie_access_result = nullptr) const;
 
   std::string DebugString() const;
 
@@ -490,14 +494,16 @@ class NET_EXPORT CanonicalCookie {
                                      bool is_secure,
                                      CookieSameSite same_site);
 
-  // Returns false iff the cookie is a partitioned cookie that violates the
-  // semantics of the Partitioned attribute:
+  // Returns true iff the cookie is a partitioned cookie with a nonce or that
+  // does not violate the semantics of the Partitioned attribute:
   // - Cannot be SameParty
   // - Must have a __Host- prefix
-  static bool IsCookiePartitionedValid(const ParsedCookie& parsed_cookie);
+  static bool IsCookiePartitionedValid(const ParsedCookie& parsed_cookie,
+                                       bool partition_has_nonce);
   static bool IsCookiePartitionedValid(bool is_partitioned,
                                        CookiePrefix prefix,
-                                       bool is_same_party);
+                                       bool is_same_party,
+                                       bool partition_has_nonce);
 
   // Keep defaults here in sync with
   // services/network/public/interfaces/cookie_manager.mojom.
@@ -514,10 +520,11 @@ class NET_EXPORT CanonicalCookie {
   CookiePriority priority_{COOKIE_PRIORITY_MEDIUM};
   bool same_party_{false};
   // This will be absl::nullopt for all cookies not set with the Partitioned
-  // attribute. If the value is non-null, then the cookie will only be delivered
-  // when the top-frame site matches the partition key.
-  // If the partition key is non-null and opaque, this means the Partitioned
-  // cookie was created on an opaque origin.
+  // attribute or without a nonce. If the value is non-null, then the cookie
+  // will only be delivered when the top-frame site matches the partition key
+  // and the nonce (if present). If the partition key is non-null and opaque,
+  // this means the Partitioned cookie was created on an opaque origin or with
+  // a nonce.
   absl::optional<CookiePartitionKey> partition_key_;
   CookieSourceScheme source_scheme_{CookieSourceScheme::kUnset};
   // This can be [0,65535], PORT_UNSPECIFIED, or PORT_INVALID.

@@ -4,7 +4,10 @@
 
 #include "chrome/browser/ash/input_method/assistive_window_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
+#include "base/feature_list.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/input_method/assistive_window_controller_delegate.h"
 #include "chrome/browser/ash/input_method/ui/assistive_accessibility_view.h"
@@ -36,7 +39,7 @@ class MockDelegate : public AssistiveWindowControllerDelegate {
 
 class TestAccessibilityView : public ui::ime::AssistiveAccessibilityView {
  public:
-  TestAccessibilityView() {}
+  TestAccessibilityView() = default;
   void VerifyAnnouncement(const std::u16string& expected_text) {
     EXPECT_EQ(text_, expected_text);
   }
@@ -49,8 +52,8 @@ class TestAccessibilityView : public ui::ime::AssistiveAccessibilityView {
 
 class AssistiveWindowControllerTest : public ChromeAshTestBase {
  protected:
-  AssistiveWindowControllerTest() { ui::IMEBridge::Initialize(); }
-  ~AssistiveWindowControllerTest() override { ui::IMEBridge::Shutdown(); }
+  AssistiveWindowControllerTest() = default;
+  ~AssistiveWindowControllerTest() override = default;
 
   void SetUp() override {
     ChromeAshTestBase::SetUp();
@@ -58,15 +61,20 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     wm::ActivateWindow(window.get());
 
     profile_ = std::make_unique<TestingProfile>();
-    accessibility_view_ = new TestAccessibilityView();
+    accessibility_view_ = std::make_unique<TestAccessibilityView>();
     controller_ = std::make_unique<AssistiveWindowController>(
-        delegate_.get(), profile_.get(), accessibility_view_);
+        delegate_.get(), profile_.get(), accessibility_view_.get());
     ui::IMEBridge::Get()->SetAssistiveWindowHandler(controller_.get());
 
     // TODO(crbug/1102283): Create MockSuggestionWindowView to be independent of
     // SuggestionWindowView's implementation.
     static_cast<views::TestViewsDelegate*>(views::ViewsDelegate::GetInstance())
         ->set_layout_provider(ChromeLayoutProvider::CreateLayoutProvider());
+  }
+
+  void TearDown() override {
+    controller_.reset();
+    ChromeAshTestBase::TearDown();
   }
 
   std::vector<std::u16string> Candidates() {
@@ -89,22 +97,24 @@ class AssistiveWindowControllerTest : public ChromeAshTestBase {
     emoji_button_.announce_string = kAnnounceString;
   }
 
+  void EnableLacros() {
+    feature_list_.Reset();
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kLacrosSupport},
+        /*disabled_features=*/{});
+  }
+
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<AssistiveWindowController> controller_;
   std::unique_ptr<MockDelegate> delegate_ = std::make_unique<MockDelegate>();
   std::unique_ptr<TestingProfile> profile_;
   const std::u16string suggestion_ = u"test";
   ui::ime::AssistiveWindowButton emoji_button_;
   AssistiveWindowProperties emoji_window_;
-  TestAccessibilityView* accessibility_view_;
-
-  void TearDown() override {
-    controller_.reset();
-    ChromeAshTestBase::TearDown();
-  }
+  std::unique_ptr<TestAccessibilityView> accessibility_view_;
 };
 
 TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
-  // Sets up suggestion_view with confirmed_length = 0.
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 0;
@@ -116,17 +126,19 @@ TEST_F(AssistiveWindowControllerTest, ConfirmedLength0SetsBoundsToCaretBounds) {
       ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
-  gfx::Rect new_caret_bounds(current_bounds.width() + 1,
-                             current_bounds.height());
+  gfx::Rect caret_bounds(0, 0, 100, 100);
+  gfx::Rect composition_bounds(0, 0, 90, 100);
   Bounds bounds;
-  bounds.caret = new_caret_bounds;
+  bounds.caret = caret_bounds;
+  bounds.composition_text = composition_bounds;
   ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
-  EXPECT_EQ(new_caret_bounds, suggestion_view->GetAnchorRect());
+
+  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
 }
 
 TEST_F(AssistiveWindowControllerTest,
        ConfirmedLengthNSetsBoundsToCompositionTextBounds) {
-  // Sets up suggestion_view with confirmed_length = 1.
   ui::ime::SuggestionDetails details;
   details.text = suggestion_;
   details.confirmed_length = 1;
@@ -138,13 +150,40 @@ TEST_F(AssistiveWindowControllerTest,
       ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
 
   gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
-  gfx::Rect composition_text_bounds(current_bounds.width() - 5,
-                                    current_bounds.height());
-
+  gfx::Rect caret_bounds(0, 0, 100, 100);
+  gfx::Rect composition_bounds(0, 0, 90, 100);
   Bounds bounds;
-  bounds.composition_text = composition_text_bounds;
+  bounds.caret = caret_bounds;
+  bounds.composition_text = composition_bounds;
   ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
-  EXPECT_EQ(composition_text_bounds, suggestion_view->GetAnchorRect());
+
+  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(composition_bounds, suggestion_view->GetAnchorRect());
+}
+
+TEST_F(AssistiveWindowControllerTest,
+       ConfirmedLengthNSetsBoundsToCaretBoundsWithLacrosEnabled) {
+  EnableLacros();
+  ui::ime::SuggestionDetails details;
+  details.text = suggestion_;
+  details.confirmed_length = 1;
+  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->ShowSuggestion(details);
+  ui::ime::SuggestionWindowView* suggestion_view =
+      controller_->GetSuggestionWindowViewForTesting();
+  EXPECT_EQ(
+      1u,
+      ui::IMEBridge::Get()->GetAssistiveWindowHandler()->GetConfirmedLength());
+
+  gfx::Rect current_bounds = suggestion_view->GetAnchorRect();
+  gfx::Rect caret_bounds(0, 0, 100, 100);
+  gfx::Rect composition_bounds(0, 0, 90, 100);
+  Bounds bounds;
+  bounds.caret = caret_bounds;
+  bounds.composition_text = composition_bounds;
+  ui::IMEBridge::Get()->GetAssistiveWindowHandler()->SetBounds(bounds);
+
+  EXPECT_NE(current_bounds, suggestion_view->GetAnchorRect());
+  EXPECT_EQ(caret_bounds, suggestion_view->GetAnchorRect());
 }
 
 TEST_F(AssistiveWindowControllerTest,

@@ -5,7 +5,6 @@
 #ifndef NET_CERT_INTERNAL_REVOCATION_UTIL_H_
 #define NET_CERT_INTERNAL_REVOCATION_UTIL_H_
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 
 namespace base {
@@ -23,11 +22,11 @@ struct GeneralizedTime;
 // a |next_update| field, is valid at |verify_time| and not older than
 // |max_age|.  Expressed differently, returns true if |this_update <=
 // verify_time < next_update|, and |this_update >= verify_time - max_age|.
-NET_EXPORT_PRIVATE bool CheckRevocationDateValid(
+[[nodiscard]] NET_EXPORT_PRIVATE bool CheckRevocationDateValid(
     const der::GeneralizedTime& this_update,
     const der::GeneralizedTime* next_update,
     const base::Time& verify_time,
-    const base::TimeDelta& max_age) WARN_UNUSED_RESULT;
+    const base::TimeDelta& max_age);
 
 }  // namespace net
 

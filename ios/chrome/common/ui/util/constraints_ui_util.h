@@ -190,13 +190,16 @@ void AddSameConstraintsToSidesWithInsets(id<EdgeLayoutGuideProvider> innerView,
 // the padding is optional so that the inner views are not artificially
 // shortened when fixed-size cells cut into that padding.  The padding is added
 // between |outerView| and |innerView|.
-void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
-                                id<EdgeLayoutGuideProvider> innerView,
-                                CGFloat padding);
-void AddOptionalVerticalPadding(id<EdgeLayoutGuideProvider> outerView,
-                                id<EdgeLayoutGuideProvider> topInnerView,
-                                id<EdgeLayoutGuideProvider> bottomInnerView,
-                                CGFloat padding);
+// Returns the top and bottom layouts that have been created.
+NSArray<NSLayoutConstraint*>* AddOptionalVerticalPadding(
+    id<EdgeLayoutGuideProvider> outerView,
+    id<EdgeLayoutGuideProvider> innerView,
+    CGFloat padding);
+NSArray<NSLayoutConstraint*>* AddOptionalVerticalPadding(
+    id<EdgeLayoutGuideProvider> outerView,
+    id<EdgeLayoutGuideProvider> topInnerView,
+    id<EdgeLayoutGuideProvider> bottomInnerView,
+    CGFloat padding);
 
 // Returns the vertical constraint of |innerView| and |outerView|. The height of
 // |outerView| equals to the height of |innerView| plus |inset|.

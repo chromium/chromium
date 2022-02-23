@@ -13,8 +13,6 @@ js_type_check("closure_compile_module") {
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
     ":os_apps_page",
-    ":permission_constants",
-    ":permission_util",
   ]
 }
 
@@ -25,8 +23,8 @@ js_library("android_apps_browser_proxy") {
 js_library("android_apps_subpage") {
   deps = [
     ":android_apps_browser_proxy",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:prefs_behavior",
     "..:route_observer_behavior",
     "../..:router",
@@ -41,14 +39,13 @@ js_library("os_apps_page") {
   deps = [
     ":android_apps_browser_proxy",
     ":android_apps_subpage",
-    "..:deep_linking_behavior.m",
-    "..:os_route.m",
+    "..:deep_linking_behavior",
+    "..:os_route",
     "..:prefs_behavior",
     "../../:router",
-    "./app_management_page:constants",
     "./app_management_page:store_client",
     "./app_notifications_page:mojo_interface_provider",
-    "//chrome/browser/ui/webui/settings/chromeos/os_apps_page/mojom:mojom_js_library_for_compile",
+    "//chrome/browser/ui/webui/settings/ash/os_apps_page/mojom:mojom_js_library_for_compile",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/cr_components/chromeos/localized_link:localized_link",
     "//ui/webui/resources/js:cr.m",
@@ -58,17 +55,6 @@ js_library("os_apps_page") {
     "$externs_path/metrics_private.js",
     "../settings_controls_types.js",
   ]
-}
-
-js_library("permission_util") {
-  deps = [
-    ":permission_constants",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("permission_constants") {
-  deps = [ "//chrome/browser/ui/webui/app_management:mojo_bindings_js_library_for_compile" ]
 }
 
 html_to_js("web_components") {

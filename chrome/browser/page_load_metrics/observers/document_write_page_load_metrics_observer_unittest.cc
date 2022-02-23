@@ -10,7 +10,6 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/page_load_metrics/browser/page_load_tracker.h"
 #include "components/page_load_metrics/common/test/page_load_metrics_test_util.h"
-#include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/blink/public/common/loader/loading_behavior_flag.h"
 
 class DocumentWritePageLoadMetricsObserverTest
@@ -29,7 +28,6 @@ class DocumentWritePageLoadMetricsObserverTest
 
 TEST_F(DocumentWritePageLoadMetricsObserverTest, NoMetrics) {
   AssertNoBlockHistogramsLogged();
-  EXPECT_EQ(0ul, tester()->test_ukm_recorder().entries_count());
 }
 
 TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlock) {
@@ -59,29 +57,10 @@ TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlock) {
   tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
 
   tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramDocWriteBlockCount, 1);
-  tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint, 1);
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint,
       contentful_paint.InMilliseconds(), 1);
-
-  using Entry = ukm::builders::Intervention_DocumentWrite_ScriptBlock;
-
-  std::map<ukm::SourceId, ukm::mojom::UkmEntryPtr> entries =
-      tester()->test_ukm_recorder().GetMergedEntriesByName(Entry::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  for (const auto& kv : entries) {
-    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(
-        kv.second.get(), GURL("https://www.google.com/"));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        Entry::kParseTiming_ParseBlockedOnScriptLoadFromDocumentWriteName, 5);
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        kv.second.get(),
-        Entry::kParseTiming_ParseBlockedOnScriptExecutionFromDocumentWriteName,
-        3);
-  }
 
   NavigateAndCommit(GURL("https://www.example.com/"));
 
@@ -90,66 +69,6 @@ TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlock) {
   tester()->histogram_tester().ExpectBucketCount(
       internal::kHistogramDocWriteBlockParseStartToFirstContentfulPaint,
       contentful_paint.InMilliseconds(), 1);
-}
-
-TEST_F(DocumentWritePageLoadMetricsObserverTest, PossibleBlockReload) {
-  base::TimeDelta contentful_paint = base::Milliseconds(1);
-  page_load_metrics::mojom::PageLoadTiming timing;
-  page_load_metrics::InitPageLoadTimingForTest(&timing);
-  timing.navigation_start = base::Time::FromDoubleT(1);
-  timing.paint_timing->first_contentful_paint = contentful_paint;
-  timing.parse_timing->parse_start = base::Milliseconds(1);
-  PopulateRequiredTimingFields(&timing);
-
-  page_load_metrics::mojom::FrameMetadata metadata;
-  metadata.behavior_flags |=
-      blink::LoadingBehaviorFlag::kLoadingBehaviorDocumentWriteBlockReload;
-  NavigateAndCommit(GURL("https://www.google.com/"));
-  tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramDocWriteBlockReloadCount, 1);
-
-  using Entry = ukm::builders::Intervention_DocumentWrite_ScriptBlock;
-  auto entries =
-      tester()->test_ukm_recorder().GetEntriesByName(Entry::kEntryName);
-  EXPECT_EQ(1u, entries.size());
-  const ukm::mojom::UkmEntry* entry1 = nullptr;
-  for (const auto* const entry : entries) {
-    tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(
-        entry, GURL("https://www.google.com/"));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        entry, Entry::kDisabled_ReloadName, true);
-    entry1 = entry;
-  }
-
-  // Another reload.
-  NavigateAndCommit(GURL("https://www.example.com/"));
-  tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramDocWriteBlockReloadCount, 2);
-
-  auto entries2 =
-      tester()->test_ukm_recorder().GetEntriesByName(Entry::kEntryName);
-  EXPECT_EQ(2u, entries2.size());
-  for (const auto* const entry : entries2) {
-    if (entry != entry1)
-      tester()->test_ukm_recorder().ExpectEntrySourceHasUrl(
-          entry, GURL("https://www.example.com/"));
-    tester()->test_ukm_recorder().ExpectEntryMetric(
-        entry, Entry::kDisabled_ReloadName, true);
-  }
-
-  // Another metadata update should not increase reload count.
-  metadata.behavior_flags |=
-      blink::LoadingBehaviorFlag::kLoadingBehaviorServiceWorkerControlled;
-  tester()->SimulateTimingAndMetadataUpdate(timing, metadata);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramDocWriteBlockReloadCount, 2);
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramDocWriteBlockCount, 0);
 }
 
 TEST_F(DocumentWritePageLoadMetricsObserverTest, NoPossibleBlock) {

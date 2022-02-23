@@ -28,6 +28,23 @@ struct WindowInfo;
 // ArcReadHandler is a helper class for a Delegate to read the app and window
 // info of ARC apps, which have special cases, e.g. ARC task creation, ARC
 // session id, etc.
+//
+// Android is responsible for restoring ARC window bounds, so full restore won't
+// restore window bounds, but restore activation_index, desk_id, window_state,
+// etc, when the widget has initialized by calling OnWidgetInitialized. For
+// ghost windows, when the ghost window is created, all window properties are
+// restored by ghost window.
+//
+// Task id is saved as the window id. So only when the task id is received, the
+// window can be restored. Task id and window init are two separate threads, so
+// there could be 2 scenarios:
+// 1. Window is initialized first, then `window` is added to the hidden
+// container, and saved in `arc_window_candidates_`. When the task is created,
+// OnTaskCreated callback applies the restore window properties, and remove the
+// window from the hidden container.
+// 2. Task is created first, then Window is initialized. So before `window` is
+// initialized, ModifyWidgetParams is called to apply the restore window
+// properties, and when `window` is initialized, it can be restored directly.
 class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
  public:
   // A delegate class which allows an owner of ArcReadHandler to have some
@@ -98,10 +115,6 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // Returns the restore window id for the ARC app's `session_id`.
   int32_t GetArcRestoreWindowIdForSessionId(int32_t session_id);
 
-  // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
-  // apps.
-  int32_t GetArcSessionId();
-
   // Sets |session_id| for |window_id| to |session_id_to_window_id_|.
   // |session_id| is assigned when ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t session_id, int32_t window_id);
@@ -122,8 +135,6 @@ class COMPONENT_EXPORT(APP_RESTORE) ArcReadHandler {
   // The map from the window id to the app id for ARC app windows. The window id
   // is saved in the window property |kRestoreWindowIdKey|.
   std::map<int32_t, std::string> window_id_to_app_id_;
-
-  int32_t session_id_ = kArcSessionIdOffsetForRestoredLaunching;
 
   // The map from the arc session id to the window id.
   std::map<int32_t, int32_t> session_id_to_window_id_;

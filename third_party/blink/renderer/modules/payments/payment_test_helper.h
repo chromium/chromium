@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_details_update.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_item.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_shipping_option.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"

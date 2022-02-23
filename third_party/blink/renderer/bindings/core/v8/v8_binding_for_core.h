@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/platform/bindings/v8_per_isolate_data.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
 #include "third_party/blink/renderer/platform/bindings/v8_value_cache.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/heap_traits.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_view.h"
 #include "v8/include/v8.h"
@@ -81,6 +81,24 @@ enum class UnionTypeConversionMode {
   kNullable,
   kNotNullable,
 };
+
+// Embedder enum set in v8 to let the V8 Profiler surface back in samples the
+// type of work performed by the embedder during a trace.
+// Explainer: https://github.com/WICG/js-self-profiling/blob/main/markers.md
+enum class BlinkState : uint8_t {
+  EMPTY = 0,
+  OTHER = 1,
+  STYLE = 2,
+  LAYOUT = 3,
+  PAINT = 4,
+};
+
+#define ENTER_EMBEDDER_STATE(isolate, frame, state)               \
+  v8::HandleScope scope(isolate);                                 \
+  v8::Local<v8::Context> v8_context =                             \
+      ToV8ContextMaybeEmpty(frame, DOMWrapperWorld::MainWorld()); \
+  v8::EmbedderStateScope embedder_state(                          \
+      isolate, v8_context, static_cast<v8::EmbedderStateTag>(state));
 
 template <typename CallbackInfo, typename T>
 inline void V8SetReturnValue(const CallbackInfo& callbackInfo,
@@ -436,6 +454,10 @@ CORE_EXPORT v8::Local<v8::Context> ToV8Context(LocalFrame*, DOMWrapperWorld&);
 CORE_EXPORT v8::Local<v8::Context> ToV8ContextEvenIfDetached(LocalFrame*,
                                                              DOMWrapperWorld&);
 
+// Like toV8Context but does not force the creation of context
+CORE_EXPORT v8::Local<v8::Context> ToV8ContextMaybeEmpty(LocalFrame*,
+                                                         DOMWrapperWorld&);
+
 // These methods can return nullptr if the context associated with the
 // ScriptState has already been detached.
 CORE_EXPORT ScriptState* ToScriptState(ExecutionContext*, DOMWrapperWorld&);
@@ -504,6 +526,15 @@ CORE_EXPORT Vector<String> GetOwnPropertyNames(v8::Isolate*,
 
 v8::MicrotaskQueue* ToMicrotaskQueue(ExecutionContext*);
 v8::MicrotaskQueue* ToMicrotaskQueue(ScriptState*);
+
+// Helper finction used in the callback functions to validate context.
+// Returns true if the given execution context and V8 context are capable to run
+// an "in parallel" algorithm, otherwise returns false.  What implements an "in
+// parallel" algorithm should check the runnability before using the context.
+// https://html.spec.whatwg.org/C/#in-parallel
+CORE_EXPORT bool IsInParallelAlgorithmRunnable(
+    ExecutionContext* execution_context,
+    ScriptState* script_state);
 
 }  // namespace blink
 

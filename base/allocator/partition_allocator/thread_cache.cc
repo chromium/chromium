@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <algorithm>
 #include <atomic>
+#include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -19,20 +20,24 @@
 #include "base/dcheck_is_on.h"
 #include "build/build_config.h"
 
-namespace base {
-
-namespace internal {
-
+namespace base::internal {
 namespace {
-
 ThreadCacheRegistry g_instance;
-
 }  // namespace
+}  // namespace base::internal
 
-namespace tools {
-uintptr_t kThreadCacheNeedleArray[3] = {
-    kNeedle1, reinterpret_cast<uintptr_t>(&g_instance), kNeedle2};
-}
+namespace partition_alloc::internal::tools {
+uintptr_t kThreadCacheNeedleArray[kThreadCacheNeedleArraySize] = {
+    kNeedle1, reinterpret_cast<uintptr_t>(&::base::internal::g_instance),
+#if BUILDFLAG(RECORD_ALLOC_INFO)
+    reinterpret_cast<uintptr_t>(&partition_alloc::internal::g_allocs),
+#else
+    0,
+#endif
+    kNeedle2};
+}  // namespace partition_alloc::internal::tools
+
+namespace base::internal {
 
 BASE_EXPORT PartitionTlsKey g_thread_cache_key;
 #if defined(PA_THREAD_CACHE_FAST_TLS)
@@ -43,9 +48,9 @@ thread_local ThreadCache* g_thread_cache;
 namespace {
 // Since |g_thread_cache_key| is shared, make sure that no more than one
 // PartitionRoot can use it.
-static std::atomic<PartitionRoot<ThreadSafe>*> g_thread_cache_root;
+static std::atomic<PartitionRoot<>*> g_thread_cache_root;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void OnDllProcessDetach() {
   // Very late allocations do occur (see crbug.com/1159411#c7 for instance),
   // including during CRT teardown. This is problematic for the thread cache
@@ -186,20 +191,6 @@ void ThreadCacheRegistry::ForcePurgeAllThreadAfterForkUnsafe() {
   }
 }
 
-void ThreadCacheRegistry::StartPeriodicPurge(
-    RunAfterDelayCallback run_after_delay_callback) {
-  ThreadCache::EnsureThreadSpecificDataInitialized();
-  PA_DCHECK(run_after_delay_callback);
-
-  // Can be called several times, don't post multiple tasks.
-  if (periodic_purge_running_)
-    return;
-
-  run_after_delay_callback_ = run_after_delay_callback;
-  periodic_purge_running_ = true;
-  PostDelayedPurgeTask();
-}
-
 void ThreadCacheRegistry::SetLargestActiveBucketIndex(
     uint8_t largest_active_bucket_index) {
   largest_active_bucket_index_ = largest_active_bucket_index;
@@ -236,16 +227,11 @@ void ThreadCacheRegistry::SetThreadCacheMultiplier(float multiplier) {
   }
 }
 
-void ThreadCacheRegistry::PostDelayedPurgeTask() {
-  run_after_delay_callback_(base::BindOnce(&ThreadCacheRegistry::PeriodicPurge,
-                                           base::Unretained(this)),
-                            purge_interval_);
-}
-
-void ThreadCacheRegistry::PeriodicPurge() {
-  // To stop periodic purge for testing.
-  if (!periodic_purge_running_)
-    return;
+void ThreadCacheRegistry::RunPeriodicPurge() {
+  if (!periodic_purge_is_initialized_) {
+    ThreadCache::EnsureThreadSpecificDataInitialized();
+    periodic_purge_is_initialized_ = true;
+  }
 
   // Summing across all threads can be slow, but is necessary. Otherwise we rely
   // on the assumption that the current thread is a good proxy for overall
@@ -281,21 +267,26 @@ void ThreadCacheRegistry::PeriodicPurge() {
   // of a renderer moving to foreground. To mitigate that, if cached memory
   // jumps is very large, make a greater leap to faster purging.
   if (cached_memory_approx > 10 * kMinCachedMemoryForPurging) {
-    purge_interval_ = std::min(kDefaultPurgeInterval, purge_interval_ / 2);
+    periodic_purge_next_interval_ =
+        std::min(kDefaultPurgeInterval, periodic_purge_next_interval_ / 2);
   } else if (cached_memory_approx > 2 * kMinCachedMemoryForPurging) {
-    purge_interval_ = std::max(kMinPurgeInterval, purge_interval_ / 2);
+    periodic_purge_next_interval_ =
+        std::max(kMinPurgeInterval, periodic_purge_next_interval_ / 2);
   } else if (cached_memory_approx < kMinCachedMemoryForPurging) {
-    purge_interval_ = std::min(kMaxPurgeInterval, purge_interval_ * 2);
+    periodic_purge_next_interval_ =
+        std::min(kMaxPurgeInterval, periodic_purge_next_interval_ * 2);
   }
 
   PurgeAll();
+}
 
-  PostDelayedPurgeTask();
+int64_t ThreadCacheRegistry::GetPeriodicPurgeNextIntervalInMicroseconds()
+    const {
+  return periodic_purge_next_interval_.InMicroseconds();
 }
 
 void ThreadCacheRegistry::ResetForTesting() {
-  purge_interval_ = kDefaultPurgeInterval;
-  periodic_purge_running_ = false;
+  periodic_purge_next_interval_ = kDefaultPurgeInterval;
 }
 
 // static
@@ -317,7 +308,7 @@ void ThreadCache::DeleteForTesting(ThreadCache* tcache) {
 }
 
 // static
-void ThreadCache::SwapForTesting(PartitionRoot<ThreadSafe>* root) {
+void ThreadCache::SwapForTesting(PartitionRoot<>* root) {
   auto* old_tcache = ThreadCache::Get();
   g_thread_cache_root.store(nullptr, std::memory_order_relaxed);
   if (old_tcache)
@@ -326,7 +317,7 @@ void ThreadCache::SwapForTesting(PartitionRoot<ThreadSafe>* root) {
     Init(root);
     Create(root);
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // OnDllProcessDetach accesses g_thread_cache_root which is nullptr now.
     PartitionTlsSetOnDllProcessDetach(nullptr);
 #endif
@@ -340,8 +331,8 @@ void ThreadCache::RemoveTombstoneForTesting() {
 }
 
 // static
-void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
-#if defined(OS_NACL)
+void ThreadCache::Init(PartitionRoot<>* root) {
+#if BUILDFLAG(IS_NACL)
   IMMEDIATE_CRASH();
 #endif
   PA_CHECK(root->buckets[kBucketCount - 1].slot_size ==
@@ -352,7 +343,7 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
   EnsureThreadSpecificDataInitialized();
 
   // Make sure that only one PartitionRoot wants a thread cache.
-  PartitionRoot<ThreadSafe>* expected = nullptr;
+  PartitionRoot<>* expected = nullptr;
   if (!g_thread_cache_root.compare_exchange_strong(expected, root,
                                                    std::memory_order_seq_cst,
                                                    std::memory_order_seq_cst)) {
@@ -360,7 +351,7 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
         << "Only one PartitionRoot is allowed to have a thread cache";
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   PartitionTlsSetOnDllProcessDetach(OnDllProcessDetach);
 #endif
 
@@ -368,8 +359,7 @@ void ThreadCache::Init(PartitionRoot<ThreadSafe>* root) {
 }
 
 // static
-void ThreadCache::SetGlobalLimits(PartitionRoot<ThreadSafe>* root,
-                                  float multiplier) {
+void ThreadCache::SetGlobalLimits(PartitionRoot<>* root, float multiplier) {
   size_t initial_value =
       static_cast<size_t>(kSmallBucketBaseCount) * multiplier;
 
@@ -412,7 +402,7 @@ void ThreadCache::SetLargestCachedSize(size_t size) {
   if (size > ThreadCache::kLargeSizeThreshold)
     size = ThreadCache::kLargeSizeThreshold;
   largest_active_bucket_index_ =
-      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(size);
+      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(size, false);
   PA_CHECK(largest_active_bucket_index_ < kBucketCount);
   ThreadCacheRegistry::Instance().SetLargestActiveBucketIndex(
       largest_active_bucket_index_);
@@ -423,7 +413,8 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   PA_CHECK(root);
   // See comment in thread_cache.h, this is used to make sure
   // kThreadCacheNeedleArray is kept in the final binary.
-  PA_CHECK(tools::kThreadCacheNeedleArray[0] == tools::kNeedle1);
+  PA_CHECK(partition_alloc::internal::tools::kThreadCacheNeedleArray[0] ==
+           partition_alloc::internal::tools::kNeedle1);
 
   // Placement new and RawAlloc() are used, as otherwise when this partition is
   // the malloc() implementation, the memory allocated for the new thread cache
@@ -436,12 +427,12 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   bool already_zeroed;
 
   auto* bucket =
-      root->buckets +
-      PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(raw_size);
-  void* buffer =
+      root->buckets + PartitionRoot<internal::ThreadSafe>::SizeToBucketIndex(
+                          raw_size, root->with_denser_bucket_distribution);
+  uintptr_t buffer =
       root->RawAlloc(bucket, PartitionAllocZeroFill, raw_size,
                      PartitionPageSize(), &usable_size, &already_zeroed);
-  ThreadCache* tcache = new (buffer) ThreadCache(root);
+  ThreadCache* tcache = new (reinterpret_cast<void*>(buffer)) ThreadCache(root);
 
   // This may allocate.
   PartitionTlsSet(g_thread_cache_key, tcache);
@@ -461,7 +452,7 @@ ThreadCache* ThreadCache::Create(PartitionRoot<internal::ThreadSafe>* root) {
   return tcache;
 }
 
-ThreadCache::ThreadCache(PartitionRoot<ThreadSafe>* root)
+ThreadCache::ThreadCache(PartitionRoot<>* root)
     : should_purge_(false),
       root_(root),
       thread_id_(PlatformThread::CurrentId()),
@@ -495,16 +486,22 @@ ThreadCache::~ThreadCache() {
 
 // static
 void ThreadCache::Delete(void* tcache_ptr) {
-  auto* tcache = reinterpret_cast<ThreadCache*>(tcache_ptr);
+  auto* tcache = static_cast<ThreadCache*>(tcache_ptr);
+
+  if (!IsValid(tcache))
+    return;
+
 #if defined(PA_THREAD_CACHE_FAST_TLS)
   g_thread_cache = nullptr;
+#else
+  PartitionTlsSet(g_thread_cache_key, nullptr);
 #endif
 
   auto* root = tcache->root_;
-  reinterpret_cast<ThreadCache*>(tcache_ptr)->~ThreadCache();
-  root->RawFree(tcache_ptr);
+  tcache->~ThreadCache();
+  root->RawFree(reinterpret_cast<uintptr_t>(tcache_ptr));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, allocations do occur during thread/process teardown, make sure
   // they don't resurrect the thread cache.
   //
@@ -514,7 +511,7 @@ void ThreadCache::Delete(void* tcache_ptr) {
   g_thread_cache = reinterpret_cast<ThreadCache*>(kTombstone);
 #endif
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 ThreadCache::Bucket::Bucket() {
@@ -569,7 +566,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
 
   size_t allocated_slots = 0;
   // Same as calling RawAlloc() |count| times, but acquires the lock only once.
-  internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
+  ::partition_alloc::internal::ScopedGuard guard(root_->lock_);
   for (int i = 0; i < count; i++) {
     // Thread cache fill should not trigger expensive operations, to not grab
     // the lock for a long time needlessly, but also to not inflate memory
@@ -580,7 +577,7 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     // |raw_size| is set to the slot size, as we don't know it. However, it is
     // only used for direct-mapped allocations and single-slot ones anyway,
     // which are not handled here.
-    void* ptr = root_->AllocFromBucket(
+    uintptr_t slot_start = root_->AllocFromBucket(
         &root_->buckets[bucket_index],
         PartitionAllocFastPathOrReturnNull | PartitionAllocReturnNull,
         root_->buckets[bucket_index].slot_size /* raw_size */,
@@ -591,11 +588,11 @@ void ThreadCache::FillBucket(size_t bucket_index) {
     // some objects, then the allocation will be handled normally. Otherwise,
     // this goes to the central allocator, which will service the allocation,
     // return nullptr or crash.
-    if (!ptr)
+    if (!slot_start)
       break;
 
     allocated_slots++;
-    PutInBucket(bucket, ptr);
+    PutInBucket(bucket, slot_start);
   }
 
   cached_memory_ += allocated_slots * bucket.slot_size;
@@ -648,11 +645,11 @@ void ThreadCache::FreeAfter(PartitionFreelistEntry* head, size_t slot_size) {
   // Acquire the lock once. Deallocation from the same bucket are likely to be
   // hitting the same cache lines in the central allocator, and lock
   // acquisitions can be expensive.
-  internal::ScopedGuard<internal::ThreadSafe> guard(root_->lock_);
+  ::partition_alloc::internal::ScopedGuard guard(root_->lock_);
   while (head) {
-    void* ptr = head;
+    uintptr_t slot_start = reinterpret_cast<uintptr_t>(head);
     head = head->GetNextForThreadCache(slot_size);
-    root_->RawFreeLocked(ptr);
+    root_->RawFreeLocked(slot_start);
   }
 }
 
@@ -740,6 +737,4 @@ void ThreadCache::PurgeInternal() {
     ClearBucket(bucket, 0);
 }
 
-}  // namespace internal
-
-}  // namespace base
+}  // namespace base::internal

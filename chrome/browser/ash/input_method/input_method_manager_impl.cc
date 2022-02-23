@@ -630,7 +630,7 @@ void InputMethodManagerImpl::StateImpl::RemoveInputMethodExtension(
   if (IsActive()) {
     if (ui::IMEBridge::Get()->GetCurrentEngineHandler() ==
         manager_->engine_map_[profile_][extension_id]) {
-      ui::IMEBridge::Get()->SetCurrentEngineHandler(NULL);
+      ui::IMEBridge::Get()->SetCurrentEngineHandler(nullptr);
     }
     manager_->engine_map_[profile_].erase(extension_id);
   }
@@ -912,7 +912,7 @@ InputMethodManagerImpl::StateImpl::LookupInputMethod(
     }
   }
 
-  const InputMethodDescriptor* descriptor = NULL;
+  const InputMethodDescriptor* descriptor = nullptr;
   if (extension_ime_util::IsExtensionIME(input_method_id_to_switch) ||
       extension_ime_util::IsArcIME(input_method_id_to_switch)) {
     DCHECK(available_input_methods_.find(input_method_id_to_switch) !=
@@ -928,7 +928,7 @@ InputMethodManagerImpl::StateImpl::LookupInputMethod(
   return descriptor;
 }
 
-Profile* const InputMethodManagerImpl::StateImpl::GetProfile() const {
+Profile* InputMethodManagerImpl::StateImpl::GetProfile() const {
   return profile_;
 }
 
@@ -1169,7 +1169,7 @@ void InputMethodManagerImpl::ActivateInputMethodMenuItem(
 }
 
 void InputMethodManagerImpl::ConnectInputEngineManager(
-    mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
+    mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {
   DCHECK(state_);
   ImeServiceConnectorMap::iterator iter =
       ime_service_connectors_.find(state_->GetProfile());

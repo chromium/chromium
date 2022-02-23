@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/logging.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "third_party/cros_system_api/dbus/u2f/dbus-constants.h"
 
@@ -59,6 +60,18 @@ void FakeU2FClient::HasLegacyU2FCredentials(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), u2f::HasCredentialsResponse()));
+}
+
+void FakeU2FClient::CountCredentials(
+    const u2f::CountCredentialsInTimeRangeRequest& request,
+    DBusMethodCallback<u2f::CountCredentialsInTimeRangeResponse> callback) {
+  NOTREACHED();
+}
+
+void FakeU2FClient::DeleteCredentials(
+    const u2f::DeleteCredentialsInTimeRangeRequest& request,
+    DBusMethodCallback<u2f::DeleteCredentialsInTimeRangeResponse> callback) {
+  NOTREACHED();
 }
 
 void FakeU2FClient::CancelWebAuthnFlow(

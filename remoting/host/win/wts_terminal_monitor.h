@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 
 namespace remoting {

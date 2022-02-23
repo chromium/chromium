@@ -16,8 +16,10 @@
 
 #include <unistd.h>
 
+#include <tuple>
+
 #include "base/mac/scoped_mach_port.h"
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/mac/mach_errors.h"
 #include "util/mach/mach_extensions.h"
@@ -154,11 +156,11 @@ TEST(MachMessage, MachMessageDestroyReceivedPort) {
   ASSERT_EQ(right_type,
             implicit_cast<mach_msg_type_name_t>(MACH_MSG_TYPE_PORT_SEND));
   EXPECT_TRUE(MachMessageDestroyReceivedPort(port, MACH_MSG_TYPE_PORT_RECEIVE));
-  ignore_result(receive.release());
+  std::ignore = receive.release();
   EXPECT_TRUE(MachMessageDestroyReceivedPort(port, MACH_MSG_TYPE_PORT_SEND));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST(MachMessage, AuditPIDFromMachMessageTrailer) {
   base::mac::ScopedMachReceiveRight port(NewMachPort(MACH_PORT_RIGHT_RECEIVE));
@@ -200,7 +202,7 @@ TEST(MachMessage, AuditPIDFromMachMessageTrailer) {
   EXPECT_EQ(AuditPIDFromMachMessageTrailer(&receive.trailer), getpid());
 }
 
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 }  // namespace test

@@ -38,8 +38,8 @@ LoginDatabase::EncryptionResult LoginDatabase::EncryptedString(
 LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
     const std::string& cipher_text,
     std::u16string* plain_text) const {
-#if !defined(OS_FUCHSIA)
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // On Android and ChromeOS, we have a mix of obfuscated and plain-text
   // passwords. Obfuscated passwords always start with "v10", therefore anything
   // else is plain-text.
@@ -56,10 +56,10 @@ LoginDatabase::EncryptionResult LoginDatabase::DecryptedString(
         PasswordDecryptionResult::kSucceededBySkipping);
     return ENCRYPTION_RESULT_SUCCESS;
   }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   bool decryption_success = OSCrypt::DecryptString16(cipher_text, plain_text);
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // If decryption failed, we assume it was because the value was actually a
   // plain-text password which started with "v10".
   // TODO(crbug.com/960322): Remove this when there isn't a mix of plain-text

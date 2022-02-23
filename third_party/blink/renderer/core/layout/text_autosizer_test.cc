@@ -12,8 +12,8 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 class TextAutosizerClient : public RenderingTestChromeClient {
@@ -21,12 +21,11 @@ class TextAutosizerClient : public RenderingTestChromeClient {
   float WindowToViewportScalar(LocalFrame*, const float value) const override {
     return value * device_scale_factor_;
   }
-  IntRect ViewportToScreen(const IntRect& rect,
-                           const LocalFrameView*) const override {
-    IntRect scaled_rect(rect);
-    scaled_rect.Scale(1 / device_scale_factor_);
-    return scaled_rect;
+  gfx::Rect ViewportToScreen(const gfx::Rect& rect,
+                             const LocalFrameView*) const override {
+    return gfx::ScaleToRoundedRect(rect, 1 / device_scale_factor_);
   }
+
   void set_device_scale_factor(float device_scale_factor) {
     device_scale_factor_ = device_scale_factor;
   }
@@ -59,7 +58,7 @@ class TextAutosizerTest : public RenderingTest {
     RenderingTest::SetUp();
     GetDocument().GetSettings()->SetTextAutosizingEnabled(true);
     GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
-        IntSize(320, 480));
+        gfx::Size(320, 480));
   }
 };
 
@@ -498,7 +497,7 @@ TEST_F(TextAutosizerTest, TextSizeAdjustDoesNotDisableAccessibility) {
 // https://crbug.com/646237
 TEST_F(TextAutosizerTest, DISABLED_TextSizeAdjustWithoutNeedingAutosizing) {
   GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
-      IntSize(800, 600));
+      gfx::Size(800, 600));
   SetBodyInnerHTML(R"HTML(
     <style>
       html { font-size: 16px; }
@@ -800,7 +799,7 @@ TEST_F(TextAutosizerTest, AutosizeInnerContentOfRuby) {
 
 TEST_F(TextAutosizerTest, ResizeAndGlyphOverflowChanged) {
   GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
-      IntSize(360, 640));
+      gfx::Size(360, 640));
   Element* html = GetDocument().body()->parentElement();
   html->setInnerHTML(
       "<head>"
@@ -832,11 +831,11 @@ TEST_F(TextAutosizerTest, ResizeAndGlyphOverflowChanged) {
   UpdateAllLifecyclePhasesForTest();
 
   GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
-      IntSize(640, 360));
+      gfx::Size(640, 360));
   UpdateAllLifecyclePhasesForTest();
 
   GetDocument().GetSettings()->SetTextAutosizingWindowSizeOverride(
-      IntSize(360, 640));
+      gfx::Size(360, 640));
   UpdateAllLifecyclePhasesForTest();
 }
 
@@ -1041,7 +1040,7 @@ TEST_F(TextAutosizerTest, ClusterHasEnoughTextToAutosizeForZoomDSF) {
 
 TEST_F(TextAutosizerTest, AfterPrint) {
   const float device_scale = 3;
-  FloatSize print_size(160, 240);
+  gfx::SizeF print_size(160, 240);
   set_device_scale_factor(device_scale);
   SetBodyInnerHTML(R"HTML(
     <style>
@@ -1078,7 +1077,7 @@ class TextAutosizerSimTest : public SimTest {
 
     Settings& settings = WebView().GetPage()->GetSettings();
     settings.SetTextAutosizingEnabled(true);
-    settings.SetTextAutosizingWindowSizeOverride(IntSize(400, 400));
+    settings.SetTextAutosizingWindowSizeOverride(gfx::Size(400, 400));
   }
 };
 

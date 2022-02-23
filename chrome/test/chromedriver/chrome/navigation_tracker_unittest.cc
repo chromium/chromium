@@ -7,6 +7,7 @@
 #include "base/compiler_specific.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/javascript_dialog_manager.h"
@@ -41,30 +42,29 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
 
   ~DeterminingLoadStateDevToolsClient() override {}
 
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
     if (method == "DOM.getDocument") {
-      base::DictionaryValue result_dict;
+      base::Value result_dict(base::Value::Type::DICTIONARY);
       if (has_empty_base_url_) {
-        result_dict.SetString("root.baseURL", "about:blank");
-        result_dict.SetString("root.documentURL", "http://test");
+        result_dict.SetStringPath("root.baseURL", "about:blank");
+        result_dict.SetStringPath("root.documentURL", "http://test");
       } else {
-        result_dict.SetString("root.baseURL", "http://test");
-        result_dict.SetString("root.documentURL", "http://test");
+        result_dict.SetStringPath("root.baseURL", "http://test");
+        result_dict.SetStringPath("root.documentURL", "http://test");
       }
-      result->reset(result_dict.DeepCopy());
+      *result = std::move(result_dict);
       return Status(kOk);
     } else if (method == "Runtime.evaluate") {
       std::string expression;
       if (params.GetString("expression", &expression)) {
-        base::DictionaryValue result_dict;
+        base::Value result_dict(base::Value::Type::DICTIONARY);
         if (expression == "1")
-          result_dict.SetInteger("result.value", 1);
+          result_dict.SetIntPath("result.value", 1);
         else if (expression == "document.readyState")
-          result_dict.SetString("result.value", "loading");
-        result->reset(result_dict.DeepCopy());
+          result_dict.SetStringPath("result.value", "loading");
+        *result = std::move(result_dict);
         return Status(kOk);
       }
     }
@@ -78,9 +78,9 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
       }
     }
 
-    base::DictionaryValue result_dict;
-    result_dict.SetBoolean("result.value", is_loading_);
-    result->reset(result_dict.DeepCopy());
+    base::Value result_dict(base::Value::Type::DICTIONARY);
+    result_dict.SetBoolPath("result.value", is_loading_);
+    *result = std::move(result_dict);
     return Status(kOk);
   }
 
@@ -88,7 +88,7 @@ class DeterminingLoadStateDevToolsClient : public StubDevToolsClient {
   bool has_empty_base_url_;
   bool is_loading_;
   std::string send_event_first_;
-  base::DictionaryValue* send_event_first_params_;
+  raw_ptr<base::DictionaryValue> send_event_first_params_;
 };
 
 class EvaluateScriptWebView : public StubWebView {
@@ -101,7 +101,7 @@ class EvaluateScriptWebView : public StubWebView {
                         const bool awaitPromise,
                         std::unique_ptr<base::Value>* result) override {
     base::Value value(result_);
-    result->reset(value.DeepCopy());
+    *result = base::Value::ToUniquePtrValue(value.Clone());
     return Status(code_);
   }
 
@@ -395,18 +395,18 @@ class FailToEvalScriptDevToolsClient : public StubDevToolsClient {
 
   ~FailToEvalScriptDevToolsClient() override {}
 
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
     if (!is_dom_getDocument_requested_ && method == "DOM.getDocument") {
       is_dom_getDocument_requested_ = true;
-      base::DictionaryValue result_dict;
-      result_dict.SetString("root.baseURL", "http://test");
-      result->reset(result_dict.DeepCopy());
+      base::Value result_dict(base::Value::Type::DICTIONARY);
+      result_dict.SetStringPath("root.baseURL", "http://test");
+      *result = std::move(result_dict);
       return Status(kOk);
     }
     EXPECT_STREQ("Runtime.evaluate", method.c_str());
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kUnknownError, "failed to eval script");
   }
 
@@ -579,10 +579,10 @@ class TargetClosedDevToolsClient : public StubDevToolsClient {
 
   ~TargetClosedDevToolsClient() override {}
 
-  Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) override {
+  Status SendCommandAndGetResult(const std::string& method,
+                                 const base::DictionaryValue& params,
+                                 base::Value* result) override {
+    *result = base::Value(base::Value::Type::DICTIONARY);
     return Status(kUnknownError, "Inspected target navigated or closed");
   }
 };

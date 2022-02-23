@@ -15,6 +15,7 @@
 #include "base/logging.h"
 #include "base/memory/discardable_memory.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "cc/cc_export.h"
@@ -513,7 +514,7 @@ class CC_EXPORT GpuImageDecodeCache
     ImageData(PaintImage::Id paint_image_id,
               DecodedDataMode mode,
               size_t size,
-              const gfx::ColorSpace& target_color_space,
+              const TargetColorParams& target_color_params,
               PaintFlags::FilterQuality quality,
               int upload_scale_mip_level,
               bool needs_mips,
@@ -529,7 +530,7 @@ class CC_EXPORT GpuImageDecodeCache
     const PaintImage::Id paint_image_id;
     const DecodedDataMode mode;
     const size_t size;
-    gfx::ColorSpace target_color_space;
+    TargetColorParams target_color_params;
     PaintFlags::FilterQuality quality;
     int upload_scale_mip_level;
     bool needs_mips = false;
@@ -575,7 +576,7 @@ class CC_EXPORT GpuImageDecodeCache
     PaintImage::FrameKey frame_key;
     int upload_scale_mip_level;
     PaintFlags::FilterQuality filter_quality;
-    gfx::ColorSpace target_color_space;
+    TargetColorParams target_color_params;
   };
   struct InUseCacheKeyHash {
     size_t operator()(const InUseCacheKey&) const;
@@ -687,6 +688,38 @@ class CC_EXPORT GpuImageDecodeCache
   void UploadImageIfNecessary(const DrawImage& draw_image,
                               ImageData* image_data);
 
+  // Implementation of UploadImageIfNecessary for each sub-case.
+  void UploadImageIfNecessary_TransferCache_HardwareDecode(
+      const DrawImage& draw_image,
+      ImageData* image_data,
+      sk_sp<SkColorSpace> color_space);
+  void UploadImageIfNecessary_TransferCache_SoftwareDecode_YUVA(
+      const DrawImage& draw_image,
+      ImageData* image_data,
+      sk_sp<SkColorSpace> decoded_target_colorspace,
+      absl::optional<TargetColorParams> target_color_params);
+  void UploadImageIfNecessary_TransferCache_SoftwareDecode_RGBA(
+      const DrawImage& draw_image,
+      ImageData* image_data,
+      bool needs_adjusted_color_space,
+      sk_sp<SkColorSpace> decoded_target_colorspace,
+      absl::optional<TargetColorParams> target_color_params);
+  void UploadImageIfNecessary_GpuCpu_YUVA(
+      const DrawImage& draw_image,
+      ImageData* image_data,
+      sk_sp<SkImage> uploaded_image,
+      GrMipMapped image_needs_mips,
+      sk_sp<SkColorSpace> decoded_target_colorspace,
+      sk_sp<SkColorSpace> color_space);
+  void UploadImageIfNecessary_GpuCpu_RGBA(
+      const DrawImage& draw_image,
+      ImageData* image_data,
+      sk_sp<SkImage> uploaded_image,
+      GrMipMapped image_needs_mips,
+      bool needs_adjusted_color_space,
+      sk_sp<SkColorSpace> decoded_target_colorspace,
+      sk_sp<SkColorSpace> color_space);
+
   // Flush pending operations on context_->GrContext() for each element of
   // |yuv_images| and then clear the vector.
   void FlushYUVImages(std::vector<sk_sp<SkImage>>* yuv_images);
@@ -741,7 +774,7 @@ class CC_EXPORT GpuImageDecodeCache
 
   const SkColorType color_type_;
   const bool use_transfer_cache_ = false;
-  viz::RasterContextProvider* context_;
+  raw_ptr<viz::RasterContextProvider> context_;
   int max_texture_size_ = 0;
   const PaintImage::GeneratorClientId generator_client_id_;
   bool allow_accelerated_jpeg_decodes_ = false;

@@ -116,6 +116,7 @@ import org.chromium.chrome.browser.test.ScreenShooter;
 import org.chromium.chrome.browser.toolbar.menu_button.MenuButton;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuHandler;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.ChromeActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.ChromeTabUtils;
@@ -418,8 +419,10 @@ public class CustomTabActivityTest {
         }
 
         MenuButton menuButtonView = toolbarView.findViewById(R.id.menu_button_wrapper);
-        assertEquals(menuButtonView.getUseLightDrawablesForTesting(),
-                ColorUtils.shouldUseLightForegroundOnBackground(expectedColor));
+        assertEquals(ColorUtils.shouldUseLightForegroundOnBackground(expectedColor)
+                        ? BrandedColorScheme.DARK_BRANDED_THEME
+                        : BrandedColorScheme.LIGHT_BRANDED_THEME,
+                menuButtonView.getBrandedColorSchemeForTesting());
     }
 
     /**
@@ -1666,6 +1669,10 @@ public class CustomTabActivityTest {
     @Features.EnableFeatures({ChromeFeatureList.CCT_RESIZABLE_FOR_THIRD_PARTIES})
     public void testLaunchPartialCustomTabActivity() throws Exception {
         Intent intent = createMinimalCustomTabIntent();
+        CustomTabsSessionToken token = CustomTabsSessionToken.getSessionTokenFromIntent(intent);
+        CustomTabsConnection connection = CustomTabsConnection.getInstance();
+        connection.newSession(token);
+        connection.overridePackageNameForSessionForTesting(token, "org.chromium.testapp");
         intent.putExtra(CustomTabIntentDataProvider.EXTRA_INITIAL_ACTIVITY_HEIGHT_IN_PIXEL, 50);
         mCustomTabActivityTestRule.startCustomTabActivityWithIntent(intent);
 

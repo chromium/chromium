@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -223,7 +224,7 @@ class FileAudioSource : public AudioOutputStream::AudioSourceCallback {
   int file_size() { return file_->data_size(); }
 
  private:
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
   int pos_;
   scoped_refptr<DecoderBuffer> file_;
 };
@@ -296,10 +297,10 @@ class FileAudioSink : public AudioInputStream::AudioInputCallback {
   void OnError() override {}
 
  private:
-  base::WaitableEvent* event_;
+  raw_ptr<base::WaitableEvent> event_;
   AudioParameters params_;
   std::unique_ptr<media::SeekableBuffer> buffer_;
-  FILE* binary_file_;
+  raw_ptr<FILE> binary_file_;
 };
 
 // Implements AudioInputCallback and AudioSourceCallback to support full
@@ -582,7 +583,7 @@ class AudioAndroidOutputTest : public testing::Test {
   std::unique_ptr<AudioManager> audio_manager_;
   AudioDeviceInfoAccessorForTests audio_manager_device_info_;
   AudioParameters audio_output_parameters_;
-  AudioOutputStream* audio_output_stream_;
+  raw_ptr<AudioOutputStream> audio_output_stream_;
   base::TimeTicks start_time_;
   base::TimeTicks end_time_;
 };
@@ -718,7 +719,7 @@ class AudioAndroidInputTest : public AudioAndroidOutputTest,
     audio_input_stream_ = nullptr;
   }
 
-  AudioInputStream* audio_input_stream_;
+  raw_ptr<AudioInputStream> audio_input_stream_;
   AudioParameters audio_input_parameters_;
 };
 

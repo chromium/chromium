@@ -23,10 +23,10 @@
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_eye_dropper.h"
 #include "chrome/browser/file_select_helper.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
@@ -230,22 +230,21 @@ BrowserWindow* DevToolsToolboxDelegate::GetInspectedBrowserWindow() {
 // static
 GURL DecorateFrontendURL(const GURL& base_url) {
   std::string frontend_url = base_url.spec();
-  std::string url_string(
-      frontend_url +
-      ((frontend_url.find("?") == std::string::npos) ? "?" : "&") +
-      "dockSide=undocked");  // TODO(dgozman): remove this support in M38.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
 
   if (command_line->HasSwitch(switches::kDevToolsFlags)) {
-    url_string += "&" + command_line->GetSwitchValueASCII(
-        switches::kDevToolsFlags);
+    frontend_url = frontend_url +
+                   ((frontend_url.find("?") == std::string::npos) ? "?" : "&") +
+                   command_line->GetSwitchValueASCII(switches::kDevToolsFlags);
   }
 
   if (command_line->HasSwitch(switches::kCustomDevtoolsFrontend)) {
-    url_string += "&debugFrontend=true";
+    frontend_url = frontend_url +
+                   ((frontend_url.find("?") == std::string::npos) ? "?" : "&") +
+                   "debugFrontend=true";
   }
 
-  return GURL(url_string);
+  return GURL(frontend_url);
 }
 
 }  // namespace
@@ -281,7 +280,7 @@ void DevToolsEventForwarder::SetWhitelistedShortcuts(
   absl::optional<base::Value> parsed_message = base::JSONReader::Read(message);
   if (!parsed_message || !parsed_message->is_list())
     return;
-  for (const auto& list_item : parsed_message->GetList()) {
+  for (const auto& list_item : parsed_message->GetListDeprecated()) {
     if (!list_item.is_dict())
       continue;
     int key_code = list_item.FindIntKey("keyCode").value_or(0);
@@ -831,7 +830,10 @@ DevToolsWindow::MaybeCreateNavigationThrottle(
     content::NavigationHandle* handle) {
   WebContents* web_contents = handle->GetWebContents();
   if (!web_contents || !web_contents->HasOriginalOpener() ||
-      web_contents->GetController().GetLastCommittedEntry()) {
+      (web_contents->GetController().GetLastCommittedEntry() &&
+       !web_contents->GetController()
+            .GetLastCommittedEntry()
+            ->IsInitialEntry())) {
     return nullptr;
   }
 
@@ -1036,7 +1038,6 @@ DevToolsWindow::DevToolsWindow(FrontendType frontend_type,
       close_on_detach_(true),
       // This initialization allows external front-end to work without changes.
       // We don't wait for docking call, but instead immediately show undocked.
-      // Passing "dockSide=undocked" parameter ensures proper UI.
       life_stage_(can_dock ? kNotLoaded : kIsDockedSet),
       action_on_load_(DevToolsToggleAction::NoOp()),
       intercepted_page_beforeunload_(false),
@@ -1546,10 +1547,10 @@ void DevToolsWindow::SetEyeDropperActive(bool active) {
 
 void DevToolsWindow::ColorPickedInEyeDropper(int r, int g, int b, int a) {
   base::DictionaryValue color;
-  color.SetInteger("r", r);
-  color.SetInteger("g", g);
-  color.SetInteger("b", b);
-  color.SetInteger("a", a);
+  color.SetIntKey("r", r);
+  color.SetIntKey("g", g);
+  color.SetIntKey("b", b);
+  color.SetIntKey("a", a);
   bindings_->CallClientMethod("DevToolsAPI", "eyeDropperPickedColor",
                               std::move(color));
 }
@@ -1584,7 +1585,7 @@ void DevToolsWindow::ShowCertificateViewer(const std::string& cert_chain) {
   absl::optional<base::Value> value = base::JSONReader::Read(cert_chain);
   CHECK(value && value->is_list());
   std::vector<std::string> decoded;
-  for (const auto& item : value->GetList()) {
+  for (const auto& item : value->GetListDeprecated()) {
     CHECK(item.is_string());
     std::string temp;
     CHECK(base::Base64Decode(item.GetString(), &temp));
@@ -1651,7 +1652,8 @@ void DevToolsWindow::SetOpenNewWindowForPopups(bool value) {
 
 void DevToolsWindow::CreateDevToolsBrowser() {
   PrefService* prefs = profile_->GetPrefs();
-  if (!prefs->GetDictionary(prefs::kAppWindowPlacement)->HasKey(kDevToolsApp)) {
+  if (!prefs->GetDictionary(prefs::kAppWindowPlacement)
+           ->FindKey(kDevToolsApp)) {
     // Ensure there is always a default size so that
     // BrowserFrame::InitBrowserFrame can retrieve it later.
     DictionaryPrefUpdate update(prefs, prefs::kAppWindowPlacement);

@@ -24,7 +24,7 @@ class DeviceAccountsSynchronizer {
   virtual void ReloadAllAccountsFromSystemWithPrimaryAccount(
       const absl::optional<CoreAccountId>& primary_account_id) = 0;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Reloads the information of the device-level account with |account_id|. The
   // account will be visible in IdentityManager::GetAccountsWithRefreshTokens()
   // with any persistent error cleared after this method is called.

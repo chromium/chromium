@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
@@ -142,7 +143,7 @@ class ResourcePrefetchPredictorTest : public testing::Test {
   scoped_refptr<base::TestSimpleTaskRunner> db_task_runner_;
 
   std::unique_ptr<LoadingPredictor> loading_predictor_;
-  ResourcePrefetchPredictor* predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
   scoped_refptr<StrictMock<MockResourcePrefetchPredictorTables>> mock_tables_;
 
   RedirectDataMap test_host_redirect_data_;
@@ -897,7 +898,7 @@ TEST_P(ResourcePrefetchPredictorPreconnectToRedirectTargetTest,
       enable_preconnect_to_redirect_target_experiment,
       predictor_->PredictPreconnectOrigins(main_frame_url, prediction.get()));
   auto expected_prediction_1 = CreatePreconnectPrediction(
-      "google.com", 0,
+      "google.com", false,
       {{url::Origin::Create(GURL("https://www.google.com/")), 1,
         www_google_network_isolation_key}});
   if (enable_preconnect_to_redirect_target_experiment) {
@@ -999,7 +1000,7 @@ TEST_F(ResourcePrefetchPredictorTest,
       url::Origin::Create(GURL("https://www.google-redirected-to.com")));
 
   const auto expected_prediction = CreatePreconnectPrediction(
-      "google.com", 0,
+      "google.com", false,
       {{url::Origin::Create(GURL("https://www.google-redirected-to.com/")), 1,
         www_google_redirected_to_network_isolation_key}});
   EXPECT_EQ(expected_prediction, *prediction);

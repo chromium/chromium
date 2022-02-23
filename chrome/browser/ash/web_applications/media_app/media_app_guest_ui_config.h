@@ -22,7 +22,8 @@ class ChromeMediaAppGuestUIDelegate : public ash::MediaAppGuestUIDelegate {
   ChromeMediaAppGuestUIDelegate(const ChromeMediaAppGuestUIDelegate&) = delete;
   ChromeMediaAppGuestUIDelegate& operator=(
       const ChromeMediaAppGuestUIDelegate&) = delete;
-  void PopulateLoadTimeData(content::WebUIDataSource* source) override;
+  void PopulateLoadTimeData(content::WebUI* web_ui,
+                            content::WebUIDataSource* source) override;
 };
 
 // A webui config for the chrome-untrusted:// part of media-app.

@@ -44,6 +44,7 @@ interface DOMException { // but see below note about ECMAScript binding
   const unsigned short DATA_CLONE_ERR = 25;
 };
 
-typedef unsigned long long DOMTimeStamp;
 callback Function = any (any... arguments);
 callback VoidFunction = undefined ();
+
+typedef unsigned long long DOMTimeStamp;

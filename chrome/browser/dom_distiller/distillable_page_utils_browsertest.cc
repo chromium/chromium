@@ -7,6 +7,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
@@ -26,8 +27,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 #include "components/ukm/test_ukm_recorder.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #endif
@@ -125,7 +126,7 @@ class TestOption : public InProcessBrowserTest {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   MockObserver holder_;
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<net::test_server::EmbeddedTestServer> https_server_;
 };
 
@@ -279,8 +280,8 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
       Optional(AllOf(IsDistillable(), IsLast(), Not(IsMobileFriendly()))));
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX) || defined(OS_MAC) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
                        RecordPageIsDistillableOnArticleLoad) {
   ON_CALL(holder_, OnResult(IsLast()))
@@ -312,6 +313,7 @@ IN_PROC_BROWSER_TEST_F(DistillablePageUtilsBrowserTestAllArticles,
                                           "IsPageDistillable"),
               Pointee(false));
 }
-#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || OS_LINUX || OS_MACOS || OS_WIN
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_MAC)OS || BUILDFLAG(IS_WIN)
 
 }  // namespace dom_distiller

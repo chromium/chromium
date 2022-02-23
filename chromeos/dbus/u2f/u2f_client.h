@@ -82,9 +82,22 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_U2F) U2FClient {
       const u2f::HasCredentialsRequest& request,
       DBusMethodCallback<u2f::HasCredentialsResponse> callback) = 0;
 
-  // Aborts a pending MakeCredential() or GetAssertion() request. Also dismisses
-  // the OS UI dialog prompting the user to confirm the request with a PIN or
-  // fingerprint.
+  // Returns the number of credentials created within the specified time range.
+  virtual void CountCredentials(
+      const u2f::CountCredentialsInTimeRangeRequest& request,
+      DBusMethodCallback<u2f::CountCredentialsInTimeRangeResponse>
+          callback) = 0;
+
+  // Deletes the credentials created within the specified time range and returns
+  // the number of credentials deleted.
+  virtual void DeleteCredentials(
+      const u2f::DeleteCredentialsInTimeRangeRequest& request,
+      DBusMethodCallback<u2f::DeleteCredentialsInTimeRangeResponse>
+          callback) = 0;
+
+  // Aborts a pending MakeCredential() or GetAssertion() request. Also
+  // dismisses the OS UI dialog prompting the user to confirm the request
+  // with a PIN or fingerprint.
   virtual void CancelWebAuthnFlow(
       const u2f::CancelWebAuthnFlowRequest& request,
       DBusMethodCallback<u2f::CancelWebAuthnFlowResponse> callback) = 0;

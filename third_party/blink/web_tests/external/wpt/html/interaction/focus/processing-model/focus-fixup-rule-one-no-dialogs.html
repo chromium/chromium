@@ -2,7 +2,7 @@
 <meta charset="utf-8">
 <title>Focus fixup rule one (no &lt;dialog>s involved)</title>
 <link rel="author" title="Domenic Denicola" href="mailto:d@domenic.me">
-<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-fixup-rule-one">
+<link rel="help" href="https://html.spec.whatwg.org/multipage/interaction.html#focus-fixup-rule">
 <link rel="help" href="https://html.spec.whatwg.org/multipage/forms.html#attr-fieldset-disabled">
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
@@ -31,7 +31,7 @@ test(() => {
   assert_not_equals(document.activeElement, button, "After disabling, the button must no longer be focused");
   assert_equals(document.activeElement, document.body, "After disabling, the body must be focused");
 
-}, "Disabling the active element (making it expressly inert)");
+}, "Disabling the active element (making it inert)");
 
 test(() => {
   const button = document.querySelector("#button2");

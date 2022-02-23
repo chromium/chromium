@@ -21,11 +21,11 @@
 #include <stdint.h>
 
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/logging.h"
 #include "base/mac/mach_logging.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
 #include "util/mac/mac_util.h"
 #include "util/mach/bootstrap.h"
@@ -178,7 +178,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
         handler_restarter->StartRestartThread(
             handler, database, metrics_dir, url, annotations, arguments)) {
       // The thread owns the object now.
-      ignore_result(handler_restarter.release());
+      std::ignore = handler_restarter.release();
     }
 
     // If StartRestartThread() failed, proceed without the ability to restart.
@@ -362,7 +362,7 @@ class HandlerStarter final : public NotifyServer::DefaultInterface {
       return false;
     }
 
-    ignore_result(receive_right.release());
+    std::ignore = receive_right.release();
     return true;
   }
 

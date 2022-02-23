@@ -1,0 +1,11 @@
+include_rules = [
+  "+gpu/config/gpu_driver_bug_workarounds.h",
+  "+gpu/config/gpu_preferences.h",
+  "+gpu/ipc/common/gpu_memory_buffer_support.h",
+  "+media/base",
+  "+media/gpu",
+  "+media/video",
+  "+services/service_manager/public/cpp",
+  "+ui/gfx",
+  "+ui/ozone/public",
+]

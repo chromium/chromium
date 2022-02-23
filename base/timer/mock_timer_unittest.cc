@@ -5,7 +5,6 @@
 #include "base/timer/mock_timer.h"
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace {

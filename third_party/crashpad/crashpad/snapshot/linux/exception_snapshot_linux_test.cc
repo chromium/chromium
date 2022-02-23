@@ -320,7 +320,8 @@ TEST(ExceptionSnapshotLinux, SelfBasic) {
   ASSERT_TRUE(exception.Initialize(&process_reader,
                                    FromPointerCast<LinuxVMAddress>(&siginfo),
                                    FromPointerCast<LinuxVMAddress>(&context),
-                                   gettid()));
+                                   gettid(),
+                                   nullptr));
   EXPECT_EQ(exception.Exception(), static_cast<uint32_t>(siginfo.si_signo));
   EXPECT_EQ(exception.ExceptionInfo(), static_cast<uint32_t>(siginfo.si_code));
   EXPECT_EQ(exception.ExceptionAddress(),
@@ -393,7 +394,8 @@ class RaiseTest {
     ASSERT_TRUE(exception.Initialize(&process_reader,
                                      FromPointerCast<LinuxVMAddress>(siginfo),
                                      FromPointerCast<LinuxVMAddress>(context),
-                                     gettid()));
+                                     gettid(),
+                                     nullptr));
 
     EXPECT_EQ(exception.Exception(), static_cast<uint32_t>(kSigno));
 
@@ -464,7 +466,8 @@ class TimerTest {
     ASSERT_TRUE(exception.Initialize(&process_reader,
                                      FromPointerCast<LinuxVMAddress>(siginfo),
                                      FromPointerCast<LinuxVMAddress>(context),
-                                     gettid()));
+                                     gettid(),
+                                     nullptr));
 
     EXPECT_EQ(exception.Exception(), static_cast<uint32_t>(kSigno));
 

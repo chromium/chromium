@@ -15,8 +15,6 @@
 #ifndef CRASHPAD_UTIL_IOS_EXCEPTION_PROCESSOR_H_
 #define CRASHPAD_UTIL_IOS_EXCEPTION_PROCESSOR_H_
 
-#include <vector>
-
 #include "util/misc/capture_context.h"
 
 namespace crashpad {
@@ -58,6 +56,10 @@ class ObjcExceptionDelegate {
 //! This should be installed at the same time the CrashpadClient installs the
 //! signal handler. It should only be installed once.
 void InstallObjcExceptionPreprocessor(ObjcExceptionDelegate* delegate);
+
+//! \brief Uninstalls the Objective-C exception preprocessor. Expected to be
+//!     used by tests only.
+void UninstallObjcExceptionPreprocessor();
 
 }  // namespace crashpad
 

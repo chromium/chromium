@@ -11,6 +11,7 @@
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/values.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
@@ -30,7 +31,7 @@ struct ModelTypeInfo {
   // String value for Model Type
   // This should be the same as the model type but space separated and the
   // first letter of every word capitalized.
-  const char* const model_type_string;
+  const char* const model_type_debug_string;
   // Field number of the model type specifics in EntitySpecifics.
   const int specifics_field_number;
   // Model type value from SyncModelTypes enum in enums.xml. Must always be in
@@ -181,7 +182,8 @@ static_assert(38 == syncer::GetNumModelTypes(),
 void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
   switch (type) {
     case UNSPECIFIED:
-      NOTREACHED() << "No default field value for " << ModelTypeToString(type);
+      NOTREACHED() << "No default field value for "
+                   << ModelTypeToDebugString(type);
       break;
     case BOOKMARKS:
       specifics->mutable_bookmark();
@@ -271,7 +273,8 @@ void AddDefaultFieldValue(ModelType type, sync_pb::EntitySpecifics* specifics) {
       specifics->mutable_send_tab_to_self();
       break;
     case PROXY_TABS:
-      NOTREACHED() << "No default field value for " << ModelTypeToString(type);
+      NOTREACHED() << "No default field value for "
+                   << ModelTypeToDebugString(type);
       break;
     case NIGORI:
       specifics->mutable_nigori();
@@ -418,11 +421,9 @@ ModelTypeSet EncryptableUserTypes() {
   return encryptable_user_types;
 }
 
-const char* ModelTypeToString(ModelType model_type) {
-  // This is used in serialization routines as well as for displaying debug
-  // information.  Do not attempt to change these string values unless you know
-  // what you're doing.
-  return kModelTypeInfoMap[model_type].model_type_string;
+const char* ModelTypeToDebugString(ModelType model_type) {
+  // This is used for displaying debug information.
+  return kModelTypeInfoMap[model_type].model_type_debug_string;
 }
 
 const char* ModelTypeToHistogramSuffix(ModelType model_type) {
@@ -441,61 +442,28 @@ int ModelTypeToStableIdentifier(ModelType model_type) {
 }
 
 std::unique_ptr<base::Value> ModelTypeToValue(ModelType model_type) {
-  return std::make_unique<base::Value>(ModelTypeToString(model_type));
+  return std::make_unique<base::Value>(ModelTypeToDebugString(model_type));
 }
 
-ModelType ModelTypeFromString(const std::string& model_type_string) {
-  auto* iter =
-      std::find_if(std::begin(kModelTypeInfoMap), std::end(kModelTypeInfoMap),
-                   [&](const ModelTypeInfo& info) {
-                     return info.model_type_string == model_type_string;
-                   });
-  return iter != std::end(kModelTypeInfoMap) ? iter->model_type : UNSPECIFIED;
-}
-
-std::string ModelTypeSetToString(ModelTypeSet model_types) {
+std::string ModelTypeSetToDebugString(ModelTypeSet model_types) {
   std::string result;
   for (ModelType type : model_types) {
     if (!result.empty()) {
       result += ", ";
     }
-    result += ModelTypeToString(type);
+    result += ModelTypeToDebugString(type);
   }
   return result;
 }
 
 std::ostream& operator<<(std::ostream& out, ModelTypeSet model_type_set) {
-  return out << ModelTypeSetToString(model_type_set);
-}
-
-ModelTypeSet ModelTypeSetFromString(const std::string& model_types_string) {
-  std::string working_copy = model_types_string;
-  ModelTypeSet model_types;
-  while (!working_copy.empty()) {
-    // Remove any leading spaces.
-    working_copy = working_copy.substr(working_copy.find_first_not_of(' '));
-    if (working_copy.empty())
-      break;
-    std::string type_str;
-    size_t end = working_copy.find(',');
-    if (end == std::string::npos) {
-      end = working_copy.length() - 1;
-      type_str = working_copy;
-    } else {
-      type_str = working_copy.substr(0, end);
-    }
-    ModelType type = ModelTypeFromString(type_str);
-    if (IsRealDataType(type))
-      model_types.Put(type);
-    working_copy = working_copy.substr(end + 1);
-  }
-  return model_types;
+  return out << ModelTypeSetToDebugString(model_type_set);
 }
 
 std::unique_ptr<base::ListValue> ModelTypeSetToValue(ModelTypeSet model_types) {
   std::unique_ptr<base::ListValue> value(new base::ListValue());
   for (ModelType type : model_types) {
-    value->Append(ModelTypeToString(type));
+    value->Append(ModelTypeToDebugString(type));
   }
   return value;
 }
@@ -526,11 +494,9 @@ bool RealModelTypeToNotificationType(ModelType model_type,
 
 bool NotificationTypeToRealModelType(const std::string& notification_type,
                                      ModelType* model_type) {
-  auto* iter =
-      std::find_if(std::begin(kModelTypeInfoMap), std::end(kModelTypeInfoMap),
-                   [&](const ModelTypeInfo& info) {
-                     return info.notification_type == notification_type;
-                   });
+  auto* iter = base::ranges::find(
+      kModelTypeInfoMap, notification_type,
+      [](const ModelTypeInfo& info) { return info.notification_type; });
   if (iter == std::end(kModelTypeInfoMap)) {
     return false;
   }

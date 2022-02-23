@@ -31,6 +31,10 @@ message ChromeResetReport {
     // Indicates the user wants to restore a specific set of URLs. The URLs
     // are contained in urls.
     URLS = 3;
+
+    // Indicates the user wants to restore the last session and a specific set
+    // of URLs. The URLs are contained in urls.
+    LAST_AND_URLS = 4;
   }
 
   optional SessionStartupType startup_type = 11;

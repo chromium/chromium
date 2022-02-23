@@ -48,6 +48,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.feature_engagement.TriggerDetails;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.url.GURL;
 
@@ -83,6 +84,8 @@ public class BookmarkBottomSheetTest {
     public void setUp() {
         when(mTracker.isInitialized()).thenReturn(true);
         when(mTracker.shouldTriggerHelpUI(READ_LATER_BOTTOM_SHEET_FEATURE)).thenReturn(false);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(READ_LATER_BOTTOM_SHEET_FEATURE))
+                .thenReturn(new TriggerDetails(false, false));
 
         mActivityTestRule.startMainActivityOnBlankPage();
         TestThreadUtils.runOnUiThreadBlocking(() -> {
@@ -107,6 +110,8 @@ public class BookmarkBottomSheetTest {
     private void setShouldShowNew(boolean shouldShowNew) {
         when(mTracker.shouldTriggerHelpUI(READ_LATER_BOTTOM_SHEET_FEATURE))
                 .thenReturn(shouldShowNew);
+        when(mTracker.shouldTriggerHelpUIWithSnooze(READ_LATER_BOTTOM_SHEET_FEATURE))
+                .thenReturn(new TriggerDetails(shouldShowNew, false));
     }
 
     private void bottomSheetCallback(BookmarkItem item) {

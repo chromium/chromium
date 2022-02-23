@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
@@ -279,8 +280,8 @@ void HttpServerPropertiesManager::ReadPrefs(
   // Iterate servers list in reverse MRU order so that entries are inserted
   // into |spdy_servers_map|, |alternative_service_map|, and
   // |server_network_stats_map| from oldest to newest.
-  for (auto it = servers_list->GetList().end();
-       it != servers_list->GetList().begin();) {
+  for (auto it = servers_list->GetListDeprecated().end();
+       it != servers_list->GetListDeprecated().begin();) {
     --it;
     if (!it->is_dict()) {
       DVLOG(1) << "Malformed http_server_properties for servers dictionary.";
@@ -305,8 +306,8 @@ void HttpServerPropertiesManager::ReadPrefs(
             kMaxRecentlyBrokenAlternativeServiceEntries);
 
     // Iterate list in reverse-MRU order
-    for (auto it = broken_alt_svc_list->GetList().end();
-         it != broken_alt_svc_list->GetList().begin();) {
+    for (auto it = broken_alt_svc_list->GetListDeprecated().end();
+         it != broken_alt_svc_list->GetListDeprecated().begin();) {
       --it;
       if (!it->is_dict()) {
         DVLOG(1) << "Malformed broken alterantive service entry.";
@@ -538,7 +539,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfoDictOfServer(
       return false;
     }
     quic::ParsedQuicVersionVector advertised_versions;
-    for (const auto& value : versions_list->GetList()) {
+    for (const auto& value : versions_list->GetListDeprecated()) {
       const std::string* version_string = value.GetIfString();
       if (!version_string) {
         DVLOG(1) << "Malformed alternative service version for server: "
@@ -573,7 +574,7 @@ bool HttpServerPropertiesManager::ParseAlternativeServiceInfo(
 
   AlternativeServiceInfoVector alternative_service_info_vector;
   for (const auto& alternative_service_list_item :
-       alternative_service_list->GetList()) {
+       alternative_service_list->GetListDeprecated()) {
     if (!alternative_service_list_item.is_dict())
       return false;
     AlternativeServiceInfo alternative_service_info;
@@ -653,7 +654,8 @@ void HttpServerPropertiesManager::AddToQuicServerInfoMap(
     return;
   }
 
-  for (const auto& quic_server_info_value : quic_server_info_list->GetList()) {
+  for (const auto& quic_server_info_value :
+       quic_server_info_list->GetListDeprecated()) {
     if (!quic_server_info_value.is_dict())
       continue;
 
@@ -716,11 +718,7 @@ void HttpServerPropertiesManager::WriteToPrefs(
   // Convert |server_info_map| to a dictionary Value and add it to
   // |http_server_properties_dict|.
   base::Value servers_list(base::Value::Type::LIST);
-  for (auto map_it = server_info_map.rbegin(); map_it != server_info_map.rend();
-       ++map_it) {
-    const HttpServerProperties::ServerInfoMapKey key = map_it->first;
-    const HttpServerProperties::ServerInfo& server_info = map_it->second;
-
+  for (const auto& [key, server_info] : base::Reversed(server_info_map)) {
     // If can't convert the NetworkIsolationKey to a value, don't save to disk.
     // Generally happens because the key is for a unique origin.
     base::Value network_isolation_key_value;
@@ -804,7 +802,7 @@ void HttpServerPropertiesManager::SaveAlternativeServiceToServerPrefs(
                                     std::move(advertised_versions_list));
     alternative_service_list.Append(std::move(alternative_service_dict));
   }
-  if (alternative_service_list.GetList().size() == 0)
+  if (alternative_service_list.GetListDeprecated().size() == 0)
     return;
   server_pref_dict->SetKey(kAlternativeServiceKey,
                            std::move(alternative_service_list));
@@ -843,10 +841,7 @@ void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
   if (quic_server_info_map.empty())
     return;
   base::Value quic_servers_list(base::Value::Type::LIST);
-  for (auto it = quic_server_info_map.rbegin();
-       it != quic_server_info_map.rend(); ++it) {
-    const HttpServerProperties::QuicServerInfoMapKey& key = it->first;
-
+  for (const auto& [key, server_info] : base::Reversed(quic_server_info_map)) {
     base::Value network_isolation_key_value;
     // Don't save entries with ephemeral NIKs.
     if (!key.network_isolation_key.ToValue(&network_isolation_key_value))
@@ -857,7 +852,7 @@ void HttpServerPropertiesManager::SaveQuicServerInfoMapToServerPrefs(
                                        QuicServerIdToString(key.server_id));
     quic_server_pref_dict.SetKey(kNetworkIsolationKey,
                                  std::move(network_isolation_key_value));
-    quic_server_pref_dict.SetStringKey(kServerInfoKey, it->second);
+    quic_server_pref_dict.SetStringKey(kServerInfoKey, server_info);
 
     quic_servers_list.Append(std::move(quic_server_pref_dict));
   }
@@ -885,18 +880,16 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
   std::map<BrokenAlternativeService, size_t> json_list_index_map;
 
   if (!recently_broken_alternative_services.empty()) {
-    for (auto it = recently_broken_alternative_services.rbegin();
-         it != recently_broken_alternative_services.rend(); ++it) {
-      const BrokenAlternativeService& broken_alt_service = it->first;
-      int broken_count = it->second;
-
+    for (const auto& [broken_alt_service, broken_count] :
+         base::Reversed(recently_broken_alternative_services)) {
       base::Value entry_dict(base::Value::Type::DICTIONARY);
       if (!TryAddBrokenAlternativeServiceFieldsToDictionaryValue(
               broken_alt_service, &entry_dict)) {
         continue;
       }
       entry_dict.SetKey(kBrokenCountKey, base::Value(broken_count));
-      json_list_index_map[broken_alt_service] = json_list.GetList().size();
+      json_list_index_map[broken_alt_service] =
+          json_list.GetListDeprecated().size();
       json_list.Append(std::move(entry_dict));
     }
   }
@@ -920,7 +913,8 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
       auto index_map_it = json_list_index_map.find(broken_alt_service);
       if (index_map_it != json_list_index_map.end()) {
         size_t json_list_index = index_map_it->second;
-        base::Value& entry_dict = json_list.GetList()[json_list_index];
+        base::Value& entry_dict =
+            json_list.GetListDeprecated()[json_list_index];
         DCHECK(entry_dict.is_dict());
         DCHECK(!entry_dict.FindKey(kBrokenUntilKey));
         entry_dict.SetKey(kBrokenUntilKey,
@@ -940,7 +934,7 @@ void HttpServerPropertiesManager::SaveBrokenAlternativeServicesToPrefs(
 
   // This can happen if all the entries are for NetworkIsolationKeys for opaque
   // origins, which isn't exactly common, but can theoretically happen.
-  if (json_list.GetList().empty())
+  if (json_list.GetListDeprecated().empty())
     return;
 
   http_server_properties_dict->SetKey(kBrokenAlternativeServicesKey,

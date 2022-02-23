@@ -5,13 +5,17 @@
 // Tests for PaymentRequest::OnPaymentResponse().
 
 #include <utility>
+
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom-blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_payment_response.h"
+#include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/testing/mock_function_scope.h"
 #include "third_party/blink/renderer/modules/payments/payment_address.h"
 #include "third_party/blink/renderer/modules/payments/payment_request.h"
+#include "third_party/blink/renderer/modules/payments/payment_response.h"
 #include "third_party/blink/renderer/modules/payments/payment_test_helper.h"
 
 namespace blink {
@@ -32,6 +36,8 @@ TEST(OnPaymentResponseTest, RejectMissingShippingOption) {
   response->shipping_address = payments::mojom::blink::PaymentAddress::New();
   response->shipping_address->country = "US";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -53,6 +59,8 @@ TEST(OnPaymentResponseTest, RejectMissingAddress) {
       BuildPaymentResponseForTest();
   response->shipping_option = "standardShipping";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -73,6 +81,8 @@ TEST(OnPaymentResponseTest, RejectMissingName) {
   payments::mojom::blink::PaymentResponsePtr response =
       BuildPaymentResponseForTest();
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -93,6 +103,8 @@ TEST(OnPaymentResponseTest, RejectMissingEmail) {
   payments::mojom::blink::PaymentResponsePtr response =
       BuildPaymentResponseForTest();
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -113,6 +125,8 @@ TEST(OnPaymentResponseTest, RejectMissingPhone) {
   payments::mojom::blink::PaymentResponsePtr response =
       BuildPaymentResponseForTest();
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -136,6 +150,8 @@ TEST(OnPaymentResponseTest, RejectEmptyShippingOption) {
   response->shipping_address = payments::mojom::blink::PaymentAddress::New();
   response->shipping_address->country = "US";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -158,6 +174,8 @@ TEST(OnPaymentResponseTest, RejectEmptyAddress) {
   response->shipping_option = "standardShipping";
   response->shipping_address = payments::mojom::blink::PaymentAddress::New();
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -179,6 +197,8 @@ TEST(OnPaymentResponseTest, RejectEmptyName) {
       BuildPaymentResponseForTest();
   response->payer->name = "";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -200,6 +220,8 @@ TEST(OnPaymentResponseTest, RejectEmptyEmail) {
       BuildPaymentResponseForTest();
   response->payer->email = "";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -221,6 +243,8 @@ TEST(OnPaymentResponseTest, RejectEmptyPhone) {
       BuildPaymentResponseForTest();
   response->payer->phone = "";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -243,6 +267,8 @@ TEST(OnPaymentResponseTest, RejectNotRequestedAddress) {
   response->shipping_address = payments::mojom::blink::PaymentAddress::New();
   response->shipping_address->country = "US";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -264,6 +290,8 @@ TEST(OnPaymentResponseTest, RejectNotRequestedShippingOption) {
       BuildPaymentResponseForTest();
   response->shipping_option = "";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -285,6 +313,8 @@ TEST(OnPaymentResponseTest, RejectNotRequestedName) {
       BuildPaymentResponseForTest();
   response->payer->name = "";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -306,6 +336,8 @@ TEST(OnPaymentResponseTest, RejectNotRequestedEmail) {
       BuildPaymentResponseForTest();
   response->payer->email = "";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -327,6 +359,8 @@ TEST(OnPaymentResponseTest, RejectNotRequestedPhone) {
       BuildPaymentResponseForTest();
   response->payer->phone = "";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -350,6 +384,8 @@ TEST(OnPaymentResponseTest, RejectInvalidAddress) {
   response->shipping_address = payments::mojom::blink::PaymentAddress::New();
   response->shipping_address->country = "Atlantis";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
       .Then(funcs.ExpectNoCall(), funcs.ExpectCall());
 
@@ -357,27 +393,19 @@ TEST(OnPaymentResponseTest, RejectInvalidAddress) {
       ->OnPaymentResponse(std::move(response));
 }
 
-class PaymentResponseFunction : public ScriptFunction {
+class PaymentResponseFunction : public ScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> Create(ScriptState* script_state,
-                                        ScriptValue* out_value) {
-    PaymentResponseFunction* self =
-        MakeGarbageCollected<PaymentResponseFunction>(script_state, out_value);
-    return self->BindToV8Function();
-  }
-
-  PaymentResponseFunction(ScriptState* script_state, ScriptValue* out_value)
-      : ScriptFunction(script_state), value_(out_value) {
+  explicit PaymentResponseFunction(ScriptValue* out_value) : value_(out_value) {
     DCHECK(value_);
   }
 
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState*, ScriptValue value) override {
     DCHECK(!value.IsEmpty());
     *value_ = value;
     return value;
   }
 
+ private:
   ScriptValue* const value_;
 };
 
@@ -396,9 +424,15 @@ TEST(OnPaymentResponseTest, CanRequestShippingInformation) {
   response->shipping_option = "standardShipping";
   response->shipping_address = payments::mojom::blink::PaymentAddress::New();
   response->shipping_address->country = "US";
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -424,9 +458,15 @@ TEST(OnPaymentResponseTest, CanRequestName) {
       BuildPaymentResponseForTest();
   response->payer = payments::mojom::blink::PayerDetail::New();
   response->payer->name = "Jon Doe";
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -451,9 +491,15 @@ TEST(OnPaymentResponseTest, CanRequestEmail) {
   payments::mojom::blink::PaymentResponsePtr response =
       BuildPaymentResponseForTest();
   response->payer->email = "abc@gmail.com";
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -479,9 +525,14 @@ TEST(OnPaymentResponseTest, CanRequestPhone) {
       BuildPaymentResponseForTest();
   response->payer->phone = "0123";
 
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -503,9 +554,15 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
   PaymentRequest* request = PaymentRequest::Create(
       scope.GetExecutionContext(), BuildPaymentMethodDataForTest(),
       BuildPaymentDetailsInitForTest(), options, ASSERT_NO_EXCEPTION);
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -520,7 +577,7 @@ TEST(OnPaymentResponseTest, ShippingInformationNotRequired) {
 
 // If the merchant does not request a phone number, the resolved show() promise
 // should contain null phone number.
-TEST(OnPaymentResponseTest, PhoneNotRequred) {
+TEST(OnPaymentResponseTest, PhoneNotRequired) {
   PaymentRequestV8TestingScope scope;
   MockFunctionScope funcs(scope.GetScriptState());
   PaymentOptions* options = PaymentOptions::Create();
@@ -531,9 +588,15 @@ TEST(OnPaymentResponseTest, PhoneNotRequred) {
   payments::mojom::blink::PaymentResponsePtr response =
       BuildPaymentResponseForTest();
   response->payer->phone = String();
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -558,9 +621,15 @@ TEST(OnPaymentResponseTest, NameNotRequired) {
   payments::mojom::blink::PaymentResponsePtr response =
       BuildPaymentResponseForTest();
   response->payer->name = String();
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)
@@ -585,9 +654,15 @@ TEST(OnPaymentResponseTest, EmailNotRequired) {
   payments::mojom::blink::PaymentResponsePtr response =
       BuildPaymentResponseForTest();
   response->payer->email = String();
+
+  LocalFrame::NotifyUserActivation(
+      &scope.GetFrame(), mojom::UserActivationNotificationType::kTest);
   ScriptValue out_value;
   request->show(scope.GetScriptState(), ASSERT_NO_EXCEPTION)
-      .Then(PaymentResponseFunction::Create(scope.GetScriptState(), &out_value),
+      .Then(MakeGarbageCollected<ScriptFunction>(
+                scope.GetScriptState(),
+                MakeGarbageCollected<PaymentResponseFunction>(&out_value))
+                ->V8Function(),
             funcs.ExpectNoCall());
 
   static_cast<payments::mojom::blink::PaymentRequestClient*>(request)

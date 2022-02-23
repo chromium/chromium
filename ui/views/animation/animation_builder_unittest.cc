@@ -343,6 +343,102 @@ TEST_F(AnimationBuilderTest, CheckTweenType) {
               0.001f);
 }
 
+// Verify that destroying the layers tracked by the animation abort handle
+// before the animation ends should not cause any crash.
+TEST_F(AnimationBuilderTest, DestroyLayerBeforeAnimationEnd) {
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+
+  std::unique_ptr<AnimationAbortHandle> abort_handle;
+  {
+    AnimationBuilder builder;
+    abort_handle = builder.GetAbortHandle();
+    builder.Once()
+        .SetDuration(base::Seconds(3))
+        .SetOpacity(first_animating_view, 0.5f)
+        .SetOpacity(second_animating_view, 0.5f);
+  }
+
+  EXPECT_TRUE(first_animating_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(second_animating_view->layer()->GetAnimator()->is_animating());
+  first_animating_view->ReleaseLayer();
+  second_animating_view->ReleaseLayer();
+}
+
+// Verify that destroying layers tracked by the animation abort handle when
+// the animation ends should not cause any crash.
+TEST_F(AnimationBuilderTest, DestroyLayerWhenAnimationEnd) {
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+
+  auto end_callback = [](TestAnimatibleLayerOwner* first_animating_view,
+                         TestAnimatibleLayerOwner* second_animating_view) {
+    first_animating_view->ReleaseLayer();
+    second_animating_view->ReleaseLayer();
+  };
+
+  constexpr auto kDelay = base::Seconds(3);
+  std::unique_ptr<AnimationAbortHandle> abort_handle;
+  {
+    AnimationBuilder builder;
+    abort_handle = builder.GetAbortHandle();
+    builder
+        .OnEnded(base::BindOnce(end_callback, first_animating_view,
+                                second_animating_view))
+        .Once()
+        .SetDuration(kDelay)
+        .SetOpacity(first_animating_view, 0.5f)
+        .SetOpacity(second_animating_view, 0.5f);
+  }
+
+  EXPECT_TRUE(first_animating_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(second_animating_view->layer()->GetAnimator()->is_animating());
+
+  Step(kDelay * 2);
+
+  // Verify that layers are destroyed when the animation ends.
+  EXPECT_FALSE(first_animating_view->layer());
+  EXPECT_FALSE(second_animating_view->layer());
+}
+
+// Verify that destroying layers tracked by the animation abort handle when
+// the animation is aborted should not cause any crash.
+TEST_F(AnimationBuilderTest, DestroyLayerWhenAnimationAborted) {
+  TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
+  TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();
+
+  auto abort_callback = [](TestAnimatibleLayerOwner* first_animating_view,
+                           TestAnimatibleLayerOwner* second_animating_view) {
+    first_animating_view->ReleaseLayer();
+    second_animating_view->ReleaseLayer();
+  };
+
+  constexpr auto kDelay = base::Seconds(3);
+  std::unique_ptr<AnimationAbortHandle> abort_handle;
+  {
+    AnimationBuilder builder;
+    abort_handle = builder.GetAbortHandle();
+    builder
+        .OnAborted(base::BindOnce(abort_callback, first_animating_view,
+                                  second_animating_view))
+        .Once()
+        .SetDuration(kDelay)
+        .SetOpacity(first_animating_view, 0.5f)
+        .SetOpacity(second_animating_view, 0.5f);
+  }
+
+  Step(0.5 * kDelay);
+  EXPECT_TRUE(first_animating_view->layer()->GetAnimator()->is_animating());
+  EXPECT_TRUE(second_animating_view->layer()->GetAnimator()->is_animating());
+
+  // Abort the animation in the half way.
+  first_animating_view->layer()->GetAnimator()->AbortAllAnimations();
+
+  // Verify that layers are destroyed by the animation abortion callback.
+  EXPECT_FALSE(first_animating_view->layer());
+  EXPECT_FALSE(second_animating_view->layer());
+}
+
 TEST_F(AnimationBuilderTest, CheckStartEndCallbacks) {
   TestAnimatibleLayerOwner* first_animating_view = CreateTestLayerOwner();
   TestAnimatibleLayerOwner* second_animating_view = CreateTestLayerOwner();

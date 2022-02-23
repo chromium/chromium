@@ -8,6 +8,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
@@ -25,7 +26,7 @@
 // static
 const char BackgroundSyncControllerImpl::kFieldTrialName[] = "BackgroundSync";
 const char BackgroundSyncControllerImpl::kDisabledParameterName[] = "disabled";
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char BackgroundSyncControllerImpl::kRelyOnAndroidNetworkDetection[] =
     "rely_on_android_network_detection";
 #endif
@@ -104,7 +105,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     content::BackgroundSyncParameters* parameters) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (delegate_->ShouldDisableBackgroundSync())
     parameters->disable = true;
 #endif
@@ -189,7 +190,7 @@ void BackgroundSyncControllerImpl::GetParameterOverrides(
     }
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Check if the delegate explicitly disabled this feature.
   if (delegate_->ShouldDisableAndroidNetworkDetection()) {
     parameters->rely_on_android_network_detection = false;
@@ -254,7 +255,7 @@ void BackgroundSyncControllerImpl::ScheduleBrowserWakeUpWithDelay(
   if (delegate_->IsProfileOffTheRecord())
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   delegate_->ScheduleBrowserWakeUpWithDelay(sync_type, delay);
 #endif
 }
@@ -266,7 +267,7 @@ void BackgroundSyncControllerImpl::CancelBrowserWakeup(
   if (delegate_->IsProfileOffTheRecord())
     return;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   delegate_->CancelBrowserWakeup(sync_type);
 #endif
 }
@@ -366,7 +367,7 @@ base::TimeDelta BackgroundSyncControllerImpl::GetNextEventDelay(
 
 std::unique_ptr<content::BackgroundSyncController::BackgroundSyncEventKeepAlive>
 BackgroundSyncControllerImpl::CreateBackgroundSyncEventKeepAlive() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Not needed on Android.
   return nullptr;
 #else

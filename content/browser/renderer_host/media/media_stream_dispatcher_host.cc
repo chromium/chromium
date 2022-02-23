@@ -13,8 +13,9 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner_util.h"
-#include "content/browser/bad_message.h"
+#include "build/build_config.h"
 #include "content/browser/renderer_host/media/media_stream_manager.h"
+#include "content/browser/renderer_host/media/video_capture_manager.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/render_frame_host.h"
@@ -27,6 +28,10 @@
 #include "services/service_manager/public/cpp/interface_provider.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "url/origin.h"
+
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/media/capture/crop_id_web_contents_helper.h"
+#endif
 
 namespace content {
 
@@ -42,6 +47,113 @@ void BindMediaStreamDeviceObserverReceiver(
       RenderFrameHost::FromID(render_process_id, render_frame_id);
   if (render_frame_host && render_frame_host->IsRenderFrameCreated())
     render_frame_host->GetRemoteInterfaces()->GetInterface(std::move(receiver));
+}
+
+std::unique_ptr<MediaStreamWebContentsObserver, BrowserThread::DeleteOnUIThread>
+StartObservingWebContents(int render_process_id,
+                          int render_frame_id,
+                          base::RepeatingClosure focus_callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
+  WebContents* const web_contents = WebContents::FromRenderFrameHost(
+      RenderFrameHost::FromID(render_process_id, render_frame_id));
+  std::unique_ptr<MediaStreamWebContentsObserver,
+                  BrowserThread::DeleteOnUIThread>
+      web_contents_observer;
+  if (web_contents) {
+    web_contents_observer.reset(new MediaStreamWebContentsObserver(
+        web_contents, base::BindPostTask(GetIOThreadTaskRunner({}),
+                                         std::move(focus_callback))));
+  }
+  return web_contents_observer;
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Checks whether a track living in the WebContents indicated by
+// (render_process_id, render_frame_id) may be cropped to the crop-target
+// indicated by |crop_id|.
+bool IsCropTargetValid(int render_process_id,
+                       int render_frame_id,
+                       const base::Token& crop_id) {
+  RenderFrameHost* const rfh =
+      RenderFrameHost::FromID(render_process_id, render_frame_id);
+  if (!rfh) {
+    return false;
+  }
+
+  WebContents* const web_contents =
+      WebContents::FromRenderFrameHost(rfh->GetMainFrame());
+  if (!web_contents) {
+    return false;
+  }
+
+  CropIdWebContentsHelper* const helper =
+      CropIdWebContentsHelper::FromWebContents(web_contents);
+  if (!helper) {
+    // No crop-IDs were ever produced on this WebContents.
+    // Any non-zero crop-ID should be rejected on account of being
+    // invalid. A zero crop-ID would ultimately be rejected on account
+    // of the track being uncropped, so we can unconditionally reject.
+    return false;
+  }
+
+  // * crop_id.is_zero() = uncrop-request.
+  // * !crop_id.is_zero() = crop-request.
+  return crop_id.is_zero() || helper->IsAssociatedWithCropId(crop_id);
+}
+
+MediaStreamDispatcherHost::CropCallback WrapCropCallback(
+    MediaStreamDispatcherHost::CropCallback callback,
+    mojo::ReportBadMessageCallback bad_message_callback) {
+  return base::BindOnce(
+      [](MediaStreamDispatcherHost::CropCallback callback,
+         mojo::ReportBadMessageCallback bad_message_callback,
+         media::mojom::CropRequestResult result) {
+        if (result ==
+            media::mojom::CropRequestResult::kNonIncreasingCropVersion) {
+          std::move(bad_message_callback).Run("Non-increasing crop-version.");
+          return;
+        }
+        std::move(callback).Run(result);
+      },
+      std::move(callback), std::move(bad_message_callback));
+}
+#endif
+
+bool AllowedStreamTypeCombination(
+    blink::mojom::MediaStreamType audio_stream_type,
+    blink::mojom::MediaStreamType video_stream_type) {
+  switch (audio_stream_type) {
+    // TODO(crbug.com/1288237): Disallow video_stream_type == NO_SERVICE when
+    // {video=false} is no longer allowed.
+    case blink::mojom::MediaStreamType::NO_SERVICE:
+      return blink::IsVideoInputMediaType(video_stream_type) ||
+             video_stream_type == blink::mojom::MediaStreamType::NO_SERVICE;
+    case blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE:
+      return video_stream_type ==
+                 blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE ||
+             video_stream_type == blink::mojom::MediaStreamType::NO_SERVICE;
+    case blink::mojom::MediaStreamType::GUM_TAB_AUDIO_CAPTURE:
+      return video_stream_type ==
+                 blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE ||
+             video_stream_type == blink::mojom::MediaStreamType::NO_SERVICE;
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_AUDIO_CAPTURE:
+      return video_stream_type ==
+             blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE;
+    case blink::mojom::MediaStreamType::DISPLAY_AUDIO_CAPTURE:
+      return video_stream_type ==
+                 blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE ||
+             video_stream_type ==
+                 blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB;
+    case blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::GUM_DESKTOP_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE:
+    case blink::mojom::MediaStreamType::DISPLAY_VIDEO_CAPTURE_THIS_TAB:
+    case blink::mojom::MediaStreamType::NUM_MEDIA_TYPES:
+      return false;
+  }
+  return false;
 }
 
 }  // namespace
@@ -75,68 +187,6 @@ struct MediaStreamDispatcherHost::PendingAccessRequest {
   MediaDeviceSaltAndOrigin salt_and_origin;
 };
 
-// MediaStreamDispatcherHost::Broker runs on both the UI and IO thread. It
-// exists because it might need to outlive MediaStreamDispatcherHost while in a
-// posted task from the MediaStreamDispatcherHost.
-class MediaStreamDispatcherHost::Broker
-    : public base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker> {
- public:
-  explicit Broker(base::WeakPtr<MediaStreamDispatcherHost> host)
-      : host_(host) {}
-
- private:
-  friend class base::RefCountedThreadSafe<MediaStreamDispatcherHost::Broker>;
-  friend class MediaStreamDispatcherHost;
-
-  ~Broker() = default;
-
-  void OnHostDestroyedOrStopped();
-  void OnHostDestroyedOrStoppedOnUI();
-  void OnWebContentsFocused();
-  void StartObservingWebContents(int render_process_id, int render_frame_id);
-
-  // host_ should be accessed only on IO thread.
-  base::WeakPtr<MediaStreamDispatcherHost> host_;
-  // web_contents_observer_ should be accessed only on UI thread.
-  std::unique_ptr<MediaStreamWebContentsObserver> web_contents_observer_;
-};
-
-void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStopped() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  base::OnceClosure stop_observing_cb = base::BindOnce(
-      &MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI, this);
-  GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(stop_observing_cb));
-}
-
-void MediaStreamDispatcherHost::Broker::OnHostDestroyedOrStoppedOnUI() {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  web_contents_observer_->StopObserving();
-  web_contents_observer_.reset();
-}
-
-void MediaStreamDispatcherHost::Broker::OnWebContentsFocused() {
-  DCHECK_CURRENTLY_ON(BrowserThread::IO);
-
-  if (!host_)
-    return;
-  host_->OnWebContentsFocused();
-}
-
-void MediaStreamDispatcherHost::Broker::StartObservingWebContents(
-    int render_process_id,
-    int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
-  web_contents_observer_ = std::make_unique<MediaStreamWebContentsObserver>(
-      render_process_id, render_frame_id);
-  web_contents_observer_->RegisterFocusCallback(base::BindPostTask(
-      GetIOThreadTaskRunner({}),
-      base::BindRepeating(
-          &MediaStreamDispatcherHost::Broker::OnWebContentsFocused, this)));
-}
-
 MediaStreamDispatcherHost::MediaStreamDispatcherHost(
     int render_process_id,
     int render_frame_id,
@@ -149,18 +199,22 @@ MediaStreamDispatcherHost::MediaStreamDispatcherHost(
           base::BindRepeating(&GetMediaDeviceSaltAndOrigin)) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
-  broker_ = base::MakeRefCounted<MediaStreamDispatcherHost::Broker>(
-      weak_factory_.GetWeakPtr());
-  GetUIThreadTaskRunner({})->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &MediaStreamDispatcherHost::Broker::StartObservingWebContents,
-          broker_, render_process_id_, render_frame_id_));
+  // TODO(crbug.com/1265369): Register focus_callback only when needed.
+  base::RepeatingClosure focus_callback =
+      base::BindRepeating(&MediaStreamDispatcherHost::OnWebContentsFocused,
+                          weak_factory_.GetWeakPtr());
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(&StartObservingWebContents, render_process_id_,
+                     render_frame_id_, std::move(focus_callback)),
+      base::BindOnce(&MediaStreamDispatcherHost::SetWebContentsObserver,
+                     weak_factory_.GetWeakPtr()));
 }
 
 MediaStreamDispatcherHost::~MediaStreamDispatcherHost() {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  broker_->OnHostDestroyedOrStopped();
+
+  web_contents_observer_.reset();
   CancelAllRequests();
 }
 
@@ -170,10 +224,19 @@ void MediaStreamDispatcherHost::Create(
     MediaStreamManager* media_stream_manager,
     mojo::PendingReceiver<blink::mojom::MediaStreamDispatcherHost> receiver) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   mojo::MakeSelfOwnedReceiver(
       std::make_unique<MediaStreamDispatcherHost>(
           render_process_id, render_frame_id, media_stream_manager),
       std::move(receiver));
+}
+
+void MediaStreamDispatcherHost::SetWebContentsObserver(
+    std::unique_ptr<MediaStreamWebContentsObserver,
+                    BrowserThread::DeleteOnUIThread> web_contents_observer) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  web_contents_observer_ = std::move(web_contents_observer);
 }
 
 void MediaStreamDispatcherHost::OnDeviceStopped(
@@ -287,12 +350,19 @@ void MediaStreamDispatcherHost::GenerateStream(
     GenerateStreamCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
+  if (!AllowedStreamTypeCombination(controls.audio.stream_type,
+                                    controls.video.stream_type)) {
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MSDH_INVALID_STREAM_TYPE_COMBINATION);
+    return;
+  }
+
   if (audio_stream_selection_info_ptr->strategy ==
           blink::mojom::StreamSelectionStrategy::SEARCH_BY_SESSION_ID &&
       (!audio_stream_selection_info_ptr->session_id.has_value() ||
        audio_stream_selection_info_ptr->session_id->is_empty())) {
-    bad_message::ReceivedBadMessage(
-        render_process_id_, bad_message::MDDH_INVALID_STREAM_SELECTION_INFO);
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_STREAM_SELECTION_INFO);
     return;
   }
 
@@ -314,6 +384,7 @@ void MediaStreamDispatcherHost::DoGenerateStream(
     GenerateStreamCallback callback,
     MediaDeviceSaltAndOrigin salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
                                            salt_and_origin.origin)) {
     std::move(callback).Run(
@@ -379,11 +450,12 @@ void MediaStreamDispatcherHost::OpenDevice(int32_t page_request_id,
                                            blink::mojom::MediaStreamType type,
                                            OpenDeviceCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   // OpenDevice is only supported for microphone or webcam capture.
   if (type != blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE &&
       type != blink::mojom::MediaStreamType::DEVICE_VIDEO_CAPTURE) {
-    bad_message::ReceivedBadMessage(
-        render_process_id_, bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
+    ReceivedBadMessage(render_process_id_,
+                       bad_message::MDDH_INVALID_DEVICE_TYPE_REQUEST);
     return;
   }
 
@@ -403,6 +475,7 @@ void MediaStreamDispatcherHost::DoOpenDevice(
     OpenDeviceCallback callback,
     MediaDeviceSaltAndOrigin salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
   if (!MediaStreamManager::IsOriginAllowed(render_process_id_,
                                            salt_and_origin.origin)) {
     std::move(callback).Run(false /* success */, std::string(),
@@ -440,7 +513,7 @@ void MediaStreamDispatcherHost::OnStreamStarted(const std::string& label) {
   media_stream_manager_->OnStreamStarted(label);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
                                                      bool focus) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
@@ -450,6 +523,66 @@ void MediaStreamDispatcherHost::FocusCapturedSurface(const std::string& label,
       /*is_from_microtask=*/false,
       /*is_from_timer=*/false);
 }
+
+void MediaStreamDispatcherHost::Crop(const base::UnguessableToken& device_id,
+                                     const base::Token& crop_id,
+                                     uint32_t crop_version,
+                                     CropCallback callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  // Hop to the UI thread to verify that cropping to |crop_id| is permitted
+  // from this particular context. Namely, cropping is currently only allowed
+  // for self-capture, so the crop_id has to be associated with the top-level
+  // WebContents belonging to this very tab.
+  // TODO(crbug.com/1299008): Switch away from the free function version
+  // when SelfOwnedReceiver properly supports this.
+  GetUIThreadTaskRunner({})->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&IsCropTargetValid, render_process_id_, render_frame_id_,
+                     crop_id),
+      base::BindOnce(&MediaStreamDispatcherHost::OnCropValidationComplete,
+                     weak_factory_.GetWeakPtr(), device_id, crop_id,
+                     crop_version,
+                     WrapCropCallback(std::move(callback),
+                                      mojo::GetBadMessageCallback())));
+}
+
+void MediaStreamDispatcherHost::OnCropValidationComplete(
+    const base::UnguessableToken& device_id,
+    const base::Token& crop_id,
+    uint32_t crop_version,
+    CropCallback callback,
+    bool crop_id_passed_validation) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (!crop_id_passed_validation) {
+    std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
+    return;
+  }
+
+  media_stream_manager_->video_capture_manager()->Crop(
+      device_id, crop_id, crop_version, std::move(callback));
+}
 #endif
+
+void MediaStreamDispatcherHost::ReceivedBadMessage(
+    int render_process_id,
+    bad_message::BadMessageReason reason) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+
+  if (bad_message_callback_for_testing_) {
+    bad_message_callback_for_testing_.Run(render_process_id, reason);
+  }
+
+  bad_message::ReceivedBadMessage(render_process_id, reason);
+}
+
+void MediaStreamDispatcherHost::SetBadMessageCallbackForTesting(
+    base::RepeatingCallback<void(int, bad_message::BadMessageReason)>
+        callback) {
+  DCHECK_CURRENTLY_ON(BrowserThread::IO);
+  DCHECK(!bad_message_callback_for_testing_);
+  bad_message_callback_for_testing_ = std::move(callback);
+}
 
 }  // namespace content

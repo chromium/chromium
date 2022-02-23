@@ -53,6 +53,7 @@
 #include "ui/base/l10n/l10n_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/arc/arc_util.h"
 #include "ash/constants/ash_paths.h"
 #include "base/path_service.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
@@ -65,13 +66,12 @@
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chromeos/extensions/device_local_account_external_policy_loader.h"
 #include "chrome/browser/chromeos/extensions/signin_screen_extensions_external_loader.h"
-#include "components/arc/arc_util.h"
 #include "extensions/common/constants.h"
 #else
 #include "chrome/browser/extensions/preinstalled_apps.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/extensions/external_registry_loader_win.h"
 #endif
 
@@ -166,7 +166,8 @@ void ExternalProviderImpl::SetPrefs(
         InstallStageTracker::InstallCreationStage::SEEN_BY_EXTERNAL_PROVIDER);
   }
 
-  prefs_ = std::move(prefs);
+  prefs_ = std::make_unique<base::Value::DictStorage>(
+      std::move(*prefs).TakeDictDeprecated());
   ready_ = true;  // Queries for extensions are allowed from this point.
 
   NotifyServiceOnExternalExtensionsFound(/*is_initial_load=*/true);
@@ -211,16 +212,17 @@ void ExternalProviderImpl::UpdatePrefs(
 
   std::set<std::string> removed_extensions;
   // Find extensions that were removed by this ExternalProvider.
-  for (base::DictionaryValue::Iterator i(*prefs_); !i.IsAtEnd(); i.Advance()) {
-    const std::string& extension_id = i.key();
+  for (auto& pref : *prefs_) {
+    const std::string& extension_id = pref.first;
     // Don't bother about invalid ids.
     if (!crx_file::id_util::IdIsValid(extension_id))
       continue;
-    if (!prefs->HasKey(extension_id))
+    if (!prefs->FindKey(extension_id))
       removed_extensions.insert(extension_id);
   }
 
-  prefs_ = std::move(prefs);
+  prefs_ = std::make_unique<base::Value::DictStorage>(
+      std::move(*prefs).TakeDictDeprecated());
 
   std::vector<ExternalInstallInfoUpdateUrl> external_update_url_extensions;
   std::vector<ExternalInstallInfoFile> external_file_extensions;
@@ -244,8 +246,8 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       InstallStageTracker::Get(profile_);
 
   // Discover all the extensions this provider has.
-  for (base::DictionaryValue::Iterator i(*prefs_); !i.IsAtEnd(); i.Advance()) {
-    const std::string& extension_id = i.key();
+  for (auto& pref : *prefs_) {
+    const std::string& extension_id = pref.first;
     const base::DictionaryValue* extension_dict = nullptr;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -276,7 +278,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       continue;
     }
 
-    if (!i.value().GetAsDictionary(&extension_dict)) {
+    if (!pref.second.GetAsDictionary(&extension_dict)) {
       LOG(WARNING) << "Malformed extension dictionary: key "
                    << extension_id.c_str()
                    << " has a value that is not a dictionary.";
@@ -340,19 +342,19 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
       l10n_util::GetParentLocales(g_browser_process->GetApplicationLocale(),
                                   &browser_locales);
 
-      size_t num_locales = supported_locales->GetList().size();
       bool locale_supported = false;
-      for (size_t j = 0; j < num_locales; j++) {
-        std::string current_locale;
-        if (supported_locales->GetString(j, &current_locale) &&
-            l10n_util::IsValidLocaleSyntax(current_locale)) {
-          current_locale = l10n_util::NormalizeLocale(current_locale);
-          if (base::Contains(browser_locales, current_locale)) {
+      for (const base::Value& locale : supported_locales->GetListDeprecated()) {
+        const std::string* current_locale = locale.GetIfString();
+        if (current_locale && l10n_util::IsValidLocaleSyntax(*current_locale)) {
+          std::string normalized_locale =
+              l10n_util::NormalizeLocale(*current_locale);
+          if (base::Contains(browser_locales, normalized_locale)) {
             locale_supported = true;
             break;
           }
         } else {
-          LOG(WARNING) << "Unrecognized locale '" << current_locale
+          LOG(WARNING) << "Unrecognized locale '"
+                       << (current_locale ? *current_locale : "(Not a string)")
                        << "' found as supported locale for extension: "
                        << extension_id;
         }
@@ -517,7 +519,7 @@ void ExternalProviderImpl::RetrieveExtensionsFromPrefs(
        it != unsupported_extensions.end(); ++it) {
     // Remove extension for the list of know external extensions. The extension
     // will be uninstalled later because provider doesn't provide it anymore.
-    prefs_->RemoveKey(*it);
+    prefs_->erase(prefs_->find(*it));
   }
 }
 
@@ -534,7 +536,7 @@ bool ExternalProviderImpl::HasExtension(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_.get());
   CHECK(ready_);
-  return prefs_->HasKey(id);
+  return prefs_->find(id) != prefs_->end();
 }
 
 bool ExternalProviderImpl::GetExtensionDetails(
@@ -544,23 +546,24 @@ bool ExternalProviderImpl::GetExtensionDetails(
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   CHECK(prefs_.get());
   CHECK(ready_);
-  base::DictionaryValue* extension = nullptr;
-  if (!prefs_->GetDictionary(id, &extension))
+  auto it = prefs_->find(id);
+  if (it == prefs_->end() || !it->second.is_dict())
     return false;
 
   ManifestLocation loc = ManifestLocation::kInvalidLocation;
-  if (extension->HasKey(kExternalUpdateUrl)) {
+  if (it->second.FindKey(kExternalUpdateUrl)) {
     loc = download_location_;
 
-  } else if (extension->HasKey(kExternalCrx)) {
+  } else if (it->second.FindKey(kExternalCrx)) {
     loc = crx_location_;
 
-    std::string external_version;
-    if (!extension->GetString(kExternalVersion, &external_version))
+    const std::string* external_version =
+        it->second.FindStringKey(kExternalVersion);
+    if (!external_version)
       return false;
 
     if (version)
-      *version = std::make_unique<base::Version>(external_version);
+      *version = std::make_unique<base::Version>(*external_version);
 
   } else {
     NOTREACHED();  // Chrome should not allow prefs to get into this state.
@@ -632,7 +635,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   ManifestLocation crx_location = ManifestLocation::kInvalidLocation;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile)) {
+  if (ash::ProfileHelper::IsSigninProfile(profile)) {
     // Download extensions/apps installed by policy in the login profile.
     // Extensions (not apps) installed through this path will have type
     // |TYPE_LOGIN_SCREEN_EXTENSION| with limited API capabilities.
@@ -653,7 +656,7 @@ void ExternalProviderImpl::CreateExternalProviders(
       g_browser_process->platform_part()->browser_policy_connector_ash();
   bool is_chrome_os_public_session = false;
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   policy::DeviceLocalAccount::Type account_type;
   if (user && connector->IsDeviceEnterpriseManaged() &&
       policy::IsDeviceLocalAccountUser(user->GetAccountId().GetUserEmail(),
@@ -753,11 +756,11 @@ void ExternalProviderImpl::CreateExternalProviders(
     return;
   }
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   // On Mac OS, items in /Library/... should be written by the superuser.
   // Check that all components of the path are writable by root only.
   ExternalPrefLoader::Options check_admin_permissions_on_mac;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   check_admin_permissions_on_mac =
       ExternalPrefLoader::ENSURE_PATH_CONTROLLED_BY_ADMIN;
 #else
@@ -798,7 +801,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   // For Chrome OS demo sessions, add pre-installed demo extensions and apps.
   if (ash::DemoExtensionsExternalLoader::SupportedForProfile(profile)) {
     base::FilePath cache_dir;
-    CHECK(base::PathService::Get(chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
+    CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                  &cache_dir));
     auto loader =
         base::MakeRefCounted<ash::DemoExtensionsExternalLoader>(cache_dir);
@@ -815,7 +818,7 @@ void ExternalProviderImpl::CreateExternalProviders(
   if (!profile->GetPrefs()->GetBoolean(pref_names::kBlockExternalExtensions)) {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     provider_list->push_back(std::make_unique<ExternalProviderImpl>(
         service,
         base::MakeRefCounted<ExternalPrefLoader>(
@@ -825,7 +828,7 @@ void ExternalProviderImpl::CreateExternalProviders(
         ManifestLocation::kExternalPrefDownload,
         bundled_extension_creation_flags));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     auto registry_provider = std::make_unique<ExternalProviderImpl>(
         service, new ExternalRegistryLoader, profile,
         ManifestLocation::kExternalRegistry,
@@ -843,8 +846,8 @@ void ExternalProviderImpl::CreateExternalProviders(
         bundled_extension_creation_flags));
 
     // Define a per-user source of external extensions.
-#if defined(OS_MAC) || ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && \
-                        BUILDFLAG(CHROMIUM_BRANDING))
+#if BUILDFLAG(IS_MAC) || ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+                          BUILDFLAG(CHROMIUM_BRANDING))
     provider_list->push_back(std::make_unique<ExternalProviderImpl>(
         service,
         base::MakeRefCounted<ExternalPrefLoader>(

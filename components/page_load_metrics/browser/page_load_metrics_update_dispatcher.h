@@ -8,6 +8,7 @@
 #include <map>
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "components/page_load_metrics/browser/layout_shift_normalization.h"
@@ -96,8 +97,6 @@ enum PageLoadTimingStatus {
 };
 
 extern const char kPageLoadTimingStatus[];
-extern const char kHistogramOutOfOrderTiming[];
-extern const char kHistogramOutOfOrderTimingBuffered[];
 
 }  // namespace internal
 
@@ -140,8 +139,6 @@ class PageLoadMetricsUpdateDispatcher {
     virtual void OnFrameIntersectionUpdate(
         content::RenderFrameHost* rfh,
         const mojom::FrameIntersectionUpdate& frame_intersection_update) = 0;
-    virtual void OnNewDeferredResourceCounts(
-        const mojom::DeferredResourceCounts& new_deferred_resource_data) = 0;
     virtual void SetUpSharedMemoryForSmoothness(
         base::ReadOnlySharedMemoryRegion shared_memory) = 0;
   };
@@ -167,7 +164,6 @@ class PageLoadMetricsUpdateDispatcher {
       const std::vector<mojom::ResourceDataUpdatePtr>& resources,
       mojom::FrameRenderDataUpdatePtr render_data,
       mojom::CpuTimingPtr new_cpu_timing,
-      mojom::DeferredResourceCountsPtr new_deferred_resource_data,
       mojom::InputTimingPtr input_timing_delta,
       const absl::optional<blink::MobileFriendliness>& mobile_friendliness);
 
@@ -271,10 +267,10 @@ class PageLoadMetricsUpdateDispatcher {
   void UpdateHasSeenInputOrScroll(const mojom::PageLoadTiming& new_timing);
 
   // The client is guaranteed to outlive this object.
-  Client* const client_;
+  const raw_ptr<Client> client_;
 
   // Interface to chrome features. Must outlive the class.
-  PageLoadMetricsEmbedderInterface* const embedder_interface_;
+  const raw_ptr<PageLoadMetricsEmbedderInterface> embedder_interface_;
 
   std::unique_ptr<base::OneShotTimer> timer_;
 

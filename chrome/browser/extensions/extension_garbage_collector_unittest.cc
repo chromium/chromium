@@ -57,7 +57,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, CleanupOnStartup) {
   // Simulate that one of them got partially deleted by clearing its pref.
   {
     DictionaryPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
-    base::DictionaryValue* dict = update.Get();
+    base::Value* dict = update.Get();
     ASSERT_TRUE(dict != nullptr);
     dict->RemoveKey(kExtensionId);
   }
@@ -92,7 +92,7 @@ TEST_F(ExtensionGarbageCollectorUnitTest, NoCleanupDuringInstall) {
   // Simulate that one of them got partially deleted by clearing its pref.
   {
     DictionaryPrefUpdate update(profile_->GetPrefs(), pref_names::kExtensions);
-    base::DictionaryValue* dict = update.Get();
+    base::Value* dict = update.Get();
     ASSERT_TRUE(dict != nullptr);
     dict->RemoveKey(kExtensionId);
   }

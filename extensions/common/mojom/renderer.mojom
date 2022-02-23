@@ -83,6 +83,9 @@ interface Renderer {
   // Cancels suspending the extension.
   CancelSuspendExtension(string extension_id);
 
+  // Informs the renderer whether or not the developer mode is enabled.
+  SetDeveloperMode(bool developer_mode_only);
+
   // Informs the renderer what channel (dev, beta, stable, etc) and user session
   // type is running. |is_lock_screen_context| represents whether the browser
   // context is associated with Chrome OS lock screen.
@@ -128,7 +131,7 @@ interface Renderer {
   UpdateTabSpecificPermissions(string extension_id,
                                URLPatternSet new_hosts,
                                int32 tab_id,
-                               bool update_origin_whitelist);
+                               bool update_origin_allowlist);
 
   // Notifies the renderer that the user scripts have been updated. It has one
   // ReadOnlySharedMemoryRegion argument consisting of the pickled script data.
@@ -141,7 +144,7 @@ interface Renderer {
   // extensions.
   ClearTabSpecificPermissions(array<string> extension_ids,
                               int32 tab_id,
-                              bool update_origin_whitelist);
+                              bool update_origin_allowlist);
 
   // Notifies the renderer that an extension wants notifications when certain
   // searches match the active page. This method replaces the old set of

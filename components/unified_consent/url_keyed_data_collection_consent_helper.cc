@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/base/model_type.h"
@@ -15,7 +16,6 @@
 #include "components/sync/driver/sync_service_observer.h"
 #include "components/sync/driver/sync_service_utils.h"
 #include "components/unified_consent/pref_names.h"
-
 
 namespace unified_consent {
 
@@ -39,7 +39,7 @@ class PrefBasedUrlKeyedDataCollectionConsentHelper
 
  private:
   void OnPrefChanged();
-  PrefService* pref_service_;  // weak (must outlive this)
+  raw_ptr<PrefService> pref_service_;  // weak (must outlive this)
   PrefChangeRegistrar pref_change_registrar_;
 };
 
@@ -68,7 +68,7 @@ class SyncBasedUrlKeyedDataCollectionConsentHelper
  private:
   void UpdateSyncDataTypeStates();
 
-  syncer::SyncService* sync_service_;
+  raw_ptr<syncer::SyncService> sync_service_;
   std::map<syncer::ModelType, syncer::UploadState> sync_data_type_states_;
 };
 

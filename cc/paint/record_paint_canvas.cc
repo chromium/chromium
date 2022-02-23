@@ -36,9 +36,12 @@ size_t RecordPaintCanvas::push(Args&&... args) {
   // The following check fails if client code does not check and handle
   // NeedsFlush() before issuing draw calls.
   // Note: restore ops are tolerated when flushes are requested since they are
-  // often necessary in order to bring the canvas to a flushable state
+  // often necessary in order to bring the canvas to a flushable state.
+  // SetNodeId ops are also tolerated because they may be inserted just before
+  // flushing.
   DCHECK(disable_flush_check_scope_ || !needs_flush_ ||
-         (std::is_same<T, RestoreOp>::value));
+         (std::is_same<T, RestoreOp>::value) ||
+         (std::is_same<T, SetNodeIdOp>::value));
 #endif
   return list_->push<T>(std::forward<Args>(args)...);
 }
@@ -311,8 +314,11 @@ void RecordPaintCanvas::drawImageRect(const PaintImage& image,
 void RecordPaintCanvas::drawSkottie(scoped_refptr<SkottieWrapper> skottie,
                                     const SkRect& dst,
                                     float t,
-                                    SkottieFrameDataMap images) {
-  push<DrawSkottieOp>(std::move(skottie), dst, t, std::move(images));
+                                    SkottieFrameDataMap images,
+                                    const SkottieColorMap& color_map,
+                                    SkottieTextPropertyValueMap text_map) {
+  push<DrawSkottieOp>(std::move(skottie), dst, t, std::move(images), color_map,
+                      std::move(text_map));
 }
 
 void RecordPaintCanvas::drawTextBlob(sk_sp<SkTextBlob> blob,

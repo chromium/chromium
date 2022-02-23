@@ -113,8 +113,9 @@ void DownSampler::Process(const float* source_p,
   // (destination sample-rate) to match shifting forward in time in
   // m_reducedKernel.
   float* odd_samples_p = temp_buffer_.Data();
-  for (unsigned i = 0; i < dest_frames_to_process; ++i)
+  for (unsigned i = 0; i < dest_frames_to_process; ++i) {
     odd_samples_p[i] = *((input_p - 1) + i * 2);
+  }
 
   // Actually process oddSamplesP with m_reducedKernel for efficiency.
   // The theoretical kernel is double this size with 0 values for even terms
@@ -126,8 +127,9 @@ void DownSampler::Process(const float* source_p,
   // sample-rate), scaled by 0.5.
 
   // Sum into the destination.
-  for (unsigned i = 0; i < dest_frames_to_process; ++i)
+  for (unsigned i = 0; i < dest_frames_to_process; ++i) {
     dest_p[i] += 0.5 * *((input_p - half_size) + i * 2);
+  }
 
   // Copy 2nd half of input buffer to 1st half.
   memcpy(input_buffer_.Data(), input_p,

@@ -10,7 +10,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.graphics.Rect;
 import android.os.Build;
@@ -18,6 +17,7 @@ import android.view.DisplayCutout;
 import android.view.WindowInsets;
 import android.widget.LinearLayout;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.SmallTest;
 
 import org.junit.Before;
@@ -54,7 +54,7 @@ public class InsetObserverViewTest {
 
     private LinearLayout mContentView;
 
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private void setCutout(boolean hasCutout) {
         DisplayCutout cutout = hasCutout ? new DisplayCutout(new Rect(1, 1, 1, 1), null) : null;
         doReturn(cutout).when(mInsets).getDisplayCutout();
@@ -95,7 +95,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets does not notify the observer. */
     @Test
     @SmallTest
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets() {
         setCutout(false);
         mView.onApplyWindowInsets(mInsets);
@@ -105,7 +105,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets with a cutout notifies the observer. */
     @Test
     @SmallTest
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout() {
         setCutout(true);
         mView.onApplyWindowInsets(mInsets);
@@ -115,7 +115,7 @@ public class InsetObserverViewTest {
     /** Test applying new insets with a cutout and then remove the cutout. */
     @Test
     @SmallTest
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout_WithoutCutout() {
         setCutout(true);
         mView.onApplyWindowInsets(mInsets);
@@ -130,7 +130,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets with a cutout but no observer is a no-op. */
     @Test
     @SmallTest
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_WithCutout_NoListener() {
         setCutout(true);
         mView.removeObserver(mObserver);
@@ -140,7 +140,7 @@ public class InsetObserverViewTest {
     /** Test that applying new insets with no observer is a no-op. */
     @Test
     @SmallTest
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     public void applyInsets_NoListener() {
         setCutout(false);
         mView.removeObserver(mObserver);

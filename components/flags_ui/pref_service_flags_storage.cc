@@ -25,7 +25,7 @@ std::set<std::string> PrefServiceFlagsStorage::GetFlags() const {
   const base::Value* enabled_experiments =
       prefs_->GetList(prefs::kAboutFlagsEntries);
   std::set<std::string> flags;
-  for (const auto& entry : enabled_experiments->GetList()) {
+  for (const auto& entry : enabled_experiments->GetListDeprecated()) {
     if (!entry.is_string()) {
       LOG(WARNING) << "Invalid entry in " << prefs::kAboutFlagsEntries;
       continue;
@@ -62,7 +62,7 @@ void PrefServiceFlagsStorage::SetOriginListFlag(
     const std::string& internal_entry_name,
     const std::string& origin_list_value) {
   DictionaryPrefUpdate update(prefs_, prefs::kAboutFlagsOriginLists);
-  update->SetString(internal_entry_name, origin_list_value);
+  update->SetStringPath(internal_entry_name, origin_list_value);
 }
 
 void PrefServiceFlagsStorage::CommitPendingWrites() {

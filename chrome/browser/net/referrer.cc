@@ -110,7 +110,7 @@ void Referrer::Deserialize(const base::Value& value) {
   if (value.type() != base::Value::Type::LIST)
     return;
 
-  base::Value::ConstListView list = value.GetList();
+  base::Value::ConstListView list = value.GetListDeprecated();
   for (auto it = list.begin(); it != list.end() && it + 1 != list.end();
        it += 2) {
     const std::string* url = it->GetIfString();

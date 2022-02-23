@@ -58,7 +58,7 @@ bool IsValid(absl::string_view in, int bit_length) {
   if (!status_or_truncated_bytes.ok()) {
     return false;
   }
-  return (status_or_truncated_bytes.ValueOrDie() == in);
+  return (status_or_truncated_bytes.value() == in);
 }
 
 }  // namespace rlwe

@@ -164,11 +164,25 @@ Polymer({
       value: 0,
     },
 
+    /** @private {!Array<ash.scanning.mojom.ColorMode>} */
+    selectedSourceColorModes_: {
+      type: Array,
+      value: () => [],
+      computed: 'computeColorModes_(selectedSource, capabilities_.sources)',
+    },
+
     /** @private {!Array<ash.scanning.mojom.PageSize>} */
     selectedSourcePageSizes_: {
       type: Array,
       value: () => [],
       computed: 'computePageSizes_(selectedSource, capabilities_.sources)',
+    },
+
+    /** @private {!Array<number>} */
+    selectedSourceResolutions_: {
+      type: Array,
+      value: () => [],
+      computed: 'computeResolutions_(selectedSource, capabilities_.sources)',
     },
 
     /**
@@ -510,6 +524,20 @@ Polymer({
   },
 
   /**
+   * @return {!Array<ash.scanning.mojom.ColorMode>}
+   * @private
+   */
+  computeColorModes_() {
+    for (const source of this.capabilities_.sources) {
+      if (source.name === this.selectedSource) {
+        return source.colorModes;
+      }
+    }
+
+    return [];
+  },
+
+  /**
    * @return {!Array<ash.scanning.mojom.PageSize>}
    * @private
    */
@@ -517,6 +545,20 @@ Polymer({
     for (const source of this.capabilities_.sources) {
       if (source.name === this.selectedSource) {
         return source.pageSizes;
+      }
+    }
+
+    return [];
+  },
+
+  /**
+   * @return {!Array<number>}
+   * @private
+   */
+  computeResolutions_() {
+    for (const source of this.capabilities_.sources) {
+      if (source.name === this.selectedSource) {
+        return source.resolutions;
       }
     }
 
@@ -1298,7 +1340,7 @@ Polymer({
    * @private
    */
   setSelectedColorModeIfAvailable_(colorMode) {
-    if (this.capabilities_.colorModes.includes(colorMode)) {
+    if (this.selectedSourceColorModes_.includes(colorMode)) {
       this.selectedColorMode = colorMode.toString();
     }
   },
@@ -1318,7 +1360,7 @@ Polymer({
    * @private
    */
   setSelectedResolutionIfAvailable_(resolution) {
-    if (this.capabilities_.resolutions.includes(resolution)) {
+    if (this.selectedSourceResolutions_.includes(resolution)) {
       this.selectedResolution = resolution.toString();
     }
   },

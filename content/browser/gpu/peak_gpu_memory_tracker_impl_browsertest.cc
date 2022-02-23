@@ -65,9 +65,12 @@ class TestGpuService : public viz::mojom::GpuService {
                            base::ProcessId client_pid) override {}
   void CloseChannel(int32_t client_id) override {}
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   void CreateArcVideoDecodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoDecodeAccelerator> vda_receiver)
       override {}
+  void CreateArcVideoDecoder(
+      mojo::PendingReceiver<arc::mojom::VideoDecoder> vd_receiver) override {}
   void CreateArcVideoEncodeAccelerator(
       mojo::PendingReceiver<arc::mojom::VideoEncodeAccelerator> vea_receiver)
       override {}
@@ -77,6 +80,7 @@ class TestGpuService : public viz::mojom::GpuService {
   void CreateArcProtectedBufferManager(
       mojo::PendingReceiver<arc::mojom::ProtectedBufferManager> pbm_receiver)
       override {}
+#endif  // BUILDFLAG(USE_CHROMEOS_MEDIA_ACCELERATION)
   void CreateJpegDecodeAccelerator(
       mojo::PendingReceiver<chromeos_camera::mojom::MjpegDecodeAccelerator>
           jda_receiver) override {}
@@ -84,7 +88,7 @@ class TestGpuService : public viz::mojom::GpuService {
       mojo::PendingReceiver<chromeos_camera::mojom::JpegEncodeAccelerator>
           jea_receiver) override {}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void RegisterDCOMPSurfaceHandle(
       mojo::PlatformHandle surface_handle,
       RegisterDCOMPSurfaceHandleCallback callback) override {}
@@ -122,11 +126,11 @@ class TestGpuService : public viz::mojom::GpuService {
   void OnBackgroundCleanup() override {}
   void OnBackgrounded() override {}
   void OnForegrounded() override {}
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnMemoryPressure(
       base::MemoryPressureListener::MemoryPressureLevel level) override {}
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void BeginCATransaction() override {}
   void CommitCATransaction(CommitCATransactionCallback callback) override {}
 #endif

@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "chromeos/network/network_handler_callbacks.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -75,6 +74,9 @@ class NetworkStateHelper {
 
   // Returns true if the default network is in connected state.
   virtual bool IsConnected() const;
+
+  // Returns true if the ethernet network is in connected state.
+  virtual bool IsConnectedToEthernet() const;
 
   // Returns true if the default network is in connecting state.
   virtual bool IsConnecting() const;

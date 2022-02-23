@@ -36,6 +36,7 @@ source_set("lib") {
     "//mojo/public/cpp/bindings",
     "//net",
     "//skia",
+    "//third_party/libxml:libxml_utils",
     "//third_party/libxml:xml_reader",
     "//third_party/zlib/google:compression_utils",
     "//ui/gfx",

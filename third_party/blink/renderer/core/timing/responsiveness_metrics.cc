@@ -7,6 +7,7 @@
 
 #include "base/rand_util.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
 #include "third_party/blink/public/common/responsiveness_metrics/user_interaction_latency.h"

@@ -81,10 +81,4 @@ bool AutofillDataModel::IsDeletable() const {
   return IsAutofillEntryWithUseDateDeletable(use_date_);
 }
 
-AutofillDataModel::ValidityState AutofillDataModel::GetValidityState(
-    ServerFieldType type,
-    AutofillDataModel::ValidationSource source) const {
-  return AutofillDataModel::UNSUPPORTED;
-}
-
 }  // namespace autofill

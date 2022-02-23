@@ -27,23 +27,8 @@
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
-#include "url/origin.h"
-#include "url/third_party/mozilla/url_parse.h"
-#include "url/url_canon.h"
 
 namespace content {
-
-namespace {
-
-GURL GetPublicKeyUrl(const url::Origin& origin) {
-  url::Replacements<char> replacements;
-  static constexpr char kEndpointPath[] =
-      ".well-known/aggregation-service/keys.json";
-  replacements.SetPath(kEndpointPath, url::Component(0, strlen(kEndpointPath)));
-  return origin.GetURL().ReplaceComponents(replacements);
-}
-
-}  // namespace
 
 AggregationServiceNetworkFetcherImpl::AggregationServiceNetworkFetcherImpl(
     const base::Clock* clock,
@@ -74,7 +59,7 @@ AggregationServiceNetworkFetcherImpl::CreateForTesting(
 }
 
 void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback) {
   DCHECK(storage_partition_ || url_loader_factory_);
 
@@ -85,10 +70,8 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
         storage_partition_->GetURLLoaderFactoryForBrowserProcess();
   }
 
-  GURL public_key_url = GetPublicKeyUrl(origin);
-
   auto resource_request = std::make_unique<network::ResourceRequest>();
-  resource_request->url = public_key_url;
+  resource_request->url = url;
   resource_request->method = net::HttpRequestHeaders::kGetMethod;
   resource_request->credentials_mode = network::mojom::CredentialsMode::kOmit;
   // No cache read, always download from the network.
@@ -148,20 +131,20 @@ void AggregationServiceNetworkFetcherImpl::FetchPublicKeys(
       url_loader_factory_.get(),
       base::BindOnce(
           &AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete,
-          base::Unretained(this), std::move(it), origin, std::move(callback)),
+          base::Unretained(this), std::move(it), url, std::move(callback)),
       kMaxJsonSize);
 }
 
 void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
     UrlLoaderList::iterator it,
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback,
     std::unique_ptr<std::string> response_body) {
   std::unique_ptr<network::SimpleURLLoader> loader = std::move(*it);
   loaders_in_progress_.erase(it);
 
   if (!response_body) {
-    OnError(origin, std::move(callback), FetchError::kDownload,
+    OnError(url, std::move(callback), FetchError::kDownload,
             /*error_msg=*/"Public key network request failed.");
     return;
   }
@@ -191,27 +174,27 @@ void AggregationServiceNetworkFetcherImpl::OnSimpleLoaderComplete(
   data_decoder::DataDecoder::ParseJsonIsolated(
       *response_body,
       base::BindOnce(&AggregationServiceNetworkFetcherImpl::OnJsonParse,
-                     weak_factory_.GetWeakPtr(), origin, std::move(callback),
+                     weak_factory_.GetWeakPtr(), url, std::move(callback),
                      std::move(response_time), std::move(expiry_time)));
 
   // TODO(crbug.com/1232599): Add performance metrics for key fetching.
 }
 
 void AggregationServiceNetworkFetcherImpl::OnJsonParse(
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback,
     base::Time fetch_time,
     base::Time expiry_time,
     data_decoder::DataDecoder::ValueOrError result) {
   if (!result.value) {
-    OnError(origin, std::move(callback), FetchError::kJsonParse, *result.error);
+    OnError(url, std::move(callback), FetchError::kJsonParse, *result.error);
     return;
   }
 
   std::vector<PublicKey> keys =
       aggregation_service::GetPublicKeys(result.value.value());
   if (keys.empty()) {
-    OnError(origin, std::move(callback), FetchError::kJsonParse,
+    OnError(url, std::move(callback), FetchError::kJsonParse,
             /*error_msg=*/"Public key parsing failed");
     return;
   }
@@ -221,7 +204,7 @@ void AggregationServiceNetworkFetcherImpl::OnJsonParse(
 }
 
 void AggregationServiceNetworkFetcherImpl::OnError(
-    const url::Origin& origin,
+    const GURL& url,
     NetworkFetchCallback callback,
     FetchError error,
     const std::string& error_msg) {

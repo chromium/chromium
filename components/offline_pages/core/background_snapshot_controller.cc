@@ -58,14 +58,13 @@ void BackgroundSnapshotController::Stop() {
 void BackgroundSnapshotController::RenovationsCompleted() {
 }
 
-void BackgroundSnapshotController::DocumentOnLoadCompletedInMainFrame() {
-    // Post a delayed task to snapshot and then stop this controller.
-    task_runner_->PostDelayedTask(
-        FROM_HERE,
-        base::BindOnce(
-            &BackgroundSnapshotController::MaybeStartSnapshotThenStop,
-            weak_ptr_factory_.GetWeakPtr()),
-        base::Milliseconds(delay_after_document_on_load_completed_ms_));
+void BackgroundSnapshotController::DocumentOnLoadCompletedInPrimaryMainFrame() {
+  // Post a delayed task to snapshot and then stop this controller.
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&BackgroundSnapshotController::MaybeStartSnapshotThenStop,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Milliseconds(delay_after_document_on_load_completed_ms_));
 }
 
 void BackgroundSnapshotController::MaybeStartSnapshot() {

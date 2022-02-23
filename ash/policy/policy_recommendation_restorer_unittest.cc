@@ -32,6 +32,7 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
             /*managed_prefs=*/new TestingPrefStore,
             /*supervised_user_prefs=*/new TestingPrefStore,
             /*extension_prefs=*/new TestingPrefStore,
+            /*standalone_browser_prefs=*/new TestingPrefStore,
             /*user_prefs=*/new TestingPrefStore,
             recommended_prefs_,
             new user_prefs::PrefRegistrySyncable,
@@ -90,7 +91,7 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
     EXPECT_TRUE(pref->HasUserSetting());
     const base::Value* value = pref->GetValue();
     ASSERT_TRUE(value);
-    EXPECT_TRUE(expected_value.Equals(value));
+    EXPECT_EQ(expected_value, *value);
   }
 
   void VerifyPrefsFollowUser() const {
@@ -116,7 +117,7 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
     EXPECT_FALSE(pref->HasUserSetting());
     const base::Value* value = pref->GetValue();
     ASSERT_TRUE(value);
-    EXPECT_TRUE(expected_value.Equals(value));
+    EXPECT_EQ(expected_value, *value);
   }
 
   void VerifyPrefsFollowRecommendation() const {
@@ -138,7 +139,7 @@ class PolicyRecommendationRestorerTest : public NoSessionAshTestBase {
 
   // If restore timer is running, stops it, runs its task and returns true.
   // Otherwise, returns false.
-  bool TriggerRestoreTimer() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TriggerRestoreTimer() {
     if (!restorer_->restore_timer_for_test()->IsRunning())
       return false;
 

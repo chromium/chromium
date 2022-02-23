@@ -387,7 +387,7 @@ class EnableDebuggingRequestedTest : public EnableDebuggingDevTest {
   // EnableDebuggingDevTest overrides:
   bool SetUpUserDataDirectory() override {
     base::DictionaryValue local_state_dict;
-    local_state_dict.SetBoolean(prefs::kDebuggingFeaturesRequested, true);
+    local_state_dict.SetBoolKey(prefs::kDebuggingFeaturesRequested, true);
 
     base::FilePath user_data_dir;
     CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));

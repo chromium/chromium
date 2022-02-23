@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/infobars/core/infobar_manager.h"
 #include "ios/web/public/navigation/referrer.h"

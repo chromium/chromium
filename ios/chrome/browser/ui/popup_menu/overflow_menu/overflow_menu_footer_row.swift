@@ -31,27 +31,28 @@ struct OverflowMenuFooterRow: View {
         spacing: Dimensions.iconLineSpacing
       ) {
         Rectangle()
-          .foregroundColor(.cr_grey300)
+          .foregroundColor(.overflowMenuSeparatorColor)
           .frame(height: Dimensions.iconLineDividerHeight)
         footer.image
           .fixedSize()
-          .foregroundColor(.cr_grey300)
+          .foregroundColor(.cr_grey500)
         Rectangle()
-          .foregroundColor(.cr_grey300)
+          .foregroundColor(.overflowMenuSeparatorColor)
           .frame(height: Dimensions.iconLineDividerHeight)
       }
       .padding([.top], Dimensions.iconLineExtraVerticalSpacing)
-      // Add empty tap gesture to the non tapable text, otherwise the link
-      // onTapGesture is triggered when tapping on this text too.
       Text(footer.name)
         .padding([.top], Dimensions.iconLineExtraVerticalSpacing)
         .font(.footnote)
-        .onTapGesture {}
       Text(footer.link)
         .font(.caption2)
         .foregroundColor(.cr_blue)
         .onTapGesture(perform: footer.handler)
+        .accessibilityIdentifier(footer.accessibilityIdentifier)
     }
-    .contentShape(Rectangle())
+    // Group all children together so VoiceOver doesn't have to read the two
+    // text labels individually.
+    .accessibilityElement(children: .combine)
+    .accessibilityAction(.default, footer.handler)
   }
 }

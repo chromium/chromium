@@ -7,12 +7,18 @@
 
 #include <memory>
 
+#include "ash/components/disks/disk.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_pref_names.h"
 #include "chrome/browser/ash/crostini/fake_crostini_features.h"
@@ -20,24 +26,31 @@
 #include "chrome/browser/ash/file_manager/file_watcher.h"
 #include "chrome/browser/ash/file_manager/mount_test_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
+#include "chrome/browser/ash/file_manager/volume_manager.h"
 #include "chrome/browser/ash/file_system_provider/icon_set.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_info.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/event_router_factory.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_misc.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_factory.h"
+#include "chrome/browser/chromeos/policy/dlp/mock_dlp_rules_manager.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_function_test_utils.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/browser_list.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/api/file_system_provider_capabilities/file_system_provider_capabilities_handler.h"
 #include "chromeos/dbus/concierge/concierge_service.pb.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
+#include "chromeos/dbus/dlp/dlp_client.h"
+#include "chromeos/dbus/dlp/dlp_service.pb.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
+#include "content/public/test/test_navigation_observer.h"
 #include "extensions/common/extension.h"
 #include "extensions/common/install_warning.h"
 #include "google_apis/common/test_util.h"
@@ -46,11 +59,11 @@
 using ::testing::_;
 using ::testing::ReturnRef;
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
-using chromeos::disks::FormatFileSystemType;
-
 namespace {
+
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
+using ::ash::disks::FormatFileSystemType;
 
 struct TestDiskInfo {
   const char* file_path;
@@ -79,7 +92,7 @@ struct TestMountPoint {
   std::string source_path;
   std::string mount_path;
   chromeos::MountType mount_type;
-  chromeos::disks::MountCondition mount_condition;
+  ash::disks::MountCondition mount_condition;
 
   // -1 if there is no disk info.
   int disk_info_index;
@@ -198,9 +211,8 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
   // ExtensionApiTest override
   void SetUpInProcessBrowserTestFixture() override {
     extensions::ExtensionApiTest::SetUpInProcessBrowserTestFixture();
-    disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager;
-    chromeos::disks::DiskMountManager::InitializeForTesting(
-        disk_mount_manager_mock_);
+    disk_mount_manager_mock_ = new ash::disks::MockDiskMountManager;
+    DiskMountManager::InitializeForTesting(disk_mount_manager_mock_);
     disk_mount_manager_mock_->SetupDefaultReplies();
 
     // override mock functions.
@@ -214,7 +226,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
 
   // ExtensionApiTest override
   void TearDownInProcessBrowserTestFixture() override {
-    chromeos::disks::DiskMountManager::Shutdown();
+    DiskMountManager::Shutdown();
     disk_mount_manager_mock_ = nullptr;
 
     extensions::ExtensionApiTest::TearDownInProcessBrowserTestFixture();
@@ -228,7 +240,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path1").AsUTF8Unsafe(),
         chromeos::MOUNT_TYPE_DEVICE,
-        chromeos::disks::MOUNT_CONDITION_NONE,
+        ash::disks::MOUNT_CONDITION_NONE,
         0
       },
       {
@@ -236,7 +248,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path2").AsUTF8Unsafe(),
         chromeos::MOUNT_TYPE_DEVICE,
-        chromeos::disks::MOUNT_CONDITION_NONE,
+        ash::disks::MOUNT_CONDITION_NONE,
         1
       },
       {
@@ -244,7 +256,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         chromeos::CrosDisksClient::GetRemovableDiskMountPoint().AppendASCII(
             "mount_path3").AsUTF8Unsafe(),
         chromeos::MOUNT_TYPE_DEVICE,
-        chromeos::disks::MOUNT_CONDITION_NONE,
+        ash::disks::MOUNT_CONDITION_NONE,
         2
       },
       {
@@ -254,7 +266,7 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
         chromeos::CrosDisksClient::GetArchiveMountPoint().AppendASCII(
             "archive_mount_path").AsUTF8Unsafe(),
         chromeos::MOUNT_TYPE_ARCHIVE,
-        chromeos::disks::MOUNT_CONDITION_NONE,
+        ash::disks::MOUNT_CONDITION_NONE,
         -1
       }
     };
@@ -320,14 +332,16 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                   const std::string& mount_label,
                   const std::vector<std::string>& mount_options,
                   chromeos::MountType type,
-                  chromeos::MountAccessMode access_mode) {
+                  chromeos::MountAccessMode access_mode,
+                  DiskMountManager::MountPathCallback callback) {
+    auto mount_point_info = DiskMountManager::MountPointInfo(
+        source_path, "/media/fuse/" + mount_label,
+        chromeos::MountType::MOUNT_TYPE_NETWORK_STORAGE,
+        ash::disks::MountCondition::MOUNT_CONDITION_NONE);
     disk_mount_manager_mock_->NotifyMountEvent(
-        chromeos::disks::DiskMountManager::MountEvent::MOUNTING,
-        chromeos::MountError::MOUNT_ERROR_NONE,
-        chromeos::disks::DiskMountManager::MountPointInfo(
-            source_path, "/media/fuse/" + mount_label,
-            chromeos::MountType::MOUNT_TYPE_NETWORK_STORAGE,
-            chromeos::disks::MountCondition::MOUNT_CONDITION_NONE));
+        DiskMountManager::MountEvent::MOUNTING,
+        chromeos::MountError::MOUNT_ERROR_NONE, mount_point_info);
+    std::move(callback).Run(chromeos::MOUNT_ERROR_NONE, mount_point_info);
   }
 
   void ExpectCrostiniMount() {
@@ -342,12 +356,12 @@ class FileManagerPrivateApiTest : public extensions::ExtensionApiTest {
                 MountPath("sshfs://testuser@hostname:", "",
                           "crostini_user_termina_penguin", mount_options,
                           chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                          chromeos::MOUNT_ACCESS_MODE_READ_WRITE))
+                          chromeos::MOUNT_ACCESS_MODE_READ_WRITE, _))
         .WillOnce(Invoke(this, &FileManagerPrivateApiTest::SshfsMount));
   }
 
   base::ScopedTempDir temp_dir_;
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
   DiskMountManager::DiskMap volumes_;
   DiskMountManager::MountPointMap mount_points_;
   file_manager::EventRouter* event_router_ = nullptr;
@@ -622,5 +636,102 @@ IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, GetVolumeRoot) {
   AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
 
   ASSERT_TRUE(RunExtensionTest("file_browser/get_volume_root", {},
+                               {.load_as_component = true}));
+}
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiTest, OpenURL) {
+  const char* target_url = "https://www.google.com/";
+  content::TestNavigationObserver navigation_observer(GURL{target_url});
+  navigation_observer.StartWatchingNewWebContents();
+  ASSERT_TRUE(RunExtensionTest("file_browser/open_url",
+                               {.custom_arg = target_url},
+                               {.load_as_component = true}));
+  // Wait for navigation to finish.
+  navigation_observer.Wait();
+
+  // Check that the current active web contents points to the expected URL.
+  BrowserList* browser_list = BrowserList::GetInstance();
+  Browser* browser = browser_list->GetLastActive();
+  content::WebContents* active_web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
+  EXPECT_STREQ(target_url,
+               active_web_contents->GetVisibleURL().spec().c_str());
+}
+
+class FileManagerPrivateApiDlpTest : public FileManagerPrivateApiTest {
+ public:
+  FileManagerPrivateApiDlpTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kDataLeakPreventionFilesRestriction);
+  }
+
+  FileManagerPrivateApiDlpTest(const FileManagerPrivateApiDlpTest&) = delete;
+  void operator=(const FileManagerPrivateApiDlpTest&) = delete;
+
+  ~FileManagerPrivateApiDlpTest() override = default;
+
+  void SetUpOnMainThread() override {
+    FileManagerPrivateApiTest::SetUpOnMainThread();
+    ASSERT_TRUE(drive_path_.CreateUniqueTempDir());
+  }
+
+  std::unique_ptr<KeyedService> SetDlpRulesManager(
+      content::BrowserContext* context) {
+    auto dlp_rules_manager = std::make_unique<policy::MockDlpRulesManager>();
+    mock_rules_manager_ = dlp_rules_manager.get();
+    return dlp_rules_manager;
+  }
+
+ protected:
+  base::ScopedTempDir drive_path_;
+  policy::MockDlpRulesManager* mock_rules_manager_ = nullptr;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(FileManagerPrivateApiDlpTest, DlpBlockCopy) {
+  policy::DlpRulesManagerFactory::GetInstance()->SetTestingFactory(
+      browser()->profile(),
+      base::BindRepeating(&FileManagerPrivateApiDlpTest::SetDlpRulesManager,
+                          base::Unretained(this)));
+  ASSERT_TRUE(policy::DlpRulesManagerFactory::GetForPrimaryProfile());
+
+  AddLocalFileSystem(browser()->profile(), temp_dir_.GetPath());
+
+  const base::FilePath test_file_path =
+      temp_dir_.GetPath().Append("dlp_test_file.txt");
+
+  {
+    base::ScopedAllowBlockingForTesting allow_io;
+    base::File test_file(test_file_path,
+                         base::File::FLAG_CREATE | base::File::FLAG_WRITE);
+    ASSERT_TRUE(test_file.IsValid());
+
+    ASSERT_TRUE(base::CreateDirectory(drive_path_.GetPath().Append("subdir")));
+  }
+
+  storage::ExternalMountPoints::GetSystemInstance()->RegisterFileSystem(
+      "drivefs-delayed_mount_2", storage::kFileSystemTypeDriveFs,
+      storage::FileSystemMountOption(), drive_path_.GetPath());
+  file_manager::VolumeManager::Get(browser()->profile())
+      ->AddVolumeForTesting(  // IN-TEST
+          drive_path_.GetPath(), file_manager::VOLUME_TYPE_GOOGLE_DRIVE,
+          chromeos::DEVICE_TYPE_UNKNOWN,
+          /*read_only=*/false);
+
+  // Set the file source in DlpClient
+  base::MockCallback<chromeos::DlpClient::AddFileCallback> add_file_cb;
+  EXPECT_CALL(add_file_cb, Run(testing::_));
+
+  dlp::AddFileRequest add_file_req;
+  add_file_req.set_file_path(test_file_path.value());
+  add_file_req.set_source_url("example1.com");
+  chromeos::DlpClient::Get()->AddFile(std::move(add_file_req),
+                                      add_file_cb.Get());
+  ::testing::Mock::VerifyAndClearExpectations(&add_file_cb);
+
+  EXPECT_CALL(*mock_rules_manager_, IsRestrictedDestination(_, _, _, _, _))
+      .WillOnce(::testing::Return(policy::DlpRulesManager::Level::kBlock));
+
+  EXPECT_TRUE(RunExtensionTest("file_browser/dlp_block", {},
                                {.load_as_component = true}));
 }

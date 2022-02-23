@@ -43,6 +43,10 @@ class COMPONENTS_PREFS_EXPORT PrefServiceFactory {
     extension_prefs_.swap(prefs);
   }
 
+  void set_standalone_browser_prefs(scoped_refptr<PersistentPrefStore> prefs) {
+    standalone_browser_prefs_.swap(prefs);
+  }
+
   void set_command_line_prefs(scoped_refptr<PrefStore> prefs) {
     command_line_prefs_.swap(prefs);
   }
@@ -87,6 +91,7 @@ class COMPONENTS_PREFS_EXPORT PrefServiceFactory {
   scoped_refptr<PrefStore> managed_prefs_;
   scoped_refptr<PrefStore> supervised_user_prefs_;
   scoped_refptr<PrefStore> extension_prefs_;
+  scoped_refptr<PersistentPrefStore> standalone_browser_prefs_;
   scoped_refptr<PrefStore> command_line_prefs_;
   scoped_refptr<PersistentPrefStore> user_prefs_;
   scoped_refptr<PrefStore> recommended_prefs_;

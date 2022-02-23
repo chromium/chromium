@@ -12,6 +12,9 @@ import androidx.annotation.IntDef;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.recyclerview.widget.RecyclerView.Adapter;
 
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.RadioButtonWithDescriptionAndAuxButton;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -49,12 +52,44 @@ public class PrivacyReviewPagerAdapter extends RecyclerView.Adapter<RecyclerView
         }
     }
 
-    class SafeBrowsingViewHolder extends RecyclerView.ViewHolder {
+    class SafeBrowsingViewHolder extends RecyclerView.ViewHolder
+            implements RadioButtonWithDescriptionAndAuxButton.OnAuxButtonClickedListener {
         private View mView;
+        private RadioButtonWithDescriptionAndAuxButton mStandardProtection;
+        private RadioButtonWithDescriptionAndAuxButton mEnhancedProtection;
+        private BottomSheetController mBottomSheetController;
 
-        public SafeBrowsingViewHolder(View view) {
+        public SafeBrowsingViewHolder(View view, BottomSheetController controller) {
             super(view);
             mView = view;
+            mBottomSheetController = controller;
+            mEnhancedProtection = (RadioButtonWithDescriptionAndAuxButton) view.findViewById(
+                    R.id.enhanced_option);
+            mStandardProtection = (RadioButtonWithDescriptionAndAuxButton) view.findViewById(
+                    R.id.standard_option);
+
+            mEnhancedProtection.setAuxButtonClickedListener(this);
+            mStandardProtection.setAuxButtonClickedListener(this);
+        }
+
+        @Override
+        public void onAuxButtonClicked(int clickedButtonId) {
+            LayoutInflater inflater = LayoutInflater.from(mView.getContext());
+            if (clickedButtonId == mEnhancedProtection.getId()) {
+                displayBottomSheet(
+                        inflater.inflate(R.layout.privacy_review_sb_enhanced_explanation, null));
+            } else if (clickedButtonId == mStandardProtection.getId()) {
+                displayBottomSheet(
+                        inflater.inflate(R.layout.privacy_review_sb_standard_explanation, null));
+            } else {
+                assert false : "Should not be reached.";
+            }
+        }
+
+        private void displayBottomSheet(View sheetContent) {
+            PrivacyReviewBottomSheetView bottomSheet =
+                    new PrivacyReviewBottomSheetView(sheetContent);
+            mBottomSheetController.requestShowContent(bottomSheet, /* animate= */ true);
         }
     }
 
@@ -65,6 +100,13 @@ public class PrivacyReviewPagerAdapter extends RecyclerView.Adapter<RecyclerView
             super(view);
             mView = view;
         }
+    }
+
+    private BottomSheetController mBottomSheetController;
+
+    public PrivacyReviewPagerAdapter(BottomSheetController controller) {
+        super();
+        mBottomSheetController = controller;
     }
 
     @Override
@@ -88,7 +130,8 @@ public class PrivacyReviewPagerAdapter extends RecyclerView.Adapter<RecyclerView
                         inflater.inflate(R.layout.privacy_review_sync_step, parent, false));
             case ViewType.SAFE_BROWSING:
                 return new SafeBrowsingViewHolder(
-                        inflater.inflate(R.layout.privacy_review_sb_step, parent, false));
+                        inflater.inflate(R.layout.privacy_review_sb_step, parent, false),
+                        mBottomSheetController);
             case ViewType.COOKIES:
                 return new CookiesViewHolder(
                         inflater.inflate(R.layout.privacy_review_cookies_step, parent, false));

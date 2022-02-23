@@ -110,7 +110,7 @@ bool PrefetchProxyURLLoaderInterceptor::MaybeInterceptNoStatePrefetchNavigation(
   if (!no_state_prefetch_manager)
     return false;
 
-  if (!no_state_prefetch_manager->IsWebContentsPrerendering(web_contents))
+  if (!no_state_prefetch_manager->IsWebContentsPrefetching(web_contents))
     return false;
 
   PrefetchProxyService* service =

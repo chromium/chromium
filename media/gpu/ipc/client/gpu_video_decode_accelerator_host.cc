@@ -172,7 +172,7 @@ void GpuVideoDecodeAcceleratorHost::OnInitializationComplete(bool success) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   if (client_) {
     client_->NotifyInitializationComplete(
-        success ? OkStatus() : StatusCode::kInitializationUnspecifiedFailure);
+        success ? DecoderStatus::Codes::kOk : DecoderStatus::Codes::kFailed);
   }
 }
 

@@ -19,6 +19,7 @@
 #include "base/strings/strcat.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/logging/log_manager.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/common/password_generation_util.h"
@@ -150,7 +151,12 @@ bool ShowAllSavedPasswordsContextMenuEnabled(
 }
 
 void UserTriggeredManualGenerationFromContextMenu(
-    password_manager::PasswordManagerClient* password_manager_client) {
+    password_manager::PasswordManagerClient* password_manager_client,
+    autofill::AutofillClient* autofill_client) {
+  if (autofill_client) {
+    autofill_client->HideAutofillPopup(
+        autofill::PopupHidingReason::kOverlappingWithPasswordGenerationPopup);
+  }
   if (!password_manager_client->GetPasswordFeatureManager()
            ->ShouldShowAccountStorageOptIn()) {
     password_manager_client->GeneratePassword(PasswordGenerationType::kManual);
@@ -187,14 +193,14 @@ void RemoveUselessCredentials(
         network_context_getter) {
   DCHECK(cleaning_tasks_runner);
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Can be null for some unittests.
   if (!network_context_getter.is_null()) {
     cleaning_tasks_runner->MaybeAddCleaningTask(
         std::make_unique<password_manager::HttpCredentialCleaner>(
             store, network_context_getter, prefs));
   }
-#endif  // !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_IOS)
 
   // TODO(crbug.com/450621): Remove this when enough number of clients switch
   // to the new version of Chrome.

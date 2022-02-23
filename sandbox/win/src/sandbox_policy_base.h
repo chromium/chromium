@@ -5,8 +5,6 @@
 #ifndef SANDBOX_WIN_SRC_SANDBOX_POLICY_BASE_H_
 #define SANDBOX_WIN_SRC_SANDBOX_POLICY_BASE_H_
 
-#include <windows.h>
-
 #include <stddef.h>
 #include <stdint.h>
 
@@ -16,21 +14,22 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/process/launch.h"
+#include "base/synchronization/lock.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/windows_types.h"
 #include "sandbox/win/src/app_container_base.h"
-#include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/handle_closer.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
 #include "sandbox/win/src/sandbox_policy.h"
-#include "sandbox/win/src/win_utils.h"
 
 namespace sandbox {
 
+class Dispatcher;
 class LowLevelPolicy;
 class PolicyDiagnostic;
 class PolicyInfo;
@@ -86,9 +85,6 @@ class PolicyBase final : public TargetPolicy {
   void SetAllowNoSandboxJob() override;
   bool GetAllowNoSandboxJob() override;
 
-  // Get the AppContainer profile as its internal type.
-  scoped_refptr<AppContainerBase> GetAppContainerBase();
-
   // Creates a Job object with the level specified in a previous call to
   // SetJobLevel().
   ResultCode MakeJobObject(base::win::ScopedHandle* job);
@@ -104,11 +100,9 @@ class PolicyBase final : public TargetPolicy {
                         base::win::ScopedHandle* lockdown,
                         base::win::ScopedHandle* lowbox);
 
-  PSID GetLowBoxSid() const;
-
-  // Adds a target process to the internal list of targets. Internally a
+  // Applies the sandbox to |target| and takes ownership. Internally a
   // call to TargetProcess::Init() is issued.
-  ResultCode AddTarget(std::unique_ptr<TargetProcess> target);
+  ResultCode ApplyToTarget(std::unique_ptr<TargetProcess> target);
 
   // Called when there are no more active processes in a Job.
   // Removes a Job object associated with this policy and the target associated
@@ -142,12 +136,8 @@ class PolicyBase final : public TargetPolicy {
                              Semantics semantics,
                              const wchar_t* pattern);
 
-  // This lock synchronizes operations on the targets_ collection.
-  CRITICAL_SECTION lock_;
-  // Maintains the list of target process associated with this policy.
-  // The policy takes ownership of them.
-  typedef std::list<std::unique_ptr<TargetProcess>> TargetSet;
-  TargetSet targets_;
+  // The policy takes ownership of a target as it is applied to it.
+  std::unique_ptr<TargetProcess> target_;
   // Standard object-lifetime reference counter.
   volatile LONG ref_count;
   // The user-defined global policy settings.
@@ -158,8 +148,6 @@ class PolicyBase final : public TargetPolicy {
   size_t memory_limit_;
   bool use_alternate_desktop_;
   bool use_alternate_winstation_;
-  // Helps the file system policy initialization.
-  bool file_system_init_;
   bool relaxed_interceptions_;
   HANDLE stdout_handle_;
   HANDLE stderr_handle_;
@@ -169,9 +157,9 @@ class PolicyBase final : public TargetPolicy {
   MitigationFlags delayed_mitigations_;
   bool is_csrss_connected_;
   // Object in charge of generating the low level policy.
-  LowLevelPolicy* policy_maker_;
+  raw_ptr<LowLevelPolicy> policy_maker_;
   // Memory structure that stores the low level policy.
-  PolicyGlobal* policy_;
+  raw_ptr<PolicyGlobal> policy_;
   // The list of dlls to unload in the target process.
   std::vector<std::wstring> blocklisted_dlls_;
   // This is a map of handle-types to names that we need to close in the

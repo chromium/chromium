@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -74,6 +75,18 @@ ash::KioskAppManagerBase* GetKioskAppManagerIfKioskAppIsRunning(
     return ash::WebKioskAppManager::Get();
 
   return nullptr;
+}
+
+void SendResultCodeToUma(
+    DeviceCommandStartCrdSessionJob::ResultCode result_code) {
+  base::UmaHistogramEnumeration("Enterprise.DeviceRemoteCommand.Crd.Result",
+                                result_code);
+}
+
+void SendSessionTypeToUma(
+    DeviceCommandStartCrdSessionJob::UmaSessionType session_type) {
+  base::UmaHistogramEnumeration(
+      "Enterprise.DeviceRemoteCommand.Crd.SessionType", session_type);
 }
 
 }  // namespace
@@ -297,6 +310,23 @@ DeviceCommandStartCrdSessionJob::GetUserType() const {
   return UserType::kOther;
 }
 
+DeviceCommandStartCrdSessionJob::UmaSessionType
+DeviceCommandStartCrdSessionJob::GetUmaSessionType() const {
+  switch (GetUserType()) {
+    case UserType::kAutoLaunchedKiosk:
+      return UmaSessionType::kAutoLaunchedKiosk;
+    case UserType::kAffiliatedUser:
+      return UmaSessionType::kAffiliatedUser;
+    case UserType::kManagedGuestSession:
+      return UmaSessionType::kManagedGuestSession;
+    case UserType::kNonAutoLaunchedKiosk:
+    case UserType::kOther:
+    case UserType::kNoUser:
+      NOTREACHED();
+      return UmaSessionType::kMaxValue;
+  }
+}
+
 bool DeviceCommandStartCrdSessionJob::IsRunningAutoLaunchedKiosk() const {
   const auto* user_manager = user_manager::UserManager::Get();
   const auto* kiosk_app_manager =
@@ -334,6 +364,7 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
     const std::string& message) {
   CRD_LOG(INFO) << "Not starting CRD session because of error (code "
                 << result_code << ", message '" << message << "')";
+  SendResultCodeToUma(result_code);
   DCHECK(result_code != ResultCode::SUCCESS);
   if (!failed_callback_)
     return;  // Task was terminated.
@@ -345,10 +376,21 @@ void DeviceCommandStartCrdSessionJob::FinishWithError(
 
 void DeviceCommandStartCrdSessionJob::FinishWithNotIdleError() {
   CRD_LOG(INFO) << "Not starting CRD session because device is not idle";
+  SendResultCodeToUma(ResultCode::FAILURE_NOT_IDLE);
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE, base::BindOnce(std::move(failed_callback_),
                                 ResultPayload::CreateNonIdlePayload(
                                     GetDeviceIdlenessPeriod())));
+}
+
+void DeviceCommandStartCrdSessionJob::FinishWithSuccess(
+    const std::string& access_code) {
+  SendResultCodeToUma(ResultCode::SUCCESS);
+  SendSessionTypeToUma(GetUmaSessionType());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(std::move(succeeded_callback_),
+                     ResultPayload::CreateSuccessPayload(access_code)));
 }
 
 void DeviceCommandStartCrdSessionJob::RunImpl(
@@ -417,10 +459,7 @@ void DeviceCommandStartCrdSessionJob::OnAccessCodeReceived(
     return;  // Task was terminated.
 
   CRD_LOG(INFO) << "Successfully received CRD access code";
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(succeeded_callback_),
-                     ResultPayload::CreateSuccessPayload(access_code)));
+  FinishWithSuccess(access_code);
 }
 
 std::string DeviceCommandStartCrdSessionJob::GetRobotAccountUserName() const {

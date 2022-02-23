@@ -6,9 +6,12 @@
 
 #include <string>
 #include <utility>
+#include <vector>
 
 #include "base/bind.h"
 #include "base/strings/string_number_conversions.h"
+#include "cc/metrics/frame_info.h"
+#include "cc/test/fake_frame_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace cc {
@@ -49,6 +52,9 @@ class FrameSorterTest : public testing::Test {
   // "R": Reset the frame sorter.
   // Method expects the start of frames to be in order starting with 1.
   void SimulateQueries(std::vector<std::string> queries) {
+    // Keeps track of how many times a frame is terminated.
+    std::map<int, int> end_counters;
+
     for (auto& query : queries) {
       int id;
       base::StringToInt(query.substr(1), &id);
@@ -60,12 +66,38 @@ class FrameSorterTest : public testing::Test {
         case 'S':
           frame_sorter_.AddNewFrame(args_[id]);
           break;
-        case 'D':
-          frame_sorter_.AddFrameResult(args_[id], true);
+        case 'D': {
+          ++end_counters[id];
+          FrameInfo info =
+              CreateFakeFrameInfo(FrameInfo::FrameFinalState::kDropped);
+          if (end_counters[id] == 1) {
+            // For the first response to the frame, mark it as not including
+            // update from the main-thread.
+            info.main_thread_response = FrameInfo::MainThreadResponse::kMissing;
+          } else {
+            DCHECK_EQ(2, end_counters[id]);
+            info.main_thread_response =
+                FrameInfo::MainThreadResponse::kIncluded;
+          }
+          frame_sorter_.AddFrameResult(args_[id], info);
           break;
-        case 'P':
-          frame_sorter_.AddFrameResult(args_[id], false);
+        }
+        case 'P': {
+          ++end_counters[id];
+          FrameInfo info =
+              CreateFakeFrameInfo(FrameInfo::FrameFinalState::kPresentedAll);
+          if (end_counters[id] == 1) {
+            // For the first response to the frame, mark it as not including
+            // update from the main-thread.
+            info.main_thread_response = FrameInfo::MainThreadResponse::kMissing;
+          } else {
+            DCHECK_EQ(2, end_counters[id]);
+            info.main_thread_response =
+                FrameInfo::MainThreadResponse::kIncluded;
+          }
+          frame_sorter_.AddFrameResult(args_[id], info);
           break;
+        }
         case 'I':
           IncreaseSourceId();
           break;
@@ -89,8 +121,8 @@ class FrameSorterTest : public testing::Test {
   }
 
  private:
-  void FlushFrame(const viz::BeginFrameArgs& args, bool is_dropped) {
-    sorted_frames_.emplace_back(args, is_dropped);
+  void FlushFrame(const viz::BeginFrameArgs& args, const FrameInfo& frame) {
+    sorted_frames_.emplace_back(args, frame.IsDroppedAffectingSmoothness());
   }
 
   FrameSorter frame_sorter_;

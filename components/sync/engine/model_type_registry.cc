@@ -44,7 +44,8 @@ void ModelTypeRegistry::ConnectDataType(
   DCHECK(!activation_response->skip_engine_connection);
   DCHECK(activation_response->type_processor);
 
-  DVLOG(1) << "Enabling an off-thread sync type: " << ModelTypeToString(type);
+  DVLOG(1) << "Enabling an off-thread sync type: "
+           << ModelTypeToDebugString(type);
 
   auto worker = std::make_unique<ModelTypeWorker>(
       type, activation_response->model_type_state,
@@ -68,7 +69,8 @@ void ModelTypeRegistry::DisconnectDataType(ModelType type) {
     return;
   }
 
-  DVLOG(1) << "Disabling an off-thread sync type: " << ModelTypeToString(type);
+  DVLOG(1) << "Disabling an off-thread sync type: "
+           << ModelTypeToDebugString(type);
 
   DCHECK(ProtocolTypes().Has(type));
   DCHECK(update_handler_map_.find(type) != update_handler_map_.end());
@@ -96,7 +98,8 @@ void ModelTypeRegistry::SetProxyTabsDatatypeEnabled(bool enabled) {
 
 ModelTypeSet ModelTypeRegistry::GetConnectedTypes() const {
   ModelTypeSet types;
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     types.Put(worker->GetModelType());
   }
   return types;
@@ -108,9 +111,9 @@ bool ModelTypeRegistry::proxy_tabs_datatype_enabled() const {
 
 ModelTypeSet ModelTypeRegistry::GetInitialSyncEndedTypes() const {
   ModelTypeSet result;
-  for (const auto& kv : update_handler_map_) {
-    if (kv.second->IsInitialSyncEnded())
-      result.Put(kv.first);
+  for (const auto& [type, update_handler] : update_handler_map_) {
+    if (update_handler->IsInitialSyncEnded())
+      result.Put(type);
   }
   return result;
 }
@@ -134,7 +137,8 @@ KeystoreKeysHandler* ModelTypeRegistry::keystore_keys_handler() {
 
 bool ModelTypeRegistry::HasUnsyncedItems() const {
   // For model type workers, we ask them individually.
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     if (worker->HasLocalChangesForTest()) {
       return true;
     }
@@ -157,14 +161,12 @@ void ModelTypeRegistry::OnTrustedVaultKeyRequired() {}
 
 void ModelTypeRegistry::OnTrustedVaultKeyAccepted() {}
 
-void ModelTypeRegistry::OnBootstrapTokenUpdated(
-    const std::string& bootstrap_token) {}
-
 void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
                                                 bool encrypt_everything) {
   // This does NOT support disabling encryption without reconnecting the
   // type, i.e. recreating its ModelTypeWorker.
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     if (encrypted_types.Has(worker->GetModelType())) {
       // No-op if the type was already encrypted.
       worker->EnableEncryption();
@@ -175,14 +177,16 @@ void ModelTypeRegistry::OnEncryptedTypesChanged(ModelTypeSet encrypted_types,
 void ModelTypeRegistry::OnCryptographerStateChanged(
     Cryptographer* cryptographer,
     bool has_pending_keys) {
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     worker->OnCryptographerChange();
   }
 }
 
 void ModelTypeRegistry::OnPassphraseTypeChanged(PassphraseType type,
                                                 base::Time passphrase_time) {
-  for (const auto& worker : connected_model_type_workers_) {
+  for (const std::unique_ptr<ModelTypeWorker>& worker :
+       connected_model_type_workers_) {
     worker->UpdatePassphraseType(type);
   }
 }

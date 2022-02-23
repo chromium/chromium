@@ -218,6 +218,7 @@ void SetupSandboxParameters(sandbox::mojom::Sandbox sandbox_type,
     case sandbox::mojom::Sandbox::kPrintCompositor:
     case sandbox::mojom::Sandbox::kRenderer:
     case sandbox::mojom::Sandbox::kService:
+    case sandbox::mojom::Sandbox::kServiceWithJit:
     case sandbox::mojom::Sandbox::kUtility:
       SetupCommonSandboxParameters(client);
       break;

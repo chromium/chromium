@@ -4,7 +4,6 @@
 
 package org.chromium.android_webview.test;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
@@ -26,6 +25,8 @@ import android.view.accessibility.AccessibilityNodeProvider;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
 import android.widget.FrameLayout;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwContents;
 import org.chromium.android_webview.gfx.AwDrawFnImpl;
@@ -416,7 +417,7 @@ public class AwTestContainerView extends FrameLayout {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public boolean onDragEvent(DragEvent event) {
         return mAwContents.onDragEvent(event);
     }

@@ -52,7 +52,7 @@ class TestChunkerDisplayItem : public DrawingDisplayItem {
 sk_sp<const PaintRecord> OpaquePaintRecord(const gfx::Rect& visual_rect) {
   PaintRecorder recorder;
   auto* canvas = recorder.beginRecording(gfx::RectToSkRect(visual_rect));
-  PaintFlags flags;
+  cc::PaintFlags flags;
   flags.setColor(SK_ColorBLACK);
   canvas->drawRect(gfx::RectToSkRect(visual_rect), flags);
   return recorder.finishRecordingAsPicture();
@@ -149,7 +149,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithSinglePropertyChanging) {
                                     TestChunkerDisplayItem(client_->Id()));
 
   auto simple_transform_node = CreateTransform(
-      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), FloatPoint3D(9, 8, 7));
+      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), gfx::Point3F(9, 8, 7));
   auto simple_transform = DefaultPaintChunkProperties();
   simple_transform.SetTransform(*simple_transform_node);
 
@@ -159,7 +159,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithSinglePropertyChanging) {
                                     TestChunkerDisplayItem(client_->Id()));
 
   auto another_transform_node = CreateTransform(
-      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), FloatPoint3D(9, 8, 7));
+      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), gfx::Point3F(9, 8, 7));
   auto another_transform = DefaultPaintChunkProperties();
   another_transform.SetTransform(*another_transform_node);
   PaintChunk::Id id3(client_->Id(), DisplayItemType(3));
@@ -184,7 +184,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithDifferentPropertyChanges) {
                                     TestChunkerDisplayItem(client_->Id()));
 
   auto simple_transform_node = CreateTransform(
-      t0(), TransformationMatrix(0, 0, 0, 0, 0, 0), FloatPoint3D(9, 8, 7));
+      t0(), TransformationMatrix(0, 0, 0, 0, 0, 0), gfx::Point3F(9, 8, 7));
   auto simple_transform = DefaultPaintChunkProperties();
   simple_transform.SetTransform(*simple_transform_node);
   PaintChunk::Id id2(client_->Id(), DisplayItemType(2));
@@ -207,7 +207,7 @@ TEST_F(PaintChunkerTest, BuildMultipleChunksWithDifferentPropertyChanges) {
                                     TestChunkerDisplayItem(client_->Id()));
 
   auto new_transform_node = CreateTransform(
-      t0(), TransformationMatrix(1, 1, 0, 0, 0, 0), FloatPoint3D(9, 8, 7));
+      t0(), TransformationMatrix(1, 1, 0, 0, 0, 0), gfx::Point3F(9, 8, 7));
   auto simple_transform_and_effect_with_updated_transform =
       DefaultPaintChunkProperties();
   auto new_effect_node = CreateOpacityEffect(e0(), 0.5f);
@@ -263,7 +263,7 @@ TEST_F(PaintChunkerTest, BuildChunksFromNestedTransforms) {
                                     TestChunkerDisplayItem(client_->Id()));
 
   auto simple_transform_node = CreateTransform(
-      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), FloatPoint3D(9, 8, 7));
+      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), gfx::Point3F(9, 8, 7));
   auto simple_transform = DefaultPaintChunkProperties();
   simple_transform.SetTransform(*simple_transform_node);
   PaintChunk::Id id2(client_->Id(), DisplayItemType(2));
@@ -296,14 +296,14 @@ TEST_F(PaintChunkerTest, ChangingPropertiesWithoutItems) {
                                     TestChunkerDisplayItem(client_->Id()));
 
   auto first_transform_node = CreateTransform(
-      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), FloatPoint3D(9, 8, 7));
+      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), gfx::Point3F(9, 8, 7));
   auto first_transform = DefaultPaintChunkProperties();
   first_transform.SetTransform(*first_transform_node);
   PaintChunk::Id id2(client_->Id(), DisplayItemType(2));
   chunker.UpdateCurrentPaintChunkProperties(first_transform);
 
   auto second_transform_node = CreateTransform(
-      t0(), TransformationMatrix(9, 8, 7, 6, 5, 4), FloatPoint3D(3, 2, 1));
+      t0(), TransformationMatrix(9, 8, 7, 6, 5, 4), gfx::Point3F(3, 2, 1));
   auto second_transform = DefaultPaintChunkProperties();
   second_transform.SetTransform(*second_transform_node);
   PaintChunk::Id id3(client_->Id(), DisplayItemType(3));
@@ -559,7 +559,7 @@ TEST_F(PaintChunkerTest, ChunkIdsSkippingCache) {
                                     TestChunkerDisplayItem(client_->Id()));
 
   auto simple_transform_node = CreateTransform(
-      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), FloatPoint3D(9, 8, 7));
+      t0(), TransformationMatrix(0, 1, 2, 3, 4, 5), gfx::Point3F(9, 8, 7));
   auto simple_transform = DefaultPaintChunkProperties();
   simple_transform.SetTransform(*simple_transform_node);
 
@@ -643,26 +643,13 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunk) {
   HitTestData hit_test_data;
   hit_test_data.touch_action_rects = {
       {gfx::Rect(20, 30, 40, 50), TouchAction::kPan}};
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(10, 20, 50, 60)),
-                    IsPaintChunk(1, 2, id3, properties, nullptr,
-                                 gfx::Rect(0, 0, 100, 120))));
-  } else {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(20, 30, 40, 50)),
-                    IsPaintChunk(
-                        1, 2, PaintChunk::Id(client_->Id(), DisplayItemType(5)),
-                        properties, nullptr, gfx::Rect(0, 0, 10, 10))));
-  }
+  EXPECT_THAT(chunks,
+              ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
+                                       nullptr, gfx::Rect(0, 0, 10, 10)),
+                          IsPaintChunk(1, 1, id2, properties, &hit_test_data,
+                                       gfx::Rect(10, 20, 50, 60)),
+                          IsPaintChunk(1, 2, id3, properties, nullptr,
+                                       gfx::Rect(0, 0, 100, 120))));
 }
 
 TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
@@ -706,26 +693,13 @@ TEST_F(PaintChunkerTest, AddHitTestDataToCurrentChunkWheelRegionsEnabled) {
   hit_test_data.touch_action_rects = {
       {gfx::Rect(20, 30, 40, 50), TouchAction::kPan}};
   hit_test_data.wheel_event_rects = {gfx::Rect(25, 35, 5, 10)};
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(10, 20, 50, 60)),
-                    IsPaintChunk(1, 2, id3, properties, nullptr,
-                                 gfx::Rect(0, 0, 100, 120))));
-  } else {
-    EXPECT_THAT(
-        chunks,
-        ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
-                                 nullptr, gfx::Rect(0, 0, 10, 10)),
-                    IsPaintChunk(1, 1, id2, properties, &hit_test_data,
-                                 gfx::Rect(20, 30, 40, 50)),
-                    IsPaintChunk(
-                        1, 2, PaintChunk::Id(client_->Id(), DisplayItemType(5)),
-                        properties, nullptr, gfx::Rect(0, 0, 10, 10))));
-  }
+  EXPECT_THAT(chunks,
+              ElementsAre(IsPaintChunk(0, 1, id1, DefaultPaintChunkProperties(),
+                                       nullptr, gfx::Rect(0, 0, 10, 10)),
+                          IsPaintChunk(1, 1, id2, properties, &hit_test_data,
+                                       gfx::Rect(10, 20, 50, 60)),
+                          IsPaintChunk(1, 2, id3, properties, nullptr,
+                                       gfx::Rect(0, 0, 100, 120))));
 }
 
 TEST_F(PaintChunkerTest, ChunkBoundsAndKnownToBeOpaqueAllOpaqueItems) {

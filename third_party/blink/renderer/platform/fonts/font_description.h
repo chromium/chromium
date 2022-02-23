@@ -34,6 +34,7 @@
 #include "third_party/blink/renderer/platform/fonts/font_family.h"
 #include "third_party/blink/renderer/platform/fonts/font_optical_sizing.h"
 #include "third_party/blink/renderer/platform/fonts/font_orientation.h"
+#include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/font_selection_types.h"
 #include "third_party/blink/renderer/platform/fonts/font_smoothing_mode.h"
 #include "third_party/blink/renderer/platform/fonts/font_variant_east_asian.h"
@@ -62,9 +63,10 @@ class PLATFORM_EXPORT FontDescription {
     kHashRegularValue
   };
 
-  enum GenericFamilyType {
+  enum GenericFamilyType : uint8_t {
     kNoFamily,
     kStandardFamily,
+    kWebkitBodyFamily,
     kSerifFamily,
     kSansSerifFamily,
     kMonospaceFamily,
@@ -252,6 +254,7 @@ class PLATFORM_EXPORT FontDescription {
   OpticalSizing FontOpticalSizing() const {
     return static_cast<OpticalSizing>(fields_.font_optical_sizing_);
   }
+  FontPalette* GetFontPalette() const { return font_palette_.get(); }
   TextRenderingMode TextRendering() const {
     return static_cast<TextRenderingMode>(fields_.text_rendering_);
   }
@@ -345,6 +348,9 @@ class PLATFORM_EXPORT FontDescription {
   }
   void SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
     fields_.font_optical_sizing_ = font_optical_sizing;
+  }
+  void SetFontPalette(scoped_refptr<FontPalette> palette) {
+    font_palette_ = std::move(palette);
   }
   void SetTextRendering(TextRenderingMode rendering) {
     fields_.text_rendering_ = rendering;
@@ -446,6 +452,7 @@ class PLATFORM_EXPORT FontDescription {
   scoped_refptr<FontFeatureSettings> feature_settings_;
   scoped_refptr<FontVariationSettings> variation_settings_;
   scoped_refptr<const LayoutLocale> locale_;
+  scoped_refptr<FontPalette> font_palette_;
 
   void UpdateTypesettingFeatures();
 

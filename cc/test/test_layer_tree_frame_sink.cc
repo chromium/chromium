@@ -13,6 +13,8 @@
 #include "base/bind.h"
 #include "base/task/single_thread_task_runner.h"
 #include "cc/trees/layer_tree_frame_sink_client.h"
+#include "cc/trees/single_thread_proxy.h"
+#include "cc/trees/task_runner_provider.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/service/display/direct_renderer.h"
@@ -32,14 +34,16 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
     gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
     const viz::RendererSettings& renderer_settings,
     const viz::DebugRendererSettings* const debug_settings,
-    scoped_refptr<base::SingleThreadTaskRunner> compositor_task_runner,
+    TaskRunnerProvider* task_runner_provider,
     bool synchronous_composite,
     bool disable_display_vsync,
     double refresh_rate,
     viz::BeginFrameSource* begin_frame_source)
     : LayerTreeFrameSink(std::move(compositor_context_provider),
                          std::move(worker_context_provider),
-                         std::move(compositor_task_runner),
+                         task_runner_provider->HasImplThread()
+                             ? task_runner_provider->ImplThreadTaskRunner()
+                             : task_runner_provider->MainThreadTaskRunner(),
                          gpu_memory_buffer_manager),
       synchronous_composite_(synchronous_composite),
       disable_display_vsync_(disable_display_vsync),
@@ -50,7 +54,8 @@ TestLayerTreeFrameSink::TestLayerTreeFrameSink(
       parent_local_surface_id_allocator_(
           new viz::ParentLocalSurfaceIdAllocator),
       client_provided_begin_frame_source_(begin_frame_source),
-      external_begin_frame_source_(this) {
+      external_begin_frame_source_(this),
+      task_runner_provider_(task_runner_provider) {
   parent_local_surface_id_allocator_->GenerateId();
 }
 
@@ -64,6 +69,7 @@ void TestLayerTreeFrameSink::SetDisplayColorSpace(
 }
 
 bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   if (!LayerTreeFrameSink::BindToClient(client))
     return false;
 
@@ -104,8 +110,7 @@ bool TestLayerTreeFrameSink::BindToClient(LayerTreeFrameSinkClient* client) {
     }
     scheduler = std::make_unique<viz::DisplayScheduler>(
         display_begin_frame_source_, compositor_task_runner_.get(),
-        display_output_surface->capabilities().max_frames_pending,
-        display_output_surface->capabilities().max_frames_pending_120hz);
+        display_output_surface->capabilities().pending_swap_params);
   }
 
   auto overlay_processor = std::make_unique<viz::OverlayProcessorStub>();
@@ -144,6 +149,7 @@ void TestLayerTreeFrameSink::DetachFromClient() {
   // The shared_bitmap_manager_ has ownership of shared memory for each
   // SharedBitmapId that has been reported from the client. Since the client is
   // gone that memory can be freed. If we don't then it would leak.
+  DebugScopedSetImplThread impl(task_runner_provider_);
   for (const auto& id : owned_bitmaps_)
     shared_bitmap_manager_->ChildDeletedSharedBitmap(id);
   owned_bitmaps_.clear();
@@ -166,12 +172,13 @@ void TestLayerTreeFrameSink::DetachFromClient() {
 
 void TestLayerTreeFrameSink::SetLocalSurfaceId(
     const viz::LocalSurfaceId& local_surface_id) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   test_client_->DisplayReceivedLocalSurfaceId(local_surface_id);
 }
 
 void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
-                                                   bool hit_test_data_changed,
-                                                   bool show_hit_test_borders) {
+                                                   bool hit_test_data_changed) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   DCHECK(frame.metadata.begin_frame_ack.has_damage);
   DCHECK(frame.metadata.begin_frame_ack.frame_id.IsSequenceValid());
   test_client_->DisplayReceivedCompositorFrame(frame);
@@ -195,7 +202,7 @@ void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
   support_->SubmitCompositorFrame(local_surface_id, std::move(frame));
 
   if (!display_->has_scheduler()) {
-    display_->DrawAndSwap(base::TimeTicks::Now());
+    display_->DrawAndSwap(base::TimeTicks::Now(), base::TimeTicks::Now());
     // Post this to get a new stack frame so that we exit this function before
     // calling the client to tell it that it is done.
     compositor_task_runner_->PostTask(
@@ -207,6 +214,7 @@ void TestLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
 
 void TestLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
                                                 FrameSkippedReason reason) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   DCHECK(!ack.has_damage);
   DCHECK(ack.frame_id.IsSequenceValid());
   support_->DidNotProduceFrame(ack);
@@ -215,6 +223,7 @@ void TestLayerTreeFrameSink::DidNotProduceFrame(const viz::BeginFrameAck& ack,
 void TestLayerTreeFrameSink::DidAllocateSharedBitmap(
     base::ReadOnlySharedMemoryRegion region,
     const viz::SharedBitmapId& id) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   bool ok =
       shared_bitmap_manager_->ChildAllocatedSharedBitmap(region.Map(), id);
   DCHECK(ok);
@@ -229,6 +238,7 @@ void TestLayerTreeFrameSink::DidDeleteSharedBitmap(
 
 void TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(
     std::vector<viz::ReturnedResource> resources) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   ReclaimResources(std::move(resources));
   // In synchronous mode, we manually send acks and this method should not be
   // used.
@@ -240,6 +250,7 @@ void TestLayerTreeFrameSink::DidReceiveCompositorFrameAck(
 void TestLayerTreeFrameSink::OnBeginFrame(
     const viz::BeginFrameArgs& args,
     const viz::FrameTimingDetailsMap& timing_details) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   for (const auto& pair : timing_details)
     client_->DidPresentCompositorFrame(pair.first, pair.second);
   external_begin_frame_source_.OnBeginFrame(args);
@@ -247,22 +258,24 @@ void TestLayerTreeFrameSink::OnBeginFrame(
 
 void TestLayerTreeFrameSink::ReclaimResources(
     std::vector<viz::ReturnedResource> resources) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   client_->ReclaimResources(std::move(resources));
 }
 
-void TestLayerTreeFrameSink::OnBeginFramePausedChanged(bool paused) {}
-
 void TestLayerTreeFrameSink::DisplayOutputSurfaceLost() {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   client_->DidLoseLayerTreeFrameSink();
 }
 
 void TestLayerTreeFrameSink::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
     viz::AggregatedRenderPassList* render_passes) {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   test_client_->DisplayWillDrawAndSwap(will_draw_and_swap, render_passes);
 }
 
 void TestLayerTreeFrameSink::DisplayDidDrawAndSwap() {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   test_client_->DisplayDidDrawAndSwap();
 }
 
@@ -277,6 +290,7 @@ void TestLayerTreeFrameSink::OnNeedsBeginFrames(bool needs_begin_frames) {
 }
 
 void TestLayerTreeFrameSink::SendCompositorFrameAckToClient() {
+  DebugScopedSetImplThread impl(task_runner_provider_);
   client_->DidReceiveCompositorFrameAck();
 }
 

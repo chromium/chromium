@@ -36,17 +36,20 @@ import androidx.annotation.IdRes;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.SysUtils;
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.task.PostTask;
+import org.chromium.base.task.TaskTraits;
 import org.chromium.chrome.browser.ui.appmenu.internal.R;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightParams;
 import org.chromium.components.browser_ui.widget.highlight.ViewHighlighter.HighlightShape;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.ModelListAdapter;
 import org.chromium.ui.modelutil.PropertyModel;
-import org.chromium.ui.widget.ChipView;
 import org.chromium.ui.widget.Toast;
 
 import java.util.ArrayList;
@@ -60,6 +63,9 @@ import java.util.List;
  */
 class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler {
     private static final float LAST_ITEM_SHOW_FRACTION = 0.5f;
+
+    /** A means of reporting an exception/stack without crashing. */
+    private static Callback<Throwable> sExceptionReporter;
 
     private final int mItemRowHeight;
     private final int mVerticalFadeDistance;
@@ -212,7 +218,7 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
         // Make sure that the popup window will be closed when touch outside of it.
         mPopup.setOutsideTouchable(true);
 
-        if (!isByPermanentButton) mPopup.setAnimationStyle(R.style.OverflowMenuAnim);
+        if (!isByPermanentButton) mPopup.setAnimationStyle(R.style.EndIconMenuAnim);
 
         // Turn off window animations for low end devices.
         if (SysUtils.isLowEndDevice()) mPopup.setAnimationStyle(0);
@@ -521,6 +527,17 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
         availableScreenSpace -= (padding.bottom + footerHeight + headerHeight);
         if (mIsByPermanentButton) availableScreenSpace -= padding.top;
+        if (availableScreenSpace <= 0 && sExceptionReporter != null) {
+            String logMessage = String.format(
+                    "there is no screen space for app menn, mIsByPermanentButton = "
+                    + mIsByPermanentButton + ", anchorViewY = " + anchorViewY
+                    + ", appDimensions.height() = " + appDimensions.height()
+                    + ", anchorView.getHeight() = " + anchorView.getHeight()
+                    + " padding.top = " + padding.top + ", padding.bottom = " + padding.bottom
+                    + ", footerHeight = " + footerHeight + ", headerHeight = " + headerHeight);
+            PostTask.postTask(TaskTraits.BEST_EFFORT_MAY_BLOCK,
+                    () -> sExceptionReporter.onResult(new Throwable(logMessage)));
+        }
 
         int menuHeight = calculateHeightForItems(
                 menuItemIds, heightList, groupDividerResourceId, availableScreenSpace);
@@ -531,7 +548,8 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
 
     @VisibleForTesting
     int calculateHeightForItems(List<Integer> menuItemIds, List<Integer> heightList,
-            @IdRes int groupDividerResourceId, int availableScreenSpace) {
+            @IdRes int groupDividerResourceId, int screenSpaceForItems) {
+        int availableScreenSpace = screenSpaceForItems > 0 ? screenSpaceForItems : 0;
         int spaceForFullItems = 0;
         for (int i = 0; i < heightList.size(); i++) {
             spaceForFullItems += heightList.get(i);
@@ -650,5 +668,10 @@ class AppMenu implements OnItemClickListener, OnKeyListener, AppMenuClickHandler
             }
         }
         return mItemRowHeight;
+    }
+
+    /** @param reporter A means of reporting an exception without crashing. */
+    static void setExceptionReporter(Callback<Throwable> reporter) {
+        sExceptionReporter = reporter;
     }
 }

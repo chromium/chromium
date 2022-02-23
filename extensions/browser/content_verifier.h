@@ -9,7 +9,7 @@
 #include <set>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/scoped_observation.h"
@@ -211,7 +211,7 @@ class ContentVerifier : public base::RefCountedThreadSafe<ContentVerifier>,
   // Updated and accessed only on IO thread.
   bool shutdown_on_io_ = false;
 
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // Guards creation of |hash_helper_|, limiting number of creation to <= 1.
   // Accessed only on IO thread.

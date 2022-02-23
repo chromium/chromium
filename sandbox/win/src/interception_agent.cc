@@ -15,7 +15,6 @@
 #include "sandbox/win/src/interception_internal.h"
 #include "sandbox/win/src/interceptors.h"
 #include "sandbox/win/src/sandbox_nt_util.h"
-#include "sandbox/win/src/sidestep_resolver.h"
 
 namespace {
 
@@ -28,9 +27,6 @@ bool IsWithinRange(const void* base, size_t range, const void* target) {
 }  // namespace
 
 namespace sandbox {
-
-// This is the list of all imported symbols from ntdll.dll.
-SANDBOX_INTERCEPT NtExports g_nt;
 
 // The list of intercepted functions back-pointers.
 SANDBOX_INTERCEPT OriginalFunctions g_originals;
@@ -68,21 +64,18 @@ bool InterceptionAgent::DllMatch(const UNICODE_STRING* full_path,
                                  const UNICODE_STRING* name,
                                  const DllPatchInfo* dll_info) {
   UNICODE_STRING current_name;
-  current_name.Length =
-      static_cast<USHORT>(g_nt.wcslen(dll_info->dll_name) * sizeof(wchar_t));
+  current_name.Length = static_cast<USHORT>(
+      GetNtExports()->wcslen(dll_info->dll_name) * sizeof(wchar_t));
   current_name.MaximumLength = current_name.Length;
   current_name.Buffer = const_cast<wchar_t*>(dll_info->dll_name);
 
   BOOLEAN case_insensitive = TRUE;
-  if (full_path &&
-      !g_nt.RtlCompareUnicodeString(&current_name, full_path, case_insensitive))
+  if (full_path && !GetNtExports()->RtlCompareUnicodeString(
+                       &current_name, full_path, case_insensitive)) {
     return true;
-
-  if (name &&
-      !g_nt.RtlCompareUnicodeString(&current_name, name, case_insensitive))
-    return true;
-
-  return false;
+  }
+  return name && !GetNtExports()->RtlCompareUnicodeString(&current_name, name,
+                                                          case_insensitive);
 }
 
 bool InterceptionAgent::OnDllLoad(const UNICODE_STRING* full_path,
@@ -129,9 +122,9 @@ bool InterceptionAgent::OnDllLoad(const UNICODE_STRING* full_path,
   ULONG old_protect;
   SIZE_T real_size = buffer_bytes;
   void* to_protect = dlls_[i];
-  VERIFY_SUCCESS(g_nt.ProtectVirtualMemory(NtCurrentProcess, &to_protect,
-                                           &real_size, PAGE_EXECUTE_READ,
-                                           &old_protect));
+  VERIFY_SUCCESS(GetNtExports()->ProtectVirtualMemory(
+      NtCurrentProcess, &to_protect, &real_size, PAGE_EXECUTE_READ,
+      &old_protect));
   return true;
 }
 
@@ -168,7 +161,7 @@ bool InterceptionAgent::PatchDll(const DllPatchInfo* dll_info,
       return false;
 
     const char* interceptor =
-        function->function + g_nt.strlen(function->function) + 1;
+        function->function + GetNtExports()->strlen(function->function) + 1;
 
     if (!IsWithinRange(function, function->record_bytes, interceptor) ||
         !IsWithinRange(dll_info, dll_info->record_bytes, interceptor)) {
@@ -202,32 +195,12 @@ bool InterceptionAgent::PatchDll(const DllPatchInfo* dll_info,
 // This method is called from within the loader lock
 ResolverThunk* InterceptionAgent::GetResolver(InterceptionType type) {
   static EatResolverThunk* eat_resolver = nullptr;
-  static SidestepResolverThunk* sidestep_resolver = nullptr;
-  static SmartSidestepResolverThunk* smart_sidestep_resolver = nullptr;
 
   if (!eat_resolver)
     eat_resolver = new (NT_ALLOC) EatResolverThunk;
-
-#if !defined(_WIN64)
-  // Sidestep is not supported for x64.
-  if (!sidestep_resolver)
-    sidestep_resolver = new (NT_ALLOC) SidestepResolverThunk;
-
-  if (!smart_sidestep_resolver)
-    smart_sidestep_resolver = new (NT_ALLOC) SmartSidestepResolverThunk;
-#endif
-
-  switch (type) {
-    case INTERCEPTION_EAT:
-      return eat_resolver;
-    case INTERCEPTION_SIDESTEP:
-      return sidestep_resolver;
-    case INTERCEPTION_SMART_SIDESTEP:
-      return smart_sidestep_resolver;
-    default:
-      NOTREACHED_NT();
-  }
-
+  if (type == INTERCEPTION_EAT)
+    return eat_resolver;
+  NOTREACHED_NT();
   return nullptr;
 }
 

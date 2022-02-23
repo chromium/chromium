@@ -5,11 +5,13 @@
 #ifndef UI_ACCESSIBILITY_AX_COMMON_H_
 #define UI_ACCESSIBILITY_AX_COMMON_H_
 
+#include "build/build_config.h"
+
 #if (!defined(NDEBUG) || defined(ADDRESS_SANITIZER) ||            \
      defined(LEAK_SANITIZER) || defined(MEMORY_SANITIZER) ||      \
      defined(THREAD_SANITIZER) || defined(UNDEFINED_SANITIZER) || \
      DCHECK_IS_ON()) &&                                           \
-    !defined(OS_IOS)
+    !BUILDFLAG(IS_IOS)
 // Enable fast fails on clusterfuzz and other builds used to debug Chrome,
 // in order to help narrow down illegal states more quickly.
 #define AX_FAIL_FAST_BUILD

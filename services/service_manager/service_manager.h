@@ -11,7 +11,7 @@
 
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -204,7 +204,7 @@ class ServiceManager : public Service {
 
   // Always points to the ServiceManager's own Instance. Note that this
   // ServiceInstance still has an entry in |instances_|.
-  ServiceInstance* service_manager_instance_;
+  raw_ptr<ServiceInstance> service_manager_instance_;
 
   mojo::RemoteSet<mojom::ServiceManagerListener> listeners_;
 };

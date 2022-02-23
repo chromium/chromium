@@ -18,6 +18,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 
@@ -25,6 +26,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
  * Test AnimationLooper class.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AnimationLooperTest {
     @Mock
     private AnimatedVectorDrawable mAnimatableMock;

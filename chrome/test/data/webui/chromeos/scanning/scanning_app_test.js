@@ -8,7 +8,7 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {setScanServiceForTesting} from 'chrome://scanning/mojo_interface_provider.js';
 import {MAX_NUM_SAVED_SCANNERS, ScannerArr, ScannerSetting, ScanSettings, StartMultiPageScanResponse} from 'chrome://scanning/scanning_app_types.js';
-import {tokenToString} from 'chrome://scanning/scanning_app_util.js';
+import {getColorModeString, getPageSizeString, tokenToString} from 'chrome://scanning/scanning_app_util.js';
 import {ScanningBrowserProxyImpl} from 'chrome://scanning/scanning_browser_proxy.js';
 
 import {assertArrayEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from '../../chai_assert.js';
@@ -52,8 +52,16 @@ const SourceType = {
 };
 
 const firstPageSizes = [PageSize.A4, PageSize.Letter, PageSize.Max];
+const firstColorModes = [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR];
+const firstResolutions = [75, 100, 300];
 
 const secondPageSizes = [PageSize.A4, PageSize.Max];
+const secondColorModes = [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE];
+const secondResolutions = [150, 600];
+
+const thirdPageSizes = [PageSize.Max];
+const thirdColorModes = [ColorMode.BLACK_AND_WHITE];
+const thirdResolutions = [75, 200];
 
 const firstScannerId =
     /** @type {!mojoBase.mojom.UnguessableToken} */ ({high: 0, low: 1});
@@ -65,20 +73,24 @@ const secondScannerName = 'Scanner 2';
 
 const firstCapabilities = {
   sources: [
-    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes),
-    createScannerSource(SourceType.FLATBED, PLATEN, secondPageSizes),
-  ],
-  colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.COLOR],
-  resolutions: [75, 100, 300]
+    createScannerSource(
+        SourceType.ADF_DUPLEX, ADF_DUPLEX, firstPageSizes, firstColorModes,
+        firstResolutions),
+    createScannerSource(
+        SourceType.FLATBED, PLATEN, secondPageSizes, firstColorModes,
+        firstResolutions),
+  ]
 };
 
 const secondCapabilities = {
   sources: [
-    createScannerSource(SourceType.ADF_DUPLEX, ADF_DUPLEX, secondPageSizes),
-    createScannerSource(SourceType.ADF_SIMPLEX, ADF_SIMPLEX, secondPageSizes),
-  ],
-  colorModes: [ColorMode.BLACK_AND_WHITE, ColorMode.GRAYSCALE],
-  resolutions: [150, 600]
+    createScannerSource(
+        SourceType.ADF_DUPLEX, ADF_DUPLEX, thirdPageSizes, thirdColorModes,
+        thirdResolutions),
+    createScannerSource(
+        SourceType.ADF_SIMPLEX, ADF_SIMPLEX, secondPageSizes, secondColorModes,
+        secondResolutions),
+  ]
 };
 
 /** @implements {ash.scanning.mojom.ScanServiceInterface} */
@@ -648,7 +660,7 @@ export function scanningAppTest() {
               firstCapabilities.sources[1].pageSizes[0].toString(),
               scanningApp.selectedPageSize);
           assertEquals(
-              firstCapabilities.resolutions[0].toString(),
+              firstCapabilities.sources[1].resolutions[0].toString(),
               scanningApp.selectedResolution);
 
           // Before the scan button is clicked, the settings and scan button
@@ -1477,6 +1489,69 @@ export function scanningAppTest() {
               scanningApp.$$('multi-page-scan')
                   .$$('#scanButton')
                   .textContent.trim());
+        });
+  });
+
+  // Verify the page size, color, and resolution dropdowns contain the correct
+  // elements when each source is selected.
+  test('SourceChangeUpdatesDropdowns', () => {
+    return initializeScanningApp(expectedScanners.slice(1), capabilities)
+        .then(() => {
+          sourceSelect = scanningApp.$$('#sourceSelect').$$('select');
+          return getScannerCapabilities();
+        })
+        .then(() => {
+          assertEquals(2, sourceSelect.length);
+          return changeSelect(
+              /** @type {!HTMLSelectElement} */ (sourceSelect),
+              /* value=*/ null, /* selectedIndex=*/ 0);
+        })
+        .then(() => {
+          colorModeSelect = scanningApp.$$('#colorModeSelect').$$('select');
+          pageSizeSelect = scanningApp.$$('#pageSizeSelect').$$('select');
+          resolutionSelect = scanningApp.$$('#resolutionSelect').$$('select');
+
+          assertEquals(2, colorModeSelect.length);
+          assertEquals(
+              getColorModeString(secondColorModes[0]),
+              colorModeSelect.options[0].textContent.trim());
+          assertEquals(
+              getColorModeString(secondColorModes[1]),
+              colorModeSelect.options[1].textContent.trim());
+          assertEquals(2, pageSizeSelect.length);
+          assertEquals(
+              getPageSizeString(secondPageSizes[0]),
+              pageSizeSelect.options[0].textContent.trim());
+          assertEquals(
+              getPageSizeString(secondPageSizes[1]),
+              pageSizeSelect.options[1].textContent.trim());
+          assertEquals(2, resolutionSelect.length);
+          assertEquals(
+              secondResolutions[0].toString() + ' dpi',
+              resolutionSelect.options[0].textContent.trim());
+          assertEquals(
+              secondResolutions[1].toString() + ' dpi',
+              resolutionSelect.options[1].textContent.trim());
+          return changeSelect(
+              /** @type {!HTMLSelectElement} */ (sourceSelect),
+              /* value=*/ null, /* selectedIndex=*/ 1);
+        })
+        .then(() => {
+          assertEquals(1, colorModeSelect.length);
+          assertEquals(
+              getColorModeString(thirdColorModes[0]),
+              colorModeSelect.options[0].textContent.trim());
+          assertEquals(1, pageSizeSelect.length);
+          assertEquals(
+              getPageSizeString(thirdPageSizes[0]),
+              pageSizeSelect.options[0].textContent.trim());
+          assertEquals(2, resolutionSelect.length);
+          assertEquals(
+              thirdResolutions[0].toString() + ' dpi',
+              resolutionSelect.options[0].textContent.trim());
+          assertEquals(
+              thirdResolutions[1].toString() + ' dpi',
+              resolutionSelect.options[1].textContent.trim());
         });
   });
 

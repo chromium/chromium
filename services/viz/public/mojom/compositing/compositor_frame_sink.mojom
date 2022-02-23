@@ -93,6 +93,12 @@ interface CompositorFrameSink {
   // the value has been set to anything other than kUnspecified, subsequent calls
   // are silently ignored.
   InitializeCompositorFrameSinkType(CompositorFrameSinkType type);
+
+  // Informs the display compositor the IDs of the thread involved in frame
+  // production. This is used on Android PerformanceHint API to dynamically
+  // adjust performance to allow power saving.
+  [EnableIf=is_android]
+  SetThreadIds(array<int32> thread_ids);
 };
 
 interface CompositorFrameSinkClient {

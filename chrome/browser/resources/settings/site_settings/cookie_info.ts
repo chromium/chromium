@@ -35,10 +35,6 @@ export const cookieInfo: {[key: string]: Array<Array<string>>} = {
     ['accessibleToScript', 'cookieAccessibleToScript'],
     ['created', 'cookieCreated'], ['expires', 'cookieExpires']
   ],
-  'app_cache': [
-    ['origin', 'appCacheOrigin'], ['size', 'localStorageSize'],
-    ['modified', 'localStorageLastModified']
-  ],
   'database': [
     ['origin', 'databaseOrigin'], ['size', 'localStorageSize'],
     ['modified', 'localStorageLastModified']

@@ -31,6 +31,27 @@ const char kMatchFieldAttributesKey[] = "match_field_attributes";
 const char kMatchFieldInputTypesKey[] = "match_field_input_types";
 const char kVersionKey[] = "version";
 
+// Converts a JSON list like [1,2,3] to a DenseSet<Enum>{1,2,3}, provided that
+// the values are in the range [0, ..., Enum::kMaxValue].
+template <typename Enum>
+absl::optional<DenseSet<Enum>> JsonListToDenseSet(
+    const base::Value* list_value) {
+  if (!list_value)
+    return absl::nullopt;
+
+  DenseSet<Enum> set;
+  for (const base::Value& v : list_value->GetListDeprecated()) {
+    if (!v.is_int())
+      return absl::nullopt;
+    int i = v.GetInt();
+    auto attribute = static_cast<Enum>(i);
+    if (i < 0 || attribute > Enum::kMaxValue)
+      return absl::nullopt;
+    set.insert(attribute);
+  }
+  return set;
+}
+
 bool ParseMatchingPattern(PatternProvider::Map& patterns,
                           const std::string& field_type,
                           const LanguageCode& language,
@@ -44,30 +65,26 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
       value.FindStringKey(kNegativePatternKey);
   absl::optional<double> positive_score =
       value.FindDoubleKey(kPositiveScoreKey);
-  absl::optional<int> match_field_attributes =
-      value.FindIntKey(kMatchFieldAttributesKey);
-  absl::optional<int> match_field_input_types =
-      value.FindIntKey(kMatchFieldInputTypesKey);
+  absl::optional<DenseSet<MatchAttribute>> match_field_attributes =
+      JsonListToDenseSet<MatchAttribute>(
+          value.FindListKey(kMatchFieldAttributesKey));
+  absl::optional<DenseSet<MatchFieldType>> match_field_input_types =
+      JsonListToDenseSet<MatchFieldType>(
+          value.FindListKey(kMatchFieldInputTypesKey));
 
   if (!positive_pattern || !positive_score || !match_field_attributes ||
-      !match_field_input_types)
+      !match_field_input_types) {
     return false;
+  }
 
-  autofill::MatchingPattern new_pattern;
+  MatchingPattern new_pattern;
   new_pattern.positive_pattern = base::UTF8ToUTF16(*positive_pattern);
   new_pattern.positive_score = *positive_score;
-  if (negative_pattern != nullptr) {
-    new_pattern.negative_pattern = base::UTF8ToUTF16(*negative_pattern);
-  } else {
-    new_pattern.negative_pattern = u"";
-  }
-  new_pattern.match_field_attributes = match_field_attributes.value();
-  new_pattern.match_field_input_types = match_field_input_types.value();
+  new_pattern.negative_pattern =
+      negative_pattern ? base::UTF8ToUTF16(*negative_pattern) : u"";
+  new_pattern.match_field_attributes = *match_field_attributes;
+  new_pattern.match_field_input_types = *match_field_input_types;
   new_pattern.language = language;
-
-  // Shift to the right to match the MatchFieldTypes enum, which temporarily
-  // starts at 1<<2 instead of 1<<0.
-  new_pattern.match_field_input_types <<= 2;
 
   std::vector<MatchingPattern>* pattern_list = &patterns[field_type][language];
   pattern_list->push_back(new_pattern);
@@ -83,8 +100,7 @@ bool ParseMatchingPattern(PatternProvider::Map& patterns,
 // are equal or both unspecified (i.e. set to 0) this prioritizes the remote
 // configuration over the local one.
 void OnJsonParsed(data_decoder::DataDecoder::ValueOrError result) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsFromRemote)) {
+  if (features::kAutofillParsingWithRemotePatternsParam.Get()) {
     DVLOG(1) << "Remote patterns are disabled.";
     return;
   }
@@ -138,7 +154,7 @@ absl::optional<PatternProvider::Map> GetConfigurationFromJsonObject(
         return absl::nullopt;
       }
 
-      for (const auto& matchingPatternObj : inner_list->GetList()) {
+      for (const auto& matchingPatternObj : inner_list->GetListDeprecated()) {
         bool success = ParseMatchingPattern(patterns, field_type, language,
                                             matchingPatternObj);
         if (!success) {

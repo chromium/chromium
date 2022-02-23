@@ -89,6 +89,17 @@ void NFCProxy::CancelPush() {
   nfc_remote_->CancelPush();
 }
 
+void NFCProxy::MakeReadOnly(device::mojom::blink::NFC::PushCallback cb) {
+  EnsureMojoConnection();
+  nfc_remote_->MakeReadOnly(std::move(cb));
+}
+
+void NFCProxy::CancelMakeReadOnly() {
+  if (!nfc_remote_)
+    return;
+  nfc_remote_->CancelMakeReadOnly();
+}
+
 // device::mojom::blink::NFCClient implementation.
 void NFCProxy::OnWatch(const Vector<uint32_t>& watch_ids,
                        const String& serial_number,
@@ -184,6 +195,7 @@ void NFCProxy::OnMojoConnectionError() {
   // Notify all writers about the connection error and clear the list.
   for (auto& writer : writers_) {
     writer->WriteOnMojoConnectionError();
+    writer->MakeReadOnlyOnMojoConnectionError();
   }
   writers_.clear();
 }

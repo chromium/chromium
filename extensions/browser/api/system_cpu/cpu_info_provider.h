@@ -9,7 +9,6 @@
 
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/common/api/system_cpu.h"
 

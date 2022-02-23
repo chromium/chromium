@@ -172,7 +172,7 @@ base::Time PolicyLoaderMac::LastModificationTime() {
   return file_info.last_modified;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 base::FilePath PolicyLoaderMac::GetManagedPolicyPath(CFStringRef bundle_id) {
   // This constructs the path to the plist file in which Mac OS X stores the

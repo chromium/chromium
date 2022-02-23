@@ -19,7 +19,6 @@ export enum ContentSettingsTypes {
   CAMERA = 'media-stream-camera',
   CLIPBOARD = 'clipboard',
   COOKIES = 'cookies',
-  FILE_HANDLING = 'file-handling',
   FILE_SYSTEM_WRITE = 'file-system-write',
   FONT_ACCESS = 'font-access',
   GEOLOCATION = 'location',
@@ -140,6 +139,7 @@ export enum AllSitesAction2 {
   ENTER_SITE_DETAILS = 6,
   REMOVE_SITE_GROUP = 7,
   REMOVE_ORIGIN = 8,
+  REMOVE_ORIGIN_PARTITIONED = 9,
 }
 
 /**

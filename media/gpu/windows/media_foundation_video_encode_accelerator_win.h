@@ -18,6 +18,8 @@
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
+#include "gpu/config/gpu_driver_bug_workarounds.h"
+#include "gpu/config/gpu_preferences.h"
 #include "media/base/bitrate.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/dxgi_device_manager.h"
@@ -36,10 +38,9 @@ namespace media {
 class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
     : public VideoEncodeAccelerator {
  public:
-  // If |compatible_with_win7| is true, MediaFoundationVideoEncoderAccelerator
-  // works on Windows 7. Some attributes of the encoder are not supported on old
-  // systems, which may impact the performance or quality of the output.
-  explicit MediaFoundationVideoEncodeAccelerator(bool compatible_with_win7);
+  explicit MediaFoundationVideoEncodeAccelerator(
+      const gpu::GpuPreferences& gpu_preferences,
+      const gpu::GpuDriverBugWorkarounds& gpu_workarounds);
 
   MediaFoundationVideoEncodeAccelerator(
       const MediaFoundationVideoEncodeAccelerator&) = delete;
@@ -53,7 +54,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   bool Initialize(const Config& config, Client* client) override;
   void Encode(scoped_refptr<VideoFrame> frame, bool force_keyframe) override;
   void UseOutputBitstreamBuffer(BitstreamBuffer buffer) override;
-  void RequestEncodingParametersChange(const media::Bitrate& bitrate,
+  void RequestEncodingParametersChange(const Bitrate& bitrate,
                                        uint32_t framerate) override;
   void Destroy() override;
   bool IsGpuFrameResizeSupported() override;
@@ -61,6 +62,8 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // Preloads dlls required for encoding. Returns true if all required dlls are
   // correctly loaded.
   static bool PreSandboxInitialization();
+
+  enum class DriverVendor { kOther, kNvidia, kIntel, kAMD };
 
  protected:
   ~MediaFoundationVideoEncodeAccelerator() override;
@@ -107,7 +110,15 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PopulateInputSampleBuffer(scoped_refptr<VideoFrame> frame);
   HRESULT PopulateInputSampleBufferGpu(scoped_refptr<VideoFrame> frame);
 
-  int AssignTemporalId(bool keyframe);
+  // Assign TemporalID by bitstream or external state machine(based on SVC
+  // Spec).
+  bool AssignTemporalId(Microsoft::WRL::ComPtr<IMFMediaBuffer> output_buffer,
+                        size_t size,
+                        int* temporal_id,
+                        bool keyframe);
+
+  int AssignTemporalIdBySvcSpec(bool keyframe);
+
   bool temporalScalableCoding() { return num_temporal_layers_ > 1; }
 
   // Checks for and copies encoded output on |encoder_thread_|.
@@ -144,6 +155,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   HRESULT PerformD3DScaling(ID3D11Texture2D* input_texture);
 
   const bool compatible_with_win7_;
+  const bool disable_dynamic_framerate_update_;
 
   // Bitstream buffers ready to be used to return encoded output as a FIFO.
   base::circular_deque<std::unique_ptr<BitstreamBufferRef>>
@@ -156,6 +168,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // according to the corresponding layer pattern. Reset for every key frame.
   uint32_t outputs_since_keyframe_count_ = 0;
 
+  // This parser is used to assign temporalId.
+  H264Parser h264_parser_;
+
   gfx::Size input_visible_size_;
   size_t bitstream_buffer_size_;
   uint32_t frame_rate_;
@@ -165,6 +180,9 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Codec type used for encoding.
   VideoCodec codec_ = VideoCodec::kUnknown;
+
+  // Vendor of the active video encoder.
+  DriverVendor vendor_ = DriverVendor::kOther;
 
   // Group of picture length for encoded output stream, indicates the
   // distance between two key frames.
@@ -198,11 +216,11 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
   // |main_client_task_runner_|.
   base::WeakPtr<Client> main_client_;
   std::unique_ptr<base::WeakPtrFactory<Client>> main_client_weak_factory_;
-  scoped_refptr<base::SingleThreadTaskRunner> main_client_task_runner_;
+  scoped_refptr<base::SequencedTaskRunner> main_client_task_runner_;
+  SEQUENCE_CHECKER(sequence_checker_);
 
-  // This thread services tasks posted from the VEA API entry points by the
-  // GPU child thread and CompressionCallback() posted from device thread.
-  base::Thread encoder_thread_;
+  // This thread services tasks posted from the VEA API entry points
+  // and runs them on a thread that can do heavy work and call MF COM interface.
   scoped_refptr<base::SingleThreadTaskRunner> encoder_thread_task_runner_;
 
   // DXGI device manager for handling hardware input textures
@@ -210,6 +228,7 @@ class MEDIA_GPU_EXPORT MediaFoundationVideoEncodeAccelerator
 
   // Declared last to ensure that all weak pointers are invalidated before
   // other destructors run.
+  base::WeakPtr<MediaFoundationVideoEncodeAccelerator> encoder_weak_ptr_;
   base::WeakPtrFactory<MediaFoundationVideoEncodeAccelerator>
       encoder_task_weak_factory_{this};
 };

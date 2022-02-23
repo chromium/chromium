@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "google_apis/gcm/base/gcm_export.h"
 #include "google_apis/gcm/protocol/mcs.pb.h"
 #include "net/base/net_errors.h"

@@ -172,7 +172,7 @@ bool ConvertKeyCodeToText(ui::KeyboardCode key_code,
   }
   key_event.state = state;
   key_event.opcode = x11::KeyEvent::Press;
-  x11::Event event(std::move(key_event));
+  x11::Event event(false, std::move(key_event));
   uint16_t character = ui::GetCharacterFromXEvent(event);
 
   if (!character)

@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/containers/span.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
@@ -40,6 +41,19 @@ class TouchToFillController {
     kSelectedCredential = 0,
     kDismissed = 1,
     kSelectedManagePasswords = 2,
+  };
+
+  // The final outcome that closes the Touch To Fill sheet.
+  //
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused. Needs to stay in sync with
+  // TouchToFill.Outcome in enums.xml.
+  enum class TouchToFillOutcome {
+    kCredentialFilled = 0,
+    kSheetDismissed = 1,
+    kReauthenticationFailed = 2,
+    kManagePasswordsSelected = 3,
+    kMaxValue = kManagePasswordsSelected,
   };
 
   // No-op constructor for tests.
@@ -89,7 +103,7 @@ class TouchToFillController {
   void FillCredential(const password_manager::UiCredential& credential);
 
   // Weak pointer to the ChromePasswordManagerClient this class is tied to.
-  ChromePasswordManagerClient* password_client_ = nullptr;
+  raw_ptr<ChromePasswordManagerClient> password_client_ = nullptr;
 
   // Driver passed to the latest invocation of Show(). Gets cleared when
   // OnCredentialSelected() or OnDismissed() gets called.

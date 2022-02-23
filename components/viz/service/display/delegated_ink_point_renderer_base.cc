@@ -124,13 +124,14 @@ void DelegatedInkPointRendererBase::PredictPoints(
 void DelegatedInkPointRendererBase::ResetPrediction() {
   for (auto& it : pointer_ids_)
     it.second.Reset();
-  TRACE_EVENT_INSTANT0("viz", "Delegated ink prediction reset.",
+  TRACE_EVENT_INSTANT0("delegated_ink_trails",
+                       "Delegated ink prediction reset.",
                        TRACE_EVENT_SCOPE_THREAD);
 }
 
 void DelegatedInkPointRendererBase::StoreDelegatedInkPoint(
     const gfx::DelegatedInkPoint& point) {
-  TRACE_EVENT_INSTANT1("viz",
+  TRACE_EVENT_INSTANT1("delegated_ink_trails",
                        "DelegatedInkPointRendererImpl::StoreDelegatedInkPoint",
                        TRACE_EVENT_SCOPE_THREAD, "point", point.ToString());
 

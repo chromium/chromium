@@ -54,6 +54,10 @@ extern NSString* const kBlueColor;
 // the main content is |kBlueColor| (e.g the background of the collections
 // shortcuts on the NTP).
 extern NSString* const kBlueHaloColor;
+
+// Other shades of blue from the palette.
+extern NSString* const kBlue500Color;
+
 // Standard green color.
 extern NSString* const kGreenColor;
 

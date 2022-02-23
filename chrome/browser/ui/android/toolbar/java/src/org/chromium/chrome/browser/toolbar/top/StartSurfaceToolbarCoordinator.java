@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.toolbar.top;
 
-import android.graphics.Bitmap;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnLongClickListener;
@@ -12,11 +11,13 @@ import android.view.ViewStub;
 
 import androidx.annotation.VisibleForTesting;
 
+import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.supplier.BooleanSupplier;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.chrome.browser.device.DeviceClassManager;
+import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.theme.ThemeColorProvider;
@@ -29,6 +30,7 @@ import org.chromium.chrome.browser.toolbar.menu_button.MenuButtonCoordinator;
 import org.chromium.chrome.browser.user_education.UserEducationHelper;
 import org.chromium.chrome.features.start_surface.StartSurfaceConfiguration;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
+import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -62,7 +64,9 @@ public class StartSurfaceToolbarCoordinator {
             ObservableSupplier<Boolean> startSurfaceAsHomepageSupplier,
             ObservableSupplier<Boolean> homepageManagedByPolicySupplier,
             OnClickListener homeButtonOnClickHandler, boolean isTabGroupsAndroidContinuationEnabled,
-            BooleanSupplier isIncognitoModeEnabledSupplier) {
+            BooleanSupplier isIncognitoModeEnabledSupplier,
+            ObservableSupplier<Profile> profileSupplier,
+            Callback<LoadUrlParams> logoClickedCallback) {
         mStub = startSurfaceToolbarStub;
 
         mPropertyModel =
@@ -74,7 +78,6 @@ public class StartSurfaceToolbarCoordinator {
                         .with(StartSurfaceToolbarProperties.IS_VISIBLE, true)
                         .with(StartSurfaceToolbarProperties.GRID_TAB_SWITCHER_ENABLED,
                                 isGridTabSwitcherEnabled)
-                        .with(StartSurfaceToolbarProperties.LOGO_IMAGE, null)
                         .build();
 
         mToolbarMediator = new StartSurfaceToolbarMediator(mPropertyModel,
@@ -95,7 +98,8 @@ public class StartSurfaceToolbarCoordinator {
                 isTabGroupsAndroidContinuationEnabled, userEducationHelper,
                 isIncognitoModeEnabledSupplier,
                 StartSurfaceConfiguration.shouldShowAnimationsForFinale()
-                        && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext()));
+                        && !DeviceClassManager.enableAccessibilityLayout(mStub.getContext()),
+                profileSupplier, logoClickedCallback);
 
         mThemeColorProvider = provider;
         mMenuButtonCoordinator = menuButtonCoordinator;
@@ -201,6 +205,13 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
+     * Called when default search engine changes.
+     */
+    void onDefaultSearchEngineChanged() {
+        mToolbarMediator.onDefaultSearchEngineChanged();
+    }
+
+    /**
      * Triggered when the offset of start surface header view is changed.
      * @param verticalOffset The start surface header view's offset.
      */
@@ -209,21 +220,14 @@ public class StartSurfaceToolbarCoordinator {
     }
 
     /**
-     * This method should be called when there is a possibility that logo image became available or
-     * was changed.
-     * @param logoImage The logo image.
-     * @param contentDescription The accessibility text describing the logo.
-     */
-    void onLogoImageAvailable(Bitmap logoImage, String contentDescription) {
-        mToolbarMediator.onLogoImageAvailable(logoImage, contentDescription);
-    }
-
-    /**
-     * @param toolbarHeight The height of start surface toolbar.
      * @return Whether or not toolbar phone layout view should be shown.
      */
-    boolean shouldShowRealSearchBox(int toolbarHeight) {
-        return mToolbarMediator.shouldShowRealSearchBox(toolbarHeight);
+    boolean shouldShowRealSearchBox() {
+        int fakeSearchBoxMarginToScreenTop =
+                mStub.getResources().getDimensionPixelOffset(R.dimen.toolbar_height_no_shadow)
+                + mStub.getResources().getDimensionPixelOffset(
+                        R.dimen.start_surface_fake_search_box_top_margin);
+        return mToolbarMediator.shouldShowRealSearchBox(fakeSearchBoxMarginToScreenTop);
     }
 
     /** Returns whether it's on the start surface homepage.*/
@@ -248,6 +252,7 @@ public class StartSurfaceToolbarCoordinator {
                 mPropertyModel, mView, StartSurfaceToolbarViewBinder::bind);
 
         mToolbarMediator.setHomeButtonView(mView.findViewById(R.id.home_button_on_tab_switcher));
+        mToolbarMediator.onLogoViewReady(mView.findViewById(R.id.logo));
 
         if (StartSurfaceConfiguration.TAB_COUNT_BUTTON_ON_START_SURFACE.getValue()) {
             mTabSwitcherButtonView = mView.findViewById(R.id.start_tab_switcher_button);

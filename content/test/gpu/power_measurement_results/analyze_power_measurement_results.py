@@ -11,14 +11,11 @@ Related design doc:
 https://docs.google.com/document/d/1s3L2IYguQmPHInsKkbHh06hXCXo8ggo5iPIhOaCNwVw
 """
 
-from __future__ import print_function
-
 import enum
 import json
 import logging
 import math
 import os
-import sets
 import sys
 
 _TESTS = [
@@ -36,6 +33,8 @@ _RESULTS_JSON_FILES = [
     'build_4760_5047_repeat3.json',
 ]
 
+MIN_RUNS_PER_BOT = 8
+
 
 class RepeatStrategy(enum.Enum):
   COUNT_EACH = 1  # count each run individually
@@ -47,23 +46,22 @@ class RepeatStrategy(enum.Enum):
   @classmethod
   def ToString(cls, strategy):
     if strategy == cls.COUNT_EACH:
-      return "each"
-    elif strategy == cls.COUNT_MINIMUM:
-      return "minimum"
-    elif strategy == cls.COUNT_AVERAGE:
-      return "average"
-    elif strategy == cls.COUNT_MEDIAN:
-      return "median"
-    else:
-      assert strategy == cls.COUNT_MINIMUM_FIRST_TWO
-      return "minimum (first two)"
+      return 'each'
+    if strategy == cls.COUNT_MINIMUM:
+      return 'minimum'
+    if strategy == cls.COUNT_AVERAGE:
+      return 'average'
+    if strategy == cls.COUNT_MEDIAN:
+      return 'median'
+    assert strategy == cls.COUNT_MINIMUM_FIRST_TWO
+    return 'minimum (first two)'
 
 
 def LoadResultsJsonFiles():
   jsons = []
   for json_filename in _RESULTS_JSON_FILES:
     json_path = os.path.join(_RESULTS_PATH, json_filename)
-    with open(json_path, "r") as json_file:
+    with open(json_path, 'r') as json_file:
       logging.debug('Loading %s', json_path)
       jsons.append(json.load(json_file))
   return jsons
@@ -72,60 +70,43 @@ def LoadResultsJsonFiles():
 def DetermineResultsFromMultipleRuns(measurements, repeat_strategy):
   if repeat_strategy == RepeatStrategy.COUNT_EACH:
     return measurements
-  elif repeat_strategy == RepeatStrategy.COUNT_MINIMUM:
+  if repeat_strategy == RepeatStrategy.COUNT_MINIMUM:
     measurements.sort()
     return [measurements[0]]
-  elif repeat_strategy == RepeatStrategy.COUNT_AVERAGE:
+  if repeat_strategy == RepeatStrategy.COUNT_AVERAGE:
     return [Mean(measurements)]
-  elif repeat_strategy == RepeatStrategy.COUNT_MEDIAN:
+  if repeat_strategy == RepeatStrategy.COUNT_MEDIAN:
     return [MedianLow(measurements)]
-  elif repeat_strategy == RepeatStrategy.COUNT_MINIMUM_FIRST_TWO:
+  if repeat_strategy == RepeatStrategy.COUNT_MINIMUM_FIRST_TWO:
     assert len(measurements) >= 2
     first_two = measurements[0:2]
     first_two.sort()
     return [first_two[0]]
-  else:
-    assert False
-    return []
+
+  assert False
+  return []
 
 
+# pylint: disable=too-many-locals
 def ProcessJsonData(jsons,
-                    measurement_names=None,
                     per_bot=False,
-                    repeat_strategy=RepeatStrategy.COUNT_MINIMUM,
-                    bot_allowlist=None,
-                    bot_blocklist=None):
-  measurement_names = measurement_names or _MEASUREMENTS
-  bot_allowlist = bot_allowlist or []
-  bot_blocklist = bot_blocklist or []
-  min_build = None
-  max_build = None
+                    repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
+  min_build = sys.maxsize
+  max_build = -1
   results = {}
-  bots = []
+  bots = set()
   for j in jsons:
-    builds = j.get('builds', [])
-    for build in builds:
+    for build in j.get('builds', []):
       build_number = build.get('number', -1)
       if build_number > 0:
-        if min_build is None or build_number < min_build:
-          min_build = build_number
-        if max_build is None or build_number > max_build:
-          max_build = build_number
+        min_build = min(build_number, min_build)
+        max_build = max(build_number, max_build)
 
       bot = build['bot']
-      if bot_allowlist and bot not in bot_allowlist:
-        continue
-      if bot_blocklist and bot in bot_blocklist:
-        continue
+      bots.add(bot)
 
-      if bot not in bots:
-        bots.append(bot)
-
-      tests = build['tests']
-      for test in tests:
-        name = test['name']
-        parts = name.split('.')
-        name = parts[-1]
+      for test in build['tests']:
+        name = test['name'].split('.')[-1]
         assert name in _TESTS
         if results.get(name, None) is None:
           if per_bot:
@@ -139,7 +120,7 @@ def ProcessJsonData(jsons,
           test_data = test_data[bot]
 
         measurements = [0]
-        for measurement_name in measurement_names:
+        for measurement_name in _MEASUREMENTS:
           actual_measurement_name = measurement_name + ' Power_0'
           data = test[actual_measurement_name]
           count = len(data)
@@ -154,9 +135,12 @@ def ProcessJsonData(jsons,
   return {
       'min_build': min_build,
       'max_build': max_build,
-      'bots': bots,
+      'bots': list(bots),
       'results': results,
   }
+
+
+# pylint: enable=too-many-locals
 
 
 def Mean(data):
@@ -219,10 +203,10 @@ def GetOutliers(data, variation_threshold):
   return outliers
 
 
+# pylint: disable=too-many-locals
 def FindBuild(jsons, selected_bots, test_name, result):
   for j in jsons:
-    builds = j.get('builds', [])
-    for build in builds:
+    for build in j.get('builds', []):
       build_number = build.get('number', -1)
       if build_number < 0:
         continue
@@ -230,11 +214,8 @@ def FindBuild(jsons, selected_bots, test_name, result):
       if bot not in selected_bots:
         continue
 
-      tests = build['tests']
-      for test in tests:
-        name = test['name']
-        parts = name.split('.')
-        name = parts[-1]
+      for test in build['tests']:
+        name = test['name'].split('.')[-1]
         assert name in _TESTS
         if name != test_name:
           continue
@@ -254,12 +235,12 @@ def FindBuild(jsons, selected_bots, test_name, result):
         if measurements[0] == result:
           return {'bot': bot, 'build': build_number}
   return None
+# pylint: enable=too-many-locals
 
 
 def RunExperiment_BadBots(jsons,
                           stdev_threshold,
                           repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
-  MIN_RUNS_PER_BOT = 8
   MarkExperiment('Locate potential bad bots: thresh=%0.2f, repeat=%s' %
                  (stdev_threshold, RepeatStrategy.ToString(repeat_strategy)))
   outcome = ProcessJsonData(
@@ -268,7 +249,7 @@ def RunExperiment_BadBots(jsons,
                 outcome['max_build'])
   logging.debug('Total number of bots: %d', len(outcome['bots']))
   results = outcome['results']
-  total_bad_bots = sets.Set([])
+  total_bad_bots = set()
   for test_name, test_results in results.items():
     if test_name == 'Basic':
       # Ignore Basic test results. They seem more unstable.
@@ -286,28 +267,28 @@ def RunExperiment_BadBots(jsons,
       if stdev > stdev_threshold:
         bad_bots.append(bot_name)
         logging.debug('Potential bad bot %s: stdev = %f', bot_name, stdev)
-    total_bad_bots = total_bad_bots | sets.Set(bad_bots)
-    logging.debug("Total bots considered: %d", bots_considered)
-    logging.debug("Bad bots: %d", len(bad_bots))
-    logging.debug("%s", bad_bots)
+    total_bad_bots |= set(bad_bots)
+    logging.debug('Total bots considered: %d', bots_considered)
+    logging.debug('Bad bots: %d', len(bad_bots))
+    logging.debug('%s', bad_bots)
   MarkSection()
   total_bad_bots = list(total_bad_bots)
   total_bad_bots.sort()
-  logging.debug("All potential bad bots: %d", len(total_bad_bots))
-  logging.debug("%s", total_bad_bots)
+  logging.debug('All potential bad bots: %d', len(total_bad_bots))
+  logging.debug('%s', total_bad_bots)
   MarkSection()
   for bot in total_bad_bots:
     build_numbers = GetBotBuilds(jsons, bot)
     build_numbers.sort()
-    logging.debug("Bad bot %s builds: %s", bot, build_numbers)
+    logging.debug('Bad bot %s builds: %s', bot, build_numbers)
   return total_bad_bots
 
 
+# pylint: disable=too-many-locals
 def RunExperiment_GoodBots(jsons,
                            bad_bots=None,
                            repeat_strategy=RepeatStrategy.COUNT_MINIMUM):
   bad_bots = bad_bots or []
-  MIN_RUNS_PER_BOT = 8
   STDEV_GOOD_BOT_THRESHOLD = 0.2
   GOOD_BOT_RANGE_PERC = 0.08
   REGULAR_BOT_RANGE_PERC = 0.15
@@ -319,9 +300,8 @@ def RunExperiment_GoodBots(jsons,
   logging.debug('Processed builds: [%d, %d]', outcome['min_build'],
                 outcome['max_build'])
   logging.debug('Total number of bots: %d', len(outcome['bots']))
-  results = outcome['results']
-  total_good_bots = sets.Set(outcome['bots'])
-  for test_name, test_results in results.items():
+  total_good_bots = set(outcome['bots'])
+  for test_name, test_results in outcome['results'].items():
     if test_name == 'Basic':
       # Ignore Basic test results. They seem more unstable.
       continue
@@ -353,7 +333,7 @@ def RunExperiment_GoodBots(jsons,
         if outliers:
           logging.debug('Regular bot %s: %d runs out of %d%% range', bot_name,
                         len(outliers), REGULAR_BOT_RANGE_PERC * 100)
-    total_good_bots = total_good_bots & sets.Set(good_bots)
+    total_good_bots &= set(good_bots)
     logging.debug('Total bots considered: %d', bots_considered)
     logging.debug('Good bots: %d', len(good_bots))
     logging.debug('%s', good_bots)
@@ -369,10 +349,14 @@ def RunExperiment_GoodBots(jsons,
     build_numbers.sort()
     logging.debug('Good bot %s builds: %s', bot, build_numbers)
   return total_good_bots
+# pylint: enable=too-many-locals
 
 
+# This could definitely use some refactoring to be more readable and make
+# pylint happier, but currently difficult to change confidently without any
+# unittests.
+# pylint: disable=too-many-locals,too-many-branches,too-many-statements
 def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
-  MIN_RUNS_PER_BOT = 8
   GET_RID_OF_N_BOTS_WITH_WORST_STDEV = 10
 
   MarkExperiment('Find %d bots with best variations, threshold = %0.2f%%' %
@@ -380,10 +364,9 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
 
   outcome = ProcessJsonData(
       jsons, per_bot=True, repeat_strategy=RepeatStrategy.COUNT_MINIMUM)
-  results = outcome['results']
   candidates_per_test = {}
   candidate_bots_per_test = {}
-  for test_name, test_results in results.items():
+  for test_name, test_results in outcome['results'].items():
     if test_name == 'Basic':
       # Ignore Basic test results. They seem more unstable.
       continue
@@ -436,7 +419,7 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
         candidates.append(candidate)
         candidate_bots.append(candidate['bot'])
     assert len(candidates) == find_m_bots
-    candidate_bots_per_test[test_name] = sets.Set(candidate_bots)
+    candidate_bots_per_test[test_name] = set(candidate_bots)
     candidates_per_test[test_name] = candidates
 
   # Now find the list of bots that work well for all tests
@@ -475,6 +458,7 @@ def RunExperiment_BestVariations(jsons, find_m_bots, variation_threshold):
                     len(outliers), len(results), (variation_threshold * 100),
                     outliers)
       logging.debug(builds)
+# pylint: enable=too-many-locals,too-many-branches,too-many-statements
 
 
 def main():

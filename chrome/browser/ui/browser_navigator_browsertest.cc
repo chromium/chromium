@@ -29,7 +29,7 @@
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -71,14 +71,6 @@ GURL GetGoogleURL() {
 
 GURL GetSettingsURL() {
   return GURL(chrome::kChromeUISettingsURL);
-}
-
-GURL GetWebUINewTabPage() {
-  return GURL(chrome::kChromeUINewTabPageURL);
-}
-
-GURL GetWebUINewTabPageThirdParty() {
-  return GURL(chrome::kChromeUINewTabPageThirdPartyURL);
 }
 
 GURL GetContentSettingsURL() {
@@ -744,7 +736,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SaveAfterFocusTabSwitchTest) {
             OmniboxFocusState::OMNIBOX_FOCUS_NONE);
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // Flaky on Linux Ozone. See https://crbug.com/1230723.
 #define MAYBE_SwitchToTabCorrectWindow DISABLED_SwitchToTabCorrectWindow
 #else
@@ -786,6 +778,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_SwitchToTabCorrectWindow) {
   EXPECT_FALSE(client.GetTabMatcher().IsTabOpenWithURL(singleton_url, nullptr));
 }
 
+// TODO(crbug/1272155): Reactivate the test.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // This test verifies that "switch to tab" prefers the latest used browser,
 // if multiple exist.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabLatestWindow) {
@@ -809,6 +803,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabLatestWindow) {
 
   EXPECT_EQ(browser2, test_browser);
 }
+#endif
 
 // Tests that a disposition of SINGLETON_TAB cannot see outside its
 // window.
@@ -938,7 +933,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SwitchToTabIncognitoLeak) {
   EXPECT_EQ(browser(), test_browser);
 }
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // Flaky on ASAN on Mac. See https://crbug.com/674497.
 #define MAYBE_Disposition_Incognito DISABLED_Disposition_Incognito
 #else
@@ -1019,7 +1014,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, TargetContents_ForegroundTab) {
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This tests adding a popup with a predefined WebContents.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, DISABLED_TargetContents_Popup) {
   NavigateParams params(MakeNavigateParams());
@@ -1286,24 +1281,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
       GetSettingsURL(), ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK);
 }
 
-// This test verifies that chrome://new-tab-page isn't opened in the incognito
-// window.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
-                       Disposition_WebUINewTabPage_UseNonIncognitoWindow) {
-  RunUseNonIncognitoWindowTest(
-      GetWebUINewTabPage(), ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK);
-}
-
-// This test verifies that chrome://new-tab-page-third-party isn't opened in the
-// incognito window.
-IN_PROC_BROWSER_TEST_F(
-    BrowserNavigatorTest,
-    Disposition_WebUINewTabPageThirdParty_UseNonIncognitoWindow) {
-  RunUseNonIncognitoWindowTest(
-      GetWebUINewTabPageThirdParty(),
-      ui::PageTransition::PAGE_TRANSITION_AUTO_BOOKMARK);
-}
-
 // This test verifies that the view-source settings page isn't opened in the
 // incognito window.
 IN_PROC_BROWSER_TEST_F(
@@ -1528,7 +1505,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 
 // TODO(crbug.com/1171245): This is disabled for Mac OS due to flakiness.
 // TODO(1024166): Timing out on linux-chromeos-dbg.
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_MAC)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_MAC)
 #define MAYBE_NavigateFromNTPToOptionsPageInSameTab \
   DISABLED_NavigateFromNTPToOptionsPageInSameTab
 #else
@@ -1665,7 +1642,7 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 }
 
 // TODO(linux_aura) http://crbug.com/163931
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) && defined(USE_AURA)
 #define MAYBE_NavigateFromDefaultToBookmarksInSameTab \
   DISABLED_NavigateFromDefaultToBookmarksInSameTab
 #else
@@ -1731,6 +1708,40 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ViewSourceIsntSingleton) {
                                   ui::PAGE_TRANSITION_LINK);
   singleton_params.disposition = WindowOpenDisposition::SINGLETON_TAB;
   EXPECT_EQ(-1, GetIndexOfExistingTab(browser(), singleton_params));
+}
+
+// Ensure that an incognito window invoking |view-source:| on a url forbidden in
+// incognito loads the correct url in the non-incognito window.
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ViewSourceUrlMatching) {
+  // Open chrome://settings in the main window.
+  NavigateParams settings_params(browser(), GURL(chrome::kChromeUISettingsURL),
+                                 ui::PAGE_TRANSITION_LINK);
+  ui_test_utils::NavigateToURL(&settings_params);
+
+  // Create a new incognito window.
+  Browser* incognito_browser = CreateIncognitoBrowser();
+  EXPECT_EQ(2u, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1, browser()->tab_strip_model()->count());
+  EXPECT_EQ(1, incognito_browser->tab_strip_model()->count());
+
+  // In the Incognito window, start a navigation to the view-source page.
+  const std::string viewsource_settings_url =
+      std::string(content::kViewSourceScheme) + ":" +
+      chrome::kChromeUISettingsURL;
+  NavigateParams params(MakeNavigateParams(incognito_browser));
+  params.disposition = WindowOpenDisposition::SINGLETON_TAB;
+  params.url = GURL(viewsource_settings_url);
+  params.window_action = NavigateParams::SHOW_WINDOW;
+  params.transition = ui::PAGE_TRANSITION_AUTO_BOOKMARK;
+  Navigate(&params);
+
+  // The view-source page should be opened as a new tab in the non-incognito
+  // browser window.
+  EXPECT_NE(incognito_browser, params.browser);
+  EXPECT_EQ(browser(), params.browser);
+  EXPECT_EQ(2, browser()->tab_strip_model()->count());
+  EXPECT_EQ(viewsource_settings_url,
+            browser()->tab_strip_model()->GetActiveWebContents()->GetURL());
 }
 
 // This test verifies that browser initiated navigations can send requests
@@ -1808,7 +1819,13 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest,
 // WebUI pages that use MojoWebUIController, which tried to use the
 // RenderViewHost's GetMainFrame() when it was invalid in RenderViewCreated().
 // See https://crbug.com/627027.
-IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, ReuseRVHWithWebUI) {
+// Flaky on Mac. See https://crbug.com/1044335.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ReuseRVHWithWebUI DISABLED_ReuseRVHWithWebUI
+#else
+#define MAYBE_ReuseRVHWithWebUI ReuseRVHWithWebUI
+#endif
+IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MAYBE_ReuseRVHWithWebUI) {
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Visit a WebUI page with bindings.
@@ -1881,6 +1898,8 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, MainFrameNavigationUIData) {
   }
 }
 
+// TODO(crbug/1272155): Reactivate the test.
+#if !BUILDFLAG(IS_CHROMEOS_LACROS)
 // Test that subframe navigations generate a NavigationUIData with no
 // disposition.
 IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
@@ -1914,5 +1933,6 @@ IN_PROC_BROWSER_TEST_F(BrowserNavigatorTest, SubFrameNavigationUIData) {
   EXPECT_EQ(WindowOpenDisposition::CURRENT_TAB,
             observer.last_navigation_ui_data()->window_open_disposition());
 }
+#endif
 
 }  // namespace

@@ -85,16 +85,6 @@ GURL TestSyncedTabDelegate::GetVirtualURLAtIndex(int i) const {
   return entries_[i]->virtual_url();
 }
 
-GURL TestSyncedTabDelegate::GetFaviconURLAtIndex(int i) const {
-  return GURL();
-}
-
-ui::PageTransition TestSyncedTabDelegate::GetTransitionAtIndex(int i) const {
-  if (static_cast<size_t>(i) >= entries_.size())
-    return ui::PAGE_TRANSITION_LINK;
-  return entries_[i]->transition_type();
-}
-
 std::string TestSyncedTabDelegate::GetPageLanguageAtIndex(int i) const {
   DCHECK(static_cast<size_t>(i) < page_language_per_index_.size());
   return page_language_per_index_[i];
@@ -128,12 +118,12 @@ std::string TestSyncedTabDelegate::GetExtensionAppId() const {
   return std::string();
 }
 
-bool TestSyncedTabDelegate::ProfileIsSupervised() const {
-  return is_supervised_;
+bool TestSyncedTabDelegate::ProfileHasChildAccount() const {
+  return has_child_account_;
 }
 
-void TestSyncedTabDelegate::set_is_supervised(bool is_supervised) {
-  is_supervised_ = is_supervised;
+void TestSyncedTabDelegate::set_has_child_account(bool has_child_account) {
+  has_child_account_ = has_child_account;
 }
 
 const std::vector<std::unique_ptr<const sessions::SerializedNavigationEntry>>*
@@ -227,16 +217,6 @@ GURL PlaceholderTabDelegate::GetVirtualURLAtIndex(int i) const {
   return GURL();
 }
 
-GURL PlaceholderTabDelegate::GetFaviconURLAtIndex(int i) const {
-  NOTREACHED();
-  return GURL();
-}
-
-ui::PageTransition PlaceholderTabDelegate::GetTransitionAtIndex(int i) const {
-  NOTREACHED();
-  return ui::PageTransition();
-}
-
 std::string PlaceholderTabDelegate::GetPageLanguageAtIndex(int i) const {
   NOTREACHED();
   return std::string();
@@ -248,7 +228,7 @@ void PlaceholderTabDelegate::GetSerializedNavigationAtIndex(
   NOTREACHED();
 }
 
-bool PlaceholderTabDelegate::ProfileIsSupervised() const {
+bool PlaceholderTabDelegate::ProfileHasChildAccount() const {
   NOTREACHED();
   return false;
 }
@@ -427,10 +407,10 @@ TestSyncedWindowDelegatesGetter::GetSyncedWindowDelegates() {
 }
 
 const SyncedWindowDelegate* TestSyncedWindowDelegatesGetter::FindById(
-    SessionID id) {
-  for (auto window_iter_pair : delegates_) {
-    if (window_iter_pair.second->GetSessionId() == id)
-      return window_iter_pair.second;
+    SessionID session_id) {
+  for (const auto& [window_id, delegate] : delegates_) {
+    if (delegate->GetSessionId() == session_id)
+      return delegate;
   }
   return nullptr;
 }

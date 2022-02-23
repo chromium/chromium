@@ -15,33 +15,45 @@ namespace {
 // Converts a |Value| to a |ContentSetting|. Returns true if |value| encodes
 // a valid content setting, false otherwise. Note that |CONTENT_SETTING_DEFAULT|
 // is encoded as a NULL value, so it is not allowed as an integer value.
-bool ParseContentSettingValue(const base::Value* value,
+bool ParseContentSettingValue(const base::Value& value,
                               ContentSetting* setting) {
-  if (!value) {
+  if (value.is_none()) {
     *setting = CONTENT_SETTING_DEFAULT;
     return true;
   }
-  if (!value->is_int())
+  if (!value.is_int())
     return false;
-  *setting = IntToContentSetting(value->GetInt());
+  *setting = IntToContentSetting(value.GetInt());
   return *setting != CONTENT_SETTING_DEFAULT;
 }
 
 }  // namespace
 
-ContentSetting ValueToContentSetting(const base::Value* value) {
+ContentSetting ValueToContentSetting(const base::Value& value) {
   ContentSetting setting = CONTENT_SETTING_DEFAULT;
   bool valid = ParseContentSettingValue(value, &setting);
   DCHECK(valid);
   return setting;
 }
 
-std::unique_ptr<base::Value> ContentSettingToValue(ContentSetting setting) {
+base::Value ContentSettingToValue(ContentSetting setting) {
   if (setting <= CONTENT_SETTING_DEFAULT ||
       setting >= CONTENT_SETTING_NUM_SETTINGS) {
-    return nullptr;
+    return base::Value();
   }
-  return std::make_unique<base::Value>(setting);
+  return base::Value(setting);
+}
+
+std::unique_ptr<base::Value> ToNullableUniquePtrValue(base::Value value) {
+  if (value.is_none())
+    return nullptr;
+  return base::Value::ToUniquePtrValue(std::move(value));
+}
+
+base::Value FromNullableUniquePtrValue(std::unique_ptr<base::Value> value) {
+  if (!value)
+    return base::Value();
+  return base::Value::FromUniquePtrValue(std::move(value));
 }
 
 }  // namespace content_settings

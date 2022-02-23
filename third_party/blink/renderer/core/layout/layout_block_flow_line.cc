@@ -553,12 +553,12 @@ static inline void SetLogicalWidthForTextRun(
     hyphen_width = LayoutUnit(layout_text.HyphenWidth(font, run->Direction()));
 
   float measured_width = 0;
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
 
   bool kerning_is_enabled =
       font.GetFontDescription().GetTypesettingFeatures() & kKerning;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // FIXME: Having any font feature settings enabled can lead to selection gaps
   // on Chromium-mac. https://bugs.webkit.org/show_bug.cgi?id=113418
   bool can_use_cached_word_measurements =
@@ -594,7 +594,7 @@ static inline void SetLogicalWidthForTextRun(
             layout_text.CharacterAt(word_measurement.start_offset) == ' ')
           measured_width += layout_text.StyleRef().WordSpacing();
       } else {
-        FloatRect word_glyph_bounds = word_measurement.glyph_bounds;
+        gfx::RectF word_glyph_bounds = word_measurement.glyph_bounds;
         word_glyph_bounds.Offset(measured_width, 0);
         glyph_bounds.Union(word_glyph_bounds);
         measured_width += word_measurement.width;
@@ -708,7 +708,7 @@ void LayoutBlockFlow::UpdateLogicalWidthForAlignment(
         }
         break;
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case ETextAlign::kStart:
       if (direction == TextDirection::kLtr) {
         UpdateLogicalWidthForLeftAlignedBlock(
@@ -2482,8 +2482,8 @@ void LayoutBlockFlow::AddVisualOverflowFromInlineChildren() {
         style.OutlineRectsShouldIncludeBlockVisualOverflow());
     if (!outline_rects.IsEmpty()) {
       PhysicalRect outline_bounds = UnionRect(outline_rects);
-      outline_bounds.Inflate(
-          LayoutUnit(OutlinePainter::OutlineOutsetExtent(style)));
+      outline_bounds.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(
+          style, OutlineInfo::GetFromStyle(style))));
       outline_bounds_of_all_continuations.Unite(outline_bounds);
     }
   }
@@ -2503,33 +2503,8 @@ void LayoutBlockFlow::AddLayoutOverflowFromInlineChildren() {
   if (HasNonVisibleOverflow() && !end_padding && GetNode() &&
       IsRootEditableElement(*GetNode()) &&
       StyleRef().IsLeftToRightDirection()) {
-    if (const NGPhysicalBoxFragment* fragment = CurrentFragment()) {
-      if (const NGFragmentItems* items = fragment->Items()) {
-        for (NGInlineCursor cursor(*fragment, *items); cursor;
-             cursor.MoveToNextSkippingChildren()) {
-          if (!cursor.Current().IsLineBox())
-            continue;
-          const NGFragmentItem& child = *cursor.CurrentItem();
-          LogicalRect logical_rect =
-              fragment->ConvertChildToLogical(child.RectInContainerFragment());
-          logical_rect.size.inline_size += 1;
-          AddLayoutOverflow(
-              fragment->ConvertChildToPhysical(logical_rect).ToLayoutRect());
-        }
-        return;
-      }
-      // Note: Paint fragment for this block isn't set yet.
-      for (const NGLink& child : fragment->Children()) {
-        if (!child->IsLineBox())
-          continue;
-        LogicalRect logical_rect = fragment->ConvertChildToLogical(
-            PhysicalRect(child.Offset(), child->Size()));
-        logical_rect.size.inline_size += 1;
-        AddLayoutOverflow(
-            fragment->ConvertChildToPhysical(logical_rect).ToLayoutRect());
-      }
-      return;
-    }
+    DCHECK(!IsLayoutNGObject());
+    // TODO(layout-dev): Explain why we add a pixel.
     end_padding = LayoutUnit(1);
   }
 

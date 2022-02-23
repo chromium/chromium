@@ -23,7 +23,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geolocation_control.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "services/device/public/cpp/test/fake_geolocation_manager.h"
 #endif
 
@@ -98,14 +98,14 @@ class GeolocationServiceUnitTest : public DeviceServiceTestBase {
   mojo::Remote<mojom::GeolocationConfig> geolocation_config_;
 };
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 // ChromeOS fails to perform network geolocation when zero wifi networks are
 // detected in a scan: https://crbug.com/767300.
 #else
 TEST_F(GeolocationServiceUnitTest, UrlWithApiKey) {
 // To align with user expectation we do not make Network Location Requests
 // on macOS unless the browser has Location Permission from the OS.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   fake_geolocation_manager_->SetSystemPermission(
       LocationSystemPermissionStatus::kAllowed);
 #endif

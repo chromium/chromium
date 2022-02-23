@@ -360,8 +360,9 @@ class LookalikeUrlNavigationThrottleBrowserTest
 
     SendInterstitialCommandSync(browser,
                                 SecurityInterstitialCommand::CMD_DONT_PROCEED);
-    EXPECT_EQ(expected_suggested_url,
-              browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(
+        expected_suggested_url,
+        browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
     // Clicking the link in the interstitial should also remove the original
     // URL from history.
@@ -401,8 +402,9 @@ class LookalikeUrlNavigationThrottleBrowserTest
     SendInterstitialCommandSync(browser,
                                 SecurityInterstitialCommand::CMD_DONT_PROCEED,
                                 /*punycode_interstitial=*/true);
-    EXPECT_EQ(GURL(chrome::kChromeUINewTabURL),
-              browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(
+        GURL(chrome::kChromeUINewTabURL),
+        browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
     histograms.ExpectTotalCount(lookalikes::kHistogramName, 1);
     histograms.ExpectBucketCount(lookalikes::kHistogramName, expected_event, 1);
@@ -437,8 +439,9 @@ class LookalikeUrlNavigationThrottleBrowserTest
     // interstitial and navigate to the original URL.
     SendInterstitialCommandSync(browser,
                                 SecurityInterstitialCommand::CMD_PROCEED);
-    EXPECT_EQ(navigated_url,
-              browser->tab_strip_model()->GetActiveWebContents()->GetURL());
+    EXPECT_EQ(
+        navigated_url,
+        browser->tab_strip_model()->GetActiveWebContents()->GetVisibleURL());
 
     // Clicking the link should cause the original URL to appear in history.
     ui_test_utils::HistoryEnumerator enumerator(browser->profile());
@@ -480,7 +483,7 @@ INSTANTIATE_TEST_SUITE_P(
 
 // Navigating to a non-IDN shouldn't show an interstitial or record metrics.
 // TODO(https://crbug.com1207573): re-enable when flakiness is fixed.
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #define MAYBE_NonIdn_NoMatch DISABLED_NonIdn_NoMatch
 #else
 #define MAYBE_NonIdn_NoMatch NonIdn_NoMatch
@@ -711,6 +714,36 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
   }
   CheckUkm({kNavigatedUrl}, "MatchType",
            LookalikeUrlMatchType::kFailedSpoofChecks);
+}
+
+// The navigated domain will fall back to punycode because it fails standard
+// ICU spoof checks in the IDN spoof checker. However, no interstitial will be
+// shown as the domain name is single character.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       Punycode_ShortHostname_NoInterstitial) {
+  const GURL kNavigatedUrl = GetURL("τ.com");
+
+  TestInterstitialNotShown(browser(), kNavigatedUrl);
+  CheckNoUkm();
+}
+
+// Same as Punycode_ShortHostname_NoInterstitial but also has target embedding.
+// Should show an interstitial this time.
+IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
+                       Punycode_ShortHostname_TargetEmbedding_Interstitial) {
+  if (!target_embedding_enabled()) {
+    return;
+  }
+  const GURL kNavigatedUrl = GetURL("google-com.τ.com");
+  const GURL kExpectedSuggestedUrl = GetURLWithoutPath("google.com");
+
+  base::HistogramTester histograms;
+  TestMetricsRecordedAndInterstitialShown(
+      browser(), histograms, kNavigatedUrl, kExpectedSuggestedUrl,
+      NavigationSuggestionEvent::kMatchTargetEmbedding);
+
+  CheckUkm({kNavigatedUrl}, "MatchType",
+           LookalikeUrlMatchType::kTargetEmbedding);
 }
 
 // The navigated domain will fall back to punycode because it fails spoof checks
@@ -1034,7 +1067,7 @@ IN_PROC_BROWSER_TEST_P(LookalikeUrlNavigationThrottleBrowserTest,
 
 // TODO(https://crbug.com/1122078): Enable test when MacOS flake is fixed.
 // TODO(https://crbug.com/1106402): Enable test when Win/Linux flake is fixed.
-#if defined(OS_MAC) || defined(OS_WIN) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX)
 #define MAYBE_Idn_SiteEngagement_Match DISABLED_Idn_SiteEngagement_Match
 #else
 #define MAYBE_Idn_SiteEngagement_Match Idn_SiteEngagement_Match

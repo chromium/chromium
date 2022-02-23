@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/views/frame/immersive_mode_controller.h"
 
+#include "base/observer_list.h"
+
 ImmersiveModeController::ImmersiveModeController() = default;
 
 ImmersiveModeController::~ImmersiveModeController() {

@@ -7,9 +7,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "content/browser/webauth/authenticator_environment_impl.h"
 #include "device/fido/authenticator_get_assertion_response.h"
-#include "device/fido/fido_transport_protocol.h"
 
 namespace content {
 

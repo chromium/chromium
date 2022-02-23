@@ -10,6 +10,7 @@
 #include "base/callback.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_usage_estimator.h"
@@ -34,7 +35,9 @@
 #include "components/sync_bookmarks/bookmark_model_observer_impl.h"
 #include "components/sync_bookmarks/bookmark_remote_updates_handler.h"
 #include "components/sync_bookmarks/bookmark_specifics_conversions.h"
+#include "components/sync_bookmarks/parent_guid_preprocessing.h"
 #include "components/sync_bookmarks/switches.h"
+#include "components/sync_bookmarks/synced_bookmark_tracker_entity.h"
 #include "components/undo/bookmark_undo_utils.h"
 
 namespace sync_bookmarks {
@@ -75,12 +78,12 @@ class ScopedRemoteUpdateBookmarks {
   }
 
  private:
-  bookmarks::BookmarkModel* const bookmark_model_;
+  const raw_ptr<bookmarks::BookmarkModel> bookmark_model_;
 
   // Changes made to the bookmark model due to sync should not be undoable.
   ScopedSuspendBookmarkUndo suspend_undo_;
 
-  bookmarks::BookmarkModelObserver* const observer_;
+  const raw_ptr<bookmarks::BookmarkModelObserver> observer_;
 };
 
 std::string ComputeServerDefinedUniqueTagForDebugging(
@@ -151,19 +154,12 @@ void BookmarkModelTypeProcessor::OnCommitCompleted(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // |error_response_list| is ignored, because all errors are treated as
-  // transientand the processor with eventually retry.
-
+  // transient and the processor with eventually retry.
   for (const syncer::CommitResponseData& response : committed_response_list) {
-    // In order to save space, |response.id_in_request| is written when it's
-    // different from |response.id|. If it's empty, then there was no id change
-    // during the commit, and |response.id| carries both the old and new ids.
-    const std::string& old_sync_id =
-        response.id_in_request.empty() ? response.id : response.id_in_request;
-    const SyncedBookmarkTracker::Entity* entity =
-        bookmark_tracker_->GetEntityForSyncId(old_sync_id);
+    const SyncedBookmarkTrackerEntity* entity =
+        bookmark_tracker_->GetEntityForClientTagHash(response.client_tag_hash);
     if (!entity) {
-      DLOG(WARNING) << "Received a commit response for an unknown entity: "
-                    << old_sync_id;
+      DLOG(WARNING) << "Received a commit response for an unknown entity.";
       continue;
     }
 
@@ -188,6 +184,9 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
       syncer::BOOKMARKS,
       /*is_initial_sync=*/!bookmark_tracker_, updates.size());
 
+  // Clients before M94 did not populate the parent GUID in specifics.
+  PopulateParentGuidInSpecifics(bookmark_tracker_.get(), &updates);
+
   if (!bookmark_tracker_) {
     OnInitialUpdateReceived(model_type_state, std::move(updates));
     return;
@@ -208,7 +207,6 @@ void BookmarkModelTypeProcessor::OnUpdateReceived(
       bookmark_tracker_->model_type_state().encryption_key_name() !=
       model_type_state.encryption_key_name();
   bookmark_tracker_->set_model_type_state(model_type_state);
-  bookmark_tracker_->UpdateLastSyncTime();
   updates_handler.Process(updates, got_new_encryption_requirements);
   if (bookmark_tracker_->ReuploadBookmarksOnLoadIfNeeded()) {
     NudgeForCommitIfNeeded();
@@ -508,7 +506,7 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     const bookmarks::BookmarkNode* node,
     int index,
     base::ListValue* all_nodes) const {
-  const SyncedBookmarkTracker::Entity* entity =
+  const SyncedBookmarkTrackerEntity* entity =
       bookmark_tracker_->GetEntityForBookmarkNode(node);
   // Include only tracked nodes. Newly added nodes are tracked even before being
   // sent to the server. Managed bookmarks (that are installed by a policy)
@@ -535,13 +533,13 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     // Set the parent to empty string to indicate it's parent of the root node
     // for bookmarks. The code in sync_node_browser.js links nodes with the
     // "modelType" when they are lacking a parent id.
-    data.parent_id = "";
+    data.legacy_parent_id = "";
   } else {
     const bookmarks::BookmarkNode* parent = node->parent();
-    const SyncedBookmarkTracker::Entity* parent_entity =
+    const SyncedBookmarkTrackerEntity* parent_entity =
         bookmark_tracker_->GetEntityForBookmarkNode(parent);
     DCHECK(parent_entity);
-    data.parent_id = parent_entity->metadata()->server_id();
+    data.legacy_parent_id = parent_entity->metadata()->server_id();
   }
 
   std::unique_ptr<base::DictionaryValue> data_dictionary =
@@ -557,7 +555,7 @@ void BookmarkModelTypeProcessor::AppendNodeAndChildrenForDebugging(
     data_dictionary->SetString("UNIQUE_SERVER_TAG",
                                data.server_defined_unique_tag);
   } else {
-    data_dictionary->SetString("PARENT_ID", "s" + data.parent_id);
+    data_dictionary->SetString("PARENT_ID", "s" + data.legacy_parent_id);
   }
   data_dictionary->SetInteger("LOCAL_EXTERNAL_ID", node->id());
   data_dictionary->SetInteger("positionIndex", index);

@@ -8,7 +8,7 @@
 #include <map>
 #include <vector>
 
-#include "extensions/common/event_filtering_info.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 #include "extensions/renderer/bindings/js_runner.h"
 #include "gin/wrappable.h"
 #include "v8/include/v8.h"
@@ -47,7 +47,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // invalidated after this!
   void Fire(v8::Local<v8::Context> context,
             std::vector<v8::Local<v8::Value>>* args,
-            const EventFilteringInfo* filter,
+            mojom::EventFilteringInfoPtr filter,
             JSRunner::ResultCallback callback);
 
   // Fires the event to any listeners synchronously, and returns the result.
@@ -57,7 +57,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // invalidated after this!
   v8::Local<v8::Value> FireSync(v8::Local<v8::Context> context,
                                 std::vector<v8::Local<v8::Value>>* args,
-                                const EventFilteringInfo* filter);
+                                mojom::EventFilteringInfoPtr filter);
 
   // Removes all listeners and marks this object as invalid so that no more
   // are added.
@@ -78,12 +78,12 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   // Dispatches an event synchronously to listeners, returning the result.
   v8::Local<v8::Value> DispatchSync(v8::Local<v8::Context> context,
                                     std::vector<v8::Local<v8::Value>>* args,
-                                    const EventFilteringInfo* filter);
+                                    mojom::EventFilteringInfoPtr filter);
 
   // Dispatches an event asynchronously to listeners.
   void DispatchAsync(v8::Local<v8::Context> context,
                      std::vector<v8::Local<v8::Value>>* args,
-                     const EventFilteringInfo* filter,
+                     mojom::EventFilteringInfoPtr filter,
                      JSRunner::ResultCallback callback);
   static void DispatchAsyncHelper(
       const v8::FunctionCallbackInfo<v8::Value>& info);
@@ -106,7 +106,7 @@ class EventEmitter final : public gin::Wrappable<EventEmitter> {
   static constexpr int kInvalidFilterId = -1;
   // The map of EventFilteringInfos for events that are pending dispatch (since
   // JS is suspended).
-  std::map<int, EventFilteringInfo> pending_filters_;
+  std::map<int, mojom::EventFilteringInfoPtr> pending_filters_;
 };
 
 }  // namespace extensions

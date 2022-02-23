@@ -15,9 +15,9 @@ limitations under the License.
 
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/model_converter.h"
 
-#include "absl/status/status.h"
-#include "absl/strings/str_replace.h"
-#include "src/sentencepiece_model.pb.h"
+#include "absl/status/status.h"          // from @com_google_absl
+#include "absl/strings/str_replace.h"    // from @com_google_absl
+#include "src/sentencepiece_model.pb.h"  // from @com_google_sentencepiece
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/decoder_config_generated.h"
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/double_array_trie_builder.h"
 #include "tensorflow_lite_support/custom_ops/kernel/sentencepiece/encoder_config_generated.h"
@@ -94,8 +94,10 @@ tflite::support::StatusOr<std::string> ConvertSentencepieceModelToFlatBuffer(
   const auto pieces_trie_fbs = pieces_trie_builder.Finish();
 
   // Converting normalization.
-  const auto [normalization_trie, normalization_strings] =
+  const auto normalization =
       DecodePrecompiledCharsmap(model_config.normalizer_spec());
+  const auto normalization_trie = std::get<0>(normalization);
+  const auto normalization_strings = std::get<1>(normalization);
   const auto normalization_trie_vector =
       builder.CreateVector(normalization_trie);
   TrieBuilder normalization_trie_builder(builder);

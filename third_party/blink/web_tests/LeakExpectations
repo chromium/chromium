@@ -5,7 +5,7 @@
 # This file is used for tests that only need to be suppressed on the Chromium
 # WebKit Leak bots.
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #
@@ -29,10 +29,6 @@ crbug.com/1003224 external/wpt/clipboard-apis/async-write-image-read-image.html 
 crbug.com/867532 external/wpt/workers/modules/dedicated-worker-import-data-url.any.worker.html [ Crash ]
 crbug.com/867532 external/wpt/workers/modules/dedicated-worker-import.any.worker.html [ Crash ]
 crbug.com/867532 http/tests/workers/worker-usecounter.html [ Crash ]
-
-# These tests crash with the leak detector enabled. Previously, crashes inside
-# leak detection were incorrectly hidden with the test passing.
-# See https://chromium-review.googlesource.com/c/chromium/src/+/2252943
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-border-image.html [ Crash ]
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-background-image.html [ Crash ]
 crbug.com/1098106 virtual/off-main-thread-css-paint/http/tests/csspaint/invalidation-content-image.html [ Crash ]
@@ -137,12 +133,11 @@ crbug.com/1103082 [ Linux ] fast/forms/select/select-change-layout-object-crash.
 # Sheriff 2020-10-08
 crbug.com/1136690 [ Linux ] http/tests/inspector-protocol/service-worker/service-worker-fetch-async-stacks.js [ Pass Timeout ]
 
+# Sheriff 2021-02-25
+crbug.com/1182675 [ Linux ] dom/attr/id-update-map-crash.html [ Failure Pass ]
+
 # Sheriff 2021-03-02
 crbug.com/1183788 [ Linux ] external/wpt/pointerevents/pointerevent_fractional_coordinates.html?touch [ Pass Failure ]
-crbug.com/1183788 [ Linux ] external/wpt/webrtc/protocol/handover.html [ Pass Failure ]
-crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-restartIce.https.html [ Pass Failure ]
-crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCPeerConnection-onnegotiationneeded.html [ Pass Failure ]
-crbug.com/1183788 [ Linux ] external/wpt/webrtc/RTCRtpTransceiver.https.html [ Pass Failure ]
 
 # Sheriff 2021-05-03
 crbug.com/1197465 [ Linux ] virtual/scroll-unification/fast/events/mouse-cursor-no-mousemove.html [ Pass Failure ]
@@ -161,6 +156,9 @@ crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-on-draggable-el
 crbug.com/1219915 [ Linux ] fast/events/touch/gesture/long-press-selects-word-when-touch-editing-enabled.html [ Failure ]
 crbug.com/1219915 [ Linux ] touchadjustment/focusout-on-touch.html [ Failure ]
 crbug.com/1219915 [ Linux ] touchadjustment/touch-links-longpress.html [ Failure ]
+
+# Sheriff 2021-11-18
+crbug.com/1271392 [ Linux ] external/wpt/service-workers/service-worker/navigation-headers.https.html [ Failure Pass ]
 
 ###########################################################################
 # WARNING: Memory leaks must be fixed asap. Sheriff is expected to revert #

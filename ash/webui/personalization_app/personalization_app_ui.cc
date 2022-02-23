@@ -5,10 +5,13 @@
 #include "ash/webui/personalization_app/personalization_app_ui.h"
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_personalization_app_resources.h"
-#include "ash/grit/ash_personalization_app_resources_map.h"
-#include "ash/webui/personalization_app/personalization_app_ui_delegate.h"
+#include "ash/webui/grit/ash_personalization_app_resources.h"
+#include "ash/webui/grit/ash_personalization_app_resources_map.h"
+#include "ash/webui/personalization_app/personalization_app_ambient_provider.h"
+#include "ash/webui/personalization_app/personalization_app_theme_provider.h"
 #include "ash/webui/personalization_app/personalization_app_url_constants.h"
+#include "ash/webui/personalization_app/personalization_app_user_provider.h"
+#include "ash/webui/personalization_app/personalization_app_wallpaper_provider.h"
 #include "base/strings/strcat.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "content/public/browser/web_contents.h"
@@ -38,10 +41,6 @@ void AddResources(content::WebUIDataSource* source) {
     if (ShouldIncludeResource(resource))
       source->AddResourcePath(resource.path, resource.id);
   }
-  // Mirror assert.m.js here so that it is accessible at the same path in
-  // trusted and untrusted context.
-  source->AddResourcePath("assert.m.js", IDR_WEBUI_JS_ASSERT_M_JS);
-
   source->AddResourcePath("test_loader.html", IDR_WEBUI_HTML_TEST_LOADER_HTML);
   source->AddResourcePath("test_loader.js", IDR_WEBUI_JS_TEST_LOADER_JS);
   source->AddResourcePath("test_loader_util.js",
@@ -55,7 +54,9 @@ void AddResources(content::WebUIDataSource* source) {
 
 void AddStrings(content::WebUIDataSource* source) {
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
-      {"title", IDS_PERSONALIZATION_APP_TITLE},
+      {"personalizationTitle",
+       IDS_PERSONALIZATION_APP_PERSONALIZATION_HUB_TITLE},
+      {"wallpaperLabel", IDS_PERSONALIZATION_APP_WALLPAPER_LABEL},
       {"back", IDS_PERSONALIZATION_APP_BACK_BUTTON},
       {"currentlySet", IDS_PERSONALIZATION_APP_CURRENTLY_SET},
       {"myImagesLabel", IDS_PERSONALIZATION_APP_MY_IMAGES},
@@ -81,20 +82,64 @@ void AddStrings(content::WebUIDataSource* source) {
       {"exitFullscreen", IDS_PERSONALIZATION_APP_EXIT_FULL_SCREEN},
       {"ariaLabelExitFullscreen",
        IDS_PERSONALIZATION_APP_ARIA_LABEL_EXIT_FULL_SCREEN},
-      {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER}};
+      {"setAsWallpaper", IDS_PERSONALIZATION_APP_SET_AS_WALLPAPER},
+      {"themeLabel", IDS_PERSONALIZATION_APP_THEME_LABEL},
+      {"darkColorMode", IDS_PERSONALIZATION_APP_THEME_DARK_COLOR_MODE},
+      {"lightColorMode", IDS_PERSONALIZATION_APP_THEME_LIGHT_COLOR_MODE},
+      {"autoColorMode", IDS_PERSONALIZATION_APP_THEME_AUTO_COLOR_MODE},
+      {"zeroImages", IDS_PERSONALIZATION_APP_NO_IMAGES},
+      {"oneImage", IDS_PERSONALIZATION_APP_ONE_IMAGE},
+      {"multipleImages", IDS_PERSONALIZATION_APP_MULTIPLE_IMAGES},
+
+      // User/avatar related strings.
+      {"avatarLabel", IDS_PERSONALIZATION_APP_AVATAR_LABEL},
+      {"takeWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_TAKE_PHOTO},
+      {"takeWebcamVideo", IDS_PERSONALIZATION_APP_AVATAR_TAKE_VIDEO},
+      {"confirmWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_PHOTO},
+      {"confirmWebcamVideo", IDS_PERSONALIZATION_APP_AVATAR_CONFIRM_VIDEO},
+      {"rejectWebcamPhoto", IDS_PERSONALIZATION_APP_AVATAR_REJECT_PHOTO},
+
+      // Ambient mode related string.
+      {"screensaverLabel", IDS_PERSONALIZATION_APP_SCREENSAVER_LABEL},
+      {"ambientModePageDescription",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_PAGE_DESCRIPTION},
+      {"ambientModeOn", IDS_PERSONALIZATION_APP_AMBIENT_MODE_ON},
+      {"ambientModeOff", IDS_PERSONALIZATION_APP_AMBIENT_MODE_OFF},
+      {"ambientModeTopicSourceTitle",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE},
+      {"ambientModeTopicSourceGooglePhotos",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS},
+      {"ambientModeTopicSourceGooglePhotosDescription",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC},
+      {"ambientModeTopicSourceGooglePhotosDescriptionNoAlbum",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_GOOGLE_PHOTOS_DESC_NO_ALBUM},
+      {"ambientModeTopicSourceArtGallery",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY},
+      {"ambientModeTopicSourceArtGalleryDescription",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_ART_GALLERY_DESCRIPTION},
+      {"ambientModeTopicSourceSelectedRow",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_SELECTED_ROW},
+      {"ambientModeTopicSourceUnselectedRow",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_UNSELECTED_ROW},
+      {"ambientModeWeatherTitle",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_TITLE},
+      {"ambientModeWeatherUnitFahrenheit",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_FAHRENHEIT},
+      {"ambientModeWeatherUnitCelsius",
+       IDS_PERSONALIZATION_APP_AMBIENT_MODE_WEATHER_UNIT_CELSIUS},
+
+      // Google Photos strings
+      {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
+      {"googlePhotosAlbumsTabLabel",
+       IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB},
+      {"googlePhotosPhotosTabLabel",
+       IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_PHOTOS_TAB},
+      {"googlePhotosZeroStateMessage",
+       IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ZERO_STATE_MESSAGE}};
+
   source->AddLocalizedStrings(kLocalizedStrings);
-
-  if (features::IsWallpaperGooglePhotosIntegrationEnabled()) {
-    static constexpr webui::LocalizedString kGooglePhotosLocalizedStrings[] = {
-        {"googlePhotosLabel", IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS},
-        {"googlePhotosAlbumsTabLabel",
-         IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_ALBUMS_TAB},
-        {"googlePhotosPhotosTabLabel",
-         IDS_PERSONALIZATION_APP_GOOGLE_PHOTOS_PHOTOS_TAB}};
-    source->AddLocalizedStrings(kGooglePhotosLocalizedStrings);
-  }
-
   source->UseStringsJs();
+  source->EnableReplaceI18nInJS();
 }
 
 void AddBooleans(content::WebUIDataSource* source) {
@@ -106,22 +151,33 @@ void AddBooleans(content::WebUIDataSource* source) {
 
   source->AddBoolean("isPersonalizationHubEnabled",
                      features::IsPersonalizationHubEnabled());
+
+  source->AddBoolean("isDarkLightModeEnabled",
+                     features::IsDarkLightModeEnabled());
 }
 
 }  // namespace
 
 PersonalizationAppUI::PersonalizationAppUI(
     content::WebUI* web_ui,
-    std::unique_ptr<PersonalizationAppUiDelegate> delegate)
-    : ui::MojoWebUIController(web_ui), delegate_(std::move(delegate)) {
-  DCHECK(delegate_);
+    std::unique_ptr<PersonalizationAppAmbientProvider> ambient_provider,
+    std::unique_ptr<PersonalizationAppThemeProvider> theme_provider,
+    std::unique_ptr<PersonalizationAppUserProvider> user_provider,
+    std::unique_ptr<PersonalizationAppWallpaperProvider> wallpaper_provider)
+    : ui::MojoWebUIController(web_ui),
+      ambient_provider_(std::move(ambient_provider)),
+      theme_provider_(std::move(theme_provider)),
+      user_provider_(std::move(user_provider)),
+      wallpaper_provider_(std::move(wallpaper_provider)) {
+  DCHECK(wallpaper_provider_);
 
   std::unique_ptr<content::WebUIDataSource> source = base::WrapUnique(
       content::WebUIDataSource::Create(kChromeUIPersonalizationAppHost));
 
   source->OverrideContentSecurityPolicy(
       network::mojom::CSPDirectiveName::ScriptSrc,
-      "script-src chrome://resources chrome://test 'self';");
+      "script-src chrome://resources chrome://test chrome://webui-test "
+      "'self';");
 
   // Allow requesting a chrome-untrusted://personalization/ iframe.
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
@@ -130,8 +186,7 @@ PersonalizationAppUI::PersonalizationAppUI(
       base::StrCat(
           {"frame-src ", kChromeUIUntrustedPersonalizationAppURL, ";"}));
 
-  // TODO(crbug/1169829) set up trusted types properly to allow Polymer to write
-  // html
+  // TODO(crbug.com/1098690): Trusted Type Polymer
   source->DisableTrustedTypesCSP();
 
   AddResources(source.get());
@@ -145,9 +200,25 @@ PersonalizationAppUI::PersonalizationAppUI(
 PersonalizationAppUI::~PersonalizationAppUI() = default;
 
 void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<personalization_app::mojom::AmbientProvider>
+        receiver) {
+  ambient_provider_->BindInterface(std::move(receiver));
+}
+
+void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<personalization_app::mojom::ThemeProvider> receiver) {
+  theme_provider_->BindInterface(std::move(receiver));
+}
+
+void PersonalizationAppUI::BindInterface(
     mojo::PendingReceiver<personalization_app::mojom::WallpaperProvider>
         receiver) {
-  delegate_->BindInterface(std::move(receiver));
+  wallpaper_provider_->BindInterface(std::move(receiver));
+}
+
+void PersonalizationAppUI::BindInterface(
+    mojo::PendingReceiver<personalization_app::mojom::UserProvider> receiver) {
+  user_provider_->BindInterface(std::move(receiver));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(PersonalizationAppUI)

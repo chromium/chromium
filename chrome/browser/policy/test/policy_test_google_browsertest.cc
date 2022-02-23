@@ -9,7 +9,7 @@
 #include "base/synchronization/lock.h"
 #include "base/test/bind.h"
 #include "base/values.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/safe_search_policy_test.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/common/net/safe_search_util.h"
@@ -29,7 +29,35 @@
 
 namespace policy {
 
-class PolicyTestGoogle : public PolicyTest {
+void CheckYouTubeRestricted(int youtube_restrict_mode,
+                            const net::HttpRequestHeaders& headers) {
+  std::string header;
+  headers.GetHeader(safe_search_util::kYouTubeRestrictHeaderName, &header);
+  if (youtube_restrict_mode == safe_search_util::YOUTUBE_RESTRICT_OFF) {
+    EXPECT_TRUE(header.empty());
+  } else if (youtube_restrict_mode ==
+             safe_search_util::YOUTUBE_RESTRICT_MODERATE) {
+    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueModerate);
+  } else if (youtube_restrict_mode ==
+             safe_search_util::YOUTUBE_RESTRICT_STRICT) {
+    EXPECT_EQ(header, safe_search_util::kYouTubeRestrictHeaderValueStrict);
+  }
+}
+
+void CheckAllowedDomainsHeader(const std::string& allowed_domain,
+                               const net::HttpRequestHeaders& headers) {
+  if (allowed_domain.empty()) {
+    EXPECT_TRUE(
+        !headers.HasHeader(safe_search_util::kGoogleAppsAllowedDomains));
+    return;
+  }
+
+  std::string header;
+  headers.GetHeader(safe_search_util::kGoogleAppsAllowedDomains, &header);
+  EXPECT_EQ(header, allowed_domain);
+}
+
+class PolicyTestGoogle : public SafeSearchPolicyTest {
  public:
   PolicyTestGoogle() : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {}
 
@@ -42,7 +70,7 @@ class PolicyTestGoogle : public PolicyTest {
 
  private:
   void SetUpOnMainThread() override {
-    PolicyTest::SetUpOnMainThread();
+    SafeSearchPolicyTest::SetUpOnMainThread();
 
     https_server_.AddDefaultHandlers(GetChromeTestDataDir());
 
@@ -59,6 +87,8 @@ class PolicyTestGoogle : public PolicyTest {
   }
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
+    SafeSearchPolicyTest::SetUpCommandLine(command_line);
+
     // Note for the google and youtube tests below, the throttles expect that
     // the URLs are to google.com or youtube.com. Networking code also
     // automatically upgrades http requests to these domains to https (see the

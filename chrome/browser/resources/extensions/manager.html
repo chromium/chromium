@@ -24,7 +24,7 @@
 </extensions-drop-overlay>
 <extensions-toolbar in-dev-mode="[[inDevMode]]"
     can-load-unpacked="[[canLoadUnpacked]]"
-    is-supervised="[[isSupervised_]]"
+    is-child-account="[[isChildAccount_]]"
     dev-mode-controlled-by-policy="[[devModeControlledByPolicy]]"
     delegate="[[delegate]]" on-cr-toolbar-menu-tap="onMenuButtonTap_"
     on-search-changed="onFilterChanged_"
@@ -40,6 +40,7 @@
       align="$i18n{textdirection}" on-close="onDrawerClose_">
     <div slot="body">
       <extensions-sidebar id="sidebar"
+          enable-enhanced-site-controls="[[enableEnhancedSiteControls]]"
           on-close-drawer="onCloseDrawer_">
       </extensions-sidebar>
     </div>
@@ -56,7 +57,7 @@
     <template>
       <extensions-detail-view delegate="[[delegate]]" slot="view"
           in-dev-mode="[[inDevMode]]"
-          use-new-site-access-page="[[useNewSiteAccessPage]]"
+          enable-enhanced-site-controls="[[enableEnhancedSiteControls]]"
           from-activity-log="[[fromActivityLog_]]"
           show-activity-log="[[showActivityLog]]"
           incognito-available="[[incognitoAvailable_]]"
@@ -71,11 +72,16 @@
       </extensions-activity-log>
     </template>
   </cr-lazy-render>
-  <cr-lazy-render id="extension-site-access">
+  <cr-lazy-render id="site-permissions">
     <template>
-      <extensions-site-access slot="view"
-          extension-info="[[extensionSiteAccessItem_]]">
-      </extensions-site-access>
+      <extensions-site-permissions delegate="[[delegate]]" slot="view">
+      </extensions-site-permissions>
+    </template>
+  </cr-lazy-render>
+  <cr-lazy-render id="site-permissions-by-site">
+    <template>
+      <extensions-site-permissions-by-site slot="view">
+      </extensions-site-permissions-by-site>
     </template>
   </cr-lazy-render>
   <cr-lazy-render id="keyboard-shortcuts">

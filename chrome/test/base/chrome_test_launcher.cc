@@ -22,6 +22,7 @@
 #include "base/test/test_file_util.h"
 #include "base/test/test_switches.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/chrome_content_browser_client.h"
 #include "chrome/common/chrome_constants.h"
@@ -38,21 +39,21 @@
 #include "content/public/test/test_utils.h"
 #include "ui/base/test/ui_controls.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/bundle_locations.h"
 #include "chrome/browser/chrome_browser_application_mac.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 #if defined(USE_AURA)
 #include "ui/aura/test/ui_controls_factory_aura.h"
 #include "ui/base/test/ui_controls_aura.h"
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include "chrome/app/chrome_crash_reporter_client.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <Shlobj.h>
 #include "base/win/registry.h"
 #include "base/win/scoped_com_initializer.h"
@@ -63,8 +64,8 @@
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/first_run/scoped_relaunch_chrome_browser_override.h"
 #include "chrome/browser/upgrade_detector/installed_version_poller.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -74,14 +75,14 @@
 int ChromeTestSuiteRunner::RunTestSuiteInternal(ChromeTestSuite* test_suite) {
   // Browser tests are expected not to tear-down various globals.
   test_suite->DisableCheckForLeakedGlobals();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android browser tests run child processes as threads instead.
   content::ContentTestSuiteBase::RegisterInProcessThreads();
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   InstalledVersionPoller::ScopedDisableForTesting disable_polling(
       InstalledVersionPoller::MakeScopedDisableForTesting());
 #endif
@@ -93,7 +94,7 @@ int ChromeTestSuiteRunner::RunTestSuite(int argc, char** argv) {
   return RunTestSuiteInternal(&test_suite);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // A helper class that adds Windows firewall rules for the duration of the test.
 class ChromeTestLauncherDelegate::ScopedFirewallRules {
@@ -123,7 +124,7 @@ class ChromeTestLauncherDelegate::ScopedFirewallRules {
   bool rules_added_ = false;
 };
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 ChromeTestLauncherDelegate::ChromeTestLauncherDelegate(
     ChromeTestSuiteRunner* runner)
@@ -158,14 +159,14 @@ ChromeTestChromeMainDelegate::CreateContentBrowserClient() {
   return chrome_content_browser_client_.get();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ChromeTestChromeMainDelegate::ShouldHandleConsoleControlEvents() {
   // Allow Ctrl-C and friends to terminate the test processes forthwith.
   return false;
 }
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 content::ContentMainDelegate*
 ChromeTestLauncherDelegate::CreateContentMainDelegate() {
   return new ChromeTestChromeMainDelegate(base::TimeTicks::Now());
@@ -173,7 +174,7 @@ ChromeTestLauncherDelegate::CreateContentMainDelegate() {
 #endif
 
 void ChromeTestLauncherDelegate::PreSharding() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Pre-test cleanup for registry state keyed off the profile dir (which can
   // proliferate with the use of uniquely named scoped_dirs):
   // https://crbug.com/721245. This needs to be here in order not to be racy
@@ -202,7 +203,7 @@ void ChromeTestLauncherDelegate::PreSharding() {
 }
 
 void ChromeTestLauncherDelegate::OnDoneRunningTests() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   firewall_rules_.reset();
 #endif
 }
@@ -211,7 +212,7 @@ int LaunchChromeTests(size_t parallel_jobs,
                       content::TestLauncherDelegate* delegate,
                       int argc,
                       char** argv) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Set up the path to the framework so resources can be loaded. This is also
   // performed in ChromeTestSuite, but in browser tests that only affects the
   // browser process. Child processes need access to the Framework bundle too.
@@ -221,7 +222,7 @@ int LaunchChromeTests(size_t parallel_jobs,
   base::mac::SetOverrideFrameworkBundlePath(path);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Create a primordial InstallDetails instance for the test.
   install_static::ScopedInstallDetails install_details;
 #endif
@@ -235,9 +236,9 @@ int LaunchChromeTests(size_t parallel_jobs,
   if (command_line.HasSwitch(switches::kLaunchAsBrowser))
     sampling_profiler = std::make_unique<MainThreadStackSamplingProfiler>();
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   ChromeCrashReporterClient::Create();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // We leak this pointer intentionally. The crash client needs to outlive
   // all other code.
   ChromeCrashReporterClient* crash_client = new ChromeCrashReporterClient();
@@ -264,8 +265,8 @@ int LaunchChromeTests(size_t parallel_jobs,
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Cause a test failure for any test that triggers an unexpected relaunch.
   // Tests that fail here should likely be restructured to put the "before
   // relaunch" code into a PRE_ test with its own

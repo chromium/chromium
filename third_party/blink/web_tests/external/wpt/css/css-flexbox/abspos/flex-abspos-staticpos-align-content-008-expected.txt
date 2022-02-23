@@ -7,8 +7,8 @@ FAIL .container > div 3 assert_equals:
 <div class="container" style="align-content: last baseline"><div data-offset-x="10" data-offset-y="5"></div></div>
 offsetLeft expected 10 but got 6
 FAIL .container > div 4 assert_equals: 
-<div class="container" style="align-content: space-between"><div data-offset-x="2" data-offset-y="5"></div></div>
-offsetLeft expected 2 but got 6
+<div class="container" style="align-content: space-between"><div data-offset-x="10" data-offset-y="5"></div></div>
+offsetLeft expected 10 but got 6
 PASS .container > div 5
 PASS .container > div 6
 PASS .container > div 7
@@ -33,8 +33,8 @@ FAIL .container > div 15 assert_equals:
 <div class="container" style="align-content: last baseline"><div data-offset-x="-2" data-offset-y="-3"></div></div>
 offsetLeft expected -2 but got 0
 FAIL .container > div 16 assert_equals: 
-<div class="container" style="align-content: space-between"><div data-offset-x="2" data-offset-y="-3"></div></div>
-offsetLeft expected 2 but got 0
+<div class="container" style="align-content: space-between"><div data-offset-x="-2" data-offset-y="-3"></div></div>
+offsetLeft expected -2 but got 0
 PASS .container > div 17
 PASS .container > div 18
 PASS .container > div 19

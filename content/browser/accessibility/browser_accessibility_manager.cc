@@ -253,6 +253,9 @@ void BrowserAccessibilityManager::Initialize(
 bool BrowserAccessibilityManager::never_suppress_or_delay_events_for_testing_ =
     false;
 
+// A flag to ensure that accessibility fatal errors crash immediately.
+bool BrowserAccessibilityManager::is_fail_fast_mode_ = false;
+
 // static
 absl::optional<int32_t> BrowserAccessibilityManager::last_focused_node_id_ = {};
 
@@ -443,8 +446,8 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
 #endif  // DCHECK_IS_ON()
 
   // Update the cached device scale factor.
-  if (delegate_ && !use_custom_device_scale_factor_for_testing_)
-    device_scale_factor_ = delegate_->AccessibilityGetDeviceScaleFactor();
+  if (!use_custom_device_scale_factor_for_testing_)
+    UpdateDeviceScaleFactor();
 
   // Optionally merge multiple tree updates into fewer updates.
   const std::vector<ui::AXTreeUpdate>* tree_updates = &details.updates;
@@ -569,7 +572,22 @@ bool BrowserAccessibilityManager::OnAccessibilityEvents(
     if (root_manager && event.event_type == ax::mojom::Event::kHover)
       root_manager->CacheHitTestResult(event_target);
 
-    FireBlinkEvent(event.event_type, retargeted);
+    // TODO(accessibility): No platform is doing anything with kLoadComplete
+    // events from Blink, even though we sometimes fire this event explicitly
+    // for the purpose of notifying platform ATs. See, for instance,
+    // RenderAccessibilityImpl::SendPendingAccessibilityEvents(). This should
+    // be resolved in a to-be-determined fashion. In the meantime, if we have
+    // a Blink load-complete event and do not have a generated load-complete
+    // event, behave as if we did have the generated event so platforms are
+    // notified.
+    if (event.event_type == ax::mojom::Event::kLoadComplete &&
+        !received_load_complete_event) {
+      FireGeneratedEvent(ui::AXEventGenerator::Event::LOAD_COMPLETE,
+                         retargeted);
+      received_load_complete_event = true;
+    }
+
+    FireBlinkEvent(event.event_type, retargeted, event.action_request_id);
   }
 
   if (received_load_complete_event) {
@@ -657,7 +675,8 @@ void BrowserAccessibilityManager::ActivateFindInPageResult(int request_id) {
 
   // The "scrolled to anchor" notification is a great way to get a
   // screen reader to jump directly to a specific location in a document.
-  FireBlinkEvent(ax::mojom::Event::kScrolledToAnchor, node);
+  FireBlinkEvent(ax::mojom::Event::kScrolledToAnchor, node,
+                 /*action_request_id=*/-1);
 }
 
 BrowserAccessibility* BrowserAccessibilityManager::GetActiveDescendant(
@@ -1008,11 +1027,14 @@ void BrowserAccessibilityManager::ClearAccessibilityFocus(
   BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
-void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point) const {
+void BrowserAccessibilityManager::HitTest(const gfx::Point& frame_point,
+                                          int request_id) const {
   if (!delegate_)
     return;
 
-  delegate_->AccessibilityHitTest(frame_point, ax::mojom::Event::kHover, 0, {});
+  delegate_->AccessibilityHitTest(frame_point, ax::mojom::Event::kHover,
+                                  request_id,
+                                  /*opt_callback=*/{});
   BrowserAccessibilityStateImpl::GetInstance()->OnAccessibilityApiUsage();
 }
 
@@ -1254,7 +1276,7 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
     const BrowserAccessibility& start_object,
     const BrowserAccessibility& end_object) {
   return GetTextForRange(start_object, 0, end_object,
-                         end_object.GetInnerText().length());
+                         end_object.GetTextContentUTF16().length());
 }
 
 // static
@@ -1271,13 +1293,14 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
       std::swap(start_offset, end_offset);
 
     if (start_offset >=
-            static_cast<int>(start_object.GetInnerText().length()) ||
-        end_offset > static_cast<int>(start_object.GetInnerText().length())) {
+            static_cast<int>(start_object.GetTextContentUTF16().length()) ||
+        end_offset >
+            static_cast<int>(start_object.GetTextContentUTF16().length())) {
       return std::u16string();
     }
 
-    return start_object.GetInnerText().substr(start_offset,
-                                              end_offset - start_offset);
+    return start_object.GetTextContentUTF16().substr(start_offset,
+                                                     end_offset - start_offset);
   }
 
   std::vector<const BrowserAccessibility*> text_only_objects =
@@ -1291,12 +1314,14 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
       std::swap(start_offset, end_offset);
 
     const BrowserAccessibility* text_object = text_only_objects[0];
-    if (start_offset < static_cast<int>(text_object->GetInnerText().length()) &&
-        end_offset <= static_cast<int>(text_object->GetInnerText().length())) {
-      return text_object->GetInnerText().substr(start_offset,
-                                                end_offset - start_offset);
+    if (start_offset <
+            static_cast<int>(text_object->GetTextContentUTF16().length()) &&
+        end_offset <=
+            static_cast<int>(text_object->GetTextContentUTF16().length())) {
+      return text_object->GetTextContentUTF16().substr(
+          start_offset, end_offset - start_offset);
     }
-    return text_object->GetInnerText();
+    return text_object->GetTextContentUTF16();
   }
 
   std::u16string text;
@@ -1309,22 +1334,22 @@ std::u16string BrowserAccessibilityManager::GetTextForRange(
     std::swap(start_offset, end_offset);
 
   if (start_offset <
-      static_cast<int>(start_text_object->GetInnerText().length())) {
-    text += start_text_object->GetInnerText().substr(start_offset);
+      static_cast<int>(start_text_object->GetTextContentUTF16().length())) {
+    text += start_text_object->GetTextContentUTF16().substr(start_offset);
   } else {
-    text += start_text_object->GetInnerText();
+    text += start_text_object->GetTextContentUTF16();
   }
 
   for (size_t i = 1; i < text_only_objects.size() - 1; ++i) {
-    text += text_only_objects[i]->GetInnerText();
+    text += text_only_objects[i]->GetTextContentUTF16();
   }
 
   const BrowserAccessibility* end_text_object = text_only_objects.back();
   if (end_offset <=
-      static_cast<int>(end_text_object->GetInnerText().length())) {
-    text += end_text_object->GetInnerText().substr(0, end_offset);
+      static_cast<int>(end_text_object->GetTextContentUTF16().length())) {
+    text += end_text_object->GetTextContentUTF16().substr(0, end_offset);
   } else {
-    text += end_text_object->GetInnerText();
+    text += end_text_object->GetTextContentUTF16();
   }
 
   return text;
@@ -1344,8 +1369,9 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
       std::swap(start_offset, end_offset);
 
     if (start_offset >=
-            static_cast<int>(start_object.GetInnerText().length()) ||
-        end_offset > static_cast<int>(start_object.GetInnerText().length())) {
+            static_cast<int>(start_object.GetTextContentUTF16().length()) ||
+        end_offset >
+            static_cast<int>(start_object.GetTextContentUTF16().length())) {
       return gfx::Rect();
     }
 
@@ -1372,7 +1398,7 @@ gfx::Rect BrowserAccessibilityManager::GetRootFrameInnerTextRangeBoundsRect(
   const BrowserAccessibility* current = first;
   do {
     if (current->IsText()) {
-      int len = static_cast<int>(current->GetInnerText().size());
+      int len = static_cast<int>(current->GetTextContentUTF16().size());
       int start_char_index = 0;
       int end_char_index = len;
       if (current == first)
@@ -1428,8 +1454,11 @@ void BrowserAccessibilityManager::OnNodeWillBeDeleted(ui::AXTree* tree,
     if (wrapper == GetLastFocusedNode())
       SetLastFocusedNode(nullptr);
 
-    // We fire these here, immediately, to ensure we can send platform
-    // notifications prior to the actual destruction of the object.
+    // TODO(accessibility): Move this to the AXEventGenerator which fires
+    // MENU_POPUP_START when a node with the menu role is created. The issue to
+    // be solved is that after the AXEventGenerator adds MENU_POPUP_END, the
+    // node gets removed from the tree. Then PostprocessEvents removes the
+    // events from that now-removed node, thus MENU_POPUP_END never gets fired.
     if (node->GetRole() == ax::mojom::Role::kMenu)
       FireGeneratedEvent(ui::AXEventGenerator::Event::MENU_POPUP_END, wrapper);
   }
@@ -1502,8 +1531,20 @@ ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
 
 ui::AXNode* BrowserAccessibilityManager::GetNodeFromTree(
     const ui::AXNodeID node_id) const {
+  return ax_tree()->GetFromId(node_id);
+}
+
+ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
+    const ui::AXNodeID node_id) const {
   BrowserAccessibility* wrapper = GetFromID(node_id);
-  return wrapper ? wrapper->node() : nullptr;
+  if (wrapper)
+    return wrapper->GetAXPlatformNode();
+  return nullptr;
+}
+
+ui::AXPlatformNode* BrowserAccessibilityManager::GetPlatformNodeFromTree(
+    const ui::AXNode& node) const {
+  return GetPlatformNodeFromTree(node.id());
 }
 
 void BrowserAccessibilityManager::AddObserver(ui::AXTreeObserver* observer) {
@@ -1668,7 +1709,7 @@ BrowserAccessibility* BrowserAccessibilityManager::CachingAsyncHitTest(
 
     // This triggers an asynchronous request to compute the true object that's
     // under the point.
-    HitTest(frame_point);
+    HitTest(frame_point, /*request_id=*/0);
 
     // Unfortunately we still have to return an answer synchronously because
     // the APIs were designed that way. The best case scenario is that the
@@ -1691,7 +1732,78 @@ BrowserAccessibility* BrowserAccessibilityManager::CachingAsyncHitTest(
   // more complicated layouts. The hope is that if the user is moving the
   // mouse, this fallback will only be used transiently, and the asynchronous
   // result will be used for the next call.
+  return ApproximateHitTest(blink_screen_point);
+}
+
+BrowserAccessibility* BrowserAccessibilityManager::ApproximateHitTest(
+    const gfx::Point& blink_screen_point) const {
+  if (cached_node_rtree_)
+    return AXTreeHitTest(blink_screen_point);
+
   return GetRoot()->ApproximateHitTest(blink_screen_point);
+}
+
+void BrowserAccessibilityManager::BuildAXTreeHitTestCache() {
+  auto* root = GetRoot();
+  if (!root)
+    return;
+
+  std::vector<const BrowserAccessibility*> storage;
+  BuildAXTreeHitTestCacheInternal(root, &storage);
+  // Use AXNodeID for this as nodes are unchanging with this cache.
+  cached_node_rtree_ = std::make_unique<cc::RTree<ui::AXNodeID>>();
+  cached_node_rtree_->Build(
+      storage,
+      [](const std::vector<const BrowserAccessibility*>& storage,
+         size_t index) {
+        return storage[index]->GetUnclippedRootFrameBoundsRect();
+      },
+      [](const std::vector<const BrowserAccessibility*>& storage,
+         size_t index) { return storage[index]->GetId(); });
+}
+
+void BrowserAccessibilityManager::BuildAXTreeHitTestCacheInternal(
+    const BrowserAccessibility* node,
+    std::vector<const BrowserAccessibility*>* storage) {
+  // Based on behavior in ApproximateHitTest() and node ordering in Blink:
+  // Generated backwards so that in the absence of any other information, we
+  // assume the object that occurs later in the tree is on top of one that comes
+  // before it.
+  auto range = node->PlatformChildren();
+  for (auto child = range.rbegin(); child != range.rend(); ++child) {
+    // Skip table columns because cells are only contained in rows,
+    // not columns.
+    if (child->GetRole() == ax::mojom::Role::kColumn)
+      continue;
+
+    BuildAXTreeHitTestCacheInternal(&(*child), storage);
+  }
+
+  storage->push_back(node);
+}
+
+BrowserAccessibility* BrowserAccessibilityManager::AXTreeHitTest(
+    const gfx::Point& blink_screen_point) const {
+  DCHECK(IsRootTree());
+  DCHECK(cached_node_rtree_);
+
+  std::vector<ui::AXNodeID> results;
+  std::vector<gfx::Rect> rects;
+  cached_node_rtree_->Search(
+      gfx::Rect(blink_screen_point.x(), blink_screen_point.y(), /*width=*/1,
+                /*height=*/1),
+      &results, &rects);
+
+  if (results.empty())
+    return nullptr;
+
+  // Find the tightest enclosing rect. Work backwards as leaf nodes come
+  // last and should be preferred.
+  auto rit = std::min_element(rects.rbegin(), rects.rend(),
+                              [](const gfx::Rect& a, const gfx::Rect& b) {
+                                return a.size().Area64() < b.size().Area64();
+                              });
+  return GetFromID(results[std::distance(rects.begin(), rit.base()) - 1]);
 }
 
 void BrowserAccessibilityManager::CacheHitTestResult(
@@ -1792,6 +1904,15 @@ bool BrowserAccessibilityManager::ShouldFireEventForNode(
     return false;
 
   return true;
+}
+
+float BrowserAccessibilityManager::device_scale_factor() const {
+  return device_scale_factor_;
+}
+
+void BrowserAccessibilityManager::UpdateDeviceScaleFactor() {
+  if (delegate_)
+    device_scale_factor_ = delegate_->AccessibilityGetDeviceScaleFactor();
 }
 
 }  // namespace content

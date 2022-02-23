@@ -29,7 +29,7 @@ namespace {
 
 // WARNING: The following parameters are highly privacy and performance
 // sensitive. These should not be changed without thorough review.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const int kPHashDownsampleWidth = 108;
 const int kPHashDownsampleHeight = 192;
 #else

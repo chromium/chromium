@@ -6,6 +6,9 @@
 <translation id="125153950246128346">दुसरा टॅब पाहण्यासाठी टॅप करा</translation>
 <translation id="1302104331113804646">किंमत ट्रॅक करण्याची सेटिंग्ज</translation>
 <translation id="1378979118429748177">किमतीमध्ये घट झाल्यावर सूचना मिळवा</translation>
+<translation id="1403228085774130835">Chrome च्या मुख्य मेनू अंतर्गत अलीकडील टॅबमध्ये तुम्ही तुमचे बंद केलेले टॅब पाहू शकता</translation>
+<translation id="1455506303394048917">या गुप्त टॅबमधील तुमची अ‍ॅक्टिव्हिटी या डिव्हाइसवरून साफ केली जाईल</translation>
+<translation id="1499635324672558517">सर्व गुप्त टॅब बंद करायचे आहेत का?</translation>
 <translation id="1657719826150349398">टॅब खाली हलवा</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> टॅब}other{<ph name="TABS_COUNT_MANY" /> टॅब}}</translation>
 <translation id="2118649612461486615">स्टोअरची माहिती</translation>
@@ -40,9 +43,11 @@
 <translation id="4648718555153979859">तुमचे टॅब येथे एकत्रित केले आहेत</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> परीक्षण)}other{(<ph name="REVIEWS_COUNT_MANY" /> परीक्षणे)}}</translation>
 <translation id="4850886885716139402">पहा</translation>
+<translation id="4870911314065352661">सर्व टॅब बंद करायचे आहेत का?</translation>
 <translation id="492284538114688557">किमतीतील घट आढळली</translation>
 <translation id="5007392906805964215">पुनरावलोकन करा</translation>
 <translation id="5073204694187207510">फुलस्क्रीन ग्रिड लपवा</translation>
+<translation id="5076161749301278626">स्टोअरशी संबंधित पुनरावलोकने पहायची आहेत का?</translation>
 <translation id="5082793167783849073">गट बनवून त्वरित पेजशी तुलना करा. सुरू करण्यासाठी, लिंकला स्पर्श करा आणि धरून ठेवा.</translation>
 <translation id="5490235265819901748">टॅब गटाचा विस्तार केला आहे</translation>
 <translation id="5533021382642990449">नंतर दाखवा</translation>
@@ -69,6 +74,7 @@
 <translation id="7326879924029668159">रिटर्न धोरण आणि आणखी बरेच काही पहा</translation>
 <translation id="7352298686197644113">तुमच्या उघड्या असलेल्या टॅबमध्ये कोणत्या आयटमची किंमत आणखी कमी आहे ते पहा</translation>
 <translation id="753732157349120914">टॅब स्विचर</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{Google कडून <ph name="REVIEWS_COUNT_ONE" /> पुनरावलोकन}other{Google कडून <ph name="REVIEWS_COUNT_MANY" /> पुनरावलोकने}}</translation>
 <translation id="7559245342362162951">फुलस्क्रीन ग्रिडमध्ये गटाचे टॅब दाखवा</translation>
 <translation id="7792771145871471484">सूचनांचे पुनरावलोकन करा.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{निवडलेल्या <ph name="TABS_COUNT_ONE" /> टॅबचा गट बनवा}other{निवडलेल्या <ph name="TABS_COUNT_MANY" /> टॅबचा गट बनवा}}</translation>

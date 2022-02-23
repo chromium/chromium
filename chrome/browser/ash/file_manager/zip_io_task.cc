@@ -16,6 +16,7 @@
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/system/sys_info.h"
+#include "base/task/bind_post_task.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
@@ -166,8 +167,10 @@ void ZipIOTask::ZipItems(
       std::move(destination_result->path()));
   zip_file_creator_->SetProgressCallback(base::BindOnce(
       &ZipIOTask::OnZipProgress, weak_ptr_factory_.GetWeakPtr()));
-  zip_file_creator_->SetCompletionCallback(base::BindOnce(
-      &ZipIOTask::OnZipComplete, weak_ptr_factory_.GetWeakPtr()));
+  zip_file_creator_->SetCompletionCallback(
+      BindPostTask(base::SequencedTaskRunnerHandle::Get(),
+                   base::BindOnce(&ZipIOTask::OnZipComplete,
+                                  weak_ptr_factory_.GetWeakPtr())));
   zip_file_creator_->Start(LaunchFileUtilService());
 }
 
@@ -204,9 +207,10 @@ void ZipIOTask::OnZipComplete() {
                  << zip_file_creator_->GetResult();
       Complete(State::kError);
       break;
-    case ZipFileCreator::kInProgress:
     case ZipFileCreator::kCancelled:
-      // This class should be destroyed on cancel, so we should never get here.
+      // Cancelled state already gets reported so don't call Complete().
+      break;
+    case ZipFileCreator::kInProgress:
       NOTREACHED();
   }
   zip_file_creator_.reset();

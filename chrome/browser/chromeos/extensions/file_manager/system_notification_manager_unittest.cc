@@ -4,6 +4,8 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/disks/disk.h"
 #include "ash/constants/ash_features.h"
 #include "ash/webui/file_manager/url_constants.h"
 #include "base/files/file.h"
@@ -23,8 +25,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk.h"
-#include "components/arc/arc_prefs.h"
 #include "content/public/test/browser_task_environment.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "storage/browser/quota/quota_manager_proxy.h"
@@ -217,12 +217,12 @@ class SystemNotificationManagerTest
   }
 
   // Creates a disk instance with |device_path| and |mount_path| for testing.
-  std::unique_ptr<chromeos::disks::Disk> CreateTestDisk(
+  std::unique_ptr<ash::disks::Disk> CreateTestDisk(
       const std::string& device_path,
       const std::string& mount_path,
       bool is_read_only_hardware,
       bool is_mounted) {
-    return chromeos::disks::Disk::Builder()
+    return ash::disks::Disk::Builder()
         .SetDevicePath(device_path)
         .SetMountPath(mount_path)
         .SetStorageDevicePath(device_path)
@@ -445,7 +445,7 @@ TEST_F(SystemNotificationManagerTest, RenameFail) {
 
 TEST_F(SystemNotificationManagerTest, DeviceHardUnplugged) {
   base::HistogramTester histogram_tester;
-  std::unique_ptr<chromeos::disks::Disk> disk =
+  std::unique_ptr<ash::disks::Disk> disk =
       CreateTestDisk(kDevicePath, kMountPath, /*is_read_only_hardware=*/false,
                      /*is_mounted=*/true);
   GetDeviceEventRouter()->OnDiskRemoved(*disk);

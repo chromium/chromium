@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Otevřít nové okno v anonymním režimu</translation>
 <translation id="152892567002884378">Zvýšit hlasitost</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> a poté <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Přejděte na plochu 1 až 8</translation>
 <translation id="1652741121070700329">Přesunout kurzor na začátek předchozího slova.</translation>
 <translation id="1679841710523778799">Zvýšit jas</translation>
 <translation id="168356808214100546">Stiskněte a podržte <ph name="ALT" /> a opakovaně stiskněte klávesu <ph name="TAB" />, dokud nepřejdete na okno, které chcete otevřít. Poté klávesy uvolněte.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Stiskněte <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> a klikněte na odkaz</translation>
 <translation id="561814908794220892">Otevřít webovou stránku na nové kartě</translation>
 <translation id="5620219513321115856">Přesunout aktivní okno na plochu vpravo</translation>
+<translation id="5699366815052349604">Přidružit aktivní okno ke všem plochám</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> nebo <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Otevřít odkaz na dané kartě</translation>
 <translation id="5757474750054631686">Snížit jas klávesnice (pouze u podsvícených klávesnic)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Zobrazit v aplikaci Soubory skryté soubory</translation>
 <translation id="8717459106217102612">Vybrat předchozí slovo nebo písmeno.</translation>
 <translation id="8727232706774971183">Zobrazit oznámení</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 až 8</translation>
 <translation id="8855885154700222542">Tlačítko celé obrazovky</translation>
 <translation id="8881584919399569791">Přesunout aktivní okno na plochu vlevo</translation>
 <translation id="88986195241502842">O stránku dolů</translation>

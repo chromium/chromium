@@ -54,6 +54,7 @@
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/boringssl/src/include/openssl/ssl.h"
+#include "url/gurl.h"
 #include "url/scheme_host_port.h"
 #include "url/url_constants.h"
 
@@ -97,12 +98,14 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
             url::SchemeHostPort(url::kHttpsScheme, "host", 443),
             NetworkIsolationKey(),
             SecureDnsPolicy::kAllow,
-            OnHostResolutionCallback())),
+            OnHostResolutionCallback(),
+            /*supported_alpns=*/{"h2", "http/1.1"})),
         proxy_transport_socket_params_(
             new TransportSocketParams(HostPortPair("proxy", 443),
                                       NetworkIsolationKey(),
                                       SecureDnsPolicy::kAllow,
-                                      OnHostResolutionCallback())),
+                                      OnHostResolutionCallback(),
+                                      /*supported_alpns=*/{})),
         socks_socket_params_(
             new SOCKSSocketParams(proxy_transport_socket_params_,
                                   true,
@@ -144,8 +147,8 @@ class SSLConnectJobTest : public WithTaskEnvironment, public testing::Test {
     const std::u16string kFoo(u"foo");
     const std::u16string kBar(u"bar");
     session_->http_auth_cache()->Add(
-        GURL("http://proxy:443/"), HttpAuth::AUTH_PROXY, "MyRealm1",
-        HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
+        url::SchemeHostPort(GURL("http://proxy:443/")), HttpAuth::AUTH_PROXY,
+        "MyRealm1", HttpAuth::AUTH_SCHEME_BASIC, NetworkIsolationKey(),
         "Basic realm=MyRealm1", AuthCredentials(kFoo, kBar), "/");
   }
 
@@ -434,7 +437,8 @@ TEST_F(SSLConnectJobTest, SecureDnsPolicy) {
         base::MakeRefCounted<TransportSocketParams>(
             url::SchemeHostPort(url::kHttpsScheme, "host", 443),
             NetworkIsolationKey(), secure_dns_policy,
-            OnHostResolutionCallback());
+            OnHostResolutionCallback(),
+            /*supported_alpns=*/base::flat_set<std::string>{"h2", "http/1.1"});
     auto common_connect_job_params = session_->CreateCommonConnectJobParams();
     std::unique_ptr<ConnectJob> ssl_connect_job =
         std::make_unique<SSLConnectJob>(DEFAULT_PRIORITY, SocketTag(),

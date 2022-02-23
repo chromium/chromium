@@ -5,8 +5,10 @@
 #include <string>
 
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/scoped_run_loop_timeout.h"
 #include "chrome/test/payments/payment_request_platform_browsertest_base.h"
+#include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
@@ -40,6 +42,55 @@ class PaymentRequestForPrerenderBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_F(PaymentRequestForPrerenderBrowserTest,
+                       AbortAfterPrerendered) {
+  // Navigate to an initial page.
+  NavigateTo("/payment_request_creator.html");
+
+  // Start a prerender.
+  auto prerender_url =
+      https_server()->GetURL("/payment_request_abort_test.html");
+
+  int prerender_id = prerender_helper_.AddPrerender(prerender_url);
+  auto* prerender_render_frame_host =
+      prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
+
+  ResetEventWaiterForSingleEvent(TestEvent::kAbortCalled);
+
+  // Try to show PaymentRequest by JS.
+  EXPECT_TRUE(content::ExecJs(prerender_render_frame_host,
+                              "document.getElementById('buy').click();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  EXPECT_TRUE(content::ExecJs(prerender_render_frame_host,
+                              "document.getElementById('abort').click();",
+                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+
+  // Activate the prerendered page.
+  prerender_helper_.NavigatePrimaryPage(prerender_url);
+
+  WaitForObservedEvent();
+
+  ExpectBodyContains({R"(Aborted)"});
+}
+
+class PaymentRequestForPrerenderBrowserBasicCardEnabledTest
+    : public PaymentRequestForPrerenderBrowserTest {
+ public:
+  PaymentRequestForPrerenderBrowserBasicCardEnabledTest(
+      const PaymentRequestForPrerenderBrowserBasicCardEnabledTest&) = delete;
+  PaymentRequestForPrerenderBrowserBasicCardEnabledTest& operator=(
+      const PaymentRequestForPrerenderBrowserBasicCardEnabledTest&) = delete;
+
+ protected:
+  PaymentRequestForPrerenderBrowserBasicCardEnabledTest() {
+    feature_list_.InitAndEnableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestForPrerenderBrowserBasicCardEnabledTest,
                        ShowAfterPrerendered) {
   // Navigate to an initial page.
   NavigateTo("/payment_request_creator.html");
@@ -72,36 +123,58 @@ IN_PROC_BROWSER_TEST_F(PaymentRequestForPrerenderBrowserTest,
   EXPECT_TRUE(is_app_list_ready_fired_);
 }
 
-IN_PROC_BROWSER_TEST_F(PaymentRequestForPrerenderBrowserTest,
-                       AbortAfterPrerendered) {
+class PaymentRequestForPrerenderBrowserBasicCardDisabledTest
+    : public PaymentRequestForPrerenderBrowserTest {
+ public:
+  PaymentRequestForPrerenderBrowserBasicCardDisabledTest(
+      const PaymentRequestForPrerenderBrowserBasicCardDisabledTest&) = delete;
+  PaymentRequestForPrerenderBrowserBasicCardDisabledTest& operator=(
+      const PaymentRequestForPrerenderBrowserBasicCardDisabledTest&) = delete;
+
+ protected:
+  PaymentRequestForPrerenderBrowserBasicCardDisabledTest() {
+    feature_list_.InitAndDisableFeature(::features::kPaymentRequestBasicCard);
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PaymentRequestForPrerenderBrowserBasicCardDisabledTest,
+                       ShowAfterPrerendered) {
+  std::string method;
+  InstallPaymentApp("a.com", "payment_request_success_responder.js", &method);
+
   // Navigate to an initial page.
   NavigateTo("/payment_request_creator.html");
 
   // Start a prerender.
-  auto prerender_url =
-      https_server()->GetURL("/payment_request_abort_test.html");
+  GURL prerender_url =
+      https_server()->GetURL("/payment_request_no_shipping_test.html");
 
   int prerender_id = prerender_helper_.AddPrerender(prerender_url);
-  auto* prerender_render_frame_host =
+  content::RenderFrameHost* prerender_render_frame_host =
       prerender_helper_.GetPrerenderedMainFrameHost(prerender_id);
 
-  ResetEventWaiterForSingleEvent(TestEvent::kAbortCalled);
+  ResetEventWaiterForSingleEvent(TestEvent::kAppListReady);
 
   // Try to show PaymentRequest by JS.
-  EXPECT_TRUE(content::ExecJs(prerender_render_frame_host,
-                              "document.getElementById('buy').click();",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  EXPECT_TRUE(content::ExecJs(
+      prerender_render_frame_host,
+      content::JsReplace("buyWithMethods([{supportedMethods:$1}]);", method),
+      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 
-  EXPECT_TRUE(content::ExecJs(prerender_render_frame_host,
-                              "document.getElementById('abort').click();",
-                              content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+  // Run the loop to give the test a chance to fail if is_app_list_ready_fired_
+  // is set to true too early.
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(is_app_list_ready_fired_);
 
   // Activate the prerendered page.
   prerender_helper_.NavigatePrimaryPage(prerender_url);
 
   WaitForObservedEvent();
-
-  ExpectBodyContains({R"(Aborted)"});
+  EXPECT_TRUE(is_app_list_ready_fired_);
 }
 
 }  // namespace

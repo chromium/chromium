@@ -52,8 +52,10 @@ std::unique_ptr<SctpTransportProxy> CreateProxy(
   DCHECK(worker_thread);
   LocalFrame* frame = To<LocalDOMWindow>(context)->GetFrame();
   DCHECK(frame);
-  return SctpTransportProxy::Create(*frame, main_thread, worker_thread,
-                                    native_transport, delegate);
+  return SctpTransportProxy::Create(
+      *frame, main_thread, worker_thread,
+      rtc::scoped_refptr<webrtc::SctpTransportInterface>(native_transport),
+      delegate);
 }
 
 }  // namespace

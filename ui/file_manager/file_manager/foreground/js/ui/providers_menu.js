@@ -66,7 +66,11 @@ export class ProvidersMenu {
     item.label = name;
 
     const iconImage = util.iconSetToCSSBackgroundImageValue(iconSet);
-    item.iconStartImage = iconImage;
+    if (iconImage === 'none' && providerId === '@smb') {
+      item.iconStartFileType = 'smb';
+    } else {
+      item.iconStartImage = iconImage;
+    }
 
     item.addEventListener(
         'activate', this.onItemActivate_.bind(this, providerId));

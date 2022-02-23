@@ -367,12 +367,17 @@ class BiodClientImpl : public BiodClient {
   void AuthScanDoneReceived(dbus::Signal* signal) {
     dbus::MessageReader signal_reader(signal);
     dbus::MessageReader array_reader(nullptr);
-    uint32_t scan_result;
     AuthScanMatches matches;
-    if (!signal_reader.PopUint32(&scan_result) ||
-        !signal_reader.PopArray(&array_reader)) {
-      LOG(ERROR) << "Error reading signal from biometrics: "
-                 << signal->ToString();
+    biod::FingerprintMessage msg;
+
+    if (!signal_reader.PopArrayOfBytesAsProto(&msg)) {
+      LOG(ERROR) << "Signal doesn't contain protobuf with authentication "
+                 << "result.";
+      return;
+    }
+
+    if (!signal_reader.PopArray(&array_reader)) {
+      LOG(ERROR) << "Can't extract matches array from AuthScanDone signal";
       return;
     }
 
@@ -383,8 +388,7 @@ class BiodClientImpl : public BiodClient {
       if (!array_reader.PopDictEntry(&entry_reader) ||
           !entry_reader.PopString(&user_id) ||
           !entry_reader.PopArrayOfObjectPaths(&paths)) {
-        LOG(ERROR) << "Error reading signal from biometrics: "
-                   << signal->ToString();
+        LOG(ERROR) << "Can't read match data from AuthScanDone signal";
         return;
       }
 
@@ -392,8 +396,7 @@ class BiodClientImpl : public BiodClient {
     }
 
     for (auto& observer : observers_) {
-      observer.BiodAuthScanDoneReceived(
-          static_cast<biod::ScanResult>(scan_result), matches);
+      observer.BiodAuthScanDoneReceived(msg, matches);
     }
   }
 

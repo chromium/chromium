@@ -41,17 +41,26 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
   // We should only ever create a constraint space from legacy layout if the
   // object is a new formatting context.
   DCHECK(block.CreatesNewFormattingContext());
+  DCHECK(!block.IsTableCell());
 
   const LayoutBlock* cb = block.ContainingBlock();
-  LayoutUnit available_logical_width =
-      LayoutBoxUtils::AvailableLogicalWidth(block, cb);
-  LayoutUnit available_logical_height =
-      LayoutBoxUtils::AvailableLogicalHeight(block, cb);
-  LogicalSize percentage_size = {available_logical_width,
-                                 available_logical_height};
-  LogicalSize available_size = percentage_size;
+  LogicalSize available_size;
+  bool is_fixed_inline_size = false;
+  bool is_fixed_block_size = false;
+  if (cb) {
+    available_size.inline_size =
+        LayoutBoxUtils::AvailableLogicalWidth(block, cb);
+    available_size.block_size =
+        LayoutBoxUtils::AvailableLogicalHeight(block, cb);
+  } else {
+    DCHECK(block.IsLayoutView());
+    available_size = To<LayoutView>(block).InitialContainingBlockSize();
+    is_fixed_inline_size = true;
+    is_fixed_block_size = true;
+  }
 
-  bool is_fixed_inline_size = false, is_fixed_block_size = false;
+  LogicalSize percentage_size = available_size;
+
   bool is_initial_block_size_definite = true;
   if (block.HasOverrideLogicalWidth()) {
     available_size.inline_size = block.OverrideLogicalWidth();
@@ -85,38 +94,6 @@ NGConstraintSpace NGConstraintSpace::CreateFromLayoutObject(
                                              block.IsAtomicInlineLevel()
                                          ? NGBaselineAlgorithmType::kInlineBlock
                                          : NGBaselineAlgorithmType::kFirstLine);
-  }
-
-  if (block.IsTableCell()) {
-    const LayoutNGTableCellInterface& cell =
-        ToInterface<LayoutNGTableCellInterface>(block);
-    const ComputedStyle& cell_style = cell.ToLayoutObject()->StyleRef();
-    const ComputedStyle& table_style =
-        cell.TableInterface()->ToLayoutObject()->StyleRef();
-    DCHECK(block.IsTableCellLegacy());
-    builder.SetIsTableCell(true, /* is_table_cell_legacy */ true);
-    builder.SetIsRestrictedBlockSizeTableCell(
-        !cell_style.LogicalHeight().IsAuto() ||
-        !table_style.LogicalHeight().IsAuto());
-    const LayoutBlock& cell_block = To<LayoutBlock>(*cell.ToLayoutObject());
-    if (is_fixed_block_size) {
-      is_initial_block_size_definite = cell_block.HasDefiniteLogicalHeight() ||
-                                       !table_style.LogicalHeight().IsAuto();
-    } else {
-      is_initial_block_size_definite = false;
-    }
-    builder.SetTableCellBorders(
-        {cell_block.BorderStart(), cell_block.BorderEnd(),
-         cell_block.BorderBefore(), cell_block.BorderAfter()});
-    builder.SetTableCellIntrinsicPadding(
-        {LayoutUnit(), LayoutUnit(), LayoutUnit(cell.IntrinsicPaddingBefore()),
-         LayoutUnit(cell.IntrinsicPaddingAfter())});
-    builder.SetHideTableCellIfEmpty(
-        cell_style.EmptyCells() == EEmptyCells::kHide &&
-        table_style.BorderCollapse() == EBorderCollapse::kSeparate);
-    builder.SetIsTableCellWithCollapsedBorders(
-        cell_block.Parent()->Parent()->Parent()->StyleRef().BorderCollapse() ==
-        EBorderCollapse::kCollapse);
   }
 
   if (block.IsAtomicInlineLevel() || block.IsFlexItem() || block.IsGridItem() ||

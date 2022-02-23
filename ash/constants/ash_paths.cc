@@ -10,7 +10,7 @@
 #include "base/system/sys_info.h"
 #include "build/branding_buildflags.h"
 
-namespace chromeos {
+namespace ash {
 
 namespace {
 
@@ -159,8 +159,11 @@ void RegisterStubPathOverrides(const base::FilePath& stubs_dir) {
       DIR_SIGNIN_PROFILE_EXTENSIONS,
       parent.AppendASCII("stub_signin_profile_extensions"));
   base::PathService::Override(
+      DIR_PREINSTALLED_COMPONENTS,
+      parent.AppendASCII("stub_preinstalled_components"));
+  base::PathService::Override(
       DIR_DEVICE_POLICY_EXTERNAL_DATA,
       parent.AppendASCII("stub_device_policy_external_data"));
 }
 
-}  // namespace chromeos
+}  // namespace ash

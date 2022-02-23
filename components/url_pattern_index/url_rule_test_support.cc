@@ -29,10 +29,11 @@ proto::UrlRule MakeUrlRule(const UrlPattern& url_pattern) {
   return rule;
 }
 
-void AddDomains(const std::vector<std::string>& domains, proto::UrlRule* rule) {
-  for (std::string domain_pattern : domains) {
+void AddInitiatorDomains(const std::vector<std::string>& initiator_domains,
+                         proto::UrlRule* rule) {
+  for (std::string domain_pattern : initiator_domains) {
     DCHECK(!domain_pattern.empty());
-    auto* domain = rule->add_domains();
+    auto* domain = rule->add_initiator_domains();
     if (domain_pattern[0] == '~') {
       domain_pattern.erase(0, 1);
       domain->set_exclude(true);

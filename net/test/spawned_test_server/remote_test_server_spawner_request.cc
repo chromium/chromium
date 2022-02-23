@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -43,7 +42,7 @@ class RemoteTestServerSpawnerRequest::Core : public URLRequest::Delegate {
   // Blocks until request is finished. If |response| isn't nullptr then server
   // response is copied to *response. Returns true if the request was completed
   // successfully.
-  bool WaitForCompletion(std::string* response) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool WaitForCompletion(std::string* response);
 
  private:
   // URLRequest::Delegate methods.

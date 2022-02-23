@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/views/eye_dropper/eye_dropper.h"
@@ -32,7 +33,7 @@ class EyeDropperView::ViewPositionHandler {
   // Timer used for updating the window location.
   base::RepeatingTimer timer_;
 
-  EyeDropperView* owner_;
+  raw_ptr<EyeDropperView> owner_;
 };
 
 EyeDropperView::ViewPositionHandler::ViewPositionHandler(EyeDropperView* owner)
@@ -101,7 +102,7 @@ void EyeDropperView::ScreenCapturer::OnCaptureResult(
   original_offset_x_ = 0;
   original_offset_y_ = 0;
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // The window parameter is intentionally passed as nullptr on Windows
     // because a non-null window parameter causes errors when restoring windows
     // to saved positions in variable-DPI situations. See
@@ -154,7 +155,7 @@ EyeDropperView::EyeDropperView(content::RenderFrameHost* frame,
   // EyeDropper/WidgetDelegate.
   set_owned_by_client();
   SetPreferredSize(GetSize());
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
   // Use TYPE_MENU for Linux to ensure that the eye dropper view is displayed
   // above the color picker.
   views::Widget::InitParams params(views::Widget::InitParams::TYPE_MENU);

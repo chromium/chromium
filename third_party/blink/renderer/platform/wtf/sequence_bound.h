@@ -35,7 +35,7 @@ struct SequenceBoundBindTraits {
   }
 
   template <typename T>
-  static inline auto Unretained(T* ptr) {
+  static inline auto Unretained(T ptr) {
     return CrossThreadUnretained(ptr);
   }
 

@@ -29,11 +29,11 @@ AndroidAppsHandler::~AndroidAppsHandler() {}
 
 void AndroidAppsHandler::RegisterMessages() {
   // Note: requestAndroidAppsInfo must be called before observers will be added.
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestAndroidAppsInfo",
       base::BindRepeating(&AndroidAppsHandler::HandleRequestAndroidAppsInfo,
                           weak_ptr_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "showAndroidAppsSettings",
       base::BindRepeating(&AndroidAppsHandler::ShowAndroidAppsSettings,
                           weak_ptr_factory_.GetWeakPtr()));
@@ -82,19 +82,19 @@ void AndroidAppsHandler::OnArcPlayStoreEnabledChanged(bool enabled) {
 std::unique_ptr<base::DictionaryValue>
 AndroidAppsHandler::BuildAndroidAppsInfo() {
   std::unique_ptr<base::DictionaryValue> info(new base::DictionaryValue);
-  info->SetBoolean("playStoreEnabled",
+  info->SetBoolKey("playStoreEnabled",
                    arc::IsArcPlayStoreEnabledForProfile(profile_));
   const ArcAppListPrefs* arc_apps_pref = ArcAppListPrefs::Get(profile_);
   // TODO(khmel): Inverstigate why in some browser tests
   // playStoreEnabled is true but arc_apps_pref is not set.
-  info->SetBoolean(
+  info->SetBoolKey(
       "settingsAppAvailable",
       arc_apps_pref && arc_apps_pref->IsRegistered(arc::kSettingsAppId));
   return info;
 }
 
 void AndroidAppsHandler::HandleRequestAndroidAppsInfo(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   SendAndroidAppsInfo();
 }
@@ -104,11 +104,12 @@ void AndroidAppsHandler::SendAndroidAppsInfo() {
   FireWebUIListener("android-apps-info-update", *info);
 }
 
-void AndroidAppsHandler::ShowAndroidAppsSettings(const base::ListValue* args) {
-  CHECK_EQ(1U, args->GetList().size());
+void AndroidAppsHandler::ShowAndroidAppsSettings(
+    base::Value::ConstListView args) {
+  CHECK_EQ(1U, args.size());
   bool activated_from_keyboard = false;
-  if (args->GetList()[0].is_bool())
-    activated_from_keyboard = args->GetList()[0].GetBool();
+  if (args[0].is_bool())
+    activated_from_keyboard = args[0].GetBool();
   int flags = activated_from_keyboard ? ui::EF_NONE : ui::EF_LEFT_MOUSE_BUTTON;
 
   app_service_proxy_->Launch(

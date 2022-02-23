@@ -31,6 +31,7 @@
 <translation id="1189258430971676908">پریکٹیس کرنے کی جگہ: ڈراپ ڈاؤن فہرستیں</translation>
 <translation id="1195238899008218998">پسِ نوشت</translation>
 <translation id="1197088940767939838">نارنجی</translation>
+<translation id="1198865190323699001">ٹچ اشارے</translation>
 <translation id="1201402288615127009">اگلا</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">اگلی سطح 4 کی کوئی ہیڈنگ نہیں ہے</translation>
@@ -390,7 +391,9 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="3492609944033322585">{COUNT,plural, =1{دایاں بریکٹ}other{# دائیں بریکٹس}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{سوالیہ نشان}other{# سوالیہ نشانات}}</translation>
+<translation id="3505359110822747654">‏ChromeVox مینوز کو سکیڑیں</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{کیرٹ}other{# کیرٹس}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{سفید نقطہ}other{# سفید نقطے}}</translation>
 <translation id="352577523970648069">ایک قابل ترمیم متن فیلڈ</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> کٹ کریں۔</translation>
@@ -664,6 +667,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="5522423213731659107">فوری سمت بندی مکمل!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">ہلکا نیلگوں خاکستری</translation>
+<translation id="554893713779400387">ڈکٹیشن ٹوگل کریں</translation>
 <translation id="5549179427201066174">صوتی تاثرات (ایئرکونز) آن یا آف کریں</translation>
 <translation id="556042886152191864">بٹن</translation>
 <translation id="5561345396546889625">اگلی فہرست</translation>
@@ -674,6 +678,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="5597170376237141345">اگلا چیک باکس</translation>
 <translation id="5598905979683743333"><ph name="NAME" />، ریڈیو بٹن کو غیر منتخب کر دیا گیا</translation>
 <translation id="5601172225407283979">ڈیفالٹ کارروائی انجام دیں</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{اسکوئیر نقطہ}other{# اسکوئیر نقطے}}</translation>
 <translation id="5608798115546226984">اِن لائن خودکار تکمیل</translation>
 <translation id="5616029807486814372">اگلا سبق</translation>
 <translation id="561939826962581046">وقت</translation>
@@ -1097,6 +1102,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="8659501358298941449">ڈراپ ڈاؤن فہرستیں</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> اختتام</translation>
 <translation id="867187640362843212">سرخی 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{نیسٹ کردہ لیول #}}</translation>
 <translation id="8693391540059827073">میرا پسندیدہ موسم</translation>
 <translation id="8696284982970258155">ہنی ڈیو</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{پائپ}other{# عمودی پائپس}}</translation>
@@ -1164,6 +1170,7 @@ Chrome براؤزر مینو کھولنے کیلئے، Alt+F دبائیں۔</tra
 <translation id="9223032053830369045">گہرا سرخ</translation>
 <translation id="923331726185079994">‏ChromeVox کو اپ ڈیٹ کر دیا گیا</translation>
 <translation id="93384979447910801">گہرا سمندری سبز</translation>
+<translation id="937605981140327129">‏TalkBack فی الحال انسٹال نہیں ہے۔ براہ کرم Play اسٹور سے Android ایکسیسبیلٹی سوئٹ انسٹال کریں اور دوبارہ کوشش کریں۔</translation>
 <translation id="948171205378458592">اسپیچ کا ریٹ گھٹائیں</translation>
 <translation id="957570623732056069">اس سبق کو نیویگیٹ کرنے کیلئے ایک انگلی سے بائیں یا دائیں سوائپ کریں</translation>
 <translation id="958854023026327378">ایک انگلی سے نیچے کی طرف سوائپ کریں</translation>

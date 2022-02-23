@@ -5,7 +5,6 @@
 #ifndef SANDBOX_LINUX_SERVICES_YAMA_H_
 #define SANDBOX_LINUX_SERVICES_YAMA_H_
 
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 namespace sandbox {

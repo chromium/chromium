@@ -4,6 +4,7 @@
 
 #include "net/url_request/url_fetcher.h"
 
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/url_request/url_fetcher_factory.h"
 #include "net/url_request/url_fetcher_impl.h"
@@ -24,7 +25,8 @@ void URLFetcher::SetIgnoreCertificateRequests(bool ignored) {
 
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if !defined(OS_WIN) && !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !BUILDFLAG(IS_WIN) && \
+    !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 // static
 std::unique_ptr<URLFetcher> URLFetcher::Create(
     const GURL& url,

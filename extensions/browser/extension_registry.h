@@ -8,7 +8,7 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/observer_list.h"
 #include "base/version.h"
@@ -216,7 +216,7 @@ class ExtensionRegistry : public KeyedService {
 
   base::ObserverList<ExtensionRegistryObserver>::Unchecked observers_;
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

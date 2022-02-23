@@ -3,17 +3,34 @@
 // found in the LICENSE file.
 
 #include "chromeos/services/bluetooth_config/bluetooth_device_status_notifier_impl.h"
+#include "ash/services/nearby/public/cpp/nearby_client_uuids.h"
+#include "base/time/time.h"
 #include "chromeos/services/bluetooth_config/device_cache.h"
+#include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "components/device_event_log/device_event_log.h"
+#include "device/bluetooth/bluetooth_device.h"
+#include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 
 #include <vector>
 
 namespace chromeos {
 namespace bluetooth_config {
 
+// static
+const base::TimeDelta
+    BluetoothDeviceStatusNotifierImpl::kSuspendCooldownTimeout =
+        base::Milliseconds(3000);
+
 BluetoothDeviceStatusNotifierImpl::BluetoothDeviceStatusNotifierImpl(
-    DeviceCache* device_cache)
-    : device_cache_(device_cache) {
+    scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+    DeviceCache* device_cache,
+    PowerManagerClient* power_manager_client)
+    : bluetooth_adapter_(std::move(bluetooth_adapter)),
+      device_cache_(device_cache),
+      power_manager_client_(power_manager_client) {
+  DCHECK(power_manager_client_);
   device_cache_observation_.Observe(device_cache_);
+  power_manager_client_observation_.Observe(power_manager_client_);
 
   for (const auto& paired_device : device_cache_->GetPairedDevices()) {
     devices_id_to_properties_map_[paired_device->device_properties->id] =
@@ -28,7 +45,31 @@ void BluetoothDeviceStatusNotifierImpl::OnPairedDevicesListChanged() {
   CheckForDeviceStateChange();
 }
 
+void BluetoothDeviceStatusNotifierImpl::SuspendImminent(
+    power_manager::SuspendImminent::Reason reason) {
+  // Set |did_recently_suspend_| when the device begins suspending. It's not
+  // sufficient to set this flag in SuspendDone() because
+  // OnPairedDevicesListChanged() can be called before SuspendDone() when the
+  // device is awoken. If the flag is not set at this point then disconnected
+  // devices will be notified to observers.
+  did_recently_suspend_ = true;
+
+  // If there's a timer currently running, stop it so it doesn't timeout while
+  // the device is suspended and flip |did_recently_suspend_| back to false.
+  suspend_cooldown_timer_.Stop();
+}
+
+void BluetoothDeviceStatusNotifierImpl::SuspendDone(
+    base::TimeDelta sleep_duration) {
+  suspend_cooldown_timer_.Start(
+      FROM_HERE, kSuspendCooldownTimeout,
+      base::BindOnce(
+          &BluetoothDeviceStatusNotifierImpl::OnSuspendCooldownTimeout,
+          base::Unretained(this)));
+}
+
 void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
+  BLUETOOTH_LOG(DEBUG) << "Checking for device state changes";
   const std::vector<mojom::PairedBluetoothDevicePropertiesPtr> paired_devices =
       device_cache_->GetPairedDevices();
 
@@ -36,8 +77,6 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
     devices_id_to_properties_map_.clear();
     return;
   }
-
-  std::vector<mojom::PairedBluetoothDevicePropertiesPtr> newly_paired_devices;
 
   // Store old map in a temporary map, this is done so if a device is unpaired
   // |devices_id_to_properties_map_| will always contain only currently paired
@@ -51,17 +90,82 @@ void BluetoothDeviceStatusNotifierImpl::CheckForDeviceStateChange() {
     devices_id_to_properties_map_[device->device_properties->id] =
         device.Clone();
 
+    device::BluetoothDevice* bluetooth_device =
+        FindDevice(device->device_properties->id);
+
+    if (!bluetooth_device || IsNearbyConnectionsDevice(*bluetooth_device)) {
+      continue;
+    }
+
     auto it = previous_devices_id_to_properties_map.find(
         device->device_properties->id);
 
-    // Check if device is not in previous map. If it is not, this means a new
-    // paired device was found.
+    // Check if device is not in previous map and is connected. If it is not,
+    // this means a new paired device was found.
     if (it == previous_devices_id_to_properties_map.end()) {
-      newly_paired_devices.push_back(device.Clone());
+      if (device->device_properties->connection_state ==
+          mojom::DeviceConnectionState::kConnected) {
+        NotifyDeviceNewlyPaired(device);
+      }
+      continue;
+    }
+
+    // Check if device is recently disconnected.
+    if (it->second->device_properties->connection_state ==
+            mojom::DeviceConnectionState::kConnected &&
+        device->device_properties->connection_state ==
+            mojom::DeviceConnectionState::kNotConnected) {
+      // Check if the Chromebook is suspended or has recently awaken from being
+      // suspended. If it has, do not notify observers of disconnected devices
+      // (see b/216341171).
+      if (did_recently_suspend_) {
+        BLUETOOTH_LOG(EVENT) << "Device " << GetPairedDeviceName(device)
+                             << " connection status changed to disconnected, "
+                                "but device was recently awoken from being "
+                                "suspended. Not notifying observers";
+        continue;
+      }
+
+      NotifyDeviceNewlyDisconnected(device);
+      continue;
+    }
+
+    // Check if device is recently connected.
+    if (it->second->device_properties->connection_state !=
+            mojom::DeviceConnectionState::kConnected &&
+        device->device_properties->connection_state ==
+            mojom::DeviceConnectionState::kConnected) {
+      NotifyDeviceNewlyConnected(device);
+      continue;
     }
   }
+}
 
-  NotifyDevicesNewlyPaired(newly_paired_devices);
+void BluetoothDeviceStatusNotifierImpl::OnSuspendCooldownTimeout() {
+  did_recently_suspend_ = false;
+}
+
+bool BluetoothDeviceStatusNotifierImpl::IsNearbyConnectionsDevice(
+    const device::BluetoothDevice& device) {
+  // NOTE(http://b/215024088): If the newly paired device is connected via a
+  // Nearby Connections client (e.g., Nearby Share), do not display this
+  // notification.
+  device::BluetoothDevice::UUIDSet uuids = device.GetUUIDs();
+  if (std::any_of(uuids.begin(), uuids.end(),
+                  ash::nearby::IsNearbyClientUuid)) {
+    return true;
+  }
+
+  return false;
+}
+
+device::BluetoothDevice* BluetoothDeviceStatusNotifierImpl::FindDevice(
+    const std::string& device_id) {
+  for (auto* device : bluetooth_adapter_->GetDevices()) {
+    if (device->GetIdentifier() == device_id)
+      return device;
+  }
+  return nullptr;
 }
 
 }  // namespace bluetooth_config

@@ -42,6 +42,12 @@ SegmentSelectorImpl::SegmentSelectorImpl(
   if (selected_segment.has_value()) {
     selected_segment_last_session_.segment = selected_segment->segment_id;
     selected_segment_last_session_.is_ready = true;
+    stats::RecordSegmentSelectionFailure(
+        stats::SegmentationSelectionFailureReason::kSelectionAvailableInPrefs);
+  } else {
+    stats::RecordSegmentSelectionFailure(
+        stats::SegmentationSelectionFailureReason::
+            kInvalidSelectionResultInPrefs);
   }
 }
 
@@ -52,6 +58,10 @@ void SegmentSelectorImpl::GetSelectedSegment(
   base::ThreadTaskRunnerHandle::Get()->PostTask(
       FROM_HERE,
       base::BindOnce(std::move(callback), selected_segment_last_session_));
+}
+
+SegmentSelectionResult SegmentSelectorImpl::GetCachedSegmentResult() {
+  return selected_segment_last_session_;
 }
 
 void SegmentSelectorImpl::OnModelExecutionCompleted(
@@ -67,18 +77,16 @@ void SegmentSelectorImpl::OnModelExecutionCompleted(
 }
 
 void SegmentSelectorImpl::RunSegmentSelection(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        all_segments) {
-  if (!CanComputeSegmentSelection(all_segments))
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> all_segments) {
+  if (!CanComputeSegmentSelection(*all_segments))
     return;
 
-  OptimizationTarget selected_segment = FindBestSegment(all_segments);
+  OptimizationTarget selected_segment = FindBestSegment(*all_segments);
   UpdateSelectedSegment(selected_segment);
 }
 
 bool SegmentSelectorImpl::CanComputeSegmentSelection(
-    const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
-        all_segments) {
+    const SegmentInfoDatabase::SegmentInfoList& all_segments) {
   VLOG(1) << __func__ << ": all_segments.size()=" << all_segments.size();
   // Don't compute results if we don't have enough signals, or don't have
   // valid unexpired results for any of the segments.
@@ -90,6 +98,9 @@ bool SegmentSelectorImpl::CanComputeSegmentSelection(
       VLOG(1) << __func__ << ": segment="
               << OptimizationTarget_Name(segment_info.segment_id())
               << " does not meet signal collection requirements.";
+      stats::RecordSegmentSelectionFailure(
+          stats::SegmentationSelectionFailureReason::
+              kAtLeastOneSegmentSignalsNotCollected);
       return false;
     }
 
@@ -98,6 +109,9 @@ bool SegmentSelectorImpl::CanComputeSegmentSelection(
       VLOG(1) << __func__ << ": segment="
               << OptimizationTarget_Name(segment_info.segment_id())
               << " has expired or unavailable result.";
+      stats::RecordSegmentSelectionFailure(
+          stats::SegmentationSelectionFailureReason::
+              kAtLeastOneSegmentNotReady);
       return false;
     }
   }
@@ -113,6 +127,8 @@ bool SegmentSelectorImpl::CanComputeSegmentSelection(
                                      : config_->segment_selection_ttl;
     if (!platform_options_.force_refresh_results &&
         previous_selection->selection_time + ttl_to_use > clock_->Now()) {
+      stats::RecordSegmentSelectionFailure(
+          stats::SegmentationSelectionFailureReason::kSelectionTtlNotExpired);
       VLOG(1) << __func__ << ": previous selection of segment="
               << OptimizationTarget_Name(previous_selection->segment_id)
               << " has not yet expired.";
@@ -124,8 +140,7 @@ bool SegmentSelectorImpl::CanComputeSegmentSelection(
 }
 
 OptimizationTarget SegmentSelectorImpl::FindBestSegment(
-    const std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>&
-        all_segments) {
+    const SegmentInfoDatabase::SegmentInfoList& all_segments) {
   int max_score = 0;
   OptimizationTarget max_score_id =
       OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN;

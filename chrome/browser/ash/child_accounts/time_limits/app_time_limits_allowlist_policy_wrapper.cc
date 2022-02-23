@@ -29,7 +29,7 @@ AppTimeLimitsAllowlistPolicyWrapper::GetAllowlistURLList() const {
     return return_value;
   }
 
-  base::Value::ConstListView list_view = list->GetList();
+  base::Value::ConstListView list_view = list->GetListDeprecated();
   for (const base::Value& value : list_view) {
     if (!value.is_string()) {
       VLOG(1) << "Allowlist URL is not a string.";
@@ -50,7 +50,7 @@ std::vector<AppId> AppTimeLimitsAllowlistPolicyWrapper::GetAllowlistAppList()
     return return_value;
   }
 
-  base::Value::ConstListView list_view = app_list->GetList();
+  base::Value::ConstListView list_view = app_list->GetListDeprecated();
   for (const base::Value& value : list_view) {
     absl::optional<AppId> app_id = policy::AppIdFromDict(value);
     if (app_id)

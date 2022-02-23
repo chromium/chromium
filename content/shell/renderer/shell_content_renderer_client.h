@@ -8,8 +8,8 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/renderer/content_renderer_client.h"
 #include "media/mojo/buildflags.h"
 
@@ -31,20 +31,23 @@ class ShellContentRendererClient : public ContentRendererClient {
   void PrepareErrorPage(RenderFrame* render_frame,
                         const blink::WebURLError& error,
                         const std::string& http_method,
+                        content::mojom::AlternativeErrorPageOverrideInfoPtr
+                            alternative_error_page_info,
                         std::string* error_html) override;
-  void PrepareErrorPageForHttpStatusError(content::RenderFrame* render_frame,
-                                          const blink::WebURLError& error,
-                                          const std::string& http_method,
-                                          int http_status,
-                                          std::string* error_html) override;
+  void PrepareErrorPageForHttpStatusError(
+      content::RenderFrame* render_frame,
+      const blink::WebURLError& error,
+      const std::string& http_method,
+      int http_status,
+      content::mojom::AlternativeErrorPageOverrideInfoPtr
+          alternative_error_page_info,
+      std::string* error_html) override;
 
   void DidInitializeWorkerContextOnWorkerThread(
       v8::Local<v8::Context> context) override;
 
 #if BUILDFLAG(ENABLE_MOJO_CDM)
-  void AddSupportedKeySystems(
-      std::vector<std::unique_ptr<media::KeySystemProperties>>* key_systems)
-      override;
+  void GetSupportedKeySystems(media::GetSupportedKeySystemsCB cb) override;
 #endif
 
  private:

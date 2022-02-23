@@ -8,6 +8,7 @@
 #include "ash/quick_pair/repository/fast_pair_repository.h"
 #include "base/memory/scoped_refptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -41,6 +42,22 @@ class MockFastPairRepository : public FastPairRepository {
   MOCK_METHOD(bool,
               DeleteAssociatedDevice,
               (const device::BluetoothDevice* device),
+              (override));
+  MOCK_METHOD(void,
+              FetchDeviceImages,
+              (scoped_refptr<Device> device),
+              (override));
+  MOCK_METHOD(bool,
+              PersistDeviceImages,
+              (scoped_refptr<Device> device),
+              (override));
+  MOCK_METHOD(bool,
+              EvictDeviceImages,
+              (const device::BluetoothDevice* device),
+              (override));
+  MOCK_METHOD(absl::optional<chromeos::bluetooth_config::DeviceImageInfo>,
+              GetImagesForDevice,
+              (const std::string& device_id),
               (override));
 };
 

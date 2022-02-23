@@ -36,9 +36,9 @@ TEST_F(InMemoryPrefStoreTest, SetGetValue) {
   store_->SetValue(kTestPref, std::make_unique<base::Value>(42),
                    WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_TRUE(store_->GetValue(kTestPref, &value));
-  EXPECT_TRUE(base::Value(42).Equals(value));
+  EXPECT_EQ(base::Value(42), *value);
   EXPECT_TRUE(store_->GetMutableValue(kTestPref, &mutable_value));
-  EXPECT_TRUE(base::Value(42).Equals(mutable_value));
+  EXPECT_EQ(base::Value(42), *mutable_value);
 
   store_->RemoveValue(kTestPref, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
   EXPECT_FALSE(store_->GetValue(kTestPref, &value));

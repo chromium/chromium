@@ -22,14 +22,6 @@ namespace enterprise_connectors {
 
 namespace {
 
-struct TestParam {
-  TestParam(const char* settings_value, ReportingSettings* expected_settings)
-      : settings_value(settings_value), expected_settings(expected_settings) {}
-
-  const char* settings_value;
-  ReportingSettings* expected_settings;
-};
-
 constexpr char kNoProviderSettings[] = "{}";
 
 constexpr char kNormalSettingsWithoutEvents[] =
@@ -40,38 +32,38 @@ constexpr char kNormalSettingsWithEvents[] =
          "enabled_event_names" : ["event 1", "event 2", "event 3"]
        })";
 
-ReportingSettings* NoSettings() {
-  return nullptr;
-}
-
-ReportingSettings* NormalSettingsWithoutEvents() {
-  static base::NoDestructor<ReportingSettings> settings;
-  return settings.get();
-}
-
-ReportingSettings* NormalSettingsWithEvents() {
-  static base::NoDestructor<ReportingSettings> settings;
-  return settings.get();
-}
+constexpr char kNormalSettingsWithOptInEvents[] =
+    R"({ "service_provider": "google",
+         "enabled_opt_in_events" : [
+            { "name": "opt_in_event 1", "url_patterns" : []},
+            { "name": "opt_in_event 2", "url_patterns" : ["*"]},
+            {
+              "name": "opt_in_event 3",
+              "url_patterns" : ["example.com", "other.example.com"]
+            }
+          ]})";
 
 }  // namespace
 
-class ReportingServiceSettingsTest : public testing::TestWithParam<TestParam> {
+class ReportingServiceSettingsTest : public testing::Test {
  public:
-  const char* settings_value() const { return GetParam().settings_value; }
-  ReportingSettings* expected_settings() const {
-    // Set the settings fields dynamically to avoid static initialization issue.
-    if (GetParam().expected_settings == NormalSettingsWithoutEvents() &&
-        !GetParam().expected_settings->reporting_url.is_valid()) {
-      GetParam().expected_settings->reporting_url =
-          GURL("https://chromereporting-pa.googleapis.com/v1/events");
-    } else if (GetParam().expected_settings == NormalSettingsWithEvents() &&
-               GetParam().expected_settings->enabled_event_names.empty()) {
-      GetParam().expected_settings->enabled_event_names.insert("event 1");
-      GetParam().expected_settings->enabled_event_names.insert("event 2");
-      GetParam().expected_settings->enabled_event_names.insert("event 3");
-    }
-    return GetParam().expected_settings;
+  void SetUpTestCommandLine() {
+    base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
+    cmd->AppendSwitchASCII("reporting-connector-url",
+                           "https://test.com/reports");
+    policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
+  }
+
+  absl::optional<ReportingSettings> GetReportingSettings(
+      const char* settings_value) {
+    auto settings = base::JSONReader::Read(settings_value,
+                                           base::JSON_ALLOW_TRAILING_COMMAS);
+    EXPECT_TRUE(settings.has_value());
+
+    ServiceProviderConfig config(kServiceProviderConfig);
+    ReportingServiceSettings service_settings(settings.value(), config);
+
+    return service_settings.GetReportingSettings();
   }
 
  private:
@@ -85,55 +77,80 @@ class ReportingServiceSettingsTest : public testing::TestWithParam<TestParam> {
 #endif
 };
 
-TEST_P(ReportingServiceSettingsTest, Test) {
-  auto settings = base::JSONReader::Read(settings_value(),
-                                         base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(settings.has_value());
-
-  ServiceProviderConfig config(kServiceProviderConfig);
-  ReportingServiceSettings service_settings(settings.value(), config);
-
-  auto reporting_settings = service_settings.GetReportingSettings();
-  ASSERT_EQ((expected_settings() != nullptr), reporting_settings.has_value());
-  if (expected_settings() == NormalSettingsWithoutEvents()) {
-    ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
-    ASSERT_EQ(expected_settings()->reporting_url,
-              reporting_settings.value().reporting_url);
-  } else if (expected_settings() == NormalSettingsWithEvents()) {
-    ASSERT_FALSE(reporting_settings->enabled_event_names.empty());
-    ASSERT_EQ(expected_settings()->enabled_event_names,
-              reporting_settings.value().enabled_event_names);
-  } else {
-    ASSERT_EQ(expected_settings(), NoSettings());
-  }
+TEST_F(ReportingServiceSettingsTest, TestNoSettings) {
+  absl::optional<ReportingSettings> reporting_settings =
+      GetReportingSettings(kNoProviderSettings);
+  ASSERT_FALSE(reporting_settings.has_value());
 }
 
-TEST_P(ReportingServiceSettingsTest, FlagOverride) {
-  base::CommandLine* cmd = base::CommandLine::ForCurrentProcess();
-  cmd->AppendSwitchASCII("reporting-connector-url", "https://test.com/reports");
-  policy::ChromeBrowserPolicyConnector::EnableCommandLineSupportForTesting();
+TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithoutEvents) {
+  absl::optional<ReportingSettings> reporting_settings =
+      GetReportingSettings(kNormalSettingsWithoutEvents);
+  ASSERT_TRUE(reporting_settings.has_value());
 
-  auto settings = base::JSONReader::Read(settings_value(),
-                                         base::JSON_ALLOW_TRAILING_COMMAS);
-  ASSERT_TRUE(settings.has_value());
-
-  ServiceProviderConfig config(kServiceProviderConfig);
-  ReportingServiceSettings service_settings(settings.value(), config);
-
-  auto reporting_settings = service_settings.GetReportingSettings();
-  ASSERT_EQ((expected_settings() != nullptr), reporting_settings.has_value());
-  if (expected_settings()) {
-    ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
-    ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
-  }
+  ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
+  ASSERT_EQ(GURL("https://chromereporting-pa.googleapis.com/v1/events"),
+            reporting_settings.value().reporting_url);
 }
 
-INSTANTIATE_TEST_CASE_P(
-    ,
-    ReportingServiceSettingsTest,
-    testing::Values(
-        TestParam(kNoProviderSettings, NoSettings()),
-        TestParam(kNormalSettingsWithoutEvents, NormalSettingsWithoutEvents()),
-        TestParam(kNormalSettingsWithEvents, NormalSettingsWithEvents())));
+TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithEvents) {
+  absl::optional<ReportingSettings> reporting_settings =
+      GetReportingSettings(kNormalSettingsWithEvents);
+  ASSERT_TRUE(reporting_settings.has_value());
+
+  ASSERT_FALSE(reporting_settings->enabled_event_names.empty());
+  std::set<std::string> expected_event_names{"event 1", "event 2", "event 3"};
+  ASSERT_EQ(expected_event_names,
+            reporting_settings.value().enabled_event_names);
+}
+
+TEST_F(ReportingServiceSettingsTest, TestNormalSettingsWithOptInEvents) {
+  absl::optional<ReportingSettings> reporting_settings =
+      GetReportingSettings(kNormalSettingsWithOptInEvents);
+  ASSERT_TRUE(reporting_settings.has_value());
+
+  std::map<std::string, std::vector<std::string>> actual_opt_in_events =
+      reporting_settings.value().enabled_opt_in_events;
+  ASSERT_EQ(2UL, actual_opt_in_events.size());
+
+  // An event with no URL patterns isn't enabled.
+  ASSERT_EQ(actual_opt_in_events.find("opt_in_event 1"),
+            actual_opt_in_events.end());
+
+  ASSERT_NE(actual_opt_in_events.find("opt_in_event 2"),
+            actual_opt_in_events.end());
+  ASSERT_EQ(1UL, actual_opt_in_events["opt_in_event 2"].size());
+
+  ASSERT_NE(actual_opt_in_events.find("opt_in_event 3"),
+            actual_opt_in_events.end());
+  ASSERT_EQ(2UL, actual_opt_in_events["opt_in_event 3"].size());
+}
+
+TEST_F(ReportingServiceSettingsTest, FlagOverrideNoProviderSettings) {
+  SetUpTestCommandLine();
+  absl::optional<ReportingSettings> reporting_settings =
+      GetReportingSettings(kNoProviderSettings);
+  ASSERT_FALSE(reporting_settings.has_value());
+}
+
+TEST_F(ReportingServiceSettingsTest, FlagOverrideNormalSettingsWithoutEvents) {
+  SetUpTestCommandLine();
+  absl::optional<ReportingSettings> reporting_settings =
+      GetReportingSettings(kNormalSettingsWithoutEvents);
+  ASSERT_TRUE(reporting_settings.has_value());
+
+  ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
+  ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
+}
+
+TEST_F(ReportingServiceSettingsTest, FlagOverrideNormalSettingsWithEvents) {
+  SetUpTestCommandLine();
+  absl::optional<ReportingSettings> reporting_settings =
+      GetReportingSettings(kNormalSettingsWithEvents);
+  ASSERT_TRUE(reporting_settings.has_value());
+
+  ASSERT_TRUE(reporting_settings->reporting_url.is_valid());
+  ASSERT_EQ(reporting_settings->reporting_url, "https://test.com/reports");
+}
 
 }  // namespace enterprise_connectors

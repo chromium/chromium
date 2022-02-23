@@ -69,4 +69,8 @@ void PlatformWindow::SetOpaqueRegion(const std::vector<gfx::Rect>* region_px) {}
 
 void PlatformWindow::SetInputRegion(const gfx::Rect* region_px) {}
 
+bool PlatformWindow::IsClientControlledWindowMovementSupported() const {
+  return true;
+}
+
 }  // namespace ui

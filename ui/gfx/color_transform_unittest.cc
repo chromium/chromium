@@ -11,6 +11,7 @@
 #include "ui/gfx/color_space.h"
 #include "ui/gfx/color_transform.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/gfx_export.h"
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/skia_color_space_util.h"
 #include "ui/gfx/test/icc_profiles.h"
@@ -28,32 +29,23 @@ ColorSpace::PrimaryID all_primaries[] = {
     ColorSpace::PrimaryID::BT470BG,      ColorSpace::PrimaryID::SMPTE170M,
     ColorSpace::PrimaryID::SMPTE240M,    ColorSpace::PrimaryID::FILM,
     ColorSpace::PrimaryID::BT2020,       ColorSpace::PrimaryID::SMPTEST428_1,
-    ColorSpace::PrimaryID::SMPTEST431_2, ColorSpace::PrimaryID::SMPTEST432_1,
+    ColorSpace::PrimaryID::SMPTEST431_2, ColorSpace::PrimaryID::P3,
 };
 
 ColorSpace::TransferID simple_transfers[] = {
-    ColorSpace::TransferID::BT709,
-    ColorSpace::TransferID::GAMMA22,
-    ColorSpace::TransferID::GAMMA28,
-    ColorSpace::TransferID::SMPTE170M,
-    ColorSpace::TransferID::SMPTE240M,
-    ColorSpace::TransferID::SMPTEST428_1,
-    ColorSpace::TransferID::LINEAR,
-    ColorSpace::TransferID::LOG,
-    ColorSpace::TransferID::LOG_SQRT,
-    ColorSpace::TransferID::IEC61966_2_4,
-    ColorSpace::TransferID::BT1361_ECG,
-    ColorSpace::TransferID::IEC61966_2_1,
-    ColorSpace::TransferID::BT2020_10,
-    ColorSpace::TransferID::BT2020_12,
-    ColorSpace::TransferID::SMPTEST2084,
-    ColorSpace::TransferID::ARIB_STD_B67,
-    ColorSpace::TransferID::IEC61966_2_1_HDR,
+    ColorSpace::TransferID::BT709,      ColorSpace::TransferID::GAMMA22,
+    ColorSpace::TransferID::GAMMA28,    ColorSpace::TransferID::SMPTE170M,
+    ColorSpace::TransferID::SMPTE240M,  ColorSpace::TransferID::SMPTEST428_1,
+    ColorSpace::TransferID::LINEAR,     ColorSpace::TransferID::LOG,
+    ColorSpace::TransferID::LOG_SQRT,   ColorSpace::TransferID::IEC61966_2_4,
+    ColorSpace::TransferID::BT1361_ECG, ColorSpace::TransferID::SRGB,
+    ColorSpace::TransferID::BT2020_10,  ColorSpace::TransferID::BT2020_12,
+    ColorSpace::TransferID::SRGB_HDR,
 };
 
 ColorSpace::TransferID extended_transfers[] = {
     ColorSpace::TransferID::LINEAR_HDR,
-    ColorSpace::TransferID::IEC61966_2_1_HDR,
+    ColorSpace::TransferID::SRGB_HDR,
 };
 
 ColorSpace::MatrixID all_matrices[] = {
@@ -125,8 +117,7 @@ TEST(SimpleColorSpace, BT2020CLtoBT2020RGB) {
 }
 
 TEST(SimpleColorSpace, YCOCGLimitedToSRGB) {
-  ColorSpace ycocg(ColorSpace::PrimaryID::BT709,
-                   ColorSpace::TransferID::IEC61966_2_1,
+  ColorSpace ycocg(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::SRGB,
                    ColorSpace::MatrixID::YCOCG, ColorSpace::RangeID::LIMITED);
   ColorSpace sRGB = ColorSpace::CreateSRGB();
   std::unique_ptr<ColorTransform> t(
@@ -175,7 +166,7 @@ TEST(SimpleColorSpace, TransferFnCancel) {
   ColorSpace bt709(primary, ColorSpace::TransferID::BT709, matrix, range);
 
   // IEC61966_2_1 has the sRGB gamma of 2.4 (with some adjustments)
-  ColorSpace srgb(primary, ColorSpace::TransferID::IEC61966_2_1, matrix, range);
+  ColorSpace srgb(primary, ColorSpace::TransferID::SRGB, matrix, range);
 
   // gamma28 is a simple exponential
   ColorSpace gamma28(primary, ColorSpace::TransferID::GAMMA28, matrix, range);
@@ -506,13 +497,13 @@ TEST(SimpleColorSpace, SampleShaderSource) {
       "               -2.28029018e-09, -2.13248596e-01, 2.11240172e+00,\n"
       "               1.79274118e+00, -5.32909274e-01, -5.96049432e-10) "
       "* color;\n"
-      "  color += vec3(-9.69429970e-01, 3.00019622e-01, -1.12926030e+00);\n"
+      "  color += vec3(-9.69429970e-01, 3.00019622e-01, -1.12926018e+00);\n"
       "  color.r = TransferFn1(color.r);\n"
       "  color.g = TransferFn1(color.g);\n"
       "  color.b = TransferFn1(color.b);\n"
-      "  color = mat3(6.27404153e-01, 6.90974146e-02, 1.63914431e-02,\n"
+      "  color = mat3(6.27404153e-01, 6.90974295e-02, 1.63914450e-02,\n"
       "               3.29283088e-01, 9.19540644e-01, 8.80132765e-02,\n"
-      "               4.33131084e-02, 1.13623096e-02, 8.95595253e-01) "
+      "               4.33131158e-02, 1.13623142e-02, 8.95595193e-01) "
       "* color;\n"
       "  color.r = TransferFn3(color.r);\n"
       "  color.g = TransferFn3(color.g);\n"
@@ -545,7 +536,7 @@ TEST(SimpleColorSpace, CanParseSkShaderSource) {
 
 class TransferTest : public testing::TestWithParam<ColorSpace::TransferID> {};
 
-TEST_P(TransferTest, basicTest) {
+TEST_P(TransferTest, BasicTest) {
   gfx::ColorSpace space_with_transfer(ColorSpace::PrimaryID::BT709, GetParam(),
                                       ColorSpace::MatrixID::RGB,
                                       ColorSpace::RangeID::FULL);
@@ -720,17 +711,12 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
   };
   float nits[] = {80.f, 100.f, 200.f};
 
-  for (size_t i = 0; i < 4; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     // We'll set the SDR white level to the values in |nits| and also the
     // default.
-    ColorSpace hdr10 =
-        i < 3 ? ColorSpace::CreateHDR10(nits[i]) : ColorSpace::CreateHDR10();
-    float white_level = 0;
-    EXPECT_TRUE(hdr10.GetSDRWhiteLevel(&white_level));
-    if (i < 3)
-      EXPECT_EQ(white_level, nits[i]);
-    else
-      EXPECT_EQ(white_level, ColorSpace::kDefaultSDRWhiteLevel);
+    const ColorSpace hdr10 = ColorSpace::CreateHDR10();
+    ColorTransform::Options options;
+    options.sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.
@@ -738,7 +724,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
                       ColorSpace::TransferID::LINEAR_HDR,
                       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
     std::unique_ptr<ColorTransform> xform(
-        ColorTransform::NewColorTransform(hdr10, target));
+        ColorTransform::NewColorTransform(hdr10, target, options));
 
     // Do the transform to the values in |pq_encoded_nits|.
     ColorTransform::TriStim val(pq_encoded_nits[0], pq_encoded_nits[1],
@@ -768,7 +754,7 @@ TEST(ColorSpaceTest, PQSDRWhiteLevel) {
 
     // Test the inverse transform.
     std::unique_ptr<ColorTransform> xform_inv(
-        ColorTransform::NewColorTransform(target, hdr10));
+        ColorTransform::NewColorTransform(target, hdr10, options));
     xform_inv->Transform(&val, 1);
     EXPECT_NEAR(val.x(), pq_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), pq_encoded_nits[1], kMathEpsilon);
@@ -786,18 +772,12 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
   };
   constexpr float nits[] = {80.f, 100.f, 200.f};
 
-  for (size_t i = 0; i < 4; ++i) {
+  for (size_t i = 0; i < 3; ++i) {
     // We'll set the SDR white level to the values in |nits| and also the
     // default.
-    ColorSpace hlg = i < 3
-                         ? ColorSpace::CreateHLG().GetWithSDRWhiteLevel(nits[i])
-                         : ColorSpace::CreateHLG();
-    float white_level = 0;
-    EXPECT_TRUE(hlg.GetSDRWhiteLevel(&white_level));
-    if (i < 3)
-      EXPECT_EQ(white_level, nits[i]);
-    else
-      EXPECT_EQ(white_level, ColorSpace::kDefaultSDRWhiteLevel);
+    const ColorSpace hlg = ColorSpace::CreateHLG();
+    ColorTransform::Options options;
+    options.sdr_max_luminance_nits = nits[i];
 
     // Transform to the same color space, but with the LINEAR_HDR transfer
     // function.
@@ -805,7 +785,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
                       ColorSpace::TransferID::LINEAR_HDR,
                       ColorSpace::MatrixID::RGB, ColorSpace::RangeID::FULL);
     std::unique_ptr<ColorTransform> xform(
-        ColorTransform::NewColorTransform(hlg, target));
+        ColorTransform::NewColorTransform(hlg, target, options));
 
     // Do the transform to the values in |hlg_encoded_nits|.
     ColorTransform::TriStim val(hlg_encoded_nits[0], hlg_encoded_nits[1],
@@ -836,7 +816,7 @@ TEST(ColorSpaceTest, HLGSDRWhiteLevel) {
 
     // Test the inverse transform.
     std::unique_ptr<ColorTransform> xform_inv(
-        ColorTransform::NewColorTransform(target, hlg));
+        ColorTransform::NewColorTransform(target, hlg, options));
     xform_inv->Transform(&val, 1);
     EXPECT_NEAR(val.x(), hlg_encoded_nits[0], kMathEpsilon);
     EXPECT_NEAR(val.y(), hlg_encoded_nits[1], kMathEpsilon);
@@ -923,6 +903,62 @@ TEST(ColorSpaceTest, PiecewiseHDR) {
       }
     }
   }
+}
+
+TEST(ColorSpaceTest, HLGHDRToSDR) {
+  ColorSpace hlg_cs(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::HLG);
+  ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
+                         ColorSpace::TransferID::LINEAR);
+  gfx::ColorTransform::Options sdr_options;
+  sdr_options.tone_map_pq_and_hlg_to_sdr = true;
+  auto sdr_transform =
+      ColorTransform::NewColorTransform(hlg_cs, dest_sdr_cs, sdr_options);
+
+  // HLG conversion will produce values above 1 w/o intervention.
+  ColorTransform::TriStim sdr_val = {1, 1, 1};
+  sdr_transform->Transform(&sdr_val, 1);
+  EXPECT_FLOAT_EQ(sdr_val.x(), 1);
+  EXPECT_FLOAT_EQ(sdr_val.y(), 1);
+  EXPECT_FLOAT_EQ(sdr_val.z(), 1);
+
+  ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
+                         ColorSpace::TransferID::LINEAR_HDR);
+  gfx::ColorTransform::Options hdr_options;
+  hdr_options.tone_map_pq_and_hlg_to_sdr = false;
+  auto hdr_transform =
+      ColorTransform::NewColorTransform(hlg_cs, dest_hdr_cs, hdr_options);
+
+  ColorTransform::TriStim hdr_val = {1, 1, 1};
+  hdr_transform->Transform(&hdr_val, 1);
+  EXPECT_NE(sdr_val, hdr_val);
+}
+
+TEST(ColorSpaceTest, PQHDRToSDR) {
+  ColorSpace pq_cs(ColorSpace::PrimaryID::BT709, ColorSpace::TransferID::PQ);
+  ColorSpace dest_sdr_cs(ColorSpace::PrimaryID::BT709,
+                         ColorSpace::TransferID::LINEAR);
+  gfx::ColorTransform::Options sdr_options;
+  sdr_options.tone_map_pq_and_hlg_to_sdr = true;
+  auto sdr_transform =
+      ColorTransform::NewColorTransform(pq_cs, dest_sdr_cs, sdr_options);
+
+  // PQ conversion will produce values above 1 w/o intervention.
+  ColorTransform::TriStim sdr_val = {1, 1, 1};
+  sdr_transform->Transform(&sdr_val, 1);
+  EXPECT_FLOAT_EQ(sdr_val.x(), 1);
+  EXPECT_FLOAT_EQ(sdr_val.y(), 1);
+  EXPECT_FLOAT_EQ(sdr_val.z(), 1);
+
+  ColorSpace dest_hdr_cs(ColorSpace::PrimaryID::BT709,
+                         ColorSpace::TransferID::LINEAR_HDR);
+  gfx::ColorTransform::Options hdr_options;
+  hdr_options.tone_map_pq_and_hlg_to_sdr = false;
+  auto hdr_transform =
+      ColorTransform::NewColorTransform(pq_cs, dest_hdr_cs, hdr_options);
+
+  ColorTransform::TriStim hdr_val = {1, 1, 1};
+  hdr_transform->Transform(&hdr_val, 1);
+  EXPECT_NE(sdr_val, hdr_val);
 }
 
 }  // namespace gfx

@@ -121,7 +121,7 @@ void SetUpdateNeededForApp(Profile* profile,
                            bool update_needed) {
   DictionaryPrefUpdate generated_webapks(profile->GetPrefs(),
                                          kGeneratedWebApksPref);
-  if (generated_webapks->HasKey(app_id)) {
+  if (generated_webapks->FindKey(app_id)) {
     generated_webapks->SetPath({app_id, kUpdateNeededKey},
                                base::Value(update_needed));
   }

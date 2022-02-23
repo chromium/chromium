@@ -159,11 +159,12 @@ int Setup(UpdaterScope scope) {
 
   for (const auto& key_path :
        {GetRegistryKeyClientsUpdater(), GetRegistryKeyClientStateUpdater()}) {
-    install_list->AddCreateRegKeyWorkItem(key, key_path, Wow6432(0));
-    install_list->AddSetRegValueWorkItem(key, key_path, Wow6432(0), kRegValuePV,
-                                         kUpdaterVersionUtf16, true);
+    install_list->AddCreateRegKeyWorkItem(key, key_path, KEY_WOW64_32KEY);
+    install_list->AddSetRegValueWorkItem(key, key_path, KEY_WOW64_32KEY,
+                                         kRegValuePV, kUpdaterVersionUtf16,
+                                         true);
     install_list->AddSetRegValueWorkItem(
-        key, key_path, Wow6432(0), kRegValueName,
+        key, key_path, KEY_WOW64_32KEY, kRegValueName,
         base::ASCIIToWide(PRODUCT_FULLNAME_STRING), true);
   }
 
@@ -191,6 +192,12 @@ int Setup(UpdaterScope scope) {
   run_updater_wake_command.AppendSwitch(kEnableLoggingSwitch);
   run_updater_wake_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                              kLoggingModuleSwitchValue);
+
+  if (scope == UpdaterScope::kUser) {
+    RegisterUserRunAtStartup(GetTaskNamePrefix(scope), run_updater_wake_command,
+                             install_list.get());
+  }
+
   if (!install_list->Do() ||
       !RegisterWakeTask(run_updater_wake_command, scope)) {
     LOG(ERROR) << "Install failed, rolling back...";

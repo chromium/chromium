@@ -11,7 +11,7 @@
 #include <string>
 #include <unordered_map>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/elapsed_timer.h"
@@ -110,11 +110,11 @@ class ExtensionHost : public DeferredStartRenderHost,
   bool OnMessageReceived(const IPC::Message& message,
                          content::RenderFrameHost* host) override;
   void RenderFrameCreated(content::RenderFrameHost* frame_host) override;
-  void RenderFrameDeleted(content::RenderFrameHost* frame_host) override;
+  void RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                              content::RenderFrameHost* new_host) override;
   void PrimaryMainFrameRenderProcessGone(
       base::TerminationStatus status) override;
-  void DocumentAvailableInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void PrimaryMainDocumentElementAvailable() override;
   void DidStopLoading() override;
 
   // content::WebContentsDelegate:
@@ -137,9 +137,7 @@ class ExtensionHost : public DeferredStartRenderHost,
                                   blink::mojom::MediaStreamType type) override;
   bool IsNeverComposited(content::WebContents* web_contents) override;
   content::PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents,
-      const viz::SurfaceId& surface_id,
-      const gfx::Size& natural_size) override;
+      content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
   std::string GetTitleForMediaControls(
       content::WebContents* web_contents) override;
@@ -171,6 +169,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   void OnIncrementLazyKeepaliveCount();
   void OnDecrementLazyKeepaliveCount();
 
+  void MaybeNotifyRenderProcessReady();
   void NotifyRenderProcessReady();
 
   // Records UMA for load events.
@@ -180,13 +179,13 @@ class ExtensionHost : public DeferredStartRenderHost,
   std::unique_ptr<ExtensionHostDelegate> delegate_;
 
   // The extension that we're hosting in this view.
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 
   // Id of extension that we're hosting in this view.
   const std::string extension_id_;
 
   // The browser context that this host is tied to.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // The host for our HTML content.
   std::unique_ptr<content::WebContents> host_contents_;
@@ -196,7 +195,7 @@ class ExtensionHost : public DeferredStartRenderHost,
   // not expose the speculative main frame. While navigating to a still-loading
   // speculative main frame, we want to send messages to it rather than the
   // current frame.
-  content::RenderFrameHost* main_frame_host_;
+  raw_ptr<content::RenderFrameHost> main_frame_host_;
 
   // Whether CreateRendererNow was called before the extension was ready.
   bool is_renderer_creation_pending_ = false;

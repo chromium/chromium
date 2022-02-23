@@ -12,10 +12,18 @@ import org.chromium.base.Callback;
  */
 public interface SegmentationPlatformService {
     /**
-     * Called to get the segment selection result from the backend.
+     * Called to get the segment selection result asynchronously from the backend.
      * @param segmentationKey The key to be used to distinguish between different segmentation
-     *         usages. Currently unused.
+     *         usages.
      * @param callback The callback that contains the result of segmentation.
      */
     void getSelectedSegment(String segmentationKey, Callback<SegmentSelectionResult> callback);
+
+    /**
+     * Called to get the segment selection result synchronously from the backend.
+     * @param segmentationKey The key to be used to distinguish between different segmentation
+     *         usages.
+     * @return The result of segment selection
+     */
+    SegmentSelectionResult getCachedSegmentResult(String segmentationKey);
 }

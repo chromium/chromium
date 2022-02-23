@@ -16,6 +16,7 @@
 <translation id="1369915414381695676"><ph name="SITE_NAME" /> ସାଇଟ୍ ଯୋଗ କରାଗଲା</translation>
 <translation id="1383876407941801731">Search</translation>
 <translation id="1384959399684842514">ଡାଉନ୍‌ଲୋଡ୍ ବିରତ ହୋଇଛି</translation>
+<translation id="1409426117486808224">ଖୋଲାଥିବା ଟାବ୍‍ଗୁଡ଼ିକ ପାଇଁ ସରଳୀକୃତ ଦୃଶ୍ୟ</translation>
 <translation id="1415402041810619267">URLକୁ ଛୋଟ କରାଯାଇଛି</translation>
 <translation id="1446450296470737166">MIDI ଡିଭାଇସ୍‌ଗୁଡ଼ିକର ପୂର୍ଣ୍ଣ ନିୟନ୍ତ୍ରଣର ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="1620510694547887537">କ୍ୟାମେରା</translation>
@@ -49,10 +50,13 @@
 <translation id="2212565012507486665">କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" />କୁ ଆପଣଙ୍କ କ୍ୟାମେରା ଆକ୍ସେସ୍ ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ କ୍ୟାମେରା ମଧ୍ୟ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="2241634353105152135">ଥରେ ମାତ୍ର</translation>
+<translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" />କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="2289270750774289114">ଯେତେବେଳେ ଏକ ସାଇଟ୍ ଆଖପାଖର ବ୍ଲୁଟୂଥ୍ ଡିଭାଇସ୍‍ଗୁଡ଼ିକୁ ଖୋଜିବାକୁ ଚାହୁଁଛି, ସେତେବେଳେ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="2315043854645842844">କ୍ଲାଏଣ୍ଟ ସାଇଡ୍ ସାର୍ଟିଫିକେଟ୍ ଚୟନ ଅପରେଟିଂ ସିଷ୍ଟମ୍‍ ଦ୍ବାରା ସପୋର୍ଟ କରୁନାହିଁ।</translation>
+<translation id="2321958826496381788">ସ୍ଲାଇଡର୍‍କୁ ସେପର୍ଯ୍ୟନ୍ତ ଟାଣନ୍ତୁ, ଯେପର୍ଯ୍ୟନ୍ତ ଆପଣ ଏହାକୁ ଭଲ ଭାବରେ ପଢ଼ିନାହାନ୍ତି। ପାରାଗ୍ରାଫ୍‍‍ରେ ଦୁଇଥର ଟାପ୍ କରିବା ପରେ ଟେକ୍ସଟ୍ ଅତି କମ୍‍‍ରେ ଏତେ ବଡ଼ ଦେଖାଯିବା ଆବଶ୍ୟକ।</translation>
 <translation id="2359808026110333948">ଜାରି ରଖନ୍ତୁ</translation>
 <translation id="2379925928934107488">ଯେତେବେଳେ ସମ୍ଭବ, Chrome ଗାଢ଼ା ଥିମ ବ୍ୟବହାର କରିବା ସମୟରେ ସାଇଟଗୁଡ଼ିକରେ ଗାଢ଼ା ଥିମ ଲାଗୁ କରନ୍ତୁ</translation>
+<translation id="2387895666653383613">ଟେକ୍ସଟ୍‌ ସ୍କେଲିଂ</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}other{<ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, ଏବଂ ଅଧିକ <ph name="NUM_MORE" />ଟିକୁ ଅନୁମତି ଦିଆଯାଇଛି}}</translation>
 <translation id="2434158240863470628">ଡାଉନ୍‌ଲୋଡ୍ ଶେଷ ହେଲା <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -89,6 +93,7 @@
 <translation id="3115898365077584848">ସୂଚନା ଦେଖାନ୍ତୁ</translation>
 <translation id="3123473560110926937">କିଛି ସାଇଟ୍‍ଗୁଡ଼ିକରେ ଅବରୋଧ କରାଯାଇଛି</translation>
 <translation id="3198916472715691905"><ph name="STORAGE_AMOUNT" /> ଷ୍ଟୋର୍ ହୋ‍ଇଥିବା ଡାଟା</translation>
+<translation id="3203366800380907218">ୱେବରୁ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" />କୁ ଆପଣଙ୍କୁ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ପଠାଇବାକୁ ଅନୁମତି ଦେବା ପାଇଁ, <ph name="BEGIN_LINK" />Android ସେଟିଂସ<ph name="END_LINK" />ରେ ମଧ୍ୟ ବିଜ୍ଞପ୍ତିଗୁଡ଼ିକ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="3227137524299004712">ମାଇକ୍ରୋଫୋନ୍</translation>
 <translation id="3277252321222022663">ସେନ୍ସର୍ ଆକ୍ସେସ୍ କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଅନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
@@ -110,6 +115,7 @@
 <translation id="3835233591525155343">ଆପଣଙ୍କ ଡିଭାଇସର ବ୍ୟବହାର</translation>
 <translation id="385051799172605136">ପଛକୁ</translation>
 <translation id="3859306556332390985">ଆଗକୁ ବଢ଼ାନ୍ତୁ</translation>
+<translation id="3895926599014793903">ଜୁମ୍ ସକ୍ଷମ କରିବା ପାଇଁ ବାଧ୍ୟ କରନ୍ତୁ</translation>
 <translation id="3955193568934677022">ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁକୁ ଚଲାଇବା ପାଇଁ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ଅନୁମତି ଦିଆଯାଇଛି।(ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="3967822245660637423">ଡାଉନ୍‍‍‍ଲୋଡ୍ ଶେଷ ହୋଇଛି</translation>
 <translation id="3987993985790029246">ଲିଙ୍କ୍ କପି କରନ୍ତୁ</translation>
@@ -117,7 +123,9 @@
 <translation id="4002066346123236978">ଆଖ୍ୟା</translation>
 <translation id="4008040567710660924">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅନୁମତି ଦିଏ।</translation>
 <translation id="4046123991198612571">ପରବର୍ତ୍ତୀ ଟ୍ରାକ୍</translation>
+<translation id="4149994727733219643">ୱେବ୍ ପୃଷ୍ଠାଗୁଡ଼ିକ ପାଇଁ ସରଳୀକୃତ ଭ୍ୟୁ</translation>
 <translation id="4165986682804962316">ସାଇଟ୍‍ ସେଟିଂସ୍‌</translation>
+<translation id="4194328954146351878">NFC ଡିଭାଇସଗୁଡ଼ିକରେ ସୂଚନା ଦେଖିବା ଏବଂ ପରିବର୍ତ୍ତନ କରିବା ପାଇଁ ସାଇଟଗୁଡ଼ିକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="4200726100658658164">ଲୋକେସନ୍ ସେଟିଂସ୍ ଖୋଲନ୍ତୁ</translation>
 <translation id="4226663524361240545">ବିଜ୍ଞପ୍ତି ଡିଭାଇସ୍‍କୁ ଭାଇବ୍ରେଟ୍ କରିପାରେ</translation>
 <translation id="4259722352634471385">ନାଭିଗେସନ୍ ଅବରୋଧ କରାଯାଇଛି: <ph name="URL" /></translation>
@@ -126,6 +134,7 @@
 <translation id="42981349822642051">ପ୍ରସାରଣ କରନ୍ତୁ</translation>
 <translation id="4336434711095810371">ସମସ୍ତ ଡାଟା ଖାଲି କରନ୍ତୁ</translation>
 <translation id="4402755511846832236">ଆପଣ କେତେବେଳେ ସକ୍ରିୟ ଭାବେ ଏହି ଡିଭାଇସକୁ ବ୍ୟବହାର କରୁଛନ୍ତି ତାହା ଜାଣିବାରୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="4428065317363009941">ବିଜ୍ଞାପନ ପର୍ସନାଲାଇଜେସନ</translation>
 <translation id="4434045419905280838">ପପ୍-ଅପ୍ ଏବଂ ରିଡାଇରେକ୍‌ଟ</translation>
 <translation id="445467742685312942">ସାଇଟ୍‍ଗୁଡ଼ିକୁ ସୁରକ୍ଷିତ ବିଷୟବସ୍ତୁ ଚଳାଇବାକୁ ଅନୁମତି ଦିଅନ୍ତୁ</translation>
 <translation id="4468959413250150279">ଗୋଟିଏ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ ସାଉଣ୍ଡକୁ ମ୍ୟୁଟ୍ କରନ୍ତୁ।</translation>
@@ -156,6 +165,7 @@
 <translation id="5186036860380548585">ସ୍କ୍ରିନର ଶୀର୍ଷଭାଗର ନିକଟରେ ବିକଳ୍ପ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="5197729504361054390">ଆପଣ ଚୟନ କରିଥିବା ଯୋଗାଯୋଗଗୁଡ଼ିକ <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> ସହିତ ସେୟାର୍ କରାଯିବ।</translation>
 <translation id="5216942107514965959">ଆଜି ଶେଷ ଥର ଭିଜିଟ୍ କରାଯାଇଛି</translation>
+<translation id="5264323282659631142">'<ph name="CHIP_LABEL" />'କୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="528192093759286357">ପୂର୍ଣ୍ଣ ସ୍କ୍ରିନ୍‌ରୁ ପ୍ରସ୍ଥାନ କରିବାକୁ ଶୀର୍ଷରୁ ଟାଣନ୍ତୁ ଏବଂ ପଛପଟ ବଟନ୍‌କୁ ସ୍ପର୍ଶ କରନ୍ତୁ</translation>
 <translation id="5300589172476337783">ପ୍ରଦର୍ଶନ କରନ୍ତୁ</translation>
 <translation id="5301954838959518834">ଠିକ୍ ଅଛି, ବୁଝିଗଲି</translation>
@@ -177,10 +187,10 @@
 <translation id="5556459405103347317">ପୁନଃ ଲୋଡ୍ କରନ୍ତୁ</translation>
 <translation id="5596627076506792578">ଅଧିକ ବିକଳ୍ପ</translation>
 <translation id="5649053991847567735">ସ୍ୱଚାଳିତ ଡାଉନ୍‌ଲୋଡ୍‌ଗୁଡ଼ିକ</translation>
+<translation id="5668404140385795438">ଜୁମ୍ ଇନ୍ ପ୍ରକ୍ରିୟାକୁ ପ୍ରତିରୋଧ କରିବା ପାଇଁ ଏକ ୱେବ୍‌ସାଇଟ୍‌ର ଅନୁରୋଧକୁ ଓଭର୍‌ରାଇଡ୍ କରନ୍ତୁ</translation>
 <translation id="5677928146339483299">ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5689516760719285838">ଲୋକେସନ୍</translation>
 <translation id="5690795753582697420">Android ସେଟିଂସରେ କ୍ୟାମେରା ବନ୍ଦ କରାଯାଇଛି</translation>
-<translation id="5710871682236653961">ଆପଣ NFC ଡିଭାଇସ୍‍ଗୁଡ଼ିକରେ ଟାପ୍ କଲେ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ସୂଚନା ପଠାଇବା ଏବଂ ପ୍ରାପ୍ତ କରିବାକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ ପଚାରନ୍ତୁ (ସୁପାରିଶ କରାଯାଇଛି)</translation>
 <translation id="5719847187258001597">ଆପଣଙ୍କ ମୂଳ ସ୍କ୍ରିନରେ <ph name="ORIGIN" /> କିମ୍ବା ଏହାର ଆପଗୁଡ଼ିକ ଦ୍ୱାରା ଷ୍ଟୋର୍ କରାଯାଇଥିବା ଡାଟା ଏବଂ କୁକୀଗୁଡ଼ିକୁ ଏହା ଖାଲି କରିଦେବ।</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ବ୍ଲକ୍ କରାଯାଇଛି</translation>
 <translation id="5804241973901381774">ଅନୁମତିଗୁଡ଼ିକ</translation>
@@ -230,16 +240,16 @@
 <translation id="6790428901817661496">ଚଲାନ୍ତୁ</translation>
 <translation id="6818926723028410516">ଆଇଟମ୍ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6864395892908308021">ଏହି ଡିଭାଇସ୍ NFC ପଢ଼ିପାରିବ ନାହିଁ</translation>
-<translation id="6910211073230771657">ଡିଲିଟ୍ କରାଗଲା</translation>
 <translation id="6912998170423641340">ସାଇଟ୍‍ ଏବଂ କ୍ଲିପ୍‌ବୋର୍ଡରୁ ଲେଖା ପଢ଼ିବା ଏବଂ ଛବି ଅବରୋଧ କରନ୍ତୁ</translation>
 <translation id="6945221475159498467">ଚୟନ କରନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
+<translation id="6981982820502123353">ଆକ୍ସେସିବିଲିଟୀ</translation>
 <translation id="6992289844737586249">ଆପଣଙ୍କର ମାଇକ୍ରୋଫୋନ୍‍ ବ୍ୟବହାର କରିବାକୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ଅନୁମତି ଦେବା ପୂର୍ବରୁ, ପ୍ରଥମେ ପଚାରନ୍ତୁ(ସୁପାରିଶ୍‌ କରାଯାଇଛି)</translation>
 <translation id="7000754031042624318">Android ସେଟିଂସରେ ବନ୍ଦ କରାଯାଇଛି</translation>
 <translation id="7016516562562142042">ସାମ୍ପ୍ରତିକ 'ସନ୍ଧାନ ଇଞ୍ଜିନ୍' ପାଇଁ ଅନୁମତି ଦିଆଯାଇଛି</translation>
+<translation id="702463548815491781">TalkBack କିମ୍ବା ଆକ୍ସେସ୍ ପରିବର୍ତ୍ତନ ଚାଲୁ ଥିଲେ ଏହା କରିବାକୁ ସୁପାରିଶ୍ କରାଯାଇଛି</translation>
 <translation id="7053983685419859001">ଅବରୋଧ କରନ୍ତୁ</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1ଟି ଚୟନ କରାଯାଇଛି}other{#ଟି ଚୟନ କରାଯାଇଛି}}</translation>
-<translation id="7070090581017165256">ଏହି ସାଇଟ ବିଷୟରେ</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" />ଟି ଚୟନ କରାଯାଇଛି।  ସ୍କ୍ରିନ୍‌ର ଶୀର୍ଷଭାଗରେ ବିକଳ୍ପଗୁଡ଼ିକ ଉପଲବ୍ଧ ଅଛି</translation>
 <translation id="7141896414559753902">ସାଇଟ୍‌ଗୁଡ଼ିକର ପପ୍‌-ଅପ୍‌ ଏବଂ ରିଡାଇରେକ୍ଟ ଦେଖାଇବାକୁ ଅବରୋଧ କରନ୍ତୁ (ସୁପାରିଶ୍ କରାଯାଇଛି)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> KB</translation>
@@ -254,8 +264,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">କୌଣସି ସାଇଟ୍ ଆପଣଙ୍କ ମାଇକ୍ରୋଫୋନକୁ ବ୍ୟବହାର କରୁଛି</translation>
 <translation id="7561196759112975576">ସର୍ବଦା</translation>
-<translation id="7572498721684305250">ଆପଣ NFC ଡିଭାଇସ୍‍ଗୁଡ଼ିକରେ ଟାପ୍ କଲେ ସାଇଟ୍‍ଗୁଡ଼ିକୁ ସୂଚନା ପଠାଇବା ଏବଂ ପ୍ରାପ୍ତ କରିବାରୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="757524316907819857">ସୁରକ୍ଷିତ ଥିବା ବିଷୟବସ୍ତୁ ଚଲାଇବାରୁ ସାଇଟ୍‌ଗୁଡ଼ିକୁ ବ୍ଲକ୍ କରନ୍ତୁ</translation>
+<translation id="7577900504646297215">ରୁଚିଗୁଡ଼ିକୁ ପରିଚାଳନା କରନ୍ତୁ</translation>
 <translation id="7649070708921625228">ସହାୟତା</translation>
 <translation id="7658239707568436148">ବାତିଲ୍</translation>
 <translation id="7781829728241885113">ଗତକଲି</translation>
@@ -288,6 +298,7 @@
 <translation id="8211406090763984747">ସଂଯୋଗ ସୁରକ୍ଷିତ ଅଛି</translation>
 <translation id="8249310407154411074">ଉପରକୁ ଘୁଞ୍ଚାନ୍ତୁ</translation>
 <translation id="8261506727792406068">ବିଲୋପ</translation>
+<translation id="8284326494547611709">କ୍ୟାପସନ୍</translation>
 <translation id="8300705686683892304">ଆପ୍ ଦ୍ୱାରା ପରିଚାଳିତ</translation>
 <translation id="8324158725704657629">ପୁଣି ପଚାର ନାହିଁ</translation>
 <translation id="8372893542064058268">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ ପୃଷ୍ଟପଟ ସିଙ୍କ୍‌କୁ ଅନୁମତି ଦିଅନ୍ତୁ।</translation>
@@ -321,6 +332,7 @@
 <translation id="8903921497873541725">ଜୁମ୍ ବଢ଼ାନ୍ତୁ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ଏହି ଡିଭାଇସ୍ ପାଇଁ NFC ବନ୍ଦ ଅଛି। ଏହାକୁ <ph name="BEGIN_LINK" />Android ସେଟିଂସ୍‌<ph name="END_LINK" />ରେ ଚାଲୁ କରନ୍ତୁ।</translation>
+<translation id="8928445016601307354">NFC ଡିଭାଇସଗୁଡ଼ିକରେ ସୂଚନା ଦେଖିବାରୁ ଏବଂ ପରିବର୍ତ୍ତନ କରିବାରୁ ସାଇଟଗୁଡ଼ିକୁ ବ୍ଲକ କରନ୍ତୁ</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">ଏକ ନିର୍ଦ୍ଦିଷ୍ଟ ସାଇଟ୍ ପାଇଁ କୁକୀଗୁଡ଼ିକୁ ଅବରୋଧ କରନ୍ତୁ।</translation>
 <translation id="8959122750345127698">ନାଭିଗେସନ୍‌ରେ ପହଞ୍ଚି ହେଉନାହିଁ: <ph name="URL" /></translation>

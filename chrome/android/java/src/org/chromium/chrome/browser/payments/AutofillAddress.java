@@ -67,23 +67,38 @@ public class AutofillAddress extends EditableOption {
 
     @Nullable private static Pattern sRegionCodePattern;
 
-    private Context mContext;
+    private final Context mContext;
     private AutofillProfile mProfile;
     @Nullable private String mShippingLabelWithCountry;
     @Nullable private String mShippingLabelWithoutCountry;
     @Nullable private String mBillingLabel;
+    private final @CompletenessCheckType int mCheckType;
 
     /**
      * Builds the autofill address.
      *
+     * @param context The context where this address was created.
      * @param profile The autofill profile containing the address information.
      */
     public AutofillAddress(Context context, AutofillProfile profile) {
+        this(context, profile, CompletenessCheckType.NORMAL);
+    }
+
+    /**
+     * Builds the autofill address.
+     *
+     * @param context The context where this address was created.
+     * @param profile The autofill profile containing the address information.
+     * @param checkType The type of completeness to check.
+     */
+    public AutofillAddress(
+            Context context, AutofillProfile profile, @CompletenessCheckType int checkType) {
         super(profile.getGUID(), profile.getFullName(), profile.getLabel(),
                 profile.getPhoneNumber(), null);
         mContext = context;
         mProfile = profile;
         mIsEditable = true;
+        mCheckType = checkType;
         checkAndUpdateAddressCompleteness();
     }
 
@@ -180,8 +195,8 @@ public class AutofillAddress extends EditableOption {
      * status.
      */
     private void checkAndUpdateAddressCompleteness() {
-        Pair<Integer, Integer> messageResIds = getEditMessageAndTitleResIds(
-                checkAddressCompletionStatus(mProfile, CompletenessCheckType.NORMAL));
+        Pair<Integer, Integer> messageResIds =
+                getEditMessageAndTitleResIds(checkAddressCompletionStatus(mProfile, mCheckType));
 
         mEditMessage = messageResIds.first.intValue() == 0
                 ? null
@@ -239,8 +254,9 @@ public class AutofillAddress extends EditableOption {
      * will use the default locale to fill in a blank country code before sending the address to the
      * renderer.
      *
-     * @param  profile The autofill profile containing the address information.
-     * @return int     The completion status.
+     * @param profile   The autofill profile containing the address information.
+     * @param checkType The type of completeness to check.
+     * @return int      The completion status.
      */
     @CompletionStatus
     public static int checkAddressCompletionStatus(
@@ -332,11 +348,11 @@ public class AutofillAddress extends EditableOption {
 
     /** @return The missing fields of the shipping profile. */
     public int getMissingFieldsOfShippingProfile() {
-        return checkAddressCompletionStatus(mProfile, CompletenessCheckType.NORMAL);
+        return checkAddressCompletionStatus(mProfile, mCheckType);
     }
 
     private int calculateCompletenessScore() {
-        int missingFields = checkAddressCompletionStatus(mProfile, CompletenessCheckType.NORMAL);
+        int missingFields = checkAddressCompletionStatus(mProfile, mCheckType);
 
         // Count how many are set. The completeness of the address is weighted so as
         // to dominate the other fields.

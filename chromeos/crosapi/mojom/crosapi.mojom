@@ -8,6 +8,7 @@ import "chromeos/components/sensors/mojom/cros_sensor_service.mojom";
 import "chromeos/crosapi/mojom/account_manager.mojom";
 import "chromeos/crosapi/mojom/app_service.mojom";
 import "chromeos/crosapi/mojom/app_window_tracker.mojom";
+import "chromeos/crosapi/mojom/arc.mojom";
 import "chromeos/crosapi/mojom/authentication.mojom";
 import "chromeos/crosapi/mojom/automation.mojom";
 import "chromeos/crosapi/mojom/browser_app_instance_registry.mojom";
@@ -18,6 +19,7 @@ import "chromeos/crosapi/mojom/clipboard_history.mojom";
 import "chromeos/crosapi/mojom/content_protection.mojom";
 import "chromeos/crosapi/mojom/device_attributes.mojom";
 import "chromeos/crosapi/mojom/device_settings_service.mojom";
+import "chromeos/crosapi/mojom/dlp.mojom";
 import "chromeos/crosapi/mojom/download_controller.mojom";
 import "chromeos/crosapi/mojom/drive_integration_service.mojom";
 import "chromeos/crosapi/mojom/feedback.mojom";
@@ -30,7 +32,10 @@ import "chromeos/crosapi/mojom/identity_manager.mojom";
 import "chromeos/crosapi/mojom/idle_service.mojom";
 import "chromeos/crosapi/mojom/image_writer.mojom";
 import "chromeos/crosapi/mojom/keystore_service.mojom";
+import "chromeos/crosapi/mojom/launcher_search.mojom";
 import "chromeos/crosapi/mojom/local_printer.mojom";
+import "chromeos/crosapi/mojom/login.mojom";
+import "chromeos/crosapi/mojom/login_screen_storage.mojom";
 import "chromeos/crosapi/mojom/login_state.mojom";
 import "chromeos/crosapi/mojom/policy_service.mojom";
 import "chromeos/crosapi/mojom/message_center.mojom";
@@ -44,10 +49,13 @@ import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
+import "chromeos/crosapi/mojom/sharesheet.mojom";
 import "chromeos/crosapi/mojom/structured_metrics_service.mojom";
+import "chromeos/crosapi/mojom/sync.mojom";
 import "chromeos/crosapi/mojom/system_display.mojom";
 import "chromeos/crosapi/mojom/task_manager.mojom";
 import "chromeos/crosapi/mojom/test_controller.mojom";
+import "chromeos/crosapi/mojom/timezone.mojom";
 import "chromeos/crosapi/mojom/tts.mojom";
 import "chromeos/crosapi/mojom/url_handler.mojom";
 import "chromeos/services/machine_learning/public/mojom/machine_learning_service.mojom";
@@ -76,6 +84,12 @@ struct BrowserInfo {
   // For example, "87.0.0.1 dev", "86.0.4240.38 beta".
   string browser_version@0;
 
+  // Lacros publishes the set of workarounds it has implemented. This is needed
+  // to cherry-picks of lacros bug fixes to older branches. See
+  // `ash_workarounds` for more details.
+  [MinVersion=1]
+  array<string>? lacros_workarounds@1;
+
   // TODO(crbug.com/1119925): Add more parameters later.
 };
 
@@ -84,8 +98,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 59
-// Next method id: 63
+// Next version: 67
+// Next method id: 71
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -116,6 +130,11 @@ interface Crosapi {
   // Added in M93.
   [MinVersion=40]
   BindAppServiceProxy@45(pending_receiver<AppServiceProxy> receiver);
+
+  // Bind ARC.
+  // Added in M98.
+  [MinVersion=59]
+  BindArc@63(pending_receiver<Arc> receiver);
 
   // Added in M95.
   [MinVersion=50] BindBrowserAppInstanceRegistry@54(
@@ -189,6 +208,11 @@ interface Crosapi {
   [MinVersion=55] BindDeviceSettingsService@59(
     pending_receiver<DeviceSettingsService> receiver);
 
+  // Binds the DLP (Data Leak Prevention) interface for notifying Ash about
+  // content restrictions applied to web content in Lacros.
+  // Added in M98.
+  [MinVersion=60] BindDlp@64(pending_receiver<Dlp> receiver);
+
   // Binds the DownloadController interface, which allows Lacros download
   // information to be passed into Ash Chrome.
   // Added in M92.
@@ -254,6 +278,14 @@ interface Crosapi {
   // Added in M91.
   [MinVersion=25] BindLocalPrinter@30(pending_receiver<LocalPrinter> receiver);
 
+  // Binds the login service.
+  // Added in M99.
+  [MinVersion=63] BindLogin@67(pending_receiver<Login> receiver);
+
+  // Binds the login screen storage service.
+  [MinVersion=64] BindLoginScreenStorage@68(
+      pending_receiver<LoginScreenStorage> receiver);
+
   // Binds the login state service.
   [MinVersion=57] BindLoginState@61(pending_receiver<LoginState> receiver);
 
@@ -309,6 +341,12 @@ interface Crosapi {
   [MinVersion=14]
   BindSensorHalClient@19(
       pending_remote<chromeos.sensors.mojom.SensorHalClient> receiver);
+
+  // Binds the Sharesheet interface.
+  // Added in M99.
+  [MinVersion=66]
+  BindSharesheet@70(
+      pending_receiver<Sharesheet> receiver);
 
   // Binds the StableVideoDecoderFactory, which allows lacros-chrome to request
   // hardware accelerated video decoding. We need to use a
@@ -366,6 +404,18 @@ interface Crosapi {
   [MinVersion=36] BindResourceManager@41(
       pending_receiver<ResourceManager> receiver);
 
+  // Binds the search controller which send queries from ash to lacros.
+  // Added in M99.
+  [MinVersion=62] BindSearchControllerRegistry@66(
+      pending_receiver<SearchControllerRegistry> receiver);
+
+  // Binds the Sync Service interface to enable communication between Ash and
+  // Lacros Sync. Ash Sync Service is not always available (e.g. Sync can be
+  // disabled via command line flags or after/during profile destruction), in
+  // this case call fails and caller notified via disconnection of |receiver|.
+  // Added in M100.
+  [MinVersion=65] BindSyncService@69(pending_receiver<SyncService> receiver);
+
   // Binds the System Display interface for querying display info.
   // Added in M92.
   [MinVersion=24] BindSystemDisplay@29(
@@ -380,6 +430,11 @@ interface Crosapi {
   // is not available on production devices.
   [MinVersion=9] BindTestController@14(
       pending_receiver<TestController> receiver);
+
+  // Binds the TimeZoneService which notifies system timezone change.
+  // Added in M99.
+  [MinVersion=61] BindTimeZoneService@65(
+      pending_receiver<TimeZoneService> receiver);
 
   // Binds the Tts service which process speech synthesis requests.
   [MinVersion=54] BindTts@58(pending_receiver<Tts> receiver);
@@ -455,32 +510,38 @@ enum MetricsReportingManaged {
   kManaged = 2,
 };
 
-// Default directories on the system.
+// Default directories on the system. We send the full path for each value for
+// future compatibility, to avoid assumptions about where on disk the directory
+// is located.
 [Stable]
 struct DefaultPaths {
   // The default (non-configurable) directory for documents. For example,
-  // /home/chronos/u-<hash>/MyFiles. We send the full path for future
-  // compatibility, to avoid assumptions about where on disk the directory is
-  // located.
+  // /home/chronos/u-<hash>/MyFiles.
   mojo_base.mojom.FilePath documents@0;
 
   // The default (non-configurable) directory for downloads. For example,
-  // /home/chronos/u-<hash>/MyFiles/Downloads.  We send the full path for future
-  // compatibility, to avoid assumptions about where on disk the directory is
-  // located.
+  // /home/chronos/u-<hash>/MyFiles/Downloads.
   mojo_base.mojom.FilePath downloads@1;
 
   // The (non-configurable) path of the mount point for drive in ChromeOS. For
-  // example, /media/fuse/drivefs-<hash>. We send the full path for future
-  // compatibility, to avoid assumptions about where on disk the directory is
-  // located.
+  // example, /media/fuse/drivefs-<hash>.
   [MinVersion=23] mojo_base.mojom.FilePath? drivefs@2;
 
   // The (non-configurable) path of the software user NSS database. For
-  // example, /home/chronos/u-<hash>/.pki/nssdb. We send the full path for
-  // future compatibility, to avoid assumptions about where on disk the
-  // directory is located.
+  // example, /home/chronos/u-<hash>/.pki/nssdb.
   [MinVersion=30] mojo_base.mojom.FilePath? user_nss_database@3;
+
+  // The (non-configurable) path at which removable media is mounted. For
+  // example, /media/removable.
+  [MinVersion=31] mojo_base.mojom.FilePath? removable_media@4;
+
+  // The (non-configurable) path at which ARC's storage is located (shown as
+  // "Play Files" in Files app). For example, /run/arc/sdcard/write/emulated/0.
+  [MinVersion=31] mojo_base.mojom.FilePath? android_files@5;
+
+  // The (non-configurable) path at which Crostini's home directory is
+  // mounted. For example, /media/fuse/crostini_<hash>_termina_penguin.
+  [MinVersion=31] mojo_base.mojom.FilePath? linux_files@6;
 };
 
 // The device specific data needed in Lacros.
@@ -544,6 +605,10 @@ enum InitialBrowserAction {
   // The URLs should be set with BrowserInitParams::startup_urls.
   // Added in M96.
   [MinVersion=3] kOpenWindowWithUrls = 5,
+
+  // Opens a new Guest mode window.
+  // Added in M100.
+  [MinVersion=4] kOpenGuestWindow = 6,
 };
 
 // Whether / how mlservice on-device handwriting is supported.
@@ -577,6 +642,17 @@ enum CreationResult {
   [MinVersion=1] kBrowserWindowUnavailable = 6,
 };
 
+// Represents the source of this OpenUrl request.
+[Stable, Extensible]
+enum OpenUrlFrom {
+  // From is not specified or unknown.
+  [Default] kUnspecified = 0,
+
+  // ARC app made a request of this OpenUrl.
+  kArc = 1,
+};
+
+
 // BrowserInitParams is a set of parameters for initialization of browsers
 // (such as lacros-chrome), which is passed from ash-chrome to a browser.
 // Since ash-chrome and browsers may have different versions, the browsers must
@@ -594,8 +670,8 @@ enum CreationResult {
 // If ash-chrome is newer than the browser, then some fields may not be
 // processed by the browser.
 //
-// Next version: 31
-// Next id: 30
+// Next version: 37
+// Next id: 37
 [Stable, RenamedFrom="crosapi.mojom.LacrosInitParams"]
 struct BrowserInitParams {
   // This is ash-chrome's version of the Crosapi interface. This is used by
@@ -677,17 +753,10 @@ struct BrowserInitParams {
   [MinVersion=12]
   IdleInfo? idle_info@12;
 
-  // Launches an incognito window.
-  // Added in M91.
-  // TODO(https://crbug.com/1194304): Remove in M93.
   [MinVersion=13]
-  bool is_incognito_deprecated@13;
-
-  // Restores tabs from the last session.
-  // Added in M91.
-  // TODO(https://crbug.com/1194304): Remove in M93.
+  bool REMOVED_13@13;
   [MinVersion=14]
-  bool restore_last_session_deprecated@14;
+  bool REMOVED_14@14;
 
   // Defines which windows or tabs to restore on launch.
   [MinVersion=15]
@@ -744,6 +813,12 @@ struct BrowserInitParams {
   // enforce at run-time in lacros-chrome.
   array<BuildFlag>? build_flags@23;
 
+  // Specifies what requests the startup_urls.
+  // This can be effective only when startup_urls is specified.
+  // Added in M100.
+  [MinVersion=36]
+  OpenUrlFrom startup_urls_from@36;
+
   // URLs to be opened at the beginning. This works only when
   // initial_browser_action == OpenWindowWithUrls.
   // Added in M96.
@@ -790,6 +865,70 @@ struct BrowserInitParams {
   // BrowserService::UpdateKeepAlive().
   [MinVersion=29]
   InitialKeepAlive initial_keep_alive@29;
+
+  // Whether the ash::switches::kUnfilteredBluetoothDevices command line switch
+  // is present for Ash.
+  [MinVersion=31]
+  bool is_unfiltered_bluetooth_device_enabled@30;
+
+  // Ash publishes the list of capabilities it has implemented to Lacros so
+  // that Lacros can dynamically change its behavior. This should typically take
+  // the format of a bug identifier, e.g. "crbug/123" or "b/456". This is
+  // primarily necessary for backporting behavior changes and fixes to older
+  // branches. If applicable, when adding a new capability, please indicate with
+  // a comment when we can stop publishing the capability -- e.g. once Ash and
+  // Lacros are both past M100, then we can remove this capability.
+  [MinVersion=32]
+  array<string>? ash_capabilities@31;
+
+  // Internal chrome:// URLs which can be handled by Ash. These are sent from
+  // Ash to Lacros at startup so Lacros knows which URLs are OK to forward.
+  // Added in M97.
+  [MinVersion=33]
+  array<url.mojom.Url>? accepted_internal_ash_urls@32;
+
+  // Whether incognito profile integration is enabled with the feature that aims
+  // to reduce context switching by enabling users to collect content and
+  // transfer or access it later.
+  // See `ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()`.
+  [MinVersion=34]
+  bool is_holding_space_incognito_profile_integration_enabled@33;
+
+  // Whether in-progress downloads notification suppression is enabled with the
+  // feature that aims to reduce context switching by enabling users to collect
+  // content and transfer or access it later.
+  // See `ash::features::IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled()`.
+  [MinVersion=34]
+  bool is_holding_space_in_progress_downloads_notification_suppression_enabled@34;
+
+  // Whether the device is either enterprise managed or in demo mode.
+  [MinVersion=35]
+  bool is_device_enterprised_managed@35;
+};
+
+// Parameters to specify OpenUrl behavior.
+[Stable]
+struct OpenUrlParams {
+  // Decides the disposition of the opening page.
+  [Stable, Extensible]
+  enum WindowOpenDisposition {
+    // DEPRECATED. OpenUrl used to check the URL to decide the disposition
+    // of the page. This is kept just for the compatibility. New callers
+    // should not use this value.
+    [Default] kLegacyAutoDetection = 0,
+
+    // Opens a new tab and navigate to the given URL.
+    kNewForegroundTab = 1,
+
+    // If there's an existing tab showing the given URL, activate it.
+    // If not, if the tab is NTP and does not have history, navigate it
+    // to the given URL. Otherwise, opens a new tab and navigate it to
+    // the given URL.
+    kSwitchToTab = 2,
+  };
+  WindowOpenDisposition disposition@0;
+
+  [MinVersion=1] OpenUrlFrom from@1;
 };
 
 // BrowserService defines the APIs that live in a browser (such as
@@ -799,8 +938,8 @@ struct BrowserInitParams {
 // has accidentally become a kitchen sink for different features. This was not
 // intentional.
 //
-// Next MinVersion: 15.
-// Next ID: 13
+// Next MinVersion: 64.
+// Next ID: 15
 //
 [Stable, Uuid="4e04dc16-b34c-40fd-9e3f-3c55c2c6cf91",
  RenamedFrom="crosapi.mojom.LacrosChromeService"]
@@ -811,8 +950,13 @@ interface BrowserService {
 
   // Opens a new window in the browser with, currently, the last used profile.
   // The callback is called on the command execution.
-  // This is designed to be equivalent of CTRL+N (or CTRL+SHIFT+N) behavior.
-  NewWindow@1([MinVersion=10] bool incognito) => ();
+  // If `should_trigger_session_restore` is true, a new window opening should be
+  // treated like the start of a new session (with potential session restore,
+  // startup URLs, etc). Otherwise, don't restore the session and instead open a
+  // new window with the default blank tab.
+  NewWindow@1(
+    [MinVersion=10] bool incognito,
+    [MinVersion=61] bool should_trigger_session_restore) => ();
 
   // Opens a new fullscreen window in the browser with, currently, the last
   // used profile. The only tab will be navigated to the given `url` once the
@@ -832,6 +976,12 @@ interface BrowserService {
       mojo_base.mojom.String16 tab_id, mojo_base.mojom.String16 group_id)
           => (CreationResult result, string app_id);
 
+  // Opens a new window in the browser with the Guest profile if the Guest mode
+  // is enabled.
+  // Added in M100.
+  [MinVersion=63]
+  NewGuestWindow@14() => ();
+
   // Opens a new tab in the browser with, currently, the last used profile.
   // This may open a new window, if there's no window. Please see also
   // the Chrome's NewTab command for details.
@@ -848,7 +998,8 @@ interface BrowserService {
   // such as web-page opening request from ash features, or Crostini/ARC apps.
   // Added in M96.
   [MinVersion=12]
-  OpenUrl@10(url.mojom.Url url) => ();
+  OpenUrl@10(url.mojom.Url url,
+             [MinVersion=62] OpenUrlParams? params) => ();
 
   // Restores a tab (or a window) recently closed in the browser with,
   // currently, the last used profile. Please see also RestoreTab command
@@ -857,6 +1008,13 @@ interface BrowserService {
   // Added in M91.
   [MinVersion=10]
   RestoreTab@8() => ();
+
+  // Signals Lacros that a multi-finger horizontal swipe has occurred in Ash.
+  // The browser usually responds by switching tabs
+  //
+  // |x_offset| is in DIP coordinates.
+  [MinVersion=15]
+  HandleTabScrubbing@13(float x_offset);
 
   // Returns the browser's feedback data used for generating feedback report in
   // a dictionary object, each entry representing a log entry in the feedback

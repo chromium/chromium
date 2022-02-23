@@ -4,6 +4,8 @@
 
 #include "components/reporting/metrics/metric_data_collector.h"
 
+#include <utility>
+
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/task/bind_post_task.h"
@@ -11,7 +13,6 @@
 #include "components/reporting/metrics/metric_rate_controller.h"
 #include "components/reporting/metrics/metric_report_queue.h"
 #include "components/reporting/metrics/metric_reporting_controller.h"
-#include "components/reporting/metrics/sampler.h"
 #include "components/reporting/util/status.h"
 
 namespace reporting {
@@ -52,11 +53,12 @@ OneShotCollector::OneShotCollector(Sampler* sampler,
                                    MetricReportQueue* metric_report_queue,
                                    ReportingSettings* reporting_settings,
                                    const std::string& setting_path,
+                                   bool setting_enabled_default_value,
                                    base::OnceClosure on_data_reported)
     : CollectorBase(sampler, metric_report_queue),
       on_data_reported_(std::move(on_data_reported)) {
   reporting_controller_ = std::make_unique<MetricReportingController>(
-      reporting_settings, setting_path,
+      reporting_settings, setting_path, setting_enabled_default_value,
       base::BindRepeating(&OneShotCollector::Collect, base::Unretained(this)));
 }
 
@@ -85,6 +87,7 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
                                      MetricReportQueue* metric_report_queue,
                                      ReportingSettings* reporting_settings,
                                      const std::string& enable_setting_path,
+                                     bool setting_enabled_default_value,
                                      const std::string& rate_setting_path,
                                      base::TimeDelta default_rate,
                                      int rate_unit_to_ms)
@@ -99,6 +102,7 @@ PeriodicCollector::PeriodicCollector(Sampler* sampler,
       reporting_controller_(std::make_unique<MetricReportingController>(
           reporting_settings,
           enable_setting_path,
+          setting_enabled_default_value,
           base::BindRepeating(&PeriodicEventCollector::StartPeriodicCollection,
                               base::Unretained(this)),
           base::BindRepeating(&PeriodicEventCollector::StopPeriodicCollection,
@@ -115,12 +119,54 @@ void PeriodicCollector::OnMetricDataCollected(MetricData metric_data) {
 
 void PeriodicCollector::StartPeriodicCollection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  // Do initial collection at startup.
+  Collect();
   rate_controller_->Start();
 }
 
 void PeriodicCollector::StopPeriodicCollection() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   rate_controller_->Stop();
+}
+
+AdditionalSamplersCollector::AdditionalSamplersCollector(
+    std::vector<Sampler*> samplers)
+    : samplers_(std::move(samplers)) {
+  DETACH_FROM_SEQUENCE(sequence_checker_);
+}
+
+AdditionalSamplersCollector::~AdditionalSamplersCollector() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+}
+
+void AdditionalSamplersCollector::CollectAll(MetricCallback on_all_collected_cb,
+                                             MetricData metric_data) const {
+  MetricData empty_metric_data;
+  CollectAdditionalMetricData(
+      /*sampler_index=*/0, std::move(on_all_collected_cb),
+      std::move(metric_data), std::move(empty_metric_data));
+}
+
+void AdditionalSamplersCollector::CollectAdditionalMetricData(
+    uint64_t sampler_index,
+    MetricCallback on_all_collected_cb,
+    MetricData metric_data,
+    MetricData new_metric_data) const {
+  CHECK(base::SequencedTaskRunnerHandle::IsSet());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  metric_data.CheckTypeAndMergeFrom(new_metric_data);
+  if (sampler_index == samplers_.size()) {
+    std::move(on_all_collected_cb).Run(std::move(metric_data));
+    return;
+  }
+
+  auto on_collected_cb =
+      base::BindOnce(&AdditionalSamplersCollector::CollectAdditionalMetricData,
+                     weak_ptr_factory_.GetWeakPtr(), sampler_index + 1,
+                     std::move(on_all_collected_cb), std::move(metric_data));
+  samplers_[sampler_index]->Collect(base::BindPostTask(
+      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
 }
 
 PeriodicEventCollector::PeriodicEventCollector(
@@ -130,6 +176,7 @@ PeriodicEventCollector::PeriodicEventCollector(
     MetricReportQueue* metric_report_queue,
     ReportingSettings* reporting_settings,
     const std::string& enable_setting_path,
+    bool setting_enabled_default_value,
     const std::string& rate_setting_path,
     base::TimeDelta default_rate,
     int rate_unit_to_ms)
@@ -137,11 +184,14 @@ PeriodicEventCollector::PeriodicEventCollector(
                         metric_report_queue,
                         reporting_settings,
                         enable_setting_path,
+                        setting_enabled_default_value,
                         rate_setting_path,
                         default_rate,
                         rate_unit_to_ms),
-      additional_samplers_(std::move(additional_samplers)),
-      event_detector_(std::move(event_detector)) {}
+      event_detector_(std::move(event_detector)),
+      additional_samplers_collector_(
+          std::make_unique<AdditionalSamplersCollector>(
+              std::move(additional_samplers))) {}
 
 PeriodicEventCollector::~PeriodicEventCollector() = default;
 
@@ -149,37 +199,24 @@ void PeriodicEventCollector::OnMetricDataCollected(MetricData metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   metric_data.set_timestamp_ms(base::Time::Now().ToJavaTime());
-  const bool event_detected =
-      event_detector_->DetectEvent(last_collected_data_, &metric_data);
+  absl::optional<MetricEventType> event =
+      event_detector_->DetectEvent(last_collected_data_, metric_data);
   last_collected_data_ = std::move(metric_data);
-  if (!event_detected) {
+  if (!event.has_value()) {
     return;
   }
+  last_collected_data_.mutable_event_data()->set_type(event.value());
 
-  MetricData empty_metric_data;
-  CollectAdditionalMetricData(/*sampler_index=*/0,
-                              /*metric_data=*/last_collected_data_,
-                              /*new_metric_data=*/empty_metric_data);
+  additional_samplers_collector_->CollectAll(
+      base::BindOnce(&PeriodicEventCollector::OnAdditionalMetricDataCollected,
+                     base::Unretained(this)),
+      /*metric_data=*/last_collected_data_);
 }
 
-void PeriodicEventCollector::CollectAdditionalMetricData(
-    uint64_t sampler_index,
-    MetricData metric_data,
-    MetricData new_metric_data) {
-  CHECK(base::SequencedTaskRunnerHandle::IsSet());
+void PeriodicEventCollector::OnAdditionalMetricDataCollected(
+    MetricData metric_data) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  metric_data.CheckTypeAndMergeFrom(new_metric_data);
-  if (sampler_index == additional_samplers_.size()) {
-    ReportMetricData(metric_data);
-    return;
-  }
-
-  auto on_collected_cb =
-      base::BindOnce(&PeriodicEventCollector::CollectAdditionalMetricData,
-                     weak_ptr_factory_.GetWeakPtr(), sampler_index + 1,
-                     std::move(metric_data));
-  additional_samplers_[sampler_index]->Collect(base::BindPostTask(
-      base::SequencedTaskRunnerHandle::Get(), std::move(on_collected_cb)));
+  ReportMetricData(metric_data);
 }
 }  // namespace reporting

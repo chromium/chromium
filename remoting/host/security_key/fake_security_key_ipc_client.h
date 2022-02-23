@@ -9,9 +9,10 @@
 #include <string>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
+#include "remoting/host/mojom/remote_security_key.mojom.h"
 #include "remoting/host/security_key/security_key_ipc_client.h"
 
 namespace IPC {
@@ -64,8 +65,6 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
 
   bool connection_ready() { return connection_ready_; }
 
-  bool invalid_session_error() { return invalid_session_error_; }
-
   void set_check_for_ipc_channel_return_value(bool return_value) {
     check_for_ipc_channel_return_value_ = return_value;
   }
@@ -82,10 +81,6 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
     security_key_response_payload_ = response_payload;
   }
 
-  void set_on_channel_connected_callback(base::OnceClosure callback) {
-    on_channel_connected_callback_ = std::move(callback);
-  }
-
  private:
   // IPC::Listener implementation.
   bool OnMessageReceived(const IPC::Message& message) override;
@@ -95,21 +90,14 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
   // Handles security key response IPC messages.
   void OnSecurityKeyResponse(const std::string& request_data);
 
-  // Handles the ConnectionReady IPC message.
-  void OnConnectionReady();
-
-  // Handles the InvalidSession IPC message.
-  void OnInvalidSession();
-
   // Called when a change in the IPC channel state has occurred.
   base::RepeatingClosure channel_event_callback_;
-
-  // Called when the IPC Channel is connected.
-  base::OnceClosure on_channel_connected_callback_;
 
   // Used for sending/receiving security key messages between processes.
   std::unique_ptr<mojo::IsolatedConnection> mojo_connection_;
   std::unique_ptr<IPC::Channel> client_channel_;
+
+  mojo::AssociatedRemote<mojom::SecurityKeyForwarder> security_key_forwarder_;
 
   // Provides the contents of the last IPC message received.
   std::string last_message_received_;
@@ -128,9 +116,6 @@ class FakeSecurityKeyIpcClient : public SecurityKeyIpcClient {
 
   // Tracks whether a ConnectionReady message has been received.
   bool connection_ready_ = false;
-
-  // Tracks whether an InvalidSession message has been received.
-  bool invalid_session_error_ = false;
 
   // Value returned by SendSecurityKeyRequest() method.
   std::string security_key_response_payload_;

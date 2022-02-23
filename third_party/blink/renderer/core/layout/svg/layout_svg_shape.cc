@@ -38,9 +38,9 @@
 #include "third_party/blink/renderer/core/paint/svg_shape_painter.h"
 #include "third_party/blink/renderer/core/svg/svg_geometry_element.h"
 #include "third_party/blink/renderer/core/svg/svg_length_context.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -200,10 +200,9 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
     if (!HasPath())
       CreatePath();
 
-    StrokeData stroke_data;
-    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, StyleRef(),
-                                                   *this, DashScaleFactor());
+    const Path* path = path_.get();
 
+    AffineTransform root_transform;
     if (HasNonScalingStroke()) {
       // The reason is similar to the above code about HasPath().
       if (!rare_data_)
@@ -211,20 +210,24 @@ bool LayoutSVGShape::ShapeDependentStrokeContains(
 
       // Un-scale to get back to the root-transform (cheaper than re-computing
       // the root transform from scratch).
-      AffineTransform root_transform;
       root_transform.Scale(StyleRef().EffectiveZoom())
           .Multiply(NonScalingStrokeTransform());
 
-      stroke_path_cache_ = std::make_unique<Path>(
-          NonScalingStrokePath().StrokePath(stroke_data, root_transform));
+      path = &NonScalingStrokePath();
     } else {
-      stroke_path_cache_ = std::make_unique<Path>(
-          path_->StrokePath(stroke_data, ComputeRootTransform()));
+      root_transform = ComputeRootTransform();
     }
+
+    StrokeData stroke_data;
+    SVGLayoutSupport::ApplyStrokeStyleToStrokeData(stroke_data, StyleRef(),
+                                                   *this, DashScaleFactor());
+
+    stroke_path_cache_ =
+        std::make_unique<Path>(path->StrokePath(stroke_data, root_transform));
   }
 
   DCHECK(stroke_path_cache_);
-  auto point = ToGfxPointF(location.TransformedPoint());
+  auto point = location.TransformedPoint();
   if (HasNonScalingStroke())
     point = NonScalingStrokeTransform().MapPoint(point);
   return stroke_path_cache_->Contains(point);
@@ -234,8 +237,7 @@ bool LayoutSVGShape::ShapeDependentFillContains(
     const HitTestLocation& location,
     const WindRule fill_rule) const {
   NOT_DESTROYED();
-  return GetPath().Contains(ToGfxPointF(location.TransformedPoint()),
-                            fill_rule);
+  return GetPath().Contains(location.TransformedPoint(), fill_rule);
 }
 
 static bool HasPaintServer(const LayoutObject& object, const SVGPaint& paint) {
@@ -254,8 +256,7 @@ bool LayoutSVGShape::FillContains(const HitTestLocation& location,
                                   bool requires_fill,
                                   const WindRule fill_rule) {
   NOT_DESTROYED();
-  if (!fill_bounding_box_.InclusiveContains(
-          ToGfxPointF(location.TransformedPoint())))
+  if (!fill_bounding_box_.InclusiveContains(location.TransformedPoint()))
     return false;
 
   if (requires_fill && !HasPaintServer(*this, StyleRef().FillPaint()))
@@ -272,14 +273,13 @@ bool LayoutSVGShape::StrokeContains(const HitTestLocation& location,
     return false;
 
   if (requires_stroke) {
-    if (!StrokeBoundingBox().InclusiveContains(
-            ToGfxPointF(location.TransformedPoint())))
+    if (!StrokeBoundingBox().InclusiveContains(location.TransformedPoint()))
       return false;
 
     if (!HasPaintServer(*this, StyleRef().StrokePaint()))
       return false;
   } else if (!HitTestStrokeBoundingBox().InclusiveContains(
-                 ToGfxPointF(location.TransformedPoint()))) {
+                 location.TransformedPoint())) {
     return false;
   }
 
@@ -401,8 +401,8 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
     return false;
   const ComputedStyle& style = StyleRef();
   const PointerEventsHitRules hit_rules(
-      PointerEventsHitRules::SVG_GEOMETRY_HITTESTING,
-      result.GetHitTestRequest(), style.PointerEvents());
+      PointerEventsHitRules::kSvgGeometryHitTesting, result.GetHitTestRequest(),
+      style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;
 
@@ -415,7 +415,7 @@ bool LayoutSVGShape::NodeAtPoint(HitTestResult& result,
     return false;
 
   if (HitTestShape(result.GetHitTestRequest(), *local_location, hit_rules)) {
-    UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+    UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                     local_location->TransformedPoint()));
     if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
         kStopHitTesting)

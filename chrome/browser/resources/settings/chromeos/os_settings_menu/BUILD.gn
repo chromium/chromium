@@ -14,7 +14,7 @@ js_type_check("closure_compile_module") {
 
 js_library("os_settings_menu") {
   deps = [
-    "..:os_route.m",
+    "..:os_route",
     "..:route_observer_behavior",
     "../..:router",
     "//third_party/polymer/v3_0/components-chromium/iron-collapse:iron-collapse",

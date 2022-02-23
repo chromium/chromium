@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/number_formatting.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/public/browser/navigation_throttle.h"
 #include "content/public/browser/ssl_status.h"
@@ -116,8 +117,7 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
                        base::Unretained(this)));
 
     GetNavigationRequest()->WillRedirectRequest(
-        GURL(), WebExposedIsolationInfo::CreateNonIsolated(),
-        nullptr /* post_redirect_process */);
+        GURL(), nullptr /* post_redirect_process */);
   }
 
   // Helper function to call WillFailRequest on |handle|. If this function
@@ -215,6 +215,23 @@ class NavigationRequestTest : public RenderViewHostImplTestHarness {
     GetNavigationRequest()->StartNavigation();
   }
 
+  FrameTreeNode* AddFrame(FrameTree& frame_tree,
+                          RenderFrameHostImpl* parent,
+                          int process_id,
+                          int new_routing_id,
+                          const blink::FramePolicy& frame_policy,
+                          blink::FrameOwnerElementType owner_type) {
+    return frame_tree.AddFrame(
+        parent, process_id, new_routing_id,
+        TestRenderFrameHost::CreateStubFrameRemote(),
+        TestRenderFrameHost::CreateStubBrowserInterfaceBrokerReceiver(),
+        TestRenderFrameHost::CreateStubPolicyContainerBindParams(),
+        blink::mojom::TreeScopeType::kDocument, std::string(), "uniqueName0",
+        false, blink::LocalFrameToken(), base::UnguessableToken::Create(),
+        frame_policy, blink::mojom::FrameOwnerProperties(), false, owner_type,
+        /*is_dummy_frame_for_inner_tree=*/false);
+  }
+
  private:
   // The callback provided to NavigationRequest::WillStartRequest,
   // NavigationRequest::WillRedirectRequest, and
@@ -300,6 +317,65 @@ TEST_F(NavigationRequestTest, SimpleDataChecksFailure) {
                 ->request_context_type());
   EXPECT_EQ(net::ERR_CERT_DATE_INVALID,
             navigation->GetNavigationHandle()->GetNetErrorCode());
+}
+
+TEST_F(NavigationRequestTest, FencedFrameNavigationToPendingMappedURN) {
+  // Note that we only run this test for the ShadowDOM implementation of fenced
+  // frames, due to how they add subframes in a way that is very specific to the
+  // ShadowDOM implementation, and not suitable for the MPArch implementation.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeatureWithParameters(
+      blink::features::kFencedFrames, {{"implementation_type", "shadow_dom"}});
+
+  FrameTree& frame_tree = contents()->GetPrimaryFrameTree();
+  FrameTreeNode* root = frame_tree.root();
+  int process_id = root->current_frame_host()->GetProcess()->GetID();
+
+  // Add a fenced frame.
+  constexpr auto kFencedframeOwnerType =
+      blink::FrameOwnerElementType::kFencedframe;
+  blink::FramePolicy policy;
+  policy.is_fenced = true;
+  AddFrame(frame_tree, root->current_frame_host(), process_id, 15, policy,
+           kFencedframeOwnerType);
+
+  FrameTreeNode* fenced_frame_tree_node = root->child_at(0);
+  EXPECT_TRUE(fenced_frame_tree_node->IsFencedFrameRoot());
+  EXPECT_TRUE(fenced_frame_tree_node->IsInFencedFrameTree());
+
+  FencedFrameURLMapping& fenced_frame_urls_map =
+      main_test_rfh()->GetPage().fenced_frame_urls_map();
+
+  const GURL urn_uuid = fenced_frame_urls_map.GeneratePendingMappedURN();
+  const GURL mapped_url = GURL("http://chromium.org");
+
+  auto navigation_simulator = NavigationSimulatorImpl::CreateRendererInitiated(
+      urn_uuid, fenced_frame_tree_node->current_frame_host());
+
+  auto response_headers =
+      base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
+  response_headers->SetHeader("Supports-Loading-Mode", "fenced-frame");
+
+  navigation_simulator->SetAutoAdvance(false);
+  navigation_simulator->SetResponseHeaders(response_headers);
+  navigation_simulator->SetTransition(ui::PAGE_TRANSITION_AUTO_SUBFRAME);
+
+  navigation_simulator->Start();
+
+  EXPECT_EQ(navigation_simulator->GetNavigationHandle()->GetURL(), urn_uuid);
+
+  fenced_frame_urls_map.OnURNMappingResultDetermined(urn_uuid, mapped_url);
+
+  // Expect that the url in the NavigationRequest is already mapped.
+  EXPECT_EQ(navigation_simulator->GetNavigationHandle()->GetURL(), mapped_url);
+
+  navigation_simulator->Wait();
+
+  navigation_simulator->SetAutoAdvance(true);
+  navigation_simulator->ReadyToCommit();
+  navigation_simulator->Commit();
+
+  EXPECT_EQ(fenced_frame_tree_node->current_url(), mapped_url);
 }
 
 // Checks that a navigation deferred during WillStartRequest can be properly

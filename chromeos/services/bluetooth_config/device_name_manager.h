@@ -25,9 +25,11 @@ class DeviceNameManager {
     ~Observer() override = default;
 
     // Invoked when the nickname of device with id |device_id| has changed to
-    // |nickname|.
-    virtual void OnDeviceNicknameChanged(const std::string& device_id,
-                                         const std::string& nickname) = 0;
+    // |nickname|. If |nickname| is null, the nickname has been removed for
+    // |device_id|.
+    virtual void OnDeviceNicknameChanged(
+        const std::string& device_id,
+        const absl::optional<std::string>& nickname) = 0;
   };
 
   virtual ~DeviceNameManager();
@@ -42,6 +44,10 @@ class DeviceNameManager {
   virtual void SetDeviceNickname(const std::string& device_id,
                                  const std::string& nickname) = 0;
 
+  // Removes the nickname of the Bluetooth device with ID |device_id| for all
+  // users of the current device.
+  virtual void RemoveDeviceNickname(const std::string& device_id) = 0;
+
   // Sets the PrefService used to store nicknames.
   virtual void SetPrefs(PrefService* local_state) = 0;
 
@@ -52,7 +58,7 @@ class DeviceNameManager {
   DeviceNameManager();
 
   void NotifyDeviceNicknameChanged(const std::string& device_id,
-                                   const std::string& nickname);
+                                   const absl::optional<std::string>& nickname);
 
   base::ObserverList<Observer> observers_;
 };

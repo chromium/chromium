@@ -5,7 +5,7 @@
 #ifndef CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 #define CONTENT_BROWSER_ATTRIBUTION_REPORTING_ATTRIBUTION_HOST_UTILS_H_
 
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/navigation/impression.h"
@@ -30,10 +30,13 @@ struct VerifyResult {
   bool stored;
 };
 
+// Checks if the origin is trustworthy or an android app origin.
+bool IsOriginTrustworthyForAttributions(const url::Origin& origin);
+
 // Performs required checks on an incoming impression's data (trustworthy
 // origins, etc), and if verified, generates a StorableImpression and persists
 // it.
-VerifyResult VerifyAndStoreImpression(StorableSource::SourceType source_type,
+VerifyResult VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
                                       const url::Origin& impression_origin,
                                       const blink::Impression& impression,
                                       BrowserContext* browser_context,
@@ -44,7 +47,7 @@ CONTENT_EXPORT absl::optional<blink::Impression> ParseImpressionFromApp(
     const std::string& attribution_source_event_id,
     const std::string& attribution_destination,
     const std::string& attribution_report_to,
-    int64_t attribution_expiry) WARN_UNUSED_RESULT;
+    int64_t attribution_expiry);
 
 }  // namespace attribution_host_utils
 

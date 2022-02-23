@@ -15,6 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/current_thread.h"
 #import "chrome/browser/mac/nsprocessinfo_additions.h"
+#include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/menu_controller.h"
 #include "ui/color/color_provider.h"
 #include "ui/views/widget/widget.h"

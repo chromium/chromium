@@ -47,6 +47,8 @@ ResultExpr CdmProcessPolicy::EvaluateSyscall(int sysno) const {
       return Allow();
     case __NR_sched_getaffinity:
       return RestrictSchedTarget(GetPolicyPid(), sysno);
+    case __NR_prlimit64:
+      return RestrictPrlimitToGetrlimit(GetPolicyPid());
     default:
       // Default on the content baseline policy.
       return BPFBasePolicy::EvaluateSyscall(sysno);

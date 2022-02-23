@@ -30,9 +30,10 @@ class BindingDelegate : public storage::BlobRegistryImpl::Delegate {
   bool CanReadFileSystemFile(const storage::FileSystemURL& url) override {
     return security_policy_handle_.CanReadFileSystemFile(url);
   }
-  bool CanCommitURL(const GURL& url) override {
-    return security_policy_handle_.CanCommitURL(url);
+  bool CanAccessDataForOrigin(const url::Origin& origin) override {
+    return security_policy_handle_.CanAccessDataForOrigin(origin);
   }
+
  private:
   ChildProcessSecurityPolicyImpl::Handle security_policy_handle_;
 };

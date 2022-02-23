@@ -2,11 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "ash/app_list/model/app_list_item.h"
+#include "ash/app_list/model/app_list_model.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/accelerators.h"
+#include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -22,6 +27,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
+#include "chrome/test/base/interactive_test_utils.h"
 #include "components/account_id/account_id.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/sync/model/string_ordinal.h"
@@ -36,9 +42,7 @@ constexpr char kOemAppId[] = "emfkafnhnpcmabnnkckkchdilgeoekbo";
 
 class OemAppPositionTest : public ash::LoginManagerTest {
  public:
-  OemAppPositionTest() : LoginManagerTest() {
-    login_mixin_.AppendRegularUsers(1);
-  }
+  OemAppPositionTest() { login_mixin_.AppendRegularUsers(1); }
   OemAppPositionTest(const OemAppPositionTest&) = delete;
   OemAppPositionTest& operator=(const OemAppPositionTest&) = delete;
   ~OemAppPositionTest() override = default;
@@ -52,9 +56,9 @@ class OemAppPositionTest : public ash::LoginManagerTest {
     const std::string& email =
         login_mixin_.users()[0].account_id.GetUserEmail();
     const std::string user_id_hash =
-        chromeos::ProfileHelper::GetUserIdHashByUserIdForTesting(email);
+        ash::ProfileHelper::GetUserIdHashByUserIdForTesting(email);
     const base::FilePath user_profile_path = user_data_dir.Append(
-        chromeos::ProfileHelper::GetUserProfileDir(user_id_hash));
+        ash::ProfileHelper::GetUserProfileDir(user_id_hash));
     base::CreateDirectory(user_profile_path);
 
     base::FilePath src_dir;
@@ -71,13 +75,19 @@ class OemAppPositionTest : public ash::LoginManagerTest {
   ash::LoginManagerMixin login_mixin_{&mixin_host_};
 };
 
-class AppPositionReorderingTest : public extensions::ExtensionBrowserTest {
+class ChromeAppListModelUpdaterTestBase
+    : public extensions::ExtensionBrowserTest {
  public:
-  AppPositionReorderingTest() = default;
-  ~AppPositionReorderingTest() override = default;
-  AppPositionReorderingTest(const AppPositionReorderingTest& other) = delete;
-  AppPositionReorderingTest& operator=(const AppPositionReorderingTest& other) =
-      delete;
+  explicit ChromeAppListModelUpdaterTestBase(
+      bool enable_productivity_launcher) {
+    feature_list_.InitWithFeatureState(ash::features::kProductivityLauncher,
+                                       enable_productivity_launcher);
+  }
+  ~ChromeAppListModelUpdaterTestBase() override = default;
+  ChromeAppListModelUpdaterTestBase(
+      const ChromeAppListModelUpdaterTestBase& other) = delete;
+  ChromeAppListModelUpdaterTestBase& operator=(
+      const ChromeAppListModelUpdaterTestBase& other) = delete;
 
  protected:
   void SetUpOnMainThread() override {
@@ -90,8 +100,54 @@ class AppPositionReorderingTest : public extensions::ExtensionBrowserTest {
     base::RunLoop().RunUntilIdle();
   }
 
+  void ShowAppList() {
+    ash::AcceleratorController::Get()->PerformActionIfEnabled(
+        ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+    if (ash::features::IsProductivityLauncherEnabled()) {
+      app_list_test_api_.WaitForBubbleWindow(
+          /*wait_for_opening_animation=*/false);
+    }
+  }
+
   ash::AppListTestApi app_list_test_api_;
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
+
+// Parameterized by whether productivity launcher is enabled,
+class ChromeAppListModelUpdaterTest
+    : public ChromeAppListModelUpdaterTestBase,
+      public ::testing::WithParamInterface<bool> {
+ public:
+  ChromeAppListModelUpdaterTest()
+      : ChromeAppListModelUpdaterTestBase(
+            /*enable_productiviy_launcher=*/GetParam()) {}
+  ~ChromeAppListModelUpdaterTest() override = default;
+};
+
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         ChromeAppListModelUpdaterTest,
+                         ::testing::Bool());
+
+// Test cases with productivity launcher enabled.
+class ChromeAppListModelUpdaterLegacyLauncherTest
+    : public ChromeAppListModelUpdaterTestBase {
+ public:
+  ChromeAppListModelUpdaterLegacyLauncherTest()
+      : ChromeAppListModelUpdaterTestBase(
+            /*enable_productivity_launcher=*/false) {}
+  ~ChromeAppListModelUpdaterLegacyLauncherTest() override = default;
+};
+
+class ChromeAppListModelUpdaterProductivityLauncherTest
+    : public ChromeAppListModelUpdaterTestBase {
+ public:
+  ChromeAppListModelUpdaterProductivityLauncherTest()
+      : ChromeAppListModelUpdaterTestBase(
+            /*enable_productivity_launcher=*/true) {}
+};
+
 // Tests that an Oem app and its folder are created with valid positions after
 // sign-in.
 IN_PROC_BROWSER_TEST_F(OemAppPositionTest, ValidOemAppPosition) {
@@ -122,7 +178,7 @@ IN_PROC_BROWSER_TEST_F(OemAppPositionTest, ValidOemAppPosition) {
   EXPECT_TRUE(oem_folder->position().IsValid());
 }
 
-IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
                        GetPositionBeforeFirstItemTest) {
   AppListClientImpl* client = AppListClientImpl::GetInstance();
   ASSERT_TRUE(client);
@@ -135,8 +191,7 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
   ASSERT_FALSE(app1_id.empty());
 
   // Create the app list view and show the apps grid.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  ShowAppList();
 
   std::vector<std::string> top_level_id_list =
       app_list_test_api_.GetTopLevelViewIdList();
@@ -164,7 +219,7 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
   }
 }
 
-IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
                        PRE_ReorderAppPositionInTopLevelAppList) {
   const std::string app1_id =
       LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
@@ -179,8 +234,7 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
   ASSERT_FALSE(app3_id.empty());
 
   // Create the app list view and show the apps grid.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  ShowAppList();
 
   std::vector<std::string> top_level_id_list =
       app_list_test_api_.GetTopLevelViewIdList();
@@ -190,9 +244,15 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
   // |top_level_id_list| size here.
   ASSERT_GE(top_level_id_list_size, 3u);
 
-  ASSERT_EQ(top_level_id_list[top_level_id_list_size - 3], app1_id);
-  ASSERT_EQ(top_level_id_list[top_level_id_list_size - 2], app2_id);
-  ASSERT_EQ(top_level_id_list[top_level_id_list_size - 1], app3_id);
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    ASSERT_EQ(top_level_id_list[2], app1_id);
+    ASSERT_EQ(top_level_id_list[1], app2_id);
+    ASSERT_EQ(top_level_id_list[0], app3_id);
+  } else {
+    ASSERT_EQ(top_level_id_list[top_level_id_list_size - 3], app1_id);
+    ASSERT_EQ(top_level_id_list[top_level_id_list_size - 2], app2_id);
+    ASSERT_EQ(top_level_id_list[top_level_id_list_size - 1], app3_id);
+  }
 
   // After the move operation, app3 should be at index 0 and app1 should be at
   // index 1. App2 stays at the last position in the item list.
@@ -205,16 +265,19 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
   EXPECT_EQ(top_level_id_list_size, reordered_top_level_id_list.size());
   EXPECT_EQ(reordered_top_level_id_list[0], app3_id);
   EXPECT_EQ(reordered_top_level_id_list[1], app1_id);
-  EXPECT_EQ(reordered_top_level_id_list.back(), app2_id);
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    EXPECT_EQ(reordered_top_level_id_list[2], app2_id);
+  } else {
+    EXPECT_EQ(reordered_top_level_id_list.back(), app2_id);
+  }
 }
 
 // Tests if the app position changed in the top level persist after the system
 // restarts.
-IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
                        ReorderAppPositionInTopLevelAppList) {
   // Create the app list view and show the apps grid.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  ShowAppList();
 
   const std::string app1_id =
       GetExtensionByPath(extension_registry()->enabled_extensions(),
@@ -238,10 +301,14 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
 
   EXPECT_EQ(reordered_top_level_id_list[0], app3_id);
   EXPECT_EQ(reordered_top_level_id_list[1], app1_id);
-  EXPECT_EQ(reordered_top_level_id_list.back(), app2_id);
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    ASSERT_EQ(reordered_top_level_id_list[2], app2_id);
+  } else {
+    EXPECT_EQ(reordered_top_level_id_list.back(), app2_id);
+  }
 }
 
-IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
                        PRE_ReorderAppPositionInFolder) {
   const std::string app1_id =
       LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
@@ -256,8 +323,7 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
   ASSERT_FALSE(app3_id.empty());
 
   // Create the app list view and show the apps grid.
-  ash::AcceleratorController::Get()->PerformActionIfEnabled(
-      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  ShowAppList();
 
   // Create a folder with app1, app2 and app3 in order.
   const std::string folder_id =
@@ -275,7 +341,8 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest,
 
 // Tests if the app position changed in a folder persist after the system
 // restarts.
-IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest, ReorderAppPositionInFolder) {
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
+                       ReorderAppPositionInFolder) {
   const std::string app1_id =
       GetExtensionByPath(extension_registry()->enabled_extensions(),
                          test_data_dir_.AppendASCII("app1"))
@@ -297,4 +364,198 @@ IN_PROC_BROWSER_TEST_F(AppPositionReorderingTest, ReorderAppPositionInFolder) {
 
   std::vector<std::string> reordered_id_list{app2_id, app3_id, app1_id};
   EXPECT_EQ(app_list_test_api_.GetAppIdsInFolder(folder_id), reordered_id_list);
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest,
+                       PRE_UnmergeTwoItemFolder) {
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+  const std::string app2_id =
+      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
+  ASSERT_FALSE(app2_id.empty());
+  // App3 is the same app as app1 in |test_data_dir_|. Take app4 as the third
+  // app in this test.
+  const std::string app3_id =
+      LoadExtension(test_data_dir_.AppendASCII("app4"))->id();
+  ASSERT_FALSE(app3_id.empty());
+
+  // Create the app list view and show the apps grid.
+  ShowAppList();
+
+  // Create a folder with app1, app2 and app3 in order.
+  const std::string folder_id =
+      app_list_test_api_.CreateFolderWithApps({app1_id, app2_id});
+
+  ash::AppListModel* model = app_list_test_api_.GetAppListModel();
+  ash::AppListItem* app1_item = model->FindItem(app1_id);
+  ASSERT_TRUE(app1_item);
+
+  ash::AppListItem* app2_item = model->FindItem(app2_id);
+  ASSERT_TRUE(app2_item);
+
+  ash::AppListItem* app3_item = model->FindItem(app3_id);
+  ASSERT_TRUE(app3_item);
+
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    model->MoveItemToRootAt(app2_item, app3_item->position().CreateBefore());
+  } else {
+    model->MoveItemToRootAt(app2_item, app3_item->position().CreateAfter());
+  }
+
+  // Get last 3 items (the grid may have default items, in addition to the ones
+  // installed by the test).
+  std::vector<std::string> top_level_id_list =
+      app_list_test_api_.GetTopLevelViewIdList();
+  ASSERT_GT(top_level_id_list.size(), 2u);
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    EXPECT_TRUE(base::Contains(top_level_id_list, folder_id));
+    model->MoveItemToRootAt(app1_item, app2_item->position().CreateBefore());
+
+    top_level_id_list = app_list_test_api_.GetTopLevelViewIdList();
+    EXPECT_FALSE(base::Contains(top_level_id_list, folder_id));
+  } else {
+    EXPECT_FALSE(base::Contains(top_level_id_list, folder_id));
+  }
+
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    std::vector<std::string> leading_items = {
+        top_level_id_list[0],
+        top_level_id_list[1],
+        top_level_id_list[2],
+    };
+
+    EXPECT_EQ(std::vector<std::string>({app1_id, app2_id, app3_id}),
+              leading_items);
+  } else {
+    std::vector<std::string> trailing_items = {
+        top_level_id_list[top_level_id_list.size() - 3],
+        top_level_id_list[top_level_id_list.size() - 2],
+        top_level_id_list[top_level_id_list.size() - 1],
+    };
+
+    EXPECT_EQ(std::vector<std::string>({app1_id, app3_id, app2_id}),
+              trailing_items);
+  }
+}
+
+IN_PROC_BROWSER_TEST_P(ChromeAppListModelUpdaterTest, UnmergeTwoItemFolder) {
+  const std::string app1_id =
+      GetExtensionByPath(extension_registry()->enabled_extensions(),
+                         test_data_dir_.AppendASCII("app1"))
+          ->id();
+  const std::string app2_id =
+      GetExtensionByPath(extension_registry()->enabled_extensions(),
+                         test_data_dir_.AppendASCII("app2"))
+          ->id();
+  const std::string app3_id =
+      GetExtensionByPath(extension_registry()->enabled_extensions(),
+                         test_data_dir_.AppendASCII("app4"))
+          ->id();
+
+  // Create the app list view and show the apps grid.
+  ShowAppList();
+
+  // Get last 3 items (the grid may have default items, in addition to the ones
+  // installed by the test).
+  std::vector<std::string> top_level_id_list =
+      app_list_test_api_.GetTopLevelViewIdList();
+  ASSERT_GT(top_level_id_list.size(), 2u);
+
+  if (ash::features::IsProductivityLauncherEnabled()) {
+    std::vector<std::string> leading_items = {
+        top_level_id_list[0],
+        top_level_id_list[1],
+        top_level_id_list[2],
+    };
+
+    EXPECT_EQ(std::vector<std::string>({app1_id, app2_id, app3_id}),
+              leading_items);
+  } else {
+    std::vector<std::string> trailing_items = {
+        top_level_id_list[top_level_id_list.size() - 3],
+        top_level_id_list[top_level_id_list.size() - 2],
+        top_level_id_list[top_level_id_list.size() - 1],
+    };
+
+    EXPECT_EQ(std::vector<std::string>({app1_id, app3_id, app2_id}),
+              trailing_items);
+  }
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterProductivityLauncherTest,
+                       IsNewInstall) {
+  AppListClientImpl* client = AppListClientImpl::GetInstance();
+  ASSERT_TRUE(client);
+  AppListModelUpdater* model_updater = test::GetModelUpdater(client);
+  ASSERT_TRUE(model_updater);
+
+  // The built-in "Web Store" app is not a new install.
+  ChromeAppListItem* web_store_item =
+      model_updater->FindItem(extensions::kWebStoreAppId);
+  ASSERT_TRUE(web_store_item);
+  EXPECT_FALSE(web_store_item->CloneMetadata()->is_new_install);
+
+  // Install 2 apps.
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+  const std::string app2_id =
+      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
+  ASSERT_FALSE(app2_id.empty());
+
+  // Both apps are new installs.
+  ChromeAppListItem* item1 = model_updater->FindItem(app1_id);
+  ASSERT_TRUE(item1);
+  EXPECT_TRUE(item1->CloneMetadata()->is_new_install);
+
+  ChromeAppListItem* item2 = model_updater->FindItem(app2_id);
+  ASSERT_TRUE(item2);
+  EXPECT_TRUE(item2->CloneMetadata()->is_new_install);
+
+  // Launch the first app.
+  item1->Activate(ui::EF_NONE);
+
+  // First app is no longer a new install.
+  EXPECT_FALSE(item1->CloneMetadata()->is_new_install);
+
+  // Second app is still a new install.
+  EXPECT_TRUE(item2->CloneMetadata()->is_new_install);
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterLegacyLauncherTest,
+                       PRE_PersistTrailingUserCreatedPage) {
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+  const std::string app2_id =
+      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
+  ASSERT_FALSE(app2_id.empty());
+
+  // Create the app list view and show the apps grid.
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  ASSERT_EQ(1, app_list_test_api_.GetPaginationModel()->total_pages());
+
+  app_list_test_api_.GetLastItemInAppsGridView()->RequestFocus();
+
+  ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
+      nullptr, ui::VKEY_DOWN, /*control=*/true, /*shift=*/false,
+      /*alt=*/false, /*command=*/false));
+  EXPECT_EQ(2, app_list_test_api_.GetPaginationModel()->total_pages());
+}
+
+IN_PROC_BROWSER_TEST_F(ChromeAppListModelUpdaterLegacyLauncherTest,
+                       PersistTrailingUserCreatedPage) {
+  const std::string app1_id =
+      LoadExtension(test_data_dir_.AppendASCII("app1"))->id();
+  ASSERT_FALSE(app1_id.empty());
+  const std::string app2_id =
+      LoadExtension(test_data_dir_.AppendASCII("app2"))->id();
+  ASSERT_FALSE(app2_id.empty());
+
+  // Verify that the app list still has 2 pages after session restart.
+  ash::AcceleratorController::Get()->PerformActionIfEnabled(
+      ash::TOGGLE_APP_LIST_FULLSCREEN, {});
+  EXPECT_EQ(2, app_list_test_api_.GetPaginationModel()->total_pages());
 }

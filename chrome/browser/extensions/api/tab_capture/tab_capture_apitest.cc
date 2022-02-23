@@ -8,6 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/tab_helper.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
@@ -36,6 +38,10 @@
 #include "extensions/test/result_catcher.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "url/url_constants.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "base/mac/mac_util.h"
+#endif
 
 namespace extensions {
 
@@ -84,6 +90,11 @@ class TabCaptureApiPixelTest : public TabCaptureApiTest {
 
 // Tests API behaviors, including info queries, and constraints violations.
 IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, ApiTests) {
+  // This test flakes on the MacOS 10.12 builder (see crbug.com/1299873).
+#if BUILDFLAG(IS_MAC)
+  if (base::mac::IsOS10_12())
+    GTEST_SKIP();
+#endif
   AddExtensionToCommandLineAllowlist();
   ASSERT_TRUE(
       RunExtensionTest("tab_capture/api_tests", {.page_url = "api_tests.html"}))
@@ -305,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(TabCaptureApiTest, TabIndicator) {
     }
 
    private:
-    Browser* const browser_;
+    const raw_ptr<Browser> browser_;
     base::OnceClosure on_tab_changed_;
   };
 

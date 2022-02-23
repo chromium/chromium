@@ -56,7 +56,7 @@
 #include "services/network/public/mojom/network_service_test.mojom.h"
 #include "sql/database.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "base/win/registry.h"
@@ -64,15 +64,15 @@
 #include "base/win/sid.h"
 #include "base/win/windows_version.h"
 #include "sandbox/policy/features.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "content/common/android/cpu_affinity_setter.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace content {
 
 namespace {
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 // Environment variable pointing to credential cache file.
 constexpr char kKrb5CCEnvName[] = "KRB5CCNAME";
 // Environment variable pointing to Kerberos config file.
@@ -103,12 +103,12 @@ const base::FilePath::CharType kCacheDataDirectoryName[] =
 // A platform specific set of parameters that is used when granting the sandbox
 // access to the network context data.
 struct SandboxParameters {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring lpac_capability_name;
 #if DCHECK_IS_ON()
   bool sandbox_enabled;
 #endif  // DCHECK_IS_ON()
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 };
 
 // The outcome of attempting to allow the sandbox access to network context data
@@ -168,7 +168,7 @@ std::unique_ptr<network::NetworkService>& GetLocalNetworkService() {
 // called from the IO thread.
 const base::Feature kNetworkServiceDedicatedThread {
   "NetworkServiceDedicatedThread",
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_DISABLED_BY_DEFAULT
 #else
       base::FEATURE_ENABLED_BY_DEFAULT
@@ -177,7 +177,6 @@ const base::Feature kNetworkServiceDedicatedThread {
 
 base::Thread& GetNetworkServiceDedicatedThread() {
   static base::NoDestructor<base::Thread> thread{"NetworkService"};
-  DCHECK(base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread));
   return *thread;
 }
 
@@ -190,7 +189,7 @@ static NetworkServiceClient* g_client = nullptr;
 
 void CreateInProcessNetworkServiceOnThread(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (base::GetFieldTrialParamByFeatureAsBool(
           features::kBigLittleScheduling,
           features::kBigLittleSchedulingNetworkMainBigParam, false)) {
@@ -364,7 +363,7 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
   // Only do this on directories.
   if (!base::DirectoryExists(path))
     return false;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On platforms that don't support the LPAC sandbox, do nothing.
   if (!sandbox::policy::features::IsWinNetworkServiceSandboxSupported())
     return true;
@@ -383,7 +382,7 @@ bool MaybeGrantAccessToDataPath(const SandboxParameters& sandbox_params,
       CONTAINER_INHERIT_ACE | OBJECT_INHERIT_ACE, /*recursive=*/true);
 #else
   return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 // Copies data file called `filename` from `old_path` to `new_path` (which must
@@ -547,7 +546,11 @@ scoped_refptr<base::SequencedTaskRunner>& GetNetworkTaskRunnerStorage() {
 void CreateInProcessNetworkService(
     mojo::PendingReceiver<network::mojom::NetworkService> receiver) {
   scoped_refptr<base::SingleThreadTaskRunner> task_runner;
-  if (base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread)) {
+  // If it's specified to run a separate thread for the in-process network
+  // service, or if the IO thread isn't initialized because we're in Android's
+  // minimal browser mode, then use a dedicated thread.
+  if (base::FeatureList::IsEnabled(kNetworkServiceDedicatedThread) ||
+      !BrowserThread::IsThreadInitialized(BrowserThread::IO)) {
     base::Thread::Options options(base::MessagePumpType::IO, 0);
     GetNetworkServiceDedicatedThread().StartWithOptions(std::move(options));
     task_runner = GetNetworkServiceDedicatedThread().task_runner();
@@ -573,7 +576,10 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
           net::NetworkChangeNotifier::GetConnectionSubtype());
   network_service_params->default_observer =
       g_client->BindURLLoaderNetworkServiceObserver();
-#if defined(OS_POSIX)
+  network_service_params->first_party_sets_enabled =
+      GetContentClient()->browser()->IsFirstPartySetsEnabled();
+
+#if BUILDFLAG(IS_POSIX)
   // Send Kerberos environment variables to the network service.
   if (IsOutOfProcessNetworkService()) {
     std::unique_ptr<base::Environment> env(base::Environment::Create());
@@ -698,11 +704,11 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
     const SandboxParameters& sandbox_params,
     network::mojom::NetworkContextParams* params) {
   DCHECK(!BrowserThread::CurrentlyOn(BrowserThread::UI));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #if DCHECK_IS_ON()
   params->win_permissions_set = true;
 #endif
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // HTTP cache path is special, and not under `data_path` so must also be
   // granted access. Continue attempting to grant access to the other files if
@@ -740,7 +746,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
   DCHECK(!params->file_paths->data_path.empty());
 
   if (!params->file_paths->unsandboxed_data_path.has_value()) {
-#if defined(OS_WIN) && DCHECK_IS_ON()
+#if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
     // On Windows, if network sandbox is enabled then there a migration must
     // happen, so a `unsandboxed_data_path` must be specified.
     DCHECK(!sandbox_params.sandbox_enabled);
@@ -779,7 +785,7 @@ SandboxGrantResult MaybeGrantSandboxAccessToNetworkContextData(
 
   // Case 1. above where nothing is done.
   if (!params->file_paths->trigger_migration && !migration_already_happened) {
-#if defined(OS_WIN) && DCHECK_IS_ON()
+#if BUILDFLAG(IS_WIN) && DCHECK_IS_ON()
     // On Windows, if network sandbox is enabled then there a migration must
     // happen, so `trigger_migration` must be true, or a migration must have
     // already happened.
@@ -999,6 +1005,8 @@ network::mojom::NetworkService* GetNetworkService() {
       // Call SetClient before creating NetworkServiceClient, as the latter
       // might make requests to NetworkService that depend on initialization.
       (*g_network_service_remote)->SetParams(CreateNetworkServiceParams());
+      g_client->OnNetworkServiceInitialized(g_network_service_remote->get());
+
       g_network_service_is_responding = false;
       g_network_service_remote->QueryVersion(base::BindOnce(
           [](base::Time start_time, uint32_t) {
@@ -1054,7 +1062,7 @@ network::mojom::NetworkService* GetNetworkService() {
         if (env->GetVar("SSLKEYLOGFILE", &env_str)) {
           UMA_HISTOGRAM_ENUMERATION(kSSLKeyLogFileHistogram,
                                     SSLKeyLogFileAction::kEnvVarFound);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           // base::Environment returns environment variables in UTF-8 on
           // Windows.
           ssl_key_log_path = base::FilePath(base::UTF8ToWide(env_str));
@@ -1213,7 +1221,9 @@ GetNewCertVerifierServiceRemote(
 void RunInProcessCertVerifierServiceFactory(
     mojo::PendingReceiver<cert_verifier::mojom::CertVerifierServiceFactory>
         receiver) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
+  // See the comment in GetCertVerifierServiceFactory() for the thread-affinity
+  // of the CertVerifierService.
   DCHECK(!BrowserThread::IsThreadInitialized(BrowserThread::IO) ||
          BrowserThread::CurrentlyOn(BrowserThread::IO));
 #else
@@ -1249,10 +1259,11 @@ GetCertVerifierServiceFactory() {
   if (!factory_remote_storage.is_bound() ||
       !factory_remote_storage.is_connected()) {
     factory_remote_storage.reset();
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    // ChromeOS's in-process CertVerifierService should run on the IO thread
-    // because it interacts with IO-bound NSS and ChromeOS user slots.
-    // See for example InitializeNSSForChromeOSUser().
+#if BUILDFLAG(IS_CHROMEOS)
+    // In-process CertVerifierService in Ash and Lacros should run on the IO
+    // thread because it interacts with IO-bound NSS and ChromeOS user slots.
+    // See for example InitializeNSSForChromeOSUser() or
+    // CertDbInitializerIOImpl.
     GetIOThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&RunInProcessCertVerifierServiceFactory,
@@ -1286,7 +1297,7 @@ void CreateNetworkContextInNetworkService(
     network::mojom::NetworkContextParamsPtr params) {
   DCHECK(BrowserThread::CurrentlyOn(BrowserThread::UI));
   SandboxParameters sandbox_params = {};
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, if a cookie_manager pending receiver was passed then migration
   // should not be attempted as the cookie file is already being accessed by the
   // browser instance.
@@ -1300,15 +1311,15 @@ void CreateNetworkContextInNetworkService(
         SandboxGrantResult::kDidNotAttemptToGrantSandboxAccess);
     return;
   }
-#endif  // defined(OS_ANDROID)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   sandbox_params.lpac_capability_name =
       GetContentClient()->browser()->GetLPACCapabilityNameForNetworkService();
 #if DCHECK_IS_ON()
   sandbox_params.sandbox_enabled =
       GetContentClient()->browser()->ShouldSandboxNetworkService();
 #endif  // DCHECK_IS_ON()
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   base::OnceCallback<SandboxGrantResult()> worker_task =
       base::BindOnce(&MaybeGrantSandboxAccessToNetworkContextData,
                      sandbox_params, params.get());

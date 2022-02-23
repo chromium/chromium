@@ -64,6 +64,8 @@ class CORE_EXPORT HTMLFormControlElementWithState
   void FinishParsingChildren() override;
   bool IsFormControlElementWithState() const final;
 
+  void ResetImpl() override;
+
  private:
   int DefaultTabIndex() const override;
 

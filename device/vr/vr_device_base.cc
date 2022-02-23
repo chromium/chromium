@@ -7,9 +7,10 @@
 #include <utility>
 
 #include "base/metrics/histogram_functions.h"
+#include "build/build_config.h"
 #include "device/vr/public/cpp/vr_device_provider.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
 #endif
 
@@ -88,7 +89,7 @@ void VRDeviceBase::SetArBlendModeSupported(bool is_ar_blend_mode_supported) {
   device_data_.is_ar_blend_mode_supported = is_ar_blend_mode_supported;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void VRDeviceBase::SetLuid(const CHROME_LUID& luid) {
   if (luid.HighPart != 0 || luid.LowPart != 0) {
     // Only set the LUID if it exists and is nonzero.

@@ -22,13 +22,14 @@ export class TestPluralStringProxy extends TestBrowserProxy {
     this.text = 'some text';
   }
 
-  /** override */
+  // override
+  // Note: Not using @override because it breaks TypeScript.
   getPluralString(messageName, itemCount) {
     this.methodCalled('getPluralString', {messageName, itemCount});
     return Promise.resolve(this.text);
   }
 
-  /** @override */
+  // override
   getPluralStringTupleWithComma(
       messageName1, itemCount1, messageName2, itemCount2) {
     this.methodCalled(
@@ -37,7 +38,7 @@ export class TestPluralStringProxy extends TestBrowserProxy {
     return Promise.resolve(this.text);
   }
 
-  /** @override */
+  // override
   getPluralStringTupleWithPeriods(
       messageName1, itemCount1, messageName2, itemCount2) {
     this.methodCalled(

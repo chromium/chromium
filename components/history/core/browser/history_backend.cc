@@ -26,6 +26,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/rand_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -58,7 +59,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/ios/scoped_critical_action.h"
 #endif
 
@@ -160,6 +161,30 @@ constexpr int kDomainDiversityMaxBacktrackedDays = 7;
 // accommodate larger DST shifts that have been used historically and to
 // avoid other potential issues.
 constexpr int kDSTRoundingOffsetHours = 4;
+
+// Merges `update` into `existing` by overwriting fields in `existing` that are
+// not the default value in `update`.
+void MergeUpdateIntoExistingModelAnnotations(
+    const VisitContentModelAnnotations& update,
+    VisitContentModelAnnotations& existing) {
+  if (update.visibility_score !=
+      VisitContentModelAnnotations::kDefaultVisibilityScore) {
+    existing.visibility_score = update.visibility_score;
+  }
+
+  if (!update.categories.empty()) {
+    existing.categories = update.categories;
+  }
+
+  if (update.page_topics_model_version !=
+      VisitContentModelAnnotations::kDefaultPageTopicsModelVersion) {
+    existing.page_topics_model_version = update.page_topics_model_version;
+  }
+
+  if (!update.entities.empty()) {
+    existing.entities = update.entities;
+  }
+}
 
 }  // namespace
 
@@ -325,7 +350,7 @@ void HistoryBackend::Closing() {
   CancelScheduledCommit();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void HistoryBackend::PersistState() {
   TRACE_EVENT0("browser", "HistoryBackend::PersistState");
   Commit();
@@ -450,10 +475,10 @@ void HistoryBackend::UpdateWithPageEndTime(ContextID context_id,
   UpdateVisitDuration(visit_id, end_ts);
 }
 
-void HistoryBackend::SetFlocAllowed(ContextID context_id,
-                                    int nav_entry_id,
-                                    const GURL& url) {
-  TRACE_EVENT0("browser", "HistoryBackend::SetFlocAllowed");
+void HistoryBackend::SetBrowsingTopicsAllowed(ContextID context_id,
+                                              int nav_entry_id,
+                                              const GURL& url) {
+  TRACE_EVENT0("browser", "HistoryBackend::SetBrowsingTopicsAllowed");
 
   if (!db_)
     return;
@@ -467,11 +492,11 @@ void HistoryBackend::SetFlocAllowed(ContextID context_id,
   VisitContentAnnotations annotations;
   if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
     annotations.annotation_flags |=
-        VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+        VisitContentAnnotationFlag::kBrowsingTopicsEligible;
     db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
   } else {
     annotations.annotation_flags |=
-        VisitContentAnnotationFlag::kFlocEligibleRelaxed;
+        VisitContentAnnotationFlag::kBrowsingTopicsEligible;
     db_->AddContentAnnotationsForVisit(visit_id, annotations);
   }
   ScheduleCommit();
@@ -491,11 +516,17 @@ void HistoryBackend::AddContentModelAnnotationsForVisit(
   if (db_->GetRowForVisit(visit_id, &visit_row)) {
     VisitContentAnnotations annotations;
     if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
-      annotations.model_annotations = model_annotations;
+      MergeUpdateIntoExistingModelAnnotations(model_annotations,
+                                              annotations.model_annotations);
       db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
     } else {
       annotations.model_annotations = model_annotations;
       db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
+    URLRow url_row;
+    if (db_->GetURLRow(visit_row.url_id, &url_row)) {
+      delegate_->NotifyContentModelAnnotationModified(url_row,
+                                                      model_annotations);
     }
     ScheduleCommit();
   }
@@ -519,6 +550,33 @@ void HistoryBackend::AddRelatedSearchesForVisit(
       db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
     } else {
       annotations.related_searches = related_searches;
+      db_->AddContentAnnotationsForVisit(visit_id, annotations);
+    }
+    ScheduleCommit();
+  }
+}
+
+void HistoryBackend::AddSearchMetadataForVisit(
+    VisitID visit_id,
+    const GURL& search_normalized_url,
+    const std::u16string& search_terms) {
+  TRACE_EVENT0("browser", "HistoryBackend::AddSearchMetadataForVisit");
+
+  if (!db_)
+    return;
+
+  // Only add to the annotations table if the visit_id exists in the visits
+  // table.
+  VisitRow visit_row;
+  if (db_->GetRowForVisit(visit_id, &visit_row)) {
+    VisitContentAnnotations annotations;
+    if (db_->GetContentAnnotationsForVisit(visit_id, &annotations)) {
+      annotations.search_normalized_url = search_normalized_url;
+      annotations.search_terms = search_terms;
+      db_->UpdateContentAnnotationsForVisit(visit_id, annotations);
+    } else {
+      annotations.search_normalized_url = search_normalized_url;
+      annotations.search_terms = search_terms;
       db_->AddContentAnnotationsForVisit(visit_id, annotations);
     }
     ScheduleCommit();
@@ -863,7 +921,7 @@ void HistoryBackend::InitImpl(
       // The frequency of this UMA will indicate how often history
       // initialization fails.
       UMA_HISTOGRAM_BOOLEAN("History.AttemptedToFixProfileError", kill_db);
-      FALLTHROUGH;
+      [[fallthrough]];
     }
     case sql::INIT_TOO_NEW: {
       db_diagnostics_ += sql::GetCorruptFileDiagnosticsInfo(history_name);
@@ -1300,7 +1358,7 @@ DomainDiversityResults HistoryBackend::GetDomainDiversity(
       std::min(number_of_days_to_report, kDomainDiversityMaxBacktrackedDays);
 
   base::Time current_midnight = report_time.LocalMidnight();
-  SCOPED_UMA_HISTOGRAM_TIMER("History.DomainCountQueryTime");
+  SCOPED_UMA_HISTOGRAM_TIMER("History.DomainCountQueryTime_V2");
 
   for (int days_back = 0; days_back < number_of_days_to_report; ++days_back) {
     DomainMetricSet single_metric_set;
@@ -1695,7 +1753,7 @@ bool HistoryBackend::CreateDownload(const DownloadRow& history_info) {
   if (!db_)
     return false;
   bool success = db_->CreateDownload(history_info);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On android, browser process can get easily killed. Download will no longer
   // be able to resume and the temporary file will linger forever if the
   // download is not committed before that. Do the commit right away to avoid
@@ -2226,7 +2284,7 @@ void HistoryBackend::Commit() {
   if (!db_)
     return;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Attempts to get the application running long enough to commit the database
   // transaction if it is currently being backgrounded.
   base::ios::ScopedCriticalAction scoped_critical_action(
@@ -2648,7 +2706,7 @@ bool HistoryBackend::ClearAllFaviconHistory(
   if (!favicon_backend_->ClearAllExcept(kept_urls))
     return false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(michaelbai): Add the unit test once AndroidProviderBackend is
   // available in HistoryBackend.
   db_->ClearAndroidURLRows();

@@ -49,6 +49,19 @@
         Reset
       </cr-button>
     </div>
+    <div class="cr-row">
+      <div class="cr-padded-text">
+        Click to make the Recent Photos onboarding UI appear when the feature
+        becomes disabled by the user if it has been dismissed by the user
+        previously. Note that this should be done before disabling Recent
+        Photos from the settings page in order for the onboarding UI to
+        reappear.
+      </div>
+      <cr-button class="internals-button"
+          on-click="onResetCameraRollOnboardingUiDismissedButtonClick_">
+        Reset
+      </cr-button>
+    </div>
   </template>
   <template is="dom-if" if="[[shouldEnableFakePhoneHubManager_]]" restamp>
     <div class="cr-row">

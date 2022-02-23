@@ -28,4 +28,11 @@ public interface LayoutManager extends LayoutStateProvider {
     <V extends SceneLayer> CompositorModelChangeProcessor<V> createCompositorMCP(
             PropertyModel model, V view,
             PropertyModelChangeProcessor.ViewBinder<PropertyModel, V, PropertyKey> viewBinder);
+
+    /**
+     * Start hiding the currently visible layout and show the one provided.
+     * @param layoutType The type of the next layout to show.
+     * @param animate Whether the transition should be animated if the layout supports it.
+     */
+    void showLayout(@LayoutType int layoutType, boolean animate);
 }

@@ -6,6 +6,13 @@
 
 #include <string>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/backup_settings.mojom.h"
+#include "ash/components/arc/mojom/pip.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/bind.h"
@@ -32,16 +39,10 @@
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_state_handler_observer.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/network/proxy/proxy_config_service_impl.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
+#include "components/arc/common/intent_helper/arc_intent_helper_package.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/backup_settings.mojom.h"
-#include "components/arc/mojom/pip.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/onc/onc_pref_names.h"
 #include "components/prefs/pref_change_registrar.h"
@@ -523,8 +524,8 @@ void ArcSettingsServiceImpl::SyncLocale() const {
   // code (e.g. fr_FR).  Since Android expects locale to contain country code,
   // ARC will derive a likely locale with country code from such
   GetLocaleAndPreferredLanguages(profile_, &locale, &preferred_languages);
-  extras.SetString("locale", locale);
-  extras.SetString("preferredLanguages", preferred_languages);
+  extras.SetStringKey("locale", locale);
+  extras.SetStringKey("preferredLanguages", preferred_languages);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_LOCALE", extras);
 }
 
@@ -552,7 +553,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
   }
 
   base::DictionaryValue extras;
-  extras.SetString("mode", ProxyPrefs::ProxyModeToString(mode));
+  extras.SetStringKey("mode", ProxyPrefs::ProxyModeToString(mode));
 
   switch (mode) {
     case ProxyPrefs::MODE_DIRECT:
@@ -563,10 +564,10 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
     case ProxyPrefs::MODE_AUTO_DETECT: {
       // WPAD with DHCP has a higher priority than DNS.
       if (dhcp_wpad_url_.is_valid()) {
-        extras.SetString("pacUrl", dhcp_wpad_url_.spec());
+        extras.SetStringKey("pacUrl", dhcp_wpad_url_.spec());
       } else {
         // Fallback to WPAD via DNS.
-        extras.SetString("pacUrl", "http://wpad/wpad.dat");
+        extras.SetStringKey("pacUrl", "http://wpad/wpad.dat");
       }
       break;
     }
@@ -576,7 +577,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
         LOG(ERROR) << "No pac URL for pac_script proxy mode.";
         return;
       }
-      extras.SetString("pacUrl", pac_url);
+      extras.SetStringKey("pacUrl", pac_url);
       break;
     }
     case ProxyPrefs::MODE_FIXED_SERVERS: {
@@ -586,8 +587,8 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
         LOG(ERROR) << "No Http proxy server is sent.";
         return;
       }
-      extras.SetString("host", host);
-      extras.SetInteger("port", port);
+      extras.SetStringKey("host", host);
+      extras.SetIntKey("port", port);
 
       std::string bypass_list;
       if (proxy_config_dict->GetBypassList(&bypass_list) &&
@@ -600,7 +601,7 @@ void ArcSettingsServiceImpl::SyncProxySettings() const {
             base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY);
         bypass_list =
             base::JoinString(bypassed_hosts, kArcProxyBypassListDelimiter);
-        extras.SetString("bypassList", bypass_list);
+        extras.SetStringKey("bypassList", bypass_list);
       }
       break;
     }
@@ -634,10 +635,10 @@ void ArcSettingsServiceImpl::SyncProxySettingsForSystemProxy() const {
     return;
 
   base::DictionaryValue extras;
-  extras.SetString(
+  extras.SetStringKey(
       "mode", ProxyPrefs::ProxyModeToString(ProxyPrefs::MODE_FIXED_SERVERS));
-  extras.SetString("host", host);
-  extras.SetInteger("port", port);
+  extras.SetStringKey("host", host);
+  extras.SetIntKey("port", port);
   SendSettingsBroadcast(kSetProxyAction, extras);
 }
 
@@ -658,7 +659,7 @@ void ArcSettingsServiceImpl::SyncReportingConsent(bool initial_sync) const {
     consent = false;
   }
   base::DictionaryValue extras;
-  extras.SetBoolean("reportingConsent", consent);
+  extras.SetBoolKey("reportingConsent", consent);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_REPORTING_CONSENT",
                         extras);
 }
@@ -697,13 +698,13 @@ void ArcSettingsServiceImpl::SyncTimeZone() const {
   TimezoneSettings* timezone_settings = TimezoneSettings::GetInstance();
   std::u16string timezoneID = timezone_settings->GetCurrentTimezoneID();
   base::DictionaryValue extras;
-  extras.SetString("olsonTimeZone", timezoneID);
+  extras.SetStringKey("olsonTimeZone", timezoneID);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_TIME_ZONE", extras);
 }
 
 void ArcSettingsServiceImpl::SyncTimeZoneByGeolocation() const {
   base::DictionaryValue extras;
-  extras.SetBoolean("autoTimeZone",
+  extras.SetBoolKey("autoTimeZone",
                     chromeos::system::TimeZoneResolverManager::
                             GetEffectiveUserTimeZoneResolveMethod(
                                 registrar_.prefs(), false) !=
@@ -720,7 +721,7 @@ void ArcSettingsServiceImpl::SyncUse24HourClock() const {
   DCHECK(pref->GetValue()->is_bool());
   bool use24HourClock = pref->GetValue()->GetBool();
   base::DictionaryValue extras;
-  extras.SetBoolean("use24HourClock", use24HourClock);
+  extras.SetBoolKey("use24HourClock", use24HourClock);
   SendSettingsBroadcast("org.chromium.arc.intent_helper.SET_USE_24_HOUR_CLOCK",
                         extras);
 }
@@ -777,8 +778,8 @@ void ArcSettingsServiceImpl::SendBoolValueSettingsBroadcast(
     bool managed,
     const std::string& action) const {
   base::DictionaryValue extras;
-  extras.SetBoolean("enabled", enabled);
-  extras.SetBoolean("managed", managed);
+  extras.SetBoolKey("enabled", enabled);
+  extras.SetBoolKey("managed", managed);
   SendSettingsBroadcast(action, extras);
 }
 
@@ -794,7 +795,7 @@ void ArcSettingsServiceImpl::SendSettingsBroadcast(
   DCHECK(write_success);
 
   instance->SendBroadcast(
-      action, ArcIntentHelperBridge::kArcIntentHelperPackageName,
+      action, kArcIntentHelperPackageName,
       ArcIntentHelperBridge::AppendStringToIntentHelperPackageName(
           "SettingsReceiver"),
       extras_json);

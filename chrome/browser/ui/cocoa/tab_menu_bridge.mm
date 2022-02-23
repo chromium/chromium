@@ -47,6 +47,14 @@ void UpdateItemForWebContents(NSMenuItem* item,
   item.image = tab_ui_helper->GetFavicon().AsNSImage();
 }
 
+void RemoveMenuItems(NSArray* menu_items) {
+  NSMenu* tab_menu = [[menu_items firstObject] menu];
+
+  for (NSMenuItem* item in menu_items) {
+    [tab_menu removeItem:item];
+  }
+}
+
 }  // namespace
 
 @interface TabMenuListener : NSObject
@@ -86,35 +94,57 @@ TabMenuBridge::TabMenuBridge(TabStripModel* model, NSMenuItem* menu_item)
 TabMenuBridge::~TabMenuBridge() {
   if (model_)
     model_->RemoveObserver(this);
-  RemoveAllDynamicItems();
+  RemoveMenuItems(DynamicMenuItems());
 }
 
 void TabMenuBridge::BuildMenu() {
   DCHECK(model_);
-  RemoveAllDynamicItems();
   AddDynamicItemsFromModel();
 }
 
-void TabMenuBridge::RemoveAllDynamicItems() {
+NSMutableArray* TabMenuBridge::DynamicMenuItems() {
+  NSMenu* tabMenu = menu_item_.submenu;
+  NSMutableArray* array = [[[NSMutableArray alloc]
+      initWithCapacity:[tabMenu numberOfItems]] autorelease];
+
   for (NSMenuItem* item in menu_item_.submenu.itemArray) {
     if (item.target == menu_listener_.get())
-      [menu_item_.submenu removeItem:item];
+      [array addObject:item];
   }
+
+  return array;
 }
 
 void TabMenuBridge::AddDynamicItemsFromModel() {
-  dynamic_items_start_ = menu_item_.submenu.numberOfItems;
+  NSMutableArray* recyclable_items = DynamicMenuItems();
+  NSMenu* tabMenu = menu_item_.submenu;
+
+  dynamic_items_start_ = tabMenu.numberOfItems - recyclable_items.count;
   for (int i = 0; i < model_->count(); ++i) {
-    base::scoped_nsobject<NSMenuItem> item([[NSMenuItem alloc]
-        initWithTitle:@""
-               action:@selector(activateTab:)
-        keyEquivalent:@""]);
-    [item setTarget:menu_listener_.get()];
-    if (model_->active_index() == i)
+    base::scoped_nsobject<NSMenuItem> item;
+
+    if (recyclable_items.count) {
+      item.reset([[recyclable_items firstObject] retain]);
+      [recyclable_items removeObjectAtIndex:0];
+      [item setState:NSOffState];
+    } else {
+      item.reset([[NSMenuItem alloc] initWithTitle:@""
+                                            action:@selector(activateTab:)
+                                     keyEquivalent:@""]);
+      [item setTarget:menu_listener_.get()];
+    }
+
+    if (model_->active_index() == i) {
       [item setState:NSOnState];
+    }
     UpdateItemForWebContents(item, model_->GetWebContentsAt(i));
-    [menu_item_.submenu addItem:item.get()];
+
+    if ([item menu] == nil) {
+      [tabMenu addItem:item.get()];
+    }
   }
+
+  RemoveMenuItems(recyclable_items);
 }
 
 void TabMenuBridge::OnDynamicItemChosen(NSMenuItem* item) {
@@ -144,9 +174,6 @@ void TabMenuBridge::OnTabStripModelChanged(
     return;
   }
 
-  // Rather than doing clever updating from |change|, just destroy the dynamic
-  // menu items and re-add them.
-  RemoveAllDynamicItems();
   AddDynamicItemsFromModel();
 }
 

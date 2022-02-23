@@ -12,7 +12,7 @@
 namespace gfx {
 
 std::string Vector2dF::ToString() const {
-  return base::StringPrintf("[%f %f]", x_, y_);
+  return base::StringPrintf("[%g %g]", x_, y_);
 }
 
 bool Vector2dF::IsZero() const {
@@ -59,7 +59,7 @@ Vector2dF ScaleVector2d(const Vector2dF& v, float x_scale, float y_scale) {
 }
 
 float Vector2dF::SlopeAngleRadians() const {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // atan2f(...) returns less accurate results on Mac.
   // 3.1415925 vs. 3.14159274 for atan2f(0, -50) as an example.
   return static_cast<float>(

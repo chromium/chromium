@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
@@ -47,7 +48,7 @@
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/service/download_task_scheduler.h"
 #endif
 
@@ -106,7 +107,7 @@ class DownloadBlobContextGetterFactory
         key_, base::BindOnce(&DownloadOnProfileCreated, std::move(callback)));
   }
 
-  SimpleFactoryKey* key_;
+  raw_ptr<SimpleFactoryKey> key_;
 };
 
 }  // namespace
@@ -197,7 +198,7 @@ BackgroundDownloadServiceFactory::BuildServiceInstanceFor(
             {base::MayBlock(), base::TaskPriority::BEST_EFFORT});
 
     std::unique_ptr<download::TaskScheduler> task_scheduler;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     task_scheduler =
         std::make_unique<download::android::DownloadTaskScheduler>();
 #else

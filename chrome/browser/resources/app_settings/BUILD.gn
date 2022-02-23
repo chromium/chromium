@@ -1,0 +1,77 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//chrome/common/features.gni")
+import("//tools/grit/grit_rule.gni")
+import("//tools/grit/preprocess_if_expr.gni")
+import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_win || is_mac || is_linux || is_fuchsia)
+preprocess_folder = "preprocessed"
+resources_grd_file = "$target_gen_dir/resources.grd"
+
+web_component_files = [
+  "app.ts",
+  "web_app_settings.ts",
+]
+
+html_to_js("web_components") {
+  js_files = web_component_files
+}
+
+preprocess_if_expr("preprocess_web_components") {
+  deps = [ ":web_components" ]
+  in_folder = target_gen_dir
+  out_folder = "$target_gen_dir/$preprocess_folder"
+  in_files = web_component_files
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = web_component_files + [ "app_management.mojom-webui.js" ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/app_management:build_ts",
+  ]
+  extra_deps = [
+    ":copy_mojo",
+    ":preprocess_web_components",
+  ]
+}
+
+copy("copy_mojo") {
+  deps = [ "//ui/webui/resources/cr_components/app_management:mojo_bindings_js__generator" ]
+  sources = [ "$root_gen_dir/mojom-webui/ui/webui/resources/cr_components/app_management/app_management.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
+}
+
+generate_grd("build_grd") {
+  grd_prefix = "app_settings"
+  out_grd = resources_grd_file
+  input_files = [ "web_app_settings.html" ]
+  input_files_base_dir = rebase_path(".", "//")
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+}
+
+grit("resources") {
+  defines = chrome_grit_defines
+
+  enable_input_discovery_for_gn_analyze = false
+  source = resources_grd_file
+  deps = [ ":build_grd" ]
+  outputs = [
+    "grit/app_settings_resources.h",
+    "grit/app_settings_resources_map.cc",
+    "grit/app_settings_resources_map.h",
+    "app_settings_resources.pak",
+  ]
+  output_dir = "$root_gen_dir/chrome"
+}

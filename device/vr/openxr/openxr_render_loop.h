@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "device/vr/openxr/context_provider_callbacks.h"
 #include "device/vr/openxr/openxr_anchor_manager.h"
@@ -79,6 +78,8 @@ class OpenXrRenderLoop : public XRCompositorCommon,
   void OnContextLost() override;
 
   void SendInitialDisplayInfo();
+  void OnOpenXrSessionStarted(StartRuntimeCallback start_runtime_callback,
+                              XrResult result);
   bool UpdateViews();
   bool UpdateView(const XrView& view_head,
                   int width,

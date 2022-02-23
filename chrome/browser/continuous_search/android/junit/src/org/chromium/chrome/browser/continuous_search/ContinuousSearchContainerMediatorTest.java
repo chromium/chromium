@@ -13,6 +13,7 @@ import org.junit.runner.RunWith;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
@@ -31,6 +32,7 @@ import java.util.concurrent.TimeoutException;
  * Tests for {@link ContinuousSearchContainerMediator}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ContinuousSearchContainerMediatorTest {
     @Mock
     private LayoutStateProvider mLayoutStateProvider;

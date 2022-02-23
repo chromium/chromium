@@ -7,7 +7,6 @@
 #include "base/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/mock_callback.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/safe_browsing/chrome_user_population_helper.h"
@@ -18,7 +17,6 @@
 #include "components/safe_browsing/core/browser/referrer_chain_provider.h"
 #include "components/safe_browsing/core/browser/sync/sync_utils.h"
 #include "components/safe_browsing/core/browser/verdict_cache_manager.h"
-#include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "components/sync/driver/test_sync_service.h"
@@ -208,9 +206,6 @@ TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
 
 TEST_F(ChromeEnterpriseRealTimeUrlLookupServiceTest,
        TestStartLookup_RequestWithDmToken) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      kRealTimeUrlLookupReferrerChainForEnterprise);
   GURL url("http://example.test/");
   SetUpRTLookupResponse(RTLookupResponse::ThreatInfo::DANGEROUS,
                         RTLookupResponse::ThreatInfo::SOCIAL_ENGINEERING, 60,

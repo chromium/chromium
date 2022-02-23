@@ -4,7 +4,7 @@
 
 (async function() {
   TestRunner.addResult(`Test the set of visible records is correctly update when category filter changes\n`);
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   const sessionId = '4.20';

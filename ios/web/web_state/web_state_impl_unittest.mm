@@ -17,6 +17,7 @@
 #import "base/strings/sys_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
 #import "base/test/ios/wait_util.h"
+#include "base/test/scoped_feature_list.h"
 #include "ios/web/common/features.h"
 #import "ios/web/common/uikit_ui_util.h"
 #import "ios/web/navigation/navigation_context_impl.h"
@@ -454,12 +455,6 @@ TEST_F(WebStateImplTest, DelegateTest) {
   EXPECT_TRUE(
       PageTransitionCoreTypeIs(params.transition, actual_params.transition));
   EXPECT_EQ(params.is_renderer_initiated, actual_params.is_renderer_initiated);
-
-  // Test that HandleContextMenu() is called.
-  EXPECT_FALSE(delegate.handle_context_menu_called());
-  web::ContextMenuParams context_menu_params;
-  web_state_->HandleContextMenu(context_menu_params);
-  EXPECT_TRUE(delegate.handle_context_menu_called());
 
   // Test that ShowRepostFormWarningDialog() is called.
   EXPECT_FALSE(delegate.last_repost_form_request());
@@ -980,6 +975,7 @@ TEST_F(WebStateImplTest, FaviconUpdateForSameDocumentNavigations) {
 TEST_F(WebStateImplTest, UncommittedRestoreSession) {
   GURL url("http://test.com");
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.lastCommittedItemIndex = 0;
   CRWNavigationItemStorage* item_storage =
       [[CRWNavigationItemStorage alloc] init];
@@ -1022,6 +1018,10 @@ TEST_F(WebStateImplTest, NoUncommittedRestoreSession) {
 }
 
 TEST_F(WebStateImplTest, BuildStorageDuringRestore) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {features::kSynthesizedRestoreSession});
+
   GURL urls[3] = {GURL("https://chromium.test/1"),
                   GURL("https://chromium.test/2"),
                   GURL("https://chromium.test/3")};
@@ -1228,6 +1228,26 @@ TEST_F(WebStateImplTest, VisibilitychangeEventFired) {
   [web_state_->GetView() removeFromSuperview];
 }
 
+// Test that changing visibility update the WebState last active time.
+TEST_F(WebStateImplTest, LastActiveTimeUpdatedWhenBecomeVisible) {
+  base::Time last_active_time = web_state_->GetLastActiveTime();
+
+  // Spin the RunLoop a bit to ensure that the active time changes.
+  {
+    base::RunLoop run_loop;
+    base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+        FROM_HERE, run_loop.QuitClosure(), base::Milliseconds(1));
+    run_loop.Run();
+  }
+
+  // Check that the last active time has not changed.
+  EXPECT_EQ(web_state_->GetLastActiveTime(), last_active_time);
+
+  // Mark the WebState has visible. The last active time should be updated.
+  web_state_->WasShown();
+  EXPECT_GT(web_state_->GetLastActiveTime(), last_active_time);
+}
+
 // Tests that WebState sessionState data doesn't load things with unsafe
 // restore.
 TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
@@ -1235,6 +1255,12 @@ TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
   } else {
     return;
   }
+
+  // There's never any unsafe restore with kSynthesizedRestoreSession and iOS15,
+  // so disable it first, and test again enabled after.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatures({},
+                                       {features::kSynthesizedRestoreSession});
 
   GURL urls[3] = {GURL("https://chromium.test/1"),
                   GURL("https://chromium.test/2"),
@@ -1256,9 +1282,22 @@ TEST_F(WebStateImplTest, MixedSafeUnsafeRestore) {
   ASSERT_TRUE(WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     return restore_done;
   }));
+  EXPECT_EQ(nullptr, web_state_->SessionStateData());
 
-  NSData* data = web_state_->SessionStateData();
-  EXPECT_EQ(nullptr, data);
+  // Enable kSynthesizedRestoreSession to test the opposite.
+  scoped_feature_list.Reset();
+  scoped_feature_list.InitWithFeatures({features::kSynthesizedRestoreSession},
+                                       {});
+  for (size_t index = 0; index < base::size(urls); ++index) {
+    items.push_back(NavigationItem::Create());
+    items.back()->SetURL(urls[index]);
+  }
+  web::WebState::CreateParams params(GetBrowserState());
+  __block auto web_state = std::make_unique<web::WebStateImpl>(params);
+  web_state->GetView();
+  web_state->SetKeepRenderProcessAlive(true);
+  web_state->GetNavigationManager()->Restore(0, std::move(items));
+  EXPECT_NE(nullptr, web_state->SessionStateData());
 }
 
 // Tests that WebState sessionState data can be read and writen.

@@ -7,7 +7,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define CSV_EOL_SEQUENCE "\r\n"
 #else
 #define CSV_EOL_SEQUENCE "\n"

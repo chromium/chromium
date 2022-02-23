@@ -16,8 +16,10 @@
 #include "base/containers/circular_deque.h"
 #include "base/cxx17_backports.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -123,6 +125,16 @@ void GetFrameTypeForOpcode(WebSocketFrameHeader::OpCode opcode,
   return;
 }
 
+base::Value NetLogFailParam(uint16_t code,
+                            base::StringPiece reason,
+                            base::StringPiece message) {
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetDoubleKey("code", code);
+  dict.SetStringKey("reason", reason);
+  dict.SetStringKey("internal_reason", message);
+  return dict;
+}
+
 class DependentIOBuffer : public WrappedIOBuffer {
  public:
   DependentIOBuffer(scoped_refptr<IOBuffer> buffer, size_t offset)
@@ -226,7 +238,7 @@ class WebSocketChannel::ConnectDelegate
   // danger of this pointer being stale, because deleting the WebSocketChannel
   // cancels the connect process, deleting this object and preventing its
   // callbacks from being called.
-  WebSocketChannel* const creator_;
+  const raw_ptr<WebSocketChannel> creator_;
 };
 
 WebSocketChannel::WebSocketChannel(
@@ -431,7 +443,7 @@ void WebSocketChannel::SendAddChannelRequestWithSuppliedCallback(
   auto connect_delegate = std::make_unique<ConnectDelegate>(this);
   stream_request_ = std::move(callback).Run(
       socket_url_, requested_subprotocols, origin, site_for_cookies,
-      isolation_info, additional_headers, url_request_context_,
+      isolation_info, additional_headers, url_request_context_.get(),
       NetLogWithSource(), traffic_annotation, std::move(connect_delegate));
   SetState(CONNECTING);
 }
@@ -897,7 +909,10 @@ void WebSocketChannel::FailChannel(const std::string& message,
   DCHECK_NE(CONNECTING, state_);
   DCHECK_NE(CLOSED, state_);
 
-  // TODO(ricea): Logging.
+  stream_->GetNetLogWithSource().AddEvent(
+      net::NetLogEventType::WEBSOCKET_INVALID_FRAME,
+      [&] { return NetLogFailParam(code, reason, message); });
+
   if (state_ == CONNECTED) {
     if (SendClose(code, reason) == CHANNEL_DELETED)
       return;
@@ -960,7 +975,7 @@ bool WebSocketChannel::ParseClose(base::span<const char> payload,
 
   const char* data = payload.data();
   uint16_t unchecked_code = 0;
-  base::ReadBigEndian(data, &unchecked_code);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(data), &unchecked_code);
   static_assert(sizeof(unchecked_code) == kWebSocketCloseCodeLength,
                 "they should both be two bytes");
 
@@ -997,6 +1012,8 @@ void WebSocketChannel::DoDropChannel(bool was_clean,
 }
 
 void WebSocketChannel::CloseTimeout() {
+  stream_->GetNetLogWithSource().AddEvent(
+      net::NetLogEventType::WEBSOCKET_CLOSE_TIMEOUT);
   stream_->Close();
   SetState(CLOSED);
   DoDropChannel(false, kWebSocketErrorAbnormalClosure, "");

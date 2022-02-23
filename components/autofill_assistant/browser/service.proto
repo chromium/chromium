@@ -26,6 +26,7 @@ message FieldTrialProto {
 }
 
 // Context contains client environment details.
+// Next ID: 20
 message ClientContextProto {
   message Chrome {
     optional string chrome_version = 1;
@@ -40,7 +41,8 @@ message ClientContextProto {
   optional string locale = 5;
 
   // country should be a country code as defined by ISO 3166-1-alpha-2.
-  // The intent is to communicate the client's location to the server.
+  // The intent is to communicate the client's location to the server. Location
+  // is extracted from Chrome Variations Service latest country.
   optional string country = 6;
 
   // Experiment ids string provided by the 'caller'.
@@ -122,6 +124,9 @@ message ClientContextProto {
     LANDSCAPE = 2;
   }
   optional ScreenOrientation screen_orientation = 16;
+
+  // An opaque client token for interactions with payments' systems.
+  optional bytes payments_client_token = 19;
 }
 
 // Get the list of scripts that can potentially be run on a url.
@@ -168,6 +173,103 @@ message SupportsScriptResponseProto {
   reserved 4, 5;
 }
 
+// A privacy sensitive way to look up Capabilities. Allows querying for
+// capabilities by hashing the requested domain urls and sending only some of
+// the leading bits, such that the recipient will be unable to reconstruct the
+// original URL.
+message GetCapabilitiesByHashPrefixRequestProto {
+  // Required. Number of bits in each hash prefix. Value must be in the range
+  // [15, 64].
+  optional uint32 hash_prefix_length = 1;
+  // Required. Hash prefixes for requested urls. The prefix will be taken as the
+  // first `hash_prefix_length` number of bits of this uint64. Other bits will
+  // be ignored. CityHash64 should be used to calculate the hashes. Encoding of
+  // the domain url prior to hashing should be UTF-8, it should include the
+  // http(s) header and exclude the last '/' character.
+  // Examples:
+  // - https://www.exampledomain.com
+  // - https://example.domain.com
+  // - https://domain.com
+  repeated uint64 hash_prefix = 2 [packed = true];
+  // The client context of the device for which you want to know script
+  // capabilities.
+  // NOTE: Currently, this will only contain the Chrome version number, locale
+  // and country for privacy reasons.
+  optional ClientContextProto client_context = 3;
+  // There is only a subset of parameters allowed to be sent from the client.
+  // INTENT parameter is required.
+  repeated ScriptParameterProto script_parameters = 4;
+}
+
+message GetCapabilitiesByHashPrefixResponseProto {
+  message MatchInfoProto {
+    // Domain url that matches one of the requested hash prefixes.
+    optional string url_match = 1;
+    // The list of script parameters for the client to use.
+    // Note: The list only contains additional or changed script parameters.
+    // This will specifically NOT include mandatory script parameters such as
+    // ENABLED or START_IMMEDIATELY, and will also not contain the INTENT.
+    // Clients are required to add those parameters themselves if needed to.
+    // They are omitted here to reduce the size of the response.
+    repeated ScriptParameterProto script_parameters_override = 2;
+  }
+  // Match information for the requested hash prefixes. No correlation should
+  // be assumed between the order of returned info and the order of requested
+  // prefixes. Clients are expected to match the returned urls to determine
+  // which responses they are interested in.
+  repeated MatchInfoProto match_info = 1;
+}
+
+// Request to get user data.
+message GetUserDataRequestProto {
+  // For logging, to know which run this request has originated from.
+  optional uint64 run_id = 1;
+
+  optional bool request_name = 2;
+  optional bool request_email = 3;
+  optional bool request_phone = 4;
+  optional bool request_addresses = 5;
+  optional bool request_payment_methods = 6;
+}
+
+// Response with user data.
+message GetUserDataResponseProto {
+  // The locale to be used when creating this data. This can have influence
+  // on the potential processing by Autofill.
+  optional string locale = 3;
+
+  repeated ProfileProto available_contacts = 1;
+  // The identifier of the contact to select. If not specified, the client
+  // will use its own heuristics to select a default contact.
+  optional string selected_contact_identifier = 5;
+
+  // Available phone numbers to select.
+  repeated PhoneNumberProto available_phone_numbers = 10;
+  // The identifier of the phone number to select. If not specified,
+  // the client will use its own heuristics to select a default payment
+  // instrument.
+  optional string selected_phone_number_identifier = 11;
+
+  // Available (shipping) addresses to select.
+  repeated ProfileProto available_addresses = 4;
+  // The identifier of the shipping address to select. If not specified, the
+  // client will use its own heuristics to select a default shipping address.
+  optional string selected_shipping_address_identifier = 6;
+  // An opaque token to launch the GMS address editor for creating a new
+  // address.
+  optional bytes add_address_token = 8;
+
+  // Available payment instruments to select.
+  repeated PaymentInstrumentProto available_payment_instruments = 2;
+  // The identifier of the payment instrument to select. If not specified,
+  // the client will use its own heuristics to select a default payment
+  // instrument.
+  optional string selected_payment_instrument_identifier = 7;
+  // An opaque token returned by the |GetInstrumentListResponse| to launch
+  // the GMS card editor to create a new credit card.
+  optional bytes add_payment_instrument_token = 9;
+}
+
 // Overlay image to be drawn on top of full overlays.
 message OverlayImageProto {
   // TODO(b/170202574): Remove legacy |image_url|.
@@ -193,7 +295,7 @@ message OverlayImageProto {
   optional ClientDimensionProto text_size = 7;
 }
 
-// Next ID: 24
+// Next ID: 25
 message ClientSettingsProto {
   message IntegrationTestSettings {
     // Disables animations for the poodle and the progress bar.
@@ -372,6 +474,11 @@ message ClientSettingsProto {
   // format, e.g. "en-US".
   optional string display_strings_locale = 23;
 
+  // Extra time SelectorObserver has to finish. If it takes longer than
+  // max_wait_time + extra_timeout (this value) it assumes something went
+  // wrong and fails with a |TIMED_OUT| error.
+  optional int32 selector_observer_extra_timeout_ms = 24;
+
   reserved 8 to 11;
 }
 
@@ -459,7 +566,20 @@ enum PolicyType {
   SCRIPT = 1;
 }
 
+message CUPRequestData {
+  // A serialized ScriptActionRequestProto.
+  optional bytes request = 1;
+  // Combination of public key id and random nonce.
+  optional bytes query_cup2key = 2;
+  // SHA2 hash of the request.
+  optional bytes hash_hex = 3;
+}
+
 message ScriptActionRequestProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ScriptActionRequestProto should be ignored.
+  optional CUPRequestData cup_data = 11;
+
   optional ClientContextProto client_context = 7;
 
   // Global payload from the previous response, possibly for another script.
@@ -475,6 +595,8 @@ message ScriptActionRequestProto {
     InitialScriptActionsRequestProto initial_request = 4;
     NextScriptActionsRequestProto next_request = 5;
   }
+
+  reserved 6, 9, 10;
 }
 
 // Message specifying how to retrieve the scripts. If bundle_path is set, it
@@ -493,6 +615,8 @@ message InitialScriptActionsRequestProto {
     // The exact URL on which the script was initially started.
     optional string url = 2;
     optional PolicyType policy = 3;
+
+    reserved 4 to 12;
   }
   optional QueryProto query = 3;
 
@@ -500,6 +624,8 @@ message InitialScriptActionsRequestProto {
 
   // Specify a bundle and version to run.
   optional ScriptStoreConfig script_store_config = 6;
+
+  reserved 1, 4, 5, 7 to 11;
 }
 
 message RoundtripTimingStats {
@@ -523,8 +649,22 @@ message NextScriptActionsRequestProto {
   optional SlowWarningStatus slow_connection_warning = 34;
 }
 
+message CUPResponseData {
+  // A serialized ActionsResponseProto.
+  optional bytes response = 1;
+  // The signature signing both the response, as well as the request hash, key
+  // ID, and nonce of the corresponding ScriptActionRequestProto. See
+  // https://source.chromium.org/chromium/chromium/src/+/main:docs/updater/cup.md
+  // for the signing scheme.
+  optional bytes ecdsa_signature = 2;
+}
+
 // Response of a script's actions.
 message ActionsResponseProto {
+  // CUP-signed version of this proto. When set, the rest of the fields in
+  // ActionsResponseProto should be ignored.
+  optional CUPResponseData cup_data = 11;
+
   // Opaque data to send to the next ScriptActionRequestProto.
   optional bytes global_payload = 4;
 
@@ -549,7 +689,7 @@ message ActionsResponseProto {
   message UpdateScriptListProto { repeated SupportedScriptProto scripts = 1; }
   optional UpdateScriptListProto update_script_list = 5;
 
-  reserved 1, 6 to 10;
+  reserved 1, 6 to 10, 12;
 }
 
 // RPC request to fetch the available trigger scripts for a particular domain.
@@ -780,6 +920,12 @@ message ActionProto {
   // pass this back unchanged in the next request
   optional bytes server_payload = 4;
 
+  // The action to be executed.
+  //
+  // WARNING: proto messages in this oneof and all protos they depend on must
+  // meet the requirements listed on jspb_parse.h to be callable conveniently
+  // from RunJsFlow. In practice, this means don't add any new fields of type
+  // bytes, uint32, uint64, fixed32, fixed64, sfixed32 or sfixed64.
   oneof action_info {
     SelectOptionProto select_option = 7;
     NavigateProto navigate = 9;
@@ -841,6 +987,7 @@ message ActionProto {
     ResetPendingCredentialsProto reset_pending_credentials = 86;
     SaveSubmittedPasswordProto save_submitted_password = 87;
     UpdateClientSettingsProto update_client_settings = 89;
+    ExecuteJsProto execute_js = 93;
   }
 
   // Set to true to make the client remove any contextual information if the
@@ -849,7 +996,7 @@ message ActionProto {
   optional bool clean_contextual_ui = 33;
 
   reserved 5, 6, 8, 13 to 17, 20 to 23, 25 to 27, 30, 31, 34, 38, 46 to 48, 50,
-      51, 71, 88;
+      51, 71, 88, 90 to 92;
 }
 
 // Result of |CollectUserDataProto| to be sent to the server.
@@ -866,22 +1013,19 @@ message CollectUserDataResultProto {
   // If set, this means that the user clicked on one of the terms and conditions
   // links.
   optional int32 terms_link = 5;
-  // The payload of the chosen login option.
-  optional bytes login_payload = 6;
+
+  oneof payload_or_tag {
+    // The payload of the chosen login option, from LoginOptionsProto.payload.
+    bytes login_payload = 6;
+    // The payload of the chosen login option, from LoginOptionsProto.tag.
+    string login_tag = 21;
+  }
   // The values obtained by the generic user interface.
   optional ModelProto model = 9;
   // The memory keys of all non-empty text inputs, corresponding to the memory
   // keys specified in |TextInputProto|. The values themselves are stored in the
   // client and do not leave the device.
   repeated string set_text_input_memory_keys = 10;
-  // The start date of the date/time range, if requested.
-  optional DateProto date_range_start_date = 11;
-  // The index of the selected timeslot for the start of the date/time range.
-  optional int32 date_range_start_timeslot = 12;
-  // The end date of the date/time range, if requested.
-  optional DateProto date_range_end_date = 13;
-  // The index of the selected timeslot for the end of the date/time range.
-  optional int32 date_range_end_timeslot = 14;
   // The values obtained from the additional sections.
   repeated ModelProto.ModelValue additional_sections_values = 15;
   // Indicates whether the UI was shown to the user. This can be false if
@@ -890,7 +1034,7 @@ message CollectUserDataResultProto {
   // Indicates that the chosen login option was missing the username.
   optional bool login_missing_username = 17;
 
-  reserved 7, 8, 18 to 20;
+  reserved 7, 8, 11 to 14, 18 to 20;
 }
 
 message ActionTimingStats {
@@ -1204,6 +1348,9 @@ message WebControllerErrorInfoProto {
     // Blur an element that might have focus to remove its focus.
     BLUR_FIELD = 28;
 
+    // Execute JS on an element.
+    EXECUTE_JS = 29;
+
     reserved 5;
   }
 
@@ -1229,6 +1376,34 @@ message ElementFinderInfoProto {
 
   // If set, the document could not be resolved.
   optional bool get_document_failed = 5;
+
+  enum SemanticInferenceStatus {
+    // Unknown error. Should not occur.
+    UNKNOWN = 0;
+    // The model was run successfully.
+    SUCCESS = 1;
+    // An unexpected error happened when the model was run. E.g. the frame
+    // was not available where it was expected to be.
+    UNEXPECTED_ERROR = 2;
+    // The model was successfully loaded but could not initialize the executor.
+    INITIALIZATION_ERROR = 3;
+    // The model could not be loaded. This is unexpected and should not occur.
+    MODEL_LOAD_ERROR = 4;
+    // The model loading timed out.
+    MODEL_LOAD_TIMEOUT = 5;
+  }
+  message PredictedElement {
+    // Whether the inference returned the expectation.
+    optional bool matches_css_element = 1;
+  }
+  message SemanticInferenceResult {
+    // If this is empty, the model inference did not find any results.
+    repeated PredictedElement predicted_elements = 1;
+    // Status per frame. The order is not predictable, the results are
+    // collected async and arrive in random order.
+    repeated SemanticInferenceStatus status_per_frame = 2;
+  }
+  optional SemanticInferenceResult semantic_inference_result = 6;
 }
 
 // The pseudo type values come from
@@ -1463,6 +1638,20 @@ message SelectorProto {
     // Take the match at the given |index|.
     optional int32 index = 1;
   }
+
+  // If set, and the model inference is enabled on the client, will run model
+  // inference and compare if the found element has been inferred along
+  // the expectation.
+  message SemanticInformation {
+    // The objective we expect this Selector to have.
+    optional int32 objective = 1;
+    // The role we expect this Selector to have.
+    optional int32 semantic_role = 2;
+    // Timeout, defaults to 5s.
+    // TODO(b/218482826): Consider moving this to settings.
+    optional int32 model_timeout_ms = 3 [default = 5000];
+  }
+  optional SemanticInformation semantic_information = 11;
 
   reserved 1 to 8;
 }
@@ -1745,8 +1934,11 @@ message WaitForDomProto {
 
   // Result to include into ProcessedActionProto.
   message Result {
-    // Payload of all matching conditions, if one is set.
+    // Payload of all matching conditions, from ElementConditionProto.payload.
     repeated bytes matching_condition_payloads = 1;
+
+    // Payload of all matching conditions, from ElementConditionProto.tag.
+    repeated string matching_condition_tags = 2;
   }
 }
 
@@ -1770,7 +1962,14 @@ message ElementConditionProto {
 
   // A payload that identifies this condition. WaitForDom puts this payload
   // into the result. This is ignored outside of WaitForDom.
+  //
+  // Prefer using tag.
   optional bytes payload = 5;
+
+  // A tag that is echoed back to WaitForDom.Result if the condition matches.
+  //
+  // This is ignored outside of WaitForDom.
+  optional string tag = 8;
 
   // Optional. If set, the element of |match| will be stored under this
   // identifier on the client. If |require_unique_element| is not set to true,
@@ -1960,23 +2159,6 @@ message WaitForDocumentProto {
 //   log should contain additional information about the issue, if verbose
 //   logging is enabled (suggested level: 2 or 3).
 message ShowGenericUiProto {
-  message RequestAutofillCreditCards { optional string model_identifier = 1; }
-  message RequestAutofillProfiles { optional string model_identifier = 1; }
-  message RequestLoginOptions {
-    message PasswordManagerLogins {
-      optional string sublabel = 1;
-      optional bytes payload = 2;
-    }
-    message LoginOption {
-      oneof type {
-        LoginOptionProto custom_login_option = 1;
-        PasswordManagerLogins password_manager_logins = 2;
-      }
-    }
-
-    repeated LoginOption login_options = 1;
-    optional string model_identifier = 2;
-  }
   message RequestUserData {
     message AdditionalValue {
       // The client memory identifier (from |UserData|).
@@ -2002,19 +2184,6 @@ message ShowGenericUiProto {
   // subset of the input model identifiers!
   repeated string output_model_identifiers = 2;
 
-  // If specified, available autofill credit cards will be provided and
-  // auto-updated in the specified |model_identifier|.
-  optional RequestAutofillCreditCards request_credit_cards = 3;
-
-  // If specified, available autofill profiles will be provided and auto-updated
-  // in the specified |model_identifier|.
-  optional RequestAutofillProfiles request_profiles = 4;
-
-  // If specified, available login options (including those provided by password
-  // manager) will be provided and auto-updated in the specified
-  // |model_identifier|.
-  optional RequestLoginOptions request_login_options = 5;
-
   message PeriodicElementChecks {
     message ElementCheck {
       // The element condition to be checked during the action.
@@ -2037,7 +2206,7 @@ message ShowGenericUiProto {
   // |is_client_side_only| set to true.
   optional RequestUserData request_user_data = 9;
 
-  reserved 10;
+  reserved 3 to 5, 10;
 }
 
 // Show backend-specified user interface elements to the user until dismissed.
@@ -2095,7 +2264,12 @@ message PromptProto {
 
     // Server payload originally sent by the server. This should
     // be transmitted as-is by the client without interpreting.
+    //
+    // Prefer using tag.
     optional bytes server_payload = 5;
+
+    // Tag set by the server. It is put into PromptProto.Result.tag
+    optional string tag = 18;
 
     reserved 4, 6, 8, 12 to 14, 17;
   }
@@ -2145,6 +2319,9 @@ message PromptProto {
     // transmitted as-is by the client without interpreting.
     optional bytes server_payload = 5;
 
+    // Tag originally set in Choice.tag.
+    optional string choice_tag = 6;
+
     reserved 1;
   }
 }
@@ -2184,6 +2361,17 @@ message ContactDetailsProto {
   optional string contact_details_section_title = 9;
   // Defines how to evaluate validity of this contact.
   repeated RequiredDataPiece required_data_piece = 10;
+
+  // If true, the phone number will be asked in a separate section from the
+  // rest of the contact info. If true, |request_payer_phone| must be false.
+  // Only supported for backend-provided data.
+  optional bool separate_phone_number_section = 11;
+  // The title of the separate phone number section.
+  // Required if |separate_phone_number_section| is true, ignored if false.
+  optional string phone_number_section_title = 12;
+  // Defines how to evaluate the validity of the phone number in the separate
+  // section. Ignored if |separate_phone_number_section| is false.
+  repeated RequiredDataPiece phone_number_required_data_piece = 13;
 }
 
 message LoginDetailsProto {
@@ -2213,8 +2401,17 @@ message LoginDetailsProto {
     // description.
     optional string edit_button_content_description = 10;
 
-    // If the option was chosen, this payload will be returned to the server.
-    optional bytes payload = 1;
+    oneof payload_or_tag {
+      // The payload attached to this login option, to be echoed back to the
+      // caller when the option is chosen.
+      //
+      // Prefer using tag.
+      bytes payload = 1;
+
+      // The tag attached to this login option, to be echoed back to the
+      // caller when the option is chosen.
+      string tag = 21;
+    }
 
     // Whether the UI should automatically choose this login option if no
     // password manager login options are available.
@@ -2234,46 +2431,6 @@ message LoginDetailsProto {
   optional string section_title = 1;
   // The list of available login options.
   repeated LoginOptionProto login_options = 2;
-}
-
-message DateTimeRangeProto {
-  message TimeSlot {
-    // The label to display.
-    optional string label = 1;
-    // The comparison value to be used to compare this timeslot
-    // to others. Smaller values indicate earlier times. This will be used to
-    // prevent start > end and vice-versa.
-    optional int32 comparison_value = 2;
-  }
-
-  // The initial start date of the date/time range.
-  optional DateProto start_date = 15;
-  // The index of the initial start time slot to select.
-  optional int32 start_time_slot = 13;
-  // The initial end date of the date/time range.
-  optional DateProto end_date = 16;
-  // The index of the initial end time slot to select.
-  optional int32 end_time_slot = 14;
-  // The minimum allowed date of the date/time range.
-  optional DateProto min_date = 3;
-  // The maximum allowed date of the date/time range.
-  optional DateProto max_date = 4;
-  // The label for the start date (e.g., 'Pick up date').
-  optional string start_date_label = 8;
-  // The label for the start time (e.g., 'Pick up time').
-  optional string start_time_label = 9;
-  // The label for the end date (e.g., 'Drop off date').
-  optional string end_date_label = 10;
-  // The label for the end time (e.g., 'Drop off time').
-  optional string end_time_label = 11;
-  // The time slots to offer (e.g., 08:00 AM, 08:30 AM, ...)
-  repeated TimeSlot time_slots = 12;
-  // The error message to display if the date is not set.
-  optional string date_not_set_error = 17;
-  // The error message to display if the time is not set.
-  optional string time_not_set_error = 18;
-
-  reserved 1, 2, 5, 6, 7;
 }
 
 // A section showing a simple text message.
@@ -2364,9 +2521,23 @@ message ProfileProto {
   reserved 1;
 }
 
+message PhoneNumberProto {
+  // The identifier of this phone number.
+  optional string identifier = 1;
+  // The canonical value of the phone number, including country and area code
+  // without any separators.
+  optional AutofillEntryProto value = 2;
+}
+
 message PaymentInstrumentProto {
   // The values for the card, where the key is one of autofill::ServerFieldType.
   map<int32, AutofillEntryProto> card_values = 2;
+  // The payments instrument id used to identify and unmask the credit card.
+  optional int64 instrument_id = 7;
+  // The network of the card.
+  optional string network = 5;
+  // The last 4 digits of the card.
+  optional string last_four_digits = 6;
   // The values for the billing address, where the key is one of
   // autofill::ServerFieldType.
   map<int32, AutofillEntryProto> address_values = 3;
@@ -2378,7 +2549,7 @@ message PaymentInstrumentProto {
 
 // Asks to provide the data used by UseAddressAction and
 // UseCreditCardAction.
-// Next: 38
+// Next: 40
 message CollectUserDataProto {
   enum TermsAndConditionsState {
     // No choice has been made yet.
@@ -2388,6 +2559,9 @@ message CollectUserDataProto {
     // The 'review' radio button is toggled.
     REVIEW_REQUIRED = 2;
   }
+
+  // Specifies information about the data source to be used.
+  message DataSource {}
 
   optional string prompt = 1;
   // NOTE: The action does not ask separately for billing address.
@@ -2439,8 +2613,6 @@ message CollectUserDataProto {
   optional string credit_card_expired_text = 23;
   // The login details that should be gathered.
   optional LoginDetailsProto login_details = 16;
-  // The date/time range that should be gathered.
-  optional DateTimeRangeProto date_time_range = 17;
   // An optional list of additional sections, which is above all other sections.
   repeated UserFormSectionProto additional_prepended_sections = 18;
   // An optional list of additional sections, which is below all other sections.
@@ -2475,33 +2647,15 @@ message CollectUserDataProto {
   repeated RequiredDataPiece required_credit_card_data_piece = 35;
   repeated RequiredDataPiece required_billing_address_data_piece = 36;
 
-  message UserDataProto {
-    // Available contacts to select.
-    repeated ProfileProto available_contacts = 1;
-    // The identifier of the contact to select. If not specified, the client
-    // will use its own heuristics to select a default contact.
-    optional string selected_contact_identifier = 5;
+  // TODO(b/218838411): This way of getting data is about to be deprecated. It
+  // is left in place until the backend has been adapted. Reserve after.
+  optional GetUserDataResponseProto user_data = 37;
 
-    // Available (shipping) addresses to select.
-    repeated ProfileProto available_addresses = 4;
-    // The identifier of the shipping address to select. If not specified, the
-    // client will use its own heuristics to select a default shipping address.
-    optional string selected_shipping_address_identifier = 6;
+  // If set, will request data from the GetUserData remote backend, rather than
+  // Chrome Autofill. Takes precedence over |user_data|.
+  optional DataSource data_source = 38;
 
-    // Available payment instruments to select.
-    repeated PaymentInstrumentProto available_payment_instruments = 2;
-    // The identifier of the payment instrument to select. If not specified,
-    // the client will use its own heuristics to select a default payment
-    // instrument.
-    optional string selected_payment_instrument_identifier = 7;
-
-    // The locale to be used when creating this data. This can have influence
-    // on the potential processing by Autofill.
-    optional string locale = 3;
-  }
-  optional UserDataProto user_data = 37;
-
-  reserved 7, 10, 14, 15, 26;
+  reserved 7, 10, 14, 15, 17, 26;
 }
 
 // Stop Autofill Assistant.

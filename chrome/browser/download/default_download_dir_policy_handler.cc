@@ -37,7 +37,7 @@ void DefaultDownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
     return;
   std::string str_value = value->GetString();
   base::FilePath::StringType string_value =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       base::UTF8ToWide(str_value);
 #else
       str_value;
@@ -47,7 +47,7 @@ void DefaultDownloadDirPolicyHandler::ApplyPolicySettingsWithParameters(
       download_dir_util::ExpandDownloadDirectoryPath(string_value, parameters);
 
   if (policies.Get(policy_name())->level == policy::POLICY_LEVEL_RECOMMENDED) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     prefs->SetValue(prefs::kDownloadDefaultDirectory,
                     base::Value(base::WideToUTF8(expanded_value)));
     prefs->SetValue(prefs::kSaveFileDefaultDirectory,

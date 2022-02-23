@@ -6,6 +6,7 @@
 
 #include "base/check.h"
 #include "base/containers/flat_map.h"
+#include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service.h"
 #include "chrome/browser/enterprise/connectors/device_trust/device_trust_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -33,7 +34,13 @@ void ConnectorsInternalsPageHandler::GetZeroTrustState(
   // The factory will not return a service if the profile is off-the-record.
   if (!device_trust_service) {
     auto state = connectors_internals::mojom::ZeroTrustState::New(
-        false, base::flat_map<std::string, std::string>());
+        false,
+        connectors_internals::mojom::KeyInfo::New(
+            connectors_internals::mojom::KeyManagerInitializedValue::
+                UNSUPPORTED,
+            connectors_internals::mojom::KeyTrustLevel::UNSPECIFIED,
+            connectors_internals::mojom::KeyType::UNKNOWN),
+        base::flat_map<std::string, std::string>());
     std::move(callback).Run(std::move(state));
     return;
   }
@@ -51,7 +58,8 @@ void ConnectorsInternalsPageHandler::OnSignalsCollected(
     bool is_device_trust_enabled,
     std::unique_ptr<SignalsType> signals) {
   auto state = connectors_internals::mojom::ZeroTrustState::New(
-      is_device_trust_enabled, utils::SignalsToMap(std::move(signals)));
+      is_device_trust_enabled, utils::GetKeyInfo(),
+      utils::SignalsToMap(std::move(signals)));
   std::move(callback).Run(std::move(state));
 }
 

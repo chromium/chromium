@@ -10,6 +10,8 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/router/discovery/dial/device_description_service.h"
@@ -30,7 +32,7 @@ class DialRegistry;
 // This class may be created on any thread. All methods, unless otherwise noted,
 // must be invoked on the SequencedTaskRunner given by |task_runner()|.
 class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
-                                 public DialRegistry::Observer {
+                                 public DialRegistry::Client {
  public:
   // Callbacks invoked when the list of available sinks for |app_name| changes.
   // The client can call |GetAvailableSinks()| to obtain the latest sink list.
@@ -84,8 +86,6 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
 
  protected:
-  // Does not take ownership of |dial_registry|.
-  void SetDialRegistryForTest(DialRegistry* dial_registry);
   void SetDescriptionServiceForTest(
       std::unique_ptr<DeviceDescriptionService> description_service);
   void SetAppDiscoveryServiceForTest(
@@ -97,7 +97,7 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   FRIEND_TEST_ALL_PREFIXES(DialMediaSinkServiceImplTest,
                            OnDeviceDescriptionRestartsTimer);
   FRIEND_TEST_ALL_PREFIXES(DialMediaSinkServiceImplTest,
-                           OnDialDeviceEventRestartsTimer);
+                           OnDialDeviceListRestartsTimer);
   FRIEND_TEST_ALL_PREFIXES(DialMediaSinkServiceImplTest,
                            OnDeviceDescriptionAvailable);
   FRIEND_TEST_ALL_PREFIXES(DialMediaSinkServiceImplTest,
@@ -119,8 +119,8 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   FRIEND_TEST_ALL_PREFIXES(DialMediaSinkServiceImplTest,
                            FetchDialAppInfoWithDiscoveryOnlySink);
 
-  // DialRegistry::Observer implementation
-  void OnDialDeviceEvent(const DialRegistry::DeviceList& devices) override;
+  // DialRegistry::Client implementation
+  void OnDialDeviceList(const DialRegistry::DeviceList& devices) override;
   void OnDialError(DialRegistry::DialErrorCode type) override;
 
   // Called when description service successfully fetches and parses device
@@ -164,16 +164,13 @@ class DialMediaSinkServiceImpl : public MediaSinkServiceBase,
   void RecordDeviceCounts() override;
 
   // Initialized in |Start()|.
+  std::unique_ptr<DialRegistry> dial_registry_;
+
+  // Initialized in |Start()|.
   std::unique_ptr<DeviceDescriptionService> description_service_;
 
   // Initialized in |Start()|.
   std::unique_ptr<DialAppDiscoveryService> app_discovery_service_;
-
-  // Raw pointer to DialRegistry singleton.
-  DialRegistry* dial_registry_ = nullptr;
-
-  // DialRegistry for unit test.
-  DialRegistry* test_dial_registry_ = nullptr;
 
   // Device data list from current round of discovery.
   DialRegistry::DeviceList current_devices_;

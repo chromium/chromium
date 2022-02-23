@@ -1,0 +1,33 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+template("html_to_wrapper") {
+  action(target_name) {
+    script = "//tools/polymer/html_to_wrapper.py"
+    forward_variables_from(invoker, [ "visibility" ])
+
+    inputs = []
+    outputs = []
+
+    wrapper_extension = ".ts"
+
+    foreach(html_file, invoker.in_files) {
+      extension = get_path_info(html_file, "extension")
+      assert(extension == "html")
+
+      wrapper_file = get_path_info(html_file, "dir") + "/" +
+                     get_path_info(html_file, "file") + wrapper_extension
+      inputs += [ html_file ]
+      outputs += [ "$target_gen_dir/" + wrapper_file ]
+    }
+
+    args = [
+             "--in_folder",
+             rebase_path(".", root_build_dir),
+             "--out_folder",
+             rebase_path(target_gen_dir, root_build_dir),
+             "--in_files",
+           ] + invoker.in_files
+  }
+}

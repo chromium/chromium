@@ -286,12 +286,13 @@ void SharedImageVideoSurfaceTexture::BeginGLReadAccess(
 
 // Representation of SharedImageVideoSurfaceTexture as an overlay plane.
 class SharedImageVideoSurfaceTexture::SharedImageRepresentationOverlayVideo
-    : public gpu::SharedImageRepresentationOverlay {
+    : public gpu::SharedImageRepresentationLegacyOverlay {
  public:
   SharedImageRepresentationOverlayVideo(gpu::SharedImageManager* manager,
                                         SharedImageVideoSurfaceTexture* backing,
                                         gpu::MemoryTypeTracker* tracker)
-      : gpu::SharedImageRepresentationOverlay(manager, backing, tracker) {}
+      : gpu::SharedImageRepresentationLegacyOverlay(manager, backing, tracker) {
+  }
 
   // Disallow copy and assign.
   SharedImageRepresentationOverlayVideo(
@@ -300,25 +301,12 @@ class SharedImageVideoSurfaceTexture::SharedImageRepresentationOverlayVideo
       const SharedImageRepresentationOverlayVideo&) = delete;
 
  protected:
-  bool BeginReadAccess(std::vector<gfx::GpuFence>* acquire_fences) override {
-    // A |CodecImage| is already in a SurfaceView, render content to the
-    // overlay.
-    if (!stream_image()->HasTextureOwner()) {
-      TRACE_EVENT0("media",
-                   "SharedImageRepresentationOverlayVideo::BeginReadAccess");
-      stream_image()->RenderToOverlay();
-    }
-    return true;
-  }
-
-  void EndReadAccess(gfx::GpuFenceHandle release_fence) override {
-    DCHECK(release_fence.is_null());
-  }
-
-  gl::GLImage* GetGLImage() override {
-    // This method should not be called for SurfaceView.
-    NOTREACHED();
-    return nullptr;
+  void RenderToOverlay() override {
+    DCHECK(!stream_image()->HasTextureOwner())
+        << "CodecImage must be already in overlay";
+    TRACE_EVENT0("media",
+                 "SharedImageRepresentationOverlayVideo::RenderToOverlay");
+    stream_image()->RenderToOverlay();
   }
 
   void NotifyOverlayPromotion(bool promotion,
@@ -335,8 +323,8 @@ class SharedImageVideoSurfaceTexture::SharedImageRepresentationOverlayVideo
   }
 };
 
-std::unique_ptr<gpu::SharedImageRepresentationOverlay>
-SharedImageVideoSurfaceTexture::ProduceOverlay(
+std::unique_ptr<gpu::SharedImageRepresentationLegacyOverlay>
+SharedImageVideoSurfaceTexture::ProduceLegacyOverlay(
     gpu::SharedImageManager* manager,
     gpu::MemoryTypeTracker* tracker) {
   DCHECK(gpu_main_task_runner_->RunsTasksInCurrentSequence());

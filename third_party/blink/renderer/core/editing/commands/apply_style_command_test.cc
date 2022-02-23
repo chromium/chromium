@@ -14,7 +14,7 @@
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -199,7 +199,7 @@ TEST_F(ApplyStyleCommandTest, ItalicCrossingIgnoredContentBoundary) {
       InputEvent::InputType::kFormatItalic)
       ->Apply();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ("|a<select multiple><option></option></select>b",
             GetSelectionTextFromBody());
 #else

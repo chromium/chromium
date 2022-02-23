@@ -812,6 +812,32 @@ TEST(PasswordReuseDetectorTest, AccountPasswordsCleared) {
   reuse_detector.CheckReuse(u"secretword", "https://evil.com", &mockConsumer);
 }
 
+TEST(PasswordReuseDetectorTest, OnLoginsRetained) {
+  PasswordReuseDetector reuse_detector;
+
+  std::vector<TestData> test_data = GetTestDomainsPasswords();
+
+  reuse_detector.OnGetPasswordStoreResults(GetForms(test_data));
+  MockPasswordReuseDetectorConsumer mockConsumer;
+
+  EXPECT_CALL(mockConsumer, OnReuseCheckDone(true, _, _, _, _));
+  reuse_detector.CheckReuse(u"saved_password", "https://evil.com",
+                            &mockConsumer);
+  testing::Mock::VerifyAndClearExpectations(&mockConsumer);
+
+  // Remove the first test data entry corresponding to "saved_password".
+  test_data.erase(test_data.begin());
+  std::vector<PasswordForm> retained_forms;
+  for (const auto& form : GetForms(test_data)) {
+    retained_forms.push_back(*form);
+  }
+  reuse_detector.OnLoginsRetained(retained_forms);
+
+  EXPECT_CALL(mockConsumer, OnReuseCheckDone(false, _, _, _, _));
+  reuse_detector.CheckReuse(u"saved_password", "https://evil.com",
+                            &mockConsumer);
+}
+
 }  // namespace
 
 }  // namespace password_manager

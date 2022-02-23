@@ -40,11 +40,16 @@
     display: initial;
   }
 
+  :host([is-answer]) #image {
+    max-height: 24px;
+    max-width: 24px;
+  }
+
   #icon {
     -webkit-mask-position: center;
     -webkit-mask-repeat: no-repeat;
     -webkit-mask-size: 16px;
-    background-color: var(--search-box-icon, var(--google-grey-refresh-700));
+    background-color: var(--search-box-icon, var(--google-grey-700));
     background-position: center center;
     background-repeat: no-repeat;
     background-size: 16px;
@@ -60,8 +65,8 @@
     background-color: white;
   }
 
-  :host([in-searchbox][background-image='google_g.png']) #icon {
-    background-size: 12px;
+  :host([in-searchbox][background-image='realbox/icons/google_g.svg']) #icon {
+    background-size: 24px;
   }
 
   :host([in-searchbox][mask-image='search.svg']) #icon {

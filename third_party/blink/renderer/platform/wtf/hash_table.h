@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/partition_allocator.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
+#include "third_party/blink/renderer/platform/wtf/atomic_operations.h"
 #include "third_party/blink/renderer/platform/wtf/conditional_destructor.h"
 #include "third_party/blink/renderer/platform/wtf/construct_traits.h"
 #include "third_party/blink/renderer/platform/wtf/hash_traits.h"
@@ -609,7 +610,7 @@ struct HashTableAddResult final {
   STACK_ALLOCATED();
 
  public:
-  HashTableAddResult(const HashTableType* container,
+  HashTableAddResult([[maybe_unused]] const HashTableType* container,
                      ValueType* stored_value,
                      bool is_new_entry)
       : stored_value(stored_value),
@@ -620,7 +621,6 @@ struct HashTableAddResult final {
         container_modifications_(container->Modifications())
 #endif
   {
-    ALLOW_UNUSED_LOCAL(container);
     DCHECK(container);
   }
 
@@ -1138,7 +1138,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
 
   UPDATE_ACCESS_COUNTS();
 
-  while (1) {
+  while (true) {
     const ValueType* entry = table + i;
 
     if (HashFunctions::safe_to_compare_to_empty_or_deleted) {
@@ -1193,7 +1193,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
 
   ValueType* deleted_entry = nullptr;
 
-  while (1) {
+  while (true) {
     ValueType* entry = table + i;
 
     if (IsEmptyBucket(*entry))
@@ -1249,7 +1249,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
 
   ValueType* deleted_entry = nullptr;
 
-  while (1) {
+  while (true) {
     ValueType* entry = table + i;
 
     if (IsEmptyBucket(*entry))
@@ -1387,7 +1387,7 @@ HashTable<Key, Value, Extractor, HashFunctions, Traits, KeyTraits, Allocator>::
 
   ValueType* deleted_entry = nullptr;
   ValueType* entry;
-  while (1) {
+  while (true) {
     entry = table + i;
 
     if (IsEmptyBucket(*entry))

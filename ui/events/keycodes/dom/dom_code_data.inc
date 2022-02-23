@@ -76,6 +76,13 @@
 //       Apple keyboards with USB 0x070049 [Insert] labelled "Help" have not
 //       been made since 2007.
 
+// ChromeOS notes:
+//
+//  Any keys that are added or updated specifically for use in the ChromeOS
+//  top-row should also be updated in sections of Input Diagnostics:
+//    ash/webui/diagnostics_ui/mojom/input_data_provider.mojom: enum TopRowKey
+//    ash/webui/diagnostics_ui/backend/input_data_provider_keyboard.cc: kScancodeMapping
+
 DOM_CODE_DECLARATION {
 
   //            USB     evdev    XKB     Win     Mac   Code
@@ -103,6 +110,10 @@ DOM_CODE_DECLARATION {
   // content.
   DOM_CODE(0x000018, 0x00f8, 0x0100, 0x0000, 0xffff, "MicrophoneMuteToggle",
              MICROPHONE_MUTE_TOGGLE),  // Microphone Mute Toggle
+  // As with privacy screen, keyboard backlight toggle will not be exposed to web
+  // content.
+  DOM_CODE(0x000019, 0x00e4, 0x00ec, 0x0000, 0xffff, "KeyboardBacklightToggle",
+             KEYBOARD_BACKLIGHT_TOGGLE),  // Keyboard Backlight Toggle
 
   // =========================================
   // USB Usage Page 0x01: Generic Desktop Page
@@ -504,6 +515,8 @@ DOM_CODE_DECLARATION {
   DOM_CODE(0x0c00cd, 0x00a4, 0x00ac, 0xe022, 0xffff, "MediaPlayPause",
              MEDIA_PLAY_PAUSE),
   DOM_CODE(0x0c00cf, 0x0246, 0x024e, 0x0000, 0xffff, NULL, SPEECH_INPUT_TOGGLE),
+  DOM_CODE(0x0c00d8, 0x024a, 0x0252, 0x0000, 0xffff, NULL, DICTATE),
+  DOM_CODE(0x0c00d9, 0x0249, 0x0251, 0x0000, 0xffff, NULL, EMOJI_PICKER),
   DOM_CODE(0x0c00e5, 0x00d1, 0x00d9, 0x0000, 0xffff, NULL, BASS_BOOST),
   //DOM_CODE(0x0c00e6, 0x0000, 0x0000, 0x0000, 0xffff, NULL, SURROUND_MODE),
   //DOM_CODE(0x0c0150, 0x0000, 0x0000, 0x0000, 0xffff, NULL, AUDIO_BALANCE_RIGHT),

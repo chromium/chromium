@@ -10,6 +10,7 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.feed.FeedServiceBridge;
 import org.chromium.chrome.browser.feed.FeedSurfaceTracker;
 import org.chromium.chrome.browser.feed.R;
+import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.v2.FeedUserActionType;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -145,7 +146,7 @@ public class WebFeedSnackbarController {
             @Override
             public void onAction(Object actionData) {
                 super.onAction(actionData);
-                FeedServiceBridge.reportOtherUserAction(
+                FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN,
                         FeedUserActionType.TAPPED_UNFOLLOW_TRY_AGAIN_ON_SNACKBAR);
                 WebFeedBridge.unfollow(followId, result -> {
                     showSnackbarForUnfollow(result.requestStatus, followId, url, title);
@@ -262,7 +263,7 @@ public class WebFeedSnackbarController {
 
             // The snackbar should not be showing if canRetryFollow() returns false.
             assert canRetryFollow(mPinnedTab, mFollowId, mUrl);
-            FeedServiceBridge.reportOtherUserAction(mUserActionType);
+            FeedServiceBridge.reportOtherUserAction(StreamKind.UNKNOWN, mUserActionType);
 
             if (!isFollowIdValid(mFollowId)) {
                 WebFeedBridge.followFromUrl(mPinnedTab, mUrl, result -> {

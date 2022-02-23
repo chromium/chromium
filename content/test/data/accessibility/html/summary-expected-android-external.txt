@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="details"]
+++++View text:"details tag" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="disclosureTriangle", clickableScore="300", roleDescription="disclosure triangle"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="details"]
+++++View text:"name" hint:"details #2" clickable focusable actions:[FOCUS, CLICK, AX_FOCUS, NEXT, PREVIOUS, EXPAND] bundle:[chromeRole="disclosureTriangle", clickableScore="300", hint="details #2", roleDescription="disclosure triangle"]

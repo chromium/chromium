@@ -193,8 +193,6 @@ component("proxy") {
       "device_enumeration_resource_helper.h",
       "flash_font_file_resource.cc",
       "flash_font_file_resource.h",
-      "flash_fullscreen_resource.cc",
-      "flash_fullscreen_resource.h",
       "host_dispatcher.cc",
       "host_dispatcher.h",
       "host_var_serialization_rules.cc",
@@ -241,6 +239,7 @@ component("proxy") {
     "//mojo/core/embedder",
     "//ppapi/c",
     "//ppapi/shared_impl",
+    "//third_party/icu",
     "//ui/gfx/geometry",
     "//ui/gfx/ipc/geometry",
   ]
@@ -253,10 +252,6 @@ component("proxy") {
       "//ui/events:events_base",
       "//ui/surface",
     ]
-  }
-
-  if (!is_nacl_nonsfi) {
-    deps += [ "//third_party/icu" ]
   }
 }
 

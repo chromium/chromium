@@ -16,7 +16,10 @@
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/chrome_features.h"
 #include "chrome/common/url_constants.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/grit/extensions_browser_resources.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "url/gurl.h"
@@ -37,13 +40,13 @@ void LoadDefaultImage(content::URLDataSource::GotDataCallback callback) {
 }
 
 void RunCallback(content::URLDataSource::GotDataCallback callback,
-                 apps::mojom::IconValuePtr iv) {
-  if (!iv->compressed.has_value() || iv->compressed.value().empty()) {
+                 apps::IconValuePtr iv) {
+  if (!iv || iv->compressed.empty()) {
     LoadDefaultImage(std::move(callback));
     return;
   }
   base::RefCountedBytes* image_bytes =
-      new base::RefCountedBytes(iv->compressed.value());
+      new base::RefCountedBytes(iv->compressed);
   std::move(callback).Run(image_bytes);
 }
 
@@ -69,24 +72,21 @@ void AppIconSource::StartDataRequest(
     const GURL& url,
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
-  const std::string path_lower =
-      base::ToLowerASCII(content::URLDataSource::URLToRequestPath(url));
+  std::string request_path = content::URLDataSource::URLToRequestPath(url);
   std::vector<std::string> path_parts = base::SplitString(
-      path_lower, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
+      request_path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
 
-  // Check data exists, load default image if it doesn't.
-  if (path_lower.empty() || path_parts.size() < 2) {
+  // Check whether data exists, load default image if not.
+  if (request_path.empty() || path_parts.size() < 2) {
     LoadDefaultImage(std::move(callback));
     return;
   }
 
-  // Check data is correct type, load default image if not.
-  const std::string app_id = path_parts[0];
-  std::string size_param = path_parts[1];
+  // Check whether data is of correct type, load default image if not.
+  std::string size_param = base::ToLowerASCII(path_parts[1]);
   size_t query_position = size_param.find("?");
   if (query_position != std::string::npos)
     size_param = size_param.substr(0, query_position);
-
   int size_in_dip = 0;
   if (!base::StringToInt(size_param, &size_in_dip)) {
     LoadDefaultImage(std::move(callback));
@@ -95,14 +95,22 @@ void AppIconSource::StartDataRequest(
 
   auto* app_service_proxy =
       apps::AppServiceProxyFactory::GetForProfile(profile_);
-
+  const std::string app_id = path_parts[0];
   const apps::mojom::AppType app_type =
       app_service_proxy->AppRegistryCache().GetAppType(app_id);
   constexpr bool allow_placeholder_icon = false;
-  app_service_proxy->LoadIcon(
-      app_type, app_id, apps::mojom::IconType::kCompressed, size_in_dip,
-      allow_placeholder_icon,
-      base::BindOnce(&RunCallback, std::move(callback)));
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    app_service_proxy->LoadIcon(
+        ConvertMojomAppTypToAppType(app_type), app_id, IconType::kCompressed,
+        size_in_dip, allow_placeholder_icon,
+        base::BindOnce(&RunCallback, std::move(callback)));
+  } else {
+    app_service_proxy->LoadIcon(
+        app_type, app_id, apps::mojom::IconType::kCompressed, size_in_dip,
+        allow_placeholder_icon,
+        MojomIconValueToIconValueCallback(
+            base::BindOnce(&RunCallback, std::move(callback))));
+  }
 }
 
 std::string AppIconSource::GetMimeType(const std::string&) {

@@ -9,6 +9,7 @@
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "content/browser/renderer_host/render_widget_host_view_aura.h"
@@ -191,7 +192,7 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
     selection_controller_client_ =
         new TestTouchSelectionControllerClientAura(rwhva);
     rwhva->SetSelectionControllerClientForTest(
-        base::WrapUnique(selection_controller_client_));
+        base::WrapUnique(selection_controller_client_.get()));
     // Simulate the start of a motion event sequence, since the tests assume it.
     rwhva->selection_controller()->WillHandleTouchEvent(
         ui::test::MockMotionEvent(ui::MotionEvent::Action::DOWN));
@@ -212,7 +213,7 @@ class TouchSelectionControllerClientAuraTest : public ContentBrowserTest {
 
   std::unique_ptr<TestTouchSelectionMenuRunner> menu_runner_;
 
-  TestTouchSelectionControllerClientAura* selection_controller_client_ =
+  raw_ptr<TestTouchSelectionControllerClientAura> selection_controller_client_ =
       nullptr;
 };
 

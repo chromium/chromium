@@ -269,6 +269,7 @@ TEST_F(BrowserCommandsTest, BackForwardInNewTab) {
 TEST_F(BrowserCommandsTest, BackForwardInNewTabWithGroup) {
   GURL url1("http://foo/1");
   GURL url2("http://foo/2");
+  ASSERT_TRUE(browser()->tab_strip_model()->SupportsTabGroups());
 
   // Make a tab with the two pages navigated in it.
   AddTab(browser(), url1);
@@ -446,7 +447,7 @@ TEST_F(BrowserCommandsTest, ToggleCaretBrowsing) {
   pref_service->SetBoolean(prefs::kCaretBrowsingEnabled, false);
   pref_service->SetBoolean(prefs::kShowCaretBrowsingDialog, false);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, caret browsing should be disabled unless focus is in web content.
   // Make sure it's disabled initially and doesn't toggle if executed.
   EXPECT_FALSE(chrome::IsCommandEnabled(browser(), IDC_CARET_BROWSING_TOGGLE));

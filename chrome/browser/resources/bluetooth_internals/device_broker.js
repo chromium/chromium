@@ -9,14 +9,14 @@
  * DeviceRemote being shared among all requesters.
  */
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import './device.mojom-lite.js';
 import {getAdapterBroker} from './adapter_broker.js';
+import {DeviceRemote} from './device.mojom-webui.js';
+
 
 // Expose for testing.
 /**
  * @type {Map<string,
- *     !bluetooth.mojom.DeviceRemote|!Promise<!bluetooth.mojom.DeviceRemote>>}
+ *     !DeviceRemote|!Promise<!DeviceRemote>>}
  */
 export const connectedDevices = new Map();
 
@@ -26,7 +26,7 @@ export const connectedDevices = new Map();
  * DeviceRemote. If a connection is in progress, the promise resolves when
  * the existing connection request promise is fulfilled.
  * @param {string} address
- * @return {!Promise<!bluetooth.mojom.DeviceRemote>}
+ * @return {!Promise<!DeviceRemote>}
  */
 export function connectToDevice(address) {
   const deviceOrPromise = connectedDevices.get(address) || null;
@@ -34,7 +34,7 @@ export function connectToDevice(address) {
     return Promise.resolve(deviceOrPromise);
   }
 
-  const promise = /** @type {!Promise<!bluetooth.mojom.DeviceRemote>} */ (
+  const promise = /** @type {!Promise<!DeviceRemote>} */ (
       getAdapterBroker()
           .then(function(adapterBroker) {
             return adapterBroker.connectToDevice(address);

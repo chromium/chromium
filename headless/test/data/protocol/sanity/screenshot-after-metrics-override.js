@@ -23,10 +23,10 @@
        <body></body>`
   );
 
-  await new Promise(async fulfill => {
-    await virtualTimeController.grantInitialTime(500, 100, null, fulfill);
-    frameNavigationHelper.navigate('http://green.com/');
-  });
+  await virtualTimeController.initialize(100);
+  await frameNavigationHelper.navigate('http://green.com/');
+  await virtualTimeController.grantTime(500);
+
   await dp.Emulation.setDeviceMetricsOverride({
       deviceScaleFactor: 1,
       width: 1024, height: 1024,

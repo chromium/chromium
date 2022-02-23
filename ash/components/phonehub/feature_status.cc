@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/feature_status.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
@@ -42,4 +42,4 @@ std::ostream& operator<<(std::ostream& stream, FeatureStatus status) {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

@@ -26,7 +26,7 @@ function readFile(fs)
         },
         function(e) { fail('read:' + fileErrorToString(e)); });
     },
-    function(e) { fail('getFile:' + fileErrorToString(e)); });
+    function(e) { fail('readFile getFile:' + fileErrorToString(e)); });
 }
 
 function writeFile(fs)
@@ -38,7 +38,7 @@ function writeFile(fs)
         function(writer) {
           writer.onwriteend = function(e) {
             readFile(fs);
-          }
+          };
           writer.onerror = function(e) {
             fail('Write:' + fileErrorToString(e));
           };
@@ -48,7 +48,7 @@ function writeFile(fs)
         },
         function(e) { fail('createWriter:' + fileErrorToString(e)); });
     },
-    function(e) { fail('getFile:' + fileErrorToString(e)); });
+    function(e) { fail('writeFile getFile:' + fileErrorToString(e)); });
 }
 
 function requestFileSystemSuccess(fs)
@@ -59,9 +59,11 @@ function requestFileSystemSuccess(fs)
 
   fs.root.getFile( filename, {create:false},
     function(fileEntry) {
-      fileEntry.remove(fileDeleted, function(e) {
-        fail('getFile:' + fileErrorToString(e));
-      });
+      fileEntry.remove(
+        fileDeleted,
+        function(e) {
+          fail('requestFileSystemSuccess remove:' + fileErrorToString(e));
+        });
     },
     fileDeleted);
 }
@@ -73,5 +75,5 @@ function test()
       window.TEMPORARY,
       1024 * 1024,
       requestFileSystemSuccess,
-      unexpectedErrorCallback);
+      function(e) { fail('webkitRequestFileSystem:' + fileErrorToString(e)); });
 }

@@ -59,7 +59,7 @@ static_library("storage_monitor") {
       "storage_monitor_chromeos.cc",
       "storage_monitor_chromeos.h",
     ]
-    deps += [ "//chromeos/disks" ]
+    deps += [ "//ash/components/disks" ]
 
     if (use_dbus) {
       sources += [
@@ -179,6 +179,6 @@ source_set("unit_tests") {
     }
   }
   if (is_chromeos_ash) {
-    deps += [ "//chromeos/disks:test_support" ]
+    deps += [ "//ash/components/disks:test_support" ]
   }
 }

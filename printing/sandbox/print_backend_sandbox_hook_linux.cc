@@ -3,18 +3,19 @@
 // found in the LICENSE file.
 
 #include "printing/sandbox/print_backend_sandbox_hook_linux.h"
-#include "sandbox/policy/export.h"
 
 #include "base/base_paths.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
+#include "build/build_config.h"
 #include "sandbox/linux/syscall_broker/broker_command.h"
 #include "sandbox/linux/syscall_broker/broker_file_permission.h"
+#include "sandbox/policy/export.h"
 #include "sandbox/policy/linux/sandbox_linux.h"
 #include "services/network/network_sandbox_hook_linux.h"
 
-#if defined(OS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
 #include "printing/backend/cups_connection_pool.h"
 #endif
 
@@ -45,7 +46,7 @@ sandbox::syscall_broker::BrokerCommandSet GetPrintBackendBrokerCommandSet() {
 }
 
 std::vector<BrokerFilePermission> GetPrintBackendFilePermissions() {
-#if defined(OS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
   // No extra permissions required, as the needed socket connections to the CUPS
   // server are established before entering the sandbox.
   return std::vector<BrokerFilePermission>();
@@ -79,14 +80,14 @@ std::vector<BrokerFilePermission> GetPrintBackendFilePermissions() {
                      network_permissions.end());
 
   return permissions;
-#endif  // defined(OS_CHROMEOS) && defined(USE_CUPS)
+#endif  // BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
 }
 
 }  // namespace
 
 bool PrintBackendPreSandboxHook(
     sandbox::policy::SandboxLinux::Options options) {
-#if defined(OS_CHROMEOS) && defined(USE_CUPS)
+#if BUILDFLAG(IS_CHROMEOS) && defined(USE_CUPS)
   // Create the socket connections to the CUPS server before engaging the
   // sandbox, since new connections cannot be made after that.
   CupsConnectionPool::Create();

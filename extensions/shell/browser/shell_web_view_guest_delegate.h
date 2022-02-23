@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SHELL_WEB_VIEW_GUEST_DELEGATE_H_
 #define EXTENSIONS_SHELL_BROWSER_SHELL_WEB_VIEW_GUEST_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest_delegate.h"
 
 namespace extensions {

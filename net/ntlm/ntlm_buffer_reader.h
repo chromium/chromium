@@ -72,37 +72,37 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
 
   // Reads a 16 bit value (little endian) as a uint16_t. If there are not 16
   // more bits available, it returns false.
-  bool ReadUInt16(uint16_t* value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadUInt16(uint16_t* value);
 
   // Reads a 32 bit value (little endian) as a uint32_t. If there are not 32
   // more bits available, it returns false.
-  bool ReadUInt32(uint32_t* value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadUInt32(uint32_t* value);
 
   // Reads a 64 bit value (little endian) as a uint64_t. If there are not 64
   // more bits available, it returns false.
-  bool ReadUInt64(uint64_t* value) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadUInt64(uint64_t* value);
 
   // Calls |ReadUInt32| and returns it cast as |NegotiateFlags|. No
   // validation of the value takes place.
-  bool ReadFlags(NegotiateFlags* flags) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadFlags(NegotiateFlags* flags);
 
   // Reads |len| bytes and copies them into |buffer|.
-  bool ReadBytes(base::span<uint8_t> buffer) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadBytes(base::span<uint8_t> buffer);
 
   // Reads |sec_buf.length| bytes from offset |sec_buf.offset| and copies them
   // into |buffer|. If the security buffer specifies a payload outside the
   // buffer, then the call fails. Unlike the other Read* methods, this does
   // not move the cursor.
-  bool ReadBytesFrom(const SecurityBuffer& sec_buf,
-                     base::span<uint8_t> buffer) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadBytesFrom(const SecurityBuffer& sec_buf,
+                                   base::span<uint8_t> buffer);
 
   // Reads |sec_buf.length| bytes from offset |sec_buf.offset| and assigns
   // |reader| an |NtlmBufferReader| representing the payload. If the security
   //  buffer specifies a payload outside the buffer, then the call fails, and
   // the state of |reader| is undefined. Unlike the other Read* methods, this
   // does not move the cursor.
-  bool ReadPayloadAsBufferReader(const SecurityBuffer& sec_buf,
-                                 NtlmBufferReader* reader) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadPayloadAsBufferReader(const SecurityBuffer& sec_buf,
+                                               NtlmBufferReader* reader);
 
   // A security buffer is an 8 byte structure that defines the offset and
   // length of a payload (string, struct or byte array) that appears after the
@@ -112,7 +112,7 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
   //     uint16 - |length| Length of payload
   //     uint16 - Allocation (this is always ignored and not returned)
   //     uint32 - |offset| Offset from start of message
-  bool ReadSecurityBuffer(SecurityBuffer* sec_buf) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadSecurityBuffer(SecurityBuffer* sec_buf);
 
   // Reads an AvPair header. AvPairs appear sequentially, terminated by a
   // special EOL AvPair, in the target info payload of the Challenge message.
@@ -124,22 +124,21 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
   //    uint16      - AvLen: The length of the following payload.
   //    (variable)  - Payload: Variable length payload. The content and
   //                  format are determined by the AvId.
-  bool ReadAvPairHeader(TargetInfoAvId* avid,
-                        uint16_t* avlen) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadAvPairHeader(TargetInfoAvId* avid, uint16_t* avlen);
 
   // There are 3 message types Negotiate (sent by client), Challenge (sent by
   // server), and Authenticate (sent by client).
   //
   // This reads the message type from the header and will return false if the
   // value is invalid.
-  bool ReadMessageType(MessageType* message_type) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadMessageType(MessageType* message_type);
 
   // Reads |target_info_len| bytes and parses them as a sequence of Av Pairs.
   // |av_pairs| should be empty on entry to this function. If |ReadTargetInfo|
   // returns false, the content of |av_pairs| is in an undefined state and
   // should be discarded.
-  bool ReadTargetInfo(size_t target_info_len,
-                      std::vector<AvPair>* av_pairs) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadTargetInfo(size_t target_info_len,
+                                    std::vector<AvPair>* av_pairs);
 
   // Reads a security buffer, then parses the security buffer payload as a
   // target info. The target info is returned as a sequence of AvPairs, with
@@ -149,43 +148,43 @@ class NET_EXPORT_PRIVATE NtlmBufferReader {
   // |av_pairs| should be empty on entry to this function. If |ReadTargetInfo|
   // returns false, the content of |av_pairs| is in an undefined state and
   // should be discarded.
-  bool ReadTargetInfoPayload(std::vector<AvPair>* av_pairs) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool ReadTargetInfoPayload(std::vector<AvPair>* av_pairs);
 
   // Skips over a security buffer field without reading the fields. This is
   // the equivalent of advancing the cursor 8 bytes. Returns false if there
   // are less than 8 bytes left in the buffer.
-  bool SkipSecurityBuffer() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SkipSecurityBuffer();
 
   // Skips over the security buffer without returning the values, but fails if
   // the values would cause a read outside the buffer if the payload was
   // actually read.
-  bool SkipSecurityBufferWithValidation() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SkipSecurityBufferWithValidation();
 
   // Skips over |count| bytes in the buffer. Returns false if there are not
   // |count| bytes left in the buffer.
-  bool SkipBytes(size_t count) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool SkipBytes(size_t count);
 
   // Reads and returns true if the next 8 bytes matches the signature in an
   // NTLM message "NTLMSSP\0". The cursor advances if the the signature
   // is matched.
-  bool MatchSignature() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MatchSignature();
 
   // Performs |ReadMessageType| and returns true if the value is
   // |message_type|. If the read fails or the message type does not match,
   // the buffer is invalid and MUST be discarded.
-  bool MatchMessageType(MessageType message_type) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MatchMessageType(MessageType message_type);
 
   // Performs |MatchSignature| then |MatchMessageType|.
-  bool MatchMessageHeader(MessageType message_type) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MatchMessageHeader(MessageType message_type);
 
   // Performs |ReadBytes(count)| and returns true if the contents is all
   // zero.
-  bool MatchZeros(size_t count) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MatchZeros(size_t count);
 
   // Reads the security buffer and returns true if the length is 0 and
   // the offset is within the message. On failure, the buffer is invalid
   // and MUST be discarded.
-  bool MatchEmptySecurityBuffer() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool MatchEmptySecurityBuffer();
 
  private:
   // Reads |sizeof(T)| bytes of an integer type from a little-endian buffer.

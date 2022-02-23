@@ -6,7 +6,7 @@
 
 #include <array>
 
-#include "ash/quick_pair/pairing/fast_pair/fast_pair_encryption.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_encryption.h"
 #include "ash/services/quick_pair/public/cpp/fast_pair_message_type.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

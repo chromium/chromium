@@ -4,10 +4,17 @@
 
 package org.chromium.chrome.browser.password_manager;
 
-import com.google.android.gms.common.api.ApiException;
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
 
+import android.app.PendingIntent;
+
+import com.google.android.gms.common.api.ApiException;
+import com.google.android.gms.common.api.ResolvableApiException;
+
+import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
@@ -19,6 +26,7 @@ import java.lang.annotation.Target;
  * store backend that forwards password store operations to a downstream implementation.
  */
 class PasswordStoreAndroidBackendBridgeImpl {
+    private static final String TAG = "PwdStoreBackend";
     /**
      * Each operation sent to the passwords API will be assigned a JobId. The native side uses
      * this ID to map an API response to the job that invoked it.
@@ -49,8 +57,26 @@ class PasswordStoreAndroidBackendBridgeImpl {
     }
 
     @CalledByNative
-    void getAllLogins(@JobId int jobId) {
-        mBackend.getAllLogins(passwords -> {
+    void getAllLogins(@JobId int jobId, @PasswordStoreOperationTarget int target) {
+        mBackend.getAllLogins(target, passwords -> {
+            if (mNativeBackendBridge == 0) return;
+            PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
+                    mNativeBackendBridge, jobId, passwords);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
+    @CalledByNative
+    void getAutofillableLogins(@JobId int jobId) {
+        mBackend.getAutofillableLogins(passwords -> {
+            if (mNativeBackendBridge == 0) return;
+            PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
+                    mNativeBackendBridge, jobId, passwords);
+        }, exception -> handleAndroidBackendException(jobId, exception));
+    }
+
+    @CalledByNative
+    void getLoginsForSignonRealm(@JobId int jobId, String signonRealm) {
+        mBackend.getLoginsForSignonRealm(signonRealm, passwords -> {
             if (mNativeBackendBridge == 0) return;
             PasswordStoreAndroidBackendBridgeImplJni.get().onCompleteWithLogins(
                     mNativeBackendBridge, jobId, passwords);
@@ -76,8 +102,9 @@ class PasswordStoreAndroidBackendBridgeImpl {
     }
 
     @CalledByNative
-    void removeLogin(@JobId int jobId, byte[] pwdSpecificsData) {
-        mBackend.removeLogin(pwdSpecificsData, () -> {
+    void removeLogin(
+            @JobId int jobId, byte[] pwdSpecificsData, @PasswordStoreOperationTarget int target) {
+        mBackend.removeLogin(pwdSpecificsData, target, () -> {
             if (mNativeBackendBridge == 0) return;
             PasswordStoreAndroidBackendBridgeImplJni.get().onLoginDeleted(
                     mNativeBackendBridge, jobId, pwdSpecificsData);
@@ -98,6 +125,19 @@ class PasswordStoreAndroidBackendBridgeImpl {
         if (exception instanceof ApiException) {
             error = AndroidBackendErrorType.EXTERNAL_ERROR;
             api_error_code = ((ApiException) exception).getStatusCode();
+
+            if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)
+                    && exception instanceof ResolvableApiException) {
+                // Backend error is user-recoverable, launch pending intent to allow the user to
+                // resolve it.
+                ResolvableApiException resolvableApiException = (ResolvableApiException) exception;
+                PendingIntent pendingIntent = resolvableApiException.getResolution();
+                try {
+                    pendingIntent.send();
+                } catch (PendingIntent.CanceledException e) {
+                    Log.e(TAG, "Can not launch error resolution intent", e);
+                }
+            }
         }
 
         PasswordStoreAndroidBackendBridgeImplJni.get().onError(

@@ -40,6 +40,12 @@ export class OnboardingChooseDestinationPageElement extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       destinationOwner_: {
         type: String,

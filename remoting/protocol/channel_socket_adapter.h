@@ -9,7 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "remoting/protocol/p2p_datagram_socket.h"
 // TODO(zhihuang):Replace #include by forward declaration once proper
@@ -73,7 +73,7 @@ class TransportChannelSocketAdapter : public P2PDatagramSocket,
 
   base::ThreadChecker thread_checker_;
 
-  cricket::IceTransportInternal* channel_;
+  raw_ptr<cricket::IceTransportInternal> channel_;
 
   base::OnceClosure destruction_callback_;
 

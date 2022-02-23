@@ -13,9 +13,7 @@ InMemoryMetadataChangeList::~InMemoryMetadataChangeList() = default;
 
 void InMemoryMetadataChangeList::TransferChangesTo(MetadataChangeList* other) {
   DCHECK(other);
-  for (const auto& pair : metadata_changes_) {
-    const std::string& storage_key = pair.first;
-    const MetadataChange& change = pair.second;
+  for (const auto& [storage_key, change] : metadata_changes_) {
     switch (change.type) {
       case UPDATE:
         other->UpdateMetadata(storage_key, change.metadata);
@@ -46,8 +44,8 @@ void InMemoryMetadataChangeList::UpdateModelTypeState(
 }
 
 void InMemoryMetadataChangeList::ClearModelTypeState() {
-  state_change_ =
-      std::make_unique<ModelTypeStateChange>(ModelTypeStateChange{CLEAR});
+  state_change_ = std::make_unique<ModelTypeStateChange>(
+      ModelTypeStateChange{CLEAR, sync_pb::ModelTypeState()});
 }
 
 void InMemoryMetadataChangeList::UpdateMetadata(

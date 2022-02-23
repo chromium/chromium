@@ -217,7 +217,9 @@ bool ShouldHandleElement(
     const blink::WebElement& element,
     const std::vector<TagAndAttributesItem>& tag_and_attributes_list) {
   // Resources with a SRC are always handled.
+  // TODO(1298672): Handle portal elements.
   if ((element.HasHTMLTagName("iframe") || element.HasHTMLTagName("frame") ||
+       element.HasHTMLTagName("fencedframe") ||
        element.HasHTMLTagName("embed") || element.HasHTMLTagName("script")) &&
       element.HasAttribute("src")) {
     return true;

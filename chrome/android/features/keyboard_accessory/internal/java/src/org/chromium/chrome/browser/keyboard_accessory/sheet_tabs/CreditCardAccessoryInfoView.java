@@ -14,7 +14,7 @@ import android.widget.LinearLayout;
 import androidx.annotation.Nullable;
 
 import org.chromium.chrome.browser.keyboard_accessory.R;
-import org.chromium.ui.widget.ChipView;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 
 /**
  * This view represents a section of user credit card details in the payment method tab of the

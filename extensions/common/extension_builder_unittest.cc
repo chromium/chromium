@@ -62,35 +62,33 @@ TEST(ExtensionBuilderTest, Actions) {
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("no action").Build();
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kPageAction));
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kBrowserAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kPageAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kBrowserAction));
   }
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("page action")
-            .SetAction(ExtensionBuilder::ActionType::PAGE_ACTION)
+            .SetAction(ActionInfo::TYPE_PAGE)
             .Build();
-    EXPECT_TRUE(extension->manifest()->HasKey(manifest_keys::kPageAction));
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kBrowserAction));
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kAction));
+    EXPECT_TRUE(extension->manifest()->FindKey(manifest_keys::kPageAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kBrowserAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kAction));
   }
   {
     scoped_refptr<const Extension> extension =
         ExtensionBuilder("browser action")
-            .SetAction(ExtensionBuilder::ActionType::BROWSER_ACTION)
+            .SetAction(ActionInfo::TYPE_BROWSER)
             .Build();
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kPageAction));
-    EXPECT_TRUE(extension->manifest()->HasKey(manifest_keys::kBrowserAction));
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kPageAction));
+    EXPECT_TRUE(extension->manifest()->FindKey(manifest_keys::kBrowserAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kAction));
   }
   {
     scoped_refptr<const Extension> extension =
-        ExtensionBuilder("action")
-            .SetAction(ExtensionBuilder::ActionType::ACTION)
-            .Build();
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kPageAction));
-    EXPECT_FALSE(extension->manifest()->HasKey(manifest_keys::kBrowserAction));
-    EXPECT_TRUE(extension->manifest()->HasKey(manifest_keys::kAction));
+        ExtensionBuilder("action").SetAction(ActionInfo::TYPE_ACTION).Build();
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kPageAction));
+    EXPECT_FALSE(extension->manifest()->FindKey(manifest_keys::kBrowserAction));
+    EXPECT_TRUE(extension->manifest()->FindKey(manifest_keys::kAction));
   }
 }
 

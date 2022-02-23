@@ -13,9 +13,9 @@
 #include "gpu/gpu_export.h"
 #include "ui/gfx/gpu_extra_info.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <d3dcommon.h>
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace angle {
 struct SystemInfo;
@@ -27,7 +27,7 @@ class CommandLine;
 
 namespace gpu {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(magchen@): Remove D3D_FEATURE_LEVEL_CHROMIUM and
 // D3D_SHADER_MODEL_CHROMIUM and use D3D_FEATURE_LEVEL directly once the Windows
 // Kits is updated from version 19041 to a newer version 20170 or later.
@@ -53,7 +53,7 @@ typedef enum D3D_FEATURE_LEVEL_CHROMIUM {
   D3D12_FEATURE_LEVEL_12_2 = 0xc200,
 } D3D_FEATURE_LEVEL_CHROMIUM;
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Collects basic GPU info without creating a GL/DirectX context (and without
 // the danger of crashing), including vendor_id and device_id.
@@ -70,7 +70,7 @@ GPU_EXPORT bool CollectBasicGraphicsInfo(const base::CommandLine* command_line,
 // This is called at GPU process startup time.
 GPU_EXPORT bool CollectContextGraphicsInfo(GPUInfo* gpu_info);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Collect the DirectX Disagnostics information about the attached displays.
 GPU_EXPORT bool GetDxDiagnostics(DxDiagNode* output);
 GPU_EXPORT void GetGpuSupportedD3D12Version(
@@ -96,7 +96,7 @@ GPU_EXPORT void CollectHardwareOverlayInfo(OverlayInfo* overlay_info);
 
 // Identify the active GPU based on LUIDs.
 bool IdentifyActiveGPUWithLuid(GPUInfo* gpu_info);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Create a GL context and collect GL strings and versions.
 GPU_EXPORT bool CollectGraphicsInfoGL(GPUInfo* gpu_info);

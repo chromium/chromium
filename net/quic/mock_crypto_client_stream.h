@@ -5,7 +5,7 @@
 #ifndef NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_H_
 #define NET_QUIC_MOCK_CRYPTO_CLIENT_STREAM_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_handshake.h"
 #include "net/third_party/quiche/src/quic/core/crypto/crypto_protocol.h"
@@ -74,6 +74,8 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
       const override;
   quic::CryptoMessageParser* crypto_message_parser() override;
   void OnOneRttPacketAcknowledged() override;
+  std::unique_ptr<quic::QuicDecrypter>
+  AdvanceKeysAndCreateCurrentOneRttDecrypter() override;
   bool EarlyDataAccepted() const override;
   // Override QuicCryptoClientStream::SetServerApplicationStateForResumption()
   // to avoid tripping over the DCHECK on handshaker state.
@@ -107,7 +109,7 @@ class MockCryptoClientStream : public quic::QuicCryptoClientStream,
   bool use_mock_crypter_;
 
   const quic::QuicServerId server_id_;
-  const net::ProofVerifyDetailsChromium* proof_verify_details_;
+  raw_ptr<const net::ProofVerifyDetailsChromium> proof_verify_details_;
   const quic::QuicConfig config_;
 };
 

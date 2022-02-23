@@ -4,6 +4,11 @@
 
 #include <memory>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -13,11 +18,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/switches.h"
 #include "extensions/test/extension_test_message_listener.h"
@@ -83,8 +83,10 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
   ASSERT_TRUE(prefs);
   CreateAppInstance(prefs);
   // Add one launchable app and one non-launchable app.
-  arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
-  app_instance()->SendRefreshAppList({launchable_app});
+  std::vector<arc::mojom::AppInfoPtr> one_app;
+  one_app.emplace_back(
+      arc::mojom::AppInfo::New("App_0", "Package_0", "Dummy_activity_0"));
+  app_instance()->SendRefreshAppList(one_app);
   static_cast<arc::mojom::AppHost*>(prefs)->OnTaskCreated(
       0 /* task_id */, "Package_1", "Dummy_activity_1", "App_1",
       absl::nullopt /* intent */, 0 /* session_id */);
@@ -105,9 +107,12 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, GetPackageNameAndLaunchApp) {
   // Restarting the service makes the app ready. Verify the app is launched
   // successfully.
   CreateAppInstance(prefs);
-  app_instance()->SendRefreshAppList({launchable_app});
-  ASSERT_EQ(1u, app_instance()->launch_requests().size());
-  EXPECT_TRUE(app_instance()->launch_requests()[0]->IsForApp(launchable_app));
+  app_instance()->SendRefreshAppList(one_app);
+  EXPECT_EQ(0u, app_instance()->launch_requests().size());
+  ASSERT_EQ(1u, app_instance()->launch_intents().size());
+  EXPECT_NE(app_instance()->launch_intents()[0].find(
+                "component=Package_0/Dummy_activity_0;"),
+            std::string::npos);
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
@@ -115,7 +120,9 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
   ASSERT_TRUE(prefs);
   CreateAppInstance(prefs);
 
-  arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
+  std::vector<arc::mojom::AppInfoPtr> launchable_apps;
+  launchable_apps.emplace_back(
+      arc::mojom::AppInfo::New("App_0", "Package_0", "Dummy_activity_0"));
 
   // The JS test will observe the onInstalled event and attempt to launch the
   // newly installed app.
@@ -131,7 +138,7 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
 
   EXPECT_EQ(0u, app_instance()->launch_requests().size());
   // Add one launchable app and one non-launchable app.
-  app_instance()->SendRefreshAppList({launchable_app});
+  app_instance()->SendRefreshAppList(launchable_apps);
   static_cast<arc::mojom::AppHost*>(prefs)->OnTaskCreated(
       0 /* task_id */, "Package_1", "Dummy_activity_1", "App_1",
       absl::nullopt /* intent */, 0 /* session_id */);
@@ -139,7 +146,8 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, OnInstalled) {
   // only, and the app is launched successfully.
   EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
   ASSERT_EQ(1u, app_instance()->launch_requests().size());
-  EXPECT_TRUE(app_instance()->launch_requests()[0]->IsForApp(launchable_app));
+  EXPECT_TRUE(
+      app_instance()->launch_requests()[0]->IsForApp(*launchable_apps[0]));
 }
 
 IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest,
@@ -156,8 +164,10 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest,
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->profile());
   ASSERT_TRUE(prefs);
   CreateAppInstance(prefs);
-  arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
-  app_instance()->SendRefreshAppList({launchable_app});
+  std::vector<arc::mojom::AppInfoPtr> one_app;
+  one_app.emplace_back(
+      arc::mojom::AppInfo::New("App_0", "Package_0", "Dummy_activity_0"));
+  app_instance()->SendRefreshAppList(one_app);
   EXPECT_TRUE(RunExtensionTest(
       "arc_app_launcher/launch_app",
       {.custom_arg = "Package_0", .launch_as_platform_app = true}))
@@ -182,8 +192,10 @@ IN_PROC_BROWSER_TEST_F(ArcAppsPrivateApiTest, DemoModeAppLaunchSourceReported) {
   ArcAppListPrefs* prefs = ArcAppListPrefs::Get(browser()->profile());
   ASSERT_TRUE(prefs);
   CreateAppInstance(prefs);
-  arc::mojom::AppInfo launchable_app("App_0", "Package_0", "Dummy_activity_0");
-  app_instance()->SendRefreshAppList({launchable_app});
+  std::vector<arc::mojom::AppInfoPtr> one_app;
+  one_app.emplace_back(
+      arc::mojom::AppInfo::New("App_0", "Package_0", "Dummy_activity_0"));
+  app_instance()->SendRefreshAppList(one_app);
   EXPECT_TRUE(RunExtensionTest(
       "arc_app_launcher/launch_app",
       {.custom_arg = "Package_0", .launch_as_platform_app = true}))

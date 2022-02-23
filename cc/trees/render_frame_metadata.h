@@ -5,7 +5,6 @@
 #ifndef CC_TREES_RENDER_FRAME_METADATA_H_
 #define CC_TREES_RENDER_FRAME_METADATA_H_
 
-#include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/cc_export.h"
 #include "components/viz/common/quads/selection.h"
@@ -67,7 +66,7 @@ class CC_EXPORT RenderFrameMetadata {
   SkColor root_background_color = SK_ColorWHITE;
 
   // Scroll offset of the root layer.
-  absl::optional<gfx::Vector2dF> root_scroll_offset;
+  absl::optional<gfx::PointF> root_scroll_offset;
 
   // Selection region relative to the current viewport. If the selection is
   // empty or otherwise unused, the bound types will indicate such.
@@ -115,11 +114,7 @@ class CC_EXPORT RenderFrameMetadata {
   viz::VerticalScrollDirection new_vertical_scroll_direction =
       viz::VerticalScrollDirection::kNull;
 
-  // Measures the amount of time that Blink spends updating in response to a new
-  // set of VisualProperties arriving. See WidgetBase::UpdateVisualProperties.
-  base::TimeDelta visual_properties_update_duration;
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Used to position Android bottom bar, whose position is computed by the
   // renderer compositor.
   float bottom_controls_height = 0.f;

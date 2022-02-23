@@ -43,7 +43,7 @@ namespace cc {
 using base::TimeTicks;
 
 std::unique_ptr<PageScaleAnimation> PageScaleAnimation::Create(
-    const gfx::Vector2dF& start_scroll_offset,
+    const gfx::PointF& start_scroll_offset,
     float start_page_scale_factor,
     const gfx::SizeF& viewport_size,
     const gfx::SizeF& root_layer_size) {
@@ -52,11 +52,10 @@ std::unique_ptr<PageScaleAnimation> PageScaleAnimation::Create(
                              viewport_size, root_layer_size));
 }
 
-PageScaleAnimation::PageScaleAnimation(
-    const gfx::Vector2dF& start_scroll_offset,
-    float start_page_scale_factor,
-    const gfx::SizeF& viewport_size,
-    const gfx::SizeF& root_layer_size)
+PageScaleAnimation::PageScaleAnimation(const gfx::PointF& start_scroll_offset,
+                                       float start_page_scale_factor,
+                                       const gfx::SizeF& viewport_size,
+                                       const gfx::SizeF& root_layer_size)
     : start_page_scale_factor_(start_page_scale_factor),
       target_page_scale_factor_(0.f),
       start_scroll_offset_(start_scroll_offset),
@@ -69,7 +68,7 @@ PageScaleAnimation::PageScaleAnimation(
 
 PageScaleAnimation::~PageScaleAnimation() = default;
 
-void PageScaleAnimation::ZoomTo(const gfx::Vector2dF& target_scroll_offset,
+void PageScaleAnimation::ZoomTo(const gfx::PointF& target_scroll_offset,
                                 float target_page_scale_factor,
                                 double duration) {
   target_page_scale_factor_ = target_page_scale_factor;
@@ -89,7 +88,7 @@ void PageScaleAnimation::ZoomTo(const gfx::Vector2dF& target_scroll_offset,
   start_anchor_ = target_anchor_;
 }
 
-void PageScaleAnimation::ZoomWithAnchor(const gfx::Vector2dF& anchor,
+void PageScaleAnimation::ZoomWithAnchor(const gfx::PointF& anchor,
                                         float target_page_scale_factor,
                                         double duration) {
   start_anchor_ = anchor;
@@ -140,11 +139,11 @@ void PageScaleAnimation::InferTargetAnchorFromScrollOffsets() {
 }
 
 void PageScaleAnimation::ClampTargetScrollOffset() {
-  gfx::Vector2dF max_scroll_offset =
+  gfx::PointF max_scroll_offset = gfx::PointAtOffsetFromOrigin(
       gfx::RectF(root_layer_size_).bottom_right() -
-      gfx::RectF(gfx::SizeF(TargetViewportSize())).bottom_right();
+      gfx::RectF(gfx::SizeF(TargetViewportSize())).bottom_right());
   target_scroll_offset_.SetToMin(max_scroll_offset);
-  target_scroll_offset_.SetToMax(gfx::Vector2dF());
+  target_scroll_offset_.SetToMax(gfx::PointF());
 }
 
 gfx::SizeF PageScaleAnimation::StartViewportSize() const {
@@ -168,8 +167,7 @@ void PageScaleAnimation::StartAnimation(base::TimeTicks time) {
   start_time_ = time;
 }
 
-gfx::Vector2dF PageScaleAnimation::ScrollOffsetAtTime(
-    base::TimeTicks time) const {
+gfx::PointF PageScaleAnimation::ScrollOffsetAtTime(base::TimeTicks time) const {
   DCHECK(!start_time_.is_null());
   return ScrollOffsetAt(InterpAtTime(time));
 }
@@ -194,7 +192,7 @@ float PageScaleAnimation::InterpAtTime(base::TimeTicks monotonic_time) const {
   return static_cast<float>(timing_function_.Solve(normalized_time));
 }
 
-gfx::Vector2dF PageScaleAnimation::ScrollOffsetAt(float interp) const {
+gfx::PointF PageScaleAnimation::ScrollOffsetAt(float interp) const {
   if (interp <= 0.f)
     return start_scroll_offset_;
   if (interp >= 1.f)
@@ -203,9 +201,11 @@ gfx::Vector2dF PageScaleAnimation::ScrollOffsetAt(float interp) const {
   return AnchorAt(interp) - ViewportRelativeAnchorAt(interp);
 }
 
-gfx::Vector2dF PageScaleAnimation::AnchorAt(float interp) const {
+gfx::PointF PageScaleAnimation::AnchorAt(float interp) const {
   // Interpolate from start to target anchor in absolute space.
-  return InterpolateBetween(start_anchor_, target_anchor_, interp);
+  return gfx::PointAtOffsetFromOrigin(
+      InterpolateBetween(start_anchor_.OffsetFromOrigin(),
+                         target_anchor_.OffsetFromOrigin(), interp));
 }
 
 gfx::Vector2dF PageScaleAnimation::ViewportRelativeAnchorAt(

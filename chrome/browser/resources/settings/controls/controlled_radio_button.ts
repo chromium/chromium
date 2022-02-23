@@ -13,6 +13,7 @@ import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/pol
 
 import {prefToString} from '../prefs/pref_util.js';
 
+import {getTemplate} from './controlled_radio_button.html.js';
 import {PrefControlMixin, PrefControlMixinInterface} from './pref_control_mixin.js';
 
 const ControlledRadioButtonElementBase =
@@ -28,7 +29,7 @@ export class ControlledRadioButtonElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get observers() {

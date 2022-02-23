@@ -34,7 +34,7 @@
 namespace content {
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kShellExecutableName[] = "content_shell.exe";
 #else
 const char kShellExecutableName[] = "content_shell";
@@ -77,7 +77,9 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     command_line.AppendSwitchASCII(switches::kUseGL,
-                                   gl::kGLImplementationSwiftShaderName);
+                                   gl::kGLImplementationANGLEName);
+    command_line.AppendSwitchASCII(switches::kUseANGLE,
+                                   gl::kANGLEImplementationSwiftShaderName);
 #endif
     return command_line;
   }
@@ -101,7 +103,7 @@ class LaunchAsMojoClientBrowserTest : public ContentBrowserTest {
     return controller;
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::FilePath GetMojoCoreLibraryPath() {
     return GetFilePathNextToCurrentExecutable(kMojoCoreLibraryName);
   }
@@ -155,21 +157,14 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest, LaunchAndBindInterface) {
   shell_controller->ShutDown();
 }
 
-// Running a Content embedder with a dynamically loaded Mojo Core library is
-// currently only supported on Linux and Chrome OS.
-//
-// TODO(crbug.com/1096899): Re-enable on MSan if possible. MSan complains about
-// spurious uninitialized memory reads inside base::PlatformThread due to what
-// appears to be poor interaction among MSan, PlatformThread's thread_local
-// storage, and Mojo's use of dlopen().
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-#if defined(MEMORY_SANITIZER) || BUILDFLAG(CFI_ICALL_CHECK)
-#define MAYBE_WithMojoCoreLibrary DISABLED_WithMojoCoreLibrary
-#else
-#define MAYBE_WithMojoCoreLibrary WithMojoCoreLibrary
-#endif
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// TODO(crbug.com/1259557): This test implementation fundamentally conflicts
+// with a fix for the linked bug because it causes a browser process to behave
+// partially as a broker and partially as a non-broker. This can be re-enabled
+// when we migrate away from the current Mojo implementation. It's OK to disable
+// for now because no production code relies on this feature.
 IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest,
-                       MAYBE_WithMojoCoreLibrary) {
+                       DISABLED_WithMojoCoreLibrary) {
   // Instructs a newly launched Content Shell browser to initialize Mojo Core
   // dynamically from a shared library, rather than using the version linked
   // into the Content Shell binary.
@@ -198,7 +193,7 @@ IN_PROC_BROWSER_TEST_F(LaunchAsMojoClientBrowserTest,
 
   shell_controller->ShutDown();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace content

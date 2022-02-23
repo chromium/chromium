@@ -65,6 +65,15 @@ bool HasStandardMappingOnAndroid(GamepadId gamepad_id,
           // Xbox Series X Bluetooth
           {GamepadId::kMicrosoftProduct0b13,
            base::android::SdkVersion::SDK_VERSION_Q},
+          // Xbox One S Bluetooth (2021 firmware)
+          {GamepadId::kMicrosoftProduct0b20,
+           base::android::SdkVersion::SDK_VERSION_Q},
+          // Xbox Adaptive (2021 firmware)
+          {GamepadId::kMicrosoftProduct0b21,
+           base::android::SdkVersion::SDK_VERSION_Q},
+          // Xbox Elite Series 2 (2021 firmware)
+          {GamepadId::kMicrosoftProduct0b22,
+           base::android::SdkVersion::SDK_VERSION_Q},
           // Switch Pro Controller
           {GamepadId::kNintendoProduct2009,
            base::android::SdkVersion::SDK_VERSION_R},

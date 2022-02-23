@@ -37,7 +37,7 @@ class FindTextTestClient : public TestClient {
     std::vector<SearchStringResult> results;
 
     size_t pos = 0;
-    while (1) {
+    while (true) {
       pos = haystack.find(needle, pos);
       if (pos == std::u16string::npos)
         break;

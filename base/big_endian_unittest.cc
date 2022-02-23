@@ -14,7 +14,7 @@
 namespace base {
 
 TEST(ReadBigEndianTest, ReadSignedPositive) {
-  char data[] = {0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x1A, 0x2A};
+  uint8_t data[] = {0x0A, 0x0B, 0x0C, 0x0D, 0x0E, 0x0F, 0x1A, 0x2A};
   int8_t s8 = 0;
   int16_t s16 = 0;
   int32_t s32 = 0;
@@ -35,10 +35,10 @@ TEST(ReadBigEndianTest, ReadSignedNegative) {
   int16_t s16 = 0;
   int32_t s32 = 0;
   int64_t s64 = 0;
-  ReadBigEndian(reinterpret_cast<const char*>(data), &s8);
-  ReadBigEndian(reinterpret_cast<const char*>(data), &s16);
-  ReadBigEndian(reinterpret_cast<const char*>(data), &s32);
-  ReadBigEndian(reinterpret_cast<const char*>(data), &s64);
+  ReadBigEndian(data, &s8);
+  ReadBigEndian(data, &s16);
+  ReadBigEndian(data, &s32);
+  ReadBigEndian(data, &s64);
   EXPECT_EQ(-1, s8);
   EXPECT_EQ(-1, s16);
   EXPECT_EQ(-1, s32);
@@ -51,10 +51,10 @@ TEST(ReadBigEndianTest, ReadUnsignedSigned) {
   uint16_t u16 = 0;
   uint32_t u32 = 0;
   uint64_t u64 = 0;
-  ReadBigEndian(reinterpret_cast<const char*>(data), &u8);
-  ReadBigEndian(reinterpret_cast<const char*>(data), &u16);
-  ReadBigEndian(reinterpret_cast<const char*>(data), &u32);
-  ReadBigEndian(reinterpret_cast<const char*>(data), &u64);
+  ReadBigEndian(data, &u8);
+  ReadBigEndian(data, &u16);
+  ReadBigEndian(data, &u32);
+  ReadBigEndian(data, &u64);
   EXPECT_EQ(0xA0, u8);
   EXPECT_EQ(0xA0B0, u16);
   EXPECT_EQ(0xA0B0C0D0, u32);
@@ -63,20 +63,20 @@ TEST(ReadBigEndianTest, ReadUnsignedSigned) {
 
 TEST(ReadBigEndianTest, TryAll16BitValues) {
   using signed_type = int16_t;
-  char data[sizeof(signed_type)];
+  uint8_t data[sizeof(signed_type)];
   for (int i = std::numeric_limits<signed_type>::min();
        i <= std::numeric_limits<signed_type>::max(); i++) {
     signed_type expected = i;
     signed_type actual = 0;
-    WriteBigEndian(data, expected);
+    WriteBigEndian(reinterpret_cast<char*>(data), expected);
     ReadBigEndian(data, &actual);
     EXPECT_EQ(expected, actual);
   }
 }
 
 TEST(BigEndianReaderTest, ReadsValues) {
-  char data[] = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0xA, 0xB, 0xC, 0xD, 0xE, 0xF,
-                  0x1A, 0x2B, 0x3C, 0x4D, 0x5E };
+  uint8_t data[] = {0,   1,   2,   3,   4,   5,    6,    7,    8,    9,   0xA,
+                    0xB, 0xC, 0xD, 0xE, 0xF, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E};
   char buf[2];
   uint8_t u8;
   uint16_t u16;
@@ -99,7 +99,7 @@ TEST(BigEndianReaderTest, ReadsValues) {
   EXPECT_EQ(0x0708090Au, u32);
   EXPECT_TRUE(reader.ReadU64(&u64));
   EXPECT_EQ(0x0B0C0D0E0F1A2B3Cllu, u64);
-  base::StringPiece expected(reader.ptr(), 2);
+  base::StringPiece expected(reinterpret_cast<const char*>(reader.ptr()), 2);
   EXPECT_TRUE(reader.ReadPiece(&piece, 2));
   EXPECT_EQ(2u, piece.size());
   EXPECT_EQ(expected.data(), piece.data());
@@ -107,8 +107,8 @@ TEST(BigEndianReaderTest, ReadsValues) {
 
 TEST(BigEndianReaderTest, ReadsLengthPrefixedValues) {
   {
-    char u8_prefixed_data[] = {8,   8,   9,    0xA,  0xB,  0xC,  0xD,
-                               0xE, 0xF, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E};
+    uint8_t u8_prefixed_data[] = {8,   8,   9,    0xA,  0xB,  0xC,  0xD,
+                                  0xE, 0xF, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E};
     BigEndianReader reader(u8_prefixed_data, sizeof(u8_prefixed_data));
 
     base::StringPiece piece;
@@ -116,19 +116,21 @@ TEST(BigEndianReaderTest, ReadsLengthPrefixedValues) {
     // |reader| should skip both a u8 and the length-8 length-prefixed field.
     EXPECT_EQ(reader.ptr(), u8_prefixed_data + 9);
     EXPECT_EQ(piece.size(), 8u);
-    EXPECT_EQ(piece.data(), u8_prefixed_data + 1);
+    EXPECT_EQ(reinterpret_cast<const uint8_t*>(piece.data()),
+              u8_prefixed_data + 1);
   }
 
   {
-    char u16_prefixed_data[] = {0,    8,    0xD,  0xE,  0xF,
-                                0x1A, 0x2B, 0x3C, 0x4D, 0x5E};
+    uint8_t u16_prefixed_data[] = {0,    8,    0xD,  0xE,  0xF,
+                                   0x1A, 0x2B, 0x3C, 0x4D, 0x5E};
     BigEndianReader reader(u16_prefixed_data, sizeof(u16_prefixed_data));
     base::StringPiece piece;
     ASSERT_TRUE(reader.ReadU16LengthPrefixed(&piece));
     // |reader| should skip both a u16 and the length-8 length-prefixed field.
     EXPECT_EQ(reader.ptr(), u16_prefixed_data + 10);
     EXPECT_EQ(piece.size(), 8u);
-    EXPECT_EQ(piece.data(), u16_prefixed_data + 2);
+    EXPECT_EQ(reinterpret_cast<const uint8_t*>(piece.data()),
+              u16_prefixed_data + 2);
 
     // With no data left, we shouldn't be able to
     // read another u8 length prefix (or a u16 length prefix,
@@ -139,12 +141,13 @@ TEST(BigEndianReaderTest, ReadsLengthPrefixedValues) {
 
   {
     // Make sure there's no issue reading a zero-value length prefix.
-    char u16_prefixed_data[3] = {};
+    uint8_t u16_prefixed_data[3] = {};
     BigEndianReader reader(u16_prefixed_data, sizeof(u16_prefixed_data));
     base::StringPiece piece;
     ASSERT_TRUE(reader.ReadU16LengthPrefixed(&piece));
     EXPECT_EQ(reader.ptr(), u16_prefixed_data + 2);
-    EXPECT_EQ(piece.data(), u16_prefixed_data + 2);
+    EXPECT_EQ(reinterpret_cast<const uint8_t*>(piece.data()),
+              u16_prefixed_data + 2);
     EXPECT_EQ(piece.size(), 0u);
   }
 }
@@ -152,8 +155,8 @@ TEST(BigEndianReaderTest, ReadsLengthPrefixedValues) {
 TEST(BigEndianReaderTest, LengthPrefixedReadsFailGracefully) {
   // We can't read 0xF (or, for that matter, 0xF8) bytes after the length
   // prefix: there isn't enough data.
-  char data[] = {0xF, 8,   9,    0xA,  0xB,  0xC,  0xD,
-                 0xE, 0xF, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E};
+  uint8_t data[] = {0xF, 8,   9,    0xA,  0xB,  0xC,  0xD,
+                    0xE, 0xF, 0x1A, 0x2B, 0x3C, 0x4D, 0x5E};
   BigEndianReader reader(data, sizeof(data));
   base::StringPiece piece;
   EXPECT_FALSE(reader.ReadU8LengthPrefixed(&piece));
@@ -164,7 +167,7 @@ TEST(BigEndianReaderTest, LengthPrefixedReadsFailGracefully) {
 }
 
 TEST(BigEndianReaderTest, RespectsLength) {
-  char data[8];
+  uint8_t data[8];
   char buf[2];
   uint8_t u8;
   uint16_t u16;
@@ -192,7 +195,7 @@ TEST(BigEndianReaderTest, RespectsLength) {
 }
 
 TEST(BigEndianReaderTest, SafePointerMath) {
-  char data[] = "foo";
+  uint8_t data[] = "foo";
   BigEndianReader reader(data, sizeof(data));
   // The test should fail without ever dereferencing the |dummy_buf| pointer.
   char* dummy_buf = reinterpret_cast<char*>(0xdeadbeef);

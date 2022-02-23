@@ -89,7 +89,7 @@ test(() => {
 
 test(() => {
   const argument = { "element": "anyfunc", "initial": 0 };
-  const table = new WebAssembly.Table(argument, {});
+  const table = new WebAssembly.Table(argument, null, {});
   assert_Table(table, { "length": 0 });
 }, "Stray argument");
 

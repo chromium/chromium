@@ -19,15 +19,35 @@
  *  - showConfirmPage()
  */
 
+import '//resources/cr_elements/cr_button/cr_button.m.js';
+import '//resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import '../../prefs/prefs.js';
+import '../../shared/nearby_onboarding_one_page.m.js';
+import '../../shared/nearby_onboarding_page.m.js';
+import '../../shared/nearby_visibility_page.m.js';
+import './nearby_share_confirm_page.js';
+import './nearby_share_high_visibility_page.js';
+
+import {CrViewManagerElement} from '//resources/cr_elements/cr_view_manager/cr_view_manager.js';
+import {assert} from '//resources/js/assert.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {loadTimeData} from '../../i18n_setup.js';
+import {NearbySettings} from '../../shared/nearby_share_settings_behavior.m.js';
+
+import {getReceiveManager, observeReceiveManager} from './nearby_share_receive_manager.js';
+
 /** @enum {string} */
 const Page = {
   HIGH_VISIBILITY: 'high-visibility',
   CONFIRM: 'confirm',
   ONBOARDING: 'onboarding',
+  ONEPAGE_ONBOARDING: 'onboarding-one',
   VISIBILITY: 'visibility',
 };
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-share-receive-dialog',
 
   properties: {
@@ -49,7 +69,7 @@ Polymer({
       value: null,
     },
 
-    /** @type {nearby_share.NearbySettings} */
+    /** @type {NearbySettings} */
     settings: {
       type: Object,
       notify: true,
@@ -136,8 +156,8 @@ Polymer({
   attached() {
     this.closing_ = false;
     this.errorString = null;
-    this.receiveManager_ = nearby_share.getReceiveManager();
-    this.observerReceiver_ = nearby_share.observeReceiveManager(
+    this.receiveManager_ = getReceiveManager();
+    this.observerReceiver_ = observeReceiveManager(
         /** @type {!nearbyShare.mojom.ReceiveObserverInterface} */ (this));
   },
 
@@ -161,6 +181,15 @@ Polymer({
     if (urlParams.get('entrypoint') === 'notification') {
       this.receiveManager_.recordFastInitiationNotificationUsage(success);
     }
+  },
+
+  /**
+   * Determines if the feature flag for One-page onboarding workflow is enabled.
+   * @return {boolean} whether the new one-page onboarding workflow is enabled
+   * @private
+   */
+  isOnePageOnboardingEnabled_() {
+    return loadTimeData.getBoolean('isOnePageOnboardingEnabled');
   },
 
   /**
@@ -275,7 +304,11 @@ Polymer({
       // We need to show onboarding first if onboarding is not yet complete, but
       // we need to run the callback afterward.
       this.postOnboardingCallback = callback;
-      this.getViewManager_().switchView(Page.ONBOARDING);
+      if (this.isOnePageOnboardingEnabled_()) {
+        this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
+      } else {
+        this.getViewManager_().switchView(Page.ONBOARDING);
+      }
       return true;
     }
 
@@ -295,7 +328,11 @@ Polymer({
   showOnboarding() {
     // Setup the callback to close this dialog when onboarding is complete.
     this.postOnboardingCallback = this.close_.bind(this);
-    this.getViewManager_().switchView(Page.ONBOARDING);
+    if (this.isOnePageOnboardingEnabled_()) {
+      this.getViewManager_().switchView(Page.ONEPAGE_ONBOARDING);
+    } else {
+      this.getViewManager_().switchView(Page.ONBOARDING);
+    }
   },
 
   /**

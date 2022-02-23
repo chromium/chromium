@@ -5,6 +5,7 @@
 #ifndef EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_APITEST_H_
 #define EXTENSIONS_BROWSER_GUEST_VIEW_WEB_VIEW_WEB_VIEW_APITEST_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "components/guest_view/browser/test_guest_view_manager.h"
 #include "extensions/shell/test/shell_test.h"
@@ -13,10 +14,6 @@
 namespace content {
 class WebContents;
 }  // namespace content
-
-namespace guestview {
-class TestGuestViewManager;
-}  // namesapce guestview
 
 namespace extensions {
 
@@ -56,7 +53,7 @@ class WebViewAPITest : public AppShellTest {
   void SetUpOnMainThread() override;
   void TearDownOnMainThread() override;
 
-  content::WebContents* embedder_web_contents_;
+  raw_ptr<content::WebContents> embedder_web_contents_;
   guest_view::TestGuestViewManagerFactory factory_;
   base::DictionaryValue test_config_;
 

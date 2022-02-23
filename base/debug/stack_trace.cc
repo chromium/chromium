@@ -11,23 +11,24 @@
 
 #include "base/check_op.h"
 #include "base/cxx17_backports.h"
+#include "build/build_config.h"
 #include "build/config/compiler/compiler_buildflags.h"
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 #include <pthread.h>
 
 #include "base/process/process_handle.h"
 #include "base/threading/platform_thread.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
 #endif
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__GLIBC__)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
 extern "C" void* __libc_stack_end;
 #endif
 
@@ -49,6 +50,27 @@ constexpr size_t kStackFrameAdjustment = sizeof(uintptr_t);
 constexpr size_t kStackFrameAdjustment = 0;
 #endif
 
+// On Arm-v8.3+ systems with pointer authentication codes (PAC), signature bits
+// are set in the top bits of the pointer, which confuses test assertions.
+// Because the signature size can vary based on the system configuration, use
+// the xpaclri instruction to remove the signature.
+static uintptr_t StripPointerAuthenticationBits(uintptr_t ptr) {
+#if defined(ARCH_CPU_ARM64)
+  // A single Chromium binary currently spans all Arm systems (including those
+  // with and without pointer authentication). xpaclri is used here because it's
+  // in the HINT space and treated as a no-op on older Arm cores (unlike the
+  // more generic xpaci which has a new encoding). The downside is that ptr has
+  // to be moved to x30 to use this instruction. TODO(richard.townsend@arm.com):
+  // replace with an intrinsic once that is available.
+  register uintptr_t x30 __asm("x30") = ptr;
+  asm("xpaclri" : "+r"(x30));
+  return x30;
+#else
+  // No-op on other platforms.
+  return ptr;
+#endif
+}
+
 uintptr_t GetNextStackFrame(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
   MSAN_UNPOISON(fp_addr, sizeof(uintptr_t));
@@ -58,7 +80,7 @@ uintptr_t GetNextStackFrame(uintptr_t fp) {
 uintptr_t GetStackFramePC(uintptr_t fp) {
   const uintptr_t* fp_addr = reinterpret_cast<const uintptr_t*>(fp);
   MSAN_UNPOISON(&fp_addr[1], sizeof(uintptr_t));
-  return fp_addr[1];
+  return StripPointerAuthenticationBits(fp_addr[1]);
 }
 
 bool IsStackFrameValid(uintptr_t fp, uintptr_t prev_fp, uintptr_t stack_end) {
@@ -146,7 +168,7 @@ void* LinkStackFrames(void* fpp, void* parent_fp) {
 
 #if BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
 uintptr_t GetStackEnd() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Bionic reads proc/maps on every call to pthread_getattr_np() when called
   // from the main thread. So we need to cache end of stack in that case to get
   // acceptable performance.
@@ -175,13 +197,13 @@ uintptr_t GetStackEnd() {
     main_stack_end = stack_end;
   }
   return stack_end;  // 0 in case of error
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   // No easy way to get end of the stack for non-main threads,
   // see crbug.com/617730.
   return reinterpret_cast<uintptr_t>(pthread_get_stackaddr_np(pthread_self()));
 #else
 
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(__GLIBC__)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(__GLIBC__)
   if (GetCurrentProcId() == PlatformThread::CurrentId()) {
     // For the main thread we have a shortcut.
     return reinterpret_cast<uintptr_t>(__libc_stack_end);
@@ -218,15 +240,15 @@ bool StackTrace::WillSymbolizeToStreamForTesting() {
   // See https://crbug.com/706728
   return false;
 #elif defined(OFFICIAL_BUILD) && \
-    ((defined(OS_POSIX) && !defined(OS_APPLE)) || defined(OS_FUCHSIA))
+    ((BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)) || BUILDFLAG(IS_FUCHSIA))
   // On some platforms stack traces require an extra data table that bloats our
   // binaries, so they're turned off for official builds.
   return false;
-#elif defined(OFFICIAL_BUILD) && defined(OS_APPLE)
+#elif defined(OFFICIAL_BUILD) && BUILDFLAG(IS_APPLE)
   // Official Mac OS X builds contain enough information to unwind the stack,
   // but not enough to symbolize the output.
   return false;
-#elif defined(OS_FUCHSIA) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
   // Under Fuchsia and Android, StackTrace emits executable build-Ids and
   // address offsets which are symbolized on the test host system, rather than
   // being symbolized in-process.

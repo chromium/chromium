@@ -4,6 +4,7 @@
 
 #include "components/services/heap_profiling/public/cpp/heap_profiling_trace_source.h"
 
+#include "base/no_destructor.h"
 #include "base/profiler/frame.h"
 #include "base/profiler/module_cache.h"
 #include "base/trace_event/trace_event.h"

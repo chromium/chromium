@@ -4,14 +4,15 @@
 
 #include "content/browser/media/key_system_support_impl.h"
 
+#include <tuple>
 #include <vector>
 
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "base/strings/string_split.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -27,7 +28,7 @@
 #include "media/mojo/buildflags.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 #include "content/browser/media/key_system_support_win.h"
 #include "gpu/config/gpu_driver_bug_workaround_type.h"
@@ -130,7 +131,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
     return absl::nullopt;
   }
 #elif !BUILDFLAG(USE_CHROMEOS_PROTECTED_MEDIA)
-  if (!base::FeatureList::IsEnabled(media::kHardwareSecureDecryption)) {
+  if (!media::IsHardwareSecureDecryptionEnabled()) {
     DVLOG(1) << "Hardware secure decryption disabled";
     return absl::nullopt;
   }
@@ -156,7 +157,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
     return absl::nullopt;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(GpuDataManagerImpl::GetInstance()->IsGpuFeatureInfoAvailable());
   if (GpuDataManagerImpl::GetInstance()
           ->GetGpuFeatureInfo()
@@ -167,7 +168,7 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
 
     return absl::nullopt;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kHardwareSecure);
@@ -189,17 +190,25 @@ absl::optional<media::CdmCapability> GetHardwareSecureCapability(
 }  // namespace
 
 // static
-void KeySystemSupportImpl::Create(
+KeySystemSupportImpl* KeySystemSupportImpl::GetInstance() {
+  static base::NoDestructor<KeySystemSupportImpl> impl;
+  return impl.get();
+}
+
+// static
+void KeySystemSupportImpl::BindReceiver(
     mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
-  DVLOG(3) << __func__;
-  // The created object is bound to (and owned by) |request|.
-  mojo::MakeSelfOwnedReceiver(std::make_unique<KeySystemSupportImpl>(),
-                              std::move(receiver));
+  KeySystemSupportImpl::GetInstance()->Bind(std::move(receiver));
 }
 
 KeySystemSupportImpl::KeySystemSupportImpl() = default;
 
 KeySystemSupportImpl::~KeySystemSupportImpl() = default;
+
+void KeySystemSupportImpl::Bind(
+    mojo::PendingReceiver<media::mojom::KeySystemSupport> receiver) {
+  key_system_support_receivers_.Add(this, std::move(receiver));
+}
 
 void KeySystemSupportImpl::IsKeySystemSupported(
     const std::string& key_system,
@@ -240,7 +249,7 @@ void KeySystemSupportImpl::LazyInitializeHardwareSecureCapability(
     return;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto cdm_info = CdmRegistryImpl::GetInstance()->GetCdmInfo(
       key_system, CdmInfo::Robustness::kHardwareSecure);
   DCHECK(cdm_info && !cdm_info->capability);
@@ -248,7 +257,7 @@ void KeySystemSupportImpl::LazyInitializeHardwareSecureCapability(
       key_system, cdm_info->path, std::move(cdm_capability_cb));
 #else
   std::move(cdm_capability_cb).Run(absl::nullopt);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 void KeySystemSupportImpl::SetHardwareSecureCapabilityCBForTesting(
@@ -265,9 +274,8 @@ void KeySystemSupportImpl::OnHardwareSecureCapability(
   // parallel `IsKeySystemSupported()` calls from different renderer processes.
   // This is okay and won't cause collision or corruption of data.
   if (lazy_initialize) {
-    ignore_result(CdmRegistryImpl::GetInstance()->FinalizeCdmCapability(
-        key_system, CdmInfo::Robustness::kHardwareSecure,
-        hw_secure_capability));
+    std::ignore = CdmRegistryImpl::GetInstance()->FinalizeCdmCapability(
+        key_system, CdmInfo::Robustness::kHardwareSecure, hw_secure_capability);
   }
 
   auto capability = media::mojom::KeySystemCapability::New();

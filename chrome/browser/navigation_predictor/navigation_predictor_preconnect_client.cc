@@ -39,7 +39,8 @@ const base::Feature kPreconnectOnDidFinishNavigation{
 NavigationPredictorPreconnectClient::NavigationPredictorPreconnectClient(
     content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
-      web_contents_(web_contents),
+      content::WebContentsUserData<NavigationPredictorPreconnectClient>(
+          *web_contents),
       browser_context_(web_contents->GetBrowserContext()),
       current_visibility_(web_contents->GetVisibility()) {}
 
@@ -47,7 +48,7 @@ NavigationPredictorPreconnectClient::~NavigationPredictorPreconnectClient() {
   NavigationPredictorKeyedService* navigation_predictor_service =
       GetNavigationPredictorKeyedService();
   if (navigation_predictor_service) {
-    navigation_predictor_service->OnWebContentsDestroyed(web_contents_);
+    navigation_predictor_service->OnWebContentsDestroyed(web_contents());
   }
 }
 
@@ -67,7 +68,7 @@ void NavigationPredictorPreconnectClient::DidFinishNavigation(
       GetNavigationPredictorKeyedService();
   if (navigation_predictor_service) {
     navigation_predictor_service->OnWebContentsVisibilityChanged(
-        web_contents_, current_visibility_ == content::Visibility::VISIBLE);
+        web_contents(), current_visibility_ == content::Visibility::VISIBLE);
   }
 
   if (!navigation_handle->IsInPrimaryMainFrame() ||
@@ -123,7 +124,7 @@ void NavigationPredictorPreconnectClient::OnVisibilityChanged(
       GetNavigationPredictorKeyedService();
   if (navigation_predictor_service) {
     navigation_predictor_service->OnWebContentsVisibilityChanged(
-        web_contents_, visibility == content::Visibility::VISIBLE);
+        web_contents(), visibility == content::Visibility::VISIBLE);
   }
 
   // Check for same state.

@@ -282,11 +282,25 @@ void SafeBrowsingTabHelper::PolicyDecider::HandleSubFrameResponsePolicy(
     const GURL& url,
     web::WebStatePolicyDecider::PolicyDecisionCallback callback) {
   // Sub frame response policy decisions are expected to always be requested
-  // after a request policy decision for |url|.
-  DCHECK(pending_sub_frame_queries_.find(url) !=
-         pending_sub_frame_queries_.end());
+  // after a request policy decision for |url|. However, in some cases, WebKit
+  // changes the URL in between the request and response policy callbacks,
+  // without triggering a new request policy callback. One such case is when the
+  // URL's query string changes. If |url| isn't found in any pending query,
+  // start a new query for it now.
+  auto it = pending_sub_frame_queries_.find(url);
+  if (it == pending_sub_frame_queries_.end()) {
+    int main_frame_item_id = web_state()
+                                 ->GetNavigationManager()
+                                 ->GetLastCommittedItem()
+                                 ->GetUniqueID();
+    query_manager_->StartQuery(
+        SafeBrowsingQueryManager::Query(url, "GET", main_frame_item_id));
+    pending_sub_frame_queries_[url].response_callbacks.push_back(
+        std::move(callback));
+    return;
+  }
 
-  SubFrameUrlQuery& sub_frame_query = pending_sub_frame_queries_[url];
+  SubFrameUrlQuery& sub_frame_query = it->second;
   if (sub_frame_query.decision) {
     std::move(callback).Run(*(sub_frame_query.decision));
   } else {

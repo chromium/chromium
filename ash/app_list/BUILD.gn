@@ -2,13 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/config/ui.gni")
-import("//testing/test.gni")
+import("//build/config/chromeos/ui_mode.gni")
 
-assert(is_chromeos)
+assert(is_chromeos_ash)
 
 source_set("app_list") {
   sources = [
+    "app_list_badge_controller.cc",
+    "app_list_badge_controller.h",
     "app_list_bubble_event_filter.cc",
     "app_list_bubble_event_filter.h",
     "app_list_bubble_presenter.cc",
@@ -17,6 +18,8 @@ source_set("app_list") {
     "app_list_color_provider_impl.h",
     "app_list_controller_impl.cc",
     "app_list_controller_impl.h",
+    "app_list_event_targeter.cc",
+    "app_list_event_targeter.h",
     "app_list_feature_usage_metrics.cc",
     "app_list_feature_usage_metrics.h",
     "app_list_metrics.cc",
@@ -53,10 +56,18 @@ source_set("app_list") {
     "views/app_list_main_view.h",
     "views/app_list_menu_model_adapter.cc",
     "views/app_list_menu_model_adapter.h",
+    "views/app_list_nudge_controller.cc",
+    "views/app_list_nudge_controller.h",
     "views/app_list_page.cc",
     "views/app_list_page.h",
+    "views/app_list_toast_container_view.cc",
+    "views/app_list_toast_container_view.h",
+    "views/app_list_toast_view.cc",
+    "views/app_list_toast_view.h",
     "views/app_list_view.cc",
     "views/app_list_view.h",
+    "views/app_list_view_util.cc",
+    "views/app_list_view_util.h",
     "views/apps_container_view.cc",
     "views/apps_container_view.h",
     "views/apps_grid_context_menu.cc",
@@ -92,6 +103,8 @@ source_set("app_list") {
     "views/folder_header_view_delegate.h",
     "views/ghost_image_view.cc",
     "views/ghost_image_view.h",
+    "views/legacy_remove_query_confirmation_dialog.cc",
+    "views/legacy_remove_query_confirmation_dialog.h",
     "views/page_switcher.cc",
     "views/page_switcher.h",
     "views/paged_apps_grid_view.cc",
@@ -121,10 +134,14 @@ source_set("app_list") {
     "views/search_result_base_view.h",
     "views/search_result_container_view.cc",
     "views/search_result_container_view.h",
+    "views/search_result_inline_icon_view.cc",
+    "views/search_result_inline_icon_view.h",
     "views/search_result_list_view.cc",
     "views/search_result_list_view.h",
     "views/search_result_page_anchored_dialog.cc",
     "views/search_result_page_anchored_dialog.h",
+    "views/search_result_page_dialog_controller.cc",
+    "views/search_result_page_dialog_controller.h",
     "views/search_result_page_view.cc",
     "views/search_result_page_view.h",
     "views/search_result_suggestion_chip_view.cc",
@@ -173,6 +190,7 @@ source_set("app_list") {
     "//components/prefs",
     "//components/services/app_service/public/cpp:app_update",
     "//components/sync",
+    "//components/vector_icons",
     "//extensions/common:common_constants",
     "//mojo/public/cpp/bindings",
     "//skia",
@@ -231,6 +249,7 @@ source_set("test_support") {
     "//base",
     "//ui/base",
     "//ui/events",
+    "//ui/events:test_support",
     "//ui/gfx",
     "//ui/gfx/geometry",
     "//ui/views",
@@ -251,13 +270,17 @@ source_set("unit_tests") {
     "app_list_unittest.cc",
     "folder_image_unittest.cc",
     "model/app_list_item_list_unittest.cc",
+    "model/app_list_item_unittest.cc",
     "model/app_list_model_unittest.cc",
     "views/app_drag_icon_proxy_unittest.cc",
     "views/app_list_bubble_apps_page_unittest.cc",
+    "views/app_list_bubble_search_page_unittest.cc",
     "views/app_list_bubble_view_unittest.cc",
     "views/app_list_folder_view_unittest.cc",
+    "views/app_list_item_view_unittest.cc",
     "views/app_list_main_view_unittest.cc",
     "views/app_list_menu_model_adapter_unittest.cc",
+    "views/app_list_nudge_controller_unittest.cc",
     "views/app_list_view_unittest.cc",
     "views/apps_grid_view_unittest.cc",
     "views/assistant/assistant_dialog_plate_unittest.cc",

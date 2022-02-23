@@ -9,6 +9,7 @@
 #include "third_party/blink/renderer/core/input/boundary_event_dispatcher.h"
 #include "third_party/blink/renderer/core/input/touch_event_manager.h"
 #include "third_party/blink/renderer/core/page/touch_adjustment.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {

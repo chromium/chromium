@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_cleaner/sw_reporter_invocation_win.h"
 #include "components/component_updater/component_installer.h"
 #include "components/component_updater/component_updater_service.h"
@@ -103,7 +104,7 @@ class SwReporterOnDemandFetcher : public ServiceObserver {
 
  private:
   // Will outlive this object.
-  ComponentUpdateService* cus_;
+  raw_ptr<ComponentUpdateService> cus_;
   base::OnceClosure on_error_callback_;
 };
 

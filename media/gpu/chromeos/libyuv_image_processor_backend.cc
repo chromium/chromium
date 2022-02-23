@@ -6,7 +6,9 @@
 
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/numerics/checked_math.h"
+#include "base/trace_event/trace_event.h"
 #include "media/gpu/chromeos/fourcc.h"
 #include "media/gpu/macros.h"
 #include "media/gpu/video_frame_mapper.h"
@@ -108,10 +110,7 @@ SupportResult IsConversionSupported(Fourcc input_fourcc,
 #define CONV(in, out, trans, result) \
   {Fourcc::in, Fourcc::out, Transform::trans, SupportResult::result}
       // Conversion.
-      CONV(AB24, NV12, kConversion, SupportedWithI420Pivot),
-      CONV(AR24, NV12, kConversion, Supported),
       CONV(NV12, NV12, kConversion, Supported),
-      CONV(XB24, NV12, kConversion, SupportedWithI420Pivot),
       CONV(YM16, NV12, kConversion, Supported),
       CONV(YM16, YU12, kConversion, Supported),
       CONV(YU12, NV12, kConversion, Supported),
@@ -164,11 +163,13 @@ SupportResult IsConversionSupported(Fourcc input_fourcc,
 std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
     const PortConfig& input_config,
     const PortConfig& output_config,
-    const std::vector<OutputMode>& preferred_output_modes,
+    OutputMode output_mode,
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> backend_task_runner) {
   VLOGF(2);
+  DCHECK_EQ(output_mode, OutputMode::IMPORT)
+      << "Only OutputMode::IMPORT supported";
 
   std::unique_ptr<VideoFrameMapper> input_frame_mapper;
   // LibYUVImageProcessorBackend supports only memory-based video frame for
@@ -215,11 +216,6 @@ std::unique_ptr<ImageProcessorBackend> LibYUVImageProcessorBackend::Create(
   }
   if (output_storage_type == VideoFrame::STORAGE_UNKNOWN) {
     VLOGF(2) << "Unsupported output storage type";
-    return nullptr;
-  }
-
-  if (!base::Contains(preferred_output_modes, OutputMode::IMPORT)) {
-    VLOGF(2) << "Only support OutputMode::IMPORT";
     return nullptr;
   }
 
@@ -352,13 +348,21 @@ void LibYUVImageProcessorBackend::Process(
       return;
     }
   }
-  int res = DoConversion(input_frame.get(), mapped_frame.get());
+
+  int res;
+  {
+    TRACE_EVENT0("media", "LibYUVImageProcessorBackend::Process");
+    SCOPED_UMA_HISTOGRAM_TIMER("LibYUVImageProcessorBackend::Process");
+    res = DoConversion(input_frame.get(), mapped_frame.get());
+  }
+
   if (res != 0) {
     VLOGF(1) << "libyuv returns non-zero code: " << res;
     error_cb_.Run();
     return;
   }
   output_frame->set_timestamp(input_frame->timestamp());
+  output_frame->set_color_space(input_frame->ColorSpace());
 
   std::move(cb).Run(std::move(output_frame));
 }
@@ -384,9 +388,6 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
 #define YUY2_DATA(fr) \
   fr->visible_data(VideoFrame::kYPlane), fr->stride(VideoFrame::kYPlane)
 
-#define RGB_DATA(fr) \
-  fr->visible_data(VideoFrame::kARGBPlane), fr->stride(VideoFrame::kARGBPlane)
-
 #define LIBYUV_FUNC(func, i, o)                      \
   libyuv::func(i, o, output->visible_rect().width(), \
                output->visible_rect().height())
@@ -398,23 +399,6 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
       case PIXEL_FORMAT_YV12:
         return LIBYUV_FUNC(I420ToNV12, Y_V_U_DATA(input), Y_UV_DATA(output));
 
-      // RGB conversions. NOTE: Libyuv functions called here are named in
-      // little-endian manner.
-      case PIXEL_FORMAT_ARGB:
-        return LIBYUV_FUNC(ARGBToNV12, RGB_DATA(input), Y_UV_DATA(output));
-      case PIXEL_FORMAT_XBGR:
-      case PIXEL_FORMAT_ABGR: {
-        // There is no libyuv function to convert to RGBA to NV12. Therefore, we
-        // convert RGBA to I420 tentatively and thereafter convert the tentative
-        // one to NV12.
-        DCHECK_EQ(intermediate_frame_->format(), PIXEL_FORMAT_I420);
-        int ret = LIBYUV_FUNC(ABGRToI420, RGB_DATA(input),
-                              Y_U_V_DATA(intermediate_frame_));
-        if (ret != 0)
-          return ret;
-        return LIBYUV_FUNC(I420ToNV12, Y_U_V_DATA(intermediate_frame_),
-                           Y_UV_DATA(output));
-      }
       case PIXEL_FORMAT_NV12:
         // Rotation mode.
         if (relative_rotation_ != VIDEO_ROTATION_0) {
@@ -530,7 +514,6 @@ int LibYUVImageProcessorBackend::DoConversion(const VideoFrame* const input,
 #undef Y_U_V_DATA
 #undef Y_V_U_DATA
 #undef Y_UV_DATA
-#undef RGB_DATA
 #undef LIBYUV_FUNC
 
   VLOGF(1) << "Unexpected output format: " << output->format();

@@ -166,7 +166,7 @@ public final class EventConstants {
 
     /** The keyboard accessory was used to fill payment data into a form. */
     public static final String KEYBOARD_ACCESSORY_PAYMENT_AUTOFILLED =
-            "keyboard_accessory_payment_suggestion_accepted";
+            "autofill_virtual_card_suggestion_accepted";
 
     /** The keyboard accessory was swiped to reveal more suggestions. */
     public static final String KEYBOARD_ACCESSORY_BAR_SWIPED = "keyboard_accessory_bar_swiped";
@@ -191,6 +191,8 @@ public final class EventConstants {
     public static final String NTP_HOME_BUTTON_CLICKED = "ntp_homebutton_clicked";
 
     public static final String TAB_SWITCHER_BUTTON_CLICKED = "tab_switcher_button_clicked";
+
+    public static final String FOREGROUND_SESSION_DESTROYED = "foreground_session_destroyed";
 
     /** Read later related events. */
     public static final String APP_MENU_BOOKMARK_STAR_ICON_PRESSED =
@@ -260,6 +262,13 @@ public final class EventConstants {
     public static final String ADAPTIVE_TOOLBAR_CUSTOMIZATION_VOICE_SEARCH_OPENED =
             "adaptive_toolbar_customization_voice_search_opened";
 
+    /** Open new incognito tab from app menu. */
+    public static final String APP_MENU_NEW_INCOGNITO_TAB_CLICKED =
+            "app_menu_new_incognito_tab_clicked";
+
+    /** Voice search button click on NTP. */
+    public static final String NTP_VOICE_SEARCH_BUTTON_CLICKED = "ntp_voice_search_button_clicked";
+
     /** WebFeed events. */
     public static final String WEB_FEED_FOLLOW_INTRO_CLICKED = "web_feed_follow_intro_clicked";
 
@@ -268,8 +277,7 @@ public final class EventConstants {
             "start_surface_tab_switcher_home_button_clicked";
 
     /** Shared Highlighting button event */
-    public static final String IPH_SHARED_HIGHLIGHTING_BUTTON_CLICKED =
-            "iph_shared_highlighting_button_clicked";
+    public static final String IPH_SHARED_HIGHLIGHTING_USED = "iph_shared_highlighting_used";
 
     /** Webnotes Stylize feature used from Sharing Hub */
     public static final String SHARING_HUB_WEBNOTES_STYLIZE_USED =
@@ -283,6 +291,14 @@ public final class EventConstants {
 
     /** The feed swipe refresh event. */
     public static final String FEED_SWIPE_REFRESHED = "feed_swipe_refresh_shown";
+
+    /** The option to track the price of a product was selected from the main menu. */
+    public static final String SHOPPING_LIST_PRICE_TRACK_FROM_MENU =
+            "shopping_list_track_price_from_menu";
+
+    /** A tap on the folder icon in the enhanced bookmark save flow. */
+    public static final String SHOPPING_LIST_SAVE_FLOW_FOLDER_TAP =
+            "shopping_list_save_flow_folder_tap";
 
     /**
      * Do not instantiate.

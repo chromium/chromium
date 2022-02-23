@@ -44,6 +44,14 @@ void StaticDataNavigationBodyLoader::StartLoadingBody(
     CodeCacheHost* code_cache_host) {
   DCHECK(!is_in_continue_);
   client_ = client;
+
+  if (client_) {
+    auto weak_self = weak_factory_.GetWeakPtr();
+    client_->BodyCodeCacheReceived(mojo_base::BigBuffer());
+    if (!weak_self)
+      return;
+  }
+
   Continue();
 }
 

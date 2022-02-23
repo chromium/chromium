@@ -59,7 +59,7 @@ class MediaStreamManager::StreamUi : public content::MediaStreamUI {
 
   // content::MediaStreamUi:
   gfx::NativeViewId OnStarted(
-      base::OnceClosure stop,
+      base::RepeatingClosure stop,
       SourceCallback source,
       const std::string& label,
       std::vector<content::DesktopMediaID> screen_capture_ids,

@@ -12,7 +12,9 @@
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 using std::vector;
 
@@ -103,7 +105,7 @@ TEST(SelectFaviconFramesTest, _16From16) {
   EXPECT_EQ(16, image.height());
   EXPECT_EQ(SK_ColorGREEN, GetColor1x(image));
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   const gfx::ImageSkiaRep& rep = image.GetRepresentation(1.5f);
   EXPECT_EQ(1.5f, rep.scale());
   EXPECT_EQ(16, rep.GetWidth());
@@ -186,7 +188,7 @@ TEST(SelectFaviconFramesTest, _16From16_Scale2x_32_From_32) {
   EXPECT_EQ(SK_ColorGREEN, GetColor1x(image));
   EXPECT_EQ(SK_ColorBLUE, GetColor2x(image));
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   const gfx::ImageSkiaRep& rep = image.GetRepresentation(1.5f);
   EXPECT_EQ(1.5f, rep.scale());
   EXPECT_EQ(16, rep.GetWidth());

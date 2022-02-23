@@ -11,8 +11,8 @@
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/blink/public/common/manifest/manifest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -39,6 +39,8 @@ void AddIconToIconsMap(const GURL& icon_url,
                        int size_px,
                        SkColor solid_color,
                        IconsMap* icons_map);
+
+void AddEmptyIconToIconsMap(const GURL& icon_url, IconsMap* icons_map);
 
 bool AreColorsEqual(SkColor expected_color,
                     SkColor actual_color,
@@ -92,8 +94,8 @@ apps::IconInfo CreateIconInfo(const GURL& icon_base_url,
                               IconPurpose purpose,
                               SquareSizePx size_px);
 
-void AddIconsToWebApplicationInfo(
-    WebApplicationInfo* web_application_info,
+void AddIconsToWebAppInstallInfo(
+    WebAppInstallInfo* web_application_info,
     const GURL& icons_base_url,
     const std::vector<GeneratedIconsInfo>& icons_info);
 

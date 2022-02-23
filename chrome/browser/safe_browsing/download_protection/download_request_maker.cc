@@ -183,7 +183,7 @@ void DownloadRequestMaker::OnFileFeatureExtractionDone(
   request_->set_archive_directory_count(results.directory_count);
   request_->mutable_document_summary()->CopyFrom(results.document_summary);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!results.disk_image_signature.empty()) {
     request_->set_udif_code_signature(results.disk_image_signature.data(),
                                       results.disk_image_signature.size());

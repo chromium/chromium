@@ -1,0 +1,14 @@
+include_rules = [
+  "+chromeos/dbus/session_manager",
+  "+components/version_info",
+  "+crypto",
+  "+google_apis",
+  "+third_party/private_membership",
+  "+third_party/shell-encryption",
+]
+
+specific_include_rules = {
+  ".*test\.cc": [
+    "+testing",
+  ],
+}

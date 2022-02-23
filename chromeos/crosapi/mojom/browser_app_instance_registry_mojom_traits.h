@@ -31,6 +31,16 @@ struct StructTraits<crosapi::mojom::BrowserWindowInstanceUpdateDataView,
   static bool is_active(const apps::BrowserWindowInstanceUpdate& update) {
     return update.is_active;
   }
+
+  static uint32_t browser_session_id(
+      const apps::BrowserWindowInstanceUpdate& update) {
+    return update.browser_session_id;
+  }
+
+  static uint32_t restored_browser_session_id(
+      const apps::BrowserWindowInstanceUpdate& update) {
+    return update.restored_browser_session_id;
+  }
 };
 
 template <>
@@ -69,6 +79,16 @@ struct StructTraits<crosapi::mojom::BrowserAppInstanceUpdateDataView,
   static bool is_web_contents_active(
       const apps::BrowserAppInstanceUpdate& update) {
     return update.is_web_contents_active;
+  }
+
+  static uint32_t browser_session_id(
+      const apps::BrowserAppInstanceUpdate& update) {
+    return update.browser_session_id;
+  }
+
+  static uint32_t restored_browser_session_id(
+      const apps::BrowserAppInstanceUpdate& update) {
+    return update.restored_browser_session_id;
   }
 };
 

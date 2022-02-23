@@ -26,14 +26,16 @@ ImageContextImpl::ImageContextImpl(
     bool maybe_concurrent_reads,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
     sk_sp<SkColorSpace> color_space,
-    const bool allow_keeping_read_access)
+    bool allow_keeping_read_access,
+    bool raw_draw_if_possible)
     : ImageContext(mailbox_holder,
                    size,
                    resource_format,
                    ycbcr_info,
                    color_space),
       maybe_concurrent_reads_(maybe_concurrent_reads),
-      allow_keeping_read_access_(allow_keeping_read_access) {}
+      allow_keeping_read_access_(allow_keeping_read_access),
+      raw_draw_if_possible_(raw_draw_if_possible) {}
 
 ImageContextImpl::~ImageContextImpl() {
   if (fallback_context_state_)
@@ -169,7 +171,10 @@ bool ImageContextImpl::BeginRasterAccess(
     return true;
   }
 
-  auto raster = representation_factory->ProduceRaster(mailbox_holder().mailbox);
+  auto raster =
+      raw_draw_if_possible_
+          ? representation_factory->ProduceRaster(mailbox_holder().mailbox)
+          : nullptr;
   if (!raster)
     return false;
 

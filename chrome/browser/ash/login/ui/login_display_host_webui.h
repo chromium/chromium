@@ -16,6 +16,7 @@
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "base/timer/elapsed_timer.h"
+#include "base/timer/timer.h"
 #include "chrome/browser/ash/login/existing_user_controller.h"
 #include "chrome/browser/ash/login/oobe_configuration.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
@@ -68,6 +69,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   LoginDisplay* GetLoginDisplay() override;
   ExistingUserController* GetExistingUserController() override;
   gfx::NativeWindow GetNativeWindow() const override;
+  views::Widget* GetLoginWindowWidget() const override;
   OobeUI* GetOobeUI() const override;
   content::WebContents* GetOobeWebContents() const override;
   WebUILoginView* GetWebUILoginView() const override;
@@ -78,13 +80,12 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   void OnStartUserAdding() override;
   void CancelUserAdding() override;
   void OnStartSignInScreen() override;
-  void OnPreferencesChanged() override;
   void OnStartAppLaunch() override;
   void OnBrowserCreated() override;
   void ShowGaiaDialog(const AccountId& prefilled_account) override;
   void ShowOsInstallScreen() override;
   void ShowGuestTosScreen() override;
-  void HideOobeDialog() override;
+  void HideOobeDialog(bool saml_video_timeout = false) override;
   void SetShelfButtonsEnabled(bool enabled) override;
   void UpdateOobeDialogState(OobeDialogState state) override;
   void HandleDisplayCaptivePortal() override;
@@ -103,6 +104,7 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   bool IsWizardControllerCreated() const final;
   bool GetKeyboardRemappedPrefValue(const std::string& pref_name,
                                     int* value) const final;
+  bool IsWebUIStarted() const final;
 
   // session_manager::SessionManagerObserver:
   void OnNetworkErrorScreenShown() override;
@@ -213,6 +215,9 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   // Updates default scaling for CfM devices.
   void UpScaleOobe();
 
+  // Show OOBE WebUI if signal from javascript side never came.
+  void OnShowWebUITimeout();
+
   // Sign in screen controller.
   std::unique_ptr<ExistingUserController> existing_user_controller_;
 
@@ -230,9 +235,6 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
 
   // Login display we are using.
   std::unique_ptr<LoginDisplayWebUI> login_display_;
-
-  // True if the login display is the current screen.
-  bool is_showing_login_ = false;
 
   // Stores status area current visibility to be applied once login WebUI
   // is shown.
@@ -288,6 +290,8 @@ class LoginDisplayHostWebUI : public LoginDisplayHostCommon,
   display::ScopedDisplayObserver display_observer_{this};
 
   base::ObserverList<LoginDisplayHost::Observer> observers_;
+
+  base::OneShotTimer show_webui_guard_;
 
   base::WeakPtrFactory<LoginDisplayHostWebUI> weak_factory_{this};
 };

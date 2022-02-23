@@ -9,6 +9,8 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_session.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
@@ -33,8 +35,6 @@
 #include "chrome/test/base/testing_profile_manager.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/arc_session.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_file_task_runner.h"
@@ -97,14 +97,12 @@ class LockScreenEventObserver
       return;
     }
     ASSERT_TRUE(event.event_args);
-    const base::Value* arg_value = nullptr;
-    ASSERT_TRUE(event.event_args->Get(0, &arg_value));
-    ASSERT_TRUE(arg_value);
+    const base::Value& arg_value = event.event_args->GetListDeprecated()[0];
     if (event.restrict_to_browser_context)
       EXPECT_EQ(context_, event.restrict_to_browser_context);
 
     std::unique_ptr<extensions::api::app_runtime::LaunchData> launch_data =
-        extensions::api::app_runtime::LaunchData::FromValue(*arg_value);
+        extensions::api::app_runtime::LaunchData::FromValue(arg_value);
     ASSERT_TRUE(launch_data);
     ASSERT_TRUE(launch_data->action_data);
     EXPECT_EQ(extensions::api::app_runtime::ACTION_TYPE_NEW_NOTE,

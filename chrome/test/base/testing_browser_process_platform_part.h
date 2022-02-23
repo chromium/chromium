@@ -19,7 +19,7 @@ class TestingBrowserProcessPlatformPart : public BrowserProcessPlatformPart {
   TestingBrowserProcessPlatformPart& operator=(
       const TestingBrowserProcessPlatformPart&) = delete;
   ~TestingBrowserProcessPlatformPart() override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void SetGeolocationManager(
       std::unique_ptr<device::GeolocationManager> geolocation_manager);
 #endif

@@ -4,9 +4,18 @@
 
 #include "ash/wm/desks/templates/desks_templates_dialog_controller.h"
 
+#include "ash/public/cpp/desks_templates_delegate.h"
+#include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
+#include "ash/wm/desks/templates/desks_templates_grid_view.h"
 #include "ash/wm/desks/templates/desks_templates_icon_container.h"
+#include "ash/wm/desks/templates/desks_templates_item_view.h"
+#include "ash/wm/desks/templates/desks_templates_metrics_util.h"
+#include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "base/bind.h"
+#include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -52,11 +61,16 @@ class DesksTemplatesDialog : public views::DialogDelegateView {
             views::DISTANCE_RELATED_CONTROL_VERTICAL)));
 
     // Add the description for the dialog.
-    AddChildView(views::Builder<views::Label>()
-                     .CopyAddressTo(&description_label_)
-                     .SetMultiLine(true)
-                     .SetHorizontalAlignment(gfx::ALIGN_LEFT)
-                     .Build());
+    AddChildView(
+        views::Builder<views::Label>()
+            .CopyAddressTo(&description_label_)
+            .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
+                                       gfx::Font::Weight::NORMAL))
+            .SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
+                AshColorProvider::ContentLayerType::kTextColorPrimary))
+            .SetMultiLine(true)
+            .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+            .Build());
   }
   DesksTemplatesDialog(const DesksTemplatesDialog&) = delete;
   DesksTemplatesDialog& operator=(const DesksTemplatesDialog&) = delete;
@@ -75,6 +89,11 @@ class DesksTemplatesDialog : public views::DialogDelegateView {
     description_label_->SetText(text);
   }
 
+  void SetDescriptionAccessibleName(const std::u16string& accessible_name) {
+    DCHECK(description_label_);
+    description_label_->SetAccessibleName(accessible_name);
+  }
+
  private:
   views::Label* description_label_ = nullptr;
 };
@@ -85,6 +104,7 @@ BEGIN_VIEW_BUILDER(/* no export */,
 VIEW_BUILDER_PROPERTY(int, TitleText)
 VIEW_BUILDER_PROPERTY(int, ConfirmButtonText)
 VIEW_BUILDER_PROPERTY(std::u16string, DescriptionText)
+VIEW_BUILDER_PROPERTY(std::u16string, DescriptionAccessibleName)
 END_VIEW_BUILDER
 
 BEGIN_METADATA(DesksTemplatesDialog, views::DialogDelegateView)
@@ -130,14 +150,36 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
   unsupported_apps_callback_ = std::move(callback);
   unsupported_apps_template_ = std::move(desk_template);
 
-  DesksTemplatesIconContainer* icon_container = nullptr;
+  size_t incognito_window_count = 0;
+  auto* delegate = Shell::Get()->desks_templates_delegate();
+  // TODO(shidi): The caller of  ShowUnsupportedAppsDialog should provide us
+  // with the incognito window count to avoid double looping.
+  for (auto* window : unsupported_apps) {
+    if (delegate->IsIncognitoWindow(window))
+      ++incognito_window_count;
+  }
+
+  // Note that this assumed unsupported apps which are not incognito browsers
+  // are linux apps.
+  std::u16string app_description;
+  int app_description_id;
+  if (incognito_window_count == 0) {
+    app_description_id =
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_DIALOG_DESCRIPTION;
+  } else if (incognito_window_count != unsupported_apps.size()) {
+    app_description_id =
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_LINUX_APPS_AND_INCOGNITO_DIALOG_DESCRIPTION;
+  } else {
+    app_description_id =
+        IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_INCOGNITO_DIALOG_DESCRIPTION;
+  }
+
   auto dialog =
       views::Builder<DesksTemplatesDialog>()
           .SetTitleText(IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_TITLE)
           .SetConfirmButtonText(
               IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_CONFIRM_BUTTON)
-          .SetDescriptionText(l10n_util::GetStringUTF16(
-              IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_DESCRIPTION))
+          .SetDescriptionText(l10n_util::GetStringUTF16(app_description_id))
           .SetCancelCallback(
               base::BindOnce(&DesksTemplatesDialogController::
                                  OnUserCanceledUnsupportedAppsDialog,
@@ -153,18 +195,26 @@ void DesksTemplatesDialogController::ShowUnsupportedAppsDialog(
           .AddChildren(
               views::Builder<views::Label>()
                   .SetHorizontalAlignment(gfx::ALIGN_LEFT)
+                  .SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL, 14,
+                                             gfx::Font::Weight::MEDIUM))
+                  .SetEnabledColor(
+                      AshColorProvider::Get()->GetContentLayerColor(
+                          AshColorProvider::ContentLayerType::
+                              kTextColorPrimary))
                   .SetText(l10n_util::GetStringUTF16(
                       IDS_ASH_DESKS_TEMPLATES_UNSUPPORTED_APPS_DIALOG_HEADER)),
-              views::Builder<DesksTemplatesIconContainer>().CopyAddressTo(
-                  &icon_container))
+              views::Builder<DesksTemplatesIconContainer>()
+                  .PopulateIconContainerFromWindows(unsupported_apps))
           .Build();
-  icon_container->PopulateIconContainerFromWindows(unsupported_apps);
   CreateDialogWidget(std::move(dialog), root_window);
+  RecordUnsupportedAppDialogShowHistogram();
 }
 
 void DesksTemplatesDialogController::ShowReplaceDialog(
     aura::Window* root_window,
-    const std::u16string& template_name) {
+    const std::u16string& template_name,
+    base::OnceClosure on_accept_callback,
+    base::OnceClosure on_cancel_callback) {
   auto dialog = views::Builder<DesksTemplatesDialog>()
                     .SetTitleText(IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_TITLE)
                     .SetConfirmButtonText(
@@ -172,6 +222,11 @@ void DesksTemplatesDialogController::ShowReplaceDialog(
                     .SetDescriptionText(l10n_util::GetStringFUTF16(
                         IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
                         GetStringWithQuotes(template_name)))
+                    .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+                        IDS_ASH_DESKS_TEMPLATES_REPLACE_DIALOG_DESCRIPTION,
+                        template_name))
+                    .SetAcceptCallback(std::move(on_accept_callback))
+                    .SetCancelCallback(std::move(on_cancel_callback))
                     .Build();
   CreateDialogWidget(std::move(dialog), root_window);
 }
@@ -190,6 +245,8 @@ void DesksTemplatesDialogController::ShowDeleteDialog(
           .SetDescriptionText(l10n_util::GetStringFUTF16(
               IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION,
               GetStringWithQuotes(template_name)))
+          .SetDescriptionAccessibleName(l10n_util::GetStringFUTF16(
+              IDS_ASH_DESKS_TEMPLATES_DELETE_DIALOG_DESCRIPTION, template_name))
           .SetAcceptCallback(std::move(on_accept_callback))
           .Build();
 
@@ -198,6 +255,22 @@ void DesksTemplatesDialogController::ShowDeleteDialog(
 
 void DesksTemplatesDialogController::OnWidgetDestroying(views::Widget* widget) {
   DCHECK_EQ(dialog_widget_, widget);
+  for (auto& overview_grid :
+       Shell::Get()->overview_controller()->overview_session()->grid_list()) {
+    views::Widget* templates_grid_widget =
+        overview_grid->desks_templates_grid_widget();
+    if (templates_grid_widget) {
+      auto* templates_grid_view = static_cast<DesksTemplatesGridView*>(
+          templates_grid_widget->GetContentsView());
+      for (DesksTemplatesItemView* template_item :
+           templates_grid_view->grid_items()) {
+        // Update the button visibility when a dialog is closed.
+        template_item->UpdateHoverButtonsVisibility(
+            aura::Env::GetInstance()->last_mouse_location(),
+            /*is_touch=*/false);
+      }
+    }
+  }
   dialog_widget_observation_.Reset();
   dialog_widget_ = nullptr;
 }

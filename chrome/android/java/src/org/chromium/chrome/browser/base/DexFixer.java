@@ -20,7 +20,6 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.base.compat.ApiHelperForM;
 import org.chromium.base.compat.ApiHelperForO;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
 import org.chromium.build.BuildConfig;
@@ -28,7 +27,7 @@ import org.chromium.build.NativeLibraries;
 import org.chromium.chrome.browser.DeferredStartupHandler;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 
 import java.io.File;
 import java.io.IOException;
@@ -71,7 +70,8 @@ public class DexFixer {
 
     @WorkerThread
     @VisibleForTesting
-    static void fixDexIfNecessary(Runtime runtime) {
+    @DexFixerReason
+    static int fixDexIfNecessary(Runtime runtime) {
         ApplicationInfo appInfo = ContextUtils.getApplicationContext().getApplicationInfo();
         @DexFixerReason
         int reason = needsDexCompile(appInfo);
@@ -87,10 +87,10 @@ public class DexFixer {
                 cmd += ContextUtils.getApplicationContext().getPackageName();
                 runtime.exec(cmd);
             } catch (IOException e) {
-                reason = DexFixerReason.FAILED_TO_RUN;
+                // Don't crash.
             }
         }
-        RecordHistogram.recordEnumeratedHistogram("Android.DexFixer", reason, DexFixerReason.COUNT);
+        return reason;
     }
 
     private static boolean shouldSkipDexFix() {
@@ -106,7 +106,7 @@ public class DexFixer {
         }
         // Skip the workaround on local builds to avoid affecting perf bots.
         // https://bugs.chromium.org/p/chromium/issues/detail?id=1160070
-        if (ChromeVersionInfo.isLocalBuild() && ChromeVersionInfo.isOfficialBuild()) {
+        if (VersionInfo.isLocalBuild() && VersionInfo.isOfficialBuild()) {
             return true;
         }
         return false;

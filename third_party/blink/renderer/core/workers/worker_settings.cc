@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
 
+#include "third_party/blink/renderer/core/frame/settings.h"
+
 namespace blink {
 
 WorkerSettings::WorkerSettings(Settings* settings) {

@@ -37,6 +37,8 @@
 #include "third_party/blink/renderer/core/animation/effect_stack.h"
 #include "third_party/blink/renderer/core/animation/worklet_animation_base.h"
 #include "third_party/blink/renderer/core/css/properties/css_bitset.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_counted_set.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_counted_set.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
@@ -83,7 +85,7 @@ class CORE_EXPORT ElementAnimations final
   }
   bool IsAnimationStyleChange() const { return animation_style_change_; }
 
-  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const FloatSize& box_size);
+  bool UpdateBoxSizeAndCheckTransformAxisAlignment(const gfx::SizeF& box_size);
   bool IsIdentityOrTranslation() const;
 
   void Trace(Visitor*) const;

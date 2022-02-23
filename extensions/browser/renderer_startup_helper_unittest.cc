@@ -5,6 +5,7 @@
 #include "extensions/browser/renderer_startup_helper.h"
 
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "components/crx_file/id_util.h"
 #include "content/public/test/mock_render_process_host.h"
 #include "extensions/browser/extension_prefs.h"
@@ -102,6 +103,8 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
 
   void CancelSuspendExtension(const std::string& extension_id) override {}
 
+  void SetDeveloperMode(bool current_developer_mode) override {}
+
   void SetSessionInfo(version_info::Channel channel,
                       mojom::FeatureSessionType session,
                       bool is_lock_screen_context) override {}
@@ -138,7 +141,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void UpdateTabSpecificPermissions(const std::string& extension_id,
                                     URLPatternSet new_hosts,
                                     int tab_id,
-                                    bool update_origin_whitelist) override {}
+                                    bool update_origin_allowlist) override {}
 
   void UpdateUserScripts(base::ReadOnlySharedMemoryRegion shared_memory,
                          mojom::HostIDPtr host_id) override {}
@@ -146,7 +149,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   void ClearTabSpecificPermissions(
       const std::vector<std::string>& extension_ids,
       int tab_id,
-      bool update_origin_whitelist) override {}
+      bool update_origin_allowlist) override {}
 
   void WatchPages(const std::vector<std::string>& css_selectors) override {}
 
@@ -156,7 +159,7 @@ class RendererStartupHelperInterceptor : public RendererStartupHelper,
   size_t num_loaded_extensions_;
   size_t num_loaded_extensions_in_incognito_;
   std::vector<std::string> unloaded_extensions_;
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
   mojo::AssociatedReceiverSet<mojom::Renderer> receivers_;
 };
 
@@ -271,7 +274,7 @@ class RendererStartupHelperTest : public ExtensionsTest {
   }
 
   std::unique_ptr<RendererStartupHelperInterceptor> helper_;
-  ExtensionRegistry* registry_;  // Weak.
+  raw_ptr<ExtensionRegistry> registry_;  // Weak.
   std::unique_ptr<content::MockRenderProcessHost> render_process_host_;
   std::unique_ptr<content::MockRenderProcessHost>
       incognito_render_process_host_;

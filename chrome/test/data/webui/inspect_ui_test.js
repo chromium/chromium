@@ -81,3 +81,9 @@ function testAdbTargetsListed() {
     testDone();
   });
 }
+
+function testElementDisabled(selector, disabled) {
+  var element = document.querySelector(selector);
+  expectEquals(disabled, element.disabled);
+  testDone();
+}

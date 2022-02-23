@@ -9,7 +9,7 @@
 #include "components/permissions/request_type.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/android_theme_resources.h"
 #include "components/url_formatter/elide_url.h"
 #include "url/origin.h"

@@ -13,6 +13,13 @@ def _CommonChecks(input_api, output_api):
         import sys
         old_sys_path = sys.path[:]
         sys.path += [
+            input_api.os_path.join(
+                input_api.change.RepositoryRoot(), 'ui', 'chromeos')
+        ]
+        import styles.presubmit_support
+        results += styles.presubmit_support._CheckSemanticColors(
+            input_api, output_api)
+        sys.path += [
             input_api.os_path.join(input_api.change.RepositoryRoot(), 'tools')
         ]
         import style_variable_generator.presubmit_support

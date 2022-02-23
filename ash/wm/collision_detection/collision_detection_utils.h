@@ -44,7 +44,8 @@ class ASH_EXPORT CollisionDetectionUtils {
     kSwitchAccessMenu = 1,
     kAutomaticClicksMenu = 2,
     kAutomaticClicksScrollMenu = 3,
-    kDefault = 4,
+    kDictationBubble = 4,
+    kDefault = 5,
   };
 
   CollisionDetectionUtils() = delete;

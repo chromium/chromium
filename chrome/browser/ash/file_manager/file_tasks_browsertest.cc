@@ -9,6 +9,7 @@
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/branding_buildflags.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
@@ -26,6 +27,8 @@
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "chrome/browser/web_applications/web_app_registry_update.h"
+#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -153,6 +156,18 @@ class FileTasksBrowserTestBase
     }
     EXPECT_EQ(0, remaining);
   }
+
+  // PDF handler expectations when |kMediaAppHandlesPdf| is off (the default).
+  std::vector<Expectation> GetDefaultPdfExpectations() {
+    const char* file_manager_app_id = ash::features::IsFileManagerSwaEnabled()
+                                          ? kFileManagerSwaAppId
+                                          : kFileManagerAppId;
+    return {{"pdf", file_manager_app_id}};
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_{
+      blink::features::kFileHandlingAPI};
 };
 
 class FileTasksBrowserTest : public FileTasksBrowserTestBase {
@@ -235,9 +250,6 @@ constexpr Expectation kVideoExpectations[] = {
     {"ogx", kMediaAppId, "video/ogg"},
     {"webm", kMediaAppId},
 };
-
-// PDF handler expectations when |kMediaAppHandlesPdf| is off (the default).
-constexpr Expectation kDefaultPdfExpectations[] = {{"pdf", kFileManagerAppId}};
 
 // PDF handler expectations when |kMediaAppHandlesPdf| is on.
 constexpr Expectation kMediaAppPdfExpectations[] = {{"pdf", kMediaAppId}};
@@ -342,8 +354,10 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, DefaultHandlerChangeDetector) {
                       std::end(kVideoExpectations));
   expectations.insert(expectations.end(), std::begin(kAudioExpectations),
                       std::end(kAudioExpectations));
-  expectations.insert(expectations.end(), std::begin(kDefaultPdfExpectations),
-                      std::end(kDefaultPdfExpectations));
+
+  auto pdf_expectations = GetDefaultPdfExpectations();
+  expectations.insert(expectations.end(), std::begin(pdf_expectations),
+                      std::end(pdf_expectations));
 
   TestExpectationsAgainstDefaultTasks(expectations);
 }
@@ -476,7 +490,7 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ProvidedFileSystemFileSource) {
 }
 
 IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
-  auto web_app_info = std::make_unique<WebApplicationInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>();
   web_app_info->start_url = GURL("https://www.example.com/");
   web_app_info->scope = GURL("https://www.example.com/");
   apps::FileHandler handler;
@@ -496,12 +510,17 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
     // Install a PWA in ash.
     web_app::AppId app_id =
         web_app::test::InstallWebApp(profile, std::move(web_app_info));
-    task_descriptor =
-        TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP, "activity name");
+    task_descriptor = TaskDescriptor(app_id, TaskType::TASK_TYPE_WEB_APP,
+                                     "https://www.example.com/handle_file");
+    // Skip past the permission dialog.
+    web_app::WebAppProvider::GetForTest(profile)
+        ->sync_bridge()
+        .SetAppFileHandlerApprovalState(app_id,
+                                        web_app::ApiApprovalState::kAllowed);
   } else {
     // Use an existing SWA in ash - Media app.
-    task_descriptor =
-        TaskDescriptor(kMediaAppId, TaskType::TASK_TYPE_WEB_APP, "");
+    task_descriptor = TaskDescriptor(kMediaAppId, TaskType::TASK_TYPE_WEB_APP,
+                                     "chrome://media-app/open");
     // TODO(petermarshall): Install the web app in Lacros once installing and
     // launching apps from ash -> lacros is possible.
   }
@@ -511,6 +530,14 @@ IN_PROC_BROWSER_TEST_P(FileTasksBrowserTest, ExecuteWebApp) {
       base::BindLambdaForTesting(
           [&run_loop](apps::AppLaunchParams&& params) -> content::WebContents* {
             EXPECT_EQ(params.intent->action, apps_util::kIntentActionView);
+            if (GetParam().crosapi_state ==
+                TestProfileParam::CrosapiParam::kDisabled) {
+              EXPECT_EQ(params.intent->activity_name,
+                        "https://www.example.com/handle_file");
+            } else {
+              EXPECT_EQ(params.intent->activity_name,
+                        "chrome://media-app/open");
+            }
             EXPECT_EQ(params.launch_files.size(), 2U);
             EXPECT_TRUE(base::EndsWith(params.launch_files.at(0).MaybeAsASCII(),
                                        "foo.jpg"));

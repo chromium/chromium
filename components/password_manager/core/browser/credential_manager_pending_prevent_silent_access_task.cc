@@ -19,11 +19,12 @@ CredentialManagerPendingPreventSilentAccessTask::
 
 void CredentialManagerPendingPreventSilentAccessTask::AddOrigin(
     const PasswordFormDigest& form_digest) {
-  delegate_->GetProfilePasswordStore()->GetLogins(form_digest, this);
+  delegate_->GetProfilePasswordStore()->GetLogins(
+      form_digest, weak_ptr_factory_.GetWeakPtr());
   pending_requests_++;
   if (PasswordStoreInterface* account_store =
           delegate_->GetAccountPasswordStore()) {
-    account_store->GetLogins(form_digest, this);
+    account_store->GetLogins(form_digest, weak_ptr_factory_.GetWeakPtr());
     pending_requests_++;
   }
 }

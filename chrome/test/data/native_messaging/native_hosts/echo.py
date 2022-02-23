@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -17,9 +17,9 @@ import time
 
 def WriteMessage(message):
   try:
-    sys.stdout.write(struct.pack("I", len(message)))
-    sys.stdout.write(message)
-    sys.stdout.flush()
+    sys.stdout.buffer.write(struct.pack("I", len(message)))
+    sys.stdout.buffer.write(message)
+    sys.stdout.buffer.flush()
     return True
   except IOError:
     return False
@@ -82,11 +82,11 @@ def Main():
       return 1
 
   reconnect_args = json.loads(base64.b64decode(
-      args.reconnect_command)) if args.reconnect_command else None
+      args.reconnect_command.encode())) if args.reconnect_command else None
 
   while 1:
     # Read the message type (first 4 bytes).
-    text_length_bytes = sys.stdin.read(4)
+    text_length_bytes = sys.stdin.buffer.read(4)
 
     if len(text_length_bytes) == 0:
       break
@@ -95,7 +95,7 @@ def Main():
     text_length = struct.unpack('i', text_length_bytes)[0]
 
     # Read the text (JSON object) of the message.
-    text = json.loads(sys.stdin.read(text_length).decode('utf-8'))
+    text = json.loads(sys.stdin.buffer.read(text_length))
 
     # bigMessage() test sends a special message that is sent to verify that
     # chrome rejects messages that are too big. Try sending a message bigger
@@ -111,8 +111,8 @@ def Main():
       # Using os.close() here because sys.stdin.close() doesn't really close
       # the pipe (it just marks it as closed, but doesn't close the file
       # descriptor).
-      os.close(sys.stdin.fileno())
-      WriteMessage('{"stopped": true }')
+      os.close(sys.stdin.buffer.fileno())
+      WriteMessage(b'{"stopped": true }')
       sys.exit(0)
 
     message_number += 1

@@ -16,8 +16,8 @@
 #include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringize_macros.h"
 #include "base/test/task_environment.h"
@@ -261,7 +261,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
   void TestConnect();
 
   // Raw pointer to host factory (owned by It2MeNativeMessagingHost).
-  MockIt2MeHostFactory* factory_raw_ptr_ = nullptr;
+  raw_ptr<MockIt2MeHostFactory> factory_raw_ptr_ = nullptr;
 
  private:
   void StartHost();
@@ -287,7 +287,7 @@ class It2MeNativeMessagingHostTest : public testing::Test {
 
   // Retain a raw pointer to |policy_loader_| in order to control the policy
   // contents.
-  policy::FakeAsyncPolicyLoader* policy_loader_ = nullptr;
+  raw_ptr<policy::FakeAsyncPolicyLoader> policy_loader_ = nullptr;
 
   // Task runner of the host thread.
   scoped_refptr<AutoThreadTaskRunner> host_task_runner_;

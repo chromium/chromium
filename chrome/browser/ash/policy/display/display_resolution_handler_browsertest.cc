@@ -173,8 +173,8 @@ class DeviceDisplayResolutionTestBase
       const DeviceDisplayResolutionTestBase&) = delete;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
     command_line->AppendSwitch(switches::kUseFirstDisplayAsInternal);
   }
 

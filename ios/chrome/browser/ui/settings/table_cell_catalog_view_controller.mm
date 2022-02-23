@@ -5,6 +5,9 @@
 #import "ios/chrome/browser/ui/settings/table_cell_catalog_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/signin/constants.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_account_item.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_signin_promo_item.h"
@@ -15,7 +18,6 @@
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -25,6 +27,8 @@
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_link_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_multi_detail_text_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_item.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_tabs_search_suggested_history_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_button_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_header_footer_item.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_text_item.h"
@@ -35,6 +39,7 @@
 #include "ios/chrome/browser/ui/ui_feature_flags.h"
 #import "ios/chrome/browser/ui/util/uikit_ui_util.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/util/image_util.h"
 #import "ios/public/provider/chrome/browser/signin/signin_resources_api.h"
 #include "url/gurl.h"
 
@@ -59,6 +64,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeTextButton,
   ItemTypeURLNoMetadata,
   ItemTypeTextAccessoryImage,
+  ItemTypeSearchHistorySuggestedItem,
   ItemTypeTextAccessoryNoImage,
   ItemTypeTextEditItem,
   ItemTypeURLWithTimestamp,
@@ -70,11 +76,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
   ItemTypeDetailText,
   ItemTypeMultiDetailText,
   ItemTypeAccountSignInItem,
-  ItemTypeSettingsSwitch1,
-  ItemTypeSettingsSwitch2,
   ItemTypeTableViewInfoButton,
   ItemTypeTableViewInfoButtonWithDetailText,
   ItemTypeTableViewInfoButtonWithImage,
+  ItemTypeTableViewSwitch1,
+  ItemTypeTableViewSwitch2,
   ItemTypeSyncSwitch,
   ItemTypeSettingsSyncError,
   ItemTypeAutofillData,
@@ -139,6 +145,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
   textImageItem.title = @"Image Item with History Image";
   textImageItem.image = [UIImage imageNamed:@"show_history"];
   [model addItem:textImageItem toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewTabsSearchSuggestedHistoryItem* searchHistorySuggestedItem =
+      [[TableViewTabsSearchSuggestedHistoryItem alloc]
+          initWithType:ItemTypeSearchHistorySuggestedItem];
+  [model addItem:searchHistorySuggestedItem
+      toSectionWithIdentifier:SectionIdentifierText];
 
   TableViewImageItem* textImageItem2 =
       [[TableViewImageItem alloc] initWithType:ItemTypeTextAccessoryImage];
@@ -327,6 +339,21 @@ typedef NS_ENUM(NSInteger, ItemType) {
   [model addItem:tableViewMultiDetailTextItem
       toSectionWithIdentifier:SectionIdentifierText];
 
+  TableViewSwitchItem* tableViewSwitchItem =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeTableViewSwitch1];
+  tableViewSwitchItem.text = @"This is a switch item";
+  [model addItem:tableViewSwitchItem
+      toSectionWithIdentifier:SectionIdentifierText];
+
+  TableViewSwitchItem* tableViewSwitchItem2 =
+      [[TableViewSwitchItem alloc] initWithType:ItemTypeTableViewSwitch2];
+  tableViewSwitchItem2.text = @"This is a disabled switch item";
+  tableViewSwitchItem2.detailText = @"This is a switch item with detail text";
+  tableViewSwitchItem2.on = YES;
+  tableViewSwitchItem2.enabled = NO;
+  [model addItem:tableViewSwitchItem2
+      toSectionWithIdentifier:SectionIdentifierText];
+
   // SectionIdentifierSettings.
   TableViewTextHeaderFooterItem* settingsHeader =
       [[TableViewTextHeaderFooterItem alloc] initWithType:ItemTypeTextHeader];
@@ -338,21 +365,6 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[AccountSignInItem alloc] initWithType:ItemTypeAccountSignInItem];
   accountSignInItem.detailText = @"Get cool stuff on all your devices";
   [model addItem:accountSignInItem
-      toSectionWithIdentifier:SectionIdentifierSettings];
-
-  SettingsSwitchItem* settingsSwitchItem =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeSettingsSwitch1];
-  settingsSwitchItem.text = @"This is a settings switch item";
-  [model addItem:settingsSwitchItem
-      toSectionWithIdentifier:SectionIdentifierSettings];
-
-  SettingsSwitchItem* settingsSwitchItem2 =
-      [[SettingsSwitchItem alloc] initWithType:ItemTypeSettingsSwitch2];
-  settingsSwitchItem2.text = @"This is a disabled settings switch item";
-  settingsSwitchItem2.detailText = @"This is a switch item with detail text";
-  settingsSwitchItem2.on = YES;
-  settingsSwitchItem2.enabled = NO;
-  [model addItem:settingsSwitchItem2
       toSectionWithIdentifier:SectionIdentifierSettings];
 
   SyncSwitchItem* syncSwitchItem =
@@ -479,6 +491,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
       [[TableViewLinkHeaderFooterItem alloc] initWithType:ItemTypeLinkFooter];
   linkFooter.text =
       @"This is a footer text view with a BEGIN_LINKlinkEND_LINK in the middle";
+  linkFooter.urls =
+      @[ [[CrURL alloc] initWithGURL:GURL("http://www.example.com")] ];
   [model setFooter:linkFooter
       forSectionWithIdentifier:SectionIdentifierSettings];
 
@@ -495,14 +509,29 @@ typedef NS_ENUM(NSInteger, ItemType) {
       toSectionWithIdentifier:SectionIdentifierAutofill];
 
   // SectionIdentifierAccount.
+  UIImage* signinPromoAvatar = ios::provider::GetSigninDefaultAvatar();
+  CGSize avatarSize =
+      GetSizeForIdentityAvatarSize(IdentityAvatarSize::SmallSize);
+  signinPromoAvatar =
+      ResizeImage(signinPromoAvatar, avatarSize, ProjectionMode::kFill);
   TableViewSigninPromoItem* signinPromo =
       [[TableViewSigninPromoItem alloc] initWithType:ItemTypeAccount];
   signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
       initWithSigninPromoViewMode:SigninPromoViewModeSigninWithAccount
                         userEmail:@"jonhdoe@example.com"
                     userGivenName:@"John Doe"
-                        userImage:nil
+                        userImage:signinPromoAvatar
                    hasCloseButton:NO];
+  signinPromo.text = @"Signin promo text example";
+  [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
+
+  signinPromo = [[TableViewSigninPromoItem alloc] initWithType:ItemTypeAccount];
+  signinPromo.configurator = [[SigninPromoViewConfigurator alloc]
+      initWithSigninPromoViewMode:SigninPromoViewModeNoAccounts
+                        userEmail:nil
+                    userGivenName:nil
+                        userImage:nil
+                   hasCloseButton:YES];
   signinPromo.text = @"Signin promo text example";
   [model addItem:signinPromo toSectionWithIdentifier:SectionIdentifierAccount];
 
@@ -537,35 +566,36 @@ typedef NS_ENUM(NSInteger, ItemType) {
   TableViewURLItem* item =
       [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
   item.title = @"Google Design";
-  item.URL = GURL("https://design.google.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://design.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLNoMetadata];
-  item.URL = GURL("https://notitle.google.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://notitle.google.com")];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithTimestamp];
   item.title = @"Google";
-  item.URL = GURL("https://www.google.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://www.google.com")];
   item.metadata = @"3:42 PM";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSize];
   item.title = @"World Series 2017: Houston Astros Defeat Someone Else";
-  item.URL = GURL("https://m.bbc.com");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://m.bbc.com")];
   item.metadata = @"176 KB";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item =
       [[TableViewURLItem alloc] initWithType:ItemTypeURLWithSupplementalText];
   item.title = @"Chrome | Google Blog";
-  item.URL = GURL("https://blog.google/products/chrome/");
+  item.URL =
+      [[CrURL alloc] initWithGURL:GURL("https://blog.google/products/chrome/")];
   item.supplementalURLText = @"Read 4 days ago";
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 
   item = [[TableViewURLItem alloc] initWithType:ItemTypeURLWithBadgeImage];
   item.title = @"Photos - Google Photos";
-  item.URL = GURL("https://photos.google.com/");
+  item.URL = [[CrURL alloc] initWithGURL:GURL("https://photos.google.com/")];
   item.badgeImage = [UIImage imageNamed:@"table_view_cell_check_mark"];
   [model addItem:item toSectionWithIdentifier:SectionIdentifierURL];
 }
@@ -632,6 +662,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [checkCell.infoButton addTarget:self
                              action:@selector(didTapCheckInfoButton:)
                    forControlEvents:UIControlEventTouchUpInside];
+  } else if (itemType == ItemTypeSearchHistorySuggestedItem) {
+    TableViewTabsSearchSuggestedHistoryCell* searchHistoryCell =
+        base::mac::ObjCCastStrict<TableViewTabsSearchSuggestedHistoryCell>(
+            cell);
+    [searchHistoryCell updateHistoryResultsCount:7];
   }
   return cell;
 }

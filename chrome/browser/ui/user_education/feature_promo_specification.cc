@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/feature_list.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -45,9 +46,21 @@ ui::Accelerator FeaturePromoSpecification::AcceleratorInfo::GetAccelerator(
   return result;
 }
 
+FeaturePromoSpecification::DemoPageInfo::DemoPageInfo(
+    std::string display_title_,
+    std::string display_description_,
+    base::RepeatingClosure setup_for_feature_promo_callback_)
+    : display_title(display_title_),
+      display_description(display_description_),
+      setup_for_feature_promo_callback(setup_for_feature_promo_callback_) {}
+
+FeaturePromoSpecification::DemoPageInfo::DemoPageInfo(
+    const DemoPageInfo& other) = default;
+
+FeaturePromoSpecification::DemoPageInfo::~DemoPageInfo() = default;
+
 // static
-constexpr FeaturePromoSpecification::BubbleArrow
-    FeaturePromoSpecification::kDefaultBubbleArrow;
+constexpr HelpBubbleArrow FeaturePromoSpecification::kDefaultBubbleArrow;
 
 FeaturePromoSpecification::FeaturePromoSpecification() = default;
 
@@ -65,7 +78,23 @@ FeaturePromoSpecification::FeaturePromoSpecification(
       screen_reader_string_id_(
           std::exchange(other.screen_reader_string_id_, 0)),
       screen_reader_accelerator_(
-          std::exchange(other.screen_reader_accelerator_, AcceleratorInfo())) {}
+          std::exchange(other.screen_reader_accelerator_, AcceleratorInfo())),
+      demo_page_info_(std::exchange(other.demo_page_info_, DemoPageInfo())),
+      tutorial_id_(std::move(other.tutorial_id_)) {}
+
+FeaturePromoSpecification::FeaturePromoSpecification(
+    const base::Feature* feature,
+    PromoType promo_type,
+    ui::ElementIdentifier anchor_element_id,
+    int bubble_body_string_id)
+    : feature_(feature),
+      promo_type_(promo_type),
+      anchor_element_id_(anchor_element_id),
+      bubble_body_string_id_(bubble_body_string_id),
+      demo_page_info_(DemoPageInfo(feature ? feature->name : std::string())) {
+  DCHECK_NE(promo_type, PromoType::kUnspecifiied);
+  DCHECK(bubble_body_string_id_);
+}
 
 FeaturePromoSpecification::~FeaturePromoSpecification() = default;
 
@@ -84,6 +113,8 @@ FeaturePromoSpecification& FeaturePromoSpecification::operator=(
     screen_reader_string_id_ = std::exchange(other.screen_reader_string_id_, 0);
     screen_reader_accelerator_ =
         std::exchange(other.screen_reader_accelerator_, AcceleratorInfo());
+    demo_page_info_ = std::exchange(other.demo_page_info_, DemoPageInfo());
+    tutorial_id_ = std::move(other.tutorial_id_);
   }
   return *this;
 }
@@ -112,6 +143,19 @@ FeaturePromoSpecification FeaturePromoSpecification::CreateForSnoozePromo(
 }
 
 // static
+FeaturePromoSpecification FeaturePromoSpecification::CreateForTutorialPromo(
+    const base::Feature& feature,
+    ui::ElementIdentifier anchor_element_id,
+    int body_text_string_id,
+    TutorialIdentifier tutorial_id) {
+  FeaturePromoSpecification spec(&feature, PromoType::kTutorial,
+                                 anchor_element_id, body_text_string_id);
+  DCHECK(!tutorial_id.empty());
+  spec.tutorial_id_ = tutorial_id;
+  return spec;
+}
+
+// static
 FeaturePromoSpecification FeaturePromoSpecification::CreateForLegacyPromo(
     const base::Feature* feature,
     ui::ElementIdentifier anchor_element_id,
@@ -135,7 +179,7 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleIcon(
 }
 
 FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
-    BubbleArrow bubble_arrow) {
+    HelpBubbleArrow bubble_arrow) {
   bubble_arrow_ = bubble_arrow;
   return *this;
 }
@@ -143,6 +187,12 @@ FeaturePromoSpecification& FeaturePromoSpecification::SetBubbleArrow(
 FeaturePromoSpecification& FeaturePromoSpecification::SetAnchorElementFilter(
     AnchorElementFilter anchor_element_filter) {
   anchor_element_filter_ = std::move(anchor_element_filter);
+  return *this;
+}
+
+FeaturePromoSpecification& FeaturePromoSpecification::SetDemoPageInfo(
+    DemoPageInfo demo_page_info) {
+  demo_page_info_ = std::move(demo_page_info);
   return *this;
 }
 
@@ -154,17 +204,4 @@ ui::TrackedElement* FeaturePromoSpecification::GetAnchorElement(
                                           anchor_element_id_, context))
                                 : element_tracker->GetFirstMatchingElement(
                                       anchor_element_id_, context);
-}
-
-FeaturePromoSpecification::FeaturePromoSpecification(
-    const base::Feature* feature,
-    PromoType promo_type,
-    ui::ElementIdentifier anchor_element_id,
-    int bubble_body_string_id)
-    : feature_(feature),
-      promo_type_(promo_type),
-      anchor_element_id_(anchor_element_id),
-      bubble_body_string_id_(bubble_body_string_id) {
-  DCHECK_NE(promo_type, PromoType::kUnspecifiied);
-  DCHECK(bubble_body_string_id_);
 }

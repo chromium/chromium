@@ -15,22 +15,27 @@
 #include "base/process/launch.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_split.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/test/bind.h"
 #include "base/test/test_timeouts.h"
 #include "base/time/time.h"
 #include "base/version.h"
+#include "build/build_config.h"
+#include "chrome/common/chrome_paths.h"
 #include "chrome/common/mac/launchd.h"
 #include "chrome/updater/constants.h"
 #include "chrome/updater/external_constants_builder.h"
 #include "chrome/updater/launchd_util.h"
 #import "chrome/updater/mac/mac_util.h"
 #include "chrome/updater/mac/xpc_service_names.h"
+#include "chrome/updater/persisted_data.h"
 #include "chrome/updater/prefs.h"
 #include "chrome/updater/test/integration_tests_impl.h"
 #include "chrome/updater/updater_branding.h"
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/util.h"
+#include "components/crx_file/crx_verifier.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -103,12 +108,18 @@ void ExpectServiceAbsent(UpdaterScope scope, const std::string& service) {
 
 }  // namespace
 
+base::FilePath GetSetupExecutablePath() {
+  // There is no metainstaller on mac, use the main executable for setup.
+  return GetExecutablePath();
+}
+
 void EnterTestMode(const GURL& url) {
   ASSERT_TRUE(ExternalConstantsBuilder()
                   .SetUpdateURL(std::vector<std::string>{url.spec()})
                   .SetUseCUP(false)
                   .SetInitialDelay(0.1)
                   .SetServerKeepAliveSeconds(1)
+                  .SetCrxVerifierFormat(crx_file::VerifierFormat::CRX3)
                   .Overwrite());
 }
 
@@ -158,6 +169,23 @@ void Clean(UpdaterScope scope) {
                          CopyUpdateServiceLaunchdName(scope));
     RemoveJobFromLaunchd(scope, launchd_domain, launchd_type,
                          CopyUpdateServiceInternalLaunchdName(scope));
+  }
+
+  // Also clean up any other versions of the updater that are around.
+  base::CommandLine launchctl(base::FilePath("/bin/launchctl"));
+  launchctl.AppendArg("list");
+  std::string out;
+  ASSERT_TRUE(base::GetAppOutput(launchctl, &out));
+  for (const auto& token : base::SplitStringPiece(out, base::kWhitespaceASCII,
+                                                  base::TRIM_WHITESPACE,
+                                                  base::SPLIT_WANT_NONEMPTY)) {
+    if (base::StartsWith(token, MAC_BUNDLE_IDENTIFIER_STRING)) {
+      std::string out_rm;
+      base::CommandLine launchctl_rm(base::FilePath("/bin/launchctl"));
+      launchctl_rm.AppendArg("remove");
+      launchctl_rm.AppendArg(token);
+      ASSERT_TRUE(base::GetAppOutput(launchctl_rm, &out_rm));
+    }
   }
 }
 
@@ -213,16 +241,6 @@ void ExpectInstalled(UpdaterScope scope) {
   EXPECT_TRUE(Launchd::GetInstance()->PlistExists(
       launchd_domain, launchd_type,
       CopyUpdateServiceInternalLaunchdName(scope)));
-}
-
-void Install(UpdaterScope scope) {
-  const base::FilePath path = GetExecutablePath();
-  ASSERT_FALSE(path.empty());
-  base::CommandLine command_line(path);
-  command_line.AppendSwitch(kInstallSwitch);
-  int exit_code = -1;
-  ASSERT_TRUE(Run(scope, command_line, &exit_code));
-  EXPECT_EQ(exit_code, 0);
 }
 
 void ExpectActiveUpdater(UpdaterScope scope) {
@@ -300,7 +318,7 @@ void ExpectNotActive(UpdaterScope scope, const std::string& app_id) {
   EXPECT_FALSE(base::PathIsWritable(*path));
 }
 
-void WaitForServerExit(UpdaterScope /*scope*/) {
+void WaitForUpdaterExit(UpdaterScope /*scope*/) {
   ASSERT_TRUE(WaitFor(base::BindRepeating([]() {
     std::string ps_stdout;
     EXPECT_TRUE(base::GetAppOutput({"ps", "ax", "-o", "command"}, &ps_stdout));
@@ -310,6 +328,85 @@ void WaitForServerExit(UpdaterScope /*scope*/) {
     }
     return false;
   })));
+}
+
+void SetupRealUpdaterLowerVersion(UpdaterScope scope) {
+  base::FilePath source_path;
+  ASSERT_TRUE(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_path));
+  base::FilePath old_updater_path =
+      source_path.Append("third_party").Append("updater");
+#if BUILDFLAG(CHROMIUM_BRANDING)
+#if defined(ARCH_CPU_ARM64)
+  old_updater_path =
+      old_updater_path.Append("chromium_mac_arm64").Append("updater");
+#elif defined(ARCH_CPU_X86_64)
+  old_updater_path =
+      old_updater_path.Append("chromium_mac_amd64").Append("updater");
+#endif
+#elif BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  old_updater_path = old_updater_path.Append("chrome_mac_universal");
+#endif
+  base::CommandLine command_line(
+      old_updater_path.Append(PRODUCT_FULLNAME_STRING "_test.app")
+          .Append("Contents")
+          .Append("MacOS")
+          .Append(PRODUCT_FULLNAME_STRING "_test"));
+  command_line.AppendSwitch(kInstallSwitch);
+  int exit_code = -1;
+  ASSERT_TRUE(Run(scope, command_line, &exit_code));
+  ASSERT_EQ(exit_code, 0);
+}
+
+void SetupFakeLegacyUpdaterData(UpdaterScope scope) {
+  base::FilePath test_ticket_store_path;
+  ASSERT_TRUE(
+      base::PathService::Get(chrome::DIR_TEST_DATA, &test_ticket_store_path));
+  test_ticket_store_path =
+      test_ticket_store_path.Append(FILE_PATH_LITERAL("updater"))
+          .Append(FILE_PATH_LITERAL("Keystone.legacy.ticketstore"));
+
+  base::FilePath keystone_ticket_store_path =
+      GetKeystoneFolderPath(scope)->Append(FILE_PATH_LITERAL("TicketStore"));
+  ASSERT_TRUE(base::CreateDirectory(keystone_ticket_store_path));
+  ASSERT_TRUE(base::CopyFile(test_ticket_store_path,
+                             keystone_ticket_store_path.Append(
+                                 FILE_PATH_LITERAL("Keystone.ticketstore"))));
+}
+
+void ExpectLegacyUpdaterDataMigrated(UpdaterScope scope) {
+  scoped_refptr<GlobalPrefs> global_prefs = CreateGlobalPrefs(scope);
+  auto persisted_data =
+      base::MakeRefCounted<PersistedData>(global_prefs->GetPrefService());
+
+  // Keystone should not be migrated.
+  EXPECT_FALSE(
+      persisted_data->GetProductVersion("com.google.keystone").IsValid());
+
+  // Uninstalled app should not be migrated.
+  EXPECT_FALSE(
+      persisted_data->GetProductVersion("com.chromium.NonExistApp").IsValid());
+
+  // App Kipple.
+  const std::string kKippleApp = "com.chromium.kipple";
+  EXPECT_EQ(persisted_data->GetProductVersion(kKippleApp),
+            base::Version("1.2.3.4"));
+  EXPECT_EQ(persisted_data->GetExistenceCheckerPath(kKippleApp),
+            base::FilePath("/"));
+  EXPECT_TRUE(persisted_data->GetAP(kKippleApp).empty());
+  EXPECT_TRUE(persisted_data->GetBrandCode(kKippleApp).empty());
+  EXPECT_TRUE(persisted_data->GetBrandPath(kKippleApp).empty());
+  EXPECT_TRUE(persisted_data->GetFingerprint(kKippleApp).empty());
+
+  // App PopularApp.
+  const std::string kPopularApp = "com.chromium.PopularApp";
+  EXPECT_EQ(persisted_data->GetProductVersion(kPopularApp),
+            base::Version("101.100.1000.9999"));
+  EXPECT_EQ(persisted_data->GetExistenceCheckerPath(kPopularApp),
+            base::FilePath("/"));
+  EXPECT_EQ(persisted_data->GetAP(kPopularApp), "GOOG");
+  EXPECT_TRUE(persisted_data->GetBrandCode(kKippleApp).empty());
+  EXPECT_EQ(persisted_data->GetBrandPath(kPopularApp), base::FilePath("/"));
+  EXPECT_TRUE(persisted_data->GetFingerprint(kPopularApp).empty());
 }
 
 }  // namespace test

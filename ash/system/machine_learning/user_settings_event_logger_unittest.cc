@@ -7,11 +7,13 @@
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
 #include "ash/shell.h"
+#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/machine_learning/user_settings_event.pb.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
 #include "ash/system/power/power_status.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
@@ -162,6 +164,25 @@ class UserSettingsEventLoggerTest : public AshTestBase {
   ukm::TestAutoSetUkmRecorder ukm_recorder_;
 };
 
+class UserSettingsEventLoggerTestLegacy : public UserSettingsEventLoggerTest {
+ public:
+  void SetUp() override {
+    // These tests should only be run with the kBluetoothRevamp feature flag is
+    // disabled, and so we force it off here and ensure that the local state
+    // prefs that would have been registered had the feature flag been off are
+    // registered.
+    if (ash::features::IsBluetoothRevampEnabled()) {
+      feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+      BluetoothPowerController::RegisterLocalStatePrefs(
+          local_state()->registry());
+    }
+    UserSettingsEventLoggerTest::SetUp();
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
 TEST_F(UserSettingsEventLoggerTest, TestLogWifiEvent) {
   logger_->LogNetworkUkmEvent(
       *CreateWifiNetwork(50, SecurityType::kNone).get());
@@ -213,7 +234,7 @@ TEST_F(UserSettingsEventLoggerTest, TestLogCellularEvent) {
   TestUkmRecorder::ExpectEntryMetric(entry, "UsedCellularInSession", true);
 }
 
-TEST_F(UserSettingsEventLoggerTest, TestLogBluetoothEvent) {
+TEST_F(UserSettingsEventLoggerTestLegacy, TestLogBluetoothEventLegacy) {
   // Log an event with a null bluetooth address.
   logger_->LogBluetoothUkmEvent(BluetoothAddress());
 

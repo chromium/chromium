@@ -11,10 +11,10 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/url_matcher/url_matcher.h"
-#include "extensions/common/event_filtering_info.h"
 #include "extensions/common/event_matcher.h"
+#include "extensions/common/mojom/event_dispatcher.mojom-forward.h"
 
 namespace extensions {
 
@@ -51,7 +51,7 @@ class EventFilter {
   // event matchers that matched the event.
   // TODO(koz): Add a std::string* parameter for retrieving error messages.
   std::set<MatcherID> MatchEvent(const std::string& event_name,
-                                 const EventFilteringInfo& event_info,
+                                 const mojom::EventFilteringInfo& event_info,
                                  int routing_id) const;
 
   int GetMatcherCountForEventForTesting(const std::string& event_name) const;
@@ -89,7 +89,7 @@ class EventFilter {
     std::unique_ptr<EventMatcher> event_matcher_;
     // The id sets in |url_matcher_| that this EventMatcher owns.
     std::vector<url_matcher::URLMatcherConditionSet::ID> condition_set_ids_;
-    url_matcher::URLMatcher* url_matcher_;
+    raw_ptr<url_matcher::URLMatcher> url_matcher_;
   };
 
   // Maps from a matcher id to an event matcher entry.
@@ -105,7 +105,7 @@ class EventFilter {
       url_matcher::URLMatcherConditionSet::Vector* condition_sets);
 
   bool AddDictionaryAsConditionSet(
-      base::DictionaryValue* url_filter,
+      const base::DictionaryValue* url_filter,
       url_matcher::URLMatcherConditionSet::Vector* condition_sets);
 
   url_matcher::URLMatcher url_matcher_;

@@ -48,7 +48,7 @@
 
   currentPriceLabel.translatesAutoresizingMaskIntoConstraints = NO;
   currentPriceLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   currentPriceLabel.textColor = [UIColor colorNamed:kGreen700Color];
   currentPriceLabel.backgroundColor = [UIColor colorNamed:kGreen50Color];
   currentPriceLabel.adjustsFontForContentSizeCategory = YES;
@@ -57,7 +57,7 @@
   UILabel* previousPriceLabel = [[UILabel alloc] init];
   previousPriceLabel.translatesAutoresizingMaskIntoConstraints = NO;
   previousPriceLabel.font =
-      [UIFont preferredFontForTextStyle:UIFontTextStyleBody];
+      [UIFont preferredFontForTextStyle:UIFontTextStyleFootnote];
   previousPriceLabel.textColor =
       [UIColor colorNamed:kPriceDropPreviousPriceTextColor];
   previousPriceLabel.adjustsFontForContentSizeCategory = YES;

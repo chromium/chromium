@@ -4,6 +4,7 @@
 
 #include "media/base/bitstream_buffer.h"
 
+#include "base/numerics/checked_math.h"
 #include "media/base/decrypt_config.h"
 
 namespace media {
@@ -41,8 +42,25 @@ BitstreamBuffer& BitstreamBuffer::operator=(BitstreamBuffer&&) = default;
 BitstreamBuffer::~BitstreamBuffer() = default;
 
 scoped_refptr<DecoderBuffer> BitstreamBuffer::ToDecoderBuffer() {
-  scoped_refptr<DecoderBuffer> buffer =
-      DecoderBuffer::FromSharedMemoryRegion(std::move(region_), offset_, size_);
+  return ToDecoderBuffer(0, size_);
+}
+scoped_refptr<DecoderBuffer> BitstreamBuffer::ToDecoderBuffer(off_t offset,
+                                                              size_t size) {
+  // We do allow mapping beyond the bounds of the original specified size in
+  // order to deal with the OEMCrypto secure buffer format, but we do ensure
+  // it stays within the shared memory region.
+  base::CheckedNumeric<off_t> total_range(offset_);
+  total_range += offset;
+  if (!total_range.IsValid())
+    return nullptr;
+  const off_t final_offset = total_range.ValueOrDie();
+  total_range += base::checked_cast<off_t>(size);
+  if (!total_range.IsValid<size_t>())
+    return nullptr;
+  if (total_range.ValueOrDie<size_t>() > region_.GetSize())
+    return nullptr;
+  scoped_refptr<DecoderBuffer> buffer = DecoderBuffer::FromSharedMemoryRegion(
+      std::move(region_), final_offset, size);
   if (!buffer)
     return nullptr;
   buffer->set_timestamp(presentation_timestamp_);

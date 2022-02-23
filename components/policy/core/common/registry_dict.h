@@ -13,7 +13,7 @@
 #include "components/policy/policy_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -44,9 +44,8 @@ class POLICY_EXPORT RegistryDict {
   using KeyMap = std::map<std::string,
                           std::unique_ptr<RegistryDict>,
                           CaseInsensitiveStringCompare>;
-  using ValueMap = std::map<std::string,
-                            std::unique_ptr<base::Value>,
-                            CaseInsensitiveStringCompare>;
+  using ValueMap =
+      std::map<std::string, base::Value, CaseInsensitiveStringCompare>;
 
   RegistryDict();
   RegistryDict(const RegistryDict&) = delete;
@@ -66,10 +65,10 @@ class POLICY_EXPORT RegistryDict {
   // Returns a pointer to a value, NULL if not present.
   base::Value* GetValue(const std::string& name);
   const base::Value* GetValue(const std::string& name) const;
-  // Sets a value. If |value| is NULL, removes the value.
-  void SetValue(const std::string& name, std::unique_ptr<base::Value> value);
-  // Removes a value. If the value doesn't exist, NULL is returned.
-  std::unique_ptr<base::Value> RemoveValue(const std::string& name);
+  // Sets a value.
+  void SetValue(const std::string& name, base::Value&& value);
+  // Removes a value. If the value doesn't exist, nullopt is returned.
+  absl::optional<base::Value> RemoveValue(const std::string& name);
   // Clears all values.
   void ClearValues();
 
@@ -79,7 +78,7 @@ class POLICY_EXPORT RegistryDict {
   // Swap with |other|.
   void Swap(RegistryDict* other);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Read a Windows registry subtree into this registry dictionary object.
   void ReadRegistry(HKEY hive, const std::wstring& root);
 

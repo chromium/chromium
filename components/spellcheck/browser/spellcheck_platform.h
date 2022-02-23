@@ -12,16 +12,17 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/spellcheck/spellcheck_buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/spellcheck/browser/spellcheck_host_metrics.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 #include "components/spellcheck/common/spellcheck_common.h"
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 class PlatformSpellChecker;
 
@@ -32,10 +33,10 @@ namespace spellcheck_platform {
 typedef base::OnceCallback<void(const std::vector<SpellCheckResult>&)>
     TextCheckCompleteCallback;
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 typedef base::OnceCallback<void(const spellcheck::PerLanguageSuggestions&)>
     GetSuggestionsCallback;
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 typedef base::OnceCallback<void(const std::vector<std::string>& /* results */)>
     RetrieveSpellcheckLanguagesCompleteCallback;
@@ -134,14 +135,14 @@ void RequestTextCheck(PlatformSpellChecker* spell_checker_instance,
                       const std::u16string& text,
                       TextCheckCompleteCallback callback);
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 // Finds the replacement suggestions for each language for the given word.
 void GetPerLanguageSuggestions(PlatformSpellChecker* spell_checker_instance,
                                const std::u16string& word,
                                GetSuggestionsCallback callback);
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Records statistics about spell check support for the user's Chrome locales.
 void RecordChromeLocalesStats(PlatformSpellChecker* spell_checker_instance,
                               const std::vector<std::string> chrome_locales,
@@ -153,7 +154,7 @@ void RecordSpellcheckLocalesStats(
     PlatformSpellChecker* spell_checker_instance,
     const std::vector<std::string> spellcheck_locales,
     SpellCheckHostMetrics* metrics);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Internal state, to restore system state after testing.
 // Not public since it contains Cocoa data types.
@@ -165,7 +166,7 @@ class ScopedEnglishLanguageForTest {
   ScopedEnglishLanguageForTest();
   ~ScopedEnglishLanguageForTest();
  private:
-  SpellcheckerStateInternal* state_;
+  raw_ptr<SpellcheckerStateInternal> state_;
 };
 
 }  // namespace spellcheck_platform

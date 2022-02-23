@@ -145,4 +145,10 @@ void WebViewTrustedVaultClient::AddTrustedRecoveryMethod(
   NOTREACHED();
 }
 
+void WebViewTrustedVaultClient::ClearDataForAccount(
+    const CoreAccountInfo& account_info) {
+  // TODO(crbug.com/1273080): decide whether this logic needs to be implemented
+  // on iOS.
+}
+
 }  // namespace ios_web_view

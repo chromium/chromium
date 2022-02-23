@@ -34,7 +34,9 @@ import org.chromium.chrome.browser.autofill_assistant.AutofillAssistantFacade;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider;
 import org.chromium.chrome.browser.browserservices.intents.BrowserServicesIntentDataProvider.CustomTabsUiType;
 import org.chromium.chrome.browser.customtabs.content.CustomTabActivityTabProvider;
+import org.chromium.chrome.browser.customtabs.dependency_injection.BaseCustomTabActivityComponent;
 import org.chromium.chrome.browser.customtabs.features.CustomTabNavigationBarController;
+import org.chromium.chrome.browser.dependency_injection.ChromeActivityCommonsModule;
 import org.chromium.chrome.browser.firstrun.FirstRunSignInProcessor;
 import org.chromium.chrome.browser.flags.AllCachedFieldTrialParameters;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -42,8 +44,8 @@ import org.chromium.chrome.browser.fonts.FontPreloader;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.night_mode.NightModeStateProvider;
 import org.chromium.chrome.browser.page_info.ChromePageInfo;
+import org.chromium.chrome.browser.page_info.ChromePageInfoHighlight;
 import org.chromium.chrome.browser.tab.Tab;
-import org.chromium.components.page_info.PageInfoController;
 import org.chromium.components.page_info.PageInfoController.OpenedFromSource;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
@@ -63,6 +65,8 @@ public class CustomTabActivity extends BaseCustomTabActivity {
     public static final AllCachedFieldTrialParameters EXPERIMENTS_FOR_AGSA_PARAMS =
             new AllCachedFieldTrialParameters(ChromeFeatureList.EXPERIMENTS_FOR_AGSA);
 
+    private CustomTabsOpenTimeRecorder mOpenTimeRecorder;
+
     private CustomTabActivityTabProvider.Observer mTabChangeObserver =
             new CustomTabActivityTabProvider.Observer() {
         @Override
@@ -80,6 +84,15 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             resetPostMessageHandlersForCurrentSession();
         }
     };
+
+    @Override
+    protected BaseCustomTabActivityComponent createComponent(
+            ChromeActivityCommonsModule commonsModule) {
+        BaseCustomTabActivityComponent component = super.createComponent(commonsModule);
+        mOpenTimeRecorder = new CustomTabsOpenTimeRecorder(
+                getLifecycleDispatcher(), mNavigationController, this::isFinishing);
+        return component;
+    }
 
     @Override
     protected Drawable getBackgroundDrawable() {
@@ -158,6 +171,18 @@ public class CustomTabActivity extends BaseCustomTabActivity {
         }
     }
 
+    @Override
+    protected void handleFinishAndClose() {
+        mOpenTimeRecorder.updateCloseCause();
+        super.handleFinishAndClose();
+    }
+
+    @Override
+    protected void onUserLeaveHint() {
+        mOpenTimeRecorder.onUserLeaveHint();
+        super.onUserLeaveHint();
+    }
+
     private void resetPostMessageHandlersForCurrentSession() {
         Tab tab = mTabProvider.getTab();
         WebContents webContents = tab == null ? null : tab.getWebContents();
@@ -173,7 +198,10 @@ public class CustomTabActivity extends BaseCustomTabActivity {
 
     @Override
     public String getPackageName() {
-        if (mShouldOverridePackage) return mIntentDataProvider.getClientPackageName();
+        if (mShouldOverridePackage && mIntentDataProvider instanceof CustomTabIntentDataProvider) {
+            return ((CustomTabIntentDataProvider) mIntentDataProvider)
+                    .getInsecureClientPackageNameForOnFinishAnimation();
+        }
         return super.getPackageName();
     }
 
@@ -213,8 +241,7 @@ public class CustomTabActivity extends BaseCustomTabActivity {
             String publisher = getToolbarManager().getContentPublisher();
             new ChromePageInfo(getModalDialogManagerSupplier(), publisher, OpenedFromSource.MENU,
                     () -> mRootUiCoordinator.getMerchantTrustSignalsCoordinatorSupplier().get())
-                    .show(tab, PageInfoController.NO_HIGHLIGHTED_PERMISSION,
-                            /*fromStoreIcon=*/false);
+                    .show(tab, ChromePageInfoHighlight.noHighlight());
             return true;
         }
         return super.onMenuOrKeyboardAction(id, fromMenu);

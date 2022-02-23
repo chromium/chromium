@@ -92,6 +92,10 @@ void AppListItem::SetNotificationBadgeColor(const SkColor color) {
   }
 }
 
+void AppListItem::SetIconColor(const IconColor color) {
+  metadata_->icon_color = color;
+}
+
 void AppListItem::AddObserver(AppListItemObserver* observer) {
   observers_.AddObserver(observer);
 }
@@ -106,6 +110,10 @@ const char* AppListItem::GetItemType() const {
 }
 
 AppListItem* AppListItem::FindChildItem(const std::string& id) {
+  return nullptr;
+}
+
+AppListItem* AppListItem::GetChildItemAt(size_t index) {
   return nullptr;
 }
 
@@ -153,4 +161,13 @@ void AppListItem::UpdateNotificationBadge(bool has_badge) {
   }
 }
 
+void AppListItem::SetIsNewInstall(bool is_new_install) {
+  if (metadata_->is_new_install == is_new_install)
+    return;
+
+  metadata_->is_new_install = is_new_install;
+  for (auto& observer : observers_) {
+    observer.ItemIsNewInstallChanged();
+  }
+}
 }  // namespace ash

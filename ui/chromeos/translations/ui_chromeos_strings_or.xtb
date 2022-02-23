@@ -21,6 +21,7 @@
 <translation id="115443833402798225">ହଂଗୁଲ୍ Ahnmatae</translation>
 <translation id="1155759005174418845">କାଟାଲାନ୍</translation>
 <translation id="1168100932582989117">Google ନାମ ସର୍ଭର୍</translation>
+<translation id="1171082344678443012">XZରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="1172970565351728681">ପ୍ରାୟ <ph name="REMAINING_TIME" /> ସମୟ ବାକି ଅଛି</translation>
 <translation id="1173894706177603556">ରିନେମ୍ କରନ୍ତୁ</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, ସିଗ୍‍ନାଲ୍‍ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଫୋନ୍‌ ବ୍ୟାଟେରୀ <ph name="BATTERY_STATUS" />%, ବିବରଣୀ</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">କୌଣସି ଡ୍ରାଇଭ୍‍କୁ ଡିଲିଟ୍ କରିବା ଦ୍ୱାରା ଏଥିରେ ଷ୍ଟୋର୍ କରାଯାଇଥିବା ସମସ୍ତ ଡାଟା ଡିଲିଟ୍ ହୋଇଯିବ। ଏହି କାର୍ଯ୍ୟକୁ ପୂର୍ବବତ୍ କରାଯାଇପାରିବ ନାହିଁ।</translation>
 <translation id="2025955442973426285">ଟାଇଗ୍ରିନ୍ୟା</translation>
 <translation id="2028997212275086731">ରାର୍‌ ଆର୍କାଇଭ୍‌</translation>
+<translation id="2036414735548252477">LZMAରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="2037845485764049925">ଋଷୀୟ</translation>
 <translation id="2044023416777079300">ମୋଡେମ୍ ପଞ୍ଜିକୃତ ହୋଇନାହିଁ</translation>
 <translation id="2046702855113914483">ରାମେନ୍</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS ହୋଷ୍ଟ୍</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
 <translation id="3113153474486991170">ଏହି ଲୋକେସନରୁ "<ph name="PATH" />"କୁ ଖୋଲା ଯାଇପାରିଲା ନାହିଁ। ଖୋଲିବା ପାଇଁ ଦୟାକରି ଏହାକୁ "ମୋ ଫାଇଲଗୁଡ଼ିକ"ରେ କପି କରନ୍ତୁ।</translation>
 <translation id="3113592018909187986">ଆପଣଙ୍କ ପାଖରେ 1ଟି ପ୍ରଚେଷ୍ଟା ବାକି ଅଛି। ଆପଣ ଏକ ନୂଆ PIN ସେଟ୍ ଅପ୍ ନକରିବା ପର୍ଯ୍ୟନ୍ତ ଏହି ନେଟୱାର୍କକୁ ବ୍ୟବହାର କରିବା ପାଇଁ ସକ୍ଷମ ହେବେ ନାହିଁ।</translation>
 <translation id="3124404833828281817">ଦିନରେ ସ୍ୱପ୍ନ ଦେଖୁଥିବା ଜଣେ ବ୍ୟକ୍ତି</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">ଆନ୍ତର୍ଜାତୀୟ PC କୀବୋର୍ଡ ସହ ଇଂରାଜୀ (US)</translation>
 <translation id="3567221313191587603">ଏକ ଫାଇଲ୍ ଚୟନ କରନ୍ତୁ ଏବଂ ଆପଣଙ୍କ ଫାଇଲଗୁଡ଼ିକୁ ଅଫଲାଇନରେ ଆକ୍ସେସ୍ କରିବା ପାଇଁ <ph name="OFFLINE_CHECKBOX_NAME" />ର ଟୋଗଲ୍ ଚାଲୁ କରନ୍ତୁ।</translation>
 <translation id="357479282490346887">ଲିଥୁଆନିଆନ୍</translation>
+<translation id="3587482841069643663">ସମସ୍ତ</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" />କୁ ଅଫଲାଇନରେ ଉପଲବ୍ଧ କରାଯାଇପାରିଲା ନାହିଁ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">କାନାଡିଆନ୍ ଫ୍ରେଞ୍ଚ୍</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">ସମସ୍ତ ବ୍ୟାକ୍‍ଅପ୍‍ ନିଆଯାଇଛି!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" /> ଆପଣଙ୍କ ଆଡ୍‍ମିନିଷ୍ଟ୍ରେଟର୍‌ଙ୍କ ଦ୍ୱାରା ପରିଚାଳିତ, ବିବରଣୀ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" />ଟି ଆଇଟମ୍ ମୁଭ୍ କରାଯାଇଛି।</translation>
-<translation id="3645531960514756307">ଫୋଲ୍ଡର୍ ଅନ୍‌ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="3685122418104378273">ମୋବାଇଲ୍ ଡାଟା ବ୍ୟବହାର କରିବା ସମୟରେ Google ଡ୍ରାଇଭ୍ ସିଙ୍କ ଡିଫଲ୍ଟ ରୂପେ ଅକ୍ଷମ କରାଯାଇଛି।</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ବାତିଲ୍ କରନ୍ତୁ।</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" />ର <ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କକୁ ନିଷ୍କ୍ରିୟ କରାଯାଇଛି, <ph name="CONNECTION_STATUS" />, ସିଗନାଲର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ବିବରଣୀ</translation>
 <translation id="3691184985318546178">ସିଂହଳ</translation>
 <translation id="3726463242007121105">ଏହି ଡିଭାଇସ୍‌ ଖୋଲାଯାଇପାରିବ ନାହିଁ କାରଣ ଏହାର ଫାଇଲ୍‌ସିଷ୍ଟମ୍‌ ସମର୍ଥିତ ନୁହେଁ।</translation>
 <translation id="3727148787322499904">ଏହି ସେଟିଂସ୍‍‍ରେ ପରିବର୍ତ୍ତନ କରିବା ଦ୍ୱାରା ସମସ୍ତ ସେୟାର୍‍ କରାଯାଇଥିବା ନେଟ୍‍ୱର୍କ ପ୍ରଭାବିତ ହେବ</translation>
+<translation id="3737576078404241332">ସାଇଡବାରରୁ କାଢ଼ି ଦିଅନ୍ତୁ</translation>
 <translation id="3741243925913727067">Google ଡ୍ରାଇଭ୍‌ରେ ଆପଣଙ୍କର ମିଡିଆ ଡିଭାଇସ୍‍ର ଫଟୋ ଓ ଭିଡିଓର ବ୍ୟାକ୍ ଅପ୍ ନିଅନ୍ତୁ।</translation>
 <translation id="3749289110408117711">ଫାଇଲ୍ ନାମ</translation>
 <translation id="3780536599611287598">ଫାଇଲ୍‌ଗୁଡ଼ିକୁ '<ph name="FOLDER_NAME" />'କୁ ନେବା ପାଇଁ ଆପଣଙ୍କ ପାଖରେ ଅନୁମତି ନାହିଁ।</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">ବଟାନିଷ୍ଟ</translation>
 <translation id="4326192123064055915">କଫି</translation>
 <translation id="4336032328163998280">କପି କରିବା କାର୍ଯ୍ୟ ବିଫଳ ହେଲା।<ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">ସାଇଡବାରରେ ଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4348495354623233847">ସୋରାନୀ କୁର୍ଦ୍ଦିଶ୍ ଆରବିକ୍-ଆଧାରିତ କୀବୋର୍ଡ</translation>
 <translation id="4363958938297989186">ଫୋନେଟିକ୍ କୀବୋର୍ଡ ସହ ଋଷୀୟ</translation>
 <translation id="4364327530094270451">ମେଲୋନ୍</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ବାଇଟ୍</translation>
 <translation id="4880214202172289027">ଭଲ୍ୟୁମ୍‍ ସ୍ଲାଇଡର୍‍</translation>
 <translation id="4881695831933465202">ଖୋଲନ୍ତୁ</translation>
+<translation id="4886199584824489598">Bzip2ରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="4900532980794411603">Parallels Desktop ସହ ସେୟାର୍ କରନ୍ତୁ</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" />ଟିର <ph name="NETWORK_INDEX" /> ନେଟ୍‌ୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗ୍‌ନାଲ୍‌ର କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ସଂଯୋଗ କରନ୍ତୁ</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />ର ବ୍ୟାକ୍‌ଅପ୍ ନେବାକୁ ପ୍ରସ୍ତୁତ ଅଛି</translation>
@@ -578,6 +584,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ନେଟ୍‍ୱାର୍କ, ସଂଯୁକ୍ତ ହୋଇନାହିଁ</translation>
 <translation id="6074825444536523002">Google ଫର୍ମ</translation>
 <translation id="6079871810119356840">Qwerty କୀବୋର୍ଡ ସହ ହଙ୍ଗେରୀୟ</translation>
+<translation id="6082256976217156453">LZMAରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="6096979789310008754">ସନ୍ଧାନ ଟେକ୍ସଟ୍ ଖାଲି ହୋଇଛି, ସମସ୍ତ ଫାଇଲ୍ ଏବଂ ଫୋଲ୍ଡର୍ ଦେଖାଉଛି।</translation>
 <translation id="610101264611565198"><ph name="FOLDER_NAME" />କୁ <ph name="FILE_NAME" /> ମୁଭ୍ କରାଯାଉଛି</translation>
 <translation id="6129953537138746214">ସ୍ପେସ୍</translation>
@@ -673,6 +680,7 @@
 <translation id="6935521024859866267">ଓଲଟା</translation>
 <translation id="6943836128787782965">HTTP ବିଫଳ ହୋଇଛି</translation>
 <translation id="6949408524333579394">ସର୍ବିଆନ୍ ଟ୍ରାନ୍ସଲିଟ୍ରେସନ୍</translation>
+<translation id="6954309393500027528">ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ଏହି ଫାଇଲକୁ ପେଷ୍ଟ କରିବା ସୁବିଧାକୁ ବ୍ଲକ କରାଯାଇଛି</translation>
 <translation id="6960565108681981554">ସକ୍ରିୟ କରାଯାଇନାହିଁ। ଆପଣଙ୍କ କ୍ୟାରିଅର୍ ସହ ଯୋଗାଯୋଗ କରନ୍ତୁ।</translation>
 <translation id="696203921837389374">ମୋବାଇଲ୍ ଡାଟା ଜରିଆରେ ସିଙ୍କ୍ ପ୍ରକ୍ରିୟା ସକ୍ଷମ କରନ୍ତୁ</translation>
 <translation id="6965382102122355670">ଓକେ ବଟନ୍</translation>
@@ -833,6 +841,7 @@
 <translation id="8297012244086013755">ହଂଗୁଲ୍ 3 ସେଟ୍ (କୌଣସି ସିଫ୍ଟ ନାହିଁ)</translation>
 <translation id="8299269255470343364">ଜାପାନୀ</translation>
 <translation id="8300849813060516376">OTASP ବିଫଳ ହେଲା</translation>
+<translation id="8308481408797647857">XZରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା tar ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="8312871300878166382">ଫୋଲ୍ଡର୍‌ରେ ପେଷ୍ଟ କରନ୍ତୁ</translation>
 <translation id="8329978297633540474">କେବଳ ଟେକ୍ସଟ୍</translation>
 <translation id="8335587457941836791">ସେଲ୍ଫରୁ ଅନପିନ୍ କରନ୍ତୁ</translation>
@@ -869,6 +878,7 @@
 <translation id="8551494947769799688">ଲାଟଭିଆନ୍</translation>
 <translation id="8560515948038859357">କାଣ୍ଟୋନିଜ୍</translation>
 <translation id="8561206103590473338">ହାତୀ</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_COUNT" />ଟିରୁ <ph name="NETWORK_INDEX" /> ନମ୍ବର ନେଟୱାର୍କ, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, ସିଗନାଲ କ୍ଷମତା <ph name="SIGNAL_STRENGTH" />%, ଆପଣଙ୍କ ଆଡମିନିଷ୍ଟ୍ରେଟରଙ୍କ ଦ୍ୱାରା ବ୍ଲକ କରାଯାଇଛି, ବିବରଣୀ</translation>
 <translation id="8569764466147087991">ଖୋଲିବାକୁ ଏକ ଫାଇଲ୍‌ ଚୟନ କରନ୍ତୁ</translation>
 <translation id="8577897833047451336">କ୍ରୋଏସୀୟ</translation>
 <translation id="8578308463707544055">ଇନ୍ଦୋନେସୀୟ</translation>
@@ -921,7 +931,6 @@
 <translation id="9110990317705400362">ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌କୁ ସୁରକ୍ଷିତ କରିବାକୁ ଆମେ ନିରିବିଚ୍ଛିନ୍ନ ଭାବରେ ଉପାୟ ଖୋଜୁଛୁ। ପୂର୍ବରୁ, ଯେକୌଣସି ୱେବ୍‌ସାଇଟ୍‍ ଆପଣଙ୍କର ବ୍ରାଉଜର୍‌ରେ ଗୋଟିଏ ଏକ୍ସଟେନ୍‌ସନ୍‌ ଯୋଗ କରିବାକୁ ଆପଣଙ୍କୁ ସଙ୍କେତ ଦେଇଥିଲା। Google Chromeର ନବୀନତମ ସଂସ୍କରଣରେ, ଆପଣଙ୍କୁ ଏକ୍ସଟେନ୍‍ସନ୍‍ ପୃଷ୍ଠା ମାଧ୍ୟମରେ ଏହି ଏକ୍ସଟେନ୍‍ସନ୍‌କୁ ଯୋଗ କରି Chromeକୁ ସ୍ପଷ୍ଟ ଭାବରେ କହିବାକୁ ପଡ଼ିବ ଯେ ଆପଣ ଏହି ଏକ୍ସଟେନ୍‌ସନ୍‌‍ଗୁଡ଼ିକୁ ଇନ୍‍ଷ୍ଟଲ୍‍ କରିବାକୁ ଚାହୁଁଛନ୍ତି। <ph name="BEGIN_LINK" />ଅଧିକ ଜାଣନ୍ତୁ<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ଅନ୍‌ଲକ୍ କରନ୍ତୁ</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">ଫୋଲ୍ଡର୍ ପିନ୍ କରନ୍ତୁ</translation>
 <translation id="9130775360844693113"><ph name="DESTINATION_NAME" />ର ସଦସ୍ୟମାନେ ଏହି ଆଇଟମ୍‍ଗୁଡ଼ିକୁ ଆକ୍ସେସ୍ କରିପାରିବେ।</translation>
 <translation id="9131598836763251128">ଏକ କିମ୍ବା ଏକାଧିକ ଫାଇଲ୍‌ ଚିହ୍ନଟ କରନ୍ତୁ</translation>
 <translation id="9133055936679483811">ଜିପ୍ କରିବା ବିଫଳ ହୋଇଛି। <ph name="ERROR_MESSAGE" /></translation>
@@ -942,6 +951,7 @@
 <translation id="943972244133411984">ଏହାଙ୍କ ଦ୍ୱାରା ସଂଶୋଧନ କରାଗଲା</translation>
 <translation id="945522503751344254">ମତାମତ ପଠାନ୍ତୁ</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ରୁ <ph name="TO_ENTRY_NAME" /> ମଧ୍ୟରେ <ph name="ENTRY_COUNT" />ଟି ଫାଇଲ୍‌ର ଏକ ପରିସର ବଛାଯାଇଛି।</translation>
+<translation id="961973045258256291">Gzipରେ କମ୍ପ୍ରେସ କରାଯାଇଥିବା ଆର୍କାଇଭ ଫାଇଲ</translation>
 <translation id="965477715979482472">ଇଂରାଜୀ (ଦକ୍ଷିଣ ଆଫ୍ରିକା)</translation>
 <translation id="981121421437150478">ଅଫ୍‍ଲାଇନ୍</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" ନାମକ ଗୋଟିଏ ଫାଇଲ୍ ପୂର୍ବରୁ ବିଦ୍ୟମାନ ଅଛି। ଆପଣ ଏହାକୁ ପ୍ରତିସ୍ଥାପନ କରିବାକୁ ଚାହାନ୍ତି କି?</translation>

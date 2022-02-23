@@ -6,7 +6,17 @@
 
 #include <ostream>
 
+#include "base/notreached.h"
+
 namespace content {
+
+namespace {
+
+constexpr char kComparisonErrorMessage[] =
+    "You are comparing optional WebExposedIsolationInfo objects using "
+    "operator==, use WebExposedIsolationInfo::AreCompatible() instead.";
+
+}  // namespace
 
 // static
 WebExposedIsolationInfo WebExposedIsolationInfo::CreateNonIsolated() {
@@ -22,6 +32,33 @@ WebExposedIsolationInfo WebExposedIsolationInfo::CreateIsolated(
 WebExposedIsolationInfo WebExposedIsolationInfo::CreateIsolatedApplication(
     const url::Origin& origin) {
   return WebExposedIsolationInfo(origin, true /* isolated_application */);
+}
+
+bool WebExposedIsolationInfo::AreCompatible(const WebExposedIsolationInfo& a,
+                                            const WebExposedIsolationInfo& b) {
+  return a == b;
+}
+
+bool WebExposedIsolationInfo::AreCompatible(
+    const absl::optional<WebExposedIsolationInfo>& a,
+    const WebExposedIsolationInfo& b) {
+  if (!a.has_value())
+    return true;
+  return AreCompatible(a.value(), b);
+}
+
+bool WebExposedIsolationInfo::AreCompatible(
+    const WebExposedIsolationInfo& a,
+    const absl::optional<WebExposedIsolationInfo>& b) {
+  return AreCompatible(b, a);
+}
+
+bool WebExposedIsolationInfo::AreCompatible(
+    const absl::optional<WebExposedIsolationInfo>& a,
+    const absl::optional<WebExposedIsolationInfo>& b) {
+  if (!a.has_value() || !b.has_value())
+    return true;
+  return AreCompatible(a.value(), b.value());
 }
 
 WebExposedIsolationInfo::WebExposedIsolationInfo(
@@ -91,4 +128,41 @@ std::ostream& operator<<(std::ostream& out,
   out << "}";
   return out;
 }
+
+bool operator==(const absl::optional<WebExposedIsolationInfo>& a,
+                const absl::optional<WebExposedIsolationInfo>& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
+bool operator==(const WebExposedIsolationInfo& a,
+                const absl::optional<WebExposedIsolationInfo>& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
+bool operator==(const absl::optional<WebExposedIsolationInfo>& a,
+                const WebExposedIsolationInfo& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
+bool operator!=(const absl::optional<WebExposedIsolationInfo>& a,
+                const absl::optional<WebExposedIsolationInfo>& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
+bool operator!=(const WebExposedIsolationInfo& a,
+                const absl::optional<WebExposedIsolationInfo>& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
+bool operator!=(const absl::optional<WebExposedIsolationInfo>& a,
+                const WebExposedIsolationInfo& b) {
+  NOTREACHED() << kComparisonErrorMessage;
+  return false;
+}
+
 }  // namespace content

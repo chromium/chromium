@@ -1,0 +1,655 @@
+diff --git a/galois_key.h b/galois_key.h
+index 0b73a63eff4d0..e6295f1082748 100644
+--- a/galois_key.h
++++ b/galois_key.h
+@@ -23,6 +23,8 @@
+ #include "relinearization_key.h"
+ #include "status_macros.h"
+ #include "statusor.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
++#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+ 
+ namespace rlwe {
+ 
+@@ -41,7 +43,7 @@ namespace rlwe {
+ //
+ // Details can be found in Appendix D.2 of https://eprint.iacr.org/2011/566.pdf
+ template <typename ModularInt>
+-class GaloisKey {
++class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) GaloisKey {
+  public:
+   // Initializes a GaloisKey based on a SymmetricRlweKey key that can key-switch
+   // two component ciphertexts. A positive log_decomposition_modulus corresponds
+@@ -49,7 +51,7 @@ class GaloisKey {
+   // power of x in the secret key polynomial s(x^substitution_power) that the
+   // ciphertext is encrypted with. The prng_seed is used to generate and encode
+   // the bottom row of the matrix, which consists of random entries.
+-  static rlwe::StatusOr<GaloisKey> Create(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<GaloisKey> Create(
+       const SymmetricRlweKey<ModularInt>& key, absl::string_view prng_seed,
+       Uint64 substitution_power, Uint64 log_decomposition_modulus) {
+     RLWE_ASSIGN_OR_RETURN(auto relinearization_key,
+@@ -88,7 +90,7 @@ class GaloisKey {
+   // SerializedGaloisKey is (2 * num_parts * dimension) where dimension is the
+   // number of digits needed to represent the modulus in base
+   // 2^{log_decomposition_modulus}. Crashes for non-valid input parameters.
+-  static rlwe::StatusOr<GaloisKey> Deserialize(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<GaloisKey> Deserialize(
+       const SerializedGaloisKey& serialized,
+       const typename ModularInt::Params* modulus_params,
+       const NttParameters<ModularInt>* ntt_params) {
+@@ -110,6 +112,14 @@ class GaloisKey {
+   RelinearizationKey<ModularInt> relinearization_key_;
+ };
+ 
++template class EXPORT_TEMPLATE_DECLARE(
++    SHELL_ENCRYPTION_EXPORT) GaloisKey<rlwe::MontgomeryInt<Uint16>>;
++template class EXPORT_TEMPLATE_DECLARE(
++    SHELL_ENCRYPTION_EXPORT) GaloisKey<rlwe::MontgomeryInt<Uint32>>;
++template class EXPORT_TEMPLATE_DECLARE(
++    SHELL_ENCRYPTION_EXPORT) GaloisKey<rlwe::MontgomeryInt<Uint64>>;
++template class EXPORT_TEMPLATE_DECLARE(
++    SHELL_ENCRYPTION_EXPORT) GaloisKey<rlwe::MontgomeryInt<absl::uint128>>;
+ }  //  namespace rlwe
+ 
+ #endif  // RLWE_GALOIS_KEY_H_
+diff --git a/int256.h b/int256.h
+index 540dce2d765b1..4c464a4978412 100644
+--- a/int256.h
++++ b/int256.h
+@@ -18,13 +18,15 @@
+ 
+ #include "absl/numeric/int128.h"
+ #include "integral_types.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
++#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+ 
+ namespace rlwe {
+ 
+ struct uint256_pod;
+ 
+ // An unsigned 256-bit integer type. Thread-compatible.
+-class uint256 {
++class SHELL_ENCRYPTION_EXPORT uint256 {
+  public:
+   constexpr uint256();
+   constexpr uint256(absl::uint128 top, absl::uint128 bottom);
+@@ -74,11 +76,11 @@ class uint256 {
+   uint256& operator-=(const uint256& b);
+   uint256& operator*=(const uint256& b);
+   // Long division/modulo for uint256.
+-  uint256& operator/=(const uint256& b);
+-  uint256& operator%=(const uint256& b);
++  SHELL_ENCRYPTION_EXPORT uint256& operator/=(const uint256& b);
++  SHELL_ENCRYPTION_EXPORT uint256& operator%=(const uint256& b);
+   uint256 operator++(int);
+   uint256 operator--(int);
+-  uint256& operator<<=(int);
++  SHELL_ENCRYPTION_EXPORT uint256& operator<<=(int);
+   uint256& operator>>=(int);
+   uint256& operator&=(const uint256& b);
+   uint256& operator|=(const uint256& b);
+@@ -90,7 +92,7 @@ class uint256 {
+   friend absl::uint128 Uint256High128(const uint256& v);
+ 
+   // We add "std::" to avoid including all of port.h.
+-  friend std::ostream& operator<<(std::ostream& o, const uint256& b);
++  friend SHELL_ENCRYPTION_EXPORT std::ostream& operator<<(std::ostream& o, const uint256& b);
+ 
+  private:
+   static void DivModImpl(uint256 dividend, uint256 divisor,
+@@ -121,7 +123,7 @@ constexpr uint256 Uint256Max() {
+ 
+ // This is a POD form of uint256 which can be used for static variables which
+ // need to be operated on as uint256.
+-struct uint256_pod {
++struct SHELL_ENCRYPTION_EXPORT uint256_pod {
+   // Note: The ordering of fields is different than 'class uint256' but the
+   // same as its 2-arg constructor.  This enables more obvious initialization
+   // of static instances, which is the primary reason for this struct in the
+diff --git a/montgomery.cc b/montgomery.cc
+index 9fbc5dabee18c..4bd03362420fc 100644
+--- a/montgomery.cc
++++ b/montgomery.cc
+@@ -14,6 +14,8 @@
+ 
+ #include "montgomery.h"
+ 
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
++#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+ #include "transcription.h"
+ 
+ namespace rlwe {
+@@ -416,12 +418,12 @@ MontgomeryInt<T> MontgomeryInt<T>::MultiplicativeInverse(
+ 
+ // Instantiations of MontgomeryInt and MontgomeryIntParams with specific
+ // integral types.
+-template struct MontgomeryIntParams<Uint16>;
+-template struct MontgomeryIntParams<Uint32>;
+-template struct MontgomeryIntParams<Uint64>;
+-template struct MontgomeryIntParams<absl::uint128>;
+-template class MontgomeryInt<Uint16>;
+-template class MontgomeryInt<Uint32>;
+-template class MontgomeryInt<Uint64>;
+-template class MontgomeryInt<absl::uint128>;
++template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint16>;
++template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint32>;
++template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint64>;
++template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<absl::uint128>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint16>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint32>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint64>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<absl::uint128>;
+ }  // namespace rlwe
+diff --git a/montgomery.h b/montgomery.h
+index 4f0e2eafb815f..c3988ff34da34 100644
+--- a/montgomery.h
++++ b/montgomery.h
+@@ -34,6 +34,8 @@
+ #include "serialization.pb.h"
+ #include "status_macros.h"
+ #include "statusor.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
++#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+ 
+ namespace rlwe {
+ 
+@@ -43,24 +45,24 @@ namespace internal {
+ template <typename T>
+ struct BigInt;
+ // Specialization for uint8, uint16, uint32, uint64, and uint128.
+-template <>
+-struct BigInt<Uint8> {
++template <> 
++struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint8> {
+   typedef Uint16 value_type;
+ };
+-template <>
+-struct BigInt<Uint16> {
++template <> 
++struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint16> {
+   typedef Uint32 value_type;
+ };
+-template <>
+-struct BigInt<Uint32> {
++template <> 
++struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint32> {
+   typedef Uint64 value_type;
+ };
+-template <>
+-struct BigInt<Uint64> {
++template <> 
++struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<Uint64> {
+   typedef absl::uint128 value_type;
+ };
+-template <>
+-struct BigInt<absl::uint128> {
++template <> 
++struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) BigInt<absl::uint128> {
+   typedef uint256 value_type;
+ };
+ 
+@@ -69,7 +71,7 @@ struct BigInt<absl::uint128> {
+ // The parameters necessary for a Montgomery integer. Note that the template
+ // parameters ensure that T is an unsigned integral of at least 8 bits.
+ template <typename T>
+-struct MontgomeryIntParams {
++struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams{
+   // Expose Int and its greater type. BigInt is required in order to multiply
+   // two Int and ensure that no overflow occurs.
+   //
+@@ -159,7 +161,7 @@ struct MontgomeryIntParams {
+   // modulus must be odd.
+   // Returns a tuple of (inv_r, inv_modulus) such that:
+   //     r * inv_r - modulus * inv_modulus = 1
+-  static std::tuple<Int, Int> Inverses(BigInt modulus_bigint, BigInt r);
++  static SHELL_ENCRYPTION_EXPORT std::tuple<Int, Int> Inverses(BigInt modulus_bigint, BigInt r);
+ };
+ 
+ // Stores an integer in Montgomery representation. The goal of this
+@@ -170,7 +172,7 @@ struct MontgomeryIntParams {
+ // The underlying integer type T must be unsigned and must not be bool.
+ // This class is thread safe.
+ template <typename T>
+-class ABSL_MUST_USE_RESULT MontgomeryInt {
++class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) ABSL_MUST_USE_RESULT MontgomeryInt {
+  public:
+   // Expose Int and its greater type. BigInt is required in order to multiply
+   // two Int and ensure that no overflow occurs. This should also be used by
+@@ -184,16 +186,16 @@ class ABSL_MUST_USE_RESULT MontgomeryInt {
+   // Static factory that converts a non-Montgomery representation integer, the
+   // underlying integer type, into a Montgomery representation integer. Does not
+   // take ownership of params. i.e., import "a".
+-  static rlwe::StatusOr<MontgomeryInt> ImportInt(Int n, const Params* params);
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<MontgomeryInt> ImportInt(Int n, const Params* params);
+ 
+   // Static functions to create a MontgomeryInt of 0 and 1.
+-  static MontgomeryInt ImportZero(const Params* params);
+-  static MontgomeryInt ImportOne(const Params* params);
++  static SHELL_ENCRYPTION_EXPORT MontgomeryInt ImportZero(const Params* params);
++  static SHELL_ENCRYPTION_EXPORT MontgomeryInt ImportOne(const Params* params);
+ 
+   // Import a random integer using entropy from specified prng. Does not take
+   // ownership of params or prng.
+   template <typename Prng = rlwe::SecurePrng>
+-  static rlwe::StatusOr<MontgomeryInt> ImportRandom(Prng* prng,
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<MontgomeryInt> ImportRandom(Prng* prng,
+                                                     const Params* params) {
+     // In order to generate unbiased randomness, we uniformly and randomly
+     // sample integers in [0, 2^params->log_modulus) until the generated integer
+@@ -234,13 +236,13 @@ class ABSL_MUST_USE_RESULT MontgomeryInt {
+ 
+   // Serialization.
+   rlwe::StatusOr<std::string> Serialize(const Params* params) const;
+-  static rlwe::StatusOr<std::string> SerializeVector(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> SerializeVector(
+       const std::vector<MontgomeryInt>& coeffs, const Params* params);
+ 
+   // Deserialization.
+-  static rlwe::StatusOr<MontgomeryInt> Deserialize(absl::string_view payload,
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<MontgomeryInt> Deserialize(absl::string_view payload,
+                                                    const Params* params);
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> DeserializeVector(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> DeserializeVector(
+       int num_coeffs, absl::string_view serialized, const Params* params);
+ 
+   // Modular multiplication.
+@@ -353,7 +355,7 @@ class ABSL_MUST_USE_RESULT MontgomeryInt {
+   // size.
+ 
+   // Batch addition of two vectors.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchAdd(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchAdd(
+       const std::vector<MontgomeryInt>& in1,
+       const std::vector<MontgomeryInt>& in2, const Params* params);
+   static absl::Status BatchAddInPlace(std::vector<MontgomeryInt>* in1,
+@@ -361,7 +363,7 @@ class ABSL_MUST_USE_RESULT MontgomeryInt {
+                                       const Params* params);
+ 
+   // Batch addition of one vector with a scalar.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchAdd(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchAdd(
+       const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+       const Params* params);
+   static absl::Status BatchAddInPlace(std::vector<MontgomeryInt>* in1,
+@@ -369,51 +371,51 @@ class ABSL_MUST_USE_RESULT MontgomeryInt {
+                                       const Params* params);
+ 
+   // Batch subtraction of two vectors.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchSub(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchSub(
+       const std::vector<MontgomeryInt>& in1,
+       const std::vector<MontgomeryInt>& in2, const Params* params);
+-  static absl::Status BatchSubInPlace(std::vector<MontgomeryInt>* in1,
++  static SHELL_ENCRYPTION_EXPORT absl::Status BatchSubInPlace(std::vector<MontgomeryInt>* in1,
+                                       const std::vector<MontgomeryInt>& in2,
+                                       const Params* params);
+ 
+   // Batch subtraction of one vector with a scalar.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchSub(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchSub(
+       const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+       const Params* params);
+-  static absl::Status BatchSubInPlace(std::vector<MontgomeryInt>* in1,
++  static SHELL_ENCRYPTION_EXPORT absl::Status BatchSubInPlace(std::vector<MontgomeryInt>* in1,
+                                       const MontgomeryInt& in2,
+                                       const Params* params);
+ 
+   // Batch multiplication of two vectors.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMul(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMul(
+       const std::vector<MontgomeryInt>& in1,
+       const std::vector<MontgomeryInt>& in2, const Params* params);
+-  static absl::Status BatchMulInPlace(std::vector<MontgomeryInt>* in1,
++  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulInPlace(std::vector<MontgomeryInt>* in1,
+                                       const std::vector<MontgomeryInt>& in2,
+                                       const Params* params);
+ 
+   // Batch multiplication of two vectors, where the second vector is a constant.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMulConstant(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMulConstant(
+       const std::vector<MontgomeryInt>& in1,
+       const std::vector<Int>& in2_constant,
+       const std::vector<Int>& in2_constant_barrett, const Params* params);
+-  static absl::Status BatchMulConstantInPlace(
++  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulConstantInPlace(
+       std::vector<MontgomeryInt>* in1, const std::vector<Int>& in2_constant,
+       const std::vector<Int>& in2_constant_barrett, const Params* params);
+ 
+   // Batch multiplication of a vector with a scalar.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMul(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMul(
+       const std::vector<MontgomeryInt>& in1, const MontgomeryInt& in2,
+       const Params* params);
+-  static absl::Status BatchMulInPlace(std::vector<MontgomeryInt>* in1,
++  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulInPlace(std::vector<MontgomeryInt>* in1,
+                                       const MontgomeryInt& in2,
+                                       const Params* params);
+ 
+   // Batch multiplication of a vector with a constant scalar.
+-  static rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMulConstant(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::vector<MontgomeryInt>> BatchMulConstant(
+       const std::vector<MontgomeryInt>& in1, const Int& constant,
+       const Int& constant_barrett, const Params* params);
+-  static absl::Status BatchMulConstantInPlace(std::vector<MontgomeryInt>* in1,
++  static SHELL_ENCRYPTION_EXPORT absl::Status BatchMulConstantInPlace(std::vector<MontgomeryInt>* in1,
+                                               const Int& constant,
+                                               const Int& constant_barrett,
+                                               const Params* params);
+@@ -423,14 +425,14 @@ class ABSL_MUST_USE_RESULT MontgomeryInt {
+   bool operator!=(const MontgomeryInt& that) const { return !(*this == that); }
+ 
+   // Modular exponentiation.
+-  MontgomeryInt ModExp(Int exponent, const Params* params) const;
++  SHELL_ENCRYPTION_EXPORT MontgomeryInt ModExp(Int exponent, const Params* params) const;
+ 
+   // Inverse.
+-  MontgomeryInt MultiplicativeInverse(const Params* params) const;
++  SHELL_ENCRYPTION_EXPORT  MontgomeryInt MultiplicativeInverse(const Params* params) const;
+ 
+  private:
+   template <typename Prng = rlwe::SecurePrng>
+-  static rlwe::StatusOr<Int> GenerateRandomInt(int log_modulus, Prng* prng) {
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Int> GenerateRandomInt(int log_modulus, Prng* prng) {
+     // Generate a random Int. As the modulus is always smaller than max(Int),
+     // there will be no issues with overflow.
+     int max_bits_per_step = std::min((int)Params::bitsize_int, (int)64);
+@@ -467,6 +469,17 @@ class ABSL_MUST_USE_RESULT MontgomeryInt {
+   Int n_;
+ };
+ 
++// Instantiations of MontgomeryInt and MontgomeryIntParams with specific
++// integral types.
++extern template struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint16>;
++extern template struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint32>;
++extern template struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint64>;
++extern template struct EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<absl::uint128>;
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint16>;
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint32>;
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint64>;
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<absl::uint128>;
++
+ }  // namespace rlwe
+ 
+ #endif  // RLWE_MONTGOMERY_H_
+diff --git a/montgomery_test.cc b/montgomery_test.cc
+index 7caf459a4c08b..2d952ddfbdad4 100644
+--- a/montgomery_test.cc
++++ b/montgomery_test.cc
+@@ -30,6 +30,8 @@
+ #include "testing/status_matchers.h"
+ #include "testing/status_testing.h"
+ #include "testing/testing_prng.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
++#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+ 
+ namespace rlwe {
+ namespace {
+@@ -65,7 +67,7 @@ uint256 GenerateRandom(unsigned int* seed) {
+ }
+ 
+ template <typename T>
+-class MontgomeryTest : public ::testing::Test {};
++class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) MontgomeryTest : public ::testing::Test {};
+ TYPED_TEST_SUITE(MontgomeryTest, testing::ModularIntTypes);
+ 
+ TYPED_TEST(MontgomeryTest, ModulusTooLarge) {
+diff --git a/ntt_parameters.h b/ntt_parameters.h
+index 55671ec5e65de..eba9579ab87ca 100644
+--- a/ntt_parameters.h
++++ b/ntt_parameters.h
+@@ -24,6 +24,7 @@
+ #include "constants.h"
+ #include "status_macros.h"
+ #include "statusor.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
+ 
+ namespace rlwe {
+ namespace internal {
+@@ -94,7 +95,7 @@ rlwe::StatusOr<std::vector<ModularInt>> NttPsis(
+ // Creates a vector containing the indices necessary to perform the NTT bit
+ // reversal operation. Index i of the returned vector contains an integer with
+ // the rightmost log_n bits of i reversed.
+-std::vector<unsigned int> BitrevArray(unsigned int log_n);
++SHELL_ENCRYPTION_EXPORT std::vector<unsigned int> BitrevArray(unsigned int log_n);
+ 
+ // Helper function: Perform the bit-reversal operation in-place on coeffs_.
+ template <typename ModularInt>
+diff --git a/prng/chacha_prng.h b/prng/chacha_prng.h
+index 27940fd82c646..7e4f719fedaf6 100644
+--- a/prng/chacha_prng.h
++++ b/prng/chacha_prng.h
+@@ -26,6 +26,7 @@
+ #include "prng/chacha_prng_util.h"
+ #include "prng/prng.h"
+ #include "statusor.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
+ 
+ namespace rlwe {
+ 
+@@ -56,7 +57,7 @@ class ChaChaPrng : public SecurePrng {
+   // errors.
+   //
+   // Thread safe.
+-  static rlwe::StatusOr<std::unique_ptr<ChaChaPrng>> Create(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::unique_ptr<ChaChaPrng>> Create(
+       absl::string_view in_key);
+ 
+   // Returns 8 bits of randomness.
+@@ -72,12 +73,12 @@ class ChaChaPrng : public SecurePrng {
+   // Generate a valid seed for the Prng.
+   //
+   // Fails on internal cryptographic errors.
+-  static rlwe::StatusOr<std::string> GenerateSeed() {
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> GenerateSeed() {
+     return internal::ChaChaPrngGenerateKey();
+   }
+ 
+   // Output the size of the expected generated seed.
+-  static int SeedLength() { return internal::kChaChaKeyBytesSize; }
++  static SHELL_ENCRYPTION_EXPORT int SeedLength() { return internal::kChaChaKeyBytesSize; }
+ 
+  private:
+   explicit ChaChaPrng(absl::string_view in_key, int position_in_buffer,
+diff --git a/prng/chacha_prng_util.h b/prng/chacha_prng_util.h
+index 8eb8118fe26f9..80f0cedf4a703 100644
+--- a/prng/chacha_prng_util.h
++++ b/prng/chacha_prng_util.h
+@@ -27,6 +27,7 @@
+ #include "absl/strings/string_view.h"
+ #include "integral_types.h"
+ #include "statusor.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
+ 
+ namespace rlwe {
+ namespace internal {
+@@ -37,28 +38,33 @@ const int kChaChaOutputBytes = 255 * 32;
+ 
+ // Once pseudorandom output is exhausted, the salt is updated to construct
+ // new pseudorandom output.
+-absl::Status ChaChaPrngResalt(absl::string_view key, int buffer_size,
+-                              int* salt_counter, int* position_in_buffer,
+-                              std::vector<Uint8>* buffer);
++SHELL_ENCRYPTION_EXPORT absl::Status ChaChaPrngResalt(
++    absl::string_view key,
++    int buffer_size,
++    int* salt_counter,
++    int* position_in_buffer,
++    std::vector<Uint8>* buffer);
+ 
+ // Generates a secure key for instantiating an CHACHA.
+-rlwe::StatusOr<std::string> ChaChaPrngGenerateKey();
++SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::string> ChaChaPrngGenerateKey();
+ 
+ // Returns 8 bits of randomness.
+ //
+ // Fails on internal cryptographic errors.
+-rlwe::StatusOr<Uint8> ChaChaPrngRand8(absl::string_view key,
+-                                      int* position_in_buffer,
+-                                      int* salt_counter,
+-                                      std::vector<Uint8>* buffer);
++SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Uint8> ChaChaPrngRand8(
++    absl::string_view key,
++    int* position_in_buffer,
++    int* salt_counter,
++    std::vector<Uint8>* buffer);
+ 
+ // Returns 64 bits of randomness.
+ //
+ // Fails on internal cryptographic errors.
+-rlwe::StatusOr<Uint64> ChaChaPrngRand64(absl::string_view key,
+-                                        int* position_in_buffer,
+-                                        int* salt_counter,
+-                                        std::vector<Uint8>* buffer);
++SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<Uint64> ChaChaPrngRand64(
++    absl::string_view key,
++    int* position_in_buffer,
++    int* salt_counter,
++    std::vector<Uint8>* buffer);
+ 
+ }  // namespace internal
+ }  // namespace rlwe
+diff --git a/prng/single_thread_chacha_prng.h b/prng/single_thread_chacha_prng.h
+index fcaff827be355..2fddf6f3530c4 100644
+--- a/prng/single_thread_chacha_prng.h
++++ b/prng/single_thread_chacha_prng.h
+@@ -24,6 +24,7 @@
+ #include "prng/chacha_prng_util.h"
+ #include "prng/prng.h"
+ #include "statusor.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
+ 
+ namespace rlwe {
+ 
+@@ -52,7 +53,7 @@ class SingleThreadChaChaPrng : public SecurePrng {
+   //
+   // Fails if the key is not the expected size or on internal cryptographic
+   // errors.
+-  static rlwe::StatusOr<std::unique_ptr<SingleThreadChaChaPrng>> Create(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<std::unique_ptr<SingleThreadChaChaPrng>> Create(
+       absl::string_view in_key);
+ 
+   // Returns 8 bits of randomness.
+diff --git a/relinearization_key.cc b/relinearization_key.cc
+index 7982a2f71a74c..0b22a50e0abb7 100644
+--- a/relinearization_key.cc
++++ b/relinearization_key.cc
+@@ -22,6 +22,8 @@
+ #include "status_macros.h"
+ #include "statusor.h"
+ #include "symmetric_encryption_with_prng.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
++#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+ 
+ namespace rlwe {
+ namespace {
+@@ -432,9 +434,9 @@ RelinearizationKey<ModularInt>::Deserialize(
+ // Instantiations of RelinearizationKey with specific MontgomeryInt classes.
+ // If any new types are added, montgomery.h should be updated accordingly (such
+ // as ensuring BigInt is correctly specialized, etc.).
+-template class RelinearizationKey<MontgomeryInt<Uint16>>;
+-template class RelinearizationKey<MontgomeryInt<Uint32>>;
+-template class RelinearizationKey<MontgomeryInt<Uint64>>;
+-template class RelinearizationKey<MontgomeryInt<absl::uint128>>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint16>>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint32>>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint64>>;
++template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<absl::uint128>>;
+ 
+ }  //  namespace rlwe
+diff --git a/relinearization_key.h b/relinearization_key.h
+index 265da33e5af15..1aff179b9ed39 100644
+--- a/relinearization_key.h
++++ b/relinearization_key.h
+@@ -22,6 +22,8 @@
+ #include "sample_error.h"
+ #include "statusor.h"
+ #include "symmetric_encryption.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
++#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
+ 
+ namespace rlwe {
+ // Represents a RelinearizationKey constructed from a symmetric-key. Applying a
+@@ -57,7 +59,7 @@ namespace rlwe {
+ // length (k - 1), where k is the number of parts of the ciphertext it applies
+ // to.
+ template <typename ModularInt>
+-class RelinearizationKey {
++class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey {
+   using ModularIntParams = typename ModularInt::Params;
+ 
+  public:
+@@ -73,7 +75,7 @@ class RelinearizationKey {
+   // with (1, s^k). In that case, we would use a relinearization key with
+   // substition_power = k to return the ciphertext to be encrypted with (1,s).
+   // See GaloisKey for an explicit wrapper around RelinearizationKey.
+-  static rlwe::StatusOr<RelinearizationKey> Create(
++  static SHELL_ENCRYPTION_EXPORT rlwe::StatusOr<RelinearizationKey> Create(
+       const SymmetricRlweKey<ModularInt>& key, absl::string_view prng_seed,
+       ssize_t num_parts, Uint64 log_decomposition_modulus,
+       Uint64 substitution_power = 1);
+@@ -192,6 +194,13 @@ class RelinearizationKey {
+   std::string prng_seed_;
+ };
+ 
++// Instantiations of RelinearizationKey with specific MontgomeryInt classes.
++// If any new types are added, montgomery.h should be updated accordingly (such
++// as ensuring BigInt is correctly specialized, etc.).
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint16>>;
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint32>>;
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<Uint64>>;
++extern template class EXPORT_TEMPLATE_DECLARE(SHELL_ENCRYPTION_EXPORT) RelinearizationKey<MontgomeryInt<absl::uint128>>;
+ }  // namespace rlwe
+ 
+ #endif  // RLWE_RELINEARIZATION_KEY_H_
+diff --git a/statusor.h b/statusor.h
+index 200f62d917d0f..b7ada09372c9f 100644
+--- a/statusor.h
++++ b/statusor.h
+@@ -22,11 +22,12 @@
+ #include "absl/base/attributes.h"
+ #include "absl/status/status.h"
+ #include "absl/types/optional.h"
++#include "third_party/shell-encryption/base/shell_encryption_export.h"
+ 
+ namespace rlwe {
+ 
+ template <typename T>
+-class StatusOr {
++class SHELL_ENCRYPTION_EXPORT StatusOr {
+  public:
+   // Construct a new StatusOr with Status::UNKNOWN status
+   StatusOr();
+@@ -112,12 +113,12 @@ class StatusOr {
+ 
+ namespace internal {
+ 
+-class StatusOrHelper {
++class SHELL_ENCRYPTION_EXPORT StatusOrHelper {
+  public:
+   // Move type-agnostic error handling to the .cc.
+-  static absl::Status HandleInvalidStatusCtorArg();
+-  static absl::Status HandleNullObjectCtorArg();
+-  static void Crash(const absl::Status& status);
++  static SHELL_ENCRYPTION_EXPORT absl::Status HandleInvalidStatusCtorArg();
++  static SHELL_ENCRYPTION_EXPORT absl::Status HandleNullObjectCtorArg();
++  static SHELL_ENCRYPTION_EXPORT void Crash(const absl::Status& status);
+ 
+   // Customized behavior for StatusOr<T> vs. StatusOr<T*>
+   template <typename T>
+@@ -125,13 +126,13 @@ class StatusOrHelper {
+ };
+ 
+ template <typename T>
+-struct StatusOrHelper::Specialize {
++struct SHELL_ENCRYPTION_EXPORT StatusOrHelper::Specialize {
+   // For non-pointer T, a reference can never be NULL.
+   static inline bool IsValueNull(const T& t) { return false; }
+ };
+ 
+ template <typename T>
+-struct StatusOrHelper::Specialize<T*> {
++struct SHELL_ENCRYPTION_EXPORT StatusOrHelper::Specialize<T*> {
+   static inline bool IsValueNull(const T* t) { return t == nullptr; }
+ };
+ 

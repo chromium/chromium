@@ -90,13 +90,13 @@ TEST_F(WebCryptoAesCbcTest, ExportKeyUnsupportedFormat) {
 // Tests importing of keys (in a variety of formats), errors during import,
 // encryption, and decryption, using known answers.
 TEST_F(WebCryptoAesCbcTest, KnownAnswerEncryptDecrypt) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("aes_cbc.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("aes_cbc.json", &tests));
 
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);
@@ -119,7 +119,7 @@ TEST_F(WebCryptoAesCbcTest, KnownAnswerEncryptDecrypt) {
       continue;
 
     // Test encryption.
-    if (test->HasKey("plain_text")) {
+    if (test->FindKey("plain_text")) {
       std::vector<uint8_t> test_plain_text =
           GetBytesFromHexString(test, "plain_text");
 
@@ -142,7 +142,7 @@ TEST_F(WebCryptoAesCbcTest, KnownAnswerEncryptDecrypt) {
     }
 
     // Test decryption.
-    if (test->HasKey("cipher_text")) {
+    if (test->FindKey("cipher_text")) {
       std::vector<uint8_t> test_cipher_text =
           GetBytesFromHexString(test, "cipher_text");
 

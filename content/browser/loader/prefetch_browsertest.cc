@@ -828,14 +828,8 @@ IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest, CrossOriginWithPreloadAnonymous) {
 // Variants of this test:
 // - PrefetchBrowserTest.CrossOriginWithPreloadAnonymous
 // - PrefetchBrowserTest.CrossOriginWithPreloadCredentialled
-// Disabling due to flakiness, see https://crbug.com/1257939
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_MAC)
-#define MAYBE_CrossOriginWithPreloadCredentialled DISABLED_CrossOriginWithPreloadCredentialled
-#else
-#define MAYBE_CrossOriginWithPreloadCredentialled CrossOriginWithPreloadCredentialled
-#endif
 IN_PROC_BROWSER_TEST_P(PrefetchBrowserTest,
-                       MAYBE_CrossOriginWithPreloadCredentialled) {
+                       CrossOriginWithPreloadCredentialled) {
   ASSERT_TRUE(embedded_test_server()->InitializeAndListen());
   const auto port = embedded_test_server()->port();
   const char target_path[] = "/target.html";

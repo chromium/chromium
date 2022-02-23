@@ -9,16 +9,18 @@
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
 class ComputedStyle;
 class Document;
-class FloatRect;
 class GraphicsContext;
 class LayoutUnit;
 class Node;
 class StyleableMarker;
-class TextMarkerBase;
 struct PaintInfo;
 struct PhysicalOffset;
 struct PhysicalRect;
@@ -36,7 +38,7 @@ class DocumentMarkerPainter {
                                             const StyleableMarker& marker,
                                             const ComputedStyle& style,
                                             const Document& document,
-                                            const FloatRect& marker_rect,
+                                            const gfx::RectF& marker_rect,
                                             LayoutUnit logical_height,
                                             bool in_dark_mode);
   static void PaintDocumentMarker(
@@ -49,7 +51,7 @@ class DocumentMarkerPainter {
   static TextPaintStyle ComputeTextPaintStyleFrom(const Document& document,
                                                   Node* node,
                                                   const ComputedStyle& style,
-                                                  const TextMarkerBase& marker,
+                                                  const DocumentMarker& marker,
                                                   const PaintInfo& paint_info);
   static bool ShouldPaintMarkerUnderline(const StyleableMarker& marker);
 };

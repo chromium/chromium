@@ -15,6 +15,7 @@
 #include "base/files/file_util.h"
 #include "base/files/memory_mapped_file.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_piece.h"
@@ -160,7 +161,8 @@ class ScopedFileWriter {
 
  private:
   bool valid_ = false;
-  FILE* file_ = nullptr;  // base::ScopedFILE doesn't check errors on close.
+  raw_ptr<FILE> file_ =
+      nullptr;  // base::ScopedFILE doesn't check errors on close.
 };
 
 bool MmapHasGzipHeader(const base::MemoryMappedFile* mmap) {
@@ -285,8 +287,8 @@ bool DataPack::LoadFromPath(const base::FilePath& path) {
   // Open the file for reading; allowing other consumers to also open it for
   // reading and deleting. Do not allow others to write to it.
   base::File data_file(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                                 base::File::FLAG_EXCLUSIVE_WRITE |
-                                 base::File::FLAG_SHARE_DELETE);
+                                 base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                                 base::File::FLAG_WIN_SHARE_DELETE);
   if (!data_file.IsValid()) {
     DLOG(ERROR) << "Failed to open datapack with base::File::Error "
                 << data_file.error_details();

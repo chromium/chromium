@@ -2,24 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 import os
+import posixpath
 import sys
 
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 from gpu_tests import pixel_test_pages
+
+import gpu_path_util
 
 from telemetry.timeline import model as model_module
 from telemetry.timeline import tracing_config
 
-gpu_relative_path = "content/test/data/gpu/"
+gpu_data_relative_path = gpu_path_util.GPU_DATA_RELATIVE_PATH
 
 data_paths = [
-    os.path.join(path_util.GetChromiumSrcDir(), gpu_relative_path),
-    os.path.join(path_util.GetChromiumSrcDir(), 'media', 'test', 'data')
+    gpu_path_util.GPU_DATA_DIR,
+    os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test', 'data')
 ]
 
 webgl_test_harness_script = r"""
@@ -93,7 +93,7 @@ _PRESENT_MAIN_SWAP_CHAIN_EVENT_NAME =\
 _SUPPORTED_WIN_AMD_GPUS_WITH_NV12_ROTATED_OVERLAYS = [0x7340]
 
 
-class _TraceTestArguments(object):
+class _TraceTestArguments():
   """Struct-like object for passing trace test arguments instead of dicts."""
 
   def __init__(  # pylint: disable=too-many-arguments
@@ -123,7 +123,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     # should perhaps be enabled in the future.
     namespace = pixel_test_pages.PixelTestPages
     for p in namespace.DefaultPages('TraceTest'):
-      yield (p.name, gpu_relative_path + p.url,
+      yield (p.name, posixpath.join(gpu_data_relative_path, p.url),
              _TraceTestArguments(
                  browser_args=p.browser_args,
                  category=cls._DisabledByDefaultTraceCategory('gpu.service'),
@@ -132,7 +132,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                  success_eval_func='CheckGLCategory',
                  other_args=p.other_args))
     for p in namespace.DirectCompositionPages('VideoPathTraceTest'):
-      yield (p.name, gpu_relative_path + p.url,
+      yield (p.name, posixpath.join(gpu_data_relative_path, p.url),
              _TraceTestArguments(
                  browser_args=p.browser_args,
                  category=cls._DisabledByDefaultTraceCategory('gpu.service'),
@@ -141,7 +141,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                  success_eval_func='CheckVideoPath',
                  other_args=p.other_args))
     for p in namespace.LowLatencyPages('SwapChainTraceTest'):
-      yield (p.name, gpu_relative_path + p.url,
+      yield (p.name, posixpath.join(gpu_data_relative_path, p.url),
              _TraceTestArguments(
                  browser_args=p.browser_args,
                  category='gpu',
@@ -150,7 +150,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                  success_eval_func='CheckSwapChainPath',
                  other_args=p.other_args))
     for p in namespace.DirectCompositionPages('OverlayModeTraceTest'):
-      yield (p.name, gpu_relative_path + p.url,
+      yield (p.name, posixpath.join(gpu_data_relative_path, p.url),
              _TraceTestArguments(
                  browser_args=p.browser_args,
                  category=cls._DisabledByDefaultTraceCategory('gpu.service'),
@@ -159,7 +159,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
                  success_eval_func='CheckOverlayMode',
                  other_args=p.other_args))
     for p in namespace.ForceFullDamagePages('SwapChainTraceTest'):
-      yield (p.name, gpu_relative_path + p.url,
+      yield (p.name, posixpath.join(gpu_data_relative_path, p.url),
              _TraceTestArguments(
                  browser_args=p.browser_args,
                  category='gpu',
@@ -206,7 +206,6 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
   @classmethod
   def SetUpProcess(cls):
     super(TraceIntegrationTest, cls).SetUpProcess()
-    path_util.SetupTelemetryPaths()
     cls.CustomizeBrowserArgs([])
     cls.StartBrowser()
     cls.SetStaticServerDirs(data_paths)
@@ -410,10 +409,9 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
       return
 
     valid_entry_found = False
-    for index in range(len(presentation_mode_history)):
-      mode = presentation_mode_history[index]
-      if (mode == _SWAP_CHAIN_PRESENTATION_MODE_NONE
-          or mode == _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED):
+    for index, mode in enumerate(presentation_mode_history):
+      if mode in (_SWAP_CHAIN_PRESENTATION_MODE_NONE,
+                  _SWAP_CHAIN_GET_FRAME_STATISTICS_MEDIA_FAILED):
         # Be more tolerant to avoid test flakiness
         continue
       if (TraceIntegrationTest._SwapChainPresentationModeToStr(mode) !=
@@ -510,7 +508,7 @@ class TraceIntegrationTest(gpu_integration_test.GpuIntegrationTest):
     ]
 
 
-class _VideoExpectations(object):
+class _VideoExpectations():
   """Struct-like object for passing around video test expectations."""
 
   def __init__(self):

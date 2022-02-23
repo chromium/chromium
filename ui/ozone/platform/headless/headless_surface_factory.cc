@@ -42,7 +42,7 @@ base::FilePath GetPathForWidget(const base::FilePath& base_path,
     return base_path;
 
     // Disambiguate multiple window output files with the window id.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::string path =
       base::NumberToString(reinterpret_cast<int>(widget)) + ".png";
   std::wstring wpath(path.begin(), path.end());
@@ -227,7 +227,10 @@ std::vector<gl::GLImplementationParts>
 HeadlessSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
-      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader)};
+      gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kDefault),
+  };
 }
 
 GLOzone* HeadlessSurfaceFactory::GetGLOzone(

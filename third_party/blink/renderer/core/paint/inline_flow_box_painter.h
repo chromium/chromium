@@ -49,7 +49,7 @@ class InlineFlowBoxPainter : public InlineBoxPainterBase {
                            const PhysicalRect& rect) override;
   BorderPaintingType GetBorderPaintType(
       const PhysicalRect& adjusted_frame_rect,
-      IntRect& adjusted_clip_rect,
+      gfx::Rect& adjusted_clip_rect,
       bool object_has_multiple_boxes) const override;
 
   void PaintBackgroundBorderShadow(const PaintInfo&,

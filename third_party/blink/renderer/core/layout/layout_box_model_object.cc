@@ -41,8 +41,6 @@
 #include "third_party/blink/renderer/core/layout/ng/legacy_layout_tree_walking.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_constraint_space.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_layout_result.h"
-#include "third_party/blink/renderer/core/paint/compositing/composited_layer_mapping.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/object_paint_invalidator.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
@@ -91,25 +89,11 @@ static ContinuationMap& GetContinuationMap() {
   return *map;
 }
 
-void LayoutBoxModelObject::ContentChanged(ContentChangeType change_type) {
-  NOT_DESTROYED();
-  DCHECK(!RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-  if (!HasLayer())
-    return;
-
-  Layer()->ContentChanged(change_type);
-}
-
 LayoutBoxModelObject::LayoutBoxModelObject(ContainerNode* node)
     : LayoutObject(node) {}
 
 bool LayoutBoxModelObject::UsesCompositedScrolling() const {
   NOT_DESTROYED();
-
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-    return IsScrollContainer() && HasLayer() &&
-           Layer()->GetScrollableArea()->UsesCompositedScrolling();
-  }
 
   const auto* properties = FirstFragment().PaintProperties();
   return properties && properties->ScrollTranslation() &&
@@ -152,14 +136,6 @@ void LayoutBoxModelObject::WillBeDestroyed() {
 void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
                                            const ComputedStyle& new_style) {
   NOT_DESTROYED();
-  // SPv1:
-  // This object's layer may begin or cease to be stacked or stacking context,
-  // in which case the paint invalidation container of this object and
-  // descendants may change. Thus we need to invalidate paint eagerly for all
-  // such children. PaintLayerCompositor::paintInvalidationOnCompositingChange()
-  // doesn't work for the case because we can only see the new
-  // paintInvalidationContainer during compositing update.
-  // SPv1 and v2:
   // Change of stacked/stacking context status may cause change of this or
   // descendant PaintLayer's CompositingContainer, so we need to eagerly
   // invalidate the current compositing container chain which may have painted
@@ -169,14 +145,7 @@ void LayoutBoxModelObject::StyleWillChange(StyleDifference diff,
        IsStackingContext() != IsStackingContext(new_style)) &&
       // ObjectPaintInvalidator requires this.
       IsRooted()) {
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
-    } else {
-      // We need to invalidate based on the current compositing status.
-      DisableCompositingQueryAsserts compositing_disabler;
-      ObjectPaintInvalidator(*this)
-          .InvalidatePaintIncludingNonCompositingDescendants();
-    }
+    ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
   }
 
   LayoutObject::StyleWillChange(diff, new_style);
@@ -294,6 +263,18 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (Layer()) {
+    // The previous CompositingContainer chain was marked for repaint via
+    // |LayoutBoxModelObject::StyleWillChange| but changes to stacking can
+    // change the compositing container so we need to ensure the new
+    // CompositingContainer is also marked for repaint.
+    if (old_style &&
+        (IsStacked() != IsStacked(*old_style) ||
+         IsStackingContext() != IsStackingContext(*old_style)) &&
+        // ObjectPaintInvalidator requires this.
+        IsRooted()) {
+      ObjectPaintInvalidator(*this).SlowSetPaintingLayerNeedsRepaint();
+    }
+
     Layer()->StyleDidChange(diff, old_style);
     if (had_layer && Layer()->IsSelfPaintingLayer() != layer_was_self_painting)
       SetChildNeedsLayout();
@@ -378,9 +359,7 @@ void LayoutBoxModelObject::StyleDidChange(StyleDifference diff,
   }
 
   if (old_style && HasLayer() && !Layer()->SelfNeedsRepaint() &&
-      diff.TransformChanged() &&
-      (RuntimeEnabledFeatures::CompositeAfterPaintEnabled() ||
-       !Layer()->HasStyleDeterminedDirectCompositingReasons())) {
+      diff.TransformChanged()) {
     // PaintLayerPainter::PaintLayerWithAdjustedRoot skips painting of a layer
     // whose transform is not invertible, so we need to repaint the layer when
     // invertible status changes.
@@ -507,7 +486,7 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 
   if (descendant.HasLayer()) {
     Vector<PhysicalRect> layer_outline_rects;
-    descendant.AddOutlineRects(layer_outline_rects, PhysicalOffset(),
+    descendant.AddOutlineRects(layer_outline_rects, nullptr, PhysicalOffset(),
                                include_block_overflows);
     descendant.LocalToAncestorRects(layer_outline_rects, this, PhysicalOffset(),
                                     additional_offset);
@@ -517,7 +496,8 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
 
   if (descendant.IsBox()) {
     descendant.AddOutlineRects(
-        rects, additional_offset + To<LayoutBox>(descendant).PhysicalLocation(),
+        rects, nullptr,
+        additional_offset + To<LayoutBox>(descendant).PhysicalLocation(),
         include_block_overflows);
     return;
   }
@@ -535,7 +515,8 @@ void LayoutBoxModelObject::AddOutlineRectsForDescendant(
     return;
   }
 
-  descendant.AddOutlineRects(rects, additional_offset, include_block_overflows);
+  descendant.AddOutlineRects(rects, nullptr, additional_offset,
+                             include_block_overflows);
 }
 
 void LayoutBoxModelObject::RecalcVisualOverflow() {
@@ -554,27 +535,27 @@ void LayoutBoxModelObject::RecalcVisualOverflow() {
 }
 
 void LayoutBoxModelObject::AbsoluteQuadsForSelf(
-    Vector<FloatQuad>& quads,
+    Vector<gfx::QuadF>& quads,
     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
   NOTREACHED();
 }
 
-void LayoutBoxModelObject::LocalQuadsForSelf(Vector<FloatQuad>& quads) const {
+void LayoutBoxModelObject::LocalQuadsForSelf(Vector<gfx::QuadF>& quads) const {
   NOT_DESTROYED();
   NOTREACHED();
 }
 
-void LayoutBoxModelObject::AbsoluteQuads(Vector<FloatQuad>& quads,
+void LayoutBoxModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                          MapCoordinatesFlags mode) const {
   QuadsInternal(quads, mode, true);
 }
 
-void LayoutBoxModelObject::LocalQuads(Vector<FloatQuad>& quads) const {
+void LayoutBoxModelObject::LocalQuads(Vector<gfx::QuadF>& quads) const {
   QuadsInternal(quads, 0, false);
 }
 
-void LayoutBoxModelObject::QuadsInternal(Vector<FloatQuad>& quads,
+void LayoutBoxModelObject::QuadsInternal(Vector<gfx::QuadF>& quads,
                                          MapCoordinatesFlags mode,
                                          bool map_to_absolute) const {
   NOT_DESTROYED();
@@ -600,16 +581,16 @@ void LayoutBoxModelObject::QuadsInternal(Vector<FloatQuad>& quads,
   }
 }
 
-FloatRect LayoutBoxModelObject::LocalBoundingBoxFloatRect() const {
+gfx::RectF LayoutBoxModelObject::LocalBoundingBoxRectF() const {
   NOT_DESTROYED();
-  Vector<FloatQuad> quads;
+  Vector<gfx::QuadF> quads;
   LocalQuads(quads);
 
   wtf_size_t n = quads.size();
   if (n == 0)
-    return FloatRect();
+    return gfx::RectF();
 
-  FloatRect result = quads[0].BoundingBox();
+  gfx::RectF result = quads[0].BoundingBox();
   for (wtf_size_t i = 1; i < n; ++i)
     result.Union(quads[i].BoundingBox());
   return result;
@@ -1089,7 +1070,7 @@ PhysicalOffset LayoutBoxModelObject::StickyPositionOffset() const {
   // The sticky offset is physical, so we can just return the delta computed in
   // absolute coords (though it may be wrong with transforms).
   PhysicalRect constraining_rect = ComputeStickyConstrainingRect();
-  FloatPoint scroll_position =
+  gfx::PointF scroll_position =
       ancestor_scroll_container_layer->GetScrollableArea()->ScrollPosition();
   constraining_rect.Move(PhysicalOffset(LayoutUnit(scroll_position.x()),
                                         LayoutUnit(scroll_position.y())));

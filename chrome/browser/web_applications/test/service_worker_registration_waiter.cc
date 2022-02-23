@@ -13,9 +13,14 @@ namespace web_app {
 ServiceWorkerRegistrationWaiter::ServiceWorkerRegistrationWaiter(
     content::BrowserContext* browser_context,
     const GURL& url)
+    : ServiceWorkerRegistrationWaiter(
+          browser_context->GetStoragePartitionForUrl(url),
+          url) {}
+
+ServiceWorkerRegistrationWaiter::ServiceWorkerRegistrationWaiter(
+    content::StoragePartition* storage_partition,
+    const GURL& url)
     : url_(std::move(url)) {
-  content::StoragePartition* storage_partition =
-      browser_context->GetStoragePartitionForUrl(url_);
   DCHECK(storage_partition);
 
   service_worker_context_ = storage_partition->GetServiceWorkerContext();

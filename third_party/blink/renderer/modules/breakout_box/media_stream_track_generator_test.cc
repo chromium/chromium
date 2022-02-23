@@ -11,6 +11,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_track.h"
 #include "third_party/blink/public/web/web_heap.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_media_stream_track_generator_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_video_frame.h"
@@ -43,9 +44,9 @@ ScriptValue CreateVideoFrameChunk(ScriptState* script_state) {
       media::VideoFrame::CreateBlackFrame(gfx::Size(10, 5));
   VideoFrame* video_frame = MakeGarbageCollected<VideoFrame>(
       std::move(media_frame), ExecutionContext::From(script_state));
-  return ScriptValue(script_state->GetIsolate(),
-                     ToV8(video_frame, script_state->GetContext()->Global(),
-                          script_state->GetIsolate()));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<VideoFrame>::ToV8(script_state, video_frame).ToLocalChecked());
 }
 
 ScriptValue CreateAudioDataChunk(ScriptState* script_state) {
@@ -55,9 +56,9 @@ ScriptValue CreateAudioDataChunk(ScriptState* script_state) {
           /*channel_count=*/2,
           /*sample_rate=*/44100,
           /*frame_count=*/500, base::TimeDelta()));
-  return ScriptValue(script_state->GetIsolate(),
-                     ToV8(audio_data, script_state->GetContext()->Global(),
-                          script_state->GetIsolate()));
+  return ScriptValue(
+      script_state->GetIsolate(),
+      ToV8Traits<AudioData>::ToV8(script_state, audio_data).ToLocalChecked());
 }
 
 }  // namespace

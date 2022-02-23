@@ -6,7 +6,6 @@
 #define UI_EVENTS_OZONE_EVDEV_EVENT_FACTORY_EVDEV_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/task_runner.h"
@@ -84,7 +83,8 @@ class COMPONENT_EXPORT(EVDEV) EventFactoryEvdev : public DeviceEventObserver,
   void DispatchMouseDevicesUpdated(const std::vector<InputDevice>& devices,
                                    bool has_mouse,
                                    bool has_pointing_stick);
-  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices);
+  void DispatchTouchpadDevicesUpdated(const std::vector<InputDevice>& devices,
+                                      bool has_haptic_touchpad);
   void DispatchUncategorizedDevicesUpdated(
       const std::vector<InputDevice>& devices);
   void DispatchDeviceListsComplete();

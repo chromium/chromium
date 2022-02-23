@@ -6,17 +6,20 @@
 
 <link rel="import" href="chrome://resources/html/parse_html_subset.html">
 <link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
+<link rel="import" href="chrome://resources/html/load_time_data.html">
 
-<link rel="import" href="/components/oobe_icons.html">
-<link rel="import" href="/components/behaviors/login_screen_behavior.html">
-<link rel="import" href="/components/behaviors/multi_step_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_dialog_host_behavior.html">
-<link rel="import" href="/components/behaviors/oobe_i18n_behavior.html">
-<link rel="import" href="/components/buttons/oobe_text_button.html">
-<link rel="import" href="/components/common_styles/common_styles.html">
-<link rel="import" href="/components/common_styles/oobe_dialog_host_styles.html">
-<link rel="import" href="/components/dialogs/oobe_adaptive_dialog.html">
-<link rel="import" href="/components/dialogs/oobe_modal_dialog.html">
+<link rel="import" href="./checking_downloading_update.html">
+<link rel="import" href="../../components/display_manager_types.html">
+<link rel="import" href="../../components/oobe_icons.html">
+<link rel="import" href="../../components/behaviors/login_screen_behavior.html">
+<link rel="import" href="../../components/behaviors/multi_step_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_dialog_host_behavior.html">
+<link rel="import" href="../../components/behaviors/oobe_i18n_behavior.html">
+<link rel="import" href="../../components/buttons/oobe_text_button.html">
+<link rel="import" href="../../components/common_styles/common_styles.html">
+<link rel="import" href="../../components/common_styles/oobe_dialog_host_styles.html">
+<link rel="import" href="../../components/dialogs/oobe_adaptive_dialog.html">
+<link rel="import" href="../../components/dialogs/oobe_modal_dialog.html">
 
 <!--
   Update required card that informs user that current chromeos version does not
@@ -62,7 +65,7 @@
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-             src="../../images/1x/updating_1x.svg">
+             src="/images/updating.svg" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onUpdateClicked_"
@@ -91,7 +94,7 @@
       </div>
     </oobe-adaptive-dialog>
 
-    <checking-downloading-update id="checking-downloading-update"
+    <checking-downloading-update id="downloadingUpdate"
         aria-label$="[[i18nDynamic(locale, 'updateScreenAccessibleTitle')]]"
         for-step="update-process, update-completed-need-reboot"
         checking-for-update="[[updateProgressUnavailable]]"
@@ -117,7 +120,7 @@
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            src="../../images/1x/updating_1x.svg">
+            src="/images/updating.svg" aria-hidden="true">
       </div>
       <div slot="bottom-buttons" class="layout horizontal end-justified">
         <oobe-text-button inverse on-click="onCellularPermissionAccepted_"
@@ -140,7 +143,7 @@
       </div>
       <div slot="content" class="flex layout vertical center-justified center">
         <img class="update-illustration oobe-illustration"
-            src="../../images/1x/updating_1x.svg">
+            src="/images/updating.svg" aria-hidden="true">
       </div>
       <div slot="bottom-buttons">
         <oobe-text-button inverse on-click="onSelectNetworkClicked_"
@@ -176,7 +179,7 @@
           <!-- Use lock image indicating that end-of-life has been reached and
              the device is disabled for further use  -->
           <img class="update-illustration oobe-illustration"
-              src="../../images/device-disabled.svg">
+              src="/images/device-disabled.svg" aria-hidden="true">
         </div>
       </div>
     </oobe-adaptive-dialog>
@@ -198,4 +201,5 @@
     </oobe-modal-dialog>
 
   </template>
+  <script src="update_required_card.js"></script>
 </dom-module>

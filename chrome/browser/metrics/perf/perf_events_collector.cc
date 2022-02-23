@@ -19,6 +19,7 @@
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/metrics/perf/cpu_identity.h"
 #include "chrome/browser/metrics/perf/process_type_collector.h"
 #include "chrome/browser/metrics/perf/windowed_incognito_observer.h"
@@ -289,8 +290,9 @@ const std::vector<RandomSelector::WeightAndValue> GetDefaultCommands_x86_64(
 }
 
 void CollectProcessTypes(SampledProfile* sampled_profile) {
+  std::vector<uint32_t> lacros_pids;
   std::map<uint32_t, Process> process_types =
-      ProcessTypeCollector::ChromeProcessTypes();
+      ProcessTypeCollector::ChromeProcessTypes(lacros_pids);
   std::map<uint32_t, Thread> thread_types =
       ProcessTypeCollector::ChromeThreadTypes();
   if (!process_types.empty() && !thread_types.empty()) {
@@ -298,6 +300,10 @@ void CollectProcessTypes(SampledProfile* sampled_profile) {
                                                      process_types.end());
     sampled_profile->mutable_thread_types()->insert(thread_types.begin(),
                                                     thread_types.end());
+  }
+  if (!lacros_pids.empty()) {
+    sampled_profile->mutable_lacros_pids()->Add(lacros_pids.begin(),
+                                                lacros_pids.end());
   }
 }
 

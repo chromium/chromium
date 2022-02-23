@@ -11,7 +11,7 @@
 #include "net/base/network_change_notifier.h"
 #include "net/base/network_interfaces.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/p2p/network_list_manager.h"
 #include "third_party/webrtc/rtc_base/mdns_responder_interface.h"
 

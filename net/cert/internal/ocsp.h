@@ -230,7 +230,8 @@ struct NET_EXPORT OCSPResponse {
 // id-pkix-ocsp-basic     OBJECT IDENTIFIER ::= { id-pkix-ocsp 1 }
 //
 // In dotted notation: 1.3.6.1.5.5.7.48.1.1
-NET_EXPORT der::Input BasicOCSPResponseOid();
+inline constexpr uint8_t kBasicOCSPResponseOid[] = {
+    0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x01, 0x01};
 
 // Parses a DER-encoded OCSP "CertID" as specified by RFC 6960. Returns true on
 // success and sets the results in |out|.
@@ -285,26 +286,26 @@ NET_EXPORT_PRIVATE bool ParseOCSPResponse(const der::Input& raw_tlv,
 //        the |this_update| field in OCSPSingleResponse. Responses older than
 //        |max_age| will be considered invalid.
 //  * |response_details|: Additional details about failures.
-NET_EXPORT OCSPRevocationStatus CheckOCSP(
-    base::StringPiece raw_response,
-    base::StringPiece certificate_der,
-    base::StringPiece issuer_certificate_der,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
-    OCSPVerifyResult::ResponseStatus* response_details) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT OCSPRevocationStatus
+CheckOCSP(base::StringPiece raw_response,
+          base::StringPiece certificate_der,
+          base::StringPiece issuer_certificate_der,
+          const base::Time& verify_time,
+          const base::TimeDelta& max_age,
+          OCSPVerifyResult::ResponseStatus* response_details);
 
 // Checks the revocation status of |certificate| by using the DER-encoded
 // |raw_response|.
 //
 // Arguments are the same as above, except that it takes already parsed
 // instances of the certificate and issuer certificate.
-NET_EXPORT OCSPRevocationStatus CheckOCSP(
-    base::StringPiece raw_response,
-    const ParsedCertificate* certificate,
-    const ParsedCertificate* issuer_certificate,
-    const base::Time& verify_time,
-    const base::TimeDelta& max_age,
-    OCSPVerifyResult::ResponseStatus* response_details) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT OCSPRevocationStatus
+CheckOCSP(base::StringPiece raw_response,
+          const ParsedCertificate* certificate,
+          const ParsedCertificate* issuer_certificate,
+          const base::Time& verify_time,
+          const base::TimeDelta& max_age,
+          OCSPVerifyResult::ResponseStatus* response_details);
 
 // Creates a DER-encoded OCSPRequest for |cert|. The request is fairly basic:
 //  * No signature

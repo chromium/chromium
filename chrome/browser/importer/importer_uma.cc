@@ -11,19 +11,19 @@ namespace {
 
 // The enum used to register importer use.
 enum ImporterTypeMetrics {
-  IMPORTER_METRICS_UNKNOWN         = 0,
-#if defined(OS_WIN)
-  IMPORTER_METRICS_IE              = 1,
+  IMPORTER_METRICS_UNKNOWN = 0,
+#if BUILDFLAG(IS_WIN)
+  IMPORTER_METRICS_IE = 1,
 #endif
-  IMPORTER_METRICS_FIREFOX2        = 2,  // obsolete
-  IMPORTER_METRICS_FIREFOX3        = 3,
-#if defined(OS_MAC)
-  IMPORTER_METRICS_SAFARI          = 4,
+  IMPORTER_METRICS_FIREFOX2 = 2,  // obsolete
+  IMPORTER_METRICS_FIREFOX3 = 3,
+#if BUILDFLAG(IS_MAC)
+  IMPORTER_METRICS_SAFARI = 4,
 #endif
   IMPORTER_METRICS_GOOGLE_TOOLBAR5 = 5,  // obsolete
-  IMPORTER_METRICS_BOOKMARKS_FILE  = 6,
-#if defined(OS_WIN)
-  IMPORTER_METRICS_EDGE            = 7,
+  IMPORTER_METRICS_BOOKMARKS_FILE = 6,
+#if BUILDFLAG(IS_WIN)
+  IMPORTER_METRICS_EDGE = 7,
 #endif
 
   // Insert new values here. Never remove any existing values, as this enum is
@@ -40,7 +40,7 @@ void LogImporterUseToMetrics(const std::string& metric_postfix,
     case TYPE_UNKNOWN:
       metrics_type = IMPORTER_METRICS_UNKNOWN;
       break;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case TYPE_IE:
       metrics_type = IMPORTER_METRICS_IE;
       break;
@@ -51,7 +51,7 @@ void LogImporterUseToMetrics(const std::string& metric_postfix,
     case TYPE_FIREFOX:
       metrics_type = IMPORTER_METRICS_FIREFOX3;
       break;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     case TYPE_SAFARI:
       metrics_type = IMPORTER_METRICS_SAFARI;
       break;

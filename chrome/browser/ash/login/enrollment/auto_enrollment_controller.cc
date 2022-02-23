@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/logging.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/strings/string_number_conversions.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/ash/policy/enrollment/private_membership/fake_private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/private_membership_rlwe_client_impl.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_id_provider_impl.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_state_keys_broker.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/browser_process.h"
@@ -180,6 +182,18 @@ policy::DeviceManagementService* InitializeAndGetDeviceManagementService() {
   return service;
 }
 
+enum class AutoEnrollmentControllerTimeoutReport {
+  kTimeoutCancelled = 0,
+  kTimeoutFRE,
+  kTimeout,
+  kMaxValue = kTimeout,
+};
+
+void ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport report) {
+  base::UmaHistogramEnumeration("Enterprise.AutoEnrollmentControllerTimeout",
+                                report);
+}
+
 }  // namespace
 
 const char AutoEnrollmentController::kForcedReEnrollmentAlways[] = "always";
@@ -263,6 +277,11 @@ AutoEnrollmentController::GetFRERequirement() {
       return FRERequirement::kExplicitlyNotRequired;
     if (check_enrollment_value == "1")
       return FRERequirement::kExplicitlyRequired;
+
+    LOG(ERROR) << "Unexpected value for " << system::kCheckEnrollmentKey << ": "
+               << check_enrollment_value;
+    LOG(WARNING) << "Forcing auto enrollment check.";
+    return FRERequirement::kExplicitlyRequired;
   }
   // Assume that the presence of the machine serial number means that VPD has
   // been read successfully. Don't trust a missing ActivateDate if VPD could not
@@ -273,6 +292,10 @@ AutoEnrollmentController::GetFRERequirement() {
     // The device has never been activated (enterprise enrolled or
     // consumer-owned) so doing a FRE check is not necessary.
     return FRERequirement::kNotRequired;
+  }
+  if (!vpd_read_successfully) {
+    LOG(ERROR) << "VPD could not be read, skipping explicitly required auto "
+                  "enrollment check.";
   }
   return FRERequirement::kRequired;
 }
@@ -469,6 +492,10 @@ AutoEnrollmentController::DetermineAutoEnrollmentCheckType(
   FRERequirement fre_requirement = GetFRERequirement();
   LOG_DETERMINATION() << FRERequirementToString(fre_requirement);
 
+  // Skip FRE check if the device is explicitly marked as consumer owned.
+  if (fre_requirement == FRERequirement::kExplicitlyNotRequired)
+    return AutoEnrollmentCheckType::kNone;
+
   if (ShouldDoFRECheck(command_line, fre_requirement)) {
     // FRE has precedence over Initial Enrollment.
     LOG(WARNING) << "Proceeding with FRE check.";
@@ -654,7 +681,7 @@ void AutoEnrollmentController::StartClientForInitialEnrollment() {
       g_browser_process->system_network_context_manager()
           ->GetSharedURLLoaderFactory(),
       serial_number, rlz_brand_code, power_initial, power_limit,
-      psm_rlwe_client_factory_.get());
+      psm_rlwe_client_factory_.get(), &psm_rlwe_id_provider_);
 
   LOG(WARNING) << "Starting auto-enrollment client for Initial Enrollment.";
   client_->Start();
@@ -678,6 +705,8 @@ void AutoEnrollmentController::UpdateState(
     case policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT:
     case policy::AUTO_ENROLLMENT_STATE_DISABLED:
       safeguard_timer_.Stop();
+      ReportTimeoutUMA(
+          AutoEnrollmentControllerTimeoutReport::kTimeoutCancelled);
       break;
   }
 
@@ -771,7 +800,6 @@ void AutoEnrollmentController::Timeout() {
   // TODO(igorcov): Investigate the remaining causes of hitting timeout and
   // potentially either remove the timeout altogether or enforce FRE in the
   // REQUIRED case as well.
-  // TODO(mnissler): Add UMA to track results of auto-enrollment checks.
   if (client_start_weak_factory_.HasWeakPtrs() &&
       GetFRERequirement() != FRERequirement::kExplicitlyRequired) {
     // If the callbacks to check ownership status or state keys are still
@@ -779,12 +807,14 @@ void AutoEnrollmentController::Timeout() {
     // retrying anything, need to fix that bug.
     LOG(ERROR) << "Failed to start auto-enrollment check, fix the code!";
     UpdateState(policy::AUTO_ENROLLMENT_STATE_NO_ENROLLMENT);
+    ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeout);
   } else {
     // This can actually happen in some cases, for example when state key
     // generation is waiting for time sync or the server just doesn't reply and
     // keeps the connection open.
     LOG(ERROR) << "AutoEnrollmentClient didn't complete within time limit.";
     UpdateState(policy::AUTO_ENROLLMENT_STATE_CONNECTION_ERROR);
+    ReportTimeoutUMA(AutoEnrollmentControllerTimeoutReport::kTimeoutFRE);
   }
 
   // Reset state.

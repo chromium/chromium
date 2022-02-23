@@ -26,16 +26,16 @@ namespace network_time {
 // version and 123123123 as the nonce. Use
 // NetworkTimeTracker::OverrideNonceForTesting() to set the nonce so
 // that this response validates.
-extern const char* kGoodTimeResponseBody[2];
+extern const char* kGoodTimeResponseBody[3];
 
 // The x-cup-server-proof header values that should be served along with
 // |kGoodTimeResponseBody| to make a test server response be accepted by
 // NetworkTimeTracker as a valid response.
-extern const char* kGoodTimeResponseServerProofHeader[2];
+extern const char* kGoodTimeResponseServerProofHeader[3];
 
 // The times that |kGoodTimeResponseBody| uses. Can be converted to a
 // base::Time with base::Time::FromJsTime.
-extern const double kGoodTimeResponseHandlerJsTime[2];
+extern const double kGoodTimeResponseHandlerJsTime[3];
 
 // Returns a valid network time response using the constants above. See
 // comments in the .cc for how to update the time returned in the response.

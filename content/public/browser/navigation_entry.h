@@ -44,6 +44,13 @@ class NavigationEntry : public base::SupportsUserData {
 
   CONTENT_EXPORT static std::unique_ptr<NavigationEntry> Create();
 
+  // True if this entry is the initial NavigationEntry, which is created when a
+  // FrameTree is first initialized. The initial NavigationEntry, unlike other
+  // NavigationEntries, is not associated with any committed navigation in the
+  // main frame. After any navigation committed in the main frame, the
+  // NavigationEntry will be replaced, or at least lose its "initial" status.
+  virtual bool IsInitialEntry() = 0;
+
   // Page-related stuff --------------------------------------------------------
 
   // A unique ID is preserved across commits and redirects, which means that
@@ -65,7 +72,7 @@ class NavigationEntry : public base::SupportsUserData {
   virtual void SetBaseURLForDataURL(const GURL& url) = 0;
   virtual const GURL& GetBaseURLForDataURL() = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The real data: URL when it is received via WebView.loadDataWithBaseUrl
   // method. Represented as a string to circumvent the size restriction
   // of GURLs for compatibility with legacy Android WebView apps.

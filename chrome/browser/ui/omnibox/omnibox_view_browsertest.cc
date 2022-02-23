@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_util.h"
@@ -45,7 +46,6 @@
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/history_quick_provider.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
-#include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/browser/test_location_bar_model.h"
@@ -137,7 +137,7 @@ void SetClipboardText(const std::u16string& text) {
   writer.WriteText(text);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const int kCtrlOrCmdMask = ui::EF_COMMAND_DOWN;
 #else
 const int kCtrlOrCmdMask = ui::EF_CONTROL_DOWN;
@@ -373,7 +373,7 @@ class OmniboxViewTest : public InProcessBrowserTest {
   testing::NiceMock<policy::MockConfigurationPolicyProvider> policy_provider_;
 
   // Non-owning pointer.
-  TestLocationBarModel* test_location_bar_model_ = nullptr;
+  raw_ptr<TestLocationBarModel> test_location_bar_model_ = nullptr;
 };
 
 // Test if ctrl-* accelerators are workable in omnibox.
@@ -417,7 +417,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
   EXPECT_EQ(u"Hello worlds", omnibox_view->GetText());
 
   // Try ctrl-x to cut text.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac uses alt-left/right to select a word.
   ASSERT_NO_FATAL_FAILURE(
       SendKey(ui::VKEY_LEFT, ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN));
@@ -429,7 +429,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, DISABLED_BrowserAccelerators) {
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_X, kCtrlOrCmdMask));
   EXPECT_EQ(u"Hello ", omnibox_view->GetText());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   // Try alt-f4 to close the browser.
   ExpectBrowserClosed(browser(), ui::VKEY_F4, ui::EF_ALT_DOWN);
 #endif
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, PopupAccelerators) {
   EXPECT_EQ(u"Hello world", omnibox_view->GetText());
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
-#if !BUILDFLAG(IS_CHROMEOS_ASH) && !defined(OS_MAC)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_MAC)
   // Try alt-f4 to close the popup.
   ExpectBrowserClosed(popup, ui::VKEY_F4, ui::EF_ALT_DOWN);
 #endif
@@ -514,7 +514,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   ASSERT_NO_FATAL_FAILURE(SendKeySequence(kSearchTextKeys));
 
   // Move cursor to the beginning of the search text.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Home doesn't work on Mac trybot.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_A, ui::EF_CONTROL_DOWN));
 #else
@@ -523,17 +523,10 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceInKeywordMode) {
   // Backspace at the beginning of the search text shall turn off
   // the keyword mode.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-  // When the keyword search button is enabled, a keyword 'hint'/button will
-  // persist as long as the entry begins with a keyword.
-  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-    ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
-  } else {
-    ASSERT_FALSE(omnibox_view->model()->is_keyword_hint());
-    ASSERT_EQ(std::u16string(), omnibox_view->model()->keyword());
-    ASSERT_EQ(base::StrCat({kSearchKeyword, u" ", kSearchText}),
-              omnibox_view->GetText());
-  }
+  // A keyword 'hint'/button will persist as long as the entry begins with a
+  // keyword.
+  ASSERT_TRUE(omnibox_view->model()->is_keyword_hint());
+  ASSERT_EQ(kSearchKeyword, omnibox_view->model()->keyword());
 }
 
 // TODO(https://crbug.com/1030551): This test flakily times out.
@@ -610,7 +603,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, ClearUserTextAfterBackgroundCommit) {
       browser()->tab_strip_model()->GetActiveWebContents();
 
   // Create another tab in the foreground.
-  AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(1, url1, ui::PAGE_TRANSITION_TYPED));
   EXPECT_EQ(2, browser()->tab_strip_model()->count());
   EXPECT_EQ(1, browser()->tab_strip_model()->active_index());
 
@@ -750,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), old_text);
+  EXPECT_EQ(url::kAboutBlankURL16, old_text);
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   size_t start, end;
@@ -763,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
   EXPECT_EQ(old_text.size(), end);
 
   // Move the cursor to the end.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // End doesn't work on Mac trybot.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_E, ui::EF_CONTROL_DOWN));
 #else
@@ -817,7 +810,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BasicTextOperations) {
 
   // Check that reverting clamps the cursor to the bounds of the new text.
   // Move the cursor to the end.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // End doesn't work on Mac trybot.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_E, ui::EF_CONTROL_DOWN));
 #else
@@ -1145,7 +1138,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, UndoRedo) {
   ASSERT_NO_FATAL_FAILURE(GetOmniboxView(&omnibox_view));
 
   std::u16string old_text = omnibox_view->GetText();
-  EXPECT_EQ(base::UTF8ToUTF16(url::kAboutBlankURL), old_text);
+  EXPECT_EQ(url::kAboutBlankURL16, old_text);
   EXPECT_TRUE(omnibox_view->IsSelectAll());
 
   // Delete the text, then undo.
@@ -1214,7 +1207,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest, BackspaceDeleteHalfWidthKatakana) {
   // Backspace should delete the character. In http://crbug.com/192743, the bug
   // was that nothing was deleted.
   ASSERT_NO_FATAL_FAILURE(SendKey(ui::VKEY_BACK, 0));
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Cocoa text fields attach the sound mark and delete the whole thing. This
   // behavior should remain on Mac even when using a toolkit-views browser
   // window.
@@ -1327,7 +1320,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxViewTest,
   // Highlight the last 2 words and the omnibox text should not change.
   // Simulating Ctrl-shift-left only once does not seem to highlight anything
   // on Linux.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac uses alt-left/right to select a word.
   const int modifiers = ui::EF_SHIFT_DOWN | ui::EF_ALT_DOWN;
 #else

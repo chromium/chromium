@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIA_CONTROLS_MEDIA_CONTROLS_IMPL_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect_read_only.h"
 #include "third_party/blink/renderer/core/html/html_div_element.h"
 #include "third_party/blink/renderer/core/html/media/media_controls.h"
@@ -420,7 +419,7 @@ class MODULES_EXPORT MediaControlsImpl final : public HTMLDivElement,
   Member<MediaElementMutationCallback> element_mutation_callback_;
 
   HeapTaskRunnerTimer<MediaControlsImpl> element_size_changed_timer_;
-  IntSize size_;
+  gfx::Size size_;
 
   bool keep_showing_until_timer_fires_ : 1;
 

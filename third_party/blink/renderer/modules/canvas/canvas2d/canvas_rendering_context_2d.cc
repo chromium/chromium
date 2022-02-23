@@ -34,7 +34,9 @@
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_rendering_context_2d.h"
 
 #include "base/metrics/histogram_functions.h"
+#include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "cc/paint/paint_flags.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
@@ -58,7 +60,6 @@
 #include "third_party/blink/renderer/core/layout/hit_test_canvas_result.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/scroll/scroll_alignment.h"
 #include "third_party/blink/renderer/core/typed_arrays/array_buffer/array_buffer_contents.h"
 #include "third_party/blink/renderer/modules/canvas/canvas2d/canvas_style.h"
@@ -67,12 +68,12 @@
 #include "third_party/blink/renderer/platform/fonts/font_cache.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_canvas.h"
-#include "third_party/blink/renderer/platform/graphics/paint/paint_flags.h"
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/stroke_data.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/text/bidi_text_run.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -141,6 +142,10 @@ CanvasRenderingContext2D::CanvasRenderingContext2D(
 
 V8RenderingContext* CanvasRenderingContext2D::AsV8RenderingContext() {
   return MakeGarbageCollected<V8RenderingContext>(this);
+}
+
+NoAllocDirectCallHost* CanvasRenderingContext2D::AsNoAllocDirectCallHost() {
+  return this;
 }
 
 CanvasRenderingContext2D::~CanvasRenderingContext2D() = default;
@@ -227,15 +232,8 @@ void CanvasRenderingContext2D::DidSetSurfaceSize() {
   DCHECK(context_lost_mode_ != kNotLostContext && !IsPaintable());
 
   if (CanCreateCanvas2dResourceProvider()) {
-    if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-            canvas()->GetTopExecutionContext())) {
-      dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
-                                                          FROM_HERE);
-    } else {
-      // legacy synchronous context restoration.
-      Reset();
-      context_lost_mode_ = kNotLostContext;
-    }
+    dispatch_context_restored_event_timer_.StartOneShot(base::TimeDelta(),
+                                                        FROM_HERE);
   }
 }
 
@@ -434,7 +432,7 @@ cc::PaintCanvas* CanvasRenderingContext2D::GetPaintCanvasForDraw(
     return nullptr;
   CanvasRenderingContext::DidDraw(dirty_rect, draw_type);
   // Always draw everything during printing.
-  if (!layer_count_ && !canvas()->IsPrinting()) {
+  if (!layer_count_) {
     // TODO(crbug.com/1246486): Make auto-flushing layer friendly.
     canvas()
         ->GetCanvas2DLayerBridge()
@@ -653,14 +651,16 @@ ImageData* CanvasRenderingContext2D::getImageDataInternal(
     int sh,
     ImageDataSettings* image_data_settings,
     ExceptionState& exception_state) {
+  UMA_HISTOGRAM_BOOLEAN("Blink.Canvas.GetImageData.WillReadFrequently",
+                        CreationAttributes().will_read_frequently);
   return BaseRenderingContext2D::getImageDataInternal(
       sx, sy, sw, sh, image_data_settings, exception_state);
 }
 
-void CanvasRenderingContext2D::FinalizeFrame() {
+void CanvasRenderingContext2D::FinalizeFrame(bool printing) {
   TRACE_EVENT0("blink", "CanvasRenderingContext2D::FinalizeFrame");
   if (IsPaintable())
-    canvas()->GetCanvas2DLayerBridge()->FinalizeFrame();
+    canvas()->GetCanvas2DLayerBridge()->FinalizeFrame(printing);
 }
 
 CanvasRenderingContextHost*
@@ -728,34 +728,27 @@ void CanvasRenderingContext2D::setDirection(const String& direction_string) {
   GetState().SetDirection(direction);
 }
 
-void CanvasRenderingContext2D::setLetterSpacing(const double letter_spacing) {
+void CanvasRenderingContext2D::setLetterSpacing(const String& letter_spacing) {
   UseCounter::Count(canvas()->GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DLetterSpacing);
-  if (UNLIKELY(!std::isfinite(letter_spacing)))
-    return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
-
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float letter_spacing_float = ClampTo<float>(letter_spacing);
-  GetState().SetLetterSpacing(letter_spacing_float, Host()->GetFontSelector());
+  GetState().SetLetterSpacing(letter_spacing);
 }
 
-void CanvasRenderingContext2D::setWordSpacing(const double word_spacing) {
+void CanvasRenderingContext2D::setWordSpacing(const String& word_spacing) {
   UseCounter::Count(canvas()->GetTopExecutionContext(),
                     WebFeature::kCanvasRenderingContext2DWordSpacing);
-  if (UNLIKELY(!std::isfinite(word_spacing)))
-    return;
   // TODO(crbug.com/1234113): Instrument new canvas APIs.
   identifiability_study_helper_.set_encountered_skipped_ops();
 
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  float word_spacing_float = ClampTo<float>(word_spacing);
-  GetState().SetWordSpacing(word_spacing_float, Host()->GetFontSelector());
+  GetState().SetWordSpacing(word_spacing);
 }
 
 void CanvasRenderingContext2D::setTextRendering(
@@ -941,14 +934,15 @@ void CanvasRenderingContext2D::fillFormattedText(
   if (!GetState().HasRealizedFont())
     setFont(font());
 
-  FloatRect bounds;
+  gfx::RectF bounds;
   sk_sp<PaintRecord> recording = formatted_text->PaintFormattedText(
       canvas()->GetDocument(), GetState().GetFontDescription(), x, y,
       wrap_width, bounds);
   Draw<OverdrawOp::kNone>(
-      [recording](cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+      [recording](cc::PaintCanvas* c,
+                  const cc::PaintFlags* flags)  // draw lambda
       { c->drawPicture(recording); },
-      [](const SkIRect& rect) { return false; }, bounds,
+      [](const SkIRect& rect) { return false; }, gfx::RectFToSkRect(bounds),
       CanvasRenderingContext2DState::PaintType::kFillPaintType,
       CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
@@ -1009,8 +1003,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
                    bidi_override);
   text_run.SetNormalizeSpace(true);
   // Draw the item text at the correct point.
-  FloatPoint location(ClampTo<float>(x),
-                      ClampTo<float>(y + GetFontBaseline(*font_data)));
+  gfx::PointF location(ClampTo<float>(x),
+                       ClampTo<float>(y + GetFontBaseline(*font_data)));
   double font_width = font.Width(text_run);
 
   bool use_max_width = (max_width && *max_width < font_width);
@@ -1033,7 +1027,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
       break;
   }
 
-  FloatRect bounds(
+  gfx::RectF bounds(
       location.x() - font_metrics.Height() / 2,
       location.y() - font_metrics.Ascent() - font_metrics.LineGap(),
       ClampTo<float>(width + font_metrics.Height()),
@@ -1054,7 +1048,7 @@ void CanvasRenderingContext2D::DrawTextInternal(
 
   Draw<OverdrawOp::kNone>(
       [this, text = std::move(text), direction, bidi_override, location](
-          cc::PaintCanvas* c, const PaintFlags* flags)  // draw lambda
+          cc::PaintCanvas* c, const cc::PaintFlags* flags)  // draw lambda
       {
         TextRun text_run(text, 0, 0, TextRun::kAllowTrailingExpansion,
                          direction, bidi_override);
@@ -1066,7 +1060,8 @@ void CanvasRenderingContext2D::DrawTextInternal(
       },
       [](const SkIRect& rect)  // overdraw test lambda
       { return false; },
-      bounds, paint_type, CanvasRenderingContext2DState::kNoImage,
+      gfx::RectFToSkRect(bounds), paint_type,
+      CanvasRenderingContext2DState::kNoImage,
       CanvasPerformanceMonitor::DrawType::kText);
 }
 
@@ -1099,13 +1094,11 @@ CanvasRenderingContext2D::getContextAttributes() const {
       CanvasRenderingContext2DSettings::Create();
   settings->setAlpha(CreationAttributes().alpha);
   if (RuntimeEnabledFeatures::CanvasColorManagementEnabled())
-    settings->setColorSpace(GetCanvas2DColorParams().GetColorSpaceAsString());
+    settings->setColorSpace(color_params_.GetColorSpaceAsString());
   if (RuntimeEnabledFeatures::CanvasColorManagementV2Enabled())
-    settings->setPixelFormat(GetCanvas2DColorParams().GetPixelFormatAsString());
+    settings->setPixelFormat(color_params_.GetPixelFormatAsString());
   settings->setDesynchronized(Host()->LowLatencyEnabled());
-  if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(
-          canvas()->GetTopExecutionContext()))
-    settings->setWillReadFrequently(CreationAttributes().will_read_frequently);
+  settings->setWillReadFrequently(CreationAttributes().will_read_frequently);
   return settings;
 }
 
@@ -1176,8 +1169,7 @@ void CanvasRenderingContext2D::DrawFocusRing(const Path& path,
   stroke_data.SetThickness(kFocusRingWidth);
 
   SkIRect dirty_rect;
-  if (!ComputeDirtyRect(FloatRect(path.StrokeBoundingRect(stroke_data)),
-                        &dirty_rect))
+  if (!ComputeDirtyRect(path.StrokeBoundingRect(stroke_data), &dirty_rect))
     return;
 
   DidDraw(dirty_rect, CanvasPerformanceMonitor::DrawType::kPath);

@@ -112,7 +112,8 @@ void ShowIntentPickerBubbleForApps(content::WebContents* web_contents,
 
   browser->window()->ShowIntentPickerBubble(
       std::move(apps), show_stay_in_chrome, show_remember_selection,
-      PageActionIconType::kIntentPicker, absl::nullopt, std::move(callback));
+      IntentPickerBubbleType::kLinkCapturing, absl::nullopt,
+      std::move(callback));
 }
 
 bool InAppBrowser(content::WebContents* web_contents) {
@@ -208,9 +209,10 @@ PickerEntryType GetPickerEntryType(mojom::AppType app_type) {
     case mojom::AppType::kBuiltIn:
     case mojom::AppType::kCrostini:
     case mojom::AppType::kPluginVm:
+    case mojom::AppType::kChromeApp:
     case mojom::AppType::kExtension:
     case mojom::AppType::kStandaloneBrowser:
-    case mojom::AppType::kStandaloneBrowserExtension:
+    case mojom::AppType::kStandaloneBrowserChromeApp:
     case mojom::AppType::kRemote:
     case mojom::AppType::kBorealis:
       break;

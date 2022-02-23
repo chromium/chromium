@@ -40,7 +40,7 @@ IN_PROC_BROWSER_TEST_F(MetricIntegrationTest, DISABLED_FirstScrollDelay) {
                                    blink::WebMouseWheelEvent::kPhaseEnded);
 
   // Wait for the scroll to complete and the display to be updated.
-  frame_observer.WaitForScrollOffset(gfx::Vector2d(0, scroll_distance));
+  frame_observer.WaitForScrollOffset(gfx::PointF(0, scroll_distance));
 
   // Navigate away.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL("about:blank")));

@@ -86,6 +86,7 @@ class ASH_EXPORT MessageCenterUiController
       message_center::NotificationBlocker* blocker) override;
   void OnNotificationPopupShown(const std::string& notification_id,
                                 bool mark_notification_as_read) override;
+  void OnMessageViewHovered(const std::string& notification_id) override;
 
   // SessionObserver:
   void OnFirstSessionStarted() override;

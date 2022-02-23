@@ -75,7 +75,7 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
     EXPECT_EQ(1u, element->GetComputedStyle()->Filter().size());
     const FilterOperation* filter =
         element->GetComputedStyle()->Filter().Operations()[0];
-    EXPECT_EQ(FilterOperation::OperationType::CONTRAST, filter->GetType());
+    EXPECT_EQ(FilterOperation::OperationType::kContrast, filter->GetType());
     return static_cast<const BasicComponentTransferFilterOperation*>(filter)
         ->Amount();
   }
@@ -84,7 +84,7 @@ class CSSAnimationsTest : public RenderingTest, public PaintTestConfigurations {
     EXPECT_EQ(1u, element->GetComputedStyle()->Filter().size());
     const FilterOperation* filter =
         element->GetComputedStyle()->Filter().Operations()[0];
-    EXPECT_EQ(FilterOperation::OperationType::SATURATE, filter->GetType());
+    EXPECT_EQ(FilterOperation::OperationType::kSaturate, filter->GetType());
     return static_cast<const BasicColorMatrixFilterOperation*>(filter)
         ->Amount();
   }

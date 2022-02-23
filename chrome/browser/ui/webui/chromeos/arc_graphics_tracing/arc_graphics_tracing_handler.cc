@@ -6,6 +6,9 @@
 
 #include <map>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -34,9 +37,6 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/platform_util.h"
 #include "chrome/browser/profiles/profile.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
 #include "components/exo/shell_surface_util.h"
 #include "components/exo/surface.h"
 #include "components/exo/wm_helper.h"
@@ -48,6 +48,7 @@
 #include "ui/base/ui_base_features.h"
 #include "ui/events/event.h"
 #include "ui/gfx/codec/png_codec.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace chromeos {
 
@@ -614,31 +615,31 @@ void ArcGraphicsTracingHandler::HandleReady(const base::ListValue* args) {
 
 void ArcGraphicsTracingHandler::HandleSetStopOnJank(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
+  DCHECK_EQ(1U, args->GetListDeprecated().size());
   DCHECK_EQ(ArcGraphicsTracingMode::kFull, mode_);
-  if (!args->GetList()[0].is_bool()) {
+  if (!args->GetListDeprecated()[0].is_bool()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
-  stop_on_jank_ = args->GetList()[0].GetBool();
+  stop_on_jank_ = args->GetListDeprecated()[0].GetBool();
 }
 
 void ArcGraphicsTracingHandler::HandleSetMaxTime(const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
+  DCHECK_EQ(1U, args->GetListDeprecated().size());
   DCHECK_EQ(ArcGraphicsTracingMode::kOverview, mode_);
 
-  if (!args->GetList()[0].is_int()) {
+  if (!args->GetListDeprecated()[0].is_int()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
-  max_tracing_time_ = base::Seconds(args->GetList()[0].GetInt());
+  max_tracing_time_ = base::Seconds(args->GetListDeprecated()[0].GetInt());
   DCHECK_GE(max_tracing_time_, base::Seconds(1));
 }
 
 void ArcGraphicsTracingHandler::HandleLoadFromText(
     const base::ListValue* args) {
-  DCHECK_EQ(1U, args->GetList().size());
-  if (!args->GetList()[0].is_string()) {
+  DCHECK_EQ(1U, args->GetListDeprecated().size());
+  if (!args->GetListDeprecated()[0].is_string()) {
     LOG(ERROR) << "Invalid input";
     return;
   }
@@ -646,7 +647,7 @@ void ArcGraphicsTracingHandler::HandleLoadFromText(
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&LoadGraphicsModel, mode_,
-                     std::move(args->GetList()[0].GetString())),
+                     std::move(args->GetListDeprecated()[0].GetString())),
       base::BindOnce(&ArcGraphicsTracingHandler::OnGraphicsModelReady,
                      weak_ptr_factory_.GetWeakPtr()));
 }

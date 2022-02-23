@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_CONTENT_SETTINGS_BROWSER_TEST_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 #define COMPONENTS_CONTENT_SETTINGS_BROWSER_TEST_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 
@@ -47,7 +48,7 @@ class TestPageSpecificContentSettingsDelegate
   void OnWebDatabaseAccessAllowed(const url::Origin& origin) override;
 
  private:
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
   scoped_refptr<HostContentSettingsMap> settings_map_;
 };
 

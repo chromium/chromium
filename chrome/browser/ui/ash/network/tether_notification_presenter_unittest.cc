@@ -9,6 +9,7 @@
 #include "base/memory/ptr_util.h"
 #include "base/observer_list.h"
 #include "base/test/metrics/histogram_tester.h"
+#include "base/values.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
@@ -45,13 +46,12 @@ class TetherNotificationPresenterTest : public BrowserWithTestWindowTest {
                               bool enabled_state) override {}
     void ShowMobileSetup(const std::string& network_id) override {}
     void ShowCarrierAccountDetail(const std::string& network_id) override {}
-    void ConfigureNetworkIdAndConnect(
-        const std::string& network_id,
-        const base::DictionaryValue& shill_properties,
-        bool shared) override {}
-    void CreateConfigurationAndConnect(base::DictionaryValue* shill_properties,
+    void ConfigureNetworkIdAndConnect(const std::string& network_id,
+                                      const base::Value& shill_properties,
+                                      bool shared) override {}
+    void CreateConfigurationAndConnect(base::Value* shill_properties,
                                        bool shared) override {}
-    void CreateConfiguration(base::DictionaryValue* shill_properties,
+    void CreateConfiguration(base::Value* shill_properties,
                              bool shared) override {}
 
     void ConnectToNetworkId(const std::string& network_id) override {

@@ -24,7 +24,7 @@ class MemoryAblationStudyTest : public testing::Test {
 };
 
 // Tests basic functionality of the MemoryAblationStudy class.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(https://crbug.com/1245173) Flaky on Win7
 #define MAYBE_Basic DISABLED_Basic
 #else

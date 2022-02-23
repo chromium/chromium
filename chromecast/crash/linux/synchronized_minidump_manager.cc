@@ -326,7 +326,7 @@ bool SynchronizedMinidumpManager::WriteFiles(const base::ListValue* dumps,
   DCHECK(metadata);
   std::string lockfile;
 
-  for (const auto& elem : dumps->GetList()) {
+  for (const auto& elem : dumps->GetListDeprecated()) {
     std::string dump_info;
     bool ret = base::JSONWriter::Write(elem, &dump_info);
     RCHECK(ret, false);
@@ -372,7 +372,7 @@ bool SynchronizedMinidumpManager::AddEntryToLockFile(
 }
 
 bool SynchronizedMinidumpManager::RemoveEntryFromLockFile(int index) {
-  base::Value::ListView dumps_view = dumps_->GetList();
+  base::Value::ListView dumps_view = dumps_->GetListDeprecated();
   if (index < 0 || static_cast<size_t>(index) >= dumps_view.size())
     return false;
   return dumps_->EraseListIter(dumps_view.begin() + index);
@@ -396,7 +396,7 @@ void SynchronizedMinidumpManager::ReleaseLockFile() {
 std::vector<std::unique_ptr<DumpInfo>> SynchronizedMinidumpManager::GetDumps() {
   std::vector<std::unique_ptr<DumpInfo>> dumps;
 
-  for (const auto& elem : dumps_->GetList()) {
+  for (const auto& elem : dumps_->GetListDeprecated()) {
     dumps.push_back(std::unique_ptr<DumpInfo>(new DumpInfo(&elem)));
   }
 

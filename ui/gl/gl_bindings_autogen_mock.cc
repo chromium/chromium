@@ -25,6 +25,14 @@ void MakeGlMockFunctionUnique(const char* func_name) {
 namespace gl {
 
 void GL_BINDING_CALL
+MockGLInterface::Mock_glAcquireTexturesANGLE(GLuint numTextures,
+                                             const GLuint* textures,
+                                             const GLenum* layouts) {
+  MakeGlMockFunctionUnique("glAcquireTexturesANGLE");
+  interface_->AcquireTexturesANGLE(numTextures, textures, layouts);
+}
+
+void GL_BINDING_CALL
 MockGLInterface::Mock_glActiveShaderProgram(GLuint pipeline, GLuint program) {
   MakeGlMockFunctionUnique("glActiveShaderProgram");
   interface_->ActiveShaderProgram(pipeline, program);
@@ -4066,6 +4074,14 @@ void GL_BINDING_CALL MockGLInterface::Mock_glReleaseShaderCompiler(void) {
 }
 
 void GL_BINDING_CALL
+MockGLInterface::Mock_glReleaseTexturesANGLE(GLuint numTextures,
+                                             const GLuint* textures,
+                                             GLenum* layouts) {
+  MakeGlMockFunctionUnique("glReleaseTexturesANGLE");
+  interface_->ReleaseTexturesANGLE(numTextures, textures, layouts);
+}
+
+void GL_BINDING_CALL
 MockGLInterface::Mock_glRenderbufferStorage(GLenum target,
                                             GLenum internalformat,
                                             GLsizei width,
@@ -4785,20 +4801,21 @@ MockGLInterface::Mock_glTexStorageMem2DEXT(GLenum target,
                                  memory, offset);
 }
 
-void GL_BINDING_CALL
-MockGLInterface::Mock_glTexStorageMemFlags2DANGLE(GLenum target,
-                                                  GLsizei levels,
-                                                  GLenum internalFormat,
-                                                  GLsizei width,
-                                                  GLsizei height,
-                                                  GLuint memory,
-                                                  GLuint64 offset,
-                                                  GLbitfield createFlags,
-                                                  GLbitfield usageFlags) {
+void GL_BINDING_CALL MockGLInterface::Mock_glTexStorageMemFlags2DANGLE(
+    GLenum target,
+    GLsizei levels,
+    GLenum internalFormat,
+    GLsizei width,
+    GLsizei height,
+    GLuint memory,
+    GLuint64 offset,
+    GLbitfield createFlags,
+    GLbitfield usageFlags,
+    const void* imageCreateInfoPNext) {
   MakeGlMockFunctionUnique("glTexStorageMemFlags2DANGLE");
   interface_->TexStorageMemFlags2DANGLE(target, levels, internalFormat, width,
                                         height, memory, offset, createFlags,
-                                        usageFlags);
+                                        usageFlags, imageCreateInfoPNext);
 }
 
 void GL_BINDING_CALL MockGLInterface::Mock_glTexSubImage2D(GLenum target,
@@ -5393,6 +5410,8 @@ static void MockGlInvalidFunction() {
 
 GLFunctionPointerType GL_BINDING_CALL
 MockGLInterface::GetGLProcAddress(const char* name) {
+  if (strcmp(name, "glAcquireTexturesANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(Mock_glAcquireTexturesANGLE);
   if (strcmp(name, "glActiveShaderProgram") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glActiveShaderProgram);
   if (strcmp(name, "glActiveTexture") == 0)
@@ -6556,6 +6575,8 @@ MockGLInterface::GetGLProcAddress(const char* name) {
   if (strcmp(name, "glReleaseShaderCompiler") == 0)
     return reinterpret_cast<GLFunctionPointerType>(
         Mock_glReleaseShaderCompiler);
+  if (strcmp(name, "glReleaseTexturesANGLE") == 0)
+    return reinterpret_cast<GLFunctionPointerType>(Mock_glReleaseTexturesANGLE);
   if (strcmp(name, "glRenderbufferStorage") == 0)
     return reinterpret_cast<GLFunctionPointerType>(Mock_glRenderbufferStorage);
   if (strcmp(name, "glRenderbufferStorageEXT") == 0)

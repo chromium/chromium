@@ -38,7 +38,8 @@ class NotificationHandler {
     ANNOUNCEMENT = 7,
     NEARBY_SHARE = 8,
     NOTIFICATIONS_MUTED = 9,
-    MAX = NOTIFICATIONS_MUTED,
+    TAILORED_SECURITY = 10,
+    MAX = TAILORED_SECURITY,
   };
 
   virtual ~NotificationHandler();

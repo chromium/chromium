@@ -28,10 +28,7 @@
     'nacl_test_data/glibc/pm_exit_status_test_libs/lib64/libppapi_cpp_lib.so',
     'nacl_test_data/glibc/simple_libs/lib64/libppapi_cpp_lib.so',
     'nacl_test_data/glibc/sysconf_nprocessors_onln_test_libs/lib64/libppapi_cpp_lib.so',
-    'nacl_test_data/nonsfi/irt_exception_test_pnacl_newlib_x32_nonsfi.nexe',
-    'nacl_test_data/nonsfi/irt_manifest_file_pnacl_newlib_x32_nonsfi.nexe',
     'ppapi_nacl_tests_pnacl_newlib_x64.nexe',
-    'test_data/ppapi/tests/extensions/packaged_app/nonsfi/ppapi_tests_extensions_packaged_app_pnacl_newlib_x32_nonsfi.nexe',
 
     # https://crbug.com/1040247
     'nacl_irt_x86_64.nexe',
@@ -56,7 +53,6 @@
     'nacl_test_data/newlib/sysconf_nprocessors_onln_test_newlib_x86_64.nexe',
     'nacl_test_data/pnacl/pnacl_debug_url_newlib_pnacl.pexe.debug',
     'nacl_test_data/pnacl/pnacl_errors_newlib_pnacl.pexe',
-    'ppapi_nacl_tests_pnacl_newlib_x32_nonsfi.nexe',
     'ppapi_nacl_tests_newlib_x86_64.nexe',
     'test_data/ppapi/tests/extensions/background_keepalive/newlib/ppapi_tests_extensions_background_keepalive_newlib_x86_64.nexe',
     'test_data/ppapi/tests/extensions/load_unload/newlib/ppapi_tests_extensions_load_unload_newlib_x86_64.nexe',
@@ -72,11 +68,6 @@
   ],
 
   'linux_component': [
-    # https://crbug.com/954056
-    'nacl_test_data/nonsfi/irt_exception_test_pnacl_newlib_x32_nonsfi.nexe',
-    'nacl_test_data/nonsfi/irt_manifest_file_pnacl_newlib_x32_nonsfi.nexe',
-    'test_data/ppapi/tests/extensions/packaged_app/nonsfi/ppapi_tests_extensions_packaged_app_pnacl_newlib_x32_nonsfi.nexe',
-
     # https://crbug.com/1008035
     'nacl_test_data/extension_vcache_test/glibc/extension_validation_cache_libs/lib64/libppapi_cpp_lib.so',
     'nacl_test_data/glibc/pm_exit_status_test_libs/lib64/libppapi_cpp_lib.so',
@@ -105,7 +96,6 @@
     'nacl_test_data/newlib/sysconf_nprocessors_onln_test_newlib_x86_64.nexe',
     'nacl_test_data/pnacl/pnacl_debug_url_newlib_pnacl.pexe.debug',
     'nacl_test_data/pnacl/pnacl_errors_newlib_pnacl.pexe',
-    'ppapi_nacl_tests_pnacl_newlib_x32_nonsfi.nexe',
     'ppapi_nacl_tests_newlib_x86_64.nexe',
     'test_data/ppapi/tests/extensions/background_keepalive/newlib/ppapi_tests_extensions_background_keepalive_newlib_x86_64.nexe',
     'test_data/ppapi/tests/extensions/load_unload/newlib/ppapi_tests_extensions_load_unload_newlib_x86_64.nexe',

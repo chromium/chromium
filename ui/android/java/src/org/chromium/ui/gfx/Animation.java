@@ -4,8 +4,6 @@
 
 package org.chromium.ui.gfx;
 
-import android.annotation.TargetApi;
-import android.os.Build;
 import android.provider.Settings;
 
 import org.chromium.base.ContextUtils;
@@ -19,7 +17,6 @@ import org.chromium.base.annotations.JNINamespace;
 @JNINamespace("gfx")
 public class Animation {
     @CalledByNative
-    @TargetApi(Build.VERSION_CODES.JELLY_BEAN_MR1)
     private static boolean prefersReducedMotion() {
         // We default to assuming that animations are enabled, to avoid impacting the experience for
         // users that don't have ANIMATOR_DURATION_SCALE defined.

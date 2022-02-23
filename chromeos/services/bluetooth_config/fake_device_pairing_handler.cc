@@ -4,6 +4,8 @@
 
 #include "chromeos/services/bluetooth_config/fake_device_pairing_handler.h"
 
+#include "chromeos/services/bluetooth_config/device_conversion_util.h"
+
 namespace chromeos {
 namespace bluetooth_config {
 
@@ -27,6 +29,18 @@ FakeDevicePairingHandler::~FakeDevicePairingHandler() {
 void FakeDevicePairingHandler::SetDeviceList(
     std::vector<device::BluetoothDevice*> device_list) {
   device_list_ = std::move(device_list);
+}
+
+void FakeDevicePairingHandler::FetchDevice(const std::string& device_address,
+                                           FetchDeviceCallback callback) {
+  for (auto* device : device_list_) {
+    if (device->GetAddress() != device_address)
+      continue;
+    std::move(callback).Run(GenerateBluetoothDeviceMojoProperties(
+        device, /*fast_pair_delegate_=*/nullptr));
+    return;
+  }
+  std::move(callback).Run(std::move(nullptr));
 }
 
 device::BluetoothDevice* FakeDevicePairingHandler::FindDevice(

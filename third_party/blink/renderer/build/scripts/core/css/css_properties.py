@@ -71,8 +71,8 @@ class CSSProperties(object):
         # in the various generators for ComputedStyle.
         self._field_alias_expander = FieldAliasExpander(file_paths[1])
 
-        # _alias_offset must be a power of 2.
-        self._alias_offset = 1024
+        # _alias_offset is updated in add_properties().
+        self._alias_offset = -1
         # 0: CSSPropertyID::kInvalid
         # 1: CSSPropertyID::kVariable
         self._first_enum_value = 2
@@ -101,10 +101,6 @@ class CSSProperties(object):
         self.add_properties(css_properties_file.name_dictionaries,
                             origin_trial_features)
 
-        assert self._first_enum_value + len(self._properties_by_id) < \
-            self._alias_offset, \
-            'Property aliasing expects fewer than %d properties.' % \
-            self._alias_offset
         self._last_unresolved_property_id = max(
             property_["enum_value"] for property_ in self._aliases)
 
@@ -180,6 +176,7 @@ class CSSProperties(object):
             if property_['priority'] == 'High':
                 self._last_high_priority_property = property_
 
+        self._alias_offset = self._last_used_enum_value
         self.expand_aliases()
         self._properties_including_aliases = self._longhands + \
             self._shorthands + self._aliases
@@ -228,8 +225,9 @@ class CSSProperties(object):
                 alias['name'])
             updated_alias['enum_key'] = enum_key_for_css_property_alias(
                 alias['name'])
-            updated_alias['enum_value'] = aliased_property['enum_value'] + \
-                self._alias_offset * len(aliased_property['aliases'])
+            updated_alias['enum_value'] = self._alias_offset + i
+            updated_alias['aliased_enum_value'] = aliased_property[
+                'enum_value']
             updated_alias['superclass'] = 'CSSUnresolvedProperty'
             updated_alias['namespace_group'] = \
                 'Shorthand' if aliased_property['longhands'] else 'Longhand'
@@ -296,7 +294,8 @@ class CSSProperties(object):
 
             type_name = property_['type_name']
             if (property_['field_template'] == 'keyword'
-                    or property_['field_template'] == 'multi_keyword'):
+                    or property_['field_template'] == 'multi_keyword'
+                    or property_['field_template'] == 'bitset_keyword'):
                 default_value = (type_name + '::' + NameStyleConverter(
                     property_['default_value']).to_enum_value())
             elif (property_['field_template'] == 'external'

@@ -7,12 +7,32 @@
 
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "chrome/browser/web_applications/external_install_options.h"
+#include "url/gurl.h"
+
+class Profile;
 
 namespace web_app {
 
 // Returns the list of web apps that should be pre-installed on new profiles.
 std::vector<ExternalInstallOptions> GetPreinstalledWebApps();
+
+// A subset of ExternalInstallOptions pertaining to web app migration.
+struct PreinstalledWebAppMigration {
+  PreinstalledWebAppMigration();
+  PreinstalledWebAppMigration(PreinstalledWebAppMigration&&);
+  ~PreinstalledWebAppMigration();
+
+  GURL install_url;
+  AppId expected_web_app_id;
+  AppId old_chrome_app_id;
+};
+
+// Returns the list of preinstalled web apps that are migrations away from their
+// corresponding Chrome app.
+std::vector<PreinstalledWebAppMigration> GetPreinstalledWebAppMigrations(
+    Profile& profile);
 
 // A scoped helper to provide a testing set of preinstalled app data. This will
 // replace the default set.

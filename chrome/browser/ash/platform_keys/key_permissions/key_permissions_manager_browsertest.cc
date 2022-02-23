@@ -10,6 +10,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
@@ -26,7 +27,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_test_utils.h"
 #include "components/signin/public/identity_manager/identity_test_utils.h"
 #include "content/public/test/browser_test.h"
@@ -102,7 +102,7 @@ class KeyPermissionsManagerBrowserTestBase
                                              /*modulus_length_bits=*/2048,
                                              /*sw_backed=*/false,
                                              generate_key_waiter.GetCallback());
-    generate_key_waiter.Wait();
+    EXPECT_TRUE(generate_key_waiter.Wait());
     return generate_key_waiter.public_key_spki_der();
   }
 
@@ -111,7 +111,7 @@ class KeyPermissionsManagerBrowserTestBase
     test_util::GetAllKeysExecutionWaiter get_all_keys_waiter;
     GetPlatformKeysService()->GetAllKeys(GetToken(),
                                          get_all_keys_waiter.GetCallback());
-    get_all_keys_waiter.Wait();
+    EXPECT_TRUE(get_all_keys_waiter.Wait());
     return get_all_keys_waiter.public_keys();
   }
 
@@ -141,7 +141,7 @@ class KeyPermissionsManagerBrowserTestBase
     GetPlatformKeysService()->SetAttributeForKey(
         GetToken(), public_key, KeyAttributeType::kKeyPermissions,
         serialized_key_permissions, set_attr_waiter.GetCallback());
-    set_attr_waiter.Wait();
+    ASSERT_TRUE(set_attr_waiter.Wait());
 
     ASSERT_EQ(set_attr_waiter.status(), Status::kSuccess);
   }
@@ -156,7 +156,7 @@ class KeyPermissionsManagerBrowserTestBase
     GetPlatformKeysService()->GetAttributeForKey(
         GetToken(), public_key, KeyAttributeType::kKeyPermissions,
         get_attr_waiter.GetCallback());
-    get_attr_waiter.Wait();
+    EXPECT_TRUE(get_attr_waiter.Wait());
 
     if (!get_attr_waiter.attribute_value().has_value()) {
       return false;
@@ -225,7 +225,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->AllowKeyForUsage(
       allow_key_for_usage_waiter.GetCallback(), KeyUsage::kArc,
       public_key_spki_der);
-  allow_key_for_usage_waiter.Wait();
+  ASSERT_TRUE(allow_key_for_usage_waiter.Wait());
 
   // Explicitly modifying arc permission is not allowed so the operation fails.
   EXPECT_EQ(allow_key_for_usage_waiter.status(), Status::kErrorInternal);
@@ -245,7 +245,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->AllowKeyForUsage(
       allow_key_for_usage_waiter.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der_1);
-  allow_key_for_usage_waiter.Wait();
+  ASSERT_TRUE(allow_key_for_usage_waiter.Wait());
 
   EXPECT_EQ(allow_key_for_usage_waiter.status(), Status::kSuccess);
   EXPECT_TRUE(
@@ -278,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_1.GetCallback(), KeyUsage::kArc,
       public_key_spki_der_1);
-  is_key_allowed_for_usage_waiter_1.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_1.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().value());
@@ -288,7 +288,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_2.GetCallback(), KeyUsage::kArc,
       public_key_spki_der_2);
-  is_key_allowed_for_usage_waiter_2.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_2.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().has_value());
   EXPECT_FALSE(is_key_allowed_for_usage_waiter_2.allowed().value());
@@ -298,7 +298,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_3.GetCallback(), KeyUsage::kArc,
       public_key_spki_der_3);
-  is_key_allowed_for_usage_waiter_3.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_3.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_3.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_3.allowed().has_value());
   EXPECT_FALSE(is_key_allowed_for_usage_waiter_3.allowed().value());
@@ -317,7 +317,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_1.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der_1);
-  is_key_allowed_for_usage_waiter_1.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_1.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().value());
@@ -327,7 +327,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_2.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der_2);
-  is_key_allowed_for_usage_waiter_2.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_2.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().value());
@@ -348,7 +348,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_1.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der);
-  is_key_allowed_for_usage_waiter_1.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_1.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().value());
@@ -358,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(SystemTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_2.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der);
-  is_key_allowed_for_usage_waiter_2.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_2.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().value());
@@ -433,7 +433,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->AllowKeyForUsage(
       allow_key_for_usage_waiter.GetCallback(), KeyUsage::kArc,
       public_key_spki_der);
-  allow_key_for_usage_waiter.Wait();
+  ASSERT_TRUE(allow_key_for_usage_waiter.Wait());
 
   EXPECT_EQ(allow_key_for_usage_waiter.status(), Status::kErrorInternal);
 }
@@ -453,7 +453,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->AllowKeyForUsage(
       allow_key_for_usage_waiter.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der_1);
-  allow_key_for_usage_waiter.Wait();
+  ASSERT_TRUE(allow_key_for_usage_waiter.Wait());
 
   EXPECT_EQ(allow_key_for_usage_waiter.status(), Status::kSuccess);
   EXPECT_TRUE(
@@ -490,7 +490,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_1.GetCallback(), KeyUsage::kArc,
       public_key_spki_der_1);
-  is_key_allowed_for_usage_waiter_1.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_1.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().value());
@@ -500,7 +500,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_2.GetCallback(), KeyUsage::kArc,
       public_key_spki_der_2);
-  is_key_allowed_for_usage_waiter_2.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_2.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().has_value());
   EXPECT_FALSE(is_key_allowed_for_usage_waiter_2.allowed().value());
@@ -510,7 +510,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_3.GetCallback(), KeyUsage::kArc,
       public_key_spki_der_3);
-  is_key_allowed_for_usage_waiter_3.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_3.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_3.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_3.allowed().has_value());
   EXPECT_FALSE(is_key_allowed_for_usage_waiter_3.allowed().value());
@@ -539,7 +539,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_1.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der_1);
-  is_key_allowed_for_usage_waiter_1.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_1.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().value());
@@ -549,7 +549,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_2.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der_2);
-  is_key_allowed_for_usage_waiter_2.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_2.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().has_value());
   EXPECT_FALSE(is_key_allowed_for_usage_waiter_2.allowed().value());
@@ -559,7 +559,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_3.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der_3);
-  is_key_allowed_for_usage_waiter_3.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_3.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_3.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_3.allowed().has_value());
   EXPECT_FALSE(is_key_allowed_for_usage_waiter_3.allowed().value());
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_1.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der);
-  is_key_allowed_for_usage_waiter_1.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_1.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_1.allowed().value());
@@ -594,7 +594,7 @@ IN_PROC_BROWSER_TEST_F(UserTokenKeyPermissionsManagerBrowserTest,
   GetKeyPermissionsManager()->IsKeyAllowedForUsage(
       is_key_allowed_for_usage_waiter_2.GetCallback(), KeyUsage::kCorporate,
       public_key_spki_der);
-  is_key_allowed_for_usage_waiter_2.Wait();
+  ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.Wait());
   EXPECT_EQ(is_key_allowed_for_usage_waiter_2.status(), Status::kSuccess);
   ASSERT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().has_value());
   EXPECT_TRUE(is_key_allowed_for_usage_waiter_2.allowed().value());

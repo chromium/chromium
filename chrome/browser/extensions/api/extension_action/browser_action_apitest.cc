@@ -37,8 +37,8 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/notification_service.h"
 #include "content/public/browser/overlay_window.h"
-#include "content/public/browser/picture_in_picture_window_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "content/public/browser/video_picture_in_picture_window_controller.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -59,6 +59,7 @@
 #include "extensions/test/result_catcher.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
+#include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
@@ -186,7 +187,8 @@ class BrowserActionApiTestWithContextType
 
     if (expect_failure) {
       EXPECT_FALSE(catcher.GetNextResult());
-      EXPECT_EQ("The source image could not be decoded.", catcher.message());
+      EXPECT_THAT(catcher.message(),
+                  testing::EndsWith("The source image could not be decoded."));
       return;
     }
 
@@ -287,7 +289,7 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, DynamicBrowserAction) {
   const Extension* extension = GetSingleLoadedExtension();
   ASSERT_TRUE(extension) << message_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // We need this on mac so we don't loose 2x representations from browser icon
   // in transformations gfx::ImageSkia -> NSImage -> gfx::ImageSkia.
   std::vector<ui::ResourceScaleFactor> supported_scale_factors;
@@ -490,8 +492,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
 
   const std::string histogram_name =
       "Extensions.DynamicExtensionActionIconWasVisible";
-  const std::string new_histogram_name =
-      "Extensions.DynamicExtensionActionIconWasVisibleRendered";
   {
     base::HistogramTester histogram_tester;
     std::string result;
@@ -503,8 +503,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
     EXPECT_TRUE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
     EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-                testing::ElementsAre(base::Bucket(0, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(new_histogram_name),
                 testing::ElementsAre(base::Bucket(0, 1)));
   }
 
@@ -519,8 +517,6 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiCanvasTest, InvisibleIconBrowserAction) {
     EXPECT_FALSE(gfx::test::AreImagesEqual(
         initial_bar_icon, GetBrowserActionsBar()->GetIcon(extension->id())));
     EXPECT_THAT(histogram_tester.GetAllSamples(histogram_name),
-                testing::ElementsAre(base::Bucket(1, 1)));
-    EXPECT_THAT(histogram_tester.GetAllSamples(new_histogram_name),
                 testing::ElementsAre(base::Bucket(1, 1)));
   }
 }
@@ -1019,9 +1015,9 @@ IN_PROC_BROWSER_TEST_F(BrowserActionApiTest,
       process_manager->GetBackgroundHostForExtension(extension->id())
           ->web_contents();
   ASSERT_TRUE(web_contents);
-  content::PictureInPictureWindowController* window_controller =
-      content::PictureInPictureWindowController::GetOrCreateForWebContents(
-          web_contents);
+  content::VideoPictureInPictureWindowController* window_controller =
+      content::PictureInPictureWindowController::
+          GetOrCreateVideoPictureInPictureController(web_contents);
   ASSERT_TRUE(window_controller->GetWindowForTesting());
   EXPECT_FALSE(window_controller->GetWindowForTesting()->IsVisible());
 

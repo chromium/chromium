@@ -12,6 +12,7 @@
 
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "ui/base/hit_test.h"
@@ -35,7 +36,7 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/shell.h"
 #endif
 
@@ -52,7 +53,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   explicit TestBubbleDialogDelegateView(View* anchor_view)
       : BubbleDialogDelegateView(anchor_view, BubbleBorder::TOP_LEFT) {
     view_->SetFocusBehavior(FocusBehavior::ALWAYS);
-    AddChildView(view_);
+    AddChildView(view_.get());
   }
   ~TestBubbleDialogDelegateView() override = default;
   TestBubbleDialogDelegateView(const TestBubbleDialogDelegateView&) = delete;
@@ -101,7 +102,7 @@ class TestBubbleDialogDelegateView : public BubbleDialogDelegateView {
   using BubbleDialogDelegateView::SizeToContents;
 
  private:
-  View* view_ = new View;
+  raw_ptr<View> view_ = new View;
   std::unique_ptr<View> title_view_;
   bool should_show_close_button_ = false;
   bool should_show_window_title_ = true;
@@ -373,7 +374,7 @@ TEST_F(BubbleDialogDelegateViewTest,
 
 TEST_F(BubbleDialogDelegateViewTest, NoParentWidget) {
   test_views_delegate()->set_use_desktop_native_widgets(true);
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   test_views_delegate()->set_context(GetContext());
 #endif
   BubbleDialogDelegateView* bubble_delegate =
@@ -407,7 +408,7 @@ TEST_F(BubbleDialogDelegateViewTest, NonClientHitTest) {
   BubbleDialogDelegateView::CreateBubble(bubble_delegate);
   BubbleFrameView* frame = bubble_delegate->GetBubbleFrameView();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool is_aero_glass_enabled = ui::win::IsAeroGlassEnabled();
 #endif
 
@@ -415,7 +416,7 @@ TEST_F(BubbleDialogDelegateViewTest, NonClientHitTest) {
     const int point;
     const int hit;
   } kTestCases[] = {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {0, is_aero_glass_enabled ? HTTRANSPARENT : HTNOWHERE},
 #else
     {0, HTTRANSPARENT},

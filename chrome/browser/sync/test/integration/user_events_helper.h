@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -37,7 +38,7 @@ class UserEventEqualityChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 
  private:
-  fake_server::FakeServer* fake_server_;
+  raw_ptr<fake_server::FakeServer> fake_server_;
   const std::vector<sync_pb::UserEventSpecifics> expected_specifics_;
 };
 

@@ -24,7 +24,7 @@ class SystemFontsWinTest : public testing::Test {
 
  protected:
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // System fonts is keeping a cache of loaded system fonts. These fonts are
     // scaled based on global callbacks configured on startup. The tests in this
     // file are testing these callbacks and need to be sure we cleared the

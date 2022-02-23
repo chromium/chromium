@@ -10,7 +10,7 @@
 #include <vector>
 
 #include "base/memory/ref_counted.h"
-#include "chromeos/network/onc/certificate_scope.h"
+#include "chromeos/components/onc/certificate_scope.h"
 
 namespace net {
 class X509Certificate;
@@ -51,7 +51,7 @@ class PolicyCertificateProvider {
   // Returns the server and authority certificates which were successfully
   // parsed from ONC and were granted web trust. This means that the
   // certificates had the "Web" trust bit set, and this
-  // UserNetworkConfigurationUpdater instance was created with
+  // NetworkConfigurationUpdater instance was created with
   // |allow_trusted_certs_from_policy| = true.
   virtual net::CertificateList GetWebTrustedCertificates(
       const chromeos::onc::CertificateScope& scope) const = 0;

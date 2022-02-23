@@ -91,6 +91,7 @@ java_library("junit") {
     "//third_party/mockito:mockito_java",
     "//ui/android:ui_full_java",
     "//url:gurl_java",
+    "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
 }

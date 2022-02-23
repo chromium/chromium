@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/dom/events/native_event_listener.h"
 #include "third_party/blink/renderer/modules/peerconnection/adapters/test/mock_ice_transport_adapter.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_ice_transport.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 
 namespace blink {
 

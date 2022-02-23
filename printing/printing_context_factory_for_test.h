@@ -14,7 +14,8 @@ namespace printing {
 class PrintingContextFactoryForTest {
  public:
   virtual std::unique_ptr<PrintingContext> CreatePrintingContext(
-      PrintingContext::Delegate* delegate) = 0;
+      PrintingContext::Delegate* delegate,
+      bool skip_system_calls) = 0;
 };
 
 }  // namespace printing

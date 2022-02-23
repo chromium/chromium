@@ -14,6 +14,7 @@
 
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -120,7 +121,6 @@ class ProfileImpl : public Profile {
   bool HasAnyOffTheRecordProfile() override;
   Profile* GetOriginalProfile() override;
   const Profile* GetOriginalProfile() const override;
-  bool IsSupervised() const override;
   bool IsChild() const override;
   bool AllowsBrowserWindows() const override;
   ExtensionSpecialStoragePolicy* GetExtensionSpecialStoragePolicy() override;
@@ -183,7 +183,7 @@ class ProfileImpl : public Profile {
               base::Time path_creation_time,
               scoped_refptr<base::SequencedTaskRunner> io_task_runner);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Takes the ownership of the pre-created PrefService and other objects if
   // they have been created.
   void TakePrefsFromStartupData();
@@ -312,7 +312,7 @@ class ProfileImpl : public Profile {
   // components/keyed_service/core/keyed_service.h
   // components/keyed_service/content/browser_context_keyed_service_factory.*
 
-  Profile::Delegate* delegate_;
+  raw_ptr<Profile::Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_PROFILES_PROFILE_IMPL_H_

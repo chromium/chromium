@@ -5,13 +5,14 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_table_view_controller.h"
 
 #include "base/mac/foundation_util.h"
-#import "ios/chrome/browser/ui/settings/cells/settings_switch_cell.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/elements/enterprise_info_popover_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_service_delegate.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_view_controller_model_delegate.h"
 #import "ios/chrome/browser/ui/table_view/cells/table_view_info_button_cell.h"
+#import "ios/chrome/browser/ui/table_view/cells/table_view_switch_cell.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #include "ios/chrome/grit/ios_strings.h"
 #import "net/base/mac/url_conversions.h"
@@ -66,9 +67,9 @@
         cellForRowAtIndexPath:(NSIndexPath*)indexPath {
   UITableViewCell* cell = [super tableView:tableView
                      cellForRowAtIndexPath:indexPath];
-  if ([cell isKindOfClass:[SettingsSwitchCell class]]) {
-    SettingsSwitchCell* switchCell =
-        base::mac::ObjCCastStrict<SettingsSwitchCell>(cell);
+  if ([cell isKindOfClass:[TableViewSwitchCell class]]) {
+    TableViewSwitchCell* switchCell =
+        base::mac::ObjCCastStrict<TableViewSwitchCell>(cell);
     [switchCell.switchView addTarget:self
                               action:@selector(switchAction:)
                     forControlEvents:UIControlEventValueChanged];
@@ -190,8 +191,7 @@
 #pragma mark - PopoverLabelViewControllerDelegate
 
 - (void)didTapLinkURL:(NSURL*)URL {
-  GURL convertedURL = net::GURLWithNSURL(URL);
-  [self view:nil didTapLinkURL:convertedURL];
+  [self view:nil didTapLinkURL:[[CrURL alloc] initWithNSURL:URL]];
 }
 
 @end

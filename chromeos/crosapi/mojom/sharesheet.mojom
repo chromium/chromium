@@ -1,0 +1,37 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "chromeos/crosapi/mojom/app_service_types.mojom";
+
+// The source from which the sharesheet was launched from.
+// Based on sharesheet::LaunchSource.
+[Stable, Extensible]
+enum SharesheetLaunchSource {
+  [Default] kUnknown = 0,
+  kWebShare = 3,
+  kOmniboxShare = 5,
+};
+
+// The result from showing a sharesheet bubble.
+[Stable, Extensible]
+enum SharesheetResult {
+  kSuccess,            // Successfully passed data to selected target.
+  kCancel,             // Share was cancelled before completion.
+  kErrorAlreadyOpen,   // Share failed because the sharesheet is already open.
+  kErrorWindowClosed,  // Parent window closed before sharesheet could be shown.
+};
+
+// Interacts with the Sharesheet service. Implemented in ash-chrome.
+[Stable, Uuid="be0b8049-1fdd-4ba7-a980-997b8c59420e"]
+interface Sharesheet {
+  // Displays the dialog (aka bubble) for sharing content (or files) with
+  // other applications and targets. |intent| contains the list of the
+  // files/content to be shared.
+  ShowBubble@0(
+      string window_id,
+      SharesheetLaunchSource source,
+      Intent intent) => (SharesheetResult sharesheet_result);
+};

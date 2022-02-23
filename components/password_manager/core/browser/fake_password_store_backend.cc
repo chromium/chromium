@@ -16,10 +16,6 @@ namespace password_manager {
 FakePasswordStoreBackend::FakePasswordStoreBackend() = default;
 FakePasswordStoreBackend::~FakePasswordStoreBackend() = default;
 
-base::WeakPtr<PasswordStoreBackend> FakePasswordStoreBackend::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void FakePasswordStoreBackend::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
@@ -32,7 +28,7 @@ void FakePasswordStoreBackend::Shutdown(base::OnceClosure shutdown_completed) {
   std::move(shutdown_completed).Run();
 }
 
-void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsReply callback) {
+void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsOrErrorReply callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::GetAllLoginsInternal,
@@ -41,7 +37,7 @@ void FakePasswordStoreBackend::GetAllLoginsAsync(LoginsReply callback) {
 }
 
 void FakePasswordStoreBackend::GetAutofillableLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(&FakePasswordStoreBackend::GetAutofillableLoginsInternal,
@@ -83,7 +79,11 @@ void FakePasswordStoreBackend::UpdateLoginAsync(
 void FakePasswordStoreBackend::RemoveLoginAsync(
     const PasswordForm& form,
     PasswordStoreChangeListReply callback) {
-  NOTREACHED();
+  base::SequencedTaskRunnerHandle::Get()->PostTaskAndReplyWithResult(
+      FROM_HERE,
+      base::BindOnce(&FakePasswordStoreBackend::RemoveLoginInternal,
+                     base::Unretained(this), form),
+      std::move(callback));
 }
 
 void FakePasswordStoreBackend::RemoveLoginsByURLAndTimeAsync(
@@ -127,8 +127,7 @@ FakePasswordStoreBackend::CreateSyncControllerDelegate() {
   return nullptr;
 }
 
-void FakePasswordStoreBackend::GetSyncStatus(
-    base::OnceCallback<void(bool)> callback) {
+void FakePasswordStoreBackend::ClearAllLocalPasswords() {
   NOTIMPLEMENTED();
 }
 
@@ -246,6 +245,22 @@ void FakePasswordStoreBackend::DisableAutoSignInForOriginsInternal(
       }
     }
   }
+}
+
+PasswordStoreChangeList FakePasswordStoreBackend::RemoveLoginInternal(
+    const PasswordForm& form) {
+  PasswordStoreChangeList changes;
+  std::vector<PasswordForm>& forms = stored_passwords_[form.signon_realm];
+  auto it = forms.begin();
+  while (it != forms.end()) {
+    if (ArePasswordFormUniqueKeysEqual(form, *it)) {
+      it = forms.erase(it);
+      changes.push_back(PasswordStoreChange(PasswordStoreChange::REMOVE, form));
+    } else {
+      ++it;
+    }
+  }
+  return changes;
 }
 
 }  // namespace password_manager

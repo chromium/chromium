@@ -33,7 +33,7 @@ namespace chromeos {
 namespace {
 
 constexpr int kBluetoothPairingDialogHeight = 375;
-constexpr int kBluetoothPairingDialogHeightWithFlag = 408;
+constexpr int kBluetoothPairingDialogHeightWithFlag = 424;
 
 void AddBluetoothStrings(content::WebUIDataSource* html_source) {
   struct {
@@ -93,7 +93,7 @@ BluetoothPairingDialog::BluetoothPairingDialog(
                               /*title=*/std::u16string()),
       dialog_id_(dialog_id) {
   if (canonical_device_address.has_value()) {
-    device_data_.SetString("address", canonical_device_address.value());
+    device_data_.SetStringKey("address", canonical_device_address.value());
   } else {
     CHECK(ash::features::IsBluetoothRevampEnabled());
   }
@@ -140,7 +140,13 @@ BluetoothPairingDialogUI::BluetoothPairingDialogUI(content::WebUI* web_ui)
       content::WebUIDataSource::Create(chrome::kChromeUIBluetoothPairingHost);
 
   AddBluetoothStrings(source);
-  source->AddLocalizedString("title", IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE);
+  if (chromeos::features::IsBluetoothRevampEnabled()) {
+    source->AddLocalizedString("title", IDS_BLUETOOTH_PAIRING_PAIR_NEW_DEVICES);
+  } else {
+    source->AddLocalizedString("title",
+                               IDS_SETTINGS_BLUETOOTH_PAIR_DEVICE_TITLE);
+  }
+
   webui::SetupWebUIDataSource(
       source,
       base::make_span(kBluetoothPairingDialogResources,

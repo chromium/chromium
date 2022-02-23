@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -98,6 +99,27 @@ class BackForwardCacheMetricsBrowserTestBase : public ContentBrowserTest,
 
   void DidStartNavigation(NavigationHandle* navigation_handle) override {
     navigation_ids_.push_back(navigation_handle->GetNavigationId());
+  }
+
+  void NavigateAndWaitForDisablingFeature(
+      const GURL& url,
+      blink::scheduler::WebSchedulerTrackedFeature feature) {
+    base::RunLoop run_loop;
+    current_frame_host()
+        ->SetBackForwardCacheDisablingFeaturesCallbackForTesting(
+            base::BindLambdaForTesting(
+                [&run_loop, feature](
+                    blink::scheduler::WebSchedulerTrackedFeatures features) {
+                  if (features.Has(feature))
+                    run_loop.Quit();
+                }));
+    EXPECT_TRUE(NavigateToURL(shell(), url));
+    run_loop.Run();
+
+    EXPECT_EQ(base::Difference(
+                  current_frame_host()->GetBackForwardCacheDisablingFeatures(),
+                  kFeaturesToIgnore),
+              blink::scheduler::WebSchedulerTrackedFeatures(feature));
   }
 
   std::vector<int64_t> navigation_ids_;
@@ -614,20 +636,13 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, DedicatedWorker) {
   const GURL url(embedded_test_server()->GetURL(
       "/back_forward_cache/page_with_dedicated_worker.html"));
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  EXPECT_EQ(
-      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
-                           ->GetMainFrame()
-                           ->GetBackForwardCacheDisablingFeatures(),
-                       kFeaturesToIgnore),
-      blink::scheduler::WebSchedulerTrackedFeatures(
-          blink::scheduler::WebSchedulerTrackedFeature::
-              kDedicatedWorkerOrWorklet));
+  NavigateAndWaitForDisablingFeature(
+      url,
+      blink::scheduler::WebSchedulerTrackedFeature::kDedicatedWorkerOrWorklet);
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SharedWorker DISABLED_SharedWorker
 #else
 #define MAYBE_SharedWorker SharedWorker
@@ -636,15 +651,8 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, MAYBE_SharedWorker) {
   const GURL url(embedded_test_server()->GetURL(
       "/back_forward_cache/page_with_shared_worker.html"));
 
-  EXPECT_TRUE(NavigateToURL(shell(), url));
-
-  EXPECT_EQ(
-      base::Difference(static_cast<WebContentsImpl*>(shell()->web_contents())
-                           ->GetMainFrame()
-                           ->GetBackForwardCacheDisablingFeatures(),
-                       kFeaturesToIgnore),
-      blink::scheduler::WebSchedulerTrackedFeatures(
-          blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker));
+  NavigateAndWaitForDisablingFeature(
+      url, blink::scheduler::WebSchedulerTrackedFeature::kSharedWorker);
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Geolocation) {

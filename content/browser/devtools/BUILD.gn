@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/compiler/pgo/pgo.gni")
 import("//build/config/devtools.gni")
 import("//components/viz/common/debugger/viz_debugger.gni")
 import("//third_party/inspector_protocol/inspector_protocol.gni")
@@ -10,6 +11,15 @@ import("//tools/grit/grit_rule.gni")
 
 # Android does not support DevTools front-end.
 if (!is_android) {
+  source_set("devtools_resources_extern") {
+    sources = [ "devtools_resources.cc" ]
+
+    # This is to remove unnecessary dependency from compiles of targets depends
+    # on this target to grit action.
+    public = []
+
+    deps = [ ":devtools_resources" ]
+  }
   grit("devtools_resources") {
     source = "$root_gen_dir/$devtools_grd_location"
 
@@ -40,8 +50,9 @@ if (!is_android) {
   }
 }
 
-# Here we concatenate the viz_debugger.pdl into our browser protocol.
-# This technique is nearly identical to what is done for cros_protocol.pdl in chrome/browser/devtools
+# Here we concatenate the viz_debugger.pdl and native_profiling.pdl
+# into our browser protocol. This technique is nearly identical to what is
+# done for cros_protocol.pdl in chrome/browser/devtools
 _concatenated_protocol_path =
     "$root_gen_dir/content/browser/devtools/protocol.json"
 action("concatenate_protocols") {
@@ -61,6 +72,12 @@ action("concatenate_protocols") {
     args += [ rebase_path(_visual_debugger_pdl, root_build_dir) ]
   }
 
+  if (use_clang_profiling_inside_sandbox && chrome_pgo_phase == 1) {
+    native_profiling_pdl = "//content/browser/native_profiling.pdl"
+    inputs += [ native_profiling_pdl ]
+    args += [ rebase_path(native_profiling_pdl, root_build_dir) ]
+  }
+
   args += [ rebase_path(output_file, root_build_dir) ]
 }
 
@@ -72,6 +89,7 @@ inspector_protocol_generate("protocol_sources") {
   config_file = "protocol_config.json"
   protocol_path = rebase_path(_concatenated_protocol_path, root_build_dir)
   config_values = [ "protocol.path=$protocol_path" ]
+  use_embedder_types = true
 
   inputs = [
     _concatenated_protocol_path,
@@ -84,8 +102,6 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/audits.h",
     "protocol/background_service.cc",
     "protocol/background_service.h",
-    "protocol/base_string_adapter.cc",
-    "protocol/base_string_adapter.h",
     "protocol/browser.cc",
     "protocol/browser.h",
     "protocol/dom.cc",
@@ -111,7 +127,6 @@ inspector_protocol_generate("protocol_sources") {
     "protocol/overlay.h",
     "protocol/page.cc",
     "protocol/page.h",
-    "protocol/protocol.cc",
     "protocol/protocol.h",
     "protocol/runtime.cc",
     "protocol/runtime.h",
@@ -139,6 +154,13 @@ inspector_protocol_generate("protocol_sources") {
     outputs += [
       "protocol/visual_debugger.cc",
       "protocol/visual_debugger.h",
+    ]
+  }
+
+  if (chrome_pgo_phase == 1) {
+    outputs += [
+      "protocol/native_profiling.cc",
+      "protocol/native_profiling.h",
     ]
   }
 }

@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -81,7 +82,8 @@ class SignedExchangePrefetchHandler final
  private:
   // network::mojom::URLLoaderClient overrides:
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -97,7 +99,7 @@ class SignedExchangePrefetchHandler final
 
   std::unique_ptr<SignedExchangeLoader> signed_exchange_loader_;
 
-  network::mojom::URLLoaderClient* forwarding_client_;
+  raw_ptr<network::mojom::URLLoaderClient> forwarding_client_;
 };
 
 }  // namespace content

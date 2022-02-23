@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
 #include "base/callback_list.h"
@@ -9,10 +10,10 @@
 #include "base/test/test_timeouts.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_service.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/common/pref_names.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/prefs/pref_service.h"
@@ -198,7 +199,7 @@ class FetchDiscountWorkerBrowserTest : public InProcessBrowserTest {
   std::unique_ptr<IdentityTestEnvironmentProfileAdaptor>
       identity_test_environment_adaptor_;
   base::CallbackListSubscription create_services_subscription_;
-  CartService* service_;
+  raw_ptr<CartService> service_;
   bool satisfied_;
 };
 
@@ -395,7 +396,7 @@ class FetchFLCodeDiscountWorkerBrowserTest
 
  protected:
   std::vector<std::string> parter_merchant_list_;
-  CouponService* coupon_service_;
+  raw_ptr<CouponService> coupon_service_;
 };
 
 IN_PROC_BROWSER_TEST_F(FetchFLCodeDiscountWorkerBrowserTest,

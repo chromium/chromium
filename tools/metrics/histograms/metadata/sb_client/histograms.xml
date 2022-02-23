@@ -35,7 +35,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="SBClientDownload.CheckDownloadStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-05-08">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-07-11">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -51,22 +51,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.CheckWhitelistResult"
-    enum="WhitelistedDownloadType" expires_after="M90">
-  <obsolete>
-    Removed 05-2021 due to lack of use
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    For each download supported by the SafeBrowsing download protection service,
-    records if it matches a certain whitelist (e.g. matches URL whitelist,
-    matches signature whitelist, or does not match any whitelists).
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DeepScanTrigger" enum="SBDeepScanTriggers"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -85,22 +71,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.DmgFileSuccessByType"
-    enum="SBClientDownloadExtensions" expires_after="M90">
-  <obsolete>
-    Removed 05-2021 due to lack of use
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Counts of DMG-like file types that were successfully analyzed by the
-    SafeBrowsing download service.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.DocumentAnalysisSuccess" units="Boolean"
     expires_after="2022-08-15">
-  <owner>anise@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     For each Office file analyzed by the SafeBrowsing download service, records
@@ -109,7 +82,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadExtensions"
-    enum="SBClientDownloadExtensions" expires_after="2022-04-10">
+    enum="SBClientDownloadExtensions" expires_after="2022-08-14">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
@@ -156,43 +129,36 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkDuration" units="ms"
-    expires_after="2021-05-05">
+    expires_after="2022-07-31">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service ping. It is
     not recorded for requests that were cancelled.
+
+    Warning: this histogram was expired from 2021-05-06 to 2021-12-02; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestNetworkStats"
-    enum="SBClientDownloadCheckDownloadStats" expires_after="2021-05-05">
+    enum="SBClientDownloadCheckDownloadStats" expires_after="2022-07-31">
   <owner>vakh@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
     Records the results of SafeBrowsing binary download checks which caused a
     server ping.
-  </summary>
-</histogram>
 
-<histogram name="SBClientDownload.DownloadRequestPayloadSize" units="bytes"
-    expires_after="M90">
-  <obsolete>
-    Remove 05-2021 due to lack of use.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    The size of the upload data for CheckClientDownloadRequest URLFetchers.
+    Warning: this histogram was expired from 2021-05-06 to 2021-12-02; data may
+    be missing.
   </summary>
 </histogram>
 
 <histogram name="SBClientDownload.DownloadRequestResponseCode"
-    enum="HttpResponseCode" expires_after="2022-04-24">
-  <owner>vakh@chromium.org</owner>
+    enum="HttpResponseCode" expires_after="2022-06-26">
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <owner>mattm@chromium.org</owner>
   <summary>
@@ -201,51 +167,13 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientDownload.ExtractDmgFeaturesTimeMedium" units="ms"
-    expires_after="2021-07-21">
-  <obsolete>
-    Removed 08-2021 due to lack of use.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <owner>rsesek@chromium.org</owner>
-  <summary>
-    Records the time it takes for the SafeBrowsing download service to extract
-    info from a downloaded DMG file.
-  </summary>
-</histogram>
-
 <histogram name="SBClientDownload.ExtractDocumentFeaturesTimeMedium" units="ms"
     expires_after="2022-08-15">
-  <owner>anise@chromium.org</owner>
+  <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the time it takes for the SafeBrowsing download service to extract
     info from an Office document.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.ExtractRarFeaturesTimeMedium" units="ms"
-    expires_after="2021-05-05">
-  <obsolete>
-    Removed in M92 due to lack of use.
-  </obsolete>
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Records the time it takes for the SafeBrowsing download service to extract
-    info from a downloaded rar file.
-  </summary>
-</histogram>
-
-<histogram name="SBClientDownload.ExtractZipFeaturesTimeMedium" units="ms"
-    expires_after="2021-05-05">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <owner>mattm@chromium.org</owner>
-  <summary>
-    Records the time it takes for the SafeBrowsing download service to extract
-    info from a downloaded zip file.
   </summary>
 </histogram>
 
@@ -270,26 +198,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="SBClientDownload.SafeDownloadOpenedLatency.{ShowAction}"
-    units="ms" expires_after="2022-05-20">
-  <obsolete>
-    Removed 09-2021 in favor of SBClientDownload.SafeDownloadOpenedLatency2
-    which filters autopened downloads.
-  </obsolete>
-  <owner>xinghuilu@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Records the latency between when a safe download is completed and when the
-    user {ShowAction}. Users can open the download either from the download
-    shelf or from the downloads page. Note that if the user opens the same
-    download for several times, this metric is recorded each time.
-  </summary>
-  <token key="ShowAction">
-    <variant name="OpenDirectly" summary="opens the download directly"/>
-    <variant name="ShowInFolder" summary="clicks show in folder"/>
-  </token>
-</histogram>
-
 <histogram name="SBClientDownload.SafeDownloadOpenedLatency2.{ShowAction}"
     units="ms" expires_after="2022-05-20">
   <owner>xinghuilu@chromium.org</owner>
@@ -310,7 +218,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="SBClientDownload.SafeDownloadOpenedLatencyByContentType.{DownloadContent}"
     units="ms" expires_after="2022-09-30">
-  <owner>anise@chromium.org</owner>
+  <owner>xinghuilu@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the latency between when a safe {DownloadContent} download is
@@ -353,7 +261,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientDownload.ServerRequestsDeepScanningPrompt"
-    enum="BooleanRequested" expires_after="2022-03-01">
+    enum="BooleanRequested" expires_after="2023-01-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -442,82 +350,29 @@ chromium-metrics-reviews@google.com.
   <token key="Action" variants="DownloadWarningAction"/>
 </histogram>
 
-<histogram name="SBClientDownload.ZipFileSuccess" enum="BooleanSuccess"
-    expires_after="M83">
-  <obsolete>
-    Removed 10-2021 due to lack of use.
-  </obsolete>
+<histogram name="SBClientPhishing.ApplyTfliteTime.{Operation}" units="ms"
+    expires_after="2022-03-18">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    For each zip file analyzed by the SafeBrowsing download service, records if
-    the unpacking was 100% successful.
+    Records the duration of {Operation}, which is one step in applying the
+    TfLite model for phishing detection. This model is applied roughly once per
+    navigation.
   </summary>
-</histogram>
-
-<histogram name="SBClientMalware.IPBlacklistRequestNetError"
-    enum="NetErrorCodes" expires_after="M85">
-  <obsolete>
-    Removed in 09-2020 since the SBClientMalware feature was removed.
-  </obsolete>
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The net error code for all ClientMalwareRequest URLFetchers.
-  </summary>
-</histogram>
-
-<histogram name="SBClientMalware.IPBlacklistRequestPayloadSize" units="bytes"
-    expires_after="M85">
-  <obsolete>
-    Removed in 09-2020 since the SBClientMalware feature was removed.
-  </obsolete>
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The size of the upload data for ClientMalwareRequest URLFetchers.
-  </summary>
-</histogram>
-
-<histogram name="SBClientMalware.IPBlacklistRequestResponseCode"
-    enum="HttpResponseCode" expires_after="M85">
-  <obsolete>
-    Removed in 09-2020 since the SBClientMalware feature was removed.
-  </obsolete>
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    For ClientMalwareRequest URLFetchers with successful status, the HTTP
-    response code that was received.
-  </summary>
-</histogram>
-
-<histogram name="SBClientMalware.SentReports" enum="SBClientMalwareSentReports"
-    expires_after="M85">
-  <obsolete>
-    Removed in 09-2020 since the SBClientMalware feature was removed.
-  </obsolete>
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Measures the success rate of sending malware reports. Sending a report can
-    fail due to a client reaching the limit on the number of reports it can send
-    per day or due to the report failing to be serialized.
-  </summary>
-</histogram>
-
-<histogram name="SBClientMalware.ServerDeterminesMalware"
-    enum="BooleanIsMalware" expires_after="M85">
-  <obsolete>
-    Removed in 09-2020 since the SBClientMalware feature was removed.
-  </obsolete>
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>The counts for malware verdicts given by server side model.</summary>
+  <token key="Operation">
+    <variant name="Classify" summary="running the TfLite classification"/>
+    <variant name="CreateClassifier"
+        summary="creating a TfLite classifier from the model data"/>
+    <variant name="GetModelInput"
+        summary="extracting the model input data from the page screenshot"/>
+    <variant name="ModelCopy"
+        summary="copying the model data into a separate string for the TfLite
+                 runtime"/>
+  </token>
 </histogram>
 
 <histogram name="SBClientPhishing.BrowserReadyOnClassifierNotReady"
-    enum="BooleanReady" expires_after="2022-03-08">
+    enum="BooleanReady" expires_after="2023-01-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -540,7 +395,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.CancelClassificationReason"
     enum="SBClientPhishingCancelClassificationReason"
-    expires_after="2022-02-20">
+    expires_after="2023-01-24">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -564,7 +419,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.Classifier.Event"
-    enum="SBPhishingClassifierEvent" expires_after="2022-04-24">
+    enum="SBPhishingClassifierEvent" expires_after="2022-06-26">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -573,57 +428,14 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.ClassifierNotReadyReason"
-    enum="SBClientPhishingClientModelStatus" expires_after="2021-08-29">
-  <obsolete>
-    Removed in 05-2021 and replaced with
-    SBClientPhishing.BrowserReadyOnClassifierNotReady.
-  </obsolete>
+<histogram name="SBClientPhishing.ComponentUpdateEvent"
+    enum="ClientSidePhishingUpdateStatus" expires_after="2023-02-10">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    Records the result of the last model fetch. This is only recorded when
-    classification fails because the model is not ready. This is useful for
-    distinguishing different reasons the model may not be ready (never fetched,
-    fetch failed, etc.)
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.ClientModelDownloadResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="M94">
-  <obsolete>
-    Remove 09-2021
-  </obsolete>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Response or error codes from the SafeBrowsing service. Logged after a
-    request for the client side model finishes to capture the response code or
-    the error code for that HTTP request. Starting M92, the
-    ERR_HTTP_RESPONSE_CODE_FAILURE net error is matched to the actual HTTP
-    response code.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.ClientModelStatus"
-    enum="SBClientPhishingClientModelStatus" expires_after="2021-12-05">
-  <owner>vakh@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The counts for various model status codes that we get after loading a new
-    client-side phishing model.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.ClientModelVersionFetched" units="version"
-    expires_after="2021-11-21">
-  <obsolete>
-    Removed 10-2021 since models are no longer fetched by this mechanism.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Records the version of the local phishing detection model fetched. This
-    histogram is logged each time we load a model.
+    Records whether or not the Client Side Detection model was updated or not.
+    This is logged each time the component updater checks for an update
+    (approximately every 6 hours or on startup).
   </summary>
 </histogram>
 
@@ -632,19 +444,6 @@ chromium-metrics-reviews@google.com.
   <owner>gab@chromium.org</owner>
   <summary>
     The time that an individual chunk of DOM feature extraction work took.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.DOMFeatureFrameRemoved" units="units"
-    expires_after="M90">
-  <obsolete>
-    Removed 01-29-2021 due to lack of use.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@chromium.org</owner>
-  <summary>
-    The number of times that DOM feature extraction finished early because the
-    active WebDocument's frame was removed during traversal.
   </summary>
 </histogram>
 
@@ -687,7 +486,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.FlatBufferMappedRegionValid"
-    enum="BooleanSuccess" expires_after="2022-04-03">
+    enum="BooleanSuccess" expires_after="2022-08-07">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -707,21 +506,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.IllegalFeatureValue" units="units"
-    expires_after="M90">
-  <obsolete>
-    Removed 01-29-2021 due to lack of use.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The number of features which were omitted from phishing classification
-    because they were added with an illegal value. This would indicate a bug.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.LocalModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2022-05-08">
+    enum="BooleanIsPhishing" expires_after="2022-07-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -734,7 +520,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.MainFrameRemoteConnected"
-    enum="BooleanConnected" expires_after="2021-12-07">
+    enum="BooleanConnected" expires_after="2022-05-29">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -746,7 +532,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.MainFrameRemoteExists" enum="BooleanExists"
-    expires_after="2021-12-07">
+    expires_after="2022-05-29">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -757,7 +543,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ModelDynamicUpdateSuccess"
-    enum="BooleanSuccess" expires_after="2022-05-08">
+    enum="BooleanSuccess" expires_after="2022-07-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -767,7 +553,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ModelDynamicUpdateVersion"
-    units="client phishing model version" expires_after="2022-05-08">
+    units="client phishing model version" expires_after="2022-07-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -776,22 +562,28 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.PageCapturedMatchesBrowserURL"
-    enum="BooleanMatched" expires_after="2021-01-27">
-  <obsolete>
-    Removed 01-29-2021 due to lack of use.
-  </obsolete>
+<histogram name="SBClientPhishing.NetworkRequestDuration" units="ms"
+    expires_after="2022-11-09">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    This records whether a page capture event matches the last URL requested
-    from the browser process. This histogram is recorded on every page capture
-    event.
+    Records the the duration of a network request due to a client side phishing
+    ping.
+  </summary>
+</histogram>
+
+<histogram name="SBClientPhishing.NetworkResult"
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-11-09">
+  <owner>drubery@chromium.org</owner>
+  <owner>chrome-safebrowsing-alerts@google.com</owner>
+  <summary>
+    Records the net error or HTTP response code after sending a network request
+    due to a client side phishing ping.
   </summary>
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectionDuration" units="ms"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -800,7 +592,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.PhishingDetectorResult"
-    enum="ClientSidePhishingResult" expires_after="2022-05-08">
+    enum="ClientSidePhishingResult" expires_after="2022-07-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -814,7 +606,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="SBClientPhishing.PreClassificationCheckResult"
     enum="SBClientDetectionPreClassificationCheckResult"
-    expires_after="2022-04-10">
+    expires_after="2022-08-14">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -827,38 +619,12 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.ProtobufScorer.CreationStatus"
-    enum="SBClientPhishingScorerCreationStatus" expires_after="2022-04-03">
+    enum="SBClientPhishingScorerCreationStatus" expires_after="2022-08-07">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
     Records the status when we create a Protobuf scorer object for the
     client-side phishing detection classifier.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.ReportLimitSkipped" enum="BooleanHit"
-    expires_after="2021-01-27">
-  <obsolete>
-    Removed 01-29-2021 due to lack of use.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The number of phishing classifications that were previously cached as being
-    phishing but that will get re-classified (to possibly fix false positives).
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.RequestNotSerialized" units="units"
-    expires_after="M90">
-  <obsolete>
-    Removed 01-29-2021 due to lack of use.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The number of phishing classifier pingbacks that were skipped because
-    serializing the request protocol buffer to string failed.
   </summary>
 </histogram>
 
@@ -873,7 +639,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.RequestWithToken" enum="BooleanSent"
-    expires_after="2022-03-30">
+    expires_after="2022-07-31">
   <owner>bhatiarohit@google.com</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -882,22 +648,8 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.ScorerCreationStatus"
-    enum="SBClientPhishingScorerCreationStatus" expires_after="M94">
-  <obsolete>
-    Removed 05-27-2021. Using SBClientPhishing.ProtobufScorer.CreationStatus and
-    SBClientPhishing.FlatBufferScorer.CreationStatus
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    Records the status when we create a scorer object for the client-side
-    phishing detection classifier.
-  </summary>
-</histogram>
-
 <histogram name="SBClientPhishing.ServerModelDetectsPhishing"
-    enum="BooleanIsPhishing" expires_after="2022-05-08">
+    enum="BooleanIsPhishing" expires_after="2022-07-11">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -906,19 +658,6 @@ chromium-metrics-reviews@google.com.
     whether a site is phishing.
 
     This metric is used to populate a dashboard on go/crsb-site.
-  </summary>
-</histogram>
-
-<histogram name="SBClientPhishing.TermFeatureBreakIterError" units="units"
-    expires_after="M90">
-  <obsolete>
-    Removed 01-29-2021 due to lack of use.
-  </obsolete>
-  <owner>drubery@chromium.org</owner>
-  <owner>chrome-safebrowsing-alerts@google.com</owner>
-  <summary>
-    The number of phishing classifications that were aborted because the term
-    feature extractor failed to initialize an ICU break iterator.
   </summary>
 </histogram>
 
@@ -960,18 +699,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="SBClientPhishing.TooManyFeatures" units="units"
-    expires_after="2021-01-27">
-  <obsolete>
-    Removed 01-29-2021 due to lack of use.
-  </obsolete>
+<histogram name="SBClientPhishing.TfLiteModelLoadTime.{Scorer}" units="ms"
+    expires_after="2022-04-10">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
-    The number of times that the limit on the number of phishing classifier
-    features for a page was reached. This may indicate a bug, or that
-    kMaxFeatureSize is too small.
+    Records how long it takes the {Scorer} to load the TfLite model file from
+    the memory mapped file into a string. This blocks the main thread, so we
+    need to ensure it is small.
   </summary>
+  <token key="Scorer">
+    <variant name="FlatbufferScorer" summary="Flatbuffer scorer"/>
+    <variant name="ProtobufScorer" summary="Protobuf scorer"/>
+  </token>
 </histogram>
 
 <histogram name="SBClientPhishing.URLFeatureTime" units="ms"
@@ -984,7 +724,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.VisualComparisonTime" units="ms"
-    expires_after="2022-04-03">
+    expires_after="2022-08-07">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>
@@ -994,7 +734,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="SBClientPhishing.VisualFeatureTime" units="ms"
-    expires_after="2022-04-10">
+    expires_after="2022-08-14">
   <owner>drubery@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
   <summary>

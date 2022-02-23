@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script src="../../../resources/run-after-layout-and-paint.js"></script>
+<script>
+onload = () => {
+  runAfterLayoutAndPaint(() => {
+    outer.style.color = "green";
+  }, true);
+}
+</script>
+<div id="outer" style="color: red">
+  <div id="inner" style="height: 100px; background: linear-gradient(white, currentColor)">Text</div>
+</div>

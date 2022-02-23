@@ -129,6 +129,10 @@ $gen_targets = $(ninja -C out/Debug -t targets all \
 ninja -C out/Debug $gen_targets
 ```
 
+Note that running the clang tool with precompiled headers enabled currently
+produces errors. This can be avoided by setting
+`enable_precompiled_headers = false` in the build's gn args.
+
 Then run the actual clang tool to generate a list of edits:
 
 ```shell
@@ -140,13 +144,17 @@ tools/clang/scripts/run_tool.py --tool <path to tool> \
 `--generate-compdb` can be omitted if the compile DB was already generated and
 the list of build flags and source files has not changed since generation.
 
+If cross-compiling, specify `--target_os`. See `gn help target_os` for
+possible values. For example, when cross-compiling a Windows build on
+Linux/Mac, use `--target_os=win`.
+
 `<path 1>`, `<path 2>`, etc are optional arguments to filter the files to run
 the tool against. This is helpful when sharding global refactorings into smaller
 chunks. For example, the following command will run the `empty_string` tool
 against just the `.c`, `.cc`, `.cpp`, `.m`, `.mm` files in `//net`.  Note that
 the filtering is not applied to the *output* of the tool - the tool can emit
-edits that apply to files outside of `//cc` (i.e. edits that apply to headers
-from `//base` that got included by source files in `//cc`).
+edits that apply to files outside of `//net` (i.e. edits that apply to headers
+from `//base` that got included by source files in `//net`).
 
 ```shell
 tools/clang/scripts/run_tool.py --tool empty_string  \

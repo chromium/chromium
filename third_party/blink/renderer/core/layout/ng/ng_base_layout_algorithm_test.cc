@@ -38,7 +38,7 @@ NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithm(
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
-  scoped_refptr<const NGLayoutResult> result =
+  const NGLayoutResult* result =
       NGBlockLayoutAlgorithm(
           {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
           .Layout();
@@ -55,7 +55,7 @@ NGBaseLayoutAlgorithmTest::RunBlockLayoutAlgorithmForElement(Element* element) {
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
-  scoped_refptr<const NGLayoutResult> result =
+  const NGLayoutResult* result =
       NGBlockLayoutAlgorithm({node, fragment_geometry, space}).Layout();
   return std::make_pair(To<NGPhysicalBoxFragment>(&result->PhysicalFragment()),
                         std::move(space));
@@ -69,7 +69,7 @@ NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
   NGFragmentGeometry fragment_geometry =
       CalculateInitialFragmentGeometry(space, node);
 
-  scoped_refptr<const NGLayoutResult> result =
+  const NGLayoutResult* result =
       NGFieldsetLayoutAlgorithm(
           {node, fragment_geometry, space, To<NGBlockBreakToken>(break_token)})
           .Layout();
@@ -80,7 +80,7 @@ NGBaseLayoutAlgorithmTest::RunFieldsetLayoutAlgorithm(
 scoped_refptr<const NGPhysicalBoxFragment>
 NGBaseLayoutAlgorithmTest::GetBoxFragmentByElementId(const char* id) {
   LayoutObject* layout_object = GetLayoutObjectByElementId(id);
-  CHECK(layout_object && layout_object->IsLayoutNGMixin());
+  CHECK(layout_object && layout_object->IsLayoutNGObject());
   scoped_refptr<const NGPhysicalBoxFragment> fragment =
       To<LayoutBlockFlow>(layout_object)->GetPhysicalFragment(0);
   CHECK(fragment);
@@ -131,6 +131,8 @@ NGConstraintSpace ConstructBlockLayoutTestConstraintSpace(
                                     : NGAutoBehavior::kFitContent);
   builder.SetFragmentainerBlockSize(fragmentainer_space_available);
   builder.SetFragmentationType(block_fragmentation);
+  if (block_fragmentation != NGFragmentationType::kFragmentNone)
+    builder.SetShouldPropagateChildBreakValues();
   return builder.ToConstraintSpace();
 }
 

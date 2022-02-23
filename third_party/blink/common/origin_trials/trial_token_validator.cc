@@ -50,13 +50,14 @@ TrialTokenResult TrialTokenValidator::ValidateToken(
     base::StringPiece token,
     const url::Origin& origin,
     base::Time current_time) const {
-  return ValidateToken(token, origin, nullptr, current_time);
+  return ValidateToken(token, origin, base::span<const url::Origin>{},
+                       current_time);
 }
 
 TrialTokenResult TrialTokenValidator::ValidateToken(
     base::StringPiece token,
     const url::Origin& origin,
-    const url::Origin* third_party_origin,
+    base::span<const url::Origin> third_party_origins,
     base::Time current_time) const {
   OriginTrialPolicy* policy = PolicyGetter().Run();
 
@@ -82,8 +83,12 @@ TrialTokenResult TrialTokenValidator::ValidateToken(
   // If the third_party flag is set on the token, we match it against third
   // party origin if it exists. Otherwise match against document origin.
   if (trial_token->is_third_party()) {
-    if (third_party_origin) {
-      status = trial_token->IsValid(*third_party_origin, current_time);
+    if (!third_party_origins.empty()) {
+      for (const auto& third_party_origin : third_party_origins) {
+        status = trial_token->IsValid(third_party_origin, current_time);
+        if (status == OriginTrialTokenStatus::kSuccess)
+          break;
+      }
     } else {
       status = OriginTrialTokenStatus::kWrongOrigin;
     }

@@ -26,6 +26,7 @@ enum class PageActionIconType {
   kSmsRemoteFetcher,
   kTranslate,
   kVirtualCardManualFallback,
+  kVirtualCardEnroll,
   kWebAuthn,
   kZoom,
 };

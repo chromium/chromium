@@ -27,28 +27,13 @@ MATCHER_P(SerializesTo, want, "") {
   return testing::ExplainMatchResult(testing::Eq(want), got, result_listener);
 }
 
-TEST(FirstPartySetParser, RejectsEmpty) {
-  // If the input isn't valid JSON, we should
-  // reject it. In particular, we should reject
-  // empty input.
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(""),
-              IsEmpty());
+base::flat_map<net::SchemefulSite, net::SchemefulSite> ParseSets(
+    const std::string& sets) {
+  std::istringstream stream(sets);
+  return FirstPartySetParser::ParseSetsFromStream(stream);
 }
 
 TEST(FirstPartySetParser, RejectsNonemptyMalformed) {
-  // If the input isn't valid JSON, we should
-  // reject it.
-  const char input[] = "certainly not valid JSON";
-
-  // Sanity check that the input is not valid JSON.
-  ASSERT_FALSE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
-}
-
-TEST(FirstPartySetParser, Streamed_RejectsNonemptyMalformed) {
   // If the input isn't valid JSON, we should
   // reject it.
   const std::string input = "certainly not valid JSON";
@@ -58,57 +43,20 @@ TEST(FirstPartySetParser, Streamed_RejectsNonemptyMalformed) {
   EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream), IsEmpty());
 }
 
-TEST(FirstPartySetParser, RejectsNonListInput) {
-  // The outermost value should be a list.
-  const std::string input = "{}";
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
-}
-
 TEST(FirstPartySetParser, AcceptsTrivial) {
-  const std::string input = "[]";
+  const std::string input = "";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsSingletonSet) {
   const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": []
-        }])";
+      R"({"owner": "https://example.test", "members": []})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, AcceptsMinimal) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["https://aaaa.test"]
-        }])";
-
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://aaaa.test"),
-                                        SerializesTo("https://example.test"))));
-}
-
-TEST(FirstPartySetParser, Streamed_AcceptsMinimal) {
   const std::string input =
       R"({"owner": "https://example.test", "members": ["https://aaaa.test"]})";
 
@@ -121,145 +69,78 @@ TEST(FirstPartySetParser, Streamed_AcceptsMinimal) {
 }
 
 TEST(FirstPartySetParser, RejectsMissingOwner) {
-  const std::string input = R"( [ { "members": ["https://aaaa.test"] } ] )";
+  const std::string input = R"({"members": ["https://aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafeOwner) {
   const std::string input =
-      R"( [ { "owner": 3, "members": ["https://aaaa.test"] } ] )";
+      R"({ "owner": 3, "members": ["https://aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonHTTPSOwner) {
   const std::string input =
-      R"([{
-        "owner": "http://example.test",
-        "members": ["https://aaaa.test"]
-        }])";
+      R"({"owner": "http://example.test", "members": ["https://aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonOriginOwner) {
   const std::string input =
-      R"([{
-        "owner": "example",
-        "members": ["https://aaaa.test"]
-        }])";
+      R"({"owner": "example", "members": ["https://aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsOwnerWithoutRegisteredDomain) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test..",
-        "members": ["https://aaaa.test"]
-        }])";
+  const std::string input = R"({"owner": "https://example.test..", )"
+                            R"("members": ["https://aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsMissingMembers) {
-  const std::string input = R"( [ { "owner": "https://example.test" } ] )";
+  const std::string input = R"({"owner": "https://example.test" })";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsTypeUnsafeMembers) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["https://aaaa.test", 4]
-        }])";
+  const std::string input = R"({"owner": "https://example.test", )"
+                            R"("members": ["https://aaaa.test", 4]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonHTTPSMember) {
   const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["http://aaaa.test"]
-        }])";
+      R"({"owner": "https://example.test", "members": ["http://aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsNonOriginMember) {
   const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["aaaa"]
-        }])";
+      R"({"owner": "https://example.test", "members": ["aaaa"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsMemberWithoutRegisteredDomain) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["https://aaaa.test.."]
-        }])";
+  const std::string input = R"({"owner": "https://example.test", )"
+                            R"("members": ["https://aaaa.test.."]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
-  const std::string input =
-      R"([{
-        "owner": "https://subdomain.example.test",
-        "members": ["https://aaaa.test"]
-        }])";
+  const std::string input = R"({"owner": "https://subdomain.example.test", )"
+                            R"("members": ["https://aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+  EXPECT_THAT(ParseSets(input),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://aaaa.test"),
@@ -267,16 +148,10 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Owner) {
 }
 
 TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
-  const std::string input =
-      R"([{
-        "owner": "https://example.test",
-        "members": ["https://subdomain.aaaa.test"]
-        }])";
+  const std::string input = R"({"owner": "https://example.test", )"
+                            R"("members": ["https://subdomain.aaaa.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+  EXPECT_THAT(ParseSets(input),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://aaaa.test"),
@@ -284,34 +159,6 @@ TEST(FirstPartySetParser, TruncatesSubdomain_Member) {
 }
 
 TEST(FirstPartySetParser, AcceptsMultipleSets) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
-
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://member1.test"),
-                                        SerializesTo("https://example.test")),
-                                   Pair(SerializesTo("https://foo.test"),
-                                        SerializesTo("https://foo.test")),
-                                   Pair(SerializesTo("https://member2.test"),
-                                        SerializesTo("https://foo.test"))));
-}
-
-TEST(FirstPartySetParser, Streamed_AcceptsMultipleSets) {
   const std::string input =
       "{\"owner\": \"https://example.test\", \"members\": "
       "[\"https://member1.test\"]}\n"
@@ -330,63 +177,46 @@ TEST(FirstPartySetParser, Streamed_AcceptsMultipleSets) {
                                         SerializesTo("https://foo.test"))));
 }
 
-TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
+TEST(FirstPartySetParser, AcceptsMultipleSetsWithWhitespace) {
+  // Note the leading blank line, middle blank line, trailing blank line, and
+  // leading whitespace on each line.
   const std::string input = R"(
-  [
-    {
-      "owner": 3,
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
+      {"owner": "https://example.test", "members": ["https://member1.test"]}
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
+      {"owner": "https://foo.test", "members": ["https://member2.test"]}
+    )";
 
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  std::istringstream stream(input);
+  EXPECT_THAT(FirstPartySetParser::ParseSetsFromStream(stream),
+              UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://member1.test"),
+                                        SerializesTo("https://example.test")),
+                                   Pair(SerializesTo("https://foo.test"),
+                                        SerializesTo("https://foo.test")),
+                                   Pair(SerializesTo("https://member2.test"),
+                                        SerializesTo("https://foo.test"))));
+}
+
+TEST(FirstPartySetParser, RejectsInvalidSets_InvalidOwner) {
+  const std::string input = R"({"owner": 3, "members": ["https://member1.test"]}
+    {"owner": "https://foo.test", "members": ["https://member2.test"]})";
+
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, RejectsInvalidSets_InvalidMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": [3]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
+  const std::string input = R"({"owner": "https://example.test", "members": [3]}
+    {"owner": "https://foo.test", "members": ["https://member2.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, AllowsTrailingCommas) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"],
-    },
-  ]
-  )";
+  const std::string input = R"({"owner": "https://example.test", )"
+                            R"("members": ["https://member1.test"],})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(
-      input, base::JSONParserOptions::JSON_ALLOW_TRAILING_COMMAS));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
+  EXPECT_THAT(ParseSets(input),
               UnorderedElementsAre(Pair(SerializesTo("https://example.test"),
                                         SerializesTo("https://example.test")),
                                    Pair(SerializesTo("https://member1.test"),
@@ -394,87 +224,37 @@ TEST(FirstPartySetParser, AllowsTrailingCommas) {
 }
 
 TEST(FirstPartySetParser, Rejects_SameOwner) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://example.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
+  const std::string input =
+      R"({"owner": "https://example.test", "members": ["https://member1.test"]}
+    {"owner": "https://example.test", "members": ["https://member2.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, Rejects_MemberAsOwner) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://member1.test",
-      "members": ["https://member2.test"]
-    }
-  ]
-  )";
+  const std::string input =
+      R"({"owner": "https://example.test", "members": ["https://member1.test"]}
+    {"owner": "https://member1.test", "members": ["https://member2.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, Rejects_SameMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://foo.test",
-      "members": ["https://member1.test", "https://member2.test"]
-    }
-  ]
-  )";
+  const std::string input =
+      R"({"owner": "https://example.test", "members": ["https://member1.test"]}
+    {"owner": "https://foo.test", "members": )"
+      R"(["https://member1.test", "https://member2.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, Rejects_OwnerAsMember) {
-  const std::string input = R"(
-  [
-    {
-      "owner": "https://example.test",
-      "members": ["https://member1.test"]
-    },
-    {
-      "owner": "https://example2.test",
-      "members": ["https://example.test", "https://member2.test"]
-    }
-  ]
-  )";
+  const std::string input =
+      R"({"owner": "https://example.test", "members": ["https://member1.test"]}
+    {"owner": "https://example2.test", )"
+      R"("members": ["https://example.test", "https://member2.test"]})";
 
-  // Sanity check that the input is actually valid JSON.
-  ASSERT_TRUE(base::JSONReader::Read(input));
-
-  EXPECT_THAT(FirstPartySetParser::ParseSetsFromComponentUpdater(input),
-              IsEmpty());
+  EXPECT_THAT(ParseSets(input), IsEmpty());
 }
 
 TEST(FirstPartySetParser, SerializeFirstPartySets) {

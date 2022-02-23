@@ -62,7 +62,7 @@ def LuciAuthTokenGeneratorCallback():
   args = ['luci-auth', 'token']
   p = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if p.wait() == 0:
-    return p.stdout.read()
+    return p.stdout.read().strip()
   else:
     raise RuntimeError(
         'Error generating authentication token.\nStdout: %s\nStder:%s' %

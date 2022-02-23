@@ -10,7 +10,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -23,7 +23,7 @@
 #include "ui/views/controls/menu/menu_types.h"
 #include "ui/views/view.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -246,8 +246,8 @@ class VIEWS_EXPORT MenuItemView : public View {
 
   // Adds a callback subscription associated with the above selected property.
   // The callback will be invoked whenever the selected property changes.
-  base::CallbackListSubscription AddSelectedChangedCallback(
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+  [[nodiscard]] base::CallbackListSubscription AddSelectedChangedCallback(
+      PropertyChangedCallback callback);
 
   // Sets whether the submenu area of an ACTIONABLE_SUBMENU is selected.
   void SetSelectionOfActionableSubmenu(
@@ -375,6 +375,10 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns whether keyboard navigation through the menu should stop on this
   // item.
   bool IsTraversableByKeyboard() const;
+
+  bool last_paint_as_selected_for_testing() const {
+    return last_paint_as_selected_;
+  }
 
  protected:
   // Creates a MenuItemView. This is used by the various AddXXX methods.
@@ -538,10 +542,19 @@ class VIEWS_EXPORT MenuItemView : public View {
   // Returns true if the MenuItemView should be painted as selected.
   bool ShouldPaintAsSelected(PaintMode mode) const;
 
+  // Returns true if this item or any anscestor menu items have been removed and
+  // are currently scheduled for deletion. Items can exist in this state after
+  // they have been removed from the menu but before ChildrenChanged() has been
+  // called.
+  // Menu items scheduled for deletion may not accurately reflect the state of
+  // the menu model and this should be checked when performing actions that
+  // could interact with model state.
+  bool IsScheduledForDeletion() const;
+
   // The delegate. This is only valid for the root menu item. You shouldn't
   // use this directly, instead use GetDelegate() which walks the tree as
   // as necessary.
-  MenuDelegate* delegate_ = nullptr;
+  raw_ptr<MenuDelegate> delegate_ = nullptr;
 
   // The controller for the run operation, or NULL if the menu isn't showing.
   base::WeakPtr<MenuController> controller_;
@@ -550,7 +563,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool canceled_ = false;
 
   // Our parent.
-  MenuItemView* parent_menu_item_ = nullptr;
+  raw_ptr<MenuItemView> parent_menu_item_ = nullptr;
 
   // Type of menu. NOTE: MenuItemView doesn't itself represent SEPARATOR,
   // that is handled by an entirely different view class.
@@ -575,7 +588,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool may_have_mnemonics_ = true;
 
   // Submenu, created via CreateSubmenu.
-  SubmenuView* submenu_ = nullptr;
+  raw_ptr<SubmenuView> submenu_ = nullptr;
 
   std::u16string title_;
   std::u16string secondary_title_;
@@ -594,7 +607,7 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool has_icons_ = false;
 
   // Pointer to a view with a menu icon.
-  ImageView* icon_view_ = nullptr;
+  raw_ptr<ImageView> icon_view_ = nullptr;
 
   // The tooltip to show on hover for this menu item.
   std::u16string tooltip_;
@@ -636,17 +649,17 @@ class VIEWS_EXPORT MenuItemView : public View {
   bool use_right_margin_ = true;
 
   // Contains an image for the checkbox or radio icon.
-  ImageView* radio_check_image_view_ = nullptr;
+  raw_ptr<ImageView> radio_check_image_view_ = nullptr;
 
   // The submenu indicator arrow icon in case the menu item has a Submenu.
-  ImageView* submenu_arrow_image_view_ = nullptr;
+  raw_ptr<ImageView> submenu_arrow_image_view_ = nullptr;
 
   // The forced visual selection state of this item, if any.
   absl::optional<bool> forced_visual_selection_;
 
   // The vertical separator that separates the actionable and submenu regions of
   // an ACTIONABLE_SUBMENU.
-  Separator* vertical_separator_ = nullptr;
+  raw_ptr<Separator> vertical_separator_ = nullptr;
 
   // Whether this menu item is rendered differently to draw attention to it.
   bool is_alerted_ = false;

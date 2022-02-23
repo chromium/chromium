@@ -25,6 +25,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
 #include "ui/views/background.h"
@@ -36,7 +37,9 @@ namespace ash {
 
 namespace {
 
-constexpr gfx::Size kBarSize{376, 64};
+// Full size of capture mode bar view, the width of which will be
+// adjusted in projector mode.
+constexpr gfx::Size kFullBarSize{376, 64};
 
 constexpr gfx::Insets kBarPadding{/*vertical=*/14, /*horizontal=*/16};
 
@@ -110,7 +113,8 @@ CaptureModeBarView::CaptureModeBarView(bool projector_mode)
 CaptureModeBarView::~CaptureModeBarView() = default;
 
 // static
-gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root) {
+gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root,
+                                        bool is_in_projector_mode) {
   DCHECK(root);
 
   auto bounds = root->GetBoundsInScreen();
@@ -128,8 +132,14 @@ gfx::Rect CaptureModeBarView::GetBounds(aura::Window* root) {
     bar_y = shelf_widget->GetWindowBoundsInScreen().y();
   }
 
-  bar_y -= (kDistanceFromShelfOrHotseatTopDp + kBarSize.height());
-  bounds.ClampToCenteredSize(kBarSize);
+  gfx::Size bar_size = kFullBarSize;
+  if (is_in_projector_mode) {
+    bar_size.set_width(kFullBarSize.width() -
+                       capture_mode::kButtonSize.width() -
+                       capture_mode::kSpaceBetweenCaptureModeTypeButtons);
+  }
+  bar_y -= (kDistanceFromShelfOrHotseatTopDp + bar_size.height());
+  bounds.ClampToCenteredSize(bar_size);
   bounds.set_y(bar_y);
   return bounds;
 }

@@ -62,6 +62,15 @@ export function scanPreviewTest() {
   /** @type {!HTMLElement} */
   let cancelingProgress;
 
+  /**
+   * @suppress {visibility}
+   * @param {boolean} enabled
+   */
+  function setIsDarkModeEnabled_(enabled) {
+    assertTrue(!!scanPreview);
+    scanPreview.isDarkModeEnabled_ = enabled;
+  }
+
   setup(() => {
     fakeAccessibilityFeatures_ = new FakeAccessibilityFeatures();
     setAccessibilityFeaturesForTesting(fakeAccessibilityFeatures_);
@@ -411,5 +420,20 @@ export function scanPreviewTest() {
               'visible',
               getComputedStyle(actionToolbar).getPropertyValue('visibility'));
         });
+  });
+
+  // Verify correct svg displayed when page is in dark mode.
+  test('readyToScanSvgSetByColorScheme', async () => {
+    const srcBase = 'chrome://scanning/';
+    const lightModeSvg = `${srcBase}svg/ready_to_scan.svg`;
+    const darkModeSvg = `${srcBase}svg/ready_to_scan_dark.svg`;
+    const getReadyToScanSvg = () =>
+        (/** @type {!HTMLImageElement} */ (scanPreview.$$('#readyToScanImg')));
+    assertEquals(getReadyToScanSvg().src, lightModeSvg);
+
+    // Mock media query state for dark mode.
+    setIsDarkModeEnabled_(true);
+    await flushTasks();
+    assertEquals(getReadyToScanSvg().src, darkModeSvg);
   });
 }

@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -131,7 +132,7 @@ class GPU_IPC_SERVICE_EXPORT GpuMemoryAblationExperiment
   scoped_refptr<SharedContextState> context_state_;
   std::unique_ptr<SharedImageFactory> factory_;
   std::unique_ptr<SharedImageRepresentationFactory> rep_factory_;
-  GpuChannelManager* channel_manager_;
+  raw_ptr<GpuChannelManager> channel_manager_;
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   base::WeakPtrFactory<GpuMemoryAblationExperiment> weak_factory_{this};
 };

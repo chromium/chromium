@@ -147,10 +147,10 @@ UnPackStatus LzmaUtilImpl::OpenArchive(const base::FilePath& archivePath) {
   // Make sure file is not already open.
   CloseArchive();
 
-  archive_file_.Initialize(archivePath, base::File::FLAG_OPEN |
-                                            base::File::FLAG_READ |
-                                            base::File::FLAG_EXCLUSIVE_WRITE |
-                                            base::File::FLAG_SHARE_DELETE);
+  archive_file_.Initialize(archivePath,
+                           base::File::FLAG_OPEN | base::File::FLAG_READ |
+                               base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                               base::File::FLAG_WIN_SHARE_DELETE);
   if (archive_file_.IsValid())
     return UNPACK_NO_ERROR;
   error_code_ = ::GetLastError();
@@ -241,10 +241,10 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
     base::File target_file(file_path, base::File::FLAG_CREATE_ALWAYS |
                                           base::File::FLAG_READ |
                                           base::File::FLAG_WRITE |
-                                          base::File::FLAG_EXCLUSIVE_READ |
-                                          base::File::FLAG_EXCLUSIVE_WRITE |
+                                          base::File::FLAG_WIN_EXCLUSIVE_READ |
+                                          base::File::FLAG_WIN_EXCLUSIVE_WRITE |
                                           base::File::FLAG_CAN_DELETE_ON_CLOSE |
-                                          base::File::FLAG_SHARE_DELETE);
+                                          base::File::FLAG_WIN_SHARE_DELETE);
     if (!target_file.IsValid()) {
       PLOG(ERROR) << "Invalid file.";
       error_code_ = ::GetLastError();
@@ -291,11 +291,11 @@ UnPackStatus LzmaUtilImpl::UnPack(const base::FilePath& location,
           base::File temp_file(
               temp_file_path,
               base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_READ |
-                  base::File::FLAG_WRITE | base::File::FLAG_EXCLUSIVE_READ |
-                  base::File::FLAG_EXCLUSIVE_WRITE |
-                  base::File::FLAG_TEMPORARY |
+                  base::File::FLAG_WRITE | base::File::FLAG_WIN_EXCLUSIVE_READ |
+                  base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                  base::File::FLAG_WIN_TEMPORARY |
                   base::File::FLAG_DELETE_ON_CLOSE |
-                  base::File::FLAG_SHARE_DELETE);
+                  base::File::FLAG_WIN_SHARE_DELETE);
           mapped_file_ok = mapped_file->Initialize(
               std::move(temp_file),
               {0, static_cast<size_t>(folder_unpack_size)},

@@ -123,7 +123,7 @@ template("cipd_package_definition_by_file") {
   }
   action(target_name) {
     script = "//build/cipd/cipd_from_file.py"
-    inputs = [ "//build/cipd/cipd_from_file.py" ]
+    inputs = [ invoker.files_file ]
     args = [
       "--description=" + invoker.description,
       "--buildtype=" + invoker.buildtype,

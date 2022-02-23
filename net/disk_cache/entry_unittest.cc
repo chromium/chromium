@@ -8,7 +8,6 @@
 #include "base/callback_helpers.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/field_trial_param_associator.h"
 #include "base/run_loop.h"
@@ -551,7 +550,7 @@ TEST_F(DiskCacheEntryTest, ExternalAsyncIO) {
 }
 
 // TODO(http://crbug.com/497101): This test is flaky.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #define MAYBE_ExternalAsyncIONoBuffer DISABLED_ExternalAsyncIONoBuffer
 #else
 #define MAYBE_ExternalAsyncIONoBuffer ExternalAsyncIONoBuffer

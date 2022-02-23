@@ -46,7 +46,7 @@ class MediaNotificationDeviceMonitor {
   base::ObserverList<DevicesChangedObserver> observers_;
 };
 
-#if !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV))
+#if !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && defined(USE_UDEV))
 // Monitors device changes by observing the SystemMonitor
 class SystemMonitorDeviceMonitorImpl
     : public MediaNotificationDeviceMonitor,
@@ -89,6 +89,7 @@ class PollingDeviceMonitorImpl : public MediaNotificationDeviceMonitor {
 
   base::WeakPtrFactory<PollingDeviceMonitorImpl> weak_ptr_factory_{this};
 };
-#endif  // !((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(USE_UDEV))
+#endif  // !((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) &&
+        // defined(USE_UDEV))
 
 #endif  // CHROME_BROWSER_UI_GLOBAL_MEDIA_CONTROLS_MEDIA_NOTIFICATION_DEVICE_MONITOR_H_

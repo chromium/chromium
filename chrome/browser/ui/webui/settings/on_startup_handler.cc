@@ -39,11 +39,11 @@ void OnStartupHandler::OnJavascriptDisallowed() {
 }
 
 void OnStartupHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getNtpExtension",
       base::BindRepeating(&OnStartupHandler::HandleGetNtpExtension,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "validateStartupPage",
       base::BindRepeating(&OnStartupHandler::HandleValidateStartupPage,
                           base::Unretained(this)));
@@ -53,44 +53,44 @@ void OnStartupHandler::OnExtensionUnloaded(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension,
     extensions::UnloadedExtensionReason reason) {
-  FireWebUIListener(kOnStartupNtpExtensionEventName, *GetNtpExtension());
+  FireWebUIListener(kOnStartupNtpExtensionEventName, GetNtpExtension());
 }
 
 void OnStartupHandler::OnExtensionReady(
     content::BrowserContext* browser_context,
     const extensions::Extension* extension) {
-  FireWebUIListener(kOnStartupNtpExtensionEventName, *GetNtpExtension());
+  FireWebUIListener(kOnStartupNtpExtensionEventName, GetNtpExtension());
 }
 
-std::unique_ptr<base::Value> OnStartupHandler::GetNtpExtension() {
+base::Value OnStartupHandler::GetNtpExtension() {
   const extensions::Extension* ntp_extension =
       extensions::GetExtensionOverridingNewTabPage(profile_);
   if (!ntp_extension) {
-    std::unique_ptr<base::Value> none(new base::Value);
-    return none;
+    return base::Value();
   }
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetString("id", ntp_extension->id());
-  dict->SetString("name", ntp_extension->name());
-  dict->SetBoolean("canBeDisabled",
-                   !extensions::ExtensionSystem::Get(profile_)
-                        ->management_policy()
-                        ->MustRemainEnabled(ntp_extension, nullptr));
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetStringKey("id", ntp_extension->id());
+  dict.SetStringKey("name", ntp_extension->name());
+  dict.SetBoolKey("canBeDisabled",
+                  !extensions::ExtensionSystem::Get(profile_)
+                       ->management_policy()
+                       ->MustRemainEnabled(ntp_extension, nullptr));
   return dict;
 }
 
-void OnStartupHandler::HandleGetNtpExtension(const base::ListValue* args) {
-  const base::Value& callback_id = args->GetList()[0];
+void OnStartupHandler::HandleGetNtpExtension(base::Value::ConstListView args) {
+  const base::Value& callback_id = args[0];
   AllowJavascript();
 
-  ResolveJavascriptCallback(callback_id, *GetNtpExtension());
+  ResolveJavascriptCallback(callback_id, GetNtpExtension());
 }
 
-void OnStartupHandler::HandleValidateStartupPage(const base::ListValue* args) {
-  CHECK_EQ(args->GetList().size(), 2U);
-  const base::Value& callback_id = args->GetList()[0];
-  const std::string& url_string = args->GetList()[1].GetString();
+void OnStartupHandler::HandleValidateStartupPage(
+    base::Value::ConstListView args) {
+  CHECK_EQ(args.size(), 2U);
+  const base::Value& callback_id = args[0];
+  const std::string& url_string = args[1].GetString();
   AllowJavascript();
 
   bool valid = settings_utils::FixupAndValidateStartupPage(url_string, nullptr);

@@ -7,7 +7,6 @@
 
 #import <UIKit/UIKit.h>
 
-#include "base/macros.h"
 #include "testing/platform_test.h"
 
 // Base test fixture that restores the key window's original root view

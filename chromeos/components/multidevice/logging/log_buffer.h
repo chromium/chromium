@@ -85,4 +85,11 @@ class LogBuffer {
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+namespace multidevice {
+using ::chromeos::multidevice::LogBuffer;
+}  // namespace multidevice
+}  // namespace ash
+
 #endif  // CHROMEOS_COMPONENTS_MULTIDEVICE_LOGGING_LOG_BUFFER_H_

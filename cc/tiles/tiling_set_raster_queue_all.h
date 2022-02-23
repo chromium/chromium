@@ -62,8 +62,13 @@ class CC_EXPORT TilingSetRasterQueueAll {
     IsTileValidResult IsTileValid(const Tile* tile) const;
 
     PrioritizedTile current_tile_;
+
+    // `tiling_` and `tiling_data_` are not a raw_ptr<...> for performance
+    // reasons (based on analysis of sampling profiler data and
+    // tab_search:top100:2020).
     PictureLayerTiling* tiling_;
     TilingData* tiling_data_;
+
     PictureLayerTiling::PriorityRectType priority_rect_type_;
     gfx::Rect pending_visible_rect_;
   };
@@ -163,6 +168,9 @@ class CC_EXPORT TilingSetRasterQueueAll {
 
     void AdvancePhase();
 
+    // `tiling_` and `tiling_data_` are not a raw_ptr<...> for performance
+    // reasons (based on analysis of sampling profiler data and
+    // tab_search:top100:2020).
     PictureLayerTiling* tiling_;
     TilingData* tiling_data_;
 
@@ -186,6 +194,8 @@ class CC_EXPORT TilingSetRasterQueueAll {
   void MakeTilingIterator(IteratorType type, PictureLayerTiling* tiling);
   void AdvanceToNextStage();
 
+  // `tiling_set_` is not a raw_ptr<...> for performance reasons (based on
+  // analysis of sampling profiler data).
   PictureLayerTilingSet* tiling_set_;
 
   struct IterationStage {

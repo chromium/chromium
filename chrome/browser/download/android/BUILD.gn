@@ -101,6 +101,7 @@ android_library("java") {
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
     "//ui/android:ui_java",
+    "//url:gurl_java",
   ]
 
   srcjar_deps = [ "//chrome:download_enum_javagen" ]
@@ -146,7 +147,6 @@ android_library("download_java_tests") {
     "java/src/org/chromium/chrome/browser/download/DownloadFileProviderTest.java",
     "java/src/org/chromium/chrome/browser/download/MimeUtilsTest.java",
     "java/src/org/chromium/chrome/browser/download/StringUtilsTest.java",
-    "java/src/org/chromium/chrome/browser/download/settings/DownloadSettingsTest.java",
   ]
 
   deps = [
@@ -154,7 +154,6 @@ android_library("download_java_tests") {
     ":java",
     "//base:base_java",
     "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",

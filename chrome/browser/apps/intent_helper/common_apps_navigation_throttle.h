@@ -12,6 +12,10 @@
 #include "content/public/browser/navigation_throttle.h"
 #include "url/gurl.h"
 
+namespace base {
+class TickClock;
+}
+
 namespace content {
 class NavigationHandle;
 }  // namespace content
@@ -30,6 +34,10 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
   static std::unique_ptr<apps::AppsNavigationThrottle> MaybeCreate(
       content::NavigationHandle* handle);
 
+  // Method intended for testing purposes only.
+  // Set clock used for timing to enable manipulation during tests.
+  static void SetClockForTesting(const base::TickClock* tick_clock);
+
   explicit CommonAppsNavigationThrottle(
       content::NavigationHandle* navigation_handle);
 
@@ -43,6 +51,10 @@ class CommonAppsNavigationThrottle : public apps::AppsNavigationThrottle {
   bool ShouldCancelNavigation(content::NavigationHandle* handle) override;
   bool ShouldShowDisablePage(content::NavigationHandle* handle) override;
   ThrottleCheckResult MaybeShowCustomResult() override;
+
+  // Used to create a unique timestamped URL to force reload apps.
+  // Points to the base::DefaultTickClock by default.
+  static const base::TickClock* clock_;
 };
 
 }  // namespace apps

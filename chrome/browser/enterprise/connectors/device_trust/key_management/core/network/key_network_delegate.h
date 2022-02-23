@@ -15,17 +15,19 @@ namespace enterprise_connectors {
 // implementation for each platform and also for tests.
 class KeyNetworkDelegate {
  public:
+  using HttpResponseCode = int;
+
   virtual ~KeyNetworkDelegate() = default;
 
   // Sends `body`, which is a serialized DeviceManagementRequest, to DM
   // server at `url`.  `dm_token` authn the local machine.  Only the
   // BrowserPublicKeyUploadRequest member is expected to be initialized.
   //
-  // The return value is a string that can be parsed into
-  // DeviceManagementResponse.
-  virtual std::string SendPublicKeyToDmServerSync(const GURL& url,
-                                                  const std::string& dm_token,
-                                                  const std::string& body) = 0;
+  // The return value is the upload response's HTTP status code.
+  virtual HttpResponseCode SendPublicKeyToDmServerSync(
+      const GURL& url,
+      const std::string& dm_token,
+      const std::string& body) = 0;
 };
 
 }  // namespace enterprise_connectors

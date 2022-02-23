@@ -32,9 +32,9 @@ namespace blink {
 
 // Common type of stereo panner as found in normal audio mixing equipment.
 
-class PLATFORM_EXPORT EqualPowerPanner final : public Panner {
+class EqualPowerPanner final : public Panner {
  public:
-  EqualPowerPanner(float sample_rate);
+  explicit EqualPowerPanner(float sample_rate);
 
   void Pan(double azimuth,
            double elevation,

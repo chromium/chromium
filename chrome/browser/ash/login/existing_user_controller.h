@@ -10,8 +10,9 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/login/auth/login_performer.h"
+#include "ash/components/login/auth/user_context.h"
 #include "base/callback_forward.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -23,8 +24,6 @@
 #include "chrome/browser/ash/login/session/user_session_manager.h"
 #include "chrome/browser/ash/login/ui/login_display.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
-#include "chromeos/login/auth/login_performer.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/account_id/account_id.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
@@ -99,7 +98,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   bool IsSigninInProgress() const override;
   void Login(const UserContext& user_context,
              const SigninSpecifics& specifics) override;
-  void OnSigninScreenReady() override;
   void OnStartEnterpriseEnrollment() override;
   void OnStartKioskEnableScreen() override;
   void OnStartKioskAutolaunchScreen() override;
@@ -176,6 +174,22 @@ class ExistingUserController : public LoginDisplay::Delegate,
                                bool has_incomplete_migration) override;
   void AllowlistCheckFailed(const std::string& email) override;
   void PolicyLoadFailed() override;
+
+  // Callback called in response to calling WaitForServiceToBeAvailable() on the
+  // hibernate service. This is initiated in the OnAuthSuccess() flow to make a
+  // blocking call to resume from hibernate before releasing other usual login
+  // activities.
+  void OnHibernateServiceAvailable(
+    const UserContext& user_context,
+    bool service_is_available);
+
+  // Handles the continuation of successful login after an attempt has been made
+  // to divert to a hibernate resume flow. The execution of this method means
+  // that the diversion to a resume flow did not occur, indicating either no
+  // hibernation image was present, the resume was cancelled/aborted, or
+  // hibernate is simply not supported.
+  void ContinueAuthSuccessAfterResumeAttempt(const UserContext& user_context,
+                                             bool resume_call_success);
 
   // UserSessionManagerDelegate implementation:
   void OnProfilePrepared(Profile* profile, bool browser_launched) override;
@@ -376,7 +390,6 @@ class ExistingUserController : public LoginDisplay::Delegate,
   std::unique_ptr<login::NetworkStateHelper> network_state_helper_;
 
   base::CallbackListSubscription show_user_names_subscription_;
-  base::CallbackListSubscription allow_new_user_subscription_;
   base::CallbackListSubscription allow_guest_subscription_;
   base::CallbackListSubscription users_subscription_;
   base::CallbackListSubscription local_account_auto_login_id_subscription_;

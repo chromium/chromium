@@ -21,6 +21,7 @@
 #include "chromeos/dbus/shill/shill_manager_client.h"
 #include "chromeos/dbus/shill/shill_profile_client.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
+#include "chromeos/network/metrics/network_metrics_helper.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "dbus/object_path.h"
@@ -32,14 +33,12 @@ namespace {
 // priority order, it should be reasonable to ignore services past this.
 const size_t kMaxObserved = 100;
 
-const base::ListValue* GetListValue(const std::string& key,
-                                    const base::Value& value) {
-  const base::ListValue* vlist = nullptr;
-  if (!value.GetAsList(&vlist)) {
+bool CheckListValue(const std::string& key, const base::Value& value) {
+  if (!value.is_list()) {
     NET_LOG(ERROR) << "Error parsing key as list: " << key;
-    return nullptr;
+    return false;
   }
-  return vlist;
+  return true;
 }
 
 }  // namespace
@@ -163,16 +162,20 @@ void ShillPropertyHandler::SetTechnologyEnabled(
   if (enabled) {
     if (prohibited_technologies_.find(technology) !=
         prohibited_technologies_.end()) {
-      chromeos::network_handler::RunErrorCallback(
-          std::move(error_callback), "", "prohibited_technologies",
-          "Ignored: Attempt to enable prohibited network technology " +
-              technology);
+      NET_LOG(ERROR) << "Attempt to enable prohibited network technology: "
+                     << technology;
+      chromeos::network_handler::RunErrorCallback(std::move(error_callback),
+                                                  "prohibited_technologies");
+      NetworkMetricsHelper::LogEnableTechnologyResult(technology,
+                                                      /*success=*/false);
       return;
     }
     enabling_technologies_.insert(technology);
     disabling_technologies_.erase(technology);
     shill_manager_->EnableTechnology(
-        technology, base::DoNothing(),
+        technology,
+        base::BindOnce(&NetworkMetricsHelper::LogEnableTechnologyResult,
+                       technology, /*success=*/true),
         base::BindOnce(&ShillPropertyHandler::EnableTechnologyFailed,
                        AsWeakPtr(), technology, std::move(error_callback)));
   } else {
@@ -180,7 +183,9 @@ void ShillPropertyHandler::SetTechnologyEnabled(
     enabling_technologies_.erase(technology);
     disabling_technologies_.insert(technology);
     shill_manager_->DisableTechnology(
-        technology, base::DoNothing(),
+        technology,
+        base::BindOnce(&NetworkMetricsHelper::LogDisableTechnologyResult,
+                       technology, /*success=*/true),
         base::BindOnce(&ShillPropertyHandler::DisableTechnologyFailed,
                        AsWeakPtr(), technology, std::move(error_callback)));
   }
@@ -382,31 +387,26 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
   }
   NET_LOG(DEBUG) << "ManagerPropertyChanged: " << key << " = " << value;
   if (key == shill::kServiceCompleteListProperty) {
-    const base::ListValue* vlist = GetListValue(key, value);
-    if (vlist) {
-      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_NETWORK, *vlist);
-      UpdateProperties(ManagedState::MANAGED_TYPE_NETWORK, *vlist);
-      UpdateObserved(ManagedState::MANAGED_TYPE_NETWORK, *vlist);
+    if (CheckListValue(key, value)) {
+      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_NETWORK, value);
+      UpdateProperties(ManagedState::MANAGED_TYPE_NETWORK, value);
+      UpdateObserved(ManagedState::MANAGED_TYPE_NETWORK, value);
     }
   } else if (key == shill::kDevicesProperty) {
-    const base::ListValue* vlist = GetListValue(key, value);
-    if (vlist) {
-      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_DEVICE, *vlist);
-      UpdateProperties(ManagedState::MANAGED_TYPE_DEVICE, *vlist);
-      UpdateObserved(ManagedState::MANAGED_TYPE_DEVICE, *vlist);
+    if (CheckListValue(key, value)) {
+      listener_->UpdateManagedList(ManagedState::MANAGED_TYPE_DEVICE, value);
+      UpdateProperties(ManagedState::MANAGED_TYPE_DEVICE, value);
+      UpdateObserved(ManagedState::MANAGED_TYPE_DEVICE, value);
     }
   } else if (key == shill::kAvailableTechnologiesProperty) {
-    const base::ListValue* vlist = GetListValue(key, value);
-    if (vlist)
-      UpdateAvailableTechnologies(*vlist);
+    if (CheckListValue(key, value))
+      UpdateAvailableTechnologies(value);
   } else if (key == shill::kEnabledTechnologiesProperty) {
-    const base::ListValue* vlist = GetListValue(key, value);
-    if (vlist)
-      UpdateEnabledTechnologies(*vlist);
+    if (CheckListValue(key, value))
+      UpdateEnabledTechnologies(value);
   } else if (key == shill::kUninitializedTechnologiesProperty) {
-    const base::ListValue* vlist = GetListValue(key, value);
-    if (vlist)
-      UpdateUninitializedTechnologies(*vlist);
+    if (CheckListValue(key, value))
+      UpdateUninitializedTechnologies(value);
   } else if (key == shill::kProhibitedTechnologiesProperty &&
              value.is_string()) {
     UpdateProhibitedTechnologies(value.GetString());
@@ -422,12 +422,12 @@ void ShillPropertyHandler::ManagerPropertyChanged(const std::string& key,
 }
 
 void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
-                                            const base::ListValue& entries) {
+                                            const base::Value& entries) {
   std::set<std::string>& requested_updates = requested_updates_[type];
   std::set<std::string> new_requested_updates;
   NET_LOG(DEBUG) << "UpdateProperties: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetList().size();
-  for (const auto& entry : entries.GetList()) {
+                 << ": " << entries.GetListDeprecated().size();
+  for (const auto& entry : entries.GetListDeprecated()) {
     const std::string* path = entry.GetIfString();
     if (!path || (*path).empty())
       continue;
@@ -445,12 +445,12 @@ void ShillPropertyHandler::UpdateProperties(ManagedState::ManagedType type,
 }
 
 void ShillPropertyHandler::UpdateObserved(ManagedState::ManagedType type,
-                                          const base::ListValue& entries) {
+                                          const base::Value& entries) {
   ShillPropertyObserverMap& observer_map =
       (type == ManagedState::MANAGED_TYPE_NETWORK) ? observed_networks_
                                                    : observed_devices_;
   ShillPropertyObserverMap new_observed;
-  for (const auto& entry : entries.GetList()) {
+  for (const auto& entry : entries.GetListDeprecated()) {
     const std::string* path = entry.GetIfString();
     if (!path || (*path).empty())
       continue;
@@ -479,10 +479,10 @@ void ShillPropertyHandler::UpdateObserved(ManagedState::ManagedType type,
 }
 
 void ShillPropertyHandler::UpdateAvailableTechnologies(
-    const base::ListValue& technologies) {
+    const base::Value& technologies) {
   NET_LOG(EVENT) << "AvailableTechnologies:" << technologies;
   std::set<std::string> new_available_technologies;
-  for (const base::Value& technology : technologies.GetList())
+  for (const base::Value& technology : technologies.GetListDeprecated())
     new_available_technologies.insert(technology.GetString());
   if (new_available_technologies == available_technologies_)
     return;
@@ -500,10 +500,10 @@ void ShillPropertyHandler::UpdateAvailableTechnologies(
 }
 
 void ShillPropertyHandler::UpdateEnabledTechnologies(
-    const base::ListValue& technologies) {
+    const base::Value& technologies) {
   NET_LOG(EVENT) << "EnabledTechnologies:" << technologies;
   std::set<std::string> new_enabled_technologies;
-  for (const base::Value& technology : technologies.GetList())
+  for (const base::Value& technology : technologies.GetListDeprecated())
     new_enabled_technologies.insert(technology.GetString());
   if (new_enabled_technologies == enabled_technologies_)
     return;
@@ -514,7 +514,7 @@ void ShillPropertyHandler::UpdateEnabledTechnologies(
   for (auto it = disabling_technologies_.begin();
        it != disabling_technologies_.end();) {
     base::Value technology_value(*it);
-    if (!base::Contains(technologies.GetList(), technology_value))
+    if (!base::Contains(technologies.GetListDeprecated(), technology_value))
       it = disabling_technologies_.erase(it);
     else
       ++it;
@@ -533,10 +533,10 @@ void ShillPropertyHandler::UpdateEnabledTechnologies(
 }
 
 void ShillPropertyHandler::UpdateUninitializedTechnologies(
-    const base::ListValue& technologies) {
+    const base::Value& technologies) {
   NET_LOG(EVENT) << "UninitializedTechnologies:" << technologies;
   std::set<std::string> new_uninitialized_technologies;
-  for (const base::Value& technology : technologies.GetList())
+  for (const base::Value& technology : technologies.GetListDeprecated())
     new_uninitialized_technologies.insert(technology.GetString());
   if (new_uninitialized_technologies == uninitialized_technologies_)
     return;
@@ -561,6 +561,8 @@ void ShillPropertyHandler::EnableTechnologyFailed(
     network_handler::ErrorCallback error_callback,
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
+  NetworkMetricsHelper::LogEnableTechnologyResult(technology,
+                                                  /*success=*/false);
   enabling_technologies_.erase(technology);
   network_handler::ShillErrorCallbackFunction(
       "EnableTechnology Failed", technology, std::move(error_callback),
@@ -573,6 +575,8 @@ void ShillPropertyHandler::DisableTechnologyFailed(
     network_handler::ErrorCallback error_callback,
     const std::string& dbus_error_name,
     const std::string& dbus_error_message) {
+  NetworkMetricsHelper::LogDisableTechnologyResult(technology,
+                                                   /*success=*/false);
   disabling_technologies_.erase(technology);
   network_handler::ShillErrorCallbackFunction(
       "DisableTechnology Failed", technology, std::move(error_callback),
@@ -653,10 +657,9 @@ void ShillPropertyHandler::RequestIPConfigsList(
     ManagedState::ManagedType type,
     const std::string& path,
     const base::Value& ip_config_list_value) {
-  const base::ListValue* ip_configs;
-  if (!ip_config_list_value.GetAsList(&ip_configs))
+  if (!ip_config_list_value.is_list())
     return;
-  for (const auto& entry : ip_configs->GetList()) {
+  for (const auto& entry : ip_config_list_value.GetListDeprecated()) {
     RequestIPConfig(type, path, entry);
   }
 }

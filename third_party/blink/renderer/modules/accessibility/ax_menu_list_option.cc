@@ -25,13 +25,13 @@
 
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_option.h"
 
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/blink/renderer/core/aom/accessible_node.h"
 #include "third_party/blink/renderer/core/dom/events/simulated_click_options.h"
 #include "third_party/blink/renderer/core/html/forms/html_select_element.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_menu_list_popup.h"
 #include "third_party/blink/renderer/modules/accessibility/ax_object_cache_impl.h"
+#include "ui/gfx/geometry/transform.h"
 
 namespace blink {
 
@@ -145,13 +145,13 @@ bool AXMenuListOption::ComputeAccessibilityIsIgnored(
 
 void AXMenuListOption::GetRelativeBounds(
     AXObject** out_container,
-    FloatRect& out_bounds_in_container,
-    skia::Matrix44& out_container_transform,
+    gfx::RectF& out_bounds_in_container,
+    gfx::Transform& out_container_transform,
     bool* clips_children) const {
   DCHECK(!IsDetached());
   *out_container = nullptr;
-  out_bounds_in_container = FloatRect();
-  out_container_transform.setIdentity();
+  out_bounds_in_container = gfx::RectF();
+  out_container_transform.MakeIdentity();
 
   // When a <select> is collapsed, the bounds of its options are the same as
   // that of the containing <select>.

@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
 #define IOS_CHROME_BROWSER_UI_LOCATION_BAR_LOCATION_BAR_MODEL_DELEGATE_IOS_H_
 
-#include "base/macros.h"
 #include "components/omnibox/browser/location_bar_model_delegate.h"
 
 class WebStateList;

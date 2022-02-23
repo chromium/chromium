@@ -7,8 +7,11 @@ package org.chromium.chrome.browser.omnibox.suggestions;
 import android.os.Debug;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.NonNull;
 
 import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.chrome.browser.omnibox.action.OmniboxPedalType;
+import org.chromium.components.metrics.OmniboxEventProtos.OmniboxEventProto.PageClassification;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -17,7 +20,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * This class collects a variety of different Suggestions related metrics.
  */
-class SuggestionsMetrics {
+public class SuggestionsMetrics {
     // The expected range for measure and layout durations.
     // If the combination of (N*Create)+Measure+Layout, where N is a maximum number of suggestions
     // exceeds:
@@ -149,5 +152,82 @@ class SuggestionsMetrics {
     static final void recordRefineActionUsage(@RefineActionUsage int refineActionUsage) {
         RecordHistogram.recordEnumeratedHistogram(
                 "Android.Omnibox.RefineActionUsage", refineActionUsage, RefineActionUsage.COUNT);
+    }
+
+    /**
+     * Record the pedal shown when the user used the omnibox to go somewhere.
+     *
+     * @param type the shown pedal's {@link OmniboxActionType}.
+     */
+    public static final void recordPedalShown(@OmniboxPedalType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.PedalShown", type, OmniboxPedalType.TOTAL_COUNT);
+    }
+
+    /**
+     * Record a pedal is used.
+     *
+    @param omniboxActionType the clicked pedal's {@link OmniboxActionType}.
+     */
+    public static final void recordPedalUsed(@OmniboxPedalType int type) {
+        RecordHistogram.recordEnumeratedHistogram(
+                "Omnibox.SuggestionUsed.Pedal", type, OmniboxPedalType.TOTAL_COUNT);
+    }
+
+    /**
+     * Record page class specific histogram reflecting whether the user scrolled the suggestions
+     * list.
+     *
+     * @param pageClass Page classification.
+     * @param wasScrolled Whether the suggestions list was scrolled.
+     */
+    static final void recordSuggestionsListScrolled(int pageClass, boolean wasScrolled) {
+        RecordHistogram.recordBooleanHistogram(
+                histogramName("Android.Omnibox.SuggestionsListScrolled", pageClass), wasScrolled);
+    }
+
+    /**
+     * Translate the pageClass to a histogram suffix.
+     *
+     * @param histogram Histogram prefix.
+     * @param pageClass Page classification to translate.
+     * @return Metric name.
+     */
+    private static final String histogramName(@NonNull String prefix, int pageClass) {
+        String suffix = "Other";
+
+        switch (pageClass) {
+            case PageClassification.NTP_VALUE:
+            case PageClassification.INSTANT_NTP_WITH_OMNIBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.INSTANT_NTP_WITH_FAKEBOX_AS_STARTING_FOCUS_VALUE:
+            case PageClassification.START_SURFACE_NEW_TAB_VALUE:
+            case PageClassification.START_SURFACE_HOMEPAGE_VALUE:
+                suffix = "NTP";
+                break;
+
+            case PageClassification.SEARCH_RESULT_PAGE_DOING_SEARCH_TERM_REPLACEMENT_VALUE:
+            case PageClassification.SEARCH_RESULT_PAGE_NO_SEARCH_TERM_REPLACEMENT_VALUE:
+                suffix = "SRP";
+                break;
+
+            case PageClassification.ANDROID_SEARCH_WIDGET_VALUE:
+            case PageClassification.ANDROID_SHORTCUTS_WIDGET_VALUE:
+                suffix = "Widget";
+                break;
+
+            case PageClassification.BLANK_VALUE:
+            case PageClassification.HOME_PAGE_VALUE:
+            case PageClassification.OTHER_VALUE:
+                // use default value for websites.
+                break;
+
+            default:
+                // Report an error, but fall back to a default value.
+                // Use this to detect missing new cases.
+                assert false : "Unknown page classification: " + pageClass;
+                break;
+        }
+
+        return prefix + "." + suffix;
     }
 }

@@ -33,7 +33,8 @@ import org.chromium.chrome.browser.document.ChromeLauncherActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.infobar.InfoBarContainer;
 import org.chromium.chrome.browser.init.ChromeBrowserInitializer;
-import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesSettingsBridge;
+import org.chromium.chrome.browser.prefetch.settings.PreloadPagesState;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabLaunchType;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuCoordinator;
@@ -45,6 +46,7 @@ import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.infobars.InfoBar;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.JavaScriptUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.content_public.common.ContentSwitches;
@@ -241,7 +243,11 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
         InstrumentationRegistry.getInstrumentation().runOnMainSync(new Runnable() {
             @Override
             public void run() {
-                PrivacyPreferencesManagerImpl.getInstance().setNetworkPredictionEnabled(enabled);
+                if (enabled) {
+                    PreloadPagesSettingsBridge.setState(PreloadPagesState.STANDARD_PRELOADING);
+                } else {
+                    PreloadPagesSettingsBridge.setState(PreloadPagesState.NO_PRELOADING);
+                }
             }
         });
     }
@@ -494,6 +500,17 @@ public class ChromeActivityTestRule<T extends ChromeActivity> extends BaseActivi
                     ((ChromeActivity) holder[0]).getActivityTab(), Matchers.notNullValue());
         }, maxTimeToPoll, CriteriaHelper.DEFAULT_POLLING_INTERVAL);
         return (T) holder[0];
+    }
+
+    /**
+     * Waits for the first frame so that the page scale factor is set. Skipping this causes
+     * flakiness when clicking DOM objects since the page scale factor might not have been set yet,
+     * and coordinates can be wrong.
+     */
+    protected void waitForFirstFrame() {
+        final Coordinates coord = Coordinates.createFor(getWebContents());
+        CriteriaHelper.pollUiThread(
+                coord::frameInfoUpdated, "FrameInfo has not been updated in time.");
     }
 
     private class ChromeUncaughtExceptionHandler implements Thread.UncaughtExceptionHandler {

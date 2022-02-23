@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
@@ -93,7 +92,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool chromium_texture_filtering_hint = false;
     bool angle_texture_usage = false;
     bool ext_texture_storage = false;
-    bool chromium_raster_transport = false;
     bool chromium_framebuffer_mixed_samples = false;
     bool blend_equation_advanced = false;
     bool blend_equation_advanced_coherent = false;
@@ -133,7 +131,6 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool chromium_texture_storage_image = false;
     bool ext_window_rectangles = false;
     bool chromium_gpu_fence = false;
-    bool unpremultiply_and_dither_copy = false;
     bool separate_stencil_ref_mask_writemask = false;
     bool mesa_framebuffer_flip_y = false;
     bool ovr_multiview2 = false;
@@ -152,6 +149,7 @@ class GPU_GLES2_EXPORT FeatureInfo : public base::RefCounted<FeatureInfo> {
     bool ext_texture_compression_rgtc = false;
     bool oes_draw_buffers_indexed = false;
     bool ext_yuv_target = false;
+    bool angle_rgbx_internal_format = false;
   };
 
   FeatureInfo();

@@ -4,11 +4,16 @@
 
 package org.chromium.chrome.browser.subscriptions;
 
+import android.os.Build;
+
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.ObserverList;
+import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.tasks.tab_management.PriceTrackingUtilities;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -37,6 +42,7 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
     private static List<CommerceSubscription> sRemoteSubscriptionsForTesting;
     private boolean mCanHandleRequests;
     private Queue<DeferredSubscriptionOperation> mDeferredTasks;
+    private final ObserverList<SubscriptionObserver> mObservers;
 
     private static class DeferredSubscriptionOperation {
         private final @Operation int mOperation;
@@ -76,6 +82,17 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
         mDeferredTasks = new LinkedList<>();
         mCanHandleRequests = false;
         initTypes(this::onInitComplete);
+        mObservers = new ObserverList<>();
+    }
+
+    @Override
+    public void addObserver(SubscriptionObserver observer) {
+        mObservers.addObserver(observer);
+    }
+
+    @Override
+    public void removeObserver(SubscriptionObserver observer) {
+        mObservers.removeObserver(observer);
     }
 
     /**
@@ -107,25 +124,47 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
             callback.onResult(SubscriptionsManager.StatusCode.OK);
             return;
         }
+
+        // Wrap the callback in one that allows us to trigger the observers.
+        Callback<Integer> wrappedCallback = (status) -> {
+            if (status == StatusCode.OK) {
+                for (SubscriptionObserver o : mObservers) {
+                    o.onSubscribe(subscriptions);
+                }
+            }
+            callback.onResult(status);
+        };
+
         String type = subscriptions.get(0).getType();
         if (!isSubscriptionTypeSupported(type)) {
-            callback.onResult(SubscriptionsManager.StatusCode.INVALID_ARGUMENT);
+            wrappedCallback.onResult(SubscriptionsManager.StatusCode.INVALID_ARGUMENT);
             return;
+        }
+
+        // Make sure the notification channel is initialized if there is a user-managed PRICE_TRACK
+        // subscription. For chrome-managed subscriptions, channel will be initialized via message
+        // card in tab switcher.
+        if (CommerceSubscription.CommerceSubscriptionType.PRICE_TRACK.equals(type)
+                && CommerceSubscription.SubscriptionManagementType.USER_MANAGED.equals(
+                        subscriptions.get(0).getManagementType())
+                && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            (new PriceDropNotificationManager()).createNotificationChannel();
         }
 
         if (!mCanHandleRequests) {
             mDeferredTasks.add(new DeferredSubscriptionOperation(
-                    Operation.SUBSCRIBE, subscriptions, callback));
+                    Operation.SUBSCRIBE, subscriptions, wrappedCallback));
             return;
         }
 
         getUniqueSubscriptions(subscriptions, (list) -> {
             if (list.size() == 0) {
-                callback.onResult(SubscriptionsManager.StatusCode.OK);
+                wrappedCallback.onResult(SubscriptionsManager.StatusCode.OK);
             } else {
                 mServiceProxy.create(list,
                         (didSucceed)
-                                -> handleUpdateSubscriptionsResponse(didSucceed, type, callback));
+                                -> handleUpdateSubscriptionsResponse(
+                                        didSucceed, type, wrappedCallback));
             }
         });
     }
@@ -168,7 +207,47 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
         }
     }
 
-    private void unsubscribe(List<CommerceSubscription> subscriptions, Callback<Integer> callback) {
+    /**
+     * Checks if the given subscription matches any subscriptions in local storage.
+     *
+     * @param subscription The subscription to check.
+     * @param callback The callback to receive the result.
+     */
+    @Override
+    public void isSubscribed(CommerceSubscription subscription, Callback<Boolean> callback) {
+        if (subscription == null) {
+            callback.onResult(false);
+            return;
+        }
+
+        // Searching by prefix instead of loading by key to handle cases of duplicates.
+        String targetKey = CommerceSubscriptionsStorage.getKey(subscription);
+        mStorage.loadWithPrefix(targetKey, localSubscriptions -> {
+            // TODO: (crbug/1279519) CommerceSubscriptionsStorage should support full key matching
+            // and we shouldn't need to perform this additional check.
+            for (CommerceSubscription current : localSubscriptions) {
+                if (targetKey.equals(CommerceSubscriptionsStorage.getKey(current))) {
+                    callback.onResult(true);
+                    return;
+                }
+            }
+            callback.onResult(false);
+        });
+    }
+
+    /**
+     * Called when user account is cleared or updated.
+     */
+    void onIdentityChanged() {
+        mStorage.deleteAll();
+        // If the feature is still eligible to work, we should re-init and fetch the fresh data.
+        if (PriceTrackingUtilities.isPriceDropNotificationEligible()) {
+            initTypes((status) -> { assert status == SubscriptionsManager.StatusCode.OK; });
+        }
+    }
+
+    @Override
+    public void unsubscribe(List<CommerceSubscription> subscriptions, Callback<Integer> callback) {
         String type = subscriptions.get(0).getType();
         if (subscriptions == null || !isSubscriptionTypeSupported(type)) {
             callback.onResult(SubscriptionsManager.StatusCode.INVALID_ARGUMENT);
@@ -180,16 +259,26 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
             return;
         }
 
+        // Wrap the callback in one that allows us to trigger the observers.
+        Callback<Integer> wrappedCallback = (status) -> {
+            if (status == StatusCode.OK) {
+                for (SubscriptionObserver o : mObservers) {
+                    o.onUnsubscribe(subscriptions);
+                }
+            }
+            callback.onResult(status);
+        };
+
         if (!mCanHandleRequests) {
             mDeferredTasks.add(new DeferredSubscriptionOperation(
-                    Operation.UNSUBSCRIBE, subscriptions, callback));
+                    Operation.UNSUBSCRIBE, subscriptions, wrappedCallback));
             return;
         }
 
         Map<String, CommerceSubscription> subscriptionsMap = getSubscriptionsMap(subscriptions);
         mStorage.loadWithPrefix(String.valueOf(type), localSubscriptions -> {
             if (localSubscriptions.size() == 0) {
-                callback.onResult(SubscriptionsManager.StatusCode.OK);
+                wrappedCallback.onResult(SubscriptionsManager.StatusCode.OK);
                 return;
             }
 
@@ -204,12 +293,14 @@ public class SubscriptionsManagerImpl implements SubscriptionsManager {
             }
 
             if (subscriptionsToDelete.size() == 0) {
-                callback.onResult(SubscriptionsManager.StatusCode.OK);
+                wrappedCallback.onResult(SubscriptionsManager.StatusCode.OK);
                 return;
             }
 
             mServiceProxy.delete(subscriptionsToDelete,
-                    (didSucceed) -> handleUpdateSubscriptionsResponse(didSucceed, type, callback));
+                    (didSucceed)
+                            -> handleUpdateSubscriptionsResponse(
+                                    didSucceed, type, wrappedCallback));
         });
     }
 

@@ -10,9 +10,9 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/mouse_cursor_event_filter.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
+#include "ash/utility/haptics_util.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_util.h"
@@ -36,7 +36,9 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
+#include "ui/events/devices/haptic_touchpad_effects.h"
 #include "ui/wm/core/coordinate_conversion.h"
 
 namespace ash {
@@ -99,8 +101,14 @@ gfx::SizeF GetItemSizeWhenOnDesksBar(OverviewGrid* overview_grid,
   const DesksBarView* desks_bar_view = overview_grid->desks_bar_view();
   DCHECK(desks_bar_view);
 
-  const float scale_factor = static_cast<float>(desks_bar_view->height()) /
-                             overview_grid->root_window()->bounds().height();
+  // We should always use the expanded desks bar height here even if the desks
+  // bar is actually in zero state to calculate `scale_factor`. Because if zero
+  // state bar height is used here, the dragged window could become too small
+  // during the drag.
+  const float scale_factor =
+      static_cast<float>(
+          DesksBarView::GetExpandedBarHeight(overview_grid->root_window())) /
+      overview_grid->root_window()->bounds().height();
   gfx::SizeF scaled_size = gfx::ScaleSize(window_original_size, scale_factor);
   // Add the margins overview mode adds around the window's contents.
   scaled_size.Enlarge(2 * kWindowMargin, 2 * kWindowMargin + kHeaderHeightDp);
@@ -299,10 +307,9 @@ void OverviewWindowDragController::StartNormalDragMode(
       OVERVIEW_ANIMATION_LAYOUT_OVERVIEW_ITEMS_IN_OVERVIEW);
   original_scaled_size_ = item_->target_bounds().size();
   auto* overview_grid = item_->overview_grid();
-  // We need to transform desks bar view to expanded state if it's at zero state
-  // when dragging starts.
-  overview_grid->MaybeExpandDesksBarView();
   overview_grid->AddDropTargetForDraggingFromThisGrid(item_);
+
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
 
   if (should_allow_split_view_) {
     overview_session_->SetSplitViewDragIndicatorsDraggedWindow(
@@ -347,6 +354,10 @@ void OverviewWindowDragController::StartNormalDragMode(
           GetItemSizeWhenOnDesksBar(grid.get(), window_original_size);
       grid_desks_bar_data.desks_bar_bounds = grid_desks_bar_data.shrink_bounds =
           gfx::RectF(grid->desks_bar_view()->GetBoundsInScreen());
+      const int expanded_height =
+          DesksBarView::GetExpandedBarHeight(grid->root_window());
+      grid_desks_bar_data.desks_bar_bounds.set_height(expanded_height);
+      grid_desks_bar_data.shrink_bounds.set_height(expanded_height);
       grid_desks_bar_data.shrink_bounds.Inset(
           -item_no_header_size.width() / 2, -item_no_header_size.height() / 2);
       grid_desks_bar_data.shrink_region_distance =
@@ -439,6 +450,8 @@ void OverviewWindowDragController::StartDragToCloseMode() {
   current_drag_behavior_ = DragBehavior::kDragToClose;
   overview_session_->GetGridWithRootWindow(item_->root_window())
       ->StartNudge(item_);
+
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/true);
 }
 
 void OverviewWindowDragController::ContinueDragToClose(
@@ -495,6 +508,8 @@ OverviewWindowDragController::CompleteDragToClose(
     return DragResult::kSuccessfulDragToClose;
   }
 
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/false);
+
   item_->SetOpacity(original_opacity_);
   overview_session_->PositionWindows(/*animate=*/true);
   RecordDragToClose(kSwipeToCloseCanceled);
@@ -513,9 +528,17 @@ void OverviewWindowDragController::ContinueNormalDrag(
   gfx::PointF centerpoint =
       location_in_screen - (initial_event_location_ - initial_centerpoint_);
 
+  auto* overview_grid = GetCurrentGrid();
+
+  // We may need to transform desks bar from zero state to expanded state if
+  // `kDragWindowToNewDesk` is enabled while dragging continues and the square
+  // length between the window being dragged and new desk button reaches
+  // `kExpandDesksBarThreshold`.
+  if (features::IsDragWindowToNewDeskEnabled())
+    overview_grid->MaybeExpandDesksBarView(location_in_screen);
+
   // If virtual desks is enabled, we want to gradually shrink the dragged item
   // as it gets closer to get dropped into a desk mini view.
-  auto* overview_grid = GetCurrentGrid();
   if (virtual_desks_bar_enabled_) {
     // TODO(sammiequon): There is a slight jump especially if we drag from the
     // corner of a larger overview item, but this is necessary for the time
@@ -607,6 +630,8 @@ OverviewWindowDragController::CompleteNormalDrag(
   item_->DestroyPhantomsForDragging();
   overview_session_->RemoveDropTargets();
 
+  item_->UpdateShadowTypeForDrag(/*is_dragging=*/false);
+
   const gfx::Point rounded_screen_point =
       gfx::ToRoundedPoint(location_in_screen);
   if (should_allow_split_view_) {
@@ -662,6 +687,11 @@ OverviewWindowDragController::CompleteNormalDrag(
     // Overview grid will be updated after window is snapped in splitview.
     SnapWindow(SplitViewController::Get(target_root), snap_position_);
     RecordNormalDrag(kToSnap, is_dragged_to_other_display);
+    // When there's only one window and it's snapped, overview mode will be
+    // ended. Thus we need to check whether `overview_session_` is being
+    // shutting down or not here before triggering `MaybeShrinkDesksBarView`.
+    if (!overview_session_->is_shutting_down())
+      current_grid->MaybeShrinkDesksBarView();
     return DragResult::kSnap;
   }
 
@@ -700,6 +730,7 @@ OverviewWindowDragController::CompleteNormalDrag(
   } else {
     item_->set_should_restack_on_animation_end(true);
     overview_session_->PositionWindows(/*animate=*/true);
+    current_grid->MaybeShrinkDesksBarView();
   }
   RecordNormalDrag(kToGrid, is_dragged_to_other_display);
   return DragResult::kDropIntoOverview;

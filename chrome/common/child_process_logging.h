@@ -9,10 +9,10 @@
 
 namespace child_process_logging {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Sets up the base/debug/crash_logging.h mechanism.
 void Init();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace child_process_logging
 

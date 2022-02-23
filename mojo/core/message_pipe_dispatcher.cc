@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/trace_event/trace_event.h"
 #include "mojo/core/core.h"

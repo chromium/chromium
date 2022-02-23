@@ -16,8 +16,6 @@
     <dimen name="toolbar_swipe_space_between_tabs">30dp</dimen>
     <!-- TabSwitcher - The minimum distance from the edge to commit a toolbar side swap. -->
     <dimen name="toolbar_swipe_commit_distance">90dp</dimen>
-     <!-- TabSwitcher - The size of the close button on each tab. -->
-    <dimen name="tab_switcher_close_button_size">20dp</dimen>
 
     <!-- Tab title -->
     <dimen name="border_texture_title_fade">24dp</dimen>                    <!-- 40px hdpi -->
@@ -57,7 +55,6 @@
     <dimen name="contextual_search_chip_list_side_padding">16dp</dimen>
     <!-- Padding at the end of the Bar. -->
     <dimen name="contextual_search_end_padding">7dp</dimen>
-    <dimen name="contextual_search_bubble_y_inset">-3dp</dimen>
     <!-- Padding amount that should be removed between the Related Searches chips carousel
          in the Bar and the content above it due to overlapping whitespace margins. This
          effectively removes the whitespace from the top of the chips carousel because there's
@@ -103,11 +100,6 @@
     <dimen name="password_manager_dialog_details_padding_bottom">8dp</dimen>
     <dimen name="password_manager_dialog_details_padding_top">12dp</dimen>
 
-    <!-- Data Saver -->
-    <dimen name="data_usage_chart_height">252dp</dimen>
-    <dimen name="data_reduction_main_menu_icon_width">24dp</dimen>
-    <dimen name="data_saver_menu_footer_min_show_height">240dp</dimen>
-
     <!-- The size of the text for tab titles. -->
     <dimen name="compositor_tab_title_text_size">13sp</dimen>
     <!-- The size of the bounding box for favicons. -->
@@ -120,10 +112,8 @@
     <dimen name="fre_content_margin">24dp</dimen>
     <dimen name="fre_vertical_spacing">32dp</dimen>
     <dimen name="fre_landscape_top_padding">72dp</dimen>
-    <dimen name="fre_margin">24dp</dimen>
 
     <dimen name="fre_image_bottom_margin">36dp</dimen>
-    <dimen name="fre_image_height">120dp</dimen>
     <dimen name="fre_tos_image_height">110dp</dimen>
     <dimen name="fre_tos_checkbox_padding">12dp</dimen>
     <dimen name="fre_tos_bottom_margin">16dp</dimen>
@@ -134,15 +124,25 @@
     <dimen name="fre_policy_privacy_disclaimer_top_margin">16dp</dimen>
 
     <dimen name="fre_button_vertical_margin">24dp</dimen>
-    <!-- fre_button_bar_height = 68dp = layout_height (48dp) + 2 * layout_marginBottom(10dp) -->
-    <dimen name="fre_button_bar_height">68dp</dimen>
+
 
     <dimen name="fre_button_vertical_margin_small">16dp</dimen>
+
+    <!-- Chrome Management dimensions -->
+    <dimen name="cm_max_width">600dp</dimen>
+    <dimen name="cm_padding">32dp</dimen>
+    <dimen name="cm_logo_width">40dp</dimen>
+    <dimen name="cm_logo_height">36dp</dimen>
+    <dimen name="cm_title_margin_top">30dp</dimen>
+    <dimen name="cm_description_margin_top">24dp</dimen>
+    <dimen name="cm_learn_more_margin_top">22dp</dimen>
+    <dimen name="cm_browser_margin_top">42dp</dimen>
+    <dimen name="cm_browser_item_margin_top">20dp</dimen>
+    <dimen name="cm_browser_item_drawable_padding">18dp</dimen>
 
     <!-- Account Signin dimensions -->
     <!-- The Account Signin page appears in the First Run Experience (amongst other places), so uses
     a lot of the fre_* dimensions for consistency. -->
-    <dimen name="signin_image_carousel_width">240dp</dimen>
     <dimen name="signin_chooser_padding">16dp</dimen>
     <dimen name="signin_screen_top_padding">50dp</dimen>
 
@@ -157,6 +157,7 @@
     <!-- Should match toolbar_height_no_shadow -->
     <dimen name="control_container_height">56dp</dimen>
     <dimen name="custom_tabs_control_container_height">56dp</dimen>
+    <dimen name="fullscreen_notification_max_width">320dp</dimen>
 
     <!-- The combined height of the tab strip and toolbar. -->
     <dimen name="tab_strip_and_toolbar_height">56dp</dimen>
@@ -176,7 +177,6 @@
     <dimen name="ntp_logo_height">100dp</dimen>
     <dimen name="ntp_logo_margin_top">26dp</dimen>
     <dimen name="duet_ntp_logo_top_margin">-16dp</dimen>
-    <dimen name="ntp_promo_bottom_margin">16dp</dimen>
     <dimen name="ntp_search_box_height">48dp</dimen>
     <dimen name="ntp_search_box_transition_length">16dp</dimen>
     <dimen name="experimental_explore_sites_radius">8dp</dimen>
@@ -184,7 +184,7 @@
     <dimen name="experimental_explore_sites_margin">16dp</dimen>
     <dimen name="experimental_explore_sites_spacing">12dp</dimen>
     <dimen name="snippets_article_header_height">40dp</dimen>
-    <dimen name="snippets_article_header_menu_size">48dp</dimen>
+    <dimen name="snippets_article_header_menu_size">56dp</dimen>
     <dimen name="content_suggestions_card_bottom_margin">12dp</dimen>
     <!-- This is in sp because we want the icon to scale with the TextView it sits alongside. -->
     <dimen name="md_incognito_ntp_line_spacing">6sp</dimen>
@@ -194,12 +194,10 @@
 
     <!-- NTP Feed dimensions -->
     <dimen name="feed_header_menu_max_width">225dp</dimen>
-    <dimen name="feed_header_icon_margin">15dp</dimen>
+    <dimen name="feed_header_icon_margin">16dp</dimen>
     <dimen name="feed_header_icon_size">20dp</dimen>
-    <dimen name="feed_header_height">44dp</dimen>
-    <dimen name="feed_v2_header_menu_width">18dp</dimen>
-    <dimen name="ntp_header_dropdown_size">15dp</dimen>
-    <dimen name="ntp_header_tab_text_height">24dp</dimen>
+    <dimen name="feed_header_tab_layout_height">40dp</dimen>
+    <dimen name="feed_v2_header_menu_width">20dp</dimen>
 
     <!-- Incognito NTP -->
     <dimen name="incognito_ntp_total_space_between_views">14sp</dimen>
@@ -271,6 +269,10 @@
 
     <!-- Bookmark visual refresh dimensions. -->
      <dimen name="bookmark_refresh_preferred_start_icon_size">32dp</dimen>
+     <!-- We intentionally use px to avoid showing fewer favicons in some UIs on higher density devices. -->
+     <dimen name="bookmark_refresh_min_start_icon_size" tools:ignore="PxUsage">32px</dimen>
+     <dimen name="bookmark_refresh_circular_monogram_text_size">18dp</dimen>
+
 
     <!-- Bookmark widget dimensions -->
     <dimen name="bookmark_widget_min_width">64dp</dimen>
@@ -333,12 +335,15 @@
     <dimen name="context_menu_header_vertical_padding">16dp</dimen>
     <dimen name="context_menu_header_image_max_size">60dp</dimen>
     <dimen name="context_menu_header_circle_bg_diameter">48dp</dimen>
-    <dimen name="context_menu_header_circle_bg_lateral_margin">6dp</dimen>
-    <dimen name="context_menu_header_circle_bg_vertical_margin">22dp</dimen>
+    <dimen name="context_menu_header_circle_bg_margin">6dp</dimen>
     <dimen name="context_menu_header_monogram_text_size">16dp</dimen>
     <dimen name="context_menu_header_monogram_size">26dp</dimen>
     <dimen name="context_menu_small_width">268dp</dimen>
     <dimen name="context_menu_small_lateral_margin">30dp</dimen>
+    <dimen name="context_menu_popup_max_width">319dp</dimen>
+
+    <dimen name="context_menu_popup_header_image_max_size">36dp</dimen>
+    <dimen name="context_menu_popup_header_monogram_size">16dp</dimen>
 
     <!-- Defaults for TabbedModeFirstRunActivity values. -->
     <item type="dimen" name="dialog_fixed_width_major">100%</item>
@@ -389,6 +394,10 @@
     <dimen name="overflow_menu_update_min_height">40sp</dimen>
     <dimen name="overflow_menu_update_padding">12dp</dimen>
 
+    <!-- Settings dimensions -->
+    <dimen name="settings_wide_display_min_padding">16dp</dimen>
+
+
     <!-- Sharing Hub dimensions -->
     <dimen name="sharing_hub_preview_icon_padding">12dp</dimen>
     <dimen name="sharing_hub_preview_icon_rounded_corner_radius">4dp</dimen>
@@ -410,4 +419,18 @@
 
     <dimen name="sharing_hub_tile_width">69sp</dimen>
     <dimen name="sharing_hub_tile_margin">8sp</dimen>
+
+    <!-- Distilled page pref dimensions -->
+    <dimen name="distilled_page_pref_background_elev">@dimen/default_elevation_0</dimen>
+
+    <!-- Virtual card enrollment dialog -->
+    <dimen name="virtual_card_enrollment_dialog_padding">24dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_title_margin_top">24dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_card_container_padding">12dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_card_container_issuer_icon_margin_end">12dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_description_margin_top">16dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_google_legal_message_margin_top">20dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_google_issuer_message_margin_top">8dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_card_art_width">32dp</dimen>
+    <dimen name="virtual_card_enrollment_dialog_card_art_height">20dp</dimen>
 </resources>

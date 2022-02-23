@@ -6,11 +6,11 @@
 
 #include <memory>
 
+#include "ash/components/arc/compat_mode/style/arc_color_provider.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "chrome/browser/ash/arc/nearby_share/ui/nearby_share_overlay_view.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
-#include "components/arc/compat_mode/style/arc_color_provider.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/color_palette.h"

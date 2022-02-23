@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "device/udev_linux/udev_loader.h"
 
 class LibUdev1Loader;

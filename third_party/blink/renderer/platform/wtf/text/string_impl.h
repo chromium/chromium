@@ -49,7 +49,7 @@
 #include "third_party/blink/renderer/platform/wtf/thread_restriction_verifier.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_cftyperef.h"
 
 typedef const struct __CFString* CFStringRef;
@@ -265,15 +265,18 @@ class WTF_EXPORT StringImpl {
 #if DCHECK_IS_ON()
     DCHECK(IsStatic() || verifier_.IsSafeToUse()) << AsciiForDebugging();
 #endif
-    return ref_count_ == 1;
+    return ref_count_.load(std::memory_order_acquire) == 1;
+  }
+
+  ALWAYS_INLINE bool HasZeroRefRelaxed() const {
+    return ref_count_.load(std::memory_order_relaxed) == 0;
   }
 
   ALWAYS_INLINE void AddRef() const {
-#if DCHECK_IS_ON()
-    DCHECK(IsStatic() || verifier_.OnRef(ref_count_)) << AsciiForDebugging();
-#endif
     if (!IsStatic()) {
-      ref_count_ = base::CheckAdd(ref_count_, 1).ValueOrDie();
+      uint32_t previous_ref_count =
+          ref_count_.fetch_add(1, std::memory_order_relaxed);
+      CHECK_NE(previous_ref_count, std::numeric_limits<uint32_t>::max());
 #if DCHECK_IS_ON()
       ref_count_change_count_++;
 #endif
@@ -281,25 +284,20 @@ class WTF_EXPORT StringImpl {
   }
 
   ALWAYS_INLINE void Release() const {
-#if DCHECK_IS_ON()
-    DCHECK(IsStatic() || verifier_.OnDeref(ref_count_))
-        << AsciiForDebugging() << " " << CurrentThread();
-#endif
-
     if (!IsStatic()) {
+      uint32_t previous_ref_count =
+          ref_count_.fetch_sub(1, std::memory_order_acq_rel);
 #if DCHECK_IS_ON()
       // In non-DCHECK builds, we can save a bit of time in micro-benchmarks by
       // not checking the arithmetic. We hope that checking in DCHECK builds is
       // enough to catch implementation bugs, and that implementation bugs are
       // the only way we'd experience underflow.
-      ref_count_ = base::CheckSub(ref_count_, 1).ValueOrDie();
+      DCHECK_NE(previous_ref_count, 0u);
       ref_count_change_count_++;
-#else
-      --ref_count_;
 #endif
+      if (previous_ref_count == 1)
+        DestroyIfNeeded();
     }
-    if (ref_count_ == 0)
-      DestroyIfNotStatic();
   }
 
 #if DCHECK_IS_ON()
@@ -456,7 +454,7 @@ class WTF_EXPORT StringImpl {
                  wtf_size_t start = 0,
                  wtf_size_t length = UINT_MAX) const;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ScopedCFTypeRef<CFStringRef> CreateCFString();
 #endif
 #ifdef __OBJC__
@@ -558,7 +556,7 @@ class WTF_EXPORT StringImpl {
                                                              StripBehavior);
   NOINLINE wtf_size_t HashSlowCase() const;
 
-  void DestroyIfNotStatic() const;
+  void DestroyIfNeeded() const;
 
   // Calculates the kContainsOnlyAscii and kIsLowerAscii flags. Returns
   // a bitfield with those 2 values.
@@ -582,7 +580,9 @@ class WTF_EXPORT StringImpl {
   mutable ThreadRestrictionVerifier verifier_;
   mutable unsigned int ref_count_change_count_{0};
 #endif
-  mutable unsigned ref_count_{1};
+  // TODO (crbug.com/1083392): Use base::AtomicRefCount once Blink strings are
+  // fully thread-safe and ThreadRestrictionVerifier is no longer needed.
+  mutable std::atomic_uint32_t ref_count_{1};
   const unsigned length_;
   mutable std::atomic<uint32_t> hash_and_flags_;
 };

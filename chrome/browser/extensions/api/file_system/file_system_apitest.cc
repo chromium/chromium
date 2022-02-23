@@ -164,7 +164,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiGetDisplayPath) {
       << message_;
 }
 
-#if defined(OS_WIN) || defined(OS_POSIX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX)
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiGetDisplayPathPrettify) {
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
@@ -181,7 +181,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest, FileSystemApiGetDisplayPathPrettify) {
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
     FileSystemApiGetDisplayPathPrettifyMac) {
   base::FilePath test_file;
@@ -357,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
   CheckStoredDirectoryMatches(base::FilePath());
 }
 
-#if defined(OS_WIN) || defined(OS_POSIX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
                        FileSystemApiOpenDirectoryOnGraylistAndAllowTest) {
   base::FilePath test_file = TempFilePath("open_existing.txt", true);
@@ -439,7 +439,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
       << message_;
   CheckStoredDirectoryMatches(test_file);
 }
-#endif  // defined(OS_WIN) || defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
     FileSystemApiInvalidChooseEntryTypeTest) {
@@ -565,7 +565,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTest,
   CheckStoredDirectoryMatches(test_file);
 }
 
-#if defined(OS_MAC) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_MAC) && defined(ADDRESS_SANITIZER)
 // TODO(http://crbug.com/1230100): Timing-out on Mac ASan.
 #define MAYBE_FileSystemApiSaveMultipleFilesTest \
   DISABLED_FileSystemApiSaveMultipleFilesTest

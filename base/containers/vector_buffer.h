@@ -8,14 +8,12 @@
 #include <stdlib.h>
 #include <string.h>
 
-#include <ios>
 #include <type_traits>
 #include <utility>
 
 #include "base/check_op.h"
 #include "base/containers/util.h"
 #include "base/numerics/checked_math.h"
-#include "build/build_config.h"
 
 namespace base {
 namespace internal {
@@ -129,11 +127,7 @@ class VectorBuffer {
             typename std::enable_if<base::is_trivially_copyable<T2>::value,
                                     int>::type = 0>
   static void MoveRange(T* from_begin, T* from_end, T* to) {
-    CHECK(!RangesOverlap(from_begin, from_end, to))
-        // TODO(crbug.com/1172816): Remove logging once root cause is found.
-        << std::hex << "from_begin: 0x" << get_uintptr(from_begin)
-        << ", from_end: 0x" << get_uintptr(from_end) << ", to: 0x"
-        << get_uintptr(to);
+    CHECK(!RangesOverlap(from_begin, from_end, to));
 
     memcpy(
         to, from_begin,
@@ -185,6 +179,8 @@ class VectorBuffer {
                 .ValueOrDie() <= from_begin_uintptr);
   }
 
+  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data and tab_search:top100:2020).
   T* buffer_ = nullptr;
   size_t capacity_ = 0;
 };

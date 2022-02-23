@@ -11,7 +11,6 @@
 #include "ash/assistant/test/assistant_ash_test_base.h"
 #include "ash/assistant/test/test_assistant_service.h"
 #include "ash/assistant/util/deep_link_util.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/assistant/controller/assistant_controller_observer.h"
 #include "ash/public/cpp/test/test_new_window_delegate.h"
@@ -20,6 +19,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/scoped_observation.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -77,10 +77,7 @@ class MockAssistantUiModelObserver : public AssistantUiModelObserver {
 class MockNewWindowDelegate : public testing::NiceMock<TestNewWindowDelegate> {
  public:
   // TestNewWindowDelegate:
-  MOCK_METHOD(void,
-              OpenUrl,
-              (const GURL& url, bool from_user_interaction),
-              (override));
+  MOCK_METHOD(void, OpenUrl, (const GURL& url, OpenUrlFrom from), (override));
 
   MOCK_METHOD(void,
               OpenFeedbackPage,
@@ -164,11 +161,9 @@ TEST_F(AssistantControllerImplTest, NotifiesOpeningUrlAndUrlOpened) {
             EXPECT_TRUE(from_server);
           }));
 
-  EXPECT_CALL(new_window_delegate(), OpenUrl)
-      .WillOnce([](const GURL& url, bool from_user_interaction) {
-        EXPECT_EQ(GURL("https://g.co/"), url);
-        EXPECT_TRUE(from_user_interaction);
-      });
+  EXPECT_CALL(new_window_delegate(),
+              OpenUrl(GURL("https://g.co/"),
+                      NewWindowDelegate::OpenUrlFrom::kUserInteraction));
 
   EXPECT_CALL(controller_observer_mock, OnUrlOpened)
       .WillOnce(testing::Invoke([](const GURL& url, bool from_server) {
@@ -245,7 +240,11 @@ TEST_F(AssistantControllerImplTest, ClosesAssistantUiForFeedbackDeeplink) {
 // flag is off. SettingsController won't set options if dark mode bit is not
 // set.
 TEST_F(AssistantControllerImplTest, ColorModeIsSetWhenAssistantIsReadyFlagOff) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
+
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
 
   controller()->SetAssistant(test_assistant_service());
 
@@ -255,9 +254,9 @@ TEST_F(AssistantControllerImplTest, ColorModeIsSetWhenAssistantIsReadyFlagOff) {
 
 TEST_F(AssistantControllerImplTest, ColorModeIsUpdated) {
   base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(features::kDarkLightMode);
+  feature_list.InitAndEnableFeature(chromeos::features::kDarkLightMode);
 
-  ASSERT_TRUE(features::IsDarkLightModeEnabled());
+  ASSERT_TRUE(chromeos::features::IsDarkLightModeEnabled());
 
   // AshColorProvider::IsDarkModeEnabled reports it's in dark mode if active
   // pref service is not set.

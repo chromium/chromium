@@ -11,8 +11,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/components/settings/timezone_settings.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/multi_user_window_manager.h"
+#include "ash/public/cpp/new_window_delegate.h"
+#include "ash/public/cpp/style/color_provider.h"
+#include "ash/public/cpp/style/scoped_light_mode_as_default.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/bind.h"
 #include "base/command_line.h"
@@ -37,6 +42,7 @@
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/service.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
+#include "chrome/browser/ash/guest_os/public/guest_os_service.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/extensions/file_manager/private_api_util.h"
@@ -62,7 +68,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_prefs.h"
 #include "components/drive/drive_pref_names.h"
 #include "components/drive/event_logger.h"
 #include "components/prefs/pref_service.h"
@@ -79,6 +84,7 @@
 #include "storage/common/file_system/file_system_types.h"
 #include "storage/common/file_system/file_system_util.h"
 #include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/gurl.h"
 
@@ -117,7 +123,7 @@ std::vector<ProfileInfo> GetLoggedInProfileInfoList() {
       continue;
     original_profiles.insert(profile);
     const user_manager::User* const user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+        ash::ProfileHelper::Get()->GetUserByProfile(profile);
     if (!user || !user->is_logged_in())
       continue;
 
@@ -205,13 +211,17 @@ std::string Redact(const base::FilePath& path) {
   return Redact(path.value());
 }
 
+std::string SkColorToHexString(const SkColor color) {
+  return base::StringPrintf("#%02x%02x%02x", SkColorGetR(color),
+                            SkColorGetG(color), SkColorGetB(color));
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateLogoutUserForReauthenticationFunction::Run() {
-  const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(
-          Profile::FromBrowserContext(browser_context()));
+  const user_manager::User* user = ash::ProfileHelper::Get()->GetUserByProfile(
+      Profile::FromBrowserContext(browser_context()));
   if (user) {
     user_manager::UserManager::Get()->SaveUserOAuthStatus(
         user->GetAccountId(), user_manager::User::OAUTH2_TOKEN_STATUS_INVALID);
@@ -242,6 +252,14 @@ FileManagerPrivateGetPreferencesFunction::Run() {
   result.arc_enabled = service->GetBoolean(arc::prefs::kArcEnabled);
   result.arc_removable_media_access_enabled =
       service->GetBoolean(arc::prefs::kArcHasAccessToRemovableMedia);
+  std::vector<std::string> folder_shortcuts;
+  const auto& value_list =
+      service->GetList(ash::prefs::kFilesAppFolderShortcuts)
+          ->GetListDeprecated();
+  for (const base::Value& value : value_list) {
+    folder_shortcuts.push_back(value.is_string() ? value.GetString() : "");
+  }
+  result.folder_shortcuts = folder_shortcuts;
 
   return RespondNow(
       OneArgument(base::Value::FromUniquePtrValue(result.ToValue())));
@@ -268,6 +286,14 @@ FileManagerPrivateSetPreferencesFunction::Run() {
     service->SetBoolean(
         arc::prefs::kArcHasAccessToRemovableMedia,
         *params->change_info.arc_removable_media_access_enabled);
+  }
+  if (params->change_info.folder_shortcuts) {
+    std::vector<base::Value> folder_shortcuts;
+    for (auto& shortcut : *params->change_info.folder_shortcuts) {
+      folder_shortcuts.push_back(base::Value(shortcut));
+    }
+    service->Set(ash::prefs::kFilesAppFolderShortcuts,
+                 base::Value(std::move(folder_shortcuts)));
   }
 
   return RespondNow(NoArguments());
@@ -424,7 +450,7 @@ FileManagerPrivateGetZipProgressFunction::ZipProgressValue(
 
     // Remove the matching ZipFileCreator from the list of active ones.
     const size_t n = zip_creators->erase(zip_id_);
-    DCHECK_LT(0, n);
+    DCHECK_GT(n, 0u);
   }
 
   return TwoArguments(base::Value(static_cast<int>(progress.result)),
@@ -963,16 +989,16 @@ FileManagerPrivateInternalGetCrostiniSharedPathsFunction::Run() {
       continue;
     }
     auto entry = std::make_unique<base::DictionaryValue>();
-    entry->SetString(
+    entry->SetStringKey(
         "fileSystemRoot",
         storage::GetExternalFileSystemRootURIString(source_url(), mount_name));
-    entry->SetString("fileSystemName", file_system_name);
-    entry->SetString("fileFullPath", full_path);
+    entry->SetStringKey("fileSystemName", file_system_name);
+    entry->SetStringKey("fileFullPath", full_path);
     // All shared paths should be directories.  Even if this is not true,
     // it is fine for foreground/js/crostini.js class to think so. We
     // verify that the paths are in fact valid directories before calling
     // seneschal/9p in GuestOsSharePath::CallSeneschalSharePath().
-    entry->SetBoolean("fileIsDirectory", true);
+    entry->SetBoolKey("fileIsDirectory", true);
     entries->Append(std::move(entry));
   }
   return RespondNow(
@@ -1249,11 +1275,41 @@ void FileManagerPrivateInternalGetRecentFilesFunction::
           *entry_definition_list))));
 }
 
+// TODO(crbug.com/1212768): Remove this once Files app SWA has fully launched.
+ExtensionFunction::ResponseAction
+FileManagerPrivateGetFrameColorFunction::Run() {
+  ash::ScopedLightModeAsDefault scoped_light_mode_as_default;
+  auto* color_provider = ash::ColorProvider::Get();
+  std::string frame_color = SkColorToHexString(SK_ColorWHITE);
+  if (color_provider) {
+    frame_color = SkColorToHexString(cros_styles::ResolveColor(
+        cros_styles::ColorName::kBgColor, color_provider->IsDarkModeEnabled(),
+        /*use_debug_color=*/false));
+  }
+  return RespondNow(OneArgument(base::Value(frame_color)));
+}
+
 ExtensionFunction::ResponseAction
 FileManagerPrivateIsTabletModeEnabledFunction::Run() {
   ash::TabletMode* tablet_mode = ash::TabletMode::Get();
   return RespondNow(OneArgument(
       base::Value(tablet_mode ? tablet_mode->InTabletMode() : false)));
+}
+
+ExtensionFunction::ResponseAction FileManagerPrivateOpenURLFunction::Run() {
+  using extensions::api::file_manager_private::OpenURL::Params;
+  const std::unique_ptr<Params> params(Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  const GURL url(params->url);
+
+  if (!ash::NewWindowDelegate::GetPrimary()) {
+    return RespondNow(
+        Error("Could not get NewWindowDelegate's primary browser"));
+  }
+  ash::NewWindowDelegate::GetPrimary()->OpenUrl(
+      url, ash::NewWindowDelegate::OpenUrlFrom::kUserInteraction);
+
+  return RespondNow(NoArguments());
 }
 
 ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
@@ -1267,12 +1323,14 @@ ExtensionFunction::ResponseAction FileManagerPrivateOpenWindowFunction::Run() {
   const GURL selection_url(
       params->params.selection_url ? (*params->params.selection_url) : "");
 
+  ui::SelectFileDialog::FileTypeInfo file_type_info;
+  file_type_info.allowed_paths =
+      ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
   GURL files_swa_url =
       ::file_manager::util::GetFileManagerMainPageUrlWithParams(
           ui::SelectFileDialog::SELECT_NONE, /*title=*/{}, destination_folder,
           selection_url,
-          /*target_name=*/{},
-          /*file_types=*/nullptr,
+          /*target_name=*/{}, &file_type_info,
           /*file_type_index=*/0,
           /*search_query=*/{},
           /*show_android_picker_apps=*/false);

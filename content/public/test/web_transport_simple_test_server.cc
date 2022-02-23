@@ -12,7 +12,6 @@
 #include "base/threading/thread_restrictions.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/common/content_switches.h"
-#include "net/third_party/quiche/src/quic/quic_transport/quic_transport_protocol.h"
 #include "net/third_party/quiche/src/quic/test_tools/crypto_test_utils.h"
 #include "net/third_party/quiche/src/quic/test_tools/quic_test_backend.h"
 #include "net/tools/quic/quic_simple_server.h"
@@ -21,7 +20,7 @@
 namespace content {
 
 WebTransportSimpleTestServer::WebTransportSimpleTestServer() {
-  quic::QuicEnableVersion(quic::DefaultVersionForQuicTransport());
+  quic::QuicEnableVersion(quic::ParsedQuicVersion::RFCv1());
 }
 
 WebTransportSimpleTestServer::~WebTransportSimpleTestServer() {
@@ -44,7 +43,7 @@ void WebTransportSimpleTestServer::SetUpCommandLine(
   command_line->AppendSwitch(switches::kEnableQuic);
   command_line->AppendSwitchASCII(
       switches::kQuicVersion,
-      quic::AlpnForVersion(quic::DefaultVersionForQuicTransport()));
+      quic::AlpnForVersion(quic::ParsedQuicVersion::RFCv1()));
   // The value is calculated from net/data/ssl/certificates/quic-chain.pem.
   command_line->AppendSwitchASCII(
       network::switches::kIgnoreCertificateErrorsSPKIList,

@@ -8,9 +8,11 @@
 #include <sstream>
 #include <utility>
 
+#include "base/base64.h"
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/json/string_escape.h"
+#include "base/observer_list.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/feed/core/proto/v2/store.pb.h"
@@ -18,6 +20,7 @@
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
 #include "components/feed/core/v2/protocol_translator.h"
+#include "components/feed/core/v2/types.h"
 
 namespace feed {
 namespace {
@@ -63,8 +66,10 @@ StoreUpdate::~StoreUpdate() = default;
 StoreUpdate::StoreUpdate(StoreUpdate&&) = default;
 StoreUpdate& StoreUpdate::operator=(StoreUpdate&&) = default;
 
-StreamModel::StreamModel(Context* context)
-    : content_map_(&(context->revision_generator)) {}
+StreamModel::StreamModel(Context* context,
+                         const LoggingParameters& logging_parameters)
+    : logging_parameters_(logging_parameters),
+      content_map_(&(context->revision_generator)) {}
 
 StreamModel::~StreamModel() = default;
 
@@ -144,6 +149,10 @@ void StreamModel::Update(
       } else {
         MergeSharedStateIds(stream_data_, update_request->stream_data);
       }
+      // Never allow overwriting the root event ID.
+      update_request->stream_data.set_root_event_id(
+          stream_data_.root_event_id());
+
       // Note: We might be overwriting some shared-states unnecessarily.
       StoreUpdate store_update;
       store_update.stream_type = stream_type_;
@@ -156,7 +165,6 @@ void StreamModel::Update(
     }
   }
 
-  // Update non-tree data.
   stream_data_ = update_request->stream_data;
 
   if (has_clear_all) {
@@ -307,9 +315,18 @@ ContentStats StreamModel::GetContentStats() const {
   return stats;
 }
 
+const std::string& StreamModel::GetRootEventId() const {
+  return stream_data_.root_event_id();
+}
+
 std::string StreamModel::DumpStateForTesting() {
   std::stringstream ss;
   ss << "StreamModel{\n";
+  {
+    std::string base64_root_id;
+    base::Base64Encode(GetRootEventId(), &base64_root_id);
+    ss << "root_event_id=" << base64_root_id << "'\n";
+  }
   ss << "next_page_token='" << GetNextPageToken() << "'\n";
   for (auto& entry : shared_states_) {
     ss << "shared_state[" << entry.first

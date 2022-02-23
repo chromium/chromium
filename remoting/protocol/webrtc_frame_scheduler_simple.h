@@ -5,6 +5,7 @@
 #ifndef REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_SIMPLE_H_
 #define REMOTING_PROTOCOL_WEBRTC_FRAME_SCHEDULER_SIMPLE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/webrtc_frame_scheduler.h"
 
 #include <memory>
@@ -33,7 +34,6 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
   ~WebrtcFrameSchedulerSimple() override;
 
   // VideoChannelStateObserver implementation.
-  void OnEncoderReady() override;
   void OnKeyFrameRequested() override;
   void OnTargetBitrateChanged(int bitrate_kbps) override;
   void OnFrameEncoded(
@@ -58,12 +58,15 @@ class WebrtcFrameSchedulerSimple : public WebrtcFrameScheduler {
 
   // A TimeTicks provider which defaults to using a real system clock, but can
   // be replaced for unittests.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   base::RepeatingClosure capture_callback_;
   bool paused_ = false;
 
-  // Set to true when the encoder is ready to receive frames.
+  // Set to true when the encoder is ready to receive frames (which is when the
+  // output sink gets added to the VideoTrackSource). The sink's requested
+  // framerate will then be passed to SetMaxFramerateFps(), which will set this
+  // flag.
   bool encoder_ready_ = false;
 
   // Set to true when a key frame was requested.

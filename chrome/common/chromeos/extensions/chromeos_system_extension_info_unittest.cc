@@ -4,6 +4,7 @@
 
 #include "chrome/common/chromeos/extensions/chromeos_system_extension_info.h"
 
+#include "base/command_line.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 TEST(ChromeOSSystemExtensionInfo, AllowlistedExtensionsSizeEqualsToOne) {
@@ -28,4 +29,20 @@ TEST(ChromeOSSystemExtensionInfo, HPExtension) {
       chromeos::GetChromeOSExtensionInfoForId(hp_extension_id);
   EXPECT_EQ("HP", extension_info.manufacturer);
   EXPECT_EQ("*://hpcs-appschr.hpcloud.hp.com/*", extension_info.pwa_origin);
+}
+
+TEST(ChromeOSSystemExtensionInfo, PwaOriginOverride) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      chromeos::switches::kTelemetryExtensionPwaOriginOverrideForTesting,
+      "*://pwa.website.com/*");
+
+  const auto google_extension_info = chromeos::GetChromeOSExtensionInfoForId(
+      "gogonhoemckpdpadfnjnpgbjpbjnodgc");
+  EXPECT_EQ("*://pwa.website.com/*", google_extension_info.pwa_origin);
+  EXPECT_EQ("HP", google_extension_info.manufacturer);
+
+  const auto hp_extension_info = chromeos::GetChromeOSExtensionInfoForId(
+      "alnedpmllcfpgldkagbfbjkloonjlfjb");
+  EXPECT_EQ("*://pwa.website.com/*", hp_extension_info.pwa_origin);
+  EXPECT_EQ("HP", hp_extension_info.manufacturer);
 }

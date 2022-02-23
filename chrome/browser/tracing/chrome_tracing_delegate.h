@@ -14,7 +14,7 @@
 #include "content/public/browser/tracing_delegate.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model_list_observer.h"
 #else
 #include "chrome/browser/ui/browser_list_observer.h"
@@ -28,7 +28,7 @@ class Value;
 }
 
 class ChromeTracingDelegate : public content::TracingDelegate,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                               public TabModelListObserver
 #else
                               public BrowserListObserver
@@ -143,7 +143,7 @@ class ChromeTracingDelegate : public content::TracingDelegate,
     base::flat_map<std::string, base::Time> scenario_last_upload_timestamp_;
   };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TabModelListObserver implementation.
   void OnTabModelAdded() override;
   void OnTabModelRemoved() override;

@@ -14,7 +14,7 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/request_priority.h"
 #include "net/third_party/quiche/src/quic/core/http/http_encoder.h"
 #include "net/third_party/quiche/src/quic/core/qpack/qpack_encoder.h"
@@ -594,7 +594,7 @@ class QuicTestPacketMaker {
   // Parameters used throughout the lifetime of the class.
   quic::ParsedQuicVersion version_;
   quic::QuicConnectionId connection_id_;
-  const quic::QuicClock* clock_;  // Not owned.
+  raw_ptr<const quic::QuicClock> clock_;  // Not owned.
   std::string host_;
   spdy::SpdyFramer spdy_request_framer_;
   spdy::SpdyFramer spdy_response_framer_;

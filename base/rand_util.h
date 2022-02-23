@@ -19,8 +19,12 @@ namespace blink {
 namespace scheduler {
 class UkmTaskSampler;
 class MainThreadMetricsHelper;
-}
+}  // namespace scheduler
 }  // namespace blink
+
+namespace partition_alloc {
+class RandomGenerator;
+}  // namespace partition_alloc
 
 namespace base {
 
@@ -77,13 +81,9 @@ void RandomShuffle(Itr first, Itr last) {
   std::shuffle(first, last, RandomBitGenerator());
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 BASE_EXPORT int GetUrandomFD();
 #endif
-
-namespace partition_alloc {
-class RandomGenerator;
-}
 
 namespace sequence_manager {
 namespace internal {
@@ -140,7 +140,7 @@ class BASE_EXPORT InsecureRandomGenerator {
   // malloc()/free() pair, otherwise high-level benchmarks regress, and does not
   // need a secure PRNG, as it's used for ASLR and zeroing some allocations at
   // free() time.
-  friend class partition_alloc::RandomGenerator;
+  friend class ::partition_alloc::RandomGenerator;
 
   // Friend classes below are using the generator to sub-sample metrics after
   // task execution. Task execution overhead is ~1us on a Linux desktop, and yet

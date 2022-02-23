@@ -12,7 +12,6 @@
 
 #include "base/auto_reset.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "extensions/browser/api/declarative_net_request/file_backed_ruleset_source.h"
 #include "extensions/browser/api/declarative_net_request/flat/extension_ruleset_generated.h"
 #include "extensions/common/api/declarative_net_request.h"

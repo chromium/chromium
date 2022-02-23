@@ -7,6 +7,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/audio_renderer_sink.h"
 #include "media/base/output_device_info.h"
@@ -66,7 +67,7 @@ class FakeAudioRendererSink : public AudioRendererSink {
   void ChangeState(State new_state);
 
   State state_;
-  RenderCallback* callback_;
+  raw_ptr<RenderCallback> callback_;
   OutputDeviceInfo output_device_info_;
   bool is_optimized_for_hw_params_;
 };

@@ -713,7 +713,7 @@ void VrShell::UpdateWebInputIndices(
 }
 
 content::WebContents* VrShell::GetNonNativePageWebContents() const {
-  return !web_contents_is_native_page_ ? web_contents_ : nullptr;
+  return !web_contents_is_native_page_ ? web_contents_.get() : nullptr;
 }
 
 void VrShell::OnUnsupportedMode(UiUnsupportedMode mode) {
@@ -975,7 +975,7 @@ content::WebContents* VrShell::GetActiveWebContents() const {
 
 bool VrShell::ShouldDisplayURL() const {
   content::NavigationEntry* entry = GetNavigationEntry();
-  if (!entry) {
+  if (!entry || entry->IsInitialEntry()) {
     return ChromeLocationBarModelDelegate::ShouldDisplayURL();
   }
   GURL url = entry->GetVirtualURL();

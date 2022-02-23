@@ -7,12 +7,13 @@
 
 #include "device/vr/public/mojom/vr_service.mojom-blink.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
+#include "third_party/blink/renderer/modules/xr/xr_viewport.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/transformation_matrix.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 #include "third_party/blink/renderer/modules/xr/xr_rigid_transform.h"
 
@@ -32,6 +33,7 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   const String& eye() const { return eye_string_; }
   device::mojom::blink::XREye EyeValue() const { return eye_; }
   XRViewData* ViewData() const { return view_data_; }
+  XRViewport* Viewport(double scale);
 
   XRFrame* frame() const;
   XRSession* session() const;
@@ -41,10 +43,8 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
 
   // isFirstPersonObserver is only true for views that composed with a video
   // feed that is not directly displayed on the viewer device. Primarily this is
-  // used for video streams from optically transparent AR headsets. Since Chrome
-  // does not directly support any such headset at this time we return false
-  // unconditionally.
-  bool isFirstPersonObserver() const { return false; }
+  // used for video streams from optically transparent AR headsets.
+  bool isFirstPersonObserver() const;
 
   absl::optional<double> recommendedViewportScale() const;
   void requestViewportScale(absl::optional<double> scale);
@@ -60,11 +60,13 @@ class MODULES_EXPORT XRView final : public ScriptWrappable {
   // XRFrame::getViewerPose.
   Member<XRRigidTransform> ref_space_from_view_;
   Member<DOMFloat32Array> projection_matrix_;
+  Member<XRViewport> viewport_;
 };
 
 class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
  public:
-  explicit XRViewData(device::mojom::blink::XREye eye) : eye_(eye) {}
+  explicit XRViewData(device::mojom::blink::XREye eye, gfx::Rect viewport)
+      : eye_(eye), viewport_(viewport) {}
   XRViewData(const device::mojom::blink::XRViewPtr& view,
              double depth_near,
              double depth_far);
@@ -94,6 +96,8 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   const TransformationMatrix& ProjectionMatrix() const {
     return projection_matrix_;
   }
+  const gfx::Rect& Viewport() const { return viewport_; }
+  bool IsFirstPersonObserver() const { return is_first_person_observer_; }
 
   absl::optional<double> recommendedViewportScale() const;
   void SetRecommendedViewportScale(absl::optional<double> scale) {
@@ -120,6 +124,8 @@ class MODULES_EXPORT XRViewData final : public GarbageCollected<XRViewData> {
   TransformationMatrix projection_matrix_;
   TransformationMatrix inv_projection_;
   bool inv_projection_dirty_ = true;
+  gfx::Rect viewport_;
+  bool is_first_person_observer_ = false;
   absl::optional<double> recommended_viewport_scale_ = absl::nullopt;
   double requested_viewport_scale_ = 1.0;
   double current_viewport_scale_ = 1.0;

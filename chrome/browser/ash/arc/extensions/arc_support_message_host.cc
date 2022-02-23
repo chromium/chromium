@@ -73,6 +73,10 @@ void ArcSupportMessageHost::OnMessage(const std::string& message_string) {
   if (!observer_)
     return;
 
+  // |message_string| comes from the ARC support extension via native messaging,
+  // which on Chrome OS runs in the browser process.
+  // Therefore this use of JSONReader does not violate
+  // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/security/rule-of-2.md.
   std::unique_ptr<base::Value> message_value =
       base::JSONReader::ReadDeprecated(message_string);
   base::DictionaryValue* message;

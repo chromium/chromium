@@ -7,9 +7,8 @@
 namespace cc {
 
 FakeRasterQueryQueue::FakeRasterQueryQueue(
-    viz::RasterContextProvider* const worker_context_provider,
-    bool oop_rasterization_enabled)
-    : RasterQueryQueue(worker_context_provider, oop_rasterization_enabled) {}
+    viz::RasterContextProvider* const worker_context_provider)
+    : RasterQueryQueue(worker_context_provider) {}
 
 FakeRasterQueryQueue::~FakeRasterQueryQueue() = default;
 

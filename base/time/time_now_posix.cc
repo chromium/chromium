@@ -2,12 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/time/time.h"
-
 #include <stdint.h>
 #include <sys/time.h>
 #include <time.h>
-#if defined(OS_ANDROID) && !defined(__LP64__)
+
+#include "base/time/time.h"
+#include "build/build_config.h"
+#if BUILDFLAG(IS_ANDROID) && !defined(__LP64__)
 #include <time64.h>
 #endif
 #include <unistd.h>
@@ -21,7 +22,7 @@
 
 // Ensure the Fuchsia and Mac builds do not include this module. Instead,
 // non-POSIX implementation is used for sampling the system clocks.
-#if defined(OS_FUCHSIA) || defined(OS_APPLE)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_APPLE)
 #error "This implementation is for POSIX platforms other than Fuchsia or Mac."
 #endif
 
@@ -46,9 +47,9 @@ int64_t ConvertTimespecToMicros(const struct timespec& ts) {
 // microsecond timebase. Minimum requirement is MONOTONIC_CLOCK to be supported
 // on the system. FreeBSD 6 has CLOCK_MONOTONIC but defines
 // _POSIX_MONOTONIC_CLOCK to -1.
-#if (defined(OS_POSIX) && defined(_POSIX_MONOTONIC_CLOCK) && \
-     _POSIX_MONOTONIC_CLOCK >= 0) ||                         \
-    defined(OS_BSD) || defined(OS_ANDROID)
+#if (BUILDFLAG(IS_POSIX) && defined(_POSIX_MONOTONIC_CLOCK) && \
+     _POSIX_MONOTONIC_CLOCK >= 0) ||                           \
+    BUILDFLAG(IS_BSD) || BUILDFLAG(IS_ANDROID)
 int64_t ClockNow(clockid_t clk_id) {
   struct timespec ts;
   CHECK(clock_gettime(clk_id, &ts) == 0);
@@ -127,7 +128,7 @@ bool TimeTicks::IsConsistentAcrossProcesses() {
 namespace subtle {
 ThreadTicks ThreadTicksNowIgnoringOverride() {
 #if (defined(_POSIX_THREAD_CPUTIME) && (_POSIX_THREAD_CPUTIME >= 0)) || \
-    defined(OS_ANDROID)
+    BUILDFLAG(IS_ANDROID)
   return ThreadTicks() + Microseconds(ClockNow(CLOCK_THREAD_CPUTIME_ID));
 #else
   NOTREACHED();

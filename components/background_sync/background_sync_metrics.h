@@ -6,6 +6,7 @@
 #define COMPONENTS_BACKGROUND_SYNC_BACKGROUND_SYNC_METRICS_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "services/metrics/public/cpp/ukm_source_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -81,7 +82,7 @@ class BackgroundSyncMetrics {
       int max_attempts,
       ukm::SourceId source_id);
 
-  background_sync::BackgroundSyncDelegate* delegate_;
+  raw_ptr<background_sync::BackgroundSyncDelegate> delegate_;
 
   // Used to signal tests that a UKM event has been recorded.
   base::OnceClosure ukm_event_recorded_for_testing_;

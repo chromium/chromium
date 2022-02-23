@@ -9,8 +9,8 @@
 #include <memory>
 #include <vector>
 
-#include "chrome/browser/chromeos/printing/print_server.h"
-#include "chrome/browser/chromeos/printing/printer_detector.h"
+#include "chrome/browser/ash/printing/print_server.h"
+#include "chrome/browser/ash/printing/printer_detector.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;
@@ -42,12 +42,10 @@ class ServerPrintersProvider {
   // |servers_are_complete| is true if all policies have been parsed and
   // applied. |servers| contains the current list of print servers to query for
   // printers.
-  virtual void OnServersChanged(
-      bool servers_are_complete,
-      const std::map<GURL, chromeos::PrintServer>& servers) = 0;
+  virtual void OnServersChanged(bool servers_are_complete,
+                                const std::map<GURL, PrintServer>& servers) = 0;
 
-  virtual std::vector<chromeos::PrinterDetector::DetectedPrinter>
-  GetPrinters() = 0;
+  virtual std::vector<PrinterDetector::DetectedPrinter> GetPrinters() = 0;
 
  protected:
   ServerPrintersProvider() = default;

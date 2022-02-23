@@ -18,36 +18,37 @@ import '../icons.js';
 import '../prefs/prefs.js';
 import '../settings_shared_css.js';
 
-import {CrActionMenuElement} from '//resources/cr_elements/cr_action_menu/cr_action_menu.js';
+import {CrButtonElement} from '//resources/cr_elements/cr_button/cr_button.m.js';
 import {assert} from '//resources/js/assert.m.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {DomRepeatEvent, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {Route, Router} from '../router.js';
 
+import {getTemplate} from './sync_account_control.html.js';
 import {StatusAction, StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 export const MAX_SIGNIN_PROMO_IMPRESSION: number = 10;
 
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    item: StoredAccount,
+export interface SettingsSyncAccountControlElement {
+  $: {
+    signIn: CrButtonElement,
   };
 }
 
 const SettingsSyncAccountControlElementBase =
     WebUIListenerMixin(PrefsMixin(PolymerElement));
 
-class SettingsSyncAccountControlElement extends
+export class SettingsSyncAccountControlElement extends
     SettingsSyncAccountControlElementBase {
   static get is() {
     return 'settings-sync-account-control';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -318,13 +319,13 @@ class SettingsSyncAccountControlElement extends
       return false;
     }
     // </if>
+
     // <if expr="lacros">
-    if (!loadTimeData.getBoolean('isSignoutSupported')) {
-      // On Lacros the primary account doesn't support turning off sync yet.
-      // TODO(https://crbug.com/1217645): Remove after adding sync off state.
-      return false;
-    }
+    // On Lacros the primary account doesn't support turning off sync yet.
+    // TODO(https://crbug.com/1217645): Remove after adding sync off state.
+    return false;
     // </if>
+
     return !this.hideButtons && !this.showSetupButtons_ &&
         !!this.syncStatus.signedIn;
   }
@@ -428,7 +429,7 @@ class SettingsSyncAccountControlElement extends
     }
   }
 
-  private onAccountTap_(e: RepeaterEvent) {
+  private onAccountTap_(e: DomRepeatEvent<StoredAccount>) {
     this.shownAccount_ = e.model.item;
     this.shadowRoot!.querySelector('cr-action-menu')!.close();
   }
@@ -480,6 +481,12 @@ class SettingsSyncAccountControlElement extends
   private onSetupConfirm_() {
     this.dispatchEvent(new CustomEvent(
         'sync-setup-done', {bubbles: true, composed: true, detail: true}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-sync-account-control': SettingsSyncAccountControlElement;
   }
 }
 

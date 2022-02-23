@@ -4,6 +4,7 @@
 
 #include "chrome/browser/lacros/account_manager/profile_account_manager_factory.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/lacros/account_manager/profile_account_manager.h"
 #include "chrome/browser/profiles/profile.h"

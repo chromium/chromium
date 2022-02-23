@@ -22,7 +22,7 @@
 #include "components/viz/test/buildflags.h"
 #include "third_party/skia/include/core/SkImage.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -32,15 +32,17 @@ namespace {
 std::vector<RasterTestConfig> const kTestCases = {
     {viz::RendererType::kSoftware, TestRasterType::kBitmap},
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     {viz::RendererType::kGL, TestRasterType::kGpu},
     {viz::RendererType::kGL, TestRasterType::kOneCopy},
     {viz::RendererType::kGL, TestRasterType::kZeroCopy},
+#endif  // BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     {viz::RendererType::kSkiaGL, TestRasterType::kGpu},
     {viz::RendererType::kSkiaGL, TestRasterType::kOneCopy},
     {viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
-    {viz::RendererType::kSkiaVk, TestRasterType::kOop},
+    {viz::RendererType::kSkiaVk, TestRasterType::kGpu},
     {viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy},
 #endif  // BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
 };
@@ -222,8 +224,9 @@ class LayerTreeHostMaskPixelTest_SolidColorEmptyMaskWithEffectAndRenderSurface
   void SetupTree() override {
     LayerTreeHostMaskPixelTestWithLayerList::SetupTree();
 
-    auto* effect = layer_tree_host()->property_trees()->effect_tree.Node(
-        mask_layer_->effect_tree_index());
+    auto* effect =
+        layer_tree_host()->property_trees()->effect_tree_mutable().Node(
+            mask_layer_->effect_tree_index());
     effect->render_surface_reason = RenderSurfaceReason::kTest;
   }
 };
@@ -573,11 +576,11 @@ INSTANTIATE_TEST_SUITE_P(
 
 TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerList, Test) {
   base::FilePath image_name =
-      (raster_type() == TestRasterType::kGpu)
+      (use_accelerated_raster())
           ? base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter_gpu.png"))
           : base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter.png"));
 
-  if (use_skia_vulkan() && raster_type() == TestRasterType::kOop) {
+  if (use_skia_vulkan() && use_accelerated_raster()) {
     // Vulkan with OOP raster has 3 pixels errors (the circle mask shape is
     // slightly different).
     float percentage_pixels_large_error = 0.031f;  // 3px / (100*100)
@@ -633,11 +636,11 @@ TEST_P(LayerTreeHostMasksForBackdropFiltersPixelTestWithLayerTree, Test) {
   blur->SetMaskLayer(mask);
 
   base::FilePath image_name =
-      (raster_type() == TestRasterType::kGpu)
+      (use_accelerated_raster())
           ? base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter_gpu.png"))
           : base::FilePath(FILE_PATH_LITERAL("mask_of_backdrop_filter.png"));
 
-  if (use_skia_vulkan() && raster_type() == TestRasterType::kOop) {
+  if (use_skia_vulkan() && use_accelerated_raster()) {
     // Vulkan with OOP raster has 3 pixels errors (the circle mask shape is
     // slightly different).
     float percentage_pixels_large_error = 0.031f;  // 3px / (100*100)
@@ -760,7 +763,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
       small_error_allowed = 1;
     } else {
 #if defined(ARCH_CPU_ARM64)
-#if defined(OS_WIN) || defined(OS_FUCHSIA) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_MAC)
       // ARM Windows, macOS, and Fuchsia has some pixels difference
       // Affected tests: RotatedClippedCircle, RotatedClippedCircleUnderflow
       // crbug.com/1030244, crbug.com/1048249, crbug.com/1128443
@@ -871,6 +874,7 @@ class LayerTreeHostMaskAsBlendingPixelTest
 MaskTestConfig const kTestConfigs[] = {
     MaskTestConfig{{viz::RendererType::kSoftware, TestRasterType::kBitmap}, 0},
 #if BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
+#if BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
@@ -878,9 +882,14 @@ MaskTestConfig const kTestConfigs[] = {
                    kForceShaders},
     MaskTestConfig{{viz::RendererType::kGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing | kForceShaders},
+#endif  // BUILDFLAG(ENABLE_GL_RENDERER_TESTS)
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy}, 0},
     MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
                    kUseAntialiasing},
+    MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
+                   kForceShaders},
+    MaskTestConfig{{viz::RendererType::kSkiaGL, TestRasterType::kZeroCopy},
+                   kUseAntialiasing | kForceShaders},
 #endif  // BUILDFLAG(ENABLE_GL_BACKEND_TESTS)
 #if BUILDFLAG(ENABLE_VULKAN_BACKEND_TESTS)
     MaskTestConfig{{viz::RendererType::kSkiaVk, TestRasterType::kZeroCopy}, 0},
@@ -1154,4 +1163,4 @@ TEST_P(LayerTreeHostMasksForBackdropFiltersAndBlendPixelTest, Test) {
 }  // namespace
 }  // namespace cc
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)

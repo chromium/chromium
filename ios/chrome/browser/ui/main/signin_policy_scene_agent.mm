@@ -188,11 +188,11 @@
     return;
   }
 
-  if (self.sceneState.appState.shouldShowPolicySignoutPrompt) {
+  if (self.sceneState.appState.shouldShowForceSignOutPrompt) {
     // Show the sign-out prompt if the user was signed out due to policy.
     [HandlerForProtocol(self.dispatcher, PolicyChangeCommands)
-        showPolicySignoutPrompt];
-    self.sceneState.appState.shouldShowPolicySignoutPrompt = NO;
+        showForceSignedOutPrompt];
+    self.sceneState.appState.shouldShowForceSignOutPrompt = NO;
   }
 
   if ([self isForcedSignInRequiredByPolicy]) {
@@ -257,9 +257,8 @@
     return NO;
   }
 
-  if (self.sceneState.presentingModalOverlay) {
-    // Return NO when the scene cannot present views because it is blocked by
-    // the modal overlay.
+  if (self.sceneState.appState.currentUIBlocker) {
+    // Return NO when the scene cannot present views because it is blocked.
     return NO;
   }
 

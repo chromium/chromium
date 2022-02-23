@@ -148,27 +148,6 @@ class MessageBundle {
   SubstitutionMap dictionary_;
 };
 
-///////////////////////////////////////////////////////////////////////////////
-//
-// Renderer helper typedefs and functions.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-// A map of message name to message.
-typedef std::map<std::string, std::string> L10nMessagesMap;
-
-// A map of extension ID to l10n message map.
-typedef std::map<std::string, L10nMessagesMap > ExtensionToL10nMessagesMap;
-
-// Returns the extension_id to messages map.
-ExtensionToL10nMessagesMap* GetExtensionToL10nMessagesMap();
-
-// Returns message map that matches given extension_id, or NULL.
-L10nMessagesMap* GetL10nMessagesMap(const std::string& extension_id);
-
-// Erases the L10nMessagesMap for the given |extension_id|.
-void EraseL10nMessagesMap(const std::string& extension_id);
-
 }  // namespace extensions
 
 #endif  // EXTENSIONS_COMMON_MESSAGE_BUNDLE_H_

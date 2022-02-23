@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/bubble/bubble_contents_wrapper.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
@@ -18,7 +19,7 @@ namespace {
 class TestBubbleContentsWrapper : public BubbleContentsWrapper {
  public:
   explicit TestBubbleContentsWrapper(Profile* profile)
-      : BubbleContentsWrapper(profile, 0, false, true, true) {}
+      : BubbleContentsWrapper(GURL(""), profile, 0, true, true) {}
   void ReloadWebContents() override {}
 };
 }  // namespace
@@ -70,8 +71,8 @@ class WebUIBubbleDialogViewTest : public ChromeViewsTestBase {
   std::unique_ptr<TestingProfile> profile_;
   views::UniqueWidgetPtr anchor_widget_;
   std::unique_ptr<TestBubbleContentsWrapper> contents_wrapper_;
-  Widget* bubble_widget_ = nullptr;
-  WebUIBubbleDialogView* bubble_view_ = nullptr;
+  raw_ptr<Widget> bubble_widget_ = nullptr;
+  raw_ptr<WebUIBubbleDialogView> bubble_view_ = nullptr;
 };
 
 TEST_F(WebUIBubbleDialogViewTest, BubbleRespondsToWebViewPreferredSizeChanges) {

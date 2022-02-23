@@ -47,12 +47,6 @@ mojom::ParsedHeadersPtr PopulateParsedHeaders(
   if (headers->GetNormalizedHeader("Accept-CH", &accept_ch))
     parsed_headers->accept_ch = ParseClientHintsHeader(accept_ch);
 
-  std::string accept_ch_lifetime;
-  if (headers->GetNormalizedHeader("Accept-CH-Lifetime", &accept_ch_lifetime)) {
-    parsed_headers->accept_ch_lifetime =
-        ParseAcceptCHLifetime(accept_ch_lifetime);
-  }
-
   std::string critical_ch;
   if (headers->GetNormalizedHeader("Critical-CH", &critical_ch))
     parsed_headers->critical_ch = ParseClientHintsHeader(critical_ch);

@@ -9,21 +9,24 @@
 #include "base/trace_event/trace_event.h"
 #include "cc/document_transition/document_transition_request.h"
 #include "cc/trees/paint_holding_reason.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_prepare_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_document_transition_start_options.h"
+#include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/dom/pseudo_element.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
@@ -36,35 +39,33 @@ namespace {
 const char kAbortedFromPrepare[] = "Aborted due to prepare() call";
 const char kAbortedFromSignal[] = "Aborted due to abortSignal";
 
-constexpr base::TimeDelta kDefaultTransitionDuration = base::Milliseconds(250);
-
-DocumentTransition::Request::Effect ParseEffect(const String& input) {
-  using MapType = HashMap<String, DocumentTransition::Request::Effect>;
+DocumentTransitionRequest::Effect ParseEffect(const String& input) {
+  using MapType = HashMap<String, DocumentTransitionRequest::Effect>;
   DEFINE_STATIC_LOCAL(
       MapType*, lookup_map,
       (new MapType{
-          {"cover-down", DocumentTransition::Request::Effect::kCoverDown},
-          {"cover-left", DocumentTransition::Request::Effect::kCoverLeft},
-          {"cover-right", DocumentTransition::Request::Effect::kCoverRight},
-          {"cover-up", DocumentTransition::Request::Effect::kCoverUp},
-          {"explode", DocumentTransition::Request::Effect::kExplode},
-          {"fade", DocumentTransition::Request::Effect::kFade},
-          {"implode", DocumentTransition::Request::Effect::kImplode},
-          {"reveal-down", DocumentTransition::Request::Effect::kRevealDown},
-          {"reveal-left", DocumentTransition::Request::Effect::kRevealLeft},
-          {"reveal-right", DocumentTransition::Request::Effect::kRevealRight},
-          {"reveal-up", DocumentTransition::Request::Effect::kRevealUp}}));
+          {"cover-down", DocumentTransitionRequest::Effect::kCoverDown},
+          {"cover-left", DocumentTransitionRequest::Effect::kCoverLeft},
+          {"cover-right", DocumentTransitionRequest::Effect::kCoverRight},
+          {"cover-up", DocumentTransitionRequest::Effect::kCoverUp},
+          {"explode", DocumentTransitionRequest::Effect::kExplode},
+          {"fade", DocumentTransitionRequest::Effect::kFade},
+          {"implode", DocumentTransitionRequest::Effect::kImplode},
+          {"reveal-down", DocumentTransitionRequest::Effect::kRevealDown},
+          {"reveal-left", DocumentTransitionRequest::Effect::kRevealLeft},
+          {"reveal-right", DocumentTransitionRequest::Effect::kRevealRight},
+          {"reveal-up", DocumentTransitionRequest::Effect::kRevealUp}}));
 
   auto it = lookup_map->find(input);
   return it != lookup_map->end() ? it->value
-                                 : DocumentTransition::Request::Effect::kNone;
+                                 : DocumentTransitionRequest::Effect::kNone;
 }
 
-DocumentTransition::Request::Effect ParseRootTransition(
+DocumentTransitionRequest::Effect ParseRootTransition(
     const DocumentTransitionPrepareOptions* options) {
   return options->hasRootTransition()
              ? ParseEffect(options->rootTransition())
-             : DocumentTransition::Request::Effect::kNone;
+             : DocumentTransitionRequest::Effect::kNone;
 }
 
 uint32_t NextDocumentTag() {
@@ -72,9 +73,9 @@ uint32_t NextDocumentTag() {
   return next_document_tag++;
 }
 
-DocumentTransition::Request::TransitionConfig ParseTransitionConfig(
+DocumentTransitionRequest::TransitionConfig ParseTransitionConfig(
     const DocumentTransitionConfig& config) {
-  DocumentTransition::Request::TransitionConfig transition_config;
+  DocumentTransitionRequest::TransitionConfig transition_config;
 
   if (config.hasDuration()) {
     transition_config.duration = base::Milliseconds(config.duration());
@@ -100,7 +101,7 @@ void DocumentTransition::Trace(Visitor* visitor) const {
   visitor->Trace(start_promise_resolver_);
   visitor->Trace(active_shared_elements_);
   visitor->Trace(signal_);
-  visitor->Trace(transition_elements_);
+  visitor->Trace(style_tracker_);
 
   ScriptWrappable::Trace(visitor);
   ActiveScriptWrappable::Trace(visitor);
@@ -116,9 +117,7 @@ void DocumentTransition::ContextDestroyed() {
     start_promise_resolver_->Detach();
     start_promise_resolver_ = nullptr;
   }
-  active_shared_elements_.clear();
-  signal_ = nullptr;
-  StopDeferringCommits();
+  ResetState();
 }
 
 bool DocumentTransition::HasPendingActivity() const {
@@ -132,9 +131,8 @@ ScriptPromise DocumentTransition::prepare(
     const DocumentTransitionPrepareOptions* options,
     ExceptionState& exception_state) {
   // Reject any previous prepare promises.
-  if (state_ == State::kPreparing || state_ == State::kPrepared) {
+  if (state_ == State::kPreparing || state_ == State::kPrepared)
     CancelPendingTransition(kAbortedFromPrepare);
-  }
 
   // Get the sequence id before any early outs so we will correctly process
   // callbacks from previous requests.
@@ -158,7 +156,7 @@ ScriptPromise DocumentTransition::prepare(
   }
 
   std::string error;
-  DocumentTransition::Request::TransitionConfig root_config;
+  DocumentTransitionRequest::TransitionConfig root_config;
   if (options->hasRootConfig())
     root_config = ParseTransitionConfig(*options->rootConfig());
   if (!root_config.IsValid(&error)) {
@@ -167,11 +165,18 @@ ScriptPromise DocumentTransition::prepare(
     return ScriptPromise();
   }
 
-  std::vector<DocumentTransition::Request::TransitionConfig>
+  // This stores a per-shared-element configuration, if specified. Note that
+  // this is likely to change when the API is redesigned at
+  // https://github.com/WICG/shared-element-transitions.
+  //
+  // Note that we add one extra config for the "root" element, after parsing the
+  // shared elements.
+  std::vector<DocumentTransitionRequest::TransitionConfig>
       shared_elements_config;
   if (options->hasSharedElements()) {
     shared_elements_config.resize(options->sharedElements().size());
 
+    // TODO(vmpstr): This is likely to be superceded by CSS customization.
     if (options->hasSharedElementsConfig()) {
       const auto& shared_elements_config_options =
           options->sharedElementsConfig();
@@ -197,6 +202,9 @@ ScriptPromise DocumentTransition::prepare(
     }
   }
 
+  // The root snapshot is handled as a shared element by the compositing stack.
+  shared_elements_config.emplace_back();
+
   if (options->hasAbortSignal()) {
     if (options->abortSignal()->aborted()) {
       exception_state.ThrowDOMException(DOMExceptionCode::kAbortError,
@@ -220,22 +228,16 @@ ScriptPromise DocumentTransition::prepare(
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
   state_ = State::kPreparing;
-  pending_request_ = Request::CreatePrepare(
+  pending_request_ = DocumentTransitionRequest::CreatePrepare(
       effect, document_tag_, root_config, std::move(shared_elements_config),
       ConvertToBaseOnceCallback(CrossThreadBindOnce(
           &DocumentTransition::NotifyPrepareFinished,
-          WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)));
+          WrapCrossThreadWeakPersistent(this), last_prepare_sequence_id_)),
+      /*is_renderer_transition=*/true);
 
-  // Add DOM elements to render and animate the content of shared elements for
-  // renderer driven transitions.
-  if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
-    transition_elements_.resize(prepare_shared_element_count_);
-    for (wtf_size_t i = 0; i < prepare_shared_element_count_; i++) {
-      transition_elements_[i] =
-          MakeGarbageCollected<DocumentTransitionContainerElement>(*document_);
-      transition_elements_[i]->Prepare(active_shared_elements_[i]);
-    }
-  }
+  style_tracker_ =
+      MakeGarbageCollected<DocumentTransitionStyleTracker>(*document_);
+  style_tracker_->Prepare(active_shared_elements_);
 
   NotifyHasChangesToCommit();
   return prepare_promise_resolver_->Promise();
@@ -263,6 +265,7 @@ ScriptPromise DocumentTransition::start(
 
   signal_ = nullptr;
   StopDeferringCommits();
+
   if (options->hasSharedElements())
     SetActiveSharedElements(options->sharedElements());
 
@@ -278,8 +281,7 @@ ScriptPromise DocumentTransition::start(
 
     // TODO(khushalsagar) : Viz keeps copy results cached for 5 seconds at this
     // point. We should send an early release. See crbug.com/1266500.
-    SetActiveSharedElements({});
-    transition_elements_.clear();
+    ResetState();
     return ScriptPromise();
   }
 
@@ -287,28 +289,9 @@ ScriptPromise DocumentTransition::start(
   state_ = State::kStarted;
   start_promise_resolver_ =
       MakeGarbageCollected<ScriptPromiseResolver>(script_state);
-  if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
-    pending_request_ = Request::CreateAnimateRenderer(document_tag_);
-    for (wtf_size_t i = 0; i < prepare_shared_element_count_; i++) {
-      transition_elements_[i]->Start(active_shared_elements_[i]);
-    }
-
-    // TODO(khushalsagar) : Update this once its clear how transition end should
-    // be defined. See crbug.com/1266488.
-    document_->GetTaskRunner(TaskType::kInternalFrameLifecycleControl)
-        ->PostDelayedTask(
-            FROM_HERE,
-            ConvertToBaseOnceCallback(CrossThreadBindOnce(
-                &DocumentTransition::NotifyStartFinished,
-                WrapCrossThreadWeakPersistent(this), last_start_sequence_id_)),
-            kDefaultTransitionDuration);
-  } else {
-    pending_request_ = Request::CreateStart(
-        document_tag_, prepare_shared_element_count_,
-        ConvertToBaseOnceCallback(CrossThreadBindOnce(
-            &DocumentTransition::NotifyStartFinished,
-            WrapCrossThreadWeakPersistent(this), last_start_sequence_id_)));
-  }
+  pending_request_ =
+      DocumentTransitionRequest::CreateAnimateRenderer(document_tag_);
+  style_tracker_->Start(active_shared_elements_);
 
   NotifyHasChangesToCommit();
   return start_promise_resolver_->Promise();
@@ -319,7 +302,7 @@ void DocumentTransition::NotifyHasChangesToCommit() {
     return;
 
   // Schedule a new frame.
-  document_->GetPage()->Animator().ScheduleVisualUpdate(document_->GetFrame());
+  document_->View()->ScheduleAnimation();
 
   // Ensure paint artifact compositor does an update, since that's the mechanism
   // we use to pass transition requests to the compositor.
@@ -337,9 +320,8 @@ void DocumentTransition::NotifyPrepareFinished(uint32_t sequence_id) {
 
   DCHECK(state_ == State::kPreparing);
   DCHECK(prepare_promise_resolver_);
-  for (wtf_size_t i = 0; i < transition_elements_.size(); i++) {
-    transition_elements_[i]->PrepareResolved();
-  }
+  if (style_tracker_)
+    style_tracker_->PrepareResolved();
 
   // Defer commits before resolving the promise to ensure any updates made in
   // the callback are deferred.
@@ -361,56 +343,94 @@ void DocumentTransition::NotifyStartFinished(uint32_t sequence_id) {
 
   DCHECK(state_ == State::kStarted);
   DCHECK(start_promise_resolver_);
-
   start_promise_resolver_->Resolve();
   start_promise_resolver_ = nullptr;
-  state_ = State::kIdle;
-  SetActiveSharedElements({});
 
-  if (base::FeatureList::IsEnabled(features::kDocumentTransitionRenderer)) {
-    for (auto& transition_element : transition_elements_)
-      transition_element->StartFinished();
+  // Resolve the promise to notify script when animations finish but don't
+  // remove the pseudo element tree.
+  if (disable_end_transition_)
+    return;
 
-    pending_request_ = Request::CreateRelease(document_tag_);
-    NotifyHasChangesToCommit();
-  }
+  style_tracker_->StartFinished();
+  pending_request_ = DocumentTransitionRequest::CreateRelease(document_tag_);
+  NotifyHasChangesToCommit();
+  ResetState(/*abort_style_tracker=*/false);
 }
 
-std::unique_ptr<DocumentTransition::Request>
+std::unique_ptr<DocumentTransitionRequest>
 DocumentTransition::TakePendingRequest() {
   return std::move(pending_request_);
 }
 
-bool DocumentTransition::IsActiveElement(const Element* element) const {
-  return active_shared_elements_.Contains(element);
+bool DocumentTransition::IsTransitionParticipant(
+    const LayoutObject& object) const {
+  // If our state is idle it implies that we have no style tracker.
+  DCHECK(state_ != State::kIdle || !style_tracker_);
+
+  // The layout view is always a participant if there is a transition.
+  if (auto* layout_view = DynamicTo<LayoutView>(object))
+    return state_ != State::kIdle;
+
+  // Otherwise check if the layout object has an active shared element.
+  auto* element = DynamicTo<Element>(object.GetNode());
+  return element && active_shared_elements_.Contains(element);
 }
 
-void DocumentTransition::PopulateSharedElementAndResourceId(
-    const Element* element,
-    DocumentTransitionSharedElementId* shared_element_id,
-    viz::SharedElementResourceId* resource_id) const {
-  DCHECK(IsActiveElement(element));
+PaintPropertyChangeType DocumentTransition::UpdateEffect(
+    const LayoutObject& object,
+    const EffectPaintPropertyNodeOrAlias& current_effect,
+    const TransformPaintPropertyNodeOrAlias* current_transform) {
+  DCHECK(IsTransitionParticipant(object));
+  DCHECK(current_transform);
 
-  *shared_element_id = DocumentTransitionSharedElementId(document_tag_);
+  EffectPaintPropertyNode::State state;
+  state.direct_compositing_reasons =
+      CompositingReason::kDocumentTransitionSharedElement;
+  state.local_transform_space = current_transform;
+  state.document_transition_shared_element_id =
+      DocumentTransitionSharedElementId(document_tag_);
+  state.compositor_element_id = CompositorElementIdFromUniqueObjectId(
+      object.UniqueId(),
+      CompositorElementIdNamespace::kSharedElementTransition);
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (!element) {
+    // The only non-element participant is the layout view.
+    DCHECK(object.IsLayoutView());
+    // This matches one past the size of the shared element configs generated in
+    // ::prepare().
+    state.document_transition_shared_element_id.AddIndex(
+        active_shared_elements_.size());
+    state.shared_element_resource_id = style_tracker_->GetLiveRootSnapshotId();
+    DCHECK(state.document_transition_shared_element_id.valid());
+    return style_tracker_->UpdateRootEffect(std::move(state), current_effect);
+  }
+
   for (wtf_size_t i = 0; i < active_shared_elements_.size(); ++i) {
     if (active_shared_elements_[i] != element)
       continue;
-    shared_element_id->AddIndex(i);
+    state.document_transition_shared_element_id.AddIndex(i);
 
     // This tags the shared element's content with the resource id used by the
     // first pseudo element. This is okay since in the eventual API we should
     // have a 1:1 mapping between shared elements and pseudo elements.
-    if (!resource_id->IsValid() && !transition_elements_.IsEmpty()) {
-      // The active element is from the old DOM during prepare which maps to the
-      // old content element. And is from the new DOM during start which maps to
-      // the new content element.
-      auto* content_element = state_ == State::kPreparing
-                                  ? transition_elements_[i]->old_content()
-                                  : transition_elements_[i]->new_content();
-      *resource_id = content_element->resource_id();
+    if (!state.shared_element_resource_id.IsValid()) {
+      state.shared_element_resource_id =
+          style_tracker_->GetLiveSnapshotId(element);
     }
   }
-  DCHECK(shared_element_id->valid());
+
+  return style_tracker_->UpdateEffect(element, std::move(state),
+                                      current_effect);
+}
+
+EffectPaintPropertyNode* DocumentTransition::GetEffect(
+    const LayoutObject& object) const {
+  DCHECK(IsTransitionParticipant(object));
+
+  auto* element = DynamicTo<Element>(object.GetNode());
+  if (!element)
+    return style_tracker_->GetRootEffect();
+  return style_tracker_->GetEffect(element);
 }
 
 void DocumentTransition::VerifySharedElements() {
@@ -449,12 +469,60 @@ void DocumentTransition::VerifySharedElements() {
   }
 }
 
-void DocumentTransition::UpdateTransforms() {
+void DocumentTransition::RunPostLayoutSteps() {
   DCHECK(document_->Lifecycle().GetState() >=
          DocumentLifecycle::LifecycleState::kLayoutClean);
 
-  for (auto& transition_element : transition_elements_)
-    transition_element->UpdateTransform();
+  if (style_tracker_) {
+    style_tracker_->RunPostLayoutSteps();
+    // If we don't have active animations, schedule a frame to end the
+    // transition. Note that if we don't have start_promise_resolver_ we don't
+    // need to finish the animation, since it should already be done. See the
+    // DCHECK below.
+    //
+    // TODO(vmpstr): Note that RunPostLayoutSteps can happen multiple times
+    // during a lifecycle update. These checks don't have to happen here, and
+    // could perhaps be moved to DidFinishLifecycleUpdate.
+    //
+    // We can end up here multiple times, but if we are in a started state and
+    // don't have a start promise resolver then the only way we're here is if we
+    // disabled end transition.
+    DCHECK(state_ != State::kStarted || start_promise_resolver_ ||
+           disable_end_transition_);
+    if (state_ == State::kStarted && !style_tracker_->HasActiveAnimations() &&
+        start_promise_resolver_) {
+      DCHECK(document_->View());
+      document_->View()->RegisterForLifecycleNotifications(this);
+      document_->View()->ScheduleAnimation();
+    }
+  }
+}
+
+void DocumentTransition::WillStartLifecycleUpdate(const LocalFrameView&) {
+  DCHECK_EQ(state_, State::kStarted);
+  DCHECK(document_);
+  DCHECK(document_->View());
+  DCHECK(style_tracker_);
+
+  if (!style_tracker_->HasActiveAnimations())
+    NotifyStartFinished(last_start_sequence_id_);
+  document_->View()->UnregisterFromLifecycleNotifications(this);
+}
+
+PseudoElement* DocumentTransition::CreatePseudoElement(
+    Element* parent,
+    PseudoId pseudo_id,
+    const AtomicString& document_transition_tag) {
+  DCHECK(style_tracker_);
+
+  return style_tracker_->CreatePseudoElement(parent, pseudo_id,
+                                             document_transition_tag);
+}
+
+const String& DocumentTransition::UAStyleSheet() const {
+  DCHECK(style_tracker_);
+
+  return style_tracker_->UAStyleSheet();
 }
 
 void DocumentTransition::SetActiveSharedElements(
@@ -516,7 +584,7 @@ void DocumentTransition::StopDeferringCommits() {
   TRACE_EVENT_NESTABLE_ASYNC_END0("blink",
                                   "DocumentTransition::DeferringCommits", this);
   deferring_commits_ = false;
-  if (!document_->GetPage())
+  if (!document_ || !document_->GetPage())
     return;
 
   document_->GetPage()->GetChromeClient().StopDeferringCommits(
@@ -533,6 +601,15 @@ void DocumentTransition::CancelPendingTransition(const char* abort_message) {
         DOMExceptionCode::kAbortError, abort_message));
     prepare_promise_resolver_ = nullptr;
   }
+
+  ResetState();
+}
+
+void DocumentTransition::ResetState(bool abort_style_tracker) {
+  SetActiveSharedElements({});
+  if (style_tracker_ && abort_style_tracker)
+    style_tracker_->Abort();
+  style_tracker_ = nullptr;
   StopDeferringCommits();
   state_ = State::kIdle;
   signal_ = nullptr;

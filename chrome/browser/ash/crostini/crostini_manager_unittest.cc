@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/bind.h"
@@ -46,7 +47,6 @@
 #include "chromeos/dbus/seneschal/seneschal_client.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "components/account_id/account_id.h"
 #include "components/policy/proto/chrome_device_policy.pb.h"
 #include "components/user_manager/scoped_user_manager.h"
@@ -803,7 +803,7 @@ class CrostiniManagerRestartTest : public CrostiniManagerTest,
   int restart_crostini_callback_count_ = 0;
   CrostiniResult last_crostini_callback_result_ = CrostiniResult::SUCCESS;
   int remove_crostini_callback_count_ = 0;
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
   base::HistogramTester histogram_tester_{};
 
   base::RepeatingCallback<void(mojom::InstallerState)> on_stage_started_ =
@@ -1265,12 +1265,12 @@ TEST_F(CrostiniManagerRestartTest,
                      base::Unretained(this), run_loop()->QuitClosure()),
       this);
 
-  task_environment_.FastForwardBy(base::Days(4));
+  task_environment_.FastForwardBy(base::Minutes(2));
   crostini_manager_->OnLxdContainerStarting(signal);
-  task_environment_.FastForwardBy(base::Days(4));
+  task_environment_.FastForwardBy(base::Minutes(2));
   ASSERT_EQ(0, restart_crostini_callback_count_);
 
-  task_environment_.FastForwardBy(base::Days(4));
+  task_environment_.FastForwardBy(base::Minutes(2));
   ASSERT_EQ(1, restart_crostini_callback_count_);
 
   EXPECT_GE(fake_concierge_client_->create_disk_image_call_count(), 1);
@@ -1780,7 +1780,7 @@ class CrostiniManagerEnterpriseReportingTest
   }
 
   void TearDown() override {
-    chromeos::disks::DiskMountManager::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
     CrostiniManagerRestartTest::TearDown();
   }
 };
@@ -1846,18 +1846,14 @@ TEST_F(CrostiniManagerTest, ExportContainerSuccess) {
       base::BindOnce(&ExpectCrostiniExportResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS, 123, 456));
 
-  // Send signals, PACK, DOWNLOAD, DONE.
+  // Send signals, STREAMING, DONE.
   vm_tools::cicerone::ExportLxdContainerProgressSignal signal;
   signal.set_owner_id(CryptohomeIdForProfile(profile()));
   signal.set_vm_name(kVmName);
   signal.set_container_name(kContainerName);
-  signal.set_status(vm_tools::cicerone::
-                        ExportLxdContainerProgressSignal_Status_EXPORTING_PACK);
-  fake_cicerone_client_->NotifyExportLxdContainerProgress(signal);
-
   signal.set_status(
       vm_tools::cicerone::
-          ExportLxdContainerProgressSignal_Status_EXPORTING_DOWNLOAD);
+          ExportLxdContainerProgressSignal_Status_EXPORTING_STREAMING);
   fake_cicerone_client_->NotifyExportLxdContainerProgress(signal);
 
   signal.set_status(
@@ -2084,6 +2080,15 @@ TEST_F(CrostiniManagerTest, InstallerStatusInitiallyFalse) {
 
 TEST_F(CrostiniManagerTest, StartContainerSuccess) {
   crostini_manager()->StartLxdContainer(
+      container_id(),
+      base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
+                     CrostiniResult::SUCCESS));
+
+  run_loop()->Run();
+}
+
+TEST_F(CrostiniManagerTest, StopContainerSuccess) {
+  crostini_manager()->StopLxdContainer(
       container_id(),
       base::BindOnce(&ExpectCrostiniResult, run_loop()->QuitClosure(),
                      CrostiniResult::SUCCESS));

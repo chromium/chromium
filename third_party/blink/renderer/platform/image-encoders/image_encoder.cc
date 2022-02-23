@@ -7,9 +7,9 @@
 #include "base/notreached.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <basetsd.h>  // Included before jpeglib.h because of INT32 clash
-#endif                // OS_WIN
+#endif
 #include <stdio.h>    // Needed by jpeglib.h
 
 #include "jpeglib.h"  // for JPEG_MAX_DIMENSION

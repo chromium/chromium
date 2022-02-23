@@ -119,11 +119,11 @@ template <typename Traits>
 struct Sigset<
     Traits,
     typename std::enable_if<std::is_base_of<Traits64, Traits>::value>::type> {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   uint64_t val;
 #else
   typename Traits::ULong val[16];
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 };
 
 #if defined(ARCH_CPU_X86_FAMILY)

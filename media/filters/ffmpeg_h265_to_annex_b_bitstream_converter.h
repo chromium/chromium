@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "media/base/media_export.h"
 #include "media/filters/ffmpeg_bitstream_converter.h"
 #include "media/formats/mp4/hevc.h"
@@ -43,7 +44,7 @@ class MEDIA_EXPORT FFmpegH265ToAnnexBBitstreamConverter
 
   // Variable to hold a pointer to memory where we can access the global
   // data from the FFmpeg file format's global headers.
-  AVCodecParameters* stream_codec_parameters_;
+  raw_ptr<AVCodecParameters> stream_codec_parameters_;
 };
 
 }  // namespace media

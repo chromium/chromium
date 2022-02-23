@@ -8,7 +8,7 @@
 #include "ash/components/phonehub/user_action_recorder.h"
 #include "base/gtest_prod_util.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FeatureStatusProvider;
@@ -57,6 +57,6 @@ class UserActionRecorderImpl : public UserActionRecorder {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_USER_ACTION_RECORDER_IMPL_H_

@@ -62,7 +62,7 @@
 #include "third_party/blink/renderer/core/loader/subresource_filter.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_info.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
@@ -90,7 +90,6 @@ class FrameFetchContextMockLocalFrameClient : public EmptyLocalFrameClient {
                void(const ResourceRequest&, const ResourceResponse&));
   MOCK_METHOD0(UserAgent, String());
   MOCK_METHOD0(MayUseClientLoFiForImageRequests, bool());
-  MOCK_CONST_METHOD0(GetPreviewsStateForFrame, PreviewsState());
 };
 
 class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
@@ -109,6 +108,9 @@ class FixedPolicySubresourceFilter : public WebDocumentSubresourceFilter {
     return policy_;
   }
 
+  LoadPolicy GetLoadPolicyForWebTransportConnect(const WebURL&) override {
+    return policy_;
+  }
   void ReportDisallowedLoad() override { ++*filtered_load_counter_; }
 
   bool ShouldLogToConsole() override { return false; }
@@ -126,7 +128,7 @@ class FrameFetchContextTest : public testing::Test {
       const KURL& url = KURL(),
       const String& permissions_policy_header = String()) {
     dummy_page_holder = nullptr;
-    dummy_page_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+    dummy_page_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
     dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
     if (url.IsValid()) {
       auto params = WebNavigationParams::CreateWithHTMLBufferForTesting(
@@ -252,7 +254,7 @@ class FrameFetchContextMockedLocalFrameClientTest
     client = MakeGarbageCollected<
         testing::NiceMock<FrameFetchContextMockLocalFrameClient>>();
     dummy_page_holder =
-        std::make_unique<DummyPageHolder>(IntSize(500, 500), nullptr, client);
+        std::make_unique<DummyPageHolder>(gfx::Size(500, 500), nullptr, client);
     dummy_page_holder->GetPage().SetDeviceScaleFactorDeprecated(1.0);
     Page::InsertOrdinaryPageForTesting(&dummy_page_holder->GetPage());
     document = &dummy_page_holder->GetDocument();
@@ -619,7 +621,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorDeviceMemorySecureTransport) {
   // Without a permissions policy header, the client hints should be sent only
   // to the first party origins. Device-memory is a legacy hint that's sent on
   // Android regardless of Permissions Policy delegation.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
 #else
@@ -776,7 +778,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorViewportWidthHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Viewport-Width", true,
                "500");
   dummy_page_holder->GetFrameView().SetLayoutSizeFixedToFrameSize(false);
-  dummy_page_holder->GetFrameView().SetLayoutSize(IntSize(800, 800));
+  dummy_page_holder->GetFrameView().SetLayoutSize(gfx::Size(800, 800));
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", true, "800");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Viewport-Width", true,
                "800");
@@ -1084,7 +1086,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
                "4");
   // Device-memory is a legacy hint that's sent on Android regardless of
   // Permissions Policy delegation.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ExpectHeader("https://www.someother-example.com/1.gif", "Device-Memory", true,
                "4");
 #else
@@ -1101,7 +1103,7 @@ TEST_F(FrameFetchContextHintsTest, MonitorSomeHintsPermissionsPolicy) {
   ExpectHeader("https://www.example.net/1.gif", "ect", false, "");
   // DPR is a legacy hint that's sent on Android regardless of Permissions
   // Policy delegation.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ExpectHeader("https://www.example.net/1.gif", "DPR", true, "1");
 #else
   ExpectHeader("https://www.example.net/1.gif", "DPR", false, "");

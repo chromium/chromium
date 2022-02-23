@@ -10,6 +10,7 @@
 
 import {$} from 'chrome://resources/js/util.m.js';
 
+import {DeviceInfo, DeviceRemote, ServiceInfo} from './device.mojom-webui.js';
 import {connectToDevice} from './device_broker.js';
 import {ConnectionStatus} from './device_collection.js';
 import {formatManufacturerDataMap, formatServiceUuids} from './device_utils.js';
@@ -41,18 +42,18 @@ const PROPERTY_NAMES = {
 export class DeviceDetailsPage extends Page {
   /**
    * @param {string} id
-   * @param {!bluetooth.mojom.DeviceInfo} deviceInfo
+   * @param {!DeviceInfo} deviceInfo
    */
   constructor(id, deviceInfo) {
     super(id, deviceInfo.nameForDisplay, id);
 
-    /** @type {!bluetooth.mojom.DeviceInfo} */
+    /** @type {!DeviceInfo} */
     this.deviceInfo = deviceInfo;
 
-    /** @type {?Array<bluetooth.mojom.ServiceInfo>} */
+    /** @type {?Array<ServiceInfo>} */
     this.services = null;
 
-    /** @private {?bluetooth.mojom.DeviceRemote} */
+    /** @private {?DeviceRemote} */
     this.device_ = null;
 
     /** @private {!ObjectFieldSet} */
@@ -182,7 +183,7 @@ export class DeviceDetailsPage extends Page {
 
   /**
    * Sets the page's device info and forces a redraw.
-   * @param {!bluetooth.mojom.DeviceInfo} info
+   * @param {!DeviceInfo} info
    */
   setDeviceInfo(info) {
     this.deviceInfo = info;

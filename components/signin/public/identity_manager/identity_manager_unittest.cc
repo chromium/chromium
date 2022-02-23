@@ -13,6 +13,7 @@
 #include "base/command_line.h"
 #include "base/containers/flat_set.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/bind.h"
@@ -55,7 +56,7 @@
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/internal/identity_manager/child_account_info_fetcher_android.h"
 #endif
 
@@ -250,7 +251,7 @@ class TestIdentityManagerDiagnosticsObserver
       std::move(on_access_token_request_completed_callback_).Run();
   }
 
-  IdentityManager* identity_manager_;
+  raw_ptr<IdentityManager> identity_manager_;
   base::OnceClosure on_access_token_requested_callback_;
   base::OnceClosure on_access_token_request_completed_callback_;
   CoreAccountId token_requestor_account_id_;
@@ -416,8 +417,9 @@ class IdentityManagerTest : public testing::Test {
         PrimaryAccountManagerSetup::kWithAuthenticatedAccout) {
       CoreAccountId account_id =
           account_tracker_service->SeedAccountInfo(kTestGaiaId, kTestEmail);
-      primary_account_manager->SetSyncPrimaryAccountInfo(
-          account_tracker_service->GetAccountInfo(account_id));
+      primary_account_manager->SetPrimaryAccountInfo(
+          account_tracker_service->GetAccountInfo(account_id),
+          ConsentLevel::kSync);
     }
 
     IdentityManager::InitParameters init_params;
@@ -436,7 +438,7 @@ class IdentityManagerTest : public testing::Test {
             account_tracker_service.get(), token_service.get(),
             primary_account_manager.get(), &pref_service_, account_consistency);
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
     init_params.device_accounts_synchronizer =
         std::make_unique<DeviceAccountsSynchronizerImpl>(
             token_service->GetDelegate());
@@ -542,7 +544,7 @@ TEST_F(IdentityManagerTest, Construct) {
   EXPECT_NE(identity_manager()->GetPrimaryAccountMutator(), nullptr);
   EXPECT_NE(identity_manager()->GetAccountsCookieMutator(), nullptr);
   EXPECT_NE(identity_manager()->GetDiagnosticsProvider(), nullptr);
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_EQ(identity_manager()->GetAccountsMutator(), nullptr);
   EXPECT_NE(identity_manager()->GetDeviceAccountsSynchronizer(), nullptr);
 #else
@@ -2453,7 +2455,7 @@ TEST_F(IdentityManagerTest, TestPickAccountIdForAccount) {
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(IdentityManagerTest, RefreshAccountInfoIfStale) {
   // The flow of this test results in an interaction with
   // ChildAccountInfoFetcherAndroid, which requires initialization of

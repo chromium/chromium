@@ -34,6 +34,10 @@
 #include "media/base/media_switches.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
+#if BUILDFLAG(IS_MAC)
+#include <CoreGraphics/CoreGraphics.h>
+#endif
+
 namespace {
 
 const char kMainWebrtcTestHtmlPage[] = "/webrtc/webrtc_jsep01_test.html";
@@ -91,11 +95,11 @@ class WebRtcMediaDevicesInteractiveUITest
 
     base::Value& values = *parsed_json.value;
     ASSERT_TRUE(values.is_list());
-    ASSERT_FALSE(values.GetList().empty());
+    ASSERT_FALSE(values.GetListDeprecated().empty());
     bool found_audio_input = false;
     bool found_video_input = false;
 
-    for (const auto& dict : values.GetList()) {
+    for (const auto& dict : values.GetListDeprecated()) {
       ASSERT_TRUE(dict.is_dict());
       MediaDeviceInfo device;
       ASSERT_TRUE(dict.FindStringPath("deviceId"));
@@ -208,7 +212,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  AddTabAtIndexToBrowser(browser(), 1, url, ui::PAGE_TRANSITION_LINK, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url,
+                                     ui::PAGE_TRANSITION_LINK, true));
 
   content::WebContents* focused_tab =
       browser()->tab_strip_model()->GetWebContentsAt(1);
@@ -224,7 +229,8 @@ IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesInteractiveUITest,
   ASSERT_TRUE(embedded_test_server()->Start());
   GURL url(embedded_test_server()->GetURL(kMainWebrtcTestHtmlPage));
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
-  AddTabAtIndexToBrowser(browser(), 1, url, ui::PAGE_TRANSITION_LINK, true);
+  ASSERT_TRUE(AddTabAtIndexToBrowser(browser(), 1, url,
+                                     ui::PAGE_TRANSITION_LINK, true));
 
   content::WebContents* tab = browser()->tab_strip_model()->GetWebContentsAt(0);
   GetUserMediaReturnsFalseIfWaitIsTooLong(tab, kAudioVideoCallConstraints);
@@ -401,6 +407,11 @@ class WebRtcMediaDevicesPrerenderingBrowserTest
 
 IN_PROC_BROWSER_TEST_F(WebRtcMediaDevicesPrerenderingBrowserTest,
                        EnumerateDevicesInPrerendering) {
+#if BUILDFLAG(IS_MAC)
+  // Test will fail if the window it's running in contains the mouse pointer.
+  // Here we warp the cursor, hopefully, out of the window.
+  CGWarpMouseCursorPosition({0, 0});
+#endif
   ASSERT_TRUE(embedded_test_server()->Start());
 
   // Loads a simple page as a primary page.

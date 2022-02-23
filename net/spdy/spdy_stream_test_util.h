@@ -117,6 +117,15 @@ class StreamDelegateDoNothing : public StreamDelegateBase {
   ~StreamDelegateDoNothing() override;
 };
 
+// Test delegate that consumes data as it arrives.
+class StreamDelegateConsumeData : public StreamDelegateBase {
+ public:
+  explicit StreamDelegateConsumeData(const base::WeakPtr<SpdyStream>& stream);
+  ~StreamDelegateConsumeData() override;
+
+  void OnDataReceived(std::unique_ptr<SpdyBuffer> buffer) override;
+};
+
 // Test delegate that sends data immediately in OnHeadersReceived().
 class StreamDelegateSendImmediate : public StreamDelegateBase {
  public:

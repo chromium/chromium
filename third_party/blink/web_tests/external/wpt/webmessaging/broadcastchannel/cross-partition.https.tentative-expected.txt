@@ -1,0 +1,4 @@
+This is a testharness.js-based test.
+FAIL BroadcastChannel messages aren't received from a cross-partition iframe assert_equals: expected "msg from iframe2" but got "msg from iframe1"
+Harness: the test ran to completion.
+

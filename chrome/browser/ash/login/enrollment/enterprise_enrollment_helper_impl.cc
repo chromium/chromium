@@ -172,8 +172,10 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
              policy::EnrollmentConfig::MODE_OFFLINE_DEMO ||
          oauth_status_ == OAUTH_STARTED_WITH_AUTH_CODE ||
          oauth_status_ == OAUTH_STARTED_WITH_TOKEN);
-  VLOG(1) << "Enroll with token type: "
-          << static_cast<int>(auth_data.token_type());
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Enroll with token type: "
+               << static_cast<int>(auth_data.token_type());
   auth_data_ = std::move(auth_data);
   policy::BrowserPolicyConnectorAsh* connector =
       g_browser_process->platform_part()->browser_policy_connector_ash();
@@ -202,7 +204,7 @@ void EnterpriseEnrollmentHelperImpl::DoEnroll(policy::DMAuth auth_data) {
       connector->GetDeviceCloudPolicyManager();
   // Obtain attestation_flow from the connector because it can be fake
   // attestation flow for testing.
-  chromeos::attestation::AttestationFlow* attestation_flow =
+  attestation::AttestationFlow* attestation_flow =
       connector->GetAttestationFlow();
   auto signing_service =
       std::make_unique<policy::TpmEnrollmentKeySigningService>();
@@ -303,7 +305,9 @@ void EnterpriseEnrollmentHelperImpl::OnEnrollmentFinished(
   // removing caller from callee.
   enrollment_handler_.reset();
 
-  VLOG(1) << "Enrollment finished, status: " << status.status();
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Enrollment finished, status: " << status.status();
   ReportEnrollmentStatus(status);
   if (oauth_status_ != OAUTH_NOT_STARTED)
     oauth_status_ = OAUTH_FINISHED;
@@ -521,6 +525,9 @@ void EnterpriseEnrollmentHelperImpl::ReportEnrollmentStatus(
     case policy::EnrollmentStatus::OFFLINE_POLICY_LOAD_FAILED:
     case policy::EnrollmentStatus::OFFLINE_POLICY_DECODING_FAILED:
       UMA(policy::kMetricEnrollmentRegisterPolicyResponseInvalid);
+      break;
+    case policy::EnrollmentStatus::MAY_NOT_BLOCK_DEV_MODE:
+      UMA(policy::kMetricEnrollmentMayNotBlockDevMode);
       break;
   }
 }

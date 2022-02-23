@@ -17,70 +17,57 @@ function SysInternalsBrowserTest() {}
 SysInternalsBrowserTest.prototype = {
   __proto__: testing.Test.prototype,
 
-  browsePreload: 'chrome://sys-internals',
+  browsePreload:
+      'chrome://sys-internals/index.html?module=sys_internals/all_tests.js',
 
   isAsync: true,
 
   extraLibraries: [
-    'api_test.js',
-    'line_chart/data_series_test.js',
-    'line_chart/line_chart_test.js',
-    'line_chart/menu_test.js',
-    'line_chart/scrollbar_test.js',
-    'line_chart/sub_chart_test.js',
-    'line_chart/unit_label_test.js',
-    'page_drawer_test.js',
-    'page_infopage_test.js',
-    'page_switch_test.js',
-    'page_unit_test.js',
-    'test_util.js',
     '//third_party/mocha/mocha.js',
-    '//third_party/polymer/v1_0/components-chromium/' +
-        'iron-test-helpers/mock-interactions.js',
     '//chrome/test/data/webui/mocha_adapter.js',
   ],
 };
 
 TEST_F('SysInternalsBrowserTest', 'getSysInfo', function() {
-  ApiTest.getSysInfo();
+  runMochaSuite('getSysInfo');
 });
 
 TEST_F('SysInternalsBrowserTest', 'LineChart_DataSeries', function() {
-  LineChartTest.DataSeries();
+  runMochaSuite('LineChart_DataSeries');
 });
 
 TEST_F('SysInternalsBrowserTest', 'LineChart_LineChart', function() {
-  LineChartTest.LineChart();
+  runMochaSuite('LineChart_LineChart');
 });
 
 TEST_F('SysInternalsBrowserTest', 'LineChart_Menu', function() {
-  LineChartTest.Menu();
+  runMochaSuite('LineChart_Menu');
 });
 
 TEST_F('SysInternalsBrowserTest', 'LineChart_Scrollbar', function() {
-  LineChartTest.Scrollbar();
+  runMochaSuite('LineChart_Scrollbar');
 });
 
 TEST_F('SysInternalsBrowserTest', 'LineChart_SubChart', function() {
-  LineChartTest.SubChart();
+  runMochaSuite('LineChart_SubChart');
 });
 
 TEST_F('SysInternalsBrowserTest', 'LineChart_UnitLabel', function() {
-  LineChartTest.UnitLabel();
+  runMochaSuite('LineChart_UnitLabel');
 });
 
 TEST_F('SysInternalsBrowserTest', 'Page_Drawer', function() {
-  PageTest.Drawer();
+  runMochaSuite('Page_Drawer');
 });
 
 TEST_F('SysInternalsBrowserTest', 'Page_InfoPage', function() {
-  PageTest.InfoPage();
+  runMochaSuite('Page_InfoPage');
 });
 
 TEST_F('SysInternalsBrowserTest', 'Page_Switch', function() {
-  PageTest.Switch();
+  runMochaSuite('Page_Switch');
 });
 
 TEST_F('SysInternalsBrowserTest', 'Page_Unit', function() {
-  PageTest.Unit();
+  runMochaSuite('Page_Unit');
 });

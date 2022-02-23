@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/timer/timer.h"
 #include "chromecast/media/cma/backend/system_volume_control.h"

@@ -43,14 +43,38 @@ def CheckChangeOnUpload(input_api, output_api):
       elif "g3" in name:
         grade = "3"
 
-      new_json.append({
-          "id": name,
-          "locale": name_parts[0],
-          "dots": dots,
-          "grade": grade,
-          "fileNames": table
-      })
-    results.append(output_api.PresubmitError("Suggested additions to " +
-                                             "tables.json (please edit and validate):"))
-    results.append(output_api.PresubmitError(json.dumps(new_json, indent=2)))
+      # See if the table file has any more data.
+      data = liblouis_list_tables.GetAdditionalFileTableData("src/tables/" + table)
+      if "dots" in data:
+        dots = data["dots"]
+
+      en_display_name = ""
+      if "display-name" in data:
+        en_display_name = data["display-name"]
+
+      locale = name_parts[0]
+      if 'locale' in data:
+        locale = data['locale']
+      elif len(locale) == 4:
+        # This works around bad locale specifiers e.g. "zhcn".
+        locale = locale[0:2] + "-" + locale[2:]
+      elif len(name_parts) > 1 and len(name_parts[1]) == 2:
+        locale = "-".join(name_parts[0:2])
+
+      entry = {
+        "id": name,
+        "locale": locale,
+        "dots": dots,
+        "grade": grade,
+        "fileNames": table
+      }
+
+      if en_display_name:
+        entry["enDisplayName"] = en_display_name
+
+      new_json.append(entry)
+
+    results.append(output_api.PresubmitNotifyResult("Suggested additions to " +
+                                             "tables.json (please edit and validate):\n" +
+                                             json.dumps(new_json, indent=2)))
   return results

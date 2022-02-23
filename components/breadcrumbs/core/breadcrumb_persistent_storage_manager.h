@@ -67,8 +67,8 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
       BreadcrumbManagerKeyedService* service);
 
  private:
-  // Sets |current_mapped_file_position_| to |file_size|;
-  void SetCurrentMappedFilePosition(size_t file_size);
+  // Initializes |file_position_| to |file_size| and writes any events so far.
+  void InitializeFilePosition(size_t file_size);
 
   // Writes |pending_breadcrumbs_| to |breadcrumbs_file_| if it fits, otherwise
   // rewrites the file. NOTE: Writing may be delayed if the file has recently
@@ -117,7 +117,7 @@ class BreadcrumbPersistentStorageManager : public BreadcrumbManagerObserver {
   // The current size of breadcrumbs written to |breadcrumbs_file_path_|.
   // NOTE: The optional will not have a value until the size of the existing
   // file, if any, is retrieved.
-  absl::optional<size_t> current_mapped_file_position_;
+  absl::optional<size_t> file_position_;
 
   // The SequencedTaskRunner on which File IO operations are performed.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;

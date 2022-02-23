@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -56,10 +57,9 @@ class AuthenticatorRequestDialogView
   // provided by the new sheet), and the dialog size and position.
   void UpdateUIForCurrentSheet();
 
-  // Shows or hides the "Choose another option" button based on whether the
-  // current sheet model defines a model for the other transports popup menu,
-  // and whether it has at least one element.
-  void ToggleOtherMechanismsButtonVisibility();
+  // Returns whether the "Choose another option" button show be shown based on
+  // whether the current sheet model defines a model for the other transports
+  // popup menu, and whether it has at least one element.
   bool ShouldOtherMechanismsButtonBeVisible() const;
 
   AuthenticatorRequestSheetView* sheet() const {
@@ -97,13 +97,15 @@ class AuthenticatorRequestDialogView
   void Show();
 
   void OtherMechanismsButtonPressed();
+  void ManageDevicesButtonPressed();
 
   void OnDialogClosing();
 
   std::unique_ptr<AuthenticatorRequestDialogModel> model_;
 
-  AuthenticatorRequestSheetView* sheet_ = nullptr;
-  views::View* other_mechanisms_button_ = nullptr;
+  raw_ptr<AuthenticatorRequestSheetView> sheet_ = nullptr;
+  raw_ptr<views::View> other_mechanisms_button_ = nullptr;
+  raw_ptr<views::View> manage_devices_button_ = nullptr;
   std::unique_ptr<views::MenuRunner> other_mechanisms_menu_runner_;
   bool first_shown_ = false;
 

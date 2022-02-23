@@ -298,7 +298,7 @@ gfx::NativeViewAccessible AXVirtualView::ChildAtIndex(int index) {
   return nullptr;
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 gfx::NativeViewAccessible AXVirtualView::GetNSWindow() {
   NOTREACHED();
   return nullptr;
@@ -435,7 +435,7 @@ const ui::AXUniqueId& AXVirtualView::GetUniqueId() const {
 // Virtual views need to implement this function in order for accessibility
 // events to be routed correctly.
 gfx::AcceleratedWidget AXVirtualView::GetTargetForNativeAccessibilityEvent() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (GetOwnerView())
     return HWNDForView(GetOwnerView());
 #endif

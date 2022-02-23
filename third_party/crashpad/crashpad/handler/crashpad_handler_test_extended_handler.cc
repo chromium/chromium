@@ -19,7 +19,7 @@
 #include "minidump/test/minidump_user_extension_stream_util.h"
 #include "tools/tool_support.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -55,16 +55,16 @@ int ExtendedHandlerMain(int argc, char* argv[]) {
 
 }  // namespace
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 
 int main(int argc, char* argv[]) {
   return ExtendedHandlerMain(argc, argv);
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(argc, argv, &ExtendedHandlerMain);
 }
 
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

@@ -265,7 +265,7 @@ base::OnceClosure ShellTestApi::CreateWaiterForFinishingWindowAnimation(
 
 PaginationModel* ShellTestApi::GetAppListPaginationModel() {
   AppListView* view =
-      Shell::Get()->app_list_controller()->presenter()->GetView();
+      Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView();
   if (!view)
     return nullptr;
   return view->GetAppsPaginationModel();

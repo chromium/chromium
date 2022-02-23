@@ -79,7 +79,6 @@ class DragDropOperation : public DataSourceObserver,
 
   // aura::client::DragDropClientObserver:
   void OnDragStarted() override;
-  void OnDragEnded() override;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   void OnDragActionsChanged(int actions) override;
 

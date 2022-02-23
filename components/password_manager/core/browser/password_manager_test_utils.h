@@ -119,6 +119,15 @@ MATCHER_P(UnorderedPasswordFormElementsAre, expectations, "") {
                                              result_listener->stream());
 }
 
+MATCHER_P(LoginsResultsOrErrorAre, expectations, "") {
+  if (absl::holds_alternative<PasswordStoreBackendError>(arg))
+    return false;
+
+  return ContainsEqualPasswordFormsUnordered(
+      *expectations, std::move(absl::get<LoginsResult>(arg)),
+      result_listener->stream());
+}
+
 class MockPasswordStoreObserver : public PasswordStoreInterface::Observer {
  public:
   MockPasswordStoreObserver();

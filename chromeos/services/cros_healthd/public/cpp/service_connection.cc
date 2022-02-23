@@ -160,13 +160,16 @@ class ServiceConnectionImpl : public ServiceConnection {
   void AddPowerObserver(mojo::PendingRemote<mojom::CrosHealthdPowerObserver>
                             pending_observer) override;
   void AddNetworkObserver(
-      mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
+      mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkEventsObserver>
           pending_observer) override;
   void AddAudioObserver(mojo::PendingRemote<mojom::CrosHealthdAudioObserver>
                             pending_observer) override;
   void AddThunderboltObserver(
       mojo::PendingRemote<mojom::CrosHealthdThunderboltObserver>
           pending_observer) override;
+  void AddUsbObserver(mojo::PendingRemote<mojom::CrosHealthdUsbObserver>
+                          pending_observer) override;
   void ProbeTelemetryInfo(
       const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
       mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback)
@@ -175,8 +178,10 @@ class ServiceConnectionImpl : public ServiceConnection {
                         mojom::CrosHealthdProbeService::ProbeProcessInfoCallback
                             callback) override;
   void GetDiagnosticsService(
-      mojom::CrosHealthdDiagnosticsServiceRequest service) override;
-  void GetProbeService(mojom::CrosHealthdProbeServiceRequest service) override;
+      mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service)
+      override;
+  void GetProbeService(
+      mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) override;
   void SetBindNetworkHealthServiceCallback(
       BindNetworkHealthServiceCallback callback) override;
   void SetBindNetworkDiagnosticsRoutinesCallback(
@@ -582,7 +587,7 @@ void ServiceConnectionImpl::AddPowerObserver(
 }
 
 void ServiceConnectionImpl::AddNetworkObserver(
-    mojo::PendingRemote<ash::network_health::mojom::NetworkEventsObserver>
+    mojo::PendingRemote<chromeos::network_health::mojom::NetworkEventsObserver>
         pending_observer) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   BindCrosHealthdEventServiceIfNeeded();
@@ -605,6 +610,13 @@ void ServiceConnectionImpl::AddThunderboltObserver(
       std::move(pending_observer));
 }
 
+void ServiceConnectionImpl::AddUsbObserver(
+    mojo::PendingRemote<mojom::CrosHealthdUsbObserver> pending_observer) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  BindCrosHealthdEventServiceIfNeeded();
+  cros_healthd_event_service_->AddUsbObserver(std::move(pending_observer));
+}
+
 void ServiceConnectionImpl::ProbeTelemetryInfo(
     const std::vector<mojom::ProbeCategoryEnum>& categories_to_test,
     mojom::CrosHealthdProbeService::ProbeTelemetryInfoCallback callback) {
@@ -625,7 +637,7 @@ void ServiceConnectionImpl::ProbeProcessInfo(
 }
 
 void ServiceConnectionImpl::GetDiagnosticsService(
-    mojom::CrosHealthdDiagnosticsServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdDiagnosticsService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetDiagnosticsService(std::move(service));
@@ -713,7 +725,7 @@ void ServiceConnectionImpl::BindAndSendNetworkDiagnosticsRoutines() {
 }
 
 void ServiceConnectionImpl::GetProbeService(
-    mojom::CrosHealthdProbeServiceRequest service) {
+    mojo::PendingReceiver<mojom::CrosHealthdProbeService> service) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   EnsureCrosHealthdServiceFactoryIsBound();
   cros_healthd_service_factory_->GetProbeService(std::move(service));

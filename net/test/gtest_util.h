@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "base/test/mock_log.h"
 #include "net/base/net_errors.h"

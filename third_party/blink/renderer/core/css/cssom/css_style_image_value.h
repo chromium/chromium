@@ -31,13 +31,13 @@ class CORE_EXPORT CSSStyleImageValue : public CSSResourceValue,
   // CanvasImageSource
   bool IsCSSImageValue() const final { return true; }
   bool WouldTaintOrigin() const final { return true; }
-  FloatSize ElementSize(const FloatSize& default_object_size,
-                        const RespectImageOrientationEnum) const final;
+  gfx::SizeF ElementSize(const gfx::SizeF& default_object_size,
+                         const RespectImageOrientationEnum) const final;
 
  protected:
   CSSStyleImageValue() = default;
 
-  virtual absl::optional<IntSize> IntrinsicSize() const = 0;
+  virtual absl::optional<gfx::Size> IntrinsicSize() const = 0;
 };
 
 }  // namespace blink

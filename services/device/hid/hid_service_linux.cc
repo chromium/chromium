@@ -20,7 +20,6 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"

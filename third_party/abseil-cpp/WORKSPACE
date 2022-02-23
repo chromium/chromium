@@ -20,11 +20,11 @@ load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
 
 # GoogleTest/GoogleMock framework. Used by most unit-tests.
 http_archive(
-    name = "com_google_googletest",  # 2021-07-09T13:28:13Z
-    sha256 = "12ef65654dc01ab40f6f33f9d02c04f2097d2cd9fbe48dc6001b29543583b0ad",
-    strip_prefix = "googletest-8d51ffdfab10b3fba636ae69bc03da4b54f8c235",
+    name = "com_google_googletest",  # 2022-01-28T15:27:11Z
+    sha256 = "eb70a6d4520f940956a6b3e37d205d92736bb104c6a1b2b9f82bfc41bd7a2b34",
+    strip_prefix = "googletest-28e1da21d8d677bc98f12ccc7fc159ff19e8e817",
     # Keep this URL in sync with ABSL_GOOGLETEST_COMMIT in ci/cmake_common.sh.
-    urls = ["https://github.com/google/googletest/archive/8d51ffdfab10b3fba636ae69bc03da4b54f8c235.zip"],
+    urls = ["https://github.com/google/googletest/archive/28e1da21d8d677bc98f12ccc7fc159ff19e8e817.zip"],
 )
 
 # Google benchmark.

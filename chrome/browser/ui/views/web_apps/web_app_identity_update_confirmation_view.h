@@ -7,9 +7,13 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
+#include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_callback_app_identity.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/window/dialog_delegate.h"
@@ -21,7 +25,9 @@ class WebAppUninstallDialogViews;
 // WebAppIdentityUpdateConfirmationView provides views for showing which parts
 // of the app's identity changed so the user can make a determination whether to
 // allow the update or uninstall it.
-class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
+class WebAppIdentityUpdateConfirmationView
+    : public views::DialogDelegateView,
+      public web_app::WebAppInstallManagerObserver {
  public:
   METADATA_HEADER(WebAppIdentityUpdateConfirmationView);
   WebAppIdentityUpdateConfirmationView(
@@ -41,19 +47,28 @@ class WebAppIdentityUpdateConfirmationView : public views::DialogDelegateView {
   ~WebAppIdentityUpdateConfirmationView() override;
 
  private:
-  // Overridden from views::WidgetDelegate:
+  // web_app::WebAppInstallManagerObserver:
+  void OnWebAppWillBeUninstalled(const web_app::AppId& app_id) override;
+  void OnWebAppInstallManagerDestroyed() override;
+
+  // views::WidgetDelegate:
   bool ShouldShowCloseButton() const override;
 
-  // Overriden from views::DialogDelegateView:
+  // views::DialogDelegateView:
   bool Cancel() override;
 
   void OnDialogAccepted();
   void OnWebAppUninstallDialogClosed(bool uninstalled);
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // The id of the app whose identity is changing.
   const std::string app_id_;
+
+  // An observer listening for web app uninstalls.
+  base::ScopedObservation<web_app::WebAppInstallManager,
+                          web_app::WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   // A callback to relay the results of the app identity update dialog.
   web_app::AppIdentityDialogCallback callback_;

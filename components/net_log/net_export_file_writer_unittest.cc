@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
@@ -107,7 +106,7 @@ bool SetPathToGivenAndReturnTrue(const base::FilePath& path_to_return,
 }
 
 // Checks the "state" string of a NetExportFileWriter state.
-WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
+[[nodiscard]] ::testing::AssertionResult VerifyState(
     std::unique_ptr<base::DictionaryValue> state,
     const std::string& expected_state_string) {
   std::string actual_state_string;
@@ -127,19 +126,20 @@ WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
 // Checks all fields of a NetExportFileWriter state except possibly the
 // "captureMode" string; that field is only checked if
 // |expected_log_capture_mode_known| is true.
-WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
+[[nodiscard]] ::testing::AssertionResult VerifyState(
     std::unique_ptr<base::DictionaryValue> state,
     const std::string& expected_state_string,
     bool expected_log_exists,
     bool expected_log_capture_mode_known,
     const std::string& expected_log_capture_mode_string) {
   base::DictionaryValue expected_state;
-  expected_state.SetString("state", expected_state_string);
-  expected_state.SetBoolean("logExists", expected_log_exists);
-  expected_state.SetBoolean("logCaptureModeKnown",
+  expected_state.SetStringKey("state", expected_state_string);
+  expected_state.SetBoolKey("logExists", expected_log_exists);
+  expected_state.SetBoolKey("logCaptureModeKnown",
                             expected_log_capture_mode_known);
   if (expected_log_capture_mode_known) {
-    expected_state.SetString("captureMode", expected_log_capture_mode_string);
+    expected_state.SetStringKey("captureMode",
+                                expected_log_capture_mode_string);
   } else {
     state->RemoveKey("captureMode");
   }
@@ -167,7 +167,7 @@ WARN_UNUSED_RESULT ::testing::AssertionResult VerifyState(
   return ::testing::AssertionSuccess();
 }
 
-WARN_UNUSED_RESULT ::testing::AssertionResult ReadCompleteLogFile(
+[[nodiscard]] ::testing::AssertionResult ReadCompleteLogFile(
     const base::FilePath& log_path,
     std::unique_ptr<base::DictionaryValue>* root) {
   DCHECK(!log_path.empty());
@@ -179,7 +179,7 @@ WARN_UNUSED_RESULT ::testing::AssertionResult ReadCompleteLogFile(
 
   // Check file permissions. These tests are only done on POSIX for simplicity,
   // since base has better support for the POSIX permission model.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   int actual_permissions = 0;
   if (!base::GetPosixFilePermissions(log_path, &actual_permissions)) {
     return ::testing::AssertionFailure()
@@ -193,7 +193,7 @@ WARN_UNUSED_RESULT ::testing::AssertionResult ReadCompleteLogFile(
   // 640 rather than 644.
   int expected_permissions = base::FILE_PERMISSION_READ_BY_USER |
                              base::FILE_PERMISSION_WRITE_BY_USER
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
                              | base::FILE_PERMISSION_READ_BY_GROUP |
                              base::FILE_PERMISSION_READ_BY_OTHERS
 #endif
@@ -205,7 +205,7 @@ WARN_UNUSED_RESULT ::testing::AssertionResult ReadCompleteLogFile(
            << base::StringPrintf("%o", actual_permissions) << " vs "
            << base::StringPrintf("%o", expected_permissions);
   }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
   // Parse log file contents into a dictionary
   std::string log_string;
@@ -335,7 +335,7 @@ class NetExportFileWriterTest : public ::testing::Test {
     return test_callback.WaitForResult();
   }
 
-  WARN_UNUSED_RESULT ::testing::AssertionResult InitializeThenVerifyNewState(
+  [[nodiscard]] ::testing::AssertionResult InitializeThenVerifyNewState(
       bool expected_initialize_success,
       bool expected_log_exists) {
     file_writer_.Initialize();
@@ -368,7 +368,7 @@ class NetExportFileWriterTest : public ::testing::Test {
 
   // If |custom_log_path| is empty path, |file_writer_| will use its
   // default log path, which is cached in |default_log_path_|.
-  WARN_UNUSED_RESULT::testing::AssertionResult StartThenVerifyNewState(
+  [[nodiscard]] ::testing::AssertionResult StartThenVerifyNewState(
       const base::FilePath& custom_log_path,
       net::NetLogCaptureMode capture_mode,
       const std::string& expected_capture_mode_string,
@@ -410,7 +410,7 @@ class NetExportFileWriterTest : public ::testing::Test {
 
   // If |custom_log_path| is empty path, it's assumed the log file with be at
   // |default_log_path_|.
-  WARN_UNUSED_RESULT ::testing::AssertionResult StopThenVerifyNewStateAndFile(
+  [[nodiscard]] ::testing::AssertionResult StopThenVerifyNewStateAndFile(
       const base::FilePath& custom_log_path,
       std::unique_ptr<base::DictionaryValue> polled_data,
       const std::string& expected_capture_mode_string) {
@@ -702,7 +702,7 @@ TEST_F(NetExportFileWriterTest, StopWithPolledData) {
   const char kDummyPolledDataString[] = "dummy_info";
   std::unique_ptr<base::DictionaryValue> dummy_polled_data =
       std::make_unique<base::DictionaryValue>();
-  dummy_polled_data->SetString(kDummyPolledDataPath, kDummyPolledDataString);
+  dummy_polled_data->SetStringKey(kDummyPolledDataPath, kDummyPolledDataString);
 
   ASSERT_TRUE(StartThenVerifyNewState(
       base::FilePath(), net::NetLogCaptureMode::kDefault,
@@ -802,7 +802,7 @@ TEST_F(NetExportFileWriterTest, StartWithNetworkContextActive) {
   ASSERT_TRUE(root->GetList("events", &events));
 
   // Check there is at least one event as a result of the ongoing request.
-  ASSERT_GE(events->GetList().size(), 1u);
+  ASSERT_GE(events->GetListDeprecated().size(), 1u);
 
   // Check the URL in the params of the first event.
   base::DictionaryValue* event;

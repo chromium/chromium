@@ -6,14 +6,14 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/dbus/shill/shill_manager_client.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
 #include "components/prefs/testing_pref_service.h"
 #include "content/public/test/browser_task_environment.h"
@@ -54,25 +54,28 @@ bool RequestsAreEqual(
     const enterprise_management::UploadEuiccInfoRequest& lhs,
     const enterprise_management::UploadEuiccInfoRequest& rhs) {
   return lhs.euicc_count() == rhs.euicc_count() &&
-         std::equal(
-             std::begin(lhs.esim_profiles()), std::end(lhs.esim_profiles()),
-             std::begin(rhs.esim_profiles()), [](const auto& u, const auto& v) {
-               return std::tie(u.iccid(), u.smdp_address()) ==
-                      std::tie(v.iccid(), v.smdp_address());
-             });
+         std::equal(std::begin(lhs.esim_profiles()),
+                    std::end(lhs.esim_profiles()),
+                    std::begin(rhs.esim_profiles()),
+                    [](const auto& u, const auto& v) {
+                      return std::tie(u.iccid(), u.smdp_address()) ==
+                             std::tie(v.iccid(), v.smdp_address());
+                    }) &&
+         lhs.clear_profile_list() == rhs.clear_profile_list();
 }
 
 const char kFakeObjectPath[] = "object-path";
 const char kFakeEid[] = "12";
+const char kEuiccStatusUploadResultHistogram[] =
+    "Network.Cellular.ESim.Policy.EuiccStatusUploadResult";
 
 const char kEmptyEuiccStatus[] =
     R"(
 {
-  "clear_profile_list":false,"esim_profiles":[],"euicc_count":0
+  "esim_profiles":[],"euicc_count":0
 })";
 const char kEuiccStatusWithOneProfile[] =
     R"({
-        "clear_profile_list":false,
         "esim_profiles":
           [
             {"iccid":"iccid-1","smdp_address":"smdp-1"}
@@ -81,7 +84,6 @@ const char kEuiccStatusWithOneProfile[] =
        })";
 const char kEuiccStatusWithTwoProfiles[] =
     R"({
-        "clear_profile_list":false,
         "esim_profiles":
           [
             {"iccid":"iccid-1","smdp_address":"smdp-1"},
@@ -89,6 +91,11 @@ const char kEuiccStatusWithTwoProfiles[] =
           ],
         "euicc_count":3
        })";
+const char kEuiccStatusAfterReset[] =
+    R"(
+{
+  "esim_profiles":[],"euicc_count":2
+})";
 
 const char kDefaultProfilePath[] = "/profile/default";
 
@@ -117,6 +124,7 @@ const EuiccTestData kSetupTwoEsimProfiles = {
         {kCellularDevicePath, "guid-1", "iccid-1", "smdp-1", true},
         {kCellularDevicePath2, "guid-2", "iccid-2", "smdp-2", true},
     }};
+const EuiccTestData kSetupAfterReset = {2, {}};
 
 }  // namespace
 
@@ -128,10 +136,8 @@ class EuiccStatusUploaderTest : public testing::Test {
     helper_ = std::make_unique<ash::NetworkHandlerTestHelper>();
 
     EuiccStatusUploader::RegisterLocalStatePrefs(local_state_.registry());
-    chromeos::CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    chromeos::NetworkHandler::Get()->InitializePrefServices(nullptr,
-                                                            &local_state_);
+    helper_->RegisterPrefs(nullptr, local_state_.registry());
+    helper_->InitializePrefs(nullptr, &local_state_);
   }
 
   std::unique_ptr<EuiccStatusUploader> CreateStatusUploader() {
@@ -163,6 +169,7 @@ class EuiccStatusUploaderTest : public testing::Test {
 
   void SetUpDeviceProfiles(const EuiccTestData& data) {
     // Create |data.euicc_count| fake EUICCs.
+    chromeos::HermesManagerClient::Get()->GetTestInterface()->ClearEuiccs();
     for (int euicc_id = 0; euicc_id < data.euicc_count; euicc_id++) {
       chromeos::HermesManagerClient::Get()->GetTestInterface()->AddEuicc(
           dbus::ObjectPath(kFakeObjectPath), kFakeEid, /*is_active=*/true,
@@ -171,9 +178,9 @@ class EuiccStatusUploaderTest : public testing::Test {
 
     ash::ShillServiceClient::TestInterface* shill_service_client =
         ash::ShillServiceClient::Get()->GetTestInterface();
+    shill_service_client->ClearServices();
 
     base::Value onc_config(base::Value::Type::LIST);
-
     for (const auto& test_profile : data.profiles) {
       shill_service_client->AddService(
           test_profile.service_path, test_profile.guid, /*name=*/"cellular",
@@ -215,13 +222,15 @@ class EuiccStatusUploaderTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
-  void ValidateUploadedStatus(const std::string& expected_status_str) {
+  void ValidateUploadedStatus(const std::string& expected_status_str,
+                              bool clear_profile_list) {
     base::Value expected_status = base::test::ParseJson(expected_status_str);
     EXPECT_EQ(expected_status, *GetStoredPref());
     EXPECT_TRUE(cloud_policy_client_.GetLastRequest());
-    EXPECT_TRUE(RequestsAreEqual(
-        *EuiccStatusUploader::ConstructRequestFromStatus(expected_status),
-        *cloud_policy_client_.GetLastRequest()));
+    EXPECT_TRUE(
+        RequestsAreEqual(*EuiccStatusUploader::ConstructRequestFromStatus(
+                             expected_status, clear_profile_list),
+                         *cloud_policy_client_.GetLastRequest()));
   }
 
   void SetLastUploadedValue(const std::string& last_value) {
@@ -229,13 +238,33 @@ class EuiccStatusUploaderTest : public testing::Test {
                      base::test::ParseJson(last_value));
   }
 
+  void ExecuteResetCommand(EuiccStatusUploader* status_uploader) {
+    SetUpDeviceProfiles(kSetupAfterReset);
+
+    // TODO(crbug.com/1269719): Make FakeHermesEuiccClient trigger OnEuiccReset
+    // directly.
+    static_cast<chromeos::HermesEuiccClient::Observer*>(status_uploader)
+        ->OnEuiccReset(dbus::ObjectPath());
+  }
+
   int GetRequestCount() { return cloud_policy_client_.num_requests(); }
+
+  void CheckHistogram(int total_count, int success_count, int failed_count) {
+    histogram_tester_.ExpectTotalCount(kEuiccStatusUploadResultHistogram,
+                                       total_count);
+    histogram_tester_.ExpectBucketCount(kEuiccStatusUploadResultHistogram, true,
+                                        /*expected_count=*/success_count);
+    histogram_tester_.ExpectBucketCount(kEuiccStatusUploadResultHistogram,
+                                        false,
+                                        /*expected_count=*/failed_count);
+  }
 
  private:
   content::BrowserTaskEnvironment task_environment_;
   FakeCloudPolicyClient cloud_policy_client_;
   TestingPrefServiceSimple local_state_;
   std::unique_ptr<ash::NetworkHandlerTestHelper> helper_;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(EuiccStatusUploaderTest, EmptySetup) {
@@ -244,13 +273,15 @@ TEST_F(EuiccStatusUploaderTest, EmptySetup) {
   EXPECT_EQ(GetRequestCount(), 1);
   // No value is uploaded yet.
   EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
 
   // Make server accept requests.
   SetServerSuccessStatus(true);
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEmptyEuiccStatus);
+  ValidateUploadedStatus(kEmptyEuiccStatus, /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
 }
 
 TEST_F(EuiccStatusUploaderTest, ServerError) {
@@ -259,11 +290,13 @@ TEST_F(EuiccStatusUploaderTest, ServerError) {
   EXPECT_EQ(GetRequestCount(), 1);
   // No value is uploaded yet.
   EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
 
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
   // Nothing is stored when requests fail.
   EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/2, /*success_count=*/0, /*failed_count=*/2);
 }
 
 TEST_F(EuiccStatusUploaderTest, Basic) {
@@ -274,13 +307,16 @@ TEST_F(EuiccStatusUploaderTest, Basic) {
   EXPECT_EQ(GetRequestCount(), 1);
   // No value is uploaded yet.
   EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
 
   // Make server accept requests.
   SetServerSuccessStatus(true);
   UpdateUploader(status_uploader.get());
   EXPECT_EQ(GetRequestCount(), 2);
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile);
+  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
 }
 
 TEST_F(EuiccStatusUploaderTest, MultipleProfiles) {
@@ -291,6 +327,7 @@ TEST_F(EuiccStatusUploaderTest, MultipleProfiles) {
   EXPECT_EQ(GetRequestCount(), 1);
   // No value is uploaded yet.
   EXPECT_EQ("{}", GetStoredPrefString());
+  CheckHistogram(/*total_count=*/1, /*success_count=*/0, /*failed_count=*/1);
 
   // Make server accept requests.
   SetServerSuccessStatus(true);
@@ -298,7 +335,9 @@ TEST_F(EuiccStatusUploaderTest, MultipleProfiles) {
   EXPECT_EQ(GetRequestCount(), 2);
 
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithTwoProfiles);
+  ValidateUploadedStatus(kEuiccStatusWithTwoProfiles,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/2, /*success_count=*/1, /*failed_count=*/1);
 }
 
 TEST_F(EuiccStatusUploaderTest, SameValueAsBefore) {
@@ -311,6 +350,7 @@ TEST_F(EuiccStatusUploaderTest, SameValueAsBefore) {
   auto status_uploader = CreateStatusUploader();
   // No value is uploaded since it has been previously sent.
   EXPECT_EQ(GetRequestCount(), 0);
+  CheckHistogram(/*total_count=*/0, /*success_count=*/0, /*failed_count=*/0);
 }
 
 TEST_F(EuiccStatusUploaderTest, NewValue) {
@@ -322,7 +362,62 @@ TEST_F(EuiccStatusUploaderTest, NewValue) {
 
   auto status_uploader = CreateStatusUploader();
   // Verify that last uploaded configuration is stored.
-  ValidateUploadedStatus(kEuiccStatusWithOneProfile);
+  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+                         /*clear_profile_list=*/false);
+  CheckHistogram(/*total_count=*/1, /*success_count=*/1, /*failed_count=*/0);
+}
+
+TEST_F(EuiccStatusUploaderTest, ResetRequest) {
+  // Make server accept requests.
+  SetServerSuccessStatus(true);
+  // Set up a value different from one that was previously uploaded.
+  SetUpDeviceProfiles(kSetupOneEsimProfile);
+  SetLastUploadedValue(kEmptyEuiccStatus);
+
+  auto status_uploader = CreateStatusUploader();
+  // Verify that last uploaded configuration is stored.
+  ValidateUploadedStatus(kEuiccStatusWithOneProfile,
+                         /*clear_profile_list=*/false);
+
+  // Reset remote command was received and executed.
+  ExecuteResetCommand(status_uploader.get());
+  // Request has been sent.
+  EXPECT_EQ(GetRequestCount(), 3);
+
+  ValidateUploadedStatus(kEuiccStatusAfterReset,
+                         /*clear_profile_list=*/true);
+
+  // Send the reset command again.
+  ExecuteResetCommand(status_uploader.get());
+  // Request will be force-sent again because we've received a reset command..
+  EXPECT_EQ(GetRequestCount(), 4);
+
+  ValidateUploadedStatus(kEuiccStatusAfterReset,
+                         /*clear_profile_list=*/true);
+}
+
+TEST_F(EuiccStatusUploaderTest, UnexpectedNetworkHandlerShutdown) {
+  SetUpDeviceProfiles(kSetupOneEsimProfile);
+  // NetworkHandler has not been initialized.
+  auto status_uploader = CreateStatusUploader();
+
+  // Initial Request
+  EXPECT_EQ(GetRequestCount(), 1);
+
+  // Requests made normally.
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // NetworkHandler::Shutdown() has already been called before
+  // EuiccStatusUploader is deleted
+  chromeos::NetworkHandler::Shutdown();
+
+  // No requests made as NetworkHandler is not available.
+  UpdateUploader(status_uploader.get());
+  EXPECT_EQ(GetRequestCount(), 2);
+
+  // Need to reinitialize before exiting test.
+  chromeos::NetworkHandler::Initialize();
 }
 
 }  // namespace policy

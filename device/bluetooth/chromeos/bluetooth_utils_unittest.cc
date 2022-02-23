@@ -6,16 +6,20 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "build/chromeos_buildflags.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_test_helper.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
 namespace device {
 
@@ -78,6 +82,9 @@ class BluetoothUtilsTest : public testing::Test {
   base::test::TaskEnvironment task_environment_;
   scoped_refptr<MockBluetoothAdapter> adapter_ =
       base::MakeRefCounted<testing::NiceMock<MockBluetoothAdapter>>();
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  chromeos::ScopedLacrosServiceTestHelper scoped_lacros_service_test_helper_;
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 };
 
 TEST_F(BluetoothUtilsTest,
@@ -263,6 +270,12 @@ TEST_F(BluetoothUtilsTest, TestUserAttemptedReconnectionMetric) {
       "Bluetooth.ChromeOS.UserInitiatedReconnectionAttempt.Duration.Failure."
       "Classic",
       2000, 1);
+}
+
+TEST_F(BluetoothUtilsTest, TestDisconnectMetric) {
+  RecordDeviceDisconnect(BluetoothDeviceType::MOUSE);
+  histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.DeviceDisconnect",
+                                     BluetoothDeviceType::MOUSE, 1);
 }
 
 }  // namespace device

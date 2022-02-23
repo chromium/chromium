@@ -8,9 +8,7 @@
   <template>
     <style>
       [slot='page-body'] {
-        background-image: -webkit-image-set(
-            url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success_1x.png) 1x,
-            url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success_2x.png) 2x);
+        background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success.svg);
         background-position: center center;
         background-repeat: no-repeat;
         background-size: contain;
@@ -18,10 +16,18 @@
       }
 
       .error[slot='page-body'] {
-          background-image: -webkit-image-set(
-              url(chrome://resources/cr_components/chromeos/cellular_setup/error_1x.png) 1x,
-              url(chrome://resources/cr_components/chromeos/cellular_setup/error_2x.png) 2x);
+          background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error.svg);
           background-size: contain;
+      }
+
+      @media(prefers-color-scheme: dark) {
+        [slot='page-body'] {
+          background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/final_page_success_dark.svg);
+        }
+
+        .error[slot='page-body'] {
+            background-image: url(chrome://resources/cr_components/chromeos/cellular_setup/error_dark.svg);
+        }
       }
     </style>
     <base-page title="[[getTitle_(showError)]]"

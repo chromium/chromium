@@ -12,7 +12,7 @@
 namespace file_manager {
 
 // UMA metric name that tracks the mounted File System Provider.
-constexpr char kFileSystemProviderMountedMetricName[] =
+inline constexpr char kFileSystemProviderMountedMetricName[] =
     "FileBrowser.FileSystemProviderMounted";
 
 // List of known File System Providers and their corresponding UMA enum value.

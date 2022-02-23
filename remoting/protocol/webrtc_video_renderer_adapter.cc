@@ -68,6 +68,14 @@ WebrtcVideoRendererAdapter::WebrtcVideoRendererAdapter(
 WebrtcVideoRendererAdapter::~WebrtcVideoRendererAdapter() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 
+  // Needed for ConnectionTest unittests which set up a
+  // fake connection without starting any video. This
+  // video adapter is instantiated when the incoming
+  // video-stats data channel is created.
+  if (!media_stream_) {
+    return;
+  }
+
   webrtc::VideoTrackVector video_tracks = media_stream_->GetVideoTracks();
   DCHECK(!video_tracks.empty());
   video_tracks[0]->RemoveSink(this);

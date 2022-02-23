@@ -20,11 +20,11 @@
 #include "third_party/blink/public/platform/web_runtime_features.h"
 #include "third_party/blink/public/web/blink.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/test/mock_chrome_application_mac.h"
 #endif
 
@@ -72,11 +72,11 @@ void SetUpBlinkTestEnvironment() {
     blink::WebRuntimeFeatures::EnableFeatureFromString(feature, false);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   mock_cr_app::RegisterMockCrApp();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(1.0f);
 #endif
 

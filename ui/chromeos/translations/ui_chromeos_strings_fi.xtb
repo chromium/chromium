@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">katalaani</translation>
 <translation id="1168100932582989117">Googlen nimipalvelimet</translation>
+<translation id="1171082344678443012">XZ-pakattu arkisto</translation>
 <translation id="1172970565351728681">Noin <ph name="REMAINING_TIME" /> jäljellä</translation>
 <translation id="1173894706177603556">Muuta nimeä</translation>
 <translation id="1173916544412572294">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, puhelimen akun varaus <ph name="BATTERY_STATUS" /> %, lisätietoja</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Driven alustaminen poistaa kaiken sille tallennetun datan. Tätä toimintoa ei voi kumota.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2028997212275086731">RAR-arkisto</translation>
+<translation id="2036414735548252477">LZMA-pakattu tar-arkisto</translation>
 <translation id="2037845485764049925">venäjä</translation>
 <translation id="2044023416777079300">Modeemia ei rekisteröity</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Jaa laajennuksen <ph name="EXTENSION_NAME" /> kanssa</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS-isäntä</translation>
+<translation id="3104793765551262433">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan estämä, lisätietoja</translation>
 <translation id="3113153474486991170">"<ph name="PATH" />" ei avaudu tästä sijainnista. Kopioi se omiin tiedostoihin, jotta voit avata sen.</translation>
 <translation id="3113592018909187986">Sinulla on 1 yritys jäljellä. Et voi käyttää tätä verkkoa ennen kuin luot uuden PIN-koodin.</translation>
 <translation id="3124404833828281817">Haaveileva henkilö</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">englanti (Yhdysvallat), kansainvälinen PC-näppäimistö</translation>
 <translation id="3567221313191587603">Jos haluat käyttää tiedostoja ilman verkkoyhteyttä, valitse tiedosto ja laita <ph name="OFFLINE_CHECKBOX_NAME" /> päälle.</translation>
 <translation id="357479282490346887">liettua</translation>
+<translation id="3587482841069643663">Kaikki</translation>
 <translation id="3592251141500063301">Tiedoston (<ph name="FILE_NAME" />) käyttöönotto offline-tilassa ei onnistunut</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">ranska (Kanada)</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Kaikki on varmuuskopioitu!</translation>
 <translation id="3634507049637220048">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, järjestelmänvalvojan hallinnoima, lisätietoja</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> kohdetta siirretty</translation>
-<translation id="3645531960514756307">Irrota kansio</translation>
 <translation id="3685122418104378273">Google Driven synkronointi on oletuksena pois käytöstä käyttäessäsi mobiilitiedonsiirtoa.</translation>
 <translation id="3689865792480713551">Peru <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, ei aktivoitu, <ph name="CONNECTION_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, tiedot</translation>
 <translation id="3691184985318546178">sinhala</translation>
 <translation id="3726463242007121105">Tätä laitetta ei voi avata, sillä sen tiedostojärjestelmää ei tueta.</translation>
 <translation id="3727148787322499904">Tämän asetuksen muuttaminen vaikuttaa kaikkiin jaettuihin verkkoihin.</translation>
+<translation id="3737576078404241332">Poista sivupalkista</translation>
 <translation id="3741243925913727067">Varmuuskopioi medialaitteesi kuvat ja videot Google Driveen.</translation>
 <translation id="3749289110408117711">Tiedostonimi</translation>
 <translation id="3780536599611287598">Sinulla ei ole lupaa siirtää tiedostoja kansioon <ph name="FOLDER_NAME" />.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Kasvitieteilijä</translation>
 <translation id="4326192123064055915">Kahvi</translation>
 <translation id="4336032328163998280">Kopiointi epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Lisää sivupalkkiin</translation>
 <translation id="4348495354623233847">soranî, arabiaan perustuva näppäimistö</translation>
 <translation id="4363958938297989186">venäjä, foneettinen näppäimistö</translation>
 <translation id="4364327530094270451">Meloni</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> tavua</translation>
 <translation id="4880214202172289027">Äänenvoimakkuuden liukusäädin</translation>
 <translation id="4881695831933465202">Avaa</translation>
+<translation id="4886199584824489598">Bzip2-pakattu arkisto</translation>
 <translation id="4900532980794411603">Jaa Parallels Desktopille</translation>
 <translation id="4902546322522096650">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalin vahvuus <ph name="SIGNAL_STRENGTH" /> %, yhdistä</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> valmiina varmuuskopiointiin</translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> verkko, ei yhteyttä</translation>
 <translation id="6074825444536523002">Google-lomake</translation>
 <translation id="6079871810119356840">unkari, qwerty-näppäimistö</translation>
+<translation id="6082256976217156453">LZMA-pakattu arkisto</translation>
 <translation id="6096979789310008754">Hakukysely poistettu, kaikki tiedostot ja kansiot näytetään.</translation>
 <translation id="610101264611565198">Siirretään <ph name="FILE_NAME" /> kansioon <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Välilyönti</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Ylösalaisin</translation>
 <translation id="6943836128787782965">HTTP get -toiminto epäonnistui</translation>
 <translation id="6949408524333579394">translitteroitu serbia</translation>
+<translation id="6954309393500027528">Järjestelmänvalvoja on estänyt tämän tiedoston liittämisen</translation>
 <translation id="6960565108681981554">Ei aktivoitu. Ota yhteyttä operaattoriin.</translation>
 <translation id="696203921837389374">Ota käyttöön synkronointi mobiilitiedonsiirron kautta</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Hangul 3-set (ei vaihtoa)</translation>
 <translation id="8299269255470343364">japani</translation>
 <translation id="8300849813060516376">OTASP epäonnistui</translation>
+<translation id="8308481408797647857">XZ-pakattu arkisto</translation>
 <translation id="8312871300878166382">Liitä kansioon</translation>
 <translation id="8329978297633540474">Vain teksti</translation>
 <translation id="8335587457941836791">Poista kiinnitys hyllystä</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">latvia</translation>
 <translation id="8560515948038859357">kantoninkiina</translation>
 <translation id="8561206103590473338">Norsu</translation>
+<translation id="8566466896628108558">Verkko <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, signaalin voimakkuus <ph name="SIGNAL_STRENGTH" /> %, järjestelmänvalvojan estämä, lisätietoja</translation>
 <translation id="8569764466147087991">Valitse avattava tiedosto</translation>
 <translation id="8577897833047451336">kroatia</translation>
 <translation id="8578308463707544055">indonesia</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Pyrimme jatkuvasti tekemään selaamisesta turvallisempaa. Aiemmin mikä tahansa sivusto pystyi pyytämään laajennuksen lisäämistä selaimeen. Uusimmissa Google Chrome -versioissa sinun on erikseen ilmoitettava Chromelle, että haluat asentaa nämä laajennukset, lisäämällä ne Laajennukset-sivulla. <ph name="BEGIN_LINK" />Lisätietoja<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Poista lukitus</translation>
 <translation id="912419004897138677">Pakkaus</translation>
-<translation id="9129931661813833980">Kiinnitä kansio</translation>
 <translation id="9130775360844693113">Paikan <ph name="DESTINATION_NAME" /> jäsenet saavat käyttöoikeuden näihin kohteisiin.</translation>
 <translation id="9131598836763251128">Valitse vähintään yksi tiedosto</translation>
 <translation id="9133055936679483811">Pakkaus epäonnistui. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Muokkaaja</translation>
 <translation id="945522503751344254">Lähetä palautetta</translation>
 <translation id="947144732524271678">Valittiin <ph name="ENTRY_COUNT" /> kohdetta välillä <ph name="FROM_ENTRY_NAME" /> ja <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Gzip-pakattu arkisto</translation>
 <translation id="965477715979482472">englanti (Etelä-Afrikka)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Tiedosto nimeltä <ph name="FILE_NAME" /> on jo olemassa. Haluatko korvata sen?</translation>

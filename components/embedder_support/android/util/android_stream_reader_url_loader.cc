@@ -130,7 +130,7 @@ AndroidStreamReaderURLLoader::AndroidStreamReaderURLLoader(
         security_options->disable_web_security ||
         (security_options->allow_cors_to_same_scheme &&
          resource_request.request_initiator->IsSameOriginWith(
-             url::Origin::Create(resource_request_.url)));
+             resource_request_.url));
     reject_cors_request_ = true;
   }
   response_head_->response_type = network::cors::CalculateResponseType(
@@ -315,7 +315,8 @@ void AndroidStreamReaderURLLoader::SendResponseToClient() {
   DCHECK(client_.is_bound());
   cache_response_ =
       response_delegate_->ShouldCacheResponse(response_head_.get());
-  client_->OnReceiveResponse(std::move(response_head_));
+  client_->OnReceiveResponse(std::move(response_head_),
+                             mojo::ScopedDataPipeConsumerHandle());
   client_->OnStartLoadingResponseBody(std::move(consumer_handle_));
 }
 

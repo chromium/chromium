@@ -143,10 +143,10 @@ class CommerceHintObserverImpl
 };
 
 CommerceHintService::CommerceHintService(content::WebContents* web_contents)
-    : web_contents_(web_contents) {
+    : content::WebContentsUserData<CommerceHintService>(*web_contents) {
   DCHECK(!web_contents->GetBrowserContext()->IsOffTheRecord());
   Profile* profile =
-      Profile::FromBrowserContext(web_contents_->GetBrowserContext());
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
   service_ = CartServiceFactory::GetInstance()->GetForProfile(profile);
   optimization_guide_decider_ =
       OptimizationGuideKeyedServiceFactory::GetForProfile(profile);
@@ -159,7 +159,7 @@ CommerceHintService::CommerceHintService(content::WebContents* web_contents)
 CommerceHintService::~CommerceHintService() = default;
 
 content::WebContents* CommerceHintService::WebContents() {
-  return web_contents_;
+  return &GetWebContents();
 }
 
 void CommerceHintService::BindCommerceHintObserver(
@@ -243,7 +243,7 @@ void CommerceHintService::OnFormSubmit(const GURL& navigation_url,
   bool random = (bytes[0] >> 1) & 0x1;
   bool reported = report_truth ? is_purchase : random;
   ukm::builders::Shopping_FormSubmitted(
-      ukm::GetSourceIdForWebContentsDocument(web_contents_))
+      ukm::GetSourceIdForWebContentsDocument(&GetWebContents()))
       .SetIsTransaction(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.FormSubmitIsTransaction", reported);
@@ -259,7 +259,7 @@ void CommerceHintService::OnWillSendRequest(const GURL& navigation_url,
   bool random = (bytes[0] >> 1) & 0x1;
   bool reported = report_truth ? is_addtocart : random;
   ukm::builders::Shopping_WillSendRequest(
-      ukm::GetSourceIdForWebContentsDocument(web_contents_))
+      ukm::GetSourceIdForWebContentsDocument(&GetWebContents()))
       .SetIsAddToCart(reported)
       .Record(ukm::UkmRecorder::Get());
   base::UmaHistogramBoolean("Commerce.Carts.XHRIsAddToCart", reported);

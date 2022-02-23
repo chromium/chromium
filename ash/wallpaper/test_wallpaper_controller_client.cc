@@ -4,6 +4,7 @@
 
 #include "ash/wallpaper/test_wallpaper_controller_client.h"
 
+#include "ash/webui/personalization_app/proto/backdrop_wallpaper.pb.h"
 #include "base/logging.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -50,17 +51,52 @@ void TestWallpaperControllerClient::FetchDailyRefreshWallpaper(
     DailyWallpaperUrlFetchedCallback callback) {
   fetch_daily_refresh_wallpaper_param_ = collection_id;
   if (fetch_daily_refresh_info_fails_) {
-    std::move(callback).Run(absl::nullopt, std::string());
+    std::move(callback).Run(/*success=*/false, std::move(backdrop::Image()));
   } else {
-    std::move(callback).Run(1, "fun_image_url");
+    backdrop::Image image;
+    image.set_asset_id(1);
+    image.set_image_url("http://example.com");
+    image.add_attribution()->set_text("test");
+    image.set_unit_id(1);
+    image.set_image_type(backdrop::Image_ImageType_IMAGE_TYPE_LIGHT_MODE);
+    std::move(callback).Run(/*success=*/true, std::move(image));
   }
 }
 
-bool TestWallpaperControllerClient::SaveWallpaperToDriveFs(
+void TestWallpaperControllerClient::FetchImagesForCollection(
+    const std::string& collection_id,
+    FetchImagesForCollectionCallback callback) {
+  if (fetch_images_for_collection_fails_) {
+    std::move(callback).Run(/*success=*/false, std::vector<backdrop::Image>());
+  } else {
+    std::vector<backdrop::Image> images;
+
+    backdrop::Image image1;
+    image1.set_asset_id(1);
+    image1.set_image_url("https://best_wallpaper/1");
+    image1.add_attribution()->set_text("test");
+    image1.set_unit_id(1);
+    image1.set_image_type(backdrop::Image::IMAGE_TYPE_DARK_MODE);
+    images.push_back(image1);
+
+    backdrop::Image image2;
+    image2.set_asset_id(2);
+    image2.set_image_url("https://best_wallpaper/2");
+    image2.add_attribution()->set_text("test");
+    image2.set_unit_id(1);
+    image2.set_image_type(backdrop::Image::IMAGE_TYPE_LIGHT_MODE);
+    images.push_back(image2);
+
+    std::move(callback).Run(/*success=*/true, std::move(images));
+  }
+}
+
+void TestWallpaperControllerClient::SaveWallpaperToDriveFs(
     const AccountId& account_id,
-    const base::FilePath& origin) {
+    const base::FilePath& origin,
+    base::OnceCallback<void(bool)> wallpaper_saved_callback) {
   save_wallpaper_to_drive_fs_account_id_ = account_id;
-  return true;
+  std::move(wallpaper_saved_callback).Run(true);
 }
 
 base::FilePath TestWallpaperControllerClient::GetWallpaperPathFromDriveFs(

@@ -2,6 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <memory>
+#include <string>
+#include <utility>
+
 #include "third_party/blink/renderer/modules/xr/xr_joint_space.h"
 #include "third_party/blink/renderer/modules/xr/xr_hand.h"
 #include "third_party/blink/renderer/modules/xr/xr_space.h"
@@ -23,7 +27,7 @@ XRJointSpace::XRJointSpace(
       radius_(radius),
       handedness_(handedness) {}
 
-absl::optional<TransformationMatrix> XRJointSpace::MojoFromNative() {
+absl::optional<TransformationMatrix> XRJointSpace::MojoFromNative() const {
   return *mojo_from_joint_space_.get();
 }
 
@@ -41,7 +45,7 @@ bool XRJointSpace::EmulatedPosition() const {
   return false;
 }
 
-XRPose* XRJointSpace::getPose(XRSpace* other_space) {
+XRPose* XRJointSpace::getPose(const XRSpace* other_space) const {
   // If any of the spaces belonging to the same XRHand return null when
   // populating the pose, all the spaces of that XRHand must also return
   // null when populating the pose.

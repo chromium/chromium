@@ -13,9 +13,9 @@
 #include "net/base/ip_endpoint.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include <net/if.h>
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include <iphlpapi.h>
@@ -44,7 +44,7 @@ TEST(NetworkInterfacesTest, GetNetworkList) {
     EXPECT_GT(it->prefix_length, 1u);
     EXPECT_LE(it->prefix_length, it->address.size() * 8);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On Windows |name| is NET_LUID.
     NET_LUID luid;
     EXPECT_EQ(static_cast<DWORD>(NO_ERROR),
@@ -58,7 +58,7 @@ TEST(NetworkInterfacesTest, GetNetworkList) {
     if (it->type == NetworkChangeNotifier::CONNECTION_WIFI) {
       EXPECT_NE(WIFI_PHY_LAYER_PROTOCOL_NONE, GetWifiPHYLayerProtocol());
     }
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
     char name[IF_NAMESIZE];
     EXPECT_TRUE(if_indextoname(it->interface_index, name));
     EXPECT_STREQ(it->name.c_str(), name);

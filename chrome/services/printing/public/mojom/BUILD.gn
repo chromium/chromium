@@ -42,7 +42,9 @@ mojom("mojom") {
     sources += [ "print_backend_service.mojom" ]
     public_deps += [
       "//printing/backend/mojom",
+      "//printing/mojom",
       "//printing/mojom:printing_context",
+      "//ui/gfx/geometry/mojom",
     ]
   }
 

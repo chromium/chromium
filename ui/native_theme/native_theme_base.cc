@@ -21,6 +21,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/base/ui_base_switches.h"
+#include "ui/color/color_provider.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/gfx/color_utils.h"
@@ -241,6 +242,7 @@ float NativeThemeBase::GetBorderRadiusForPart(Part part,
 }
 
 void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
+                            const ui::ColorProvider* color_provider,
                             Part part,
                             State state,
                             const gfx::Rect& rect,
@@ -267,7 +269,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
     case kFrameTopArea:
       PaintFrameTopArea(canvas, state, rect, extra.frame_top_area,
                         color_scheme);
@@ -280,16 +282,16 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       PaintMenuList(canvas, state, rect, extra.menu_list, color_scheme);
       break;
     case kMenuPopupBackground:
-      PaintMenuPopupBackground(canvas, rect.size(), extra.menu_background,
-                               color_scheme);
+      PaintMenuPopupBackground(canvas, color_provider, rect.size(),
+                               extra.menu_background, color_scheme);
       break;
     case kMenuPopupSeparator:
-      PaintMenuSeparator(canvas, state, rect, extra.menu_separator,
-                         color_scheme);
+      PaintMenuSeparator(canvas, color_provider, state, rect,
+                         extra.menu_separator);
       break;
     case kMenuItemBackground:
-      PaintMenuItemBackground(canvas, state, rect, extra.menu_item,
-                              color_scheme);
+      PaintMenuItemBackground(canvas, color_provider, state, rect,
+                              extra.menu_item, color_scheme);
       break;
     case kProgressBar:
       PaintProgressBar(canvas, state, rect, extra.progress_bar, color_scheme,
@@ -312,7 +314,7 @@ void NativeThemeBase::Paint(cc::PaintCanvas* canvas,
       break;
     case kScrollbarHorizontalThumb:
     case kScrollbarVerticalThumb:
-      PaintScrollbarThumb(canvas, part, state, rect,
+      PaintScrollbarThumb(canvas, color_provider, part, state, rect,
                           extra.scrollbar_thumb.scrollbar_theme, color_scheme);
       break;
     case kScrollbarHorizontalTrack:
@@ -542,6 +544,7 @@ void NativeThemeBase::PaintScrollbarTrack(
 }
 
 void NativeThemeBase::PaintScrollbarThumb(cc::PaintCanvas* canvas,
+                                          const ColorProvider* color_provider,
                                           Part part,
                                           State state,
                                           const gfx::Rect& rect,
@@ -929,6 +932,7 @@ void NativeThemeBase::PaintMenuList(cc::PaintCanvas* canvas,
 
 void NativeThemeBase::PaintMenuPopupBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     const gfx::Size& size,
     const MenuBackgroundExtraParams& menu_background,
     ColorScheme color_scheme) const {
@@ -942,6 +946,7 @@ void NativeThemeBase::PaintMenuPopupBackground(
 
 void NativeThemeBase::PaintMenuItemBackground(
     cc::PaintCanvas* canvas,
+    const ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
     const MenuItemExtraParams& menu_item,
@@ -951,13 +956,13 @@ void NativeThemeBase::PaintMenuItemBackground(
 
 void NativeThemeBase::PaintMenuSeparator(
     cc::PaintCanvas* canvas,
+    const ui::ColorProvider* color_provider,
     State state,
     const gfx::Rect& rect,
-    const MenuSeparatorExtraParams& menu_separator,
-    ColorScheme color_scheme) const {
+    const MenuSeparatorExtraParams& menu_separator) const {
+  DCHECK(color_provider);
   cc::PaintFlags flags;
-  flags.setColor(GetSystemColor(ui::NativeTheme::kColorId_MenuSeparatorColor,
-                                color_scheme));
+  flags.setColor(color_provider->GetColor(kColorMenuSeparator));
   canvas->drawRect(gfx::RectToSkRect(*menu_separator.paint_rect), flags);
 }
 

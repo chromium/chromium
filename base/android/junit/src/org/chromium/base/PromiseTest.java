@@ -12,6 +12,7 @@ import static org.junit.Assert.fail;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 
 import org.chromium.base.Promise.UnhandledRejectionException;
@@ -20,6 +21,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 /** Unit tests for {@link Promise}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class PromiseTest {
     // We need a simple mutable reference type for testing.
     private static class Value {

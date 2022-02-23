@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ios/chrome/browser/net/net_types.h"
 #include "net/url_request/url_request_context.h"

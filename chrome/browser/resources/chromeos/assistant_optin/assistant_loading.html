@@ -18,9 +18,21 @@
 
 <dom-module id="assistant-loading">
   <template>
-    <style include="oobe-dialog-host-styles"></style>
-    <link rel="stylesheet" href="assistant_loading.css">
-    <link rel="stylesheet" href="assistant_shared_styles.css">
+    <style include="oobe-dialog-host-styles assistant-common-styles">
+      #retry-button {
+        margin-inline-end: 0;
+      }
+
+      paper-progress {
+        --paper-progress-active-color: rgb(66, 133, 244);
+        --paper-progress-container-color: #CEE0FC;
+        --paper-progress-secondary-color: rgb(66, 133, 244);
+        display: block;
+        height: 4px;
+        padding: 12px 0 0 0;
+        width: 100%;
+      }
+    </style>
     <oobe-content-dialog id="loading-dialog" role="dialog" for-step="loading"
         no-buttons>
       <div slot="content" class="flex layout vertical center-justified">

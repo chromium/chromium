@@ -62,33 +62,6 @@ def _CheckFlagsMessageNotTranslated(input_api, output_api):
         items=problems)]
   return []
 
-def _CheckCrOsStringsEduLoginInfoTextVersion(input_api, output_api):
-  """Check text version for IDS_EDU_LOGIN_INFO_* strings.
-
-  If any of IDS_EDU_LOGIN_INFO_* strings changed, text version in
-  chrome/browser/ash/child_accounts/secondary_account_consent_logger.cc
-  has to be updated.
-  """
-
-  CHROMEOS_STRINGS_PATH = input_api.os_path.join(
-      input_api.change.RepositoryRoot(), "chrome/app/chromeos_strings.grdp")
-  TEXT_VERSION_PATH = input_api.os_path.join(input_api.change.RepositoryRoot(),
-  "chrome/browser/ash/child_accounts/secondary_account_consent_logger.cc")
-  UPDATE_TEXT_VERSION_MESSAGE = (
-      "You have changed EDU login parental consent text "
-      "(IDS_EDU_LOGIN_INFO_* strings). Update kConsentScreenTextVersion in "
-      "chrome/browser/ash/child_accounts/"
-      "secondary_account_consent_logger.cc to the value of \"%s\"."
-  )
-  UPDATE_INVALIDATION_VERSION_MESSAGE = (
-      "You have changed EDU login parental consent text "
-      "(IDS_EDU_LOGIN_INFO_* strings). If you want to invalidate secondary "
-      "accounts added with previous consent versions, also update "
-      "kSecondaryAccountsInvalidationVersion in "
-      "chrome/browser/ash/child_accounts/"
-      "secondary_account_consent_logger.cc to the value of \"%s\"."
-  )
-
   def _GetInfoStrings(file_contents):
     """Retrieves IDS_EDU_LOGIN_INFO_* messages from the file contents
 
@@ -152,8 +125,6 @@ def _CommonChecks(input_api, output_api):
   results = []
   results.extend(_CheckNoProductNameInGeneratedResources(input_api, output_api))
   results.extend(_CheckFlagsMessageNotTranslated(input_api, output_api))
-  results.extend(
-    _CheckCrOsStringsEduLoginInfoTextVersion(input_api, output_api))
   return results
 
 def CheckChangeOnUpload(input_api, output_api):

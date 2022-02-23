@@ -5,6 +5,10 @@
 // Custom binding for the omnibox API. Only injected into the v8 contexts
 // for extensions which have permission for the omnibox API.
 
+// TODO(devlin): Move IsInServiceWorker() somewhere more common than setIcon
+// bindings.
+var inServiceWorker = requireNative('setIcon').IsInServiceWorker();
+
 // Remove invalid characters from |text| so that it is suitable to use
 // for |AutocompleteMatch::contents|.
 function sanitizeString(text, shouldTrim) {
@@ -76,37 +80,38 @@ function parseOmniboxDescription(input) {
   return result;
 }
 
-apiBridge.registerCustomHook(function(bindingsAPI) {
-  var apiFunctions = bindingsAPI.apiFunctions;
+// The following custom hooks are only registered in non-service worker
+// contexts. In service worker contexts, we instead parse the description and
+// styles from the browser process.
+// TODO(devlin): Migrate DOM-based contexts to also use the browser-side
+// parsing so that there's only one implementation. We have them separate for
+// now to ensure things don't break.
+if (!inServiceWorker) {
+  apiBridge.registerCustomHook(function(bindingsAPI) {
+    var apiFunctions = bindingsAPI.apiFunctions;
 
-  apiFunctions.setUpdateArgumentsPreValidate(
-      'setDefaultSuggestion', function(suggestResult) {
-        if (suggestResult.content != null) {
-          throw new Error(
-              'setDefaultSuggestion cannot contain the "content" field');
-        }
-        return [suggestResult];
-      });
+    apiFunctions.setHandleRequest('setDefaultSuggestion',
+                                  function(details, callback) {
+      var parseResult = parseOmniboxDescription(details.description);
+      bindingUtil.sendRequest('omnibox.setDefaultSuggestion',
+                              [parseResult, callback],
+                              undefined);
+    });
 
-  apiFunctions.setHandleRequest('setDefaultSuggestion', function(details) {
-    var parseResult = parseOmniboxDescription(details.description);
-    bindingUtil.sendRequest('omnibox.setDefaultSuggestion', [parseResult],
-                            undefined);
+    apiFunctions.setUpdateArgumentsPostValidate(
+        'sendSuggestions', function(requestId, userSuggestions) {
+      var suggestions = [];
+      for (var i = 0; i < userSuggestions.length; i++) {
+        var parseResult = parseOmniboxDescription(
+            userSuggestions[i].description);
+        parseResult.content = userSuggestions[i].content;
+        parseResult.deletable = userSuggestions[i].deletable;
+        $Array.push(suggestions, parseResult);
+      }
+      return [requestId, suggestions];
+    });
   });
-
-  apiFunctions.setUpdateArgumentsPostValidate(
-      'sendSuggestions', function(requestId, userSuggestions) {
-    var suggestions = [];
-    for (var i = 0; i < userSuggestions.length; i++) {
-      var parseResult = parseOmniboxDescription(
-          userSuggestions[i].description);
-      parseResult.content = userSuggestions[i].content;
-      parseResult.deletable = userSuggestions[i].deletable;
-      $Array.push(suggestions, parseResult);
-    }
-    return [requestId, suggestions];
-  });
-});
+}
 
 bindingUtil.registerEventArgumentMassager('omnibox.onInputChanged',
                                           function(args, dispatch) {

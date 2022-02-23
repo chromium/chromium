@@ -43,6 +43,7 @@ interface DOMStringList {
 };
 
 enum DocumentReadyState { "loading", "interactive", "complete" };
+enum DocumentVisibilityState { "visible", "hidden" };
 typedef (HTMLScriptElement or SVGScriptElement) HTMLOrSVGScriptElement;
 
 [LegacyOverrideBuiltIns]
@@ -87,9 +88,12 @@ partial interface Document {
   boolean queryCommandState(DOMString commandId);
   boolean queryCommandSupported(DOMString commandId);
   DOMString queryCommandValue(DOMString commandId);
+  readonly attribute boolean hidden;
+  readonly attribute DocumentVisibilityState visibilityState;
 
   // special event handler IDL attributes that only apply to Document objects
   [LegacyLenientThis] attribute EventHandler onreadystatechange;
+  attribute EventHandler onvisibilitychange;
 
   // also has obsolete members
 };
@@ -197,6 +201,7 @@ interface HTMLLinkElement : HTMLElement {
   [CEReactions] attribute USVString imageSrcset;
   [CEReactions] attribute DOMString imageSizes;
   [CEReactions] attribute DOMString referrerPolicy;
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
   [CEReactions] attribute boolean disabled;
 
   // also has obsolete members
@@ -220,6 +225,7 @@ interface HTMLStyleElement : HTMLElement {
   [HTMLConstructor] constructor();
 
   [CEReactions] attribute DOMString media;
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 
   // also has obsolete members
 };
@@ -929,6 +935,8 @@ interface HTMLInputElement : HTMLElement {
   undefined setRangeText(DOMString replacement, unsigned long start, unsigned long end, optional SelectionMode selectionMode = "preserve");
   undefined setSelectionRange(unsigned long start, unsigned long end, optional DOMString direction);
 
+  undefined showPicker();
+
   // also has obsolete members
 };
 
@@ -1215,6 +1223,7 @@ interface HTMLScriptElement : HTMLElement {
   [CEReactions] attribute DOMString text;
   [CEReactions] attribute DOMString integrity;
   [CEReactions] attribute DOMString referrerPolicy;
+  [SameObject, PutForwards=value] readonly attribute DOMTokenList blocking;
 
   static boolean supports(DOMString type);
 
@@ -1363,7 +1372,14 @@ interface mixin CanvasShadowStyles {
 
 interface mixin CanvasFilters {
   // filters
-  attribute DOMString filter; // (default "none")
+  attribute (DOMString or CanvasFilter) filter; // (default "none")
+};
+
+typedef record<DOMString, any> CanvasFilterInput;
+
+[Exposed=(Window,Worker,PaintWorklet)]
+interface CanvasFilter {
+  constructor(optional (CanvasFilterInput or sequence<CanvasFilterInput>) filters);
 };
 
 interface mixin CanvasRect {
@@ -1447,12 +1463,12 @@ interface mixin CanvasTextDrawingStyles {
   attribute CanvasTextAlign textAlign; // (default: "start")
   attribute CanvasTextBaseline textBaseline; // (default: "alphabetic")
   attribute CanvasDirection direction; // (default: "inherit")
-  attribute double textLetterSpacing; // (default: 0)
-  attribute double textWordSpacing; // (default: 0)
+  attribute DOMString letterSpacing; // (default: "0px")
   attribute CanvasFontKerning fontKerning; // (default: "auto")
   attribute CanvasFontStretch fontStretch; // (default: "normal")
   attribute CanvasFontVariantCaps fontVariantCaps; // (default: "normal")
   attribute CanvasTextRendering textRendering; // (default: "auto")
+  attribute DOMString wordSpacing; // (default: "0px")
 };
 
 interface mixin CanvasPath {
@@ -1834,7 +1850,7 @@ interface BeforeUnloadEvent : Event {
   attribute DOMString returnValue;
 };
 
-[Exposed=(Window,Worker)]
+[Exposed=*]
 interface ErrorEvent : Event {
   constructor(DOMString type, optional ErrorEventInit eventInitDict = {});
 
@@ -1853,7 +1869,7 @@ dictionary ErrorEventInit : EventInit {
   any error = null;
 };
 
-[Exposed=(Window,Worker)]
+[Exposed=*]
 interface PromiseRejectionEvent : Event {
   constructor(DOMString type, PromiseRejectionEventInit eventInitDict);
 
@@ -1989,9 +2005,9 @@ interface mixin WindowOrWorkerGlobalScope {
 
   // timers
   long setTimeout(TimerHandler handler, optional long timeout = 0, any... arguments);
-  undefined clearTimeout(optional long handle = 0);
+  undefined clearTimeout(optional long id = 0);
   long setInterval(TimerHandler handler, optional long timeout = 0, any... arguments);
-  undefined clearInterval(optional long handle = 0);
+  undefined clearInterval(optional long id = 0);
 
   // microtask queuing
   undefined queueMicrotask(VoidFunction callback);

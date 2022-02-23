@@ -91,19 +91,8 @@ void CrostiniThrottle::Shutdown() {
   StopObservers();
 }
 
-void CrostiniThrottle::ThrottleInstance(
-    ash::ThrottleObserver::PriorityLevel level) {
-  switch (level) {
-    case ash::ThrottleObserver::PriorityLevel::CRITICAL:
-    case ash::ThrottleObserver::PriorityLevel::IMPORTANT:
-    case ash::ThrottleObserver::PriorityLevel::NORMAL:
-      delegate_->SetCpuRestriction(false);
-      break;
-    case ash::ThrottleObserver::PriorityLevel::LOW:
-    case ash::ThrottleObserver::PriorityLevel::UNKNOWN:
-      delegate_->SetCpuRestriction(true);
-      break;
-  }
+void CrostiniThrottle::ThrottleInstance(bool should_throttle) {
+  delegate_->SetCpuRestriction(should_throttle);
 }
 
 }  // namespace crostini

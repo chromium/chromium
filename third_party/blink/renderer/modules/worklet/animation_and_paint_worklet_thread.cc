@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_thread_holder.h"
 #include "third_party/blink/renderer/modules/animationworklet/animation_worklet_global_scope.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_worklet_global_scope.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
@@ -28,7 +29,7 @@ AnimationAndPaintWorkletThread::CreateForAnimationWorklet(
                "AnimationAndPaintWorkletThread::CreateForAnimationWorklet");
   DCHECK(IsMainThread());
   return base::WrapUnique(new AnimationAndPaintWorkletThread(
-      WorkletType::ANIMATION_WORKLET, worker_reporting_proxy));
+      WorkletType::kAnimation, worker_reporting_proxy));
 }
 
 std::unique_ptr<AnimationAndPaintWorkletThread>
@@ -38,7 +39,7 @@ AnimationAndPaintWorkletThread::CreateForPaintWorklet(
                "AnimationAndPaintWorkletThread::CreateForPaintWorklet");
   DCHECK(IsMainThread());
   return base::WrapUnique(new AnimationAndPaintWorkletThread(
-      WorkletType::PAINT_WORKLET, worker_reporting_proxy));
+      WorkletType::kPaint, worker_reporting_proxy));
 }
 
 template class WorkletThreadHolder<AnimationAndPaintWorkletThread>;
@@ -89,13 +90,13 @@ WorkerOrWorkletGlobalScope*
 AnimationAndPaintWorkletThread::CreateWorkerGlobalScope(
     std::unique_ptr<GlobalScopeCreationParams> creation_params) {
   switch (worklet_type_) {
-    case WorkletType::ANIMATION_WORKLET: {
+    case WorkletType::kAnimation: {
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("animation-worklet"),
                    "AnimationAndPaintWorkletThread::CreateWorkerGlobalScope");
       return MakeGarbageCollected<AnimationWorkletGlobalScope>(
           std::move(creation_params), this);
     }
-    case WorkletType::PAINT_WORKLET:
+    case WorkletType::kPaint:
       TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("paint-worklet"),
                    "AnimationAndPaintWorkletThread::CreateWorkerGlobalScope");
       return PaintWorkletGlobalScope::Create(std::move(creation_params), this);

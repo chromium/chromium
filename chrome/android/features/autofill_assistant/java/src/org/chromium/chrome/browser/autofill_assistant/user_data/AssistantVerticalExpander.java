@@ -184,8 +184,8 @@ public class AssistantVerticalExpander extends LinearLayout {
     }
 
     private View createChevron() {
-        TintedDrawable chevron = TintedDrawable.constructTintedDrawable(
-                getContext(), R.drawable.ic_expand_more_black_24dp, R.color.default_icon_color);
+        TintedDrawable chevron = TintedDrawable.constructTintedDrawable(getContext(),
+                R.drawable.ic_expand_more_black_24dp, R.color.default_icon_color_tint_list);
 
         ImageView view = new ImageView(getContext());
         view.setImageDrawable(chevron);

@@ -46,7 +46,7 @@ class BoxBorderPainter {
   }
 
   static void DrawBoxSide(GraphicsContext& context,
-                          const IntRect& snapped_edge_rect,
+                          const gfx::Rect& snapped_edge_rect,
                           BoxSide side,
                           Color color,
                           EBorderStyle style,
@@ -106,7 +106,7 @@ class BoxBorderPainter {
                  BoxSide,
                  unsigned alpha,
                  BorderEdgeFlags) const;
-  void PaintOneBorderSide(const FloatRect& side_rect,
+  void PaintOneBorderSide(const gfx::RectF& side_rect,
                           BoxSide,
                           BoxSide adjacent_side1,
                           BoxSide adjacent_side2,
@@ -139,7 +139,7 @@ class BoxBorderPainter {
                                       Color,
                                       EBorderStyle) const;
   void ClipBorderSidePolygon(BoxSide, MiterType miter1, MiterType miter2) const;
-  FloatRect CalculateSideRectIncludingInner(BoxSide) const;
+  gfx::RectF CalculateSideRectIncludingInner(BoxSide) const;
   void ClipBorderSideForComplexInnerPath(BoxSide) const;
 
   MiterType ComputeMiter(BoxSide, BoxSide adjacent_side, BorderEdgeFlags) const;

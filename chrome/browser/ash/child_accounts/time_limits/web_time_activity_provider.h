@@ -15,6 +15,7 @@
 
 namespace base {
 class Time;
+class UnguessableToken;
 }  // namespace base
 
 class Browser;
@@ -57,10 +58,10 @@ class WebTimeActivityProvider : public WebTimeNavigationObserver::EventListener,
 
   // AppServiceWrapper::EventListener:
   void OnAppActive(const AppId& app_id,
-                   const apps::Instance::InstanceKey& instance_key,
+                   const base::UnguessableToken& instance_id,
                    base::Time timestamp) override;
   void OnAppInactive(const AppId& app_id,
-                     const apps::Instance::InstanceKey& instance_key,
+                     const base::UnguessableToken& instance_id,
                      base::Time timestamp) override;
 
   ChromeAppActivityState chrome_app_activty_state() const {

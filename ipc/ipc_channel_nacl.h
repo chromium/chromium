@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/process/process.h"
 #include "base/threading/simple_thread.h"

@@ -9,7 +9,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "sandbox/sandbox_export.h"
 
 struct arch_seccomp_data;

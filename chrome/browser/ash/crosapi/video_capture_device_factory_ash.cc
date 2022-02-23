@@ -46,25 +46,21 @@ void VideoCaptureDeviceFactoryAsh::CreateDevice(
           base::Unretained(this), device_id));
 
   auto wrapped_callback = base::BindOnce(
-      [](CreateDeviceCallback callback,
-         video_capture::mojom::DeviceAccessResultCode code) {
+      [](CreateDeviceCallback callback, media::VideoCaptureError error_code) {
         crosapi::mojom::DeviceAccessResultCode crosapi_result_code;
-        switch (code) {
-          case video_capture::mojom::DeviceAccessResultCode::NOT_INITIALIZED:
+        switch (error_code) {
+          case media::VideoCaptureError::
+              kCrosHalV3DeviceDelegateFailedToInitializeCameraDevice:
             crosapi_result_code =
                 crosapi::mojom::DeviceAccessResultCode::NOT_INITIALIZED;
             break;
-          case video_capture::mojom::DeviceAccessResultCode::SUCCESS:
+          case media::VideoCaptureError::kNone:
             crosapi_result_code =
                 crosapi::mojom::DeviceAccessResultCode::SUCCESS;
             break;
-          case video_capture::mojom::DeviceAccessResultCode::
-              ERROR_DEVICE_NOT_FOUND:
+          default:
             crosapi_result_code =
                 crosapi::mojom::DeviceAccessResultCode::ERROR_DEVICE_NOT_FOUND;
-            break;
-          default:
-            NOTREACHED() << "Unexpected device access result code";
         }
         std::move(callback).Run(crosapi_result_code);
       },

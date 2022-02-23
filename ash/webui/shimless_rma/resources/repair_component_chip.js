@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './shimless_rma_fonts_css.js';
 import './shimless_rma_shared_css.js';
 import './icons.js';
 
@@ -47,17 +48,13 @@ export class RepairComponentChipElement extends PolymerElement {
       componentName: {type: String, value: ''},
 
       /** @type {string} */
-      componentId: {type: String, value: ''},
+      componentIdentifier: {type: String, value: ''},
     };
   }
 
   /** @protected */
   onComponentButtonClicked_() {
     this.checked = !this.checked;
-  }
-
-  click() {
-    this.onComponentButtonClicked_();
   }
 }
 

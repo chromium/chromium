@@ -33,7 +33,6 @@ android_resources("java_resources") {
     "java/res/drawable/chevron_right.xml",
     "java/res/drawable/fake_search_box_text_box_bg_incognito.xml",
     "java/res/drawable/hovered_tab_grid_card_background.xml",
-    "java/res/drawable/ic_add_alert_blue.xml",
     "java/res/drawable/ic_check_googblue_20dp_animated.xml",
     "java/res/drawable/ic_group_icon_16dp.xml",
     "java/res/drawable/ic_rating_star_full.xml",
@@ -64,10 +63,10 @@ android_resources("java_resources") {
     "java/res/layout/incognito_description_container_layout.xml",
     "java/res/layout/iph_drag_and_drop_dialog_layout.xml",
     "java/res/layout/large_message_card_item.xml",
-    "java/res/layout/mv_tiles_layout.xml",
     "java/res/layout/new_tab_tile_card_item.xml",
     "java/res/layout/price_card.xml",
     "java/res/layout/price_tracking_dialog_layout.xml",
+    "java/res/layout/query_tiles_layout.xml",
     "java/res/layout/selectable_tab_grid_card_item.xml",
     "java/res/layout/selectable_tab_list_card_item.xml",
     "java/res/layout/single_tab_view_layout.xml",
@@ -80,6 +79,7 @@ android_resources("java_resources") {
     "java/res/layout/tab_selection_editor_layout.xml",
     "java/res/layout/tab_selection_editor_toolbar.xml",
     "java/res/layout/tab_strip_item.xml",
+    "java/res/layout/tasks_surface_search_box_layout.xml",
     "java/res/layout/tasks_view_layout.xml",
     "java/res/values/attrs.xml",
     "java/res/values/colors.xml",
@@ -96,9 +96,6 @@ android_resources("java_resources") {
 
 android_library("java") {
   sources = [
-    "java/src/org/chromium/chrome/browser/tasks/MostVisitedListCoordinator.java",
-    "java/src/org/chromium/chrome/browser/tasks/MostVisitedListViewBinder.java",
-    "java/src/org/chromium/chrome/browser/tasks/MvTilesLayout.java",
     "java/src/org/chromium/chrome/browser/tasks/SingleTabSwitcherCoordinator.java",
     "java/src/org/chromium/chrome/browser/tasks/SingleTabSwitcherMediator.java",
     "java/src/org/chromium/chrome/browser/tasks/SingleTabView.java",
@@ -203,6 +200,7 @@ android_library("java") {
     "//chrome/browser/feedback/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/lens:java",
+    "//chrome/browser/preferences:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/search_engines/android:java",
     "//chrome/browser/share:java",
@@ -247,6 +245,7 @@ android_library("java") {
     "//third_party/androidx:androidx_lifecycle_lifecycle_viewmodel_java",
     "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//ui/android:ui_java",
+    "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
   resources_package = "org.chromium.chrome.tab_ui"

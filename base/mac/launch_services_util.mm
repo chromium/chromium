@@ -7,8 +7,7 @@
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 NSRunningApplication* OpenApplicationWithPath(
     const base::FilePath& bundle_path,
@@ -49,5 +48,4 @@ NSRunningApplication* OpenApplicationWithPath(
   return app;
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

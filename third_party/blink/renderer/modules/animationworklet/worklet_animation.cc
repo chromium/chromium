@@ -25,7 +25,7 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/modules/animationworklet/css_animation_worklet.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_timeline.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -127,12 +127,6 @@ AnimationTimeline* ConvertAnimationTimeline(
   }
   NOTREACHED();
   return nullptr;
-}
-
-bool CheckElementComposited(const Node& target) {
-  return target.GetLayoutObject() &&
-         target.GetLayoutObject()->GetCompositingState() ==
-             kPaintsIntoOwnBacking;
 }
 
 void StartEffectOnCompositor(CompositorAnimation* animation,
@@ -619,9 +613,6 @@ bool WorkletAnimation::CanStartOnCompositor() {
   if (failure_reasons != CompositorAnimations::kNoFailure)
     return false;
 
-  if (!CheckElementComposited(target))
-    return false;
-
   // If the scroll source is not composited, fall back to main thread.
   if (timeline_->IsScrollTimeline() &&
       !CompositorAnimations::CheckUsesCompositedScrolling(
@@ -629,7 +620,10 @@ bool WorkletAnimation::CanStartOnCompositor() {
     return false;
   }
 
-  return true;
+  // TODO(crbug.com/1281413): This function has returned false since the launch
+  // of CompositeAfterPaint, but that may not be intended. Should this return
+  // true?
+  return false;
 }
 
 bool WorkletAnimation::StartOnCompositor() {

@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_provider.h"
@@ -101,7 +102,7 @@ class PluginMetricsProvider : public metrics::MetricsProvider,
   // Records the delay used internally by RecordCurrentStateWithDelay().
   static base::TimeDelta GetRecordStateDelay();
 
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // The list of plugins which was retrieved on the file thread.
   std::vector<content::WebPluginInfo> plugins_;

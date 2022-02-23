@@ -33,7 +33,7 @@ ChromeAshMessageCenterClient* g_chrome_ash_message_center_client = nullptr;
 // All notifier actions are performed on the notifiers for the currently active
 // profile, so this just returns the active profile.
 Profile* GetProfileForNotifiers() {
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(
+  return ash::ProfileHelper::Get()->GetProfileByUser(
       user_manager::UserManager::Get()->GetActiveUser());
 }
 

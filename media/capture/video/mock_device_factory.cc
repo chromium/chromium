@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
+
 namespace {
 
 // Report a single hard-coded supported format to clients.
@@ -43,7 +45,7 @@ class RawPointerVideoCaptureDevice : public media::VideoCaptureDevice {
   }
 
  private:
-  media::VideoCaptureDevice* device_;
+  raw_ptr<media::VideoCaptureDevice> device_;
 };
 
 }  // anonymous namespace
@@ -64,12 +66,15 @@ void MockDeviceFactory::RemoveAllDevices() {
   devices_.clear();
 }
 
-std::unique_ptr<media::VideoCaptureDevice> MockDeviceFactory::CreateDevice(
+VideoCaptureErrorOrDevice MockDeviceFactory::CreateDevice(
     const media::VideoCaptureDeviceDescriptor& device_descriptor) {
   if (devices_.find(device_descriptor) == devices_.end())
-    return nullptr;
-  return std::make_unique<RawPointerVideoCaptureDevice>(
-      devices_[device_descriptor]);
+    return VideoCaptureErrorOrDevice(
+        VideoCaptureError::
+            kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
+  return VideoCaptureErrorOrDevice(
+      std::make_unique<RawPointerVideoCaptureDevice>(
+          devices_[device_descriptor]));
 }
 
 void MockDeviceFactory::GetDevicesInfo(GetDevicesInfoCallback callback) {

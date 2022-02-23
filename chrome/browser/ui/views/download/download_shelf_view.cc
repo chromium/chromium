@@ -84,8 +84,7 @@ DownloadShelfView::DownloadShelfView(Browser* browser, BrowserView* parent)
 
   close_button_ = AddChildView(views::CreateVectorImageButton(
       base::BindRepeating(&DownloadShelf::Close, base::Unretained(this))));
-  close_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
+  close_button_->SetTooltipText(l10n_util::GetStringUTF16(IDS_ACCNAME_CLOSE));
   close_button_->SizeToPreferredSize();
 
   accessible_alert_ = AddChildView(std::make_unique<views::View>());
@@ -369,7 +368,7 @@ void DownloadShelfView::OnThemeChanged() {
 
   views::SetImageFromVectorIcon(
       close_button_, vector_icons::kCloseRoundedIcon,
-      GetThemeProvider()->GetColor(ThemeProperties::COLOR_BOOKMARK_TEXT));
+      GetThemeProvider()->GetColor(ThemeProperties::COLOR_TOOLBAR_TEXT));
 }
 
 views::View* DownloadShelfView::GetDefaultFocusableChild() {

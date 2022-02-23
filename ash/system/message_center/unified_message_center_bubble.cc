@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/accessibility/accessibility_controller_impl.h"
+#include "ash/bubble/bubble_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -58,7 +59,7 @@ class UnifiedMessageCenterBubble::Border : public ui::LayerDelegate {
     flags.setStyle(cc::PaintFlags::kStroke_Style);
     flags.setStrokeWidth(canvas->image_scale());
     flags.setAntiAlias(true);
-    canvas->DrawRoundRect(bounds, kUnifiedTrayCornerRadius, flags);
+    canvas->DrawRoundRect(bounds, kBubbleCornerRadius, flags);
   }
 
   void OnDeviceScaleFactorChanged(float old_device_scale_factor,
@@ -102,11 +103,11 @@ void UnifiedMessageCenterBubble::ShowBubble() {
 
   ui::Layer* widget_layer = bubble_widget_->GetLayer();
   if (!features::IsNotificationsRefreshEnabled()) {
-    float radius = kUnifiedTrayCornerRadius;
+    float radius = kBubbleCornerRadius;
     widget_layer->SetRoundedCornerRadius({radius, radius, radius, radius});
     widget_layer->SetIsFastRoundedCorner(true);
+    widget_layer->Add(border_->layer());
   }
-  widget_layer->Add(border_->layer());
 
   bubble_view_->InitializeAndShowBubble();
   message_center_view_->Init();
@@ -122,9 +123,14 @@ UnifiedMessageCenterBubble::~UnifiedMessageCenterBubble() {
 
     bubble_view_->ResetDelegate();
     bubble_widget_->RemoveObserver(this);
-    bubble_widget_->CloseNow();
+    bubble_widget_->Close();
   }
   CHECK(!views::WidgetObserver::IsInObserverList());
+}
+
+gfx::Rect UnifiedMessageCenterBubble::GetBoundsInScreen() const {
+  DCHECK(bubble_view_);
+  return bubble_view_->GetBoundsInScreen();
 }
 
 void UnifiedMessageCenterBubble::CollapseMessageCenter() {
@@ -149,6 +155,9 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
   message_center_view_->SetMaxHeight(available_height);
   message_center_view_->SetAvailableHeight(available_height);
 
+  if (!tray_->bubble())
+    return;
+
   // Note: It's tempting to set the insets for TrayBubbleView in order to
   // achieve the padding, but that enlarges the layer bounds and breaks rounded
   // corner clipping for ARC notifications. This approach only modifies the
@@ -167,8 +176,10 @@ void UnifiedMessageCenterBubble::UpdatePosition() {
                     kUnifiedMessageCenterBubbleSpacing);
   bubble_view_->ChangeAnchorRect(anchor_rect);
 
-  bubble_widget_->GetLayer()->StackAtTop(border_->layer());
-  border_->layer()->SetBounds(message_center_view_->GetContentsBounds());
+  if (!features::IsNotificationsRefreshEnabled()) {
+    bubble_widget_->GetLayer()->StackAtTop(border_->layer());
+    border_->layer()->SetBounds(message_center_view_->GetContentsBounds());
+  }
 }
 
 void UnifiedMessageCenterBubble::FocusEntered(bool reverse) {
@@ -221,6 +232,17 @@ void UnifiedMessageCenterBubble::OnViewPreferredSizeChanged(
     views::View* observed_view) {
   UpdatePosition();
   bubble_view_->Layout();
+}
+
+void UnifiedMessageCenterBubble::OnViewVisibilityChanged(
+    views::View* observed_view,
+    views::View* starting_view) {
+  // Hide the message center widget if the message center is not
+  // visible. This is to ensure we do not see an empty bubble.
+  if (observed_view != message_center_view_)
+    return;
+
+  bubble_view_->UpdateBubble();
 }
 
 void UnifiedMessageCenterBubble::OnWidgetDestroying(views::Widget* widget) {

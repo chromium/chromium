@@ -72,6 +72,10 @@ struct BLINK_COMMON_EXPORT StructTraits<blink::mojom::UserAgentMetadataDataView,
     return data.bitness;
   }
 
+  static bool wow64(const ::blink::UserAgentMetadata& data) {
+    return data.wow64;
+  }
+
   static bool Read(blink::mojom::UserAgentMetadataDataView data,
                    ::blink::UserAgentMetadata* out);
 };

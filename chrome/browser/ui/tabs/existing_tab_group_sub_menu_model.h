@@ -23,7 +23,7 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   ExistingTabGroupSubMenuModel(const ExistingTabGroupSubMenuModel&) = delete;
   ExistingTabGroupSubMenuModel& operator=(const ExistingTabGroupSubMenuModel&) =
       delete;
-  ~ExistingTabGroupSubMenuModel() override = default;
+  ~ExistingTabGroupSubMenuModel() override;
 
   // Whether the submenu should be shown in the provided context. True iff
   // the submenu would show at least one group. Does not assume ownership of
@@ -47,6 +47,12 @@ class ExistingTabGroupSubMenuModel : public ExistingBaseSubMenuModel {
   static bool ShouldShowGroup(TabStripModel* model,
                               int context_index,
                               tab_groups::TabGroupId group);
+
+  // mapping of the initial tab group to index in the menu model. this must
+  // be used in cases where the tab groups returned from
+  // GetOrderedTabGroupsInSubMenu changes after the menu has been opened but
+  // before the action is taken from the menumodel.
+  std::map<int, tab_groups::TabGroupId> target_index_to_group_mapping_;
 };
 
 #endif  // CHROME_BROWSER_UI_TABS_EXISTING_TAB_GROUP_SUB_MENU_MODEL_H_

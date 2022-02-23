@@ -103,7 +103,7 @@ GuestViewContainer.prototype.attachWindow = function() {
 GuestViewContainer.prototype.makeGCOwnContainer = function(internalInstanceId) {
   MessagingNatives.BindToGC(this, function() {
     GuestViewInternalNatives.DestroyContainer(internalInstanceId);
-  }, -1);
+  });
 };
 
 GuestViewContainer.prototype.onInternalInstanceId = function(

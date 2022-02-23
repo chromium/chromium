@@ -25,10 +25,10 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxSVG) {
     </svg>
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
-  absl::optional<IntRect> mask_bounding_box =
+  absl::optional<gfx::Rect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset());
   ASSERT_TRUE(mask_bounding_box.has_value());
-  EXPECT_EQ(IntRect(35, 35, 180, 180), *mask_bounding_box);
+  EXPECT_EQ(gfx::Rect(35, 35, 180, 180), *mask_bounding_box);
 }
 
 TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSBlock) {
@@ -37,10 +37,10 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSBlock) {
                             width:300px; height:200px;"></div>
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
-  absl::optional<IntRect> mask_bounding_box =
+  absl::optional<gfx::Rect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset(8, 8));
   ASSERT_TRUE(mask_bounding_box.has_value());
-  EXPECT_EQ(IntRect(8, 8, 300, 200), *mask_bounding_box);
+  EXPECT_EQ(gfx::Rect(8, 8, 300, 200), *mask_bounding_box);
 }
 
 TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSMaskBoxImageOutset) {
@@ -50,10 +50,10 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSMaskBoxImageOutset) {
         -webkit-mask-box-image-outset:10px; width:300px; height:200px;"></div>
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
-  absl::optional<IntRect> mask_bounding_box =
+  absl::optional<gfx::Rect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset(8, 8));
   ASSERT_TRUE(mask_bounding_box.has_value());
-  EXPECT_EQ(IntRect(-2, -2, 320, 220), *mask_bounding_box);
+  EXPECT_EQ(gfx::Rect(-2, -2, 320, 220), *mask_bounding_box);
 }
 
 TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSInline) {
@@ -68,10 +68,10 @@ TEST_F(CSSMaskPainterTest, MaskBoundingBoxCSSInline) {
     </div>
   )HTML");
   auto& masked = *GetLayoutObjectByElementId("masked");
-  absl::optional<IntRect> mask_bounding_box =
+  absl::optional<gfx::Rect> mask_bounding_box =
       CSSMaskPainter::MaskBoundingBox(masked, PhysicalOffset(8, 8));
   ASSERT_TRUE(mask_bounding_box.has_value());
-  EXPECT_EQ(IntRect(8, 8, 260, 20), *mask_bounding_box);
+  EXPECT_EQ(gfx::Rect(8, 8, 260, 20), *mask_bounding_box);
 }
 
 }  // unnamed namespace

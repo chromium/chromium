@@ -7,6 +7,7 @@
 #include <iostream>
 #include <mutex>
 #include <thread>
+#include <tuple>
 
 #include "base/compiler_specific.h"
 #include "v8/include/libplatform/libplatform.h"
@@ -96,8 +97,8 @@ struct Environment {
         v8::platform::InProcessStackDumping::kDisabled, nullptr);
 
     v8::V8::InitializePlatform(platform_.get());
-#ifdef V8_VIRTUAL_MEMORY_CAGE
-    v8::V8::InitializeVirtualMemoryCage();
+#ifdef V8_SANDBOX
+    v8::V8::InitializeSandbox();
 #endif
     v8::V8::Initialize();
     v8::Isolate::CreateParams create_params;
@@ -161,7 +162,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
   env->start_time = steady_clock::now();
   env->mtx.unlock();
 
-  ALLOW_UNUSED_LOCAL(local_script->Run(context));
+  std::ignore = local_script->Run(context);
 
   lock_guard<mutex> mtx_locker(env->mtx);
   env->is_running = false;

@@ -93,10 +93,6 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.use_skia_renderer;
   }
 
-  static bool allow_overlays(const viz::RendererSettings& input) {
-    return input.allow_overlays;
-  }
-
   static bool auto_resize_output_surface(const viz::RendererSettings& input) {
     return input.auto_resize_output_surface;
   }
@@ -105,7 +101,7 @@ struct StructTraits<viz::mojom::RendererSettingsDataView,
     return input.requires_alpha_channel;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   static gfx::Size initial_screen_size(const viz::RendererSettings& input) {
     return input.initial_screen_size;
   }

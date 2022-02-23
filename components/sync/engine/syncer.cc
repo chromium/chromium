@@ -19,7 +19,6 @@
 #include "components/sync/engine/get_updates_delegate.h"
 #include "components/sync/engine/get_updates_processor.h"
 #include "components/sync/engine/net/server_connection_manager.h"
-#include "components/sync/engine/sync_engine_switches.h"
 
 namespace syncer {
 
@@ -47,7 +46,7 @@ bool Syncer::NormalSyncShare(ModelTypeSet request_types,
   base::AutoReset<bool> is_syncing(&is_syncing_, true);
   HandleCycleBegin(cycle);
   if (nudge_tracker->IsGetUpdatesRequired(request_types)) {
-    VLOG(1) << "Downloading types " << ModelTypeSetToString(request_types);
+    VLOG(1) << "Downloading types " << ModelTypeSetToDebugString(request_types);
     if (!DownloadAndApplyUpdates(&request_types, cycle,
                                  NormalGetUpdatesDelegate(*nudge_tracker))) {
       return HandleCycleEnd(cycle, nudge_tracker->GetOrigin());
@@ -74,7 +73,8 @@ bool Syncer::ConfigureSyncShare(const ModelTypeSet& request_types,
   // registered types.
   ModelTypeSet still_enabled_types =
       Intersection(request_types, cycle->context()->GetConnectedTypes());
-  VLOG(1) << "Configuring types " << ModelTypeSetToString(still_enabled_types);
+  VLOG(1) << "Configuring types "
+          << ModelTypeSetToDebugString(still_enabled_types);
   HandleCycleBegin(cycle);
   DownloadAndApplyUpdates(&still_enabled_types, cycle,
                           ConfigureGetUpdatesDelegate(origin));
@@ -83,7 +83,7 @@ bool Syncer::ConfigureSyncShare(const ModelTypeSet& request_types,
 
 bool Syncer::PollSyncShare(ModelTypeSet request_types, SyncCycle* cycle) {
   base::AutoReset<bool> is_syncing(&is_syncing_, true);
-  VLOG(1) << "Polling types " << ModelTypeSetToString(request_types);
+  VLOG(1) << "Polling types " << ModelTypeSetToDebugString(request_types);
   HandleCycleBegin(cycle);
   DownloadAndApplyUpdates(&request_types, cycle, PollGetUpdatesDelegate());
   return HandleCycleEnd(cycle, sync_pb::SyncEnums::PERIODIC);
@@ -136,7 +136,8 @@ bool Syncer::DownloadAndApplyUpdates(ModelTypeSet* request_types,
 SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
                                         NudgeTracker* nudge_tracker,
                                         SyncCycle* cycle) {
-  VLOG(1) << "Committing from types " << ModelTypeSetToString(request_types);
+  VLOG(1) << "Committing from types "
+          << ModelTypeSetToDebugString(request_types);
 
   CommitProcessor commit_processor(
       request_types,
@@ -169,6 +170,8 @@ SyncerError Syncer::BuildAndPostCommits(const ModelTypeSet& request_types,
     if (error.value() != SyncerError::SYNCER_OK) {
       return error;
     }
+    nudge_tracker->RecordSuccessfulCommitMessage(
+        commit->GetContributingDataTypes());
   }
 
   return SyncerError(SyncerError::SYNCER_OK);

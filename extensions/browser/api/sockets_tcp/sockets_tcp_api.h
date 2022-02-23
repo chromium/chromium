@@ -10,7 +10,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/api/socket/socket_api.h"
 #include "extensions/common/api/sockets_tcp.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -142,7 +142,7 @@ class SocketsTcpConnectFunction
   void OnCompleted(int net_result);
 
   std::unique_ptr<sockets_tcp::Connect::Params> params_;
-  TCPSocketEventDispatcher* socket_event_dispatcher_ = nullptr;
+  raw_ptr<TCPSocketEventDispatcher> socket_event_dispatcher_ = nullptr;
 };
 
 class SocketsTcpDisconnectFunction : public TCPSocketApiFunction {

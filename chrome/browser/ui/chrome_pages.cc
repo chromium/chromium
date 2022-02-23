@@ -15,6 +15,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
@@ -43,6 +44,8 @@
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension_urls.h"
+#include "net/base/escape.h"
 #include "net/base/url_util.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
@@ -51,7 +54,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_features.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
-#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes_util.h"
@@ -59,7 +61,8 @@
 #include "chrome/browser/ui/signin_view_controller.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
+#include "base/metrics/histogram_functions.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
@@ -227,7 +230,7 @@ void ShowBookmarkManagerForNode(Browser* browser, int64_t node_id) {
   OpenBookmarkManagerForNode(browser, node_id);
 }
 
-void ShowHistory(Browser* browser) {
+void ShowHistory(Browser* browser, const std::string& host_name) {
   // History UI should not be shown in Incognito mode, instead history
   // disclaimer bubble should show up. This also updates the behavior of history
   // keyboard shortcts in Incognito.
@@ -239,7 +242,17 @@ void ShowHistory(Browser* browser) {
   }
 
   base::RecordAction(UserMetricsAction("ShowHistory"));
-  ShowSingletonTabIgnorePathOverwriteNTP(browser, GURL(kChromeUIHistoryURL));
+  GURL url = GURL(kChromeUIHistoryURL);
+  if (!host_name.empty()) {
+    url = url.Resolve(base::StringPrintf(
+        "/?q=%s",
+        net::EscapeQueryParamValue(host_name, /*use_plus=*/false).c_str()));
+  }
+  ShowSingletonTabIgnorePathOverwriteNTP(browser, url);
+}
+
+void ShowHistory(Browser* browser) {
+  ShowHistory(browser, std::string());
 }
 
 void ShowDownloads(Browser* browser) {
@@ -425,6 +438,16 @@ void ShowSearchEngineSettings(Browser* browser) {
   ShowSettingsSubPage(browser, kSearchEnginesSubPage);
 }
 
+void ShowWebStore(Browser* browser) {
+  ShowSingletonTabIgnorePathOverwriteNTP(
+      browser, extension_urls::GetWebstoreLaunchURL());
+}
+
+void ShowPrivacySandboxSettings(Browser* browser) {
+  base::RecordAction(UserMetricsAction("Options_ShowPrivacySandbox"));
+  ShowSettingsSubPage(browser, kPrivacySandboxSubPage);
+}
+
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
   // Management shows in a tab because it has a "back" arrow that takes the
@@ -434,7 +457,7 @@ void ShowEnterpriseManagementPageInTabbedBrowser(Browser* browser) {
 
 void ShowAppManagementPage(Profile* profile,
                            const std::string& app_id,
-                           AppManagementEntryPoint entry_point) {
+                           ash::settings::AppManagementEntryPoint entry_point) {
   // This histogram is also declared and used at chrome/browser/resources/
   // settings/chrome_os/os_apps_page/app_management_page/constants.js.
   constexpr char kAppManagementEntryPointsHistogramName[] =
@@ -465,6 +488,12 @@ void ShowDiagnosticsApp(Profile* profile) {
   DCHECK(base::FeatureList::IsEnabled(chromeos::features::kDiagnosticsApp));
 
   LaunchSystemWebAppAsync(profile, web_app::SystemAppType::DIAGNOSTICS);
+}
+
+void ShowFirmwareUpdatesApp(Profile* profile) {
+  DCHECK(base::FeatureList::IsEnabled(chromeos::features::kFirmwareUpdaterApp));
+
+  LaunchSystemWebAppAsync(profile, web_app::SystemAppType::FIRMWARE_UPDATE);
 }
 
 GURL GetOSSettingsUrl(const std::string& sub_page) {
@@ -517,6 +546,23 @@ void ShowBrowserSigninOrSettings(Browser* browser,
     ShowSettings(browser);
   else
     ShowBrowserSignin(browser, access_point, signin::ConsentLevel::kSync);
+}
+#endif
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_FUCHSIA)
+void ShowWebAppSettings(Browser* browser,
+                        const std::string& app_id,
+                        web_app::AppSettingsPageEntryPoint entry_point) {
+  base::UmaHistogramEnumeration(
+      web_app::kAppSettingsPageEntryPointsHistogramName, entry_point);
+
+  const GURL link_destination(chrome::kChromeUIWebAppSettingsURL + app_id);
+  NavigateParams params(browser->profile(), link_destination,
+                        ui::PAGE_TRANSITION_TYPED);
+  params.disposition = WindowOpenDisposition::NEW_FOREGROUND_TAB;
+  params.browser = browser;
+  Navigate(&params);
 }
 #endif
 

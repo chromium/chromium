@@ -4,27 +4,32 @@
 
 package org.chromium.android_webview.devui.util;
 
-import org.chromium.android_webview.services.ComponentsProviderPathUtil;
-
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
- * A Controller class which iterates over AwComponentUpdateService's download directory {@link
- * ComponentsProviderPathUtil#getComponentUpdateServiceDirectoryPath} to retrieve component name and
- * version for each component.
+ * A Controller class which iterates over the directory where components are downloaded to retrieve
+ * component name and version for each component.
  */
 public class ComponentsInfoLoader {
+    private final File mComponentsDir;
+
+    /**
+     * @param componentsDir the top directory where components are downloaded {@link
+     *         ComponentsProviderPathUtil#getComponentUpdateServiceDirectoryPath}.
+     */
+    public ComponentsInfoLoader(File componentsDir) {
+        mComponentsDir = componentsDir;
+    }
+
     /**
      * @return list of {@link ComponentInfo} for downloaded components sorted in lexicographical
      *         order.
      */
     public ArrayList<ComponentInfo> getComponentsInfo() {
         ArrayList<ComponentInfo> componentInfoList = new ArrayList<>();
-        File[] componentDirectories =
-                new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath())
-                        .listFiles();
+        File[] componentDirectories = mComponentsDir.listFiles();
 
         if (componentDirectories == null || componentDirectories.length == 0) {
             return componentInfoList;

@@ -8,6 +8,7 @@
 
 #import "base/test/ios/wait_util.h"
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/test/fakes/fake_ui_view_controller.h"
 #import "ios/chrome/test/scoped_key_window.h"
@@ -22,13 +23,14 @@
 // Test fixture for StoreKitCoordinator class.
 class StoreKitCoordinatorTest : public PlatformTest {
  protected:
-  StoreKitCoordinatorTest()
-      : root_view_controller_([[UIViewController alloc] init]),
-        base_view_controller_([[UIViewController alloc] init]),
-        browser_(std::make_unique<TestBrowser>()),
-        coordinator_([[StoreKitCoordinator alloc]
-            initWithBaseViewController:base_view_controller_
-                               browser:browser_.get()]) {
+  StoreKitCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    root_view_controller_ = [[UIViewController alloc] init];
+    base_view_controller_ = [[UIViewController alloc] init];
+    coordinator_ = [[StoreKitCoordinator alloc]
+        initWithBaseViewController:base_view_controller_
+                           browser:browser_.get()];
     [scoped_key_window_.Get() setRootViewController:root_view_controller_];
     [root_view_controller_ presentViewController:base_view_controller_
                                         animated:NO
@@ -47,10 +49,10 @@ class StoreKitCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   UIViewController* root_view_controller_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<Browser> browser_;
   StoreKitCoordinator* coordinator_;
   ScopedKeyWindow scoped_key_window_;
 };

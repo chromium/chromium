@@ -40,7 +40,9 @@ class JniDistillabilityObserverWrapper
   }
 
  private:
-  explicit JniDistillabilityObserverWrapper(content::WebContents* contents) {}
+  explicit JniDistillabilityObserverWrapper(content::WebContents* contents)
+      : content::WebContentsUserData<JniDistillabilityObserverWrapper>(
+            *contents) {}
   friend class content::WebContentsUserData<JniDistillabilityObserverWrapper>;
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 

@@ -53,7 +53,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.DeletedUserProfiles" units="profiles"
-    expires_after="2022-02-05">
+    expires_after="2022-07-31">
   <owner>simmonsjosh@google.com</owner>
   <owner>src/ui/file_manager/OWNERS</owner>
   <summary>
@@ -214,25 +214,10 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.Errors" enum="CryptohomeError"
-    expires_after="2022-03-20">
+    expires_after="2022-07-24">
   <owner>apronin@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>Cryptohome errors.</summary>
-</histogram>
-
-<histogram name="Cryptohome.EvkkEncryptionType" enum="EvkkEncryptionType"
-    expires_after="2021-08-01">
-  <obsolete>
-    Replaced with Cryptohome.WrappingKeyDerivation.Mount 2021-03-08 which
-    describes the derivation types more comprehensively.
-  </obsolete>
-  <owner>enlightened@chromium.org</owner>
-  <owner>tnagel@chromium.org</owner>
-  <summary>
-    Indicates whether Encrypted Vault Keyset Key (EVKK) is TPM wrapped. This is
-    reported when the Derive function inside scrypt auth block or TPM auth block
-    is called, which happens during cryptohome mount phase.
-  </summary>
 </histogram>
 
 <histogram name="Cryptohome.FreedCacheVaultDiskSpaceInMb" units="MB"
@@ -300,7 +285,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Cryptohome.LECredential"
-    enum="CryptohomeLECredError" expires_after="2022-03-13">
+    enum="CryptohomeLECredError" expires_after="2022-07-17">
 <!-- Name completed by histogram_suffixes name="LECredentialOps" -->
 
   <owner>pmalani@chromium.org</owner>
@@ -330,14 +315,40 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Cryptohome.MigrationToGaiaId"
-    enum="CryptohomeMigrationToGaiaId" expires_after="2022-05-01">
-  <owner>alemate@chromium.org</owner>
-  <owner>rsorokin@chromium.org</owner>
-  <owner>cros-oac@google.com</owner>
+<histogram name="Cryptohome.LoginDiskCleanupProgress"
+    enum="CryptohomeLoginDiskCleanupProgress" expires_after="2023-02-01">
+  <owner>vsavu@google.com</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
   <summary>
-    This is the status of cryptohome migration to GaiaId. Every time user logs
-    in current migration status is recorded.
+    When disk space is very low during login, cryptohome will remove other users
+    to ensure that the current user can successfully log in. This metric tracks
+    what was performed to free up space.
+
+    cryptohomed reports what step was reached to fulfill a cleanup request. The
+    steps are described in CryptohomeLoginDiskCleanupProgress and are executed
+    in order.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.LoginDiskCleanupResult"
+    enum="CryptohomeDiskCleanupResult" expires_after="2023-02-01">
+  <owner>vsavu@google.com</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
+  <summary>
+    Records the result of triggering disk cleanup during login. Reports failure
+    when any error is encountered and skipped if enough disk space is already
+    available.
+  </summary>
+</histogram>
+
+<histogram name="Cryptohome.LoginDiskCleanupTotalTime" units="ms"
+    expires_after="2023-02-01">
+  <owner>vsavu@google.com</owner>
+  <owner>sarthakkukreti@chromium.org</owner>
+  <summary>
+    When disk space is very low during login, cryptohome will remove other users
+    to ensure that the current user can successfully log in. This metric records
+    how long cleanup took before the user logged in.
   </summary>
 </histogram>
 
@@ -403,7 +414,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.OOPMountCleanupResult"
-    enum="CryptohomeOOPMountCleanupResult" expires_after="2021-12-12">
+    enum="CryptohomeOOPMountCleanupResult" expires_after="2022-05-01">
   <owner>betuls@chromium.org</owner>
   <owner>jorgelo@chromium.org</owner>
   <summary>
@@ -499,7 +510,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToGenerateEccAuthValue" units="ms"
-    expires_after="2022-04-04">
+    expires_after="2022-10-04">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -543,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TimeToMountGuestEx" units="ms"
-    expires_after="2021-12-12">
+    expires_after="2022-05-01">
   <owner>jorgelo@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -575,27 +586,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cryptohome.TimeToPerformOOPMountCleanup" units="ms"
-    expires_after="2022-01-02">
-  <owner>jorgelo@chromium.org</owner>
-  <owner>betuls@chromium.org</owner>
-  <summary>
-    The amount of time (ms) cryptohome spends terminating and reaping the
-    out-of-process mounter, which includes the time spent by the mounter itself
-    tearing down the user home directory.
-  </summary>
-</histogram>
-
-<histogram name="Cryptohome.TimeToPerformOOPMountOperation" units="ms"
-    expires_after="2022-05-01">
-  <owner>jorgelo@chromium.org</owner>
-  <owner>betuls@chromium.org</owner>
-  <summary>
-    The amount of time (ms) cryptohome spends running the out-of-process
-    mounter, until the user home directory is finalized.
-  </summary>
-</histogram>
-
 <histogram name="Cryptohome.TimeToTakeTpmOwnership" units="ms"
     expires_after="2022-03-20">
   <owner>apronin@chromium.org</owner>
@@ -607,7 +597,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.TpmResults" enum="CryptohomeTpmResults"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>afakhry@chromium.org</owner>
   <summary>
     The errors resulting from interacting with the Trusted Platform Module (TPM)
@@ -623,6 +613,30 @@ chromium-metrics-reviews@google.com.
     Records whether the user's profile directory (/home/chronos/u-{hash}) is
     owned by group chronos-access. This is recorded once per log-in.
   </summary>
+</histogram>
+
+<histogram name="Cryptohome.VaultKeysetMetric.{VaultKeysetMetric}"
+    units="count" expires_after="2022-06-01">
+  <owner>thomascedeno@google.com</owner>
+  <owner>cros-hwsec+uma@chromium.org</owner>
+  <summary>
+    Any given ChromeOS user has some number of vault keysets to store file name
+    encryption keys, depending on registered authentication factors at the time.
+    This histogram records how many vault keysets with {VaultKeysetMetric} a
+    user has. Recorded once on startup, and during every call to ListKeys or
+    MassRemoveKeys through the ChromeOS cryptohome daemon.
+  </summary>
+  <token key="VaultKeysetMetric">
+    <variant name="EmptyLabelCount"/>
+    <variant name="EmptyLabelPINCount"/>
+    <variant name="FingerprintCount"/>
+    <variant name="KioskCount"/>
+    <variant name="PasswordCount"/>
+    <variant name="PINCount"/>
+    <variant name="SmartCardCount"/>
+    <variant name="SmartUnlockCount"/>
+    <variant name="UnclassifedKeysetCount"/>
+  </token>
 </histogram>
 
 <histogram name="Cryptohome.WrappingKeyDerivation.Create"
@@ -656,7 +670,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Cryptohome.{Action}AuthBlockType"
-    enum="CryptohomeAuthBlockType" expires_after="2022-04-04">
+    enum="CryptohomeAuthBlockType" expires_after="2022-10-04">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>
@@ -669,7 +683,7 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="CryptohomeClient" units="ms" expires_after="2022-03-20">
+<histogram name="CryptohomeClient" units="ms" expires_after="2022-07-24">
   <owner>zuan@chromium.org</owner>
   <owner>cros-hwsec+uma@chromium.org</owner>
   <summary>

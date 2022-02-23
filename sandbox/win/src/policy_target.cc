@@ -18,12 +18,6 @@
 
 namespace sandbox {
 
-// Handle for our private heap.
-extern void* g_heap;
-
-// This is the list of all imported symbols from ntdll.dll.
-SANDBOX_INTERCEPT NtExports g_nt;
-
 // Policy data.
 extern void* volatile g_shared_policy_memory;
 SANDBOX_INTERCEPT size_t g_shared_policy_size;

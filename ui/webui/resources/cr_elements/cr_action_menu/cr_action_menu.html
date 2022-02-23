@@ -56,7 +56,8 @@
     </style>
     <dialog id="dialog" part="dialog" on-close="onNativeDialogClose_"
         role="application" aria-roledescription$="[[roleDescription]]">
-      <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1">
+      <div id="wrapper" class="item-wrapper" role="menu" tabindex="-1"
+          aria-label$="[[accessibilityLabel]]">
         <slot id="contentNode"></slot>
       </div>
     </dialog>

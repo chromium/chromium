@@ -36,6 +36,7 @@
 #include "chrome/browser/ash/file_manager/file_browser_handlers.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
+#include "chrome/browser/ash/file_manager/filesystem_api_util.h"
 #include "chrome/browser/ash/file_manager/guest_os_file_tasks.h"
 #include "chrome/browser/ash/file_manager/open_util.h"
 #include "chrome/browser/ash/file_manager/open_with_browser.h"
@@ -68,6 +69,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/extension_set.h"
 #include "net/base/mime_util.h"
+#include "pdf/buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/mime_util/mime_util.h"
@@ -197,7 +199,8 @@ void AdjustTasksForMediaApp(const std::vector<extensions::EntryInfo>& entries,
 bool IsFallbackFileHandler(const FullTaskDescriptor& task) {
   if ((task.task_descriptor.task_type !=
            file_tasks::TASK_TYPE_FILE_BROWSER_HANDLER &&
-       task.task_descriptor.task_type != file_tasks::TASK_TYPE_FILE_HANDLER) ||
+       task.task_descriptor.task_type != file_tasks::TASK_TYPE_FILE_HANDLER &&
+       task.task_descriptor.task_type != file_tasks::TASK_TYPE_WEB_APP) ||
       task.is_generic_file_handler) {
     return false;
   }
@@ -271,7 +274,7 @@ void ExecuteTaskAfterMimeTypesCollected(
 
   DCHECK_EQ(task.task_type, TASK_TYPE_ARC_APP);
   apps::RecordAppLaunchMetrics(
-      profile, apps::mojom::AppType::kArc, task.app_id,
+      profile, apps::AppType::kArc, task.app_id,
       apps::mojom::LaunchSource::kFromFileManager,
       apps::mojom::LaunchContainer::kLaunchContainerWindow);
   ExecuteArcTask(profile, task, file_urls, *mime_types, std::move(done));
@@ -288,31 +291,69 @@ void PostProcessFoundTasks(
 
   std::set<std::string> disabled_actions;
 
-  // kFilesArchivemount is whether we allow "mount-archive" for every filename
-  // extension listed in ui/file_manager/file_manager/manifest.json (when the
-  // feature flag is true) or only for ".rar" and ".zip" (when the feature flag
-  // is false). False corresponds to the status quo as of milestone M92. This
-  // feature flag will be introduced in M93 (https://crrev.com/c/3017636), false
-  // by default.
+  // kFilesArchivemount and kFilesArchivemount2 controls what subset of
+  // filename extensions listed in ui/file_manager/file_manager/manifest.json
+  // allows the "mount-archive" action.
   //
-  // TODO(nigeltao): some time after M94, remove the kFilesArchivemount feature
-  // flag (scheduled to expire in M100) by hard-coding it to true, so that this
-  // if-block is never taken and can be deleted.
+  // If kFilesArchivemount is disabled then only ".rar" and ".zip" are allowed.
+  // This corresponds to the status quo as of milestone M92.
+  //
+  // If kFilesArchivemount is enabled but kFilesArchivemount2 is disabled then
+  // more extensions are allowed, including ".7z" and uncompressed tar (".tar")
+  // but not compressed tar (".tar.bz", ".tar.bz2", ".tar.gz", ".tar.lzma",
+  // ".tar.xz", ".tbz", ".tbz2", ".tgz", ".tlzma", and ".txz") or compressed
+  // general files (".bz2", ".gz", ".lzma", and ".xz").
+  //
+  // If both are enabled then everything listed in manifest.json is allowed.
+  //
+  // TODO(crbug.com/1295892): some time after M98, remove these feature flags
+  // (scheduled to expire in M112) by hard-coding them to true, so that these
+  // if-blocks are never taken and can be deleted.
   if (!base::FeatureList::IsEnabled(ash::features::kFilesArchivemount)) {
     for (const auto& entry : entries) {
+      // Allow-list: .rar and .zip.
       if (!entry.path.MatchesExtension(".rar") &&
           !entry.path.MatchesExtension(".zip")) {
         disabled_actions.emplace("mount-archive");
         break;
       }
     }
+  } else if (!base::FeatureList::IsEnabled(
+                 ash::features::kFilesArchivemount2)) {
+    for (const auto& entry : entries) {
+      // Deny-list: various compressed formats.
+      if (entry.path.MatchesFinalExtension(".bz") ||
+          entry.path.MatchesFinalExtension(".bz2") ||
+          entry.path.MatchesFinalExtension(".gz") ||
+          entry.path.MatchesFinalExtension(".lzma") ||
+          entry.path.MatchesFinalExtension(".xz") ||
+          entry.path.MatchesFinalExtension(".tbz") ||
+          entry.path.MatchesFinalExtension(".tbz2") ||
+          entry.path.MatchesFinalExtension(".tgz") ||
+          entry.path.MatchesFinalExtension(".tlzma") ||
+          entry.path.MatchesFinalExtension(".txz")) {
+        disabled_actions.emplace("mount-archive");
+        break;
+      }
+    }
   }
 
-  // Remove file manager internal view-pdf and view-swf actions if needed.
-  if (!util::ShouldBeOpenedWithPlugin(profile, FILE_PATH_LITERAL(".pdf"), ""))
-    disabled_actions.emplace("view-pdf");
-  if (!util::ShouldBeOpenedWithPlugin(profile, FILE_PATH_LITERAL(".swf"), ""))
-    disabled_actions.emplace("view-swf");
+  if (!base::FeatureList::IsEnabled(ash::features::kFilesWebDriveOffice)) {
+    disabled_actions.emplace("open-web-drive-office");
+  } else {
+    for (const auto& entry : entries) {
+      // Allow the Web Drive Office task only if the entries are on Drive.
+      if (!::file_manager::util::IsDriveLocalPath(profile, entry.path)) {
+        disabled_actions.emplace("open-web-drive-office");
+        break;
+      }
+    }
+  }
+
+#if !BUILDFLAG(ENABLE_PDF)
+  disabled_actions.emplace("view-pdf");
+#endif  // !BUILDFLAG(ENABLE_PDF)
+
   if (!disabled_actions.empty())
     RemoveFileManagerInternalActions(disabled_actions, result_list.get());
 
@@ -328,12 +369,12 @@ void PostProcessFoundTasks(
 bool ShouldBeOpenedWithBrowser(const std::string& extension_id,
                                const std::string& action_id) {
   return isFilesAppId(extension_id) &&
-         (action_id == "view-pdf" || action_id == "view-swf" ||
-          action_id == "view-in-browser" ||
+         (action_id == "view-pdf" || action_id == "view-in-browser" ||
           action_id == "open-hosted-generic" ||
           action_id == "open-hosted-gdoc" ||
           action_id == "open-hosted-gsheet" ||
-          action_id == "open-hosted-gslides");
+          action_id == "open-hosted-gslides" ||
+          action_id == "open-web-drive-office");
 }
 
 // Opens the files specified by |file_urls| with the browser for |profile|.
@@ -427,7 +468,7 @@ void UpdateDefaultTask(PrefService* pref_service,
     DictionaryPrefUpdate mime_type_pref(pref_service,
                                         prefs::kDefaultTasksByMimeType);
     for (const std::string& mime_type : mime_types) {
-      mime_type_pref->SetKey(mime_type, base::Value(task_id));
+      mime_type_pref->SetStringKey(mime_type, task_id);
     }
   }
 
@@ -437,7 +478,7 @@ void UpdateDefaultTask(PrefService* pref_service,
     for (const std::string& suffix : suffixes) {
       // Suffixes are case insensitive.
       std::string lower_suffix = base::ToLowerASCII(suffix);
-      mime_type_pref->SetKey(lower_suffix, base::Value(task_id));
+      mime_type_pref->SetStringKey(lower_suffix, task_id);
     }
   }
 }
@@ -449,7 +490,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
   VLOG(1) << "Looking for default for MIME type: " << mime_type
       << " and suffix: " << suffix;
   if (!mime_type.empty()) {
-    const base::DictionaryValue* mime_task_prefs =
+    const base::Value* mime_task_prefs =
         pref_service.GetDictionary(prefs::kDefaultTasksByMimeType);
     DCHECK(mime_task_prefs);
     LOG_IF(ERROR, !mime_task_prefs) << "Unable to open MIME type prefs";
@@ -462,7 +503,7 @@ bool GetDefaultTaskFromPrefs(const PrefService& pref_service,
     }
   }
 
-  const base::DictionaryValue* suffix_task_prefs =
+  const base::Value* suffix_task_prefs =
       pref_service.GetDictionary(prefs::kDefaultTasksBySuffix);
   DCHECK(suffix_task_prefs);
   LOG_IF(ERROR, !suffix_task_prefs) << "Unable to open suffix prefs";
@@ -568,13 +609,15 @@ bool ExecuteFileTask(Profile* profile,
     std::u16string title;
     const GURL destination_entry =
         file_urls.size() ? file_urls[0].ToGURL() : GURL();
+    ui::SelectFileDialog::FileTypeInfo file_type_info;
+    file_type_info.allowed_paths =
+        ui::SelectFileDialog::FileTypeInfo::ANY_PATH_OR_URL;
     GURL files_swa_url =
         ::file_manager::util::GetFileManagerMainPageUrlWithParams(
             ui::SelectFileDialog::SELECT_NONE, title,
             /*current_directory_url=*/{},
             /*selection_url=*/destination_entry,
-            /*target_name=*/{},
-            /*file_types=*/nullptr,
+            /*target_name=*/{}, &file_type_info,
             /*file_type_index=*/0,
             /*search_query=*/{},
             /*show_android_picker_apps=*/false);
@@ -672,15 +715,11 @@ void FindExtensionAndAppTasks(
     std::unique_ptr<std::vector<FullTaskDescriptor>> result_list) {
   std::vector<FullTaskDescriptor>* result_list_ptr = result_list.get();
 
-  // 2. Find and append file browser handler tasks. We know there aren't
-  // duplicates because "file_browser_handlers" and "file_handlers" shouldn't
-  // be used in the same manifest.json.
-  FindFileBrowserHandlerTasks(profile, file_urls, result_list_ptr);
-
-  // 3. Web tasks file_handlers (View/Open With), and Chrome app file_handlers.
+  // 2. Web tasks file_handlers (View/Open With), Chrome app file_handlers, and
+  // extension file_browser_handlers.
   FindAppServiceTasks(profile, entries, file_urls, result_list_ptr);
 
-  // 4. Find and append Guest OS tasks.
+  // 3. Find and append Guest OS tasks.
   FindGuestOsTasks(profile, entries, file_urls, result_list_ptr,
                    // Done. Apply post-filtering and callback.
                    base::BindOnce(PostProcessFoundTasks, profile, entries,
@@ -726,9 +765,20 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
     }
   }
 
-  // No default task, check for an explicit file extension match (without
-  // MIME match) in the extension manifest and pick that over the fallback
-  // handlers below (see crbug.com/803930)
+  // No default task. If ShadowDocs is available for Office files, set as
+  // default.
+  for (FullTaskDescriptor& task : *tasks) {
+    if (isFilesAppId(task.task_descriptor.app_id) &&
+        parseFilesAppActionId(task.task_descriptor.action_id) ==
+            "open-web-drive-office") {
+      task.is_default = true;
+      return;
+    }
+  }
+
+  // Check for an explicit file extension match (without MIME match) in the
+  // extension manifest and pick that over the fallback handlers below (see
+  // crbug.com/803930)
   for (FullTaskDescriptor& task : *tasks) {
     if (task.is_file_extension_match && !task.is_generic_file_handler &&
         !IsFallbackFileHandler(task)) {
@@ -741,7 +791,8 @@ void ChooseAndSetDefaultTask(const PrefService& pref_service,
   // Unless it's HTML which should open in the browser (crbug.com/1121396).
   for (FullTaskDescriptor& task : *tasks) {
     if (IsFallbackFileHandler(task) &&
-        task.task_descriptor.action_id != "view-in-browser") {
+        parseFilesAppActionId(task.task_descriptor.action_id) !=
+            "view-in-browser") {
       const extensions::EntryInfo entry = entries[0];
       const base::FilePath& file_path = entry.path;
 

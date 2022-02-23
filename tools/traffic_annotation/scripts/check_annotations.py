@@ -119,14 +119,6 @@ class NetworkTrafficAnnotationChecker():
     if stderr_text:
       print("\n[Runtime Messages]:\n%s" % stderr_text)
 
-    if self.tools.GetCurrentPlatform() == "android":
-      # For now, always mark the android bot as green. This acts as a sort of
-      # "FYI" mode.
-      #
-      # TODO(crbug.com/1254719): Once the Android presubmit bot is stable, turn
-      # this into a CQ-blocking failure.
-      return 0
-
     return return_code
 
 

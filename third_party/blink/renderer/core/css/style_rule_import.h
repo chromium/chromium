@@ -24,7 +24,7 @@
 
 #include "third_party/blink/renderer/core/css/css_origin_clean.h"
 #include "third_party/blink/renderer/core/css/style_rule.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"

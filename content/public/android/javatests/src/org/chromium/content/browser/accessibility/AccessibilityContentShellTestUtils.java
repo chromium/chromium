@@ -7,7 +7,8 @@ package org.chromium.content.browser.accessibility;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
-import android.view.accessibility.AccessibilityNodeInfo;
+
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat;
 
 /**
  * Helper class with various testing util methods for content shell accessibility tests.
@@ -36,7 +37,7 @@ public class AccessibilityContentShellTestUtils {
          * @param element           The element and type we are matching against
          * @return                  True/false for whether or not the node is a match
          */
-        boolean matches(AccessibilityNodeInfo node, T element);
+        boolean matches(AccessibilityNodeInfoCompat node, T element);
     }
 
     // Helper methods for common matching conditions for AccessibilityNodeInfo objects.

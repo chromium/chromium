@@ -53,10 +53,14 @@ cast_source_set("feature_constants") {
 test("cast_common_unittests") {
   testonly = true
 
-  sources = [ "activity_url_filter_unittest.cc" ]
+  sources = [
+    "activity_url_filter_unittest.cc",
+    "cors_exempt_headers_unittest.cc",
+  ]
 
   deps = [
     ":activity_url_filter",
+    ":cors_exempt_headers",
     "//base/test:run_all_unittests",
     "//base/test:test_support",
     "//testing/gmock",
@@ -78,11 +82,7 @@ cast_source_set("common") {
   sources = [
     "cast_content_client.cc",
     "cast_content_client.h",
-    "cast_url_loader_throttle.cc",
-    "cast_url_loader_throttle.h",
     "global_descriptors.h",
-    "identification_settings_manager.cc",
-    "identification_settings_manager.h",
     "user_agent.cc",
     "user_agent.h",
   ]
@@ -94,15 +94,11 @@ cast_source_set("common") {
     "//chromecast/base",
     "//chromecast/base:cast_version",
     "//chromecast/common/media",
-    "//chromecast/common/mojom",
     "//components/cast/common:constants",
     "//components/cdm/common:common",
     "//components/version_info",
     "//content/public/common",
     "//media:media_buildflags",
-    "//mojo/public/cpp/bindings",
-    "//net",
-    "//services/network/public/cpp:cpp",
     "//third_party/widevine/cdm:buildflags",
     "//ui/base",
     "//url:url",

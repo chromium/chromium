@@ -260,24 +260,13 @@ bool RecordInfo::IsStackAllocated() {
     is_stack_allocated_ = kFalse;
     if (HasTypeAlias("IsStackAllocatedTypeMarker")) {
       is_stack_allocated_ = kTrue;
-      return is_stack_allocated_;
-    }
-    for (Bases::iterator it = GetBases().begin();
-         it != GetBases().end();
-         ++it) {
-      if (it->second.info()->IsStackAllocated()) {
-        is_stack_allocated_ = kTrue;
-        return is_stack_allocated_;
-      }
-    }
-    for (CXXRecordDecl::method_iterator it = record_->method_begin();
-         it != record_->method_end();
-         ++it) {
-      if (it->getNameAsString() == kNewOperatorName &&
-          it->isDeleted() &&
-          Config::IsStackAnnotated(*it)) {
-        is_stack_allocated_ = kTrue;
-        return is_stack_allocated_;
+    } else {
+      for (Bases::iterator it = GetBases().begin(); it != GetBases().end();
+           ++it) {
+        if (it->second.info()->IsStackAllocated()) {
+          is_stack_allocated_ = kTrue;
+          break;
+        }
       }
     }
   }

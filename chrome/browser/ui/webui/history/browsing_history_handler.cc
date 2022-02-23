@@ -37,7 +37,7 @@
 #include "components/favicon/core/fallback_url_util.h"
 #include "components/favicon/core/large_icon_service.h"
 #include "components/favicon_base/favicon_url_parser.h"
-#include "components/history_clusters/core/memories_features.h"
+#include "components/history_clusters/core/features.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/prefs/pref_service.h"
 #include "components/query_parser/snippet.h"
@@ -241,7 +241,7 @@ base::Value HistoryEntryToValue(
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
   SupervisedUserService* supervised_user_service = nullptr;
-  if (profile->IsSupervised()) {
+  if (profile->IsChild()) {
     supervised_user_service =
         SupervisedUserServiceFactory::GetForProfile(profile);
   }
@@ -351,7 +351,7 @@ void BrowsingHistoryHandler::StartQueryHistory() {
 
 void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   if (!initial_results_.is_none()) {
     ResolveJavascriptCallback(callback_id, std::move(initial_results_));
     initial_results_ = base::Value();
@@ -374,9 +374,9 @@ void BrowsingHistoryHandler::HandleQueryHistory(const base::ListValue* args) {
   // - the text to search for (may be empty)
   // - the maximum number of results to return (may be 0, meaning that there
   //   is no maximum).
-  const base::Value& search_text = args->GetList()[1];
+  const base::Value& search_text = args->GetListDeprecated()[1];
 
-  const base::Value& count = args->GetList()[2];
+  const base::Value& count = args->GetListDeprecated()[2];
   if (!count.is_int()) {
     NOTREACHED() << "Failed to convert argument 2.";
     return;
@@ -395,8 +395,8 @@ void BrowsingHistoryHandler::SendHistoryQuery(int max_count,
 
 void BrowsingHistoryHandler::HandleQueryHistoryContinuation(
     const base::ListValue* args) {
-  CHECK(args->GetList().size() == 1);
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK(args->GetListDeprecated().size() == 1);
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   // Cancel the previous query if it is still in flight.
   if (!query_history_callback_id_.empty()) {
     RejectJavascriptCallback(base::Value(query_history_callback_id_),
@@ -409,14 +409,14 @@ void BrowsingHistoryHandler::HandleQueryHistoryContinuation(
 }
 
 void BrowsingHistoryHandler::HandleRemoveVisits(const base::ListValue* args) {
-  CHECK(args->GetList().size() == 2);
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK(args->GetListDeprecated().size() == 2);
+  const base::Value& callback_id = args->GetListDeprecated()[0];
   CHECK(remove_visits_callback_.empty());
   remove_visits_callback_ = callback_id.GetString();
 
   std::vector<BrowsingHistoryService::HistoryEntry> items_to_remove;
-  const base::Value& items = args->GetList()[1];
-  base::Value::ConstListView list = items.GetList();
+  const base::Value& items = args->GetListDeprecated()[1];
+  base::Value::ConstListView list = items.GetListDeprecated();
   items_to_remove.reserve(list.size());
   for (size_t i = 0; i < list.size(); ++i) {
     // Each argument is a dictionary with properties "url" and "timestamps".
@@ -432,7 +432,7 @@ void BrowsingHistoryHandler::HandleRemoveVisits(const base::ListValue* args) {
       return;
     }
 
-    base::Value::ConstListView timestamps = timestamps_ptr->GetList();
+    base::Value::ConstListView timestamps = timestamps_ptr->GetListDeprecated();
     DCHECK_GT(timestamps.size(), 0U);
     BrowsingHistoryService::HistoryEntry entry;
     entry.url = GURL(*url_ptr);

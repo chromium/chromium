@@ -1,21 +1,26 @@
 <style include="cr-shared-style shimless-rma-shared">
+  #reworkFlowLink {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
 </style>
 
-<base-page orientation="column">
-  <div slot="header">
+<base-page>
+  <div slot="left-pane">
     <h1>[[i18n('selectComponentsTitleText')]]</h1>
-    <div>
+    <div class="instructions">
       <span inner-h-t-m-l="[[reworkFlowLinkText_]]"></span>
     </div>
   </div>
-  <div slot="body">
-    <div>
+  <div slot="right-pane">
+    <div class="component-grid repair">
       <template is="dom-repeat" items="{{componentCheckboxes_}}" as="component">
         <repair-component-chip id="[[component.id]]"
           checked="{{component.checked}}"
-          disabled$="[[component.disabled]]"
+          disabled$="[[isComponentDisabled_(component.disabled,
+              allButtonsDisabled)]]"
           component-name="[[component.name]]"
-          component-id="[[component.uniqueId]]">
+          component-identifier="[[component.identifier]]">
         </repair-component-chip>
       </template>
     </div>

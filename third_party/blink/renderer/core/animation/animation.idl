@@ -28,7 +28,7 @@
  * OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
  */
 
-// https://drafts.csswg.org/web-animations/#the-animation-interface
+// https://w3.org/TR/web-animations-1/#the-animation-interface
 
 enum AnimationPlayState { "idle", "pending", "running", "paused", "finished" };
 

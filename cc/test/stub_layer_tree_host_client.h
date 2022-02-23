@@ -42,7 +42,7 @@ class StubLayerTreeHostClient : public LayerTreeHostClient {
   void RequestNewLayerTreeFrameSink() override {}
   void DidInitializeLayerTreeFrameSink() override {}
   void DidFailToInitializeLayerTreeFrameSink() override {}
-  void WillCommit(CommitState*) override {}
+  void WillCommit(const CommitState&) override {}
   void DidCommit(base::TimeTicks, base::TimeTicks) override {}
   void DidCommitAndDrawFrame() override {}
   void DidObserveFirstScrollDelay(

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/auto_reset.h"
-#include "base/macros.h"
 
 namespace extensions {
 

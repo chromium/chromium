@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="pt-PT">
 <translation id="102360288709523007">Ajude a melhorar o Chromium ao enviar estatísticas de utilização e relatórios de falhas à Google.</translation>
+<translation id="1047130070405668746">Selecione o Chromium</translation>
+<translation id="1091252999271033193">Isto significa que o Chromium irá pedir sempre o site para dispositivos móveis.</translation>
 <translation id="1185134272377778587">Acerca do Chromium</translation>
 <translation id="1257458525759135959">Para guardar imagens, toque em Definições para permitir que o Chromium adicione as suas fotos.</translation>
 <translation id="1289216811211435351">Mude para o Chromium</translation>
@@ -13,16 +15,19 @@
 <translation id="1531155317299575425">Mostra pedidos para iniciar sessão no Chromium.</translation>
 <translation id="1584569488888892906">O Chromium é simples, seguro e está mais rápido do que nunca</translation>
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
+<translation id="1722370509450468186">A palavra-passe será guardada na sua Conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dados do Chromium apagados</translation>
 <translation id="1838412507805038478">O Chromium confirmou que a <ph name="ISSUER" /> emitiu o certificado deste Website.</translation>
 <translation id="1843424232666537147">O Chromium inclui funcionalidades que o ajudam a gerir os seus dados de Internet e a velocidade com que as páginas Web são carregadas.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Selecione o Chromium</translation>
 <translation id="2006345422933397527">O Chromium não conseguiu verificar se existem atualizações. Experimente verificar a sua ligação à Internet.</translation>
 <translation id="2054703085270098503">Proteja-se com o Chromium</translation>
 <translation id="2168108852149185974">Alguns suplementos provocam falhas no sistema do Chromium. Desinstale:</translation>
 <translation id="2178608107313874732">O Chromium não pode utilizar a câmara neste momento</translation>
 <translation id="2195025571279539885">Pretende que o Chromium se ofereça para traduzir as páginas em <ph name="LANGUAGE_NAME" /> deste site da próxima vez?</translation>
 <translation id="2218146227246548550">A sua organização requer que inicie sessão para utilizar o Chromium. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">Isto significa que o Chromium irá pedir sempre o site para computador.</translation>
 <translation id="2426113998523353159">A sua organização requer que inicie sessão para utilizar o Chromium.</translation>
 <translation id="2450140762465183767">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
 <translation id="2478931088402984578">Selecione o <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -40,7 +45,7 @@
 <translation id="3472200483164753384">Opção não suportada no Chromium Canary.</translation>
 <translation id="3639997914391704523">O Chromium pode verificar as suas palavras-passe quando inicia sessão com a sua Conta Google.</translation>
 <translation id="3805899903892079518">O Chromium não tem acesso aos seus vídeos ou fotos. Ative o acesso nas Definições do iOS &gt; Privacidade &gt; Fotos.</translation>
-<translation id="3946918322491238254">Ainda pode ver todos os seus marcadores, histórico, palavras-passe e outras definições neste dispositivo. Se efetuar alterações, estes não serão sincronizadas com a sua conta.</translation>
+<translation id="4043291146360695975">As palavras-passe são guardadas no Gestor de palavras-passe apenas neste dispositivo.</translation>
 <translation id="4099085513035183040">Opção não suportada no Chromium Beta.</translation>
 <translation id="4555020257205549924">Se esta funcionalidade estiver ativada, o Chromium oferecer-se-á para traduzir páginas escritas noutros idiomas com o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
@@ -73,17 +78,20 @@
 <translation id="6424492062988593837">O Chromium ficou ainda melhor! Está disponível uma nova versão.</translation>
 <translation id="6752854822223394465">A sua entidade está a configurar o Chromium…</translation>
 <translation id="6820823224820483452">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente amanhã.</translation>
+<translation id="7006920032187763988">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe noutras apps no seu iPad.</translation>
 <translation id="7018284295775193585">Não é possível atualizar o Chromium.</translation>
 <translation id="7045244423563602563">Personalize o Chromium</translation>
 <translation id="7099326575020694068">O Chromium não pode utilizar a câmara no modo Vista dividida</translation>
 <translation id="7108914401277488191">Faça mais com o Chromium</translation>
 <translation id="7118091470949186573">Agora, pode utilizar o Chromium sempre que tocar em links de mensagens, documentos e outras apps.</translation>
+<translation id="7175400662502680481">A sua palavra-passe foi exposta numa violação de dados. O Gestor de palavras-passe recomenda que a altere agora.</translation>
 <translation id="7208566199746267865">O Chromium poupa o seu tempo ao trazer as suas contas para a Web. Pode adicionar ou remover contas nas Definições.</translation>
 <translation id="725427773388857052">O Chromium pode ajudar a proteger contra violações de dados, Websites inseguros e muito mais.</translation>
 <translation id="7269362888766543920">Alguns suplementos provocam falhas no sistema do Chromium. Tente desinstalá-los.</translation>
 <translation id="7313655110045230863">Para definir o Chromium como o seu navegador predefinido, abra as Definições. Toque na app de navegador predefinida e, em seguida, selecione o Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Os dados selecionados foram removidos do Chromium e dos dispositivos sincronizados. A sua Conta Google pode ter outras formas do histórico de navegação, como pesquisas e atividade de outros serviços Google, em history.google.com.</translation>
+<translation id="7395825497086981028">A palavra-passe será guardada no Gestor de palavras-passe para <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Utilizar o Chromium em todas as plataformas</translation>
 <translation id="766897673682622022">A sua palavra-passe foi exposta numa violação de dados. O Chromium recomenda a alteração da palavra-passe agora.</translation>
 <translation id="7674213385180944843">Abra Definições &gt; Privacidade &gt; Câmara &gt; Chromium e ative a câmara.</translation>
@@ -98,11 +106,13 @@
 <translation id="8073677936375100957">Pretende limpar os dados do Chromium deste dispositivo?</translation>
 <translation id="8175055321229419309">Sugestão: <ph name="BEGIN_LINK" />mova o Chromium para a Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">O Chromium não conseguiu verificar se existem atualizações. Tente novamente mais tarde.</translation>
+<translation id="858114650497379505">Pode utilizar as palavras-passe que guardou no Gestor de palavras-passe noutras apps no seu iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Os autores do Chromium. Todos os direitos reservados.</translation>
 <translation id="8663480472502753423">Mantenha o Chromium atualizado.</translation>
 <translation id="8776843108004031667">Esta conta e quaisquer dados não guardados serão removidos do Chromium.</translation>
 <translation id="894437814105052438">Quando terminar sessão, o Chromium não irá sincronizar quaisquer dados novos com a sua Conta Google. Os dados anteriormente sincronizados mantêm-se na conta.</translation>
 <translation id="9022552996538154597">Iniciar sessão no Chromium</translation>
+<translation id="9059693977935746710">Não terá de memorizar esta palavra-passe. Será guardada no Gestor de palavras-passe de <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">O Chromium está desatualizado</translation>
 <translation id="9110075932708282655">Utilize o Chromium por predefinição</translation>
 <translation id="921174536258924340">O Chromium não conseguiu verificar todas as palavras-passe. Tente novamente amanhã ou <ph name="BEGIN_LINK" />verifique as palavras-passe na sua Conta Google<ph name="END_LINK" />.</translation>

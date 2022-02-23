@@ -87,21 +87,20 @@ ClearBrowsingDataHandler::ClearBrowsingDataHandler(content::WebUI* webui,
       sync_service_(SyncServiceFactory::GetForProfile(profile_)),
       show_history_deletion_dialog_(false) {}
 
-ClearBrowsingDataHandler::~ClearBrowsingDataHandler() {
-}
+ClearBrowsingDataHandler::~ClearBrowsingDataHandler() = default;
 
 void ClearBrowsingDataHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getInstalledApps",
       base::BindRepeating(
           &ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "clearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleClearBrowsingData,
                           base::Unretained(this)));
 
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "initializeClearBrowsingData",
       base::BindRepeating(&ClearBrowsingDataHandler::HandleInitialize,
                           base::Unretained(this)));
@@ -109,7 +108,7 @@ void ClearBrowsingDataHandler::RegisterMessages() {
 
 void ClearBrowsingDataHandler::OnJavascriptAllowed() {
   if (sync_service_)
-    sync_service_observation_.Observe(sync_service_);
+    sync_service_observation_.Observe(sync_service_.get());
 
   dse_service_observation_.Observe(
       TemplateURLServiceFactory::GetForProfile(profile_));
@@ -160,12 +159,11 @@ void ClearBrowsingDataHandler::HandleClearBrowsingDataForTest() {
   list_args.Append(std::move(data_types));
   list_args.Append(1);
   list_args.Append(std::move(installed_apps));
-  HandleClearBrowsingData(&base::Value::AsListValue(list_args));
+  HandleClearBrowsingData(list_args.GetListDeprecated());
 }
 
 void ClearBrowsingDataHandler::GetRecentlyLaunchedInstalledApps(
-    const base::ListValue* args) {
-  const auto& list = args->GetList();
+    base::Value::ConstListView list) {
   CHECK_EQ(2U, list.size());
   std::string webui_callback_id = list[0].GetString();
   int period_selected = list[1].GetInt();
@@ -184,24 +182,24 @@ void ClearBrowsingDataHandler::OnGotInstalledApps(
     const std::string& webui_callback_id,
     const std::vector<site_engagement::ImportantSitesUtil::ImportantDomainInfo>&
         installed_apps) {
-  base::ListValue installed_apps_list;
+  std::vector<base::Value> installed_apps_list;
   for (const auto& info : installed_apps) {
-    auto entry = std::make_unique<base::DictionaryValue>();
+    base::Value entry(base::Value::Type::DICTIONARY);
     // Used to get favicon in ClearBrowsingDataDialog and display URL next to
     // app name in the dialog.
-    entry->SetString(kRegisterableDomainField, info.registerable_domain);
+    entry.SetStringKey(kRegisterableDomainField, info.registerable_domain);
     // The |reason_bitfield| is only passed to Javascript to be logged
     // from |HandleClearBrowsingData|.
-    entry->SetInteger(kReasonBitfieldField, info.reason_bitfield);
+    entry.SetIntKey(kReasonBitfieldField, info.reason_bitfield);
     // Initially all sites are selected for deletion.
-    entry->SetBoolean(kIsCheckedField, true);
+    entry.SetBoolKey(kIsCheckedField, true);
     // User friendly name for the installed app.
     DCHECK(info.app_name);
-    entry->SetString(kAppName, info.app_name.value());
-    installed_apps_list.Append(std::move(entry));
+    entry.SetStringKey(kAppName, info.app_name.value());
+    installed_apps_list.push_back(std::move(entry));
   }
   ResolveJavascriptCallback(base::Value(webui_callback_id),
-                            installed_apps_list);
+                            base::Value(std::move(installed_apps_list)));
 }
 
 std::unique_ptr<content::BrowsingDataFilterBuilder>
@@ -214,8 +212,7 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
   for (const auto& item : installed_apps) {
     const base::DictionaryValue* site = nullptr;
     CHECK(item.GetAsDictionary(&site));
-    bool is_checked = false;
-    CHECK(site->GetBoolean(kIsCheckedField, &is_checked));
+    bool is_checked = site->FindBoolPath(kIsCheckedField).value();
     std::string domain;
     CHECK(site->GetString(kRegisterableDomainField, &domain));
     absl::optional<int> domain_reason = site->FindIntKey(kReasonBitfieldField);
@@ -243,13 +240,11 @@ ClearBrowsingDataHandler::ProcessInstalledApps(
 }
 
 void ClearBrowsingDataHandler::HandleClearBrowsingData(
-    const base::ListValue* args) {
-  base::Value::ConstListView args_list = args->GetList();
+    base::Value::ConstListView args_list) {
   CHECK_EQ(4U, args_list.size());
   std::string webui_callback_id = args_list[0].GetString();
 
   PrefService* prefs = profile_->GetPrefs();
-
   int site_data_mask = chrome_browsing_data_remover::DATA_TYPE_SITE_DATA;
   // Don't try to clear LSO data if it's not supported.
   if (!prefs->GetBoolean(prefs::kClearPluginLSODataEnabled))
@@ -260,7 +255,7 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
   std::vector<BrowsingDataType> data_type_vector;
 
   CHECK(args_list[1].is_list());
-  base::Value::ConstListView data_type_list = args_list[1].GetList();
+  base::Value::ConstListView data_type_list = args_list[1].GetListDeprecated();
   for (const base::Value& type : data_type_list) {
     const std::string pref_name = type.GetString();
     BrowsingDataType data_type =
@@ -359,7 +354,8 @@ void ClearBrowsingDataHandler::HandleClearBrowsingData(
 
   int period_selected = args_list[2].GetInt();
 
-  const base::Value::ConstListView installed_apps = args_list[3].GetList();
+  const base::Value::ConstListView installed_apps =
+      args_list[3].GetListDeprecated();
   std::unique_ptr<content::BrowsingDataFilterBuilder> filter_builder =
       ProcessInstalledApps(installed_apps);
 
@@ -417,9 +413,10 @@ void ClearBrowsingDataHandler::OnClearingTaskFinished(
   ResolveJavascriptCallback(base::Value(webui_callback_id), std::move(result));
 }
 
-void ClearBrowsingDataHandler::HandleInitialize(const base::ListValue* args) {
+void ClearBrowsingDataHandler::HandleInitialize(
+    base::Value::ConstListView args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
+  const base::Value& callback_id = args[0];
 
   // Needed because WebUI doesn't handle renderer crashes. See crbug.com/610450.
   weak_ptr_factory_.InvalidateWeakPtrs();
@@ -457,23 +454,21 @@ void ClearBrowsingDataHandler::UpdateSyncState() {
       browsing_data_counter_utils::ShouldShowCookieException(profile_));
 
   event.SetBoolKey("isNonGoogleDse", false);
-  if (base::FeatureList::IsEnabled(features::kSearchHistoryLink)) {
-    const TemplateURLService* template_url_service =
-        TemplateURLServiceFactory::GetForProfile(profile_);
-    const TemplateURL* dse = template_url_service->GetDefaultSearchProvider();
-    if (dse && dse->GetEngineType(template_url_service->search_terms_data()) !=
-                   SearchEngineType::SEARCH_ENGINE_GOOGLE) {
-      // Non-Google DSE. Prepopulated DSEs have an ID > 0.
-      event.SetBoolKey("isNonGoogleDse", true);
-      event.SetStringKey(
-          "nonGoogleSearchHistoryString",
-          (dse->prepopulate_id() > 0)
-              ? l10n_util::GetStringFUTF16(
-                    IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE,
-                    dse->short_name())
-              : l10n_util::GetStringUTF16(
-                    IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE));
-    }
+  const TemplateURLService* template_url_service =
+      TemplateURLServiceFactory::GetForProfile(profile_);
+  const TemplateURL* dse = template_url_service->GetDefaultSearchProvider();
+  if (dse && dse->GetEngineType(template_url_service->search_terms_data()) !=
+                 SearchEngineType::SEARCH_ENGINE_GOOGLE) {
+    // Non-Google DSE. Prepopulated DSEs have an ID > 0.
+    event.SetBoolKey("isNonGoogleDse", true);
+    event.SetStringKey(
+        "nonGoogleSearchHistoryString",
+        (dse->prepopulate_id() > 0)
+            ? l10n_util::GetStringFUTF16(
+                  IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_PREPOPULATED_DSE,
+                  dse->short_name())
+            : l10n_util::GetStringUTF16(
+                  IDS_SETTINGS_CLEAR_NON_GOOGLE_SEARCH_HISTORY_NON_PREPOPULATED_DSE));
   }
   FireWebUIListener("update-sync-state", event);
 }

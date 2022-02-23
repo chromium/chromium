@@ -8,26 +8,26 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Interface to get ULP data from GSM Core.
+ * Default implementation of language profile delegate.
  */
 public class LanguageProfileDelegateImpl implements LanguageProfileDelegate {
     /**
-     * @return True if ULP is currently available.
+     * @return True if ULP is currently supported.
      */
     @Override
-    public boolean isULPAvailable() {
-        // ULP is not available in the default implementation.
+    public boolean isULPSupported() {
+        // ULP is not supported in the default implementation.
         return false;
     }
 
     /**
-     * The default implementation always returns an empty list.
      * @param accountName Account to get profile or null if the default profile should be returned.
-     * @return A list of language preferences for |accountName|
+     * @param timeoutInSeconds Seconds to wait before timing out on call to device.
+     * @return A list of language tags ordered by preference for |accountName|
      */
     @Override
-    public List<LanguageProfileDelegate.LanguagePreference> getLanguagePreferences(
-            String accountName) {
-        return new ArrayList<LanguageProfileDelegate.LanguagePreference>();
+    public List<String> getLanguagePreferences(String accountName, int timeoutInSeconds) {
+        // The default implementation always returns an empty list.
+        return new ArrayList<String>();
     }
 }

@@ -65,6 +65,13 @@ public class SettingsIntentHelper {
         return createIntentWithExtras(context, extras);
     }
 
+    public static Intent createIntentForAccessibilitySettings(
+            Context context, String profileName, boolean isIncognito) {
+        Bundle extras = createSettingsExtras(profileName, isIncognito);
+        extras.putString(SettingsFragmentArgs.FRAGMENT_NAME, SettingsFragmentArgs.ACCESSIBILITY);
+        return createIntentWithExtras(context, extras);
+    }
+
     private static Intent createIntentWithExtras(Context context, Bundle extras) {
         Intent intent = new Intent();
         intent.setClassName(context, SettingsFragmentArgs.ACTIVITY_CLASS_NAME);

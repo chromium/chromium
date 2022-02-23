@@ -8,7 +8,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/debug/activity_tracker.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/platform_thread.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,7 +48,7 @@ class BasicLockTestThread : public PlatformThread::Delegate {
   int acquired() const { return acquired_; }
 
  private:
-  Lock* lock_;
+  raw_ptr<Lock> lock_;
   int acquired_;
 };
 
@@ -112,7 +112,7 @@ class TryLockTestThread : public PlatformThread::Delegate {
   bool got_lock() const { return got_lock_; }
 
  private:
-  Lock* lock_;
+  raw_ptr<Lock> lock_;
   bool got_lock_;
 };
 
@@ -219,8 +219,8 @@ class MutexLockTestThread : public PlatformThread::Delegate {
   void ThreadMain() override { DoStuff(lock_, value_); }
 
  private:
-  Lock* lock_;
-  int* value_;
+  raw_ptr<Lock> lock_;
+  raw_ptr<int> value_;
 };
 
 TEST(LockTest, MutexTwoThreads) {

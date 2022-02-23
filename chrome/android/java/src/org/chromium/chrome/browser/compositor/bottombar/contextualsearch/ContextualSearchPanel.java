@@ -72,15 +72,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         void onPromoOptOut();
     }
 
-    /** The interface that the help section uses to communicate with this Panel. */
-    interface ContextualSearchHelpSectionHost extends ContextualSearchPanelSectionHost {
-        /** Returns whether the help section of the panel is enabled for the current user. */
-        boolean isPanelHelpEnabled();
-
-        /** Notifies that the user has clicked the OK button in the help section of the panel. */
-        void onPanelHelpOkClicked();
-    }
-
     /** The interface that the Related Searches section uses to communicate with this Panel. */
     interface RelatedSearchesSectionHost extends ContextualSearchPanelSectionHost {
         /**
@@ -206,7 +197,7 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
             RectF viewport, RectF visibleViewport, ResourceManager resourceManager, float yOffset) {
         super.getUpdatedSceneOverlayTree(viewport, visibleViewport, resourceManager, yOffset);
         mSceneLayer.update(resourceManager, this, getSearchBarControl(), getBarBannerControl(),
-                getPromoControl(), getPanelHelp(), getRelatedSearchesInBarControl(),
+                getPromoControl(), getRelatedSearchesInBarControl(),
                 getRelatedSearchesInContentControl(), getImageControl());
 
         return mSceneLayer;
@@ -395,7 +386,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     protected void destroyComponents() {
         super.destroyComponents();
         destroyPromoControl();
-        destroyPanelHelp();
         destroyInBarRelatedSearchesControl();
         destroyInContentRelatedSearchesControl();
         destroyBarBannerControl();
@@ -451,8 +441,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
     @Override
     public float getContentY() {
-        return getOffsetY() + getBarContainerHeight() + getPanelHelpHeight()
-                + getRelatedSearchesHeightDps(false) + getPromoHeightPx() * mPxToDp;
+        return getOffsetY() + getBarContainerHeight() + getRelatedSearchesHeightDps(false)
+                + getPromoHeightPx() * mPxToDp;
     }
 
     @Override
@@ -531,15 +521,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         }
 
         mPanelMetrics.setIsPromoActive(isActive);
-    }
-
-    @Override
-    public void setIsPanelHelpActive(boolean isActive) {
-        if (isActive) {
-            getPanelHelp().show();
-        } else {
-            getPanelHelp().hide();
-        }
     }
 
     @Override
@@ -704,9 +685,15 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     /** Ensures that we have a Caption to display in the SearchBar. */
     @Override
     public void ensureCaption() {
-        if (getSearchBarControl().getCaptionVisible()) return;
+        if (getSearchBarControl().hasCaption()) return;
         getSearchBarControl().setCaption(
                 mContext.getResources().getString(R.string.contextual_search_default_caption));
+    }
+
+    /** Hides the caption. */
+    @Override
+    public void hideCaption() {
+        getSearchBarControl().hideCaption();
     }
 
     /**
@@ -852,7 +839,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.updatePanelForCloseOrPeek(percentage);
 
         getPromoControl().onUpdateFromCloseToPeek(percentage);
-        getPanelHelp().onUpdateFromCloseToPeek(percentage);
         getRelatedSearchesInBarControl().onUpdateFromCloseToPeek(percentage);
         getRelatedSearchesInContentControl().onUpdateFromCloseToPeek(percentage);
         getBarBannerControl().onUpdateFromCloseToPeek(percentage);
@@ -864,7 +850,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.updatePanelForExpansion(percentage);
 
         getPromoControl().onUpdateFromPeekToExpand(percentage);
-        getPanelHelp().onUpdateFromPeekToExpand(percentage);
         getRelatedSearchesInBarControl().onUpdateFromPeekToExpand(percentage);
         getRelatedSearchesInContentControl().onUpdateFromPeekToExpand(percentage);
         getBarBannerControl().onUpdateFromPeekToExpand(percentage);
@@ -876,19 +861,16 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         super.updatePanelForMaximization(percentage);
 
         getPromoControl().onUpdateFromExpandToMaximize(percentage);
-        getPanelHelp().onUpdateFromExpandToMaximize(percentage);
         getRelatedSearchesInBarControl().onUpdateFromExpandToMaximize(percentage);
         getRelatedSearchesInContentControl().onUpdateFromExpandToMaximize(percentage);
         getBarBannerControl().onUpdateFromExpandToMaximize(percentage);
+        getSearchBarControl().onUpdateFromExpandToMaximize(percentage);
     }
 
     @Override
     protected void updatePanelForSizeChange() {
         if (getPromoControl().isVisible()) {
             getPromoControl().invalidate(true);
-        }
-        if (getPanelHelp().isVisible()) {
-            getPanelHelp().invalidate(true);
         }
         if (getRelatedSearchesInBarControl().isVisible()) {
             getRelatedSearchesInBarControl().invalidate(true);
@@ -908,8 +890,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
         updateBasePageTargetY();
 
         super.updatePanelForSizeChange();
-
-        mManagementDelegate.onPanelResized();
     }
 
     @Override
@@ -1104,9 +1084,8 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                 @Override
                 public float getYPositionPx() {
                     // Needs to enumerate anything that can appear above it in the panel.
-                    return Math.round(
-                            (getOffsetY() + getBarContainerHeight()
-                                    + getRelatedSearchesHeightDps(false) + getPanelHelpHeight())
+                    return Math.round((getOffsetY() + getBarContainerHeight()
+                                              + getRelatedSearchesHeightDps(false))
                             / mPxToDp);
                 }
 
@@ -1122,7 +1101,6 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
                         getOverlayPanelContent().showContent();
                         expandPanel(StateChangeReason.OPTIN);
                     }
-                    mManagementDelegate.onPromoOptIn();
                 }
 
                 @Override
@@ -1139,72 +1117,15 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
     }
 
     // ============================================================================================
-    // In-Panel Help
+    // The Delayed Intelligence Feature support
     // ============================================================================================
 
-    /** The Help section of the Panel. */
-    private ContextualSearchPanelHelp mPanelHelp;
-    private ContextualSearchHelpSectionHost mHelpSectionHost;
-
     /**
-     * Returns the {@link ContextualSearchPanelHelp} that controls the help section of this
-     * panel.
+     * Returns whether the Delayed Intelligence Feature is currently active for the current user.
+     * A user must be in the undecided privacy state for Delayed Intelligence to take affect.
      */
-    private ContextualSearchPanelHelp getPanelHelp() {
-        if (mPanelHelp == null) {
-            mPanelHelp = new ContextualSearchPanelHelp(this, getContextualSearchHelpSectionHost(),
-                    mContext, mContainerView, mResourceLoader);
-        }
-        return mPanelHelp;
-    }
-
-    /**
-     * @return Height of the help section of the panel in DPs.
-     */
-    private float getPanelHelpHeight() {
-        return getPanelHelp().getHeightPx() * mPxToDp;
-    }
-
-    /** Destroys the Help section of this panel. */
-    private void destroyPanelHelp() {
-        mPanelHelp.destroy();
-        mPanelHelp = null;
-    }
-
-    /**
-     * @return An implementation of {@link ContextualSearchHelpSectionHost}.
-     */
-    private ContextualSearchHelpSectionHost getContextualSearchHelpSectionHost() {
-        if (mHelpSectionHost == null) {
-            mHelpSectionHost = new ContextualSearchHelpSectionHost() {
-                @Override
-                public float getYPositionPx() {
-                    // Needs to enumerate anything that can appear above it in the panel.
-                    return Math.round((getOffsetY() + getBarContainerHeight()
-                                              + getRelatedSearchesHeightDps(false))
-                            / mPxToDp);
-                }
-
-                @Override
-                public void onPanelSectionSizeChange(boolean hasStarted) {
-                    // The help section is causing movement which means the promo below
-                    // it will move.
-                    getPromoControl().onUpdateForMovement(hasStarted);
-                }
-
-                @Override
-                public boolean isPanelHelpEnabled() {
-                    return mManagementDelegate.isPanelHelpEnabled();
-                }
-
-                @Override
-                public void onPanelHelpOkClicked() {
-                    // Tell the manager the user said OK.
-                    mManagementDelegate.onPanelHelpOkClicked();
-                }
-            };
-        }
-        return mHelpSectionHost;
+    boolean isDelayedIntelligenceActive() {
+        return mManagementDelegate.isDelayedIntelligenceActive();
     }
 
     // ============================================================================================
@@ -1423,5 +1344,21 @@ public class ContextualSearchPanel extends OverlayPanel implements ContextualSea
 
         // Simulate the tap.
         handleClick(xPosition, yPosition);
+    }
+
+    /**
+     * Updates the panel as if a transition from one state to the given state has just been
+     * completed. The caller should first set the panel to the supplied "to" state. This method just
+     * makes the panel notify its subcomponents that the transition has been completed.
+     * @param panelState The "to" state that has just been completed by the test.
+     */
+    @VisibleForTesting
+    public void updatePanelToStateForTest(@PanelState int panelState) {
+        // Use a switch to just support the implemented state(s) and fail if others are attempted.
+        switch (panelState) {
+            case PanelState.EXPANDED:
+                updatePanelForExpansion(1.0f);
+                break;
+        }
     }
 }

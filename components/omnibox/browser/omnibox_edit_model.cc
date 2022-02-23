@@ -16,6 +16,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
@@ -62,7 +63,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/url_util.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/vector_icon_types.h"
@@ -75,6 +76,21 @@ using metrics::OmniboxEventProto;
 // Helpers --------------------------------------------------------------------
 
 namespace {
+
+// The possible histogram values emitted when escape is pressed.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OmniboxEscapeAction {
+  // `kNone` doesn't mean escape did nothing (e.g. it could have stopped a
+  // navigation), just that it did not affect the omnibox state.
+  kNone = 0,
+  kRevertTemporaryText = 1,
+  kClosePopup = 2,
+  kClearUserInput = 3,
+  kClosePopupAndClearUserInput = 4,
+  kBlur = 5,
+  kMaxValue = kBlur,
+};
 
 const char kOmniboxFocusResultedInNavigation[] =
     "Omnibox.FocusResultedInNavigation";
@@ -93,6 +109,10 @@ const char kFocusToEditTimeHistogram[] = "Omnibox.FocusToEditTime";
 // between focusing and opening an omnibox match.
 const char kFocusToOpenTimeHistogram[] =
     "Omnibox.FocusToOpenTimeAnyPopupState3";
+
+// Histogram name which counts the number of times the user completes a search
+// in keyword mode, enumerated by how they enter keyword mode.
+const char kAcceptedKeywordSuggestion[] = "Omnibox.AcceptedKeywordSuggestion";
 
 void EmitKeywordHistogram(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
@@ -284,7 +304,7 @@ bool OmniboxEditModel::ResetDisplayTexts() {
   LocationBarModel* location_bar_model = controller()->GetLocationBarModel();
   url_for_editing_ = location_bar_model->GetFormattedFullURL();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // iOS is unusual in that it uses a separate LocationView to show the
   // LocationBarModel's display-only URL. The actual OmniboxViewIOS widget is
   // hidden in the defocused state, and always contains the URL for editing.
@@ -446,10 +466,11 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
 
   // Infer the correct scheme for the copied text, and prepend it if necessary.
   {
-    std::u16string http = base::ASCIIToUTF16(url::kHttpScheme) +
-                          base::ASCIIToUTF16(url::kStandardSchemeSeparator);
-    std::u16string https = base::ASCIIToUTF16(url::kHttpsScheme) +
-                           base::ASCIIToUTF16(url::kStandardSchemeSeparator);
+    const std::u16string http =
+        base::StrCat({url::kHttpScheme16, url::kStandardSchemeSeparator16});
+    const std::u16string https =
+        base::StrCat({url::kHttpsScheme16, url::kStandardSchemeSeparator16});
+
     const std::u16string& current_page_url_prefix =
         current_page_url.SchemeIs(url::kHttpScheme) ? http : https;
 
@@ -895,6 +916,9 @@ void OmniboxEditModel::OpenMatch(AutocompleteMatch match,
       }
 
       base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
+      UMA_HISTOGRAM_ENUMERATION(
+          kAcceptedKeywordSuggestion, keyword_mode_entry_method_,
+          static_cast<int>(OmniboxEventProto::KeywordModeEntryMethod_MAX + 1));
       client_->GetTemplateURLService()->IncrementUsageCount(template_url);
     } else {
       DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
@@ -995,16 +1019,14 @@ bool OmniboxEditModel::AcceptKeyword(
     StartAutocomplete(false, true);
   }
 
-  // When entering keyword mode via tab (or if keyword search button is enabled,
-  // when the user text is empty), the new text to show is whatever the
-  // newly-selected match in the dropdown is.  When entering via space (or, if
-  // keyword button is enabled, when user text is not empty), however, we should
-  // make sure to use the actual |user_text_| as the basis for the new
-  // text.  This ensures that if the user types "<keyword><space>" and the
-  // default match would have inline autocompleted a further string (e.g.
-  // because there's a past multi-word search beginning with this keyword), the
-  // inline autocompletion doesn't get filled in as the keyword search query
-  // text.
+  // When user text is empty (the user hasn't typed anything beyond the
+  // keyword), the new text to show is whatever the newly-selected match in the
+  // dropdown is.  When user text is not empty, however, we should make sure to
+  // use the actual |user_text_| as the basis for the new text.  This ensures
+  // that if the user types "<keyword><space>" and the default match would have
+  // inline autocompleted a further string (e.g. because there's a past
+  // multi-word search beginning with this keyword), the inline autocompletion
+  // doesn't get filled in as the keyword search query text.
   //
   // We also treat tabbing into keyword mode like tabbing through the popup in
   // that we set |has_temporary_text_|, whereas pressing space is treated like
@@ -1015,11 +1037,7 @@ bool OmniboxEditModel::AcceptKeyword(
   // which we don't want to switch back to when exiting keyword mode; see
   // comments in ClearKeyword().
   const AutocompleteMatch& match = CurrentMatch(nullptr);
-  const bool can_overwrite_user_text =
-      OmniboxFieldTrial::IsKeywordSearchButtonEnabled()
-          ? user_text_.empty()
-          : entry_method == OmniboxEventProto::TAB;
-  if (can_overwrite_user_text) {
+  if (user_text_.empty()) {
     // Ensure the current selection is saved before showing keyword mode
     // so that moving to another line and then reverting the text will restore
     // the current state properly.
@@ -1028,9 +1046,7 @@ bool OmniboxEditModel::AcceptKeyword(
   } else {
     view_->OnTemporaryTextMaybeChanged(user_text_, match, !has_temporary_text_,
                                        true);
-    if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-      view_->UpdatePopup();
-    }
+    view_->UpdatePopup();
   }
 
   base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));
@@ -1193,9 +1209,10 @@ void OmniboxEditModel::StartZeroSuggestRequest(
 
   // Send the textfield contents exactly as-is, as otherwise the verbatim
   // match can be wrong. The full page URL is anyways in set_current_url().
+  // Don't attempt to use https as the default scheme for these requests.
   input_ = AutocompleteInput(view_->GetText(), GetPageClassification(),
                              client_->GetSchemeClassifier(),
-                             client_->ShouldDefaultTypedNavigationsToHttps(),
+                             /*should_use_https_as_default_scheme=*/false,
                              client_->GetHttpsPortForTesting());
   input_.set_current_url(client_->GetURL());
   input_.set_current_title(client_->GetTitle());
@@ -1231,7 +1248,7 @@ void OmniboxEditModel::OnKillFocus() {
   last_omnibox_focus_ = base::TimeTicks();
   paste_state_ = NONE;
   control_key_state_ = UP;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   view_->HideImeIfNeeded();
 #endif
 }
@@ -1241,7 +1258,13 @@ bool OmniboxEditModel::WillHandleEscapeKey() const {
 }
 
 bool OmniboxEditModel::OnEscapeKeyPressed() {
+  const char* kOmniboxEscapeHistogramName = "Omnibox.Escape";
+
+  // If there is temporary text (i.e. a non default suggestion is selected),
+  // revert it.
   if (has_temporary_text_) {
+    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
+                                  OmniboxEscapeAction::kRevertTemporaryText);
     RevertTemporaryTextAndPopup();
     return true;
   }
@@ -1254,21 +1277,51 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
     view_->Update();
   }
 
+  // Close the popup if it's open.
+  if (base::FeatureList::IsEnabled(omnibox::kClosePopupWithEscape) &&
+      PopupIsOpen()) {
+    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
+                                  OmniboxEscapeAction::kClosePopup);
+    view_->CloseOmniboxPopup();
+    return true;
+  }
+
   // Unconditionally revert/select all.  This ensures any popup, whether due to
   // normal editing or ZeroSuggest, is closed, and the full text is selected.
   // This in turn allows the user to use escape to quickly select all the text
   // for ease of replacement, and matches other browsers.
   bool user_input_was_in_progress = user_input_in_progress_;
+  bool popup_was_open = PopupIsOpen();
   view_->RevertAll();
   view_->SelectAll(true);
+  if (user_input_was_in_progress) {
+    base::UmaHistogramEnumeration(
+        kOmniboxEscapeHistogramName,
+        popup_was_open ? OmniboxEscapeAction::kClosePopupAndClearUserInput
+                       : OmniboxEscapeAction::kClearUserInput);
+    // If the user was in the midst of editing, don't cancel any underlying page
+    // load.  This doesn't match IE or Firefox, but seems more correct.  Note
+    // that we do allow the page load to be stopped in the case where
+    // ZeroSuggest was visible; this is so that it's still possible to focus the
+    // address bar and hit escape once to stop a load even if the address being
+    // loaded triggers the ZeroSuggest popup.
+    return true;
+  }
 
-  // If the user was in the midst of editing, don't cancel any underlying page
-  // load.  This doesn't match IE or Firefox, but seems more correct.  Note that
-  // we do allow the page load to be stopped in the case where ZeroSuggest was
-  // visible; this is so that it's still possible to focus the address bar and
-  // hit escape once to stop a load even if the address being loaded triggers
-  // the ZeroSuggest popup.
-  return user_input_was_in_progress;
+  DCHECK(!popup_was_open);
+
+  // Blur the omnibox and focus the web contents.
+  if (base::FeatureList::IsEnabled(omnibox::kBlurWithEscape)) {
+    base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
+                                  OmniboxEscapeAction::kBlur);
+    client_->FocusWebContents();
+    return true;
+  }
+
+  base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
+                                OmniboxEscapeAction::kNone);
+
+  return false;
 }
 
 void OmniboxEditModel::OnControlKeyChanged(bool pressed) {
@@ -1608,10 +1661,6 @@ void OmniboxEditModel::OnCurrentMatchChanged() {
                      is_keyword_hint, additional_text);
 }
 
-// static
-const char OmniboxEditModel::kCutOrCopyAllTextHistogram[] =
-    "Omnibox.CutOrCopyAllText";
-
 void OmniboxEditModel::SetAccessibilityLabel(const AutocompleteMatch& match) {
   view_->SetAccessibilityLabel(view_->GetText(), match, true);
 }
@@ -1716,7 +1765,7 @@ bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
 }
 
 // Android and iOS have their own platform-specific icon logic.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
                                           SkColor vector_icon_color) {
   gfx::Image extension_icon = client()->GetIconIfExtensionMatch(match);
@@ -1751,7 +1800,7 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
 
   return client()->GetSizedIcon(vector_icon_type, vector_icon_color);
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 bool OmniboxEditModel::PopupIsOpen() const {
   return popup_view_ && popup_view_->IsOpen();
@@ -2117,9 +2166,11 @@ PrefService* OmniboxEditModel::GetPrefService() const {
 }
 
 bool OmniboxEditModel::AllowKeywordSpaceTriggering() const {
-  return !base::FeatureList::IsEnabled(
-             omnibox::kKeywordSpaceTriggeringSetting) ||
-         GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
+  return GetPrefService()->GetBoolean(omnibox::kKeywordSpaceTriggeringEnabled);
+#else
+  return true;
+#endif
 }
 
 bool OmniboxEditModel::MaybeAcceptKeywordBySpace(

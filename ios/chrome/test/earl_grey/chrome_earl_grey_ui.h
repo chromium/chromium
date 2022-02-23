@@ -37,6 +37,10 @@
 // calling this method.
 - (void)openToolsMenu;
 
+// Closes the tools menu by tapping on the Tools menu button, or tapping the
+// background scrim, depending on the current version of the tools menu.
+- (void)closeToolsMenu;
+
 // Makes the toolbar visible by swiping downward, if necessary. Then taps on
 // the Tools menu button. At least one tab needs to be open and visible when
 // calling this method.
@@ -54,10 +58,20 @@
 // Sets and Leaves the root matcher to the given window with |windowNumber|.
 - (void)openSettingsMenuInWindowWithNumber:(int)windowNumber;
 
+// Makes the toolbar visible by swiping downward, if necessary. Then long-
+// presses on the New Tab menu button. At least one tab needs to be open and
+// visible when calling this method.
+- (void)openNewTabMenu;
+
 // Scrolls to find the button in the Tools menu with the corresponding
 // |buttonMatcher|, and then taps it. If |buttonMatcher| is not found, or
 // the Tools menu is not open when this is called there will be a GREYAssert.
 - (void)tapToolsMenuButton:(id<GREYMatcher>)buttonMatcher;
+
+// Scrolls to find the action in the Tools menu with the corresponding
+// |buttonMatcher|, and then taps it. If |buttonMatcher| is not found, or
+// the Tools menu is not open when this is called there will be a GREYAssert.
+- (void)tapToolsMenuAction:(id<GREYMatcher>)buttonMatcher;
 
 // Scrolls to find the button in the Settings menu with the corresponding
 // |buttonMatcher|, and then taps it. If |buttonMatcher| is not found, or

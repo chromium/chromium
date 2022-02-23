@@ -72,7 +72,7 @@ public class TabSuggestionMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS = "force-fieldtrial-params="
             + "Study.Group:baseline_tab_suggestions/true/enable_launch_polish/true"
-            + "/min_time_between_prefetches/0/thumbnail_aspect_ratio/1.0";
+            + "/min_time_between_prefetches/0";
     private static final String ENABLE_CLOSE_SUGGESTION_PARAM =
             "/baseline_close_tab_suggestions/true";
     private static final String ENABLE_GROUP_SUGGESTION_PARAM =
@@ -182,6 +182,7 @@ public class TabSuggestionMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + ENABLE_CLOSE_SUGGESTION_PARAM})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1280257")
     public void closeTabSuggestionReviewedAndDismissed() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 
@@ -195,6 +196,7 @@ public class TabSuggestionMessageCardTest {
     @Test
     @MediumTest
     @CommandLineFlags.Add({BASE_PARAMS + ENABLE_GROUP_SUGGESTION_PARAM})
+    @DisableIf.Build(sdk_is_less_than = VERSION_CODES.N, message = "https://crbug.com/1273142")
     public void groupTabSuggestionReviewedAndAccepted() {
         CriteriaHelper.pollUiThread(TabSuggestionMessageService::isSuggestionAvailableForTesting);
 

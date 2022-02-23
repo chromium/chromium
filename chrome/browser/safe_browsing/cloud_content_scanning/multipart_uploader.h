@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/safe_browsing/cloud_content_scanning/multipart_data_pipe_getter.h"
@@ -36,8 +37,8 @@ class MultipartUploadRequest {
   using Callback = base::OnceCallback<
       void(bool success, int http_status, const std::string& response_data)>;
 
-  // Creates a MultipartUploadRequest, which will upload |data| to the given
-  // |base_url| with |metadata| attached.
+  // Creates a MultipartUploadRequest, which will upload `data` to the given
+  // `base_url` with `metadata` attached.
   MultipartUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
@@ -46,13 +47,23 @@ class MultipartUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
-  // Creates a MultipartUploadRequest, which will upload |data| to the given
-  // |base_url| with |metadata| attached.
+  // Creates a MultipartUploadRequest, which will upload the file corresponding
+  // to `path` to the given `base_url` with `metadata` attached.
   MultipartUploadRequest(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const GURL& base_url,
       const std::string& metadata,
-      const base::FilePath& file,
+      const base::FilePath& path,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      Callback callback);
+
+  // Creates a MultipartUploadRequest, which will upload the page in
+  // `page_region` to the given `base_url` with `metadata` attached.
+  MultipartUploadRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       Callback callback);
 
@@ -64,10 +75,10 @@ class MultipartUploadRequest {
   virtual ~MultipartUploadRequest();
 
   // Start the upload. This must be called on the UI thread. When complete, this
-  // will call |callback_| on the UI thread.
+  // will call `callback_` on the UI thread.
   virtual void Start();
 
-  // Makes the passed |factory| the factory used to instantiate a
+  // Makes the passed `factory` the factory used to instantiate a
   // MultipartUploadRequest. Useful for tests.
   static void RegisterFactoryForTests(MultipartUploadRequestFactory* factory) {
     factory_ = factory;
@@ -89,8 +100,16 @@ class MultipartUploadRequest {
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback);
 
-  MultipartDataPipeGetter* file_data_pipe_getter_for_testing() {
-    return file_data_pipe_getter_.get();
+  static std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      base::ReadOnlySharedMemoryRegion page_region,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      MultipartUploadRequest::Callback callback);
+
+  MultipartDataPipeGetter* data_pipe_getter_for_testing() {
+    return data_pipe_getter_.get();
   }
 
  private:
@@ -102,9 +121,9 @@ class MultipartUploadRequest {
                            EmitsUploadSuccessHistogram);
   FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest,
                            EmitsRetriesNeededHistogram);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest, FileRetries);
-  FRIEND_TEST_ALL_PREFIXES(MultipartUploadRequestTest,
-                           FileAndStringRequestsEquivalent);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest, Retries);
+  FRIEND_TEST_ALL_PREFIXES(MultipartUploadDataPipeRequestTest,
+                           EquivalentToStringRequest);
 
   // Set the boundary between parts.
   void set_boundary(const std::string& boundary) { boundary_ = boundary; }
@@ -125,16 +144,16 @@ class MultipartUploadRequest {
   virtual void SendRequest();
   void SendStringRequest(std::unique_ptr<network::ResourceRequest> request);
   void SendFileRequest(std::unique_ptr<network::ResourceRequest> request);
+  void SendPageRequest(std::unique_ptr<network::ResourceRequest> request);
 
-  // Called by SendStringRequest after |file_data_pipe_getter_| has been
-  // initialized.
-  void FileDataPipeCreatedCallback(
+  // Called after `data_pipe_getter_` has been initialized.
+  void DataPipeCreatedCallback(
       std::unique_ptr<network::ResourceRequest> request,
-      std::unique_ptr<MultipartDataPipeGetter> file_data_pipe_getter);
+      std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter);
 
-  // Called by SendFileRequest after |file_data_pipe_getter_| is known to be
-  // initialized to a correct state.
-  virtual void CompleteSendFileRequest(
+  // Called by SendFileRequest and SendPageRequest after `data_pipe_getter_`
+  // is known to be initialized to a correct state.
+  virtual void CompleteSendRequest(
       std::unique_ptr<network::ResourceRequest> request);
 
   static MultipartUploadRequestFactory* factory_;
@@ -142,12 +161,21 @@ class MultipartUploadRequest {
   GURL base_url_;
   std::string metadata_;
 
-  // |data_| is populated for string requests, while |path_| and
-  // |file_data_pipe_getter_| are populated for file requests. Only one of these
-  // variable sets should be populated for a single request.
+  // Indicates what the source of the data to upload is.
+  const enum { STRING = 0, FILE = 1, PAGE = 2 } data_source_;
+
+  // String of content to upload. Only populated for STRING requests.
   std::string data_;
+
+  // Path to read the file to upload. Only populated for FILE requests.
   base::FilePath path_;
-  std::unique_ptr<MultipartDataPipeGetter> file_data_pipe_getter_;
+
+  // Memory to upload. Only populated for PAGE requests.
+  base::ReadOnlySharedMemoryRegion page_region_;
+
+  // Data pipe getter used to stream a file or a page. Only populated for the
+  // corresponding requests.
+  std::unique_ptr<MultipartDataPipeGetter> data_pipe_getter_;
 
   std::string boundary_;
   Callback callback_;
@@ -179,6 +207,13 @@ class MultipartUploadRequestFactory {
       const GURL& base_url,
       const std::string& metadata,
       const base::FilePath& path,
+      const net::NetworkTrafficAnnotationTag& traffic_annotation,
+      MultipartUploadRequest::Callback callback) = 0;
+  virtual std::unique_ptr<MultipartUploadRequest> CreatePageRequest(
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const GURL& base_url,
+      const std::string& metadata,
+      base::ReadOnlySharedMemoryRegion page_region,
       const net::NetworkTrafficAnnotationTag& traffic_annotation,
       MultipartUploadRequest::Callback callback) = 0;
 };

@@ -168,11 +168,11 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 
   // Create three more tabs plus the existing one that browser tests start with.
   const GURL about_blank(url::kAboutBlankURL);
-  AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->GetActiveWebContents()->Focus();
-  AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->GetActiveWebContents()->Focus();
-  AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, about_blank, ui::PAGE_TRANSITION_TYPED));
   browser()->tab_strip_model()->GetActiveWebContents()->Focus();
 
   // Toggle fullscreen mode.
@@ -356,7 +356,8 @@ IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest,
 IN_PROC_BROWSER_TEST_P(ImmersiveModeBrowserViewTest, TabAndBrowserFullscreen) {
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser());
 
-  AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(
+      AddTabAtIndex(0, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_TYPED));
 
   // The shelf should start out as visible.
   EXPECT_TRUE(IsShelfVisible());

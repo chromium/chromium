@@ -11,17 +11,6 @@
   </outputs>
   <release seq="1">
     <structures fallback_to_low_resolution="true">
-      <!-- Badge for Chrome Apps if Arc is enabled. -->
-      <structure type="chrome_scaled_image" name="IDR_CHROME_ICON_BADGE" file="badges/chrome-icon-badge.png" />
-      <!-- Badge for disabled apps. -->
-      <structure type="chrome_scaled_image" name="IDR_BLOCK_ICON_BADGE" file="badges/block-icon-badge.png" />
-      <!-- Badge for apps that used their daily time limit. -->
-      <structure type="chrome_scaled_image" name="IDR_HOURGLASS_ICON_BADGE" file="badges/hourglass-icon-badge.png" />
-      <!-- Mask for standard icons. -->
-      <structure type="chrome_scaled_image" name="IDR_ICON_MASK" file="mask/mask.png" />
-
-      <structure type="chrome_scaled_image" name="IDR_ICON_BADGE_MASK" file="mask/badge-mask.png" />
-
       <!-- Default user profile images. -->
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER" file="default_user_images/avatar_anonymous.png" />
       <structure type="chrome_scaled_image" name="IDR_LOGIN_DEFAULT_USER_1" file="default_user_images/avatar_bee.png" />
@@ -131,9 +120,6 @@
 
       <!-- Assistant images. -->
       <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ANIMATION" file="vector/voice_laptop.json" compress="gzip" />
-      <structure type="chrome_html" name="IDR_ASSISTANT_VOICE_MATCH_ALREADY_SETUP_ANIMATION" file="vector/connecting_loop.json" compress="gzip" />
-
-      <structure type="chrome_html" name="IDR_LOGIN_WELCOME_SCREEN_ANIMATION" file="vector/welcome_screen_animation.json" compress="gzip" />
     </structures>
   </release>
 </grit>

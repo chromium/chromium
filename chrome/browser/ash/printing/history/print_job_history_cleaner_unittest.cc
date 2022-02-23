@@ -12,8 +12,8 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/test_print_job_database.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -22,7 +22,7 @@ namespace ash {
 
 namespace {
 
-using ::chromeos::printing::proto::PrintJobInfo;
+using printing::proto::PrintJobInfo;
 
 constexpr char kId1[] = "id1";
 constexpr char kId2[] = "id2";

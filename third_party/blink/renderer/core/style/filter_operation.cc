@@ -40,7 +40,7 @@ void ReferenceFilterOperation::Trace(Visitor* visitor) const {
   FilterOperation::Trace(visitor);
 }
 
-FloatRect ReferenceFilterOperation::MapRect(const FloatRect& rect) const {
+gfx::RectF ReferenceFilterOperation::MapRect(const gfx::RectF& rect) const {
   const auto* last_effect = filter_ ? filter_->LastEffect() : nullptr;
   if (!last_effect)
     return rect;
@@ -49,7 +49,7 @@ FloatRect ReferenceFilterOperation::MapRect(const FloatRect& rect) const {
 
 ReferenceFilterOperation::ReferenceFilterOperation(const AtomicString& url,
                                                    SVGResource* resource)
-    : FilterOperation(REFERENCE), url_(url), resource_(resource) {}
+    : FilterOperation(kReference), url_(url), resource_(resource) {}
 
 void ReferenceFilterOperation::AddClient(SVGResourceClient& client) {
   if (resource_)
@@ -68,19 +68,19 @@ bool ReferenceFilterOperation::operator==(const FilterOperation& o) const {
   return url_ == other.url_ && resource_ == other.resource_;
 }
 
-FloatRect BlurFilterOperation::MapRect(const FloatRect& rect) const {
+gfx::RectF BlurFilterOperation::MapRect(const gfx::RectF& rect) const {
   float std_deviation = FloatValueForLength(std_deviation_, 0);
-  return FEGaussianBlur::MapEffect(FloatSize(std_deviation, std_deviation),
+  return FEGaussianBlur::MapEffect(gfx::SizeF(std_deviation, std_deviation),
                                    rect);
 }
 
-FloatRect DropShadowFilterOperation::MapRect(const FloatRect& rect) const {
+gfx::RectF DropShadowFilterOperation::MapRect(const gfx::RectF& rect) const {
   float std_deviation = shadow_.Blur();
-  return FEDropShadow::MapEffect(FloatSize(std_deviation, std_deviation),
+  return FEDropShadow::MapEffect(gfx::SizeF(std_deviation, std_deviation),
                                  shadow_.Location(), rect);
 }
 
-FloatRect BoxReflectFilterOperation::MapRect(const FloatRect& rect) const {
+gfx::RectF BoxReflectFilterOperation::MapRect(const gfx::RectF& rect) const {
   return reflection_.MapRect(rect);
 }
 

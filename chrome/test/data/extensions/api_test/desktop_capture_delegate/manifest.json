@@ -12,6 +12,6 @@
     "desktopCapture"
   ],
   "externally_connectable": {
-    "matches": ["*://*.example.com:*/*"]
+    "matches": ["*://localhost/*"]
   }
 }

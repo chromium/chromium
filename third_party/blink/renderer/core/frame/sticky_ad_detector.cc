@@ -77,7 +77,7 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
 
   TRACE_EVENT0("blink,benchmark", "StickyAdDetector::MaybeFireDetection");
 
-  IntSize main_frame_size = main_frame->GetMainFrameViewportSize();
+  gfx::Size main_frame_size = main_frame->GetMainFrameViewportSize();
 
   // Hit test the bottom center of the viewport.
   HitTestLocation location(DoublePoint(main_frame_size.width() / 2.0,
@@ -116,11 +116,12 @@ void StickyAdDetector::MaybeFireDetection(LocalFrame* main_frame) {
   if (!element->GetLayoutObject())
     return;
 
-  IntRect overlay_rect = element->GetLayoutObject()->AbsoluteBoundingBoxRect();
+  gfx::Rect overlay_rect =
+      element->GetLayoutObject()->AbsoluteBoundingBoxRect();
 
   bool is_large =
-      (overlay_rect.size().Area() >
-       main_frame_size.Area() * kLargeAdSizeToViewportSizeThreshold);
+      (overlay_rect.size().Area64() >
+       main_frame_size.Area64() * kLargeAdSizeToViewportSizeThreshold);
 
   bool is_main_page_scrollable =
       element->GetDocument().GetLayoutView()->HasScrollableOverflowY();

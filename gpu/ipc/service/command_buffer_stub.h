@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/time.h"
@@ -244,7 +244,7 @@ class GPU_IPC_SERVICE_EXPORT CommandBufferStub
   // The lifetime of objects of this class is managed by a GpuChannel. The
   // GpuChannels destroy all the CommandBufferStubs that they own when
   // they are destroyed. So a raw pointer is safe.
-  GpuChannel* const channel_;
+  const raw_ptr<GpuChannel> channel_;
 
   ContextType context_type_;
   ContextUrl active_url_;

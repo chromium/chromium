@@ -56,6 +56,9 @@
 -org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestionWhenIncognitoTabOnTop
 -org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestion
 
+# crbug.com/1274918
+-org.chromium.chrome.browser.omnibox.UrlBarIntegrationTest.testLongPress_with___disable_features=SpannableInlineAutocomplete
+
 # crbug.com/1225709
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
 -org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
@@ -89,3 +92,18 @@
 
 # crbug.com/1231656
 -org.chromium.chrome.browser.language.settings.LanguageSettingsTest.testToggleOfferToTranslate
+
+# crbug.com/1289810
+-org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInCCT_Downloaded
+-org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testMhtmlLoadResultFromRendererWithNamespace
+-org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
+-org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorOnOfflinePageWhenOffline
+
+# crbug.com/1179791
+-org.chromium.chrome.browser.autofill_assistant.AutofillAssistantChromeTabIntegrationTest.interactingWithLocationBarHidesAutofillAssistant
+
+# crbug.com/1287572
+-org.chromium.chrome.browser.webapps.WebappLaunchCauseMetricsTest.testHomescreenLaunch
+
+# crbug.com/1288469
+-org.chromium.chrome.browser.signin.AccountsReloadingTest.testRefreshTokenUpdateWhenDefaultAccountSignsinWithoutSync

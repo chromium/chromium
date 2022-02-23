@@ -136,6 +136,17 @@ void MessageWrapper::SetIcon(const SkBitmap& icon) {
   Java_MessageWrapper_setIcon(env, java_message_wrapper_, java_bitmap);
 }
 
+void MessageWrapper::EnableLargeIcon(bool enabled) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setLargeIcon(env, java_message_wrapper_, enabled);
+}
+
+void MessageWrapper::SetIconRoundedCornerRadius(int radius) {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_MessageWrapper_setIconRoundedCornerRadius(env, java_message_wrapper_,
+                                                 radius);
+}
+
 void MessageWrapper::DisableIconTint() {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_MessageWrapper_disableIconTint(env, java_message_wrapper_);
@@ -201,6 +212,14 @@ void MessageWrapper::SetMessageEnqueued(
     const base::android::JavaRef<jobject>& java_window_android) {
   message_enqueued_ = true;
   java_window_android_ = java_window_android;
+}
+
+const SkBitmap MessageWrapper::GetIconBitmap() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  base::android::ScopedJavaLocalRef<jobject> bitmap =
+      Java_MessageWrapper_getIconBitmap(env, java_message_wrapper_);
+  gfx::JavaBitmap java_bitmap_lock(bitmap);
+  return gfx::CreateSkBitmapFromJavaBitmap(java_bitmap_lock);
 }
 
 }  // namespace messages

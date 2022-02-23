@@ -24,7 +24,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/metrics/histogram_functions.h"
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate.h"
@@ -140,7 +140,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
       base::BindRepeating(&IdentityManager::OnRefreshTokenRevokedFromSource,
                           base::Unretained(this)));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   java_identity_manager_ = Java_IdentityManager_create(
       base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this),
       token_service_->GetDelegate()->GetJavaObject());
@@ -162,7 +162,7 @@ IdentityManager::IdentityManager(IdentityManager::InitParameters&& parameters)
 }
 
 IdentityManager::~IdentityManager() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_)
     Java_IdentityManager_destroy(base::android::AttachCurrentThread(),
                                  java_identity_manager_);
@@ -430,7 +430,7 @@ DiagnosticsProvider* IdentityManager::GetDiagnosticsProvider() {
   return diagnostics_provider_.get();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 IdentityManager::LegacyGetAccountTrackerServiceJavaObject() {
   return account_tracker_service_->GetJavaObject();
@@ -545,7 +545,7 @@ AccountInfo IdentityManager::GetAccountInfoForAccountWithRefreshToken(
   // enforce on Android due to the underlying relationship between
   // O2TS::GetAccounts(), O2TS::RefreshTokenIsAvailable(), and
   // O2TS::Observer::OnRefreshTokenAvailable().
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(HasAccountWithRefreshToken(account_id));
 #endif
 
@@ -571,7 +571,7 @@ void IdentityManager::OnPrimaryAccountChanged(
         GetPrimaryAccountId(event_details.GetCurrentState().consent_level));
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_IdentityManager_onPrimaryAccountChanged(
@@ -588,7 +588,7 @@ void IdentityManager::OnRefreshTokenAvailable(const CoreAccountId& account_id) {
   for (auto& observer : observer_list_) {
     observer.OnRefreshTokenUpdatedForAccount(account_info);
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
     JNIEnv* env = base::android::AttachCurrentThread();
     Java_IdentityManager_onRefreshTokenUpdatedForAccount(
@@ -642,7 +642,7 @@ void IdentityManager::OnGaiaCookieDeletedByUserAction() {
   for (auto& observer : observer_list_) {
     observer.OnAccountsCookieDeletedByUserAction();
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
     Java_IdentityManager_onAccountsCookieDeletedByUserAction(
         base::android::AttachCurrentThread(), java_identity_manager_);
@@ -703,7 +703,7 @@ void IdentityManager::OnAccountUpdated(const AccountInfo& info) {
   for (auto& observer : observer_list_) {
     observer.OnExtendedAccountInfoUpdated(info);
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (java_identity_manager_) {
     if (account_info_fetch_start_times_.count(info.account_id) &&
         !info.account_image.IsEmpty()) {

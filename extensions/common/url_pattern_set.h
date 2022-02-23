@@ -11,7 +11,6 @@
 #include <memory>
 #include <set>
 
-#include "base/macros.h"
 #include "extensions/common/url_pattern.h"
 
 class GURL;
@@ -79,9 +78,6 @@ class URLPatternSet {
   // Returns the union of |set1| and |set2|.
   static URLPatternSet CreateUnion(const URLPatternSet& set1,
                                    const URLPatternSet& set2);
-
-  // Returns the union of all sets in |sets|.
-  static URLPatternSet CreateUnion(const std::vector<URLPatternSet>& sets);
 
   URLPatternSet();
   URLPatternSet(URLPatternSet&& rhs);

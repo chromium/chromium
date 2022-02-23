@@ -134,6 +134,10 @@ void ComputePressureHost::UpdateObservers(ComputePressureSample sample,
     return;
   }
 
+  // No need to send an update if previous value is similar.
+  if (last_report_state_ == quantized_state)
+    return;
+
   for (auto it = observers_.begin(); it != observers_.end(); ++it) {
     mojo::RemoteSetElementId observer_id = it.id();
 
@@ -160,6 +164,7 @@ void ComputePressureHost::UpdateObservers(ComputePressureSample sample,
     // implement sending (less frequent) updates to observers in non-visible
     // frames.
     last_report_time_ = sample_time;
+    last_report_state_ = quantized_state;
 
     (*it)->OnUpdate(quantized_state.Clone());
   }
@@ -194,7 +199,8 @@ void ComputePressureHost::ResetObserverState() {
   last_report_time_ = base::Time::Now();
 
   // Setting to an invalid value, so any state is considered an update.
-  last_report_sample_ = {.cpu_utilization = -1, .cpu_speed = -1};
+  last_report_state_ = {/* cpu_utilization */ -1,
+                        /* cpu_speed */ -1};
 }
 
 }  // namespace content

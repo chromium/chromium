@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "content/public/browser/global_routing_id.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 
@@ -39,6 +40,26 @@ struct DomObjectFrameStack {
   // This holds the information of all the frames that were traversed until
   // the final element was reached.
   std::vector<JsObjectIdentifier> frame_stack;
+};
+
+// GlobalBackendNodeId contains all data required to uniquely identify a node.
+class GlobalBackendNodeId {
+ public:
+  GlobalBackendNodeId(content::RenderFrameHost* render_frame_host,
+                      int backend_node_id);
+  GlobalBackendNodeId(content::GlobalRenderFrameHostId host_id,
+                      int backend_node_id);
+  ~GlobalBackendNodeId();
+  GlobalBackendNodeId(const GlobalBackendNodeId&);
+
+  bool operator==(const GlobalBackendNodeId& other) const;
+
+  content::GlobalRenderFrameHostId host_id() const;
+  int backend_node_id() const;
+
+ private:
+  content::GlobalRenderFrameHostId host_id_;
+  int backend_node_id_ = -1;
 };
 
 // Find the frame host in the set of known frames matching the |frame_id|. This

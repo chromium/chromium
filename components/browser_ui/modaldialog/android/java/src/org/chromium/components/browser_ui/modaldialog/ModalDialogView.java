@@ -146,6 +146,11 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
         updateContentVisibility();
     }
 
+    /** @param maxLines The maximum number of title lines. */
+    public void setTitleMaxLines(int maxLines) {
+        mTitleView.setMaxLines(maxLines);
+    }
+
     /**
      * @param drawable The icon drawable on the title.
      */
@@ -293,6 +298,20 @@ public class ModalDialogView extends BoundedLinearLayout implements View.OnClick
      */
     void setButtonText(@ModalDialogProperties.ButtonType int buttonType, String buttonText) {
         getButton(buttonType).setText(buttonText);
+        updateButtonVisibility();
+    }
+
+    /**
+     * @param drawable The icon drawable on the positive button.
+     */
+    void setPositiveButtonIcon(Drawable drawable) {
+        Button button = getButton(ModalDialogProperties.ButtonType.POSITIVE);
+        button.setCompoundDrawablesRelativeWithIntrinsicBounds(drawable, null, null, null);
+        button.setCompoundDrawablePadding(getResources().getDimensionPixelSize(
+                R.dimen.modal_dialog_button_with_icon_text_padding));
+        button.setPaddingRelative(getResources().getDimensionPixelSize(
+                                          R.dimen.modal_dialog_button_with_icon_start_padding),
+                button.getPaddingTop(), button.getPaddingEnd(), button.getPaddingBottom());
         updateButtonVisibility();
     }
 

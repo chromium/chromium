@@ -54,7 +54,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/loader/referrer_utils.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metrics.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -88,10 +87,11 @@ scoped_refptr<Extension> CreateTestExtension(const std::string& name,
                                              bool incognito_split_mode,
                                              const ExtensionId& extension_id) {
   base::DictionaryValue manifest;
-  manifest.SetString("name", name);
-  manifest.SetString("version", "1");
-  manifest.SetInteger("manifest_version", 2);
-  manifest.SetString("incognito", incognito_split_mode ? "split" : "spanning");
+  manifest.SetStringKey("name", name);
+  manifest.SetStringKey("version", "1");
+  manifest.SetIntKey("manifest_version", 2);
+  manifest.SetStringKey("incognito",
+                        incognito_split_mode ? "split" : "spanning");
 
   base::FilePath path = GetTestPath("response_headers");
 
@@ -244,7 +244,7 @@ class ExtensionProtocolsTestBase : public testing::Test {
 
   void RemoveExtension(const scoped_refptr<const Extension>& extension,
                        const UnloadedExtensionReason reason) {
-    info_map()->RemoveExtension(extension->id(), reason);
+    info_map()->RemoveExtension(extension->id());
     EXPECT_TRUE(extension_registry()->RemoveEnabled(extension->id()));
     if (reason == UnloadedExtensionReason::DISABLE)
       EXPECT_TRUE(extension_registry()->AddDisabled(extension));
@@ -624,7 +624,7 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
 
-#if !defined(OS_FUCHSIA)  // Fuchsia does not support file permissions.
+#if !BUILDFLAG(IS_FUCHSIA)  // Fuchsia does not support file permissions.
   // chmod -r 1024.js.
   {
     TestContentVerifySingleJobObserver observer(extension_id, kRelativePath);
@@ -638,7 +638,7 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForFileAccessErrors) {
     // TODO(lazyboy): We may want to update this to more closely reflect the
     // real flow.
   }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // Delete 1024.js.
   {
@@ -687,7 +687,7 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
 
-#if !defined(OS_FUCHSIA)  // Fuchsia does not support file permissions.
+#if !BUILDFLAG(IS_FUCHSIA)  // Fuchsia does not support file permissions.
   // chmod -r empty.js.
   // Unreadable empty file doesn't generate hash mismatch. Note that this is the
   // current behavior of ContentVerifyJob.
@@ -699,7 +699,7 @@ TEST_F(ExtensionProtocolsTest, VerificationSeenForZeroByteFile) {
               DoRequestOrLoad(extension, kEmptyJs).result());
     EXPECT_EQ(ContentVerifyJob::NONE, observer.WaitForJobFinished());
   }
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // rm empty.js.
   // Deleted empty file doesn't generate hash mismatch. Note that this is the

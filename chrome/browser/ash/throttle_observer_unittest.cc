@@ -12,6 +12,8 @@
 
 namespace ash {
 
+constexpr const char kObserverName[] = "TestObserver";
+
 class ThrottleObserverTest
     : public testing::Test,
       public base::SupportsWeakPtr<ThrottleObserverTest> {
@@ -26,23 +28,26 @@ class ThrottleObserverTest
   ThrottleObserverTest(const ThrottleObserverTest&) = delete;
   ThrottleObserverTest& operator=(const ThrottleObserverTest&) = delete;
 
-  void OnObserverStateChanged() { notify_count_++; }
+  void OnObserverStateChanged(const ThrottleObserver*) { notify_count_++; }
 
  protected:
   ThrottleObserver* observer() { return &observer_; }
   size_t notify_count() const { return notify_count_; }
 
  private:
-  ThrottleObserver observer_{ThrottleObserver::PriorityLevel::LOW,
-                             "TestObserver"};
+  ThrottleObserver observer_{kObserverName};
   size_t notify_count_{0};
 };
 
 // Tests that ThrottleObserver can be constructed and destructed.
 TEST_F(ThrottleObserverTest, TestConstructDestruct) {}
 
-// Tests that ThrottleObserver notifies observers only when its 'active'
-// state changes
+// Tests that ThrottleObserver's name is properly set.
+TEST_F(ThrottleObserverTest, TestObserverName) {
+  EXPECT_EQ(kObserverName, observer()->name());
+}
+
+// Tests that ThrottleObserver notifies observers on SetActive().
 TEST_F(ThrottleObserverTest, TestSetActive) {
   EXPECT_EQ(0U, notify_count());
   EXPECT_FALSE(observer()->active());
@@ -53,11 +58,41 @@ TEST_F(ThrottleObserverTest, TestSetActive) {
 
   observer()->SetActive(true);
   EXPECT_TRUE(observer()->active());
-  EXPECT_EQ(1U, notify_count());
+  EXPECT_EQ(2U, notify_count());
 
   observer()->SetActive(false);
   EXPECT_FALSE(observer()->active());
+  EXPECT_EQ(3U, notify_count());
+}
+
+// Tests that ThrottleObserver notifies observers on SetEnforced().
+TEST_F(ThrottleObserverTest, TestSetEnforced) {
+  EXPECT_EQ(0U, notify_count());
+  EXPECT_FALSE(observer()->enforced());
+
+  observer()->SetEnforced(true);
+  EXPECT_TRUE(observer()->enforced());
+  EXPECT_EQ(1U, notify_count());
+
+  observer()->SetEnforced(true);
+  EXPECT_TRUE(observer()->enforced());
   EXPECT_EQ(2U, notify_count());
+
+  observer()->SetEnforced(false);
+  EXPECT_FALSE(observer()->enforced());
+  EXPECT_EQ(3U, notify_count());
+}
+
+// Tests that the callback is not called after StopObserving.
+TEST_F(ThrottleObserverTest, TestStopObserving) {
+  observer()->StopObserving();
+  EXPECT_EQ(0U, notify_count());
+
+  observer()->SetActive(true);
+  EXPECT_EQ(0U, notify_count());
+
+  observer()->SetEnforced(true);
+  EXPECT_EQ(0U, notify_count());
 }
 
 }  // namespace ash

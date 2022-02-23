@@ -5,12 +5,12 @@
 #include "third_party/blink/renderer/platform/graphics/compositing/layers_as_json.h"
 
 #include "cc/layers/layer.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/geometry/geometry_as_json.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint/transform_paint_property_node.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_stream.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace blink {
 
@@ -50,7 +50,7 @@ std::unique_ptr<JSONObject> CCLayerAsJSON(const cc::Layer& layer,
   else if (layer.contents_opaque_for_text())
     json->SetBoolean("contentsOpaqueForText", true);
 
-  if (!layer.DrawsContent())
+  if (!layer.draws_content())
     json->SetBoolean("drawsContent", false);
 
   if (layer.should_check_backface_visibility())
@@ -108,8 +108,7 @@ int LayersAsJSON::AddTransformJSON(
 
   if (!transform.IsIdentityOr2DTranslation() &&
       !transform.Matrix().IsIdentityOrTranslation()) {
-    transform_json->SetArray(
-        "origin", Point3AsJSONArray(ToGfxPoint3F(transform.Origin())));
+    transform_json->SetArray("origin", Point3AsJSONArray(transform.Origin()));
   }
 
   if (!transform.FlattensInheritedTransform())
@@ -133,7 +132,7 @@ int LayersAsJSON::AddTransformJSON(
 void LayersAsJSON::AddLayer(const cc::Layer& layer,
                             const TransformPaintPropertyNode& transform,
                             const LayerAsJSONClient* json_client) {
-  if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.DrawsContent() &&
+  if (!(flags_ & kLayerTreeIncludesAllLayers) && !layer.draws_content() &&
       (layer.DebugName() == "LayoutView #document" ||
        layer.DebugName() == "Inner Viewport Scroll Layer" ||
        layer.DebugName() == "Scrolling Contents Layer"))

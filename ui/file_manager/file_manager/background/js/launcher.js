@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {getFrameColor} from '../../common/js/api.js';
 import {FilesAppState} from '../../common/js/files_app_state.js';
 import {util} from '../../common/js/util.js';
 
@@ -158,8 +159,11 @@ launcher.launchFileManager = async (
   nextFileManagerWindowID = Math.max(nextFileManagerWindowID, id + 1);
   const appId = FILES_ID_PREFIX + id;
 
-  const appWindow = new AppWindowWrapper(
-      'main.html', appId, FILE_MANAGER_WINDOW_CREATE_OPTIONS);
+  const windowCreateOptions = FILE_MANAGER_WINDOW_CREATE_OPTIONS;
+  windowCreateOptions.frame.color = await getFrameColor();
+
+  const appWindow =
+      new AppWindowWrapper('main.html', appId, windowCreateOptions);
 
   await appWindow.launch(appState || {}, false);
   if (!appWindow.rawAppWindow) {

@@ -18,6 +18,7 @@
 
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -34,7 +35,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace gpu {
 
@@ -1268,7 +1269,7 @@ class GLHelperTest : public testing::Test {
 
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<GLInProcessContext> context_;
-  gles2::GLES2Interface* gl_;
+  raw_ptr<gles2::GLES2Interface> gl_;
   std::unique_ptr<GLHelper> helper_;
   std::unique_ptr<GLHelperScaling> helper_scaling_;
   base::circular_deque<GLHelperScaling::ScaleOp> x_ops_, y_ops_;
@@ -1415,4 +1416,4 @@ TEST_F(GLHelperTest, CheckOptimizations) {
 
 }  // namespace gpu
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

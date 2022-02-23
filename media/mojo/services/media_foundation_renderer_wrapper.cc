@@ -131,9 +131,10 @@ void MediaFoundationRendererWrapper::OnMuteStateChange(bool muted) {
 
 void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
     GetDCOMPSurfaceCallback callback,
-    base::win::ScopedHandle handle) {
+    base::win::ScopedHandle handle,
+    const std::string& error) {
   if (!handle.IsValid()) {
-    std::move(callback).Run(absl::nullopt);
+    std::move(callback).Run(absl::nullopt, "invalid handle: " + error);
     return;
   }
 
@@ -155,12 +156,15 @@ void MediaFoundationRendererWrapper::OnReceiveDCOMPSurface(
 void MediaFoundationRendererWrapper::OnDCOMPSurfaceHandleRegistered(
     GetDCOMPSurfaceCallback callback,
     const absl::optional<base::UnguessableToken>& token) {
+  std::string error;
   if (token) {
     DCHECK(dcomp_surface_token_.is_empty());
     dcomp_surface_token_ = token.value();
+  } else {
+    error = "dcomp surface handle registration failed";
   }
 
-  std::move(callback).Run(token);
+  std::move(callback).Run(token, error);
 }
 
 }  // namespace media

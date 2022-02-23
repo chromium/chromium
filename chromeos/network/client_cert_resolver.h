@@ -24,6 +24,7 @@
 
 namespace base {
 class Clock;
+class Value;
 }
 
 namespace chromeos {
@@ -90,7 +91,7 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
   static bool ResolveClientCertificateSync(
       const client_cert::ConfigType client_cert_type,
       const client_cert::ClientCertConfig& client_cert_config,
-      base::DictionaryValue* shill_properties);
+      base::Value* shill_properties);
 
   // Allows overwriting the function which gets the client certificate
   // provisioning profile id of a certificate. This is necessary for unit tests,
@@ -113,6 +114,11 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) ClientCertResolver
 
   // NetworkPolicyObserver overrides
   void PolicyAppliedToNetwork(const std::string& service_path) override;
+
+  // Forget the resolved certificate of |network| - ensures that the next
+  // ResolveNetwork run will reconfigure the certificate (and EAP Identity
+  // field) even if the certificate has not changed.
+  void ForgetResolvedCert(const NetworkState* network);
 
   // Check which networks of |networks| are configured with a client certificate
   // pattern. Search for certificates, on the worker thread, and configure the

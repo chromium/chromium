@@ -16,6 +16,7 @@
 #include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/observer_list_types.h"
+#include "base/time/time.h"
 #include "chrome/browser/ui/app_list/search/mixer.h"
 #include "chrome/browser/ui/app_list/search/ranking/launch_data.h"
 #include "chrome/browser/ui/app_list/search/ranking/types.h"
@@ -26,6 +27,11 @@ namespace ash {
 enum class AppListSearchResultType;
 }
 
+namespace base {
+class Time;
+class TimeDelta;
+}
+
 namespace app_list {
 
 class SearchProvider;
@@ -33,21 +39,14 @@ enum class RankingItemType;
 
 // Common types used throughout result ranking.
 
-// The type of a particular result.
-using ResultType = ash::AppListSearchResultType;
-// The type of a search provider as a whole. This is currently just the 'main'
-// ResultType returned by the provider.
-using ProviderType = ash::AppListSearchResultType;
-
 using Results = std::vector<std::unique_ptr<ChromeSearchResult>>;
 using ResultsMap = base::flat_map<ProviderType, Results>;
-using CategoriesMap = base::flat_map<Category, double>;
 
 // Controller that collects query from given SearchBoxModel, dispatches it
 // to all search providers, then invokes the mixer to mix and to publish the
 // results to the given SearchResults UI model.
 //
-// // TODO(crbug.com/1199206): The SearchController is being reimplemented with
+// TODO(crbug.com/1199206): The SearchController is being reimplemented with
 // a different ranking system. Once this reimplementation is finished, this pure
 // virtual class can be removed and replaced with SearchControllerImplNew.
 class SearchController {
@@ -74,9 +73,11 @@ class SearchController {
 
   virtual ~SearchController() {}
 
-  virtual void InitializeRankers() = 0;
+  virtual void InitializeRankers() {}
 
-  virtual void Start(const std::u16string& query) = 0;
+  virtual void StartSearch(const std::u16string& query) = 0;
+  virtual void StartZeroState(base::OnceClosure on_done,
+                              base::TimeDelta timeout) = 0;
   // TODO(crbug.com/1199206): We should rename this to AppListClosing for
   // consistency with AppListShown.
   virtual void ViewClosing() = 0;
@@ -94,8 +95,9 @@ class SearchController {
 
   // Update the controller with the given results. Used only if the categorical
   // search feature flag is enabled.
-  virtual void SetResults(ash::AppListSearchResultType provider_type,
-                          Results results) = 0;
+  virtual void SetResults(const SearchProvider* provider, Results results) = 0;
+  // Publishes results to ash.
+  virtual void Publish() = 0;
 
   virtual ChromeSearchResult* FindSearchResult(
       const std::string& result_id) = 0;
@@ -130,6 +132,8 @@ class SearchController {
 
   virtual void set_results_changed_callback_for_test(
       ResultsChangedCallback callback) = 0;
+
+  virtual void disable_ranking_for_test() = 0;
 };
 
 }  // namespace app_list

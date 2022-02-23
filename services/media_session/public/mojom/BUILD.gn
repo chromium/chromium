@@ -19,6 +19,8 @@ mojom("mojom") {
     "//url/mojom:url_mojom_gurl",
   ]
 
+  webui_module_path = "/"
+
   # The blink variant of the Device Service mojom are depended on by the
   # blink platform target. All blink variant mojoms use WTF types, which are
   # part of the blink platform component. In order to avoid a dependency cycle,

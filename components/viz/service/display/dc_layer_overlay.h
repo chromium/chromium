@@ -8,13 +8,13 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/service/display/aggregated_frame.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/mailbox.h"
-#include "skia/ext/skia_matrix_44.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/hdr_metadata.h"
@@ -159,7 +159,7 @@ class VIZ_SERVICE_EXPORT DCLayerOverlayProcessor
   int processed_yuv_overlay_count_ = 0;
 
   // Reference to the global viz singleton.
-  const DebugRendererSettings* const debug_settings_;
+  const raw_ptr<const DebugRendererSettings> debug_settings_;
 
   bool previous_frame_underlay_is_opaque_ = true;
   gfx::RectF previous_display_rect_;

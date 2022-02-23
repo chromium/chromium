@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sk">
 <translation id="102360288709523007">Odosielanie štatistík používania a správ o zlyhaní pomôže Googlu zlepšiť Chromium.</translation>
+<translation id="1047130070405668746">Vyberte Chromium</translation>
 <translation id="1185134272377778587">Informácie o prehliadači Chromium</translation>
 <translation id="1257458525759135959">Ak chcete ukladať obrázky, klepnutím na Nastavenia povoľte prehliadaču Chromium pridávať do vašich fotiek</translation>
 <translation id="1289216811211435351">Prejdite na Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Zobrazí výzvy na prihlásenie do prehliadača Chromium.</translation>
 <translation id="1584569488888892906">Prehliadač Chromium je jednoduchý, bezpečný a rýchlejší ako kedykoľvek predtým</translation>
 <translation id="1617663976202781617">Údaje zo synchronizácie prehliadača Chromium</translation>
+<translation id="1722370509450468186">Heslo bude uložené do vášho účtu (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Vymazanie údajov prehliadača Chromium</translation>
 <translation id="1838412507805038478">Prehliadač Chromium overil, že certifikát tohto webu bol vydaný vydavateľom <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Prehliadač Chromium obsahuje funkcie, ktoré vám pomôžu spravovať internetové dáta a rýchlosť načítania webových stránok.
 <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Vyberte Chromium</translation>
 <translation id="2006345422933397527">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skontrolujte internetové pripojenie.</translation>
 <translation id="2054703085270098503">Zaistite svoju bezpečnosť s prehliadačom Chromium</translation>
 <translation id="2168108852149185974">Niektoré doplnky spôsobujú zlyhanie prehliadača Chromium. Odinštalujte ich.</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Nepodporované vo verzii Chromium Canary</translation>
 <translation id="3639997914391704523">Keď sa prihlásite účtom Google, Chromium môže skontrolovať vaše heslá.</translation>
 <translation id="3805899903892079518">Chromium nemá prístup k vašim fotkám ani videám. Prístup povoľte v časti Nastavenia systému iOS &gt; Súkromie &gt; Fotky.</translation>
-<translation id="3946918322491238254">Vaše záložky, história, heslá a ďalšie nastavenia zostanú v tomto zariadení zachované. Ak ich zmeníte, tieto zmeny nebudú synchronizované do vášho účtu.</translation>
+<translation id="4043291146360695975">Heslá sa ukladajú do správcu hesiel iba v tomto zariadení.</translation>
 <translation id="4099085513035183040">Nepodporované vo verzii Chromium Beta</translation>
 <translation id="4555020257205549924">Po zapnutí tejto funkcie bude prehliadač Chromium ponúkať preloženie stránok napísaných v inom jazyku pomocou Prekladača Google. <ph name="BEGIN_LINK" />Ďalšie informácie<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">Systém Chromium bol práve vylepšený. K dispozícii je nová verzia.</translation>
 <translation id="6752854822223394465">Vaša organizácia nastavuje Chromium…</translation>
 <translation id="6820823224820483452">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra.</translation>
+<translation id="7006920032187763988">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPade použiť v iných aplikáciách.</translation>
 <translation id="7018284295775193585">Chromium sa nedá aktualizovať</translation>
 <translation id="7045244423563602563">Upravte Chromium podľa seba</translation>
 <translation id="7099326575020694068">Chromium nemôže použiť váš fotoaparát v režime Rozdelené zobrazenie</translation>
 <translation id="7108914401277488191">S prehliadačom Chromium zvládnete viac</translation>
 <translation id="7118091470949186573">Chromium môžete teraz kedykoľvek použiť klepnutím na odkazy v správach, dokumentoch a ďalších aplikáciách.</translation>
+<translation id="7175400662502680481">Pri porušení ochrany údajov došlo k prezradeniu vášho hesla. Správca hesiel odporúča okamžite ho zmeniť.</translation>
 <translation id="7208566199746267865">Vaše účty sú na webe, čím Chromium šetrí váš čas. Účty môžete pridávať alebo odstraňovať v nastaveniach.</translation>
 <translation id="725427773388857052">Chromium vás môže chrániť pred porušeniami ochrany údajov, nebezpečnými webmi a ďalšími hrozbami.</translation>
 <translation id="7269362888766543920">Niektoré doplnky spôsobujú zlyhanie prehliadača Chromium. Skúste ich odinštalovať.</translation>
 <translation id="7313655110045230863">Ak chcete nastaviť Chromium ako predvolený prehliadač, otvorte Nastavenia. Klepnite na Predvolený prehliadač a potom vyberte Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Vybraté údaje boli odstránené z prehliadača Chromium a synchronizovaných zariadení. Váš účet Google môže mať na adrese history.google.com ďalšie formy histórie prehliadania, ako napríklad vyhľadávania a aktivity v iných službách Google.</translation>
+<translation id="7395825497086981028">Heslo bude uložené do správcu hesiel v účte <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Používajte Chromium kdekoľvek</translation>
 <translation id="766897673682622022">V rámci porušenia ochrany údajov bolo prezradené vaše heslo. Chromium vám ho odporúča okamžite zmeniť.</translation>
 <translation id="7674213385180944843">Otvorte Nastavenia &gt; Súkromie &gt; Fotoaparát &gt; Chromium a zapnite fotoaparát.</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">Chcete vymazať údaje prehliadača Chromium z tohto zariadenia?</translation>
 <translation id="8175055321229419309">Tip: <ph name="BEGIN_LINK" />Presuňte Chromium do doku<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Prehliadaču Chromium sa nepodarilo skontrolovať dostupnosť aktualizácií. Skúste to neskôr.</translation>
+<translation id="858114650497379505">Heslá, ktoré ste uložili do správcu hesiel, môžete v iPhone použiť v iných aplikáciách.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> Autori Chromium. Všetky práva vyhradené.</translation>
 <translation id="8663480472502753423">Udržujte prehliadač Chromium aktuálny</translation>
 <translation id="8776843108004031667">Tento účet bude spolu so všetkými neuloženými údajmi odstránený z prehliadača Chromium.</translation>
 <translation id="894437814105052438">Keď sa odhlásite, Chromium prestane synchronizovať nové údaje do vášho účtu Google. Údaje, ktoré boli synchronizované predtým, v účte zostanú.</translation>
 <translation id="9022552996538154597">Prihlásiť sa do prehliadača Chromium</translation>
+<translation id="9059693977935746710">Toto heslo si nebudete musieť pamätať. Uloží sa do správcu hesiel v účte <ph name="EMAIL" />.</translation>
 <translation id="9089354809943900324">Prehliadač Chromium je zastaraný</translation>
 <translation id="9110075932708282655">Predvolene používať Chromium</translation>
 <translation id="921174536258924340">Prehliadaču Chromium sa nepodarilo skontrolovať všetky heslá. Skúste to znova zajtra alebo <ph name="BEGIN_LINK" />skontrolujte heslá vo svojom účte Google<ph name="END_LINK" />.</translation>

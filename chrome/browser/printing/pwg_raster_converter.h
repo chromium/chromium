@@ -27,7 +27,7 @@ struct PwgRasterSettings;
 class PwgRasterConverter {
  public:
   // Callback for when the PDF is converted to a PWG raster.
-  // |region| contains the PWG raster data.
+  // `region` contains the PWG raster data.
   using ResultCallback =
       base::OnceCallback<void(base::ReadOnlySharedMemoryRegion /*region*/)>;
 

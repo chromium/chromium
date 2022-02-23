@@ -10,13 +10,14 @@
 #include <vector>
 
 #include "base/auto_reset.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 #include "ui/accessibility/platform/ax_platform_node_delegate_base.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace gfx {
 const AcceleratedWidget kMockAcceleratedWidget = reinterpret_cast<HWND>(-1);
 }
@@ -194,10 +195,10 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegateBase {
   // Determine the offscreen status of a particular element given its bounds.
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
-  AXTree* tree_;
-  AXNode* node_;
+  raw_ptr<AXTree> tree_;
+  raw_ptr<AXNode> node_;
   ui::AXUniqueId unique_id_;
-  AXPlatformNode* platform_node_;
+  raw_ptr<AXPlatformNode> platform_node_;
   gfx::AcceleratedWidget native_event_target_;
   bool minimized_ = false;
 };

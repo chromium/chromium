@@ -8,12 +8,13 @@
 #include <vector>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/startup/startup_browser_creator.h"
@@ -79,7 +80,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
 
     ASSERT_TRUE(browser_creator_.Start(
         base::CommandLine(base::CommandLine::NO_PROGRAM), base::FilePath(),
-        profile_,
+        {profile_, StartupProfileMode::kBrowserWindow},
         g_browser_process->profile_manager()->GetLastOpenedProfiles()));
     ASSERT_EQ(1U, BrowserList::GetInstance()->size());
   }
@@ -87,7 +88,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   void ExpectUrlInBrowserAtPosition(const GURL& url, int tab_index) {
     Browser* browser = BrowserList::GetInstance()->get(0);
     TabStripModel* tab_strip = browser->tab_strip_model();
-    EXPECT_EQ(url, tab_strip->GetWebContentsAt(tab_index)->GetURL());
+    EXPECT_EQ(url, tab_strip->GetWebContentsAt(tab_index)->GetVisibleURL());
   }
 
   void TearDownOnMainThread() override {
@@ -96,7 +97,7 @@ class StartupBrowserCreatorWelcomeBackTest : public InProcessBrowserTest {
   }
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   std::unique_ptr<ScopedKeepAlive> scoped_keep_alive_;
   std::unique_ptr<ScopedProfileKeepAlive> scoped_profile_keep_alive_;
   StartupBrowserCreator browser_creator_;

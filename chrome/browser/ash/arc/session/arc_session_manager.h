@@ -10,6 +10,8 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/timer/timer.h"
@@ -20,8 +22,6 @@
 #include "chrome/browser/ash/policy/arc/android_management_client.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/session/arc_stop_reason.h"
 #include "components/policy/core/common/policy_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -32,9 +32,13 @@ class Profile;
 
 namespace arc {
 
-constexpr const char kGeneratedPropertyFilesPath[] = "/run/arc/host_generated";
-constexpr const char kGeneratedPropertyFilesPathVm[] =
-    "/run/arcvm/host_generated";
+// The file exists only when ARC container is in use.
+constexpr const char kGeneratedBuildPropertyFilePath[] =
+    "/run/arc/host_generated/build.prop";
+
+// The file exists only when ARCVM is in use.
+constexpr const char kGeneratedCombinedPropertyFilePathVm[] =
+    "/run/arcvm/host_generated/combined.prop";
 
 class ArcAndroidManagementChecker;
 class ArcDataRemover;
@@ -288,7 +292,7 @@ class ArcSessionManager : public ArcSessionRunner::Observer,
 
   // Invoking StartArc() only for testing, e.g., to emulate accepting Terms of
   // Service then passing Android management check successfully.
-  void StartArcForTesting() { StartArc(); }
+  void StartArcForTesting();
 
   // Invokes OnTermsOfServiceNegotiated as if negotiation is done for testing.
   void OnTermsOfServiceNegotiatedForTesting(bool accepted) {

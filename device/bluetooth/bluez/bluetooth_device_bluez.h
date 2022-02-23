@@ -12,7 +12,6 @@
 #include <unordered_set>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/sequenced_task_runner.h"
@@ -72,9 +71,6 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   bool IsGattConnected() const override;
   bool IsConnectable() const override;
   bool IsConnecting() const override;
-#if defined(OS_CHROMEOS)
-  bool IsBlockedByPolicy() const override;
-#endif
   UUIDSet GetUUIDs() const override;
   absl::optional<int8_t> GetInquiryRSSI() const override;
   absl::optional<int8_t> GetInquiryTxPower() const override;
@@ -87,6 +83,10 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                             ErrorCallback error_callback) override;
   void Connect(device::BluetoothDevice::PairingDelegate* pairing_delegate,
                ConnectCallback callback) override;
+#if BUILDFLAG(IS_CHROMEOS)
+  void ConnectClassic(PairingDelegate* pairing_delegate,
+                      ConnectCallback callback) override;
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void SetPinCode(const std::string& pincode) override;
   void SetPasskey(uint32_t passkey) override;
   void ConfirmPairing() override;
@@ -109,12 +109,12 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   bool IsGattServicesDiscoveryComplete() const override;
   void Pair(device::BluetoothDevice::PairingDelegate* pairing_delegate,
             ConnectCallback callback) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void ExecuteWrite(base::OnceClosure callback,
                     ExecuteWriteErrorCallback error_callback) override;
   void AbortWrite(base::OnceClosure callback,
                   AbortWriteErrorCallback error_callback) override;
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Returns the complete list of service records discovered for on this
   // device via SDP. If called before discovery is complete, it may return
@@ -229,7 +229,7 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
                                 const std::string& error_name,
                                 const std::string& error_message);
 
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnExecuteWriteError(ExecuteWriteErrorCallback error_callback,
                            const std::string& error_name,
                            const std::string& error_message);
@@ -237,11 +237,14 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
   void OnAbortWriteError(AbortWriteErrorCallback error_callback,
                          const std::string& error_name,
                          const std::string& error_message);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
-  // Internal method to initiate a connection to this device, and methods called
-  // by dbus:: on completion of the D-Bus method call.
+  // Internal methods to initiate a connection to this device, and methods
+  // called by dbus:: on completion of the D-Bus method call.
   void ConnectInternal(ConnectCallback callback);
+#if BUILDFLAG(IS_CHROMEOS)
+  void ConnectClassicInternal(ConnectCallback callback);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void OnConnect(ConnectCallback callback);
   void OnConnectError(ConnectCallback callback,
                       const std::string& error_name,
@@ -249,14 +252,17 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothDeviceBlueZ
 
 // Once DisconnectLE is supported on Linux, this buildflag will not be necessary
 // (this bluez code is only run on Chrome OS and Linux).
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void OnDisconnectLEError(const std::string& error_name,
                            const std::string& error_message);
-#endif
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
 
   // Called by dbus:: on completion of the D-Bus method call to pair the device,
-  // made inside |Connect()|.
+  // made inside |Connect()| and |ConnectClassic()|.
   void OnPairDuringConnect(ConnectCallback callback);
+#if BUILDFLAG(IS_CHROMEOS)
+  void OnPairDuringConnectClassic(ConnectCallback callback);
+#endif  // BUILDFLAG(IS_CHROMEOS)
   void OnPairDuringConnectError(ConnectCallback callback,
                                 const std::string& error_name,
                                 const std::string& error_message);

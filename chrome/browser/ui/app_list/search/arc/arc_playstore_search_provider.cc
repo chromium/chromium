@@ -8,6 +8,9 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/app/arc_playstore_search_request_state.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -16,9 +19,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
 #include "chrome/browser/ui/app_list/search/arc/arc_playstore_search_result.h"
-#include "components/arc/app/arc_playstore_search_request_state.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 
 namespace {
 constexpr int kHistogramBuckets = 13;
@@ -87,7 +87,7 @@ ArcPlayStoreSearchProvider::ArcPlayStoreSearchProvider(
 
 ArcPlayStoreSearchProvider::~ArcPlayStoreSearchProvider() = default;
 
-ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() {
+ash::AppListSearchResultType ArcPlayStoreSearchProvider::ResultType() const {
   return ash::AppListSearchResultType::kPlayStoreApp;
 }
 
@@ -103,9 +103,9 @@ void ArcPlayStoreSearchProvider::Start(const std::u16string& query) {
                 GetRecentAndSuggestedAppsFromPlayStore)
           : nullptr;
 
-  if (app_instance == nullptr || query.empty()) {
+  DCHECK(!query.empty());
+  if (app_instance == nullptr)
     return;
-  }
 
   app_instance->GetRecentAndSuggestedAppsFromPlayStore(
       base::UTF16ToUTF8(query), max_results_,

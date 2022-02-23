@@ -4,17 +4,22 @@
 
 #include "chrome/browser/ash/exo/chrome_data_exchange_delegate.h"
 
+#include <algorithm>
 #include <string>
+#include <vector>
 
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/pickle.h"
+#include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/crostini/crostini_test_helper.h"
 #include "chrome/browser/ash/crostini/crostini_util.h"
+#include "chrome/browser/ash/file_manager/fileapi_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/guest_os/guest_os_share_path.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"
@@ -44,6 +49,7 @@
 #include "ui/base/dragdrop/os_exchange_data.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/origin.h"
+#include "url/url_constants.h"
 
 namespace ash {
 
@@ -137,11 +143,15 @@ class ChromeDataExchangeDelegateTest : public testing::Test {
 };
 
 TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
+  // Create container window as the parent for other windows.
+  aura::Window container_window(nullptr, aura::client::WINDOW_TYPE_NORMAL);
+  container_window.Init(ui::LAYER_NOT_DRAWN);
+
   // ChromeDataExchangeDelegate always checks app type in
   // window->GetToplevelWindow(), so we must create a parent window with
   // delegate and app type set, but use the child window in tests. Arc:
   aura::Window* arc_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate_, 0, gfx::Rect(), nullptr);
+      &delegate_, 0, gfx::Rect(), &container_window);
   arc_toplevel->SetProperty(aura::client::kAppType,
                             static_cast<int>(ash::AppType::ARC_APP));
   ASSERT_TRUE(ash::IsArcWindow(arc_toplevel));
@@ -151,7 +161,7 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
 
   // Crostini:
   aura::Window* crostini_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate_, 0, gfx::Rect(), nullptr);
+      &delegate_, 0, gfx::Rect(), &container_window);
   crostini_toplevel->SetProperty(aura::client::kAppType,
                                  static_cast<int>(ash::AppType::CROSTINI_APP));
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_toplevel));
@@ -159,9 +169,19 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
       aura::test::CreateTestWindowWithBounds(gfx::Rect(), crostini_toplevel);
   ASSERT_TRUE(crostini::IsCrostiniWindow(crostini_window->GetToplevelWindow()));
 
+  // Lacros:
+  aura::Window* lacros_toplevel = aura::test::CreateTestWindowWithDelegate(
+      &delegate_, 0, gfx::Rect(), &container_window);
+  exo::SetShellApplicationId(lacros_toplevel, "org.chromium.lacros.");
+  ASSERT_TRUE(crosapi::browser_util::IsLacrosWindow(lacros_toplevel));
+  aura::Window* lacros_window =
+      aura::test::CreateTestWindowWithBounds(gfx::Rect(), lacros_toplevel);
+  ASSERT_TRUE(crosapi::browser_util::IsLacrosWindow(
+      lacros_window->GetToplevelWindow()));
+
   // Plugin VM:
   aura::Window* plugin_vm_toplevel = aura::test::CreateTestWindowWithDelegate(
-      &delegate_, 0, gfx::Rect(), nullptr);
+      &delegate_, 0, gfx::Rect(), &container_window);
   exo::SetShellApplicationId(plugin_vm_toplevel, "org.chromium.plugin_vm_ui");
   ASSERT_TRUE(plugin_vm::IsPluginVmAppWindow(plugin_vm_toplevel));
   aura::Window* plugin_vm_window =
@@ -179,6 +199,9 @@ TEST_F(ChromeDataExchangeDelegateTest, GetDataTransferEndpointType) {
   EXPECT_EQ(
       ui::EndpointType::kCrostini,
       data_exchange_delegate.GetDataTransferEndpointType(crostini_window));
+
+  EXPECT_EQ(ui::EndpointType::kLacros,
+            data_exchange_delegate.GetDataTransferEndpointType(lacros_window));
 
   EXPECT_EQ(
       ui::EndpointType::kPluginVm,
@@ -454,19 +477,26 @@ TEST_F(ChromeDataExchangeDelegateTest, ParseFileSystemSources) {
       guest_os::GuestOsSharePath::GetForProfile(profile());
   guest_os_share_path->RegisterSharedPath(crostini::kCrostiniDefaultVmName,
                                           shared_path);
-  std::u16string urls =
-      u"filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/"
-      "external/Downloads-test%2540example.com-hash/shared/file1\n"
-      "filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/"
-      "external/Downloads-test%2540example.com-hash/shared/file2";
+  const GURL file_manager_url = file_manager::util::GetFileManagerURL();
+  std::vector<std::string> file_names = {
+      "external/Downloads-test%2540example.com-hash/shared/file1",
+      "external/Downloads-test%2540example.com-hash/shared/file2",
+  };
+  std::vector<std::string> file_urls;
+  std::transform(file_names.begin(), file_names.end(),
+                 std::back_inserter(file_urls),
+                 [&file_manager_url](const std::string& name) {
+                   return base::StrCat({url::kFileSystemScheme, ":",
+                                        file_manager_url.Resolve(name).spec()});
+                 });
+  std::u16string urls(base::ASCIIToUTF16(base::JoinString(file_urls, "\n")));
   base::Pickle pickle;
   ui::WriteCustomDataToPickle(
       std::unordered_map<std::u16string, std::u16string>(
           {{u"fs/tag", u"exo"}, {u"fs/sources", urls}}),
       &pickle);
 
-  ui::DataTransferEndpoint files_app(url::Origin::Create(
-      GURL("chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj")));
+  ui::DataTransferEndpoint files_app(url::Origin::Create(file_manager_url));
   std::vector<ui::FileInfo> file_info =
       data_exchange_delegate.ParseFileSystemSources(&files_app, pickle);
   EXPECT_EQ(2, file_info.size());

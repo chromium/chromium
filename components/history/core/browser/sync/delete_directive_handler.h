@@ -5,10 +5,7 @@
 #ifndef COMPONENTS_HISTORY_CORE_BROWSER_SYNC_DELETE_DIRECTIVE_HANDLER_H_
 #define COMPONENTS_HISTORY_CORE_BROWSER_SYNC_DELETE_DIRECTIVE_HANDLER_H_
 
-#include <stdint.h>
-
 #include <memory>
-#include <set>
 
 #include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
@@ -19,6 +16,10 @@
 #include "components/sync/model/syncable_service.h"
 
 class GURL;
+
+namespace base {
+class Time;
+}
 
 namespace sync_pb {
 class HistoryDeleteDirectiveSpecifics;
@@ -50,12 +51,10 @@ class DeleteDirectiveHandler : public syncer::SyncableService {
   // handle sync events.
   void OnBackendLoaded();
 
-  // Create delete directives for the deletion of visits identified by
-  // `global_ids` (which may be empty), in the time range specified by
-  // `begin_time` and `end_time`.
-  bool CreateDeleteDirectives(const std::set<int64_t>& global_ids,
-                              base::Time begin_time,
-                              base::Time end_time);
+  // Create delete directives for the deletion of visits in the time range
+  // specified by `begin_time` and `end_time`.
+  bool CreateTimeRangeDeleteDirective(base::Time begin_time,
+                                      base::Time end_time);
 
   bool CreateUrlDeleteDirective(const GURL& url);
 

@@ -24,9 +24,10 @@ MainThreadSchedulerHelper::MainThreadSchedulerHelper(
           NewTaskQueue(MainThreadTaskQueue::QueueCreationParams(
                            MainThreadTaskQueue::QueueType::kControl)
                            .SetShouldNotifyObservers(false))) {
-  InitDefaultQueues(default_task_queue_->GetTaskQueue(),
-                    control_task_queue_->GetTaskQueue(),
-                    TaskType::kMainThreadTaskQueueDefault);
+  control_task_queue_->SetQueuePriority(TaskQueue::kControlPriority);
+  InitDefaultTaskRunner(default_task_queue_->CreateTaskRunner(
+      TaskType::kMainThreadTaskQueueDefault));
+
   sequence_manager_->EnableCrashKeys("blink_scheduler_async_stack");
 }
 
@@ -38,11 +39,6 @@ MainThreadSchedulerHelper::~MainThreadSchedulerHelper() {
 scoped_refptr<MainThreadTaskQueue>
 MainThreadSchedulerHelper::DefaultMainThreadTaskQueue() {
   return default_task_queue_;
-}
-
-const scoped_refptr<base::SingleThreadTaskRunner>&
-MainThreadSchedulerHelper::DefaultTaskRunner() {
-  return default_task_runner();
 }
 
 scoped_refptr<MainThreadTaskQueue>
@@ -59,7 +55,7 @@ scoped_refptr<base::SingleThreadTaskRunner>
 MainThreadSchedulerHelper::DeprecatedDefaultTaskRunner() {
   // TODO(hajimehoshi): Introduce a different task queue from the default task
   // queue and return the task runner created from it.
-  return default_task_runner();
+  return DefaultTaskRunner();
 }
 
 scoped_refptr<MainThreadTaskQueue> MainThreadSchedulerHelper::NewTaskQueue(

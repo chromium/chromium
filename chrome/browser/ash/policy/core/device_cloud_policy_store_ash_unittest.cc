@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/compiler_specific.h"
 #include "base/run_loop.h"
@@ -15,10 +16,10 @@
 #include "chrome/browser/ash/settings/device_settings_test_helper.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
+#include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/fake_install_attributes_client.h"
 #include "chromeos/dbus/userdataauth/install_attributes_util.h"
-#include "chromeos/network/onc/onc_test_utils.h"
 #include "chromeos/tpm/install_attributes.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_store.h"
@@ -340,6 +341,25 @@ TEST_F(DeviceCloudPolicyStoreAshTest, InstallInitialPolicyNotEnterprise) {
   FlushDeviceSettings();
   ExpectFailure(CloudPolicyStore::STATUS_BAD_STATE);
   EXPECT_EQ(std::string(), store_->policy_signature_public_key());
+}
+
+TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceBlockDevmodeAllowed) {
+  PrepareExistingPolicy();
+  device_policy_->payload().mutable_system_settings()->set_block_devmode(true);
+  store_->Store(device_policy_->policy());
+  FlushDeviceSettings();
+  ExpectSuccess();
+}
+
+TEST_F(DeviceCloudPolicyStoreAshTest, StoreDeviceBlockDevmodeDisallowed) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(
+      ash::switches::kDisallowPolicyBlockDevMode);
+  PrepareExistingPolicy();
+  device_policy_->payload().mutable_system_settings()->set_block_devmode(true);
+  device_policy_->Build();
+  store_->Store(device_policy_->policy());
+  FlushDeviceSettings();
+  EXPECT_EQ(store_->status(), CloudPolicyStore::STATUS_BAD_STATE);
 }
 
 }  // namespace policy

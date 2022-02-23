@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "gpu/config/gpu_info.h"
+
 #include <stdint.h>
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/gpu_memory_buffer_support.h"
-#include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <GLES2/gl2.h>
 #include <GLES2/gl2extchromium.h>
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace {
 
@@ -22,12 +24,12 @@ void EnumerateGPUDevice(const gpu::GPUInfo::GPUDevice& device,
   enumerator->BeginGPUDevice();
   enumerator->AddInt("vendorId", device.vendor_id);
   enumerator->AddInt("deviceId", device.device_id);
-#if defined(OS_WIN) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)
   enumerator->AddInt("revision", device.revision);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   enumerator->AddInt("subSysId", device.sub_sys_id);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   enumerator->AddBool("active", device.active);
   enumerator->AddString("vendorString", device.vendor_string);
   enumerator->AddString("deviceString", device.device_string);
@@ -113,7 +115,7 @@ void EnumerateImageDecodeAcceleratorSupportedProfile(
   enumerator->EndImageDecodeAcceleratorSupportedProfile();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void EnumerateOverlayInfo(const gpu::OverlayInfo& info,
                           gpu::GPUInfo::Enumerator* enumerator) {
   enumerator->BeginOverlayInfo();
@@ -143,7 +145,7 @@ bool IsSoftwareRenderer(uint32_t vendor_id) {
 
 namespace gpu {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char* OverlaySupportToString(gpu::OverlaySupport support) {
   switch (support) {
     case gpu::OverlaySupport::kNone:
@@ -156,9 +158,9 @@ const char* OverlaySupportToString(gpu::OverlaySupport support) {
       return "SOFTWARE";
   }
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 GPU_EXPORT bool ValidateMacOSSpecificTextureTarget(int target) {
   switch (target) {
     case GL_TEXTURE_2D:
@@ -169,7 +171,7 @@ GPU_EXPORT bool ValidateMacOSSpecificTextureTarget(int target) {
       return false;
   }
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 VideoDecodeAcceleratorCapabilities::VideoDecodeAcceleratorCapabilities()
     : flags(0) {}
@@ -220,11 +222,10 @@ GPUInfo::GPUInfo()
       sandboxed(false),
       in_process_gpu(true),
       passthrough_cmd_decoder(false),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       macos_specific_texture_target(gpu::GetPlatformSpecificTextureTarget()),
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
       jpeg_decode_accelerator_supported(false),
-      oop_rasterization_supported(false),
       subpixel_font_rendering(true) {
 }
 
@@ -292,11 +293,12 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     bool sandboxed;
     bool in_process_gpu;
     bool passthrough_cmd_decoder;
+    bool is_asan;
     bool can_support_threaded_texture_mailbox;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     uint32_t macos_specific_texture_target;
-#endif  // OS_MAC
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
     DxDiagNode dx_diagnostics;
     uint32_t d3d12_feature_level;
     uint32_t vulkan_version;
@@ -316,7 +318,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
     ImageDecodeAcceleratorSupportedProfiles
         image_decode_accelerator_supported_profiles;
 
-    bool oop_rasterization_supported;
     bool subpixel_font_rendering;
     uint32_t visibility_callback_call_count;
 
@@ -362,14 +363,15 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
   enumerator->AddBool("sandboxed", sandboxed);
   enumerator->AddBool("inProcessGpu", in_process_gpu);
   enumerator->AddBool("passthroughCmdDecoder", passthrough_cmd_decoder);
+  enumerator->AddBool("isAsan", is_asan);
   enumerator->AddBool("canSupportThreadedTextureMailbox",
                       can_support_threaded_texture_mailbox);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   enumerator->AddInt("macOSSpecificTextureTarget",
                      macos_specific_texture_target);
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   // TODO(kbr): add dx_diagnostics on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EnumerateOverlayInfo(overlay_info, enumerator);
   enumerator->AddBool("supportsDx12", d3d12_feature_level != 0);
   enumerator->AddBool("supportsVulkan", vulkan_version != 0);
@@ -394,7 +396,6 @@ void GPUInfo::EnumerateFields(Enumerator* enumerator) const {
       jpeg_decode_accelerator_supported);
   for (const auto& profile : image_decode_accelerator_supported_profiles)
     EnumerateImageDecodeAcceleratorSupportedProfile(profile, enumerator);
-  enumerator->AddBool("oopRasterizationSupported", oop_rasterization_supported);
   enumerator->AddBool("subpixelFontRendering", subpixel_font_rendering);
   enumerator->AddInt("visibilityCallbackCallCount",
                      visibility_callback_call_count);

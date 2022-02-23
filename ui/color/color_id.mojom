@@ -1,0 +1,27 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module color.mojom;
+
+// Color Ids that are used for renderer-specific code. These map directly to
+// ui::ColorIds and help ensure that the renderer only receives this well
+// defined subset of colors. If changing this you must also update the mapping
+// in color_provider_utils.cc.
+enum RendererColorId {
+  kColorMenuBackground,
+  kColorMenuItemBackgroundSelected,
+  kColorMenuSeparator,
+  kColorOverlayScrollbarFill,
+  kColorOverlayScrollbarFillDark,
+  kColorOverlayScrollbarFillLight,
+  kColorOverlayScrollbarFillHovered,
+  kColorOverlayScrollbarFillHoveredDark,
+  kColorOverlayScrollbarFillHoveredLight,
+  kColorOverlayScrollbarStroke,
+  kColorOverlayScrollbarStrokeDark,
+  kColorOverlayScrollbarStrokeLight,
+  kColorOverlayScrollbarStrokeHovered,
+  kColorOverlayScrollbarStrokeHoveredDark,
+  kColorOverlayScrollbarStrokeHoveredLight,
+};

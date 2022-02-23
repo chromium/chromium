@@ -4,12 +4,12 @@
 
 #include "ash/webui/eche_app_ui/eche_presence_manager.h"
 
+#include "ash/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 #include "ash/webui/eche_app_ui/eche_connector.h"
 #include "ash/webui/eche_app_ui/proto/exo_messages.pb.h"
 #include "chromeos/components/multidevice/logging/logging.h"
 #include "chromeos/components/multidevice/remote_device_ref.h"
 #include "chromeos/services/device_sync/public/cpp/device_sync_client.h"
-#include "chromeos/services/secure_channel/public/cpp/client/presence_monitor_client.h"
 
 namespace ash {
 namespace eche_app {
@@ -71,6 +71,8 @@ void EchePresenceManager::UpdateMonitoringStatus() {
   const FeatureStatus feature_status =
       eche_feature_status_provider_->GetStatus();
   switch (feature_status) {
+    case FeatureStatus::kNotEnabledByPhone:
+      ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kIneligible:
       ABSL_FALLTHROUGH_INTENDED;
     case FeatureStatus::kDisabled:

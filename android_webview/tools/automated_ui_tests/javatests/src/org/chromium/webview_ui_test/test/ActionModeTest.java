@@ -18,13 +18,9 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtra;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasExtras;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasType;
-import static androidx.test.espresso.matcher.RootMatchers.DEFAULT;
 import static androidx.test.espresso.matcher.RootMatchers.withDecorView;
 import static androidx.test.espresso.matcher.ViewMatchers.isClickable;
-import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.isEnabled;
-import static androidx.test.espresso.matcher.ViewMatchers.withChild;
-import static androidx.test.espresso.matcher.ViewMatchers.withClassName;
 import static androidx.test.espresso.matcher.ViewMatchers.withContentDescription;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
@@ -34,7 +30,6 @@ import static androidx.test.espresso.web.webdriver.DriverAtoms.findElement;
 import static androidx.test.espresso.web.webdriver.DriverAtoms.getText;
 
 import static org.hamcrest.CoreMatchers.allOf;
-import static org.hamcrest.CoreMatchers.endsWith;
 import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.core.AnyOf.anyOf;
@@ -64,8 +59,6 @@ import androidx.test.espresso.intent.Intents;
 import androidx.test.espresso.web.webdriver.Locator;
 import androidx.test.filters.SmallTest;
 
-import junit.framework.AssertionFailedError;
-
 import org.hamcrest.Description;
 import org.hamcrest.Matcher;
 import org.hamcrest.TypeSafeMatcher;
@@ -75,7 +68,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
-import org.chromium.base.test.util.DisableIf;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.webview_ui_test.R;
 import org.chromium.webview_ui_test.WebViewUiTestActivity;
 import org.chromium.webview_ui_test.test.util.UseLayout;
@@ -84,7 +77,7 @@ import org.chromium.webview_ui_test.test.util.WebViewUiTestRule;
 /**
  * Tests for WebView ActionMode.
  */
-@DisableIf.Build(message = "crbug.com/947352", sdk_is_greater_than = Build.VERSION_CODES.LOLLIPOP)
+@DisabledTest(message = "https://crbug.com/947352")
 @RunWith(BaseJUnit4ClassRunner.class)
 public class ActionModeTest {
     private static final String TAG = "ActionModeTest";
@@ -210,22 +203,7 @@ public class ActionModeTest {
      * Click an item on the Action Mode popup
      */
     public void clickPopupAction(final String name) {
-        Matcher<Root> rootMatcher;
-
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.M) {
-            try {
-                // On L and lower, use the espresso DEFAULT root matcher if ActionBar is detected
-                onView(withClassName(endsWith("ActionBarContextView")))
-                        .check(matches(isDisplayed()));
-                rootMatcher = DEFAULT;
-            } catch (NoMatchingViewException | AssertionFailedError e) {
-                // Else match in a popup
-                rootMatcher = withDecorView(withChild(withText(name)));
-            }
-        } else {
-            // On M and above, can use the decoreView matcher
-            rootMatcher = withDecorView(isEnabled());
-        }
+        Matcher<Root> rootMatcher = withDecorView(isEnabled());
 
         try {
             onView(allOf(anyOf(withText(name), withContentDescription(name)), isClickable()))

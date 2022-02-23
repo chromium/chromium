@@ -60,18 +60,22 @@
   "file_handlers": {
     "mount-archive": {
       "extensions": [
-        "7z",
-        "bz2",
-        "crx",
-        "gz",
-        "iso",
+        "zip",
         "rar",
+        "7z",
+        "crx",
+        "iso",
         "tar",
         "tbz",
         "tbz2",
         "tgz",
-        "xz",
-        "zip"
+        "tlzma",
+        "txz",
+        "bz",
+        "bz2",
+        "gz",
+        "lzma",
+        "xz"
       ]
     },
     "view-pdf": {
@@ -80,11 +84,6 @@
       ],
       "types": [
         "application/pdf"
-      ]
-    },
-    "view-swf": {
-      "extensions": [
-        "swf"
       ]
     },
     "view-in-browser": {
@@ -126,6 +125,16 @@
     "open-hosted-gslides": {
       "extensions": [
         "gslides"
+      ]
+    },
+    "open-web-drive-office": {
+      "extensions": [
+        "doc",
+        "docx",
+        "xls",
+        "xlsx",
+        "ppt",
+        "pptx"
       ]
     },
     "install-linux-package": {

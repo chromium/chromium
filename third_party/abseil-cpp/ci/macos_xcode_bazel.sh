@@ -32,6 +32,13 @@ else
   BAZEL_BIN="bazel"
 fi
 
+# Avoid depending on external sites like GitHub by checking --distdir for
+# external dependencies first.
+# https://docs.bazel.build/versions/master/guide.html#distdir
+if [[ ${KOKORO_GFILE_DIR:-} ]] && [[ -d "${KOKORO_GFILE_DIR}/distdir" ]]; then
+  BAZEL_EXTRA_ARGS="--distdir=${KOKORO_GFILE_DIR}/distdir ${BAZEL_EXTRA_ARGS:-}"
+fi
+
 # Print the compiler and Bazel versions.
 echo "---------------"
 gcc -v
@@ -46,9 +53,11 @@ if [[ -n "${ALTERNATE_OPTIONS:-}" ]]; then
 fi
 
 ${BAZEL_BIN} test ... \
+  --copt="-DGTEST_REMOVE_LEGACY_TEST_CASEAPI_=1" \
   --copt=-Werror \
   --keep_going \
   --show_timestamps \
   --test_env="TZDIR=${ABSEIL_ROOT}/absl/time/internal/cctz/testdata/zoneinfo" \
   --test_output=errors \
-  --test_tag_filters=-benchmark
+  --test_tag_filters=-benchmark \
+  ${BAZEL_EXTRA_ARGS:-}

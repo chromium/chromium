@@ -160,8 +160,8 @@ const Extension* PlatformAppBrowserTest::InstallAndLaunchPlatformApp(
 void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
-          extension->id(), LaunchContainer::kLaunchContainerNone,
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+          extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));
 }
@@ -169,7 +169,7 @@ void PlatformAppBrowserTest::LaunchPlatformApp(const Extension* extension) {
 void PlatformAppBrowserTest::LaunchHostedApp(const Extension* extension) {
   apps::AppServiceProxyFactory::GetForProfile(profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(CreateAppLaunchParamsUserContainer(
+      ->LaunchAppWithParamsForTesting(CreateAppLaunchParamsUserContainer(
           browser()->profile(), extension,
           WindowOpenDisposition::NEW_FOREGROUND_TAB,
           apps::mojom::LaunchSource::kFromCommandLine));
@@ -208,7 +208,7 @@ size_t PlatformAppBrowserTest::RunGetWindowsFunctionForExtension(
   std::unique_ptr<base::ListValue> result(
       utils::ToList(utils::RunFunctionAndReturnSingleResult(function.get(),
                                                             "[]", browser())));
-  return result->GetList().size();
+  return result->GetListDeprecated().size();
 }
 
 bool PlatformAppBrowserTest::RunGetWindowFunctionForExtension(

@@ -216,7 +216,8 @@ class ThreadedWorkletMessagingProxyForTest
             GetExecutionContext()->GetHttpsState(), worker_clients,
             nullptr /* content_settings_client */,
             GetExecutionContext()->AddressSpace(),
-            OriginTrialContext::GetTokens(GetExecutionContext()).get(),
+            OriginTrialContext::GetInheritedTrialFeatures(GetExecutionContext())
+                .get(),
             base::UnguessableToken::Create(), std::move(worker_settings),
             mojom::blink::V8CacheOptions::kDefault,
             MakeGarbageCollected<WorkletModuleResponsesMap>(),

@@ -9,14 +9,17 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "components/services/app_service/public/mojom/types.mojom-forward.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/models/image_model.h"
@@ -45,7 +48,7 @@ class WebAppProvider;
 // Note: Much of the functionality in HostedAppBrowserController
 // will move to this class.
 class WebAppBrowserController : public AppBrowserController,
-                                public AppRegistrarObserver {
+                                public WebAppInstallManagerObserver {
  public:
   WebAppBrowserController(WebAppProvider& provider,
                           Browser* browser,
@@ -85,9 +88,9 @@ class WebAppBrowserController : public AppBrowserController,
   bool ShouldShowCustomTabBar() const override;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppUninstalled(const AppId& app_id) override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   void SetReadIconCallbackForTesting(base::OnceClosure callback);
 
@@ -98,11 +101,12 @@ class WebAppBrowserController : public AppBrowserController,
 
  private:
   const WebAppRegistrar& registrar() const;
+  const WebAppInstallManager& install_manager() const;
 
   // Helper function to call AppServiceProxy to load icon.
   void LoadAppIcon(bool allow_placeholder_icon) const;
   // Invoked when the icon is loaded.
-  void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
 
   void OnReadIcon(SkBitmap bitmap);
   void PerformDigitalAssetLinkVerification(Browser* browser);
@@ -112,8 +116,12 @@ class WebAppBrowserController : public AppBrowserController,
       digital_asset_links::RelationshipCheckResult result);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+  // Helper function to return the resolved background color from the manifest
+  // given the current state of dark/light mode.
+  absl::optional<SkColor> GetResolvedManifestBackgroundColor() const;
+
   WebAppProvider& provider_;
-  const SystemWebAppDelegate* system_app_;
+  raw_ptr<const SystemWebAppDelegate> system_app_;
   mutable absl::optional<ui::ImageModel> app_icon_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -125,8 +133,8 @@ class WebAppBrowserController : public AppBrowserController,
       asset_link_handler_;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver>
-      registrar_observation_{this};
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      install_manager_observation_{this};
 
   base::OnceClosure callback_for_testing_;
   mutable base::WeakPtrFactory<WebAppBrowserController> weak_ptr_factory_{this};

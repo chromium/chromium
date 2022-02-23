@@ -299,7 +299,10 @@
     },
     "marquee",
     "menu",
-    "meta",
+    {
+      name: "meta",
+      constructorNeedsCreateElementFlags: true,
+    },
     {
       name: "meter",
       interfaceName: "HTMLMeterElement",

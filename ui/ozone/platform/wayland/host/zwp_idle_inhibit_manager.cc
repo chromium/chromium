@@ -12,7 +12,7 @@
 namespace ui {
 
 namespace {
-constexpr uint32_t kMaxZwpIdleInhibitManagerVersion = 1;
+constexpr uint32_t kMinVersion = 1;
 }
 
 // static
@@ -26,11 +26,13 @@ void ZwpIdleInhibitManager::Instantiate(WaylandConnection* connection,
                                         uint32_t version) {
   DCHECK_EQ(interface, kInterfaceName);
 
-  if (connection->zwp_idle_inhibit_manager_)
+  if (connection->zwp_idle_inhibit_manager_ ||
+      !wl::CanBind(interface, version, kMinVersion, kMinVersion)) {
     return;
+  }
 
-  auto manager = wl::Bind<zwp_idle_inhibit_manager_v1>(
-      registry, name, std::min(version, kMaxZwpIdleInhibitManagerVersion));
+  auto manager =
+      wl::Bind<zwp_idle_inhibit_manager_v1>(registry, name, kMinVersion);
   if (!manager) {
     LOG(ERROR) << "Failed to bind zwp_idle_inhibit_manager_v1";
     return;

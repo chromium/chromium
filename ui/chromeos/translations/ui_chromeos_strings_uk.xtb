@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Клавіатура хангул (анмате)</translation>
 <translation id="1155759005174418845">Каталанська</translation>
 <translation id="1168100932582989117">Імена серверів – Google</translation>
+<translation id="1171082344678443012">Стиснутий архів XZ</translation>
 <translation id="1172970565351728681">Залишилося приблизно <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Перейменувати</translation>
 <translation id="1173916544412572294">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, рівень заряду акумулятора телефона – <ph name="BATTERY_STATUS" />%. Докладніше</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Якщо відформатувати диск, усі збережені на ньому дані буде видалено. Цю дію не можна відмінити.</translation>
 <translation id="2025955442973426285">Тигринья</translation>
 <translation id="2028997212275086731">Архів у форматі RAR</translation>
+<translation id="2036414735548252477">Стиснутий архів LZMA у форматі TAR</translation>
 <translation id="2037845485764049925">Російська</translation>
 <translation id="2044023416777079300">Модем не зареєстровано</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Надіслати в <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Хост SOCKS</translation>
+<translation id="3104793765551262433">Мережа № <ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: "<ph name="NETWORK_NAME" />"; стан безпеки: <ph name="SECURITY_STATUS" />; стан з’єднання: <ph name="CONNECTION_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
 <translation id="3113153474486991170">Не вдалося відкрити файл "<ph name="PATH" />" з цієї папки. Скопіюйте його в папку "Мої файли".</translation>
 <translation id="3113592018909187986">Залишилась 1 спроба. Ви не зможете користуватися цією мережею, доки не налаштуєте новий PIN-код.</translation>
 <translation id="3124404833828281817">Замріяна людина</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Англійська (США), міжнародна розкладка для ПК</translation>
 <translation id="3567221313191587603">Виберіть файл і ввімкніть опцію "<ph name="OFFLINE_CHECKBOX_NAME" />", щоб мати доступ у режимі офлайн.</translation>
 <translation id="357479282490346887">Литовська</translation>
+<translation id="3587482841069643663">Все</translation>
 <translation id="3592251141500063301">Не вдалося завантажити файл "<ph name="FILE_NAME" />" для доступу офлайн</translation>
 <translation id="3601151620448429694">"<ph name="NETWORK_NAME" />" · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Французька (Канада)</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Усі файли імпортовано!</translation>
 <translation id="3634507049637220048">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />. Мережею керує адміністратор. Докладніше</translation>
 <translation id="3645233063072417428">Переміщено елементів: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Відкріпити папку</translation>
 <translation id="3685122418104378273">Коли використовується мобільний Інтернет, синхронізацію Google Диска вимкнено за умовчанням.</translation>
 <translation id="3689865792480713551">Скасувати <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, не активовано, <ph name="CONNECTION_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%, відомості</translation>
 <translation id="3691184985318546178">Сингальська</translation>
 <translation id="3726463242007121105">Не вдається відкрити пристрій, оскільки його файлова система не підтримується.</translation>
 <translation id="3727148787322499904">Зміна цього налаштування вплине на всі спільні мережі</translation>
+<translation id="3737576078404241332">Видалити з бічної панелі</translation>
 <translation id="3741243925913727067">Створення резервних копій фотографій і відео з носія на Google Диску.</translation>
 <translation id="3749289110408117711">Ім’я файлу</translation>
 <translation id="3780536599611287598">У вас немає дозволу переміщати файли в папку "<ph name="FOLDER_NAME" />".</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Ботанік</translation>
 <translation id="4326192123064055915">Кава</translation>
 <translation id="4336032328163998280">Помилка операції копіювання. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Додати на бічну панель</translation>
 <translation id="4348495354623233847">Курдська сорані, розкладка на основі арабської</translation>
 <translation id="4363958938297989186">Російська, фонетична розкладка</translation>
 <translation id="4364327530094270451">Диня</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
 <translation id="4880214202172289027">Регулятор гучності</translation>
 <translation id="4881695831933465202">Відкрити</translation>
+<translation id="4886199584824489598">Стиснутий архів Bzip2</translation>
 <translation id="4900532980794411603">Надати доступ додатку Parallels Desktop</translation>
 <translation id="4902546322522096650">Мережа <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, рівень сигналу – <ph name="SIGNAL_STRENGTH" />%. Підключитися</translation>
 <translation id="4905417359854579806">Готово до резервного копіювання: <ph name="FILE_COUNT" /></translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013">Мережа <ph name="NETWORK_TYPE" />, не під'єднано до Інтернету</translation>
 <translation id="6074825444536523002">Форма Google</translation>
 <translation id="6079871810119356840">Угорська, розкладка Qwerty</translation>
+<translation id="6082256976217156453">Стиснутий архів LZMA</translation>
 <translation id="6096979789310008754">Текст пошукового запиту стерто, показано всі папки та файли.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> переміщається в папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="6129953537138746214">Пробіл</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Догори дригом</translation>
 <translation id="6943836128787782965">Помилка HTTP</translation>
 <translation id="6949408524333579394">Сербська, транслітерація</translation>
+<translation id="6954309393500027528">Адміністратор заблокував можливість вставити цей файл</translation>
 <translation id="6960565108681981554">Не активовано. Зв’яжіться з оператором.</translation>
 <translation id="696203921837389374">Увімкнути синхронізацію через мобільний Інтернет</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Клавіатура хангул із 3 наборами клавіш (без клавіші Shift)</translation>
 <translation id="8299269255470343364">Японська</translation>
 <translation id="8300849813060516376">Помилка OTASP</translation>
+<translation id="8308481408797647857">Стиснутий архів XZ у форматі TAR</translation>
 <translation id="8312871300878166382">Вставити в папку</translation>
 <translation id="8329978297633540474">Звичайний текст</translation>
 <translation id="8335587457941836791">Відкріпити від панелі запуску</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">Латвійська</translation>
 <translation id="8560515948038859357">Кантонський діалект</translation>
 <translation id="8561206103590473338">Слон</translation>
+<translation id="8566466896628108558">Мережа № <ph name="NETWORK_INDEX" />; загалом мереж: <ph name="NETWORK_COUNT" />; назва мережі: "<ph name="NETWORK_NAME" />"; стан безпеки: <ph name="SECURITY_STATUS" />; рівень сигналу: <ph name="SIGNAL_STRENGTH" />%; заблоковано адміністратором; відомості</translation>
 <translation id="8569764466147087991">Виберіть файл, який потрібно відкрити</translation>
 <translation id="8577897833047451336">Хорватська</translation>
 <translation id="8578308463707544055">Індонезійська</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Ми постійно шукаємо способи зробити перегляд веб-сторінок безпечнішим. Раніше будь-який веб-сайт міг пропонувати вам додати розширення у веб-переглядач. В останніх версіях Google Chrome ви маєте чітко вказати, що хочете встановити ці розширення, додавши їх на сторінці "Розширення". <ph name="BEGIN_LINK" />Докладніше<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Розблокувати</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Закріпити папку</translation>
 <translation id="9130775360844693113">Учасники, які мають доступ до розташування "<ph name="DESTINATION_NAME" />", отримають доступ до цих елементів.</translation>
 <translation id="9131598836763251128">Виберіть один або декілька файлів</translation>
 <translation id="9133055936679483811">Помилка архівування. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Змінено користувачем</translation>
 <translation id="945522503751344254">Надіслати відгук</translation>
 <translation id="947144732524271678">Вибрано елементи (<ph name="ENTRY_COUNT" />): від <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Стиснутий архів Gzip</translation>
 <translation id="965477715979482472">Англійська (Південна Африка)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">Файл із назвою "<ph name="FILE_NAME" />" уже існує. Замінити його?</translation>

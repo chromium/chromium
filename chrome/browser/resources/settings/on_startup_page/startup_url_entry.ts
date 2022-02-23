@@ -20,6 +20,7 @@ import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './startup_url_entry.html.js';
 
 import {StartupPageInfo, StartupUrlsPageBrowserProxyImpl} from './startup_urls_page_browser_proxy.js';
 
@@ -40,7 +41,7 @@ export class SettingsStartupUrlEntryElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -185,7 +185,7 @@ TEST_F(BrowsingDataHistoryObserverServiceTest,
       url::Origin::Create(origin_b), nullptr /* special_storage_policy */));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 TEST_F(BrowsingDataHistoryObserverServiceTest,
        TimeRangeHistoryWithRestrictions_ClearCommerceDataCalled) {

@@ -74,7 +74,8 @@ declare_args() {
   use_thin_lto =
       is_cfi ||
       (is_clang && is_official_build && chrome_pgo_phase != 1 &&
-       (is_linux || is_win || (is_android && target_os != "chromeos") ||
+       (is_linux || is_win || is_mac ||
+        (is_android && target_os != "chromeos") ||
         ((is_chromeos_ash || is_chromeos_lacros) && is_chromeos_device)))
 
   # If true, use Goma for ThinLTO code generation where applicable.
@@ -166,10 +167,12 @@ if (is_chromeos_ash || is_chromeos_lacros) {
       # For caller-callee instrumentation version which needs frame pointers to
       # get the caller address.
       use_call_graph
+} else if (is_fuchsia) {
+  # Fuchsia on arm64 could use shadow call stack for unwinding.
+  enable_frame_pointers = current_cpu != "arm64"
 } else {
-  # Explicitly ask for frame pointers, otherwise:
-  # * Stacks may be missing for sanitizer and profiling builds.
-  # * Debug tcmalloc can crash (crbug.com/636489).
+  # Explicitly ask for frame pointers, otherwise stacks may be missing for
+  # sanitizer and profiling builds.
   enable_frame_pointers = using_sanitizer || enable_profiling || is_debug
 }
 
@@ -201,6 +204,9 @@ can_unwind_with_cfi_table = is_android && !is_component_build &&
 enable_arm_cfi_table = is_android && !is_component_build && current_cpu == "arm"
 
 declare_args() {
+  # Set to true to use the android unwinder V2 implementation.
+  use_android_unwinder_v2 = false
+
   # If this running on a GPU FYI bot.
   # TODO(https://crbug.com/1233871): Remove this again.
   is_gpu_fyi_bot = false
@@ -209,11 +215,12 @@ declare_args() {
 declare_args() {
   # Set to true to use lld, the LLVM linker.
   # In late bring-up on macOS (see docs/mac_lld.md).
-  # Tentatively used on iOS, except in cronet builds (cronet still supports 32-bit builds, which
-  # lld doesn't support).
+  # Tentatively used on iOS, except in cronet builds (cronet still supports
+  # 32-bit builds, which lld doesn't support) or when targeting "catalyst"
+  # (which lld doesn't support either).
   # The default linker everywhere else.
-  use_lld = is_clang && !(is_ios && is_cronet_build) &&
-            !(is_mac && is_gpu_fyi_bot) && current_os != "zos"
+  use_lld = is_clang && !(is_mac && is_gpu_fyi_bot) && current_os != "zos" &&
+            !(is_ios && (is_cronet_build || target_environment == "catalyst"))
 }
 
 declare_args() {

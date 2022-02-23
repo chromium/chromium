@@ -27,6 +27,7 @@ import org.chromium.chrome.browser.download.DownloadNotificationService.Download
 import org.chromium.chrome.browser.notifications.NotificationUmaTracker;
 import org.chromium.chrome.browser.notifications.NotificationWrapperBuilderFactory;
 import org.chromium.chrome.browser.notifications.channels.ChromeChannelDefinitions;
+import org.chromium.components.browser_ui.notifications.ForegroundServiceUtils;
 import org.chromium.components.browser_ui.notifications.NotificationMetadata;
 import org.chromium.components.browser_ui.notifications.NotificationWrapperBuilder;
 
@@ -368,6 +369,7 @@ public class DownloadForegroundServiceManager {
      */
     private boolean canStartForeground() {
         if (!BuildInfo.isAtLeastS()) return true;
+        if (!ForegroundServiceUtils.canStartForegroundServiceExcludingMedia()) return true;
         // If foreground service is started, startForeground() must be called.
         return ApplicationStatus.hasVisibleActivities()
                 || (mIsServiceBound && !mStartForegroundCalled);

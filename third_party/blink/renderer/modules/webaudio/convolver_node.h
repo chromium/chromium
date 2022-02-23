@@ -95,7 +95,7 @@ class MODULES_EXPORT ConvolverNode final : public AudioNode {
                                const ConvolverOptions*,
                                ExceptionState&);
 
-  ConvolverNode(BaseAudioContext&);
+  explicit ConvolverNode(BaseAudioContext&);
 
   AudioBuffer* buffer() const;
   void setBuffer(AudioBuffer*, ExceptionState&);

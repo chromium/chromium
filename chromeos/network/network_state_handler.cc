@@ -10,6 +10,7 @@
 #include <memory>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/contains.h"
@@ -322,9 +323,8 @@ void NetworkStateHandler::SetTechnologyEnabled(
                        << "DeviceState, but the current state was: "
                        << tether_technology_state_;
         network_handler::RunErrorCallback(
-            std::move(error_callback), kTetherDevicePath,
-            NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable,
-            "");
+            std::move(error_callback),
+            NetworkConnectionHandler::kErrorEnabledOrDisabledWhenNotAvailable);
         continue;
       }
 
@@ -1268,11 +1268,13 @@ void NetworkStateHandler::SetDeviceStateUpdatedForTest(
 // ShillPropertyHandler::Delegate overrides
 
 void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
-                                            const base::ListValue& entries) {
+                                            const base::Value& entries) {
   CHECK(!notifying_network_observers_);
+  DCHECK(entries.is_list());
+
   ManagedStateList* managed_list = GetManagedList(type);
   NET_LOG(DEBUG) << "UpdateManagedList: " << ManagedState::TypeToString(type)
-                 << ": " << entries.GetList().size();
+                 << ": " << entries.GetListDeprecated().size();
   // Create a map of existing entries. Assumes all entries in |managed_list|
   // are unique.
   std::map<std::string, std::unique_ptr<ManagedState>> managed_map;
@@ -1285,7 +1287,7 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   managed_list->clear();
   // Updates managed_list and request updates for new entries.
   std::set<std::string> list_entries;
-  for (const auto& iter : entries.GetList()) {
+  for (const auto& iter : entries.GetListDeprecated()) {
     const std::string* path = iter.GetIfString();
     if (!path)
       continue;
@@ -1319,7 +1321,9 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
   }
 
   UpdateManagedWifiNetworkAvailable();
-
+  if (features::IsESimPolicyEnabled()) {
+    UpdateBlockedCellularNetworks();
+  }
   if (type != ManagedState::ManagedType::MANAGED_TYPE_NETWORK)
     return;
 
@@ -1351,6 +1355,15 @@ void NetworkStateHandler::UpdateManagedList(ManagedState::ManagedType type,
     if (tether_network)
       tether_network->set_tether_guid(std::string());
   }
+}
+
+void NetworkStateHandler::UpdateBlockedCellularNetworks() {
+  DeviceState* device =
+      GetModifiableDeviceStateByType(NetworkTypePattern::Cellular());
+  if (!device || !device->update_received())
+    return;  // May be null in tests.
+
+  UpdateBlockedNetworksInternal(NetworkTypePattern::Cellular());
 }
 
 void NetworkStateHandler::ProfileListChanged(const base::Value& profile_list) {
@@ -1573,6 +1586,10 @@ void NetworkStateHandler::UpdateDeviceProperty(const std::string& device_path,
 
     if (device->type() == shill::kTypeWifi && !device->scanning())
       UpdateManagedWifiNetworkAvailable();
+    if (device->type() == shill::kTypeCellular && !device->scanning() &&
+        features::IsESimPolicyEnabled()) {
+      UpdateBlockedCellularNetworks();
+    }
   }
   if (key == shill::kEapAuthenticationCompletedProperty) {
     // Notify a change for each Ethernet service using this device.
@@ -1659,6 +1676,8 @@ void NetworkStateHandler::ManagedStateListChanged(
       UpdateNetworkStats();
       NotifyIfActiveNetworksChanged();
       NotifyNetworkListChanged();
+      if (features::IsESimPolicyEnabled())
+        UpdateBlockedCellularNetworks();
       UpdateManagedWifiNetworkAvailable();
       // ManagedStateListChanged only gets executed if all pending updates have
       // completed. Profile networks are loaded if a user is logged in and all
@@ -2222,7 +2241,7 @@ void NetworkStateHandler::ProcessIsUserLoggedIn(
   }
   // The profile list contains the shared profile on the login screen. Once the
   // user is logged in there is more than one profile in the profile list.
-  is_user_logged_in_ = profile_list.GetList().size() > 1;
+  is_user_logged_in_ = profile_list.GetListDeprecated().size() > 1;
 }
 
 }  // namespace chromeos

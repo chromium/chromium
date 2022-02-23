@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/media/cma/backend/video_decoder_for_mixer.h"
 

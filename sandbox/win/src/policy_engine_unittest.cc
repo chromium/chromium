@@ -15,11 +15,7 @@
 
 namespace sandbox {
 
-bool SetupNtdllImports();
-
 TEST(PolicyEngineTest, Rules1) {
-  SetupNtdllImports();
-
   // Construct two policy rules that say:
   //
   // #1

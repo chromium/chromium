@@ -122,8 +122,6 @@ source_set("internal") {
     "policy_load_status.h",
     "policy_loader_command_line.cc",
     "policy_loader_command_line.h",
-    "policy_loader_common.cc",
-    "policy_loader_common.h",
     "policy_map.cc",
     "policy_map.h",
     "policy_merger.cc",
@@ -228,6 +226,13 @@ source_set("internal") {
     ]
   }
 
+  if (is_win || is_mac) {
+    sources += [
+      "policy_loader_common.cc",
+      "policy_loader_common.h",
+    ]
+  }
+
   # Compile on Linux for fuzzer and since code is reused on Chrome OS.
   if (is_win || is_linux || is_chromeos) {
     sources += [
@@ -275,6 +280,8 @@ source_set("internal") {
   if (is_chromeos_ash) {
     deps += [ "//chromeos/system" ]
     sources += [
+      "default_chrome_apps_migrator.cc",
+      "default_chrome_apps_migrator.h",
       "policy_scheduler.cc",
       "policy_scheduler.h",
     ]
@@ -351,10 +358,10 @@ static_library("test_support") {
     "mock_policy_service.h",
     "policy_test_utils.cc",
     "policy_test_utils.h",
-    "remote_commands/test_remote_command_job.cc",
-    "remote_commands/test_remote_command_job.h",
-    "remote_commands/testing_remote_commands_server.cc",
-    "remote_commands/testing_remote_commands_server.h",
+    "remote_commands/test_support/echo_remote_command_job.cc",
+    "remote_commands/test_support/echo_remote_command_job.h",
+    "remote_commands/test_support/testing_remote_commands_server.cc",
+    "remote_commands/test_support/testing_remote_commands_server.h",
   ]
 
   if (is_chromeos_ash) {
@@ -430,10 +437,8 @@ source_set("unit_tests") {
     "cloud/affiliation_unittest.cc",
     "cloud/cloud_policy_client_unittest.cc",
     "cloud/cloud_policy_core_unittest.cc",
-    "cloud/cloud_policy_manager_unittest.cc",
     "cloud/cloud_policy_refresh_scheduler_unittest.cc",
     "cloud/cloud_policy_service_unittest.cc",
-    "cloud/cloud_policy_validator_unittest.cc",
     "cloud/device_management_service_unittest.cc",
     "cloud/user_info_fetcher_unittest.cc",
     "command_line_policy_provider_unittest.cc",
@@ -443,6 +448,7 @@ source_set("unit_tests") {
     "policy_bundle_unittest.cc",
     "policy_loader_command_line_unittest.cc",
     "policy_map_unittest.cc",
+    "policy_proto_decoders_unittest.cc",
     "policy_service_impl_unittest.cc",
     "policy_statistics_collector_unittest.cc",
     "remote_commands/remote_commands_queue_unittest.cc",
@@ -453,6 +459,15 @@ source_set("unit_tests") {
     "schema_unittest.cc",
     "values_util_unittest.cc",
   ]
+
+  # TODO(crbug.com/1270429): Enable these tests on Fuchsia if appropriate.
+  if (!is_fuchsia) {
+    sources += [
+      "cloud/cloud_policy_manager_unittest.cc",
+      "cloud/cloud_policy_validator_unittest.cc",
+    ]
+  }
+
   if (is_win || is_linux || is_chromeos) {
     sources += [
       "preg_parser_unittest.cc",
@@ -461,25 +476,27 @@ source_set("unit_tests") {
   }
   if (is_chromeos_ash) {
     sources += [
+      "default_chrome_apps_migrator_unittest.cc",
       "policy_scheduler_unittest.cc",
       "proxy_policy_provider_unittest.cc",
     ]
   } else {
     sources += [
       "cloud/machine_level_user_cloud_policy_manager_unittest.cc",
-      "cloud/machine_level_user_cloud_policy_store_unittest.cc",
       "cloud/user_cloud_policy_manager_unittest.cc",
-      "cloud/user_cloud_policy_store_unittest.cc",
     ]
+
+    # TODO(crbug.com/1270429): Enable these tests on Fuchsia if appropriate.
+    if (!is_fuchsia) {
+      sources += [
+        "cloud/machine_level_user_cloud_policy_store_unittest.cc",
+        "cloud/user_cloud_policy_store_unittest.cc",
+      ]
+    }
   }
 
-  if (is_fuchsia) {
-    sources -= [
-      "cloud/cloud_policy_manager_unittest.cc",
-      "cloud/cloud_policy_validator_unittest.cc",
-      "cloud/machine_level_user_cloud_policy_store_unittest.cc",
-      "cloud/user_cloud_policy_store_unittest.cc",
-    ]
+  if (is_win || is_mac) {
+    sources += [ "policy_loader_common_unittest.cc" ]
   }
 
   if (is_android) {

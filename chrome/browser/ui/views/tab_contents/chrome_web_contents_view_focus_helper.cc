@@ -13,13 +13,14 @@
 #include "ui/views/focus/focus_manager.h"
 #include "ui/views/widget/widget.h"
 
-
 ChromeWebContentsViewFocusHelper::ChromeWebContentsViewFocusHelper(
     content::WebContents* web_contents)
-    : web_contents_(web_contents) {}
+    : content::WebContentsUserData<ChromeWebContentsViewFocusHelper>(
+          *web_contents) {}
 
 bool ChromeWebContentsViewFocusHelper::Focus() {
-  SadTabHelper* sad_tab_helper = SadTabHelper::FromWebContents(web_contents_);
+  SadTabHelper* sad_tab_helper =
+      SadTabHelper::FromWebContents(&GetWebContents());
   if (sad_tab_helper) {
     SadTabView* sad_tab = static_cast<SadTabView*>(sad_tab_helper->sad_tab());
     if (sad_tab) {
@@ -29,7 +30,8 @@ bool ChromeWebContentsViewFocusHelper::Focus() {
   }
 
   const web_modal::WebContentsModalDialogManager* manager =
-      web_modal::WebContentsModalDialogManager::FromWebContents(web_contents_);
+      web_modal::WebContentsModalDialogManager::FromWebContents(
+          &GetWebContents());
   if (manager && manager->IsDialogActive()) {
     manager->FocusTopmostDialog();
     return true;
@@ -77,7 +79,7 @@ views::View* ChromeWebContentsViewFocusHelper::GetStoredFocus() {
 }
 
 gfx::NativeView ChromeWebContentsViewFocusHelper::GetActiveNativeView() {
-  return web_contents_->GetNativeView();
+  return GetWebContents().GetNativeView();
 }
 
 views::Widget* ChromeWebContentsViewFocusHelper::GetTopLevelWidget() {

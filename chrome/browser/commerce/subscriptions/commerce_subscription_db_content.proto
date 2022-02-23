@@ -20,6 +20,7 @@ message CommerceSubscriptionContentProto {
   enum TrackingIdType {
     IDENTIFIER_TYPE_UNSPECIFIED = 0;
     OFFER_ID = 1;
+    PRODUCT_CLUSTER_ID = 2;
   }
 
   // The type of subscription management.

@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/test/launcher/unit_test_launcher.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -12,7 +13,7 @@
 #include "components/exo/test/exo_test_suite_aura.h"
 #endif
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "mojo/core/embedder/embedder.h"
 #endif
 
@@ -23,7 +24,7 @@ int main(int argc, char** argv) {
   exo::test::ExoTestSuiteAura test_suite(argc, argv);
 #endif
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   mojo::core::Init();
 #endif
 

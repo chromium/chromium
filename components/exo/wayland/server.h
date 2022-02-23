@@ -11,12 +11,12 @@
 #include "base/callback.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
+#include "base/files/scoped_temp_dir.h"
 #include "base/time/time.h"
-#include "components/exo/wayland/scoped_wl.h"
-#include "ui/display/display_observer.h"
-
 #include "build/chromeos_buildflags.h"
 #include "components/exo/buildflags.h"
+#include "components/exo/wayland/scoped_wl.h"
+#include "ui/display/display_observer.h"
 
 struct wl_resource;
 struct wl_client;
@@ -37,13 +37,16 @@ struct WaylandTextInputManager;
 struct WaylandXdgShell;
 struct WaylandZxdgShell;
 struct WaylandRemoteShellData;
-struct WestonTestState;
+class WestonTest;
 class WaylandWatcher;
 
 // This class is a thin wrapper around a Wayland display server. All Wayland
 // requests are dispatched into the given Exosphere display.
 class Server : public display::DisplayObserver {
  public:
+  using StartCallback =
+      base::OnceCallback<void(bool, const base::FilePath& path)>;
+
   Server(Display* display, std::unique_ptr<Capabilities> capabilities);
 
   Server(const Server&) = delete;
@@ -55,22 +58,23 @@ class Server : public display::DisplayObserver {
   // default socket name.
   static std::unique_ptr<Server> Create(Display* display);
 
-  // As above, but where the socket's name is |socket_path|.
+  // As above, but with the given set of |capabilities_.
   static std::unique_ptr<Server> Create(
       Display* display,
-      std::unique_ptr<Capabilities> capabilities,
-      const base::FilePath& socket_path);
+      std::unique_ptr<Capabilities> capabilities);
 
-  // As above, but asynchronously.
-  static void CreateAsync(
-      Display* display,
-      std::unique_ptr<Capabilities> capabilities,
-      const base::FilePath& socket_path,
-      base::OnceCallback<void(std::unique_ptr<Server>)> callback);
+  // In cases where the server was started asynchronously, this helper can be
+  // used to delete it asynchronously as well.
+  static void DestroyAsync(std::unique_ptr<Server> server);
+
+  void StartAsync(StartCallback callback);
+  void StartWithDefaultPath(StartCallback callback);
 
   void Initialize();
 
-  void Finalize();
+  bool Open(bool default_path);
+
+  void Finalize(StartCallback callback, bool success);
 
   // This adds a Unix socket to the Wayland display server which can be used
   // by clients to connect to the display server.
@@ -101,12 +105,19 @@ class Server : public display::DisplayObserver {
     return GetWaylandDisplay();
   }
 
+  const base::FilePath& socket_path() const { return socket_path_; }
+
  protected:
+  friend class WestonTest;
   void AddWaylandOutput(int64_t id,
                         std::unique_ptr<WaylandDisplayOutput> output);
   wl_display* GetWaylandDisplay() const { return wl_display_.get(); }
 
  private:
+  friend class ScopedEventDispatchDisabler;
+
+  // This has the server's socket inside it, so it must be deleted last.
+  base::ScopedTempDir socket_dir_;
   Display* const display_;
   std::unique_ptr<Capabilities> capabilities_;
   // Deleting wl_display depends on SerialTracker.
@@ -117,6 +128,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandSeat> seat_data_;
   display::ScopedDisplayObserver display_observer_{this};
   std::unique_ptr<wayland::WaylandWatcher> wayland_watcher_;
+  base::FilePath socket_path_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<WaylandKeyboardExtension> zcr_keyboard_extension_data_;
@@ -125,9 +137,7 @@ class Server : public display::DisplayObserver {
   std::unique_ptr<WaylandZxdgShell> zxdg_shell_data_;
   std::unique_ptr<WaylandXdgShell> xdg_shell_data_;
   std::unique_ptr<WaylandRemoteShellData> remote_shell_data_;
-#if BUILDFLAG(ENABLE_WESTON_TEST)
-  std::unique_ptr<WestonTestState> weston_test_data_;
-#endif
+  std::unique_ptr<WestonTest> weston_test_holder_;
 #endif
 };
 

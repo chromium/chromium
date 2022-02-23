@@ -5,13 +5,13 @@
 #ifndef CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_DELEGATE_H_
 #define CHROME_BROWSER_ASH_ARC_ENTERPRISE_ARC_DATA_SNAPSHOTD_DELEGATE_H_
 
+#include "ash/components/arc/enterprise/arc_apps_tracker.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/arc/enterprise/arc_snapshot_reboot_notification.h"
+#include "ash/components/arc/session/arc_stop_reason.h"
 #include "base/callback.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager_observer.h"
-#include "components/arc/enterprise/arc_apps_tracker.h"
-#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "components/arc/enterprise/arc_snapshot_reboot_notification.h"
-#include "components/arc/session/arc_stop_reason.h"
 
 class PrefService;
 

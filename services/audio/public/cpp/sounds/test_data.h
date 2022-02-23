@@ -11,6 +11,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/audio_renderer_sink.h"
@@ -54,7 +55,7 @@ class TestObserver : public AudioStreamHandler::TestObserver {
   int num_stop_requests_;
   int cursor_;
   int is_playing;
-  media::AudioRendererSink::RenderCallback* callback_;
+  raw_ptr<media::AudioRendererSink::RenderCallback> callback_;
   std::unique_ptr<media::AudioBus> bus_;
 };
 

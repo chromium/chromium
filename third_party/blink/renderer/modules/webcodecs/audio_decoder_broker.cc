@@ -14,7 +14,6 @@
 #include "media/base/audio_decoder_config.h"
 #include "media/base/decoder_factory.h"
 #include "media/base/media_log.h"
-#include "media/base/status_codes.h"
 #include "media/mojo/buildflags.h"
 #include "media/mojo/clients/mojo_decoder_factory.h"
 #include "media/mojo/mojom/interface_factory.mojom.h"
@@ -42,8 +41,8 @@ struct CrossThreadCopier<media::AudioDecoderConfig>
 };
 
 template <>
-struct CrossThreadCopier<media::Status>
-    : public CrossThreadCopierPassThrough<media::Status> {
+struct CrossThreadCopier<media::DecoderStatus>
+    : public CrossThreadCopierPassThrough<media::DecoderStatus> {
   STATIC_ONLY(CrossThreadCopier);
 };
 
@@ -64,10 +63,10 @@ namespace blink {
 class MediaAudioTaskWrapper {
  public:
   using CrossThreadOnceInitCB =
-      WTF::CrossThreadOnceFunction<void(media::Status status,
+      WTF::CrossThreadOnceFunction<void(media::DecoderStatus status,
                                         absl::optional<DecoderDetails>)>;
   using CrossThreadOnceDecodeCB =
-      WTF::CrossThreadOnceFunction<void(media::Status)>;
+      WTF::CrossThreadOnceFunction<void(media::DecoderStatus)>;
   using CrossThreadOnceResetCB = WTF::CrossThreadOnceClosure;
 
   MediaAudioTaskWrapper(
@@ -134,7 +133,7 @@ class MediaAudioTaskWrapper {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     if (!decoder_) {
-      OnDecodeDone(cb_id, media::DecodeStatus::DECODE_ERROR);
+      OnDecodeDone(cb_id, media::DecoderStatus::Codes::kNotInitialized);
       return;
     }
 
@@ -195,13 +194,14 @@ class MediaAudioTaskWrapper {
 
     decoder_ = std::move(decoder);
 
-    media::Status status(media::StatusCode::kDecoderUnsupportedConfig);
-    absl::optional<DecoderDetails> decoder_details;
+    media::DecoderStatus status = media::DecoderStatus::Codes::kOk;
+    absl::optional<DecoderDetails> decoder_details = absl::nullopt;
     if (decoder_) {
-      status = media::OkStatus();
       decoder_details = DecoderDetails({decoder_->GetDecoderType(),
                                         decoder_->IsPlatformDecoder(),
                                         decoder_->NeedsBitstreamConversion()});
+    } else {
+      status = media::DecoderStatus::Codes::kUnsupportedConfig;
     }
 
     // Fire |init_cb|.
@@ -221,7 +221,7 @@ class MediaAudioTaskWrapper {
                                  weak_client_, std::move(buffer)));
   }
 
-  void OnDecodeDone(int cb_id, media::Status status) {
+  void OnDecodeDone(int cb_id, media::DecoderStatus status) {
     DVLOG(2) << __func__;
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     PostCrossThreadTask(
@@ -326,7 +326,7 @@ int AudioDecoderBroker::CreateCallbackId() {
   return last_callback_id_;
 }
 
-void AudioDecoderBroker::OnInitialize(media::Status status,
+void AudioDecoderBroker::OnInitialize(media::DecoderStatus status,
                                       absl::optional<DecoderDetails> details) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -349,7 +349,7 @@ void AudioDecoderBroker::Decode(scoped_refptr<media::DecoderBuffer> buffer,
                                buffer, callback_id));
 }
 
-void AudioDecoderBroker::OnDecodeDone(int cb_id, media::Status status) {
+void AudioDecoderBroker::OnDecodeDone(int cb_id, media::DecoderStatus status) {
   DVLOG(2) << __func__;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(pending_decode_cb_map_.Contains(cb_id));

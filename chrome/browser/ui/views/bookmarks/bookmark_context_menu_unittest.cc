@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
@@ -36,7 +37,7 @@
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/test/scoped_views_test_helper.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/bookmarks/bookmark_bar_view.h"
 #endif
 
@@ -99,7 +100,7 @@ class BookmarkContextMenuTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   views::ScopedViewsTestHelper views_test_helper_;
   std::unique_ptr<TestingProfile> profile_;
-  BookmarkModel* model_;
+  raw_ptr<BookmarkModel> model_;
   TestingPageNavigator navigator_;
 
  private:
@@ -415,8 +416,8 @@ TEST_F(BookmarkContextMenuTest, ShowManagedBookmarks) {
 
   // Now set the managed bookmarks policy.
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue);
-  dict->SetString("name", "Google");
-  dict->SetString("url", "http://google.com");
+  dict->SetStringKey("name", "Google");
+  dict->SetStringKey("url", "http://google.com");
   base::ListValue list;
   list.Append(std::move(dict));
   EXPECT_TRUE(managed->managed_node()->children().empty());

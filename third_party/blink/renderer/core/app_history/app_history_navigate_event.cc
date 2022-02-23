@@ -4,7 +4,9 @@
 
 #include "third_party/blink/renderer/core/app_history/app_history_navigate_event.h"
 
+#include "third_party/blink/public/mojom/devtools/console_message.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_app_history_navigate_event_init.h"
+#include "third_party/blink/renderer/bindings/core/v8/v8_app_history_transition_while_options.h"
 #include "third_party/blink/renderer/core/app_history/app_history_destination.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -12,6 +14,8 @@
 #include "third_party/blink/renderer/core/event_type_names.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/html/forms/form_data.h"
+#include "third_party/blink/renderer/core/inspector/console_message.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -35,21 +39,23 @@ AppHistoryNavigateEvent::AppHistoryNavigateEvent(
   DCHECK(IsA<LocalDOMWindow>(context));
 }
 
-void AppHistoryNavigateEvent::transitionWhile(ScriptState* script_state,
-                                              ScriptPromise newNavigationAction,
-                                              ExceptionState& exception_state) {
+void AppHistoryNavigateEvent::transitionWhile(
+    ScriptState* script_state,
+    ScriptPromise newNavigationAction,
+    AppHistoryTransitionWhileOptions* options,
+    ExceptionState& exception_state) {
   if (!DomWindow()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
         "transitionWhile() may not be called in a "
-        "detached window");
+        "detached window.");
     return;
   }
 
   if (!isTrusted()) {
     exception_state.ThrowSecurityError(
         "transitionWhile() may only be called on a "
-        "trusted event during event dispatch");
+        "trusted event.");
     return;
   }
 
@@ -63,15 +69,50 @@ void AppHistoryNavigateEvent::transitionWhile(ScriptState* script_state,
     return;
   }
 
-  if (!IsBeingDispatched() || defaultPrevented()) {
+  if (!IsBeingDispatched()) {
     exception_state.ThrowDOMException(
         DOMExceptionCode::kInvalidStateError,
-        "transitionWhile() may only be called during "
-        "the first dispatch of this event");
+        "transitionWhile() may only be called while the navigate event is "
+        "being dispatched.");
+  }
+
+  if (defaultPrevented()) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kInvalidStateError,
+        "transitionWhile() may not be called if the event has been canceled.");
     return;
   }
 
   navigation_action_promises_list_.push_back(newNavigationAction);
+
+  if (options->hasFocusReset()) {
+    if (focus_reset_behavior_ &&
+        focus_reset_behavior_->AsEnum() != options->focusReset().AsEnum()) {
+      GetExecutionContext()->AddConsoleMessage(
+          MakeGarbageCollected<ConsoleMessage>(
+              mojom::ConsoleMessageSource::kJavaScript,
+              mojom::blink::ConsoleMessageLevel::kWarning,
+              "The \"" + options->focusReset().AsString() +
+                  "\" value for transitionWhile()'s focusReset option will "
+                  "override the previously-passed value of \"" +
+                  focus_reset_behavior_->AsString() + "\"."));
+    }
+    focus_reset_behavior_ = options->focusReset();
+  }
+}
+
+bool AppHistoryNavigateEvent::ShouldResetFocus() const {
+  // We only do focus reset if transitionWhile() was called, opting us into the
+  // new default behavior which app history provides.
+  if (navigation_action_promises_list_.IsEmpty())
+    return false;
+
+  // If we're in "app history mode" per the above, then either leaving focus
+  // reset behavior as the default, or setting it to "after-transition"
+  // explicitly, should reset the focus.
+  return !focus_reset_behavior_ ||
+         focus_reset_behavior_->AsEnum() ==
+             V8AppHistoryFocusReset::Enum::kAfterTransition;
 }
 
 const AtomicString& AppHistoryNavigateEvent::InterfaceName() const {

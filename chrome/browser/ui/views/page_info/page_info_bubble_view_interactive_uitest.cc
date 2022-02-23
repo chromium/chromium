@@ -160,7 +160,7 @@ class PageInfoBubbleViewInteractiveUiTest : public InProcessBrowserTest {
   }
 };
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1029882
 #define MAYBE_FocusReturnsToContentOnClose DISABLED_FocusReturnsToContentOnClose
 #else
@@ -188,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewInteractiveUiTest,
   EXPECT_TRUE(web_contents_focus_tracker.focused());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1029882
 #define MAYBE_FocusDoesNotReturnToContentsOnReloadPrompt \
   DISABLED_FocusDoesNotReturnToContentsOnReloadPrompt

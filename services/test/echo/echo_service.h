@@ -5,7 +5,6 @@
 #ifndef SERVICES_TEST_ECHO_ECHO_SERVICE_H_
 #define SERVICES_TEST_ECHO_ECHO_SERVICE_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "services/test/echo/public/mojom/echo.mojom.h"

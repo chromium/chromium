@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/weak_ptr.h"
 #include "components/remote_cocoa/common/select_file_dialog.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -86,6 +87,10 @@ class SHELL_DIALOGS_EXPORT SelectFileDialogImpl : public ui::SelectFileDialog {
   std::list<DialogData> dialog_data_list_;
 
   bool hasMultipleFileTypeChoices_;
+
+  // A callback to be called when a selection dialog is closed. For testing
+  // only.
+  base::RepeatingClosure dialog_closed_callback_for_testing_;
 
   base::WeakPtrFactory<SelectFileDialogImpl> weak_factory_;
 };

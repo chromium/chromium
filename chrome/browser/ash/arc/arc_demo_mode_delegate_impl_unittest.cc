@@ -38,28 +38,28 @@ class ArcDemoModeDelegateImplTest : public testing::Test {
   ArcDemoModeDelegateImpl delegate_;
 };
 
-// Test that EnsureOfflineResourcesLoaded returns immediately if demo mode is
+// Test that EnsureResourcesLoaded returns immediately if demo mode is
 // not enabled.
-TEST_F(ArcDemoModeDelegateImplTest, EnsureOfflineResourcesLoaded_NotEnabled) {
+TEST_F(ArcDemoModeDelegateImplTest, EnsureResourcesLoaded_NotEnabled) {
   ash::DemoSession::SetDemoConfigForTesting(
       ash::DemoSession::DemoModeConfig::kNone);
 
   bool was_called = false;
   base::OnceClosure callback =
       base::BindOnce([](bool* was_called) { *was_called = true; }, &was_called);
-  delegate()->EnsureOfflineResourcesLoaded(std::move(callback));
+  delegate()->EnsureResourcesLoaded(std::move(callback));
   EXPECT_TRUE(was_called);
 }
 
-// Test that EnsureOfflineResourcesLoaded returns after resources are loaded if
+// Test that EnsureResourcesLoaded returns after resources are loaded if
 // demo mode is enabled.
-TEST_F(ArcDemoModeDelegateImplTest, EnsureOfflineResourcesLoaded_Enabled) {
+TEST_F(ArcDemoModeDelegateImplTest, EnsureResourcesLoaded_Enabled) {
   demo_helper()->InitializeSessionWithPendingComponent();
 
   bool was_called = false;
   base::OnceClosure callback =
       base::BindOnce([](bool* was_called) { *was_called = true; }, &was_called);
-  delegate()->EnsureOfflineResourcesLoaded(std::move(callback));
+  delegate()->EnsureResourcesLoaded(std::move(callback));
   EXPECT_FALSE(was_called);
 
   demo_helper()->FinishLoadingComponent();

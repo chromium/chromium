@@ -71,7 +71,8 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
     // For every Start(), expect a corresponding Stop() call.
     EXPECT_CALL(*this, Stop(_));
     // Simulate device started.
-    OnStateChanged(media::mojom::VideoCaptureState::STARTED);
+    OnStateChanged(media::mojom::blink::VideoCaptureResult::NewState(
+        media::mojom::VideoCaptureState::STARTED));
   }
 
   MOCK_METHOD1(Stop, void(const base::UnguessableToken&));
@@ -85,11 +86,6 @@ class MockVideoCaptureImpl : public VideoCaptureImpl,
               const media::VideoCaptureParams& params) override {
     pause_callback_->OnResumed(session_id);
   }
-
-  MOCK_METHOD3(Crop,
-               void(const base::UnguessableToken&,
-                    const base::Token&,
-                    CropCallback));
 
   MOCK_METHOD1(RequestRefreshFrame, void(const base::UnguessableToken&));
   MOCK_METHOD3(ReleaseBuffer,

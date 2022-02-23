@@ -1,4 +1,7 @@
 {
+  "program": {
+    "binary": "cast_runner_exe"
+  },
   "sandbox": {
     "features": [
       "config-data",
@@ -7,7 +10,7 @@
     "services": [
       "chromium.cast.ApplicationConfigManager",
       "fuchsia.accessibility.semantics.SemanticsManager",
-      "fuchsia.camera3.DeviceWatcher",
+      "fuchsia.buildinfo.Provider",
       "fuchsia.device.NameProvider",
       "fuchsia.feedback.ComponentDataRegister",
       "fuchsia.feedback.CrashReportingProductRegister",
@@ -16,6 +19,7 @@
       "fuchsia.intl.PropertyProvider",
       "fuchsia.logger.LogSink",
       "fuchsia.media.Audio",
+      "fuchsia.media.AudioDeviceEnumerator",
       "fuchsia.media.ProfileProvider",
       "fuchsia.media.SessionAudioConsumerFactory",
       "fuchsia.media.drm.PlayReady",
@@ -30,6 +34,8 @@
       "fuchsia.sys.Environment",
       "fuchsia.sys.Loader",
       "fuchsia.sysmem.Allocator",
+      "fuchsia.ui.composition.Allocator",
+      "fuchsia.ui.composition.Flatland",
       "fuchsia.ui.input3.Keyboard",
       "fuchsia.ui.scenic.Scenic",
       "fuchsia.vulkan.loader.Loader"

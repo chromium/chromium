@@ -53,15 +53,6 @@ void StartMonitoringVisibility(HTMLImageElement* html_image) {
   }
 }
 
-bool IsFullyLoadableFirstKImageAndDecrementCount(
-    HTMLImageElement* image_element) {
-  Document* document = GetRootDocumentOrNull(image_element);
-  if (!document)
-    return true;
-  return document->EnsureLazyLoadImageObserver()
-      .IsFullyLoadableFirstKImageAndDecrementCount();
-}
-
 }  // namespace
 
 // static
@@ -76,9 +67,8 @@ void LazyImageHelper::StartMonitoring(blink::Element* element) {
     LoadingAttributeValue effective_loading_attr = GetLoadingAttributeValue(
         html_image->FastGetAttribute(html_names::kLoadingAttr));
     DCHECK_NE(effective_loading_attr, LoadingAttributeValue::kEager);
-    if (effective_loading_attr == LoadingAttributeValue::kAuto) {
-      deferral_message = DeferralMessage::kLoadEventsDeferred;
-    } else if (!IsDimensionAbsoluteLarge(*html_image)) {
+    if (effective_loading_attr != LoadingAttributeValue::kAuto &&
+        !IsDimensionAbsoluteLarge(*html_image)) {
       DCHECK_EQ(effective_loading_attr, LoadingAttributeValue::kLazy);
       deferral_message = DeferralMessage::kMissingDimensionForLazy;
     }
@@ -110,8 +100,6 @@ LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
   const auto lazy_load_image_setting = frame.GetLazyLoadImageSetting();
   LoadingAttributeValue loading_attr = GetLoadingAttributeValue(
       html_image->FastGetAttribute(html_names::kLoadingAttr));
-  bool is_fully_loadable =
-      IsFullyLoadableFirstKImageAndDecrementCount(html_image);
   if (loading_attr == LoadingAttributeValue::kLazy) {
     StartMonitoringVisibility(html_image);
     UseCounter::Count(frame.GetDocument(),
@@ -156,13 +144,6 @@ LazyImageHelper::DetermineEligibilityAndTrackVisibilityMetrics(
   }
 
   StartMonitoringVisibility(html_image);
-
-  if (!is_fully_loadable &&
-      lazy_load_image_setting ==
-          LocalFrame::LazyLoadImageSetting::kEnabledAutomatic) {
-    // Automatic lazyload
-    return LazyImageHelper::Eligibility::kEnabledFullyDeferred;
-  }
   return LazyImageHelper::Eligibility::kDisabled;
 }
 

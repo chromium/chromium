@@ -6,6 +6,7 @@
 #define GPU_IPC_CLIENT_SHARED_IMAGE_INTERFACE_PROXY_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
@@ -42,16 +43,16 @@ class SharedImageInterfaceProxy {
                             SkAlphaType alpha_type,
                             uint32_t usage);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::vector<Mailbox> CreateSharedImageVideoPlanes(
       gfx::GpuMemoryBuffer* gpu_memory_buffer,
       GpuMemoryBufferManager* gpu_memory_buffer_manager,
       uint32_t usage);
   void CopyToGpuMemoryBuffer(const SyncToken& sync_token,
                              const Mailbox& mailbox);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   Mailbox CreateSharedImageWithAHB(const Mailbox& mailbox,
                                    uint32_t usage,
                                    const SyncToken& sync_token);
@@ -77,14 +78,14 @@ class SharedImageInterfaceProxy {
       uint32_t usage);
   void PresentSwapChain(const SyncToken& sync_token, const Mailbox& mailbox);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   scoped_refptr<gfx::NativePixmap> GetNativePixmap(const gpu::Mailbox& mailbox);
 
@@ -99,7 +100,7 @@ class SharedImageInterfaceProxy {
   void AddMailbox(const Mailbox& mailbox, uint32_t usage)
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
-  GpuChannelHost* const host_;
+  const raw_ptr<GpuChannelHost> host_;
   const int32_t route_id_;
   base::Lock lock_;
   uint32_t next_release_id_ GUARDED_BY(lock_) = 0;

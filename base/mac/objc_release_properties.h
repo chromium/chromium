@@ -45,8 +45,7 @@
 // properties. Distant subclasses might not expect it and over-release their
 // properties, so don't do that.
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 namespace details {
 
@@ -59,7 +58,6 @@ void ReleaseProperties(Self* self) {
   details::ReleaseProperties(self, [Self class]);
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_OBJC_RELEASE_PROPERTIES_H_

@@ -93,7 +93,6 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestDefaultImpl) {
 
   EXPECT_TRUE(config->EnabledCupSigning());
   EXPECT_TRUE(config->EnabledDeltas());
-  EXPECT_TRUE(config->EnabledComponentUpdates());
   EXPECT_FALSE(config->EnabledBackgroundDownloader());
 }
 
@@ -106,7 +105,6 @@ TEST_F(AwComponentUpdaterConfiguratorTest, TestCustomImpl) {
                    update_client::UpdateQueryParams::ProdId::WEBVIEW),
                config->GetProdId().c_str());
 
-  EXPECT_TRUE(config->GetBrand().empty());
   EXPECT_TRUE(config->GetLang().empty());
 }
 

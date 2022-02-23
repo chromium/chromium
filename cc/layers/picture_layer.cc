@@ -41,24 +41,26 @@ PictureLayer::PictureLayer(ContentLayerClient* client)
 PictureLayer::PictureLayer(ContentLayerClient* client,
                            std::unique_ptr<RecordingSource> source)
     : PictureLayer(client) {
-  recording_source_ = std::move(source);
+  recording_source_.Write(*this) = std::move(source);
 }
 
 PictureLayer::~PictureLayer() = default;
 
 std::unique_ptr<LayerImpl> PictureLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return PictureLayerImpl::Create(tree_impl, id());
 }
 
-void PictureLayer::PushPropertiesTo(LayerImpl* base_layer,
-                                    const CommitState& commit_state) {
+void PictureLayer::PushPropertiesTo(
+    LayerImpl* base_layer,
+    const CommitState& commit_state,
+    const ThreadUnsafeCommitState& unsafe_state) {
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
 
   PictureLayerImpl* layer_impl = static_cast<PictureLayerImpl*>(base_layer);
 
-  Layer::PushPropertiesTo(base_layer, commit_state);
+  Layer::PushPropertiesTo(base_layer, commit_state, unsafe_state);
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
                "PictureLayer::PushPropertiesTo");
   DropRecordingSourceContentIfInvalid(
@@ -68,12 +70,12 @@ void PictureLayer::PushPropertiesTo(LayerImpl* base_layer,
   layer_impl->set_gpu_raster_max_texture_size(
       commit_state.device_viewport_rect.size());
   layer_impl->SetIsBackdropFilterMask(is_backdrop_filter_mask());
-  layer_impl->SetDirectlyCompositedImageSize(
-      picture_layer_inputs_.directly_composited_image_size);
+  layer_impl->SetDirectlyCompositedImageDefaultRasterScale(
+      picture_layer_inputs_.directly_composited_image_default_raster_scale);
 
   // TODO(enne): http://crbug.com/918126 debugging
   CHECK(this);
-  if (!recording_source_) {
+  if (!recording_source_.Read(*this)) {
     bool valid_host = layer_tree_host();
     bool has_parent = parent();
     bool parent_has_host = parent() && parent()->layer_tree_host();
@@ -86,9 +88,10 @@ void PictureLayer::PushPropertiesTo(LayerImpl* base_layer,
     base::debug::DumpWithoutCrashing();
   }
 
-  layer_impl->UpdateRasterSource(recording_source_->CreateRasterSource(),
-                                 &last_updated_invalidation_, nullptr, nullptr);
-  DCHECK(last_updated_invalidation_.IsEmpty());
+  layer_impl->UpdateRasterSource(
+      recording_source_.Read(*this)->CreateRasterSource(),
+      &last_updated_invalidation_.Write(*this), nullptr, nullptr);
+  DCHECK(last_updated_invalidation_.Read(*this).IsEmpty());
 }
 
 void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {
@@ -97,31 +100,33 @@ void PictureLayer::SetLayerTreeHost(LayerTreeHost* host) {
   if (!host)
     return;
 
-  if (!recording_source_)
-    recording_source_ = std::make_unique<RecordingSource>();
-  recording_source_->SetSlowdownRasterScaleFactor(
+  if (!recording_source_.Read(*this))
+    recording_source_.Write(*this) = std::make_unique<RecordingSource>();
+  recording_source_.Write(*this)->SetSlowdownRasterScaleFactor(
       host->GetDebugState().slow_down_raster_scale_factor);
 
   // Source frame numbers are relative the LayerTreeHost, so this needs
   // to be reset.
-  update_source_frame_number_ = -1;
+  update_source_frame_number_.Write(*this) = -1;
 }
 
 void PictureLayer::SetNeedsDisplayRect(const gfx::Rect& layer_rect) {
   DCHECK(IsPropertyChangeAllowed());
-  if (recording_source_)
-    recording_source_->SetNeedsDisplayRect(layer_rect);
+  if (recording_source_.Read(*this))
+    recording_source_.Write(*this)->SetNeedsDisplayRect(layer_rect);
   Layer::SetNeedsDisplayRect(layer_rect);
 }
 
 bool PictureLayer::Update() {
-  update_source_frame_number_ = layer_tree_host()->SourceFrameNumber();
+  update_source_frame_number_.Write(*this) =
+      layer_tree_host()->SourceFrameNumber();
   bool updated = Layer::Update();
 
   gfx::Size layer_size = bounds();
 
-  recording_source_->SetBackgroundColor(SafeOpaqueBackgroundColor());
-  recording_source_->SetRequiresClear(
+  auto& recording_source = recording_source_.Write(*this);
+  recording_source->SetBackgroundColor(SafeOpaqueBackgroundColor());
+  recording_source->SetRequiresClear(
       !contents_opaque() &&
       !picture_layer_inputs_.client->FillsBoundsCompletely());
 
@@ -138,8 +143,8 @@ bool PictureLayer::Update() {
 
   auto recorded_viewport = picture_layer_inputs_.client->PaintableRegion();
 
-  updated |= recording_source_->UpdateAndExpandInvalidation(
-      &last_updated_invalidation_, layer_size, recorded_viewport);
+  updated |= recording_source->UpdateAndExpandInvalidation(
+      &last_updated_invalidation_.Write(*this), layer_size, recorded_viewport);
 
   if (updated) {
     {
@@ -149,28 +154,28 @@ bool PictureLayer::Update() {
       if (old_display_list &&
           picture_layer_inputs_.display_list
               ->NeedsAdditionalInvalidationForLCDText(*old_display_list)) {
-        last_updated_invalidation_ = gfx::Rect(bounds());
+        last_updated_invalidation_.Write(*this) = gfx::Rect(bounds());
       }
     }
 
     // Clear out previous directly composited image state - if the layer
     // qualifies we'll set up the state below.
-    picture_layer_inputs_.directly_composited_image_size = absl::nullopt;
+    picture_layer_inputs_.directly_composited_image_default_raster_scale =
+        gfx::Vector2dF();
     picture_layer_inputs_.nearest_neighbor = false;
     absl::optional<DisplayItemList::DirectlyCompositedImageResult> result =
-        picture_layer_inputs_.display_list->GetDirectlyCompositedImageResult(
-            bounds());
+        picture_layer_inputs_.display_list->GetDirectlyCompositedImageResult();
     if (result) {
       // Directly composited images are not guaranteed to fully cover every
       // pixel in the layer due to ceiling when calculating the tile content
       // rect from the layer bounds.
-      recording_source_->SetRequiresClear(true);
-      picture_layer_inputs_.directly_composited_image_size =
-          result->intrinsic_image_size;
+      recording_source->SetRequiresClear(true);
+      picture_layer_inputs_.directly_composited_image_default_raster_scale =
+          result->default_raster_scale;
       picture_layer_inputs_.nearest_neighbor = result->nearest_neighbor;
     }
 
-    recording_source_->UpdateDisplayItemList(
+    recording_source->UpdateDisplayItemList(
         picture_layer_inputs_.display_list,
         layer_tree_host()->recording_scale_factor());
 
@@ -179,14 +184,14 @@ bool PictureLayer::Update() {
   } else {
     // If this invalidation did not affect the recording source, then it can be
     // cleared as an optimization.
-    last_updated_invalidation_.Clear();
+    last_updated_invalidation_.Write(*this).Clear();
   }
 
   return updated;
 }
 
 sk_sp<const SkPicture> PictureLayer::GetPicture() const {
-  if (!DrawsContent() || bounds().IsEmpty())
+  if (!draws_content() || bounds().IsEmpty())
     return nullptr;
 
   scoped_refptr<DisplayItemList> display_list =
@@ -200,13 +205,11 @@ sk_sp<const SkPicture> PictureLayer::GetPicture() const {
 }
 
 void PictureLayer::ClearClient() {
-  DCHECK(IsMutationAllowed());
   picture_layer_inputs_.client = nullptr;
-  UpdateDrawsContent(HasDrawableContent());
+  SetDrawsContent(HasDrawableContent());
 }
 
 void PictureLayer::SetNearestNeighbor(bool nearest_neighbor) {
-  DCHECK(IsMutationAllowed());
   if (picture_layer_inputs_.nearest_neighbor == nearest_neighbor)
     return;
 
@@ -219,7 +222,6 @@ bool PictureLayer::HasDrawableContent() const {
 }
 
 void PictureLayer::SetIsBackdropFilterMask(bool is_backdrop_filter_mask) {
-  DCHECK(IsMutationAllowed());
   if (picture_layer_inputs_.is_backdrop_filter_mask == is_backdrop_filter_mask)
     return;
 
@@ -233,7 +235,7 @@ void PictureLayer::RunMicroBenchmark(MicroBenchmark* benchmark) {
 
 void PictureLayer::CaptureContent(const gfx::Rect& rect,
                                   std::vector<NodeInfo>* content) const {
-  if (!DrawsContent())
+  if (!draws_content())
     return;
 
   const DisplayItemList* display_item_list = GetDisplayItemList();
@@ -241,7 +243,7 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
     return;
 
   // We could run into this situation as CaptureContent could start at any time.
-  if (transform_tree_index() == TransformTree::kInvalidNodeId)
+  if (transform_tree_index() == kInvalidPropertyNodeId)
     return;
 
   gfx::Transform inverse_screen_space_transform;
@@ -275,23 +277,23 @@ void PictureLayer::CaptureContent(const gfx::Rect& rect,
 
 void PictureLayer::DropRecordingSourceContentIfInvalid(
     int source_frame_number) {
-  gfx::Size recording_source_bounds = recording_source_->GetSize();
+  gfx::Size recording_source_bounds = recording_source_.Read(*this)->GetSize();
 
   gfx::Size layer_bounds = bounds();
 
   // If update called, then recording source size must match bounds pushed to
   // impl layer.
-  DCHECK(update_source_frame_number_ != source_frame_number ||
+  DCHECK(update_source_frame_number_.Read(*this) != source_frame_number ||
          layer_bounds == recording_source_bounds)
       << " bounds " << layer_bounds.ToString() << " recording source "
       << recording_source_bounds.ToString();
 
-  if (update_source_frame_number_ != source_frame_number &&
+  if (update_source_frame_number_.Read(*this) != source_frame_number &&
       recording_source_bounds != layer_bounds) {
     // Update may not get called for the layer (if it's not in the viewport
     // for example), even though it has resized making the recording source no
     // longer valid. In this case just destroy the recording source.
-    recording_source_->SetEmptyBounds();
+    recording_source_.Write(*this)->SetEmptyBounds();
     picture_layer_inputs_.display_list = nullptr;
   }
 }

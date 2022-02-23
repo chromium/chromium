@@ -55,7 +55,6 @@ export function createRawSiteException(
         setting: ContentSetting.ALLOW,
         source: SiteSettingSource.PREFERENCE,
         isEmbargoed: false,
-        settingDetail: null,
         type: '',
       },
       override || {});
@@ -191,6 +190,7 @@ export function createOriginInfo(
         numCookies: 0,
         hasPermissionSettings: false,
         isInstalled: false,
+        isPartitioned: false,
       },
       override || {});
 }

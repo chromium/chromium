@@ -14,7 +14,7 @@
 #include "mojo/core/broker_messages.h"
 #include "mojo/core/platform_handle_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -25,7 +25,7 @@ BrokerHost::BrokerHost(base::Process client_process,
                        ConnectionParams connection_params,
                        const ProcessErrorCallback& process_error_callback)
     : process_error_callback_(process_error_callback)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       ,
       client_process_(std::move(client_process))
 #endif
@@ -36,7 +36,14 @@ BrokerHost::BrokerHost(base::Process client_process,
   base::CurrentThread::Get()->AddDestructionObserver(this);
 
   channel_ = Channel::Create(this, std::move(connection_params),
-                             Channel::HandlePolicy::kAcceptHandles,
+#if BUILDFLAG(IS_WIN)
+                             client_process_
+#else
+                             client_process
+#endif
+                                     .IsValid()
+                                 ? Channel::HandlePolicy::kAcceptHandles
+                                 : Channel::HandlePolicy::kRejectHandles,
                              base::ThreadTaskRunnerHandle::Get());
   channel_->Start();
 }
@@ -50,15 +57,14 @@ BrokerHost::~BrokerHost() {
 }
 
 bool BrokerHost::PrepareHandlesForClient(
-    std::vector<PlatformHandleInTransit>* handles,
-    bool check_on_failure) {
-#if defined(OS_WIN)
+    std::vector<PlatformHandleInTransit>* handles) {
+#if BUILDFLAG(IS_WIN)
+  if (!client_process_.IsValid())
+    return false;
   bool handles_ok = true;
   for (auto& handle : *handles) {
-    if (!handle.TransferToProcess(client_process_.Duplicate(),
-                                  check_on_failure)) {
+    if (!handle.TransferToProcess(client_process_.Duplicate()))
       handles_ok = false;
-    }
   }
   return handles_ok;
 #else
@@ -70,7 +76,7 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
   CHECK(handle.is_valid());
   CHECK(channel_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   InitData* data;
   Channel::MessagePtr message =
       CreateBrokerMessage(BrokerMessageType::INIT, 1, 0, &data);
@@ -84,7 +90,7 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
 
   // This may legitimately fail on Windows if the client process is in another
   // session, e.g., is an elevated process.
-  if (!PrepareHandlesForClient(&handles, /*check_on_failure=*/false))
+  if (!PrepareHandlesForClient(&handles))
     return false;
 
   message->SetHandles(std::move(handles));
@@ -92,7 +98,7 @@ bool BrokerHost::SendChannel(PlatformHandle handle) {
   return true;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void BrokerHost::SendNamedChannel(base::WStringPiece pipe_name) {
   InitData* data;
@@ -105,7 +111,7 @@ void BrokerHost::SendNamedChannel(base::WStringPiece pipe_name) {
   channel_->Write(std::move(message));
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
   base::subtle::PlatformSharedMemoryRegion region =
@@ -118,7 +124,7 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
     ExtractPlatformHandlesFromSharedMemoryRegionHandle(
         region.PassPlatformHandle(), &h[0], &h[1]);
     handles.emplace_back(std::move(h[0]));
-#if !defined(OS_POSIX) || defined(OS_ANDROID) || defined(OS_MAC)
+#if !BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_MAC)
     // Non-POSIX systems, as well as Android and Mac, only use a single handle
     // to represent a writable region.
     DCHECK(!h[1].is_valid());
@@ -138,7 +144,7 @@ void BrokerHost::OnBufferRequest(uint32_t num_bytes) {
     const base::UnguessableToken& guid = region.GetGUID();
     response->guid_high = guid.GetHighForSerialization();
     response->guid_low = guid.GetLowForSerialization();
-    PrepareHandlesForClient(&handles, /*check_on_failure=*/true);
+    PrepareHandlesForClient(&handles);
     message->SetHandles(std::move(handles));
   }
 

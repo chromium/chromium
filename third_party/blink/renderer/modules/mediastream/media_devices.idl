@@ -37,11 +37,10 @@
     ] void
     setCaptureHandleConfig(optional CaptureHandleConfig config = {});
 
-    // Given an html element of specified type, produces an identifier for the
-    // element that can be used by SelfCaptureMediaStreamTrack. Repeated calls
-    // to this method will return the same value.
-    // See draft spec here: https://eladalon1983.github.io/region-capture/.
-    // TODO(crbug.com/1247761): Link to final spec once it's published.
+    // https://w3c.github.io/mediacapture-region/
+    // Given an HTML element of specified type, produces an identifier for the
+    // element that can be used by SelfCaptureMediaStreamTrack.
+    // Repeated calls to this method will return the same value.
     [
       CallWith = ScriptState, RaisesException, MeasureAs = RegionCapture,
       RuntimeEnabled = RegionCapture

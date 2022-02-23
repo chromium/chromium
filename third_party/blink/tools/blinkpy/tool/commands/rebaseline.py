@@ -94,7 +94,7 @@ class AbstractRebaseliningCommand(Command):
     flag_specific_option = optparse.make_option(
         '--flag-specific',
         # TODO: build the list from builders.json
-        choices=["composite-after-paint", "disable-layout-ng", "highdpi"],
+        choices=["disable-layout-ng", "highdpi"],
         default=None,
         action='store',
         help=(
@@ -102,6 +102,22 @@ class AbstractRebaseliningCommand(Command):
             'FlagSpecificConfig. This option will rebaseline '
             'results for the given FlagSpecificConfig while ignoring results '
             'from other builders.'))
+    resultDB_option = optparse.make_option(
+        '--resultDB',
+        default=False,
+        action='store_true',
+        help=('Fetch results from resultDB(WIP). '
+              'Works with --test-name-file '
+              'and positional parameters'))
+
+    fetch_url_option = optparse.make_option(
+        '--fetch-url',
+        default=None,
+        action='store',
+        help=('Comma separated list of complete urls to fetch the baseline '
+              'artifact from. Developers do not need this option while '
+              'using rebaseline-cl. Default is empty. '
+              'When this is empty baselines will not be downloaded'))
 
     def __init__(self, options=None):
         super(AbstractRebaseliningCommand, self).__init__(options=options)
@@ -319,6 +335,26 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 wpt_builders.add(builder)
         return set(builders_to_fallback_paths) | wpt_builders
 
+    def baseline_fetch_url_resultdb(self, test_name, build):
+        # TODO(preethim): Consider doing QueryArtifacts do a walk of that list for
+        # test of interest than sending out the RPC for every test.
+        webtest_results_resultdb = self._tool.results_fetcher.fetch_results_from_resultdb_layout_tests(
+            self._tool, build, True)
+        results_list = webtest_results_resultdb.test_results_resultdb()
+        artifact_fetch_urls = []
+        done = False
+        for result in results_list:
+            if done:
+                break
+            if test_name in result['testId']:
+                artifact_list = self._tool.results_fetcher.get_artifact_list_for_test(
+                    self._tool, result['name'])
+                for artifact in artifact_list:
+                    if 'actual' in artifact['artifactId']:
+                        artifact_fetch_urls.append(artifact['fetchUrl'])
+                    done = True
+        return artifact_fetch_urls
+
     def _rebaseline_commands(self, test_baseline_set, options):
         path_to_blink_tool = self._tool.path()
         cwd = self._tool.git().checkout_root
@@ -366,7 +402,7 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
             # We may be rebaselining only a subset of all platforms, in which
             # case we need to copy any existing baselines first to avoid clobbering
             # results from platforms that were not run. See
-            # https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_baseline_fallback.md#rebaseline
+            # https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_baseline_fallback.md#rebaseline
             #
             # However when running in modes that don't interact with the optimizer,
             # we don't want to do this copying.
@@ -394,6 +430,11 @@ class AbstractParallelRebaselineCommand(AbstractRebaseliningCommand):
                 build)
             if step_name:
                 args.extend(['--step-name', step_name])
+
+            if options.resultDB:
+                args.append('--resultDB')
+                fetch_urls = self.baseline_fetch_url_resultdb(test, build)
+                args.extend(['--fetch-url', ','.join(fetch_urls)])
 
             rebaseline_command = [
                 self._tool.executable, path_to_blink_tool,

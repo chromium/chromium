@@ -15,6 +15,7 @@
 #include "base/containers/flat_map.h"
 #include "base/cpu.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/persistent_histogram_allocator.h"
@@ -632,7 +633,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
       bool first_cycle = wall_time_delta == (now - base::TimeTicks());
 
       if (first_cycle || time_delta <= base::TimeDelta() ||
-          process_cpu_time_delta <= base::TimeDelta()) {
+          process_cpu_time_delta <= base::TimeDelta() || time_delta.is_inf()) {
         continue;
       }
 
@@ -651,14 +652,20 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
         }
 
         size_t num_cores = next_core_index - entry.cluster_core_index;
-        current_cluster_active_wall_time = cluster_active_time / num_cores;
+        if (cluster_active_time.is_inf()) {
+          current_cluster_active_wall_time = cluster_active_time;
+        } else {
+          current_cluster_active_wall_time = cluster_active_time / num_cores;
+        }
         current_cluster_unattributed_idle_wall_time =
             cluster_idle_time / num_cores;
 
         // (1) Proportion of execution on this cluster's cores vs others.
         current_cluster_proportion = 0;
-        if (total_active_time.is_positive())
+        if (total_active_time.is_positive() && !total_active_time.is_inf() &&
+            !cluster_active_time.is_inf()) {
           current_cluster_proportion = cluster_active_time / total_active_time;
+        }
 
         last_core_index = entry.cluster_core_index;
       }
@@ -678,8 +685,10 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
       // (3) Proportion of active wall time that this cluster spent in the
       // frequency state.
       double frequency_proportion = 0;
-      if (current_cluster_active_wall_time.is_positive())
+      if (current_cluster_active_wall_time.is_positive() &&
+          !current_cluster_active_wall_time.is_inf()) {
         frequency_proportion = time_delta / current_cluster_active_wall_time;
+      }
 
       // (4) Scale the process's cpu time by the cluster/frequency pair's
       // relative proportion of execution time. Note that we calculate
@@ -710,7 +719,7 @@ class ProcessCpuTimeMetrics::DetailedCpuTimeMetrics {
 
   // Accessed on |task_runner_|.
   SEQUENCE_CHECKER(thread_pool_);
-  base::ProcessMetrics* process_metrics_;
+  raw_ptr<base::ProcessMetrics> process_metrics_;
   ProcessTypeForUma process_type_;
   uint32_t current_cycle_ = 0;
   base::PlatformThreadId main_thread_id_;

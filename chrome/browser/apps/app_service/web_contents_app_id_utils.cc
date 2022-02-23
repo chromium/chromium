@@ -4,6 +4,7 @@
 
 #include "chrome/browser/apps/app_service/web_contents_app_id_utils.h"
 
+#include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/apps/app_service/launch_utils.h"
@@ -44,7 +45,7 @@ bool IsAppReady(Profile* profile, const std::string& app_id) {
   return app_installed;
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const extensions::Extension* GetExtensionForWebContents(
     Profile* profile,
     content::WebContents* tab) {
@@ -55,21 +56,20 @@ const extensions::Extension* GetExtensionForWebContents(
   }
 
   auto* registry = extensions::ExtensionRegistry::Get(profile);
-  const GURL url = tab->GetURL();
+  const GURL url = tab->GetVisibleURL();
   const extensions::Extension* extension =
       registry->enabled_extensions().GetAppByURL(url);
 
-  if (extension && !extension->from_bookmark() &&
-      !extensions::LaunchesInWindow(profile, extension)) {
+  if (extension && !extensions::LaunchesInWindow(profile, extension)) {
     return extension;
   }
   return nullptr;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 absl::optional<std::string> GetInstanceAppIdForWebContents(
     content::WebContents* tab) {
   Profile* profile = Profile::FromBrowserContext(tab->GetBrowserContext());
@@ -89,7 +89,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
     }
 
     absl::optional<web_app::AppId> app_id =
-        provider->registrar().FindAppWithUrlInScope(tab->GetURL());
+        provider->registrar().FindAppWithUrlInScope(tab->GetVisibleURL());
     if (app_id) {
       const web_app::WebApp* web_app =
           provider->registrar().GetAppById(*app_id);
@@ -113,7 +113,7 @@ absl::optional<std::string> GetInstanceAppIdForWebContents(
   }
   return absl::nullopt;
 }
-#endif  // OS_CHROMEOS
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 std::string GetAppIdForWebContents(content::WebContents* web_contents) {
   std::string app_id;
@@ -148,7 +148,7 @@ void SetAppIdForWebContents(Profile* profile,
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id);
-  if (extension && !extension->from_bookmark()) {
+  if (extension) {
     DCHECK(extension->is_app());
     web_app::WebAppTabHelper::FromWebContents(web_contents)
         ->SetAppId(std::string());
@@ -167,7 +167,7 @@ bool IsInstalledApp(Profile* profile, const std::string& app_id) {
   const extensions::Extension* extension =
       extensions::ExtensionRegistry::Get(profile)->GetInstalledExtension(
           app_id);
-  if (extension && !extension->from_bookmark()) {
+  if (extension) {
     DCHECK(extension->is_app());
     return true;
   }

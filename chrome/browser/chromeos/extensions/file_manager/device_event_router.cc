@@ -4,10 +4,10 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/device_event_router.h"
 
+#include "ash/components/disks/disk.h"
 #include "base/bind.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk.h"
 #include "content/public/browser/browser_thread.h"
 
 namespace file_manager {
@@ -67,12 +67,12 @@ void DeviceEventRouter::OnDeviceRemoved(const std::string& device_path) {
                 "");
 }
 
-void DeviceEventRouter::OnDiskAdded(const chromeos::disks::Disk& disk,
+void DeviceEventRouter::OnDiskAdded(const ash::disks::Disk& disk,
                                     bool mounting) {
   // Do nothing.
 }
 
-void DeviceEventRouter::OnDiskRemoved(const chromeos::disks::Disk& disk) {
+void DeviceEventRouter::OnDiskRemoved(const ash::disks::Disk& disk) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (is_resuming_ || is_starting_up_)

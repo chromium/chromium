@@ -5,7 +5,12 @@ specific_include_rules = {
     "canvas_rendering_context.cc": [
         "+services/metrics/public/cpp/ukm_builders.h",
     ],
+    "client_hints_util.cc": [
+        "+services/network/public/cpp/client_hints.h",
+        "+url/gurl.h",
+        "+url/origin.h",
+    ],
     "trust_token_attribute_parsing_test.cc": [
-        "+services/network/trust_tokens/test",
+        "+services/network/test",
     ],
 }

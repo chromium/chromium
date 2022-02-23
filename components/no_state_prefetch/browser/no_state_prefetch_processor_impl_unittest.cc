@@ -4,6 +4,7 @@
 
 #include "components/no_state_prefetch/browser/no_state_prefetch_processor_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_link_manager.h"
@@ -66,7 +67,7 @@ class MockNoStatePrefetchProcessorImplDelegate final
   }
 
  private:
-  MockNoStatePrefetchLinkManager* link_manager_;
+  raw_ptr<MockNoStatePrefetchLinkManager> link_manager_;
 };
 
 class NoStatePrefetchProcessorImplTest

@@ -7,6 +7,7 @@
 #include <list>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/current_thread.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -117,8 +118,8 @@ class RecentlyAudibleHelperTest : public testing::Test {
   TestingProfile testing_profile_;
 
   // A test WebContents and its associated helper.
-  content::WebContents* contents_;
-  RecentlyAudibleHelper* helper_;
+  raw_ptr<content::WebContents> contents_;
+  raw_ptr<RecentlyAudibleHelper> helper_;
   base::CallbackListSubscription subscription_;
 
   std::list<bool> recently_audible_messages_;

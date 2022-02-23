@@ -4,6 +4,8 @@
 
 #include "sandbox/win/src/target_process.h"
 
+#include <windows.h>
+
 #include <stddef.h>
 #include <stdint.h>
 
@@ -11,19 +13,20 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/win/access_token.h"
+#include "base/win/security_util.h"
 #include "base/win/startup_information.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/crosscall_client.h"
 #include "sandbox/win/src/crosscall_server.h"
 #include "sandbox/win/src/policy_low_level.h"
 #include "sandbox/win/src/restricted_token_utils.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/sandbox_types.h"
 #include "sandbox/win/src/security_capabilities.h"
 #include "sandbox/win/src/sharedmem_ipc_server.h"
-#include "sandbox/win/src/sid.h"
 #include "sandbox/win/src/startup_information_helper.h"
 #include "sandbox/win/src/win_utils.h"
 
@@ -49,47 +52,18 @@ void CopyPolicyToTarget(const void* source, size_t size, void* dest) {
   }
 }
 
-bool GetTokenAppContainerSid(HANDLE token_handle,
-                             std::unique_ptr<Sid>* app_container_sid) {
-  std::vector<char> app_container_info(sizeof(TOKEN_APPCONTAINER_INFORMATION) +
-                                       SECURITY_MAX_SID_SIZE);
-  DWORD return_length;
-
-  if (!::GetTokenInformation(
-          token_handle, TokenAppContainerSid, app_container_info.data(),
-          base::checked_cast<DWORD>(app_container_info.size()),
-          &return_length)) {
-    return false;
-  }
-
-  PTOKEN_APPCONTAINER_INFORMATION info =
-      reinterpret_cast<PTOKEN_APPCONTAINER_INFORMATION>(
-          app_container_info.data());
-  if (!info->TokenAppContainer)
-    return false;
-  *app_container_sid = std::make_unique<Sid>(info->TokenAppContainer);
-  return true;
-}
-
-bool GetProcessAppContainerSid(HANDLE process,
-                               std::unique_ptr<Sid>* app_container_sid) {
-  HANDLE token_handle;
-  if (!::OpenProcessToken(process, TOKEN_QUERY, &token_handle))
-    return false;
-  base::win::ScopedHandle process_token(token_handle);
-
-  return GetTokenAppContainerSid(process_token.Get(), app_container_sid);
-}
-
 bool GetAppContainerImpersonationToken(
     HANDLE process,
     HANDLE initial_token,
-    const std::vector<Sid>& capabilities,
+    const std::vector<base::win::Sid>& capabilities,
     base::win::ScopedHandle* impersonation_token) {
-  std::unique_ptr<Sid> app_container_sid;
-  if (!GetProcessAppContainerSid(process, &app_container_sid)) {
+  absl::optional<base::win::AccessToken> token =
+      base::win::AccessToken::FromProcess(process);
+  if (!token)
     return false;
-  }
+  auto app_container_sid = token->AppContainerSid();
+  if (!app_container_sid)
+    return false;
   SecurityCapabilities security_caps(*app_container_sid, capabilities);
   return CreateLowBoxToken(initial_token, IMPERSONATION, &security_caps,
                            nullptr, 0, impersonation_token) == ERROR_SUCCESS;
@@ -101,11 +75,12 @@ SANDBOX_INTERCEPT HANDLE g_shared_section;
 SANDBOX_INTERCEPT size_t g_shared_IPC_size;
 SANDBOX_INTERCEPT size_t g_shared_policy_size;
 
-TargetProcess::TargetProcess(base::win::ScopedHandle initial_token,
-                             base::win::ScopedHandle lockdown_token,
-                             HANDLE job,
-                             ThreadPool* thread_pool,
-                             const std::vector<Sid>& impersonation_capabilities)
+TargetProcess::TargetProcess(
+    base::win::ScopedHandle initial_token,
+    base::win::ScopedHandle lockdown_token,
+    HANDLE job,
+    ThreadPool* thread_pool,
+    const std::vector<base::win::Sid>& impersonation_capabilities)
     // This object owns everything initialized here except thread_pool and
     // the job_ handle. The Job handle is closed by BrokerServices and results
     // eventually in a call to our dtor.
@@ -114,7 +89,8 @@ TargetProcess::TargetProcess(base::win::ScopedHandle initial_token,
       job_(job),
       thread_pool_(thread_pool),
       base_address_(nullptr),
-      impersonation_capabilities_(impersonation_capabilities) {}
+      impersonation_capabilities_(
+          base::win::CloneSidVector(impersonation_capabilities)) {}
 
 TargetProcess::~TargetProcess() {
   // Give a chance to the process to die. In most cases the JOB_KILL_ON_CLOSE
@@ -230,16 +206,17 @@ ResultCode TargetProcess::Create(
 }
 
 ResultCode TargetProcess::TransferVariable(const char* name,
-                                           void* address,
+                                           const void* address,
                                            size_t size) {
   if (!sandbox_process_info_.IsValid())
     return SBOX_ERROR_UNEXPECTED_CALL;
 
   SIZE_T written;
-  if (!::WriteProcessMemory(sandbox_process_info_.process_handle(), address,
-                            address, size, &written))
+  if (!::WriteProcessMemory(sandbox_process_info_.process_handle(),
+                            const_cast<void*>(address), address, size,
+                            &written)) {
     return SBOX_ERROR_CANNOT_WRITE_VARIABLE_VALUE;
-
+  }
   if (written != size)
     return SBOX_ERROR_INVALID_WRITE_VARIABLE_SIZE;
 
@@ -344,12 +321,9 @@ ResultCode TargetProcess::AssignLowBoxToken(
   PROCESS_ACCESS_TOKEN process_access_token = {};
   process_access_token.token = token.Get();
 
-  NtSetInformationProcess SetInformationProcess = nullptr;
-  ResolveNTFunctionPtr("NtSetInformationProcess", &SetInformationProcess);
-
-  NTSTATUS status = SetInformationProcess(
+  NTSTATUS status = GetNtExports()->SetInformationProcess(
       sandbox_process_info_.process_handle(),
-      static_cast<PROCESS_INFORMATION_CLASS>(NtProcessInformationAccessToken),
+      static_cast<PROCESSINFOCLASS>(NtProcessInformationAccessToken),
       &process_access_token, sizeof(process_access_token));
   if (!NT_SUCCESS(status)) {
     ::SetLastError(GetLastErrorFromNtStatus(status));
@@ -362,7 +336,7 @@ std::unique_ptr<TargetProcess> MakeTestTargetProcess(HANDLE process,
                                                      HMODULE base_address) {
   auto target = std::make_unique<TargetProcess>(
       base::win::ScopedHandle(), base::win::ScopedHandle(), nullptr, nullptr,
-      std::vector<Sid>());
+      std::vector<base::win::Sid>());
   PROCESS_INFORMATION process_info = {};
   process_info.hProcess = process;
   target->sandbox_process_info_.Set(process_info);

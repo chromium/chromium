@@ -25,6 +25,10 @@
 #include "components/autofill_assistant/browser/web/web_controller.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
+namespace password_manager {
+class PasswordChangeSuccessTracker;
+}
+
 namespace autofill_assistant {
 class UserModel;
 
@@ -51,9 +55,10 @@ class MockActionDelegate : public ActionDelegate {
       void(const Selector& selector,
            base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>&));
 
-  MOCK_METHOD5(
+  MOCK_METHOD6(
       WaitForDom,
       void(base::TimeDelta max_wait_time,
+           bool allow_observer_mode,
            bool allow_interrupt,
            WaitForDomObserver* observer,
            base::RepeatingCallback<void(
@@ -126,6 +131,8 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_CONST_METHOD0(GetUserData, UserData*());
   MOCK_CONST_METHOD0(GetPersonalDataManager, autofill::PersonalDataManager*());
   MOCK_CONST_METHOD0(GetWebsiteLoginManager, WebsiteLoginManager*());
+  MOCK_CONST_METHOD0(GetPasswordChangeSuccessTracker,
+                     password_manager::PasswordChangeSuccessTracker*());
   MOCK_CONST_METHOD0(GetWebContents, content::WebContents*());
   MOCK_CONST_METHOD0(GetWebController, WebController*());
   MOCK_CONST_METHOD0(GetEmailAddressForAccessTokenAccount, std::string());
@@ -200,6 +207,11 @@ class MockActionDelegate : public ActionDelegate {
   MOCK_METHOD0(MaybeShowSlowConnectionWarning, void());
   MOCK_METHOD0(GetLogInfo, ProcessedActionStatusDetailsProto&());
   MOCK_CONST_METHOD0(GetElementStore, ElementStore*());
+  MOCK_METHOD2(
+      RequestUserData,
+      void(const CollectUserDataOptions& options,
+           base::OnceCallback<void(bool, const GetUserDataResponseProto&)>
+               callback));
 
   base::WeakPtr<ActionDelegate> GetWeakPtr() const override {
     return weak_ptr_factory_.GetWeakPtr();

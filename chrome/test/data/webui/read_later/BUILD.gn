@@ -1,36 +1,45 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://read-later.top-chrome/=../../chrome/browser/resources/read_later/\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-  deps = [
-    ":read_later_app_test",
-    ":test_read_later_api_proxy",
-  ]
+generate_grd("build_grdp") {
+  grd_prefix = "webui_read_later"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "read_later"
 }
 
-js_library("read_later_app_test") {
-  deps = [
-    ":test_read_later_api_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/read_later:app",
-    "//third_party/polymer/v3_0/components-chromium/iron-test-helpers:mock-interactions",
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://read-later.top-chrome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/read_later/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_read_later_api_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/read_later:read_later_api_proxy",
-    "//chrome/browser/ui/webui/read_later:mojo_bindings_js_library_for_compile",
+  in_files = [
+    "read_later_app_test.ts",
+    "side_panel/bookmark_folder_test.ts",
+    "side_panel/bookmarks_drag_manager_test.ts",
+    "side_panel/bookmarks_list_interactive_ui_test.ts",
+    "side_panel/bookmarks_list_test.ts",
+    "side_panel/side_panel_app_test.ts",
+    "side_panel/test_bookmarks_api_proxy.ts",
+    "test_read_later_api_proxy.ts",
   ]
+  definitions = [
+    "//tools/typescript/definitions/bookmarks.d.ts",
+    "//tools/typescript/definitions/bookmark_manager_private.d.ts",
+  ]
+  deps = [ "//chrome/browser/resources/read_later:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
 }

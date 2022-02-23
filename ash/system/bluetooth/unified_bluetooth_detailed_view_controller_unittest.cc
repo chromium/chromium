@@ -6,12 +6,16 @@
 
 #include <memory>
 
+#include "ash/constants/ash_features.h"
 #include "ash/system/bluetooth/bluetooth_detailed_view_legacy.h"
+#include "ash/system/bluetooth/bluetooth_power_controller.h"
 #include "ash/system/bluetooth/tray_bluetooth_helper.h"
 #include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/scoped_feature_list.h"
 #include "device/bluetooth/dbus/bluez_dbus_manager.h"
 #include "device/bluetooth/dbus/fake_bluetooth_adapter_client.h"
 #include "device/bluetooth/dbus/fake_bluetooth_device_client.h"
@@ -36,6 +40,16 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
   ~UnifiedBluetoothDetailedViewControllerTest() override = default;
 
   void SetUp() override {
+    // These tests should only be run with the kBluetoothRevamp feature flag is
+    // disabled, and so we force it off here and ensure that the local state
+    // prefs that would have been registered had the feature flag been off are
+    // registered.
+    if (ash::features::IsBluetoothRevampEnabled()) {
+      feature_list_.InitAndDisableFeature(features::kBluetoothRevamp);
+      BluetoothPowerController::RegisterLocalStatePrefs(
+          local_state()->registry());
+    }
+
     AshTestBase::SetUp();
 
     // Set fake adapter client to powered-on and initialize with zero simulation
@@ -51,7 +65,7 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
     device_client_->SetSimulationIntervalMs(0);
     task_environment()->RunUntilIdle();
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    tray_model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     bt_detailed_view_controller_ =
@@ -105,9 +119,10 @@ class UnifiedBluetoothDetailedViewControllerTest : public AshTestBase {
   }
 
  private:
+  base::test::ScopedFeatureList feature_list_;
   bluez::FakeBluetoothAdapterClient* adapter_client_;
   bluez::FakeBluetoothDeviceClient* device_client_;
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<UnifiedBluetoothDetailedViewController>
       bt_detailed_view_controller_;

@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 
 namespace blink {
@@ -367,8 +367,9 @@ void OfflineAudioContext::FireCompletionEvent() {
         static_cast<OfflineAudioDestinationNode*>(destination())
             ->DestinationBuffer();
     DCHECK(rendered_buffer);
-    if (!rendered_buffer)
+    if (!rendered_buffer) {
       return;
+    }
 
     // Call the offline rendering completion event listener and resolve the
     // promise too.

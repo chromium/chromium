@@ -10,11 +10,13 @@
 #include <vector>
 
 #include "base/cxx17_backports.h"
+#include "base/feature_list_buildflags.h"
 #include "base/format_macros.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/persistent_memory_allocator.h"
 #include "base/ranges/algorithm.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -672,6 +674,82 @@ TEST_F(FeatureListTest, StoreAndRetrieveAssociatedFeaturesFromSharedMemory) {
       feature_list2->GetAssociatedFieldTrial(kFeatureOffByDefault);
   EXPECT_EQ(associated_trial1, trial1);
   EXPECT_EQ(associated_trial2, trial2);
+}
+
+#if BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX) && \
+    defined(GTEST_HAS_DEATH_TEST)
+using FeatureListDeathTest = FeatureListTest;
+TEST_F(FeatureListDeathTest, DiesWithBadFeatureName) {
+  EXPECT_DEATH(
+      Feature(
+          StrCat({BUILDFLAG(BANNED_BASE_FEATURE_PREFIX), "MyFeature"}).c_str(),
+          FEATURE_DISABLED_BY_DEFAULT),
+      StrCat({"Invalid feature name ", BUILDFLAG(BANNED_BASE_FEATURE_PREFIX),
+              "MyFeature"}));
+}
+#endif  // BUILDFLAG(ENABLE_BANNED_BASE_FEATURE_PREFIX) &&
+        // defined(GTEST_HAS_DEATH_TEST)
+
+TEST(FeatureListAccessorTest, DefaultStates) {
+  auto feature_list = std::make_unique<FeatureList>();
+  auto feature_list_accessor = feature_list->ConstructAccessor();
+  test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+  EXPECT_EQ(feature_list_accessor->GetOverrideStateByFeatureName(
+                kFeatureOnByDefault.name),
+            FeatureList::OVERRIDE_USE_DEFAULT);
+  EXPECT_EQ(feature_list_accessor->GetOverrideStateByFeatureName(
+                kFeatureOffByDefault.name),
+            FeatureList::OVERRIDE_USE_DEFAULT);
+}
+
+TEST(FeatureListAccessorTest, InitializeFromCommandLine) {
+  struct {
+    const char* enable_features;
+    const char* disable_features;
+    FeatureList::OverrideState expected_feature_on_state;
+    FeatureList::OverrideState expected_feature_off_state;
+  } test_cases[] = {
+      {"", "", FeatureList::OVERRIDE_USE_DEFAULT,
+       FeatureList::OVERRIDE_USE_DEFAULT},
+      {"OffByDefault", "", FeatureList::OVERRIDE_USE_DEFAULT,
+       FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {"OffByDefault", "OnByDefault", FeatureList::OVERRIDE_DISABLE_FEATURE,
+       FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {"OnByDefault,OffByDefault", "", FeatureList::OVERRIDE_ENABLE_FEATURE,
+       FeatureList::OVERRIDE_ENABLE_FEATURE},
+      {"", "OnByDefault,OffByDefault", FeatureList::OVERRIDE_DISABLE_FEATURE,
+       FeatureList::OVERRIDE_DISABLE_FEATURE},
+      // In the case an entry is both, disable takes precedence.
+      {"OnByDefault", "OnByDefault,OffByDefault",
+       FeatureList::OVERRIDE_DISABLE_FEATURE,
+       FeatureList::OVERRIDE_DISABLE_FEATURE},
+  };
+
+  for (size_t i = 0; i < base::size(test_cases); ++i) {
+    const auto& test_case = test_cases[i];
+    SCOPED_TRACE(base::StringPrintf("Test[%" PRIuS "]: [%s] [%s]", i,
+                                    test_case.enable_features,
+                                    test_case.disable_features));
+
+    auto feature_list = std::make_unique<FeatureList>();
+    auto feature_list_accessor = feature_list->ConstructAccessor();
+
+    feature_list->InitializeFromCommandLine(test_case.enable_features,
+                                            test_case.disable_features);
+    test::ScopedFeatureList scoped_feature_list;
+    scoped_feature_list.InitWithFeatureList(std::move(feature_list));
+
+    EXPECT_EQ(test_case.expected_feature_on_state,
+              feature_list_accessor->GetOverrideStateByFeatureName(
+                  kFeatureOnByDefault.name))
+        << i;
+    EXPECT_EQ(test_case.expected_feature_off_state,
+              feature_list_accessor->GetOverrideStateByFeatureName(
+                  kFeatureOffByDefault.name))
+        << i;
+  }
 }
 
 }  // namespace base

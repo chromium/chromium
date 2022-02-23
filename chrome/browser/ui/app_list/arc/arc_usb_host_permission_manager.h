@@ -10,10 +10,10 @@
 #include <unordered_set>
 #include <vector>
 
+#include "ash/components/arc/usb/usb_host_ui_delegate.h"
 #include "base/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs.h"
-#include "components/arc/usb/usb_host_ui_delegate.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 class Profile;

@@ -5,6 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_ABSTRACT_TEXTURE_IMPL_H_
 #define GPU_COMMAND_BUFFER_SERVICE_PASSTHROUGH_ABSTRACT_TEXTURE_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/abstract_texture.h"
 #include "gpu/command_buffer/service/gles2_cmd_decoder_passthrough.h"
 
@@ -42,8 +43,8 @@ class GPU_GLES2_EXPORT PassthroughAbstractTextureImpl : public AbstractTexture {
  private:
   scoped_refptr<TexturePassthrough> texture_passthrough_;
   bool decoder_managed_image_ = false;
-  gl::GLApi* gl_api_;
-  GLES2DecoderPassthroughImpl* decoder_;
+  raw_ptr<gl::GLApi> gl_api_;
+  raw_ptr<GLES2DecoderPassthroughImpl> decoder_;
   CleanupCallback cleanup_cb_;
 };
 

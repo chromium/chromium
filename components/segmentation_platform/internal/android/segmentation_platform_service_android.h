@@ -6,6 +6,7 @@
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_ANDROID_SEGMENTATION_PLATFORM_SERVICE_ANDROID_H_
 
 #include "base/android/jni_android.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/segmentation_platform/public/segmentation_platform_service.h"
 
@@ -29,6 +30,11 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
                           const JavaParamRef<jstring>& j_segmentation_key,
                           const JavaParamRef<jobject>& j_callback);
 
+  ScopedJavaLocalRef<jobject> GetCachedSegmentResult(
+      JNIEnv* env,
+      const JavaParamRef<jobject>& jcaller,
+      const JavaParamRef<jstring>& j_segmentation_key);
+
   ScopedJavaLocalRef<jobject> GetJavaObject();
 
  private:
@@ -37,7 +43,7 @@ class SegmentationPlatformServiceAndroid : public base::SupportsUserData::Data {
   ScopedJavaGlobalRef<jobject> java_obj_;
 
   // Not owned.
-  SegmentationPlatformService* segmentation_platform_service_;
+  raw_ptr<SegmentationPlatformService> segmentation_platform_service_;
 };
 
 }  // namespace segmentation_platform

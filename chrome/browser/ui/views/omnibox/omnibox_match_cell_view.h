@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_MATCH_CELL_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_MATCH_CELL_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
@@ -86,12 +87,12 @@ class OmniboxMatchCellView : public views::View {
 
   // Weak pointers for easy reference.
   // An icon representing the type or content.
-  views::ImageView* icon_view_;
+  raw_ptr<views::ImageView> icon_view_;
   // The image for answers in suggest and rich entity suggestions.
-  views::ImageView* answer_image_view_;
-  OmniboxTextView* content_view_;
-  OmniboxTextView* description_view_;
-  OmniboxTextView* separator_view_;
+  raw_ptr<views::ImageView> answer_image_view_;
+  raw_ptr<OmniboxTextView> content_view_;
+  raw_ptr<OmniboxTextView> description_view_;
+  raw_ptr<OmniboxTextView> separator_view_;
 
   // This (permanently) holds the rendered width of
   // AutocompleteMatch::kEllipsis so that we don't have to keep calculating

@@ -42,11 +42,11 @@ import androidx.test.filters.MediumTest;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.Feature;
@@ -56,6 +56,7 @@ import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.price_tracking.PriceDropNotificationManager;
+import org.chromium.chrome.browser.tasks.tab_management.MessageService.MessageDisableReason;
 import org.chromium.chrome.tab_ui.R;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -64,7 +65,6 @@ import org.chromium.chrome.test.util.ChromeRenderTestRule;
 import org.chromium.chrome.test.util.ChromeTabUtils;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.notifications.MockNotificationManagerProxy;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.io.IOException;
@@ -80,15 +80,14 @@ import java.io.IOException;
 public class PriceAlertsMessageCardTest {
     // clang-format on
     private static final String BASE_PARAMS =
-            "force-fieldtrial-params=Study.Group:enable_price_notification/true";
+            "force-fieldtrial-params=Study.Group:enable_price_notification/true"
+            + "/implicit_subscriptions_enabled/true";
     private static final String ACTION_APP_NOTIFICATION_SETTINGS =
             "android.settings.APP_NOTIFICATION_SETTINGS";
+    private static final String METRICS_IDENTIFIER =
+            "GridTabSwitcher.PriceAlertsMessageCard.DisableReason";
     private MockNotificationManagerProxy mMockNotificationManager;
     private PriceDropNotificationManager mPriceDropNotificationManager;
-
-    @ClassRule
-    public static DisableAnimationsTestRule sDisableAnimationsTestRule =
-            new DisableAnimationsTestRule();
 
     @Rule
     public ChromeTabbedActivityTestRule mActivityTestRule = new ChromeTabbedActivityTestRule();
@@ -96,9 +95,6 @@ public class PriceAlertsMessageCardTest {
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
-
-    @Rule
-    public DisableAnimationsTestRule mDisableAnimationsTestRule = new DisableAnimationsTestRule();
 
     @Before
     public void setUp() {
@@ -190,10 +186,28 @@ public class PriceAlertsMessageCardTest {
 
     @Test
     @MediumTest
-    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/false"})
-    public void testMessageCardNotShowing_ParameterDisabled() {
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/false"
+            + "/implicit_subscriptions_enabled/true"})
+    public void
+    testMessageCardNotShowing_NotificationParameterDisabled() {
         final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
         assertFalse(PriceTrackingUtilities.isPriceDropNotificationEligible());
+        mMockNotificationManager.setNotificationsEnabled(false);
+        assertFalse(mPriceDropNotificationManager.canPostNotification());
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
+
+        enterTabSwitcher(cta);
+        onView(withId(R.id.large_message_card_item)).check(doesNotExist());
+    }
+
+    @Test
+    @MediumTest
+    @CommandLineFlags.Add({"force-fieldtrial-params=Study.Group:enable_price_notification/true"
+            + "/implicit_subscriptions_enabled/false"})
+    public void
+    testMessageCardNotShowing_ImplicitSubscriptionsParameterDisabled() {
+        final ChromeTabbedActivity cta = mActivityTestRule.getActivity();
+        assertTrue(PriceTrackingUtilities.isPriceDropNotificationEligible());
         mMockNotificationManager.setNotificationsEnabled(false);
         assertFalse(mPriceDropNotificationManager.canPostNotification());
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
@@ -221,6 +235,9 @@ public class PriceAlertsMessageCardTest {
         assertNotNull(mPriceDropNotificationManager.getNotificationChannel());
         assertEquals(NotificationManager.IMPORTANCE_LOW,
                 mPriceDropNotificationManager.getNotificationChannel().getImportance());
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED));
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
@@ -244,6 +261,9 @@ public class PriceAlertsMessageCardTest {
         } else {
             intended(hasAction(Settings.ACTION_APP_NOTIFICATION_SETTINGS));
         }
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_ACCEPTED));
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
     }
 
@@ -260,6 +280,9 @@ public class PriceAlertsMessageCardTest {
 
         onView(allOf(withId(R.id.close_button), withParent(withId(R.id.large_message_card_view))))
                 .perform(click());
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED));
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
@@ -282,6 +305,9 @@ public class PriceAlertsMessageCardTest {
         onView(allOf(withId(R.id.tab_list_view), withParent(withId(R.id.compositor_view_holder))))
                 .perform(RecyclerViewActions.actionOnItemAtPosition(
                         1, getSwipeToDismissAction(true)));
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_DISMISSED));
         assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
     }
@@ -319,16 +345,19 @@ public class PriceAlertsMessageCardTest {
         mMockNotificationManager.setNotificationsEnabled(false);
 
         for (int i = 0; i < 10; i++) {
-            assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
             enterTabSwitcher(cta);
             CriteriaHelper.pollUiThread(TabSwitcherCoordinator::hasAppendedMessagesForTesting);
             onView(withId(R.id.large_message_card_item)).check(matches(isDisplayed()));
+            assertTrue(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
             clickFirstCardFromTabSwitcher(cta);
         }
 
-        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
         enterTabSwitcher(cta);
         onView(withId(R.id.large_message_card_item)).check(doesNotExist());
+        assertEquals(1,
+                RecordHistogram.getHistogramValueCountForTesting(
+                        METRICS_IDENTIFIER, MessageDisableReason.MESSAGE_IGNORED));
+        assertFalse(PriceTrackingUtilities.isPriceAlertsMessageCardEnabled());
     }
 
     @Test

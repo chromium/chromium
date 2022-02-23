@@ -17,6 +17,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.Robolectric;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowLooper;
 import org.robolectric.shadows.ShadowView;
 
@@ -30,6 +31,7 @@ import java.util.concurrent.TimeUnit;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE, shadows = {ShadowView.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class LoadingViewTest {
     static class TestObserver implements LoadingView.Observer {
         public final CallbackHelper showLoadingCallback = new CallbackHelper();

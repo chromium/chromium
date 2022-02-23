@@ -14,7 +14,7 @@ config("delay_load_mf") {
 }
 
 component("media_foundation_util") {
-  defines = [ "MF_INITIALIZER_IMPLEMENTATION" ]
+  defines = [ "IS_MF_UTIL_IMPL" ]
   sources = [
     "dxgi_device_manager.cc",
     "dxgi_device_manager.h",
@@ -22,7 +22,7 @@ component("media_foundation_util") {
     "mf_helpers.h",
     "mf_initializer.cc",
     "mf_initializer.h",
-    "mf_initializer_export.h",
+    "mf_util_export.h",
   ]
   configs += [ "//media:media_config" ]
   deps = [
@@ -41,14 +41,6 @@ component("media_foundation_util") {
   all_dependent_configs = [ ":delay_load_mf" ]
 }
 
-source_set("hresult_status_helper") {
-  sources = [
-    "hresult_status_helper.cc",
-    "hresult_status_helper.h",
-  ]
-  deps = [ "//media" ]
-}
-
 source_set("mf_cdm_proxy") {
   sources = [ "media_foundation_cdm_proxy.h" ]
   deps = [ "//base" ]
@@ -56,7 +48,10 @@ source_set("mf_cdm_proxy") {
 
 source_set("dcomp_texture_wrapper") {
   sources = [ "dcomp_texture_wrapper.h" ]
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//ui/gfx:memory_buffer",
+  ]
 }
 
 source_set("test_support") {

@@ -13,6 +13,7 @@
 #include "content/public/browser/desktop_media_id.h"
 #include "third_party/blink/public/common/mediastream/media_stream_request.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-shared.h"
+#include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
@@ -96,15 +97,21 @@ class MediaStreamUI {
       const DesktopMediaID& media_id,
       blink::mojom::MediaStreamStateChange new_state)>;
 
-  virtual ~MediaStreamUI() {}
+  virtual ~MediaStreamUI() = default;
 
   // Called when MediaStream capturing is started. Chrome layer can call |stop|
   // to stop the stream, or |source| to change the source of the stream, or
   // |state_change| to pause/unpause the stream.
-  // Returns the platform-dependent window ID for the UI, or 0 if not
-  // applicable.
+  // |stop| is a callback that, once invoked, will stop the stream.
+  // Stopping a stream is irreversible, so only the first invocation
+  // will have an effect. |stop| is defined as RepeatingClosure so as
+  // to allow its duplication upstream, thereby enabling multiple
+  // potential sources for the stop invocation. (For example, allow
+  // multiple UX elements that would stop the capture.)
+  // Returns the platform-dependent window ID for the UI, or 0
+  // if not applicable.
   virtual gfx::NativeViewId OnStarted(
-      base::OnceClosure stop,
+      base::RepeatingClosure stop,
       SourceCallback source,
       const std::string& label,
       std::vector<DesktopMediaID> screen_capture_ids,
@@ -113,7 +120,15 @@ class MediaStreamUI {
   virtual void OnDeviceStopped(const std::string& label,
                                const DesktopMediaID& media_id) = 0;
 
-#if !defined(OS_ANDROID)
+  // Called when Region Capture starts/stops, or when the cropped area changes.
+  // * A non-empty rect indicates the region which was cropped-to.
+  // * An empty rect indicates that Region Capture was employed,
+  //   but the cropped-to region ended up having zero pixels.
+  // * Nullopt indicates that cropping stopped.
+  virtual void OnRegionCaptureRectChanged(
+      const absl::optional<gfx::Rect>& region_capture_rect) {}
+
+#if !BUILDFLAG(IS_ANDROID)
   // Focuses the display surface represented by |media_id|.
   //
   // |is_from_microtask| and |is_from_timer| are used to distinguish:

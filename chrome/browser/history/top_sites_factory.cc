@@ -53,7 +53,7 @@ struct RawPrepopulatedPage {
                          // roughly match favicon).
 };
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Android does not use prepopulated pages.
 const RawPrepopulatedPage kRawPrepopulatedPages[] = {
     {
@@ -68,7 +68,7 @@ const RawPrepopulatedPage kRawPrepopulatedPages[] = {
 void InitializePrepopulatedPageList(
     Profile* profile,
     history::PrepopulatedPageList* prepopulated_pages) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(prepopulated_pages);
   PrefService* pref_service = profile->GetPrefs();
   bool hide_web_store_icon = pref_service->GetBoolean(prefs::kHideWebStoreIcon);

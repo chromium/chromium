@@ -209,7 +209,7 @@ DriveFsHost::DriveFsHost(
     DriveFsHost::MountObserver* mount_observer,
     network::NetworkConnectionTracker* network_connection_tracker,
     const base::Clock* clock,
-    chromeos::disks::DiskMountManager* disk_mount_manager,
+    ash::disks::DiskMountManager* disk_mount_manager,
     std::unique_ptr<base::OneShotTimer> timer)
     : profile_path_(profile_path),
       delegate_(delegate),

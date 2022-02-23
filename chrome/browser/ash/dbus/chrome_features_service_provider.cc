@@ -10,6 +10,7 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
@@ -25,7 +26,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/chrome_features.h"
 #include "chromeos/tpm/install_attributes.h"
-#include "components/arc/arc_features.h"
 #include "components/prefs/pref_service.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -80,7 +80,9 @@ Profile* GetSenderProfile(
 
 namespace ash {
 
-ChromeFeaturesServiceProvider::ChromeFeaturesServiceProvider() {}
+ChromeFeaturesServiceProvider::ChromeFeaturesServiceProvider(
+    std::unique_ptr<base::FeatureList::Accessor> feature_list_accessor)
+    : feature_list_accessor_(std::move(feature_list_accessor)) {}
 
 ChromeFeaturesServiceProvider::~ChromeFeaturesServiceProvider() = default;
 
@@ -201,8 +203,6 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
     return;
   }
   // Not on our list. Potentially look up by name instead.
-  base::FeatureList* features = base::FeatureList::GetInstance();
-  base::FieldTrial* trial = nullptr;
   // Only search for arbitrary trial names that begin with the appropriate
   // prefix, since looking up a feature by name will not be able to get the
   // default value associated with any `base::Feature` defined in the code
@@ -210,20 +210,20 @@ void ChromeFeaturesServiceProvider::IsFeatureEnabled(
   // Separately, a presubmit will enforce that no `base::Feature` definition
   // has a name starting with this prefix.
   // TODO(https://crbug.com/1263068): Add the aforementioned presubmit.
+  base::FeatureList::OverrideState state =
+      base::FeatureList::OVERRIDE_USE_DEFAULT;
   if (feature_name.find(kCrOSLateBootFeaturePrefix) == 0) {
-    trial = features->GetAssociatedFieldTrialByFeatureName(feature_name);
+    state = feature_list_accessor_->GetOverrideStateByFeatureName(feature_name);
   }
-  if (!trial) {
+  if (state == base::FeatureList::OVERRIDE_USE_DEFAULT) {
     LOG(ERROR) << "Unexpected feature name '" << feature_name << "'";
     std::move(response_sender)
         .Run(dbus::ErrorResponse::FromMethodCall(
             method_call, DBUS_ERROR_INVALID_ARGS, "Unexpected feature name."));
     return;
   }
-  bool enabled = features->GetEnabledFieldTrialByFeatureName(feature_name);
-  // Call group() so that the field trial will be reported as active.
-  trial->group();
-  SendResponse(method_call, std::move(response_sender), enabled);
+  SendResponse(method_call, std::move(response_sender),
+               state == base::FeatureList::OVERRIDE_ENABLE_FEATURE);
 }
 
 void ChromeFeaturesServiceProvider::IsCrostiniEnabled(

@@ -38,6 +38,9 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   // Emulates the biod daemon by sending events which the daemon normally sends.
   // Notifies |observers_| about various events. These will be used in tests.
 
+  // Emulates biod service restarted.
+  void SendRestarted();
+
   // Emulates a scan that occurs during enrolling a new fingerprint.
   // |fingerprint| is the fake data of the finger as a string. If |is_complete|
   // is true the enroll session is finished, and the record is stored.
@@ -49,7 +52,7 @@ class COMPONENT_EXPORT(BIOD_CLIENT) FakeBiodClient : public BiodClient {
   // is a string which represents the finger, and will be compared with all the
   // stored fingerprints.
   void SendAuthScanDone(const std::string& fingerprint,
-                        biod::ScanResult type_result);
+                        const biod::FingerprintMessage& msg);
   void SendSessionFailed();
 
   // Clears all stored and current records from the fake storage.

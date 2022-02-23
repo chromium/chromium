@@ -1,0 +1,8 @@
+This is a testharness.js-based test.
+FAIL Default "speaker-selection" permissions policy ["self"] allows the top-level document. promise_test: Unhandled rejection with value: object "Error: setSinkId() promise not already settled"
+FAIL Default "speaker-selection" permissions policy ["self"] allows same-origin iframes. assert_equals: setSinkId() promise not already settled. expected "#OK" but got "Error"
+FAIL Default "speaker-selection" permissions policy ["self"] disallows cross-origin iframes. assert_equals: setSinkId() promise not already settled. expected "NotAllowedError" but got "Error"
+FAIL permissions policy "speaker-selection" can be enabled in cross-origin iframes using "allow" attribute. assert_equals: setSinkId() promise not already settled. expected "#OK" but got "Error"
+FAIL permissions policy "speaker-selection" can be disabled in same-origin iframes using "allow" attribute. assert_equals: setSinkId() promise not already settled. expected "NotAllowedError" but got "Error"
+Harness: the test ran to completion.
+

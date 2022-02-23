@@ -17,7 +17,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/file_utils.h"
 #endif
 
@@ -29,27 +29,27 @@ TEST(ChromePaths, UserCacheDir) {
   base::FilePath test_profile_dir;  // Platform-specific profile directory path.
   base::FilePath expected_cache_dir;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   test_profile_dir = base::FilePath(FILE_PATH_LITERAL("C:\\Users\\Foo\\Bar"));
   expected_cache_dir = base::FilePath(FILE_PATH_LITERAL("C:\\Users\\Foo\\Bar"));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   // Fuchsia uses the Component's cache directory as the base.
   expected_cache_dir = base::FilePath(base::kPersistedCacheDirectoryPath);
   // TODO(crbug.com/1263566): Support profile-specific cache and uncomment this.
   // test_profile_dir =
   //     base::FilePath(base::kPersistedDataDirectoryPath).Append("foobar");
   // expected_cache_dir = expected_cache_dir.Append("foobar");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   ASSERT_TRUE(base::PathService::Get(base::DIR_APP_DATA, &test_profile_dir));
   test_profile_dir = test_profile_dir.Append("foobar");
   ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &expected_cache_dir));
   expected_cache_dir = expected_cache_dir.Append("foobar");
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // No matter what the test_profile_dir is, Android always uses the
   // application's cache directory since multiple profiles are not supported.
   test_profile_dir = base::FilePath("\\Not a valid path");
   ASSERT_TRUE(base::PathService::Get(base::DIR_CACHE, &expected_cache_dir));
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   base::FilePath homedir;
   base::PathService::Get(base::DIR_HOME, &homedir);
   // Note: we assume XDG_CACHE_HOME/XDG_CONFIG_HOME are at their
@@ -63,7 +63,7 @@ TEST(ChromePaths, UserCacheDir) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 #else
 #error Unsupported platform
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Verify the expectations above for the platform-specific profile directory.
   // On Linux and Mac the platform-specific profile directory is in a special
@@ -78,10 +78,10 @@ TEST(ChromePaths, UserCacheDir) {
   base::FilePath non_special_profile_dir =
       base::FilePath(FILE_PATH_LITERAL("/some/other/path"));
   GetUserCacheDirectory(non_special_profile_dir, &cache_dir);
-#if defined(OS_FUCHSIA) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_ANDROID)
   // Fuchsia always uses the same base cache directory.
   EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Android always uses the same application cache directory.
   EXPECT_EQ(expected_cache_dir.value(), cache_dir.value());
 #else
@@ -90,7 +90,7 @@ TEST(ChromePaths, UserCacheDir) {
 }
 
 // Chrome OS doesn't use any of the desktop linux configuration.
-#if defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_LACROS) && \
     !BUILDFLAG(IS_CHROMEOS_ASH)
 TEST(ChromePaths, DefaultUserDataDir) {
   std::unique_ptr<base::Environment> env(base::Environment::Create());

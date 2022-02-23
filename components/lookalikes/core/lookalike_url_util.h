@@ -13,6 +13,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/reputation/core/safety_tips.pb.h"
 #include "components/url_formatter/url_formatter.h"
+#include "components/version_info/channel.h"
 #include "url/gurl.h"
 
 class GURL;
@@ -171,7 +172,8 @@ bool IsTopDomain(const DomainInfo& domain_info);
 // which doesn't have a notion of private registries.
 std::string GetETLDPlusOne(const std::string& hostname);
 
-// Returns true if a lookalike interstitial should be shown.
+// Returns true if a lookalike interstitial should be shown for the given
+// match type.
 bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type);
 
 // Returns true if a domain is visually similar to the hostname of |url|. The
@@ -233,5 +235,13 @@ bool HasOneCharacterSwap(const std::u16string& str1,
 void SetTop500DomainsParamsForTesting(const Top500DomainsParams& params);
 // Resets information about top 500 domains for testing.
 void ResetTop500DomainsParamsForTesting();
+
+// Returns true if the launch configuration provided by the component updater
+// enables `heuristic` for the given `etld_plus_one`.
+bool IsHeuristicEnabledForHostname(
+    const reputation::SafetyTipsConfig* config_proto,
+    reputation::HeuristicLaunchConfig::Heuristic heuristic,
+    const std::string& lookalike_etld_plus_one,
+    version_info::Channel channel);
 
 #endif  // COMPONENTS_LOOKALIKES_CORE_LOOKALIKE_URL_UTIL_H_

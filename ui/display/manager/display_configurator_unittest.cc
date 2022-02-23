@@ -201,7 +201,7 @@ class ConfigurationWaiter {
   // runs it and returns base::TimeDelta(). Otherwise, triggers the
   // configuration timer and returns its delay. If the timer wasn't running,
   // returns base::TimeDelta::Max().
-  base::TimeDelta Wait() WARN_UNUSED_RESULT {
+  [[nodiscard]] base::TimeDelta Wait() {
     base::RunLoop().RunUntilIdle();
     if (callback_result_ != CALLBACK_NOT_CALLED)
       return base::TimeDelta();
@@ -245,7 +245,7 @@ class DisplayConfiguratorTest : public testing::Test {
 
     // Force system compositor mode to simulate on-device configurator behavior.
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        chromeos::switches::kForceSystemCompositorMode);
+        ash::switches::kForceSystemCompositorMode);
 
     native_display_delegate_ = new TestNativeDisplayDelegate(log_.get());
     configurator_.SetDelegateForTesting(

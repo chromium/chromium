@@ -9,8 +9,8 @@ py_library(
     name = "tflite_text_api",
     srcs = ["tflite_text_api.py"],
     deps = [
-        "//tensorflow_lite_support/custom_ops:expect_tfpy_installed",
-        "//tensorflow_lite_support/custom_ops:expect_tftext_installed",
+        # build rule placeholder: tensorflow dep,
+        # build rule placeholder: tensorflow_text dep,
     ],
 )
 
@@ -23,8 +23,8 @@ py_library(
     ],
     srcs_version = "PY3",
     deps = [
-        "//tensorflow_lite_support/custom_ops:expect_tfpy_installed",
-        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece:pywrap_model_converter",
+        # build rule placeholder: tensorflow dep,
+        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece/py:pywrap_model_converter",
     ],
 )
 
@@ -37,9 +37,9 @@ py_test(
     python_version = "PY3",
     deps = [
         ":sentencepiece_tokenizer",
-        "//tensorflow_lite_support/custom_ops:expect_tfpy_installed",
-        "//tensorflow_lite_support/custom_ops:expect_tftext_installed",
-        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece:pywrap_tflite_registerer",
+        # build rule placeholder: tensorflow dep,
+        # build rule placeholder: tensorflow_text dep,
+        "//tensorflow_lite_support/custom_ops/kernel/sentencepiece/py:pywrap_tflite_registerer",
         "@absl_py//absl:app",
         "@absl_py//absl/flags",
         "@absl_py//absl/logging",
@@ -52,8 +52,8 @@ py_test(
     srcs = ["ragged_tensor_to_tensor_test.py"],
     python_version = "PY3",
     deps = [
-        "//tensorflow_lite_support/custom_ops:expect_tfpy_installed",
-        "//tensorflow_lite_support/custom_ops/kernel/ragged:pywrap_tflite_registerer",
+        # build rule placeholder: tensorflow dep,
+        "//tensorflow_lite_support/custom_ops/kernel/ragged/py:pywrap_tflite_registerer",
         "@absl_py//absl:app",
         "@absl_py//absl/flags",
         "@absl_py//absl/logging",

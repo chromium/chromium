@@ -20,10 +20,7 @@ void TestWebAppUrlLoader::SaveLoadUrlRequests() {
 
 void TestWebAppUrlLoader::ProcessLoadUrlRequests() {
   while (!pending_requests_.empty()) {
-    GURL url;
-    ResultCallback callback;
-
-    std::tie(url, callback) = std::move(pending_requests_.front());
+    auto [url, callback] = std::move(pending_requests_.front());
     pending_requests_.pop();
 
     DCHECK(base::Contains(next_result_map_, url));

@@ -8,11 +8,11 @@
 #include "cc/layers/texture_layer_client.h"
 #include "cc/resources/shared_bitmap_id_registrar.h"
 #include "components/viz/common/resources/resource_format.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 class CrossThreadSharedBitmap;
@@ -51,7 +51,7 @@ class PLATFORM_EXPORT ImageLayerBridge
   void SetFilterQuality(cc::PaintFlags::FilterQuality filter_quality) {
     filter_quality_ = filter_quality;
   }
-  void SetUV(const FloatPoint& left_top, const FloatPoint& right_bottom);
+  void SetUV(const gfx::PointF& left_top, const gfx::PointF& right_bottom);
 
   bool IsAccelerated() { return image_ && image_->IsTextureBacked(); }
 

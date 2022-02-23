@@ -142,10 +142,8 @@ String ComputedStylePropertyMap::SerializationForShorthand(
     const CSSProperty& property) const {
   DCHECK(property.IsShorthand());
   const ComputedStyle* style = UpdateStyle();
-  if (!style) {
-    NOTREACHED();
+  if (!style)
     return "";
-  }
 
   if (const CSSValue* value = property.CSSValueFromComputedStyle(
           *style, nullptr /* layout_object */, false)) {

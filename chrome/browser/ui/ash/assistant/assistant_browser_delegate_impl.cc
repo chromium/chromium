@@ -191,7 +191,7 @@ void AssistantBrowserDelegateImpl::OnUserSessionStarted(bool is_primary_user) {
   // Disable the handling for browser tests to prevent the Assistant being
   // enabled unexpectedly.
   base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (is_primary_user && !chromeos::switches::ShouldSkipOobePostLogin() &&
+  if (is_primary_user && !ash::switches::ShouldSkipOobePostLogin() &&
       !command_line->HasSwitch(switches::kBrowserTest)) {
     MaybeStartAssistantOptInFlow();
   }

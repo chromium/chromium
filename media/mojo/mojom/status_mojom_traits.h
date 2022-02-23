@@ -7,6 +7,8 @@
 
 #include "base/containers/span.h"
 #include "base/values.h"
+#include "media/base/decoder_status.h"
+#include "media/base/encoder_status.h"
 #include "media/base/ipc/media_param_traits.h"
 #include "media/base/status.h"
 #include "media/mojo/mojom/media_types.mojom.h"
@@ -34,9 +36,11 @@ struct StructTraits<media::mojom::StatusDataDataView,
     return input.frames;
   }
 
-  static base::span<media::internal::StatusData> causes(
-      media::internal::StatusData& input) {
-    return input.causes;
+  static absl::optional<media::internal::StatusData> cause(
+      const media::internal::StatusData& input) {
+    if (input.cause)
+      return *input.cause;
+    return absl::nullopt;
   }
 
   static base::Value data(const media::internal::StatusData& input) {

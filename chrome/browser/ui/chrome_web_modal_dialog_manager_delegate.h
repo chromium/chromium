@@ -5,7 +5,6 @@
 #ifndef CHROME_BROWSER_UI_CHROME_WEB_MODAL_DIALOG_MANAGER_DELEGATE_H_
 #define CHROME_BROWSER_UI_CHROME_WEB_MODAL_DIALOG_MANAGER_DELEGATE_H_
 
-#include "base/compiler_specific.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
 
 class ChromeWebModalDialogManagerDelegate

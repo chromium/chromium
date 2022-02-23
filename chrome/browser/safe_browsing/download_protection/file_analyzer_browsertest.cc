@@ -5,6 +5,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
@@ -15,7 +16,7 @@
 #include "chrome/services/file_util/document_analysis_service.h"
 #include "chrome/test/base/in_process_browser_test.h"
 
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #include "chrome/browser/safe_browsing/download_protection/document_analysis_service.h"
 #include "chrome/services/file_util/public/cpp/sandboxed_document_analyzer.h"
 #endif
@@ -77,7 +78,7 @@ class FileAnalyzerBrowserTest : public InProcessBrowserTest {
     }
 
     base::OnceClosure done_closure_;
-    DocumentAnalyzerResults* results_;
+    raw_ptr<DocumentAnalyzerResults> results_;
   };
 };
 

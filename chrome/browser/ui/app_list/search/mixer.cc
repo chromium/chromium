@@ -122,7 +122,7 @@ Mixer::~Mixer() = default;
 
 void Mixer::InitializeRankers(Profile* profile) {
   search_result_ranker_ = std::make_unique<SearchResultRanker>(profile);
-  search_result_ranker_->InitializeRankers(search_controller_);
+  search_result_ranker_->InitializeRankers();
 
   if (app_list_features::IsSuggestedFilesEnabled() ||
       app_list_features::IsSuggestedLocalFilesEnabled()) {

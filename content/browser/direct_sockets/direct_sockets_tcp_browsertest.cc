@@ -18,6 +18,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/content_browser_test.h"
@@ -207,9 +208,6 @@ class ReadWriteWaiter {
 
 class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
  public:
-  DirectSocketsTcpBrowserTest() {
-    feature_list_.InitAndEnableFeature(features::kDirectSockets);
-  }
   ~DirectSocketsTcpBrowserTest() override = default;
 
   GURL GetTestOpenPageURL() {
@@ -272,13 +270,19 @@ class DirectSocketsTcpBrowserTest : public ContentBrowserTest {
 
  protected:
   void SetUp() override {
-    DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(true);
-    DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(false);
-
     embedded_test_server()->AddDefaultHandlers(GetTestDataFilePath());
     ASSERT_TRUE(embedded_test_server()->Start());
 
     ContentBrowserTest::SetUp();
+  }
+
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    ContentBrowserTest::SetUpCommandLine(command_line);
+    std::string origin_list =
+        GetTestOpenPageURL().spec() + "," + GetTestPageURL().spec();
+
+    command_line->AppendSwitchASCII(switches::kRestrictedApiOrigins,
+                                    origin_list);
   }
 
  private:
@@ -316,7 +320,7 @@ IN_PROC_BROWSER_TEST_F(DirectSocketsTcpBrowserTest, OpenTcp_Success_Global) {
               StartsWith("openTcp succeeded"));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // https://crbug.com/1211492 Keep failing on Mac11.3
 #define MAYBE_OpenTcp_MDNS DISABLED_OpenTcp_MDNS
 #else

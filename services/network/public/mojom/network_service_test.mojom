@@ -4,17 +4,20 @@
 
 module network.mojom;
 
+import "mojo/public/mojom/base/file_path.mojom";
 import "mojo/public/mojom/base/memory_pressure_level.mojom";
 import "mojo/public/mojom/base/time.mojom";
+import "services/network/public/mojom/host_resolver.mojom";
 import "services/network/public/mojom/network_change_manager.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/network_types.mojom";
 
 // Maps to net::RuleBasedHostResolverProc::Rule::ResolverType.
+//
+// TODO(https://crbug.com/1298106) Deduplicate this enum's definition.
 enum ResolverType {
   kResolverTypeFail,
   kResolverTypeFailTimeout,
-  kResolverTypeFailHTTPSServiceFormRecord,
   kResolverTypeSystem,
   kResolverTypeIPLiteral,
   kResolverTypeDirectLookup,
@@ -86,6 +89,16 @@ interface NetworkServiceTest {
   [Sync]
   SetAllowNetworkAccessToHostResolutions() => ();
 
+  // Replace the system DNS configuration with a basic, single-server,
+  // localhost-only configuration and ignore any future changes to the real
+  // configuration.
+  [Sync]
+  ReplaceSystemDnsConfig() => ();
+
+  // Set the DoH configuration to be used during tests.
+  [Sync]
+  SetTestDohConfig(DnsOverHttpsConfig doh_config) => ();
+
   // Causes the next host resolve to the given hostname to crash the process.
   CrashOnResolveHost(string host);
 
@@ -118,14 +131,12 @@ interface NetworkServiceTest {
   // network service informs the main process when a field trial is activated.
   ActivateFieldTrial(string field_trial_name);
 
-  // Gets the current count of entries in the First-Party sets mapping. Note
-  // that each entry is a registered domain mapped to its owner.
-  [Sync]
-  GetFirstPartySetEntriesCount() => (int64 entries);
-
   // Set how long of an initial delay should be used for exponential backoff in
   // SCT auditing retries. Setting the delay to nullopt will reset to the
   // default.
   [Sync]
   SetSCTAuditingRetryDelay(mojo_base.mojom.TimeDelta? delay) => ();
+
+  // Opens a file with the given `path`, and returns whether it is valid.
+  OpenFile(mojo_base.mojom.FilePath path) => (bool result);
 };

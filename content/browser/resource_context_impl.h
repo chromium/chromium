@@ -5,7 +5,6 @@
 #ifndef CONTENT_BROWSER_RESOURCE_CONTEXT_IMPL_H_
 #define CONTENT_BROWSER_RESOURCE_CONTEXT_IMPL_H_
 
-#include "content/common/content_export.h"
 #include "content/public/browser/resource_context.h"
 
 namespace content {
@@ -17,7 +16,7 @@ class BrowserContext;
 // public API.
 
 // Initialize the above data on the ResourceContext from a given BrowserContext.
-CONTENT_EXPORT void InitializeResourceContext(BrowserContext* browser_context);
+void InitializeResourceContext(BrowserContext* browser_context);
 
 }  // namespace content
 

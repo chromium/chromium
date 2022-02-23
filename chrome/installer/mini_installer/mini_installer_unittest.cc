@@ -63,16 +63,6 @@ TEST(MiniInstallerTest, GetModuleDir) {
   EXPECT_EQ(directory.get()[directory.length() - 1], L'\\');
 }
 
-TEST(MiniInstallerTest, GetTempDir) {
-  ProcessExitResult exit_result(SUCCESS_EXIT_CODE);
-  PathString directory;
-
-  ASSERT_TRUE(GetTempDir(&directory, &exit_result));
-  ASSERT_NE(directory.length(), 0U);
-  EXPECT_LT(directory.length(), directory.capacity());
-  EXPECT_EQ(directory.get()[directory.length() - 1], L'\\');
-}
-
 // A test harness for GetPreviousSetupExePath.
 class GetPreviousSetupExePathTest : public ::testing::Test {
  public:

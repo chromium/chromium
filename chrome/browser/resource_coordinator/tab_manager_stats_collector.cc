@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
@@ -28,7 +29,6 @@
 #include "chrome/browser/resource_coordinator/time.h"
 #include "chrome/browser/sessions/session_restore.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/swap_metrics_driver.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -87,7 +87,7 @@ class TabManagerStatsCollector::SwapMetricsDelegate
   }
 
  private:
-  TabManagerStatsCollector* tab_manager_stats_collector_;
+  raw_ptr<TabManagerStatsCollector> tab_manager_stats_collector_;
 };
 
 TabManagerStatsCollector::TabManagerStatsCollector() {
@@ -215,66 +215,6 @@ void TabManagerStatsCollector::UpdateSessionAndSequence() {
 
   ++session_id_;
   sequence_ = 0;
-}
-
-// static
-void TabManagerStatsCollector::RecordDecisionDetails(
-    LifecycleUnit* lifecycle_unit,
-    const DecisionDetails& decision_details,
-    LifecycleUnitState target_state) {
-  ukm::SourceId ukm_source_id = lifecycle_unit->GetUkmSourceId();
-  if (ukm_source_id == ukm::kInvalidSourceId)
-    return;
-
-  // Don't log anything for invalid decision details (trivial reasons: crashed
-  // tabs, navigations not yet committed, etc).
-  if (decision_details.reasons().empty())
-    return;
-
-  ukm::builders::TabManager_LifecycleStateChange builder(ukm_source_id);
-
-  builder.SetOldLifecycleState(
-      static_cast<int64_t>(lifecycle_unit->GetState()));
-  builder.SetNewLifecycleState(static_cast<int64_t>(target_state));
-  // No LifecycleStateChangeReason is set right now, indicating that this is a
-  // theoretical state change rather than an actual one. This differentiates
-  // sampled lifecycle transitions from actual ones.
-
-  // We only currently report transitions for tabs, so this lookup should never
-  // fail. It will start failing once we add ARC processes as LifecycleUnits.
-  // TODO(chrisha): This should be time since the navigation was committed (the
-  // load started), but that information is currently only persisted inside the
-  // CU-graph. Using time since navigation finished is a cheap approximation for
-  // the time being.
-  auto* tab = lifecycle_unit->AsTabLifecycleUnitExternal();
-  auto* contents = tab->GetWebContents();
-  auto* nav_entry = contents->GetController().GetLastCommittedEntry();
-  if (nav_entry) {
-    auto timestamp = nav_entry->GetTimestamp();
-    if (!timestamp.is_null()) {
-      auto elapsed = base::Time::Now() - timestamp;
-      builder.SetTimeSinceNavigationMs(elapsed.InMilliseconds());
-    }
-  }
-
-  // Set visibility related data.
-  // |time_since_visible| is:
-  // - Zero if the LifecycleUnit is currently visible.
-  // - Time since creation if the LifecycleUnit was never visible.
-  // - Time since visible if the LifecycleUnit was visible in the past.
-  auto visibility = lifecycle_unit->GetVisibility();
-  base::TimeDelta time_since_visible;  // Zero.
-  if (visibility != content::Visibility::VISIBLE)
-    time_since_visible = NowTicks() - lifecycle_unit->GetWallTimeWhenHidden();
-  builder.SetTimeSinceVisibilityStateChangeMs(
-      time_since_visible.InMilliseconds());
-  builder.SetVisibilityState(static_cast<int64_t>(visibility));
-
-  // This populates all of the relevant Success/Failure fields, as well as
-  // Outcome.
-  decision_details.Populate(&builder);
-
-  builder.Record(ukm::UkmRecorder::Get());
 }
 
 // static

@@ -12,7 +12,9 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "components/cronet/cronet_global_state.h"
 #include "components/cronet/cronet_url_request_context.h"
 #include "components/cronet/native/generated/cronet.idl_impl_struct.h"
@@ -121,7 +123,7 @@ Cronet_RESULT Cronet_EngineImpl::StartWithParams(
       break;
     case Cronet_EngineParams_HTTP_CACHE_MODE_DISK: {
       context_config_builder.http_cache = URLRequestContextConfig::DISK;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       const base::FilePath storage_path(
           base::FilePath::FromUTF8Unsafe(params->storage_path));
 #else
@@ -396,7 +398,7 @@ class Cronet_EngineImpl::Callback : public CronetURLRequestContext::Callback {
 
  private:
   // The engine which owns context that owns |this| callback.
-  Cronet_EngineImpl* const engine_;
+  const raw_ptr<Cronet_EngineImpl> engine_;
 
   // All methods are invoked on the network thread.
   THREAD_CHECKER(network_thread_checker_);

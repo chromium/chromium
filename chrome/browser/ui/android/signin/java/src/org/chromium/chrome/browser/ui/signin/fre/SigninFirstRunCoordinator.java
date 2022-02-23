@@ -5,12 +5,13 @@
 package org.chromium.chrome.browser.ui.signin.fre;
 
 import android.content.Context;
-import android.view.View;
 
 import androidx.annotation.MainThread;
+import androidx.annotation.StringRes;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManager;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -27,11 +28,25 @@ public class SigninFirstRunCoordinator {
         /** Notifies when the user accepts the terms of service. */
         void acceptTermsOfService();
 
+        /** Called when the interaction with the page is over and the next page should be shown. */
+        void advanceToNextPage();
+
         /**
          * Records the FRE progress histogram MobileFre.Progress.*.
          * @param state FRE state to record.
          */
         void recordFreProgressHistogram(@MobileFreProgress int state);
+
+        /**
+         * Show an informational web page. The page doesn't show navigation control.
+         * @param url Resource id for the URL of the web page.
+         */
+        void showInfoPage(@StringRes int url);
+
+        /**
+         * Opens a dialog to get consent for recording UMA data.
+         */
+        void openUmaDialog();
     }
 
     private final SigninFirstRunMediator mMediator;
@@ -40,14 +55,18 @@ public class SigninFirstRunCoordinator {
      * Constructs a coordinator instance.
      *
      * @param context is used to create the UI.
-     * @param view is the FRE bottom group view including the selected account, the continue/
-     *        dismiss buttons and other view components that change according to different state.
+     * @param view is the FRE view including the selected account, the continue/dismiss buttons,
+     *        the footer string and other view components that change according to different state.
      * @param modalDialogManager is used to open dialogs like account picker dialog and uma dialog.
      * @param delegate is invoked to interact with classes outside the module.
+     * @param privacyPreferencesManager is used to check whether metrics and crash reporting are
+     *         disabled by policy and set the footer string accordingly.
      */
-    public SigninFirstRunCoordinator(
-            Context context, View view, ModalDialogManager modalDialogManager, Delegate delegate) {
-        mMediator = new SigninFirstRunMediator(context, modalDialogManager, delegate);
+    public SigninFirstRunCoordinator(Context context, SigninFirstRunView view,
+            ModalDialogManager modalDialogManager, Delegate delegate,
+            PrivacyPreferencesManager privacyPreferencesManager) {
+        mMediator = new SigninFirstRunMediator(
+                context, modalDialogManager, delegate, privacyPreferencesManager);
         PropertyModelChangeProcessor.create(
                 mMediator.getModel(), view, SigninFirstRunViewBinder::bind);
     }
@@ -70,5 +89,9 @@ public class SigninFirstRunCoordinator {
 
     public void onAccountSelected(String accountName) {
         mMediator.onAccountSelected(accountName);
+    }
+
+    public boolean isMetricsReportingDisabledByPolicy() {
+        return mMediator.isMetricsReportingDisabledByPolicy();
     }
 }

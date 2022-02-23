@@ -7,8 +7,6 @@
 
 #include "content/public/browser/web_contents_view_delegate.h"
 
-#include "base/macros.h"
-
 namespace content {
 class WebContents;
 }  // namespace content

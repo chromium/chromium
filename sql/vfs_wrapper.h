@@ -28,9 +28,8 @@ sqlite3_vfs* VFSWrapper();
 struct VfsFile {
   const sqlite3_io_methods* methods;
   sqlite3_file* wrapped_file;
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   std::string file_name;
-  int lock_level;
 #endif
 };
 

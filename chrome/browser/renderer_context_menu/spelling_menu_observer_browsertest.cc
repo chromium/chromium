@@ -35,7 +35,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
   void SetUpOnMainThread() override {
     Reset(false);
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     // Windows versions that don't support platform
     // spellchecker fallback to Hunspell.
     if (!spellcheck::WindowsVersionSupportsSpellchecker())
@@ -51,10 +51,10 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
         menu()->GetBrowserContext(),
         base::BindRepeating(&SpellingMenuObserverTest::BuildSpellcheckService,
                             base::Unretained(this)));
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   std::unique_ptr<KeyedService> BuildSpellcheckService(
       content::BrowserContext* context) {
     auto spellcheck_service = std::make_unique<SpellcheckService>(context);
@@ -93,7 +93,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     // Reset status.
     callback_received_ = false;
   }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
   void TearDownOnMainThread() override {
     observer_.reset();
@@ -115,7 +115,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     if (suggestion)
       params.dictionary_suggestions.push_back(base::ASCIIToUTF16(suggestion));
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     // Expect early return if word is spelled correctly.
     if (params.misspelled_word.empty())
       callback_received_ = true;
@@ -125,7 +125,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
           base::BindOnce(&SpellingMenuObserverTest::OnSuggestionsComplete,
                          base::Unretained(this)));
     }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
     observer_->InitMenu(params);
 
@@ -133,10 +133,10 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
     // menu items. Doesn't hurt for non-Windows platforms either.
     observer_->OnContextMenuShown(params, gfx::Rect());
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
     if (spellcheck::WindowsVersionSupportsSpellchecker())
       RunUntilCallbackReceived();
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   }
 
   void ForceSuggestMode() {
@@ -164,7 +164,7 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
   std::unique_ptr<SpellingMenuObserver> observer_;
   std::unique_ptr<MockRenderViewContextMenu> menu_;
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
   // Quits the RunLoop on receiving callbacks.
   base::OnceClosure quit_;
 
@@ -172,10 +172,10 @@ class SpellingMenuObserverTest : public InProcessBrowserTest {
   bool callback_received_ = false;
 
   base::test::ScopedFeatureList feature_list_;
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 };
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 SpellingMenuObserverTest::SpellingMenuObserverTest() {
   feature_list_.InitWithFeatures(
       /*enabled_features=*/{spellcheck::kWinUseBrowserSpellChecker,
@@ -184,7 +184,7 @@ SpellingMenuObserverTest::SpellingMenuObserverTest() {
 }
 #else
 SpellingMenuObserverTest::SpellingMenuObserverTest() = default;
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 SpellingMenuObserverTest::~SpellingMenuObserverTest() = default;
 
@@ -220,7 +220,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest, InitMenuWithMisspelledWord) {
   menu()->GetMenuItem(2, &item);
 }
 
-#if defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 // Tests that right-clicking a misspelled word that is identified as misspelled
 // by both Hunspell and Windows platform combines their suggestions.
 IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
@@ -369,7 +369,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
   EXPECT_FALSE(item.checked);
   EXPECT_FALSE(item.hidden);
 }
-#endif  // defined(OS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
+#endif  // BUILDFLAG(IS_WIN) && BUILDFLAG(USE_BROWSER_SPELLCHECKER)
 
 // Tests that right-clicking a correct word when we enable spelling-service
 // integration to verify an item "Use enhanced spell check" is checked. Even
@@ -481,7 +481,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 }
 
 // crbug.com/899935
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NoSpellingServiceWhenOffTheRecord \
   DISABLED_NoSpellingServiceWhenOffTheRecord
 #else
@@ -536,7 +536,7 @@ IN_PROC_BROWSER_TEST_F(SpellingMenuObserverTest,
 }
 
 // crbug.com/899935
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SuggestionsForceTopSeparator DISABLED_SuggestionsForceTopSeparator
 #else
 #define MAYBE_SuggestionsForceTopSeparator SuggestionsForceTopSeparator

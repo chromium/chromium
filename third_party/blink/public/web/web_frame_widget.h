@@ -43,6 +43,7 @@
 #include "third_party/blink/public/platform/web_touch_action.h"
 #include "third_party/blink/public/web/web_widget.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom-shared.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace blink {
 
@@ -136,6 +137,11 @@ class WebFrameWidget : public WebWidget {
   // be timestamp of when the failure is detected.
   virtual void NotifyPresentationTime(
       base::OnceCallback<void(base::TimeTicks)> callback) = 0;
+
+#if BUILDFLAG(IS_MAC)
+  virtual void NotifyCoreAnimationErrorCode(
+      base::OnceCallback<void(gfx::CALayerResult)> callback) = 0;
+#endif
 
   // Instructs devtools to pause loading of the frame as soon as it's shown
   // until explicit command from the devtools client.

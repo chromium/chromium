@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "remoting/host/chromeos/point_transformer.h"
 #include "third_party/webrtc/modules/desktop_capture/desktop_geometry.h"

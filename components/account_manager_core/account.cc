@@ -19,10 +19,23 @@ bool AccountKey::operator<(const AccountKey& other) const {
 }
 
 bool AccountKey::operator==(const AccountKey& other) const {
-  return id_ == other.id_ && account_type_ == other.account_type_;
+  return std::tie(id_, account_type_) ==
+         std::tie(other.id_, other.account_type_);
 }
 
 bool AccountKey::operator!=(const AccountKey& other) const {
+  return !(*this == other);
+}
+
+bool Account::operator<(const Account& other) const {
+  return std::tie(key, raw_email) < std::tie(other.key, other.raw_email);
+}
+
+bool Account::operator==(const Account& other) const {
+  return std::tie(key, raw_email) == std::tie(other.key, other.raw_email);
+}
+
+bool Account::operator!=(const Account& other) const {
   return !(*this == other);
 }
 

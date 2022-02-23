@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/test/media_router/media_router_integration_browsertest.h"
 #include "chrome/test/media_router/test_media_sinks_observer.h"
 #include "components/media_router/browser/media_router.h"
@@ -17,6 +18,17 @@ namespace media_router {
 class MediaRouter;
 class RouteRequestResult;
 
+// Tests Chromecast-specific functionality of Media Router using the Cast Media
+// Route Provider.  Requires an actual Chromecast device.
+//
+// Use the following command to run e2e browser tests:
+// ./out/Default/browser_tests --user-data-dir=<empty user data dir>
+//   --extension-unpacked=<mr extension dir>
+//   --receiver=<chromecast device name>
+//   --enable-pixel-output-in-tests --run-manual
+//   --gtest_filter=MediaRouterE2EBrowserTest.<test case name>
+//   --enable-logging=stderr
+//   --ui-test-action-timeout=200000
 class MediaRouterE2EBrowserTest : public MediaRouterIntegrationBrowserTest {
  public:
   MediaRouterE2EBrowserTest();
@@ -58,7 +70,7 @@ class MediaRouterE2EBrowserTest : public MediaRouterIntegrationBrowserTest {
   void OpenMediaPage();
 
  private:
-  MediaRouter* media_router_;
+  raw_ptr<MediaRouter> media_router_;
   std::unique_ptr<TestMediaSinksObserver> observer_;
   MediaRoute::Id route_id_;
 };

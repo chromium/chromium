@@ -44,8 +44,8 @@ class PaintPreviewCompositorClient {
       const base::UnguessableToken& frame_guid,
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback
-          callback) = 0;
+      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback callback,
+      bool run_callback_on_default_task_runner = true) = 0;
   virtual void BeginMainFrameComposite(
       mojom::PaintPreviewBeginCompositeRequestPtr request,
       mojom::PaintPreviewCompositor::BeginMainFrameCompositeCallback
@@ -53,7 +53,8 @@ class PaintPreviewCompositorClient {
   virtual void BitmapForMainFrame(
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback) = 0;
+      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback,
+      bool run_callback_on_default_task_runner = true) = 0;
   virtual void SetRootFrameUrl(const GURL& url) = 0;
 
   PaintPreviewCompositorClient(const PaintPreviewCompositorClient&) = delete;

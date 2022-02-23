@@ -53,11 +53,8 @@
 #include "extensions/common/extensions_client.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/app_mode/kiosk_app_manager.h"
 #include "chrome/browser/chromeos/extensions/install_limiter.h"
-#endif
-
-#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #endif
 
 namespace extensions {
@@ -90,9 +87,7 @@ std::unique_ptr<TestingProfile> BuildTestingProfile(
 
   if (params.profile_is_supervised) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
-    profile_builder.SetSupervisedUserId(supervised_users::kChildAccountSUID);
-#else
-    profile_builder.SetSupervisedUserId("asdf");
+    profile_builder.SetIsSupervisedProfile();
 #endif
   }
 
@@ -155,7 +150,12 @@ ExtensionServiceTestBase::ExtensionServiceTestBase(
 ExtensionServiceTestBase::~ExtensionServiceTestBase() {
   // Why? Because |profile_| has to be destroyed before |at_exit_manager_|, but
   // is declared above it in the class definition since it's protected.
+  // TODO(1269752): Since we're getting rid of at_exit_manager_, perhaps
+  // we don't need this call?
   profile_.reset();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  ash::KioskAppManager::ResetForTesting();
+#endif
 }
 
 ExtensionServiceTestBase::ExtensionServiceInitParams
@@ -252,7 +252,7 @@ void ExtensionServiceTestBase::
 }
 
 size_t ExtensionServiceTestBase::GetPrefKeyCount() {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       profile()->GetPrefs()->GetDictionary(pref_names::kExtensions);
   if (!dict) {
     ADD_FAILURE();
@@ -274,15 +274,14 @@ testing::AssertionResult ExtensionServiceTestBase::ValidateBooleanPref(
                                        expected_val ? "true" : "false");
 
   PrefService* prefs = profile()->GetPrefs();
-  const base::DictionaryValue* dict =
-      prefs->GetDictionary(pref_names::kExtensions);
+  const base::Value* dict = prefs->GetDictionary(pref_names::kExtensions);
   if (!dict) {
     return testing::AssertionFailure()
         << "extension.settings does not exist " << msg;
   }
 
-  const base::DictionaryValue* pref = NULL;
-  if (!dict->GetDictionary(extension_id, &pref)) {
+  const base::Value* pref = dict->FindDictKey(extension_id);
+  if (!pref) {
     return testing::AssertionFailure()
         << "extension pref does not exist " << msg;
   }
@@ -308,12 +307,10 @@ void ExtensionServiceTestBase::ValidateIntegerPref(
       base::NumberToString(expected_val).c_str());
 
   PrefService* prefs = profile()->GetPrefs();
-  const base::DictionaryValue* dict =
-      prefs->GetDictionary(pref_names::kExtensions);
-  ASSERT_TRUE(dict != NULL) << msg;
-  const base::DictionaryValue* pref = NULL;
-  ASSERT_TRUE(dict->GetDictionary(extension_id, &pref)) << msg;
-  EXPECT_TRUE(pref != NULL) << msg;
+  const base::Value* dict = prefs->GetDictionary(pref_names::kExtensions);
+  ASSERT_TRUE(dict) << msg;
+  const base::Value* pref = dict->FindDictKey(extension_id);
+  ASSERT_TRUE(pref) << msg;
   EXPECT_EQ(expected_val, pref->FindIntPath(pref_path)) << msg;
 }
 
@@ -325,16 +322,15 @@ void ExtensionServiceTestBase::ValidateStringPref(
                                        extension_id.c_str(), pref_path.c_str(),
                                        expected_val.c_str());
 
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       profile()->GetPrefs()->GetDictionary(pref_names::kExtensions);
-  ASSERT_TRUE(dict != NULL) << msg;
-  const base::DictionaryValue* pref = NULL;
+  ASSERT_TRUE(dict) << msg;
   std::string manifest_path = extension_id + ".manifest";
-  ASSERT_TRUE(dict->GetDictionary(manifest_path, &pref)) << msg;
-  EXPECT_TRUE(pref != NULL) << msg;
-  std::string val;
-  ASSERT_TRUE(pref->GetString(pref_path, &val)) << msg;
-  EXPECT_EQ(expected_val, val) << msg;
+  const base::Value* pref = dict->FindDictPath(manifest_path);
+  ASSERT_TRUE(pref) << msg;
+  const std::string* val = pref->FindStringPath(pref_path);
+  ASSERT_TRUE(val) << msg;
+  EXPECT_EQ(expected_val, *val) << msg;
 }
 
 void ExtensionServiceTestBase::SetUp() {

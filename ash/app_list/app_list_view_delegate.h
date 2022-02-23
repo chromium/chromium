@@ -59,7 +59,6 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
   // |launch_as_default|: True if the result is launched as the default result
   // by user pressing ENTER key.
   virtual void OpenSearchResult(const std::string& result_id,
-                                AppListSearchResultType result_type,
                                 int event_flags,
                                 AppListLaunchedFrom launched_from,
                                 AppListLaunchType launch_type,
@@ -99,16 +98,12 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
 
   // Returns the context menu model for a ChromeAppListItem with |id|, or
   // nullptr if there is currently no menu for the item (e.g. during install).
-  // Note the returned menu model is owned by that item.
+  // Requests the menu model to include sort options that can sort the app list
+  // if `add_sort_options` is true. Note the returned menu model is owned by
+  // that item.
   virtual void GetContextMenuModel(const std::string& id,
+                                   bool add_sort_options,
                                    GetContextMenuModelCallback callback) = 0;
-
-  // Sorts app list items (including apps and folders) with the given order.
-  virtual void SortAppList(AppListSortOrder order) = 0;
-
-  // Reverts the app list temporary sort order (i.e. the order that has not been
-  // committed yet) if any.
-  virtual void RevertAppListSort() = 0;
 
   // Returns an animation observer if the |target_state| is interesting to the
   // delegate.
@@ -212,6 +207,10 @@ class ASH_PUBLIC_EXPORT AppListViewDelegate {
 
   // Loads the icon of an app item identified by `app_id`.
   virtual void LoadIcon(const std::string& app_id) = 0;
+
+  // Whether the controller has a valid profile, and hence a valid data model.
+  // Returns false during startup and shutdown.
+  virtual bool HasValidProfile() const = 0;
 };
 
 }  // namespace ash

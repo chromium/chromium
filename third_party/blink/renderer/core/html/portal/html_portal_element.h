@@ -98,10 +98,6 @@ class CORE_EXPORT HTMLPortalElement : public HTMLFrameOwnerElement {
   // the console).
   bool CheckWithinFrameLimitOrWarn() const;
 
-  // Checks that the number of frames and portals on the page are within the
-  // limit.
-  bool IsCurrentlyWithinFrameLimit() const;
-
   enum class GuestContentsEligibility {
     // Can have a guest contents.
     kEligible,

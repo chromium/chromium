@@ -5,7 +5,6 @@
 #ifndef MOJO_CORE_CONNECTION_PARAMS_H_
 #define MOJO_CORE_CONNECTION_PARAMS_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/core/system_impl_export.h"
 #include "mojo/public/cpp/platform/platform_channel_endpoint.h"

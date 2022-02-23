@@ -8,6 +8,15 @@
  * reject the request
  */
 
+import '//resources/cr_elements/cr_lottie/cr_lottie.m.js';
+import '../../shared/nearby_page_template.m.js';
+import '../../shared/nearby_device.m.js';
+import '../../shared/nearby_preview.m.js';
+import '../../shared/nearby_progress.m.js';
+
+import {I18nBehavior} from '//resources/js/i18n_behavior.m.js';
+import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 /**
  * The progress bar asset URL for light mode.
  * @type {string}
@@ -21,6 +30,7 @@ const PROGRESS_BAR_URL_LIGHT = 'nearby_share_progress_bar_light.json';
 const PROGRESS_BAR_URL_DARK = 'nearby_share_progress_bar_dark.json';
 
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'nearby-share-confirm-page',
 
   behaviors: [I18nBehavior],

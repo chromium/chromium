@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/constants/ash_features.h"
 #include "ash/metrics/user_metrics_recorder.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/shelf_types.h"
@@ -96,6 +97,7 @@ class AssistantControllerImpl;
 class AutoclickController;
 class BackGestureEventHandler;
 class BacklightsForcedOffSetter;
+class BluetoothDeviceStatusUiHandler;
 class BluetoothNotificationController;
 class BluetoothPowerController;
 class BrightnessControlDelegate;
@@ -122,6 +124,7 @@ class EventClientImpl;
 class EventRewriterControllerImpl;
 class EventTransformationHandler;
 class WindowRestoreController;
+class FirmwareUpdateNotificationController;
 class FloatController;
 class FocusCycler;
 class FrameThrottlingController;
@@ -129,6 +132,8 @@ class FullscreenMagnifierController;
 class HighContrastController;
 class HighlighterController;
 class HoldingSpaceController;
+class HpsNotifyController;
+class HpsOrientationController;
 class ImeControllerImpl;
 class InSessionAuthDialogControllerImpl;
 class KeyAccessibilityEnabler;
@@ -151,6 +156,7 @@ class MouseCursorEventFilter;
 class MruWindowTracker;
 class MultiDeviceNotificationPresenter;
 class NearbyShareControllerImpl;
+class DesksTemplatesDelegate;
 class NearbyShareDelegate;
 class NightLightControllerImpl;
 class OcclusionTrackerPauser;
@@ -159,6 +165,7 @@ class OverviewController;
 class ParentAccessController;
 class PartialMagnifierController;
 class PciePeripheralNotificationController;
+class UsbPeripheralNotificationController;
 class PeripheralBatteryListener;
 class PeripheralBatteryNotifier;
 class PersistentDesksBarController;
@@ -349,6 +356,7 @@ class ASH_EXPORT Shell : public SessionObserver,
     return backlights_forced_off_setter_.get();
   }
   BluetoothPowerController* bluetooth_power_controller() {
+    DCHECK(!ash::features::IsBluetoothRevampEnabled());
     return bluetooth_power_controller_.get();
   }
   BrightnessControlDelegate* brightness_control_delegate() {
@@ -364,6 +372,9 @@ class ASH_EXPORT Shell : public SessionObserver,
   DesksController* desks_controller() { return desks_controller_.get(); }
   PersistentDesksBarController* persistent_desks_bar_controller() {
     return persistent_desks_bar_controller_.get();
+  }
+  DesksTemplatesDelegate* desks_templates_delegate() {
+    return desks_templates_delegate_.get();
   }
   DetachableBaseHandler* detachable_base_handler() {
     return detachable_base_handler_.get();
@@ -403,6 +414,12 @@ class ASH_EXPORT Shell : public SessionObserver,
   EventTransformationHandler* event_transformation_handler() {
     return event_transformation_handler_.get();
   }
+
+  FirmwareUpdateNotificationController*
+  firmware_update_notification_controller() {
+    return firmware_update_notification_controller_.get();
+  }
+
   FloatController* float_controller() { return float_controller_.get(); }
   ::wm::FocusController* focus_controller() { return focus_controller_.get(); }
   AshFocusRules* focus_rules() { return focus_rules_; }
@@ -415,6 +432,12 @@ class ASH_EXPORT Shell : public SessionObserver,
   }
   HighContrastController* high_contrast_controller() {
     return high_contrast_controller_.get();
+  }
+  HpsNotifyController* hps_notify_controller() {
+    return hps_notify_controller_.get();
+  }
+  HpsOrientationController* hps_orientation_controller() {
+    return hps_orientation_controller_.get();
   }
   ImeControllerImpl* ime_controller() { return ime_controller_.get(); }
   InSessionAuthDialogControllerImpl* in_session_auth_dialog_controller() {
@@ -550,6 +573,8 @@ class ASH_EXPORT Shell : public SessionObserver,
     return touch_transformer_controller_.get();
   }
   TrayAction* tray_action() { return tray_action_.get(); }
+
+  // Will return |nullptr| when the |kBluetoothRevamp| feature flag is enabled.
   TrayBluetoothHelper* tray_bluetooth_helper() {
     return tray_bluetooth_helper_.get();
   }
@@ -591,6 +616,12 @@ class ASH_EXPORT Shell : public SessionObserver,
   pcie_peripheral_notification_controller() {
     return pcie_peripheral_notification_controller_.get();
   }
+
+  UsbPeripheralNotificationController*
+  usb_peripheral_notification_controller() {
+    return usb_peripheral_notification_controller_.get();
+  }
+
   OcclusionTrackerPauser* occlusion_tracker_pauser() {
     return occlusion_tracker_pauser_.get();
   }
@@ -645,10 +676,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   void NotifyShelfAlignmentChanged(aura::Window* root_window,
                                    ShelfAlignment old_alignment);
 
-  // Notifies observers that |root_window|'s shelf changed auto-hide behavior.
-  // TODO(jamescook): Move to Shelf.
-  void NotifyShelfAutoHideBehaviorChanged(aura::Window* root_window);
-
  private:
   FRIEND_TEST_ALL_PREFIXES(ExtendedDesktopTest, TestCursor);
   FRIEND_TEST_ALL_PREFIXES(WindowManagerTest, MouseEventCursors);
@@ -656,7 +683,6 @@ class ASH_EXPORT Shell : public SessionObserver,
   friend class AcceleratorControllerTest;
   friend class AshTestHelper;
   friend class RootWindowController;
-  friend class ScopedRootWindowForNewWindows;
   friend class ShellTestApi;
   friend class SmsObserverTest;
 
@@ -724,16 +750,20 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<CalendarController> calendar_controller_;
   std::unique_ptr<CrosDisplayConfig> cros_display_config_;
   std::unique_ptr<DesksController> desks_controller_;
+  std::unique_ptr<DesksTemplatesDelegate> desks_templates_delegate_;
   std::unique_ptr<DetachableBaseHandler> detachable_base_handler_;
   std::unique_ptr<DetachableBaseNotificationController>
       detachable_base_notification_controller_;
   std::unique_ptr<DisplayHighlightController> display_highlight_controller_;
   std::unique_ptr<DisplaySpeakerController> display_speaker_controller_;
   std::unique_ptr<DragDropController> drag_drop_controller_;
+  std::unique_ptr<FirmwareUpdateNotificationController>
+      firmware_update_notification_controller_;
   std::unique_ptr<FocusCycler> focus_cycler_;
   std::unique_ptr<FloatController> float_controller_;
-  std::unique_ptr<WindowRestoreController> window_restore_controller_;
   std::unique_ptr<HoldingSpaceController> holding_space_controller_;
+  std::unique_ptr<HpsNotifyController> hps_notify_controller_;
+  std::unique_ptr<HpsOrientationController> hps_orientation_controller_;
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<chromeos::ImmersiveContext> immersive_context_;
   std::unique_ptr<InSessionAuthDialogControllerImpl>
@@ -756,6 +786,8 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<ParentAccessController> parent_access_controller_;
   std::unique_ptr<PciePeripheralNotificationController>
       pcie_peripheral_notification_controller_;
+  std::unique_ptr<UsbPeripheralNotificationController>
+      usb_peripheral_notification_controller_;
   std::unique_ptr<PersistentDesksBarController>
       persistent_desks_bar_controller_;
   std::unique_ptr<ResizeShadowController> resize_shadow_controller_;
@@ -781,6 +813,7 @@ class ASH_EXPORT Shell : public SessionObserver,
   std::unique_ptr<TrayAction> tray_action_;
   std::unique_ptr<WallpaperControllerImpl> wallpaper_controller_;
   std::unique_ptr<WindowCycleController> window_cycle_controller_;
+  std::unique_ptr<WindowRestoreController> window_restore_controller_;
   std::unique_ptr<OverviewController> overview_controller_;
   // Owned by |focus_controller_|.
   AshFocusRules* focus_rules_ = nullptr;
@@ -847,7 +880,11 @@ class ASH_EXPORT Shell : public SessionObserver,
       resolution_notification_controller_;
   std::unique_ptr<BluetoothNotificationController>
       bluetooth_notification_controller_;
+  std::unique_ptr<BluetoothDeviceStatusUiHandler>
+      bluetooth_device_status_ui_handler_;
   std::unique_ptr<BluetoothPowerController> bluetooth_power_controller_;
+
+  // Will be |nullptr| when the |kBluetoothRevamp| feature flag is enabled.
   std::unique_ptr<TrayBluetoothHelper> tray_bluetooth_helper_;
   std::unique_ptr<KeyboardControllerImpl> keyboard_controller_;
   std::unique_ptr<DisplayAlignmentController> display_alignment_controller_;

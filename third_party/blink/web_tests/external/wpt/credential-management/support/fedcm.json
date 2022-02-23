@@ -1,0 +1,6 @@
+{
+  "accounts_endpoint": "accounts.json",
+  "client_metadata_endpoint": "client_metadata.json",
+  "id_token_endpoint": "id_token.py",
+  "revocation_endpoint": "revoke.json"
+}

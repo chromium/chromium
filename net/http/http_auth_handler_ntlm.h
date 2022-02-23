@@ -8,11 +8,12 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
 // This contains the portable and the SSPI implementations for NTLM.
 // We use NTLM_SSPI for Windows, and NTLM_PORTABLE for other platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define NTLM_SSPI
 #else
 #define NTLM_PORTABLE
@@ -28,11 +29,14 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_factory.h"
+
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -54,7 +58,7 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
                           HttpAuth::Target target,
                           const SSLInfo& ssl_info,
                           const NetworkIsolationKey& network_isolation_key,
-                          const GURL& origin,
+                          const url::SchemeHostPort& scheme_host_port,
                           CreateReason reason,
                           int digest_nonce_count,
                           const NetLogWithSource& net_log,
@@ -110,12 +114,12 @@ class NET_EXPORT_PRIVATE HttpAuthHandlerNTLM : public HttpAuthHandler {
   // Parse the challenge, saving the results into this instance.
   HttpAuth::AuthorizationResult ParseChallenge(HttpAuthChallengeTokenizer* tok);
 
-  // Create an NTLM SPN to identify the |origin| server.
-  static std::string CreateSPN(const GURL& origin);
+  // Create an NTLM SPN to identify the |scheme_host_port| server.
+  static std::string CreateSPN(const url::SchemeHostPort& scheme_host_port);
 
 #if defined(NTLM_SSPI)
   HttpAuthSSPI mechanism_;
-  const HttpAuthPreferences* http_auth_preferences_;
+  raw_ptr<const HttpAuthPreferences> http_auth_preferences_;
 #elif defined(NTLM_PORTABLE)
   HttpAuthNtlmMechanism mechanism_;
 #endif

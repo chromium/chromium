@@ -443,6 +443,9 @@ class HotseatWidget::DelegateView : public HotseatTransitionAnimator::Observer,
                                          HotseatState to_state) override;
   void OnHotseatTransitionAnimationAborted() override;
 
+  // views::View:
+  void OnThemeChanged() override;
+
   // views::WidgetDelegateView:
   bool CanActivate() const override;
   void ReorderChildLayers(ui::Layer* parent_layer) override;
@@ -520,6 +523,7 @@ void HotseatWidget::DelegateView::UpdateTranslucentBackground() {
     return;
   }
 
+  DCHECK(scrollable_shelf_view_);
   SetTranslucentBackground(
       scrollable_shelf_view_->GetHotseatBackgroundBounds());
 }
@@ -600,6 +604,15 @@ void HotseatWidget::DelegateView::OnHotseatTransitionAnimationAborted() {
   DCHECK_GT(blur_lock_, 0);
 
   --blur_lock_;
+}
+
+void HotseatWidget::DelegateView::OnThemeChanged() {
+  views::WidgetDelegateView::OnThemeChanged();
+
+  // Only update the background when the `scrollable_shelf_view_` is
+  // initialized.
+  if (scrollable_shelf_view_)
+    UpdateTranslucentBackground();
 }
 
 bool HotseatWidget::DelegateView::CanActivate() const {
@@ -952,7 +965,7 @@ void HotseatWidget::UpdateLayout(bool animate) {
   }
 
   // If shelf view is invisible, the hotseat should be as well. Otherwise the
-  // hotseat opacit should be 1.0f to preserve background blur.
+  // hotseat opacity should be 1.0f to preserve background blur.
   const double target_opacity =
       (new_layout_inputs.shelf_view_opacity == 0.f ? 0.f : 1.f);
   const gfx::Rect& target_bounds = new_layout_inputs.bounds;

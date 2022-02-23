@@ -100,9 +100,8 @@ public class NavigationBubble extends LinearLayout {
         mColorUpdateListener = new ColorUpdateListener();
         mColorAnimator = ValueAnimator.ofFloat(0, 1).setDuration(COLOR_TRANSITION_DURATION_MS);
         mColorAnimator.addUpdateListener(mColorUpdateListener);
-        getBackground().setColorFilter(ApiCompatibilityUtils.getColor(getResources(),
-                                               R.color.navigation_bubble_background_color),
-                Mode.MULTIPLY);
+        getBackground().setColorFilter(
+                SemanticColorUtils.getNavigationBubbleBackgroundColor(context), Mode.MULTIPLY);
         mCloseApp = getResources().getString(R.string.overscroll_navigation_close_chrome,
                 getContext().getString(R.string.app_name));
         mCloseTab = getResources().getString(R.string.overscroll_navigation_close_tab);

@@ -262,7 +262,8 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   int url_index = api_info->arg_url_index;
 
   if (!action->args() || url_index < 0 ||
-      static_cast<size_t>(url_index) >= action->args()->GetList().size())
+      static_cast<size_t>(url_index) >=
+          action->args()->GetListDeprecated().size())
     return;
 
   // Do not overwrite an existing arg_url value in the Action, so that callers
@@ -270,7 +271,7 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
   if (action->arg_url().is_valid())
     return;
 
-  base::Value::ListView args_list = action->mutable_args()->GetList();
+  base::Value::ListView args_list = action->mutable_args()->GetListDeprecated();
 
   GURL arg_url;
   bool arg_incognito = action->page_incognito();
@@ -319,7 +320,8 @@ void ExtractUrls(scoped_refptr<Action> action, Profile* profile) {
         if (arg_url.is_valid())
           args_list[url_index] = base::Value(kArgUrlPlaceholder);
       } else if (args_list[url_index].is_list()) {
-        base::Value::ListView tab_list = args_list[url_index].GetList();
+        base::Value::ListView tab_list =
+            args_list[url_index].GetListDeprecated();
         // A list of possible IDs to translate.  Work through in reverse order
         // so the last one translated is left in arg_url.
         int extracted_index = -1;  // Which list item is copied to arg_url?
@@ -386,7 +388,8 @@ void LogApiActivity(content::BrowserContext* browser_context,
 
   auto action = base::MakeRefCounted<Action>(extension_id, base::Time::Now(),
                                              type, activity_name);
-  action->set_args(args.CreateDeepCopy());
+  action->set_args(
+      base::ListValue::From(base::Value::ToUniquePtrValue(args.Clone())));
   activity_log->LogAction(action);
 }
 
@@ -652,7 +655,7 @@ void ActivityLog::LogAction(scoped_refptr<Action> action) {
     base::DictionaryValue* other = action->mutable_other();
     absl::optional<int> dom_verb = other->FindIntKey(constants::kActionDomVerb);
     if (dom_verb == DomActionType::METHOD)
-      other->SetInteger(constants::kActionDomVerb, DomActionType::XHR);
+      other->SetIntKey(constants::kActionDomVerb, DomActionType::XHR);
   }
   if (IsDatabaseEnabled() && database_policy_)
     database_policy_->ProcessAction(action);
@@ -697,8 +700,8 @@ void ActivityLog::OnScriptsExecuted(content::WebContents* web_contents,
           prerender::NoStatePrefetchManagerFactory::GetForBrowserContext(
               profile_);
       if (no_state_prefetch_manager &&
-          no_state_prefetch_manager->IsWebContentsPrerendering(web_contents))
-        action->mutable_other()->SetBoolean(constants::kActionPrerender, true);
+          no_state_prefetch_manager->IsWebContentsPrefetching(web_contents))
+        action->mutable_other()->SetBoolKey(constants::kActionPrerender, true);
       for (auto it2 = it->second.begin(); it2 != it->second.end(); ++it2) {
         action->mutable_args()->Append(*it2);
       }

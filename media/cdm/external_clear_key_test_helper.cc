@@ -31,10 +31,10 @@ ExternalClearKeyTestHelper::~ExternalClearKeyTestHelper() {
 }
 
 void ExternalClearKeyTestHelper::LoadLibrary() {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   library_path_ =
       base::FilePath(base::GetLoadableModuleName(kClearKeyCdmLibraryName));
-#else   // defined(OS_FUCHSIA)
+#else   // BUILDFLAG(IS_FUCHSIA)
   // Determine the location of the CDM. It is expected to be in the same
   // directory as the current module.
   base::FilePath cdm_base_path;
@@ -44,7 +44,7 @@ void ExternalClearKeyTestHelper::LoadLibrary() {
   library_path_ = cdm_base_path.AppendASCII(
       base::GetLoadableModuleName(kClearKeyCdmLibraryName));
   ASSERT_TRUE(base::PathExists(library_path_)) << library_path_.value();
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Now load the CDM library.
   library_ = base::ScopedNativeLibrary(library_path_);

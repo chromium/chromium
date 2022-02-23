@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
@@ -96,8 +97,6 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
 
   void SetAppManifestUpdateTime(const AppId& app_id, const base::Time& time);
 
-  void SetAppRunOnOsLoginMode(const AppId& app_id, RunOnOsLoginMode mode);
-
   void SetAppWindowControlsOverlayEnabled(const AppId& app_id, bool enabled);
 
   // These methods are used by extensions::AppSorting, which manages the sorting
@@ -115,6 +114,10 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
                                 const std::string& protocol_scheme);
   void RemoveAllowedLaunchProtocol(const AppId& app_id,
                                    const std::string& protocol_scheme);
+
+  // Stores the user's preference for the app's use of the File Handling API.
+  void SetAppFileHandlerApprovalState(const AppId& app_id,
+                                      ApiApprovalState state);
 
   // These methods are used by web apps to add or remove disallowed
   // protocol schemes based on user preference or withdrawal of that preference.
@@ -186,8 +189,8 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   void MaybeInstallAppsFromSyncAndPendingInstallation();
 
   std::unique_ptr<WebAppDatabase> database_;
-  WebAppRegistrarMutable* const registrar_;
-  SyncInstallDelegate* const install_delegate_;
+  const raw_ptr<WebAppRegistrarMutable> registrar_;
+  const raw_ptr<SyncInstallDelegate> install_delegate_;
 
   bool is_in_update_ = false;
   bool disable_checks_for_testing_ = false;

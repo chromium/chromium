@@ -4,12 +4,14 @@
 
 #include "ash/ambient/util/ambient_util.h"
 
+#include "ash/ambient/ambient_constants.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/proto/photo_cache_entry.pb.h"
 #include "ash/style/ash_color_provider.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_util.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
@@ -87,6 +89,10 @@ bool IsAmbientModeTopicTypeAllowed(::ambient::TopicType topic_type) {
     case ::ambient::TopicType::kOther:
       return false;
   }
+}
+
+bool IsDynamicLottieAsset(base::StringPiece asset_id) {
+  return base::StartsWith(asset_id, kLottieDynamicAssetIdPrefix);
 }
 
 }  // namespace util

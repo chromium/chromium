@@ -5,7 +5,7 @@
 #include "chrome/browser/privacy/privacy_metrics_service.h"
 
 #include "base/metrics/histogram_functions.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/prefs/pref_service.h"
@@ -34,7 +34,7 @@ PrivacyMetricsService::PrivacyMetricsService(
   // Observe the identity manager regardless of sync state to catch changes to
   // sync level consent (e.g. a user enabling sync).
   if (identity_manager_)
-    identity_manager_observer_.Observe(identity_manager_);
+    identity_manager_observer_.Observe(identity_manager_.get());
 
   // Avoid observing the sync service if sync-the-feature is disabled, events
   // this service is interested in will still be caught by the identity manager
@@ -45,7 +45,7 @@ PrivacyMetricsService::PrivacyMetricsService(
     return;
   }
 
-  sync_service_observer_.Observe(sync_service_);
+  sync_service_observer_.Observe(sync_service_.get());
 
   // While this service is brought up with the profile, and thus practically
   // should capture all sync state changes as the sync service starts up,
@@ -149,12 +149,8 @@ void PrivacyMetricsService::RecordStartupMetrics() {
       "Privacy.DoNotTrackSetting",
       pref_service_->GetBoolean(prefs::kEnableDoNotTrack));
 
-  auto preload_setting_status =
-      static_cast<chrome_browser_net::NetworkPredictionOptions>(
-          pref_service_->GetInteger(::prefs::kNetworkPredictionOptions));
-  base::UmaHistogramBoolean(
-      "Settings.PreloadStatus.OnStartup",
-      (preload_setting_status != chrome_browser_net::NETWORK_PREDICTION_NEVER));
+  base::UmaHistogramBoolean("Settings.PreloadStatus.OnStartup",
+                            prefetch::IsSomePreloadingEnabled(*pref_service_));
 
   base::UmaHistogramBoolean(
       "Settings.AutocompleteSearches.OnStartup",

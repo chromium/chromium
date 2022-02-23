@@ -5,6 +5,7 @@
 #include "content/test/mock_widget_input_handler.h"
 
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/input/web_gesture_event.h"
 #include "third_party/blink/public/common/input/web_mouse_event.h"
@@ -123,7 +124,7 @@ MockWidgetInputHandler::GetAndResetDispatchedMessages() {
   return dispatched_events;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void MockWidgetInputHandler::AttachSynchronousCompositor(
     mojo::PendingRemote<blink::mojom::SynchronousCompositorControlHost>
         control_host,

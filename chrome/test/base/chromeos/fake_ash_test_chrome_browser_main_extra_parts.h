@@ -27,6 +27,7 @@ class FakeAshTestChromeBrowserMainExtraParts
 
   void PreBrowserStart() override;
   void PostBrowserStart() override;
+  void PostMainMessageLoopRun() override;
 
  private:
   std::unique_ptr<crosapi::TestControllerAsh> test_controller_ash_;

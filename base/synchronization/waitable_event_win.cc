@@ -29,26 +29,26 @@ WaitableEvent::WaitableEvent(ResetPolicy reset_policy,
                           nullptr)) {
   // We're probably going to crash anyways if this is ever NULL, so we might as
   // well make our stack reports more informative by crashing here.
-  CHECK(handle_.IsValid());
+  CHECK(handle_.is_valid());
 }
 
 WaitableEvent::WaitableEvent(win::ScopedHandle handle)
     : handle_(std::move(handle)) {
-  CHECK(handle_.IsValid()) << "Tried to create WaitableEvent from NULL handle";
+  CHECK(handle_.is_valid()) << "Tried to create WaitableEvent from NULL handle";
 }
 
 WaitableEvent::~WaitableEvent() = default;
 
 void WaitableEvent::Reset() {
-  ResetEvent(handle_.Get());
+  ResetEvent(handle_.get());
 }
 
 void WaitableEvent::Signal() {
-  SetEvent(handle_.Get());
+  SetEvent(handle_.get());
 }
 
 bool WaitableEvent::IsSignaled() {
-  DWORD result = WaitForSingleObject(handle_.Get(), 0);
+  DWORD result = WaitForSingleObject(handle_.get(), 0);
   DCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
       << "Unexpected WaitForSingleObject result " << result;
   return result == WAIT_OBJECT_0;
@@ -66,7 +66,7 @@ void WaitableEvent::Wait() {
     scoped_blocking_call.emplace(FROM_HERE, BlockingType::MAY_BLOCK);
   }
 
-  DWORD result = WaitForSingleObject(handle_.Get(), INFINITE);
+  DWORD result = WaitForSingleObject(handle_.get(), INFINITE);
   // It is most unexpected that this should ever fail.  Help consumers learn
   // about it if it should ever fail.
   DPCHECK(result != WAIT_FAILED);
@@ -104,7 +104,7 @@ bool WaitableEvent::TimedWait(const TimeDelta& wait_delta) {
         remaining.is_max()
             ? INFINITE
             : saturated_cast<DWORD>(remaining.InMillisecondsRoundedUp());
-    const DWORD result = WaitForSingleObject(handle_.Get(), timeout_ms);
+    const DWORD result = WaitForSingleObject(handle_.get(), timeout_ms);
     DCHECK(result == WAIT_OBJECT_0 || result == WAIT_TIMEOUT)
         << "Unexpected WaitForSingleObject result " << result;
     switch (result) {

@@ -4,6 +4,8 @@
 
 #include "third_party/blink/renderer/modules/webgpu/gpu_compilation_message.h"
 
+#include "base/notreached.h"
+
 namespace blink {
 
 GPUCompilationMessage::GPUCompilationMessage(String message,

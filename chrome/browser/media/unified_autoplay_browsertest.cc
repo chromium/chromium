@@ -508,7 +508,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, Allow_Wildcard) {
   ContentSettingsPattern pattern(ContentSettingsPattern::FromString("[*.]com"));
   GetSettingsMap()->SetWebsiteSettingCustomScope(
       pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::SOUND,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+      base::Value(CONTENT_SETTING_ALLOW));
 
   NavigateFrameAndWait(main_frame(), main_url);
   EXPECT_TRUE(AutoplayAllowed(main_frame()));
@@ -546,7 +546,7 @@ IN_PROC_BROWSER_TEST_F(UnifiedAutoplaySettingBrowserTest, Block_Wildcard) {
   ContentSettingsPattern pattern(ContentSettingsPattern::FromString("[*.]com"));
   GetSettingsMap()->SetWebsiteSettingCustomScope(
       pattern, ContentSettingsPattern::Wildcard(), ContentSettingsType::SOUND,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      base::Value(CONTENT_SETTING_BLOCK));
 
   GetSettingsMap()->SetContentSettingDefaultScope(
       foo_url, foo_url, ContentSettingsType::SOUND, CONTENT_SETTING_ALLOW);

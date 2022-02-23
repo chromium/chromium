@@ -17,7 +17,7 @@ import 'chrome://resources/cr_elements/shared_style_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
 import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../controls/extension_controlled_indicator.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import '../controls/password_prompt_dialog.js';
 // </if>
 import '../controls/settings_toggle_button.js';
@@ -31,24 +31,24 @@ import './passwords_shared_css.js';
 import './avatar_icon.js';
 
 import {CrActionMenuElement} from 'chrome://resources/cr_elements/cr_action_menu/cr_action_menu.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
 import {IronA11yAnnouncer} from 'chrome://resources/polymer/v3_0/iron-a11y-announcer/iron-a11y-announcer.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, DomRepeatEvent, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {HatsBrowserProxyImpl, TrustSafetyInteraction} from '../hats_browser_proxy.js';
 import {loadTimeData} from '../i18n_setup.js';
 import {OpenWindowProxyImpl} from '../open_window_proxy.js';
-import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus} from '../people_page/sync_browser_proxy.js';
+import {StoredAccount, SyncBrowserProxyImpl, SyncPrefs, SyncStatus, TrustedVaultBannerState} from '../people_page/sync_browser_proxy.js';
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {routes} from '../route.js';
 import {Route, Router} from '../router.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {MergeExceptionsStoreCopiesMixin} from './merge_exceptions_store_copies_mixin.js';
@@ -56,8 +56,10 @@ import {MergePasswordsStoreCopiesMixin} from './merge_passwords_store_copies_mix
 import {MultiStoreExceptionEntry} from './multi_store_exception_entry.js';
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordCheckMixin} from './password_check_mixin.js';
+import {AddCredentialFromSettingsUserInteractions} from './password_edit_dialog.js';
 import {PasswordCheckReferrer, PasswordExceptionListChangedListener, PasswordManagerImpl, PasswordManagerProxy} from './password_manager_proxy.js';
 import {PasswordsListHandlerElement} from './passwords_list_handler.js';
+import {getTemplate} from './passwords_section.html.js';
 
 /**
  * Checks if an HTML element is an editable. An editable is either a text
@@ -74,13 +76,7 @@ function isEditable(element: Element): boolean {
 
 type FocusConfig = Map<string, string|(() => void)>;
 
-interface RepeaterEvent extends CustomEvent {
-  model: {
-    item: MultiStoreExceptionEntry,
-  };
-}
-
-interface PasswordsSectionElement {
+export interface PasswordsSectionElement {
   $: {
     exportImportMenu: CrActionMenuElement,
     passwordsListHandler: PasswordsListHandlerElement,
@@ -91,13 +87,13 @@ const PasswordsSectionElementBase = MergePasswordsStoreCopiesMixin(
     PrefsMixin(GlobalScrollTargetMixin(MergeExceptionsStoreCopiesMixin(
         WebUIListenerMixin(I18nMixin(PasswordCheckMixin(PolymerElement)))))));
 
-class PasswordsSectionElement extends PasswordsSectionElementBase {
+export class PasswordsSectionElement extends PasswordsSectionElementBase {
   static get is() {
     return 'passwords-section';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -205,13 +201,10 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
             'isOptedInForAccountStorage_, numberOfDevicePasswords_)',
       },
 
-      /**
-       * Whether the entry point leading to enroll in trusted vault encryption
-       * should be shown.
-       */
-      shouldOfferTrustedVaultOptIn_: {
-        type: Boolean,
-        value: false,
+      /** The visibility state of the trusted vault banner. */
+      trustedVaultBannerState_: {
+        type: Object,
+        value: TrustedVaultBannerState.NOT_SHOWN,
       },
 
       hasLeakedCredentials_: {
@@ -248,7 +241,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
       syncPrefs_: Object,
       syncStatus_: Object,
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       showPasswordPromptDialog_: Boolean,
       tokenRequestManager_: Object,
       // </if>
@@ -259,9 +252,9 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
 
       showAddPasswordButton_: {
         type: Boolean,
-        value() {
-          return loadTimeData.getBoolean('addPasswordsInSettingsEnabled');
-        }
+        computed: 'computeShowAddPasswordButton_(' +
+            'prefs.credentials_enable_service.enforcement, ' +
+            'prefs.credentials_enable_service.value)',
       },
     };
   }
@@ -283,7 +276,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
   private shouldShowBanner_: boolean;
   private isAccountStoreUser_: boolean;
   private shouldShowDevicePasswordsLink_: boolean;
-  private shouldOfferTrustedVaultOptIn_: boolean;
+  private trustedVaultBannerState_: TrustedVaultBannerState;
   private hasLeakedCredentials_: boolean;
   private hidePasswordsLink_: boolean;
   private showImportPasswords_: boolean;
@@ -293,7 +286,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
   private syncPrefs_: SyncPrefs;
   private syncStatus_: SyncStatus;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private showPasswordPromptDialog_: boolean;
   private tokenRequestManager_: BlockingRequestManager;
   // </if>
@@ -351,7 +344,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.setIsOptedInForAccountStorageListener_ =
         setIsOptedInForAccountStorageListener;
 
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     // If the user's account supports the password check, an auth token will be
     // required in order for them to view or export passwords. Otherwise there
     // is no additional security so |tokenRequestManager_| will immediately
@@ -385,17 +378,18 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     syncBrowserProxy.sendSyncPrefsChanged();
 
     // For non-ChromeOS, non-Lacros, also check whether accounts are available.
-    // <if expr="not (chromeos or lacros)">
+    // <if expr="not (chromeos_ash or chromeos_lacros)">
     const storedAccountsChanged = (accounts: Array<StoredAccount>) =>
         this.storedAccounts_ = accounts;
     syncBrowserProxy.getStoredAccounts().then(storedAccountsChanged);
     this.addWebUIListener('stored-accounts-updated', storedAccountsChanged);
     // </if>
 
-    syncBrowserProxy.sendOfferTrustedVaultOptInChanged();
+    syncBrowserProxy.sendTrustedVaultBannerStateChanged();
     this.addWebUIListener(
-        'offer-trusted-vault-opt-in-changed', (offerOptIn: boolean) => {
-          this.shouldOfferTrustedVaultOptIn_ = offerOptIn;
+        'trusted-vault-banner-state-changed',
+        (state: TrustedVaultBannerState) => {
+          this.trustedVaultBannerState_ = state;
         });
 
     afterNextRender(this, function() {
@@ -412,6 +406,14 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     this.passwordManager_.removeAccountStorageOptInStateListener(
         assert(this.setIsOptedInForAccountStorageListener_!));
     this.setIsOptedInForAccountStorageListener_ = null;
+  }
+
+  private computeShowAddPasswordButton_(): boolean {
+    return loadTimeData.getBoolean('addPasswordsInSettingsEnabled') &&
+        // Don't show add button if password manager is disabled by policy.
+        !(this.prefs.credentials_enable_service.enforcement ===
+              chrome.settingsPrivate.Enforcement.ENFORCED &&
+          !this.prefs.credentials_enable_service.value);
   }
 
   private computeSignedIn_(): boolean {
@@ -484,12 +486,20 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
         PasswordCheckReferrer.PASSWORD_SETTINGS);
   }
 
-  /**
-   * Shows the page to opt in to trusted vault encryption.
-   */
-  private onTrustedVaultOptInClick_() {
-    OpenWindowProxyImpl.getInstance().openURL(
-        loadTimeData.getString('trustedVaultOptInUrl'));
+  private onTrustedVaultBannerClick_() {
+    switch (this.trustedVaultBannerState_) {
+      case TrustedVaultBannerState.OPTED_IN:
+        OpenWindowProxyImpl.getInstance().openURL(
+            loadTimeData.getString('trustedVaultLearnMoreUrl'));
+        break;
+      case TrustedVaultBannerState.OFFER_OPT_IN:
+        OpenWindowProxyImpl.getInstance().openURL(
+            loadTimeData.getString('trustedVaultOptInUrl'));
+        break;
+      case TrustedVaultBannerState.NOT_SHOWN:
+      default:
+        assertNotReached();
+    }
   }
 
   /**
@@ -499,7 +509,7 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
     Router.getInstance().navigateTo(routes.DEVICE_PASSWORDS);
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * When this event fired, it means that the password-prompt-dialog succeeded
    * in creating a fresh token in the quickUnlockPrivate API. Because new tokens
@@ -563,7 +573,8 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
   /**
    * Fires an event that should delete the password exception.
    */
-  private onRemoveExceptionButtonTap_(e: RepeaterEvent) {
+  private onRemoveExceptionButtonTap_(
+      e: DomRepeatEvent<MultiStoreExceptionEntry>) {
     const exception = e.model.item;
     const allExceptionIds: Array<number> = [];
     if (exception.isPresentInAccount()) {
@@ -607,12 +618,20 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
   }
 
   private onAddPasswordTap_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PasswordManager.AddCredentialFromSettings.UserAction',
+        AddCredentialFromSettingsUserInteractions.Add_Dialog_Opened,
+        AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = true;
     this.activeDialogAnchorStack_.push(
         this.shadowRoot!.querySelector('#addPasswordButton')!);
   }
 
   private onAddPasswordDialogClosed_() {
+    chrome.metricsPrivate.recordEnumerationValue(
+        'PasswordManager.AddCredentialFromSettings.UserAction',
+        AddCredentialFromSettingsUserInteractions.Add_Dialog_Closed,
+        AddCredentialFromSettingsUserInteractions.COUNT);
     this.showAddPasswordDialog_ = false;
     focusWithoutInk(assert(this.activeDialogAnchorStack_.pop()!));
   }
@@ -681,6 +700,30 @@ class PasswordsSectionElement extends PasswordsSectionElementBase {
         }
       }));
     }, 0);
+  }
+
+  private getTrustedVaultBannerSubLabel_(): string {
+    switch (this.trustedVaultBannerState_) {
+      case TrustedVaultBannerState.OPTED_IN:
+        return this.i18n('trustedVaultBannerSubLabelOptedIn');
+      case TrustedVaultBannerState.OFFER_OPT_IN:
+        return this.i18n('trustedVaultBannerSubLabelOfferOptIn');
+      case TrustedVaultBannerState.NOT_SHOWN:
+        return '';
+      default:
+        assertNotReached();
+        return '';
+    }
+  }
+
+  private shouldHideTrustedVaultBanner_(): boolean {
+    return this.trustedVaultBannerState_ === TrustedVaultBannerState.NOT_SHOWN;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'passwords-section': PasswordsSectionElement;
   }
 }
 

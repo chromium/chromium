@@ -28,7 +28,7 @@ void CloneSharedBufferHandle(const mojo::ScopedSharedBufferHandle& source,
 void CloneSharedBufferToRawFileDescriptorHandle(
     const mojo::ScopedSharedBufferHandle& source,
     media::mojom::VideoBufferHandlePtr* target) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // |source| is unwrapped to a |PlatformSharedMemoryRegion|, from whence a file
   // descriptor can be extracted which is then mojo-wrapped.
   base::subtle::PlatformSharedMemoryRegion platform_region =
@@ -222,7 +222,15 @@ BroadcastingReceiver::BufferContext::CloneBufferHandle(
       }
       break;
     case media::VideoCaptureBufferType::kGpuMemoryBuffer:
+#if BUILDFLAG(IS_WIN)
+      // On windows with MediaFoundationD3D11VideoCapture if the
+      // texture capture path fails, a ShMem buffer might be produced instead.
+      DCHECK(buffer_handle_->is_shared_buffer_handle());
+      CloneSharedBufferHandle(buffer_handle_->get_shared_buffer_handle(),
+                              &result);
+#else
       NOTREACHED() << "Unexpected GpuMemoryBuffer handle type";
+#endif
       break;
   }
   return result;
@@ -232,7 +240,7 @@ void BroadcastingReceiver::BufferContext::
     ConvertRawFileDescriptorToSharedBuffer() {
   DCHECK(buffer_handle_->is_shared_memory_via_raw_file_descriptor());
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The conversion unwraps the descriptor from its mojo handle to the raw file
   // descriptor (ie, an int). This is used to create a
   // PlatformSharedMemoryRegion which is then wrapped as a
@@ -470,6 +478,13 @@ void BroadcastingReceiver::OnFrameDropped(
     if (client.second.is_suspended())
       continue;
     client.second.client()->OnFrameDropped(reason);
+  }
+}
+
+void BroadcastingReceiver::OnFrameWithEmptyRegionCapture() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  for (auto& client : clients_) {
+    client.second.client()->OnFrameWithEmptyRegionCapture();
   }
 }
 

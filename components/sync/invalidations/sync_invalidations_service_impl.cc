@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "components/sync/base/features.h"
 #include "components/sync/invalidations/fcm_handler.h"
-#include "components/sync/invalidations/switches.h"
 
 namespace syncer {
 
@@ -29,7 +29,7 @@ SyncInvalidationsServiceImpl::SyncInvalidationsServiceImpl(
 SyncInvalidationsServiceImpl::~SyncInvalidationsServiceImpl() = default;
 
 void SyncInvalidationsServiceImpl::SetActive(bool active) {
-  if (!base::FeatureList::IsEnabled(switches::kUseSyncInvalidations) ||
+  if (!base::FeatureList::IsEnabled(kUseSyncInvalidations) ||
       fcm_handler_->IsListening() == active) {
     return;
   }

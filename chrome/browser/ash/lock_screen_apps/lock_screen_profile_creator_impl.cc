@@ -55,7 +55,7 @@ void LockScreenProfileCreatorImpl::OnPreferredNoteTakingAppUpdated(
   OnLockScreenProfileCreateStarted();
 
   g_browser_process->profile_manager()->CreateProfileAsync(
-      chromeos::ProfileHelper::GetLockScreenAppProfilePath(),
+      ash::ProfileHelper::GetLockScreenAppProfilePath(),
       base::BindRepeating(&LockScreenProfileCreatorImpl::OnProfileReady,
                           weak_ptr_factory_.GetWeakPtr(),
                           tick_clock_->NowTicks()));

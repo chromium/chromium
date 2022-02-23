@@ -115,7 +115,7 @@ void PageTestBase::SetUp() {
       settings.SetAcceleratedCompositingEnabled(true);
   });
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(800, 600), nullptr, nullptr, std::move(setter), GetTickClock());
+      gfx::Size(800, 600), nullptr, nullptr, std::move(setter), GetTickClock());
 
   // Mock out clipboard calls so that tests don't mess
   // with each other's copies/pastes when running in parallel.
@@ -128,7 +128,7 @@ void PageTestBase::SetUp() {
   GetPage().SetDefaultPageScaleLimits(1, 4);
 }
 
-void PageTestBase::SetUp(IntSize size) {
+void PageTestBase::SetUp(gfx::Size size) {
   DCHECK(!dummy_page_holder_) << "Page should be set up only once";
   auto setter = base::BindLambdaForTesting([&](Settings& settings) {
     if (enable_compositing_)
@@ -156,7 +156,7 @@ void PageTestBase::SetupPageWithClients(
       settings.SetAcceleratedCompositingEnabled(true);
   });
   dummy_page_holder_ = std::make_unique<DummyPageHolder>(
-      IntSize(800, 600), chrome_client, local_frame_client, std::move(setter),
+      gfx::Size(800, 600), chrome_client, local_frame_client, std::move(setter),
       GetTickClock());
 
   // Use no-quirks (ake "strict") mode by default.
@@ -203,6 +203,27 @@ void PageTestBase::LoadAhem(LocalFrame& frame) {
   ScriptState* script_state = ToScriptStateForMainWorld(&frame);
   DummyExceptionStateForTesting exception_state;
   FontFaceSetDocument::From(document)->addForBinding(script_state, ahem,
+                                                     exception_state);
+}
+
+void PageTestBase::LoadNoto() {
+  LoadNoto(GetFrame());
+}
+
+void PageTestBase::LoadNoto(LocalFrame& frame) {
+  Document& document = *frame.DomWindow()->document();
+  scoped_refptr<SharedBuffer> shared_buffer =
+      test::ReadFromFile(blink::test::PlatformTestDataPath(
+          "third_party/Noto/NotoNaskhArabic-regular.woff2"));
+  auto* buffer =
+      MakeGarbageCollected<V8UnionArrayBufferOrArrayBufferViewOrString>(
+          DOMArrayBuffer::Create(shared_buffer));
+  FontFace* noto = FontFace::Create(frame.DomWindow(), "NotoArabic", buffer,
+                                    FontFaceDescriptors::Create());
+
+  ScriptState* script_state = ToScriptStateForMainWorld(&frame);
+  DummyExceptionStateForTesting exception_state;
+  FontFaceSetDocument::From(document)->addForBinding(script_state, noto,
                                                      exception_state);
 }
 

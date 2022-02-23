@@ -16,6 +16,7 @@
 #include "base/cxx17_backports.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/strings/stringprintf.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/trace_event/memory_dump_request_args.h"
 #include "build/build_config.h"
@@ -73,10 +74,11 @@ const MetricRange ImageSizeMetricRange = {1, 500 * kMiB /*500 MiB*/};
 
 // Prefer predefined ranges kLarge, kSmall and kTiny over custom ranges.
 enum class MetricSize {
-  kLarge,   // 1MiB - 64,000MiB
-  kSmall,   // 10 - 500,000KiB
-  kTiny,    // 1 - 500,000B
-  kCustom,  // custom range, in bytes
+  kPercentage,  // percentages, 0% - 100%
+  kLarge,       // 1MiB - 64,000MiB
+  kSmall,       // 10 - 500,000KiB
+  kTiny,        // 1 - 500,000B
+  kCustom,      // custom range, in bytes
 };
 
 enum class EmitTo {
@@ -229,7 +231,13 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      MetricSize::kLarge, "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"malloc/partitions/allocator", "Malloc.MaxCommittedSize",
      MetricSize::kLarge, "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
-#endif
+    {"malloc/partitions/allocator", "Malloc.Wasted", MetricSize::kLarge,
+     "wasted", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc/partitions/allocator", "Malloc.Fragmentation",
+     MetricSize::kPercentage, "fragmentation", EmitTo::kSizeInUmaOnly, nullptr},
+    {"malloc", "Malloc.SyscallsPerMinute", MetricSize::kTiny,
+     "syscalls_per_minute", EmitTo::kSizeInUmaOnly, nullptr},
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"mojo", "NumberOfMojoHandles", MetricSize::kSmall,
      MemoryAllocatorDump::kNameObjectCount, EmitTo::kCountsInUkmOnly,
      &Memory_Experimental::SetNumberOfMojoHandles},
@@ -266,30 +274,46 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
      EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_ArrayBuffer},
     {"partition_alloc/partitions/array_buffer",
+     "PartitionAlloc.Fragmentation.ArrayBuffer", MetricSize::kPercentage,
+     "fragmentation", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/array_buffer",
      "PartitionAlloc.MaxCommittedSize.ArrayBuffer", MetricSize::kLarge,
      "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/array_buffer",
      "PartitionAlloc.MaxAllocatedSize.ArrayBuffer", MetricSize::kLarge,
      "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/array_buffer",
+     "PartitionAlloc.Wasted.ArrayBuffer", MetricSize::kLarge, "wasted",
+     EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/buffer", "PartitionAlloc.Partitions.Buffer",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Buffer},
+    {"partition_alloc/partitions/buffer", "PartitionAlloc.Fragmentation.Buffer",
+     MetricSize::kPercentage, "fragmentation", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/buffer",
      "PartitionAlloc.MaxCommittedSize.Buffer", MetricSize::kLarge,
      "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/buffer",
      "PartitionAlloc.MaxAllocatedSize.Buffer", MetricSize::kLarge,
      "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/buffer", "PartitionAlloc.Wasted.Buffer",
+     MetricSize::kLarge, "wasted", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/fast_malloc",
      "PartitionAlloc.Partitions.FastMalloc", MetricSize::kLarge, kSize,
      EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_FastMalloc},
+    {"partition_alloc/partitions/fast_malloc",
+     "PartitionAlloc.Fragmentation.FastMalloc", MetricSize::kPercentage,
+     "fragmentation", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/fast_malloc",
      "PartitionAlloc.MaxCommittedSize.FastMalloc", MetricSize::kLarge,
      "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/fast_malloc",
      "PartitionAlloc.MaxAllocatedSize.FastMalloc", MetricSize::kLarge,
      "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/fast_malloc",
+     "PartitionAlloc.Wasted.FastMalloc", MetricSize::kLarge, "wasted",
+     EmitTo::kSizeInUmaOnly, nullptr},
 #if !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     {"partition_alloc/partitions/fast_malloc/thread_cache",
      "PartitionAlloc.Partitions.FastMalloc.ThreadCache", MetricSize::kSmall,
@@ -298,12 +322,16 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
     {"partition_alloc/partitions/layout", "PartitionAlloc.Partitions.Layout",
      MetricSize::kLarge, kSize, EmitTo::kSizeInUkmAndUma,
      &Memory_Experimental::SetPartitionAlloc_Partitions_Layout},
+    {"partition_alloc/partitions/layout", "PartitionAlloc.Fragmentation.Layout",
+     MetricSize::kPercentage, "fragmentation", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/layout",
      "PartitionAlloc.MaxCommittedSize.Layout", MetricSize::kLarge,
      "max_committed_size", EmitTo::kSizeInUmaOnly, nullptr},
     {"partition_alloc/partitions/layout",
      "PartitionAlloc.MaxAllocatedSize.Layout", MetricSize::kLarge,
      "max_allocated_size", EmitTo::kSizeInUmaOnly, nullptr},
+    {"partition_alloc/partitions/layout", "PartitionAlloc.Wasted.Layout",
+     MetricSize::kLarge, "wasted", EmitTo::kSizeInUmaOnly, nullptr},
     {"passwords", "ManualFillingCache", MetricSize::kSmall, kEffectiveSize,
      EmitTo::kSizeInUmaOnly, nullptr},
     {"site_storage", "SiteStorage", MetricSize::kLarge, kEffectiveSize,
@@ -452,6 +480,7 @@ const Metric kAllocatorDumpNamesForMetrics[] = {
 };
 
 #define EXPERIMENTAL_UMA_PREFIX "Memory.Experimental."
+#define VERSION_SUFFIX_PERCENT "2."
 #define VERSION_SUFFIX_NORMAL "2."
 #define VERSION_SUFFIX_SMALL "2.Small."
 #define VERSION_SUFFIX_TINY "2.Tiny."
@@ -466,6 +495,8 @@ void EmitProcessUkm(const Metric& item,
 
 const char* MetricSizeToVersionSuffix(MetricSize size) {
   switch (size) {
+    case MetricSize::kPercentage:
+      return VERSION_SUFFIX_PERCENT;
     case MetricSize::kLarge:
       return VERSION_SUFFIX_NORMAL;
     case MetricSize::kSmall:
@@ -495,6 +526,9 @@ void EmitProcessUma(HistogramProcessType process_type,
   }
 
   switch (item.metric_size) {
+    case MetricSize::kPercentage:
+      base::UmaHistogramPercentage(uma_name, value);
+      break;
     case MetricSize::kLarge:  // 1 - 64,000 MiB
       MEMORY_METRICS_HISTOGRAM_MB(uma_name, value / kMiB);
       break;
@@ -508,6 +542,85 @@ void EmitProcessUma(HistogramProcessType process_type,
       base::UmaHistogramCustomCounts(uma_name, value, item.range.min,
                                      item.range.max, 100);
       break;
+  }
+}
+
+void EmitPartitionAllocFragmentationStat(
+    const GlobalMemoryDump::ProcessDump& pmd,
+    HistogramProcessType process_type,
+    const char* dump_name,
+    const char* uma_name) {
+  absl::optional<uint64_t> value = pmd.GetMetric(dump_name, "fragmentation");
+  if (value.has_value()) {
+    Metric fragmentation_metric = {dump_name,
+                                   uma_name,
+                                   MetricSize::kPercentage,
+                                   "fragmentation",
+                                   EmitTo::kSizeInUmaOnly,
+                                   nullptr};
+    EmitProcessUma(process_type, fragmentation_metric, value.value());
+  }
+}
+
+void EmitPartitionAllocWastedStat(const GlobalMemoryDump::ProcessDump& pmd,
+                                  HistogramProcessType process_type,
+                                  const char* dump_name,
+                                  const char* uma_name) {
+  absl::optional<uint64_t> value = pmd.GetMetric(dump_name, "wasted");
+  if (value.has_value()) {
+    Metric wasted_metric = {dump_name,
+                            uma_name,
+                            MetricSize::kLarge,
+                            "wasted",
+                            EmitTo::kSizeInUmaOnly,
+                            nullptr};
+    EmitProcessUma(process_type, wasted_metric, value.value());
+  }
+}
+
+void EmitMallocStats(const GlobalMemoryDump::ProcessDump& pmd,
+                     HistogramProcessType process_type,
+                     const absl::optional<base::TimeDelta>& uptime) {
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+  const char* const kMallocDumpName = "malloc/partitions/allocator";
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+  static constexpr int kRecordHours[] = {1, 24};
+  // First element of the pair is the name as found in memory dumps, second
+  // element is the corresponding name to emit in UMA.
+  static constexpr std::pair<const char*, const char*> kPartitionNames[] = {
+      {"array_buffer", "ArrayBuffer"},
+      {"buffer", "Buffer"},
+      {"fast_malloc", "FastMalloc"},
+      {"layout", "Layout"}};
+
+  for (int hours : kRecordHours) {
+    if (uptime <= base::Hours(hours))
+      continue;
+
+#if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+    EmitPartitionAllocFragmentationStat(
+        pmd, process_type, kMallocDumpName,
+        base::StringPrintf("Malloc.Fragmentation.After%dH", hours).c_str());
+    EmitPartitionAllocWastedStat(
+        pmd, process_type, kMallocDumpName,
+        base::StringPrintf("Malloc.Wasted.After%dH", hours).c_str());
+#endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+
+    for (const auto& partition_name : kPartitionNames) {
+      const auto* dump_name = partition_name.first;
+      const auto* uma_name = partition_name.second;
+      EmitPartitionAllocFragmentationStat(
+          pmd, process_type, dump_name,
+          base::StringPrintf("PartitionAlloc.Fragmentation.%s.After%dH",
+                             uma_name, hours)
+              .c_str());
+      EmitPartitionAllocWastedStat(
+          pmd, process_type, dump_name,
+          base::StringPrintf("PartitionAlloc.Wasted.%s.After%dH", uma_name,
+                             hours)
+              .c_str());
+    }
   }
 }
 
@@ -547,14 +660,14 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     }
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Resident set is not populated on Mac.
   builder->SetResident(pmd.os_dump().resident_set_kb / kKiB);
 #endif
 
   builder->SetPrivateMemoryFootprint(pmd.os_dump().private_footprint_kb / kKiB);
   builder->SetSharedMemoryFootprint(pmd.os_dump().shared_footprint_kb / kKiB);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   builder->SetPrivateSwapFootprint(pmd.os_dump().private_footprint_swap_kb /
                                    kKiB);
 #endif
@@ -564,7 +677,7 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
     return;
 
   const char* process_name = HistogramProcessTypeToString(process_type);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Resident set is not populated on Mac.
   DCHECK_EQ(pmd.os_dump().resident_set_kb, 0U);
 #else
@@ -574,14 +687,25 @@ void EmitProcessUmaAndUkm(const GlobalMemoryDump::ProcessDump& pmd,
 #endif
   MEMORY_METRICS_HISTOGRAM_MB(GetPrivateFootprintHistogramName(process_type),
                               pmd.os_dump().private_footprint_kb / kKiB);
+  ProfileManager* profile_manager = g_browser_process->profile_manager();
+  if (process_type == HistogramProcessType::kBrowser && profile_manager &&
+      profile_manager->GetZombieProfileCount() > 0) {
+    // Measure impact of the DestroyProfileOnBrowserClose experiment.
+    MEMORY_METRICS_HISTOGRAM_MB(
+        GetPrivateFootprintHistogramName(process_type) + ".HasZombieProfile",
+        pmd.os_dump().private_footprint_kb / kKiB);
+  }
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".SharedMemoryFootprint",
                               pmd.os_dump().shared_footprint_kb / kKiB);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   MEMORY_METRICS_HISTOGRAM_MB(std::string(kMemoryHistogramPrefix) +
                                   process_name + ".PrivateSwapFootprint",
                               pmd.os_dump().private_footprint_swap_kb / kKiB);
 #endif
+
+  if (record_uma)
+    EmitMallocStats(pmd, process_type, uptime);
 }
 
 void EmitSummedGpuMemory(const GlobalMemoryDump::ProcessDump& pmd,
@@ -856,6 +980,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 
   uint32_t private_footprint_total_kb = 0;
   uint32_t renderer_private_footprint_total_kb = 0;
+  uint32_t renderer_malloc_total_kb = 0;
   uint32_t shared_footprint_total_kb = 0;
   uint32_t resident_set_total_kb = 0;
   bool emit_metrics_for_all_processes = pid_scope_ == base::kNullProcessId;
@@ -909,6 +1034,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
             single_page_info = &process_info.page_infos[0];
           }
         }
+        renderer_malloc_total_kb +=
+            pmd.GetMetric("malloc", "effective_size").value_or(0) / kKiB;
 
         int number_of_extensions = GetNumberOfExtensions(pmd.pid());
         EmitRendererMemoryMetrics(
@@ -942,9 +1069,9 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
         break;
       }
       case memory_instrumentation::mojom::ProcessType::PLUGIN:
-        FALLTHROUGH;
+        [[fallthrough]];
       case memory_instrumentation::mojom::ProcessType::ARC:
-        FALLTHROUGH;
+        [[fallthrough]];
       case memory_instrumentation::mojom::ProcessType::OTHER:
         break;
     }
@@ -981,7 +1108,7 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
     UMA_HISTOGRAM_MEMORY_LARGE_MB(
         "Memory.Experimental.Total2.PrivateMemoryFootprint",
         private_footprint_total_kb / kKiB);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Resident set is not populated on Mac.
     DCHECK_EQ(resident_set_total_kb, 0U);
 #else
@@ -991,6 +1118,13 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
 #endif
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.PrivateMemoryFootprint",
                                   private_footprint_total_kb / kKiB);
+    ProfileManager* profile_manager = g_browser_process->profile_manager();
+    if (profile_manager && profile_manager->GetZombieProfileCount() > 0) {
+      // Measure impact of the DestroyProfileOnBrowserClose experiment.
+      UMA_HISTOGRAM_MEMORY_LARGE_MB(
+          "Memory.Total.PrivateMemoryFootprint.HasZombieProfile",
+          private_footprint_total_kb / kKiB);
+    }
     // The pseudo metric of Memory.Total.PrivateMemoryFootprint. Only used to
     // assess field trial data quality.
     UMA_HISTOGRAM_MEMORY_LARGE_MB(
@@ -999,6 +1133,8 @@ void ProcessMemoryMetricsEmitter::CollateResults() {
             static_cast<double>(private_footprint_total_kb) / kKiB));
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererPrivateMemoryFootprint",
                                   renderer_private_footprint_total_kb / kKiB);
+    UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.RendererMalloc",
+                                  renderer_malloc_total_kb / kKiB);
     UMA_HISTOGRAM_MEMORY_LARGE_MB("Memory.Total.SharedMemoryFootprint",
                                   shared_footprint_total_kb / kKiB);
 

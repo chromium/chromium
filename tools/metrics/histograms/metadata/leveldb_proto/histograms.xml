@@ -31,11 +31,6 @@ chromium-metrics-reviews@google.com.
   <variant name="CommerceSubscriptionDatabase"
       summary="Database for Chrome commerce subscriptions."/>
   <variant name="CouponDatabase" summary="Database for coupons in Chrome."/>
-  <variant name="DomDistillerStore" summary="Databases for DomDistillerStore">
-    <obsolete>
-      Deprecated since 2019-10.
-    </obsolete>
-  </variant>
   <variant name="DownloadDB" summary="Databases for in-progress download."/>
   <variant name="DownloadService" summary="Databases for download service."/>
   <variant name="FeatureEngagementTrackerAvailabilityStore"
@@ -44,20 +39,10 @@ chromium-metrics-reviews@google.com.
       summary="Database for FeatureEngagementTracker events."/>
   <variant name="FeedContentDatabase"
       summary="Database for Feed content storage."/>
-  <variant name="FeedImageDatabase" summary="Databases for Feed Image Loader.">
-    <obsolete>
-      Deprecated since 11/18.
-    </obsolete>
-  </variant>
   <variant name="FeedJournalDatabase"
       summary="Database for Feed journal storage."/>
   <variant name="FeedKeyValueDatabase"
       summary="Database for key value cache used in feed rendering."/>
-  <variant name="FeedStorageDatabase" summary="Databases for Feed Storage.">
-    <obsolete>
-      Deprecated since 08/18.
-    </obsolete>
-  </variant>
   <variant name="FeedStreamDatabase"
       summary="Database for Feed v2 stream and content storage."/>
   <variant name="GCMKeyStore" summary="Databases for GCMKeyStore"/>
@@ -79,6 +64,8 @@ chromium-metrics-reviews@google.com.
       summary="Database for RemoteSuggestion snippets."/>
   <variant name="OfflinePageMetadataStore"
       summary="Databases for OfflinePageMetadataStore"/>
+  <variant name="PageEntityMetadataDatabase"
+      summary="Database for page entity metadata."/>
   <variant name="PersistedStateDatabase"
       summary="Database for NonCriticalPersistedTabData"/>
   <variant name="PreviewsHintCacheStore"
@@ -96,12 +83,6 @@ chromium-metrics-reviews@google.com.
   <variant name="SignalStorageConfigDatabase"
       summary="Segmentation platform signal storage config."/>
   <variant name="StrikeService" summary="Database for strike service."/>
-  <variant name="TabStateDatabase"
-      summary="Database for NonCriticalPersistedTabData">
-    <obsolete>
-      Deprecated since 10/2020 in favor of PersistedStateDatabase
-    </obsolete>
-  </variant>
   <variant name="UpboardingQueryTileStore"
       summary="Database for Upboarding query tiles."/>
   <variant name="UsageReportsBufferBackend"
@@ -118,6 +99,8 @@ chromium-metrics-reviews@google.com.
       summary="Database for video tutorials (deprecated)."/>
   <variant name="VideoTutorialsV2Database"
       summary="Database for video tutorials."/>
+  <variant name="WebrtcVideoStatsDB"
+      summary="Database for Webrtc video stats."/>
 </variants>
 
 <histogram name="LevelDB.ApproximateMemTableMemoryUse.{LevelDBClient}"
@@ -201,7 +184,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="ProtoDB.SharedDbInitStatus" enum="ProtoDatabaseInitState"
-    expires_after="2022-04-17">
+    expires_after="2022-08-21">
   <owner>ssid@chromium.org</owner>
   <owner>salg@chromium.org</owner>
   <summary>

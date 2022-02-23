@@ -11,15 +11,9 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 
 namespace ash {
-
-namespace {
-
-// Minimum duration for a toast to be visible (in millisecond).
-const int32_t kMinimumDurationMs = 200;
-
-}  // anonymous namespace
 
 ToastManagerImpl::ToastManagerImpl()
     : locked_(Shell::Get()->session_controller()->IsScreenLocked()) {}
@@ -30,19 +24,23 @@ void ToastManagerImpl::Show(const ToastData& data) {
   const std::string& id = data.id;
   DCHECK(!id.empty());
 
-  if (current_toast_data_ && current_toast_data_->id == id) {
-    // TODO(yoshiki): Replaces the visible toast.
-    return;
-  }
-
   auto existing_toast =
       std::find_if(queue_.begin(), queue_.end(),
                    [&id](const ToastData& data) { return data.id == id; });
 
-  if (existing_toast == queue_.end()) {
-    queue_.emplace_back(data);
-  } else {
+  if (existing_toast != queue_.end()) {
     *existing_toast = data;
+  } else {
+    if (current_toast_data_ && current_toast_data_->id == id) {
+      // Replace the visible toast by adding the new toast data to the front of
+      // the queue and hiding the visible toast. Once the visible toast finishes
+      // hiding, the new toast will be displayed.
+      queue_.emplace_front(data);
+      overlay_->Show(false);
+      return;
+    }
+
+    queue_.emplace_back(data);
   }
 
   if (queue_.size() == 1 && overlay_ == nullptr)
@@ -96,14 +94,12 @@ void ToastManagerImpl::ShowLatest() {
       current_toast_data_->is_managed, current_toast_data_->dismiss_callback);
   overlay_->Show(true);
 
-  if (current_toast_data_->duration_ms != ToastData::kInfiniteDuration) {
-    int32_t duration_ms =
-        std::max(current_toast_data_->duration_ms, kMinimumDurationMs);
+  if (current_toast_data_->duration != ToastData::kInfiniteDuration) {
     base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&ToastManagerImpl::OnDurationPassed,
                        weak_ptr_factory_.GetWeakPtr(), serial_),
-        base::Milliseconds(duration_ms));
+        current_toast_data_->duration);
   }
 }
 

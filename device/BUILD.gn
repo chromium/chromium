@@ -144,6 +144,7 @@ test("device_unittests") {
 
   data_deps = [
     "bluetooth/strings:bluetooth_test_strings",
+    "//testing/buildbot/filters:device_unittests_filters",
     "//ui/resources:ui_test_pak_data",
   ]
 
@@ -236,13 +237,16 @@ test("device_unittests") {
     ]
   }
 
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [
       "bluetooth/bluetooth_low_energy_scan_filter_unittest.cc",
       "bluetooth/chromeos/bluetooth_connection_logger_unittest.cc",
       "bluetooth/chromeos/bluetooth_utils_unittest.cc",
     ]
-    deps += [ "//ash/constants" ]
+    deps += [ "//chromeos/constants" ]
+    if (is_chromeos_lacros) {
+      deps += [ "//chromeos/lacros:test_support" ]
+    }
   }
 
   if ((is_chromeos || is_linux) && use_dbus) {
@@ -270,7 +274,7 @@ test("device_unittests") {
       "//dbus:test_support",
     ]
 
-    if (is_chromeos_ash) {
+    if (is_chromeos_ash || is_chromeos_lacros) {
       sources += [
         "bluetooth/dbus/bluetooth_advertisement_monitor_application_service_provider_unittest.cc",
         "bluetooth/dbus/bluetooth_advertisement_monitor_service_provider_unittest.cc",

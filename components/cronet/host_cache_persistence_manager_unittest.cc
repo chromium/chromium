@@ -53,7 +53,7 @@ class HostCachePersistenceManagerTest : public testing::Test {
     const base::Value* value = pref_service_->GetUserPref(kPrefName);
     base::Value list(base::Value::Type::LIST);
     if (value)
-      list = base::Value(value->GetList());
+      list = base::Value(value->GetListDeprecated());
     net::HostCache temp_cache(10);
     temp_cache.RestoreFromListValue(base::Value::AsListValue(list));
     ASSERT_EQ(expected_size, temp_cache.size());
@@ -80,9 +80,9 @@ class HostCachePersistenceManagerTest : public testing::Test {
     temp_cache.Set(key2, entry, base::TimeTicks::Now(), base::Seconds(1));
     temp_cache.Set(key3, entry, base::TimeTicks::Now(), base::Seconds(1));
 
-    base::ListValue value;
-    temp_cache.GetAsListValue(&value, false /* include_stale */,
-                              net::HostCache::SerializationType::kRestorable);
+    base::Value value(base::Value::Type::LIST);
+    temp_cache.GetList(&value, false /* include_stale */,
+                       net::HostCache::SerializationType::kRestorable);
     pref_service_->Set(kPrefName, value);
   }
 

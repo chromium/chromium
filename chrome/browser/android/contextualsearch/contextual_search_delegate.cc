@@ -144,7 +144,7 @@ void ContextualSearchDelegate::StartSearchTermResolutionRequest(
 
   // Decide if the URL should be sent with the context.
   if (context_->CanSendBasePageUrl())
-    context_->SetBasePageUrl(web_contents->GetURL());
+    context_->SetBasePageUrl(web_contents->GetLastCommittedURL());
 
   // Issue the resolve request.
   ResolveSearchTermFromContext();
@@ -177,7 +177,8 @@ void ContextualSearchDelegate::ResolveSearchTermFromContext() {
                "data to Google and the response identifies what to search for "
                "plus additional actionable information."
             trigger:
-              "Triggered by an unhandled tap on plain text on most pages."
+              "Triggered by an unhandled tap or touch and hold gesture on "
+              "plain text on most pages."
             data:
               "The URL and some page content from the current tab."
             destination: GOOGLE_OWNED_SERVICE
@@ -471,8 +472,8 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
         dict->FindListKey(kContextualSearchMentionsKey);
     // Note that because we've deserialized the json and it's not used later, we
     // can just take the list without worrying about putting it back.
-    if (mentions_list && mentions_list->GetList().size() >= 2)
-      ExtractMentionsStartEnd(std::move(*mentions_list).TakeList(),
+    if (mentions_list && mentions_list->GetListDeprecated().size() >= 2)
+      ExtractMentionsStartEnd(std::move(*mentions_list).TakeListDeprecated(),
                               mention_start, mention_end);
   }
 
@@ -523,7 +524,10 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
   // Contextual Cards V5+ integration can provide the primary card tag, so
   // clients can tell what kind of card they have received.
   // TODO(donnd): make sure this works with a non-integer or missing value!
-  dict->GetInteger(kContextualSearchCardTag, coca_card_tag);
+  absl::optional<int> maybe_coca_card_tag =
+      dict->FindIntKey(kContextualSearchCardTag);
+  if (coca_card_tag && maybe_coca_card_tag)
+    *coca_card_tag = *maybe_coca_card_tag;
 
   // Any Contextual Cards integration.
   // For testing purposes check if there was a diagnostic from Contextual
@@ -548,12 +552,9 @@ void ContextualSearchDelegate::DecodeSearchTermFromJsonResponse(
   // Extract an arbitrary Related Searches payload as JSON and return to Java
   // for decoding.
   // TODO(donnd): remove soon (once the server is updated);
-  if (dict->HasKey(kRelatedSearchesSuggestions)) {
-    base::Value* rsearches_json_value = nullptr;
-    dict->Get(kRelatedSearchesSuggestions, &rsearches_json_value);
-    DCHECK(rsearches_json_value);
+  if (base::Value* rsearches_json_value =
+          dict->FindKey(kRelatedSearchesSuggestions))
     base::JSONWriter::Write(*rsearches_json_value, related_searches_json);
-  }
 }
 
 // Extract the Start/End of the mentions in the surrounding text

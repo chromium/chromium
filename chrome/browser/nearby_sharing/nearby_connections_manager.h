@@ -9,12 +9,12 @@
 #include <string>
 #include <vector>
 
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/callback.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/nearby_sharing/common/nearby_share_enums.h"
 #include "chrome/browser/nearby_sharing/nearby_connection.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 // A wrapper around the Nearby Connections mojo API.

@@ -4,6 +4,8 @@
 
 #include "gpu/command_buffer/client/shared_image_interface.h"
 
+#include "base/notreached.h"
+
 namespace gpu {
 
 uint32_t SharedImageInterface::UsageForMailbox(const Mailbox& mailbox) {

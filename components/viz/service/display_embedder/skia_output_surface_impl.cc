@@ -5,16 +5,17 @@
 #include "components/viz/service/display_embedder/skia_output_surface_impl.h"
 
 #include <memory>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -32,13 +33,13 @@
 #include "gpu/command_buffer/service/shared_image_factory.h"
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/skia_utils.h"
-#include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/context_url.h"
 #include "gpu/ipc/single_task_sequence.h"
 #include "gpu/vulkan/buildflags.h"
 #include "skia/buildflags.h"
 #include "skia/ext/legacy_display_globals.h"
 #include "third_party/skia/include/gpu/GrYUVABackendTextures.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_gl_api_implementation.h"
@@ -48,7 +49,7 @@
 #include "gpu/vulkan/vulkan_device_queue.h"
 #endif  // BUILDFLAG(ENABLE_VULKAN)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
@@ -103,7 +104,7 @@ SkiaOutputSurfaceImpl::FrameBufferDamageTracker::FrameBufferDamageTracker(
 SkiaOutputSurfaceImpl::FrameBufferDamageTracker::~FrameBufferDamageTracker() =
     default;
 
-void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::ReallocatedFrameBuffers(
+void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::FrameBuffersChanged(
     const gfx::Size& frame_buffer_size) {
   frame_buffer_size_ = frame_buffer_size;
   damage_between_frames_.clear();
@@ -126,7 +127,7 @@ void SkiaOutputSurfaceImpl::FrameBufferDamageTracker::SkippedSwapWithDamage(
     damage_between_frames_.back().Union(damage);
     cached_current_damage_.reset();
   } else {
-    // First frame after `ReallocatedFrameBuffers already has full damage.
+    // First frame after `FrameBuffersChanged already has full damage.
     // So no need to keep track of it with another entry, which would violate
     // the condition the deque size is at most `number_of_buffers_ - 1`.
   }
@@ -142,7 +143,7 @@ SkiaOutputSurfaceImpl::FrameBufferDamageTracker::GetCurrentFrameBufferDamage()
 
 gfx::Rect SkiaOutputSurfaceImpl::FrameBufferDamageTracker::
     ComputeCurrentFrameBufferDamage() const {
-  // First few frames after `ReallocatedFrameBuffers`.
+  // First few frames after `FrameBuffersChanged`.
   if (damage_between_frames_.size() < number_of_buffers_ - 1) {
     return gfx::Rect(frame_buffer_size_);
   }
@@ -214,7 +215,7 @@ SkiaOutputSurfaceImpl::~SkiaOutputSurfaceImpl() {
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
   // Flush GPU tasks and block until all tasks are finished.
-  FlushGpuTasks(/*wait_for_finish=*/true);
+  FlushGpuTasks(SyncMode::kWaitForTasksFinished);
 }
 
 gpu::SurfaceHandle SkiaOutputSurfaceImpl::GetSurfaceHandle() const {
@@ -279,7 +280,7 @@ void SkiaOutputSurfaceImpl::RecreateRootRecorder() {
   root_recorder_.emplace(characterization_);
 
   // This will trigger the lazy initialization of the recorder
-  ignore_result(root_recorder_->getCanvas());
+  std::ignore = root_recorder_->getCanvas();
 }
 
 void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
@@ -296,7 +297,7 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
   if (use_damage_area_from_skia_output_device_) {
     damage_of_current_buffer_ = gfx::Rect(size);
   } else if (frame_buffer_damage_tracker_) {
-    frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size);
+    frame_buffer_damage_tracker_->FrameBuffersChanged(size);
   }
 
   // impl_on_gpu_ is released on the GPU thread by a posted task from
@@ -307,7 +308,7 @@ void SkiaOutputSurfaceImpl::Reshape(const gfx::Size& size,
                              use_stencil, GetDisplayTransform());
   EnqueueGpuTask(std::move(task), {}, /*make_current=*/true,
                  /*need_framebuffer=*/!dependency_->IsOffscreen());
-  FlushGpuTasks(/*wait_for_finish=*/false);
+  FlushGpuTasks(SyncMode::kNoWait);
 
   color_space_ = color_space;
   is_hdr_ = color_space_.IsHDR();
@@ -382,6 +383,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(current_paint_);
   DCHECK(!image_context->mailbox_holder().mailbox.IsZero());
+  TRACE_EVENT0("viz", "SkiaOutputSurfaceImpl::MakePromiseSkImage");
 
   images_in_current_paint_.push_back(
       static_cast<ImageContextImpl*>(image_context));
@@ -394,7 +396,7 @@ void SkiaOutputSurfaceImpl::MakePromiseSkImage(ImageContext* image_context) {
     if (sync_token.HasData() &&
         !sync_point_manager->IsSyncTokenReleased(sync_token)) {
       gpu_task_sync_tokens_.push_back(sync_token);
-      FlushGpuTasks(/*wait_for_finish=*/true);
+      FlushGpuTasks(SyncMode::kWaitForTasksStarted);
       image_context->mutable_mailbox_holder()->sync_token.Clear();
     }
 
@@ -495,10 +497,12 @@ SkiaOutputSurfaceImpl::CreateImageContext(
     ResourceFormat format,
     bool maybe_concurrent_reads,
     const absl::optional<gpu::VulkanYCbCrInfo>& ycbcr_info,
-    sk_sp<SkColorSpace> color_space) {
-  return std::make_unique<ImageContextImpl>(holder, size, format,
-                                            maybe_concurrent_reads, ycbcr_info,
-                                            std::move(color_space));
+    sk_sp<SkColorSpace> color_space,
+    bool raw_draw_if_possible) {
+  return std::make_unique<ImageContextImpl>(
+      holder, size, format, maybe_concurrent_reads, ycbcr_info,
+      std::move(color_space),
+      /*allow_keeping_read_access=*/true, raw_draw_if_possible);
 }
 
 void SkiaOutputSurfaceImpl::SwapBuffers(OutputSurfaceFrame frame) {
@@ -611,7 +615,7 @@ SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPass(
   return current_paint_->recorder()->getCanvas();
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 SkCanvas* SkiaOutputSurfaceImpl::BeginPaintRenderPassOverlay(
     const gfx::Size& size,
     ResourceFormat format,
@@ -640,7 +644,7 @@ SkiaOutputSurfaceImpl::EndPaintRenderPassOverlay() {
   current_paint_.reset();
   return ddl;
 }
-#endif  // defined(OS_APPLE) || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 
 void SkiaOutputSurfaceImpl::EndPaint(base::OnceClosure on_finished) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
@@ -797,7 +801,7 @@ void SkiaOutputSurfaceImpl::ScheduleOverlays(
     OverlayList overlays,
     std::vector<gpu::SyncToken> sync_tokens,
     base::OnceClosure on_finished) {
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // If there are render pass overlays, then a gl context is needed for drawing
   // the overlay render passes to a backing for being scanned out.
   bool make_current =
@@ -848,7 +852,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
   // This runner could be called from vsync or GPU thread after |this| is
   // destroyed. We post directly to display compositor thread to check
   // |weak_ptr_| as |dependency_| may have been destroyed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Callback is never used on Android. Doesn't work with WebView because
   // calling it bypasses SkiaOutputSurfaceDependency.
   GpuVSyncCallback vsync_callback_runner = base::DoNothing();
@@ -872,7 +876,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
                  /*need_framebuffer=*/false);
   // |capabilities_| will be initialized in InitializeOnGpuThread(), so have to
   // wait.
-  FlushGpuTasks(/*wait_for_finish=*/true);
+  FlushGpuTasks(SyncMode::kWaitForTasksFinished);
 
   if (capabilities_.preserve_buffer_content &&
       capabilities_.supports_post_sub_buffer) {
@@ -880,7 +884,7 @@ bool SkiaOutputSurfaceImpl::Initialize() {
     // If there is only one pending frame, then we can use damage area hint from
     // SkiaOutputDevice, otherwise we have to track damage area with
     // FrameBufferDamageTracker.
-    if (capabilities_.max_frames_pending == 1 &&
+    if (capabilities_.pending_swap_params.max_pending_swaps == 1 &&
         capabilities_.damage_area_from_skia_output_device) {
       use_damage_area_from_skia_output_device_ = true;
       damage_of_current_buffer_ = gfx::Rect();
@@ -930,8 +934,7 @@ SkiaOutputSurfaceImpl::CreateSkSurfaceCharacterization(
   }
 
   auto cache_max_resource_bytes = impl_on_gpu_->max_resource_cache_bytes();
-  SkSurfaceProps surface_props =
-      skia::LegacyDisplayGlobals::GetSkSurfaceProps();
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
   if (is_root_render_pass) {
     const auto format_index = static_cast<int>(format);
     const auto& color_type = capabilities_.sk_color_types[format_index];
@@ -1011,7 +1014,7 @@ void SkiaOutputSurfaceImpl::DidSwapBuffersComplete(
       gfx::SwapResult::SWAP_NAK_RECREATE_BUFFERS) {
     client_->SetNeedsRedrawRect(gfx::Rect(size_));
     if (frame_buffer_damage_tracker_)
-      frame_buffer_damage_tracker_->ReallocatedFrameBuffers(size_);
+      frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
   }
 
   pending_swaps_.pop_front();
@@ -1061,7 +1064,7 @@ void SkiaOutputSurfaceImpl::ScheduleGpuTaskForTesting(
     std::vector<gpu::SyncToken> sync_tokens) {
   EnqueueGpuTask(std::move(callback), std::move(sync_tokens),
                  /*make_current=*/false, /*need_framebuffer=*/false);
-  FlushGpuTasks(/*wait_for_finish=*/false);
+  FlushGpuTasks(SyncMode::kNoWait);
 }
 
 void SkiaOutputSurfaceImpl::EnqueueGpuTask(
@@ -1079,14 +1082,17 @@ void SkiaOutputSurfaceImpl::EnqueueGpuTask(
   need_framebuffer_ |= need_framebuffer;
 }
 
-void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
+void SkiaOutputSurfaceImpl::FlushGpuTasks(SyncMode sync_mode) {
+  TRACE_EVENT1("viz", "SkiaOutputSurfaceImpl::FlushGpuTasks", "sync_mode",
+               sync_mode);
   // If |wait_for_finish| is true, a GPU task will be always scheduled to make
   // sure all pending tasks are finished on the GPU thread.
-  if (gpu_tasks_.empty() && !wait_for_finish)
+  if (gpu_tasks_.empty() && sync_mode == SyncMode::kNoWait)
     return;
 
-  auto event =
-      wait_for_finish ? std::make_unique<base::WaitableEvent>() : nullptr;
+  auto event = sync_mode != SyncMode::kNoWait
+                   ? std::make_unique<base::WaitableEvent>()
+                   : nullptr;
 
   base::TimeTicks post_task_timestamp;
   if (should_measure_next_post_task_) {
@@ -1094,9 +1100,12 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
   }
 
   auto callback = base::BindOnce(
-      [](std::vector<GpuTask> tasks, base::WaitableEvent* event,
-         SkiaOutputSurfaceImplOnGpu* impl_on_gpu, bool make_current,
-         bool need_framebuffer, base::TimeTicks post_task_timestamp) {
+      [](std::vector<GpuTask> tasks, SyncMode sync_mode,
+         base::WaitableEvent* event, SkiaOutputSurfaceImplOnGpu* impl_on_gpu,
+         bool make_current, bool need_framebuffer,
+         base::TimeTicks post_task_timestamp) {
+        if (sync_mode == SyncMode::kWaitForTasksStarted)
+          event->Signal();
         gpu::ContextUrl::SetActiveUrl(GetActiveUrl());
         // impl_on_gpu can be null during destruction.
         if (impl_on_gpu) {
@@ -1112,11 +1121,12 @@ void SkiaOutputSurfaceImpl::FlushGpuTasks(bool wait_for_finish) {
         for (auto& task : tasks) {
           std::move(task).Run();
         }
-        if (event)
+
+        if (sync_mode == SyncMode::kWaitForTasksFinished)
           event->Signal();
       },
-      std::move(gpu_tasks_), event.get(), impl_on_gpu_.get(), make_current_,
-      need_framebuffer_, post_task_timestamp);
+      std::move(gpu_tasks_), sync_mode, event.get(), impl_on_gpu_.get(),
+      make_current_, need_framebuffer_, post_task_timestamp);
 
   gpu::GpuTaskSchedulerHelper::ReportingCallback reporting_callback;
   if (should_measure_next_post_task_) {
@@ -1161,14 +1171,14 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
                                           ->GetDeviceQueue()
                                           ->GetVulkanPhysicalDevice(),
                                       VK_IMAGE_TILING_OPTIMAL, ycbcr_info);
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
     // Textures that were allocated _on linux_ with ycbcr info came from
     // VaapiVideoDecoder, which exports using DRM format modifiers.
     return GrBackendFormat::MakeVk(gr_ycbcr_info,
                                    /*willUseDRMFormatModifiers=*/true);
 #else
     return GrBackendFormat::MakeVk(gr_ycbcr_info);
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 #endif  // BUILDFLAG(ENABLE_VULKAN)
   } else if (dependency_->IsUsingDawn()) {
 #if BUILDFLAG(SKIA_USE_DAWN)
@@ -1176,7 +1186,7 @@ GrBackendFormat SkiaOutputSurfaceImpl::GetGrBackendFormatForTexture(
     return GrBackendFormat::MakeDawn(format);
 #endif
   } else if (dependency_->IsUsingMetal()) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     return GrBackendFormat::MakeMtl(ToMTLPixelFormat(resource_format));
 #endif
   } else {
@@ -1245,8 +1255,24 @@ void SkiaOutputSurfaceImpl::OnObservingBeginFrameSourceChanged(bool observing) {
   if (!capabilities_.use_dynamic_frame_buffer_allocation)
     return;
   idle_drop_frame_buffer_timer_.Stop();
-  if (observing)
+  if (observing) {
+    if (size_.IsEmpty())
+      return;
+
+    int num_new_buffers =
+        num_preallocate_frame_buffer_ - num_allocated_buffers_;
+    num_preallocate_frame_buffer_ = 0;
+    if (num_new_buffers <= 0)
+      return;
+    num_allocated_buffers_ += num_new_buffers;
+    if (frame_buffer_damage_tracker_)
+      frame_buffer_damage_tracker_->FrameBuffersChanged(size_);
+    gpu_task_scheduler_->ScheduleOrRetainGpuTask(
+        base::BindOnce(&SkiaOutputSurfaceImplOnGpu::AllocateFrameBuffers,
+                       base::Unretained(impl_on_gpu_.get()), num_new_buffers),
+        {});
     return;
+  }
 
   if (num_allocated_buffers_ <= 1)
     return;
@@ -1259,6 +1285,8 @@ void SkiaOutputSurfaceImpl::OnObservingBeginFrameSourceChanged(bool observing) {
             int available_buffers_lower_bound =
                 self->AvailableBuffersLowerBound();
             if (available_buffers_lower_bound > 0) {
+              self->num_preallocate_frame_buffer_ =
+                  self->num_allocated_buffers_;
               self->num_allocated_buffers_ -= available_buffers_lower_bound;
               self->gpu_task_scheduler_->ScheduleOrRetainGpuTask(
                   base::BindOnce(
@@ -1291,7 +1319,7 @@ gpu::SyncToken SkiaOutputSurfaceImpl::Flush() {
                      base::Unretained(impl_on_gpu_.get()), sync_fence_release_);
   EnqueueGpuTask(std::move(callback), {}, /*make_current=*/false,
                  /*need_framebuffer=*/false);
-  FlushGpuTasks(/*wait_for_finish=*/false);
+  FlushGpuTasks(SyncMode::kNoWait);
   return sync_token;
 }
 

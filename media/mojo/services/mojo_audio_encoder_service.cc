@@ -28,7 +28,7 @@ void MojoAudioEncoderService::Initialize(
     const AudioEncoderConfig& config,
     InitializeCallback callback) {
   if (client_.is_bound()) {
-    std::move(callback).Run(StatusCode::kEncoderInitializeTwice);
+    std::move(callback).Run(EncoderStatus::Codes::kEncoderInitializeTwice);
     return;
   }
 
@@ -43,7 +43,8 @@ void MojoAudioEncoderService::Initialize(
 void MojoAudioEncoderService::Encode(mojom::AudioBufferPtr buffer,
                                      EncodeCallback callback) {
   if (!client_.is_bound() || !client_.is_connected()) {
-    std::move(callback).Run(StatusCode::kEncoderInitializeNeverCompleted);
+    std::move(callback).Run(
+        EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
     return;
   }
 
@@ -57,7 +58,8 @@ void MojoAudioEncoderService::Encode(mojom::AudioBufferPtr buffer,
 
 void MojoAudioEncoderService::Flush(FlushCallback callback) {
   if (!client_.is_bound() || !client_.is_connected()) {
-    std::move(callback).Run(StatusCode::kEncoderInitializeNeverCompleted);
+    std::move(callback).Run(
+        EncoderStatus::Codes::kEncoderInitializeNeverCompleted);
     return;
   }
 
@@ -65,7 +67,8 @@ void MojoAudioEncoderService::Flush(FlushCallback callback) {
                                  std::move(callback)));
 }
 
-void MojoAudioEncoderService::OnDone(MojoDoneCallback callback, Status error) {
+void MojoAudioEncoderService::OnDone(MojoDoneCallback callback,
+                                     EncoderStatus error) {
   std::move(callback).Run(error);
 }
 

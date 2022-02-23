@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -20,7 +21,7 @@
 #include "ui/views/widget/widget_deletion_observer.h"
 #include "ui/views/window/dialog_delegate.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -46,7 +47,7 @@ class DeleteOnKeyEventView : public View {
 
  private:
   // Set to true in OnKeyPressed().
-  bool* set_on_key_;
+  raw_ptr<bool> set_on_key_;
 };
 
 // Verifies deleting a View in OnKeyPressed() doesn't crash and that the
@@ -114,7 +115,7 @@ class TestContextMenuController : public ContextMenuController {
 
  private:
   int show_context_menu_calls_ = 0;
-  View* menu_source_view_ = nullptr;
+  raw_ptr<View> menu_source_view_ = nullptr;
   ui::MenuSourceType menu_source_type_ = ui::MENU_SOURCE_NONE;
 };
 
@@ -122,7 +123,7 @@ class TestContextMenuController : public ContextMenuController {
 // and VKEY_APPS) by the pre-target handler installed on RootView.
 TEST_F(RootViewTest, ContextMenuFromKeyEvent) {
   // This behavior is intentionally unsupported on macOS.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   Widget widget;
   Widget::InitParams init_params =
       CreateParams(Widget::InitParams::TYPE_WINDOW_FRAMELESS);
@@ -432,7 +433,7 @@ class DeleteViewOnEvent : public View {
   ui::EventType delete_event_type_;
 
   // Tracks whether the view was destroyed.
-  bool* was_destroyed_;
+  raw_ptr<bool> was_destroyed_;
 };
 
 // View class which remove itself when it gets an event of type
@@ -481,7 +482,7 @@ class NestedEventOnEvent : public View {
   // The event type which causes the view to generate a nested event.
   ui::EventType nested_event_type_;
   // root view of this view; owned by widget.
-  View* root_view_;
+  raw_ptr<View> root_view_;
 };
 
 }  // namespace
@@ -718,7 +719,7 @@ class DeleteWidgetOnMouseExit : public View {
   void OnMouseExited(const ui::MouseEvent& event) override { delete widget_; }
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 };
 
 }  // namespace
@@ -852,7 +853,7 @@ TEST_F(RootViewDesktopNativeWidgetTest, SingleLayoutDuringInit) {
   widget->CloseNow();
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 
 // Tests that AnnounceText sets up the correct text value on the hidden view,
 // and that the resulting hidden view actually stays hidden.
@@ -882,7 +883,7 @@ TEST_F(RootViewTest, AnnounceTextTest) {
             node_data.GetString16Attribute(ax::mojom::StringAttribute::kName));
 }
 
-#endif  // !defined(OS_MAC)
+#endif  // !BUILDFLAG(IS_MAC)
 
 TEST_F(RootViewTest, MouseEventDispatchedToClosestEnabledView) {
   Widget widget;

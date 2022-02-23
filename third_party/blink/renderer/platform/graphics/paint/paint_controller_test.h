@@ -18,10 +18,10 @@ namespace blink {
 
 class GraphicsContext;
 
-class CommitCycleScope : public PaintController::CycleScope {
+class CommitCycleScope : public PaintControllerCycleScope {
  public:
   explicit CommitCycleScope(PaintController& controller)
-      : PaintController::CycleScope(controller, true) {}
+      : PaintControllerCycleScope(controller, true) {}
   ~CommitCycleScope() {
     for (auto* controller : controllers_)
       controller->CommitNewDisplayItems();
@@ -45,7 +45,7 @@ class PaintControllerTestBase : public testing::Test {
     if (DrawingRecorder::UseCachedDrawingIfPossible(context, client, type))
       return;
     DrawingRecorder recorder(context, client, type, bounds);
-    context.DrawRect(IntRect(bounds), AutoDarkMode::Disabled());
+    context.DrawRect(bounds, AutoDarkMode::Disabled());
   }
 
  protected:

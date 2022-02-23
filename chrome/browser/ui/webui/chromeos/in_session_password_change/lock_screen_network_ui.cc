@@ -16,6 +16,7 @@
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_network_handler.h"
 #include "chrome/browser/ui/webui/chromeos/internet_config_dialog.h"
 #include "chrome/browser/ui/webui/chromeos/internet_detail_dialog.h"
 #include "chrome/common/url_constants.h"
@@ -35,83 +36,28 @@
 
 namespace chromeos {
 
-namespace {
-
-constexpr char kAddNetwork[] = "addNetwork";
-constexpr char kShowNetworkDetails[] = "showNetworkDetails";
-constexpr char kShowNetworkConfig[] = "showNetworkConfig";
-
-class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
- public:
-  NetworkConfigMessageHandler() {}
-  NetworkConfigMessageHandler(NetworkConfigMessageHandler const&) = delete;
-  NetworkConfigMessageHandler& operator=(const NetworkConfigMessageHandler&) =
-      delete;
-  ~NetworkConfigMessageHandler() override {}
-
-  // WebUIMessageHandler implementation.
-  void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
-        kAddNetwork,
-        base::BindRepeating(&NetworkConfigMessageHandler::AddNetwork,
-                            base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
-        kShowNetworkDetails,
-        base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
-                            base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
-        kShowNetworkConfig,
-        base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkConfig,
-                            base::Unretained(this)));
-  }
-
- private:
-  void ShowNetworkDetails(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid = arg_list->GetList()[0].GetString();
-
-    InternetDetailDialog::ShowDialog(guid);
-  }
-
-  void ShowNetworkConfig(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid = arg_list->GetList()[0].GetString();
-
-    InternetConfigDialog::ShowDialogForNetworkId(guid);
-  }
-
-  void AddNetwork(const base::ListValue* args) {
-    CHECK_EQ(1u, args->GetList().size());
-    std::string onc_type = args->GetList()[0].GetString();
-
-    InternetConfigDialog::ShowDialogForNetworkType(onc_type);
-  }
-
-  base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
-};
-
-}  // namespace
-
 // static
 void LockScreenNetworkUI::GetLocalizedStrings(
     base::DictionaryValue* localized_strings) {
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "titleText", l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_NETWORK_TITLE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "lockScreenNetworkTitle",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_NETWORK_TITLE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "lockScreenNetworkSubtitle",
       l10n_util::GetStringFUTF16(IDS_LOCK_SCREEN_NETWORK_SUBTITLE,
                                  ui::GetChromeOSDeviceName()));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "lockScreenCancelButton",
       l10n_util::GetStringUTF16(IDS_LOCK_SCREEN_CANCEL_BUTTON));
 }
 
 LockScreenNetworkUI::LockScreenNetworkUI(content::WebUI* web_ui)
     : ui::MojoWebDialogUI(web_ui) {
-  web_ui->AddMessageHandler(std::make_unique<NetworkConfigMessageHandler>());
+  auto main_handler = std::make_unique<NetworkConfigMessageHandler>();
+  main_handler_ = main_handler.get();
+  web_ui->AddMessageHandler(std::move(main_handler));
 
   base::DictionaryValue localized_strings;
   GetLocalizedStrings(&localized_strings);

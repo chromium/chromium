@@ -30,7 +30,7 @@ EPKPChallengeKey::~EPKPChallengeKey() = default;
 bool EPKPChallengeKey::IsExtensionAllowed(
     Profile* profile,
     scoped_refptr<const Extension> extension) {
-  if (!chromeos::ProfileHelper::Get()->GetUserByProfile(profile)) {
+  if (!ash::ProfileHelper::Get()->GetUserByProfile(profile)) {
     // Only allow remote attestation for apps that were force-installed on the
     // login/signin screen.
     // TODO(drcrash): Use a separate device-wide policy for the API.

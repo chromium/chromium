@@ -15,7 +15,7 @@
 namespace gpu {
 namespace {
 
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
 // On Android, semaphores are created with handle type
 // VK_EXTERNAL_SEMAPHORE_HANDLE_TYPE_SYNC_FD_BIT. With this handle type,
 // the semaphore will not be reset to un-signalled state after waiting,

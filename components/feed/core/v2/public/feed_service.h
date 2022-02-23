@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/feed/core/v2/public/feed_api.h"
@@ -16,7 +17,7 @@
 #include "components/leveldb_proto/public/proto_database.h"
 #include "components/web_resource/eula_accepted_notifier.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -75,6 +76,9 @@ class FeedService : public KeyedService {
     // Registers a synthetic field trial "FollowingFeedFollowCount".
     virtual void RegisterFollowingFeedFollowCountFieldTrial(
         size_t follow_count) = 0;
+    // Registers a synthetic field trial "FeedUserSettings".
+    virtual void RegisterFeedUserSettingsFieldTrial(
+        base::StringPiece group) = 0;
   };
 
   // Construct a FeedService given an already constructed FeedStream.
@@ -126,7 +130,7 @@ class FeedService : public KeyedService {
   class IdentityManagerObserverImpl;
 
   FeedService();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
@@ -143,13 +147,13 @@ class FeedService : public KeyedService {
   std::unique_ptr<RefreshTaskScheduler> refresh_task_scheduler_;
   std::unique_ptr<HistoryObserverImpl> history_observer_;
   std::unique_ptr<IdentityManagerObserverImpl> identity_manager_observer_;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool foregrounded_ = true;
   std::unique_ptr<base::android::ApplicationStatusListener>
       application_status_listener_;
 #endif
   std::unique_ptr<FeedStream> stream_;
-  FeedApi* api_;  // Points to `stream_`, overridden for testing.
+  raw_ptr<FeedApi> api_;  // Points to `stream_`, overridden for testing.
 };
 
 }  // namespace feed

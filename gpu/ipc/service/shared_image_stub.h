@@ -5,6 +5,7 @@
 #ifndef GPU_IPC_SERVICE_SHARED_IMAGE_STUB_H_
 #define GPU_IPC_SERVICE_SHARED_IMAGE_STUB_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "build/build_config.h"
@@ -67,7 +68,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
                          SkAlphaType alpha_type,
                          uint32_t usage);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool CreateSharedImageWithAHB(const Mailbox& out_mailbox,
                                 const Mailbox& in_mailbox,
                                 uint32_t usage);
@@ -76,14 +77,14 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   bool UpdateSharedImage(const Mailbox& mailbox,
                          gfx::GpuFenceHandle in_fence_handle);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   void RegisterSysmemBufferCollection(gfx::SysmemBufferCollectionId id,
                                       zx::channel token,
                                       gfx::BufferFormat format,
                                       gfx::BufferUsage usage,
                                       bool register_with_image_pipe);
   void ReleaseSysmemBufferCollection(gfx::SysmemBufferCollectionId id);
-#endif  // OS_FUCHSIA
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
  private:
   SharedImageStub(GpuChannel* channel, int32_t route_id);
@@ -95,7 +96,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   void OnUpdateSharedImage(const Mailbox& mailbox,
                            uint32_t release_id,
                            gfx::GpuFenceHandle in_fence_handle);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnCreateSharedImageWithAHB(const Mailbox& out_mailbox,
                                   const Mailbox& in_mailbox,
                                   uint32_t usage,
@@ -103,13 +104,13 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
 #endif
   void OnDestroySharedImage(const Mailbox& mailbox);
   void OnRegisterSharedImageUploadBuffer(base::ReadOnlySharedMemoryRegion shm);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void OnCreateSharedImageVideoPlanes(
       mojom::CreateSharedImageVideoPlanesParamsPtr params);
   void OnCopyToGpuMemoryBuffer(const Mailbox& mailbox, uint32_t release_id);
   void OnCreateSwapChain(mojom::CreateSwapChainParamsPtr params);
   void OnPresentSwapChain(const Mailbox& mailbox, uint32_t release_id);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
   bool MakeContextCurrent(bool needs_gl = false);
   ContextResult MakeContextCurrentAndCreateFactory();
@@ -118,7 +119,7 @@ class GPU_IPC_SERVICE_EXPORT SharedImageStub
   // Wait on the sync token if any and destroy the shared image.
   void DestroySharedImage(const Mailbox& mailbox, const SyncToken& sync_token);
 
-  GpuChannel* channel_;
+  raw_ptr<GpuChannel> channel_;
 
   // While this is not a CommandBuffer, this provides a unique identifier for
   // a SharedImageStub, comprised of identifiers which it was already using.

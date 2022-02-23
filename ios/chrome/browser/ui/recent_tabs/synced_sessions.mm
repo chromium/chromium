@@ -66,6 +66,12 @@ size_t DistantTab::hashOfUserVisibleProperties() {
   return std::hash<std::string>()(ss.str());
 }
 
+DistantTabsSet::DistantTabsSet() = default;
+
+DistantTabsSet::~DistantTabsSet() = default;
+
+DistantTabsSet::DistantTabsSet(const DistantTabsSet&) = default;
+
 DistantSession::DistantSession() = default;
 
 DistantSession::DistantSession(sync_sessions::SessionSyncService* sync_service,
@@ -149,7 +155,15 @@ size_t SyncedSessions::GetSessionCount() const {
 }
 
 // Deletes the session at index |index|.
-void SyncedSessions::EraseSession(size_t index) {
+void SyncedSessions::EraseSessionWithTag(const std::string& tag) {
+  size_t index = GetSessionCount();
+  for (size_t i = 0; i < GetSessionCount(); i++) {
+    if (GetSession(i)->tag == tag) {
+      index = i;
+      break;
+    }
+  }
+
   DCHECK_LE(index, GetSessionCount());
   sessions_.erase(sessions_.begin() + index);
 }

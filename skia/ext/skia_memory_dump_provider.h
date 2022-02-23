@@ -5,7 +5,6 @@
 #ifndef SKIA_EXT_SKIA_MEMORY_DUMP_PROVIDER_H_
 #define SKIA_EXT_SKIA_MEMORY_DUMP_PROVIDER_H_
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/skia/include/core/SkTypes.h"

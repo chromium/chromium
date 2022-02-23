@@ -157,6 +157,8 @@ shared_library("mojo_java_unittests") {
 }
 
 instrumentation_test_apk("mojo_test_apk") {
+  apk_name = "MojoTest"
+  android_manifest = "javatests/AndroidManifest.xml"
   deps = [
     ":mojo_javatests",
     ":system_impl_java",
@@ -167,6 +169,4 @@ instrumentation_test_apk("mojo_test_apk") {
     "//third_party/androidx:androidx_test_runner_java",
   ]
   shared_libraries = [ ":mojo_java_unittests" ]
-  apk_name = "MojoTest"
-  android_manifest = "javatests/AndroidManifest.xml"
 }

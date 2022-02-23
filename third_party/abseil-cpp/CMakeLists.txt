@@ -46,10 +46,6 @@ if (POLICY CMP0091)
   cmake_policy(SET CMP0091 NEW)
 endif (POLICY CMP0091)
 
-# Set BUILD_TESTING to OFF by default.
-# This must come before the project() and include(CTest) lines.
-OPTION(BUILD_TESTING "Build tests" OFF)
-
 project(absl LANGUAGES CXX)
 include(CTest)
 
@@ -111,6 +107,9 @@ find_package(Threads REQUIRED)
 
 include(CMakeDependentOption)
 
+option(ABSL_BUILD_TESTING
+  "If ON, Abseil will build all of Abseil's own tests." OFF)
+
 option(ABSL_USE_EXTERNAL_GOOGLETEST
   "If ON, Abseil will assume that the targets for GoogleTest are already provided by the including project. This makes sense when Abseil is used with add_subproject." OFF)
 
@@ -130,13 +129,19 @@ set(ABSL_LOCAL_GOOGLETEST_DIR "/usr/src/googletest" CACHE PATH
   "If ABSL_USE_GOOGLETEST_HEAD is OFF and ABSL_GOOGLETEST_URL is not set, specifies the directory of a local GoogleTest checkout."
   )
 
-if(BUILD_TESTING)
+if(BUILD_TESTING AND ABSL_BUILD_TESTING)
   ## check targets
   if (ABSL_USE_EXTERNAL_GOOGLETEST)
     if (ABSL_FIND_GOOGLETEST)
       find_package(GTest REQUIRED)
-    else()
-      if (NOT TARGET gtest AND NOT TARGET GTest::gtest)
+    elseif(NOT TARGET GTest::gtest)
+      if(TARGET gtest)
+        # When Google Test is included directly rather than through find_package, the aliases are missing.
+        add_library(GTest::gtest ALIAS gtest)
+        add_library(GTest::gtest_main ALIAS gtest_main)
+        add_library(GTest::gmock ALIAS gmock)
+        add_library(GTest::gmock_main ALIAS gmock_main)
+      else()
         message(FATAL_ERROR "ABSL_USE_EXTERNAL_GOOGLETEST is ON and ABSL_FIND_GOOGLETEST is OFF, which means that the top-level project must build the Google Test project. However, the target gtest was not found.")
       endif()
     endif()
@@ -146,7 +151,7 @@ if(BUILD_TESTING)
       message(FATAL_ERROR "Do not set both ABSL_USE_GOOGLETEST_HEAD and ABSL_GOOGLETEST_DOWNLOAD_URL")
     endif()
     if(ABSL_USE_GOOGLETEST_HEAD)
-      set(absl_gtest_download_url "https://github.com/google/googletest/archive/master.zip")
+      set(absl_gtest_download_url "https://github.com/google/googletest/archive/main.zip")
     elseif(ABSL_GOOGLETEST_DOWNLOAD_URL)
       set(absl_gtest_download_url ${ABSL_GOOGLETEST_DOWNLOAD_URL})
     endif()
@@ -156,14 +161,6 @@ if(BUILD_TESTING)
       set(absl_gtest_src_dir ${ABSL_LOCAL_GOOGLETEST_DIR})
     endif()
     include(CMake/Googletest/DownloadGTest.cmake)
-  endif()
-
-  if (NOT ABSL_FIND_GOOGLETEST)
-    # When Google Test is included directly rather than through find_package, the aliases are missing.
-    add_library(GTest::gtest ALIAS gtest)
-    add_library(GTest::gtest_main ALIAS gtest_main)
-    add_library(GTest::gmock ALIAS gmock)
-    add_library(GTest::gmock_main ALIAS gmock_main)
   endif()
 
   check_target(GTest::gtest)

@@ -48,7 +48,7 @@ class FakePictureLayerImplForRenderSurfaceTest : public FakePictureLayerImpl {
   }
 
   std::unique_ptr<LayerImpl> CreateLayerImpl(
-      LayerTreeImpl* tree_impl) override {
+      LayerTreeImpl* tree_impl) const override {
     return base::WrapUnique(
         new FakePictureLayerImplForRenderSurfaceTest(tree_impl, id()));
   }
@@ -170,12 +170,10 @@ TEST(RenderSurfaceTest, SanityCheckSurfaceCreatesCorrectSharedQuadState) {
   viz::SharedQuadState* shared_quad_state =
       render_pass->shared_quad_state_list.front();
 
-  EXPECT_EQ(
-      30.0,
-      shared_quad_state->quad_to_target_transform.matrix().getDouble(0, 3));
-  EXPECT_EQ(
-      40.0,
-      shared_quad_state->quad_to_target_transform.matrix().getDouble(1, 3));
+  EXPECT_EQ(30.0,
+            shared_quad_state->quad_to_target_transform.matrix().rc(0, 3));
+  EXPECT_EQ(40.0,
+            shared_quad_state->quad_to_target_transform.matrix().rc(1, 3));
   EXPECT_EQ(content_rect,
             gfx::Rect(shared_quad_state->visible_quad_layer_rect));
   EXPECT_EQ(1.f, shared_quad_state->opacity);

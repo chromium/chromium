@@ -3,14 +3,10 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import sys
+# pylint: disable=protected-access
+
 import unittest
-# This script is not Python 2-compatible, but some presubmit scripts end up
-# trying to parse this to find tests.
-# TODO(crbug.com/1198237): Remove this once all the GPU tests, and by
-# extension the presubmit scripts, are Python 3-compatible.
-if sys.version_info[0] == 3:
-  import unittest.mock as mock
+import unittest.mock as mock
 
 from flake_suppressor import data_types
 from flake_suppressor import results
@@ -49,7 +45,9 @@ class AggregateResultsUnittest(BaseResultsUnittest):
                      'conformance/textures/misc/video-rotation.html'),
             'id':
             'build-1111',
-            'typ_tags': ['win', 'nvidia'],
+            # The win-laptop tag is ignored, and thus should be removed in the
+            # output.
+            'typ_tags': ['win', 'nvidia', 'win-laptop'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'
@@ -182,7 +180,9 @@ class ConvertJsonResultsToResultObjectsUnittest(BaseResultsUnittest):
                      'conformance/textures/misc/video-rotation.html'),
             'id':
             'build-1111',
-            'typ_tags': ['win', 'nvidia'],
+            # The win-laptop tag is ignored, and thus should be removed in the
+            # output.
+            'typ_tags': ['win', 'nvidia', 'win-laptop'],
         },
         {
             'name': ('gpu_tests.webgl_conformance_integration_test.'

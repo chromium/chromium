@@ -31,6 +31,7 @@ import org.chromium.base.Log;
 import org.chromium.chrome.browser.flags.BooleanCachedFieldTrialParameter;
 import org.chromium.chrome.browser.flags.CachedFeatureFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.components.browser_ui.widget.displaystyle.UiConfig;
 import org.chromium.components.browser_ui.widget.displaystyle.ViewResizer;
 
@@ -160,7 +161,10 @@ public class FeedPlaceholderLayout extends LinearLayout {
     }
 
     private void setPlaceholders() {
-        setPadding();
+        // If showing this layout for Instant Start, add some padding to imitate the eventual width
+        // of the feed.
+        if (mInstantStart) setPadding();
+
         LinearLayout cardsParentView = findViewById(R.id.placeholders_layout);
         cardsParentView.removeAllViews();
 
@@ -335,7 +339,8 @@ public class FeedPlaceholderLayout extends LinearLayout {
             // affected by layer inset left and right bound and the container padding.
             placeholders[i].setSize(width, height);
             placeholders[i].setCornerRadius(radius);
-            placeholders[i].setColor(mResources.getColor(R.color.feed_placeholder_color));
+            placeholders[i].setColor(
+                    ChromeColors.getSurfaceColor(mContext, R.dimen.default_elevation_1));
         }
         return placeholders;
     }

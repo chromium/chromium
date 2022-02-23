@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/values.h"
 #include "components/prefs/pref_registry.h"
@@ -45,11 +46,12 @@ class PrefDelegateImpl
   std::unique_ptr<base::DictionaryValue> GetDictionaryValue() override {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
     UMA_HISTOGRAM_EXACT_LINEAR("NQE.Prefs.ReadCount", 1, 2);
-    return pref_service_->GetDictionary(path_)->CreateDeepCopy();
+    return base::DictionaryValue::From(base::Value::ToUniquePtrValue(
+        pref_service_->GetDictionary(path_)->Clone()));
   }
 
  private:
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // |path_| is the location of the network quality estimator prefs.
   const std::string path_;

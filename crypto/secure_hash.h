@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {

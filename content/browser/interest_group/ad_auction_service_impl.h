@@ -8,10 +8,10 @@
 #include <memory>
 #include <set>
 
-#include "base/callback_forward.h"
 #include "base/containers/unique_ptr_adapters.h"
-#include "content/browser/interest_group/auction_runner.h"
+#include "content/browser/interest_group/auction_worklet_manager.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/document_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -19,29 +19,27 @@
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/ad_auction_service.mojom.h"
 #include "third_party/blink/public/mojom/interest_group/interest_group_types.mojom-forward.h"
+#include "third_party/blink/public/mojom/parakeet/ad_request.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace content {
 
 class AuctionRunner;
-class InterestGroupManager;
+class InterestGroupManagerImpl;
 class RenderFrameHost;
 class RenderFrameHostImpl;
 
 // Implements the AdAuctionService service called by Blink code.
 class CONTENT_EXPORT AdAuctionServiceImpl final
     : public DocumentService<blink::mojom::AdAuctionService>,
-      public AuctionRunner::Delegate {
+      public AuctionWorkletManager::Delegate {
  public:
   // Factory method for creating an instance of this interface that is
   // bound to the lifetime of the frame or receiver (whichever is shorter).
   static void CreateMojoService(
       RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::AdAuctionService> receiver);
-
-  typedef base::RepeatingCallback<void(const std::vector<std::string>& errors)>
-      AuctionCompleteCallback;
 
   // blink::mojom::AdAuctionService.
   void JoinInterestGroup(const blink::InterestGroup& group) override;
@@ -50,19 +48,20 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   void UpdateAdInterestGroups() override;
   void RunAdAuction(blink::mojom::AuctionAdConfigPtr config,
                     RunAdAuctionCallback callback) override;
+  void DeprecatedGetURLFromURN(
+      const GURL& urn_url,
+      DeprecatedGetURLFromURNCallback callback) override;
+  void CreateAdRequest(blink::mojom::AdRequestConfigPtr config,
+                       CreateAdRequestCallback callback) override;
+  void FinalizeAd(const std::string& ads_guid,
+                  blink::mojom::AuctionAdConfigPtr config,
+                  FinalizeAdCallback callback) override;
 
   // AuctionRunner::Delegate implementation:
   network::mojom::URLLoaderFactory* GetFrameURLLoaderFactory() override;
   network::mojom::URLLoaderFactory* GetTrustedURLLoaderFactory() override;
   RenderFrameHostImpl* GetFrame() override;
   network::mojom::ClientSecurityStatePtr GetClientSecurityState() override;
-
-  // Sets a global callback invoked whenever an auction completes, for
-  // investigating flakiness on the bots.
-  //
-  // TODO(https://crbug.com/1259733):  Remove this once the issue is fixed.
-  static void SetOnAuctionCompleteCallbackForTesting(
-      AuctionCompleteCallback auction_complete_callback);
 
   using DocumentService::origin;
   using DocumentService::render_frame_host;
@@ -77,30 +76,41 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
   // `this` can only be destroyed by DocumentService.
   ~AdAuctionServiceImpl() override;
 
+  // Returns true if `origin` is allowed to perform the specified
+  // `interest_group_api_operation` in this frame. Must be called on worklet /
+  // interest group origins before using them in any interest group API.
+  bool IsInterestGroupAPIAllowed(ContentBrowserClient::InterestGroupApiOperation
+                                     interest_group_api_operation,
+                                 const url::Origin& origin) const;
+
   // Deletes `auction`.
   void OnAuctionComplete(RunAdAuctionCallback callback,
                          AuctionRunner* auction,
                          absl::optional<GURL> render_url,
                          absl::optional<std::vector<GURL>> ad_component_urls,
-                         absl::optional<GURL> bidder_report_url,
-                         absl::optional<GURL> seller_report_url,
+                         std::vector<GURL> report_urls,
+                         std::vector<GURL> debug_loss_report_urls,
+                         std::vector<GURL> debug_win_report_urls,
                          std::vector<std::string> errors);
 
-  InterestGroupManager& GetInterestGroupManager() const;
+  InterestGroupManagerImpl& GetInterestGroupManager() const;
 
-  // This must be above `auction_worklet_service_`, since auctions may own
-  // callbacks over the AuctionWorkletService pipe, and mojo pipes must be
-  // destroyed before any callbacks that are bound to them.
-  std::set<std::unique_ptr<AuctionRunner>, base::UniquePtrComparator> auctions_;
-
-  mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
-  mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
+  url::Origin GetTopWindowOrigin() const;
 
   // To avoid race conditions associated with top frame navigations (mentioned
   // in document_service.h), we need to save the values of the main frame
   // URL and origin in the constructor.
   const url::Origin main_frame_origin_;
   const GURL main_frame_url_;
+
+  mojo::Remote<network::mojom::URLLoaderFactory> frame_url_loader_factory_;
+  mojo::Remote<network::mojom::URLLoaderFactory> trusted_url_loader_factory_;
+
+  // This must be before `auctions_`, since auctions may own references to
+  // worklets it manages.
+  AuctionWorkletManager auction_worklet_manager_;
+
+  std::set<std::unique_ptr<AuctionRunner>, base::UniquePtrComparator> auctions_;
 };
 
 }  // namespace content

@@ -10,10 +10,10 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "media/capture/mojom/video_capture_types.mojom-blink.h"
 #include "media/capture/video_capture_types.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -21,6 +21,7 @@
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/web/modules/mediastream/media_stream_video_source.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/video_capture/video_capturer_source.h"
 
 namespace blink {
 
@@ -87,14 +88,17 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   absl::optional<media::VideoCaptureParams> GetCurrentCaptureParams()
       const override;
   void ChangeSourceImpl(const MediaStreamDevice& new_device) override;
+#if !BUILDFLAG(IS_ANDROID)
   void Crop(const base::Token& crop_id,
+            uint32_t crop_version,
             base::OnceCallback<void(media::mojom::CropRequestResult)> callback)
       override;
+#endif
   base::WeakPtr<MediaStreamVideoSource> GetWeakPtr() const override;
 
   // Method to bind as RunningCallback in VideoCapturerSource::StartCapture().
   void OnRunStateChanged(const media::VideoCaptureParams& new_capture_params,
-                         bool is_running);
+                         RunState run_state);
 
   mojom::blink::MediaStreamDispatcherHost* GetMediaStreamDispatcherHost();
 
@@ -105,14 +109,14 @@ class MODULES_EXPORT MediaStreamVideoCapturerSource
   std::unique_ptr<VideoCapturerSource> source_;
 
   enum State {
-    STARTING,
-    STARTED,
-    STOPPING_FOR_RESTART,
-    STOPPING_FOR_CHANGE_SOURCE,
-    RESTARTING,
-    STOPPED
+    kStarting,
+    kStarted,
+    kStoppingForRestart,
+    kStoppingForChangeSource,
+    kRestarting,
+    kStopped
   };
-  State state_ = STOPPED;
+  State state_ = kStopped;
 
   media::VideoCaptureParams capture_params_;
   VideoCaptureDeliverFrameCB frame_callback_;

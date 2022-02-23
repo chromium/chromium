@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/native_library.h"
 #include "build/build_config.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/extension_set.h"
 #include "ui/gl/buildflags.h"
 #include "ui/gl/gl_export.h"
@@ -68,8 +69,17 @@ struct GL_EXPORT GLImplementationParts {
     return (gl == other.gl && angle == other.angle);
   }
 
+  constexpr bool operator==(const ANGLEImplementation angle_impl) const {
+    return operator==(GLImplementationParts(angle_impl));
+  }
+
+  constexpr bool operator==(const GLImplementation gl_impl) const {
+    return operator==(GLImplementationParts(gl_impl));
+  }
+
   bool IsValid() const;
   bool IsAllowed(const std::vector<GLImplementationParts>& allowed_impls) const;
+  std::string ToString() const;
 };
 
 struct GL_EXPORT GLWindowSystemBindingInfo {
@@ -82,7 +92,7 @@ struct GL_EXPORT GLWindowSystemBindingInfo {
 };
 
 using GLFunctionPointerType = void (*)();
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 typedef GLFunctionPointerType(WINAPI* GLGetProcAddressProc)(const char* name);
 #else
 typedef GLFunctionPointerType (*GLGetProcAddressProc)(const char* name);
@@ -136,14 +146,24 @@ GL_EXPORT ANGLEImplementation GetANGLEImplementation();
 GL_EXPORT GLImplementationParts GetLegacySoftwareGLImplementation();
 GL_EXPORT GLImplementationParts GetSoftwareGLImplementation();
 
+// Returns the software GL implementation used by default on the current
+// platform
+GL_EXPORT GLImplementationParts GetSoftwareGLImplementationForPlatform();
+
 // Set the software GL implementation on the provided command line
-GL_EXPORT void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
-                                                bool legacy_software_gl);
+GL_EXPORT void SetSoftwareGLCommandLineSwitches(
+    base::CommandLine* command_line);
 
 // Set the software WebGL implementation on the provided command line
 GL_EXPORT void SetSoftwareWebGLCommandLineSwitches(
-    base::CommandLine* command_line,
-    bool legacy_software_gl);
+    base::CommandLine* command_line);
+
+// Return requested GL implementation by checking commandline. If there isn't
+// gl related argument, nullopt is returned.
+GL_EXPORT absl::optional<GLImplementationParts>
+GetRequestedGLImplementationFromCommandLine(
+    const base::CommandLine* command_line,
+    bool* fallback_to_software_gl);
 
 // Whether the implementation is one of the software GL implementations
 GL_EXPORT bool IsSoftwareGLImplementation(GLImplementationParts implementation);

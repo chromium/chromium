@@ -47,7 +47,8 @@ ts_library("build_ts") {
   in_files = [
     "app.ts",
     "browser_switch_proxy.ts",
-    "internals/browser_switch_internals.ts",
+    "internals/browser_switch_internals_proxy.ts",
+    "internals/app.ts",
   ]
   definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]
   deps = [
@@ -67,10 +68,13 @@ copy("copy_browser_proxy") {
 }
 
 copy("copy_internals") {
-  sources = [ "internals/browser_switch_internals.ts" ]
+  sources = [ "internals/browser_switch_internals_proxy.ts" ]
   outputs = [ "$target_gen_dir/internals/{{source_file_part}}" ]
 }
 
 html_to_js("web_components") {
-  js_files = [ "app.ts" ]
+  js_files = [
+    "app.ts",
+    "internals/app.ts",
+  ]
 }

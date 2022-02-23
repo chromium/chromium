@@ -11,6 +11,7 @@
 #include "build/chromeos_buildflags.h"
 #include "content/browser/renderer_host/media/ref_counted_video_source_provider.h"
 #include "content/browser/renderer_host/media/video_capture_provider.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/service_process_host.h"
 #include "services/video_capture/public/mojom/video_capture_service.mojom.h"
 
@@ -58,8 +59,8 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   // Discarding the returned RefCountedVideoSourceProvider indicates that the
   // caller no longer requires the connection to the service and allows it to
   // disconnect.
-  scoped_refptr<RefCountedVideoSourceProvider> LazyConnectToService()
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] scoped_refptr<RefCountedVideoSourceProvider>
+  LazyConnectToService();
 
   void GetDeviceInfosAsyncForRetry(GetDeviceInfosCallback result_callback,
                                    int retry_count);
@@ -86,7 +87,7 @@ class CONTENT_EXPORT ServiceVideoCaptureProvider
   base::TimeTicks time_of_last_connect_;
   base::TimeTicks time_of_last_uninitialize_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   GetDeviceInfosCallback stashed_result_callback_for_retry_;
   int stashed_retry_count_;
 #endif

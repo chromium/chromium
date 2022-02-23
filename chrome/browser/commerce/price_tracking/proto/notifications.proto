@@ -58,4 +58,5 @@ message PriceDropNotificationPayload {
   optional string destination_url = 3;
   optional commerce.ProductPrice current_price = 4;
   optional commerce.ProductPrice previous_price = 5;
+  optional uint64 product_cluster_id = 6;
 }

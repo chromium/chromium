@@ -48,10 +48,12 @@ ScriptPromise FileSystemDirectoryIterator::next(ScriptState* script_state) {
         break;
       case Mode::kKeyValue:
         HeapVector<ScriptValue, 2> keyvalue;
-        keyvalue.push_back(ScriptValue(script_state->GetIsolate(),
-                                       ToV8(handle->name(), script_state)));
-        keyvalue.push_back(ScriptValue(script_state->GetIsolate(),
-                                       ToV8(handle, script_state)));
+        keyvalue.push_back(ScriptValue(
+            script_state->GetIsolate(),
+            ToV8Traits<IDLString>::ToV8(script_state, handle->name())));
+        keyvalue.push_back(ScriptValue(
+            script_state->GetIsolate(),
+            ToV8Traits<FileSystemHandle>::ToV8(script_state, handle)));
         result = V8IteratorResult(script_state, keyvalue);
         break;
     }

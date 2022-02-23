@@ -78,7 +78,7 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
         path = host.port_factory.get().web_tests_dir() + '/TestExpectations'
         host.filesystem.write_text_file(
             path, self._raw_baseline_expectations)
-        path = host.port_factory.get().web_tests_dir() + '/new2-expected.txt'
+        path = host.port_factory.get().web_tests_dir() + '/external/wpt/new2-expected.txt'
         host.filesystem.write_text_file(
             path, self._raw_expected_text)
 
@@ -101,36 +101,64 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
             '\n'
             '# This comment will not be deleted\n')
         host = self._setup_host(raw_android_expectations)
-        host.results_fetcher.set_results(
-            Build('MOCK Android Weblayer - Pie', 123),
-            WebTestResults({
-                'tests': {
-                    # A test result covered by default expectation
-                    'new1.html': {
-                        'expected': 'PASS',
-                        'actual': 'FAIL',
-                        'is_unexpected': True,
-                    },
-                    # A test result covered by baseline
-                    'new2.html': {
-                        'expected': 'PASS',
-                        'actual': 'FAIL',
-                        'is_unexpected': True,
-                    },
-                    # A new test case
-                    'new3.html': {
-                        'expected': 'PASS',
-                        'actual': 'CRASH CRASH FAIL',
-                        'is_unexpected': True,
-                    },
+        # Add results for Weblayer
+        # new1.html is covered by default expectations
+        # new2.html is covered by baseline
+        # new3.html is a new test. We should create WebLayer expectation for it.
+        result = """
+            [{
+                "testId": "ninja://weblayer/shell/android:weblayer_shell_wpt/external/wpt/new1.html",
+                "variant": {
+                    "def": {
+                        "builder": "android-weblayer-pie-x86-wpt-fyi-rel",
+                        "os": "Ubuntu-16.04",
+                        "test_suite": "weblayer_shell_wpt"
+                    }
                 },
-            }, step_name=WEBLAYER_WPT_STEP + ' (with patch)'),
-            step_name=WEBLAYER_WPT_STEP + ' (with patch)')
+                "status": "FAIL"
+            },
+            {
+                "testId": "ninja://weblayer/shell/android:weblayer_shell_wpt/external/wpt/new2.html",
+                "variant": {
+                    "def": {
+                        "builder": "android-weblayer-pie-x86-wpt-fyi-rel",
+                        "os": "Ubuntu-16.04",
+                        "test_suite": "weblayer_shell_wpt"
+                    }
+                },
+                "status": "FAIL"
+            },
+            {
+                "testId": "ninja://weblayer/shell/android:weblayer_shell_wpt/external/wpt/new3.html",
+                "variant": {
+                    "def": {
+                        "builder": "android-weblayer-pie-x86-wpt-fyi-rel",
+                        "os": "Ubuntu-16.04",
+                        "test_suite": "weblayer_shell_wpt"
+                    }
+                },
+                "status": "CRASH"
+            },
+            {
+                "testId": "ninja://weblayer/shell/android:weblayer_shell_wpt/external/wpt/new3.html",
+                "variant": {
+                    "def": {
+                        "builder": "android-weblayer-pie-x86-wpt-fyi-rel",
+                        "os": "Ubuntu-16.04",
+                        "test_suite": "weblayer_shell_wpt"
+                    }
+                },
+                "status": "FAIL"
+            }]"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Android Weblayer - Pie', 123, '123'),
+            json.loads(result) * 3)
+
         updater = AndroidWPTExpectationsUpdater(
             host, ['-vvv', '--android-product', ANDROID_WEBLAYER,
                    '--include-unexpected-pass'])
         updater.git_cl = MockGitCL(host, {
-            Build('MOCK Android Weblayer - Pie', 123):
+            Build('MOCK Android Weblayer - Pie', 123, '123'):
             TryJobStatus('COMPLETED', 'FAILURE')})
         # Run command
         updater.run()
@@ -169,23 +197,21 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
             '# This comment will not be deleted\n')
         host = self._setup_host(raw_android_expectations)
         # Add results for Weblayer
-        host.results_fetcher.set_results(
-            Build('MOCK Android Weblayer - Pie', 123),
-            WebTestResults({
-                'tests': {
-                    'disabled_weblayer_only.html': {
-                        'expected': 'SKIP',
-                        'actual': 'SKIP',
-                        'is_unexpected': True,
-                    },
-                    'bar.html': {
-                        'expected': 'FAIL',
-                        'actual': 'CRASH',
-                        'is_unexpected': True
-                    },
+        result = """
+            {
+                "testId": "ninja://weblayer/shell/android:weblayer_shell_wpt/external/wpt/bar.html",
+                "variant": {
+                    "def": {
+                        "builder": "android-weblayer-pie-x86-wpt-fyi-rel",
+                        "os": "Ubuntu-16.04",
+                        "test_suite": "weblayer_shell_wpt"
+                    }
                 },
-            }, step_name=WEBLAYER_WPT_STEP + ' (with patch)'),
-            step_name=WEBLAYER_WPT_STEP + ' (with patch)')
+                "status": "CRASH"
+            }"""
+        host.results_fetcher.set_results_to_resultdb(
+            Build('MOCK Android Weblayer - Pie', 123, '123'),
+            [json.loads(result)] * 3)
         updater = AndroidWPTExpectationsUpdater(
             host, ['-vvv',
                    '--clean-up-test-expectations',
@@ -203,7 +229,7 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
             return ''
 
         updater.git_cl = MockGitCL(host, {
-            Build('MOCK Android Weblayer - Pie', 123):
+            Build('MOCK Android Weblayer - Pie', 123, '123'):
             TryJobStatus('COMPLETED', 'FAILURE')})
 
         updater.git.run = _git_command_return_val
@@ -225,14 +251,3 @@ class AndroidWPTExpectationsUpdaterTest(LoggingTestCase):
             '\n'
             '# This comment will not be deleted\n')
         self.assertEqual(content, _new_expectations)
-
-        # Check disabled test file
-        neverfix_content = host.filesystem.read_text_file(ANDROID_DISABLED_TESTS)
-        self.assertEqual(
-            neverfix_content,
-            ('# tags: [ android-weblayer android-webview chrome-android ]\n'
-             '# results: [ Skip ]\n'
-             '\n'
-             '# Add untriaged disabled tests in this block\n'
-             'crbug.com/1050754 [ android-webview ] external/wpt/disabled.html [ Skip ]\n'
-             'crbug.com/1050754 [ android-weblayer ] external/wpt/disabled_weblayer_only.html [ Skip ]\n'))

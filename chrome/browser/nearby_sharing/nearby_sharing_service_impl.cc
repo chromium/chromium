@@ -6,8 +6,10 @@
 
 #include <utility>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/session/session_controller.h"
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
+#include "ash/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
@@ -50,9 +52,7 @@
 #include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/services/sharing/public/cpp/advertisement.h"
 #include "chrome/services/sharing/public/cpp/conversions.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
-#include "chromeos/services/nearby/public/mojom/nearby_share_target_types.mojom.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/storage_partition.h"
@@ -69,7 +69,7 @@ constexpr int
 namespace {
 
 using NearbyProcessShutdownReason =
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason;
 
 constexpr base::TimeDelta kBackgroundAdvertisementRotationDelayMin =
     base::Minutes(12);
@@ -80,6 +80,10 @@ constexpr base::TimeDelta kInvalidateSurfaceStateDelayAfterTransferDone =
     base::Milliseconds(3000);
 constexpr base::TimeDelta kProcessShutdownPendingTimerDelay = base::Seconds(15);
 constexpr base::TimeDelta kProcessNetworkChangeTimerDelay = base::Seconds(1);
+
+// Cooldown period after a successful incoming share before we allow the "Device
+// nearby is sharing" notification to appear again.
+constexpr base::TimeDelta kFastInitiationScannerCooldown = base::Seconds(8);
 
 // The maximum number of certificate downloads that can be performed during a
 // discovery session.
@@ -271,7 +275,7 @@ NearbySharingServiceImpl::NearbySharingServiceImpl(
     NotificationDisplayService* notification_display_service,
     Profile* profile,
     std::unique_ptr<NearbyConnectionsManager> nearby_connections_manager,
-    chromeos::nearby::NearbyProcessManager* process_manager,
+    ash::nearby::NearbyProcessManager* process_manager,
     std::unique_ptr<PowerClient> power_client)
     : prefs_(prefs),
       profile_(profile),
@@ -406,6 +410,7 @@ void NearbySharingServiceImpl::Shutdown() {
 
   net::NetworkChangeNotifier::RemoveNetworkChangeObserver(this);
   on_network_changed_delay_timer_.Stop();
+  fast_initiation_scanner_cooldown_timer_.Stop();
 }
 
 void NearbySharingServiceImpl::AddObserver(
@@ -1321,6 +1326,24 @@ void NearbySharingServiceImpl::AdapterPoweredChanged(
   InvalidateSurfaceState();
 }
 
+void NearbySharingServiceImpl::
+    LowEnergyScanSessionHardwareOffloadingStatusChanged(
+        device::BluetoothAdapter::LowEnergyScanSessionHardwareOffloadingStatus
+            status) {
+  if (!IsBackgroundScanningFeatureEnabled()) {
+    return;
+  }
+
+  NS_LOG(VERBOSE)
+      << __func__
+      << ": Bluetooth low energy scan session hardware offloading status : "
+      << (status == device::BluetoothAdapter::
+                        LowEnergyScanSessionHardwareOffloadingStatus::kSupported
+              ? "enabled"
+              : "disabled");
+  InvalidateSurfaceState();
+}
+
 void NearbySharingServiceImpl::SuspendImminent() {
   NS_LOG(VERBOSE) << __func__ << ": Suspend imminent.";
   InvalidateSurfaceState();
@@ -1682,7 +1705,9 @@ bool NearbySharingServiceImpl::HasAvailableConnectionMediums() {
           net::NetworkChangeNotifier::ConnectionType::CONNECTION_WIFI ||
       connection_type ==
           net::NetworkChangeNotifier::ConnectionType::CONNECTION_ETHERNET;
-  return IsBluetoothPowered() || (kIsWifiLanSupported && hasNetworkConnection);
+  return IsBluetoothPowered() ||
+         (kIsWifiLanAdvertisingSupported && kIsWifiLanDiscoverySupported &&
+          hasNetworkConnection);
 }
 
 void NearbySharingServiceImpl::InvalidateSurfaceState() {
@@ -1887,8 +1912,9 @@ void NearbySharingServiceImpl::InvalidateAdvertisingState() {
     return;
   }
 
-  // Screen is off. Do no work.
-  if (is_screen_locked_) {
+  // Do not advertise on lock screen unless Self Share is enabled.
+  if (is_screen_locked_ &&
+      !base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
     StopAdvertising();
     NS_LOG(VERBOSE) << __func__
                     << ": Stopping advertising because the screen is locked.";
@@ -2115,6 +2141,9 @@ void NearbySharingServiceImpl::StopAdvertisingAndInvalidateSurfaceState() {
 }
 
 void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
+  if (!IsBackgroundScanningFeatureEnabled())
+    return;
+
   bool is_hardware_offloading_supported =
       IsBluetoothPresent() &&
       FastInitiationScanner::Factory::IsHardwareSupportAvailable(
@@ -2130,6 +2159,14 @@ void NearbySharingServiceImpl::InvalidateFastInitiationScanning() {
   // Nothing to do if we're shutting down the profile.
   if (!profile_)
     return;
+
+  if (fast_initiation_scanner_cooldown_timer_.IsRunning()) {
+    NS_LOG(VERBOSE) << __func__
+                    << ": Stopping background scanning due to post-transfer "
+                       "cooldown period";
+    StopFastInitiationScanning();
+    return;
+  }
 
   if (settings_.GetFastInitiationNotificationState() !=
       FastInitiationNotificationState::kEnabled) {
@@ -3709,6 +3746,9 @@ absl::optional<ShareTarget> NearbySharingServiceImpl::CreateShareTarget(
   target.device_name = std::move(*device_name);
   target.is_incoming = is_incoming;
   target.device_id = GetDeviceId(endpoint_id, certificate);
+  if (base::FeatureList::IsEnabled(features::kNearbySharingSelfShare)) {
+    target.for_self_share = certificate && certificate->for_self_share();
+  }
 
   ShareTargetInfo& info = GetOrCreateShareTargetInfo(target, endpoint_id);
 
@@ -3748,18 +3788,28 @@ void NearbySharingServiceImpl::OnPayloadTransferUpdate(
   }
 
   if (metadata.status() == TransferMetadata::Status::kComplete &&
-      share_target.is_incoming && !OnIncomingPayloadsComplete(share_target)) {
-    metadata = TransferMetadataBuilder()
-                   .set_status(TransferMetadata::Status::kIncompletePayloads)
-                   .build();
+      share_target.is_incoming) {
+    if (!OnIncomingPayloadsComplete(share_target)) {
+      metadata = TransferMetadataBuilder()
+                     .set_status(TransferMetadata::Status::kIncompletePayloads)
+                     .build();
 
-    // Reset file paths for file attachments.
-    for (auto& file : share_target.file_attachments)
-      file.set_file_path(absl::nullopt);
+      // Reset file paths for file attachments.
+      for (auto& file : share_target.file_attachments)
+        file.set_file_path(absl::nullopt);
 
-    // Reset body of text attachments.
-    for (auto& text : share_target.text_attachments)
-      text.set_text_body(std::string());
+      // Reset body of text attachments.
+      for (auto& text : share_target.text_attachments)
+        text.set_text_body(std::string());
+    }
+
+    if (IsBackgroundScanningFeatureEnabled()) {
+      fast_initiation_scanner_cooldown_timer_.Start(
+          FROM_HERE, kFastInitiationScannerCooldown,
+          base::BindRepeating(
+              &NearbySharingServiceImpl::InvalidateFastInitiationScanning,
+              base::Unretained(this)));
+    }
   }
 
   // Make sure to call this before calling Disconnect or we risk loosing some

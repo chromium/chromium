@@ -122,7 +122,10 @@ cr.define('cr.ui', function() {
    *                        modified (Chrome OS only).
    * - unset:               The value is controlled by the user alone.
    */
-  cr.defineProperty(ControlledIndicator, 'controlledBy', cr.PropertyKind.ATTR);
+  ControlledIndicator.prototype.controlledBy;
+  Object.defineProperty(
+      ControlledIndicator.prototype, 'controlledBy',
+      cr.getPropertyDescriptor('controlledBy', cr.PropertyKind.BOOL_ATTR));
 
   return {ControlledIndicator: ControlledIndicator};
 });

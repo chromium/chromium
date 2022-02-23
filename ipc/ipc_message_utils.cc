@@ -20,29 +20,30 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "ipc/ipc_channel_handle.h"
+#include "ipc/ipc_message.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_attachment_set.h"
 #include "ipc/ipc_mojo_param_traits.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ipc/mach_port_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <tchar.h>
 #include "ipc/handle_win.h"
 #include "ipc/ipc_platform_file.h"
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include "base/file_descriptor_posix.h"
 #include "ipc/ipc_platform_file_attachment_posix.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/fuchsia_logging.h"
 #include "ipc/handle_attachment_fuchsia.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #include "ipc/ipc_mojo_handle_attachment.h"
 #include "mojo/public/cpp/system/message_pipe.h"
@@ -57,11 +58,11 @@ const int kMaxRecursionDepth = 200;
 
 template<typename CharType>
 void LogBytes(const std::vector<CharType>& data, std::string* out) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows has a GUI for logging, which can handle arbitrary binary data.
   for (size_t i = 0; i < data.size(); ++i)
     out->push_back(data[i]);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // On POSIX, we log to stdout, which we assume can display ASCII.
   static const size_t kMaxBytesToLog = 100;
   for (size_t i = 0; i < std::min(data.size(), kMaxBytesToLog); ++i) {
@@ -123,22 +124,19 @@ void WriteValue(base::Pickle* m, const base::Value* value, int recursion) {
       break;
     }
     case base::Value::Type::DICTIONARY: {
-      const base::DictionaryValue* dict =
-          static_cast<const base::DictionaryValue*>(value);
+      DCHECK(value->is_dict());
+      WriteParam(m, base::checked_cast<int>(value->DictSize()));
 
-      WriteParam(m, base::checked_cast<int>(dict->DictSize()));
-
-      for (base::DictionaryValue::Iterator it(*dict); !it.IsAtEnd();
-           it.Advance()) {
-        WriteParam(m, it.key());
-        WriteValue(m, &it.value(), recursion + 1);
+      for (auto it : value->DictItems()) {
+        WriteParam(m, it.first);
+        WriteValue(m, &it.second, recursion + 1);
       }
       break;
     }
     case base::Value::Type::LIST: {
       const base::ListValue* list = static_cast<const base::ListValue*>(value);
-      WriteParam(m, base::checked_cast<int>(list->GetList().size()));
-      for (const auto& entry : list->GetList()) {
+      WriteParam(m, base::checked_cast<int>(list->GetListDeprecated().size()));
+      for (const auto& entry : list->GetListDeprecated()) {
         WriteValue(m, &entry, recursion + 1);
       }
       break;
@@ -351,8 +349,9 @@ void ParamTraits<unsigned int>::Log(const param_type& p, std::string* l) {
   l->append(base::NumberToString(p));
 }
 
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_FUCHSIA) || (defined(OS_ANDROID) && defined(ARCH_CPU_64_BITS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA) ||                                              \
+    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_64_BITS))
 void ParamTraits<long>::Log(const param_type& p, std::string* l) {
   l->append(base::NumberToString(p));
 }
@@ -403,7 +402,7 @@ void ParamTraits<std::u16string>::Log(const param_type& p, std::string* l) {
   l->append(base::UTF16ToUTF8(p));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ParamTraits<std::wstring>::Read(const base::Pickle* m,
                                      base::PickleIterator* iter,
                                      param_type* r) {
@@ -532,7 +531,7 @@ void ParamTraits<base::DictionaryValue>::Log(const param_type& p,
   l->append(json);
 }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 void ParamTraits<base::FileDescriptor>::Write(base::Pickle* m,
                                               const param_type& p) {
   // This serialization must be kept in sync with
@@ -635,9 +634,9 @@ bool ParamTraits<base::ScopedFD>::Read(const base::Pickle* m,
 void ParamTraits<base::ScopedFD>::Log(const param_type& p, std::string* l) {
   l->append(base::StringPrintf("ScopedFD(%d)", p.get()));
 }
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ParamTraits<base::win::ScopedHandle>::Write(base::Pickle* m,
                                                  const param_type& p) {
   const bool valid = p.IsValid();
@@ -672,9 +671,9 @@ void ParamTraits<base::win::ScopedHandle>::Log(const param_type& p,
                                                std::string* l) {
   l->append(base::StringPrintf("ScopedHandle(%p)", p.Get()));
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 void ParamTraits<zx::vmo>::Write(base::Pickle* m, const param_type& p) {
   // This serialization must be kept in sync with
   // nacl_message_scanner.cc:WriteHandle().
@@ -765,9 +764,9 @@ bool ParamTraits<zx::channel>::Read(const base::Pickle* m,
 void ParamTraits<zx::channel>::Log(const param_type& p, std::string* l) {
   l->append("ZirconChannel");
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void ParamTraits<base::android::ScopedHardwareBufferHandle>::Write(
     base::Pickle* m,
     const param_type& p) {
@@ -838,7 +837,7 @@ void ParamTraits<base::android::ScopedHardwareBufferHandle>::Log(
   l->append(base::StringPrintf("base::android::ScopedHardwareBufferHandle(%p)",
                                p.get()));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ParamTraits<base::ReadOnlySharedMemoryRegion>::Write(base::Pickle* m,
                                                           const param_type& p) {
@@ -936,22 +935,22 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Write(
   WriteParam(m, static_cast<uint64_t>(p.GetSize()));
   WriteParam(m, p.GetGUID());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::win::ScopedHandle h = const_cast<param_type&>(p).PassPlatformHandle();
   HandleWin handle_win(h.Get());
   WriteParam(m, handle_win);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo vmo = const_cast<param_type&>(p).PassPlatformHandle();
   WriteParam(m, vmo);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   base::mac::ScopedMachSendRight h =
       const_cast<param_type&>(p).PassPlatformHandle();
   MachPortMac mach_port_mac(h.get());
   WriteParam(m, mach_port_mac);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   m->WriteAttachment(new internal::PlatformFileAttachment(
       base::ScopedFD(const_cast<param_type&>(p).PassPlatformHandle())));
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   base::subtle::ScopedFDPair h =
       const_cast<param_type&>(p).PassPlatformHandle();
   m->WriteAttachment(new internal::PlatformFileAttachment(std::move(h.fd)));
@@ -985,26 +984,26 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
   }
   size_t size = static_cast<size_t>(shm_size);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HandleWin handle_win;
   if (!ReadParam(m, iter, &handle_win))
     return false;
   *r = base::subtle::PlatformSharedMemoryRegion::Take(
       base::win::ScopedHandle(handle_win.get_handle()), mode, size, guid);
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   zx::vmo vmo;
   if (!ReadParam(m, iter, &vmo))
     return false;
   *r = base::subtle::PlatformSharedMemoryRegion::Take(std::move(vmo), mode,
                                                       size, guid);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   MachPortMac mach_port_mac;
   if (!ReadParam(m, iter, &mach_port_mac))
     return false;
   *r = base::subtle::PlatformSharedMemoryRegion::Take(
       base::mac::ScopedMachSendRight(mach_port_mac.get_mach_port()), mode, size,
       guid);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   scoped_refptr<base::Pickle::Attachment> attachment;
   if (!m->ReadAttachment(iter, &attachment))
     return false;
@@ -1013,7 +1012,7 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
     return false;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   *r = base::subtle::PlatformSharedMemoryRegion::Take(
       base::ScopedFD(
           static_cast<internal::PlatformFileAttachment*>(attachment.get())
@@ -1041,7 +1040,7 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
                                    ->TakePlatformFile())
               : base::ScopedFD()),
       mode, size, guid);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #endif
 
@@ -1051,19 +1050,19 @@ bool ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Read(
 void ParamTraits<base::subtle::PlatformSharedMemoryRegion>::Log(
     const param_type& p,
     std::string* l) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   l->append("Handle: ");
   LogParam(p.GetPlatformHandle()->get(), l);
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   l->append("Handle: ");
   LogParam(p.GetPlatformHandle(), l);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   l->append("Mach port: ");
   LogParam(p.GetPlatformHandle(), l);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   l->append("FD: ");
   LogParam(p.GetPlatformHandle(), l);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   base::subtle::FDPair h = p.GetPlatformHandle();
   l->append("FD: ");
   LogParam(h.fd, l);
@@ -1108,7 +1107,7 @@ void ParamTraits<base::subtle::PlatformSharedMemoryRegion::Mode>::Log(
   LogParam(static_cast<int>(p), l);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void ParamTraits<PlatformFileForTransit>::Write(base::Pickle* m,
                                                 const param_type& p) {
   m->WriteBool(p.IsValid());
@@ -1141,7 +1140,7 @@ void ParamTraits<PlatformFileForTransit>::Log(const param_type& p,
                                               std::string* l) {
   LogParam(p.GetHandle(), l);
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void ParamTraits<base::FilePath>::Write(base::Pickle* m, const param_type& p) {
   p.WriteToPickle(m);
@@ -1326,7 +1325,7 @@ void ParamTraits<base::UnguessableToken>::Log(const param_type& p,
 
 void ParamTraits<IPC::ChannelHandle>::Write(base::Pickle* m,
                                             const param_type& p) {
-#if defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_NACL)
   WriteParam(m, p.socket);
 #else
   WriteParam(m, p.mojo_handle);
@@ -1336,7 +1335,7 @@ void ParamTraits<IPC::ChannelHandle>::Write(base::Pickle* m,
 bool ParamTraits<IPC::ChannelHandle>::Read(const base::Pickle* m,
                                            base::PickleIterator* iter,
                                            param_type* r) {
-#if defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_NACL)
   return ReadParam(m, iter, &r->socket);
 #else
   return ReadParam(m, iter, &r->mojo_handle);
@@ -1346,7 +1345,7 @@ bool ParamTraits<IPC::ChannelHandle>::Read(const base::Pickle* m,
 void ParamTraits<IPC::ChannelHandle>::Log(const param_type& p,
                                           std::string* l) {
   l->append("ChannelHandle(");
-#if defined(OS_NACL_SFI)
+#if BUILDFLAG(IS_NACL)
   ParamTraits<base::FileDescriptor>::Log(p.socket, l);
 #else
   LogParam(p.mojo_handle, l);
@@ -1386,7 +1385,7 @@ void ParamTraits<LogData>::Log(const param_type& p, std::string* l) {
 }
 
 void ParamTraits<Message>::Write(base::Pickle* m, const Message& p) {
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // We don't serialize the file descriptors in the nested message, so there
   // better not be any.
   DCHECK(!p.HasAttachments());
@@ -1431,7 +1430,7 @@ void ParamTraits<Message>::Log(const Message& p, std::string* l) {
   l->append("<IPC::Message>");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Note that HWNDs/HANDLE/HCURSOR/HACCEL etc are always 32 bits, even on 64
 // bit systems. That's why we use the Windows macros to convert to 32 bits.
 void ParamTraits<HANDLE>::Write(base::Pickle* m, const param_type& p) {
@@ -1476,6 +1475,6 @@ void ParamTraits<MSG>::Log(const param_type& p, std::string* l) {
   l->append("<MSG>");
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace IPC

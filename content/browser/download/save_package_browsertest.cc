@@ -4,6 +4,7 @@
 
 #include "base/bind.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
@@ -136,7 +137,7 @@ class DownloadCompleteObserver : public DownloadManager::Observer {
       item_ = nullptr;
     }
 
-    download::DownloadItem* item_;
+    raw_ptr<download::DownloadItem> item_;
     base::OnceClosure completed_closure_;
   };
 
@@ -244,6 +245,33 @@ IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, DownloadItemDestroyed) {
 
 IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, DownloadItemCanceled) {
   RunAndCancelSavePackageDownload(SAVE_PAGE_TYPE_AS_MHTML, false);
+}
+
+// Create a SavePackage and reload the page. This tests that when the
+// Reload destroys the primary Page SavePackage's ContinueSaveInfo
+// will not crash with a destroyed Page reference.
+IN_PROC_BROWSER_TEST_F(SavePackageBrowserTest, Reload) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url = embedded_test_server()->GetURL(kTestFile);
+  EXPECT_TRUE(NavigateToURL(shell(), url));
+  base::FilePath full_file_name, dir;
+  GetDestinationPaths("a", &full_file_name, &dir);
+
+  auto* download_manager = static_cast<DownloadManagerImpl*>(
+      shell()->web_contents()->GetBrowserContext()->GetDownloadManager());
+  auto delegate = std::make_unique<TestShellDownloadManagerDelegate>(
+      SAVE_PAGE_TYPE_AS_ONLY_HTML);
+  delegate->download_dir_ = save_dir_.GetPath();
+  auto* old_delegate = download_manager->GetDelegate();
+  download_manager->SetDelegate(delegate.get());
+
+  scoped_refptr<SavePackage> save_package(
+      new SavePackage(shell()->web_contents()->GetPrimaryPage(),
+                      SAVE_PAGE_TYPE_AS_ONLY_HTML, full_file_name, dir));
+  save_package->GetSaveInfo();
+  shell()->web_contents()->GetController().Reload(content::ReloadType::NORMAL,
+                                                  false /* check_for_repost */);
+  download_manager->SetDelegate(old_delegate);
 }
 
 class SavePackageWebBundleBrowserTest : public SavePackageBrowserTest {

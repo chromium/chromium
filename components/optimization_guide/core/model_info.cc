@@ -6,7 +6,9 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
-#include "components/optimization_guide/core/optimization_guide_util.h"
+#include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
+#include "components/optimization_guide/core/model_util.h"
 
 namespace optimization_guide {
 

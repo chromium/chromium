@@ -10,6 +10,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
@@ -393,6 +394,7 @@ std::string ConnectorsService::GetManagementDomain() {
         ConnectorScopePref(AnalysisConnector::FILE_ATTACHED),
         ConnectorScopePref(AnalysisConnector::FILE_DOWNLOADED),
         ConnectorScopePref(AnalysisConnector::BULK_DATA_ENTRY),
+        ConnectorScopePref(AnalysisConnector::PRINT),
         ConnectorScopePref(ReportingConnector::SECURITY_EVENT)}) {
     absl::optional<DmToken> dm_token = GetDmToken(scope_pref);
     if (dm_token.has_value()) {
@@ -485,7 +487,7 @@ ConnectorsService::DmToken::~DmToken() = default;
 
 absl::optional<ConnectorsService::DmToken> ConnectorsService::GetDmToken(
     const char* scope_pref) const {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // On CrOS the settings from primary profile applies to all profiles.
   return GetBrowserDmToken();
 #else
@@ -506,7 +508,7 @@ ConnectorsService::GetBrowserDmToken() const {
   return DmToken(dm_token.value(), policy::POLICY_SCOPE_MACHINE);
 }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
 absl::optional<ConnectorsService::DmToken>
 ConnectorsService::GetProfileDmToken() const {
   if (!CanUseProfileDmToken())
@@ -533,7 +535,7 @@ bool ConnectorsService::CanUseProfileDmToken() const {
 
   return chrome::enterprise_util::IsProfileAffiliated(profile);
 }
-#endif  // !defined(OS_CHROMEOS)
+#endif  // !BUILDFLAG(IS_CHROMEOS)
 
 policy::PolicyScope ConnectorsService::GetPolicyScope(
     const char* scope_pref) const {
@@ -560,7 +562,7 @@ std::unique_ptr<ClientMetadata> ConnectorsService::BuildClientMetadata() {
   Profile* profile = Profile::FromBrowserContext(context_);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   const bool include_device_info = user && user->IsAffiliated();
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   const bool include_device_info =

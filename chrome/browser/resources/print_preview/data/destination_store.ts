@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {NativeEventTarget as EventTarget} from 'chrome://resources/js/cr/event_target.m.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
@@ -10,14 +10,20 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {CloudPrintInterface, CloudPrintInterfaceEventType, CloudPrintInterfacePrinterFailedDetail, CloudPrintInterfaceSearchDoneDetail} from '../cloud_print_interface.js';
 import {DestinationSearchBucket, MetricsContext, PrintPreviewInitializationEvents} from '../metrics.js';
 import {CapabilitiesResponse, NativeLayer, NativeLayerImpl} from '../native_layer.js';
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {NativeLayerCros, NativeLayerCrosImpl, PrinterSetupResponse} from '../native_layer_cros.js';
 
 // </if>
 import {Cdd, MediaSizeOption} from './cdd.js';
-import {CloudOrigins, createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationProvisionalType, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+import {createDestinationKey, createRecentDestinationKey, Destination, DestinationConnectionStatus, DestinationOrigin, DestinationType, GooglePromotedDestinationId, RecentDestination} from './destination.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {DestinationProvisionalType} from './destination.js';
+// </if>
 import {DestinationMatch, getPrinterTypeForDestination, originToType, PrinterType} from './destination_match.js';
-import {LocalDestinationInfo, parseDestination, parseExtensionDestination, ProvisionalDestinationInfo} from './local_parsers.js';
+import {LocalDestinationInfo, parseDestination, ProvisionalDestinationInfo} from './local_parsers.js';
+// <if expr="chromeos_ash or chromeos_lacros">
+import {parseExtensionDestination} from './local_parsers.js';
+// </if>
 
 /**
  * Printer search statuses used by the destination store.
@@ -101,7 +107,7 @@ function sortMediaSizes(capabilities: Cdd): Cdd {
   const categoryStandardMisc: MediaSizeOption[] = [];
   const categoryCustom: MediaSizeOption[] = [];
   for (let i = 0, media; (media = mediaSize.option[i]); i++) {
-    const name = media.name || 'CUSTOM';
+    const name: string = media.name || 'CUSTOM';
     let category: MediaSizeOption[];
     if (name.startsWith('NA_')) {
       category = categoryStandardNA;
@@ -150,7 +156,7 @@ export enum DestinationStoreEventType {
   ERROR = 'DestinationStore.ERROR',
   SELECTED_DESTINATION_CAPABILITIES_READY = 'DestinationStore' +
       '.SELECTED_DESTINATION_CAPABILITIES_READY',
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   DESTINATION_EULA_READY = 'DestinationStore.DESTINATION_EULA_READY',
   // </if>
 }
@@ -209,7 +215,7 @@ export class DestinationStore extends EventTarget {
    */
   private nativeLayer_: NativeLayer = NativeLayerImpl.getInstance();
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Used to fetch information about Chrome OS local print destinations.
    */
@@ -276,7 +282,7 @@ export class DestinationStore extends EventTarget {
     ]);
 
     this.platformOrigin_ = DestinationOrigin.LOCAL;
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.platformOrigin_ = DestinationOrigin.CROS;
     // </if>
 
@@ -346,7 +352,7 @@ export class DestinationStore extends EventTarget {
    */
   init(
       pdfPrinterDisabled: boolean,
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       isDriveMounted: boolean,
       // </if>
       // <if expr="not chromeos and not lacros">
@@ -381,7 +387,7 @@ export class DestinationStore extends EventTarget {
 
     this.pdfPrinterEnabled_ = !pdfPrinterDisabled;
     this.createLocalPdfPrintDestination_();
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (isDriveMounted) {
       this.createLocalDrivePrintDestination_();
     }
@@ -532,7 +538,7 @@ export class DestinationStore extends EventTarget {
   }
 
   private isDestinationLocal_(destinationId: string|null): boolean {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     if (destinationId === GooglePromotedDestinationId.SAVE_TO_DRIVE_CROS) {
       return true;
     }
@@ -546,7 +552,7 @@ export class DestinationStore extends EventTarget {
     this.tracker_.removeAll();
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Attempts to find the EULA URL of the the destination ID.
    */
@@ -590,21 +596,16 @@ export class DestinationStore extends EventTarget {
     }
 
     const isLocal = !matchRules.kind || matchRules.kind === 'local';
-    const isCloud = !matchRules.kind || matchRules.kind === 'cloud';
-    if (!isLocal && !isCloud) {
+    if (!isLocal) {
       console.warn('Unsupported type: "' + matchRules.kind + '"');
       return null;
     }
 
-    const origins = [];
-    if (isLocal) {
-      origins.push(DestinationOrigin.LOCAL);
-      origins.push(DestinationOrigin.EXTENSION);
-      origins.push(DestinationOrigin.CROS);
-    }
-    if (isCloud) {
-      origins.push(...CloudOrigins);
-    }
+    const origins = [
+      DestinationOrigin.LOCAL,
+      DestinationOrigin.EXTENSION,
+      DestinationOrigin.CROS,
+    ];
 
     let idRegExp = null;
     try {
@@ -721,7 +722,7 @@ export class DestinationStore extends EventTarget {
     }
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Attempt to resolve the capabilities for a Chrome OS printer.
    */
@@ -776,7 +777,9 @@ export class DestinationStore extends EventTarget {
     if (this.pdfPrinterEnabled_) {
       const saveToPdfKey = createDestinationKey(
           GooglePromotedDestinationId.SAVE_AS_PDF, DestinationOrigin.LOCAL, '');
-      this.selectDestination(assert(this.destinationMap_.get(saveToPdfKey)!));
+      const destination = this.destinationMap_.get(saveToPdfKey);
+      assert(destination);
+      this.selectDestination(destination);
       return true;
     }
 
@@ -861,7 +864,7 @@ export class DestinationStore extends EventTarget {
     return this.destinationMap_.get(key);
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Removes the provisional destination with ID |provisionalId| from
    * |destinationMap_| and |destinations_|.
@@ -936,8 +939,8 @@ export class DestinationStore extends EventTarget {
    */
   private updateDestination_(destination: Destination) {
     assert(destination.constructor !== Array, 'Single printer expected');
-    destination.capabilities =
-        localizeCapabilities(assert(destination.capabilities!));
+    assert(destination.capabilities);
+    destination.capabilities = localizeCapabilities(destination.capabilities);
     if (originToType(destination.origin) !== PrinterType.LOCAL_PRINTER) {
       destination.capabilities = sortMediaSizes(destination.capabilities);
     }
@@ -991,7 +994,7 @@ export class DestinationStore extends EventTarget {
     }
   }
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   /**
    * Creates a local Drive print destination.
    */
@@ -1047,8 +1050,8 @@ export class DestinationStore extends EventTarget {
         assert(origin === DestinationOrigin.EXTENSION);
         return;
       }
-      dest =
-          parseDestination(originToType(origin), assert(settingsInfo.printer));
+      assert(settingsInfo.printer);
+      dest = parseDestination(originToType(origin), settingsInfo.printer);
     }
     if (dest) {
       if ((origin === DestinationOrigin.LOCAL ||
@@ -1061,7 +1064,7 @@ export class DestinationStore extends EventTarget {
       }
       dest.capabilities = settingsInfo.capabilities;
       this.updateDestination_(dest);
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       // Start the fetch for the PPD EULA URL.
       this.fetchEulaUrl(dest.id);
       // </if>

@@ -159,8 +159,8 @@ class Arg {
   Arg(Hex hex);  // NOLINT(runtime/explicit)
   Arg(Dec dec);  // NOLINT(runtime/explicit)
 
-  // vector<bool>::reference and const_reference require special help to
-  // convert to `AlphaNum` because it requires two user defined conversions.
+  // vector<bool>::reference and const_reference require special help to convert
+  // to `Arg` because it requires two user defined conversions.
   template <typename T,
             absl::enable_if_t<
                 std::is_class<T>::value &&
@@ -173,6 +173,14 @@ class Arg {
   // `void*` values, with the exception of `char*`, are printed as
   // "0x<hex value>". However, in the case of `nullptr`, "NULL" is printed.
   Arg(const void* value);  // NOLINT(runtime/explicit)
+
+  // Normal enums are already handled by the integer formatters.
+  // This overload matches only scoped enums.
+  template <typename T,
+            typename = typename std::enable_if<
+                std::is_enum<T>{} && !std::is_convertible<T, int>{}>::type>
+  Arg(T value)  // NOLINT(google-explicit-constructor)
+      : Arg(static_cast<typename std::underlying_type<T>::type>(value)) {}
 
   Arg(const Arg&) = delete;
   Arg& operator=(const Arg&) = delete;

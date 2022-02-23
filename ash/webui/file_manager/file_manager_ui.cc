@@ -31,6 +31,8 @@ FileManagerUI::FileManagerUI(content::WebUI* web_ui,
 
   // Add ability to request chrome-untrusted: URLs
   web_ui->AddRequestableScheme(content::kChromeUIUntrustedScheme);
+
+  LOG(WARNING) << "Starting FileManagerUI";
 }
 
 content::WebUIDataSource* FileManagerUI::CreateTrustedAppDataSource() {

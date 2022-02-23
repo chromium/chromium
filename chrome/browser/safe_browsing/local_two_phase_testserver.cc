@@ -75,7 +75,7 @@ std::unique_ptr<net::test_server::HttpResponse> HandleTwoPhaseRequest(
       if (it.GetKey() == "p2close")
         p2close = "1";
       if (it.GetKey() == "p2code")
-        p2code = it.GetValue();
+        p2code = std::string(it.GetValue());
     }
 
     std::string put_url = base::StringPrintf(

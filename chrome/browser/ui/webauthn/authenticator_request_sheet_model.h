@@ -53,6 +53,8 @@ class AuthenticatorRequestSheetModel {
   virtual bool IsAcceptButtonEnabled() const = 0;
   virtual std::u16string GetAcceptButtonLabel() const = 0;
 
+  virtual bool IsManageDevicesButtonVisible() const;
+
   virtual const gfx::VectorIcon& GetStepIllustration(
       ImageColorScheme color_scheme) const = 0;
   virtual std::u16string GetStepTitle() const = 0;
@@ -65,6 +67,7 @@ class AuthenticatorRequestSheetModel {
   virtual void OnBack() = 0;
   virtual void OnAccept() = 0;
   virtual void OnCancel() = 0;
+  virtual void OnManageDevices();
 };
 
 #endif  // CHROME_BROWSER_UI_WEBAUTHN_AUTHENTICATOR_REQUEST_SHEET_MODEL_H_

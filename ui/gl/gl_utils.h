@@ -11,11 +11,11 @@
 #include "build/build_config.h"
 #include "ui/gl/gl_export.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <dxgi1_6.h>
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/files/scoped_file.h"
 #endif
 
@@ -25,7 +25,7 @@ class GLApi;
 GL_EXPORT void Crash();
 GL_EXPORT void Hang();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 GL_EXPORT base::ScopedFD MergeFDs(base::ScopedFD a, base::ScopedFD b);
 #endif
 
@@ -34,7 +34,7 @@ GL_EXPORT bool UsePassthroughCommandDecoder(
 
 GL_EXPORT bool PassthroughCommandDecoderSupported();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 GL_EXPORT bool AreOverlaysSupportedWin();
 
 // Calculates present during in 100 ns from number of frames per second.
@@ -72,7 +72,7 @@ class GL_EXPORT ScopedEnableTextureRectangleInShaderCompiler {
       const ScopedEnableTextureRectangleInShaderCompiler&) = delete;
 
   // This class is a no-op except on macOS.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   explicit ScopedEnableTextureRectangleInShaderCompiler(gl::GLApi* gl_api) {}
 
 #else

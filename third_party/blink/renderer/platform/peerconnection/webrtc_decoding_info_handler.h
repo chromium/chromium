@@ -40,10 +40,11 @@ class PLATFORM_EXPORT WebrtcDecodingInfoHandler {
   // https://wicg.github.io/media-capabilities/#media-capabilities-interface
   using OnMediaCapabilitiesDecodingInfoCallback =
       base::OnceCallback<void(bool, bool)>;
-  void DecodingInfo(const absl::optional<String> audio_mime_type,
-                    const absl::optional<String> video_mime_type,
-                    const absl::optional<String> video_scalability_mode,
-                    OnMediaCapabilitiesDecodingInfoCallback callback) const;
+  void DecodingInfo(
+      const absl::optional<webrtc::SdpAudioFormat> sdp_audio_format,
+      const absl::optional<webrtc::SdpVideoFormat> sdp_video_format,
+      const absl::optional<String> video_scalability_mode,
+      OnMediaCapabilitiesDecodingInfoCallback callback) const;
 
  private:
   std::unique_ptr<webrtc::VideoDecoderFactory> video_decoder_factory_;

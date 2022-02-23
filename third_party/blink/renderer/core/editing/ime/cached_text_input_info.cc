@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/editing/ime/cached_text_input_info.h"
 
+#include "build/chromeos_buildflags.h"
 #include "third_party/blink/renderer/core/editing/editing_utilities.h"
 #include "third_party/blink/renderer/core/editing/ephemeral_range.h"
 #include "third_party/blink/renderer/core/editing/iterators/text_iterator.h"

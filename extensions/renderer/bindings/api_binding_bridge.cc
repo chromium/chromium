@@ -89,10 +89,6 @@ void APIBindingBridge::RegisterCustomHook(v8::Isolate* isolate,
   if (!result.IsJust() || !result.FromJust())
     return;
 
-  // TODO(devlin): The binding.js version of these hooks also has a 'schema'
-  // property. I wonder if we can factor that out? If not, we'll need to add it
-  // here.
-
   result = hook_object->SetPrototype(context, v8::Null(isolate));
   if (!result.IsJust() || !result.FromJust())
     return;

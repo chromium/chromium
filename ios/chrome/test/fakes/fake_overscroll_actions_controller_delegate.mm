@@ -48,6 +48,11 @@
   return 0;
 }
 
+- (CGFloat)initialContentOffsetForOverscrollActionsController:
+    (OverscrollActionsController*)controller {
+  return 0;
+}
+
 - (FullscreenController*)fullscreenControllerForOverscrollActionsController:
     (OverscrollActionsController*)controller {
   return nullptr;

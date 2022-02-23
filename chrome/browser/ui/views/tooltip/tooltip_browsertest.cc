@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/test_simple_task_runner.h"
@@ -86,7 +87,7 @@ class TooltipWidgetMonitor {
   // This attribute will help us avoid starting the |run_loop_| when the widget
   // is already shown. Otherwise, we would be waiting infinitely for an event
   // that already occurred.
-  views::Widget* active_widget_ = nullptr;
+  raw_ptr<views::Widget> active_widget_ = nullptr;
   std::unique_ptr<views::AnyWidgetObserver> observer_;
   std::unique_ptr<base::RunLoop> run_loop_;
 };  // class TooltipWidgetMonitor
@@ -140,7 +141,7 @@ class TooltipBrowserTest : public InProcessBrowserTest {
   }
 
   bool SkipTestForOldWinVersion() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On older Windows version, tooltips are displayed with TooltipWin instead
     // of TooltipAura. For TooltipAura, a tooltip is displayed using a Widget
     // and a Label and for TooltipWin, it is displayed using a native win32
@@ -157,7 +158,7 @@ class TooltipBrowserTest : public InProcessBrowserTest {
     // on why we still need TooltipWin on Win7, see https://crbug.com/1201440.
     if (base::win::GetVersion() <= base::win::Version::WIN7)
       return true;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
     return false;
   }
 
@@ -178,8 +179,8 @@ class TooltipBrowserTest : public InProcessBrowserTest {
 
  private:
   std::unique_ptr<ui::test::EventGenerator> event_generator_ = nullptr;
-  RenderWidgetHostView* rwhv_ = nullptr;
-  WebContents* web_contents_ = nullptr;
+  raw_ptr<RenderWidgetHostView> rwhv_ = nullptr;
+  raw_ptr<WebContents> web_contents_ = nullptr;
 
   std::unique_ptr<TooltipControllerTestHelper> helper_;
   std::unique_ptr<TooltipWidgetMonitor> tooltip_monitor_ = nullptr;
@@ -207,7 +208,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 // https://crbug.com/1212403. Flaky on linux-chromeos-rel and other linux bots.
 #define MAYBE_ShowTooltipFromWebContentWithKeyboard \
   DISABLED_ShowTooltipFromWebContentWithKeyboard
@@ -233,7 +234,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 // https://crbug.com/1212403. Flaky on linux-chromeos-rel.
 // https://crbug.com/1241736. Flaky on Win.
 #define MAYBE_ShowTooltipFromIFrameWithKeyboard \
@@ -285,7 +286,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest,
   helper()->HideAndReset();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // https://crbug.com/1212403. Flaky on linux-chromeos-rel.
 #define MAYBE_HideTooltipOnKeyPress DISABLED_HideTooltipOnKeyPress
 #else
@@ -328,7 +329,7 @@ IN_PROC_BROWSER_TEST_F(TooltipBrowserTest, MAYBE_HideTooltipOnKeyPress) {
   EXPECT_FALSE(helper()->IsTooltipVisible());
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // https://crbug.com/1212403. Flaky on linux-chromeos-rel.
 #define MAYBE_ScriptFocusHidesKeyboardTriggeredTooltip \
   DISABLED_ScriptFocusHidesKeyboardTriggeredTooltip

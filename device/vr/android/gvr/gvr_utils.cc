@@ -47,14 +47,17 @@ device::mojom::XRViewPtr CreateView(
 
   if (eye == GVR_LEFT_EYE) {
     view->eye = device::mojom::XREye::kLeft;
+    view->viewport =
+        gfx::Rect(0, 0, maximum_size.width() / 2, maximum_size.height());
   } else if (eye == GVR_RIGHT_EYE) {
     view->eye = device::mojom::XREye::kRight;
+    view->viewport = gfx::Rect(maximum_size.width() / 2, 0,
+                               maximum_size.width() / 2, maximum_size.height());
   } else {
     NOTREACHED();
   }
 
   view->field_of_view = device::mojom::VRFieldOfView::New();
-  view->viewport = gfx::Size(maximum_size.width() / 2, maximum_size.height());
 
   gvr::BufferViewport eye_viewport = gvr_api->CreateBufferViewport();
   buffers.GetBufferViewport(eye, &eye_viewport);

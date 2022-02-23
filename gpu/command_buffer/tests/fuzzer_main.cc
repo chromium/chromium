@@ -63,8 +63,7 @@ const uint32_t kTransferBufferSize = 16384;
 const uint32_t kSmallTransferBufferSize = 16;
 const uint32_t kTinyTransferBufferSize = 3;
 
-#if !defined(GPU_FUZZER_USE_ANGLE) && !defined(GPU_FUZZER_USE_SWIFTSHADER) && \
-    !defined(GPU_FUZZER_USE_SWANGLE)
+#if !defined(GPU_FUZZER_USE_ANGLE) && !defined(GPU_FUZZER_USE_SWANGLE)
 #define GPU_FUZZER_USE_STUB
 #endif
 
@@ -242,9 +241,8 @@ struct Config {
     attrib_helper.buffer_preserved = it.GetBit();
     attrib_helper.bind_generates_resource = it.GetBit();
     attrib_helper.single_buffer = it.GetBit();
-    bool es3 = it.GetBit();
+    [[maybe_unused]] bool es3 = it.GetBit();
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
-    ALLOW_UNUSED_LOCAL(es3);
     attrib_helper.context_type = CONTEXT_TYPE_OPENGLES2;
 #else
     bool es31 = it.GetBit();
@@ -325,8 +323,8 @@ class CommandBufferSetup {
     CHECK(base::i18n::InitializeICU());
     base::CommandLine::Init(0, nullptr);
 
-    auto* command_line = base::CommandLine::ForCurrentProcess();
-    ALLOW_UNUSED_LOCAL(command_line);
+    [[maybe_unused]] auto* command_line =
+        base::CommandLine::ForCurrentProcess();
 
 #if defined(USE_OZONE)
     ui::OzonePlatform::InitializeForGPU(ui::OzonePlatform::InitParams());
@@ -345,13 +343,6 @@ class CommandBufferSetup {
 
     CHECK(gl::init::InitializeStaticGLBindingsImplementation(
         gl::GLImplementationParts(gl::kGLImplementationEGLANGLE), false));
-    CHECK(
-        gl::init::InitializeGLOneOffPlatformImplementation(false, false, true));
-#elif defined(GPU_FUZZER_USE_SWIFTSHADER)
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    gl::kGLImplementationSwiftShaderName);
-    CHECK(gl::init::InitializeStaticGLBindingsImplementation(
-        gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL), false));
     CHECK(
         gl::init::InitializeGLOneOffPlatformImplementation(false, false, true));
 #elif defined(GPU_FUZZER_USE_STUB)
@@ -384,8 +375,7 @@ class CommandBufferSetup {
     context_->MakeCurrent(surface_.get());
     GpuFeatureInfo gpu_feature_info;
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
-    // Cause feature_info's |chromium_raster_transport| to be enabled.
-    gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] =
+    gpu_feature_info.status_values[GPU_FEATURE_TYPE_GPU_RASTERIZATION] =
         kGpuFeatureStatusEnabled;
 #endif
     auto feature_info = base::MakeRefCounted<gles2::FeatureInfo>(
@@ -439,7 +429,6 @@ class CommandBufferSetup {
     }
 
 #if defined(GPU_FUZZER_USE_RASTER_DECODER)
-    CHECK(feature_info->feature_flags().chromium_raster_transport);
     context_state_->MakeCurrent(nullptr);
     auto* context = context_state_->context();
     decoder_.reset(raster::RasterDecoder::Create(

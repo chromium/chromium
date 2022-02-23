@@ -4,6 +4,8 @@
 
 #include "base/fuchsia/startup_context.h"
 
+#include <tuple>
+
 #include <fuchsia/io/cpp/fidl.h>
 #include <lib/sys/cpp/outgoing_directory.h>
 #include <lib/sys/cpp/service_directory.h>
@@ -11,7 +13,6 @@
 #include "base/fuchsia/file_utils.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/logging.h"
-#include "base/macros.h"
 
 namespace base {
 
@@ -82,7 +83,7 @@ StartupContext::StartupContext(::fuchsia::sys::StartupInfo startup_info) {
     // Create a dummy ServiceDirectory with a channel that's not
     // connected on the other end.
     fidl::InterfaceHandle<::fuchsia::io::Directory> dummy_directory;
-    ignore_result(dummy_directory.NewRequest());
+    std::ignore = dummy_directory.NewRequest();
     incoming_services =
         std::make_unique<sys::ServiceDirectory>(std::move(dummy_directory));
   }

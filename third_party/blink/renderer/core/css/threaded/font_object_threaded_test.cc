@@ -17,7 +17,7 @@
 #include "third_party/blink/renderer/platform/fonts/shaping/caching_word_shape_iterator.h"
 #include "third_party/blink/renderer/platform/fonts/shaping/harfbuzz_shaper.h"
 #include "third_party/blink/renderer/platform/fonts/text_run_paint_info.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/testing/font_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -49,9 +49,10 @@ TSAN_TEST(FontObjectThreadedTest, GetDefaultFontData) {
   num_threads_ = 5;
   RunOnThreads([]() {
     for (FontDescription::GenericFamilyType family_type :
-         {FontDescription::kStandardFamily, FontDescription::kSerifFamily,
-          FontDescription::kSansSerifFamily, FontDescription::kMonospaceFamily,
-          FontDescription::kCursiveFamily, FontDescription::kFantasyFamily}) {
+         {FontDescription::kStandardFamily, FontDescription::kWebkitBodyFamily,
+          FontDescription::kSerifFamily, FontDescription::kSansSerifFamily,
+          FontDescription::kMonospaceFamily, FontDescription::kCursiveFamily,
+          FontDescription::kFantasyFamily}) {
       FontDescription font_description;
       font_description.SetComputedSize(12.0);
       font_description.SetLocale(LayoutLocale::Get("en"));

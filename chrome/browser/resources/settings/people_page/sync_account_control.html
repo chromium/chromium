@@ -57,7 +57,7 @@
 
       @media (prefers-color-scheme: dark) {
         #sync-icon-container {
-          background: var(--google-green-refresh-300);
+          background: var(--google-green-300);
           border-color: var(--google-grey-900);
         }
       }
@@ -72,7 +72,7 @@
 
       @media (prefers-color-scheme: dark) {
         #sync-icon-container.sync-paused {
-          background: var(--google-blue-refresh-300);
+          background: var(--google-blue-300);
         }
       }
 
@@ -82,7 +82,7 @@
 
       @media (prefers-color-scheme: dark) {
         #sync-icon-container.sync-disabled {
-          background: var(--google-grey-refresh-500);
+          background: var(--google-grey-500);
         }
       }
 
@@ -93,7 +93,7 @@
         width: 12px;
       }
 
-      #sign-in {
+      #signIn {
         min-width: 100px;
       }
 
@@ -127,7 +127,7 @@
         <div class="secondary">[[subLabel_]]</div>
       </div>
       <cr-button class="action-button cr-button-gap" on-click="onSigninTap_"
-          id="sign-in"
+          id="signIn"
           disabled="[[shouldDisableSyncButton_(showSetupButtons_,
                   syncStatus.firstSetupInProgress,
                   prefs.signin.allowed_on_next_startup.value)]]"
@@ -197,7 +197,11 @@
         </cr-button>
         <div id="setup-buttons" hidden="[[!showSetupButtons_]]"
             class="cr-button-gap">
-          <cr-button on-click="onSetupCancel_">$i18n{cancel}</cr-button>
+          <if expr="not lacros">
+            <!-- On Lacros, turning off sync is not supported yet. -->
+            <!--  TODO(https://crbug.com/1217645): Add this button on Lacros -->
+            <cr-button on-click="onSetupCancel_">$i18n{cancel}</cr-button>
+          </if>
           <cr-button class="action-button cr-button-gap"
               on-click="onSetupConfirm_">
             $i18n{confirm}

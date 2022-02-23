@@ -664,7 +664,8 @@ constexpr Span<T> MakeSpan(T* ptr, size_t size) noexcept {
 
 template <int&... ExplicitArgumentBarrier, typename T>
 Span<T> MakeSpan(T* begin, T* end) noexcept {
-  return ABSL_HARDENING_ASSERT(begin <= end), Span<T>(begin, end - begin);
+  return ABSL_HARDENING_ASSERT(begin <= end),
+         Span<T>(begin, static_cast<size_t>(end - begin));
 }
 
 template <int&... ExplicitArgumentBarrier, typename C>

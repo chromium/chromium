@@ -97,13 +97,13 @@ TEST_F(SolidColorAnalyzerTest, ClearTranslucent) {
   Initialize();
   SkColor color = SkColorSetARGB(128, 11, 22, 33);
   canvas()->clear(color);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(andrescj): remove the special treatment of OS_MAC once
   // https://crbug.com/922899 is fixed.
   EXPECT_FALSE(IsSolidColor());
 #else
   EXPECT_EQ(color, GetColor());
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 TEST_F(SolidColorAnalyzerTest, DrawColor) {
@@ -295,13 +295,13 @@ TEST_F(SolidColorAnalyzerTest, DrawRectTranslucent) {
   flags.setColor(color);
   SkRect rect = SkRect::MakeWH(100, 100);
   canvas()->drawRect(rect, flags);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(andrescj): remove the special treatment of OS_MAC once
   // https://crbug.com/922899 is fixed.
   EXPECT_FALSE(IsSolidColor());
 #else
   EXPECT_EQ(color, GetColor());
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 TEST_F(SolidColorAnalyzerTest, DrawRectTranslucentOverNonSolid) {
@@ -343,14 +343,14 @@ TEST_F(SolidColorAnalyzerTest, DrawRectSolidWithSrcOverBlending) {
   flags.setColor(color);
   rect = SkRect::MakeWH(100, 100);
   canvas()->drawRect(rect, flags);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(andrescj): remove the special treatment of OS_MAC once
   // https://crbug.com/922899 is fixed.
   EXPECT_FALSE(IsSolidColor());
 #else
   EXPECT_EQ(SkColorSetARGB(159, 15, 25, 35),
             GetColor(2 /* max_ops_to_analyze */));
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 TEST_F(SolidColorAnalyzerTest, SaveLayer) {

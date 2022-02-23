@@ -334,9 +334,8 @@ void CastMediaNotificationItem::ImageDownloader::Download(const GURL& url) {
                               url_, this, GetTrafficAnnotationTag())
                         : std::make_unique<BitmapFetcher>(
                               url_, this, GetTrafficAnnotationTag());
-  bitmap_fetcher_->Init(
-      /* referrer */ "", net::ReferrerPolicy::NEVER_CLEAR,
-      network::mojom::CredentialsMode::kOmit);
+  bitmap_fetcher_->Init(net::ReferrerPolicy::NEVER_CLEAR,
+                        network::mojom::CredentialsMode::kOmit);
   bitmap_fetcher_->Start(url_loader_factory_.get());
 }
 

@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">ဆိုက် <ph name="SITE_NAME" /> အား ထည့်ခဲ့၏</translation>
 <translation id="1383876407941801731">ရှာဖွေမှု</translation>
 <translation id="1384959399684842514">ဒေါင်းလုဒ်လုပ်မှု ဆိုင်းငံ့ထားသည်</translation>
+<translation id="1409426117486808224">တဘ်ဖွင့်ခြင်းများအတွက် ရိုးရှင်းသည့် မြင်ကွင်း</translation>
 <translation id="1415402041810619267">URL ကို ဖြတ်လိုက်သည်</translation>
 <translation id="1446450296470737166">MIDI ကိရိယာများအား အပြည့်အဝ ထိန်းချုပ်ခွင့် ပြုရန်</translation>
 <translation id="1620510694547887537">ကင်မရာ</translation>
@@ -49,10 +50,13 @@
 <translation id="2212565012507486665">ကွတ်ကီးများ ခွင့်ပြုရန်</translation>
 <translation id="2228071138934252756"><ph name="APP_NAME" /> က သင့်ကင်မရာကို သုံးနိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း ကင်မရာကို ဖွင့်ပါ။</translation>
 <translation id="2241634353105152135">တစ်ကြိမ်သာ</translation>
+<translation id="2253414712144136228"><ph name="NAME_OF_LIST_ITEM" /> ဖယ်ရှားရန်</translation>
 <translation id="2289270750774289114">ဝဘ်ဆိုက်က အနီးအနားရှိ ဘလူးတုသ်ကိရိယာများ ရှာဖွေလိုသည့်အခါ ခွင့်တောင်းရန် (အကြံပြုထားသည်)</translation>
 <translation id="2315043854645842844">ကလိုင်းယင့် ဘက်မှ လက်မှတ်ရွေးမှုကို လည်ပတ်သည့်စနစ်မှ မပံ့ပိုးပါ။</translation>
+<translation id="2321958826496381788">သင်က ယင်းကို ဖတ်ရအဆင်ပြေသည့် အထိ ဆွဲတန်းကို ဆွဲယူပါ။ စာသားတွင် စာပိုဒ် တစ်ခုကို နှစ်ကြိမ် ပုတ်လိုက်သည့် နောက်မှာ ဤမျှလောက် ကြီးလျက် မြင်ရသင့်သည်။</translation>
 <translation id="2359808026110333948">ဆက်လုပ်ရန်</translation>
 <translation id="2379925928934107488">Chrome က ဝဘ်ဆိုက်များကို မှောင်သည့် အပြင်အဆင်သုံးလျှင် ဖြစ်နိုင်ပါက ၎င်းအပြင်အဆင်ကို ပြောင်းပေးသည်</translation>
+<translation id="2387895666653383613">စာသား စကေး</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> မီဂါဘိုက်</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}other{<ph name="PERMISSION_1" />၊ <ph name="PERMISSION_2" /> နှင့် နောက်ထပ် <ph name="NUM_MORE" /> ခု ခွင့်ပြုထားသည်}}</translation>
 <translation id="2434158240863470628">ဒေါင်းလုဒ်လုပ်ပြီးပါပြီ <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
@@ -89,6 +93,7 @@
 <translation id="3115898365077584848">အချက်အလက်များကို ပြသရန်</translation>
 <translation id="3123473560110926937">အချို့ဝဘ်ဆိုက်များတွင် ပိတ်ထားသည်</translation>
 <translation id="3198916472715691905">သိမ်းထားသော ဒေတာ <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3203366800380907218">ဝဘ်ပေါ်မှ</translation>
 <translation id="321187648315454507"><ph name="APP_NAME" /> က အကြောင်းကြားချက်များ ပေးပို့နိုင်ရန် <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> တွင်လည်း အကြောင်းကြားချက်များ ဖွင့်ပါ။</translation>
 <translation id="3227137524299004712">မိုက်ခရိုဖုန်း</translation>
 <translation id="3277252321222022663">အာရုံခံစနစ်များ အသုံးပြုရန် ဤဝဘ်ဆိုက်များကို ခွင့်ပြုသည် (အကြံပြုထားသည်)</translation>
@@ -110,6 +115,7 @@
 <translation id="3835233591525155343">သင်၏ ကိရိယာအသုံးပြုမှု</translation>
 <translation id="385051799172605136">နောက်သို့</translation>
 <translation id="3859306556332390985">အရှေ့သို့ ရစ်ရန်</translation>
+<translation id="3895926599014793903">ဇူးမ် အတင်း ဖွင့်ရန်</translation>
 <translation id="3955193568934677022">ကာကွယ်ထားသည့် အကြောင်းအရာများကို ဆိုက်များအား ဖွင့်ခွင့်ပြုပါ (အကြံပြုထားသည်)</translation>
 <translation id="3967822245660637423">ဒေါင်းလုဒ်လုပ်ခြင်း ပြည့်စုံပါပြီ</translation>
 <translation id="3987993985790029246">လင့်ခ်ကူးယူမည်</translation>
@@ -117,7 +123,9 @@
 <translation id="4002066346123236978">ခေါင်းစဉ်</translation>
 <translation id="4008040567710660924">အချို့ဝဘ်ဆိုက်များအတွက် ကွတ်ကီးများ ခွင့်ပြုသည်။</translation>
 <translation id="4046123991198612571">နောက်တစ်ပုဒ်</translation>
+<translation id="4149994727733219643">ဝဘ်စာမျက်နှာများအတွက် ရိုးရှင်းသည့်မြင်ကွင်း</translation>
 <translation id="4165986682804962316">ဝက်ဆိုက် ဆက်တင်များ</translation>
+<translation id="4194328954146351878">NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ဝဘ်ဆိုက်များအား ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="4200726100658658164">'တည်နေရာပြဆက်တင်များ' ကို ဖွင့်ပါ</translation>
 <translation id="4226663524361240545">အကြောင်းကြားချက်သည် စက်ပစ္စည်းကို တုန်ခါစေပါမည်</translation>
 <translation id="4259722352634471385">သွားလာမှုပြလမ်းညွှန်အား ပိတ်ထား၏- <ph name="URL" /></translation>
@@ -126,6 +134,7 @@
 <translation id="42981349822642051">တိုးချဲ့</translation>
 <translation id="4336434711095810371">ဒေတာအားလုံး ရှင်းထုတ်ရန်</translation>
 <translation id="4402755511846832236">ဤကိရိယာသုံးနေချိန်ကို ဝဘ်ဆိုက်များကသိခြင်းအား ပိတ်ထားရန်</translation>
+<translation id="4428065317363009941">ကြော်ငြာ စိတ်ကြိုက်သတ်မှတ်ခြင်း</translation>
 <translation id="4434045419905280838">ပေါ့ပ်အပ်နှင့် တစ်ဆင့်ညွှန်ချက်</translation>
 <translation id="445467742685312942">ကာကွယ်ထားသော အကြောင်းအရာများ ဖွင့်ရန် ဝဘ်ဆိုက်များကို� ခွင့်ပြုသည်</translation>
 <translation id="4468959413250150279">ဝဘ်ဆိုက်တစ်ခုအတွက် အသံတိတ်ထားသည်။</translation>
@@ -156,6 +165,7 @@
 <translation id="5186036860380548585">ဖန်သားပြင်၏ထိပ်နားတွင် ရွေးချယ်နိုင်သည်</translation>
 <translation id="5197729504361054390">သင်ရွေးချယ်သော အဆက်အသွယ်များကို <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" /> နှင့် မျှဝေပါမည်။</translation>
 <translation id="5216942107514965959">ယနေ့ နောက်ဆုံး ဝင်ကြည့်ထားသည်</translation>
+<translation id="5264323282659631142">'<ph name="CHIP_LABEL" />' ဖယ်ရှားရန်</translation>
 <translation id="528192093759286357">မျက်နှာပြင်အပြည့်ဖွင့်ခြင်းမှ ထွက်ရန် ထိပ်ဆုံးမှဆွဲချကာ နောက်ဆုတ်ရန်ခလုတ်ကို နှိပ်ပါ။</translation>
 <translation id="5300589172476337783">ပြရန်</translation>
 <translation id="5301954838959518834">OK</translation>
@@ -166,6 +176,7 @@
 <translation id="5354152178998424783">၎င်းက ဒေတာ <ph name="DATASIZE" /> နှင့် ဝဘ်ဆိုက်များက သိမ်းထားသည့် ကွတ်ကီးများကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
 <translation id="5394307150471348411">{DETAIL_COUNT,plural, =1{(+ နောက်ထပ် ၁ ခု)}other{(+ နောက်ထပ် # ခု)}}</translation>
 <translation id="5403592356182871684">အမည်များ</translation>
+<translation id="5412236728747081950">နောက်ထပ်သက်ဆိုင်ရာ ကြော်ငြာများ ပြရန် Chrome မှ သင့်စိတ်ဝင်စားမှုများကို ဤဝဘ်ဆိုက်က ရယူပါသည်</translation>
 <translation id="5438097262470833822">ဤရွေးချယ်မှုက <ph name="WEBSITE" /> အတွက် ခွင့်ပြုချက်များကို ပြင်ဆင်သတ်မှတ်ပါလိမ့်မည်</translation>
 <translation id="5489227211564503167">ကုန်လွန်သွားချိန် <ph name="TOTAL_TIME" /> အနက် <ph name="ELAPSED_TIME" />။</translation>
 <translation id="5494752089476963479">စိတ်အနှောင့်အယှက်ဖြစ်စေသော သို့မဟုတ် အထင်အမြင်မှားစေနိုင်သော ကြော်ငြာများပြသသည့် ဝဘ်ဆိုက်များတွင် ကြော်ငြာများကို ပိတ်သည်</translation>
@@ -177,10 +188,10 @@
 <translation id="5556459405103347317">ပြန်တင်ရန်</translation>
 <translation id="5596627076506792578">ပိုမို ရွေးချယ်စရာများ</translation>
 <translation id="5649053991847567735">အလိုအလျောက် ဒေါင်းလုပ်ရယူခြင်း</translation>
+<translation id="5668404140385795438">ချဲ့နေမှုကို ဟန့်တားရန် ဝဘ်ဆိုက် တစ်ခု၏ တောင်းဆိုချက်ကို အုပ်ရေးပါ</translation>
 <translation id="5677928146339483299">ပိတ်ဆို့ထား</translation>
 <translation id="5689516760719285838">တည်နေရာ</translation>
 <translation id="5690795753582697420">Android ဆက်တင်များတွင် 'ကင်မရာ' ပိတ်ထားသည်</translation>
-<translation id="5710871682236653961">NFC စက်များကို တို့လိုက်သည့်အခါ အချက်အလက်များ ပို့ရန်၊ လက်ခံရန် ဝဘ်ဆိုက်များကို ခွင့်မပြုမီ ခွင့်တောင်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="5719847187258001597">၎င်းက သင့် 'ပင်မစာမျက်နှာ' ပေါ်ရှိ <ph name="ORIGIN" /> သို့မဟုတ် ၎င်း၏အက်ပ်က သိမ်းထားသော ဒေတာနှင့် ကွတ်ကီးအားလုံးကို ရှင်းထုတ်လိုက်ပါမည်။</translation>
 <translation id="5771720122942595109"><ph name="PERMISSION_1" /> ပိတ်ထားသည်</translation>
 <translation id="5804241973901381774">ခွင့်ပြုချက်များ</translation>
@@ -230,16 +241,16 @@
 <translation id="6790428901817661496">ဖွင့်ရန်</translation>
 <translation id="6818926723028410516">စာရင်းမှ ရွေးရန်</translation>
 <translation id="6864395892908308021">ဤစက်က NFC ဖတ်၍မရပါ</translation>
-<translation id="6910211073230771657">ဖျက်ပြီး</translation>
 <translation id="6912998170423641340">ကလစ်ဘုတ်ရှိ စာနှင့် ပုံများအား မကြည့်နိုင်ရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
 <translation id="6945221475159498467">ရွေးရန်</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">ရယူအသုံးချနိုင်မှု</translation>
 <translation id="6992289844737586249">ဆိုက်များကို သင့်မိုခရိုဖုန်းအား အသုံးပြုခွင့်မပေးမီ ဦးစွာမေးမြန်းပါ (အကြံပြုထားသည်)</translation>
 <translation id="7000754031042624318">Android ဆက်တင်များတွင် ပိတ်ထားသည်</translation>
 <translation id="7016516562562142042">လက်ရှိရှာ​ဖွေမှု အင်ဂျင်အတွက် ခွင့်ပြုထားသည်</translation>
+<translation id="702463548815491781">TalkBack သို့မဟုတ် 'ခလုတ်အသုံးပြုခွင့်' ဖွင့်ထားသည့်အခါ အကြံပြုသည်</translation>
 <translation id="7053983685419859001">ပိတ်ဆို့ရန်</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{1 ခု ရွေးထားသည်}other{# ခု ရွေးထားသည်}}</translation>
-<translation id="7070090581017165256">ဤဝဘ်ဆိုက်အကြောင်း</translation>
 <translation id="7087918508125750058"><ph name="ITEM_COUNT" /> ခု ရွေးထားသည်။ မျက်နှာပြင်၏ ထိပ်နားတွင် ရွေးချယ်စရာများ ရှိသည်</translation>
 <translation id="7141896414559753902">ပေါ့ပ်အပ်နှင့် တစ်ဆင့်ပြန်ညွှန်ချက်များကို မဖော်ပြနိုင်စေရန် ဝဘ်ဆိုက်များအား ပိတ်ပါ (အကြံပြုထားသည်)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> ကီလိုဘိုက်</translation>
@@ -254,8 +265,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">ဝဘ်ဆိုက်တစ်ခုက သင့်မိုက်ကရိုဖုန်းကို အသုံးပြုနေသည်</translation>
 <translation id="7561196759112975576">အမြဲတမ်း</translation>
-<translation id="7572498721684305250">NFC စက်များကို တို့လိုက်သည့်အခါ အချက်အလက်များ ပို့ခြင်း၊ လက်ခံခြင်းတို့မှ ဝဘ်ဆိုက်များကို ပိတ်ထားသည်</translation>
 <translation id="757524316907819857">ကာကွယ်ထားသည့် အကြောင်းအရာများကို မပြသရန် ဝဘ်ဆိုက်များကို ပိတ်ပါ</translation>
+<translation id="7577900504646297215">စိတ်ဝင်စားမှုများ စီမံရန်</translation>
 <translation id="7649070708921625228">အကူအညီ</translation>
 <translation id="7658239707568436148">မလုပ်တော့</translation>
 <translation id="7781829728241885113">မနေ့က</translation>
@@ -288,6 +299,7 @@
 <translation id="8211406090763984747">ချိတ်ဆက်မှုသည် လုံခြုံပါသည်</translation>
 <translation id="8249310407154411074">အပေါ်ဆုံးသို့ ရွှေ့ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
+<translation id="8284326494547611709">စာတန်းများ</translation>
 <translation id="8300705686683892304">အက်ပ်က စီမံခန့်ခွဲထားသည်</translation>
 <translation id="8324158725704657629">ထပ်မမေးပါနှင့်</translation>
 <translation id="8372893542064058268">တိကျသည့်ဆိုက်အတွက် နောက်ခံတွင်စင့်ခ်လုပ်ခြင်းကို ခွင့်ပြုပါ</translation>
@@ -321,6 +333,7 @@
 <translation id="8903921497873541725">ချဲ့ကြည့်ပါ</translation>
 <translation id="8921772741368021346"><ph name="POSITION" /> / <ph name="DURATION" /></translation>
 <translation id="8926666909099850184">ဤစက်အတွက် NFC ကို ပိတ်ထားသည်။ <ph name="BEGIN_LINK" />Android ဆက်တင်များ<ph name="END_LINK" /> ထဲတွင် ၎င်းကို ဖွင့်ပါ။</translation>
+<translation id="8928445016601307354">ဝဘ်ဆိုက်များအား NFC စက်ပစ္စည်းများရှိ အချက်အလက်များကို ကြည့်ခွင့်နှင့် ပြောင်းလဲခွင့် ပိတ်ရန်</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">အချို့ဝဘ်ဆိုက်များအတွက် ကွတ်ကီးများကို ပိတ်ဆို့သည်။</translation>
 <translation id="8959122750345127698">သွားလာမှုပြလမ်းညွှန်ဆီသို့ မရောက်နိုင်ပါ- <ph name="URL" /></translation>

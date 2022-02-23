@@ -3,6 +3,7 @@
 <grit base_dir="." current_release="1" latest_public_release="0"
       output_all_resource_defines="false" enc_check="möl" source_lang_id="en">
   <outputs>
+    <output filename="_locales/af/messages.json.gz" type="chrome_messages_json_gzip" lang="af"/>
     <output filename="_locales/am/messages.json.gz" type="chrome_messages_json_gzip" lang="am"/>
     <output filename="_locales/ar/messages.json.gz" type="chrome_messages_json_gzip" lang="ar"/>
     <output filename="_locales/bg/messages.json.gz" type="chrome_messages_json_gzip" lang="bg"/>
@@ -27,6 +28,7 @@
     <output filename="_locales/hr/messages.json.gz" type="chrome_messages_json_gzip" lang="hr"/>
     <output filename="_locales/hu/messages.json.gz" type="chrome_messages_json_gzip" lang="hu"/>
     <output filename="_locales/id/messages.json.gz" type="chrome_messages_json_gzip" lang="id"/>
+    <output filename="_locales/is/messages.json.gz" type="chrome_messages_json_gzip" lang="is"/>
     <output filename="_locales/it/messages.json.gz" type="chrome_messages_json_gzip" lang="it"/>
     <output filename="_locales/ja/messages.json.gz" type="chrome_messages_json_gzip" lang="ja"/>
     <output filename="_locales/kn/messages.json.gz" type="chrome_messages_json_gzip" lang="kn"/>
@@ -56,6 +58,7 @@
     <output filename="_locales/vi/messages.json.gz" type="chrome_messages_json_gzip" lang="vi"/>
     <output filename="_locales/zh_CN/messages.json.gz" type="chrome_messages_json_gzip" lang="zh-CN"/>
     <output filename="_locales/zh_TW/messages.json.gz" type="chrome_messages_json_gzip" lang="zh-TW"/>
+    <output filename="_locales/zu/messages.json.gz" type="chrome_messages_json_gzip" lang="zu"/>
   </outputs>
   <translations>
     <file path="accessibility_strings_af.xtb" lang="af" />

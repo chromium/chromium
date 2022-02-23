@@ -14,6 +14,7 @@
 #include "base/threading/hang_watcher.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/trace_event/memory_dump_manager.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/browser_child_process_host_impl.h"
 #include "content/browser/browser_thread_impl.h"
@@ -26,12 +27,12 @@
 #include "net/url_request/url_fetcher.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "content/common/android/cpu_affinity_setter.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -70,7 +71,7 @@ void BrowserProcessIOThread::AllowBlockingForTesting() {
 void BrowserProcessIOThread::Init() {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   com_initializer_ = std::make_unique<base::win::ScopedCOMInitializer>();
 #endif
 
@@ -82,7 +83,7 @@ void BrowserProcessIOThread::Init() {
 void BrowserProcessIOThread::Run(base::RunLoop* run_loop) {
   DCHECK_CALLED_ON_VALID_THREAD(browser_thread_checker_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Not to reset thread name to "Thread-???" by VM, attach VM with thread name.
   // Though it may create unnecessary VM thread objects, keeping thread name
   // gives more benefit in debugging in the platform.
@@ -110,7 +111,7 @@ void BrowserProcessIOThread::CleanUp() {
 
   notification_service_.reset();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   com_initializer_.reset();
 #endif
 }

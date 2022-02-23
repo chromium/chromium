@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
@@ -28,7 +29,6 @@ class PrefRegistrySyncable;
 namespace web_app {
 
 class WebAppDatabaseFactory;
-class WebAppMover;
 class WebAppSyncBridge;
 class WebAppIconManager;
 class PreinstalledWebAppManager;
@@ -40,6 +40,7 @@ class WebAppInstallManager;
 class WebAppPolicyManager;
 class WebAppUiManager;
 class OsIntegrationManager;
+class WebAppTranslationManager;
 
 // Connects Web App features, such as the installation of default and
 // policy-managed web apps, with Profiles (as WebAppProvider is a
@@ -123,20 +124,31 @@ class WebAppProvider : public KeyedService {
   // Implements fetching of app icons.
   WebAppIconManager& icon_manager();
 
+  WebAppTranslationManager& translation_manager();
+
   SystemWebAppManager& system_web_app_manager();
 
   // Manage all OS hooks that need to be deployed during Web Apps install
   OsIntegrationManager& os_integration_manager();
+  const OsIntegrationManager& os_integration_manager() const;
 
   // KeyedService:
   void Shutdown() override;
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // Kicks off a migration of some entries from the `web_app_ids` pref
+  // dictionary to the web app database. This should be safe to delete one year
+  // after 02-2022.
+  static void MigrateProfilePrefs(Profile* profile);
+
   // Signals when app registry becomes ready.
   const base::OneShotEvent& on_registry_ready() const {
     return on_registry_ready_;
   }
+
+  // Returns whether the app registry is ready.
+  bool is_registry_ready() { return is_registry_ready_; }
 
   PreinstalledWebAppManager& preinstalled_web_app_manager() {
     return *preinstalled_web_app_manager_;
@@ -158,12 +170,14 @@ class WebAppProvider : public KeyedService {
 
   void CheckIsConnected() const;
 
+  void DoMigrateProfilePrefs(Profile* profile);
+
   std::unique_ptr<WebAppDatabaseFactory> database_factory_;
-  std::unique_ptr<WebAppMover> web_app_mover_;
   std::unique_ptr<WebAppRegistrar> registrar_;
   std::unique_ptr<WebAppSyncBridge> sync_bridge_;
   std::unique_ptr<PreinstalledWebAppManager> preinstalled_web_app_manager_;
   std::unique_ptr<WebAppIconManager> icon_manager_;
+  std::unique_ptr<WebAppTranslationManager> translation_manager_;
   std::unique_ptr<WebAppInstallFinalizer> install_finalizer_;
   std::unique_ptr<ManifestUpdateManager> manifest_update_manager_;
   std::unique_ptr<ExternallyManagedAppManager> externally_managed_app_manager_;
@@ -176,11 +190,12 @@ class WebAppProvider : public KeyedService {
 
   base::OneShotEvent on_registry_ready_;
 
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Ensures that ConnectSubsystems() is not called after Start().
   bool started_ = false;
   bool connected_ = false;
+  bool is_registry_ready_ = false;
 
   bool skip_awaiting_extension_system_ = false;
 

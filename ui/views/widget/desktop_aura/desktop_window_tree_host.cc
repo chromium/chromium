@@ -8,12 +8,17 @@
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
+#include "ui/views/widget/desktop_aura/desktop_native_cursor_manager.h"
 #include "ui/views/widget/desktop_aura/desktop_screen_position_client.h"
 
 namespace views {
 
+bool DesktopWindowTreeHost::IsMoveLoopSupported() const {
+  return true;
+}
+
 void DesktopWindowTreeHost::SetBoundsInDIP(const gfx::Rect& bounds) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The window parameter is intentionally passed as nullptr on Windows because
   // a non-null window parameter causes errors when restoring windows to saved
   // positions in variable-DPI situations. See https://crbug.com/1224715 for
@@ -34,6 +39,11 @@ std::unique_ptr<aura::client::ScreenPositionClient>
 DesktopWindowTreeHost::CreateScreenPositionClient() {
   return std::make_unique<DesktopScreenPositionClient>(
       AsWindowTreeHost()->window());
+}
+
+DesktopNativeCursorManager*
+DesktopWindowTreeHost::GetSingletonDesktopNativeCursorManager() {
+  return new DesktopNativeCursorManager();
 }
 
 }  // namespace views

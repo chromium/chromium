@@ -4,24 +4,22 @@
 
 /* Small icons for file statuses, used in lists and menus. */
 [file-status-icon] {
-  background-image: none;
-  background-position: right center;
-  background-repeat: no-repeat;
-  background-size: 16px 16px;
+  -webkit-mask-image: none;
+  -webkit-mask-position: right center;
+  -webkit-mask-repeat: no-repeat;
+  -webkit-mask-size: 16px 16px;
 }
 
 html[dir='rtl'] [file-status-icon] {
-  background-position: left center;
+  -webkit-mask-position: left center;
 }
 
 [file-status-icon='copied'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/cloud_import_syncing.png) 1x,
-      url(../images/files/ui/2x/cloud_import_syncing.png) 2x);
+  -webkit-mask-image: url(../images/files/ui/cloud_import_syncing.svg);
+  background-color: currentColor;
 }
 
 [file-status-icon='imported'] {
-  background-image: -webkit-image-set(
-      url(../images/files/ui/service_drive.png) 1x,
-      url(../images/files/ui/2x/service_drive.png) 2x);
+  -webkit-mask-image: url(../images/volumes/service_drive.svg);
+  background-color: currentColor;
 }

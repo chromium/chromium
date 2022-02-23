@@ -51,9 +51,21 @@ html {
   margin: 0;
   width: 100%;
 }
+
+embed {
+  left: 0;
+  position: fixed;
+  top: 0;
+}
+
+/* Hide scrollbars when in Presentation mode. */
+.fullscreen {
+  overflow: hidden;
+}
 </style>
+<div id="sizer"></div>
 <embed type="application/x-google-chrome-pdf" src="$1" original-url="$2"
-  background-color="$4" javascript="$5"$6>
+    background-color="$4" javascript="$5"$6>
 <script type="module">
 $3
 </script>
@@ -62,7 +74,7 @@ $3
   // TODO(crbug.com/1252096): We should load the injected scripts as network
   // resources instead. Until then, feel free to raise this limit as necessary.
   if (stream_info.injected_script)
-    DCHECK_LE(stream_info.injected_script->size(), 8'192u);
+    DCHECK_LE(stream_info.injected_script->size(), 16'384u);
 
   return base::ReplaceStringPlaceholders(
       kResponseTemplate,
@@ -88,7 +100,8 @@ void PluginResponseWriter::Start(base::OnceClosure done_callback) {
   response->headers =
       base::MakeRefCounted<net::HttpResponseHeaders>("HTTP/1.1 200 OK");
   response->mime_type = "text/html";
-  client_->OnReceiveResponse(std::move(response));
+  client_->OnReceiveResponse(std::move(response),
+                             mojo::ScopedDataPipeConsumerHandle());
 
   mojo::ScopedDataPipeProducerHandle producer;
   mojo::ScopedDataPipeConsumerHandle consumer;

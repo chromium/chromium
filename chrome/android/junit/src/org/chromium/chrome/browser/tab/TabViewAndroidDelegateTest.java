@@ -8,8 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
-import android.view.ViewGroup;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -17,15 +15,21 @@ import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
+import org.robolectric.annotation.LooperMode;
 
+import org.chromium.base.FeatureList;
+import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseRobolectricTestRunner;
+import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.common.ContentFeatures;
 import org.chromium.ui.base.ApplicationViewportInsetSupplier;
 import org.chromium.ui.base.WindowAndroid;
 
 /** Unit tests for the TabViewAndroidDelegate. */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class TabViewAndroidDelegateTest {
     private final ArgumentCaptor<TabObserver> mTabObserverCaptor =
             ArgumentCaptor.forClass(TabObserver.class);
@@ -40,7 +44,7 @@ public class TabViewAndroidDelegateTest {
     private WindowAndroid mWindowAndroid;
 
     @Mock
-    private ViewGroup mViewContainer;
+    private ContentView mContentView;
 
     private ApplicationViewportInsetSupplier mApplicationInsetSupplier;
     private ObservableSupplierImpl<Integer> mFeatureInsetSupplier;
@@ -60,7 +64,10 @@ public class TabViewAndroidDelegateTest {
         when(mTab.getWindowAndroid()).thenReturn(mWindowAndroid);
         when(mTab.getWebContents()).thenReturn(mWebContents);
 
-        mViewAndroidDelegate = new TabViewAndroidDelegate(mTab, mViewContainer);
+        FeatureList.TestValues testValues = new TestValues();
+        testValues.addFeatureFlagOverride(ContentFeatures.TOUCH_DRAG_AND_CONTEXT_MENU, false);
+        FeatureList.setTestValues(testValues);
+        mViewAndroidDelegate = new TabViewAndroidDelegate(mTab, mContentView);
         verify(mTab).addObserver(mTabObserverCaptor.capture());
     }
 

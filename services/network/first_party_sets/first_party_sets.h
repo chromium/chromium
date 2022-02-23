@@ -10,56 +10,147 @@
 #include <set>
 
 #include "base/callback.h"
+#include "base/containers/circular_deque.h"
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
+#include "base/files/file.h"
+#include "base/sequence_checker.h"
+#include "base/thread_annotations.h"
+#include "base/time/time.h"
 #include "net/base/schemeful_site.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/first_party_set_metadata.h"
 #include "net/cookies/same_party_context.h"
+#include "services/network/first_party_sets/first_party_sets_loader.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace network {
 
-// Class FirstPartySets is a pseudo-singleton owned by NetworkService; it stores
-// all known information about First-Party Sets state. This information is
-// updated by the component updater via |ParseAndSet|.
+// Class FirstPartySets is a pseudo-singleton owned by NetworkService; it
+// handles loading First-Party Sets from multiple sources and answers queries
+// about First-Party Sets.
 class FirstPartySets {
  public:
-  FirstPartySets();
+  using SetsByOwner =
+      base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>>;
+  using OwnerResult = absl::optional<net::SchemefulSite>;
+  using OwnersResult = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+  using FlattenedSets = base::flat_map<net::SchemefulSite, net::SchemefulSite>;
+
+  explicit FirstPartySets(bool enabled);
   ~FirstPartySets();
 
   FirstPartySets(const FirstPartySets&) = delete;
   FirstPartySets& operator=(const FirstPartySets&) = delete;
 
-  // Stores the First-Party Set that was provided via the `kUseFirstPartySet`
-  // flag/switch.
+  bool is_enabled() const {
+    DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+    return enabled_;
+  }
+
+  // Parses and stores the First-Party Set that was provided via the
+  // `kUseFirstPartySet` flag/switch.
   //
-  // Has no effect if `kFirstPartySets` is disabled.
+  // Has no effect if `kFirstPartySets` is disabled, or `ParseAndSet` is not
+  // called.
   void SetManuallySpecifiedSet(const std::string& flag_value);
 
-  // Overwrites the current members-to-owners map with the values in |raw_sets|,
-  // which should be the JSON-encoded string representation of a collection of
-  // set declarations according to the format specified in this document:
-  // https://github.com/privacycg/first-party-sets. Returns a pointer to the
-  // mapping, for testing.
+  // Asynchronously parses and stores the First-Party Sets from `sets_file`.
+  //  `sets_file` is expected to contain either a JSON-encoded array of records,
+  //  or a sequence of newline-delimited JSON records. Each record is a set
+  //  declaration in the format specified here:
+  // https://github.com/privacycg/first-party-sets.
   //
-  // In case of invalid input, clears the current members-to-owners map, but
-  // keeps any manually-specified set (i.e. a set provided on the command line).
+  // Only the first call to ParseAndSet can have any effect; subsequent
+  // invocations are ignored.
   //
-  // Has no effect if `kFirstPartySets` is disabled.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite>* ParseAndSet(
-      base::StringPiece raw_sets);
+  // Has no effect if `kFirstPartySets` is disabled, or
+  // `SetManuallySpecifiedSet` is not called.
+  void ParseAndSet(base::File sets_file);
 
-  // Overwrites the current members-to-owners map with the values in `input`,
-  // which should be a newline-delimited collection of JSON-encoded set
-  // declarations according to the format specified in this document:
-  // https://github.com/privacycg/first-party-sets. Exactly one JSON record must
-  // be on each line.
+  // Computes the First-Party Set metadata related to the given context.
   //
-  // In case of invalid input, clears the current members-to-owners map, but
-  // keeps any manually-specified set (i.e. a set provided on the command line).
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<net::FirstPartySetMetadata> ComputeMetadata(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback);
+
+  // Computes a mapping from owner to set members. For convenience of iteration,
+  // the members of the set includes the owner.
   //
-  // Has no effect if `kFirstPartySets` is disabled.
-  void ParseAndSetFromStream(std::istream& input);
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<SetsByOwner> Sets(
+      base::OnceCallback<void(SetsByOwner)> callback);
+
+  // Receives the completed First-Party Sets from `sets_loader_` and stores it
+  // in the `sets_`.
+  void SetCompleteSets(FlattenedSets sets);
+  // Sets the `raw_persisted_sets_`, which is a JSON-encoded
+  // string representation of a map of site -> site.
+  void SetPersistedSets(base::StringPiece persisted_sets);
+  // Sets the `on_site_data_cleared_` callback, which takes input of a
+  // JSON-encoded string representation of a map of site -> site.
+  void SetOnSiteDataCleared(
+      base::OnceCallback<void(const std::string&)> callback);
+  // Sets the enabled_ attribute for testing.
+  void SetEnabledForTesting(bool enabled);
+
+  // Returns nullopt if First-Party Sets is disabled or if the input is not in
+  // a nontrivial set.
+  // If FPS is enabled and the input site is in a nontrivial set, then this
+  // returns the owner site of that set.
+  //
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<OwnerResult> FindOwner(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(OwnerResult)> callback);
+
+  // Batched version of `FindOwner`. Returns the mapping of sites to owners for
+  // the given input sites (if an owner exists).
+  //
+  // When FPS is disabled, returns an empty map.
+  // When FPS is enabled, this maps each input site to its owner (if one
+  // exists), and returns the resulting mapping. If a site isn't in a
+  // non-trivial First-Party Set, it is not added to the output map.
+  //
+  // This may return a result synchronously, or asynchronously invoke `callback`
+  // with the result. The callback will be invoked iff the return value is
+  // nullopt; i.e. a result will be provided via return value or callback, but
+  // not both, and not neither.
+  [[nodiscard]] absl::optional<OwnersResult> FindOwners(
+      const base::flat_set<net::SchemefulSite>& sites,
+      base::OnceCallback<void(OwnersResult)> callback);
+
+ private:
+  using SingleSet =
+      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>;
+
+  // Same as `ComputeMetadata`, but plumbs the result into the callback. Must
+  // only be called once the instance is fully initialized.
+  void ComputeMetadataAndInvoke(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context,
+      base::OnceCallback<void(net::FirstPartySetMetadata)> callback,
+      base::TimeTicks enqueued_at) const;
+
+  // Synchronous version of `ComputeMetadata`, to be run only once the instance
+  // is fully initialized.
+  net::FirstPartySetMetadata ComputeMetadataInternal(
+      const net::SchemefulSite& site,
+      const net::SchemefulSite* top_frame_site,
+      const std::set<net::SchemefulSite>& party_context) const;
 
   // Returns whether the `site` is same-party with the `party_context`, and
   // `top_frame_site` (if it is not nullptr). That is, is the `site`'s owner the
@@ -73,15 +164,6 @@ class FirstPartySets {
       const std::set<net::SchemefulSite>& party_context,
       bool infer_singleton_sets) const;
 
-  // Computes the SameParty context, indicating whether `site` is same-party
-  // with `top_frame_site` (if not nullptr) and `party_context`. The context
-  // includes the real context type, plus some additional "hypothetical" context
-  // types for metrics.
-  net::SamePartyContext ComputeContext(
-      const net::SchemefulSite& site,
-      const net::SchemefulSite* top_frame_site,
-      const std::set<net::SchemefulSite>& party_context) const;
-
   // Computes the "type" of the context. I.e., categorizes contexts based on
   // whether the top frame site and resource URL are same-party; whether the top
   // frame site was ignored; whether the `party_context` is same-party with
@@ -93,51 +175,53 @@ class FirstPartySets {
   // implictly-declared singleton First-Party Set.
   net::FirstPartySetsContextType ComputeContextType(
       const net::SchemefulSite& site,
-      const absl::optional<net::SchemefulSite>& top_frame_site,
+      const net::SchemefulSite* top_frame_site,
       const std::set<net::SchemefulSite>& party_context) const;
 
-  // Returns whether the `site` is a member of a non-trivial (i.e.
-  // non-singleton) First-Party Set.
-  bool IsInNontrivialFirstPartySet(const net::SchemefulSite& site) const;
-
-  int64_t size() const { return sets_.size(); }
-
-  // Returns a mapping from owner to set members. For convenience of iteration,
-  // the members of the set includes the owner.
-  base::flat_map<net::SchemefulSite, std::set<net::SchemefulSite>> Sets() const;
-
-  // Sets the `raw_persisted_sets_`, which is a JSON-encoded
-  // string representation of a map of site -> site.
-  void SetPersistedSets(base::StringPiece persisted_sets);
-  // Sets the `on_site_data_cleared_` callback, which takes input of a
-  // JSON-encoded string representation of a map of site -> site.
-  void SetOnSiteDataCleared(
-      base::OnceCallback<void(const std::string&)> callback);
-
- private:
-  // Performs bookkeeping after receiving a new set of sets from Component
-  // Updater.
-  void OnComponentSetsReceived();
+  // Same as `FindOwner`, but plumbs the result into the callback. Must only be
+  // called once the instance is fully initialized.
+  void FindOwnerAndInvoke(
+      const net::SchemefulSite& site,
+      base::OnceCallback<void(FirstPartySets::OwnerResult)> callback,
+      base::TimeTicks enqueued_at) const;
 
   // Returns `site`'s owner (optionally inferring a singleton set if necessary),
   // or `nullopt` if `site` has no owner. Must not return `nullopt` if
   // `infer_singleton_sets` is true.
-  const absl::optional<net::SchemefulSite> FindOwner(
+  //
+  // This is synchronous, and must not be called
+  // until the instance is fully initialized.
+  const absl::optional<net::SchemefulSite> FindOwnerInternal(
       const net::SchemefulSite& site,
       bool infer_singleton_sets) const;
 
-  // We must ensure there's no intersection between the manually-specified set
-  // and the sets that came from Component Updater. (When reconciling the
-  // manually-specified set and `sets_`, entries in the manually-specified set
-  // always win.) We must also ensure that `sets_` includes the set described by
-  // `manually_specified_set_`.
-  void ApplyManuallySpecifiedSet();
+  // Same as `FindOwners`, but plumbs the result into the callback. Must only be
+  // called once the instance is fully initialized.
+  void FindOwnersAndInvoke(
+      const base::flat_set<net::SchemefulSite>& sites,
+      base::OnceCallback<void(FirstPartySets::OwnersResult)> callback,
+      base::TimeTicks enqueued_at) const;
+
+  // Synchronous version of `FindOwners`, to be run only once the instance is
+  // initialized.
+  OwnersResult FindOwnersInternal(
+      const base::flat_set<net::SchemefulSite>& sites) const;
+
+  // Same as `Sets`, but plumbs the result into the callback. Must only be
+  // called once the instance is fully initialized.
+  void SetsAndInvoke(
+      base::OnceCallback<void(FirstPartySets::SetsByOwner)> callback,
+      base::TimeTicks enqueued_at) const;
+
+  // Synchronous version of `Sets`, to be run only once the instance is
+  // initialized.
+  SetsByOwner SetsInternal() const;
 
   // Compares the map `old_sets` to `sets_` and returns the set of sites that:
   // 1) were in `old_sets` but are no longer in `sets_`, i.e. leave the FPSs;
   // or, 2) mapped to a different owner site.
   base::flat_set<net::SchemefulSite> ComputeSetsDiff(
-      const base::flat_map<net::SchemefulSite, net::SchemefulSite>& old_sets);
+      const FlattenedSets& old_sets) const;
 
   // Checks the required inputs have been received, and if so, computes the diff
   // between the `sets_` and the parsed `raw_persisted_sets_`, and clears the
@@ -146,30 +230,60 @@ class FirstPartySets {
   // TODO(shuuran@chromium.org): Implement the code to clear site state.
   void ClearSiteDataOnChangedSetsIfReady();
 
+  // Enqueues a query to be answered once the instance is fully initialized.
+  void EnqueuePendingQuery(base::OnceClosure run_query);
+
+  // Runs all pending queries. Must not be called until the instance is fully
+  // initialized.
+  void InvokePendingQueries();
+
   // Represents the mapping of site -> site, where keys are members of sets, and
   // values are owners of the sets. Owners are explicitly represented as members
   // of the set.
-  base::flat_map<net::SchemefulSite, net::SchemefulSite> sets_;
-  absl::optional<
-      std::pair<net::SchemefulSite, base::flat_set<net::SchemefulSite>>>
-      manually_specified_set_;
+  //
+  // Optional because it is unset until all of the required inputs have been
+  // received.
+  absl::optional<FlattenedSets> sets_ GUARDED_BY_CONTEXT(sequence_checker_);
 
-  std::string raw_persisted_sets_;
+  // The sets that were persisted during the last run of Chrome. Initially unset
+  // (nullopt) until it has been read from disk.
+  absl::optional<std::string> raw_persisted_sets_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  bool persisted_sets_ready_ = false;
-  bool component_sets_ready_ = false;
-  bool manual_sets_ready_ = false;
+  bool enabled_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
 
   // The callback runs after the site state clearing is completed.
-  base::OnceCallback<void(const std::string&)> on_site_data_cleared_;
+  base::OnceCallback<void(const std::string&)> on_site_data_cleared_
+      GUARDED_BY_CONTEXT(sequence_checker_);
 
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesJoined);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_SitesLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerChanged);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_OwnerLeft);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest,
+  std::unique_ptr<FirstPartySetsLoader> sets_loader_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The queue of queries that are waiting for the instance to be initialized.
+  std::unique_ptr<base::circular_deque<base::OnceClosure>> pending_queries_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  // The time when the first async query was enqueued, if any. Used for metrics.
+  absl::optional<base::TimeTicks> first_async_query_time_
+      GUARDED_BY_CONTEXT(sequence_checker_);
+
+  SEQUENCE_CHECKER(sequence_checker_);
+
+  base::WeakPtrFactory<FirstPartySets> weak_factory_{this};
+
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_SitesJoined);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_SitesLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_OwnerChanged);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_OwnerLeft);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
                            ComputeSetsDiff_OwnerMemberRotate);
-  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsTest, ComputeSetsDiff_EmptySets);
+  FRIEND_TEST_ALL_PREFIXES(FirstPartySetsEnabledTest,
+                           ComputeSetsDiff_EmptySets);
+  FRIEND_TEST_ALL_PREFIXES(PopulatedFirstPartySetsTest, ComputeContextType);
 };
 
 }  // namespace network

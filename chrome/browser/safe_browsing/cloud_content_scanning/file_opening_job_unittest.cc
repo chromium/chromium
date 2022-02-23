@@ -25,7 +25,7 @@ class FileOpeningJobTest : public testing::Test {
 
   void OnGotFileData(std::unique_ptr<FileAnalysisRequest> request,
                      BinaryUploadService::Result result,
-                     const BinaryUploadService::Request::Data& data) {
+                     BinaryUploadService::Request::Data data) {
     EXPECT_EQ(BinaryUploadService::Result::SUCCESS, result);
     EXPECT_TRUE(data.contents.empty());
     EXPECT_FALSE(data.mime_type.empty());

@@ -6,11 +6,18 @@
 import codecs
 import unittest
 from unittest.mock import patch, mock_open, call
+from typing import NamedTuple
 
 import generate_policy_source
 import generate_policy_source_test_data as test_data
 
 from generate_policy_source import PolicyDetails
+
+
+class PolicyData(NamedTuple):
+  policy_id: int
+  chunk_number: int
+  field_number: int
 
 
 class PolicyGenerationTest(unittest.TestCase):
@@ -85,6 +92,61 @@ class PolicyGenerationTest(unittest.TestCase):
           "tags": [],
           "caption": "CloudOnlyPolicy caption",
           "desc": "CloudOnlyPolicy desc",
+      }, {
+          "name": "ChunkZeroLastFieldBooleanPolicy",
+          "type": "main",
+          "schema": {
+              "type": "boolean"
+          },
+          "supported_on": ["chrome_os:99-"],
+          "id": 979,
+          "tags": [],
+          "caption": "ChunkZeroLastFieldBooleanPolicy caption",
+          "desc": "ChunkZeroLastFieldBooleanPolicy desc.",
+      }, {
+          "name": "ChunkOneFirstFieldBooleanPolicy",
+          "type": "main",
+          "schema": {
+              "type": "boolean"
+          },
+          "supported_on": ["chrome_os:99-"],
+          "id": 980,
+          "tags": [],
+          "caption": "ChunkOneFirstFieldBooleanPolicy caption",
+          "desc": "ChunkOneFirstFieldBooleanPolicy desc.",
+      }, {
+          "name": "ChunkOneLastFieldBooleanPolicy",
+          "type": "main",
+          "schema": {
+              "type": "boolean"
+          },
+          "supported_on": ["chrome_os:99-"],
+          "id": 1779,
+          "tags": [],
+          "caption": "ChunkOneLastFieldBooleanPolicy caption",
+          "desc": "ChunkOneLastFieldBooleanPolicy desc.",
+      }, {
+          "name": "ChunkTwoFirstFieldStringPolicy",
+          "type": "string",
+          "schema": {
+              "type": "string"
+          },
+          "supported_on": ["chrome_os:99-"],
+          "id": 1780,
+          "tags": [],
+          "caption": "ChunkTwoFirstFieldStringPolicy caption",
+          "desc": "ChunkTwoFirstFieldStringPolicy desc"
+      }, {
+          "name": "ChunkTwoLastFieldStringPolicy",
+          "type": "string",
+          "schema": {
+              "type": "string"
+          },
+          "supported_on": ["chrome_os:99-"],
+          "id": 2579,
+          "tags": [],
+          "caption": "ChunkTwoLastFieldStringPolicy caption",
+          "desc": "ChunkTwoLastFieldStringPolicy desc"
       }],
       "policy_atomic_group_definitions": []
   }
@@ -354,6 +416,46 @@ class PolicyGenerationTest(unittest.TestCase):
     mocked_file.assert_called_once_with(output_path, 'w', encoding='utf-8')
     self._assertCallsEqual(mocked_file().write.call_args_list,
                            test_data.EXPECTED_APP_RESTRICTIONS_XML)
+
+
+  def testChunkNumberAndFieldNumber(self):
+    test_data = [
+        # Last top-level policy
+        PolicyData(policy_id=979, chunk_number=0, field_number=981),
+        # First policy in chunk 1
+        PolicyData(policy_id=980, chunk_number=1, field_number=1),
+        # Last policy in chunk 1
+        PolicyData(policy_id=1779, chunk_number=1, field_number=800),
+        # First policy in chunk 2
+        PolicyData(policy_id=1780, chunk_number=2, field_number=1),
+        # Last policy in chunk 2
+        PolicyData(policy_id=2579, chunk_number=2, field_number=800),
+        # First policy in chunk 3
+        PolicyData(policy_id=2580, chunk_number=3, field_number=1),
+        # Last policy in chunk 3
+        PolicyData(policy_id=3379, chunk_number=3, field_number=800),
+        # First policy in chunk 501
+        PolicyData(policy_id=400980, chunk_number=501, field_number=1),
+        # Last policy in chunk 501
+        PolicyData(policy_id=401779, chunk_number=501, field_number=800),
+        # First policy in chunk 502
+        PolicyData(policy_id=401780, chunk_number=502, field_number=1),
+        # Last policy in chunk 502
+        PolicyData(policy_id=402579, chunk_number=502, field_number=800),
+        # First policy in chunk 503
+        PolicyData(policy_id=402580, chunk_number=503, field_number=1),
+        # Last policy in chunk 503
+        PolicyData(policy_id=403379, chunk_number=503, field_number=800),
+    ]
+
+    for policy_data in test_data:
+      self.assertEqual(
+          generate_policy_source._ChunkNumber(policy_data.policy_id),
+          policy_data.chunk_number)
+      self.assertEqual(
+          generate_policy_source._FieldNumber(policy_data.policy_id,
+                                              policy_data.chunk_number),
+          policy_data.field_number)
 
 
 if __name__ == '__main__':

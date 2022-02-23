@@ -5,11 +5,9 @@
 #ifndef CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 #define CONTENT_RENDERER_WEBGRAPHICSCONTEXT3D_PROVIDER_IMPL_H_
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/memory/ref_counted.h"
 #include "components/viz/common/gpu/context_provider.h"
-#include "content/common/content_export.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/webgpu_interface.h"
@@ -29,7 +27,7 @@ class GLHelper;
 
 namespace content {
 
-class CONTENT_EXPORT WebGraphicsContext3DProviderImpl
+class WebGraphicsContext3DProviderImpl
     : public blink::WebGraphicsContext3DProvider,
       public viz::ContextLostObserver {
  public:

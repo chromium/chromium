@@ -11,6 +11,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "net/base/filename_util.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
@@ -46,6 +47,14 @@ bool OSExchangeDataProviderNonBacked::DidOriginateFromRenderer() const {
 #else
   return originated_from_renderer_;
 #endif
+}
+
+void OSExchangeDataProviderNonBacked::MarkAsFromPrivileged() {
+  is_from_privileged_ = true;
+}
+
+bool OSExchangeDataProviderNonBacked::IsFromPrivileged() const {
+  return is_from_privileged_;
 }
 
 void OSExchangeDataProviderNonBacked::SetString(const std::u16string& data) {
@@ -85,14 +94,14 @@ void OSExchangeDataProviderNonBacked::SetPickledData(
 }
 
 bool OSExchangeDataProviderNonBacked::GetString(std::u16string* data) const {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (HasFile()) {
     // Various Linux file managers both pass a list of file:// URIs and set the
     // string representation to the URI. We explicitly don't want to return use
     // this representation.
     return false;
   }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
   if ((formats_ & OSExchangeData::STRING) == 0)
     return false;
@@ -278,6 +287,7 @@ void OSExchangeDataProviderNonBacked::CopyData(
   provider->source_ =
       source_ ? std::make_unique<DataTransferEndpoint>(*source_.get())
               : nullptr;
+  provider->is_from_privileged_ = is_from_privileged_;
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   provider->originated_from_renderer_ = originated_from_renderer_;
 #endif

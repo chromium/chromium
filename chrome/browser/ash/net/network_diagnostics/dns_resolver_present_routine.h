@@ -27,7 +27,7 @@ class DnsResolverPresentRoutine : public NetworkDiagnosticsRoutine {
 
   // NetworkDiagnosticsRoutine:
   bool CanRun() override;
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -43,7 +43,8 @@ class DnsResolverPresentRoutine : public NetworkDiagnosticsRoutine {
   bool connected_network_ = false;
   bool name_servers_are_found_ = false;
   bool name_servers_are_valid_ = false;
-  std::vector<mojom::DnsResolverPresentProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::DnsResolverPresentProblem>
+      problems_;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
 };

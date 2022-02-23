@@ -1,5 +1,5 @@
 UNKNOWN_TYPE | unbxd_q | enter keyword or item number... | enter keyword or item number... | unbxd_q_1-default
-UNKNOWN_TYPE | CouponCode | Enter Your Gift Card or Coupon Number: |  | unbxd_q_1-default
+MERCHANT_PROMO_CODE | CouponCode | Enter Your Gift Card or Coupon Number: |  | unbxd_q_1-default
 UNKNOWN_TYPE | CouponPin | Enter Your Gift Card Pin Number: |  | unbxd_q_1-default
 UNKNOWN_TYPE | paymentMethod | Credit Card | CreditCard | paymentMethod_1-default
 CREDIT_CARD_NUMBER | CreditCardNumber | Credit Card Number: |  | credit-card-cc

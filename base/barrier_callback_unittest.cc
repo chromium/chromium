@@ -6,6 +6,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -50,6 +51,29 @@ TEST(BarrierCallbackTest, RunAfterNumCallbacks) {
   EXPECT_TRUE(done);
 }
 
+TEST(BarrierCallbackTest, CopiesShareState) {
+  bool done = false;
+  const auto barrier_callback = base::BarrierCallback<int>(
+      3, base::BindLambdaForTesting([&done](std::vector<int> results) {
+        EXPECT_THAT(results, testing::ElementsAre(1, 3, 2));
+        done = true;
+      }));
+  EXPECT_FALSE(done);
+
+  const auto barrier_copy1 = barrier_callback;
+  const auto barrier_copy2 = barrier_callback;
+  const auto barrier_copy3 = barrier_callback;
+
+  barrier_copy1.Run(1);
+  EXPECT_FALSE(done);
+
+  barrier_copy2.Run(3);
+  EXPECT_FALSE(done);
+
+  barrier_copy3.Run(2);
+  EXPECT_TRUE(done);
+}
+
 template <typename... Args>
 class DestructionIndicator {
  public:
@@ -63,7 +87,7 @@ class DestructionIndicator {
   void DoNothing(Args...) {}
 
  private:
-  bool* destructed_;
+  raw_ptr<bool> destructed_;
 };
 
 TEST(BarrierCallbackTest, ReleasesDoneCallbackWhenDone) {

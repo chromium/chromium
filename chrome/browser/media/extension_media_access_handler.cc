@@ -8,6 +8,7 @@
 
 #include "chrome/browser/media/webrtc/media_stream_device_permissions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension.h"
@@ -29,7 +30,7 @@ namespace {
 // 8. Accessibility Common extension (used for Dictation)
 // Once http://crbug.com/292856 is fixed, remove this allowlist.
 bool IsMediaRequestAllowedForExtension(const extensions::Extension* extension) {
-  return extension->id() == "mppnpdlheglhdfmldimlhpnegondlapf" ||
+  return extension->id() == extension_misc::kKeyboardExtensionId ||
          extension->id() == "jokbpnebhdcladagohdnfgjcpejggllo" ||
          extension->id() == "clffjmdilanldobdnedchkdbofoimcgb" ||
          extension->id() == "nnckehldicaciogcbchegobnafnjkcne" ||

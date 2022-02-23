@@ -17,7 +17,7 @@
 
 namespace gpu {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // A test that exercises the glReadPixels workaround for IOSurface backed
 // textures.
 class GLIOSurfaceReadbackWorkaroundTest : public testing::Test {
@@ -80,6 +80,6 @@ TEST_F(GLIOSurfaceReadbackWorkaroundTest, ReadPixels) {
   glDeleteFramebuffers(1, &framebuffer);
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace gpu

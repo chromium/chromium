@@ -40,18 +40,18 @@ class ContentSettingsRegistryTest : public testing::Test {
 };
 
 TEST_F(ContentSettingsRegistryTest, GetPlatformDependent) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Javascript shouldn't be registered on iOS.
   EXPECT_FALSE(registry()->Get(ContentSettingsType::JAVASCRIPT));
 #endif
 
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   // Images shouldn't be registered on mobile.
   EXPECT_FALSE(registry()->Get(ContentSettingsType::IMAGES));
 #endif
 
 // Protected media identifier only registered on Android, Chrome OS and Windows.
-#if defined(ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if defined(ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
   EXPECT_TRUE(registry()->Get(ContentSettingsType::PROTECTED_MEDIA_IDENTIFIER));
 #else
   EXPECT_FALSE(
@@ -84,10 +84,10 @@ TEST_F(ContentSettingsRegistryTest, Properties) {
             website_settings_info->pref_name());
   EXPECT_EQ("profile.default_content_setting_values.cookies",
             website_settings_info->default_value_pref_name());
-  ASSERT_TRUE(website_settings_info->initial_default_value()->is_int());
+  ASSERT_TRUE(website_settings_info->initial_default_value().is_int());
   EXPECT_EQ(CONTENT_SETTING_ALLOW,
-            website_settings_info->initial_default_value()->GetInt());
-#if defined(OS_ANDROID) || defined(OS_IOS)
+            website_settings_info->initial_default_value().GetInt());
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_EQ(PrefRegistry::NO_REGISTRATION_FLAGS,
             website_settings_info->GetPrefRegistrationFlags());
 #else
@@ -158,7 +158,7 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
       registry()->Get(ContentSettingsType::COOKIES);
   EXPECT_TRUE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   info = registry()->Get(ContentSettingsType::MEDIASTREAM_MIC);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 
@@ -171,7 +171,7 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
   EXPECT_TRUE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
 
-#if !defined(OS_IOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   info = registry()->Get(ContentSettingsType::FILE_SYSTEM_WRITE_GUARD);
   EXPECT_FALSE(info->IsDefaultSettingValid(CONTENT_SETTING_ALLOW));
 #endif
@@ -182,7 +182,7 @@ TEST_F(ContentSettingsRegistryTest, IsDefaultSettingValid) {
 // would require this test to be updated.
 TEST_F(ContentSettingsRegistryTest, GetInitialDefaultSetting) {
 // There is no default-ask content setting on iOS, so skip testing it there.
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   const ContentSettingsInfo* notifications =
       registry()->Get(ContentSettingsType::NOTIFICATIONS);
   EXPECT_EQ(CONTENT_SETTING_ASK, notifications->GetInitialDefaultSetting());

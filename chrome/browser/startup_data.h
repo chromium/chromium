@@ -49,7 +49,7 @@ class StartupData {
   // browser mode.
   void RecordCoreSystemProfile();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Initializes all necessary parameters to create the Profile's PrefService.
   void CreateProfilePrefService();
 
@@ -87,7 +87,7 @@ class StartupData {
   }
 
  private:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void PreProfilePrefServiceInit();
   void CreateServicesInternal();
 

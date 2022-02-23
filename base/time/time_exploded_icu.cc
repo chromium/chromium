@@ -138,7 +138,7 @@ bool Time::FromExplodedUsingIcu(bool is_local,
   return true;
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 void Time::Explode(bool is_local, Exploded* exploded) const {
   return ExplodeUsingIcu(ToRoundedDownMillisecondsSinceUnixEpoch(), is_local,
@@ -154,6 +154,6 @@ bool Time::FromExploded(bool is_local, const Exploded& exploded, Time* time) {
   return false;
 }
 
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace base

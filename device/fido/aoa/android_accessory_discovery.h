@@ -13,7 +13,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/fido_device_discovery.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"

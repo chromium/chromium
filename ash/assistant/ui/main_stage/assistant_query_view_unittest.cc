@@ -15,6 +15,7 @@
 #include "ash/style/ash_color_provider.h"
 #include "base/feature_list.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/chromeos/styles/cros_styles.h"
 #include "ui/compositor/layer.h"
@@ -28,18 +29,19 @@ namespace {
 using AssistantQueryViewUnittest = AssistantAshTestBase;
 
 TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
-  base::test::ScopedFeatureList scoped_feature_list(features::kDarkLightMode);
+  base::test::ScopedFeatureList scoped_feature_list(
+      chromeos::features::kDarkLightMode);
   AshColorProvider::Get()->OnActiveUserPrefServiceChanged(
       Shell::Get()->session_controller()->GetActivePrefService());
 
   ShowAssistantUi();
 
   const views::View* query_view =
-      main_view()->GetViewByID(AssistantViewID::kQueryView);
+      page_view()->GetViewByID(AssistantViewID::kQueryView);
   const views::Label* high_confidence_label = static_cast<views::Label*>(
-      main_view()->GetViewByID(AssistantViewID::kHighConfidenceLabel));
+      page_view()->GetViewByID(AssistantViewID::kHighConfidenceLabel));
   const views::Label* low_confidence_label = static_cast<views::Label*>(
-      main_view()->GetViewByID(AssistantViewID::kLowConfidenceLabel));
+      page_view()->GetViewByID(AssistantViewID::kLowConfidenceLabel));
 
   EXPECT_FALSE(query_view->background());
   ASSERT_TRUE(query_view->layer());
@@ -69,22 +71,29 @@ TEST_F(AssistantQueryViewUnittest, ThemeDarkLightMode) {
 }
 
 TEST_F(AssistantQueryViewUnittest, Theme) {
-  ASSERT_FALSE(features::IsDarkLightModeEnabled());
+  ASSERT_FALSE(chromeos::features::IsDarkLightModeEnabled());
+
+  // ProductivityLauncher uses DarkLightMode colors.
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(features::kProductivityLauncher);
 
   ShowAssistantUi();
 
   const views::View* query_view =
-      main_view()->GetViewByID(AssistantViewID::kQueryView);
+      page_view()->GetViewByID(AssistantViewID::kQueryView);
   const views::Label* high_confidence_label = static_cast<views::Label*>(
-      main_view()->GetViewByID(AssistantViewID::kHighConfidenceLabel));
+      page_view()->GetViewByID(AssistantViewID::kHighConfidenceLabel));
   const views::Label* low_confidence_label = static_cast<views::Label*>(
-      main_view()->GetViewByID(AssistantViewID::kLowConfidenceLabel));
+      page_view()->GetViewByID(AssistantViewID::kLowConfidenceLabel));
 
   EXPECT_FALSE(query_view->background());
   ASSERT_TRUE(query_view->layer());
   EXPECT_FALSE(query_view->layer()->fills_bounds_opaquely());
   EXPECT_EQ(high_confidence_label->GetEnabledColor(), kTextColorPrimary);
   EXPECT_EQ(low_confidence_label->GetEnabledColor(), kTextColorSecondary);
+
+  // Avoid some cleanup during test teardown by explicitly closing the launcher.
+  CloseAssistantUi();
 }
 
 }  // namespace

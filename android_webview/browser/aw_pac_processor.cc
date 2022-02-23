@@ -19,7 +19,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/no_destructor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "base/threading/thread_restrictions.h"
@@ -70,14 +70,6 @@ int AndroidGetAddrInfoForNetwork(net_handle_t network,
     return ptr;
   }();
   return getaddrinfofornetwork(network, node, service, hints, res);
-}
-
-net::IPAddress StringToIPAddress(const std::string& address) {
-  net::IPAddress ip_address;
-  if (!ip_address.AssignFromIPLiteral(std::string(address))) {
-    LOG(ERROR) << "Not a supported IP literal: " << std::string(address);
-  }
-  return ip_address;
 }
 
 scoped_refptr<base::SingleThreadTaskRunner> GetTaskRunner() {
@@ -275,7 +267,7 @@ class Bindings : public proxy_resolver::ProxyResolverV8Tracing::Bindings {
   }
 
  private:
-  HostResolver* host_resolver_;
+  raw_ptr<HostResolver> host_resolver_;
 };
 
 
@@ -333,7 +325,7 @@ class Job {
   base::OnceClosure task_;
   int net_error_ = net::ERR_ABORTED;
   base::WaitableEvent event_;
-  AwPacProcessor* processor_;
+  raw_ptr<AwPacProcessor> processor_;
 };
 
 class SetProxyScriptJob : public Job {
@@ -479,8 +471,13 @@ void AwPacProcessor::SetNetworkAndLinkAddresses(
   base::android::AppendJavaStringArrayToStringVector(env, jlink_addresses,
                                                      &string_link_addresses);
   std::vector<net::IPAddress> link_addresses;
-  for (std::string const& address : string_link_addresses) {
-    link_addresses.push_back(StringToIPAddress(address));
+  for (const std::string& address : string_link_addresses) {
+    net::IPAddress ip_address;
+    if (ip_address.AssignFromIPLiteral(address)) {
+      link_addresses.push_back(ip_address);
+    } else {
+      LOG(ERROR) << "Not a supported IP literal: " << address;
+    }
   }
 
   GetTaskRunner()->PostTask(

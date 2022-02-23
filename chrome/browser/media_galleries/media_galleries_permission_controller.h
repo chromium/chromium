@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/media_galleries/media_galleries_dialog_controller.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "components/storage_monitor/removable_storage_observer.h"
@@ -165,7 +166,7 @@ class MediaGalleriesPermissionController
   void SavePermissions();
 
   // Updates the model and view when |preferences_| changes. Some of the
-  // possible changes includes a gallery getting blacklisted, or a new
+  // possible changes includes a gallery getting blocklisted, or a new
   // auto detected gallery becoming available.
   void UpdateGalleriesOnPreferencesEvent();
 
@@ -178,16 +179,16 @@ class MediaGalleriesPermissionController
   Profile* GetProfile();
 
   // The web contents from which the request originated.
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 
   // This is just a reference, but it's assumed that it won't become invalid
   // while the dialog is showing.
-  const extensions::Extension* extension_;
+  raw_ptr<const extensions::Extension> extension_;
 
   // Mapping between pref ids and dialog ids.
   DialogIdMap id_map_;
 
-  // This map excludes those galleries which have been blacklisted; it only
+  // This map excludes those galleries which have been blocklisted; it only
   // counts active known galleries.
   GalleryPermissionsMap known_galleries_;
 
@@ -209,7 +210,7 @@ class MediaGalleriesPermissionController
 
   // The model that tracks galleries and extensions' permissions.
   // This is the authoritative source for gallery information.
-  MediaGalleriesPreferences* preferences_;
+  raw_ptr<MediaGalleriesPreferences> preferences_;
 
   // The view that's showing.
   std::unique_ptr<MediaGalleriesDialog> dialog_;

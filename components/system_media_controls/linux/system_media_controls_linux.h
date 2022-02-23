@@ -15,6 +15,7 @@
 #include "components/system_media_controls/system_media_controls.h"
 #include "dbus/bus.h"
 #include "dbus/exported_object.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 class DbusProperties;
 
@@ -35,6 +36,8 @@ COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPIInterfaceName[];
 COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
 extern const char kMprisAPIPlayerInterfaceName[];
+COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS)
+extern const char kMprisAPISignalSeeked[];
 
 // A D-Bus service conforming to the MPRIS spec:
 // https://specifications.freedesktop.org/mpris-spec/latest/
@@ -59,11 +62,14 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   void SetIsPreviousEnabled(bool value) override;
   void SetIsPlayPauseEnabled(bool value) override;
   void SetIsStopEnabled(bool value) override {}
+  void SetIsSeekToEnabled(bool value) override;
   void SetPlaybackStatus(PlaybackStatus value) override;
+  void SetID(const std::string* value) override;
   void SetTitle(const std::u16string& value) override;
   void SetArtist(const std::u16string& value) override;
   void SetAlbum(const std::u16string& value) override;
   void SetThumbnail(const SkBitmap& bitmap) override {}
+  void SetPosition(const media_session::MediaPosition& position) override;
   void ClearThumbnail() override {}
   void ClearMetadata() override;
   void UpdateDisplay() override {}
@@ -96,6 +102,10 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
             dbus::ExportedObject::ResponseSender response_sender);
   void Play(dbus::MethodCall* method_call,
             dbus::ExportedObject::ResponseSender response_sender);
+  void Seek(dbus::MethodCall* method_call,
+            dbus::ExportedObject::ResponseSender response_sender);
+  void SetPositionMpris(dbus::MethodCall* method_call,
+                        dbus::ExportedObject::ResponseSender response_sender);
 
   // Used for API methods we don't support.
   void DoNothing(dbus::MethodCall* method_call,
@@ -105,6 +115,20 @@ class COMPONENT_EXPORT(SYSTEM_MEDIA_CONTROLS) SystemMediaControlsLinux
   // signal if necessary.
   void SetMetadataPropertyInternal(const std::string& property_name,
                                    DbusVariant&& new_value);
+
+  void ClearTrackId();
+
+  void ClearPosition();
+
+  // Updates MPRIS with our current position.
+  void UpdatePosition(bool emit_signal);
+
+  void StartPositionUpdateTimer();
+  void StopPositionUpdateTimer();
+
+  absl::optional<media_session::MediaPosition> position_;
+  base::RepeatingTimer position_update_timer_;
+  bool playing_ = false;
 
   const std::string product_name_;
 

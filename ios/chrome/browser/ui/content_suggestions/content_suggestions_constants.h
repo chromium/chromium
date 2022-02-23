@@ -5,7 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_
 #define IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 // Represents the content suggestions collection view.
 extern NSString* const kContentSuggestionsCollectionIdentifier;
@@ -17,7 +17,7 @@ extern NSString* const kContentSuggestionsLearnMoreIdentifier;
 extern NSString* const
     kContentSuggestionsMostVisitedAccessibilityIdentifierPrefix;
 
-// Represents the menu button in the Discover feed header.
-extern NSString* const kContentSuggestionsDiscoverHeaderButtonIdentifier;
+// The bottom margin below the Most Visited section.
+extern const CGFloat kMostVisitedBottomMargin;
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_CONSTANTS_H_

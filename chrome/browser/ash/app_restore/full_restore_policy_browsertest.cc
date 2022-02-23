@@ -4,6 +4,7 @@
 
 #include <memory>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "ash/constants/ash_switches.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
@@ -15,7 +16,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/app_restore/features.h"
-#include "components/arc/test/arc_util_test_support.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
@@ -32,11 +32,9 @@ class FullRestorePolicyBrowserTest
   // policy::PolicyTest:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     scoped_feature_list_.InitWithFeatures(
-        {::full_restore::features::kFullRestore,
-         ::full_restore::features::kArcGhostWindow},
-        {});
+        {::full_restore::features::kArcGhostWindow}, {});
     arc::SetArcAvailableCommandLineForTesting(command_line);
-    command_line->AppendSwitch(chromeos::switches::kEnableArcVm);
+    command_line->AppendSwitch(switches::kEnableArcVm);
   }
 
   void SetUpInProcessBrowserTestFixture() override {

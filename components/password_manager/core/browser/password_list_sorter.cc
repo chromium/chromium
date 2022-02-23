@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/password_list_sorter.h"
 
 #include <algorithm>
-#include <tuple>
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/password_manager/core/browser/android_affiliation/affiliation_utils.h"
@@ -28,9 +27,7 @@ constexpr char kSortKeyNoFederationSymbol = '-';
 }  // namespace
 
 std::string CreateSortKey(const PasswordForm& form, IgnoreStore ignore_store) {
-  std::string shown_origin;
-  GURL link_url;
-  std::tie(shown_origin, link_url) = GetShownOriginAndLinkUrl(form);
+  auto [shown_origin, link_url] = GetShownOriginAndLinkUrl(form);
 
   const auto facet_uri =
       FacetURI::FromPotentiallyInvalidSpec(form.signon_realm);

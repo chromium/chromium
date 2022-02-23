@@ -45,5 +45,14 @@ def _RunUnitTests(input_api, output_api):
 def _RunPyLint(input_api, output_api):
   """Runs unit tests for checkteamtags."""
   tests = input_api.canned_checks.GetPylint(
-      input_api, output_api)
+      input_api,
+      output_api,
+      version='2.7',
+      # Disabling certain python3-specific warnings until the conversion
+      # is complete.
+      disabled_warnings=[
+          'super-with-arguments',
+          'raise-missing-from',
+          'useless-object-inheritance',
+      ])
   return input_api.RunTests(tests)

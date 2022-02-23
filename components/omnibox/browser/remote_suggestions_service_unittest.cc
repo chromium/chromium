@@ -74,3 +74,32 @@ TEST_F(RemoteSuggestionsServiceTest, EnsureAttachCookies) {
   EXPECT_EQ(kServiceUri,
             resource_request.url.spec().substr(0, kServiceUri.size()));
 }
+
+TEST_F(RemoteSuggestionsServiceTest, EnsureBypassCache) {
+  network::ResourceRequest resource_request;
+  test_url_loader_factory_.SetInterceptor(
+      base::BindLambdaForTesting([&](const network::ResourceRequest& request) {
+        resource_request = request;
+      }));
+
+  RemoteSuggestionsService service(GetUrlLoaderFactory());
+  TemplateURLService template_url_service(nullptr, 0);
+  TemplateURLRef::SearchTermsArgs search_terms_args;
+  search_terms_args.current_page_url = "https://www.google.com/";
+  search_terms_args.bypass_cache = true;
+  service.CreateSuggestionsRequest(
+      search_terms_args, &template_url_service,
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestStart,
+                     base::Unretained(this)),
+      base::BindOnce(&RemoteSuggestionsServiceTest::OnRequestComplete,
+                     base::Unretained(this)));
+
+  RunAndWait();
+  EXPECT_EQ(net::LOAD_DO_NOT_SAVE_COOKIES | net::LOAD_BYPASS_CACHE,
+            resource_request.load_flags);
+  EXPECT_TRUE(resource_request.site_for_cookies.IsEquivalent(
+      net::SiteForCookies::FromUrl(resource_request.url)));
+  const std::string kServiceUri = "https://www.google.com/complete/search";
+  EXPECT_EQ(kServiceUri,
+            resource_request.url.spec().substr(0, kServiceUri.size()));
+}

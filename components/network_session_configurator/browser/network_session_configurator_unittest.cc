@@ -26,7 +26,7 @@
 #include "net/url_request/url_request_context_builder.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -71,7 +71,6 @@ TEST_F(NetworkSessionConfiguratorTest, Defaults) {
   EXPECT_FALSE(params_.enable_http2_settings_grease);
   EXPECT_FALSE(params_.greased_http2_frame);
   EXPECT_FALSE(params_.http2_end_stream_with_data_frame);
-  EXPECT_TRUE(params_.enable_websocket_over_http2);
 
   EXPECT_TRUE(params_.enable_quic);
   EXPECT_TRUE(quic_params_.retry_without_alt_svc_on_quic_errors);
@@ -150,12 +149,12 @@ TEST_F(NetworkSessionConfiguratorTest, EnableQuicFromParams) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, ValidQuicParams) {
-  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::Draft29();
+  quic::ParsedQuicVersion version = net::DefaultSupportedQuicVersions().front();
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["enable_quic"] = "true";
   field_trial_params["channel"] = "T";
   field_trial_params["epoch"] = "90001234";  // Epoch in the far future.
-  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  field_trial_params["quic_version"] = quic::ParsedQuicVersionToString(version);
   variations::AssociateVariationParams("QUIC", "ValidQuicParams",
                                        field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "ValidQuicParams");
@@ -170,11 +169,11 @@ TEST_F(NetworkSessionConfiguratorTest, ValidQuicParams) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, InvalidQuicParams) {
-  quic::ParsedQuicVersion version = quic::ParsedQuicVersion::Draft29();
+  quic::ParsedQuicVersion version = net::DefaultSupportedQuicVersions().front();
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["enable_quic"] = "true";
   // These params are missing channel and epoch.
-  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  field_trial_params["quic_version"] = quic::ParsedQuicVersionToString(version);
   variations::AssociateVariationParams("QUIC", "InvalidQuicParams",
                                        field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "InvalidQuicParams");
@@ -536,9 +535,9 @@ TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParams) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, QuicVersionFromFieldTrialParamsAlpn) {
-  quic::ParsedQuicVersion version = quic::AllSupportedVersions().front();
+  quic::ParsedQuicVersion version = net::DefaultSupportedQuicVersions().front();
   std::map<std::string, std::string> field_trial_params;
-  field_trial_params["quic_version"] = quic::AlpnForVersion(version);
+  field_trial_params["quic_version"] = quic::ParsedQuicVersionToString(version);
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
 
@@ -553,11 +552,12 @@ TEST_F(NetworkSessionConfiguratorTest,
   ASSERT_LE(2u, quic::AllSupportedVersions().size());
   quic::ParsedQuicVersion version1 = quic::AllSupportedVersions()[0];
   quic::ParsedQuicVersion version2 = quic::AllSupportedVersions()[1];
-  std::string quic_versions =
-      quic::AlpnForVersion(version1) + "," + quic::AlpnForVersion(version2);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version1) + "," +
+                              quic::ParsedQuicVersionToString(version2);
 
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
+  field_trial_params["obsolete_versions_allowed"] = "true";
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
   base::FieldTrialList::CreateFieldTrial("QUIC", "Enabled");
 
@@ -776,10 +776,10 @@ TEST_F(NetworkSessionConfiguratorTest, HostRules) {
 }
 
 TEST_F(NetworkSessionConfiguratorTest, DefaultCacheBackend) {
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
             ChooseCacheType());
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   EXPECT_EQ(
       base::mac::IsAtLeastOS10_14()
           ? net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE
@@ -799,10 +799,10 @@ TEST_F(NetworkSessionConfiguratorTest, SimpleCacheTrialExperimentYes) {
 
 TEST_F(NetworkSessionConfiguratorTest, SimpleCacheTrialDisable) {
   base::FieldTrialList::CreateFieldTrial("SimpleCacheTrial", "Disable");
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE,
             ChooseCacheType());
-#else  // defined(OS_ANDROID)
+#else  // BUILDFLAG(IS_ANDROID)
   // Android always uses the simple cache.
   EXPECT_EQ(net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE,
             ChooseCacheType());
@@ -822,7 +822,7 @@ TEST_F(NetworkSessionConfiguratorTest, QuicHeadersIncludeH2StreamDependency) {
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromCommandLine) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitch(switches::kHttp2GreaseSettings);
+  command_line.AppendSwitch(switches::kEnableHttp2GreaseSettings);
 
   ParseCommandLineAndFieldTrials(command_line);
 
@@ -838,6 +838,21 @@ TEST_F(NetworkSessionConfiguratorTest, Http2GreaseSettingsFromFieldTrial) {
   ParseFieldTrials();
 
   EXPECT_TRUE(params_.enable_http2_settings_grease);
+}
+
+TEST_F(NetworkSessionConfiguratorTest,
+       DisableHttp2GreaseSettingsFromCommandLineOverridesFieldTrial) {
+  base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
+  command_line.AppendSwitch(switches::kDisableHttp2GreaseSettings);
+
+  std::map<std::string, std::string> field_trial_params;
+  field_trial_params["http2_grease_settings"] = "true";
+  variations::AssociateVariationParams("HTTP2", "Enabled", field_trial_params);
+  base::FieldTrialList::CreateFieldTrial("HTTP2", "Enabled");
+
+  ParseCommandLineAndFieldTrials(command_line);
+
+  EXPECT_FALSE(params_.enable_http2_settings_grease);
 }
 
 TEST_F(NetworkSessionConfiguratorTest, Http2GreaseFrameTypeFromCommandLine) {
@@ -923,7 +938,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, QuicVersionAlpn) {
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
   command_line.AppendSwitch(switches::kEnableQuic);
   command_line.AppendSwitchASCII(switches::kQuicVersion,
-                                 quic::AlpnForVersion(version_));
+                                 quic::ParsedQuicVersionToString(version_));
   ParseCommandLineAndFieldTrials(command_line);
   quic::ParsedQuicVersionVector expected_versions = {version_};
   EXPECT_EQ(expected_versions, quic_params_.supported_versions);
@@ -964,8 +979,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     // ObsoleteQuicVersion tests.
     return;
   }
-  std::string quic_versions =
-      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(version_);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_) + "," +
+                              quic::ParsedQuicVersionToString(version_);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
@@ -983,7 +998,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest, ObsoleteQuicVersion) {
     // Only test obsolete versions here.
     return;
   }
-  std::string quic_versions = quic::AlpnForVersion(version_);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
@@ -1002,7 +1017,7 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     // Only test obsolete versions here.
     return;
   }
-  std::string quic_versions = quic::AlpnForVersion(version_);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   field_trial_params["obsolete_versions_allowed"] = "true";
@@ -1024,8 +1039,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     return;
   }
   quic::ParsedQuicVersion good_version = quic::AllSupportedVersions().front();
-  std::string quic_versions =
-      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(good_version);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_) + "," +
+                              quic::ParsedQuicVersionToString(good_version);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   variations::AssociateVariationParams("QUIC", "Enabled", field_trial_params);
@@ -1046,8 +1061,8 @@ TEST_P(NetworkSessionConfiguratorWithQuicVersionTest,
     return;
   }
   quic::ParsedQuicVersion good_version = quic::AllSupportedVersions().front();
-  std::string quic_versions =
-      quic::AlpnForVersion(version_) + "," + quic::AlpnForVersion(good_version);
+  std::string quic_versions = quic::ParsedQuicVersionToString(version_) + "," +
+                              quic::ParsedQuicVersionToString(good_version);
   std::map<std::string, std::string> field_trial_params;
   field_trial_params["quic_version"] = quic_versions;
   field_trial_params["obsolete_versions_allowed"] = "true";

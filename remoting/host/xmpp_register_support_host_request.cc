@@ -22,8 +22,8 @@
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_address.h"
 #include "remoting/signaling/signaling_id_util.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 using jingle_xmpp::QName;
 using jingle_xmpp::XmlElement;
@@ -83,8 +83,7 @@ void XmppRegisterSupportHostRequest::OnSignalStrategyStateChange(
     // remoting bot JID.
     std::string host_jid = signal_strategy_->GetLocalAddress().id();
     request_ = iq_sender_->SendIq(
-        jingle_xmpp::STR_SET, directory_bot_jid_,
-        CreateRegistrationRequest(host_jid),
+        kIqTypeSet, directory_bot_jid_, CreateRegistrationRequest(host_jid),
         base::BindOnce(&XmppRegisterSupportHostRequest::ProcessResponse,
                        base::Unretained(this)));
     if (!request_) {
@@ -169,8 +168,8 @@ void XmppRegisterSupportHostRequest::ParseResponse(const XmlElement* response,
     return;
   }
 
-  std::string type = response->Attr(jingle_xmpp::QN_TYPE);
-  if (type == jingle_xmpp::STR_ERROR) {
+  std::string type = response->Attr(kQNameType);
+  if (type == kIqTypeError) {
     LOG(ERROR) << "Received error in response to heartbeat: "
                << response->Str();
     *error_code = ErrorCode::HOST_REGISTRATION_ERROR;
@@ -178,7 +177,7 @@ void XmppRegisterSupportHostRequest::ParseResponse(const XmlElement* response,
   }
 
   // This method must only be called for error or result stanzas.
-  if (type != jingle_xmpp::STR_RESULT) {
+  if (type != kIqTypeResult) {
     LOG(ERROR) << "Received unexpect stanza of type \"" << type << "\"";
     *error_code = ErrorCode::HOST_REGISTRATION_ERROR;
     return;

@@ -420,8 +420,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
 
   // Select text and wait until the bounding box updates.
   auto* wc = shell()->web_contents();
+  BoundingBoxUpdateWaiter select_waiter(wc);
   ASSERT_TRUE(ExecJs(wc, "selectText();"));
-  WaitForSelectionBoundingBoxUpdate(wc);
+  select_waiter.Wait();
 
   // Verify the device scale factor.
   const float device_scale_factor =
@@ -430,12 +431,12 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraDSFBrowserTest,
 
   // Calculate the DIP size from the bounds in pixel. Follow exactly what is
   // done in `WebFrameWidgetImpl`.
-  const base::ListValue eval_result =
+  const base::Value eval_result =
       EvalJs(wc, "getSelectionBounds();").ExtractList();
-  const int x = floor(eval_result.GetList()[0].GetDouble());
-  const int right = ceil(eval_result.GetList()[1].GetDouble());
-  const int y = floor(eval_result.GetList()[2].GetDouble());
-  const int bottom = ceil(eval_result.GetList()[3].GetDouble());
+  const int x = floor(eval_result.GetListDeprecated()[0].GetDouble());
+  const int right = ceil(eval_result.GetListDeprecated()[1].GetDouble());
+  const int y = floor(eval_result.GetListDeprecated()[2].GetDouble());
+  const int bottom = ceil(eval_result.GetListDeprecated()[3].GetDouble());
   const int expected_dip_width = floor(right / scale()) - ceil(x / scale());
   const int expected_dip_height = floor(bottom / scale()) - ceil(y / scale());
 
@@ -532,8 +533,9 @@ IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 // Verifies that getting active input control accounts for iframe positioning.
+// Flaky: crbug.com/1293700
 IN_PROC_BROWSER_TEST_F(RenderWidgetHostViewAuraActiveWidgetTest,
-                       TextControlBoundingRegionInIframe) {
+                       DISABLED_TextControlBoundingRegionInIframe) {
   GURL page(
       embedded_test_server()->GetURL("example.com", "/input_in_iframe.html"));
   EXPECT_TRUE(NavigateToURL(shell(), page));

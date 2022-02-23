@@ -239,6 +239,7 @@ class Shelf::AutoHideEventHandler : public ui::EventHandler {
       shelf_layout_manager->LockAutoHideState(true);
     } else if (event->type() == ui::ET_TOUCH_RELEASED ||
                event->type() == ui::ET_TOUCH_CANCELLED) {
+      // Unlock auto hide (and eventually recompute auto hide state).
       shelf_layout_manager->LockAutoHideState(false);
     }
   }
@@ -506,8 +507,9 @@ void Shelf::SetAutoHideBehavior(ShelfAutoHideBehavior auto_hide_behavior) {
     return;
 
   auto_hide_behavior_ = auto_hide_behavior;
-  Shell::Get()->NotifyShelfAutoHideBehaviorChanged(
-      GetWindow()->GetRootWindow());
+
+  for (auto& observer : observers_)
+    observer.OnShelfAutoHideBehaviorChanged();
 }
 
 ShelfAutoHideState Shelf::GetAutoHideState() const {

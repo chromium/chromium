@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/policy/core/device_policy_builder.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"

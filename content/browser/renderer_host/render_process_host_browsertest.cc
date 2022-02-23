@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
@@ -62,7 +63,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -581,7 +582,7 @@ class RenderProcessHostObserverCounter : public RenderProcessHostObserver {
   int exited_count_ = 0;
   int destroyed_count_ = 0;
   bool observing_ = false;
-  RenderProcessHost* observed_host_ = nullptr;
+  raw_ptr<RenderProcessHost> observed_host_ = nullptr;
 };
 
 // Check that the spare renderer is properly destroyed via DisableRefCounts().
@@ -662,8 +663,8 @@ class ShellCloser : public RenderProcessHostObserver {
     logging_string_->append("ShellCloser::RenderProcessHostDestroyed ");
   }
 
-  Shell* shell_;
-  std::string* logging_string_;
+  raw_ptr<Shell> shell_;
+  raw_ptr<std::string> logging_string_;
 };
 
 class ObserverLogger : public RenderProcessHostObserver {
@@ -685,12 +686,12 @@ class ObserverLogger : public RenderProcessHostObserver {
     host_destroyed_ = true;
   }
 
-  std::string* logging_string_;
+  raw_ptr<std::string> logging_string_;
   bool host_destroyed_;
 };
 
 // Flaky on Android. http://crbug.com/759514.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_AllProcessExitedCallsBeforeAnyHostDestroyedCalls \
   DISABLED_AllProcessExitedCallsBeforeAnyHostDestroyedCalls
 #else
@@ -802,7 +803,7 @@ class AudioStartObserver : public WebContentsObserver {
       std::move(audible_closure_).Run();
   }
 
-  RenderFrameHostImpl* render_frame_host_ = nullptr;
+  raw_ptr<RenderFrameHostImpl> render_frame_host_ = nullptr;
   bool contents_audible_ = false;
   bool frame_audible_ = false;
   base::OnceClosure audible_closure_;
@@ -816,7 +817,7 @@ class AudioStartObserver : public WebContentsObserver {
 // only used by Chromecast.
 //
 // crbug.com/864476: flaky on Android for unclear reasons.
-#if BUILDFLAG(ENABLE_MOJO_RENDERER) || defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_MOJO_RENDERER) || BUILDFLAG(IS_ANDROID)
 #define KillProcessZerosAudioStreams DISABLED_KillProcessZerosAudioStreams
 #endif
 IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KillProcessZerosAudioStreams) {
@@ -1066,7 +1067,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, KeepAliveRendererProcess) {
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   host_destructions_ = 0;
   process_exits_ = 0;
@@ -1115,7 +1116,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_KeepAliveRendererProcess_Hung \
   DISABLED_KeepAliveRendererProcess_Hung
 #else
@@ -1132,7 +1133,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // BFCache for this test.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(HandleHungBeacon, base::RepeatingClosure()));
@@ -1155,7 +1156,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
   host_destructions_ = 0;
   process_exits_ = 0;
   Observe(rph);
@@ -1170,7 +1171,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
 }
 
 // Test is flaky on Android builders: https://crbug.com/875179
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_FetchKeepAliveRendererProcess_Hung \
   DISABLED_FetchKeepAliveRendererProcess_Hung
 #else
@@ -1188,7 +1189,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // BFCache for this test.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   embedded_test_server()->RegisterRequestHandler(
       base::BindRepeating(HandleHungBeacon, base::RepeatingClosure()));
@@ -1212,7 +1213,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   // Disable the BackForwardCache to ensure the old process is going to be
   // released.
   DisableBackForwardCacheForTesting(shell()->web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   host_destructions_ = 0;
   process_exits_ = 0;
@@ -1557,7 +1558,7 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, AllowUnusedProcessToExit) {
   // BFCache for this test.
   content::DisableBackForwardCacheForTesting(
       shell()->web_contents(),
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Ensure the initial tab has not loaded yet.
   FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
@@ -1619,8 +1620,10 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, AllowUnusedProcessToExit) {
 
   // There shouldn't be live RenderViewHosts or proxies either.
   EXPECT_FALSE(original_rfh->GetRenderViewHost()->IsRenderViewLive());
-  EXPECT_FALSE(root->render_manager()->GetRenderFrameProxyHost(
-      original_rfh->GetSiteInstance()->group()));
+  EXPECT_FALSE(
+      root->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(original_rfh->GetSiteInstance()->group()));
 
   // Reset the process exit related counts.
   process_exits_ = 0;
@@ -1749,8 +1752,10 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest,
   EXPECT_EQ(0, host_destructions_);
 
   // There shouldn't be live proxies either.
-  RenderFrameProxyHost* proxy = root->render_manager()->GetRenderFrameProxyHost(
-      child_rfh1->GetSiteInstance()->group());
+  RenderFrameProxyHost* proxy =
+      root->current_frame_host()
+          ->browsing_context_state()
+          ->GetRenderFrameProxyHost(child_rfh1->GetSiteInstance()->group());
   EXPECT_FALSE(proxy->is_render_frame_proxy_live());
 
   // Reset the process exit related counts.
@@ -1810,6 +1815,100 @@ IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, HandleNestedFrameDeletion) {
   EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
   EXPECT_EQ(1, process_exits_);
   EXPECT_EQ(1, host_destructions_);
+}
+
+namespace {
+
+// Observer that listens for RenderFrameDeleted and iterates over the remaining
+// RenderFrameHosts in the process at the time. This catches a case where a
+// parent RenderFrameHost might not be found via RenderFrameHost::FromID because
+// of nested frame deletion, which used to cause a CHECK failure.
+class RenderFrameDeletionObserver : public WebContentsObserver {
+ public:
+  explicit RenderFrameDeletionObserver(WebContents* web_contents)
+      : WebContentsObserver(web_contents) {}
+  ~RenderFrameDeletionObserver() override = default;
+
+  // WebContentsObserver:
+  void RenderFrameDeleted(RenderFrameHost* render_frame_host) override {
+    render_frame_deleted_count_++;
+
+    // Find all other RenderFrameHosts in the process, which should exclude the
+    // one being deleted.
+    auto rfh_collector = [](std::vector<RenderFrameHost*>& results,
+                            RenderFrameHost* rfh) { results.push_back(rfh); };
+    RenderProcessHostImpl* process =
+        static_cast<RenderProcessHostImpl*>(render_frame_host->GetProcess());
+    std::vector<RenderFrameHost*> all_rfhs;
+    process->ForEachRenderFrameHost(
+        base::BindRepeating(rfh_collector, std::ref(all_rfhs)));
+
+    // Update the cumulative count of other RenderFrameHosts in the process.
+    render_frame_host_iterator_count_ += all_rfhs.size();
+  }
+
+  // Returns how many time RenderFrameDeleted was called.
+  int render_frame_deleted_count() { return render_frame_deleted_count_; }
+
+  // Returns a cumulative count of how many remaining RenderFrameHosts were
+  // found in the process at the time of any RenderFrameDeleted calls.
+  int render_frame_host_iterator_count() {
+    return render_frame_host_iterator_count_;
+  }
+
+ private:
+  int render_frame_deleted_count_ = 0;
+  int render_frame_host_iterator_count_ = 0;
+};
+
+}  // namespace
+
+// Test that RenderProcessHost::ForEachRenderFrameHost can handle nested
+// deletions of RenderFrameHost objects, when we might encounter a parent RFH
+// that is no longer discoverable via FromID, while handling the deletion of a
+// subframe. One way this can occur is during bfcache eviction.
+IN_PROC_BROWSER_TEST_F(RenderProcessHostTest, ForEachFrameNestedFrameDeletion) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+
+  // Ensure all sites get dedicated processes during the test.
+  IsolateAllSitesForTesting(base::CommandLine::ForCurrentProcess());
+
+  // Navigate to a page with a same-process subframe.
+  GURL url_a(embedded_test_server()->GetURL("a.com", "/page_with_iframe.html"));
+  EXPECT_TRUE(NavigateToURL(shell(), url_a));
+  FrameTreeNode* root = static_cast<WebContentsImpl*>(shell()->web_contents())
+                            ->GetPrimaryFrameTree()
+                            .root();
+  RenderFrameHostImpl* rfh_a = root->current_frame_host();
+  RenderProcessHost* process_a = rfh_a->GetProcess();
+  int process_a_id = process_a->GetID();
+
+  // Listen for RenderFrameDeleted and count the other RenderFrameHosts in the
+  // process at the time.
+  RenderFrameDeletionObserver rfh_deletion_observer(shell()->web_contents());
+
+  // Navigate cross-process and evict process A from the back-forward cache.
+  // This should not cause a crash when iterating over RenderFrameHosts.
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  RenderProcessHostWatcher cleanup_observer(
+      process_a, RenderProcessHostWatcher::WATCH_FOR_HOST_DESTRUCTION);
+  EXPECT_TRUE(NavigateToURL(shell(), url_b));
+  shell()->web_contents()->GetController().GetBackForwardCache().Flush();
+  cleanup_observer.Wait();
+  RenderFrameHostImpl* rfh_b = root->current_frame_host();
+  EXPECT_NE(process_a_id, rfh_b->GetProcess()->GetID());
+
+  // RenderFrameDeleted should have been called for both the main frame and
+  // subframe in process A.
+  EXPECT_EQ(2, rfh_deletion_observer.render_frame_deleted_count());
+
+  // The subframe's RenderFrameDeleted happens after both the main frame and
+  // subframe have become undiscoverable by FromID (i.e., removed from
+  // g_routing_id_frame_map). The subframe isn't expected to be found during its
+  // own RenderFrameDeleted (since it has been removed from
+  // render_frame_host_id_set_), but the partially destructed main frame also
+  // isn't found at that time when iterating over other frames in the process.
+  EXPECT_EQ(0, rfh_deletion_observer.render_frame_host_iterator_count());
 }
 
 }  // namespace content

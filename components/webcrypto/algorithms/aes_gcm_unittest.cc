@@ -133,14 +133,14 @@ TEST_F(WebCryptoAesGcmTest, ImportExportJwk) {
 //   * Test decryption with empty input
 //   * Test decryption with tag length of 0.
 TEST_F(WebCryptoAesGcmTest, SampleSets) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("aes_gcm.json", &tests));
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("aes_gcm.json", &tests));
 
   // Note that WebCrypto appends the authentication tag to the ciphertext.
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);

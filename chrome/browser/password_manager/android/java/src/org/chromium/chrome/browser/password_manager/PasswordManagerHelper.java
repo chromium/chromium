@@ -4,12 +4,21 @@
 
 package org.chromium.chrome.browser.password_manager;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID;
+
+import android.app.PendingIntent;
+import android.app.PendingIntent.CanceledException;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.SystemClock;
 
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncher.CredentialManagerError;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.signin.base.CoreAccountInfo;
+import org.chromium.components.sync.ModelType;
 
 /** A helper class for showing PasswordSettings. */
 public class PasswordManagerHelper {
@@ -22,6 +31,23 @@ public class PasswordManagerHelper {
     // |PasswordSettings.class.getName()| once it's modularized.
     private static final String PASSWORD_SETTINGS_CLASS =
             "org.chromium.chrome.browser.password_manager.settings.PasswordSettings";
+    private static final String ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.Latency";
+    private static final String ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.Success";
+    private static final String ACCOUNT_GET_INTENT_ERROR_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.GetIntent.Error";
+    private static final String ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.Account.Launch.Success";
+
+    private static final String LOCAL_GET_INTENT_LATENCY_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.Latency";
+    private static final String LOCAL_GET_INTENT_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.Success";
+    private static final String LOCAL_GET_INTENT_ERROR_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.GetIntent.Error";
+    private static final String LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM =
+            "PasswordManager.CredentialManager.LocalProfile.Launch.Success";
 
     /**
      * Launches the password settings or, if available, the credential manager from Google Play
@@ -30,25 +56,128 @@ public class PasswordManagerHelper {
      * @param context used to show the UI to manage passwords.
      */
     public static void showPasswordSettings(Context context, @ManagePasswordsReferrer int referrer,
-            SettingsLauncher settingsLauncher) {
+            SettingsLauncher settingsLauncher, CredentialManagerLauncher credentialManagerLauncher,
+            SyncService syncService) {
         RecordHistogram.recordEnumeratedHistogram("PasswordManager.ManagePasswordsReferrer",
                 referrer, ManagePasswordsReferrer.MAX_VALUE + 1);
 
-        // TODO(crbug.com/1255038): Add a Google Play Services version check before the feature
-        // check.
-        if (ChromeFeatureList.isEnabled(ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_ANDROID)) {
-            CredentialManagerLauncher credentialManagerLauncher =
-                    CredentialManagerLauncherFactory.getInstance().createLauncher();
+        if (credentialManagerLauncher != null) {
+            launchTheCredentialManager(referrer, credentialManagerLauncher, syncService);
 
-            if (credentialManagerLauncher != null) {
-                credentialManagerLauncher.launchCredentialManager(referrer);
-                return;
-            }
+            // If the global feature is not enabled the Credential Manager will not be launched even
+            // if the intent is fetched so the regular password settings should be launched instead.
+            if (ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) return;
         }
 
         Bundle fragmentArgs = new Bundle();
         fragmentArgs.putInt(MANAGE_PASSWORDS_REFERRER, referrer);
         context.startActivity(settingsLauncher.createSettingsActivityIntent(
                 context, PASSWORD_SETTINGS_CLASS, fragmentArgs));
+    }
+
+    /**
+     *  Checks whether the sync feature is enabled and the user has chosen to sync passwords.
+     *  Note that this doesn't mean that passwords are actively syncing.
+     *
+     * @param syncService the service to query about the sync status.
+     * @return true if syncing passwords is enabled
+     */
+    public static boolean hasChosenToSyncPasswords(SyncService syncService) {
+        return syncService != null && syncService.isSyncFeatureEnabled()
+                && syncService.getChosenDataTypes().contains(ModelType.PASSWORDS);
+    }
+
+    /**
+     *  Checks whether the sync feature is enabled, the user has chosen to sync passwords and
+     *  they haven't set up a custom passphrase.
+     *  The caller should make sure that the sync engine is initialized before calling this method.
+     *
+     *  Note that this doesn't mean that passwords are actively syncing.
+     *
+     * @param syncService the service to query about the sync status.
+     * @return true if syncing passwords is enabled without custom passphrase.
+     */
+    public static boolean hasChosenToSyncPasswordsWithNoCustomPassphrase(SyncService syncService) {
+        assert syncService.isEngineInitialized();
+        return PasswordManagerHelper.hasChosenToSyncPasswords(syncService)
+                && !syncService.isUsingExplicitPassphrase();
+    }
+
+    /**
+     * Checks whether the user is actively syncing passwords without a custom passphrase.
+     * The caller should make sure that the sync engine is initialized before calling this method.
+     *
+     * @param syncService the service to query about the sync status.
+     * @return true if actively syncing passwords and no custom passphrase was set.
+     */
+    public static boolean isSyncingPasswordsWithNoCustomPassphrase(SyncService syncService) {
+        assert syncService.isEngineInitialized();
+        if (syncService == null || !syncService.hasSyncConsent()) return false;
+        if (!syncService.getActiveDataTypes().contains(ModelType.PASSWORDS)) return false;
+        if (syncService.isUsingExplicitPassphrase()) return false;
+        return true;
+    }
+
+    private static void launchTheCredentialManager(@ManagePasswordsReferrer int referrer,
+            CredentialManagerLauncher credentialManagerLauncher, SyncService syncService) {
+        if (hasChosenToSyncPasswords(syncService)) {
+            long startTimeMs = SystemClock.elapsedRealtime();
+            credentialManagerLauncher.getCredentialManagerIntentForAccount(referrer,
+
+                    CoreAccountInfo.getEmailFrom(syncService.getAccountInfo()),
+                    (intent)
+                            -> PasswordManagerHelper.launchCredentialManager(
+                                    intent, startTimeMs, true),
+                    (error) -> PasswordManagerHelper.recordFailureMetrics(error, true));
+            return;
+        }
+
+        long startTimeMs = SystemClock.elapsedRealtime();
+        credentialManagerLauncher.getCredentialManagerIntentForLocal(referrer,
+                (intent)
+                        -> PasswordManagerHelper.launchCredentialManager(
+                                intent, startTimeMs, false),
+                (error) -> PasswordManagerHelper.recordFailureMetrics(error, false));
+    }
+
+    private static void recordFailureMetrics(
+            @CredentialManagerError int error, boolean forAccount) {
+        final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
+                                                             : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
+        final String kGetIntentErrorHistogram =
+                forAccount ? ACCOUNT_GET_INTENT_ERROR_HISTOGRAM : LOCAL_GET_INTENT_ERROR_HISTOGRAM;
+        RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, false);
+        RecordHistogram.recordEnumeratedHistogram(
+                kGetIntentErrorHistogram, error, CredentialManagerError.COUNT);
+    }
+
+    private static void launchCredentialManager(
+            PendingIntent intent, long startTimeMs, boolean forAccount) {
+        recordSuccessMetrics(SystemClock.elapsedRealtime() - startTimeMs, forAccount);
+
+        if (!ChromeFeatureList.isEnabled(UNIFIED_PASSWORD_MANAGER_ANDROID)) {
+            return;
+        }
+
+        boolean launchIntentSuccessfully = true;
+        try {
+            intent.send();
+        } catch (CanceledException e) {
+            launchIntentSuccessfully = false;
+        }
+        RecordHistogram.recordBooleanHistogram(forAccount
+                        ? ACCOUNT_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM
+                        : LOCAL_LAUNCH_CREDENTIAL_MANAGER_SUCCESS_HISTOGRAM,
+                launchIntentSuccessfully);
+    }
+
+    private static void recordSuccessMetrics(long elapsedTimeMs, boolean forAccount) {
+        final String kGetIntentLatencyHistogram = forAccount ? ACCOUNT_GET_INTENT_LATENCY_HISTOGRAM
+                                                             : LOCAL_GET_INTENT_LATENCY_HISTOGRAM;
+        final String kGetIntentSuccessHistogram = forAccount ? ACCOUNT_GET_INTENT_SUCCESS_HISTOGRAM
+                                                             : LOCAL_GET_INTENT_SUCCESS_HISTOGRAM;
+
+        RecordHistogram.recordTimesHistogram(kGetIntentLatencyHistogram, elapsedTimeMs);
+        RecordHistogram.recordBooleanHistogram(kGetIntentSuccessHistogram, true);
     }
 }

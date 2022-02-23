@@ -12,13 +12,16 @@ namespace net {
 
 UDPClientSocket::UDPClientSocket(DatagramSocket::BindType bind_type,
                                  net::NetLog* net_log,
-                                 const net::NetLogSource& source)
-    : socket_(bind_type, net_log, source),
-      network_(NetworkChangeNotifier::kInvalidNetworkHandle) {}
+                                 const net::NetLogSource& source,
+                                 NetworkChangeNotifier::NetworkHandle network)
+    : socket_(bind_type, net_log, source), connect_using_network_(network) {}
 
 UDPClientSocket::~UDPClientSocket() = default;
 
 int UDPClientSocket::Connect(const IPEndPoint& address) {
+  if (connect_using_network_ != NetworkChangeNotifier::kInvalidNetworkHandle)
+    return ConnectUsingNetwork(connect_using_network_, address);
+
   int rv = socket_.Open(address.GetFamily());
   if (rv != OK)
     return rv;
@@ -150,7 +153,7 @@ const NetLogWithSource& UDPClientSocket::NetLog() const {
 }
 
 void UDPClientSocket::UseNonBlockingIO() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   socket_.UseNonBlockingIO();
 #endif
 }
@@ -184,13 +187,13 @@ int UDPClientSocket::SetMulticastInterface(uint32_t interface_index) {
 }
 
 void UDPClientSocket::EnableRecvOptimization() {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   socket_.enable_experimental_recv_optimization();
 #endif
 }
 
 void UDPClientSocket::SetIOSNetworkServiceType(int ios_network_service_type) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   socket_.SetIOSNetworkServiceType(ios_network_service_type);
 #endif
 }

@@ -19,6 +19,7 @@
 #include "chrome/browser/plugins/plugin_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/pref_names.h"
+#include "components/metrics/stability_metrics_helper.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -72,35 +73,15 @@ void SetPluginInfo(const content::WebPluginInfo& plugin_info,
 struct PluginMetricsProvider::ChildProcessStats {
  public:
   explicit ChildProcessStats(int process_type)
-      : process_launches(0),
-        process_crashes(0),
-        instances(0),
-        loading_errors(0),
-        process_type(process_type) {}
+      : process_crashes(0), process_type(process_type) {}
 
   // This constructor is only used by the map to return some default value for
   // an index for which no value has been assigned.
   ChildProcessStats()
-      : process_launches(0),
-        process_crashes(0),
-        instances(0),
-        loading_errors(0),
-        process_type(content::PROCESS_TYPE_UNKNOWN) {}
-
-  // The number of times that the given child process has been launched
-  int process_launches;
+      : process_crashes(0), process_type(content::PROCESS_TYPE_UNKNOWN) {}
 
   // The number of times that the given child process has crashed
   int process_crashes;
-
-  // The number of instances of this child process that have been created.
-  // An instance is a DOM object rendered by this child process during a page
-  // load.
-  int instances;
-
-  // The number of times there was an error loading an instance of this child
-  // process.
-  int loading_errors;
 
   int process_type;
 };
@@ -134,14 +115,14 @@ void PluginMetricsProvider::ProvideSystemProfileMetrics(
 void PluginMetricsProvider::ProvideStabilityMetrics(
     metrics::SystemProfileProto* system_profile_proto) {
   RecordCurrentStateIfPending();
-  const base::ListValue* plugin_stats_list = local_state_->GetList(
-      prefs::kStabilityPluginStats);
+  const base::Value* plugin_stats_list =
+      local_state_->GetList(prefs::kStabilityPluginStats);
   if (!plugin_stats_list)
     return;
 
   metrics::SystemProfileProto::Stability* stability =
       system_profile_proto->mutable_stability();
-  for (const auto& value : plugin_stats_list->GetList()) {
+  for (const auto& value : plugin_stats_list->GetListDeprecated()) {
     const base::DictionaryValue* plugin_dict;
     if (!value.GetAsDictionary(&plugin_dict)) {
       NOTREACHED();
@@ -155,7 +136,9 @@ void PluginMetricsProvider::ProvideStabilityMetrics(
     // profiler runs.
     const metrics::SystemProfileProto::Plugin* system_profile_plugin = NULL;
     std::string plugin_name;
-    plugin_dict->GetString(prefs::kStabilityPluginName, &plugin_name);
+    if (const std::string* ptr =
+            plugin_dict->FindStringKey(prefs::kStabilityPluginName))
+      plugin_name = *ptr;
     for (int i = 0; i < system_profile_proto->plugin_size(); ++i) {
       if (system_profile_proto->plugin(i).name() == plugin_name) {
         system_profile_plugin = &system_profile_proto->plugin(i);
@@ -171,29 +154,13 @@ void PluginMetricsProvider::ProvideStabilityMetrics(
         stability->add_plugin_stability();
     *plugin_stability->mutable_plugin() = *system_profile_plugin;
 
-    int launches = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginLaunches, &launches);
-    if (launches > 0)
-      plugin_stability->set_launch_count(launches);
-
-    int instances = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginInstances, &instances);
-    if (instances > 0)
-      plugin_stability->set_instance_count(instances);
-
-    int crashes = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginCrashes, &crashes);
+    int crashes =
+        plugin_dict->FindIntKey(prefs::kStabilityPluginCrashes).value_or(0);
     if (crashes > 0)
       plugin_stability->set_crash_count(crashes);
-
-    int loading_errors = 0;
-    plugin_dict->GetInteger(prefs::kStabilityPluginLoadingErrors,
-                            &loading_errors);
-    if (loading_errors > 0)
-      plugin_stability->set_loading_error_count(loading_errors);
   }
 
-  local_state_->ClearPref(prefs::kStabilityPluginStats);
+  ClearSavedStabilityMetrics();
 }
 
 void PluginMetricsProvider::ClearSavedStabilityMetrics() {
@@ -204,10 +171,10 @@ void PluginMetricsProvider::ClearSavedStabilityMetrics() {
 // for retrieval next time we send a Profile log (generally next launch).
 void PluginMetricsProvider::RecordCurrentState() {
   ListPrefUpdate update(local_state_, prefs::kStabilityPluginStats);
-  base::ListValue* plugins = update.Get();
+  base::Value* plugins = update.Get();
   DCHECK(plugins);
 
-  for (auto& value : plugins->GetList()) {
+  for (auto& value : plugins->GetListDeprecated()) {
     base::DictionaryValue* plugin_dict;
     if (!value.GetAsDictionary(&plugin_dict)) {
       NOTREACHED();
@@ -215,7 +182,10 @@ void PluginMetricsProvider::RecordCurrentState() {
     }
 
     std::u16string plugin_name;
-    plugin_dict->GetString(prefs::kStabilityPluginName, &plugin_name);
+    if (const std::string* ptr =
+            plugin_dict->FindStringKey(prefs::kStabilityPluginName)) {
+      plugin_name = base::UTF8ToUTF16(*ptr);
+    }
     if (plugin_name.empty()) {
       NOTREACHED();
       continue;
@@ -227,31 +197,11 @@ void PluginMetricsProvider::RecordCurrentState() {
     }
 
     ChildProcessStats stats = child_process_stats_buffer_[plugin_name];
-    if (stats.process_launches) {
-      int launches = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginLaunches, &launches);
-      launches += stats.process_launches;
-      plugin_dict->SetInteger(prefs::kStabilityPluginLaunches, launches);
-    }
     if (stats.process_crashes) {
-      int crashes = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginCrashes, &crashes);
+      int crashes =
+          plugin_dict->FindIntKey(prefs::kStabilityPluginCrashes).value_or(0);
       crashes += stats.process_crashes;
-      plugin_dict->SetInteger(prefs::kStabilityPluginCrashes, crashes);
-    }
-    if (stats.instances) {
-      int instances = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginInstances, &instances);
-      instances += stats.instances;
-      plugin_dict->SetInteger(prefs::kStabilityPluginInstances, instances);
-    }
-    if (stats.loading_errors) {
-      int loading_errors = 0;
-      plugin_dict->GetInteger(prefs::kStabilityPluginLoadingErrors,
-                              &loading_errors);
-      loading_errors += stats.loading_errors;
-      plugin_dict->SetInteger(prefs::kStabilityPluginLoadingErrors,
-                              loading_errors);
+      plugin_dict->SetIntKey(prefs::kStabilityPluginCrashes, crashes);
     }
 
     child_process_stats_buffer_.erase(plugin_name);
@@ -267,18 +217,11 @@ void PluginMetricsProvider::RecordCurrentState() {
     if (!IsPluginProcess(stats.process_type))
       continue;
 
-    std::unique_ptr<base::DictionaryValue> plugin_dict(
-        new base::DictionaryValue);
+    base::Value plugin_dict(base::Value::Type::DICTIONARY);
 
-    plugin_dict->SetString(prefs::kStabilityPluginName, cache_iter->first);
-    plugin_dict->SetInteger(prefs::kStabilityPluginLaunches,
-                            stats.process_launches);
-    plugin_dict->SetInteger(prefs::kStabilityPluginCrashes,
-                            stats.process_crashes);
-    plugin_dict->SetInteger(prefs::kStabilityPluginInstances,
-                            stats.instances);
-    plugin_dict->SetInteger(prefs::kStabilityPluginLoadingErrors,
-                            stats.loading_errors);
+    plugin_dict.SetStringKey(prefs::kStabilityPluginName, cache_iter->first);
+    plugin_dict.SetIntKey(prefs::kStabilityPluginCrashes,
+                          stats.process_crashes);
     plugins->Append(std::move(plugin_dict));
   }
   child_process_stats_buffer_.clear();
@@ -300,7 +243,6 @@ void PluginMetricsProvider::LogPluginLoadingError(
   } else {
     DCHECK(IsPluginProcess(stats.process_type));
   }
-  stats.loading_errors++;
   RecordCurrentStateWithDelay();
 }
 
@@ -340,7 +282,6 @@ PluginMetricsProvider::GetChildProcessStats(
 
 void PluginMetricsProvider::BrowserChildProcessLaunchedAndConnected(
     const content::ChildProcessData& data) {
-  GetChildProcessStats(data).process_launches++;
   RecordCurrentStateWithDelay();
 }
 
@@ -348,6 +289,8 @@ void PluginMetricsProvider::BrowserChildProcessCrashed(
     const content::ChildProcessData& data,
     const content::ChildProcessTerminationInfo& info) {
   GetChildProcessStats(data).process_crashes++;
+  metrics::StabilityMetricsHelper::RecordStabilityEvent(
+      metrics::StabilityEventType::kPluginCrash);
   RecordCurrentStateWithDelay();
 }
 
@@ -358,6 +301,8 @@ void PluginMetricsProvider::BrowserChildProcessKilled(
   // actual crashes, which is treated as a kill rather than a crash by
   // base::GetTerminationStatus
   GetChildProcessStats(data).process_crashes++;
+  metrics::StabilityMetricsHelper::RecordStabilityEvent(
+      metrics::StabilityEventType::kPluginCrash);
   RecordCurrentStateWithDelay();
 }
 

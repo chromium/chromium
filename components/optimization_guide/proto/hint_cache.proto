@@ -59,4 +59,6 @@ message StoreEntry {
   optional PredictionModel prediction_model = 6;
   // The actual HostModelFeature data.
   optional HostModelFeatures host_model_features = 7;
+  // Whether to delete a model once expiry_time_secs is past.
+  optional bool keep_beyond_valid_duration = 8;
 }

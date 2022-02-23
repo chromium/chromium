@@ -14,15 +14,15 @@ import '../controls/controlled_button.js';
 import '../controls/settings_toggle_button.js';
 import '../settings_shared_css.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {listenOnce} from 'chrome://resources/js/util.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {afterNextRender, html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 
 import {DownloadsBrowserProxy, DownloadsBrowserProxyImpl} from './downloads_browser_proxy.js';
+import {getTemplate} from './downloads_page.html.js';
 
 type AccountInfo = {
   linked: boolean,
@@ -40,7 +40,7 @@ export class SettingsDownloadsPageElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

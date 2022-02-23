@@ -344,7 +344,7 @@ TEST_F(MediaStreamTrackProcessorTest, VideoCloseOnTrackEnd) {
   EXPECT_TRUE(readable->IsClosed());
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // TODO(https://crbug.com/1234343): Test seems flaky on Fuchsia, enable once
 // flakiness has been investigated.
 #define MAYBE_VideoNoCloseOnTrackDisable DISABLED_VideoNoCloseOnTrackDisable

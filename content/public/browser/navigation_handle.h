@@ -11,8 +11,10 @@
 
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle_timing.h"
 #include "content/public/browser/navigation_throttle.h"
+#include "content/public/browser/prerender_trigger_type.h"
 #include "content/public/browser/reload_type.h"
 #include "content/public/browser/restore_type.h"
 #include "content/public/common/referrer.h"
@@ -27,9 +29,13 @@
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/referrer.mojom.h"
-#include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom.h"
+#include "third_party/blink/public/mojom/loader/transferrable_url_loader.mojom-forward.h"
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/base/page_transition_types.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/scoped_java_ref.h"
+#endif
 
 class GURL;
 
@@ -120,6 +126,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // only meaningful to call this after BeginNavigation().
   virtual bool IsPrerenderedPageActivation() = 0;
 
+  // Returns the type of the frame in which this navigation is taking place.
+  virtual FrameType GetNavigatingFrameType() const = 0;
+
   // Whether the navigation was initiated by the renderer process. Examples of
   // renderer-initiated navigations include:
   //  * <a> link click
@@ -160,6 +169,12 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // navigation is taking place in the main frame. This value will not change
   // during a navigation.
   virtual RenderFrameHost* GetParentFrame() = 0;
+
+  // Returns the document owning the frame this NavigationHandle is located
+  // in, which will either be a parent (for <iframe>s) or outer document (for
+  // <fencedframe> and <portal>). See documentation for
+  // `RenderFrameHost::GetParentOrOuterDocument()` for more details.
+  virtual RenderFrameHost* GetParentFrameOrOuterDocument() = 0;
 
   // The WebContents the navigation is taking place in.
   virtual WebContents* GetWebContents();
@@ -255,6 +270,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // exists.
   virtual GlobalRenderFrameHostId GetPreviousRenderFrameHostId() = 0;
 
+  // Returns the id of the RenderProcessHost this navigation is expected to
+  // commit in. The actual RenderProcessHost may change at commit time. It is
+  // only valid to call this before commit.
+  virtual int GetExpectedRenderProcessHostId() = 0;
+
   // Whether the navigation happened without changing document. Examples of
   // same document navigations are:
   // * reference fragment navigations
@@ -302,7 +322,8 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns true if the browser history should be updated. Otherwise only
   // the session history will be updated. E.g., on unreachable urls or other
   // navigations that the users may not think of as navigations (such as
-  // happens with 'history.replaceState()').
+  // happens with 'history.replaceState()'), or navigations in non-primary frame
+  // trees or portals that should not appear in history.
   virtual bool ShouldUpdateHistory() = 0;
 
   // The previous main frame URL that the user was on. This may be empty if
@@ -432,9 +453,9 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // IsRendererInitiated() returns true.
   virtual const absl::optional<url::Origin>& GetInitiatorOrigin() = 0;
 
-  // Retrieves any DNS aliases for the requested URL. The alias chain order
-  // is preserved in reverse, from canonical name (i.e. address record name)
-  // through to query name.
+  // Retrieves any DNS aliases for the requested URL. Includes all known
+  // aliases, e.g. from A, AAAA, or HTTPS, not just from the address used for
+  // the connection, in no particular order.
   virtual const std::vector<std::string>& GetDnsAliases() = 0;
 
   // Whether the new document will be hosted in the same process as the current
@@ -508,6 +529,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // will be ignored (they won't reset the timeout) and will return `false`.
   virtual bool SetNavigationTimeout(base::TimeDelta timeout) = 0;
 
+  // Prerender2:
+  // Used for metrics.
+  virtual PrerenderTriggerType GetPrerenderTriggerType() = 0;
+  virtual std::string GetPrerenderEmbedderHistogramSuffix() = 0;
+
   // Testing methods ----------------------------------------------------------
   //
   // The following methods should be used exclusively for writing unit tests.
@@ -525,6 +551,11 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Returns whether this navigation is currently deferred.
   virtual bool IsDeferredForTesting() = 0;
   virtual bool IsCommitDeferringConditionDeferredForTesting() = 0;
+
+#if BUILDFLAG(IS_ANDROID)
+  // Returns a reference to NavigationHandle Java counterpart.
+  virtual const base::android::JavaRef<jobject>& GetJavaNavigationHandle() = 0;
+#endif
 };
 
 }  // namespace content

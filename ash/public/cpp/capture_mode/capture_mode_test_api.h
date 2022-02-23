@@ -39,6 +39,9 @@ class ASH_EXPORT CaptureModeTestApi {
   void StartForWindow(bool for_video);
   void StartForRegion(bool for_video);
 
+  // Returns true if a capture mode session is currently active.
+  bool IsSessionActive() const;
+
   // Sets the user selected region for partial screen capture.
   void SetUserSelectedRegion(const gfx::Rect& region);
 
@@ -47,10 +50,21 @@ class ASH_EXPORT CaptureModeTestApi {
   // perform the capture of either an image or a video from the chosen source.
   // Note that for video capture, this skips the 3-second count down UIs, and
   // starts video recording immediately.
-  void PerformCapture();
+  void PerformCapture(bool skip_count_down = true);
 
   // Returns true if there is a video recording currently in progress.
   bool IsVideoRecordingInProgress() const;
+
+  // Returns true if capture mode is waiting for a reply from the DLP manager to
+  // check content restrictions.
+  bool IsPendingDlpCheck() const;
+
+  // Returns true if there's an active session in a waiting state for the DLP
+  // confirmation.
+  bool IsSessionWaitingForDlpConfirmation() const;
+
+  // Returns true if the 3-second countdown animation is in progress.
+  bool IsInCountDownAnimation() const;
 
   // Stops the video recording. Can only be called if a video recording was
   // in progress.

@@ -24,6 +24,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_palette.h"
+#include "ui/gfx/font_list.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
 #include "ui/views/controls/button/button.h"
@@ -153,8 +154,9 @@ void SuggestionChipView::InitLayout(const AssistantSuggestion& suggestion) {
   text_view_->SetID(kSuggestionChipViewLabel);
   text_view_->SetAutoColorReadabilityEnabled(false);
   text_view_->SetSubpixelRenderingEnabled(false);
-  text_view_->SetFontList(
-      assistant::ui::GetDefaultFontList().DeriveWithSizeDelta(1));
+  const gfx::FontList& font_list = assistant::ui::GetDefaultFontList();
+  text_view_->SetFontList(font_list.Derive(
+      /*size_delta=*/1, font_list.GetFontStyle(), gfx::Font::Weight::MEDIUM));
   SetText(text);
 
   if (!use_dark_light_mode_colors_) {

@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import fnmatch
+import hashlib
 import logging
 import posixpath
 import signal
@@ -33,10 +34,9 @@ _SIGTERM_TEST_LOG = (
 def SubstituteDeviceRoot(device_path, device_root):
   if not device_path:
     return device_root
-  elif isinstance(device_path, list):
+  if isinstance(device_path, list):
     return posixpath.join(*(p if p else device_root for p in device_path))
-  else:
-    return device_path
+  return device_path
 
 
 class TestsTerminated(Exception):
@@ -45,15 +45,15 @@ class TestsTerminated(Exception):
 
 class InvalidShardingSettings(Exception):
   def __init__(self, shard_index, total_shards):
-    super(InvalidShardingSettings, self).__init__(
-        'Invalid sharding settings. shard_index: %d total_shards: %d'
-            % (shard_index, total_shards))
+    super().__init__(
+        'Invalid sharding settings. shard_index: %d total_shards: %d' %
+        (shard_index, total_shards))
 
 
 class LocalDeviceTestRun(test_run.TestRun):
 
   def __init__(self, env, test_instance):
-    super(LocalDeviceTestRun, self).__init__(env, test_instance)
+    super().__init__(env, test_instance)
     self._tools = {}
     # This is intended to be filled by a child class.
     self._installed_packages = []
@@ -275,10 +275,10 @@ class LocalDeviceTestRun(test_run.TestRun):
   # Sort by hash so we don't put all tests in a slow suite in the same
   # partition.
   def _SortTests(self, tests):
-    return sorted(
-        tests,
-        key=lambda t: hash(
-            self._GetUniqueTestName(t[0] if isinstance(t, list) else t)))
+    return sorted(tests,
+                  key=lambda t: hashlib.sha256(
+                      self._GetUniqueTestName(t[0] if isinstance(t, list) else t
+                                              ).encode()).hexdigest())
 
   # Partition tests evenly into |num_desired_partitions| partitions where
   # possible. However, many constraints make partitioning perfectly impossible.

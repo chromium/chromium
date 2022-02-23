@@ -17,6 +17,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/omnibox/browser/autocomplete_match.h"
@@ -28,6 +29,7 @@
 #include "ui/gfx/native_widget_types.h"
 #include "ui/gfx/range/range.h"
 
+class AutocompleteInput;
 class GURL;
 class OmniboxEditController;
 class OmniboxViewMacTest;
@@ -150,6 +152,10 @@ class OmniboxView {
   // conflicts with the OSX class override as that has a base class that also
   // defines a method with that name.
   virtual void CloseOmniboxPopup();
+
+  // Starts an autocomplete prefetch query so those providers that benefit from
+  // it could perform a prefetch request and populate their caches.
+  virtual void StartPrefetch(const AutocompleteInput& input);
 
   // Sets the focus to the omnibox. |is_user_initiated| is true when the user
   // explicitly focused the omnibox, and false when the omnibox was
@@ -322,7 +328,7 @@ class OmniboxView {
 
   // |model_| can be NULL in tests.
   std::unique_ptr<OmniboxEditModel> model_;
-  OmniboxEditController* controller_;
+  raw_ptr<OmniboxEditController> controller_;
 };
 
 #endif  // COMPONENTS_OMNIBOX_BROWSER_OMNIBOX_VIEW_H_

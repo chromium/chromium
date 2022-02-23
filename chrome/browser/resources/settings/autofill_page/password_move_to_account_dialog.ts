@@ -16,10 +16,11 @@ import '../site_favicon.js';
 
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiStorePasswordUiEntry} from './multi_store_password_ui_entry.js';
 import {PasswordManagerImpl} from './password_manager_proxy.js';
+import {getTemplate} from './password_move_to_account_dialog.html.js';
 
 /**
  * This should be kept in sync with the enum in
@@ -35,19 +36,20 @@ export enum MoveToAccountStoreTrigger {
   COUNT = 4,
 }
 
-interface PasswordMoveToAccountDialogElement {
+export interface PasswordMoveToAccountDialogElement {
   $: {
     dialog: CrDialogElement,
+    moveButton: HTMLElement,
   };
 }
 
-class PasswordMoveToAccountDialogElement extends PolymerElement {
+export class PasswordMoveToAccountDialogElement extends PolymerElement {
   static get is() {
     return 'password-move-to-account-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -79,6 +81,12 @@ class PasswordMoveToAccountDialogElement extends PolymerElement {
 
   private onCancelButtonClick_() {
     this.$.dialog.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'password-move-to-account-dialog': PasswordMoveToAccountDialogElement;
   }
 }
 

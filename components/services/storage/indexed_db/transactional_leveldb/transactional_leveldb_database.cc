@@ -53,7 +53,7 @@ namespace {
 //
 // Sync writes are necessary on Windows for quota calculations; POSIX
 // calculates file sizes correctly even when not synced to disk.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const bool kSyncWrites = true;
 #else
 // TODO(dgrogan): Either remove the #if block or change this back to false.

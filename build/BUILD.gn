@@ -43,21 +43,6 @@ buildflag_header("chromeos_buildflags") {
     "IS_CHROMEOS_LACROS=$is_chromeos_lacros",
     "IS_CHROMEOS_ASH=$is_chromeos_ash",
     "IS_CHROMEOS_WITH_HW_DETAILS=$is_chromeos_with_hw_details",
-  ]
-}
-
-buildflag_header("os_buildflags") {
-  header = "os_buildflags.h"
-  flags = [
-    "IS_ANDROID=$is_android",
-    "IS_CHROMEOS=$is_chromeos",
-    "IS_FUCHSIA=$is_fuchsia",
-    "IS_IOS=$is_ios",
-    "IS_LINUX=$is_linux",
-    "IS_MAC=$is_mac",
-    "IS_NACL=$is_nacl",
-    "IS_WIN=$is_win",
-    "IS_APPLE=$is_apple",
-    "IS_POSIX=$is_posix",
+    "IS_REVEN=$is_reven",
   ]
 }

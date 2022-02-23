@@ -18,9 +18,8 @@
 namespace mojo {
 
 template <>
-struct CONTENT_EXPORT
-    EnumTraits<content::mojom::PointerActionType,
-               content::SyntheticPointerActionParams::PointerActionType> {
+struct EnumTraits<content::mojom::PointerActionType,
+                  content::SyntheticPointerActionParams::PointerActionType> {
   static content::mojom::PointerActionType ToMojom(
       content::SyntheticPointerActionParams::PointerActionType input);
   static bool FromMojom(
@@ -29,9 +28,8 @@ struct CONTENT_EXPORT
 };
 
 template <>
-struct CONTENT_EXPORT
-    EnumTraits<content::mojom::SyntheticButton,
-               content::SyntheticPointerActionParams::Button> {
+struct EnumTraits<content::mojom::SyntheticButton,
+                  content::SyntheticPointerActionParams::Button> {
   static content::mojom::SyntheticButton ToMojom(
       content::SyntheticPointerActionParams::Button input);
   static bool FromMojom(content::mojom::SyntheticButton input,
@@ -39,8 +37,8 @@ struct CONTENT_EXPORT
 };
 
 template <>
-struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticSmoothDragDataView,
-                                   content::SyntheticSmoothDragGestureParams> {
+struct StructTraits<content::mojom::SyntheticSmoothDragDataView,
+                    content::SyntheticSmoothDragGestureParams> {
   static content::mojom::GestureSourceType gesture_source_type(
       const content::SyntheticSmoothDragGestureParams& r) {
     return r.gesture_source_type;
@@ -66,8 +64,8 @@ struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticSmoothDragDataView,
 };
 
 template <>
-struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticPinchDataView,
-                                   content::SyntheticPinchGestureParams> {
+struct StructTraits<content::mojom::SyntheticPinchDataView,
+                    content::SyntheticPinchGestureParams> {
   static float scale_factor(const content::SyntheticPinchGestureParams& r) {
     return r.scale_factor;
   }
@@ -87,9 +85,8 @@ struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticPinchDataView,
 };
 
 template <>
-struct CONTENT_EXPORT
-    StructTraits<content::mojom::SyntheticSmoothScrollDataView,
-                 content::SyntheticSmoothScrollGestureParams> {
+struct StructTraits<content::mojom::SyntheticSmoothScrollDataView,
+                    content::SyntheticSmoothScrollGestureParams> {
   static content::mojom::GestureSourceType gesture_source_type(
       const content::SyntheticSmoothScrollGestureParams& r) {
     return r.gesture_source_type;
@@ -140,8 +137,8 @@ struct CONTENT_EXPORT
 };
 
 template <>
-struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticTapDataView,
-                                   content::SyntheticTapGestureParams> {
+struct StructTraits<content::mojom::SyntheticTapDataView,
+                    content::SyntheticTapGestureParams> {
   static content::mojom::GestureSourceType gesture_source_type(
       const content::SyntheticTapGestureParams& r) {
     return r.gesture_source_type;
@@ -161,9 +158,8 @@ struct CONTENT_EXPORT StructTraits<content::mojom::SyntheticTapDataView,
 };
 
 template <>
-struct CONTENT_EXPORT
-    StructTraits<content::mojom::SyntheticPointerActionParamsDataView,
-                 content::SyntheticPointerActionParams> {
+struct StructTraits<content::mojom::SyntheticPointerActionParamsDataView,
+                    content::SyntheticPointerActionParams> {
   static content::SyntheticPointerActionParams::PointerActionType
   pointer_action_type(const content::SyntheticPointerActionParams& r) {
     return r.pointer_action_type_;
@@ -231,9 +227,8 @@ struct CONTENT_EXPORT
 };
 
 template <>
-struct CONTENT_EXPORT
-    StructTraits<content::mojom::SyntheticPointerActionDataView,
-                 content::SyntheticPointerActionListParams> {
+struct StructTraits<content::mojom::SyntheticPointerActionDataView,
+                    content::SyntheticPointerActionListParams> {
   static content::mojom::GestureSourceType gesture_source_type(
       const content::SyntheticPointerActionListParams& r) {
     return r.gesture_source_type;

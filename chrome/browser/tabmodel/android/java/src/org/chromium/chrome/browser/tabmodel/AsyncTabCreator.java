@@ -22,9 +22,11 @@ public abstract class AsyncTabCreator extends TabCreator {
      * @param loadUrlParams Parameters specifying the URL to load and other navigation details.
      * @param activity      The current {@link Activity}
      * @param parentId      The ID of the parent tab, or {@link Tab#INVALID_TAB_ID}.
+     * @param otherActivity The activity to create a new tab in. This is non-null when we have
+     *                      a visible activity running adjacently.
      */
     public abstract void createTabInOtherWindow(
-            LoadUrlParams loadUrlParams, Activity activity, int parentId);
+            LoadUrlParams loadUrlParams, Activity activity, int parentId, Activity otherActivity);
 
     /**
      * Creates a Tab to host the given WebContents asynchronously.

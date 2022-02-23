@@ -7,6 +7,7 @@
 
 #include <ostream>
 #include "base/time/time.h"
+#include "components/autofill_assistant/browser/script_parameters.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/startup_util.h"
 #include "services/metrics/public/cpp/ukm_recorder.h"
@@ -60,23 +61,24 @@ class Metrics {
     kMaxValue = MULTIPLE_AUTOSTARTABLE_SCRIPTS
   };
 
-  // The different ways that autofill assistant can stop. Note that this only
-  // covers regular onboarding. Trigger script onboarding is covered by
-  // TriggerScriptOnboarding.
+  // The different ways to complete the onboarding / user consent screen.
   //
-  // GENERATED_JAVA_ENUM_PACKAGE: (
-  // org.chromium.chrome.browser.autofill_assistant.metrics)
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: OnBoarding
-  //
-  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
   // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantOnBoarding enum listing in
+  // AutofillAssistantOnboarding enum listing in
   // tools/metrics/histograms/enums.xml.
-  enum class OnBoarding {
+  enum class Onboarding {
+    // The onboarding was shown to the user.
     OB_SHOWN = 0,
+    // The onboarding was not shown to the user, because the user has already
+    // accepted the onboarding in a previous flow.
     OB_NOT_SHOWN = 1,
+    // The user explicitly accepted the onboarding by tapping the relevant chip.
     OB_ACCEPTED = 2,
+    // The user explicitly rejected the onboarding by tapping the relevant chip.
     OB_CANCELLED = 3,
+    // The user implicitly rejected the onboarding. Some of the possible reasons
+    // include navigating away, tapping the back button, closing the tab, etc.
     OB_NO_ANSWER = 4,
 
     kMaxValue = OB_NO_ANSWER
@@ -406,7 +408,7 @@ class Metrics {
   //
   // This enum is used in histograms, do not remove/renumber entries. Only add
   // at the end and update kMaxValue. Also remember to update the
-  // AutofillAssistantWindowAttachmentChange enum listing in
+  // AutofillAssistantDependenciesInvalidated enum listing in
   // tools/metrics/histograms/enums.xml.
   enum class DependenciesInvalidated {
     // The dependencies were invalidated while the starter existed but before
@@ -419,6 +421,207 @@ class Metrics {
     DURING_FLOW = 2,
 
     kMaxValue = DURING_FLOW
+  };
+
+  // Used for logging the CALLER script parameter.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantCaller enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class AutofillAssistantCaller {
+    UNKNOWN_CALLER = 0,
+    ASSISTANT = 1,
+    SEARCH = 2,
+    STARTER_APP = 3,
+    SEARCH_ADS = 4,
+    SHOPPING_PROPERTY = 5,
+    EMULATOR = 6,
+    IN_CHROME = 7,
+    DIRECT_ACTION = 8,
+
+    kMaxValue = DIRECT_ACTION
+  };
+
+  // Used for logging the SOURCE script parameter.
+  //
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantSource enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class AutofillAssistantSource {
+    UNKNOWN_SOURCE = 0,
+    ORGANIC = 1,
+    FRESH_DEEPLINK = 2,
+    STARTER_APP = 3,
+    EMULATOR_VALIDATION = 4,
+    S_API = 5,
+    C_CARD = 6,
+    MD_CARD = 7,
+    C_NOTIFICATION = 8,
+    G_CAROUSEL = 9,
+
+    kMaxValue = G_CAROUSEL
+  };
+
+  // Used for logging the intent of an autofill-assistant flow.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantIntent enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class AutofillAssistantIntent {
+    UNDEFINED_INTENT = 0,
+    BUY_MOVIE_TICKET = 3,
+    RENT_CAR = 9,
+    SHOPPING = 10,
+    TELEPORT = 11,
+    SHOPPING_ASSISTED_CHECKOUT = 14,
+    FLIGHTS_CHECKIN = 15,
+    FOOD_ORDERING = 17,
+    PASSWORD_CHANGE = 18,
+    FOOD_ORDERING_PICKUP = 19,
+    FOOD_ORDERING_DELIVERY = 20,
+    UNLAUNCHED_VERTICAL_1 = 22,
+    FIND_COUPONS = 25,
+
+    kMaxValue = FIND_COUPONS
+  };
+
+  // Used for logging active autofill-assistant experiments. This is intended
+  // to be a bitmask to support cases where more than one experiment is running.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantExperiment enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class AutofillAssistantExperiment {
+    // No experiment is running.
+    NO_EXPERIMENT = 0,
+    // An unknown experiment is running.
+    UNKNOWN_EXPERIMENT = 1,
+
+    kMaxValue = UNKNOWN_EXPERIMENT
+  };
+
+  // Used to record successful and failed autofill-assistant startup requests.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantStarted enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class AutofillAssistantStarted {
+    FAILED_FEATURE_DISABLED = 0,
+    FAILED_MANDATORY_PARAMETER_MISSING = 1,
+    FAILED_SETTING_DISABLED = 2,
+    FAILED_NO_INITIAL_URL = 3,
+    OK_DELAYED_START = 4,
+    OK_IMMEDIATE_START = 5,
+
+    kMaxValue = OK_IMMEDIATE_START
+  };
+
+  // Used to track what action the user performed on the contact/shipping/card
+  // data. Only reported at the end of a CollectUserData action. Reported up to
+  // three times for each of contact/shipping/credit card and only if the given
+  // entry was requested at that step.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantUserDataSelectionState enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class UserDataSelectionState {
+    // The user kept the initial selection without modifications.
+    NO_CHANGE,
+    // The user kept the initial selection but edited it.
+    EDIT_PRESELECTED,
+    // The user changed the selected option.
+    SELECTED_DIFFERENT_ENTRY,
+    // The user changed the selected option and edited the newly selected entry.
+    SELECTED_DIFFERENT_AND_MODIFIED_ENTRY,
+    // The user added a new entry.
+    NEW_ENTRY,
+
+    kMaxValue = NEW_ENTRY
+  };
+
+  // Used to log the initial number of contact/shipping/card entries. Reported
+  // at the end of a CollectUserData action.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantUserDataEntryCount enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class UserDataEntryCount {
+    ZERO,
+    ONE,
+    TWO,
+    THREE,
+    FOUR,
+    FIVE_OR_MORE,
+
+    kMaxValue = FIVE_OR_MORE
+  };
+
+  // Whether the CollectUserData action was successfully completed.
+  //
+  // This enum is used in UKM metrics, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantCollectUserDataResult enum listing in
+  // tools/metrics/histograms/enums.xml and the description in
+  // tools/metrics/ukm/ukm.xml as necessary.
+  enum class CollectUserDataResult {
+    UNKNOWN,
+    SUCCESS,
+    FAILURE,
+
+    kMaxValue = FAILURE
+  };
+
+  // Used for bitmasks for the InitialContactFieldsStatus,
+  // InitialBillingFieldsStatus and InitialShippingFieldsStatus metrics.
+  enum AutofillAssistantProfileFields {
+    NAME_FIRST = 1 << 0,
+    NAME_LAST = 1 << 1,
+    NAME_FULL = 1 << 2,
+    EMAIL_ADDRESS = 1 << 3,
+    PHONE_HOME_NUMBER = 1 << 4,
+    PHONE_HOME_COUNTRY_CODE = 1 << 5,
+    PHONE_HOME_WHOLE_NUMBER = 1 << 6,
+    ADDRESS_HOME_COUNTRY = 1 << 7,
+    ADDRESS_HOME_STATE = 1 << 8,
+    ADDRESS_HOME_CITY = 1 << 9,
+    ADDRESS_HOME_ZIP = 1 << 10,
+    ADDRESS_HOME_LINE1 = 1 << 11,
+  };
+
+  enum AutofillAssistantCreditCardFields {
+    CREDIT_CARD_NAME_FULL = 1 << 0,
+    CREDIT_CARD_EXP_MONTH = 1 << 1,
+    CREDIT_CARD_EXP_2_DIGIT_YEAR = 1 << 2,
+    CREDIT_CARD_EXP_4_DIGIT_YEAR = 1 << 3,
+    MASKED = 1 << 4,
+    // If the card is masked, this is always logged as present, to match what
+    // CollectUserData considers complete for the purposes of enabling the
+    // "Continue" button.
+    VALID_NUMBER = 1 << 5,
+  };
+
+  // This enum is used in histograms, do not remove/renumber entries. Only add
+  // at the end and update kMaxValue. Also remember to update the
+  // AutofillAssistantOnboardingFetcherResultStatus enum listing in
+  // tools/metrics/histograms/enums.xml.
+  enum class OnboardingFetcherResultStatus {
+    kOk = 0,
+    // No body was received from the server.
+    kNoBody = 1,
+    // Parsing the JSON failed.
+    kInvalidJson = 1,
+    // The JSON was not in the form we expected it to be.
+    kInvalidData = 2,
+    kMaxValue = kInvalidData
   };
 
   static void RecordDropOut(DropOutReason reason, const std::string& intent);
@@ -449,10 +652,12 @@ class Metrics {
       ukm::SourceId source_id,
       TriggerScriptProto::TriggerUIType trigger_ui_type,
       TriggerScriptOnboarding event);
+  static void RecordRegularScriptOnboarding(ukm::UkmRecorder* ukm_recorder,
+                                            ukm::SourceId source_id,
+                                            Metrics::Onboarding event);
   static void RecordInChromeTriggerAction(ukm::UkmRecorder* ukm_recorder,
                                           ukm::SourceId source_id,
                                           InChromeTriggerAction event);
-  static void RecordOnboardingResult(OnBoarding event);
   static void RecordTtsButtonAction(TtsButtonAction action);
   static void RecordTtsEngineEvent(TtsEngineEvent event);
   static void RecordFeatureModuleInstallation(FeatureModuleInstallation event);
@@ -462,6 +667,36 @@ class Metrics {
       base::TimeDelta evaluation_time);
   static void RecordDependenciesInvalidated(
       DependenciesInvalidated dependencies_invalidated);
+  static void RecordStartRequest(ukm::UkmRecorder* ukm_recorder,
+                                 ukm::SourceId source_id,
+                                 const ScriptParameters& script_parameters,
+                                 StartupUtil::StartupMode event);
+  static void RecordContactMetrics(ukm::UkmRecorder* ukm_recorder,
+                                   ukm::SourceId source_id,
+                                   int complete_count,
+                                   int incomplete_count,
+                                   int initially_selected_field_bitmask,
+                                   UserDataSelectionState selection_state);
+  static void RecordCreditCardMetrics(
+      ukm::UkmRecorder* ukm_recorder,
+      ukm::SourceId source_id,
+      int complete_count,
+      int incomplete_count,
+      int initially_selected_card_field_bitmask,
+      int initially_selected_billing_address_field_bitmask,
+      UserDataSelectionState selection_state);
+  static void RecordShippingMetrics(ukm::UkmRecorder* ukm_recorder,
+                                    ukm::SourceId source_id,
+                                    int complete_count,
+                                    int incomplete_count,
+                                    int initially_selected_field_bitmask,
+                                    UserDataSelectionState selection_state);
+  static void RecordCollectUserDataSuccess(ukm::UkmRecorder* ukm_recorder,
+                                           ukm::SourceId source_id,
+                                           bool success,
+                                           int64_t time_taken_ms);
+  static void RecordOnboardingFetcherResult(
+      OnboardingFetcherResultStatus status);
 
   // Intended for debugging: writes string representation of |reason| to
   // |out|.
@@ -568,7 +803,7 @@ class Metrics {
   }
 
   // Intended for debugging: writes string representation of |metric| to |out|.
-  friend std::ostream& operator<<(std::ostream& out, const OnBoarding& metric) {
+  friend std::ostream& operator<<(std::ostream& out, const Onboarding& metric) {
 #ifdef NDEBUG
     // Non-debugging builds write the enum number.
     out << static_cast<int>(metric);
@@ -576,19 +811,19 @@ class Metrics {
 #else
     // Debugging builds write a string representation of |metric|.
     switch (metric) {
-      case OnBoarding::OB_SHOWN:
+      case Onboarding::OB_SHOWN:
         out << "OB_SHOWN";
         break;
-      case OnBoarding::OB_NOT_SHOWN:
+      case Onboarding::OB_NOT_SHOWN:
         out << "OB_NOT_SHOWN";
         break;
-      case OnBoarding::OB_ACCEPTED:
+      case Onboarding::OB_ACCEPTED:
         out << "OB_ACCEPTED";
         break;
-      case OnBoarding::OB_CANCELLED:
+      case Onboarding::OB_CANCELLED:
         out << "OB_CANCELLED";
         break;
-      case OnBoarding::OB_NO_ANSWER:
+      case Onboarding::OB_NO_ANSWER:
         out << "OB_NO_ANSWER";
         break;
         // Do not add default case to force compilation error for new values.

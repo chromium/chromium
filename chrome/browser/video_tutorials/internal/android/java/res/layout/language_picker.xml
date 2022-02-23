@@ -9,7 +9,7 @@
     android:id="@+id/language_picker"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     android:paddingTop="12dp" >
 
     <org.chromium.ui.widget.ChromeImageButton

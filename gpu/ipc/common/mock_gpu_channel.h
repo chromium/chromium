@@ -44,18 +44,18 @@ class MockGpuChannel : public mojom::GpuChannel {
                void(mojom::ScheduleImageDecodeParamsPtr, uint64_t));
   MOCK_METHOD1(FlushDeferredRequests,
                void(std::vector<mojom::DeferredRequestPtr>));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD3(CreateStreamTexture,
                void(int32_t,
                     mojo::PendingAssociatedReceiver<mojom::StreamTexture>,
                     CreateStreamTextureCallback));
-#endif  // defined(OS_ANDROID)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_ANDROID)
+#if BUILDFLAG(IS_WIN)
   MOCK_METHOD3(CreateDCOMPTexture,
                void(int32_t,
                     mojo::PendingAssociatedReceiver<mojom::DCOMPTexture>,
                     CreateDCOMPTextureCallback));
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   MOCK_METHOD4(WaitForTokenInRange,
                void(int32_t, int32_t, int32_t, WaitForTokenInRangeCallback));
   MOCK_METHOD5(WaitForGetOffsetInRange,
@@ -64,7 +64,7 @@ class MockGpuChannel : public mojom::GpuChannel {
                     int32_t,
                     int32_t,
                     WaitForGetOffsetInRangeCallback));
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   MOCK_METHOD5(RegisterSysmemBufferCollection,
                void(const base::UnguessableToken&,
                     mojo::PlatformHandle,
@@ -73,7 +73,7 @@ class MockGpuChannel : public mojom::GpuChannel {
                     bool));
   MOCK_METHOD1(ReleaseSysmemBufferCollection,
                void(const base::UnguessableToken&));
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 };
 
 }  // namespace gpu

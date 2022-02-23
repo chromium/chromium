@@ -10,13 +10,13 @@
 #include "third_party/metrics_proto/omnibox_input_type.pb.h"
 #include "url/url_constants.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/java/jni/AutocompleteSchemeClassifierImpl_jni.h"
 #endif
 
 namespace weblayer {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jlong JNI_AutocompleteSchemeClassifierImpl_CreateAutocompleteClassifier(
     JNIEnv* env) {
   return reinterpret_cast<intptr_t>(new AutocompleteSchemeClassifierImpl());

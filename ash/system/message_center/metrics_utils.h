@@ -61,6 +61,28 @@ enum NotificationTypeDetailed : int {
   kMaxValue = PHONEHUB_PRIORITY_TWO,
 };
 
+// These are the types of notification view that we are interested in recording
+// metrics. A notification view might contain an image, a set of action buttons,
+// and some of those buttons might enable inline reply. This enum covers all the
+// possible variations for a notification view with image, action buttons and
+// inline reply, and whether it is part of a group notification or not.
+// Note to keep in sync with enum in tools/metrics/histograms/enums.xml.
+enum class NotificationViewType {
+  SIMPLE = 0,  // no image, action buttons and inline reply.
+  GROUPED_SIMPLE = 1,
+  HAS_IMAGE = 2,  // has image, no action buttons and inline reply.
+  GROUPED_HAS_IMAGE = 3,
+  HAS_ACTION = 4,  // has action buttons, no image and inline reply.
+  GROUPED_HAS_ACTION = 5,
+  HAS_INLINE_REPLY = 6,  // has inline reply, no image.
+  GROUPED_HAS_INLINE_REPLY = 7,
+  HAS_IMAGE_AND_ACTION = 8,  // has image and action button, no inline reply.
+  GROUPED_HAS_IMAGE_AND_ACTION = 9,
+  HAS_IMAGE_AND_INLINE_REPLY = 10,  // has image and inline reply.
+  GROUPED_HAS_IMAGE_AND_INLINE_REPLY = 11,
+  kMaxValue = GROUPED_HAS_IMAGE_AND_INLINE_REPLY,
+};
+
 // Returns the detailed notification type enum for a notification.
 NotificationTypeDetailed GetNotificationType(
     const message_center::Notification& notification);
@@ -68,6 +90,9 @@ NotificationTypeDetailed GetNotificationType(
 // Returns the detailed notification type enum for a notification id.
 absl::optional<NotificationTypeDetailed> GetNotificationType(
     const std::string& notification_id);
+
+// Logs a Hover event on a notification.
+void LogHover(const std::string& notification_id, bool is_popup);
 
 // Logs a ClickedBody event.
 void LogClickedBody(const std::string& notification_id, bool is_popup);

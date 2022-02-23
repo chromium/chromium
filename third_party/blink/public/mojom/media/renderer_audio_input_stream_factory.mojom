@@ -7,6 +7,7 @@ module blink.mojom;
 import "media/mojo/mojom/audio_data_pipe.mojom";
 import "media/mojo/mojom/audio_input_stream.mojom";
 import "media/mojo/mojom/audio_parameters.mojom";
+import "media/mojo/mojom/audio_processing.mojom";
 import "media/mojo/mojom/media_types.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 
@@ -15,12 +16,15 @@ import "mojo/public/mojom/base/unguessable_token.mojom";
 // to send the stream to when it's ready. The lifetime of the stream is limited
 // by the lifetime of the client.
 interface RendererAudioInputStreamFactory {
+  // |processing_config| is passed through the browser, to the audio process.
+  // It is given IFF |client| wants audio to be processed in the audio process.
   CreateStream(
       pending_remote<RendererAudioInputStreamFactoryClient> client,
       mojo_base.mojom.UnguessableToken session_id,
       media.mojom.AudioParameters params,
       bool automatic_gain_control,
-      uint32 shared_memory_count);
+      uint32 shared_memory_count,
+      media.mojom.AudioProcessingConfig? processing_config);
 
   // Associates an output device with an input stream, so that the input knows
   // which output device to cancel echo from. |input_stream_id| is the id

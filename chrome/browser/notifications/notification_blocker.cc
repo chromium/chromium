@@ -4,6 +4,8 @@
 
 #include "chrome/browser/notifications/notification_blocker.h"
 
+#include "base/observer_list.h"
+
 NotificationBlocker::NotificationBlocker() = default;
 
 NotificationBlocker::~NotificationBlocker() = default;

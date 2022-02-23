@@ -7,6 +7,7 @@
 
 #include <memory>
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "components/autofill_assistant/browser/starter_platform_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
@@ -50,12 +51,13 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool GetMakeSearchesAndBrowsingBetterEnabled() const override;
   bool GetIsCustomTab() const override;
   bool GetIsTabCreatedByGSA() const override;
+  std::unique_ptr<AssistantFieldTrialUtil> CreateFieldTrialUtil() override;
 
   // Intentionally public to give tests direct access.
   std::unique_ptr<TriggerScriptCoordinator::UiDelegate>
       trigger_script_ui_delegate_;
   std::unique_ptr<ServiceRequestSender> trigger_script_request_sender_for_test_;
-  WebsiteLoginManager* website_login_manager_ = nullptr;
+  raw_ptr<WebsiteLoginManager> website_login_manager_ = nullptr;
   version_info::Channel channel_ = version_info::Channel::UNKNOWN;
   bool feature_module_installed_ = true;
   Metrics::FeatureModuleInstallation feature_module_installation_result_ =
@@ -71,6 +73,8 @@ class FakeStarterPlatformDelegate : public StarterPlatformDelegate {
   bool msbb_enabled_ = true;
   bool is_custom_tab_ = true;
   bool is_tab_created_by_gsa_ = true;
+  std::unique_ptr<AssistantFieldTrialUtil> field_trial_util_;
+
   base::OnceCallback<void(
       GURL url,
       std::unique_ptr<TriggerContext> trigger_context,

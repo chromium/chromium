@@ -22,12 +22,15 @@
 #include "base/files/file_path_watcher.h"
 #include "base/files/file_util.h"
 #include "base/i18n/number_formatting.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/time/time.h"
 #include "base/version.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -68,6 +71,7 @@ const char kMethodGetCapabilities[] = "GetCapabilities";
 const char kMethodListActivatableNames[] = "ListActivatableNames";
 const char kMethodNameHasOwner[] = "NameHasOwner";
 const char kMethodNotify[] = "Notify";
+const char kMethodStartServiceByName[] = "StartServiceByName";
 
 // DBus signals.
 const char kSignalActionInvoked[] = "ActionInvoked";
@@ -99,6 +103,9 @@ const char kSettingsButtonId[] = "settings";
 // Max image size; specified in the FDO notification specification.
 const int kMaxImageWidth = 200;
 const int kMaxImageHeight = 100;
+
+// Time to wait for the notification service to start.
+constexpr base::TimeDelta kStartServiceTimeout = base::Seconds(1);
 
 // Notification on-screen time, in milliseconds.
 const int32_t kExpireTimeout = 25000;
@@ -156,7 +163,7 @@ int NotificationPriorityToFdoUrgency(int priority) {
       return URGENCY_CRITICAL;
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case message_center::DEFAULT_PRIORITY:
       return URGENCY_NORMAL;
   }
@@ -196,6 +203,16 @@ bool ShouldAddCloseButton(const std::string& server_name,
   // so exclude versions that provide one already.
   return server_name == "cinnamon" && server_version.IsValid() &&
          server_version.CompareToWildcardString("3.8.0") < 0;
+}
+
+bool ShouldMarkPersistentNotificationsAsCritical(
+    const std::string& server_name) {
+  // Gnome-based desktops intentionally disregard the notification timeout
+  // and hide a notification automatically unless it is marked as critical.
+  // https://github.com/linuxmint/Cinnamon/issues/7179
+  // For this reason, we mark a notification that should not time out as
+  // critical unless we are on KDE Plasma which follows the notification spec.
+  return server_name != "Plasma";
 }
 
 void ForwardNotificationOperationOnUiThread(
@@ -286,7 +303,24 @@ bool CheckNotificationsNameHasOwnerOrIsActivatable(dbus::Bus* bus) {
     dbus::MessageReader reader(list_activatable_names_response.get());
     std::vector<std::string> activatable_names;
     reader.PopArrayOfStrings(&activatable_names);
-    return base::Contains(activatable_names, kFreedesktopNotificationsName);
+    if (base::Contains(activatable_names, kFreedesktopNotificationsName)) {
+      dbus::MethodCall start_service_call(DBUS_INTERFACE_DBUS,
+                                          kMethodStartServiceByName);
+      dbus::MessageWriter start_service_writer(&start_service_call);
+      start_service_writer.AppendString(kFreedesktopNotificationsName);
+      start_service_writer.AppendUint32(/*flags=*/0);
+      auto start_service_response = dbus_proxy->CallMethodAndBlock(
+          &start_service_call, kStartServiceTimeout.InMilliseconds());
+      if (!start_service_response)
+        return false;
+      dbus::MessageReader start_service_reader(start_service_response.get());
+      uint32_t start_service_reply = 0;
+      if (start_service_reader.PopUint32(&start_service_reply) &&
+          (start_service_reply == DBUS_START_REPLY_SUCCESS ||
+           start_service_reply == DBUS_START_REPLY_ALREADY_RUNNING)) {
+        return true;
+      }
+    }
   }
   return false;
 }
@@ -748,7 +782,8 @@ class NotificationPlatformBridgeLinuxImpl
     hints_writer.OpenDictEntry(&urgency_writer);
     urgency_writer.AppendString("urgency");
     uint32_t urgency =
-        notification->never_timeout()
+        notification->never_timeout() &&
+                ShouldMarkPersistentNotificationsAsCritical(server_name_)
             ? URGENCY_CRITICAL
             : NotificationPriorityToFdoUrgency(notification->priority());
     urgency_writer.AppendVariantOfUint32(urgency);

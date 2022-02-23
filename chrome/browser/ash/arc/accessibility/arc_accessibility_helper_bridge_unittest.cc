@@ -9,6 +9,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/external_arc/message_center/arc_notification_content_view.h"
@@ -29,9 +32,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -202,7 +202,8 @@ class ArcAccessibilityHelperBridgeTest : public ChromeViewsTestBase {
   std::unique_ptr<ArcNotificationView> CreateArcNotificationView(
       ArcNotificationItem* item,
       const message_center::Notification& notification) {
-    return std::make_unique<ArcNotificationView>(item, notification);
+    return std::make_unique<ArcNotificationView>(item, notification,
+                                                 /*shown_in_popup=*/false);
   }
 
  protected:
@@ -234,7 +235,8 @@ TEST_F(ArcAccessibilityHelperBridgeTest, AnnouncementEvent) {
   ASSERT_EQ(1, helper_bridge->GetEventCount(event_name));
   ASSERT_EQ(event_name, helper_bridge->last_event->event_name);
   base::Value::ConstListView arg =
-      helper_bridge->last_event->event_args->GetList()[0].GetList();
+      helper_bridge->last_event->event_args->GetListDeprecated()[0]
+          .GetListDeprecated();
   ASSERT_EQ(1U, arg.size());
   ASSERT_EQ(announce_text, arg[0].GetString());
 }
@@ -264,7 +266,8 @@ TEST_F(ArcAccessibilityHelperBridgeTest, NotificationStateChangedEvent) {
   ASSERT_EQ(1, helper_bridge->GetEventCount(event_name));
   ASSERT_EQ(event_name, helper_bridge->last_event->event_name);
   base::Value::ConstListView arg =
-      helper_bridge->last_event->event_args->GetList()[0].GetList();
+      helper_bridge->last_event->event_args->GetListDeprecated()[0]
+          .GetListDeprecated();
   ASSERT_EQ(1U, arg.size());
   ASSERT_EQ(toast_text, arg[0].GetString());
 

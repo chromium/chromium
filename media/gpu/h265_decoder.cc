@@ -301,7 +301,7 @@ H265Decoder::DecodeResult H265Decoder::Decode() {
         break;
       case H265NALU::EOS_NUT:
         first_picture_ = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case H265NALU::EOB_NUT:  // fallthrough
       case H265NALU::AUD_NUT:
       case H265NALU::RSV_NVCL41:

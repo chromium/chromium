@@ -8,8 +8,9 @@ namespace apps {
 
 AppWebContentsData::AppWebContentsData(content::WebContents* web_contents,
                                        Client* client)
-    : content::WebContentsObserver(web_contents), client_(client) {
-  DCHECK(web_contents);
+    : content::WebContentsUserData<AppWebContentsData>(*web_contents),
+      content::WebContentsObserver(web_contents),
+      client_(client) {
   DCHECK(client);
 }
 

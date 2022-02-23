@@ -5,6 +5,7 @@
 #include <string>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/browser_finder.h"
@@ -14,6 +15,7 @@
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
 #include "chrome/browser/ui/views/title_origin_label.h"
 #include "components/permissions/chooser_controller.h"
+#include "extensions/buildflags/buildflags.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 #include "ui/views/bubble/bubble_frame_view.h"
@@ -22,6 +24,11 @@
 #include "ui/views/controls/table/table_view_observer.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/widget/widget.h"
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "chrome/browser/extensions/chrome_extension_chooser_dialog.h"
+#include "extensions/browser/app_window/app_window_registry.h"
+#endif
 
 using bubble_anchor_util::AnchorConfiguration;
 
@@ -78,7 +85,7 @@ class ChooserBubbleUiViewDelegate : public LocationBarBubbleDelegateView,
   void Close();
 
  private:
-  DeviceChooserContentView* device_chooser_content_view_ = nullptr;
+  raw_ptr<DeviceChooserContentView> device_chooser_content_view_ = nullptr;
 
   base::WeakPtrFactory<ChooserBubbleUiViewDelegate> weak_ptr_factory_{this};
 };
@@ -112,7 +119,7 @@ ChooserBubbleUiViewDelegate::ChooserBubbleUiViewDelegate(
   SetLayoutManager(std::make_unique<views::FillLayout>());
   device_chooser_content_view_ =
       new DeviceChooserContentView(this, std::move(chooser_controller));
-  AddChildView(device_chooser_content_view_);
+  AddChildView(device_chooser_content_view_.get());
 
   SetExtraView(device_chooser_content_view_->CreateExtraView());
 
@@ -184,6 +191,17 @@ base::OnceClosure ShowDeviceChooserDialog(
     content::RenderFrameHost* owner,
     std::unique_ptr<permissions::ChooserController> controller) {
   auto* contents = content::WebContents::FromRenderFrameHost(owner);
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  if (extensions::AppWindowRegistry::Get(owner->GetBrowserContext())
+          ->GetAppWindowForWebContents(contents)) {
+    ShowConstrainedDeviceChooserDialog(contents, std::move(controller));
+    // This version of the chooser dialog does not support being closed by the
+    // code which created it.
+    return base::DoNothing();
+  }
+#endif
+
   auto* browser = chrome::FindBrowserWithWebContents(contents);
   if (!browser)
     return base::DoNothing();

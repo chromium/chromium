@@ -7,7 +7,9 @@
 #include "base/base64.h"
 #include "base/logging.h"
 #include "base/strings/sys_string_conversions.h"
-#import "ios/web/public/deprecated/crw_js_injection_receiver.h"
+#include "base/values.h"
+#import "ios/web/public/js_messaging/web_frame.h"
+#import "ios/web/public/js_messaging/web_frame_util.h"
 #import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -110,9 +112,19 @@ void ExtractVoiceSearchAudioDataFromWebState(
   DCHECK(completion);
   NSString* tts_extraction_script = [NSString
       stringWithFormat:kTTSAudioDataExtractorScriptFormat, kTTSStartTag];
-  [webState->GetJSInjectionReceiver()
-      executeJavaScript:tts_extraction_script
-      completionHandler:^(id result, NSError* error) {
-        completion(ExtractVoiceSearchAudioDataFromPageHTML(result));
-      }];
+
+  web::WebFrame* web_frame = web::GetMainFrame(webState);
+  if (!web_frame) {
+    completion(nil);
+    return;
+  }
+
+  std::string script = base::SysNSStringToUTF8(tts_extraction_script);
+  web_frame->ExecuteJavaScript(
+      script, BindOnce(^(const base::Value* value) {
+        if (value->is_string()) {
+          NSString* result = base::SysUTF8ToNSString(value->GetString());
+          completion(ExtractVoiceSearchAudioDataFromPageHTML(result));
+        }
+      }));
 }

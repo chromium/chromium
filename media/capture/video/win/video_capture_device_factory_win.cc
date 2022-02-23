@@ -353,26 +353,29 @@ VideoCaptureDeviceFactoryWin::~VideoCaptureDeviceFactoryWin() {
   }
 }
 
-std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryWin::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryWin::CreateDevice(
     const VideoCaptureDeviceDescriptor& device_descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   switch (device_descriptor.capture_api) {
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION:
-      FALLTHROUGH;
+      [[fallthrough]];
     case VideoCaptureApi::WIN_MEDIA_FOUNDATION_SENSOR: {
       DCHECK(PlatformSupportsMediaFoundation());
       ComPtr<IMFMediaSource> source;
-      if (!CreateDeviceSourceMediaFoundation(device_descriptor.device_id,
-                                             device_descriptor.capture_api,
-                                             &source)) {
-        break;
+      MFSourceOutcome outcome = CreateDeviceSourceMediaFoundation(
+          device_descriptor.device_id, device_descriptor.capture_api, &source);
+      if (outcome == MFSourceOutcome::kFailedSystemPermissions) {
+        return VideoCaptureErrorOrDevice(
+            VideoCaptureError::kWinMediaFoundationSystemPermissionDenied);
       }
-      auto device = std::make_unique<VideoCaptureDeviceMFWin>(
-          device_descriptor, std::move(source), dxgi_device_manager_);
-      DVLOG(1) << " MediaFoundation Device: "
-               << device_descriptor.display_name();
-      if (device->Init())
-        return device;
+      if (outcome == MFSourceOutcome::kSuccess) {
+        auto device = std::make_unique<VideoCaptureDeviceMFWin>(
+            device_descriptor, std::move(source), dxgi_device_manager_);
+        DVLOG(1) << " MediaFoundation Device: "
+                 << device_descriptor.display_name();
+        if (device->Init())
+          return VideoCaptureErrorOrDevice(std::move(device));
+      }
       break;
     }
     case VideoCaptureApi::WIN_DIRECT_SHOW: {
@@ -385,14 +388,16 @@ std::unique_ptr<VideoCaptureDevice> VideoCaptureDeviceFactoryWin::CreateDevice(
           device_descriptor, std::move(capture_filter));
       DVLOG(1) << " DirectShow Device: " << device_descriptor.display_name();
       if (device->Init())
-        return device;
+        return VideoCaptureErrorOrDevice(std::move(device));
       break;
     }
     default:
       NOTREACHED();
       break;
   }
-  return nullptr;
+  return VideoCaptureErrorOrDevice(
+      VideoCaptureError::
+          kVideoCaptureControllerInvalidOrUnsupportedVideoCaptureParametersRequested);
 }
 
 bool VideoCaptureDeviceFactoryWin::CreateDeviceEnumMonikerDirectShow(
@@ -488,7 +493,7 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceFilterDirectShow(
   return true;
 }
 
-bool VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
+MFSourceOutcome VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
     const std::string& device_id,
     VideoCaptureApi capture_api,
     IMFMediaSource** source) {
@@ -505,7 +510,7 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
   // in attributes store.
   if (!PrepareVideoCaptureAttributesMediaFoundation(
           attributes_data, attributes_data.size() + 1, &attributes)) {
-    return false;
+    return MFSourceOutcome::kFailed;
   }
 
   attributes->SetString(MF_DEVSOURCE_ATTRIBUTE_SOURCE_TYPE_VIDCAP_SYMBOLIC_LINK,
@@ -514,19 +519,22 @@ bool VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
   return CreateDeviceSourceMediaFoundation(std::move(attributes), source);
 }
 
-bool VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
+MFSourceOutcome VideoCaptureDeviceFactoryWin::CreateDeviceSourceMediaFoundation(
     ComPtr<IMFAttributes> attributes,
     IMFMediaSource** source_out) {
   ComPtr<IMFMediaSource> source;
   HRESULT hr = MFCreateDeviceSource(attributes.Get(), &source);
   DLOG_IF(ERROR, FAILED(hr)) << "MFCreateDeviceSource failed: "
                              << logging::SystemErrorCodeToString(hr);
+  if (hr == E_ACCESSDENIED)
+    return MFSourceOutcome::kFailedSystemPermissions;
+
   if (SUCCEEDED(hr) && use_d3d11_with_media_foundation_ &&
       dxgi_device_manager_) {
     dxgi_device_manager_->RegisterWithMediaSource(source);
   }
   *source_out = source.Detach();
-  return SUCCEEDED(hr);
+  return SUCCEEDED(hr) ? MFSourceOutcome::kSuccess : MFSourceOutcome::kFailed;
 }
 
 bool VideoCaptureDeviceFactoryWin::EnumerateDeviceSourcesMediaFoundation(
@@ -584,18 +592,17 @@ void VideoCaptureDeviceFactoryWin::EnumerateDevicesUWP(
       &VideoCaptureDeviceFactoryWin::FoundAllDevicesUWP,
       base::Unretained(factory), base::Passed(&devices_info),
       base::Passed(&result_callback));
-  auto callback =
-      Microsoft::WRL::Callback<
-          ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
-              DeviceInformationCollection*>>(
-          [com_thread_runner, device_info_callback](
-              IAsyncOperation<DeviceInformationCollection*>* operation,
-              AsyncStatus status) -> HRESULT {
-            com_thread_runner->PostTask(
-                FROM_HERE, base::BindOnce(device_info_callback,
-                                          base::Unretained(operation)));
-            return S_OK;
-          });
+  auto callback = Microsoft::WRL::Callback<
+      ABI::Windows::Foundation::IAsyncOperationCompletedHandler<
+          DeviceInformationCollection*>>(
+      [com_thread_runner, device_info_callback](
+          IAsyncOperation<DeviceInformationCollection*>* operation,
+          AsyncStatus status) -> HRESULT {
+        com_thread_runner->PostTask(
+            FROM_HERE,
+            base::BindOnce(device_info_callback, base::Unretained(operation)));
+        return S_OK;
+      });
 
   ComPtr<ABI::Windows::Devices::Enumeration::IDeviceInformationStatics>
       dev_info_statics;
@@ -773,7 +780,8 @@ DevicesInfo VideoCaptureDeviceFactoryWin::GetDevicesInfoMediaFoundation() {
             VideoCaptureControlSupport control_support;
             VideoCaptureFormats supported_formats;
             if (CreateDeviceSourceMediaFoundation(
-                    device_id, api_attributes.first, &source)) {
+                    device_id, api_attributes.first, &source) ==
+                MFSourceOutcome::kSuccess) {
               control_support =
                   VideoCaptureDeviceMFWin::GetControlSupport(source);
               supported_formats =

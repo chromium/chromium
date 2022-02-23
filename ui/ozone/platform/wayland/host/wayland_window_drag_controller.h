@@ -51,6 +51,7 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
     kAttached,   // DnD session ongoing but no drag loop running.
     kDetached,   // Drag loop running. ie: blocked in a Drag() call.
     kDropped,    // Drop event was just received.
+    kCancelled,  // Drag cancel event was just received.
     kAttaching,  // About to transition back to |kAttached|.
   };
   enum class DragSource {
@@ -79,8 +80,19 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
 
   void OnToplevelWindowCreated(WaylandToplevelWindow* window);
 
+  // Tells if "extended drag" extension is available.
+  bool IsExtendedDragAvailable() const;
+
+  // Makes IsExtendedDragAvailable() always return true.
+  void SetExtendedDragAvailableForTesting() {
+    set_extended_drag_available_for_testing_ = true;
+  }
+
  private:
   class ExtendedDragSource;
+
+  FRIEND_TEST_ALL_PREFIXES(WaylandWindowDragControllerTest,
+                           HandleDraggedWindowDestruction);
 
   // WaylandDataDevice::DragDelegate:
   bool IsDragSource() const override;
@@ -121,8 +133,9 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // extended-drag extension is available.
   void SetDraggedWindow(WaylandToplevelWindow* window,
                         const gfx::Vector2d& offset);
-  // Tells if "extended drag" extension is available.
-  bool IsExtendedDragAvailable() const;
+  // Tells if "extended drag" extension is available, ignoring
+  // |set_extended_drag_available_for_testing_|.
+  bool IsExtendedDragAvailableInternal() const;
 
   WaylandConnection* const connection_;
   WaylandDataDeviceManager* const data_device_manager_;
@@ -168,6 +181,8 @@ class WaylandWindowDragController : public WaylandDataDevice::DragDelegate,
   // in progress, which leads to issues in window dragging sessions, this flag
   // is used to make window drag controller resistant to such scenarios.
   bool should_process_drag_event_ = false;
+
+  bool set_extended_drag_available_for_testing_ = false;
 
   base::WeakPtrFactory<WaylandWindowDragController> weak_factory_{this};
 };

@@ -35,7 +35,7 @@ class AmbientClientImplTest : public testing::Test {
 
     profile_ = profile_manager_->CreateTestingProfile(
         kTestProfileName, /*prefs=*/{}, kTestProfileName16,
-        /*avatar_id=*/0, /*supervised_user_id=*/{},
+        /*avatar_id=*/0,
         IdentityTestEnvironmentProfileAdaptor::
             GetIdentityTestEnvironmentFactories());
     identity_test_env_adaptor_ =

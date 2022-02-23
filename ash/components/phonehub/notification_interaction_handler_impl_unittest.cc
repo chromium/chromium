@@ -10,7 +10,7 @@
 #include "ash/components/phonehub/notification_click_handler.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -106,4 +106,4 @@ TEST_F(NotificationInteractionHandlerImplTest,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

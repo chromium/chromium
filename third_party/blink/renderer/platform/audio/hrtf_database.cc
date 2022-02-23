@@ -65,8 +65,9 @@ HRTFDatabase::HRTFDatabase(float sample_rate)
     for (unsigned i = 0; i < kNumberOfTotalElevations;
          i += kInterpolationFactor) {
       unsigned j = (i + kInterpolationFactor);
-      if (j >= kNumberOfTotalElevations)
+      if (j >= kNumberOfTotalElevations) {
         j = i;  // for last elevation interpolate with itself
+      }
 
       // Create the interpolated convolution kernels and delays.
       for (unsigned jj = 1; jj < kInterpolationFactor; ++jj) {
@@ -91,8 +92,9 @@ void HRTFDatabase::GetKernelsFromAzimuthElevation(double azimuth_blend,
   SECURITY_DCHECK(elevation_index < elevations_.size());
   SECURITY_DCHECK(elevations_.size() > 0);
 
-  if (elevation_index > elevations_.size() - 1)
+  if (elevation_index > elevations_.size() - 1) {
     elevation_index = elevations_.size() - 1;
+  }
 
   HRTFElevation* hrtf_elevation = elevations_[elevation_index].get();
   DCHECK(hrtf_elevation);

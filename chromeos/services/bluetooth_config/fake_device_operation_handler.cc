@@ -17,12 +17,20 @@ void FakeDeviceOperationHandler::CompleteCurrentOperation(bool success) {
   HandleFinishedOperation(success);
 }
 
-void FakeDeviceOperationHandler::PerformConnect(const std::string& device_id) {}
+void FakeDeviceOperationHandler::PerformConnect(const std::string& device_id) {
+  perform_connect_call_count_++;
+  last_perform_connect_device_id_ = device_id;
+}
 
 void FakeDeviceOperationHandler::PerformDisconnect(
     const std::string& device_id) {}
 
 void FakeDeviceOperationHandler::PerformForget(const std::string& device_id) {}
+
+device::BluetoothDevice* FakeDeviceOperationHandler::FindDevice(
+    const std::string& device_id) const {
+  return nullptr;
+}
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

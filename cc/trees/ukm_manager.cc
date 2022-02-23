@@ -98,11 +98,11 @@ void UkmManager::RecordRenderingUkm() {
 
 void UkmManager::RecordThroughputUKM(
     FrameSequenceTrackerType tracker_type,
-    FrameSequenceMetrics::ThreadType thread_type,
+    FrameInfo::SmoothEffectDrivingThread thread_type,
     int64_t throughput) const {
   ukm::builders::Graphics_Smoothness_PercentDroppedFrames builder(source_id_);
   switch (thread_type) {
-    case FrameSequenceMetrics::ThreadType::kMain: {
+    case FrameInfo::SmoothEffectDrivingThread::kMain: {
       switch (tracker_type) {
 #define CASE_FOR_MAIN_THREAD_TRACKER(name)    \
   case FrameSequenceTrackerType::k##name:     \
@@ -127,7 +127,7 @@ void UkmManager::RecordThroughputUKM(
       break;
     }
 
-    case FrameSequenceMetrics::ThreadType::kCompositor: {
+    case FrameInfo::SmoothEffectDrivingThread::kCompositor: {
       switch (tracker_type) {
 #define CASE_FOR_COMPOSITOR_THREAD_TRACKER(name)    \
   case FrameSequenceTrackerType::k##name:           \
@@ -149,7 +149,7 @@ void UkmManager::RecordThroughputUKM(
       break;
     }
 
-    case FrameSequenceMetrics::ThreadType::kUnknown:
+    case FrameInfo::SmoothEffectDrivingThread::kUnknown:
       NOTREACHED();
       break;
   }
@@ -227,7 +227,6 @@ void UkmManager::RecordCompositorLatencyUKM(
       CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
       CASE_FOR_BLINK_BREAKDOWN(Prepaint);
       CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
-      CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
       CASE_FOR_BLINK_BREAKDOWN(Paint);
       CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
       CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);
@@ -313,18 +312,12 @@ void UkmManager::RecordEventLatencyUKM(
         event_metrics->GetDispatchStageTimestamp(
             EventMetrics::DispatchStage::kGenerated);
 
-    if (event_metrics->scroll_type()) {
+    if (ScrollEventMetrics* scroll_metrics = event_metrics->AsScroll()) {
       builder.SetScrollInputType(
-          static_cast<int64_t>(*event_metrics->scroll_type()));
-
-      if (!processed_viz_breakdown.swap_start().is_null()) {
-        builder.SetTotalLatencyToSwapBegin(
-            (processed_viz_breakdown.swap_start() - generated_timestamp)
-                .InMicroseconds());
-      }
-    } else if (event_metrics->pinch_type()) {
+          static_cast<int64_t>(scroll_metrics->scroll_type()));
+    } else if (PinchEventMetrics* pinch_metrics = event_metrics->AsPinch()) {
       builder.SetPinchInputType(
-          static_cast<int64_t>(*event_metrics->pinch_type()));
+          static_cast<int64_t>(pinch_metrics->pinch_type()));
     }
 
     // Record event dispatch metrics.
@@ -504,7 +497,6 @@ void UkmManager::RecordEventLatencyUKM(
         CASE_FOR_BLINK_BREAKDOWN(LayoutUpdate);
         CASE_FOR_BLINK_BREAKDOWN(Prepaint);
         CASE_FOR_BLINK_BREAKDOWN(CompositingInputs);
-        CASE_FOR_BLINK_BREAKDOWN(CompositingAssignments);
         CASE_FOR_BLINK_BREAKDOWN(Paint);
         CASE_FOR_BLINK_BREAKDOWN(CompositeCommit);
         CASE_FOR_BLINK_BREAKDOWN(UpdateLayers);

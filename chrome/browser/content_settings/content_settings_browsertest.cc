@@ -36,7 +36,6 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/cookie_access_details.h"
 #include "content/public/browser/navigation_handle.h"
-#include "content/public/browser/plugin_service.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_view_host.h"
@@ -63,8 +62,12 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "third_party/widevine/cdm/buildflags.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
+#endif
+
+#if BUILDFLAG(ENABLE_PLUGINS)
+#include "content/public/browser/plugin_service.h"
 #endif
 
 using content::BrowserThread;
@@ -105,7 +108,7 @@ class CookieChangeObserver : public content::WebContentsObserver {
  public:
   explicit CookieChangeObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
-  ~CookieChangeObserver() override {}
+  ~CookieChangeObserver() override = default;
 
   void Wait() { run_loop_.Run(); }
 
@@ -127,7 +130,7 @@ class MockWebContentsLoadFailObserver : public content::WebContentsObserver {
  public:
   explicit MockWebContentsLoadFailObserver(content::WebContents* web_contents)
       : content::WebContentsObserver(web_contents) {}
-  ~MockWebContentsLoadFailObserver() override {}
+  ~MockWebContentsLoadFailObserver() override = default;
 
   MOCK_METHOD1(DidFinishNavigation,
                void(content::NavigationHandle* navigation_handle));
@@ -411,13 +414,13 @@ IN_PROC_BROWSER_TEST_P(CookieSettingsTest, PRE_BlockCookies) {
 IN_PROC_BROWSER_TEST_P(CookieSettingsTest, BlockCookies) {
   ASSERT_EQ(CONTENT_SETTING_BLOCK,
             CookieSettingsFactory::GetForProfile(browser()->profile())
-                ->GetDefaultCookieSetting(NULL));
+                ->GetDefaultCookieSetting(nullptr));
 }
 
 // Verify that cookies can be allowed and set using exceptions for particular
 // website(s) when all others are blocked.
 // Flaky on Mac (crbug.com/1155077) and Linux (crbug.com/1242410).
-#if defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 #define MAYBE_AllowCookiesUsingExceptions DISABLED_AllowCookiesUsingExceptions
 #else
 #define MAYBE_AllowCookiesUsingExceptions AllowCookiesUsingExceptions
@@ -1213,8 +1216,7 @@ IN_PROC_BROWSER_TEST_F(ContentSettingsWorkerModulesBrowserTest,
   content_settings_map->SetWebsiteSettingCustomScope(
       ContentSettingsPattern::FromURLNoWildcard(http_url),
       ContentSettingsPattern::FromURLNoWildcard(module_url),
-      ContentSettingsType::JAVASCRIPT,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+      ContentSettingsType::JAVASCRIPT, base::Value(CONTENT_SETTING_BLOCK));
 
   content::WebContents* web_contents =
       browser()->tab_strip_model()->GetActiveWebContents();

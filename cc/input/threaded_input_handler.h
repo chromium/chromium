@@ -9,6 +9,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/input/compositor_input_interfaces.h"
 #include "cc/input/event_listener_properties.h"
@@ -71,11 +72,12 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
       const gfx::PointF& viewport_point) override;
   void RequestUpdateForSynchronousInputHandler() override;
   void SetSynchronousInputHandlerRootScrollOffset(
-      const gfx::Vector2dF& root_content_offset) override;
-  void PinchGestureBegin() override;
+      const gfx::PointF& root_content_offset) override;
+  void PinchGestureBegin(const gfx::Point& anchor,
+                         ui::ScrollInputType source) override;
   void PinchGestureUpdate(float magnify_delta,
                           const gfx::Point& anchor) override;
-  void PinchGestureEnd(const gfx::Point& anchor, bool snap_to_min) override;
+  void PinchGestureEnd(const gfx::Point& anchor) override;
   void SetNeedsAnimateInput() override;
   bool IsCurrentlyScrollingViewport() const override;
   EventListenerProperties GetEventListenerProperties(
@@ -94,14 +96,13 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   ScrollElasticityHelper* CreateScrollElasticityHelper() override;
   void DestroyScrollElasticityHelper() override;
   bool GetScrollOffsetForLayer(ElementId element_id,
-                               gfx::Vector2dF* offset) override;
-  bool ScrollLayerTo(ElementId element_id,
-                     const gfx::Vector2dF& offset) override;
+                               gfx::PointF* offset) override;
+  bool ScrollLayerTo(ElementId element_id, const gfx::PointF& offset) override;
   bool ScrollingShouldSwitchtoMainThread() override;
   bool GetSnapFlingInfoAndSetAnimatingSnapTarget(
       const gfx::Vector2dF& natural_displacement_in_viewport,
-      gfx::Vector2dF* out_initial_position,
-      gfx::Vector2dF* out_target_position) override;
+      gfx::PointF* out_initial_position,
+      gfx::PointF* out_target_position) override;
   void ScrollEndForSnapFling(bool did_finish) override;
   void NotifyInputEvent() override;
   bool ScrollbarScrollIsActive() override;
@@ -137,6 +138,8 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
                                   const gfx::Vector2dF& delta,
                                   const gfx::Point& viewport_point,
                                   bool is_direct_manipulation);
+
+  float LineStep() const;
 
   // Resolves a delta in the given granularity for the |scroll_node| into
   // physical pixels to scroll.
@@ -184,7 +187,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
 
   // This method gets the scroll offset for a regular scroller, or the combined
   // visual and layout offsets of the viewport.
-  gfx::Vector2dF GetVisualScrollOffset(const ScrollNode& scroll_node) const;
+  gfx::PointF GetVisualScrollOffset(const ScrollNode& scroll_node) const;
   bool IsScrolledBy(LayerImpl* child, ScrollNode* ancestor);
   bool IsAnimatingForSnap() const;
 
@@ -359,7 +362,7 @@ class CC_EXPORT ThreadedInputHandler : public InputHandler,
   // together.
   CompositorDelegateForInput& compositor_delegate_;
 
-  InputHandlerClient* input_handler_client_ = nullptr;
+  raw_ptr<InputHandlerClient> input_handler_client_ = nullptr;
 
   // An object to implement the ScrollElasticityHelper interface and
   // hold all state related to elasticity. May be nullptr if never requested.

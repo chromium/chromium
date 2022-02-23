@@ -16,7 +16,8 @@
 #include "base/strings/string_split.h"
 #include "chrome/browser/prefetch/prefetch_proxy/prefetch_proxy_features.h"
 #include "chrome/common/chrome_features.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_params.h"
+#include "components/prefs/pref_service.h"
+#include "components/unified_consent/url_keyed_data_collection_consent_helper.h"
 
 const char kIsolatedPrerenderLimitNSPSubresourcesCmdLineFlag[] =
     "isolated-prerender-max-subresource-per-prerender";
@@ -56,11 +57,6 @@ std::string PrefetchProxyProxyHeaderKey() {
     return header;
   }
   return "chrome-tunnel";
-}
-
-bool PrefetchProxyOnlyForLiteMode() {
-  return base::GetFieldTrialParamByFeatureAsBool(features::kIsolatePrerenders,
-                                                 "lite_mode_only", true);
 }
 
 bool PrefetchProxyNoStatePrefetchSubresources() {
@@ -118,10 +114,15 @@ size_t PrefetchProxyMaximumNumberOfConcurrentPrefetches() {
       features::kIsolatePrerenders, "max_concurrent_prefetches", 1));
 }
 
-base::TimeDelta PrefetchProxyProbeTimeout() {
+base::TimeDelta PrefetchProxyCanaryCheckTimeout() {
   return base::Milliseconds(base::GetFieldTrialParamByFeatureAsInt(
-      features::kIsolatePrerendersMustProbeOrigin, "probe_timeout_ms",
-      10 * 1000 /* 10 seconds */));
+      features::kIsolatePrerendersMustProbeOrigin, "canary_check_timeout_ms",
+      5 * 1000 /* 5 seconds */));
+}
+
+int PrefetchProxyCanaryCheckRetries() {
+  return base::GetFieldTrialParamByFeatureAsInt(
+      features::kIsolatePrerendersMustProbeOrigin, "canary_check_retries", 1);
 }
 
 bool PrefetchProxyCloseIdleSockets() {
@@ -182,12 +183,6 @@ base::TimeDelta PrefetchProxyCanaryCheckCacheLifetime() {
       features::kIsolatePrerendersMustProbeOrigin, "canary_cache_hours", 24));
 }
 
-bool PrefetchProxyMustHTTPProbeInsteadOfTLS() {
-  return base::GetFieldTrialParamByFeatureAsBool(
-      features::kIsolatePrerendersMustProbeOrigin, "replace_tls_with_http",
-      false);
-}
-
 size_t PrefetchProxyMaxSubresourcesPerPrerender() {
   std::string cmd_line_value =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
@@ -238,7 +233,8 @@ base::TimeDelta PrefetchProxyMaxRetryAfterDelta() {
   return base::Seconds(max_seconds);
 }
 
-bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
+bool PrefetchProxySendDecoyRequestForIneligiblePrefetch(
+    PrefService* pref_service) {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "prefetch-proxy-never-send-decoy-requests-for-testing")) {
     return false;
@@ -246,6 +242,18 @@ bool PrefetchProxySendDecoyRequestForIneligiblePrefetch() {
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           "prefetch-proxy-always-send-decoy-requests-for-testing")) {
     return true;
+  }
+
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          features::kIsolatePrerenders, "disable_decoys_for_msbb", true)) {
+    std::unique_ptr<unified_consent::UrlKeyedDataCollectionConsentHelper>
+        helper = unified_consent::UrlKeyedDataCollectionConsentHelper::
+            NewAnonymizedDataCollectionConsentHelper(pref_service);
+    if (helper->IsEnabled()) {
+      // The user opted-in to Make Search and Browsing Better, no need to send
+      // a decoy request.
+      return false;
+    }
   }
 
   double probability = base::GetFieldTrialParamByFeatureAsDouble(
@@ -266,6 +274,12 @@ bool PrefetchProxyAllowAllDomains() {
       "isolated-prerender-allow-all-domains");
 }
 
+bool PrefetchProxyAllowAllDomainsForExtendedPreloading() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kIsolatePrerenders, "allow_all_domains_for_extended_preloading",
+      false);
+}
+
 base::TimeDelta PrefetchProxyCacheableDuration() {
   return base::Seconds(base::GetFieldTrialParamByFeatureAsInt(
       features::kIsolatePrerenders, "cacheable_duration", 300));
@@ -274,4 +288,17 @@ base::TimeDelta PrefetchProxyCacheableDuration() {
 std::string PrefetchProxyServerExperimentGroup() {
   return base::GetFieldTrialParamValueByFeature(features::kIsolatePrerenders,
                                                 "server_experiment_group");
+}
+
+bool PrefetchProxyUseIndividualNetworkContextsForEachPrefetch() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      features::kIsolatePrerenders, "use_individual_network_contexts", false);
+}
+
+bool PrefetchProxySupportNonPrivatePrefetches() {
+  // The non-private prefetches require individual network contexts.
+  return PrefetchProxyUseIndividualNetworkContextsForEachPrefetch() &&
+         base::GetFieldTrialParamByFeatureAsBool(
+             features::kIsolatePrerenders, "support_non_private_prefetches",
+             true);
 }

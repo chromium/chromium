@@ -5,9 +5,9 @@
 #ifndef MEDIA_BASE_DECODER_H_
 #define MEDIA_BASE_DECODER_H_
 
+#include <ostream>
 #include <string>
 
-#include "base/callback.h"
 #include "media/base/media_export.h"
 #include "media/base/status.h"
 

@@ -104,15 +104,15 @@ scoped_refptr<extensions::Extension> MakeKioskApp(
     const std::string& id,
     const std::string& required_platform_version) {
   base::DictionaryValue value;
-  value.SetString("name", name);
-  value.SetString("version", version);
+  value.SetStringKey("name", name);
+  value.SetStringKey("version", version);
   base::ListValue scripts;
   scripts.Append("main.js");
   value.SetPath("app.background.scripts", std::move(scripts));
-  value.SetBoolean("kiosk_enabled", true);
+  value.SetBoolKey("kiosk_enabled", true);
   if (!required_platform_version.empty()) {
-    value.SetString("kiosk.required_platform_version",
-                    required_platform_version);
+    value.SetStringPath("kiosk.required_platform_version",
+                        required_platform_version);
   }
 
   std::string err;
@@ -318,10 +318,10 @@ class KioskAppManagerTest : public InProcessBrowserTest {
         CopyFileToTempDir(data_dir.AppendASCII(icon_file_name));
 
     base::DictionaryValue apps_dict;
-    apps_dict.SetString(app_id + ".name", app_name);
-    apps_dict.SetString(app_id + ".icon", icon_path.MaybeAsASCII());
-    apps_dict.SetString(app_id + ".required_platform_version",
-                        required_platform_version);
+    apps_dict.SetStringPath(app_id + ".name", app_name);
+    apps_dict.SetStringPath(app_id + ".icon", icon_path.MaybeAsASCII());
+    apps_dict.SetStringPath(app_id + ".required_platform_version",
+                            required_platform_version);
 
     PrefService* local_state = g_browser_process->local_state();
     DictionaryPrefUpdate dict_update(local_state,
@@ -375,30 +375,30 @@ class KioskAppManagerTest : public InProcessBrowserTest {
 
     // Check data is cached in local state correctly.
     PrefService* local_state = g_browser_process->local_state();
-    const base::DictionaryValue* dict =
+    const base::Value* dict =
         local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
 
-    std::string name;
     const std::string name_key = "apps." + app_id + ".name";
-    EXPECT_TRUE(dict->GetString(name_key, &name));
-    EXPECT_EQ(expected_app_name, name);
+    const std::string* name = dict->FindStringPath(name_key);
+    ASSERT_TRUE(name);
+    EXPECT_EQ(expected_app_name, *name);
 
-    std::string icon_path_string;
     const std::string icon_path_key = "apps." + app_id + ".icon";
-    EXPECT_TRUE(dict->GetString(icon_path_key, &icon_path_string));
+    const std::string* icon_path_string = dict->FindStringPath(icon_path_key);
+    ASSERT_TRUE(icon_path_string);
 
-    std::string required_platform_version;
     const std::string required_platform_version_key =
         "apps." + app_id + ".required_platform_version";
-    EXPECT_TRUE(dict->GetString(required_platform_version_key,
-                                &required_platform_version));
-    EXPECT_EQ(expected_required_platform_version, required_platform_version);
+    const std::string* required_platform_version =
+        dict->FindStringPath(required_platform_version_key);
+    ASSERT_TRUE(required_platform_version);
+    EXPECT_EQ(expected_required_platform_version, *required_platform_version);
 
     base::FilePath expected_icon_path;
     manager()->GetKioskAppIconCacheDir(&expected_icon_path);
     expected_icon_path =
         expected_icon_path.AppendASCII(app_id).AddExtension(".png");
-    EXPECT_EQ(expected_icon_path.value(), icon_path_string);
+    EXPECT_EQ(expected_icon_path.value(), *icon_path_string);
   }
 
   void RunAddNewAppTest(const std::string& id,
@@ -548,10 +548,10 @@ IN_PROC_BROWSER_TEST_F(KioskAppManagerTest, ClearAppData) {
   SetExistingApp("app_1", "Cached App1 Name", "red16x16.png", "");
 
   PrefService* local_state = g_browser_process->local_state();
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       local_state->GetDictionary(KioskAppManager::kKioskDictionaryName);
-  const base::DictionaryValue* apps_dict;
-  EXPECT_TRUE(dict->GetDictionary(KioskAppDataBase::kKeyApps, &apps_dict));
+  const base::Value* apps_dict = dict->FindDictKey(KioskAppDataBase::kKeyApps);
+  EXPECT_TRUE(apps_dict);
   EXPECT_TRUE(apps_dict->FindKey("app_1") != nullptr);
 
   manager()->ClearAppData("app_1");

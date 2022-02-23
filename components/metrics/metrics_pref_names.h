@@ -41,7 +41,6 @@ extern const char kMetricsLastSeenPrefix[];
 
 // Preferences for recording stability logs.
 extern const char kStabilityBrowserLastLiveTimeStamp[];
-extern const char kStabilityChildProcessCrashCount[];
 extern const char kStabilityCrashCount[];
 extern const char kStabilityCrashCountDueToGmsCoreUpdate[];
 extern const char kStabilityExitedCleanly[];
@@ -52,16 +51,13 @@ extern const char kStabilityFileMetricsUnsentSamplesCount[];
 extern const char kStabilityFileMetricsUnsentFilesCount[];
 extern const char kStabilityGmsCoreVersion[];
 extern const char kStabilityGpuCrashCount[];
-extern const char kStabilityIncompleteSessionEndCount[];
 extern const char kStabilityLaunchCount[];
 extern const char kStabilityPageLoadCount[];
 extern const char kStabilityRendererCrashCount[];
 extern const char kStabilityRendererFailedLaunchCount[];
-extern const char kStabilityRendererHangCount[];
 extern const char kStabilityRendererLaunchCount[];
 extern const char kStabilitySavedSystemProfile[];
 extern const char kStabilitySavedSystemProfileHash[];
-extern const char kStabilitySessionEndCompleted[];
 extern const char kStabilityStatsBuildTime[];
 extern const char kStabilityStatsVersion[];
 extern const char kStabilitySystemCrashCount[];

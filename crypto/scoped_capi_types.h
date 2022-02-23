@@ -10,7 +10,6 @@
 #include <memory>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/scoped_generic.h"
 #include "base/win/wincrypt_shim.h"
 

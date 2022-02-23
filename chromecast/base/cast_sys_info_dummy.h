@@ -9,7 +9,6 @@
 
 // Note(slan): This file is needed by internal targets which cannot depend on
 // "//base". Amend this include with a comment so gn check ignores it.
-#include "base/macros.h"  // nogncheck
 #include "chromecast/public/cast_sys_info.h"
 
 namespace chromecast {

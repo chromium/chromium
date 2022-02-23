@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_request.h"
 #include "third_party/blink/renderer/platform/exported/wrapped_resource_response.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -66,7 +66,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   WebURL GetUrl() const override;
   WebString HttpMethod() const override;
   WebString Referrer() const override;
-  network::mojom::ReferrerPolicy GetReferrerPolicy() const override;
   const WebURLResponse& GetResponse() const override;
   bool HasUnreachableURL() const override;
   WebURL UnreachableURL() const override;
@@ -83,7 +82,6 @@ class CORE_EXPORT WebDocumentLoaderImpl final : public DocumentLoader,
   void BlockParser() override;
   void ResumeParser() override;
   bool HasBeenLoadedAsWebArchive() const override;
-  PreviewsState GetPreviewsState() const override;
   WebArchiveInfo GetArchiveInfo() const override;
   bool LastNavigationHadTransientUserActivation() const override;
   void SetCodeCacheHost(

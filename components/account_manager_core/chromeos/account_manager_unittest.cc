@@ -456,18 +456,6 @@ TEST_F(AccountManagerTest, TestAccountEmailPersistence) {
   EXPECT_EQ(kRawUserEmail, raw_email);
 }
 
-TEST_F(AccountManagerTest, UpdatingAccountEmailShouldNotOverwriteTokens) {
-  const std::string new_email = "new-email@example.org";
-  account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
-  account_manager()->UpdateEmail(kGaiaAccountKey, new_email);
-  RunAllPendingTasks();
-
-  ResetAndInitializeAccountManager();
-  const std::string raw_email = GetAccountEmailBlocking(kGaiaAccountKey);
-  EXPECT_EQ(new_email, raw_email);
-  EXPECT_EQ(kGaiaToken, account_manager()->accounts_[kGaiaAccountKey].token);
-}
-
 TEST_F(AccountManagerTest, UpsertAccountCanUpdateEmail) {
   const std::string new_email = "new-email@example.org";
   account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
@@ -549,23 +537,6 @@ TEST_F(AccountManagerTest, RemovedAccountsAreImmediatelyUnavailable) {
   account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
 
   account_manager()->RemoveAccount(kGaiaAccountKey);
-  EXPECT_TRUE(GetAccountsBlocking().empty());
-}
-
-TEST_F(AccountManagerTest, AccountsCanBeRemovedByRawEmail) {
-  account_manager()->UpsertAccount(kGaiaAccountKey, kRawUserEmail, kGaiaToken);
-
-  account_manager()->RemoveAccount(kRawUserEmail);
-  EXPECT_TRUE(GetAccountsBlocking().empty());
-}
-
-TEST_F(AccountManagerTest, AccountsCanBeRemovedByCanonicalEmail) {
-  const std::string raw_email = "abc.123.456@gmail.com";
-  const std::string canonical_email = "abc123456@gmail.com";
-
-  account_manager()->UpsertAccount(kGaiaAccountKey, raw_email, kGaiaToken);
-
-  account_manager()->RemoveAccount(canonical_email);
   EXPECT_TRUE(GetAccountsBlocking().empty());
 }
 

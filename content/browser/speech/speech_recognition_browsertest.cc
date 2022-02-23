@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -107,7 +108,7 @@ class MockCapturerSource : public media::AudioCapturerSource {
   }
 
   void Start() override {
-    std::move(start_callback_).Run(audio_parameters_, capture_callback_);
+    std::move(start_callback_).Run(audio_parameters_, capture_callback_.get());
   }
 
   void Stop() override { std::move(stop_callback_).Run(); }
@@ -123,7 +124,7 @@ class MockCapturerSource : public media::AudioCapturerSource {
  private:
   StartCallback start_callback_;
   StopCallback stop_callback_;
-  CaptureCallback* capture_callback_;
+  raw_ptr<CaptureCallback> capture_callback_;
   media::AudioParameters audio_parameters_;
 };
 
@@ -299,7 +300,7 @@ IN_PROC_BROWSER_TEST_F(SpeechRecognitionBrowserTest, DISABLED_Precheck) {
 }
 
 // Flaky on mac, see https://crbug.com/794645.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_OneShotRecognition DISABLED_OneShotRecognition
 #else
 #define MAYBE_OneShotRecognition OneShotRecognition

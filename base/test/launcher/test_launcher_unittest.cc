@@ -17,6 +17,7 @@
 #include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/test/gtest_xml_util.h"
 #include "base/test/launcher/test_launcher_test_utils.h"
 #include "base/test/launcher/unit_test_launcher.h"
 #include "base/test/multiprocess_test.h"
@@ -31,7 +32,7 @@
 #include "testing/multiprocess_func_list.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -556,12 +557,12 @@ bool ValidateTestResultObject(const Value* iteration_data,
     ADD_FAILURE() << "Results not found";
     return false;
   }
-  if (1u != results->GetList().size()) {
+  if (1u != results->GetListDeprecated().size()) {
     ADD_FAILURE() << "Expected one result, actual: "
-                  << results->GetList().size();
+                  << results->GetListDeprecated().size();
     return false;
   }
-  const Value& val = results->GetList()[0];
+  const Value& val = results->GetListDeprecated()[0];
   if (!val.is_dict()) {
     ADD_FAILURE() << "Unexpected type";
     return false;
@@ -586,14 +587,15 @@ bool ValidateTestResultObject(const Value* iteration_data,
   result &= ValidateKeyValue(val, "status", test_result.StatusAsString());
 
   const Value* value = val.FindListKey("result_parts");
-  if (test_result.test_result_parts.size() != value->GetList().size()) {
+  if (test_result.test_result_parts.size() !=
+      value->GetListDeprecated().size()) {
     ADD_FAILURE() << "test_result_parts count is not valid";
     return false;
   }
 
   for (unsigned i = 0; i < test_result.test_result_parts.size(); i++) {
     TestResultPart result_part = test_result.test_result_parts.at(i);
-    const Value& part_dict = value->GetList()[i];
+    const Value& part_dict = value->GetListDeprecated()[i];
 
     result &= ValidateKeyValue(part_dict, "type", result_part.TypeAsString());
     result &= ValidateKeyValue(part_dict, "file", result_part.file_name);
@@ -615,15 +617,15 @@ bool ValidateStringList(const absl::optional<Value>& root,
     return false;
   }
 
-  if (values.size() != val->GetList().size()) {
+  if (values.size() != val->GetListDeprecated().size()) {
     ADD_FAILURE() << "expected size: " << values.size()
-                  << ", actual size:" << val->GetList().size();
+                  << ", actual size:" << val->GetListDeprecated().size();
     return false;
   }
 
   for (unsigned i = 0; i < values.size(); i++) {
-    if (!val->GetList()[i].is_string() &&
-        val->GetList()[i].GetString().compare(values.at(i))) {
+    if (!val->GetListDeprecated()[i].is_string() &&
+        val->GetListDeprecated()[i].GetString().compare(values.at(i))) {
       ADD_FAILURE() << "Expected list values do not match actual list";
       return false;
     }
@@ -684,9 +686,9 @@ TEST_F(TestLauncherTest, JsonSummary) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(2u, val->GetList().size());
-  for (size_t i = 0; i < val->GetList().size(); i++) {
-    const Value* iteration_val = &(val->GetList()[i]);
+  ASSERT_EQ(2u, val->GetListDeprecated().size());
+  for (size_t i = 0; i < val->GetListDeprecated().size(); i++) {
+    const Value* iteration_val = &(val->GetListDeprecated()[i]);
     ASSERT_TRUE(iteration_val);
     ASSERT_TRUE(iteration_val->is_dict());
     EXPECT_EQ(2u, iteration_val->DictSize());
@@ -727,9 +729,9 @@ TEST_F(TestLauncherTest, JsonSummaryWithDisabledTests) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetList().size());
+  ASSERT_EQ(1u, val->GetListDeprecated().size());
 
-  Value* iteration_val = &(val->GetList()[0]);
+  Value* iteration_val = &(val->GetListDeprecated()[0]);
   ASSERT_TRUE(iteration_val);
   ASSERT_TRUE(iteration_val->is_dict());
   EXPECT_EQ(1u, iteration_val->DictSize());
@@ -777,14 +779,14 @@ TEST_F(TestLauncherTest, TestChildTempDir) {
   EXPECT_FALSE(DirectoryExists(task_temp));
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 // Verifies that test processes have /data, /cache and /tmp available.
 TEST_F(TestLauncherTest, ProvidesDataCacheAndTmpDirs) {
   EXPECT_TRUE(base::DirectoryExists(base::FilePath("/data")));
   EXPECT_TRUE(base::DirectoryExists(base::FilePath("/cache")));
   EXPECT_TRUE(base::DirectoryExists(base::FilePath("/tmp")));
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // Unit tests to validate UnitTestLauncherDelegate implementation.
 class UnitTestLauncherDelegateTester : public testing::Test {
@@ -832,8 +834,9 @@ TEST_F(UnitTestLauncherDelegateTester, BatchSize) {
   EXPECT_EQ(delegate_ptr->GetBatchSize(), 15u);
 }
 
-// The following 3 tests are disabled as they are meant to only run from
-// |RunMockTests| to validate tests launcher output for known results.
+// The following 4 tests are disabled as they are meant to only run from
+// |RunMockTests| to validate tests launcher output for known results. The tests
+// are expected to run in order within a same batch.
 
 // Basic test to pass
 TEST(MockUnitTests, DISABLED_PassTest) {
@@ -863,13 +866,13 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   command_line.AppendSwitchPath("test-launcher-summary-output", path);
   command_line.AppendSwitch("gtest_also_run_disabled_tests");
   command_line.AppendSwitchASCII("test-launcher-retry-limit", "0");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // In Windows versions prior to Windows 8, nested job objects are
   // not allowed and cause this test to fail.
   if (win::GetVersion() < win::Version::WIN8) {
     command_line.AppendSwitch(kDontUseJobObjectFlag);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::string output;
   GetAppOutputAndError(command_line, &output);
@@ -886,9 +889,9 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetList().size());
+  ASSERT_EQ(1u, val->GetListDeprecated().size());
 
-  Value* iteration_val = &(val->GetList()[0]);
+  Value* iteration_val = &(val->GetListDeprecated()[0]);
   ASSERT_TRUE(iteration_val);
   ASSERT_TRUE(iteration_val->is_dict());
   EXPECT_EQ(4u, iteration_val->DictSize());
@@ -900,11 +903,55 @@ TEST_F(UnitTestLauncherDelegateTester, RunMockTests) {
   EXPECT_TRUE(test_launcher_utils::ValidateTestResult(
       iteration_val, "MockUnitTests.CrashTest", "CRASH", 0u));
   EXPECT_TRUE(test_launcher_utils::ValidateTestResult(
-      iteration_val, "MockUnitTests.NoRunTest", "NOTRUN", 0u));
+      iteration_val, "MockUnitTests.NoRunTest", "NOTRUN", 0u,
+      /*have_running_info=*/false));
+}
+
+TEST(ProcessGTestOutputTest, RunMockTests) {
+  ScopedTempDir dir;
+  CommandLine command_line(CommandLine::ForCurrentProcess()->GetProgram());
+  command_line.AppendSwitchASCII("gtest_filter", "MockUnitTests.DISABLED_*");
+
+  ASSERT_TRUE(dir.CreateUniqueTempDir());
+  FilePath path = dir.GetPath().AppendASCII("SaveSummaryResult.xml");
+  command_line.AppendSwitchPath("test-launcher-output", path);
+  command_line.AppendSwitch("gtest_also_run_disabled_tests");
+  command_line.AppendSwitch("single-process-tests");
+
+  std::string output;
+  GetAppOutputAndError(command_line, &output);
+
+  std::vector<TestResult> test_results;
+  bool crashed = false;
+  bool have_test_results = ProcessGTestOutput(path, &test_results, &crashed);
+
+  EXPECT_TRUE(have_test_results);
+  EXPECT_TRUE(crashed);
+  ASSERT_EQ(test_results.size(), 3u);
+
+  EXPECT_EQ(test_results[0].full_name, "MockUnitTests.DISABLED_PassTest");
+  EXPECT_EQ(test_results[0].status, TestResult::TEST_SUCCESS);
+  EXPECT_EQ(test_results[0].test_result_parts.size(), 0u);
+  ASSERT_TRUE(test_results[0].timestamp.has_value());
+  EXPECT_GT(*test_results[0].timestamp, Time());
+  EXPECT_FALSE(test_results[0].thread_id);
+  EXPECT_FALSE(test_results[0].process_num);
+
+  EXPECT_EQ(test_results[1].full_name, "MockUnitTests.DISABLED_FailTest");
+  EXPECT_EQ(test_results[1].status, TestResult::TEST_FAILURE);
+  EXPECT_EQ(test_results[1].test_result_parts.size(), 1u);
+  ASSERT_TRUE(test_results[1].timestamp.has_value());
+  EXPECT_GT(*test_results[1].timestamp, Time());
+
+  EXPECT_EQ(test_results[2].full_name, "MockUnitTests.DISABLED_CrashTest");
+  EXPECT_EQ(test_results[2].status, TestResult::TEST_CRASH);
+  EXPECT_EQ(test_results[2].test_result_parts.size(), 0u);
+  ASSERT_TRUE(test_results[2].timestamp.has_value());
+  EXPECT_GT(*test_results[2].timestamp, Time());
 }
 
 // TODO(crbug.com/1094369): Enable leaked-child checks on other platforms.
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 
 // Test that leaves a child process running. The test is DISABLED_, so it can
 // be launched explicitly by RunMockLeakProcessTest
@@ -934,13 +981,13 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   command_line.AppendSwitchPath("test-launcher-summary-output", path);
   command_line.AppendSwitch("gtest_also_run_disabled_tests");
   command_line.AppendSwitchASCII("test-launcher-retry-limit", "0");
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // In Windows versions prior to Windows 8, nested job objects are
   // not allowed and cause this test to fail.
   if (win::GetVersion() < win::Version::WIN8) {
     command_line.AppendSwitch(kDontUseJobObjectFlag);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   std::string output;
   int exit_code = 0;
@@ -960,7 +1007,7 @@ TEST_F(UnitTestLauncherDelegateTester, LeakedChildProcess) {
   // Validate that the leaked child caused the batch to error-out.
   EXPECT_EQ(exit_code, 1);
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 // Validate GetTestOutputSnippetTest assigns correct output snippet.
 TEST(TestLauncherTools, GetTestOutputSnippetTest) {

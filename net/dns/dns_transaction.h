@@ -111,7 +111,7 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
   // cases where the caller has reasonable fallback options to the transaction
   // and it would be beneficial to move on to those options sooner on signals
   // that the transaction is potentially slow or problematic.
-  virtual std::unique_ptr<DnsTransaction> CreateTransaction(
+  [[nodiscard]] virtual std::unique_ptr<DnsTransaction> CreateTransaction(
       std::string hostname,
       uint16_t qtype,
       CallbackType callback,
@@ -119,12 +119,12 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
       bool secure,
       SecureDnsMode secure_dns_mode,
       ResolveContext* resolve_context,
-      bool fast_timeout) WARN_UNUSED_RESULT = 0;
+      bool fast_timeout) = 0;
 
   // Creates a runner to run the DoH probe sequence for all configured DoH
   // resolvers.
-  virtual std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
-      ResolveContext* resolve_context) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
+      ResolveContext* resolve_context) = 0;
 
   // The given EDNS0 option will be included in all DNS queries performed by
   // transactions from this factory.
@@ -135,8 +135,8 @@ class NET_EXPORT_PRIVATE DnsTransactionFactory {
 
   // Creates a DnsTransactionFactory which creates DnsTransactionImpl using the
   // |session|.
-  static std::unique_ptr<DnsTransactionFactory> CreateFactory(
-      DnsSession* session) WARN_UNUSED_RESULT;
+  [[nodiscard]] static std::unique_ptr<DnsTransactionFactory> CreateFactory(
+      DnsSession* session);
 
   base::WeakPtrFactory<DnsTransactionFactory> weak_factory_{this};
 };

@@ -69,14 +69,15 @@ TEST_F(AppDiscoveryServiceTest, GetAppsFromFetcherNoExtras) {
 
   std::vector<Result> fake_results;
   fake_results.emplace_back(
-      Result(AppSource::kPlay, kTestAppId, kTestAppTitle, nullptr));
+      Result(AppSource::kTestSource, kTestAppId, kTestAppTitle, nullptr));
   test_fetcher()->SetResults(std::move(fake_results));
 
   app_discovery_service->GetApps(
-      ResultType::kRecommendedArcApps,
+      ResultType::kTestType,
       base::BindLambdaForTesting([this](std::vector<Result> results) {
         EXPECT_EQ(results.size(), 1u);
-        CheckResult(results[0], AppSource::kPlay, kTestAppId, kTestAppTitle);
+        CheckResult(results[0], AppSource::kTestSource, kTestAppId,
+                    kTestAppTitle);
         EXPECT_FALSE(results[0].GetSourceExtras());
       }));
 }
@@ -91,13 +92,13 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
   auto play_extras = std::make_unique<PlayExtras>(
       kTestPlayAppPackageName, kTestIconUrl, kTestPlayAppCategory,
       kTestPlayAppDescription, kTestPlayAppContentRating, kTestIconUrl, true,
-      false, false);
+      false, false, false);
   fake_results.emplace_back(Result(AppSource::kPlay, kTestAppId, kTestAppTitle,
                                    std::move(play_extras)));
   test_fetcher()->SetResults(std::move(fake_results));
 
   app_discovery_service->GetApps(
-      ResultType::kRecommendedArcApps,
+      ResultType::kTestType,
       base::BindLambdaForTesting([this](std::vector<Result> results) {
         GURL kTestIconUrl(kTestPlayAppIconUrl);
         EXPECT_EQ(results.size(), 1u);
@@ -114,6 +115,7 @@ TEST_F(AppDiscoveryServiceTest, GetArcAppsFromFetcher) {
         EXPECT_EQ(play_extras->GetHasInAppPurchases(), true);
         EXPECT_EQ(play_extras->GetWasPreviouslyInstalled(), false);
         EXPECT_EQ(play_extras->GetContainsAds(), false);
+        EXPECT_EQ(play_extras->GetOptimizedForChrome(), false);
       }));
 }
 

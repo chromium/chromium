@@ -19,6 +19,7 @@
 #include "chrome/browser/ui/app_list/app_list_model_updater.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service_factory.h"
+#include "chrome/browser/ui/app_list/app_list_util.h"
 #include "chrome/browser/ui/app_list/chrome_app_list_item.h"
 #include "chrome/grit/generated_resources.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
@@ -128,6 +129,7 @@ RemoteAppsManager::RemoteAppsManager(Profile* profile)
           this)),
       model_(std::make_unique<RemoteAppsModel>()),
       image_downloader_(std::make_unique<ImageDownloaderImpl>()) {
+  remote_apps_->Initialize();
   app_list_syncable_service_ =
       app_list::AppListSyncableServiceFactory::GetForProfile(profile_);
   model_updater_ = app_list_syncable_service_->GetModelUpdater();
@@ -165,14 +167,64 @@ void RemoteAppsManager::AddApp(const std::string& name,
     return;
   }
 
-  // Disable |add_to_front| if app has a parent folder.
-  if (!folder_id.empty())
+  if (!folder_id.empty()) {
+    // Disable |add_to_front| if app has a parent folder.
     add_to_front = false;
+
+    // Ensure that the parent folder exists before adding the app.
+    MaybeAddFolder(folder_id);
+  }
 
   const RemoteAppsModel::AppInfo& info =
       model_->AddApp(name, icon_url, folder_id, add_to_front);
   add_app_callback_map_.insert({info.id, std::move(callback)});
   remote_apps_->AddApp(info);
+}
+
+void RemoteAppsManager::MaybeAddFolder(const std::string& folder_id) {
+  // If the specified folder already exists, nothing to do.
+  if (model_updater_->FindFolderItem(folder_id))
+    return;
+
+  DCHECK(!model_updater_->FindItem(folder_id));
+
+  // The folder to be added.
+  auto remote_folder =
+      std::make_unique<ChromeAppListItem>(profile_, folder_id, model_updater_);
+
+  const app_list::AppListSyncableService::SyncItem* sync_item =
+      app_list_syncable_service_->GetSyncItem(folder_id);
+  if (sync_item) {
+    // If the specified folder's sync data exists, fill `remote_folder` with
+    // the sync data.
+    DCHECK_EQ(sync_pb::AppListSpecifics::TYPE_FOLDER, sync_item->item_type);
+    remote_folder->SetMetadata(
+        app_list::GenerateItemMetadataFromSyncItem(*sync_item));
+    remote_folder->SetIsPersistent(true);
+    app_list_syncable_service_->AddItem(std::move(remote_folder));
+    return;
+  }
+
+  // Handle the case that the specified folder's sync data does not exist.
+  DCHECK(model_->HasFolder(folder_id));
+  const RemoteAppsModel::FolderInfo& info = model_->GetFolderInfo(folder_id);
+  remote_folder->SetChromeName(info.name);
+  remote_folder->SetIsPersistent(true);
+  remote_folder->SetChromeIsFolder(true);
+  syncer::StringOrdinal position =
+      info.add_to_front ? model_updater_->GetPositionBeforeFirstItem()
+                        : remote_folder->CalculateDefaultPositionIfApplicable();
+  remote_folder->SetChromePosition(position);
+
+  app_list_syncable_service_->AddItem(std::move(remote_folder));
+}
+
+const RemoteAppsModel::AppInfo* RemoteAppsManager::GetAppInfo(
+    const std::string& app_id) const {
+  if (!model_->HasApp(app_id))
+    return nullptr;
+
+  return &model_->GetAppInfo(app_id);
 }
 
 RemoteAppsError RemoteAppsManager::DeleteApp(const std::string& id) {
@@ -310,30 +362,6 @@ void RemoteAppsManager::HandleOnAppAdded(const std::string& id) {
   if (!model_->HasApp(id))
     return;
   RemoteAppsModel::AppInfo& app_info = model_->GetAppInfo(id);
-
-  const std::string& folder_id = app_info.folder_id;
-  // If folder was deleted, |folder_id| would be set to empty by the model, so
-  // we don't have to check if it was deleted.
-  if (!folder_id.empty()) {
-    bool folder_already_exists = model_updater_->FindFolderItem(folder_id);
-    model_updater_->SetItemFolderId(id, folder_id);
-    RemoteAppsModel::FolderInfo& folder_info = model_->GetFolderInfo(folder_id);
-
-    if (!folder_already_exists) {
-      // Update metadata for newly created folder.
-      ChromeAppListItem* item = model_updater_->FindFolderItem(folder_id);
-      DCHECK(item) << "Missing folder item for folder_id: " << folder_id;
-      model_updater_->SetItemName(item->id(), folder_info.name);
-      item->SetIsPersistent(true);
-
-      syncer::StringOrdinal item_position =
-          folder_info.add_to_front
-              ? model_updater_->GetPositionBeforeFirstItem()
-              : model_updater_->CalculatePositionForNewItem(*item);
-      model_updater_->SetItemPosition(item->id(), item_position);
-    }
-  }
-
   StartIconDownload(id, app_info.icon_url);
 
   auto it = add_app_callback_map_.find(id);

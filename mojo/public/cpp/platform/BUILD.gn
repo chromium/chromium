@@ -12,6 +12,7 @@ component("platform") {
     "platform_channel_endpoint.h",
     "platform_channel_server_endpoint.h",
     "platform_handle.h",
+    "platform_handle_internal.h",
   ]
 
   sources = [
@@ -21,7 +22,7 @@ component("platform") {
     "platform_handle.cc",
   ]
 
-  if (is_posix && !is_mac && (!is_nacl || is_nacl_nonsfi)) {
+  if (is_posix && !is_mac && !is_nacl) {
     public += [ "socket_utils_posix.h" ]
     sources += [ "socket_utils_posix.cc" ]
   }

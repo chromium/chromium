@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #include "device/vr/openxr/openxr_statics.h"
+
+#include "build/build_config.h"
 #include "device/vr/openxr/openxr_util.h"
 
 namespace device {
@@ -35,7 +37,7 @@ bool OpenXrStatics::IsApiAvailable() {
   return GetXrInstance() != XR_NULL_HANDLE;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns the LUID of the adapter the OpenXR runtime is on. Returns {0, 0} if
 // the LUID could not be determined.
 CHROME_LUID OpenXrStatics::GetLuid(

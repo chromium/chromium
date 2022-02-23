@@ -16,6 +16,7 @@
 #include "base/win/scoped_handle.h"
 #include "base/win/windows_version.h"
 #include "sandbox/win/src/nt_internals.h"
+#include "sandbox/win/src/sandbox_nt_util.h"
 #include "sandbox/win/src/target_services.h"
 #include "sandbox/win/tests/common/controller.h"
 #include "sandbox/win/tests/integration_tests/hooking_dll.h"
@@ -482,17 +483,11 @@ SBOX_TESTS_COMMAND int CheckDep(int argc, wchar_t** argv) {
       return SBOX_TEST_SECOND_ERROR;
 
   } else {
-    NtQueryInformationProcessFunction query_information_process = nullptr;
-    ResolveNTFunctionPtr("NtQueryInformationProcess",
-                         &query_information_process);
-    if (!query_information_process)
-      return SBOX_TEST_NOT_FOUND;
-
     ULONG size = 0;
     ULONG dep_flags = 0;
-    if (!SUCCEEDED(query_information_process(::GetCurrentProcess(),
-                                             ProcessExecuteFlags, &dep_flags,
-                                             sizeof(dep_flags), &size))) {
+    if (!SUCCEEDED(GetNtExports()->QueryInformationProcess(
+            ::GetCurrentProcess(), ProcessExecuteFlags, &dep_flags,
+            sizeof(dep_flags), &size))) {
       return SBOX_TEST_THIRD_ERROR;
     }
 
@@ -925,13 +920,9 @@ TEST(ProcessMitigationsTest, CheckWin10MsSigned_Failure) {
 // ASAN doesn't initialize early enough for the intercepts in NtCreateSection to
 // be able to use std::unique_ptr, so disable pre-launch CIG on ASAN builds.
 #if !defined(ADDRESS_SANITIZER)
-#define MAYBE_CheckWin10MsSignedWithIntercept_Success \
-  CheckWin10MsSignedWithIntercept_Success
 #define MAYBE_CheckWin10MsSigned_FailurePreSpawn \
   CheckWin10MsSigned_FailurePreSpawn
 #else
-#define MAYBE_CheckWin10MsSignedWithIntercept_Success \
-  DISABLED_CheckWin10MsSignedWithIntercept_Success
 #define MAYBE_CheckWin10MsSigned_FailurePreSpawn \
   DISABLED_CheckWin10MsSigned_FailurePreSpawn
 #endif
@@ -1296,6 +1287,101 @@ TEST(ProcessMitigationsTest, CheckWin10KernelTransactionManagerMitigation) {
   EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_KTM_COMPONENT),
             SBOX_ALL_OK);
   EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_policy_command.c_str()));
+}
+
+TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoRemotePolicySuccess) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_LOADNOREMOTE);
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  //---------------------------------
+  TestRunner runner;
+  sandbox::TargetPolicy* policy = runner.GetPolicy();
+
+  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_IMAGE_LOAD_NO_REMOTE),
+            SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+
+  //---------------------------------
+  // 2) Test setting post-startup.
+  //---------------------------------
+  TestRunner runner2;
+  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+
+  EXPECT_EQ(
+      policy2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_NO_REMOTE),
+      SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
+}
+
+//---------------
+// This test validates that setting the MITIGATION_IMAGE_LOAD_NO_LOW_LABEL
+// mitigation enables the setting on a process.
+TEST(ProcessMitigationsTest, CheckWin10ImageLoadNoLowLabelPolicySuccess) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_TH2)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_LOADNOLOW);
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  //---------------------------------
+  TestRunner runner;
+  sandbox::TargetPolicy* policy = runner.GetPolicy();
+
+  EXPECT_EQ(policy->SetProcessMitigations(MITIGATION_IMAGE_LOAD_NO_LOW_LABEL),
+            SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner.RunTest(test_command.c_str()));
+
+  //---------------------------------
+  // 2) Test setting post-startup.
+  //---------------------------------
+  TestRunner runner2;
+  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+
+  EXPECT_EQ(
+      policy2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_NO_LOW_LABEL),
+      SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
+}
+
+// This test validates that setting the MITIGATION_IMAGE_LOAD_PREFER_SYS32
+// mitigation enables the setting on a process.
+TEST(ProcessMitigationsTest, CheckWin10ImageLoadPreferSys32PolicySuccess) {
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1)
+    return;
+
+  std::wstring test_command = L"CheckPolicy ";
+  test_command += std::to_wstring(TESTPOLICY_LOADPREFERSYS32);
+
+  //---------------------------------
+  // 1) Test setting pre-startup.
+  //   ** Currently disabled.  All PreferSys32 tests start to explode on
+  //   >= Win10 1703/RS2 when this mitigation is set pre-startup.
+  //   Child process creation works fine, but when ::ResumeThread() is called,
+  //   there is a fatal error: "Entry point ucnv_convertEx_60 could not be
+  //   located in the DLL ... sbox_integration_tests.exe."
+  //   This is a character conversion function in a ucnv (unicode) DLL.
+  //   Potentially the loader is finding a different version of this DLL that
+  //   we have a dependency on in System32... but it doesn't match up with
+  //   what we build against???!
+  //---------------------------------
+
+  //---------------------------------
+  // 2) Test setting post-startup.
+  //---------------------------------
+  TestRunner runner2;
+  sandbox::TargetPolicy* policy2 = runner2.GetPolicy();
+
+  EXPECT_EQ(
+      policy2->SetDelayedProcessMitigations(MITIGATION_IMAGE_LOAD_PREFER_SYS32),
+      SBOX_ALL_OK);
+  EXPECT_EQ(SBOX_TEST_SUCCEEDED, runner2.RunTest(test_command.c_str()));
 }
 
 }  // namespace sandbox

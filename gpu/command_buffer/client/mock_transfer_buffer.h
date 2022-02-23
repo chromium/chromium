@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 #define GPU_COMMAND_BUFFER_CLIENT_MOCK_TRANSFER_BUFFER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/client/transfer_buffer.h"
 
@@ -78,7 +78,7 @@ class MockTransferBuffer : public TransferBufferInterface {
   uint32_t GetExpectedResultBufferOffset();
   int GetExpectedTransferBufferId();
 
-  CommandBuffer* command_buffer_;
+  raw_ptr<CommandBuffer> command_buffer_;
   uint32_t size_;
   uint32_t result_size_;
   uint32_t alignment_;
@@ -86,7 +86,7 @@ class MockTransferBuffer : public TransferBufferInterface {
   scoped_refptr<Buffer> buffers_[kNumBuffers];
   int actual_buffer_index_;
   int expected_buffer_index_;
-  void* last_alloc_;
+  raw_ptr<void> last_alloc_;
   uint32_t expected_offset_;
   uint32_t actual_offset_;
   bool initialize_fail_;

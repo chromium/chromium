@@ -11,10 +11,9 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_tester.h"
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
-#include "third_party/blink/renderer/bindings/core/v8/v8_dom_exception.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/core/streams/writable_stream.h"
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
+#include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
@@ -82,9 +81,10 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
   ScriptValue CreateEncodedAudioFrameChunk(ScriptState* script_state) {
     RTCEncodedAudioFrame* frame = MakeGarbageCollected<RTCEncodedAudioFrame>(
         std::make_unique<FakeAudioFrame>());
-    return ScriptValue(script_state->GetIsolate(),
-                       ToV8(frame, script_state->GetContext()->Global(),
-                            script_state->GetIsolate()));
+    return ScriptValue(
+        script_state->GetIsolate(),
+        ToV8Traits<RTCEncodedAudioFrame>::ToV8(script_state, frame)
+            .ToLocalChecked());
   }
 
  protected:

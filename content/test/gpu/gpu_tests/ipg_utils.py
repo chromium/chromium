@@ -18,8 +18,6 @@ An easy way to use the APIs are:
    5 seconds, call AnalyzeIPGLogFile(skip_in_sec=5).
 """
 
-from __future__ import print_function
-
 import datetime
 import json
 import logging
@@ -32,14 +30,14 @@ def LocateIPG():
   if sys.platform == 'win32':
     ipg_dir = os.getenv('IPG_Dir')
     if not ipg_dir:
-      raise Exception("No env IPG_Dir")
-    gadget_path = os.path.join(ipg_dir, "PowerLog3.0.exe")
+      raise Exception('No env IPG_Dir')
+    gadget_path = os.path.join(ipg_dir, 'PowerLog3.0.exe')
     if not os.path.isfile(gadget_path):
       raise Exception("Can't locate Intel Power Gadget at " + gadget_path)
     return gadget_path
   if sys.platform == 'darwin':
     return '/Applications/Intel Power Gadget/PowerLog'
-  raise Exception("Only supported on Windows/Mac")
+  raise Exception('Only supported on Windows/Mac')
 
 
 def GenerateIPGLogFilename(log_prefix='PowerLog',
@@ -51,10 +49,10 @@ def GenerateIPGLogFilename(log_prefix='PowerLog',
   log_dir = log_dir or os.getcwd()
   log_dir = os.path.abspath(log_dir)
   if total_runs > 1:
-    log_prefix = "%s_%d_%d" % (log_prefix, current_run, total_runs)
+    log_prefix = '%s_%d_%d' % (log_prefix, current_run, total_runs)
   if timestamp:
     now = datetime.datetime.now()
-    log_prefix = "%s_%s" % (log_prefix, now.strftime('%Y%m%d%H%M%S'))
+    log_prefix = '%s_%s' % (log_prefix, now.strftime('%Y%m%d%H%M%S'))
   return os.path.join(log_dir, log_prefix + '.csv')
 
 
@@ -66,7 +64,7 @@ def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
     # It is not necessary but allows to print out the log path for debugging.
     logfile = GenerateIPGLogFilename()
   command = command + (' -file %s' % logfile)
-  logging.debug("Running: " + command)
+  logging.debug('Running: %s', command)
   try:
     output = subprocess.check_output(command,
                                      shell=True,
@@ -74,7 +72,7 @@ def RunIPG(duration_in_s=60, resolution_in_ms=100, logfile=None):
   except subprocess.CalledProcessError as e:
     logging.error('Running Intel Power Gadget failed. Output: %s', e.output)
     raise
-  logging.debug("Running: DONE")
+  logging.debug('Running: DONE')
   logging.debug(output)
 
 
@@ -112,8 +110,7 @@ def AnalyzeIPGLogFile(logfile=None, skip_in_sec=0):
     if skip_in_sec > 0 and float(tokens[col_time]) < skip_in_sec:
       continue
     samples += 1
-    for ii in range(0, len(indices)):
-      index = indices[ii]
+    for ii, index in enumerate(indices):
       sums[ii] += float(tokens[index])
   results = {'samples': samples}
   if samples > 0:
@@ -147,7 +144,7 @@ def ProcessResultsFromMultipleIPGRuns(logfiles,
       per_core_results[core] = results
 
       for key in results:
-        if key == 'samples' or key == 'log':
+        if key in ('samples', 'log'):
           continue
         metrics.setdefault(key, []).append(results[key])
     return per_core_results, metrics

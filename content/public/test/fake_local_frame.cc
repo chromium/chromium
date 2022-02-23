@@ -4,13 +4,14 @@
 
 #include "content/public/test/fake_local_frame.h"
 
+#include "build/build_config.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "third_party/blink/public/mojom/devtools/inspector_issue.mojom.h"
 #include "third_party/blink/public/mojom/frame/media_player_action.mojom.h"
 #include "third_party/blink/public/mojom/push_messaging/push_messaging.mojom.h"
 #include "third_party/blink/public/mojom/timing/resource_timing.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/base/mojom/attributed_string.mojom.h"
 #endif
 
@@ -25,6 +26,10 @@ void FakeLocalFrame::Init(blink::AssociatedInterfaceProvider* provider) {
       blink::mojom::LocalFrame::Name_,
       base::BindRepeating(&FakeLocalFrame::BindFrameHostReceiver,
                           base::Unretained(this)));
+}
+
+void FakeLocalFrame::FlushMessages() {
+  receiver_.FlushForTesting();
 }
 
 void FakeLocalFrame::GetTextSurroundingSelection(
@@ -142,7 +147,7 @@ void FakeLocalFrame::JavaScriptExecuteRequestInIsolatedWorld(
 void FakeLocalFrame::GetSavableResourceLinks(
     GetSavableResourceLinksCallback callback) {}
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void FakeLocalFrame::GetCharacterIndexAtPoint(const gfx::Point& point) {}
 void FakeLocalFrame::GetFirstRectForRange(const gfx::Range& range) {}
 void FakeLocalFrame::GetStringForRange(const gfx::Range& range,
@@ -170,7 +175,7 @@ void FakeLocalFrame::BindDevToolsAgent(
     mojo::PendingAssociatedRemote<blink::mojom::DevToolsAgentHost> host,
     mojo::PendingAssociatedReceiver<blink::mojom::DevToolsAgent> receiver) {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FakeLocalFrame::ExtractSmartClipData(
     const gfx::Rect& rect,
     ExtractSmartClipDataCallback callback) {
@@ -182,6 +187,9 @@ void FakeLocalFrame::HandleRendererDebugURL(const GURL& url) {}
 
 void FakeLocalFrame::GetCanonicalUrlForSharing(
     base::OnceCallback<void(const absl::optional<GURL>&)> callback) {}
+
+void FakeLocalFrame::SetAppHistoryEntriesForRestore(
+    blink::mojom::AppHistoryEntryArraysPtr entry_arrays) {}
 
 void FakeLocalFrame::BindFrameHostReceiver(
     mojo::ScopedInterfaceEndpointHandle handle) {

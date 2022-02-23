@@ -10,9 +10,9 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <stdlib.h>
 #endif
 
@@ -52,7 +52,7 @@ class EnvironmentImpl : public Environment {
 
  private:
   bool GetVarImpl(StringPiece variable_name, std::string* result) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     DWORD value_length =
         ::GetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), nullptr, 0);
     if (value_length == 0)
@@ -64,7 +64,7 @@ class EnvironmentImpl : public Environment {
       *result = WideToUTF8(value.get());
     }
     return true;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     const char* env_value = getenv(variable_name.data());
     if (!env_value)
       return false;
@@ -76,21 +76,21 @@ class EnvironmentImpl : public Environment {
   }
 
   bool SetVarImpl(StringPiece variable_name, const std::string& new_value) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On success, a nonzero value is returned.
     return !!SetEnvironmentVariable(UTF8ToWide(variable_name).c_str(),
                                     UTF8ToWide(new_value).c_str());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // On success, zero is returned.
     return !setenv(variable_name.data(), new_value.c_str(), 1);
 #endif
   }
 
   bool UnSetVarImpl(StringPiece variable_name) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // On success, a nonzero value is returned.
     return !!SetEnvironmentVariable(UTF8ToWide(variable_name).c_str(), nullptr);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
     // On success, zero is returned.
     return !unsetenv(variable_name.data());
 #endif
@@ -101,7 +101,7 @@ class EnvironmentImpl : public Environment {
 
 namespace env_vars {
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // On Posix systems, this variable contains the location of the user's home
 // directory. (e.g, /home/username/).
 const char kHome[] = "HOME";

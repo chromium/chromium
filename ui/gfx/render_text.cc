@@ -42,7 +42,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/gfx/utf16_indexing.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -210,9 +210,18 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
   constexpr char16_t kSymbolsCodepoint = 0x2400;
 
   if (codepoint >= 0 && codepoint <= 0x1F) {
-    // Replace codepoints with their visual symbols, which are
-    // at the same offset from kSymbolsCodepoint.
-    return kSymbolsCodepoint + codepoint;
+    switch (codepoint) {
+      case 0x09:
+        // Replace character tabulation ('\t') with its visual arrow symbol.
+        return 0x21E5;
+      case 0x0A:
+        // Replace line feed ('\n') with space character.
+        return 0x20;
+      default:
+        // Replace codepoints with their visual symbols, which are
+        // at the same offset from kSymbolsCodepoint.
+        return kSymbolsCodepoint + codepoint;
+    }
   }
   if (codepoint == 0x7F) {
     // Replace the 'del' codepoint by its symbol (u2421).
@@ -230,13 +239,13 @@ UChar32 ReplaceControlCharacter(UChar32 codepoint) {
   if (codepoint > 0x7F) {
     // Private use codepoints are working with a pair of font
     // and codepoint, but they are not used in Chrome.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // Support Apple defined PUA on Mac.
     // see: http://www.unicode.org/Public/MAPPINGS/VENDORS/APPLE/CORPCHAR.TXT
     if (codepoint == 0xF8FF)
       return codepoint;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Support Microsoft defined PUA on Windows.
     // see:
     // https://docs.microsoft.com/en-us/windows/uwp/design/style/segoe-ui-symbol-font

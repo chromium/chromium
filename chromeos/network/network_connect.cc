@@ -29,8 +29,7 @@ namespace chromeos {
 
 namespace {
 
-void IgnoreDisconnectError(const std::string& error_name,
-                           std::unique_ptr<base::DictionaryValue> error_data) {}
+void IgnoreDisconnectError(const std::string& error_name) {}
 
 const NetworkState* GetNetworkStateFromId(const std::string& network_id) {
   // Note: network_id === NetworkState::guid.
@@ -66,45 +65,39 @@ class NetworkConnectImpl : public NetworkConnect {
                             bool enabled_state) override;
   void ShowMobileSetup(const std::string& network_id) override;
   void ShowCarrierAccountDetail(const std::string& network_id) override;
-  void ConfigureNetworkIdAndConnect(
-      const std::string& network_id,
-      const base::DictionaryValue& shill_properties,
-      bool shared) override;
-  void CreateConfigurationAndConnect(base::DictionaryValue* shill_properties,
+  void ConfigureNetworkIdAndConnect(const std::string& network_id,
+                                    const base::Value& shill_properties,
+                                    bool shared) override;
+  void CreateConfigurationAndConnect(base::Value* shill_properties,
                                      bool shared) override;
-  void CreateConfiguration(base::DictionaryValue* shill_properties,
-                           bool shared) override;
+  void CreateConfiguration(base::Value* shill_properties, bool shared) override;
 
  private:
   void ActivateCellular(const std::string& network_id);
   void HandleUnconfiguredNetwork(const std::string& network_id);
   void OnConnectFailed(const std::string& network_id,
-                       const std::string& error_name,
-                       std::unique_ptr<base::DictionaryValue> error_data);
+                       const std::string& error_name);
   bool GetNetworkProfilePath(bool shared, std::string* profile_path);
   void OnConnectSucceeded(const std::string& network_id);
   void CallConnectToNetwork(const std::string& network_id,
                             bool check_error_state);
-  void OnConfigureFailed(const std::string& error_name,
-                         std::unique_ptr<base::DictionaryValue> error_data);
+  void OnConfigureFailed(const std::string& error_name);
   void OnConfigureSucceeded(bool connect_on_configure,
                             const std::string& service_path,
                             const std::string& network_id);
-  void CallCreateConfiguration(base::DictionaryValue* properties,
+  void CallCreateConfiguration(base::Value* properties,
                                bool shared,
                                bool connect_on_configure);
   void SetPropertiesFailed(const std::string& desc,
                            const std::string& network_id,
-                           const std::string& config_error_name,
-                           std::unique_ptr<base::DictionaryValue> error_data);
-  void SetPropertiesToClear(base::DictionaryValue* properties_to_set,
+                           const std::string& config_error_name);
+  void SetPropertiesToClear(base::Value* properties_to_set,
                             std::vector<std::string>* properties_to_clear);
   void ClearPropertiesAndConnect(
       const std::string& network_id,
       const std::vector<std::string>& properties_to_clear);
-  void ConfigureSetProfileSucceeded(
-      const std::string& network_id,
-      std::unique_ptr<base::DictionaryValue> properties_to_set);
+  void ConfigureSetProfileSucceeded(const std::string& network_id,
+                                    base::Value properties_to_set);
 
   Delegate* delegate_;
   base::WeakPtrFactory<NetworkConnectImpl> weak_factory_{this};
@@ -194,10 +187,8 @@ bool NetworkConnectImpl::GetNetworkProfilePath(bool shared,
   return true;
 }
 
-void NetworkConnectImpl::OnConnectFailed(
-    const std::string& network_id,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void NetworkConnectImpl::OnConnectFailed(const std::string& network_id,
+                                         const std::string& error_name) {
   NET_LOG(ERROR) << "Connect Failed: " << error_name
                  << " For: " << NetworkGuidId(network_id);
   if (error_name == NetworkConnectionHandler::kErrorConnectFailed ||
@@ -228,8 +219,7 @@ void NetworkConnectImpl::CallConnectToNetwork(const std::string& network_id,
                                               bool check_error_state) {
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
-    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound,
-                    nullptr);
+    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound);
     return;
   }
 
@@ -242,9 +232,7 @@ void NetworkConnectImpl::CallConnectToNetwork(const std::string& network_id,
       check_error_state, ConnectCallbackMode::ON_COMPLETED);
 }
 
-void NetworkConnectImpl::OnConfigureFailed(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+void NetworkConnectImpl::OnConfigureFailed(const std::string& error_name) {
   NET_LOG(ERROR) << "Unable to configure network";
   delegate_->ShowNetworkConnectError(
       NetworkConnectionHandler::kErrorConfigureFailed, "");
@@ -261,10 +249,9 @@ void NetworkConnectImpl::OnConfigureSucceeded(bool connect_on_configure,
   CallConnectToNetwork(network_id, check_error_state);
 }
 
-void NetworkConnectImpl::CallCreateConfiguration(
-    base::DictionaryValue* shill_properties,
-    bool shared,
-    bool connect_on_configure) {
+void NetworkConnectImpl::CallCreateConfiguration(base::Value* shill_properties,
+                                                 bool shared,
+                                                 bool connect_on_configure) {
   std::string profile_path;
   if (!GetNetworkProfilePath(shared, &profile_path)) {
     delegate_->ShowNetworkConnectError(
@@ -285,8 +272,7 @@ void NetworkConnectImpl::CallCreateConfiguration(
 void NetworkConnectImpl::SetPropertiesFailed(
     const std::string& desc,
     const std::string& network_id,
-    const std::string& config_error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
+    const std::string& config_error_name) {
   NET_LOG(ERROR) << desc << ": Failed: " << config_error_name
                  << "For: " << NetworkGuidId(network_id);
   delegate_->ShowNetworkConnectError(
@@ -294,19 +280,18 @@ void NetworkConnectImpl::SetPropertiesFailed(
 }
 
 void NetworkConnectImpl::SetPropertiesToClear(
-    base::DictionaryValue* properties_to_set,
+    base::Value* properties_to_set,
     std::vector<std::string>* properties_to_clear) {
   // Move empty string properties to properties_to_clear.
-  for (base::DictionaryValue::Iterator iter(*properties_to_set);
-       !iter.IsAtEnd(); iter.Advance()) {
-    const std::string* value_str = iter.value().GetIfString();
-    if (value_str && (*value_str).empty())
-      properties_to_clear->push_back(iter.key());
+  for (auto iter : properties_to_set->DictItems()) {
+    if (!iter.second.is_string())
+      continue;
+    if (iter.second.GetString().empty())
+      properties_to_clear->push_back(iter.first);
   }
   // Remove cleared properties from properties_to_set.
-  for (std::vector<std::string>::iterator iter = properties_to_clear->begin();
-       iter != properties_to_clear->end(); ++iter) {
-    properties_to_set->RemoveKey(*iter);
+  for (const std::string& property_to_clear : *properties_to_clear) {
+    properties_to_set->RemoveKey(property_to_clear);
   }
 }
 
@@ -317,7 +302,7 @@ void NetworkConnectImpl::ClearPropertiesAndConnect(
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
     SetPropertiesFailed("ClearProperties", network_id,
-                        NetworkConnectionHandler::kErrorNotFound, nullptr);
+                        NetworkConnectionHandler::kErrorNotFound);
     return;
   }
   // After configuring a network, ignore any (possibly stale) error state.
@@ -333,17 +318,17 @@ void NetworkConnectImpl::ClearPropertiesAndConnect(
 
 void NetworkConnectImpl::ConfigureSetProfileSucceeded(
     const std::string& network_id,
-    std::unique_ptr<base::DictionaryValue> properties_to_set) {
+    base::Value properties_to_set) {
   std::vector<std::string> properties_to_clear;
-  SetPropertiesToClear(properties_to_set.get(), &properties_to_clear);
+  SetPropertiesToClear(&properties_to_set, &properties_to_clear);
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
     SetPropertiesFailed("SetProperties", network_id,
-                        NetworkConnectionHandler::kErrorNotFound, nullptr);
+                        NetworkConnectionHandler::kErrorNotFound);
     return;
   }
   NetworkHandler::Get()->network_configuration_handler()->SetShillProperties(
-      network->path(), *properties_to_set,
+      network->path(), properties_to_set,
       base::BindOnce(&NetworkConnectImpl::ClearPropertiesAndConnect,
                      weak_factory_.GetWeakPtr(), network_id,
                      properties_to_clear),
@@ -357,8 +342,7 @@ void NetworkConnectImpl::ConnectToNetworkId(const std::string& network_id) {
   NET_LOG(USER) << "ConnectToNetwork: " << NetworkGuidId(network_id);
   const NetworkState* network = GetNetworkStateFromId(network_id);
   if (!network) {
-    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound,
-                    nullptr);
+    OnConnectFailed(network_id, NetworkConnectionHandler::kErrorNotFound);
     return;
   }
   if (PreviousConnectAttemptHadError(network)) {
@@ -484,13 +468,12 @@ void NetworkConnectImpl::ShowCarrierAccountDetail(
 
 void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
     const std::string& network_id,
-    const base::DictionaryValue& properties,
+    const base::Value& properties,
     bool shared) {
   NET_LOG(USER) << "ConfigureNetworkIdAndConnect: "
                 << NetworkGuidId(network_id);
 
-  std::unique_ptr<base::DictionaryValue> properties_to_set(
-      properties.DeepCopy());
+  base::Value properties_to_set = properties.Clone();
 
   std::string profile_path;
   if (!GetNetworkProfilePath(shared, &profile_path)) {
@@ -514,14 +497,13 @@ void NetworkConnectImpl::ConfigureNetworkIdAndConnect(
                      network_id));
 }
 
-void NetworkConnectImpl::CreateConfigurationAndConnect(
-    base::DictionaryValue* properties,
-    bool shared) {
+void NetworkConnectImpl::CreateConfigurationAndConnect(base::Value* properties,
+                                                       bool shared) {
   NET_LOG(USER) << "CreateConfigurationAndConnect";
   CallCreateConfiguration(properties, shared, true /* connect_on_configure */);
 }
 
-void NetworkConnectImpl::CreateConfiguration(base::DictionaryValue* properties,
+void NetworkConnectImpl::CreateConfiguration(base::Value* properties,
                                              bool shared) {
   NET_LOG(USER) << "CreateConfiguration";
   CallCreateConfiguration(properties, shared, false /* connect_on_configure */);

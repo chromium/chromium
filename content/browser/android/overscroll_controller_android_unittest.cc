@@ -4,6 +4,7 @@
 
 #include "content/browser/android/overscroll_controller_android.h"
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "cc/input/overscroll_behavior.h"
 #include "cc/layers/layer.h"
 #include "content/public/common/use_zoom_for_dsf_policy.h"
@@ -47,6 +48,10 @@ class MockCompositor : public WindowAndroidCompositor {
   void OnUpdateRefreshRate(float refresh_rate) override {}
   void OnUpdateSupportedRefreshRates(
       const std::vector<float>& supported_refresh_rates) override {}
+  std::unique_ptr<ui::CompositorLock> GetCompositorLock(
+      base::TimeDelta timeout) override {
+    return nullptr;
+  }
 };
 
 class MockGlowClient : public OverscrollGlowClient {
@@ -104,7 +109,7 @@ class OverscrollControllerAndroidUnitTest : public testing::Test {
   }
 
  protected:
-  MockGlow* glow_;
+  raw_ptr<MockGlow> glow_;
   MockRefresh* refresh_;
   std::unique_ptr<MockCompositor> compositor_;
   std::unique_ptr<OverscrollControllerAndroid> controller_;

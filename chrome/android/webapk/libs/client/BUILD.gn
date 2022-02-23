@@ -19,12 +19,6 @@ android_library("client_java") {
     "//components/webapk/android/libs/common:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  srcjar_deps = [ ":runtime_library_version_java" ]
-}
-
-java_cpp_template("runtime_library_version_java") {
-  sources = [ "src/org/chromium/webapk/lib/client/WebApkVersion.template" ]
-  defines = [ "REQUEST_UPDATE_FOR_SHELL_APK_VERSION_VALUE=$request_update_for_shell_apk_version" ]
 }
 
 junit_binary("webapk_client_junit_tests") {

@@ -15,9 +15,9 @@ limitations under the License.
 
 package org.tensorflow.lite.support.tensorbuffer;
 
-import static org.tensorflow.lite.support.common.SupportPreconditions.checkArgument;
-import static org.tensorflow.lite.support.common.SupportPreconditions.checkNotNull;
-import static org.tensorflow.lite.support.common.SupportPreconditions.checkState;
+import static org.tensorflow.lite.support.common.internal.SupportPreconditions.checkArgument;
+import static org.tensorflow.lite.support.common.internal.SupportPreconditions.checkNotNull;
+import static org.tensorflow.lite.support.common.internal.SupportPreconditions.checkState;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.tensorflow.lite.DataType;
@@ -50,19 +50,19 @@ public abstract class TensorBuffer {
      * some examples:
      *
      * <pre>
-     * Creating a float TensorBuffer with shape {2, 3}:
+     * // Creating a float TensorBuffer with shape {2, 3}:
      * int[] shape = new int[] {2, 3};
      * TensorBuffer tensorBuffer = TensorBuffer.createFixedSize(shape, DataType.FLOAT32);
      * </pre>
      *
      * <pre>
-     * Creating an uint8 TensorBuffer of a scalar:
+     * // Creating an uint8 TensorBuffer of a scalar:
      * int[] shape = new int[] {};
      * TensorBuffer tensorBuffer = TensorBuffer.createFixedSize(shape, DataType.UINT8);
      * </pre>
      *
      * <pre>
-     * Creating an empty uint8 TensorBuffer:
+     * // Creating an empty uint8 TensorBuffer:
      * int[] shape = new int[] {0};
      * TensorBuffer tensorBuffer = TensorBuffer.createFixedSize(shape, DataType.UINT8);
      * </pre>
@@ -91,7 +91,25 @@ public abstract class TensorBuffer {
      * the created {@link TensorBuffer} is {0}.
      *
      * <p>Dynamic TensorBuffers will reallocate memory when loading arrays or data buffers of
-     * different buffer sizes.
+     * different buffer sizes. Here are some examples:
+     *
+     * <pre>
+     * // Creating a float dynamic TensorBuffer:
+     * TensorBuffer tensorBuffer = TensorBuffer.createDynamic(DataType.FLOAT32);
+     * // Loading a float array:
+     * float[] arr1 = new float[] {1, 2, 3};
+     * tensorBuffer.loadArray(arr, new int[] {arr1.length});
+     * // loading another float array:
+     * float[] arr2 = new float[] {1, 2, 3, 4, 5};
+     * tensorBuffer.loadArray(arr, new int[] {arr2.length});
+     * // loading a third float array with the same size as arr2, assuming shape doesn't change:
+     * float[] arr3 = new float[] {5, 4, 3, 2, 1};
+     * tensorBuffer.loadArray(arr);
+     * // loading a forth float array with different size as arr3 and omitting the shape will result
+     * // in error:
+     * float[] arr4 = new float[] {3, 2, 1};
+     * tensorBuffer.loadArray(arr); // Error: The size of byte buffer and the shape do not match.
+     * </pre>
      *
      * @param dataType The dataType of the {@link TensorBuffer} to be created.
      */
@@ -144,12 +162,12 @@ public abstract class TensorBuffer {
     }
 
     /**
-     * Gets the {@link TensorBuffer#flatSize} of the buffer.
+     * Gets the flatSize of the buffer.
      *
      * @throws IllegalStateException if the underlying data is corrupted
      */
     public int getFlatSize() {
-        assertShapeIsCorect();
+        assertShapeIsCorrect();
         return flatSize;
     }
 
@@ -160,7 +178,7 @@ public abstract class TensorBuffer {
      */
     @NonNull
     public int[] getShape() {
-        assertShapeIsCorect();
+        assertShapeIsCorrect();
         return Arrays.copyOf(shape, shape.length);
     }
 
@@ -185,7 +203,7 @@ public abstract class TensorBuffer {
      * For example, a TensorBuffer with shape {2, 3} that represents the following array,
      * [[0.0f, 1.0f, 2.0f], [3.0f, 4.0f, 5.0f]].
      *
-     * The fourth element (whose value is 3.0f) in the TensorBuffer can be retrived by:
+     * The fourth element (whose value is 3.0f) in the TensorBuffer can be retrieved by:
      * float v = tensorBuffer.getFloatValue(3);
      * </pre>
      *
@@ -212,7 +230,7 @@ public abstract class TensorBuffer {
      * For example, a TensorBuffer with shape {2, 3} that represents the following array,
      * [[0.0f, 1.0f, 2.0f], [3.0f, 4.0f, 5.0f]].
      *
-     * The fourth element (whose value is 3.0f) in the TensorBuffer can be retrived by:
+     * The fourth element (whose value is 3.0f) in the TensorBuffer can be retrieved by:
      * int v = tensorBuffer.getIntValue(3);
      * Note that v is converted from 3.0f to 3 as a result of type conversion.
      * </pre>
@@ -255,8 +273,10 @@ public abstract class TensorBuffer {
      * TensorBufferUint8} , the values will be clamped to [0, 255] and then be casted to uint8 by
      * {255, 0}.
      *
-     * <p>Size of {@code src} should always match the flat size of this {@link TensorBuffer}, for
-     * both fixed-size and dynamic {@link TensorBuffer}.
+     * <p>Using this method assumes that the shape of {@code src} is the same as the shape of this
+     * {@link TensorBuffer}. Thus the size of {@code buffer} ({@code src.length}) should always
+     * match the flat size of this {@link TensorBuffer}, for both fixed-size and dynamic {@link
+     * TensorBuffer}. Use {@link #loadArray(int[], int[])} if {@code src} has a different shape.
      *
      * @param src The source array to be loaded.
      */
@@ -287,8 +307,10 @@ public abstract class TensorBuffer {
      * with values {400.32f, -23.04f}, the values will be clamped to [0, 255] and then be casted to
      * uint8 by {255, 0}.
      *
-     * <p>Size of {@code src} should always match the flat size of this {@link TensorBuffer}, for
-     * both fixed-size and dynamic {@link TensorBuffer}.
+     * <p>Using this method assumes that the shape of {@code src} is the same as the shape of this
+     * {@link TensorBuffer}. Thus the size of {@code buffer} ({@code src.length}) should always
+     * match the flat size of this {@link TensorBuffer}, for both fixed-size and dynamic {@link
+     * TensorBuffer}. Use {@link #loadArray(float[], int[])} if {@code src} has a different shape.
      *
      * @param src The source array to be loaded.
      */
@@ -302,6 +324,9 @@ public abstract class TensorBuffer {
      * <p>Important: The loaded buffer is a reference. DO NOT MODIFY. We don't create a copy here
      * for performance concern, but if modification is necessary, please make a copy.
      *
+     * <p>For the best performance, always load a direct {@link ByteBuffer} or a {@link ByteBuffer}
+     * backed by an array.
+     *
      * @param buffer The byte buffer to load.
      * @throws NullPointerException if {@code buffer} is null.
      * @throws IllegalArgumentException if the size of {@code buffer} and {@code typeSize} do not
@@ -309,11 +334,22 @@ public abstract class TensorBuffer {
      */
     public void loadBuffer(@NonNull ByteBuffer buffer, @NonNull int[] shape) {
         checkNotNull(buffer, "Byte buffer cannot be null.");
+        checkArgument(isShapeValid(shape), "Values in TensorBuffer shape should be non-negative.");
+
         int flatSize = computeFlatSize(shape);
         checkArgument((buffer.limit() == getTypeSize() * flatSize),
-                "The size of byte buffer and the shape do not match.");
+                "The size of byte buffer and the shape do not match. Expected: "
+                        + getTypeSize() * flatSize + " Actual: " + buffer.limit());
 
-        resize(shape);
+        if (!isDynamic) {
+            // Make sure the new shape fits the buffer size when TensorBuffer has fixed size.
+            checkArgument(Arrays.equals(shape, this.shape));
+        }
+
+        // Update to the new shape, since shape dim values might change.
+        this.shape = shape.clone();
+        this.flatSize = flatSize;
+
         buffer.rewind();
         this.buffer = buffer;
     }
@@ -322,8 +358,20 @@ public abstract class TensorBuffer {
      * Loads a byte buffer into this {@link TensorBuffer}. Buffer size must match the flat size of
      * this {@link TensorBuffer}.
      *
+     * <p>Using this method assumes that the shape of {@code buffer} is the same as the shape of
+     * this
+     * {@link TensorBuffer}. Thus the size of {@code buffer} ({@code buffer.limit()}) should always
+     * match the flat size of this {@link TensorBuffer}, for both fixed-size and dynamic {@link
+     * TensorBuffer}. Use {@link #loadBuffer(ByteBuffer, int[])} if {@code buffer} has a different
+     * shape.
+     *
      * <p>Important: The loaded buffer is a reference. DO NOT MODIFY. We don't create a copy here
      * for performance concern, but if modification is necessary, please make a copy.
+     *
+     * <p>For the best performance, always load a direct {@link ByteBuffer} or a {@link ByteBuffer}
+     * backed by an array.
+     *
+     * <p>If the {@code buffer} is read-only, we adopt a copy-on-write strategy for performance.
      *
      * @param buffer The byte buffer to load.
      */
@@ -373,6 +421,18 @@ public abstract class TensorBuffer {
         }
     }
 
+    /** Copies the underlying {@link ByteBuffer} if it's readonly. */
+    protected synchronized void copyByteBufferIfReadOnly() {
+        if (!buffer.isReadOnly()) {
+            return;
+        }
+        ByteBuffer newByteBuffer = ByteBuffer.allocateDirect(buffer.capacity());
+        newByteBuffer.order(buffer.order());
+        newByteBuffer.put(buffer);
+        newByteBuffer.rewind();
+        buffer = newByteBuffer;
+    }
+
     /**
      * Allocates buffer with corresponding size of the {@code shape}. If shape is an empty array,
      * this
@@ -402,7 +462,7 @@ public abstract class TensorBuffer {
      * Verifies if the shape of the {@link TensorBuffer} matched the size of the underlying {@link
      * ByteBuffer}.
      */
-    private void assertShapeIsCorect() {
+    private void assertShapeIsCorrect() {
         int flatSize = computeFlatSize(shape);
         checkState((buffer.limit() == getTypeSize() * flatSize),
                 String.format(

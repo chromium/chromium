@@ -32,6 +32,7 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_element_htmlcollection.h"
+#include "third_party/blink/renderer/core/html/html_all_collection.h"
 #include "third_party/blink/renderer/platform/bindings/v8_set_return_value.h"
 
 namespace blink {
@@ -62,7 +63,8 @@ void GetIndexedOrNamed(const v8::FunctionCallbackInfo<v8::Value>& info) {
   }
 
   TOSTRING_VOID(V8StringResource<>, name, info[0]);
-  ScriptState* script_state = ScriptState::From(info.This()->CreationContext());
+  ScriptState* script_state =
+      ScriptState::From(info.This()->GetCreationContextChecked());
   v8::Local<v8::Value> v8_value;
   if (!ToV8Traits<IDLNullable<V8UnionElementOrHTMLCollection>>::ToV8(
            script_state, impl->NamedGetter(name))

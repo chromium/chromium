@@ -23,6 +23,7 @@
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/extensions/extension_constants.h"
+#include "components/app_constants/constants.h"
 #include "extensions/browser/extension_prefs.h"
 #include "extensions/browser/extension_system.h"
 #include "extensions/common/constants.h"
@@ -196,6 +197,7 @@ void ChromeAppSorting::InitializePageOrdinalMapFromWebApps() {
   web_app_registrar_ = &web_app_provider->registrar();
   web_app_sync_bridge_ = &web_app_provider->sync_bridge();
   app_registrar_observation_.Observe(&web_app_provider->registrar());
+  install_manager_observation_.Observe(&web_app_provider->install_manager());
   InitializePageOrdinalMap(web_app_registrar_->GetAppIds());
 }
 
@@ -516,6 +518,10 @@ void ChromeAppSorting::OnWebAppInstalled(const web_app::AppId& app_id) {
   }
 }
 
+void ChromeAppSorting::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
+}
+
 void ChromeAppSorting::OnWebAppsWillBeUpdatedFromSync(
     const std::vector<const web_app::WebApp*>& updated_apps_state) {
   DCHECK(web_app_registrar_);
@@ -595,7 +601,7 @@ void ChromeAppSorting::InitializePageOrdinalMap(
     // Ensure that the web store app still isn't found in this list, since
     // it is added after this loop.
     DCHECK(*ext_it != extensions::kWebStoreAppId);
-    DCHECK(*ext_it != extension_misc::kChromeAppId);
+    DCHECK(*ext_it != app_constants::kChromeAppId);
   }
 
   // Include the Web Store App since it is displayed on the NTP.
@@ -608,11 +614,10 @@ void ChromeAppSorting::InitializePageOrdinalMap(
   }
   // Include the Chrome App since it is displayed in the app launcher.
   syncer::StringOrdinal chrome_app_page =
-      GetPageOrdinal(extension_misc::kChromeAppId);
+      GetPageOrdinal(app_constants::kChromeAppId);
   if (chrome_app_page.IsValid()) {
-    AddOrdinalMapping(extension_misc::kChromeAppId,
-                      chrome_app_page,
-                      GetAppLaunchOrdinal(extension_misc::kChromeAppId));
+    AddOrdinalMapping(app_constants::kChromeAppId, chrome_app_page,
+                      GetAppLaunchOrdinal(app_constants::kChromeAppId));
   }
 }
 
@@ -684,8 +689,8 @@ void ChromeAppSorting::CreateDefaultOrdinals() {
   chromeos::default_app_order::Get(&app_ids);
 #else
   const char* const kDefaultAppOrder[] = {
-    extension_misc::kChromeAppId,
-    extensions::kWebStoreAppId,
+      app_constants::kChromeAppId,
+      extensions::kWebStoreAppId,
   };
   const std::vector<const char*> app_ids(
       kDefaultAppOrder, kDefaultAppOrder + base::size(kDefaultAppOrder));

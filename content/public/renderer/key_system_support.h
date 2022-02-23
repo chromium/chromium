@@ -13,12 +13,13 @@
 
 namespace content {
 
-// Determines if |key_system| is supported by calling into the browser.
-// If it is supported, return true and |key_system_capability| is updated
-// to match what |key_system| supports. If not supported, false is returned.
-CONTENT_EXPORT bool IsKeySystemSupported(
-    const std::string& key_system,
-    media::mojom::KeySystemCapabilityPtr* key_system_capability);
+using IsKeySystemSupportedCB =
+    media::mojom::KeySystemSupport::IsKeySystemSupportedCallback;
+
+// Determines if |key_system| is supported by calling into the browser and
+// calls the `cb` with the result.
+CONTENT_EXPORT void IsKeySystemSupported(const std::string& key_system,
+                                         IsKeySystemSupportedCB cb);
 
 }  // namespace content
 

@@ -6,6 +6,9 @@
 <translation id="125153950246128346">يُرجى النقر للاطِّلاع على علامة تبويب أخرى</translation>
 <translation id="1302104331113804646">إعدادات تتبُّع الأسعار</translation>
 <translation id="1378979118429748177">تلقّي إشعارات عند انخفاض الأسعار</translation>
+<translation id="1403228085774130835">‏يمكنك العثور على علامات التبويب المغلقة في "علامات التبويب الأخيرة" ضمن قائمة Chrome الرئيسية.</translation>
+<translation id="1455506303394048917">سيتم محو بيانات نشاطك ضمن علامات التبويب هذه في وضع التصفُّح المتخفي على هذا الجهاز.</translation>
+<translation id="1499635324672558517">هل تريد إغلاق جميع علامات التبويب في وضع التصفُّح المتخفي؟</translation>
 <translation id="1657719826150349398">نقل علامة التبويب إلى الأسفل</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{علامة تبويب واحدة (<ph name="TABS_COUNT_ONE" />)}zero{<ph name="TABS_COUNT_MANY" /> علامة تبويب}two{علامتا تبويب (<ph name="TABS_COUNT_MANY" />)}few{<ph name="TABS_COUNT_MANY" /> علامات تبويب}many{<ph name="TABS_COUNT_MANY" /> علامة تبويب}other{<ph name="TABS_COUNT_MANY" /> علامة تبويب}}</translation>
 <translation id="2118649612461486615">معلومات المتجر</translation>
@@ -40,9 +43,11 @@
 <translation id="4648718555153979859">يتم جمع علامات التبويب معًا هنا</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />))}zero{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}two{(مراجعتان (<ph name="REVIEWS_COUNT_MANY" />))}few{(<ph name="REVIEWS_COUNT_MANY" /> مراجعات)}many{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}other{(<ph name="REVIEWS_COUNT_MANY" /> مراجعة)}}</translation>
 <translation id="4850886885716139402">عرض</translation>
+<translation id="4870911314065352661">هل تريد إغلاق جميع علامات التبويب؟</translation>
 <translation id="492284538114688557">تم رصد انخفاض في السعر.</translation>
 <translation id="5007392906805964215">مراجعة</translation>
 <translation id="5073204694187207510">إخفاء شبكة ملء الشاشة</translation>
+<translation id="5076161749301278626">هل تريد الاطّلاع على مراجعات المتجر؟</translation>
 <translation id="5082793167783849073">يُرجى مقارنة الصفحات بسرعة من خلال إنشاء مجموعة. للبدء، المس رابطًا مع الاستمرار.</translation>
 <translation id="5490235265819901748">تم توسيع مجموعة علامات التبويب.</translation>
 <translation id="5533021382642990449">العرض لاحقًا</translation>
@@ -69,6 +74,7 @@
 <translation id="7326879924029668159">الاطّلاع على سياسة الإرجاع وغيرها</translation>
 <translation id="7352298686197644113">يمكنك الاطّلاع على المُنتَج الذي انخفض سعره في علامات التبويب المفتوحة.</translation>
 <translation id="753732157349120914">أداة تغيير علامات التبويب</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{‏مراجعة واحدة (<ph name="REVIEWS_COUNT_ONE" />) من Google}zero{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}two{‏مراجعتان (<ph name="REVIEWS_COUNT_MANY" />) من Google}few{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعات من Google}many{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}other{‏<ph name="REVIEWS_COUNT_MANY" /> مراجعة من Google}}</translation>
 <translation id="7559245342362162951">عرض علامات تبويب المجموعة في شبكة ملء الشاشة</translation>
 <translation id="7792771145871471484">مراجعة الاقتراحات</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{إضافة علامة تبويب محدّدة واحدة (<ph name="TABS_COUNT_ONE" />) إلى مجموعة جديدة}zero{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة إلى مجموعة جديدة}two{إضافة علامتَي تبويب محدّدتَين (<ph name="TABS_COUNT_MANY" />) إلى مجموعة جديدة}few{إضافة <ph name="TABS_COUNT_MANY" /> علامات تبويب محدّدة إلى مجموعة جديدة}many{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة إلى مجموعة جديدة}other{إضافة <ph name="TABS_COUNT_MANY" /> علامة تبويب محدّدة إلى مجموعة جديدة}}</translation>

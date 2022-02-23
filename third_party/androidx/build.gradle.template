@@ -45,7 +45,7 @@ dependencies {
     compile 'androidx.interpolator:interpolator:{{androidx_dependency_version}}'
     compile 'androidx.leanback:leanback:{{androidx_dependency_version}}'
     compile 'androidx.leanback:leanback-preference:{{androidx_dependency_version}}'
-    compile 'androidx.localbroadcastmanager:localbroadcastmanager:{{androidx_dependency_version}}'
+    compile 'androidx.localbroadcastmanager:localbroadcastmanager:1.0.0'
     compile 'androidx.media:media:{{androidx_dependency_version}}'
     compile 'androidx.mediarouter:mediarouter:{{androidx_dependency_version}}'
     compile 'androidx.preference:preference:{{androidx_dependency_version}}'

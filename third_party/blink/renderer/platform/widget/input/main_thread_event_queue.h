@@ -46,6 +46,12 @@ class PLATFORM_EXPORT MainThreadEventQueueClient {
   virtual bool HandleInputEvent(const WebCoalescedInputEvent& event,
                                 std::unique_ptr<cc::EventMetrics> metrics,
                                 HandledEventCallback handled_callback) = 0;
+
+  // Notify clients that the queued events have been dispatched. `raf_aligned`
+  // determines whether the events were rAF-aligned events or non-rAF-aligned
+  // ones.
+  virtual void InputEventsDispatched(bool raf_aligned) = 0;
+
   // Requests a BeginMainFrame callback from the compositor.
   virtual void SetNeedsMainFrame() = 0;
 };
@@ -130,6 +136,10 @@ class PLATFORM_EXPORT MainThreadEventQueue
     return ack_state == mojom::blink::InputEventResultState::kNotConsumed ||
            ack_state ==
                mojom::blink::InputEventResultState::kSetNonBlockingDueToFling;
+  }
+
+  base::SingleThreadTaskRunner* main_task_runner_for_testing() const {
+    return main_task_runner_.get();
   }
 
  protected:

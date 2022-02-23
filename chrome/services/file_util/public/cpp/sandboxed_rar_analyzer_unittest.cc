@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -118,7 +119,7 @@ class SandboxedRarAnalyzerTest : public testing::Test {
     }
 
     base::RepeatingClosure next_closure_;
-    safe_browsing::ArchiveAnalyzerResults* results_;
+    raw_ptr<safe_browsing::ArchiveAnalyzerResults> results_;
   };
   // |analzyer_| should be destroyed after task_environment, so that any other
   // threads with objects holding references to it will be shut down first.
@@ -143,7 +144,7 @@ const SandboxedRarAnalyzerTest::BinaryData
         "signed.exe",
         CDRDT(WIN_EXECUTABLE),
         kSignedExeSignature,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
         true,
         true,
 #else
@@ -302,7 +303,7 @@ TEST_F(SandboxedRarAnalyzerTest,
   ASSERT_TRUE(binary.has_length());
   EXPECT_EQ(kSignedExe.length, binary.length());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On windows, we should also have a signature and image header
   ASSERT_TRUE(binary.has_signature());
   ASSERT_TRUE(binary.has_image_headers());

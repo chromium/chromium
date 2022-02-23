@@ -41,14 +41,16 @@ RealtimeAudioWorkletThread::RealtimeAudioWorkletThread(
                  "RealtimeAudioWorkletThread() - NORMAL");
   }
 
-  if (++s_ref_count_ == 1)
+  if (++s_ref_count_ == 1) {
     EnsureSharedBackingThread(params);
+  }
 }
 
 RealtimeAudioWorkletThread::~RealtimeAudioWorkletThread() {
   DCHECK(IsMainThread());
-  if (--s_ref_count_ == 0)
+  if (--s_ref_count_ == 0) {
     ClearSharedBackingThread();
+  }
 }
 
 WorkerBackingThread& RealtimeAudioWorkletThread::GetWorkerBackingThread() {

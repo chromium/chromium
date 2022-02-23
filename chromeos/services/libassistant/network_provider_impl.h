@@ -7,9 +7,9 @@
 
 #include <vector>
 
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/public/mojom/platform_delegate.mojom-forward.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
-#include "libassistant/shared/public/platform_net.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 

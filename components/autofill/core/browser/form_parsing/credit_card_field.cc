@@ -147,8 +147,10 @@ std::unique_ptr<FormField> CreditCardField::Parse(
     // below.
     // Note: Some sites use type="tel" or type="number" for numerical inputs.
     // They also sometimes use type="password" for sensitive types.
-    const int kMatchNumTelAndPwd =
-        MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE | MATCH_PASSWORD;
+    const auto kMatchNumTelAndPwd =
+        kDefaultMatchParamsWith<MatchFieldType::kNumber,
+                                MatchFieldType::kTelephone,
+                                MatchFieldType::kPassword>;
 
     if (!credit_card_field->verification_ &&
         ParseFieldSpecifics(scanner, kCardCvcRe, kMatchNumTelAndPwd,
@@ -259,9 +261,7 @@ std::unique_ptr<FormField> CreditCardField::Parse(
   if (credit_card_field->cardholder_) {
     // If we got the cardholder name with a dangerous check, require at least a
     // card number and one of expiration or verification fields.
-    if (!base::FeatureList::IsEnabled(
-            features::kAutofillStrictContextualCardNameConditions) ||
-        !cardholder_name_match_has_low_confidence ||
+    if (!cardholder_name_match_has_low_confidence ||
         (!credit_card_field->numbers_.empty() &&
          (credit_card_field->verification_ ||
           credit_card_field->HasExpiration()))) {
@@ -292,9 +292,11 @@ bool CreditCardField::LikelyCardMonthSelectField(AutofillScanner* scanner) {
     return false;
 
   AutofillField* field = scanner->Cursor();
-  if (!MatchesFormControlType(field->form_control_type,
-                              MATCH_SELECT | MATCH_SEARCH))
+  if (!MatchesFormControlType(
+          field->form_control_type,
+          {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
+  }
 
   if (field->options.size() < 12 || field->options.size() > 13)
     return false;
@@ -332,9 +334,11 @@ bool CreditCardField::LikelyCardYearSelectField(
     return false;
 
   AutofillField* field = scanner->Cursor();
-  if (!MatchesFormControlType(field->form_control_type,
-                              MATCH_SELECT | MATCH_SEARCH))
+  if (!MatchesFormControlType(
+          field->form_control_type,
+          {MatchFieldType::kSelect, MatchFieldType::kSearch})) {
     return false;
+  }
 
   // Filter out days - elements for date entries would have
   // numbers 1 to 9 as well in them, which we can filter on.
@@ -348,9 +352,9 @@ bool CreditCardField::LikelyCardYearSelectField(
   // Another way to eliminate days - filter out 'day' fields.
   const std::vector<MatchingPattern>& day_patterns =
       PatternProvider::GetInstance().GetMatchPatterns("DAY", page_language);
-  if (FormField::ParseFieldSpecifics(scanner, kDayRe,
-                                     MATCH_DEFAULT | MATCH_SELECT, day_patterns,
-                                     nullptr, {log_manager, "kDayRe"})) {
+  if (FormField::ParseFieldSpecifics(
+          scanner, kDayRe, kDefaultMatchParamsWith<MatchFieldType::kSelect>,
+          day_patterns, nullptr, {log_manager, "kDayRe"})) {
     return false;
   }
 
@@ -396,8 +400,9 @@ bool CreditCardField::LikelyCardTypeSelectField(AutofillScanner* scanner) {
 
   AutofillField* field = scanner->Cursor();
 
-  if (!MatchesFormControlType(field->form_control_type,
-                              MATCH_SELECT | MATCH_SEARCH))
+  if (!MatchesFormControlType(
+          field->form_control_type,
+          {MatchFieldType::kSelect, MatchFieldType::kSearch}))
     return false;
 
   // We set |ignore_whitespace| to true on these calls because this is actually
@@ -418,11 +423,12 @@ bool CreditCardField::IsGiftCardField(AutofillScanner* scanner,
   if (scanner->IsEnd())
     return false;
 
-  // kMatchFieldTypes should subsume kMatchNumTelAndPwd used for
+  // kMatchFieldType should subsume kMatchNumTelAndPwd used for
   // CREDIT_CARD_NUMBER matching. Otherwise, a gift card field may not match the
   // GIFT_CARD pattern but erroneously do match the CREDIT_CARD_NUMBER pattern.
-  const int kMatchFieldTypes = MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE |
-                               MATCH_SEARCH | MATCH_PASSWORD;
+  const auto kMatchFieldType = kDefaultMatchParamsWith<
+      MatchFieldType::kNumber, MatchFieldType::kTelephone,
+      MatchFieldType::kSearch, MatchFieldType::kPassword>;
   size_t saved_cursor = scanner->SaveCursor();
 
   const std::vector<MatchingPattern>& debit_cards_patterns =
@@ -437,20 +443,20 @@ bool CreditCardField::IsGiftCardField(AutofillScanner* scanner,
       PatternProvider::GetInstance().GetMatchPatterns("GIFT_CARD",
                                                       page_language);
 
-  if (ParseFieldSpecifics(scanner, kDebitCardRe, kMatchFieldTypes,
+  if (ParseFieldSpecifics(scanner, kDebitCardRe, kMatchFieldType,
                           debit_cards_patterns, nullptr,
                           {log_manager, "kDebitCardRe"})) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
-  if (ParseFieldSpecifics(scanner, kDebitGiftCardRe, kMatchFieldTypes,
+  if (ParseFieldSpecifics(scanner, kDebitGiftCardRe, kMatchFieldType,
                           debit_gift_card_patterns, nullptr,
                           {log_manager, "kDebitGiftCardRe"})) {
     scanner->RewindTo(saved_cursor);
     return false;
   }
 
-  return ParseFieldSpecifics(scanner, kGiftCardRe, kMatchFieldTypes,
+  return ParseFieldSpecifics(scanner, kGiftCardRe, kMatchFieldType,
                              gift_card_patterns, nullptr,
                              {log_manager, "kGiftCardRe"});
 }
@@ -540,8 +546,10 @@ bool CreditCardField::ParseExpirationDate(AutofillScanner* scanner,
 
   // If that fails, do a general regex search.
   scanner->RewindTo(month_year_saved_cursor);
-  const int kMatchCCType = MATCH_DEFAULT | MATCH_NUMBER | MATCH_TELEPHONE |
-                           MATCH_SELECT | MATCH_SEARCH;
+  const auto kMatchCCType =
+      kDefaultMatchParamsWith<MatchFieldType::kNumber,
+                              MatchFieldType::kTelephone,
+                              MatchFieldType::kSelect, MatchFieldType::kSearch>;
 
   const std::vector<MatchingPattern>& cc_exp_month_patterns =
       PatternProvider::GetInstance().GetMatchPatterns(CREDIT_CARD_EXP_MONTH,

@@ -24,12 +24,12 @@ class SecureDnsBridge {
      */
     static class Entry {
         public final @NonNull String name; // Display name
-        public final @NonNull String template; // URI template, or "" for the custom entry.
+        public final @NonNull String config; // DoH config, or "" for the custom entry.
         public final @NonNull String privacy; // Privacy policy link
 
-        Entry(String name, String template, String privacy) {
+        Entry(String name, String config, String privacy) {
             this.name = name;
-            this.template = template;
+            this.config = config;
             this.privacy = privacy;
         }
 
@@ -60,7 +60,7 @@ class SecureDnsBridge {
     }
 
     /**
-     * Sets the current Secure DNS mode.  Callers must successfully set a DoH template
+     * Sets the current Secure DNS mode.  Callers must successfully set a DoH config
      * before changing the mode to "secure".
      *
      * @param mode The desired new Secure DNS mode.
@@ -93,22 +93,20 @@ class SecureDnsBridge {
      * by whitespace.  The raw value is needed in order to allow direct editing while
      * preserving whitespace.
      *
-     * @return The templates (separated by spaces) of the DoH server
-     *     currently selected for use in "secure" mode, or "" if there is none.
+     * @return The current DoH config for use in "secure" mode, or "" if there is none.
      */
-    static String getTemplates() {
-        return SecureDnsBridgeJni.get().getTemplates();
+    static String getConfig() {
+        return SecureDnsBridgeJni.get().getConfig();
     }
 
     /**
-     * Sets the templates to use for DoH in secure mode, if they are valid.
+     * Sets the DoH config to use in secure mode, if it is valid.
      *
-     * @param templates The templates (separated by spaces) to store, or "" to clear
-     *     the setting.
+     * @param config The DoH config to store, or "" to clear the setting.
      * @return True if the input was valid.
      */
-    static boolean setTemplates(String templates) {
-        return SecureDnsBridgeJni.get().setTemplates(templates);
+    static boolean setConfig(String config) {
+        return SecureDnsBridgeJni.get().setConfig(config);
     }
 
     /**
@@ -125,34 +123,26 @@ class SecureDnsBridge {
      * @param newEntry The current selection.
      */
     static void updateDropdownHistograms(Entry oldEntry, Entry newEntry) {
-        SecureDnsBridgeJni.get().updateDropdownHistograms(oldEntry.template, newEntry.template);
+        SecureDnsBridgeJni.get().updateDropdownHistograms(oldEntry.config, newEntry.config);
     }
 
     /**
-     * Record whether a custom template entered was valid for statistical purposes.
-     * @param valid True if the template was valid.
+     * Record whether a custom DoH config entered was valid for statistical purposes.
+     * @param valid True if the config was valid.
      */
     static void updateValidationHistogram(boolean valid) {
         SecureDnsBridgeJni.get().updateValidationHistogram(valid);
     }
 
     /**
-     * @param group A collection of DoH templates in textual format.
-     * @return All templates in the group, or an empty array if the group is not valid.
-     */
-    static String[] splitTemplateGroup(String group) {
-        return SecureDnsBridgeJni.get().splitTemplateGroup(group);
-    }
-
-    /**
-     * Perform a probe to see if a server is working.  This function blocks until the
-     * probe completes.
+     * Perform a probe to see if a server set is working.  This function blocks until the
+     * probes complete.
      *
-     * @param template A valid DoH URI template.
-     * @return True if the server is reachable and functioning correctly.
+     * @param dohConfig A valid DoH configuration string.
+     * @return True if any server is reachable and functioning correctly.
      */
-    static boolean probeServer(String template) {
-        return SecureDnsBridgeJni.get().probeServer(template);
+    static boolean probeConfig(String dohConfig) {
+        return SecureDnsBridgeJni.get().probeConfig(dohConfig);
     }
 
     @NativeMethods
@@ -162,13 +152,12 @@ class SecureDnsBridge {
         void setMode(@SecureDnsMode int mode);
         boolean isModeManaged();
         String[][] getProviders();
-        String getTemplates();
-        boolean setTemplates(String templates);
+        String getConfig();
+        boolean setConfig(String config);
         @SecureDnsManagementMode
         int getManagementMode();
-        void updateDropdownHistograms(String oldTemplate, String newTemplate);
+        void updateDropdownHistograms(String oldConfig, String newConfig);
         void updateValidationHistogram(boolean valid);
-        String[] splitTemplateGroup(String group);
-        boolean probeServer(String dohTemplate);
+        boolean probeConfig(String dohConfig);
     }
 }

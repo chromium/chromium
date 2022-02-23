@@ -11,4 +11,5 @@ echo "Added to PATH: $toolchain_dir"
 set -x
 exec $base_dir/../main.py archive test.size \
     --map-file $base_dir/test.map \
-    --elf-file $base_dir/mock_output_directory/elf
+    --no-output-directory
+

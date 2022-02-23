@@ -5,7 +5,7 @@
 #ifndef REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 #define REMOTING_HOST_WIN_CHROMOTING_MODULE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/win/atl.h"
 #include "base/win/scoped_com_initializer.h"
@@ -61,8 +61,8 @@ class ChromotingModule : public ATL::CAtlModuleT<ChromotingModule> {
   base::win::ScopedCOMInitializer com_initializer_;
 
   // Point to the vector of classes registered by this module.
-  ATL::_ATL_OBJMAP_ENTRY* classes_;
-  ATL::_ATL_OBJMAP_ENTRY* classes_end_;
+  raw_ptr<ATL::_ATL_OBJMAP_ENTRY> classes_;
+  raw_ptr<ATL::_ATL_OBJMAP_ENTRY> classes_end_;
 };
 
 } // namespace remoting

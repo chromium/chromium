@@ -9,7 +9,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "content/browser/attribution_reporting/attribution_manager_impl.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/stored_source.h"
 #include "content/browser/storage_partition_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_handle.h"
@@ -88,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsOriginTrialBrowserTest,
   EXPECT_EQ(true, EvalJs(shell(), "window.attributionReporting === undefined"));
 }
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 // TODO(https://crbug.com/1121464): Flaky on linux.
 #define MAYBE_OriginTrialEnabled_ImpressionRegistered \
   DISABLED_OriginTrialEnabled_ImpressionRegistered
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(AttributionsOriginTrialBrowserTest,
 
   // Verify we have received and logged an impression for the origin trial.
   attribution_manager->GetActiveSourcesForWebUI(base::BindLambdaForTesting(
-      [&](std::vector<StorableSource> impressions) -> void {
+      [&](std::vector<StoredSource> impressions) -> void {
         EXPECT_EQ(1u, impressions.size());
         run_loop.Quit();
       }));

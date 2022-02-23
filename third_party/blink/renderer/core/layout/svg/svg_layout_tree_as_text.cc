@@ -74,7 +74,7 @@
 #include "third_party/blink/renderer/platform/graphics/filters/filter.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -558,7 +558,7 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
     WriteNameValuePair(ts, "primitiveUnits", filter->PrimitiveUnits());
     ts << "\n";
     // Creating a placeholder filter which is passed to the builder.
-    FloatRect dummy_rect;
+    gfx::RectF dummy_rect;
     auto* dummy_filter = MakeGarbageCollected<Filter>(dummy_rect, dummy_rect, 1,
                                                       Filter::kBoundingBox);
     SVGFilterBuilder builder(dummy_filter->GetSourceGraphic());
@@ -626,8 +626,8 @@ void WriteSVGResourceContainer(WTF::TextStream& ts,
         ->CollectGradientAttributes(attributes);
     WriteCommonGradientProperties(ts, attributes);
 
-    FloatPoint focal_point = gradient->FocalPoint(attributes);
-    FloatPoint center_point = gradient->CenterPoint(attributes);
+    gfx::PointF focal_point = gradient->FocalPoint(attributes);
+    gfx::PointF center_point = gradient->CenterPoint(attributes);
     float radius = gradient->Radius(attributes);
     float focal_radius = gradient->FocalRadius(attributes);
 
@@ -751,7 +751,7 @@ void WriteResources(WTF::TextStream& ts,
   if (const ClipPathOperation* clip_path = style.ClipPath()) {
     if (LayoutSVGResourceClipper* clipper =
             GetSVGResourceAsType(*client, clip_path)) {
-      DCHECK_EQ(clip_path->GetType(), ClipPathOperation::REFERENCE);
+      DCHECK_EQ(clip_path->GetType(), ClipPathOperation::kReference);
       const auto& clip_path_reference =
           To<ReferenceClipPathOperation>(*clip_path);
       WriteSVGResourceReferencePrefix(ts, "clipPath", clipper,
@@ -766,7 +766,7 @@ void WriteResources(WTF::TextStream& ts,
     DCHECK(style.HasFilter());
     DCHECK_EQ(style.Filter().size(), 1u);
     const FilterOperation& filter_operation = *style.Filter().at(0);
-    DCHECK_EQ(filter_operation.GetType(), FilterOperation::REFERENCE);
+    DCHECK_EQ(filter_operation.GetType(), FilterOperation::kReference);
     const auto& reference_filter_operation =
         To<ReferenceFilterOperation>(filter_operation);
     WriteSVGResourceReferencePrefix(ts, "filter", filter,

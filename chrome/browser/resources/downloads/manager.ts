@@ -16,7 +16,7 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {CrA11yAnnouncerElement} from 'chrome://resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {getToastManager} from 'chrome://resources/cr_elements/cr_toast/cr_toast_manager.js';
 import {FindShortcutMixin} from 'chrome://resources/cr_elements/find_shortcut_mixin.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {EventTracker} from 'chrome://resources/js/event_tracker.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -27,6 +27,7 @@ import {BrowserProxy} from './browser_proxy.js';
 import {States} from './constants.js';
 import {MojomData} from './data.js';
 import {PageCallbackRouter, PageHandlerInterface} from './downloads.mojom-webui.js';
+import {getTemplate} from './manager.html.js';
 import {SearchService} from './search_service.js';
 import {DownloadsToolbarElement} from './toolbar.js';
 
@@ -49,6 +50,10 @@ const DownloadsManagerElementBase = FindShortcutMixin(PolymerElement);
 export class DownloadsManagerElement extends DownloadsManagerElementBase {
   static get is() {
     return 'downloads-manager';
+  }
+
+  static get template() {
+    return getTemplate();
   }
 
   static get properties() {
@@ -368,10 +373,6 @@ export class DownloadsManagerElement extends DownloadsManagerElementBase {
   // Override FindShortcutMixin methods.
   searchInputHasFocus() {
     return this.$.toolbar.isSearchFocused();
-  }
-
-  static get template() {
-    return html`{__html_template__}`;
   }
 }
 

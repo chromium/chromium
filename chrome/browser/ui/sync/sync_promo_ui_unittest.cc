@@ -13,7 +13,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,8 +33,7 @@ class SyncPromoUITest : public testing::Test {
 
  protected:
   void DisableSync() {
-    base::CommandLine::ForCurrentProcess()->AppendSwitch(
-        switches::kDisableSync);
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
   }
 
   content::BrowserTaskEnvironment task_environment_;

@@ -61,7 +61,7 @@ namespace {
 // Resolves InputEngineManager receiver in InputMethodManager.
 void BindInputEngineManager(
     content::RenderFrameHost* render_frame_host,
-    mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
+    mojo::PendingReceiver<ash::ime::mojom::InputEngineManager> receiver) {
   ash::input_method::InputMethodManager::Get()->ConnectInputEngineManager(
       std::move(receiver));
 }
@@ -129,7 +129,7 @@ void PopulateChromeFrameBindersForExtension(
 #if BUILDFLAG(GOOGLE_CHROME_BRANDING)
   // Registry InputEngineManager for official Google XKB Input only.
   if (extension->id() == ash::extension_ime_util::kXkbExtensionId) {
-    binder_map->Add<chromeos::ime::mojom::InputEngineManager>(
+    binder_map->Add<ash::ime::mojom::InputEngineManager>(
         base::BindRepeating(&BindInputEngineManager));
     binder_map->Add<chromeos::language::mojom::LanguagePacks>(
         base::BindRepeating(&BindLanguagePacks));

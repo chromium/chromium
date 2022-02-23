@@ -97,7 +97,7 @@ public abstract class TabModelJniBridge implements TabModel {
      */
     @CalledByNative
     private void setIndex(int index) {
-        TabModelUtils.setIndex(this, index);
+        TabModelUtils.setIndex(this, index, false);
     }
 
     @Override

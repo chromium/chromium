@@ -19,12 +19,13 @@ prefers). Callers can create as many partitions as they need. The direct
 memory cost of partitions is minimal, but the implicit cost resulting from
 fragmentation is not to be underestimated.
 
-Each partition holds multiple buckets. A *bucket* is a series of regions in a
-partition that contains similar-sized objects, e.g. one bucket holds sizes
-(240,&nbsp;256], another (256,&nbsp;288], and so on. Bucket sizes are
-geometrically-spaced, and go all the way up to `kMaxBucketed=960KiB`
-(so called *normal buckets*). There are 8 buckets between each power of two.
-Note that buckets that aren't a multiple of `base::kAlignment` can't be used.
+Each partition holds multiple buckets. A *bucket* is a collection of regions in
+a partition that contains similar-sized objects, e.g. one bucket holds sizes
+(224,&nbsp;256], another (256,&nbsp;320], and so on. Bucket sizes are
+geometrically-spaced, and go all the way up to `kMaxBucketed`, which is a tad
+under 1MiB (so called *normal buckets*). There are tens of buckets, 4 between
+each power of two (except for lower sizes where buckets that aren't a multiple
+of `base::kAlignment` simply don't exist).
 
 Larger allocations (&gt;`kMaxBucketed`) are realized by direct memory mapping
 (*direct map*).
@@ -176,6 +177,21 @@ The first and the last partition page are permanently inaccessible and serve
 as guard pages, with the exception of one system page in the middle of the first
 partition page that holds metadata (32B struct per partition page).
 
+![anatomy of a super page](./dot/super-page.png)
+
+* The slot span numbers provide a visual hint of their size (in partition
+  pages).
+* Colors provide a visual hint of the bucket to which the slot span belongs.
+    * Although only five colors are shown, in reality, a super page holds
+      tens of slot spans, some of which belong to the same bucket.
+* The system page that holds metadata tracks each partition page with one 32B
+  [`PartitionPage` struct][PartitionPage], which is either
+    * a [`SlotSpanMetadata`][SlotSpanMetadata] ("v"s in the diagram) or
+    * a [`SubsequentPageMetadata`][SubsequentPageMetadata] ("+"s in the
+      diagram).
+* Gray fill denotes guard pages (one partition page each at the head and tail
+  of each super page).
+
 As allocation requests arrive, there is eventually a need to allocate a new slot
 span.
 Address space for such a slot span is carved out from the last super page. If
@@ -247,3 +263,7 @@ until `PartitionBucket<thread_safe>::SlowPathAlloc()` encounters it. However,
 the inaccuracy can't happen in the other direction, i.e. an active span can only
 be on the active list, and an empty span can only be on the active or empty
 list.
+
+[PartitionPage]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=314;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[SlotSpanMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=120;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4
+[SubsequentPageMetadata]: https://source.chromium.org/chromium/chromium/src/+/main:base/allocator/partition_allocator/partition_page.h;l=295;drc=e5b03e85ea180d1d1ab0dec471c7fd5d1706a9e4

@@ -7,6 +7,7 @@
 
 #include "base/callback_forward.h"
 #include "content/common/content_export.h"
+#include "net/cookies/cookie_partition_key.h"
 
 namespace url {
 class Origin;
@@ -26,6 +27,7 @@ CONTENT_EXPORT void ClearSiteData(
     bool clear_storage,
     bool clear_cache,
     bool avoid_closing_connections,
+    const absl::optional<net::CookiePartitionKey>& cookie_partition_key,
     base::OnceClosure callback);
 
 }  // namespace content

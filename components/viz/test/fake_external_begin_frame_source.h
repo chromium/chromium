@@ -8,6 +8,7 @@
 #include <set>
 
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
@@ -38,6 +39,8 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
   void AddObserver(BeginFrameObserver* obs) override;
   void RemoveObserver(BeginFrameObserver* obs) override;
   void DidFinishFrame(BeginFrameObserver* obs) override;
+  void AddStateObserver(BeginFrameSourceObserver* obs) override {}
+  void RemoveStateObserver(BeginFrameSourceObserver* obs) override {}
   void OnGpuNoLongerBusy() override {}
   void SetDynamicBeginFrameDeadlineOffsetSource(
       DynamicBeginFrameDeadlineOffsetSource*
@@ -64,7 +67,7 @@ class FakeExternalBeginFrameSource : public BeginFrameSource {
 
   const bool tick_automatically_;
   const double milliseconds_per_frame_;
-  Client* client_ = nullptr;
+  raw_ptr<Client> client_ = nullptr;
   bool paused_ = false;
   BeginFrameArgs current_args_;
   uint64_t next_begin_frame_number_ = BeginFrameArgs::kStartingFrameNumber;

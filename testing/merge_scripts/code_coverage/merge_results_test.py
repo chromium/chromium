@@ -281,6 +281,34 @@ class MergeProfilesTest(unittest.TestCase):
             '/b/some/path', 'output/path', 'path/to/jacococli.jar')
         self.assertFalse(mock_exec_cmd.called)
 
+  def test_calls_merge_js_results_script(self):
+    task_output_dir = 'some/task/output/dir'
+    profdata_dir = '/some/different/path/to/profdata/default.profdata'
+
+    args = [
+        'script_name', '--output-json', 'output.json', '--task-output-dir',
+        task_output_dir, '--profdata-dir', profdata_dir, '--llvm-profdata',
+        'llvm-profdata', 'a.json', 'b.json', 'c.json', '--test-target-name',
+        'v8_unittests', '--sparse',
+        '--javascript-coverage-dir', 'output/dir/devtools_code_coverage',
+        '--merged-js-cov-filename', 'path/js/cov/filename'
+    ]
+    with mock.patch.object(merger, 'merge_profiles') as mock_merge:
+      mock_merge.return_value = None, None
+      with mock.patch.object(sys, 'argv', args):
+        with mock.patch.object(subprocess, 'call') as mock_exec_cmd:
+          with mock.patch.object(os.path, 'join') as mock_os_path_join:
+            mock_merge_js_results_path = 'path/to/js/merge_js_results.py'
+            mock_os_path_join.return_value = mock_merge_js_results_path
+            python_exec = sys.executable
+            merge_results.main()
+
+            mock_exec_cmd.assert_called_with(
+                [python_exec, mock_merge_js_results_path, '--task-output-dir',
+                 task_output_dir, '--javascript-coverage-dir',
+                 'output/dir/devtools_code_coverage',
+                 '--merged-js-cov-filename', 'path/js/cov/filename'])
+
   def test_argparse_sparse(self):
     """Ensure that sparse flag defaults to true, and is set to correct value"""
     # Basic required args

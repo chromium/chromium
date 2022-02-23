@@ -226,6 +226,7 @@ enum KeyboardCode {
   VKEY_MICROPHONE_MUTE_TOGGLE = 0x9F,
   VKEY_BRIGHTNESS_DOWN = 0xD8,
   VKEY_BRIGHTNESS_UP = 0xD9,
+  VKEY_KBD_BACKLIGHT_TOGGLE = 0xB8,
   VKEY_KBD_BRIGHTNESS_DOWN = 0xDA,
   VKEY_KBD_BRIGHTNESS_UP = 0xE8,
 
@@ -241,6 +242,15 @@ enum KeyboardCode {
   // represent them.
   VKEY_MEDIA_PLAY = 0xE9,
   VKEY_MEDIA_PAUSE = 0xEA,
+
+  // Application keys.
+  VKEY_NEW = 0xEB,
+  VKEY_CLOSE = 0xEC,
+
+  // Emoji Picker.
+  VKEY_EMOJI_PICKER = 0xED,
+  // Start dictation.
+  VKEY_DICTATE = 0xEE,
 };
 
 }  // namespace ui

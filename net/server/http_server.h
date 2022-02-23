@@ -12,7 +12,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "net/http/http_status_code.h"
@@ -130,7 +130,7 @@ class HttpServer {
 
   const std::unique_ptr<ServerSocket> server_socket_;
   std::unique_ptr<StreamSocket> accepted_socket_;
-  HttpServer::Delegate* const delegate_;
+  const raw_ptr<HttpServer::Delegate> delegate_;
 
   int last_id_;
   std::map<int, std::unique_ptr<HttpConnection>> id_to_connection_;

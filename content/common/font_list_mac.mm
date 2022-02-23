@@ -245,7 +245,8 @@ std::unique_ptr<base::ListValue> GetFontList_SlowBlocking() {
       font_list.emplace_back(std::move(font_list_item));
     }
 
-    return std::make_unique<base::ListValue>(base::Value(font_list).TakeList());
+    return std::make_unique<base::ListValue>(
+        base::Value(font_list).TakeListDeprecated());
   }
 }
 

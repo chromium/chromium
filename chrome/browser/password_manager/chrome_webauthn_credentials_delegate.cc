@@ -4,19 +4,23 @@
 
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate.h"
 
+#include "base/callback.h"
 #include "base/feature_list.h"
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
 #include "content/public/common/content_features.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/webauthn/authenticator_request_scheduler.h"
 #include "chrome/browser/webauthn/chrome_authenticator_request_delegate.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 ChromeWebAuthnCredentialsDelegate::ChromeWebAuthnCredentialsDelegate(
     ChromePasswordManagerClient* client)
     : client_(client) {}
+
+ChromeWebAuthnCredentialsDelegate::~ChromeWebAuthnCredentialsDelegate() =
+    default;
 
 bool ChromeWebAuthnCredentialsDelegate::IsWebAuthnAutofillEnabled() const {
   return base::FeatureList::IsEnabled(features::kWebAuthConditionalUI);
@@ -24,7 +28,7 @@ bool ChromeWebAuthnCredentialsDelegate::IsWebAuthnAutofillEnabled() const {
 
 void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
     std::string backend_id) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
           client_->web_contents());
@@ -33,19 +37,23 @@ void ChromeWebAuthnCredentialsDelegate::SelectWebAuthnCredential(
   }
   authenticator_delegate->dialog_model()->OnAccountPreselected(
       std::vector<uint8_t>(backend_id.begin(), backend_id.end()));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
-std::vector<autofill::Suggestion>
+const std::vector<autofill::Suggestion>&
 ChromeWebAuthnCredentialsDelegate::GetWebAuthnSuggestions() const {
-#if defined(OS_ANDROID)
-  return {};
-#else
+  return suggestions_;
+}
+
+void ChromeWebAuthnCredentialsDelegate::RetrieveWebAuthnSuggestions(
+    base::OnceClosure callback) {
+#if !BUILDFLAG(IS_ANDROID)
   ChromeAuthenticatorRequestDelegate* authenticator_delegate =
       AuthenticatorRequestScheduler::GetRequestDelegate(
           client_->web_contents());
   if (!authenticator_delegate) {
-    return {};
+    std::move(callback).Run();
+    return;
   }
   std::vector<autofill::Suggestion> suggestions;
   for (const auto& credential :
@@ -68,6 +76,8 @@ ChromeWebAuthnCredentialsDelegate::GetWebAuthnSuggestions() const {
         std::string(credential.id.begin(), credential.id.end());
     suggestions.push_back(std::move(suggestion));
   }
-  return suggestions;
+  suggestions_ = std::move(suggestions);
 #endif
+
+  std::move(callback).Run();
 }

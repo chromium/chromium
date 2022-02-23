@@ -30,8 +30,6 @@
 #include "ios/chrome/browser/translate/translate_service_ios.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ios/web/public/browser_state.h"
-#include "ios/web/public/navigation/navigation_item.h"
-#include "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_state.h"
 #include "third_party/metrics_proto/translate_event.pb.h"
 #include "url/gurl.h"
@@ -61,9 +59,7 @@ ChromeIOSTranslateClient::ChromeIOSTranslateClient(web::WebState* web_state)
               ChromeBrowserState::FromBrowserState(
                   web_state->GetBrowserState()))
               ->GetPrimaryModel())),
-      translate_driver_(web_state,
-                        web_state->GetNavigationManager(),
-                        translate_manager_.get()) {
+      translate_driver_(web_state, translate_manager_.get()) {
   web_state_->AddObserver(this);
 }
 

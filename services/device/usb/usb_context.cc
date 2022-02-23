@@ -8,7 +8,6 @@
 
 #include "base/atomicops.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/threading/simple_thread.h"
 #include "base/threading/thread_restrictions.h"
 #include "services/device/usb/usb_error.h"

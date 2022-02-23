@@ -51,9 +51,8 @@ class HeadlessClientBrowserTest : public HeadlessAsyncDevTooledBrowserTest,
 
   void FinishTest(std::unique_ptr<runtime::EvaluateResult> result) {
     const base::Value* value = result->GetResult()->GetValue();
-    std::string str;
-    EXPECT_TRUE(value->GetAsString(&str));
-    EXPECT_EQ("about:blank", str);
+    EXPECT_TRUE(value->is_string());
+    EXPECT_EQ("about:blank", value->GetString());
     session_client_.reset();
     FinishAsynchronousTest();
   }

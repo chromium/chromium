@@ -60,6 +60,7 @@
 #include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -355,7 +356,7 @@ bool SelectionController::HandleSingleClick(
   // existing selection so we can allow for text dragging.
   if (LocalFrameView* view = frame_->View()) {
     const PhysicalOffset v_point(view->ConvertFromRootFrame(
-        FlooredIntPoint(event.Event().PositionInRootFrame())));
+        gfx::ToFlooredPoint(event.Event().PositionInRootFrame())));
     if (!extend_selection && Selection().Contains(v_point)) {
       mouse_down_was_single_click_in_selection_ = true;
       if (!event.Event().FromTouch())
@@ -460,12 +461,11 @@ bool SelectionController::HandleTapInsideSelection(
   if (Selection().IsHandleVisible())
     return false;
 
-  // In CAP, we need to trigger a repaint on the selection endpoints if the
-  // selection is tapped when the selection handle was previously not visible.
-  // Repainting will record the painted selection bounds and send it through
-  // the pipeline so the handles show up in the next frame after the tap.
-  if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled())
-    MarkSelectionEndpointsForRepaint(selection);
+  // We need to trigger a repaint on the selection endpoints if the selection is
+  // tapped when the selection handle was previously not visible. Repainting
+  // will record the painted selection bounds and send it through the pipeline
+  // so the handles show up in the next frame after the tap.
+  MarkSelectionEndpointsForRepaint(selection);
 
   const bool did_select = UpdateSelectionForMouseDownDispatchingSelectStart(
       event.InnerNode(), selection,
@@ -1031,8 +1031,7 @@ void SelectionController::HandleMouseDraggedEvent(
   if (!Selection().IsAvailable())
     return;
   if (selection_state_ != SelectionState::kExtendedSelection) {
-    HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                           HitTestRequest::kRetargetForInert);
+    HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive);
     HitTestLocation location(mouse_down_pos);
     HitTestResult result(request, location);
     frame_->GetDocument()->GetLayoutView()->HitTest(location, result);
@@ -1045,8 +1044,8 @@ void SelectionController::HandleMouseDraggedEvent(
 }
 
 void SelectionController::UpdateSelectionForMouseDrag(
-    const PhysicalOffset& drag_start_pos,
-    const PhysicalOffset& last_known_mouse_position) {
+    const PhysicalOffset& drag_start_pos_in_root_frame,
+    const PhysicalOffset& last_known_mouse_position_in_root_frame) {
   LocalFrameView* view = frame_->View();
   if (!view)
     return;
@@ -1055,13 +1054,13 @@ void SelectionController::UpdateSelectionForMouseDrag(
     return;
 
   HitTestRequest request(HitTestRequest::kReadOnly | HitTestRequest::kActive |
-                         HitTestRequest::kMove |
-                         HitTestRequest::kRetargetForInert);
-  HitTestLocation location(view->ViewportToFrame(last_known_mouse_position));
+                         HitTestRequest::kMove);
+  HitTestLocation location(
+      view->ConvertFromRootFrame(last_known_mouse_position_in_root_frame));
   HitTestResult result(request, location);
   layout_view->HitTest(location, result);
-  UpdateSelectionForMouseDrag(result, drag_start_pos,
-                              last_known_mouse_position);
+  UpdateSelectionForMouseDrag(result, drag_start_pos_in_root_frame,
+                              last_known_mouse_position_in_root_frame);
 }
 
 bool SelectionController::HandleMouseReleaseEvent(
@@ -1080,7 +1079,7 @@ bool SelectionController::HandleMouseReleaseEvent(
   // editing, place the caret.
   if (mouse_down_was_single_click_in_selection_ &&
       selection_state_ != SelectionState::kExtendedSelection &&
-      drag_start_pos == PhysicalOffset(FlooredIntPoint(
+      drag_start_pos == PhysicalOffset(gfx::ToFlooredPoint(
                             event.Event().PositionInRootFrame())) &&
       Selection().ComputeVisibleSelectionInDOMTreeDeprecated().IsRange() &&
       event.Event().button != WebPointerProperties::Button::kRight) {
@@ -1242,8 +1241,12 @@ void SelectionController::UpdateSelectionForContextMenuEvent(
   if (TextFragmentHandler::IsOverTextFragment(hit_test_result))
     return;
 
-  if (mouse_event->GetMenuSourceType() == kMenuSourceLongPress)
+  // Opening the context menu, triggered by long press or keyboard, should not
+  // change the selected text.
+  if (mouse_event->GetMenuSourceType() == kMenuSourceLongPress ||
+      mouse_event->GetMenuSourceType() == kMenuSourceKeyboard) {
     return;
+  }
 
   SelectClosestWordOrLinkFromMouseEvent(mouse_event, hit_test_result);
 }
@@ -1259,7 +1262,7 @@ void SelectionController::PassMousePressEventToSubframe(
   // really strange (having the whole frame be greyed out), so we deselect the
   // selection.
   PhysicalOffset p(frame_->View()->ConvertFromRootFrame(
-      FlooredIntPoint(mev.Event().PositionInRootFrame())));
+      gfx::ToFlooredPoint(mev.Event().PositionInRootFrame())));
   if (!Selection().Contains(p))
     return;
 

@@ -5,7 +5,6 @@
 #ifndef CONTENT_WEB_TEST_BROWSER_WEB_TEST_BROWSER_CONTEXT_H_
 #define CONTENT_WEB_TEST_BROWSER_WEB_TEST_BROWSER_CONTEXT_H_
 
-#include "base/compiler_specific.h"
 #include "content/shell/browser/shell_browser_context.h"
 
 namespace device {

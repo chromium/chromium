@@ -5,6 +5,7 @@
 #include "media/base/renderer_factory_selector.h"
 
 #include "base/logging.h"
+#include "build/build_config.h"
 
 namespace media {
 
@@ -99,7 +100,7 @@ RendererFactory* RendererFactorySelector::GetCurrentFactory() {
   return current_factory;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RendererFactorySelector::StartRequestRemotePlayStateCB(
     RequestRemotePlayStateChangeCB callback_request) {
   DCHECK(!remote_play_state_change_cb_request_);

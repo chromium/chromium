@@ -47,6 +47,7 @@
         }
         function onPageLoaded()
         {
+            queuedOutput.sort();
             for (var i = 0; i < queuedOutput.length; ++i)
                 output(queuedOutput[i]);
             nextTest();

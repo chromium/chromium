@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/repository/unauthenticated_http_fetcher.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "services/network/public/cpp/resource_request.h"
@@ -16,15 +17,6 @@ namespace {
 // Max size set to 2MB.  This is well over the expected maximum for our
 // expected responses, however it can be increased if needed in the future.
 constexpr int kMaxDownloadBytes = 2 * 1024 * 1024;
-
-// Helper function to extract response code from |SimpleURLLoader|.
-int GetResponseCode(network::SimpleURLLoader* simple_loader) {
-  if (simple_loader->ResponseInfo() && simple_loader->ResponseInfo()->headers) {
-    return simple_loader->ResponseInfo()->headers->response_code();
-  }
-
-  return -1;
-}
 
 }  // namespace
 
@@ -60,7 +52,7 @@ void UnauthenticatedHttpFetcher::ExecuteGetRequest(
       QuickPairBrowserDelegate::Get()->GetURLLoaderFactory();
   if (!url_loader_factory) {
     QP_LOG(WARNING) << __func__ << ": No SharedURLLoaderFactory is available.";
-    std::move(callback).Run(nullptr);
+    std::move(callback).Run(nullptr, nullptr);
     return;
   }
 
@@ -77,21 +69,25 @@ void UnauthenticatedHttpFetcher::OnComplete(
     std::unique_ptr<network::SimpleURLLoader> simple_loader,
     FetchCompleteCallback callback,
     std::unique_ptr<std::string> response_body) {
-  if (simple_loader->NetError() == net::OK && response_body) {
+  std::unique_ptr<FastPairHttpResult> http_result =
+      std::make_unique<FastPairHttpResult>(
+          /*net_error=*/simple_loader->NetError(),
+          /*head=*/simple_loader->ResponseInfo());
+
+  if (http_result->IsSuccess()) {
     QP_LOG(VERBOSE) << "Successfully fetched "
                     << simple_loader->GetContentSize() << " bytes from "
                     << simple_loader->GetFinalURL();
-    std::move(callback).Run(std::move(response_body));
+    std::move(callback).Run(std::move(response_body), std::move(http_result));
     return;
   }
 
   QP_LOG(WARNING) << "Downloading to string from "
-                  << simple_loader->GetFinalURL() << " failed with error code: "
-                  << GetResponseCode(simple_loader.get())
-                  << " with network error: " << simple_loader->NetError();
+                  << simple_loader->GetFinalURL()
+                  << " failed: " << http_result->ToString();
 
   // TODO(jonmann): Implement retries with back-off.
-  std::move(callback).Run(nullptr);
+  std::move(callback).Run(nullptr, std::move(http_result));
 }
 
 }  // namespace quick_pair

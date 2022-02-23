@@ -38,8 +38,7 @@ MATCHER_P(Equals, value, "") {
 
 // Creates a media route whose ID is |kRouteId|.
 MediaRoute CreateMediaRoute() {
-  MediaRoute route(kRouteId, MediaSource(kSource), kSinkId, kDescription, true,
-                   true);
+  MediaRoute route(kRouteId, MediaSource(kSource), kSinkId, kDescription, true);
   route.set_presentation_id(kPresentationId);
   route.set_controller_type(RouteControllerType::kGeneric);
   return route;
@@ -142,10 +141,10 @@ void MediaRouterMojoTest::ProvideTestRoute(
     mojom::MediaRouteProviderId provider_id,
     const MediaRoute::Id& route_id) {
   if (!routes_observer_)
-    routes_observer_ = std::make_unique<MediaRoutesObserver>(router(), kSource);
+    routes_observer_ = std::make_unique<MediaRoutesObserver>(router());
   MediaRoute route = CreateMediaRoute();
   route.set_media_route_id(route_id);
-  router()->OnRoutesUpdated(provider_id, {route}, kSource, {});
+  router()->OnRoutesUpdated(provider_id, {route});
 }
 
 void MediaRouterMojoTest::ProvideTestSink(
@@ -165,7 +164,7 @@ void MediaRouterMojoTest::ProvideTestSink(
 
 void MediaRouterMojoTest::TestCreateRoute() {
   MediaSource media_source(kSource);
-  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription, true,
+  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription,
                             true);
   expected_route.set_presentation_id(kPresentationId);
   expected_route.set_controller_type(RouteControllerType::kGeneric);
@@ -201,7 +200,7 @@ void MediaRouterMojoTest::TestCreateRoute() {
 
 void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
   MediaSource media_source(kSource);
-  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription, true,
+  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription,
                             true);
   expected_route.set_presentation_id(kPresentationId);
   expected_route.set_controller_type(RouteControllerType::kGeneric);
@@ -211,8 +210,7 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
   // is a route to join.
   std::vector<MediaRoute> routes;
   routes.push_back(route);
-  router()->OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, routes,
-                            std::string(), std::vector<std::string>());
+  router()->OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, routes);
   EXPECT_TRUE(router()->HasJoinableRoute());
 
   // Use a lambda function as an invocation target here to work around
@@ -240,43 +238,6 @@ void MediaRouterMojoTest::TestJoinRoute(const std::string& presentation_id) {
                       base::BindOnce(&RouteResponseCallbackHandler::Invoke,
                                      base::Unretained(&handler)),
                       base::Milliseconds(kTimeoutMillis), false);
-  base::RunLoop().RunUntilIdle();
-}
-
-void MediaRouterMojoTest::TestConnectRouteByRouteId() {
-  MediaSource media_source(kSource);
-  MediaRoute expected_route(kRouteId, media_source, kSinkId, kDescription, true,
-                            true);
-  expected_route.set_presentation_id(kPresentationId);
-  expected_route.set_controller_type(RouteControllerType::kGeneric);
-  MediaRoute route = CreateMediaRoute();
-  ProvideTestRoute(mojom::MediaRouteProviderId::CAST, kRouteId);
-
-  // Use a lambda function as an invocation target here to work around
-  // a limitation with GMock::Invoke that prevents it from using move-only types
-  // in runnable parameter lists.
-  EXPECT_CALL(mock_cast_provider_,
-              ConnectRouteByRouteIdInternal(
-                  kSource, kRouteId, _, url::Origin::Create(GURL(kOrigin)),
-                  kInvalidTabId, base::Milliseconds(kTimeoutMillis), false, _))
-      .WillOnce(Invoke(
-          [&route](const std::string& source, const std::string& route_id,
-                   const std::string& presentation_id,
-                   const url::Origin& origin, int tab_id,
-                   base::TimeDelta timeout, bool incognito,
-                   mojom::MediaRouteProvider::JoinRouteCallback& cb) {
-            std::move(cb).Run(route, nullptr, std::string(),
-                              RouteRequestResult::OK);
-          }));
-
-  RouteResponseCallbackHandler handler;
-  EXPECT_CALL(handler, DoInvoke(Pointee(expected_route), Not(""), "",
-                                RouteRequestResult::OK, _));
-  router()->ConnectRouteByRouteId(
-      kSource, kRouteId, url::Origin::Create(GURL(kOrigin)), nullptr,
-      base::BindOnce(&RouteResponseCallbackHandler::Invoke,
-                     base::Unretained(&handler)),
-      base::Milliseconds(kTimeoutMillis), false);
   base::RunLoop().RunUntilIdle();
 }
 

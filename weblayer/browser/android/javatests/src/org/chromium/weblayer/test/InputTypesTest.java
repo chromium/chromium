@@ -5,10 +5,8 @@
 package org.chromium.weblayer.test;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.ClipData;
-import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
@@ -18,6 +16,7 @@ import android.os.Handler;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 
+import androidx.annotation.RequiresApi;
 import androidx.core.app.ActivityCompat;
 import androidx.test.filters.SmallTest;
 
@@ -29,11 +28,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.Function;
+import org.chromium.base.ContextUtils;
+import org.chromium.base.test.util.ApplicationContextWrapper;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
-import org.chromium.base.test.util.InMemorySharedPreferencesContext;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.base.test.util.UrlUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -88,7 +87,7 @@ public class InputTypesTest {
 
     private FileIntentInterceptor mIntentInterceptor = new FileIntentInterceptor();
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private class PermissionCompatDelegate implements ActivityCompat.PermissionCompatDelegate {
         public int mResult = PackageManager.PERMISSION_DENIED;
         private CallbackHelper mCallbackHelper = new CallbackHelper();
@@ -129,43 +128,45 @@ public class InputTypesTest {
 
     @Before
     public void setUp() throws Exception {
-        Bundle extras = new Bundle();
-        // We need to override the context with which to create WebLayer.
-        extras.putBoolean(InstrumentationActivity.EXTRA_CREATE_WEBLAYER, false);
-
-        Function<Context, Context> applicationContextBuilder = (baseContext) -> {
-            return new InMemorySharedPreferencesContext(baseContext) {
-                @Override
-                public int checkPermission(String permission, int pid, int uid) {
-                    if (permission.equals(Manifest.permission.CAMERA)) {
-                        return mCameraPermission;
+        ContextUtils.initApplicationContextForTests(
+                new ApplicationContextWrapper(ContextUtils.getApplicationContext()) {
+                    @Override
+                    public int checkPermission(String permission, int pid, int uid) {
+                        if (permission.equals(Manifest.permission.CAMERA)) {
+                            return mCameraPermission;
+                        }
+                        return super.checkPermission(permission, pid, uid);
                     }
-                    return getBaseContext().checkPermission(permission, pid, uid);
-                }
-            };
-        };
-        InstrumentationActivity.setActivityContextBuilder(applicationContextBuilder);
+                });
+        ActivityCompat.setPermissionCompatDelegate(mPermissionCompatDelegate);
 
-        InstrumentationActivity activity = mActivityTestRule.launchShell(extras);
-        TestThreadUtils.runOnUiThreadBlocking(
-                () -> { activity.loadWebLayerSync(activity.getApplicationContext()); });
-        mActivityTestRule.navigateAndWait(mActivityTestRule.getTestDataURL("input_types.html"));
         mTestDir = new File(UrlUtils.getIsolatedTestFilePath("weblayer"));
         if (!mTestDir.exists()) mTestDir.mkdir();
         mTempFile = File.createTempFile("file", null, mTestDir);
-        activity.setIntentInterceptor(mIntentInterceptor);
-        ActivityCompat.setPermissionCompatDelegate(mPermissionCompatDelegate);
-
         Intent response = new Intent();
         response.setData(Uri.fromFile(mTempFile));
         mIntentInterceptor.setResponse(Activity.RESULT_OK, response);
+
+        Bundle extras = new Bundle();
+        // We need to override the context with which to create WebLayer.
+        extras.putBoolean(InstrumentationActivity.EXTRA_CREATE_WEBLAYER, false);
+        InstrumentationActivity activity = mActivityTestRule.launchShell(extras);
+        activity.setIntentInterceptor(mIntentInterceptor);
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> activity.loadWebLayerSync(ContextUtils.getApplicationContext()));
+        mActivityTestRule.navigateAndWait(mActivityTestRule.getTestDataURL("input_types.html"));
     }
 
     @After
     public void tearDown() {
-        mTempFile.delete();
-        mTestDir.delete();
         ActivityCompat.setPermissionCompatDelegate(null);
+        if (mTempFile != null) {
+            mTempFile.delete();
+        }
+        if (mTestDir != null) {
+            mTestDir.delete();
+        }
     }
 
     @Test

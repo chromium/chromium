@@ -24,42 +24,14 @@ bool SuppressError(const std::string& dbus_error_message) {
 namespace chromeos {
 namespace network_handler {
 
-// None of these messages are user-facing, they should only appear in logs.
+// This message is not user-facing, it should only appear in logs.
 const char kDBusFailedError[] = "Error.DBusFailed";
-const char kDBusFailedErrorMessage[] = "DBus call failed.";
-
-// These are names of fields in the error data dictionary for ErrorCallback.
-const char kErrorName[] = "errorName";
-const char kErrorDetail[] = "errorDetail";
-const char kDbusErrorName[] = "dbusErrorName";
-const char kDbusErrorMessage[] = "dbusErrorMessage";
-const char kPath[] = "path";
 
 void RunErrorCallback(ErrorCallback error_callback,
-                      const std::string& path,
-                      const std::string& error_name,
-                      const std::string& error_detail) {
+                      const std::string& error_name) {
   if (error_callback.is_null())
     return;
-  std::move(error_callback)
-      .Run(error_name,
-           CreateDBusErrorData(path, error_name, error_detail, "", ""));
-}
-
-std::unique_ptr<base::DictionaryValue> CreateDBusErrorData(
-    const std::string& path,
-    const std::string& error_name,
-    const std::string& error_detail,
-    const std::string& dbus_error_name,
-    const std::string& dbus_error_message) {
-  auto error_data = std::make_unique<base::DictionaryValue>();
-  error_data->SetString(kErrorName, error_name);
-  error_data->SetString(kErrorDetail, error_detail);
-  error_data->SetString(kDbusErrorName, dbus_error_name);
-  error_data->SetString(kDbusErrorMessage, dbus_error_message);
-  if (!path.empty())
-    error_data->SetString(kPath, path);
-  return error_data;
+  std::move(error_callback).Run(error_name);
 }
 
 void ShillErrorCallbackFunction(const std::string& error_name,
@@ -80,10 +52,7 @@ void ShillErrorCallbackFunction(const std::string& error_name,
 
   if (error_callback.is_null())
     return;
-  std::move(error_callback)
-      .Run(error_name,
-           CreateDBusErrorData(path, error_name, detail, dbus_error_name,
-                               dbus_error_message));
+  std::move(error_callback).Run(error_name);
 }
 
 }  // namespace network_handler

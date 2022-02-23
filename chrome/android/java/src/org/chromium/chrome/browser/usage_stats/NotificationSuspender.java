@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser.usage_stats;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -16,6 +15,8 @@ import android.os.Build;
 import android.service.notification.StatusBarNotification;
 import android.text.TextUtils;
 import android.webkit.URLUtil;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Promise;
@@ -115,7 +116,7 @@ public class NotificationSuspender {
         NotificationSuspenderJni.get().reDisplayNotifications(mProfile, origins);
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private List<NotificationWrapper> getActiveNotificationsForFqdns(List<String> fqdns) {
         List<NotificationWrapper> notifications = new ArrayList<>();
 
@@ -134,18 +135,18 @@ public class NotificationSuspender {
         return notifications;
     }
 
-    @TargetApi(Build.VERSION_CODES.P)
+    @RequiresApi(Build.VERSION_CODES.P)
     private Bitmap getBitmapFromIcon(Icon icon) {
         if (icon == null || icon.getType() != Icon.TYPE_BITMAP) return null;
         return ((BitmapDrawable) icon.loadDrawable(mContext)).getBitmap();
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Bitmap getNotificationIcon(Notification notification) {
         return getBitmapFromIcon(notification.getLargeIcon());
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Bitmap getNotificationBadge(Notification notification) {
         return getBitmapFromIcon(notification.getSmallIcon());
     }

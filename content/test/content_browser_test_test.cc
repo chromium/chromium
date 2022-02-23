@@ -26,6 +26,7 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -51,8 +52,8 @@ namespace content {
 // TODO(mac): figure out why symbolization doesn't happen in the renderer.
 // http://crbug.com/521456
 // TODO(win): send PDB files for component build. http://crbug.com/521459
-#if !defined(OFFICIAL_BUILD) && !defined(OS_ANDROID) && !defined(OS_MAC) && \
-    !(defined(COMPONENT_BUILD) && defined(OS_WIN))
+#if !defined(OFFICIAL_BUILD) && !BUILDFLAG(IS_ANDROID) && \
+    !BUILDFLAG(IS_MAC) && !(defined(COMPONENT_BUILD) && BUILDFLAG(IS_WIN))
 
 namespace {
 
@@ -90,7 +91,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 
 // Non-Windows sanitizer builds do not symbolize stack traces internally, so use
 // this macro to avoid looking for symbols from the stack trace.
-#if !defined(OS_WIN) &&                                       \
+#if !BUILDFLAG(IS_WIN) &&                                     \
     (defined(ADDRESS_SANITIZER) || defined(LEAK_SANITIZER) || \
      defined(MEMORY_SANITIZER) || defined(THREAD_SANITIZER))
 #define USE_EXTERNAL_SYMBOLIZER 1
@@ -99,7 +100,7 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 #endif
 
 // Flaky on Linux: crbug.com/1223763
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_RendererCrashCallStack DISABLED_RendererCrashCallStack
 #else
 #define MAYBE_RendererCrashCallStack RendererCrashCallStack
@@ -108,8 +109,6 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_RendererCrash) {
 // Tests that browser tests print the callstack when a child process crashes.
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RendererCrashCallStack) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::CommandLine new_test = CreateCommandLine();
   new_test.AppendSwitchASCII(base::kGTestFilterFlag,
@@ -155,21 +154,25 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MANUAL_BrowserCrash) {
 
 // Tests that browser tests print the callstack on asserts.
 // Disabled on Windows crbug.com/1034784
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_BrowserCrashCallStack DISABLED_BrowserCrashCallStack
 #else
 #define MAYBE_BrowserCrashCallStack BrowserCrashCallStack
 #endif
 IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_BrowserCrashCallStack) {
   base::ScopedAllowBlockingForTesting allow_blocking;
-  base::ScopedTempDir temp_dir;
-  ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
   base::CommandLine new_test = CreateCommandLine();
   new_test.AppendSwitchASCII(base::kGTestFilterFlag,
                              "ContentBrowserTest.MANUAL_BrowserCrash");
   new_test.AppendSwitch(switches::kRunManualTestsFlag);
   new_test.AppendSwitch(switches::kSingleProcessTests);
+  // A browser process immediate crash can race the initialization of the
+  // network service process and leave the process hanging, so run the network
+  // service in-process.
+  new_test.AppendSwitchASCII(switches::kEnableFeatures,
+                             features::kNetworkServiceInProcess.name);
+
   std::string output;
   base::GetAppOutputAndError(new_test, &output);
 
@@ -208,9 +211,9 @@ IN_PROC_BROWSER_TEST_F(MockContentBrowserTest, DISABLED_CrashTest) {
 }
 
 // This is disabled due to flakiness: https://crbug.com/1086372
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_RunMockTests DISABLED_RunMockTests
-#elif defined(OS_LINUX) && defined(THREAD_SANITIZER)
+#elif BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER)
 // This is disabled because it fails on bionic: https://crbug.com/1202220
 #define MAYBE_RunMockTests DISABLED_RunMockTests
 #else
@@ -248,9 +251,9 @@ IN_PROC_BROWSER_TEST_F(ContentBrowserTest, MAYBE_RunMockTests) {
 
   val = root->FindListKey("per_iteration_data");
   ASSERT_TRUE(val);
-  ASSERT_EQ(1u, val->GetList().size());
+  ASSERT_EQ(1u, val->GetListDeprecated().size());
 
-  base::Value* iteration_val = &(val->GetList()[0]);
+  base::Value* iteration_val = &(val->GetListDeprecated()[0]);
   ASSERT_TRUE(iteration_val);
   ASSERT_TRUE(iteration_val->is_dict());
   EXPECT_EQ(3u, iteration_val->DictSize());

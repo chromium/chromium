@@ -110,6 +110,15 @@ class LauncherNudgeControllerTest : public AshTestBase {
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+TEST_F(LauncherNudgeControllerTest, DisableNudgeForGuestSession) {
+  // Simulate a guest user logging in, where the session is ephemeral.
+  SimulateGuestLogin();
+
+  // Do not show the nudge in the guest session.
+  EXPECT_FALSE(nudge_controller_->IsRecheckTimerRunningForTesting());
+  EXPECT_EQ(0, GetNudgeShownCount());
+}
+
 TEST_F(LauncherNudgeControllerTest, DisableNudgeForExistingUser) {
   // Simulate a existing user logging in.
   SimulateUserLogin("user@gmail.com");

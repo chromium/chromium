@@ -12,6 +12,7 @@
 #include "net/cert/cert_verify_result.h"
 #include "net/cert/crl_set.h"
 #include "net/cert/internal/test_helpers.h"
+#include "net/cert/mock_cert_net_fetcher.h"
 #include "net/cert/test_root_certs.h"
 #include "net/cert/x509_certificate.h"
 #include "net/cert/x509_util.h"
@@ -32,57 +33,9 @@ namespace net {
 
 namespace {
 
-// A CertNetFetcher::Request whose WaitForResult() method always
-// immediately returns the |error| and |bytes| provided in its
-// constructor.
-class TestCertNetFetcherRequest : public CertNetFetcher::Request {
- public:
-  TestCertNetFetcherRequest(Error error, const std::vector<uint8_t>& bytes)
-      : error_(error), bytes_(bytes) {}
-  ~TestCertNetFetcherRequest() override {}
-
-  void WaitForResult(Error* error, std::vector<uint8_t>* bytes) override {
-    *error = error_;
-    *bytes = bytes_;
-  }
-
- private:
-  Error error_;
-  std::vector<uint8_t> bytes_;
-};
-
-class MockCertNetFetcher : public CertNetFetcher {
- public:
-  MockCertNetFetcher() {}
-
-  MOCK_METHOD0(Shutdown, void());
-  MOCK_METHOD3(FetchCaIssuers, std::unique_ptr<Request>(const GURL&, int, int));
-  MOCK_METHOD3(FetchCrl, std::unique_ptr<Request>(const GURL&, int, int));
-  MOCK_METHOD3(FetchOcsp, std::unique_ptr<Request>(const GURL&, int, int));
-
- private:
-  ~MockCertNetFetcher() override {}
-};
-
-std::unique_ptr<CertNetFetcher::Request> CreateMockRequestFromX509Certificate(
-    Error error,
-    const scoped_refptr<X509Certificate>& cert) {
-  base::StringPiece der =
-      x509_util::CryptoBufferAsStringPiece(cert->cert_buffer());
-  return std::make_unique<TestCertNetFetcherRequest>(
-      error, std::vector<uint8_t>(der.data(), der.data() + der.length()));
-}
-
-std::unique_ptr<CertNetFetcher::Request> CreateMockRequestWithError(
-    Error error) {
-  return std::make_unique<TestCertNetFetcherRequest>(error,
-                                                     std::vector<uint8_t>({}));
-}
-
 std::unique_ptr<CertNetFetcher::Request>
 CreateMockRequestWithInvalidCertificate() {
-  return std::make_unique<TestCertNetFetcherRequest>(
-      OK, std::vector<uint8_t>({1, 2, 3}));
+  return MockCertNetFetcherRequest::Create(std::vector<uint8_t>({1, 2, 3}));
 }
 
 ::testing::AssertionResult ReadTestPem(const std::string& file_name,
@@ -223,12 +176,12 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, OneFileAndOneHTTPURL) {
   // intermediate itself contains an AIA URL, it should not be fetched because
   // |root_| is in the test trust store.
   EXPECT_CALL(*fetcher_, FetchCaIssuers(GURL("file:///dev/null"), _, _))
-      .WillOnce(Return(
-          ByMove(CreateMockRequestWithError(ERR_DISALLOWED_URL_SCHEME))));
+      .WillOnce(Return(ByMove(
+          MockCertNetFetcherRequest::Create(ERR_DISALLOWED_URL_SCHEME))));
   EXPECT_CALL(*fetcher_,
               FetchCaIssuers(GURL("http://url-for-aia2/I2.foo"), _, _))
-      .WillOnce(Return(
-          ByMove(CreateMockRequestFromX509Certificate(OK, intermediate))));
+      .WillOnce(Return(ByMove(
+          MockCertNetFetcherRequest::Create(intermediate->cert_buffer()))));
 
   CertVerifyResult verify_result;
   EXPECT_EQ(
@@ -251,8 +204,8 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
       ImportCertFromFile(GetTestCertsDirectory(), "ok_cert.pem");
 
   EXPECT_CALL(*fetcher_, FetchCaIssuers(GURL("http://url-for-aia/I.cer"), _, _))
-      .WillOnce(Return(
-          ByMove(CreateMockRequestFromX509Certificate(OK, bad_intermediate))));
+      .WillOnce(Return(ByMove(
+          MockCertNetFetcherRequest::Create(bad_intermediate->cert_buffer()))));
 
   CertVerifyResult verify_result;
   EXPECT_EQ(
@@ -273,7 +226,7 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
   ASSERT_TRUE(ReadTestCert("target_one_aia.pem", &cert));
 
   EXPECT_CALL(*fetcher_, FetchCaIssuers(GURL("http://url-for-aia/I.cer"), _, _))
-      .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))));
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))));
 
   CertVerifyResult verify_result;
   EXPECT_EQ(
@@ -324,12 +277,12 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, TwoHTTPURLs) {
   // contains an AIA URL, it should not be fetched because |root_| is in the
   // trust store.
   EXPECT_CALL(*fetcher_, FetchCaIssuers(GURL("http://url-for-aia/I.cer"), _, _))
-      .WillOnce(
-          Return(ByMove(CreateMockRequestFromX509Certificate(OK, unrelated))));
+      .WillOnce(Return(
+          ByMove(MockCertNetFetcherRequest::Create(unrelated->cert_buffer()))));
   EXPECT_CALL(*fetcher_,
               FetchCaIssuers(GURL("http://url-for-aia2/I2.foo"), _, _))
-      .WillOnce(Return(
-          ByMove(CreateMockRequestFromX509Certificate(OK, intermediate))));
+      .WillOnce(Return(ByMove(
+          MockCertNetFetcherRequest::Create(intermediate->cert_buffer()))));
 
   CertVerifyResult verify_result;
   EXPECT_EQ(
@@ -358,11 +311,12 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching,
   // Expect two fetches, the first of which returns an intermediate that itself
   // has an AIA URL.
   EXPECT_CALL(*fetcher_, FetchCaIssuers(GURL("http://url-for-aia/I.cer"), _, _))
-      .WillOnce(Return(
-          ByMove(CreateMockRequestFromX509Certificate(OK, intermediate))));
+      .WillOnce(Return(ByMove(
+          MockCertNetFetcherRequest::Create(intermediate->cert_buffer()))));
   EXPECT_CALL(*fetcher_,
               FetchCaIssuers(GURL("http://url-for-aia/Root.cer"), _, _))
-      .WillOnce(Return(ByMove(CreateMockRequestFromX509Certificate(OK, root))));
+      .WillOnce(Return(
+          ByMove(MockCertNetFetcherRequest::Create(root->cert_buffer()))));
 
   CertVerifyResult verify_result;
   // This chain results in an AUTHORITY_INVALID root because |root_| is not
@@ -384,11 +338,11 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, MaxAIAFetches) {
   ASSERT_TRUE(ReadTestCert("target_six_aia.pem", &cert));
 
   EXPECT_CALL(*fetcher_, FetchCaIssuers(_, _, _))
-      .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))))
-      .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))))
-      .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))))
-      .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))))
-      .WillOnce(Return(ByMove(CreateMockRequestWithError(ERR_FAILED))));
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))))
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))))
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))))
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))))
+      .WillOnce(Return(ByMove(MockCertNetFetcherRequest::Create(ERR_FAILED))));
 
   CertVerifyResult verify_result;
   EXPECT_EQ(
@@ -414,7 +368,8 @@ TEST_F(CertVerifyProcAndroidTestWithAIAFetching, FetchForSuppliedIntermediate) {
 
   EXPECT_CALL(*fetcher_,
               FetchCaIssuers(GURL("http://url-for-aia/Root.cer"), _, _))
-      .WillOnce(Return(ByMove(CreateMockRequestFromX509Certificate(OK, root))));
+      .WillOnce(Return(
+          ByMove(MockCertNetFetcherRequest::Create(root->cert_buffer()))));
 
   CertVerifyResult verify_result;
   // This chain results in an AUTHORITY_INVALID root because |root_| is not

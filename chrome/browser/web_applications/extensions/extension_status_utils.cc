@@ -16,6 +16,7 @@
 #include "extensions/browser/management_policy.h"
 #include "extensions/browser/pref_names.h"
 #include "extensions/common/constants.h"
+#include "extensions/common/extension.h"
 
 namespace {
 
@@ -68,6 +69,17 @@ bool IsExtensionForceInstalled(content::BrowserContext* context,
                                                                     reason);
 }
 
+bool IsExtensionDefaultInstalled(content::BrowserContext* context,
+                                 const std::string& extension_id) {
+  auto* registry = ExtensionRegistry::Get(context);
+  // May be nullptr in unit tests.
+  if (!registry)
+    return false;
+  const Extension* extension = registry->GetInstalledExtension(extension_id);
+  return extension &&
+         (extension->creation_flags() & Extension::WAS_INSTALLED_BY_DEFAULT);
+}
+
 bool IsExternalExtensionUninstalled(content::BrowserContext* context,
                                     const std::string& extension_id) {
   auto* prefs = ExtensionPrefs::Get(context);
@@ -75,7 +87,7 @@ bool IsExternalExtensionUninstalled(content::BrowserContext* context,
   return prefs && prefs->IsExternalExtensionUninstalled(extension_id);
 }
 
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_LINUX)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 bool IsExtensionUnsupportedDeprecatedApp(content::BrowserContext* context,
                                          const std::string& extension_id) {
   if (!base::FeatureList::IsEnabled(features::kChromeAppsDeprecation))
@@ -108,12 +120,12 @@ void OnExtensionSystemReady(content::BrowserContext* context,
 }
 
 bool DidPreinstalledAppsPerformNewInstallation(Profile* profile) {
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   return preinstalled_apps::Provider::DidPerformNewInstallationForProfile(
       profile);
 #else
   return false;
-#endif  // defined(OS_CHROMEOS)
+#endif
 }
 
 bool IsPreinstalledAppId(const std::string& app_id) {

@@ -20,6 +20,8 @@
 #include "base/strings/string_number_conversions.h"
 #include "build/chromeos_buildflags.h"
 #include "components/exo/display.h"
+#include "components/exo/seat.h"
+#include "components/exo/seat_observer.h"
 #include "components/exo/shell_surface.h"
 #include "components/exo/shell_surface_base.h"
 #include "components/exo/wayland/server_util.h"
@@ -55,6 +57,10 @@ namespace exo {
 namespace wayland {
 
 namespace {
+
+constexpr int kAuraShellSeatObserverPriority = 1;
+static_assert(Seat::IsValidObserverPriority(kAuraShellSeatObserverPriority),
+              "kAuraShellSeatObserverPriority is not in the valid range.");
 
 // A property key containing a boolean set to true if na aura surface object is
 // associated with surface object.
@@ -585,6 +591,18 @@ void AuraSurface::OnDeskChanged(Surface* surface, int state) {
   zaura_surface_send_desk_changed(resource_, state);
 }
 
+void AuraSurface::ThrottleFrameRate(bool on) {
+  if (wl_resource_get_version(resource_) <
+      ZAURA_SURFACE_START_THROTTLE_SINCE_VERSION) {
+    return;
+  }
+  if (on)
+    zaura_surface_send_start_throttle(resource_);
+  else
+    zaura_surface_send_end_throttle(resource_);
+  wl_client_flush(wl_resource_get_client(resource_));
+}
+
 void AuraSurface::MoveToDesk(int desk_index) {
   constexpr int kToggleVisibleOnAllWorkspacesValue = -1;
   if (desk_index == kToggleVisibleOnAllWorkspacesValue) {
@@ -759,10 +777,11 @@ const uint32_t kFixedBugIds[] = {
 // Implements aura shell interface and monitors workspace state needed
 // for the aura shell interface.
 class WaylandAuraShell : public ash::DesksController::Observer,
-                         public ash::TabletModeObserver {
+                         public ash::TabletModeObserver,
+                         public SeatObserver {
  public:
   WaylandAuraShell(wl_resource* aura_shell_resource, Display* display)
-      : aura_shell_resource_(aura_shell_resource) {
+      : aura_shell_resource_(aura_shell_resource), seat_(display->seat()) {
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->AddTabletModeObserver(this);
     ash::DesksController::Get()->AddObserver(this);
@@ -779,9 +798,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
         zaura_shell_send_bug_fix(aura_shell_resource_, bug_id);
       }
     }
-    display->seat()->SetFocusChangedCallback(
-        base::BindRepeating(&WaylandAuraShell::FocusedSurfaceChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
+    display->seat()->AddObserver(this, kAuraShellSeatObserverPriority);
 
     OnDesksChanged();
     OnDeskActivationChanged();
@@ -792,6 +809,8 @@ class WaylandAuraShell : public ash::DesksController::Observer,
     WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
     helper->RemoveTabletModeObserver(this);
     ash::DesksController::Get()->RemoveObserver(this);
+    if (seat_)
+      seat_->RemoveObserver(this);
   }
 
   // Overridden from ash::TabletModeObserver:
@@ -808,6 +827,13 @@ class WaylandAuraShell : public ash::DesksController::Observer,
                                    ZAURA_SHELL_LAYOUT_MODE_WINDOWED);
   }
   void OnTabletModeEnded() override {}
+
+  // Overridden from SeatObserver:
+  void OnSurfaceFocused(Surface* gained_focus,
+                        Surface* lost_focus,
+                        bool has_focused_surface) override {
+    FocusedSurfaceChanged(gained_focus, lost_focus, has_focused_surface);
+  }
 
   // ash::DesksController::Observer:
   void OnDeskAdded(const ash::Desk* desk) override { OnDesksChanged(); }
@@ -898,6 +924,7 @@ class WaylandAuraShell : public ash::DesksController::Observer,
 
   // The aura shell resource associated with observer.
   wl_resource* const aura_shell_resource_;
+  Seat* const seat_;
 
   base::WeakPtrFactory<WaylandAuraShell> weak_ptr_factory_{this};
 };

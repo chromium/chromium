@@ -7,6 +7,7 @@
 
 #include "base/feature_list.h"
 #include "base/no_destructor.h"
+#include "base/synchronization/lock.h"
 #include "base/trace_event/memory_dump_provider.h"
 #include "third_party/blink/renderer/platform/disk_data_allocator.h"
 #include "third_party/blink/renderer/platform/graphics/parkable_image.h"
@@ -83,12 +84,12 @@ class PLATFORM_EXPORT ParkableImageManager
       EXCLUSIVE_LOCKS_REQUIRED(lock_);
 
   void RecordDiskWriteTime(base::TimeDelta write_time) LOCKS_EXCLUDED(lock_) {
-    MutexLocker lock(lock_);
+    base::AutoLock lock(lock_);
     total_disk_write_time_ += write_time;
   }
 
   void RecordDiskReadTime(base::TimeDelta read_time) LOCKS_EXCLUDED(lock_) {
-    MutexLocker lock(lock_);
+    base::AutoLock lock(lock_);
     total_disk_read_time_ += read_time;
   }
 
@@ -106,7 +107,7 @@ class PLATFORM_EXPORT ParkableImageManager
   constexpr static auto kDelayedParkingInterval = base::Seconds(2);
   constexpr static const char* kAllocatorDumpName = "parkable_images";
 
-  mutable Mutex lock_;
+  mutable base::Lock lock_;
 
   // The following two sets are used to keep track of all ParkableImages that
   // have been created. ParkableImages are added to |unparked_images_| upon

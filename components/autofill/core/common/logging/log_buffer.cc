@@ -65,8 +65,8 @@ bool TryCoalesceString(std::vector<base::Value>* buffer,
   auto* children = parent.FindListKey("children");
   if (!children)
     return false;
-  DCHECK(!children->GetList().empty());
-  auto& last_child = children->GetList().back();
+  DCHECK(!children->GetListDeprecated().empty());
+  auto& last_child = children->GetListDeprecated().back();
   if (!IsTextNode(last_child))
     return false;
   std::string* old_text = last_child.FindStringKey("value");
@@ -99,13 +99,13 @@ base::Value LogBuffer::RetrieveResult() {
     *this << CTag{};
 
   auto* children = buffer_[0].FindListKey("children");
-  if (!children || children->GetList().empty())
+  if (!children || children->GetListDeprecated().empty())
     return base::Value();
 
   // If the fragment has a single child, remove it from |children| and return
   // that directly.
-  if (children->GetList().size() == 1) {
-    return std::move(std::move(*children).TakeList().back());
+  if (children->GetListDeprecated().size() == 1) {
+    return std::move(std::move(*children).TakeListDeprecated().back());
   }
 
   return std::exchange(buffer_.back(), CreateEmptyFragment());
@@ -197,7 +197,7 @@ LogBuffer& operator<<(LogBuffer& buf, LogBuffer&& buffer) {
     auto* children = node_to_add.FindListKey("children");
     if (!children)
       return buf;
-    for (auto& child : children->GetList())
+    for (auto& child : children->GetListDeprecated())
       AppendChildToLastNode(&buf.buffer_, std::exchange(child, base::Value()));
     return buf;
   }

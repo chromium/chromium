@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "ash/public/cpp/shell_window_ids.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/browser/view_type_utils.h"
@@ -60,8 +59,6 @@ AccessibilityPanel::AccessibilityPanel(content::BrowserContext* browser_context,
   web_contents_->SetDelegate(this);
   extensions::SetViewType(web_contents_,
                           extensions::mojom::ViewType::kComponent);
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_);
   web_view->LoadInitialURL(GURL(content_url));
   web_view_ = web_view;
 

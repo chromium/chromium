@@ -8,8 +8,6 @@
 
 // #import {assert} from 'chrome://resources/js/assert.m.js';
 // #import {$, ensureTransitionEndEvent} from 'chrome://resources/js/util.m.js';
-// #import {isChromeOS} from 'chrome://resources/js/cr.m.js';
-// #import {toCssPx} from 'chrome://resources/js/cr/ui.m.js';
 // #import {loadTimeData} from './i18n_setup.js';
 // #import {OobeTypes} from './components/oobe_types.m.js';
 
@@ -179,19 +177,6 @@ cr.define('cr.ui.login', function() {
     }
 
     /**
-     * Sets the current size of the client area (display size).
-     * @param {number} width client area width
-     * @param {number} height client area height
-     */
-    setClientAreaSize(width, height) {
-      if (!cr.isChromeOS) {
-        var clientArea = $('outer-container');
-        var bottom = parseInt(window.getComputedStyle(clientArea).bottom, 10);
-        clientArea.style.minHeight = cr.ui.toCssPx(height - bottom);
-      }
-    }
-
-    /**
      * Sets the current height of the shelf area.
      * @param {number} height current shelf height
      */
@@ -213,25 +198,6 @@ cr.define('cr.ui.login', function() {
           '--oobe-oobe-dialog-height-base', height + 'px');
       document.documentElement.style.setProperty(
           '--oobe-oobe-dialog-width-base', width + 'px');
-    }
-
-    /**
-     * Sets the hint for calculating OOBE dialog inner padding.
-     * @param {OobeTypes.DialogPaddingMode} mode
-     */
-    setDialogPaddingMode(mode) {
-      document.documentElement.setAttribute('dialog-padding', mode);
-    }
-
-    /**
-     * Toggles background of main body between transparency and solid.
-     * @param {boolean} solid Whether to show a solid background.
-     */
-    set solidBackground(solid) {
-      if (solid)
-        document.body.classList.add('solid');
-      else
-        document.body.classList.remove('solid');
     }
 
     /**
@@ -588,28 +554,6 @@ cr.define('cr.ui.login', function() {
       this.initializeDemoModeMultiTapListener();
     }
 
-    /**
-     * Shows signin UI.
-     * @param {string} opt_email An optional email for signin UI.
-     */
-    showSigninUI(opt_email) {
-      if (this.currentScreen.id == SCREEN_GAIA_SIGNIN) {
-        this.setOobeUIState(OOBE_UI_STATE.GAIA_SIGNIN);
-      }
-      chrome.send('showAddUser', [opt_email]);
-    }
-
-    /**
-     * Resets sign-in input fields.
-     * @param {boolean} forceOnline Whether online sign-in should be forced.
-     *     If |forceOnline| is false previously used sign-in type will be used.
-     */
-    resetSigninUI(forceOnline) {
-      if ($(SCREEN_GAIA_SIGNIN)) {
-        $(SCREEN_GAIA_SIGNIN)
-            .reset(this.currentScreen.id == SCREEN_GAIA_SIGNIN, forceOnline);
-      }
-    }
 
     /**
      * Sets text content for a div with |labelId|.

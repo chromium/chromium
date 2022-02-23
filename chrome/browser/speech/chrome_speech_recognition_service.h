@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 #define CHROME_BROWSER_SPEECH_CHROME_SPEECH_RECOGNITION_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/speech/speech_recognition_service.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "media/mojo/mojom/speech_recognition_service.mojom.h"
@@ -22,9 +23,7 @@ namespace speech {
 // Provides a mojo endpoint in the browser that allows the renderer process to
 // launch and initialize the sandboxed speech recognition service
 // process.
-class ChromeSpeechRecognitionService
-    : public SpeechRecognitionService,
-      public media::mojom::SpeechRecognitionServiceClient {
+class ChromeSpeechRecognitionService : public SpeechRecognitionService {
  public:
   explicit ChromeSpeechRecognitionService(content::BrowserContext* context);
   ChromeSpeechRecognitionService(const ChromeSpeechRecognitionService&) =
@@ -36,14 +35,6 @@ class ChromeSpeechRecognitionService
   void Create(mojo::PendingReceiver<media::mojom::SpeechRecognitionContext>
                   receiver) override;
 
-  // media::mojom::SpeechRecognitionServiceClient
-  void OnNetworkServiceDisconnect() override;
-
- protected:
-  // A flag indicating whether to use the Speech On-Device API (SODA) for speech
-  // recognition.
-  const bool enable_soda_;
-
  private:
   // Launches the speech recognition service in a sandboxed utility process.
   void LaunchIfNotRunning();
@@ -52,15 +43,12 @@ class ChromeSpeechRecognitionService
   base::FilePath GetSodaConfigPath(PrefService* prefs);
 
   // The browser context associated with the keyed service.
-  content::BrowserContext* const context_;
+  const raw_ptr<content::BrowserContext> context_;
 
   // The remote to the speech recognition service. The browser will not launch a
   // new speech recognition service process if this remote is already bound.
   mojo::Remote<media::mojom::SpeechRecognitionService>
       speech_recognition_service_;
-
-  mojo::Receiver<media::mojom::SpeechRecognitionServiceClient>
-      speech_recognition_service_client_{this};
 };
 
 }  // namespace speech

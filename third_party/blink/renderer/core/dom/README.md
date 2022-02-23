@@ -1,6 +1,6 @@
 # DOM
 
-[Rendered](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/dom/README.md)
+[Rendered](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/dom/README.md)
 
 Author: hayato@chromium.org, some edits by masonf@chromium.org
 

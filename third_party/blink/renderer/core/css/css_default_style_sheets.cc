@@ -40,7 +40,7 @@
 #include "third_party/blink/renderer/core/layout/layout_theme.h"
 #include "third_party/blink/renderer/core/mathml_names.h"
 #include "third_party/blink/renderer/platform/data_resource_helper.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/leak_annotations.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -52,12 +52,6 @@ CSSDefaultStyleSheets& CSSDefaultStyleSheets::Instance() {
                       css_default_style_sheets,
                       (MakeGarbageCollected<CSSDefaultStyleSheets>()));
   return *css_default_style_sheets;
-}
-
-static const MediaQueryEvaluator& ScreenEval() {
-  DEFINE_STATIC_LOCAL(const Persistent<MediaQueryEvaluator>, static_screen_eval,
-                      (MakeGarbageCollected<MediaQueryEvaluator>("screen")));
-  return *static_screen_eval;
 }
 
 static const MediaQueryEvaluator& PrintEval() {
@@ -76,6 +70,11 @@ static const MediaQueryEvaluator& ForcedColorsEval() {
 }
 
 // static
+void CSSDefaultStyleSheets::Init() {
+  Instance();
+}
+
+// static
 StyleSheetContents* CSSDefaultStyleSheets::ParseUASheet(const String& str) {
   // UA stylesheets always parse in the insecure context mode.
   auto* sheet = MakeGarbageCollected<StyleSheetContents>(
@@ -88,6 +87,13 @@ StyleSheetContents* CSSDefaultStyleSheets::ParseUASheet(const String& str) {
   return sheet;
 }
 
+// static
+const MediaQueryEvaluator& CSSDefaultStyleSheets::ScreenEval() {
+  DEFINE_STATIC_LOCAL(const Persistent<MediaQueryEvaluator>, static_screen_eval,
+                      (MakeGarbageCollected<MediaQueryEvaluator>("screen")));
+  return *static_screen_eval;
+}
+
 CSSDefaultStyleSheets::CSSDefaultStyleSheets()
     : media_controls_style_sheet_loader_(nullptr) {
   // Strict-mode rules.
@@ -97,9 +103,7 @@ CSSDefaultStyleSheets::CSSDefaultStyleSheets()
   default_style_sheet_ = ParseUASheet(default_rules);
 
   // Quirks-mode rules.
-  String quirks_rules =
-      UncompressResourceAsASCIIString(IDR_UASTYLE_QUIRKS_CSS) +
-      LayoutTheme::GetTheme().ExtraQuirksStyleSheet();
+  String quirks_rules = UncompressResourceAsASCIIString(IDR_UASTYLE_QUIRKS_CSS);
   quirks_style_sheet_ = ParseUASheet(quirks_rules);
 
   InitializeDefaultStyles();
@@ -130,6 +134,7 @@ void CSSDefaultStyleSheets::PrepareForLeakDetection() {
   forced_colors_style_sheet_.Clear();
   fullscreen_style_sheet_.Clear();
   popup_style_sheet_.Clear();
+  selectmenu_style_sheet_.Clear();
   webxr_overlay_style_sheet_.Clear();
   marker_style_sheet_.Clear();
   // Recreate the default style sheet to clean up possible SVG resources.
@@ -307,6 +312,18 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
     changed_default_style = true;
   }
 
+  if (!selectmenu_style_sheet_ && IsA<HTMLSelectMenuElement>(element)) {
+    // TODO: We should assert that this sheet only contains rules for
+    // <selectmenu>.
+    String selectmenu_rules =
+        RuntimeEnabledFeatures::HTMLSelectMenuElementEnabled()
+            ? UncompressResourceAsASCIIString(IDR_UASTYLE_SELECTMENU_CSS)
+            : String();
+    selectmenu_style_sheet_ = ParseUASheet(selectmenu_rules);
+    AddRulesToDefaultStyleSheets(selectmenu_style_sheet_, NamespaceType::kHTML);
+    changed_default_style = true;
+  }
+
   DCHECK(!default_html_style_->Features().HasIdsInSelectors());
   return changed_default_style;
 }
@@ -423,6 +440,7 @@ void CSSDefaultStyleSheets::Trace(Visitor* visitor) const {
   visitor->Trace(forced_colors_style_sheet_);
   visitor->Trace(fullscreen_style_sheet_);
   visitor->Trace(popup_style_sheet_);
+  visitor->Trace(selectmenu_style_sheet_);
   visitor->Trace(webxr_overlay_style_sheet_);
   visitor->Trace(marker_style_sheet_);
 }

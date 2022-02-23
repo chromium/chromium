@@ -47,6 +47,11 @@ class ASH_EXPORT AssistantTestApi {
   // queries, i.e. the input text field must be visible and focussed.
   virtual void SendTextQuery(const std::string& query) = 0;
 
+  // Simulates the production state of assistant enabled. Equivalent to
+  // SetAssistantEnabled(true) followed by notifications for feature allowed and
+  // feature ready, then a wait for assistant actions to settle.
+  virtual void EnableAssistantAndWait() = 0;
+
   // Enables/Disables Assistant in settings.
   // This will ensure the new value is propagated to the |AssistantState|.
   virtual void SetAssistantEnabled(bool enabled) = 0;

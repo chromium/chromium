@@ -36,9 +36,9 @@ static constexpr base::TimeDelta kDefaultLaunchTimeout = base::Seconds(60);
 
 // Class for storing a bitwise OR of enum values.
 //
-// TODO(jrw): Make values of cast_channel::CastDeviceCapability consecutive and
-// store sets of values using a class like v8::base::EnumSet instead of this
-// monstrosity.
+// TODO(crbug.com/1291715): Make values of cast_channel::CastDeviceCapability
+// consecutive and store sets of values using a class like v8::base::EnumSet
+// instead of this monstrosity.
 template <typename E, typename T = std::underlying_type_t<E>>
 class BitwiseOr {
  public:
@@ -57,7 +57,7 @@ class BitwiseOr {
     return (bits_ & other.bits_) == other.bits_;
   }
   bool operator==(const BitwiseOr& other) const { return bits_ == other.bits_; }
-  bool operator!=(const BitwiseOr& other) const { return *this != other; }
+  bool operator!=(const BitwiseOr& other) const { return !(*this == other); }
 
  private:
   explicit constexpr BitwiseOr(T bits) : bits_(bits) {}

@@ -25,6 +25,7 @@
 #include "ash/app_list/views/apps_grid_view.h"
 #include "ash/app_list/views/apps_grid_view_test_api.h"
 #include "ash/app_list/views/contents_view.h"
+#include "ash/app_list/views/continue_section_view.h"
 #include "ash/app_list/views/expand_arrow_view.h"
 #include "ash/app_list/views/folder_background_view.h"
 #include "ash/app_list/views/folder_header_view.h"
@@ -46,9 +47,9 @@
 #include "ash/public/cpp/app_list/app_list_features.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/pagination/pagination_model.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/test/test_app_list_color_provider.h"
 #include "ash/search_box/search_box_constants.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -61,6 +62,7 @@
 #include "ui/base/models/simple_menu_model.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animator.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
@@ -73,7 +75,6 @@
 
 namespace ash {
 namespace test {
-
 namespace {
 
 constexpr int kInitialItems = 34;
@@ -107,8 +108,37 @@ constexpr int kPageSwitcherSpacing = 8;
 // The maximum allowed margin between items in apps item grid.
 constexpr int kMaxItemMargin = 96;
 
+// The min margins for contents within the fullscreen productivity launcher.
+constexpr int kMinProductivityLauncherMargin = 24;
+
+// The min horizontal margin for apps grid in fullscreen productivity launcher.
+// In addition to min productivity launcher margin, reserves 32 dip for page
+// switcher UI.
+constexpr int kMinProductivityLauncherGridHorizontalMargin =
+    kMinProductivityLauncherMargin + 32;
+
+int GetExpectedProductivityLauncherAppsContainerHeight(int row_count,
+                                                       int tile_height,
+                                                       int tile_margins) {
+  return row_count * tile_height + (row_count - 1) * tile_margins +
+         2 * kMinProductivityLauncherMargin + kGridVerticalMargin +
+         kGridVerticalInset + 48 /*search box height*/ + 56 /*shelf size*/;
+}
+
 SearchModel* GetSearchModel() {
   return AppListModelProvider::Get()->search_model();
+}
+
+void AddRecentApps(int num_apps) {
+  for (int i = 0; i < num_apps; i++) {
+    auto result = std::make_unique<TestSearchResult>();
+    // Use the same "Item #" convention as AppListTestModel uses. The search
+    // result IDs must match app item IDs in the app list data model.
+    result->set_result_id(test::AppListTestModel::GetItemName(i));
+    result->set_result_type(AppListSearchResultType::kInstalledApp);
+    result->set_display_type(SearchResultDisplayType::kRecentApps);
+    GetSearchModel()->results()->Add(std::move(result));
+  }
 }
 
 int GridItemSizeWithMargins(int grid_size, int item_size, int item_count) {
@@ -168,33 +198,24 @@ class TestStartPageSearchResult : public TestSearchResult {
   ~TestStartPageSearchResult() override = default;
 };
 
-class AppListViewTest : public views::ViewsTestBase,
-                        public testing::WithParamInterface<bool> {
+class AppListViewTest : public views::ViewsTestBase {
  public:
   AppListViewTest() = default;
-
   AppListViewTest(const AppListViewTest&) = delete;
   AppListViewTest& operator=(const AppListViewTest&) = delete;
-
   ~AppListViewTest() override = default;
 
   void SetUp() override {
-    if (testing::UnitTest::GetInstance()->current_test_info()->value_param()) {
-      // Setup right to left environment if necessary.
-      is_rtl_ = GetParam();
-      if (is_rtl_)
-        base::i18n::SetICUDefaultLocale("he");
-    }
     views::ViewsTestBase::SetUp();
     zero_duration_mode_ =
         std::make_unique<ui::ScopedAnimationDurationScaleMode>(
             ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-    ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         true);
   }
 
   void TearDown() override {
-    ash::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     view_->GetWidget()->Close();
     zero_duration_mode_.reset();
@@ -320,6 +341,10 @@ class AppListViewTest : public views::ViewsTestBase,
     return contents_view()->apps_container_view()->page_switcher();
   }
 
+  RecentAppsView* recent_apps() {
+    return contents_view()->apps_container_view()->GetRecentApps();
+  }
+
   views::View* assistant_page_view() {
     const int assistant_page_index = contents_view()->GetPageIndexForState(
         ash::AppListState::kStateEmbeddedAssistant);
@@ -338,6 +363,131 @@ class AppListViewTest : public views::ViewsTestBase,
 
   int show_wallpaper_context_menu_count() {
     return delegate_->show_wallpaper_context_menu_count();
+  }
+
+  void VerifyAppsContainerLayoutForProductivityLauncher(
+      const gfx::Size& container_size,
+      int row_count,
+      int expected_horizontal_margin,
+      const gfx::Size& expected_item_size,
+      bool has_recent_apps) {
+    const int column_count = 5;
+    ASSERT_EQ(column_count, apps_grid_view()->cols());
+    ASSERT_EQ(row_count, apps_grid_view()->GetFirstPageRowsForTesting());
+
+    const int expected_vertical_margin = kMinProductivityLauncherMargin;
+
+    const int expected_grid_width =
+        container_size.width() - 2 * expected_horizontal_margin;
+
+    // Verify scrollable container bounds.
+    const int expected_scrollable_container_top = expected_vertical_margin +
+                                                  48 /*search box height*/ +
+                                                  kGridVerticalMargin;
+    const int expected_scrollable_container_height =
+        container_size.height() - expected_scrollable_container_top -
+        expected_vertical_margin - ShelfSize();
+    EXPECT_EQ(
+        gfx::Rect(expected_horizontal_margin, expected_scrollable_container_top,
+                  expected_grid_width, expected_scrollable_container_height),
+        scrollable_container()->bounds());
+
+    // Verify apps grid bounds.
+    gfx::Point grid_origin_in_scrollable_container;
+    views::View::ConvertPointToTarget(apps_grid_view(), scrollable_container(),
+                                      &grid_origin_in_scrollable_container);
+    EXPECT_EQ(gfx::Point(0, kGridVerticalInset),
+              grid_origin_in_scrollable_container);
+
+    const int expected_grid_height =
+        expected_scrollable_container_height - kGridVerticalInset;
+    EXPECT_EQ(gfx::Size(expected_grid_width, expected_grid_height),
+              apps_grid_view()->size());
+
+    // Verify page switcher bounds.
+    EXPECT_EQ(gfx::Rect(expected_grid_width + expected_horizontal_margin +
+                            kPageSwitcherSpacing,
+                        expected_scrollable_container_top,
+                        2 * PageSwitcher::kMaxButtonRadiusForRootGrid,
+                        expected_grid_height),
+              page_switcher_view()->bounds());
+
+    // Verify recent apps view visibility and bounds (when visible).
+    EXPECT_EQ(has_recent_apps, recent_apps()->GetVisible());
+    if (has_recent_apps) {
+      gfx::Point origin_in_scrollable_container;
+      views::View::ConvertPointToTarget(recent_apps(), scrollable_container(),
+                                        &origin_in_scrollable_container);
+      EXPECT_EQ(gfx::Point(0, kGridVerticalInset),
+                origin_in_scrollable_container);
+      EXPECT_EQ(expected_grid_width, recent_apps()->width());
+      EXPECT_EQ(expected_item_size.height(), recent_apps()->height());
+    }
+
+    // Horizontal offset between app list item views, which includes tile width
+    // and horizontal margin.
+    const int horizontal_item_offset = GridItemSizeWithMargins(
+        expected_grid_width, expected_item_size.width(), column_count);
+    EXPECT_LE(horizontal_item_offset - expected_item_size.width(), 128);
+
+    // Calculate space reserved for separator, which is only shown if suggested
+    // content (e.g. recent apps) exists.
+    int separator_size = 0;
+    if (has_recent_apps) {
+      const int separator_margin = expected_item_size.height() > 88 ? 16 : 8;
+      separator_size = 2 * separator_margin + 1 /*actual separator height*/;
+    }
+
+    // Vertical offset between app list item views, which includes tile height
+    // and vertical margin.
+    const int vertical_item_offset = GridItemSizeWithMargins(
+        expected_grid_height - separator_size, expected_item_size.height(),
+        row_count + (has_recent_apps ? 1 : 0));
+    EXPECT_GE(vertical_item_offset - expected_item_size.height(), 8);
+    EXPECT_LE(vertical_item_offset - expected_item_size.height(), 96);
+
+    // If recent apps are shown, the items on the first page are offset by the
+    // recent apps container height, a separator and vertical margin between
+    // tiles.
+    const int base_vertical_offset =
+        has_recent_apps ? vertical_item_offset + separator_size : 0;
+
+    // Verify expected bounds for the first row:
+    for (int i = 0; i < column_count; ++i) {
+      EXPECT_EQ(gfx::Rect(gfx::Point(i * horizontal_item_offset,
+                                     base_vertical_offset),
+                          expected_item_size),
+                test_api_->GetItemTileRectAtVisualIndex(0, i))
+          << "Item " << i << " bounds";
+    }
+
+    // Verify expected bounds for the first column:
+    for (int j = 1; j < row_count; ++j) {
+      EXPECT_EQ(gfx::Rect(gfx::Point(0, base_vertical_offset +
+                                            j * vertical_item_offset),
+                          expected_item_size),
+                test_api_->GetItemTileRectAtVisualIndex(0, j * column_count))
+          << "Item " << j * column_count << " bounds";
+    }
+
+    // The last item in the page (bottom right):
+    EXPECT_EQ(gfx::Rect(gfx::Point((column_count - 1) * horizontal_item_offset,
+                                   base_vertical_offset +
+                                       (row_count - 1) * vertical_item_offset),
+                        expected_item_size),
+              test_api_->GetItemTileRectAtVisualIndex(
+                  0, row_count * column_count - 1));
+
+    // Verify that search box top is at the expected apps container vertical
+    // margin, both in apps, and search results state.
+    std::vector<ash::AppListState> available_app_list_states = {
+        ash::AppListState::kStateApps, ash::AppListState::kStateSearchResults};
+    for (auto app_list_state : available_app_list_states) {
+      const gfx::Rect search_box_bounds =
+          contents_view()->GetSearchBoxBounds(app_list_state);
+      EXPECT_EQ(expected_vertical_margin, search_box_bounds.y())
+          << "App list state: " << static_cast<int>(app_list_state);
+    }
   }
 
   // Verifies fullscreen apps container bounds and layout.
@@ -417,13 +567,13 @@ class AppListViewTest : public views::ViewsTestBase,
     }
   }
 
-  // Restores the locale to default when destructor is called.
-  base::test::ScopedRestoreICUDefaultLocale restore_locale_;
-
   // Sets animation durations to zero.
   std::unique_ptr<ui::ScopedAnimationDurationScaleMode> zero_duration_mode_;
 
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
+  TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
+
+  // Needed by ProductivityLauncher AppsContainerView::ContinueContainer.
+  AshColorProvider ash_color_provider_;
 
   AppListView* view_ = nullptr;  // Owned by native widget.
   std::unique_ptr<AppListTestViewDelegate> delegate_;
@@ -431,18 +581,50 @@ class AppListViewTest : public views::ViewsTestBase,
 
   // Used by AppListFolderView::UpdatePreferredBounds.
   keyboard::KeyboardUIController keyboard_ui_controller_;
-
-  bool is_rtl_ = false;
 };
 
-INSTANTIATE_TEST_SUITE_P(Rtl, AppListViewTest, ::testing::Bool());
+// Tests for the legacy "peeking" clamshell launcher. These can be deleted when
+// ProductivityLauncher is the default.
+class AppListViewPeekingTest : public AppListViewTest {
+ public:
+  AppListViewPeekingTest() {
+    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Tests for tablet mode. Parameterized by ProductivityLauncher.
+class AppListViewTabletTest : public AppListViewTest,
+                              public testing::WithParamInterface<bool> {
+ public:
+  AppListViewTabletTest() {
+    const bool enable_productivity_launcher = GetParam();
+    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                       enable_productivity_launcher);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         AppListViewTabletTest,
+                         testing::Bool());
 
 // Tests app list view layout for different screen sizes.
 class AppListViewScalableLayoutTest : public AppListViewTest {
  public:
-  AppListViewScalableLayoutTest() {
-    scoped_feature_list_.InitAndEnableFeature(
-        ash::features::kEnableBackgroundBlur);
+  explicit AppListViewScalableLayoutTest(bool enable_productivity_launcher) {
+    if (enable_productivity_launcher) {
+      scoped_feature_list_.InitWithFeatures(
+          {ash::features::kEnableBackgroundBlur,
+           ash::features::kProductivityLauncher},
+          {});
+    } else {
+      scoped_feature_list_.InitWithFeatures(
+          {ash::features::kEnableBackgroundBlur},
+          {ash::features::kProductivityLauncher});
+    }
   }
   ~AppListViewScalableLayoutTest() override = default;
 
@@ -457,10 +639,31 @@ class AppListViewScalableLayoutTest : public AppListViewTest {
     AppListConfigProvider::Get().ResetForTesting();
   }
 
- private:
+ protected:
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
+class ProductivityLauncherAppListViewLayoutTest
+    : public AppListViewScalableLayoutTest {
+ public:
+  ProductivityLauncherAppListViewLayoutTest()
+      : AppListViewScalableLayoutTest(/*enable_productivity_launcher=*/true) {}
+
+  void InitializeAppList() {
+    Initialize(true /*is_tablet_mode*/);
+    delegate_->GetTestModel()->PopulateApps(kInitialItems);
+    Show();
+  }
+};
+
+class LegacyLauncherAppListViewLayoutTest
+    : public AppListViewScalableLayoutTest {
+ public:
+  LegacyLauncherAppListViewLayoutTest()
+      : AppListViewScalableLayoutTest(/*enable_productivity_launcher=*/false) {}
+};
+
+// Tests of focus, optionally parameterized by RTL.
 class AppListViewFocusTest : public views::ViewsTestBase,
                              public testing::WithParamInterface<bool> {
  public:
@@ -488,6 +691,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     view_->InitView(GetContext());
     Show();
     test_api_ = std::make_unique<AppsGridViewTestApi>(apps_grid_view());
+    // May be null for ProductivityLauncher, which does not use chips.
     suggestions_container_ = contents_view()
                                  ->apps_container_view()
                                  ->suggestion_chip_container_view_for_test();
@@ -507,7 +711,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
     AppListFolderItem* folder_item =
         model->CreateAndPopulateFolderWithApps(kItemNumInFolder);
     model->PopulateApps(kAppListItemNum);
-    suggestions_container()->Update();
+    if (suggestions_container_)
+      suggestions_container_->Update();
     EXPECT_EQ(static_cast<size_t>(kAppListItemNum + 1),
               model->top_level_item_list()->item_count());
     EXPECT_EQ(folder_item->id(),
@@ -578,7 +783,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
             std::make_unique<TestSearchResult>();
         result->set_display_type(data.first);
         result->set_display_score(display_score);
-        result->set_title(u"Test");
+        result->SetTitle(u"Test");
+        result->set_best_match(true);
         results->Add(std::move(result));
       }
     }
@@ -602,7 +808,7 @@ class AppListViewFocusTest : public views::ViewsTestBase,
           std::make_unique<TestSearchResult>();
       result->set_display_type(ash::SearchResultDisplayType::kList);
       result->set_display_score(display_score);
-      result->set_title(u"Test" + base::NumberToString16(i));
+      result->SetTitle(u"Test" + base::NumberToString16(i));
       result->set_result_id("Test" + base::NumberToString(i));
       if (i == index_open_assistant_ui)
         result->set_is_omnibox_search(true);
@@ -622,7 +828,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
         std::make_unique<TestSearchResult>();
     result->set_display_type(ash::SearchResultDisplayType::kList);
     result->set_display_score(score);
-    result->set_title(ASCIIToUTF16(title));
+    result->SetTitle(ASCIIToUTF16(title));
+    result->set_best_match(true);
     GetSearchModel()->results()->Add(std::move(result));
     RunPendingMessages();
   }
@@ -807,6 +1014,8 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   }
 
   std::vector<views::View*> GetAllSuggestions() {
+    // ProductivityLauncher does not use suggestion chips.
+    DCHECK(!features::IsProductivityLauncherEnabled());
     const auto& children = suggestions_container()->children();
     std::vector<views::View*> suggestions;
     std::copy_if(children.cbegin(), children.cend(),
@@ -832,10 +1041,12 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   base::test::ScopedFeatureList scoped_feature_list_;
 
  private:
-  TestAppListColorProvider color_provider_;  // Needed by AppListView.
+  TestAppListColorProvider app_list_color_provider_;  // Needed by AppListView.
+  AshColorProvider ash_color_provider_;  // Needed by ProductivityLauncher.
   AppListView* view_ = nullptr;  // Owned by native widget.
-  SearchResultContainerView* suggestions_container_ =
-      nullptr;                                    // Owned by view hierarchy.
+  // Owned by view hierarchy. May be null for ProductivityLauncher, which does
+  // not use suggestion chips.
+  SearchResultContainerView* suggestions_container_ = nullptr;
   ExpandArrowView* expand_arrow_view_ = nullptr;  // Owned by view hierarchy.
 
   std::unique_ptr<AppListTestViewDelegate> delegate_;
@@ -847,9 +1058,20 @@ class AppListViewFocusTest : public views::ViewsTestBase,
   keyboard::KeyboardUIController keyboard_ui_controller_;
 };
 
-INSTANTIATE_TEST_SUITE_P(All, AppListViewFocusTest, testing::Bool());
+INSTANTIATE_TEST_SUITE_P(Rtl, AppListViewFocusTest, testing::Bool());
 
-}  // namespace
+// Tests for the legacy "peeking" clamshell launcher. These can be deleted when
+// ProductivityLauncher is the default.
+class AppListViewPeekingFocusTest : public AppListViewFocusTest {
+ public:
+  AppListViewPeekingFocusTest() {
+    feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(Rtl, AppListViewPeekingFocusTest, testing::Bool());
 
 // Tests that the initial focus is on search box.
 TEST_F(AppListViewFocusTest, InitialFocus) {
@@ -857,7 +1079,7 @@ TEST_F(AppListViewFocusTest, InitialFocus) {
 }
 
 // Tests the linear focus traversal in PEEKING state.
-TEST_P(AppListViewFocusTest, LinearFocusTraversalInPeekingState) {
+TEST_P(AppListViewPeekingFocusTest, LinearFocusTraversalInPeekingState) {
   Show();
   SetAppListState(ash::AppListViewState::kPeeking);
 
@@ -887,6 +1109,11 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInPeekingState) {
 
 // Tests the linear focus traversal in FULLSCREEN_ALL_APPS state.
 TEST_P(AppListViewFocusTest, LinearFocusTraversalInFullscreenAllAppsState) {
+  // TODO(https://crbug.com/1284992): Fix for ProductivityLauncher, which
+  // does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   Show();
   SetAppListState(ash::AppListViewState::kFullscreenAllApps);
 
@@ -918,7 +1145,7 @@ TEST_P(AppListViewFocusTest, LinearFocusTraversalInFullscreenAllAppsState) {
 }
 
 // Tests focus traversal in HALF state with opened search box using |VKEY_TAB|.
-TEST_F(AppListViewFocusTest, TabFocusTraversalInHalfState) {
+TEST_F(AppListViewPeekingFocusTest, TabFocusTraversalInHalfState) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -972,7 +1199,7 @@ TEST_F(AppListViewFocusTest, TabFocusTraversalInHalfState) {
 // *   search box text is cleared
 // *   search box gets focus, but it's not active
 // *   subsequent tab keys move focus to app list folder view.
-TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
+TEST_F(AppListViewPeekingFocusTest, CloseButtonClearsSearchOnEnter) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1016,7 +1243,7 @@ TEST_F(AppListViewFocusTest, CloseButtonClearsSearchOnEnter) {
 
 // Tests focus traversal in HALF state with opened search box using |VKEY_LEFT|
 // and |VKEY_RIGHT|.
-TEST_P(AppListViewFocusTest, LeftRightFocusTraversalInHalfState) {
+TEST_P(AppListViewPeekingFocusTest, LeftRightFocusTraversalInHalfState) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1101,24 +1328,42 @@ TEST_F(AppListViewFocusTest, OpeningFolderRemovesOtherViewsFromAccessibility) {
 
   // Note: For fullscreen app list, the search box is part of the focus cycle
   // when a folder is open.
+  // ProductivityLauncher uses recent apps and continue section.
+  auto* recent_apps_view = apps_container_view->GetRecentApps();
+  auto* continue_section_view = apps_container_view->GetContinueSection();
+  // Non-ProductivityLauncher uses suggestion chips.
   auto* suggestion_chip_container =
       apps_container_view->suggestion_chip_container_view_for_test();
-  EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
-  EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  if (features::IsProductivityLauncherEnabled()) {
+    EXPECT_TRUE(recent_apps_view->GetViewAccessibility().IsIgnored());
+    EXPECT_TRUE(recent_apps_view->GetViewAccessibility().IsLeaf());
+    EXPECT_TRUE(continue_section_view->GetViewAccessibility().IsIgnored());
+    EXPECT_TRUE(continue_section_view->GetViewAccessibility().IsLeaf());
+  } else {
+    EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
+    EXPECT_TRUE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  }
   EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsIgnored());
   EXPECT_TRUE(apps_grid_view()->GetViewAccessibility().IsLeaf());
 
   // Close the folder.
   SimulateKeyPress(ui::VKEY_ESCAPE, false);
 
-  EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
-  EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  if (features::IsProductivityLauncherEnabled()) {
+    EXPECT_FALSE(recent_apps_view->GetViewAccessibility().IsIgnored());
+    EXPECT_FALSE(recent_apps_view->GetViewAccessibility().IsLeaf());
+    EXPECT_FALSE(continue_section_view->GetViewAccessibility().IsIgnored());
+    EXPECT_FALSE(continue_section_view->GetViewAccessibility().IsLeaf());
+  } else {
+    EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsIgnored());
+    EXPECT_FALSE(suggestion_chip_container->GetViewAccessibility().IsLeaf());
+  }
   EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsIgnored());
   EXPECT_FALSE(apps_grid_view()->GetViewAccessibility().IsLeaf());
 }
 
 // Tests the vertical focus traversal by in PEEKING state.
-TEST_P(AppListViewFocusTest, VerticalFocusTraversalInPeekingState) {
+TEST_P(AppListViewPeekingFocusTest, VerticalFocusTraversalInPeekingState) {
   Show();
   SetAppListState(ash::AppListViewState::kPeeking);
 
@@ -1144,6 +1389,11 @@ TEST_P(AppListViewFocusTest, VerticalFocusTraversalInPeekingState) {
 
 // Tests the vertical focus traversal in FULLSCREEN_ALL_APPS state.
 TEST_P(AppListViewFocusTest, VerticalFocusTraversalInFullscreenAllAppsState) {
+  // TODO(https://crbug.com/1284992): Fix for ProductivityLauncher, which
+  // does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   Show();
   SetAppListState(ash::AppListViewState::kFullscreenAllApps);
 
@@ -1176,7 +1426,7 @@ TEST_P(AppListViewFocusTest, VerticalFocusTraversalInFullscreenAllAppsState) {
 }
 
 // Tests the vertical focus traversal in HALF state with opened search box.
-TEST_F(AppListViewFocusTest, VerticalFocusTraversalInHalfState) {
+TEST_F(AppListViewPeekingFocusTest, VerticalFocusTraversalInHalfState) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1258,8 +1508,9 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInFirstPageOfFolder) {
 }
 
 // Tests the vertical focus traversal in FULLSCREEN_ALL_APPS state in the second
-// page within folder.
-TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
+// page within folder. ProductivityLauncher does not use pages for folders.
+TEST_F(AppListViewPeekingFocusTest,
+       VerticalFocusTraversalInSecondPageOfFolder) {
   Show();
 
   // Transition to FULLSCREEN_ALL_APPS state and open the folder.
@@ -1306,7 +1557,7 @@ TEST_F(AppListViewFocusTest, VerticalFocusTraversalInSecondPageOfFolder) {
 
 // Tests that the focus is set back onto search box after all state transitions
 // besides those going to/from an activated folder.
-TEST_F(AppListViewFocusTest, FocusResetAfterStateTransition) {
+TEST_F(AppListViewPeekingFocusTest, FocusResetAfterStateTransition) {
   Show();
 
   // Type something in search box to transition to HALF state and populate
@@ -1363,6 +1614,11 @@ TEST_F(AppListViewFocusTest, FocusResetAfterStateTransition) {
 // Tests that key event which is not handled by focused view will be redirected
 // to search box when search box view is active (but not focused).
 TEST_F(AppListViewFocusTest, RedirectFocusToSearchBox) {
+  // TODO(https://crbug.com/1284992): Fix for ProductivityLauncher, which
+  // does not support this behavior and also does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   Show();
 
   // Set focus to first suggestion app and type a character.
@@ -1459,7 +1715,7 @@ TEST_F(AppListViewFocusTest, CtrlASelectsAllTextInSearchbox) {
 // Tests that the first search result's view is selected after search results
 // are updated when the focus is on search box.
 // crbug.com/1242053: flaky on chromeos
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_FirstResultSelectedAfterSearchResultsUpdated \
   DISABLED_FirstResultSelectedAfterSearchResultsUpdated
 #else
@@ -1552,8 +1808,10 @@ TEST_F(AppListViewFocusTest, HittingEnterWhenFocusOnSearchBox) {
 TEST_F(AppListViewFocusTest, SetFocusOnSearchboxWhenActivated) {
   Show();
 
-  // Set focus to the first suggestion app.
-  GetAllSuggestions()[0]->RequestFocus();
+  // Press tab several times to move focus out of the search box.
+  SimulateKeyPress(ui::VKEY_TAB, false);
+  SimulateKeyPress(ui::VKEY_TAB, false);
+  SimulateKeyPress(ui::VKEY_TAB, false);
   EXPECT_FALSE(search_box_view()->search_box()->HasFocus());
 
   // Activate the search box.
@@ -1704,7 +1962,7 @@ TEST_F(AppListViewFocusTest, SelectionGoesIntoFolderIfSelected) {
 }
 
 // Tests that opening the app list opens in peeking mode by default.
-TEST_F(AppListViewTest, ShowPeekingByDefault) {
+TEST_F(AppListViewPeekingTest, ShowPeekingByDefault) {
   Initialize(false /*is_tablet_mode*/);
 
   Show();
@@ -1712,9 +1970,9 @@ TEST_F(AppListViewTest, ShowPeekingByDefault) {
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
 }
 
-TEST_F(AppListViewTest, RecordFolderMetrics_ZeroFolders) {
+TEST_P(AppListViewTabletTest, RecordFolderMetrics_ZeroFolders) {
   base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/false);
+  Initialize(/*is_tablet_mode=*/true);
   delegate_->GetTestModel()->PopulateApps(2);
   Show();
 
@@ -1726,9 +1984,9 @@ TEST_F(AppListViewTest, RecordFolderMetrics_ZeroFolders) {
                    "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
 }
 
-TEST_F(AppListViewTest, RecordFolderMetrics_OneRegularFolder) {
+TEST_P(AppListViewTabletTest, RecordFolderMetrics_OneRegularFolder) {
   base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/false);
+  Initialize(/*is_tablet_mode=*/true);
   delegate_->GetTestModel()->CreateAndPopulateFolderWithApps(2);
   Show();
 
@@ -1740,9 +1998,9 @@ TEST_F(AppListViewTest, RecordFolderMetrics_OneRegularFolder) {
                    "Apps.AppsInFolders.FullscreenAppListEnabled", 2));
 }
 
-TEST_F(AppListViewTest, RecordFolderMetrics_OemFolder) {
+TEST_P(AppListViewTabletTest, RecordFolderMetrics_OemFolder) {
   base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/false);
+  Initialize(/*is_tablet_mode=*/true);
   delegate_->GetTestModel()->CreateSingleItemFolder(kOemFolderId, "item_id");
   Show();
 
@@ -1755,9 +2013,9 @@ TEST_F(AppListViewTest, RecordFolderMetrics_OemFolder) {
                    "Apps.AppsInFolders.FullscreenAppListEnabled", 0));
 }
 
-TEST_F(AppListViewTest, RecordFolderMetrics_LinuxAppsFolder) {
+TEST_P(AppListViewTabletTest, RecordFolderMetrics_LinuxAppsFolder) {
   base::HistogramTester histogram;
-  Initialize(/*is_tablet_mode=*/false);
+  Initialize(/*is_tablet_mode=*/true);
   delegate_->GetTestModel()->CreateSingleItemFolder(kCrostiniFolderId,
                                                     "item_id");
   Show();
@@ -1773,8 +2031,9 @@ TEST_F(AppListViewTest, RecordFolderMetrics_LinuxAppsFolder) {
 
 // Tests that in side shelf mode, the app list opens in fullscreen by default
 // and verifies that the top rounded corners of the app list background are
-// hidden (see https://crbug.com/920082).
-TEST_F(AppListViewTest, ShowFullscreenWhenInSideShelfMode) {
+// hidden (see https://crbug.com/920082). ProductivityLauncher does not change
+// shelf corners.
+TEST_F(AppListViewPeekingTest, ShowFullscreenWhenInSideShelfMode) {
   Initialize(false /*is_tablet_mode*/);
 
   Show(true /*is_side_shelf*/);
@@ -1797,7 +2056,7 @@ TEST_F(AppListViewTest, ShowFullscreenWhenInTabletMode) {
 }
 
 // Tests that setting empty text in the search box does not change the state.
-TEST_F(AppListViewTest, EmptySearchTextStillPeeking) {
+TEST_F(AppListViewPeekingTest, EmptySearchTextStillPeeking) {
   Initialize(false /*is_tablet_mode*/);
   views::Textfield* search_box =
       view_->app_list_main_view()->search_box_view()->search_box();
@@ -1808,12 +2067,13 @@ TEST_F(AppListViewTest, EmptySearchTextStillPeeking) {
   ASSERT_EQ(ash::AppListViewState::kPeeking, view_->app_list_state());
 }
 
-TEST_F(AppListViewTest, UpwardMouseWheelScrollTransitionsToFullscreen) {
+TEST_F(AppListViewPeekingTest, UpwardMouseWheelScrollTransitionsToFullscreen) {
   base::HistogramTester histogram_tester;
 
   Initialize(false /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
+  EXPECT_EQ(AppListViewState::kPeeking, view_->app_list_state());
 
   view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, 30),
                       ui::ET_MOUSEWHEEL);
@@ -1843,7 +2103,8 @@ TEST_F(AppListViewTest, UpwardMouseWheelScrollTransitionsToFullscreen) {
   ASSERT_EQ(1, delegate_->dismiss_count());
 }
 
-TEST_F(AppListViewTest, DownwardMouseWheelScrollDismissesPeekingLauncher) {
+TEST_F(AppListViewPeekingTest,
+       DownwardMouseWheelScrollDismissesPeekingLauncher) {
   Initialize(false /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
@@ -1856,11 +2117,12 @@ TEST_F(AppListViewTest, DownwardMouseWheelScrollDismissesPeekingLauncher) {
   EXPECT_EQ(1, delegate_->dismiss_count());
 }
 
-TEST_F(AppListViewTest, UpwardGestureScrollTransitionsToFullscreen) {
+TEST_F(AppListViewPeekingTest, UpwardGestureScrollTransitionsToFullscreen) {
   base::HistogramTester histogram_tester;
   Initialize(false /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
+  EXPECT_EQ(AppListViewState::kPeeking, view_->app_list_state());
 
   view_->HandleScroll(gfx::Point(0, 0), gfx::Vector2d(0, 30), ui::ET_SCROLL);
 
@@ -1871,7 +2133,7 @@ TEST_F(AppListViewTest, UpwardGestureScrollTransitionsToFullscreen) {
       "Apps.StateTransition.Drag.PresentationTime.ClamshellMode", 0);
 }
 
-TEST_F(AppListViewTest, DownwardGestureScrollDismissesPeekingLauncher) {
+TEST_F(AppListViewPeekingTest, DownwardGestureScrollDismissesPeekingLauncher) {
   Initialize(false /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
@@ -1884,7 +2146,7 @@ TEST_F(AppListViewTest, DownwardGestureScrollDismissesPeekingLauncher) {
 }
 
 // Tests that typing text after opening transitions from peeking to half.
-TEST_F(AppListViewTest, TypingPeekingToHalf) {
+TEST_F(AppListViewPeekingTest, TypingPeekingToHalf) {
   Initialize(false /*is_tablet_mode*/);
   views::Textfield* search_box =
       view_->app_list_main_view()->search_box_view()->search_box();
@@ -1899,7 +2161,7 @@ TEST_F(AppListViewTest, TypingPeekingToHalf) {
 }
 
 // Tests that typing when in fullscreen changes the state to fullscreen search.
-TEST_F(AppListViewTest, TypingFullscreenToFullscreenSearch) {
+TEST_F(AppListViewPeekingTest, TypingFullscreenToFullscreenSearch) {
   Initialize(false /*is_tablet_mode*/);
   Show();
   view_->SetState(ash::AppListViewState::kFullscreenAllApps);
@@ -1931,7 +2193,7 @@ TEST_F(AppListViewTest, TypingTabletModeFullscreenSearch) {
 }
 
 // Tests that pressing escape when in peeking closes the app list.
-TEST_F(AppListViewTest, EscapeKeyPeekingToClosed) {
+TEST_F(AppListViewPeekingTest, EscapeKeyPeekingToClosed) {
   Initialize(false /*is_tablet_mode*/);
 
   Show();
@@ -1941,7 +2203,7 @@ TEST_F(AppListViewTest, EscapeKeyPeekingToClosed) {
 }
 
 // Tests that pressing escape when in half screen changes the state to peeking.
-TEST_F(AppListViewTest, EscapeKeyHalfToPeeking) {
+TEST_F(AppListViewPeekingTest, EscapeKeyHalfToPeeking) {
   Initialize(false /*is_tablet_mode*/);
 
   Show();
@@ -1952,7 +2214,7 @@ TEST_F(AppListViewTest, EscapeKeyHalfToPeeking) {
 }
 
 // Tests that pressing escape when in fullscreen changes the state to closed.
-TEST_F(AppListViewTest, EscapeKeyFullscreenToClosed) {
+TEST_F(AppListViewPeekingTest, EscapeKeyFullscreenToClosed) {
   Initialize(false /*is_tablet_mode*/);
   view_->SetState(ash::AppListViewState::kFullscreenAllApps);
 
@@ -1963,20 +2225,20 @@ TEST_F(AppListViewTest, EscapeKeyFullscreenToClosed) {
 }
 
 // Tests that pressing escape when in fullscreen side-shelf closes the app list.
-TEST_F(AppListViewTest, EscapeKeySideShelfFullscreenToClosed) {
+TEST_F(AppListViewPeekingTest, EscapeKeySideShelfFullscreenToClosed) {
   // Put into fullscreen by using side-shelf.
   Initialize(false /*is_tablet_mode*/);
 
-  Show();
+  Show(/*is_side_shelf=*/true);
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
 
   ASSERT_EQ(1, delegate_->dismiss_count());
 }
 
 // Tests that pressing escape when in tablet mode keeps app list in fullscreen.
-TEST_F(AppListViewTest, EscapeKeyTabletModeStayFullscreen) {
+TEST_P(AppListViewTabletTest, EscapeKeyTabletModeStayFullscreen) {
   // Put into fullscreen by using tablet mode.
-  Initialize(true /*is_tablet_mode*/);
+  Initialize(/*is_tablet_mode=*/true);
 
   Show();
   view_->AcceleratorPressed(ui::Accelerator(ui::VKEY_ESCAPE, ui::EF_NONE));
@@ -1985,7 +2247,7 @@ TEST_F(AppListViewTest, EscapeKeyTabletModeStayFullscreen) {
 }
 
 // Tests that pressing escape when in fullscreen search changes to fullscreen.
-TEST_F(AppListViewTest, EscapeKeyFullscreenSearchToFullscreen) {
+TEST_F(AppListViewPeekingTest, EscapeKeyFullscreenSearchToFullscreen) {
   Initialize(false /*is_tablet_mode*/);
   Show();
   view_->SetState(ash::AppListViewState::kFullscreenAllApps);
@@ -1997,7 +2259,7 @@ TEST_F(AppListViewTest, EscapeKeyFullscreenSearchToFullscreen) {
 }
 
 // Tests that pressing escape when in sideshelf search changes to fullscreen.
-TEST_F(AppListViewTest, EscapeKeySideShelfSearchToFullscreen) {
+TEST_F(AppListViewPeekingTest, EscapeKeySideShelfSearchToFullscreen) {
   // Put into fullscreen using side-shelf.
   Initialize(false /*is_tablet_mode*/);
 
@@ -2010,7 +2272,7 @@ TEST_F(AppListViewTest, EscapeKeySideShelfSearchToFullscreen) {
 
 // Tests that in fullscreen, the app list has multiple pages with enough apps.
 TEST_F(AppListViewTest, PopulateAppsCreatesAnotherPage) {
-  Initialize(false /*is_tablet_mode*/);
+  Initialize(/*is_tablet_mode=*/true);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
 
   Show();
@@ -2031,7 +2293,7 @@ TEST_F(AppListViewTest, EscapeKeyTabletModeSearchToFullscreen) {
 }
 
 // Tests that opening in peeking mode sets the correct height.
-TEST_P(AppListViewTest, OpenInPeekingCorrectHeight) {
+TEST_F(AppListViewPeekingTest, OpenInPeekingCorrectHeight) {
   Initialize(false /*is_tablet_mode*/);
 
   Show();
@@ -2040,8 +2302,8 @@ TEST_P(AppListViewTest, OpenInPeekingCorrectHeight) {
             view_->GetCurrentAppListHeight());
 }
 
-// Tests that opening in peeking mode sets the correct height.
-TEST_F(AppListViewTest, OpenInFullscreenCorrectHeight) {
+// Tests that opening in fullscreen mode sets the correct height.
+TEST_F(AppListViewPeekingTest, OpenInFullscreenCorrectHeight) {
   Initialize(false /*is_tablet_mode*/);
 
   Show();
@@ -2052,7 +2314,7 @@ TEST_F(AppListViewTest, OpenInFullscreenCorrectHeight) {
 
 // Tests that AppListView::SetState succeeds when the state has been set to
 // CLOSED.
-TEST_F(AppListViewTest, SetStateFailsWhenClosing) {
+TEST_F(AppListViewPeekingTest, SetStateFailsWhenClosing) {
   Initialize(false /*is_tablet_mode*/);
   Show();
   view_->SetState(ash::AppListViewState::kClosed);
@@ -2062,7 +2324,7 @@ TEST_F(AppListViewTest, SetStateFailsWhenClosing) {
   ASSERT_EQ(ash::AppListViewState::kFullscreenAllApps, view_->app_list_state());
 }
 
-TEST_F(AppListViewTest, AppsGridViewVisibilityOnReopening) {
+TEST_F(AppListViewPeekingTest, AppsGridViewVisibilityOnReopening) {
   Initialize(false /*is_tablet_mode*/);
   Show();
   view_->SetState(ash::AppListViewState::kFullscreenAllApps);
@@ -2079,7 +2341,7 @@ TEST_F(AppListViewTest, AppsGridViewVisibilityOnReopening) {
   EXPECT_TRUE(IsViewVisibleOnScreen(apps_grid_view()));
 }
 
-TEST_F(AppListViewTest, AppsGridViewExpandHintingOnReopening) {
+TEST_F(AppListViewPeekingTest, AppsGridViewExpandHintingOnReopening) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
   Initialize(false /*is_tablet_mode*/);
@@ -2101,7 +2363,7 @@ TEST_F(AppListViewTest, AppsGridViewExpandHintingOnReopening) {
 
 // Tests that going into a folder view, then setting the AppListState to PEEKING
 // hides the folder view.
-TEST_F(AppListViewTest, FolderViewToPeeking) {
+TEST_F(AppListViewPeekingTest, FolderViewToPeeking) {
   Initialize(false /*is_tablet_mode*/);
   AppListTestModel* model = delegate_->GetTestModel();
   model->PopulateApps(kInitialItems);
@@ -2129,8 +2391,8 @@ TEST_F(AppListViewTest, FolderViewToPeeking) {
 }
 
 // Tests that a tap or click in an empty region of the AppsGridView closes the
-// AppList.
-TEST_F(AppListViewTest, TapAndClickWithinAppsGridView) {
+// AppList. ProductivityLauncher does not have this behavior.
+TEST_F(AppListViewPeekingTest, TapAndClickWithinAppsGridView) {
   Initialize(false /*is_tablet_mode*/);
   // Populate the AppList with a small number of apps so there is an empty
   // region to click.
@@ -2174,7 +2436,7 @@ TEST_F(AppListViewTest, TapAndClickWithinAppsGridView) {
 }
 
 // Tests that search box should not become a rectangle during drag.
-TEST_F(AppListViewTest, SearchBoxCornerRadiusDuringDragging) {
+TEST_F(AppListViewPeekingTest, SearchBoxCornerRadiusDuringDragging) {
   base::HistogramTester histogram_tester;
   Initialize(false /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
@@ -2244,9 +2506,33 @@ TEST_F(AppListViewTest, SearchBoxCornerRadiusDuringDragging) {
 }
 
 // Tests displaying the app list and performs a standard set of checks on its
-// top level views. Then closes the window.
-TEST_F(AppListViewTest, DisplayTest) {
-  Initialize(false /*is_tablet_mode*/);
+// top level views.
+TEST_F(AppListViewPeekingTest, DisplayTest) {
+  Initialize(/*is_tablet_mode=*/false);
+  EXPECT_EQ(-1, GetPaginationModel()->total_pages());
+  delegate_->GetTestModel()->PopulateApps(kInitialItems);
+
+  Show();
+
+  // |view_| bounds equal to the root window's size.
+  EXPECT_EQ("800x600", view_->bounds().size().ToString());
+
+  EXPECT_EQ(2, GetPaginationModel()->total_pages());
+  EXPECT_EQ(0, GetPaginationModel()->selected_page());
+
+  // Checks on the main view.
+  AppListMainView* main_view = view_->app_list_main_view();
+  EXPECT_NO_FATAL_FAILURE(CheckView(main_view));
+  EXPECT_NO_FATAL_FAILURE(CheckView(main_view->contents_view()));
+
+  ash::AppListState expected = ash::AppListState::kStateApps;
+  EXPECT_TRUE(main_view->contents_view()->IsStateActive(expected));
+  EXPECT_EQ(expected, delegate_->GetCurrentAppListPage());
+}
+
+// As above above, but tests tablet mode with and without ProductivityLauncher.
+TEST_P(AppListViewTabletTest, DisplayTest) {
+  Initialize(/*is_tablet_mode=*/true);
   EXPECT_EQ(-1, GetPaginationModel()->total_pages());
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
 
@@ -2269,11 +2555,13 @@ TEST_F(AppListViewTest, DisplayTest) {
 }
 
 // Tests switching rapidly between multiple pages of the launcher.
-TEST_F(AppListViewTest, PageSwitchingAnimationTest) {
+// ProductivityLauncher has tests of animated page transitions in the tests for
+// AppListBubbleView and AppListBubbleAppsPage.
+TEST_F(AppListViewPeekingTest, PageSwitchingAnimationTest) {
   ui::ScopedAnimationDurationScaleMode non_zero_duration(
       ui::ScopedAnimationDurationScaleMode::NON_ZERO_DURATION);
 
-  Initialize(false /*is_tablet_mode*/);
+  Initialize(/*is_tablet_mode=*/false);
   Show();
   AppListMainView* main_view = view_->app_list_main_view();
   // Checks on the main view.
@@ -2427,7 +2715,7 @@ TEST_F(AppListViewTest, DISABLED_BackTest) {
 }
 
 // Tests that a context menu can be shown between app icons in tablet mode.
-TEST_F(AppListViewTest, ShowContextMenuBetweenAppsInTabletMode) {
+TEST_P(AppListViewTabletTest, ShowContextMenuBetweenAppsInTabletMode) {
   Initialize(true /*is_tablet_mode*/);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
@@ -2458,7 +2746,7 @@ TEST_F(AppListViewTest, ShowContextMenuBetweenAppsInTabletMode) {
 }
 
 // Tests that context menus are not shown between app icons in clamshell mode.
-TEST_F(AppListViewTest, DontShowContextMenuBetweenAppsInClamshellMode) {
+TEST_F(AppListViewPeekingTest, DontShowContextMenuBetweenAppsInClamshellMode) {
   Initialize(false /* disable tablet mode */);
   delegate_->GetTestModel()->PopulateApps(kInitialItems);
   Show();
@@ -2588,7 +2876,7 @@ TEST_F(AppListViewTest, InitialPageResetClamshellModeTest) {
 
 // Tests that, in tablet mode, the current app list page doesn't immediately
 // reset to the initial page when app list is closed and re-opened.
-TEST_F(AppListViewTest, PagePersistanceTabletModeTest) {
+TEST_P(AppListViewTabletTest, PagePersistanceTabletModeTest) {
   Initialize(true /*is_tablet_mode*/);
 
   AppListTestModel* model = delegate_->GetTestModel();
@@ -2611,12 +2899,9 @@ TEST_F(AppListViewTest, PagePersistanceTabletModeTest) {
 }
 
 // Tests selecting search result to show embedded Assistant UI.
-TEST_F(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures(
-      {app_list_features::kEnableAssistantSearch}, {});
-  ASSERT_TRUE(app_list_features::IsAssistantSearchEnabled());
-
+// TODO(https://crbug.com/1280300): Figure out if ProductivityLauncher needs a
+// version of this test. ProductivityLauncherSearchView has its own test suite.
+TEST_F(AppListViewPeekingFocusTest, ShowEmbeddedAssistantUI) {
   Show();
 
   // Initially the search box is inactive, hitting Enter to activate it.
@@ -2647,7 +2932,7 @@ TEST_F(AppListViewFocusTest, ShowEmbeddedAssistantUI) {
 
 // Tests that the correct contents is visible in the contents_view upon
 // reshowing. See b/142069648 for the details.
-TEST_F(AppListViewTest, AppsGridVisibilityOnResetForShow) {
+TEST_F(AppListViewPeekingTest, AppsGridVisibilityOnResetForShow) {
   Initialize(true /*is_tablet_mode*/);
   Show();
 
@@ -2686,7 +2971,7 @@ TEST_F(AppListViewTest, EscapeKeyInEmbeddedAssistantUIReturnsToAppList) {
 
 // Tests that pressing escape in embedded Assistant UI returns to peeking
 // if the Assistant UI was launched from half screen.
-TEST_F(AppListViewTest, EscapeKeyInEmbeddedAssistantUIReturnsToPeeking) {
+TEST_F(AppListViewPeekingTest, EscapeKeyInEmbeddedAssistantUIReturnsToPeeking) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
@@ -2705,7 +2990,7 @@ TEST_F(AppListViewTest, EscapeKeyInEmbeddedAssistantUIReturnsToPeeking) {
 
 // Tests that clicking empty region in AppListview when showing Assistant UI
 // should go back to peeking state.
-TEST_F(AppListViewTest, ClickOutsideEmbeddedAssistantUIToPeeking) {
+TEST_F(AppListViewPeekingTest, ClickOutsideEmbeddedAssistantUIToPeeking) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
@@ -2734,7 +3019,8 @@ TEST_F(AppListViewTest, ClickOutsideEmbeddedAssistantUIToPeeking) {
 }
 
 // Tests that expand arrow is not visible when showing embedded Assistant UI.
-TEST_F(AppListViewTest, ExpandArrowNotVisibleInEmbeddedAssistantUI) {
+// ProductivityLauncher does not have an expand arrow.
+TEST_F(AppListViewPeekingTest, ExpandArrowNotVisibleInEmbeddedAssistantUI) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
@@ -2748,9 +3034,10 @@ TEST_F(AppListViewTest, ExpandArrowNotVisibleInEmbeddedAssistantUI) {
             contents_view()->expand_arrow_view()->layer()->GetTargetOpacity());
 }
 
-// Tests the expand arrow view opacity updtes correctly when transitioning
-// between various app list view states.
-TEST_F(AppListViewTest, ExpandArrowViewVisibilityTest) {
+// Tests the expand arrow view opacity updates correctly when transitioning
+// between various app list view states. ProductivityLauncher does not have an
+// expand arrow.
+TEST_F(AppListViewPeekingTest, ExpandArrowViewVisibilityTest) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
@@ -2778,9 +3065,11 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityTest) {
   ASSERT_EQ(contents_view()->expand_arrow_view()->layer()->opacity(), 1.0f);
 }
 
-// Tests the expand arrow view opacity updtes correctly when transitioning
+// Tests the expand arrow view opacity updates correctly when transitioning
 // between various app list view states with app list state animations enabled.
-TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
+// ProductivityLauncher does not have an expand arrow.
+TEST_F(AppListViewPeekingTest,
+       ExpandArrowViewVisibilityWithStateAnimationsTest) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
@@ -2815,7 +3104,8 @@ TEST_F(AppListViewTest, ExpandArrowViewVisibilityWithStateAnimationsTest) {
 }
 
 // Tests that search box is not visible when showing embedded Assistant UI.
-TEST_F(AppListViewTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
+// ProductivityLauncher has tests for this in AppListBubbleViewTest.
+TEST_F(AppListViewPeekingTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
   Initialize(false /*is_tablet_mode*/);
   Show();
 
@@ -2828,8 +3118,8 @@ TEST_F(AppListViewTest, SearchBoxViewNotVisibleInEmbeddedAssistantUI) {
 }
 
 // Tests that the expand arrow cannot be seen when opening the app list with
-// side shelf enabled.
-TEST_F(AppListViewTest, ExpandArrowNotVisibleWithSideShelf) {
+// side shelf enabled. ProductivityLauncher does not have an expand arrow.
+TEST_F(AppListViewPeekingTest, ExpandArrowNotVisibleWithSideShelf) {
   Initialize(false /*is_tablet_mode*/);
 
   Show(true /*is_side_shelf*/);
@@ -2837,9 +3127,779 @@ TEST_F(AppListViewTest, ExpandArrowNotVisibleWithSideShelf) {
   EXPECT_EQ(0.0f, contents_view()->expand_arrow_view()->layer()->opacity());
 }
 
+TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularLandscapeScreen) {
+  const gfx::Size window_size = gfx::Size(1000, 800);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularLandscapeScreenAtMinPreferredVerticalMargin) {
+  const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
+      /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/8);
+  EXPECT_EQ(680, window_height);
+  const gfx::Size window_size = gfx::Size(800, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 2 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularLandscapeScreenWithRemovedRows) {
+  const int window_height =
+      GetExpectedProductivityLauncherAppsContainerHeight(
+          /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/8) -
+      4;
+  EXPECT_EQ(676, window_height);
+  const gfx::Size window_size = gfx::Size(800, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 2 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularLandscapeScreenAtMaxPreferredVerticalMargin) {
+  const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
+      /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/96);
+  EXPECT_EQ(944, window_height);
+  const gfx::Size window_size = gfx::Size(1000, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularLandscapeScreenWithAddedRows) {
+  const int window_height =
+      GetExpectedProductivityLauncherAppsContainerHeight(
+          /*row_count=*/4, /*tile_size=*/120, /*tile_margin=*/96) +
+      6;
+  EXPECT_EQ(950, window_height);
+  const gfx::Size window_size = gfx::Size(1000, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/5, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest, RegularPortraitScreen) {
+  const gfx::Size window_size = gfx::Size(800, 1000);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/5, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularPortraitScreenAtMinPreferredVerticalMargin) {
+  const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
+      /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/8);
+  EXPECT_EQ(808, window_height);
+  const gfx::Size window_size = gfx::Size(700, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/5, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularPortraitScreenWithRemovedRows) {
+  const int window_height =
+      GetExpectedProductivityLauncherAppsContainerHeight(
+          /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/8) -
+      8;
+  EXPECT_EQ(800, window_height);
+  const gfx::Size window_size = gfx::Size(700, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularPortraitScreenAtMaxPreferredVerticalMargin) {
+  const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
+      /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/96);
+  EXPECT_EQ(1160, window_height);
+  const gfx::Size window_size = gfx::Size(1200, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin = 104;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/5, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularPortraitScreenWithExtraRows) {
+  const int window_height =
+      GetExpectedProductivityLauncherAppsContainerHeight(
+          /*row_count=*/5, /*tile_size=*/120, /*tile_margin=*/96) +
+      4;
+  EXPECT_EQ(1164, window_height);
+  const gfx::Size window_size = gfx::Size(1200, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin = 104;
+  const gfx::Size expected_item_size(96, 120);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/6, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest, DenseLandscapeScreen) {
+  const gfx::Size window_size = gfx::Size(800, 600);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DenseLandscapeScreenAtMinPreferredVerticalMargin) {
+  const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
+      /*row_count=*/4, /*tile_size=*/88, /*tile_margin=*/8);
+  EXPECT_EQ(552, window_height);
+  const gfx::Size window_size = gfx::Size(800, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 2 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DenseLandscapeScreenWithRemovedRows) {
+  const int window_height =
+      GetExpectedProductivityLauncherAppsContainerHeight(
+          /*row_count=*/4, /*tile_size=*/88, /*tile_margin=*/8) -
+      4;
+  EXPECT_EQ(548, window_height);
+  const gfx::Size window_size = gfx::Size(800, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(3, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 2 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest, DensePortraitScreen) {
+  const gfx::Size window_size = gfx::Size(600, 800);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/5, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DensePortraitScreenAtMinPreferredVerticalMargin) {
+  const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
+      /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/8);
+  EXPECT_EQ(648, window_height);
+  const gfx::Size window_size = gfx::Size(600, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/5, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DensePortraitScreenWithRemovedRows) {
+  const int window_height =
+      GetExpectedProductivityLauncherAppsContainerHeight(
+          /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/8) -
+      8;
+  EXPECT_EQ(640, window_height);
+  const gfx::Size window_size = gfx::Size(500, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, 3 /*row_count*/, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DensePortraitScreenAtMaxPreferredVerticalMargin) {
+  const int window_height = GetExpectedProductivityLauncherAppsContainerHeight(
+      /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/96);
+  EXPECT_EQ(1000, window_height);
+  const gfx::Size window_size = gfx::Size(600, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/5, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DensePortraitScreenWithExtraRows) {
+  const int window_height =
+      GetExpectedProductivityLauncherAppsContainerHeight(
+          /*row_count=*/5, /*tile_size=*/88, /*tile_margin=*/96) +
+      4;
+  EXPECT_EQ(1004, window_height);
+  const gfx::Size window_size = gfx::Size(600, window_height);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+
+  {
+    SCOPED_TRACE("Only apps grid");
+    EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/6, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/false);
+  }
+
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  {
+    SCOPED_TRACE("With recent apps");
+    EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
+    VerifyAppsContainerLayoutForProductivityLauncher(
+        window_size, /*row_count=*/4, expected_horizontal_margin,
+        expected_item_size, /*has_recent_apps=*/true);
+  }
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DenseAppsGridPaddingScaledDownToMakeRoomForPageSwitcher) {
+  // Select window width so using non-zero horizontal padding would result in
+  // lack of space for the page switcher.
+  const gfx::Size window_size = gfx::Size(472, 800);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+  EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/5, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/false);
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DenseAppsGridScaledDownToMakeRoomForPageSwitcher) {
+  // Select window width so using default icon width would result in lack of
+  // space for the page switcher.
+  const gfx::Size window_size = gfx::Size(442, 800);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(66, 88);
+  EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/5, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/false);
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DenseAppsGridWithMaxHorizontalItemMargins) {
+  // Select window width that results in apps grid layout with max allowed
+  // horizontal margin (128): 2 * 56 (min horizontal margin) + 4 * 128 + 5 * 72
+  const gfx::Size window_size = gfx::Size(984, 600);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+  EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/4, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/false);
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       DenseAppsGridHorizontalItemMarginsBounded) {
+  // Select window width that results in apps grid layout with max allowed
+  // horizontal margin (128), i.e. larger than
+  // 2 * 56 (min horizontal margin) + 4 * 128 * 5 * 72
+  const gfx::Size window_size = gfx::Size(1000, 600);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin = 64;
+  const gfx::Size expected_item_size(72, 88);
+  EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/4, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/false);
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularAppsGridWithMaxHorizontalItemMargins) {
+  // Select window width that results in apps grid layout with max allowed
+  // horizontal margin (128):
+  // 2 * 56 (min horizontal margin) + 4 * 128 * 5 * 96
+  const gfx::Size window_size = gfx::Size(1104, 1200);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(96, 120);
+  EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/6, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/false);
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       RegularAppsGridHorizontalItemMarginsBounded) {
+  // Select window width that results in apps grid layout with max allowed
+  // horizontal margin (128), i.e. larger than
+  // 2 * 56 (min horizontal margin) + 4 * 128 * 5 * 96
+  const gfx::Size window_size = gfx::Size(1116, 1200);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin = 62;
+  const gfx::Size expected_item_size(96, 120);
+  EXPECT_EQ(6, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/6, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/false);
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest, LayoutAfterConfigChange) {
+  const gfx::Size window_size = gfx::Size(600, 800);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+  EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/5, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/false);
+
+  const gfx::Size updated_window_size = gfx::Size(1000, 800);
+  GetContext()->SetBounds(gfx::Rect(updated_window_size));
+  view_->OnParentWindowBoundsChanged();
+
+  const gfx::Size expected_updated_item_size(96, 120);
+  EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      updated_window_size, /*row_count=*/4, expected_horizontal_margin,
+      expected_updated_item_size, /*has_recent_apps=*/false);
+}
+
+TEST_F(ProductivityLauncherAppListViewLayoutTest,
+       LayoutAfterConfigChangeWithRecentApps) {
+  const gfx::Size window_size = gfx::Size(600, 800);
+  GetContext()->SetBounds(gfx::Rect(window_size));
+
+  InitializeAppList();
+  AddRecentApps(4);
+  contents_view()->ResetForShow();
+
+  const int expected_horizontal_margin =
+      kMinProductivityLauncherGridHorizontalMargin;
+  const gfx::Size expected_item_size(72, 88);
+  EXPECT_EQ(5, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      window_size, /*row_count=*/4, expected_horizontal_margin,
+      expected_item_size, /*has_recent_apps=*/true);
+
+  const gfx::Size updated_window_size = gfx::Size(1000, 800);
+  GetContext()->SetBounds(gfx::Rect(updated_window_size));
+  view_->OnParentWindowBoundsChanged();
+
+  const gfx::Size expected_updated_item_size(96, 120);
+  EXPECT_EQ(4, apps_grid_view()->GetRowsForTesting());
+  VerifyAppsContainerLayoutForProductivityLauncher(
+      updated_window_size, /*row_count=*/3, expected_horizontal_margin,
+      expected_updated_item_size, /*has_recent_apps=*/true);
+}
+
 // Tests fullscreen apps grid sizing and layout for small screens (width < 960)
 // in landscape layout.
-TEST_F(AppListViewScalableLayoutTest,
+TEST_F(LegacyLauncherAppListViewLayoutTest,
        AppListViewLayoutForSmallLandscapeScreen) {
   const gfx::Size window_size = gfx::Size(800, 600);
   gfx::NativeView parent = GetContext();
@@ -2860,7 +3920,8 @@ TEST_F(AppListViewScalableLayoutTest,
 
 // Tests fullscreen apps grid sizing and layout for small screens (width < 600)
 // in portrait layout.
-TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutForSmallPortraitScreen) {
+TEST_F(LegacyLauncherAppListViewLayoutTest,
+       AppListViewLayoutForSmallPortraitScreen) {
   const gfx::Size window_size = gfx::Size(500, 800);
   gfx::NativeView parent = GetContext();
   parent->SetBounds(gfx::Rect(window_size));
@@ -2880,7 +3941,7 @@ TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutForSmallPortraitScreen) {
 
 // Tests fullscreen apps grid sizing and layout for medium sized screens
 // (width < 1200) in lanscape layout.
-TEST_F(AppListViewScalableLayoutTest,
+TEST_F(LegacyLauncherAppListViewLayoutTest,
        AppListViewLayoutForMediumLandscapeScreen) {
   const gfx::Size window_size = gfx::Size(960, 800);
   gfx::NativeView parent = GetContext();
@@ -2904,7 +3965,7 @@ TEST_F(AppListViewScalableLayoutTest,
 
 // Tests fullscreen apps grid sizing and layout for medium sized screens
 // (width < 768) in portrait layout.
-TEST_F(AppListViewScalableLayoutTest,
+TEST_F(LegacyLauncherAppListViewLayoutTest,
        AppListViewLayoutForMediumPortraitScreen) {
   const gfx::Size window_size = gfx::Size(700, 800);
   gfx::NativeView parent = GetContext();
@@ -2925,7 +3986,7 @@ TEST_F(AppListViewScalableLayoutTest,
 
 // Tests fullscreen apps grid sizing and layout for large screens
 // (width >= 1200) in landscape layout.
-TEST_F(AppListViewScalableLayoutTest,
+TEST_F(LegacyLauncherAppListViewLayoutTest,
        AppListViewLayoutForLargeLandscapeScreen) {
   const gfx::Size window_size = gfx::Size(1200, 960);
   gfx::NativeView parent = GetContext();
@@ -2949,7 +4010,8 @@ TEST_F(AppListViewScalableLayoutTest,
 
 // Tests fullscreen apps grid sizing and layout for large screens (width >= 768)
 // in portrait layout.
-TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutForLargePortraitScreen) {
+TEST_F(LegacyLauncherAppListViewLayoutTest,
+       AppListViewLayoutForLargePortraitScreen) {
   const gfx::Size window_size = gfx::Size(800, 1200);
   gfx::NativeView parent = GetContext();
   parent->SetBounds(gfx::Rect(window_size));
@@ -2969,7 +4031,8 @@ TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutForLargePortraitScreen) {
 
 // Tests that apps grid horizontal margin have minimum that ensures the page
 // switcher view can fit next to the apps grid.
-TEST_F(AppListViewScalableLayoutTest, EnsurePageSwitcherFitsAppsGridMargin) {
+TEST_F(LegacyLauncherAppListViewLayoutTest,
+       EnsurePageSwitcherFitsAppsGridMargin) {
   const gfx::Size window_size = gfx::Size(440, 800);
   gfx::NativeView parent = GetContext();
   parent->SetBounds(gfx::Rect(window_size));
@@ -2993,7 +4056,8 @@ TEST_F(AppListViewScalableLayoutTest, EnsurePageSwitcherFitsAppsGridMargin) {
 // Verifies that the vertical spacing between items in apps grid has an upper
 // limit, and that the apps grid is centered in the available space if item
 // spacing hits that limit.
-TEST_F(AppListViewScalableLayoutTest, VerticalAppsGridItemSpacingIsBounded) {
+TEST_F(LegacyLauncherAppListViewLayoutTest,
+       VerticalAppsGridItemSpacingIsBounded) {
   const gfx::Size window_size = gfx::Size(960, 1600);
   gfx::NativeView parent = GetContext();
   parent->SetBounds(gfx::Rect(window_size));
@@ -3019,7 +4083,7 @@ TEST_F(AppListViewScalableLayoutTest, VerticalAppsGridItemSpacingIsBounded) {
 
 // Verifies that the vertical apps container margin is big enough to fit the
 // apps grid fadeout area.
-TEST_F(AppListViewScalableLayoutTest,
+TEST_F(LegacyLauncherAppListViewLayoutTest,
        VerticalAppsContainerMarginFitFadeoutArea) {
   const gfx::Size window_size(650, 536);
   gfx::NativeView parent = GetContext();
@@ -3042,7 +4106,8 @@ TEST_F(AppListViewScalableLayoutTest,
 
 // Tests fullscreen apps grid sizing and layout gets updated to correct bounds
 // when app list config changes.
-TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutAfterConfigChange) {
+TEST_F(LegacyLauncherAppListViewLayoutTest,
+       AppListViewLayoutAfterConfigChange) {
   const gfx::Size window_size = gfx::Size(500, 800);
   gfx::NativeView parent = GetContext();
   parent->SetBounds(gfx::Rect(window_size));
@@ -3070,8 +4135,8 @@ TEST_F(AppListViewScalableLayoutTest, AppListViewLayoutAfterConfigChange) {
 }
 
 // Tests that page switching in folder doesn't record AppListPageSwitcherSource
-// metric.
-TEST_F(AppListViewFocusTest, PageSwitchingNotRecordingMetric) {
+// metric. ProductivityLauncher does not use pages in folders.
+TEST_F(AppListViewPeekingFocusTest, PageSwitchingNotRecordingMetric) {
   base::HistogramTester histogram_tester;
   Show();
 
@@ -3095,5 +4160,6 @@ TEST_F(AppListViewFocusTest, PageSwitchingNotRecordingMetric) {
   histogram_tester.ExpectTotalCount("Apps.AppListPageSwitcherSource", 0);
 }
 
+}  // namespace
 }  // namespace test
 }  // namespace ash

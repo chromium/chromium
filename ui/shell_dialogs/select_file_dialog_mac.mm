@@ -53,6 +53,9 @@ void SelectFileDialogImpl::FileWasSelected(
   void* params = dialog_data->params;
   dialog_data_list_.erase(it);
 
+  if (dialog_closed_callback_for_testing_)
+    dialog_closed_callback_for_testing_.Run();
+
   if (!listener_)
     return;
 
@@ -166,7 +169,7 @@ SelectFileDialogImpl::~SelectFileDialogImpl() {
       listener_->FileSelectionCanceled(dialog_data.params);
   }
 
-  // Cancel the NSSavePanels be destroying their bridges.
+  // Cancel the NSSavePanels by destroying their bridges.
   dialog_data_list_.clear();
 }
 

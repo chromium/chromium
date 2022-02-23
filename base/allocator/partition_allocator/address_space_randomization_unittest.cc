@@ -4,6 +4,7 @@
 
 #include "base/allocator/partition_allocator/address_space_randomization.h"
 
+#include <cstdint>
 #include <vector>
 
 #include "base/allocator/partition_allocator/page_allocator.h"
@@ -12,14 +13,14 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/windows_version.h"
 // versionhelpers.h must be included after windows.h.
 #include <versionhelpers.h>
 #endif
 
-namespace base {
+namespace partition_alloc {
 
 namespace {
 
@@ -27,20 +28,20 @@ uintptr_t GetMask() {
   uintptr_t mask = internal::ASLRMask();
 #if defined(ARCH_CPU_64_BITS)
 // Sanitizers use their own ASLR mask constant.
-#if defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
+#if BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)
   if (!IsWindows8Point1OrGreater()) {
     mask = internal::ASLRMaskBefore8_10();
   }
-#endif  // defined(OS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR))
+#endif  // BUILDFLAG(IS_WIN) && !defined(MEMORY_TOOL_REPLACES_ALLOCATOR))
 #elif defined(ARCH_CPU_32_BITS)
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   BOOL is_wow64 = FALSE;
   if (!IsWow64Process(GetCurrentProcess(), &is_wow64))
     is_wow64 = FALSE;
   if (!is_wow64) {
     mask = 0;
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 #endif  // defined(ARCH_CPU_32_BITS)
   return mask;
 }
@@ -48,7 +49,7 @@ uintptr_t GetMask() {
 const size_t kSamples = 100;
 
 uintptr_t GetAddressBits() {
-  return reinterpret_cast<uintptr_t>(base::GetRandomPageBase());
+  return GetRandomPageBase();
 }
 
 uintptr_t GetRandomBits() {
@@ -61,12 +62,12 @@ uintptr_t GetRandomBits() {
 TEST(PartitionAllocAddressSpaceRandomizationTest, DisabledASLR) {
   uintptr_t mask = GetMask();
   if (!mask) {
-#if defined(OS_WIN) && defined(ARCH_CPU_32_BITS)
+#if BUILDFLAG(IS_WIN) && defined(ARCH_CPU_32_BITS)
     // ASLR should be turned off on 32-bit Windows.
-    EXPECT_EQ(nullptr, base::GetRandomPageBase());
+    EXPECT_EQ(0u, GetRandomPageBase());
 #else
-    // Otherwise, nullptr is very unexpected.
-    EXPECT_NE(nullptr, base::GetRandomPageBase());
+    // Otherwise, 0 is very unexpected.
+    EXPECT_NE(0u, GetRandomPageBase());
 #endif
   }
 }
@@ -78,7 +79,8 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Alignment) {
 
   for (size_t i = 0; i < kSamples; ++i) {
     uintptr_t address = GetAddressBits();
-    EXPECT_EQ(0ULL, (address & PageAllocationGranularityOffsetMask()));
+    EXPECT_EQ(0ULL,
+              (address & internal::PageAllocationGranularityOffsetMask()));
   }
 }
 
@@ -102,19 +104,17 @@ TEST(PartitionAllocAddressSpaceRandomizationTest, Predictable) {
     return;
 
   const uint64_t kInitialSeed = 0xfeed5eedULL;
-  base::SetMmapSeedForTesting(kInitialSeed);
+  SetMmapSeedForTesting(kInitialSeed);
 
   std::vector<uintptr_t> sequence;
   for (size_t i = 0; i < kSamples; ++i) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(base::GetRandomPageBase());
-    sequence.push_back(address);
+    sequence.push_back(GetRandomPageBase());
   }
 
-  base::SetMmapSeedForTesting(kInitialSeed);
+  SetMmapSeedForTesting(kInitialSeed);
 
   for (size_t i = 0; i < kSamples; ++i) {
-    uintptr_t address = reinterpret_cast<uintptr_t>(base::GetRandomPageBase());
-    EXPECT_EQ(address, sequence[i]);
+    EXPECT_EQ(GetRandomPageBase(), sequence[i]);
   }
 }
 
@@ -244,4 +244,4 @@ TEST_RANDOM_BIT(48)
 
 #undef TEST_RANDOM_BIT
 
-}  // namespace base
+}  // namespace partition_alloc

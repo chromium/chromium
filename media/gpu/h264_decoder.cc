@@ -1058,9 +1058,8 @@ bool H264Decoder::FinishPicture(scoped_refptr<H264Picture> pic) {
     if (!(*output_candidate)->ref) {
       // Current picture hasn't been inserted into DPB yet, so don't remove it
       // if we managed to output it immediately.
-      int outputted_poc = (*output_candidate)->pic_order_cnt;
-      if (outputted_poc != pic->pic_order_cnt)
-        dpb_.DeleteByPOC(outputted_poc);
+      if (*output_candidate != pic)
+        dpb_.Delete(*output_candidate);
     }
 
     ++output_candidate;
@@ -1438,7 +1437,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
     current_stream_has_been_changed_ = false;
   }
 
-  while (1) {
+  while (true) {
     H264Parser::Result par_res;
 
     if (!curr_nalu_) {
@@ -1462,7 +1461,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
             (state_ == State::kAfterReset && !recovery_frame_cnt_))
           break;
 
-        FALLTHROUGH;
+        [[fallthrough]];
       case H264NALU::kIDRSlice: {
         // TODO(posciak): the IDR may require an SPS that we don't have
         // available. For now we'd fail if that happens, but ideally we'd like
@@ -1632,7 +1631,7 @@ H264Decoder::DecodeResult H264Decoder::Decode() {
           }
         }
 
-        FALLTHROUGH;
+        [[fallthrough]];
       default:
         DVLOG(4) << "Skipping NALU type: " << curr_nalu_->nal_unit_type;
         break;

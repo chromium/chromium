@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
 #include "components/security_interstitials/core/unsafe_resource.h"
 #include "ios/components/security_interstitials/ios_blocking_page_controller_client.h"
@@ -48,6 +47,7 @@ class SafeBrowsingBlockingPage
     GURL url_;
     // The threat type encountered for |url_|.
     safe_browsing::SBThreatType threat_type_;
+    safe_browsing::ThreatSource threat_source_;
   };
 
   // Constructor used by Create().

@@ -6,7 +6,6 @@
 #define MOJO_PUBLIC_CPP_PLATFORM_PLATFORM_CHANNEL_ENDPOINT_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 
 namespace mojo {
@@ -34,7 +33,7 @@ class COMPONENT_EXPORT(MOJO_CPP_PLATFORM) PlatformChannelEndpoint {
 
   const PlatformHandle& platform_handle() const { return handle_; }
 
-  PlatformHandle TakePlatformHandle() WARN_UNUSED_RESULT {
+  [[nodiscard]] PlatformHandle TakePlatformHandle() {
     return std::move(handle_);
   }
 

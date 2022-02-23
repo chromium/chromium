@@ -6,7 +6,9 @@
 
 #include <stddef.h>
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <string.h>
 #endif
 
@@ -17,7 +19,7 @@ namespace internal {
 
 namespace {
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA) || defined(OS_WIN)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_WIN)
 // Parses a null-terminated input string of an environment block. The key is
 // placed into the given string, and the total length of the line, including
 // the terminating null, is returned.
@@ -38,7 +40,7 @@ size_t ParseEnvLine(const NativeEnvironmentString::value_type* input,
 
 }  // namespace
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 std::unique_ptr<char* []> AlterEnvironment(const char* const* const env,
                                            const EnvironmentMap& changes) {
@@ -89,7 +91,7 @@ std::unique_ptr<char* []> AlterEnvironment(const char* const* const env,
   return result;
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 NativeEnvironmentString AlterEnvironment(const wchar_t* env,
                                          const EnvironmentMap& changes) {
@@ -126,7 +128,7 @@ NativeEnvironmentString AlterEnvironment(const wchar_t* env,
   return result;
 }
 
-#endif  // OS_POSIX || OS_FUCHSIA
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace internal
 }  // namespace base

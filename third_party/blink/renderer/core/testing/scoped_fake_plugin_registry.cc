@@ -28,9 +28,7 @@ class FakePluginRegistryImpl : public mojom::blink::PluginRegistry {
   }
 
   // PluginRegistry
-  void GetPlugins(bool refresh,
-                  const scoped_refptr<const SecurityOrigin>& origin,
-                  GetPluginsCallback callback) override {
+  void GetPlugins(bool refresh, GetPluginsCallback callback) override {
     Vector<mojom::blink::PluginInfoPtr> plugins;
     {
       auto mime = mojom::blink::PluginMimeType::New();

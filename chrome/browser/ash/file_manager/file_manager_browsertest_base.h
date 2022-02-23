@@ -49,6 +49,7 @@ class RemovableTestVolume;
 class DocumentsProviderTestVolume;
 class MediaViewTestVolume;
 class SmbfsTestVolume;
+class HiddenTestVolume;
 
 class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
                                    public extensions::ExtensionApiTest {
@@ -110,6 +111,16 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
 
     // Whether test should run with the new Banners framework feature.
     bool enable_banners_framework = false;
+
+    // Whether test should enable DLP (Data Leak Prevention) files restrictions
+    // feature.
+    bool enable_dlp_files_restriction = false;
+
+    // Whether test should run with the Web Drive Office feature.
+    bool enable_web_drive_office = false;
+
+    // Whether test should run with the GuestOs <-> Files app integration.
+    bool enable_guest_os_files = false;
   };
 
   FileManagerBrowserTestBase(const FileManagerBrowserTestBase&) = delete;
@@ -224,6 +235,7 @@ class FileManagerBrowserTestBase : public content::DevToolsAgentHostObserver,
   std::unique_ptr<MediaViewTestVolume> media_view_videos_;
   std::unique_ptr<MediaViewTestVolume> media_view_audio_;
   std::unique_ptr<SmbfsTestVolume> smbfs_volume_;
+  std::unique_ptr<HiddenTestVolume> hidden_volume_;
 
   drive::DriveIntegrationServiceFactory::FactoryCallback
       create_drive_integration_service_;

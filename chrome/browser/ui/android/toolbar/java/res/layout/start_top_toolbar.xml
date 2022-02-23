@@ -31,17 +31,13 @@
         android:layout_centerHorizontal="true"
         android:layout_marginBottom="4dp"/>
 
-    <ImageView
+    <org.chromium.chrome.browser.logo.LogoView
         android:id="@+id/logo"
-        android:layout_width="wrap_content"
+        android:visibility="gone"
+        android:layout_width="match_parent"
         android:layout_height="32dp"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:scaleType="centerInside"
-        android:clickable="false"
-        android:adjustViewBounds="true"
-        android:visibility="gone"
-        android:contentDescription="@null"/>
+        android:layout_centerVertical="true"/>
 
     <LinearLayout
         android:layout_width="wrap_content"
@@ -57,7 +53,7 @@
             android:scaleType="center"
             android:paddingStart="16dp"
             android:paddingEnd="16dp"
-            app:tint="?attr/default_icon_color"
+            app:tint="@macro/default_icon_color"
             app:srcCompat="@drawable/new_tab_icon"
             android:contentDescription="@string/accessibility_toolbar_btn_new_tab"/>
         <TextView
@@ -81,6 +77,7 @@
     <org.chromium.ui.widget.ChromeImageButton
         android:id="@+id/identity_disc_button"
         android:layout_toStartOf="@+id/menu_anchor"
+        android:layout_marginStart="@dimen/identity_disc_button_margin_start"
         android:paddingStart="@dimen/start_surface_toolbar_button_padding_to_button"
         android:paddingEnd="@dimen/start_surface_toolbar_button_padding_to_button"
         style="@style/ToolbarButton"

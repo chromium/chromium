@@ -5,13 +5,13 @@
 #ifndef COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_TRACKER_SERVICE_H_
 #define COMPONENTS_SIGNIN_INTERNAL_IDENTITY_MANAGER_ACCOUNT_TRACKER_SERVICE_H_
 
-#include <list>
 #include <map>
 #include <string>
 #include <vector>
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/timer/timer.h"
@@ -21,7 +21,7 @@
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -125,7 +125,7 @@ class AccountTrackerService {
   AccountIdMigrationState GetMigrationState() const;
   void SetMigrationDone();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a reference to the corresponding Java AccountTrackerService object.
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 
@@ -228,7 +228,7 @@ class AccountTrackerService {
   static AccountIdMigrationState GetMigrationState(
       const PrefService* pref_service);
 
-  PrefService* pref_service_ = nullptr;  // Not owned.
+  raw_ptr<PrefService> pref_service_ = nullptr;  // Not owned.
   std::map<CoreAccountId, AccountInfo> accounts_;
   base::FilePath user_data_dir_;
 
@@ -238,7 +238,7 @@ class AccountTrackerService {
   // Task runner used for file operations on avatar images.
   scoped_refptr<base::SequencedTaskRunner> image_storage_task_runner_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // A reference to the Java counterpart of this object.
   base::android::ScopedJavaGlobalRef<jobject> java_ref_;
 #endif

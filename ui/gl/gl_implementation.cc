@@ -6,6 +6,7 @@
 
 #include <stddef.h>
 
+#include <sstream>
 #include <string>
 
 #include "base/at_exit.h"
@@ -76,6 +77,78 @@ bool GLImplementationParts::IsAllowed(
   return false;
 }
 
+std::string GLImplementationParts::ToString() const {
+  std::stringstream s;
+  s << "(gl=";
+  switch (gl) {
+    case GLImplementation::kGLImplementationNone:
+      s << "none";
+      break;
+    case GLImplementation::kGLImplementationDesktopGL:
+      s << "desktop-gl";
+      break;
+    case GLImplementation::kGLImplementationDesktopGLCoreProfile:
+      s << "desktop-gl-core-profile";
+      break;
+    case GLImplementation::kGLImplementationSwiftShaderGL:
+      s << "swiftshader-gl";
+      break;
+    case GLImplementation::kGLImplementationAppleGL:
+      s << "apple-gl";
+      break;
+    case GLImplementation::kGLImplementationEGLGLES2:
+      s << "egl-gles2";
+      break;
+    case GLImplementation::kGLImplementationMockGL:
+      s << "mock-gl";
+      break;
+    case GLImplementation::kGLImplementationStubGL:
+      s << "stub-gl";
+      break;
+    case GLImplementation::kGLImplementationDisabled:
+      s << "disabled";
+      break;
+    case GLImplementation::kGLImplementationEGLANGLE:
+      s << "egl-angle";
+      break;
+  }
+  s << ",angle=";
+  switch (angle) {
+    case ANGLEImplementation::kNone:
+      s << "none";
+      break;
+    case ANGLEImplementation::kD3D9:
+      s << "d3d9";
+      break;
+    case ANGLEImplementation::kD3D11:
+      s << "d3d11";
+      break;
+    case ANGLEImplementation::kOpenGL:
+      s << "opengl";
+      break;
+    case ANGLEImplementation::kOpenGLES:
+      s << "opengles";
+      break;
+    case ANGLEImplementation::kNull:
+      s << "null";
+      break;
+    case ANGLEImplementation::kVulkan:
+      s << "vulkan";
+      break;
+    case ANGLEImplementation::kSwiftShader:
+      s << "swiftshader";
+      break;
+    case ANGLEImplementation::kMetal:
+      s << "metal";
+      break;
+    case ANGLEImplementation::kDefault:
+      s << "default";
+      break;
+  }
+  s << ")";
+  return s.str();
+}
+
 namespace {
 
 const struct {
@@ -87,7 +160,7 @@ const struct {
      GLImplementationParts(kGLImplementationDesktopGL)},
     {kGLImplementationSwiftShaderName, kANGLEImplementationNoneName,
      GLImplementationParts(kGLImplementationSwiftShaderGL)},
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     {kGLImplementationAppleName, kANGLEImplementationNoneName,
      GLImplementationParts(kGLImplementationAppleGL)},
 #endif
@@ -219,37 +292,74 @@ GLImplementationParts GetSoftwareGLImplementation() {
   return GLImplementationParts(ANGLEImplementation::kSwiftShader);
 }
 
+GLImplementationParts GetSoftwareGLImplementationForPlatform() {
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC) || \
+    BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_FUCHSIA)
+  return GetSoftwareGLImplementation();
+#else
+  return GetLegacySoftwareGLImplementation();
+#endif
+}
+
 bool IsSoftwareGLImplementation(GLImplementationParts implementation) {
   return (implementation == GetLegacySoftwareGLImplementation()) ||
          (implementation == GetSoftwareGLImplementation());
 }
 
-void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line,
-                                      bool legacy_software_gl) {
-  if (legacy_software_gl) {
-    command_line->AppendSwitchASCII(
-        switches::kUseGL,
-        gl::GetGLImplementationGLName(gl::GetLegacySoftwareGLImplementation()));
-  } else {
-    GLImplementationParts implementation = GetSoftwareGLImplementation();
-    command_line->AppendSwitchASCII(
-        switches::kUseGL, gl::GetGLImplementationGLName(implementation));
-    command_line->AppendSwitchASCII(
-        switches::kUseANGLE, gl::GetGLImplementationANGLEName(implementation));
-  }
+void SetSoftwareGLCommandLineSwitches(base::CommandLine* command_line) {
+  GLImplementationParts implementation = GetSoftwareGLImplementation();
+  command_line->AppendSwitchASCII(
+      switches::kUseGL, gl::GetGLImplementationGLName(implementation));
+  command_line->AppendSwitchASCII(
+      switches::kUseANGLE, gl::GetGLImplementationANGLEName(implementation));
 }
 
-void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line,
-                                         bool legacy_software_gl) {
-  if (legacy_software_gl) {
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    kGLImplementationSwiftShaderForWebGLName);
-  } else {
-    command_line->AppendSwitchASCII(switches::kUseGL,
-                                    kGLImplementationANGLEName);
-    command_line->AppendSwitchASCII(
-        switches::kUseANGLE, kANGLEImplementationSwiftShaderForWebGLName);
+void SetSoftwareWebGLCommandLineSwitches(base::CommandLine* command_line) {
+  command_line->AppendSwitchASCII(switches::kUseGL, kGLImplementationANGLEName);
+  command_line->AppendSwitchASCII(switches::kUseANGLE,
+                                  kANGLEImplementationSwiftShaderForWebGLName);
+}
+
+absl::optional<GLImplementationParts>
+GetRequestedGLImplementationFromCommandLine(
+    const base::CommandLine* command_line,
+    bool* fallback_to_software_gl) {
+  *fallback_to_software_gl = false;
+  if (command_line->HasSwitch(switches::kOverrideUseSoftwareGLForTests)) {
+    return GetSoftwareGLImplementationForPlatform();
   }
+
+  if (!command_line->HasSwitch(switches::kUseGL) &&
+      !command_line->HasSwitch(switches::kUseANGLE)) {
+    return absl::nullopt;
+  }
+
+  std::string gl_name = command_line->GetSwitchValueASCII(switches::kUseGL);
+  std::string angle_name =
+      command_line->GetSwitchValueASCII(switches::kUseANGLE);
+
+  // If --use-angle was specified but --use-gl was not, assume --use-gl=angle
+  if (command_line->HasSwitch(switches::kUseANGLE) &&
+      !command_line->HasSwitch(switches::kUseGL)) {
+    gl_name = kGLImplementationANGLEName;
+  }
+
+  if (gl_name == "any") {
+    *fallback_to_software_gl = true;
+    return absl::nullopt;
+  }
+
+  if ((gl_name == kGLImplementationSwiftShaderName) ||
+      (gl_name == kGLImplementationSwiftShaderForWebGLName)) {
+    return GLImplementationParts(kGLImplementationSwiftShaderGL);
+  }
+
+  if ((gl_name == kGLImplementationANGLEName) &&
+      ((angle_name == kANGLEImplementationSwiftShaderName) ||
+       (angle_name == kANGLEImplementationSwiftShaderForWebGLName))) {
+    return GLImplementationParts(ANGLEImplementation::kSwiftShader);
+  }
+  return GetNamedGLImplementation(gl_name, angle_name);
 }
 
 const char* GetGLImplementationGLName(GLImplementationParts implementation) {

@@ -56,7 +56,7 @@ std::string CreateFilename(const base::Time::Exploded& start_time,
           chromeos::features::kScanAppSearchablePdf));
       // Temporarily set searchable pdfs to follow png pipeline while
       // implementing.
-      FALLTHROUGH;
+      [[fallthrough]];
     case mojo_ipc::FileType::kPng:
       file_ext = "png";
       break;
@@ -323,13 +323,13 @@ void ScanService::ScanNextPage(const base::UnguessableToken& scanner_id,
 
 void ScanService::RemovePage(uint32_t page_index) {
   if (page_index >= scanned_images_.size()) {
-    mojo::ReportBadMessage(
+    multi_page_controller_receiver_.ReportBadMessage(
         "Invalid page_index passed to ScanService::RemovePage()");
     return;
   }
 
   if (scanned_images_.size() == 0) {
-    mojo::ReportBadMessage(
+    multi_page_controller_receiver_.ReportBadMessage(
         "Invalid call to ScanService::RemovePage(), no scanned images "
         "available to remove");
     return;
@@ -353,14 +353,14 @@ void ScanService::RescanPage(const base::UnguessableToken& scanner_id,
                              uint32_t page_index,
                              ScanNextPageCallback callback) {
   if (scanned_images_.size() == 0) {
-    mojo::ReportBadMessage(
+    multi_page_controller_receiver_.ReportBadMessage(
         "Invalid call to ScanService::RescanPage(), no scanned images "
         "available to rescan");
     return;
   }
 
   if (page_index >= scanned_images_.size()) {
-    mojo::ReportBadMessage(
+    multi_page_controller_receiver_.ReportBadMessage(
         "Invalid page_index passed to ScanService::RescanPage()");
     return;
   }
@@ -496,7 +496,7 @@ void ScanService::OnPageReceived(
     // The output of multi-page PDF scans is a single file so only create and
     // append a single file path.
     if (scanned_file_paths_.empty()) {
-      DCHECK_EQ(1, page_number);
+      DCHECK_EQ(1u, page_number);
       scanned_file_paths_.push_back(scan_to_path.Append(CreateFilename(
           start_time_, /*not used*/ 0, mojo_ipc::FileType::kPdf)));
     }

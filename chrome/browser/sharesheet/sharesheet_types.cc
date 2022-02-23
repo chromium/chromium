@@ -26,4 +26,8 @@ TargetInfo::TargetInfo(TargetInfo&& other) = default;
 
 TargetInfo& TargetInfo::operator=(TargetInfo&& other) = default;
 
+TargetInfo::TargetInfo(const TargetInfo&) = default;
+
+TargetInfo& TargetInfo::operator=(const TargetInfo&) = default;
+
 }  // namespace sharesheet

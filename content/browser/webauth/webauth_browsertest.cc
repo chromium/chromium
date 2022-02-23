@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
@@ -55,7 +56,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/mojom/webauthn/authenticator.mojom.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "device/fido/win/fake_webauthn_api.h"
@@ -69,15 +70,18 @@ using blink::mojom::Authenticator;
 using blink::mojom::AuthenticatorStatus;
 using blink::mojom::GetAssertionAuthenticatorResponsePtr;
 using blink::mojom::MakeCredentialAuthenticatorResponsePtr;
+using blink::mojom::WebAuthnDOMExceptionDetailsPtr;
 
 using TestCreateCallbackReceiver =
-    ::device::test::StatusAndValueCallbackReceiver<
+    device::test::StatusAndValuesCallbackReceiver<
         AuthenticatorStatus,
-        MakeCredentialAuthenticatorResponsePtr>;
+        MakeCredentialAuthenticatorResponsePtr,
+        WebAuthnDOMExceptionDetailsPtr>;
 
-using TestGetCallbackReceiver = ::device::test::StatusAndValueCallbackReceiver<
+using TestGetCallbackReceiver = device::test::StatusAndValuesCallbackReceiver<
     AuthenticatorStatus,
-    GetAssertionAuthenticatorResponsePtr>;
+    GetAssertionAuthenticatorResponsePtr,
+    WebAuthnDOMExceptionDetailsPtr>;
 
 constexpr char kOkMessage[] = "webauth: OK";
 
@@ -92,12 +96,12 @@ constexpr char kNotAllowedErrorMessage[] =
     "allowed. See: "
     "https://www.w3.org/TR/webauthn-2/#sctn-privacy-considerations-client.";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 constexpr char kInvalidStateErrorMessage[] =
     "webauth: InvalidStateError: The user attempted to register an "
     "authenticator that contains one of the credentials already registered "
     "with the relying party.";
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 constexpr char kResidentCredentialsErrorMessage[] =
     "webauth: NotSupportedError: Resident credentials or empty "
@@ -375,7 +379,7 @@ class WebAuthBrowserTestWebAuthenticationDelegate
   }
 
  private:
-  WebAuthBrowserTestState* const test_state_;
+  const raw_ptr<WebAuthBrowserTestState> test_state_;
 };
 
 class WebAuthBrowserTestClientDelegate
@@ -399,7 +403,7 @@ class WebAuthBrowserTestClientDelegate
   }
 
  private:
-  WebAuthBrowserTestState* const test_state_;
+  const raw_ptr<WebAuthBrowserTestState> test_state_;
 };
 
 // Implements ContentBrowserClient and allows webauthn-related calls to be
@@ -427,7 +431,7 @@ class WebAuthBrowserTestContentBrowserClient : public ContentBrowserClient {
   }
 
  private:
-  WebAuthBrowserTestState* const test_state_;
+  const raw_ptr<WebAuthBrowserTestState> test_state_;
   WebAuthBrowserTestWebAuthenticationDelegate web_authentication_delegate_{
       test_state_};
 };
@@ -505,7 +509,7 @@ class WebAuthBrowserTestBase : public content::ContentBrowserTest {
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
   std::unique_ptr<WebAuthBrowserTestContentBrowserClient> test_client_;
   WebAuthBrowserTestState test_state_;
-  ContentBrowserClient* old_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
 // WebAuthLocalClientBrowserTest ----------------------------------------------
@@ -570,7 +574,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
         /*enforce_protection_policy=*/false, /*appid_exclude=*/absl::nullopt,
         /*cred_props=*/false, device::LargeBlobSupport::kNotRequested,
         /*is_payment_credential_creation=*/false, /*cred_blob=*/absl::nullopt,
-        /*google_legacy_app_id_support=*/false);
+        /*google_legacy_app_id_support=*/false,
+        /*min_pin_length_requested=*/false);
 
     return mojo_options;
   }
@@ -613,7 +618,7 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
     return authenticator_remote_.get();
   }
 
-  device::test::FakeFidoDiscoveryFactory* discovery_factory_;
+  raw_ptr<device::test::FakeFidoDiscoveryFactory> discovery_factory_;
 
  private:
   mojo::Remote<blink::mojom::Authenticator> authenticator_remote_;
@@ -1205,9 +1210,10 @@ absl::optional<std::string> ExecuteScriptAndExtractPrefixedString(
     }
 
     std::string str;
-    if (result->GetAsString(&str) && str.find(result_prefix) == 0) {
+    if (result->is_string())
+      str = result->GetString();
+    if (str.find(result_prefix) == 0)
       return str;
-    }
   }
 }
 
@@ -1421,7 +1427,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
                    EXECUTE_SCRIPT_USE_MANUAL_REPLY));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));

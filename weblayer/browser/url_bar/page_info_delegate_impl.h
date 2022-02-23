@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/page_info/page_info.h"
@@ -35,7 +36,7 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
       ContentSettingsType type,
       const GURL& site_url) override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool CreateInfoBarDelegate() override;
   void ShowSiteSettings(const GURL& site_url) override;
   void OpenCookiesDialog() override;
@@ -59,14 +60,14 @@ class PageInfoDelegateImpl : public PageInfoDelegate {
   security_state::SecurityLevel GetSecurityLevel() override;
   security_state::VisibleSecurityState GetVisibleSecurityState() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const std::u16string GetClientApplicationName() override;
 #endif
 
  private:
   content::BrowserContext* GetBrowserContext() const;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  //  namespace weblayer

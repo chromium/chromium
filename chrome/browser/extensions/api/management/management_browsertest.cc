@@ -330,24 +330,17 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, DisableEnable) {
 // Used for testing notifications sent during extension updates.
 class NotificationListener : public content::NotificationObserver {
  public:
-  NotificationListener() : started_(false), finished_(false) {
-    int types[] = {extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED,
-                   extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND};
-    for (size_t i = 0; i < base::size(types); i++) {
-      registrar_.Add(
-          this, types[i], content::NotificationService::AllSources());
-    }
+  NotificationListener() {
+    registrar_.Add(this, extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND,
+                   content::NotificationService::AllSources());
   }
   ~NotificationListener() override {}
-
-  bool started() { return started_; }
 
   bool finished() { return finished_; }
 
   const std::set<std::string>& updates() { return updates_; }
 
   void Reset() {
-    started_ = false;
     finished_ = false;
     updates_.clear();
   }
@@ -356,21 +349,10 @@ class NotificationListener : public content::NotificationObserver {
   void Observe(int type,
                const content::NotificationSource& source,
                const content::NotificationDetails& details) override {
-    switch (type) {
-      case extensions::NOTIFICATION_EXTENSION_UPDATING_STARTED: {
-        EXPECT_FALSE(started_);
-        started_ = true;
-        break;
-      }
-      case extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND: {
-        const std::string& id =
-            content::Details<extensions::UpdateDetails>(details)->id;
-        updates_.insert(id);
-        break;
-      }
-      default:
-        NOTREACHED();
-    }
+    DCHECK_EQ(extensions::NOTIFICATION_EXTENSION_UPDATE_FOUND, type);
+    const std::string& id =
+        content::Details<extensions::UpdateDetails>(details)->id;
+    updates_.insert(id);
   }
 
   void OnFinished() {
@@ -381,17 +363,14 @@ class NotificationListener : public content::NotificationObserver {
  private:
   content::NotificationRegistrar registrar_;
 
-  // Did we see EXTENSION_UPDATING_STARTED?
-  bool started_;
-
   // Did we see EXTENSION_UPDATING_FINISHED?
-  bool finished_;
+  bool finished_ = false;
 
   // The set of extension id's we've seen via EXTENSION_UPDATE_FOUND.
   std::set<std::string> updates_;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Fails consistently on Windows XP, see: http://crbug.com/120640.
 #define MAYBE_AutoUpdate DISABLED_AutoUpdate
 #else
@@ -451,7 +430,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
       "ogjcoiohnmldgjemafoockdghcjciccf");
   ASSERT_TRUE(extension);
   ASSERT_EQ("2.0", extension->VersionString());
-  ASSERT_TRUE(notification_listener.started());
   ASSERT_TRUE(notification_listener.finished());
   ASSERT_TRUE(base::Contains(notification_listener.updates(),
                              "ogjcoiohnmldgjemafoockdghcjciccf"));
@@ -477,7 +455,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
     service->updater()->CheckNow(std::move(params2));
     install_error_observer.Wait();
   }
-  ASSERT_TRUE(notification_listener.started());
   ASSERT_TRUE(notification_listener.finished());
   ASSERT_TRUE(base::Contains(notification_listener.updates(),
                              "ogjcoiohnmldgjemafoockdghcjciccf"));
@@ -490,7 +467,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, MAYBE_AutoUpdate) {
   ASSERT_EQ("2.0", extension->VersionString());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Fails consistently on Windows XP, see: http://crbug.com/120640.
 #define MAYBE_AutoUpdateDisabledExtensions DISABLED_AutoUpdateDisabledExtensions
 #else
@@ -559,7 +536,6 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest,
   ASSERT_FALSE(listener2.was_satisfied());
   EnableExtension(extension->id());
   EXPECT_TRUE(listener2.WaitUntilSatisfied());
-  ASSERT_TRUE(notification_listener.started());
   ASSERT_TRUE(notification_listener.finished());
   ASSERT_TRUE(base::Contains(notification_listener.updates(),
                              "ogjcoiohnmldgjemafoockdghcjciccf"));
@@ -724,7 +700,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionManagementTest, ExternalPolicyRefresh) {
 }
 
 // See http://crbug.com/103371 and http://crbug.com/120640.
-#if defined(ADDRESS_SANITIZER) || defined(OS_WIN)
+#if defined(ADDRESS_SANITIZER) || BUILDFLAG(IS_WIN)
 #define MAYBE_PolicyOverridesUserInstall DISABLED_PolicyOverridesUserInstall
 #else
 #define MAYBE_PolicyOverridesUserInstall PolicyOverridesUserInstall

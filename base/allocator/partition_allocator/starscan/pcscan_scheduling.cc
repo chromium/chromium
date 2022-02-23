@@ -10,9 +10,9 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_hooks.h"
 #include "base/allocator/partition_allocator/partition_lock.h"
+#include "base/allocator/partition_allocator/starscan/logging.h"
 #include "base/allocator/partition_allocator/starscan/pcscan.h"
 #include "base/bind.h"
-#include "base/logging.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -80,9 +80,11 @@ constexpr double MUAwareTaskBasedBackend::kTargetMutatorUtilizationPercent;
 
 MUAwareTaskBasedBackend::MUAwareTaskBasedBackend(
     PCScanScheduler& scheduler,
-    base::RepeatingCallback<void(TimeDelta)> schedule_delayed_scan)
+    ScheduleDelayedScanFunc schedule_delayed_scan)
     : PCScanSchedulingBackend(scheduler),
-      schedule_delayed_scan_(std::move(schedule_delayed_scan)) {}
+      schedule_delayed_scan_(schedule_delayed_scan) {
+  PA_DCHECK(schedule_delayed_scan_);
+}
 
 MUAwareTaskBasedBackend::~MUAwareTaskBasedBackend() = default;
 
@@ -123,8 +125,8 @@ bool MUAwareTaskBasedBackend::LimitReached() {
         return true;
       }
 
-      VLOG(3) << "Rescheduling scan with delay: "
-              << reschedule_delay.InMillisecondsF() << " ms";
+      PA_PCSCAN_VLOG(3) << "Rescheduling scan with delay: "
+                        << reschedule_delay.InMillisecondsF() << " ms";
       // 5. If the MU requirement is not satisfied, schedule a delayed scan to
       // the time instance when MU is satisfied.
       should_reschedule = true;
@@ -133,7 +135,7 @@ bool MUAwareTaskBasedBackend::LimitReached() {
   // Don't reschedule under the lock as the callback can call free() and
   // recursively enter the lock.
   if (should_reschedule) {
-    schedule_delayed_scan_.Run(reschedule_delay);
+    schedule_delayed_scan_(reschedule_delay.InMicroseconds());
     return false;
   }
   return true;
@@ -191,15 +193,15 @@ bool MUAwareTaskBasedBackend::NeedsToImmediatelyScan() {
       return true;
     }
 
-    VLOG(3) << "Rescheduling scan with delay: "
-            << reschedule_delay.InMillisecondsF() << " ms";
+    PA_PCSCAN_VLOG(3) << "Rescheduling scan with delay: "
+                      << reschedule_delay.InMillisecondsF() << " ms";
     // Schedule a delayed scan to the time instance when MU is satisfied.
     should_reschedule = true;
   }
   // Don't reschedule under the lock as the callback can call free() and
   // recursively enter the lock.
   if (should_reschedule)
-    schedule_delayed_scan_.Run(reschedule_delay);
+    schedule_delayed_scan_(reschedule_delay.InMicroseconds());
   return false;
 }
 
@@ -207,7 +209,7 @@ TimeDelta MUAwareTaskBasedBackend::UpdateDelayedSchedule() {
   PartitionAutoLock guard(scheduler_lock_);
   // TODO(1197479): Adjust schedule to current heap sizing.
   const auto delay = earliest_next_scan_time_ - base::TimeTicks::Now();
-  VLOG(3) << "Schedule is off by " << delay.InMillisecondsF() << "ms";
+  PA_PCSCAN_VLOG(3) << "Schedule is off by " << delay.InMillisecondsF() << "ms";
   return delay >= TimeDelta() ? delay : TimeDelta();
 }
 

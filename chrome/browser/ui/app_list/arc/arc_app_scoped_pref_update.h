@@ -33,7 +33,7 @@ class ArcAppScopedPrefUpdate : public DictionaryPrefUpdate {
   ~ArcAppScopedPrefUpdate() override;
 
   // DictionaryPrefUpdate:
-  base::DictionaryValue* Get() override;
+  base::Value* Get() override;
 
  private:
   const std::string id_;

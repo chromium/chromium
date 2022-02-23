@@ -18,7 +18,7 @@ import {Component, ComponentRepairStatus, ComponentType, ShimlessRmaServiceInter
  * @typedef {{
  *   component: !ComponentType,
  *   id: string,
- *   uniqueId: string,
+ *   identifier: string,
  *   name: string,
  *   checked: boolean,
  *   disabled: boolean
@@ -53,6 +53,12 @@ export class OnboardingSelectComponentsPageElement extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected {!Array<!ComponentCheckbox>} */
       componentCheckboxes_: {
         type: Array,
@@ -91,12 +97,11 @@ export class OnboardingSelectComponentsPageElement extends
       }
 
       this.componentCheckboxes_ = result.components.map(item => {
-        const component = assert(item.component);
+        assert(item.component);
         return {
           component: item.component,
           id: ComponentTypeToId[item.component],
-          // TODO(gavinwill): Source |uniqueId| from proto.
-          uniqueId: '',
+          identifier: item.identifier,
           name: this.i18n(ComponentTypeToId[item.component]),
           checked: item.state === ComponentRepairStatus.kReplaced,
           disabled: item.state === ComponentRepairStatus.kMissing
@@ -118,7 +123,11 @@ export class OnboardingSelectComponentsPageElement extends
       } else if (item.checked) {
         state = ComponentRepairStatus.kReplaced;
       }
-      return {component: item.component, state: state};
+      return {
+        component: item.component,
+        state: state,
+        identifier: item.identifier,
+      };
     });
   }
 
@@ -149,8 +158,22 @@ export class OnboardingSelectComponentsPageElement extends
         this.i18nAdvanced('reworkFlowLinkText', {attrs: ['id']});
     const linkElement = this.shadowRoot.querySelector('#reworkFlowLink');
     linkElement.setAttribute('href', '#');
-    linkElement.addEventListener(
-        'click', e => this.onReworkFlowLinkClicked_(e));
+    linkElement.addEventListener('click', e => {
+      if (this.allButtonsDisabled) {
+        return;
+      }
+
+      this.onReworkFlowLinkClicked_(e);
+    });
+  }
+
+  /**
+   * @param {boolean} componentDisabled
+   * @return {boolean}
+   * @protected
+   */
+  isComponentDisabled_(componentDisabled) {
+    return this.allButtonsDisabled || componentDisabled;
   }
 }
 

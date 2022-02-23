@@ -5,6 +5,7 @@
 #include "content/browser/gpu/gpu_data_manager_impl.h"
 
 #include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "content/browser/gpu/gpu_data_manager_impl_private.h"
 #include "content/public/browser/browser_thread.h"
 #include "gpu/ipc/common/memory_stats.h"
@@ -162,7 +163,7 @@ void GpuDataManagerImpl::UpdateGpuInfo(
   private_->UpdateGpuInfo(gpu_info, gpu_info_for_hardware_gpu);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GpuDataManagerImpl::UpdateDxDiagNode(
     const gpu::DxDiagNode& dx_diagnostics) {
   base::AutoLock auto_lock(lock_);

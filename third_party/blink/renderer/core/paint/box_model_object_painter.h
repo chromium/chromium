@@ -35,10 +35,9 @@ class BoxModelObjectPainter : public BoxPainterBase {
       const FillLayer&,
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space) const override;
-  bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const override;
 
   void PaintTextClipMask(const PaintInfo&,
-                         const IntRect& mask_rect,
+                         const gfx::Rect& mask_rect,
                          const PhysicalOffset& paint_offset,
                          bool object_has_multiple_boxes) override;
   PhysicalRect AdjustRectForScrolledContent(

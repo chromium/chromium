@@ -8,14 +8,14 @@
 #include <memory>
 #include <string>
 
-#include "chromeos/chromeos_export.h"
+#include "base/component_export.h"
 
 namespace chromeos {
 
 // Class supporting line-oriented input from unencoded and gzip-encoded PPDs.
 // Decompression, when required, is streamed to avoid excessive memory usage due
 // to malicious gzip contents.
-class CHROMEOS_EXPORT PpdLineReader {
+class COMPONENT_EXPORT(CHROMEOS_PRINTING) PpdLineReader {
  public:
   // Create a new PpdLineReader using ppd contents in |contents|.  The max
   // allowed line length in the ppd is also parameterized.

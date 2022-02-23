@@ -7,29 +7,35 @@
 #include <vector>
 
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/buildflag.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile_attributes_entry.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/signin/signin_features.h"
+#include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/test/base/profile_waiter.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile_manager.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
+#include "components/signin/public/identity_manager/primary_account_mutator.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_contents_factory.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/skia/include/core/SkColor.h"
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "chrome/browser/lacros/account_manager/account_profile_mapper.h"
+#include "chrome/browser/lacros/account_manager/get_account_information_helper.h"
 #include "components/account_manager_core/account.h"
 #include "components/account_manager_core/account_addition_result.h"
 #include "components/account_manager_core/mock_account_manager_facade.h"
+#include "ui/gfx/image/image_unittest_util.h"
+const char kTestCallbackId[] = "test-callback-id";
 #endif
 
 void VerifyProfileEntry(const base::Value& value,
@@ -78,14 +84,19 @@ class ProfilePickerHandlerTest : public testing::Test {
     profile_manager()->SetAccountProfileMapper(
         std::make_unique<AccountProfileMapper>(
             &mock_account_manager_facade_,
-            profile_manager()->profile_attributes_storage()));
+            profile_manager()->profile_attributes_storage(),
+            profile_manager()->local_state()->Get()));
 #endif
-
-    system_profile_ = profile_manager()->CreateSystemProfile();
+    handler_ = std::make_unique<ProfilePickerHandler>();
+    web_ui_profile_ = GetWebUIProfile();
     web_ui_.set_web_contents(
-        web_contents_factory_.CreateWebContents(system_profile_));
-    handler_.set_web_ui(&web_ui_);
-    handler_.RegisterMessages();
+        web_contents_factory_.CreateWebContents(web_ui_profile_));
+    handler_->set_web_ui(&web_ui_);
+    handler_->RegisterMessages();
+  }
+
+  virtual Profile* GetWebUIProfile() {
+    return profile_manager()->CreateSystemProfile();
   }
 
   void VerifyProfileListWasPushed(
@@ -94,10 +105,11 @@ class ProfilePickerHandlerTest : public testing::Test {
     const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
     ASSERT_EQ("cr.webUIListenerCallback", data.function_name());
     ASSERT_EQ("profiles-list-changed", data.arg1()->GetString());
-    size_t size = data.arg2()->GetList().size();
+    size_t size = data.arg2()->GetListDeprecated().size();
     ASSERT_EQ(size, ordered_profile_entries.size());
     for (size_t i = 0; i < size; ++i) {
-      VerifyProfileEntry(data.arg2()->GetList()[i], ordered_profile_entries[i]);
+      VerifyProfileEntry(data.arg2()->GetListDeprecated()[i],
+                         ordered_profile_entries[i]);
     }
   }
 
@@ -130,7 +142,7 @@ class ProfilePickerHandlerTest : public testing::Test {
 
   TestingProfileManager* profile_manager() { return &profile_manager_; }
   content::TestWebUI* web_ui() { return &web_ui_; }
-  ProfilePickerHandler* handler() { return &handler_; }
+  ProfilePickerHandler* handler() { return handler_.get(); }
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   account_manager::MockAccountManagerFacade* mock_account_manager_facade() {
@@ -145,9 +157,8 @@ class ProfilePickerHandlerTest : public testing::Test {
 
  private:
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
-  base::test::ScopedFeatureList scoped_feature_list_{
-      kMultiProfileAccountConsistency};
-  account_manager::MockAccountManagerFacade mock_account_manager_facade_;
+  testing::NiceMock<account_manager::MockAccountManagerFacade>
+      mock_account_manager_facade_;
 
   // Callback to configure the accounts in the facade.
   base::OnceCallback<void(const std::vector<account_manager::Account>&)>
@@ -157,9 +168,9 @@ class ProfilePickerHandlerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   content::TestWebContentsFactory web_contents_factory_;
-  Profile* system_profile_ = nullptr;
+  raw_ptr<Profile> web_ui_profile_ = nullptr;
   content::TestWebUI web_ui_;
-  ProfilePickerHandler handler_;
+  std::unique_ptr<ProfilePickerHandler> handler_;
 };
 
 TEST_F(ProfilePickerHandlerTest, OrderedAlphabeticallyOnInit) {
@@ -294,19 +305,123 @@ TEST_F(ProfilePickerHandlerTest, OmittedProfileOnInit) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 
-TEST_F(ProfilePickerHandlerTest, HandleGetUnassignedAccounts) {
+// Tests that accounts available as primary are returned.
+TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Empty) {
+  CompleteFacadeGetAccounts({});
+
   // Send message to the handler.
   base::ListValue empty_args;
-  web_ui()->HandleReceivedMessage("getUnassignedAccounts", &empty_args);
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
 
   // Check that the handler replied.
-  // TODO(https://crbug/1226050): Update the test once this is fully
-  // implemented.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
   EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
-  EXPECT_EQ("unassigned-accounts-changed", data.arg1()->GetString());
-  EXPECT_TRUE(data.arg2()->GetList().empty());
+  EXPECT_EQ("available-accounts-changed", data.arg1()->GetString());
+  EXPECT_TRUE(data.arg2()->GetListDeprecated().empty());
+}
+
+TEST_F(ProfilePickerHandlerTest, HandleGetAvailableAccounts_Available) {
+  // AccountProfileMapper only allows available accounts if there are
+  // multiple profiles.
+  CreateTestingProfile("Primary");
+  ProfileAttributesEntry* secondary = CreateTestingProfile("Secondary");
+
+  // Add an available account into the facade
+  const std::string kGaiaId1 = "some_gaia_id1";
+  const std::string kGaiaId2 = "some_gaia_id2";
+  const std::string kEmail2 = "example2@gmail.com";
+  CompleteFacadeGetAccounts(
+      {account_manager::Account{
+           account_manager::AccountKey{kGaiaId1,
+                                       account_manager::AccountType::kGaia},
+           "example1@gmail.com"},
+       account_manager::Account{
+           account_manager::AccountKey{kGaiaId2,
+                                       account_manager::AccountType::kGaia},
+           kEmail2}});
+
+  // ****** No accounts syncing in any profile: return all.
+  // Send message to the handler.
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ(data1.arg2()->GetListDeprecated().size(), 2u);
+
+  // ****** Account 1 syncing in Secondary profile: return account 2.
+  secondary->SetAuthInfo(kGaiaId1, u"example1@gmail.com",
+                         /*is_consented_primary_account=*/true);
+  // Send message to the handler.
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data2 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data2.function_name());
+  EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
+  EXPECT_EQ(data2.arg2()->GetListDeprecated().size(), 1u);
+  const std::string* gaia_id =
+      data2.arg2()->GetListDeprecated()[0].FindStringPath("gaiaId");
+  EXPECT_NE(gaia_id, nullptr);
+  EXPECT_EQ(*gaia_id, kGaiaId2);
+  // TODO(https://crbug/1226050): Test all other fields.
+}
+
+TEST_F(ProfilePickerHandlerTest, ProfilePickerObservesAvailableAccounts) {
+  // AccountProfileMapper only allows available accounts if there are
+  // multiple profiles.
+  CreateTestingProfile("Primary");
+  CreateTestingProfile("Secondary");
+
+  // Add some available accounts into the facade.
+  const std::string kGaiaId1 = "some_gaia_id1";
+  const std::string kGaiaId2 = "some_gaia_id2";
+  account_manager::Account account1{
+      account_manager::AccountKey{kGaiaId1,
+                                  account_manager::AccountType::kGaia},
+      "example1@gmail.com"};
+  account_manager::Account account2{
+      account_manager::AccountKey{kGaiaId2,
+                                  account_manager::AccountType::kGaia},
+      "example2@gmail.com"};
+  CompleteFacadeGetAccounts({account1, account2});
+
+  // Send message to the handler.
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  LOG(INFO) << web_ui()->call_data().size();
+  const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ(data1.arg2()->GetListDeprecated().size(), 2u);
+
+  // Add another account.
+  const std::string kGaiaId = "some_gaia_id3";
+  account_manager::Account new_account{
+      account_manager::AccountKey{kGaiaId, account_manager::AccountType::kGaia},
+      "example3@gmail.com"};
+  profile_manager()
+      ->profile_manager()
+      ->GetAccountProfileMapper()
+      ->OnAccountUpserted(new_account);
+  CompleteFacadeGetAccounts({account1, account2, new_account});
+
+  // Check that the profile picker handler picked up the new account, and
+  // forwarded it to the Web UI.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  LOG(INFO) << web_ui()->call_data().size();
+  const content::TestWebUI::CallData& data2 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data2.function_name());
+  EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
+  EXPECT_EQ(data2.arg2()->GetListDeprecated().size(), 3u);
 }
 
 TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
@@ -341,6 +456,15 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileExistingAccount) {
   ASSERT_TRUE(entry);
   EXPECT_EQ(entry->GetGaiaIds(), base::flat_set<std::string>{kGaiaId});
 
+  // Set the primary account (simulate the `SigninManager`).
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager->GetAccountsWithRefreshTokens();
+  ASSERT_EQ(1u, accounts.size());
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      accounts[0].account_id, signin::ConsentLevel::kSignin);
+
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -366,12 +490,18 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
                                AccountAdditionSource::kChromeProfileCreation,
                            testing::_))
       .WillOnce(
-          [account](
+          [account, this](
               account_manager::AccountManagerFacade::AccountAdditionSource,
               base::OnceCallback<void(
                   const account_manager::AccountAdditionResult&)> callback) {
             std::move(callback).Run(
                 account_manager::AccountAdditionResult::FromAccount(account));
+            // Notify the mapper that an account has been added.
+            profile_manager()
+                ->profile_manager()
+                ->GetAccountProfileMapper()
+                ->OnAccountUpserted(account);
+            CompleteFacadeGetAccounts({account});
           });
 
   // Request profile creation.
@@ -391,6 +521,15 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
   ASSERT_TRUE(entry);
   EXPECT_EQ(entry->GetGaiaIds(), base::flat_set<std::string>{kGaiaId});
 
+  // Set the primary account (simulate the `SigninManager`).
+  signin::IdentityManager* identity_manager =
+      IdentityManagerFactory::GetForProfile(new_profile);
+  std::vector<CoreAccountInfo> accounts =
+      identity_manager->GetAccountsWithRefreshTokens();
+  ASSERT_EQ(1u, accounts.size());
+  identity_manager->GetPrimaryAccountMutator()->SetPrimaryAccount(
+      accounts[0].account_id, signin::ConsentLevel::kSignin);
+
   // Check that the handler replied.
   ASSERT_TRUE(!web_ui()->call_data().empty());
   const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
@@ -400,4 +539,168 @@ TEST_F(ProfilePickerHandlerTest, CreateProfileNewAccount) {
   EXPECT_TRUE(success);
 }
 
+class ProfilePickerHandlerInUserProfileTest : public ProfilePickerHandlerTest {
+ public:
+  ProfilePickerHandlerInUserProfileTest() = default;
+
+  void SetUp() override {
+    ProfilePickerHandlerTest::SetUp();
+    // AccountProfileMapper only allows available accounts if there are
+    // multiple profiles (another profile, named "Secondary", is created below).
+    CreateTestingProfile("Primary");
+  }
+
+  Profile* GetWebUIProfile() override {
+    if (!secondary_profile_)
+      secondary_profile_ = profile_manager()->CreateTestingProfile("Secondary");
+    return secondary_profile_;
+  }
+
+ protected:
+  const base::Value& GetThemeInfoReply() {
+    EXPECT_TRUE(!web_ui()->call_data().empty());
+    const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+    EXPECT_EQ("cr.webUIResponse", data.function_name());
+    EXPECT_EQ(kTestCallbackId, data.arg1()->GetString());
+    EXPECT_TRUE(data.arg2()->GetBool()) << "Callback should get resolved.";
+    EXPECT_TRUE(data.arg3()->is_dict());
+    return *data.arg3();
+  }
+
+  Profile* secondary_profile_ = nullptr;
+};
+
+// Tests that accounts available as secondary are returned.
+TEST_F(ProfilePickerHandlerInUserProfileTest,
+       HandleGetAvailableAccounts_Empty) {
+  CompleteFacadeGetAccounts({});
+
+  // Send message to the handler.
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data.function_name());
+  EXPECT_EQ("available-accounts-changed", data.arg1()->GetString());
+  EXPECT_TRUE(data.arg2()->GetListDeprecated().empty());
+}
+
+TEST_F(ProfilePickerHandlerInUserProfileTest,
+       HandleGetAvailableAccounts_Available) {
+  // Add an available account into the facade
+  const std::string kGaiaId1 = "some_gaia_id1";
+  const std::string kGaiaId2 = "some_gaia_id2";
+  const std::string kEmail2 = "example2@gmail.com";
+  CompleteFacadeGetAccounts(
+      {account_manager::Account{
+           account_manager::AccountKey{kGaiaId1,
+                                       account_manager::AccountType::kGaia},
+           "example1@gmail.com"},
+       account_manager::Account{
+           account_manager::AccountKey{kGaiaId2,
+                                       account_manager::AccountType::kGaia},
+           kEmail2}});
+
+  // ****** No accounts assigned to "Secondary": return all.
+  // Send message to the handler.
+  base::ListValue empty_args;
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ(data1.arg2()->GetListDeprecated().size(), 2u);
+
+  // ****** Account 1 is assigned to "Secondary": return account 2.
+  ProfileAttributesEntry* profile_entry =
+      profile_manager()
+          ->profile_attributes_storage()
+          ->GetProfileAttributesWithPath(GetWebUIProfile()->GetPath());
+  profile_entry->SetGaiaIds({kGaiaId1});
+  // Send message to the handler.
+  web_ui()->HandleReceivedMessage("getAvailableAccounts", &empty_args);
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data2 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data2.function_name());
+  EXPECT_EQ("available-accounts-changed", data2.arg1()->GetString());
+  EXPECT_EQ(data2.arg2()->GetListDeprecated().size(), 1u);
+  const std::string* gaia_id =
+      data2.arg2()->GetListDeprecated()[0].FindStringPath("gaiaId");
+  EXPECT_NE(gaia_id, nullptr);
+  EXPECT_EQ(*gaia_id, kGaiaId2);
+}
+
+TEST_F(ProfilePickerHandlerInUserProfileTest,
+       HandleExtendedAccountInformation) {
+  std::string kGaiaId1 = "some_gaia_id1";
+  std::string kEmail1 = "example1@gmail.com";
+  std::string kFullName1 = "Example Name1";
+  GetAccountInformationHelper::GetAccountInformationResult account1;
+  account1.gaia = kGaiaId1;
+  account1.email = kEmail1;
+  account1.full_name = kFullName1;
+  account1.account_image = gfx::test::CreateImage(100, 100);
+
+  // Explicitly call the function so we can pass the resulting account info.
+  handler()->AllowJavascript();
+  handler()->SendAvailableAccounts({account1});
+
+  // Check that the handler replied.
+  ASSERT_TRUE(!web_ui()->call_data().empty());
+  const content::TestWebUI::CallData& data1 = *web_ui()->call_data().back();
+  EXPECT_EQ("cr.webUIListenerCallback", data1.function_name());
+  EXPECT_EQ("available-accounts-changed", data1.arg1()->GetString());
+  EXPECT_EQ(data1.arg2()->GetListDeprecated().size(), 1u);
+  const std::string* gaia_id =
+      data1.arg2()->GetListDeprecated()[0].FindStringPath("gaiaId");
+  EXPECT_NE(gaia_id, nullptr);
+  EXPECT_EQ(*gaia_id, kGaiaId1);
+  const std::string* email =
+      data1.arg2()->GetListDeprecated()[0].FindStringPath("email");
+  EXPECT_NE(email, nullptr);
+  EXPECT_EQ(*email, kEmail1);
+  const std::string* full_name =
+      data1.arg2()->GetListDeprecated()[0].FindStringPath("name");
+  EXPECT_NE(full_name, nullptr);
+  EXPECT_EQ(*full_name, kFullName1);
+  const std::string* account_image_url =
+      data1.arg2()->GetListDeprecated()[0].FindStringPath("accountImageUrl");
+  EXPECT_NE(account_image_url, nullptr);
+}
+
+TEST_F(ProfilePickerHandlerInUserProfileTest,
+       HandleGetNewProfileSuggestedThemeInfo_Default) {
+  // Send message to the handler.
+  base::ListValue args;
+  args.Append(kTestCallbackId);
+  web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", &args);
+
+  // Check that the handler replied correctly.
+  const base::Value& theme_info = GetThemeInfoReply();
+  EXPECT_EQ(-1, *theme_info.FindIntKey("colorId"));  // -1: default color
+  EXPECT_EQ(absl::nullopt, theme_info.FindIntKey("color"));
+}
+
+TEST_F(ProfilePickerHandlerInUserProfileTest,
+       HandleGetNewProfileSuggestedThemeInfo_Color) {
+  ThemeService* theme_service =
+      ThemeServiceFactory::GetForProfile(GetWebUIProfile());
+  theme_service->BuildAutogeneratedThemeFromColor(SK_ColorRED);
+
+  // Send message to the handler.
+  base::ListValue args;
+  args.Append(kTestCallbackId);
+  web_ui()->HandleReceivedMessage("getNewProfileSuggestedThemeInfo", &args);
+
+  // Check that the handler replied correctly.
+  const base::Value& theme_info = GetThemeInfoReply();
+  EXPECT_EQ(0, *theme_info.FindIntKey("colorId"));  // 0: manually picked color.
+  EXPECT_EQ(SK_ColorRED, static_cast<SkColor>(*theme_info.FindIntKey("color")));
+}
 #endif  //  BUILDFLAG(IS_CHROMEOS_LACROS)

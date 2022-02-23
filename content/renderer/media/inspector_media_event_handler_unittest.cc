@@ -111,7 +111,9 @@ class InspectorMediaEventHandlerTest : public testing::Test {
     error.id = 0;
     error.type = media::MediaLogRecord::Type::kMediaStatus;
     error.time = base::TimeTicks();
-    error.params.SetIntPath(media::MediaLog::kStatusText, errorcode);
+    error.params.SetIntPath(media::StatusConstants::kCodeKey, errorcode);
+    error.params.SetStringPath(media::StatusConstants::kGroupKey,
+                               media::PipelineStatus::Traits::Group());
     return error;
   }
 };
@@ -302,15 +304,17 @@ TEST_F(InspectorMediaEventHandlerTest, PassesPlayAndPauseEvents) {
 }
 
 TEST_F(InspectorMediaEventHandlerTest, PassesErrorEvents) {
-  std::vector<media::MediaLogRecord> errors = {CreateError(5), CreateError(7)};
+  std::vector<media::MediaLogRecord> errors = {
+      CreateError(media::PIPELINE_ERROR_NETWORK),
+      CreateError(media::PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED)};
 
   blink::InspectorPlayerErrors expected_errors;
   blink::InspectorPlayerError first = {
       blink::InspectorPlayerError::Type::kPipelineError,
-      blink::WebString::FromUTF8("5")};
+      blink::WebString::FromUTF8("PIPELINE_ERROR_NETWORK")};
   blink::InspectorPlayerError second = {
       blink::InspectorPlayerError::Type::kPipelineError,
-      blink::WebString::FromUTF8("7")};
+      blink::WebString::FromUTF8("PIPELINE_ERROR_EXTERNAL_RENDERER_FAILED")};
   expected_errors.emplace_back(first);
   expected_errors.emplace_back(second);
 

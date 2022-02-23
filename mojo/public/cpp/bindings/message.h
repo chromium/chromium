@@ -15,10 +15,10 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "mojo/public/cpp/bindings/connection_group.h"
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 #include "mojo/public/cpp/bindings/lib/message_internal.h"
@@ -296,7 +296,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) Message {
 
   std::vector<ScopedHandle> handles_;
   std::vector<ScopedInterfaceEndpointHandle> associated_endpoint_handles_;
-  const ConnectionGroup::Ref* receiver_connection_group_ = nullptr;
+  raw_ptr<const ConnectionGroup::Ref> receiver_connection_group_ = nullptr;
 
   // Indicates whether this Message object is transferable, i.e. can be sent
   // elsewhere. In general this is true unless |handle_| is invalid or
@@ -322,7 +322,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageFilter {
   // the message is dispatched to the associated MessageReceiver. Returns true
   // if the message was accepted and false otherwise, indicating that the
   // message was invalid or malformed.
-  virtual bool WillDispatch(Message* message) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool WillDispatch(Message* message) = 0;
 
   // The filter receives notification that the message was dispatched or
   // rejected. Since the message filter is owned by the receiver it will not be
@@ -340,7 +340,7 @@ class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) MessageReceiver {
   // The receiver may mutate the given message.  Returns true if the message
   // was accepted and false otherwise, indicating that the message was invalid
   // or malformed.
-  virtual bool Accept(Message* message) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Accept(Message* message) = 0;
 };
 
 class MessageReceiverWithResponder : public MessageReceiver {
@@ -351,9 +351,9 @@ class MessageReceiverWithResponder : public MessageReceiver {
   // responder) to handle the response message generated from the given
   // message. The responder's Accept method may be called during
   // AcceptWithResponder or some time after its return.
-  virtual bool AcceptWithResponder(Message* message,
-                                   std::unique_ptr<MessageReceiver> responder)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool AcceptWithResponder(
+      Message* message,
+      std::unique_ptr<MessageReceiver> responder) = 0;
 };
 
 // A MessageReceiver that is also able to provide status about the state
@@ -385,9 +385,9 @@ class MessageReceiverWithResponderStatus : public MessageReceiver {
   // the responder) to handle the response message generated from the given
   // message. Any of the responder's methods (Accept or IsValid) may be called
   // during  AcceptWithResponder or some time after its return.
-  virtual bool AcceptWithResponder(Message* message,
-                                   std::unique_ptr<MessageReceiverWithStatus>
-                                       responder) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool AcceptWithResponder(
+      Message* message,
+      std::unique_ptr<MessageReceiverWithStatus> responder) = 0;
 };
 
 class COMPONENT_EXPORT(MOJO_CPP_BINDINGS_BASE) PassThroughFilter

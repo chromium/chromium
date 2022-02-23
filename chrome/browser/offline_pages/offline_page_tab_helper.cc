@@ -47,7 +47,7 @@ using blink::mojom::MHTMLLoadResult;
 
 namespace {
 bool SchemeIsForUntrustedOfflinePages(const GURL& url) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (url.SchemeIs(url::kContentScheme))
     return true;
 #endif
@@ -115,6 +115,7 @@ bool OfflinePageTabHelper::LoadedOfflinePageInfo::IsValid() const {
 
 OfflinePageTabHelper::OfflinePageTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OfflinePageTabHelper>(*web_contents),
       mhtml_page_notifier_receivers_(web_contents, this) {
   DCHECK(content::BrowserThread::CurrentlyOn(content::BrowserThread::UI));
   Profile* profile =

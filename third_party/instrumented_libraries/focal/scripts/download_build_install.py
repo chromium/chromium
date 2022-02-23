@@ -276,8 +276,10 @@ class DebianBuilder(InstrumentedPackageBuilder):
   TODO(spang): Probably the rest of the packages should also use this method..
   """
 
-  def init_build_env(self):
+  def init_build_env(self, args_env):
     self._build_env = os.environ.copy()
+
+    self._build_env.update(dict(args_env))
 
     self._build_env['CC'] = self._cc
     self._build_env['CXX'] = self._cxx

@@ -4,140 +4,364 @@
 
 #include "content/browser/attribution_reporting/attribution_storage_delegate_impl.h"
 
+#include <vector>
+
+#include "base/containers/flat_map.h"
+#include "base/guid.h"
 #include "base/time/time.h"
 #include "content/browser/attribution_reporting/attribution_report.h"
 #include "content/browser/attribution_reporting/attribution_test_utils.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/combinatorics.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
+#include "content/browser/attribution_reporting/stored_source.h"
+#include "content/public/browser/attribution_reporting.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace content {
 
 namespace {
 
+using FakeReport = ::content::AttributionStorageDelegate::FakeReport;
+
 constexpr base::TimeDelta kDefaultExpiry = base::Days(30);
 
 AttributionReport GetReport(base::Time impression_time,
-                            base::Time conversion_time,
+                            base::Time trigger_time,
                             base::TimeDelta expiry = kDefaultExpiry,
-                            StorableSource::SourceType source_type =
-                                StorableSource::SourceType::kNavigation) {
-  base::Time report_time = conversion_time;
-  return AttributionReport(SourceBuilder(impression_time)
-                               .SetExpiry(expiry)
-                               .SetSourceType(source_type)
-                               .Build(),
-                           /*trigger_data=*/123, conversion_time, report_time,
-                           /*priority=*/0,
-                           /*conversion_id=*/absl::nullopt);
+                            CommonSourceInfo::SourceType source_type =
+                                CommonSourceInfo::SourceType::kNavigation) {
+  return ReportBuilder(AttributionInfoBuilder(SourceBuilder(impression_time)
+                                                  .SetExpiry(expiry)
+                                                  .SetSourceType(source_type)
+                                                  .BuildStored())
+                           .SetTime(trigger_time)
+                           .Build())
+      .Build();
+}
+
+void RunRandomFakeReportsTest(const CommonSourceInfo::SourceType source_type,
+                              const int num_stars,
+                              const int num_bars,
+                              const int num_samples,
+                              const double tolerance) {
+  const auto source = SourceBuilder()
+                          .SetSourceType(source_type)
+                          .SetExpiry(kDefaultExpiry)
+                          .BuildCommonInfo();
+
+  base::flat_map<std::vector<FakeReport>, int> output_counts;
+  for (int i = 0; i < num_samples; i++) {
+    std::vector<FakeReport> fake_reports =
+        AttributionStorageDelegateImpl().GetRandomFakeReports(source);
+    output_counts[fake_reports]++;
+  }
+
+  // This is the coupon collector problem (see
+  // https://en.wikipedia.org/wiki/Coupon_collector%27s_problem).
+  // For n possible results:
+  //
+  // the expected number of trials needed to see all possible results is equal
+  // to n * Sum_{i = 1,..,n} 1/i.
+  //
+  // The variance of the number of trials is equal to
+  // Sum_{i = 1,.., n} (1 - p_i) / p_i^2,
+  // where p_i = (n - i + 1) / n.
+  //
+  // The probability that t trials are not enough to see all possible results is
+  // at most n^{-t/(n*ln(n)) + 1}.
+  int expected_num_combinations =
+      BinomialCoefficient(num_stars + num_bars, num_stars);
+  EXPECT_EQ(static_cast<int>(output_counts.size()), expected_num_combinations);
+
+  // For any of the n possible results, the expected number of times it is seen
+  // is equal to 1/n. Moreover, for any possible result, the probability that it
+  // is seen more than (1+alpha)*t/n times is at most p_high = exp(- D(1/n +
+  // alpha/n || 1/n) * t).
+  //
+  // The probability that it is seen less than (1-alpha)*t/n times is at most
+  // p_low = exp(-D(1/n - alpha/n || 1/n) * t,
+  //
+  // where D( x || y) = x * ln(x/y) + (1-x) * ln( (1-x) / (1-y) ).
+  // See
+  // https://en.wikipedia.org/wiki/Chernoff_bound#Additive_form_(absolute_error)
+  // for details.
+  //
+  // Thus, the probability that the number of occurrences of one of the results
+  // deviates from its expectation by alpha*t/n is at most
+  // n * (p_high + p_low).
+  int expected_counts =
+      num_samples / static_cast<double>(expected_num_combinations);
+  for (const auto& output_count : output_counts) {
+    const double abs_error = expected_counts * tolerance;
+    EXPECT_NEAR(output_count.second, expected_counts, abs_error);
+  }
 }
 
 }  // namespace
 
-class AttributionStorageDelegateImplTest : public testing::Test {
- public:
-  AttributionStorageDelegateImplTest() = default;
-};
-
-TEST_F(AttributionStorageDelegateImplTest,
-       ImmediateConversion_FirstWindowUsed) {
+TEST(AttributionStorageDelegateImplTest, ImmediateConversion_FirstWindowUsed) {
   base::Time impression_time = base::Time::Now();
   const AttributionReport report =
-      GetReport(impression_time, /*conversion_time=*/impression_time);
+      GetReport(impression_time, /*trigger_time=*/impression_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ConversionImmediatelyBeforeWindow_NextWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ConversionImmediatelyBeforeWindow_NextWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time =
-      impression_time + base::Days(2) - base::Minutes(1);
-  const AttributionReport report = GetReport(impression_time, conversion_time);
+  base::Time trigger_time = impression_time + base::Days(2) - base::Minutes(1);
+  const AttributionReport report = GetReport(impression_time, trigger_time);
   EXPECT_EQ(impression_time + base::Days(7),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ConversionBeforeWindowDelay_WindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ConversionBeforeWindowDelay_WindowUsed) {
   base::Time impression_time = base::Time::Now();
 
   // The deadline for a window is 1 hour before the window. Use a time just
   // before the deadline.
-  base::Time conversion_time =
-      impression_time + base::Days(2) - base::Minutes(61);
-  const AttributionReport report = GetReport(impression_time, conversion_time);
+  base::Time trigger_time = impression_time + base::Days(2) - base::Minutes(61);
+  const AttributionReport report = GetReport(impression_time, trigger_time);
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ImpressionExpiryBeforeTwoDayWindow_TwoDayWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ImpressionExpiryBeforeTwoDayWindow_TwoDayWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Hours(1);
+  base::Time trigger_time = impression_time + base::Hours(1);
 
   // Set the impression to expire before the two day window.
-  const AttributionReport report = GetReport(impression_time, conversion_time,
+  const AttributionReport report = GetReport(impression_time, trigger_time,
                                              /*expiry=*/base::Hours(2));
   EXPECT_EQ(impression_time + base::Days(2),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ImpressionExpiryBeforeSevenDayWindow_ExpiryWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ImpressionExpiryBeforeSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(3);
+  base::Time trigger_time = impression_time + base::Days(3);
 
   // Set the impression to expire before the two day window.
-  const AttributionReport report = GetReport(impression_time, conversion_time,
+  const AttributionReport report = GetReport(impression_time, trigger_time,
                                              /*expiry=*/base::Days(4));
 
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       ImpressionExpiryAfterSevenDayWindow_ExpiryWindowUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     ImpressionExpiryAfterSevenDayWindow_ExpiryWindowUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(7);
+  base::Time trigger_time = impression_time + base::Days(7);
 
   // Set the impression to expire before the two day window.
-  const AttributionReport report = GetReport(impression_time, conversion_time,
+  const AttributionReport report = GetReport(impression_time, trigger_time,
                                              /*expiry=*/base::Days(9));
 
   // The expiry window is reported one hour after expiry time.
   EXPECT_EQ(impression_time + base::Days(9) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     SourceTypeEvent_ExpiryLessThanTwoDays_TwoDaysUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(3);
+  base::Time trigger_time = impression_time + base::Days(3);
   const AttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::Days(1), StorableSource::SourceType::kEvent);
+      GetReport(impression_time, trigger_time,
+                /*expiry=*/base::Days(1), CommonSourceInfo::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(2) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
 }
 
-TEST_F(AttributionStorageDelegateImplTest,
-       SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
+TEST(AttributionStorageDelegateImplTest,
+     SourceTypeEvent_ExpiryGreaterThanTwoDays_ExpiryUsed) {
   base::Time impression_time = base::Time::Now();
-  base::Time conversion_time = impression_time + base::Days(3);
+  base::Time trigger_time = impression_time + base::Days(3);
   const AttributionReport report =
-      GetReport(impression_time, conversion_time,
-                /*expiry=*/base::Days(4), StorableSource::SourceType::kEvent);
+      GetReport(impression_time, trigger_time,
+                /*expiry=*/base::Days(4), CommonSourceInfo::SourceType::kEvent);
   EXPECT_EQ(impression_time + base::Days(4) + base::Hours(1),
             AttributionStorageDelegateImpl().GetReportTime(
-                report.impression, report.conversion_time));
+                report.attribution_info().source.common_info(),
+                report.attribution_info().time));
+}
+
+TEST(AttributionStorageDelegateImplTest, NewReportID_IsValidGUID) {
+  EXPECT_TRUE(AttributionStorageDelegateImpl().NewReportID().is_valid());
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     RandomizedResponse_NoNoiseModeReturnsNull) {
+  for (auto source_type : kSourceTypes) {
+    EXPECT_EQ(
+        AttributionStorageDelegateImpl(AttributionNoiseMode::kNone)
+            .GetRandomizedResponse(
+                SourceBuilder().SetSourceType(source_type).BuildCommonInfo()),
+        absl::nullopt);
+  }
+}
+
+TEST(AttributionStorageDelegateImplTest, GetFakeReportsForSequenceIndex) {
+  constexpr base::Time kImpressionTime = base::Time();
+  constexpr base::TimeDelta kExpiry = base::Days(9);
+
+  constexpr base::Time kEarlyReportTime1 = kImpressionTime + base::Days(2);
+  constexpr base::Time kEarlyReportTime2 = kImpressionTime + base::Days(7);
+  constexpr base::Time kExpiryReportTime =
+      kImpressionTime + kExpiry + base::Hours(1);
+
+  const struct {
+    CommonSourceInfo::SourceType source_type;
+    int sequence_index;
+    std::vector<FakeReport> expected;
+  } kTestCases[] = {
+      // Event sources only have 3 output states, so we can enumerate them:
+      {
+          .source_type = CommonSourceInfo::SourceType::kEvent,
+          .sequence_index = 0,
+          .expected = {},
+      },
+      {
+          .source_type = CommonSourceInfo::SourceType::kEvent,
+          .sequence_index = 1,
+          .expected = {{
+              .trigger_data = 0,
+              .report_time = kExpiryReportTime,
+          }},
+      },
+      {
+          .source_type = CommonSourceInfo::SourceType::kEvent,
+          .sequence_index = 2,
+          .expected = {{
+              .trigger_data = 1,
+              .report_time = kExpiryReportTime,
+          }},
+      },
+      // Navigation sources have 2925 output states, so pick interesting ones:
+      {
+          .source_type = CommonSourceInfo::SourceType::kNavigation,
+          .sequence_index = 0,
+          .expected = {},
+      },
+      {
+          .source_type = CommonSourceInfo::SourceType::kNavigation,
+          .sequence_index = 20,
+          .expected = {{
+              .trigger_data = 3,
+              .report_time = kEarlyReportTime1,
+          }},
+      },
+      {
+          .source_type = CommonSourceInfo::SourceType::kNavigation,
+          .sequence_index = 41,
+          .expected =
+              {
+                  {
+                      .trigger_data = 4,
+                      .report_time = kEarlyReportTime1,
+                  },
+                  {
+                      .trigger_data = 2,
+                      .report_time = kEarlyReportTime1,
+                  },
+              },
+      },
+      {
+          .source_type = CommonSourceInfo::SourceType::kNavigation,
+          .sequence_index = 50,
+          .expected =
+              {
+                  {
+                      .trigger_data = 4,
+                      .report_time = kEarlyReportTime1,
+                  },
+                  {
+                      .trigger_data = 4,
+                      .report_time = kEarlyReportTime1,
+                  },
+              },
+      },
+      {
+          .source_type = CommonSourceInfo::SourceType::kNavigation,
+          .sequence_index = 1268,
+          .expected =
+              {
+                  {
+                      .trigger_data = 1,
+                      .report_time = kExpiryReportTime,
+                  },
+                  {
+                      .trigger_data = 6,
+                      .report_time = kEarlyReportTime2,
+                  },
+                  {
+                      .trigger_data = 7,
+                      .report_time = kEarlyReportTime1,
+                  },
+              },
+      },
+  };
+
+  for (const auto& test_case : kTestCases) {
+    EXPECT_EQ(test_case.expected,
+              AttributionStorageDelegateImpl().GetFakeReportsForSequenceIndex(
+                  SourceBuilder(kImpressionTime)
+                      .SetSourceType(test_case.source_type)
+                      .SetExpiry(kExpiry)
+                      .BuildCommonInfo(),
+                  test_case.sequence_index))
+        << test_case.sequence_index;
+  }
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     GetRandomFakeReports_Event_MatchesExpectedDistribution) {
+  // The probability that not all of the 3 states are seen after `num_samples`
+  // trials is at most ~1e-14476, which is 0 for all practical purposes, so the
+  // `expected_num_combinations` check should always pass.
+  //
+  // For the distribution check, the probability of failure with `tolerance` is
+  // at most 1e-9.
+  RunRandomFakeReportsTest(CommonSourceInfo::SourceType::kEvent,
+                           /*num_stars=*/1,
+                           /*num_bars=*/2,
+                           /*num_samples=*/100'000,
+                           /*tolerance=*/0.03);
+}
+
+TEST(AttributionStorageDelegateImplTest,
+     GetRandomFakeReports_Navigation_MatchesExpectedDistribution) {
+  // The probability that not all of the 2925 states are seen after
+  // `num_samples` trials is at most ~1e-19, which is 0 for all practical
+  // purposes, so the `expected_num_combinations` check should always pass.
+  //
+  // For the distribution check, the probability of failure with `tolerance` is
+  // at most .0002.
+  RunRandomFakeReportsTest(CommonSourceInfo::SourceType::kNavigation,
+                           /*num_stars=*/3,
+                           /*num_bars=*/24,
+                           /*num_samples=*/150'000,
+                           /*tolerance=*/0.9);
 }
 
 }  // namespace content

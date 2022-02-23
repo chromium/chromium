@@ -19,9 +19,8 @@ bool MathMLRadicalElement::HasIndex() const {
 LayoutObject* MathMLRadicalElement::CreateLayoutObject(
     const ComputedStyle& style,
     LegacyLayout legacy) {
-  DCHECK(!style.IsDisplayMathType() || legacy != LegacyLayout::kForce);
   if (!RuntimeEnabledFeatures::MathMLCoreEnabled() ||
-      !style.IsDisplayMathType())
+      !style.IsDisplayMathType() || legacy == LegacyLayout::kForce)
     return MathMLElement::CreateLayoutObject(style, legacy);
   if (HasTagName(mathml_names::kMsqrtTag))
     return MakeGarbageCollected<LayoutNGMathMLBlockWithAnonymousMrow>(this);

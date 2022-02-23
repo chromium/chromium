@@ -8,7 +8,7 @@
 #include <set>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/scoped_multi_source_observation.h"
 #include "content/public/browser/ax_event_notification_details.h"
@@ -105,7 +105,7 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
     void DidFinishNavigation(
         content::NavigationHandle* navigation_handle) override;
 
-    AutomationEventRouter* router;
+    raw_ptr<AutomationEventRouter> router;
     ExtensionId extension_id;
     int process_id;
     bool desktop;
@@ -152,12 +152,12 @@ class AutomationEventRouter : public content::RenderProcessHostObserver,
   content::NotificationRegistrar registrar_;
   std::vector<std::unique_ptr<AutomationListener>> listeners_;
 
-  content::BrowserContext* active_context_;
+  raw_ptr<content::BrowserContext> active_context_;
 
   // The caller of RegisterRemoteRouter is responsible for ensuring that this
   // pointer is valid. The remote router must be unregistered with
   // RegisterRemoteRouter(nullptr) before it is destroyed.
-  AutomationEventRouterInterface* remote_router_ = nullptr;
+  raw_ptr<AutomationEventRouterInterface> remote_router_ = nullptr;
 
   base::ScopedMultiSourceObservation<content::RenderProcessHost,
                                      content::RenderProcessHostObserver>

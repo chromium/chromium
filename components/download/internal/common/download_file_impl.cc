@@ -30,10 +30,10 @@
 #include "mojo/public/c/system/types.h"
 #include "net/base/io_buffer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/content_uri_utils.h"
 #include "components/download/internal/common/android/download_collection_bridge.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace download {
 
@@ -358,7 +358,7 @@ void DownloadFileImpl::RenameAndAnnotate(
   RenameWithRetryInternal(std::move(parameters));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void DownloadFileImpl::RenameToIntermediateUri(
     const GURL& original_url,
     const GURL& referrer_url,
@@ -392,7 +392,7 @@ void DownloadFileImpl::PublishDownload(RenameCompletionCallback callback) {
 base::FilePath DownloadFileImpl::GetDisplayName() {
   return display_name_;
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 base::TimeDelta DownloadFileImpl::GetRetryDelayForFailedRename(
     int attempt_number) {

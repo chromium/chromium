@@ -15,6 +15,7 @@ component("network") {
     "//base",
     "//base:i18n",
     "//chromeos/components/feature_usage",
+    "//chromeos/components/onc",
     "//chromeos/dbus:common",
     "//chromeos/dbus/hermes",
     "//chromeos/dbus/permission_broker",
@@ -82,6 +83,16 @@ component("network") {
     "managed_network_configuration_handler_impl.h",
     "managed_state.cc",
     "managed_state.h",
+    "metrics/connection_info_metrics_logger.cc",
+    "metrics/connection_info_metrics_logger.h",
+    "metrics/connection_results.cc",
+    "metrics/connection_results.h",
+    "metrics/esim_policy_login_metrics_logger.cc",
+    "metrics/esim_policy_login_metrics_logger.h",
+    "metrics/network_metrics_helper.cc",
+    "metrics/network_metrics_helper.h",
+    "metrics/vpn_network_metrics_helper.cc",
+    "metrics/vpn_network_metrics_helper.h",
     "network_activation_handler.h",
     "network_activation_handler_impl.cc",
     "network_activation_handler_impl.h",
@@ -140,34 +151,22 @@ component("network") {
     "network_ui_data.h",
     "network_util.cc",
     "network_util.h",
-    "onc/certificate_scope.cc",
-    "onc/certificate_scope.h",
+    "onc/network_onc_utils.cc",
+    "onc/network_onc_utils.h",
     "onc/onc_certificate_importer.h",
     "onc/onc_certificate_importer_impl.cc",
     "onc/onc_certificate_importer_impl.h",
     "onc/onc_certificate_pattern.cc",
     "onc/onc_certificate_pattern.h",
-    "onc/onc_mapper.cc",
-    "onc/onc_mapper.h",
     "onc/onc_merger.cc",
     "onc/onc_merger.h",
     "onc/onc_normalizer.cc",
     "onc/onc_normalizer.h",
-    "onc/onc_parsed_certificates.cc",
-    "onc/onc_parsed_certificates.h",
-    "onc/onc_signature.cc",
-    "onc/onc_signature.h",
     "onc/onc_translation_tables.cc",
     "onc/onc_translation_tables.h",
     "onc/onc_translator.h",
     "onc/onc_translator_onc_to_shill.cc",
     "onc/onc_translator_shill_to_onc.cc",
-    "onc/onc_utils.cc",
-    "onc/onc_utils.h",
-    "onc/onc_validator.cc",
-    "onc/onc_validator.h",
-    "onc/variable_expander.cc",
-    "onc/variable_expander.h",
     "policy_applicator.cc",
     "policy_applicator.h",
     "policy_certificate_provider.h",
@@ -204,16 +203,19 @@ source_set("test_support") {
   testonly = true
   public_deps = [
     ":network",
+    "//chromeos/components/onc",
     "//chromeos/dbus/hermes:hermes_fakes",
     "//dbus",
   ]
   deps = [
     "//base",
     "//chromeos:test_utils",
+    "//chromeos/components/onc:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/services/network_config/public/cpp",
     "//chromeos/services/network_config/public/mojom",
+    "//components/onc",
     "//components/sync_preferences:test_support",
     "//dbus",
     "//net:test_support",
@@ -241,8 +243,6 @@ source_set("test_support") {
     "network_state_test_helper.h",
     "network_test_helper_base.cc",
     "network_test_helper_base.h",
-    "onc/onc_test_utils.cc",
-    "onc/onc_test_utils.h",
     "portal_detector/mock_network_portal_detector.cc",
     "portal_detector/mock_network_portal_detector.h",
     "system_token_cert_db_storage_test_util.cc",
@@ -263,6 +263,8 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos:test_utils",
     "//chromeos/components/feature_usage",
+    "//chromeos/components/onc",
+    "//chromeos/components/onc:test_support",
     "//chromeos/dbus:test_support",
     "//chromeos/dbus/hermes:hermes_clients",
     "//chromeos/dbus/hermes:hermes_fakes",
@@ -299,6 +301,10 @@ source_set("unit_tests") {
     "firewall_hole_unittest.cc",
     "geolocation_handler_unittest.cc",
     "managed_network_configuration_handler_unittest.cc",
+    "metrics/connection_info_metrics_logger_unittest.cc",
+    "metrics/esim_policy_login_metrics_logger_unittest.cc",
+    "metrics/network_metrics_helper_unittest.cc",
+    "metrics/vpn_network_metrics_helper_unittest.cc",
     "network_cert_loader_unittest.cc",
     "network_cert_migrator_unittest.cc",
     "network_configuration_handler_unittest.cc",
@@ -314,39 +320,19 @@ source_set("unit_tests") {
     "network_type_pattern_unittest.cc",
     "network_ui_data_unittest.cc",
     "network_util_unittest.cc",
+    "onc/network_onc_utils_unittest.cc",
     "onc/onc_certificate_importer_impl_unittest.cc",
     "onc/onc_certificate_pattern_unittest.cc",
     "onc/onc_merger_unittest.cc",
     "onc/onc_normalizer_unittest.cc",
-    "onc/onc_parsed_certificates_unittest.cc",
     "onc/onc_translator_unittest.cc",
-    "onc/onc_utils_unittest.cc",
-    "onc/onc_validator_unittest.cc",
-    "onc/variable_expander_unittest.cc",
     "prohibited_technologies_handler_unittest.cc",
     "proxy/proxy_config_service_impl_unittest.cc",
     "proxy/ui_proxy_config_service_unittest.cc",
     "shill_property_handler_unittest.cc",
+    "shill_property_util_unittest.cc",
     "stub_cellular_networks_provider_unittest.cc",
     "system_token_cert_db_storage_unittest.cc",
-  ]
-}
-
-fuzzer_test("variable_expander_fuzzer") {
-  sources = [ "onc/variable_expander_fuzzer.cc" ]
-  seed_corpus = "//chromeos/test/data/variable_expander/fuzzer_corpus"
-  dict = "//chromeos/test/data/variable_expander/fuzzer.dict"
-  deps = [
-    ":network",
-    "//base/test:test_support",
-  ]
-}
-
-fuzzer_test("onc_validator_fuzzer") {
-  sources = [ "onc/onc_validator_fuzzer.cc" ]
-  deps = [
-    ":network",
-    "//base",
   ]
 }
 
@@ -355,5 +341,6 @@ fuzzer_test("onc_normalizer_fuzzer") {
   deps = [
     ":network",
     "//base",
+    "//chromeos/components/onc:onc",
   ]
 }

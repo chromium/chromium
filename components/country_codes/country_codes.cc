@@ -4,7 +4,9 @@
 
 #include "components/country_codes/country_codes.h"
 
-#if defined(OS_POSIX) && !defined(OS_APPLE)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_APPLE)
 #include <locale.h>
 #endif
 
@@ -13,14 +15,14 @@
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #undef IN  // On Windows, windef.h defines this, which screws up "India" cases.
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_cftyperef.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/locale_utils.h"
 #endif
 
@@ -49,7 +51,7 @@ int CountryCharsToCountryIDWithUpdate(char c1, char c2) {
   return CountryCharsToCountryID(c1, c2);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // For reference, a list of GeoIDs can be found at
 // http://msdn.microsoft.com/en-us/library/dd374073.aspx .
@@ -106,7 +108,7 @@ int GeoIDToCountryID(GEOID geo_id) {
   }
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -138,13 +140,13 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                 kCountryIDUnknown);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 int GetCurrentCountryID() {
   return GeoIDToCountryID(GetUserGeoID(GEOCLASS_NATION));
 }
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 
 int GetCurrentCountryID() {
   base::ScopedCFTypeRef<CFLocaleRef> locale(CFLocaleCopyCurrent());
@@ -161,13 +163,13 @@ int GetCurrentCountryID() {
                                            static_cast<char>(isobuf[1]));
 }
 
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 
 int GetCurrentCountryID() {
   return CountryStringToCountryID(base::android::GetDefaultCountryCode());
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 int GetCurrentCountryID() {
   const char* locale = setlocale(LC_MESSAGES, nullptr);

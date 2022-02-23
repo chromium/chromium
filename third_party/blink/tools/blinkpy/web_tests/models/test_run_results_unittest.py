@@ -333,16 +333,16 @@ class SummarizedResultsTest(unittest.TestCase):
             passing=True,
             flaky=False,
             extra_skipped_tests=['passes/text.html'])
-        self.assertEquals(summary['tests']['passes']['text.html']['expected'],
-                          'SKIP PASS')
+        actual = summary['tests']['passes']['text.html']['expected']
+        self.assertEquals(sorted(list(actual.split(" "))), ['PASS', 'SKIP'])
 
     def test_summarized_results_wontfix(self):
         self.port._options.builder_name = 'dummy builder'
         summary = summarized_results(
             self.port, expected=False, passing=False, flaky=False)
-        self.assertEquals(
-            summary['tests']['failures']['expected']['keyboard.html']
-            ['expected'], 'SKIP CRASH')
+        actual = summary['tests']['failures']['expected']['keyboard.html'][
+            'expected']
+        self.assertEquals(sorted(list(actual.split(" "))), ['CRASH', 'SKIP'])
         self.assertTrue(
             summary['tests']['passes']['text.html']['is_unexpected'])
         self.assertEqual(summary['num_passes'], 1)

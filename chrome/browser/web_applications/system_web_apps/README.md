@@ -19,7 +19,7 @@ Most SWAs are built in the Chromium source tree, but it is possible to develop i
 
 ## Installation
 System Web Apps are installed on startup using the Web Apps installation pipeline. The key differences are:
-* SWAs don’t use the html->manifest path at all. They are installed directly by creating a WebApplicationInfo object directly in C++ code, and skipping much of the installation process.
+* SWAs don’t use the html->manifest path at all. They are installed directly by creating a WebAppInstallInfo object directly in C++ code, and skipping much of the installation process.
 * The SWAs are checked for installation or upgrade on boot, and re-installed up to the current version of ChromeOS.
 
 ## Serving Resources

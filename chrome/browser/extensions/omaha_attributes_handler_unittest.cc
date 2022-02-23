@@ -5,14 +5,12 @@
 #include "chrome/browser/extensions/omaha_attributes_handler.h"
 
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_service_test_base.h"
 #include "extensions/browser/blocklist_extension_prefs.h"
 #include "extensions/browser/disable_reason.h"
 #include "extensions/browser/extension_prefs.h"
-#include "extensions/common/extension_features.h"
 #include "extensions/test/extension_state_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -26,16 +24,7 @@ constexpr char kTestExtensionId[] = "behllobkkfkfnphdnhnkndlbkcpglgmj";
 }  // namespace
 
 // Test suite to test Omaha attribute handler.
-class OmahaAttributesHandlerUnitTest : public ExtensionServiceTestBase {
- public:
-  OmahaAttributesHandlerUnitTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {extensions_features::kDisablePolicyViolationExtensionsRemotely,
-         extensions_features::kDisablePotentiallyUwsExtensionsRemotely},
-        /*disabled_features=*/{});
-  }
-};
+using OmahaAttributesHandlerUnitTest = ExtensionServiceTestBase;
 
 TEST_F(OmahaAttributesHandlerUnitTest, LogPolicyViolationUWSMetrics) {
   base::HistogramTester histograms;
@@ -260,45 +249,6 @@ TEST_F(OmahaAttributesHandlerUnitTest, KeepDisabledWhenMalwareRemoved) {
   // cleared, but it is no longer blocklisted (instead just disabled).
   EXPECT_TRUE(state_tester.ExpectDisabledWithSingleReason(
       kTestExtensionId, disable_reason::DISABLE_GREYLIST));
-}
-
-// Test suite to test Omaha attribute handler when features are disabled.
-class OmahaAttributesHandlerWithFeatureDisabledUnitTest
-    : public ExtensionServiceTestBase {
- public:
-  OmahaAttributesHandlerWithFeatureDisabledUnitTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/
-        {},
-        /*disabled_features=*/{
-            extensions_features::kDisablePolicyViolationExtensionsRemotely,
-            extensions_features::kDisablePotentiallyUwsExtensionsRemotely});
-  }
-};
-
-TEST_F(OmahaAttributesHandlerWithFeatureDisabledUnitTest,
-       DoNotDisableRemotelyWhenFlagsDisabled) {
-  base::HistogramTester histograms;
-  InitializeGoodInstalledExtensionService();
-  service()->Init();
-
-  base::Value attributes(base::Value::Type::DICTIONARY);
-  attributes.SetBoolKey("_policy_violation", true);
-  attributes.SetBoolKey("_potentially_uws", true);
-  service()->PerformActionBasedOnOmahaAttributes(kTestExtensionId, attributes);
-
-  // Since the flag is disabled, we don't expect the extension to be affected.
-  ExtensionStateTester state_tester(profile());
-  EXPECT_TRUE(state_tester.ExpectEnabled(kTestExtensionId));
-  EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
-      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_CWS_POLICY_VIOLATION,
-      ExtensionPrefs::Get(profile())));
-  EXPECT_FALSE(blocklist_prefs::HasOmahaBlocklistState(
-      kTestExtensionId, BitMapBlocklistState::BLOCKLISTED_POTENTIALLY_UNWANTED,
-      ExtensionPrefs::Get(profile())));
-  // Histograms should not be logged when the flag is disabled.
-  histograms.ExpectTotalCount("Extensions.ExtensionAddDisabledRemotelyReason2",
-                              /*expected_count=*/0);
 }
 
 }  // namespace extensions

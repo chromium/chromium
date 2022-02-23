@@ -2,16 +2,16 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+config("edition_2021") {
+  rustflags = [ "--edition=2021" ]
+}
+
 config("edition_2018") {
   rustflags = [ "--edition=2018" ]
 }
 
 config("edition_2015") {
   rustflags = [ "--edition=2015" ]
-}
-
-config("rust_enabled") {
-  defines = [ "RUST_ENABLED" ]
 }
 
 # The required config for cxx-generated bindings because Chromium C++ is built
@@ -27,6 +27,18 @@ source_set("cxx_cppdeps") {
     "//third_party/rust/cxx/v1/crate/include/cxx.h",
     "//third_party/rust/cxx/v1/crate/src/cxx.cc",
   ]
+
+  # Depending on the C++ bindings side of cxx then requires also depending
+  # on the Rust bindings, since one calls the other. And the Rust bindings
+  # require the Rust standard library.
+  # Normally the Rust stdlib is brought in as a dependency by depending
+  # on any first-party Rust target. But in this case, it's conceivable
+  # that pure-C++ targets will not depend on any 1p Rust code so we'll add
+  # the Rust stdlib explicitly.
+  deps = [
+    ":cxx_rustdeps",
+    "//build/rust/std",
+  ]
   public_configs = [ ":cxx_cppconfig" ]
 }
 
@@ -34,4 +46,13 @@ source_set("cxx_cppdeps") {
 # on the Rust side.
 group("cxx_rustdeps") {
   deps = [ "//third_party/rust/cxx/v1:lib" ]
+}
+
+# Enables code behind #[cfg(test)]. This should only be used for targets where
+# testonly=true.
+config("test") {
+  rustflags = [
+    "--cfg",
+    "test",
+  ]
 }

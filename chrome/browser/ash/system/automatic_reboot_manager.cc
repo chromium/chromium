@@ -30,7 +30,10 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/tick_clock.h"
+#include "base/time/time.h"
+#include "base/timer/wall_clock_timer.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/common/pref_names.h"
@@ -53,6 +56,7 @@ const int kMinRebootUptimeMs = 60 * 60 * 1000;     // 1 hour.
 const int kLoginManagerIdleTimeoutMs = 60 * 1000;  // 60 seconds.
 const int kGracePeriodMs = 24 * 60 * 60 * 1000;    // 24 hours.
 const int kOneKilobyte = 1 << 10;                  // 1 kB in bytes.
+const int kResumeRebootDelayMs = 100;
 
 base::TimeDelta ReadTimeDeltaFromFile(const base::FilePath& path) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
@@ -80,7 +84,7 @@ void SaveUpdateRebootNeededUptime() {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::MAY_BLOCK);
   base::FilePath update_reboot_needed_uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME,
+  CHECK(base::PathService::Get(FILE_UPDATE_REBOOT_NEEDED_UPTIME,
                                &update_reboot_needed_uptime_file));
   const base::TimeDelta last_update_reboot_needed_uptime =
       ReadTimeDeltaFromFile(update_reboot_needed_uptime_file);
@@ -88,7 +92,7 @@ void SaveUpdateRebootNeededUptime() {
     return;
 
   base::FilePath uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPTIME, &uptime_file));
+  CHECK(base::PathService::Get(FILE_UPTIME, &uptime_file));
   const base::TimeDelta uptime = ReadTimeDeltaFromFile(uptime_file);
   if (uptime.is_zero())
     return;
@@ -133,9 +137,9 @@ struct SystemEventTimes {
 
 SystemEventTimes GetSystemEventTimes() {
   base::FilePath uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPTIME, &uptime_file));
+  CHECK(base::PathService::Get(FILE_UPTIME, &uptime_file));
   base::FilePath update_reboot_needed_uptime_file;
-  CHECK(base::PathService::Get(chromeos::FILE_UPDATE_REBOOT_NEEDED_UPTIME,
+  CHECK(base::PathService::Get(FILE_UPDATE_REBOOT_NEEDED_UPTIME,
                                &update_reboot_needed_uptime_file));
   return SystemEventTimes(
       ReadTimeDeltaFromFile(uptime_file),
@@ -144,8 +148,10 @@ SystemEventTimes GetSystemEventTimes() {
 
 }  // namespace internal
 
-AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
-    : clock_(clock) {
+AutomaticRebootManager::AutomaticRebootManager(
+    const base::Clock* clock,
+    const base::TickClock* tick_clock)
+    : clock_(clock), tick_clock_(tick_clock) {
   local_state_registrar_.Init(g_browser_process->local_state());
   local_state_registrar_.Add(
       prefs::kUptimeLimit,
@@ -169,6 +175,7 @@ AutomaticRebootManager::AutomaticRebootManager(const base::TickClock* clock)
       ui::UserActivityDetector::Get()->AddObserver(this);
     session_manager_observation_.Observe(
         session_manager::SessionManager::Get());
+    VLOG(1) << "Enabling login screen idle timer";
     login_screen_idle_timer_ = std::make_unique<base::OneShotTimer>();
     OnUserActivity(nullptr);
   }
@@ -207,7 +214,16 @@ bool AutomaticRebootManager::WaitForInitForTesting(
 }
 
 void AutomaticRebootManager::SuspendDone(base::TimeDelta sleep_duration) {
-  MaybeReboot(true);
+  VLOG(1) << "Attempting a reboot because device is unsuspended";
+  // Ignore session to allow rebooting kiosk apps on resume. In case the session
+  // is a user session, there is an additional check in the Reboot method below.
+  // We post a delayed task to ensure that we run any due grace timers and
+  // update |reboot_requested_| flag before we try to reboot.
+  base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&AutomaticRebootManager::MaybeReboot,
+                     base::Unretained(this), true),
+      base::Milliseconds(kResumeRebootDelayMs));
 }
 
 void AutomaticRebootManager::UpdateStatusChanged(
@@ -215,6 +231,12 @@ void AutomaticRebootManager::UpdateStatusChanged(
   // Ignore repeated notifications that a reboot is necessary. This is important
   // so that only the time of the first notification is taken into account and
   // repeated notifications do not postpone the reboot request and grace period.
+  VLOG(1) << "UpdateStatusChanged called with operation "
+          << update_engine::Operation_Name(status.current_operation())
+          << ", boot_time_ is " << (boot_time_.has_value() ? "" : "not ")
+          << "present, update_reboot_needed_time_ is "
+          << (update_reboot_needed_time_.has_value() ? "" : "not ")
+          << "present";
   if (status.current_operation() !=
           update_engine::Operation::UPDATED_NEED_REBOOT ||
       !boot_time_ || update_reboot_needed_time_) {
@@ -226,7 +248,7 @@ void AutomaticRebootManager::UpdateStatusChanged(
                               base::TaskShutdownBehavior::BLOCK_SHUTDOWN},
                              base::BindOnce(&SaveUpdateRebootNeededUptime));
 
-  update_reboot_needed_time_ = clock_->NowTicks();
+  update_reboot_needed_time_ = tick_clock_->NowTicks();
 
   Reschedule();
 }
@@ -254,6 +276,7 @@ void AutomaticRebootManager::OnUserSessionStarted(bool is_primary_user) {
   if (ui::UserActivityDetector::Get())
     ui::UserActivityDetector::Get()->RemoveObserver(this);
   session_manager_observation_.Reset();
+  VLOG(1) << "Disabling login screen idle timer";
   login_screen_idle_timer_.reset();
 }
 
@@ -265,6 +288,7 @@ void AutomaticRebootManager::Observe(
   if (session_manager::SessionManager::Get()->IsSessionStarted()) {
     // The browser is terminating during a session, either because the session
     // is ending or because the browser is being restarted.
+    VLOG(1) << "Attempting a reboot since app is terminating";
     MaybeReboot(true);
   }
 }
@@ -279,13 +303,15 @@ void AutomaticRebootManager::Init(
     const internal::SystemEventTimes& system_event_times) {
   initialized_.Signal();
 
-  const base::TimeDelta offset = clock_->NowTicks() - base::TimeTicks::Now();
+  const base::TimeDelta offset =
+      tick_clock_->NowTicks() - base::TimeTicks::Now();
   if (system_event_times.boot_time) {
-    // Convert the time at which the device was booted to |clock_| ticks.
+    // Convert the time at which the device was booted to |tick_clock_| ticks.
     boot_time_ = *system_event_times.boot_time + offset;
   }
   if (system_event_times.update_reboot_needed_time) {
-    // Convert the time at which a reboot became necessary to |clock_| ticks.
+    // Convert the time at which a reboot became necessary to |tick_clock_|
+    // ticks.
     update_reboot_needed_time_ =
         *system_event_times.update_reboot_needed_time + offset;
   } else {
@@ -293,6 +319,7 @@ void AutomaticRebootManager::Init(
         DBusThreadManager::Get()->GetUpdateEngineClient()->GetLastStatus());
   }
 
+  VLOG(1) << "Initialization finished";
   Reschedule();
 }
 
@@ -319,6 +346,11 @@ void AutomaticRebootManager::Reschedule() {
   // update has been applied, set the time at which a reboot should be
   // requested to the minimum of its current value and the time when the reboot
   // became necessary.
+  VLOG(1) << "Reboot after update is "
+          << (local_state_registrar_.prefs()->GetBoolean(
+                  prefs::kRebootAfterUpdate)
+                  ? "enabled"
+                  : "disabled");
   if (update_reboot_needed_time_ &&
       local_state_registrar_.prefs()->GetBoolean(prefs::kRebootAfterUpdate) &&
       (!have_reboot_request_time ||
@@ -339,7 +371,8 @@ void AutomaticRebootManager::Reschedule() {
   // Safeguard against reboot loops: Ensure that the uptime after which a reboot
   // is actually requested and the grace period begins is never less than
   // |kMinRebootUptimeMs|.
-  const base::TimeTicks now = clock_->NowTicks();
+  const base::TimeTicks now = tick_clock_->NowTicks();
+  const base::Time wall_clock_now = clock_->Now();
   const base::TimeTicks grace_start_time =
       std::max(reboot_request_time,
                *boot_time_ + base::Milliseconds(kMinRebootUptimeMs));
@@ -347,10 +380,13 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the start of the grace period. If the grace period
   // started in the past, the timer is still used with its delay set to zero.
   if (!grace_start_timer_)
-    grace_start_timer_ = std::make_unique<base::OneShotTimer>();
-  VLOG(1) << "Scheduling reboot attempt in " << (grace_start_time - now);
+    grace_start_timer_ =
+        std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
+  VLOG(1) << "Scheduling reboot attempt at "
+          << wall_clock_now + (grace_start_time - now);
   grace_start_timer_->Start(
-      FROM_HERE, std::max(grace_start_time - now, base::TimeDelta()),
+      FROM_HERE,
+      wall_clock_now + std::max(grace_start_time - now, base::TimeDelta()),
       base::BindOnce(&AutomaticRebootManager::RequestReboot,
                      base::Unretained(this)));
 
@@ -359,10 +395,13 @@ void AutomaticRebootManager::Reschedule() {
   // Set up a timer for the end of the grace period. If the grace period ended
   // in the past, the timer is still used with its delay set to zero.
   if (!grace_end_timer_)
-    grace_end_timer_ = std::make_unique<base::OneShotTimer>();
-  VLOG(1) << "Scheduling unconditional reboot in " << (grace_end_time - now);
+    grace_end_timer_ =
+        std::make_unique<base::WallClockTimer>(clock_, tick_clock_);
+  VLOG(1) << "Scheduling unconditional reboot at "
+          << wall_clock_now + (grace_end_time - now);
   grace_end_timer_->Start(
-      FROM_HERE, std::max(grace_end_time - now, base::TimeDelta()),
+      FROM_HERE,
+      wall_clock_now + std::max(grace_end_time - now, base::TimeDelta()),
       base::BindOnce(&AutomaticRebootManager::Reboot, base::Unretained(this)));
 }
 
@@ -373,6 +412,7 @@ void AutomaticRebootManager::RequestReboot() {
             reboot_reason_);
   for (auto& observer : observers_)
     observer.OnRebootRequested(reboot_reason_);
+  VLOG(1) << "Attempting a reboot after it has been requested";
   MaybeReboot(false);
 }
 
@@ -385,6 +425,19 @@ void AutomaticRebootManager::MaybeReboot(bool ignore_session) {
       (login_screen_idle_timer_ && login_screen_idle_timer_->IsRunning()) ||
       (!ignore_session &&
        session_manager::SessionManager::Get()->IsSessionStarted())) {
+    VLOG(1)
+        << "Skipping reboot: reboot is " << (reboot_requested_ ? "" : "not ")
+        << "requested, login screen idle timer is "
+        << (login_screen_idle_timer_
+                ? (login_screen_idle_timer_->IsRunning() ? "running"
+                                                         : "not running")
+                : "disabled")
+        << " and session is "
+        << (ignore_session
+                ? "ignored"
+                : (session_manager::SessionManager::Get()->IsSessionStarted()
+                       ? "started"
+                       : "not started"));
     return;
   }
 

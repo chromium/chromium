@@ -5,7 +5,7 @@
 # This file is used for tests that only need to be suppressed on
 # the Chromium Blink MSan bots.
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 # Those stress V8's simulator, making them very slow under MSan.
 crbug.com/420198 [ Linux ] fast/js/regress/* [ Skip ]
@@ -70,8 +70,6 @@ crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-misc/timeline-ev
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-time/timeline-usertiming.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/tracing/timeline-paint/timeline-paint.js [ Pass Timeout ]
 crbug.com/760543 [ Linux ] http/tests/devtools/oopif/oopif-performance-cpu-profiles.js [ Pass Timeout ]
-crbug.com/902685 [ Linux ] http/tests/devtools/isolated-code-cache/same-origin-test.js [ Pass Timeout ]
-crbug.com/902685 [ Linux ] http/tests/devtools/isolated-code-cache/cross-origin-test.js [ Pass Timeout ]
 
 # Memory allocation hooks are disabled on ASAN/MSAN
 crbug.com/803276 inspector-protocol/memory/sampling-native-profile.js [ Skip ]
@@ -116,7 +114,6 @@ crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.servi
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.sharedworker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-large.any.worker.html [ Pass Timeout ]
 crbug.com/856601 [ Linux ] external/wpt/IndexedDB/nested-cloning-small.any.serviceworker.html [ Pass Timeout ]
-crbug.com/856601 [ Linux ] http/tests/devtools/a11y-axe-core/console/console-a11y-test.js [ Pass Timeout ]
 
 # Sheriff 2019-06-28
 crbug.com/856601 [ Linux ] http/tests/devtools/indexeddb/live-update-indexeddb-content.js [ Pass Timeout ]
@@ -138,9 +135,6 @@ crbug.com/1041052 [ Linux ] external/wpt/html/canvas/element/fill-and-stroke-sty
 
 # Sheriff 2020-02-10
 crbug.com/1050559 [ Linux ] external/wpt/WebCryptoAPI/derive_bits_keys/hkdf.https.any.worker.html?1-1000 [ Skip ]
-
-# Sheriff 2020-06-16
-crbug.com/1095518 [ Linux ] crbug.com/840659 external/wpt/webrtc/simulcast/h264.https.html [ Crash ]
 
 # Sheriff 2020-10-05
 crbug.com/1134580 [ Linux ] virtual/eye-dropper/http/tests/eye-dropper/color-picker-show-eye-dropper.html [ Pass Timeout ]
@@ -169,10 +163,6 @@ crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-selecti
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-format.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/tracing/console-timeline.js [ Pass Timeout ]
 crbug.com/1179829 [ Linux ] http/tests/devtools/console/console-viewport-stick-to-bottom-onload.js [ Pass Timeout ]
-crbug.com/1179829 [ Linux ] http/tests/devtools/isolated-code-cache/stale-revalidation-test.js [ Pass Timeout ]
-
-# Sheriff 2021-03-23
-crbug.com/1179829 [ Linux ] http/tests/devtools/console/viewport-testing/console-stick-to-bottom-with-large-prompt.js [ Pass Timeout ]
 
 # Sheriff 2021-04-22
 crbug.com/1201807 [ Linux ] virtual/feature-policy-permissions/external/wpt/mediacapture-streams/MediaStreamTrack-MediaElement-disabled-video-is-black.https.html [ Pass Timeout ]
@@ -185,6 +175,3 @@ crbug.com/1214884 [ Linux ] external/wpt/html/webappapis/scripting/events/event-
 crbug.com/1215390 [ Linux ] external/wpt/pointerevents/pointerevent_pointerId_scope.html [ Pass Failure Timeout ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-frameset-window.html [ Pass Timeout ]
 crbug.com/1215632 [ Linux ] external/wpt/html/webappapis/scripting/events/event-handler-attributes-windowless-body.html [ Pass Timeout ]
-
-# Sheriff 2021-07-15
-crbug.com/1229588 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tentative.https.html [ Pass Timeout ]

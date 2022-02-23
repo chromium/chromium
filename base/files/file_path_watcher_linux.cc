@@ -219,7 +219,7 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // Reconfigure to watch for the most specific parent directory of |target_|
   // that exists. Also calls UpdateRecursiveWatches() below. Returns true if
   // watch limit is not hit. Otherwise, returns false.
-  bool UpdateWatches() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateWatches();
 
   // Reconfigure to recursively watch |target_| and all its sub-directories.
   // - This is a no-op if the watch is not recursive.
@@ -229,12 +229,12 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // - Otherwise, only the directory associated with |fired_watch| and its
   //   sub-directories will be reconfigured.
   // Returns true if watch limit is not hit. Otherwise, returns false.
-  bool UpdateRecursiveWatches(InotifyReader::Watch fired_watch,
-                              bool is_dir) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateRecursiveWatches(InotifyReader::Watch fired_watch,
+                                            bool is_dir);
 
   // Enumerate recursively through |path| and add / update watches.
   // Returns true if watch limit is not hit. Otherwise, returns false.
-  bool UpdateRecursiveWatchesForPath(const FilePath& path) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateRecursiveWatchesForPath(const FilePath& path);
 
   // Do internal bookkeeping to update mappings between |watch| and its
   // associated full path |path|.
@@ -246,8 +246,8 @@ class FilePathWatcherImpl : public FilePathWatcher::PlatformDelegate {
   // |path| is a symlink to a non-existent target. Attempt to add a watch to
   // the link target's parent directory. Update |watch_entry| on success.
   // Returns true if watch limit is not hit. Otherwise, returns false.
-  bool AddWatchForBrokenSymlink(const FilePath& path,
-                                WatchEntry* watch_entry) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AddWatchForBrokenSymlink(const FilePath& path,
+                                              WatchEntry* watch_entry);
 
   bool HasValidWatchVector() const;
 
@@ -566,8 +566,7 @@ bool FilePathWatcherImpl::Watch(const FilePath& path,
   target_ = path;
   type_ = type;
 
-  std::vector<FilePath::StringType> comps;
-  target_.GetComponents(&comps);
+  std::vector<FilePath::StringType> comps = target_.GetComponents();
   DCHECK(!comps.empty());
   for (size_t i = 1; i < comps.size(); ++i)
     watches_.emplace_back(comps[i]);
@@ -819,14 +818,14 @@ FilePathWatcher::FilePathWatcher() {
   impl_ = std::make_unique<FilePathWatcherImpl>();
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-// Put inside "defined(OS_LINUX) || defined(OS_CHROMEOS)" because Android
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+// Put inside "BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)" because Android
 // includes file_path_watcher_linux.cc.
 
 // static
 bool FilePathWatcher::HasWatchesForTest() {
   return g_inotify_reader.Get().HasWatches();
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace base

@@ -26,6 +26,7 @@ html_to_js("web_components") {
     "drive_welcome_banner.js",
     "educational_banner.js",
     "holding_space_welcome_banner.js",
+    "invalid_usb_filesystem_banner.js",
     "local_disk_low_space_banner.js",
     "photos_welcome_banner.js",
     "shared_with_crostini_pluginvm_banner.js",
@@ -50,6 +51,7 @@ js_type_check("closure_compile_jsmodules") {
     ":drive_welcome_banner",
     ":educational_banner",
     ":holding_space_welcome_banner",
+    ":invalid_usb_filesystem_banner",
     ":local_disk_low_space_banner",
     ":photos_welcome_banner",
     ":shared_with_crostini_pluginvm_banner",
@@ -65,6 +67,15 @@ js_library("holding_space_welcome_banner") {
     "//ui/file_manager/file_manager/common/js:volume_manager_types",
     "//ui/file_manager/file_manager/externs:banner",
     "//ui/file_manager/file_manager/foreground/js:holding_space_util",
+  ]
+}
+
+js_library("invalid_usb_filesystem_banner") {
+  deps = [
+    ":state_banner",
+    "//ui/file_manager/file_manager/common/js:util",
+    "//ui/file_manager/file_manager/common/js:volume_manager_types",
+    "//ui/file_manager/file_manager/externs:banner",
   ]
 }
 

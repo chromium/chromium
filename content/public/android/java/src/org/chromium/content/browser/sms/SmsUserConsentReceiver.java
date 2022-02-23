@@ -17,6 +17,7 @@ import com.google.android.gms.common.api.Status;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
 import org.chromium.ui.base.WindowAndroid;
 
@@ -45,7 +46,8 @@ public class SmsUserConsentReceiver extends BroadcastReceiver {
         if (DEBUG) Log.d(TAG, "Registering intent filters.");
         IntentFilter filter = new IntentFilter();
         filter.addAction(SmsRetriever.SMS_RETRIEVED_ACTION);
-        mContext.registerReceiver(this, filter);
+        ContextUtils.registerExportedBroadcastReceiver(
+                mContext, this, filter, SmsRetriever.SEND_PERMISSION);
     }
 
     public SmsRetrieverClient createClient() {

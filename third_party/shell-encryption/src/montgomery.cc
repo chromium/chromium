@@ -14,6 +14,8 @@
 
 #include "montgomery.h"
 
+#include "third_party/shell-encryption/base/shell_encryption_export.h"
+#include "third_party/shell-encryption/base/shell_encryption_export_template.h"
 #include "transcription.h"
 
 namespace rlwe {
@@ -416,12 +418,12 @@ MontgomeryInt<T> MontgomeryInt<T>::MultiplicativeInverse(
 
 // Instantiations of MontgomeryInt and MontgomeryIntParams with specific
 // integral types.
-template struct MontgomeryIntParams<Uint16>;
-template struct MontgomeryIntParams<Uint32>;
-template struct MontgomeryIntParams<Uint64>;
-template struct MontgomeryIntParams<absl::uint128>;
-template class MontgomeryInt<Uint16>;
-template class MontgomeryInt<Uint32>;
-template class MontgomeryInt<Uint64>;
-template class MontgomeryInt<absl::uint128>;
+template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint16>;
+template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint32>;
+template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<Uint64>;
+template struct EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryIntParams<absl::uint128>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint16>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint32>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<Uint64>;
+template class EXPORT_TEMPLATE_DEFINE(SHELL_ENCRYPTION_EXPORT) MontgomeryInt<absl::uint128>;
 }  // namespace rlwe

@@ -17,6 +17,7 @@ syntax = "proto2";
 
 package tflite.task.core;
 
+
 // Represents external files used by the Task APIs (e.g. TF Lite FlatBuffer or
 // plain-text labels file). The files can be specified by one of the following
 // three ways:
@@ -63,3 +64,4 @@ message FileDescriptorMeta {
   // offset of a given asset obtained from AssetFileDescriptor#getStartOffset().
   optional int64 offset = 3;
 }
+

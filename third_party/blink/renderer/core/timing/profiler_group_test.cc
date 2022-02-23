@@ -188,16 +188,9 @@ TEST(ProfilerGroupTest, OverflowSamplingInterval) {
 }
 
 TEST(ProfilerGroupTest, Bug1119865) {
-  class ExpectNoCallFunction : public ScriptFunction {
+  class ExpectNoCallFunction : public ScriptFunction::Callable {
    public:
-    static v8::Local<v8::Function> Create(ScriptState* state) {
-      return MakeGarbageCollected<ExpectNoCallFunction>(state)
-          ->BindToV8Function();
-    }
-
-    explicit ExpectNoCallFunction(ScriptState* state) : ScriptFunction(state) {}
-
-    ScriptValue Call(ScriptValue) override {
+    ScriptValue Call(ScriptState*, ScriptValue) override {
       EXPECT_FALSE(true)
           << "Promise should not resolve without dispatching a task";
       return ScriptValue();
@@ -216,7 +209,8 @@ TEST(ProfilerGroupTest, Bug1119865) {
       scope.GetScriptState(), *init_options, base::TimeTicks(),
       scope.GetExceptionState());
 
-  auto function = ExpectNoCallFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<ScriptFunction>(
+      scope.GetScriptState(), MakeGarbageCollected<ExpectNoCallFunction>());
   profiler->stop(scope.GetScriptState()).Then(function);
 }
 

@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/observer_list_types.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -36,10 +37,22 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdvertisementMonitorManagerClient
     dbus::Property<std::vector<std::string>> supported_features;
   };
 
+  // Interface for observing changes in advertisement monitor client properties.
+  class Observer : public base::CheckedObserver {
+   public:
+    ~Observer() override;
+
+    // Called when the advertisement monitoring supported features change.
+    virtual void SupportedAdvertisementMonitorFeaturesChanged() = 0;
+  };
+
   ~BluetoothAdvertisementMonitorManagerClient() override;
 
   using ErrorCallback = base::OnceCallback<void(std::string error_name,
                                                 std::string error_message)>;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
 
   // Registers an advertisement monitor manager at the D-bus object path
   // |application| with the remote BlueZ advertisement monitor manager. After

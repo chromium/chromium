@@ -141,7 +141,7 @@ class PLATFORM_EXPORT ShapeResultView final
 
   // Computes and returns the ink bounds (or visual overflow rect). This is
   // quite expensive and involves measuring each glyph accumulating the bounds.
-  FloatRect ComputeInkBounds() const;
+  gfx::RectF ComputeInkBounds() const;
 
   scoped_refptr<const SimpleFontData> PrimaryFont() const {
     return primary_font_;
@@ -169,7 +169,7 @@ class PLATFORM_EXPORT ShapeResultView final
   template <bool is_horizontal_run, bool has_glyph_offsets>
   void ComputePartInkBounds(const ShapeResultView::RunInfoPart&,
                             float run_advance,
-                            FloatRect* ink_bounds) const;
+                            gfx::RectF* ink_bounds) const;
 
   // Common signatures with ShapeResult, to templatize algorithms.
   base::span<const RunInfoPart> RunsOrParts() const { return Parts(); }

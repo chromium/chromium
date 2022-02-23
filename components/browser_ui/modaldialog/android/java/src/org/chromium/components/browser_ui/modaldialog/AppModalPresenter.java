@@ -56,12 +56,20 @@ public class AppModalPresenter extends ModalDialogManager.Presenter {
     protected void addDialogView(PropertyModel model) {
         int styles[][] = {
                 {R.style.Theme_Chromium_ModalDialog_TextPrimaryButton,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_TextPrimaryButton_Fullscreen},
+                        R.style.ThemeOverlay_Chromium_ModalDialog_TextPrimaryButton_Fullscreen,
+                        R.style.ThemeOverlay_Chromium_ModalDialog_TextPrimaryButton_DialogWhenLarge},
                 {R.style.Theme_Chromium_ModalDialog_FilledPrimaryButton,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledPrimaryButton_Fullscreen},
+                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledPrimaryButton_Fullscreen,
+                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledPrimaryButton_DialogWhenLarge},
                 {R.style.Theme_Chromium_ModalDialog_FilledNegativeButton,
-                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledNegativeButton_Fullscreen}};
-        int index = (model.get(ModalDialogProperties.FULLSCREEN_DIALOG)) ? 1 : 0;
+                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledNegativeButton_Fullscreen,
+                        R.style.ThemeOverlay_Chromium_ModalDialog_FilledNegativeButton_DialogWhenLarge}};
+        int index = 0;
+        if (model.get(ModalDialogProperties.FULLSCREEN_DIALOG)) {
+            index = 1;
+        } else if (model.get(ModalDialogProperties.DIALOG_WHEN_LARGE)) {
+            index = 2;
+        }
         int buttonIndex = 0;
         int buttonStyle = model.get(ModalDialogProperties.BUTTON_STYLES);
         if (buttonStyle == ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE) {

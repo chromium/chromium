@@ -154,9 +154,7 @@ void MojoRendererService::SetCdm(
 void MojoRendererService::OnError(PipelineStatus error) {
   DVLOG(1) << __func__ << "(" << error << ")";
   state_ = STATE_ERROR;
-  StatusCode status_code = PipelineStatusToStatusCode(error);
-  auto status = Status(status_code, PipelineStatusToString(error));
-  client_->OnError(status);
+  client_->OnError(std::move(error));
 }
 
 void MojoRendererService::OnEnded() {

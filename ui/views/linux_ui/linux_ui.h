@@ -10,16 +10,20 @@
 
 #include "base/callback.h"
 #include "build/buildflag.h"
+#include "build/chromecast_buildflags.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/cursor/cursor_theme_manager.h"
 #include "ui/base/ime/linux/linux_input_method_context_factory.h"
 #include "ui/base/ime/linux/text_edit_key_bindings_delegate_auralinux.h"
 #include "ui/gfx/animation/animation_settings_provider_linux.h"
 #include "ui/gfx/skia_font_delegate.h"
-#include "ui/shell_dialogs/shell_dialog_linux.h"
 #include "ui/views/buildflags.h"
 #include "ui/views/controls/button/button.h"
 #include "ui/views/views_export.h"
+
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
+#include "ui/shell_dialogs/shell_dialog_linux.h"
+#endif
 
 // The main entrypoint into Linux toolkit specific code. GTK code should only
 // be executed behind this interface.
@@ -53,7 +57,9 @@ class WindowFrameProvider;
 // project that wants to do linux desktop native rendering.
 class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
                              public gfx::SkiaFontDelegate,
+#if BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMECAST)
                              public ui::ShellDialogLinux,
+#endif
                              public ui::TextEditKeyBindingsDelegateAuraLinux,
                              public ui::CursorThemeManager,
                              public gfx::AnimationSettingsProviderLinux {
@@ -122,7 +128,8 @@ class VIEWS_EXPORT LinuxUI : public ui::LinuxInputMethodContextFactory,
   // TODO(davidben): Add an observer for the theme changing, so we can drop the
   // caches.
   virtual gfx::Image GetIconForContentType(const std::string& content_type,
-                                           int size) const = 0;
+                                           int size,
+                                           float scale) const = 0;
 
   // Builds a Border which paints the native button style.
   virtual std::unique_ptr<Border> CreateNativeBorder(

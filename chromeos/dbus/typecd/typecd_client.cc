@@ -30,6 +30,7 @@ class TypecdClientImpl : public TypecdClient {
 
  private:
   void ThunderboltDeviceConnectedReceived(dbus::Signal* signal);
+  void CableWarningReceived(dbus::Signal* signal);
   void OnSignalConnected(const std::string& interface_name,
                          const std::string& signal_name,
                          bool success);
@@ -47,7 +48,8 @@ void TypecdClientImpl::Init(dbus::Bus* bus) {
   typedef void (TypecdClientImpl::*SignalMethod)(dbus::Signal*);
   const std::pair<const char*, SignalMethod> kSignalMethods[] = {
       {typecd::kTypecdDeviceConnected,
-       &TypecdClientImpl::ThunderboltDeviceConnectedReceived}};
+       &TypecdClientImpl::ThunderboltDeviceConnectedReceived},
+      {typecd::kTypecdCableWarning, &TypecdClientImpl::CableWarningReceived}};
 
   auto on_connected_callback = base::BindRepeating(
       &TypecdClientImpl::OnSignalConnected, weak_ptr_factory_.GetWeakPtr());
@@ -77,6 +79,21 @@ void TypecdClientImpl::ThunderboltDeviceConnectedReceived(
       static_cast<uint32_t>(typecd::DeviceConnectedType::kThunderboltOnly));
 }
 
+void TypecdClientImpl::CableWarningReceived(dbus::Signal* signal) {
+  dbus::MessageReader reader(signal);
+  uint32_t cable_warning_signal = 0u;
+  if (!reader.PopUint32(&cable_warning_signal)) {
+    LOG(ERROR) << "Typecd: Unable to decode cable warning type from"
+               << typecd::kTypecdCableWarning << " signal.";
+    return;
+  }
+  typecd::CableWarningType cable_warning_type =
+      static_cast<typecd::CableWarningType>(cable_warning_signal);
+  VLOG(1) << "Typecd: Received cable warning signal with "
+          << "CableWarningType: " << cable_warning_signal;
+  NotifyOnCableWarning(cable_warning_type);
+}
+
 void TypecdClientImpl::OnSignalConnected(const std::string& interface_name,
                                          const std::string& signal_name,
                                          bool success) {
@@ -100,6 +117,12 @@ void TypecdClient::NotifyOnThunderboltDeviceConnected(
     bool is_thunderbolt_only) {
   for (auto& observer : observer_list_)
     observer.OnThunderboltDeviceConnected(is_thunderbolt_only);
+}
+
+void TypecdClient::NotifyOnCableWarning(
+    typecd::CableWarningType cable_warning_type) {
+  for (auto& observer : observer_list_)
+    observer.OnCableWarning(cable_warning_type);
 }
 
 TypecdClient::TypecdClient() {

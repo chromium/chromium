@@ -200,8 +200,4 @@ test("cast_audio_backend_unittests") {
     "//testing/gmock",
     "//testing/gtest",
   ]
-
-  if (is_fuchsia) {
-    deps += [ "fuchsia:unit_tests" ]
-  }
 }

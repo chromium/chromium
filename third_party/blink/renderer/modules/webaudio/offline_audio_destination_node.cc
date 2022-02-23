@@ -80,21 +80,24 @@ void OfflineAudioDestinationHandler::Dispose() {
 }
 
 void OfflineAudioDestinationHandler::Initialize() {
-  if (IsInitialized())
+  if (IsInitialized()) {
     return;
+  }
 
   AudioHandler::Initialize();
 }
 
 void OfflineAudioDestinationHandler::Uninitialize() {
-  if (!IsInitialized())
+  if (!IsInitialized()) {
     return;
+  }
 
   // See https://crbug.com/1110035 and https://crbug.com/1080821. Resetting the
   // thread unique pointer multiple times or not-resetting at all causes a
   // mysterious CHECK failure or a crash.
-  if (render_thread_)
+  if (render_thread_) {
     render_thread_.reset();
+  }
 
   AudioHandler::Uninitialize();
 }
@@ -191,8 +194,9 @@ void OfflineAudioDestinationHandler::DoOfflineRendering() {
     // Suspend the rendering if a scheduled suspend found at the current
     // sample frame. Otherwise render one quantum.
     if (RenderIfNotSuspended(nullptr, render_bus_.get(),
-                             GetDeferredTaskHandler().RenderQuantumFrames()))
+                             GetDeferredTaskHandler().RenderQuantumFrames())) {
       return;
+    }
 
     uint32_t frames_available_to_copy = std::min(
         frames_to_process_, GetDeferredTaskHandler().RenderQuantumFrames());
@@ -238,8 +242,9 @@ void OfflineAudioDestinationHandler::FinishOfflineRendering() {
 void OfflineAudioDestinationHandler::NotifySuspend(size_t frame) {
   DCHECK(IsMainThread());
 
-  if (!IsExecutionContextDestroyed() && Context())
+  if (!IsExecutionContextDestroyed() && Context()) {
     Context()->ResolveSuspendOnMainThread(frame);
+  }
 }
 
 void OfflineAudioDestinationHandler::NotifyComplete() {
@@ -254,8 +259,9 @@ void OfflineAudioDestinationHandler::NotifyComplete() {
   }
 
   // The OfflineAudioContext might be gone.
-  if (Context() && Context()->GetExecutionContext())
+  if (Context() && Context()->GetExecutionContext()) {
     Context()->FireCompletionEvent();
+  }
 }
 
 bool OfflineAudioDestinationHandler::RenderIfNotSuspended(
@@ -275,8 +281,9 @@ bool OfflineAudioDestinationHandler::RenderIfNotSuspended(
   // TODO(hongchan): because the context can go away while rendering, so this
   // check cannot guarantee the safe execution of the following steps.
   DCHECK(Context());
-  if (!Context())
+  if (!Context()) {
     return false;
+  }
 
   Context()->GetDeferredTaskHandler().SetAudioThreadToCurrentThread();
 

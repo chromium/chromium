@@ -255,11 +255,8 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
   for (size_t i = 0; i < length; i += 2) {
     const std::string* name = array[i];
     const std::string* value = array[i+1];
-    if (dictionary->HasKey(*name)) {
+    if (base::Value* entry = dictionary->FindKey(*name)) {
       absl::optional<base::Value> entry_owned;
-      base::Value* entry = dictionary->FindKey(*name);
-      if (!entry)
-        return nullptr;
       switch (entry->type()) {
         case base::Value::Type::STRING: {
           // Replace the present string with a list.
@@ -279,7 +276,7 @@ std::unique_ptr<base::DictionaryValue> GetDictionaryFromArray(
           return nullptr;
       }
     } else {
-      dictionary->SetString(*name, *value);
+      dictionary->SetStringPath(*name, *value);
     }
   }
   return dictionary;

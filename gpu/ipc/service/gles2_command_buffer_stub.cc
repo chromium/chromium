@@ -11,7 +11,6 @@
 #include "base/callback_helpers.h"
 #include "base/hash/hash.h"
 #include "base/json/json_writer.h"
-#include "base/macros.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/metrics/histogram_macros.h"
@@ -53,7 +52,7 @@
 #include "ui/gl/gl_workarounds.h"
 #include "ui/gl/init/gl_factory.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #endif
 
@@ -119,7 +118,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
         manager->shared_image_manager());
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Virtualize GpuPreference::kLowPower contexts by default on OS X to prevent
   // performance regressions when enabling FCM.
   // http://crbug.com/180463
@@ -140,7 +139,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   // format to ensure it's treated as compatible where applicable.
   gl::GLSurfaceFormat surface_format =
       offscreen ? default_surface->GetFormat() : gl::GLSurfaceFormat();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (init_params.attribs.red_size <= 5 &&
       init_params.attribs.green_size <= 6 &&
       init_params.attribs.blue_size <= 5 &&
@@ -388,7 +387,7 @@ gpu::ContextResult GLES2CommandBufferStub::Initialize(
   return gpu::ContextResult::kSuccess;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void GLES2CommandBufferStub::DidCreateAcceleratedSurfaceChildWindow(
     SurfaceHandle parent_window,
     SurfaceHandle child_window) {

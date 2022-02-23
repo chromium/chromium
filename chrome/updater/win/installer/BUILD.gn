@@ -27,6 +27,7 @@ source_set("lib") {
   deps = [
     "//base",
     "//chrome/installer/util:with_no_strings",
+    "//chrome/updater:branding_header",
     "//chrome/updater/win:tag_extractor",
   ]
 }

@@ -38,9 +38,6 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/window_open_disposition.h"
 
-using content::BrowserContext;
-using content::OpenURLParams;
-using content::RenderFrameHost;
 using content::RenderProcessHost;
 using content::SiteInstance;
 using content::WebContents;
@@ -256,8 +253,7 @@ void ExtensionHost::OnDidStopFirstLoad() {
   // Nothing to do for background pages.
 }
 
-void ExtensionHost::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void ExtensionHost::PrimaryMainDocumentElementAvailable() {
   // If the document has already been marked as available for this host, then
   // bail. No need for the redundant setup. http://crbug.com/31170
   if (document_element_available_)
@@ -384,14 +380,30 @@ void ExtensionHost::AddNewContents(WebContents* source,
 }
 
 void ExtensionHost::RenderFrameCreated(content::RenderFrameHost* frame_host) {
-  // TODO(crbug.com/1199689): This wants to watch just the top-level main frame
-  // once the WebContents could hold multiple frame trees under the upcoming
-  // Multiple-Process Architecture.
-  if (frame_host->GetParent())
+  // Only consider the main frame. Ignore all other frames, including
+  // speculative main frames (which might replace the main frame, but that
+  // scenario is handled in `RenderFrameHostChanged`).
+  if (frame_host != main_frame_host_)
     return;
 
-  main_frame_host_ = frame_host;
+  MaybeNotifyRenderProcessReady();
+}
 
+void ExtensionHost::RenderFrameHostChanged(content::RenderFrameHost* old_host,
+                                           content::RenderFrameHost* new_host) {
+  // Only the primary main frame is tracked, so ignore any other frames.
+  if (old_host != main_frame_host_)
+    return;
+
+  main_frame_host_ = new_host;
+
+  // The RenderFrame already exists when this callback is fired. Try to notify
+  // again in case we missed the `RenderFrameCreated` callback (e.g. when the
+  // ExtensionHost is attached after the main frame started a navigation).
+  MaybeNotifyRenderProcessReady();
+}
+
+void ExtensionHost::MaybeNotifyRenderProcessReady() {
   if (!has_creation_notification_already_fired_) {
     has_creation_notification_already_fired_ = true;
 
@@ -406,15 +418,6 @@ void ExtensionHost::RenderFrameCreated(content::RenderFrameHost* frame_host) {
 void ExtensionHost::NotifyRenderProcessReady() {
   ExtensionHostRegistry::Get(browser_context_)
       ->ExtensionHostRenderProcessReady(this);
-}
-
-void ExtensionHost::RenderFrameDeleted(content::RenderFrameHost* frame_host) {
-  if (frame_host != main_frame_host_)
-    return;
-
-  // If this was a speculative frame host, we revert back to the current frame
-  // host.
-  main_frame_host_ = host_contents_->GetMainFrame();
 }
 
 void ExtensionHost::RequestMediaAccessPermission(
@@ -439,11 +442,8 @@ bool ExtensionHost::IsNeverComposited(content::WebContents* web_contents) {
 }
 
 content::PictureInPictureResult ExtensionHost::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
-  return delegate_->EnterPictureInPicture(web_contents, surface_id,
-                                          natural_size);
+    content::WebContents* web_contents) {
+  return delegate_->EnterPictureInPicture(web_contents);
 }
 
 void ExtensionHost::ExitPictureInPicture() {

@@ -69,7 +69,7 @@ static_assert(CSSPropertyID::kColor == kFirstHighPriorityCSSProperty,
 static_assert(CSSPropertyID::kZoom == kLastHighPriorityCSSProperty,
               "CSSPropertyID::kZoom is the last high-priority property");
 static_assert((static_cast<int>(kLastHighPriorityCSSProperty) -
-               static_cast<int>(kFirstHighPriorityCSSProperty)) == 28,
+               static_cast<int>(kFirstHighPriorityCSSProperty)) == 29,
               "There should a low number of high-priority properties");
 
 inline int GetCSSPropertyIDIndex(CSSPropertyID id) {
@@ -100,13 +100,18 @@ inline CSSPropertyID ConvertToCSSPropertyID(int value)
     return static_cast<CSSPropertyID>(value);
 }
 
-inline CSSPropertyID ResolveCSSPropertyID(CSSPropertyID id)
-{
-    return ConvertToCSSPropertyID(static_cast<int>(id) & ~{{alias_mask}});
-}
+int CORE_EXPORT ResolveCSSPropertyAlias(int value);
 
 inline bool IsPropertyAlias(CSSPropertyID id) {
-  return static_cast<int>(id) & {{alias_mask}};
+  return static_cast<int>(id) >= {{alias_offset}};
+}
+
+inline CSSPropertyID ResolveCSSPropertyID(CSSPropertyID id)
+{
+  int int_id = static_cast<int>(id);
+  if (IsPropertyAlias(id))
+    int_id = ResolveCSSPropertyAlias(int_id);
+  return ConvertToCSSPropertyID(int_id);
 }
 
 CSSPropertyID CORE_EXPORT UnresolvedCSSPropertyID(const ExecutionContext*,

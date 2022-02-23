@@ -10,7 +10,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/disk_cache/blockfile/addr.h"
 #include "net/disk_cache/blockfile/mapped_file.h"
 
@@ -94,8 +94,8 @@ class StorageBlock : public FileBlock {
   void DeleteData();
   uint32_t CalculateHash() const;
 
-  T* data_;
-  MappedFile* file_;
+  raw_ptr<T> data_;
+  raw_ptr<MappedFile> file_;
   Addr address_;
   bool modified_;
   bool own_data_;  // Is data_ owned by this object or shared with someone else.

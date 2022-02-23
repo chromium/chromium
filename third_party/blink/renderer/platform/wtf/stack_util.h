@@ -29,7 +29,7 @@ WTF_EXPORT extern uintptr_t g_main_thread_underestimated_stack_size;
 
 WTF_EXPORT void InitializeMainThreadStackEstimate();
 
-#if defined(OS_WIN) && defined(COMPILER_MSVC)
+#if BUILDFLAG(IS_WIN) && defined(COMPILER_MSVC)
 size_t ThreadStackSize();
 #endif
 

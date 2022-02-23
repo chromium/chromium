@@ -34,6 +34,7 @@
 #include "chrome/common/chrome_constants.h"
 #include "components/policy/core/common/cloud/cloud_policy_core.h"
 #include "components/policy/proto/device_management_backend.pb.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/signin/public/base/consent_level.h"
@@ -128,6 +129,12 @@ std::string GetDeviceIdForActiveUserProfile() {
 }
 
 }  // namespace
+
+void EduCoexistenceLoginHandler::RegisterProfilePrefs(
+    PrefRegistrySimple* registry) {
+  registry->RegisterStringPref(ash::prefs::kEduCoexistenceId,
+                               std::string() /* default_value */);
+}
 
 EduCoexistenceLoginHandler::EduCoexistenceLoginHandler(
     const base::RepeatingClosure& close_dialog_closure)
@@ -252,7 +259,7 @@ void EduCoexistenceLoginHandler::InitializeEduArgs(
     const base::ListValue* args) {
   AllowJavascript();
 
-  initialize_edu_args_callback_ = args->GetList()[0].GetString();
+  initialize_edu_args_callback_ = args->GetListDeprecated()[0].GetString();
 
   if (in_error_state_) {
     FireWebUIListener(kOnErrorWebUIListener);
@@ -326,14 +333,15 @@ void EduCoexistenceLoginHandler::ConsentValid(const base::ListValue* args) {
 }
 
 void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
-  if (!args || args->GetList().size() == 0)
+  if (!args || args->GetListDeprecated().size() == 0)
     return;
 
   DCHECK(!in_error_state_);
 
-  account_added_callback_ = args->GetList()[0].GetString();
+  account_added_callback_ = args->GetListDeprecated()[0].GetString();
 
-  const base::Value::ConstListView& arguments = args->GetList()[1].GetList();
+  const base::Value::ConstListView& arguments =
+      args->GetListDeprecated()[1].GetListDeprecated();
 
   edu_account_email_ = arguments[0].GetString();
   terms_of_service_version_number_ = arguments[1].GetString();
@@ -345,10 +353,10 @@ void EduCoexistenceLoginHandler::ConsentLogged(const base::ListValue* args) {
 
 void EduCoexistenceLoginHandler::OnError(const base::ListValue* args) {
   AllowJavascript();
-  if (!args || args->GetList().size() == 0)
+  if (!args || args->GetListDeprecated().size() == 0)
     return;
   in_error_state_ = true;
-  const base::Value::ConstListView& arguments = args->GetList();
+  const base::Value::ConstListView& arguments = args->GetListDeprecated();
   for (const base::Value& message : arguments) {
     DCHECK(message.is_string());
     LOG(ERROR) << message.GetString();

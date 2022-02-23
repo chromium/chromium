@@ -23,6 +23,8 @@ enum SpeechRecognizerStatus {
   SPEECH_RECOGNIZER_IN_SPEECH,
   // There was an error.
   SPEECH_RECOGNIZER_ERROR,
+  // Stopping speech recognition.
+  SPEECH_RECOGNITION_STOPPING
 };
 
 // Delegate for speech recognizer. All methods are called from the thread on
@@ -45,6 +47,9 @@ class SpeechRecognizerDelegate {
   // Invoked when the state of speech recognition is changed.
   virtual void OnSpeechRecognitionStateChanged(
       SpeechRecognizerStatus new_state) = 0;
+
+  // Invoked when the speech recognition has stopped.
+  virtual void OnSpeechRecognitionStopped() = 0;
 
  protected:
   virtual ~SpeechRecognizerDelegate() {}

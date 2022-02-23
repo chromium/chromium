@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/policy/policy_export.h"
 #include "components/signin/public/identity_manager/access_token_info.h"
 #include "google_apis/gaia/google_service_auth_error.h"
@@ -83,10 +84,11 @@ class POLICY_EXPORT UserCloudSigninRestrictionPolicyFetcher {
 
   GURL GetSecureConnectApiGetAccountSigninRestrictionUrl() const;
 
-  policy::BrowserPolicyConnector* const browser_policy_connector_;
+  const raw_ptr<policy::BrowserPolicyConnector> browser_policy_connector_;
   std::unique_ptr<signin::AccessTokenFetcher> access_token_fetcher_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
-  network::mojom::URLLoaderFactory* url_loader_factory_for_testing_ = nullptr;
+  raw_ptr<network::mojom::URLLoaderFactory> url_loader_factory_for_testing_ =
+      nullptr;
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
 };
 

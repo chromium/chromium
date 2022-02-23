@@ -2263,6 +2263,38 @@ TEST_P(LtrRtlShelfViewTest, TapInFullscreen) {
   EXPECT_EQ(SHELF_HIDDEN, shelf->GetVisibilityState());
 }
 
+// Verifies that partying items are hidden from the shelf.
+TEST_P(LtrRtlShelfViewTest, PartyingItemsHiddenFromShelf) {
+  AddAppShortcut();
+  AddAppShortcut();
+  AddApp();
+  ShelfItem item = model_->items()[1u];
+  item.status = STATUS_RUNNING;
+  model_->Set(1, item);
+  const gfx::Rect initial_bounds0 = test_api_->GetBoundsByIndex(0);
+  const gfx::Rect initial_bounds2 = test_api_->GetBoundsByIndex(2);
+
+  // Start shelf party.
+  model_->ToggleShelfParty();
+  {
+    const std::vector<int> not_partying = {1, 3};
+    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
+  }
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_TRUE(test_api_->GetBoundsByIndex(0).IsEmpty());
+  EXPECT_TRUE(test_api_->GetBoundsByIndex(2).IsEmpty());
+
+  // End shelf party.
+  model_->ToggleShelfParty();
+  {
+    const std::vector<int> not_partying = {0, 1, 2, 3};
+    EXPECT_EQ(not_partying, shelf_view_->visible_views_indices());
+  }
+  test_api_->RunMessageLoopUntilAnimationsDone();
+  EXPECT_EQ(initial_bounds0, test_api_->GetBoundsByIndex(0));
+  EXPECT_EQ(initial_bounds2, test_api_->GetBoundsByIndex(2));
+}
+
 // Test class that tests both context and application menus.
 class ShelfViewMenuTest : public ShelfViewTest,
                           public testing::WithParamInterface<bool> {
@@ -2326,6 +2358,131 @@ TEST_F(ShelfViewTest, ItemHasCorrectNotificationBadgeIndicator) {
 
   EXPECT_FALSE(GetItemByID(item_id).has_notification);
   EXPECT_FALSE(shelf_app_button->state() & ShelfAppButton::STATE_NOTIFICATION);
+}
+
+class GhostImageShelfViewTest : public ShelfViewTest {
+ public:
+  GhostImageShelfViewTest() = default;
+
+  GhostImageShelfViewTest(const GhostImageShelfViewTest&) = delete;
+  GhostImageShelfViewTest& operator=(const GhostImageShelfViewTest&) = delete;
+
+  ~GhostImageShelfViewTest() override = default;
+
+  void StartDrag(ShelfAppButton* dragged) {
+    ASSERT_TRUE(dragged);
+    ui::test::EventGenerator* generator = GetEventGenerator();
+    generator->set_current_screen_location(
+        dragged->GetBoundsInScreen().CenterPoint());
+    generator->PressTouch();
+    ASSERT_TRUE(dragged->FireDragTimerForTest());
+  }
+};
+
+// Tests that the ghost image shows during a drag operation.
+TEST_F(GhostImageShelfViewTest, ShowGhostImageOnDrag) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+  ShelfAppButton* first_app = GetButtonByID(id_map[0].first);
+
+  StartDrag(first_app);
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_FALSE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+
+  ShelfID second_app_id = id_map[1].first;
+  GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_TRUE(shelf_view_->drag_view());
+  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+
+  GetEventGenerator()->ReleaseTouch();
+
+  EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_FALSE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+}
+
+// Tests that the ghost image is removed if the app is dragged outide of the
+// bounds of the shelf.
+TEST_F(GhostImageShelfViewTest, RemoveGhostImageForRipOffDrag) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+  ShelfAppButton* first_app = GetButtonByID(id_map[0].first);
+
+  StartDrag(first_app);
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_FALSE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+
+  ShelfID second_app_id = id_map[1].first;
+  GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_TRUE(shelf_view_->drag_view());
+  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+
+  // The rip off threshold. Taken from |kRipOffDistance| in shelf_view.cc.
+  constexpr int kRipOffDistance = 48;
+  // Drag off the shelf to trigger rip off drag.
+  GetEventGenerator()->MoveTouch(shelf_view_->GetBoundsInScreen().top_center());
+  GetEventGenerator()->MoveTouchBy(0, -kRipOffDistance - 1);
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_TRUE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+
+  GetEventGenerator()->ReleaseTouch();
+
+  EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_FALSE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+}
+
+// Tests that the ghost image is reinserted if the app is dragged within the
+// bounds of the shelf after a rip off.
+TEST_F(GhostImageShelfViewTest, ReinsertGhostImageAfterRipOffDrag) {
+  std::vector<std::pair<ShelfID, views::View*>> id_map;
+  SetupForDragTest(&id_map);
+  ShelfAppButton* first_app = GetButtonByID(id_map[0].first);
+
+  StartDrag(first_app);
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_FALSE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+
+  ShelfID second_app_id = id_map[1].first;
+  GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_TRUE(shelf_view_->drag_view());
+  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+
+  // The rip off threshold. Taken from |kRipOffDistance| in shelf_view.cc.
+  constexpr int kRipOffDistance = 48;
+  // Drag off the shelf to trigger rip off drag.
+  GetEventGenerator()->MoveTouch(shelf_view_->GetBoundsInScreen().top_center());
+  GetEventGenerator()->MoveTouchBy(0, -kRipOffDistance - 1);
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_TRUE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
+
+  GetEventGenerator()->MoveTouch(GetButtonCenter(second_app_id));
+
+  EXPECT_TRUE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_TRUE(shelf_view_->drag_view());
+  EXPECT_EQ(1, shelf_view_->current_ghost_view_index());
+
+  GetEventGenerator()->ReleaseTouch();
+
+  EXPECT_FALSE(first_app->state() & ShelfAppButton::STATE_DRAGGING);
+  EXPECT_FALSE(shelf_view_->drag_view());
+  EXPECT_EQ(-1, shelf_view_->current_ghost_view_index());
 }
 
 class ShelfViewVisibleBoundsTest : public ShelfViewTest,

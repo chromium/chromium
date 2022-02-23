@@ -48,13 +48,23 @@ ScreenOrientationController::ScreenOrientationController(LocalDOMWindow& window)
       PageVisibilityObserver(window.GetFrame()->GetPage()),
       Supplement<LocalDOMWindow>(window),
       screen_orientation_service_(&window) {
-  AssociatedInterfaceProvider* provider =
-      window.GetFrame()->GetRemoteNavigationAssociatedInterfaces();
-  if (provider) {
-    provider->GetInterface(
-        screen_orientation_service_.BindNewEndpointAndPassReceiver(
-            window.GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  Page* page = window.GetFrame()->GetPage();
+
+  // https://wicg.github.io/nav-speculation/prerendering.html#patch-orientation-lock
+  // Step 2: If this's relevant global object's browsing context is a
+  // prerendering browsing context, then append the following steps to this's
+  // post-prerendering activation steps list and return promise.
+  //
+  // According to the specification, `lock` and `unlock` operations should be
+  // deferred until the prerendering page is activated. So here it also delay
+  // binding the interface until activation because no one would use it.
+  if (page && page->IsPrerendering()) {
+    DomWindow()->document()->AddPostPrerenderingActivationStep(
+        WTF::Bind(&ScreenOrientationController::BuildMojoConnection,
+                  WrapWeakPersistent(this)));
+    return;
   }
+  BuildMojoConnection();
 }
 
 // Compute the screen orientation using the orientation angle and the screen
@@ -123,8 +133,20 @@ void ScreenOrientationController::UpdateOrientation() {
 }
 
 bool ScreenOrientationController::IsActiveAndVisible() const {
-  return orientation_ && screen_orientation_service_.is_bound() && GetPage() &&
-         GetPage()->IsPageVisible();
+  return orientation_ && DomWindow() && GetPage() && GetPage()->IsPageVisible();
+}
+
+void ScreenOrientationController::BuildMojoConnection() {
+  // Need not to bind when detached.
+  if (!DomWindow() || !DomWindow()->document())
+    return;
+  AssociatedInterfaceProvider* provider =
+      DomWindow()->GetFrame()->GetRemoteNavigationAssociatedInterfaces();
+  if (provider) {
+    provider->GetInterface(
+        screen_orientation_service_.BindNewEndpointAndPassReceiver(
+            DomWindow()->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+  }
 }
 
 void ScreenOrientationController::PageVisibilityChanged() {
@@ -199,15 +221,14 @@ void ScreenOrientationController::SetOrientation(
 void ScreenOrientationController::lock(
     device::mojom::blink::ScreenOrientationLockType orientation,
     std::unique_ptr<WebLockOrientationCallback> callback) {
-  // When detached, the |screen_orientation_service_| is no longer valid.
-  if (!screen_orientation_service_.is_bound())
+  // Do not lock the screen when detached.
+  if (!DomWindow() || !DomWindow()->document())
     return;
 
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-orientation-lock
-  // Step 7.3.10. Screen Orientation API.
-  // Defer to lock with |orientation| until the prerendering page is activated
-  // via appending lock operation to the post-prerendering activation steps
-  // list.
+  // Step 2: If this's relevant global object's browsing context is a
+  // prerendering browsing context, then append the following steps to this's
+  // post-prerendering activation steps list and return promise.
   if (DomWindow()->document()->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
         WTF::Bind(&ScreenOrientationController::LockOrientationInternal,
@@ -219,15 +240,14 @@ void ScreenOrientationController::lock(
 }
 
 void ScreenOrientationController::unlock() {
-  // When detached, the |screen_orientation_service_| is no longer valid.
-  if (!screen_orientation_service_.is_bound())
+  // Do not unlock the screen when detached.
+  if (!DomWindow() || !DomWindow()->document())
     return;
 
   // https://wicg.github.io/nav-speculation/prerendering.html#patch-orientation-lock
-  // Step 7.3.10. Screen Orientation API.
-  // Defer to unlock with |orientation| until the prerendering page is activated
-  // via appending unlock operation to the post-prerendering activation steps
-  // list.
+  // Step 2: If this's relevant global object's browsing context is a
+  // prerendering browsing context, then append the following steps to this's
+  // post-prerendering activation steps list and return promise.
   if (DomWindow()->document()->IsPrerendering()) {
     DomWindow()->document()->AddPostPrerenderingActivationStep(
         WTF::Bind(&ScreenOrientationController::UnlockOrientationInternal,
@@ -316,6 +336,11 @@ int ScreenOrientationController::GetRequestIdForTests() {
 void ScreenOrientationController::LockOrientationInternal(
     device::mojom::blink::ScreenOrientationLockType orientation,
     std::unique_ptr<WebLockOrientationCallback> callback) {
+  // Do not lock when detached. This can be executed as a post prerendering
+  // activation step so should be checked again.
+  if (!DomWindow() || !DomWindow()->document())
+    return;
+
   CancelPendingLocks();
   pending_callback_ = std::move(callback);
   screen_orientation_service_->LockOrientation(
@@ -327,6 +352,11 @@ void ScreenOrientationController::LockOrientationInternal(
 }
 
 void ScreenOrientationController::UnlockOrientationInternal() {
+  // Do not unlock when detached. This can be executed as a post prerendering
+  // activation step so should be checked again.
+  if (!DomWindow() || !DomWindow()->document())
+    return;
+
   CancelPendingLocks();
   screen_orientation_service_->UnlockOrientation();
   active_lock_ = false;

@@ -9,4 +9,8 @@ namespace enterprise_connectors {
 const base::Feature kDeviceTrustConnectorEnabled{
     "DeviceTrustConnectorEnabled", base::FEATURE_DISABLED_BY_DEFAULT};
 
+bool IsDeviceTrustConnectorFeatureEnabled() {
+  return base::FeatureList::IsEnabled(kDeviceTrustConnectorEnabled);
+}
+
 }  // namespace enterprise_connectors

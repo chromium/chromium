@@ -6,7 +6,7 @@
 <layer-list xmlns:android="http://schemas.android.com/apk/res/android">
     <item>
         <shape android:shape="rectangle">
-            <solid android:color="@color/toolbar_background_primary" />
+            <solid android:color="@macro/toolbar_background_primary" />
         </shape>
     </item>
     <item

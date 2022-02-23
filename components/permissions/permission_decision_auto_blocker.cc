@@ -56,13 +56,13 @@ int g_ignore_embargo_days = kDefaultEmbargoDays;
 std::unique_ptr<base::Value> GetOriginAutoBlockerData(
     HostContentSettingsMap* settings,
     const GURL& origin_url) {
-  std::unique_ptr<base::Value> website_setting = settings->GetWebsiteSetting(
+  base::Value website_setting = settings->GetWebsiteSetting(
       origin_url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
       nullptr);
-  if (!website_setting || !website_setting->is_dict())
+  if (!website_setting.is_dict())
     return std::make_unique<base::Value>(base::Value::Type::DICTIONARY);
 
-  return website_setting;
+  return base::Value::ToUniquePtrValue(std::move(website_setting));
 }
 
 base::Value* GetOrCreatePermissionDict(base::Value* origin_dict,
@@ -92,7 +92,7 @@ int RecordActionInWebsiteSettings(const GURL& url,
 
   settings_map->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-      std::move(dict));
+      base::Value::FromUniquePtrValue(std::move(dict)));
 
   return current_count;
 }
@@ -403,7 +403,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
 
   settings_map_->SetWebsiteSettingDefaultScope(
       url, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-      std::move(dict));
+      base::Value::FromUniquePtrValue(std::move(dict)));
 }
 
 void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
@@ -419,7 +419,7 @@ void PermissionDecisionAutoBlocker::RemoveEmbargoAndResetCounts(
     if (origin.is_valid() && filter.Run(origin)) {
       settings_map_->SetWebsiteSettingDefaultScope(
           origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-          nullptr);
+          base::Value());
     }
   }
 }
@@ -448,7 +448,7 @@ void PermissionDecisionAutoBlocker::PlaceUnderEmbargo(
       key, base::Value(static_cast<double>(clock_->Now().ToInternalValue())));
   settings_map_->SetWebsiteSettingDefaultScope(
       request_origin, GURL(), ContentSettingsType::PERMISSION_AUTOBLOCKER_DATA,
-      std::move(dict));
+      base::Value::FromUniquePtrValue(std::move(dict)));
 }
 
 void PermissionDecisionAutoBlocker::SetClockForTesting(base::Clock* clock) {

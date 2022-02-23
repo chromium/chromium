@@ -1,3 +1,0 @@
-include_rules = [
-  "+third_party/cld_3/src/src/nnet_language_identifier.h",
-]

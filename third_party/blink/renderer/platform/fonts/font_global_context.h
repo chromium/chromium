@@ -11,6 +11,7 @@
 #include "third_party/blink/renderer/platform/text/layout_locale.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/lru_cache.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 
 struct hb_font_funcs_t;
@@ -27,15 +28,13 @@ class PLATFORM_EXPORT FontGlobalContext {
   USING_FAST_MALLOC(FontGlobalContext);
 
  public:
-  static FontGlobalContext* Get(CreateIfNeeded = kCreate);
+  static FontGlobalContext& Get();
+  static FontGlobalContext* TryGet();
 
   FontGlobalContext(const FontGlobalContext&) = delete;
   FontGlobalContext& operator=(const FontGlobalContext&) = delete;
 
-  static inline FontCache* GetFontCache(CreateIfNeeded create = kCreate) {
-    FontGlobalContext* context = Get(create);
-    return context ? &context->font_cache_ : nullptr;
-  }
+  static inline FontCache& GetFontCache() { return Get().font_cache_; }
 
   static HarfBuzzFontCache* GetHarfBuzzFontCache();
 
@@ -47,17 +46,17 @@ class PLATFORM_EXPORT FontGlobalContext {
   static hb_font_funcs_t* GetHarfBuzzFontFuncs(
       HorizontalAdvanceSource advance_source) {
     if (advance_source == kHarfBuzzHorizontalAdvances) {
-      return Get()->harfbuzz_font_funcs_harfbuzz_advances_;
+      return Get().harfbuzz_font_funcs_harfbuzz_advances_;
     }
-    return Get()->harfbuzz_font_funcs_skia_advances_;
+    return Get().harfbuzz_font_funcs_skia_advances_;
   }
 
   static void SetHarfBuzzFontFuncs(HorizontalAdvanceSource advance_source,
                                    hb_font_funcs_t* funcs) {
     if (advance_source == kHarfBuzzHorizontalAdvances) {
-      Get()->harfbuzz_font_funcs_harfbuzz_advances_ = funcs;
+      Get().harfbuzz_font_funcs_harfbuzz_advances_ = funcs;
     }
-    Get()->harfbuzz_font_funcs_skia_advances_ = funcs;
+    Get().harfbuzz_font_funcs_skia_advances_ = funcs;
   }
 
   static FontUniqueNameLookup* GetFontUniqueNameLookup();

@@ -11,7 +11,7 @@
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/crosscall_params.h"
 #include "sandbox/win/src/crosscall_server.h"
@@ -96,14 +96,14 @@ class SharedMemIPCServer {
     // The size of this channel.
     uint32_t channel_size;
     // The pointer to the actual channel data.
-    char* channel_buffer;
+    raw_ptr<char> channel_buffer;
     // The pointer to the base of the shared memory.
-    char* shared_base;
+    raw_ptr<char> shared_base;
     // A pointer to this channel's client-side control structure this structure
     // lives in the shared memory.
-    ChannelControl* channel;
+    raw_ptr<ChannelControl> channel;
     // the IPC dispatcher associated with this channel.
-    Dispatcher* dispatcher;
+    raw_ptr<Dispatcher> dispatcher;
     // The target process information associated with this channel.
     ClientInfo target_info;
   };
@@ -115,6 +115,9 @@ class SharedMemIPCServer {
 
   // Points to the shared memory channel control which lives at
   // the start of the shared section.
+  //
+  // `client_control_` is not a raw_ptr<IPCControl>, because reinterpret_cast of
+  // uninitialized memory to raw_ptr can cause ref-counting mismatch.
   IPCControl* client_control_;
 
   // Keeps track of the server side objects that are used to answer an IPC.
@@ -122,7 +125,7 @@ class SharedMemIPCServer {
 
   // The thread pool provides the threads that call back into this object
   // when the IPC events fire.
-  ThreadPool* thread_pool_;
+  raw_ptr<ThreadPool> thread_pool_;
 
   // The IPC object is associated with a target process.
   HANDLE target_process_;
@@ -131,6 +134,9 @@ class SharedMemIPCServer {
   DWORD target_process_id_;
 
   // The dispatcher handles 'ready' IPC calls.
+  //
+  // `call_dispatcher_` is not a raw_ptr<Dispatcher>, because reinterpret_cast
+  // of uninitialized memory to raw_ptr can cause ref-counting mismatch.
   Dispatcher* call_dispatcher_;
 };
 

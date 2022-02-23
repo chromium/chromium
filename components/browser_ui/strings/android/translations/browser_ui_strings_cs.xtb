@@ -16,6 +16,7 @@
 <translation id="1369915414381695676">Byl přidán web <ph name="SITE_NAME" /></translation>
 <translation id="1383876407941801731">Vyhledávání</translation>
 <translation id="1384959399684842514">Stahování pozastaveno</translation>
+<translation id="1409426117486808224">Zjednodušené zobrazení otevřených karet</translation>
 <translation id="1415402041810619267">Zkrácená adresa URL</translation>
 <translation id="1446450296470737166">Povolit úplné ovládání zařízení MIDI</translation>
 <translation id="1620510694547887537">Kamera</translation>
@@ -49,13 +50,17 @@
 <translation id="2212565012507486665">Povolit cookies</translation>
 <translation id="2228071138934252756">Pokud aplikaci <ph name="APP_NAME" /> chcete umožnit přístup k fotoaparátu, zapněte fotoaparát také v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
 <translation id="2241634353105152135">Pouze jednou</translation>
+<translation id="2253414712144136228">Odstranit položku <ph name="NAME_OF_LIST_ITEM" /></translation>
 <translation id="2289270750774289114">Zeptat se, když chce web objevit zařízení Bluetooth v okolí (doporučeno)</translation>
 <translation id="2315043854645842844">Volbu certifikátu na straně klienta operační systém nepodporuje.</translation>
+<translation id="2321958826496381788">Přetahujte posuvník tak dlouho, dokud nebudete moci pohodlně přečíst tento text. Po dvojitém klepnutí na odstavec by měl být text alespoň takto velký.</translation>
 <translation id="2359808026110333948">Pokračovat</translation>
 <translation id="2379925928934107488">Když Chrome používá tmavý motiv, použít ho i pro Chrome (pokud je to možné)</translation>
+<translation id="2387895666653383613">Zvětšení/zmenšení textu</translation>
 <translation id="2402980924095424747"><ph name="MEGABYTES" /> MB</translation>
 <translation id="2404630663942400771">{PERMISSIONS_SUMMARY_ALLOWED,plural, =1{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}few{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}many{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}other{Povolená oprávnění: <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> a další (<ph name="NUM_MORE" />)}}</translation>
 <translation id="2434158240863470628">Stažení bylo dokončeno <ph name="SEPARATOR" /> <ph name="BYTES_DOWNLOADED" /></translation>
+<translation id="2442870161001914531">Vždy požadovat zobrazení na počítači</translation>
 <translation id="2482878487686419369">Oznámení</translation>
 <translation id="2485422356828889247">Odinstalovat</translation>
 <translation id="2490684707762498678">Spravováno aplikací <ph name="APP_NAME" /></translation>
@@ -88,6 +93,7 @@
 <translation id="3115898365077584848">Zobrazit informace</translation>
 <translation id="3123473560110926937">Na některých webech blokováno</translation>
 <translation id="3198916472715691905">Uložená data: <ph name="STORAGE_AMOUNT" /></translation>
+<translation id="3203366800380907218">Z webu</translation>
 <translation id="321187648315454507">Pokud aplikaci <ph name="APP_NAME" /> chcete povolit, aby vám zasílala oznámení, zapněte oznámení také v <ph name="BEGIN_LINK" />Natavení Android<ph name="END_LINK" />.</translation>
 <translation id="3227137524299004712">Mikrofon</translation>
 <translation id="3277252321222022663">Povolit webům přístup k senzorům (doporučeno)</translation>
@@ -109,6 +115,7 @@
 <translation id="3835233591525155343">Využití vašeho zařízení</translation>
 <translation id="385051799172605136">Zpět</translation>
 <translation id="3859306556332390985">Přetočit dopředu</translation>
+<translation id="3895926599014793903">Vynutit aktivaci přiblížení</translation>
 <translation id="3955193568934677022">Povolit webům přehrávat chráněný obsah (doporučeno)</translation>
 <translation id="3967822245660637423">Stahování bylo dokončeno</translation>
 <translation id="3987993985790029246">Kopírovat odkaz</translation>
@@ -116,7 +123,9 @@
 <translation id="4002066346123236978">Název</translation>
 <translation id="4008040567710660924">Povolit soubory cookie pro konkrétní web.</translation>
 <translation id="4046123991198612571">Další skladba</translation>
+<translation id="4149994727733219643">Zjednodušené zobrazení webových stránek</translation>
 <translation id="4165986682804962316">Nastavení webu</translation>
+<translation id="4194328954146351878">Pokud web bude chtít číst a měnit informace na zařízeních NFC, zobrazit dotaz (doporučeno)</translation>
 <translation id="4200726100658658164">Otevřít nastavení polohy</translation>
 <translation id="4226663524361240545">Oznámení mohou aktivovat vibraci</translation>
 <translation id="4259722352634471385">Navigace je blokována: <ph name="URL" /></translation>
@@ -125,6 +134,7 @@
 <translation id="42981349822642051">Rozbalit</translation>
 <translation id="4336434711095810371">Vymazat všechna data</translation>
 <translation id="4402755511846832236">Nedovolit webům zjistit, kdy aktivně používáte toto zařízení</translation>
+<translation id="4428065317363009941">Personalizace reklam</translation>
 <translation id="4434045419905280838">Vyskakovací okna a přesměrování</translation>
 <translation id="445467742685312942">Povolit webům přehrávat chráněný obsah</translation>
 <translation id="4468959413250150279">Vypne zvuk na konkrétním webu.</translation>
@@ -148,11 +158,14 @@
 <translation id="5048398596102334565">Povolit webům přístup k senzorům pohybu (doporučeno)</translation>
 <translation id="5050380848339752099">Tento web chce sdílet informace s aplikací mimo anonymní režim.</translation>
 <translation id="5063480226653192405">Použití</translation>
+<translation id="509133520954049755">Vyžádat zobrazení na počítači</translation>
 <translation id="5100237604440890931">Sbaleno – kliknutím rozbalíte</translation>
 <translation id="5123685120097942451">Anonymní karta</translation>
+<translation id="5134599672855298214">Vyžádat zobrazení na mobilním zařízení (doporučeno)</translation>
 <translation id="5186036860380548585">Možnost je k dispozici u horního okraje obrazovky</translation>
 <translation id="5197729504361054390">Vybrané kontakty budou sdíleny s webem <ph name="BEGIN_BOLD" /><ph name="SITE" /><ph name="END_BOLD" />.</translation>
 <translation id="5216942107514965959">Naposledy navštíveno dnes</translation>
+<translation id="5264323282659631142">Odstranit položku <ph name="CHIP_LABEL" /></translation>
 <translation id="528192093759286357">Režim celé obrazovky ukončíte přetažením z horního okraje obrazovky a klepnutím na tlačítko Zpět.</translation>
 <translation id="5300589172476337783">Zobrazit</translation>
 <translation id="5301954838959518834">Dobře, rozumím</translation>
@@ -174,10 +187,10 @@
 <translation id="5556459405103347317">Načíst znovu</translation>
 <translation id="5596627076506792578">Další možnosti</translation>
 <translation id="5649053991847567735">Automatické stahování</translation>
+<translation id="5668404140385795438">Přepsat požadavek webu na zákaz přiblížení</translation>
 <translation id="5677928146339483299">Zablokováno</translation>
 <translation id="5689516760719285838">Poloha</translation>
 <translation id="5690795753582697420">Fotoaparát je vypnutý v nastavení zařízení Android</translation>
-<translation id="5710871682236653961">Když se dotknete zařízení NFC, nejdříve se zeptat a teprve poté webu případně povolit odesílání a příjem informací (doporučeno)</translation>
 <translation id="5719847187258001597">Tímto vymažete veškerá data a soubory cookie, které uložil web <ph name="ORIGIN" /> nebo jeho aplikace na ploše.</translation>
 <translation id="5771720122942595109">Oprávnění <ph name="PERMISSION_1" /> je zablokováno</translation>
 <translation id="5804241973901381774">Oprávnění</translation>
@@ -227,16 +240,16 @@
 <translation id="6790428901817661496">Přehrát</translation>
 <translation id="6818926723028410516">Výběr položek</translation>
 <translation id="6864395892908308021">Toto zařízení neumí číst NFC</translation>
-<translation id="6910211073230771657">Smazáno</translation>
 <translation id="6912998170423641340">Blokovat webům přístup k textu a obrázkům zkopírovaným do schránky</translation>
 <translation id="6945221475159498467">Vybrat</translation>
 <translation id="6965382102122355670">OK</translation>
+<translation id="6981982820502123353">Usnadnění</translation>
 <translation id="6992289844737586249">Pokud web bude chtít použít váš mikrofon, zobrazit dotaz (doporučeno)</translation>
 <translation id="7000754031042624318">Vypnuto v nastavení systému Android</translation>
 <translation id="7016516562562142042">Pro aktuální vyhledávač povoleno</translation>
+<translation id="702463548815491781">Doporučeno, když je zapnuta funkce TalkBack nebo přístup pomocí přepínačů</translation>
 <translation id="7053983685419859001">Blokovat</translation>
 <translation id="7066151586745993502">{NUM_SELECTED,plural, =1{Vybráno: 1}few{Vybráno: #}many{Vybráno: #}other{Vybráno: #}}</translation>
-<translation id="7070090581017165256">O tomto webu</translation>
 <translation id="7087918508125750058">Vybrané položky: <ph name="ITEM_COUNT" />. Možnosti jsou k dispozici u horního okraje obrazovky</translation>
 <translation id="7141896414559753902">Bránit webům v zobrazování vyskakovacích oken a v přesměrování (doporučeno)</translation>
 <translation id="7176368934862295254"><ph name="KILOBYTES" /> kB</translation>
@@ -251,8 +264,8 @@
 <translation id="7521387064766892559">JavaScript</translation>
 <translation id="7554752735887601236">Webové stránky používají váš mikrofon</translation>
 <translation id="7561196759112975576">Vždy</translation>
-<translation id="7572498721684305250">Blokovat webům odesílání a příjem informací, když se dotknete zařízení NFC</translation>
 <translation id="757524316907819857">Bránit webům v přehrávání chráněného obsahu</translation>
+<translation id="7577900504646297215">Spravovat zájmy</translation>
 <translation id="7649070708921625228">Nápověda</translation>
 <translation id="7658239707568436148">Zrušit</translation>
 <translation id="7781829728241885113">Včera</translation>
@@ -285,6 +298,7 @@
 <translation id="8211406090763984747">Připojení je zabezpečené</translation>
 <translation id="8249310407154411074">Přesunout na začátek</translation>
 <translation id="8261506727792406068">Smazat</translation>
+<translation id="8284326494547611709">Titulky</translation>
 <translation id="8300705686683892304">Spravováno aplikací</translation>
 <translation id="8324158725704657629">Příště se neptat</translation>
 <translation id="8372893542064058268">Povolit synchronizaci na pozadí konkrétnímu webu.</translation>
@@ -298,6 +312,7 @@
 <translation id="8447861592752582886">Zrušit oprávnění zařízení</translation>
 <translation id="8451050538944905715">{NUM_SELECTED,plural, =1{Je používán 1 soubor cookie}few{Jsou používány # soubory cookie}many{Je používáno # souboru cookie}other{Je používáno # souborů cookie}}</translation>
 <translation id="8487700953926739672">Dostupné offline</translation>
+<translation id="848952951823693243">Vždy požadovat zobrazení na mobilu</translation>
 <translation id="851751545965956758">Bránit webům v připojení k zařízením</translation>
 <translation id="8525306231823319788">Celá obrazovka</translation>
 <translation id="857943718398505171">Povoleno (doporučeno)</translation>
@@ -317,6 +332,7 @@
 <translation id="8903921497873541725">Přiblížit</translation>
 <translation id="8921772741368021346"><ph name="POSITION" />/<ph name="DURATION" /></translation>
 <translation id="8926666909099850184">Funkce NFC je v tomto zařízení vypnutá. Zapnete ji v <ph name="BEGIN_LINK" />Nastavení Android<ph name="END_LINK" />.</translation>
+<translation id="8928445016601307354">Bránit webům v zobrazení a změně informací na zařízeních NFC</translation>
 <translation id="8941729603749328384">www.example.com</translation>
 <translation id="8958424370300090006">Blokovat soubory cookie pro konkrétní web.</translation>
 <translation id="8959122750345127698">Navigace není dosažitelná: <ph name="URL" /></translation>

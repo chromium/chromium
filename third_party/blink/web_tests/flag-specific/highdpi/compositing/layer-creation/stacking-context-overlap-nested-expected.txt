@@ -1,7 +1,7 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -10,6 +10,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
       "position": [-15, -15],
       "bounds": [180, 180],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#008000",
       "transform": 1
     },
@@ -17,6 +18,7 @@
       "name": "LayoutNGBlockFlow (positioned) DIV class='composited box'",
       "position": [-15, -15],
       "bounds": [330, 180],
+      "contentsOpaqueForText": true,
       "backgroundColor": "#FF000099",
       "transform": 2
     },

@@ -565,7 +565,7 @@ void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
   UMA_HISTOGRAM_BOOLEAN("TextToSpeech.Utterance.Native", voice.native);
 
   if (!voice.native) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     DCHECK(!voice.engine_id.empty());
     SetCurrentUtterance(std::move(utterance));
     current_utterance_->SetEngineId(voice.engine_id);
@@ -578,7 +578,7 @@ void TtsControllerImpl::SpeakNow(std::unique_ptr<TtsUtterance> utterance) {
       SetCurrentUtterance(nullptr);
       SpeakNextUtterance();
     }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   } else {
     // It's possible for certain platforms to send start events immediately
     // during |speak|.
@@ -701,8 +701,10 @@ void TtsControllerImpl::StripSSML(
 
   // Parse using safe, out-of-process Xml Parser.
   data_decoder::DataDecoder::ParseXmlIsolated(
-      utterance, base::BindOnce(&TtsControllerImpl::StripSSMLHelper, utterance,
-                                std::move(on_ssml_parsed)));
+      utterance,
+      data_decoder::mojom::XmlParser::WhitespaceBehavior::kPreserveSignificant,
+      base::BindOnce(&TtsControllerImpl::StripSSMLHelper, utterance,
+                     std::move(on_ssml_parsed)));
 }
 
 // Called when ParseXml finishes.
@@ -751,10 +753,10 @@ void TtsControllerImpl::PopulateParsedText(std::string* parsed_text,
   if (!children || !children->is_list())
     return;
 
-  for (size_t i = 0; i < children->GetList().size(); ++i) {
+  for (size_t i = 0; i < children->GetListDeprecated().size(); ++i) {
     // We need to iterate over all children because some text elements are
     // nested within other types of elements, such as <emphasis> tags.
-    PopulateParsedText(parsed_text, &children->GetList()[i]);
+    PopulateParsedText(parsed_text, &children->GetListDeprecated()[i]);
   }
 }
 

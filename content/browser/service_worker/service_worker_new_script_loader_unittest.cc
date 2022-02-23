@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -112,7 +113,8 @@ class MockNetwork {
       client->OnReceiveRedirect(net::RedirectInfo(), std::move(response_head));
       return true;
     }
-    client->OnReceiveResponse(std::move(response_head));
+    client->OnReceiveResponse(std::move(response_head),
+                              mojo::ScopedDataPipeConsumerHandle());
 
     uint32_t bytes_written = response.body.size();
     mojo::ScopedDataPipeConsumerHandle consumer;
@@ -131,7 +133,7 @@ class MockNetwork {
 
  private:
   // |mock_server_| is owned by ServiceWorkerNewScriptLoaderTest.
-  MockHTTPServer* const mock_server_;
+  const raw_ptr<MockHTTPServer> mock_server_;
 
   // The most recent request received.
   network::ResourceRequest last_request_;
@@ -451,36 +453,6 @@ TEST_F(ServiceWorkerNewScriptLoaderTest, Error_NoMimeType) {
 
   // The request should be failed because of the response with no MIME type.
   EXPECT_EQ(net::ERR_INSECURE_RESPONSE, client->completion_status().error_code);
-  EXPECT_FALSE(client->has_received_response());
-
-  // The response shouldn't be stored in the storage.
-  EXPECT_FALSE(VerifyStoredResponse(kScriptURL));
-  // No sample should be recorded since a write didn't occur.
-  histogram_tester.ExpectTotalCount(kHistogramWriteResponseResult, 0);
-}
-
-// Tests that service workers fail to load over a connection with legacy TLS.
-TEST_F(ServiceWorkerNewScriptLoaderTest, Error_LegacyTLS) {
-  base::HistogramTester histogram_tester;
-
-  std::unique_ptr<network::TestURLLoaderClient> client;
-  std::unique_ptr<ServiceWorkerNewScriptLoader> loader;
-
-  // Serve a response with a certificate error.
-  const GURL kScriptURL("https://example.com/certificate-error.js");
-  MockHTTPServer::Response response(std::string("HTTP/1.1 200 OK\n\n"),
-                                    std::string("body"));
-  response.has_certificate_error = true;
-  response.cert_status = net::CERT_STATUS_LEGACY_TLS;
-  mock_server_.Set(kScriptURL, response);
-  SetUpRegistration(kScriptURL);
-  DoRequest(kScriptURL, &client, &loader);
-  client->RunUntilComplete();
-
-  // The request should be failed because of the response with the legacy TLS
-  // error.
-  EXPECT_EQ(net::ERR_SSL_OBSOLETE_VERSION,
-            client->completion_status().error_code);
   EXPECT_FALSE(client->has_received_response());
 
   // The response shouldn't be stored in the storage.

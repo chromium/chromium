@@ -5,10 +5,9 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_PLATFORM_API_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_PLATFORM_API_H_
 
-#include "libassistant/shared/public/platform_api.h"
-
 #include <memory>
 
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/libassistant/grpc/assistant_client_observer.h"
 #include "chromeos/services/libassistant/network_provider_impl.h"
 #include "chromeos/services/libassistant/public/mojom/audio_output_delegate.mojom.h"

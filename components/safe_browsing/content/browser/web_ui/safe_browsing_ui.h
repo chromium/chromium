@@ -6,6 +6,7 @@
 #define COMPONENTS_SAFE_BROWSING_CONTENT_BROWSER_WEB_UI_SAFE_BROWSING_UI_H_
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/safe_browsing/buildflags.h"
 #include "components/safe_browsing/content/browser/safe_browsing_service_interface.h"
@@ -96,90 +97,92 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void OnJavascriptDisallowed() override;
 
   // Get the experiments that are currently enabled per Chrome instance.
-  void GetExperiments(const base::ListValue* args);
+  void GetExperiments(const base::Value::ConstListView args);
 
   // Get the Safe Browsing related preferences for the current user.
-  void GetPrefs(const base::ListValue* args);
+  void GetPrefs(const base::Value::ConstListView args);
 
   // Get the Safe Browsing related policies for the current user.
-  void GetPolicies(const base::ListValue* args);
+  void GetPolicies(const base::Value::ConstListView args);
 
   // Get the Safe Browsing cookie.
-  void GetCookie(const base::ListValue* args);
+  void GetCookie(const base::Value::ConstListView args);
 
   // Get the current captured passwords.
-  void GetSavedPasswords(const base::ListValue* args);
+  void GetSavedPasswords(const base::Value::ConstListView args);
 
   // Get the information related to the Safe Browsing database and full hash
   // cache.
-  void GetDatabaseManagerInfo(const base::ListValue* args);
+  void GetDatabaseManagerInfo(const base::Value::ConstListView args);
 
   // Get the download URLs that have been checked since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetDownloadUrlsChecked(const base::ListValue* args);
+  void GetDownloadUrlsChecked(const base::Value::ConstListView args);
 
   // Get the ClientDownloadRequests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSentClientDownloadRequests(const base::ListValue* args);
+  void GetSentClientDownloadRequests(const base::Value::ConstListView args);
 
   // Get the ClientDownloadReponses that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReceivedClientDownloadResponses(const base::ListValue* args);
+  void GetReceivedClientDownloadResponses(
+      const base::Value::ConstListView args);
 
   // Get the ClientPhishingRequests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSentClientPhishingRequests(const base::ListValue* args);
+  void GetSentClientPhishingRequests(const base::Value::ConstListView args);
 
   // Get the ClientPhishingResponses that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReceivedClientPhishingResponses(const base::ListValue* args);
+  void GetReceivedClientPhishingResponses(
+      const base::Value::ConstListView args);
 
   // Get the ThreatDetails that have been collected since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetSentCSBRRs(const base::ListValue* args);
+  void GetSentCSBRRs(const base::Value::ConstListView args);
 
   // Get the PhishGuard events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetPGEvents(const base::ListValue* args);
+  void GetPGEvents(const base::Value::ConstListView args);
 
   // Get the Security events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetSecurityEvents(const base::ListValue* args);
+  void GetSecurityEvents(const base::Value::ConstListView args);
 
   // Get the PhishGuard pings that have been sent since the oldest currently
   // open chrome://safe-browsing tab was opened.
-  void GetPGPings(const base::ListValue* args);
+  void GetPGPings(const base::Value::ConstListView args);
 
   // Get the PhishGuard responses that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetPGResponses(const base::ListValue* args);
+  void GetPGResponses(const base::Value::ConstListView args);
 
   // Get the real time lookup pings that have been sent since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetRTLookupPings(const base::ListValue* args);
+  void GetRTLookupPings(const base::Value::ConstListView args);
 
   // Get the real time lookup responses that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetRTLookupResponses(const base::ListValue* args);
+  void GetRTLookupResponses(const base::Value::ConstListView args);
 
   // Get the current referrer chain for a given URL.
-  void GetReferrerChain(const base::ListValue* args);
+  void GetReferrerChain(const base::Value::ConstListView args);
 
   // Get the referring app info that launches Chrome on Android. Always set to
   // null if it's called from platforms other than Android.
-  void GetReferringAppInfo(const base::ListValue* args);
+  void GetReferringAppInfo(const base::Value::ConstListView args);
 
   // Get the list of log messages that have been received since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetLogMessages(const base::ListValue* args);
+  void GetLogMessages(const base::Value::ConstListView args);
 
   // Get the reporting events that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetReportingEvents(const base::ListValue* args);
+  void GetReportingEvents(const base::Value::ConstListView args);
 
   // Get the deep scanning requests that have been collected since the oldest
   // currently open chrome://safe-browsing tab was opened.
-  void GetDeepScans(const base::ListValue* args);
+  void GetDeepScans(const base::Value::ConstListView args);
 
   // Register callbacks for WebUI messages.
   void RegisterMessages() override;
@@ -256,7 +259,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
 
   // Called when any new reporting events are sent while one or more WebUI tabs
   // are open.
-  void NotifyReportingEventJsListener(const base::Value& event);
+  void NotifyReportingEventJsListener(const base::Value::Dict& event);
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
   // Called when any deep scans are updated while one or more WebUI
@@ -269,7 +272,7 @@ class SafeBrowsingUIHandler : public content::WebUIMessageHandler {
   void OnGetCookie(const std::string& callback_id,
                    const std::vector<net::CanonicalCookie>& cookies);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   mojo::Remote<network::mojom::CookieManager> cookie_manager_remote_;
 
@@ -398,7 +401,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   // Add the reporting event to |reporting_events_| and send it to all the open
   // chrome://safe-browsing tabs.
-  void AddToReportingEvents(const base::Value& event);
+  void AddToReportingEvents(const base::Value::Dict& event);
 
   // Clear |reporting_events_|.
   void ClearReportingEvents();
@@ -538,7 +541,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
   ReferrerChainProvider* GetReferrerChainProvider(
       content::BrowserContext* browser_context);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents);
 #endif
@@ -632,6 +635,8 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 
   // List of reporting events logged since the oldest currently open
   // chrome://safe-browsing tab was opened.
+  // TODO(https://crbug.com/1297256): This can only store base::Value::Dicts, so
+  // update this type to reflect that.
   std::vector<base::Value> reporting_events_;
 
 #if BUILDFLAG(FULL_SAFE_BROWSING)
@@ -642,7 +647,7 @@ class WebUIInfoSingleton : public SafeBrowsingUrlCheckerImpl::WebUIDelegate {
 #endif
 
   // The Safe Browsing service.
-  SafeBrowsingServiceInterface* sb_service_ = nullptr;
+  raw_ptr<SafeBrowsingServiceInterface> sb_service_ = nullptr;
 
   // Whether there is a test listener.
   bool has_test_listener_ = false;

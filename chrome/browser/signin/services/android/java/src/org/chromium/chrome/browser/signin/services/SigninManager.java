@@ -94,9 +94,14 @@ public interface SigninManager {
     void onFirstRunCheckDone();
 
     /**
-     * Returns true if signin can be started now.
+     * Returns true if sign in can be started now.
      */
-    boolean isSignInAllowed();
+    boolean isSigninAllowed();
+
+    /**
+     * Returns true if sync opt in can be started now.
+     */
+    boolean isSyncOptInAllowed();
 
     /**
      * Returns true if signin is disabled by policy.
@@ -157,7 +162,7 @@ public interface SigninManager {
             @SigninAccessPoint int accessPoint, Account account, @Nullable SignInCallback callback);
 
     /**
-     * Schedules the runnable to be invoked after currently ongoing a sign-in or sign-out operation
+     * Schedules the runnable to be invoked after all sign-in, sign-out, or sync data wipe operation
      * is finished. If there's no operation is progress, posts the callback to the UI thread right
      * away.
      */
@@ -205,4 +210,14 @@ public interface SigninManager {
      * @param primaryAccountId {@link CoreAccountId} of the primary account.
      */
     void reloadAllAccountsFromSystem(CoreAccountId primaryAccountId);
+
+    /**
+     * Wipes the user's bookmarks and sync data.
+     *
+     * Callers should make this call within a runAfterOperationInProgress() call in order to ensure
+     * serialization of wipe operations.
+     *
+     * @param wipeDataCallback A callback which will be called once the data is wiped.
+     */
+    void wipeSyncUserData(Runnable wipeDataCallback);
 }

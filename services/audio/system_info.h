@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "media/audio/audio_system_helper.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"

@@ -6,8 +6,9 @@
 #define CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "chrome/browser/ui/extensions/extension_popup_types.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 #include "chrome/browser/ui/views/extensions/extension_view_views.h"
@@ -52,11 +53,6 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
  public:
   METADATA_HEADER(ExtensionPopup);
 
-  enum ShowAction {
-    SHOW,
-    SHOW_AND_INSPECT,
-  };
-
   // The min/max height of popups.
   // The minimum is just a little larger than the size of the button itself.
   // The maximum is an arbitrary number and should be smaller than most screens.
@@ -74,7 +70,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   static void ShowPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                         views::View* anchor_view,
                         views::BubbleBorder::Arrow arrow,
-                        ShowAction show_action);
+                        PopupShowAction show_action,
+                        ShowPopupCallback callback);
 
   ExtensionPopup(const ExtensionPopup&) = delete;
   ExtensionPopup& operator=(const ExtensionPopup&) = delete;
@@ -106,8 +103,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                            extensions::UnloadedExtensionReason reason) override;
 
   // content::WebContentsObserver:
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
   // TabStripModelObserver:
   void OnTabStripModelChanged(
@@ -128,7 +124,8 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   ExtensionPopup(std::unique_ptr<extensions::ExtensionViewHost> host,
                  views::View* anchor_view,
                  views::BubbleBorder::Arrow arrow,
-                 ShowAction show_action);
+                 PopupShowAction show_action,
+                 ShowPopupCallback callback);
 
   // Shows the bubble, focuses its content, and registers listeners.
   void ShowBubble();
@@ -139,7 +136,7 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
   // The contained host for the view.
   std::unique_ptr<extensions::ExtensionViewHost> host_;
 
-  ExtensionViewViews* extension_view_;
+  raw_ptr<ExtensionViewViews> extension_view_;
 
   base::ScopedObservation<extensions::ExtensionHost,
                           extensions::ExtensionHostObserver>
@@ -149,7 +146,9 @@ class ExtensionPopup : public views::BubbleDialogDelegateView,
                           extensions::ExtensionRegistryObserver>
       extension_registry_observation_{this};
 
-  ShowAction show_action_;
+  PopupShowAction show_action_;
+
+  ShowPopupCallback shown_callback_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_EXTENSIONS_EXTENSION_POPUP_H_

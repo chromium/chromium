@@ -5,7 +5,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MOJO_MEDIA_STREAM_DISPATCHER_HOST_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_MEDIASTREAM_MOCK_MOJO_MEDIA_STREAM_DISPATCHER_HOST_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -52,8 +51,13 @@ class MockMojoMediaStreamDispatcherHost
                     mojom::blink::MediaStreamType,
                     bool));
   MOCK_METHOD1(OnStreamStarted, void(const WTF::String&));
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   MOCK_METHOD2(FocusCapturedSurface, void(const WTF::String&, bool));
+  MOCK_METHOD4(Crop,
+               void(const base::UnguessableToken&,
+                    const base::Token&,
+                    uint32_t,
+                    CropCallback));
 #endif
 
   void ResetSessionId() { session_id_ = base::UnguessableToken::Create(); }

@@ -70,12 +70,12 @@ bool GrantAccessToPath(const FilePath& path,
     ScopedHandle handle(::CreateFile(path.value().c_str(), WRITE_DAC, 0,
                                      nullptr, OPEN_EXISTING,
                                      FILE_FLAG_BACKUP_SEMANTICS, nullptr));
-    if (!handle.IsValid()) {
+    if (!handle.is_valid()) {
       DPLOG(ERROR) << "Failed opening path \"" << path.value()
                    << "\" to write DACL";
       return false;
     }
-    error = ::SetSecurityInfo(handle.Get(), SE_KERNEL_OBJECT,
+    error = ::SetSecurityInfo(handle.get(), SE_KERNEL_OBJECT,
                               DACL_SECURITY_INFORMATION, nullptr, nullptr,
                               new_dacl_ptr.get(), nullptr);
   }
@@ -87,6 +87,22 @@ bool GrantAccessToPath(const FilePath& path,
   }
 
   return true;
+}
+
+std::vector<Sid> CloneSidVector(const std::vector<Sid>& sids) {
+  std::vector<Sid> clone;
+  clone.reserve(sids.size());
+  for (const Sid& sid : sids) {
+    clone.push_back(sid.Clone());
+  }
+  return clone;
+}
+
+void AppendSidVector(std::vector<Sid>& base_sids,
+                     const std::vector<Sid>& append_sids) {
+  for (const Sid& sid : append_sids) {
+    base_sids.push_back(sid.Clone());
+  }
 }
 
 }  // namespace win

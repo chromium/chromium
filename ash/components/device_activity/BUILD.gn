@@ -3,6 +3,7 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//third_party/protobuf/proto_library.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
@@ -11,18 +12,37 @@ component("device_activity") {
   defines = [ "IS_ASH_DEVICE_ACTIVITY_IMPL" ]
 
   deps = [
+    ":fresnel_service_proto",
     "//base",
+    "//base:i18n",
+    "//chromeos/dbus/session_manager",
     "//chromeos/network",
+    "//chromeos/system",
     "//components/prefs:prefs",
+    "//components/version_info",
+    "//crypto:crypto",
+    "//google_apis",
+    "//services/network/public/cpp",
+    "//third_party/icu",
+    "//third_party/private_membership:private_membership",
+    "//third_party/private_membership:private_membership_proto",
+    "//url",
   ]
 
   sources = [
+    "daily_use_case_impl.cc",
+    "daily_use_case_impl.h",
+    "device_active_use_case.cc",
+    "device_active_use_case.h",
     "device_activity_client.cc",
     "device_activity_client.h",
     "device_activity_controller.cc",
     "device_activity_controller.h",
     "fresnel_pref_names.cc",
     "fresnel_pref_names.h",
+    "monthly_use_case_impl.cc",
+    "monthly_use_case_impl.h",
+    "trigger.h",
   ]
 }
 
@@ -30,12 +50,15 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "daily_use_case_impl_unittest.cc",
     "device_activity_client_unittest.cc",
     "device_activity_controller_unittest.cc",
+    "monthly_use_case_impl_unittest.cc",
   ]
 
   deps = [
     ":device_activity",
+    ":fresnel_service_proto",
     "//base",
     "//base/test:test_support",
     "//chromeos/network",
@@ -43,6 +66,28 @@ source_set("unit_tests") {
     "//components/prefs:test_support",
     "//dbus",
     "//services/device/public/cpp:test_support",
+    "//services/network:test_support",
+    "//testing/gmock",
     "//testing/gtest",
+    "//third_party/private_membership:private_membership",
   ]
+
+  data = [ "//third_party/private_membership/src/internal/testing/regression_test_data/cros_test_data.binarypb" ]
+}
+
+proto_library("fresnel_service_proto") {
+  sources = [ "fresnel_service.proto" ]
+
+  extra_configs =
+      [ "//third_party/private_membership:private_membership_config" ]
+
+  import_dirs = [
+    "//third_party/private_membership/src",
+    "//third_party/shell-encryption/src",
+    ".",
+  ]
+
+  proto_in_dir = "//"
+
+  link_deps = [ "//third_party/private_membership:private_membership_proto" ]
 }

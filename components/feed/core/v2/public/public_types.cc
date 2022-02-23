@@ -5,8 +5,32 @@
 #include "components/feed/core/v2/public/types.h"
 
 #include <ostream>
+#include <tuple>
+#include "components/feed/core/proto/v2/ui.pb.h"
 
 namespace feed {
+
+AccountInfo::AccountInfo() = default;
+AccountInfo::AccountInfo(const std::string& gaia, const std::string& email)
+    : gaia(gaia), email(email) {}
+AccountInfo::AccountInfo(CoreAccountInfo account_info)
+    : gaia(std::move(account_info.gaia)),
+      email(std::move(account_info.email)) {}
+bool AccountInfo::IsEmpty() const {
+  DCHECK_EQ(gaia.empty(), email.empty());
+  return gaia.empty();
+}
+bool AccountInfo::operator==(const AccountInfo& rhs) const {
+  return tie(gaia, email) == tie(rhs.gaia, rhs.email);
+}
+
+std::ostream& operator<<(std::ostream& os, const AccountInfo& o) {
+  if (o.IsEmpty()) {
+    return os << "signed-out";
+  }
+  return os << o.gaia << ":" << o.email;
+}
+
 WebFeedMetadata::WebFeedMetadata() = default;
 WebFeedMetadata::WebFeedMetadata(const WebFeedMetadata&) = default;
 WebFeedMetadata::WebFeedMetadata(WebFeedMetadata&&) = default;
@@ -29,7 +53,11 @@ void WebFeedPageInformation::SetUrl(const GURL& url) {
   clear_ref.ClearRef();
   url_ = url.ReplaceComponents(clear_ref);
 }
-
+void WebFeedPageInformation::SetCanonicalUrl(const GURL& url) {
+  url::Replacements<char> clear_ref;
+  clear_ref.ClearRef();
+  canonical_url_ = url.ReplaceComponents(clear_ref);
+}
 void WebFeedPageInformation::SetRssUrls(const std::vector<GURL>& rss_urls) {
   rss_urls_ = rss_urls;
 }
@@ -37,6 +65,9 @@ void WebFeedPageInformation::SetRssUrls(const std::vector<GURL>& rss_urls) {
 std::ostream& operator<<(std::ostream& os,
                          const WebFeedPageInformation& value) {
   os << "{ " << value.url() << " ";
+  if (value.canonical_url().is_valid()) {
+    os << "canonical=" << value.canonical_url() << ' ';
+  }
   os << "RSS:\n";
   for (const GURL& url : value.GetRssUrls()) {
     os << url << '\n';
@@ -56,7 +87,7 @@ std::ostream& operator<<(std::ostream& os, const NetworkResponseInfo& o) {
             << " bless_nonce=" << o.bless_nonce
             << " base_request_url=" << o.base_request_url
             << " response_body_bytes=" << o.response_body_bytes
-            << " was_signed_in=" << o.was_signed_in << "}";
+            << " account_info=" << o.account_info << "}";
 }
 
 std::ostream& operator<<(std::ostream& out, WebFeedSubscriptionStatus value) {
@@ -121,6 +152,18 @@ std::ostream& operator<<(std::ostream& out, const WebFeedMetadata& value) {
   if (value.subscription_status != WebFeedSubscriptionStatus::kUnknown)
     out << " status=" << value.subscription_status;
   return out << " }";
+}
+
+std::ostream& operator<<(std::ostream& out,
+                         WebFeedPageInformationRequestReason value) {
+  switch (value) {
+    case WebFeedPageInformationRequestReason::kUserRequestedFollow:
+      return out << "kUserRequestedFollow";
+    case WebFeedPageInformationRequestReason::kFollowRecommendation:
+      return out << "kFollowRecommendation";
+    case WebFeedPageInformationRequestReason::kMenuItemPresentation:
+      return out << "kMenuItemPresentation";
+  }
 }
 
 }  // namespace feed

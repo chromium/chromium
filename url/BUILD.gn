@@ -235,10 +235,15 @@ test("url_unittests") {
   }
 
   if (!is_ios) {
-    sources += [ "mojom/url_gurl_mojom_traits_unittest.cc" ]
+    sources += [
+      "mojom/scheme_host_port_mojom_traits_unittest.cc",
+      "mojom/url_gurl_mojom_traits_unittest.cc",
+    ]
     deps += [
       "//mojo/core/embedder",
+      "//mojo/public/cpp/test_support:test_utils",
       "//url/ipc:url_ipc_unittests",
+      "//url/mojom:mojom_traits",
       "//url/mojom:test_url_mojom_gurl",
     ]
   }

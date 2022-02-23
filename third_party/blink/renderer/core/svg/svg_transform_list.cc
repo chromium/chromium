@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/svg/animation/smil_animation_effect_parameters.h"
 #include "third_party/blink/renderer/core/svg/svg_parser_utilities.h"
 #include "third_party/blink/renderer/core/svg/svg_transform_distance.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/character_visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/parsing_utilities.h"
@@ -213,8 +213,8 @@ CSSValue* CreateTransformCSSValue(const SVGTransform& transform) {
     case CSSValueID::kRotate: {
       transform_value->Append(*CSSNumericLiteralValue::Create(
           transform.Angle(), CSSPrimitiveValue::UnitType::kDegrees));
-      FloatPoint rotation_origin = transform.RotationCenter();
-      if (!ToFloatSize(rotation_origin).IsZero()) {
+      gfx::PointF rotation_origin = transform.RotationCenter();
+      if (!rotation_origin.IsOrigin()) {
         transform_value->Append(*CSSNumericLiteralValue::Create(
             rotation_origin.x(), CSSPrimitiveValue::UnitType::kUserUnits));
         transform_value->Append(*CSSNumericLiteralValue::Create(

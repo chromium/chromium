@@ -158,6 +158,10 @@ class SpdyStreamTest : public ::testing::Test, public WithTaskEnvironment {
     return session->num_pushed_streams_;
   }
 
+  int32_t unacked_recv_window_bytes(base::WeakPtr<SpdyStream> stream) {
+    return stream->unacked_recv_window_bytes_;
+  }
+
   static SpdySessionPool* spdy_session_pool(
       base::WeakPtr<SpdySession> session) {
     return session->pool_;
@@ -223,6 +227,56 @@ TEST_F(SpdyStreamTest, SendDataAfterOpen) {
   EXPECT_EQ(std::string(kPostBody, kPostBodyLength),
             delegate.TakeReceivedData());
   EXPECT_TRUE(data.AllWriteDataConsumed());
+}
+
+TEST_F(SpdyStreamTest, BrokenConnectionDetectionSuccessfulRequest) {
+  spdy::SpdySerializedFrame req(spdy_util_.ConstructSpdyPost(
+      kDefaultUrl, 1, kPostBodyLength, LOWEST, nullptr, 0));
+  AddWrite(req);
+
+  spdy::SpdySerializedFrame resp(spdy_util_.ConstructSpdyPostReply(nullptr, 0));
+  AddRead(resp);
+
+  spdy::SpdySerializedFrame msg(
+      spdy_util_.ConstructSpdyDataFrame(1, kPostBodyStringPiece, false));
+  AddWrite(msg);
+
+  spdy::SpdySerializedFrame echo(
+      spdy_util_.ConstructSpdyDataFrame(1, kPostBodyStringPiece, false));
+  AddRead(echo);
+
+  AddReadPause();
+  AddReadEOF();
+
+  SequencedSocketData data(GetReads(), GetWrites());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
+
+  ASSERT_FALSE(session->IsBrokenConnectionDetectionEnabled());
+  base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
+      SPDY_BIDIRECTIONAL_STREAM, session, url_, LOWEST, NetLogWithSource(),
+      true, base::Seconds(10));
+  ASSERT_TRUE(stream);
+  ASSERT_TRUE(session->IsBrokenConnectionDetectionEnabled());
+  StreamDelegateSendImmediate delegate(stream, kPostBodyStringPiece);
+  stream->SetDelegate(&delegate);
+
+  spdy::Http2HeaderBlock headers(
+      spdy_util_.ConstructPostHeaderBlock(kDefaultUrl, kPostBodyLength));
+  EXPECT_THAT(stream->SendRequestHeaders(std::move(headers), MORE_DATA_TO_SEND),
+              IsError(ERR_IO_PENDING));
+
+  base::RunLoop().RunUntilIdle();
+  ASSERT_TRUE(session->IsBrokenConnectionDetectionEnabled());
+
+  data.Resume();
+  EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_CONNECTION_CLOSED));
+  ASSERT_FALSE(session->IsBrokenConnectionDetectionEnabled());
 }
 
 // Delegate that receives trailers.
@@ -1948,6 +2002,79 @@ TEST_F(SpdyStreamTest, DelegateIsInformedOfEOF) {
 
   EXPECT_TRUE(data.AllReadDataConsumed());
   EXPECT_TRUE(data.AllWriteDataConsumed());
+}
+
+// A small read should trigger sending a receive window update and dropping the
+// count of unacknowledged bytes to zero only after
+// kDefaultTimeToBufferSmallWindowUpdates time has passed.
+TEST_F(SpdyStreamTestWithMockClock, FlowControlSlowReads) {
+  spdy::SpdySerializedFrame req(
+      spdy_util_.ConstructSpdyGet(nullptr, 0, 1, LOWEST));
+  AddWrite(req);
+
+  AddReadPause();
+
+  spdy::SpdySerializedFrame reply(
+      spdy_util_.ConstructSpdyGetReply(nullptr, 0, 1));
+  AddRead(reply);
+
+  AddReadPause();
+
+  spdy::SpdySerializedFrame msg(
+      spdy_util_.ConstructSpdyDataFrame(1, kPostBodyStringPiece, false));
+  AddRead(msg);
+
+  AddReadPause();
+
+  AddReadEOF();
+
+  SequencedSocketData data(GetReads(), GetWrites());
+  MockConnect connect_data(SYNCHRONOUS, OK);
+  data.set_connect_data(connect_data);
+  session_deps_.socket_factory->AddSocketDataProvider(&data);
+
+  AddSSLSocketData();
+
+  base::WeakPtr<SpdySession> session(CreateDefaultSpdySession());
+  session->SetTimeToBufferSmallWindowUpdates(
+      kDefaultTimeToBufferSmallWindowUpdates);
+
+  base::WeakPtr<SpdyStream> stream = CreateStreamSynchronously(
+      SPDY_REQUEST_RESPONSE_STREAM, session, url_, LOWEST, NetLogWithSource());
+  ASSERT_TRUE(stream);
+  EXPECT_EQ(kDefaultUrl, stream->url().spec());
+
+  StreamDelegateConsumeData delegate(stream);
+  stream->SetDelegate(&delegate);
+
+  EXPECT_EQ(0, unacked_recv_window_bytes(stream));
+
+  spdy::Http2HeaderBlock headers(
+      spdy_util_.ConstructGetHeaderBlock(kDefaultUrl));
+  EXPECT_THAT(
+      stream->SendRequestHeaders(std::move(headers), NO_MORE_DATA_TO_SEND),
+      IsError(ERR_IO_PENDING));
+
+  // REQUEST
+  data.RunUntilPaused();
+
+  // REPLY
+  data.Resume();
+  data.RunUntilPaused();
+
+  // Delay long enough for the receive window to send an update on read,
+  // draining the unacked_recv_window_bytes back to zero.
+  AdvanceClock(kDefaultTimeToBufferSmallWindowUpdates);
+
+  // DATA
+  data.Resume();
+  data.RunUntilPaused();
+
+  EXPECT_EQ(0, unacked_recv_window_bytes(stream));
+
+  // FIN
+  data.Resume();
+  EXPECT_THAT(delegate.WaitForClose(), IsError(ERR_CONNECTION_CLOSED));
 }
 
 }  // namespace test

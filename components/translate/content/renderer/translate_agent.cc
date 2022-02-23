@@ -91,12 +91,9 @@ namespace translate {
 
 ////////////////////////////////////////////////////////////////////////////////
 // TranslateAgent, public:
-TranslateAgent::TranslateAgent(content::RenderFrame* render_frame,
-                               int world_id,
-                               const std::string& extension_scheme)
+TranslateAgent::TranslateAgent(content::RenderFrame* render_frame, int world_id)
     : content::RenderFrameObserver(render_frame),
       world_id_(world_id),
-      extension_scheme_(extension_scheme),
       waiting_for_first_foreground_(render_frame->IsHidden()) {
   translate_task_runner_ = this->render_frame()->GetTaskRunner(
       blink::TaskType::kInternalTranslation);

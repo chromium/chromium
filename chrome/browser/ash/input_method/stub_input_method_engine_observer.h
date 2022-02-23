@@ -7,12 +7,12 @@
 
 #include <vector>
 
-#include "chrome/browser/ash/input_method/input_method_engine_base.h"
+#include "chrome/browser/ash/input_method/input_method_engine_observer.h"
 
 namespace ash {
 namespace input_method {
 
-class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
+class StubInputMethodEngineObserver : public InputMethodEngineObserver {
  public:
   StubInputMethodEngineObserver() = default;
   ~StubInputMethodEngineObserver() override = default;
@@ -23,15 +23,15 @@ class StubInputMethodEngineObserver : public InputMethodEngineBase::Observer {
       const std::string& engine_id,
       int context_id,
       const ui::IMEEngineHandlerInterface::InputContext& context) override {}
+  void OnTouch(ui::EventPointerType pointerType) override {}
   void OnBlur(const std::string& engine_id, int context_id) override {}
   void OnKeyEvent(
       const std::string& engine_id,
       const ui::KeyEvent& event,
       ui::IMEEngineHandlerInterface::KeyEventDoneCallback callback) override {}
-  void OnCandidateClicked(
-      const std::string& engine_id,
-      int candidate_id,
-      InputMethodEngineBase::MouseButtonEvent button) override {}
+  void OnCandidateClicked(const std::string& engine_id,
+                          int candidate_id,
+                          MouseButtonEvent button) override {}
   void OnMenuItemActivated(const std::string& engine_id,
                            const std::string& menu_id) override {}
   void OnSurroundingTextChanged(const std::string& engine_id,

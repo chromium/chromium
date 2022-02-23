@@ -4,16 +4,38 @@
 
 #include "components/feature_engagement/public/feature_configurations.h"
 
+#include "base/strings/string_util.h"
 #include "build/build_config.h"
 #include "components/feature_engagement/public/configuration.h"
 #include "components/feature_engagement/public/feature_constants.h"
 
 namespace feature_engagement {
 
+FeatureConfig CreateAlwaysTriggerConfig(const base::Feature* feature) {
+  // Trim "IPH_" prefix from the feature name to use for trigger and used
+  // events.
+  const char* prefix = "IPH_";
+  std::string stripped_feature_name = feature->name;
+  if (base::StartsWith(stripped_feature_name, prefix,
+                       base::CompareCase::SENSITIVE))
+    stripped_feature_name = stripped_feature_name.substr(strlen(prefix));
+
+  // A config that always meets condition to trigger IPH.
+  FeatureConfig config;
+  config.valid = true;
+  config.availability = Comparator(ANY, 0);
+  config.session_rate = Comparator(ANY, 0);
+  config.trigger = EventConfig(stripped_feature_name + "_trigger",
+                               Comparator(ANY, 0), 90, 90);
+  config.used =
+      EventConfig(stripped_feature_name + "_used", Comparator(ANY, 0), 90, 90);
+  return config;
+}
+
 absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     const base::Feature* feature) {
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS)
   if (kIPHPasswordsAccountStorageFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
@@ -87,10 +109,11 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
                     Comparator(EQUAL, 0), 7, 360));
     return config;
   }
-#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS)
 
-#if defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS)
+
+#if BUILDFLAG(IS_ANDROID)
 
   constexpr int k10YearsInDays = 365 * 10;
 
@@ -207,6 +230,191 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->event_configs.insert(
         EventConfig("add_to_homescreen_text_bubble_iph_trigger",
                     Comparator(EQUAL, 0), 15, 90));
+    return config;
+  }
+
+  // Feature notification guide help UI promos that are shown in response to a
+  // notification click.
+  if (kIPHFeatureNotificationGuideDefaultBrowserPromoFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideSignInHelpBubbleFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideIncognitoTabHelpBubbleFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideNTPSuggestionCardHelpBubbleFeature.name ==
+          feature->name ||
+      kIPHFeatureNotificationGuideVoiceSearchHelpBubbleFeature.name ==
+          feature->name) {
+    return CreateAlwaysTriggerConfig(feature);
+  }
+
+  // A generic feature that always returns true.
+  if (kIPHGenericAlwaysTriggerHelpUiFeature.name == feature->name) {
+    return CreateAlwaysTriggerConfig(feature);
+  }
+
+  if (kIPHFeatureNotificationGuideIncognitoTabUsedFeature.name ==
+      feature->name) {
+    // A config that allows to check whether use has used incognito tabs before.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    // unused.
+    config->trigger =
+        EventConfig("feature_notification_guide_dummy_feature_trigger",
+                    Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("feature_notification_guide_dummy_feature_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(
+        EventConfig("app_menu_new_incognito_tab_clicked",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 90, 90));
+    return config;
+  }
+
+  if (kIPHFeatureNotificationGuideVoiceSearchUsedFeature.name ==
+      feature->name) {
+    // A config that allows to check whether use has used voice search from NTP
+    // before.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    // unused.
+    config->trigger =
+        EventConfig("feature_notification_guide_dummy_feature_trigger",
+                    Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("feature_notification_guide_dummy_feature_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(
+        EventConfig("ntp_voice_search_button_clicked",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 90, 90));
+    return config;
+  }
+
+  if (kIPHFeatureNotificationGuideIncognitoTabNotificationShownFeature.name ==
+      feature->name) {
+    // A config that allows the feature guide incognito tab notification to be
+    // shown.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->trigger = EventConfig(
+        "feature_notification_guide_incognito_tab_notification_trigger",
+        Comparator(LESS_THAN, 1), 90, 90);
+    config->used = EventConfig("app_menu_new_incognito_tab_clicked",
+                               Comparator(EQUAL, 0), 90, 90);
+    return config;
+  }
+
+  if (kIPHFeatureNotificationGuideNTPSuggestionCardNotificationShownFeature
+          .name == feature->name) {
+    // A config that allows the feature guide NTP suggestions cards notification
+    // to be shown.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    SessionRateImpact session_rate_impact;
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->trigger = EventConfig(
+        "feature_notification_guide_ntp_suggestion_card_notification_trigger",
+        Comparator(LESS_THAN, 1), 90, 90);
+    config->used = EventConfig(
+        "feature_notification_guide_ntp_suggestion_card_notification_used",
+        Comparator(EQUAL, 0), 90, 90);
+    return config;
+  }
+
+  if (kIPHFeatureNotificationGuideVoiceSearchNotificationShownFeature.name ==
+      feature->name) {
+    // A config that allows the feature guide voice search notification to be
+    // shown.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    SessionRateImpact session_rate_impact;
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->trigger = EventConfig(
+        "feature_notification_guide_voice_search_notification_trigger",
+        Comparator(LESS_THAN, 1), 90, 90);
+    config->used = EventConfig("ntp_voice_search_button_clicked",
+                               Comparator(EQUAL, 0), 90, 90);
+    return config;
+  }
+
+  if (kIPHFeatureNotificationGuideDefaultBrowserNotificationShownFeature.name ==
+      feature->name) {
+    // A config that allows the feature guide default browser notification to be
+    // shown.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    SessionRateImpact session_rate_impact;
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->trigger = EventConfig(
+        "feature_notification_guide_default_browser_notification_trigger",
+        Comparator(LESS_THAN, 1), 90, 90);
+    config->used = EventConfig(
+        "feature_notification_guide_default_browser_notification_used",
+        Comparator(EQUAL, 0), 90, 90);
+    return config;
+  }
+
+  if (kIPHFeatureNotificationGuideSignInNotificationShownFeature.name ==
+      feature->name) {
+    // A config that allows the feature guide sign-in notification to be
+    // shown.
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    SessionRateImpact session_rate_impact;
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->trigger =
+        EventConfig("feature_notification_guide_sign_in_notification_trigger",
+                    Comparator(LESS_THAN, 1), 90, 90);
+    config->used =
+        EventConfig("feature_notification_sign_in_search_notification_used",
+                    Comparator(EQUAL, 0), 90, 90);
+    return config;
+  }
+
+  if (kIPHLowUserEngagementDetectorFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(GREATER_THAN_OR_EQUAL, 14);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->trigger = EventConfig("low_user_engagement_detector_trigger",
+                                  Comparator(ANY, 0), 90, 90);
+    config->used = EventConfig("low_user_engagement_detector_used",
+                               Comparator(ANY, 0), 90, 90);
+    config->event_configs.insert(EventConfig("foreground_session_destroyed",
+                                             Comparator(LESS_THAN_OR_EQUAL, 3),
+                                             14, 14));
     return config;
   }
 
@@ -470,7 +678,7 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     config->session_rate = Comparator(ANY, 0);
     config->trigger = EventConfig("iph_shared_highlighting_receiver_trigger",
                                   Comparator(LESS_THAN, 5), 360, 360);
-    config->used = EventConfig("iph_shared_highlighting_button_clicked",
+    config->used = EventConfig("iph_shared_highlighting_used",
                                Comparator(LESS_THAN, 2), 360, 360);
     config->event_configs.insert(
         EventConfig("iph_shared_highlighting_receiver_trigger",
@@ -534,6 +742,26 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHAutoDarkUserEducationMessageOptInFeature.name == feature->name) {
+    // A config that allows the auto dark message to be shown:
+    // * Until the user opens auto dark settings
+    // * 2 times per week
+    // * Up to 6 times (3 weeks)
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->used = EventConfig("auto_dark_settings_opened",
+                               Comparator(EQUAL, 0), 360, 360);
+    config->trigger =
+        EventConfig("auto_dark_user_education_message_opt_in_trigger",
+                    Comparator(LESS_THAN, 2), 7, 360);
+    config->event_configs.insert(
+        EventConfig("auto_dark_user_education_message_opt_in_trigger",
+                    Comparator(LESS_THAN, 6), 360, 360));
+    return config;
+  }
+
   if (kIPHInstanceSwitcherFeature.name == feature->name) {
     // A config that allows the 'Manage windows' text bubble IPH to be shown
     // only once when the user starts using the multi-instance feature by
@@ -551,30 +779,92 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
-  if (kIPHKeyboardAccessoryPaymentVirtualCardFeature.name == feature->name) {
-    // A config that allows the virtual card IPH to be shown when a user
-    // interacts with the payment form and triggers the credit card suggestion
-    // list.
+  if (kIPHReadLaterAppMenuBookmarkThisPageFeature.name == feature->name) {
+    // A config that allows the reading list IPH bubble to prompt the user to
+    // bookmark this page.
+    // This will only occur once every 60 days.
+
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(ANY, 0);
     config->trigger =
-        EventConfig("keyboard_accessory_payment_virtual_card_iph_trigger",
-                    Comparator(LESS_THAN, 3), 90, 360);
-    config->used = EventConfig("keyboard_accessory_payment_suggestion_accepted",
+        EventConfig("read_later_app_menu_bookmark_this_page_iph_trigger",
+                    Comparator(EQUAL, 0), 60, 60);
+    config->used = EventConfig("app_menu_bookmark_star_icon_pressed",
+                               Comparator(EQUAL, 0), 60, 60);
+
+    return config;
+  }
+
+  if (kIPHReadLaterAppMenuBookmarksFeature.name == feature->name) {
+    // A config that allows the reading list IPH bubble to promopt the user to
+    // open the reading list.
+    // This will only occur once every 60 days.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("read_later_app_menu_bookmarks_iph_trigger",
+                                  Comparator(EQUAL, 0), 60, 60);
+    config->used = EventConfig("read_later_bookmark_folder_opened",
+                               Comparator(EQUAL, 0), 60, 60);
+    config->event_configs.insert(
+        EventConfig("read_later_article_saved",
+                    Comparator(GREATER_THAN_OR_EQUAL, 1), 60, 60));
+    return config;
+  }
+
+  if (kIPHReadLaterContextMenuFeature.name == feature->name) {
+    // A config that allows the reading list label on the context menu to show
+    // when the context menu "copy" option is clicked.
+    // This will only occur once every 60 days.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->trigger = EventConfig("read_later_context_menu_tapped_iph_trigger",
+                                  Comparator(EQUAL, 0), 60, 60);
+    config->used = EventConfig("read_later_context_menu_tapped",
+                               Comparator(EQUAL, 0), 60, 60);
+    return config;
+  }
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
+  if (kIPHAutofillVirtualCardSuggestionFeature.name == feature->name) {
+    // A config that allows the virtual card credit card suggestion IPH to be
+    // shown when:
+    // * it has been shown less than three times in last 90 days;
+    // * the virtual card suggestion has been selected less than twice in last
+    // 90 days.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(EQUAL, 0);
+    config->trigger = EventConfig("autofill_virtual_card_iph_trigger",
+                                  Comparator(LESS_THAN, 3), 90, 360);
+    config->used = EventConfig("autofill_virtual_card_suggestion_accepted",
                                Comparator(LESS_THAN, 2), 90, 360);
 
+#if BUILDFLAG(IS_ANDROID)
     SessionRateImpact session_rate_impact;
     session_rate_impact.type = SessionRateImpact::Type::EXPLICIT;
     std::vector<std::string> affected_features;
     affected_features.push_back("IPH_KeyboardAccessoryBarSwiping");
     session_rate_impact.affected_features = affected_features;
     config->session_rate_impact = session_rate_impact;
+#endif  // BUILDFLAG(IS_ANDROID)
+
     return config;
   }
-
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) ||
+        // BUILDFLAG(IS_FUCHSIA)
 
   if (kIPHDummyFeature.name == feature->name) {
     // Only used for tests. Various magic tricks are used below to ensure this

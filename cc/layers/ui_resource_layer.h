@@ -24,7 +24,8 @@ class CC_EXPORT UIResourceLayer : public Layer {
   UIResourceLayer& operator=(const UIResourceLayer&) = delete;
 
   void PushPropertiesTo(LayerImpl* layer,
-                        const CommitState& commit_state) override;
+                        const CommitState& commit_state,
+                        const ThreadUnsafeCommitState& unsafe_state) override;
 
   void SetLayerTreeHost(LayerTreeHost* host) override;
 
@@ -54,21 +55,22 @@ class CC_EXPORT UIResourceLayer : public Layer {
 
   bool HasDrawableContent() const override;
 
-  UIResourceId resource_id() const { return resource_id_; }
+  UIResourceId resource_id() const { return resource_id_.Read(*this); }
 
  private:
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void RecreateUIResourceIdFromBitmap();
   void SetUIResourceIdInternal(UIResourceId resource_id);
 
   // The resource ID will be zero when it's unset or when there's no associated
   // LayerTreeHost.
-  UIResourceId resource_id_ = 0;
-  SkBitmap bitmap_;
+  ProtectedSequenceReadable<UIResourceId> resource_id_;
+  ProtectedSequenceForbidden<SkBitmap> bitmap_;
 
-  gfx::PointF uv_top_left_;
-  gfx::PointF uv_bottom_right_;
-  float vertex_opacity_[4];
+  ProtectedSequenceReadable<gfx::PointF> uv_top_left_;
+  ProtectedSequenceReadable<gfx::PointF> uv_bottom_right_;
+  ProtectedSequenceReadable<float[4]> vertex_opacity_;
 };
 
 }  // namespace cc

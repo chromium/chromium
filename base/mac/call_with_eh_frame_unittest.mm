@@ -8,8 +8,7 @@
 
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 namespace {
 
 class CallWithEHFrameTest : public testing::Test {
@@ -51,5 +50,4 @@ TEST_F(CallWithEHFrameTest, CatchExceptionLower) {
 }
 
 }  // namespace
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

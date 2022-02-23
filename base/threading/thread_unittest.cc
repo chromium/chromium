@@ -13,8 +13,8 @@
 #include "base/bind.h"
 #include "base/debug/leak_annotations.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/task/current_thread.h"
@@ -104,7 +104,7 @@ class CaptureToEventList : public Thread {
   void CleanUp() override { event_list_->push_back(THREAD_EVENT_CLEANUP); }
 
  private:
-  EventList* event_list_;
+  raw_ptr<EventList> event_list_;
 };
 
 // Observer that writes a value into |event_list| when a message loop has been
@@ -128,7 +128,7 @@ class CapturingDestructionObserver
   }
 
  private:
-  EventList* event_list_;
+  raw_ptr<EventList> event_list_;
 };
 
 // Task that adds a destruction observer to the current message loop.

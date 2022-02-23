@@ -12,8 +12,10 @@
 
 #include "base/callback_forward.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/browser/storage_partition_impl.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/storage_partition_config.h"
 
@@ -54,15 +56,9 @@ class CONTENT_EXPORT StoragePartitionImplMap
                        base::OnceClosure on_gc_required,
                        base::OnceClosure done_callback);
 
-  // Examines the on-disk storage and removes any entires that are not listed
-  // in the |active_paths|, or in use by current entries in the storage
-  // partition.
-  //
-  // The |done| closure is executed on the calling thread when garbage
-  // collection is complete.
-  void GarbageCollect(
-      std::unique_ptr<std::unordered_set<base::FilePath>> active_paths,
-      base::OnceClosure done);
+  // See BrowserContext::GarbageCollectStoragePartitions().
+  void GarbageCollect(std::unordered_set<base::FilePath> active_paths,
+                      base::OnceClosure done);
 
   void ForEach(BrowserContext::StoragePartitionCallback callback);
 
@@ -92,7 +88,7 @@ class CONTENT_EXPORT StoragePartitionImplMap
   void PostCreateInitialization(StoragePartitionImpl* partition,
                                 bool in_memory);
 
-  BrowserContext* browser_context_;  // Not Owned.
+  raw_ptr<BrowserContext> browser_context_;  // Not Owned.
   scoped_refptr<base::SequencedTaskRunner> file_access_runner_;
   PartitionMap partitions_;
 

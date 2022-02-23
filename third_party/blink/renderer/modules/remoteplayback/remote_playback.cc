@@ -18,14 +18,14 @@
 #include "third_party/blink/renderer/core/html/media/html_video_element.h"
 #include "third_party/blink/renderer/core/html/media/remote_playback_observer.h"
 #include "third_party/blink/renderer/core/html_names.h"
-#include "third_party/blink/renderer/core/probe/async_task_id.h"
+#include "third_party/blink/renderer/core/probe/async_task_context.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/modules/event_target_modules.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_availability_state.h"
 #include "third_party/blink/renderer/modules/presentation/presentation_controller.h"
 #include "third_party/blink/renderer/modules/remoteplayback/availability_callback_wrapper.h"
 #include "third_party/blink/renderer/modules/remoteplayback/remote_playback_metrics.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/memory_pressure_listener.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/base64.h"
@@ -54,10 +54,11 @@ const AtomicString& RemotePlaybackStateToString(
   }
 }
 
-void RunRemotePlaybackTask(ExecutionContext* context,
-                           base::OnceClosure task,
-                           std::unique_ptr<probe::AsyncTaskId> task_id) {
-  probe::AsyncTask async_task(context, task_id.get());
+void RunRemotePlaybackTask(
+    ExecutionContext* context,
+    base::OnceClosure task,
+    std::unique_ptr<probe::AsyncTaskContext> task_context) {
+  probe::AsyncTask async_task(context, task_context.get());
   std::move(task).Run();
 }
 
@@ -206,6 +207,13 @@ ScriptPromise RemotePlayback::prompt(ScriptState* script_state) {
     return promise;
   }
 
+  if (!media_element_->DomWindow()) {
+    resolver->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kInvalidAccessError,
+        "RemotePlayback::prompt() does not work in a detached window."));
+    return promise;
+  }
+
   if (!LocalFrame::HasTransientUserActivation(
           media_element_->DomWindow()->GetFrame())) {
     resolver->Reject(MakeGarbageCollected<DOMException>(
@@ -269,15 +277,15 @@ void RemotePlayback::PromptInternal() {
     base::OnceClosure task =
         WTF::Bind(&RemotePlayback::PromptCancelled, WrapPersistent(this));
 
-    std::unique_ptr<probe::AsyncTaskId> task_id =
-        std::make_unique<probe::AsyncTaskId>();
-    probe::AsyncTaskScheduled(GetExecutionContext(), "promptCancelled",
-                              task_id.get());
+    std::unique_ptr<probe::AsyncTaskContext> task_context =
+        std::make_unique<probe::AsyncTaskContext>();
+    task_context->Schedule(GetExecutionContext(), "promptCancelled");
     GetExecutionContext()
         ->GetTaskRunner(TaskType::kMediaElementEvent)
-        ->PostTask(FROM_HERE, WTF::Bind(RunRemotePlaybackTask,
-                                        WrapPersistent(GetExecutionContext()),
-                                        std::move(task), std::move(task_id)));
+        ->PostTask(FROM_HERE,
+                   WTF::Bind(RunRemotePlaybackTask,
+                             WrapPersistent(GetExecutionContext()),
+                             std::move(task), std::move(task_context)));
   }
 }
 
@@ -302,15 +310,15 @@ int RemotePlayback::WatchAvailabilityInternal(
   // We can remove the wrapper if InspectorInstrumentation returns a task id.
   base::OnceClosure task = WTF::Bind(&RemotePlayback::NotifyInitialAvailability,
                                      WrapPersistent(this), id);
-  std::unique_ptr<probe::AsyncTaskId> task_id =
-      std::make_unique<probe::AsyncTaskId>();
-  probe::AsyncTaskScheduled(GetExecutionContext(), "watchAvailabilityCallback",
-                            task_id.get());
+  std::unique_ptr<probe::AsyncTaskContext> task_context =
+      std::make_unique<probe::AsyncTaskContext>();
+  task_context->Schedule(GetExecutionContext(), "watchAvailabilityCallback");
   GetExecutionContext()
       ->GetTaskRunner(TaskType::kMediaElementEvent)
-      ->PostTask(FROM_HERE, WTF::Bind(RunRemotePlaybackTask,
-                                      WrapPersistent(GetExecutionContext()),
-                                      std::move(task), std::move(task_id)));
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(RunRemotePlaybackTask,
+                           WrapPersistent(GetExecutionContext()),
+                           std::move(task), std::move(task_context)));
 
   MaybeStartListeningForAvailability();
   return id;

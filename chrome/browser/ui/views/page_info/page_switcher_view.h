@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_SWITCHER_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_SWITCHER_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/view.h"
 
 // A container view that contains one view at a time and can switch between
@@ -23,7 +24,7 @@ class PageSwitcherView : public views::View {
   void ChildPreferredSizeChanged(views::View* child) override;
 
  private:
-  views::View* current_page_ = nullptr;
+  raw_ptr<views::View> current_page_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_PAGE_INFO_PAGE_SWITCHER_VIEW_H_

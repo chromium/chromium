@@ -9,9 +9,8 @@
 #include <vector>
 
 #include "base/base_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
-#include "base/synchronization/lock.h"
-#include "base/thread_annotations.h"
 
 namespace logging {
 
@@ -47,7 +46,7 @@ class BASE_EXPORT VlogInfo {
 
   // Returns the vlog level for a given file (usually taken from
   // __FILE__).
-  int GetVlogLevel(base::StringPiece file);
+  int GetVlogLevel(base::StringPiece file) const;
 
  private:
   void SetMaxVlogLevel(int level);
@@ -56,9 +55,8 @@ class BASE_EXPORT VlogInfo {
   // VmodulePattern holds all the information for each pattern parsed
   // from |vmodule_switch|.
   struct VmodulePattern;
-  base::Lock vmodule_levels_lock_;
-  std::vector<VmodulePattern> vmodule_levels_ GUARDED_BY(vmodule_levels_lock_);
-  int* min_log_level_;
+  std::vector<VmodulePattern> vmodule_levels_;
+  raw_ptr<int> min_log_level_;
 };
 
 // Returns true if the string passed in matches the vlog pattern.  The

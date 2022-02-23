@@ -21,8 +21,7 @@
 #include "base/strings/string_util.h"
 #include "base/threading/hang_watcher.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 AuthorizationRef GetAuthorizationRightsWithPrompt(
     AuthorizationRights* rights,
@@ -206,5 +205,4 @@ OSStatus ExecuteWithPrivilegesAndWait(AuthorizationRef authorization,
   return status;
 }
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

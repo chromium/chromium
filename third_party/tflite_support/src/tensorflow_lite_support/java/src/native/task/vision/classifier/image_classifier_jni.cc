@@ -19,6 +19,7 @@ limitations under the License.
 #include <string>
 
 #include "tensorflow_lite_support/cc/port/statusor.h"
+#include "tensorflow_lite_support/cc/task/core/proto/base_options_proto_inc.h"
 #include "tensorflow_lite_support/cc/task/vision/core/frame_buffer.h"
 #include "tensorflow_lite_support/cc/task/vision/image_classifier.h"
 #include "tensorflow_lite_support/cc/task/vision/proto/bounding_box_proto_inc.h"
@@ -28,27 +29,42 @@ limitations under the License.
 #include "tensorflow_lite_support/cc/utils/jni_utils.h"
 #include "tensorflow_lite_support/java/src/native/task/vision/jni_utils.h"
 
+namespace tflite {
+namespace task {
+// To be provided by a link-time library
+extern std::unique_ptr<OpResolver> CreateOpResolver();
+
+}  // namespace task
+}  // namespace tflite
+
 namespace {
 
 using ::tflite::support::StatusOr;
-using ::tflite::support::utils::GetMappedFileBuffer;
-using ::tflite::support::utils::kAssertionError;
+using ::tflite::support::utils::GetExceptionClassNameForStatusCode;
 using ::tflite::support::utils::kInvalidPointer;
 using ::tflite::support::utils::StringListToVector;
 using ::tflite::support::utils::ThrowException;
+using ::tflite::task::core::BaseOptions;
 using ::tflite::task::vision::BoundingBox;
 using ::tflite::task::vision::ClassificationResult;
 using ::tflite::task::vision::Classifications;
 using ::tflite::task::vision::ConvertToCategory;
-using ::tflite::task::vision::ConvertToFrameBufferOrientation;
 using ::tflite::task::vision::FrameBuffer;
 using ::tflite::task::vision::ImageClassifier;
 using ::tflite::task::vision::ImageClassifierOptions;
 
 // Creates an ImageClassifierOptions proto based on the Java class.
 ImageClassifierOptions ConvertToProtoOptions(JNIEnv* env,
-                                             jobject java_options) {
+                                             jobject java_options,
+                                             jlong base_options_handle) {
   ImageClassifierOptions proto_options;
+
+  if (base_options_handle != kInvalidPointer) {
+    // proto_options will free the previous base_options and set the new one.
+    proto_options.set_allocated_base_options(
+        reinterpret_cast<BaseOptions*>(base_options_handle));
+  }
+
   jclass java_options_class = env->FindClass(
       "org/tensorflow/lite/task/vision/classifier/"
       "ImageClassifier$ImageClassifierOptions");
@@ -93,7 +109,6 @@ ImageClassifierOptions ConvertToProtoOptions(JNIEnv* env,
   for (const auto& class_name : deny_list_vector) {
     proto_options.add_class_name_blacklist(class_name);
   }
-
   return proto_options;
 }
 
@@ -139,6 +154,26 @@ jobject ConvertToClassificationResults(JNIEnv* env,
   return classifications_list;
 }
 
+jlong CreateImageClassifierFromOptions(JNIEnv* env,
+                                       const ImageClassifierOptions& options) {
+  StatusOr<std::unique_ptr<ImageClassifier>> image_classifier_or =
+      ImageClassifier::CreateFromOptions(options,
+                                         tflite::task::CreateOpResolver());
+  if (image_classifier_or.ok()) {
+    // Deletion is handled at deinitJni time.
+    return reinterpret_cast<jlong>(image_classifier_or->release());
+  } else {
+    ThrowException(
+        env,
+        GetExceptionClassNameForStatusCode(image_classifier_or.status().code()),
+        "Error occurred when initializing ImageClassifier: %s",
+        image_classifier_or.status().message().data());
+    return kInvalidPointer;
+  }
+}
+
+}  // namespace
+
 extern "C" JNIEXPORT void JNICALL
 Java_org_tensorflow_lite_task_vision_classifier_ImageClassifier_deinitJni(
     JNIEnv* env,
@@ -147,6 +182,9 @@ Java_org_tensorflow_lite_task_vision_classifier_ImageClassifier_deinitJni(
   delete reinterpret_cast<ImageClassifier*>(native_handle);
 }
 
+// Creates an ImageClassifier instance from the model file descriptor.
+// file_descriptor_length and file_descriptor_offset are optional. Non-possitive
+// values will be ignored.
 extern "C" JNIEXPORT jlong JNICALL
 Java_org_tensorflow_lite_task_vision_classifier_ImageClassifier_initJniWithModelFdAndOptions(
     JNIEnv* env,
@@ -154,26 +192,40 @@ Java_org_tensorflow_lite_task_vision_classifier_ImageClassifier_initJniWithModel
     jint file_descriptor,
     jlong file_descriptor_length,
     jlong file_descriptor_offset,
-    jobject java_options) {
+    jobject java_options,
+    jlong base_options_handle) {
   ImageClassifierOptions proto_options =
-      ConvertToProtoOptions(env, java_options);
-  auto file_descriptor_meta = proto_options.mutable_model_file_with_metadata()
+      ConvertToProtoOptions(env, java_options, base_options_handle);
+  auto file_descriptor_meta = proto_options.mutable_base_options()
+                                  ->mutable_model_file()
                                   ->mutable_file_descriptor_meta();
   file_descriptor_meta->set_fd(file_descriptor);
-  file_descriptor_meta->set_length(file_descriptor_length);
-  file_descriptor_meta->set_offset(file_descriptor_offset);
-
-  StatusOr<std::unique_ptr<ImageClassifier>> image_classifier_or =
-      ImageClassifier::CreateFromOptions(proto_options);
-  if (image_classifier_or.ok()) {
-    // Deletion is handled at deinitJni time.
-    return reinterpret_cast<jlong>(image_classifier_or->release());
-  } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when initializing ImageClassifier: %s",
-                   image_classifier_or.status().message().data());
-    return kInvalidPointer;
+  if (file_descriptor_length > 0) {
+    file_descriptor_meta->set_length(file_descriptor_length);
   }
+  if (file_descriptor_offset > 0) {
+    file_descriptor_meta->set_offset(file_descriptor_offset);
+  }
+  return CreateImageClassifierFromOptions(env, proto_options);
+}
+
+extern "C" JNIEXPORT jlong JNICALL
+Java_org_tensorflow_lite_task_vision_classifier_ImageClassifier_initJniWithByteBuffer(
+    JNIEnv* env,
+    jclass thiz,
+    jobject model_buffer,
+    jobject java_options,
+    jlong base_options_handle) {
+  ImageClassifierOptions proto_options =
+      ConvertToProtoOptions(env, java_options, base_options_handle);
+  // External proto generated header does not overload `set_file_content` with
+  // string_view, therefore GetMappedFileBuffer does not apply here.
+  // Creating a std::string will cause one extra copying of data. Thus, the
+  // most efficient way here is to set file_content using char* and its size.
+  proto_options.mutable_base_options()->mutable_model_file()->set_file_content(
+      static_cast<char*>(env->GetDirectBufferAddress(model_buffer)),
+      static_cast<size_t>(env->GetDirectBufferCapacity(model_buffer)));
+  return CreateImageClassifierFromOptions(env, proto_options);
 }
 
 extern "C" JNIEXPORT jobject JNICALL
@@ -181,17 +233,12 @@ Java_org_tensorflow_lite_task_vision_classifier_ImageClassifier_classifyNative(
     JNIEnv* env,
     jclass thiz,
     jlong native_handle,
-    jobject image_byte_buffer,
-    jint width,
-    jint height,
-    jintArray jroi,
-    jint jorientation) {
+    jlong frame_buffer_handle,
+    jintArray jroi) {
   auto* classifier = reinterpret_cast<ImageClassifier*>(native_handle);
-  auto image = GetMappedFileBuffer(env, image_byte_buffer);
-  std::unique_ptr<FrameBuffer> frame_buffer = CreateFromRgbRawBuffer(
-      reinterpret_cast<const uint8*>(image.data()),
-      FrameBuffer::Dimension{width, height},
-      ConvertToFrameBufferOrientation(env, jorientation));
+  // frame_buffer will be deleted after inference is done in
+  // base_vision_api_jni.cc.
+  auto* frame_buffer = reinterpret_cast<FrameBuffer*>(frame_buffer_handle);
 
   int* roi_array = env->GetIntArrayElements(jroi, 0);
   BoundingBox roi;
@@ -205,10 +252,10 @@ Java_org_tensorflow_lite_task_vision_classifier_ImageClassifier_classifyNative(
   if (results_or.ok()) {
     return ConvertToClassificationResults(env, results_or.value());
   } else {
-    ThrowException(env, kAssertionError,
-                   "Error occurred when classifying the image: %s",
-                   results_or.status().message().data());
+    ThrowException(
+        env, GetExceptionClassNameForStatusCode(results_or.status().code()),
+        "Error occurred when classifying the image: %s",
+        results_or.status().message().data());
     return nullptr;
   }
 }
-}  // namespace

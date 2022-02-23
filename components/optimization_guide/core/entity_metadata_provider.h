@@ -6,6 +6,7 @@
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_ENTITY_METADATA_PROVIDER_H_
 
 #include "components/optimization_guide/core/entity_metadata.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace optimization_guide {
 

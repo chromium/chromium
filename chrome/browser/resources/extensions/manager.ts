@@ -20,19 +20,22 @@ import './keyboard_shortcuts.js';
 import './load_error.js';
 import './options_dialog.js';
 import './sidebar.js';
-import './site_access.js';
+import './site_permissions.js';
+import './site_permissions_by_site.js';
 import './toolbar.js';
 // <if expr="chromeos">
 import './kiosk_dialog.js';
+
 // </if>
 
 import {CrViewManagerElement} from 'chrome://resources/cr_elements/cr_view_manager/cr_view_manager.js';
-import {assert, assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ActivityLogExtensionPlaceholder} from './activity_log/activity_log.js';
 import {ExtensionsDetailViewElement} from './detail_view.js';
+import {ExtensionsItemListElement} from './item_list.js';
 // <if expr="chromeos">
 import {KioskBrowserProxyImpl} from './kiosk_browser_proxy.js';
 // </if>
@@ -73,13 +76,14 @@ declare global {
   }
 }
 
-interface ExtensionsManagerElement {
+export interface ExtensionsManagerElement {
   $: {
     viewManager: CrViewManagerElement,
+    'items-list': ExtensionsItemListElement,
   };
 }
 
-class ExtensionsManagerElement extends PolymerElement {
+export class ExtensionsManagerElement extends PolymerElement {
   static get is() {
     return 'extensions-manager';
   }
@@ -108,9 +112,9 @@ class ExtensionsManagerElement extends PolymerElement {
         value: () => loadTimeData.getBoolean('showActivityLog'),
       },
 
-      useNewSiteAccessPage: {
+      enableEnhancedSiteControls: {
         type: Boolean,
-        value: () => loadTimeData.getBoolean('useNewSiteAccessPage'),
+        value: () => loadTimeData.getBoolean('enableEnhancedSiteControls'),
       },
 
       devModeControlledByPolicy: {
@@ -118,7 +122,7 @@ class ExtensionsManagerElement extends PolymerElement {
         value: false,
       },
 
-      isSupervised_: {
+      isChildAccount_: {
         type: Boolean,
         value: false,
       },
@@ -153,12 +157,6 @@ class ExtensionsManagerElement extends PolymerElement {
        * for the activity log view subpage. See also errorPageItem_.
        */
       activityLogItem_: Object,
-
-      /**
-       * The item that provides some information about the current extension
-       * for the extension site access view subpage. See also errorPageItem_.
-       */
-      extensionSiteAccessItem_: Object,
 
       extensions_: Array,
 
@@ -206,16 +204,15 @@ class ExtensionsManagerElement extends PolymerElement {
   delegate: Service;
   inDevMode: boolean;
   showActivityLog: boolean;
-  useNewSiteAccessPage: boolean;
+  enableEnhancedSiteControls: boolean;
   devModeControlledByPolicy: boolean;
-  private isSupervised_: boolean;
+  private isChildAccount_: boolean;
   private incognitoAvailable_: boolean;
   filter: string;
   private errorPageItem_?: chrome.developerPrivate.ExtensionInfo;
   private detailViewItem_?: chrome.developerPrivate.ExtensionInfo;
   private activityLogItem_?: chrome.developerPrivate.ExtensionInfo|
       ActivityLogExtensionPlaceholder;
-  private extensionSiteAccessItem_?: chrome.developerPrivate.ExtensionInfo;
   private extensions_: Array<chrome.developerPrivate.ExtensionInfo>;
   private apps_: Array<chrome.developerPrivate.ExtensionInfo>;
   private didInitPage_: boolean;
@@ -262,7 +259,7 @@ class ExtensionsManagerElement extends PolymerElement {
 
     const onProfileStateChanged =
         (profileInfo: chrome.developerPrivate.ProfileInfo) => {
-          this.isSupervised_ = profileInfo.isSupervised;
+          this.isChildAccount_ = profileInfo.isChildAccount;
           this.incognitoAvailable_ = profileInfo.isIncognitoAvailable;
           this.devModeControlledByPolicy =
               profileInfo.isDeveloperModeControlledByPolicy;
@@ -302,7 +299,8 @@ class ExtensionsManagerElement extends PolymerElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    assert(navigation.removeListener(this.navigationListener_!));
+    assert(this.navigationListener_);
+    assert(navigation.removeListener(this.navigationListener_));
     this.navigationListener_ = null;
   }
 
@@ -392,10 +390,8 @@ class ExtensionsManagerElement extends PolymerElement {
         return 'extensions_';
       case ExtensionType.THEME:
         assertNotReached('Don\'t send themes to the chrome://extensions page');
-        break;
     }
     assertNotReached();
-    return '';
   }
 
   /**
@@ -479,11 +475,6 @@ class ExtensionsManagerElement extends PolymerElement {
         this.activityLogItem_ && this.activityLogItem_.id === item.id &&
         this.currentPage_!.page === Page.ACTIVITY_LOG) {
       this.activityLogItem_ = item;
-    } else if (
-        this.extensionSiteAccessItem_ &&
-        this.extensionSiteAccessItem_.id === item.id &&
-        this.currentPage_!.page === Page.EXTENSION_SITE_ACCESS) {
-      this.extensionSiteAccessItem_ = item;
     }
   }
 
@@ -503,8 +494,7 @@ class ExtensionsManagerElement extends PolymerElement {
     // We should never try and remove a non-existent item.
     assert(index >= 0);
     this.splice(listId, index, 1);
-    if ((this.currentPage_!.page === Page.EXTENSION_SITE_ACCESS ||
-         this.currentPage_!.page === Page.ACTIVITY_LOG ||
+    if ((this.currentPage_!.page === Page.ACTIVITY_LOG ||
          this.currentPage_!.page === Page.DETAILS ||
          this.currentPage_!.page === Page.ERRORS) &&
         this.currentPage_!.extensionId === itemId) {
@@ -559,9 +549,9 @@ class ExtensionsManagerElement extends PolymerElement {
     }
 
     if (toPage === Page.DETAILS) {
-      this.detailViewItem_ = assert(data);
+      this.detailViewItem_ = data;
     } else if (toPage === Page.ERRORS) {
-      this.errorPageItem_ = assert(data);
+      this.errorPageItem_ = data;
     } else if (toPage === Page.ACTIVITY_LOG) {
       if (!this.showActivityLog) {
         // Redirect back to the details page if we try to view the
@@ -571,19 +561,15 @@ class ExtensionsManagerElement extends PolymerElement {
         return;
       }
 
-      this.activityLogItem_ = data ? assert(data) : activityLogPlaceholder;
-    } else if (toPage === Page.EXTENSION_SITE_ACCESS) {
-      // TODO(crbug.com/1253673): Redirect back to details page if the extension
-      // does not have any runtime host permissions.
-      if (!this.useNewSiteAccessPage) {
-        // Redirect back to the details page if we try to view the new extension
-        // site access page of an extension but the flag is not set.
-        navigation.replaceWith(
-            {page: Page.DETAILS, extensionId: newPage.extensionId});
-        return;
-      }
-
-      this.extensionSiteAccessItem_ = assert(data);
+      this.activityLogItem_ = data || activityLogPlaceholder;
+    } else if (
+        (toPage === Page.SITE_PERMISSIONS ||
+         toPage === Page.SITE_PERMISSIONS_ALL_SITES) &&
+        !this.enableEnhancedSiteControls) {
+      // Redirect back to the main page if we try to view the new site
+      // permissions page but the flag is not set.
+      navigation.replaceWith({page: Page.LIST});
+      return;
     }
 
     if (fromPage !== toPage) {
@@ -648,7 +634,8 @@ class ExtensionsManagerElement extends PolymerElement {
     if (viewType === 'EXTENSIONS-ITEM-LIST' ||
         viewType === 'EXTENSIONS-KEYBOARD-SHORTCUTS' ||
         viewType === 'EXTENSIONS-ACTIVITY-LOG' ||
-        viewType === 'EXTENSIONS-SITE-ACCESS') {
+        viewType === 'EXTENSIONS-SITE-PERMISSIONS' ||
+        viewType === 'EXTENSIONS-SITE-PERMISSIONS-BY-SITE') {
       return;
     }
 
@@ -691,6 +678,12 @@ class ExtensionsManagerElement extends PolymerElement {
 
   static get template() {
     return html`{__html_template__}`;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'extensions-manager': ExtensionsManagerElement;
   }
 }
 

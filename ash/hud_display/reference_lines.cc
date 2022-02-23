@@ -57,9 +57,6 @@ ReferenceLines::ReferenceLines(float left,
       horizontal_points_number_(horizontal_points_number),
       horizontal_ticks_interval_(horizontal_ticks_interval),
       vertical_ticks_interval_(vertical_ticks_interval) {
-  // not implemented.
-  ALLOW_UNUSED_LOCAL(right_);
-
   // Text is set later.
   right_top_label_ = AddChildView(std::make_unique<views::Label>(
       std::u16string(), views::style::CONTEXT_LABEL));

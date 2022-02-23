@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/sequence_checker.h"
@@ -61,8 +62,8 @@ class LookalikeUrlService : public KeyedService {
  private:
   void OnUpdateEngagedSitesCompleted(std::vector<DomainInfo> new_engaged_sites);
 
-  Profile* profile_;
-  base::Clock* clock_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<base::Clock> clock_;
   base::Time last_engagement_fetch_time_;
   std::vector<DomainInfo> engaged_sites_ GUARDED_BY_CONTEXT(sequence_checker_);
 

@@ -17,6 +17,9 @@
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
+#include "chromeos/network/network_ui_data.h"
+#include "chromeos/network/shill_property_util.h"
+#include "components/onc/onc_constants.h"
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 
 namespace chromeos {
@@ -67,11 +70,38 @@ void AppendRequiredCellularProperties(const dbus::ObjectPath& euicc_path,
         shill::kGuidProperty, profile_properties->iccid().value());
 }
 
+bool IsManagedNetwork(const base::Value& new_shill_properties) {
+  std::unique_ptr<NetworkUIData> ui_data =
+      shill_property_util::GetUIDataFromProperties(new_shill_properties);
+  return ui_data && (ui_data->onc_source() == ::onc::ONC_SOURCE_DEVICE_POLICY ||
+                     ui_data->onc_source() == ::onc::ONC_SOURCE_USER_POLICY);
+}
+
 }  // namespace
 
 // static
-void CellularESimInstaller::RecordInstallProfileViaQrCodeResult(
-    InstallProfileViaQrCodeResult result) {
+void CellularESimInstaller::RecordInstallESimProfileResult(
+    InstallESimProfileResult result,
+    bool is_managed,
+    bool is_initial_install) {
+  base::UmaHistogramEnumeration("Network.Cellular.ESim.InstallationResult",
+                                result);
+
+  if (is_managed) {
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.Policy.ESimInstall.OperationResult", result);
+    if (is_initial_install) {
+      base::UmaHistogramEnumeration(
+          "Network.Cellular.ESim.Policy.ESimInstall.OperationResult."
+          "InitialAttempt",
+          result);
+      return;
+    }
+    base::UmaHistogramEnumeration(
+        "Network.Cellular.ESim.Policy.ESimInstall.OperationResult.Retry",
+        result);
+    return;
+  }
   base::UmaHistogramEnumeration(
       "Network.Cellular.ESim.InstallViaQrCode.OperationResult", result);
 }
@@ -98,7 +128,8 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
     const std::string& confirmation_code,
     const dbus::ObjectPath& euicc_path,
     base::Value new_shill_properties,
-    InstallProfileFromActivationCodeCallback callback) {
+    InstallProfileFromActivationCodeCallback callback,
+    bool is_initial_install) {
   // Try installing directly with activation code.
   // TODO(crbug.com/1186682) Add a check for activation codes that are
   // currently being installed to prevent multiple attempts for the same
@@ -109,7 +140,7 @@ void CellularESimInstaller::InstallProfileFromActivationCode(
       base::BindOnce(
           &CellularESimInstaller::PerformInstallProfileFromActivationCode,
           weak_ptr_factory_.GetWeakPtr(), activation_code, confirmation_code,
-          euicc_path, std::move(new_shill_properties),
+          euicc_path, std::move(new_shill_properties), is_initial_install,
           CreateTimedInstallProfileCallback(std::move(callback))));
 }
 
@@ -118,12 +149,14 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
     const std::string& confirmation_code,
     const dbus::ObjectPath& euicc_path,
     base::Value new_shill_properties,
+    bool is_initial_install,
     InstallProfileFromActivationCodeCallback callback,
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock) {
   if (!inhibit_lock) {
     NET_LOG(ERROR) << "Error inhibiting cellular device";
-    RecordInstallProfileViaQrCodeResult(
-        InstallProfileViaQrCodeResult::kInhibitFailed);
+    RecordInstallESimProfileResult(InstallESimProfileResult::kInhibitFailed,
+                                   IsManagedNetwork(new_shill_properties),
+                                   is_initial_install);
     std::move(callback).Run(HermesResponseStatus::kErrorWrongState,
                             /*profile_path=*/absl::nullopt,
                             /*service_path=*/absl::nullopt);
@@ -135,7 +168,7 @@ void CellularESimInstaller::PerformInstallProfileFromActivationCode(
       base::BindOnce(&CellularESimInstaller::OnProfileInstallResult,
                      weak_ptr_factory_.GetWeakPtr(), std::move(callback),
                      std::move(inhibit_lock), euicc_path,
-                     std::move(new_shill_properties)));
+                     std::move(new_shill_properties), is_initial_install));
 }
 
 void CellularESimInstaller::OnProfileInstallResult(
@@ -143,83 +176,90 @@ void CellularESimInstaller::OnProfileInstallResult(
     std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
     const dbus::ObjectPath& euicc_path,
     const base::Value& new_shill_properties,
+    bool is_initial_install,
     HermesResponseStatus status,
     const dbus::ObjectPath* profile_path) {
   hermes_metrics::LogInstallViaQrCodeResult(status);
 
+  bool is_managed = IsManagedNetwork(new_shill_properties);
   if (status != HermesResponseStatus::kSuccess) {
     NET_LOG(ERROR) << "Error Installing profile status="
                    << static_cast<int>(status);
-    RecordInstallProfileViaQrCodeResult(
-        InstallProfileViaQrCodeResult::kHermesInstallFailed);
+    RecordInstallESimProfileResult(
+        InstallESimProfileResult::kHermesInstallFailed, is_managed,
+        is_initial_install);
     std::move(callback).Run(status, /*profile_path=*/absl::nullopt,
                             /*service_path=*/absl::nullopt);
     return;
   }
 
-  RecordInstallProfileViaQrCodeResult(InstallProfileViaQrCodeResult::kSuccess);
+  RecordInstallESimProfileResult(InstallESimProfileResult::kSuccess, is_managed,
+                                 is_initial_install);
+  pending_inhibit_locks_.emplace(*profile_path, std::move(inhibit_lock));
+  ConfigureESimService(
+      new_shill_properties, euicc_path, *profile_path,
+      base::BindOnce(&CellularESimInstaller::EnableProfile,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback),
+                     euicc_path, *profile_path));
+}
 
+void CellularESimInstaller::ConfigureESimService(
+    const base::Value& new_shill_properties,
+    const dbus::ObjectPath& euicc_path,
+    const dbus::ObjectPath& profile_path,
+    ConfigureESimServiceCallback callback) {
   const NetworkProfile* profile =
       network_profile_handler_->GetProfileForUserhash(
           /*userhash=*/std::string());
   if (!profile) {
     NET_LOG(ERROR)
-        << "Error installing eSIM profile. Default profile not initialized.";
-    std::move(callback).Run(HermesResponseStatus::kErrorUnknown,
-                            /*profile_path=*/absl::nullopt,
-                            /*service_path=*/absl::nullopt);
+        << "Error configuring eSIM profile. Default profile not initialized.";
+    std::move(callback).Run(
+        /*service_path=*/absl::nullopt);
     return;
   }
 
   base::Value properties_to_set = new_shill_properties.Clone();
-  AppendRequiredCellularProperties(euicc_path, *profile_path, profile,
+  AppendRequiredCellularProperties(euicc_path, profile_path, profile,
                                    &properties_to_set);
-  NET_LOG(EVENT) << "Creating shill configuration for newly installed eSim "
-                    "profile with properties: "
-                 << properties_to_set;
+  NET_LOG(EVENT)
+      << "Creating shill configuration for eSim profile with properties: "
+      << properties_to_set;
 
-  pending_inhibit_locks_.emplace(*profile_path, std::move(inhibit_lock));
   auto callback_split = base::SplitOnceCallback(std::move(callback));
   ShillManagerClient::Get()->ConfigureServiceForProfile(
       dbus::ObjectPath(profile->path), properties_to_set,
       base::BindOnce(
           &CellularESimInstaller::OnShillConfigurationCreationSuccess,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback_split.first),
-          euicc_path, *profile_path),
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback_split.first)),
       base::BindOnce(
           &CellularESimInstaller::OnShillConfigurationCreationFailure,
-          weak_ptr_factory_.GetWeakPtr(), std::move(callback_split.second),
-          euicc_path, *profile_path));
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback_split.second)));
 }
 
 void CellularESimInstaller::OnShillConfigurationCreationSuccess(
-    InstallProfileFromActivationCodeCallback callback,
-    const dbus::ObjectPath& euicc_path,
-    const dbus::ObjectPath& profile_path,
+    ConfigureESimServiceCallback callback,
     const dbus::ObjectPath& service_path) {
   NET_LOG(EVENT)
       << "Successfully creating shill configuration on service path: "
       << service_path.value();
-
-  EnableProfile(std::move(callback), euicc_path, profile_path);
+  std::move(callback).Run(service_path);
 }
 
 void CellularESimInstaller::OnShillConfigurationCreationFailure(
-    InstallProfileFromActivationCodeCallback callback,
-    const dbus::ObjectPath& euicc_path,
-    const dbus::ObjectPath& profile_path,
+    ConfigureESimServiceCallback callback,
     const std::string& error_name,
     const std::string& error_message) {
   NET_LOG(ERROR) << "Create shill configuration failed, error:" << error_name
                  << ", message: " << error_message;
-
-  EnableProfile(std::move(callback), euicc_path, profile_path);
+  std::move(callback).Run(/*service_path=*/absl::nullopt);
 }
 
 void CellularESimInstaller::EnableProfile(
     InstallProfileFromActivationCodeCallback callback,
     const dbus::ObjectPath& euicc_path,
-    const dbus::ObjectPath& profile_path) {
+    const dbus::ObjectPath& profile_path,
+    absl::optional<dbus::ObjectPath> service_path) {
   auto it = pending_inhibit_locks_.find(profile_path);
   DCHECK(it != pending_inhibit_locks_.end());
 

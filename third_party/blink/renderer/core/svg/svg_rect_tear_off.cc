@@ -30,7 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_rect_tear_off.h"
 
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {

@@ -5,6 +5,10 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/json/json_writer.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
@@ -28,11 +32,6 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/mojom/app_permissions.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/test/browser_test.h"
@@ -54,17 +53,13 @@ arc::mojom::ArcPackageInfoPtr CreateArcAppPackage(
   package->last_backup_time = 1;
   package->sync = false;
   package->system = false;
-  package->permissions = base::flat_map<::arc::mojom::AppPermission, bool>();
   return package;
 }
 
-arc::mojom::AppInfo CreateArcAppInfo(const std::string& package_name) {
-  arc::mojom::AppInfo app;
-  app.package_name = package_name;
-  app.name = package_name;
-  app.activity = base::StrCat({package_name, ".", "activity"});
-  app.sticky = true;
-  return app;
+arc::mojom::AppInfoPtr CreateArcAppInfo(const std::string& package_name) {
+  return arc::mojom::AppInfo::New(package_name, package_name,
+                                  base::StrCat({package_name, ".", "activity"}),
+                                  true /* sticky */);
 }
 
 }  // namespace
@@ -162,8 +157,10 @@ class AppTimeTest : public MixinBasedInProcessBrowserTest {
     arc_app_instance_->SendPackageAdded(
         CreateArcAppPackage(package_name)->Clone());
 
-    const arc::mojom::AppInfo app = CreateArcAppInfo(package_name);
-    arc_app_instance_->SendPackageAppListRefreshed(package_name, {app});
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(CreateArcAppInfo(package_name));
+
+    arc_app_instance_->SendPackageAppListRefreshed(package_name, apps);
 
     base::RunLoop().RunUntilIdle();
   }

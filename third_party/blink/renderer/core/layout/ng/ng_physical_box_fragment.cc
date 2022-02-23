@@ -14,6 +14,7 @@
 #include "third_party/blink/renderer/core/layout/layout_inline.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_object_inlines.h"
+#include "third_party/blink/renderer/core/layout/layout_view.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/layout_ng_text_combine.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_fragment_item.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -99,7 +100,7 @@ NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
           builder->Style().GetWritingDirection(), outer_size, inner_size),
       containing_block.relative_offset.ConvertToPhysical(
           builder->Style().GetWritingDirection(), outer_size, inner_size),
-      containing_block.fragment);
+      containing_block.fragment, containing_block.is_inside_column_spanner);
 }
 
 NGContainingBlock<PhysicalOffset> PhysicalContainingBlock(
@@ -403,34 +404,30 @@ NGPhysicalBoxFragment::NGPhysicalBoxFragment(
 #if DCHECK_IS_ON()
   AllowPostLayoutScope allow_post_layout_scope;
 #endif
-  const LayoutBox* flow_thread = nullptr;
   for (wtf_size_t i = 0; i < const_num_children_; ++i) {
     children_[i].offset = other.children_[i].offset;
-    const NGPhysicalFragment* post_layout;
     const NGPhysicalFragment& other_child_fragment = *other.children_[i];
-    if (UNLIKELY(other_child_fragment.IsColumnBox())) {
-      // To find the PostLayout fragment of a column box, copy from the
-      // FlowThread. Its |PhysicalFragments| should match the children of the
-      // multicol container fragment. |PostLayout| does not work for column
-      // boxes because a fragment can't compute its index, but we know the
-      // index. See |PostLayout| for more details.
-      if (!flow_thread) {
-        DCHECK_EQ(i, 0u);
-        flow_thread =
-            To<LayoutBox>(GetSelfOrContainerLayoutObject()->SlowFirstChild());
-        DCHECK(flow_thread);
-        DCHECK(flow_thread->IsLayoutFlowThread());
-        DCHECK_EQ(flow_thread->PhysicalFragmentCount(), const_num_children_);
-      }
-      post_layout = flow_thread->GetPhysicalFragment(i);
-    } else {
-      DCHECK(!flow_thread);
-      post_layout = other_child_fragment.PostLayout();
-    }
-
+    const NGPhysicalFragment* post_layout = other_child_fragment.PostLayout();
     DCHECK(post_layout);
     new (&children_[i].fragment)
         scoped_refptr<const NGPhysicalFragment>(post_layout);
+
+    if (!children_[i]->IsFragmentainerBox())
+      continue;
+
+    // Fragmentainers don't have the concept of post-layout fragments, so if
+    // this is a fragmentation context root (such as a multicol container), we
+    // need to not only update its children, but also the children of the
+    // children that are fragmentainers.
+    auto* fragmentainer = const_cast<NGPhysicalBoxFragment*>(
+        To<NGPhysicalBoxFragment>(children_[i].fragment));
+    for (wtf_size_t j = 0; j < fragmentainer->const_num_children_; ++j) {
+      NGLink& link = fragmentainer->children_[j];
+      auto& old_child = *To<NGPhysicalBoxFragment>(link.fragment);
+      link.fragment = old_child.PostLayout();
+      link.fragment->AddRef();
+      old_child.Release();
+    }
   }
 
   ink_overflow_type_ = other.ink_overflow_type_;
@@ -546,19 +543,28 @@ NGPhysicalBoxFragment::RareData::RareData(const RareData& other)
       table_cell_column_index(other.table_cell_column_index) {}
 
 const LayoutBox* NGPhysicalBoxFragment::OwnerLayoutBox() const {
+  // TODO(layout-dev): We should probably get rid of this method, now that it
+  // does nothing, apart from some checking. The checks are useful, but could be
+  // moved elsewhere.
   const LayoutBox* owner_box =
       DynamicTo<LayoutBox>(GetSelfOrContainerLayoutObject());
+
+#if DCHECK_IS_ON()
   DCHECK(owner_box);
-  if (UNLIKELY(IsColumnBox())) {
-    // Adjust the owner for column boxes. Column box fragment's |layout_object_|
-    // is its multicol container, but |LayoutFlowThread::layout_results_|
-    // has the column box fragments.
-    owner_box = To<LayoutBox>(owner_box->SlowFirstChild());
-    DCHECK(owner_box && owner_box->IsLayoutFlowThread());
+  if (UNLIKELY(IsFragmentainerBox())) {
+    if (owner_box->IsLayoutView()) {
+      DCHECK(IsPageBox());
+      DCHECK(To<LayoutView>(owner_box)->ShouldUsePrintingLayout());
+    } else {
+      DCHECK(IsColumnBox());
+    }
+  } else {
+    // Check |this| and the |LayoutBox| that produced it are in sync.
+    DCHECK(owner_box->PhysicalFragments().Contains(*this));
+    DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
   }
-  // Check |this| and the |LayoutBox| that produced it are in sync.
-  DCHECK(owner_box->PhysicalFragments().Contains(*this));
-  DCHECK_EQ(IsFirstForNode(), this == owner_box->GetPhysicalFragment(0));
+#endif
+
   return owner_box;
 }
 
@@ -567,6 +573,8 @@ LayoutBox* NGPhysicalBoxFragment::MutableOwnerLayoutBox() const {
 }
 
 PhysicalOffset NGPhysicalBoxFragment::OffsetFromOwnerLayoutBox() const {
+  DCHECK(IsCSSBox());
+
   // This function uses |FragmentData|, so must be |kPrePaintClean|.
   DCHECK_GE(GetDocument().Lifecycle().GetState(),
             DocumentLifecycle::kPrePaintClean);
@@ -620,16 +628,15 @@ const NGPhysicalBoxFragment* NGPhysicalBoxFragment::PostLayout() const {
     DCHECK(IsInlineBox());
     return this;
   }
-  if (UNLIKELY(IsColumnBox())) {
-    // For column boxes, the logic does not work because non-last column box
-    // fragments may have null |BreakToken|, and |SequenceNumber| does not match
-    // the index of |LayoutBox::PhysicalFragments|. For this reason,
-    // |CloneWithPostLayoutFragments| has special logic to handle column boxes.
-#if DCHECK_IS_ON()
-    // We can at least check whether |this| is the latest or not.
-    if (!AllowPostLayoutScope::IsAllowed())
-      DCHECK(OwnerLayoutBox());
-#endif
+  if (UNLIKELY(!IsCSSBox())) {
+    // We don't need to do anything special for fragments that don't correspond
+    // to entries in the CSS box tree (such as fragmentainers). Any post-layout
+    // fragmentainers should be found as children of the post-layout fragments
+    // of the containing block.
+    //
+    // TODO(mstensho): Clean up this method. Rather than calling
+    // GetSelfOrContainerLayoutObject() above, we first bail on !IsCSSBox(), and
+    // then simply use GetLayoutObject().
     return this;
   }
 
@@ -705,22 +712,18 @@ PhysicalRect NGPhysicalBoxFragment::InkOverflow() const {
     return self_rect;
 
   const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
-  // overflow_clip_margin should only be set if 'overflow' is 'clip' along
-  // both axis.
-  DCHECK(overflow_clip_axes == kOverflowClipBothAxis ||
-         !style.OverflowClipMargin());
   if (overflow_clip_axes == kNoOverflowClip) {
     return UnionRect(self_rect,
                      ink_overflow_.Contents(InkOverflowType(), Size()));
   }
 
   if (overflow_clip_axes == kOverflowClipBothAxis) {
-    if (const LayoutUnit overflow_clip_margin = style.OverflowClipMargin()) {
+    if (ShouldApplyOverflowClipMargin()) {
       const PhysicalRect& contents_rect =
           ink_overflow_.Contents(InkOverflowType(), Size());
       if (!contents_rect.IsEmpty()) {
         PhysicalRect result = LocalRect();
-        result.Inflate(overflow_clip_margin);
+        result.Inflate(style.OverflowClipMargin());
         result.Intersect(contents_rect);
         result.Unite(self_rect);
         return result;
@@ -1062,10 +1065,10 @@ void NGPhysicalBoxFragment::RecalcInkOverflow() {
 
   // Copy the computed values to the |OwnerBox| if |this| is the last fragment.
 
-  // Column boxes may or may not have |BreakToken|s, and that
+  // Fragmentainers may or may not have |BreakToken|s, and that
   // |CopyVisualOverflowFromFragments| cannot compute stitched coordinate for
   // them. See crbug.com/1197561.
-  if (UNLIKELY(IsColumnBox()))
+  if (UNLIKELY(IsFragmentainerBox()))
     return;
 
   if (BreakToken()) {
@@ -1195,12 +1198,13 @@ PhysicalRect NGPhysicalBoxFragment::ComputeSelfInkOverflow() const {
 
   if (style.HasOutline() && IsOutlineOwner()) {
     Vector<PhysicalRect> outline_rects;
+    LayoutObject::OutlineInfo info;
     // The result rects are in coordinates of this object's border box.
     AddSelfOutlineRects(PhysicalOffset(),
                         style.OutlineRectsShouldIncludeBlockVisualOverflow(),
-                        &outline_rects);
+                        &outline_rects, &info);
     PhysicalRect rect = UnionRect(outline_rects);
-    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style)));
+    rect.Inflate(LayoutUnit(OutlinePainter::OutlineOutsetExtent(style, info)));
     ink_overflow.Unite(rect);
   }
   return ink_overflow;
@@ -1215,7 +1219,15 @@ void NGPhysicalBoxFragment::InvalidateInkOverflow() {
 void NGPhysicalBoxFragment::AddSelfOutlineRects(
     const PhysicalOffset& additional_offset,
     NGOutlineType outline_type,
-    Vector<PhysicalRect>* outline_rects) const {
+    Vector<PhysicalRect>* outline_rects,
+    LayoutObject::OutlineInfo* info) const {
+  if (info) {
+    if (IsSvgText())
+      *info = LayoutObject::OutlineInfo::GetUnzoomedFromStyle(Style());
+    else
+      *info = LayoutObject::OutlineInfo::GetFromStyle(Style());
+  }
+
   AddOutlineRects(additional_offset, outline_type,
                   /* container_relative */ false, outline_rects);
 }
@@ -1358,13 +1370,15 @@ PositionWithAffinity NGPhysicalBoxFragment::PositionForPoint(
           ? point + PhysicalOffset(PixelSnappedScrolledContentOffset())
           : point;
 
-  if (const NGFragmentItems* items = Items()) {
-    NGInlineCursor cursor(*this, *items);
-    if (const PositionWithAffinity position =
-            cursor.PositionForPointInInlineFormattingContext(point_in_contents,
-                                                             *this))
-      return AdjustForEditingBoundary(position);
-    return layout_object_->CreatePositionWithAffinity(0);
+  if (!layout_object_->ChildPaintBlockedByDisplayLock()) {
+    if (const NGFragmentItems* items = Items()) {
+      NGInlineCursor cursor(*this, *items);
+      if (const PositionWithAffinity position =
+              cursor.PositionForPointInInlineFormattingContext(
+                  point_in_contents, *this))
+        return AdjustForEditingBoundary(position);
+      return layout_object_->CreatePositionWithAffinity(0);
+    }
   }
 
   if (IsA<LayoutBlockFlow>(*layout_object_) &&
@@ -1748,14 +1762,12 @@ void NGPhysicalBoxFragment::AssertFragmentTreeSelf() const {
 }
 
 void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
-    bool allow_destroyed) const {
+    bool allow_destroyed_or_moved) const {
   if (const NGFragmentItems* items = Items()) {
     for (NGInlineCursor cursor(*this, *items); cursor; cursor.MoveToNext()) {
       const NGFragmentItem& item = *cursor.Current();
       if (item.IsLayoutObjectDestroyedOrMoved()) {
-        DCHECK(allow_destroyed);
-        DCHECK(!item.BoxFragment() ||
-               item.BoxFragment()->IsLayoutObjectDestroyedOrMoved());
+        DCHECK(allow_destroyed_or_moved);
         continue;
       }
       if (const auto* box = item.BoxFragment()) {
@@ -1768,7 +1780,7 @@ void NGPhysicalBoxFragment::AssertFragmentTreeChildren(
 
   for (const NGLink& child : Children()) {
     if (child->IsLayoutObjectDestroyedOrMoved()) {
-      DCHECK(allow_destroyed);
+      DCHECK(allow_destroyed_or_moved);
       continue;
     }
     if (const auto* box = DynamicTo<NGPhysicalBoxFragment>(child.fragment))

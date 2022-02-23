@@ -11,6 +11,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
+#include "third_party/blink/renderer/core/layout/deferred_shaping.h"
 #include "third_party/blink/renderer/core/layout/layout_multi_column_flow_thread.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/ng/inline/ng_inline_cursor.h"
@@ -96,11 +97,10 @@ LogicalOffset CenterBlockChild(LogicalOffset offset,
   return offset;
 }
 
-inline scoped_refptr<const NGLayoutResult> LayoutBlockChild(
-    const NGConstraintSpace& space,
-    const NGBreakToken* break_token,
-    const NGEarlyBreak* early_break,
-    NGBlockNode* node) {
+inline const NGLayoutResult* LayoutBlockChild(const NGConstraintSpace& space,
+                                              const NGBreakToken* break_token,
+                                              const NGEarlyBreak* early_break,
+                                              NGBlockNode* node) {
   const NGEarlyBreak* early_break_in_child = nullptr;
   if (UNLIKELY(early_break))
     early_break_in_child = EnterEarlyBreakInChild(*node, *early_break);
@@ -108,12 +108,11 @@ inline scoped_refptr<const NGLayoutResult> LayoutBlockChild(
                       early_break_in_child);
 }
 
-inline scoped_refptr<const NGLayoutResult> LayoutInflow(
-    const NGConstraintSpace& space,
-    const NGBreakToken* break_token,
-    const NGEarlyBreak* early_break,
-    NGLayoutInputNode* node,
-    NGInlineChildLayoutContext* context) {
+inline const NGLayoutResult* LayoutInflow(const NGConstraintSpace& space,
+                                          const NGBreakToken* break_token,
+                                          const NGEarlyBreak* early_break,
+                                          NGLayoutInputNode* node,
+                                          NGInlineChildLayoutContext* context) {
   if (auto* inline_node = DynamicTo<NGInlineNode>(node))
     return inline_node->Layout(space, break_token, context);
   return LayoutBlockChild(space, break_token, early_break,
@@ -124,7 +123,7 @@ NGAdjoiningObjectTypes ToAdjoiningObjectTypes(EClear clear) {
   switch (clear) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case EClear::kNone:
       return kAdjoiningNone;
     case EClear::kLeft:
@@ -429,8 +428,8 @@ LogicalOffset NGBlockLayoutAlgorithm::CalculateLogicalOffset(
   return {inline_offset, LayoutUnit()};
 }
 
-scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout() {
-  scoped_refptr<const NGLayoutResult> result;
+const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
+  const NGLayoutResult* result = nullptr;
   // Inline children require an inline child layout context to be
   // passed between siblings. We want to stack-allocate that one, but
   // only on demand, as it's quite big.
@@ -457,22 +456,21 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout() {
   }
 }
 
-NOINLINE scoped_refptr<const NGLayoutResult>
+NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithInlineChildLayoutContext(
     const NGLayoutInputNode& first_child) {
   NGInlineChildLayoutContext context;
   return LayoutWithItemsBuilder(To<NGInlineNode>(first_child), &context);
 }
 
-NOINLINE scoped_refptr<const NGLayoutResult>
-NGBlockLayoutAlgorithm::LayoutWithItemsBuilder(
+NOINLINE const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutWithItemsBuilder(
     const NGInlineNode& first_child,
     NGInlineChildLayoutContext* context) {
   NGFragmentItemsBuilder items_builder(
       first_child, container_builder_.GetWritingDirection());
   container_builder_.SetItemsBuilder(&items_builder);
   context->SetItemsBuilder(&items_builder);
-  scoped_refptr<const NGLayoutResult> result = Layout(context);
+  const NGLayoutResult* result = Layout(context);
   // Ensure stack-allocated |NGFragmentItemsBuilder| is not used anymore.
   // TODO(kojii): Revisit when the storage of |NGFragmentItemsBuilder| is
   // finalized.
@@ -481,7 +479,7 @@ NGBlockLayoutAlgorithm::LayoutWithItemsBuilder(
   return result;
 }
 
-NOINLINE scoped_refptr<const NGLayoutResult>
+NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
   NGLayoutAlgorithmParams params(Node(),
                                  container_builder_.InitialFragmentGeometry(),
@@ -494,11 +492,8 @@ NGBlockLayoutAlgorithm::RelayoutIgnoringLineClamp() {
   return algorithm_ignoring_line_clamp.Layout();
 }
 
-inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
+inline const NGLayoutResult* NGBlockLayoutAlgorithm::Layout(
     NGInlineChildLayoutContext* inline_child_layout_context) {
-  if (ConstraintSpace().IsLegacyTableCell())
-    container_builder_.AdjustBorderScrollbarPaddingForTableCell();
-
   DCHECK_EQ(!!inline_child_layout_context,
             Node().IsInlineFormattingContextRoot());
   container_builder_.SetIsInlineFormattingContext(inline_child_layout_context);
@@ -760,7 +755,7 @@ inline scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::Layout(
   return FinishLayout(&previous_inflow_position, inline_child_layout_context);
 }
 
-scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
+const NGLayoutResult* NGBlockLayoutAlgorithm::FinishLayout(
     NGPreviousInflowPosition* previous_inflow_position,
     NGInlineChildLayoutContext* inline_child_layout_context) {
   LogicalSize border_box_size = container_builder_.InitialBorderBoxSize();
@@ -883,8 +878,21 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
       intrinsic_block_size_,
       CalculateQuirkyBodyMarginBlockSum(end_margin_strut));
 
+  // In order to calculate the block-size for the fragment, we need to compare
+  // the combined intrinsic block-size of all fragments to e.g. specified
+  // block-size. We'll skip this part if this is a fragmentainer.
+  // Fragmentainers never have a specified block-size anyway, but, more
+  // importantly, adding consumed block-size, and then subtracting it again
+  // later (when setting the final fragment size) would produce incorrect
+  // results if the sum becomes "infinity", i.e. LayoutUnit::Max(). Skipping
+  // this will allow the total block-size of all the fragmentainers to become
+  // greater than LayoutUnit::Max(). This is important for column balancing, or
+  // we'd fail to finish very tall child content properly, ending up with too
+  // many fragmentainers, since the fragmentainers produced would be too short
+  // to fit as much as necessary. Basically: don't mess up (clamp) the measument
+  // we've already done.
   LayoutUnit previously_consumed_block_size;
-  if (UNLIKELY(BreakToken()))
+  if (UNLIKELY(BreakToken() && !container_builder_.IsFragmentainerBoxType()))
     previously_consumed_block_size = BreakToken()->ConsumedBlockSize();
 
   // Recompute the block-axis size now that we know our content size.
@@ -951,10 +959,6 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
     }
   }
 
-  // At this point, perform any final table-cell adjustments needed.
-  if (ConstraintSpace().IsTableCell())
-    FinalizeForTableCell(unconstrained_intrinsic_block_size);
-
   if (UNLIKELY(InvolvedInBlockFragmentation(container_builder_))) {
     NGBreakStatus status = FinalizeForFragmentation();
     if (status != NGBreakStatus::kContinue) {
@@ -970,6 +974,10 @@ scoped_refptr<const NGLayoutResult> NGBlockLayoutAlgorithm::FinishLayout(
   container_builder_.CheckNoBlockFragmentation();
 #endif
   }
+
+  // At this point, perform any final table-cell adjustments needed.
+  if (ConstraintSpace().IsTableCell())
+    FinalizeForTableCell(unconstrained_intrinsic_block_size);
 
   NGOutOfFlowLayoutPart(Node(), ConstraintSpace(), &container_builder_).Run();
 
@@ -1316,11 +1324,10 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
                           !child_margin_got_separated &&
                           child_determined_bfc_offset;
   NGBfcOffset child_bfc_offset;
-  scoped_refptr<const NGLayoutResult> layout_result =
-      LayoutNewFormattingContext(
-          child, child_break_token, child_data,
-          {child_origin_line_offset, child_bfc_offset_estimate},
-          abort_if_cleared, &child_bfc_offset);
+  const NGLayoutResult* layout_result = LayoutNewFormattingContext(
+      child, child_break_token, child_data,
+      {child_origin_line_offset, child_bfc_offset_estimate}, abort_if_cleared,
+      &child_bfc_offset);
 
   if (!layout_result) {
     DCHECK(abort_if_cleared);
@@ -1430,8 +1437,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleNewFormattingContext(
   return NGLayoutResult::kSuccess;
 }
 
-scoped_refptr<const NGLayoutResult>
-NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
+const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     NGLayoutInputNode child,
     const NGBreakToken* child_break_token,
     const NGInflowChildData& child_data,
@@ -1526,7 +1532,8 @@ NGBlockLayoutAlgorithm::LayoutNewFormattingContext(
     // exclusion space.
     DCHECK(child_space.ExclusionSpace().IsEmpty());
 
-    scoped_refptr<const NGLayoutResult> layout_result = LayoutBlockChild(
+    auto minimum_top = CreateMinimumTopScopeForChild(child, child_data);
+    const NGLayoutResult* layout_result = LayoutBlockChild(
         child_space, child_break_token, early_break_, &To<NGBlockNode>(child));
 
     // Since this child establishes a new formatting context, no exclusion space
@@ -1651,7 +1658,8 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::HandleInflow(
       child, child_data, ChildAvailableSize(), /* is_new_fc */ false,
       forced_bfc_block_offset, has_clearance_past_adjoining_floats,
       previous_inflow_position->block_end_annotation_space);
-  scoped_refptr<const NGLayoutResult> layout_result =
+  auto minimum_top = CreateMinimumTopScopeForChild(child, child_data);
+  const NGLayoutResult* layout_result =
       LayoutInflow(child_space, child_break_token, early_break_, &child,
                    inline_child_layout_context);
 
@@ -1670,7 +1678,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     const NGBreakToken* child_break_token,
     const NGConstraintSpace& child_space,
     bool has_clearance_past_adjoining_floats,
-    scoped_refptr<const NGLayoutResult> layout_result,
+    const NGLayoutResult* layout_result,
     NGInflowChildData* child_data,
     NGPreviousInflowPosition* previous_inflow_position,
     NGInlineChildLayoutContext* inline_child_layout_context,
@@ -1830,6 +1838,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
     NGConstraintSpace new_child_space = CreateConstraintSpaceForChild(
         child, *child_data, ChildAvailableSize(), /* is_new_fc */ false,
         child_bfc_block_offset);
+    auto minimum_top = CreateMinimumTopScopeForChild(child, *child_data);
     layout_result =
         LayoutInflow(new_child_space, child_break_token, early_break_, &child,
                      inline_child_layout_context);
@@ -1845,6 +1854,7 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       new_child_space = CreateConstraintSpaceForChild(
           child, *child_data, ChildAvailableSize(), /* is_new_fc */ false,
           child_bfc_block_offset);
+      auto minimum_top = CreateMinimumTopScopeForChild(child, *child_data);
       layout_result =
           LayoutInflow(new_child_space, child_break_token, early_break_, &child,
                        inline_child_layout_context);
@@ -1963,9 +1973,24 @@ NGLayoutResult::EStatus NGBlockLayoutAlgorithm::FinishInflow(
       logical_offset, *layout_result, fragment,
       self_collapsing_child_had_clearance);
 
-  *previous_inline_break_token =
-      child.IsInline() ? To<NGInlineBreakToken>(physical_fragment.BreakToken())
-                       : nullptr;
+  if (child.IsInline()) {
+    const auto* inline_break_token =
+        To<NGInlineBreakToken>(physical_fragment.BreakToken());
+    if (UNLIKELY(inline_break_token &&
+                 inline_break_token->BlockInInlineBreakToken())) {
+      if (inline_break_token->BlockInInlineBreakToken()->IsAtBlockEnd()) {
+        // We resumed a block in inline in a parallel flow, and broke
+        // again. This will have to wait until we get to the next
+        // fragmentainer. The break token has already been added to the fragment
+        // builder.
+        DCHECK(child_break_token);
+        inline_break_token = nullptr;
+      }
+    }
+    *previous_inline_break_token = inline_break_token;
+  } else {
+    *previous_inline_break_token = nullptr;
+  }
 
   // Update |lines_until_clamp_| from the LayoutResult.
   if (lines_until_clamp_) {
@@ -2209,14 +2234,15 @@ void NGBlockLayoutAlgorithm::FinalizeForTableCell(
   container_builder_.SetHasCollapsedBorders(
       ConstraintSpace().IsTableCellWithCollapsedBorders());
 
-  // Everything else within this function only applies to new table-cells.
-  if (ConstraintSpace().IsLegacyTableCell())
-    return;
-
   container_builder_.SetIsTableNGPart();
 
   container_builder_.SetTableCellColumnIndex(
       ConstraintSpace().TableCellColumnIndex());
+
+  // If we're resuming after a break, there'll be no alignment, since the
+  // fragment will start at the block-start edge of the fragmentainer then.
+  if (IsResumingLayout(BreakToken()))
+    return;
 
   switch (Style().VerticalAlign()) {
     case EVerticalAlign::kTop:
@@ -2338,6 +2364,28 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   // non-empty child content yet (as that would have resolved the BFC offset).
   DCHECK(container_builder_.BfcBlockOffset());
 
+  bool pushed_to_next_fragmentainer_by_float = false;
+  if (layout_result.Status() == NGLayoutResult::kSuccess && child.IsBlock()) {
+    const auto* child_box_fragment =
+        To<NGPhysicalBoxFragment>(&layout_result.PhysicalFragment());
+
+    // If we're at a resumed fragment, don't break before it. Once we've found
+    // room for the first fragment, we cannot skip fragmentainers afterwards. We
+    // might be out of space at a subsequent fragment e.g. if all space is taken
+    // up by a float that got pushed ahead from a previous fragmentainer, but we
+    // still need to allow this fragment here. Inserting a break before on a
+    // node that has already started producing fragments would result in
+    // restarting layout from scratch once we find room for a fragment
+    // again. Preventing breaking here should have no visual effect, since the
+    // block-size of the fragment will typically be 0 anyway.
+    if (!child_box_fragment->IsFirstForNode())
+      return NGBreakStatus::kContinue;
+
+    if (exclusion_space_.NeedsClearancePastFragmentainer(
+            child.Style().Clear(Style())))
+      pushed_to_next_fragmentainer_by_float = true;
+  }
+
   LayoutUnit fragmentainer_block_offset =
       ConstraintSpace().FragmentainerOffsetAtBfc() + bfc_block_offset -
       layout_result.AnnotationBlockOffsetAdjustment();
@@ -2357,16 +2405,6 @@ NGBreakStatus NGBlockLayoutAlgorithm::BreakBeforeChildIfNeeded(
   NGBreakAppeal appeal_before =
       CalculateBreakAppealBefore(ConstraintSpace(), child, layout_result,
                                  container_builder_, has_container_separation);
-
-  bool pushed_to_next_fragmentainer_by_float = false;
-  if (layout_result.Status() == NGLayoutResult::kSuccess && child.IsBlock() &&
-      exclusion_space_.NeedsClearancePastFragmentainer(
-          child.Style().Clear(Style()))) {
-    const auto* child_box_fragment =
-        DynamicTo<NGPhysicalBoxFragment>(&layout_result.PhysicalFragment());
-    if (child_box_fragment->IsFirstForNode())
-      pushed_to_next_fragmentainer_by_float = true;
-  }
 
   // Unless clearance forces the child to the next fragmentainer, attempt to
   // move past the break point, and if we can do that, also assess the appeal of
@@ -2689,12 +2727,27 @@ NGConstraintSpace NGBlockLayoutAlgorithm::CreateConstraintSpaceForChild(
     // fragmentation line.
     if (is_new_fc)
       fragmentainer_offset_delta = *child_bfc_block_offset;
-    SetupSpaceBuilderForFragmentation(ConstraintSpace(), child,
-                                      fragmentainer_offset_delta, &builder,
-                                      is_new_fc);
+    SetupSpaceBuilderForFragmentation(
+        ConstraintSpace(), child, fragmentainer_offset_delta, &builder,
+        is_new_fc, container_builder_.RequiresContentBeforeBreaking());
   }
 
   return builder.ToConstraintSpace();
+}
+
+DeferredShapingMinimumTopScope
+NGBlockLayoutAlgorithm::CreateMinimumTopScopeForChild(
+    const NGLayoutInputNode child,
+    const NGInflowChildData& child_data) const {
+  LayoutUnit minimum_top =
+      Node().GetLayoutBox()->GetFrameView()->CurrentMinimumTop();
+  if (Node().CreatesNewFormattingContext()) {
+    minimum_top += child_data.bfc_offset_estimate.block_offset;
+  } else {
+    minimum_top = minimum_top - ConstraintSpace().BfcOffset().block_offset +
+                  child_data.bfc_offset_estimate.block_offset;
+  }
+  return DeferredShapingMinimumTopScope(child, minimum_top);
 }
 
 void NGBlockLayoutAlgorithm::PropagateBaselineFromChild(
@@ -2877,7 +2930,7 @@ bool NGBlockLayoutAlgorithm::PositionOrPropagateListMarker(
     // now because authors cannot style list-markers currently. If we want to
     // support `::marker` pseudo, we need to create ConstraintSpace for marker
     // separately.
-    scoped_refptr<const NGLayoutResult> marker_layout_result =
+    const NGLayoutResult* marker_layout_result =
         list_marker.Layout(space, container_builder_.Style(), baseline_type);
     DCHECK(marker_layout_result);
     // If the BFC block-offset of li is still not resolved, resolved it now.
@@ -2916,7 +2969,7 @@ bool NGBlockLayoutAlgorithm::PositionListMarkerWithoutLineBoxes(
   const NGConstraintSpace& space = ConstraintSpace();
   FontBaseline baseline_type = Style().GetFontBaseline();
   // Layout the list marker.
-  scoped_refptr<const NGLayoutResult> marker_layout_result =
+  const NGLayoutResult* marker_layout_result =
       list_marker.Layout(space, container_builder_.Style(), baseline_type);
   DCHECK(marker_layout_result);
   // If the BFC block-offset of li is still not resolved, resolve it now.
@@ -2965,7 +3018,7 @@ void NGBlockLayoutAlgorithm::HandleRubyText(NGBlockNode ruby_text_child) {
                             rt_style.GetWritingMode()))
     builder.SetInlineAutoBehavior(NGAutoBehavior::kStretchImplicit);
 
-  scoped_refptr<const NGLayoutResult> result =
+  const NGLayoutResult* result =
       ruby_text_child.Layout(builder.ToConstraintSpace(), break_token);
 
   LayoutUnit ruby_text_box_top;
@@ -3066,13 +3119,14 @@ void NGBlockLayoutAlgorithm::HandleTextControlPlaceholder(
   }
 
   const bool is_new_fc = placeholder.CreatesNewFormattingContext();
-  const NGConstraintSpace space = CreateConstraintSpaceForChild(
-      placeholder,
+  const NGInflowChildData child_data =
       ComputeChildData(previous_inflow_position, placeholder,
-                       /* child_break_token */ nullptr, is_new_fc),
-      available_size, is_new_fc);
+                       /* child_break_token */ nullptr, is_new_fc);
+  const NGConstraintSpace space = CreateConstraintSpaceForChild(
+      placeholder, child_data, available_size, is_new_fc);
 
-  scoped_refptr<const NGLayoutResult> result = placeholder.Layout(space);
+  auto minimum_top = CreateMinimumTopScopeForChild(placeholder, child_data);
+  const NGLayoutResult* result = placeholder.Layout(space);
   LogicalOffset offset = BorderScrollbarPadding().StartOffset();
   if (Node().IsTextArea()) {
     container_builder_.AddResult(*result, offset);

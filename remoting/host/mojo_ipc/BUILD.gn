@@ -5,11 +5,30 @@
 static_library("mojo_ipc") {
   sources = [
     "ipc_server.h",
+    "mojo_caller_security_checker.h",
     "mojo_ipc_server.cc",
     "mojo_ipc_server.h",
     "mojo_ipc_util.cc",
     "mojo_ipc_util.h",
+    "mojo_server_endpoint_connector.h",
   ]
+  if (is_linux) {
+    sources += [
+      "mojo_caller_security_checker_linux.cc",
+      "mojo_server_endpoint_connector_linux.cc",
+      "mojo_server_endpoint_connector_linux.h",
+    ]
+  } else if (is_win) {
+    sources += [
+      "mojo_server_endpoint_connector_win.cc",
+      "mojo_server_endpoint_connector_win.h",
+    ]
+  } else {
+    sources += [ "mojo_server_endpoint_connector_unsupported.cc" ]
+  }
+  if (!is_linux) {
+    sources += [ "bypass_mojo_caller_security_checker.cc" ]
+  }
   deps = [
     "//base",
     "//mojo/public/cpp/bindings",
@@ -37,7 +56,12 @@ static_library("test_support") {
 source_set("unit_tests") {
   testonly = true
 
-  sources = [ "mojo_ipc_server_unittest.cc" ]
+  sources = []
+
+  # Disable MojoIpcServerTest on unsupported platforms (i.e. Mac).
+  if (is_linux || is_win) {
+    sources += [ "mojo_ipc_server_unittest.cc" ]
+  }
   deps = [
     ":mojo_ipc",
     ":test_support",

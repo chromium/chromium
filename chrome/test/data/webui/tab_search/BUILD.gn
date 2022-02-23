@@ -1,89 +1,42 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://tab-search.top-chrome/=./\"",
-                    "js_module_root=" +
-                        rebase_path("//chrome/browser/resources/tab_search",
-                                    root_build_dir),
-                    "js_module_root=" +
-                        rebase_path("//chrome/test/data/webui", root_build_dir),
-                    "js_module_root=" +
-                        rebase_path("$root_gen_dir/chrome/test/data/webui",
-                                    root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_search",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/components/tab_groups/public/mojom",
-                            root_build_dir),
-                  ]
-  deps = [
-    ":bimap_test",
-    ":fuzzy_search_test",
-    ":infinite_list_test",
-    ":tab_search_app_focus_test",
-    ":tab_search_app_test",
-    ":tab_search_item_test",
-  ]
+generate_grd("build_grdp") {
+  grd_prefix = "webui_tab_search"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "tab_search"
 }
 
-js_library("bimap_test") {
-  deps = [ "..:chai_assert" ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("fuzzy_search_test") {
-  deps = [
-    ":test_tab_search_api_proxy",
-    "..:chai_assert",
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://tab-search.top-chrome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/tab_search/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("infinite_list_test") {
-  deps = [
-    "..:chai_assert",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  in_files = [
+    "bimap_test.ts",
+    "fuzzy_search_test.ts",
+    "infinite_list_test.ts",
+    "tab_search_app_focus_test.ts",
+    "tab_search_app_test.ts",
+    "tab_search_item_test.ts",
+    "tab_search_test_data.ts",
+    "tab_search_test_helper.ts",
+    "test_tab_search_api_proxy.ts",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("tab_search_app_test") {
-  deps = [
-    ":test_tab_search_api_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_search:tab_search",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("tab_search_app_focus_test") {
-  deps = [
-    ":test_tab_search_api_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_search:tab_search",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("test_tab_search_api_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/tab_search:tab_search",
-    "//chrome/browser/ui/webui/tab_search:mojo_bindings_js_library_for_compile",
-  ]
-}
-
-js_library("tab_search_item_test") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_search:tab_search",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  deps = [ "//chrome/browser/resources/tab_search:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
 }

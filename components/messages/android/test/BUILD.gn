@@ -4,6 +4,11 @@
 
 import("//build/config/android/rules.gni")
 
+generate_jni("jni_headers") {
+  sources =
+      [ "java/src/org/chromium/components/messages/MessagesTestHelper.java" ]
+}
+
 android_library("test_support_java") {
   testonly = true
   sources =
@@ -14,5 +19,18 @@ android_library("test_support_java") {
     "//components/messages/android:java",
     "//components/messages/android/internal:java",
     "//ui/android:ui_no_recycler_view_java",
+  ]
+}
+
+static_library("test_support_cpp") {
+  testonly = true
+  sources = [
+    "messages_test_helper.cc",
+    "messages_test_helper.h",
+  ]
+  deps = [
+    ":jni_headers",
+    "//base",
+    "//ui/android:android",
   ]
 }

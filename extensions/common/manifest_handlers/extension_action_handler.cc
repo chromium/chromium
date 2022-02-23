@@ -25,16 +25,16 @@ bool ExtensionActionHandler::Parse(Extension* extension,
   const char* key = nullptr;
   const char* error_key = nullptr;
   ActionInfo::Type type = ActionInfo::TYPE_ACTION;
-  if (extension->manifest()->HasKey(manifest_keys::kAction)) {
+  if (extension->manifest()->FindKey(manifest_keys::kAction)) {
     key = manifest_keys::kAction;
     error_key = manifest_errors::kInvalidAction;
     // type ACTION is correct.
   }
 
-  if (extension->manifest()->HasKey(manifest_keys::kPageAction)) {
+  if (extension->manifest()->FindKey(manifest_keys::kPageAction)) {
     if (key != nullptr) {
       // An extension can only have one action.
-      *error = base::ASCIIToUTF16(manifest_errors::kOneUISurfaceOnly);
+      *error = manifest_errors::kOneUISurfaceOnly;
       return false;
     }
     key = manifest_keys::kPageAction;
@@ -42,10 +42,10 @@ bool ExtensionActionHandler::Parse(Extension* extension,
     type = ActionInfo::TYPE_PAGE;
   }
 
-  if (extension->manifest()->HasKey(manifest_keys::kBrowserAction)) {
+  if (extension->manifest()->FindKey(manifest_keys::kBrowserAction)) {
     if (key != nullptr) {
       // An extension can only have one action.
-      *error = base::ASCIIToUTF16(manifest_errors::kOneUISurfaceOnly);
+      *error = manifest_errors::kOneUISurfaceOnly;
       return false;
     }
     key = manifest_keys::kBrowserAction;

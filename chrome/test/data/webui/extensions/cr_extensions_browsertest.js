@@ -7,6 +7,7 @@
 // Polymer BrowserTest fixture.
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
+GEN('#include "build/build_config.h"');
 GEN('#include "chrome/browser/ui/webui/extensions/' +
     'extension_settings_browsertest.h"');
 GEN('#include "chrome/browser/ui/ui_features.h"');
@@ -59,7 +60,7 @@ const CrExtensionsBrowserTestWithInstalledExtension =
 var CrExtensionsSidebarTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/sidebar_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/sidebar_test.js&host=webui-test';
   }
 
   /** @override */
@@ -82,7 +83,7 @@ TEST_F('CrExtensionsSidebarTest', 'SetSelected', function() {
 var CrExtensionsToolbarTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/toolbar_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/toolbar_test.js&host=webui-test';
   }
 
   /** @override */
@@ -105,7 +106,7 @@ TEST_F('CrExtensionsToolbarTest', 'FailedUpdateFiresLoadError', function() {
 });
 
 // TODO(crbug.com/882342) Disabled on other platforms but MacOS due to timeouts.
-GEN('#if !defined(OS_MAC)');
+GEN('#if !BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_ClickHandlers DISABLED_ClickHandlers');
 GEN('#else');
 GEN('#define MAYBE_ClickHandlers ClickHandlers');
@@ -126,7 +127,7 @@ GEN('#endif');
 var CrExtensionsItemsTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/item_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/item_test.js&host=webui-test';
   }
 
   /** @override */
@@ -183,7 +184,7 @@ TEST_F('CrExtensionsItemsTest', 'RepairButton', function() {
 var CrExtensionsActivityLogTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_test.js&host=webui-test';
   }
 };
 
@@ -197,7 +198,7 @@ TEST_F('CrExtensionsActivityLogTest', 'All', () => {
 var CrExtensionsActivityLogHistoryTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_history_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_history_test.js&host=webui-test';
   }
 };
 
@@ -212,7 +213,7 @@ var CrExtensionsActivityLogHistoryItemTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_history_item_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_history_item_test.js&host=webui-test';
   }
 };
 
@@ -226,7 +227,7 @@ TEST_F('CrExtensionsActivityLogHistoryItemTest', 'All', () => {
 var CrExtensionsActivityLogStreamTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_stream_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_stream_test.js&host=webui-test';
   }
 };
 
@@ -241,7 +242,7 @@ var CrExtensionsActivityLogStreamItemTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_stream_item_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/activity_log_stream_item_test.js&host=webui-test';
   }
 };
 
@@ -255,7 +256,7 @@ TEST_F('CrExtensionsActivityLogStreamItemTest', 'All', () => {
 var CrExtensionsDetailViewTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/detail_view_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/detail_view_test.js&host=webui-test';
   }
 
   /** @override */
@@ -290,19 +291,12 @@ TEST_F('CrExtensionsDetailViewTest', 'Warnings', function() {
   this.runMochaTest(extension_detail_view_tests.TestNames.Warnings);
 });
 
-////////////////////////////////////////////////////////////////////////////////
-// Extension Site Access Tests
-
-var CrExtensionsSiteAccessTest = class extends CrExtensionsBrowserTest {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/site_access_test.js';
-  }
-};
-
-TEST_F('CrExtensionsSiteAccessTest', 'All', () => {
-  mocha.run();
-});
+TEST_F(
+    'CrExtensionsDetailViewTest', 'NoSiteAccessWithEnhancedSiteControls',
+    function() {
+      this.runMochaTest(extension_detail_view_tests.TestNames
+                            .NoSiteAccessWithEnhancedSiteControls);
+    });
 
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Item List Tests
@@ -310,7 +304,7 @@ TEST_F('CrExtensionsSiteAccessTest', 'All', () => {
 var CrExtensionsItemListTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/item_list_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/item_list_test.js&host=webui-test';
   }
 
   /** @override */
@@ -341,7 +335,7 @@ TEST_F('CrExtensionsItemListTest', 'LoadTimeData', function() {
 var CrExtensionsLoadErrorTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/load_error_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/load_error_test.js&host=webui-test';
   }
 
   /** @override */
@@ -368,7 +362,7 @@ TEST_F('CrExtensionsLoadErrorTest', 'CodeSection', function() {
 var CrExtensionsManagerUnitTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test.js&host=webui-test';
   }
 
   /** @override */
@@ -416,7 +410,7 @@ var CrExtensionsManagerUnitTestWithActivityLogFlag =
     class extends CrExtensionsManagerUnitTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test_with_activity_log_flag.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_unit_test_with_activity_log_flag.js&host=webui-test';
   }
 
   /** @override */
@@ -439,7 +433,7 @@ var CrExtensionsKioskModeManagerUnitTest =
     class extends CrExtensionsManagerUnitTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/kiosk_mode_manager_unit_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/kiosk_mode_manager_unit_test.js&host=webui-test';
   }
 };
 
@@ -452,7 +446,7 @@ var CrExtensionsManagerTestWithMultipleExtensionTypesInstalled =
     class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_test.js&host=webui-test';
   }
 
   /** @override */
@@ -493,11 +487,25 @@ TEST_F(
       this.runMochaTest(extension_manager_tests.TestNames.PageTitleUpdate);
     });
 
+TEST_F(
+    'CrExtensionsManagerTestWithMultipleExtensionTypesInstalled',
+    'NavigateToSitePermissionsFail', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.NavigateToSitePermissionsFail);
+    });
+
+TEST_F(
+    'CrExtensionsManagerTestWithMultipleExtensionTypesInstalled',
+    'NavigateToSitePermissionsSuccess', function() {
+      this.runMochaTest(
+          extension_manager_tests.TestNames.NavigateToSitePermissionsSuccess);
+    });
+
 var CrExtensionsManagerTestWithIdQueryParam =
     class extends CrExtensionsBrowserTestWithInstalledExtension {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_test_with_id_query_param.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_test_with_id_query_param.js&host=webui-test';
   }
 
   /** @override */
@@ -521,18 +529,11 @@ TEST_F(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogFail);
     });
 
-TEST_F(
-    'CrExtensionsManagerTestWithIdQueryParam', 'UrlNavigationToSiteAccessFail',
-    function() {
-      this.runMochaTest(
-          extension_manager_tests.TestNames.UrlNavigationToSiteAccessFail);
-    });
-
 CrExtensionsManagerTestWithActivityLogFlag =
     class extends CrExtensionsManagerTestWithIdQueryParam {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_test_with_activity_log_flag.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/manager_test_with_activity_log_flag.js&host=webui-test';
   }
 
   /** @override */
@@ -550,33 +551,13 @@ TEST_F(
           extension_manager_tests.TestNames.UrlNavigationToActivityLogSuccess);
     });
 
-CrExtensionsManagerTestWithNewSiteAccess =
-    class extends CrExtensionsManagerTestWithIdQueryParam {
-  /** @override */
-  get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/manager_test_with_new_site_access.js';
-  }
-
-  /** @override */
-  get featureList() {
-    return {enabled: ['features::kExtensionsMenuAccessControl']};
-  }
-};
-
-TEST_F(
-    'CrExtensionsManagerTestWithNewSiteAccess',
-    'UrlNavigationToSiteAccessSuccess', function() {
-      this.runMochaTest(
-          extension_manager_tests.TestNames.UrlNavigationToSiteAccessSuccess);
-    });
-
 ////////////////////////////////////////////////////////////////////////////////
 // Extension Keyboard Shortcuts Tests
 
 var CrExtensionsShortcutTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/keyboard_shortcuts_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/keyboard_shortcuts_test.js&host=webui-test';
   }
 
   /** @override */
@@ -607,7 +588,7 @@ TEST_F('CrExtensionsShortcutTest', 'ScopeChange', function() {
 var CrExtensionsPackDialogTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/pack_dialog_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/pack_dialog_test.js&host=webui-test';
   }
 
   /** @override */
@@ -622,7 +603,7 @@ TEST_F('CrExtensionsPackDialogTest', 'Interaction', function() {
 
 // Disabling on Windows due to flaky timeout on some build bots.
 // http://crbug.com/832885
-GEN('#if defined(OS_WIN)');
+GEN('#if BUILDFLAG(IS_WIN)');
 GEN('#define MAYBE_PackSuccess DISABLED_PackSuccess');
 GEN('#else');
 GEN('#define MAYBE_PackSuccess PackSuccess');
@@ -637,7 +618,7 @@ TEST_F('CrExtensionsPackDialogTest', 'PackError', function() {
 
 // Temporarily disabling on Mac due to flakiness.
 // http://crbug.com/877109
-GEN('#if defined(OS_MAC)');
+GEN('#if BUILDFLAG(IS_MAC)');
 GEN('#define MAYBE_PackWarning DISABLED_PackWarning');
 GEN('#else');
 GEN('#define MAYBE_PackWarning PackWarning');
@@ -657,7 +638,7 @@ var CrExtensionsOptionsDialogTest = class extends CrExtensionsBrowserTest {
 
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/options_dialog_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/options_dialog_test.js&host=webui-test';
   }
 
   /** @override */
@@ -676,7 +657,7 @@ TEST_F('CrExtensionsOptionsDialogTest', 'DISABLED_Layout', function() {
 var CrExtensionsErrorPageTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/error_page_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/error_page_test.js&host=webui-test';
   }
 
   /** @override */
@@ -703,7 +684,7 @@ TEST_F('CrExtensionsErrorPageTest', 'ErrorSelection', function() {
 var CrExtensionsCodeSectionTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/code_section_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/code_section_test.js&host=webui-test';
   }
 
   /** @override */
@@ -726,7 +707,7 @@ TEST_F('CrExtensionsCodeSectionTest', 'LongSource', function() {
 var CrExtensionsNavigationHelperTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/navigation_helper_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/navigation_helper_test.js&host=webui-test';
   }
 
   /** @override */
@@ -759,18 +740,23 @@ TEST_F('CrExtensionsNavigationHelperTest', 'SupportedRoutes', function() {
 var CrExtensionsErrorConsoleTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/error_console_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/error_console_test.js&host=webui-test';
   }
 
   /** @override */
   testGenPreamble() {
     GEN('  SetDevModeEnabled(true);');
+    // TODO(https://crbug.com/1269161): Update the associated extensions to
+    // Manifest V3 and stop ignoring deprecated manifest version warnings.
+    GEN('  SetSilenceDeprecatedManifestVersionWarnings(true);');
     GEN('  InstallErrorsExtension();');
   }
 
   /** @override */
   testGenPostamble() {
-    GEN('  SetDevModeEnabled(false);');  // Return this to default.
+    // Return settings to default.
+    GEN('  SetDevModeEnabled(false);');
+    GEN('  SetSilenceDeprecatedManifestVersionWarnings(false);');
   }
 };
 
@@ -784,7 +770,7 @@ TEST_F('CrExtensionsErrorConsoleTest', 'TestUpDownErrors', () => {
 var CrExtensionsToggleRowTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/toggle_row_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/toggle_row_test.js&host=webui-test';
   }
 };
 
@@ -800,7 +786,7 @@ GEN('#if BUILDFLAG(IS_CHROMEOS_ASH)');
 var CrExtensionsKioskModeTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/kiosk_mode_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/kiosk_mode_test.js&host=webui-test';
   }
 
   /** @override */
@@ -841,7 +827,7 @@ GEN('#endif');
 var CrExtensionsRuntimeHostsDialogTest = class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/runtime_hosts_dialog_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/runtime_hosts_dialog_test.js&host=webui-test';
   }
 };
 
@@ -856,7 +842,7 @@ var CrExtensionsRuntimeHostPermissionsTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/runtime_host_permissions_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/runtime_host_permissions_test.js&host=webui-test';
   }
 };
 
@@ -871,10 +857,83 @@ var CrExtensionsHostPermissionsToggleListTest =
     class extends CrExtensionsBrowserTest {
   /** @override */
   get browsePreload() {
-    return 'chrome://extensions/test_loader.html?module=extensions/host_permissions_toggle_list_test.js';
+    return 'chrome://extensions/test_loader.html?module=extensions/host_permissions_toggle_list_test.js&host=webui-test';
   }
 };
 
 TEST_F('CrExtensionsHostPermissionsToggleListTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissions tests
+
+var CrExtensionsSitePermissionsTest = class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsBySite tests
+
+var CrExtensionsSitePermissionsBySiteTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_by_site_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsBySiteTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsEditDialog tests
+
+var CrExtensionsSitePermissionsEditDialogTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_edit_dialog_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsEditDialogTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// SitePermissionsList tests
+
+var CrExtensionsSitePermissionsListTest =
+    class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/site_permissions_list_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrExtensionsSitePermissionsListTest', 'All', () => {
+  mocha.run();
+});
+
+////////////////////////////////////////////////////////////////////////////////
+// UrlUtil tests
+
+var CrUrlUtilTest = class extends CrExtensionsBrowserTest {
+  /** @override */
+  get browsePreload() {
+    return 'chrome://extensions/test_loader.html?module=extensions/url_util_test.js&host=webui-test';
+  }
+};
+
+TEST_F('CrUrlUtilTest', 'All', () => {
   mocha.run();
 });

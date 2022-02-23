@@ -15,7 +15,7 @@
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/webgpu_mailbox_texture.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -24,7 +24,7 @@ GPUSwapChain::GPUSwapChain(GPUCanvasContext* context,
                            WGPUTextureUsage usage,
                            WGPUTextureFormat format,
                            cc::PaintFlags::FilterQuality filter_quality,
-                           IntSize size)
+                           gfx::Size size)
     : DawnObjectBase(device->GetDawnControlClient()),
       device_(device),
       context_(context),
@@ -96,8 +96,11 @@ scoped_refptr<StaticBitmapImage> GPUSwapChain::TransferToStaticBitmapImage() {
   const auto& sk_image_sync_token =
       transferable_resource.mailbox_holder.sync_token;
 
-  const SkImageInfo sk_image_info = SkImageInfo::MakeN32Premul(
-      transferable_resource.size.width(), transferable_resource.size.height());
+  auto sk_color_type = viz::ResourceFormatToClosestSkColorType(
+      /*gpu_compositing=*/true, transferable_resource.format);
+
+  const SkImageInfo sk_image_info = SkImageInfo::Make(
+      size_.width(), size_.height(), sk_color_type, kPremul_SkAlphaType);
 
   return AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
       sk_image_mailbox, sk_image_sync_token, /* shared_image_texture_id = */ 0,
@@ -159,9 +162,14 @@ scoped_refptr<StaticBitmapImage> GPUSwapChain::SnapshotInternal(
                                       viz::ResourceFormatToClosestSkColorType(
                                           /*gpu_compositing=*/true, Format()),
                                       kPremul_SkAlphaType);
+  // We tag the SharedImage inside the WebGPUImageProvider with display usage
+  // since there are uncommon paths which may use this snapshot for compositing.
+  // These paths are usually related to either printing or either video and
+  // usually related to OffscreenCanvas; in cases where the image created from
+  // this Snapshot will be sent eventually to the Display Compositor.
   auto resource_provider = CanvasResourceProvider::CreateWebGPUImageProvider(
       info,
-      /*is_origin_top_left=*/true);
+      /*is_origin_top_left=*/true, gpu::SHARED_IMAGE_USAGE_DISPLAY);
   if (!resource_provider)
     return nullptr;
 
@@ -185,7 +193,7 @@ bool GPUSwapChain::CopyTextureToResourceProvider(
     const gfx::Size& size,
     CanvasResourceProvider* resource_provider) const {
   DCHECK(resource_provider);
-  DCHECK_EQ(resource_provider->Size(), IntSize(size));
+  DCHECK_EQ(resource_provider->Size(), size);
   DCHECK(resource_provider->GetSharedImageUsageFlags() &
          gpu::SHARED_IMAGE_USAGE_WEBGPU);
   DCHECK(resource_provider->IsOriginTopLeft());

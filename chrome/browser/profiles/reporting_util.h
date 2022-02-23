@@ -5,20 +5,17 @@
 #ifndef CHROME_BROWSER_PROFILES_REPORTING_UTIL_H_
 #define CHROME_BROWSER_PROFILES_REPORTING_UTIL_H_
 
+#include "base/values.h"
 #include "components/enterprise/common/proto/connectors.pb.h"
 
 class Profile;
-
-namespace base {
-class Value;
-}  // namespace base
 
 namespace reporting {
 
 // Fetches additional information that is common to every event. Fetches and
 // returns corresponding info to a Device, Browser and Profile protos defined in
 // google3/google/internal/chrome/reporting/v1/chromereporting.proto.
-base::Value GetContext(Profile* profile);
+base::Value::Dict GetContext(Profile* profile);
 
 // Fetches the same information as GetContext, but in a protobuf instead of a
 // Value.

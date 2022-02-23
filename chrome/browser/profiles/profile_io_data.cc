@@ -42,9 +42,9 @@ bool ProfileIOData::IsHandledProtocol(const std::string& scheme) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     content::kExternalFileScheme,
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     url::kContentScheme,
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     url::kAboutScheme,
     url::kBlobScheme,
     url::kFileSystemScheme,

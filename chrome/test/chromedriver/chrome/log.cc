@@ -57,8 +57,8 @@ std::unique_ptr<base::Value> SmartDeepCopy(const base::Value* value) {
     return std::move(dict_copy);
   } else if (value->is_list()) {
     std::unique_ptr<base::ListValue> list_copy(new base::ListValue());
-    for (const base::Value& child : value->GetList()) {
-      if (list_copy->GetList().size() >= kMaxChildren - 1) {
+    for (const base::Value& child : value->GetListDeprecated()) {
+      if (list_copy->GetListDeprecated().size() >= kMaxChildren - 1) {
         list_copy->Append("...");
         break;
       }
@@ -85,7 +85,7 @@ std::string PrettyPrintValue(const base::Value& value) {
   std::string json;
   base::JSONWriter::WriteWithOptions(
       value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &json);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::RemoveChars(json, "\r", &json);
 #endif
   // Remove the trailing newline.

@@ -61,15 +61,6 @@ enum class FileSystemType { kDownloads, kDriveFs };
 
 // Helpers ---------------------------------------------------------------------
 
-// Returns the path of the downloads mount point for the given `profile`.
-base::FilePath GetDownloadsPath(Profile* profile) {
-  base::FilePath result;
-  EXPECT_TRUE(
-      storage::ExternalMountPoints::GetSystemInstance()->GetRegisteredPath(
-          file_manager::util::GetDownloadsMountPointName(profile), &result));
-  return result;
-}
-
 // Converts an `absolute_file_path` to its drive path.
 base::FilePath ConvertAbsoluteFilePathToDrivePath(
     Profile* profile,
@@ -140,15 +131,6 @@ void WaitForItemAddition(
         }
       });
   run_loop.Run();
-}
-
-// Waits for a holding space item with the provided `item_id` to be added to the
-// holding space model. Returns immediately if the item already exists.
-void WaitForItemAddition(const std::string& item_id) {
-  WaitForItemAddition(
-      base::BindLambdaForTesting([&item_id](const HoldingSpaceItem* item) {
-        return item->id() == item_id;
-      }));
 }
 
 // Waits for a holding space item matching the provided `predicate` to be
@@ -354,9 +336,8 @@ class HoldingSpaceKeyedServiceBrowserTest : public InProcessBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
-        profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+    if (profile->GetPath() == ProfileHelper::GetSigninProfileDir() ||
+        profile->GetPath() == ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -799,7 +780,6 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
       public ::testing::WithParamInterface<
           std::tuple<FileSystemType,
                      /*from_incognito_profile=*/bool,
-                     /*incognito_downloads_enabled=*/bool,
                      /*in_progress_downloads_enabled=*/bool,
                      /*in_progress_downloads_eligible_client=*/bool>> {
  public:
@@ -807,14 +787,6 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
       : HoldingSpaceKeyedServiceBrowserTest(std::get<0>(GetParam())) {
     std::vector<base::Feature> enabled_features;
     std::vector<base::Feature> disabled_features;
-
-    if (IncognitoDownloadsEnabled()) {
-      enabled_features.push_back(
-          features::kHoldingSpaceIncognitoProfileIntegration);
-    } else {
-      disabled_features.push_back(
-          features::kHoldingSpaceIncognitoProfileIntegration);
-    }
 
     if (InProgressDownloadsEnabled()) {
       enabled_features.push_back(
@@ -828,10 +800,9 @@ class HoldingSpaceKeyedServiceLacrosBrowserTest
   }
 
   bool FromIncognitoProfile() const { return std::get<1>(GetParam()); }
-  bool IncognitoDownloadsEnabled() const { return std::get<2>(GetParam()); }
-  bool InProgressDownloadsEnabled() const { return std::get<3>(GetParam()); }
+  bool InProgressDownloadsEnabled() const { return std::get<2>(GetParam()); }
   bool InProgressDownloadsEligibleClient() const {
-    return std::get<4>(GetParam());
+    return std::get<3>(GetParam());
   }
 
   crosapi::DownloadControllerAsh* download_controller() {
@@ -850,7 +821,6 @@ INSTANTIATE_TEST_SUITE_P(
     ::testing::Combine(
         ::testing::Values(FileSystemType::kDownloads, FileSystemType::kDriveFs),
         /*from_incognito_profile=*/::testing::Bool(),
-        /*incognito_downloads_enabled=*/::testing::Bool(),
         /*in_progress_downloads_enabled=*/::testing::Bool(),
         /*in_progress_downloads_eligible_client=*/::testing::Bool()));
 
@@ -889,10 +859,8 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   download_controller()->OnDownloadUpdated(download.Clone());
 
   // In-progress downloads should only be added to holding space if the feature
-  // is enabled and the Lacros client owning the download is supported. If the
-  // download is from an incognito profile, that feature must be enabled too.
-  if (InProgressDownloadsEnabled() && InProgressDownloadsEligibleClient() &&
-      (!FromIncognitoProfile() || IncognitoDownloadsEnabled())) {
+  // is enabled and the Lacros client owning the download is supported.
+  if (InProgressDownloadsEnabled() && InProgressDownloadsEligibleClient()) {
     ASSERT_EQ(1u, model->items().size());
     const auto& download_item = model->items().front();
     EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
@@ -906,16 +874,10 @@ IN_PROC_BROWSER_TEST_P(HoldingSpaceKeyedServiceLacrosBrowserTest,
   download->full_path = download->target_file_path;
   download_controller()->OnDownloadUpdated(download.Clone());
 
-  // Completed downloads should always be added to holding space unless the
-  // download is from an incognito profile and that feature flag is disabled.
-  if (!FromIncognitoProfile() || IncognitoDownloadsEnabled()) {
-    ASSERT_EQ(1u, model->items().size());
-    const auto& download_item = model->items().front();
-    EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
-    EXPECT_EQ(download_item->file_path(), download->full_path);
-  } else {
-    ASSERT_EQ(0u, model->items().size());
-  }
+  // Completed downloads should always be added to holding space.
+  const auto& download_item = model->items().front();
+  EXPECT_EQ(download_item->type(), HoldingSpaceItem::Type::kLacrosDownload);
+  EXPECT_EQ(download_item->file_path(), download->full_path);
 }
 
 }  // namespace ash

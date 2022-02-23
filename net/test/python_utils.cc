@@ -16,7 +16,7 @@
 #include "base/process/launch.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -32,7 +32,7 @@ void SetPythonPathInEnvironment(const std::vector<base::FilePath>& python_path,
   base::NativeEnvironmentString path_str;
   for (const auto& path : python_path) {
     if (!path_str.empty()) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       path_str.push_back(';');
 #else
       path_str.push_back(':');
@@ -57,7 +57,7 @@ bool GetPyProtoPath(base::FilePath* dir) {
     return false;
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   if (base::mac::AmIBundled())
     generated_code_dir = generated_code_dir.DirName().DirName().DirName();
 #endif
@@ -75,7 +75,7 @@ bool GetPythonCommand(base::CommandLine* python_cmd) {
   DCHECK(python_cmd);
 
 // Use vpython to pick up src.git's vpython VirtualEnv spec.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   python_cmd->SetProgram(base::FilePath(FILE_PATH_LITERAL("vpython.bat")));
 #else
   python_cmd->SetProgram(base::FilePath(FILE_PATH_LITERAL("vpython")));
@@ -92,13 +92,13 @@ bool GetPython3Command(base::CommandLine* python_cmd) {
   DCHECK(python_cmd);
 
 // Use vpython3 to pick up src.git's vpython3 VirtualEnv spec.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   python_cmd->SetProgram(base::FilePath(FILE_PATH_LITERAL("vpython3.bat")));
 #else
   python_cmd->SetProgram(base::FilePath(FILE_PATH_LITERAL("vpython3")));
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Enable logging to help diagnose https://crbug.com/1254962. Remove this when
   // the bug is resolved.
   python_cmd->AppendArg("-vpython-log-level=info");

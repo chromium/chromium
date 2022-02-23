@@ -4,8 +4,11 @@
 
 package org.chromium.chrome.browser.ui.android.webid;
 
+import android.content.res.Resources;
+
 import androidx.annotation.Nullable;
 
+import org.chromium.base.ContextUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.ui.android.webid.data.Account;
@@ -35,6 +38,22 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
     }
 
     @CalledByNative
+    private static int getBrandIconMinimumSize() {
+        // Icon needs to be big enough for the smallest screen density (1x).
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        // Density < 1.0f on ldpi devices. Adjust density to ensure that
+        // {@link getBrandIconMinimumSize()} <= {@link getBrandIconIdealSize()}.
+        float density = Math.max(resources.getDisplayMetrics().density, 1.0f);
+        return Math.round(getBrandIconIdealSize() / density);
+    }
+
+    @CalledByNative
+    private static int getBrandIconIdealSize() {
+        Resources resources = ContextUtils.getApplicationContext().getResources();
+        return Math.round(resources.getDimension(R.dimen.account_selection_sheet_icon_size));
+    }
+
+    @CalledByNative
     private static @Nullable AccountSelectionBridge create(
             long nativeView, WindowAndroid windowAndroid) {
         BottomSheetController bottomSheetController =
@@ -45,22 +64,24 @@ class AccountSelectionBridge implements AccountSelectionComponent.Delegate {
 
     @CalledByNative
     private void destroy() {
+        mAccountSelectionComponent.hideBottomSheet();
         mNativeView = 0;
     }
 
     /* Shows the accounts in a bottom sheet UI allowing user to select one.
      *
-     * @param url is the URL for RP that has initiated the WebID flow.
+     * @param rpEtldPlusOne is the ETLD+1 for RP that has initiated the WebID flow.
+     * @param idpEtldPlusOne is the ETLD+1 for the IDP that is providing the accounts.
      * @param accounts is the list of accounts to be shown.
      * @param isAutoSignIn represents whether this is an auto sign in flow.
      */
     @CalledByNative
-    private void showAccounts(GURL rpUrl, GURL idpUrl, Account[] accounts,
+    private void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, Account[] accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientIdMetadata,
             boolean isAutoSignIn) {
         assert accounts != null && accounts.length > 0;
-        mAccountSelectionComponent.showAccounts(rpUrl, idpUrl, Arrays.asList(accounts), idpMetadata,
-                clientIdMetadata, isAutoSignIn);
+        mAccountSelectionComponent.showAccounts(rpEtldPlusOne, idpEtldPlusOne,
+                Arrays.asList(accounts), idpMetadata, clientIdMetadata, isAutoSignIn);
     }
 
     @Override

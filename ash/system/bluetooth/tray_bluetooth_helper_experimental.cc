@@ -7,10 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ash/shell.h"
 #include "ash/system/tray/system_tray_notifier.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/check.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 // base::Unretained():
@@ -25,7 +27,9 @@ namespace ash {
 TrayBluetoothHelperExperimental::TrayBluetoothHelperExperimental(
     mojo::PendingRemote<device::mojom::BluetoothSystemFactory>
         bluetooth_system_factory)
-    : bluetooth_system_factory_(std::move(bluetooth_system_factory)) {}
+    : bluetooth_system_factory_(std::move(bluetooth_system_factory)) {
+  DCHECK(!ash::features::IsBluetoothRevampEnabled());
+}
 
 TrayBluetoothHelperExperimental::~TrayBluetoothHelperExperimental() = default;
 

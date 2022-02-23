@@ -1,0 +1,8 @@
+include_rules = [
+  "+ash/constants",
+  "+ash/services/multidevice_setup/public/cpp",
+  "+crypto",
+  "+chromeos/services/device_sync",
+  "+third_party/securemessage",
+  "+third_party/ukey2",
+]

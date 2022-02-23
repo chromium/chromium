@@ -7,10 +7,10 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "ui/gfx/image/image_skia_rep_ios.h"
 #else
 #include "ui/gfx/image/image_skia_rep_default.h"
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 #endif  // UI_GFX_IMAGE_IMAGE_SKIA_REP_H_

@@ -16,6 +16,7 @@
 #include "ui/display/display_switches.h"
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/test/gl_surface_test_support.h"
+#include "ui/lottie/resource.h"
 
 namespace ash {
 
@@ -40,12 +41,26 @@ void AshTestSuite::Initialize() {
   // it'll pass regardless of the system language.
   base::i18n::SetICUDefaultLocale("en_US");
 
+  ui::ResourceBundle::SetLottieParsingFunctions(
+      &lottie::ParseLottieAsStillImage, &lottie::ParseLottieAsThemedStillImage);
+
+  LoadTestResources();
+
+  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
+  env_ = aura::Env::CreateInstance();
+}
+
+void AshTestSuite::LoadTestResources() {
   // Load ash test resources and en-US strings; not 'common' (Chrome) resources.
   base::FilePath path;
-  base::PathService::Get(base::DIR_MODULE, &path);
+  base::PathService::Get(base::DIR_ASSETS, &path);
   base::FilePath ash_test_strings =
       path.Append(FILE_PATH_LITERAL("ash_test_strings.pak"));
   ui::ResourceBundle::InitSharedInstanceWithPakPath(ash_test_strings);
+
+  ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
+      path.AppendASCII("ash_test_resources_unscaled.pak"),
+      ui::kScaleFactorNone);
 
   if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
     base::FilePath ash_test_resources_100 =
@@ -59,9 +74,6 @@ void AshTestSuite::Initialize() {
     ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
         ash_test_resources_200, ui::k200Percent);
   }
-
-  base::DiscardableMemoryAllocator::SetInstance(&discardable_memory_allocator_);
-  env_ = aura::Env::CreateInstance();
 }
 
 void AshTestSuite::Shutdown() {

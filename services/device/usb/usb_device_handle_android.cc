@@ -40,10 +40,8 @@ UsbDeviceHandleAndroid::UsbDeviceHandleAndroid(
 
 UsbDeviceHandleAndroid::~UsbDeviceHandleAndroid() {}
 
-void UsbDeviceHandleAndroid::CloseBlocking() {
-  ReleaseFileDescriptor();
-  task_runner()->PostTask(
-      FROM_HERE,
+void UsbDeviceHandleAndroid::FinishClose() {
+  ReleaseFileDescriptor(
       base::BindOnce(&UsbDeviceHandleAndroid::CloseConnection, this));
 }
 

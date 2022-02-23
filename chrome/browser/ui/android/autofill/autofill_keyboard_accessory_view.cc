@@ -31,7 +31,7 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillKeyboardAccessoryView::AutofillKeyboardAccessoryView(
-    AutofillPopupController* controller)
+    base::WeakPtr<AutofillPopupController> controller)
     : controller_(controller) {
   java_object_.Reset(Java_AutofillKeyboardAccessoryViewBridge_create(
       base::android::AttachCurrentThread()));

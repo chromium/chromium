@@ -35,22 +35,24 @@ class PatternProvider {
   // Setter for loading patterns from external storage.
   void SetPatterns(const Map patterns, const base::Version& version);
 
-  // Find the patterns for a given ServerFieldType and for a given
+  // Finds the patterns for a given ServerFieldType and for a given
   // |page_language|.
   const std::vector<MatchingPattern> GetMatchPatterns(
       ServerFieldType type,
       const LanguageCode& page_language) const;
 
-  // Find the patterns for a given |pattern_name| and a given |page_language|.
+  // Finds the patterns for a given |pattern_name| and a given |page_language|.
+  // If there are no patterns for a given |page_language|, returns all patterns
+  // for |pattern_name| for any language.
   const std::vector<MatchingPattern> GetMatchPatterns(
       const std::string& pattern_name,
       const LanguageCode& page_language) const;
 
-  // Find all patterns, across all languages, for a given server field |type|.
+  // Finds all patterns, across all languages, for a given server field |type|.
   const std::vector<MatchingPattern> GetAllPatternsByType(
       ServerFieldType type) const;
 
-  // Find all patterns, across all languages, for a given server field |type|.
+  // Finds all patterns, across all languages, for a given server field |type|.
   const std::vector<MatchingPattern> GetAllPatternsByType(
       const std::string& type) const;
 

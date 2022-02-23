@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/policy/cloud/user_policy_signin_service_base.h"

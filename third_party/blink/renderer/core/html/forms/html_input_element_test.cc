@@ -23,8 +23,9 @@
 #include "third_party/blink/renderer/core/html/html_html_element.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 using ::testing::Truly;
 
@@ -228,7 +229,7 @@ TEST_F(HTMLInputElementTest, DateTimeChooserSizeParamRespectsScale) {
   bool success = input->SetupDateTimeChooserParameters(params);
   EXPECT_TRUE(success);
   EXPECT_EQ("date", params.type);
-  EXPECT_EQ(IntRect(16, 16, 400, 100), params.anchor_rect_in_screen);
+  EXPECT_EQ(gfx::Rect(16, 16, 400, 100), params.anchor_rect_in_screen);
 }
 
 TEST_F(HTMLInputElementTest, StepDownOverflow) {
@@ -263,7 +264,9 @@ TEST_F(HTMLInputElementTest, RepaintAfterClearingFile) {
   FileChooserFileInfoList files;
   files.push_back(CreateFileChooserFileInfoNative("/native/path/native-file",
                                                   "display-name"));
-  FileList* list = FileInputType::CreateFileList(files, base::FilePath());
+  auto* execution_context = MakeGarbageCollected<NullExecutionContext>();
+  FileList* list = FileInputType::CreateFileList(*execution_context, files,
+                                                 base::FilePath());
   ASSERT_TRUE(list);
   EXPECT_EQ(1u, list->length());
 
@@ -278,6 +281,7 @@ TEST_F(HTMLInputElementTest, RepaintAfterClearingFile) {
 
   ASSERT_TRUE(input->GetLayoutObject());
   EXPECT_TRUE(input->GetLayoutObject()->ShouldCheckForPaintInvalidation());
+  execution_context->NotifyContextDestroyed();
 }
 
 TEST_F(HTMLInputElementTest, UpdateTypeDcheck) {

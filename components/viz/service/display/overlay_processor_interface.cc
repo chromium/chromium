@@ -8,6 +8,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 #include "build/chromecast_buildflags.h"
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/display/renderer_settings.h"
@@ -16,11 +17,11 @@
 #include "components/viz/service/display/overlay_processor_stub.h"
 #include "ui/gfx/overlay_priority_hint.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/overlay_processor_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/overlay_processor_win.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display/overlay_processor_android.h"
 #include "components/viz/service/display/overlay_processor_surface_control.h"
 #elif defined(USE_OZONE)
@@ -99,12 +100,11 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   // overlay for WebView is enabled, this check still works.
   if (surface_handle == gpu::kNullSurfaceHandle)
     return std::make_unique<OverlayProcessorStub>();
-#if defined(OS_APPLE)
-  DCHECK(capabilities.supports_surfaceless);
 
-  return std::make_unique<OverlayProcessorMac>(
-      renderer_settings.allow_overlays);
-#elif defined(OS_WIN)
+#if BUILDFLAG(IS_APPLE)
+  DCHECK(capabilities.supports_surfaceless);
+  return std::make_unique<OverlayProcessorMac>();
+#elif BUILDFLAG(IS_WIN)
   if (!capabilities.supports_dc_layers)
     return std::make_unique<OverlayProcessorStub>();
 
@@ -152,7 +152,7 @@ OverlayProcessorInterface::CreateOverlayProcessor(
   return std::make_unique<OverlayProcessorOzone>(
       std::move(overlay_candidates),
       std::move(renderer_settings.overlay_strategies), sii);
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   DCHECK(display_controller);
 
   if (capabilities.supports_surfaceless) {
@@ -218,5 +218,9 @@ void OverlayProcessorInterface::ScheduleOverlays(
     DisplayResourceProvider* display_resource_provider) {}
 
 void OverlayProcessorInterface::OverlayPresentationComplete() {}
+
+gfx::CALayerResult OverlayProcessorInterface::GetCALayerErrorCode() const {
+  return gfx::kCALayerSuccess;
+}
 
 }  // namespace viz

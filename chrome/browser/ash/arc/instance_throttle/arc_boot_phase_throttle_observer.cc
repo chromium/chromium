@@ -4,40 +4,65 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_boot_phase_throttle_observer.h"
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "base/logging.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/arc/arc_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sessions/session_restore.h"
 
 namespace arc {
+namespace {
+
+// Try to throttle ARC |kThrottleArcDelay| after app.mojom is connected.
+constexpr base::TimeDelta kThrottleArcDelay = base::Seconds(10);
+
+void RemoveMojoObservers(ArcBootPhaseThrottleObserver* observer) {
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  if (!arc_service_manager)
+    return;
+  arc_service_manager->arc_bridge_service()->intent_helper()->RemoveObserver(
+      observer);
+  arc_service_manager->arc_bridge_service()->app()->RemoveObserver(observer);
+}
+
+}  // namespace
 
 ArcBootPhaseThrottleObserver::ArcBootPhaseThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL,
-                       "ArcIsBooting") {}
+    : ThrottleObserver("ArcIsBooting") {}
+
+ArcBootPhaseThrottleObserver::~ArcBootPhaseThrottleObserver() = default;
 
 void ArcBootPhaseThrottleObserver::StartObserving(
     content::BrowserContext* context,
     const ObserverStateChangedCallback& callback) {
-  DCHECK(!boot_phase_monitor_);
   ThrottleObserver::StartObserving(context, callback);
 
   auto* session_manager = ArcSessionManager::Get();
   DCHECK(session_manager);
   session_manager->AddObserver(this);
 
-  boot_phase_monitor_ =
-      ArcBootPhaseMonitorBridge::GetForBrowserContext(context);
-  DCHECK(boot_phase_monitor_);
-  boot_phase_monitor_->AddObserver(this);
-
   SessionRestore::AddObserver(this);
+
+  // If app() and/or intent_helper() are already connected to the instance in
+  // the guest, the OnConnectionReady() function is synchronously called before
+  // returning from AddObserver. For more details, see
+  // ash/components/arc/session/connection_holder.h especially its AddObserver()
+  // function.
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  // ArcServiceManager and objects owned by the manager are created very early
+  // in `ChromeBrowserMainPartsAsh::PreMainMessageLoopRun()` too.
+  DCHECK(arc_service_manager);
+  arc_service_manager->arc_bridge_service()->app()->AddObserver(this);
+  arc_service_manager->arc_bridge_service()->intent_helper()->AddObserver(this);
 }
 
 void ArcBootPhaseThrottleObserver::StopObserving() {
+  RemoveMojoObservers(this);
   SessionRestore::RemoveObserver(this);
-
-  boot_phase_monitor_->RemoveObserver(this);
-  boot_phase_monitor_ = nullptr;
 
   auto* session_manager = ArcSessionManager::Get();
   DCHECK(session_manager);
@@ -61,11 +86,6 @@ void ArcBootPhaseThrottleObserver::OnArcSessionRestarting() {
   MaybeSetActive();
 }
 
-void ArcBootPhaseThrottleObserver::OnBootCompleted() {
-  arc_is_booting_ = false;
-  MaybeSetActive();
-}
-
 void ArcBootPhaseThrottleObserver::OnSessionRestoreStartedLoadingTabs() {
   session_restore_loading_ = true;
   MaybeSetActive();
@@ -73,6 +93,43 @@ void ArcBootPhaseThrottleObserver::OnSessionRestoreStartedLoadingTabs() {
 
 void ArcBootPhaseThrottleObserver::OnSessionRestoreFinishedLoadingTabs() {
   session_restore_loading_ = false;
+  MaybeSetActive();
+}
+
+void ArcBootPhaseThrottleObserver::OnConnectionReady() {
+  auto* arc_service_manager = arc::ArcServiceManager::Get();
+  const bool app_connected =
+      arc_service_manager &&
+      arc_service_manager->arc_bridge_service()->app()->IsConnected();
+  const bool intent_helper_connected =
+      arc_service_manager &&
+      arc_service_manager->arc_bridge_service()->intent_helper()->IsConnected();
+  if (!app_connected || !intent_helper_connected)
+    return;
+
+  // Only the first OnConnectionReady() calls need to be monitored. Remove the
+  // observers now.
+  RemoveMojoObservers(this);
+
+  DVLOG(1)
+      << "app.mojom and intent_helper.mojom are connected. Throttle ARC in "
+      << kThrottleArcDelay;
+  base::ThreadTaskRunnerHandle::Get()->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&ArcBootPhaseThrottleObserver::ThrottleArc,
+                     weak_ptr_factory_.GetWeakPtr()),
+      kThrottleArcDelay);
+}
+
+// static
+const base::TimeDelta&
+ArcBootPhaseThrottleObserver::GetThrottleDelayForTesting() {
+  return kThrottleArcDelay;
+}
+
+void ArcBootPhaseThrottleObserver::ThrottleArc() {
+  DVLOG(1) << "Throttling ARC (reason: boot completed)";
+  arc_is_booting_ = false;
   MaybeSetActive();
 }
 

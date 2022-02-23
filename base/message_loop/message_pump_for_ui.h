@@ -10,43 +10,43 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/message_loop/message_pump_win.h"
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 #include "base/message_loop/message_pump_android.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "base/message_loop/message_pump.h"
-#elif defined(OS_NACL) || defined(OS_AIX)
+#elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
 // No MessagePumpForUI, see below.
 #elif defined(USE_GLIB)
 #include "base/message_loop/message_pump_glib.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_BSD)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 #include "base/message_loop/message_pump_libevent.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "base/message_loop/message_pump_fuchsia.h"
 #endif
 
 namespace base {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows defines it as-is.
 using MessagePumpForUI = MessagePumpForUI;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 // Android defines it as-is.
 using MessagePumpForUI = MessagePumpForUI;
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 // MessagePumpForUI isn't bound to a specific impl on Mac. While each impl can
 // be represented by a plain MessagePump: MessagePumpMac::Create() must be used
 // to instantiate the right impl.
 using MessagePumpForUI = MessagePump;
-#elif defined(OS_NACL) || defined(OS_AIX)
+#elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
 // Currently NaCl and AIX don't have a MessagePumpForUI.
 // TODO(abarth): Figure out if we need this.
 #elif defined(USE_GLIB)
 using MessagePumpForUI = MessagePumpGlib;
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_BSD)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_BSD)
 using MessagePumpForUI = MessagePumpLibevent;
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 using MessagePumpForUI = MessagePumpFuchsia;
 #else
 #error Platform does not define MessagePumpForUI

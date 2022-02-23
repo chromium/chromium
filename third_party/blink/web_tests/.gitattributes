@@ -126,7 +126,6 @@ fast/text/international/thai-baht-space.html -crlf
 fast/text/resources/line-breaks-crlf.txt -crlf
 fast/text/text-large-negative-letter-spacing-with-opacity.html -crlf
 fast/text/text-letter-spacing.html -crlf
-http/tests/appcache/max-size.html -crlf
 http/tests/misc/location-test-xsl-style-sheet.xml -crlf
 http/tests/misc/resources/location-test-xsl-style-sheet.xsl -crlf
 http/tests/misc/single-character-pi-stylesheet.xhtml -crlf

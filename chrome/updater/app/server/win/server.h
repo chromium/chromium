@@ -11,7 +11,6 @@
 #include "base/check.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/win/scoped_com_initializer.h"
 #include "chrome/updater/app/app.h"
 #include "chrome/updater/app/app_server.h"
 #include "chrome/updater/update_service.h"
@@ -69,8 +68,8 @@ class ComServerApp : public AppServer {
   void ActiveDuty(scoped_refptr<UpdateService> update_service) override;
   void ActiveDutyInternal(
       scoped_refptr<UpdateServiceInternal> update_service_internal) override;
-  bool SwapRPCInterfaces() override;
-  bool ConvertLegacyUpdaters(
+  bool SwapInNewVersion() override;
+  bool MigrateLegacyUpdaters(
       base::RepeatingCallback<void(const RegistrationRequest&)>
           register_callback) override;
   void UninstallSelf() override;
@@ -91,9 +90,6 @@ class ComServerApp : public AppServer {
 
   // Handles COM setup and registration.
   void Start(base::OnceCallback<HRESULT()> register_callback);
-
-  // While this object lives, COM can be used by all threads in the program.
-  base::win::ScopedCOMInitializer com_initializer_;
 
   // Task runner bound to the main sequence.
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;

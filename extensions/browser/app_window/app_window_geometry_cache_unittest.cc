@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "extensions/browser/app_window/app_window_geometry_cache.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 
@@ -58,7 +59,7 @@ class AppWindowGeometryCacheTest : public ExtensionsTest {
   std::string AddExtensionWithPrefs(const std::string& name);
 
  protected:
-  ExtensionPrefs* extension_prefs_;  // Weak.
+  raw_ptr<ExtensionPrefs> extension_prefs_;  // Weak.
   std::unique_ptr<AppWindowGeometryCache> cache_;
 };
 
@@ -85,15 +86,15 @@ void AppWindowGeometryCacheTest::AddGeometryAndLoadExtension(
       std::make_unique<base::DictionaryValue>();
   std::unique_ptr<base::DictionaryValue> value =
       std::make_unique<base::DictionaryValue>();
-  value->SetInteger("x", bounds.x());
-  value->SetInteger("y", bounds.y());
-  value->SetInteger("w", bounds.width());
-  value->SetInteger("h", bounds.height());
-  value->SetInteger("screen_bounds_x", screen_bounds.x());
-  value->SetInteger("screen_bounds_y", screen_bounds.y());
-  value->SetInteger("screen_bounds_w", screen_bounds.width());
-  value->SetInteger("screen_bounds_h", screen_bounds.height());
-  value->SetInteger("state", state);
+  value->SetIntKey("x", bounds.x());
+  value->SetIntKey("y", bounds.y());
+  value->SetIntKey("w", bounds.width());
+  value->SetIntKey("h", bounds.height());
+  value->SetIntKey("screen_bounds_x", screen_bounds.x());
+  value->SetIntKey("screen_bounds_y", screen_bounds.y());
+  value->SetIntKey("screen_bounds_w", screen_bounds.width());
+  value->SetIntKey("screen_bounds_h", screen_bounds.height());
+  value->SetIntKey("state", state);
   dict->SetKey(window_id, base::Value::FromUniquePtrValue(std::move(value)));
   extension_prefs_->SetGeometryCache(extension_id, std::move(dict));
   LoadExtension(extension_id);
@@ -269,7 +270,7 @@ TEST_F(AppWindowGeometryCacheTest, SaveGeometryAndStateToStore) {
       extension_prefs_->GetGeometryCache(extension_id);
   ASSERT_TRUE(dict);
 
-  ASSERT_TRUE(dict->HasKey(window_id));
+  ASSERT_TRUE(dict->FindKey(window_id));
 
   ASSERT_EQ(bounds.x(), dict->FindIntPath(window_id + ".x"));
   ASSERT_EQ(bounds.y(), dict->FindIntPath(window_id + ".y"));

@@ -33,35 +33,43 @@
 
 namespace {
 
-// List of services provided to the WebEngine context.
-// All services must be listed in cast_runner.cmx.
+// List of services in CastRunner's Service Directory that will be passed
+// through to each WebEngine instance it creates. Each service in
+// web_instance.cmx/.cml must appear on a line below.
+// Although the array must not include any services handled dynamically by the
+// CastRunner logic (e.g., Agent redirections), they are listed here as comments
+// to make the list easier to validate at-a-glance.
+// cast_runner.cmx/.cml must include all services in the array as well as
+// "fuchsia.media.Audio" since OnAudioServiceRequest() may fall back to it.
 static constexpr const char* kServices[] = {
     "fuchsia.accessibility.semantics.SemanticsManager",
+    "fuchsia.buildinfo.Provider",
+    // "fuchsia.camera3.DeviceWatcher" is redirected to the agent.
     "fuchsia.device.NameProvider",
     "fuchsia.fonts.Provider",
     "fuchsia.input.virtualkeyboard.ControllerCreator",
     "fuchsia.intl.PropertyProvider",
+    // "fuchsia.legacymetrics.MetricsRecorder" is redirected to the agent.
     "fuchsia.logger.LogSink",
+    // "fuchsia.media.Audio" may be redirected to the agent.
+    "fuchsia.media.AudioDeviceEnumerator",
     "fuchsia.media.ProfileProvider",
     "fuchsia.media.SessionAudioConsumerFactory",
     "fuchsia.media.drm.PlayReady",
     "fuchsia.media.drm.Widevine",
     "fuchsia.mediacodec.CodecFactory",
     "fuchsia.memorypressure.Provider",
-    "fuchsia.net.name.Lookup",
     "fuchsia.net.interfaces.State",
+    "fuchsia.net.name.Lookup",
     "fuchsia.posix.socket.Provider",
     "fuchsia.process.Launcher",
     "fuchsia.settings.Display",
     "fuchsia.sysmem.Allocator",
+    "fuchsia.ui.composition.Allocator",
+    "fuchsia.ui.composition.Flatland",
     "fuchsia.ui.input3.Keyboard",
     "fuchsia.ui.scenic.Scenic",
     "fuchsia.vulkan.loader.Loader",
-
-    // These services are redirected to the Agent:
-    // * fuchsia.camera3.DeviceWatcher
-    // * fuchsia.legacymetrics.MetricsRecorder
-    // * fuchsia.media.Audio
 };
 
 // Names used to partition the Runner's persistent storage for different uses.
@@ -602,6 +610,7 @@ CastRunner::GetIsolatedContextParamsWithFuchsiaDirs(
     std::vector<fuchsia::web::ContentDirectoryProvider> content_directories) {
   fuchsia::web::CreateContextParams params = GetCommonContextParams();
   EnsureSoftwareVideoDecodersAreDisabled(params.mutable_features());
+  *params.mutable_features() |= fuchsia::web::ContextFeatureFlags::NETWORK;
   params.set_remote_debugging_port(kEphemeralRemoteDebuggingPort);
   params.set_content_directories(std::move(content_directories));
   zx_status_t status = isolated_services_->ConnectClient(

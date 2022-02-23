@@ -731,17 +731,6 @@ bool URLDatabase::CreateURLTable(bool is_temporary) {
       // during this period. Once Sync come back, Sync would use ROWIDs and
       // timestamps to see if there are any updates need to be synced. And sync
       // will only see the new URL, but missed the deleted URL.
-      //
-      // IMPORTANT NOTE: Currently new tables are created with AUTOINCREMENT
-      // but the migration code is disabled. This means that you will not
-      // be able to count on AUTOINCREMENT behavior without adding
-      // additional migration steps.
-      //
-      // Along with this, an unused favicon_id column will exist for tables
-      // without AUTOINCREMENT. This should be removed everywhere.
-      //
-      // TODO(https://crbug.com/736136) figure out how to update users to use
-      // AUTOINCREMENT and remove the favicon_id column consistently.
       "id INTEGER PRIMARY KEY AUTOINCREMENT,"
       "url LONGVARCHAR,"
       "title LONGVARCHAR,"

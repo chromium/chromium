@@ -139,8 +139,9 @@ SettingsOverridesHandler::~SettingsOverridesHandler() {}
 
 bool SettingsOverridesHandler::Parse(Extension* extension,
                                      std::u16string* error) {
-  const base::Value* dict = NULL;
-  CHECK(extension->manifest()->Get(manifest_keys::kSettingsOverride, &dict));
+  const base::Value* dict =
+      extension->manifest()->FindPath(manifest_keys::kSettingsOverride);
+  CHECK(dict != nullptr);
   std::unique_ptr<ChromeSettingsOverrides> settings(
       ChromeSettingsOverrides::FromValue(*dict, error));
   if (!settings)

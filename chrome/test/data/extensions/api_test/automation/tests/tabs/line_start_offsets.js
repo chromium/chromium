@@ -10,7 +10,8 @@ var allTests = [
     assertTrue(!!input);
     assertTrue('lineStartOffsets' in input);
     var lineStarts = input.lineStartOffsets;
-    assertEq(0, lineStarts.length);
+    assertEq(1, lineStarts.length);
+    assertEq(0, lineStarts[0]);
     chrome.test.succeed();
   },
 
@@ -21,9 +22,10 @@ var allTests = [
     assertTrue(!!textarea);
     assertTrue('lineStartOffsets' in textarea);
     var lineStarts = textarea.lineStartOffsets;
-    assertEq(2, lineStarts.length);
-    assertEq(10, lineStarts[0]);
-    assertEq(20, lineStarts[1]);
+    assertEq(3, lineStarts.length);
+    assertEq(0, lineStarts[0]);
+    assertEq(10, lineStarts[1]);
+    assertEq(20, lineStarts[2]);
     chrome.test.succeed();
   }
 ];

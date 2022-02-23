@@ -548,10 +548,14 @@ editing.EditableLine = class {
    * @return {boolean}
    */
   isBeforeLine(otherLine) {
-    if (this.isSameLine(otherLine) || !this.lineStartContainer_ ||
-        !otherLine.lineStartContainer_) {
+    if (!this.lineStartContainer_ || !otherLine.lineStartContainer_) {
       return false;
     }
+
+    if (this.isSameLine(otherLine)) {
+      return this.endOffset <= otherLine.endOffset;
+    }
+
     return AutomationUtil.getDirection(
                this.lineStartContainer_, otherLine.lineStartContainer_) ===
         Dir.FORWARD;
@@ -622,29 +626,54 @@ editing.EditableLine = class {
    * @param {editing.EditableLine} prevLine
    */
   speakLine(prevLine) {
-    let prev = (prevLine && prevLine.startContainer_.role) ?
+    // Detect when the entire line is just a breaking space. This occurs on
+    // Google Docs and requires that we speak it as a new line. However, we
+    // still need to account for all of the possible rich output occurring from
+    // ancestors of line nodes.
+    const isLineBreakingSpace = this.text === '\u00a0';
+
+    const prev = (prevLine && prevLine.startContainer_.role) ?
         prevLine.startContainer_ :
         null;
     const lineNodes =
         /** @type {Array<!AutomationNode>} */ (this.value_.getSpansInstanceOf(
             /** @type {function()} */ (this.startContainer_.constructor)));
-    for (let i = 0, cur; cur = lineNodes[i]; i++) {
-      if (cur.children.length) {
-        continue;
+    const speakNodeAtIndex = (index, prev) => {
+      const cur = lineNodes[index];
+      if (!cur) {
+        return;
       }
 
-      const o = new Output().withRichSpeech(
-          Range.fromNode(cur),
-          prev ? Range.fromNode(prev) : Range.fromNode(cur),
-          OutputEventType.NAVIGATE);
+      if (cur.children.length) {
+        speakNodeAtIndex(++index, cur);
+        return;
+      }
+
+      const o = new Output();
+
+      if (isLineBreakingSpace) {
+        // Apply a replacement for \u00a0 to \n.
+        o.withSpeechTextReplacement('\u00a0', '\n');
+      }
+
+      o.withRichSpeech(
+           Range.fromNode(cur),
+           prev ? Range.fromNode(prev) : Range.fromNode(cur),
+           OutputEventType.NAVIGATE)
+          .onSpeechEnd(() => {
+            speakNodeAtIndex(++index, cur);
+          });
 
       // Ignore whitespace only output except if it is leading content on the
       // line.
-      if (!o.isOnlyWhitespace || i === 0) {
+      if (!o.isOnlyWhitespace || index === 0) {
         o.go();
+      } else {
+        speakNodeAtIndex(++index, cur);
       }
-      prev = cur;
-    }
+    };
+
+    speakNodeAtIndex(0, prev);
   }
 
   /**
@@ -681,7 +710,7 @@ editing.EditableLine = class {
         Unit.WORD,
         shouldMoveToPreviousWord ? Movement.DIRECTIONAL : Movement.BOUND,
         Dir.BACKWARD);
-    const end = pos.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
+    const end = start.move(Unit.WORD, Movement.BOUND, Dir.FORWARD);
     return new Range(start, end);
   }
 };

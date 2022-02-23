@@ -51,7 +51,7 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
         PaymentAppServiceBridgeJni.get().create(delegate.getParams().getRenderFrameHost(),
                 delegate.getParams().getTopLevelOrigin(), delegate.getParams().getSpec(),
                 delegate.getParams().getTwaPackageName(), delegate.getParams().getMayCrawl(),
-                callback);
+                delegate.getParams().isOffTheRecord(), callback);
     }
 
     /** Handles callbacks from native PaymentAppService. */
@@ -120,10 +120,13 @@ public class PaymentAppServiceBridge implements PaymentAppFactoryInterface {
          * Chrome. If not running in TWA mode, then this string is null or empty.
          * @param mayCrawlForInstallablePaymentApps Whether crawling for just-in-time installable
          * payment apps is allowed.
+         * @param isOffTheRecord Whether the merchant WebContent's profile is in off-the-record
+         * mode.
          * @param callback The callback that receives the discovered payment apps.
          */
         void create(RenderFrameHost initiatorRenderFrameHost, String topOrigin,
                 PaymentRequestSpec spec, String twaPackageName,
-                boolean mayCrawlForInstallablePaymentApps, PaymentAppServiceCallback callback);
+                boolean mayCrawlForInstallablePaymentApps, boolean isOffTheRecord,
+                PaymentAppServiceCallback callback);
     }
 }

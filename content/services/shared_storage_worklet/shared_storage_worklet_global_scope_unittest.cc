@@ -19,7 +19,8 @@ namespace shared_storage_worklet {
 namespace {
 
 std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
-CreateBatchResult(std::vector<std::pair<std::string, std::string>> input) {
+CreateBatchResult(
+    std::vector<std::pair<std::u16string, std::u16string>> input) {
   std::vector<shared_storage_worklet::mojom::SharedStorageKeyAndOrValuePtr>
       result;
   for (const auto& p : input) {
@@ -53,8 +54,8 @@ std::vector<uint8_t> Serialize(v8::Isolate* isolate,
 }
 
 struct SetParams {
-  std::string key;
-  std::string value;
+  std::u16string key;
+  std::u16string value;
   bool ignore_if_present;
 };
 
@@ -64,8 +65,8 @@ class TestClient
   explicit TestClient(scoped_refptr<base::SingleThreadTaskRunner> task_runner)
       : task_runner_(task_runner) {}
 
-  void SharedStorageSet(const std::string& key,
-                        const std::string& value,
+  void SharedStorageSet(const std::u16string& key,
+                        const std::u16string& value,
                         bool ignore_if_present,
                         SharedStorageSetCallback callback) override {
     observed_set_params_.push_back({key, value, ignore_if_present});
@@ -77,8 +78,8 @@ class TestClient
         }));
   }
 
-  void SharedStorageAppend(const std::string& key,
-                           const std::string& value,
+  void SharedStorageAppend(const std::u16string& key,
+                           const std::u16string& value,
                            SharedStorageAppendCallback callback) override {
     task_runner_->PostTask(
         FROM_HERE,
@@ -89,12 +90,12 @@ class TestClient
         }));
   }
 
-  void SharedStorageDelete(const std::string& key,
+  void SharedStorageDelete(const std::u16string& key,
                            SharedStorageDeleteCallback callback) override {}
 
   void SharedStorageClear(SharedStorageClearCallback callback) override {}
 
-  void SharedStorageGet(const std::string& key,
+  void SharedStorageGet(const std::u16string& key,
                         SharedStorageGetCallback callback) override {
     task_runner_->PostTask(
         FROM_HERE,
@@ -102,7 +103,7 @@ class TestClient
           std::move(callback).Run(
               /*success=*/true,
               /*error_message=*/{},
-              /*value=*/"test-value");
+              /*value=*/u"test-value");
         }));
   }
 
@@ -254,7 +255,6 @@ TEST_F(SharedStorageWorkletGlobalScopeTest, OnModuleScriptDownloadedSuccess) {
   EXPECT_EQ(GetTypeOf("console.log"), "function");
   EXPECT_EQ(GetTypeOf("registerURLSelectionOperation"), "function");
   EXPECT_EQ(GetTypeOf("registerOperation"), "function");
-  EXPECT_EQ(GetTypeOf("sharedStorage"), "object");
   EXPECT_EQ(GetTypeOf("sharedStorage"), "object");
   EXPECT_EQ(GetTypeOf("sharedStorage.set"), "function");
   EXPECT_EQ(GetTypeOf("sharedStorage.append"), "function");
@@ -491,7 +491,7 @@ class SharedStorageRunOperationTest
 
   void SimulateRunURLSelectionOperation(
       const std::string& name,
-      const std::vector<std::string>& urls,
+      const std::vector<GURL>& urls,
       const std::vector<uint8_t>& serialized_data) {
     auto run_operation_callback = base::BindLambdaForTesting(
         [&](bool success, const std::string& error_message, uint32_t index) {
@@ -785,8 +785,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_TRUE(url_selection_operation_finished());
   EXPECT_TRUE(url_selection_operation_success());
@@ -806,8 +807,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_TRUE(url_selection_operation_finished());
   EXPECT_FALSE(url_selection_operation_success());
@@ -828,8 +830,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_FALSE(url_selection_operation_finished());
 
@@ -841,8 +844,9 @@ TEST_F(SharedStorageRunOperationTest,
   EXPECT_EQ(url_selection_operation_index(), 1u);
 }
 
-TEST_F(SharedStorageRunOperationTest,
-       URLSelectionOperation_ResultPromiseRejectedAsynchronously) {
+TEST_F(
+    SharedStorageRunOperationTest,
+    URLSelectionOperation_ResultPromiseRejectedAsynchronously_ReturnValueNotUint32) {
   SimulateAddModule(R"(
       class TestClass {
         async run(urls) {
@@ -853,8 +857,9 @@ TEST_F(SharedStorageRunOperationTest,
       registerURLSelectionOperation("test-operation", TestClass);
     )");
 
-  SimulateRunURLSelectionOperation("test-operation", {"url0", "url1"},
-                                   /*serialized_data=*/{});
+  SimulateRunURLSelectionOperation(
+      "test-operation", {GURL("https://foo.com"), GURL("https://bar.com")},
+      /*serialized_data=*/{});
 
   EXPECT_FALSE(url_selection_operation_finished());
 
@@ -864,6 +869,34 @@ TEST_F(SharedStorageRunOperationTest,
   EXPECT_FALSE(url_selection_operation_success());
   EXPECT_EQ(url_selection_operation_error_message(),
             "Promise did not resolve to an uint32 number.");
+  EXPECT_EQ(url_selection_operation_index(), 0u);
+}
+
+TEST_F(
+    SharedStorageRunOperationTest,
+    URLSelectionOperation_ResultPromiseRejectedAsynchronously_ReturnValueOutOfRange) {
+  SimulateAddModule(R"(
+      class TestClass {
+        async run(urls) {
+          return sharedStorage.length(); // this would return 1 for this test
+        }
+      }
+
+      registerURLSelectionOperation("test-operation", TestClass);
+    )");
+
+  SimulateRunURLSelectionOperation("test-operation", {GURL("https://foo.com")},
+                                   /*serialized_data=*/{});
+
+  EXPECT_FALSE(url_selection_operation_finished());
+
+  task_environment_.RunUntilIdle();
+
+  EXPECT_TRUE(url_selection_operation_finished());
+  EXPECT_FALSE(url_selection_operation_success());
+  EXPECT_EQ(
+      url_selection_operation_error_message(),
+      "Promise resolved to a number outside the length of the input urls.");
   EXPECT_EQ(url_selection_operation_index(), 0u);
 }
 
@@ -983,8 +1016,8 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_FulfilledAsynchronously) {
   }
 
   EXPECT_EQ(test_client()->observed_set_params().size(), 1u);
-  EXPECT_EQ(test_client()->observed_set_params()[0].key, "key");
-  EXPECT_EQ(test_client()->observed_set_params()[0].value, "value");
+  EXPECT_EQ(test_client()->observed_set_params()[0].key, u"key");
+  EXPECT_EQ(test_client()->observed_set_params()[0].value, u"value");
   EXPECT_FALSE(test_client()->observed_set_params()[0].ignore_if_present);
 }
 
@@ -1001,8 +1034,8 @@ TEST_F(SharedStorageObjectMethodTest, SetOperation_IgnoreIfPresent) {
   }
 
   EXPECT_EQ(test_client()->observed_set_params().size(), 1u);
-  EXPECT_EQ(test_client()->observed_set_params()[0].key, "key");
-  EXPECT_EQ(test_client()->observed_set_params()[0].value, "value");
+  EXPECT_EQ(test_client()->observed_set_params()[0].key, u"key");
+  EXPECT_EQ(test_client()->observed_set_params()[0].value, u"value");
   EXPECT_TRUE(test_client()->observed_set_params()[0].ignore_if_present);
 }
 
@@ -1169,7 +1202,7 @@ TEST_F(SharedStorageObjectMethodTest,
 
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
-      CreateBatchResult({{"key0", "value0"}}),
+      CreateBatchResult({{u"key0", u"value0"}}),
       /*has_more_entries=*/true);
   task_environment_.RunUntilIdle();
 
@@ -1179,7 +1212,7 @@ TEST_F(SharedStorageObjectMethodTest,
 
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
-      CreateBatchResult({{"key1", "value1"}, {"key2", "value2"}}),
+      CreateBatchResult({{u"key1", u"value1"}, {u"key2", u"value2"}}),
       /*has_more_entries=*/false);
   task_environment_.RunUntilIdle();
 
@@ -1209,7 +1242,7 @@ TEST_F(SharedStorageObjectMethodTest,
 
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
-      CreateBatchResult({{"key0", "value0"}}),
+      CreateBatchResult({{u"key0", u"value0"}}),
       /*has_more_entries=*/true);
   task_environment_.RunUntilIdle();
 
@@ -1253,7 +1286,7 @@ TEST_F(SharedStorageObjectMethodTest,
   // It's harmless to still send the `value` field. They will simply be ignored.
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
-      CreateBatchResult({{"key0", "value0"}, {"key1", "value1"}}),
+      CreateBatchResult({{u"key0", u"value0"}, {u"key1", u"value1"}}),
       /*has_more_entries=*/false);
   task_environment_.RunUntilIdle();
 
@@ -1296,7 +1329,7 @@ TEST_F(SharedStorageObjectMethodTest,
 
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
-      CreateBatchResult({{"key0", /*value=*/{}}}),
+      CreateBatchResult({{u"key0", /*value=*/{}}}),
       /*has_more_entries=*/true);
   task_environment_.RunUntilIdle();
 
@@ -1305,7 +1338,7 @@ TEST_F(SharedStorageObjectMethodTest,
 
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
-      CreateBatchResult({{"key1", /*value=*/{}}, {"key2", /*value=*/{}}}),
+      CreateBatchResult({{u"key1", /*value=*/{}}, {u"key2", /*value=*/{}}}),
       /*has_more_entries=*/true);
   task_environment_.RunUntilIdle();
 
@@ -1316,7 +1349,7 @@ TEST_F(SharedStorageObjectMethodTest,
 
   remote_listener->DidReadEntries(
       /*success=*/true, /*error_message=*/{},
-      CreateBatchResult({{"key3", /*value=*/{}}}),
+      CreateBatchResult({{u"key3", /*value=*/{}}}),
       /*has_more_entries=*/false);
   task_environment_.RunUntilIdle();
 

@@ -21,7 +21,7 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
       'recordSignInPromoImpression', 'getAvailableIcons', 'getSwitchProfile',
       'confirmProfileSwitch', 'cancelProfileSwitch',
       // <if expr="lacros">
-      'getUnassignedAccounts',
+      'getAvailableAccounts', 'openAshAccountSettingsPage',
       // </if>
     ]);
 
@@ -161,8 +161,12 @@ export class TestManageProfilesBrowserProxy extends TestBrowserProxy implements
   }
 
   // <if expr="lacros">
-  getUnassignedAccounts() {
-    this.methodCalled('getUnassignedAccounts');
+  getAvailableAccounts() {
+    this.methodCalled('getAvailableAccounts');
+  }
+
+  openAshAccountSettingsPage() {
+    this.methodCalled('openAshAccountSettingsPage');
   }
   // </if>
 }

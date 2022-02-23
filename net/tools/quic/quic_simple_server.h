@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "net/base/io_buffer.h"
 #include "net/base/ip_endpoint.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"

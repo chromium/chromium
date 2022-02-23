@@ -30,7 +30,7 @@ struct OriginStatus {
 };
 
 OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
-  std::unique_ptr<base::Value> stored_value =
+  const base::Value stored_value =
       permissions::PermissionsClient::Get()
           ->GetSettingsMap(profile)
           ->GetWebsiteSetting(
@@ -39,10 +39,10 @@ OriginStatus GetOriginStatus(Profile* profile, const GURL& origin) {
 
   OriginStatus status;
 
-  if (!stored_value || !stored_value->is_dict())
+  if (!stored_value.is_dict())
     return status;
 
-  base::Value* dict = stored_value->FindPath(kPermissionName);
+  const base::Value* dict = stored_value.FindPath(kPermissionName);
   if (!dict)
     return status;
 
@@ -73,7 +73,7 @@ void SetOriginStatus(Profile* profile,
       ->GetSettingsMap(profile)
       ->SetWebsiteSettingDefaultScope(
           origin, GURL(), ContentSettingsType::PERMISSION_AUTOREVOCATION_DATA,
-          base::Value::ToUniquePtrValue(dict.Clone()));
+          dict.Clone());
 }
 
 void RevokePermission(const GURL& origin, Profile* profile) {

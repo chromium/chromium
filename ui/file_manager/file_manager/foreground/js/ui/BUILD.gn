@@ -25,7 +25,6 @@ group("js_modules") {
     ":action_model_ui",
     ":actions_submenu",
     ":autocomplete_list",
-    ":banners",
     ":combobutton",
     ":commandbutton",
     ":default_task_dialog",
@@ -75,7 +74,6 @@ js_type_check("closure_compile_jsmodules") {
     ":action_model_ui",
     ":actions_submenu",
     ":autocomplete_list",
-    ":banners",
     ":breadcrumb",
     ":combobutton",
     ":commandbutton",
@@ -142,22 +140,6 @@ js_unittest("actions_submenu_unittest.m") {
     "//ui/file_manager/file_manager/foreground/js:mock_actions_model",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:menu.m",
-  ]
-}
-
-js_library("banners") {
-  deps = [
-    "//ui/file_manager/file_manager/common/js:util",
-    "//ui/file_manager/file_manager/common/js:volume_manager_types",
-    "//ui/file_manager/file_manager/externs:volume_info",
-    "//ui/file_manager/file_manager/externs:volume_manager",
-    "//ui/file_manager/file_manager/foreground/js:constants",
-    "//ui/file_manager/file_manager/foreground/js:directory_model",
-    "//ui/file_manager/file_manager/foreground/js:holding_space_util",
-    "//ui/webui/resources/js:assert.m",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:util.m",
-    "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
 
@@ -330,7 +312,6 @@ js_library("file_manager_ui") {
     ":a11y_announce",
     ":action_model_ui",
     ":actions_submenu",
-    ":banners",
     ":combobutton",
     ":default_task_dialog",
     ":dialog_footer",

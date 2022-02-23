@@ -9,22 +9,22 @@ source_set("reading_list") {
     "favicon_web_state_dispatcher_impl.mm",
     "offline_page_tab_helper.h",
     "offline_page_tab_helper.mm",
-    "offline_url_utils.cc",
     "offline_url_utils.h",
+    "offline_url_utils.mm",
     "reading_list_distiller_page.h",
     "reading_list_distiller_page.mm",
     "reading_list_distiller_page_factory.h",
     "reading_list_distiller_page_factory.mm",
-    "reading_list_download_service.cc",
     "reading_list_download_service.h",
-    "reading_list_download_service_factory.cc",
+    "reading_list_download_service.mm",
     "reading_list_download_service_factory.h",
-    "reading_list_model_factory.cc",
+    "reading_list_download_service_factory.mm",
     "reading_list_model_factory.h",
+    "reading_list_model_factory.mm",
     "reading_list_web_state_observer.h",
     "reading_list_web_state_observer.mm",
-    "url_downloader.cc",
     "url_downloader.h",
+    "url_downloader.mm",
   ]
   deps = [
     ":reading_list_remover",
@@ -49,7 +49,7 @@ source_set("reading_list") {
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",
     "//ios/web/public",
-    "//ios/web/public/deprecated",
+    "//ios/web/public/js_messaging:js_messaging",
     "//ios/web/public/security",
     "//net",
     "//services/network/public/cpp",
@@ -62,9 +62,10 @@ source_set("reading_list") {
 }
 
 source_set("reading_list_remover") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "reading_list_remover_helper.cc",
     "reading_list_remover_helper.h",
+    "reading_list_remover_helper.mm",
   ]
   deps = [
     "//base",
@@ -87,7 +88,7 @@ source_set("unit_tests") {
   sources = [
     "favicon_web_state_dispatcher_impl_unittest.mm",
     "offline_page_tab_helper_unittest.mm",
-    "offline_url_utils_unittest.cc",
+    "offline_url_utils_unittest.mm",
     "reading_list_web_state_observer_unittest.mm",
     "url_downloader_unittest.mm",
   ]
@@ -102,6 +103,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/dom_distiller",
+    "//ios/chrome/browser/web:test_support",
     "//ios/web",
     "//ios/web/public",
     "//ios/web/public/test",
@@ -124,6 +126,7 @@ source_set("fakes") {
     "//base",
     "//components/reading_list/core",
   ]
+  public_deps = [ "//third_party/abseil-cpp:absl" ]
 }
 
 bundle_data("distilled_bundle_data") {

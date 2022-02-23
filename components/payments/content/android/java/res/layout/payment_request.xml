@@ -14,7 +14,7 @@
     android:gravity="center"
     app:maxWidthLandscape="@dimen/payments_ui_max_dialog_width"
     app:maxWidthPortrait="@dimen/payments_ui_max_dialog_width"
-    android:background="@color/payment_request_bg" >
+    android:background="@drawable/sheet_background" >
 
     <include layout="@layout/payment_request_header" />
     <include layout="@layout/payment_request_spinny" />

@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//extensions/buildflags/buildflags.gni")
 import("//mojo/public/tools/bindings/mojom.gni")
 
 static_library("common") {
@@ -18,7 +19,7 @@ static_library("common") {
   deps = [
     ":mojo_bindings",
     "//content/public/common:common",
-    "//extensions/common:common_constants",
+    "//extensions/buildflags",
     "//ipc",
     "//ipc:message_support",
     "//ipc:param_traits",
@@ -26,6 +27,10 @@ static_library("common") {
     "//ui/gfx",
     "//url",
   ]
+
+  if (enable_extensions) {
+    deps += [ "//extensions/common:common_constants" ]
+  }
 }
 
 mojom("mojo_bindings") {

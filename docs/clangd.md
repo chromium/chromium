@@ -19,6 +19,7 @@ tools/clang/scripts/generate_compdb.py -p out/<build> > compile_commands.json
   lots of CPU and RAM. There's also a
   [remote-index service](https://github.com/clangd/chrome-remote-index/blob/main/docs/index.md)
   to have an instant project-wide index without consuming local resources
+  (requires clangd 12+ built with remote index support).
 * Use clangd in your favourite editor
 
 ## Getting clangd
@@ -83,6 +84,11 @@ ninja -C out/Default chrome
 
 5. Use clangd in your favourite editor, see detailed [instructions](
 https://clangd.llvm.org/installation.html#editor-plugins).
+
+    * Optional: You may want to add `-header-insertion=never` to the clangd flags,
+      so that your editor doesn't automatically add incorrect #include lines. The
+      feature doesn't correctly handle some common Chromium headers like
+      `base/strings/string_piece_forward.h` and `base/callback_forward.h`
 
 ## Background Indexing
 

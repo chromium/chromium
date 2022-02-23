@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "ppapi/thunk/resource_creation_api.h"
 
 namespace content {

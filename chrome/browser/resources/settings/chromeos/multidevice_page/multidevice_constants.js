@@ -32,7 +32,7 @@ cr.define('settings', function() {
   /**
    * Enum of MultiDevice features. Note that this is copied from (and must
    * include an analog of all values in) the Feature enum in
-   * //chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
+   * //ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
    * @enum {number}
    */
   /* #export */ const MultiDeviceFeature = {
@@ -51,7 +51,7 @@ cr.define('settings', function() {
   /**
    * Possible states of MultiDevice features. Note that this is copied from (and
    * must include an analog of all values in) the FeatureState enum in
-   * //chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
+   * //ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.
    * @enum {number}
    */
   /* #export */ const MultiDeviceFeatureState = {
@@ -70,13 +70,43 @@ cr.define('settings', function() {
 
   /**
    * Possible states of Phone Hub's notification access. Access can be
-   * prohibited if the user is using a work profile on their phone.
+   * prohibited if the user is using a work profile on their phone on Android
+   * version <N, or if the policy managing the phone disables access.
    * @enum {number}
    */
   /* #export */ const PhoneHubNotificationAccessStatus = {
     PROHIBITED: 0,
     AVAILABLE_BUT_NOT_GRANTED: 1,
     ACCESS_GRANTED: 2,
+  };
+
+  /**
+   * Possible reasons for Phone Hub's notification access being prohibited.
+   * Users should ensure notification access is actually prohibited before
+   * comparing against these reasons.
+   * @enum {number}
+   */
+  /* #export */ const PhoneHubNotificationAccessProhibitedReason = {
+    UNKNOWN: 0,
+    WORK_PROFILE: 1,
+    DISABLED_BY_PHONE_POLICY: 2,
+  };
+
+  /**
+   * Possible of Phone Hub's permissions setup mode．The value will be assigned
+   * when the user clicks on the settings UI. Basically, INIT_MODE will be
+   * default value, which means it has not been set yet.
+   * ALL_PERMISSIONS_SETUP_MODE means that we will process notifications and
+   * apps streaming onboarding flow in order.
+   *
+   * @enum {number}
+   */
+  /* #export */ const PhoneHubPermissionsSetupMode = {
+    INIT_MODE: 0,
+    NOTIFICATION_SETUP_MODE: 1,
+    APPS_SETUP_MODE: 2,
+    CAMERA_ROLL_SETUP_MODE: 3,
+    ALL_PERMISSIONS_SETUP_MODE: 4,
   };
 
   /**
@@ -107,9 +137,12 @@ cr.define('settings', function() {
    *   wifiSyncState: !settings.MultiDeviceFeatureState,
    *   isAndroidSmsPairingComplete: boolean,
    *   notificationAccessStatus: !settings.PhoneHubNotificationAccessStatus,
+   *   notificationAccessProhibitedReason:
+   *       !settings.PhoneHubNotificationAccessProhibitedReason,
    *   isNearbyShareDisallowedByPolicy: boolean,
    *   isPhoneHubAppsAccessGranted: boolean,
-   *   isPhoneHubPermissionsDialogSupported: boolean
+   *   isPhoneHubPermissionsDialogSupported: boolean,
+   *   isCameraRollFilePermissionGranted: boolean
    * }}
    */
   /* #export */ let MultiDevicePageContentData;
@@ -121,6 +154,8 @@ cr.define('settings', function() {
     MultiDeviceFeatureState,
     MultiDevicePageContentData,
     PhoneHubNotificationAccessStatus,
+    PhoneHubNotificationAccessProhibitedReason,
+    PhoneHubPermissionsSetupMode,
     SmartLockSignInEnabledState
   };
 });

@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_RENDERER_HEADLESS_PRINT_RENDER_FRAME_HELPER_DELEGATE_H_
 #define HEADLESS_LIB_RENDERER_HEADLESS_PRINT_RENDER_FRAME_HELPER_DELEGATE_H_
 
-#include "base/macros.h"
 #include "components/printing/renderer/print_render_frame_helper.h"
 
 namespace headless {

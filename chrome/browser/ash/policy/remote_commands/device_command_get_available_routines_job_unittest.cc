@@ -94,7 +94,7 @@ void DeviceCommandGetAvailableRoutinesJobTest::InitializeJob(
       base::TimeTicks::Now(),
       GenerateCommandProto(unique_id, base::TimeTicks::Now() - issued_time,
                            idleness_cutoff, terminate_upon_input),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(unique_id, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());

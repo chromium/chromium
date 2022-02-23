@@ -25,6 +25,7 @@ enum class CompositorElementIdNamespace {
   kEffectClipPath,
   kVerticalScrollbar,
   kHorizontalScrollbar,
+  kSharedElementTransition,
   kDOMNodeId,
   // The following values are for internal usage only.
   kMax = kDOMNodeId,

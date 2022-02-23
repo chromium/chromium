@@ -47,9 +47,9 @@ const char kEmbeddedSetupWindowsUrlSuffix[] = "embedded/setup/windows";
 // to all URLs that are loaded as part of thi sign-in flow.
 const char kSigninChromeSyncDice[] = "signin/chrome/sync?ssp=1";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/android";
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/ios";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 const char kSigninChromeSyncKeysRetrievalUrl[] = "encryption/unlock/chromeos";

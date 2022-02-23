@@ -16,8 +16,9 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForFiles(
     const std::string& action,
     const std::string& mime_type,
     const std::string& file_extension,
+    const std::string& url_pattern,
     const std::string& activity_label) {
-  DCHECK(!mime_type.empty() || !file_extension.empty());
+  DCHECK(!mime_type.empty() || !file_extension.empty() || !url_pattern.empty());
   auto intent_filter = apps::mojom::IntentFilter::New();
 
   apps_util::AddSingleValueCondition(
@@ -32,6 +33,10 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForFiles(
   if (!file_extension.empty()) {
     condition_values.push_back(apps_util::MakeConditionValue(
         file_extension, apps::mojom::PatternMatchType::kFileExtension));
+  }
+  if (!url_pattern.empty()) {
+    condition_values.push_back(apps_util::MakeConditionValue(
+        url_pattern, apps::mojom::PatternMatchType::kGlob));
   }
   intent_filter->conditions.push_back(apps_util::MakeCondition(
       apps::mojom::ConditionType::kFile, std::move(condition_values)));
@@ -82,7 +87,7 @@ apps::mojom::IntentFilterPtr CreateSchemeAndHostOnlyFilter(
 apps::mojom::IntentFilterPtr CreateIntentFilterForSend(
     const std::string& mime_type,
     const std::string& activity_label) {
-  return CreateIntentFilterForFiles(kIntentActionSend, mime_type, "",
+  return CreateIntentFilterForFiles(kIntentActionSend, mime_type, "", "",
                                     activity_label);
 }
 
@@ -107,7 +112,7 @@ apps::mojom::IntentFilterPtr CreateIntentFilterForSendMultiple(
     const std::string& mime_type,
     const std::string& activity_label) {
   return CreateIntentFilterForFiles(kIntentActionSendMultiple, mime_type, "",
-                                    activity_label);
+                                    "", activity_label);
 }
 
 apps::mojom::IntentFilterPtr CreateFileFilterForView(
@@ -115,7 +120,14 @@ apps::mojom::IntentFilterPtr CreateFileFilterForView(
     const std::string& file_extension,
     const std::string& activity_label) {
   return CreateIntentFilterForFiles(kIntentActionView, mime_type,
-                                    file_extension, activity_label);
+                                    file_extension, "", activity_label);
+}
+
+apps::mojom::IntentFilterPtr CreateURLFilterForView(
+    const std::string& url_pattern,
+    const std::string& activity_label) {
+  return CreateIntentFilterForFiles(kIntentActionView, "", "", url_pattern,
+                                    activity_label);
 }
 
 void AddConditionValue(apps::mojom::ConditionType condition_type,

@@ -127,12 +127,13 @@ std::unique_ptr<WebRequestCondition> WebRequestCondition::Create(
   }
 
   // Verify that we are dealing with a Condition whose type we understand.
-  std::string instance_type;
-  if (!condition_dict->GetString(keys::kInstanceTypeKey, &instance_type)) {
+  const std::string* instance_type =
+      condition_dict->FindStringKey(keys::kInstanceTypeKey);
+  if (!instance_type) {
     *error = kConditionWithoutInstanceType;
     return nullptr;
   }
-  if (instance_type != keys::kRequestMatcherType) {
+  if (*instance_type != keys::kRequestMatcherType) {
     *error = kExpectedOtherConditionType;
     return nullptr;
   }

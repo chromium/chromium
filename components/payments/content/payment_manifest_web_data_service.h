@@ -25,7 +25,7 @@ class SingleThreadTaskRunner;
 
 namespace payments {
 
-struct SecurePaymentConfirmationInstrument;
+struct SecurePaymentConfirmationCredential;
 
 // Web data service to read/write data in WebAppManifestSectionTable and
 // PaymentMethodManifestTable.
@@ -59,25 +59,25 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
       const std::string& payment_method,
       WebDataServiceConsumer* consumer);
 
-  // Adds the secure payment confirmation `instrument` and returns a boolean
+  // Adds the secure payment confirmation `credential` and returns a boolean
   // status to the `consumer`, which must outlive the DB operation, because DB
-  // tasks cannot be cancelled. The `instrument` should not be null.
-  WebDataServiceBase::Handle AddSecurePaymentConfirmationInstrument(
-      std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+  // tasks cannot be cancelled. The `credential` should not be null.
+  WebDataServiceBase::Handle AddSecurePaymentConfirmationCredential(
+      std::unique_ptr<SecurePaymentConfirmationCredential> credential,
       WebDataServiceConsumer* consumer);
 
-  // Gets the secure payment confirmation instrument information for the given
+  // Gets the secure payment confirmation credential information for the given
   // `credential_ids` and returns it to the `consumer`, which must outlive the
   // DB operation, because DB tasks cannot be cancelled. Please use
   // `std::move()` for `credential_ids` parameter to avoid extra copies.
-  WebDataServiceBase::Handle GetSecurePaymentConfirmationInstruments(
+  WebDataServiceBase::Handle GetSecurePaymentConfirmationCredentials(
       std::vector<std::vector<uint8_t>> credential_ids,
       WebDataServiceConsumer* consumer);
 
-  // Clears all of the the secure payment confirmation instrument information
+  // Clears all of the the secure payment confirmation credential information
   // created in the given time range `begin` and `end`, and invokes `callback`
   // when the clearing is completed.
-  virtual void ClearSecurePaymentConfirmationInstruments(
+  virtual void ClearSecurePaymentConfirmationCredentials(
       base::Time begin,
       base::Time end,
       base::OnceClosure callback);
@@ -91,7 +91,7 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
   ~PaymentManifestWebDataService() override;
 
  private:
-  std::unique_ptr<WDTypedResult> ClearSecurePaymentConfirmationInstrumentsImpl(
+  std::unique_ptr<WDTypedResult> ClearSecurePaymentConfirmationCredentialsImpl(
       base::Time begin,
       base::Time end,
       WebDatabase* db);
@@ -105,8 +105,8 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
       const std::string& payment_method,
       const std::vector<std::string>& app_package_names,
       WebDatabase* db);
-  std::unique_ptr<WDTypedResult> AddSecurePaymentConfirmationInstrumentImpl(
-      std::unique_ptr<SecurePaymentConfirmationInstrument> instrument,
+  std::unique_ptr<WDTypedResult> AddSecurePaymentConfirmationCredentialImpl(
+      std::unique_ptr<SecurePaymentConfirmationCredential> credential,
       WebDatabase* db);
 
   std::unique_ptr<WDTypedResult> GetPaymentWebAppManifestImpl(
@@ -115,12 +115,12 @@ class PaymentManifestWebDataService : public WebDataServiceBase,
   std::unique_ptr<WDTypedResult> GetPaymentMethodManifestImpl(
       const std::string& payment_method,
       WebDatabase* db);
-  std::unique_ptr<WDTypedResult> GetSecurePaymentConfirmationInstrumentsImpl(
+  std::unique_ptr<WDTypedResult> GetSecurePaymentConfirmationCredentialsImpl(
       std::vector<std::vector<uint8_t>> credential_ids,
       WebDatabase* db);
 
   std::map<WebDataServiceBase::Handle, base::OnceClosure>
-      clearing_instruments_requests_;
+      clearing_credentials_requests_;
 };
 
 }  // namespace payments

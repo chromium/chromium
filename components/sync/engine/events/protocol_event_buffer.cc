@@ -23,7 +23,7 @@ void ProtocolEventBuffer::RecordProtocolEvent(const ProtocolEvent& event) {
 std::vector<std::unique_ptr<ProtocolEvent>>
 ProtocolEventBuffer::GetBufferedProtocolEvents() const {
   std::vector<std::unique_ptr<ProtocolEvent>> ret;
-  for (auto& event : buffer_)
+  for (const std::unique_ptr<ProtocolEvent>& event : buffer_)
     ret.push_back(event->Clone());
 
   return ret;

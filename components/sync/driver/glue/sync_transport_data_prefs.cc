@@ -8,18 +8,15 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/feature_list.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/model_type.h"
 
 namespace syncer {
 
 namespace {
-
-constexpr base::Feature kSyncResetVeryShortPollInterval{
-    "SyncResetVeryShortPollInterval", base::FEATURE_ENABLED_BY_DEFAULT};
 
 // 64-bit integer serialization of the base::Time when the last sync occurred.
 const char kSyncLastSyncedTime[] = "sync.last_synced_time";
@@ -38,11 +35,113 @@ const char kSyncBirthday[] = "sync.birthday";
 const char kSyncBagOfChips[] = "sync.bag_of_chips";
 
 // Dictionary of last seen invalidation versions for each model type.
-const char kSyncInvalidationVersions[] = "sync.invalidation_versions";
+const char kDeprecatedSyncInvalidationVersions[] = "sync.invalidation_versions";
+const char kSyncInvalidationVersions2[] = "sync.invalidation_versions2";
 
 // Obsolete pref.
 const char kSyncObsoleteKeystoreEncryptionBootstrapToken[] =
     "sync.keystore_encryption_bootstrap_token";
+
+void UpdateInvalidationVersions(
+    const std::map<ModelType, int64_t>& invalidation_versions,
+    PrefService* pref_service) {
+  auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
+  for (const auto& [type, version] : invalidation_versions) {
+    invalidation_dictionary->SetStringKey(
+        base::NumberToString(GetSpecificsFieldNumberFromModelType(type)),
+        base::NumberToString(version));
+  }
+  pref_service->Set(kSyncInvalidationVersions2, *invalidation_dictionary);
+}
+
+std::string GetLegacyModelTypeNameForInvalidationVersions(ModelType type) {
+  switch (type) {
+    case UNSPECIFIED:
+      NOTREACHED();
+      break;
+    case BOOKMARKS:
+      return "Bookmarks";
+    case PREFERENCES:
+      return "Preferences";
+    case PASSWORDS:
+      return "Passwords";
+    case AUTOFILL_PROFILE:
+      return "Autofill Profiles";
+    case AUTOFILL:
+      return "Autofill";
+    case AUTOFILL_WALLET_DATA:
+      return "Autofill Wallet";
+    case AUTOFILL_WALLET_METADATA:
+      return "Autofill Wallet Metadata";
+    case AUTOFILL_WALLET_OFFER:
+      return "Autofill Wallet Offer";
+    case THEMES:
+      return "Themes";
+    case TYPED_URLS:
+      return "Typed URLs";
+    case EXTENSIONS:
+      return "Extensions";
+    case SEARCH_ENGINES:
+      return "Search Engines";
+    case SESSIONS:
+      return "Sessions";
+    case APPS:
+      return "Apps";
+    case APP_SETTINGS:
+      return "App settings";
+    case EXTENSION_SETTINGS:
+      return "Extension settings";
+    case HISTORY_DELETE_DIRECTIVES:
+      return "History Delete Directives";
+    case DICTIONARY:
+      return "Dictionary";
+    case DEVICE_INFO:
+      return "Device Info";
+    case PRIORITY_PREFERENCES:
+      return "Priority Preferences";
+    case SUPERVISED_USER_SETTINGS:
+      return "Managed User Settings";
+    case APP_LIST:
+      return "App List";
+    case ARC_PACKAGE:
+      return "Arc Package";
+    case PRINTERS:
+      return "Printers";
+    case READING_LIST:
+      return "Reading List";
+    case USER_EVENTS:
+      return "User Events";
+    case SECURITY_EVENTS:
+      return "Security Events";
+    case USER_CONSENTS:
+      return "User Consents";
+    case SEND_TAB_TO_SELF:
+      return "Send Tab To Self";
+    case PROXY_TABS:
+      NOTREACHED();
+      break;
+    case NIGORI:
+      return "Encryption Keys";
+    case WEB_APPS:
+      return "Web Apps";
+    case WIFI_CONFIGURATIONS:
+      return "Wifi Configurations";
+    case WORKSPACE_DESK:
+      return "Workspace Desk";
+    case OS_PREFERENCES:
+      return "OS Preferences";
+    case OS_PRIORITY_PREFERENCES:
+      return "OS Priority Preferences";
+    case SHARING_MESSAGE:
+      return "Sharing Message";
+    default:
+      // Note: There is no need to add new data types here. This code is only
+      // used for a migration, so data types introduced after the migration
+      // don't need to be handled.
+      break;
+  }
+  return std::string();
+}
 
 }  // namespace
 
@@ -61,7 +160,8 @@ void SyncTransportDataPrefs::RegisterProfilePrefs(
   registry->RegisterTimePref(kSyncLastSyncedTime, base::Time());
   registry->RegisterTimePref(kSyncLastPollTime, base::Time());
   registry->RegisterTimeDeltaPref(kSyncPollIntervalSeconds, base::TimeDelta());
-  registry->RegisterDictionaryPref(kSyncInvalidationVersions);
+  registry->RegisterDictionaryPref(kDeprecatedSyncInvalidationVersions);
+  registry->RegisterDictionaryPref(kSyncInvalidationVersions2);
 
   // Obsolete pref.
   registry->RegisterStringPref(kSyncObsoleteKeystoreEncryptionBootstrapToken,
@@ -74,7 +174,8 @@ void SyncTransportDataPrefs::ClearAll() {
   pref_service_->ClearPref(kSyncLastSyncedTime);
   pref_service_->ClearPref(kSyncLastPollTime);
   pref_service_->ClearPref(kSyncPollIntervalSeconds);
-  pref_service_->ClearPref(kSyncInvalidationVersions);
+  pref_service_->ClearPref(kSyncInvalidationVersions2);
+  pref_service_->ClearPref(kDeprecatedSyncInvalidationVersions);
   pref_service_->ClearPref(kSyncGaiaId);
   pref_service_->ClearPref(kSyncCacheGuid);
   pref_service_->ClearPref(kSyncBirthday);
@@ -109,8 +210,7 @@ base::TimeDelta SyncTransportDataPrefs::GetPollInterval() const {
   // callers to use a reasonable default value instead.
   // This fixes a past bug where stored pref values were accidentally
   // re-interpreted from "seconds" to "microseconds"; see crbug.com/1246850.
-  if (poll_interval < base::Minutes(1) &&
-      base::FeatureList::IsEnabled(kSyncResetVeryShortPollInterval)) {
+  if (poll_interval < base::Minutes(1)) {
     pref_service_->ClearPref(kSyncPollIntervalSeconds);
     return base::TimeDelta();
   }
@@ -171,19 +271,54 @@ std::string SyncTransportDataPrefs::GetBagOfChips() const {
   return decoded;
 }
 
+// static
+void SyncTransportDataPrefs::MigrateInvalidationVersions(
+    PrefService* pref_service) {
+  const base::Value* invalidation_dictionary =
+      pref_service->GetDictionary(kDeprecatedSyncInvalidationVersions);
+  if (invalidation_dictionary->DictEmpty()) {
+    // No data, or was already migrated. Nothing to do here.
+    return;
+  }
+
+  // Read data from the deprecated pref.
+  std::map<ModelType, int64_t> invalidation_versions;
+  for (ModelType type : ProtocolTypes()) {
+    std::string key = GetLegacyModelTypeNameForInvalidationVersions(type);
+    // The key may be empty, e.g. for data types introduced after this
+    // migration.
+    if (key.empty())
+      continue;
+    const std::string* version_str =
+        invalidation_dictionary->FindStringKey(key);
+    if (!version_str)
+      continue;
+    int64_t version = 0;
+    if (!base::StringToInt64(*version_str, &version))
+      continue;
+    invalidation_versions[type] = version;
+  }
+
+  // Write to the new pref and clear the deprecated one.
+  syncer::UpdateInvalidationVersions(invalidation_versions, pref_service);
+  pref_service->ClearPref(kDeprecatedSyncInvalidationVersions);
+}
+
 std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::map<ModelType, int64_t> invalidation_versions;
-  const base::DictionaryValue* invalidation_dictionary =
-      pref_service_->GetDictionary(kSyncInvalidationVersions);
+  const base::Value* invalidation_dictionary =
+      pref_service_->GetDictionary(kSyncInvalidationVersions2);
   for (ModelType type : ProtocolTypes()) {
-    std::string key = ModelTypeToString(type);
-    std::string version_str;
-    if (!invalidation_dictionary->GetString(key, &version_str))
+    std::string key =
+        base::NumberToString(GetSpecificsFieldNumberFromModelType(type));
+    const std::string* version_str =
+        invalidation_dictionary->FindStringKey(key);
+    if (!version_str)
       continue;
     int64_t version = 0;
-    if (!base::StringToInt64(version_str, &version))
+    if (!base::StringToInt64(*version_str, &version))
       continue;
     invalidation_versions[type] = version;
   }
@@ -193,13 +328,7 @@ std::map<ModelType, int64_t> SyncTransportDataPrefs::GetInvalidationVersions()
 void SyncTransportDataPrefs::UpdateInvalidationVersions(
     const std::map<ModelType, int64_t>& invalidation_versions) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  auto invalidation_dictionary = std::make_unique<base::DictionaryValue>();
-  for (const auto& map_iter : invalidation_versions) {
-    std::string version_str = base::NumberToString(map_iter.second);
-    invalidation_dictionary->SetString(ModelTypeToString(map_iter.first),
-                                       version_str);
-  }
-  pref_service_->Set(kSyncInvalidationVersions, *invalidation_dictionary);
+  syncer::UpdateInvalidationVersions(invalidation_versions, pref_service_);
 }
 
 void ClearObsoleteKeystoreBootstrapTokenPref(PrefService* pref_service) {

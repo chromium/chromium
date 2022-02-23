@@ -119,6 +119,10 @@ class ASH_PUBLIC_EXPORT KeyboardController {
   // Returns current key repeat settings, derived from the active user's prefs.
   virtual KeyRepeatSettings GetKeyRepeatSettings() = 0;
 
+  // Return true if pressing the top row of the keyboard sends F<number> keys,
+  // rather than media keys (back/forward/refresh/etc.)
+  virtual bool AreTopRowKeysFunctionKeys() = 0;
+
  protected:
   static KeyboardController* g_instance_;
 };

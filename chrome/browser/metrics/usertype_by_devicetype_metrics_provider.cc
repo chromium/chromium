@@ -80,8 +80,7 @@ void UserTypeByDeviceTypeMetricsProvider::OnUserSessionStarted(
       user_manager::UserManager::Get()->GetPrimaryUser();
   DCHECK(primary_user);
   DCHECK(primary_user->is_profile_created());
-  Profile* profile =
-      chromeos::ProfileHelper::Get()->GetProfileByUser(primary_user);
+  Profile* profile = ash::ProfileHelper::Get()->GetProfileByUser(primary_user);
   DCHECK(profile);
 
   user_segment_ = GetUserSegment(profile);

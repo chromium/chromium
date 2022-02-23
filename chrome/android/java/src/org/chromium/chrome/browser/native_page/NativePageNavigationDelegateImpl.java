@@ -88,7 +88,8 @@ public class NativePageNavigationDelegateImpl implements NativePageNavigationDel
 
     private void openUrlInNewWindow(LoadUrlParams loadUrlParams) {
         TabDelegate tabDelegate = new TabDelegate(false);
-        tabDelegate.createTabInOtherWindow(loadUrlParams, mActivity, mHost.getParentId());
+        tabDelegate.createTabInOtherWindow(loadUrlParams, mActivity, mHost.getParentId(),
+                MultiWindowUtils.getAdjacentWindowActivity(mActivity));
     }
 
     private Tab openUrlInNewTab(LoadUrlParams loadUrlParams, int windowOpenDisposition) {

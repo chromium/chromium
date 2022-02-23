@@ -125,7 +125,7 @@ const char* NetworkStateToString(WebMediaPlayer::NetworkState state) {
 constexpr base::TimeDelta kForceBeginFramesTimeout = base::Seconds(1);
 }  // namespace
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Since we do not have native GMB support in Windows, using GMBs can cause a
 // CPU regression. This is more apparent and can have adverse affects in lower
 // resolution content which are defined by these thresholds, see
@@ -133,7 +133,7 @@ constexpr base::TimeDelta kForceBeginFramesTimeout = base::Seconds(1);
 // static
 const gfx::Size WebMediaPlayerMS::kUseGpuMemoryBufferVideoFramesMinResolution =
     gfx::Size(1920, 1080);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // FrameDeliverer is responsible for delivering frames received on
 // the IO thread by calling of EnqueueFrame() method of |compositor_|.
@@ -172,10 +172,15 @@ class WebMediaPlayerMS::FrameDeliverer {
     DCHECK_CALLED_ON_VALID_THREAD(io_thread_checker_);
 
 // On Android, stop passing frames.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (render_frame_suspended_)
       return;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
+
+#if BUILDFLAG(IS_FUCHSIA)
+    // Always create GMP to workaround https://crbug.com/1293616.
+    CreateGpuMemoryBufferPoolIfNecessary();
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
     if (!gpu_memory_buffer_pool_) {
       int original_frame_id = frame->unique_id();
@@ -183,21 +188,26 @@ class WebMediaPlayerMS::FrameDeliverer {
       return;
     }
 
-#if defined(OS_WIN)
-    const bool skip_creating_gpu_memory_buffer =
-        frame->visible_rect().width() <
-            kUseGpuMemoryBufferVideoFramesMinResolution.width() ||
-        frame->visible_rect().height() <
-            kUseGpuMemoryBufferVideoFramesMinResolution.height();
-#else
-    const bool skip_creating_gpu_memory_buffer = false;
-#endif  // defined(OS_WIN)
-
     // If |render_frame_suspended_|, we can keep passing the frames to keep the
     // latest frame in compositor up to date. However, creating GMB backed
     // frames is unnecessary, because the frames are not going to be shown for
     // the time period.
-    if (render_frame_suspended_ || skip_creating_gpu_memory_buffer) {
+    bool skip_creating_gpu_memory_buffer = render_frame_suspended_;
+
+#if BUILDFLAG(IS_WIN)
+    skip_creating_gpu_memory_buffer |=
+        frame->visible_rect().width() <
+            kUseGpuMemoryBufferVideoFramesMinResolution.width() ||
+        frame->visible_rect().height() <
+            kUseGpuMemoryBufferVideoFramesMinResolution.height();
+#endif  // BUILDFLAG(IS_WIN)
+
+#if BUILDFLAG(IS_FUCHSIA)
+    // Always create GMP to workaround https://crbug.com/1293616.
+    skip_creating_gpu_memory_buffer = false;
+#endif  // BUILDFLAG(IS_FUCHSIA)
+
+    if (skip_creating_gpu_memory_buffer) {
       int original_frame_id = frame->unique_id();
       EnqueueFrame(original_frame_id, std::move(frame));
       // If there are any existing MaybeCreateHardwareFrame() calls, we do not
@@ -862,7 +872,8 @@ void WebMediaPlayerMS::SetPreservesPitch(bool preserves_pitch) {
   // and thus there should be no pitch-shifting.
 }
 
-void WebMediaPlayerMS::SetAutoplayInitiated(bool autoplay_initiated) {}
+void WebMediaPlayerMS::SetWasPlayedWithUserActivation(
+    bool was_played_with_user_activation) {}
 
 void WebMediaPlayerMS::OnRequestPictureInPicture() {
   if (!bridge_)
@@ -1086,24 +1097,24 @@ void WebMediaPlayerMS::OnFrameHidden() {
 
 // On Android, substitute the displayed VideoFrame with a copy to avoid holding
 // onto it unnecessarily.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!paused_)
     compositor_->ReplaceCurrentFrameWithACopy();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void WebMediaPlayerMS::SuspendForFrameClosed() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
 // On Android, pause the video completely for this time period.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!paused_) {
     Pause();
     should_play_upon_shown_ = true;
   }
 
   delegate_->PlayerGone(delegate_id_);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (frame_deliverer_) {
     PostCrossThreadTask(
@@ -1135,10 +1146,10 @@ void WebMediaPlayerMS::OnFrameShown() {
 
 // On Android, resume playback on visibility. play() clears
 // |should_play_upon_shown_|.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (should_play_upon_shown_)
     Play();
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 void WebMediaPlayerMS::OnIdleTimeout() {}
@@ -1537,6 +1548,16 @@ WebMediaPlayerMS::GetMediaStreamType() {
   }
 
   return absl::nullopt;
+}
+
+void WebMediaPlayerMS::RegisterFrameSinkHierarchy() {
+  if (bridge_)
+    bridge_->RegisterFrameSinkHierarchy();
+}
+
+void WebMediaPlayerMS::UnregisterFrameSinkHierarchy() {
+  if (bridge_)
+    bridge_->UnregisterFrameSinkHierarchy();
 }
 
 }  // namespace blink

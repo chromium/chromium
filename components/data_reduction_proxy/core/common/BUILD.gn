@@ -2,29 +2,17 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//build/util/process_version.gni")
-
 # Variables:
 #   deps: Extra dependencies.
 template("common_tmpl") {
   static_library(target_name) {
     sources = [
-      "data_reduction_proxy_features.cc",
-      "data_reduction_proxy_features.h",
-      "data_reduction_proxy_headers.cc",
-      "data_reduction_proxy_headers.h",
-      "data_reduction_proxy_params.cc",
-      "data_reduction_proxy_params.h",
-      "data_reduction_proxy_pref_names.cc",
-      "data_reduction_proxy_pref_names.h",
       "data_reduction_proxy_switches.cc",
       "data_reduction_proxy_switches.h",
     ]
 
-    public_deps = [ ":version_header" ]
     deps = [
       "//base",
-      "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
       "//google_apis",
       "//services/network/public/cpp",
     ]
@@ -41,34 +29,5 @@ common_tmpl("common") {
   deps = [
     "//net",
     "//url",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-  sources = [ "data_reduction_proxy_params_unittest.cc" ]
-
-  deps = [
-    ":common",
-    "//base",
-    "//base/test:test_support",
-    "//components/prefs",
-    "//components/prefs:test_support",
-
-    # TODO this dependency seems wrong, but
-    "//components/data_reduction_proxy/core/browser",
-    "//components/data_reduction_proxy/proto:data_reduction_proxy_proto",
-    "//net:test_support",
-    "//testing/gtest",
-  ]
-}
-
-process_version("version_header") {
-  template_file = "version.h.in"
-  sources = [ "//chrome/VERSION" ]
-  output = "$target_gen_dir/version.h"
-  extra_args = [
-    "-e",
-    "VERSION_FULL=\"%s.%s.%s.%s\" % (MAJOR,MINOR,BUILD,PATCH)",
   ]
 }

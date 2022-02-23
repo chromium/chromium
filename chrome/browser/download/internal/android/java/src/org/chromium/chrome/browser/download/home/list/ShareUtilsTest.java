@@ -17,6 +17,8 @@ import org.robolectric.annotation.Config;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.components.offline_items_collection.OfflineItem;
 import org.chromium.components.offline_items_collection.OfflineItemShareInfo;
+import org.chromium.url.GURL;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -35,112 +37,111 @@ public class ShareUtilsTest {
     @Test
     public void testAction() {
         Intent intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "", null)));
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "", null)));
         Assert.assertEquals(Intent.ACTION_SEND, intent.getAction());
 
         intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("http://www.google.com", "text/plain", "", null),
-                        createItem("http://www.chrome.com", "text/plain", "", null)));
+                Arrays.asList(createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem(JUnitTestGURLs.URL_2, "text/plain", "", null)));
         Assert.assertEquals(Intent.ACTION_SEND, intent.getAction());
 
         intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("http://www.google.com", "text/plain", "", null),
-                        createItem("", "text/plain", "", "http://www.chrome.com")));
+                Arrays.asList(createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem("", "text/plain", "", JUnitTestGURLs.URL_2)));
         Assert.assertEquals(Intent.ACTION_SEND_MULTIPLE, intent.getAction());
 
         intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("", "text/plain", "", "http://www.google.com"),
-                        createItem("", "text/plain", "", "http://www.chrome.com")));
+                Arrays.asList(createItem("", "text/plain", "", JUnitTestGURLs.URL_1),
+                        createItem("", "text/plain", "", JUnitTestGURLs.URL_2)));
         Assert.assertEquals(Intent.ACTION_SEND_MULTIPLE, intent.getAction());
     }
 
     @Test
     public void testFlags() {
         Intent intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "", null)));
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "", null)));
         Assert.assertNotEquals(0, intent.getFlags() | Intent.FLAG_ACTIVITY_NEW_TASK);
     }
 
     @Test
     public void testExtraText() {
         Intent intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "", null)));
-        Assert.assertEquals("http://www.google.com", intent.getStringExtra(Intent.EXTRA_TEXT));
-
-        intent = ShareUtils.createIntent(Arrays.asList(
-                createItem("http://www.google.com", "text/plain", "", null),
-                createItem("http://www.chrome.com", "text/plain", "", "http://www.chrome.com")));
-        Assert.assertEquals("http://www.google.com", intent.getStringExtra(Intent.EXTRA_TEXT));
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "", null)));
+        Assert.assertEquals(JUnitTestGURLs.URL_1, intent.getStringExtra(Intent.EXTRA_TEXT));
 
         intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("http://www.google.com", "text/plain", "", null),
-                        createItem("http://www.chrome.com", "text/plain", "", null)));
-        Assert.assertEquals("http://www.google.com\nhttp://www.chrome.com",
+                Arrays.asList(createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem(JUnitTestGURLs.URL_2, "text/plain", "", JUnitTestGURLs.URL_2)));
+        Assert.assertEquals(JUnitTestGURLs.URL_1, intent.getStringExtra(Intent.EXTRA_TEXT));
+
+        intent = ShareUtils.createIntent(
+                Arrays.asList(createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem(JUnitTestGURLs.URL_2, "text/plain", "", null)));
+        Assert.assertEquals(JUnitTestGURLs.URL_1 + "\n" + JUnitTestGURLs.URL_2,
                 intent.getStringExtra(Intent.EXTRA_TEXT));
 
-        intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("", "text/plain", "", "http://www.google.com")));
+        intent = ShareUtils.createIntent(
+                Collections.singletonList(createItem("", "text/plain", "", JUnitTestGURLs.URL_1)));
         Assert.assertFalse(intent.hasExtra(Intent.EXTRA_TEXT));
     }
 
     @Test
     public void testExtraSubject() {
         Intent intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "title", null)));
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "title", null)));
         Assert.assertEquals("title", intent.getStringExtra(Intent.EXTRA_SUBJECT));
 
-        intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("http://www.google.com", "text/plain", "title1", null),
-                        createItem("http://www.chrome.com", "text/plain", "title2",
-                                "http://www.chrome.com")));
+        intent = ShareUtils.createIntent(Arrays.asList(
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "title1", null),
+                createItem(JUnitTestGURLs.URL_2, "text/plain", "title2", JUnitTestGURLs.URL_2)));
         Assert.assertFalse(intent.hasExtra(Intent.EXTRA_SUBJECT));
     }
 
     @Test
     public void testExtraStream() {
         Intent intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "", null)));
-        Assert.assertFalse(intent.hasExtra(Intent.EXTRA_STREAM));
-        Assert.assertNull(intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
-
-        intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("", "text/plain", "", "http://www.google.com")));
-        Assert.assertEquals(
-                Uri.parse("http://www.google.com"), intent.getParcelableExtra(Intent.EXTRA_STREAM));
-
-        intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "", "http://www.google.com")));
-        Assert.assertEquals(
-                Uri.parse("http://www.google.com"), intent.getParcelableExtra(Intent.EXTRA_STREAM));
-
-        intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("", "text/plain", "", "http://www.google.com"),
-                        createItem("http://www.chrome.com", "text/plain", "", "")));
-        Assert.assertEquals(
-                Uri.parse("http://www.google.com"), intent.getParcelableExtra(Intent.EXTRA_STREAM));
-
-        intent = ShareUtils.createIntent(Arrays.asList(
-                createItem("", "text/plain", "", "http://www.google.com"),
-                createItem("http://www.chrome.com", "text/plain", "", "http://www.chrome.com")));
-        Assert.assertEquals(Arrays.asList(Uri.parse("http://www.google.com"),
-                                    Uri.parse("http://www.chrome.com")),
-                intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
-
-        intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("", "text/plain", "", "http://www.google.com"),
-                        createItem("", "text/plain", "", "http://www.chrome.com")));
-        Assert.assertEquals(Arrays.asList(Uri.parse("http://www.google.com"),
-                                    Uri.parse("http://www.chrome.com")),
-                intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
-
-        intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "", null)));
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "", null)));
         Assert.assertFalse(intent.hasExtra(Intent.EXTRA_STREAM));
         Assert.assertNull(intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
 
         intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("http://www.google.com", "text/plain", "", null),
-                        createItem("http://www.chrome.com", "text/plain", "", null)));
+                Collections.singletonList(createItem("", "text/plain", "", JUnitTestGURLs.URL_1)));
+        Assert.assertEquals(
+                Uri.parse(JUnitTestGURLs.URL_1), intent.getParcelableExtra(Intent.EXTRA_STREAM));
+
+        intent = ShareUtils.createIntent(Collections.singletonList(
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "", JUnitTestGURLs.URL_1)));
+        Assert.assertEquals(
+                Uri.parse(JUnitTestGURLs.URL_1), intent.getParcelableExtra(Intent.EXTRA_STREAM));
+
+        intent = ShareUtils.createIntent(
+                Arrays.asList(createItem("", "text/plain", "", JUnitTestGURLs.URL_1),
+                        createItem(JUnitTestGURLs.URL_2, "text/plain", "", "")));
+        Assert.assertEquals(
+                Uri.parse(JUnitTestGURLs.URL_1), intent.getParcelableExtra(Intent.EXTRA_STREAM));
+
+        intent = ShareUtils.createIntent(
+                Arrays.asList(createItem("", "text/plain", "", JUnitTestGURLs.URL_1),
+                        createItem(JUnitTestGURLs.URL_2, "text/plain", "", JUnitTestGURLs.URL_2)));
+        Assert.assertEquals(
+                Arrays.asList(Uri.parse(JUnitTestGURLs.URL_1), Uri.parse(JUnitTestGURLs.URL_2)),
+                intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
+
+        intent = ShareUtils.createIntent(
+                Arrays.asList(createItem("", "text/plain", "", JUnitTestGURLs.URL_1),
+                        createItem("", "text/plain", "", JUnitTestGURLs.URL_2)));
+        Assert.assertEquals(
+                Arrays.asList(Uri.parse(JUnitTestGURLs.URL_1), Uri.parse(JUnitTestGURLs.URL_2)),
+                intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
+
+        intent = ShareUtils.createIntent(Collections.singletonList(
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "", null)));
+        Assert.assertFalse(intent.hasExtra(Intent.EXTRA_STREAM));
+        Assert.assertNull(intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
+
+        intent = ShareUtils.createIntent(
+                Arrays.asList(createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem(JUnitTestGURLs.URL_2, "text/plain", "", null)));
         Assert.assertFalse(intent.hasExtra(Intent.EXTRA_STREAM));
         Assert.assertNull(intent.getParcelableArrayListExtra(Intent.EXTRA_STREAM));
     }
@@ -148,26 +149,32 @@ public class ShareUtilsTest {
     @Test
     public void testType() {
         Intent intent = ShareUtils.createIntent(Collections.singletonList(
-                createItem("http://www.google.com", "text/plain", "", null)));
+                createItem(JUnitTestGURLs.URL_1, "text/plain", "", null)));
         Assert.assertEquals(Intent.normalizeMimeType("text/plain"), intent.getType());
 
         intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("http://www.google.com", "text/plain", "", null),
-                        createItem("http://www.google.com", "text/plain", "", null),
-                        createItem("http://www.google.com", "text/html", "", null),
-                        createItem("http://www.google.com", "text/html", "", null)));
+                Arrays.asList(createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem(JUnitTestGURLs.URL_1, "text/html", "", null),
+                        createItem(JUnitTestGURLs.URL_1, "text/html", "", null)));
         Assert.assertEquals(Intent.normalizeMimeType("text/*"), intent.getType());
 
         intent = ShareUtils.createIntent(
-                Arrays.asList(createItem("http://www.google.com", "text/plain", "", null),
-                        createItem("http://www.google.com", "application/octet-stream", "", null)));
+                Arrays.asList(createItem(JUnitTestGURLs.URL_1, "text/plain", "", null),
+                        createItem(JUnitTestGURLs.URL_1, "application/octet-stream", "", null)));
         Assert.assertEquals(Intent.normalizeMimeType("*/*"), intent.getType());
     }
 
     private static Pair<OfflineItem, OfflineItemShareInfo> createItem(
             String url, String mimeType, String title, String uri) {
         OfflineItem item = new OfflineItem();
-        item.url = url;
+        if (url == null) {
+            item.url = null;
+        } else if (url.isEmpty()) {
+            item.url = GURL.emptyGURL();
+        } else {
+            item.url = JUnitTestGURLs.getGURL(url);
+        }
         item.mimeType = mimeType;
         item.title = title;
 

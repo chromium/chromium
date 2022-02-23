@@ -35,6 +35,7 @@ source_set("unit_tests") {
     "//components/services/app_service/public/cpp:intents",
     "//components/services/app_service/public/cpp:preferred_apps",
     "//components/services/app_service/public/cpp:publisher",
+    "//components/services/app_service/public/cpp:run_on_os_login",
     "//components/services/app_service/public/cpp:test_support",
     "//content/test:test_support",
     "//testing/gtest",

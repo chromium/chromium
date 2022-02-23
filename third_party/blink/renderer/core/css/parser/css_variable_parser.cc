@@ -83,8 +83,6 @@ bool IsValidVariableReference(CSSParserTokenRange range) {
 
   if (range.Consume().GetType() != kCommaToken)
     return false;
-  if (range.AtEnd())
-    return false;
 
   bool has_references = false;
   return ClassifyBlock(range, has_references);
@@ -149,11 +147,11 @@ bool CSSVariableParser::IsValidVariableName(const CSSParserToken& token) {
     return false;
 
   StringView value = token.Value();
-  return value.length() >= 2 && value[0] == '-' && value[1] == '-';
+  return value.length() >= 3 && value[0] == '-' && value[1] == '-';
 }
 
 bool CSSVariableParser::IsValidVariableName(const String& string) {
-  return string.length() >= 2 && string[0] == '-' && string[1] == '-';
+  return string.length() >= 3 && string[0] == '-' && string[1] == '-';
 }
 
 bool CSSVariableParser::ContainsValidVariableReferences(
@@ -167,9 +165,6 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
     const CSSTokenizedValue& tokenized_value,
     bool is_animation_tainted,
     const CSSParserContext& context) {
-  if (tokenized_value.range.AtEnd())
-    return nullptr;
-
   bool has_references;
   CSSValueID type =
       ClassifyVariableRange(tokenized_value.range, has_references);
@@ -178,7 +173,6 @@ CSSCustomPropertyDeclaration* CSSVariableParser::ParseDeclarationValue(
     return nullptr;
   if (type == CSSValueID::kInternalVariableValue) {
     return MakeGarbageCollected<CSSCustomPropertyDeclaration>(
-
         CSSVariableData::Create(tokenized_value, is_animation_tainted,
                                 has_references, context.BaseURL(),
                                 context.Charset()));

@@ -153,6 +153,21 @@ BuildAttributionReportingIssueType(AttributionReportingIssueType type) {
     case AttributionReportingIssueType::kAttributionUntrustworthyOrigin:
       return protocol::Audits::AttributionReportingIssueTypeEnum::
           AttributionUntrustworthyOrigin;
+    case AttributionReportingIssueType::kInvalidAttributionSourceExpiry:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionSourceExpiry;
+    case AttributionReportingIssueType::kInvalidAttributionSourcePriority:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidAttributionSourcePriority;
+    case AttributionReportingIssueType::kInvalidEventSourceTriggerData:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidEventSourceTriggerData;
+    case AttributionReportingIssueType::kInvalidTriggerPriority:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidTriggerPriority;
+    case AttributionReportingIssueType::kInvalidTriggerDedupKey:
+      return protocol::Audits::AttributionReportingIssueTypeEnum::
+          InvalidTriggerDedupKey;
   }
 }
 
@@ -208,11 +223,8 @@ void AuditsIssue::ReportNavigatorUserAgentAccess(
           .build();
 
   // Try to get only the script name quickly.
-  String script_url = GetCurrentScriptUrl(5);
-  if (script_url.IsEmpty())
-    script_url = GetCurrentScriptUrl(200);
-
   std::unique_ptr<SourceLocation> location;
+  String script_url = GetCurrentScriptUrl();
   if (!script_url.IsEmpty())
     location = std::make_unique<SourceLocation>(script_url, 1, 0, nullptr);
   else
@@ -233,32 +245,6 @@ void AuditsIssue::ReportNavigatorUserAgentAccess(
               protocol::Audits::InspectorIssueCodeEnum::NavigatorUserAgentIssue)
           .setDetails(std::move(details))
           .build();
-  execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
-}
-
-void AuditsIssue::ReportCrossOriginWasmModuleSharingIssue(
-    ExecutionContext* execution_context,
-    const std::string& wasm_source_url,
-    WTF::String source_origin,
-    WTF::String target_origin,
-    bool is_warning) {
-  auto details =
-      protocol::Audits::WasmCrossOriginModuleSharingIssueDetails::create()
-          .setWasmModuleUrl(WTF::String::FromUTF8(wasm_source_url))
-          .setSourceOrigin(source_origin)
-          .setTargetOrigin(target_origin)
-          .setIsWarning(is_warning)
-          .build();
-
-  auto issue_details =
-      protocol::Audits::InspectorIssueDetails::create()
-          .setWasmCrossOriginModuleSharingIssue(std::move(details))
-          .build();
-  auto issue = protocol::Audits::InspectorIssue::create()
-                   .setCode(protocol::Audits::InspectorIssueCodeEnum::
-                                WasmCrossOriginModuleSharingIssue)
-                   .setDetails(std::move(issue_details))
-                   .build();
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
@@ -300,6 +286,8 @@ protocol::Audits::MixedContentResourceType
 RequestContextToMixedContentResourceType(
     mojom::blink::RequestContextType request_context) {
   switch (request_context) {
+    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
+      return protocol::Audits::MixedContentResourceTypeEnum::AttributionSrc;
     case mojom::blink::RequestContextType::AUDIO:
       return protocol::Audits::MixedContentResourceTypeEnum::Audio;
     case mojom::blink::RequestContextType::BEACON:
@@ -439,12 +427,14 @@ void AuditsIssue::ReportSharedArrayBufferIssue(
 
 // static
 void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
-                                         const String& message) {
+                                         const String& message,
+                                         const String& type) {
   auto source_location = SourceLocation::Capture(execution_context);
   auto deprecation_issue_details =
       protocol::Audits::DeprecationIssueDetails::create()
           .setSourceCodeLocation(CreateProtocolLocation(*source_location))
           .setMessage(message)
+          .setDeprecationType(type)
           .build();
   if (auto* window = DynamicTo<LocalDOMWindow>(execution_context)) {
     auto affected_frame =
@@ -463,6 +453,42 @@ void AuditsIssue::ReportDeprecationIssue(ExecutionContext* execution_context,
           .setDetails(std::move(issue_details))
           .build();
   execution_context->AddInspectorIssue(AuditsIssue(std::move(issue)));
+}
+
+namespace {
+
+protocol::Audits::ClientHintIssueReason ClientHintIssueReasonToProtocol(
+    ClientHintIssueReason reason) {
+  switch (reason) {
+    case ClientHintIssueReason::kMetaTagAllowListInvalidOrigin:
+      return protocol::Audits::ClientHintIssueReasonEnum::
+          MetaTagAllowListInvalidOrigin;
+    case ClientHintIssueReason::kMetaTagModifiedHTML:
+      return protocol::Audits::ClientHintIssueReasonEnum::MetaTagModifiedHTML;
+  }
+}
+
+}  // namespace
+
+// static
+void AuditsIssue::ReportClientHintIssue(LocalDOMWindow* local_dom_window,
+                                        ClientHintIssueReason reason) {
+  auto source_location = SourceLocation::Capture(local_dom_window);
+  auto client_hint_issue_details =
+      protocol::Audits::ClientHintIssueDetails::create()
+          .setSourceCodeLocation(CreateProtocolLocation(*source_location))
+          .setClientHintIssueReason(ClientHintIssueReasonToProtocol(reason))
+          .build();
+  auto issue_details =
+      protocol::Audits::InspectorIssueDetails::create()
+          .setClientHintIssueDetails(std::move(client_hint_issue_details))
+          .build();
+  auto issue =
+      protocol::Audits::InspectorIssue::create()
+          .setCode(protocol::Audits::InspectorIssueCodeEnum::ClientHintIssue)
+          .setDetails(std::move(issue_details))
+          .build();
+  local_dom_window->AddInspectorIssue(AuditsIssue(std::move(issue)));
 }
 
 AuditsIssue AuditsIssue::CreateBlockedByResponseIssue(

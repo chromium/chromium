@@ -6,6 +6,7 @@
 
 #include <GL/gl.h>
 
+#include "base/notreached.h"
 #include "ui/gfx/gpu_fence.h"
 
 namespace gl {

@@ -767,7 +767,7 @@ class MinimumVersionBeforeLoginHost : public MinimumVersionExistingUserTest {
       return false;
     // Postpone login host creation.
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        chromeos::switches::kForceLoginManagerInTests);
+        ash::switches::kForceLoginManagerInTests);
     return true;
   }
 };

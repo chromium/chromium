@@ -71,16 +71,14 @@ public interface LayoutUpdateHost {
      * @param id               The id of the reference tab in the
      *                         {@link org.chromium.chrome.browser.tabmodel.TabModel}.
      * @param incognito        Whether the new tab is incognito.
-     * @param showCloseButton  True to show and activate a close button on the border.
-     * @param isTitleNeeded    Whether a title will be shown.
      * @param maxContentWidth  The maximum layout width this tab can be.  Negative numbers will use
      *                         the original content width.
      * @param maxContentHeight The maximum layout height this tab can be.  Negative numbers will use
      *                         the original content height.
      * @return                 The created or recycled {@link LayoutTab}.
      */
-    LayoutTab createLayoutTab(int id, boolean incognito, boolean showCloseButton,
-            boolean isTitleNeeded, float maxContentWidth, float maxContentHeight);
+    LayoutTab createLayoutTab(
+            int id, boolean incognito, float maxContentWidth, float maxContentHeight);
 
     /**
      * Notifies the host that the {@link LayoutTab} is no longer needed by the layout.

@@ -6,8 +6,8 @@ package org.chromium.chrome.browser.download;
 
 import android.content.Context;
 
-import org.chromium.base.supplier.Supplier;
-import org.chromium.chrome.browser.ActivityTabProvider;
+import androidx.annotation.Nullable;
+
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.offline_items_collection.ContentId;
 import org.chromium.components.offline_items_collection.OfflineContentProvider;
@@ -23,6 +23,30 @@ import java.util.List;
  * downloads etc. and computes the current state of the UI to be shown.
  */
 public interface DownloadMessageUiController extends OfflineContentProvider.Observer {
+    /**
+     * A delegate to provide chrome layer dependencies.
+     */
+    interface Delegate {
+        /** @return The context used for obtaining resources. */
+        @Nullable
+        Context getContext();
+
+        /** @return The {@link MessageDispatcher} used for showing messages. */
+        @Nullable
+        MessageDispatcher getMessageDispatcher();
+
+        /** @return The {@link ModalDialogManager} for showing download later dialog. */
+        @Nullable
+        ModalDialogManager getModalDialogManager();
+
+        /**
+         * Called by the controller before updating the UI so that it is only using the last focused
+         * activity for all purposes.
+         * @return True if we did a switch to another activity, false otherwise.
+         */
+        boolean maybeSwitchToFocusedActivity();
+    }
+
     /**
      * Shows the message that download has started. Unlike other methods in this class, this
      * method doesn't require an {@link OfflineItem} and is invoked by the backend to provide a
@@ -46,9 +70,4 @@ public interface DownloadMessageUiController extends OfflineContentProvider.Obse
 
     /** @return Whether the UI is currently showing. */
     boolean isShowing();
-
-    /** Called when activity is launched or configuration is changed. */
-    default void onConfigurationChanged(Context context,
-            Supplier<MessageDispatcher> messageDispatcher, ModalDialogManager modalDialogManager,
-            ActivityTabProvider activityTabProvider) {}
 }

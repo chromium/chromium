@@ -4,6 +4,7 @@
 
 #include "ash/system/tray/tray_bubble_wrapper.h"
 
+#include "ash/app_list/app_list_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/system/tray/tray_background_view.h"
 #include "ash/system/tray/tray_bubble_view.h"
@@ -17,23 +18,29 @@
 namespace ash {
 
 TrayBubbleWrapper::TrayBubbleWrapper(TrayBackgroundView* tray,
-                                     TrayBubbleView* bubble_view)
-    : tray_(tray), bubble_view_(bubble_view) {
+                                     TrayBubbleView* bubble_view,
+                                     bool event_handling)
+    : tray_(tray), bubble_view_(bubble_view), event_handling_(event_handling) {
   bubble_widget_ = views::BubbleDialogDelegateView::CreateBubble(bubble_view_);
   bubble_widget_->AddObserver(this);
 
   TrayBackgroundView::InitializeBubbleAnimations(bubble_widget_);
   bubble_view_->InitializeAndShowBubble();
 
-  tray->tray_event_filter()->AddBubble(this);
+  if (!Shell::Get()->tablet_mode_controller()->InTabletMode())
+    Shell::Get()->app_list_controller()->DismissAppList();
 
-  Shell::Get()->activation_client()->AddObserver(this);
+  if (event_handling_) {
+    tray->tray_event_filter()->AddBubble(this);
+    Shell::Get()->activation_client()->AddObserver(this);
+  }
 }
 
 TrayBubbleWrapper::~TrayBubbleWrapper() {
-  Shell::Get()->activation_client()->RemoveObserver(this);
-
-  tray_->tray_event_filter()->RemoveBubble(this);
+  if (event_handling_) {
+    Shell::Get()->activation_client()->RemoveObserver(this);
+    tray_->tray_event_filter()->RemoveBubble(this);
+  }
   if (bubble_widget_) {
     auto* transient_manager = ::wm::TransientWindowManager::GetOrCreate(
         bubble_widget_->GetNativeWindow());
@@ -83,6 +90,10 @@ void TrayBubbleWrapper::OnWindowActivated(ActivationReason reason,
                                           aura::Window* gained_active,
                                           aura::Window* lost_active) {
   if (!gained_active)
+    return;
+
+  // Check for the CloseBubble() lock.
+  if (!TrayBackgroundView::ShouldCloseBubbleOnWindowActivated())
     return;
 
   views::Widget* bubble_widget = bubble_view()->GetWidget();

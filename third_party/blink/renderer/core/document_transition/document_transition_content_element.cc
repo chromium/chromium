@@ -9,27 +9,15 @@
 namespace blink {
 
 DocumentTransitionContentElement::DocumentTransitionContentElement(
-    Document& document)
-    : HTMLElement(
-          QualifiedName(g_null_atom, "transition_content_element", g_null_atom),
-          document),
-      resource_id_(viz::SharedElementResourceId::Generate()) {
-  // TODO(khushalsagar) : Move this to a UA style sheet.
-  SetInlineStyleProperty(CSSPropertyID::kPosition, CSSValueID::kAbsolute);
-  SetInlineStyleProperty(CSSPropertyID::kTop, 0,
-                         CSSPrimitiveValue::UnitType::kPixels);
-  SetInlineStyleProperty(CSSPropertyID::kLeft, 0,
-                         CSSPrimitiveValue::UnitType::kPixels);
-
-  // This implements the current default behaviour of stretching the snapshot to
-  // match container size.
-  // TODO(khushalsagar) : Change this to a pattern which preserves the aspect
-  // ratio once browser defaults are finalized.
-  SetInlineStyleProperty(CSSPropertyID::kWidth, 100,
-                         CSSPrimitiveValue::UnitType::kPercentage);
-  SetInlineStyleProperty(CSSPropertyID::kHeight, 100,
-                         CSSPrimitiveValue::UnitType::kPercentage);
-  SetInlineStyleProperty(CSSPropertyID::kObjectFit, CSSValueID::kFill);
+    Element* parent,
+    PseudoId pseudo_id,
+    const AtomicString& document_transition_tag,
+    viz::SharedElementResourceId resource_id)
+    : DocumentTransitionPseudoElementBase(parent,
+                                          pseudo_id,
+                                          document_transition_tag),
+      resource_id_(resource_id) {
+  DCHECK(resource_id_.IsValid());
 }
 
 DocumentTransitionContentElement::~DocumentTransitionContentElement() = default;
@@ -47,10 +35,6 @@ LayoutObject* DocumentTransitionContentElement::CreateLayoutObject(
     const ComputedStyle&,
     LegacyLayout) {
   return MakeGarbageCollected<LayoutDocumentTransitionContent>(this);
-}
-
-void DocumentTransitionContentElement::Trace(Visitor* visitor) const {
-  HTMLElement::Trace(visitor);
 }
 
 }  // namespace blink

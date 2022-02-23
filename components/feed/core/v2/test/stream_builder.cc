@@ -8,6 +8,7 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "components/feed/core/proto/v2/wire/eventid.pb.h"
 #include "components/feed/core/proto/v2/wire/web_feeds.pb.h"
 #include "components/feed/core/v2/feedstore_util.h"
 #include "components/feed/core/v2/proto_util.h"
@@ -16,6 +17,9 @@
 namespace feed {
 
 base::Time kTestTimeEpoch = base::Time::UnixEpoch();
+AccountInfo TestAccountInfo() {
+  return {"gaia", "user@foo"};
+}
 
 ContentId MakeContentId(ContentId::Type type,
                         std::string content_domain,
@@ -45,6 +49,12 @@ ContentId MakeSharedStateContentId(int id_number) {
 
 ContentId MakeRootId(int id_number) {
   return MakeContentId(ContentId::TYPE_UNDEFINED, "root", id_number);
+}
+
+std::string MakeRootEventId(int id_number) {
+  feedwire::EventIdMessage id;
+  id.set_time_usec(id_number);
+  return id.SerializeAsString();
 }
 
 ContentId MakeSharedStateId(int id_number) {
@@ -225,10 +235,16 @@ StreamModelUpdateRequestGenerator::MakeFirstPage(int first_cluster_id,
 
   initial_update->shared_states.push_back(MakeSharedState(first_cluster_id));
   *initial_update->stream_data.mutable_content_id() = MakeRootId();
+  initial_update->stream_data.set_root_event_id(
+      MakeRootEventId(event_id_number));
   *initial_update->stream_data.add_shared_state_ids() =
       MakeSharedStateId(first_cluster_id);
   initial_update->stream_data.set_next_page_token("page-2");
   initial_update->stream_data.set_signed_in(signed_in);
+  if (signed_in) {
+    initial_update->stream_data.set_email(account_info.email);
+    initial_update->stream_data.set_gaia(account_info.gaia);
+  }
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
@@ -260,11 +276,18 @@ StreamModelUpdateRequestGenerator::MakeNextPage(
 
   initial_update->shared_states.push_back(MakeSharedState(page_number));
   *initial_update->stream_data.mutable_content_id() = MakeRootId();
+  // This is a different event ID than the first page.
+  initial_update->stream_data.set_root_event_id(
+      MakeRootEventId(1000 + page_number));
   *initial_update->stream_data.add_shared_state_ids() =
       MakeSharedStateId(page_number);
   initial_update->stream_data.set_next_page_token(
       "page-" + base::NumberToString(page_number + 1));
   initial_update->stream_data.set_signed_in(signed_in);
+  if (signed_in) {
+    initial_update->stream_data.set_email(account_info.email);
+    initial_update->stream_data.set_gaia(account_info.gaia);
+  }
   initial_update->stream_data.set_logging_enabled(logging_enabled);
   initial_update->stream_data.set_privacy_notice_fulfilled(
       privacy_notice_fulfilled);
@@ -300,6 +323,7 @@ std::unique_ptr<StreamModelUpdateRequest> MakeTypicalRefreshModelState(
   generator.signed_in = signed_in;
   generator.logging_enabled = logging_enabled;
   generator.privacy_notice_fulfilled = false;
+  generator.event_id_number = 456;  // Refreshes will have a new event id.
   return generator.MakeFirstPage(first_cluster_id, /*num_cards=*/3);
 }
 

@@ -6,6 +6,7 @@ package org.chromium.chrome.browser.omnibox.suggestions.base;
 
 import android.content.Context;
 
+import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.StringRes;
@@ -13,12 +14,23 @@ import androidx.annotation.StringRes;
 import org.chromium.chrome.browser.omnibox.suggestions.SuggestionCommonProperties;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModel.WritableIntPropertyKey;
 import org.chromium.ui.modelutil.PropertyModel.WritableObjectPropertyKey;
 
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 
 /** The base set of properties for most omnibox suggestions. */
 public class BaseSuggestionViewProperties {
+    /** Describes density of the suggestions. */
+    @IntDef({Density.DEFAULT, Density.COMPACT})
+    @Retention(RetentionPolicy.SOURCE)
+    public @interface Density {
+        int DEFAULT = 0;
+        int COMPACT = 1;
+    }
+
     /**
      * Describes the content and behavior of the interactive Action Icon.
      */
@@ -82,6 +94,9 @@ public class BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_FOCUS_VIA_SELECTION =
             new WritableObjectPropertyKey<>();
 
+    /** Specifies how densely suggestions should be packed. */
+    public static final WritableIntPropertyKey DENSITY = new WritableIntPropertyKey();
+
     /** Callback invoked when user clicks the suggestion. */
     public static final WritableObjectPropertyKey<Runnable> ON_CLICK =
             new WritableObjectPropertyKey<>();
@@ -90,8 +105,8 @@ public class BaseSuggestionViewProperties {
     public static final WritableObjectPropertyKey<Runnable> ON_LONG_CLICK =
             new WritableObjectPropertyKey<>();
 
-    public static final PropertyKey[] ALL_UNIQUE_KEYS =
-            new PropertyKey[] {ACTIONS, ICON, ON_CLICK, ON_LONG_CLICK, ON_FOCUS_VIA_SELECTION};
+    public static final PropertyKey[] ALL_UNIQUE_KEYS = new PropertyKey[] {
+            ICON, ACTIONS, ON_FOCUS_VIA_SELECTION, DENSITY, ON_CLICK, ON_LONG_CLICK};
 
     public static final PropertyKey[] ALL_KEYS =
             PropertyModel.concatKeys(ALL_UNIQUE_KEYS, SuggestionCommonProperties.ALL_KEYS);

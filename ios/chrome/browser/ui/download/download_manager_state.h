@@ -14,6 +14,8 @@ typedef NS_ENUM(NSInteger, DownloadManagerState) {
   kDownloadManagerStateSucceeded,
   // Download has failed with an error.
   kDownloadManagerStateFailed,
+  // Download has failed and cannot be resumed
+  kDownloadManagerStateFailedNotResumable,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_STATE_H_

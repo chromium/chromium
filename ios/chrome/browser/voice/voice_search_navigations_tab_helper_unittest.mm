@@ -4,17 +4,17 @@
 
 #import "ios/chrome/browser/voice/voice_search_navigations_tab_helper.h"
 
-#import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/chrome/browser/web/chrome_web_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
 
 // Test fixture for VoiceSearchNavigations.
-class VoiceSearchNavigationsTest : public web::WebTestWithWebState {
+class VoiceSearchNavigationsTest : public ChromeWebTest {
  public:
   void SetUp() override {
-    web::WebTestWithWebState::SetUp();
+    ChromeWebTest::SetUp();
     VoiceSearchNavigationTabHelper::CreateForWebState(web_state());
   }
 

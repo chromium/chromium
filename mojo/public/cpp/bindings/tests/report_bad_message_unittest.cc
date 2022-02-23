@@ -5,7 +5,6 @@
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "mojo/public/cpp/bindings/message.h"

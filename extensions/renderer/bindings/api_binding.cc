@@ -64,7 +64,8 @@ std::string GetJSEnumEntryName(const std::string& original) {
 
 std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
     const base::Value* dict,
-    BindingAccessChecker* access_checker) {
+    BindingAccessChecker* access_checker,
+    const std::string& api_name) {
   const base::Value* params =
       dict->FindKeyOfType("parameters", base::Value::Type::LIST);
   CHECK(params);
@@ -72,7 +73,8 @@ std::unique_ptr<APISignature> GetAPISignatureFromDictionary(
   const base::Value* returns_async =
       dict->FindKeyOfType("returns_async", base::Value::Type::DICTIONARY);
 
-  return APISignature::CreateFromValues(*params, returns_async, access_checker);
+  return APISignature::CreateFromValues(*params, returns_async, access_checker,
+                                        api_name);
 }
 
 void RunAPIBindingHandlerCallback(
@@ -208,23 +210,24 @@ APIBinding::APIBinding(const std::string& api_name,
   // construction.
 
   if (function_definitions) {
-    for (const auto& func : function_definitions->GetList()) {
+    for (const auto& func : function_definitions->GetListDeprecated()) {
       const base::DictionaryValue* func_dict = nullptr;
       CHECK(func.GetAsDictionary(&func_dict));
       std::string name;
       CHECK(func_dict->GetString("name", &name));
-
-      auto signature = GetAPISignatureFromDictionary(func_dict, access_checker);
-
       std::string full_name =
           base::StringPrintf("%s.%s", api_name_.c_str(), name.c_str());
+
+      auto signature =
+          GetAPISignatureFromDictionary(func_dict, access_checker, full_name);
+
       methods_[name] = std::make_unique<MethodData>(full_name, signature.get());
       type_refs->AddAPIMethodSignature(full_name, std::move(signature));
     }
   }
 
   if (type_definitions) {
-    for (const auto& type : type_definitions->GetList()) {
+    for (const auto& type : type_definitions->GetListDeprecated()) {
       const base::DictionaryValue* type_dict = nullptr;
       CHECK(type.GetAsDictionary(&type_dict));
       std::string id;
@@ -249,17 +252,17 @@ APIBinding::APIBinding(const std::string& api_name,
       // them. Cache the function signatures in the type map.
       const base::ListValue* type_functions = nullptr;
       if (type_dict->GetList("functions", &type_functions)) {
-        for (const auto& func : type_functions->GetList()) {
+        for (const auto& func : type_functions->GetListDeprecated()) {
           const base::DictionaryValue* func_dict = nullptr;
           CHECK(func.GetAsDictionary(&func_dict));
           std::string function_name;
           CHECK(func_dict->GetString("name", &function_name));
-
-          auto signature =
-              GetAPISignatureFromDictionary(func_dict, access_checker);
-
           std::string full_name =
               base::StringPrintf("%s.%s", id.c_str(), function_name.c_str());
+
+          auto signature = GetAPISignatureFromDictionary(
+              func_dict, access_checker, full_name);
+
           type_refs->AddTypeMethodSignature(full_name, std::move(signature));
         }
       }
@@ -267,8 +270,8 @@ APIBinding::APIBinding(const std::string& api_name,
   }
 
   if (event_definitions) {
-    events_.reserve(event_definitions->GetList().size());
-    for (const auto& event : event_definitions->GetList()) {
+    events_.reserve(event_definitions->GetListDeprecated().size());
+    for (const auto& event : event_definitions->GetListDeprecated()) {
       const base::DictionaryValue* event_dict = nullptr;
       CHECK(event.GetAsDictionary(&event_dict));
       std::string name;
@@ -277,7 +280,7 @@ APIBinding::APIBinding(const std::string& api_name,
           base::StringPrintf("%s.%s", api_name_.c_str(), name.c_str());
       const base::ListValue* filters = nullptr;
       bool supports_filters = event_dict->GetList("filters", &filters) &&
-                              !filters->GetList().empty();
+                              !filters->GetListDeprecated().empty();
 
       std::vector<std::string> rule_actions;
       std::vector<std::string> rule_conditions;
@@ -303,7 +306,7 @@ APIBinding::APIBinding(const std::string& api_name,
                                       std::vector<std::string>* out_value) {
             const base::ListValue* list = nullptr;
             CHECK(options->GetList(name, &list));
-            for (const auto& entry : list->GetList()) {
+            for (const auto& entry : list->GetListDeprecated()) {
               DCHECK(entry.is_string());
               out_value->push_back(entry.GetString());
             }
@@ -461,7 +464,8 @@ void APIBinding::DecorateTemplateWithProperties(
       auto is_this_platform = [&this_platform](const base::Value& platform) {
         return platform.is_string() && platform.GetString() == this_platform;
       };
-      if (base::ranges::none_of(platforms->GetList(), is_this_platform))
+      if (base::ranges::none_of(platforms->GetListDeprecated(),
+                                is_this_platform))
         continue;
     }
 
@@ -483,7 +487,7 @@ void APIBinding::DecorateTemplateWithProperties(
 
     std::string type;
     CHECK(dict->GetString("type", &type));
-    if (type != "object" && !dict->HasKey(kValueKey)) {
+    if (type != "object" && !dict->FindKey(kValueKey)) {
       // TODO(devlin): What does a fundamental property not having a value mean?
       // It doesn't seem useful, and looks like it's only used by runtime.id,
       // which is set by custom bindings. Investigate, and remove.
@@ -524,8 +528,9 @@ void APIBinding::GetEventObject(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
-  if (!binding::IsContextValidOrThrowError(context))
+  v8::Local<v8::Context> context;
+  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
+      !binding::IsContextValidOrThrowError(context))
     return;
 
   CHECK(info.Data()->IsExternal());
@@ -556,8 +561,9 @@ void APIBinding::GetCustomPropertyObject(
     const v8::PropertyCallbackInfo<v8::Value>& info) {
   v8::Isolate* isolate = info.GetIsolate();
   v8::HandleScope handle_scope(isolate);
-  v8::Local<v8::Context> context = info.Holder()->CreationContext();
-  if (!binding::IsContextValid(context))
+  v8::Local<v8::Context> context;
+  if (!info.Holder()->GetCreationContext().ToLocal(&context) ||
+      !binding::IsContextValid(context))
     return;
 
   v8::Context::Scope context_scope(context);
@@ -631,7 +637,7 @@ void APIBinding::HandleCall(const std::string& name,
         return;  // Our work here is done.
       case APIBindingHooks::RequestResult::ARGUMENTS_UPDATED:
         updated_args = true;
-        FALLTHROUGH;
+        [[fallthrough]];
       case APIBindingHooks::RequestResult::NOT_HANDLED:
         break;  // Handle in the default manner.
     }

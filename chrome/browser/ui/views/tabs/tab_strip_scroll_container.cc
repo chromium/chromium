@@ -4,10 +4,13 @@
 
 #include "chrome/browser/ui/views/tabs/tab_strip_scroll_container.h"
 
+#include "base/memory/raw_ptr.h"
 #include "cc/paint/paint_shader.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/tabs/tab_strip.h"
 #include "chrome/browser/ui/views/tabs/tab_strip_controller.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/canvas.h"
@@ -126,7 +129,7 @@ class TabStripContainerOverflowIndicator : public views::View {
   }
 
  private:
-  TabStrip* tab_strip_;
+  raw_ptr<TabStrip> tab_strip_;
   views::OverflowIndicatorAlignment side_;
 };
 
@@ -184,14 +187,19 @@ TabStripScrollContainer::TabStripScrollContainer(
       scroll_button_container->SetLayoutManager(
           std::make_unique<views::FlexLayout>());
   scroll_button_layout->SetOrientation(views::LayoutOrientation::kHorizontal);
+
   leading_scroll_button_ =
       scroll_button_container->AddChildView(CreateScrollButton(
           base::BindRepeating(&TabStripScrollContainer::ScrollTowardsLeadingTab,
                               base::Unretained(this))));
+  leading_scroll_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_LEADING));
   trailing_scroll_button_ = scroll_button_container->AddChildView(
       CreateScrollButton(base::BindRepeating(
           &TabStripScrollContainer::ScrollTowardsTrailingTab,
           base::Unretained(this))));
+  trailing_scroll_button_->SetAccessibleName(
+      l10n_util::GetStringUTF16(IDS_ACCNAME_TAB_SCROLL_TRAILING));
 
   // The space in dips between the scroll buttons and the NTB.
   constexpr int kScrollButtonsTrailingMargin = 8;

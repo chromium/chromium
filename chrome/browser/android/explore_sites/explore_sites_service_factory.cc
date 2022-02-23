@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
@@ -44,7 +45,7 @@ class URLLoaderFactoryGetterImpl
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 ExploreSitesServiceFactory::ExploreSitesServiceFactory()

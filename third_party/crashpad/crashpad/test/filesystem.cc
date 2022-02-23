@@ -22,6 +22,7 @@
 
 #include "base/logging.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "gtest/gtest.h"
 #include "test/errors.h"
 #include "test/scoped_temp_dir.h"
@@ -29,11 +30,11 @@
 #include "util/file/filesystem.h"
 #include "util/misc/time.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <unistd.h>
 
 #include "base/posix/eintr_wrapper.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -42,7 +43,7 @@ namespace test {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Detects the flags necessary to create symbolic links and stores them in
 // |flags| if non-nullptr, and returns true on success. If symbolic links can’t
@@ -89,7 +90,7 @@ bool SymbolicLinkFlags(DWORD* flags) {
   return true;
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -101,14 +102,14 @@ bool CreateFile(const base::FilePath& file) {
 }
 
 bool PathExists(const base::FilePath& path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   struct stat st;
   if (lstat(path.value().c_str(), &st) != 0) {
     EXPECT_EQ(errno, ENOENT) << ErrnoMessage("lstat ") << path.value();
     return false;
   }
   return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (GetFileAttributes(path.value().c_str()) == INVALID_FILE_ATTRIBUTES) {
     EXPECT_EQ(GetLastError(), static_cast<DWORD>(ERROR_FILE_NOT_FOUND))
         << ErrorMessage("GetFileAttributes ") << base::WideToUTF8(path.value());
@@ -120,7 +121,7 @@ bool PathExists(const base::FilePath& path) {
 
 bool SetFileModificationTime(const base::FilePath& path,
                              const timespec& mtime) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // utimensat() isn't available on macOS until 10.13, so lutimes() is used
   // instead.
   struct stat st;
@@ -136,7 +137,7 @@ bool SetFileModificationTime(const base::FilePath& path,
     return false;
   }
   return true;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   timespec times[2];
   times[0].tv_sec = 0;
   times[0].tv_nsec = UTIME_OMIT;
@@ -147,7 +148,7 @@ bool SetFileModificationTime(const base::FilePath& path,
     return false;
   }
   return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   DWORD flags = FILE_FLAG_OPEN_REPARSE_POINT;
   if (IsDirectory(path, true)) {
     // required for directory handles
@@ -172,22 +173,22 @@ bool SetFileModificationTime(const base::FilePath& path,
     return false;
   }
   return true;
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
 
 bool CanCreateSymbolicLinks() {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return SymbolicLinkFlags(nullptr);
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
 bool CreateSymbolicLink(const base::FilePath& target_path,
                         const base::FilePath& symlink_path) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   int rv = HANDLE_EINTR(
       symlink(target_path.value().c_str(), symlink_path.value().c_str()));
   if (rv != 0) {
@@ -195,7 +196,7 @@ bool CreateSymbolicLink(const base::FilePath& target_path,
     return false;
   }
   return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   DWORD symbolic_link_flags = 0;
   SymbolicLinkFlags(&symbolic_link_flags);
   if (!::CreateSymbolicLink(
@@ -208,10 +209,10 @@ bool CreateSymbolicLink(const base::FilePath& target_path,
     return false;
   }
   return true;
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 }
 
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
 }  // namespace test
 }  // namespace crashpad

@@ -53,7 +53,7 @@ IN_PROC_BROWSER_TEST_F(ExtensionBrowserTest, OptionsPage) {
     (function() {
       var button = document.querySelector('extensions-manager').
                     shadowRoot.querySelector('extensions-detail-view').
-                    shadowRoot.querySelector('#extensions-options');
+                    shadowRoot.querySelector('#extensionsOptions');
       button.click();
     })();)";
 

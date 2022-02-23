@@ -45,6 +45,7 @@ class EmojiUI : public ui::MojoBubbleWebUIController,
   mojo::Receiver<emoji_picker::mojom::PageHandlerFactory>
       page_factory_receiver_{this};
   bool incognito_mode_;
+  bool no_text_field_;
 
   WEB_UI_CONTROLLER_TYPE_DECL();
 };

@@ -2,6 +2,9 @@
 # file, they should be prioritized. Otherwise, CLs can be sent to
 # chromium-metrics-reviews@google.com. Googlers can read more about
 # chromium-metrics-reviews@google.com at go/gwsq-gerrit.
+#
+# Becoming a subdirectory owner and being added to METRIC_REVIEWER_OWNERS
+# requires completing a training (currently Google-only): go/reviewing-metrics
 file://base/metrics/OWNERS
 
 chrome-metrics-team+robot@google.com # For bot updates to expiry.

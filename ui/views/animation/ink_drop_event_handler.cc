@@ -13,19 +13,28 @@
 #include "ui/views/widget/widget.h"
 
 namespace views {
+
+namespace {
+
+bool InkDropStateIsVisible(InkDropState state) {
+  return state != InkDropState::HIDDEN && state != InkDropState::DEACTIVATED;
+}
+
+}  // namespace
+
 InkDropEventHandler::InkDropEventHandler(View* host_view, Delegate* delegate)
     : target_handler_(
           std::make_unique<ui::ScopedTargetHandler>(host_view, this)),
       host_view_(host_view),
       delegate_(delegate) {
-  observation_.Observe(host_view_);
+  observation_.Observe(host_view_.get());
 }
 
 InkDropEventHandler::~InkDropEventHandler() = default;
 
 void InkDropEventHandler::AnimateToState(InkDropState state,
                                          const ui::LocatedEvent* event) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, don't initiate ink-drops for touch/gesture events.
   // Additionally, certain event states should dismiss existing ink-drop
   // animations. If the state is already other than HIDDEN, presumably from
@@ -40,7 +49,13 @@ void InkDropEventHandler::AnimateToState(InkDropState state,
 #endif
   last_ripple_triggering_event_.reset(
       event ? ui::Event::Clone(*event).release()->AsLocatedEvent() : nullptr);
-  delegate_->GetInkDrop()->AnimateToState(state);
+
+  // If no ink drop exists and we are not transitioning to a visible ink drop
+  // state the transition have no visual effect. The call to GetInkDrop() will
+  // lazily create the ink drop when called. Avoid creating the ink drop in
+  // these cases to prevent the creation of unnecessary layers.
+  if (delegate_->HasInkDrop() || InkDropStateIsVisible(state))
+    delegate_->GetInkDrop()->AnimateToState(state);
 }
 
 ui::LocatedEvent* InkDropEventHandler::GetLastRippleTriggeringEvent() const {

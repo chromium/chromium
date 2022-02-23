@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "content/browser/file_system_access/file_system_access_capacity_allocation_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_file_delegate_host_impl.h"
 #include "content/browser/file_system_access/file_system_access_manager_impl.h"
-#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_access_handle_host.mojom.h"
 #include "third_party/blink/public/mojom/file_system_access/file_system_access_file_delegate_host.mojom.h"
@@ -21,7 +21,7 @@ namespace content {
 // FileSystemAccessHandleHost mojom interface. Instances of this class are
 // owned by the FileSystemAccessManagerImpl instance passed in to the
 // constructor.
-class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
+class FileSystemAccessAccessHandleHostImpl
     : public blink::mojom::FileSystemAccessAccessHandleHost {
  public:
   // Crates an AccessHandleHost that acts as an exclusive write lock on the
@@ -39,7 +39,8 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
       mojo::PendingReceiver<
           blink::mojom::FileSystemAccessCapacityAllocationHost>
           capacity_allocation_host_receiver,
-      int64_t file_size);
+      int64_t file_size,
+      base::ScopedClosureRunner on_close_callback);
   FileSystemAccessAccessHandleHostImpl(
       const FileSystemAccessAccessHandleHostImpl&) = delete;
   FileSystemAccessAccessHandleHostImpl& operator=(
@@ -65,7 +66,7 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
   void OnDisconnect();
 
   // The FileSystemAccessManagerImpl that owns this instance.
-  FileSystemAccessManagerImpl* const manager_;
+  const raw_ptr<FileSystemAccessManagerImpl> manager_;
 
   // Exclusive write lock on the file. It is released on destruction.
   scoped_refptr<FileSystemAccessWriteLockManager::WriteLock> lock_;
@@ -92,6 +93,12 @@ class CONTENT_EXPORT FileSystemAccessAccessHandleHostImpl
       capacity_allocation_host_;
 
   const storage::FileSystemURL url_;
+
+  // Comes from `FileSystemOperation::OpenFileCallback`'s `on_close_callback`,
+  // which needs to run when its corresponding file closes. `on_close_callback_`
+  // will run when `this` is destroyed, which errs on the side of not running
+  // the callback too early, before the file is actually closed.
+  base::ScopedClosureRunner on_close_callback_;
 
   SEQUENCE_CHECKER(sequence_checker_);
 };

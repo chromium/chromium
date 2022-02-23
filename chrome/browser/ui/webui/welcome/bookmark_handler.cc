@@ -29,7 +29,7 @@ void BookmarkHandler::RegisterMessages() {
 }
 
 void BookmarkHandler::HandleToggleBookmarkBar(const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK(!list.empty());
   const bool show = list[0].GetBool();
   prefs_->SetBoolean(bookmarks::prefs::kShowBookmarkBar, show);
@@ -38,12 +38,11 @@ void BookmarkHandler::HandleToggleBookmarkBar(const base::ListValue* args) {
 void BookmarkHandler::HandleIsBookmarkBarShown(const base::ListValue* args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
+  CHECK_EQ(1U, args->GetListDeprecated().size());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
 
   ResolveJavascriptCallback(
-      *callback_id,
+      callback_id,
       base::Value(prefs_->GetBoolean(bookmarks::prefs::kShowBookmarkBar)));
 }
 

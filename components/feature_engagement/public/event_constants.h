@@ -12,8 +12,8 @@ namespace feature_engagement {
 namespace events {
 
 // Desktop
-#if defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) || \
-    defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) || \
+    BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 // The user has explicitly opened a new tab via an entry point from inside of
 // Chrome.
 extern const char kNewTabOpened[];
@@ -75,10 +75,10 @@ extern const char kFocusHelpBubbleAcceleratorPressed[];
 // the user.
 extern const char kFocusHelpBubbleAcceleratorPromoRead[];
 
-#endif  // defined(OS_WIN) || defined(OS_APPLE) || defined(OS_LINUX) ||
-        // defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
+        // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // The user has opened Chrome (cold start or from background).
 extern const char kChromeOpened[];
 
@@ -99,13 +99,19 @@ extern const char kBottomToolbarOpened[];
 
 // The Discover feed has loaded content in the NTP.
 extern const char kDiscoverFeedLoaded[];
-#endif  // defined(OS_IOS)
+
+// The user has requested the desktop version of a page.
+extern const char kDesktopVersionRequested[];
+
+// The default site view tip is shown.
+extern const char kDefaultSiteViewShown[];
+#endif  // BUILDFLAG(IS_IOS)
 
 // Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // The user has explicitly used the Install menu item under the App Menu.
 extern const char kPwaInstallMenuSelected[];
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace events
 

@@ -42,6 +42,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/frame/viewport_data.h"
+#include "third_party/blink/renderer/core/html/client_hints_util.h"
 #include "third_party/blink/renderer/core/html/cross_origin_attribute.h"
 #include "third_party/blink/renderer/core/html/html_dimension.h"
 #include "third_party/blink/renderer/core/html/html_image_element.h"
@@ -52,7 +53,6 @@
 #include "third_party/blink/renderer/core/html/parser/html_parser_idioms.h"
 #include "third_party/blink/renderer/core/html/parser/html_srcset_parser.h"
 #include "third_party/blink/renderer/core/html/parser/html_tokenizer.h"
-#include "third_party/blink/renderer/core/html/parser/subresource_redirect_origins_preloader.h"
 #include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/core/input_type_names.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
@@ -60,7 +60,6 @@
 #include "third_party/blink/renderer/core/loader/preload_helper.h"
 #include "third_party/blink/renderer/core/loader/subresource_integrity_helper.h"
 #include "third_party/blink/renderer/core/loader/web_bundle/script_web_bundle_rule.h"
-#include "third_party/blink/renderer/core/origin_trials/origin_trials.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/core/script/script_loader.h"
 #include "third_party/blink/renderer/core/script_type_names.h"
@@ -84,19 +83,8 @@ bool Match(const AtomicString& name, const QualifiedName& q_name) {
   return q_name.LocalName() == name;
 }
 
-bool Match(const String& name, const QualifiedName& q_name) {
-  return ThreadSafeMatch(name, q_name);
-}
-
 const StringImpl* TagImplFor(const HTMLToken::DataVector& data) {
   AtomicString tag_name = data.AsAtomicString();
-  const StringImpl* result = tag_name.Impl();
-  if (result->IsStatic())
-    return result;
-  return nullptr;
-}
-
-const StringImpl* TagImplFor(const String& tag_name) {
   const StringImpl* result = tag_name.Impl();
   if (result->IsStatic())
     return result;
@@ -243,16 +231,6 @@ class TokenPreloadScanner::StartTagScanner {
       String attribute_value = html_token_attribute.Value8BitIfNecessary();
       ProcessAttribute(attribute_name, attribute_value);
     }
-    PostProcessAfterAttributes();
-  }
-
-  void ProcessAttributes(
-      const Vector<CompactHTMLToken::Attribute>& attributes) {
-    if (!tag_impl_)
-      return;
-    for (const CompactHTMLToken::Attribute& html_token_attribute : attributes)
-      ProcessAttribute(html_token_attribute.GetName(),
-                       html_token_attribute.Value());
     PostProcessAfterAttributes();
   }
 
@@ -403,11 +381,6 @@ class TokenPreloadScanner::StartTagScanner {
     }
     request->SetRenderBlockingBehavior(render_blocking_behavior);
 
-    if (type == ResourceType::kImage &&
-        document_parameters.subresource_redirect_origins_preloader) {
-      document_parameters.subresource_redirect_origins_preloader
-          ->AddImagePreloadRequest(predicted_base_url, url_to_load_);
-    }
     if (type == ResourceType::kImage && Match(tag_impl_, html_names::kImgTag) &&
         IsLazyLoadImageDeferable(document_parameters)) {
       return nullptr;
@@ -655,36 +628,12 @@ class TokenPreloadScanner::StartTagScanner {
     if (!document_parameters.lazy_load_image_observer)
       return false;
 
-    bool is_fully_loadable =
-        document_parameters.lazy_load_image_observer
-            ->IsFullyLoadableFirstKImageAndDecrementCount();
     if (document_parameters.lazy_load_image_setting ==
         LocalFrame::LazyLoadImageSetting::kDisabled) {
       return false;
     }
 
-    switch (loading_attr_value_) {
-      case LoadingAttributeValue::kEager:
-        return false;
-      case LoadingAttributeValue::kLazy:
-        return true;
-      case LoadingAttributeValue::kAuto:
-        if ((width_attr_dimension_type_ ==
-                 HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall &&
-             height_attr_dimension_type_ ==
-                 HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall) ||
-            inline_style_dimensions_type_ ==
-                HTMLImageElement::LazyLoadDimensionType::kAbsoluteSmall) {
-          // Fetch small images eagerly.
-          return false;
-        } else if (is_fully_loadable ||
-                   document_parameters.lazy_load_image_setting !=
-                       LocalFrame::LazyLoadImageSetting::kEnabledAutomatic) {
-          return false;
-        }
-        break;
-    }
-    return true;
+    return loading_attr_value_ == LoadingAttributeValue::kLazy;
   }
 
   void SetUrlToLoad(const String& value, URLReplacement replacement) {
@@ -950,14 +899,6 @@ void TokenPreloadScanner::Scan(const HTMLToken& token,
   ScanCommon(token, source, requests, viewport, is_csp_meta_tag);
 }
 
-void TokenPreloadScanner::Scan(const CompactHTMLToken& token,
-                               const SegmentedString& source,
-                               PreloadRequestStream& requests,
-                               absl::optional<ViewportDescription>* viewport,
-                               bool* is_csp_meta_tag) {
-  ScanCommon(token, source, requests, viewport, is_csp_meta_tag);
-}
-
 static void HandleMetaViewport(
     const String& attribute_value,
     const CachedDocumentParameters* document_parameters,
@@ -971,8 +912,8 @@ static void HandleMetaViewport(
       document_parameters->viewport_meta_zero_values_quirk);
   if (viewport)
     *viewport = description;
-  FloatSize initial_viewport(media_values->DeviceWidth(),
-                             media_values->DeviceHeight());
+  gfx::SizeF initial_viewport(media_values->DeviceWidth(),
+                              media_values->DeviceHeight());
   PageScaleConstraints constraints = description.Resolve(
       initial_viewport, document_parameters->default_viewport_min_width);
   media_values->OverrideViewportDimensions(constraints.layout_size.width(),
@@ -994,11 +935,8 @@ static void HandleMetaReferrer(const String& attribute_value,
 }
 
 template <typename Token>
-static void HandleMetaNameAttribute(
+void TokenPreloadScanner::HandleMetaNameAttribute(
     const Token& token,
-    CachedDocumentParameters* document_parameters,
-    MediaValuesCached* media_values,
-    CSSPreloadScanner* css_scanner,
     absl::optional<ViewportDescription>* viewport) {
   const typename Token::Attribute* name_attribute =
       token.GetAttributeItem(html_names::kNameAttr);
@@ -1013,14 +951,23 @@ static void HandleMetaNameAttribute(
 
   String content_attribute_value(content_attribute->Value());
   if (EqualIgnoringASCIICase(name_attribute_value, "viewport")) {
-    HandleMetaViewport(content_attribute_value, document_parameters,
-                       media_values, viewport);
+    HandleMetaViewport(content_attribute_value, document_parameters_.get(),
+                       media_values_.Get(), viewport);
     return;
   }
 
   if (EqualIgnoringASCIICase(name_attribute_value, "referrer")) {
-    HandleMetaReferrer(content_attribute_value, document_parameters,
-                       css_scanner);
+    HandleMetaReferrer(content_attribute_value, document_parameters_.get(),
+                       &css_scanner_);
+  }
+
+  if (EqualIgnoringASCIICase(name_attribute_value, http_names::kAcceptCH) &&
+      RuntimeEnabledFeatures::ClientHintsMetaNameAcceptCHEnabled()) {
+    UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
+        client_hints_preferences_, document_parameters_->local_dom_window,
+        content_attribute->Value(), document_url_, nullptr,
+        /*is_http_equiv*/ false,
+        /*is_preload_or_parser*/ scanner_type_ == ScannerType::kMainDocument);
   }
 }
 
@@ -1117,19 +1064,25 @@ void TokenPreloadScanner::ScanCommon(
                                      "content-security-policy")) {
             *is_csp_meta_tag = true;
           } else if (EqualIgnoringASCIICase(equiv_attribute_value,
-                                            "accept-ch")) {
+                                            http_names::kAcceptCH) &&
+                     RuntimeEnabledFeatures::
+                         ClientHintsMetaHTTPEquivAcceptCHEnabled()) {
             const typename Token::Attribute* content_attribute =
                 token.GetAttributeItem(html_names::kContentAttr);
             if (content_attribute) {
-              client_hints_preferences_.UpdateFromHttpEquivAcceptCH(
-                  content_attribute->Value(), document_url_, nullptr);
+              UpdateWindowPermissionsPolicyWithDelegationSupportForClientHints(
+                  client_hints_preferences_,
+                  document_parameters_->local_dom_window,
+                  content_attribute->Value(), document_url_, nullptr,
+                  /*is_http_equiv*/ true,
+                  /*is_preload_or_parser*/ scanner_type_ ==
+                      ScannerType::kMainDocument);
             }
           }
           return;
         }
 
-        HandleMetaNameAttribute(token, document_parameters_.get(),
-                                media_values_.Get(), &css_scanner_, viewport);
+        HandleMetaNameAttribute(token, viewport);
       }
 
       if (Match(tag_impl, html_names::kBodyTag)) {
@@ -1275,8 +1228,7 @@ CachedDocumentParameters::CachedDocumentParameters(Document* document) {
   }
   probe::GetDisabledImageTypes(document->GetExecutionContext(),
                                &disabled_image_types);
-  subresource_redirect_origins_preloader =
-      SubresourceRedirectOriginsPreloader::From(*document);
+  local_dom_window = document->domWindow();
 }
 
 }  // namespace blink

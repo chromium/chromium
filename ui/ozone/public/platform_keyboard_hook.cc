@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/containers/contains.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 
 namespace ui {

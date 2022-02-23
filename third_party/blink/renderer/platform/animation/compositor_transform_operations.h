@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "ui/gfx/geometry/transform_operations.h"
 
-namespace skia {
-class Matrix44;
+namespace gfx {
+class Transform;
 }
 
 namespace blink {
@@ -35,7 +35,7 @@ class PLATFORM_EXPORT CompositorTransformOperations {
   void AppendSkewY(double y);
   void AppendSkew(double x, double y);
   void AppendPerspective(absl::optional<double> depth);
-  void AppendMatrix(const skia::Matrix44&);
+  void AppendMatrix(const gfx::Transform&);
 
   bool IsIdentity() const;
 

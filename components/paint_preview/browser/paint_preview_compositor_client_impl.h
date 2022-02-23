@@ -46,8 +46,8 @@ class PaintPreviewCompositorClientImpl : public PaintPreviewCompositorClient {
       const base::UnguessableToken& frame_guid,
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback callback)
-      override;
+      mojom::PaintPreviewCompositor::BitmapForSeparatedFrameCallback callback,
+      bool run_callback_on_default_task_runner = true) override;
   void BeginMainFrameComposite(
       mojom::PaintPreviewBeginCompositeRequestPtr request,
       mojom::PaintPreviewCompositor::BeginMainFrameCompositeCallback callback)
@@ -55,8 +55,8 @@ class PaintPreviewCompositorClientImpl : public PaintPreviewCompositorClient {
   void BitmapForMainFrame(
       const gfx::Rect& clip_rect,
       float scale_factor,
-      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback)
-      override;
+      mojom::PaintPreviewCompositor::BitmapForMainFrameCallback callback,
+      bool run_callback_on_default_task_runner = true) override;
   void SetRootFrameUrl(const GURL& url) override;
 
   // The returned remote should only be used on `compositor_task_runner_`.

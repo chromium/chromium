@@ -137,6 +137,10 @@ std::vector<ComponentName> DefaultEnUsImageRanking() {
           "com.tencent.mm",
           "com.tencent.mm.ui.tools.ShareImgUI",
       },
+      {
+          "com.tencent.mm",
+          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+      },
       // TODO(https://crbug.com/1228281): Groupme
   };
 }
@@ -231,6 +235,10 @@ std::vector<ComponentName> DefaultEnUsTextRanking() {
           "com.tencent.mm",
           "com.tencent.mm.ui.tools.ShareImgUI",
       },
+      {
+          "com.tencent.mm",
+          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+      },
       // TODO(https://crbug.com/1228281): Groupme
   };
 }
@@ -249,6 +257,10 @@ std::vector<ComponentName> DefaultWorldImageRanking() {
        "com.instagram.share.handleractivity.ShareHandlerActivity"},
       {"com.instagram.android",
        "com.instagram.share.handleractivity.StoryShareHandlerActivity"},
+      {
+          "com.tencent.mm",
+          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+      },
       {
           "org.telegram.messenger",
           "org.telegram.ui.LaunchActivity",
@@ -361,6 +373,10 @@ std::vector<ComponentName> DefaultWorldTextRanking() {
       {"com.facebook.katana",
        "com.facebook.composer.shareintent."
        "ImplicitShareIntentHandlerDefaultAlias"},
+      {
+          "com.tencent.mm",
+          "com.tencent.mm.ui.tools.ShareToTimeLineUI",
+      },
       {
           "com.google.android.talk",
           "com.google.android.apps.hangouts.phone.ShareIntentActivity",

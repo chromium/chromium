@@ -30,8 +30,10 @@ class HistoryTabHelperTest : public PlatformTest {
  public:
   void SetUp() override {
     TestChromeBrowserState::Builder test_cbs_builder;
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = test_cbs_builder.Build();
-    ASSERT_TRUE(chrome_browser_state_->CreateHistoryService());
 
     web_state_.SetBrowserState(chrome_browser_state_.get());
     HistoryTabHelper::CreateForWebState(&web_state_);

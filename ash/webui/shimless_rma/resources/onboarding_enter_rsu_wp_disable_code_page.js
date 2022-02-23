@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './shimless_rma_fonts_css.js';
 import './shimless_rma_shared_css.js';
 import './base_page.js';
-import '//resources/cr_elements/cr_input/cr_input.m.js';
+import 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
+import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from 'chrome://resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -18,6 +20,9 @@ const QR_CODE_TILE_SIZE = 5;
 const QR_CODE_PADDING = 4 * QR_CODE_TILE_SIZE;
 // Styling for filled tiles in the QR code.
 const QR_CODE_FILL_STYLE = '#000000';
+
+// The number of characters in an RSU code.
+const RSU_CODE_EXPECTED_LENGTH = 8;
 
 /**
  * @fileoverview
@@ -46,16 +51,22 @@ export class OnboardingEnterRsuWpDisableCodePage extends
 
   static get properties() {
     return {
+      /**
+       * Set by shimless_rma.js.
+       * @type {boolean}
+       */
+      allButtonsDisabled: Boolean,
+
       /** @protected */
       canvasSize_: {
         type: Number,
         value: 0,
       },
 
-      /** @protected {!Array<!Array<string>>} */
+      /** @protected {string} */
       rsuChallenge_: {
-        type: Array,
-        value: () => [],
+        type: String,
+        value: '',
       },
 
       /** @protected */
@@ -68,8 +79,42 @@ export class OnboardingEnterRsuWpDisableCodePage extends
       rsuCode_: {
         type: String,
         value: '',
+        observer: 'onRsuCodeChanged_',
       },
 
+      /** @protected */
+      rsuCodeExpectedLength_: {
+        type: Number,
+        value: RSU_CODE_EXPECTED_LENGTH,
+        readOnly: true,
+      },
+
+      /** @protected */
+      rsuInstructionsText_: {
+        type: String,
+        value: '',
+      },
+
+      /** @protected */
+      rsuChallengeLinkText_: {
+        type: String,
+        value: '',
+        computed: 'computeRsuChallengeLinkText_(rsuHwid_, rsuChallenge_)',
+      },
+
+      /** @protected */
+      rsuCodeValidationRegex_: {
+        type: String,
+        value: '.{1,8}',
+        readOnly: true,
+      },
+
+      /** @protected {boolean} */
+      rsuCodeInvalid_: {
+        type: Boolean,
+        value: false,
+        reflectToAttribute: true,
+      },
     };
   }
 
@@ -83,22 +128,17 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   ready() {
     super.ready();
     this.getRsuChallengeAndHwid_();
+    this.setRsuInstructionsText_();
+    this.dispatchEvent(new CustomEvent(
+        'disable-next-button',
+        {bubbles: true, composed: true, detail: false},
+        ));
   }
 
   /** @private */
   getRsuChallengeAndHwid_() {
     this.shimlessRmaService_.getRsuDisableWriteProtectChallenge().then(
-        (result) => {
-          this.rsuChallenge_ = [];
-          // Split raw challenge code every 4 characters.
-          /** @type !Array<string> */
-          const challenge = result.challenge.match(/.{1,4}/g) || [];
-          // Split array of 4 character blocks into multiple arrays of 4 blocks
-          // each.
-          for (let i = 0; i < challenge.length; i += 4) {
-            this.rsuChallenge_.push(challenge.slice(i, i + 4));
-          }
-        });
+        (result) => this.rsuChallenge_ = result.challenge);
     this.shimlessRmaService_.getRsuDisableWriteProtectHwid().then(
         (result) => {
           this.rsuHwid_ = result.hwid;
@@ -135,13 +175,11 @@ export class OnboardingEnterRsuWpDisableCodePage extends
   }
 
   /**
-   * @private
    * @return {boolean}
-   * TODO(gavindodd): Add basic validation for the format of RSU code.
-   * Can this use cr-input autovalidate?
+   * @private
    */
   rsuCodeIsPlausible_() {
-    return !!this.rsuCode_ && this.rsuCode_.length == 8;
+    return !!this.rsuCode_ && this.rsuCode_.length === RSU_CODE_EXPECTED_LENGTH;
   }
 
   /**
@@ -149,10 +187,9 @@ export class OnboardingEnterRsuWpDisableCodePage extends
    * @param {!Event} event
    */
   onRsuCodeChanged_(event) {
-    this.dispatchEvent(new CustomEvent(
-        'disable-next-button',
-        {bubbles: true, composed: true, detail: !this.rsuCodeIsPlausible_()},
-        ));
+    // Set to false whenever the user changes the code to remove the red invalid
+    // warning.
+    this.rsuCodeInvalid_ = false;
   }
 
   /**
@@ -165,12 +202,43 @@ export class OnboardingEnterRsuWpDisableCodePage extends
 
   /** @return {!Promise<!StateResult>} */
   onNextButtonClick() {
-    if (this.rsuCode_) {
-      return this.shimlessRmaService_.setRsuDisableWriteProtectCode(
-          this.rsuCode_);
-    } else {
+    if (this.rsuCode_.length !== this.rsuCodeExpectedLength_) {
+      this.rsuCodeInvalid_ = true;
       return Promise.reject(new Error('No RSU code set'));
     }
+
+    return this.shimlessRmaService_.setRsuDisableWriteProtectCode(
+        this.rsuCode_);
+  }
+
+  /** @private */
+  setRsuInstructionsText_() {
+    this.rsuInstructionsText_ =
+        this.i18nAdvanced('rsuCodeInstructionsText', {attrs: ['id']});
+    const linkElement = this.shadowRoot.querySelector('#rsuCodeDialogLink');
+    linkElement.setAttribute('href', '#');
+    linkElement.addEventListener('click', () => {
+      if (this.allButtonsDisabled) {
+        return;
+      }
+
+      this.shadowRoot.querySelector('#rsuChallengeDialog').showModal();
+    });
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  computeRsuChallengeLinkText_() {
+    const unlockPageUrl =
+        'https://chromeos.google.com/partner/console/cr50reset?challenge=';
+    return unlockPageUrl + this.rsuChallenge_ + '&hwid=' + this.rsuHwid_;
+  }
+
+  /** @private */
+  closeDialog_() {
+    this.shadowRoot.querySelector('#rsuChallengeDialog').close();
   }
 }
 

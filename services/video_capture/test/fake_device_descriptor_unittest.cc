@@ -20,7 +20,7 @@ namespace video_capture {
 
 class MockCreateDeviceRemoteCallback {
  public:
-  MOCK_METHOD1(Run, void(mojom::DeviceAccessResultCode result_code));
+  MOCK_METHOD1(Run, void(media::VideoCaptureError result_code));
 };
 
 // This alias ensures test output is easily attributed to this service's tests.
@@ -42,7 +42,7 @@ TEST_F(FakeVideoCaptureDeviceDescriptorTest,
 
   base::RunLoop wait_loop;
   EXPECT_CALL(create_device_remote_callback,
-              Run(mojom::DeviceAccessResultCode::SUCCESS))
+              Run(media::VideoCaptureError::kNone))
       .WillOnce(InvokeWithoutArgs([&wait_loop]() { wait_loop.Quit(); }));
 
   device_remote.reset();
@@ -58,7 +58,7 @@ TEST_F(FakeVideoCaptureDeviceDescriptorTest, AccessIsRevokedOnSecondAccess) {
   bool device_access_1_revoked = false;
   MockCreateDeviceRemoteCallback create_device_remote_callback_1;
   EXPECT_CALL(create_device_remote_callback_1,
-              Run(mojom::DeviceAccessResultCode::SUCCESS))
+              Run(media::VideoCaptureError::kNone))
       .Times(1);
   factory_->CreateDevice(
       i420_fake_device_info_.descriptor.device_id,
@@ -77,7 +77,7 @@ TEST_F(FakeVideoCaptureDeviceDescriptorTest, AccessIsRevokedOnSecondAccess) {
   bool device_access_2_revoked = false;
   MockCreateDeviceRemoteCallback create_device_remote_callback_2;
   EXPECT_CALL(create_device_remote_callback_2,
-              Run(mojom::DeviceAccessResultCode::SUCCESS))
+              Run(media::VideoCaptureError::kNone))
       .Times(1)
       .WillOnce(InvokeWithoutArgs([&wait_loop_2]() { wait_loop_2.Quit(); }));
   factory_->CreateDevice(
@@ -107,8 +107,9 @@ TEST_F(FakeVideoCaptureDeviceDescriptorTest, CanUseSecondRequestedProxy) {
       i420_fake_device_info_.descriptor.device_id,
       device_remote_2.BindNewPipeAndPassReceiver(),
       base::BindOnce(
-          [](base::RunLoop* wait_loop,
-             mojom::DeviceAccessResultCode result_code) { wait_loop->Quit(); },
+          [](base::RunLoop* wait_loop, media::VideoCaptureError result_code) {
+            wait_loop->Quit();
+          },
           &wait_loop));
   wait_loop.Run();
 

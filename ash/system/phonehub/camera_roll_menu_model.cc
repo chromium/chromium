@@ -25,8 +25,8 @@ CameraRollMenuModel::CameraRollMenuModel(
                   l10n_util::GetStringUTF16(
                       IDS_ASH_PHONE_HUB_CAMERA_ROLL_MENU_DOWNLOAD_LABEL),
                   ui::ImageModel::FromVectorIcon(
-                      kPhoneHubCameraRollMenuDownloadIcon, ui::kColorMenuIcon,
-                      kCameraRollMenuIconSize));
+                      kPhoneHubCameraRollMenuDownloadIcon,
+                      ui::kColorAshSystemUIMenuIcon, kCameraRollMenuIconSize));
 }
 
 CameraRollMenuModel::~CameraRollMenuModel() {}

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
@@ -32,8 +33,6 @@ using safe_browsing::LoginReputationClientResponse;
 using safe_browsing::RequestOutcome;
 
 namespace {
-
-constexpr char kStringTypeUMAName[] = "PasswordProtection.InterstitialString";
 
 // Used for UMA metric logging. Please don't reorder.
 // Indicates which type of strings are shown on this page.
@@ -78,7 +77,7 @@ class ResetPasswordHandlerImpl : public mojom::ResetPasswordHandler {
   }
 
  private:
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   mojo::Receiver<mojom::ResetPasswordHandler> receiver_;
 };
 
@@ -154,10 +153,6 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
     explanation_paragraph_string = l10n_util::GetStringUTF16(
         known_password_type ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH
                             : IDS_RESET_PASSWORD_EXPLANATION_PARAGRAPH);
-    UMA_HISTOGRAM_ENUMERATION(kStringTypeUMAName,
-                              known_password_type
-                                  ? StringType::WARNING_NO_ORG_NAME
-                                  : StringType::GENERIC_NO_ORG_NAME);
   } else {
     std::u16string formatted_org_name = GetFormattedHostName(org_name);
     explanation_paragraph_string = l10n_util::GetStringFUTF16(
@@ -165,19 +160,16 @@ base::DictionaryValue ResetPasswordUI::PopulateStrings() const {
             ? IDS_RESET_PASSWORD_WARNING_EXPLANATION_PARAGRAPH_WITH_ORG_NAME
             : IDS_RESET_PASSWORD_EXPLANATION_PARAGRAPH_WITH_ORG_NAME,
         formatted_org_name);
-    UMA_HISTOGRAM_ENUMERATION(kStringTypeUMAName,
-                              known_password_type
-                                  ? StringType::WARNING_WITH_ORG_NAME
-                                  : StringType::GENERIC_WITH_ORG_NAME);
   }
 
   base::DictionaryValue load_time_data;
-  load_time_data.SetString("title",
-                           l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_TITLE));
-  load_time_data.SetString("heading",
-                           l10n_util::GetStringUTF16(heading_string_id));
-  load_time_data.SetString("primaryParagraph", explanation_paragraph_string);
-  load_time_data.SetString("primaryButtonText", l10n_util::GetStringUTF16(
-                                                    IDS_RESET_PASSWORD_BUTTON));
+  load_time_data.SetStringKey(
+      "title", l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_TITLE));
+  load_time_data.SetStringKey("heading",
+                              l10n_util::GetStringUTF16(heading_string_id));
+  load_time_data.SetStringKey("primaryParagraph", explanation_paragraph_string);
+  load_time_data.SetStringKey(
+      "primaryButtonText",
+      l10n_util::GetStringUTF16(IDS_RESET_PASSWORD_BUTTON));
   return load_time_data;
 }

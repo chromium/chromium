@@ -23,6 +23,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -145,14 +146,15 @@ public class SearchEngineLogoUtils {
      * circumstances, such as: no logo url found, network/cache error, etc.
      *
      * @param resources Provides access to Android resources.
-     * @param inNightMode Whether the device is currently in night mode, used to tint icons.
+     * @param brandedColorScheme The {@link BrandedColorScheme}, used to tint icons.
      * @param profile The current profile. When null, falls back to locally-provided icons.
      * @param templateUrlService The current templateUrlService. When null, falls back to
      *         locally-provided icons.
      * @param callback How the bitmap will be returned to the caller.
      */
-    public void getSearchEngineLogo(@NonNull Resources resources, boolean inNightMode,
-            @Nullable Profile profile, @Nullable TemplateUrlService templateUrlService,
+    public void getSearchEngineLogo(@NonNull Resources resources,
+            @BrandedColorScheme int brandedColorScheme, @Nullable Profile profile,
+            @Nullable TemplateUrlService templateUrlService,
             @NonNull Callback<StatusIconResource> callback) {
         // In the following cases, we fallback to the search loupe:
         // - Either of the nullable dependencies are null.
@@ -162,7 +164,7 @@ public class SearchEngineLogoUtils {
         // then we serve the Google icon we have locally.
         // Otherwise, the search engine is non-Google and we go to the network to fetch it.
         if (profile == null || templateUrlService == null || needToCheckForSearchEnginePromo()) {
-            callback.onResult(getSearchLoupeResource(inNightMode));
+            callback.onResult(getSearchLoupeResource(brandedColorScheme));
             return;
         } else if (templateUrlService.isDefaultSearchEngineGoogle()) {
             callback.onResult(new StatusIconResource(R.drawable.ic_logo_googleg_20dp, 0));
@@ -176,7 +178,7 @@ public class SearchEngineLogoUtils {
 
         String logoUrl = getSearchLogoUrl(templateUrlService);
         if (logoUrl == null) {
-            callback.onResult(getSearchLoupeResource(inNightMode));
+            callback.onResult(getSearchLoupeResource(brandedColorScheme));
             recordEvent(Events.FETCH_FAILED_NULL_URL);
             return;
         }
@@ -192,7 +194,7 @@ public class SearchEngineLogoUtils {
         boolean willCallbackBeCalled = mFaviconHelper.getLocalFaviconImageForURL(
                 profile, logoUrl, logoSizePixels, (image, iconUrl) -> {
                     if (image == null) {
-                        callback.onResult(getSearchLoupeResource(inNightMode));
+                        callback.onResult(getSearchLoupeResource(brandedColorScheme));
                         recordEvent(Events.FETCH_FAILED_RETURNED_BITMAP_NULL);
                         return;
                     }
@@ -201,16 +203,15 @@ public class SearchEngineLogoUtils {
                     recordEvent(Events.FETCH_SUCCESS);
                 });
         if (!willCallbackBeCalled) {
-            callback.onResult(getSearchLoupeResource(inNightMode));
+            callback.onResult(getSearchLoupeResource(brandedColorScheme));
             recordEvent(Events.FETCH_FAILED_FAVICON_HELPER_ERROR);
         }
     }
 
     @VisibleForTesting
-    StatusIconResource getSearchLoupeResource(boolean inNightMode) {
-        return new StatusIconResource(R.drawable.ic_search,
-                inNightMode ? R.color.default_icon_color_secondary_tint_list
-                            : ThemeUtils.getThemedToolbarIconTintRes(/* useLight= */ true));
+    StatusIconResource getSearchLoupeResource(@BrandedColorScheme int brandedColorScheme) {
+        return new StatusIconResource(
+                R.drawable.ic_search, ThemeUtils.getThemedToolbarIconTintRes(brandedColorScheme));
     }
 
     /** Returns whether the search engine promo is complete. */

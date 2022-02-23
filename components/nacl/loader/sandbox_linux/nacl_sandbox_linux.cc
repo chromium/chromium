@@ -25,9 +25,7 @@
 #include "base/rand_util.h"
 #include "build/build_config.h"
 #include "components/nacl/common/nacl_switches.h"
-#include "components/nacl/loader/nonsfi/nonsfi_sandbox.h"
 #include "components/nacl/loader/sandbox_linux/nacl_bpf_sandbox_linux.h"
-#include "content/public/common/content_switches.h"
 #include "sandbox/linux/seccomp-bpf/sandbox_bpf.h"
 #include "sandbox/linux/services/credentials.h"
 #include "sandbox/linux/services/namespace_sandbox.h"
@@ -103,7 +101,6 @@ NaClSandbox::NaClSandbox()
     : layer_one_enabled_(false),
       layer_one_sealed_(false),
       layer_two_enabled_(false),
-      layer_two_is_nonsfi_(false),
       proc_fd_(-1),
       setuid_sandbox_client_(sandbox::SetuidSandboxClient::Create()) {
   proc_fd_.reset(
@@ -181,7 +178,7 @@ void NaClSandbox::CheckForExpectedNumberOfOpenFds() {
   CHECK_EQ(expected_num_fds, sandbox::ProcUtil::CountOpenFds(proc_fd_.get()));
 }
 
-void NaClSandbox::InitializeLayerTwoSandbox(bool uses_nonsfi_mode) {
+void NaClSandbox::InitializeLayerTwoSandbox() {
   // seccomp-bpf only applies to the current thread, so it's critical to only
   // have a single thread running here.
   DCHECK(!layer_one_sealed_);
@@ -193,14 +190,7 @@ void NaClSandbox::InitializeLayerTwoSandbox(bool uses_nonsfi_mode) {
   // Pass proc_fd_ ownership to the BPF sandbox, which guarantees it will
   // be closed. There is no point in keeping it around since the BPF policy
   // will prevent its usage.
-#if defined(OS_NACL_NONSFI)
-  CHECK(uses_nonsfi_mode);
-  layer_two_enabled_ = nacl::nonsfi::InitializeBPFSandbox(std::move(proc_fd_));
-  layer_two_is_nonsfi_ = true;
-#else
-  CHECK(!uses_nonsfi_mode);
   layer_two_enabled_ = nacl::InitializeBPFSandbox(std::move(proc_fd_));
-#endif
 }
 
 void NaClSandbox::SealLayerOneSandbox() {
@@ -214,41 +204,10 @@ void NaClSandbox::SealLayerOneSandbox() {
 }
 
 void NaClSandbox::CheckSandboxingStateWithPolicy() {
-  static const char kItIsDangerousMsg[] = " this is dangerous.";
-  static const char kItIsNotAllowedMsg[] =
-      " this is not allowed in this configuration.";
-
-  const bool no_sandbox_for_nonsfi_ok =
-#if defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) || \
-    defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER)
-      // Sanitizer tests run with --no-sandbox, but without
-      // --nacl-dangerous-no-sandbox-nonsfi. Allow that case.
-      true;
-#else
-      base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kNaClDangerousNoSandboxNonSfi);
-#endif
-
-  const bool can_be_no_sandbox =
-      !layer_two_is_nonsfi_ || no_sandbox_for_nonsfi_ok;
-
-  if (!layer_one_enabled_ || !layer_one_sealed_) {
-    static const char kNoSuidMsg[] =
-        "The SUID sandbox is not engaged for NaCl:";
-    if (can_be_no_sandbox)
-      LOG(ERROR) << kNoSuidMsg << kItIsDangerousMsg;
-    else
-      LOG(FATAL) << kNoSuidMsg << kItIsNotAllowedMsg;
-  }
-
-  if (!layer_two_enabled_) {
-    static const char kNoBpfMsg[] =
-        "The seccomp-bpf sandbox is not engaged for NaCl:";
-    if (can_be_no_sandbox)
-      LOG(ERROR) << kNoBpfMsg << kItIsDangerousMsg;
-    else
-      LOG(FATAL) << kNoBpfMsg << kItIsNotAllowedMsg;
-  }
+  LOG_IF(ERROR, !layer_one_enabled_ || !layer_one_sealed_)
+      << "The SUID sandbox is not engaged for NaCl: this is dangerous.";
+  LOG_IF(ERROR, !layer_two_enabled_)
+      << "The seccomp-bpf sandbox is not engaged for NaCl: this is dangerous.";
 }
 
 }  // namespace nacl

@@ -26,7 +26,6 @@
 #include "components/cdm/browser/media_drm_storage_impl.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
-#include "components/content_settings/core/browser/uma_util.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "components/permissions/object_permission_context_base.h"
@@ -77,24 +76,6 @@ HostContentSettingsMap* GetHostContentSettingsMap(
 HostContentSettingsMap* GetHostContentSettingsMap(
     const JavaParamRef<jobject>& jbrowser_context_handle) {
   return GetHostContentSettingsMap(unwrap(jbrowser_context_handle));
-}
-
-// Reset the give permission for the DSE if the permission and origin are
-// controlled by the DSE.
-bool MaybeResetDSEPermission(BrowserContext* browser_context,
-                             ContentSettingsType type,
-                             const GURL& origin,
-                             const GURL& embedder,
-                             ContentSetting setting) {
-  if (!embedder.is_empty() && embedder != origin)
-    return false;
-
-  if (setting != CONTENT_SETTING_DEFAULT)
-    return false;
-
-  return permissions::PermissionsClient::Get()
-      ->ResetPermissionIfControlledByDse(browser_context, type,
-                                         url::Origin::Create(origin));
 }
 
 ScopedJavaLocalRef<jstring> ConvertOriginToJavaString(
@@ -242,11 +223,6 @@ void SetPermissionSettingForOrigin(
         ->RemoveEmbargoAndResetCounts(origin_url, content_type);
   }
 
-  if (MaybeResetDSEPermission(browser_context, content_type, origin_url,
-                              embedder_url, setting)) {
-    return;
-  }
-
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
           browser_context, origin_url, embedder_url, content_type,
@@ -254,7 +230,6 @@ void SetPermissionSettingForOrigin(
   GetHostContentSettingsMap(browser_context)
       ->SetContentSettingDefaultScope(origin_url, embedder_url, content_type,
                                       setting);
-  content_settings::LogWebSiteSettingsPermissionChange(content_type, setting);
 }
 
 permissions::ObjectPermissionContextBase* GetChooserContext(
@@ -362,12 +337,6 @@ static void SetNotificationSettingForOrigin(
       ->GetPermissionDecisionAutoBlocker(browser_context)
       ->RemoveEmbargoAndResetCounts(url, ContentSettingsType::NOTIFICATIONS);
 
-  if (MaybeResetDSEPermission(browser_context,
-                              ContentSettingsType::NOTIFICATIONS, url, GURL(),
-                              setting)) {
-    return;
-  }
-
   permissions::PermissionUmaUtil::ScopedRevocationReporter
       scoped_revocation_reporter(
           browser_context, url, GURL(), ContentSettingsType::NOTIFICATIONS,
@@ -376,8 +345,6 @@ static void SetNotificationSettingForOrigin(
   GetHostContentSettingsMap(browser_context)
       ->SetContentSettingDefaultScope(
           url, GURL(), ContentSettingsType::NOTIFICATIONS, setting);
-  content_settings::LogWebSiteSettingsPermissionChange(
-      ContentSettingsType::NOTIFICATIONS, setting);
 }
 
 // In Android O+, Android is responsible for revoking notification settings--
@@ -391,9 +358,6 @@ static void JNI_WebsitePreferenceBridge_ReportNotificationRevokedForOrigin(
 
   ContentSetting setting = static_cast<ContentSetting>(new_setting_value);
   DCHECK_NE(setting, CONTENT_SETTING_ALLOW);
-
-  content_settings::LogWebSiteSettingsPermissionChange(
-      ContentSettingsType::NOTIFICATIONS, setting);
 
   permissions::PermissionUmaUtil::PermissionRevoked(
       ContentSettingsType::NOTIFICATIONS,
@@ -692,7 +656,7 @@ static void JNI_WebsitePreferenceBridge_ClearBannerData(
   GetHostContentSettingsMap(jbrowser_context_handle)
       ->SetWebsiteSettingDefaultScope(
           GURL(ConvertJavaStringToUTF8(env, jorigin)), GURL(),
-          ContentSettingsType::APP_BANNER, nullptr);
+          ContentSettingsType::APP_BANNER, base::Value());
 }
 
 static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(
@@ -706,17 +670,6 @@ static void JNI_WebsitePreferenceBridge_ClearMediaLicenses(
       user_prefs::UserPrefs::Get(browser_context), base::Time(),
       base::Time::Max(), base::BindRepeating(&OriginMatcher, origin),
       base::DoNothing());
-}
-
-static jboolean JNI_WebsitePreferenceBridge_IsPermissionControlledByDSE(
-    JNIEnv* env,
-    const JavaParamRef<jobject>& jbrowser_context_handle,
-    int content_settings_type,
-    const JavaParamRef<jstring>& jorigin) {
-  return permissions::PermissionsClient::Get()->IsPermissionControlledByDse(
-      unwrap(jbrowser_context_handle),
-      static_cast<ContentSettingsType>(content_settings_type),
-      url::Origin::Create(GURL(ConvertJavaStringToUTF8(env, jorigin))));
 }
 
 static jboolean JNI_WebsitePreferenceBridge_IsDSEOrigin(

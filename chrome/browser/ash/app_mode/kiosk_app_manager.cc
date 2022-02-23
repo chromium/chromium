@@ -22,8 +22,10 @@
 #include "base/task/post_task.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
+#include "base/values.h"
 #include "base/version.h"
 #include "chrome/browser/ash/app_mode/app_session_ash.h"
+#include "chrome/browser/ash/app_mode/chrome_app_kiosk_app_installer.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_data.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_external_loader.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_manager_observer.h"
@@ -80,7 +82,7 @@ std::string GenerateKioskAppAccountId(const std::string& app_id) {
 }
 
 // Check for presence of machine owner public key file.
-void CheckOwnerFilePresence(bool *present) {
+void CheckOwnerFilePresence(bool* present) {
   scoped_refptr<ownership::OwnerKeyUtil> util =
       OwnerSettingsServiceAshFactory::GetInstance()->GetOwnerKeyUtil();
   *present = util.get() && util->IsPublicKeyPresent();
@@ -141,32 +143,60 @@ std::string GetSwitchString(const std::string& flag_name) {
   return cmd_line.argv()[1];
 }
 
+bool IsWebstoreUpdateUrl(const std::string* url) {
+  return url && extension_urls::IsWebstoreUpdateUrl(GURL(*url));
+}
+
 }  // namespace
 
 // static
 const char KioskAppManager::kKioskDictionaryName[] = "kiosk";
 const char KioskAppManager::kKeyAutoLoginState[] = "auto_login_state";
 
+class GlobalManager : public KioskAppManager {
+ public:
+  GlobalManager() = default;
+  GlobalManager(const GlobalManager&) = delete;
+  GlobalManager& operator=(const GlobalManager&) = delete;
+  ~GlobalManager() override = default;
+};
+
+static_assert(sizeof(GlobalManager) == sizeof(KioskAppManager),
+              "Global manager is intended to provide constructor visibility to "
+              "absl::optional, nothing more.");
+
+absl::optional<GlobalManager>& GetGlobalManager() {
+  static base::NoDestructor<absl::optional<GlobalManager>> manager;
+  return *manager;
+}
+
 // static
-static base::LazyInstance<KioskAppManager>::DestructorAtExit instance =
-    LAZY_INSTANCE_INITIALIZER;
 KioskAppManager* KioskAppManager::Get() {
-  return instance.Pointer();
+  absl::optional<GlobalManager>& manager = GetGlobalManager();
+  if (!manager.has_value())
+    manager.emplace();
+
+  return &manager.value();
 }
 
 // static
 void KioskAppManager::InitializeForTesting(Overrides* overrides) {
-  DCHECK(!instance.IsCreated());
+  DCHECK(!GetGlobalManager().has_value());
   g_test_overrides = overrides;
 }
 
 // static
 void KioskAppManager::Shutdown() {
-  if (!instance.IsCreated())
+  if (!GetGlobalManager().has_value())
     return;
 
-  instance.Pointer()->CleanUp();
+  KioskAppManager::Get()->CleanUp();
+  g_test_overrides = nullptr;
+}
 
+// static
+void KioskAppManager::ResetForTesting() {
+  GetGlobalManager().reset();
   g_test_overrides = nullptr;
 }
 
@@ -208,8 +238,7 @@ void KioskAppManager::SetAppWasAutoLaunchedWithZeroDelay(
   auto_launched_with_zero_delay_ = true;
 }
 
-void KioskAppManager::InitSession(Profile* profile,
-                                   const std::string& app_id) {
+void KioskAppManager::InitSession(Profile* profile, const std::string& app_id) {
   LOG_IF(FATAL, app_session_) << "Kiosk session is already initialized.";
 
   base::CommandLine session_flags(base::CommandLine::NO_PROGRAM);
@@ -251,9 +280,9 @@ bool KioskAppManager::GetSwitchesForSessionRestore(
   // should not be present for kiosk sessions.
   bool in_policy_switches_block = false;
   const std::string policy_switches_begin =
-      GetSwitchString(switches::kPolicySwitchesBegin);
+      GetSwitchString(chromeos::switches::kPolicySwitchesBegin);
   const std::string policy_switches_end =
-      GetSwitchString(switches::kPolicySwitchesEnd);
+      GetSwitchString(chromeos::switches::kPolicySwitchesEnd);
 
   for (const auto& it : current_command_line->argv()) {
     if (it == policy_switches_begin) {
@@ -453,8 +482,8 @@ void KioskAppManager::AddApp(const std::string& app_id,
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
 
   // Don't insert the app if it's already in the list.
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator
-           it = device_local_accounts.begin();
+  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
+           device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
     if (it->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
         it->kiosk_app_id == app_id) {
@@ -465,9 +494,7 @@ void KioskAppManager::AddApp(const std::string& app_id,
   // Add the new account.
   device_local_accounts.push_back(policy::DeviceLocalAccount(
       policy::DeviceLocalAccount::TYPE_KIOSK_APP,
-      GenerateKioskAppAccountId(app_id),
-      app_id,
-      std::string()));
+      GenerateKioskAppAccountId(app_id), app_id, std::string()));
 
   policy::SetDeviceLocalAccounts(service, device_local_accounts);
 }
@@ -484,8 +511,8 @@ void KioskAppManager::RemoveApp(const std::string& app_id,
     return;
 
   // Remove entries that match |app_id|.
-  for (std::vector<policy::DeviceLocalAccount>::iterator
-           it = device_local_accounts.begin();
+  for (std::vector<policy::DeviceLocalAccount>::iterator it =
+           device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
     if (it->type == policy::DeviceLocalAccount::TYPE_KIOSK_APP &&
         it->kiosk_app_id == app_id) {
@@ -563,36 +590,76 @@ bool KioskAppManager::GetCachedCrx(const std::string& app_id,
   return external_cache_->GetExtension(app_id, file_path, version);
 }
 
-void KioskAppManager::UpdatePrimaryAppLoaderPrefs(const std::string& id) {
-  primary_app_id_ = id;
+void KioskAppManager::UpdatePrimaryAppLoaderPrefs(
+    const ChromeAppKioskAppInstaller::AppInstallData& data) {
+  primary_app_install_data_ = data;
 
   if (primary_app_changed_handler_)
-    primary_app_changed_handler_.Run();
+    primary_app_changed_handler_.Run(GetPrimaryAppLoaderPrefs());
+}
+
+ChromeAppKioskAppInstaller::AppInstallData
+KioskAppManager::CreatePrimaryAppInstallData(const std::string& id) const {
+  const base::DictionaryValue* extension = nullptr;
+  if (!external_cache_->GetCachedExtensions()->GetDictionary(id, &extension)) {
+    ChromeAppKioskAppInstaller::AppInstallData data;
+    data.id = id;
+    return data;
+  }
+
+  const absl::optional<bool> is_store_app_maybe =
+      extension->FindBoolKey(extensions::ExternalProviderImpl::kIsFromWebstore);
+  const std::string* external_update_url_value = extension->FindStringKey(
+      extensions::ExternalProviderImpl::kExternalUpdateUrl);
+  bool is_store_app_bool = is_store_app_maybe.value_or(false) ||
+                           IsWebstoreUpdateUrl(external_update_url_value);
+
+  const std::string* crx_file_location =
+      extension->FindStringKey(extensions::ExternalProviderImpl::kExternalCrx);
+  DCHECK(crx_file_location);
+
+  const std::string* external_version = extension->FindStringKey(
+      extensions::ExternalProviderImpl::kExternalVersion);
+  DCHECK(external_version);
+
+  ChromeAppKioskAppInstaller::AppInstallData data;
+  data.id = id;
+  data.is_store_app = is_store_app_bool;
+  data.crx_file_location = *crx_file_location;
+  data.version = *external_version;
+  return data;
 }
 
 std::unique_ptr<base::DictionaryValue>
 KioskAppManager::GetPrimaryAppLoaderPrefs() {
-  if (!primary_app_id_.has_value())
+  if (!primary_app_install_data_.has_value())
     return nullptr;
 
-  const std::string& id = primary_app_id_.value();
+  const std::string& id = primary_app_install_data_.value().id;
   auto prefs = std::make_unique<base::DictionaryValue>();
 
-  const base::DictionaryValue* extension = nullptr;
-  if (external_cache_->GetCachedExtensions()->GetDictionary(id, &extension)) {
-    prefs->SetKey(id, extension->Clone());
-  } else {
-    LOG(ERROR) << "Can't find app in the cached externsions"
-               << " id = " << id;
-  }
+  base::Value extension_entry(base::Value::Type::DICTIONARY);
+  if (primary_app_install_data_.value().is_store_app)
+    extension_entry.SetBoolKey(
+        extensions::ExternalProviderImpl::kIsFromWebstore, true);
+
+  extension_entry.SetStringKey(
+      extensions::ExternalProviderImpl::kExternalVersion,
+      primary_app_install_data_.value().version);
+  extension_entry.SetStringKey(
+      extensions::ExternalProviderImpl::kExternalCrx,
+      primary_app_install_data_.value().crx_file_location);
+  prefs->SetKey(id, std::move(extension_entry));
   return prefs;
 }
 
 void KioskAppManager::SetPrimaryAppLoaderPrefsChangedHandler(
-    base::RepeatingClosure handler) {
-  CHECK(handler.is_null() || primary_app_changed_handler_.is_null());
-
+    KioskAppExternalLoader::InstallDataChangeCallback handler) {
   primary_app_changed_handler_ = std::move(handler);
+
+  if (primary_app_install_data_.has_value()) {
+    UpdatePrimaryAppLoaderPrefs(primary_app_install_data_.value());
+  }
 }
 
 void KioskAppManager::UpdateSecondaryAppsLoaderPrefs(
@@ -600,7 +667,7 @@ void KioskAppManager::UpdateSecondaryAppsLoaderPrefs(
   secondary_app_ids_ = ids;
 
   if (secondary_apps_changed_handler_)
-    secondary_apps_changed_handler_.Run();
+    secondary_apps_changed_handler_.Run(GetSecondaryAppsLoaderPrefs());
 }
 
 std::unique_ptr<base::DictionaryValue>
@@ -622,10 +689,12 @@ KioskAppManager::GetSecondaryAppsLoaderPrefs() {
 }
 
 void KioskAppManager::SetSecondaryAppsLoaderPrefsChangedHandler(
-    base::RepeatingClosure handler) {
-  CHECK(handler.is_null() || secondary_apps_changed_handler_.is_null());
-
+    KioskAppExternalLoader::InstallDataChangeCallback handler) {
   secondary_apps_changed_handler_ = std::move(handler);
+
+  if (secondary_app_ids_.has_value()) {
+    UpdateSecondaryAppsLoaderPrefs(secondary_app_ids_.value());
+  }
 }
 
 void KioskAppManager::UpdateExternalCache() {
@@ -715,7 +784,7 @@ void KioskAppManager::CleanUp() {
   apps_.clear();
   usb_stick_updater_.reset();
   external_cache_.reset();
-  primary_app_id_.reset();
+  primary_app_install_data_.reset();
   secondary_app_ids_.reset();
 }
 
@@ -748,8 +817,8 @@ void KioskAppManager::UpdateAppsFromPolicy() {
   // Re-populates |apps_| and reuses existing KioskAppData when possible.
   const std::vector<policy::DeviceLocalAccount> device_local_accounts =
       policy::GetDeviceLocalAccounts(CrosSettings::Get());
-  for (std::vector<policy::DeviceLocalAccount>::const_iterator
-           it = device_local_accounts.begin();
+  for (std::vector<policy::DeviceLocalAccount>::const_iterator it =
+           device_local_accounts.begin();
        it != device_local_accounts.end(); ++it) {
     if (it->type != policy::DeviceLocalAccount::TYPE_KIOSK_APP)
       continue;
@@ -793,17 +862,18 @@ void KioskAppManager::UpdateAppsFromPolicy() {
 }
 
 void KioskAppManager::UpdateExternalCachePrefs() {
-  // Request external_cache_ to download new apps and update the existing apps.
+  // Request external_cache_ to download new apps and update the existing
+  // apps.
   std::unique_ptr<base::DictionaryValue> prefs(new base::DictionaryValue);
   for (size_t i = 0; i < apps_.size(); ++i) {
     base::DictionaryValue entry;
 
     if (apps_[i]->update_url().is_valid()) {
-      entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                      apps_[i]->update_url().spec());
+      entry.SetStringKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                         apps_[i]->update_url().spec());
     } else {
-      entry.SetString(extensions::ExternalProviderImpl::kExternalUpdateUrl,
-                      extension_urls::GetWebstoreUpdateUrl().spec());
+      entry.SetStringKey(extensions::ExternalProviderImpl::kExternalUpdateUrl,
+                         extension_urls::GetWebstoreUpdateUrl().spec());
     }
 
     prefs->SetPath(apps_[i]->app_id(), std::move(entry));
@@ -837,20 +907,20 @@ void KioskAppManager::OnExtensionDownloadFailed(
 
 KioskAppManager::AutoLoginState KioskAppManager::GetAutoLoginState() const {
   PrefService* prefs = g_browser_process->local_state();
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       prefs->GetDictionary(KioskAppManager::kKioskDictionaryName);
-  int value;
-  if (!dict->GetInteger(kKeyAutoLoginState, &value))
+  absl::optional<int> value = dict->FindIntKey(kKeyAutoLoginState);
+  if (!value.has_value())
     return AutoLoginState::kNone;
 
-  return static_cast<AutoLoginState>(value);
+  return static_cast<AutoLoginState>(value.value());
 }
 
 void KioskAppManager::SetAutoLoginState(AutoLoginState state) {
   PrefService* prefs = g_browser_process->local_state();
   DictionaryPrefUpdate dict_update(prefs,
                                    KioskAppManager::kKioskDictionaryName);
-  dict_update->SetInteger(kKeyAutoLoginState, static_cast<int>(state));
+  dict_update->SetIntKey(kKeyAutoLoginState, static_cast<int>(state));
   prefs->CommitPendingWrite();
 }
 

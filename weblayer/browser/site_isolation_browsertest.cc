@@ -4,6 +4,7 @@
 
 #include "base/base_switches.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/system/sys_info.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
@@ -48,7 +49,7 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
     auto* list =
         prefs->GetList(site_isolation::prefs::kUserTriggeredIsolatedOrigins);
     std::vector<std::string> sites;
-    for (const base::Value& value : list->GetList())
+    for (const base::Value& value : list->GetListDeprecated())
       sites.push_back(value.GetString());
     return sites;
   }
@@ -103,7 +104,7 @@ class SiteIsolationBrowserTest : public WebLayerBrowserTest {
   };
 
   SiteIsolationContentBrowserClient browser_client_;
-  content::ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
   base::test::ScopedFeatureList feature_list_;
 };
 
@@ -158,7 +159,7 @@ IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
 }
 
 // TODO(crbug.com/654704): Android does not support PRE_ tests.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(SiteIsolationBrowserTest,
                        PRE_IsolatedSitesPersistAcrossRestarts) {
   // There shouldn't be any saved isolated origins to start with.

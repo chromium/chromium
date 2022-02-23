@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "content/browser/direct_sockets/direct_udp_socket_impl.h"
@@ -28,11 +29,7 @@
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_WIN) || defined(OS_MAC)
-#include "base/enterprise_util.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chromeos/tpm/install_attributes.h"
-#endif
+using blink::mojom::DirectSocketFailureType;
 
 namespace content {
 
@@ -54,10 +51,6 @@ constexpr net::NetworkTrafficAnnotationTag kDirectSocketsTrafficAnnotation =
           policy_exception_justification: "To be implemented"
         }
       )");
-
-bool g_connection_dialog_bypass_for_testing = false;
-
-absl::optional<bool> g_is_enterprise_managed_for_testing;
 
 constexpr int32_t kMaxBufferSize = 32 * 1024 * 1024;
 
@@ -91,33 +84,6 @@ absl::optional<net::IPEndPoint> GetLocalAddr(
   return local_addr;
 }
 
-net::Error ValidateAddressAndPort(blink::mojom::DirectSocketOptions& options,
-                                  const std::string& address,
-                                  const std::string& port) {
-  // This check only ensures that the user has indeed input something. The
-  // verification of the address is done through class ResolveHostAndOpenSocket.
-  if (!address.empty())
-    options.remote_hostname = address;
-
-  if (!options.remote_hostname)
-    return net::ERR_NAME_NOT_RESOLVED;
-
-  uint32_t remote_port;
-  if (!port.empty() && base::StringToUint(port, &remote_port) &&
-      base::IsValueInRangeForNumericType<uint16_t>(remote_port)) {
-    options.remote_port = static_cast<uint16_t>(remote_port);
-  }
-
-  if (options.remote_port == 443) {
-    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  DirectSocketsServiceImpl::FailureType::kCORS);
-    // TODO(crbug.com/1119601): Issue a CORS preflight request.
-    return net::ERR_UNSAFE_PORT;
-  }
-
-  return net::OK;
-}
-
 #if BUILDFLAG(ENABLE_MDNS)
 bool ResemblesMulticastDNSName(const std::string& hostname) {
   return base::EndsWith(hostname, ".local") ||
@@ -132,23 +98,6 @@ bool ContainNonPubliclyRoutableAddress(const net::AddressList& addresses) {
       return true;
   }
   return false;
-}
-
-// TODO(crbug.com/1119662): Now only check for the device, maybe there are some
-// methods that can be applied to check for the user profile.
-bool IsEnterpriseManaged() {
-  // Return the value of the testing flag if it's set.
-  if (g_is_enterprise_managed_for_testing.has_value())
-    return g_is_enterprise_managed_for_testing.value();
-
-#if defined(OS_WIN) || defined(OS_MAC)
-  return base::IsMachineExternallyManaged();
-#elif BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::InstallAttributes::IsInitialized() &&
-         chromeos::InstallAttributes::Get()->IsEnterpriseManaged();
-#else
-  return false;
-#endif
 }
 
 }  // namespace
@@ -246,8 +195,9 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
     if (!is_raw_address_ && !is_mdns_name_ && resolved_addresses &&
         ContainNonPubliclyRoutableAddress(*resolved_addresses)) {
       result = net::Error::ERR_NETWORK_ACCESS_DENIED;
-      base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                    FailureType::kResolvingToNonPublic);
+      base::UmaHistogramEnumeration(
+          kPermissionDeniedHistogramName,
+          DirectSocketFailureType::kResolvingToNonPublic);
     }
     protocol_ == ProtocolType::kTcp ? OpenTCPSocket(result, resolved_addresses)
                                     : OpenUDPSocket(result, resolved_addresses);
@@ -289,6 +239,13 @@ class DirectSocketsServiceImpl::ResolveHostAndOpenSocket final
           std::min(options_->receive_buffer_size, kMaxBufferSize);
     }
     tcp_connected_socket_options->no_delay = options_->no_delay;
+    if (options_->keep_alive_options) {
+      // options_->keep_alive_options will be invalidated.
+      tcp_connected_socket_options->keep_alive_options =
+          std::move(options_->keep_alive_options);
+    }
+    // invalidate options_.
+    options_.reset();
 
     network_context->CreateTCPConnectedSocket(
         local_addr, *resolved_addresses,
@@ -382,25 +339,23 @@ void DirectSocketsServiceImpl::OpenTcpSocket(
     return;
   }
 
-  const net::Error result = ValidateOptions(*options);
-
-  if (result != net::OK) {
+  if (const net::Error result = ValidateOptions(*options); result != net::OK) {
     std::move(callback).Run(result, absl::nullopt, absl::nullopt,
                             mojo::ScopedDataPipeConsumerHandle(),
                             mojo::ScopedDataPipeProducerHandle());
     return;
   }
 
-  std::string remote_hostname;
-  if (options->remote_hostname)
-    remote_hostname = *options->remote_hostname;
+  network::mojom::NetworkContext* const network_context = GetNetworkContext();
+  if (!network_context) {
+    mojo::ReportBadMessage("Invalid request to open socket");
+    return;
+  }
 
-  GetContentClient()->browser()->ShowDirectSocketsConnectionDialog(
-      frame_host_, remote_hostname,
-      base::BindOnce(&DirectSocketsServiceImpl::OnDialogProceedTcp,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(options),
-                     std::move(receiver), std::move(observer),
-                     std::move(callback)));
+  ResolveHostAndOpenSocket* resolver = new ResolveHostAndOpenSocket(
+      weak_ptr_factory_.GetWeakPtr(), std::move(options), std::move(receiver),
+      std::move(observer), std::move(callback));
+  resolver->Start(network_context);
 }
 
 void DirectSocketsServiceImpl::OpenUdpSocket(
@@ -415,23 +370,21 @@ void DirectSocketsServiceImpl::OpenUdpSocket(
     return;
   }
 
-  const net::Error result = ValidateOptions(*options);
-
-  if (result != net::OK) {
+  if (const net::Error result = ValidateOptions(*options); result != net::OK) {
     std::move(callback).Run(result, absl::nullopt, absl::nullopt);
     return;
   }
 
-  std::string remote_hostname;
-  if (options->remote_hostname)
-    remote_hostname = *options->remote_hostname;
+  network::mojom::NetworkContext* const network_context = GetNetworkContext();
+  if (!network_context) {
+    mojo::ReportBadMessage("Invalid request to open socket");
+    return;
+  }
 
-  GetContentClient()->browser()->ShowDirectSocketsConnectionDialog(
-      frame_host_, remote_hostname,
-      base::BindOnce(&DirectSocketsServiceImpl::OnDialogProceedUdp,
-                     weak_ptr_factory_.GetWeakPtr(), std::move(options),
-                     std::move(receiver), std::move(listener),
-                     std::move(callback)));
+  ResolveHostAndOpenSocket* resolver = new ResolveHostAndOpenSocket(
+      weak_ptr_factory_.GetWeakPtr(), std::move(options), std::move(receiver),
+      std::move(listener), std::move(callback));
+  resolver->Start(network_context);
 }
 
 // static
@@ -439,18 +392,6 @@ net::MutableNetworkTrafficAnnotationTag
 DirectSocketsServiceImpl::TrafficAnnotation() {
   return net::MutableNetworkTrafficAnnotationTag(
       kDirectSocketsTrafficAnnotation);
-}
-
-// static
-void DirectSocketsServiceImpl::SetConnectionDialogBypassForTesting(
-    bool bypass) {
-  g_connection_dialog_bypass_for_testing = bypass;
-}
-
-// static
-void DirectSocketsServiceImpl::SetEnterpriseManagedForTesting(
-    bool enterprise_managed) {
-  g_is_enterprise_managed_for_testing = enterprise_managed;
 }
 
 // static
@@ -486,30 +427,16 @@ network::mojom::NetworkContext* DirectSocketsServiceImpl::GetNetworkContext() {
   if (GetNetworkContextForTesting())
     return GetNetworkContextForTesting();
 
+  if (!frame_host_)
+    return nullptr;
+
   return frame_host_->GetStoragePartition()->GetNetworkContext();
 }
 
 net::Error DirectSocketsServiceImpl::ValidateOptions(
     const blink::mojom::DirectSocketOptions& options) {
-  DCHECK(base::FeatureList::IsEnabled(features::kDirectSockets));
-
   if (!frame_host_)
     return net::ERR_CONTEXT_SHUT_DOWN;
-
-  // TODO(crbug.com/1119600): Do not consume (or check) transient activation
-  // for reconnection attempts.
-  bool is_consumed =
-      static_cast<RenderFrameHostImpl*>(frame_host_)
-          ->frame_tree_node()
-          ->UpdateUserActivationState(
-              blink::mojom::UserActivationUpdateType::
-                  kConsumeTransientActivation,
-              blink::mojom::UserActivationNotificationType::kNone);
-  if (!is_consumed) {
-    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kTransientActivation);
-    return net::ERR_NETWORK_ACCESS_DENIED;
-  }
 
   if (GetPermissionCallbackForTesting())
     return GetPermissionCallbackForTesting().Run(options);  // IN-TEST
@@ -517,87 +444,14 @@ net::Error DirectSocketsServiceImpl::ValidateOptions(
   if (options.send_buffer_size < 0 || options.receive_buffer_size < 0)
     return net::ERR_INVALID_ARGUMENT;
 
-  // By default, we will restrict use of the API when enterprise software
-  // policies are in effect.
-  if (IsEnterpriseManaged()) {
+  if (options.remote_port == 443) {
     base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kEnterprisePolicy);
-    return net::ERR_NETWORK_ACCESS_DENIED;
+                                  DirectSocketFailureType::kCORS);
+    // TODO(crbug.com/1119601): Issue a CORS preflight request.
+    return net::ERR_UNSAFE_PORT;
   }
-
-  // TODO(crbug.com/1119659): Check permissions policy.
 
   return net::OK;
-}
-
-void DirectSocketsServiceImpl::OnDialogProceedTcp(
-    blink::mojom::DirectSocketOptionsPtr options,
-    mojo::PendingReceiver<network::mojom::TCPConnectedSocket> receiver,
-    mojo::PendingRemote<network::mojom::SocketObserver> observer,
-    OpenTcpSocketCallback callback,
-    bool accepted,
-    const std::string& address,
-    const std::string& port) {
-  if (!accepted && !g_connection_dialog_bypass_for_testing) {
-    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kUserDialog);
-    std::move(callback).Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt,
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            mojo::ScopedDataPipeProducerHandle());
-    return;
-  }
-
-  network::mojom::NetworkContext* const network_context = GetNetworkContext();
-  if (!network_context) {
-    mojo::ReportBadMessage("Invalid request to open socket");
-    return;
-  }
-
-  const net::Error result = ValidateAddressAndPort(*options, address, port);
-  if (result != net::OK) {
-    std::move(callback).Run(result, absl::nullopt, absl::nullopt,
-                            mojo::ScopedDataPipeConsumerHandle(),
-                            mojo::ScopedDataPipeProducerHandle());
-    return;
-  }
-
-  ResolveHostAndOpenSocket* resolver = new ResolveHostAndOpenSocket(
-      weak_ptr_factory_.GetWeakPtr(), std::move(options), std::move(receiver),
-      std::move(observer), std::move(callback));
-  resolver->Start(network_context);
-}
-
-void DirectSocketsServiceImpl::OnDialogProceedUdp(
-    blink::mojom::DirectSocketOptionsPtr options,
-    mojo::PendingReceiver<blink::mojom::DirectUDPSocket> receiver,
-    mojo::PendingRemote<network::mojom::UDPSocketListener> listener,
-    OpenUdpSocketCallback callback,
-    bool accepted,
-    const std::string& address,
-    const std::string& port) {
-  if (!accepted && !g_connection_dialog_bypass_for_testing) {
-    base::UmaHistogramEnumeration(kPermissionDeniedHistogramName,
-                                  FailureType::kUserDialog);
-    std::move(callback).Run(net::ERR_ABORTED, absl::nullopt, absl::nullopt);
-    return;
-  }
-
-  network::mojom::NetworkContext* const network_context = GetNetworkContext();
-  if (!network_context) {
-    mojo::ReportBadMessage("Invalid request to open socket");
-    return;
-  }
-
-  const net::Error result = ValidateAddressAndPort(*options, address, port);
-  if (result != net::OK) {
-    std::move(callback).Run(result, absl::nullopt, absl::nullopt);
-    return;
-  }
-
-  ResolveHostAndOpenSocket* resolver = new ResolveHostAndOpenSocket(
-      weak_ptr_factory_.GetWeakPtr(), std::move(options), std::move(receiver),
-      std::move(listener), std::move(callback));
-  resolver->Start(network_context);
 }
 
 }  // namespace content

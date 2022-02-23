@@ -61,7 +61,9 @@ class InternetSection
   void OnNetworkCertificatesChanged() override {}
 
   void FetchDeviceList();
+  void OnGlobalPolicy(network_config::mojom::GlobalPolicyPtr global_policy);
   void OnDeviceList(
+      network_config::mojom::GlobalPolicyPtr global_policy,
       std::vector<network_config::mojom::DeviceStatePropertiesPtr> devices);
 
   void FetchNetworkList();

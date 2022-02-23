@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest,
 
 // This test creates a Browser and Tab, which doesn't work well with Java when
 // driven from native code.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_F(FaviconFetcherBrowserTest, OffTheRecord) {
   auto otr_profile = Profile::Create(std::string(), true);
   ProfileImpl* otr_profile_impl = static_cast<ProfileImpl*>(otr_profile.get());

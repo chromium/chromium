@@ -89,7 +89,11 @@ std::unique_ptr<TextureSelector> TextureSelector::Create(
           supports_fmt(DXGI_FORMAT_B8G8R8A8_UNORM)) {
         output_dxgi_format = DXGI_FORMAT_B8G8R8A8_UNORM;
         output_pixel_format = PIXEL_FORMAT_ARGB;
-        output_color_space = gfx::ColorSpace::CreateSRGB();
+        if (format_checker->supports_tone_mapping())
+          output_color_space = gfx::ColorSpace::CreateSRGB();
+        else
+          output_color_space.reset();  // Let gfx::ColorTransform handle.
+
         MEDIA_LOG(INFO, media_log) << "D3D11VideoDecoder: Selected ARGB";
       } else if (!needs_texture_copy || supports_fmt(DXGI_FORMAT_P010)) {
         output_dxgi_format = DXGI_FORMAT_P010;

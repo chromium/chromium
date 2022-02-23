@@ -8,6 +8,7 @@
 #include <stdint.h>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "cc/input/touch_action.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/surfaces/local_surface_id.h"
@@ -178,8 +179,8 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // not attempt to bubble the rest of the scroll sequence in this case.
   // Otherwise, returns true.
   // Made virtual for test override.
-  virtual bool BubbleScrollEvent(const blink::WebGestureEvent& event)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] virtual bool BubbleScrollEvent(
+      const blink::WebGestureEvent& event);
 
   // Determines whether the root RenderWidgetHostView (and thus the current
   // page) has focus.
@@ -361,7 +362,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
       bool include_visual_properties);
 
   // The RenderWidgetHostView for the frame. Initially nullptr.
-  RenderWidgetHostViewChildFrame* view_ = nullptr;
+  raw_ptr<RenderWidgetHostViewChildFrame> view_ = nullptr;
 
   // This is here rather than in the implementation class so that
   // intersection_state() can return a reference.
@@ -391,7 +392,7 @@ class CONTENT_EXPORT CrossProcessFrameConnector {
   // The RenderFrameProxyHost that routes messages to the parent frame's
   // renderer process.
   // Can be nullptr in tests.
-  RenderFrameProxyHost* frame_proxy_in_parent_renderer_;
+  raw_ptr<RenderFrameProxyHost> frame_proxy_in_parent_renderer_;
 
   bool is_inert_ = false;
   cc::TouchAction inherited_effective_touch_action_ = cc::TouchAction::kAuto;

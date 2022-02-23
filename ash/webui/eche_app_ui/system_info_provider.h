@@ -20,6 +20,7 @@ extern const char kJsonDeviceNameKey[];
 extern const char kJsonBoardNameKey[];
 extern const char kJsonTabletModeKey[];
 extern const char kJsonWifiConnectionStateKey[];
+extern const char kJsonDebugModeKey[];
 
 class SystemInfo;
 

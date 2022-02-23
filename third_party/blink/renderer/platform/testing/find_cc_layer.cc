@@ -67,7 +67,7 @@ cc::Layer* ScrollingContentsCcLayerByScrollElementId(
     cc::Layer* root,
     const CompositorElementId& scroll_element_id) {
   const auto& scroll_tree =
-      root->layer_tree_host()->property_trees()->scroll_tree;
+      root->layer_tree_host()->property_trees()->scroll_tree();
   for (auto& layer : root->children()) {
     const auto* scroll_node = scroll_tree.Node(layer->scroll_tree_index());
     if (scroll_node && scroll_node->element_id == scroll_element_id &&

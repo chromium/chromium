@@ -26,7 +26,7 @@ class TileShuffler {
 // Function to sort a vector of tiles based on their score in |tile_stats|. If
 // a tile ID doesn't exists in |tile_stats|, a new entry will be created and
 // a score will be calculated. If a tile ID in |tile_stats| doesn't show up in
-// |tiles|, it will be removed.
+// |tiles|, it will be removed if the tile isn't clicked recently.
 // To calculate scores for new tiles, ordering from the server response will
 // be taken into consideration. As the server has already ordered tiles
 // according to their importance.

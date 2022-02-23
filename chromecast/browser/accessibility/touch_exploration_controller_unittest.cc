@@ -13,7 +13,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
@@ -1891,22 +1890,10 @@ TEST_F(TouchExplorationTest, SingleTapInLiftActivationArea) {
   generator_->PressTouchId(1);
   generator_->ReleaseTouchId(1);
   const EventList& captured_events = GetCapturedEvents();
-  EXPECT_EQ(2U, captured_events.size());
-  EXPECT_EQ(ui::ET_TOUCH_PRESSED, captured_events[0]->type());
-  EXPECT_EQ(ui::ET_TOUCH_RELEASED, captured_events[1]->type());
-  ASSERT_EQ(1U, accessibility_sound_player_.NumTouchTypeSounds());
-  accessibility_sound_player_.ResetCountersToZero();
+  // There should be no events since single tap should not take effect in lift
+  // activation area.
+  EXPECT_EQ(0U, captured_events.size());
   ClearCapturedEvents();
-
-  gfx::Point out_tap_location(tap_location.x(), lift_activation.bottom() + 20);
-  SetTouchAccessibilityAnchorPoint(out_tap_location);
-  generator_->set_current_screen_location(out_tap_location);
-  generator_->PressTouchId(1);
-  generator_->ReleaseTouchId(1);
-
-  const EventList& out_captured_events = GetCapturedEvents();
-  ASSERT_TRUE(out_captured_events.empty());
-  ASSERT_EQ(0U, accessibility_sound_player_.NumTouchTypeSounds());
 }
 
 TEST_F(TouchExplorationTest, TouchExploreLiftInLiftActivationArea) {

@@ -36,15 +36,7 @@ static bool IsValueCharacter(UChar c) {
 
 static bool DigestsEqual(const DigestValue& digest1,
                          const DigestValue& digest2) {
-  if (digest1.size() != digest2.size())
-    return false;
-
-  for (wtf_size_t i = 0; i < digest1.size(); i++) {
-    if (digest1[i] != digest2[i])
-      return false;
-  }
-
-  return true;
+  return digest1 == digest2;
 }
 
 void SubresourceIntegrity::ReportInfo::AddUseCount(UseCounterFeature feature) {

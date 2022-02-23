@@ -609,12 +609,12 @@ void ConvertSelectedFileInfoListToFileChooserFileInfoList(
 std::unique_ptr<base::DictionaryValue> ConvertEntryDefinitionToValue(
     const EntryDefinition& entry_definition) {
   auto entry = std::make_unique<base::DictionaryValue>();
-  entry->SetString("fileSystemName", entry_definition.file_system_name);
-  entry->SetString("fileSystemRoot", entry_definition.file_system_root_url);
-  entry->SetString(
+  entry->SetStringKey("fileSystemName", entry_definition.file_system_name);
+  entry->SetStringKey("fileSystemRoot", entry_definition.file_system_root_url);
+  entry->SetStringKey(
       "fileFullPath",
       base::FilePath("/").Append(entry_definition.full_path).AsUTF8Unsafe());
-  entry->SetBoolean("fileIsDirectory", entry_definition.is_directory);
+  entry->SetBoolKey("fileIsDirectory", entry_definition.is_directory);
   return entry;
 }
 

@@ -3,8 +3,10 @@
 # found in the LICENSE file.
 
 import("//build/config/chromeos/ui_mode.gni")
+import("//build/config/linux/gtk/gtk.gni")
 import("//build/config/ui.gni")
 import("//testing/test.gni")
+
 if (is_android) {
   import("//build/config/android/config.gni")
 }
@@ -27,10 +29,34 @@ component("shell_dialogs") {
     "shell_dialogs_export.h",
   ]
 
-  if (is_linux || is_chromeos) {
+  defines = [ "SHELL_DIALOGS_IMPLEMENTATION" ]
+
+  deps = [
+    "//base",
+    "//base:i18n",
+    "//build:chromeos_buildflags",
+    "//skia",
+    "//ui/base",
+    "//ui/strings",
+    "//url",
+  ]
+
+  if (is_chromeos || (is_linux && !use_gtk)) {
+    sources += [ "shell_dialog_stub.cc" ]
+  } else if (is_linux) {
     sources += [
+      "select_file_dialog_linux.cc",
+      "select_file_dialog_linux.h",
+      "select_file_dialog_linux_kde.cc",
+      "select_file_dialog_linux_kde.h",
+      "select_file_dialog_linux_portal.cc",
+      "select_file_dialog_linux_portal.h",
       "shell_dialog_linux.cc",
       "shell_dialog_linux.h",
+    ]
+    deps += [
+      "//components/dbus/thread_linux",
+      "//dbus",
     ]
   }
 
@@ -51,18 +77,6 @@ component("shell_dialogs") {
       "select_file_dialog_win.h",
     ]
   }
-
-  defines = [ "SHELL_DIALOGS_IMPLEMENTATION" ]
-
-  deps = [
-    "//base",
-    "//base:i18n",
-    "//build:chromeos_buildflags",
-    "//skia",
-    "//ui/base",
-    "//ui/strings",
-    "//url",
-  ]
 
   if (use_aura) {
     if (is_mac) {

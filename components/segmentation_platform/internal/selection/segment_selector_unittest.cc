@@ -301,6 +301,7 @@ TEST_F(SegmentSelectorTest,
   result.segment = segment_id0;
   result.is_ready = true;
   GetSelectedSegment(result);
+  ASSERT_EQ(result, segment_selector_->GetCachedSegmentResult());
 
   // Add results for a new segment.
   base::Time result_timestamp = base::Time::Now();
@@ -312,6 +313,37 @@ TEST_F(SegmentSelectorTest,
 
   // GetSelectedSegment should still return value from previous session.
   GetSelectedSegment(result);
+  ASSERT_EQ(result, segment_selector_->GetCachedSegmentResult());
+}
+
+// Tests that prefs are properly updated after calling UpdateSelectedSegment().
+TEST_F(SegmentSelectorTest, UpdateSelectedSegment) {
+  SetUpWithConfig(CreateTestConfig());
+  EXPECT_CALL(signal_storage_config_, MeetsSignalCollectionRequirement(_))
+      .WillRepeatedly(Return(true));
+
+  OptimizationTarget segment_id =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB;
+  float mapping[][2] = {{0.2, 1}, {0.5, 3}, {0.7, 4}};
+  InitializeMetadataForSegment(segment_id, mapping, 3);
+
+  OptimizationTarget segment_id2 =
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE;
+  float mapping2[][2] = {{0.3, 1}, {0.4, 4}};
+  InitializeMetadataForSegment(segment_id2, mapping2, 2);
+
+  segment_database_->AddPredictionResult(segment_id, 0.6, clock_.Now());
+  segment_database_->AddPredictionResult(segment_id2, 0.5, clock_.Now());
+
+  clock_.Advance(base::Days(1));
+  segment_selector_->OnModelExecutionCompleted(segment_id);
+  ASSERT_TRUE(prefs_->selection.has_value());
+  ASSERT_EQ(segment_id2, prefs_->selection->segment_id);
+
+  // Update the selected segment to |segment_id|.
+  segment_selector_->UpdateSelectedSegment(segment_id);
+  ASSERT_TRUE(prefs_->selection.has_value());
+  ASSERT_EQ(segment_id, prefs_->selection->segment_id);
 }
 
 }  // namespace segmentation_platform

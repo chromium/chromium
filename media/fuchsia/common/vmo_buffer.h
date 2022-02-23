@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "media/base/media_export.h"
@@ -43,12 +42,12 @@ class MEDIA_EXPORT VmoBuffer {
   // for writable buffers. |offset| and |size| are used to specify the portion
   // of the |vmo| that should be used for this buffer. Returns false if it fails
   // to map the buffer.
-  bool Initialize(zx::vmo vmo,
-                  bool writable,
-                  size_t offset,
-                  size_t size,
-                  fuchsia::sysmem::CoherencyDomain coherency_domain)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool Initialize(
+      zx::vmo vmo,
+      bool writable,
+      size_t offset,
+      size_t size,
+      fuchsia::sysmem::CoherencyDomain coherency_domain);
 
   size_t size() const { return size_; }
 

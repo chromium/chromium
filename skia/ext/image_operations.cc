@@ -12,7 +12,6 @@
 
 #include "base/check.h"
 #include "base/containers/stack_container.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/numerics/math_constants.h"

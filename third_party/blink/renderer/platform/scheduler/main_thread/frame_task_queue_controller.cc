@@ -112,7 +112,7 @@ void FrameTaskQueueController::TaskQueueCreated(
   DCHECK(task_queue);
 
   std::unique_ptr<QueueEnabledVoter> voter =
-      task_queue->GetTaskQueue()->CreateQueueEnabledVoter();
+      task_queue->CreateQueueEnabledVoter();
 
   delegate_->OnTaskQueueCreated(task_queue.get(), voter.get());
 

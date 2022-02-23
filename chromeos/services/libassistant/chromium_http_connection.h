@@ -13,7 +13,7 @@
 
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
-#include "libassistant/shared/internal_api/http_connection.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "net/http/http_request_headers.h"
 #include "services/network/public/cpp/simple_url_loader_stream_consumer.h"

@@ -119,9 +119,9 @@ class VideoDecoderShim::DecoderImpl {
   void Stop();
 
  private:
-  void OnInitDone(media::Status status);
+  void OnInitDone(media::DecoderStatus status);
   void DoDecode();
-  void OnDecodeComplete(media::Status status);
+  void OnDecodeComplete(media::DecoderStatus status);
   void OnOutputComplete(scoped_refptr<media::VideoFrame> frame);
   void OnResetComplete();
 
@@ -182,7 +182,7 @@ void VideoDecoderShim::DecoderImpl::Initialize(
                           weak_ptr_factory_.GetWeakPtr()),
       base::NullCallback());
 #else
-  OnInitDone(media::StatusCode::kDecoderFailedInitialization);
+  OnInitDone(media::DecoderStatus::Codes::kUnsupportedCodec);
 #endif  // BUILDFLAG(ENABLE_LIBVPX) || BUILDFLAG(ENABLE_FFMPEG_VIDEO_DECODERS)
 }
 
@@ -227,7 +227,7 @@ void VideoDecoderShim::DecoderImpl::Stop() {
   // This instance is deleted once we exit this scope.
 }
 
-void VideoDecoderShim::DecoderImpl::OnInitDone(media::Status status) {
+void VideoDecoderShim::DecoderImpl::OnInitDone(media::DecoderStatus status) {
   if (!status.is_ok()) {
     main_task_runner_->PostTask(
         FROM_HERE,
@@ -253,14 +253,15 @@ void VideoDecoderShim::DecoderImpl::DoDecode() {
   pending_decodes_.pop();
 }
 
-void VideoDecoderShim::DecoderImpl::OnDecodeComplete(media::Status status) {
+void VideoDecoderShim::DecoderImpl::OnDecodeComplete(
+    media::DecoderStatus status) {
   DCHECK(awaiting_decoder_);
   awaiting_decoder_ = false;
 
   int32_t result;
   switch (status.code()) {
-    case media::StatusCode::kOk:
-    case media::StatusCode::kAborted:
+    case media::DecoderStatus::Codes::kOk:
+    case media::DecoderStatus::Codes::kAborted:
       result = PP_OK;
       break;
     default:

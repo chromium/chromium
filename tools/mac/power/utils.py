@@ -2,154 +2,94 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-SCENARIOS = [{
-    "name": "chromium_navigation",
-    "driver_script": "chromium_navigation",
-    "browser": "Chromium",
-    "extra_args": [],
-    "skip": False
-}, {
-    "name": "idle",
-    "driver_script": "idle",
-    "browser": None,
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "canary_idle_on_youtube_slack",
-    "driver_script": "canary_idle_on_youtube",
-    "browser": "Canary",
-    "extra_args": ["--enable-features=LudicrousTimerSlack"],
-    "skip": True
-}, {
-    "name": "canary_idle_on_youtube_noslack",
-    "driver_script": "canary_idle_on_youtube",
-    "browser": "Canary",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "safari_idle_on_youtube",
-    "driver_script": "safari_idle_on_youtube",
-    "browser": "Safari",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "canary_idle_on_wiki_slack",
-    "driver_script": "canary_idle_on_wiki",
-    "browser": "Canary",
-    "extra_args": ["--enable-features=LudicrousTimerSlack"],
-    "skip": True
-}, {
-    "name": "canary_idle_on_wiki_noslack",
-    "driver_script": "canary_idle_on_wiki",
-    "browser": "Canary",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "chrome_navigation",
-    "driver_script": "chrome_navigation",
-    "browser": "Chrome",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "safari_navigation",
-    "driver_script": "safari_navigation",
-    "browser": "Safari",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "chrome_idle_on_wiki",
-    "driver_script": "chrome_idle_on_wiki",
-    "browser": "Chrome",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "safari_idle_on_wiki",
-    "driver_script": "safari_idle_on_wiki",
-    "browser": "Safari",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "chrome_idle_on_wiki_hidden",
-    "driver_script": "chrome_idle_on_wiki_hidden",
-    "browser": "Chrome",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "safari_idle_on_wiki_hidden",
-    "driver_script": "safari_idle_on_wiki_hidden",
-    "browser": "Safari",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "chrome_idle_on_youtube",
-    "driver_script": "chrome_idle_on_youtube",
-    "browser": "Chrome",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "safari_idle_on_youtube",
-    "driver_script": "safari_idle_on_youtube",
-    "browser": "Safari",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "chrome_zero_window",
-    "driver_script": "chrome_zero_window",
-    "browser": "Chrome",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "safari_zero_window",
-    "driver_script": "safari_zero_window",
-    "browser": "Safari",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "chrome_meet",
-    "driver_script": "chrome_meet",
-    "browser": "Chrome",
-    "extra_args": [],
-    "skip": True
-}, {
-    "name": "safari_meet",
-    "driver_script": "safari_meet",
-    "browser": "Safari",
-    "extra_args": [],
-    "skip": True
-}]
-
-BROWSERS_DEFINITION = {
-    "Chrome": {
-        "executable": "Google Chrome",
-        "process_name": "Google Chrome",
-        "identifier": "com.google.Chrome"
-    },
-    "Canary": {
-        "executable": "Google Chrome Canary",
-        "process_name": "Google Chrome Canary",
-        "identifier": "com.google.Chrome.canary"
-    },
-    "Chromium": {
-        "process_name": "Chromium",
-        "executable": "Chromium",
-        "identifier": "org.chromium.Chromium"
-    },
-    "Edge": {
-        "executable": "Microsoft Edge",
-        "process_name": "Microsoft Edge",
-        "identifier": "com.microsoft.edgemac"
-    },
-    "Safari": {
-        "executable": "Safari",
-        "process_name": "Safari",
-        "identifier": "com.apple.Safari"
-    }
-}
+import subprocess
+import logging
+import psutil
+import os
+import signal
 
 
-def get_browser_property(browser, property_name):
-  return BROWSERS_DEFINITION[browser][property_name]
+def TerminateProcess(process: subprocess.Popen):
+  """Terminates `process` and ensures it's cleaned up before returning.
+
+    Raises:
+      RuntimeError: When failed to terminate the process after a timeout.
+  """
+
+  logging.debug(f"Terminating PID:{process.pid}")
+
+  try:
+    process.terminate()
+    process.wait(2.0)
+  except (psutil.TimeoutExpired, psutil.AccessDenied, PermissionError) as e:
+    logging.info(f"Terminate failed, moving on to kill.")
+  except psutil.NoSuchProcess:
+    return
+  else:
+    return
+
+  try:
+    process.kill()
+    process.wait(2.0)
+  except (psutil.TimeoutExpired, psutil.AccessDenied, PermissionError) as e:
+    raise RuntimeError(f"Could not clean up PID:{process.pid}.") from e
+  else:
+    return
 
 
-def get_browser_process_names():
-  return BROWSERS_DEFINITION.keys()
+def SendSignalToRootProcess(process: subprocess.Popen, signal: signal.Signals):
+  os.system(f"sudo kill -{signal.value} {process.pid}")
+
+
+def TerminateRootProcess(process: subprocess.Popen):
+  """Kills elevated `process` and ensures it's cleaned up before returning.
+
+    Raises:
+      RuntimeError: When failed to terminate the process after a timeout.
+  """
+
+  logging.debug(f"Terminating PID:{process.pid}")
+
+  try:
+    SendSignalToRootProcess(process, signal.SIGTERM)
+    process.wait(2.0)
+  except (psutil.TimeoutExpired, psutil.AccessDenied, PermissionError) as e:
+    raise RuntimeError(f"Could not clean up PID:{process.pid}.") from e
+  except psutil.NoSuchProcess:
+    return
+  else:
+    return
+
+
+def FindProcess(process_name: str) -> psutil.Process:
+  """Looks for the process associated with |browser|.
+
+  Args:
+    process_name: Name of the process to return.
+
+  Returns:
+    A psutil.process representation of the process matching `process_name`.
+
+  Raises:
+    RuntimeError: When no process is found for the browser.
+  """
+
+  processes = filter(lambda p: p.name() == process_name, psutil.process_iter())
+  returned_process = None
+  for process in processes:
+    if not returned_process:
+      returned_process = process
+    else:
+      raise RuntimeError(
+          "Too many copies of the process running, this is wrong.")
+
+  return returned_process
+
+
+def FindChromiumSrcDir(path: os.PathLike) -> os.PathLike:
+  path = os.path.abspath(path)
+  while path:
+    (head, tail) = os.path.split(path)
+    if tail == "src":
+      return path
+    path = head

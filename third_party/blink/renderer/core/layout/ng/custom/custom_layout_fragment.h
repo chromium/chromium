@@ -9,7 +9,7 @@
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -37,7 +37,7 @@ class CustomLayoutFragment : public ScriptWrappable {
  public:
   CustomLayoutFragment(CustomLayoutChild*,
                        CustomLayoutToken*,
-                       scoped_refptr<const NGLayoutResult>,
+                       const NGLayoutResult*,
                        const LogicalSize& size,
                        const absl::optional<LayoutUnit> baseline,
                        v8::Isolate*);
@@ -83,7 +83,7 @@ class CustomLayoutFragment : public ScriptWrappable {
   // that the last layout on the child wasn't with the same inputs, and force a
   // layout again.
 
-  scoped_refptr<const NGLayoutResult> layout_result_;
+  Member<const NGLayoutResult> layout_result_;
 
   // The inline and block size on this object should never change.
   const double inline_size_;

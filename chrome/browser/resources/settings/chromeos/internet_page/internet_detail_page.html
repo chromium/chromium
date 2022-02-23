@@ -338,6 +338,23 @@
     </iron-collapse>
   </template>
 
+  <template is="dom-if" if="[[showDataUsage_(managedProperties_)]]">
+    <!-- Data usage toggle. -->
+    <cr-expand-button
+        aria-label="$i18n{TrafficCountersDataUsageLabel}"
+        class="settings-box"
+        expanded="{{dataUsageExpanded_}}">
+      $i18n{TrafficCountersDataUsageLabel}
+    </cr-expand-button>
+
+    <!-- Data usage section -->
+    <iron-collapse opened="[[dataUsageExpanded_]]">
+      <settings-traffic-counters id="settingsTrafficCounters"
+          guid="[[guid]]">
+      </settings-traffic-counters>
+    </iron-collapse>
+  </template>
+
   <template is="dom-if" if="[[showConfigurableSections_]]"  restamp>
     <template is="dom-if" if="[[hasNetworkSection_(managedProperties_,
         globalPolicy, managedNetworkAvailable)]]">

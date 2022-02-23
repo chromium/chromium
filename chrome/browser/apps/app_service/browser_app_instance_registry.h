@@ -68,7 +68,13 @@ class BrowserAppInstanceRegistry
     if (instance) {
       return instance;
     }
-    return FindInstanceIf(ash_instance_tracker_.app_instances_, predicate);
+    instance =
+        FindInstanceIf(ash_instance_tracker_.app_tab_instances_, predicate);
+    if (instance) {
+      return instance;
+    }
+    return FindInstanceIf(ash_instance_tracker_.app_window_instances_,
+                          predicate);
   }
 
   template <typename PredicateT>
@@ -76,7 +82,10 @@ class BrowserAppInstanceRegistry
       PredicateT predicate) const {
     std::set<const BrowserAppInstance*> result;
     SelectInstances(result, lacros_app_instances_, predicate);
-    SelectInstances(result, ash_instance_tracker_.app_instances_, predicate);
+    SelectInstances(result, ash_instance_tracker_.app_tab_instances_,
+                    predicate);
+    SelectInstances(result, ash_instance_tracker_.app_window_instances_,
+                    predicate);
     return result;
   }
 
@@ -213,7 +222,8 @@ class BrowserAppInstanceRegistry
       receiver_set_;
   mojo::Remote<crosapi::mojom::BrowserAppInstanceController> controller_;
 
-  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_;
+  base::ObserverList<BrowserAppInstanceObserver, true>::Unchecked observers_{
+      base::ObserverListPolicy::EXISTING_ONLY};
 
   base::ScopedObservation<BrowserAppInstanceTracker, BrowserAppInstanceObserver>
       tracker_observation_{this};

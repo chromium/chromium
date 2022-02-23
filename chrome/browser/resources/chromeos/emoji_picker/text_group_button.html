@@ -1,0 +1,34 @@
+<style>
+    #group-button {
+      --hover-bg-color: var(--cr-hover-background-color);
+      border: none;
+      border-radius: 0;
+      color: var(--cros-text-color-primary);
+      font-size: 12px;
+      margin: 0;
+      margin-inline: var(--v2-tab-button-margin);
+      min-width: unset;
+      padding-inline: var(--v2-text-group-button-padding);
+      width: max-content;
+    }
+
+    #group-button:hover {
+      box-shadow: none;
+    }
+
+    #group-button:active {
+      box-shadow: none;
+    }
+
+    #group-button.text-group-active {
+      --cr-icon-button-fill-color: var(--cros-icon-color-prominent);
+      color: var(--cros-text-color-prominent);
+    }
+  </style>
+
+<cr-button
+    id="group-button"
+    class$="[[_className(active)]]"
+    on-click="handleClick">
+  [[_toUpperCase(name)]]
+</cr-button>

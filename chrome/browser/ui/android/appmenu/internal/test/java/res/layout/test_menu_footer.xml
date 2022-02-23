@@ -11,7 +11,7 @@
         android:layout_height="match_parent"
         android:text="Menu Footer"
         tools:ignore="HardcodedText" />
-    <org.chromium.ui.widget.ChipView
+    <org.chromium.components.browser_ui.widget.chips.ChipView
         android:id="@+id/menu_footer_chip_view"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content" />

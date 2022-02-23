@@ -5,7 +5,11 @@
 #include "chrome/browser/ash/login/users/default_user_image/default_user_images.h"
 
 #include <algorithm>
+#include <memory>
+#include <string>
+#include <vector>
 
+#include "ash/public/cpp/default_user_image.h"
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
@@ -21,6 +25,7 @@
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/chromeos/strings/grit/ui_chromeos_strings.h"
 #include "ui/gfx/image/image_skia.h"
+#include "url/gurl.h"
 
 namespace ash {
 namespace default_user_image {
@@ -317,10 +322,10 @@ const int kHistogramSpecialImagesMaxCount = 10;
 const int kHistogramImagesCount =
     kDefaultImagesCount + kHistogramSpecialImagesMaxCount;
 
-std::string GetDefaultImageUrl(int index) {
+GURL GetDefaultImageUrl(int index) {
   if (index <= 0 || index >= kDefaultImagesCount)
-    return kZeroDefaultUrl;
-  return base::StringPrintf("%s%d", kDefaultUrlPrefix, index);
+    return GURL(kZeroDefaultUrl);
+  return GURL(base::StringPrintf("%s%d", kDefaultUrlPrefix, index));
 }
 
 bool IsDefaultImageUrl(const std::string& url, int* image_id) {
@@ -337,7 +342,7 @@ const gfx::ImageSkia& GetDefaultImage(int index) {
       kDefaultImageInfo[index].resource_id);
 }
 
-const int GetDefaultImageResourceId(int index) {
+int GetDefaultImageResourceId(int index) {
   return kDefaultImageInfo[index].resource_id;
 }
 
@@ -354,24 +359,32 @@ bool IsInCurrentImageSet(int index) {
          kDefaultImageInfo[index].eligibility == Eligibility::kEligible;
 }
 
-std::unique_ptr<base::ListValue> GetCurrentImageSet() {
-  auto image_urls = std::make_unique<base::ListValue>();
-  for (int i = 0; i < base::size(kCurrentImageIndexes); ++i) {
-    auto image_data = std::make_unique<base::DictionaryValue>();
-    int index = kCurrentImageIndexes[i];
+std::vector<DefaultUserImage> GetCurrentImageSet() {
+  std::vector<DefaultUserImage> result;
+  for (int index : kCurrentImageIndexes) {
     int string_id = kDefaultImageInfo[index].description_message_id;
+    std::u16string title =
+        string_id ? l10n_util::GetStringUTF16(string_id) : std::u16string();
 
-    image_data->SetString("url", default_user_image::GetDefaultImageUrl(index));
-    image_data->SetInteger("index", index);
-    image_data->SetString("title", string_id
-                                       ? l10n_util::GetStringUTF16(string_id)
-                                       : std::u16string());
+    result.push_back({index, std::move(title),
+                      default_user_image::GetDefaultImageUrl(index)});
+  }
+  return result;
+}
+
+std::unique_ptr<base::ListValue> GetCurrentImageSetAsListValue() {
+  auto image_urls = std::make_unique<base::ListValue>();
+  for (auto& user_image : GetCurrentImageSet()) {
+    auto image_data = std::make_unique<base::DictionaryValue>();
+    image_data->SetIntKey("index", user_image.index);
+    image_data->SetStringKey("title", std::move(user_image.title));
+    image_data->SetStringKey("url", user_image.url.spec());
     image_urls->Append(std::move(image_data));
   }
   return image_urls;
 }
 
-absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(int index) {
+absl::optional<DefaultImageSourceInfo> GetDefaultImageSourceInfo(size_t index) {
   if (index >= base::size(kDefaultImageSourceInfo))
     return absl::nullopt;
 

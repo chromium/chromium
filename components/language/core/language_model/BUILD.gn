@@ -4,8 +4,6 @@
 
 static_library("language_model") {
   sources = [
-    "baseline_language_model.cc",
-    "baseline_language_model.h",
     "fluent_language_model.cc",
     "fluent_language_model.h",
     "ulp_language_model.cc",
@@ -28,10 +26,7 @@ static_library("language_model") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [
-    "baseline_language_model_unittest.cc",
-    "fluent_language_model_unittest.cc",
-  ]
+  sources = [ "fluent_language_model_unittest.cc" ]
   deps = [
     "//base",
     "//build:chromeos_buildflags",

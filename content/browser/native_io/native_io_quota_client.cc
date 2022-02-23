@@ -5,9 +5,9 @@
 #include "content/browser/native_io/native_io_quota_client.h"
 
 #include "base/sequence_checker.h"
+#include "components/services/storage/public/cpp/buckets/bucket_locator.h"
 #include "content/browser/native_io/native_io_manager.h"
 #include "content/public/browser/browser_thread.h"
-#include "third_party/blink/public/common/storage_key/storage_key.h"
 
 namespace content {
 
@@ -18,14 +18,20 @@ NativeIOQuotaClient::~NativeIOQuotaClient() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
-void NativeIOQuotaClient::GetStorageKeyUsage(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
-    GetStorageKeyUsageCallback callback) {
+void NativeIOQuotaClient::GetBucketUsage(const storage::BucketLocator& bucket,
+                                         GetBucketUsageCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  manager_->GetStorageKeyUsage(storage_key, type, std::move(callback));
+  // Skip non-default buckets because Storage Buckets are not planned to be
+  // supported by NativeIO.
+  if (!bucket.is_default) {
+    std::move(callback).Run(0);
+    return;
+  }
+
+  manager_->GetStorageKeyUsage(bucket.storage_key, bucket.type,
+                               std::move(callback));
   return;
 }
 
@@ -38,24 +44,19 @@ void NativeIOQuotaClient::GetStorageKeysForType(
   manager_->GetStorageKeysForType(type, std::move(callback));
 }
 
-void NativeIOQuotaClient::GetStorageKeysForHost(
-    blink::mojom::StorageType type,
-    const std::string& host,
-    GetStorageKeysForHostCallback callback) {
+void NativeIOQuotaClient::DeleteBucketData(const storage::BucketLocator& bucket,
+                                           DeleteBucketDataCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
+  DCHECK_EQ(bucket.type, blink::mojom::StorageType::kTemporary);
 
-  manager_->GetStorageKeysForHost(type, std::move(host), std::move(callback));
-}
+  // Skip non-default buckets because Storage Buckets are not planned to be
+  // supported by NativeIO.
+  if (!bucket.is_default) {
+    std::move(callback).Run(blink::mojom::QuotaStatusCode::kOk);
+    return;
+  }
 
-void NativeIOQuotaClient::DeleteStorageKeyData(
-    const blink::StorageKey& storage_key,
-    blink::mojom::StorageType type,
-    DeleteStorageKeyDataCallback callback) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  DCHECK_EQ(type, blink::mojom::StorageType::kTemporary);
-
-  manager_->DeleteStorageKeyData(storage_key, std::move(callback));
+  manager_->DeleteStorageKeyData(bucket.storage_key, std::move(callback));
 }
 
 void NativeIOQuotaClient::PerformStorageCleanup(

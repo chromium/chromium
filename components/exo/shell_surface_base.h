@@ -337,6 +337,10 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   // without actually updating it.
   bool CalculateCanResize() const;
 
+  // Returns true if this surface will exit fullscreen from a restore or
+  // maximize request. Currently only true for Lacros.
+  bool ShouldExitFullscreenFromRestoreOrMaximized();
+
   views::Widget* widget_ = nullptr;
   bool movement_disabled_ = false;
   gfx::Point origin_;
@@ -345,6 +349,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   int container_;
   gfx::Rect geometry_;
   gfx::Rect pending_geometry_;
+  gfx::Size initial_size_;
   int64_t display_id_ = display::kInvalidDisplayId;
   int64_t pending_display_id_ = display::kInvalidDisplayId;
   absl::optional<gfx::Rect> shadow_bounds_;
@@ -353,6 +358,7 @@ class ShellSurfaceBase : public SurfaceTreeHost,
   bool is_popup_ = false;
   bool has_grab_ = false;
   bool server_side_resize_ = false;
+  bool needs_layout_on_show_ = false;
 
   // The orientation to be applied when widget is being created. Only set when
   // widget is not created yet orientation lock is being set. This is currently

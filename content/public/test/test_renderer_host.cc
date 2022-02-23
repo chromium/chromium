@@ -40,12 +40,12 @@
 #include "third_party/blink/public/common/input/synthetic_web_input_event_builders.h"
 #include "third_party/blink/public/common/input/web_input_event.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/android/dummy_screen_android.h"
 #include "ui/display/screen.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -53,7 +53,7 @@
 #include "ui/aura/test/aura_test_helper.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/accelerated_widget_mac/window_resize_helper_mac.h"
 #endif
 
@@ -129,7 +129,7 @@ RenderViewHostTestEnabler::RenderViewHostTestEnabler()
     task_environment_ =
         std::make_unique<base::test::SingleThreadTaskEnvironment>();
   }
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   ImageTransportFactory::SetFactory(
       std::make_unique<TestImageTransportFactory>());
 #else
@@ -137,17 +137,17 @@ RenderViewHostTestEnabler::RenderViewHostTestEnabler()
     screen_.reset(ui::CreateDummyScreenAndroid());
   display::Screen::SetScreenInstance(screen_.get());
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::ThreadTaskRunnerHandle::IsSet())
     ui::WindowResizeHelperMac::Get()->Init(base::ThreadTaskRunnerHandle::Get());
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 RenderViewHostTestEnabler::~RenderViewHostTestEnabler() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   ui::WindowResizeHelperMac::Get()->ShutdownForTests();
-#endif  // OS_MAC
-#if !defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_MAC)
+#if !BUILDFLAG(IS_ANDROID)
   // RenderWidgetHostView holds on to a reference to SurfaceManager, so it
   // must be shut down before the ImageTransportFactory.
   ImageTransportFactory::Terminate();
@@ -200,7 +200,7 @@ void RenderViewHostTestHarness::SetContents(
 std::unique_ptr<WebContents>
 RenderViewHostTestHarness::CreateTestWebContents() {
 // Make sure we ran SetUp() already.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(ole_initializer_);
 #endif
 #if defined(USE_AURA)
@@ -232,7 +232,7 @@ void RenderViewHostTestHarness::SetUp() {
   if (factory_)
     rvh_test_enabler_->rvh_factory_->set_render_process_host_factory(factory_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ole_initializer_ = std::make_unique<ui::ScopedOleInitializer>();
 #endif
 #if defined(USE_AURA)
@@ -263,7 +263,7 @@ void RenderViewHostTestHarness::TearDown() {
   // before we destroy the browser context.
   base::RunLoop().RunUntilIdle();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ole_initializer_.reset();
 #endif
 

@@ -30,11 +30,6 @@ class BackForwardCacheLoaderHelperImpl : public BackForwardCacheLoaderHelper {
     // that `num_bytes` is the amount of additional bytes that are newly
     // buffered, on top of any previously buffered bytes for this delegate.
     virtual void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) = 0;
-
-    // Returns true if the total amount of bytes buffered while in back-forward
-    // cache in the whole renderer process is still under the per-process limit,
-    // false otherwise.
-    virtual bool CanContinueBufferingWhileInBackForwardCache() = 0;
   };
 
   explicit BackForwardCacheLoaderHelperImpl(Delegate& delegate);
@@ -42,7 +37,6 @@ class BackForwardCacheLoaderHelperImpl : public BackForwardCacheLoaderHelper {
   void EvictFromBackForwardCache(
       mojom::blink::RendererEvictionReason reason) override;
   void DidBufferLoadWhileInBackForwardCache(size_t num_bytes) override;
-  bool CanContinueBufferingWhileInBackForwardCache() const override;
   void Detach() override;
   void Trace(Visitor*) const override;
 

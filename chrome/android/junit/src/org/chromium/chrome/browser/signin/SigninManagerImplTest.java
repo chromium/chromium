@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.signin;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.anyLong;
@@ -21,17 +23,16 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.stubbing.Answer;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.signin.services.SigninManager;
-import org.chromium.chrome.browser.sync.AndroidSyncSettings;
 import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.components.externalauth.ExternalAuthUtils;
 import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.base.AccountInfo;
 import org.chromium.components.signin.base.CoreAccountId;
-import org.chromium.components.signin.base.CoreAccountInfo;
 import org.chromium.components.signin.identitymanager.AccountInfoServiceProvider;
 import org.chromium.components.signin.identitymanager.AccountTrackerService;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
@@ -49,6 +50,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /** Tests for {@link SigninManagerImpl}. */
 @RunWith(BaseRobolectricTestRunner.class)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class SigninManagerImplTest {
     private static final long NATIVE_SIGNIN_MANAGER = 10001L;
     private static final long NATIVE_IDENTITY_MANAGER = 10002L;
@@ -64,7 +66,6 @@ public class SigninManagerImplTest {
             mock(IdentityManager.Natives.class);
     private final AccountTrackerService mAccountTrackerService = mock(AccountTrackerService.class);
     private final IdentityMutator mIdentityMutator = mock(IdentityMutator.class);
-    private final AndroidSyncSettings mAndroidSyncSettings = mock(AndroidSyncSettings.class);
     private final ExternalAuthUtils mExternalAuthUtils = mock(ExternalAuthUtils.class);
     private final SyncService mSyncService = mock(SyncService.class);
 
@@ -77,7 +78,6 @@ public class SigninManagerImplTest {
         mocker.mock(SigninManagerImplJni.TEST_HOOKS, mNativeMock);
         mocker.mock(IdentityManagerJni.TEST_HOOKS, mIdentityManagerNativeMock);
         SyncService.overrideForTests(mSyncService);
-        AndroidSyncSettings.overrideForTests(mAndroidSyncSettings);
         ExternalAuthUtils.setInstanceForTesting(mExternalAuthUtils);
         when(mNativeMock.isSigninAllowedByPolicy(NATIVE_SIGNIN_MANAGER)).thenReturn(true);
         // Pretend Google Play services are available as it is required for the sign-in
@@ -109,7 +109,14 @@ public class SigninManagerImplTest {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
         when(mSyncService.getChosenDataTypes()).thenReturn(Set.of(ModelType.BOOKMARKS));
 
+        // Until the first run check is done, we do not allow sign in.
+        assertFalse(mSigninManager.isSigninAllowed());
+        assertFalse(mSigninManager.isSyncOptInAllowed());
+
+        // First run check is complete and there is no signed in account.  Sign in is allowed.
         mSigninManager.onFirstRunCheckDone();
+        assertTrue(mSigninManager.isSigninAllowed());
+        assertTrue(mSigninManager.isSyncOptInAllowed());
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         mSigninManager.signinAndEnableSync(SigninAccessPoint.START_PAGE,
@@ -117,22 +124,36 @@ public class SigninManagerImplTest {
 
         verify(mNativeMock)
                 .fetchAndApplyCloudPolicy(eq(NATIVE_SIGNIN_MANAGER), eq(ACCOUNT_INFO), any());
+        // A sign in operation is in progress, so we do not allow a new one to be started.
+        assertFalse(mSigninManager.isSigninAllowed());
+        assertFalse(mSigninManager.isSyncOptInAllowed());
 
         mSigninManager.finishSignInAfterPolicyEnforced();
         verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SYNC);
-        verify(mAndroidSyncSettings)
-                .updateAccount(CoreAccountInfo.getAndroidAccountFrom(ACCOUNT_INFO));
-        verify(mAndroidSyncSettings).enableChromeSync();
+        verify(mSyncService).setSyncRequested(true);
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
+
+        // The primary account is now present and consented to sign in and sync.  We do not allow
+        // another account to be signed in.
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                     eq(NATIVE_IDENTITY_MANAGER), anyInt()))
+                .thenReturn(ACCOUNT_INFO);
+        assertFalse(mSigninManager.isSigninAllowed());
+        assertFalse(mSigninManager.isSyncOptInAllowed());
     }
 
     @Test
     public void signinNoTurnSyncOn() {
         when(mIdentityMutator.setPrimaryAccount(any(), anyInt())).thenReturn(true);
 
+        assertFalse(mSigninManager.isSigninAllowed());
+        assertFalse(mSigninManager.isSyncOptInAllowed());
+
         mSigninManager.onFirstRunCheckDone();
+        assertTrue(mSigninManager.isSigninAllowed());
+        assertTrue(mSigninManager.isSyncOptInAllowed());
 
         SigninManager.SignInCallback callback = mock(SigninManager.SignInCallback.class);
         mSigninManager.signin(
@@ -143,11 +164,17 @@ public class SigninManagerImplTest {
 
         verify(mIdentityMutator).setPrimaryAccount(ACCOUNT_INFO.getId(), ConsentLevel.SIGNIN);
 
-        verify(mAndroidSyncSettings, never()).updateAccount(any());
-        verify(mAndroidSyncSettings, never()).enableChromeSync();
+        verify(mSyncService, never()).setSyncRequested(true);
         // Signin should be complete and callback should be invoked.
         verify(callback).onSignInComplete();
         verify(callback, never()).onSignInAborted();
+
+        // The primary account is now present and consented to sign in.
+        when(mIdentityManagerNativeMock.getPrimaryAccountInfo(
+                     eq(NATIVE_IDENTITY_MANAGER), eq(ConsentLevel.SIGNIN)))
+                .thenReturn(ACCOUNT_INFO);
+        assertFalse(mSigninManager.isSigninAllowed());
+        assertTrue(mSigninManager.isSyncOptInAllowed());
     }
 
     @Test

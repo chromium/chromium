@@ -4,11 +4,12 @@
 
 #include "third_party/blink/renderer/core/frame/dom_timer.h"
 
+#include "base/test/scoped_feature_list.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/bindings/core/v8/idl_types.h"
 #include "third_party/blink/renderer/bindings/core/v8/native_value_traits_impl.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/script/classic_script.h"
@@ -60,7 +61,7 @@ class DOMTimerTest : public RenderingTest {
   }
 
   v8::Local<v8::Value> EvalExpression(const char* expr) {
-    return ClassicScript::CreateUnspecifiedScript(ScriptSourceCode(expr))
+    return ClassicScript::CreateUnspecifiedScript(expr)
         ->RunScriptAndReturnValue(GetDocument().domWindow());
   }
 
@@ -77,9 +78,8 @@ class DOMTimerTest : public RenderingTest {
   }
 
   void ExecuteScriptAndWaitUntilIdle(const char* script_text) {
-    ScriptSourceCode script(script_text);
-    ClassicScript::CreateUnspecifiedScript(script)->RunScript(
-        GetDocument().domWindow());
+    ClassicScript::CreateUnspecifiedScript(String(script_text))
+        ->RunScript(GetDocument().domWindow());
     platform()->RunUntilIdle();
   }
 };
@@ -93,14 +93,30 @@ const char* const kSetTimeout0ScriptText =
     "}"
     "setTimeout(setTimeoutCallback, 0);";
 
-TEST_F(DOMTimerTest, DISABLED_setTimeout_ZeroIsNotClampedToOne) {
+TEST_F(DOMTimerTest, setTimeout_ZeroIsNotClampedToOne) {
   v8::HandleScope scope(v8::Isolate::GetCurrent());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(features::kSetTimeoutWithoutClamp);
 
   ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
 
   double time = ToDoubleValue(EvalExpression("elapsed"), scope);
 
   EXPECT_THAT(time, DoubleNear(0., kThreshold));
+}
+
+TEST_F(DOMTimerTest, setTimeout_ZeroIsClampedToOne) {
+  v8::HandleScope scope(v8::Isolate::GetCurrent());
+
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndDisableFeature(features::kSetTimeoutWithoutClamp);
+
+  ExecuteScriptAndWaitUntilIdle(kSetTimeout0ScriptText);
+
+  double time = ToDoubleValue(EvalExpression("elapsed"), scope);
+
+  EXPECT_THAT(time, DoubleNear(1., kThreshold));
 }
 
 const char* const kSetTimeoutNestedScriptText =

@@ -16,10 +16,10 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/scoped_blocking_call.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/printer_configurer.h"
 #include "chrome/browser/browser_process.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/chromeos/printing/printer_configurer.h"
 #include "chromeos/printing/printer_configuration.h"
 #include "components/crash/core/common/crash_keys.h"
 #include "content/public/browser/browser_thread.h"
@@ -38,51 +38,51 @@ namespace printing {
 namespace {
 
 void LogPrinterSetup(const chromeos::Printer& printer,
-                     chromeos::PrinterSetupResult result) {
+                     PrinterSetupResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   base::UmaHistogramEnumeration(
       printer.IsZeroconf()
           ? "Printing.CUPS.ZeroconfPrinterSetupResult.PrintPreview"
           : "Printing.CUPS.PrinterSetupResult.PrintPreview",
-      result, chromeos::PrinterSetupResult::kMaxValue);
+      result, PrinterSetupResult::kMaxValue);
 
   switch (result) {
-    case chromeos::PrinterSetupResult::kSuccess: {
+    case PrinterSetupResult::kSuccess: {
       VLOG(1) << "Printer setup successful for " << printer.id()
               << " fetching properties";
       if (printer.IsUsbProtocol()) {
         // Record UMA for USB printer setup source.
-        chromeos::PrinterConfigurer::RecordUsbPrinterSetupSource(
-            chromeos::UsbPrinterSetupSource::kPrintPreview);
+        PrinterConfigurer::RecordUsbPrinterSetupSource(
+            UsbPrinterSetupSource::kPrintPreview);
       }
       return;
     }
-    case chromeos::PrinterSetupResult::kPrinterUnreachable:
-    case chromeos::PrinterSetupResult::kPrinterSentWrongResponse:
-    case chromeos::PrinterSetupResult::kPpdNotFound:
-    case chromeos::PrinterSetupResult::kPpdUnretrievable:
+    case PrinterSetupResult::kPrinterUnreachable:
+    case PrinterSetupResult::kPrinterSentWrongResponse:
+    case PrinterSetupResult::kPpdNotFound:
+    case PrinterSetupResult::kPpdUnretrievable:
       // Prompt user to update configuration or check internet connection.
       // TODO(skau): Fill me in
       LOG(WARNING) << ResultCodeToMessage(result);
       break;
-    case chromeos::PrinterSetupResult::kFatalError:
-    case chromeos::PrinterSetupResult::kDbusError:
-    case chromeos::PrinterSetupResult::kNativePrintersNotAllowed:
-    case chromeos::PrinterSetupResult::kPpdTooLarge:
-    case chromeos::PrinterSetupResult::kInvalidPpd:
-    case chromeos::PrinterSetupResult::kIoError:
-    case chromeos::PrinterSetupResult::kMemoryAllocationError:
-    case chromeos::PrinterSetupResult::kBadUri:
-    case chromeos::PrinterSetupResult::kDbusNoReply:
-    case chromeos::PrinterSetupResult::kDbusTimeout:
+    case PrinterSetupResult::kFatalError:
+    case PrinterSetupResult::kDbusError:
+    case PrinterSetupResult::kNativePrintersNotAllowed:
+    case PrinterSetupResult::kPpdTooLarge:
+    case PrinterSetupResult::kInvalidPpd:
+    case PrinterSetupResult::kIoError:
+    case PrinterSetupResult::kMemoryAllocationError:
+    case PrinterSetupResult::kBadUri:
+    case PrinterSetupResult::kDbusNoReply:
+    case PrinterSetupResult::kDbusTimeout:
       LOG(ERROR) << ResultCodeToMessage(result);
       break;
-    case chromeos::PrinterSetupResult::kInvalidPrinterUpdate:
-    case chromeos::PrinterSetupResult::kEditSuccess:
-    case chromeos::PrinterSetupResult::kPrinterIsNotAutoconfigurable:
-    case chromeos::PrinterSetupResult::kComponentUnavailable:
-    case chromeos::PrinterSetupResult::kMaxValue:
+    case PrinterSetupResult::kInvalidPrinterUpdate:
+    case PrinterSetupResult::kEditSuccess:
+    case PrinterSetupResult::kPrinterIsNotAutoconfigurable:
+    case PrinterSetupResult::kComponentUnavailable:
+    case PrinterSetupResult::kMaxValue:
       LOG(ERROR) << "Unexpected error in printer setup: "
                  << ResultCodeToMessage(result);
       break;
@@ -183,15 +183,15 @@ void FetchCapabilities(const std::string& printer_id,
 }
 
 void OnPrinterInstalled(
-    chromeos::CupsPrintersManager* printers_manager,
+    CupsPrintersManager* printers_manager,
     const chromeos::Printer& printer,
     base::OnceCallback<void(
         const absl::optional<::printing::PrinterSemanticCapsAndDefaults>&)> cb,
-    chromeos::PrinterSetupResult result) {
+    PrinterSetupResult result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   LogPrinterSetup(printer, result);
-  if (result != chromeos::PrinterSetupResult::kSuccess) {
+  if (result != PrinterSetupResult::kSuccess) {
     std::move(cb).Run(absl::nullopt);
     return;
   }
@@ -202,8 +202,8 @@ void OnPrinterInstalled(
 
 }  // namespace
 
-void SetUpPrinter(chromeos::CupsPrintersManager* printers_manager,
-                  chromeos::PrinterConfigurer* printer_configurer,
+void SetUpPrinter(CupsPrintersManager* printers_manager,
+                  PrinterConfigurer* printer_configurer,
                   const chromeos::Printer& printer,
                   GetPrinterCapabilitiesCallback cb) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);

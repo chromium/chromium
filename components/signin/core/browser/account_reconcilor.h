@@ -9,12 +9,15 @@
 
 #include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/build_config.h"
+#include "build/buildflag.h"
+#include "build/chromeos_buildflags.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -29,7 +32,12 @@
 namespace signin {
 class AccountReconcilorDelegate;
 enum class SetAccountsInCookieResult;
-}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class ConsistencyCookieManager;
+class ConsistencyCookieManagerTest;
+#endif
+}  // namespace signin
 
 class SigninClient;
 
@@ -120,7 +128,7 @@ class AccountReconcilor : public KeyedService,
   void Shutdown() override;
 
   // Determine what the reconcilor is currently doing.
-  signin_metrics::AccountReconcilorState GetState();
+  signin_metrics::AccountReconcilorState GetState() const;
 
   // Adds ands removes observers.
   void AddObserver(Observer* observer);
@@ -134,16 +142,27 @@ class AccountReconcilor : public KeyedService,
   // Returns true if reconcilor is blocked.
   bool IsReconcileBlocked() const;
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Gets the ConsistencyCookieManager, which updates the
+  // "CHROME_ID_CONSISTENCY_STATE" cookie.
+  signin::ConsistencyCookieManager* GetConsistencyCookieManager();
+#endif
+
  protected:
   void OnSetAccountsInCookieCompleted(signin::SetAccountsInCookieResult result);
   void OnLogOutFromCookieCompleted(const GoogleServiceAuthError& error);
 
  private:
   friend class AccountReconcilorTest;
-  friend class DiceBrowserTest;
-  friend class BaseAccountReconcilorTestTable;
-  friend class AccountReconcilorThrottlerTest;
   friend class AccountReconcilorTestForceDiceMigration;
+  friend class AccountReconcilorThrottlerTest;
+  friend class BaseAccountReconcilorTestTable;
+  friend class DiceBrowserTest;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  friend class signin::ConsistencyCookieManagerTest;
+#endif
+
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorTestForceDiceMigration,
                            TableRowTestCheckNoOp);
   FRIEND_TEST_ALL_PREFIXES(AccountReconcilorMirrorTest,
@@ -360,10 +379,10 @@ class AccountReconcilor : public KeyedService,
   AccountReconcilorThrottler throttler_;
 
   // The IdentityManager associated with this reconcilor.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // The SigninClient associated with this reconcilor.
-  SigninClient* client_;
+  raw_ptr<SigninClient> client_;
 
   bool registered_with_identity_manager_ = false;
   bool registered_with_content_settings_ = false;
@@ -421,11 +440,18 @@ class AccountReconcilor : public KeyedService,
   // not invalidate the primary token while this is happening.
   int synced_data_deletion_in_progress_count_ = 0;
 
+  // Note: when the reconcilor is blocked with `BlockReconcile()` the state is
+  // set to ACCOUNT_RECONCILOR_SCHEDULED rather than ACCOUNT_RECONCILOR_INACTIVE
+  // as this is only used to temporarily suspend the reconcilor.
   signin_metrics::AccountReconcilorState state_ =
-      signin_metrics::ACCOUNT_RECONCILOR_OK;
+      signin_metrics::ACCOUNT_RECONCILOR_INACTIVE;
 
   // Set to true when Shutdown() is called.
   bool was_shut_down_ = false;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  std::unique_ptr<signin::ConsistencyCookieManager> consistency_cookie_manager_;
+#endif
 
   base::WeakPtrFactory<AccountReconcilor> weak_factory_{this};
 };

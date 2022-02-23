@@ -20,25 +20,22 @@ namespace ash {
 
 namespace login_views_utils {
 
-namespace {
-
 // The most used font size on login/lock screen.
-constexpr int kLoginDefaultFontSize = 13;
+inline constexpr int kLoginDefaultFontSize = 13;
 
 // The most used font on login/lock screen.
-constexpr char kLoginDefaultFontName[] = "Roboto";
+inline constexpr char kLoginDefaultFontName[] = "Roboto";
+inline constexpr char kGoogleSansFont[] = "Google Sans";
 
-constexpr int kDefaultLineHeight = 20;
+inline constexpr int kDefaultLineHeight = 20;
 
 // Helper function to get default font list for login/lock screen text label.
 // It is slightly different from views::Label::GetDefaultFontList since the
 // font size returned is 13 pt instead of 12 pt.
-const gfx::FontList GetLoginDefaultFontList() {
+inline const gfx::FontList GetLoginDefaultFontList() {
   return gfx::FontList({kLoginDefaultFontName}, gfx::Font::FontStyle::NORMAL,
                        kLoginDefaultFontSize, gfx::Font::Weight::NORMAL);
 }
-
-}  // namespace
 
 // Wraps view in another view so the original view is sized to it's preferred
 // size, regardless of the view's parent's layout manager.
@@ -55,7 +52,7 @@ ASH_EXPORT bool HasFocusInAnyChildView(views::View* view);
 // If |view_defining_max_width| is set, we allow the label to have multiple
 // lines and we set its maximum width to the preferred width of
 // |view_defining_max_width|.
-views::Label* CreateBubbleLabel(
+ASH_EXPORT views::Label* CreateBubbleLabel(
     const std::u16string& message,
     views::View* view_defining_max_width = nullptr,
     SkColor color = AshColorProvider::Get()->GetContentLayerColor(

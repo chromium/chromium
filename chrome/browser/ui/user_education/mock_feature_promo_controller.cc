@@ -6,3 +6,8 @@
 
 MockFeaturePromoController::MockFeaturePromoController() = default;
 MockFeaturePromoController::~MockFeaturePromoController() = default;
+
+base::WeakPtr<FeaturePromoController>
+MockFeaturePromoController::GetAsWeakPtr() {
+  return weak_ptr_factory_.GetWeakPtr();
+}

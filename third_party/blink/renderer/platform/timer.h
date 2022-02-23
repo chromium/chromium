@@ -29,14 +29,17 @@
 #include "base/dcheck_is_on.h"
 #include "base/location.h"
 #include "base/memory/weak_ptr.h"
+#include "base/task/delayed_task_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/time.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/sanitizers.h"
 #include "third_party/blink/renderer/platform/wtf/threading.h"
+#include "third_party/blink/renderer/platform/wtf/type_traits.h"
 
 namespace blink {
 
@@ -87,9 +90,8 @@ class PLATFORM_EXPORT TimerBase {
  protected:
   virtual void Fired() = 0;
 
-  virtual base::OnceClosure BindTimerClosure(
-      base::WeakPtr<TimerBase> weak_ptr) {
-    return WTF::Bind(&TimerBase::RunInternal, std::move(weak_ptr));
+  virtual base::OnceClosure BindTimerClosure() {
+    return WTF::Bind(&TimerBase::RunInternal, WTF::Unretained(this));
   }
 
   void RunInternal();
@@ -107,9 +109,8 @@ class PLATFORM_EXPORT TimerBase {
 #if DCHECK_IS_ON()
   base::PlatformThreadId thread_;
 #endif
-  // Used for invalidating tasks at arbitrary times and after the timer has been
-  // destructed.
-  base::WeakPtrFactory<TimerBase> weak_ptr_factory_{this};
+  // The handle to the posted delayed task.
+  base::DelayedTaskHandle delayed_task_handle_;
 };
 
 template <typename TimerFiredClass>
@@ -161,9 +162,9 @@ class HeapTaskRunnerTimer final : public TimerBase {
  protected:
   void Fired() final { (object_->*function_)(this); }
 
-  base::OnceClosure BindTimerClosure(base::WeakPtr<TimerBase> weak_ptr) final {
+  base::OnceClosure BindTimerClosure() final {
     return WTF::Bind(&HeapTaskRunnerTimer::RunInternalTrampoline,
-                     std::move(weak_ptr), WrapWeakPersistent(object_.Get()));
+                     WTF::Unretained(this), WrapWeakPersistent(object_.Get()));
   }
 
  private:
@@ -171,14 +172,12 @@ class HeapTaskRunnerTimer final : public TimerBase {
   // object has been deemed as dead by the GC but not yet reclaimed. Dead
   // objects that have not been reclaimed yet must not be touched (which is
   // enforced by ASAN poisoning).
-  static void RunInternalTrampoline(base::WeakPtr<TimerBase> weak_ptr,
+  static void RunInternalTrampoline(HeapTaskRunnerTimer* timer,
                                     TimerFiredClass* object) {
-    // - {weak_ptr} is invalidated upon request and when the timer is destroyed.
-    // - {object} is null when the garbage collector deemed the timer as
-    //   unreachable.
-    if (weak_ptr && object) {
-      static_cast<HeapTaskRunnerTimer*>(weak_ptr.get())->RunInternal();
-    }
+    // |object| is null when the garbage collector deemed the timer as
+    // unreachable.
+    if (object)
+      timer->RunInternal();
   }
 
   WeakMember<TimerFiredClass> object_;
@@ -190,7 +189,7 @@ inline bool TimerBase::IsActive() const {
 #if DCHECK_IS_ON()
   DCHECK_EQ(thread_, CurrentThread());
 #endif
-  return weak_ptr_factory_.HasWeakPtrs();
+  return delayed_task_handle_.IsValid();
 }
 
 }  // namespace blink

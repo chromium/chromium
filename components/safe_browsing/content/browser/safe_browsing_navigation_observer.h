@@ -8,6 +8,7 @@
 #include <unordered_map>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/supports_user_data.h"
 #include "components/content_settings/core/browser/content_settings_observer.h"
@@ -56,9 +57,6 @@ struct NavigationEvent {
 
   // Which tab this request url is targeting to.
   SessionID target_tab_id;
-
-  // Frame tree node ID of the frame where this navigation takes place.
-  int frame_id;
 
   // When this NavigationEvent was last updated.
   base::Time last_updated;
@@ -189,7 +187,7 @@ class SafeBrowsingNavigationObserver : public base::SupportsUserData::Data,
   base::ScopedObservation<HostContentSettingsMap, content_settings::Observer>
       content_settings_observation_{this};
 
-  SafeBrowsingNavigationObserverManager* observer_manager_ = nullptr;
+  raw_ptr<SafeBrowsingNavigationObserverManager> observer_manager_ = nullptr;
 };
 
 }  // namespace safe_browsing

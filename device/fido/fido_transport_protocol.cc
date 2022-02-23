@@ -28,7 +28,6 @@ absl::optional<FidoTransportProtocol> ConvertToFidoTransportProtocol(
     return absl::nullopt;
 }
 
-COMPONENT_EXPORT(DEVICE_FIDO)
 base::StringPiece ToString(FidoTransportProtocol protocol) {
   switch (protocol) {
     case FidoTransportProtocol::kUsbHumanInterfaceDevice:
@@ -45,6 +44,20 @@ base::StringPiece ToString(FidoTransportProtocol protocol) {
       // The Android accessory transport is not exposed to the outside world and
       // is considered a flavour of caBLE.
       return kCloudAssistedBluetoothLowEnergy;
+  }
+}
+
+AuthenticatorAttachment AuthenticatorAttachmentFromTransport(
+    FidoTransportProtocol transport) {
+  switch (transport) {
+    case FidoTransportProtocol::kInternal:
+      return AuthenticatorAttachment::kPlatform;
+    case FidoTransportProtocol::kUsbHumanInterfaceDevice:
+    case FidoTransportProtocol::kNearFieldCommunication:
+    case FidoTransportProtocol::kBluetoothLowEnergy:
+    case FidoTransportProtocol::kCloudAssistedBluetoothLowEnergy:
+    case FidoTransportProtocol::kAndroidAccessory:
+      return AuthenticatorAttachment::kCrossPlatform;
   }
 }
 

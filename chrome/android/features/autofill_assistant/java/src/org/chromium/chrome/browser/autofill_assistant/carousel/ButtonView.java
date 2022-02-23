@@ -81,8 +81,7 @@ public class ButtonView extends LinearLayout {
         int borderWidth =
                 a.getResourceId(R.styleable.ButtonView_chipBorderWidth, R.dimen.chip_border_width);
         int verticalInset = a.getDimensionPixelSize(R.styleable.ButtonView_verticalInset,
-                getResources().getDimensionPixelSize(
-                        org.chromium.ui.R.dimen.chip_bg_vertical_inset));
+                getResources().getDimensionPixelSize(R.dimen.chip_bg_vertical_inset));
         a.recycle();
 
         mIcon = new ChromeImageView(getContext());

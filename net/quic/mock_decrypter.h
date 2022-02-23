@@ -9,7 +9,6 @@
 #include <cstdint>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "net/third_party/quiche/src/quic/core/crypto/quic_decrypter.h"
 #include "net/third_party/quiche/src/quic/core/quic_types.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_export.h"

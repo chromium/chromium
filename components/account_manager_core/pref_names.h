@@ -13,6 +13,15 @@ namespace prefs {
 COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
 extern const char kSecondaryGoogleAccountSigninAllowed[];
 
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+extern const char kAccountAppsAvailability[];
+
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+extern const char kIsAvailableInArcKey[];
+
+COMPONENT_EXPORT(ACCOUNT_MANAGER_CORE)
+extern const char kSecondaryGoogleAccountUsage[];
+
 }  // namespace prefs
 }  // namespace account_manager
 

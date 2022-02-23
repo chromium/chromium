@@ -28,6 +28,7 @@
 #include "base/values.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/policy/enrollment/private_membership/testing_private_membership_rlwe_client.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/testing_psm_rlwe_id_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
@@ -194,7 +195,8 @@ class AutoEnrollmentClientImplTest
           AutoEnrollmentClientImpl::FactoryImpl().CreateForInitialEnrollment(
               progress_callback, service_.get(), local_state_,
               shared_url_loader_factory_, kSerialNumber, kBrandCode,
-              power_initial, power_limit, psm_rlwe_test_client_factory_.get());
+              power_initial, power_limit, psm_rlwe_test_client_factory_.get(),
+              testing_psm_rlwe_id_provider_.get());
     }
   }
 
@@ -418,23 +420,19 @@ class AutoEnrollmentClientImplTest
     ASSERT_TRUE(state->GetAsDictionary(&state_dict));
     *local_state_dict = state_dict;
 
-    std::string actual_management_domain;
+    const std::string* actual_management_domain =
+        state_dict->FindStringKey(kDeviceStateManagementDomain);
     if (expected_management_domain.empty()) {
-      EXPECT_FALSE(state_dict->GetString(kDeviceStateManagementDomain,
-                                         &actual_management_domain));
+      EXPECT_FALSE(actual_management_domain);
     } else {
-      EXPECT_TRUE(state_dict->GetString(kDeviceStateManagementDomain,
-                                        &actual_management_domain));
-      EXPECT_EQ(expected_management_domain, actual_management_domain);
+      EXPECT_TRUE(actual_management_domain);
+      EXPECT_EQ(expected_management_domain, *actual_management_domain);
     }
 
-    if (!expected_restore_mode.empty()) {
-      std::string actual_restore_mode;
-      EXPECT_TRUE(
-          state_dict->GetString(kDeviceStateMode, &actual_restore_mode));
-    } else {
+    if (!expected_restore_mode.empty())
+      EXPECT_TRUE(state_dict->FindStringKey(kDeviceStateMode));
+    else
       EXPECT_EQ(state_dict->FindKey(kDeviceStateMode), nullptr);
-    }
   }
 
   void VerifyServerBackedStateForFRE(
@@ -446,26 +444,22 @@ class AutoEnrollmentClientImplTest
                                   expected_restore_mode, &state_dict);
 
     if (!expected_restore_mode.empty()) {
-      std::string actual_restore_mode;
-      EXPECT_TRUE(
-          state_dict->GetString(kDeviceStateMode, &actual_restore_mode));
+      const std::string* actual_restore_mode =
+          state_dict->FindStringKey(kDeviceStateMode);
+      EXPECT_TRUE(actual_restore_mode);
       EXPECT_EQ(GetAutoEnrollmentProtocol() == AutoEnrollmentProtocol::kFRE
                     ? expected_restore_mode
                     : MapDeviceRestoreStateToDeviceInitialState(
                           expected_restore_mode),
-                actual_restore_mode);
+                *actual_restore_mode);
     }
 
-    std::string actual_disabled_message;
-    EXPECT_TRUE(state_dict->GetString(kDeviceStateDisabledMessage,
-                                      &actual_disabled_message));
-    EXPECT_EQ(expected_disabled_message, actual_disabled_message);
-
+    const std::string* actual_disabled_message =
+        state_dict->FindStringKey(kDeviceStateDisabledMessage);
+    EXPECT_TRUE(actual_disabled_message);
+    EXPECT_EQ(expected_disabled_message, *actual_disabled_message);
     EXPECT_FALSE(state_dict->FindBoolPath(kDeviceStatePackagedLicense));
-
-    std::string actual_license_type;
-    EXPECT_FALSE(
-        state_dict->GetString(kDeviceStateLicenseType, &actual_license_type));
+    EXPECT_FALSE(state_dict->FindStringKey(kDeviceStateLicenseType));
   }
 
   void VerifyServerBackedStateForInitialEnrollment(
@@ -477,9 +471,7 @@ class AutoEnrollmentClientImplTest
     VerifyServerBackedStateForAll(expected_management_domain,
                                   expected_restore_mode, &state_dict);
 
-    std::string actual_disabled_message;
-    EXPECT_FALSE(state_dict->GetString(kDeviceStateDisabledMessage,
-                                       &actual_disabled_message));
+    EXPECT_FALSE(state_dict->FindStringKey(kDeviceStateDisabledMessage));
 
     absl::optional<bool> actual_is_license_packaged_with_device;
     actual_is_license_packaged_with_device =
@@ -491,10 +483,10 @@ class AutoEnrollmentClientImplTest
       EXPECT_FALSE(expected_is_license_packaged_with_device);
     }
 
-    std::string actual_license_type;
-    EXPECT_TRUE(
-        state_dict->GetString(kDeviceStateLicenseType, &actual_license_type));
-    EXPECT_EQ(actual_license_type, expected_license_type);
+    const std::string* actual_license_type =
+        state_dict->FindStringKey(kDeviceStateLicenseType);
+    EXPECT_TRUE(actual_license_type);
+    EXPECT_EQ(*actual_license_type, expected_license_type);
   }
 
   // Expects one sample for |kUMAHashDanceNetworkErrorCode| which has value of
@@ -563,6 +555,9 @@ class AutoEnrollmentClientImplTest
   // only used for PSM during creating the client for initial enrollment.
   std::unique_ptr<TestingPrivateMembershipRlweClient::FactoryImpl>
       psm_rlwe_test_client_factory_;
+
+  // Sets the PSM RLWE ID directly for testing.
+  std::unique_ptr<TestingPsmRlweIdProvider> testing_psm_rlwe_id_provider_;
 
   base::HistogramTester histogram_tester_;
   content::BrowserTaskEnvironment task_environment_{
@@ -1681,15 +1676,13 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
     ASSERT_EQ(local_state_->GetUserPref(prefs::kEnrollmentPsmResult), nullptr);
 
     // Create PSM test case, before setting up the base class, to construct the
-    // PSM RLWE testing client factory.
+    // PSM RLWE testing client factory and its RLWE ID.
     CreatePsmTestCase();
 
     // Set up the base class AutoEnrollmentClientImplTest after creating the PSM
-    // RLWE client factory for testing in |psm_rlwe_test_client_factory_|.
+    // RLWE client factory for testing in |psm_rlwe_test_client_factory_|, and
+    // PSM RLWE ID provider in |testing_psm_rlwe_id_provider_|.
     AutoEnrollmentClientImplTest::SetUp();
-
-    // Override the stored PSM ID in the client.
-    SetPsmRlweIdClient();
   }
 
   void CreatePsmTestCase() {
@@ -1721,10 +1714,10 @@ class PsmHelperTest : public AutoEnrollmentClientImplTest {
         std::make_unique<TestingPrivateMembershipRlweClient::FactoryImpl>(
             psm_test_case_.ec_cipher_key(), psm_test_case_.seed(),
             plaintext_ids);
-  }
 
-  void SetPsmRlweIdClient() {
-    client()->SetPsmRlweIdForTesting(psm_test_case_.plaintext_id());
+    // Sets the PSM RLWE ID.
+    testing_psm_rlwe_id_provider_ = std::make_unique<TestingPsmRlweIdProvider>(
+        psm_test_case_.plaintext_id());
   }
 
   void ServerWillReplyWithPsmOprfResponse() {

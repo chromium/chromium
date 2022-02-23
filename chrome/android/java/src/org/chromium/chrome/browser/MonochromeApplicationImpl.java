@@ -8,7 +8,7 @@ import org.chromium.android_webview.nonembedded.WebViewApkApplication;
 import org.chromium.base.ActivityState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.chrome.browser.base.SplitCompatApplication;
-import org.chromium.chrome.browser.version.ChromeVersionInfo;
+import org.chromium.components.version_info.VersionInfo;
 
 /**
  * This is Application class for Monochrome.
@@ -28,7 +28,7 @@ public class MonochromeApplicationImpl extends ChromeApplicationImpl {
     @Override
     public void onCreate() {
         super.onCreate();
-        if (!ChromeVersionInfo.isStableBuild()) {
+        if (!VersionInfo.isStableBuild()) {
             // Performing Monochrome WebView DevTools Launcher icon showing/hiding logic in
             // onCreate rather than in attachBaseContext() because it depends on application
             // context being initiatied.

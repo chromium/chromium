@@ -11,9 +11,9 @@
   async function testSearches(view, searches) {
     await new Promise(resolve => setTimeout(resolve, 0));
     for (var search of searches) {
-      view._searchInputElement.value = search;
-      view._regexButton.setToggled(false);
-      view._caseSensitiveButton.setToggled(false);
+      view.searchInputElement.value = search;
+      view.regexButton.setToggled(false);
+      view.caseSensitiveButton.setToggled(false);
       view.showSearchField();
       TestRunner.addResult('Should have found and highlighted all: ' + search);
 
@@ -40,11 +40,11 @@
       searchableView = view.children()[0];
     }
     if (isSearchable)
-      compontentView = searchableView._searchProvider;
+      compontentView = searchableView.searchProvider;
 
     if (compontentView instanceof SourceFrame.ResourceSourceFrame) {
       typeName = 'ResourceSourceFrame';
-      compontentView._ensureContentLoaded();
+      compontentView.ensureContentLoaded();
       if (!compontentView.loaded) {
         // try again when content is loaded.
         TestRunner.addSniffer(
@@ -75,21 +75,21 @@
 
   function trySearches(request, searches, callback) {
     var networkPanel = UI.panels.network;
-    TestRunner.addSniffer(Network.RequestPreviewView.prototype, '_doShowPreview', async function() {
-      previewViewHandled(searches, callback, await this._contentViewPromise);
-      networkPanel._hideRequestPanel();
+    TestRunner.addSniffer(Network.RequestPreviewView.prototype, 'doShowPreview', async function() {
+      previewViewHandled(searches, callback, await this.contentViewPromise);
+      networkPanel.hideRequestPanel();
     });
-    networkPanel._onRequestSelected({data: request});
-    networkPanel._showRequestPanel();
-    var itemView = networkPanel._networkItemView;
-    itemView._selectTab('preview');
+    networkPanel.onRequestSelected({data: request});
+    networkPanel.showRequestPanel();
+    var itemView = networkPanel.networkItemView;
+    itemView.selectTab('preview');
   }
 
   function testType(contentType, content, searches, callback) {
     var url = 'data:' + contentType + ',' + encodeURIComponent(content);
     NetworkTestRunner.makeSimpleXHR('GET', url, true, function() {
-      var request = NetworkTestRunner.findRequestsByURLPattern(new RegExp(url.escapeForRegExp()))[0];
-      request._resourceType = Common.resourceTypes.Document;
+      var request = NetworkTestRunner.findRequestsByURLPattern(new RegExp(Platform.StringUtilities.escapeForRegExp(url)))[0];
+      request.setResourceType(Common.resourceTypes.Document);
       trySearches(request, searches, callback);
     });
   }

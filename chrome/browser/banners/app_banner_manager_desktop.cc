@@ -17,11 +17,13 @@
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -82,14 +84,15 @@ AppBannerManagerDesktop::AsTestAppBannerManagerDesktopForTesting() {
 
 AppBannerManagerDesktop::AppBannerManagerDesktop(
     content::WebContents* web_contents)
-    : AppBannerManager(web_contents) {
+    : AppBannerManager(web_contents),
+      content::WebContentsUserData<AppBannerManagerDesktop>(*web_contents) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   extension_registry_ = extensions::ExtensionRegistry::Get(profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // May be null in unit tests e.g. TabDesktopMediaListTest.*.
   if (provider)
-    registrar_observation_.Observe(&provider->registrar());
+    install_manager_observation_.Observe(&provider->install_manager());
 }
 
 AppBannerManagerDesktop::~AppBannerManagerDesktop() { }
@@ -169,6 +172,13 @@ bool AppBannerManagerDesktop::ShouldAllowWebAppReplacementInstall() {
   if (!registrar().IsLocallyInstalled(app_id))
     return false;
 
+  // We prompt the user to re-install if the site wants to be in a standalone
+  // window but the user has opted for opening in browser tab. This is to
+  // support the situation where a site is not a PWA, users have installed it
+  // via Create Shortcut action, the site becomes a standalone PWA later and we
+  // want to prompt them to "install" the new PWA experience.
+  // TODO(crbug.com/1205529): Showing an install button when it's already
+  // installed is confusing.
   auto display_mode = registrar().GetAppUserDisplayMode(app_id);
   return display_mode == blink::mojom::DisplayMode::kBrowser;
 }
@@ -227,8 +237,8 @@ void AppBannerManagerDesktop::OnWebAppUninstalled(
     RecheckInstallabilityForLoadedPage(validated_url(), true);
 }
 
-void AppBannerManagerDesktop::OnAppRegistrarDestroyed() {
-  registrar_observation_.Reset();
+void AppBannerManagerDesktop::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
@@ -244,19 +254,19 @@ void AppBannerManagerDesktop::CreateWebApp(WebappInstallSource install_source) {
 
 void AppBannerManagerDesktop::DidFinishCreatingWebApp(
     const web_app::AppId& app_id,
-    web_app::InstallResultCode code) {
+    webapps::InstallResultCode code) {
   content::WebContents* contents = web_contents();
   if (!contents)
     return;
 
   // Catch only kSuccessNewInstall and kUserInstallDeclined. Report nothing on
   // all other errors.
-  if (code == web_app::InstallResultCode::kSuccessNewInstall) {
+  if (code == webapps::InstallResultCode::kSuccessNewInstall) {
     SendBannerAccepted();
     TrackUserResponse(USER_RESPONSE_WEB_APP_ACCEPTED);
     AppBannerSettingsHelper::RecordBannerInstallEvent(contents,
                                                       GetAppIdentifier());
-  } else if (code == web_app::InstallResultCode::kUserInstallDeclined) {
+  } else if (code == webapps::InstallResultCode::kUserInstallDeclined) {
     SendBannerDismissed();
     TrackUserResponse(USER_RESPONSE_WEB_APP_DISMISSED);
     AppBannerSettingsHelper::RecordBannerDismissEvent(contents,

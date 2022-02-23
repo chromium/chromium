@@ -9,6 +9,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 #include "components/prefs/pref_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #import "components/safe_browsing/ios/browser/safe_browsing_url_allow_list.h"
 #include "components/security_interstitials/core/base_safe_browsing_error_ui.h"
@@ -16,6 +17,7 @@
 #include "components/security_interstitials/core/safe_browsing_loud_error_ui.h"
 #include "ios/chrome/browser/application_context.h"
 #include "ios/chrome/browser/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/safe_browsing/unsafe_resource_util.h"
 #include "ios/components/security_interstitials/ios_blocking_page_metrics_helper.h"
 #import "ios/web/public/web_state.h"
@@ -57,6 +59,13 @@ BaseSafeBrowsingErrorUI::SBErrorDisplayOptions GetDefaultDisplayOptions(
   ChromeBrowserState* browser_state =
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   PrefService* prefs = browser_state->GetPrefs();
+  safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
+      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(browser_state);
+  if (metrics_collector) {
+    metrics_collector->AddSafeBrowsingEventToPref(
+        safe_browsing::SafeBrowsingMetricsCollector::
+            SECURITY_SENSITIVE_SAFE_BROWSING_INTERSTITIAL);
+  }
   return BaseSafeBrowsingErrorUI::SBErrorDisplayOptions(
       resource.IsMainPageLoadBlocked(),
       /*is_extended_reporting_opt_in_allowed=*/false,
@@ -153,7 +162,8 @@ SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
           CreateMetricsHelper(resource),
           GetApplicationContext()->GetApplicationLocale()),
       url_(SafeBrowsingUrlAllowList::GetDecisionUrl(resource)),
-      threat_type_(resource.threat_type) {}
+      threat_type_(resource.threat_type),
+      threat_source_(resource.threat_source) {}
 
 SafeBrowsingBlockingPage::SafeBrowsingControllerClient::
     ~SafeBrowsingControllerClient() {
@@ -167,6 +177,13 @@ void SafeBrowsingBlockingPage::SafeBrowsingControllerClient::Proceed() {
   if (web_state()) {
     SafeBrowsingUrlAllowList::FromWebState(web_state())
         ->AllowUnsafeNavigations(url_, threat_type_);
+    ChromeBrowserState* browser_state =
+        ChromeBrowserState::FromBrowserState(web_state()->GetBrowserState());
+    safe_browsing::SafeBrowsingMetricsCollector* metrics_collector =
+        SafeBrowsingMetricsCollectorFactory::GetForBrowserState(browser_state);
+    if (metrics_collector) {
+      metrics_collector->AddBypassEventToPref(threat_source_);
+    }
   }
   Reload();
 }

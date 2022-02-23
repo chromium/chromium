@@ -7,6 +7,7 @@
 #include <ostream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/webid/test/fake_identity_request_dialog_controller.h"
 #include "content/browser/webid/test/webid_test_content_browser_client.h"
@@ -20,10 +21,13 @@
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/test_renderer_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/features.h"
 
 namespace content {
 
 namespace {
+
+typedef std::unique_ptr<base::test::ScopedFeatureList> MovableScopedFeatureList;
 
 constexpr char kOauthRequestParams[] =
     "?client_id=12345&scope=67890&"
@@ -88,12 +92,39 @@ class FederatedAuthNavigationThrottleTest : public RenderViewHostTestHarness {
 
  private:
   std::unique_ptr<WebIdTestContentBrowserClient> test_browser_client_;
-  ContentBrowserClient* old_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> old_client_ = nullptr;
 };
 
-// Test that the throttle is only created when the WebID feature is turned on
-// and when the frame is a main frame.
-TEST_F(FederatedAuthNavigationThrottleTest, Instantiate) {
+class FederatedAuthNavigationThrottleWithFlagEnabledTest
+    : public FederatedAuthNavigationThrottleTest {
+ public:
+  FederatedAuthNavigationThrottleWithFlagEnabledTest() {
+    feature_list_.InitAndEnableFeatureWithParameters(
+        features::kFedCm,
+        {{features::kFedCmInterceptionFieldTrialParamName, "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
+};
+
+// Test that the throttle is not created when the feature flag is not set.
+TEST_F(FederatedAuthNavigationThrottleTest, InstantiateWithoutFlag) {
+  GURL url("https://idp.example");
+
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+
+  MockNavigationHandle top_frame_handle(url, main_rfh());
+
+  auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
+      &top_frame_handle);
+  ASSERT_FALSE(throttle);
+}
+
+// Test that the throttle is created when the FedCM feature is turned on
+// and only when the frame is a main frame.
+TEST_F(FederatedAuthNavigationThrottleWithFlagEnabledTest, Instantiate) {
   GURL url("https://idp.example");
   GURL url_child("https://child.example");
 
@@ -105,36 +136,26 @@ TEST_F(FederatedAuthNavigationThrottleTest, Instantiate) {
   MockNavigationHandle top_frame_handle(url, main_rfh());
   MockNavigationHandle child_frame_handle(url_child, child_rfh);
 
-  // Attempt to create throttle for the main frame without features::kWebID set.
+  // Attempt to create throttle for a child frame with features::kFedCm set.
   auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
-      &top_frame_handle);
-  ASSERT_FALSE(throttle);
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebID);
-
-  // Attempt to create throttle for a child frame with features::kWebID set.
-  throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
       &child_frame_handle);
   ASSERT_FALSE(throttle);
 
-  // Attempt to create throttle for the main frame with features::kWebID set.
+  // Attempt to create throttle for the main frame with features::kFedCm set.
   throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
       &top_frame_handle);
   ASSERT_TRUE(throttle);
 }
 
 // Verify an OAuth request is throttled.
-TEST_F(FederatedAuthNavigationThrottleTest, ThrottleAuthRequest) {
+TEST_F(FederatedAuthNavigationThrottleWithFlagEnabledTest,
+       ThrottleAuthRequest) {
   GURL idp_url(
       "https://idp.example/?client_id=12345&scope=67890&"
       "redirect_uri=https%3A%2F%2Frp.example%2F");
 
   MockNavigationHandle handle(idp_url, main_rfh());
   handle.set_initiator_origin(url::Origin::Create(GURL("https://rp.example")));
-
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebID);
 
   auto throttle =
       FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(&handle);
@@ -144,7 +165,7 @@ TEST_F(FederatedAuthNavigationThrottleTest, ThrottleAuthRequest) {
 }
 
 class CrossSiteFederatedAuthNavigationThrottleTest
-    : public FederatedAuthNavigationThrottleTest,
+    : public FederatedAuthNavigationThrottleWithFlagEnabledTest,
       public ::testing::WithParamInterface<CrossSiteTestCase> {};
 
 INSTANTIATE_TEST_SUITE_P(CrossSiteThrottlingTests,
@@ -160,14 +181,54 @@ TEST_P(CrossSiteFederatedAuthNavigationThrottleTest, SameSiteAuthRequest) {
   MockNavigationHandle handle(idp_url, main_rfh());
   handle.set_initiator_origin(url::Origin::Create(GURL(test_case.rp_origin)));
 
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kWebID);
-
   auto throttle =
       FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(&handle);
   ASSERT_TRUE(throttle);
 
   EXPECT_EQ(test_case.expected_action, throttle->WillStartRequest().action());
+}
+
+class ContentSubresourceFilterThrottleManagerFencedFramesTest
+    : public FederatedAuthNavigationThrottleWithFlagEnabledTest {
+ public:
+  ContentSubresourceFilterThrottleManagerFencedFramesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        blink::features::kFencedFrames, {{"implementation_type", "mparch"}});
+  }
+  ~ContentSubresourceFilterThrottleManagerFencedFramesTest() override = default;
+
+  content::RenderFrameHost* CreateFencedFrame(
+      content::RenderFrameHost* parent) {
+    content::RenderFrameHost* fenced_frame =
+        content::RenderFrameHostTester::For(parent)->AppendFencedFrame();
+    return fenced_frame;
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(ContentSubresourceFilterThrottleManagerFencedFramesTest,
+       BlockThrottleCreationForFencedFrames) {
+  const GURL kUrl("https://idp.example");
+  GURL kFencedFrameUrl("https://child.example");
+
+  content::RenderFrameHostTester::For(main_rfh())
+      ->InitializeRenderFrameIfNeeded();
+  RenderFrameHost* fenced_frame_rfh = CreateFencedFrame(main_rfh());
+
+  MockNavigationHandle top_frame_handle(kUrl, main_rfh());
+  MockNavigationHandle fenced_frame_handle(kFencedFrameUrl, fenced_frame_rfh);
+
+  // Should be able to create throttle for the main frame.
+  auto throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
+      &top_frame_handle);
+  ASSERT_TRUE(throttle);
+
+  // A throttle should not be allowed for a fenced frame.
+  throttle = FederatedAuthNavigationThrottle::MaybeCreateThrottleFor(
+      &fenced_frame_handle);
+  ASSERT_FALSE(throttle);
 }
 
 }  // namespace content

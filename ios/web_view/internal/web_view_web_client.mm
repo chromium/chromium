@@ -126,13 +126,6 @@ std::u16string WebViewWebClient::GetPluginNotSupportedText() const {
   return l10n_util::GetStringUTF16(IDS_PLUGIN_NOT_SUPPORTED);
 }
 
-bool WebViewWebClient::IsLegacyTLSAllowedForHost(web::WebState* web_state,
-                                                 const std::string& hostname) {
-  // TODO(crbug.com/1191799): Legacy TLS should be supported via an interstitial
-  // UI that allows the user to override if desired.
-  return true;
-}
-
 void WebViewWebClient::PrepareErrorPage(
     web::WebState* web_state,
     const GURL& url,

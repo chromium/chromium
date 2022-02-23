@@ -353,6 +353,10 @@ class Struct(Definition):
            self.attribute_list == other.attribute_list and \
            self.body == other.body
 
+  def __repr__(self):
+    return "Struct(mojom_name = %s, attribute_list = %s, body = %s)" % (
+        self.mojom_name, self.attribute_list, self.body)
+
 
 class StructField(Definition):
   """Represents a struct field definition."""
@@ -379,6 +383,12 @@ class StructField(Definition):
            self.ordinal == other.ordinal and \
            self.typename == other.typename and \
            self.default_value == other.default_value
+
+  def __repr__(self):
+    return ("StructField(mojom_name = %s, attribute_list = %s, ordinal = %s, "
+            "typename = %s, default_value = %s") % (
+                self.mojom_name, self.attribute_list, self.ordinal,
+                self.typename, self.default_value)
 
 
 # This needs to be declared after |StructField|.

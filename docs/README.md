@@ -16,7 +16,7 @@ below.
 Markdown documents must follow the
 [style guide](https://github.com/google/styleguide/tree/gh-pages/docguide).
 
-### Preview local changes using [md_browser](../tools/md_browser/):
+### Preview local changes using [md_browser](../tools/md_browser/)
 
 ```bash
 # in chromium checkout
@@ -25,13 +25,21 @@ Markdown documents must follow the
 
 This is only an estimate. The **gitiles** view may differ.
 
-### Review changes online with gerrit's links to gitiles:
+### Review changes online with gerrit's links to gitiles
 
 1.  Upload a patch to gerrit, or receive a review request.
-    e.g. https://chromium-review.googlesource.com/c/572236
+    e.g. https://chromium-review.googlesource.com/c/3362532
 2.  View a specific .md file.
-    e.g. https://chromium-review.googlesource.com/c/572236/2/docs/README.md
-3.  Click on **gitiles** link at top of page.
+    e.g. https://chromium-review.googlesource.com/c/3362532/2/docs/README.md
+3.  You will see something like <br>
+    Base
+    [browse](https://chromium.googlesource.com/chromium/src/+/ad44f6081ccc6b92479b12f1eb7e9482f474859d/docs/README.md)
+    -> Patchset 3
+    [browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)
+    | DOWNLOAD <br>
+    at the top left of the page. Click on the second 
+    "[browse](https://chromium.googlesource.com/chromium/src/+/refs/changes/32/3362532/3/docs/README.md)"
+    link to open the preview for the current patch set.
 
 This **gitiles** view is the authoritative view, exactly the same as will be
 used when committed.
@@ -136,10 +144,8 @@ used when committed.
     renderer to the screen.
 *   [Using the Origin Trials Framework](origin_trials_integration.md) - A
     framework for conditionally enabling experimental APIs for testing.
-*   [`ClientTagBasedModelTypeProcessor` in Unified Sync and Storage](sync/uss/client_tag_based_model_type_processor.md) -
-    Notes on the central data structure used in Chrome Sync.
-*   [Chrome Sync's Model API](sync/model_api.md) - Data models used for syncing
-    information across devices using Chrome Sync.
+*   [Chrome Sync](https://source.chromium.org/chromium/chromium/src/+/main:docs/website/site/developers/design-documents/sync) -
+    Docs for the subsystem that allows one to sync data across devices.
 *   [Ozone Overview](ozone_overview.md) - Ozone is an abstraction layer between
     the window system and low level input and graphics.
 *   [Optimizing Chrome Web UIs](optimizing_web_uis.md) - Notes on making webuis
@@ -328,19 +334,19 @@ used when committed.
 ### Accessibility
 *   [Accessibility Overview](accessibility/overview.md) - Overview of
     accessibility concerns and approaches in Chromium.
-*   [Accessibility Tests](accessibility/tests.md) - Where to find
+*   [Accessibility Tests](accessibility/browser/tests.md) - Where to find
     accessibility-related tests in the codebase.
-*   [ChromeVox on Chrome OS](accessibility/chromevox.md) - Enabling spoken
+*   [ChromeVox on Chrome OS](accessibility/os/chromevox.md) - Enabling spoken
     feedback (ChromeVox) on Chrome OS.
-*   [ChromeVox on Desktop Linux](accessibility/chromevox_on_desktop_linux.md) -
+*   [ChromeVox on Desktop Linux](accessibility/os/chromevox_on_desktop_linux.md) -
     Enabling spoken feedback (ChromeVox) on desktop Linux.
-*   [Offscreen, Invisible and Size](accessibility/offscreen.md) - How Chrome
+*   [Offscreen, Invisible and Size](accessibility/browser/offscreen.md) - How Chrome
     defines offscreen, invisible and size in the accessibility tree.
-*   [Text to Speech](accessibility/tts.md) - Overview of text to speech in
+*   [Text to Speech](accessibility/browser/tts.md) - Overview of text to speech in
     Chrome and Chrome OS.
-*   [BRLTTY in Chrome OS](accessibility/brltty.md) - Chrome OS integration with
+*   [BRLTTY in Chrome OS](accessibility/os/brltty.md) - Chrome OS integration with
     BRLTTY to support refreshable braille displays
-*   [PATTS on Chrome OS](accessibility/patts.md) - Notes on the PATTS speech
+*   [PATTS on Chrome OS](accessibility/os/patts.md) - Notes on the PATTS speech
     synthesis engine used on Chrome OS
 *   [VoiceOver](ios/voiceover.md) - Using Apple's VoiceOver feature with
     Chromium on iOS.

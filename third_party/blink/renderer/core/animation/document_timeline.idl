@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://drafts.csswg.org/web-animations/#the-documenttimeline-interface
+// https://w3.org/TR/web-animations-1/#the-documenttimeline-interface
 
 [
     RuntimeEnabled=WebAnimationsAPI,

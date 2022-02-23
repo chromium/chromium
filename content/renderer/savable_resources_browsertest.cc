@@ -32,7 +32,7 @@ class SavableResourcesTest : public ContentBrowserTest {
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitch(switches::kSingleProcess);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Don't want to try to create a GPU process.
     command_line->AppendSwitch(switches::kDisableGpu);
 #endif

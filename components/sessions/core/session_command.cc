@@ -2,7 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <algorithm>
 #include <limits>
+#include <memory>
 
 #include "base/pickle.h"
 #include "components/sessions/core/session_command.h"

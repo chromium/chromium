@@ -14,13 +14,13 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/trace_event/trace_event.h"
+#include "net/base/connection_endpoint_metadata.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
 #include "net/base/net_errors.h"
 #include "net/base/trace_constants.h"
 #include "net/base/url_util.h"
 #include "net/cert/x509_util.h"
-#include "net/http/http_proxy_client_socket.h"
 #include "net/http/http_proxy_connect_job.h"
 #include "net/log/net_log_source_type.h"
 #include "net/log/net_log_with_source.h"
@@ -378,6 +378,10 @@ int SSLConnectJob::DoSSLConnect() {
   ssl_config.network_isolation_key = params_->network_isolation_key();
   ssl_config.privacy_mode = params_->privacy_mode();
   ssl_config.disable_legacy_crypto = disable_legacy_crypto_with_fallback_;
+  if (base::FeatureList::IsEnabled(features::kEncryptedClientHello)) {
+    ssl_config.ech_config_list =
+        nested_connect_job_->GetEndpointMetadata().ech_config_list;
+  }
   ssl_socket_ = client_socket_factory()->CreateSSLClientSocket(
       ssl_client_context(), std::move(nested_socket_), params_->host_and_port(),
       ssl_config);

@@ -1,8 +1,21 @@
 import traceback
+from http.client import HTTPConnection
 
 from abc import ABCMeta, abstractmethod
 from typing import ClassVar, List, Type
 
+
+def merge_dicts(target, source):
+    if not (isinstance(target, dict) and isinstance(source, dict)):
+        raise TypeError
+    for (key, source_value) in source.items():
+        if key not in target:
+            target[key] = source_value
+        else:
+            if isinstance(source_value, dict) and isinstance(target[key], dict):
+                merge_dicts(target[key], source_value)
+            else:
+                target[key] = source_value
 
 class Protocol(object):
     """Backend for a specific browser-control protocol.
@@ -552,6 +565,20 @@ class VirtualAuthenticatorProtocolPart(ProtocolPart):
         pass
 
 
+class SPCTransactionsProtocolPart(ProtocolPart):
+    """Protocol part for Secure Payment Confirmation transactions"""
+    __metaclass__ = ABCMeta
+
+    name = "spc_transactions"
+
+    @abstractmethod
+    def set_spc_transaction_mode(self, mode):
+        """Set the SPC transaction automation mode
+
+        :param str mode: The automation mode to set"""
+        pass
+
+
 class PrintProtocolPart(ProtocolPart):
     """Protocol part for rendering to a PDF."""
     __metaclass__ = ABCMeta
@@ -591,3 +618,56 @@ class DebugProtocolPart(ProtocolPart):
         self.parent.base.load(urljoin(self.parent.executor.server_url("https"),
                               "/common/third_party/reftest-analyzer.xhtml#log=%s" %
                                quote(output.getvalue())))
+
+
+class ConnectionlessBaseProtocolPart(BaseProtocolPart):
+    def load(self, url):
+        pass
+
+    def execute_script(self, script, asynchronous=False):
+        pass
+
+    def set_timeout(self, timeout):
+        pass
+
+    def wait(self):
+        return False
+
+    def set_window(self, handle):
+        pass
+
+    def window_handles(self):
+        return []
+
+
+class ConnectionlessProtocol(Protocol):
+    implements = [ConnectionlessBaseProtocolPart]
+
+    def connect(self):
+        pass
+
+    def after_connect(self):
+        pass
+
+
+class WdspecProtocol(ConnectionlessProtocol):
+    implements = [ConnectionlessBaseProtocolPart]
+
+    def __init__(self, executor, browser):
+        super().__init__(executor, browser)
+
+    def is_alive(self):
+        """Test that the connection is still alive.
+
+        Because the remote communication happens over HTTP we need to
+        make an explicit request to the remote.  It is allowed for
+        WebDriver spec tests to not have a WebDriver session, since this
+        may be what is tested.
+
+        An HTTP request to an invalid path that results in a 404 is
+        proof enough to us that the server is alive and kicking.
+        """
+        conn = HTTPConnection(self.browser.host, self.browser.port)
+        conn.request("HEAD", "/invalid")
+        res = conn.getresponse()
+        return res.status == 404

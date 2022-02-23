@@ -48,6 +48,7 @@ import org.chromium.chrome.browser.omnibox.status.StatusProperties.StatusIconRes
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.theme.ThemeUtils;
 import org.chromium.chrome.browser.ui.favicon.FaviconHelper;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.widget.RoundedIconGenerator;
 import org.chromium.components.search_engines.TemplateUrlService;
@@ -84,6 +85,8 @@ public class SearchEngineLogoUtilsUnitTest {
     LocaleManagerDelegate mLocaleManagerDelegate;
     @Mock
     BrowserStartupController mBrowserStartupController;
+    @Mock
+    Resources mResource;
 
     SearchEngineLogoUtils mSearchEngineLogoUtils;
     Bitmap mBitmap;
@@ -101,6 +104,9 @@ public class SearchEngineLogoUtilsUnitTest {
                 .getLocalFaviconImageForURL(any(), anyString(), anyInt(), any());
         doReturn(false).when(mLocaleManagerDelegate).needToCheckForSearchEnginePromo();
         LocaleManager.getInstance().setDelegateForTest(mLocaleManagerDelegate);
+
+        // Used when creating bitmaps, needs to be greater than 0.
+        doReturn(1).when(mResource).getDimensionPixelSize(anyInt());
 
         doReturn(true).when(mBrowserStartupController).isFullBrowserStarted();
         mSearchEngineLogoUtils = new SearchEngineLogoUtils(mBrowserStartupController);
@@ -134,9 +140,8 @@ public class SearchEngineLogoUtilsUnitTest {
     public void getSearchEngineLogo() {
         StatusIconResource expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
 
-        mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
-                mCallback);
+        mSearchEngineLogoUtils.getSearchEngineLogo(mResource, BrandedColorScheme.APP_DEFAULT,
+                Mockito.mock(Profile.class), mTemplateUrlService, mCallback);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         any(), anyString(), anyInt(), mCallbackCaptor.capture());
@@ -155,12 +160,12 @@ public class SearchEngineLogoUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_nullProfileOrTemplateUrlService() {
         StatusIconResource expected =
-                mSearchEngineLogoUtils.getSearchLoupeResource(/* inNightMode= */ false);
+                mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, null, mTemplateUrlService, mCallback);
+                BrandedColorScheme.APP_DEFAULT, null, mTemplateUrlService, mCallback);
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), null, mCallback);
+                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), null, mCallback);
 
         verify(mCallback, times(2)).onResult(expected);
     }
@@ -171,7 +176,7 @@ public class SearchEngineLogoUtilsUnitTest {
         doReturn(true).when(mTemplateUrlService).isDefaultSearchEngineGoogle();
 
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
+                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
         verify(mCallback).onResult(expected);
     }
@@ -180,16 +185,15 @@ public class SearchEngineLogoUtilsUnitTest {
     public void getSearchEngineLogo_faviconCached() {
         StatusIconResource expected = new StatusIconResource(LOGO_URL, mBitmap, 0);
 
-        mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
-                mCallback);
+        mSearchEngineLogoUtils.getSearchEngineLogo(mResource, BrandedColorScheme.APP_DEFAULT,
+                Mockito.mock(Profile.class), mTemplateUrlService, mCallback);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
                         any(), anyString(), anyInt(), mCallbackCaptor.capture());
         FaviconHelper.FaviconImageCallback faviconCallback = mCallbackCaptor.getValue();
         faviconCallback.onFaviconAvailable(mBitmap, JUnitTestGURLs.getGURL(LOGO_URL));
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
+                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
 
         verify(mCallback, times(2)).onResult(expected);
@@ -207,11 +211,11 @@ public class SearchEngineLogoUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_nullUrl() {
         StatusIconResource expected =
-                mSearchEngineLogoUtils.getSearchLoupeResource(/* inNightMode= */ false);
+                mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         doReturn(null).when(mTemplateUrlService).getUrlForSearchQuery(any());
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
+                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
 
         verify(mCallback).onResult(eq(expected));
@@ -226,14 +230,14 @@ public class SearchEngineLogoUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_faviconHelperError() {
         StatusIconResource expected =
-                mSearchEngineLogoUtils.getSearchLoupeResource(/* inNightMode= */ false);
+                mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         when(mFaviconHelper.getLocalFaviconImageForURL(
                      any(), anyString(), anyInt(), mCallbackCaptor.capture()))
                 .thenReturn(false);
 
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
+                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
 
         verify(mCallback).onResult(expected);
@@ -248,10 +252,10 @@ public class SearchEngineLogoUtilsUnitTest {
     @Test
     public void getSearchEngineLogo_returnedBitmapNull() {
         StatusIconResource expected =
-                mSearchEngineLogoUtils.getSearchLoupeResource(/* inNightMode= */ false);
+                mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.APP_DEFAULT);
 
         mSearchEngineLogoUtils.getSearchEngineLogo(Mockito.mock(Resources.class),
-                /* inNightMode= */ false, Mockito.mock(Profile.class), mTemplateUrlService,
+                BrandedColorScheme.APP_DEFAULT, Mockito.mock(Profile.class), mTemplateUrlService,
                 mCallback);
         verify(mFaviconHelper)
                 .getLocalFaviconImageForURL(
@@ -271,14 +275,15 @@ public class SearchEngineLogoUtilsUnitTest {
     @Test
     public void getSearchLoupeResource() {
         StatusIconResource expected = new StatusIconResource(
-                R.drawable.ic_search, R.color.default_icon_color_secondary_tint_list);
-        Assert.assertEquals(
-                expected, mSearchEngineLogoUtils.getSearchLoupeResource(/* inNightMode= */ true));
+                R.drawable.ic_search, R.color.default_icon_color_white_tint_list);
+        Assert.assertEquals(expected,
+                mSearchEngineLogoUtils.getSearchLoupeResource(
+                        BrandedColorScheme.DARK_BRANDED_THEME));
 
         expected = new StatusIconResource(
                 R.drawable.ic_search, ThemeUtils.getThemedToolbarIconTintRes(/* useLight */ true));
-        Assert.assertEquals(
-                expected, mSearchEngineLogoUtils.getSearchLoupeResource(/* inNightMode= */ false));
+        Assert.assertEquals(expected,
+                mSearchEngineLogoUtils.getSearchLoupeResource(BrandedColorScheme.INCOGNITO));
     }
 
     @Test

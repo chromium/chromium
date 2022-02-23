@@ -16,9 +16,7 @@ namespace sync_pb {
 class CommitMessage;
 }
 
-namespace syncer {
-
-namespace commit_util {
+namespace syncer::commit_util {
 
 // Adds bookmark extensions activity report to |message|.
 void AddExtensionsActivityToMessage(
@@ -35,8 +33,6 @@ void AddClientConfigParamsToMessage(
     const std::vector<std::string>& fcm_registration_tokens,
     sync_pb::CommitMessage* message);
 
-}  // namespace commit_util
-
-}  // namespace syncer
+}  // namespace syncer::commit_util
 
 #endif  // COMPONENTS_SYNC_ENGINE_COMMIT_UTIL_H_

@@ -9,7 +9,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "components/ui_devtools/Protocol.h"
+#include "components/ui_devtools/protocol.h"
 #include "components/ui_devtools/ui_element_delegate.h"
 #include "components/ui_devtools/views/devtools_event_util.h"
 #include "components/ui_devtools/views/element_utility.h"

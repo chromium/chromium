@@ -4,14 +4,13 @@
 
 #include "chrome/browser/ash/arc/instance_throttle/arc_kiosk_mode_throttle_observer.h"
 
-#include "components/arc/arc_util.h"
+#include "ash/components/arc/arc_util.h"
 #include "components/user_manager/user_manager.h"
 
 namespace arc {
 
 ArcKioskModeThrottleObserver::ArcKioskModeThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL,
-                       "ArcKioskMode") {}
+    : ThrottleObserver("ArcKioskMode") {}
 
 void ArcKioskModeThrottleObserver::StartObserving(
     content::BrowserContext* context,

@@ -8,6 +8,7 @@
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/apps/app_service/app_icon/icon_key_util.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chrome/browser/apps/app_service/publishers/app_publisher.h"
 #include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/ash/crosapi/browser_manager_observer.h"
@@ -23,6 +24,9 @@ class Profile;
 namespace apps {
 
 class BrowserAppInstanceRegistry;
+class PublisherHost;
+
+struct AppLaunchParams;
 
 // An app publisher (in the App Service sense) for the "LaCrOS" app icon,
 // which launches the lacros-chrome binary.
@@ -43,14 +47,18 @@ class StandaloneBrowserApps : public apps::PublisherBase,
   StandaloneBrowserApps& operator=(const StandaloneBrowserApps&) = delete;
 
  private:
+  friend class PublisherHost;
+
   // Returns the single lacros app.
-  std::unique_ptr<App> CreateStandaloneBrowserApp();
+  AppPtr CreateStandaloneBrowserApp();
 
   // Returns the single lacros app.
   apps::mojom::AppPtr GetStandaloneBrowserApp();
 
   // Returns an IconKey with appropriate effects.
   apps::mojom::IconKeyPtr NewIconKey();
+
+  void Initialize();
 
   // apps::AppPublisher overrides.
   void LoadIcon(const std::string& app_id,
@@ -59,6 +67,8 @@ class StandaloneBrowserApps : public apps::PublisherBase,
                 int32_t size_hint_in_dip,
                 bool allow_placeholder_icon,
                 apps::LoadIconCallback callback) override;
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback) override;
 
   // apps::PublisherBase:
   void Connect(mojo::PendingRemote<apps::mojom::Subscriber> subscriber_remote,
@@ -77,6 +87,7 @@ class StandaloneBrowserApps : public apps::PublisherBase,
                     apps::mojom::MenuType menu_type,
                     int64_t display_id,
                     GetMenuModelCallback callback) override;
+  void OpenNativeSettings(const std::string& app_id) override;
   void StopApp(const std::string& app_id) override;
 
   // crosapi::BrowserManagerObserver
@@ -85,7 +96,7 @@ class StandaloneBrowserApps : public apps::PublisherBase,
   mojo::RemoteSet<apps::mojom::Subscriber> subscribers_;
   Profile* const profile_;
   bool is_browser_load_success_ = true;
-  BrowserAppInstanceRegistry* browser_app_instance_registry_;
+  BrowserAppInstanceRegistry* const browser_app_instance_registry_;
   apps_util::IncrementingIconKeyFactory icon_key_factory_;
 
   // Used to observe the browser manager for image load changes.

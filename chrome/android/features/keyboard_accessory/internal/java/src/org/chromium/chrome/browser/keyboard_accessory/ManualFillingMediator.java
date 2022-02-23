@@ -62,6 +62,7 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.Shee
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
 import org.chromium.components.browser_ui.bottomsheet.EmptyBottomSheetObserver;
 import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.DropdownPopupWindow;
 import org.chromium.ui.base.WindowAndroid;
@@ -150,7 +151,7 @@ class ManualFillingMediator extends EmptyTabObserver
         mAccessorySheet.setHeight(3
                 * mActivity.getResources().getDimensionPixelSize(
                         R.dimen.keyboard_accessory_suggestion_height));
-        setInsetObserverViewSupplier(mActivity::getInsetObserverView);
+        setInsetObserverViewSupplier(InsetObserverViewSupplier.from(mWindowAndroid));
         mActivity.findViewById(android.R.id.content).addOnLayoutChangeListener(this);
         mTabModelObserver = new TabModelSelectorTabModelObserver(mActivity.getTabModelSelector()) {
             @Override

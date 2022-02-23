@@ -192,7 +192,7 @@ TEST_F(FeedbackUploaderTest, QueueMultipleWithFailures) {
   EXPECT_EQ(uploader()->dispatched_reports().at(kReportFive), 1u);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222877
 #define MAYBE_SimulateOfflineReports DISABLED_SimulateOfflineReports
 #else

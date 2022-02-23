@@ -175,7 +175,6 @@ class UserDataAuthClientTest : public testing::Test {
   ::user_data_auth::UnmountReply expected_unmount_reply_;
   ::user_data_auth::MountReply expected_mount_reply_;
   ::user_data_auth::RemoveReply expected_remove_reply_;
-  ::user_data_auth::RenameReply expected_rename_reply_;
   ::user_data_auth::GetKeyDataReply expected_get_key_data_reply_;
   ::user_data_auth::CheckKeyReply expected_check_key_reply_;
   ::user_data_auth::AddKeyReply expected_add_key_reply_;
@@ -226,8 +225,6 @@ class UserDataAuthClientTest : public testing::Test {
       writer.AppendProtoAsArrayOfBytes(expected_mount_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kRemove) {
       writer.AppendProtoAsArrayOfBytes(expected_remove_reply_);
-    } else if (method_call->GetMember() == ::user_data_auth::kRename) {
-      writer.AppendProtoAsArrayOfBytes(expected_rename_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kGetKeyData) {
       writer.AppendProtoAsArrayOfBytes(expected_get_key_data_reply_);
     } else if (method_call->GetMember() == ::user_data_auth::kCheckKey) {
@@ -356,18 +353,6 @@ TEST_F(UserDataAuthClientTest, Remove) {
   base::RunLoop().RunUntilIdle();
   ASSERT_NE(result_reply, absl::nullopt);
   EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_remove_reply_));
-}
-
-TEST_F(UserDataAuthClientTest, Rename) {
-  expected_rename_reply_.set_error(
-      user_data_auth::CryptohomeErrorCode::CRYPTOHOME_ERROR_TPM_DEFEND_LOCK);
-  absl::optional<::user_data_auth::RenameReply> result_reply;
-
-  client_->Rename(::user_data_auth::RenameRequest(),
-                  CreateCopyCallback(&result_reply));
-  base::RunLoop().RunUntilIdle();
-  ASSERT_NE(result_reply, absl::nullopt);
-  EXPECT_TRUE(ProtobufEquals(result_reply.value(), expected_rename_reply_));
 }
 
 TEST_F(UserDataAuthClientTest, GetKeyData) {

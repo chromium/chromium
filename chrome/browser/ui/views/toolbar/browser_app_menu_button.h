@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_APP_MENU_BUTTON_H_
 #define CHROME_BROWSER_UI_VIEWS_TOOLBAR_BROWSER_APP_MENU_BUTTON_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ui/toolbar/app_menu_icon_controller.h"
 #include "chrome/browser/ui/user_education/feature_promo_controller.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
@@ -59,9 +59,9 @@ class BrowserAppMenuButton : public AppMenuButton {
       AppMenuIconController::Severity::NONE};
 
   // Our owning toolbar view.
-  ToolbarView* const toolbar_view_;
+  const raw_ptr<ToolbarView> toolbar_view_;
 
-  absl::optional<FeaturePromoController::PromoHandle> reopen_tab_promo_handle_;
+  FeaturePromoController::PromoHandle reopen_tab_promo_handle_;
 
   base::CallbackListSubscription subscription_ =
       ui::TouchUiController::Get()->RegisterCallback(

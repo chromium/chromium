@@ -510,7 +510,8 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, TexImageTexStorageEquivalence) {
     if (!viz::GLSupportsFormat(format) ||
         viz::IsResourceFormatCompressed(format))
       continue;
-    int storage_format = viz::TextureStorageFormat(format);
+    int storage_format = viz::TextureStorageFormat(
+        format, feature_info->feature_flags().angle_rgbx_internal_format);
 
     int image_gl_format = viz::GLDataFormat(format);
     int storage_gl_format =
@@ -542,7 +543,7 @@ TEST_P(SharedImageBackingFactoryGLTextureTest, TexImageTexStorageEquivalence) {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const auto kResourceFormats =
     ::testing::Values(viz::ResourceFormat::RGBA_8888,
                       viz::ResourceFormat::BGRA_1010102,

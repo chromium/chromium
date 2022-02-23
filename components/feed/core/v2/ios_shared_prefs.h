@@ -11,6 +11,9 @@ namespace feed {
 namespace prefs {
 void SetLastFetchHadNoticeCard(PrefService& pref_service, bool value);
 bool GetLastFetchHadNoticeCard(const PrefService& pref_service);
+
+// TODO(b/213622639): These two functions are still used for iOS, but should
+// be removed along with any calling code.
 void SetHasReachedClickAndViewActionsUploadConditions(PrefService& pref_service,
                                                       bool value);
 bool GetHasReachedClickAndViewActionsUploadConditions(

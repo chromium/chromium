@@ -13,8 +13,8 @@
 #include <memory>
 #include <set>
 
-#include "base/compiler_specific.h"
 #include "base/containers/linked_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "components/performance_manager/graph/node_attached_data_impl.h"
 #include "components/performance_manager/graph/process_node_impl.h"
@@ -85,40 +85,40 @@ class ExecutionContextData : public base::LinkNode<ExecutionContextData>,
   // Returns true if this object is currently being tracked (it is in
   // ProcessData::execution_context_datas_, and
   // V8ContextTrackerDataStore::global_execution_context_datas_).
-  WARN_UNUSED_RESULT bool IsTracked() const;
+  [[nodiscard]] bool IsTracked() const;
 
   // Returns true if this object *should* be destroyed (there are no references
   // to it keeping it alive).
-  WARN_UNUSED_RESULT bool ShouldDestroy() const;
+  [[nodiscard]] bool ShouldDestroy() const;
 
   // Manages remote frame data associated with this ExecutionContextData.
   void SetRemoteFrameData(base::PassKey<RemoteFrameData>,
                           RemoteFrameData* remote_frame_data);
-  WARN_UNUSED_RESULT bool ClearRemoteFrameData(base::PassKey<RemoteFrameData>);
+  [[nodiscard]] bool ClearRemoteFrameData(base::PassKey<RemoteFrameData>);
 
   // Increments |v8_context_count_|.
   void IncrementV8ContextCount(base::PassKey<V8ContextData>);
 
   // Decrements |v8_context_count_|, and returns true if the object has
   // transitioned to "ShouldDestroy".
-  WARN_UNUSED_RESULT bool DecrementV8ContextCount(base::PassKey<V8ContextData>);
+  [[nodiscard]] bool DecrementV8ContextCount(base::PassKey<V8ContextData>);
 
   // Marks this context as destroyed. Returns true if the state changed, false
   // if it was already destroyed.
-  WARN_UNUSED_RESULT bool MarkDestroyed(base::PassKey<ProcessData>);
+  [[nodiscard]] bool MarkDestroyed(base::PassKey<ProcessData>);
 
   // Used for tracking the total number of non-detached "main" V8Contexts
   // associated with this ExecutionContext. This should always be no more than
   // 1. A new context may become the main context during a same-document
   // navigation of a frame.
-  WARN_UNUSED_RESULT bool MarkMainV8ContextCreated(
+  [[nodiscard]] bool MarkMainV8ContextCreated(
       base::PassKey<V8ContextTrackerDataStore>);
   void MarkMainV8ContextDetached(base::PassKey<V8ContextData>);
 
  private:
-  ProcessData* const process_data_;
+  const raw_ptr<ProcessData> process_data_;
 
-  RemoteFrameData* remote_frame_data_ = nullptr;
+  raw_ptr<RemoteFrameData> remote_frame_data_ = nullptr;
 
   // The count of V8ContextDatas keeping this object alive.
   size_t v8_context_count_ = 0;
@@ -161,12 +161,12 @@ class RemoteFrameData : public base::LinkNode<RemoteFrameData> {
   // Returns true if this object is currently being tracked (it is in
   // ProcessData::remote_frame_datas_, and
   // V8ContextTrackerDataStore::global_remote_frame_datas_).
-  WARN_UNUSED_RESULT bool IsTracked() const;
+  [[nodiscard]] bool IsTracked() const;
 
  private:
-  ProcessData* const process_data_;
+  const raw_ptr<ProcessData> process_data_;
   const blink::RemoteFrameToken token_;
-  ExecutionContextData* const execution_context_data_;
+  const raw_ptr<ExecutionContextData> execution_context_data_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -197,7 +197,7 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
   // Returns true if this object is currently being tracked (its in
   // ProcessData::v8_context_datas_, and
   // V8ContextTrackerDataStore::global_v8_context_datas_).
-  WARN_UNUSED_RESULT bool IsTracked() const;
+  [[nodiscard]] bool IsTracked() const;
 
   // Returns the ExecutionContextData associated with this V8ContextData.
   ExecutionContextData* GetExecutionContextData() const;
@@ -207,7 +207,7 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
 
   // Marks this context as detached. Returns true if the state changed, false
   // if it was already detached.
-  WARN_UNUSED_RESULT bool MarkDetached(base::PassKey<ProcessData>);
+  [[nodiscard]] bool MarkDetached(base::PassKey<ProcessData>);
 
   // Returns true if this is the "main" V8Context for an ExecutionContext.
   // This will return true if |GetExecutionContextData()| is a frame and
@@ -218,7 +218,7 @@ class V8ContextData : public base::LinkNode<V8ContextData>,
  private:
   bool MarkDetachedImpl();
 
-  ProcessData* const process_data_;
+  const raw_ptr<ProcessData> process_data_;
   bool was_tracked_ = false;
 };
 
@@ -259,11 +259,10 @@ class ProcessData : public NodeAttachedDataImpl<ProcessData> {
 
   // For marking objects detached/destroyed. Returns true if the state
   // actually changed, false otherwise.
-  WARN_UNUSED_RESULT bool MarkDestroyed(
-      base::PassKey<V8ContextTrackerDataStore>,
-      ExecutionContextData* ec_data);
-  WARN_UNUSED_RESULT bool MarkDetached(base::PassKey<V8ContextTrackerDataStore>,
-                                       V8ContextData* v8_data);
+  [[nodiscard]] bool MarkDestroyed(base::PassKey<V8ContextTrackerDataStore>,
+                                   ExecutionContextData* ec_data);
+  [[nodiscard]] bool MarkDetached(base::PassKey<V8ContextTrackerDataStore>,
+                                  V8ContextData* v8_data);
 
   size_t GetExecutionContextDataCount() const {
     return counts_.GetExecutionContextDataCount();
@@ -286,7 +285,7 @@ class ProcessData : public NodeAttachedDataImpl<ProcessData> {
   }
 
   // Pointer to the DataStore that implicitly owns us.
-  V8ContextTrackerDataStore* const data_store_;
+  const raw_ptr<V8ContextTrackerDataStore> data_store_;
 
   // Counts the number of ExecutionContexts and V8Contexts.
   ContextCounts counts_;
@@ -319,7 +318,7 @@ class V8ContextTrackerDataStore {
   // |ec_data| to the impl that "ShouldDestroy" should return false.
   void Pass(std::unique_ptr<ExecutionContextData> ec_data);
   void Pass(std::unique_ptr<RemoteFrameData> rf_data);
-  WARN_UNUSED_RESULT bool Pass(std::unique_ptr<V8ContextData> v8_data);
+  [[nodiscard]] bool Pass(std::unique_ptr<V8ContextData> v8_data);
 
   // Looks up owned objects by token.
   ExecutionContextData* Get(const blink::ExecutionContextToken& token);
@@ -329,7 +328,7 @@ class V8ContextTrackerDataStore {
   // For marking objects as detached/destroyed. "MarkDetached" returns true if
   // the object was not previously detached, false otherwise.
   void MarkDestroyed(ExecutionContextData* ec_data);
-  WARN_UNUSED_RESULT bool MarkDetached(V8ContextData* v8_data);
+  [[nodiscard]] bool MarkDetached(V8ContextData* v8_data);
 
   // Destroys objects by token. They must exist ("Get" should return non
   // nullptr).

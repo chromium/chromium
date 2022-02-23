@@ -9,15 +9,19 @@
 
 namespace history_clusters {
 
-// Merges |duplicate_visit| into |canonical_visit|.
+// Moves |duplicate_visit| into |canonical_visit|'s list of duplicate visits.
+// |duplicate_visit| should be considered invalid after this call.
 void MergeDuplicateVisitIntoCanonicalVisit(
-    const history::ClusterVisit& duplicate_visit,
+    history::ClusterVisit&& duplicate_visit,
     history::ClusterVisit& canonical_visit);
 
-// Calculates all the visits within |cluster| that are considered
-// "duplicates" and stores their ids in |duplicate_visit_ids|.
-base::flat_set<history::VisitID> CalculateAllDuplicateVisitsForCluster(
-    const history::Cluster& cluster);
+// Enforces the reverse-chronological invariant of clusters, as well the
+// by-score sorting of visits within clusters. Exposed for testing.
+void SortClusters(std::vector<history::Cluster>* clusters);
+
+// Whether the visit is considered a noisy visit (i.e. high engagement,
+// non-SRP).
+bool IsNoisyVisit(const history::ClusterVisit& visit);
 
 }  // namespace history_clusters
 

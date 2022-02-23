@@ -34,22 +34,20 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
 
   // Internal. Do not use.
   // Registers a partition to be tracked by the reclaimer.
-  void RegisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
-  void RegisterPartition(PartitionRoot<internal::NotThreadSafe>* partition);
+  void RegisterPartition(PartitionRoot<>* partition);
   // Internal. Do not use.
   // Unregisters a partition to be tracked by the reclaimer.
-  void UnregisterPartition(PartitionRoot<internal::ThreadSafe>* partition);
-  void UnregisterPartition(PartitionRoot<internal::NotThreadSafe>* partition);
+  void UnregisterPartition(PartitionRoot<>* partition);
 
   // Triggers an explicit reclaim now to reclaim as much free memory as
   // possible. The API callers need to invoke this method periodically
   // if they want to use memory reclaimer.
-  // c.f. See also GetRecommendedReclaimInterval()'s comment.
+  // See also GetRecommendedReclaimIntervalInMicroseconds()'s comment.
   void ReclaimNormal();
 
   // Returns a recommended interval to invoke ReclaimNormal.
-  static constexpr base::TimeDelta GetRecommendedReclaimInterval() {
-    return Seconds(4);
+  int64_t GetRecommendedReclaimIntervalInMicroseconds() {
+    return Seconds(4).InMicroseconds();
   }
 
   // Triggers an explicit reclaim now reclaiming all free memory
@@ -64,10 +62,7 @@ class BASE_EXPORT PartitionAllocMemoryReclaimer {
   void ResetForTesting();
 
   internal::PartitionLock lock_;
-  std::set<PartitionRoot<internal::ThreadSafe>*> thread_safe_partitions_
-      GUARDED_BY(lock_);
-  std::set<PartitionRoot<internal::NotThreadSafe>*> thread_unsafe_partitions_
-      GUARDED_BY(lock_);
+  std::set<PartitionRoot<>*> partitions_ GUARDED_BY(lock_);
 
   friend class NoDestructor<PartitionAllocMemoryReclaimer>;
   friend class PartitionAllocMemoryReclaimerTest;

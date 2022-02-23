@@ -22,7 +22,7 @@ class TranslateService
   static void Initialize();
 
   // Must be called to shut down the Translate feature.
-  static void Shutdown(bool cleanup_pending_fetcher);
+  static void Shutdown();
 
   // Initializes the TranslateService in a way that it can be initialized
   // multiple times in a unit test suite (once for each test). Should be paired

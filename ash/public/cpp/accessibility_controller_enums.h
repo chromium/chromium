@@ -39,7 +39,11 @@ enum class AccessibilityAlert {
 
   // When workspace state just changed from WorkspaceWindowState::kFullscreen.
   // to others.
-  WORKSPACE_FULLSCREEN_STATE_EXITED
+  WORKSPACE_FULLSCREEN_STATE_EXITED,
+
+  // When the user enters desk templates mode.
+  DESK_TEMPLATES_MODE_ENTERED
+
 };
 
 enum class AccessibilityPanelState {
@@ -196,6 +200,28 @@ enum class MagnifierMouseFollowingMode {
   kEdge = 2,
 
   kMaxValue = kEdge
+};
+
+// The icon shown in the Dictation bubble UI. This enum should be kept in sync
+// with chrome.accessibilityPrivate.DictationBubbleIconType.
+enum class DictationBubbleIconType {
+  kHidden,
+  kStandby,
+  kMacroSuccess,
+  kMacroFail,
+};
+
+// Hints that can show up in the Dictation bubble UI. This enum should be kept
+// in sync with chrome.accessibilityPrivate.DictationBubbleHintType.
+enum class DictationBubbleHintType {
+  kTrySaying,
+  kType,
+  kDelete,
+  kSelectAll,
+  kUndo,
+  kHelp,
+  kUnselect,
+  kCopy,
 };
 
 }  // namespace ash

@@ -51,7 +51,11 @@ class TestDiceWebSigninInterceptorDelegate
     return nullptr;
   }
 
-  void ShowProfileCustomizationBubble(Browser* browser) override {}
+  void ShowFirstRunExperienceInNewProfile(
+      Browser* browser,
+      const CoreAccountId& account_id,
+      DiceWebSigninInterceptor::SigninInterceptionType interception_type)
+      override {}
 };
 
 class MockDiceWebSigninInterceptor : public DiceWebSigninInterceptor {

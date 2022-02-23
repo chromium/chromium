@@ -11,6 +11,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "storage/browser/file_system/async_file_util_adapter.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_context.h"
@@ -65,7 +66,7 @@ class LocalFileUtil::LocalFileEnumerator
  private:
   // The |LocalFileUtil| producing |this| is expected to remain valid
   // through the whole lifetime of the enumerator.
-  const LocalFileUtil* const file_util_;
+  const raw_ptr<const LocalFileUtil> file_util_;
   base::FileEnumerator file_enum_;
   base::FileEnumerator::FileInfo file_util_info_;
   base::FilePath platform_root_path_;

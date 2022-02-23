@@ -5,9 +5,6 @@
 #ifndef CHROME_BROWSER_UI_TAB_DIALOGS_H_
 #define CHROME_BROWSER_UI_TAB_DIALOGS_H_
 
-#include <memory>
-#include <string>
-
 #include "base/callback_forward.h"
 #include "base/supports_user_data.h"
 #include "ui/gfx/native_widget_types.h"
@@ -49,13 +46,6 @@ class TabDialogs : public base::SupportsUserData::Data {
   virtual void HideHungRendererDialog(
       content::RenderWidgetHost* render_widget_host) = 0;
   virtual bool IsShowingHungRendererDialog() = 0;
-
-  // Shows a dialog asking the user to confirm linking to a managed account.
-  virtual void ShowProfileSigninConfirmation(
-      Browser* browser,
-      const std::string& username,
-      bool prompt_for_new_profile,
-      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) = 0;
 
   // Shows or hides the ManagePasswords bubble.
   // Pass true for |user_action| if this is a user initiated action.

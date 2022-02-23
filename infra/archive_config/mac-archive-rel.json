@@ -75,7 +75,11 @@
             "files": [
                 "chrome/updater/.install"
             ],
-            "dirs": ["ChromiumUpdater.app", "Updater Packaging"],
+            "dirs": [
+                "ChromiumUpdater.app",
+                "ChromiumUpdater_test.app",
+                "Updater Packaging"
+            ],
             "rename_dirs": [
                 {"from_dir": ".", "to_dir": "updater"}
             ],

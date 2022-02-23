@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 #
 # Copyright 2016 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
@@ -16,11 +16,10 @@ import sys
 import tempfile
 import zipfile
 
-
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+# pylint: disable=wrong-import-position,import-error
 import devil_chromium  # pylint: disable=unused-import
-from devil.android import device_utils
 from devil.android.ndk import abis
 from devil.android.sdk import version_codes
 from devil.android.tools import script_common
@@ -83,9 +82,10 @@ def GetCtsInfo(arch, cts_release, item):
   try:
     if item in _ARCH_SPECIFIC_CTS_INFO:
       return cts_gcs_path_info[cts_release]['arch'][arch][item]
-    else:
-      return cts_gcs_path_info[cts_release][item]
+    return cts_gcs_path_info[cts_release][item]
   except KeyError:
+    # pylint: disable=raise-missing-from
+    # This script is executed with python2, and cannot use 'from'.
     raise Exception('No %s info available for arch:%s, android:%s' %
                     (item, arch, cts_release))
 
@@ -120,8 +120,7 @@ def GetTestRunFilterArg(args, test_run):
 
   if filter_string:
     return [TEST_FILTER_OPT + '=' + filter_string]
-  else:
-    return []
+  return []
 
 
 def RunCTS(test_runner_args, local_cts_dir, apk, json_results_file=None):
@@ -143,7 +142,7 @@ def RunCTS(test_runner_args, local_cts_dir, apk, json_results_file=None):
 
 def MergeTestResults(existing_results_json, additional_results_json):
   """Appends results in additional_results_json to existing_results_json."""
-  for k, v in additional_results_json.iteritems():
+  for k, v in additional_results_json.items():
     if k not in existing_results_json:
       existing_results_json[k] = v
     else:
@@ -327,7 +326,6 @@ def GetDevice(args):
       # Start the emulator w/ -writable-system s.t. we can remount the system
       # partition r/w and install our own webview provider.
       emulator_instance.Start(writable_system=True)
-      device_utils.DeviceUtils(emulator_instance.serial).WaitUntilFullyBooted()
 
     devices = script_common.GetDevices(args.devices, args.denylist_file)
     device = devices[0]

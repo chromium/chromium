@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/values.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/window_controller_list.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/windows.h"
@@ -47,10 +46,10 @@ WindowController::TypeFilter WindowController::GetFilterFromWindowTypesValues(
   WindowController::TypeFilter filter = WindowController::kNoWindowFilter;
   if (!types)
     return filter;
-  for (size_t i = 0; i < types->GetList().size(); i++) {
-    std::string window_type;
-    if (types->GetString(i, &window_type))
-      filter |= 1 << api::windows::ParseWindowType(window_type);
+  for (const base::Value& type : types->GetListDeprecated()) {
+    const std::string* window_type = type.GetIfString();
+    if (window_type)
+      filter |= 1 << api::windows::ParseWindowType(*window_type);
   }
   return filter;
 }

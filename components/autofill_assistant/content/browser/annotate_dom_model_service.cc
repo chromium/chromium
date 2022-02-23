@@ -43,9 +43,11 @@ AnnotateDomModelService::AnnotateDomModelService(
     optimization_guide::OptimizationGuideModelProvider* opt_guide,
     const scoped_refptr<base::SequencedTaskRunner>& background_task_runner)
     : opt_guide_(opt_guide), background_task_runner_(background_task_runner) {
-  opt_guide_->AddObserverForOptimizationTargetModel(
-      optimization_guide::proto::OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT,
-      /* model_metadata= */ absl::nullopt, this);
+  if (opt_guide_) {
+    opt_guide_->AddObserverForOptimizationTargetModel(
+        optimization_guide::proto::OPTIMIZATION_TARGET_AUTOFILL_ASSISTANT,
+        /* model_metadata= */ absl::nullopt, this);
+  }
 }
 
 AnnotateDomModelService::~AnnotateDomModelService() = default;
@@ -127,6 +129,14 @@ void AnnotateDomModelService::NotifyOnModelFileAvailable(
     return;
   }
   std::move(callback).Run(false);
+}
+
+void AnnotateDomModelService::SetModelFileForTest(base::File model_file) {
+  annotate_dom_model_file_ = std::move(model_file);
+  for (auto& pending_request : pending_model_requests_) {
+    std::move(pending_request).Run(true);
+  }
+  pending_model_requests_.clear();
 }
 
 }  // namespace autofill_assistant

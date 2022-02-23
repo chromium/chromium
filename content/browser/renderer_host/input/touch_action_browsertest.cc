@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
 #include <utility>
 
 #include "base/auto_reset.h"
@@ -9,7 +10,6 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/json/json_reader.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -170,7 +170,7 @@ class TouchActionBrowserTest : public ContentBrowserTest {
 
     std::u16string ready_title(u"ready");
     TitleWatcher watcher(shell()->web_contents(), ready_title);
-    ignore_result(watcher.WaitAndGetTitle());
+    std::ignore = watcher.WaitAndGetTitle();
 
     // We need to wait until hit test data is available. We use our own
     // HitTestRegionObserver here because we have the RenderWidgetHostImpl
@@ -434,8 +434,8 @@ class TouchActionBrowserTest : public ContentBrowserTest {
   void CheckScrollOffset(
       bool wait_until_scrolled,
       const gfx::Vector2d& expected_scroll_position_after_scroll) {
-    gfx::Vector2dF default_scroll_offset;
-    gfx::Vector2dF root_scroll_offset =
+    gfx::PointF default_scroll_offset;
+    gfx::PointF root_scroll_offset =
         frame_observer_->LastRenderFrameMetadata().root_scroll_offset.value_or(
             default_scroll_offset);
 
@@ -555,7 +555,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanXMainThreadJanky) {
                                     gfx::Vector2d(45, 0), kShortJankTime);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_PanXAtYAreaWithTimeout PanXAtYAreaWithTimeout
 #else
 #define MAYBE_PanXAtYAreaWithTimeout DISABLED_PanXAtYAreaWithTimeout
@@ -570,7 +570,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest, MAYBE_PanXAtYAreaWithTimeout) {
                                     kLongJankTime);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TwoFingerPanXAtYAreaWithTimeout TwoFingerPanXAtYAreaWithTimeout
 #else
 #define MAYBE_TwoFingerPanXAtYAreaWithTimeout \
@@ -670,7 +670,7 @@ IN_PROC_BROWSER_TEST_F(TouchActionBrowserTest,
 }
 
 // TODO(crbug.com/899005): Make this test work on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_TwoFingerPanYDisallowed DISABLED_TwoFingerPanYDisallowed
 #else
 #define MAYBE_TwoFingerPanYDisallowed TwoFingerPanYDisallowed

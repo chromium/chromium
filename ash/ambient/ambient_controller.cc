@@ -9,13 +9,17 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/model/ambient_animation_photo_config.h"
 #include "ash/ambient/model/ambient_backend_model_observer.h"
+#include "ash/ambient/model/ambient_slideshow_photo_config.h"
+#include "ash/ambient/resources/ambient_animation_static_resources.h"
 #include "ash/ambient/ui/ambient_container_view.h"
 #include "ash/ambient/ui/ambient_view_delegate.h"
 #include "ash/ambient/util/ambient_util.h"
 #include "ash/assistant/model/assistant_interaction_model.h"
 #include "ash/constants/ash_features.h"
 #include "ash/login/ui/lock_screen.h"
+#include "ash/public/cpp/ambient/ambient_animation_theme.h"
 #include "ash/public/cpp/ambient/ambient_backend_controller.h"
 #include "ash/public/cpp/ambient/ambient_client.h"
 #include "ash/public/cpp/ambient/ambient_metrics.h"
@@ -32,10 +36,13 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/check.h"
+#include "base/containers/span.h"
+#include "base/feature_list.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "build/buildflag.h"
+#include "cc/paint/skottie_wrapper.h"
 #include "chromeos/assistant/buildflags.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/backlight.pb.h"
@@ -161,6 +168,10 @@ void AmbientController::RegisterProfilePrefs(PrefRegistrySimple* registry) {
     registry->RegisterIntegerPref(
         ambient::prefs::kAmbientModePhotoRefreshIntervalSeconds,
         kPhotoRefreshInterval.InSeconds());
+
+    registry->RegisterIntegerPref(
+        ambient::prefs::kAmbientAnimationTheme,
+        static_cast<int>(kDefaultAmbientAnimationTheme));
   }
 }
 
@@ -418,7 +429,7 @@ void AmbientController::SuspendDone(base::TimeDelta sleep_duration) {
 }
 
 void AmbientController::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr msg,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {
   DismissUI();
 }
@@ -571,7 +582,8 @@ void AmbientController::OnEnabledPrefChanged() {
 
     DCHECK(AmbientClient::Get());
     ambient_photo_controller_ = std::make_unique<AmbientPhotoController>(
-        *AmbientClient::Get(), access_token_controller_);
+        *AmbientClient::Get(), access_token_controller_,
+        CreatePhotoConfigForCurrentTheme());
 
     ambient_ui_model_observer_.Observe(&ambient_ui_model_);
 
@@ -680,7 +692,8 @@ void AmbientController::OnImagesFailed() {
 
 std::unique_ptr<views::Widget> AmbientController::CreateWidget(
     aura::Window* container) {
-  auto container_view = std::make_unique<AmbientContainerView>(&delegate_);
+  auto container_view = std::make_unique<AmbientContainerView>(
+      &delegate_, std::move(pending_animation_static_resources_));
   auto* widget_delegate = new AmbientWidgetDelegate();
   widget_delegate->SetInitiallyFocusedView(container_view.get());
 
@@ -722,12 +735,63 @@ void AmbientController::CreateAndShowWidgets() {
 
 void AmbientController::StartRefreshingImages() {
   DCHECK(ambient_photo_controller_);
+  // There is no use case for switching themes "on-the-fly" while ambient mode
+  // is rendering. Thus, it's sufficient to just reinitialize the
+  // model/controller with the appropriate config each time before calling
+  // StartScreenUpdate().
+  DCHECK(!ambient_photo_controller_->IsScreenUpdateActive());
+  ambient_photo_controller_->ambient_backend_model()->SetPhotoConfig(
+      CreatePhotoConfigForCurrentTheme());
   ambient_photo_controller_->StartScreenUpdate();
 }
 
 void AmbientController::StopRefreshingImages() {
   DCHECK(ambient_photo_controller_);
   ambient_photo_controller_->StopScreenUpdate();
+}
+
+AmbientPhotoConfig AmbientController::CreatePhotoConfigForCurrentTheme() {
+  AmbientAnimationTheme current_theme = kDefaultAmbientAnimationTheme;
+  absl::optional<bool> animation_experiment_enabled =
+      base::FeatureList::GetStateIfOverridden(
+          features::kAmbientModeAnimationFeature);
+  if (animation_experiment_enabled.has_value()) {
+    // TODO(esum): Remove this block of code once the web ui that allows the
+    // user to select the desired theme is ready. It is currently controlled by
+    // an experiment flag since the feature is under active development.
+    current_theme = animation_experiment_enabled.value()
+                        ? AmbientAnimationTheme::kFeelTheBreeze
+                        : AmbientAnimationTheme::kSlideshow;
+  } else {
+    DCHECK(GetPrimaryUserPrefService());
+    int current_theme_as_int = GetPrimaryUserPrefService()->GetInteger(
+        ambient::prefs::kAmbientAnimationTheme);
+    // Gracefully handle pref having invalid value in case pref storage is
+    // corrupted somehow.
+    if (current_theme_as_int < 0 ||
+        current_theme_as_int >
+            static_cast<int>(AmbientAnimationTheme::kMaxValue)) {
+      LOG(WARNING) << "Loaded invalid ambient theme from pref storage: "
+                   << current_theme_as_int << ". Default to "
+                   << kDefaultAmbientAnimationTheme;
+    } else {
+      current_theme = static_cast<AmbientAnimationTheme>(current_theme_as_int);
+    }
+  }
+  DVLOG(4) << "Loaded ambient theme " << current_theme;
+
+  pending_animation_static_resources_.reset();
+  if (current_theme == AmbientAnimationTheme::kSlideshow) {
+    return CreateAmbientSlideshowPhotoConfig();
+  } else {
+    pending_animation_static_resources_ =
+        AmbientAnimationStaticResources::Create(current_theme);
+    return CreateAmbientAnimationPhotoConfig(
+        cc::SkottieWrapper::CreateNonSerializable(
+            base::as_bytes(base::make_span(
+                pending_animation_static_resources_->GetLottieData())))
+            ->GetImageAssetMetadata());
+  }
 }
 
 void AmbientController::set_backend_controller_for_testing(

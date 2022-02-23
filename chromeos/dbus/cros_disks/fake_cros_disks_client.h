@@ -202,4 +202,9 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_CROS_DISKS) FakeCrosDisksClient
 
 }  // namespace chromeos
 
+// TODO(https://crbug.com/1164001): remove when //chromeos/dbus moved to ash.
+namespace ash {
+using ::chromeos::FakeCrosDisksClient;
+}  // namespace ash
+
 #endif  // CHROMEOS_DBUS_CROS_DISKS_FAKE_CROS_DISKS_CLIENT_H_

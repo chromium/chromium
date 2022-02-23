@@ -25,6 +25,9 @@ extern const base::FeatureParam<double> kPoolSizeRatio;
 extern const base::FeatureParam<double> kShouldRemainAvailableBytes;
 extern const base::FeatureParam<double> kShouldRemainAvailableRatio;
 
+COMPONENT_EXPORT(STORAGE_BROWSER)
+extern const base::Feature kOnlySendStoragePolicyUpdatesForModifiedOrigins;
+
 }  // namespace features
 
 }  // namespace storage

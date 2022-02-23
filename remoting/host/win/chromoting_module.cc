@@ -13,7 +13,7 @@
 #include "base/win/scoped_handle.h"
 #include "remoting/base/auto_thread_task_runner.h"
 #include "remoting/base/typed_buffer.h"
-#include "remoting/host/host_exit_codes.h"
+#include "remoting/host/base/host_exit_codes.h"
 #include "remoting/host/win/rdp_desktop_session.h"
 
 namespace remoting {

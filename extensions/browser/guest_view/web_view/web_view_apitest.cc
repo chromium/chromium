@@ -10,7 +10,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
@@ -190,14 +189,14 @@ void WebViewAPITest::RunTest(const std::string& test_name,
     ExtensionTestMessageListener done_listener("TEST_PASSED", false);
     done_listener.set_failure_message("TEST_FAILED");
     ASSERT_TRUE(content::ExecuteScript(
-        embedder_web_contents_,
+        embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s')", test_name.c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(done_listener.WaitUntilSatisfied());
   } else {
     ResultCatcher catcher;
     ASSERT_TRUE(content::ExecuteScript(
-        embedder_web_contents_,
+        embedder_web_contents_.get(),
         base::StringPrintf("runTest('%s')", test_name.c_str())))
         << "Unable to start test.";
     ASSERT_TRUE(catcher.GetNextResult()) << catcher.message();
@@ -223,7 +222,7 @@ void WebViewAPITest::StartTestServer(const std::string& app_location) {
     return;
   }
 
-  test_config_.SetInteger(kTestServerPort, embedded_test_server()->port());
+  test_config_.SetIntPath(kTestServerPort, embedded_test_server()->port());
 
   base::ScopedAllowBlockingForTesting allow_blocking;
   base::FilePath test_data_dir;
@@ -369,7 +368,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, GuestVisibilityChanged) {
 // The test launches an app with guest and closes the window on loadcommit. It
 // then launches the app window again. The process is repeated 3 times.
 // http://crbug.com/291278
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_CloseOnLoadcommit DISABLED_CloseOnLoadcommit
 #else
 #define MAYBE_CloseOnLoadcommit CloseOnLoadcommit
@@ -641,7 +640,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestCanGoBack) {
 }
 
 // Crashes on Win only.  http://crbug.com/805903
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestLoadStartLoadRedirect DISABLED_TestLoadStartLoadRedirect
 #else
 #define MAYBE_TestLoadStartLoadRedirect TestLoadStartLoadRedirect
@@ -738,7 +737,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
   // Run the test and wait until the guest WebContents is available and has
   // finished loading.
   ExtensionTestMessageListener guest_loaded_listener("guest-loaded", false);
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_,
+  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
                                      "runTest('testRemoveWebviewOnExit')"));
 
   content::WebContents* guest_web_contents = GetGuestWebContents();
@@ -749,7 +748,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewOnExit) {
   content::WebContentsDestroyedWatcher destroyed_watcher(guest_web_contents);
 
   // Tell the embedder to kill the guest.
-  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_,
+  EXPECT_TRUE(content::ExecuteScript(embedder_web_contents_.get(),
                                      "removeWebviewOnExitDoCrash()"));
 
   // Wait until the guest WebContents is destroyed.
@@ -774,7 +773,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestRemoveWebviewAfterNavigation) {
   RunTest("testRemoveWebviewAfterNavigation", "web_view/apitest");
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestResizeWebviewResizesContent \
   DISABLED_TestResizeWebviewResizesContent
 #else
@@ -797,7 +796,7 @@ IN_PROC_BROWSER_TEST_F(WebViewAPITest, TestWebRequestAPI) {
 }
 
 // Crashes on Win only.  http://crbug.com/805903
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestWebRequestAPIWithHeaders DISABLED_TestWebRequestAPIWithHeaders
 #else
 #define MAYBE_TestWebRequestAPIWithHeaders TestWebRequestAPIWithHeaders

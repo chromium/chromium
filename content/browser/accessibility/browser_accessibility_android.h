@@ -13,6 +13,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "content/browser/accessibility/browser_accessibility.h"
+#include "content/common/content_export.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/platform/ax_platform_node.h"
 
@@ -99,7 +100,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   bool IsChildOfLeaf() const override;
   bool IsLeaf() const override;
   bool IsLeafConsideringChildren() const;
-  std::u16string GetInnerText() const override;
+  std::u16string GetTextContentUTF16() const override;
   std::u16string GetValueForControl() const override;
   std::u16string GetHint() const;
 
@@ -116,6 +117,7 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   std::u16string GetListBoxStateDescription() const;
   std::u16string GetListBoxItemStateDescription() const;
   std::u16string GetAriaCurrentStateDescription() const;
+  std::u16string GetRadioButtonStateDescription() const;
 
   std::u16string GetComboboxExpandedText() const;
   std::u16string GetComboboxExpandedTextFallback() const;
@@ -173,13 +175,13 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
                                 int offset);
 
   // Append line start and end indices for the text of this node
-  // (as returned by GetInnerText()), adding |offset| to each one.
+  // (as returned by GetTextContentUTF16()), adding |offset| to each one.
   void GetLineBoundaries(std::vector<int32_t>* line_starts,
                          std::vector<int32_t>* line_ends,
                          int offset);
 
   // Append word start and end indices for the text of this node
-  // (as returned by GetInnerText()) to |word_starts| and |word_ends|,
+  // (as returned by GetTextContentUTF16()) to |word_starts| and |word_ends|,
   // adding |offset| to each one.
   void GetWordBoundaries(std::vector<int32_t>* word_starts,
                          std::vector<int32_t>* word_ends,
@@ -193,6 +195,11 @@ class CONTENT_EXPORT BrowserAccessibilityAndroid : public BrowserAccessibility {
   // and end offsets.
   void GetSuggestions(std::vector<int>* suggestion_starts,
                       std::vector<int>* suggestion_ends) const;
+
+  // Used for tree dumps, generate a string representation of the
+  // AccessibilityNodeInfo object for this node by calling through the
+  // manager to the web_contents_accessibility_android JNI.
+  std::u16string GenerateAccessibilityNodeInfoString() const;
 
  protected:
   BrowserAccessibilityAndroid(BrowserAccessibilityManager* manager,

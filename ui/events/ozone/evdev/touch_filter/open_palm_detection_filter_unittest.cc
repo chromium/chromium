@@ -33,8 +33,8 @@ class OpenPalmDetectionFilterTest : public testing::Test {
 
 TEST_F(OpenPalmDetectionFilterTest, TestSetsToZero) {
   std::bitset<kNumTouchEvdevSlots> suppress, hold;
-  suppress.set(kNumTouchEvdevSlots - 1, 1);
-  hold.set(0, 1);
+  suppress.set(kNumTouchEvdevSlots - 1, true);
+  hold.set(0, true);
   std::vector<InProgressTouchEvdev> inputs;
   inputs.resize(kNumTouchEvdevSlots);
   palm_detection_filter_->Filter(inputs, base::TimeTicks::Now(), &hold,

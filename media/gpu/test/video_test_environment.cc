@@ -82,7 +82,7 @@ base::FilePath VideoTestEnvironment::GetTestOutputFilePath() const {
       ::testing::UnitTest::GetInstance()->current_test_info();
   base::FilePath::StringType test_name;
   base::FilePath::StringType test_suite_name;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows the default file path string type is UTF16. Since the test name
   // is always returned in UTF8 we need to do a conversion here.
   test_name = base::UTF8ToUTF16(test_info->name());

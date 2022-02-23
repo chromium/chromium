@@ -16,10 +16,10 @@
 #include "components/prefs/scoped_user_pref_update.h"
 #include "third_party/metrics_proto/system_profile.pb.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/metrics/system_session_analyzer/system_session_analyzer_win.h"
 #endif
 
@@ -27,7 +27,7 @@ namespace metrics {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool HasGmsCoreVersionChanged(PrefService* local_state) {
   std::string previous_version =
       local_state->GetString(prefs::kStabilityGmsCoreVersion);
@@ -58,26 +58,24 @@ StabilityMetricsProvider::~StabilityMetricsProvider() = default;
 // static
 void StabilityMetricsProvider::RegisterPrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(prefs::kStabilityCrashCount, 0);
-  registry->RegisterIntegerPref(prefs::kStabilityIncompleteSessionEndCount, 0);
-  registry->RegisterBooleanPref(prefs::kStabilitySessionEndCompleted, true);
   registry->RegisterIntegerPref(prefs::kStabilityLaunchCount, 0);
   registry->RegisterIntegerPref(prefs::kStabilityFileMetricsUnsentFilesCount,
                                 0);
   registry->RegisterIntegerPref(prefs::kStabilityFileMetricsUnsentSamplesCount,
                                 0);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kStabilityGmsCoreVersion, "");
   registry->RegisterIntegerPref(prefs::kStabilityCrashCountDueToGmsCoreUpdate,
                                 0);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   registry->RegisterIntegerPref(prefs::kStabilitySystemCrashCount, 0);
 #endif
 }
 
 void StabilityMetricsProvider::Init() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This method has to be called after HasGmsCoreVersionChanged() to avoid
   // overwriting thie result.
   UpdateGmsCoreVersionPref(local_state_);
@@ -86,16 +84,14 @@ void StabilityMetricsProvider::Init() {
 
 void StabilityMetricsProvider::ClearSavedStabilityMetrics() {
   local_state_->SetInteger(prefs::kStabilityCrashCount, 0);
-  local_state_->SetInteger(prefs::kStabilityIncompleteSessionEndCount, 0);
   local_state_->SetInteger(prefs::kStabilityLaunchCount, 0);
-  local_state_->SetBoolean(prefs::kStabilitySessionEndCompleted, true);
 
   // The 0 is a valid value for the below prefs, clears pref instead
   // of setting to default value.
   local_state_->ClearPref(prefs::kStabilityFileMetricsUnsentFilesCount);
   local_state_->ClearPref(prefs::kStabilityFileMetricsUnsentSamplesCount);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   local_state_->SetInteger(prefs::kStabilitySystemCrashCount, 0);
 #endif
 }
@@ -113,17 +109,12 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
   if (GetAndClearPrefValue(prefs::kStabilityCrashCount, &pref_value))
     stability->set_crash_count(pref_value);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (GetAndClearPrefValue(prefs::kStabilityCrashCountDueToGmsCoreUpdate,
                            &pref_value)) {
     stability->set_crash_count_due_to_gms_core_update(pref_value);
   }
 #endif
-
-  if (GetAndClearPrefValue(prefs::kStabilityIncompleteSessionEndCount,
-                           &pref_value))
-    stability->set_incomplete_shutdown_count(pref_value);
-
 
   if (local_state_->HasPrefPath(prefs::kStabilityFileMetricsUnsentFilesCount)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100(
@@ -144,7 +135,7 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
     local_state_->ClearPref(prefs::kStabilityFileMetricsUnsentSamplesCount);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (GetAndClearPrefValue(prefs::kStabilitySystemCrashCount, &pref_value)) {
     UMA_STABILITY_HISTOGRAM_COUNTS_100("Stability.Internals.SystemCrashCount",
                                        pref_value);
@@ -152,23 +143,8 @@ void StabilityMetricsProvider::ProvideStabilityMetrics(
 #endif
 }
 
-
-void StabilityMetricsProvider::CheckLastSessionEndCompleted() {
-  if (!local_state_->GetBoolean(prefs::kStabilitySessionEndCompleted)) {
-    IncrementPrefValue(prefs::kStabilityIncompleteSessionEndCount);
-    StabilityMetricsHelper::RecordStabilityEvent(
-        StabilityEventType::kIncompleteShutdown);
-    // This is marked false when we get a WM_ENDSESSION.
-    MarkSessionEndCompleted(true);
-  }
-}
-
-void StabilityMetricsProvider::MarkSessionEndCompleted(bool end_completed) {
-  local_state_->SetBoolean(prefs::kStabilitySessionEndCompleted, end_completed);
-}
-
 void StabilityMetricsProvider::LogCrash(base::Time last_live_timestamp) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android, if there is an update for GMS Core when Chrome is running,
   // Chrome will be killed, counting as a crash. This is expected and should not
   // be counted in stability crash counts. Thus these crashes are added to a
@@ -182,7 +158,7 @@ void StabilityMetricsProvider::LogCrash(base::Time last_live_timestamp) {
   StabilityMetricsHelper::RecordStabilityEvent(
       StabilityEventType::kBrowserCrash);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   MaybeLogSystemCrash(last_live_timestamp);
 #endif
 }
@@ -192,7 +168,7 @@ void StabilityMetricsProvider::LogLaunch() {
   StabilityMetricsHelper::RecordStabilityEvent(StabilityEventType::kLaunch);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool StabilityMetricsProvider::IsUncleanSystemSession(
     base::Time last_live_timestamp) {
   DCHECK_NE(base::Time(), last_live_timestamp);

@@ -251,11 +251,11 @@ std::vector<uint8_t> DecompressData(const std::vector<uint8_t>& data,
 }
 
 bool CompressProgramBinaries() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   return false;
-#else   // !defined(OS_ANDROID)
+#else   // !BUILDFLAG(IS_ANDROID)
   return base::SysInfo::IsLowEndDevice();
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace

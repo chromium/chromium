@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromecast/media/cma/backend/mixer/mixer_input.h"
 #include "chromecast/public/volume_control.h"
 #include "media/audio/audio_device_description.h"

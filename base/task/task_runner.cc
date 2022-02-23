@@ -9,7 +9,9 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/post_task_and_reply_impl.h"
+#include "base/time/time.h"
 
 namespace base {
 
@@ -26,7 +28,7 @@ class PostTaskAndReplyTaskRunner : public internal::PostTaskAndReplyImpl {
   bool PostTask(const Location& from_here, OnceClosure task) override;
 
   // Non-owning.
-  TaskRunner* destination_;
+  raw_ptr<TaskRunner> destination_;
 };
 
 PostTaskAndReplyTaskRunner::PostTaskAndReplyTaskRunner(

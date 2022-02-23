@@ -121,7 +121,8 @@ FingerprintSetupScreen::~FingerprintSetupScreen() {
 
 bool FingerprintSetupScreen::MaybeSkip(WizardContext* context) {
   if (!quick_unlock::IsFingerprintEnabled(
-          ProfileManager::GetActiveUserProfile()) ||
+          ProfileManager::GetActiveUserProfile(),
+          quick_unlock::Purpose::kAny) ||
       chrome_user_manager_util::IsPublicSessionOrEphemeralLogin()) {
     exit_callback_.Run(Result::NOT_APPLICABLE);
     return true;
@@ -190,7 +191,7 @@ void FingerprintSetupScreen::OnEnrollScanDone(
 }
 
 void FingerprintSetupScreen::OnAuthScanDone(
-    device::mojom::ScanResult scan_result,
+    const device::mojom::FingerprintMessagePtr ptr,
     const base::flat_map<std::string, std::vector<std::string>>& matches) {}
 
 void FingerprintSetupScreen::OnSessionFailed() {

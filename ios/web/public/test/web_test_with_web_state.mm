@@ -19,6 +19,7 @@
 #import "ios/web/public/test/web_view_interaction_test_util.h"
 #import "ios/web/public/web_client.h"
 #include "ios/web/public/web_state_observer.h"
+#import "ios/web/test/js_test_util_internal.h"
 #import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "ios/web/web_state/web_state_impl.h"
@@ -30,6 +31,7 @@
 
 using base::test::ios::WaitUntilConditionOrTimeout;
 using base::test::ios::kWaitForActionTimeout;
+using base::test::ios::kWaitForJSCompletionTimeout;
 using base::test::ios::kWaitForPageLoadTimeout;
 
 namespace web {
@@ -116,16 +118,32 @@ bool WebTestWithWebState::LoadHtmlWithoutSubresources(const std::string& html) {
 }
 
 void WebTestWithWebState::LoadHtml(NSString* html, const GURL& url) {
-  web::test::LoadHtml(html, url, web_state());
+  LoadHtmlInWebState(html, url, web_state());
 }
 
 void WebTestWithWebState::LoadHtml(NSString* html) {
-  web::test::LoadHtml(html, web_state());
+  LoadHtmlInWebState(html, web_state());
 }
 
 bool WebTestWithWebState::LoadHtml(const std::string& html) {
-  LoadHtml(base::SysUTF8ToNSString(html));
-  // TODO(crbug.com/780062): LoadHtml(NSString*) should return bool.
+  return LoadHtmlInWebState(html, web_state());
+}
+
+void WebTestWithWebState::LoadHtmlInWebState(NSString* html,
+                                             const GURL& url,
+                                             WebState* web_state) {
+  web::test::LoadHtml(html, url, web_state);
+}
+
+void WebTestWithWebState::LoadHtmlInWebState(NSString* html,
+                                             WebState* web_state) {
+  web::test::LoadHtml(html, web_state);
+}
+
+bool WebTestWithWebState::LoadHtmlInWebState(const std::string& html,
+                                             WebState* web_state) {
+  LoadHtmlInWebState(base::SysUTF8ToNSString(html), web_state);
+  // TODO(crbug.com/780062): LoadHtmlInWebState(NSString*) should return bool.
   return true;
 }
 
@@ -187,30 +205,23 @@ id WebTestWithWebState::ExecuteJavaScriptForFeature(
       JavaScriptFeatureManager::FromBrowserState(GetBrowserState());
   JavaScriptContentWorld* world =
       feature_manager->GetContentWorldForFeature(feature);
-  return ExecuteJavaScript(world->GetWKContentWorld(), script);
+  // JS execution in particular content worlds is only available on iOS 14+.
+  DCHECK(base::ios::IsRunningOnIOS14OrLater());
+
+  if (@available(ios 14, *)) {
+    WKWebView* web_view =
+        [web::test::GetWebController(web_state()) ensureWebViewCreated];
+    return web::test::ExecuteJavaScript(web_view, world->GetWKContentWorld(),
+                                        script);
+  }
+
+  return nil;
 }
 
 id WebTestWithWebState::ExecuteJavaScript(NSString* script) {
   SCOPED_TRACE(base::SysNSStringToUTF8(script));
   return web::test::ExecuteJavaScript(script, web_state());
 }
-
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-// Synchronously executes |script| in |content_world| and returns result.
-id WebTestWithWebState::ExecuteJavaScript(WKContentWorld* content_world,
-                                          NSString* script) {
-  DCHECK(base::ios::IsRunningOnIOS14OrLater());
-
-  WKWebView* web_view =
-      [web::test::GetWebController(web_state()) ensureWebViewCreated];
-
-  if (@available(ios 14, *)) {
-    return web::test::ExecuteJavaScript(web_view, content_world, script);
-  }
-
-  return nil;
-}
-#endif  // defined(__IPHONE14_0)
 
 void WebTestWithWebState::DestroyWebState() {
   web_state_.reset();

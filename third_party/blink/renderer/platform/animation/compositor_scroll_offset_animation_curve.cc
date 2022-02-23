@@ -3,21 +3,22 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/platform/animation/compositor_scroll_offset_animation_curve.h"
-#include "third_party/blink/renderer/platform/animation/timing_function.h"
 
 #include "cc/animation/scroll_offset_animation_curve.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
+#include "third_party/blink/renderer/platform/animation/timing_function.h"
 #include "ui/gfx/animation/keyframe/timing_function.h"
+#include "ui/gfx/geometry/size.h"
 
 using blink::CompositorScrollOffsetAnimationCurve;
 
 namespace blink {
 
 CompositorScrollOffsetAnimationCurve::CompositorScrollOffsetAnimationCurve(
-    FloatPoint target_value,
+    gfx::PointF target_value,
     ScrollType scroll_type)
     : curve_(cc::ScrollOffsetAnimationCurveFactory::CreateAnimation(
-          gfx::Vector2dF(target_value.x(), target_value.y()),
+          target_value,
           scroll_type)) {}
 
 CompositorScrollOffsetAnimationCurve::CompositorScrollOffsetAnimationCurve(
@@ -28,32 +29,31 @@ CompositorScrollOffsetAnimationCurve::~CompositorScrollOffsetAnimationCurve() =
     default;
 
 void CompositorScrollOffsetAnimationCurve::SetInitialValue(
-    FloatPoint initial_value) {
-  curve_->SetInitialValue(gfx::Vector2dF(initial_value.x(), initial_value.y()));
+    gfx::PointF initial_value) {
+  curve_->SetInitialValue(initial_value);
 }
 
-FloatPoint CompositorScrollOffsetAnimationCurve::GetValue(double time) const {
-  gfx::Vector2dF value = curve_->GetValue(base::Seconds(time));
-  return FloatPoint(value.x(), value.y());
+gfx::PointF CompositorScrollOffsetAnimationCurve::GetValue(double time) const {
+  return curve_->GetValue(base::Seconds(time));
 }
 
-void CompositorScrollOffsetAnimationCurve::ApplyAdjustment(IntSize adjustment) {
-  curve_->ApplyAdjustment(
-      gfx::Vector2dF(adjustment.width(), adjustment.height()));
+void CompositorScrollOffsetAnimationCurve::ApplyAdjustment(
+    gfx::Vector2d adjustment) {
+  curve_->ApplyAdjustment(adjustment);
 }
 
 base::TimeDelta CompositorScrollOffsetAnimationCurve::Duration() const {
   return curve_->Duration();
 }
 
-FloatPoint CompositorScrollOffsetAnimationCurve::TargetValue() const {
-  gfx::Vector2dF target = curve_->target_value();
-  return FloatPoint(target.x(), target.y());
+gfx::PointF CompositorScrollOffsetAnimationCurve::TargetValue() const {
+  return curve_->target_value();
 }
 
-void CompositorScrollOffsetAnimationCurve::UpdateTarget(base::TimeDelta time,
-                                                        FloatPoint new_target) {
-  curve_->UpdateTarget(time, gfx::Vector2dF(new_target.x(), new_target.y()));
+void CompositorScrollOffsetAnimationCurve::UpdateTarget(
+    base::TimeDelta time,
+    gfx::PointF new_target) {
+  curve_->UpdateTarget(time, new_target);
 }
 
 std::unique_ptr<gfx::AnimationCurve>

@@ -10,6 +10,7 @@
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/content_settings/core/common/content_settings_utils.h"
 #include "components/site_engagement/content/site_engagement_metrics.h"
 #include "media/base/media_switches.h"
 
@@ -37,10 +38,10 @@ std::unique_ptr<base::DictionaryValue> GetMediaEngagementScoreDictForSettings(
   if (!settings)
     return std::make_unique<base::DictionaryValue>();
 
-  std::unique_ptr<base::DictionaryValue> value =
-      base::DictionaryValue::From(settings->GetWebsiteSetting(
+  std::unique_ptr<base::DictionaryValue> value = base::DictionaryValue::From(
+      content_settings::ToNullableUniquePtrValue(settings->GetWebsiteSetting(
           origin.GetURL(), origin.GetURL(),
-          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr));
+          ContentSettingsType::MEDIA_ENGAGEMENT, nullptr)));
 
   if (value.get())
     return value;
@@ -157,7 +158,7 @@ void MediaEngagementScore::Commit() {
 
   settings_map_->SetWebsiteSettingDefaultScope(
       origin_.GetURL(), GURL(), ContentSettingsType::MEDIA_ENGAGEMENT,
-      std::move(score_dict_));
+      content_settings::FromNullableUniquePtrValue(std::move(score_dict_)));
 }
 
 void MediaEngagementScore::IncrementMediaPlaybacks() {

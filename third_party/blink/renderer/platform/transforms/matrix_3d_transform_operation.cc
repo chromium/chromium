@@ -97,7 +97,7 @@ scoped_refptr<TransformOperation> Matrix3DTransformOperation::Blend(
 
   // Convert the TransformOperations into matrices. Fail the blend operation
   // if either of the matrices is non-invertible.
-  FloatSize size;
+  gfx::SizeF size;
   TransformationMatrix from_t;
   TransformationMatrix to_t;
   if (from) {

@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_UI_DOWNLOAD_DOWNLOAD_MANAGER_MEDIATOR_H_
 
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #import "ios/chrome/browser/ui/download/download_manager_consumer.h"
 #include "ios/web/public/download/download_task_observer.h"

@@ -6,19 +6,19 @@
 
 #include <memory>
 
-#include "ash/grit/connectivity_diagnostics_resources.h"
 #include "ash/webui/connectivity_diagnostics/url_constants.h"
+#include "ash/webui/grit/connectivity_diagnostics_resources.h"
 #include "chrome/browser/ash/web_applications/system_web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "third_party/blink/public/mojom/manifest/display_mode.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp() {
-  std::unique_ptr<WebApplicationInfo> info =
-      std::make_unique<WebApplicationInfo>();
+  std::unique_ptr<WebAppInstallInfo> info =
+      std::make_unique<WebAppInstallInfo>();
   info->start_url = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
   info->scope = GURL(ash::kChromeUIConnectivityDiagnosticsUrl);
   info->title = l10n_util::GetStringUTF16(IDS_CONNECTIVITY_DIAGNOSTICS_TITLE);
@@ -44,7 +44,7 @@ ConnectivityDiagnosticsSystemAppDelegate::
           GURL(ash::kChromeUIConnectivityDiagnosticsUrl),
           profile) {}
 
-std::unique_ptr<WebApplicationInfo>
+std::unique_ptr<WebAppInstallInfo>
 ConnectivityDiagnosticsSystemAppDelegate::GetWebAppInfo() const {
   return CreateWebAppInfoForConnectivityDiagnosticsSystemWebApp();
 }

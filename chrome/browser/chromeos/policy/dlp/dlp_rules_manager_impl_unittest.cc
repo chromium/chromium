@@ -5,11 +5,14 @@
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager_impl.h"
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "base/strings/strcat.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_policy_constants.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_rules_manager.h"
@@ -47,7 +50,7 @@ constexpr char kMailPattern[] = "mail.google.com";
 class MockDlpRulesManager : public DlpRulesManagerImpl {
  public:
   explicit MockDlpRulesManager(PrefService* local_state)
-      : DlpRulesManagerImpl(local_state, /* dm_token_value= */ "") {}
+      : DlpRulesManagerImpl(local_state) {}
 };
 
 }  // namespace
@@ -64,6 +67,7 @@ class DlpRulesManagerImplTest : public testing::Test {
                                     std::move(rules_list));
   }
 
+  content::BrowserTaskEnvironment task_environment_;
   ScopedTestingLocalState testing_local_state_;
   MockDlpRulesManager dlp_rules_manager_;
   base::HistogramTester histogram_tester_;
@@ -631,11 +635,11 @@ TEST_F(DlpRulesManagerImplTest, WarnPriority) {
   EXPECT_EQ(dst_pattern, kMailPattern);
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitAndEnableFeature(
       features::kDataLeakPreventionFilesRestriction);
-  content::BrowserTaskEnvironment task_environment;
   chromeos::DlpClient::InitializeFake();
 
   EXPECT_EQ(0, chromeos::DlpClient::Get()
@@ -665,9 +669,9 @@ TEST_F(DlpRulesManagerImplTest, FilesRestriction_DlpClientNotified) {
                    ->GetSetDlpFilesPolicyCount());
   chromeos::DlpClient::Shutdown();
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DlpRulesManagerImplTest, FilesRestriction_FeatureNotEnabled) {
-  content::BrowserTaskEnvironment task_environment;
   chromeos::DlpClient::InitializeFake();
 
   EXPECT_EQ(0, chromeos::DlpClient::Get()

@@ -104,7 +104,8 @@ public class TranslateIntentTest {
     @Test
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
-    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.
+    DisableFeatures({ChromeFeatureList.TRANSLATE_INTENT, ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateIntentDisabled() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -122,6 +123,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateIntentOnTranslatePage() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -226,6 +228,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateIntentOnIncognito() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -249,6 +252,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateIntentWithUrlMismatch() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -266,6 +270,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateIntentWithoutExpectedUrl() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -283,6 +288,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateIntentVerifyComponent() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);
@@ -307,6 +313,7 @@ public class TranslateIntentTest {
     @MediumTest
     @Restriction(Restriction.RESTRICTION_TYPE_INTERNET)
     @Features.EnableFeatures({ChromeFeatureList.TRANSLATE_INTENT})
+    @Features.DisableFeatures({ChromeFeatureList.TRANSLATE_TFLITE})
     public void testTranslateIntentIncorrectComponent() throws TimeoutException {
         if (shouldSkipDueToNetworkService()) return;
         final String url = sActivityTestRule.getTestServer().getURL(TRANSLATE_PAGE);

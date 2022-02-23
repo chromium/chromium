@@ -18,14 +18,14 @@
 #include "third_party/skia/include/gpu/GrTypes.h"
 #include "ui/gfx/buffer_types.h"
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gfx/native_pixmap_handle.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 namespace gfx {
 class ColorSpace;
@@ -185,7 +185,7 @@ class GPU_EXPORT SharedImageInterface {
   virtual void PresentSwapChain(const SyncToken& sync_token,
                                 const Mailbox& mailbox) = 0;
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Registers a sysmem buffer collection. While the collection exists (i.e.
   // between RegisterSysmemBufferCollection() and
   // ReleaseSysmemBufferCollection()) the caller can use CreateSharedImage() to
@@ -205,7 +205,7 @@ class GPU_EXPORT SharedImageInterface {
 
   virtual void ReleaseSysmemBufferCollection(
       gfx::SysmemBufferCollectionId id) = 0;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
   // Generates an unverified SyncToken that is released after all previous
   // commands on this interface have executed on the service side.
@@ -223,7 +223,7 @@ class GPU_EXPORT SharedImageInterface {
   // Flush the SharedImageInterface, issuing any deferred IPCs.
   virtual void Flush() = 0;
 
-#if !defined(OS_NACL)
+#if !BUILDFLAG(IS_NACL)
   // Returns the NativePixmap backing |mailbox|. This is a privileged API. Only
   // the callers living inside the GPU process are able to retrieve the
   // NativePixmap; otherwise null is returned. Also returns null if the

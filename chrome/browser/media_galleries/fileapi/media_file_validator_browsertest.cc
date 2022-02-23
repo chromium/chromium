@@ -275,7 +275,7 @@ IN_PROC_BROWSER_TEST_F(MediaFileValidatorTest, UnsupportedExtension) {
 }
 
 // TODO(crbug.com/1169640): Re-enable. Flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ValidImage DISABLED_ValidImage
 #else
 #define MAYBE_ValidImage ValidImage

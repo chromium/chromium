@@ -139,7 +139,7 @@ bool UpdateFromDict(const base::Value& value,
   if (!field->is_list())
     return false;
 
-  const base::Value::ConstListView list = field->GetList();
+  const base::Value::ConstListView list = field->GetListDeprecated();
   output->reserve(list.size());
 
   for (const base::Value& list_item : list) {

@@ -32,6 +32,7 @@ import androidx.appcompat.content.res.AppCompatResources;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.ItemTouchHelper;
 
+import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.Callback;
 import org.chromium.base.Log;
 import org.chromium.base.metrics.RecordHistogram;
@@ -39,6 +40,8 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.compositor.layouts.content.TabContentManager;
 import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.EmptyTabObserver;
@@ -67,6 +70,7 @@ import org.chromium.chrome.browser.tasks.tab_management.TabListFaviconProvider.T
 import org.chromium.chrome.browser.tasks.tab_management.TabProperties.UiType;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcherMediator.PriceWelcomeMessageController;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelegate;
 import org.chromium.components.embedder_support.util.UrlUtilities;
 import org.chromium.components.feature_engagement.FeatureConstants;
@@ -76,6 +80,7 @@ import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.NavigationHistory;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.PageTransition;
 import org.chromium.ui.modelutil.ListObservable;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
@@ -383,7 +388,7 @@ class TabListMediator {
             } else {
                 mTabModelSelector.getCurrentModel().setIndex(
                         TabModelUtils.getTabIndexById(mTabModelSelector.getCurrentModel(), tabId),
-                        TabSelectionType.FROM_USER);
+                        TabSelectionType.FROM_USER, false);
             }
         }
 
@@ -571,7 +576,7 @@ class TabListMediator {
                     mTabModelSelector.getCurrentModel().setIndex(
                             TabModelUtils.getTabIndexById(
                                     mTabModelSelector.getCurrentModel(), tab.getId()),
-                            TabSelectionType.FROM_USER);
+                            TabSelectionType.FROM_USER, false);
                 }
                 if (sTabClosedFromMapTabClosedFromMap.containsKey(tab.getId())) {
                     @TabClosedFrom
@@ -1132,6 +1137,9 @@ class TabListMediator {
             Collections.sort(tabsList, LAST_SHOWN_COMPARATOR);
         }
         mVisible = tabsList != null;
+        if (tabs != null) {
+            recordPriceAnnotationsEnabledMetrics();
+        }
         if (areTabsUnchanged(tabsList)) {
             if (tabsList == null) return true;
             for (int i = 0; i < tabsList.size(); i++) {
@@ -1261,12 +1269,11 @@ class TabListMediator {
     }
 
     void registerOrientationListener(GridLayoutManager manager) {
-        // TODO(yuezhanggg): Try to dynamically determine span counts based on screen width,
-        // minimum card width and padding.
         mComponentCallbacks = new ComponentCallbacks() {
             @Override
             public void onConfigurationChanged(Configuration newConfig) {
-                updateSpanCountForOrientation(manager, newConfig.orientation);
+                updateSpanCount(
+                        manager, newConfig.orientation, newConfig.screenWidthDp);
                 if (mMode == TabListMode.GRID && mUiType != UiType.SELECTABLE) updateLayout();
             }
 
@@ -1280,14 +1287,12 @@ class TabListMediator {
     /**
      * Update the grid layout span count and span size lookup base on orientation.
      * @param manager     The {@link GridLayoutManager} used to update the span count.
-     * @param orientation The orientation base on which we update the span count.
+     * @param orientation The orientation based on which we update the span count.
+     * @param screenWidthDp The screnWidth based on which we update the span count.
      */
-    void updateSpanCountForOrientation(GridLayoutManager manager, int orientation) {
-        // When in multi-window mode, the span count is fixed to 2 to keep tab card size reasonable.
-        int spanCount = orientation == Configuration.ORIENTATION_PORTRAIT
-                        || MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)
-                ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT
-                : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE;
+    void updateSpanCount(
+            GridLayoutManager manager, int orientation, int screenWidthDp) {
+        int spanCount = getSpanCount(orientation, screenWidthDp);
         manager.setSpanCount(spanCount);
         manager.setSpanSizeLookup(new GridLayoutManager.SpanSizeLookup() {
             @Override
@@ -1301,6 +1306,26 @@ class TabListMediator {
                 return 1;
             }
         });
+    }
+
+    /**
+     * Span count is computed based on screen width for tablets and orientation for phones.
+     * When in multi-window mode on phone, the span count is fixed to 2 to keep tab card size
+     * reasonable.
+     */
+    private int getSpanCount(int orientation, int screenWidthDp) {
+        if (DeviceFormFactor.isNonMultiDisplayContextOnTablet(mContext)
+                && TabUiFeatureUtilities.isGridTabSwitcherEnabled(mContext)) {
+            return screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP
+                    ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
+                    : screenWidthDp < TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP
+                            ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM
+                            : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE;
+        }
+        return orientation == Configuration.ORIENTATION_PORTRAIT
+                        || MultiWindowUtils.getInstance().isInMultiWindowMode((Activity) mContext)
+                ? TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT
+                : TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM;
     }
 
     /**
@@ -1464,19 +1489,20 @@ class TabListMediator {
             // Incognito in both light/dark theme is the same as non-incognito mode in dark theme.
             // Non-incognito mode and incognito in both light/dark themes in dark theme all look
             // dark.
-            ColorStateList checkedDrawableColorList = AppCompatResources.getColorStateList(mContext,
-                    pseudoTab.isIncognito() ? R.color.default_icon_color_dark
-                                            : R.color.default_icon_color_inverse);
+            ColorStateList checkedDrawableColorList = ColorStateList.valueOf(pseudoTab.isIncognito()
+                            ? mContext.getColor(R.color.default_icon_color_dark)
+                            : SemanticColorUtils.getDefaultIconColorInverse(mContext));
             ColorStateList actionButtonBackgroundColorList =
                     AppCompatResources.getColorStateList(mContext,
                             pseudoTab.isIncognito() ? R.color.default_icon_color_light
-                                                    : R.color.default_icon_color);
+                                                    : R.color.default_icon_color_tint_list);
             // TODO(995876): Update color modern_blue_300 to active_color_dark when the associated
             // bug is landed.
             ColorStateList actionbuttonSelectedBackgroundColorList =
-                    AppCompatResources.getColorStateList(mContext,
-                            pseudoTab.isIncognito() ? R.color.modern_blue_300
-                                                    : R.color.default_control_color_active);
+                    ColorStateList.valueOf(pseudoTab.isIncognito()
+                                    ? ApiCompatibilityUtils.getColor(
+                                            mContext.getResources(), R.color.modern_blue_300)
+                                    : SemanticColorUtils.getDefaultControlColorActive(mContext));
 
             tabInfo.set(TabProperties.CHECKED_DRAWABLE_STATE_LIST, checkedDrawableColorList);
             tabInfo.set(TabProperties.SELECTABLE_TAB_ACTION_BUTTON_BACKGROUND,
@@ -1898,5 +1924,27 @@ class TabListMediator {
 
     private boolean isShowingTabsInMRUOrder() {
         return TabSwitcherCoordinator.isShowingTabsInMRUOrder(mMode);
+    }
+
+    @VisibleForTesting
+    void recordPriceAnnotationsEnabledMetrics() {
+        if (mMode != TabListMode.GRID || !mActionsOnAllRelatedTabs
+                || !PriceTrackingUtilities.isPriceTrackingEligible()) {
+            return;
+        }
+        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        if (System.currentTimeMillis()
+                        - preferencesManager.readLong(
+                                ChromePreferenceKeys
+                                        .PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                                -1)
+                >= PriceTrackingUtilities
+                           .getAnnotationsEnabledMetricsWindowDurationMilliSeconds()) {
+            RecordHistogram.recordBooleanHistogram("Commerce.PriceDrop.AnnotationsEnabled",
+                    PriceTrackingUtilities.isTrackPricesOnTabsEnabled());
+            preferencesManager.writeLong(
+                    ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                    System.currentTimeMillis());
+        }
     }
 }

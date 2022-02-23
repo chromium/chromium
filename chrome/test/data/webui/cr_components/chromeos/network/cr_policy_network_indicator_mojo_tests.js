@@ -6,7 +6,7 @@
 
 // clang-format off
 // #import 'chrome://resources/cr_components/chromeos/network/cr_policy_network_indicator_mojo.m.js';
-// #import 'chrome://test/cr_elements/cr_policy_strings.js';
+// #import 'chrome://test/cr_components/chromeos/network/cr_policy_strings.js';
 
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on

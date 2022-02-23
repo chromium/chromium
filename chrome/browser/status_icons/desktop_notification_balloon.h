@@ -8,8 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
-
 namespace gfx {
 class ImageSkia;
 }

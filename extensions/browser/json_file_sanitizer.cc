@@ -90,6 +90,7 @@ void JsonFileSanitizer::JsonFileRead(
     return;
   }
   json_parser_->Parse(std::get<0>(read_and_delete_result),
+                      base::JSON_PARSE_CHROMIUM_EXTENSIONS,
                       base::BindOnce(&JsonFileSanitizer::JsonParsingDone,
                                      weak_factory_.GetWeakPtr(), file_path));
 }

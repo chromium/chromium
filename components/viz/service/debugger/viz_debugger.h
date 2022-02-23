@@ -7,6 +7,7 @@
 
 #include <atomic>
 #include <string>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -14,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
 #include "base/task/sequenced_task_runner.h"
+#include "base/threading/thread_checker.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/viz/common/buildflags.h"
@@ -316,30 +318,34 @@ class VIZ_SERVICE_EXPORT VizDebugger {
 #define DBG_OPT_BLACK 0
 
 #define DBG_DRAW_RECTANGLE_OPT(anno, option, pos, size) \
-  ANALYZER_ALLOW_UNUSED(anno)                           \
-  ANALYZER_ALLOW_UNUSED(option)                         \
-  ANALYZER_ALLOW_UNUSED(pos) ANALYZER_ALLOW_UNUSED(size)
+  std::ignore = anno;                                   \
+  std::ignore = option;                                 \
+  std::ignore = pos;                                    \
+  std::ignore = size;
 
 #define DBG_DRAW_RECTANGLE(anno, pos, size) \
   DBG_DRAW_RECTANGLE_OPT(anno, DBG_OPT_BLACK, pos, size)
 
 #define DBG_DRAW_TEXT_OPT(anno, option, pos, text) \
-  ANALYZER_ALLOW_UNUSED(anno)                      \
-  ANALYZER_ALLOW_UNUSED(option)                    \
-  ANALYZER_ALLOW_UNUSED(pos) ANALYZER_ALLOW_UNUSED(text)
+  std::ignore = anno;                              \
+  std::ignore = option;                            \
+  std::ignore = pos;                               \
+  std::ignore = text;
 
 #define DBG_DRAW_TEXT(anno, pos, text) \
   DBG_DRAW_TEXT_OPT(anno, DBG_OPT_BLACK, pos, text)
 
 #define DBG_LOG_OPT(anno, option, format, ...) \
-  ANALYZER_ALLOW_UNUSED(anno)                  \
-  ANALYZER_ALLOW_UNUSED(option) ANALYZER_ALLOW_UNUSED(format)
+  std::ignore = anno;                          \
+  std::ignore = option;                        \
+  std::ignore = format;
 
 #define DBG_LOG(anno, format, ...) DBG_LOG_OPT(anno, DBG_OPT_BLACK, format, ...)
 
 #define DBG_DRAW_RECT_OPT(anno, option, rect) \
-  ANALYZER_ALLOW_UNUSED(anno)                 \
-  ANALYZER_ALLOW_UNUSED(option) ANALYZER_ALLOW_UNUSED(rect)
+  std::ignore = anno;                         \
+  std::ignore = option;                       \
+  std::ignore = rect;
 
 #define DBG_DRAW_RECT(anno, rect) DBG_DRAW_RECT_OPT(anno, DBG_OPT_BLACK, rect)
 

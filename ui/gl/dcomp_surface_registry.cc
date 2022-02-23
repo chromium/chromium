@@ -4,6 +4,7 @@
 
 #include "ui/gl/dcomp_surface_registry.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 
 namespace gl {
 

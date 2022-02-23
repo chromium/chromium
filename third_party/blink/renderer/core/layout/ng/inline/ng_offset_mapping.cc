@@ -69,7 +69,7 @@ LayoutBlockFlow* NGInlineFormattingContextOf(const Position& position) {
     return nullptr;
   LayoutBlockFlow* block_flow =
       NGOffsetMapping::GetInlineFormattingContextOf(position);
-  if (!block_flow || !block_flow->IsLayoutNGMixin())
+  if (!block_flow || !block_flow->IsLayoutNGObject())
     return nullptr;
   return block_flow;
 }
@@ -94,7 +94,10 @@ NGOffsetMappingUnit::NGOffsetMappingUnit(NGOffsetMappingUnitType type,
                                          unsigned text_content_start,
                                          unsigned text_content_end)
     : type_(type),
-      layout_object_(&layout_object),
+      // Use atomic construction to allow for concurrently marking
+      // NGOffsetMappingUnit.
+      layout_object_(&layout_object,
+                     Member<const LayoutObject>::AtomicInitializerTag{}),
       dom_start_(dom_start),
       dom_end_(dom_end),
       text_content_start_(text_content_start),
@@ -243,7 +246,7 @@ const NGOffsetMapping* NGOffsetMapping::GetFor(
     return nullptr;
   if (!layout_object)
     return nullptr;
-  LayoutBlockFlow* context = layout_object->ContainingNGBlockFlow();
+  LayoutBlockFlow* context = layout_object->FragmentItemsContainer();
   if (!context)
     return nullptr;
   return NGInlineNode::GetOffsetMapping(context);
@@ -273,11 +276,11 @@ NGOffsetMapping::NGOffsetMapping(UnitVector&& units,
         << unit.TextContentEnd() << "<=" << text.length();
     unit.AssertValid();
   }
-  for (const auto& pair : ranges) {
+  for (const auto& pair : ranges_) {
     SECURITY_DCHECK(pair.value.first < units_.size())
         << pair.value.first << "<" << units_.size();
-    SECURITY_DCHECK(pair.value.second < units_.size())
-        << pair.value.second << "<" << units_.size();
+    SECURITY_DCHECK(pair.value.second <= units_.size())
+        << pair.value.second << "<=" << units_.size();
   }
 #endif
 }

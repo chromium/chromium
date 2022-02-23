@@ -8,6 +8,7 @@
 #include <stddef.h>
 
 #include "base/time/time.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/service_worker_context.h"
 #include "third_party/blink/public/common/service_worker/service_worker_status_code.h"
 #include "ui/base/page_transition_types.h"
@@ -131,14 +132,6 @@ class ServiceWorkerMetrics {
     base::TimeTicks local_end;
   };
 
-  // Used for UMA. Append-only.
-  enum class OfflineCapableReason {
-    kTimeout = 0,
-    kSuccess = 1,
-    kRedirect = 2,
-    kMaxValue = kRedirect,
-  };
-
   ServiceWorkerMetrics() = delete;
   ServiceWorkerMetrics(const ServiceWorkerMetrics&) = delete;
   ServiceWorkerMetrics& operator=(const ServiceWorkerMetrics&) = delete;
@@ -192,11 +185,11 @@ class ServiceWorkerMetrics {
   // navigation preload request is to be sent.
   static void RecordNavigationPreloadRequestHeaderSize(size_t size);
 
-  // Records the reason a service worker was deemed to be offline capable. The
-  // reason may be that the service worker responded with 2xx..., 3xx..., or the
-  // check timed out.
-  static void RecordOfflineCapableReason(blink::ServiceWorkerStatusCode status,
-                                         int status_code);
+  static void RecordSkipServiceWorkerOnNavigationOnBrowserStartup(
+      bool skip_service_worker);
+
+  static void RecordFirstFindRegistrationForClientUrlTimeOnBrowserStartup(
+      base::TimeDelta time);
 };
 
 }  // namespace content

@@ -8,6 +8,8 @@
 #include <windows.h>
 #include <string>
 
+#include "base/dcheck_is_on.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/win/scoped_handle.h"
 #include "sandbox/win/src/sandbox.h"
@@ -158,7 +160,7 @@ class TestRunner {
   int InternalRunTest(const wchar_t* command);
   DWORD timeout_ms();
 
-  BrokerServices* broker_;
+  raw_ptr<BrokerServices> broker_;
   scoped_refptr<TargetPolicy> policy_;
   base::TimeDelta timeout_;
   SboxTestsState state_;
@@ -168,6 +170,10 @@ class TestRunner {
   bool disable_csrss_;
   bool kill_on_destruction_;
   bool release_policy_in_run_ = false;
+#if DCHECK_IS_ON()
+  // We only allow the policy to be applied to a target once.
+  bool policy_applied_ = false;
+#endif
   base::win::ScopedHandle target_process_;
   DWORD target_process_id_;
 };

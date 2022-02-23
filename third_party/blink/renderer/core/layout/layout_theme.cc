@@ -103,7 +103,7 @@ ControlPart AutoAppearanceFor(const Element& element) {
         type == input_type_names::kDatetimeLocal ||
         type == input_type_names::kMonth || type == input_type_names::kTime ||
         type == input_type_names::kWeek) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       return kMenulistPart;
 #else
       return kTextFieldPart;
@@ -292,10 +292,6 @@ String LayoutTheme::ExtraDefaultStyleSheet() {
   return g_empty_string;
 }
 
-String LayoutTheme::ExtraQuirksStyleSheet() {
-  return String();
-}
-
 String LayoutTheme::ExtraFullscreenStyleSheet() {
   return String();
 }
@@ -303,7 +299,7 @@ String LayoutTheme::ExtraFullscreenStyleSheet() {
 Color LayoutTheme::ActiveSelectionBackgroundColor(
     mojom::blink::ColorScheme color_scheme) const {
   Color color = PlatformActiveSelectionBackgroundColor(color_scheme);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // BlendWithWhite() darkens Mac system colors too much.
   // Apply .8 (204/255) alpha instead, same as Safari.
   if (color_scheme == mojom::blink::ColorScheme::kDark)
@@ -523,6 +519,10 @@ void LayoutTheme::PlatformColorsDidChange() {
 
 void LayoutTheme::ColorSchemeDidChange() {
   Page::ColorSchemeChanged();
+}
+
+void LayoutTheme::ColorProvidersDidChange() {
+  Page::ColorProvidersChanged();
 }
 
 void LayoutTheme::SetCaretBlinkInterval(base::TimeDelta interval) {

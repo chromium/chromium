@@ -14,8 +14,8 @@ GEN('#include "content/public/test/browser_test.h"');
 
 var PersonalizationAppComponentBrowserTest = class extends PolymerTest {
   get browsePreload() {
-    return 'chrome://personalization/test_loader.html?' +
-        'module=chromeos/personalization_app/' +
+    return 'chrome://personalization/test_loader.html?host=webui-test' +
+        '&module=chromeos/personalization_app/' +
         'personalization_app_component_test.js';
   }
 

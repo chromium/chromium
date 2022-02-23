@@ -13,11 +13,11 @@
 #include "chrome/browser/cart/cart_db.h"
 #include "chrome/browser/cart/cart_db_content.pb.h"
 #include "chrome/browser/cart/cart_discount_metric_collector.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/commerce/coupons/coupon_db_content.pb.h"
 #include "chrome/browser/endpoint_fetcher/endpoint_fetcher.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/search/ntp_features.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
@@ -131,11 +131,11 @@ RuleDiscountInfo CovertToRuleDiscountInfo(
                             0 /*highest_percent_off*/);
   }
 
-  cart_discounts.reserve(rule_discount_list->GetList().size());
+  cart_discounts.reserve(rule_discount_list->GetListDeprecated().size());
 
   int highest_percent_off = 0;
   int64_t highest_amount_off = 0;
-  for (const auto& rule_discount : rule_discount_list->GetList()) {
+  for (const auto& rule_discount : rule_discount_list->GetListDeprecated()) {
     cart_db::RuleDiscountInfoProto discount_proto;
 
     // Parse ruleId
@@ -257,9 +257,10 @@ CouponDiscountInfo ConvertToCouponDiscountInfo(
     return CouponDiscountInfo({});
   }
 
-  coupons.reserve(coupon_discount_list->GetList().size());
+  coupons.reserve(coupon_discount_list->GetListDeprecated().size());
 
-  for (const auto& coupon_discount : coupon_discount_list->GetList()) {
+  for (const auto& coupon_discount :
+       coupon_discount_list->GetListDeprecated()) {
     coupon_db::FreeListingCouponInfoProto coupon_info_proto;
 
     // Parse type
@@ -458,9 +459,9 @@ std::string CartDiscountFetcher::generatePostData(
 
     auto cart_dict = std::make_unique<base::DictionaryValue>();
     // Set merchantIdentifier.
-    auto merchant_dict = std::make_unique<base::DictionaryValue>();
-    merchant_dict->SetString("cartUrl", cart_proto.merchant_cart_url());
-    cart_dict->SetDictionary("merchantIdentifier", std::move(merchant_dict));
+    auto* merchant_dict = cart_dict->SetKey(
+        "merchantIdentifier", base::Value(base::Value::Type::DICTIONARY));
+    merchant_dict->SetStringKey("cartUrl", cart_proto.merchant_cart_url());
 
     // Set CartAbandonedTimeMinutes.
     int cart_abandoned_time_mintues =
@@ -516,7 +517,7 @@ void CartDiscountFetcher::OnDiscountsAvailable(
     return;
   }
 
-  for (const auto& merchant_discount : discounts_list->GetList()) {
+  for (const auto& merchant_discount : discounts_list->GetListDeprecated()) {
     // Parse merchant_identifier.
     const base::Value* merchant_identifier =
         merchant_discount.FindKey("merchantIdentifier");

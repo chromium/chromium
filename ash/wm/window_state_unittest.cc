@@ -10,14 +10,17 @@
 #include "ash/metrics/pip_uma.h"
 #include "ash/public/cpp/shelf_config.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/test_window_builder.h"
 #include "ash/wm/pip/pip_positioner.h"
+#include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "ash/wm/window_state_util.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/ui/base/window_state_type.h"
 #include "chromeos/ui/wm/features.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/test/test_window_delegate.h"
@@ -142,6 +145,74 @@ TEST_F(WindowStateTest, SnapWindowMinimumSizeLandscape) {
                           aura::client::kResizeBehaviorCanMaximize);
   // It should be possible to snap a window if it can be maximized.
   EXPECT_TRUE(window_state->CanSnap());
+}
+
+// Test that a unresizable snappable property allows the window to be snapped.
+TEST_F(WindowStateTest, UnresizableWindowSnap) {
+  const std::array<bool, 2> orientation_params{false, true};
+
+  for (const auto is_landscape : orientation_params) {
+    UpdateDisplay(is_landscape ? "900x600,200x100" : "600x900,100x200");
+    auto* const screen = display::Screen::GetScreen();
+    ASSERT_EQ(2, screen->GetNumDisplays());
+
+    const display::Display primary_display = screen->GetAllDisplays()[0];
+    const display::Display secondary_small_display =
+        screen->GetAllDisplays()[1];
+    ASSERT_EQ(is_landscape, primary_display.is_landscape());
+    ASSERT_EQ(is_landscape, secondary_small_display.is_landscape());
+
+    std::unique_ptr<aura::Window> window(
+        CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
+
+    // Make the window unresizable.
+    window->SetProperty(aura::client::kResizeBehaviorKey,
+                        aura::client::kResizeBehaviorNone);
+
+    auto* const window_state = WindowState::Get(window.get());
+    EXPECT_FALSE(window_state->CanSnap());
+    EXPECT_FALSE(window_state->CanSnapOnDisplay(primary_display));
+    EXPECT_FALSE(window_state->CanSnapOnDisplay(secondary_small_display));
+
+    auto* const opposite_orientation_size =
+        is_landscape ? new gfx::Size(0, 300) : new gfx::Size(300, 0);
+    window->SetProperty(kUnresizableSnappedSizeKey, opposite_orientation_size);
+    EXPECT_FALSE(window_state->CanSnap());
+    EXPECT_FALSE(window_state->CanSnapOnDisplay(primary_display));
+    EXPECT_FALSE(window_state->CanSnapOnDisplay(secondary_small_display));
+
+    auto* const correct_orientation_size =
+        is_landscape ? new gfx::Size(300, 0) : new gfx::Size(0, 300);
+    window->SetProperty(kUnresizableSnappedSizeKey, correct_orientation_size);
+    EXPECT_TRUE(window_state->CanSnap());
+    EXPECT_TRUE(window_state->CanSnapOnDisplay(primary_display));
+    EXPECT_FALSE(window_state->CanSnapOnDisplay(secondary_small_display));
+
+    window_util::MoveWindowToDisplay(window.get(),
+                                     secondary_small_display.id());
+    EXPECT_FALSE(window_state->CanSnap());
+    EXPECT_TRUE(window_state->CanSnapOnDisplay(primary_display));
+    EXPECT_FALSE(window_state->CanSnapOnDisplay(secondary_small_display));
+  }
+}
+
+// Test that a unresizable snappable property doesn't have any effect in tablet
+// mode.
+TEST_F(WindowStateTest, UnresizableWindowSnapInTablet) {
+  UpdateDisplay("900x600");
+
+  // Enter tablet mode.
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  std::unique_ptr<aura::Window> window(
+      CreateTestWindowInShellWithBounds(gfx::Rect(100, 100, 100, 100)));
+
+  window->SetProperty(aura::client::kResizeBehaviorKey,
+                      aura::client::kResizeBehaviorNone);
+  window->SetProperty(kUnresizableSnappedSizeKey, new gfx::Size(300, 0));
+
+  auto* const window_state = WindowState::Get(window.get());
+  EXPECT_FALSE(window_state->CanSnap());
 }
 
 // Test that a window's state type can be changed to PIP via a WM transition
@@ -884,6 +955,329 @@ TEST_F(WindowStateTest, OpacityChange) {
 
   window_state->OnWMEvent(&snap_left);
   EXPECT_FALSE(window->GetTransparent());
+}
+
+// Tests the basic functionalties related to window state restore history stack.
+TEST_F(WindowStateTest, WindowStateRestoreHistoryBasicFunctionalites) {
+  // Start with kDefault window state.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  const std::vector<chromeos::WindowStateType>& restore_stack =
+      window_state->window_state_restore_history_for_testing();
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Transition to kPrimarySnapped window state.
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Then transition to kMaximized window state.
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(window_state->GetRestoreWindowState(),
+            WindowStateType::kPrimarySnapped);
+
+  // Then transition to kFullscreen window state.
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  EXPECT_EQ(restore_stack.size(), 3u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(restore_stack[2], WindowStateType::kMaximized);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kMaximized);
+
+  // Then transition to kMinimized window state.
+  const WMEvent minimized_event(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimized_event);
+  EXPECT_EQ(restore_stack.size(), 4u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(restore_stack[2], WindowStateType::kMaximized);
+  EXPECT_EQ(restore_stack[3], WindowStateType::kFullscreen);
+  EXPECT_EQ(window_state->GetRestoreWindowState(),
+            WindowStateType::kFullscreen);
+
+  // Then start restore from here. It should restore back to kFullscreen window
+  // state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kFullscreen);
+  EXPECT_EQ(restore_stack.size(), 3u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(restore_stack[2], WindowStateType::kMaximized);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kMaximized);
+
+  // Then restore back to kMaximized window state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kMaximized);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(window_state->GetRestoreWindowState(),
+            WindowStateType::kPrimarySnapped);
+
+  // Then restore back to kPrimarySnapped window state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Then restore back to kNormal window state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Restore a kNormal window state window will keep the window's kNormal window
+  // state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+}
+
+// Tests that window state transitioning from higher to lower layer will erase
+// the window state restore history in between.
+TEST_F(WindowStateTest, TransitionFromHighToLowerLayerEraseRestoreHistory) {
+  // Start with kDefault window state.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  const std::vector<chromeos::WindowStateType>& restore_stack =
+      window_state->window_state_restore_history_for_testing();
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Transition to kPrimarySnapped window state.
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+
+  // Then transition to kMaximized window state.
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize_event);
+
+  // Then transition to kFullscreen window state.
+  const WMEvent fullscreen_event(WM_EVENT_FULLSCREEN);
+  window_state->OnWMEvent(&fullscreen_event);
+  EXPECT_EQ(restore_stack.size(), 3u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(restore_stack[2], WindowStateType::kMaximized);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kMaximized);
+
+  // Now transition back to kPrimarySnapped window state. It should have erased
+  // any restore history after kPrimarySnapped.
+  window_state->OnWMEvent(&snap_left);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+}
+
+// Tests the restore behaviors when window state transitions in the same layer.
+// There are 3 cases: {kNormal & kDefault}, {kPrimarySnapped &
+// kSecondarySnapped}, and {kMinimized & kPip}.
+TEST_F(WindowStateTest, TransitionInTheSameLayerKeepSameRestoreHistory) {
+  // First we test kNormal & kDefault.
+  // Start with kDefault window state.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  const std::vector<chromeos::WindowStateType>& restore_stack =
+      window_state->window_state_restore_history_for_testing();
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Transition to kNormal window state. Since it's on the same layer as
+  // kDefault, kDefault won't be pushed into the restore history stack.
+  const WMEvent normal_event(WM_EVENT_NORMAL);
+  window_state->OnWMEvent(&normal_event);
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Test kPrimarySnapped & kSecondarySnapped.
+  // Transition to kPrimarySnapped window state.
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kNormal);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Transition to kSecondarySnapped window state. Since it's on the same layer
+  // as kPrimarySnapped, kPrimarySnapped won't be pushed into the restore
+  // history stack.
+  const WMEvent snap_right(WM_EVENT_SNAP_SECONDARY);
+  window_state->OnWMEvent(&snap_right);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kNormal);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Test kMinimized & kPip.
+  // Transition to kMinimized window state.
+  const WMEvent minimized_event(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimized_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kNormal);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kSecondarySnapped);
+  EXPECT_EQ(window_state->GetRestoreWindowState(),
+            WindowStateType::kSecondarySnapped);
+
+  // Transition to kPip Window state. Since it's on the same layer as
+  // kMinimized, kMinimized won't be pushed into the restore history stack.
+  const WMEvent pip_event(WM_EVENT_PIP);
+  window_state->OnWMEvent(&pip_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kNormal);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kSecondarySnapped);
+  EXPECT_EQ(window_state->GetRestoreWindowState(),
+            WindowStateType::kSecondarySnapped);
+}
+
+// Test the restore behaviors of kPinned and kTrustedPinned window state. They
+// are different with kFullscreen restore behaviors.
+TEST_F(WindowStateTest, PinnedRestoreTest) {
+  // Start with kDefault window state.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  const std::vector<chromeos::WindowStateType>& restore_stack =
+      window_state->window_state_restore_history_for_testing();
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Transition to kPrimarySnapped window state.
+  const WMEvent snap_left(WM_EVENT_SNAP_PRIMARY);
+  window_state->OnWMEvent(&snap_left);
+
+  // Then transition to kMaximized window state.
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kPrimarySnapped);
+  EXPECT_EQ(window_state->GetRestoreWindowState(),
+            WindowStateType::kPrimarySnapped);
+
+  // Then transition to kPinned window state. Since kPinned window state is not
+  // supported in the window state restore history layer, the restore history
+  // stack will be cleared. It can only restore back to kNormal window state.
+  const WMEvent pinned_event(WM_EVENT_PIN);
+  window_state->OnWMEvent(&pinned_event);
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Same should happen for kTrustedPinned as well.
+  window_state->OnWMEvent(&snap_left);
+  window_state->OnWMEvent(&maximize_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(window_state->GetRestoreWindowState(),
+            WindowStateType::kPrimarySnapped);
+
+  const WMEvent trusted_pinned_event(WM_EVENT_TRUSTED_PIN);
+  window_state->OnWMEvent(&trusted_pinned_event);
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+}
+
+// Test the restore behaviors of kMinimized and kPip window state. They are both
+// viewed as the final state in the restore layer.
+TEST_F(WindowStateTest, MinimizedAndPipRestoreTest) {
+  // Start with kDefault window state.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_TRUE(window_state->IsNormalStateType());
+
+  const std::vector<chromeos::WindowStateType>& restore_stack =
+      window_state->window_state_restore_history_for_testing();
+  EXPECT_TRUE(restore_stack.empty());
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Maximize the window.
+  const WMEvent maximize_event(WM_EVENT_MAXIMIZE);
+  window_state->OnWMEvent(&maximize_event);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+
+  // kPip window can be minimized to kMinimized window state, but restoring from
+  // kMinimized window state can't restore back to kPip window state.
+  const WMEvent pip_event(WM_EVENT_PIP);
+  window_state->OnWMEvent(&pip_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kMaximized);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kMaximized);
+
+  const WMEvent minimized_event(WM_EVENT_MINIMIZE);
+  window_state->OnWMEvent(&minimized_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kMaximized);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kMaximized);
+
+  // Restore the minimized window. It should go back to pre-pip window state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kMaximized);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+
+  // Similarly, if the pre-pip window state is kMinimized, restoring from kPip
+  // should go back to the pre-minimized window state.
+  window_state->OnWMEvent(&minimized_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kMaximized);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kMaximized);
+
+  window_state->OnWMEvent(&pip_event);
+  EXPECT_EQ(restore_stack.size(), 2u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(restore_stack[1], WindowStateType::kMaximized);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kMaximized);
+
+  // Restore the Pip window. It should go back to pre-minimized window state.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kMaximized);
+  EXPECT_EQ(restore_stack.size(), 1u);
+  EXPECT_EQ(restore_stack[0], WindowStateType::kDefault);
+  EXPECT_EQ(window_state->GetRestoreWindowState(), WindowStateType::kNormal);
+}
+
+// Tests the restore behavior for default or normal window.
+TEST_F(WindowStateTest, NormalOrDefaultRestore) {
+  // Start with kDefault window state.
+  std::unique_ptr<aura::Window> window = CreateAppWindow();
+  WindowState* window_state = WindowState::Get(window.get());
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kDefault);
+
+  // Restoring a kDefault window will change its window state to kNormal.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
+
+  // Restoring kNormal window will do nothing.
+  window_state->Restore();
+  EXPECT_EQ(window_state->GetStateType(), WindowStateType::kNormal);
 }
 
 // Test WindowStateTest functionalities with portrait display. This test is

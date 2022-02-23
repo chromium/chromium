@@ -164,7 +164,8 @@ suite('TrafficCountersTest', function() {
     managedProperties.connectionState =
         chromeos.networkConfig.mojom.ConnectionStateType.kConnected;
     managedProperties.connectable = true;
-    managedProperties.trafficCounterResetTime = FAKE_INITIAL_LAST_RESET_TIME;
+    managedProperties.trafficCounterProperties.lastResetTime =
+        FAKE_INITIAL_LAST_RESET_TIME;
     networkConfigRemote.setManagedPropertiesForTest(managedProperties);
     await flushAsync();
 

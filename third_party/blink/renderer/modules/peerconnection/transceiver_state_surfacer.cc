@@ -104,7 +104,7 @@ void TransceiverStateSurfacer::Initialize(
         CHECK(sender_track_ref);
       }
       sender_state = blink::RtpSenderState(
-          main_task_runner_, signaling_task_runner_, webrtc_sender.get(),
+          main_task_runner_, signaling_task_runner_, webrtc_sender,
           std::move(sender_track_ref), webrtc_sender->stream_ids());
     }
     // Create the receiver state.
@@ -185,6 +185,10 @@ bool SurfaceSenderStateOnly::stopped() const {
   return false;
 }
 
+bool SurfaceSenderStateOnly::stopping() const {
+  return false;
+}
+
 webrtc::RtpTransceiverDirection SurfaceSenderStateOnly::direction() const {
   return webrtc::RtpTransceiverDirection::kSendOnly;
 }
@@ -201,6 +205,33 @@ SurfaceSenderStateOnly::current_direction() const {
 
 void SurfaceSenderStateOnly::Stop() {
   NOTIMPLEMENTED();
+}
+
+webrtc::RTCError SurfaceSenderStateOnly::SetCodecPreferences(
+    rtc::ArrayView<webrtc::RtpCodecCapability>) {
+  RTC_DCHECK_NOTREACHED() << "Not implemented";
+  return {};
+}
+
+std::vector<webrtc::RtpCodecCapability>
+SurfaceSenderStateOnly::codec_preferences() const {
+  return {};
+}
+
+std::vector<webrtc::RtpHeaderExtensionCapability>
+SurfaceSenderStateOnly::HeaderExtensionsToOffer() const {
+  return {};
+}
+
+webrtc::RTCError SurfaceSenderStateOnly::SetOfferedRtpHeaderExtensions(
+    rtc::ArrayView<const webrtc::RtpHeaderExtensionCapability>
+        header_extensions_to_offer) {
+  return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+}
+
+std::vector<webrtc::RtpHeaderExtensionCapability>
+SurfaceSenderStateOnly::HeaderExtensionsNegotiated() const {
+  return {};
 }
 
 SurfaceReceiverStateOnly::SurfaceReceiverStateOnly(
@@ -233,6 +264,10 @@ bool SurfaceReceiverStateOnly::stopped() const {
   return false;
 }
 
+bool SurfaceReceiverStateOnly::stopping() const {
+  return false;
+}
+
 webrtc::RtpTransceiverDirection SurfaceReceiverStateOnly::direction() const {
   return webrtc::RtpTransceiverDirection::kRecvOnly;
 }
@@ -249,6 +284,33 @@ SurfaceReceiverStateOnly::current_direction() const {
 
 void SurfaceReceiverStateOnly::Stop() {
   NOTIMPLEMENTED();
+}
+
+webrtc::RTCError SurfaceReceiverStateOnly::SetCodecPreferences(
+    rtc::ArrayView<webrtc::RtpCodecCapability>) {
+  RTC_DCHECK_NOTREACHED() << "Not implemented";
+  return {};
+}
+
+std::vector<webrtc::RtpCodecCapability>
+SurfaceReceiverStateOnly::codec_preferences() const {
+  return {};
+}
+
+std::vector<webrtc::RtpHeaderExtensionCapability>
+SurfaceReceiverStateOnly::HeaderExtensionsToOffer() const {
+  return {};
+}
+
+webrtc::RTCError SurfaceReceiverStateOnly::SetOfferedRtpHeaderExtensions(
+    rtc::ArrayView<const webrtc::RtpHeaderExtensionCapability>
+        header_extensions_to_offer) {
+  return webrtc::RTCError(webrtc::RTCErrorType::UNSUPPORTED_OPERATION);
+}
+
+std::vector<webrtc::RtpHeaderExtensionCapability>
+SurfaceReceiverStateOnly::HeaderExtensionsNegotiated() const {
+  return {};
 }
 
 }  // namespace blink

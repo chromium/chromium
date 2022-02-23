@@ -10,10 +10,13 @@ interface AbortController
     method constructor
 interface AbortSignal : EventTarget
     static method abort
+    static method timeout
     attribute @@toStringTag
     getter aborted
     getter onabort
+    getter reason
     method constructor
+    method throwIfAborted
     setter onabort
 interface AbsoluteOrientationSensor : OrientationSensor
     attribute @@toStringTag
@@ -291,6 +294,7 @@ interface AppHistoryNavigateEvent : Event
     method transitionWhile
 interface AppHistoryTransition
     attribute @@toStringTag
+    getter finished
     getter from
     getter navigationType
     method constructor
@@ -697,6 +701,9 @@ interface CSSConditionRule : CSSGroupingRule
     attribute @@toStringTag
     getter conditionText
     method constructor
+interface CSSContainerRule : CSSConditionRule
+    attribute @@toStringTag
+    method constructor
 interface CSSCounterStyleRule : CSSRule
     attribute @@toStringTag
     getter additiveSymbols
@@ -726,6 +733,13 @@ interface CSSFontFaceRule : CSSRule
     attribute @@toStringTag
     getter style
     method constructor
+interface CSSFontPaletteValuesRule : CSSRule
+    attribute @@toStringTag
+    getter basePalette
+    getter fontFamily
+    getter name
+    getter overrideColors
+    method constructor
 interface CSSGroupingRule : CSSRule
     attribute @@toStringTag
     getter cssRules
@@ -749,6 +763,7 @@ interface CSSImageValue : CSSStyleValue
 interface CSSImportRule : CSSRule
     attribute @@toStringTag
     getter href
+    getter layerName
     getter media
     getter styleSheet
     method constructor
@@ -777,9 +792,17 @@ interface CSSKeywordValue : CSSStyleValue
     setter value
 interface CSSLayerBlockRule : CSSGroupingRule
     attribute @@toStringTag
+    getter name
     method constructor
 interface CSSLayerStatementRule : CSSRule
     attribute @@toStringTag
+    getter nameList
+    method constructor
+interface CSSMathClamp : CSSMathValue
+    attribute @@toStringTag
+    getter lower
+    getter upper
+    getter value
     method constructor
 interface CSSMathInvert : CSSMathValue
     attribute @@toStringTag
@@ -1757,7 +1780,6 @@ interface Document : Node
     attribute @@unscopables
     getter URL
     getter activeElement
-    getter addressSpace
     getter adoptedStyleSheets
     getter alinkColor
     getter all
@@ -1815,7 +1837,9 @@ interface Document : Node
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -2018,7 +2042,9 @@ interface Document : Node
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -2175,9 +2201,10 @@ interface EditContext : EventTarget
     method attachedElements
     method characterBounds
     method constructor
-    method updateBounds
     method updateCharacterBounds
+    method updateControlBounds
     method updateSelection
+    method updateSelectionBounds
     method updateText
     setter enterKeyHint
     setter inputMode
@@ -2622,7 +2649,7 @@ interface FeaturePolicy
     method features
     method getAllowlistForFeature
 interface FederatedCredential : Credential
-    static method logout
+    static method logoutRps
     static method revoke
     attribute @@toStringTag
     getter approvedBy
@@ -2688,7 +2715,6 @@ interface FileSystemFileHandle : FileSystemHandle
     method createWritable
     method getFile
     method move
-    method rename
 interface FileSystemHandle
     attribute @@toStringTag
     getter kind
@@ -2698,7 +2724,6 @@ interface FileSystemHandle
     method move
     method queryPermission
     method remove
-    method rename
     method requestPermission
 interface FileSystemWritableFileStream : WritableStream
     attribute @@toStringTag
@@ -2873,6 +2898,7 @@ interface HIDDevice : EventTarget
     getter vendorId
     method close
     method constructor
+    method forget
     method open
     method receiveFeatureReport
     method sendFeatureReport
@@ -3205,7 +3231,9 @@ interface HTMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -3327,7 +3355,9 @@ interface HTMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -3434,11 +3464,6 @@ interface HTMLEmbedElement : HTMLElement
     setter src
     setter type
     setter width
-interface HTMLFencedFrameElement : HTMLElement
-    attribute @@toStringTag
-    getter src
-    method constructor
-    setter src
 interface HTMLFieldSetElement : HTMLElement
     attribute @@toStringTag
     getter disabled
@@ -3649,6 +3674,7 @@ interface HTMLImageElement : HTMLElement
     attribute @@toStringTag
     getter align
     getter alt
+    getter attributionSrc
     getter border
     getter complete
     getter crossOrigin
@@ -3677,6 +3703,7 @@ interface HTMLImageElement : HTMLElement
     method decode
     setter align
     setter alt
+    setter attributionSrc
     setter border
     setter crossOrigin
     setter decoding
@@ -3819,6 +3846,7 @@ interface HTMLLegendElement : HTMLElement
 interface HTMLLinkElement : HTMLElement
     attribute @@toStringTag
     getter as
+    getter blocking
     getter charset
     getter crossOrigin
     getter disabled
@@ -3841,6 +3869,7 @@ interface HTMLLinkElement : HTMLElement
     getter type
     method constructor
     setter as
+    setter blocking
     setter charset
     setter crossOrigin
     setter disabled
@@ -4172,6 +4201,7 @@ interface HTMLScriptElement : HTMLElement
     static method supports
     attribute @@toStringTag
     getter async
+    getter blocking
     getter charset
     getter crossOrigin
     getter defer
@@ -4186,6 +4216,7 @@ interface HTMLScriptElement : HTMLElement
     getter type
     method constructor
     setter async
+    setter blocking
     setter charset
     setter crossOrigin
     setter defer
@@ -4237,13 +4268,25 @@ interface HTMLSelectElement : HTMLElement
     setter value
 interface HTMLSelectMenuElement : HTMLElement
     attribute @@toStringTag
+    getter disabled
     getter form
+    getter labels
     getter name
     getter open
+    getter required
+    getter selectedOption
     getter type
+    getter validationMessage
+    getter validity
     getter value
+    getter willValidate
+    method checkValidity
     method constructor
+    method reportValidity
+    method setCustomValidity
+    setter disabled
     setter name
+    setter required
     setter value
 interface HTMLSlotElement : HTMLElement
     attribute @@toStringTag
@@ -4275,11 +4318,13 @@ interface HTMLSpanElement : HTMLElement
     method constructor
 interface HTMLStyleElement : HTMLElement
     attribute @@toStringTag
+    getter blocking
     getter disabled
     getter media
     getter sheet
     getter type
     method constructor
+    setter blocking
     setter disabled
     setter media
     setter type
@@ -4757,6 +4802,7 @@ interface Image
     attribute @@toStringTag
     getter align
     getter alt
+    getter attributionSrc
     getter border
     getter complete
     getter crossOrigin
@@ -4785,6 +4831,7 @@ interface Image
     method decode
     setter align
     setter alt
+    setter attributionSrc
     setter border
     setter crossOrigin
     setter decoding
@@ -5085,7 +5132,9 @@ interface MathMLElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -5189,7 +5238,9 @@ interface MathMLElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -5692,6 +5743,7 @@ interface NDEFReader : EventTarget
     getter onreading
     getter onreadingerror
     method constructor
+    method makeReadOnly
     method scan
     method write
     setter onreading
@@ -5790,6 +5842,7 @@ interface Navigator
     getter serviceWorker
     getter storage
     getter storageBuckets
+    getter subApps
     getter usb
     getter userActivation
     getter userAgent
@@ -5813,7 +5866,6 @@ interface Navigator
     method getUserMedia
     method javaEnabled
     method queryHandwritingRecognizer
-    method queryHandwritingRecognizerSupport
     method registerProtocolHandler
     method requestMIDIAccess
     method requestMediaKeySystemAccess
@@ -5978,12 +6030,16 @@ interface OfflineAudioContext : BaseAudioContext
 interface OffscreenCanvas : EventTarget
     attribute @@toStringTag
     getter height
+    getter oncontextlost
+    getter oncontextrestored
     getter width
     method constructor
     method convertToBlob
     method getContext
     method transferToImageBitmap
     setter height
+    setter oncontextlost
+    setter oncontextrestored
     setter width
 interface OffscreenCanvasRenderingContext2D
     attribute @@toStringTag
@@ -6290,6 +6346,7 @@ interface PerformanceEntry
     getter duration
     getter entryType
     getter name
+    getter navigationCount
     getter startTime
     method constructor
     method toJSON
@@ -7211,7 +7268,9 @@ interface SVGElement : Element
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncopy
     getter oncuechange
     getter oncut
@@ -7317,7 +7376,9 @@ interface SVGElement : Element
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncopy
     setter oncuechange
     setter oncut
@@ -8192,7 +8253,6 @@ interface Sanitizer
     method sanitizeFor
 interface Scheduler
     attribute @@toStringTag
-    getter currentTaskSignal
     method constructor
     method postTask
 interface Scheduling
@@ -8593,6 +8653,11 @@ interface StyleSheetList
     method @@iterator
     method constructor
     method item
+interface SubApps
+    attribute @@toStringTag
+    method add
+    method constructor
+    method list
 interface SubmitEvent : Event
     attribute @@toStringTag
     getter submitter
@@ -9813,6 +9878,7 @@ interface WebGL2RenderingContext
     attribute WAIT_FAILED
     attribute ZERO
     getter canvas
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     method activeTexture
@@ -9893,6 +9959,7 @@ interface WebGL2RenderingContext
     method drawElements
     method drawElementsInstanced
     method drawRangeElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method endQuery
@@ -10366,6 +10433,7 @@ interface WebGLRenderingContext
     attribute VIEWPORT
     attribute ZERO
     getter canvas
+    getter drawingBufferFormat
     getter drawingBufferHeight
     getter drawingBufferWidth
     method activeTexture
@@ -10416,6 +10484,7 @@ interface WebGLRenderingContext
     method disableVertexAttribArray
     method drawArrays
     method drawElements
+    method drawingBufferStorage
     method enable
     method enableVertexAttribArray
     method finish
@@ -10537,8 +10606,6 @@ interface WebGLVertexArrayObject
 interface WebId
     attribute @@toStringTag
     method constructor
-    method get
-    method logout
     method provide
 interface WebKitCSSMatrix : DOMMatrixReadOnly
     attribute @@toStringTag
@@ -10694,11 +10761,11 @@ interface WindowControlsOverlay : EventTarget
     getter ongeometrychange
     getter visible
     method constructor
-    method getBoundingClientRect
+    method getTitlebarAreaRect
     setter ongeometrychange
 interface WindowControlsOverlayGeometryChangeEvent : Event
     attribute @@toStringTag
-    getter boundingRect
+    getter titlebarAreaRect
     getter visible
     method constructor
 interface Worker : EventTarget
@@ -10737,6 +10804,7 @@ interface WritableStream
     method getWriter
 interface WritableStreamDefaultController
     attribute @@toStringTag
+    getter signal
     method constructor
     method error
 interface WritableStreamDefaultWriter
@@ -11325,6 +11393,12 @@ namespace CSS
     method dpcm
     method dpi
     method dppx
+    method dvb
+    method dvh
+    method dvi
+    method dvmax
+    method dvmin
+    method dvw
     method em
     method escape
     method ex
@@ -11332,6 +11406,12 @@ namespace CSS
     method grad
     method in
     method kHz
+    method lvb
+    method lvh
+    method lvi
+    method lvmax
+    method lvmin
+    method lvw
     method mm
     method ms
     method number
@@ -11339,13 +11419,27 @@ namespace CSS
     method percent
     method pt
     method px
+    method qb
+    method qh
+    method qi
+    method qmax
+    method qmin
+    method qw
     method rad
     method registerProperty
     method rem
     method s
     method supports
+    method svb
+    method svh
+    method svi
+    method svmax
+    method svmin
+    method svw
     method turn
+    method vb
     method vh
+    method vi
     method vmax
     method vmin
     method vw
@@ -11361,6 +11455,7 @@ namespace CSS
     attribute propertyNamesInGlobal
     attribute testRunner
     attribute textInputController
+    getter anonymous
     getter appHistory
     getter attributionReporting
     getter caches
@@ -11410,7 +11505,9 @@ namespace CSS
     getter onchange
     getter onclick
     getter onclose
+    getter oncontextlost
     getter oncontextmenu
+    getter oncontextrestored
     getter oncuechange
     getter ondblclick
     getter ondevicemotion
@@ -11628,7 +11725,9 @@ namespace CSS
     setter onchange
     setter onclick
     setter onclose
+    setter oncontextlost
     setter oncontextmenu
+    setter oncontextrestored
     setter oncuechange
     setter ondblclick
     setter ondevicemotion

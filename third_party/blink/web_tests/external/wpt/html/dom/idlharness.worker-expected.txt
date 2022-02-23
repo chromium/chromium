@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 816 tests; 804 PASS, 12 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 822 tests; 813 PASS, 9 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Document: original interface defined
@@ -254,6 +254,12 @@ PASS HTMLTemplateElement interface: existence and properties of interface object
 PASS HTMLSlotElement interface: existence and properties of interface object
 PASS HTMLCanvasElement interface: existence and properties of interface object
 PASS CanvasRenderingContext2D interface: existence and properties of interface object
+PASS CanvasFilter interface: existence and properties of interface object
+FAIL CanvasFilter interface object length assert_equals: wrong value for CanvasFilter.length expected 0 but got 1
+PASS CanvasFilter interface object name
+PASS CanvasFilter interface: existence and properties of interface prototype object
+PASS CanvasFilter interface: existence and properties of interface prototype object's "constructor" property
+PASS CanvasFilter interface: existence and properties of interface prototype object's @@unscopables property
 PASS CanvasGradient interface: existence and properties of interface object
 PASS CanvasGradient interface object length
 PASS CanvasGradient interface object name
@@ -332,8 +338,8 @@ PASS OffscreenCanvas interface: attribute height
 PASS OffscreenCanvas interface: operation getContext(OffscreenRenderingContextId, optional any)
 PASS OffscreenCanvas interface: operation transferToImageBitmap()
 PASS OffscreenCanvas interface: operation convertToBlob(optional ImageEncodeOptions)
-FAIL OffscreenCanvas interface: attribute oncontextlost assert_true: The prototype object must have a property "oncontextlost" expected true got false
-FAIL OffscreenCanvas interface: attribute oncontextrestored assert_true: The prototype object must have a property "oncontextrestored" expected true got false
+PASS OffscreenCanvas interface: attribute oncontextlost
+PASS OffscreenCanvas interface: attribute oncontextrestored
 PASS OffscreenCanvasRenderingContext2D interface: existence and properties of interface object
 PASS OffscreenCanvasRenderingContext2D interface object length
 PASS OffscreenCanvasRenderingContext2D interface object name
@@ -405,12 +411,12 @@ PASS OffscreenCanvasRenderingContext2D interface: attribute font
 PASS OffscreenCanvasRenderingContext2D interface: attribute textAlign
 PASS OffscreenCanvasRenderingContext2D interface: attribute textBaseline
 PASS OffscreenCanvasRenderingContext2D interface: attribute direction
-FAIL OffscreenCanvasRenderingContext2D interface: attribute textLetterSpacing assert_true: The prototype object must have a property "textLetterSpacing" expected true got false
-FAIL OffscreenCanvasRenderingContext2D interface: attribute textWordSpacing assert_true: The prototype object must have a property "textWordSpacing" expected true got false
+PASS OffscreenCanvasRenderingContext2D interface: attribute letterSpacing
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontKerning
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontStretch
 PASS OffscreenCanvasRenderingContext2D interface: attribute fontVariantCaps
 PASS OffscreenCanvasRenderingContext2D interface: attribute textRendering
+PASS OffscreenCanvasRenderingContext2D interface: attribute wordSpacing
 PASS OffscreenCanvasRenderingContext2D interface: operation closePath()
 PASS OffscreenCanvasRenderingContext2D interface: operation moveTo(unrestricted double, unrestricted double)
 PASS OffscreenCanvasRenderingContext2D interface: operation lineTo(unrestricted double, unrestricted double)

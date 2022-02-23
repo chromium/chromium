@@ -18,6 +18,7 @@
 #include "base/callback.h"
 #include "base/check.h"
 #include "base/cpu.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/strings/string_split.h"
@@ -45,6 +46,7 @@
 #include "services/device/public/mojom/geolocation_context.mojom.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 #include "ui/display/display.h"
+#include "ui/display/display_util.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/geometry/rect.h"
 #include "url/gurl.h"
@@ -88,12 +90,12 @@ std::string GetOperatingSystemVersion() {
 // Adds the list of |fonts| to the |machine|.
 void AddFontsToFingerprint(const base::ListValue& fonts,
                            Fingerprint::MachineCharacteristics* machine) {
-  for (const auto& it : fonts.GetList()) {
+  for (const auto& it : fonts.GetListDeprecated()) {
     // Each item in the list is a two-element list such that the first element
     // is the font family and the second is the font name.
     DCHECK(it.is_list());
 
-    std::string font_name = it.GetList()[1].GetString();
+    std::string font_name = it.GetListDeprecated()[1].GetString();
 
     machine->add_font(font_name);
   }
@@ -214,7 +216,7 @@ class FingerprintDataLoader : public content::GpuDataManagerObserver {
 
   // The GPU data provider.
   // Weak reference because the GpuDataManager class is a singleton.
-  content::GpuDataManager* const gpu_data_manager_;
+  const raw_ptr<content::GpuDataManager> gpu_data_manager_;
 
   // Ensures that any observer registrations for the GPU data are cleaned up by
   // the time this object is destroyed.
@@ -291,7 +293,7 @@ FingerprintDataLoader::FingerprintDataLoader(
   // Load GPU data if needed.
   if (gpu_data_manager_->GpuAccessAllowed(nullptr) &&
       !gpu_data_manager_->IsEssentialGpuInfoAvailable()) {
-    gpu_observation_.Observe(gpu_data_manager_);
+    gpu_observation_.Observe(gpu_data_manager_.get());
     OnGpuInfoUpdate();
   }
 
@@ -322,7 +324,7 @@ void FingerprintDataLoader::OnGpuInfoUpdate() {
   if (!gpu_data_manager_->IsEssentialGpuInfoAvailable())
     return;
 
-  DCHECK(gpu_observation_.IsObservingSource(gpu_data_manager_));
+  DCHECK(gpu_observation_.IsObservingSource(gpu_data_manager_.get()));
   gpu_observation_.Reset();
   MaybeFillFingerprint();
 }
@@ -473,13 +475,21 @@ void GetFingerprint(
     const std::string& app_locale,
     const std::string& user_agent,
     base::OnceCallback<void(std::unique_ptr<Fingerprint>)> callback) {
-  gfx::Rect content_bounds = web_contents->GetContainerBounds();
-
+  gfx::Rect content_bounds;
   display::ScreenInfo screen_info;
-  content::RenderWidgetHostView* host_view =
-      web_contents->GetRenderWidgetHostView();
-  if (host_view)
-    screen_info = host_view->GetRenderWidgetHost()->GetScreenInfo();
+
+  // |web_contents| can be nullptr in the Clank settings page, as a user can
+  // open Clank settings without opening a tab. Thus, we will need to populate
+  // |screen_info| using display::DisplayUtil::GetDefaultScreenInfo().
+  if (web_contents) {
+    content_bounds = web_contents->GetContainerBounds();
+    base::raw_ptr<content::RenderWidgetHostView> host_view =
+        web_contents->GetRenderWidgetHostView();
+    if (host_view)
+      screen_info = host_view->GetRenderWidgetHost()->GetScreenInfo();
+  } else {
+    display::DisplayUtil::GetDefaultScreenInfo(&screen_info);
+  }
 
   internal::GetFingerprintInternal(
       obfuscated_gaia_id, window_bounds, content_bounds, screen_info, version,

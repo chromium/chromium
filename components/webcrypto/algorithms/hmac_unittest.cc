@@ -50,12 +50,12 @@ blink::WebCryptoAlgorithm CreateHmacImportAlgorithmWithLength(
 class WebCryptoHmacTest : public WebCryptoTestBase {};
 
 TEST_F(WebCryptoHmacTest, HMACSampleSets) {
-  base::ListValue tests;
-  ASSERT_TRUE(ReadJsonTestFileToList("hmac.json", &tests));
-  for (size_t test_index = 0; test_index < tests.GetList().size();
+  base::Value tests;
+  ASSERT_TRUE(ReadJsonTestFileAsList("hmac.json", &tests));
+  for (size_t test_index = 0; test_index < tests.GetListDeprecated().size();
        ++test_index) {
     SCOPED_TRACE(test_index);
-    const base::Value& test_value = tests.GetList()[test_index];
+    const base::Value& test_value = tests.GetListDeprecated()[test_index];
     ASSERT_TRUE(test_value.is_dict());
     const base::DictionaryValue* test =
         &base::Value::AsDictionaryValue(test_value);
@@ -333,7 +333,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkInputConsistency) {
   // Consistency rules when JWK value exists: Fail if inconsistency is found.
 
   // Pass: All input values are consistent with the JWK values.
-  dict.Clear();
+  dict.DictClear();
   dict.SetString("kty", "oct");
   dict.SetString("alg", "HS256");
   dict.SetString("use", "sig");
@@ -367,7 +367,7 @@ TEST_F(WebCryptoHmacTest, ImportJwkInputConsistency) {
 
   // Fail: Input algorithm (AES-CBC) is inconsistent with JWK value
   // (HMAC SHA256).
-  dict.Clear();
+  dict.DictClear();
   dict.SetString("kty", "oct");
   dict.SetString("alg", "HS256");
   dict.SetString("k", "l3nZEgZCeX8XRwJdWyK3rGB8qwjhdY8vOkbIvh4lxTuMao9Y_--hdg");

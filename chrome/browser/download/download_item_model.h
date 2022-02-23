@@ -9,7 +9,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/download/download_ui_model.h"
 #include "components/download/public/common/download_item.h"
@@ -76,6 +76,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool GetOpenWhenComplete() const override;
   bool IsOpenWhenCompleteByPolicy() const override;
   bool TimeRemaining(base::TimeDelta* remaining) const override;
+  base::Time GetEndTime() const override;
   bool GetOpened() const override;
   void SetOpened(bool opened) override;
   bool IsDone() const override;
@@ -92,7 +93,7 @@ class DownloadItemModel : public DownloadUIModel,
   bool HasUserGesture() const override;
   offline_items_collection::FailState GetLastFailState() const override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool IsCommandEnabled(const DownloadCommands* download_commands,
                         DownloadCommands::Command command) const override;
   bool IsCommandChecked(const DownloadCommands* download_commands,
@@ -120,7 +121,7 @@ class DownloadItemModel : public DownloadUIModel,
   // The DownloadItem that this model represents. Note that DownloadItemModel
   // itself shouldn't maintain any state since there can be more than one
   // DownloadItemModel in use with the same DownloadItem.
-  download::DownloadItem* download_;
+  raw_ptr<download::DownloadItem> download_;
 };
 
 #endif  // CHROME_BROWSER_DOWNLOAD_DOWNLOAD_ITEM_MODEL_H_

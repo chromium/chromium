@@ -35,6 +35,8 @@
 #include <xdg-shell-client-protocol.h>
 #include <xdg-shell-unstable-v6-client-protocol.h>
 
+#include "base/logging.h"
+
 namespace wl {
 namespace {
 
@@ -77,6 +79,25 @@ void delete_touch(wl_touch* touch) {
 
 }  // namespace
 
+bool CanBind(const std::string& interface,
+             uint32_t available_version,
+             uint32_t min_version,
+             uint32_t max_version) {
+  if (available_version < min_version) {
+    LOG(WARNING) << "Unable to bind to " << interface << " version "
+                 << available_version << ".  The minimum supported version is "
+                 << min_version << ".";
+    return false;
+  }
+
+  if (available_version > max_version) {
+    LOG(WARNING) << "Binding to " << interface << " version " << max_version
+                 << " but version " << available_version << " is available.";
+  }
+
+  return true;
+}
+
 void (*ObjectTraits<wl_cursor_theme>::deleter)(wl_cursor_theme*) =
     &wl_cursor_theme_destroy;
 
@@ -104,6 +125,7 @@ void (*ObjectTraits<wl_proxy>::deleter)(void*) = &wl_proxy_wrapper_destroy;
 
 // For convenience, keep aphabetical order in this list.
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(augmented_surface)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(augmented_sub_surface)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_device_manager)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(gtk_primary_selection_offer)
@@ -161,6 +183,7 @@ IMPLEMENT_WAYLAND_OBJECT_TRAITS(zcr_alpha_compositing_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibit_manager_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_idle_inhibitor_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_buffer_release_v1)
+IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_buffer_params_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_dmabuf_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_explicit_synchronization_v1)
 IMPLEMENT_WAYLAND_OBJECT_TRAITS(zwp_linux_surface_synchronization_v1)

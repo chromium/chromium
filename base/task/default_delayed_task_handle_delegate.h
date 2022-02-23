@@ -18,6 +18,7 @@ class BASE_EXPORT DefaultDelayedTaskHandleDelegate
     : public DelayedTaskHandle::Delegate {
  public:
   DefaultDelayedTaskHandleDelegate();
+  ~DefaultDelayedTaskHandleDelegate() override;
 
   // DelayedTaskHandle::Delegate:
   bool IsValid() const override;
@@ -28,8 +29,6 @@ class BASE_EXPORT DefaultDelayedTaskHandleDelegate
   OnceClosure BindCallback(OnceClosure callback);
 
  private:
-  ~DefaultDelayedTaskHandleDelegate() override;
-
   // Runs |callback|.
   void RunTask(OnceClosure callback);
 

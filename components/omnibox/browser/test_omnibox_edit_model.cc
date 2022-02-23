@@ -56,5 +56,5 @@ void TestOmniboxEditModel::OnPopupDataChanged(
 
 PrefService* TestOmniboxEditModel::GetPrefService() const {
   return pref_service_ == nullptr ? OmniboxEditModel::GetPrefService()
-                                  : pref_service_;
+                                  : pref_service_.get();
 }

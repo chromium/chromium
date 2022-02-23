@@ -108,7 +108,7 @@ bool BlockingUrlProtocol::SetPosition(int64_t position) {
 
 bool BlockingUrlProtocol::GetSize(int64_t* size_out) {
   base::AutoLock lock(data_source_lock_);
-  return data_source_ ? data_source_->GetSize(size_out) : 0;
+  return data_source_ ? data_source_->GetSize(size_out) : false;
 }
 
 bool BlockingUrlProtocol::IsStreaming() {

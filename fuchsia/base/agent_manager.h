@@ -10,7 +10,6 @@
 #include <lib/sys/cpp/component_context.h>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 
 namespace cr_fuchsia {

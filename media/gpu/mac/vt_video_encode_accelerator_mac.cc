@@ -6,14 +6,21 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/logging.h"
+#include "base/mac/foundation_util.h"
 #include "base/mac/mac_logging.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
+#include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "media/base/bitrate.h"
 #include "media/base/mac/video_frame_mac.h"
+
+// This is a min version of macOS where we want to support SVC encoding via
+// EnableLowLatencyRateControl flag. The flag is actually supported since 11.3,
+// but there we see frame drops even with ample bitrate budget. Excessive frame
+// drops were fixed in 12.1.
+#define LOW_LATENCY_FLAG_AVAILABLE_VER 12.0.1
 
 namespace media {
 
@@ -107,24 +114,23 @@ struct VTVideoEncodeAccelerator::BitstreamBufferRef {
 VTVideoEncodeAccelerator::VTVideoEncodeAccelerator()
     : h264_profile_(H264PROFILE_BASELINE),
       bitrate_adjuster_(.5, .95),
-      client_task_runner_(base::ThreadTaskRunnerHandle::Get()),
-      encoder_thread_("VTEncoderThread"),
+      client_task_runner_(base::SequencedTaskRunnerHandle::Get()),
+      encoder_thread_task_runner_(
+          base::ThreadPool::CreateSingleThreadTaskRunner({})),
       encoder_task_weak_factory_(this) {
   encoder_weak_ptr_ = encoder_task_weak_factory_.GetWeakPtr();
 }
 
 VTVideoEncodeAccelerator::~VTVideoEncodeAccelerator() {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
-
-  DCHECK(!encoder_thread_.IsRunning());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(!encoder_task_weak_factory_.HasWeakPtrs());
 }
 
 VideoEncodeAccelerator::SupportedProfiles
 VTVideoEncodeAccelerator::GetSupportedProfiles() {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   SupportedProfiles profiles;
   const bool rv = CreateCompressionSession(
@@ -140,6 +146,8 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
   profile.max_framerate_numerator = kMaxFrameRateNumerator;
   profile.max_framerate_denominator = kMaxFrameRateDenominator;
   profile.max_resolution = gfx::Size(kMaxResolutionWidth, kMaxResolutionHeight);
+  if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *))
+    profile.scalability_modes.push_back(SVCScalabilityMode::kL1T2);
   for (const auto& supported_profile : kSupportedProfiles) {
     profile.profile = supported_profile;
     profiles.push_back(profile);
@@ -150,7 +158,7 @@ VTVideoEncodeAccelerator::GetSupportedProfiles() {
 bool VTVideoEncodeAccelerator::Initialize(const Config& config,
                                           Client* client) {
   DVLOG(3) << __func__ << ": " << config.AsHumanReadableString();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(client);
 
   // Clients are expected to call Flush() before reinitializing the encoder.
@@ -181,11 +189,13 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
   bitstream_buffer_size_ = config.input_visible_size.GetArea();
   require_low_delay_ = config.require_low_delay;
 
-  if (!encoder_thread_.Start()) {
-    DLOG(ERROR) << "Failed spawning encoder thread.";
+  if (config.HasTemporalLayer())
+    num_temporal_layers_ = config.spatial_layers.front().num_of_temporal_layers;
+
+  if (num_temporal_layers_ > 2) {
+    DLOG(ERROR) << "Unsupported number of SVC temporal layers.";
     return false;
   }
-  encoder_thread_task_runner_ = encoder_thread_.task_runner();
 
   if (!ResetCompressionSession()) {
     DLOG(ERROR) << "Failed creating compression session.";
@@ -202,18 +212,18 @@ bool VTVideoEncodeAccelerator::Initialize(const Config& config,
 void VTVideoEncodeAccelerator::Encode(scoped_refptr<VideoFrame> frame,
                                       bool force_keyframe) {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&VTVideoEncodeAccelerator::EncodeTask,
-                     base::Unretained(this), std::move(frame), force_keyframe));
+      base::BindOnce(&VTVideoEncodeAccelerator::EncodeTask, encoder_weak_ptr_,
+                     std::move(frame), force_keyframe));
 }
 
 void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
     BitstreamBuffer buffer) {
   DVLOG(3) << __func__ << ": buffer size=" << buffer.size();
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   if (buffer.size() < bitstream_buffer_size_) {
     DLOG(ERROR) << "Output BitstreamBuffer isn't big enough: " << buffer.size()
@@ -236,7 +246,7 @@ void VTVideoEncodeAccelerator::UseOutputBitstreamBuffer(
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(&VTVideoEncodeAccelerator::UseOutputBitstreamBufferTask,
-                     base::Unretained(this), std::move(buffer_ref)));
+                     encoder_weak_ptr_, std::move(buffer_ref)));
 }
 
 void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
@@ -244,41 +254,38 @@ void VTVideoEncodeAccelerator::RequestEncodingParametersChange(
     uint32_t framerate) {
   DVLOG(3) << __func__ << ": bitrate=" << bitrate.ToString()
            << ": framerate=" << framerate;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   encoder_thread_task_runner_->PostTask(
       FROM_HERE,
       base::BindOnce(
           &VTVideoEncodeAccelerator::RequestEncodingParametersChangeTask,
-          base::Unretained(this), bitrate, framerate));
+          encoder_weak_ptr_, bitrate, framerate));
 }
 
 void VTVideoEncodeAccelerator::Destroy() {
   DVLOG(3) << __func__;
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   // Cancel all callbacks.
   client_ptr_factory_.reset();
 
-  if (encoder_thread_.IsRunning()) {
-    encoder_thread_task_runner_->PostTask(
-        FROM_HERE, base::BindOnce(&VTVideoEncodeAccelerator::DestroyTask,
-                                  base::Unretained(this)));
-    encoder_thread_.Stop();
-  } else {
-    DestroyTask();
-  }
-
-  delete this;
+  // VT resources need to be cleaned up on |encoder_thread_task_runner_|,
+  // but the object itself is supposed to be deleted on this runner, so when
+  // DestroyTask() is done we schedule deletion of |this|
+  auto delete_self = [](VTVideoEncodeAccelerator* self) { delete self; };
+  encoder_thread_task_runner_->PostTaskAndReply(
+      FROM_HERE,
+      base::BindOnce(&VTVideoEncodeAccelerator::DestroyTask, encoder_weak_ptr_),
+      base::BindOnce(delete_self, base::Unretained(this)));
 }
 
 void VTVideoEncodeAccelerator::Flush(FlushCallback flush_callback) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   encoder_thread_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(&VTVideoEncodeAccelerator::FlushTask,
-                     base::Unretained(this), std::move(flush_callback)));
+      FROM_HERE, base::BindOnce(&VTVideoEncodeAccelerator::FlushTask,
+                                encoder_weak_ptr_, std::move(flush_callback)));
 }
 
 bool VTVideoEncodeAccelerator::IsFlushSupported() {
@@ -387,7 +394,7 @@ void VTVideoEncodeAccelerator::SetAdjustedConstantBitrate(int32_t bitrate) {
   encoder_set_bitrate_ = bitrate;
   video_toolbox::SessionPropertySetter session_property_setter(
       compression_session_);
-  bool rv = session_property_setter.Set(
+  [[maybe_unused]] bool rv = session_property_setter.Set(
       kVTCompressionPropertyKey_AverageBitRate, encoder_set_bitrate_);
   rv &= session_property_setter.Set(
       kVTCompressionPropertyKey_DataRateLimits,
@@ -395,7 +402,6 @@ void VTVideoEncodeAccelerator::SetAdjustedConstantBitrate(int32_t bitrate) {
           encoder_set_bitrate_ / kBitsPerByte, 1.0f));
   DLOG_IF(ERROR, !rv)
       << "Couldn't change bitrate parameters of encode session.";
-  ALLOW_UNUSED_LOCAL(rv);
 }
 
 void VTVideoEncodeAccelerator::SetVariableBitrate(const Bitrate& bitrate) {
@@ -404,7 +410,7 @@ void VTVideoEncodeAccelerator::SetVariableBitrate(const Bitrate& bitrate) {
 
   video_toolbox::SessionPropertySetter session_property_setter(
       compression_session_);
-  bool rv =
+  [[maybe_unused]] bool rv =
       session_property_setter.Set(kVTCompressionPropertyKey_AverageBitRate,
                                   static_cast<int32_t>(bitrate.target()));
   rv &= session_property_setter.Set(kVTCompressionPropertyKey_DataRateLimits,
@@ -412,13 +418,10 @@ void VTVideoEncodeAccelerator::SetVariableBitrate(const Bitrate& bitrate) {
                                         bitrate.peak() / kBitsPerByte, 1.0f));
   DLOG_IF(ERROR, !rv)
       << "Couldn't change bitrate parameters of encode session.";
-  ALLOW_UNUSED_LOCAL(rv);
 }
 
 void VTVideoEncodeAccelerator::DestroyTask() {
-  DCHECK(thread_checker_.CalledOnValidThread() ||
-         (encoder_thread_.IsRunning() &&
-          encoder_thread_task_runner_->BelongsToCurrentThread()));
+  DCHECK(encoder_thread_task_runner_->BelongsToCurrentThread());
 
   // Cancel all encoder thread callbacks.
   encoder_task_weak_factory_.InvalidateWeakPtrs();
@@ -513,6 +516,11 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
                              0));
   const bool keyframe = !CFDictionaryContainsKey(
       sample_attachments, kCMSampleAttachmentKey_NotSync);
+  bool belongs_to_base_layer = true;
+  if (CFBooleanRef value_ptr = base::mac::GetValueFromDictionary<CFBooleanRef>(
+          sample_attachments, kCMSampleAttachmentKey_IsDependedOnByOthers)) {
+    belongs_to_base_layer = static_cast<bool>(CFBooleanGetValue(value_ptr));
+  }
 
   size_t used_buffer_size = 0;
   const bool copy_rv = video_toolbox::CopySampleBufferToAnnexBBuffer(
@@ -529,17 +537,17 @@ void VTVideoEncodeAccelerator::ReturnBitstreamBuffer(
     bitrate_adjuster_.Update(used_buffer_size);
   }
 
+  BitstreamBufferMetadata md(used_buffer_size, keyframe,
+                             encode_output->capture_timestamp);
+  md.h264.emplace().temporal_idx = belongs_to_base_layer ? 0 : 1;
   client_task_runner_->PostTask(
-      FROM_HERE,
-      base::BindOnce(
-          &Client::BitstreamBufferReady, client_, buffer_ref->id,
-          BitstreamBufferMetadata(used_buffer_size, keyframe,
-                                  encode_output->capture_timestamp)));
+      FROM_HERE, base::BindOnce(&Client::BitstreamBufferReady, client_,
+                                buffer_ref->id, std::move(md)));
   MaybeRunFlushCallback();
 }
 
 bool VTVideoEncodeAccelerator::ResetCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
   DestroyCompressionSession();
 
@@ -557,11 +565,19 @@ bool VTVideoEncodeAccelerator::ResetCompressionSession() {
 
 bool VTVideoEncodeAccelerator::CreateCompressionSession(
     const gfx::Size& input_size) {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
 
-  std::vector<CFTypeRef> encoder_keys(
-      1, kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder);
-  std::vector<CFTypeRef> encoder_values(1, kCFBooleanTrue);
+  std::vector<CFTypeRef> encoder_keys{
+      kVTVideoEncoderSpecification_RequireHardwareAcceleratedVideoEncoder};
+  std::vector<CFTypeRef> encoder_values{kCFBooleanTrue};
+
+  if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
+    if (require_low_delay_) {
+      encoder_keys.push_back(
+          kVTVideoEncoderSpecification_EnableLowLatencyRateControl);
+      encoder_values.push_back(kCFBooleanTrue);
+    }
+  }
   base::ScopedCFTypeRef<CFDictionaryRef> encoder_spec =
       video_toolbox::DictionaryWithKeysAndValues(
           encoder_keys.data(), encoder_values.data(), encoder_keys.size());
@@ -592,7 +608,7 @@ bool VTVideoEncodeAccelerator::CreateCompressionSession(
 }
 
 bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread());
+  DCHECK_CALLED_ON_VALID_SEQUENCE(client_sequence_checker_);
   DCHECK(compression_session_);
 
   video_toolbox::SessionPropertySetter session_property_setter(
@@ -613,15 +629,28 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
       kVTCompressionPropertyKey_MaxKeyFrameIntervalDuration, 240);
   DLOG_IF(ERROR, !rv) << " Setting session property failed.";
 
-  bool delay_count_rv =
-      session_property_setter.Set(kVTCompressionPropertyKey_MaxFrameDelayCount,
-                                  static_cast<int>(kNumInputBuffers));
-  if (!delay_count_rv) {
-    DLOG(ERROR) << " Setting frame delay count failed.";
-    if (require_low_delay_) {
-      // Setting MaxFrameDelayCount fails on low resolutions and arm64 macs,
-      // but we can use accelerated encoder anyway. See: crbug.com/1195177
-      return false;
+  if (session_property_setter.IsSupported(
+          kVTCompressionPropertyKey_MaxFrameDelayCount)) {
+    rv &= session_property_setter.Set(
+        kVTCompressionPropertyKey_MaxFrameDelayCount,
+        static_cast<int>(kNumInputBuffers));
+  } else {
+    DLOG(WARNING) << "MaxFrameDelayCount is not supported";
+  }
+
+  if (num_temporal_layers_ == 2) {
+    if (__builtin_available(macOS LOW_LATENCY_FLAG_AVAILABLE_VER, *)) {
+      if (!session_property_setter.IsSupported(
+              kVTCompressionPropertyKey_BaseLayerFrameRateFraction)) {
+        DLOG(ERROR) << "BaseLayerFrameRateFraction is not supported";
+        return false;
+      }
+      rv &= session_property_setter.Set(
+          kVTCompressionPropertyKey_BaseLayerFrameRateFraction, 0.5);
+      DLOG_IF(ERROR, !rv) << " Setting BaseLayerFrameRate property failed.";
+    } else {
+      DLOG(ERROR) << "SVC encoding is not supported on this OS version.";
+      rv = false;
     }
   }
 
@@ -629,10 +658,6 @@ bool VTVideoEncodeAccelerator::ConfigureCompressionSession() {
 }
 
 void VTVideoEncodeAccelerator::DestroyCompressionSession() {
-  DCHECK(thread_checker_.CalledOnValidThread() ||
-         (encoder_thread_.IsRunning() &&
-          encoder_thread_task_runner_->BelongsToCurrentThread()));
-
   if (compression_session_) {
     VTCompressionSessionInvalidate(compression_session_);
     compression_session_.reset();

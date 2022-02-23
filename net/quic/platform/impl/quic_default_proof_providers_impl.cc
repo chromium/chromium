@@ -17,24 +17,25 @@
 #include "net/quic/crypto/proof_source_chromium.h"
 #include "net/quic/crypto/proof_verifier_chromium.h"
 #include "net/quic/platform/impl/quic_chromium_clock.h"
+#include "net/third_party/quiche/src/common/platform/api/quiche_command_line_flags.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_flags.h"
 #include "net/third_party/quiche/src/quic/tools/simple_ticket_crypter.h"
 
-DEFINE_QUIC_COMMAND_LINE_FLAG(
+DEFINE_QUICHE_COMMAND_LINE_FLAG(
     bool,
     allow_unknown_root_cert,
     false,
     "If true, don't restrict cert verification to known roots");
 
-DEFINE_QUIC_COMMAND_LINE_FLAG(std::string,
-                              certificate_file,
-                              "",
-                              "Path to the certificate chain.");
+DEFINE_QUICHE_COMMAND_LINE_FLAG(std::string,
+                                certificate_file,
+                                "",
+                                "Path to the certificate chain.");
 
-DEFINE_QUIC_COMMAND_LINE_FLAG(std::string,
-                              key_file,
-                              "",
-                              "Path to the pkcs8 private key.");
+DEFINE_QUICHE_COMMAND_LINE_FLAG(std::string,
+                                key_file,
+                                "",
+                                "Path to the pkcs8 private key.");
 
 using net::CertVerifier;
 using net::ProofVerifierChromium;
@@ -86,7 +87,7 @@ std::unique_ptr<ProofSource> CreateDefaultProofSourceImpl() {
   proof_source->SetTicketCrypter(
       std::make_unique<SimpleTicketCrypter>(QuicChromiumClock::GetInstance()));
   CHECK(proof_source->Initialize(
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       base::FilePath(base::UTF8ToWide(GetQuicFlag(FLAGS_certificate_file))),
       base::FilePath(base::UTF8ToWide(GetQuicFlag(FLAGS_key_file))),
       base::FilePath()));

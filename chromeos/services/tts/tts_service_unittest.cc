@@ -21,6 +21,7 @@ using mojo::PendingRemote;
 
 namespace chromeos {
 namespace tts {
+namespace {
 
 using CreateOutputStreamCallback =
     base::OnceCallback<void(media::mojom::ReadWriteAudioDataPipePtr)>;
@@ -39,6 +40,7 @@ class MockAudioStreamFactory : public media::mojom::AudioStreamFactory {
       uint32_t shared_memory_count,
       bool enable_agc,
       base::ReadOnlySharedMemoryRegion key_press_count_buffer,
+      media::mojom::AudioProcessingConfigPtr processing_config,
       CreateInputStreamCallback callback) override {}
   void AssociateInputAndOutputForAec(
       const base::UnguessableToken& input_stream_id,
@@ -269,5 +271,6 @@ TEST_F(TtsServiceTest, ExplicitAudioTimepointing) {
   EXPECT_EQ(1, backing_observer.end_count);
 }
 
+}  // namespace
 }  // namespace tts
 }  // namespace chromeos

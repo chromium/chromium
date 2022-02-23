@@ -10,9 +10,7 @@ import android.animation.ObjectAnimator;
 import android.animation.ValueAnimator;
 import android.content.Context;
 import android.content.res.ColorStateList;
-import android.graphics.Bitmap;
 import android.graphics.Rect;
-import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Build.VERSION_CODES;
@@ -23,7 +21,6 @@ import android.view.ViewStub;
 import android.view.animation.BaseInterpolator;
 import android.view.animation.Interpolator;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
@@ -32,6 +29,7 @@ import androidx.annotation.StringRes;
 import androidx.appcompat.content.res.AppCompatResources;
 
 import org.chromium.base.supplier.ObservableSupplier;
+import org.chromium.chrome.browser.logo.LogoView;
 import org.chromium.chrome.browser.tabmodel.IncognitoStateProvider;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.browser.toolbar.HomeButton;
@@ -67,7 +65,7 @@ class StartSurfaceToolbarView extends RelativeLayout {
     private boolean mIsNewTabButtonAtStart;
     private boolean mShouldShowNewTabViewText;
     private HomeButton mHomeButton;
-    private ImageView mLogo;
+    private LogoView mLogo;
     private View mTabSwitcherButtonView;
 
     @Nullable
@@ -120,33 +118,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
         setIncognitoToggleTabSwitcherButtonXs();
     }
 
-    @Override
-    protected void onLayout(boolean changed, int l, int t, int r, int b) {
-        // TODO(https://crbug.com/1040526)
-
-        super.onLayout(changed, l, t, r, b);
-
-        if (mLogo.getVisibility() == View.GONE) return;
-
-        mLogoRect.set(mLogo.getLeft(), mLogo.getTop(), mLogo.getRight(), mLogo.getBottom());
-        for (int viewIndex = 0; viewIndex < getChildCount(); viewIndex++) {
-            View view = getChildAt(viewIndex);
-
-            // If the view is incognito toggle, it is fading out and will finally disappear.
-            if (view == mLogo || view.getVisibility() == View.GONE
-                    || view == mIncognitoToggleTabLayout) {
-                continue;
-            }
-
-            assert view.getVisibility() == View.VISIBLE;
-            mViewRect.set(view.getLeft(), view.getTop(), view.getRight(), view.getBottom());
-            if (Rect.intersects(mLogoRect, mViewRect)) {
-                mLogo.setVisibility(View.GONE);
-                break;
-            }
-        }
-    }
-
     void setGridTabSwitcherEnabled(boolean isGridTabSwitcherEnabled) {
         mNewTabButton.setGridTabSwitcherEnabled(isGridTabSwitcherEnabled);
     }
@@ -170,22 +141,6 @@ class StartSurfaceToolbarView extends RelativeLayout {
     void setLogoVisibility(boolean isVisible) {
         mIsLogoVisible = isVisible;
         if (!mShowTransitionAnimations) mLogo.setVisibility(getVisibility(isVisible));
-    }
-
-    /**
-     * Set the logo image.
-     * @param logoImage The logo image in bitmap format.
-     */
-    void setLogoImage(Bitmap logoImage) {
-        mLogo.setImageDrawable(new BitmapDrawable(getResources(), logoImage));
-    }
-
-    /**
-     * @param logoContentDescription The content description of the logo.
-     */
-    void setLogoContentDescription(String logoContentDescription) {
-        mLogo.setFocusable(logoContentDescription != null);
-        mLogo.setContentDescription(logoContentDescription);
     }
 
     /**

@@ -236,10 +236,10 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
   // extent. They should switch processes.
   const GURL& app_url(base_url.Resolve("path1/empty.html"));
   const GURL& non_app_url(base_url.Resolve("path3/empty.html"));
-  NavigateInRenderer(browser()->tab_strip_model()->GetWebContentsAt(2),
-                     non_app_url);
-  NavigateInRenderer(browser()->tab_strip_model()->GetWebContentsAt(3),
-                     app_url);
+  EXPECT_TRUE(NavigateInRenderer(
+      browser()->tab_strip_model()->GetWebContentsAt(2), non_app_url));
+  EXPECT_TRUE(NavigateInRenderer(
+      browser()->tab_strip_model()->GetWebContentsAt(3), app_url));
   EXPECT_NE(tab->GetMainFrame()->GetProcess(), browser()
                                                    ->tab_strip_model()
                                                    ->GetWebContentsAt(2)
@@ -253,8 +253,8 @@ IN_PROC_BROWSER_TEST_F(AppApiTest, AppProcess) {
 
   // If one of the popup tabs navigates back to the app, window.opener should
   // be valid.
-  NavigateInRenderer(browser()->tab_strip_model()->GetWebContentsAt(6),
-                     app_url);
+  EXPECT_TRUE(NavigateInRenderer(
+      browser()->tab_strip_model()->GetWebContentsAt(6), app_url));
   EXPECT_EQ(tab->GetMainFrame()->GetProcess(), browser()
                                                    ->tab_strip_model()
                                                    ->GetWebContentsAt(6)

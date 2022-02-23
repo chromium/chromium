@@ -57,14 +57,35 @@ bool ShouldRespondToRequest(blink::WebLocalFrame** frame_ptr,
   return true;
 }
 
+// Get or create a `child_name` object in the `parent` object.
+v8::Local<v8::Object> GetOrCreateChildObject(v8::Local<v8::Object> parent,
+                                             const std::string& child_name,
+                                             v8::Isolate* isolate,
+                                             v8::Local<v8::Context> context) {
+  v8::Local<v8::Object> child;
+  v8::Local<v8::Value> child_value;
+  if (!parent->Get(context, gin::StringToV8(isolate, child_name))
+           .ToLocal(&child_value) ||
+      !child_value->IsObject()) {
+    child = v8::Object::New(isolate);
+    parent->Set(context, gin::StringToSymbol(isolate, child_name), child)
+        .Check();
+  } else {
+    child = v8::Local<v8::Object>::Cast(child_value);
+  }
+  return child;
+}
+
 }  // namespace
 
-// Exposes two methods:
+// Exposes three methods:
 //  - chrome.send: Used to send messages to the browser. Requires the message
 //      name as the first argument and can have an optional second argument that
 //      should be an array.
 //  - chrome.getVariableValue: Returns value for the input variable name if such
 //      a value was set by the browser. Else will return an empty string.
+//  - chrome.timeTicks.nowInMicroseconds: Returns base::TimeTicks::Now() in
+//      microseconds. Used for performance measuring.
 void WebUIExtension::Install(blink::WebLocalFrame* frame) {
   v8::Isolate* isolate = blink::MainThreadIsolate();
   v8::HandleScope handle_scope(isolate);
@@ -86,6 +107,16 @@ void WebUIExtension::Install(blink::WebLocalFrame* frame) {
       ->Set(context, gin::StringToSymbol(isolate, "getVariableValue"),
             gin::CreateFunctionTemplate(
                 isolate, base::BindRepeating(&WebUIExtension::GetVariableValue))
+                ->GetFunction(context)
+                .ToLocalChecked())
+      .Check();
+
+  v8::Local<v8::Object> timeTicks =
+      GetOrCreateChildObject(chrome, "timeTicks", isolate, context);
+  timeTicks
+      ->Set(context, gin::StringToSymbol(isolate, "nowInMicroseconds"),
+            gin::CreateFunctionTemplate(
+                isolate, base::BindRepeating(&base::TimeTicks::Now))
                 ->GetFunction(context)
                 .ToLocalChecked())
       .Check();

@@ -6,13 +6,13 @@ package org.chromium.weblayer.test;
 
 import static org.chromium.content_public.browser.test.util.TestThreadUtils.runOnUiThreadBlocking;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.LargeTest;
 
 import org.hamcrest.Matchers;
@@ -25,6 +25,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.weblayer.Browser;
 import org.chromium.weblayer.OpenUrlCallback;
@@ -57,6 +58,7 @@ public class BackgroundFetchTest {
 
     @Test
     @LargeTest
+    @FlakyTest(message = "https://crbug.com/1272010")
     @MinAndroidSdkLevel(Build.VERSION_CODES.M)
     public void basic() throws Exception {
         Browser browser = mActivity.getBrowser();
@@ -123,7 +125,7 @@ public class BackgroundFetchTest {
      *         will do.
      * @return The matched notification, or null.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Notification getBackgroundFetchNotification(String expectedTitle) {
         StatusBarNotification notifications[] =
                 ((NotificationManager) mActivity.getApplicationContext().getSystemService(

@@ -19,7 +19,8 @@
 #include "third_party/blink/renderer/core/animation/string_keyframe.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
@@ -28,7 +29,7 @@ using animation_test_helpers::EnsureInterpolatedValueCached;
 class AnimationEffectStackTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().GetAnimationClock().ResetTimeForTesting();
     timeline = GetDocument().Timeline();
     element = GetDocument().CreateElementForBinding("foo");

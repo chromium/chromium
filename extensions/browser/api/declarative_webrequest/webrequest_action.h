@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "extensions/browser/api/declarative/declarative_rule.h"
 #include "extensions/browser/api/declarative_webrequest/request_stage.h"
@@ -77,12 +77,13 @@ class WebRequestAction : public base::RefCounted<WebRequestAction> {
   // essentially a parameter pack, so the pointers refer to local structures of
   // whatever function is calling one of those methods.
   struct ApplyInfo {
-    PermissionHelper* permission_helper;
+    raw_ptr<PermissionHelper> permission_helper;
     const WebRequestData& request_data;
     bool crosses_incognito;
     // Modified by each applied action:
-    std::list<extension_web_request_api_helpers::EventResponseDelta>* deltas;
-    std::set<std::string>* ignored_tags;
+    raw_ptr<std::list<extension_web_request_api_helpers::EventResponseDelta>>
+        deltas;
+    raw_ptr<std::set<std::string>> ignored_tags;
   };
 
   int stages() const {

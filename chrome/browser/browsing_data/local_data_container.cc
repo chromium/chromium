@@ -198,7 +198,7 @@ void LocalDataContainer::OnCacheStorageModelInfoLoaded(
 }
 
 void LocalDataContainer::OnMediaLicenseInfoLoaded(
-    const MediaLicenseInfoList& media_license_info) {
+    const MediaLicenseUsageInfoList& media_license_info) {
   media_license_info_list_ = media_license_info;
   DCHECK(model_);
   model_->PopulateMediaLicenseInfo(this);

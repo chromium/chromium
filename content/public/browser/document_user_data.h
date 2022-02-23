@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_BROWSER_DOCUMENT_USER_DATA_H_
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 
@@ -140,7 +141,7 @@ class DocumentUserData : public base::SupportsUserData::Data {
 
   // This is a pointer (rather than a reference) to ensure that go/miracleptr
   // can cover this field (see also //base/memory/raw_ptr.md).
-  RenderFrameHost* const render_frame_host_ = nullptr;
+  const raw_ptr<RenderFrameHost> render_frame_host_ = nullptr;
 };
 
 // Users won't be able to instantiate the template if they miss declaring the
@@ -148,7 +149,7 @@ class DocumentUserData : public base::SupportsUserData::Data {
 // This macro declares a static variable inside the class that inherits from
 // DocumentUserData. The address of this static variable is used as
 // the key to store/retrieve an instance of the class on/from a WebState.
-#define DOCUMENT_USER_DATA_KEY_DECL() static constexpr int kUserDataKey = 0
+#define DOCUMENT_USER_DATA_KEY_DECL() static const int kUserDataKey = 0
 
 // This macro instantiates the static variable declared by the previous macro.
 // It must live in a .cc file to ensure that there is only one instantiation

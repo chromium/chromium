@@ -13,9 +13,11 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/update_client/configurator.h"
 #include "services/network/test/test_url_loader_factory.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -83,7 +85,6 @@ class TestConfigurator : public Configurator {
   std::string GetProdId() const override;
   base::Version GetBrowserVersion() const override;
   std::string GetChannel() const override;
-  std::string GetBrand() const override;
   std::string GetLang() const override;
   std::string GetOSLongName() const override;
   base::flat_map<std::string, std::string> ExtraRequestParams() const override;
@@ -93,7 +94,6 @@ class TestConfigurator : public Configurator {
   scoped_refptr<UnzipperFactory> GetUnzipperFactory() override;
   scoped_refptr<PatcherFactory> GetPatcherFactory() override;
   bool EnabledDeltas() const override;
-  bool EnabledComponentUpdates() const override;
   bool EnabledBackgroundDownloader() const override;
   bool EnabledCupSigning() const override;
   PrefService* GetPrefService() const override;
@@ -101,18 +101,20 @@ class TestConfigurator : public Configurator {
   bool IsPerUserInstall() const override;
   std::unique_ptr<ProtocolHandlerFactory> GetProtocolHandlerFactory()
       const override;
+  absl::optional<bool> IsMachineExternallyManaged() const override;
+  UpdaterStateProvider GetUpdaterStateProvider() const override;
 
-  void SetBrand(const std::string& brand);
   void SetOnDemandTime(int seconds);
   void SetInitialDelay(double seconds);
   void SetDownloadPreference(const std::string& download_preference);
   void SetEnabledCupSigning(bool use_cup_signing);
-  void SetEnabledComponentUpdates(bool enabled_component_updates);
   void SetUpdateCheckUrl(const GURL& url);
   void SetPingUrl(const GURL& url);
   void SetCrxDownloaderFactory(
       scoped_refptr<CrxDownloaderFactory> crx_downloader_factory);
-
+  void SetIsMachineExternallyManaged(
+      absl::optional<bool> is_machine_externally_managed);
+  void SetUpdaterStateProvider(UpdaterStateProvider update_state_provider);
   network::TestURLLoaderFactory* test_url_loader_factory() {
     return &test_url_loader_factory_;
   }
@@ -123,13 +125,11 @@ class TestConfigurator : public Configurator {
 
   class TestPatchService;
 
-  std::string brand_;
   double initial_time_{0};
   int ondemand_time_{0};
   std::string download_preference_;
   bool enabled_cup_signing_;
-  bool enabled_component_updates_;
-  PrefService* pref_service_;  // Not owned by this class.
+  raw_ptr<PrefService> pref_service_;  // Not owned by this class.
   GURL update_check_url_;
   GURL ping_url_;
 
@@ -140,6 +140,9 @@ class TestConfigurator : public Configurator {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<NetworkFetcherFactory> network_fetcher_factory_;
   scoped_refptr<CrxDownloaderFactory> crx_downloader_factory_;
+  UpdaterStateProvider updater_state_provider_;
+
+  absl::optional<bool> is_machine_externally_managed_;
 };
 
 }  // namespace update_client

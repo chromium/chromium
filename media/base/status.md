@@ -5,7 +5,7 @@ enums that support causality tracking, data attachment, and general assistance
 with debugging, without adding slowdowns due to returning large structs,
 pointers, or more complicated types.
 
-TypedStatus<T> should be specialized with a traits struct that defines:
+TypedStatus<T> should be instantiated with a traits struct that defines:
 
   Codes - enum (usually enum class) that would be the return type, if we weren't
           using TypedStatus.
@@ -74,7 +74,7 @@ enum class MyExampleEnum : StatusCodeType {
 ```
 
 Define an |TypedStatusTraits|, picking a name for the group of codes:
-(copying the desciptive comments is not suggested)
+(copying the descriptive comments is not suggested)
 
 ```c++
 struct MyExampleStatusTraits {
@@ -82,7 +82,7 @@ struct MyExampleStatusTraits {
   // here, instead of `using`.
   using Codes = MyExampleEnum;
   static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
-  static constexpr absl::optional<Codes> { return Codes::kDefaultValue; }
+  static constexpr Codes DefaultEnumValue() { return Codes::kDefaultValue; }
 }
 ```
 
@@ -155,6 +155,21 @@ int main() {
 ```
 
 
+## Testing
+There are some helper matchers defined in test_helpers.h that can help convert
+some of the trickier method expectations. For example, this:
+```
+EXPECT_CALL(object_, Foo(kExpectedCode));
+```
+becomes:
+```
+EXPECT_CALL(object_, Foo(HasStatusCode(kExpectedCode)));
+```
+The EXPECT_CALL macro won't test for overloaded operator== equality here, so
+|HasStatusCode| is a matcher macro that allows checking if the expected status
+has the matching error code.
+
+
 ## Additional setup for mojo
 
 If you want to send a specialization of TypedStatus over mojo,
@@ -176,6 +191,27 @@ binding.
 },
 ```
 
+
+## UKM & data-recording
+TypedStatus is designed to be easily reported to UKM. A status is represented
+by 16-bit hash of the group name, the 16-bit code, and 32 bits of extra data.
+Any implementation of TypedStatus can define a |PackExtraData| method in the
+traits struct which can operate on internal data and pack it into 32 bits.
+For example, a TypedStatus which might often have wrapped HRESULTs might look
+like this:
+```c++
+struct MyExampleStatusTraits {
+  // If you do not have an existing enum, you can `enum class Codes { ... };`
+  // here, instead of `using`.
+  using Codes = MyExampleEnum;
+  static constexpr StatusGroupType Group() { return "MyExampleStatus"; }
+  static constexpr Codes DefaultEnumValue() { return Codes::kDefaultValue; }
+  static uint32_t PackExtraData(const StatusData& info) {
+    absl::optional<int> hresult = info.data.GetIntValue("HRESULT");
+    return static_cast<uint32_t>(hresult.has_value() ? *hresult : 0);
+  }
+}
+```
 
 
 ## Design decisions

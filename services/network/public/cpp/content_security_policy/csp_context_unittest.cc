@@ -335,4 +335,24 @@ TEST(CSPContextTest, CheckCSPDisposition) {
   EXPECT_EQ(console_message_a, context.violations()[0]->console_message);
 }
 
+TEST(CSPContextTest, BlockedDespiteWildcard) {
+  CSPContextTest context;
+  auto policies = ParseContentSecurityPolicies(
+      "frame-src *", mojom::ContentSecurityPolicyType::kEnforce,
+      mojom::ContentSecurityPolicySource::kMeta,
+      GURL("https://www.example.org"));
+
+  EXPECT_FALSE(context.IsAllowedByCsp(policies, CSPDirectiveName::FrameSrc,
+                                      GURL("data:text/html,<html></html>"),
+                                      GURL(), false, false, SourceLocation(),
+                                      CSPContext::CHECK_ALL_CSP, false));
+  EXPECT_EQ(context.violations().size(), 1u);
+  EXPECT_EQ(context.violations()[0]->console_message,
+            "Refused to frame 'data:text/html,<html></html>' because it "
+            "violates the following Content Security Policy directive: "
+            "\"frame-src *\". Note that '*' matches only URLs with network "
+            "schemes ('http', 'https', 'ws', 'wss'), or URLs whose scheme "
+            "matches `self`'s scheme. data:' must be added explicitely.\n");
+}
+
 }  // namespace network

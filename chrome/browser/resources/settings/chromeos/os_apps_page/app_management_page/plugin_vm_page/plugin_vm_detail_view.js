@@ -2,9 +2,9 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import '../icons.js';
-import '../permission_item.js';
 import '../pin_to_shelf_item.js';
+import '//resources/cr_components/app_management/icons.js';
+import '//resources/cr_components/app_management/permission_item.js';
 import '../shared_style.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/icons.m.js';
@@ -13,11 +13,11 @@ import {assertNotReached} from '//resources/js/assert.m.js';
 import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getSelectedApp} from 'chrome://resources/cr_components/app_management/util.js';
 
 import {Router} from '../../../../router.js';
 import {routes} from '../../../os_route.m.js';
 import {AppManagementStoreClient} from '../store_client.js';
-import {getSelectedApp} from '../util.js';
 
 import {PluginVmBrowserProxyImpl} from './plugin_vm_browser_proxy.js';
 
@@ -75,7 +75,8 @@ Polymer({
    * @private
    */
   onPermissionChanged_: async function(e) {
-    this.pendingPermissionItem_ = /** @type {Element} */ (e.target);
+    this.pendingPermissionItem_ =
+        /** @type {AppManamentPermissionItemElement} */ (e.target);
     switch (e.target.permissionType) {
       case 'kCamera':
         this.dialogText_ =

@@ -5,7 +5,6 @@
 package org.chromium.device.bluetooth;
 
 import android.Manifest;
-import android.annotation.TargetApi;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.le.ScanFilter;
 import android.bluetooth.le.ScanSettings;
@@ -17,6 +16,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.ParcelUuid;
 import android.util.SparseArray;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.annotations.CalledByNative;
@@ -37,7 +38,7 @@ import java.util.Map;
  */
 @JNINamespace("device")
 @JNIAdditionalImport(Wrappers.class)
-@TargetApi(Build.VERSION_CODES.M)
+@RequiresApi(Build.VERSION_CODES.M)
 final class ChromeBluetoothAdapter extends BroadcastReceiver {
     private static final String TAG = "Bluetooth";
 

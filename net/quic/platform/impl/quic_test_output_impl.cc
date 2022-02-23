@@ -12,6 +12,7 @@
 #include "base/files/file_util.h"
 #include "base/strings/abseil_string_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "build/build_config.h"
 #include "net/third_party/quiche/src/quic/platform/api/quic_logging.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -67,7 +68,7 @@ void QuicRecordTraceImpl(absl::string_view identifier, absl::string_view data) {
   // TODO(vasilvv): replace this with absl::Time once it's usable in Chromium.
   time_t now_ts = time(nullptr);
   tm now;
-#ifdef OS_WIN
+#if BUILDFLAG(IS_WIN)
   gmtime_s(&now, &now_ts);
 #else
   gmtime_r(&now_ts, &now);

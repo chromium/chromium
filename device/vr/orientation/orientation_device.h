@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/threading/simple_thread.h"
 #include "build/build_config.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -31,7 +30,7 @@ class VROrientationSession;
 // TODO(crbug.com/730440) If RELATIVE_ORIENTATION_QUATERNION is ever
 // implemented on Windows, use that instead.
 static constexpr mojom::SensorType kOrientationSensorType =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     mojom::SensorType::ABSOLUTE_ORIENTATION_QUATERNION;
 #else
     mojom::SensorType::RELATIVE_ORIENTATION_QUATERNION;

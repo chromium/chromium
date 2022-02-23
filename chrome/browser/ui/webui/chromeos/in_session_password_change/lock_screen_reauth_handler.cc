@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/lock_screen_reauth_handler.h"
 
+#include "ash/components/login/auth/challenge_response/cert_utils.h"
+#include "ash/components/login/auth/cryptohome_key_constants.h"
 #include "ash/constants/ash_features.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager.h"
@@ -13,13 +15,13 @@
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
+#include "chrome/browser/signin/identity_manager_factory.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/installer/util/google_update_settings.h"
 #include "chromeos/dbus/util/version_loader.h"
-#include "chromeos/login/auth/challenge_response/cert_utils.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
 #include "components/account_id/account_id.h"
+#include "components/signin/public/identity_manager/account_info.h"
 #include "components/user_manager/known_user.h"
 #include "components/version_info/version_info.h"
 #include "content/public/browser/storage_partition.h"
@@ -38,7 +40,7 @@ std::vector<std::string> ConvertToVector(const base::Value& list) {
     return string_list;
   }
 
-  for (const base::Value& value : list.GetList()) {
+  for (const base::Value& value : list.GetListDeprecated()) {
     if (value.is_string()) {
       string_list.push_back(value.GetString());
     }
@@ -62,15 +64,31 @@ bool ShouldDoSamlRedirect(const std::string& email) {
   return user && user->using_saml();
 }
 
-InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
+Profile* GetActiveUserProfile() {
   const user_manager::User* user =
       user_manager::UserManager::Get()->GetActiveUser();
   Profile* profile = chromeos::ProfileHelper::Get()->GetProfileByUser(user);
+  return profile;
+}
 
+std::string GetHostedDomain(const std::string& gaia_id) {
+  Profile* profile = GetActiveUserProfile();
+  auto* identity_manager = IdentityManagerFactory::GetForProfile(profile);
+  if (!identity_manager) {
+    return std::string();
+  }
+  const AccountInfo account_info =
+      identity_manager->FindExtendedAccountInfoByGaiaId(gaia_id);
+  return account_info.hosted_domain;
+}
+
+InSessionPasswordSyncManager* GetInSessionPasswordSyncManager() {
+  Profile* profile = GetActiveUserProfile();
   return InSessionPasswordSyncManagerFactory::GetForProfile(profile);
 }
 
 const char kMainElement[] = "$(\'main-element\').";
+const char kIdpTestingDomain[] = "example.com";
 
 }  // namespace
 
@@ -112,15 +130,14 @@ void LockScreenReauthHandler::LoadAuthenticatorParam() {
   context.force_reload = true;
   context.email = email_;
 
-  std::string gaia_id;
-  if (!context.email.empty() &&
-      user_manager::known_user::FindGaiaID(
-          AccountId::FromUserEmail(context.email), &gaia_id)) {
-    context.gaia_id = gaia_id;
-  }
-
+  user_manager::KnownUser known_user(g_browser_process->local_state());
   if (!context.email.empty()) {
-    context.gaps_cookie = user_manager::known_user::GetGAPSCookie(
+    if (const std::string* gaia_id =
+            known_user.FindGaiaID(AccountId::FromUserEmail(context.email))) {
+      context.gaia_id = *gaia_id;
+    }
+
+    context.gaps_cookie = known_user.GetGAPSCookie(
         AccountId::FromUserEmail(gaia::CanonicalizeEmail(context.email)));
   }
 
@@ -168,37 +185,39 @@ void LockScreenReauthHandler::OnSetCookieForLoadGaiaWithPartition(
     net::CookieAccessResult result) {
   base::DictionaryValue params;
 
-  params.SetString("webviewPartitionName", partition_name);
+  params.SetStringKey("webviewPartitionName", partition_name);
   signin_partition_name_ = partition_name;
 
-  params.SetString("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
-  params.SetString("clientId",
-                   GaiaUrls::GetInstance()->oauth2_chrome_client_id());
-  params.SetBoolean("dontResizeNonEmbeddedPages", false);
-  params.SetBoolean("enableGaiaActionButtons", false);
+  params.SetStringKey("gaiaUrl", GaiaUrls::GetInstance()->gaia_url().spec());
+  params.SetStringKey("clientId",
+                      GaiaUrls::GetInstance()->oauth2_chrome_client_id());
+  params.SetBoolKey("dontResizeNonEmbeddedPages", false);
+  params.SetBoolKey("enableGaiaActionButtons", false);
 
-  std::string enterprise_enrollment_domain(
-      g_browser_process->platform_part()
-          ->browser_policy_connector_ash()
-          ->GetEnterpriseEnrollmentDomain());
+  std::string hosted_domain = GetHostedDomain(context.gaia_id);
 
-  if (enterprise_enrollment_domain.empty()) {
-    enterprise_enrollment_domain = gaia::ExtractDomainName(context.email);
+  if (hosted_domain.empty()) {
+    LOG(ERROR) << "Couldn't get hosted_domain from account info.";
+    params.SetBoolKey("doSamlRedirect", force_saml_redirect_for_testing_);
+  } else {
+    params.SetStringKey(
+        "enterpriseEnrollmentDomain",
+        force_saml_redirect_for_testing_ ? kIdpTestingDomain : hosted_domain);
+    params.SetBoolKey("doSamlRedirect",
+                      force_saml_redirect_for_testing_
+                          ? true
+                          : ShouldDoSamlRedirect(context.email));
   }
-
-  params.SetString("enterpriseEnrollmentDomain", enterprise_enrollment_domain);
 
   const std::string app_locale = g_browser_process->GetApplicationLocale();
   DCHECK(!app_locale.empty());
-  params.SetString("hl", app_locale);
-  params.SetString("email", context.email);
-  params.SetString("gaiaId", context.gaia_id);
-  params.SetBoolean("extractSamlPasswordAttributes",
+  params.SetStringKey("hl", app_locale);
+  params.SetStringKey("email", context.email);
+  params.SetStringKey("gaiaId", context.gaia_id);
+  params.SetBoolKey("extractSamlPasswordAttributes",
                     login::ExtractSamlPasswordAttributesEnabled());
-  params.SetBoolean("doSamlRedirect", force_saml_redirect_for_testing_ ?
-                    true : ShouldDoSamlRedirect(context.email));
-  params.SetString("clientVersion", version_info::GetVersionNumber());
-  params.SetBoolean("readOnlyEmail", true);
+  params.SetStringKey("clientVersion", version_info::GetVersionNumber());
+  params.SetBoolKey("readOnlyEmail", true);
 
   CallJavascript("loadAuthenticator", params);
   if (features::IsNewLockScreenReauthLayoutEnabled()) {
@@ -216,15 +235,14 @@ void LockScreenReauthHandler::UpdateOrientationAndWidth() {
   CallJavascript("setWidth", base::Value(width));
 }
 
-void LockScreenReauthHandler::CallJavascript(
-    const std::string& function,
-    const base::Value& params) {
+void LockScreenReauthHandler::CallJavascript(const std::string& function,
+                                             const base::Value& params) {
   CallJavascriptFunction(std::string(kMainElement) + function, params);
 }
 
 void LockScreenReauthHandler::HandleCompleteAuthentication(
     base::Value::ConstListView params) {
-  CHECK_EQ(params.size(), 6);
+  CHECK_EQ(params.size(), 6u);
   std::string gaia_id, email, password;
   bool using_saml;
   ::login::StringList services = ::login::StringList();

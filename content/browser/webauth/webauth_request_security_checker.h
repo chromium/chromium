@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "device/fido/public_key_credential_descriptor.h"
@@ -75,9 +76,8 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   blink::mojom::AuthenticatorStatus ValidateAPrioriAuthenticatedUrl(
       const GURL& url);
 
-  bool DeduplicateCredentialDescriptorListAndValidateLength(
-      std::vector<device::PublicKeyCredentialDescriptor>* list)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] bool DeduplicateCredentialDescriptorListAndValidateLength(
+      std::vector<device::PublicKeyCredentialDescriptor>* list);
 
  protected:
   friend class base::RefCounted<WebAuthRequestSecurityChecker>;
@@ -88,7 +88,7 @@ class CONTENT_EXPORT WebAuthRequestSecurityChecker
   // entire ancestor chain. |origin| is the origin of the frame being checked.
   bool IsSameOriginWithAncestors(const url::Origin& origin);
 
-  RenderFrameHost* render_frame_host_;
+  raw_ptr<RenderFrameHost> render_frame_host_;
 };
 
 }  // namespace content

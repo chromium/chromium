@@ -14,8 +14,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace forwarder2 {
 
 // Wrapper class around unix socket api.  Can be used to create, bind or

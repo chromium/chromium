@@ -4,10 +4,11 @@
 
 #include "chrome/browser/metrics/perf/profile_provider_chromeos.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/run_loop.h"
@@ -25,6 +26,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/metrics_proto/sampled_profile.pb.h"
+#include "ui/aura/env.h"
 
 namespace metrics {
 
@@ -161,6 +163,8 @@ class ProfileProviderRealCollectionTest : public testing::Test {
         "ChromeOSWideProfilingCollection", "group_name");
     ASSERT_TRUE(field_trial_.get());
 
+    // JankMonitor requires aura::Env to be initialized.
+    aura_env_ = aura::Env::CreateInstance();
     profile_provider_ = std::make_unique<TestProfileProvider>();
     profile_provider_->Init();
 
@@ -214,7 +218,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
     ASSERT_TRUE(profile.has_perf_data());
 
     // Collection succeeded: don't output the error log.
-    ignore_result(scoped_log_error.Release());
+    std::ignore = scoped_log_error.Release();
   }
 
  protected:
@@ -265,6 +269,7 @@ class ProfileProviderRealCollectionTest : public testing::Test {
   std::atomic_bool spin_cpu_{false};
   base::WaitableEvent spin_cpu_done_;
 
+  std::unique_ptr<aura::Env> aura_env_;
   std::unique_ptr<TestProfileProvider> profile_provider_;
 };
 

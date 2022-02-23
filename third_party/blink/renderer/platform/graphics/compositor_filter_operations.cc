@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/platform/graphics/compositor_filter_operations.h"
 
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/rect_conversions.h"
@@ -128,8 +127,8 @@ bool CompositorFilterOperations::operator==(
 }
 
 String CompositorFilterOperations::ToString() const {
-  return String(filter_operations_.ToString().c_str()) + " at " +
-         reference_box_.ToString();
+  return String(filter_operations_.ToString()) + " at " +
+         String(reference_box_.ToString());
 }
 
 }  // namespace blink

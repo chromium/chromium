@@ -4,9 +4,15 @@
       "name": "Scrolling background of LayoutView #document",
       "bounds": [800, 600],
       "contentsOpaque": true,
-      "backgroundColor": "#FFFFFF",
+      "backgroundColor": "#FFFFFF"
+    },
+    {
+      "name": "Caret",
+      "position": [791, 8],
+      "bounds": [1, 19],
+      "contentsOpaque": true,
       "invalidations": [
-        [791, 8, 1, 19]
+        [0, 0, 1, 19]
       ]
     }
   ]

@@ -8,6 +8,10 @@
 #include "base/component_export.h"
 #include "mojo/public/mojom/base/thread_priority.mojom-shared.h"
 
+namespace base {
+enum class ThreadPriority;
+}
+
 namespace mojo {
 
 template <>

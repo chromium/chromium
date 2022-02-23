@@ -8,10 +8,13 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "components/viz/service/display_embedder/output_presenter.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/common/shared_image_usage.h"
 #include "gpu/command_buffer/service/shared_image_factory.h"
+#include "ui/gfx/ca_layer_result.h"
 
 namespace gl {
 class GLSurface;
@@ -62,22 +65,31 @@ class VIZ_SERVICE_EXPORT OutputPresenterGL : public OutputPresenter {
       const OverlayProcessorInterface::OutputSurfaceOverlayPlane& plane,
       Image* image,
       bool is_submitted) final;
+  void ScheduleOneOverlay(const OverlayCandidate& overlay,
+                          ScopedOverlayAccess* access) final;
   void ScheduleOverlays(SkiaOutputSurface::OverlayList overlays,
                         std::vector<ScopedOverlayAccess*> accesses) final;
-  void ScheduleBackground(Image* image) final;
+
+#if BUILDFLAG(IS_MAC)
+  void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) final;
+#endif
 
  private:
   scoped_refptr<gl::GLSurface> gl_surface_;
-  SkiaOutputSurfaceDependency* dependency_;
+  raw_ptr<SkiaOutputSurfaceDependency> dependency_;
   const bool supports_async_swap_;
 
   ResourceFormat image_format_ = RGBA_8888;
 
   // Shared Image factories
-  gpu::SharedImageFactory* const shared_image_factory_;
-  gpu::SharedImageRepresentationFactory* const
+  const raw_ptr<gpu::SharedImageFactory> shared_image_factory_;
+  const raw_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   uint32_t shared_image_usage_;
+
+#if BUILDFLAG(IS_MAC)
+  gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
+#endif
 };
 
 }  // namespace viz

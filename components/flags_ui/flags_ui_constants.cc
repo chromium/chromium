@@ -4,12 +4,14 @@
 
 #include "components/flags_ui/flags_ui_constants.h"
 
+#include "build/build_config.h"
+
 namespace flags_ui {
 
 // Resource paths.
 const char kFlagsJS[] = "flags.js";
 const char kFlagsCSS[] = "flags.css";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kFlagsSVG[] = "os_flags_app_icon.svg";
 #endif
 
@@ -18,7 +20,7 @@ const char kEnableExperimentalFeature[] = "enableExperimentalFeature";
 const char kRequestExperimentalFeatures[] = "requestExperimentalFeatures";
 const char kSetOriginListFlag[] = "setOriginListFlag";
 const char kResetAllFlags[] = "resetAllFlags";
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 const char kCrosUrlFlagsRedirect[] = "crosUrlFlagsRedirect";
 #endif
 const char kRestartBrowser[] = "restartBrowser";

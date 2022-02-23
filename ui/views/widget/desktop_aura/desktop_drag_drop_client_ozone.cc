@@ -14,11 +14,11 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "ui/aura/client/capture_client.h"
 #include "ui/aura/client/cursor_client.h"
-#include "ui/aura/client/drag_drop_delegate.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/cursor/mojom/cursor_type.mojom-shared.h"
+#include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
 #include "ui/base/dragdrop/drop_target_event.h"
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
@@ -94,6 +94,34 @@ std::unique_ptr<views::Widget> CreateDragWidget(
   return widget;
 }
 
+// Drops the dragged data if no policy restrictions exist (Data Leak Prevention
+// stack uninitialised) or if there are rules allowing the data transfer.
+// Otherwise the drag is cancelled.
+void DropIfAllowed(const ui::OSExchangeData* drag_data,
+                   aura::client::DragUpdateInfo& drag_info,
+                   base::OnceClosure drop_cb) {
+  if (ui::DataTransferPolicyController::HasInstance()) {
+    ui::DataTransferPolicyController::Get()->DropIfAllowed(
+        drag_data->GetSource(), &drag_info.data_endpoint, std::move(drop_cb));
+  } else {
+    std::move(drop_cb).Run();
+  }
+}
+
+// A callback that runs the drop closure, if there is one, to perform the data
+// drop. If this callback is destroyed without running, the |drag_cancel|
+// closure will run.
+void PerformDrop(aura::client::DragDropDelegate::DropCallback drop_cb,
+                 std::unique_ptr<ui::OSExchangeData> data_to_drop,
+                 base::ScopedClosureRunner drag_cancel) {
+  if (drop_cb) {
+    auto output_drag_op = ui::mojom::DragOperation::kNone;
+    std::move(drop_cb).Run(std::move(data_to_drop), output_drag_op);
+  }
+
+  base::IgnoreResult(drag_cancel.Release());
+}
+
 }  // namespace
 
 DesktopDragDropClientOzone::DragContext::DragContext() = default;
@@ -123,11 +151,13 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
   DCHECK(!drag_context_);
   drag_context_ = std::make_unique<DragContext>();
 
-  // Chrome expects starting drag and drop to release capture.
-  aura::Window* capture_window =
-      aura::client::GetCaptureClient(root_window)->GetGlobalCaptureWindow();
-  if (capture_window)
-    capture_window->ReleaseCapture();
+  if (drag_handler_->ShouldReleaseCaptureForDrag(data.get())) {
+    aura::Window* capture_window =
+        aura::client::GetCaptureClient(root_window)->GetGlobalCaptureWindow();
+    if (capture_window) {
+      capture_window->ReleaseCapture();
+    }
+  }
 
   aura::client::CursorClient* cursor_client =
       aura::client::GetCursorClient(root_window);
@@ -173,11 +203,13 @@ DragOperation DesktopDragDropClientOzone::StartDragAndDrop(
 }
 
 void DesktopDragDropClientOzone::DragCancel() {
+  ResetDragDropTarget(true);
+  drag_operation_ = DragOperation::kNone;
+
   if (!drag_handler_)
     return;
 
   drag_handler_->CancelDrag();
-  drag_operation_ = DragOperation::kNone;
 }
 
 bool DesktopDragDropClientOzone::IsDragDropInProgress() {
@@ -226,8 +258,8 @@ int DesktopDragDropClientOzone::OnDragMotion(const gfx::PointF& point,
   std::unique_ptr<ui::DropTargetEvent> event =
       UpdateTargetAndCreateDropEvent(point, modifiers);
   if (drag_drop_delegate_ && event) {
-    client_operation =
-        drag_drop_delegate_->OnDragUpdated(*event).drag_operation;
+    current_drag_info_ = drag_drop_delegate_->OnDragUpdated(*event);
+    client_operation = current_drag_info_.drag_operation;
   }
   return client_operation;
 }
@@ -238,7 +270,7 @@ void DesktopDragDropClientOzone::OnDragDrop(
   // If we didn't have |data_to_drop_|, then |drag_drop_delegate_| had never
   // been updated, and now it needs to receive deferred enter and update events
   // before handling the actual drop.
-  const bool posponed_enter_and_update = !data_to_drop_;
+  const bool postponed_enter_and_update = !data_to_drop_;
 
   // If we didn't have |data_to_drop_| already since the drag had entered the
   // window, take the new data that comes now.
@@ -250,7 +282,7 @@ void DesktopDragDropClientOzone::OnDragDrop(
     // This will call the delegate's OnDragEntered if needed.
     auto event = UpdateTargetAndCreateDropEvent(last_drag_point_, modifiers);
     if (drag_drop_delegate_ && event) {
-      if (posponed_enter_and_update) {
+      if (postponed_enter_and_update) {
         // TODO(https://crbug.com/1014860): deal with drop refusals.
         // The delegate's OnDragUpdated returns an operation that the delegate
         // would accept.  Normally the accepted operation would be propagated
@@ -258,9 +290,19 @@ void DesktopDragDropClientOzone::OnDragDrop(
         // be called, but in this scenario of postponed updates we send all
         // events at once.  Now we just drop, but perhaps we could call
         // OnDragLeave and quit?
-        drag_drop_delegate_->OnDragUpdated(*event);
+        current_drag_info_ = drag_drop_delegate_->OnDragUpdated(*event);
       }
-      drag_drop_delegate_->OnPerformDrop(*event, std::move(data_to_drop_));
+      auto drop_cb = drag_drop_delegate_->GetDropCallback(*event);
+      if (drop_cb) {
+        base::ScopedClosureRunner drag_cancel(
+            base::BindOnce(&DesktopDragDropClientOzone::DragCancel,
+                           weak_factory_.GetWeakPtr()));
+
+        DropIfAllowed(
+            data_to_drop_.get(), current_drag_info_,
+            base::BindOnce(&PerformDrop, std::move(drop_cb),
+                           std::move(data_to_drop_), std::move(drag_cancel)));
+      }
     }
   }
   ResetDragDropTarget(false);
@@ -277,6 +319,7 @@ void DesktopDragDropClientOzone::OnWindowDestroyed(aura::Window* window) {
   current_window_->RemoveObserver(this);
   current_window_ = nullptr;
   drag_drop_delegate_ = nullptr;
+  current_drag_info_ = aura::client::DragUpdateInfo();
 }
 
 void DesktopDragDropClientOzone::OnDragLocationChanged(

@@ -10,14 +10,14 @@
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 class EcheSystemAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit EcheSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
   bool ShouldShowInLauncher() const override;
   bool ShouldShowInSearch() const override;
@@ -27,12 +27,10 @@ class EcheSystemAppDelegate : public web_app::SystemWebAppDelegate {
   bool ShouldAllowScriptsToCloseWindows() const override;
   gfx::Rect GetDefaultBounds(Browser*) const override;
   bool IsAppEnabled() const override;
+  gfx::Rect GetDefaultBoundsForEche() const;
 };
 
-// Return a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForEcheApp();
-
-// Returns the default bounds.
-gfx::Rect GetDefaultBoundsForEche(Browser*);
+// Return a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForEcheApp();
 
 #endif  // CHROME_BROWSER_ASH_WEB_APPLICATIONS_ECHE_APP_INFO_H_

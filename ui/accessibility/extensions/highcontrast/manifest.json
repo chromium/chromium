@@ -5,11 +5,13 @@
   "manifest_version": 2,
   "permissions": [
     "<all_urls>",
+    "storage",
     "tabs"
   ],
   "background": {
     "scripts": [
       "common.js",
+      "storage.js",
       "background.js"
     ]
   },

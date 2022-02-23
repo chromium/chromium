@@ -9,7 +9,7 @@
 
 #include "base/atomicops.h"
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "remoting/proto/audio.pb.h"
 #include "remoting/proto/control.pb.h"
@@ -283,7 +283,7 @@ class FakeConnectionEventLogger::CounterVideoStub
   void ProcessVideoPacket(std::unique_ptr<VideoPacket> video_packet,
                           base::OnceClosure done) override;
 
-  protocol::FakeConnectionToClient* connection_ = nullptr;
+  raw_ptr<protocol::FakeConnectionToClient> connection_ = nullptr;
   MessageCounter video_data_;
   MessageCounter capture_time_;
   MessageCounter encode_time_;

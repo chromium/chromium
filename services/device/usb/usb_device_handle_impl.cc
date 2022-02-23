@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/sequence_checker.h"
 #include "base/task/single_thread_task_runner.h"
@@ -450,7 +449,7 @@ void UsbDeviceHandleImpl::Transfer::ProcessCompletion() {
           buffer_ = resized_buffer;
         }
       }
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case UsbTransferType::BULK:
     case UsbTransferType::INTERRUPT:

@@ -1,0 +1,9 @@
+{
+  "name": "Test opening absolute URLs",
+  "manifest_version": 2,
+  "version": "0.1",
+  "app": {
+    "background": { "scripts": ["background.js"] }
+  },
+  "key": "MIGdMA0GCSqGSIb3DQEBAQUAA4GLADCBhwKBgQDFFBqmJf6+xgNeQhSwunB7Vdi+peXwR6uf09DKBmStju73Cjhggl3x+i7jfeRvGguJA1nnxK45dHktx5ppyy2w16nFKFcfIAN9dP6RrfPWuHVxw1AzNCRm/VutRLje1e9Kk3xtXAw9Vj3N0/txZ3u8HOr62YUDIyFcS87+Yo/a9QIBIw=="
+}

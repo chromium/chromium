@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Відкрити нове вікно в режимі анонімного перегляду</translation>
 <translation id="152892567002884378">Збільшити гучність</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, а тоді <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Перейти до 1 з 8 робочих столів</translation>
 <translation id="1652741121070700329">Перейти на початок попереднього слова</translation>
 <translation id="1679841710523778799">Збільшити яскравість</translation>
 <translation id="168356808214100546">Утримуйте <ph name="ALT" /> і торкайтеся <ph name="TAB" />, доки не перейдете в потрібне вікно, а тоді відпустіть.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Натисніть <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> і посилання</translation>
 <translation id="561814908794220892">Відкрити веб-сторінку в новій вкладці</translation>
 <translation id="5620219513321115856">Перемістити активне вікно на робочий стіл праворуч</translation>
+<translation id="5699366815052349604">Призначити активне вікно всім робочим столам</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> або <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Відкрити посилання в поточній вкладці</translation>
 <translation id="5757474750054631686">Зменшити яскравість клавіатури (лише для клавіатур із підсвічуванням)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Показати сховані файли в додатку Файли</translation>
 <translation id="8717459106217102612">Виділити попереднє слово або літеру</translation>
 <translation id="8727232706774971183">Переглянути сповіщення</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> від 1 до 8</translation>
 <translation id="8855885154700222542">Клавіша повноекранного режиму</translation>
 <translation id="8881584919399569791">Перемістити активне вікно на робочий стіл ліворуч</translation>
 <translation id="88986195241502842">Сторінка вниз</translation>

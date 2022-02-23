@@ -82,6 +82,13 @@ const size_t kNumberOfChromeHostURLs = base::size(kChromeHostURLs);
 const char kSyncGoogleDashboardURL[] =
     "https://www.google.com/settings/chrome/sync/";
 
+const char kOnDeviceEncryptionOptInURL[] =
+    "https://passwords.google.com/encryption/enroll/intro?"
+    "utm_source=chrome&utm_medium=ios&utm_campaign=encryption_enroll";
+
+const char kOnDeviceEncryptionLearnMoreURL[] =
+    "https://support.google.com/accounts?p=settings_password_ode";
+
 const char kPageInfoHelpCenterURL[] =
     "https://support.google.com/chrome?p=ui_security_indicator&ios=1";
 

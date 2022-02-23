@@ -44,7 +44,7 @@ class InstanceRegistryUpdater : public BrowserAppInstanceObserver,
   BrowserAppInstanceRegistry& browser_app_instance_registry_;
   InstanceRegistry& instance_registry_;
 
-  void OnInstance(const base::UnguessableToken& id,
+  void OnInstance(const base::UnguessableToken& instance_id,
                   const std::string& app_id,
                   aura::Window* window,
                   InstanceState state);

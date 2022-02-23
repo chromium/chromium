@@ -142,26 +142,26 @@ constexpr char kAllSitePolicy[] = R"({
 })";
 
 std::set<std::string>* NormalMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"text/plain", "image/png", "application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"text/plain", "image/png", "application/zip"}};
   return mime_types.get();
 }
 
 std::set<std::string>* NoTextMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"image/png", "application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"image/png", "application/zip"}};
   return mime_types.get();
 }
 
 std::set<std::string>* NoImageMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"text/plain", "application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"text/plain", "application/zip"}};
   return mime_types.get();
 }
 
 std::set<std::string>* NoTextNoImageMimeTypes() {
-  static base::NoDestructor<std::set<std::string>> mime_types(
-      {"application/zip"});
+  static base::NoDestructor<std::set<std::string>> mime_types{
+      {"application/zip"}};
   return mime_types.get();
 }
 
@@ -234,7 +234,7 @@ TEST_P(FileSystemServiceSettingsTest, Test) {
   }
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     ,
     FileSystemServiceSettingsTest,
     testing::Values(

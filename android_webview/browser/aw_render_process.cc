@@ -66,17 +66,6 @@ void AwRenderProcess::SetJsOnlineProperty(bool network_up) {
   renderer_remote_->SetJsOnlineProperty(network_up);
 }
 
-void AwRenderProcess::SetCpuAffinityToLittleCores() {
-  renderer_remote_->SetCpuAffinityToLittleCores();
-}
-
-void AwRenderProcess::EnableIdleThrottling(int32_t policy,
-                                           int32_t min_time_ms,
-                                           float min_cputime_ratio) {
-  renderer_remote_->EnableIdleThrottling(policy, min_time_ms,
-                                         min_cputime_ratio);
-}
-
 void AwRenderProcess::Ready() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 

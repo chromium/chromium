@@ -187,6 +187,13 @@ base::TimeTicks WebPerformance::FirstContentfulPaintAsMonotonicTime() const {
   return private_->timing()->FirstContentfulPaintAsMonotonicTime();
 }
 
+base::TimeTicks
+WebPerformance::FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime()
+    const {
+  return private_->timing()
+      ->FirstContentfulPaintRenderedButNotPresentedAsMonotonicTime();
+}
+
 double WebPerformance::FirstMeaningfulPaint() const {
   return MillisecondsToSeconds(private_->timing()->FirstMeaningfulPaint());
 }
@@ -227,6 +234,10 @@ uint64_t WebPerformance::ExperimentalLargestImagePaintSize() const {
 LargestContentfulPaintTypeMask WebPerformance::LargestContentfulPaintType()
     const {
   return private_->timing()->LargestContentfulPaintType();
+}
+
+double WebPerformance::LargestContentfulPaintImageBPP() const {
+  return private_->timing()->LargestContentfulPaintImageBPP();
 }
 
 double WebPerformance::ExperimentalLargestTextPaint() const {

@@ -5,7 +5,6 @@
 #ifndef IPC_IPC_MOJO_HANDLE_ATTACHMENT_H_
 #define IPC_IPC_MOJO_HANDLE_ATTACHMENT_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "ipc/ipc_message_attachment.h"
 #include "ipc/ipc_message_support_export.h"

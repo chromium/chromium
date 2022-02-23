@@ -12,7 +12,8 @@
 
 namespace switches {
 
-extern const char kStatusChangeCheckerTimeoutInSeconds[];
+inline constexpr char kStatusChangeCheckerTimeoutInSeconds[] =
+    "sync-status-change-checker-timeout";
 
 }  // namespace switches
 

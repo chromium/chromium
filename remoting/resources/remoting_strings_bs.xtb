@@ -26,7 +26,6 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="225614027745146050">Dobro došli</translation>
 <translation id="2320166752086256636">Sakrij tastaturu</translation>
 <translation id="2329392777730037872">Otvaranje URL-a <ph name="URL" /> na uređaju klijenta nije uspjelo.</translation>
-<translation id="2333212046079545895">Autorska prava 2021. Google LLC. Sva prava su zadržana.</translation>
 <translation id="2359808026110333948">Nastavi</translation>
 <translation id="2366718077645204424">Nije moguće povezati se s host računarom. Uzrok je vjerovatno konfiguracija mreže koju koristite.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Poslednji put na mreži <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="2599300881200251572">Ova usluga omogućava dolazne veze klijenata Chrome udaljenog računara.</translation>
 <translation id="2647232381348739934">Usluga Chromoting</translation>
 <translation id="2676780859508944670">Obrada u toku…</translation>
+<translation id="2692522824157224199">Autorska prava 2022. Google LLC. Sva prava su zadržana.</translation>
 <translation id="2699970397166997657">Chromoting</translation>
 <translation id="2758123043070977469">Došlo je do greške prilikom autentifikacije, prijavite se ponovo.</translation>
 <translation id="2803375539583399270">Unesite PIN</translation>
@@ -73,10 +73,10 @@ Ako je skripta "<ph name="SERVICE_SCRIPT_NAME" />" već označena, uklonite ozna
 <translation id="4257751272692708833">Aplikacija za prosljeđivanje URL-a za proizvod <ph name="PRODUCT_NAME" /></translation>
 <translation id="4277736576214464567">Kôd za pristup je nevažeći. Pokušajte ponovo.</translation>
 <translation id="4281844954008187215">Uslovi korištenja usluge</translation>
+<translation id="4372650392690220936">Autorska prava 2022. Autori Chromiuma. Sva prava su zadržana.</translation>
 <translation id="4405930547258349619">Osnovna biblioteka</translation>
 <translation id="443560535555262820">Otvori postavke pristupačnosti</translation>
 <translation id="4450893287417543264">Ne prikazuj ponovo</translation>
-<translation id="4512952200932940229">Autorska prava 2021. Autori Chromiuma. Sva prava su zadržana.</translation>
 <translation id="4513946894732546136">Povratne informacije</translation>
 <translation id="4563926062592110512">Veza klijenta je prekinuta: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973">Usluga <ph name="URL_FORWARDER_NAME" /> nije ispravno konfigurirana. Odaberite drugi zadani web preglednik, a zatim ponovo omogućite prosljeđivanje URL-ova.</translation>

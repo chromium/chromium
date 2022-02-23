@@ -30,9 +30,9 @@
 #include "third_party/blink/renderer/core/svg/svg_animated_string.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "ui/gfx/geometry/point.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -155,15 +155,15 @@ void SVGFEConvolveMatrixElement::Trace(Visitor* visitor) const {
   SVGFilterPrimitiveStandardAttributes::Trace(visitor);
 }
 
-IntSize SVGFEConvolveMatrixElement::MatrixOrder() const {
+gfx::Size SVGFEConvolveMatrixElement::MatrixOrder() const {
   if (!order_->IsSpecified())
-    return IntSize(3, 3);
-  return IntSize(orderX()->CurrentValue()->Value(),
-                 orderY()->CurrentValue()->Value());
+    return gfx::Size(3, 3);
+  return gfx::Size(orderX()->CurrentValue()->Value(),
+                   orderY()->CurrentValue()->Value());
 }
 
 gfx::Point SVGFEConvolveMatrixElement::TargetPoint() const {
-  IntSize order = MatrixOrder();
+  gfx::Size order = MatrixOrder();
   gfx::Point target(target_x_->CurrentValue()->Value(),
                     target_y_->CurrentValue()->Value());
   // The spec says the default value is: targetX = floor ( orderX / 2 ))

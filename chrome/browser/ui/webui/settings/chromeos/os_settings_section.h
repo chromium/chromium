@@ -123,7 +123,9 @@ class OsSettingsSection {
   // whether the setting change was logged.
   virtual bool LogMetric(mojom::Setting setting, base::Value& value) const = 0;
 
-  // Registers the subpages and/or settings which reside in this section.
+  // Registers the subpages and/or settings which reside in this section. Every
+  // subpage and setting within a section must be registered, regardless of
+  // whether or not the subpage or setting is gated behind a feature flag.
   virtual void RegisterHierarchy(HierarchyGenerator* generator) const = 0;
 
   // Modifies a URL to be used by settings search. Some URLs require dynamic

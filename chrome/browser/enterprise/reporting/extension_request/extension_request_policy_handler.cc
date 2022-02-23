@@ -5,6 +5,7 @@
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_policy_handler.h"
 
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/common/pref_names.h"
 #include "components/policy/core/browser/policy_error_map.h"
 #include "components/policy/core/common/policy_map.h"
@@ -46,7 +47,7 @@ bool ExtensionRequestPolicyHandler::CheckPolicySettings(
     return false;
   }
 
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
   // Disable extension workflow when it's set by user cloud policy but machine
   // is not managed or managed by a different domain.
   if (extension_request_policy->scope == policy::POLICY_SCOPE_USER &&

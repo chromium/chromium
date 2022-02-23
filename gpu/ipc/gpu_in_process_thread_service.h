@@ -9,6 +9,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "gpu/command_buffer/service/mailbox_manager.h"
 #include "gpu/ipc/command_buffer_task_executor.h"
@@ -74,9 +75,9 @@ class GL_IN_PROCESS_CONTEXT_EXPORT GpuInProcessThreadService
   scoped_refptr<gl::GLShareGroup> GetShareGroup() override;
 
  private:
-  GpuInProcessThreadServiceDelegate* const delegate_;
+  const raw_ptr<GpuInProcessThreadServiceDelegate> delegate_;
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
-  Scheduler* scheduler_;
+  raw_ptr<Scheduler> scheduler_;
 };
 
 }  // namespace gpu

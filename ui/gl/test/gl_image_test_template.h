@@ -28,7 +28,7 @@
 #include "ui/gl/test/gl_image_test_support.h"
 #include "ui/gl/test/gl_test_helper.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/mac_util.h"
 #endif
 

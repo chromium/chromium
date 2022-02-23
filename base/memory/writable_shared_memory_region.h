@@ -104,7 +104,7 @@ class BASE_EXPORT WritableSharedMemoryRegion {
     return handle_.GetGUID();
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows it is necessary in rare cases to take a writable handle from a
   // region that will be converted to read-only. On this platform it is a safe
   // operation, as the handle returned from this method will remain writable

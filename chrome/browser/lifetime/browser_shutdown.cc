@@ -13,7 +13,6 @@
 #include "base/bind.h"
 #include "base/clang_profiling_buildflags.h"
 #include "base/command_line.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
@@ -47,12 +46,12 @@
 #include "printing/buildflags/buildflags.h"
 #include "rlz/buildflags/buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/first_run/upgrade_util_win.h"
 #include "chrome/browser/win/browser_util.h"
 #endif
 
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/first_run/upgrade_util.h"
 #endif
 
@@ -65,23 +64,14 @@
 #include "chrome/browser/background/background_mode_manager.h"
 #endif
 
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-#include "chrome/browser/service_process/service_process_control.h"
-#endif
-
 #if BUILDFLAG(ENABLE_RLZ)
 #include "components/rlz/rlz_tracker.h"  // nogncheck crbug.com/1125897
 #endif
 
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
-#include "content/public/browser/browser_child_process_host_iterator.h"
-#include "content/public/browser/browser_task_traits.h"
-#include "content/public/browser/browser_thread.h"
-#include "content/public/browser/gpu_utils.h"
-#include "content/public/common/child_process_host.h"
-#include "content/public/common/profiling_utils.h"
+#include "base/run_loop.h"
+#include "content/public/browser/profiling_utils.h"
 #endif
-
 
 namespace browser_shutdown {
 namespace {
@@ -147,41 +137,11 @@ void OnShutdownStarting(ShutdownType type) {
   // TODO(https://crbug.com/1071664): Check if this should also be enabled for
   // coverage builds.
 #if BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
-  if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSingleProcess)) {
-    content::WaitForProcessesToDumpProfilingInfo wait_for_profiling_data;
-
-    // Ask all the renderer processes to dump their profiling data.
-    for (content::RenderProcessHost::iterator i(
-             content::RenderProcessHost::AllHostsIterator());
-         !i.IsAtEnd(); i.Advance()) {
-      DCHECK(!i.GetCurrentValue()->GetProcess().is_current());
-      if (!i.GetCurrentValue()->IsInitializedAndNotDead())
-        continue;
-      i.GetCurrentValue()->DumpProfilingData(base::BindOnce(
-          &base::WaitableEvent::Signal,
-          base::Unretained(wait_for_profiling_data.GetNewWaitableEvent())));
-    }
-
-    // Ask all the other child processes to dump their profiling data
-    for (content::BrowserChildProcessHostIterator browser_child_iter;
-         !browser_child_iter.Done(); ++browser_child_iter) {
-      browser_child_iter.GetHost()->DumpProfilingData(base::BindOnce(
-          &base::WaitableEvent::Signal,
-          base::Unretained(wait_for_profiling_data.GetNewWaitableEvent())));
-    }
-
-    if (!base::CommandLine::ForCurrentProcess()->HasSwitch(
-            switches::kInProcessGPU)) {
-      content::DumpGpuProfilingData(base::BindOnce(
-          &base::WaitableEvent::Signal,
-          base::Unretained(wait_for_profiling_data.GetNewWaitableEvent())));
-    }
-
-    // This will block until all the child processes have saved their profiling
-    // data to disk.
-    wait_for_profiling_data.WaitForAll();
-  }
+  // Wait for all the child processes to dump their profiling data without
+  // blocking the main thread.
+  base::RunLoop nested_run_loop(base::RunLoop::Type::kNestableTasksAllowed);
+  content::AskAllChildrenToDumpProfilingData(nested_run_loop.QuitClosure());
+  nested_run_loop.Run();
 #endif  // BUILDFLAG(CLANG_PROFILING_INSIDE_SANDBOX) && BUILDFLAG(CLANG_PGO)
 
   // Call FastShutdown on all of the RenderProcessHosts.  This will be
@@ -190,7 +150,7 @@ void OnShutdownStarting(ShutdownType type) {
   g_shutdown_num_processes = 0;
   g_shutdown_num_processes_slow = 0;
   for (content::RenderProcessHost::iterator i(
-          content::RenderProcessHost::AllHostsIterator());
+           content::RenderProcessHost::AllHostsIterator());
        !i.IsAtEnd(); i.Advance()) {
     ++g_shutdown_num_processes;
     if (!i.GetCurrentValue()->FastShutdownIfPossible())
@@ -211,15 +171,11 @@ ShutdownType GetShutdownType() {
   return g_shutdown_type;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool ShutdownPreThreadsStop() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserShutdownStarted",
                                                      false);
-#endif
-#if BUILDFLAG(ENABLE_PRINT_PREVIEW) && !BUILDFLAG(IS_CHROMEOS_ASH)
-  // Shutdown the IPC channel to the service processes.
-  ServiceProcessControl::GetInstance()->Disconnect();
 #endif
 
   // WARNING: During logoff/shutdown (WM_ENDSESSION) we may not have enough
@@ -278,7 +234,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
   ash::BootTimesRecorder::Get()->AddLogoutTimeMarker("BrowserDeleted", true);
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!browser_util::IsBrowserAlreadyRunning() &&
       g_shutdown_type != ShutdownType::kEndSession) {
     upgrade_util::SwapNewChromeExeIfPresent();
@@ -303,7 +259,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
 
       case RestartMode::kRestartInBackground:
         new_cl.AppendSwitch(switches::kNoStartupWindow);
-        FALLTHROUGH;
+        [[fallthrough]];
 
       case RestartMode::kRestartLastSession:
         // Relaunch the browser without any command line URLs or certain one-off
@@ -347,7 +303,7 @@ void ShutdownPostThreadsStop(RestartMode restart_mode) {
   NotifyAndTerminate(false /* fast_path */);
 #endif
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void ReadLastShutdownFile(ShutdownType type,
                           int num_procs,
@@ -433,14 +389,9 @@ void SetTryingToQuit(bool quitting) {
   // attempt is cancelled.
   PrefService* pref_service = g_browser_process->local_state();
   if (pref_service) {
-#if !defined(OS_ANDROID)
-    // TODO(https://crbug.com/1227426): for debugging.
-    if (pref_service->GetBoolean(prefs::kWasRestarted) &&
-        chrome::DidCallRelaunchIgnoreUnloadHandlers()) {
-      base::debug::DumpWithoutCrashing();
-    }
+#if !BUILDFLAG(IS_ANDROID)
     pref_service->ClearPref(prefs::kWasRestarted);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
     pref_service->ClearPref(prefs::kRestartLastSessionOnShutdown);
   }
 

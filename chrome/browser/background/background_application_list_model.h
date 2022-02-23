@@ -11,6 +11,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
@@ -185,7 +186,7 @@ class BackgroundApplicationListModel
 
   extensions::ExtensionList extensions_;
   base::ObserverList<Observer, true>::Unchecked observers_;
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
   content::NotificationRegistrar registrar_;
   bool startup_done_ = false;
 

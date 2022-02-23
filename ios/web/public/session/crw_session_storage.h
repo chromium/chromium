@@ -6,15 +6,13 @@
 #define IOS_WEB_PUBLIC_SESSION_CRW_SESSION_STORAGE_H_
 
 #import <Foundation/Foundation.h>
-#include <memory>
 
+#include "base/time/time.h"
 #include "ios/web/common/user_agent.h"
 
+@class CRWNavigationItemStorage;
+@class CRWSessionUserData;
 @class CRWSessionCertificatePolicyCacheStorage;
-
-namespace web {
-class SerializableUserData;
-}
 
 // NSCoding-compliant class used to serialize session state.
 // TODO(crbug.com/685388): Investigate using code from the sessions component.
@@ -22,15 +20,13 @@ class SerializableUserData;
 
 @property(nonatomic, assign) BOOL hasOpener;
 @property(nonatomic, assign) NSInteger lastCommittedItemIndex;
-@property(nonatomic, copy) NSArray* itemStorages;
+@property(nonatomic, copy) NSArray<CRWNavigationItemStorage*>* itemStorages;
 @property(nonatomic, strong)
     CRWSessionCertificatePolicyCacheStorage* certPolicyCacheStorage;
-@property(nonatomic, readonly) web::SerializableUserData* userData;
+@property(nonatomic, strong) CRWSessionUserData* userData;
 @property(nonatomic, assign) web::UserAgentType userAgentType;
-
-// Setter for |userData|.  The receiver takes ownership of |userData|.
-- (void)setSerializableUserData:
-    (std::unique_ptr<web::SerializableUserData>)userData;
+@property(nonatomic, copy) NSString* stableIdentifier;
+@property(nonatomic, assign) base::Time lastActiveTime;
 
 @end
 

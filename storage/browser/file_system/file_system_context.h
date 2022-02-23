@@ -15,7 +15,6 @@
 #include "base/callback.h"
 #include "base/component_export.h"
 #include "base/files/file.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
@@ -415,6 +414,10 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemContext
                                   FileSystemType type,
                                   OpenFileSystemMode mode,
                                   OpenFileSystemCallback callback);
+  void DidResolveURLOnOpenFileSystem(OpenFileSystemCallback callback,
+                                     const GURL& filesystem_root,
+                                     const std::string& filesystem_name,
+                                     base::File::Error error);
 
   // Returns a FileSystemBackend, used only by test code.
   SandboxFileSystemBackend* sandbox_backend() const {

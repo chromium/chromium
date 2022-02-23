@@ -15,7 +15,6 @@
 #include <string>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/numerics/safe_math.h"
 #include "gpu/command_buffer/common/gles2_utils_export.h"
 

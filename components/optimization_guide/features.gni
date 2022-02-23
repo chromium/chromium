@@ -13,6 +13,18 @@ declare_args() {
   # You can set the variable 'build_with_internal_optimization_guide' to true
   # even in a developer build in args.gn.  Setting this variable explicitly to true will
   # cause your build to fail if the internal files are missing.
+  #
+  # If changing the value of this, you MUST also update the following files depending on the
+  # platform:
+  # ChromeOS: //lib/chrome_util.py in the Chromite repo (ex: https://crrev.com/c/3437291)
+  # Linux: Internal archive files. //chrome/installer/linux/common/installer.include handles the
+  # relevant files not being present.
+  # Mac: //chrome/installer/mac/signing/parts.py
+  # Windows: //chrome/installer/mini_installer/chrome.release and internal archive files
+  #
+  # The library this pulls in depends on open-source LevelDB which is not supported for Fuchsia.
+  # Android and iOS should just work but are not included in the set we release for, so we do
+  # not needlessly increase the binary.
   build_with_internal_optimization_guide =
-      is_chrome_branded && !is_android && !is_ios
+      is_chrome_branded && !is_android && !is_ios && !is_fuchsia
 }

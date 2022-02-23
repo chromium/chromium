@@ -12,7 +12,8 @@ namespace blink {
 LayoutDocumentTransitionContent::LayoutDocumentTransitionContent(
     DocumentTransitionContentElement* element)
     : LayoutReplaced(element),
-      layer_(cc::SharedElementLayer::Create(element->resource_id())) {
+      layer_(
+          cc::DocumentTransitionContentLayer::Create(element->resource_id())) {
   SetIntrinsicSize(element->intrinsic_size());
 }
 
@@ -31,12 +32,6 @@ PaintLayerType LayoutDocumentTransitionContent::LayerTypeRequired() const {
   return kNormalPaintLayer;
 }
 
-CompositingReasons
-LayoutDocumentTransitionContent::AdditionalCompositingReasons() const {
-  NOT_DESTROYED();
-  return CompositingReason::kDocumentTransitionContentElement;
-}
-
 void LayoutDocumentTransitionContent::PaintReplaced(
     const PaintInfo& paint_info,
     const PhysicalOffset& paint_offset) const {
@@ -45,7 +40,7 @@ void LayoutDocumentTransitionContent::PaintReplaced(
 
   PhysicalRect paint_rect = ReplacedContentRect();
   paint_rect.Move(paint_offset);
-  IntRect pixel_snapped_rect = PixelSnappedIntRect(paint_rect);
+  gfx::Rect pixel_snapped_rect = ToPixelSnappedRect(paint_rect);
   layer_->SetBounds(
       gfx::Size(pixel_snapped_rect.width(), pixel_snapped_rect.height()));
   layer_->SetIsDrawable(true);

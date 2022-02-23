@@ -33,7 +33,9 @@ SharedClipboardUiController::GetOrCreateFromWebContents(
 
 SharedClipboardUiController::SharedClipboardUiController(
     content::WebContents* web_contents)
-    : SharingUiController(web_contents) {}
+    : SharingUiController(web_contents),
+      content::WebContentsUserData<SharedClipboardUiController>(*web_contents) {
+}
 
 SharedClipboardUiController::~SharedClipboardUiController() = default;
 

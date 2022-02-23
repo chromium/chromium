@@ -1,14 +1,26 @@
 <style include="cr-hidden-style">
   :host {
     display: block;
+    --ntp-module-container-padding-top: 16px;
   }
 
   ntp-module-wrapper {
     width: var(--ntp-module-width);
   }
 
+  :host([modules-redesigned-layout-enabled_]) .module-container {
+    --ntp-module-container-padding-top: 0px;
+    margin-bottom: 30px;
+    margin-inline-end: 30px;
+  }
+
   .module-container + .module-container {
-    padding-top: 16px;
+    padding-top: var(--ntp-module-container-padding-top);
+  }
+
+  :host([modules-redesigned-layout-enabled_]) #modules {
+    display: flex;
+    flex-flow: row wrap;
   }
 
   #removeModuleToastMessage {
@@ -29,8 +41,8 @@
 <cr-toast id="removeModuleToast" duration="10000">
   <div id="removeModuleToastMessage">[[removedModuleData_.message]]</div>
   <cr-button id="undoRemoveModuleButton"
-      aria-label="[[i18n('undoDescription')]]"
+      aria-label="$i18n{undoDescription}"
       on-click="onUndoRemoveModuleButtonClick_">
-    [[i18n('undo')]]
+    $i18n{undo}
   </cr-button>
 </cr-toast>

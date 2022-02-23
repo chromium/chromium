@@ -777,13 +777,6 @@ interface FrameHost {
   // proper encoding name. Sent for top-level frames.
   UpdateEncoding(string encoding_name);
 
-  // Updates information to determine whether a user gesture should carryover to
-  // future navigations. This is needed so navigations within a certain
-  // timeframe of a request initiated by a gesture will be treated as if they
-  // were initiated by a gesture too, otherwise the navigation may be blocked.
-  [EnableIf=is_android]
-  UpdateUserGestureCarryoverInfo();
-
   // Notifies the browser that this frame has new session history information.
   //
   // NOTE: PageState can be quite large when serialized, and its message

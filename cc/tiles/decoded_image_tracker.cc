@@ -38,7 +38,7 @@ DecodedImageTracker::~DecodedImageTracker() {
 
 void DecodedImageTracker::QueueImageDecode(
     const PaintImage& image,
-    const gfx::ColorSpace& target_color_space,
+    const TargetColorParams& target_color_params,
     base::OnceCallback<void(bool)> callback) {
   size_t frame_index = PaintImage::kDefaultFrameIndex;
   TRACE_EVENT1(TRACE_DISABLED_BY_DEFAULT("cc.debug"),
@@ -50,7 +50,7 @@ void DecodedImageTracker::QueueImageDecode(
   auto image_bounds = SkIRect::MakeWH(image.width(), image.height());
   DrawImage draw_image(image, false, image_bounds,
                        PaintFlags::FilterQuality::kNone, SkM44(), frame_index,
-                       target_color_space);
+                       target_color_params);
   image_controller_->QueueImageDecode(
       draw_image, base::BindOnce(&DecodedImageTracker::ImageDecodeFinished,
                                  base::Unretained(this), std::move(callback),

@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -61,7 +62,7 @@ class TestToolbarActionViewDelegate : public ToolbarActionView::Delegate {
  private:
   std::unique_ptr<views::MenuButton> overflow_reference_view_;
 
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 class OpenMenuListener : public views::ContextMenuController {
@@ -86,7 +87,7 @@ class OpenMenuListener : public views::ContextMenuController {
   bool opened_menu() const { return opened_menu_; }
 
  private:
-  views::View* view_;
+  raw_ptr<views::View> view_;
 
   bool opened_menu_;
 };
@@ -178,8 +179,8 @@ TEST_F(ToolbarActionViewUnitTest,
 
 // Test the basic ui of a ToolbarActionView and that it responds correctly to
 // a controller's state.
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_WIN)
 // TODO(crbug.com/1042220): Test is flaky on Mac, Linux and Win10.
 #define MAYBE_BasicToolbarActionViewTest DISABLED_BasicToolbarActionViewTest
 #else

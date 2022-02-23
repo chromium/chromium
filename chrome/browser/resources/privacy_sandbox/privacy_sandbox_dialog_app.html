@@ -1,0 +1,204 @@
+<style include="cr-shared-style">
+  /* Custom scrollbar for the content area */
+  /* The default scrollbar on Windows doesn't fit with the dialog style. Also
+   * it is wide and causes visual problems when the height of the content is
+   * changed.
+   */
+  :host {
+    --scrollbar-width: 7px;
+    --scrollbar-background: var(--google-grey-200);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :host {
+      --scrollbar-background: var(--google-grey-700);
+    }
+  }
+
+  #contentArea::-webkit-scrollbar {
+    width: var(--scrollbar-width);
+  }
+
+  #contentArea::-webkit-scrollbar-track {
+    border-radius: var(--scrollbar-width);
+  }
+
+  #contentArea::-webkit-scrollbar-thumb {
+    background: var(--scrollbar-background);
+    border-radius: var(--scrollbar-width);
+  }
+
+  #contentArea.hide-scrollbar::-webkit-scrollbar-thumb {
+    visibility: hidden;
+  }
+
+  .header {
+    padding-bottom: 10px;
+    text-align: center;
+  }
+
+  .header h2 {
+    font-weight: 500;
+    line-height: 22px;
+    margin: 0;
+  }
+
+  .header h3 {
+    font-weight: normal;
+    line-height: 22px;
+    margin: 3px 0;
+  }
+
+  .header img {
+    content: url(images/privacy_sandbox_confirmation_banner.svg);
+    height: 100px;
+    padding-bottom: 16px;
+    padding-top: 16px;
+    width: 100px;
+  }
+
+  @media (prefers-color-scheme: dark) {
+    .header img {
+      content: url(images/privacy_sandbox_confirmation_banner_dark.svg);
+    }
+  }
+
+  .section {
+    line-height: 20px;
+    padding: 8px 0;
+  }
+
+  .section-header {
+    margin-bottom: 4px;
+  }
+
+  #expandSection {
+    border-bottom: var(--cr-separator-line);
+    border-top: var(--cr-separator-line);
+    line-height: 20px;
+    margin-bottom: 8px;
+  }
+
+  #expandSection ul {
+    padding-inline-start: 16px;
+  }
+
+  #expandSection b {
+    color: initial;
+    font-weight: 400;
+  }
+
+  .buttons-container {
+    align-items: center;
+    display: flex;
+    height: 64px;
+    justify-content: end;
+    padding-inline-end:
+        var(--cr-dialog-button-container-padding-horizontal, 16px);
+    width: 100%;
+  }
+
+  cr-button+cr-button {
+    margin-inline-start: 8px;
+  }
+
+  #contentArea {
+    border-color: transparent;
+    border-style: solid;
+    border-width: 1px 0;
+    overflow-y: scroll;
+    padding: 0 var(--cr-section-padding);
+  }
+
+  .wrapper.fit-into-size {
+    height: 100vh;
+  }
+
+  .wrapper.fit-into-size #contentArea {
+    bottom: 64px;
+    position: absolute;
+    top: 0;
+  }
+
+  .wrapper.fit-into-size .buttons-container {
+    bottom: 0;
+    position: fixed;
+    right: 0;
+  }
+
+  #contentArea.can-scroll {
+    border-bottom-color: var(--scrollable-border-color);
+  }
+
+  iron-collapse {
+    --iron-collapse-transition-duration: 300ms;
+  }
+</style>
+
+<div class$="wrapper [[fitIntoDialogClass_]]">
+  <div id="contentArea" class$="[[canScrollClass_]]">
+    <div class="header">
+      <img>
+      <template is="dom-if" if="[[isConsent_]]">
+        <h2>$i18n{title}</h2>
+      </template>
+      <h3>$i18n{subtitle}</h3>
+    </div>
+
+    <div class="section">
+      <div class="section-header">$i18n{bodyHeader1}</div>
+      <div class="cr-secondary-text">$i18n{bodyDescription1}</div>
+    </div>
+
+    <div class="section">
+      <div class="section-header">$i18n{bodyHeader2}</div>
+      <div class="cr-secondary-text">$i18n{bodyDescription2}</div>
+    </div>
+
+    <div id="expandSection" hidden$="[[!isConsent_]]">
+      <template is="dom-if" if="[[isConsent_]]">
+        <cr-expand-button expanded="{{expanded_}}">
+          <div class="cr-secondary-text">$i18n{learnMoreLabel}</div>
+        </cr-expand-button>
+        <iron-collapse opened="[[expanded_]]">
+          <div>$i18n{learnMoreSection1Header}</div>
+          <ul class="cr-secondary-text">
+            <li>$i18nRaw{learnMoreSection1BulletPoint1}</li>
+            <li>$i18nRaw{learnMoreSection1BulletPoint2}</li>
+            <li>$i18nRaw{learnMoreSection1BulletPoint3}</li>
+          </ul>
+
+          <div>$i18n{learnMoreSection2Header}</div>
+          <ul class="cr-secondary-text">
+            <li>$i18nRaw{learnMoreSection2BulletPoint1}</li>
+            <li>$i18nRaw{learnMoreSection2BulletPoint2}</li>
+            <li>$i18nRaw{learnMoreSection2BulletPoint3}</li>
+          </ul>
+        </iron-collapse>
+      </template>
+    </div>
+    <div class="section cr-secondary-text">$i18n{bottomSummary}</div>
+  </div>
+
+  <div class="buttons-container">
+    <template is="dom-if" if="[[isConsent_]]">
+      <cr-button id="declineButton" class="action-button"
+          on-click="onConsentDeclined_">
+        $i18n{consentDeclineButton}
+      </cr-button>
+      <cr-button id="confirmButton" class="action-button"
+          on-click="onConsentAccepted_">
+        $i18n{consentAcceptButton}
+      </cr-button>
+    </template>
+    <template is="dom-if" if="[[!isConsent_]]">
+      <cr-button id="settingsButton" on-click="onNoticeOpenSettings_">
+        $i18n{noticeOpenSettingsButton}
+      </cr-button>
+      <cr-button id="ackButton" class="action-button"
+          on-click="onNoticeAcknowledge_">
+        $i18n{noticeAcknowledgeButton}
+      </cr-button>
+    </template>
+  </div>
+</div>

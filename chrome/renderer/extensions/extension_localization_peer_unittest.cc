@@ -15,6 +15,7 @@
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "extensions/common/message_bundle.h"
+#include "extensions/renderer/shared_l10n_map.h"
 #include "ipc/ipc_sender.h"
 #include "ipc/ipc_sync_message.h"
 #include "mojo/public/cpp/system/data_pipe_utils.h"
@@ -249,11 +250,12 @@ TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestNoCatalogs) {
 TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestWithCatalogs) {
   SetUpExtensionLocalizationPeer("text/css", GURL(kExtensionUrl_2));
 
-  extensions::L10nMessagesMap messages;
-  messages.insert(std::make_pair("text", "new text"));
-  extensions::ExtensionToL10nMessagesMap& l10n_messages_map =
-      *extensions::GetExtensionToL10nMessagesMap();
-  l10n_messages_map["some_id2"] = messages;
+  {
+    extensions::SharedL10nMap::L10nMessagesMap messages;
+    messages.insert(std::make_pair("text", "new text"));
+    extensions::SharedL10nMap::GetInstance().SetMessagesForTesting(
+        "some_id2", std::move(messages));
+  }
 
   // We already have messages in memory, Send will be skipped.
   EXPECT_CALL(*sender_, Send(_)).Times(0);
@@ -274,11 +276,12 @@ TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestWithCatalogs) {
 TEST_F(ExtensionLocalizationPeerTest, OnCompletedRequestReplaceMessagesFails) {
   SetUpExtensionLocalizationPeer("text/css", GURL(kExtensionUrl_3));
 
-  extensions::L10nMessagesMap messages;
-  messages.insert(std::make_pair("text", "new text"));
-  extensions::ExtensionToL10nMessagesMap& l10n_messages_map =
-      *extensions::GetExtensionToL10nMessagesMap();
-  l10n_messages_map["some_id3"] = messages;
+  {
+    extensions::SharedL10nMap::L10nMessagesMap messages;
+    messages.insert(std::make_pair("text", "new text"));
+    extensions::SharedL10nMap::GetInstance().SetMessagesForTesting(
+        "some_id3", std::move(messages));
+  }
 
   std::string message("some __MSG_missing_message__");
 

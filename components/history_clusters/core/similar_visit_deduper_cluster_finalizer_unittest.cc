@@ -42,16 +42,16 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest, DedupeExactSimilarVisit) {
       base::Seconds(20);
 
   history::ClusterVisit canonical_visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/abc")));
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/#abc")));
   canonical_visit.annotated_visit.url_row.set_title(u"sametitle");
 
   history::Cluster cluster;
   cluster.visits = {visit, canonical_visit};
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
-                                      testing::VisitResult(2, 1.0, {1}))));
-  const auto& actual_canonical_visit = cluster.visits.at(1);
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  2, 1.0, {testing::VisitResult(1, 1.0)}))));
+  const auto& actual_canonical_visit = cluster.visits.at(0);
   // Make sure total foreground duration is updated correctly even if some don't
   // have the field populated.
   EXPECT_EQ(actual_canonical_visit.annotated_visit.context_annotations
@@ -65,7 +65,7 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest,
       testing::CreateDefaultAnnotatedVisit(1, GURL("https://google.com/")));
 
   history::ClusterVisit canonical_visit = testing::CreateClusterVisit(
-      testing::CreateDefaultAnnotatedVisit(2, GURL("https://foo.com/")));
+      testing::CreateDefaultAnnotatedVisit(2, GURL("https://google.com/")));
   canonical_visit.annotated_visit.url_row.set_title(u"someothertitle");
 
   history::Cluster cluster;
@@ -121,9 +121,9 @@ TEST_F(SimilarVisitDeduperClusterFinalizerTest, MergesAnnotations) {
   cluster.visits = {duplicate_visit, canonical_visit};
   FinalizeCluster(cluster);
   EXPECT_THAT(testing::ToVisitResults({cluster}),
-              ElementsAre(ElementsAre(testing::VisitResult(1, 1.0),
-                                      testing::VisitResult(2, 1.0, {1}))));
-  const auto& actual_canonical_visit = cluster.visits.at(1);
+              ElementsAre(ElementsAre(testing::VisitResult(
+                  2, 1.0, {testing::VisitResult(1, 1.0)}))));
+  const auto& actual_canonical_visit = cluster.visits.at(0);
   EXPECT_TRUE(actual_canonical_visit.annotated_visit.context_annotations
                   .omnibox_url_copied);
   EXPECT_TRUE(actual_canonical_visit.annotated_visit.context_annotations

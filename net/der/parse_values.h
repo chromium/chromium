@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "net/base/net_export.h"
 #include "net/der/input.h"
 
@@ -18,11 +17,11 @@ namespace der {
 // Reads a DER-encoded ASN.1 BOOLEAN value from |in| and puts the resulting
 // value in |out|. Returns whether the encoded value could successfully be
 // read.
-NET_EXPORT bool ParseBool(const Input& in, bool* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseBool(const Input& in, bool* out);
 
 // Like ParseBool, except it is more relaxed in what inputs it accepts: Any
 // value that is a valid BER encoding will be parsed successfully.
-NET_EXPORT bool ParseBoolRelaxed(const Input& in, bool* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseBoolRelaxed(const Input& in, bool* out);
 
 // Checks the validity of a DER-encoded ASN.1 INTEGER value from |in|, and
 // determines the sign of the number. Returns true on success and
@@ -32,8 +31,7 @@ NET_EXPORT bool ParseBoolRelaxed(const Input& in, bool* out) WARN_UNUSED_RESULT;
 //    in: The value portion of an INTEGER.
 //    negative: Out parameter that is set to true if the number is negative
 //        and false otherwise (zero is non-negative).
-NET_EXPORT bool IsValidInteger(const Input& in,
-                               bool* negative) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool IsValidInteger(const Input& in, bool* negative);
 
 // Reads a DER-encoded ASN.1 INTEGER value from |in| and puts the resulting
 // value in |out|. ASN.1 INTEGERs are arbitrary precision; this function is
@@ -41,10 +39,10 @@ NET_EXPORT bool IsValidInteger(const Input& in,
 // and is between 0 and 2^64-1. This function returns false if the value is too
 // big to fit in a uint64_t, is negative, or if there is an error reading the
 // integer.
-NET_EXPORT bool ParseUint64(const Input& in, uint64_t* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseUint64(const Input& in, uint64_t* out);
 
 // Same as ParseUint64() but for a uint8_t.
-NET_EXPORT bool ParseUint8(const Input& in, uint8_t* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseUint8(const Input& in, uint8_t* out);
 
 // The BitString class is a helper for representing a valid parsed BIT STRING.
 //
@@ -70,7 +68,7 @@ class NET_EXPORT BitString {
   // A return value of false can mean either:
   //  * The bit value at |bit_index| is 0.
   //  * There is no bit at |bit_index| (index is beyond the end).
-  bool AssertsBit(size_t bit_index) const WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AssertsBit(size_t bit_index) const;
 
  private:
   Input bytes_;
@@ -84,8 +82,8 @@ class NET_EXPORT BitString {
 //
 // Returns true on success, otherwise returns false and does not modify the
 // out-parameters.
-NET_EXPORT bool ParseBitString(const Input& in,
-                               BitString* bit_string) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseBitString(const Input& in,
+                                             BitString* bit_string);
 
 struct NET_EXPORT GeneralizedTime {
   uint16_t year;
@@ -110,23 +108,52 @@ NET_EXPORT_PRIVATE bool operator>=(const GeneralizedTime& lhs,
 
 // Reads a DER-encoded ASN.1 UTCTime value from |in| and puts the resulting
 // value in |out|, returning true if the UTCTime could be parsed successfully.
-NET_EXPORT bool ParseUTCTime(const Input& in,
-                             GeneralizedTime* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseUTCTime(const Input& in,
+                                           GeneralizedTime* out);
 
 // Like ParseUTCTime, but it is more lenient in what is accepted. DER requires
 // a UTCTime to be in the format YYMMDDhhmmssZ; this function will accept both
 // that and YYMMDDhhmmZ, which is a valid BER encoding of a UTCTime which
 // sometimes incorrectly appears in X.509 certificates.
-NET_EXPORT bool ParseUTCTimeRelaxed(const Input& in,
-                                    GeneralizedTime* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseUTCTimeRelaxed(const Input& in,
+                                                  GeneralizedTime* out);
 
 // Reads a DER-encoded ASN.1 GeneralizedTime value from |in| and puts the
 // resulting value in |out|, returning true if the GeneralizedTime could
 // be parsed successfully. This function is even more restrictive than the
 // DER rules - it follows the rules from RFC5280, which does not allow for
 // fractional seconds.
-NET_EXPORT bool ParseGeneralizedTime(const Input& in,
-                                     GeneralizedTime* out) WARN_UNUSED_RESULT;
+[[nodiscard]] NET_EXPORT bool ParseGeneralizedTime(const Input& in,
+                                                   GeneralizedTime* out);
+
+// Reads a DER-encoded ASN.1 IA5String value from |in| and stores the result in
+// |out| as ASCII, returning true if successful.
+[[nodiscard]] NET_EXPORT bool ParseIA5String(Input in, std::string* out);
+
+// Reads a DER-encoded ASN.1 VisibleString value from |in| and stores the result
+// in |out| as ASCII, returning true if successful.
+[[nodiscard]] NET_EXPORT bool ParseVisibleString(Input in, std::string* out);
+
+// Reads a DER-encoded ASN.1 PrintableString value from |in| and stores the
+// result in |out| as ASCII, returning true if successful.
+[[nodiscard]] NET_EXPORT bool ParsePrintableString(Input in, std::string* out);
+
+// Reads a DER-encoded ASN.1 TeletexString value from |in|, treating it as
+// Latin-1, and stores the result in |out| as UTF-8, returning true if
+// successful.
+//
+// This is for compatibility with legacy implementations that would use Latin-1
+// encoding but tag it as TeletexString.
+[[nodiscard]] NET_EXPORT bool ParseTeletexStringAsLatin1(Input in,
+                                                         std::string* out);
+
+// Reads a DER-encoded ASN.1 UniversalString value from |in| and stores the
+// result in |out| as UTF-8, returning true if successful.
+[[nodiscard]] NET_EXPORT bool ParseUniversalString(Input in, std::string* out);
+
+// Reads a DER-encoded ASN.1 BMPString value from |in| and stores the
+// result in |out| as UTF-8, returning true if successful.
+[[nodiscard]] NET_EXPORT bool ParseBmpString(Input in, std::string* out);
 
 }  // namespace der
 

@@ -73,9 +73,11 @@ FontFamily FontBuilder::StandardFontFamily() const {
 }
 
 AtomicString FontBuilder::StandardFontFamilyName() const {
-  Settings* settings = document_->GetSettings();
-  if (settings)
-    return settings->GetGenericFontFamilySettings().Standard();
+  if (document_) {
+    Settings* settings = document_->GetSettings();
+    if (settings)
+      return settings->GetGenericFontFamilySettings().Standard();
+  }
   return AtomicString();
 }
 
@@ -84,10 +86,12 @@ AtomicString FontBuilder::GenericFontFamilyName(
   switch (generic_family) {
     default:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case FontDescription::kNoFamily:
       return AtomicString();
-    case FontDescription::kStandardFamily:
+    // While the intention is to phase out kWebkitBodyFamily, it should still
+    // map to the standard font from user preference.
+    case FontDescription::kWebkitBodyFamily:
       return StandardFontFamilyName();
     case FontDescription::kSerifFamily:
       return font_family_names::kSerif;
@@ -213,6 +217,11 @@ void FontBuilder::SetFontOpticalSizing(OpticalSizing font_optical_sizing) {
   Set(PropertySetFlag::kFontOpticalSizing);
 
   font_description_.SetFontOpticalSizing(font_optical_sizing);
+}
+
+void FontBuilder::SetFontPalette(scoped_refptr<FontPalette> palette) {
+  Set(PropertySetFlag::kFontPalette);
+  font_description_.SetFontPalette(palette);
 }
 
 void FontBuilder::SetFontSmoothing(FontSmoothingMode foont_smoothing_mode) {
@@ -431,6 +440,8 @@ void FontBuilder::UpdateFontDescription(FontDescription& description,
     description.SetKerning(font_description_.GetKerning());
   if (IsSet(PropertySetFlag::kFontOpticalSizing))
     description.SetFontOpticalSizing(font_description_.FontOpticalSizing());
+  if (IsSet(PropertySetFlag::kFontPalette))
+    description.SetFontPalette(font_description_.GetFontPalette());
   if (IsSet(PropertySetFlag::kFontSmoothing))
     description.SetFontSmoothing(font_description_.FontSmoothing());
   if (IsSet(PropertySetFlag::kTextOrientation) ||

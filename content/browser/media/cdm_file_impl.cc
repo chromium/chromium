@@ -16,6 +16,7 @@
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "media/base/bind_to_current_loop.h"
+#include "media/cdm/cdm_type.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"
 #include "storage/browser/file_system/file_stream_reader.h"
@@ -53,22 +54,22 @@ std::string GetTempFileName(const std::string& file_name) {
 }
 
 // The file system is different for each CDM and each origin. So track files
-// in use based on (file system ID, origin, file name).
+// in use based on (origin, CDM type, file name).
 struct FileLockKey {
-  FileLockKey(const std::string& file_system_id,
-              const url::Origin& origin,
+  FileLockKey(const url::Origin& origin,
+              const media::CdmType& cdm_type,
               const std::string& file_name)
-      : file_system_id(file_system_id), origin(origin), file_name(file_name) {}
+      : origin(origin), cdm_type(cdm_type), file_name(file_name) {}
   ~FileLockKey() = default;
 
   // Allow use as a key in std::set.
   bool operator<(const FileLockKey& other) const {
-    return std::tie(file_system_id, origin, file_name) <
-           std::tie(other.file_system_id, other.origin, other.file_name);
+    return std::tie(origin, cdm_type, file_name) <
+           std::tie(other.origin, other.cdm_type, other.file_name);
   }
 
-  std::string file_system_id;
   url::Origin origin;
+  media::CdmType cdm_type;
   std::string file_name;
 };
 
@@ -392,13 +393,13 @@ bool CdmFileImpl::IsValidName(const std::string& name) {
 CdmFileImpl::CdmFileImpl(
     const std::string& file_name,
     const url::Origin& origin,
-    const std::string& file_system_id,
+    const media::CdmType& cdm_type,
     const std::string& file_system_root_uri,
     scoped_refptr<storage::FileSystemContext> file_system_context)
     : file_name_(file_name),
       temp_file_name_(GetTempFileName(file_name_)),
       origin_(origin),
-      file_system_id_(file_system_id),
+      cdm_type_(cdm_type),
       file_system_root_uri_(file_system_root_uri),
       file_system_context_(file_system_context) {
   DVLOG(3) << __func__ << " " << file_name_;
@@ -723,12 +724,12 @@ storage::FileSystemURL CdmFileImpl::CreateFileSystemURL(
 }
 
 bool CdmFileImpl::AcquireFileLock(const std::string& file_name) {
-  FileLockKey file_lock_key(file_system_id_, origin_, file_name);
+  FileLockKey file_lock_key(origin_, cdm_type_, file_name);
   return GetFileLockMap()->AcquireFileLock(file_lock_key);
 }
 
 void CdmFileImpl::ReleaseFileLock(const std::string& file_name) {
-  FileLockKey file_lock_key(file_system_id_, origin_, file_name);
+  FileLockKey file_lock_key(origin_, cdm_type_, file_name);
   GetFileLockMap()->ReleaseFileLock(file_lock_key);
 }
 

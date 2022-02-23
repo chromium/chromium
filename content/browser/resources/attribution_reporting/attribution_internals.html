@@ -18,7 +18,7 @@
   Attribution Reporting API Internals
 </div>
 <div id="info">
-  <p>Attribution reporting is currently <span id="feature-status-content"></span>.
+  <p>Attribution reporting is currently <span id="feature-status-content"></span> in this browser.
 </div>
 <hr>
 <div id="page-content">
@@ -26,19 +26,19 @@
     <button id="refresh">Refresh all page data</button>
     <button id="clear-data">Clear all attribution data</button>
   </div>
-  <h2> Active Sources </h2>
+  <h2> Sources </h2>
   <div class="content">
     <div class="table-wrapper" id="source-table-wrapper"></div>
   </div>
   <h2> Sent and Pending Reports </h2>
   <div class="content">
     <div>
+      <button id="send-reports" disabled>Send Selected Pending Reports</button>
+    </div>
+    <div>
       <span id="debug-mode-content"></span>
     </div>
     <div class="table-wrapper" id="report-table-wrapper"></div>
-    <div>
-      <button id="send-reports">Send All Pending Reports</button>
-    </div>
   </div>
 </div>
 </body>

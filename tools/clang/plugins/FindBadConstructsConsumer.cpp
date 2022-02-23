@@ -384,10 +384,23 @@ void FindBadConstructsConsumer::CheckCtorDtorWeight(
   for (RecordDecl::field_iterator it = record->field_begin();
        it != record->field_end();
        ++it) {
-    CountType(it->getType().getTypePtr(),
-              &trivial_member,
-              &non_trivial_member,
-              &templated_non_trivial_member);
+    switch (ClassifyType(it->getType().getTypePtr())) {
+      case TypeClassification::kTrivial:
+        trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivial:
+        non_trivial_member += 1;
+        break;
+      case TypeClassification::kTrivialTemplate:
+        trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivialTemplate:
+        templated_non_trivial_member += 1;
+        break;
+      case TypeClassification::kNonTrivialExternTemplate:
+        non_trivial_member += 1;
+        break;
+    }
   }
 
   // Check to see if we need to ban inlined/synthesized constructors. Note
@@ -671,10 +684,8 @@ void FindBadConstructsConsumer::CheckVirtualBodies(
   }
 }
 
-void FindBadConstructsConsumer::CountType(const Type* type,
-                                          int* trivial_member,
-                                          int* non_trivial_member,
-                                          int* templated_non_trivial_member) {
+FindBadConstructsConsumer::TypeClassification
+FindBadConstructsConsumer::ClassifyType(const Type* type) {
   switch (type->getTypeClass()) {
     case Type::Record: {
       auto* record_decl = type->getAsCXXRecordDecl();
@@ -685,69 +696,116 @@ void FindBadConstructsConsumer::CountType(const Type* type,
       // case, just count it as a trivial member to avoid emitting warnings that
       // might be spurious.
       if (!record_decl->hasDefinition() || record_decl->hasTrivialDestructor())
-        (*trivial_member)++;
-      else
-        (*non_trivial_member)++;
-      break;
+        return TypeClassification::kTrivial;
+
+      const auto name = record_decl->getQualifiedNameAsString();
+
+      // `std::basic_string` is externed by libc++, so even though it's a
+      // non-trivial type wrapped by a template, we shouldn't classify it as a
+      // `kNonTrivialTemplate`. The `kNonTrivialExternTemplate` classification
+      // exists for this purpose.
+      // https://github.com/llvm-mirror/libcxx/blob/78d6a7767ed57b50122a161b91f59f19c9bd0d19/include/string#L4317
+      if (name == "std::basic_string")
+        return TypeClassification::kNonTrivialExternTemplate;
+
+      // `base::raw_ptr` is non-trivial if the `use_backup_ref_ptr` flag is
+      // enabled, and trivial otherwise. Since there are many existing types
+      // using this that we don't wish to burden with defining custom
+      // ctors/dtors, and we'd rather not vary on triviality by build config,
+      // treat this as always trivial.
+      if (name == "base::raw_ptr")
+        return TypeClassification::kTrivialTemplate;
+
+      return TypeClassification::kNonTrivial;
     }
     case Type::TemplateSpecialization: {
-      TemplateName name =
-          dyn_cast<TemplateSpecializationType>(type)->getTemplateName();
+      // A "Template Specialization" is a type produced by providing arguments
+      // to any type template, not necessarily just a template which has
+      // explicitly declared specializations. This may be a regular type
+      // template, or a templated type alias.
+      //
+      // A great way to reason about templates is as a compile-time function
+      // taking compile-time arguments, and producing a regular type. In the
+      // context of a `TemplateSpecializationType`, we're referring to this
+      // particular invocation of that function. We can "desugar" that into the
+      // produced type, which is no longer seen as a template.
+      //
+      // Types produced by templates are of particular concern here, since they
+      // almost certainly have inline ctors/dtors and may result in lots of code
+      // being generated for types containing them. For that reason, non-trivial
+      // templates are weighted higher than regular non-trivial types.
+      auto* template_type = dyn_cast<TemplateSpecializationType>(type);
 
-      // HACK: I'm at a loss about how to get the syntax checker to get
-      // whether a template is externed or not. For the first pass here,
-      // just do simple string comparisons.
-      if (TemplateDecl* decl = name.getAsTemplateDecl()) {
-        std::string base_name = decl->getQualifiedNameAsString();
-        if (base_name == "std::basic_string") {
-          (*non_trivial_member)++;
-          break;
-        }
-        if (options_.checked_ptr_as_trivial_member &&
-            base_name == "base::CheckedPtr") {
-          (*trivial_member)++;
-          break;
-        }
-        if (options_.raw_ptr_template_as_trivial_member &&
-            base_name == "base::raw_ptr") {
-          (*trivial_member)++;
-          break;
-        }
-      }
+      // If this is a template type alias, just consider the underlying type
+      // without the context of it being a template.
+      // For an example:
+      //
+      // template <typename T>
+      // using Foo = Bar<T>;
+      //
+      // Given `Foo<Baz>`, we want to classify it simply as `Bar<Baz>` would be.
+      if (template_type->isTypeAlias())
+        return ClassifyType(template_type->getAliasedType().getTypePtr());
 
-        (*templated_non_trivial_member)++;
-      break;
+      // Otherwise, classify the type produced by the template and apply the
+      // corresponding template classification. For an example:
+      //
+      // template <typename T>
+      // struct Foo { ... };
+      //
+      // Given `Foo<Baz>`, classify `struct Foo { ... };` with `Baz` substituted
+      // for `T`;
+      const auto classification =
+          ClassifyType(template_type->desugar().getTypePtr());
+      if (classification == TypeClassification::kTrivial)
+        return TypeClassification::kTrivialTemplate;
+      if (classification == TypeClassification::kNonTrivial)
+        return TypeClassification::kNonTrivialTemplate;
+
+      return classification;
+    }
+    case Type::SubstTemplateTypeParm: {
+      // `SubstTemplateTypeParmType` appears wherever a template type parameter
+      // is encountered, and may be desugared into the type argument given to
+      // the template. For example:
+      //
+      // template <typename T>
+      // struct Foo {
+      //  T bar; // <-- `bar` here is a `SubstTemplateTypeParmType`
+      // };
+      //
+      // or
+      //
+      // template <typename T>
+      // using Foo = T; // <-- `T` here is a `SubstTemplateTypeParmType`
+      const auto* const subst_type = dyn_cast<SubstTemplateTypeParmType>(type)
+                                         ->getReplacementType()
+                                         .getTypePtr();
+      return ClassifyType(subst_type);
     }
     case Type::Elaborated: {
-      CountType(dyn_cast<ElaboratedType>(type)->getNamedType().getTypePtr(),
-                trivial_member,
-                non_trivial_member,
-                templated_non_trivial_member);
-      break;
+      // Quote from the LLVM documentation:
+      // "Represents a type that was referred to using an elaborated type
+      // keyword, e.g., struct S, or via a qualified name, e.g., N::M::type, or
+      // both. This type is used to keep track of a type name as written in the
+      // source code, including tag keywords and any nested-name-specifiers. The
+      // type itself is always "sugar", used to express what was written in the
+      // source code but containing no additional semantic information."
+      return ClassifyType(
+          dyn_cast<ElaboratedType>(type)->getNamedType().getTypePtr());
     }
     case Type::Typedef: {
-      while (const TypedefType* TT = dyn_cast<TypedefType>(type)) {
-        if (auto* decl = TT->getDecl()) {
-          const std::string name = decl->getNameAsString();
-          auto* context = decl->getDeclContext();
-          if (name == "atomic_int" && context->isStdNamespace()) {
-            (*trivial_member)++;
-            return;
-          }
-          type = decl->getUnderlyingType().getTypePtr();
-        }
-      }
-      CountType(type,
-                trivial_member,
-                non_trivial_member,
-                templated_non_trivial_member);
-      break;
+      // A "typedef type" is the representation of a type named through a
+      // typedef (or a C++11 type alias). In this case, we don't care about the
+      // typedef itself, so we desugar it into the underlying type and classify
+      // that.
+      const auto* const decl = dyn_cast<TypedefType>(type)->getDecl();
+      return ClassifyType(decl->getUnderlyingType().getTypePtr());
     }
     default: {
       // Stupid assumption: anything we see that isn't the above is a POD
       // or reference type.
-      (*trivial_member)++;
-      break;
+      return TypeClassification::kTrivial;
     }
   }
 }

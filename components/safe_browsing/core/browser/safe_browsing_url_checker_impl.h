@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -207,6 +208,17 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // Perform the hash based check for the url.
   void PerformHashBasedCheck(const GURL& url);
 
+  // Checks the eligibility of sending a sampled ping first;
+  // Send a sampled report if one should be sent, otherwise, exit.
+  static void MaybeSendSampleRequest(
+      base::WeakPtr<SafeBrowsingUrlCheckerImpl> weak_checker_on_io,
+      const GURL& url,
+      const GURL& last_committed_url,
+      bool is_mainframe,
+      base::WeakPtr<RealTimeUrlLookupServiceBase> url_lookup_service_on_ui,
+      scoped_refptr<SafeBrowsingDatabaseManager> database_manager,
+      scoped_refptr<base::SequencedTaskRunner> io_task_runner);
+
   // This function has to be static because it is called in UI thread.
   // This function starts a real time url check if |url_lookup_service_on_ui| is
   // available and is not in backoff mode. Otherwise, hop back to IO thread and
@@ -344,7 +356,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker,
   // May be null on certain platforms that don't support chrome://safe-browsing
   // and in unit tests. If non-null, guaranteed to outlive this object by
   // contract.
-  WebUIDelegate* webui_delegate_ = nullptr;
+  raw_ptr<WebUIDelegate> webui_delegate_ = nullptr;
 
   base::WeakPtrFactory<SafeBrowsingUrlCheckerImpl> weak_factory_{this};
 };

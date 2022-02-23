@@ -11,7 +11,7 @@
 namespace blink {
 
 class GPUSupportedFeatures : public ScriptWrappable,
-                             public SetlikeIterable<String> {
+                             public SetlikeIterable<String, IDLString> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -32,7 +32,7 @@ class GPUSupportedFeatures : public ScriptWrappable,
   HashSet<String> features_;
 
   class IterationSource final
-      : public SetlikeIterable<String>::IterationSource {
+      : public SetlikeIterable<String, IDLString>::IterationSource {
    public:
     explicit IterationSource(const HashSet<String>& features);
 

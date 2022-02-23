@@ -29,6 +29,7 @@ import com.google.flatbuffers.FlatBufferBuilder;
 
 import org.apache.commons.io.IOUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.junit.runners.Suite;
@@ -107,6 +108,7 @@ public class MetadataExtractorTest {
             assertThat(metadataExtractor.hasMetadata()).isFalse();
         }
 
+        @Ignore
         @Test
         public void getAssociatedFile_validAssociateFile() throws Exception {
             ByteBuffer mobileNetBuffer = loadMobileNetBuffer();
@@ -121,6 +123,7 @@ public class MetadataExtractorTest {
                     .isTrue();
         }
 
+        @Ignore
         @Test
         public void getAssociatedFile_invalidAssociateFile() throws Exception {
             ByteBuffer mobileNetBuffer = loadMobileNetBuffer();
@@ -131,6 +134,7 @@ public class MetadataExtractorTest {
                     "The file, %s, does not exist in the zip file.", INVALID_LABEL_FILE_NAME));
         }
 
+        @Ignore
         @Test
         public void getAssociatedFile_nullFileName() throws Exception {
             ByteBuffer mobileNetBuffer = loadMobileNetBuffer();
@@ -165,6 +169,7 @@ public class MetadataExtractorTest {
                     "This model does not contain associated files, and is not a Zip file.");
         }
 
+        @Ignore
         @Test
         public void getAssociatedFileNames_validFileNames() throws Exception {
             ByteBuffer mobileNetBuffer = loadMobileNetBuffer();

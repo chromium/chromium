@@ -50,6 +50,7 @@
 #include "media/filters/vp9_parser.h"
 #include "media/gpu/mac/vp9_super_frame_bitstream_filter.h"
 #include "media/gpu/mac/vt_config_util.h"
+#include "media/video/h264_level_limits.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_image_io_surface.h"
@@ -348,8 +349,11 @@ int32_t ComputeReorderWindow(const H264SPS* sps) {
   if (sps->pic_order_cnt_type == 2)
     return 0;
 
-  // TODO(sandersd): Compute MaxDpbFrames.
-  int32_t max_dpb_frames = 16;
+  int max_dpb_mbs = H264LevelToMaxDpbMbs(sps->GetIndicatedLevel());
+  int max_dpb_frames =
+      max_dpb_mbs / ((sps->pic_width_in_mbs_minus1 + 1) *
+                     (sps->pic_height_in_map_units_minus1 + 1));
+  max_dpb_frames = std::clamp(max_dpb_frames, 0, 16);
 
   // See AVC spec section E.2.1 definition of |max_num_reorder_frames|.
   if (sps->vui_parameters_present_flag && sps->bitstream_restriction_flag) {
@@ -866,6 +870,11 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
           return;
         }
         seen_pps_[pps_id].assign(nalu.data, nalu.data + nalu.size);
+        // Pass PPS as data to the platform decoder, it helps in cases
+        // when there are more than one PPS, Video Toolbox is smart enough
+        // to find and recognize them there.
+        nalus.push_back(nalu);
+        data_size += kNALUHeaderLength + nalu.size;
         break;
       }
 
@@ -950,7 +959,7 @@ void VTVideoDecodeAccelerator::DecodeTask(scoped_refptr<DecoderBuffer> buffer,
           frame->pic_order_cnt = *pic_order_cnt;
           frame->reorder_window = ComputeReorderWindow(sps);
         }
-        FALLTHROUGH;
+        [[fallthrough]];
 
       default:
         nalus.push_back(nalu);

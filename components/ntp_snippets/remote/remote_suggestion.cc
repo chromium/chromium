@@ -18,24 +18,36 @@
 namespace {
 
 // dict.Get() specialization for base::Time values
-bool GetTimeValue(const base::DictionaryValue& dict,
+bool GetTimeValue(const base::Value& dict,
                   const std::string& key,
                   base::Time* time) {
-  std::string time_value;
-  return dict.GetString(key, &time_value) &&
-         base::Time::FromString(time_value.c_str(), time);
+  const std::string* time_value = dict.FindStringKey(key);
+  if (!time_value) {
+    return false;
+  }
+  return base::Time::FromString(time_value->c_str(), time);
 }
 
 // dict.Get() specialization for GURL values
-bool GetURLValue(const base::DictionaryValue& dict,
-                 const std::string& key,
-                 GURL* url) {
-  std::string spec;
-  if (!dict.GetString(key, &spec)) {
+bool GetURLValue(const base::Value& dict, const std::string& key, GURL* url) {
+  const std::string* spec = dict.FindStringKey(key);
+  if (!spec) {
     return false;
   }
-  *url = GURL(spec);
+  *url = GURL(*spec);
   return url->is_valid();
+}
+
+// dict.Get() specialization for std::string values
+bool GetStringValue(const base::Value& dict,
+                    const std::string& key,
+                    std::string* str) {
+  const std::string* str_value = dict.FindStringKey(key);
+  if (!str_value) {
+    return false;
+  }
+  *str = *str_value;
+  return true;
 }
 
 }  // namespace
@@ -72,7 +84,7 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
     return nullptr;
   }
   std::vector<std::string> parsed_ids;
-  for (const base::Value& value : ids->GetList()) {
+  for (const base::Value& value : ids->GetListDeprecated()) {
     if (!value.is_string()) {
       return nullptr;
     }
@@ -85,16 +97,16 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
   auto snippet = MakeUnique(parsed_ids, remote_category_id);
   snippet->fetch_date_ = fetch_date;
 
-  if (!(dict.GetString("title", &snippet->title_) &&
+  if (!(GetStringValue(dict, "title", &snippet->title_) &&
         GetTimeValue(dict, "creationTime", &snippet->publish_date_) &&
         GetTimeValue(dict, "expirationTime", &snippet->expiry_date_) &&
-        dict.GetString("attribution", &snippet->publisher_name_) &&
+        GetStringValue(dict, "attribution", &snippet->publisher_name_) &&
         GetURLValue(dict, "fullPageUrl", &snippet->url_))) {
     return nullptr;
   }
 
   // Optional fields.
-  dict.GetString("snippet", &snippet->snippet_);
+  GetStringValue(dict, "snippet", &snippet->snippet_);
   GetURLValue(dict, "imageUrl", &snippet->salient_image_url_);
   GetURLValue(dict, "ampUrl", &snippet->amp_url_);
 
@@ -140,7 +152,7 @@ RemoteSuggestion::CreateFromContentSuggestionsDictionary(
   // content_type_ of the class |RemoteSuggestion| is by default initialized to
   // ContentType::UNKNOWN.
   std::string content_type;
-  if (dict.GetString("contentType", &content_type)) {
+  if (GetStringValue(dict, "contentType", &content_type)) {
     if (content_type == "VIDEO") {
       snippet->content_type_ = ContentType::VIDEO;
     } else {

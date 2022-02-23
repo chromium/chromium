@@ -2,6 +2,8 @@
 <html>
 <head>
 <script src="../../../resources/js-test.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 </head>
@@ -20,7 +22,7 @@ function openPickerErrorCallback() {
 menu.onchange = function() {
     menu.multiple = true;
 };
-openPicker(menu, test1, openPickerErrorCallback);
+openPickerDeprecatedJsTest(menu, test1, openPickerErrorCallback);
 description('Test for crbug.com/477932 . Pass if we don\'t crash.');
 function test1() {
     picker = internals.pagePopupWindow.global.picker;

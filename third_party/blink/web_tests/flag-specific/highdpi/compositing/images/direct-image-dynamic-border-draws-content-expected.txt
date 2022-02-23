@@ -3,7 +3,7 @@ layer tree before image style change
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -11,6 +11,7 @@ layer tree before image style change
     {
       "name": "LayoutImage IMG class='composited'",
       "bounds": [384, 384],
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],
@@ -32,7 +33,7 @@ layer tree after image style change
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
@@ -40,6 +41,7 @@ layer tree after image style change
     {
       "name": "LayoutImage IMG class='composited border'",
       "bounds": [390, 390],
+      "contentsOpaqueForText": true,
       "transform": 1
     }
   ],

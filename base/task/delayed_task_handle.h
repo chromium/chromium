@@ -5,8 +5,9 @@
 #ifndef BASE_TASK_DELAYED_TASK_HANDLE_H_
 #define BASE_TASK_DELAYED_TASK_HANDLE_H_
 
+#include <memory>
+
 #include "base/base_export.h"
-#include "base/memory/ref_counted.h"
 
 namespace base {
 
@@ -16,25 +17,23 @@ class BASE_EXPORT DelayedTaskHandle {
  public:
   // The delegate that allows each SequencedTaskRunners to have different
   // implementations.
-  class Delegate : public RefCounted<Delegate> {
+  class Delegate {
    public:
+    virtual ~Delegate() = default;
+
     // Returns true if the task handle is valid.
     virtual bool IsValid() const = 0;
 
     // Cancels the task. A canceled task, whether removed from the underlying
     // queue or only marked as canceled, will never be Run().
     virtual void CancelTask() = 0;
-
-   protected:
-    friend class RefCounted<Delegate>;
-    virtual ~Delegate() = default;
   };
 
   // Construct a default, invalid, task handle.
   DelayedTaskHandle();
 
   // Construct a valid task handle with the specified |delegate|.
-  explicit DelayedTaskHandle(scoped_refptr<Delegate> delegate);
+  explicit DelayedTaskHandle(std::unique_ptr<Delegate> delegate);
 
   ~DelayedTaskHandle();
 
@@ -48,7 +47,7 @@ class BASE_EXPORT DelayedTaskHandle {
   void CancelTask();
 
  private:
-  scoped_refptr<Delegate> delegate_;
+  std::unique_ptr<Delegate> delegate_;
 };
 
 }  // namespace base

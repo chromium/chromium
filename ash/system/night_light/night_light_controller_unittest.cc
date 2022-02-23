@@ -17,7 +17,7 @@
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shell.h"
 #include "ash/system/night_light/night_light_controller_impl.h"
-#include "ash/system/night_light/time_of_day.h"
+#include "ash/system/time/time_of_day.h"
 #include "ash/test/ash_test_base.h"
 #include "ash/test/ash_test_helper.h"
 #include "ash/test_shell_delegate.h"
@@ -80,8 +80,8 @@ gfx::Vector3dF GetDisplayCompositorRGBScaleFactors(int64_t display_id) {
   ui::Compositor* compositor = host->compositor();
   DCHECK(compositor);
 
-  const skia::Matrix44& matrix = compositor->display_color_matrix();
-  return gfx::Vector3dF(matrix.get(0, 0), matrix.get(1, 1), matrix.get(2, 2));
+  const SkM44& matrix = compositor->display_color_matrix();
+  return gfx::Vector3dF(matrix.rc(0, 0), matrix.rc(1, 1), matrix.rc(2, 2));
 }
 
 // Returns a vector with a Vector3dF for each compositor.

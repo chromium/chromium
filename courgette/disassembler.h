@@ -10,7 +10,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "courgette/courgette.h"
 #include "courgette/image_utils.h"
 #include "courgette/instruction_utils.h"

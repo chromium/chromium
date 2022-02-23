@@ -12,13 +12,13 @@
 #include "chrome/browser/signin/identity_manager_factory.h"
 #include "components/signin/core/browser/signin_status_metrics_provider_delegate.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_list_observer.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class ChromeSigninStatusMetricsProviderDelegate
     : public SigninStatusMetricsProviderDelegate,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       public BrowserListObserver,
 #endif
       public IdentityManagerFactory::Observer {
@@ -42,7 +42,7 @@ class ChromeSigninStatusMetricsProviderDelegate
   std::vector<signin::IdentityManager*> GetIdentityManagersForAllAccounts()
       override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // BrowserListObserver:
   void OnBrowserAdded(Browser* browser) override;
 #endif

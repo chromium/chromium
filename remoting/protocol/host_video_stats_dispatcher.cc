@@ -25,6 +25,10 @@ HostVideoStatsDispatcher::HostVideoStatsDispatcher(
 
 HostVideoStatsDispatcher::~HostVideoStatsDispatcher() = default;
 
+base::WeakPtr<HostVideoStatsDispatcher> HostVideoStatsDispatcher::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
+}
+
 void HostVideoStatsDispatcher::OnVideoFrameStats(uint32_t frame_id,
                                                  const HostFrameStats& stats) {
   FrameStatsMessage message;

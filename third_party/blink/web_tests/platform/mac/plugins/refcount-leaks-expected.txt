@@ -1,0 +1,10 @@
+Test that we can get an NPObject returned through a method on an NPAPI Object.
+
+Prints "SUCCESS" on success, "FAILURE" on failure. 
+
+--- num test objects:
+countAfterCreate == countOrig + 3? PASS
+countOrig == countAfterGC? PASS
+countOrig == countAfterGC2? FAIL
+
+FAILURE

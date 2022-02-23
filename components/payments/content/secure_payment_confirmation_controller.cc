@@ -13,7 +13,6 @@
 #include "build/build_config.h"
 #include "components/payments/content/content_payment_request_delegate.h"
 #include "components/payments/content/payment_request.h"
-#include "components/payments/content/payment_request_web_contents_manager.h"
 #include "components/payments/core/currency_formatter.h"
 #include "components/payments/core/method_strings.h"
 #include "components/strings/grit/components_strings.h"
@@ -33,9 +32,9 @@ SecurePaymentConfirmationController::~SecurePaymentConfirmationController() =
     default;
 
 void SecurePaymentConfirmationController::ShowDialog() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
   if (!request_ || !request_->spec())
     return;
@@ -179,7 +178,7 @@ void SecurePaymentConfirmationController::ShowCvcUnmaskPrompt(
     const autofill::CreditCard& credit_card,
     base::WeakPtr<autofill::payments::FullCardRequest::ResultDelegate>
         result_delegate,
-    content::WebContents* web_contents) {
+    content::RenderFrameHost* render_frame_host) {
   // CVC unmasking is nut supported.
   NOTREACHED();
 }

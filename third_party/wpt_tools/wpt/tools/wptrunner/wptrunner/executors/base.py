@@ -8,15 +8,13 @@ import traceback
 import socket
 import sys
 from abc import ABCMeta, abstractmethod
-from http.client import HTTPConnection
-from typing import Any, Callable, ClassVar, Optional, Tuple, Type, TYPE_CHECKING
+from typing import Any, Callable, ClassVar, Tuple, Type
 from urllib.parse import urljoin, urlsplit, urlunsplit
 
+from . import pytestrunner
 from .actions import actions
-from .protocol import Protocol, BaseProtocolPart
+from .protocol import Protocol, WdspecProtocol
 
-if TYPE_CHECKING:
-    from ..webdriver_server import WebDriverServer
 
 here = os.path.dirname(__file__)
 
@@ -598,22 +596,18 @@ class RefTestImplementation(object):
 
 class WdspecExecutor(TestExecutor):
     convert_result = pytest_result_converter
-    protocol_cls = None  # type: ClassVar[Type[Protocol]]
+    protocol_cls = WdspecProtocol  # type: ClassVar[Type[Protocol]]
 
     def __init__(self, logger, browser, server_config, webdriver_binary,
                  webdriver_args, timeout_multiplier=1, capabilities=None,
-                 debug_info=None, environ=None, **kwargs):
-        self.do_delayed_imports()
-        TestExecutor.__init__(self, logger, browser, server_config,
-                              timeout_multiplier=timeout_multiplier,
-                              debug_info=debug_info)
+                 debug_info=None, **kwargs):
+        super().__init__(logger, browser, server_config,
+                         timeout_multiplier=timeout_multiplier,
+                         debug_info=debug_info)
         self.webdriver_binary = webdriver_binary
         self.webdriver_args = webdriver_args
         self.timeout_multiplier = timeout_multiplier
         self.capabilities = capabilities
-        self.environ = environ if environ is not None else {}
-        self.output_handler_kwargs = None
-        self.output_handler_start_kwargs = None
 
     def setup(self, runner):
         self.protocol = self.protocol_cls(self, self.browser)
@@ -629,7 +623,6 @@ class WdspecExecutor(TestExecutor):
         timeout = test.timeout * self.timeout_multiplier + self.extra_timeout
 
         success, data = WdspecRun(self.do_wdspec,
-                                  self.protocol.session_config,
                                   test.abs_path,
                                   timeout).run()
 
@@ -638,22 +631,25 @@ class WdspecExecutor(TestExecutor):
 
         return (test.result_cls(*data), [])
 
-    def do_wdspec(self, session_config, path, timeout):
+    def do_wdspec(self, path, timeout):
+        session_config = {"host": self.browser.host,
+                          "port": self.browser.port,
+                          "capabilities": self.capabilities,
+                          "webdriver": {
+                              "binary": self.webdriver_binary,
+                              "args": self.webdriver_args
+                          }}
+
         return pytestrunner.run(path,
                                 self.server_config,
                                 session_config,
                                 timeout=timeout)
 
-    def do_delayed_imports(self):
-        global pytestrunner
-        from . import pytestrunner
-
 
 class WdspecRun(object):
-    def __init__(self, func, session, path, timeout):
+    def __init__(self, func, path, timeout):
         self.func = func
         self.result = (None, None)
-        self.session = session
         self.path = path
         self.timeout = timeout
         self.result_flag = threading.Event()
@@ -676,7 +672,7 @@ class WdspecRun(object):
 
     def _run(self):
         try:
-            self.result = True, self.func(self.session, self.path, self.timeout)
+            self.result = True, self.func(self.path, self.timeout)
         except (socket.timeout, IOError):
             self.result = False, ("CRASH", None)
         except Exception as e:
@@ -687,93 +683,6 @@ class WdspecRun(object):
             self.result = False, ("INTERNAL-ERROR", message)
         finally:
             self.result_flag.set()
-
-
-class ConnectionlessBaseProtocolPart(BaseProtocolPart):
-    def load(self, url):
-        pass
-
-    def execute_script(self, script, asynchronous=False):
-        pass
-
-    def set_timeout(self, timeout):
-        pass
-
-    def wait(self):
-        return False
-
-    def set_window(self, handle):
-        pass
-
-    def window_handles(self):
-        return []
-
-
-class ConnectionlessProtocol(Protocol):
-    implements = [ConnectionlessBaseProtocolPart]
-
-    def connect(self):
-        pass
-
-    def after_connect(self):
-        pass
-
-
-class WdspecProtocol(Protocol):
-    server_cls = None  # type: ClassVar[Optional[Type[WebDriverServer]]]
-
-    implements = [ConnectionlessBaseProtocolPart]
-
-    def __init__(self, executor, browser):
-        Protocol.__init__(self, executor, browser)
-        self.webdriver_binary = executor.webdriver_binary
-        self.webdriver_args = executor.webdriver_args
-        self.capabilities = self.executor.capabilities
-        self.session_config = None
-        self.server = None
-        self.environ = os.environ.copy()
-        self.environ.update(executor.environ)
-        self.output_handler_kwargs = executor.output_handler_kwargs
-        self.output_handler_start_kwargs = executor.output_handler_start_kwargs
-
-    def connect(self):
-        """Connect to browser via the HTTP server."""
-        self.server = self.server_cls(
-            self.logger,
-            binary=self.webdriver_binary,
-            args=self.webdriver_args,
-            env=self.environ)
-        self.server.start(block=False,
-                          output_handler_kwargs=self.output_handler_kwargs,
-                          output_handler_start_kwargs=self.output_handler_start_kwargs)
-        self.logger.info(
-            "WebDriver HTTP server listening at %s" % self.server.url)
-        self.session_config = {"host": self.server.host,
-                               "port": self.server.port,
-                               "capabilities": self.capabilities}
-
-    def after_connect(self):
-        pass
-
-    def teardown(self):
-        if self.server is not None and self.server.is_alive():
-            self.server.stop()
-
-    def is_alive(self):
-        """Test that the connection is still alive.
-
-        Because the remote communication happens over HTTP we need to
-        make an explicit request to the remote.  It is allowed for
-        WebDriver spec tests to not have a WebDriver session, since this
-        may be what is tested.
-
-        An HTTP request to an invalid path that results in a 404 is
-        proof enough to us that the server is alive and kicking.
-        """
-        conn = HTTPConnection(self.server.host, self.server.port)
-        conn.request("HEAD", self.server.base_path + "invalid")
-        res = conn.getresponse()
-        return res.status == 404
 
 
 class CallbackHandler(object):

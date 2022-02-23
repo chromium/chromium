@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "content/browser/child_process_security_policy_impl.h"
 #include "content/browser/process_internals/process_internals.mojom.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
 #include "content/browser/renderer_host/navigation_controller_impl.h"
@@ -47,12 +48,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
       static_cast<SiteInstanceImpl*>(frame->GetSiteInstance());
   frame_info->site_instance = ::mojom::SiteInstanceInfo::New();
   frame_info->site_instance->id = site_instance->GetId().value();
-
-  auto* policy = ChildProcessSecurityPolicyImpl::GetInstance();
   frame_info->site_instance->locked =
-      policy->GetProcessLock(site_instance->GetProcess()->GetID())
-          .is_locked_to_site();
-
+      site_instance->GetProcess()->GetProcessLock().is_locked_to_site();
   frame_info->site_instance->site_url =
       site_instance->HasSite()
           ? absl::make_optional(site_instance->GetSiteInfo().site_url())
@@ -69,8 +66,8 @@ using IsolatedOriginSource = ChildProcessSecurityPolicy::IsolatedOriginSource;
           ? absl::make_optional(site_instance->GetSiteInfo().process_lock_url())
           : absl::nullopt;
 
-  frame_info->site_instance->is_origin_keyed =
-      site_instance->GetSiteInfo().is_origin_keyed();
+  frame_info->site_instance->requires_origin_keyed_process =
+      site_instance->GetSiteInfo().requires_origin_keyed_process();
 
   for (size_t i = 0; i < frame->child_count(); ++i) {
     frame_info->subframes.push_back(RenderFrameHostToFrameInfo(

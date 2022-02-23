@@ -20,17 +20,6 @@ enum TestColorIds : ColorId {
   kTestColorsEnd,
 };
 
-// Test-only color set IDs.
-enum TestColorSetIds : ColorSetId {
-  kTestColorSetsStart = kUiColorSetsEnd,
-
-  kColorSetTest0 = kTestColorSetsStart,
-  kColorSetTest1,
-  kColorSetTest2,
-
-  kTestColorSetsEnd,
-};
-
 }  // namespace ui
 
 #endif  // UI_COLOR_COLOR_TEST_IDS_H_

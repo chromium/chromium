@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/auto_reset.h"
-#include "content/common/content_export.h"
 #include "content/public/browser/navigation_throttle.h"
 
 namespace content {
@@ -19,7 +18,7 @@ namespace content {
 // portal main frame to only the origin of its host. This allows a more limited
 // testing mode of the portals feature, in which third-party (cross-origin)
 // content cannot be loaded.
-class CONTENT_EXPORT PortalNavigationThrottle : public NavigationThrottle {
+class PortalNavigationThrottle : public NavigationThrottle {
  public:
   static std::unique_ptr<PortalNavigationThrottle> MaybeCreateThrottleFor(
       NavigationHandle* navigation_handle);

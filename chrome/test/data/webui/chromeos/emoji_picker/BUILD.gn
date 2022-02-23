@@ -18,8 +18,11 @@ js_type_check("closure_compile") {
                             root_build_dir),
                   ]
   deps = [
+    ":emoji_picker_extension_test",
+    ":emoji_picker_prefix_search_test",
     ":emoji_picker_store_test",
     ":emoji_picker_test",
+    ":emoji_picker_trie_test",
   ]
 }
 
@@ -36,6 +39,31 @@ js_library("emoji_picker_test") {
 js_library("emoji_picker_store_test") {
   deps = [
     "//chrome/browser/resources/chromeos/emoji_picker:store",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("emoji_picker_extension_test") {
+  deps = [
+    "//chrome/browser/resources/chromeos/emoji_picker:emoji_picker",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("emoji_picker_prefix_search_test") {
+  deps = [
+    "//chrome/browser/resources/chromeos/emoji_picker:prefix_search",
+    "//chrome/test/data/webui:chai_assert",
+    "//ui/webui/resources/js:assert.m",
+  ]
+  externs_list = [ "$externs_path/mocha-2.5.js" ]
+}
+
+js_library("emoji_picker_trie_test") {
+  deps = [
     "//chrome/test/data/webui:chai_assert",
     "//ui/webui/resources/js:assert.m",
   ]

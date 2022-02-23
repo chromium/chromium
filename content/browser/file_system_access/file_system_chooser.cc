@@ -123,7 +123,7 @@ bool GetFileTypesFromAcceptsOption(
 
   for (const std::string& extension_string : option.extensions) {
     base::FilePath::StringType extension;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     extension = base::UTF8ToWide(extension_string);
 #else
     extension = extension_string;

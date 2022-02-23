@@ -9,12 +9,18 @@ assert(is_chromeos_ash,
 
 source_set("repository") {
   sources = [
+    "fast_pair/device_id_map.cc",
+    "fast_pair/device_id_map.h",
+    "fast_pair/device_image_store.cc",
+    "fast_pair/device_image_store.h",
     "fast_pair/device_metadata.cc",
     "fast_pair/device_metadata.h",
     "fast_pair/device_metadata_fetcher.cc",
     "fast_pair/device_metadata_fetcher.h",
     "fast_pair/fast_pair_image_decoder.cc",
     "fast_pair/fast_pair_image_decoder.h",
+    "fast_pair/fast_pair_image_decoder_impl.cc",
+    "fast_pair/fast_pair_image_decoder_impl.h",
     "fast_pair/footprints_fetcher.cc",
     "fast_pair/footprints_fetcher.h",
     "fast_pair/pairing_metadata.cc",
@@ -42,6 +48,7 @@ source_set("repository") {
     "//ash/quick_pair/proto:fastpair_proto",
     "//ash/services/quick_pair/public/cpp",
     "//base",
+    "//chromeos/services/bluetooth_config/public/cpp",
     "//components/image_fetcher/core",
     "//components/prefs",
     "//components/signin/public/identity_manager",
@@ -52,6 +59,7 @@ source_set("repository") {
     "//services/network/public/cpp",
     "//services/network/public/mojom:url_loader_base",
     "//third_party/protobuf:protobuf_lite",
+    "//ui/base",
   ]
 }
 
@@ -61,6 +69,8 @@ static_library("test_support") {
   sources = [
     "fake_fast_pair_repository.cc",
     "fake_fast_pair_repository.h",
+    "fast_pair/mock_fast_pair_image_decoder.cc",
+    "fast_pair/mock_fast_pair_image_decoder.h",
     "mock_fast_pair_repository.cc",
     "mock_fast_pair_repository.h",
     "mock_http_fetcher.cc",
@@ -73,6 +83,7 @@ static_library("test_support") {
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//base/test:test_support",
+    "//chromeos/services/bluetooth_config/public/cpp",
     "//device/bluetooth",
     "//net/traffic_annotation:test_support",
     "//testing/gtest",
@@ -84,6 +95,8 @@ source_set("unit_tests") {
   testonly = true
 
   sources = [
+    "fast_pair/device_id_map_unittest.cc",
+    "fast_pair/device_image_store_unittest.cc",
     "fast_pair/device_metadata_fetcher_unittest.cc",
     "fast_pair/pending_write_store_unittest.cc",
     "fast_pair/saved_device_registry_unittest.cc",
@@ -92,13 +105,21 @@ source_set("unit_tests") {
   deps = [
     ":repository",
     ":test_support",
+    "//ash:test_support",
     "//ash/quick_pair/common",
     "//ash/quick_pair/common:test_support",
     "//ash/quick_pair/proto:fastpair_proto",
     "//base",
     "//base/test:test_support",
+    "//chromeos/services/bluetooth_config/public/cpp",
     "//components/prefs:test_support",
+    "//device/bluetooth:mocks",
+    "//net",
     "//services/data_decoder/public/cpp:test_support",
+    "//services/network:test_support",
+    "//services/network/public/cpp",
+    "//services/network/public/mojom",
     "//testing/gtest",
+    "//ui/gfx:test_support",
   ]
 }

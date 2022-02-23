@@ -66,7 +66,7 @@ bool GetIntArray(const base::Value& value,
     return true;
   if (!found->is_list())
     return false;
-  for (const auto& number_value : found->GetList()) {
+  for (const auto& number_value : found->GetListDeprecated()) {
     if (number_value.is_int())
       result->emplace_back(number_value.GetInt());
     else
@@ -83,7 +83,7 @@ bool GetStringArray(const base::Value& value,
     return true;
   if (!found->is_list())
     return false;
-  for (const auto& string_value : found->GetList()) {
+  for (const auto& string_value : found->GetListDeprecated()) {
     if (string_value.is_string())
       result->emplace_back(string_value.GetString());
     else

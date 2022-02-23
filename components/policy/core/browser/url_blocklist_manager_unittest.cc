@@ -32,7 +32,9 @@ namespace {
 class TestingURLBlocklistManager : public URLBlocklistManager {
  public:
   explicit TestingURLBlocklistManager(PrefService* pref_service)
-      : URLBlocklistManager(pref_service),
+      : URLBlocklistManager(pref_service,
+                            policy_prefs::kUrlBlocklist,
+                            policy_prefs::kUrlAllowlist),
         update_called_(0),
         set_blocklist_called_(false) {}
   TestingURLBlocklistManager(const TestingURLBlocklistManager&) = delete;
@@ -126,7 +128,8 @@ TEST_F(URLBlocklistManagerTest, LoadBlocklistOnCreate) {
   list.Append("example.com");
   pref_service_.SetManagedPref(policy_prefs::kUrlBlocklist,
                                base::Value::ToUniquePtrValue(std::move(list)));
-  auto manager = std::make_unique<URLBlocklistManager>(&pref_service_);
+  auto manager = std::make_unique<URLBlocklistManager>(
+      &pref_service_, policy_prefs::kUrlBlocklist, policy_prefs::kUrlAllowlist);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(URLBlocklist::URL_IN_BLOCKLIST,
             manager->GetURLBlocklistState(GURL("http://example.com")));
@@ -137,7 +140,8 @@ TEST_F(URLBlocklistManagerTest, LoadAllowlistOnCreate) {
   list.Append("example.com");
   pref_service_.SetManagedPref(policy_prefs::kUrlAllowlist,
                                base::Value::ToUniquePtrValue(std::move(list)));
-  auto manager = std::make_unique<URLBlocklistManager>(&pref_service_);
+  auto manager = std::make_unique<URLBlocklistManager>(
+      &pref_service_, policy_prefs::kUrlBlocklist, policy_prefs::kUrlAllowlist);
   task_environment_.RunUntilIdle();
   EXPECT_EQ(URLBlocklist::URL_IN_ALLOWLIST,
             manager->GetURLBlocklistState(GURL("http://example.com")));
@@ -480,7 +484,7 @@ TEST_F(URLBlocklistManagerTest, DefaultBlocklistExceptions) {
   EXPECT_FALSE(
       blocklist.IsURLBlocked(GURL("chrome-search://most-visited/title.html")));
   EXPECT_FALSE(blocklist.IsURLBlocked(GURL("chrome-native://ntp")));
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Ensure that the NTP is not blocked on iOS by "*".
   // TODO(crbug.com/1073291): On iOS, the NTP can not be blocked even by
   // explicitly listing it as a blocked URL. This is due to the usage of

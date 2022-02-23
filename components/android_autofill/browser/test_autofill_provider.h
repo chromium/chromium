@@ -13,11 +13,6 @@ namespace autofill {
 
 class TestAutofillProvider : public AutofillProvider {
  public:
-#ifdef UNIT_TEST
-  // For unit testing only.
-  TestAutofillProvider() = default;
-#endif  // UNIT_TEST
-
   // Create a instance owned by |web_contents|.
   explicit TestAutofillProvider(content::WebContents* web_contents)
       : AutofillProvider(web_contents) {}

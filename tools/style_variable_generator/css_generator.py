@@ -60,14 +60,50 @@ class CSSStyleGenerator(BaseGenerator):
             self.generator_options.get('dark_mode_selector', None),
             'debug_placeholder':
             self.generator_options.get('debug_placeholder', ''),
+            'suppress_sources_comment':
+            self.generator_options.get('suppress_sources_comment', False),
             'Modes':
             Modes,
         }
 
+    def AddGeneratedVars(self, var_names, variable_type):
+        def AddVarNames(model_names, variations):
+            for model_name in model_names:
+                for v in variations:
+                    var_name = v.replace('$css_name',
+                                         self.ToCSSVarName(model_name))
+                    if var_name in var_names:
+                        raise ValueError(name + " is defined multiple times")
+                    var_names[var_name] = model_name
+
+        submodel = self.model[variable_type]
+        if variable_type == VariableType.OPACITY:
+            AddVarNames(submodel.keys(), ['$css_name'])
+        elif variable_type == VariableType.COLOR:
+            AddVarNames(submodel.keys(), ['$css_name', '$css_name-rgb'])
+        elif variable_type == VariableType.UNTYPED_CSS:
+            for category in submodel.values():
+                AddVarNames(category.keys(), ['$css_name'])
+        elif variable_type == VariableType.TYPOGRAPHY:
+            AddVarNames(submodel.typefaces.keys(), [
+                '$css_name-font',
+                '$css_name-font-family',
+                '$css_name-font-size',
+                '$css_name-font-weight',
+                '$css_name-line-height',
+            ])
+        else:
+            raise ValueError("GetGeneratedVars() for '%s' not implemented")
+
     def GetCSSVarNames(self):
-        '''Returns generated CSS variable names (excluding the rgb versions)'''
-        return set(map(lambda n: self.ToCSSVarName(n),
-                       self.context_map.keys()))
+        '''Returns a map of all generated names to the model names that
+           generated them.
+        '''
+        var_names = dict()
+        for vt in VariableType.ALL:
+            generated = self.AddGeneratedVars(var_names, vt)
+
+        return var_names
 
     def ProcessSimpleRef(self, value):
         '''If |value| is a simple '$other_variable' reference, returns a

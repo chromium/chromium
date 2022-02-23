@@ -50,6 +50,7 @@ class MojoUkmRecorder;
 namespace content {
 
 class AXImageAnnotator;
+class AXScreenAIAnnotator;
 class RenderFrameImpl;
 class RenderAccessibilityManager;
 
@@ -127,6 +128,7 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   void MarkWebAXObjectDirty(
       const blink::WebAXObject& obj,
       bool subtree,
+      ax::mojom::EventFrom event_from = ax::mojom::EventFrom::kNone,
       ax::mojom::Action event_from_action = ax::mojom::Action::kNone,
       std::vector<ui::AXEventIntent> event_intents = {},
       ax::mojom::Event event_type = ax::mojom::Event::kNone);
@@ -209,6 +211,14 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
   // any automatic annotations that might have been added before.
   void StartOrStopLabelingImages(ui::AXMode old_mode, ui::AXMode new_mode);
 
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // If new mode includes screen reader, initializes Screen AI service
+  // connection that processes snapshots to get more metadata.
+  // If new mode does not includes screen reader and Screen AI is enabled, turns
+  // it off.
+  void StartOrStopScreenAIAnnotator(ui::AXMode new_mode);
+#endif
+
   // Marks all AXObjects with the given role in the current tree dirty.
   void MarkAllAXObjectsDirty(ax::mojom::Role role,
                              ax::mojom::Action event_from_action);
@@ -268,6 +278,11 @@ class CONTENT_EXPORT RenderAccessibilityImpl : public RenderAccessibility,
 
   // Manages the automatic image annotations, if enabled.
   std::unique_ptr<AXImageAnnotator> ax_image_annotator_;
+
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+  // Manages the snapshot processing, if enabled.
+  std::unique_ptr<AXScreenAIAnnotator> ax_screen_ai_annotator_;
+#endif
 
   // Events from Blink are collected until they are ready to be
   // sent to the browser.

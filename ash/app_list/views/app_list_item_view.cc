@@ -5,6 +5,7 @@
 #include "ash/app_list/views/app_list_item_view.h"
 
 #include <algorithm>
+#include <string>
 #include <utility>
 #include <vector>
 
@@ -13,6 +14,7 @@
 #include "ash/app_list/model/app_list_folder_item.h"
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/views/app_list_menu_model_adapter.h"
+#include "ash/app_list/views/apps_grid_context_menu.h"
 #include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
@@ -20,6 +22,7 @@
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/public/cpp/style/color_provider.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/style/ash_color_provider.h"
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/check.h"
@@ -85,6 +88,12 @@ constexpr float kNotificationIndicatorWidthRatio = 14.0f / 64.0f;
 // icon.
 constexpr float kNotificationIndicatorPaddingRatio = 4.0f / 64.0f;
 
+// Size of the "new install" blue dot that appears to the left of the title.
+constexpr int kNewInstallDotSize = 8;
+
+// Distance between the "new install" blue dot and the title.
+constexpr int kNewInstallDotPadding = 4;
+
 // The class clips the provided folder icon image.
 class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
  public:
@@ -115,6 +124,38 @@ class ClippedFolderIconImageSource : public gfx::CanvasImageSource {
 
  private:
   const gfx::ImageSkia image_;
+};
+
+// Draws a dot with no shadow.
+class DotView : public views::View {
+ public:
+  DotView() {
+    // The dot is not clickable.
+    SetCanProcessEventsWithinSubtree(false);
+  }
+  DotView(const DotView&) = delete;
+  DotView& operator=(const DotView&) = delete;
+  ~DotView() override = default;
+
+  // views::View:
+  void OnPaint(gfx::Canvas* canvas) override {
+    DCHECK_EQ(width(), height());
+    const float radius = width() / 2.0f;
+    const float scale = canvas->UndoDeviceScaleFactor();
+    gfx::PointF center = gfx::RectF(GetLocalBounds()).CenterPoint();
+    center.Scale(scale);
+
+    cc::PaintFlags flags;
+    flags.setColor(AshColorProvider::Get()->GetContentLayerColor(
+        AshColorProvider::ContentLayerType::kIconColorProminent));
+    flags.setAntiAlias(true);
+    canvas->DrawCircle(center, scale * radius, flags);
+  }
+
+  void OnThemeChanged() override {
+    views::View::OnThemeChanged();
+    SchedulePaint();
+  }
 };
 
 }  // namespace
@@ -318,12 +359,22 @@ AppListItemView::AppListItemView(const AppListConfig* app_list_config,
 
   title_ = AddChildView(std::move(title));
 
+  if (features::IsProductivityLauncherEnabled()) {
+    new_install_dot_ = AddChildView(std::make_unique<DotView>());
+    new_install_dot_->SetVisible(item_weak_->is_new_install());
+  }
+
   SetIcon(item_weak_->GetIcon(app_list_config_->type()));
   SetItemName(base::UTF8ToUTF16(item->GetDisplayName()),
               base::UTF8ToUTF16(item->name()));
   item->AddObserver(this);
 
-  set_context_menu_controller(this);
+  if (is_folder_) {
+    context_menu_for_folder_ = std::make_unique<AppsGridContextMenu>();
+    set_context_menu_controller(context_menu_for_folder_.get());
+  } else {
+    set_context_menu_controller(this);
+  }
 
   SetAnimationDuration(base::TimeDelta());
 
@@ -478,6 +529,9 @@ void AppListItemView::SetTouchDragging(bool touch_dragging) {
 
   touch_dragging_ = touch_dragging;
 
+  if (context_menu_for_folder_)
+    context_menu_for_folder_->set_owner_touch_dragging(touch_dragging_);
+
   SetState(STATE_NORMAL);
   SetUIState(touch_dragging_ ? UI_STATE_DRAGGING : UI_STATE_NORMAL);
 
@@ -540,16 +594,20 @@ void AppListItemView::OnDragEnded() {
   touch_dragging_ = false;
   touch_drag_timer_.Stop();
 
+  if (context_menu_for_folder_)
+    context_menu_for_folder_->set_owner_touch_dragging(false);
+
   SetUIState(UI_STATE_NORMAL);
   drag_state_ = DragState::kNone;
 }
 
 void AppListItemView::CancelContextMenu() {
-  if (!context_menu_)
-    return;
-
-  menu_close_initiated_from_drag_ = true;
-  context_menu_->Cancel();
+  if (item_menu_model_adapter_) {
+    menu_close_initiated_from_drag_ = true;
+    item_menu_model_adapter_->Cancel();
+  }
+  if (context_menu_for_folder_)
+    context_menu_for_folder_->Cancel();
 }
 
 gfx::Point AppListItemView::GetDragImageOffset() {
@@ -579,10 +637,11 @@ void AppListItemView::SetItemName(const std::u16string& display_name,
   const std::u16string folder_name_placeholder =
       ui::ResourceBundle::GetSharedInstance().GetLocalizedString(
           IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER);
-  if (is_folder_ && display_name.empty())
+  if (is_folder_ && display_name.empty()) {
     title_->SetText(folder_name_placeholder);
-  else
+  } else {
     title_->SetText(display_name);
+  }
 
   tooltip_text_ = display_name == full_name ? std::u16string() : full_name;
 
@@ -624,7 +683,7 @@ void AppListItemView::OnContextMenuModelReceived(
     ui::MenuSourceType source_type,
     std::unique_ptr<ui::SimpleMenuModel> menu_model) {
   waiting_for_context_menu_options_ = false;
-  if (!menu_model || (context_menu_ && context_menu_->IsShowingMenu()))
+  if (!menu_model || IsShowingAppMenu())
     return;
 
   // GetContextMenuModel is asynchronous and takes a nontrivial amount of time
@@ -640,7 +699,7 @@ void AppListItemView::OnContextMenuModelReceived(
     grid_delegate_->ClearSelectedView();
 
   int run_types = views::MenuRunner::HAS_MNEMONICS |
-                  views::MenuRunner::USE_TOUCHABLE_LAYOUT |
+                  views::MenuRunner::USE_ASH_SYS_UI_LAYOUT |
                   views::MenuRunner::FIXED_ANCHOR |
                   views::MenuRunner::CONTEXT_MENU;
 
@@ -652,32 +711,41 @@ void AppListItemView::OnContextMenuModelReceived(
   // Anchor the menu to the same rect that is used for selection highlight.
   AdaptBoundsForSelectionHighlight(&anchor_rect);
 
-  AppLaunchedMetricParams metric_params = {
-      AppListLaunchedFrom::kLaunchedFromGrid};
-  view_delegate_->GetAppLaunchedMetricParams(&metric_params);
-
-  // Assign the correct app type to `context_menu_` according to the parent view
-  // of the app list item view.
+  // Assign the correct app type to `item_menu_model_adapter_` according to the
+  // parent view of the app list item view.
   AppListMenuModelAdapter::AppListViewAppType app_type;
+  AppLaunchedMetricParams metric_params;
   switch (context_) {
     case Context::kAppsGridView:
       app_type = features::IsProductivityLauncherEnabled()
                      ? AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_APP_GRID
                      : AppListMenuModelAdapter::FULLSCREEN_APP_GRID;
+      metric_params.launched_from = AppListLaunchedFrom::kLaunchedFromGrid;
+      metric_params.launch_type = AppListLaunchType::kApp;
       break;
     case Context::kRecentAppsView:
       app_type = AppListMenuModelAdapter::PRODUCTIVITY_LAUNCHER_RECENT_APP;
+      metric_params.launched_from =
+          AppListLaunchedFrom::kLaunchedFromRecentApps;
+      metric_params.launch_type = AppListLaunchType::kAppSearchResult;
       break;
   }
+  view_delegate_->GetAppLaunchedMetricParams(&metric_params);
 
-  context_menu_ = std::make_unique<AppListMenuModelAdapter>(
+  item_menu_model_adapter_ = std::make_unique<AppListMenuModelAdapter>(
       item_weak_->GetMetadata()->id, std::move(menu_model), GetWidget(),
       source_type, metric_params, app_type,
       base::BindOnce(&AppListItemView::OnMenuClosed,
                      weak_ptr_factory_.GetWeakPtr()),
       view_delegate_->IsInTabletMode());
-  context_menu_->Run(anchor_rect, views::MenuAnchorPosition::kBubbleRight,
-                     run_types);
+
+  item_menu_model_adapter_->Run(
+      anchor_rect, views::MenuAnchorPosition::kBubbleRight, run_types);
+
+  if (!context_menu_shown_callback_.is_null()) {
+    context_menu_shown_callback_.Run();
+  }
+
   grid_delegate_->SetSelectedView(this);
 }
 
@@ -685,7 +753,7 @@ void AppListItemView::ShowContextMenuForViewImpl(
     views::View* source,
     const gfx::Point& point,
     ui::MenuSourceType source_type) {
-  if (context_menu_ && context_menu_->IsShowingMenu())
+  if (IsShowingAppMenu())
     return;
   // Prevent multiple requests for context menus before the current request
   // completes. If a second request is sent before the first one can respond,
@@ -694,8 +762,14 @@ void AppListItemView::ShowContextMenuForViewImpl(
   if (waiting_for_context_menu_options_)
     return;
   waiting_for_context_menu_options_ = true;
+
+  // If this item view is in the AppsGridView with the app sort feature enabled,
+  // request the context menu model to add sort options that can sort the app
+  // list.
+  bool add_sort_options = features::IsLauncherAppSortEnabled() &&
+                          context_ == Context::kAppsGridView;
   view_delegate_->GetContextMenuModel(
-      item_weak_->id(),
+      item_weak_->id(), add_sort_options,
       base::BindOnce(&AppListItemView::OnContextMenuModelReceived,
                      weak_ptr_factory_.GetWeakPtr(), point, source_type));
 }
@@ -713,18 +787,25 @@ void AppListItemView::PaintButtonContents(gfx::Canvas* canvas) {
   if (drag_state_ != DragState::kNone)
     return;
 
-  // TODO(ginko) focus and selection should be unified.
   if ((grid_delegate_->IsSelectedView(this) || HasFocus()) &&
       (view_delegate_->KeyboardTraversalEngaged() ||
-       waiting_for_context_menu_options_ ||
-       (context_menu_ && context_menu_->IsShowingMenu()))) {
+       waiting_for_context_menu_options_ || IsShowingAppMenu())) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
-    if (view_delegate_->KeyboardTraversalEngaged()) {
+    // Clamshell ProductivityLauncher always has keyboard traversal engaged, so
+    // explicitly check HasFocus() before drawing focus ring. This allows
+    // right-click "selected" apps to avoid drawing the focus ring.
+    const bool draw_focus_ring =
+        features::IsProductivityLauncherEnabled() &&
+                !view_delegate_->IsInTabletMode()
+            ? HasFocus()
+            : view_delegate_->KeyboardTraversalEngaged();
+    if (draw_focus_ring) {
       flags.setColor(AppListColorProvider::Get()->GetFocusRingColor());
       flags.setStyle(cc::PaintFlags::kStroke_Style);
       flags.setStrokeWidth(kFocusRingWidth);
     } else {
+      // Draw a background highlight ("selected" in the UI spec).
       const AppListColorProvider* color_provider = AppListColorProvider::Get();
       const SkColor bg_color = grid_delegate_->IsInFolder()
                                    ? color_provider->GetFolderBackgroundColor()
@@ -779,7 +860,18 @@ void AppListItemView::Layout() {
 
   gfx::Rect title_bounds = GetTitleBoundsForTargetViewBounds(
       app_list_config_, rect, title_->GetPreferredSize(), icon_scale_);
+  // Reserve space for the new install dot if it is visible. Otherwise it
+  // extends outside the app grid tile bounds and gets clipped.
+  if (new_install_dot_ && new_install_dot_->GetVisible())
+    title_bounds.Inset(kNewInstallDotSize, 0, 0, 0);
   title_->SetBoundsRect(title_bounds);
+
+  if (new_install_dot_) {
+    new_install_dot_->SetBounds(
+        title_bounds.x() - kNewInstallDotSize - kNewInstallDotPadding,
+        title_bounds.y() + title_bounds.height() / 2 - kNewInstallDotSize / 2,
+        kNewInstallDotSize, kNewInstallDotSize);
+  }
 
   if (notification_indicator_)
     notification_indicator_->SetBoundsRect(icon_bounds);
@@ -902,7 +994,7 @@ void AppListItemView::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_END:
       touch_drag_timer_.Stop();
       SetTouchDragging(false);
-      if (context_menu_ && context_menu_->IsShowingMenu())
+      if (IsShowingAppMenu())
         grid_delegate_->SetSelectedView(this);
       break;
     case ui::ET_GESTURE_TWO_FINGER_TAP:
@@ -935,6 +1027,10 @@ std::u16string AppListItemView::GetTooltipText(const gfx::Point& p) const {
   title_->SetTooltipText(tooltip_text_);
   std::u16string tooltip = title_->GetTooltipText(p);
   title_->SetHandlesTooltips(false);
+  if (new_install_dot_ && new_install_dot_->GetVisible()) {
+    // Tooltip becomes two lines: "App Name" + "New install".
+    tooltip = l10n_util::GetStringFUTF16(IDS_APP_LIST_NEW_INSTALL, tooltip);
+  }
   return tooltip;
 }
 
@@ -994,8 +1090,17 @@ bool AppListItemView::FireTouchDragTimerForTest() {
   return true;
 }
 
+bool AppListItemView::IsShowingAppMenu() const {
+  return item_menu_model_adapter_ && item_menu_model_adapter_->IsShowingMenu();
+}
+
 bool AppListItemView::IsNotificationIndicatorShownForTest() const {
   return notification_indicator_ && notification_indicator_->GetVisible();
+}
+
+void AppListItemView::SetContextMenuShownCallbackForTest(
+    base::RepeatingClosure closure) {
+  context_menu_shown_callback_ = std::move(closure);
 }
 
 void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {
@@ -1010,7 +1115,7 @@ void AppListItemView::AnimationProgressed(const gfx::Animation* animation) {
 void AppListItemView::OnMenuClosed() {
   // Release menu since its menu model delegate (AppContextMenu) could be
   // released as a result of menu command execution.
-  context_menu_.reset();
+  item_menu_model_adapter_.reset();
 
   if (!menu_close_initiated_from_drag_) {
     // If the menu was not closed due to a drag sequence(e.g. multi touch) reset
@@ -1127,6 +1232,12 @@ void AppListItemView::ItemBadgeVisibilityChanged() {
 void AppListItemView::ItemBadgeColorChanged() {
   if (notification_indicator_)
     notification_indicator_->SetColor(item_weak_->notification_badge_color());
+}
+
+void AppListItemView::ItemIsNewInstallChanged() {
+  DCHECK(item_weak_);
+  if (new_install_dot_)
+    new_install_dot_->SetVisible(item_weak_->is_new_install());
 }
 
 void AppListItemView::ItemBeingDestroyed() {

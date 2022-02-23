@@ -10,13 +10,16 @@
 
 #include "components/history/core/browser/url_row.h"
 #include "components/sync/base/model_type.h"
-#include "components/sync/model/metadata_batch.h"
 #include "components/sync/model/sync_metadata_store.h"
 
 namespace sql {
 class Database;
 class MetaTable;
 }  // namespace sql
+
+namespace syncer {
+class MetadataBatch;
+}  // namespace syncer
 
 namespace history {
 

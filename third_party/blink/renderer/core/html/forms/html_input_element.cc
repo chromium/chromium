@@ -31,6 +31,7 @@
 #include "third_party/blink/renderer/core/html/forms/html_input_element.h"
 
 #include "third_party/blink/public/mojom/choosers/date_time_chooser.mojom-blink.h"
+#include "third_party/blink/public/mojom/input/focus_type.mojom-blink.h"
 #include "third_party/blink/public/platform/task_type.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "third_party/blink/renderer/bindings/core/v8/js_event_handler_for_content_attribute.h"
@@ -77,11 +78,12 @@
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_theme_font_provider.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
+#include "third_party/blink/renderer/core/page/focus_controller.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/to_v8.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/language.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -318,7 +320,7 @@ bool HTMLInputElement::ShouldHaveFocusAppearance() const {
   return TextControlElement::ShouldHaveFocusAppearance();
 }
 
-void HTMLInputElement::UpdateFocusAppearanceWithOptions(
+void HTMLInputElement::UpdateSelectionOnFocus(
     SelectionBehaviorOnFocus selection_behavior,
     const FocusOptions* options) {
   if (IsTextField()) {
@@ -347,8 +349,7 @@ void HTMLInputElement::UpdateFocusAppearanceWithOptions(
         GetDocument().GetFrame()->Selection().RevealSelection();
     }
   } else {
-    TextControlElement::UpdateFocusAppearanceWithOptions(selection_behavior,
-                                                         options);
+    TextControlElement::UpdateSelectionOnFocus(selection_behavior, options);
   }
 }
 
@@ -579,7 +580,7 @@ void HTMLInputElement::UpdateType() {
   // UA Shadow tree was recreated. We need to set selection again. We do it
   // later in order to avoid force layout.
   if (GetDocument().FocusedElement() == this)
-    GetDocument().UpdateFocusAppearanceAfterLayout();
+    GetDocument().SetShouldUpdateSelectionAfterLayout(true);
 
   // TODO(tkent): Should we dispatch a change event?
   ClearValueBeforeFirstUserEdit();
@@ -1014,6 +1015,7 @@ void HTMLInputElement::ResetImpl() {
 
   setChecked(FastHasAttribute(html_names::kCheckedAttr));
   dirty_checkedness_ = false;
+  HTMLFormControlElementWithState::ResetImpl();
 }
 
 bool HTMLInputElement::IsTextField() const {
@@ -1869,8 +1871,11 @@ int HTMLInputElement::scrollWidth() {
   // Adjust scrollWidth to include input element horizontal paddings and
   // decoration width.
   LayoutUnit adjustment = box->ClientWidth() - editor_box->ClientWidth();
+  int snapped_scroll_width =
+      SnapSizeToPixel(editor_box->ScrollWidth() + adjustment,
+                      box->Location().X() + box->ClientLeft());
   return AdjustForAbsoluteZoom::AdjustLayoutUnit(
-             editor_box->ScrollWidth() + adjustment, box->StyleRef())
+             LayoutUnit(snapped_scroll_width), box->StyleRef())
       .Round();
 }
 
@@ -2103,6 +2108,25 @@ void HTMLInputElement::SetShouldRevealPassword(bool value) {
   }
 }
 
+#if BUILDFLAG(IS_ANDROID)
+bool HTMLInputElement::IsLastInputElementInForm() {
+  DCHECK(GetDocument().GetPage());
+  return !GetDocument()
+              .GetPage()
+              ->GetFocusController()
+              .NextFocusableElementForIME(this,
+                                          mojom::blink::FocusType::kForward);
+}
+
+void HTMLInputElement::DispatchSimulatedEnter() {
+  DCHECK(GetDocument().GetPage());
+  GetDocument().GetPage()->GetFocusController().SetFocusedElement(
+      this, GetDocument().GetFrame());
+
+  EventDispatcher::DispatchSimulatedEnterEvent(*this);
+}
+#endif
+
 bool HTMLInputElement::IsInteractiveContent() const {
   return input_type_->IsInteractiveContent();
 }
@@ -2190,18 +2214,24 @@ void HTMLInputElement::MaybeReportPiiMetrics() {
   }
 }
 
-// Show a browser picker for this input element (crbug.com/939561).
-// https://github.com/whatwg/html/issues/6909
+// Show a browser picker for this input element.
+// https://html.spec.whatwg.org/multipage/input.html#dom-input-showpicker
 void HTMLInputElement::showPicker(ExceptionState& exception_state) {
   LocalFrame* frame = GetDocument().GetFrame();
   // In cross-origin iframes it should throw a "SecurityError" DOMException
   // except on file and color. In same-origin iframes it should work fine.
   // https://github.com/whatwg/html/issues/6909#issuecomment-917138991
   if (type() != input_type_names::kFile && type() != input_type_names::kColor &&
-      frame && frame->IsCrossOriginToMainFrame()) {
-    exception_state.ThrowSecurityError(
-        "HTMLInputElement::showPicker() called from cross-origin iframe.");
-    return;
+      frame) {
+    const SecurityOrigin* security_origin =
+        frame->GetSecurityContext()->GetSecurityOrigin();
+    const SecurityOrigin* top_security_origin =
+        frame->Tree().Top().GetSecurityContext()->GetSecurityOrigin();
+    if (!security_origin->IsSameOriginWith(top_security_origin)) {
+      exception_state.ThrowSecurityError(
+          "HTMLInputElement::showPicker() called from cross-origin iframe.");
+      return;
+    }
   }
 
   if (!LocalFrame::HasTransientUserActivation(frame)) {

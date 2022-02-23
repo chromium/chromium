@@ -8,7 +8,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "services/device/geolocation/position_cache.h"
 #include "services/device/public/mojom/geoposition.mojom.h"
 

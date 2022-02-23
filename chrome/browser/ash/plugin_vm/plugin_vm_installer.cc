@@ -85,7 +85,7 @@ PluginVmSetupResult BucketForCancelledInstall(
   switch (installing_state) {
     case PluginVmInstaller::InstallingState::kInactive:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PluginVmInstaller::InstallingState::kCheckingLicense:
       return PluginVmSetupResult::kUserCancelledValidatingLicense;
     case PluginVmInstaller::InstallingState::kCheckingDiskSpace:
@@ -392,7 +392,7 @@ void PluginVmInstaller::OnConciergeAvailable(bool success) {
 
   vm_tools::concierge::ListVmDisksRequest request;
   request.set_cryptohome_id(
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
   request.set_storage_location(
       vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
   request.set_vm_name(kPluginVmName);
@@ -664,7 +664,7 @@ void PluginVmInstaller::OnFDPrepared(absl::optional<base::ScopedFD> maybeFd) {
   if (creating_new_vm_) {
     vm_tools::concierge::CreateDiskImageRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
     request.set_vm_name(kPluginVmName);
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);
@@ -680,7 +680,7 @@ void PluginVmInstaller::OnFDPrepared(absl::optional<base::ScopedFD> maybeFd) {
   } else {
     vm_tools::concierge::ImportDiskImageRequest request;
     request.set_cryptohome_id(
-        chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_));
+        ash::ProfileHelper::GetUserIdHashFromProfile(profile_));
     request.set_vm_name(kPluginVmName);
     request.set_storage_location(
         vm_tools::concierge::STORAGE_CRYPTOHOME_PLUGINVM);

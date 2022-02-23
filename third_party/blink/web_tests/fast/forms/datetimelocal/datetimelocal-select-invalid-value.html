@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -30,7 +32,7 @@ function selectValue() {
 t.step(() => {
   let dateTimeElement = document.getElementById("datetime-local");
   dateTimeElement.value = "2019-02-14T13:02:50";
-  openPicker(dateTimeElement, t.step_func(selectValue));
+  openPickerDeprecatedJsTest(dateTimeElement, t.step_func(selectValue));
 });
 </script>
 </body>

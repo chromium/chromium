@@ -31,12 +31,12 @@ std::unique_ptr<GpuBlocklist> GpuBlocklist::Create(
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGL);
   list->AddSupportedFeature("accelerated_video_decode",
                             GPU_FEATURE_TYPE_ACCELERATED_VIDEO_DECODE);
+  list->AddSupportedFeature("accelerated_video_encode",
+                            GPU_FEATURE_TYPE_ACCELERATED_VIDEO_ENCODE);
   list->AddSupportedFeature("gpu_rasterization",
                             GPU_FEATURE_TYPE_GPU_RASTERIZATION);
   list->AddSupportedFeature("accelerated_webgl2",
                             GPU_FEATURE_TYPE_ACCELERATED_WEBGL2);
-  list->AddSupportedFeature("oop_rasterization",
-                            GPU_FEATURE_TYPE_OOP_RASTERIZATION);
   list->AddSupportedFeature("android_surface_control",
                             GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL);
   list->AddSupportedFeature("accelerated_gl", GPU_FEATURE_TYPE_ACCELERATED_GL);

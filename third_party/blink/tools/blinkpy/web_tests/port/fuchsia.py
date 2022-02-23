@@ -64,8 +64,10 @@ def _import_fuchsia_runner():
     # pylint: disable=redefined-outer-name
     global aemu_target
     import aemu_target
-    global _GetPathToBuiltinTarget, _LoadTargetClass
-    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass
+    global ConnectPortForwardingTask
+    from common import ConnectPortForwardingTask
+    global _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
+    from common_args import _GetPathToBuiltinTarget, _LoadTargetClass, InitializeTargetArgs
     global device_target
     import device_target
     global fuchsia_target
@@ -103,7 +105,7 @@ def _subprocess_log_thread(pipe, prefix):
             line = pipe.readline()
             if not line:
                 return
-            _log.error('%s: %s', prefix, line)
+            _log.error('%s: %s', prefix, line.decode('utf8'))
     finally:
         pipe.close()
 
@@ -182,6 +184,9 @@ class _TargetHost(object):
             if self._target:
                 self._target.Stop()
 
+    def setup_forwarded_port(self, port):
+        return ConnectPortForwardingTask(self._target, port)
+
 
 class FuchsiaPort(base.Port):
     port_name = 'fuchsia'
@@ -210,7 +215,6 @@ class FuchsiaPort(base.Port):
 
         self._target_host = self.get_option('fuchsia_target')
         self._zircon_logger = None
-        self._host_ip = self.get_option('fuchsia_host_ip')
         _import_fuchsia_runner()
 
     def _driver_class(self):
@@ -241,23 +245,16 @@ class FuchsiaPort(base.Port):
     def setup_test_run(self):
         super(FuchsiaPort, self).setup_test_run()
         try:
-            target_args = Namespace(
-                out_dir=self._build_path(),
-                fuchsia_out_dir=self.get_option('fuchsia_out_dir'),
-                target_cpu=self._target_cpu(),
-                ssh_config=self.get_option('fuchsia_ssh_config'),
-                os_check='ignore',
-                host=self.get_option('fuchsia_host'),
-                port=self.get_option('fuchsia_port'),
-                node_name=self.get_option('fuchsia_node_name'),
-                cpu_cores=self._cpu_cores(),
-                require_kvm=True,
-                ram_size_mb=8192,
-                enable_graphics=False,
-                hardware_gpu=False,
-                with_network=False,
-                logs_dir=self.results_directory(),
-                custom_image=None)
+            target_args = InitializeTargetArgs()
+            target_args.out_dir = self._build_path()
+            target_args.target_cpu = self._target_cpu()
+            target_args.fuchsia_out_dir = self.get_option('fuchsia_out_dir')
+            target_args.ssh_config = self.get_option('fuchsia_ssh_config')
+            target_args.host = self.get_option('fuchsia_host')
+            target_args.port = self.get_option('fuchsia_port')
+            target_args.node_name = self.get_option('fuchsia_node_name')
+            target_args.cpu_cores = self._cpu_cores()
+            target_args.logs_dir = self.results_directory()
             target = _LoadTargetClass(
                 _GetPathToBuiltinTarget(
                     self._target_device)).CreateFromArgs(target_args)
@@ -267,8 +264,11 @@ class FuchsiaPort(base.Port):
                                             self.results_directory())
 
             if self.get_option('zircon_logging'):
-                self._zircon_logger = SubprocessOutputLogger(
-                    self._target_host.run_command(['dlog', '-f']), 'Zircon')
+                klog_proc = self._target_host.run_command(['dlog', '-f'])
+                symbolized_klog_proc = symbolizer.RunSymbolizer(klog_proc.stdout,
+                    subprocess.PIPE, [self.get_build_ids_path()])
+                self._zircon_logger = SubprocessOutputLogger(symbolized_klog_proc,
+                    'Zircon')
 
             # Save fuchsia_target in _options, so it can be shared with other
             # workers.
@@ -336,8 +336,7 @@ class ChromiumFuchsiaDriver(driver.Driver):
             server_name,
             cmd_line,
             environment,
-            more_logging=self._port.get_option('driver_logging'),
-            host_ip=self._port._host_ip)
+            more_logging=self._port.get_option('driver_logging'))
 
     def _base_cmd_line(self):
         cmd = [
@@ -349,10 +348,9 @@ class ChromiumFuchsiaDriver(driver.Driver):
         # Use Scenic on AEMU
         else:
             cmd.extend([
-                '--ozone-platform=scenic', '--enable-oop-rasterization',
-                '--use-vulkan', '--enable-gpu-rasterization',
-                '--force-device-scale-factor=1', '--use-gl=stub',
-                '--enable-features=UseSkiaRenderer,Vulkan',
+                '--ozone-platform=scenic', '--use-vulkan',
+                '--enable-gpu-rasterization', '--force-device-scale-factor=1',
+                '--use-gl=stub', '--enable-features=UseSkiaRenderer,Vulkan',
                 '--gpu-watchdog-timeout-seconds=60'
             ])
         return cmd
@@ -376,12 +374,10 @@ class FuchsiaServerProcess(server_process.ServerProcess):
                  cmd,
                  env=None,
                  treat_no_data_as_crash=False,
-                 more_logging=False,
-                 host_ip=None):
+                 more_logging=False):
         super(FuchsiaServerProcess, self).__init__(
             port_obj, name, cmd, env, treat_no_data_as_crash, more_logging)
         self._symbolizer_proc = None
-        self._host_ip = host_ip or qemu_target.HOST_IP_ADDRESS
 
     def _start(self):
         if self._proc:
@@ -390,18 +386,20 @@ class FuchsiaServerProcess(server_process.ServerProcess):
 
         # Fuchsia doesn't support stdin stream for packaged applications, so the
         # stdin stream for content_shell is routed through a separate TCP
-        # socket. Open a local socket and then pass the address with the port as
-        # --stdin-redirect parameter. content_shell will connect to this address
-        # and will use that connection as its stdin stream.
+        # socket. The socket is reverse-forwarded from the device to the script
+        # over SSH.
         listen_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         listen_socket.bind(('127.0.0.1', 0))
         listen_socket.listen(1)
-        stdin_port = listen_socket.getsockname()[1]
+        stdin_port = int(listen_socket.getsockname()[1])
+        forwarded_stdin_port = \
+            self._port.get_target_host().setup_forwarded_port(stdin_port)
 
         command = ['%s=%s' % (k, v) for k, v in self._env.items()] + \
             self._cmd + \
-            ['--no-sandbox', '--stdin-redirect=%s:%s' %
-             (self._host_ip, stdin_port)]
+            ['--no-sandbox', '--stdin-redirect=127.0.0.1:%d' %
+             (forwarded_stdin_port)]
+
         proc = self._port.get_target_host().run_command(command)
         # Wait for incoming connection from content_shell.
         fd = listen_socket.fileno()

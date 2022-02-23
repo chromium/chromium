@@ -16,6 +16,7 @@ gfx::Size TestNativeTheme::GetPartSize(Part part,
 }
 
 void TestNativeTheme::Paint(cc::PaintCanvas* canvas,
+                            const ui::ColorProvider* color_provider,
                             Part part,
                             State state,
                             const gfx::Rect& rect,
@@ -61,12 +62,6 @@ void TestNativeTheme::AddColorSchemeNativeThemeObserver(
       std::make_unique<ui::NativeTheme::ColorSchemeNativeThemeObserver>(
           theme_to_update);
   AddObserver(color_scheme_observer_.get());
-}
-
-SkColor TestNativeTheme::GetSystemColorDeprecated(ColorId color_id,
-                                                  ColorScheme color_scheme,
-                                                  bool apply_processing) const {
-  return SK_ColorRED;
 }
 
 }  // namespace ui

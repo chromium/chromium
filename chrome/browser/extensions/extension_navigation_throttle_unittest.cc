@@ -5,6 +5,7 @@
 #include "extensions/browser/extension_navigation_throttle.h"
 
 #include <memory>
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/test_extension_system.h"
@@ -198,7 +199,7 @@ class ExtensionNavigationThrottleUnitTest
  private:
   scoped_refptr<const Extension> extension_;
   MockBrowserClient client_;
-  content::ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> original_client_ = nullptr;
 };
 
 // Tests the basic case of an external web page embedding an extension resource.

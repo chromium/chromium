@@ -80,7 +80,7 @@ class SiteDataReaderTest : public ::testing::Test {
                                    delegate_.GetWeakPtr(), &data_store_));
     test_impl_->NotifySiteLoaded();
     test_impl_->NotifyLoadedSiteBackgrounded();
-    SiteDataReader* reader = new SiteDataReader(test_impl_.get());
+    SiteDataReader* reader = new SiteDataReaderImpl(test_impl_.get());
     reader_ = base::WrapUnique(reader);
   }
 
@@ -156,12 +156,14 @@ TEST_F(SiteDataReaderTest, FreeingReaderDoesntCauseWriteOperation) {
                               ::testing::_))
       .WillOnce(::testing::Invoke(read_from_store_mock_impl));
 
-  std::unique_ptr<SiteDataReader> reader = base::WrapUnique(
-      new SiteDataReader(base::WrapRefCounted(new internal::SiteDataImpl(
-          kOrigin, delegate_.GetWeakPtr(), &data_store))));
+  scoped_refptr<internal::SiteDataImpl> impl(
+      base::WrapRefCounted(new internal::SiteDataImpl(
+          kOrigin, delegate_.GetWeakPtr(), &data_store)));
+  std::unique_ptr<SiteDataReader> reader =
+      base::WrapUnique(new SiteDataReaderImpl(impl));
   ::testing::Mock::VerifyAndClear(&data_store);
 
-  EXPECT_TRUE(reader->impl_for_testing()->fully_initialized_for_testing());
+  EXPECT_TRUE(impl->fully_initialized_for_testing());
 
   // Resetting the reader shouldn't cause any write operation to the data store.
   EXPECT_CALL(data_store, WriteSiteDataIntoStore(::testing::_, ::testing::_))
@@ -184,7 +186,7 @@ TEST_F(SiteDataReaderTest, OnDataLoadedCallbackInvoked) {
 
   // Create the reader.
   std::unique_ptr<SiteDataReader> reader =
-      base::WrapUnique(new SiteDataReader(impl));
+      base::WrapUnique(new SiteDataReaderImpl(impl));
   EXPECT_FALSE(reader->DataLoaded());
 
   // Register a data ready closure.
@@ -215,7 +217,7 @@ TEST_F(SiteDataReaderTest, DestroyingReaderCancelsPendingCallbacks) {
 
   // Create the reader.
   std::unique_ptr<SiteDataReader> reader =
-      base::WrapUnique(new SiteDataReader(impl));
+      base::WrapUnique(new SiteDataReaderImpl(impl));
   EXPECT_FALSE(reader->DataLoaded());
 
   // Register a data ready closure.

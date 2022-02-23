@@ -436,8 +436,7 @@ void PacedSender::LogPacketEvent(const Packet& packet, CastLoggingEvent type) {
   // TODO(miu): This parsing logic belongs in RtpParser.
   event.timestamp = clock_->NowTicks();
   event.type = type;
-  base::BigEndianReader reader(reinterpret_cast<const char*>(&packet[0]),
-                               packet.size());
+  base::BigEndianReader reader(packet);
   bool success = reader.Skip(4);
   uint32_t truncated_rtp_timestamp;
   success &= reader.ReadU32(&truncated_rtp_timestamp);

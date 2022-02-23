@@ -3,7 +3,7 @@
 # found in the LICENSE file.
 
 """Uploads the results to the flakiness dashboard server."""
-# pylint: disable=E1002,R0201
+# pylint: disable=R0201
 
 import logging
 import os
@@ -25,18 +25,17 @@ class JSONResultsGenerator(json_results_generator.JSONResultsGeneratorBase):
   """
   def __init__(self, builder_name, build_name, build_number, tmp_folder,
                test_results_map, test_results_server, test_type, master_name):
-    super(JSONResultsGenerator, self).__init__(
-        builder_name=builder_name,
-        build_name=build_name,
-        build_number=build_number,
-        results_file_base_path=tmp_folder,
-        builder_base_url=None,
-        test_results_map=test_results_map,
-        svn_repositories=(('webkit', 'third_party/WebKit'),
-                          ('chrome', '.')),
-        test_results_server=test_results_server,
-        test_type=test_type,
-        master_name=master_name)
+    super().__init__(builder_name=builder_name,
+                     build_name=build_name,
+                     build_number=build_number,
+                     results_file_base_path=tmp_folder,
+                     builder_base_url=None,
+                     test_results_map=test_results_map,
+                     svn_repositories=(('webkit', 'third_party/WebKit'),
+                                       ('chrome', '.')),
+                     test_results_server=test_results_server,
+                     test_type=test_type,
+                     master_name=master_name)
 
   #override
   def _GetModifierChar(self, test_name):
@@ -61,7 +60,7 @@ class JSONResultsGenerator(json_results_generator.JSONResultsGeneratorBase):
       if os.path.exists(os.path.join(in_directory, '.git')):
         return True
       parent = os.path.dirname(in_directory)
-      if parent == host_paths.DIR_SOURCE_ROOT or parent == in_directory:
+      if parent in (host_paths.DIR_SOURCE_ROOT, in_directory):
         return False
       return _is_git_directory(parent)
 
@@ -70,8 +69,7 @@ class JSONResultsGenerator(json_results_generator.JSONResultsGeneratorBase):
     if not os.path.exists(os.path.join(in_directory, '.svn')):
       if _is_git_directory(in_directory):
         return repo_utils.GetGitHeadSHA1(in_directory)
-      else:
-        return ''
+      return ''
 
     output = cmd_helper.GetCmdOutput(['svn', 'info', '--xml'], cwd=in_directory)
     try:
@@ -82,7 +80,7 @@ class JSONResultsGenerator(json_results_generator.JSONResultsGeneratorBase):
     return ''
 
 
-class ResultsUploader(object):
+class ResultsUploader:
   """Handles uploading buildbot tests results to the flakiness dashboard."""
   def __init__(self, tests_type):
     self._build_number = os.environ.get('BUILDBOT_BUILDNUMBER')

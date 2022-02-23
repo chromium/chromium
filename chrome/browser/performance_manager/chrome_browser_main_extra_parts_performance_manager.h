@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/scoped_multi_source_observation.h"
 #include "chrome/browser/chrome_browser_main_extra_parts.h"
 #include "chrome/browser/profiles/profile.h"

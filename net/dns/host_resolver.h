@@ -9,10 +9,10 @@
 #include <stdint.h>
 
 #include <memory>
+#include <set>
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/base/address_family.h"
 #include "net/base/completion_once_callback.h"
@@ -20,6 +20,7 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/request_priority.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/host_resolver_results.h"
 #include "net/dns/public/dns_config_overrides.h"
 #include "net/dns/public/dns_query_type.h"
 #include "net/dns/public/host_resolver_source.h"
@@ -83,7 +84,17 @@ class NET_EXPORT HostResolver {
     // Address record (A or AAAA) results of the request. Should only be called
     // after Start() signals completion, either by invoking the callback or by
     // returning a result other than |ERR_IO_PENDING|.
-    virtual const absl::optional<AddressList>& GetAddressResults() const = 0;
+    //
+    // TODO(crbug.com/1264933): Remove and replace all usage with
+    // GetEndpointResults().
+    virtual const AddressList* GetAddressResults() const = 0;
+
+    // Endpoint results for `A`, `AAAA`, `UNSPECIFIED`, or `HTTPS` requests.
+    // Should only be called after Start() signals completion, either by
+    // invoking the callback or by returning a result other than
+    // `ERR_IO_PENDING`.
+    virtual const std::vector<HostResolverEndpointResult>* GetEndpointResults()
+        const = 0;
 
     // Text record (TXT) results of the request. Should only be called after
     // Start() signals completion, either by invoking the callback or by
@@ -102,20 +113,25 @@ class NET_EXPORT HostResolver {
     GetHostnameResults() const = 0;
 
     // Any DNS record aliases, such as CNAME aliases, found as a result of an
-    // address query. The alias chain order is preserved in reverse, from
-    // canonical name (i.e. address record name) through to query name. Should
-    // only be called after Start() signals completion, either by invoking the
-    // callback or by returning a result other than `ERR_IO_PENDING`. Returns a
-    // list of aliases that has been sanitized and canonicalized (as URL
-    // hostnames), and thus may differ from the results stored directly in the
-    // AddressList.
-    virtual const absl::optional<std::vector<std::string>>& GetDnsAliasResults()
-        const = 0;
+    // address query. Includes all known aliases, e.g. from A, AAAA, or HTTPS,
+    // not just from the address used for the connection, in no particular
+    // order. Should only be called after Start() signals completion, either by
+    // invoking the callback or by returning a result other than
+    // `ERR_IO_PENDING`. Returns a list of aliases that has been fixed up and
+    // canonicalized (as URL hostnames), and thus may differ from the results
+    // stored directly in the AddressList.
+    //
+    // If `ResolveHostParameters::include_canonical_name` was true, alias
+    // results will always be the single "canonical name" received from the
+    // system resolver without URL hostname canonicalization (or an empty set or
+    // `nullptr` in the unusual case that the system resolver did not give a
+    // canonical name).
+    virtual const std::set<std::string>* GetDnsAliasResults() const = 0;
 
     // Result of an experimental query. Meaning depends on the specific query
     // type, but each boolean value generally refers to a valid or invalid
     // record of the experimental type.
-    NET_EXPORT virtual const absl::optional<std::vector<bool>>&
+    NET_EXPORT virtual const std::vector<bool>*
     GetExperimentalResultsForTesting() const;
 
     // Error info for the request.
@@ -218,8 +234,10 @@ class NET_EXPORT HostResolver {
     ResolveHostParameters();
     ResolveHostParameters(const ResolveHostParameters& other);
 
-    // Requested DNS query type. If UNSPECIFIED, resolver will pick A or AAAA
-    // (or both) based on IPv4/IPv6 settings.
+    // Requested DNS query type. If UNSPECIFIED, the resolver will select a set
+    // of queries automatically. It will select A, AAAA, or both as the address
+    // queries, depending on IPv4/IPv6 settings and reachability. It may also
+    // replace UNSPECIFIED with additional queries, such as HTTPS.
     DnsQueryType dns_query_type = DnsQueryType::UNSPECIFIED;
 
     // The initial net priority for the host resolution request.
@@ -247,10 +265,18 @@ class NET_EXPORT HostResolver {
     };
     CacheUsage cache_usage = CacheUsage::ALLOWED;
 
-    // If |true|, requests that the resolver include AddressList::canonical_name
-    // in the results. If the resolver can do so without significant
-    // performance impact, canonical_name may still be included even if
-    // parameter is set to |false|.
+    // If |true|, requests special behavior that the "canonical name" be
+    // requested from the system and be returned as the only entry in
+    // `ResolveHostRequest::GetDnsAliasResults()` results. Setting this
+    // parameter is disallowed for any requests that cannot be resolved using
+    // the system resolver, e.g. non-address requests or requests specifying a
+    // non-`SYSTEM` `source`.
+    //
+    // TODO(crbug.com/1282281): Consider allowing the built-in resolver to still
+    // be used with this parameter. Would then function as a request to just
+    // keep the single final name from the alias chain instead of all aliases,
+    // and also skip the canonicalization unless that canonicalization is found
+    // to be fine for usage.
     bool include_canonical_name = false;
 
     // Hint to the resolver that resolution is only being requested for loopback
@@ -395,12 +421,31 @@ class NET_EXPORT HostResolver {
       bool enable_caching = true);
 
   // Helpers for interacting with HostCache and ProcResolver.
-  static AddressFamily DnsQueryTypeToAddressFamily(DnsQueryType query_type);
+  static AddressFamily DnsQueryTypeSetToAddressFamily(
+      DnsQueryTypeSet query_types);
   static HostResolverFlags ParametersToHostResolverFlags(
       const ResolveHostParameters& parameters);
 
   // Helper for squashing error code to a small set of DNS error codes.
   static int SquashErrorCode(int error);
+
+  // Utility to convert an AddressList to an equivalent list of
+  // `HostResolverEndpointResults`. Assumes all addresses in the input list
+  // represent the default non-protocol endpoint.
+  //
+  // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
+  // in `HostResolver` and results.
+  static std::vector<HostResolverEndpointResult> AddressListToEndpointResults(
+      const AddressList& address_list);
+
+  // Opposite conversion of `AddressListToEndpointResults()`. Builds an
+  // AddressList from the first non-protocol endpoint found in `endpoints`.
+  //
+  // TODO(crbug.com/1264933): Delete once `AddressList` usage is fully replaced
+  // in `HostResolver` and results.
+  static AddressList EndpointResultToAddressList(
+      const std::vector<HostResolverEndpointResult>& endpoints,
+      const std::set<std::string>& aliases);
 
  protected:
   HostResolver();

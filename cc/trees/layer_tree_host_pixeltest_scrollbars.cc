@@ -18,7 +18,7 @@
 #include "components/viz/test/test_in_process_context_provider.h"
 #include "gpu/command_buffer/client/gles2_interface.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 namespace cc {
 namespace {
@@ -154,8 +154,7 @@ TEST_P(LayerTreeHostScrollbarsPixelTest, MAYBE_HugeTransformScale) {
   background->AddChild(layer);
 
   auto context = base::MakeRefCounted<viz::TestInProcessContextProvider>(
-      /*enable_gles2_interface=*/true, /*support_locking=*/false,
-      viz::RasterInterfaceType::None);
+      viz::TestContextType::kGLES2, /*support_locking=*/false);
   gpu::ContextResult result = context->BindToCurrentThread();
   DCHECK_EQ(result, gpu::ContextResult::kSuccess);
   int max_texture_size = 0;
@@ -315,4 +314,4 @@ TEST_P(LayerTreeHostOverlayScrollbarsPixelTest, NinePatchScrollbarScaledDown) {
 }  // namespace
 }  // namespace cc
 
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)

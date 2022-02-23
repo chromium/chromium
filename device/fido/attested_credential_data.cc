@@ -65,6 +65,9 @@ AttestedCredentialData::ConsumeFromCtapResponse(
   const cbor::Value::MapValue& public_key_map = public_key_cbor->GetMap();
 
   struct COSEKey {
+    // Both fields below are not a raw_ptr<int64_t>, because ELEMENT() treats
+    // the raw_ptr<T> as a void*, skipping AddRef() call and causing a
+    // ref-counting mismatch.
     const int64_t* alg;
     const int64_t* kty;
   } cose_key;

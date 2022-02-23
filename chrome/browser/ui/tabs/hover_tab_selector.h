@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_TABS_HOVER_TAB_SELECTOR_H_
 #define CHROME_BROWSER_UI_TABS_HOVER_TAB_SELECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 
 class TabStripModel;
@@ -32,7 +33,7 @@ class HoverTabSelector {
   void PerformTabTransition();
 
   // Model of the tab strip on which this class operates.
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 
   // The model index of the tab to transition to.
   int tab_transition_tab_index_;

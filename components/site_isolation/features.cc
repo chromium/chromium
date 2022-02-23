@@ -19,7 +19,7 @@ const base::Feature kSiteIsolationForPasswordSites {
   "site-isolation-for-password-sites",
 // Enabled by default on Android; see https://crbug.com/849815.  Note that this
 // should not affect Android Webview, which does not include this code.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -40,7 +40,7 @@ const base::Feature kSiteIsolationForPasswordSites {
 const base::Feature kSiteIsolationForOAuthSites{
   "SiteIsolationForOAuthSites",
 // Enabled by default on Android only; see https://crbug.com/1206770.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT

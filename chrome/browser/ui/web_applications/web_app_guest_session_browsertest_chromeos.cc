@@ -30,11 +30,11 @@ namespace web_app {
 class WebAppGuestSessionBrowserTest : public InProcessBrowserTest,
                                       public WithCrosapiParam {
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(chromeos::switches::kGuestSession);
+    command_line->AppendSwitch(ash::switches::kGuestSession);
     command_line->AppendSwitch(::switches::kIncognito);
-    command_line->AppendSwitchASCII(chromeos::switches::kLoginProfile, "user");
+    command_line->AppendSwitchASCII(ash::switches::kLoginProfile, "user");
     command_line->AppendSwitchASCII(
-        chromeos::switches::kLoginUser,
+        ash::switches::kLoginUser,
         user_manager::GuestAccountId().GetUserEmail());
   }
 };
@@ -56,7 +56,7 @@ IN_PROC_BROWSER_TEST_P(WebAppGuestSessionBrowserTest, LaunchOsSettings) {
   content::WebContents* contents =
       apps::AppServiceProxyFactory::GetForProfile(profile)
           ->BrowserAppLauncher()
-          ->LaunchAppWithParams(std::move(params));
+          ->LaunchAppWithParamsForTesting(std::move(params));
   EXPECT_EQ(GURL(chrome::kChromeUIOSSettingsURL), contents->GetVisibleURL());
 }
 

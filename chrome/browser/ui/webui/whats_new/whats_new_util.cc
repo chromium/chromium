@@ -3,16 +3,33 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/ui/webui/whats_new/whats_new_util.h"
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/check.h"
 #include "base/feature_list.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
+#include "base/task/sequenced_task_runner.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_list.h"
+#include "chrome/browser/ui/browser_list_observer.h"
+#include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
+#include "chrome/common/webui_url_constants.h"
 #include "components/prefs/pref_service.h"
+#include "content/public/browser/browser_task_traits.h"
+#include "content/public/browser/browser_thread.h"
+#include "net/base/url_util.h"
 #include "net/http/http_util.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -42,114 +59,173 @@ bool ShouldShowForState(PrefService* local_state) {
   if (!base::FeatureList::IsEnabled(features::kChromeWhatsNewUI))
     return false;
 
-  // M97 does not have a What's New page. Handling this separately here, to
-  // enable early removal of retry logic in the handler and to allow time to
-  // figure out how to query the server side before opening the tab.
-  // To keep consistency for tests, don't follow this special case if remote
-  // content is disabled for testing.
-  if (CHROME_VERSION_MAJOR == 97 && !IsRemoteContentDisabled())
+  int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
+
+  // Don't show What's New if it's already been shown for the current major
+  // milestone.
+  if (CHROME_VERSION_MAJOR <= last_version)
     return false;
 
-  // Show What's New if the page hasn't yet been shown for the current
-  // milestone.
-  int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
-  return CHROME_VERSION_MAJOR > last_version;
-}
-
-void SetLastVersion(PrefService* local_state) {
-  if (!local_state) {
-    return;
-  }
-
+  // Set the last version here to indicate that What's New should not attempt
+  // to display again for this milestone. This prevents the page from
+  // potentially displaying multiple times in a given milestone, e.g. for
+  // multiple profile relaunches (see https://crbug.com/1274313).
   local_state->SetInteger(prefs::kLastWhatsNewVersion, CHROME_VERSION_MAJOR);
+  return true;
 }
 
-void LogLoadEvent(whats_new::LoadEvent event) {
-  base::UmaHistogramEnumeration("WhatsNew.LoadEvent", event);
+GURL GetServerURL(bool may_redirect) {
+  return may_redirect
+             ? net::AppendQueryParameter(
+                   GURL(kChromeWhatsNewURL), "version",
+                   base::NumberToString(CHROME_VERSION_MAJOR))
+             : GURL(kChromeWhatsNewURL)
+                   .Resolve(base::StringPrintf("m%d", CHROME_VERSION_MAJOR));
 }
 
-std::string GetURLForVersion(int version) {
-  // Versions prior to m98 don't respect the query parameter. There is no
-  // version for M97. We should never be automatically loading the page for M97,
-  // see ShouldShowForState() in whats_new_util.cc.
-  // TODO (https://crbug.com/1219381): Remove this logic in M98.
-  return version < 98
-             ? base::StringPrintf("%sm%d", whats_new::kChromeWhatsNewURL, 96)
-             : base::StringPrintf("%s/?version=m%d",
-                                  whats_new::kChromeWhatsNewURL, version);
+GURL GetWebUIStartupURL() {
+  return net::AppendQueryParameter(GURL(chrome::kChromeUIWhatsNewURL), "auto",
+                                   "true");
 }
 
-// TODO (https://crbug.com/1255463): Run this logic before opening the tab at
-// all.
-WhatsNewFetcher::WhatsNewFetcher(int version,
-                                 bool is_auto,
-                                 OnFetchResultCallback on_result)
-    : is_auto_(is_auto), callback_(std::move(on_result)) {
-  LogLoadEvent(whats_new::LoadEvent::kLoadStart);
-  auto traffic_annotation =
-      net::DefineNetworkTrafficAnnotation("whats_new_handler", R"(
-        semantics {
-          sender: "What's New Page"
-          description: "Attempts to fetch the content for the What's New page "
-            "to ensure it loads successfully."
-          trigger:
-            "Restarting Chrome after an update. Desktop only."
-          data:
-            "No data sent, other than URL of What's New. "
-            "Data does not contain PII."
-          destination: GOOGLE_OWNED_SERVICE
-        }
-        policy {
-          cookies_allowed: NO
-          setting:
-            "None"
-          chrome_policy {
-            PromotionalTabsEnabled {
-              PromotionalTabsEnabled: false
-            }
+namespace {
+
+void AddWhatsNewTab(Browser* browser) {
+  chrome::AddTabAt(browser, GetWebUIStartupURL(), 0, true);
+  browser->tab_strip_model()->ActivateTabAt(
+      browser->tab_strip_model()->IndexOfFirstNonPinnedTab());
+}
+
+class WhatsNewFetcher : public BrowserListObserver {
+ public:
+  explicit WhatsNewFetcher(Browser* browser) : browser_(browser) {
+    BrowserList::AddObserver(this);
+    if (IsRemoteContentDisabled()) {
+      // Don't fetch network content if this is the case, just pretend the tab
+      // was retrieved successfully. Do so asynchronously to simulate the
+      // production code better.
+      base::SequencedTaskRunnerHandle::Get()->PostTask(
+          FROM_HERE, base::BindOnce(&WhatsNewFetcher::OpenWhatsNewTabForTest,
+                                    base::Unretained(this)));
+      return;
+    }
+
+    LogLoadEvent(LoadEvent::kLoadStart);
+    auto traffic_annotation =
+        net::DefineNetworkTrafficAnnotation("whats_new_handler", R"(
+          semantics {
+            sender: "What's New Page"
+            description: "Attempts to fetch the content for the What's New "
+              "page to ensure it loads successfully."
+            trigger:
+              "Restarting Chrome after an update. Desktop only."
+            data:
+              "No data sent, other than URL of What's New. "
+              "Data does not contain PII."
+            destination: GOOGLE_OWNED_SERVICE
           }
-        })");
-  network::mojom::URLLoaderFactory* loader_factory =
-      g_browser_process->system_network_context_manager()
-          ->GetURLLoaderFactory();
-  auto request = std::make_unique<network::ResourceRequest>();
-  request->url = GURL(GetURLForVersion(version));
-  simple_loader_ =
-      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
-  simple_loader_->DownloadToString(
-      loader_factory,
-      base::BindOnce(&WhatsNewFetcher::OnResponseLoaded,
-                     base::Unretained(this)),
-      kMaxDownloadBytes);
-}
-
-WhatsNewFetcher::~WhatsNewFetcher() = default;
-
-void WhatsNewFetcher::OnResponseLoaded(std::unique_ptr<std::string> body) {
-  int response_code = simple_loader_->NetError();
-  const auto& headers = simple_loader_->ResponseInfo()
-                            ? simple_loader_->ResponseInfo()->headers
-                            : nullptr;
-  bool success = response_code == net::OK && headers;
-  if (headers) {
-    response_code =
-        net::HttpUtil::MapStatusCodeForHistogram(headers->response_code());
+          policy {
+            cookies_allowed: NO
+            setting:
+              "None"
+            chrome_policy {
+              PromotionalTabsEnabled {
+                PromotionalTabsEnabled: false
+              }
+            }
+          })");
+    network::mojom::URLLoaderFactory* loader_factory =
+        g_browser_process->system_network_context_manager()
+            ->GetURLLoaderFactory();
+    auto request = std::make_unique<network::ResourceRequest>();
+    // Don't allow redirects when checking if the page is valid for the current
+    // milestone.
+    request->url = GetServerURL(false);
+    simple_loader_ = network::SimpleURLLoader::Create(std::move(request),
+                                                      traffic_annotation);
+    // base::Unretained is safe here because only OnResponseLoaded deletes
+    // |this|.
+    simple_loader_->DownloadToString(
+        loader_factory,
+        base::BindOnce(&WhatsNewFetcher::OnResponseLoaded,
+                       base::Unretained(this)),
+        kMaxDownloadBytes);
   }
 
-  base::UmaHistogramSparse("WhatsNew.LoadResponseCode", response_code);
-  success = success && response_code >= 200 && response_code <= 299 && body;
-  bool page_not_found = !success && headers && headers->response_code() == 404;
+  ~WhatsNewFetcher() override { BrowserList::RemoveObserver(this); }
 
-  // Update pref if shown automatically. Do this even if the load failed - we
-  // only want to try once, so that we don't have to re-query for What's New
-  // every time the browser opens.
-  if (is_auto_) {
-    SetLastVersion(g_browser_process->local_state());
+  // BrowserListObserver:
+  void OnBrowserRemoved(Browser* browser) override {
+    if (browser != browser_)
+      return;
+
+    browser_closed_or_inactive_ = true;
+    BrowserList::RemoveObserver(this);
+    browser_ = nullptr;
   }
 
-  // Running this callback might destroy |this| so don't do anything else
-  // afterward.
-  std::move(callback_).Run(is_auto_, success, page_not_found, std::move(body));
+  void OnBrowserNoLongerActive(Browser* browser) override {
+    if (browser == browser_)
+      browser_closed_or_inactive_ = true;
+  }
+
+  void OnBrowserSetLastActive(Browser* browser) override {
+    if (browser == browser_)
+      browser_closed_or_inactive_ = false;
+  }
+
+ private:
+  static void LogLoadEvent(LoadEvent event) {
+    base::UmaHistogramEnumeration("WhatsNew.LoadEvent", event);
+  }
+
+  void OpenWhatsNewTabForTest() {
+    if (browser_closed_or_inactive_)
+      return;
+
+    AddWhatsNewTab(browser_);
+    delete this;
+  }
+
+  void OnResponseLoaded(std::unique_ptr<std::string> body) {
+    int error_or_response_code = simple_loader_->NetError();
+    const auto& headers = simple_loader_->ResponseInfo()
+                              ? simple_loader_->ResponseInfo()->headers
+                              : nullptr;
+    bool success = error_or_response_code == net::OK && headers;
+    if (headers) {
+      error_or_response_code =
+          net::HttpUtil::MapStatusCodeForHistogram(headers->response_code());
+    }
+
+    base::UmaHistogramSparse("WhatsNew.LoadResponseCode",
+                             error_or_response_code);
+    success = success && error_or_response_code >= 200 &&
+              error_or_response_code <= 299 && body;
+
+    // If the browser was closed or moved to the background while What's New was
+    // loading, return early before recording that the user saw the page.
+    if (browser_closed_or_inactive_)
+      return;
+
+    DCHECK(browser_);
+
+    LogLoadEvent(success ? LoadEvent::kLoadSuccess
+                         : LoadEvent::kLoadFailAndDoNotShow);
+    if (success)
+      AddWhatsNewTab(browser_);
+    delete this;
+  }
+
+  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
+  raw_ptr<Browser> browser_;
+  bool browser_closed_or_inactive_ = false;
+};
+
+}  // namespace
+
+void StartWhatsNewFetch(Browser* browser) {
+  new WhatsNewFetcher(browser);
 }
 
 }  // namespace whats_new

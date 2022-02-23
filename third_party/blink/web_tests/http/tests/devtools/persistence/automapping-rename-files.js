@@ -17,7 +17,7 @@
     'http://example.com/path/foo.js': foo_js,
   });
 
-  var fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+  var fs = new BindingsTestRunner.TestFileSystem('/var/www');
   BindingsTestRunner.addFiles(fs, {
     'scripts/foo.js': foo_js,
   });

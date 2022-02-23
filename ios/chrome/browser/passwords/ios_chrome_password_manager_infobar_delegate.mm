@@ -10,6 +10,8 @@
 #include "base/strings/sys_string_conversions.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_form_manager_for_ui.h"
+#include "components/password_manager/core/common/password_manager_features.h"
+#include "ios/chrome/grit/ios_google_chrome_strings.h"
 #include "ios/chrome/grit/ios_strings.h"
 #include "ios/chrome/grit/ios_theme_resources.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -24,16 +26,29 @@ IOSChromePasswordManagerInfoBarDelegate::
 
 IOSChromePasswordManagerInfoBarDelegate::
     IOSChromePasswordManagerInfoBarDelegate(
+        NSString* user_email,
         bool is_sync_user,
         std::unique_ptr<password_manager::PasswordFormManagerForUI>
             form_to_save)
     : form_to_save_(std::move(form_to_save)),
       infobar_response_(password_manager::metrics_util::NO_DIRECT_INTERACTION),
-      is_sync_user_(is_sync_user) {}
+      is_sync_user_(is_sync_user),
+      user_email_(user_email) {}
 
 NSString* IOSChromePasswordManagerInfoBarDelegate::GetDetailsMessageText()
     const {
-  return is_sync_user_ ? l10n_util::GetNSString(IDS_SAVE_PASSWORD_FOOTER) : @"";
+  if (!base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    return is_sync_user_ ? l10n_util::GetNSString(IDS_SAVE_PASSWORD_FOOTER)
+                         : @"";
+  }
+
+  return is_sync_user_
+             ? l10n_util::GetNSStringF(
+                   IDS_SAVE_PASSWORD_FOOTER_DISPLAYING_USER_EMAIL,
+                   base::SysNSStringToUTF16(user_email_))
+             : l10n_util::GetNSString(IDS_IOS_SAVE_PASSWORD_FOOTER_NOT_SYNCING);
 }
 
 NSString* IOSChromePasswordManagerInfoBarDelegate::GetUserNameText() const {

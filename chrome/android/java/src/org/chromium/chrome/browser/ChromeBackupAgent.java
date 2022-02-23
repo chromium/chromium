@@ -4,13 +4,15 @@
 
 package org.chromium.chrome.browser;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatBackupAgent;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link ChromeBackupAgentImpl}. */
 public class ChromeBackupAgent extends SplitCompatBackupAgent {
+    @IdentifierNameString
+    private static String sImplClassName = "org.chromium.chrome.browser.ChromeBackupAgentImpl";
+
     public ChromeBackupAgent() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.ChromeBackupAgentImpl"));
+        super(sImplClassName);
     }
 }

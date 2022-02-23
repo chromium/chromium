@@ -10,8 +10,10 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/prefetch/no_state_prefetch/chrome_no_state_prefetch_contents_delegate.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/safe_browsing/safe_browsing_service.h"
+#include "chrome/browser/safe_browsing/chrome_ping_manager_factory.h"
+#include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
+#include "extensions/buildflags/buildflags.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -85,15 +87,11 @@ history::HistoryService* ChromeSafeBrowsingUIManagerDelegate::GetHistoryService(
       ServiceAccessType::EXPLICIT_ACCESS);
 }
 
-PingManager* ChromeSafeBrowsingUIManagerDelegate::GetPingManagerIfExists() {
-  return g_browser_process->safe_browsing_service()->ping_manager();
-}
-
-scoped_refptr<network::SharedURLLoaderFactory>
-ChromeSafeBrowsingUIManagerDelegate::GetURLLoaderFactory(
+PingManager* ChromeSafeBrowsingUIManagerDelegate::GetPingManager(
     content::BrowserContext* browser_context) {
-  return g_browser_process->safe_browsing_service()->GetURLLoaderFactory(
-      browser_context);
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+
+  return ChromePingManagerFactory::GetForBrowserContext(browser_context);
 }
 
 bool ChromeSafeBrowsingUIManagerDelegate::IsMetricsAndCrashReportingEnabled() {

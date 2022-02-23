@@ -5,12 +5,19 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_VIEWS_TEST_BASE_H_
 #define CHROME_BROWSER_UI_VIEWS_AUTOFILL_PAYMENTS_OFFER_NOTIFICATION_BUBBLE_VIEWS_TEST_BASE_H_
 
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
+
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/autofill/payments/offer_notification_bubble_controller_impl.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_bubble_views.h"
 #include "chrome/browser/ui/views/autofill/payments/offer_notification_icon_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
+#include "components/autofill/core/browser/payments/autofill_offer_manager.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/autofill/core/browser/test_event_waiter.h"
 
@@ -54,6 +61,8 @@ class OfferNotificationBubbleViewsTestBase
   std::unique_ptr<AutofillOfferData> CreatePromoCodeOfferDataWithDomains(
       const std::vector<GURL>& domains);
 
+  void DeleteFreeListingCouponForUrl(const GURL& url);
+
   void SetUpOfferDataWithDomains(AutofillOfferData::OfferType offer_type,
                                  const std::vector<GURL>& domains);
 
@@ -76,12 +85,15 @@ class OfferNotificationBubbleViewsTestBase
 
   content::WebContents* GetActiveWebContents();
 
-  void AddEventObserverToController();
+  void AddEventObserverToController(
+      OfferNotificationBubbleControllerImpl* controller);
 
   void ResetEventWaiterForSequence(std::list<DialogEvent> event_sequence);
 
   void UpdateFreeListingCouponDisplayTime(
       std::unique_ptr<AutofillOfferData> offer);
+
+  AutofillOfferManager* GetOfferManager();
 
   void WaitForObservedEvent() { event_waiter_->Wait(); }
 
@@ -93,8 +105,8 @@ class OfferNotificationBubbleViewsTestBase
   std::string GetDefaultTestPromoCode() const;
 
  private:
-  PersonalDataManager* personal_data_;
-  CouponService* coupon_service_;
+  raw_ptr<PersonalDataManager> personal_data_;
+  raw_ptr<CouponService> coupon_service_;
   std::unique_ptr<autofill::EventWaiter<DialogEvent>> event_waiter_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };

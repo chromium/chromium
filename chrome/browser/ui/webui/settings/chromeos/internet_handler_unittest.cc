@@ -6,8 +6,8 @@
 
 #include <memory>
 
+#include "ash/components/tether/fake_gms_core_notifications_state_tracker.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
-#include "chromeos/components/tether/fake_gms_core_notifications_state_tracker.h"
 #include "content/public/test/test_web_ui.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -57,7 +57,8 @@ class InternetHandlerTest : public BrowserWithTestWindowTest {
   }
 
   void RequestGmsCoreNotificationsDisabledDeviceNames() {
-    handler_->RequestGmsCoreNotificationsDisabledDeviceNames(nullptr);
+    handler_->RequestGmsCoreNotificationsDisabledDeviceNames(
+        base::Value::ConstListView());
   }
 
   void VerifyMostRecentDeviceNamesSent(
@@ -75,7 +76,8 @@ class InternetHandlerTest : public BrowserWithTestWindowTest {
     EXPECT_EQ(kSendDeviceNamesMessageType, last_call_data->arg1()->GetString());
 
     std::vector<std::string> actual_device_names;
-    for (const auto& device_name_value : last_call_data->arg2()->GetList())
+    for (const auto& device_name_value :
+         last_call_data->arg2()->GetListDeprecated())
       actual_device_names.push_back(device_name_value.GetString());
     EXPECT_EQ(expected_device_names, actual_device_names);
   }

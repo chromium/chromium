@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
@@ -42,13 +43,15 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
     PartitionAllocGlobalInit(HandleOOM);
     PartitionAllocMemoryReclaimer::Instance()->ResetForTesting();
     allocator_ = std::make_unique<PartitionAllocator>();
-    allocator_->init({PartitionOptions::AlignedAlloc::kDisallowed,
-                      PartitionOptions::ThreadCache::kDisabled,
-                      PartitionOptions::Quarantine::kAllowed,
-                      PartitionOptions::Cookie::kAllowed,
-                      PartitionOptions::BackupRefPtr::kDisabled,
-                      PartitionOptions::UseConfigurablePool::kNo,
-                      PartitionOptions::LazyCommit::kEnabled});
+    allocator_->init({
+        PartitionOptions::AlignedAlloc::kDisallowed,
+        PartitionOptions::ThreadCache::kDisabled,
+        PartitionOptions::Quarantine::kAllowed,
+        PartitionOptions::Cookie::kAllowed,
+        PartitionOptions::BackupRefPtr::kDisabled,
+        PartitionOptions::UseConfigurablePool::kNo,
+    });
+    allocator_->root()->UncapEmptySlotSpanMemoryForTesting();
   }
 
   void TearDown() override {
@@ -67,8 +70,7 @@ class PartitionAllocMemoryReclaimerTest : public ::testing::Test {
   std::unique_ptr<PartitionAllocator> allocator_;
 };
 
-// Flaky. https://crbug.com/1212670
-TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_FreesMemory) {
+TEST_F(PartitionAllocMemoryReclaimerTest, FreesMemory) {
   PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
 
   size_t committed_initially = root->get_total_size_of_committed_pages();
@@ -83,8 +85,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_FreesMemory) {
   EXPECT_LE(committed_initially, committed_after);
 }
 
-// Flaky. https://crbug.com/1211441
-TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_Reclaim) {
+TEST_F(PartitionAllocMemoryReclaimerTest, Reclaim) {
   PartitionRoot<internal::ThreadSafe>* root = allocator_->root();
   size_t committed_initially = root->get_total_size_of_committed_pages();
 
@@ -101,10 +102,8 @@ TEST_F(PartitionAllocMemoryReclaimerTest, DISABLED_Reclaim) {
   }
 }
 
-// ThreadCache tests disabled when USE_BACKUP_REF_PTR is enabled, because the
-// "original" PartitionRoot has ThreadCache disabled.
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-    defined(PA_THREAD_CACHE_SUPPORTED) && !BUILDFLAG(USE_BACKUP_REF_PTR)
+    defined(PA_THREAD_CACHE_SUPPORTED)
 
 namespace {
 // malloc() / free() pairs can be removed by the compiler, this is enough (for
@@ -114,9 +113,11 @@ NOINLINE void FreeForTest(void* data) {
 }
 }  // namespace
 
-// Flaky. https://crbug.com/1208390
-TEST_F(PartitionAllocMemoryReclaimerTest,
-       DISABLED_DoNotAlwaysPurgeThreadCache) {
+TEST_F(PartitionAllocMemoryReclaimerTest, DoNotAlwaysPurgeThreadCache) {
+  // Make sure the thread cache is enabled in the main partition.
+  base::internal::PartitionAllocMalloc::Allocator()
+      ->EnableThreadCacheIfSupported();
+
   for (size_t i = 0; i < internal::ThreadCache::kDefaultSizeThreshold; i++) {
     void* data = malloc(i);
     FreeForTest(data);
@@ -143,8 +144,7 @@ TEST_F(PartitionAllocMemoryReclaimerTest,
 }
 
 #endif  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC) && \
-        // defined(PA_THREAD_CACHE_SUPPORTED) && \
-        // !BUILDFLAG(USE_BACKUP_REF_PTR)
+        // defined(PA_THREAD_CACHE_SUPPORTED)
 
 }  // namespace base
 #endif  // !defined(MEMORY_TOOL_REPLACES_ALLOCATOR)

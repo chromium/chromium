@@ -23,7 +23,7 @@ public interface FeedActionsHandler {
     /**
      * Sends data back to the server when content is clicked.
      */
-    default void processThereAndBackAgainData(byte[] data) {}
+    default void processThereAndBackAgainData(byte[] data, LoggingParameters loggingParameters) {}
 
     /**
      * Triggers Chrome to send user feedback for this card.

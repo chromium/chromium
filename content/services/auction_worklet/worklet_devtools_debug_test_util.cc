@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/inspector_protocol/crdtp/cbor.h"
@@ -40,7 +41,7 @@ std::string ToString(crdtp::span<uint8_t> span) {
 }  // namespace
 
 TestDevToolsAgentClient::TestDevToolsAgentClient(
-    mojo::Remote<blink::mojom::DevToolsAgent> agent,
+    mojo::AssociatedRemote<blink::mojom::DevToolsAgent> agent,
     std::string session_id,
     bool use_binary_protocol)
     : session_id_(std::move(session_id)),

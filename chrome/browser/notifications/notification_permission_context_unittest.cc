@@ -31,9 +31,9 @@
 #include "third_party/blink/public/mojom/permissions/permission_status.mojom.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "chrome/browser/extensions/extension_service.h"
@@ -206,7 +206,7 @@ TEST_F(NotificationPermissionContextTest, CrossOriginPermissionChecks) {
 
 // Now block permission for |requesting_origin|.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android O+, permission must be reset before it can be blocked. This is
   // because granting a permission on O+ creates a system-managed notification
   // channel which determines the value of the content setting, so it is not
@@ -217,7 +217,7 @@ TEST_F(NotificationPermissionContextTest, CrossOriginPermissionChecks) {
       base::android::SDK_VERSION_OREO) {
     context.ResetPermission(requesting_origin, requesting_origin);
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   UpdateContentSetting(&context, requesting_origin, requesting_origin,
                        CONTENT_SETTING_BLOCK);
@@ -328,7 +328,7 @@ TEST_F(NotificationPermissionContextTest, SecureOriginRequirement) {
                 .content_setting);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Bulk-disabled for arm64 bot stabilization: https://crbug.com/1154345
 #define MAYBE_TestDenyInIncognitoAfterDelay \
   DISABLED_TestDenyInIncognitoAfterDelay

@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "device/base/device_base_export.h"
 
 namespace device {

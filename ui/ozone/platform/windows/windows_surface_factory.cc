@@ -70,14 +70,13 @@ std::vector<gl::GLImplementationParts>
 WindowsSurfaceFactory::GetAllowedGLImplementations() {
   return std::vector<gl::GLImplementationParts>{
       gl::GLImplementationParts(gl::kGLImplementationEGLGLES2),
-      gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL),
+      gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader),
       gl::GLImplementationParts(gl::kGLImplementationEGLANGLE)};
 }
 
 GLOzone* WindowsSurfaceFactory::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   switch (implementation.gl) {
-    case gl::kGLImplementationSwiftShaderGL:
     case gl::kGLImplementationEGLGLES2:
     case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();

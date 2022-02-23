@@ -298,7 +298,7 @@ class WebSocketStreamCreateTest : public TestWithParam<HandshakeStreamType>,
 
     // Send first request.  This makes sure server's
     // spdy::SETTINGS_ENABLE_CONNECT_PROTOCOL advertisement is read.
-    TestURLRequestContext* context =
+    URLRequestContext* context =
         url_request_context_host_.GetURLRequestContext();
     TestDelegate delegate;
     std::unique_ptr<URLRequest> request = context->CreateRequest(
@@ -1627,7 +1627,7 @@ TEST_P(WebSocketMultiProtocolStreamCreateTest, Http2StreamReset) {
   AddSSLData();
 
   if (stream_type_ == BASIC_HANDSHAKE_STREAM) {
-    // This is a dummy transaction to avoid crash in ~TestURLRequestContext().
+    // This is a dummy transaction to avoid crash in ~URLRequestContext().
     CreateAndConnectStandard("wss://www.example.org/", NoSubProtocols(), {}, {},
                              {});
   } else {

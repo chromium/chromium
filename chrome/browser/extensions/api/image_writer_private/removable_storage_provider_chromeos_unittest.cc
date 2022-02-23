@@ -4,10 +4,10 @@
 
 #include <stdint.h>
 
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/bind.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/api/image_writer_private/removable_storage_provider.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,13 +33,13 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
  public:
   RemovableStorageProviderChromeOsUnitTest() {}
   void SetUp() override {
-    disk_mount_manager_mock_ = new chromeos::disks::MockDiskMountManager();
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    disk_mount_manager_mock_ = new ash::disks::MockDiskMountManager();
+    ash::disks::DiskMountManager::InitializeForTesting(
         disk_mount_manager_mock_);
     disk_mount_manager_mock_->SetupDefaultReplies();
   }
 
-  void TearDown() override { chromeos::disks::DiskMountManager::Shutdown(); }
+  void TearDown() override { ash::disks::DiskMountManager::Shutdown(); }
 
   void DevicesCallback(scoped_refptr<StorageDeviceList> devices) {
     devices_ = devices;
@@ -66,9 +66,9 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
                   bool is_parent,
                   bool has_media,
                   bool on_boot_device) {
-    chromeos::disks::DiskMountManager::MountPointInfo mount_info(
+    ash::disks::DiskMountManager::MountPointInfo mount_info(
         device_path, kMountPath, chromeos::MOUNT_TYPE_DEVICE,
-        chromeos::disks::MOUNT_CONDITION_NONE);
+        ash::disks::MOUNT_CONDITION_NONE);
     disk_mount_manager_mock_->CreateDiskEntryForMountDevice(
         mount_info, kDeviceId, kDeviceName, vendor_name, product_name,
         device_type, kDeviceSize, is_parent, has_media, on_boot_device,
@@ -102,7 +102,7 @@ class RemovableStorageProviderChromeOsUnitTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  chromeos::disks::MockDiskMountManager* disk_mount_manager_mock_;
+  ash::disks::MockDiskMountManager* disk_mount_manager_mock_;
   scoped_refptr<StorageDeviceList> devices_;
 };
 

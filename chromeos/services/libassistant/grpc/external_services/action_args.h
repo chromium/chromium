@@ -5,8 +5,8 @@
 #ifndef CHROMEOS_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_ACTION_ARGS_H_
 #define CHROMEOS_SERVICES_LIBASSISTANT_GRPC_EXTERNAL_SERVICES_ACTION_ARGS_H_
 
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/client_op.pb.h"
-#include "libassistant/shared/internal_api/action_module.h"
 
 namespace assistant {
 namespace api {

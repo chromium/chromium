@@ -16,7 +16,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of an unqualified data attribute selector.",
             run: function() {
-                var rule = applyCSSRule("[data-test] { color: red; }");
+                var rule = applyCSSRule("[data-test] { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

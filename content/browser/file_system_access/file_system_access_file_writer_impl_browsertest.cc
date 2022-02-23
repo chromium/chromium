@@ -26,7 +26,7 @@
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
 #include "ui/shell_dialogs/select_file_policy.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -112,8 +112,7 @@ class FileSystemAccessFileWriterBrowserTest : public ContentBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        ContentsWrittenToSwapFileFirst) {
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, swap_file] = CreateTestFilesAndEntry("");
   const std::string file_contents = "file contents to write";
 
   EXPECT_EQ(0,
@@ -155,8 +154,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        KeepExistingDataHasPreviousContent) {
   const std::string initial_contents = "fooks";
   const std::string expected_contents = "barks";
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry(initial_contents);
+  auto [test_file, swap_file] = CreateTestFilesAndEntry(initial_contents);
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -190,8 +188,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        CreateWriterNoKeepExistingWithEmptyFile) {
   const std::string initial_contents = "very long string";
   const std::string expected_contents = "bar";
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry(initial_contents);
+  auto [test_file, swap_file] = CreateTestFilesAndEntry(initial_contents);
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -223,8 +220,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFile) {
-  base::FilePath test_file, base_swap_file;
-  std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
 
   int num_writers = 5;
   for (int index = 0; index < num_writers; index++) {
@@ -250,8 +246,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        EachWriterHasUniqueSwapFileRacy) {
-  base::FilePath test_file, base_swap_file;
-  std::tie(test_file, base_swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, base_swap_file] = CreateTestFilesAndEntry("");
 
   int num_writers = 5;
   for (int index = 0; index < num_writers; index++) {
@@ -282,16 +277,14 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
 
 // TODO(https://crbug.com/992089): Files are only quarantined on windows in
 // browsertests unfortunately. Change this when more platforms are enabled.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FileAnnotated FileAnnotated
 #else
 #define MAYBE_FileAnnotated DISABLED_FileAnnotated
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        MAYBE_FileAnnotated) {
-  base::FilePath test_file, swap_file, lib_file;
-
-  std::tie(test_file, swap_file) = CreateQuarantineTestFilesAndEntry();
+  auto [test_file, swap_file] = CreateQuarantineTestFilesAndEntry();
 
   EXPECT_EQ(nullptr, EvalJs(shell(),
                             "(async () => {"
@@ -309,24 +302,23 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
   }
 }
 
-#if defined(OS_POSIX) || defined(OS_WIN)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
                        RespectOSPermissions) {
-  base::FilePath test_file, swap_file;
-  std::tie(test_file, swap_file) = CreateTestFilesAndEntry("");
+  auto [test_file, swap_file] = CreateTestFilesAndEntry("");
 
   // Make the file read-only.
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
     int mode = 0444;
     EXPECT_TRUE(base::SetPosixFilePermissions(test_file, mode));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     DWORD attributes = ::GetFileAttributes(test_file.value().c_str());
     ASSERT_NE(attributes, INVALID_FILE_ATTRIBUTES);
     attributes |= FILE_ATTRIBUTE_READONLY;
     EXPECT_TRUE(::SetFileAttributes(test_file.value().c_str(), attributes));
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
   }
 
   auto result = EvalJs(
@@ -336,6 +328,6 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileWriterBrowserTest,
               std::string::npos)
       << result.error;
 }
-#endif  // defined(OS_POSIX) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_WIN)
 
 }  // namespace content

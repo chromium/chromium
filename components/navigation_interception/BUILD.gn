@@ -10,8 +10,6 @@ static_library("navigation_interception") {
   sources = [
     "intercept_navigation_throttle.cc",
     "intercept_navigation_throttle.h",
-    "navigation_params.cc",
-    "navigation_params.h",
   ]
 
   deps = [
@@ -26,8 +24,6 @@ static_library("navigation_interception") {
     sources += [
       "intercept_navigation_delegate.cc",
       "intercept_navigation_delegate.h",
-      "navigation_params_android.cc",
-      "navigation_params_android.h",
     ]
     deps += [
       ":jni_headers",
@@ -39,10 +35,7 @@ static_library("navigation_interception") {
 
 if (is_android) {
   generate_jni("jni_headers") {
-    sources = [
-      "android/java/src/org/chromium/components/navigation_interception/InterceptNavigationDelegate.java",
-      "android/java/src/org/chromium/components/navigation_interception/NavigationParams.java",
-    ]
+    sources = [ "android/java/src/org/chromium/components/navigation_interception/InterceptNavigationDelegate.java" ]
   }
 }
 

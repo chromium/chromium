@@ -9,4 +9,10 @@ namespace embedder_support {
 // A boolean pref set to true if we're using Link Doctor error pages.
 const char kAlternateErrorPagesEnabled[] = "alternate_error_pages.enabled";
 
+// Enum indicating if the user agent string should freeze the major version
+// at 99 and report the browser's major version in the minor position.
+// TODO(crbug.com/1290820): Remove this policy.
+const char kForceMajorVersionToMinorPosition[] =
+    "force_major_version_to_minor_position_in_user_agent";
+
 }  // namespace embedder_support

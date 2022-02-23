@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ui/webui/settings/settings_clear_browsing_data_handler.h"
 
+#include "base/memory/raw_ptr.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/search_engines/template_url_service_factory_test_util.h"
@@ -15,10 +17,13 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
+#include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/l10n/l10n_util.h"
 
 namespace settings {
+
+using ::testing::Optional;
 
 class TestingClearBrowsingDataHandler
     : public settings::ClearBrowsingDataHandler {
@@ -58,12 +63,10 @@ class ClearBrowsingDataHandlerUnitTest : public testing::Test {
   base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<TestingClearBrowsingDataHandler> handler_;
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> dse_factory_util_;
-  TemplateURLService* template_url_service;
+  raw_ptr<TemplateURLService> template_url_service;
 };
 
 void ClearBrowsingDataHandlerUnitTest::SetUp() {
-  feature_list_.InitWithFeatures({features::kSearchHistoryLink}, {});
-
   TestingProfile::Builder builder;
   profile_ = builder.Build();
 
@@ -105,17 +108,15 @@ void ClearBrowsingDataHandlerUnitTest::VerifySearchHistoryWebUIUpdate(
     const std::string* event = data.arg1()->GetIfString();
     if (!event || *event != "update-sync-state")
       continue;
-    const base::DictionaryValue* dictionary = nullptr;
-    if (!data.arg2()->GetAsDictionary(&dictionary)) {
+    if (!data.arg2()->is_dict()) {
       continue;
     }
-    bool actual_is_non_google_dse;
-    dictionary->GetBoolean("isNonGoogleDse", &actual_is_non_google_dse);
-    ASSERT_EQ(expected_is_non_google_dse, actual_is_non_google_dse);
+    ASSERT_THAT(data.arg2()->FindBoolKey("isNonGoogleDse"),
+                Optional(expected_is_non_google_dse));
     if (expected_is_non_google_dse) {
-      std::u16string actual_non_google_search_history_string;
-      dictionary->GetString("nonGoogleSearchHistoryString",
-                            &actual_non_google_search_history_string);
+      std::u16string actual_non_google_search_history_string =
+          base::UTF8ToUTF16(
+              *data.arg2()->FindStringKey("nonGoogleSearchHistoryString"));
       ASSERT_EQ(expected_non_google_search_history_string,
                 actual_non_google_search_history_string);
     }

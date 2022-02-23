@@ -18,6 +18,7 @@
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/password_manager/core/browser/test_password_store.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
 #include "ios/chrome/browser/passwords/ios_chrome_password_check_manager.h"
@@ -80,21 +81,22 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   PasswordsTableViewControllerTest() = default;
 
   void SetUp() override {
-    browser_ = std::make_unique<TestBrowser>();
     ChromeTableViewControllerTest::SetUp();
-    IOSChromePasswordStoreFactory::GetInstance()->SetTestingFactory(
-        browser_->GetBrowserState(),
+    TestChromeBrowserState::Builder builder;
+    builder.AddTestingFactory(
+        IOSChromePasswordStoreFactory::GetInstance(),
         base::BindRepeating(
             &password_manager::BuildPasswordStore<web::BrowserState,
                                                   TestPasswordStore>));
+    builder.AddTestingFactory(
+        IOSChromeBulkLeakCheckServiceFactory::GetInstance(),
+        base::BindRepeating(base::BindLambdaForTesting([](web::BrowserState*) {
+          return std::unique_ptr<KeyedService>(
+              std::make_unique<MockBulkLeakCheckService>());
+        })));
 
-    IOSChromeBulkLeakCheckServiceFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            browser_->GetBrowserState(),
-            base::BindLambdaForTesting([](web::BrowserState*) {
-              return std::unique_ptr<KeyedService>(
-                  std::make_unique<MockBulkLeakCheckService>());
-            }));
+    browser_state_ = builder.Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     CreateController();
 
@@ -158,7 +160,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
     }
 
     [passwords_controller setPasswordCheckUIState:state
-                        compromisedPasswordsCount:count];
+                 unmutedCompromisedPasswordsCount:count];
   }
 
   // Adds a form to PasswordsTableViewController.
@@ -273,6 +275,7 @@ class PasswordsTableViewControllerTest : public ChromeTableViewControllerTest {
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   web::WebTaskEnvironment task_environment_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
   PasswordsMediator* mediator_;
 };

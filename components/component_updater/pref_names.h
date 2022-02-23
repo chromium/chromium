@@ -9,10 +9,12 @@
 
 namespace prefs {
 
+extern const char kComponentUpdatesEnabled[];
+
 extern const char kRecoveryComponentVersion[];
 extern const char kRecoveryComponentUnpackPath[];
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Local state prefs.
 extern const char kSwReporterLastExitCode[];
 extern const char kSwReporterLastTimeTriggered[];

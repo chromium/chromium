@@ -49,6 +49,19 @@ public class MockPersistedTabDataStorage implements PersistedTabDataStorage {
     }
 
     @Override
+    public <U extends PersistedTabDataResult> U restore(
+            int tabId, String dataId, PersistedTabDataMapper<U> mapper) {
+        assert false : "Restore with maapper currently unused in MockPersistedTabDataStorage";
+        return null;
+    }
+
+    @Override
+    public <U extends PersistedTabDataResult> void restore(
+            int tabId, String dataId, Callback<U> callback, PersistedTabDataMapper<U> mapper) {
+        assert false : "Restore with maapper currently unused in MockPersistedTabDataStorage";
+    }
+
+    @Override
     public void delete(int tabId, String tabDataId) {
         mStorage.remove(getKey(tabId));
         if (mSemaphore != null) {

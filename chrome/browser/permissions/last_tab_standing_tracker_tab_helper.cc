@@ -18,19 +18,8 @@ void LastTabStandingTrackerTabHelper::WebContentsDestroyed() {
   }
 }
 
-void LastTabStandingTrackerTabHelper::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted() ||
-      navigation_handle->IsSameDocument()) {
-    return;
-  }
-
-  url::Origin new_origin =
-      web_contents()->GetMainFrame()->GetLastCommittedOrigin();
+void LastTabStandingTrackerTabHelper::PrimaryPageChanged(content::Page& page) {
+  url::Origin new_origin = page.GetMainDocument().GetLastCommittedOrigin();
   if (last_committed_origin_ && *last_committed_origin_ == new_origin)
     return;
   auto* last_tab_standing_tracker =
@@ -46,6 +35,8 @@ void LastTabStandingTrackerTabHelper::DidFinishNavigation(
 
 LastTabStandingTrackerTabHelper::LastTabStandingTrackerTabHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<LastTabStandingTrackerTabHelper>(
+          *web_contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LastTabStandingTrackerTabHelper);

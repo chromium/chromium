@@ -82,7 +82,7 @@ class Gav1VideoDecoderTest : public testing::Test {
                                       bool success) {
     decoder_->Initialize(config, false, nullptr,
                          base::BindOnce(
-                             [](bool success, Status status) {
+                             [](bool success, DecoderStatus status) {
                                EXPECT_EQ(status.is_ok(), success);
                              },
                              success),
@@ -130,26 +130,26 @@ class Gav1VideoDecoderTest : public testing::Test {
   // Decodes all buffers in |input_buffers| and push all successfully decoded
   // output frames into |output_frames|. Returns the last decode status returned
   // by the decoder.
-  Status DecodeMultipleFrames(const InputBuffers& input_buffers) {
+  DecoderStatus DecodeMultipleFrames(const InputBuffers& input_buffers) {
     for (auto iter = input_buffers.begin(); iter != input_buffers.end();
          ++iter) {
-      Status status = Decode(*iter);
+      DecoderStatus status = Decode(*iter);
       switch (status.code()) {
-        case StatusCode::kOk:
+        case DecoderStatus::Codes::kOk:
           break;
-        case StatusCode::kAborted:
+        case DecoderStatus::Codes::kAborted:
           NOTREACHED();
-          FALLTHROUGH;
+          [[fallthrough]];
         default:
           DCHECK(output_frames_.empty());
           return status;
       }
     }
-    return StatusCode::kOk;
+    return DecoderStatus::Codes::kOk;
   }
 
   // Decodes the single compressed frame in |buffer|.
-  Status DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
+  DecoderStatus DecodeSingleFrame(scoped_refptr<DecoderBuffer> buffer) {
     InputBuffers input_buffers;
     input_buffers.push_back(std::move(buffer));
     return DecodeMultipleFrames(input_buffers);
@@ -168,9 +168,7 @@ class Gav1VideoDecoderTest : public testing::Test {
     input_buffers.push_back(buffer);
     input_buffers.push_back(DecoderBuffer::CreateEOSBuffer());
 
-    Status status = DecodeMultipleFrames(input_buffers);
-
-    EXPECT_TRUE(status.is_ok());
+    EXPECT_TRUE(DecodeMultipleFrames(input_buffers).is_ok());
     ASSERT_EQ(2U, output_frames_.size());
 
     gfx::Size original_size = TestVideoConfig::NormalCodedSize();
@@ -184,8 +182,8 @@ class Gav1VideoDecoderTest : public testing::Test {
               output_frames_[1]->visible_rect().size().height());
   }
 
-  Status Decode(scoped_refptr<DecoderBuffer> buffer) {
-    Status status;
+  DecoderStatus Decode(scoped_refptr<DecoderBuffer> buffer) {
+    DecoderStatus status;
     EXPECT_CALL(*this, DecodeDone(_)).WillOnce(testing::SaveArg<0>(&status));
 
     decoder_->Decode(std::move(buffer),
@@ -210,7 +208,7 @@ class Gav1VideoDecoderTest : public testing::Test {
     return base::MD5DigestToBase16(digest);
   }
 
-  MOCK_METHOD1(DecodeDone, void(Status));
+  MOCK_METHOD1(DecodeDone, void(DecoderStatus));
 
   testing::StrictMock<MockMediaLog> media_log_;
 

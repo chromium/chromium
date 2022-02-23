@@ -8,8 +8,8 @@
 #include "base/callback.h"
 #include "base/time/time.h"
 #include "media/base/bitrate.h"
+#include "media/base/encoder_status.h"
 #include "media/base/media_export.h"
-#include "media/base/status.h"
 #include "media/base/svc_scalability_mode.h"
 #include "media/base/video_codecs.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -19,6 +19,9 @@
 namespace media {
 
 class VideoFrame;
+
+MEDIA_EXPORT uint32_t GetDefaultVideoEncodeBitrate(gfx::Size frame_size,
+                                                   uint32_t framerate);
 
 // Encoded video frame, its data and metadata.
 struct MEDIA_EXPORT VideoEncoderOutput {
@@ -77,13 +80,13 @@ class MEDIA_EXPORT VideoEncoder {
                                    absl::optional<CodecDescription>)>;
 
   // Callback to report success and errors in encoder calls.
-  using StatusCB = base::OnceCallback<void(Status error)>;
+  using EncoderStatusCB = base::OnceCallback<void(EncoderStatus error)>;
 
   struct PendingEncode {
     PendingEncode();
     PendingEncode(PendingEncode&&);
     ~PendingEncode();
-    StatusCB done_callback;
+    EncoderStatusCB done_callback;
     scoped_refptr<VideoFrame> frame;
     bool key_frame;
   };
@@ -103,7 +106,7 @@ class MEDIA_EXPORT VideoEncoder {
   virtual void Initialize(VideoCodecProfile profile,
                           const Options& options,
                           OutputCB output_cb,
-                          StatusCB done_cb) = 0;
+                          EncoderStatusCB done_cb) = 0;
 
   // Requests a |frame| to be encoded. The status of the encoder and the frame
   // are returned via the provided callback |done_cb|.
@@ -119,7 +122,7 @@ class MEDIA_EXPORT VideoEncoder {
   // and harvest the outputs.
   virtual void Encode(scoped_refptr<VideoFrame> frame,
                       bool key_frame,
-                      StatusCB done_cb) = 0;
+                      EncoderStatusCB done_cb) = 0;
 
   // Adjust encoder options and the output callback for future frames, executing
   // the |done_cb| upon completion.
@@ -130,11 +133,11 @@ class MEDIA_EXPORT VideoEncoder {
   // for it to finish.
   virtual void ChangeOptions(const Options& options,
                              OutputCB output_cb,
-                             StatusCB done_cb) = 0;
+                             EncoderStatusCB done_cb) = 0;
 
   // Requests all outputs for already encoded frames to be
   // produced via |output_cb| and calls |dene_cb| after that.
-  virtual void Flush(StatusCB done_cb) = 0;
+  virtual void Flush(EncoderStatusCB done_cb) = 0;
 };
 
 }  // namespace media

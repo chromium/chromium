@@ -38,7 +38,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/resource/resource_bundle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/supervised_user/child_accounts/child_account_feedback_reporter_android.h"
 #else
 #include "chrome/browser/ui/browser.h"
@@ -75,7 +75,7 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
 
     // Close the tab only if there is a browser for it (which is not the case
     // for example in a <webview>).
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     if (!chrome::FindBrowserWithWebContents(web_contents))
       return;
 #endif
@@ -85,7 +85,8 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
  private:
   friend class content::WebContentsUserData<TabCloser>;
 
-  explicit TabCloser(WebContents* web_contents) : web_contents_(web_contents) {
+  explicit TabCloser(WebContents* web_contents)
+      : content::WebContentsUserData<TabCloser>(*web_contents) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&TabCloser::CloseTabImpl,
                                   weak_ptr_factory_.GetWeakPtr()));
@@ -93,22 +94,21 @@ class TabCloser : public content::WebContentsUserData<TabCloser> {
 
   void CloseTabImpl() {
     // On Android, FindBrowserWithWebContents and TabStripModel don't exist.
-#if !defined(OS_ANDROID)
-    Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
+#if !BUILDFLAG(IS_ANDROID)
+    Browser* browser = chrome::FindBrowserWithWebContents(&GetWebContents());
     DCHECK(browser);
     TabStripModel* tab_strip = browser->tab_strip_model();
     DCHECK_NE(TabStripModel::kNoTab,
-              tab_strip->GetIndexOfWebContents(web_contents_));
+              tab_strip->GetIndexOfWebContents(&GetWebContents()));
     if (tab_strip->count() <= 1) {
       // Don't close the last tab in the window.
-      web_contents_->RemoveUserData(UserDataKey());
+      GetWebContents().RemoveUserData(UserDataKey());
       return;
     }
 #endif
-    web_contents_->Close();
+    GetWebContents().Close();
   }
 
-  WebContents* web_contents_;
   base::WeakPtrFactory<TabCloser> weak_ptr_factory_{this};
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
@@ -134,7 +134,7 @@ void CleanUpInfoBar(content::WebContents* web_contents) {
       details.previous_main_frame_url =
           controller.GetLastCommittedEntry()->GetURL();
     }
-    details.type = content::NAVIGATION_TYPE_NEW_ENTRY;
+    details.type = content::NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY;
     for (int i = manager->infobar_count() - 1; i >= 0; --i) {
       infobars::InfoBar* infobar = manager->infobar_at(i);
       if (infobar->delegate()->ShouldExpire(
@@ -262,7 +262,7 @@ void SupervisedUserInterstitial::ShowFeedback() {
           reason_, second_custodian.empty()));
   std::string message = l10n_util::GetStringFUTF8(
       IDS_BLOCK_INTERSTITIAL_DEFAULT_FEEDBACK_TEXT, reason);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ReportChildAccountFeedback(web_contents_, message, url_);
 #else
   chrome::ShowFeedbackPage(

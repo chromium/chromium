@@ -7,7 +7,6 @@
 
 #include <set>
 
-#include "base/macros.h"
 #import "ios/chrome/browser/main/browser_list_observer.h"
 
 class Browser;

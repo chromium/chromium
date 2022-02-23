@@ -10,13 +10,14 @@ import 'chrome://resources/polymer/v3_0/paper-ripple/paper-ripple.js';
 import './shared_style.js';
 import './strings.m.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {isRTL} from 'chrome://resources/js/util.m.js';
-import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {changeFolderOpen, selectFolder} from './actions.js';
 import {BookmarksCommandManagerElement} from './command_manager.js';
 import {FOLDER_OPEN_BY_DEFAULT_DEPTH, MenuSource, ROOT_NODE_ID} from './constants.js';
+import {getTemplate} from './folder_node.html.js';
 import {StoreClientMixin} from './store_client_mixin.js';
 import {BookmarkNode} from './types.js';
 import {hasChildFolders, isShowingSearch} from './util.js';
@@ -41,7 +42,7 @@ export class BookmarksFolderNodeElement extends BookmarksFolderNodeElementBase {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

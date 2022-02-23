@@ -52,4 +52,22 @@ std::string EscapeRegexpString(absl::string_view input) {
   return result;
 }
 
+bool IsNameCodepoint(UChar32 c, bool first_codepoint) {
+  // Require group names to follow the same character restrictions as
+  // javascript identifiers.  This code originates from v8 at:
+  //
+  // https://source.chromium.org/chromium/chromium/src/+/master:v8/src/strings/char-predicates.cc;l=17-34;drc=be014256adea1552d4a044ef80616cdab6a7d549
+  //
+  // We deviate from js identifiers, however, in not support the backslash
+  // character.  This is mainly used in js identifiers to allow escaped
+  // unicode sequences to be written in ascii.  The js engine, however,
+  // should take care of this long before we reach this level of code.  So
+  // we don't need to handle it here.
+  if (first_codepoint) {
+    return u_hasBinaryProperty(c, UCHAR_ID_START) || c == '$' || c == '_';
+  }
+  return u_hasBinaryProperty(c, UCHAR_ID_CONTINUE) || c == '$' || c == '_' ||
+         c == 0x200c || c == 0x200d;
+}
+
 }  // namespace liburlpattern

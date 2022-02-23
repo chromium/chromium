@@ -53,4 +53,15 @@ message CriticalPersistedTabDataProto {
     UNKNOWN = 17;
   }
   optional LaunchTypeAtCreation launch_type_at_creation = 8;
+
+  // User agent.
+  // Cannot define two same enum name in the same proto file.
+  enum UserAgentType {
+    DEFAULT = 0;
+    MOBILE = 1;
+    DESKTOP = 2;
+    UNSET = 3;
+    USER_AGENT_SIZE = 4;
+  }
+  optional UserAgentType user_agent = 9;
 }

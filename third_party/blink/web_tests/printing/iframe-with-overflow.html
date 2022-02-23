@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<script>
+  if (window.testRunner)
+      testRunner.setPrinting();
+  if (window.internals)
+      internals.settings.setShouldPrintBackgrounds(true);
+</script>
+<iframe style="border: none; width: 200px; height: 200px; display: block" srcdoc="
+  <body style='background: yellow; margin: 0; width: 400px; height: 500px'>
+  </body>">
+</iframe>
+<div style="height: 300px; background: green"></div>

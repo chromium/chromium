@@ -96,7 +96,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // called only from GPU Thread.
   virtual void ScheduleDelayedGPUTaskFromGPUThread(base::OnceClosure task) = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual void DidCreateAcceleratedSurfaceChildWindow(
       gpu::SurfaceHandle parent_window,
       gpu::SurfaceHandle child_window) = 0;

@@ -10,6 +10,8 @@ java_cpp_enum("compositor_status_generated_enum") {
 
 source_set("android") {
   sources = [
+    "convert_to_java_bitmap.cc",
+    "convert_to_java_bitmap.h",
     "player_compositor_delegate_android.cc",
     "player_compositor_delegate_android.h",
   ]
@@ -31,7 +33,10 @@ source_set("android") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "player_compositor_delegate_android_unittest.cc" ]
+  sources = [
+    "convert_to_java_bitmap_unittest.cc",
+    "player_compositor_delegate_android_unittest.cc",
+  ]
   deps = [
     ":android",
     "//base",
@@ -86,6 +91,7 @@ android_library("java") {
 
   deps = [
     "//base:base_java",
+    "//components/browser_ui/styles/android:java",
     "//components/paint_preview/browser/android:java",
     "//content/public/android:content_java",
     "//third_party/android_swipe_refresh:android_swipe_refresh_java",

@@ -12,6 +12,7 @@
 #include "ash/app_list/model/app_list_item.h"
 #include "ash/app_list/model/app_list_model.h"
 #include "ash/app_list/views/app_list_item_view.h"
+#include "ash/controls/scroll_view_gradient_helper.h"
 #include "ash/public/cpp/app_list/app_list_config.h"
 #include "base/bind.h"
 #include "base/metrics/histogram_macros.h"
@@ -146,30 +147,6 @@ int ScrollableAppsGridView::GetSelectedPage() const {
 
 bool ScrollableAppsGridView::IsScrollAxisVertical() const {
   return true;
-}
-
-void ScrollableAppsGridView::CalculateIdealBoundsForNonFolder() {
-  DCHECK(!IsInFolder());
-
-  int grid_index = 0;
-  int model_index = 0;
-  for (const auto& entry : view_model()->entries()) {
-    views::View* view = entry.view;
-    if (grid_index == reorder_placeholder().slot) {
-      // Create space by incrementing the grid index.
-      ++grid_index;
-    }
-    if (view == drag_view()) {
-      // Skip the drag view. The dragging code will set the bounds. Collapse
-      // space in the grid by not incrementing grid_index.
-      ++model_index;
-      continue;
-    }
-    gfx::Rect tile_slot = GetExpectedTileBounds(GridIndex(0, grid_index));
-    view_model()->set_ideal_bounds(model_index, tile_slot);
-    ++model_index;
-    ++grid_index;
-  }
 }
 
 bool ScrollableAppsGridView::MaybeAutoScroll() {
@@ -323,8 +300,74 @@ gfx::Vector2d ScrollableAppsGridView::GetGridCenteringOffset(int page) const {
 }
 
 void ScrollableAppsGridView::EnsureViewVisible(const GridIndex& index) {
-  // TODO(https://crbug.com/1245865): Make sure that the view at |index| is
-  // visible. Mainly called when keyboard reordering item views.
+  // If called after usesr action that changes the grid size, make sure grid
+  // view ancestor layout is up to date before attempting scroll.
+  GetWidget()->LayoutRootViewIfNecessary();
+
+  AppListItemView* view = GetViewAtIndex(index);
+  if (view)
+    view->ScrollViewToVisible();
+}
+
+absl::optional<ScrollableAppsGridView::VisibleItemIndexRange>
+ScrollableAppsGridView::GetVisibleItemIndexRange() const {
+  // Indicate the first row on which item views are visible.
+  absl::optional<int> first_visible_row;
+
+  // Indicate the first invisible row that is right after the last visible row.
+  absl::optional<int> first_invisible_row;
+
+  const gfx::Rect scroll_view_visible_rect = scroll_view_->GetVisibleRect();
+  for (int view_index = 0; view_index < view_model()->view_size();
+       view_index += cols()) {
+    // Calculate an item view's bounds in the scroll content's coordinates.
+    gfx::Point item_view_local_origin;
+    views::View* item_view = view_model()->view_at(view_index);
+    views::View::ConvertPointToTarget(item_view, scroll_view_->contents(),
+                                      &item_view_local_origin);
+    gfx::Rect item_view_bounds_in_scroll_view =
+        gfx::Rect(item_view_local_origin, item_view->size());
+
+    // Calculate the overlapped area between the item view's bounds and the
+    // visible area.
+    item_view_bounds_in_scroll_view.InclusiveIntersect(
+        scroll_view_visible_rect);
+
+    // An item is deemed to visible if the overlapped area is not empty.
+    const bool is_current_row_visible =
+        !item_view_bounds_in_scroll_view.IsEmpty();
+
+    const int current_row = view_index / cols();
+    if (is_current_row_visible) {
+      // Already find the first visible row so continue.
+      if (first_visible_row)
+        continue;
+
+      first_visible_row = current_row;
+    } else if (first_visible_row) {
+      DCHECK(!first_invisible_row);
+      first_invisible_row = current_row;
+      break;
+    }
+  }
+
+  if (!first_visible_row)
+    return absl::nullopt;
+
+  VisibleItemIndexRange result;
+  result.first_index = *first_visible_row * cols();
+
+  // If `first_invisible_row` is not found, it means that the last item view
+  // in the view model is visible.
+  result.last_index = first_invisible_row ? *first_invisible_row * cols() - 1
+                                          : view_model()->view_size() - 1;
+
+  return result;
+}
+
+base::ScopedClosureRunner ScrollableAppsGridView::LockAppsGridOpacity() {
+  // Do nothing.
+  return base::ScopedClosureRunner();
 }
 
 const gfx::Vector2d ScrollableAppsGridView::CalculateTransitionOffset(

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/user_context.h"
 #include "ash/constants/ash_pref_names.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/login/quick_unlock/auth_token.h"
@@ -14,7 +15,6 @@
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_utils.h"
 #include "chrome/test/base/testing_profile.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -48,8 +48,8 @@ class QuickUnlockStorageUnitTest : public testing::Test {
   ~QuickUnlockStorageUnitTest() override {}
 
   // testing::Test:
-  void SetUp() override { EnabledForTesting(true); }
-  void TearDown() override { EnabledForTesting(false); }
+  void SetUp() override {}
+  void TearDown() override {}
 
   void ExpireAuthToken() {
     QuickUnlockFactory::GetForProfile(profile_.get())->auth_token_->Reset();
@@ -175,7 +175,7 @@ TEST_F(QuickUnlockStorageUnitTest, AuthToken) {
       QuickUnlockFactory::GetForProfile(profile_.get());
   EXPECT_FALSE(quick_unlock_storage->GetAuthToken());
 
-  chromeos::UserContext context;
+  UserContext context;
   std::string auth_token = quick_unlock_storage->CreateAuthToken(context);
   EXPECT_NE(std::string(), auth_token);
   EXPECT_TRUE(quick_unlock_storage->GetAuthToken());

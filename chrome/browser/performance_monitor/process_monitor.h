@@ -15,10 +15,6 @@
 #include "build/build_config.h"
 #include "content/public/common/process_type.h"
 
-#if defined(OS_MAC)
-#include "chrome/browser/performance_monitor/resource_coalition_mac.h"
-#endif
-
 namespace performance_monitor {
 
 class ProcessMetricsHistory;
@@ -55,14 +51,14 @@ class ProcessMonitor {
     // can exceed 100% in multi-thread processes running on multi-core systems.
     double cpu_usage = 0.0;
 
-#if defined(OS_MAC) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_AIX)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_AIX)
     // Returns the number of average idle cpu wakeups per second since the last
     // time the metric was sampled.
     int idle_wakeups = 0;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // The number of average "package idle exits" per second since the last
     // time the metric was sampled. See base/process/process_metrics.h for a
     // more detailed explanation.
@@ -71,11 +67,6 @@ class ProcessMonitor {
     // "Energy Impact" is a synthetic power estimation metric displayed by macOS
     // in Activity Monitor and the battery menu.
     double energy_impact = 0.0;
-
-    // Process coalition data. Only available for aggregated metrics (not
-    // individual processes), on some Mac devices. absl::nullopt if not
-    // available.
-    absl::optional<ResourceCoalition::DataRate> coalition_data;
 #endif
   };
 
@@ -146,10 +137,6 @@ class ProcessMonitor {
   base::RepeatingTimer repeating_timer_;
 
   base::ObserverList<Observer> observer_list_;
-
-#if defined(OS_MAC)
-  ResourceCoalition coalition_data_provider_;
-#endif
 
   base::WeakPtrFactory<ProcessMonitor> weak_ptr_factory_{this};
 };

@@ -177,7 +177,7 @@ class UserCloudPolicyManagerAshTest
     profile_ = profile_manager_->CreateTestingProfile(
         chrome::kInitialProfile,
         std::unique_ptr<sync_preferences::PrefServiceSyncable>(), u"", 0,
-        std::string(), std::move(factories));
+        std::move(factories));
     identity_test_env_profile_adaptor_ =
         std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
 
@@ -185,7 +185,7 @@ class UserCloudPolicyManagerAshTest
     // the signin Profile is an OTR Profile then for this test it suffices to
     // attach it to the main Profile.
     signin_profile_ = TestingProfile::Builder().BuildIncognito(profile_);
-    ASSERT_EQ(signin_profile_, chromeos::ProfileHelper::GetSigninProfile());
+    ASSERT_EQ(signin_profile_, ash::ProfileHelper::GetSigninProfile());
 
     RegisterLocalState(prefs_.registry());
 
@@ -407,10 +407,10 @@ class UserCloudPolicyManagerAshTest
     external_data_manager_->SetPolicyStore(store_);
     const user_manager::User* active_user = user_manager_->GetActiveUser();
     manager_ = std::make_unique<UserCloudPolicyManagerAsh>(
-        chromeos::ProfileHelper::Get()->GetProfileByUser(active_user),
+        ash::ProfileHelper::Get()->GetProfileByUser(active_user),
         std::move(store),
         base::WrapUnique<MockCloudExternalDataManager>(external_data_manager_),
-        base::FilePath(), enforcement_type, fetch_timeout,
+        base::FilePath(), enforcement_type, &prefs_, fetch_timeout,
         base::BindOnce(&UserCloudPolicyManagerAshTest::OnFatalErrorEncountered,
                        base::Unretained(this)),
         active_user->GetAccountId(), task_runner_);
@@ -424,7 +424,7 @@ class UserCloudPolicyManagerAshTest
 
   void InitAndConnectManager() {
     manager_->Init(&schema_registry_);
-    manager_->Connect(&prefs_, &device_management_service_,
+    manager_->Connect(&device_management_service_,
                       /*system_url_loader_factory=*/nullptr);
     // Create the UserCloudPolicyTokenForwarder, which fetches the access
     // token using the IdentityManager and forwards it to the

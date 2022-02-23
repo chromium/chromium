@@ -10,7 +10,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "content/public/app/content_main_delegate.h"
 #include "fuchsia/engine/web_engine_export.h"
 

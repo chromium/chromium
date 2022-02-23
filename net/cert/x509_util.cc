@@ -10,6 +10,7 @@
 
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
@@ -79,6 +80,21 @@ const EVP_MD* ToEVP(DigestAlgorithm alg) {
   return nullptr;
 }
 
+class BufferPoolSingleton {
+ public:
+  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
+  CRYPTO_BUFFER_POOL* pool() { return pool_; }
+
+ private:
+  // The singleton is leaky, so there is no need to use a smart pointer.
+  raw_ptr<CRYPTO_BUFFER_POOL> pool_;
+};
+
+base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
+    LAZY_INSTANCE_INITIALIZER;
+
+}  // namespace
+
 // Adds an X.509 Name with the specified distinguished name to |cbb|.
 bool AddName(CBB* cbb, base::StringPiece name) {
   // See RFC 4519.
@@ -147,21 +163,6 @@ bool AddName(CBB* cbb, base::StringPiece name) {
   }
   return true;
 }
-
-class BufferPoolSingleton {
- public:
-  BufferPoolSingleton() : pool_(CRYPTO_BUFFER_POOL_new()) {}
-  CRYPTO_BUFFER_POOL* pool() { return pool_; }
-
- private:
-  // The singleton is leaky, so there is no need to use a smart pointer.
-  CRYPTO_BUFFER_POOL* pool_;
-};
-
-base::LazyInstance<BufferPoolSingleton>::Leaky g_buffer_pool_singleton =
-    LAZY_INSTANCE_INITIALIZER;
-
-}  // namespace
 
 bool CBBAddTime(CBB* cbb, base::Time time) {
   der::GeneralizedTime generalized_time;
@@ -373,10 +374,10 @@ CRYPTO_BUFFER_POOL* GetBufferPool() {
   return g_buffer_pool_singleton.Get().pool();
 }
 
-bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(const uint8_t* data,
-                                                  size_t length) {
+bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
+    base::span<const uint8_t> data) {
   return bssl::UniquePtr<CRYPTO_BUFFER>(
-      CRYPTO_BUFFER_new(data, length, GetBufferPool()));
+      CRYPTO_BUFFER_new(data.data(), data.size(), GetBufferPool()));
 }
 
 bssl::UniquePtr<CRYPTO_BUFFER> CreateCryptoBuffer(
@@ -495,7 +496,8 @@ bool SignatureVerifierInitWithCertificate(
       return false;
     }
     ParsedExtension key_usage_ext;
-    if (ConsumeExtension(KeyUsageOid(), &extensions, &key_usage_ext)) {
+    if (ConsumeExtension(der::Input(kKeyUsageOid), &extensions,
+                         &key_usage_ext)) {
       der::BitString key_usage;
       if (!ParseKeyUsage(key_usage_ext.value, &key_usage) ||
           !key_usage.AssertsBit(KEY_USAGE_BIT_DIGITAL_SIGNATURE)) {

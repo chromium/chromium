@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/tether_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 TetherController::TetherController() = default;
@@ -55,4 +55,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

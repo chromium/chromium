@@ -54,12 +54,12 @@
 * ***** END LICENSE BLOCK ***** */
 
 // static
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const base::FilePath::CharType FirefoxProfileLock::kLockFileName[] =
     FILE_PATH_LITERAL(".parentlock");
 const base::FilePath::CharType FirefoxProfileLock::kOldLockFileName[] =
     FILE_PATH_LITERAL("parent.lock");
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 // http://www.google.com/codesearch/p?hl=en#e_ObwTAVPyo/profile/dirserviceprovider/src/nsProfileLock.cpp&l=433
 const base::FilePath::CharType FirefoxProfileLock::kLockFileName[] =
     FILE_PATH_LITERAL(".parentlock");

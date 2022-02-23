@@ -19,6 +19,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
@@ -97,7 +98,7 @@ class CacheClearer : public content::BrowsingDataRemover::Observer {
     delete this;  // Matches the new in FreeCacheAsync()
   }
 
-  content::BrowsingDataRemover* remover_;
+  raw_ptr<content::BrowsingDataRemover> remover_;
 
   base::OnceClosure install_callback_;
 };
@@ -182,9 +183,9 @@ void WebApkInstaller::OnInstallFinished(
 // static
 void WebApkInstaller::BuildProto(
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, webapps::WebApkIconHasher::Icon>
@@ -195,9 +196,10 @@ void WebApkInstaller::BuildProto(
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
       base::BindOnce(&webapps::BuildProtoInBackground, shortcut_info,
-                     primary_icon, is_primary_icon_maskable, splash_icon,
-                     package_name, version, std::move(icon_url_to_murmur2_hash),
-                     is_manifest_stale, is_app_identity_update_supported,
+                     primary_icon_data, is_primary_icon_maskable,
+                     splash_icon_data, package_name, version,
+                     std::move(icon_url_to_murmur2_hash), is_manifest_stale,
+                     is_app_identity_update_supported,
                      std::vector<webapps::WebApkUpdateReason>()),
       std::move(callback));
 }
@@ -206,9 +208,9 @@ void WebApkInstaller::BuildProto(
 void WebApkInstaller::StoreUpdateRequestToFile(
     const base::FilePath& update_request_path,
     const webapps::ShortcutInfo& shortcut_info,
-    const SkBitmap& primary_icon,
+    const std::string& primary_icon_data,
     bool is_primary_icon_maskable,
-    const SkBitmap& splash_icon,
+    const std::string& splash_icon_data,
     const std::string& package_name,
     const std::string& version,
     std::map<std::string, webapps::WebApkIconHasher::Icon>
@@ -220,8 +222,8 @@ void WebApkInstaller::StoreUpdateRequestToFile(
   base::PostTaskAndReplyWithResult(
       GetBackgroundTaskRunner().get(), FROM_HERE,
       base::BindOnce(&webapps::StoreUpdateRequestToFileInBackground,
-                     update_request_path, shortcut_info, primary_icon,
-                     is_primary_icon_maskable, splash_icon, package_name,
+                     update_request_path, shortcut_info, primary_icon_data,
+                     is_primary_icon_maskable, splash_icon_data, package_name,
                      version, std::move(icon_url_to_murmur2_hash),
                      is_manifest_stale, is_app_identity_update_supported,
                      std::move(update_reasons)),
@@ -366,7 +368,53 @@ void WebApkInstaller::OnReadUpdateRequest(
   webapk_package_ = proto->package_name();
   short_name_ = base::UTF8ToUTF16(proto->manifest().short_name());
 
-  SendRequest(std::move(update_request));
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("webapk_update", R"(
+        semantics {
+          sender: "WebAPK"
+          description:
+            "When a user launches a previously-installed WebAPK (web app which "
+            "was installed through Chrome), Chrome may check if the launched "
+            "app is out of date. If an update is required, Chrome may send a "
+            "background request to a Google server asking for a new version of "
+            "that WebAPK. Both of these actions can be skipped if they have "
+            "already been performed recently. In order for the server to "
+            "create a new, updated WebAPK for the user, it first needs to know "
+            "metadata about the web app that the user wants to update, as well "
+            "as some details about the user's device. Upon successful creation "
+            "of the new version of the WebAPK, the server will return a URL "
+            "from which the updated WebAPK can be downloaded along with a few "
+            "other details about the WebAPK (its size, version, and hash, for "
+            "example)."
+          trigger: "User launches a WebAPK, and Chrome determines that the "
+                   "WebAPK is out of date."
+          data:
+            "The 'WebApk' message in components/webapk/webapk.proto lists the "
+            "full contents of a WebAPK request. The proto includes:\n"
+            "  * the Android package name and version of the "
+            "currently-installed WebAPK that needs to be updated\n"
+            "  * the reason(s) that the WebAPK needs to be updated (usually in "
+            "the form of an attribute or attributes of the WebAPK that are out "
+            "of date)\n"
+            "  * the URL of the web app's Web Application Manifest (see "
+            "https://www.w3.org/TR/appmanifest/ for details)\n"
+            "  * the parsed contents of the web app's Web Application Manifest "
+            "(includes things like the app's name and description, URLs to "
+            "icons, and other app features)\n"
+            "  * the Android package name and version string of the browser "
+            "from which the user made the request\n"
+            "  * the ABI and Android OS version of the device that made the "
+            "request"
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          policy_exception_justification: "Not implemented."
+          setting: "This feature cannot be disabled."
+        }
+        )");
+
+  SendRequest(traffic_annotation, std::move(update_request));
 }
 
 void WebApkInstaller::OnURLLoaderComplete(
@@ -455,18 +503,64 @@ void WebApkInstaller::OnGotIconMurmur2Hashes(
     return;
   }
 
-  // Using empty |splash_icon| here because in this code path (WebApk
-  // install), we are using the splash icon data from |hashes|.
-  BuildProto(*install_shortcut_info_, install_primary_icon_,
-             is_primary_icon_maskable_, SkBitmap() /* splash_icon */,
-             "" /* package_name */, "" /* version */, std::move(*hashes),
-             false /* is_manifest_stale */,
-             false /* is_app_identity_update_supported */,
-             base::BindOnce(&WebApkInstaller::SendRequest,
-                            weak_ptr_factory_.GetWeakPtr()));
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      net::DefineNetworkTrafficAnnotation("webapk_create", R"(
+        semantics {
+          sender: "WebAPK"
+          description:
+            "At the user's request, Chrome can install supported web apps on "
+            "Android so that they show up in the user's app drawer and "
+            "optionally home screen. Web apps installed in this way are called "
+            "WebAPKs. See "
+            "https://developers.google.com/web/fundamentals/integration/webapks "
+            "for more details. WebAPKs are created on a Google server on "
+            "behalf of the Chrome client and the user. In order for the server "
+            "to create a WebAPK, it first needs to know metadata about the web "
+            "app that the user wants to install, as well as some details about "
+            "the user's device. Upon successful WebAPK creation, the server "
+            "will return a URL from which the WebAPK can be downloaded along "
+            "with a few other details about the WebAPK (its size, version, and "
+            "hash, for example)."
+          trigger: "User selects 'Add to home screen' or 'Install' items in "
+                   "Chrome's app menu or an install prompt within Chrome."
+          data:
+            "The 'WebApk' message in components/webapk/webapk.proto lists the "
+            "full contents of a WebAPK request. Note that 'package_name', "
+            "'version', and 'update_reasons' will not be filled in for initial "
+            "app installation requests, but only for future app updates. The "
+            "proto includes:\n"
+            "  * the URL of the web app's Web Application Manifest (see "
+            "https://www.w3.org/TR/appmanifest/ for details)\n"
+            "  * the parsed contents of the web app's Web Application Manifest "
+            "(includes things like the app's name and description, URLs to "
+            "icons, and other app features)\n"
+            "  * the Android package name and version string of the browser "
+            "from which the user made the request\n"
+            "  * the ABI and Android OS version of the device that made the "
+            "request"
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          policy_exception_justification: "Not implemented."
+          setting: "This feature cannot be disabled."
+        }
+        )");
+
+  // Using empty string for |primary_icon_data| and |splash_icon_data| here
+  // because in WebApk installs, we are using the icon data from |hashes|.
+  BuildProto(
+      *install_shortcut_info_, std::string() /* primary_icon_data */,
+      is_primary_icon_maskable_, std::string() /* splash_icon_data */,
+      "" /* package_name */, "" /* version */, std::move(*hashes),
+      false /* is_manifest_stale */,
+      false /* is_app_identity_update_supported */,
+      base::BindOnce(&WebApkInstaller::SendRequest,
+                     weak_ptr_factory_.GetWeakPtr(), traffic_annotation));
 }
 
 void WebApkInstaller::SendRequest(
+    const net::NetworkTrafficAnnotationTag& traffic_annotation,
     std::unique_ptr<std::string> serialized_proto) {
   DCHECK(server_url_.is_valid());
 
@@ -480,8 +574,8 @@ void WebApkInstaller::SendRequest(
   request->method = "POST";
   request->load_flags = net::LOAD_DISABLE_CACHE;
   request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-  loader_ = network::SimpleURLLoader::Create(std::move(request),
-                                             MISSING_TRAFFIC_ANNOTATION);
+  loader_ =
+      network::SimpleURLLoader::Create(std::move(request), traffic_annotation);
   loader_->AttachStringForUpload(*serialized_proto, kProtoMimeType);
   loader_->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       GetURLLoaderFactory(browser_context_),

@@ -83,7 +83,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
   auto* ev = reinterpret_cast<const xcb_generic_event_t*>(buf);
   auto* ge = reinterpret_cast<const xcb_ge_generic_event_t*>(buf);
   auto evtype = ev->response_type & ~kSendEventMask;
-  bool send_event = ev->response_type & kSendEventMask;
 
   if (conn->damage().present() &&
       evtype - conn->damage().first_event() == Damage::NotifyEvent::opcode) {
@@ -93,7 +92,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Damage::NotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -107,7 +105,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Dri2::BufferSwapCompleteEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -121,7 +118,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Dri2::InvalidateBuffersEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -135,7 +131,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Glx::PbufferClobberEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -149,7 +144,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Glx::BufferSwapCompleteEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -163,7 +157,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Present::GenericEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -178,7 +171,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Present::ConfigureNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -193,7 +185,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Present::CompleteNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -208,7 +199,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Present::IdleNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -223,7 +213,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Present::RedirectNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -237,7 +226,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new RandR::ScreenChangeNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -251,7 +239,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new RandR::NotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -266,7 +253,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ScreenSaver::NotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -280,7 +266,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Shape::NotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -294,7 +279,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Shm::CompletionEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -308,7 +292,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Sync::CounterNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -322,7 +305,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Sync::AlarmNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -336,7 +318,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new XFixes::SelectionNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -350,7 +331,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new XFixes::CursorNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -364,7 +344,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DeviceValuatorEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -372,19 +351,19 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (conn->xinput().present() &&
       (evtype - conn->xinput().first_event() ==
-           Input::LegacyDeviceEvent::DeviceButtonRelease ||
-       evtype - conn->xinput().first_event() ==
-           Input::LegacyDeviceEvent::ProximityIn ||
+           Input::LegacyDeviceEvent::DeviceKeyPress ||
        evtype - conn->xinput().first_event() ==
            Input::LegacyDeviceEvent::DeviceKeyRelease ||
        evtype - conn->xinput().first_event() ==
            Input::LegacyDeviceEvent::DeviceButtonPress ||
        evtype - conn->xinput().first_event() ==
-           Input::LegacyDeviceEvent::ProximityOut ||
+           Input::LegacyDeviceEvent::DeviceButtonRelease ||
        evtype - conn->xinput().first_event() ==
-           Input::LegacyDeviceEvent::DeviceKeyPress ||
+           Input::LegacyDeviceEvent::DeviceMotionNotify ||
        evtype - conn->xinput().first_event() ==
-           Input::LegacyDeviceEvent::DeviceMotionNotify)) {
+           Input::LegacyDeviceEvent::ProximityIn ||
+       evtype - conn->xinput().first_event() ==
+           Input::LegacyDeviceEvent::ProximityOut)) {
     event->type_id_ = 21;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<Input::LegacyDeviceEvent*>(event);
@@ -393,7 +372,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(
         evtype - conn->xinput().first_event());
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -410,7 +388,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(
         evtype - conn->xinput().first_event());
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -424,7 +401,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DeviceStateNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -438,7 +414,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DeviceMappingNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -452,7 +427,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::ChangeDeviceNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -467,7 +441,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DeviceKeyStateNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -482,7 +455,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DeviceButtonStateNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -497,7 +469,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DevicePresenceNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -512,7 +483,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DevicePropertyNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -527,7 +497,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::DeviceChangedEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -535,14 +504,14 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
-      (ge->event_type == Input::DeviceEvent::ButtonPress ||
-       ge->event_type == Input::DeviceEvent::TouchEnd ||
+      (ge->event_type == Input::DeviceEvent::KeyPress ||
        ge->event_type == Input::DeviceEvent::KeyRelease ||
-       ge->event_type == Input::DeviceEvent::TouchUpdate ||
-       ge->event_type == Input::DeviceEvent::KeyPress ||
+       ge->event_type == Input::DeviceEvent::ButtonPress ||
+       ge->event_type == Input::DeviceEvent::ButtonRelease ||
        ge->event_type == Input::DeviceEvent::Motion ||
        ge->event_type == Input::DeviceEvent::TouchBegin ||
-       ge->event_type == Input::DeviceEvent::ButtonRelease)) {
+       ge->event_type == Input::DeviceEvent::TouchUpdate ||
+       ge->event_type == Input::DeviceEvent::TouchEnd)) {
     event->type_id_ = 31;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<Input::DeviceEvent*>(event);
@@ -550,7 +519,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new Input::DeviceEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(ge->event_type);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -558,10 +526,10 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
-      (ge->event_type == Input::CrossingEvent::Leave ||
+      (ge->event_type == Input::CrossingEvent::Enter ||
+       ge->event_type == Input::CrossingEvent::Leave ||
        ge->event_type == Input::CrossingEvent::FocusIn ||
-       ge->event_type == Input::CrossingEvent::FocusOut ||
-       ge->event_type == Input::CrossingEvent::Enter)) {
+       ge->event_type == Input::CrossingEvent::FocusOut)) {
     event->type_id_ = 32;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<Input::CrossingEvent*>(event);
@@ -569,7 +537,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new Input::CrossingEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(ge->event_type);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -584,7 +551,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::HierarchyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -599,7 +565,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::PropertyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -607,14 +572,14 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
-      (ge->event_type == Input::RawDeviceEvent::RawTouchEnd ||
-       ge->event_type == Input::RawDeviceEvent::RawTouchUpdate ||
-       ge->event_type == Input::RawDeviceEvent::RawTouchBegin ||
+      (ge->event_type == Input::RawDeviceEvent::RawKeyPress ||
+       ge->event_type == Input::RawDeviceEvent::RawKeyRelease ||
+       ge->event_type == Input::RawDeviceEvent::RawButtonPress ||
        ge->event_type == Input::RawDeviceEvent::RawButtonRelease ||
        ge->event_type == Input::RawDeviceEvent::RawMotion ||
-       ge->event_type == Input::RawDeviceEvent::RawButtonPress ||
-       ge->event_type == Input::RawDeviceEvent::RawKeyRelease ||
-       ge->event_type == Input::RawDeviceEvent::RawKeyPress)) {
+       ge->event_type == Input::RawDeviceEvent::RawTouchBegin ||
+       ge->event_type == Input::RawDeviceEvent::RawTouchUpdate ||
+       ge->event_type == Input::RawDeviceEvent::RawTouchEnd)) {
     event->type_id_ = 35;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<Input::RawDeviceEvent*>(event);
@@ -622,7 +587,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new Input::RawDeviceEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(ge->event_type);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -637,7 +601,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Input::TouchOwnershipEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -645,8 +608,8 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
 
   if (evtype == GeGenericEvent::opcode && conn->xinput().present() &&
       ge->extension == conn->xinput().major_opcode() &&
-      (ge->event_type == Input::BarrierEvent::Leave ||
-       ge->event_type == Input::BarrierEvent::Hit)) {
+      (ge->event_type == Input::BarrierEvent::Hit ||
+       ge->event_type == Input::BarrierEvent::Leave)) {
     event->type_id_ = 37;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<Input::BarrierEvent*>(event);
@@ -654,7 +617,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new Input::BarrierEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(ge->event_type);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -668,7 +630,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::NewKeyboardNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -682,7 +643,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::MapNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -696,7 +656,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::StateNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -710,7 +669,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::ControlsNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -724,7 +682,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::IndicatorStateNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -738,7 +695,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::IndicatorMapNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -752,7 +708,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::NamesNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -766,7 +721,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::CompatMapNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -780,7 +734,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::BellNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -794,7 +747,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::ActionMessageEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -808,7 +760,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::AccessXNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -822,7 +773,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xkb::ExtensionDeviceNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -836,7 +786,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new XPrint::NotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -850,13 +799,12 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new XPrint::AttributNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
   }
 
-  if ((evtype == KeyEvent::Release || evtype == KeyEvent::Press)) {
+  if ((evtype == KeyEvent::Press || evtype == KeyEvent::Release)) {
     event->type_id_ = 52;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<KeyEvent*>(event);
@@ -864,13 +812,12 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new KeyEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(evtype);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
   }
 
-  if ((evtype == ButtonEvent::Release || evtype == ButtonEvent::Press)) {
+  if ((evtype == ButtonEvent::Press || evtype == ButtonEvent::Release)) {
     event->type_id_ = 53;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<ButtonEvent*>(event);
@@ -878,7 +825,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new ButtonEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(evtype);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -891,7 +837,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new MotionNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -906,13 +851,12 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new CrossingEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(evtype);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
   }
 
-  if ((evtype == FocusEvent::Out || evtype == FocusEvent::In)) {
+  if ((evtype == FocusEvent::In || evtype == FocusEvent::Out)) {
     event->type_id_ = 56;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<FocusEvent*>(event);
@@ -920,7 +864,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new FocusEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(evtype);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -933,7 +876,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new KeymapNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -946,7 +888,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ExposeEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -959,7 +900,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new GraphicsExposureEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -972,7 +912,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new NoExposureEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -985,7 +924,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new VisibilityNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -998,7 +936,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new CreateNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1011,7 +948,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new DestroyNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1024,7 +960,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new UnmapNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1037,7 +972,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new MapNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1050,7 +984,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new MapRequestEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1063,7 +996,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ReparentNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1076,7 +1008,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ConfigureNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1089,7 +1020,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ConfigureRequestEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1102,7 +1032,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new GravityNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1115,13 +1044,12 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ResizeRequestEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
   }
 
-  if ((evtype == CirculateEvent::Request || evtype == CirculateEvent::Notify)) {
+  if ((evtype == CirculateEvent::Notify || evtype == CirculateEvent::Request)) {
     event->type_id_ = 72;
     event->deleter_ = [](void* event) {
       delete reinterpret_cast<CirculateEvent*>(event);
@@ -1129,7 +1057,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     auto* event_ = new CirculateEvent;
     ReadEvent(event_, buffer);
     event_->opcode = static_cast<decltype(event_->opcode)>(evtype);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1142,7 +1069,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new PropertyNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1155,7 +1081,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new SelectionClearEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1168,7 +1093,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new SelectionRequestEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1181,7 +1105,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new SelectionNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1194,7 +1117,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ColormapNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1207,7 +1129,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new ClientMessageEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1220,7 +1141,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new MappingNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1234,7 +1154,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xv::VideoNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;
@@ -1248,7 +1167,6 @@ void ReadEvent(Event* event, Connection* conn, ReadBuffer* buffer) {
     };
     auto* event_ = new Xv::PortNotifyEvent;
     ReadEvent(event_, buffer);
-    event_->send_event = send_event;
     event->event_ = event_;
     event->window_ = event_->GetWindow();
     return;

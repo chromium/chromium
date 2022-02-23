@@ -25,7 +25,6 @@
 
 namespace base {
 class DictionaryValue;
-class ListValue;
 class Value;
 }
 
@@ -86,20 +85,16 @@ std::vector<uint8_t> MakeJsonVector(const base::DictionaryValue& dict);
 // The file must be JSON, however it can also include C++ style comments.
 ::testing::AssertionResult ReadJsonTestFile(const char* test_file_name,
                                             base::Value* value);
-// Same as ReadJsonTestFile(), but returns the value as a List.
-::testing::AssertionResult ReadJsonTestFileToList(const char* test_file_name,
-                                                  base::ListValue* list);
-// Same as ReadJsonTestFile(), but returns the value as a Dictionary.
-::testing::AssertionResult ReadJsonTestFileToDictionary(
-    const char* test_file_name,
-    base::DictionaryValue* dict);
+// Same as ReadJsonTestFile(), but asserts the value is a list.
+::testing::AssertionResult ReadJsonTestFileAsList(const char* test_file_name,
+                                                  base::Value* list);
 
-// Reads a string property from the dictionary with path |property_name|
+// Reads a string property from the dictionary |dict| with path |property_name|
 // (which can include periods for nested dictionaries). Interprets the
 // string as a hex encoded string and converts it to a bytes list.
 //
-// Returns empty vector on failure.
-std::vector<uint8_t> GetBytesFromHexString(const base::DictionaryValue* dict,
+// Returns empty vector on failure or if |dict| is not a dictionary.
+std::vector<uint8_t> GetBytesFromHexString(const base::Value* dict,
                                            const std::string& property_name);
 
 // Reads a string property with path "property_name" and converts it to a

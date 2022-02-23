@@ -23,6 +23,8 @@ typedef NS_OPTIONS(NSUInteger, EnterpriseSignInRestrictions) {
 bool IsRestrictAccountsToPatternsEnabled();
 
 // Returns true if force signIn is set.
+// DEPRECATED. Needs to use AuthenticationService::GetServiceStatus().
+// TODO(crbug.com/1242320): Need to remove this method.
 bool IsForceSignInEnabled();
 
 // Returns true if the |dataType| is managed by policies (i.e. is not syncable).
@@ -35,5 +37,8 @@ bool HasManagedSyncDataType(ChromeBrowserState* browserState);
 // Returns current EnterpriseSignInRestrictions.
 EnterpriseSignInRestrictions GetEnterpriseSignInRestrictions(
     ChromeBrowserState* browserState);
+
+// true if sync is disabled.
+bool IsSyncDisabledByPolicy(ChromeBrowserState* browserState);
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_ENTERPRISE_ENTERPRISE_UTILS_H_

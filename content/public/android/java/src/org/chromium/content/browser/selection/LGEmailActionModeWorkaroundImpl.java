@@ -7,7 +7,6 @@ package org.chromium.content.browser.selection;
 import android.animation.Animator;
 import android.animation.Animator.AnimatorListener;
 import android.animation.AnimatorListenerAdapter;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.view.ActionMode;
@@ -17,6 +16,8 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.PopupWindow;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.Log;
 import org.chromium.base.PackageUtils;
@@ -78,7 +79,7 @@ public final class LGEmailActionModeWorkaroundImpl {
         return true;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static void allowActionModeDestroyOnNonUiThread(ActionMode actionMode) {
         // LG Email app dismisses ActionMode whenever InputConnection#setComposingText() or
         // InputConnection#commitText() occurs. But they do on ImeThread, not on UI thread and

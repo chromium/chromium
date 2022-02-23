@@ -167,7 +167,7 @@ class COMPONENT_EXPORT(CHROMEOS_UI_FRAME) FrameCaptionButtonContainerView
       const views::FrameCaptionButton* to_hover,
       const views::FrameCaptionButton* to_press) override;
   bool CanSnap() override;
-  void ShowSnapPreview(SnapDirection snap) override;
+  void ShowSnapPreview(SnapDirection snap, bool allow_haptic_feedback) override;
   void CommitSnap(SnapDirection snap) override;
 
   // The widget that the buttons act on.

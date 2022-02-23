@@ -12,7 +12,6 @@
 #include <vector>
 
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/websockets/websocket_errors.h"
 #include "net/websockets/websocket_frame.h"

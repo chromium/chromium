@@ -116,7 +116,7 @@ class WebRtcApprtcBrowserTest : public WebRtcTestBase {
                                  const std::string& collider_port) {
     // The go workspace should be created, and collidermain built, at the
     // runhooks stage when webrtc.DEPS/build_apprtc_collider.py runs.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     base::FilePath collider_server = GetSourceDir().Append(
         FILE_PATH_LITERAL("third_party/webrtc/rtc_tools/testing/"
                           "browsertest/collider/collidermain.exe"));

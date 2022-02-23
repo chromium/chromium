@@ -68,11 +68,13 @@ class Speedometer2Story(press_story.PressStory):
       iterationCount = self._iterations
 
     if self._should_filter_suites:
-      action_runner.ExecuteJavaScript("""
+      action_runner.ExecuteJavaScript(
+          """
         Suites.forEach(function(suite) {
-          suite.disabled = {{ filtered_suites }}.indexOf(suite.name) < 0;
+          suite.disabled = {{ filtered_suites }}.indexOf(suite.name) == -1;
         });
-      """, filtered_suites=self._filtered_suite_names)
+      """,
+          filtered_suites=self._filtered_suite_names)
 
     self._enabled_suites = action_runner.EvaluateJavaScript("""
       (function() {

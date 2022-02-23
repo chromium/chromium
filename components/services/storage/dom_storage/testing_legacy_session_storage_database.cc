@@ -12,6 +12,7 @@
 
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -102,7 +103,7 @@ class TestingLegacySessionStorageDatabase::DBOperation {
   }
 
  private:
-  TestingLegacySessionStorageDatabase* session_storage_database_;
+  raw_ptr<TestingLegacySessionStorageDatabase> session_storage_database_;
 };
 
 TestingLegacySessionStorageDatabase::TestingLegacySessionStorageDatabase(
@@ -498,7 +499,7 @@ leveldb::Status TestingLegacySessionStorageDatabase::TryToOpen(
   options.block_cache = leveldb_chrome::GetSharedWebBlockCache();
 
   std::string db_name = file_path_.AsUTF8Unsafe();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android there is no support for session storage restoring, and since
   // the restoring code is responsible for database cleanup, we must manually
   // delete the old database here before we open it.

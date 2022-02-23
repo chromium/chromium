@@ -23,7 +23,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -48,7 +48,8 @@ class HTMLMetaElementTest : public PageTestBase,
 
  protected:
   HTMLMetaElement* CreateColorSchemeMeta(const AtomicString& content) {
-    auto* meta = MakeGarbageCollected<HTMLMetaElement>(GetDocument());
+    auto* meta = MakeGarbageCollected<HTMLMetaElement>(GetDocument(),
+                                                       CreateElementFlags());
     meta->setAttribute(html_names::kNameAttr, "color-scheme");
     meta->setAttribute(html_names::kContentAttr, content);
     return meta;

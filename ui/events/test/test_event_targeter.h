@@ -5,7 +5,7 @@
 #ifndef UI_EVENTS_TEST_TEST_EVENT_TARGETER_H_
 #define UI_EVENTS_TEST_TEST_EVENT_TARGETER_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/events/event_targeter.h"
 
 namespace ui {
@@ -35,7 +35,7 @@ class TestEventTargeter : public EventTargeter {
   EventTarget* FindNextBestTarget(EventTarget* previous_target,
                                   Event* event) override;
 
-  TestEventTarget* target_;
+  raw_ptr<TestEventTarget> target_;
   bool should_bubble_;
 };
 

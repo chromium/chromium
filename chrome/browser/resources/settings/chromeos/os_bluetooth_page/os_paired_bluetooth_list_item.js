@@ -10,14 +10,19 @@
 
 import '../../settings_shared_css.js';
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
+import '//resources/cr_elements/icons.m.js';
+import '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_icon.js';
 import 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_device_battery_info.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {getBatteryPercentage, getDeviceName} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {BatteryType} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
+import {getBatteryPercentage, getDeviceName, hasAnyDetailedBatteryInfo} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_utils.js';
+import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {FocusRowBehavior, FocusRowBehaviorInterface} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
+
 import {Router} from '../../router.js';
 import {routes} from '../os_route.m.js';
 
@@ -48,6 +53,7 @@ class SettingsPairedBluetoothListItemElement extends
        */
       device: {
         type: Object,
+        observer: 'onDeviceChanged_',
       },
 
       /** The index of this item in its parent list, used for its a11y label. */
@@ -59,6 +65,27 @@ class SettingsPairedBluetoothListItemElement extends
        */
       listSize: Number,
     };
+  }
+
+  /** @override */
+  disconnectedCallback() {
+    super.disconnectedCallback();
+    // Fire an event in case the tooltip was previously showing for the managed
+    // icon in this item and this item is being removed.
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+  }
+
+  /** @private */
+  onDeviceChanged_() {
+    if (!this.device) {
+      return;
+    }
+
+    if (!this.device.deviceProperties.isBlockedByPolicy) {
+      // Fire an event in case the tooltip was previously showing for this
+      // icon and this icon now is hidden.
+      this.fireTooltipStateChangeEvent_(/*showTooltip=*/ false);
+    }
   }
 
   /**
@@ -107,7 +134,57 @@ class SettingsPairedBluetoothListItemElement extends
    * @private
    */
   shouldShowBatteryInfo_(device) {
-    return getBatteryPercentage(device.deviceProperties) !== undefined;
+    return getBatteryPercentage(
+               device.deviceProperties, BatteryType.DEFAULT) !== undefined ||
+        hasAnyDetailedBatteryInfo(device.deviceProperties);
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   * @return {string}
+   * @private
+   */
+  getMultipleBatteryPercentageString_(device) {
+    let label = '';
+    const leftBudBatteryPercentage =
+        getBatteryPercentage(device.deviceProperties, BatteryType.LEFT_BUD);
+    if (leftBudBatteryPercentage !== undefined) {
+      label += ' ' +
+          this.i18n(
+              'bluetoothA11yDeviceNamedBatteryInfoLeftBud',
+              leftBudBatteryPercentage);
+    }
+
+    const caseBatteryPercentage =
+        getBatteryPercentage(device.deviceProperties, BatteryType.CASE);
+    if (caseBatteryPercentage !== undefined) {
+      label += ' ' +
+          this.i18n(
+              'bluetoothA11yDeviceNamedBatteryInfoCase', caseBatteryPercentage);
+    }
+
+    const rightBudbatteryPercentage =
+        getBatteryPercentage(device.deviceProperties, BatteryType.RIGHT_BUD);
+    if (rightBudbatteryPercentage !== undefined) {
+      label += ' ' +
+          this.i18n(
+              'bluetoothA11yDeviceNamedBatteryInfoRightBud',
+              rightBudbatteryPercentage);
+    }
+
+    return label;
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   * @return {boolean}
+   * @private
+   */
+  isDeviceConnecting_(device) {
+    return device.deviceProperties.connectionState ===
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnecting;
   }
 
   /**
@@ -117,67 +194,30 @@ class SettingsPairedBluetoothListItemElement extends
    * @private
    */
   getAriaLabel_(device) {
-    const deviceName = this.getDeviceName_(device);
-    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
-    const shouldShowBatteryInfo = this.shouldShowBatteryInfo_(device);
-    let stringName;
-    switch (device.deviceProperties.deviceType) {
-      case deviceType.kComputer:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeComputerWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeComputer';
-        break;
-      case deviceType.kPhone:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypePhoneWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypePhone';
-        break;
-      case deviceType.kHeadset:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeHeadsetWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeHeadset';
-        break;
-      case deviceType.kVideoCamera:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeVideoCameraWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeVideoCamera';
-        break;
-      case deviceType.kGameController:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeGameControllerWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeGameController';
-        break;
-      case deviceType.kKeyboard:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeKeyboardWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeKeyboard';
-        break;
-      case deviceType.kMouse:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeMouseWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeMouse';
-        break;
-      case deviceType.kTablet:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeTabletWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeTablet';
-        break;
-      default:
-        stringName = shouldShowBatteryInfo ?
-            'bluetoothPairedDeviceItemA11yLabelTypeUnknownWithBatteryInfo' :
-            'bluetoothPairedDeviceItemA11yLabelTypeUnknown';
-    }
+    // Start with the base information of the device name and location within
+    // the list of devices with the same connection state.
+    let a11yLabel = this.i18n(
+        'bluetoothA11yDeviceName', this.itemIndex + 1, this.listSize,
+        this.getDeviceName_(device));
 
-    if (!shouldShowBatteryInfo) {
-      return this.i18n(
-          stringName, this.itemIndex + 1, this.listSize, deviceName);
-    }
+    // Include the connection status.
+    a11yLabel +=
+        ' ' + this.i18n(this.getA11yDeviceConnectionStatusTextName_(device));
 
-    const batteryPercentage = getBatteryPercentage(device.deviceProperties);
-    assert(batteryPercentage !== undefined);
-    return this.i18n(
-        stringName, this.itemIndex + 1, this.listSize, deviceName,
-        batteryPercentage);
+    // Include the device type.
+    a11yLabel += ' ' + this.i18n(this.getA11yDeviceTypeTextName_(device));
+
+    // Include any available battery information.
+    if (hasAnyDetailedBatteryInfo(device.deviceProperties)) {
+      a11yLabel += this.getMultipleBatteryPercentageString_(device);
+    } else if (this.shouldShowBatteryInfo_(device)) {
+      const batteryPercentage =
+          getBatteryPercentage(device.deviceProperties, BatteryType.DEFAULT);
+      assert(batteryPercentage !== undefined);
+      a11yLabel +=
+          ' ' + this.i18n('bluetoothA11yDeviceBatteryInfo', batteryPercentage);
+    }
+    return a11yLabel;
   }
 
   /**
@@ -186,10 +226,72 @@ class SettingsPairedBluetoothListItemElement extends
    * @return {string}
    * @private
    */
-  getSubpageButtonA11yLabel_(device) {
-    const deviceName = this.getDeviceName_(device);
-    return this.i18n(
-        'bluetoothPairedDeviceItemSubpageButtonA11yLabel', deviceName);
+  getA11yDeviceConnectionStatusTextName_(device) {
+    const connectionState =
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState;
+    switch (device.deviceProperties.connectionState) {
+      case connectionState.kConnected:
+        return 'bluetoothA11yDeviceConnectionStateConnected';
+      case connectionState.kConnecting:
+        return 'bluetoothA11yDeviceConnectionStateConnecting';
+      case connectionState.kNotConnected:
+        return 'bluetoothA11yDeviceConnectionStateNotConnected';
+      default:
+        assertNotReached();
+    }
+  }
+
+  /**
+   * @param {!chromeos.bluetoothConfig.mojom.PairedBluetoothDeviceProperties}
+   *     device
+   * @return {string}
+   * @private
+   */
+  getA11yDeviceTypeTextName_(device) {
+    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
+    switch (device.deviceProperties.deviceType) {
+      case deviceType.kUnknown:
+        return 'bluetoothA11yDeviceTypeUnknown';
+      case deviceType.kComputer:
+        return 'bluetoothA11yDeviceTypeComputer';
+      case deviceType.kPhone:
+        return 'bluetoothA11yDeviceTypePhone';
+      case deviceType.kHeadset:
+        return 'bluetoothA11yDeviceTypeHeadset';
+      case deviceType.kVideoCamera:
+        return 'bluetoothA11yDeviceTypeVideoCamera';
+      case deviceType.kGameController:
+        return 'bluetoothA11yDeviceTypeGameController';
+      case deviceType.kKeyboard:
+        return 'bluetoothA11yDeviceTypeKeyboard';
+      case deviceType.kMouse:
+        return 'bluetoothA11yDeviceTypeMouse';
+      case deviceType.kTablet:
+        return 'bluetoothA11yDeviceTypeTablet';
+      default:
+        assertNotReached();
+    }
+  }
+
+  /** @private */
+  onShowTooltip_() {
+    this.fireTooltipStateChangeEvent_(/*showTooltip=*/ true);
+  }
+
+  /**
+   * @param {boolean} showTooltip
+   */
+  fireTooltipStateChangeEvent_(showTooltip) {
+    this.dispatchEvent(new CustomEvent('managed-tooltip-state-change', {
+      bubbles: true,
+      composed: true,
+      detail: {
+        address: this.device.deviceProperties.address,
+        show: showTooltip,
+        element: showTooltip ? this.shadowRoot.getElementById('managedIcon') :
+                               undefined,
+      }
+    }));
   }
 }
 

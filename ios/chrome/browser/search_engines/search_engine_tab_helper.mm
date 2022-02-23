@@ -164,7 +164,7 @@ void SearchEngineTabHelper::AddTemplateURLByOSDD(const GURL& page_url,
   // it to be the default value defined here:
   //   https://cs.chromium.org/chromium/src/services/network/public/cpp/resource_request.h?rcl=39c6fbea496641a6514e34c0ab689871d14e6d52&l=194;
   ios::TemplateURLFetcherFactory::GetForBrowserState(browser_state)
-      ->ScheduleDownload(keyword, osdd_url, item->GetFavicon().url,
+      ->ScheduleDownload(keyword, osdd_url, item->GetFaviconStatus().url,
                          url::Origin::Create(web_state_->GetLastCommittedURL()),
                          browser_state->GetURLLoaderFactory(),
                          /* render_frame_id */ MSG_ROUTING_NONE,
@@ -223,8 +223,10 @@ void SearchEngineTabHelper::AddTemplateURLBySearchableURL(
   //   1. Get from FaviconStatus of previous NavigationItem;
   //   2. Create by current NavigationItem's referrer if valid;
   //   3. Create by previous NavigationItem's URL if valid;
-  if (previous_item->GetFavicon().url.is_valid()) {
-    data.favicon_url = previous_item->GetFavicon().url;
+  const web::FaviconStatus& previous_item_favicon_status =
+      previous_item->GetFaviconStatus();
+  if (previous_item_favicon_status.url.is_valid()) {
+    data.favicon_url = previous_item_favicon_status.url;
   } else if (current_item->GetReferrer().url.is_valid()) {
     data.favicon_url =
         TemplateURL::GenerateFaviconURL(current_item->GetReferrer().url);

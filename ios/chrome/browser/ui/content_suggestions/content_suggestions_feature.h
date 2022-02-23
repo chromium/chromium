@@ -15,6 +15,13 @@ extern const base::Feature kDiscoverFeedInNtp;
 // Feature to use one NTP for all tabs in a Browser.
 extern const base::Feature kSingleNtp;
 
+// Feature to use one cell for Content Suggestions
+extern const base::Feature kSingleCellContentSuggestions;
+
+// Feature to move the Content Suggestions header view into the Discover
+// ScrollView.
+extern const base::Feature kContentSuggestionsHeaderMigration;
+
 // A parameter to indicate whether the native UI is enabled for the discover
 // feed.
 extern const char kDiscoverFeedIsNativeUIEnabled[];
@@ -24,5 +31,11 @@ bool IsDiscoverFeedEnabled();
 
 // Whether the single ntp feature is enabled.
 bool IsSingleNtpEnabled();
+
+// Whether the single cell content suggestions feature is enabled.
+bool IsSingleCellContentSuggestionsEnabled();
+
+// Whether the Content Suggestions header migration feature is enabled.
+bool IsContentSuggestionsHeaderMigrationEnabled();
 
 #endif  // IOS_CHROME_BROWSER_UI_CONTENT_SUGGESTIONS_CONTENT_SUGGESTIONS_FEATURE_H_

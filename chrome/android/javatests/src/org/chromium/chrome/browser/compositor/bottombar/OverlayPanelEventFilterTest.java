@@ -38,8 +38,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 /**
  * Class responsible for testing the OverlayPanelEventFilter.
  */
@@ -58,10 +57,8 @@ public class OverlayPanelEventFilterTest {
     private static final int MOCK_TOOLBAR_HEIGHT = 100;
 
     @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-    @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -270,9 +267,9 @@ public class OverlayPanelEventFilterTest {
             mWindowAndroid = new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
                     IntentRequestTracker.createFromActivity(mActivity));
 
-            mPanel = new MockOverlayPanel(context, mLayoutManager, new OverlayPanelManager(),
+            mPanel = new MockOverlayPanel(mActivity, mLayoutManager, new OverlayPanelManager(),
                     mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
-            mEventFilter = new OverlayPanelEventFilterWrapper(context, mPanel);
+            mEventFilter = new OverlayPanelEventFilterWrapper(mActivity, mPanel);
 
             mPanel.setSearchBarHeightForTesting(BAR_HEIGHT_DP);
             mPanel.setHeightForTesting(LAYOUT_HEIGHT_DP);

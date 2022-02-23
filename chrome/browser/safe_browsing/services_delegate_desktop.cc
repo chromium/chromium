@@ -157,4 +157,8 @@ void ServicesDelegateDesktop::StopOnIOThread(bool shutdown) {
   database_manager_->StopOnIOThread(shutdown);
 }
 
+void ServicesDelegateDesktop::OnProfileWillBeDestroyed(Profile* profile) {
+  download_service_->RemovePendingDownloadRequests(profile);
+}
+
 }  // namespace safe_browsing

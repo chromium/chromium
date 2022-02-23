@@ -32,8 +32,6 @@ web::WebUIIOSDataSource* CreateInternalsHTMLSource(
 
   source->AddResourcePath("autofill_and_password_manager_internals.js",
                           IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_JS);
-  source->AddResourcePath("autofill_and_password_manager_internals.css",
-                          IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_CSS);
   source->SetDefaultResource(IDR_AUTOFILL_AND_PASSWORD_MANAGER_INTERNALS_HTML);
   // Data strings:
   source->AddString(version_ui::kVersion, version_info::GetVersionNumber());
@@ -61,12 +59,12 @@ InternalsUIHandler::~InternalsUIHandler() {
 }
 
 void InternalsUIHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "loaded", base::BindRepeating(&InternalsUIHandler::OnLoaded,
                                     base::Unretained(this)));
 }
 
-void InternalsUIHandler::OnLoaded(const base::ListValue* args) {
+void InternalsUIHandler::OnLoaded(base::Value::ConstListView args) {
   base::Value load_event(call_on_load_);
   base::Value empty;
   web_ui()->CallJavascriptFunction("cr.webUIListenerCallback",

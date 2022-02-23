@@ -94,9 +94,9 @@ chromeos::device_sync::mojom::CryptAuthService EnumTraits<
     case cryptauthv2::TargetService::DEVICE_SYNC:
       return chromeos::device_sync::mojom::CryptAuthService::kDeviceSync;
     case cryptauthv2::TargetService::TARGET_SERVICE_UNSPECIFIED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case cryptauthv2::TargetService::TargetService_INT_MIN_SENTINEL_DO_NOT_USE_:
-      FALLTHROUGH;
+      [[fallthrough]];
     case cryptauthv2::TargetService::TargetService_INT_MAX_SENTINEL_DO_NOT_USE_:
       NOTREACHED();
       return chromeos::device_sync::mojom::CryptAuthService::kDeviceSync;

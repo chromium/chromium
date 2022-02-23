@@ -70,8 +70,11 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {kManagementReportAppInfoAndActivity,
      IDS_MANAGEMENT_REPORT_APP_INFO_AND_ACTIVITY},
     {kManagementPrinting, IDS_MANAGEMENT_REPORT_PRINTING},
+    {kManagementReportDeviceAudioStatus,
+     IDS_MANAGEMENT_REPORT_DEVICE_AUDIO_STATUS},
     {kManagementReportPrintJobs, IDS_MANAGEMENT_REPORT_PRINT_JOBS},
     {kManagementReportLoginLogout, IDS_MANAGEMENT_REPORT_LOGIN_LOGOUT},
+    {kManagementReportCRDSessions, IDS_MANAGEMENT_REPORT_CRD_SESSIONS},
     {kManagementCrostini, IDS_MANAGEMENT_CROSTINI},
     {kManagementCrostiniContainerConfiguration,
      IDS_MANAGEMENT_CROSTINI_CONTAINER_CONFIGURATION},
@@ -125,6 +128,8 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
     {kManagementOnBulkDataEntryEvent, IDS_MANAGEMENT_TEXT_ENTERED_EVENT},
     {kManagementOnBulkDataEntryVisibleData,
      IDS_MANAGEMENT_TEXT_ENTERED_VISIBLE_DATA},
+    {kManagementOnPrintEvent, IDS_MANAGEMENT_PAGE_PRINTED_EVENT},
+    {kManagementOnPrintVisibleData, IDS_MANAGEMENT_PAGE_PRINTED_VISIBLE_DATA},
     {kManagementOnPageVisitedEvent, IDS_MANAGEMENT_PAGE_VISITED_EVENT},
     {kManagementOnPageVisitedVisibleData,
      IDS_MANAGEMENT_PAGE_VISITED_VISIBLE_DATA},
@@ -154,10 +159,9 @@ content::WebUIDataSource* CreateManagementUIHtmlSource(Profile* profile) {
                         IDS_MANAGEMENT_REPORT_DLP_EVENTS, dlp_events_count));
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  source->AddString("enableBrandingUpdateAttribute",
-                    base::FeatureList::IsEnabled(features::kWebUIBrandingUpdate)
-                        ? "enable-branding-update"
-                        : "");
+  // TODO(crbug.com/1286649): Remove after CSS has been updated to no longer
+  // need this attribute.
+  source->AddString("enableBrandingUpdateAttribute", "enable-branding-update");
 
   webui::SetupWebUIDataSource(
       source, base::make_span(kManagementResources, kManagementResourcesSize),

@@ -20,8 +20,11 @@ class ErrorResponse;
 
 namespace floss {
 
+extern int kDBusTimeoutMs;
+
 // TODO(b/189499077) - Expose via floss package
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterService[];
+extern DEVICE_BLUETOOTH_EXPORT const char kManagerService[];
 extern DEVICE_BLUETOOTH_EXPORT const char kAdapterInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kManagerObject[];
@@ -32,14 +35,19 @@ extern DEVICE_BLUETOOTH_EXPORT const char kGetAddress[];
 extern DEVICE_BLUETOOTH_EXPORT const char kStartDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCancelDiscovery[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCreateBond[];
+extern DEVICE_BLUETOOTH_EXPORT const char kCancelBondProcess[];
+extern DEVICE_BLUETOOTH_EXPORT const char kRemoveBond[];
 extern DEVICE_BLUETOOTH_EXPORT const char kGetConnectionState[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetBondState[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectAllEnabledProfiles[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kRegisterConnectionCallback[];
 extern DEVICE_BLUETOOTH_EXPORT const char kCallbackInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kConnectionCallbackInterface[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetPairingConfirmation[];
+extern DEVICE_BLUETOOTH_EXPORT const char kSetPin[];
 extern DEVICE_BLUETOOTH_EXPORT const char kSetPasskey[];
+extern DEVICE_BLUETOOTH_EXPORT const char kGetBondedDevices[];
 
 extern DEVICE_BLUETOOTH_EXPORT const char kOnAddressChanged[];
 extern DEVICE_BLUETOOTH_EXPORT const char kOnDeviceFound[];

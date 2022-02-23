@@ -4,6 +4,8 @@
 
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 
+#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/key.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/ui/signin_ui.h"
@@ -12,8 +14,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/enrollment_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "chromeos/login/auth/key.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
 #include "components/user_manager/known_user.h"

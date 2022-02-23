@@ -5,12 +5,13 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_
 #define CHROME_BROWSER_UI_VIEWS_TABS_TAB_H_
 
-#include <list>
 #include <memory>
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_renderer_data.h"
 #include "chrome/browser/ui/views/tabs/tab_slot_view.h"
 #include "components/performance_manager/public/freezing/freezing.h"
@@ -28,7 +29,7 @@
 #include "ui/views/masked_targeter_delegate.h"
 #include "ui/views/view_observer.h"
 
-class AlertIndicator;
+class AlertIndicatorButton;
 class TabCloseButton;
 class TabController;
 class TabIcon;
@@ -152,6 +153,10 @@ class Tab : public gfx::AnimationDelegate,
   void ReleaseFreezingVoteToken();
   bool HasFreezingVoteToken() const { return freezing_token_ ? true : false; }
 
+  // Returns the width of the largest part of the tab that is available for the
+  // user to click to select/activate the tab.
+  int GetWidthOfLargestSelectableRegion() const;
+
   // Returns true if this tab became the active tab selected in
   // response to the last ui::ET_TAP_DOWN gesture dispatched to
   // this tab. Only used for collecting UMA metrics.
@@ -183,7 +188,7 @@ class Tab : public gfx::AnimationDelegate,
 
  private:
   class TabCloseButtonObserver;
-  friend class AlertIndicatorTest;
+  friend class AlertIndicatorButtonTest;
   friend class TabTest;
   friend class TabStripTestBase;
   FRIEND_TEST_ALL_PREFIXES(TabStripTest, TabCloseButtonVisibility);
@@ -221,7 +226,7 @@ class Tab : public gfx::AnimationDelegate,
   void CloseButtonPressed(const ui::Event& event);
 
   // The controller, never nullptr.
-  TabController* const controller_;
+  const raw_ptr<TabController> controller_;
 
   TabRendererData data_;
 
@@ -230,11 +235,11 @@ class Tab : public gfx::AnimationDelegate,
   // True if the tab is being animated closed.
   bool closing_ = false;
 
-  TabIcon* icon_ = nullptr;
-  AlertIndicator* alert_indicator_ = nullptr;
-  TabCloseButton* close_button_ = nullptr;
+  raw_ptr<TabIcon> icon_ = nullptr;
+  raw_ptr<AlertIndicatorButton> alert_indicator_button_ = nullptr;
+  raw_ptr<TabCloseButton> close_button_ = nullptr;
 
-  views::Label* title_;
+  raw_ptr<views::Label> title_;
   // The title's bounds are animated when switching between showing and hiding
   // the tab's favicon/throbber.
   gfx::Rect start_title_bounds_;

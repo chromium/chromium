@@ -8,7 +8,7 @@
 #include <stdint.h>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -82,7 +82,7 @@ class CaptureScheduler : public VideoFeedbackStub {
 
   base::RepeatingClosure capture_closure_;
 
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Timer used to schedule CaptureNextFrame().
   std::unique_ptr<base::OneShotTimer> capture_timer_;

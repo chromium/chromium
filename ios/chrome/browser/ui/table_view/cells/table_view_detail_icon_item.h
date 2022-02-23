@@ -39,7 +39,6 @@
 
 // UILabels corresponding to |text| and |detailText| from the item.
 @property(nonatomic, readonly, strong) UILabel* textLabel;
-@property(nonatomic, readonly, strong) UILabel* detailTextLabel;
 
 // The layout constraint axis of the text labels within the cell. Defaults
 // to a horizontal, edge aligned layout.
@@ -50,6 +49,10 @@
 // set to nil, the icon will be hidden and the text labels will expand to fill
 // the full width of the cell.
 - (void)setIconImage:(UIImage*)image;
+
+// Sets the detail text. |detailText| can be nil (or empty) to hide the detail
+// text.
+- (void)setDetailText:(NSString*)detailText;
 
 @end
 

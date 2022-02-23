@@ -11,13 +11,14 @@
 #include "base/command_line.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "components/browser_sync/browser_sync_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/pref_names.h"
 #include "components/sync/driver/data_type_controller.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/favicon/favicon_service_factory.h"
+#include "ios/chrome/browser/history/history_service_factory.h"
 #include "ios/web/public/test/web_task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "testing/platform_test.h"
@@ -32,8 +33,10 @@ class SyncServiceFactoryTest : public PlatformTest {
     browser_state_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    browser_state_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
     chrome_browser_state_ = browser_state_builder.Build();
-    CHECK(chrome_browser_state_->CreateHistoryService());
   }
 
   void SetUp() override {
@@ -47,59 +50,35 @@ class SyncServiceFactoryTest : public PlatformTest {
 
  protected:
   // Returns the collection of default datatypes.
-  std::vector<syncer::ModelType> DefaultDatatypes() {
+  syncer::ModelTypeSet DefaultDatatypes() {
     static_assert(38 == syncer::GetNumModelTypes(),
                   "When adding a new type, you probably want to add it here as "
                   "well (assuming it is already enabled).");
 
-    std::vector<syncer::ModelType> datatypes;
+    syncer::ModelTypeSet datatypes;
 
     // Common types. This excludes PASSWORDS because the password store factory
     // is null for testing and hence no controller gets instantiated.
-    datatypes.push_back(syncer::AUTOFILL);
-    datatypes.push_back(syncer::AUTOFILL_PROFILE);
-    datatypes.push_back(syncer::AUTOFILL_WALLET_DATA);
-    datatypes.push_back(syncer::AUTOFILL_WALLET_METADATA);
-    datatypes.push_back(syncer::AUTOFILL_WALLET_OFFER);
-    datatypes.push_back(syncer::BOOKMARKS);
-    datatypes.push_back(syncer::DEVICE_INFO);
-    datatypes.push_back(syncer::HISTORY_DELETE_DIRECTIVES);
-    datatypes.push_back(syncer::PREFERENCES);
-    datatypes.push_back(syncer::PRIORITY_PREFERENCES);
-    datatypes.push_back(syncer::READING_LIST);
+    datatypes.Put(syncer::AUTOFILL);
+    datatypes.Put(syncer::AUTOFILL_PROFILE);
+    datatypes.Put(syncer::AUTOFILL_WALLET_DATA);
+    datatypes.Put(syncer::AUTOFILL_WALLET_METADATA);
+    datatypes.Put(syncer::AUTOFILL_WALLET_OFFER);
+    datatypes.Put(syncer::BOOKMARKS);
+    datatypes.Put(syncer::DEVICE_INFO);
+    datatypes.Put(syncer::HISTORY_DELETE_DIRECTIVES);
+    datatypes.Put(syncer::PREFERENCES);
+    datatypes.Put(syncer::PRIORITY_PREFERENCES);
+    datatypes.Put(syncer::READING_LIST);
     // TODO(crbug.com/919489) Add SECURITY_EVENTS data type once it is enabled.
-    datatypes.push_back(syncer::SESSIONS);
-    datatypes.push_back(syncer::PROXY_TABS);
-    datatypes.push_back(syncer::TYPED_URLS);
-    datatypes.push_back(syncer::USER_EVENTS);
-    datatypes.push_back(syncer::USER_CONSENTS);
-    datatypes.push_back(syncer::SEND_TAB_TO_SELF);
+    datatypes.Put(syncer::SESSIONS);
+    datatypes.Put(syncer::PROXY_TABS);
+    datatypes.Put(syncer::TYPED_URLS);
+    datatypes.Put(syncer::USER_EVENTS);
+    datatypes.Put(syncer::USER_CONSENTS);
+    datatypes.Put(syncer::SEND_TAB_TO_SELF);
 
     return datatypes;
-  }
-
-  // Returns the number of default datatypes.
-  size_t DefaultDatatypesCount() { return DefaultDatatypes().size(); }
-
-  // Asserts that all the default datatypes are in |types|, except
-  // for |exception_types|, which are asserted to not be in |types|.
-  void CheckDefaultDatatypesInSetExcept(syncer::ModelTypeSet types,
-                                        syncer::ModelTypeSet exception_types) {
-    std::vector<syncer::ModelType> defaults = DefaultDatatypes();
-    std::vector<syncer::ModelType>::iterator iter;
-    for (iter = defaults.begin(); iter != defaults.end(); ++iter) {
-      if (exception_types.Has(*iter))
-        EXPECT_FALSE(types.Has(*iter))
-            << *iter << " found in dataypes map, shouldn't be there.";
-      else
-        EXPECT_TRUE(types.Has(*iter)) << *iter << " not found in datatypes map";
-    }
-  }
-
-  void SetDisabledTypes(syncer::ModelTypeSet disabled_types) {
-    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
-        switches::kDisableSyncTypes,
-        syncer::ModelTypeSetToString(disabled_types));
   }
 
   ChromeBrowserState* chrome_browser_state() {
@@ -113,44 +92,20 @@ class SyncServiceFactoryTest : public PlatformTest {
 
 // Verify that the disable sync flag disables creation of the sync service.
 TEST_F(SyncServiceFactoryTest, DisableSyncFlag) {
-  base::CommandLine::ForCurrentProcess()->AppendSwitch(switches::kDisableSync);
+  base::CommandLine::ForCurrentProcess()->AppendSwitch(syncer::kDisableSync);
   EXPECT_FALSE(SyncServiceFactory::GetForBrowserState(chrome_browser_state()));
 }
 
-// Verify that a normal (no command line flags) PSS can be created and
-// properly initialized.
-TEST_F(SyncServiceFactoryTest, CreatePSSDefault) {
+// Verify that a normal (no command line flags) SyncServiceImpl can be created
+// and properly initialized.
+TEST_F(SyncServiceFactoryTest, CreateSyncServiceImplDefault) {
   syncer::SyncServiceImpl* sync_service =
       SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
           chrome_browser_state());
   syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  EXPECT_EQ(DefaultDatatypesCount(), types.Size());
-  CheckDefaultDatatypesInSetExcept(types, syncer::ModelTypeSet());
-}
-
-// Verify that a PSS with a disabled datatype can be created and properly
-// initialized.
-TEST_F(SyncServiceFactoryTest, CreatePSSDisableOne) {
-  syncer::ModelTypeSet disabled_types(syncer::AUTOFILL);
-  SetDisabledTypes(disabled_types);
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
-          chrome_browser_state());
-  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
-  CheckDefaultDatatypesInSetExcept(types, disabled_types);
-}
-
-// Verify that a PSS with multiple disabled datatypes can be created and
-// properly initialized.
-TEST_F(SyncServiceFactoryTest, CreatePSSDisableMultiple) {
-  syncer::ModelTypeSet disabled_types(syncer::AUTOFILL_PROFILE,
-                                      syncer::BOOKMARKS);
-  SetDisabledTypes(disabled_types);
-  syncer::SyncServiceImpl* sync_service =
-      SyncServiceFactory::GetAsSyncServiceImplForBrowserState(
-          chrome_browser_state());
-  syncer::ModelTypeSet types = sync_service->GetRegisteredDataTypesForTest();
-  EXPECT_EQ(DefaultDatatypesCount() - disabled_types.Size(), types.Size());
-  CheckDefaultDatatypesInSetExcept(types, disabled_types);
+  const syncer::ModelTypeSet default_types = DefaultDatatypes();
+  EXPECT_EQ(default_types.Size(), types.Size());
+  for (syncer::ModelType type : default_types) {
+    EXPECT_TRUE(types.Has(type)) << type << " not found in datatypes map";
+  }
 }

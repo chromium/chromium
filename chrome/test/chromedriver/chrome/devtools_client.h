@@ -11,6 +11,7 @@
 #include "base/callback_forward.h"
 
 namespace base {
+class Value;
 class DictionaryValue;
 }
 
@@ -53,16 +54,17 @@ class DevToolsClient {
       const std::string& method,
       const base::DictionaryValue& params) = 0;
 
-  virtual Status SendCommandAndGetResult(
-      const std::string& method,
-      const base::DictionaryValue& params,
-      std::unique_ptr<base::DictionaryValue>* result) = 0;
+  // A base::Value(base::Value::Type::DICTIONARY) gets assigned to |result|.
+  virtual Status SendCommandAndGetResult(const std::string& method,
+                                         const base::DictionaryValue& params,
+                                         base::Value* result) = 0;
 
+  // A base::Value(base::Value::Type::DICTIONARY) gets assigned to |result|.
   virtual Status SendCommandAndGetResultWithTimeout(
       const std::string& method,
       const base::DictionaryValue& params,
       const Timeout* timeout,
-      std::unique_ptr<base::DictionaryValue>* result) = 0;
+      base::Value* result) = 0;
 
   virtual Status SendCommandAndIgnoreResponse(
       const std::string& method,

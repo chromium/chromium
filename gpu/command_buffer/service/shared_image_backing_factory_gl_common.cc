@@ -7,7 +7,6 @@
 #include <algorithm>
 #include <list>
 
-#include "base/containers/contains.h"
 #include "components/viz/common/resources/resource_sizes.h"
 #include "gpu/command_buffer/common/mailbox.h"
 #include "gpu/command_buffer/service/service_utils.h"
@@ -92,7 +91,8 @@ SharedImageBackingFactoryGLCommon::SharedImageBackingFactoryGLCommon(
     if (!info.enabled)
       continue;
     if (enable_texture_storage && !info.is_compressed) {
-      GLuint storage_internal_format = viz::TextureStorageFormat(format);
+      GLuint storage_internal_format = viz::TextureStorageFormat(
+          format, feature_info->feature_flags().angle_rgbx_internal_format);
       if (validators->texture_internal_format_storage.IsValid(
               storage_internal_format)) {
         info.supports_storage = true;

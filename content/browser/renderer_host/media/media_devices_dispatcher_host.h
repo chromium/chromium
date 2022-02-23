@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/bad_message.h"
 #include "content/browser/media/media_devices_util.h"
@@ -69,8 +70,9 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
       override;
   void SetCaptureHandleConfig(
       blink::mojom::CaptureHandleConfigPtr config) override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CloseFocusWindowOfOpportunity(const std::string& label) override;
+  void ProduceCropId(ProduceCropIdCallback callback) override;
 #endif
 
  private:
@@ -142,7 +144,7 @@ class CONTENT_EXPORT MediaDevicesDispatcherHost
   const int render_frame_id_;
 
   // The following fields can only be accessed on the IO thread.
-  MediaStreamManager* media_stream_manager_;
+  const raw_ptr<MediaStreamManager> media_stream_manager_;
 
   struct AudioInputCapabilitiesRequest;
   // Queued requests for audio-input capabilities.

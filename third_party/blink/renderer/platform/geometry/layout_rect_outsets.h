@@ -31,12 +31,13 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_RECT_OUTSETS_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GEOMETRY_LAYOUT_RECT_OUTSETS_H_
 
-#include "third_party/blink/renderer/platform/geometry/float_rect_outsets.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect_outsets.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
+#include "ui/gfx/geometry/insets_f.h"
+#include "ui/gfx/geometry/outsets.h"
+#include "ui/gfx/geometry/outsets_f.h"
 
 namespace blink {
 
@@ -61,17 +62,11 @@ class PLATFORM_EXPORT LayoutRectOutsets {
         bottom_(LayoutUnit(bottom)),
         left_(LayoutUnit(left)) {}
 
-  LayoutRectOutsets(const IntRectOutsets& outsets)
-      : top_(LayoutUnit(outsets.Top())),
-        right_(LayoutUnit(outsets.Right())),
-        bottom_(LayoutUnit(outsets.Bottom())),
-        left_(LayoutUnit(outsets.Left())) {}
-
-  LayoutRectOutsets(const FloatRectOutsets& outsets)
-      : top_(LayoutUnit(outsets.Top())),
-        right_(LayoutUnit(outsets.Right())),
-        bottom_(LayoutUnit(outsets.Bottom())),
-        left_(LayoutUnit(outsets.Left())) {}
+  explicit LayoutRectOutsets(const gfx::Outsets& outsets)
+      : top_(LayoutUnit(outsets.top())),
+        right_(LayoutUnit(outsets.right())),
+        bottom_(LayoutUnit(outsets.bottom())),
+        left_(LayoutUnit(outsets.left())) {}
 
   constexpr LayoutUnit Top() const { return top_; }
   constexpr LayoutUnit Right() const { return right_; }
@@ -100,6 +95,21 @@ class PLATFORM_EXPORT LayoutRectOutsets {
   }
 
   String ToString() const;
+
+  explicit operator gfx::OutsetsF() const {
+    return gfx::OutsetsF()
+        .set_left(left_.ToFloat())
+        .set_right(right_.ToFloat())
+        .set_top(top_.ToFloat())
+        .set_bottom(bottom_.ToFloat());
+  }
+  explicit operator gfx::InsetsF() const {
+    return gfx::InsetsF()
+        .set_left(-left_.ToFloat())
+        .set_right(-right_.ToFloat())
+        .set_top(-top_.ToFloat())
+        .set_bottom(-bottom_.ToFloat());
+  }
 
  private:
   LayoutUnit top_;
@@ -142,11 +152,11 @@ inline LayoutRectOutsets& operator-=(LayoutRectOutsets& a,
 }
 
 inline LayoutRectOutsets EnclosingLayoutRectOutsets(
-    const FloatRectOutsets& rect) {
-  return LayoutRectOutsets(LayoutUnit::FromFloatCeil(rect.Top()),
-                           LayoutUnit::FromFloatCeil(rect.Right()),
-                           LayoutUnit::FromFloatCeil(rect.Bottom()),
-                           LayoutUnit::FromFloatCeil(rect.Left()));
+    const gfx::OutsetsF& outsets) {
+  return LayoutRectOutsets(LayoutUnit::FromFloatCeil(outsets.top()),
+                           LayoutUnit::FromFloatCeil(outsets.right()),
+                           LayoutUnit::FromFloatCeil(outsets.bottom()),
+                           LayoutUnit::FromFloatCeil(outsets.left()));
 }
 
 PLATFORM_EXPORT std::ostream& operator<<(std::ostream&,

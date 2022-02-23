@@ -9,12 +9,30 @@
 namespace autofill_assistant {
 namespace features {
 
+// Controls whether to enable Autofill Assistant.
 const base::Feature kAutofillAssistant{"AutofillAssistant",
                                        base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether to enable Autofill Assistant's way of annotating DOM. If
+// enabled will create an |AnnotateDomModelService|.
+const base::Feature kAutofillAssistantAnnotateDom{
+    "AutofillAssistantAnnotateDom", base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to enable Assistant Autofill in a normal Chrome tab.
 const base::Feature kAutofillAssistantChromeEntry{
     "AutofillAssistantChromeEntry", base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Controls whether RPC responses from the backend should be verified for
+// |GetActions| calls.
+const base::Feature kAutofillAssistantVerifyGetActionsResponses{
+    "AutofillAssistantVerifyGetActionsResponses",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
+// Controls whether RPC requests to the backend should be signed for
+// |GetActions| calls.
+const base::Feature kAutofillAssistantSignGetActionsRequests{
+    "AutofillAssistantSignGetActionsRequests",
+    base::FEATURE_DISABLED_BY_DEFAULT};
 
 // Controls whether to enable dialog onboarding for Autofill Assistant
 const base::Feature kAutofillAssistantDialogOnboarding{
@@ -34,6 +52,12 @@ const base::Feature kAutofillAssistantDisableOnboardingFlow{
 // base64-injected trigger scripts can be shown even in the absence of MSBB.
 const base::Feature kAutofillAssistantDisableProactiveHelpTiedToMSBB{
     "AutofillAssistantDisableProactiveHelpTiedToMSBB",
+    base::FEATURE_ENABLED_BY_DEFAULT};
+
+// Get a payments client token from GMS. This is an emergency off-switch in
+// case calling this by default has a negative impact.
+const base::Feature kAutofillAssistantGetPaymentsClientToken{
+    "AutofillAssistantGetPaymentsClientToken",
     base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Whether Autofill Assistant should enable in-CCT triggering, i.e., requesting

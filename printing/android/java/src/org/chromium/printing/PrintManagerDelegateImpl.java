@@ -4,10 +4,8 @@
 
 package org.chromium.printing;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
-import android.os.Build;
 import android.print.PrintAttributes;
 import android.print.PrintDocumentAdapter;
 import android.print.PrintJob;
@@ -22,7 +20,6 @@ import java.util.List;
 /**
  * An implementation of {@link PrintManagerDelegate} using the Android framework print manager.
  */
-@TargetApi(Build.VERSION_CODES.KITKAT)
 public class PrintManagerDelegateImpl implements PrintManagerDelegate {
     private static final String TAG = "printing";
     private final PrintManager mPrintManager;

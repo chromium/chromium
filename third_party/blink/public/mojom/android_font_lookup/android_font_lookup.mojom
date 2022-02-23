@@ -20,7 +20,14 @@ interface AndroidFontLookup {
   // full font name or null if the font is not available. Although the
   // implementation posts to a user-blocking background thread, this interface
   // is synchronous for the renderer to avoid unnecessary re-layout jank.
+  // TODO(crbug.com/1270949): This may be able to be removed if
+  // FetchAllFontFiles() can be used to get the font file handles.
   [Sync]
   MatchLocalFontByUniqueName(string font_unique_name)
     => (mojo_base.mojom.ReadOnlyFile? font_file_handle);
+
+  // Fetches all available font files and returns a map of ICU case folded full
+  // font name to file.
+  FetchAllFontFiles()
+    => (map<string, mojo_base.mojom.ReadOnlyFile> font_files);
 };

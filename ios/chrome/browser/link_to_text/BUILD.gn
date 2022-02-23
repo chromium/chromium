@@ -19,6 +19,7 @@ source_set("link_to_text") {
     ":internal",
     ":link_to_text_js",
     "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/ios",
     "//components/ukm/ios:ukm_url_recorder",
     "//ios/chrome/browser/tabs",
     "//ios/web/public",

@@ -4,7 +4,6 @@
 
 import("//build/config/chrome_build.gni")
 import("//build/config/chromeos/ui_mode.gni")
-import("//build/config/crypto.gni")
 import("//build/config/devtools.gni")
 import("//build/config/ui.gni")
 
@@ -58,15 +57,30 @@ if (is_chrome_branded) {
 
 if (is_chromeos_ash) {
   grit_defines += [
+    # TODO(crbug.com/1230488): Remove |chromeos| when everything is migrated to
+    # |chromeos_ash|
     "-D",
     "chromeos",
+    "-D",
+    "chromeos_ash",
+  ]
+}
+
+if (is_reven) {
+  grit_defines += [
+    "-D",
+    "reven",
   ]
 }
 
 if (is_chromeos_lacros) {
   grit_defines += [
+    # TODO(crbug.com/1230488): Remove |lacros| when everything is migrated to
+    # |chromeos_lacros|
     "-D",
     "lacros",
+    "-D",
+    "chromeos_lacros",
   ]
 }
 
@@ -88,13 +102,6 @@ if (use_aura) {
   grit_defines += [
     "-D",
     "use_aura",
-  ]
-}
-
-if (use_nss_certs) {
-  grit_defines += [
-    "-D",
-    "use_nss_certs",
   ]
 }
 

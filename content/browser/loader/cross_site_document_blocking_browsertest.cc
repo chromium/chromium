@@ -107,6 +107,12 @@ void InspectHistograms(const base::HistogramTester& histograms,
       "NetworkService.URLLoader.RequestInitiatorOriginLockCompatibility",
       network::InitiatorLockCompatibility::kCompatibleLock, 1);
 
+  // No ORB-specific UMA at this point.
+  if (base::FeatureList::IsEnabled(
+          network::features::kOpaqueResponseBlockingV01)) {
+    return;
+  }
+
   CorbMimeType expected_mime_type = CorbMimeType::kInvalidMimeType;
   if (base::MatchPattern(resource_name, "*.html")) {
     expected_mime_type = CorbMimeType::kHtml;
@@ -385,7 +391,8 @@ class RequestInterceptor {
     // Tell the |original_client_| that the request has completed (and that it
     // can release its URLLoaderClient.
     if (status.error_code == net::OK) {
-      original_client_->OnReceiveResponse(std::move(response_head));
+      original_client_->OnReceiveResponse(std::move(response_head),
+                                          mojo::ScopedDataPipeConsumerHandle());
 
       mojo::ScopedDataPipeProducerHandle producer_handle;
       mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -475,6 +482,7 @@ class CrossSiteDocumentBlockingTestBase : public ContentBrowserTest {
 enum class TestMode {
   kWithCORBProtectionSniffing,
   kWithoutCORBProtectionSniffing,
+  kWithORBv01,
 };
 struct ImgTestParams {
   const char* resource;
@@ -494,6 +502,10 @@ class CrossSiteDocumentBlockingImgElementTest
       case TestMode::kWithoutCORBProtectionSniffing:
         scoped_feature_list_.InitAndDisableFeature(
             network::features::kCORBProtectionSniffing);
+        break;
+      case TestMode::kWithORBv01:
+        scoped_feature_list_.InitAndEnableFeature(
+            network::features::kOpaqueResponseBlockingV01);
         break;
     }
   }
@@ -557,13 +569,34 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingImgElementTest, Test) {
 
 #define IMG_TEST(tag, resource, expectations)                                  \
   INSTANTIATE_TEST_SUITE_P(                                                    \
-      ProtectionSniffingOn##tag, CrossSiteDocumentBlockingImgElementTest,      \
+      ProtectionSniffingOn_##tag, CrossSiteDocumentBlockingImgElementTest,     \
       ::testing::Values(ImgTestParams{                                         \
           resource, expectations, TestMode::kWithoutCORBProtectionSniffing})); \
   INSTANTIATE_TEST_SUITE_P(                                                    \
-      ProtectionSniffingOff##tag, CrossSiteDocumentBlockingImgElementTest,     \
+      ProtectionSniffingOff_##tag, CrossSiteDocumentBlockingImgElementTest,    \
       ::testing::Values(ImgTestParams{                                         \
-          resource, expectations, TestMode::kWithCORBProtectionSniffing}));
+          resource, expectations, TestMode::kWithCORBProtectionSniffing}));    \
+  INSTANTIATE_TEST_SUITE_P(                                                    \
+      ORBv01_##tag, CrossSiteDocumentBlockingImgElementTest,                   \
+      ::testing::Values(                                                       \
+          ImgTestParams{resource, expectations, TestMode::kWithORBv01}));
+
+#define IMG_TEST_WITH_DIFFERENT_ORB_EXPECTATIONS(                           \
+    tag, resource, corb_expectations, orb_expectations)                     \
+  INSTANTIATE_TEST_SUITE_P(ProtectionSniffingOn_##tag,                      \
+                           CrossSiteDocumentBlockingImgElementTest,         \
+                           ::testing::Values(ImgTestParams{                 \
+                               resource, corb_expectations,                 \
+                               TestMode::kWithoutCORBProtectionSniffing})); \
+  INSTANTIATE_TEST_SUITE_P(ProtectionSniffingOff_##tag,                     \
+                           CrossSiteDocumentBlockingImgElementTest,         \
+                           ::testing::Values(ImgTestParams{                 \
+                               resource, corb_expectations,                 \
+                               TestMode::kWithCORBProtectionSniffing}));    \
+  INSTANTIATE_TEST_SUITE_P(                                                 \
+      ORBv01_##tag, CrossSiteDocumentBlockingImgElementTest,                \
+      ::testing::Values(                                                    \
+          ImgTestParams{resource, orb_expectations, TestMode::kWithORBv01}));
 
 // The following are files under content/test/data/site_isolation. All
 // should be disallowed for cross site XHR under the document blocking policy.
@@ -577,6 +610,7 @@ IMG_TEST(valid_json, "valid.json", kShouldBeSniffedAndBlocked)
 IMG_TEST(html_txt, "html.txt", kShouldBeSniffedAndBlocked)
 IMG_TEST(xml_txt, "xml.txt", kShouldBeSniffedAndBlocked)
 IMG_TEST(json_txt, "json.txt", kShouldBeSniffedAndBlocked)
+IMG_TEST(json_octet_stream, "json.octet-stream", kShouldBeSniffedAndBlocked)
 IMG_TEST(comment_valid_html, "comment_valid.html", kShouldBeSniffedAndBlocked)
 IMG_TEST(html4_dtd_html, "html4_dtd.html", kShouldBeSniffedAndBlocked)
 IMG_TEST(html4_dtd_txt, "html4_dtd.txt", kShouldBeSniffedAndBlocked)
@@ -591,6 +625,31 @@ IMG_TEST(nosniff_json_js, "nosniff.json.js", kShouldBeSniffedAndBlocked)
 IMG_TEST(nosniff_json_prefixed_js,
          "nosniff.json-prefixed.js",
          kShouldBeSniffedAndBlocked)
+
+// ORB provides some incremental security benefits over CORB.  For example, CORB
+// allows responses that 1) have an unrecognized MIME type and 2) don't sniff as
+// JSON.  ORB blocks responses with non-image/audio/video MIME type that don't
+// sniff as Javascript (ORBv0.1 blocks ones that sniff as HTML or XML or JSON).
+IMG_TEST_WITH_DIFFERENT_ORB_EXPECTATIONS(html_octet_stream,
+                                         "html.octet-stream",
+                                         /* CORB */ kShouldBeSniffedAndAllowed,
+                                         /* ORB */ kShouldBeSniffedAndBlocked)
+IMG_TEST_WITH_DIFFERENT_ORB_EXPECTATIONS(xml_octet_stream,
+                                         "xml.octet-stream",
+                                         /* CORB */ kShouldBeSniffedAndAllowed,
+                                         /* ORB */ kShouldBeSniffedAndBlocked)
+
+// ORB detects audio/video responses before the final Javascript sniffing (or in
+// the case of ORBv0.1, confirmation sniffing for HTML/XML/JSON).  This
+// sequencing simplifies the ORB algorithm and implementation because it means
+// that the final sniffing step doesn't need to take into account media content.
+// OTOH, if ORB detects some audio/video responses based on the MIME type of the
+// response, then it may allow some cases that CORB would block - such as a JSON
+// response incorrectly labeled as "audio/x-wav".
+IMG_TEST_WITH_DIFFERENT_ORB_EXPECTATIONS(json_wav,
+                                         "json.wav",
+                                         /* CORB */ kShouldBeSniffedAndBlocked,
+                                         /* ORB */ kShouldBeSniffedAndAllowed)
 
 // These files should be disallowed without sniffing.
 //   nosniff.*   - Won't sniff correctly, but blocked because of nosniff.
@@ -633,6 +692,11 @@ IMG_TEST(js_html_polyglot2_html,
          "js-html-polyglot2.html",
          kShouldBeSniffedAndAllowed)
 
+// ORB allows, because even with 'XCTO: nosniff' ORB will sniff that this is an
+// image.  CORB allows, because CORB doesn't care about
+// 'application/octet-stream'.
+IMG_TEST(nosniff_png, "nosniff.png.octet-stream", kShouldBeSniffedAndAllowed)
+
 class CrossSiteDocumentBlockingTest
     : public CrossSiteDocumentBlockingTestBase,
       public testing::WithParamInterface<TestMode> {
@@ -646,6 +710,10 @@ class CrossSiteDocumentBlockingTest
       case TestMode::kWithoutCORBProtectionSniffing:
         scoped_feature_list_.InitAndDisableFeature(
             network::features::kCORBProtectionSniffing);
+        break;
+      case TestMode::kWithORBv01:
+        scoped_feature_list_.InitAndEnableFeature(
+            network::features::kOpaqueResponseBlockingV01);
         break;
     }
   }
@@ -760,19 +828,30 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, BackToAboutBlank) {
   )";
   std::string fetch_script = JsReplace(kFetchScriptTemplate, resource_url);
 
-  // Navigate to the test page and open a popup via |window.open|, explicitly
-  // specifying 'about:blank' destination, so that we can go back to it later.
+  // Navigate to the test page and open a popup via |window.open|.
   GURL initial_url("http://foo.com/title1.html");
   EXPECT_TRUE(NavigateToURL(shell(), initial_url));
   WebContentsAddedObserver popup_observer;
-  ASSERT_TRUE(ExecJs(shell(), "var popup = window.open('about:blank', '')"));
+  ASSERT_TRUE(ExecJs(shell(), "var popup = window.open('title1.html')"));
   WebContents* popup = popup_observer.GetWebContents();
-  EXPECT_EQ(GURL(url::kAboutBlankURL),
-            popup->GetMainFrame()->GetLastCommittedURL());
+  EXPECT_TRUE(WaitForLoadStop(popup));
+  EXPECT_EQ(initial_url, popup->GetMainFrame()->GetLastCommittedURL());
   EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetLastCommittedOrigin(),
             popup->GetMainFrame()->GetLastCommittedOrigin());
-  EXPECT_EQ(url::Origin::Create(resource_url),
-            popup->GetMainFrame()->GetLastCommittedOrigin());
+
+  // Navigate the popup to about:blank. Note that we didn't directly
+  // window.open() to about:blank because otherwise the about:blank page will
+  // always get replaced on the next navigation.
+  {
+    TestNavigationObserver nav_observer(popup);
+    EXPECT_TRUE(ExecJs(popup, "location.href = 'about:blank';"));
+    nav_observer.Wait();
+    EXPECT_EQ(2, popup->GetController().GetEntryCount());
+    EXPECT_EQ(GURL(url::kAboutBlankURL),
+              popup->GetMainFrame()->GetLastCommittedURL());
+    EXPECT_EQ(shell()->web_contents()->GetMainFrame()->GetLastCommittedOrigin(),
+              popup->GetMainFrame()->GetLastCommittedOrigin());
+  }
 
   // Verify that CORB doesn't block same-origin request from the popup.
   {
@@ -940,8 +1019,8 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
   EXPECT_TRUE(ExecJs(shell(), JsReplace(kScriptTemplate, bar_url)));
   interceptor.WaitForRequestCompletion();
 
-  // Verify that the response completed successfully, was blocked and was logged
-  // as having initially a non-empty body.
+  // Verify that the response completed successfully, was *not* blocked and
+  // returned the full `png_body`.
   interceptor.Verify(kShouldBeSniffedAndAllowed, png_body);
 
   // Verify that most response headers have been allowed by CORB.
@@ -1042,7 +1121,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
 
 // TODO(lukasza): https://crbug.com/154571: Enable this test on Android once
 // SharedWorkers are also enabled on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, SharedWorker) {
   embedded_test_server()->StartAcceptingConnections();
 
@@ -1122,7 +1201,7 @@ IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest, SharedWorker) {
   InspectHistograms(histograms, kShouldBeBlockedWithoutSniffing,
                     "nosniff.json");
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // https://crbug.com/1218723 this is broken by SplitCacheByNetworkIsolationKey.
 IN_PROC_BROWSER_TEST_P(CrossSiteDocumentBlockingTest,
@@ -1239,6 +1318,10 @@ INSTANTIATE_TEST_SUITE_P(
     WithoutCORBProtectionSniffing,
     CrossSiteDocumentBlockingTest,
     ::testing::Values(TestMode::kWithoutCORBProtectionSniffing));
+
+INSTANTIATE_TEST_SUITE_P(WithORBv01,
+                         CrossSiteDocumentBlockingTest,
+                         ::testing::Values(TestMode::kWithORBv01));
 
 // This test class sets up a service worker that can be used to try to respond
 // to same-origin requests with cross-origin responses.

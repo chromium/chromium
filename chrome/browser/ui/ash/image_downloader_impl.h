@@ -25,6 +25,7 @@ class ImageDownloaderImpl : public ash::ImageDownloader {
   void Download(const GURL& url,
                 const net::NetworkTrafficAnnotationTag& annotation_tag,
                 const net::HttpRequestHeaders& additional_headers,
+                absl::optional<AccountId> credentials_account_id,
                 ash::ImageDownloader::DownloadCallback callback) override;
 };
 

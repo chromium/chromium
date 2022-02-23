@@ -9,7 +9,6 @@
 #include <set>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "gpu/config/gpu_control_list.h"
 #include "gpu/gpu_export.h"
 

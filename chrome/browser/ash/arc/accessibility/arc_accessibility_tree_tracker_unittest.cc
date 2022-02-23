@@ -4,6 +4,9 @@
 
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_tree_tracker.h"
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/mojom/accessibility_helper.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "ash/constants/app_types.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_helper_instance_remote_proxy.h"
@@ -11,9 +14,6 @@
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_util.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/views/chrome_views_test_base.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/mojom/accessibility_helper.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "components/exo/shell_surface_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"

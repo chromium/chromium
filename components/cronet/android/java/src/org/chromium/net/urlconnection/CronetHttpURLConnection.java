@@ -4,7 +4,6 @@
 
 package org.chromium.net.urlconnection;
 
-import android.annotation.SuppressLint;
 import android.net.TrafficStats;
 import android.os.Build;
 import android.util.Log;
@@ -237,22 +236,15 @@ public class CronetHttpURLConnection extends HttpURLConnection {
      * Helper method to get content length passed in by
      * {@link #setFixedLengthStreamingMode}
      */
-    // TODO(crbug.com/762630): Fix and remove suppression.
-    @SuppressLint("NewApi")
     private long getStreamingModeContentLength() {
+        // Calling setFixedLengthStreamingMode(long) does not seem to set fixedContentLength (same
+        // for setFixedLengthStreamingMode(int) and fixedContentLengthLong). Check both to get this
+        // right.
         long contentLength = fixedContentLength;
-        // Use reflection to see whether fixedContentLengthLong (only added
-        // in API 19) is inherited.
-        try {
-            Class<?> parent = this.getClass();
-            long superFixedContentLengthLong =
-                    parent.getField("fixedContentLengthLong").getLong(this);
-            if (superFixedContentLengthLong != -1) {
-                contentLength = superFixedContentLengthLong;
-            }
-        } catch (NoSuchFieldException | IllegalAccessException e) {
-            // Ignored.
+        if (fixedContentLengthLong != -1) {
+            contentLength = fixedContentLengthLong;
         }
+
         return contentLength;
     }
 

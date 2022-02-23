@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 #include "net/filter/filter_source_stream.h"
 #include "net/filter/gzip_header.h"

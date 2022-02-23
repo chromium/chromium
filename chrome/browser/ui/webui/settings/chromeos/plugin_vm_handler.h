@@ -30,9 +30,9 @@ class PluginVmHandler : public ::settings::SettingsPageUIHandler {
  private:
   // Checks if Plugin VM would need to be relaunched if the proposed changes are
   // made.
-  void HandleIsRelaunchNeededForNewPermissions(const base::ListValue* args);
+  void HandleIsRelaunchNeededForNewPermissions(base::Value::ConstListView args);
   // Relaunches Plugin VM.
-  void HandleRelaunchPluginVm(const base::ListValue* args);
+  void HandleRelaunchPluginVm(base::Value::ConstListView args);
 
   Profile* profile_;
   // weak_ptr_factory_ should always be last member.

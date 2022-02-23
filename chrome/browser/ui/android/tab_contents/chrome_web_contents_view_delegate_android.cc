@@ -37,6 +37,14 @@ void ChromeWebContentsViewDelegateAndroid::ShowContextMenu(
     helper->ShowContextMenu(render_frame_host, params);
 }
 
+void ChromeWebContentsViewDelegateAndroid::DismissContextMenu() {
+  // ContextMenuHelper is a WebContentsUserData, so it will be the same obj used
+  // in #ShowContextMenu().
+  ContextMenuHelper* helper = ContextMenuHelper::FromWebContents(web_contents_);
+  if (helper)
+    helper->DismissContextMenu();
+}
+
 content::WebContentsViewDelegate* CreateWebContentsViewDelegate(
     content::WebContents* web_contents) {
   return new ChromeWebContentsViewDelegateAndroid(web_contents);

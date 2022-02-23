@@ -7,14 +7,13 @@
 
 #include <stddef.h>
 
-#include <list>
 #include <map>
 #include <memory>
 
 #include "base/compiler_specific.h"
 #include "base/time/time.h"
-#include "components/sync/base/invalidation_interface.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/base/sync_invalidation.h"
 #include "components/sync/engine/cycle/data_type_tracker.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 
@@ -52,6 +51,10 @@ class NudgeTracker {
   // information on how this flag is maintained.
   bool IsRetryRequired() const;
 
+  // Tells this class that a commit message has been sent (note that each sync
+  // cycle may include an arbitrary number of commit messages).
+  void RecordSuccessfulCommitMessage(ModelTypeSet types);
+
   // Tells this class that all required update fetching or committing has
   // completed successfully, as the result of a "normal" sync cycle.
   void RecordSuccessfulSyncCycle(ModelTypeSet types);
@@ -72,7 +75,7 @@ class NudgeTracker {
   // Returns the nudge delay for a remote invalidation.
   base::TimeDelta RecordRemoteInvalidation(
       ModelType type,
-      std::unique_ptr<InvalidationInterface> invalidation);
+      std::unique_ptr<SyncInvalidation> invalidation);
 
   // Take note that an initial sync is pending for this type.
   void RecordInitialSyncRequired(ModelType type);

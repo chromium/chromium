@@ -8,6 +8,7 @@
 #include <set>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
@@ -38,12 +39,17 @@ class ReportingServiceSettings {
   // The service provider matching the name given in a Connector policy. nullptr
   // implies that a corresponding service provider doesn't exist and that these
   // settings are not valid.
-  const ServiceProviderConfig::ServiceProvider* service_provider_ = nullptr;
+  raw_ptr<const ServiceProviderConfig::ServiceProvider> service_provider_ =
+      nullptr;
 
   std::string service_provider_name_;
 
   // The events that are enabled for the current service provider.
   std::set<std::string> enabled_event_names_;
+
+  // The enabled opt-in events for the current service provider, mapping to the
+  // URL patterns that represent on which URL they are enabled.
+  std::map<std::string, std::vector<std::string>> enabled_opt_in_events_;
 };
 
 }  // namespace enterprise_connectors

@@ -9,6 +9,7 @@
 #include <algorithm>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -50,7 +51,7 @@
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/atl.h"
 #endif
 
@@ -115,7 +116,7 @@ class OmniboxResultSelectionIndicator : public views::View {
   SkColor color_;
 
   // Pointer to the parent view.
-  OmniboxResultView* const result_view_;
+  const raw_ptr<OmniboxResultView> result_view_;
 
   // The focus bar is a straight vertical line with half-rounded endcaps. Since
   // this geometry is nontrivial to represent using primitives, it's instead
@@ -146,11 +147,9 @@ OmniboxResultView::OmniboxResultView(
     OmniboxPopupContentsView* popup_contents_view,
     OmniboxEditModel* model,
     size_t model_index)
-    : AnimationDelegateViews(this),
-      popup_contents_view_(popup_contents_view),
+    : popup_contents_view_(popup_contents_view),
       model_(model),
       model_index_(model_index),
-      keyword_slide_animation_(new gfx::SlideAnimation(this)),
       // Using base::Unretained is correct here. 'this' outlives the callback.
       mouse_enter_exit_handler_(
           base::BindRepeating(&OmniboxResultView::UpdateHoverState,
@@ -189,11 +188,6 @@ OmniboxResultView::OmniboxResultView(
 
   const gfx::Insets child_insets(0, 0, 0, OmniboxMatchCellView::kMarginRight);
 
-  // This is intentionally not in the tab order by default, but should be if the
-  // user has full-acessibility mode on. This is because this is a tertiary
-  // priority button, which already has a Shift+Delete shortcut.
-  // TODO(tommycli): Make sure we announce the Shift+Delete capability in the
-  // accessibility node data for removable suggestions.
   remove_suggestion_button_ = suggestion_button_container->AddChildView(
       std::make_unique<OmniboxRemoveSuggestionButton>(base::BindRepeating(
           &OmniboxResultView::ButtonPressed, base::Unretained(this),
@@ -250,7 +244,6 @@ SkColor OmniboxResultView::GetColor(OmniboxPart part) const {
 
 void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
   match_ = match.GetMatchWithContentsAndDescriptionPossiblySwapped();
-  keyword_slide_animation_->Reset();
 
   const int suggestion_indent =
       popup_contents_view_->InExplicitExperimentalKeywordMode() ? 70 : 0;
@@ -273,30 +266,10 @@ void OmniboxResultView::SetMatch(const AutocompleteMatch& match) {
     suggestion_view_->description()->SetTextWithStyling(
         match_.description, match_.description_class, deemphasize);
   }
-
-  // |keyword_view_| only needs to be updated if the keyword search button is
-  // not enabled.
-  if (!OmniboxFieldTrial::IsKeywordSearchButtonEnabled()) {
-    AutocompleteMatch* keyword_match = match_.associated_keyword.get();
-    keyword_view_->SetVisible(keyword_match != nullptr);
-    if (keyword_match) {
-      keyword_view_->content()->SetTextWithStyling(
-          keyword_match->contents, keyword_match->contents_class);
-      keyword_view_->description()->SetTextWithStyling(
-          keyword_match->description, keyword_match->description_class);
-    }
-  }
   button_row_->UpdateFromModel();
 
   ApplyThemeAndRefreshIcons();
   SetWidths();
-}
-
-void OmniboxResultView::ShowKeywordSlideAnimation(bool show_keyword) {
-  if (show_keyword)
-    keyword_slide_animation_->Show();
-  else
-    keyword_slide_animation_->Hide();
 }
 
 void OmniboxResultView::ApplyThemeAndRefreshIcons(bool force_reapply_styles) {
@@ -383,13 +356,6 @@ void OmniboxResultView::OnSelectionStateChanged() {
         selection_state == OmniboxPopupSelection::NORMAL) {
       popup_contents_view_->FireAXEventsForNewActiveDescendant(this);
     }
-
-    // The slide animation is not used in the new suggestion button row UI.
-    ShowKeywordSlideAnimation(
-        !OmniboxFieldTrial::IsKeywordSearchButtonEnabled() &&
-        selection_state == OmniboxPopupSelection::KEYWORD_MODE);
-  } else {
-    ShowKeywordSlideAnimation(false);
   }
   ApplyThemeAndRefreshIcons();
 }
@@ -572,13 +538,8 @@ void OmniboxResultView::UpdateRemoveSuggestionVisibility() {
 }
 
 void OmniboxResultView::SetWidths() {
-  // TODO(pkasting): Use an animating layout manager
-  const int min_keyword_width =
-      std::min(OmniboxMatchCellView::GetTextIndent(), width());
   keyword_view_->SetPreferredSize(
-      {keyword_slide_animation_->CurrentValueBetween(min_keyword_width,
-                                                     width()),
-       keyword_view_->CalculatePreferredSize().height()});
+      {width(), keyword_view_->CalculatePreferredSize().height()});
 
   InvalidateLayout();
 }
@@ -587,16 +548,11 @@ void OmniboxResultView::SetWidths() {
 // OmniboxResultView, views::View overrides, private:
 
 void OmniboxResultView::OnBoundsChanged(const gfx::Rect& previous_bounds) {
-  keyword_slide_animation_->SetSlideDuration(base::Milliseconds(width() / 4));
   SetWidths();
 }
 
 ////////////////////////////////////////////////////////////////////////////////
-// OmniboxResultView, views::AnimationDelegateViews overrides, private:
-
-void OmniboxResultView::AnimationProgressed(const gfx::Animation* animation) {
-  SetWidths();
-}
+// OmniboxResultView, overrides, private:
 
 DEFINE_ENUM_CONVERTERS(OmniboxPartState,
                        {OmniboxPartState::NORMAL, u"NORMAL"},

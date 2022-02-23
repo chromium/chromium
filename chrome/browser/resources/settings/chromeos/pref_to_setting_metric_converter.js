@@ -8,13 +8,11 @@
  * to pref-based settings.
  */
 
-// clang-format off
-// #import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js'
-// #import '../constants/setting.mojom-lite.js';
-// #import '../search/user_action_recorder.mojom-lite.js';
-// clang-format on
+import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
+import '../constants/setting.mojom-lite.js';
+import '../search/user_action_recorder.mojom-lite.js';
 
-/* #export */ class PrefToSettingMetricConverter {
+export class PrefToSettingMetricConverter {
   /**
    * @param {string} prefKey
    * @param {*} prefValue

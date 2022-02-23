@@ -299,9 +299,18 @@ class MockContentAutofillDriver : public ContentAutofillDriver {
 // RemoteFrameTokens.)
 class FormForestTest : public content::RenderViewHostTestHarness {
  public:
-  // The frame's permissions policy affects which fields may be filled (see
+  // "Shared-autofill" may be enabled or disabled per frame for certain origins.
+  // The enum constants correspond to the following permission policies:
+  // - kDefault is the default policy, which enables shared-autofill on the
+  //   main frame origin.
+  // - kSharedAutofill explicitly enables shared-autofill on a (child-) frame
+  //   for its current origin.
+  // - kNoSharedAutofill explicitly disables shared-autofill on a frame for all
+  //   origins.
+  // Child frames inherit the policy from their parents.
+  // "Shared-autofill" restricts cross-origin filling (see
   // FormForest::GetBrowserFormOfRendererForm() for details).
-  enum class Policy { kNone, kSharedAutofill };
+  enum class Policy { kDefault, kSharedAutofill, kNoSharedAutofill };
 
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
@@ -314,9 +323,22 @@ class FormForestTest : public content::RenderViewHostTestHarness {
   }
 
  protected:
-  MockContentAutofillDriver* NavigateMainFrame(const GURL& url) {
-    content::NavigationSimulator::CreateBrowserInitiated(url, web_contents())
-        ->Commit();
+  MockContentAutofillDriver* NavigateMainFrame(
+      const GURL& url,
+      Policy policy = Policy::kDefault) {
+    auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+        url, web_contents());
+    switch (policy) {
+      case Policy::kDefault:
+        break;
+      case Policy::kSharedAutofill:
+        simulator->SetPermissionsPolicyHeader(AllowSharedAutofill(Origin(url)));
+        break;
+      case Policy::kNoSharedAutofill:
+        simulator->SetPermissionsPolicyHeader(DisallowSharedAutofill());
+        break;
+    }
+    simulator->Commit();
     return GetOrCreateDriver(main_rfh());
   }
 
@@ -327,20 +349,41 @@ class FormForestTest : public content::RenderViewHostTestHarness {
       const GURL& url,
       Policy policy,
       base::StringPiece name) {
-    auto permissions =
-        policy != Policy::kSharedAutofill
-            ? blink::ParsedPermissionsPolicy()
-            : blink::ParsedPermissionsPolicy(
-                  {blink::ParsedPermissionsPolicyDeclaration(
-                      blink::mojom::PermissionsPolicyFeature::kSharedAutofill,
-                      {Origin(url)}, false, false)});
+    blink::ParsedPermissionsPolicy declared_policy;
+    switch (policy) {
+      case Policy::kDefault:
+        declared_policy = {};
+        break;
+      case Policy::kSharedAutofill:
+        declared_policy = AllowSharedAutofill(Origin(url));
+        break;
+      case Policy::kNoSharedAutofill:
+        declared_policy = DisallowSharedAutofill();
+        break;
+    }
     content::RenderFrameHost* rfh =
         content::RenderFrameHostTester::For(parent->render_frame_host())
-            ->AppendChildWithPolicy(std::string(name), permissions);
+            ->AppendChildWithPolicy(static_cast<std::string>(name),
+                                    declared_policy);
     return NavigateFrame(rfh, url);
   }
 
  private:
+  // Explicitly allows shared-autofill on |origin|.
+  static blink::ParsedPermissionsPolicy AllowSharedAutofill(
+      url::Origin origin) {
+    return {blink::ParsedPermissionsPolicyDeclaration(
+        blink::mojom::PermissionsPolicyFeature::kSharedAutofill, {origin},
+        false, false)};
+  }
+
+  // Explicitly disallows shared-autofill on all origins.
+  static blink::ParsedPermissionsPolicy DisallowSharedAutofill() {
+    return {blink::ParsedPermissionsPolicyDeclaration(
+        blink::mojom::PermissionsPolicyFeature::kSharedAutofill, {}, false,
+        false)};
+  }
+
   MockContentAutofillDriver* NavigateFrame(content::RenderFrameHost* rfh,
                                            const GURL& url) {
     rfh = content::NavigationSimulator::NavigateAndCommitFromDocument(url, rfh);
@@ -376,7 +419,7 @@ class FormForestTestWithMockedTree : public FormForestTest {
     // MockFormForest().
     std::string url = "";
     std::vector<FormInfo> forms = {};
-    FormForestTest::Policy policy = FormForestTest::Policy::kNone;
+    FormForestTest::Policy policy = FormForestTest::Policy::kDefault;
     // The index of the last field from the parent form that precedes this
     // frame. This is analogous to FormData::child_frames[i].predecessor.
     int field_predecessor = std::numeric_limits<int>::max();
@@ -414,12 +457,12 @@ class FormForestTestWithMockedTree : public FormForestTest {
                  : (!parent_driver ? kMainUrl : kIframeUrl));
     MockContentAutofillDriver* driver =
         !parent_driver
-            ? NavigateMainFrame(url)
+            ? NavigateMainFrame(url, frame_info.policy)
             : CreateAndNavigateChildFrame(parent_driver, url, frame_info.policy,
                                           frame_info.name);
     if (!frame_info.name.empty()) {
       CHECK(!base::Contains(drivers_, frame_info.name));
-      drivers_.emplace(std::string(frame_info.name), driver);
+      drivers_.emplace(frame_info.name, driver);
     }
 
     std::vector<FormData> forms;
@@ -1480,8 +1523,9 @@ TEST_F(FormForestTestUnflatten, InterruptedSameOriginPolicy) {
               UnorderedArrayEquals(expectation));
 }
 
-// Tests that (only) non-sensitive fields are filled cross-origin into the main
-// frame's origin.
+// Tests that (only) non-sensitive fields are filled across origin into the main
+// frame's origin (since the main frame has the shared-autofill policy by
+// default).
 TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
   MockFormForest(
       {.url = kMainUrl,
@@ -1499,6 +1543,26 @@ TEST_F(FormForestTestUnflatten, MainOriginPolicy) {
     expectation[0].fields[i].value.clear();
     expectation[1].fields[i].value.clear();
   }
+  EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kIframeUrl),
+                                            FieldTypeMap("main")),
+              UnorderedArrayEquals(expectation));
+}
+
+// Tests that no fields are filled across origin into frames where
+// shared-autofill is disabled (not even into non-sensitive fields).
+TEST_F(FormForestTestUnflatten, MainOriginPolicyWithoutSharedAutofill) {
+  MockFormForest(
+      {.url = kMainUrl,
+       .forms = {{.name = "main",
+                  .frames = {{.url = kMainUrl, .forms = {{.name = "child1"}}},
+                             {.url = kIframeUrl,
+                              .forms = {{.name = "child2"}}}}}},
+       .policy = Policy::kNoSharedAutofill});
+  MockFlattening({{"main"}, {"child1"}, {"child2"}});
+  std::vector<FormData> expectation = {
+      WithoutValues(GetMockedForm("main")),
+      WithoutValues(GetMockedForm("child1")),
+      WithValues(GetMockedForm("child2"), Profile(2))};
   EXPECT_THAT(GetRendererFormsOfBrowserForm("main", Origin(kIframeUrl),
                                             FieldTypeMap("main")),
               UnorderedArrayEquals(expectation));
@@ -1549,8 +1613,8 @@ TEST_F(FormForestTestUnflattenSharedAutofillPolicy, FromOtherOrigin) {
 TEST(FormForestTest, FrameDataComparator) {
   FrameData::CompareByFrameToken less;
   std::unique_ptr<FrameData> null;
-  auto x = std::make_unique<FrameData>(test::GetLocalFrameToken());
-  auto xx = std::make_unique<FrameData>(test::GetLocalFrameToken());
+  auto x = std::make_unique<FrameData>(test::MakeLocalFrameToken());
+  auto xx = std::make_unique<FrameData>(test::MakeLocalFrameToken());
   auto y = std::make_unique<FrameData>(
       LocalFrameToken(base::UnguessableToken::Deserialize(
           x->frame_token->GetHighForSerialization() + 1,

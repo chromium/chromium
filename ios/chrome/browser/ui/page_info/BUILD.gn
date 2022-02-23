@@ -9,6 +9,7 @@ source_set("page_info") {
     "page_info_site_security_description.mm",
     "page_info_view_controller.h",
     "page_info_view_controller.mm",
+    "page_info_view_controller_permissions_delegate.h",
   ]
   deps = [
     "resources:security_icon_dangerous",
@@ -24,6 +25,7 @@ source_set("page_info") {
     "//ios/chrome/app/theme",
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/fancy_ui",
@@ -38,8 +40,7 @@ source_set("page_info") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/util",
     "//ios/components/webui:url_constants",
-    "//ios/web",
-    "//ios/web/public/security",
+    "//ios/web/public/permissions",
     "//ui/base",
     "//ui/gfx",
     "//url",
@@ -61,6 +62,8 @@ source_set("coordinator") {
   sources = [
     "page_info_coordinator.h",
     "page_info_coordinator.mm",
+    "page_info_permissions_mediator.h",
+    "page_info_permissions_mediator.mm",
     "page_info_site_security_mediator.h",
     "page_info_site_security_mediator.mm",
   ]
@@ -93,11 +96,29 @@ source_set("coordinator") {
     "//ios/chrome/browser/web_state_list",
     "//ios/components/webui:url_constants",
     "//ios/web",
+    "//ios/web/common:features",
     "//ios/web/public",
+    "//ios/web/public/permissions",
     "//ios/web/public/security",
     "//ui/base",
   ]
   frameworks = [ "UIKit.framework" ]
+}
+
+source_set("unit_tests") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  testonly = true
+  sources = [ "page_info_permissions_mediator_unittest.mm" ]
+  deps = [
+    ":coordinator",
+    "//base",
+    "//base/test:test_support",
+    "//ios/chrome/test:test_support",
+    "//ios/web/common",
+    "//ios/web/public/permissions",
+    "//ios/web/public/test/fakes",
+    "//testing/gtest:gtest",
+  ]
 }
 
 source_set("eg2_tests") {
@@ -112,12 +133,12 @@ source_set("eg2_tests") {
     "//components/strings",
     "//ios/chrome/app/strings",
     "//ios/chrome/test/earl_grey:eg_test_support+eg2",
+    "//ios/testing:block_swizzler",
     "//ios/testing/earl_grey:eg_test_support+eg2",
     "//ios/third_party/earl_grey2:test_lib",
+    "//ios/web/common",
+    "//ios/web/public/permissions",
+    "//net:test_support",
     "//ui/base",
-  ]
-  frameworks = [
-    "UIKit.framework",
-    "XCTest.framework",
   ]
 }

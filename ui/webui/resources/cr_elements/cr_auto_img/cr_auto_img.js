@@ -15,6 +15,12 @@
  *
  *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png"></img>
  *
+ *      If your image needs to be fetched using cookies, you can use the
+ *      with-cookies attribute as follows:
+ *
+ *      <img is="cr-auto-img" auto-src="https://foo.com/bar.png" with-cookies>
+ *      </img>
+ *
  * NOTE: Since <cr-auto-img> may use the chrome://image data source some images
  * may be transcoded to PNG.
  */
@@ -22,12 +28,14 @@
 /** @type {string} */
 const AUTO_SRC = 'auto-src';
 
+/** @type {string} */
+const WITH_COOKIES = 'with-cookies';
+
 export class CrAutoImgElement extends HTMLImageElement {
   static get observedAttributes() {
-    return [AUTO_SRC];
+    return [AUTO_SRC, WITH_COOKIES];
   }
 
-  /** @override */
   attributeChangedCallback(name, oldValue, newValue) {
     if (name !== AUTO_SRC) {
       return;
@@ -46,6 +54,9 @@ export class CrAutoImgElement extends HTMLImageElement {
       this.removeAttribute('src');
     } else if (url.protocol === 'data:' || url.protocol === 'chrome:') {
       this.src = url.href;
+    } else if (this.hasAttribute(WITH_COOKIES)) {
+      this.src =
+          `chrome://image?url=${encodeURIComponent(url.href)}&withCookies=true`;
     } else {
       this.src = 'chrome://image?' + url.href;
     }
@@ -59,6 +70,16 @@ export class CrAutoImgElement extends HTMLImageElement {
   /** @return {string} */
   get autoSrc() {
     return this.getAttribute(AUTO_SRC);
+  }
+
+  /** @param {string} _ */
+  set withCookies(_) {
+    this.setAttribute(WITH_COOKIES, '');
+  }
+
+  /** @return {string} */
+  get withCookies() {
+    return this.getAttribute(WITH_COOKIES);
   }
 }
 

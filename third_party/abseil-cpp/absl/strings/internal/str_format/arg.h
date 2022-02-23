@@ -144,7 +144,7 @@ StringConvertResult FormatConvertImpl(const AbslCord& value,
   size_t space_remaining = 0;
 
   int width = conv.width();
-  if (width >= 0) space_remaining = width;
+  if (width >= 0) space_remaining = static_cast<size_t>(width);
 
   size_t to_write = value.size();
 

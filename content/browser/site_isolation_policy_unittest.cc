@@ -7,7 +7,10 @@
 #include "base/command_line.h"
 #include "base/test/scoped_command_line.h"
 #include "build/build_config.h"
+#include "content/public/browser/content_browser_client.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/browser_task_environment.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -38,7 +41,7 @@ TEST(SiteIsolationPolicyTest, DisableSiteIsolationSwitch) {
   EXPECT_TRUE(SiteIsolationPolicy::IsErrorPageIsolationEnabled(true));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Since https://crbug.com/910273, the kDisableSiteIsolationForPolicy switch is
 // only available/used on Android.
 TEST(SiteIsolationPolicyTest, DisableSiteIsolationForPolicySwitch) {
@@ -63,5 +66,101 @@ TEST(SiteIsolationPolicyTest, DisableSiteIsolationForPolicySwitch) {
   EXPECT_TRUE(SiteIsolationPolicy::IsErrorPageIsolationEnabled(true));
 }
 #endif
+
+class ApplicationIsolationEnablingBrowserClient : public ContentBrowserClient {
+ public:
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override {
+    return true;
+  }
+};
+
+class SiteIsolationPolicyIsolatedApplicationTest : public testing::Test {
+ public:
+  void SetUp() override {
+    SiteIsolationPolicy::DisableFlagCachingForTesting();
+    old_client_ = SetBrowserClientForTesting(&test_client_);
+  }
+
+  void TearDown() override { SetBrowserClientForTesting(old_client_); }
+
+ private:
+  BrowserTaskEnvironment task_environment_;
+  ApplicationIsolationEnablingBrowserClient test_client_;
+  raw_ptr<ContentBrowserClient> old_client_;
+};
+
+TEST_F(SiteIsolationPolicyIsolatedApplicationTest, Disabled) {
+  GURL origin_url("https://www.bar.com");
+
+  EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, origin_url));
+  EXPECT_FALSE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
+}
+
+TEST_F(SiteIsolationPolicyIsolatedApplicationTest, MatchingOrigin) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins,
+      "https://www.foo.com,https://www.bar.com");
+
+  GURL origin_url("https://www.bar.com");
+  EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, origin_url));
+  EXPECT_TRUE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
+}
+
+TEST_F(SiteIsolationPolicyIsolatedApplicationTest, NotMatchingOrigin) {
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins,
+      "https://www.foo.com,https://www.bar.com");
+
+  GURL origin_url("https://www.not-allowed.com");
+  EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, origin_url));
+  EXPECT_TRUE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
+}
+
+TEST_F(SiteIsolationPolicyIsolatedApplicationTest, InvalidOrigin) {
+  std::string origin_string = "hdsdhdfhdh";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins, origin_string);
+
+  // Fails to convert into an origin, which leads to an empty origin.
+  GURL origin_url(origin_string);
+  EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, origin_url));
+  EXPECT_FALSE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
+}
+
+TEST_F(SiteIsolationPolicyIsolatedApplicationTest, FlagTypo) {
+  // Verifies user typo in the origin for the command line flag
+  // doesn't accidentally allow all origins.
+
+  std::string invalid_origin_string = "htps://www.app.com";
+  std::string valid_origin_string = "https://www.app.com";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins, invalid_origin_string);
+
+  GURL valid_origin_url(valid_origin_string);
+  EXPECT_FALSE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, valid_origin_url));
+  EXPECT_FALSE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
+}
+
+TEST_F(SiteIsolationPolicyIsolatedApplicationTest, PortRemoved) {
+  // Verifies that ports given to kRestrictedApiOrigins are ignored, and all
+  // ports on the provided scheme+hostname pair will gain restricted API access.
+  std::string origin_string = "https://app.com:1234";
+  base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+      switches::kRestrictedApiOrigins, origin_string);
+
+  EXPECT_TRUE(SiteIsolationPolicy::IsApplicationIsolationLevelEnabled());
+  EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, GURL(origin_string)));
+  EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, GURL("https://app.com")));
+  EXPECT_TRUE(SiteIsolationPolicy::ShouldUrlUseApplicationIsolationLevel(
+      /*browser_context=*/nullptr, GURL("https://app.com:443")));
+}
 
 }  // namespace content

@@ -8,6 +8,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/task_runner_util.h"
@@ -16,9 +17,8 @@
 #include "components/signin/public/identity_manager/account_info.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/sync/base/bind_to_task_runner.h"
-#include "components/sync/base/sync_base_switches.h"
-#include "components/sync/driver/sync_driver_switches.h"
-#include "components/sync/engine/sync_engine_switches.h"
+#include "components/sync/base/command_line_switches.h"
+#include "components/sync/base/features.h"
 #include "components/sync/trusted_vault/standalone_trusted_vault_backend.h"
 #include "components/sync/trusted_vault/trusted_vault_access_token_fetcher_impl.h"
 #include "components/sync/trusted_vault/trusted_vault_connection_impl.h"
@@ -38,7 +38,7 @@ constexpr char kDefaultTrustedVaultServiceURL[] =
 GURL ExtractTrustedVaultServiceURLFromCommandLine() {
   std::string string_url =
       base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII(
-          switches::kTrustedVaultServiceURL);
+          kTrustedVaultServiceURL);
   if (string_url.empty()) {
     // Command line switch is not specified or is not a valid ASCII string.
     return GURL(kDefaultTrustedVaultServiceURL);
@@ -75,7 +75,7 @@ class IdentityManagerObserver : public signin::IdentityManager::Observer {
   const scoped_refptr<base::SequencedTaskRunner> backend_task_runner_;
   const scoped_refptr<StandaloneTrustedVaultBackend> backend_;
   const base::RepeatingClosure notify_keys_changed_callback_;
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   CoreAccountInfo primary_account_;
 };
 
@@ -209,8 +209,7 @@ StandaloneTrustedVaultClient::StandaloneTrustedVaultClient(
   std::unique_ptr<TrustedVaultConnection> connection;
   GURL trusted_vault_service_gurl =
       ExtractTrustedVaultServiceURLFromCommandLine();
-  if (base::FeatureList::IsEnabled(
-          switches::kSyncTrustedVaultPassphraseRecovery) &&
+  if (base::FeatureList::IsEnabled(kSyncTrustedVaultPassphraseRecovery) &&
       trusted_vault_service_gurl.is_valid()) {
     connection = std::make_unique<TrustedVaultConnectionImpl>(
         trusted_vault_service_gurl, url_loader_factory->Clone(),
@@ -316,6 +315,16 @@ void StandaloneTrustedVaultClient::AddTrustedRecoveryMethod(
       base::BindOnce(&StandaloneTrustedVaultBackend::AddTrustedRecoveryMethod,
                      backend_, gaia_id, public_key, method_type_hint,
                      BindToCurrentSequence(std::move(cb))));
+}
+
+void StandaloneTrustedVaultClient::ClearDataForAccount(
+    const CoreAccountInfo& account_info) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  DCHECK(backend_);
+  backend_task_runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(&StandaloneTrustedVaultBackend::ClearDataForAccount,
+                     backend_, account_info));
 }
 
 void StandaloneTrustedVaultClient::WaitForFlushForTesting(

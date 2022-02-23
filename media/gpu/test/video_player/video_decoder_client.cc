@@ -200,7 +200,12 @@ void VideoDecoderClient::CreateDecoderTask(bool* success,
       decoder_ = std::make_unique<TestVDAVideoDecoder>(
           decoder_client_config_.implementation ==
               DecoderImplementation::kVDVDA,
-          gfx::ColorSpace(), frame_renderer_.get(), gpu_memory_buffer_factory_);
+          // base::Unretained(this) is safe because |decoder_| is owned by
+          // |*this|. The lifetime of |decoder_| must be shorter than |*this|.
+          base::BindRepeating(&VideoDecoderClient::ResolutionChangeTask,
+                              base::Unretained(this)),
+          gfx::ColorSpace(), frame_renderer_.get(), gpu_memory_buffer_factory_,
+          decoder_client_config_.linear_output);
       break;
   }
 
@@ -218,7 +223,7 @@ void VideoDecoderClient::InitializeDecoderTask(const Video* video,
 
   video_ = video;
   encoded_data_helper_ =
-      std::make_unique<EncodedDataHelper>(video_->Data(), video_->Profile());
+      std::make_unique<EncodedDataHelper>(video_->Data(), video_->Codec());
 
   // (Re-)initialize the decoder.
   VideoDecoderConfig config(
@@ -229,7 +234,7 @@ void VideoDecoderClient::InitializeDecoderTask(const Video* video,
 
   VideoDecoder::InitCB init_cb = base::BindOnce(
       CallbackThunk<decltype(&VideoDecoderClient::DecoderInitializedTask),
-                    Status>,
+                    DecoderStatus>,
       weak_this_, decoder_client_thread_.task_runner(),
       &VideoDecoderClient::DecoderInitializedTask);
   VideoDecoder::OutputCB output_cb = base::BindRepeating(
@@ -304,13 +309,18 @@ void VideoDecoderClient::DecodeNextFragmentTask() {
     return;
   }
   bitstream_buffer->set_timestamp(base::TimeTicks::Now().since_origin());
-  bool has_config_info = media::test::EncodedDataHelper::HasConfigInfo(
-      bitstream_buffer->data(), bitstream_buffer->data_size(),
-      video_->Profile());
+
+  bool has_config_info = false;
+  if (video_->Codec() == media::VideoCodec::kH264 ||
+      video_->Codec() == media::VideoCodec::kHEVC) {
+    has_config_info = media::test::EncodedDataHelper::HasConfigInfo(
+        bitstream_buffer->data(), bitstream_buffer->data_size(),
+        video_->Profile());
+  }
 
   VideoDecoder::DecodeCB decode_cb = base::BindOnce(
       CallbackThunk<decltype(&VideoDecoderClient::DecodeDoneTask),
-                    media::Status>,
+                    DecoderStatus>,
       weak_this_, decoder_client_thread_.task_runner(),
       &VideoDecoderClient::DecodeDoneTask);
   decoder_->Decode(std::move(bitstream_buffer), std::move(decode_cb));
@@ -331,7 +341,7 @@ void VideoDecoderClient::FlushTask() {
 
   VideoDecoder::DecodeCB flush_done_cb =
       base::BindOnce(CallbackThunk<decltype(&VideoDecoderClient::FlushDoneTask),
-                                   media::Status>,
+                                   DecoderStatus>,
                      weak_this_, decoder_client_thread_.task_runner(),
                      &VideoDecoderClient::FlushDoneTask);
   decoder_->Decode(DecoderBuffer::CreateEOSBuffer(), std::move(flush_done_cb));
@@ -355,7 +365,7 @@ void VideoDecoderClient::ResetTask() {
   FireEvent(VideoPlayerEvent::kResetting);
 }
 
-void VideoDecoderClient::DecoderInitializedTask(Status status) {
+void VideoDecoderClient::DecoderInitializedTask(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK(decoder_client_state_ == VideoDecoderClientState::kUninitialized ||
          decoder_client_state_ == VideoDecoderClientState::kIdle);
@@ -365,10 +375,10 @@ void VideoDecoderClient::DecoderInitializedTask(Status status) {
   FireEvent(VideoPlayerEvent::kInitialized);
 }
 
-void VideoDecoderClient::DecodeDoneTask(media::Status status) {
+void VideoDecoderClient::DecodeDoneTask(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK_NE(VideoDecoderClientState::kIdle, decoder_client_state_);
-  ASSERT_TRUE(status.code() != media::StatusCode::kAborted ||
+  ASSERT_TRUE(status != DecoderStatus::Codes::kAborted ||
               decoder_client_state_ == VideoDecoderClientState::kResetting);
   DVLOGF(4);
 
@@ -397,7 +407,7 @@ void VideoDecoderClient::FrameReadyTask(scoped_refptr<VideoFrame> video_frame) {
   current_frame_index_++;
 }
 
-void VideoDecoderClient::FlushDoneTask(media::Status status) {
+void VideoDecoderClient::FlushDoneTask(DecoderStatus status) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
   DCHECK_EQ(0u, num_outstanding_decode_requests_);
 
@@ -422,7 +432,13 @@ void VideoDecoderClient::ResetDoneTask() {
   FireEvent(VideoPlayerEvent::kResetDone);
 }
 
-void VideoDecoderClient::FireEvent(VideoPlayerEvent event) {
+bool VideoDecoderClient::ResolutionChangeTask() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
+
+  return FireEvent(VideoPlayerEvent::kNewBuffersRequested);
+}
+
+bool VideoDecoderClient::FireEvent(VideoPlayerEvent event) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(decoder_client_sequence_checker_);
 
   bool continue_decoding = event_cb_.Run(event);
@@ -430,6 +446,7 @@ void VideoDecoderClient::FireEvent(VideoPlayerEvent event) {
     // Changing the state to idle will abort any pending decodes.
     decoder_client_state_ = VideoDecoderClientState::kIdle;
   }
+  return continue_decoding;
 }
 
 }  // namespace test

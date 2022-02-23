@@ -154,6 +154,14 @@ gfx::Rect TranslateBoundsToParentCoordinates(const gfx::Rect& child_bounds,
       child_bounds.size());
 }
 
+gfx::RectF TranslateBoundsToParentCoordinatesF(
+    const gfx::RectF& child_bounds,
+    const gfx::RectF& parent_bounds) {
+  return gfx::RectF(
+      (child_bounds.origin() - parent_bounds.origin().OffsetFromOrigin()),
+      child_bounds.size());
+}
+
 gfx::Rect TranslateBoundsToTopLevelCoordinates(const gfx::Rect& child_bounds,
                                                const gfx::Rect& parent_bounds) {
   return gfx::Rect(
@@ -230,9 +238,9 @@ gfx::Rect ApplyWaylandTransform(const gfx::Rect& rect,
   return result;
 }
 
-gfx::Size ApplyWaylandTransform(const gfx::Size& size,
-                                wl_output_transform transform) {
-  gfx::Size result = size;
+gfx::SizeF ApplyWaylandTransform(const gfx::SizeF& size,
+                                 wl_output_transform transform) {
+  gfx::SizeF result = size;
   switch (transform) {
     case WL_OUTPUT_TRANSFORM_NORMAL:
     case WL_OUTPUT_TRANSFORM_FLIPPED:

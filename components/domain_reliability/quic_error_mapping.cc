@@ -463,6 +463,8 @@ const struct QuicErrorMapping {
      "quic::quic_tls_keying_material_exports_mismatch"},
     {quic::QUIC_TLS_KEYING_MATERIAL_EXPORT_NOT_AVAILABLE,
      "quic::quic_tls_keying_material_export_not_available"},
+    {quic::QUIC_UNEXPECTED_DATA_BEFORE_ENCRYPTION_ESTABLISHED,
+     "quic::quic_unexpected_data_before_encryption_established"},
 
     // No error. Used as bound while iterating.
     {quic::QUIC_LAST_ERROR, "quic.last_error"}};

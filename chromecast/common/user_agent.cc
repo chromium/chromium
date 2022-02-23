@@ -20,7 +20,7 @@ namespace chromecast {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::string BuildAndroidOsInfo() {
   int32_t os_major_version = 0;
   int32_t os_minor_version = 0;
@@ -68,7 +68,7 @@ std::string GetChromiumUserAgent() {
   std::string product = "Chrome/" PRODUCT_VERSION;
   std::string os_info;
   base::StringAppendF(&os_info, "%s%s",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
                       "Linux; ", BuildAndroidOsInfo().c_str()
 #else
                       "X11; ",

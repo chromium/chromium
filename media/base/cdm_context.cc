@@ -4,6 +4,7 @@
 
 #include "media/base/cdm_context.h"
 
+#include "build/build_config.h"
 #include "media/base/callback_registry.h"
 
 namespace media {
@@ -29,7 +30,7 @@ std::string CdmContext::CdmIdToString(const base::UnguessableToken* cdm_id) {
   return cdm_id ? cdm_id->ToString() : "null";
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool CdmContext::RequiresMediaFoundationRenderer() {
   return false;
 }
@@ -40,19 +41,19 @@ bool CdmContext::GetMediaFoundationCdmProxy(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 MediaCryptoContext* CdmContext::GetMediaCryptoContext() {
   return nullptr;
 }
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 FuchsiaCdmContext* CdmContext::GetFuchsiaCdmContext() {
   return nullptr;
 }
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 chromeos::ChromeOsCdmContext* CdmContext::GetChromeOsCdmContext() {
   return nullptr;
 }

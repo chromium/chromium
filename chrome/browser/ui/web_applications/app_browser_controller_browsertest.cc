@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "build/chromeos_buildflags.h"
@@ -25,10 +26,10 @@
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/test/test_system_web_app_installation.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -84,7 +85,7 @@ class LoadFinishedWaiter : public TabStripModelObserver,
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   SkColor color_at_navigation_;
   base::RunLoop run_loop_;
 };
@@ -168,8 +169,8 @@ class AppBrowserControllerBrowserTest : public InProcessBrowserTest {
         ->GetVisibleURL();
   }
 
-  Profile* profile_ = nullptr;
-  Browser* app_browser_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
+  raw_ptr<Browser> app_browser_ = nullptr;
   GURL tabbed_app_url_;
 
  private:

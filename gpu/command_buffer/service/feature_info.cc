@@ -29,7 +29,7 @@
 #include "ui/gl/gl_switches.h"
 #include "ui/gl/gl_version_info.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 #include "ui/gl/gl_fence_egl.h"
 #else
 #include "base/mac/mac_util.h"
@@ -190,27 +190,24 @@ FeatureInfo::FeatureInfo(
   InitializeBasicState(base::CommandLine::InitializedForCurrentProcess()
                            ? base::CommandLine::ForCurrentProcess()
                            : nullptr);
-  feature_flags_.chromium_raster_transport =
-      gpu_feature_info.status_values[GPU_FEATURE_TYPE_OOP_RASTERIZATION] ==
-      gpu::kGpuFeatureStatusEnabled;
   feature_flags_.android_surface_control =
       gpu_feature_info
           .status_values[GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] ==
       gpu::kGpuFeatureStatusEnabled;
 
-#if defined(OS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_CHROMECAST)
   feature_flags_.chromium_image_ycbcr_420v = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::YUV_420_BIPLANAR);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   feature_flags_.chromium_image_ycbcr_420v = true;
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   feature_flags_.chromium_image_ycbcr_p010 = base::Contains(
       gpu_feature_info.supported_buffer_formats_for_allocation_and_texturing,
       gfx::BufferFormat::P010);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   feature_flags_.chromium_image_ycbcr_p010 = base::mac::IsAtLeastOS11();
 #endif
 }
@@ -278,7 +275,7 @@ void FeatureInfo::InitializeForTesting(ContextType context_type) {
 }
 
 bool IsGL_REDSupportedOnFBOs() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // The glTexImage2D call below can hang on Mac so skip this since it's only
   // really needed to workaround a Mesa issue. See https://crbug.com/1158744.
   return true;
@@ -314,7 +311,7 @@ bool IsGL_REDSupportedOnFBOs() {
   DCHECK(glGetError() == GL_NO_ERROR);
 
   return result;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 void FeatureInfo::EnableCHROMIUMTextureStorageImage() {
@@ -993,7 +990,19 @@ void FeatureInfo::InitializeFeatures() {
     validators_.texture_sized_texture_filterable_internal_format.AddValue(
         GL_BGRA8_EXT);
     feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRA_8888);
-    feature_flags_.gpu_memory_buffer_formats.Add(gfx::BufferFormat::BGRX_8888);
+#if BUILDFLAG(IS_MAC)
+    // TODO(sugoi): Remove this once crbug.com/1276529 is fixed.
+    // On Mac OS, DrawingBuffer is using an IOSurface as its backing storage,
+    // this allows WebGL-rendered canvases to be composited by the OS rather
+    // than Chrome. Currently, this causes an issue on MacOS with SwANGLE when
+    // alpha is false, so disable that case for now so that we go through
+    // emulation.
+    if (!gl_version_info_->is_angle_swiftshader)
+#endif
+    {
+      feature_flags_.gpu_memory_buffer_formats.Add(
+          gfx::BufferFormat::BGRX_8888);
+    }
   }
 
   // On desktop, all devices support BGRA render buffers (note that on desktop
@@ -1238,10 +1247,10 @@ void FeatureInfo::InitializeFeatures() {
         gfx::BufferFormat::YUV_420_BIPLANAR);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac can create GLImages out of AR30 IOSurfaces only after High Sierra.
   feature_flags_.chromium_image_ar30 = base::mac::IsAtLeastOS10_13();
-#elif !defined(OS_WIN)
+#elif !BUILDFLAG(IS_WIN)
   // TODO(mcasas): connect in Windows, https://crbug.com/803451
   // XB30 support was introduced in GLES 3.0/ OpenGL 3.3, before that it was
   // signalled via a specific extension.
@@ -1630,11 +1639,6 @@ void FeatureInfo::InitializeFeatures() {
     AddExtensionString("GL_EXT_debug_marker");
   }
 
-  // UnpremultiplyAndDitherCopyCHROMIUM is only implemented on the full decoder.
-  feature_flags_.unpremultiply_and_dither_copy = !is_passthrough_cmd_decoder_;
-  if (feature_flags_.unpremultiply_and_dither_copy)
-    AddExtensionString("GL_CHROMIUM_unpremultiply_and_dither_copy");
-
   // On D3D, there is only one ref, mask, and writemask setting which applies
   // to both FRONT and BACK faces. This restriction is always applied to WebGL.
   // https://crbug.com/806557
@@ -1678,7 +1682,7 @@ void FeatureInfo::InitializeFeatures() {
 
   EnableWEBGLMultiDrawIfPossible(extensions);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (is_passthrough_cmd_decoder_ &&
       gfx::HasExtension(extensions, "GL_ANGLE_base_vertex_base_instance")) {
 #else
@@ -1721,6 +1725,12 @@ void FeatureInfo::InitializeFeatures() {
                         "GL_AMD_framebuffer_multisample_advanced")) {
     feature_flags_.amd_framebuffer_multisample_advanced = true;
     AddExtensionString("GL_AMD_framebuffer_multisample_advanced");
+  }
+
+  if (gfx::HasExtension(extensions, "GL_ANGLE_rgbx_internal_format")) {
+    feature_flags_.angle_rgbx_internal_format = true;
+    AddExtensionString("GL_ANGLE_rgbx_internal_format");
+    validators_.texture_internal_format_storage.AddValue(GL_RGBX8_ANGLE);
   }
 }
 

@@ -9,6 +9,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/synchronization/lock.h"
 #include "build/build_config.h"
 #include "third_party/blink/renderer/platform/audio/audio_utilities.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -33,8 +34,9 @@ PushPullFIFO::PushPullFIFO(unsigned number_of_channels,
 
 PushPullFIFO::~PushPullFIFO() {
   // Capture metrics only after the FIFO is actually pulled.
-  if (pull_count_ == 0)
+  if (pull_count_ == 0) {
     return;
+  }
 
   // TODO(hongchan): The fast-shutdown process prevents the data below from
   // being collected correctly. Consider using "outside metric collector" that
@@ -61,7 +63,7 @@ void PushPullFIFO::Push(const AudioBus* input_bus) {
   TRACE_EVENT2("webaudio", "PushPullFIFO::Push", "this",
                static_cast<void*>(this), "frames", input_bus->length());
 
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Push under lock");
 
   CHECK(input_bus);
@@ -116,10 +118,10 @@ size_t PushPullFIFO::Pull(AudioBus* output_bus, uint32_t frames_requested) {
   TRACE_EVENT2("webaudio", "PushPullFIFO::Pull", "this",
                static_cast<void*>(this), "frames", frames_requested);
 
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   TRACE_EVENT0("webaudio", "PushPullFIFO::Pull under lock");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!output_bus) {
     // Log when outputBus or FIFO object is invalid. (crbug.com/692423)
     LOG(WARNING) << "[WebAudio/PushPullFIFO::pull <" << static_cast<void*>(this)
@@ -219,7 +221,7 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
   CHECK(output_bus);
   SECURITY_CHECK(frames_requested <= output_bus->length());
 
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   TRACE_EVENT2("webaudio", "PushPullFIFO::PullAndUpdateEarmark (under lock)",
                "pull_count_", pull_count_, "earmark_frames_", earmark_frames_);
 
@@ -304,7 +306,7 @@ size_t PushPullFIFO::PullAndUpdateEarmark(AudioBus* output_bus,
 }
 
 const PushPullFIFOStateForTest PushPullFIFO::GetStateForTest() {
-  MutexLocker locker(lock_);
+  base::AutoLock locker(lock_);
   return {length(),     NumberOfChannels(), frames_available_, index_read_,
           index_write_, overflow_count_,    underflow_count_};
 }

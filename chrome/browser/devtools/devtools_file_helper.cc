@@ -154,7 +154,8 @@ storage::IsolatedContext* isolated_context() {
 std::string RegisterFileSystem(WebContents* web_contents,
                                const base::FilePath& path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  CHECK(web_contents->GetURL().SchemeIs(content::kChromeDevToolsScheme));
+  CHECK(web_contents->GetLastCommittedURL().SchemeIs(
+      content::kChromeDevToolsScheme));
   std::string root_name(kRootName);
   storage::IsolatedContext::ScopedFSHandle file_system =
       isolated_context()->RegisterFileSystemForPath(
@@ -183,7 +184,8 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
     const std::string& type,
     const std::string& file_system_id,
     const std::string& file_system_path) {
-  const GURL origin = web_contents->GetURL().DeprecatedGetOriginAsURL();
+  const GURL origin =
+      web_contents->GetLastCommittedURL().DeprecatedGetOriginAsURL();
   std::string file_system_name =
       storage::GetIsolatedFileSystemName(origin, file_system_id);
   std::string root_url = storage::GetIsolatedFileSystemRootURIString(
@@ -195,7 +197,8 @@ DevToolsFileHelper::FileSystem CreateFileSystemStruct(
 using PathToType = std::map<std::string, std::string>;
 PathToType GetAddedFileSystemPaths(Profile* profile) {
   const base::DictionaryValue* file_systems_paths_value =
-      profile->GetPrefs()->GetDictionary(prefs::kDevToolsFileSystemPaths);
+      &base::Value::AsDictionaryValue(
+          *profile->GetPrefs()->GetDictionary(prefs::kDevToolsFileSystemPaths));
   PathToType result;
   for (base::DictionaryValue::Iterator it(*file_systems_paths_value);
        !it.IsAtEnd(); it.Advance()) {
@@ -247,8 +250,8 @@ void DevToolsFileHelper::Save(const std::string& url,
     return;
   }
 
-  const base::DictionaryValue* file_map =
-      profile_->GetPrefs()->GetDictionary(prefs::kDevToolsEditedFiles);
+  const base::DictionaryValue* file_map = &base::Value::AsDictionaryValue(
+      *profile_->GetPrefs()->GetDictionary(prefs::kDevToolsEditedFiles));
   base::FilePath initial_path;
 
   const base::Value* path_value;
@@ -305,7 +308,7 @@ void DevToolsFileHelper::SaveAsFileSelected(const std::string& url,
 
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsEditedFiles);
-  base::DictionaryValue* files_map = update.Get();
+  base::Value* files_map = update.Get();
   files_map->SetKey(base::MD5String(url), base::FilePathToValue(path));
   std::string file_system_path = path.AsUTF8Unsafe();
   std::move(callback).Run(file_system_path);
@@ -373,7 +376,7 @@ void DevToolsFileHelper::AddUserConfirmedFileSystem(const std::string& type,
 
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsFileSystemPaths);
-  base::DictionaryValue* file_systems_paths_value = update.Get();
+  base::Value* file_systems_paths_value = update.Get();
   file_systems_paths_value->SetKey(file_system_path, base::Value(type));
 }
 
@@ -425,7 +428,7 @@ void DevToolsFileHelper::RemoveFileSystem(const std::string& file_system_path) {
 
   DictionaryPrefUpdate update(profile_->GetPrefs(),
                               prefs::kDevToolsFileSystemPaths);
-  base::DictionaryValue* file_systems_paths_value = update.Get();
+  base::Value* file_systems_paths_value = update.Get();
   file_systems_paths_value->RemoveKey(file_system_path);
 }
 
@@ -433,9 +436,9 @@ bool DevToolsFileHelper::IsFileSystemAdded(
     const std::string& file_system_path) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
 
-  const base::DictionaryValue* file_systems_paths_value =
+  const base::Value* file_systems_paths_value =
       profile_->GetPrefs()->GetDictionary(prefs::kDevToolsFileSystemPaths);
-  return file_systems_paths_value->HasKey(file_system_path);
+  return file_systems_paths_value->FindKey(file_system_path);
 }
 
 void DevToolsFileHelper::OnOpenItemComplete(

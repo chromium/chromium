@@ -8,14 +8,14 @@
 #include <memory>
 #include <string>
 
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/fake_gaia_mixin.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
 #include "chrome/browser/ash/login/test/login_manager_mixin.h"
 #include "chrome/browser/ash/login/test/oobe_base_test.h"
 #include "components/account_id/account_id.h"
 
-namespace base {
-class DictionaryValue;
+namespace enterprise_management {
+class CloudPolicySettings;
 }
 
 namespace policy {
@@ -39,8 +39,8 @@ class LoginPolicyTestBase : public ash::OobeBaseTest {
   void SetUpInProcessBrowserTestFixture() override;
   void SetUpOnMainThread() override;
 
-  virtual void GetMandatoryPoliciesValue(base::DictionaryValue* policy) const;
-  virtual void GetRecommendedPoliciesValue(base::DictionaryValue* policy) const;
+  virtual void GetPolicySettings(
+      enterprise_management::CloudPolicySettings* settings) const;
   virtual std::string GetIdToken() const;
 
   UserPolicyTestHelper* user_policy_helper() {
@@ -60,7 +60,7 @@ class LoginPolicyTestBase : public ash::OobeBaseTest {
   const AccountId& account_id() const { return account_id_; }
 
   ash::FakeGaiaMixin fake_gaia_{&mixin_host_};
-  ash::LocalPolicyTestServerMixin local_policy_server_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
   ash::LoginManagerMixin login_manager_{&mixin_host_};
 
  private:

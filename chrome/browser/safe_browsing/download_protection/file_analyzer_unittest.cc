@@ -242,7 +242,7 @@ TEST_F(FileAnalyzerTest, TypeInvalidZip) {
 
 // Since we only inspect contents of DMGs on OS X, we only get
 // MAC_ARCHIVE_FAILED_PARSING on OS X.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(FileAnalyzerTest, TypeInvalidDmg) {
   scoped_refptr<MockBinaryFeatureExtractor> extractor =
       new testing::StrictMock<MockBinaryFeatureExtractor>();
@@ -631,7 +631,7 @@ TEST_F(FileAnalyzerTest, ExtractsImageHeadersForExe) {
   EXPECT_EQ(result_.image_headers.pe_headers().file_header(), "image header");
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_F(FileAnalyzerTest, ExtractsSignatureForDmg) {
   scoped_refptr<MockBinaryFeatureExtractor> extractor =

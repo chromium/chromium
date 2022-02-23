@@ -5,7 +5,6 @@
 #ifndef WEBLAYER_BROWSER_WEBLAYER_SECURITY_BLOCKING_PAGE_FACTORY_H_
 #define WEBLAYER_BROWSER_WEBLAYER_SECURITY_BLOCKING_PAGE_FACTORY_H_
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "components/captive_portal/core/buildflags.h"
 #include "components/security_interstitials/content/bad_clock_blocking_page.h"
@@ -55,12 +54,6 @@ class WebLayerSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
       const base::Time& time_triggered,
       ssl_errors::ClockState clock_state,
       std::unique_ptr<SSLCertReporter> ssl_cert_reporter) override;
-  std::unique_ptr<LegacyTLSBlockingPage> CreateLegacyTLSBlockingPage(
-      content::WebContents* web_contents,
-      int cert_error,
-      const GURL& request_url,
-      std::unique_ptr<SSLCertReporter> ssl_cert_reporter,
-      const net::SSLInfo& ssl_info) override;
   std::unique_ptr<MITMSoftwareBlockingPage> CreateMITMSoftwareBlockingPage(
       content::WebContents* web_contents,
       int cert_error,
@@ -82,7 +75,7 @@ class WebLayerSecurityBlockingPageFactory : public SecurityBlockingPageFactory {
   CreateHttpsOnlyModeBlockingPage(content::WebContents* web_contents,
                                   const GURL& request_url) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns the URL that will be navigated to when the user clicks on the
   // "Connect" button of the captive portal interstitial. Used by tests to
   // verify this flow.

@@ -8,7 +8,6 @@
 #include <stdint.h>
 #include <deque>
 
-#include "base/macros.h"
 #include "chromecast/base/statistics/weighted_mean.h"
 
 namespace chromecast {

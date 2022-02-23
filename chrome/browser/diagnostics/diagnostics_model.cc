@@ -24,19 +24,19 @@ namespace diagnostics {
 
 // This is the count of diagnostic tests on each platform.  This should
 // only be used by testing code.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const int DiagnosticsModel::kDiagnosticsTestCount = 17;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const int DiagnosticsModel::kDiagnosticsTestCount = 14;
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const int DiagnosticsModel::kDiagnosticsTestCount = 18;
 #else
 const int DiagnosticsModel::kDiagnosticsTestCount = 16;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 const int DiagnosticsModel::kDiagnosticsTestCount = 16;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace {
 
@@ -147,7 +147,7 @@ class DiagnosticsModelImpl : public DiagnosticsModel {
 
 // Each platform can have their own tests. For the time being there is only
 // one test that works on all platforms.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class DiagnosticsModelWin : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelWin() {
@@ -174,7 +174,7 @@ class DiagnosticsModelWin : public DiagnosticsModelImpl {
   DiagnosticsModelWin& operator=(const DiagnosticsModelWin&) = delete;
 };
 
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 class DiagnosticsModelMac : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelMac() {
@@ -198,7 +198,7 @@ class DiagnosticsModelMac : public DiagnosticsModelImpl {
   DiagnosticsModelMac& operator=(const DiagnosticsModelMac&) = delete;
 };
 
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 class DiagnosticsModelPosix : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelPosix() {
@@ -228,7 +228,7 @@ class DiagnosticsModelPosix : public DiagnosticsModelImpl {
   DiagnosticsModelPosix& operator=(const DiagnosticsModelPosix&) = delete;
 };
 
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 class DiagnosticsModelFuchsia : public DiagnosticsModelImpl {
  public:
   DiagnosticsModelFuchsia() {
@@ -261,13 +261,13 @@ DiagnosticsModel* MakeDiagnosticsModel(const base::CommandLine& cmdline) {
       cmdline.GetSwitchValuePath(switches::kUserDataDir);
   if (!user_data_dir.empty())
     base::PathService::Override(chrome::DIR_USER_DATA, user_data_dir);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return new DiagnosticsModelWin();
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return new DiagnosticsModelMac();
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   return new DiagnosticsModelPosix();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return new DiagnosticsModelFuchsia();
 #endif
 }

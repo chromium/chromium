@@ -43,7 +43,7 @@ class TopControlsSwapPromise : public cc::SwapPromise {
       DidNotSwapReason reason) override {
     return DidNotSwapAction::KEEP_ACTIVE;
   }
-  int64_t TraceId() const override { return 0; }
+  int64_t GetTraceId() const override { return 0; }
 
  private:
   const float height_;
@@ -186,6 +186,19 @@ void DelegatedFrameHostAndroid::EvictDelegatedFrame() {
   // when it becomes visible just in case the previous LocalSurfaceId is evicted
   // by the browser.
   client_->WasEvicted();
+}
+
+void DelegatedFrameHostAndroid::ClearFallbackSurfaceForCommitPending() {
+  const absl::optional<viz::SurfaceId> fallback_surface_id =
+      content_layer_->oldest_acceptable_fallback();
+
+  // CommitPending without a target for TakeFallbackContentFrom. Since we cannot
+  // guarantee that Navigation will complete, evict our surfaces which are from
+  // a previous Navigation.
+  if (fallback_surface_id && fallback_surface_id->is_valid()) {
+    EvictDelegatedFrame();
+    content_layer_->SetOldestAcceptableFallback(viz::SurfaceId());
+  }
 }
 
 void DelegatedFrameHostAndroid::ResetFallbackToFirstNavigationSurface() {

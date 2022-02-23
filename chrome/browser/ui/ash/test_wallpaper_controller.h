@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_ASH_TEST_WALLPAPER_CONTROLLER_H_
 #define CHROME_BROWSER_UI_ASH_TEST_WALLPAPER_CONTROLLER_H_
 
+#include "ash/public/cpp/wallpaper/google_photos_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -37,6 +38,9 @@ class TestWallpaperController : public ash::WallpaperController {
   }
   int set_custom_wallpaper_count() const { return set_custom_wallpaper_count_; }
   int set_online_wallpaper_count() const { return set_online_wallpaper_count_; }
+  int set_google_photos_wallpaper_count() const {
+    return set_google_photos_wallpaper_count_;
+  }
   int show_always_on_top_wallpaper_count() const {
     return show_always_on_top_wallpaper_count_;
   }
@@ -71,6 +75,9 @@ class TestWallpaperController : public ash::WallpaperController {
   void SetOnlineWallpaperFromData(const ash::OnlineWallpaperParams& params,
                                   const std::string& image_data,
                                   SetOnlineWallpaperCallback callback) override;
+  void SetGooglePhotosWallpaper(
+      const ash::GooglePhotosWallpaperParams& params,
+      SetGooglePhotosWallpaperCallback callback) override;
   void SetDefaultWallpaper(const AccountId& account_id,
                            bool show_wallpaper) override;
   void SetCustomizedDefaultWallpaperPaths(
@@ -122,6 +129,7 @@ class TestWallpaperController : public ash::WallpaperController {
   int set_default_wallpaper_count_ = 0;
   int set_custom_wallpaper_count_ = 0;
   int set_online_wallpaper_count_ = 0;
+  int set_google_photos_wallpaper_count_ = 0;
   int show_always_on_top_wallpaper_count_ = 0;
   int remove_always_on_top_wallpaper_count_ = 0;
   std::string collection_id_;

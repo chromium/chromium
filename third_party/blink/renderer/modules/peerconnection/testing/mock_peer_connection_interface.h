@@ -39,9 +39,8 @@ class MockPeerConnectionInterface
       (rtc::scoped_refptr<webrtc::MediaStreamTrackInterface>,
        const std::vector<std::string>&),
       (override));
-  MOCK_METHOD(bool, RemoveTrack, (webrtc::RtpSenderInterface*), (override));
   MOCK_METHOD(webrtc::RTCError,
-              RemoveTrackNew,
+              RemoveTrackOrError,
               (rtc::scoped_refptr<webrtc::RtpSenderInterface>),
               (override));
   MOCK_METHOD(

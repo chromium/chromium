@@ -8,7 +8,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/linux_util.h"
 #endif
 
@@ -17,15 +17,15 @@ namespace remoting {
 // Get the host Operating System Name, removing the need to check for OS
 // definitions and keeps the keys used consistent.
 std::string GetHostOperatingSystemName() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return "Windows";
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return "Mac";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return "ChromeOS";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return "Linux";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return "Android";
 #else
 #error "Unsupported host OS"
@@ -35,7 +35,7 @@ std::string GetHostOperatingSystemName() {
 // Get the host Operating System Version, removing the need to check for OS
 // definitions and keeps the format used consistent.
 std::string GetHostOperatingSystemVersion() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return base::GetLinuxDistro();
 #else
   return base::SysInfo::OperatingSystemVersion();

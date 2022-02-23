@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/host/security_key/security_key_message.h"
 #include "remoting/host/security_key/security_key_message_writer.h"

@@ -17,7 +17,7 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
-#include "chrome/browser/ui/webui/settings/chromeos/app_management/app_management_uma.h"
+#include "chrome/browser/ui/webui/settings/ash/app_management/app_management_uma.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chromeos/dbus/plugin_vm_service/plugin_vm_service.pb.h"
@@ -118,7 +118,7 @@ void PluginVmServiceProvider::ShowSettingsPage(
   if (request.subpage_path() == kShowSettingsPageDetails) {
     chrome::ShowAppManagementPage(
         primary_profile, plugin_vm::kPluginVmShelfAppId,
-        AppManagementEntryPoint::kDBusServicePluginVm);
+        settings::AppManagementEntryPoint::kDBusServicePluginVm);
   } else if (request.subpage_path() == kShowSettingsPageSharedPaths) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         primary_profile,

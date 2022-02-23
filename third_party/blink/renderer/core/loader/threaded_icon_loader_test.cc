@@ -31,7 +31,7 @@ constexpr char kIconLoaderInvalidIcon[] = "file.txt";
 class ThreadedIconLoaderTest : public PageTestBase {
  public:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetDocument().SetBaseURLOverride(KURL(kIconLoaderBaseUrl));
   }
 

@@ -28,6 +28,12 @@ constexpr int kHeaderHeightDp = WindowMiniView::kHeaderHeightDp;
 // slightly differently in overview mode.
 constexpr float kExtremeWindowRatioThreshold = 2.f;
 
+// Inset for the focus ring around the focusable overview items. The ring is 2px
+// thick and should have a 2px gap from the view it is associated with. Since
+// the thickness is 2px and the stroke is in the middle, we use a -3px inset to
+// achieve this.
+constexpr int kFocusRingHaloInset = -3;
+
 }  // namespace ash
 
 #endif  // ASH_WM_OVERVIEW_OVERVIEW_CONSTANTS_H_

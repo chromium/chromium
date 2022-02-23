@@ -149,6 +149,15 @@ class ScrollableAppsGridViewTest : public AshTestBase {
     return GetAppListTestHelper()->GetScrollableAppsGridView();
   }
 
+  // Verifies the visible item index range.
+  bool IsIndexRangeExpected(int first_index, int last_index) {
+    const absl::optional<AppsGridView::VisibleItemIndexRange> index_range =
+        apps_grid_view_->GetVisibleItemIndexRange();
+
+    return index_range->first_index == first_index &&
+           index_range->last_index == last_index;
+  }
+
   void AddPageBreakItem() { GetAppListTestHelper()->AddPageBreakItem(); }
 
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -504,8 +513,7 @@ TEST_F(ScrollableAppsGridViewTest, SmallFolderHasCorrectWidth) {
   ShowAppList();
 
   // Enter the folder view.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   auto* folder_view = GetAppListTestHelper()->GetBubbleFolderView();
@@ -530,8 +538,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
   ShowAppList();
 
   // Enter the folder view.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   // Drag the first app in the folder.
@@ -539,6 +546,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemToReorderInFolderRecordsHistogram) {
 
   // Drag the item to the third position in the folder.
   gfx::Size tile_size = apps_grid_view_->GetTileViewSize();
+  auto* generator = GetEventGenerator();
   generator->MoveMouseBy(0, tile_size.height());
   generator->ReleaseLeftButton();
 
@@ -579,8 +587,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
   ShowAppList();
 
   // Enter the folder view.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   // Drag the first app in the folder and move it out of the folder.
@@ -589,6 +596,7 @@ TEST_F(ScrollableAppsGridViewTest, DragItemOutOfFolderRecordsHistogram) {
   DragItemOutOfFolder();
 
   // Drag the app item to near the expected end position and end the drag.
+  auto* generator = GetEventGenerator();
   generator->MoveMouseTo(
       apps_grid_view_->GetItemViewAt(0)->GetBoundsInScreen().right_center() +
       gfx::Vector2d(20, 0));
@@ -617,8 +625,7 @@ TEST_F(ScrollableAppsGridViewTest,
   ShowAppList();
 
   // Enter the view of the first folder.
-  auto* generator = GetEventGenerator();
-  SimulateMouseClickAt(generator, apps_grid_view_->GetItemViewAt(0));
+  LeftClickOn(apps_grid_view_->GetItemViewAt(0));
   ASSERT_TRUE(GetAppListTestHelper()->IsInFolderView());
 
   // Drag the first app in the folder and move it out of the folder.
@@ -626,6 +633,7 @@ TEST_F(ScrollableAppsGridViewTest,
   DragItemOutOfFolder();
 
   // Move the app item into the other folder and end the drag.
+  auto* generator = GetEventGenerator();
   generator->MoveMouseTo(
       apps_grid_view_->GetItemViewAt(1)->GetBoundsInScreen().CenterPoint());
   generator->ReleaseLeftButton();
@@ -852,75 +860,6 @@ TEST_F(ScrollableAppsGridViewTest,
                                      kReorderByKeyboardInFolder, 1);
 }
 
-// Tests that control + shift + arrow puts selected item into a folder or
-// creates a folder if one does not exist.
-TEST_F(ScrollableAppsGridViewTest, ControlShiftArrowFoldersItem) {
-  base::HistogramTester histogram_tester;
-  PopulateApps(20);
-  ShowAppList();
-  ScrollableAppsGridView* apps_grid_view = GetScrollableAppsGridView();
-
-  // Select the first item in the grid, folder it with the item to the right.
-  AppListItemView* first_item = apps_grid_view->GetItemViewAt(0);
-  apps_grid_view->GetFocusManager()->SetFocusedView(first_item);
-  const std::string first_item_id = first_item->item()->id();
-  const std::string second_item_id =
-      apps_grid_view->GetItemViewAt(1)->item()->id();
-  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-
-  // Test that the first item in the grid is now a folder with the first and
-  // second items, and that the folder is the selected view.
-  AppListItemView* new_folder = apps_grid_view->GetItemViewAt(0);
-  ASSERT_TRUE(apps_grid_view->IsSelectedView(new_folder));
-  EXPECT_TRUE(new_folder->item()->is_folder());
-  AppListFolderItem* folder_item =
-      static_cast<AppListFolderItem*>(new_folder->item());
-  EXPECT_EQ(2u, folder_item->ChildItemCount());
-  EXPECT_TRUE(folder_item->FindChildItem(first_item_id));
-  EXPECT_TRUE(folder_item->FindChildItem(second_item_id));
-  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
-                                     kMoveByKeyboardIntoFolder, 1);
-
-  // Test that when a folder is selected, control+shift+arrow does nothing.
-  SimulateKeyPress(ui::VKEY_RIGHT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-  EXPECT_TRUE(apps_grid_view->IsSelectedView(new_folder));
-  EXPECT_EQ(2u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
-                                     kMoveByKeyboardIntoFolder, 1);
-
-  // Move selection to the item to the right of the folder and put it in the
-  // folder.
-  apps_grid_view->GetFocusManager()->SetFocusedView(
-      apps_grid_view->GetItemViewAt(1));
-
-  SimulateKeyPress(ui::VKEY_LEFT, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-
-  EXPECT_TRUE(apps_grid_view->IsSelectedView(new_folder));
-  EXPECT_EQ(3u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
-                                     kMoveByKeyboardIntoFolder, 2);
-
-  // Move selection to the item below the folder and put it in the folder.
-  SimulateKeyPress(ui::VKEY_DOWN);
-  SimulateKeyPress(ui::VKEY_UP, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-
-  EXPECT_TRUE(apps_grid_view->IsSelectedView(new_folder));
-  EXPECT_EQ(4u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
-                                     kMoveByKeyboardIntoFolder, 3);
-
-  // Move the folder to the second row, then put the item above the folder in
-  // the folder.
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN);
-  SimulateKeyPress(ui::VKEY_UP);
-  SimulateKeyPress(ui::VKEY_DOWN, ui::EF_CONTROL_DOWN | ui::EF_SHIFT_DOWN);
-
-  EXPECT_TRUE(apps_grid_view->IsSelectedView(new_folder));
-  EXPECT_EQ(5u, folder_item->ChildItemCount());
-  histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
-                                     kMoveByKeyboardIntoFolder, 4);
-}
-
 // Tests that control + shift + arrow moves selected item out of a folder.
 TEST_F(ScrollableAppsGridViewTest, ControlShiftArrowMovesItemOutOfFolder) {
   base::HistogramTester histogram_tester;
@@ -974,6 +913,151 @@ TEST_F(ScrollableAppsGridViewTest, ControlShiftArrowMovesItemOutOfFolder) {
   histogram_tester.ExpectBucketCount("Apps.AppListBubbleAppMovingType",
                                      kMoveByKeyboardOutOfFolder, 4);
   EXPECT_FALSE(GetAppListTestHelper()->IsInFolderView());
+}
+
+// Verify on the apps grid with zero scroll offset.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeByDefault) {
+  PopulateApps(33);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Verify that the items on row 0 to row 3 are visible at default.
+  EXPECT_TRUE(
+      IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/4 * cols - 1));
+}
+
+// Verify on the apps grid whose first row is unfilled.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowUnfilled) {
+  PopulateApps(4);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a smaller number as the total
+  // item count.
+  ASSERT_EQ(5, cols);
+
+  // Verify that the items on the first row are visible at default.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/3));
+}
+
+// Verify on the apps grid whose first row is filled.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeFirstRowFilled) {
+  PopulateApps(5);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so apps just fill the first row.
+  ASSERT_EQ(5, cols);
+
+  // Verify that the items on the first row are visible at default.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/4));
+}
+
+// Verify on the apps grid with a non-zero scroll offset.
+TEST_F(ScrollableAppsGridViewTest, VerifyVisibleRangeAfterScrolling) {
+  PopulateApps(33);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Scroll the apps grid so that the item views on the first row are hidden.
+  // To calculate the scroll offset, the origin of the item view at (row 1,
+  // column 0) should be translated into the scroll content's coordinates.
+  views::View* item_view = apps_grid_view_->GetItemViewAt(5);
+  views::ScrollView* scroll_view = apps_grid_view_->scroll_view_for_test();
+  gfx::Point local_origin;
+  views::View::ConvertPointToTarget(item_view, scroll_view->contents(),
+                                    &local_origin);
+  const int offset = local_origin.y() - scroll_view->GetVisibleRect().y();
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(), offset);
+
+  // Verify that in this case the items on row 1 to row 5 are visible.
+  EXPECT_TRUE(
+      IsIndexRangeExpected(/*first_index=*/cols, /*last_index=*/6 * cols - 1));
+}
+
+// Verify visible items' index range by scrolling to the end on a partially
+// filled apps grid.
+TEST_F(ScrollableAppsGridViewTest,
+       VerifyVisibleRangeAfterScrollingToEndPartiallyFilled) {
+  constexpr int populated_app_count = 33;
+  PopulateApps(populated_app_count);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Scroll to the end.
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 std::numeric_limits<int>::max());
+
+  // Verify that the items on row 3 to row 6 are visible.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/3 * cols,
+                                   /*last_index=*/populated_app_count - 1));
+}
+
+// Verify visible items' item index range by scrolling to the end on a full
+// apps grid.
+TEST_F(ScrollableAppsGridViewTest,
+       VerifyVisibleRangeAfterScrollingToEndFilled) {
+  constexpr int populated_app_count = 35;
+  PopulateApps(populated_app_count);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a column count's multiple as
+  // the total item count.
+  ASSERT_EQ(5, cols);
+
+  // Scroll to the end.
+  scroll_view_->ScrollToPosition(scroll_view_->vertical_scroll_bar(),
+                                 std::numeric_limits<int>::max());
+
+  // Verify that the items on row 3 to row 6 are visible.
+  EXPECT_TRUE(IsIndexRangeExpected(/*first_index=*/3 * cols,
+                                   /*last_index=*/populated_app_count - 1));
+}
+
+// Tests the scrollable apps grid view with app list nudge enabled.
+class ScrollableAppsGridViewWithNudgeTest : public ScrollableAppsGridViewTest {
+ public:
+  // ScrollableAppsGridViewTest:
+  void SetUp() override {
+    ScrollableAppsGridViewTest::SetUp();
+    GetAppListTestHelper()->DisableAppListNudge(false);
+  }
+};
+
+// Verify on the apps grid with zero scroll offset.
+TEST_F(ScrollableAppsGridViewWithNudgeTest, VerifyVisibleRangeByDefault) {
+  PopulateApps(33);
+  ShowAppList();
+
+  const int cols = apps_grid_view_->cols();
+
+  // Assume that the column count is 5 so choose a number that is not the
+  // multiple of 5 as the total item count.
+  ASSERT_EQ(5, cols);
+
+  // With the app list reorder nudge is showing, there's enough space to fit
+  // only 4 rows of apps in the visible portion of the app list.
+  EXPECT_TRUE(
+      IsIndexRangeExpected(/*first_index=*/0, /*last_index=*/4 * cols - 1));
 }
 
 }  // namespace ash

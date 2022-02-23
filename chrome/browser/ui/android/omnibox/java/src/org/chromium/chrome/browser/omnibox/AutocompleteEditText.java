@@ -10,6 +10,7 @@ import android.provider.Settings;
 import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.KeyEvent;
+import android.view.View.OnKeyListener;
 import android.view.accessibility.AccessibilityEvent;
 import android.view.accessibility.AccessibilityManager;
 import android.view.accessibility.AccessibilityNodeInfo;
@@ -18,6 +19,7 @@ import android.view.inputmethod.InputConnection;
 import android.widget.EditText;
 
 import androidx.annotation.CallSuper;
+import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -47,6 +49,9 @@ public class AutocompleteEditText
     private boolean mDisableTextScrollingFromAutocomplete;
 
     private boolean mIgnoreImeForTest;
+
+    /** Local copy of the OnKeyListener. */
+    private @Nullable OnKeyListener mOnKeyListener;
 
     public AutocompleteEditText(Context context, AttributeSet attrs) {
         super(context, attrs);
@@ -263,9 +268,29 @@ public class AutocompleteEditText
 
     @Override
     public boolean dispatchKeyEvent(final KeyEvent event) {
-        if (mIgnoreImeForTest) return true;
-        if (mModel == null) return super.dispatchKeyEvent(event);
-        return mModel.dispatchKeyEvent(event);
+        OnKeyListener keyListener = getOnKeyListener();
+        try {
+            setOnKeyListener(null);
+            if (keyListener != null && keyListener.onKey(this, event.getKeyCode(), event)) {
+                return true;
+            }
+
+            if (mIgnoreImeForTest) return true;
+            if (mModel == null) return super.dispatchKeyEvent(event);
+            return mModel.dispatchKeyEvent(event);
+        } finally {
+            setOnKeyListener(keyListener);
+        }
+    }
+
+    @Override
+    public void setOnKeyListener(OnKeyListener listener) {
+        super.setOnKeyListener(listener);
+        mOnKeyListener = listener;
+    }
+
+    private @Nullable OnKeyListener getOnKeyListener() {
+        return mOnKeyListener;
     }
 
     @Override

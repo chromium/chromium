@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <set>
+#include <type_traits>
 #include <utility>
 
 #include "base/containers/cxx20_erase.h"
@@ -437,6 +438,13 @@ bool AXNodeData::GetStringListAttribute(
   return false;
 }
 
+bool AXNodeData::HasHtmlAttribute(const char* attribute) const {
+  std::string value;
+  if (!GetHtmlAttribute(attribute, &value))
+    return false;
+  return true;
+}
+
 bool AXNodeData::GetHtmlAttribute(const char* attribute,
                                   std::string* value) const {
   for (const std::pair<std::string, std::string>& html_attribute :
@@ -447,7 +455,6 @@ bool AXNodeData::GetHtmlAttribute(const char* attribute,
       return true;
     }
   }
-
   return false;
 }
 
@@ -1019,9 +1026,9 @@ bool AXNodeData::IsInvocable() const {
   // would be considered a toggle or expand-collapse element - these elements
   // are "clickable" but not "invocable". Similarly, if the action only involves
   // activating the control, such as when clicking a text field, the control is
-  // not considered "invocable".
-  return IsClickable() && !IsActivatable() && !SupportsExpandCollapse() &&
-         !SupportsToggle(role);
+  // not considered "invocable". However, all links are always invocable.
+  return IsLink(role) || (IsClickable() && !IsActivatable() &&
+                          !SupportsExpandCollapse() && !SupportsToggle(role));
 }
 
 bool AXNodeData::IsMenuButton() const {
@@ -1047,14 +1054,14 @@ bool AXNodeData::IsPasswordField() const {
 }
 
 bool AXNodeData::IsAtomicTextField() const {
-  // The ARIA spec suggests a textbox is a simple text field, like an <input> or
-  // <textarea> depending on aria-multiline. However there is nothing to stop
-  // an author from adding the textbox role to a non-contenteditable element,
-  // or from adding or removing non-plain-text nodes. If we treat the textbox
-  // role as atomic when contenteditable is not set, it can break accessibility
-  // by pruning interactive elements from the accessibility tree. Therefore,
-  // until we have a reliable means to identify truly atomic ARIA textboxes,
-  // treat them as non-atomic.
+  // The ARIA spec suggests a textbox or a searchbox is a simple text field,
+  // like an <input> or <textarea> depending on aria-multiline. However there is
+  // nothing to stop an author from adding the textbox role to a
+  // non-contenteditable element, or from adding or removing non-plain-text
+  // nodes. If we treat the textbox role as atomic when contenteditable is not
+  // set, it can break accessibility by pruning interactive elements from the
+  // accessibility tree. Therefore, until we have a reliable means to identify
+  // truly atomic ARIA textboxes, we treat them as non-atomic in Blink.
   return (ui::IsTextField(role) || IsSpinnerTextField()) &&
          !GetBoolAttribute(ax::mojom::BoolAttribute::kNonAtomicTextFieldRoot);
 }
@@ -1800,6 +1807,11 @@ std::string AXNodeData::ToString() const {
       case ax::mojom::StringListAttribute::kNone:
         break;
     }
+  }
+
+  for (const std::pair<std::string, std::string>& string_pair :
+       html_attributes) {
+    result += " " + string_pair.first + "=" + string_pair.second;
   }
 
   if (actions)

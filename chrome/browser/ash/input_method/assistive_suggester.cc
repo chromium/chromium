@@ -13,9 +13,11 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/strings/string_util.h"
+#include "chrome/browser/ash/input_method/assistive_suggester_prefs.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/common/pref_names.h"
 #include "components/exo/wm_helper.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -117,6 +119,47 @@ void RecordSuggestionsMatch(const std::vector<TextSuggestion>& suggestions) {
   }
 }
 
+bool IsUsEnglishEngine(const std::string& engine_id) {
+  return engine_id == "xkb:us::eng";
+}
+
+bool IsLacrosEnabled() {
+  return base::FeatureList::IsEnabled(chromeos::features::kLacrosSupport);
+}
+
+void RecordTextInputStateMetric(AssistiveTextInputState state) {
+  base::UmaHistogramEnumeration("InputMethod.Assistive.MultiWord.InputState",
+                                state);
+}
+
+void RecordMultiWordTextInputState(PrefService* pref_service,
+                                   AssistiveSuggesterSwitch* suggester_switch,
+                                   const std::string& engine_id) {
+  if (IsLacrosEnabled()) {
+    RecordTextInputStateMetric(AssistiveTextInputState::kUnsupportedClient);
+    return;
+  }
+
+  if (!suggester_switch->IsMultiWordSuggestionAllowed()) {
+    RecordTextInputStateMetric(
+        AssistiveTextInputState::kFeatureBlockedByDenylist);
+    return;
+  }
+
+  if (!IsUsEnglishEngine(engine_id)) {
+    RecordTextInputStateMetric(AssistiveTextInputState::kUnsupportedLanguage);
+    return;
+  }
+
+  if (!IsPredictiveWritingPrefEnabled(pref_service, engine_id)) {
+    RecordTextInputStateMetric(
+        AssistiveTextInputState::kFeatureBlockedByPreference);
+    return;
+  }
+
+  RecordTextInputStateMetric(AssistiveTextInputState::kFeatureEnabled);
+}
+
 }  // namespace
 
 AssistiveSuggester::AssistiveSuggester(
@@ -126,14 +169,12 @@ AssistiveSuggester::AssistiveSuggester(
     : profile_(profile),
       personal_info_suggester_(engine, profile),
       emoji_suggester_(engine, profile),
-      multi_word_suggester_(engine),
+      multi_word_suggester_(engine, profile),
       suggester_switch_(std::move(suggester_switch)) {
   RecordAssistiveUserPrefForPersonalInfo(
       profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled));
   RecordAssistiveUserPrefForEmoji(
       profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled));
-  RecordAssistiveUserPrefForMultiWord(
-      profile_->GetPrefs()->GetBoolean(prefs::kAssistPredictiveWritingEnabled));
 }
 
 AssistiveSuggester::~AssistiveSuggester() = default;
@@ -143,14 +184,27 @@ bool AssistiveSuggester::IsAssistiveFeatureEnabled() {
          IsMultiWordSuggestEnabled() || IsEnhancedEmojiSuggestEnabled();
 }
 
+bool AssistiveSuggester::IsAssistiveFeatureAllowed(
+    const AssistiveFeature& feature) {
+  switch (feature) {
+    case AssistiveFeature::kEmojiSuggestion:
+      return suggester_switch_->IsEmojiSuggestionAllowed();
+    case AssistiveFeature::kMultiWordSuggestion:
+      return suggester_switch_->IsMultiWordSuggestionAllowed();
+    case AssistiveFeature::kPersonalInfoSuggestion:
+      return suggester_switch_->IsPersonalInfoSuggestionAllowed();
+    default:
+      return false;
+  }
+}
+
 bool AssistiveSuggester::IsAssistPersonalInfoEnabled() {
   return base::FeatureList::IsEnabled(features::kAssistPersonalInfo) &&
          profile_->GetPrefs()->GetBoolean(prefs::kAssistPersonalInfoEnabled);
 }
 
 bool AssistiveSuggester::IsEmojiSuggestAdditionEnabled() {
-  return base::FeatureList::IsEnabled(features::kEmojiSuggestAddition) &&
-         profile_->GetPrefs()->GetBoolean(
+  return profile_->GetPrefs()->GetBoolean(
              prefs::kEmojiSuggestionEnterpriseAllowed) &&
          profile_->GetPrefs()->GetBoolean(prefs::kEmojiSuggestionEnabled);
 }
@@ -162,8 +216,8 @@ bool AssistiveSuggester::IsEnhancedEmojiSuggestEnabled() {
 
 bool AssistiveSuggester::IsMultiWordSuggestEnabled() {
   return features::IsAssistiveMultiWordEnabled() &&
-         profile_->GetPrefs()->GetBoolean(
-             prefs::kAssistPredictiveWritingEnabled);
+         IsPredictiveWritingPrefEnabled(profile_->GetPrefs(),
+                                        active_engine_id_);
 }
 
 bool AssistiveSuggester::IsExpandedMultiWordSuggestEnabled() {
@@ -185,9 +239,6 @@ DisabledReason AssistiveSuggester::GetDisabledReasonForPersonalInfo() {
 }
 
 DisabledReason AssistiveSuggester::GetDisabledReasonForEmoji() {
-  if (!base::FeatureList::IsEnabled(features::kEmojiSuggestAddition)) {
-    return DisabledReason::kFeatureFlagOff;
-  }
   if (!profile_->GetPrefs()->GetBoolean(
           prefs::kEmojiSuggestionEnterpriseAllowed)) {
     return DisabledReason::kEnterpriseSettingsOff;
@@ -243,6 +294,7 @@ void AssistiveSuggester::OnFocus(int context_id) {
   personal_info_suggester_.OnFocus(context_id_);
   emoji_suggester_.OnFocus(context_id_);
   multi_word_suggester_.OnFocus(context_id_);
+  RecordTextInputStateMetrics();
 }
 
 void AssistiveSuggester::OnBlur() {
@@ -260,7 +312,8 @@ bool AssistiveSuggester::OnKeyEvent(const ui::KeyEvent& event) {
   // surrounding text change, which is triggered by a keydown event. As a
   // result, the next key event after suggesting would be a keyup event of the
   // same key, and that event is meaningless to us.
-  if (IsSuggestionShown() && event.type() == ui::ET_KEY_PRESSED) {
+  if (IsSuggestionShown() && event.type() == ui::ET_KEY_PRESSED &&
+      !event.IsControlDown() && !event.IsAltDown() && !event.IsShiftDown()) {
     SuggestionStatus status = current_suggester_->HandleKeyEvent(event);
     switch (status) {
       case SuggestionStatus::kAccept:
@@ -312,6 +365,13 @@ void AssistiveSuggester::ProcessExternalSuggestions(
     current_suggester_ = &multi_word_suggester_;
     current_suggester_->OnExternalSuggestionsUpdated(suggestions);
     RecordAssistiveCoverage(current_suggester_->GetProposeActionType());
+  }
+}
+
+void AssistiveSuggester::RecordTextInputStateMetrics() {
+  if (features::IsAssistiveMultiWordEnabled()) {
+    RecordMultiWordTextInputState(profile_->GetPrefs(), suggester_switch_.get(),
+                                  active_engine_id_);
   }
 }
 
@@ -436,6 +496,14 @@ std::vector<ime::TextSuggestion> AssistiveSuggester::GetSuggestions() {
   if (IsSuggestionShown())
     return current_suggester_->GetSuggestions();
   return {};
+}
+
+void AssistiveSuggester::OnActivate(const std::string& engine_id) {
+  if (features::IsAssistiveMultiWordEnabled()) {
+    active_engine_id_ = engine_id;
+    RecordAssistiveUserPrefForMultiWord(
+        IsPredictiveWritingPrefEnabled(profile_->GetPrefs(), engine_id));
+  }
 }
 
 }  // namespace input_method

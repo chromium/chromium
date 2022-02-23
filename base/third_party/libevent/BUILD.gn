@@ -57,22 +57,6 @@ static_library("libevent") {
       "epoll.c",
     ]
     include_dirs = [ "android" ]
-  } else if (is_nacl_nonsfi) {
-    sources -= [
-      "evdns.c",
-      "event_tagging.c",
-      "evrpc.c",
-      "http.c",
-      "select.c",
-      "signal.c",
-    ]
-    sources += [
-      "nacl_nonsfi/config.h",
-      "nacl_nonsfi/event-config.h",
-      "nacl_nonsfi/random.c",
-      "nacl_nonsfi/signal_stub.c",
-    ]
-    include_dirs = [ "nacl_nonsfi" ]
   }
 
   if (!is_debug) {

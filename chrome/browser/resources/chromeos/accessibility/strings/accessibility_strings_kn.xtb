@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">ಅಭ್ಯಾಸ ಪ್ರದೇಶ: ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="1195238899008218998">ನಂತರದ</translation>
 <translation id="1197088940767939838">ಕಿತ್ತಳೆ</translation>
+<translation id="1198865190323699001">ಟಚ್ ಗೆಸ್ಚರ್‌ಗಳು</translation>
 <translation id="1201402288615127009">ಮುಂದೆ</translation>
 <translation id="1206619573307042055">ಮಾರ್ಕ್ಯೂ</translation>
 <translation id="1207086294218137981">ಯಾವುದೇ ಮುಂದಿನ ಹಂತ 4 ರ ಶಿರೋನಾಮೆಯಿಲ್ಲ</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ಬಲ ಆವರಣ}one{# ಬಲ ಆವರಣಗಳು}other{# ಬಲ ಆವರಣಗಳು}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆ}one{# ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆಗಳು}other{# ಪ್ರಶ್ನಾರ್ಥಕ ಚಿಹ್ನೆಗಳು}}</translation>
+<translation id="3505359110822747654">ChromeVox ಮೆನುಗಳನ್ನು ಕುಗ್ಗಿಸಿ</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ಕ್ಯಾರೆಟ್}one{# ಕ್ಯಾರೆಟ್‌‌ಗಳು}other{# ಕ್ಯಾರೆಟ್‌‌ಗಳು}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{ಬಿಳಿ ಬುಲೆಟ್}one{# ಬಿಳಿ ಬುಲೆಟ್‌ಗಳು}other{# ಬಿಳಿ ಬುಲೆಟ್‌ಗಳು}}</translation>
 <translation id="352577523970648069">ಎಡಿಟ್ ಮಾಡಬಹುದಾದ ಪಠ್ಯ ಕ್ಷೇತ್ರ</translation>
 <translation id="3538907380453898475">ವಿವರಣೆ ಪಟ್ಟಿ</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> ಅನ್ನು ಕತ್ತರಿಸಿ.</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">ತ್ವರಿತ ಓರಿಯಂಟೇಶನ್ ಪೂರ್ಣಗೊಂಡಿದೆ!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">ಗೇನ್ಸ್‌ಬೋರೋ</translation>
+<translation id="554893713779400387">ಡಿಕ್ಟೇಶನ್ ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="5549179427201066174">ಧ್ವನಿ ಪ್ರತಿಕ್ರಿಯೆ (ಇಯರ್‌ಕಾನ್‌‌ಗಳು) ಆನ್ ಅಥವಾ ಆಫ್ ಮಾಡಿ</translation>
 <translation id="556042886152191864">ಬಟನ್</translation>
 <translation id="5561345396546889625">ಮುಂದಿನ ಪಟ್ಟಿ</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">ಮುಂದಿನ ಚೆಕ್‌ಬಾಕ್ಸ್</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, ರೇಡಿಯೊ ಬಟನ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಲಾಗಲಿಲ್ಲ</translation>
 <translation id="5601172225407283979">ಡಿಫಾಲ್ಟ್ ಕ್ರಮವನ್ನು ಮಾಡಿ</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{ಚೌಕದ ಬುಲೆಟ್}one{# ಚೌಕದ ಬುಲೆಟ್‌ಗಳು}other{# ಚೌಕದ ಬುಲೆಟ್‌ಗಳು}}</translation>
 <translation id="5608798115546226984">ಸ್ವಯಂಪೂರ್ಣಗೊಳಿಸುವಿಕೆಯ ಇನ್‌ಲೈನ್</translation>
 <translation id="5616029807486814372">ಮುಂದಿನ ಅಧ್ಯಾಯ</translation>
 <translation id="561939826962581046">ಸಮಯ</translation>
@@ -1095,6 +1100,7 @@
 <translation id="8659501358298941449">ಡ್ರಾಪ್-ಡೌನ್ ಪಟ್ಟಿಗಳು</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> ಅಂತ್ಯ</translation>
 <translation id="867187640362843212">ಶೀರ್ಷಿಕೆ 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{ನೆಸ್ಟ್ ಮಾಡಿದ ಹಂತ #}other{ನೆಸ್ಟ್ ಮಾಡಿದ ಹಂತ #}}</translation>
 <translation id="8693391540059827073">ನನ್ನ ನೆಚ್ಚಿನ ಋತು</translation>
 <translation id="8696284982970258155">ಹನಿಡ್ಯೂ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{ಪೈಪ್}one{# ಲಂಬ ಪೈಪ್‌ಗಳು}other{# ಲಂಬ ಪೈಪ್‌ಗಳು}}</translation>
@@ -1162,6 +1168,7 @@
 <translation id="9223032053830369045">ಕಡು ಗೆಂಪು</translation>
 <translation id="923331726185079994">ChromeVox ಅಪ್‌ಡೇಟ್ ಮಾಡಲಾಗಿದೆ</translation>
 <translation id="93384979447910801">ಗಾಢ ಸಮುದ್ರ ಹಸಿರು</translation>
+<translation id="937605981140327129">ಪ್ರಸ್ತುತವಾಗಿ TalkBack ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲಾಗಿದೆ. Play Store ಮೂಲಕ Android AccessibilitySuite ಅನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿ ಹಾಗೂ ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="948171205378458592">ಮಾತಿನ ಪ್ರಮಾಣವನ್ನು ಇಳಿಸಿ</translation>
 <translation id="957570623732056069">ಈ ಪಠ್ಯಕ್ಕೆ ನ್ಯಾವಿಗೇಟ್ ಮಾಡಲು ಒಂದು ಬೆರಳಿನಲ್ಲಿ ಎಡಕ್ಕೆ ಅಥವಾ ಬಲಕ್ಕೆ ಸ್ವೈಪ್ ಮಾಡಿ</translation>
 <translation id="958854023026327378">ಒಂದು ಬೆರಳಿನಿಂದ ಕೆಳಕ್ಕೆ ಸ್ವೈಪ್‌ ಮಾಡಿ</translation>

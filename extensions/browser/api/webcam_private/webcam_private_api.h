@@ -8,7 +8,6 @@
 #include <map>
 #include <memory>
 
-#include "base/macros.h"
 #include "extensions/browser/api/api_resource_manager.h"
 #include "extensions/browser/api/webcam_private/webcam.h"
 #include "extensions/browser/browser_context_keyed_api_factory.h"

@@ -4,9 +4,21 @@
 
 import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {ProjectorBrowserProxyImpl} from '../../communication/projector_browser_proxy.js';
 
 import {AnnotatorTrustedCommFactory, UntrustedAnnotatorClient} from './trusted/trusted_annotator_comm_factory.js';
+
+/**
+ * Enum for passing annotator error message to the browser process.
+ * @enum {string}
+ */
+const AnnotatorToolErrorType = {
+  UNDO_ERROR: 'UNDO_ERROR',
+  REDO_ERROR: 'REDO_ERROR',
+  CLEAR_ERROR: 'CLEAR_ERROR',
+  SET_TOOL_ERROR: 'SET_TOOL_ERROR',
+};
 
 Polymer({
   is: 'annotator-embedder-impl',
@@ -18,21 +30,41 @@ Polymer({
     const client = AnnotatorTrustedCommFactory.getPostMessageAPIClient();
 
     this.addWebUIListener('undo', () => {
-      client.undo();
+      try {
+        client.undo();
+      } catch (error) {
+        ProjectorBrowserProxyImpl.getInstance().onError(
+            [AnnotatorToolErrorType.UNDO_ERROR]);
+      }
     });
 
     this.addWebUIListener('redo', () => {
-      client.redo();
+      try {
+        client.redo();
+      } catch (error) {
+        ProjectorBrowserProxyImpl.getInstance().onError(
+            [AnnotatorToolErrorType.REDO_ERROR]);
+      }
     });
 
     this.addWebUIListener('clear', () => {
-      client.clear();
+      try {
+        client.clear();
+      } catch (error) {
+        ProjectorBrowserProxyImpl.getInstance().onError(
+            [AnnotatorToolErrorType.CLEAR_ERROR]);
+      }
     });
 
     this.addWebUIListener('setTool', async (tool) => {
-      const success = await client.setTool(tool);
-      if (success) {
-        ProjectorBrowserProxyImpl.getInstance().onToolSet(tool);
+      try {
+        const success = await client.setTool(tool);
+        if (success) {
+          ProjectorBrowserProxyImpl.getInstance().onToolSet(tool);
+        }
+      } catch (error) {
+        ProjectorBrowserProxyImpl.getInstance().onError(
+            [AnnotatorToolErrorType.SET_TOOL_ERROR]);
       }
     });
   },

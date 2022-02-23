@@ -6,6 +6,7 @@ include_rules = [
   "+components/strings/grit",
   "+components/version_info",
   "+crypto/sha2.h",
+  "+crypto/signature_verifier.h",
   "+net",
   "+services/network/public",
   "+third_party/protobuf"

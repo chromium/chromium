@@ -8,7 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <vector>
+#include <deque>
 
 #include "components/zucchini/address_translator.h"
 #include "components/zucchini/buffer_view.h"
@@ -70,7 +70,7 @@ class Abs32RvaExtractorWin32 {
   // length |addr.width()|) in |abs32_locations|.
   Abs32RvaExtractorWin32(ConstBufferView image,
                          AbsoluteAddress&& addr,
-                         const std::vector<offset_t>& abs32_locations,
+                         const std::deque<offset_t>& abs32_locations,
                          offset_t lo,
                          offset_t hi);
   Abs32RvaExtractorWin32(Abs32RvaExtractorWin32&&);
@@ -83,8 +83,8 @@ class Abs32RvaExtractorWin32 {
  private:
   ConstBufferView image_;
   AbsoluteAddress addr_;
-  std::vector<offset_t>::const_iterator cur_abs32_;
-  std::vector<offset_t>::const_iterator end_abs32_;
+  std::deque<offset_t>::const_iterator cur_abs32_;
+  std::deque<offset_t>::const_iterator end_abs32_;
 };
 
 // A reader for Win32 abs32 references that filters and translates results from
@@ -130,12 +130,12 @@ class Abs32WriterWin32 : public ReferenceWriter {
 size_t RemoveUntranslatableAbs32(ConstBufferView image,
                                  AbsoluteAddress&& addr,
                                  const AddressTranslator& translator,
-                                 std::vector<offset_t>* locations);
+                                 std::deque<offset_t>* locations);
 
 // Given a sorted list of abs32 |locations|, removes all elements whose body
 // (with |width| given) overlaps with the body of a previous element.
 size_t RemoveOverlappingAbs32Locations(uint32_t width,
-                                       std::vector<offset_t>* locations);
+                                       std::deque<offset_t>* locations);
 
 }  // namespace zucchini
 

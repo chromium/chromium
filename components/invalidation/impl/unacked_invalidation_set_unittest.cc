@@ -55,15 +55,6 @@ TEST_F(UnackedInvalidationSetTest, OneInvalidation) {
   EXPECT_FALSE(set.StartsWithUnknownVersion());
 }
 
-// Test that calling Clear() returns us to the empty state.
-TEST_F(UnackedInvalidationSetTest, Clear) {
-  Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
-  unacked_invalidations_.Add(inv1);
-  unacked_invalidations_.Clear();
-
-  EXPECT_EQ(0U, GetStoredInvalidations().GetSize());
-}
-
 // Test that repeated unknown version invalidations are squashed together.
 TEST_F(UnackedInvalidationSetTest, UnknownVersions) {
   Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
@@ -110,25 +101,24 @@ TEST_F(UnackedInvalidationSetTest, Truncation) {
   EXPECT_EQ(kMax, static_cast<size_t>(set.rbegin()->version()));
 }
 
-// Test that we don't truncate while a handler is registered.
+// Test that we don't truncate too early.
 TEST_F(UnackedInvalidationSetTest, RegistrationAndTruncation) {
-  unacked_invalidations_.SetHandlerIsRegistered();
-
   size_t kMax = UnackedInvalidationSet::kMaxBufferedInvalidations;
 
-  for (size_t i = 0; i < kMax + 1; ++i) {
+  for (size_t i = 0; i < kMax; ++i) {
     Invalidation inv = Invalidation::Init(kTopic, i, "payload");
     unacked_invalidations_.Add(inv);
   }
 
   SingleTopicInvalidationSet set = GetStoredInvalidations();
-  ASSERT_EQ(kMax+1, set.GetSize());
+  ASSERT_EQ(kMax, set.GetSize());
   EXPECT_FALSE(set.StartsWithUnknownVersion());
   EXPECT_EQ(0, set.begin()->version());
-  EXPECT_EQ(kMax, static_cast<size_t>(set.rbegin()->version()));
+  EXPECT_EQ(kMax - 1, static_cast<size_t>(set.rbegin()->version()));
 
-  // Unregistering should re-enable truncation.
-  unacked_invalidations_.SetHandlerIsUnregistered();
+  // Truncate when adding more than the
+  // |UnackedInvalidationSet::kMaxBufferedInvalidations|.
+  unacked_invalidations_.Add(Invalidation::Init(kTopic, kMax, "payload"));
   SingleTopicInvalidationSet set2 = GetStoredInvalidations();
   ASSERT_EQ(kMax, set2.GetSize());
   EXPECT_TRUE(set2.StartsWithUnknownVersion());
@@ -140,10 +130,6 @@ TEST_F(UnackedInvalidationSetTest, RegistrationAndTruncation) {
 TEST_F(UnackedInvalidationSetTest, Acknowledge) {
   // inv2 is included in this test just to make sure invalidations that
   // are supposed to be unaffected by this operation will be unaffected.
-
-  // We don't expect to be receiving acks or drops unless this flag is set.
-  // Not that it makes much of a difference in behavior.
-  unacked_invalidations_.SetHandlerIsRegistered();
 
   Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
   Invalidation inv2 = Invalidation::InitUnknownVersion(kTopic);
@@ -163,10 +149,6 @@ TEST_F(UnackedInvalidationSetTest, Acknowledge) {
 TEST_F(UnackedInvalidationSetTest, Drop) {
   // inv2 is included in this test just to make sure invalidations that
   // are supposed to be unaffected by this operation will be unaffected.
-
-  // We don't expect to be receiving acks or drops unless this flag is set.
-  // Not that it makes much of a difference in behavior.
-  unacked_invalidations_.SetHandlerIsRegistered();
 
   Invalidation inv1 = Invalidation::Init(kTopic, 10, "payload");
   Invalidation inv2 = Invalidation::Init(kTopic, 15, "payload");

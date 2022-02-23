@@ -14,7 +14,7 @@
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process_handle.h"
 #include "base/rand_util.h"
 #include "base/strings/string_number_conversions.h"
@@ -33,9 +33,9 @@
 #include "mojo/public/cpp/platform/platform_channel_server_endpoint.h"
 #include "mojo/public/cpp/platform/platform_handle.h"
 #include "mojo/public/cpp/system/invitation.h"
+#include "remoting/host/base/switches.h"
 #include "remoting/host/host_main.h"
 #include "remoting/host/ipc_constants.h"
-#include "remoting/host/switches.h"
 #include "remoting/host/win/launch_process_with_token.h"
 #include "remoting/host/win/security_descriptor.h"
 #include "remoting/host/win/worker_process_launcher.h"
@@ -135,7 +135,7 @@ class WtsSessionProcessDelegate::Core
   // Security descriptor (as SDDL) to be applied to |channel_|.
   const std::string channel_security_;
 
-  WorkerProcessLauncher* event_handler_ = nullptr;
+  raw_ptr<WorkerProcessLauncher> event_handler_ = nullptr;
 
   // The job object used to control the lifetime of child processes.
   base::win::ScopedHandle job_;

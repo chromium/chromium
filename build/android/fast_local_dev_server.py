@@ -281,6 +281,8 @@ def _process_requests(sock: socket.socket):
   tasks: Dict[Tuple[str, str], Task] = {}
   task_manager = TaskManager()
   try:
+    log('READY... Remember to set android_static_analysis="build_server" in '
+        'args.gn files')
     for data in _listen_for_request_data(sock):
       task = Task(name=data['name'],
                   cwd=data['cwd'],
@@ -303,7 +305,23 @@ def _process_requests(sock: socket.socket):
 
 def main():
   parser = argparse.ArgumentParser(description=__doc__)
-  parser.parse_args()
+  parser.add_argument(
+      '--fail-if-not-running',
+      action='store_true',
+      help='Used by GN to fail fast if the build server is not running.')
+  args = parser.parse_args()
+  if args.fail_if_not_running:
+    with socket.socket(socket.AF_UNIX) as sock:
+      try:
+        sock.connect(server_utils.SOCKET_ADDRESS)
+      except socket.error:
+        print('Build server is not running and '
+              'android_static_analysis="build_server" is set.\nPlease run '
+              'this command in a separate terminal:\n\n'
+              '$ build/android/fast_local_dev_server.py\n')
+        return 1
+      else:
+        return 0
   with socket.socket(socket.AF_UNIX) as sock:
     sock.bind(server_utils.SOCKET_ADDRESS)
     sock.listen()

@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/global_media_controls/public/test/mock_media_item_manager.h"
 #include "components/global_media_controls/public/test/mock_media_item_ui_device_selector.h"
@@ -131,11 +132,11 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
     GetFocusManager()->SetFocusedView(item_ui_->GetDismissButtonForTesting());
 
 // On Mac OS, we need to use the space bar to press a button.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     ui::KeyboardCode button_press_keycode = ui::VKEY_SPACE;
 #else
     ui::KeyboardCode button_press_keycode = ui::VKEY_RETURN;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
     ui::test::EventGenerator generator(GetRootWindow(widget_.get()));
     generator.PressKey(button_press_keycode, 0);
@@ -229,9 +230,9 @@ class MediaItemUIViewTest : public views::ViewsTestBase {
   }
 
   std::unique_ptr<views::Widget> widget_;
-  test::MockMediaItemUIFooter* footer_ = nullptr;
-  test::MockMediaItemUIDeviceSelector* device_selector_ = nullptr;
-  MediaItemUIView* item_ui_ = nullptr;
+  raw_ptr<test::MockMediaItemUIFooter> footer_ = nullptr;
+  raw_ptr<test::MockMediaItemUIDeviceSelector> device_selector_ = nullptr;
+  raw_ptr<MediaItemUIView> item_ui_ = nullptr;
   std::unique_ptr<global_media_controls::test::MockMediaItemUIObserver>
       observer_;
   std::unique_ptr<media_message_center::test::MockMediaNotificationItem> item_;

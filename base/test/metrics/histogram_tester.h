@@ -13,7 +13,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/metrics/histogram.h"
 #include "base/metrics/histogram_base.h"
 #include "base/strings/string_piece.h"
@@ -33,6 +32,7 @@ class HistogramSamples;
 // histogram data between the renderer and browser processes. If it is in a
 // content browser test, then content::FetchHistogramsFromChildProcesses()
 // should be used to achieve that.
+// To test histograms in Java tests, use HistogramTestRule.
 class HistogramTester {
  public:
   using CountsMap = std::map<std::string, HistogramBase::Count, std::less<>>;

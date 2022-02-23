@@ -1,59 +1,79 @@
 {
-    include: [ "syslog/client.shard.cml" ],
+    include: [
+        "syslog/client.shard.cml",
+        "vulkan/client.shard.cml",
+    ],
     program: {
         runner: "elf",
         binary: "chrome",
         args: [
-          "--enable-features=Vulkan,CanvasOopRasterization"
+            "--enable-cfv2",
+            "--enable-features=Vulkan,CanvasOopRasterization",
         ],
+
+        // SandboxPolicyFuchsia currently expects stderr & stdout to exist.
+        // Route them to the LogSink, to capture any content they emit, for
+        // now.
+        forward_stdout_to: "log",
+        forward_stderr_to: "log",
+
+        // Required to allow JIT in child processes such as renderers.
+        // Known as 'deprecated-ambient-replace-as-executable' in CFv1.
+        job_policy_ambient_mark_vmo_exec: "true",
     },
     capabilities: [
         {
             protocol: [
+                "fuchsia.element.Manager",
                 "fuchsia.ui.app.ViewProvider",
             ],
         },
     ],
     use: [
         {
-            directory: "cache",
-            from: "parent",
+            storage: "cache",
             path: "/cache",
-            rights: ["rw*"],
         },
         {
-            directory: "data",
-            from: "parent",
+            storage: "data",
             path: "/data",
-            rights: ["rw*"],
         },
         {
             storage: "tmp",
             path: "/tmp",
         },
         {
+            directory: "root-ssl-certificates",
+            rights: [ "r*" ],
+            path: "/config/ssl",
+        },
+        {
             protocol: [
+                "fuchsia.buildinfo.Provider",
                 "fuchsia.device.NameProvider",
+                "fuchsia.element.GraphicalPresenter",
                 "fuchsia.fonts.Provider",
                 "fuchsia.input.virtualkeyboard.ControllerCreator",
                 "fuchsia.intl.PropertyProvider",
                 "fuchsia.media.Audio",
+                "fuchsia.media.AudioDeviceEnumerator",
                 "fuchsia.media.ProfileProvider",
                 "fuchsia.memorypressure.Provider",
                 "fuchsia.net.interfaces.State",
                 "fuchsia.net.name.Lookup",
                 "fuchsia.posix.socket.Provider",
                 "fuchsia.process.Launcher",
-                "fuchsia.sysmem.Allocator",
+                "fuchsia.ui.composition.Allocator",
+                "fuchsia.ui.composition.Flatland",
                 "fuchsia.ui.input3.Keyboard",
                 "fuchsia.ui.scenic.Scenic",
-                "fuchsia.vulkan.loader.Loader",
             ],
         },
     ],
     expose: [
         {
             protocol: [
+                "fuchsia.element.Manager",
                 "fuchsia.ui.app.ViewProvider",
             ],
             from: "self",

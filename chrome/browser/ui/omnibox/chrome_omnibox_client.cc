@@ -31,6 +31,7 @@
 #include "chrome/browser/predictors/autocomplete_action_predictor_factory.h"
 #include "chrome/browser/predictors/loading_predictor.h"
 #include "chrome/browser/predictors/loading_predictor_factory.h"
+#include "chrome/browser/prerender/prerender_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/browser/ssl/typed_navigation_upgrade_throttle.h"
@@ -48,6 +49,7 @@
 #include "components/favicon/core/favicon_service.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/base_search_provider.h"
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox_controller_emitter.h"
 #include "components/omnibox/browser/search_provider.h"
@@ -122,12 +124,10 @@ bool ChromeOmniboxClient::IsPasteAndGoEnabled() const {
 }
 
 bool ChromeOmniboxClient::IsDefaultSearchProviderEnabled() const {
-  const base::DictionaryValue* url_dict = profile_->GetPrefs()->GetDictionary(
+  const base::Value* url_dict = profile_->GetPrefs()->GetDictionary(
       DefaultSearchManager::kDefaultSearchProviderDataPrefName);
-  bool disabled_by_policy = false;
-  url_dict->GetBoolean(DefaultSearchManager::kDisabledByPolicy,
-                       &disabled_by_policy);
-  return !disabled_by_policy;
+  return !url_dict->FindBoolPath(DefaultSearchManager::kDisabledByPolicy)
+              .value_or(false);
 }
 
 const SessionID& ChromeOmniboxClient::GetSessionID() const {
@@ -250,6 +250,7 @@ void ChromeOmniboxClient::OnFocusChanged(OmniboxFocusState state,
 void ChromeOmniboxClient::OnResultChanged(
     const AutocompleteResult& result,
     bool default_match_changed,
+    bool should_prerender,
     const BitmapFetchedCallback& on_bitmap_fetched) {
   auto now = base::TimeTicks::Now();
 
@@ -263,8 +264,18 @@ void ChromeOmniboxClient::OnResultChanged(
   request_ids_.clear();
   // Create new requests.
   int result_index = -1;
-  for (const auto& match : result) {
+  for (const AutocompleteMatch& match : result) {
     ++result_index;
+
+    // Trigger prerendering only if `should_prerender` is set to true. Caller
+    // uses this parameter to explicitly allow embedders to prerender. A typical
+    // scenario is that the caller will only set it to true if the results will
+    // not change, to ensure that the prerender is not triggered for the same
+    // input repeatedly.
+    if (prerender_utils::IsSearchSuggestionPrerenderEnabled() &&
+        should_prerender && BaseSearchProvider::ShouldPrerender(match)) {
+      DoPrerender(match);
+    }
     if (match.ImageUrl().is_empty()) {
       continue;
     }
@@ -390,6 +401,11 @@ void ChromeOmniboxClient::OpenUpdateChromeDialog() {
   }
 }
 
+void ChromeOmniboxClient::FocusWebContents() {
+  if (controller_->GetWebContents())
+    controller_->GetWebContents()->Focus();
+}
+
 void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
   content::WebContents* web_contents = controller_->GetWebContents();
 
@@ -398,10 +414,8 @@ void ChromeOmniboxClient::DoPrerender(const AutocompleteMatch& match) {
     return;
 
   gfx::Rect container_bounds = web_contents->GetContainerBounds();
-
   predictors::AutocompleteActionPredictorFactory::GetForProfile(profile_)
-      ->StartPrerendering(match.destination_url, *web_contents,
-                          container_bounds.size());
+      ->StartPrerendering(match, *web_contents, container_bounds.size());
 }
 
 void ChromeOmniboxClient::DoPreconnect(const AutocompleteMatch& match) {

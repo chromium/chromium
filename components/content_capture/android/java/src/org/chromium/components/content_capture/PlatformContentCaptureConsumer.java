@@ -4,11 +4,12 @@
 
 package org.chromium.components.content_capture;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.os.Build;
 import android.view.View;
 import android.view.ViewStructure;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.VerifiesOnQ;
 import org.chromium.base.task.AsyncTask;
@@ -19,7 +20,7 @@ import org.chromium.content_public.browser.WebContents;
  * thread.
  */
 @VerifiesOnQ
-@TargetApi(Build.VERSION_CODES.Q)
+@RequiresApi(Build.VERSION_CODES.Q)
 public class PlatformContentCaptureConsumer implements ContentCaptureConsumer {
     private PlatformSession mPlatformSession;
     private final View mView;

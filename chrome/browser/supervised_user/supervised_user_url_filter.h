@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "build/chromeos_buildflags.h"
@@ -145,11 +146,6 @@ class SupervisedUserURLFilter {
   static bool ReasonIsAutomatic(
       supervised_user_error_page::FilteringBehaviorReason reason);
 
-  // Returns true if the URL has a standard scheme. Only URLs with standard
-  // schemes are filtered.
-  // This method is public for testing.
-  static bool HasFilteredScheme(const GURL& url);
-
   // Returns true if the |host| matches the pattern. A pattern is a hostname
   // with one or both of the following modifications:
   // - If the pattern starts with "*.", it matches the host or any subdomain
@@ -257,6 +253,8 @@ class SupervisedUserURLFilter {
  private:
   friend class SupervisedUserURLFilterTest;
 
+  bool IsExemptedFromGuardianApproval(const GURL& effective_url) const;
+
   bool RunAsyncChecker(const GURL& url,
                        FilteringBehaviorCallback callback) const;
 
@@ -284,7 +282,7 @@ class SupervisedUserURLFilter {
   std::map<std::string, bool> host_map_;
 
   // Not owned.
-  const SupervisedUserDenylist* denylist_;
+  raw_ptr<const SupervisedUserDenylist> denylist_;
 
   std::unique_ptr<safe_search_api::URLChecker> async_url_checker_;
 

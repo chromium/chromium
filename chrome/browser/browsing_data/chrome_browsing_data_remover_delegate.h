@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/waitable_event_watcher.h"
@@ -22,6 +23,7 @@
 #include "components/offline_pages/core/offline_page_model.h"
 #include "content/public/browser/browsing_data_remover.h"
 #include "content/public/browser/browsing_data_remover_delegate.h"
+#include "device/fido/platform_credential_store.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "ppapi/buildflags/buildflags.h"
@@ -43,8 +45,7 @@ class WebRtcEventLogManager;
 // as the embedder.
 class ChromeBrowsingDataRemoverDelegate
     : public content::BrowsingDataRemoverDelegate,
-      public KeyedService
-{
+      public KeyedService {
  public:
   explicit ChromeBrowsingDataRemoverDelegate(
       content::BrowserContext* browser_context);
@@ -76,7 +77,7 @@ class ChromeBrowsingDataRemoverDelegate
   void OnStartRemoving() override;
   void OnDoneRemoving() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OverrideWebappRegistryForTesting(
       std::unique_ptr<WebappRegistry> webapp_registry);
 #endif
@@ -135,8 +136,10 @@ class ChromeBrowsingDataRemoverDelegate
     kAccountPasswordsSynced = 38,
     kAccountCompromisedCredentials = 39,
     kFaviconCacheExpiration = 40,
-    kSecurePaymentConfirmationInstruments = 41,
-    kMaxValue = kSecurePaymentConfirmationInstruments,
+    kSecurePaymentConfirmationCredentials = 41,
+    kWebAppHistory = 42,
+    kWebAuthnCredentials = 43,
+    kMaxValue = kWebAuthnCredentials,
   };
 
   // Called by CreateTaskCompletionClosure().
@@ -181,8 +184,10 @@ class ChromeBrowsingDataRemoverDelegate
                                base::WaitableEvent* waitable_event);
 #endif
 
+  std::unique_ptr<device::fido::PlatformCredentialStore> MakeCredentialStore();
+
   // The profile for which the data will be deleted.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Prevents |profile_| from getting deleted. Only active between
   // OnStartRemoving() and OnDoneRemoving(), i.e. while there are tasks in
@@ -212,13 +217,15 @@ class ChromeBrowsingDataRemoverDelegate
   // Used if we need to clear history.
   base::CancelableTaskTracker history_task_tracker_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // WebappRegistry makes calls across the JNI. In unit tests, the Java side is
   // not initialised, so the registry must be mocked out.
   std::unique_ptr<WebappRegistry> webapp_registry_;
 #endif
 
   bool should_clear_password_account_storage_settings_ = false;
+
+  std::unique_ptr<device::fido::PlatformCredentialStore> credential_store_;
 
   base::WeakPtrFactory<ChromeBrowsingDataRemoverDelegate> weak_ptr_factory_{
       this};

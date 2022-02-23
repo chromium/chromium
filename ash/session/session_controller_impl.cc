@@ -193,6 +193,10 @@ bool SessionControllerImpl::IsUserFirstLogin() const {
   return GetUserSession(0)->user_info.is_new_profile;
 }
 
+bool SessionControllerImpl::IsEnterpriseManaged() const {
+  return client_ && client_->IsEnterpriseManaged();
+}
+
 bool SessionControllerImpl::ShouldDisplayManagedUI() const {
   if (!IsActiveUserSessionStarted())
     return false;
@@ -365,7 +369,9 @@ void SessionControllerImpl::SetUserSessionOrder(
 }
 
 void SessionControllerImpl::PrepareForLock(PrepareForLockCallback callback) {
-  FullscreenController::MaybeExitFullscreen();
+  if (FullscreenController::ShouldExitFullscreenBeforeLock())
+    FullscreenController::MaybeExitFullscreen();
+
   std::move(callback).Run();
 }
 
@@ -519,6 +525,7 @@ LoginStatus SessionControllerImpl::CalculateLoginStatus() const {
     case SessionState::OOBE:
     case SessionState::LOGIN_PRIMARY:
     case SessionState::LOGGED_IN_NOT_ACTIVE:
+    case SessionState::RMA:
       return LoginStatus::NOT_LOGGED_IN;
 
     case SessionState::ACTIVE:

@@ -7,7 +7,6 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/check.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/sequence_token.h"
 #include "base/task/post_task.h"
@@ -274,9 +273,9 @@ class TestSyncServiceSequence {
   TestSyncServiceSequence(const TestSyncServiceSequence&) = delete;
   TestSyncServiceSequence& operator=(const TestSyncServiceSequence&) = delete;
 
-  void SetUp(InterfaceRequest<Interface> request) {
+  void SetUp(PendingReceiver<Interface> receiver) {
     CHECK(task_runner()->RunsTasksInCurrentSequence());
-    impl_ = std::make_unique<ImplTypeFor<Interface>>(std::move(request));
+    impl_ = std::make_unique<ImplTypeFor<Interface>>(std::move(receiver));
     impl_->set_ping_handler([this](typename Interface::PingCallback callback) {
       {
         base::AutoLock locker(lock_);

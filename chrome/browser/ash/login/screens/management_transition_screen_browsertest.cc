@@ -5,6 +5,11 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/session/arc_management_transition.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/login_screen_test_api.h"
 #include "base/run_loop.h"
@@ -22,11 +27,6 @@
 #include "chrome/browser/ui/webui/chromeos/login/management_transition_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "chrome/test/base/mixin_based_in_process_browser_test.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/session/arc_management_transition.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_type.h"

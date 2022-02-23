@@ -355,6 +355,12 @@ void CronetBidirectionalStreamAdapter::StartOnNetworkThread(
     std::unique_ptr<net::BidirectionalStreamRequestInfo> request_info) {
   DCHECK(context_->IsOnNetworkThread());
   DCHECK(!bidi_stream_);
+
+  request_info->detect_broken_connection =
+      context_->cronet_url_request_context()
+          ->bidi_stream_detect_broken_connection();
+  request_info->heartbeat_interval =
+      context_->cronet_url_request_context()->heartbeat_interval();
   request_info->extra_headers.SetHeaderIfMissing(
       net::HttpRequestHeaders::kUserAgent, context_->GetURLRequestContext()
                                                ->http_user_agent_settings()

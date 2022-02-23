@@ -6,6 +6,8 @@
 
 #include <cstring>
 
+#include "base/i18n/string_compare.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
 #include "components/cbor/values.h"
 #include "crypto/random.h"
@@ -17,6 +19,8 @@
 #include "third_party/boringssl/src/include/openssl/hkdf.h"
 #include "third_party/boringssl/src/include/openssl/mem.h"
 #include "third_party/boringssl/src/include/openssl/obj.h"
+#include "third_party/icu/source/common/unicode/locid.h"
+#include "third_party/icu/source/i18n/unicode/coll.h"
 
 namespace device {
 
@@ -69,6 +73,22 @@ bool CableDiscoveryData::MatchV1(const CableEidArray& eid) const {
 }
 
 namespace cablev2 {
+
+Pairing::NameComparator::NameComparator(const icu::Locale* locale) {
+  UErrorCode error = U_ZERO_ERROR;
+  collator_.reset(icu::Collator::createInstance(*locale, error));
+}
+
+Pairing::NameComparator::NameComparator(NameComparator&&) = default;
+
+Pairing::NameComparator::~NameComparator() = default;
+
+bool Pairing::NameComparator::operator()(const std::unique_ptr<Pairing>& a,
+                                         const std::unique_ptr<Pairing>& b) {
+  return base::i18n::CompareString16WithCollator(
+             *collator_, base::UTF8ToUTF16(a->name),
+             base::UTF8ToUTF16(b->name)) == UCOL_LESS;
+}
 
 Pairing::Pairing() = default;
 Pairing::~Pairing() = default;
@@ -138,6 +158,11 @@ bool Pairing::CompareByPublicKey(const std::unique_ptr<Pairing>& a,
                                  const std::unique_ptr<Pairing>& b) {
   return memcmp(a->peer_public_key_x962.data(), b->peer_public_key_x962.data(),
                 sizeof(a->peer_public_key_x962)) < 0;
+}
+
+// static
+Pairing::NameComparator Pairing::CompareByName(const icu::Locale* locale) {
+  return NameComparator(locale);
 }
 
 // static

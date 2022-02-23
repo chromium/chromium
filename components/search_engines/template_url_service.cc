@@ -15,12 +15,14 @@
 #include "base/containers/contains.h"
 #include "base/debug/crash_logging.h"
 #include "base/format_macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/search_engines/search_engines_pref_names.h"
@@ -39,7 +41,7 @@
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/search_engines/android/template_url_service_android.h"
 #endif
 
@@ -270,7 +272,7 @@ class TemplateURLService::Scoper {
 
  private:
   std::unique_ptr<KeywordWebDataService::BatchModeScoper> batch_mode_scoper_;
-  TemplateURLService* service_;
+  raw_ptr<TemplateURLService> service_;
 };
 
 // TemplateURLService ---------------------------------------------------------
@@ -318,7 +320,7 @@ void TemplateURLService::LogSearchTemplateURLEvent(
 // static
 void TemplateURLService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-#if defined(OS_IOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
   uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;
 #else
   uint32_t flags = user_prefs::PrefRegistrySyncable::SYNCABLE_PREF;
@@ -331,7 +333,7 @@ void TemplateURLService::RegisterProfilePrefs(
       prefs::kDefaultSearchProviderContextMenuAccessAllowed, true);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> TemplateURLService::GetJavaObject() {
   if (!template_url_service_android_) {
     template_url_service_android_ =
@@ -762,7 +764,7 @@ void TemplateURLService::SetUserSelectedDefaultSearchProvider(
 }
 
 const TemplateURL* TemplateURLService::GetDefaultSearchProvider() const {
-  return loaded_ ? default_search_provider_
+  return loaded_ ? default_search_provider_.get()
                  : initial_default_search_provider_.get();
 }
 
@@ -1992,6 +1994,7 @@ void TemplateURLService::UpdateProvidersCreatedByPolicy(
       new_data.GenerateSyncGUID();
     new_data.created_by_policy = true;
     new_data.safe_for_autoreplace = false;
+    new_data.is_active = TemplateURLData::ActiveStatus::kTrue;
     std::unique_ptr<TemplateURL> new_dse_ptr =
         std::make_unique<TemplateURL>(new_data);
     TemplateURL* new_dse = new_dse_ptr.get();

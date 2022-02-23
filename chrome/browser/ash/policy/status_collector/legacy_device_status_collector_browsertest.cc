@@ -14,6 +14,8 @@
 #include <vector>
 
 #include "ash/components/audio/cras_audio_handler.h"
+#include "ash/components/disks/disk_mount_manager.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "ash/components/settings/cros_settings_names.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
@@ -74,8 +76,6 @@
 #include "chromeos/dbus/update_engine/fake_update_engine_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/dbus/vm_applications/apps.pb.h"
-#include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "chromeos/login/login_state/login_state.h"
 #include "chromeos/network/network_handler.h"
 #include "chromeos/network/network_handler_test_helper.h"
@@ -109,9 +109,9 @@
 #include "ui/aura/env.h"
 #include "ui/aura/test/test_windows.h"
 
+using ::ash::disks::DiskMountManager;
 using base::Time;
 using base::test::ScopedChromeOSVersionInfo;
-using chromeos::disks::DiskMountManager;
 using ::testing::Return;
 using ::testing::ReturnRef;
 
@@ -868,9 +868,8 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     env->SetVar("TZ", "UTC");
 
     // Initialize our mock mounted disk volumes.
-    std::unique_ptr<chromeos::disks::MockDiskMountManager>
-        mock_disk_mount_manager =
-            std::make_unique<chromeos::disks::MockDiskMountManager>();
+    std::unique_ptr<ash::disks::MockDiskMountManager> mock_disk_mount_manager =
+        std::make_unique<ash::disks::MockDiskMountManager>();
     AddMountPoint("/mount/volume1");
     AddMountPoint("/mount/volume2");
     EXPECT_CALL(*mock_disk_mount_manager, mount_points())
@@ -959,7 +958,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     mount_point_map_.insert(DiskMountManager::MountPointMap::value_type(
         mount_point, DiskMountManager::MountPointInfo(
                          mount_point, mount_point, chromeos::MOUNT_TYPE_DEVICE,
-                         chromeos::disks::MOUNT_CONDITION_NONE)));
+                         ash::disks::MOUNT_CONDITION_NONE)));
   }
 
   virtual void RestartStatusCollector(
@@ -1045,7 +1044,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     TestingProfile::Builder profile_builder;
     profile_builder.SetProfileName(account_id.GetUserEmail());
     testing_profile_ = profile_builder.Build();
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
 
     EXPECT_CALL(*user_manager_, IsLoggedInAsKioskApp())
@@ -1080,7 +1079,7 @@ class LegacyDeviceStatusCollectorTest : public testing::Test {
     }
 
     testing_profile_ = std::make_unique<TestingProfile>();
-    chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+    ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
         user, testing_profile_.get());
 
     SetDeviceLocalAccounts(&owner_settings_service_, accounts);
@@ -3768,12 +3767,9 @@ TEST_F(LegacyDeviceStatusCollectorTest, GenerateAppInfo) {
   auto env = aura::Env::CreateInstance();
   std::unique_ptr<aura::Window> window(
       aura::test::CreateTestWindowWithId(/*id=*/0, nullptr));
-  auto instance = std::make_unique<apps::Instance>(
-      "id", apps::Instance::InstanceKey::ForWindowBasedApp(window.get()));
-  instance->UpdateState(apps::InstanceState::kStarted, start_time);
-  std::vector<std::unique_ptr<apps::Instance>> deltas;
-  deltas.push_back(std::move(instance));
-  app_proxy->InstanceRegistry().OnInstances(deltas);
+  apps::InstanceParams params("id", window.get());
+  params.state = std::make_pair(apps::InstanceState::kStarted, start_time);
+  app_proxy->InstanceRegistry().CreateOrUpdateInstance(std::move(params));
 
   base::Time report_time;
   EXPECT_TRUE(base::Time::FromString("30-MAR-2020 2:30pm", &report_time));

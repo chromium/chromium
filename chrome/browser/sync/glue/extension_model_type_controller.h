@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_SYNC_GLUE_EXTENSION_MODEL_TYPE_CONTROLLER_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/sync/driver/syncable_service_based_model_type_controller.h"
 
 class Profile;
@@ -35,7 +36,7 @@ class ExtensionModelTypeController
                   const ModelLoadCallback& model_load_callback) override;
 
  private:
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 }  // namespace browser_sync

@@ -44,9 +44,9 @@ def mock_url_open(data=None):
     def read(self):
       return json.dumps(self.data)
 
-  def inner(url):
-    if url.endswith('.json'):
-      return _MockJsonResponse(data)
+  def inner(_):
+    return _MockJsonResponse(data)
+
   return inner
 
 

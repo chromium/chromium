@@ -28,7 +28,7 @@ ClipPathPaintImageGeneratorImpl::ClipPathPaintImageGeneratorImpl(
 
 scoped_refptr<Image> ClipPathPaintImageGeneratorImpl::Paint(
     float zoom,
-    const FloatRect& reference_box,
+    const gfx::RectF& reference_box,
     const Node& node) {
   return clip_path_paint_definition_->Paint(zoom, reference_box, node);
 }

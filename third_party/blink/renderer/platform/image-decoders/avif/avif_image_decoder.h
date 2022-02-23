@@ -33,7 +33,7 @@ class PLATFORM_EXPORT AVIFImageDecoder final : public ImageDecoder {
   bool ImageIsHighBitDepth() override;
   void OnSetData(SegmentReader* data) override;
   cc::YUVSubsampling GetYUVSubsampling() const override;
-  IntSize DecodedYUVSize(cc::YUVIndex) const override;
+  gfx::Size DecodedYUVSize(cc::YUVIndex) const override;
   wtf_size_t DecodedYUVWidthBytes(cc::YUVIndex) const override;
   SkYUVColorSpace GetYUVColorSpace() const override;
   uint8_t GetYUVBitDepth() const override;

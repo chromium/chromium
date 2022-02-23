@@ -35,14 +35,15 @@ CastFeatureListCreator::CastFeatureListCreator() {}
 
 CastFeatureListCreator::~CastFeatureListCreator() {}
 
-void CastFeatureListCreator::CreatePrefServiceAndFeatureList() {
+void CastFeatureListCreator::CreatePrefServiceAndFeatureList(
+    ProcessType process_type) {
   DCHECK(!pref_service_);
 
   scoped_refptr<PrefRegistrySimple> pref_registry(new PrefRegistrySimple());
   metrics::RegisterPrefs(pref_registry.get());
   PrefProxyConfigTrackerImpl::RegisterPrefs(pref_registry.get());
-  pref_service_ =
-      shell::PrefServiceHelper::CreatePrefService(pref_registry.get());
+  pref_service_ = shell::PrefServiceHelper::CreatePrefService(
+      pref_registry.get(), process_type);
 
   const auto* features_dict =
       pref_service_->GetDictionary(prefs::kLatestDCSFeatures);

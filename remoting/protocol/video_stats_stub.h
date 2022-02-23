@@ -7,8 +7,6 @@
 
 #include <cstdint>
 
-#include "base/macros.h"
-
 namespace remoting {
 namespace protocol {
 

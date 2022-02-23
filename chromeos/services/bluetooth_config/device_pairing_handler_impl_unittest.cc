@@ -6,10 +6,14 @@
 
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
+#include "base/time/clock.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_pairing_delegate.h"
 #include "chromeos/services/bluetooth_config/fake_key_entered_handler.h"
+#include "device/bluetooth/chromeos/bluetooth_utils.h"
 #include "device/bluetooth/test/mock_bluetooth_adapter.h"
 #include "device/bluetooth/test/mock_bluetooth_device.h"
 #include "testing/gmock/include/gmock/gmock.h"
@@ -22,12 +26,14 @@ namespace {
 using NiceMockDevice =
     std::unique_ptr<testing::NiceMock<device::MockBluetoothDevice>>;
 
+const char kTestDeviceIdSuffix[] = "-Identifier";
 const uint32_t kTestBluetoothClass = 1337u;
 const char kTestBluetoothName[] = "testName";
 
 const char kDefaultPinCode[] = "132546";
 const uint32_t kDefaultPinCodeNum = 132546u;
 const uint32_t kUninitializedPasskey = std::numeric_limits<uint32_t>::min();
+const base::TimeDelta kTestDuration = base::Milliseconds(1000);
 
 enum class AuthType {
   kNone,
@@ -43,7 +49,10 @@ enum class AuthType {
 
 class DevicePairingHandlerImplTest : public testing::Test {
  protected:
-  DevicePairingHandlerImplTest() = default;
+  DevicePairingHandlerImplTest()
+      : task_environment_(
+            base::test::SingleThreadTaskEnvironment::MainThreadType::UI,
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {}
   DevicePairingHandlerImplTest(const DevicePairingHandlerImplTest&) = delete;
   DevicePairingHandlerImplTest& operator=(const DevicePairingHandlerImplTest&) =
       delete;
@@ -70,6 +79,38 @@ class DevicePairingHandlerImplTest : public testing::Test {
 
   void DestroyHandler() { device_pairing_handler_.reset(); }
 
+  void CheckPairingHistograms(device::BluetoothTransportType type,
+                              int type_count,
+                              int failure_count,
+                              int success_count) {
+    histogram_tester.ExpectBucketCount(
+        "Bluetooth.ChromeOS.Pairing.TransportType", type, type_count);
+    histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.Pairing.Result",
+                                       false, failure_count);
+    histogram_tester.ExpectBucketCount("Bluetooth.ChromeOS.Pairing.Result",
+                                       true, success_count);
+  }
+
+  void CheckDurationHistogramMetrics(base::TimeDelta bucket,
+                                     int success_count,
+                                     int failure_count,
+                                     std::string transport_name) {
+    histogram_tester.ExpectBucketCount(
+        "Bluetooth.ChromeOS.Pairing.Duration.Success", bucket.InMilliseconds(),
+        success_count);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat(
+            {"Bluetooth.ChromeOS.Pairing.Duration.Success.", transport_name}),
+        bucket.InMilliseconds(), success_count);
+    histogram_tester.ExpectBucketCount(
+        "Bluetooth.ChromeOS.Pairing.Duration.Failure", bucket.InMilliseconds(),
+        failure_count);
+    histogram_tester.ExpectBucketCount(
+        base::StrCat(
+            {"Bluetooth.ChromeOS.Pairing.Duration.Failure.", transport_name}),
+        bucket.InMilliseconds(), failure_count);
+  }
+
   void AddDevice(std::string* id_out,
                  AuthType auth_type,
                  uint32_t passkey = kDefaultPinCodeNum) {
@@ -78,7 +119,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
     ++num_devices_created_;
 
     // Mock devices have their ID set to "${address}-Identifier".
-    *id_out = base::StrCat({address, "-Identifier"});
+    *id_out = base::StrCat({address, kTestDeviceIdSuffix});
 
     auto mock_device =
         std::make_unique<testing::NiceMock<device::MockBluetoothDevice>>(
@@ -141,6 +182,10 @@ class DevicePairingHandlerImplTest : public testing::Test {
         .WillByDefault(testing::Invoke(
             [this](const uint32_t passkey) { received_passkey_ = passkey; }));
 
+    ON_CALL(*mock_device, GetType()).WillByDefault(testing::Invoke([]() {
+      return device::BluetoothTransport::BLUETOOTH_TRANSPORT_CLASSIC;
+    }));
+
     mock_devices_.push_back(std::move(mock_device));
   }
 
@@ -168,6 +213,14 @@ class DevicePairingHandlerImplTest : public testing::Test {
     return !connect_callback_.is_null();
   }
 
+  base::TimeDelta GetPairingFailureDelay() {
+    return DevicePairingHandler::kPairingFailureDelay;
+  }
+
+  void FastForwardOperation(base::TimeDelta time) {
+    task_environment_.FastForwardBy(time);
+  }
+
   void InvokePendingConnectCallback(bool success) {
     if (success) {
       std::move(connect_callback_).Run(absl::nullopt);
@@ -183,9 +236,36 @@ class DevicePairingHandlerImplTest : public testing::Test {
   }
 
   void EnterKeys(const std::string device_id, uint32_t num_keys_entered) {
-    device_pairing_handler_->KeysEntered(FindDevice(device_id),
+    device_pairing_handler_->KeysEntered(FindDevice(device_id)->get(),
                                          num_keys_entered);
     base::RunLoop().RunUntilIdle();
+  }
+
+  void ChangeDeviceIsConnected(const std::string& device_id,
+                               bool is_connected) {
+    auto it = FindDevice(device_id);
+    EXPECT_TRUE(it != mock_devices_.end());
+
+    ON_CALL(**it, IsConnected()).WillByDefault(testing::Return(is_connected));
+  }
+
+  mojom::BluetoothDevicePropertiesPtr FetchDevice(
+      const std::string& device_address) {
+    mojom::BluetoothDevicePropertiesPtr result;
+    remote_handler_->FetchDevice(
+        device_address,
+        base::BindLambdaForTesting(
+            [&result](mojom::BluetoothDevicePropertiesPtr device) {
+              result = std::move(device);
+            }));
+    base::RunLoop().RunUntilIdle();
+    return result;
+  }
+
+  std::string GetDeviceAddress(const std::string& device_id) {
+    return device_id.substr(
+        /*pos=*/0, device_id.length() -
+                       ((sizeof(kTestDeviceIdSuffix) - 1) / sizeof(char)));
   }
 
   const absl::optional<mojom::PairingResult>& pairing_result() const {
@@ -200,6 +280,7 @@ class DevicePairingHandlerImplTest : public testing::Test {
   }
   std::string received_pin_code() const { return received_pin_code_; }
   uint32_t received_passkey() const { return received_passkey_; }
+  base::HistogramTester histogram_tester;
 
  private:
   std::vector<const device::BluetoothDevice*> GetMockDevices() {
@@ -209,12 +290,12 @@ class DevicePairingHandlerImplTest : public testing::Test {
     return devices;
   }
 
-  device::BluetoothDevice* FindDevice(const std::string device_id) const {
-    for (auto& device : mock_devices_) {
-      if (device->GetIdentifier() == device_id)
-        return device.get();
-    }
-    return nullptr;
+  std::vector<NiceMockDevice>::iterator FindDevice(
+      const std::string& device_id) {
+    return std::find_if(mock_devices_.begin(), mock_devices_.end(),
+                        [&device_id](const NiceMockDevice& device) {
+                          return device_id == device->GetIdentifier();
+                        });
   }
 
   void OnPairingAttemptFinished() { num_pairing_attempt_finished_calls_++; }
@@ -242,27 +323,65 @@ class DevicePairingHandlerImplTest : public testing::Test {
   std::unique_ptr<DevicePairingHandlerImpl> device_pairing_handler_;
 };
 
+TEST_F(DevicePairingHandlerImplTest, FetchDeviceExists) {
+  std::string device_id;
+  AddDevice(&device_id, AuthType::kNone);
+
+  std::string device_address = GetDeviceAddress(device_id);
+  mojom::BluetoothDevicePropertiesPtr device = FetchDevice(device_address);
+  EXPECT_TRUE(device);
+  EXPECT_EQ(device->id, device_id);
+  EXPECT_EQ(device->address, device_address);
+}
+
+TEST_F(DevicePairingHandlerImplTest, FetchDeviceNotFound) {
+  EXPECT_FALSE(FetchDevice("invalid"));
+}
+
 TEST_F(DevicePairingHandlerImplTest, MultipleDevicesPairAuthNone) {
   std::string device_id1;
   AddDevice(&device_id1, AuthType::kNone);
   std::string device_id2;
   AddDevice(&device_id2, AuthType::kNone);
 
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/0,
+                                /*transport_name=*/"Classic");
+
   std::unique_ptr<FakeDevicePairingDelegate> delegate1 = PairDevice(device_id1);
   EXPECT_TRUE(delegate1->IsMojoPipeConnected());
 
   EXPECT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 
   std::unique_ptr<FakeDevicePairingDelegate> delegate2 = PairDevice(device_id2);
   EXPECT_TRUE(delegate2->IsMojoPipeConnected());
 
   EXPECT_TRUE(HasPendingConnectCallback());
+  FastForwardOperation(kTestDuration);
   InvokePendingConnectCallback(/*success=*/true);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kSuccess);
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
+
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/2, /*failure_count=*/1,
+                         /*success_count=*/1);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/1,
+                                /*failure_count=*/0,
+                                /*transport_name=*/"Classic");
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, DisableBluetoothBeforePairing) {
@@ -278,6 +397,13 @@ TEST_F(DevicePairingHandlerImplTest, DisableBluetoothBeforePairing) {
   EXPECT_FALSE(HasPendingConnectCallback());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+
+  CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Invalid");
 }
 
 TEST_F(DevicePairingHandlerImplTest, DisableBluetoothDuringPairing) {
@@ -286,6 +412,7 @@ TEST_F(DevicePairingHandlerImplTest, DisableBluetoothDuringPairing) {
 
   std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
   EXPECT_TRUE(delegate->IsMojoPipeConnected());
+  FastForwardOperation(kTestDuration);
 
   // Disable Bluetooth before invoking the Connect() callback.
   SetBluetoothSystemState(mojom::BluetoothSystemState::kDisabling);
@@ -295,6 +422,12 @@ TEST_F(DevicePairingHandlerImplTest, DisableBluetoothDuringPairing) {
   EXPECT_EQ(num_cancel_pairing_calls(), 1u);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, DestroyHandlerBeforeConnectFinishes) {
@@ -303,7 +436,6 @@ TEST_F(DevicePairingHandlerImplTest, DestroyHandlerBeforeConnectFinishes) {
 
   PairDevice(device_id);
   EXPECT_TRUE(HasPendingConnectCallback());
-
   DestroyHandler();
 
   // CancelPairing() should be called since we had an active pairing.
@@ -311,6 +443,12 @@ TEST_F(DevicePairingHandlerImplTest, DestroyHandlerBeforeConnectFinishes) {
 
   // Destroying the handler should call OnPairingAttemptFinished();
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, DestroyHandlerAfterConnectFinishes) {
@@ -321,6 +459,7 @@ TEST_F(DevicePairingHandlerImplTest, DestroyHandlerAfterConnectFinishes) {
   EXPECT_TRUE(delegate->IsMojoPipeConnected());
 
   EXPECT_TRUE(HasPendingConnectCallback());
+  FastForwardOperation(kTestDuration);
   InvokePendingConnectCallback(/*success=*/true);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kSuccess);
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
@@ -332,23 +471,67 @@ TEST_F(DevicePairingHandlerImplTest, DestroyHandlerAfterConnectFinishes) {
 
   // Destroying the handler shouldn't call OnPairingAttemptFinished();
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/0,
+                         /*success_count=*/1);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/1,
+                                /*failure_count=*/0,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, DisconnectDelegateBeforeConnectFinishes) {
   std::string device_id;
-  AddDevice(&device_id, AuthType::kNone);
+  AddDevice(&device_id, AuthType::kDisplayPinCode);
 
-  std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
+  std::unique_ptr<FakeDevicePairingDelegate> delegate1 = PairDevice(device_id);
   EXPECT_TRUE(HasPendingConnectCallback());
+  EXPECT_EQ(delegate1->displayed_pin_code(), kDefaultPinCode);
+  EXPECT_TRUE(delegate1->key_entered_handler()->IsMojoPipeConnected());
 
-  delegate->DisconnectMojoPipe();
+  // Simulate device temporarily being connected during auth.
+  ChangeDeviceIsConnected(device_id, /*is_connected=*/true);
 
-  // CancelPairing() should be called since we had an active pairing.
+  FastForwardOperation(kTestDuration);
+  delegate1->DisconnectMojoPipe();
+
+  // Once the pairing has failed, the device will return to not connected.
+  ChangeDeviceIsConnected(device_id, /*is_connected=*/false);
+
+  // CancelPairing() should be called since we had an active pairing. There
+  // should be no delay for handling the pairing failing. Even though
+  // device->IsConnected() returns true when the pairing is canceled, it should
+  // fail because CancelPairing() was called.
   EXPECT_EQ(num_cancel_pairing_calls(), 1u);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
 
   // Disconnecting the pipe should not call OnPairingAttemptFinished().
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
+
+  // Attempt to pair with the device again.
+  std::unique_ptr<FakeDevicePairingDelegate> delegate2 = PairDevice(device_id);
+  EXPECT_TRUE(HasPendingConnectCallback());
+  InvokePendingConnectCallback(/*success=*/false);
+
+  // There should be a delay for handling the pairing failing.
+  FastForwardOperation(GetPairingFailureDelay());
+
+  EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/2, /*failure_count=*/2,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest,
@@ -360,6 +543,7 @@ TEST_F(DevicePairingHandlerImplTest,
   EXPECT_TRUE(HasPendingConnectCallback());
   ClearDevices();
 
+  FastForwardOperation(kTestDuration);
   delegate->DisconnectMojoPipe();
 
   // CancelPairing() won't be called since the device won't be found. We should
@@ -369,6 +553,12 @@ TEST_F(DevicePairingHandlerImplTest,
 
   // Disconnecting the pipe should not call OnPairingAttemptFinished().
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+  CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Invalid");
 }
 
 TEST_F(DevicePairingHandlerImplTest,
@@ -379,6 +569,7 @@ TEST_F(DevicePairingHandlerImplTest,
   std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
   EXPECT_TRUE(HasPendingConnectCallback());
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
 
@@ -389,6 +580,12 @@ TEST_F(DevicePairingHandlerImplTest,
 
   // Disconnecting the pipe should not call OnPairingAttemptFinished().
   EXPECT_EQ(num_pairing_attempt_finished_calls(), 0u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairDeviceNotFound) {
@@ -396,6 +593,48 @@ TEST_F(DevicePairingHandlerImplTest, PairDeviceNotFound) {
 
   EXPECT_FALSE(HasPendingConnectCallback());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
+  CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(base::Milliseconds(0), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Invalid");
+}
+
+TEST_F(DevicePairingHandlerImplTest, PairFailsDeviceConnected) {
+  // Simulate case where pairing succeeded but the subsequent connection request
+  // returns with a failure. Empirically, it's found that the device actually
+  // does connect and should be treated as a successful pairing (See
+  // b/209531279).
+  std::string device_id;
+  AddDevice(&device_id, AuthType::kNone);
+
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/0, /*failure_count=*/0,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/0,
+                                /*transport_name=*/"Classic");
+
+  std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
+  EXPECT_TRUE(HasPendingConnectCallback());
+
+  // Update device to be connected.
+  ChangeDeviceIsConnected(device_id, /*is_connected=*/true);
+
+  // Fail the pairing.
+  InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
+
+  // The pairing should still return as a success.
+  EXPECT_EQ(pairing_result(), mojom::PairingResult::kSuccess);
+  EXPECT_EQ(num_pairing_attempt_finished_calls(), 1u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/0,
+                         /*success_count=*/1);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/1,
+                                /*failure_count=*/0,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCode) {
@@ -409,7 +648,14 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCode) {
   EXPECT_EQ(received_pin_code(), kDefaultPinCode);
 
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCodeRemoveDevice) {
@@ -418,7 +664,7 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCodeRemoveDevice) {
 
   std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
   EXPECT_TRUE(delegate->HasPendingRequestPinCodeCallback());
-
+  FastForwardOperation(kTestDuration);
   // Simulate device no longer being available.
   ClearDevices();
 
@@ -427,6 +673,12 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPinCodeRemoveDevice) {
   // Failure result should be returned.
   EXPECT_TRUE(received_pin_code().empty());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
+  CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Invalid");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskey) {
@@ -435,12 +687,18 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskey) {
 
   std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
   EXPECT_TRUE(delegate->HasPendingRequestPasskeyCallback());
-
   delegate->InvokePendingRequestPasskeyCallback(kDefaultPinCode);
   EXPECT_EQ(received_passkey(), kDefaultPinCodeNum);
 
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyRemoveDevice) {
@@ -450,6 +708,7 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyRemoveDevice) {
   std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
   EXPECT_TRUE(delegate->HasPendingRequestPasskeyCallback());
 
+  FastForwardOperation(kTestDuration);
   // Simulate device no longer being available.
   ClearDevices();
 
@@ -458,6 +717,12 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyRemoveDevice) {
   // Failure result should be returned.
   EXPECT_EQ(received_passkey(), kUninitializedPasskey);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
+  CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Invalid");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyInvalidKey) {
@@ -467,18 +732,31 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthRequestPasskeyInvalidKey) {
   std::unique_ptr<FakeDevicePairingDelegate> delegate = PairDevice(device_id);
   EXPECT_TRUE(delegate->HasPendingRequestPasskeyCallback());
 
+  FastForwardOperation(kTestDuration);
   delegate->InvokePendingRequestPasskeyCallback("hello_world");
   EXPECT_EQ(received_passkey(), kUninitializedPasskey);
 
   // CancelPairing() should be called since we had an invalid passkey.
   EXPECT_EQ(num_cancel_pairing_calls(), 1u);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 
   delegate->DisconnectMojoPipe();
 
   // CancelPairing() should not be called again since we already cancelled the
   // pairing.
   EXPECT_EQ(num_cancel_pairing_calls(), 1u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPinCode) {
@@ -489,6 +767,9 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPinCode) {
   EXPECT_EQ(delegate->displayed_pin_code(), kDefaultPinCode);
   EXPECT_TRUE(delegate->key_entered_handler()->IsMojoPipeConnected());
 
+  // Simulate device temporarily being connected during auth.
+  ChangeDeviceIsConnected(device_id, /*is_connected=*/true);
+
   EnterKeys(device_id, /*num_keys_entered=*/0);
   EXPECT_EQ(delegate->key_entered_handler()->num_keys_entered(), 0);
 
@@ -496,7 +777,17 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPinCode) {
   EXPECT_EQ(delegate->key_entered_handler()->num_keys_entered(), 6u);
 
   InvokePendingConnectCallback(/*success=*/false);
+
+  // Once the pairing has failed, the device will return to not connected.
+  ChangeDeviceIsConnected(device_id, /*is_connected=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPinCodeDisconnectHandler) {
@@ -511,10 +802,19 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPinCodeDisconnectHandler) {
   EXPECT_EQ(delegate->key_entered_handler()->num_keys_entered(), 0);
 
   delegate->key_entered_handler()->DisconnectMojoPipe();
+  FastForwardOperation(GetPairingFailureDelay());
 
   EnterKeys(device_id, /*num_keys_entered=*/6u);
   // Number of keys entered should still be zero since pipe is disconnected.
   EXPECT_EQ(delegate->key_entered_handler()->num_keys_entered(), 0);
+
+  // Metrics is not recorded because pairing did not finish.
+  CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
+                         /*type_count=*/0, /*failure_count=*/0,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/0,
+                                /*transport_name=*/"Invalid");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPasskey) {
@@ -532,7 +832,14 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPasskey) {
   EXPECT_EQ(delegate->key_entered_handler()->num_keys_entered(), 6u);
 
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPasskeyPadZeroes) {
@@ -546,17 +853,32 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthDisplayPasskeyPadZeroes) {
   EXPECT_TRUE(delegate1->key_entered_handler()->IsMojoPipeConnected());
 
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 
   // Pair a new device.
   std::string device_id2;
   AddDevice(&device_id2, AuthType::kDisplayPasskey, /*passkey=*/0);
 
   std::unique_ptr<FakeDevicePairingDelegate> delegate2 = PairDevice(device_id2);
+  FastForwardOperation(GetPairingFailureDelay());
 
   // Passkey displayed should be a 6-digit number, padded with zeroes if needed.
   EXPECT_EQ(delegate2->displayed_passkey(), "000000");
   EXPECT_TRUE(delegate2->key_entered_handler()->IsMojoPipeConnected());
+  // Expect value to be 1 since pairing was not finished.
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskey) {
@@ -573,7 +895,14 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskey) {
   EXPECT_EQ(num_confirm_pairing_calls(), 1u);
 
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 
   // Pair a new device.
   std::string device_id2;
@@ -589,9 +918,17 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskey) {
 
   // Reject the pairing.
   delegate2->InvokePendingConfirmPasskeyCallback(/*confirmed=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
+
   // ConfirmPairing() should not be called again, CancelPairing() should.
   EXPECT_EQ(num_confirm_pairing_calls(), 1u);
   EXPECT_EQ(num_cancel_pairing_calls(), 1u);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/2, /*failure_count=*/2,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/2,
+                                /*transport_name=*/"Classic");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskeyRemoveDevice) {
@@ -606,11 +943,18 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthConfirmPasskeyRemoveDevice) {
   ClearDevices();
 
   // Confirm the pairing.
+  FastForwardOperation(kTestDuration);
   delegate->InvokePendingConfirmPasskeyCallback(/*confirmed=*/true);
 
   // Failure result should be returned.
   EXPECT_EQ(num_confirm_pairing_calls(), 0u);
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kNonAuthFailure);
+  CheckPairingHistograms(device::BluetoothTransportType::kInvalid,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(kTestDuration, /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Invalid");
 }
 
 TEST_F(DevicePairingHandlerImplTest, PairAuthAuthorizePairing) {
@@ -625,7 +969,14 @@ TEST_F(DevicePairingHandlerImplTest, PairAuthAuthorizePairing) {
   EXPECT_EQ(num_confirm_pairing_calls(), 1u);
 
   InvokePendingConnectCallback(/*success=*/false);
+  FastForwardOperation(GetPairingFailureDelay());
   EXPECT_EQ(pairing_result(), mojom::PairingResult::kAuthFailed);
+  CheckPairingHistograms(device::BluetoothTransportType::kClassic,
+                         /*type_count=*/1, /*failure_count=*/1,
+                         /*success_count=*/0);
+  CheckDurationHistogramMetrics(GetPairingFailureDelay(), /*success_count=*/0,
+                                /*failure_count=*/1,
+                                /*transport_name=*/"Classic");
 }
 
 }  // namespace bluetooth_config

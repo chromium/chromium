@@ -5,17 +5,16 @@
 #include "components/value_store/lazy_leveldb.h"
 
 #include "base/json/json_reader.h"
+#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
-#include "content/public/browser/browser_thread.h"
 #include "third_party/leveldatabase/env_chromium.h"
 #include "third_party/leveldatabase/src/include/leveldb/iterator.h"
 #include "third_party/leveldatabase/src/include/leveldb/write_batch.h"
 
 using base::StringPiece;
-using content::BrowserThread;
 
 namespace value_store {
 

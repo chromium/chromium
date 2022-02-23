@@ -10,13 +10,14 @@
 #include <algorithm>
 #include <limits>
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/containers/queue.h"
 #include "base/debug/activity_tracker.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/process/process_handle.h"
@@ -74,7 +75,7 @@ class ChannelWinMessageQueue {
 
  private:
   base::circular_deque<Channel::MessagePtr> queue_;
-  std::atomic<uint64_t>* queue_size_sum_ = nullptr;
+  raw_ptr<std::atomic<uint64_t>> queue_size_sum_ = nullptr;
 };
 
 class ChannelWin : public Channel,
@@ -242,7 +243,7 @@ class ChannelWin : public Channel,
     CHECK(handle_.IsValid());
     CancelIo(handle_.Get());
     if (leak_handle_)
-      ignore_result(handle_.Take());
+      std::ignore = handle_.Take();
     else
       handle_.Close();
 

@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/token.h"
 #include "services/service_manager/public/cpp/identity.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"

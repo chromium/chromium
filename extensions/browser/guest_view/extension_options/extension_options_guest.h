@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "components/guest_view/browser/guest_view.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest_delegate.h"
 #include "url/gurl.h"
@@ -68,7 +67,7 @@ class ExtensionOptionsGuest
       const GURL& opener_url,
       const std::string& frame_name,
       const GURL& target_url,
-      const content::StoragePartitionId& partition_id,
+      const content::StoragePartitionConfig& partition_config,
       content::SessionStorageNamespace* session_storage_namespace) final;
 
   // content::WebContentsObserver implementation.

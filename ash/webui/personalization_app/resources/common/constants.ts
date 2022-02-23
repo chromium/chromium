@@ -11,12 +11,13 @@ import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path
 
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {WallpaperCollection, WallpaperImage} from '../trusted/personalization_app.mojom-webui.js';
+import {WallpaperCollection} from '../trusted/personalization_app.mojom-webui.js';
 
 export const untrustedOrigin = 'chrome-untrusted://personalization';
 
 export const trustedOrigin = 'chrome://personalization';
 
+export const kMaximumGooglePhotosPreviews = 4;
 export const kMaximumLocalImagePreviews = 3;
 
 export enum EventType {
@@ -27,7 +28,7 @@ export enum EventType {
   SELECT_GOOGLE_PHOTOS_COLLECTION = 'select_google_photos_collection',
   SELECT_LOCAL_COLLECTION = 'select_local_collection',
   SEND_IMAGE_COUNTS = 'send_image_counts',
-  SEND_IMAGES = 'send_images',
+  SEND_IMAGE_TILES = 'send_image_tiles',
   SEND_LOCAL_IMAGE_DATA = 'send_local_image_data',
   SEND_LOCAL_IMAGES = 'send_local_images',
   SEND_CURRENT_WALLPAPER_ASSET_ID = 'send_current_wallpaper_asset_id',
@@ -37,66 +38,37 @@ export enum EventType {
   SEND_VISIBLE = 'send_visible',
 }
 
-type BaseEvent = {
-  type: EventType,
-};
-
-export type SendCollectionsEvent = BaseEvent&{
+export type SendCollectionsEvent = {
+  type: EventType.SEND_COLLECTIONS,
   collections: WallpaperCollection[],
 };
 
-export type SendGooglePhotosCountEvent = BaseEvent&{
-  count?: number,
+export type SendGooglePhotosCountEvent = {
+  type: EventType.SEND_GOOGLE_PHOTOS_COUNT,
+  count: number|null,
 };
 
-export type SendGooglePhotosPhotosEvent = BaseEvent&{
-  photos?: any[],
+export type SendGooglePhotosPhotosEvent = {
+  type: EventType.SEND_GOOGLE_PHOTOS_PHOTOS,
+  photos: unknown[]|null,
 };
 
-export type SelectCollectionEvent = BaseEvent&{
+export type SelectCollectionEvent = {
+  type: EventType.SELECT_COLLECTION,
   collectionId: string,
 };
 
-export type SelectGooglePhotosCollectionEvent = BaseEvent;
-
-export type SelectLocalCollectionEvent = BaseEvent;
-
-export type SendImageCountsEvent = BaseEvent&{
-  counts: {[key: string]: number},
+export type SelectGooglePhotosCollectionEvent = {
+  type: EventType.SELECT_GOOGLE_PHOTOS_COLLECTION,
 };
 
-export type SendImagesEvent = BaseEvent&{
-  images: WallpaperImage[],
+export type SelectLocalCollectionEvent = {
+  type: EventType.SELECT_LOCAL_COLLECTION,
 };
 
-export type SendLocalImagesEvent = BaseEvent&{
-  images: FilePath[],
-};
-
-/**
- * Sends local image data keyed by stringified local image path.
- */
-export type SendLocalImageDataEvent = BaseEvent&{
-  data: {[key: string]: string},
-};
-
-export type SendCurrentWallpaperAssetIdEvent = BaseEvent&{
-  assetId?: bigint,
-};
-
-export type SendPendingWallpaperAssetIdEvent = BaseEvent&{
-  assetId?: bigint,
-};
-
-export type SelectImageEvent = BaseEvent&{
-  assetId: bigint,
-};
-
-/**
- * Notify an iframe if its visible state changes.
- */
-export type SendVisibleEvent = BaseEvent&{
-  visible: boolean,
+export type SendImageCountsEvent = {
+  type: EventType.SEND_IMAGE_COUNTS,
+  counts: {[key: string]: number|null},
 };
 
 /**
@@ -104,8 +76,55 @@ export type SendVisibleEvent = BaseEvent&{
  * single unit. e.g. Dark/Light wallpaper images.
  */
 export type ImageTile = {
-  assetId: bigint,
-  attribution: string[],
-  unitId: bigint,
-  preview: Url[],
+  assetId?: bigint,
+  attribution?: string[],
+  unitId?: bigint, preview: Url[],
 };
+
+export type SendImageTilesEvent = {
+  type: EventType.SEND_IMAGE_TILES,
+  tiles: ImageTile[],
+};
+
+export type SendLocalImagesEvent = {
+  type: EventType.SEND_LOCAL_IMAGES,
+  images: FilePath[],
+};
+
+/**
+ * Sends local image data keyed by stringified local image path.
+ */
+export type SendLocalImageDataEvent = {
+  type: EventType.SEND_LOCAL_IMAGE_DATA,
+  data: {[key: string]: string},
+};
+
+export type SendCurrentWallpaperAssetIdEvent = {
+  type: EventType.SEND_CURRENT_WALLPAPER_ASSET_ID,
+  assetId?: bigint,
+};
+
+export type SendPendingWallpaperAssetIdEvent = {
+  type: EventType.SEND_PENDING_WALLPAPER_ASSET_ID,
+  assetId?: bigint,
+};
+
+export type SelectImageEvent = {
+  type: EventType.SELECT_IMAGE,
+  assetId: bigint,
+};
+
+/**
+ * Notify an iframe if its visible state changes.
+ */
+export type SendVisibleEvent = {
+  type: EventType.SEND_VISIBLE,
+  visible: boolean,
+};
+
+export type Events = SendCollectionsEvent|SendGooglePhotosCountEvent|
+    SendGooglePhotosPhotosEvent|SelectCollectionEvent|
+    SelectGooglePhotosCollectionEvent|SelectLocalCollectionEvent|
+    SendImageCountsEvent|SendImageTilesEvent|SendLocalImagesEvent|
+    SendLocalImageDataEvent|SendCurrentWallpaperAssetIdEvent|
+    SendPendingWallpaperAssetIdEvent|SelectImageEvent|SendVisibleEvent;

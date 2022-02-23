@@ -21,9 +21,7 @@ class CategorizedWorkerPoolTestDelegate {
  public:
   CategorizedWorkerPoolTestDelegate() = default;
 
-  void StartTaskRunner() {
-    categorized_worker_pool_->Start(kNumThreads, nullptr);
-  }
+  void StartTaskRunner() { categorized_worker_pool_->Start(kNumThreads); }
 
   scoped_refptr<CategorizedWorkerPool> GetTaskRunner() {
     return categorized_worker_pool_;
@@ -42,9 +40,7 @@ class CategorizedWorkerPoolSequencedTestDelegate {
  public:
   CategorizedWorkerPoolSequencedTestDelegate() = default;
 
-  void StartTaskRunner() {
-    categorized_worker_pool_->Start(kNumThreads, nullptr);
-  }
+  void StartTaskRunner() { categorized_worker_pool_->Start(kNumThreads); }
 
   scoped_refptr<base::SequencedTaskRunner> GetTaskRunner() {
     return categorized_worker_pool_->CreateSequencedTaskRunner();
@@ -66,9 +62,7 @@ class CategorizedWorkerPoolTaskGraphRunnerTestDelegate {
  public:
   CategorizedWorkerPoolTaskGraphRunnerTestDelegate() = default;
 
-  void StartTaskGraphRunner() {
-    categorized_worker_pool_->Start(NumThreads, nullptr);
-  }
+  void StartTaskGraphRunner() { categorized_worker_pool_->Start(NumThreads); }
 
   cc::TaskGraphRunner* GetTaskGraphRunner() {
     return categorized_worker_pool_->GetTaskGraphRunner();
@@ -87,9 +81,7 @@ class CategorizedWorkerPoolTaskGraphRunnerTestDelegate {
 
 class CategorizedWorkerPoolTest : public testing::Test {
  protected:
-  CategorizedWorkerPoolTest() {
-    categorized_worker_pool_->Start(kNumThreads, nullptr);
-  }
+  CategorizedWorkerPoolTest() { categorized_worker_pool_->Start(kNumThreads); }
 
   ~CategorizedWorkerPoolTest() override {
     cc::Task::Vector completed_tasks;

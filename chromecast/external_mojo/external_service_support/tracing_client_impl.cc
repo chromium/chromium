@@ -34,7 +34,8 @@ TracingClientImpl::TracingClientImpl(ExternalConnector* connector)
   // TODO(cletnick): Support initializing startup tracing without
   // depending on per-process command-line arguments.
   tracing::EnableStartupTracingIfNeeded();
-  tracing::InitTracingPostThreadPoolStartAndFeatureList();
+  tracing::InitTracingPostThreadPoolStartAndFeatureList(
+      /* enable_consumer */ false);
 
   // Connect to service.
   connector_->BindInterface(TracingClient::kTracingServiceName,

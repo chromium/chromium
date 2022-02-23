@@ -20,7 +20,7 @@ namespace {
 }  // namespace
 
 base::Time GetLogListTimestamp() {
-  return base::Time::UnixEpoch() + kLogListTimestamp;
+  return kLogListTimestamp;
 }
 
 std::vector<CTLogInfo> GetKnownLogs() {
@@ -44,8 +44,8 @@ std::vector<std::string> GetLogsOperatedByGoogle() {
   return result;
 }
 
-std::vector<std::pair<std::string, base::TimeDelta>> GetDisqualifiedLogs() {
-  std::vector<std::pair<std::string, base::TimeDelta>> result;
+std::vector<std::pair<std::string, base::Time>> GetDisqualifiedLogs() {
+  std::vector<std::pair<std::string, base::Time>> result;
   for (const auto& log : kDisqualifiedCTLogList) {
     result.push_back(
         std::make_pair(std::string(log.log_id, crypto::kSHA256Length),

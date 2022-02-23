@@ -4,16 +4,24 @@
 
 #include "cc/paint/skottie_wrapper.h"
 
+#include <functional>
+#include <memory>
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
+#include "base/callback.h"
+#include "base/containers/flat_map.h"
 #include "base/hash/hash.h"
 #include "base/logging.h"
 #include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/trace_event/trace_event.h"
 #include "cc/paint/skottie_mru_resource_provider.h"
+#include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkImage.h"
 #include "third_party/skia/modules/skottie/include/Skottie.h"
+#include "third_party/skia/modules/skottie/include/SkottieProperty.h"
 #include "third_party/skia/modules/skresources/include/SkResources.h"
 
 namespace cc {
@@ -37,27 +45,112 @@ class SkottieLogWriter : public skottie::Logger {
   }
 };
 
+class PropertyHandler final : public skottie::PropertyObserver {
+ public:
+  PropertyHandler() = default;
+  PropertyHandler(const PropertyHandler&) = delete;
+  PropertyHandler& operator=(const PropertyHandler&) = delete;
+  ~PropertyHandler() override = default;
+
+  void ApplyColorMap(const SkottieColorMap& color_map) {
+    for (const auto& map_color : color_map) {
+      for (auto& handle : color_handles_[map_color.first]) {
+        DCHECK(handle);
+        handle->set(map_color.second);
+      }
+    }
+  }
+
+  void ApplyTextMap(const SkottieTextPropertyValueMap& text_map) {
+    for (const auto& [node_name_hash, new_text_val] : text_map) {
+      auto current_text_values_iter = current_text_values_.find(node_name_hash);
+      if (current_text_values_iter == current_text_values_.end()) {
+        LOG(WARNING) << "Encountered unknown text node with hash: "
+                     << node_name_hash;
+        continue;
+      }
+      current_text_values_iter->second = new_text_val;
+
+      for (auto& handle : text_handles_[node_name_hash]) {
+        DCHECK(handle);
+        skottie::TextPropertyValue current_text_val = handle->get();
+        ConvertTextValueToSkottie(new_text_val, current_text_val);
+        handle->set(std::move(current_text_val));
+      }
+    }
+  }
+
+  const SkottieTextPropertyValueMap& current_text_values() const {
+    return current_text_values_;
+  }
+
+  const base::flat_set<std::string>& text_node_names() const {
+    return text_node_names_;
+  }
+
+  // skottie::PropertyObserver:
+  void onColorProperty(
+      const char node_name[],
+      const LazyHandle<skottie::ColorPropertyHandle>& lh) override {
+    if (node_name)
+      color_handles_[HashSkottieResourceId(node_name)].push_back(lh());
+  }
+
+  void onTextProperty(
+      const char node_name[],
+      const LazyHandle<skottie::TextPropertyHandle>& lh) override {
+    if (!node_name)
+      return;
+
+    text_node_names_.insert(node_name);
+    SkottieResourceIdHash node_name_hash = HashSkottieResourceId(node_name);
+    auto text_handle = lh();
+    current_text_values_.emplace(
+        node_name_hash, ConvertTextValueToChromium(text_handle->get()));
+    text_handles_[node_name_hash].push_back(std::move(text_handle));
+  }
+
+ private:
+  static SkottieTextPropertyValue ConvertTextValueToChromium(
+      const skottie::TextPropertyValue& value_in) {
+    std::string text(value_in.fText.c_str());
+    return SkottieTextPropertyValue(std::move(text));
+  }
+
+  static void ConvertTextValueToSkottie(
+      const SkottieTextPropertyValue& value_in,
+      skottie::TextPropertyValue& value_out) {
+    value_out.fText.set(value_in.text().c_str());
+  }
+
+  base::flat_map<SkottieResourceIdHash,
+                 std::vector<std::unique_ptr<skottie::ColorPropertyHandle>>>
+      color_handles_;
+  base::flat_map<SkottieResourceIdHash,
+                 std::vector<std::unique_ptr<skottie::TextPropertyHandle>>>
+      text_handles_;
+  base::flat_set<std::string> text_node_names_;
+  SkottieTextPropertyValueMap current_text_values_;
+};
+
 class SkottieWrapperImpl : public SkottieWrapper {
  public:
-  static scoped_refptr<SkottieWrapperImpl> Create(
-      base::span<const uint8_t> data,
-      std::vector<uint8_t> owned_data) {
-    // The underlying assumption here is that |skottie::Animation::Builder|
-    // loads image assets on initialization rather than doing so lazily at
-    // |render()| time. This is the case currently, and there will be unit test
-    // failures if this does not hold at some point in the future.
-    const auto mru_resource_provider = sk_make_sp<SkottieMRUResourceProvider>();
-    sk_sp<skottie::Animation> animation =
-        skottie::Animation::Builder()
-            .setLogger(sk_make_sp<SkottieLogWriter>())
-            .setResourceProvider(skresources::CachingResourceProvider::Make(
-                mru_resource_provider))
-            .make(reinterpret_cast<const char*>(data.data()), data.size());
-    return base::WrapRefCounted(new SkottieWrapperImpl(
-        animation, std::move(owned_data), base::FastHash(data),
-        mru_resource_provider->GetImageAssetMetadata(),
-        mru_resource_provider->GetImageAssetMap()));
-  }
+  SkottieWrapperImpl(base::span<const uint8_t> data,
+                     std::vector<uint8_t> owned_data)
+      : SkottieWrapperImpl(
+            data,
+            owned_data,
+            // * Unretained is safe because SkottieMRUResourceProvider cannot
+            //   outlive SkottieWrapperImpl.
+            // * Binding "this" in the constructor is safe because the frame
+            //   data callback is only triggered during calls to
+            //   |animation_->seek()|.
+            sk_make_sp<SkottieMRUResourceProvider>(
+                base::BindRepeating(
+                    &SkottieWrapperImpl::RunCurrentFrameDataCallback,
+                    base::Unretained(this)),
+                base::StringPiece(reinterpret_cast<const char*>(data.data()),
+                                  data.size()))) {}
 
   SkottieWrapperImpl(const SkottieWrapperImpl&) = delete;
   SkottieWrapperImpl& operator=(const SkottieWrapperImpl&) = delete;
@@ -69,25 +162,39 @@ class SkottieWrapperImpl : public SkottieWrapper {
     return image_asset_metadata_;
   }
 
-  bool SetImageForAsset(SkottieResourceIdHash asset_id_hash,
-                        sk_sp<SkImage> image,
-                        SkSamplingOptions sampling) override {
-    auto asset_iter = image_assets_.find(asset_id_hash);
-    if (asset_iter == image_assets_.end()) {
-      LOG(ERROR) << "Failed to set image for unknown asset with id: "
-                 << asset_id_hash;
-      return false;
-    }
-    SkottieMRUResourceProvider::FrameData frame_data;
-    frame_data.image = std::move(image);
-    frame_data.sampling = sampling;
-    SkottieMRUResourceProvider::ImageAsset& asset = *asset_iter->second;
-    asset.SetCurrentFrameData(std::move(frame_data));
-    return true;
+  const base::flat_set<std::string>& GetTextNodeNames() const override
+      LOCKS_EXCLUDED(lock_) {
+    base::AutoLock lock(lock_);
+    return property_handler_->text_node_names();
   }
 
-  void Draw(SkCanvas* canvas, float t, const SkRect& rect) override {
+  SkottieTextPropertyValueMap GetCurrentTextPropertyValues() const override
+      LOCKS_EXCLUDED(lock_) {
     base::AutoLock lock(lock_);
+    return property_handler_->current_text_values();
+  }
+
+  void Seek(float t, FrameDataCallback frame_data_cb) override
+      LOCKS_EXCLUDED(lock_) {
+    base::AutoLock lock(lock_);
+    // There's no need to reset |current_frame_data_cb_| to null when finished.
+    // The callback is guaranteed to only be invoked synchronously during calls
+    // to |animation_->seek/render()|, and not thereafter.
+    current_frame_data_cb_ = std::move(frame_data_cb);
+    animation_->seek(t);
+  }
+
+  void Draw(SkCanvas* canvas,
+            float t,
+            const SkRect& rect,
+            FrameDataCallback frame_data_cb,
+            const SkottieColorMap& color_map,
+            const SkottieTextPropertyValueMap& text_map) override
+      LOCKS_EXCLUDED(lock_) {
+    base::AutoLock lock(lock_);
+    current_frame_data_cb_ = std::move(frame_data_cb);
+    property_handler_->ApplyColorMap(color_map);
+    property_handler_->ApplyTextMap(text_map);
     animation_->seek(t);
     animation_->render(canvas, &rect);
   }
@@ -105,20 +212,41 @@ class SkottieWrapperImpl : public SkottieWrapper {
 
  private:
   SkottieWrapperImpl(
-      sk_sp<skottie::Animation> animation,
+      base::span<const uint8_t> data,
       std::vector<uint8_t> raw_data,
-      uint32_t id,
-      const SkottieResourceMetadataMap& image_asset_metadata,
-      const SkottieMRUResourceProvider::ImageAssetMap& image_assets)
-      : animation_(animation),
+      const sk_sp<SkottieMRUResourceProvider>& mru_resource_provider)
+      : property_handler_(sk_make_sp<PropertyHandler>()),
+        animation_(
+            skottie::Animation::Builder()
+                .setLogger(sk_make_sp<SkottieLogWriter>())
+                .setPropertyObserver(property_handler_)
+                .setResourceProvider(skresources::CachingResourceProvider::Make(
+                    mru_resource_provider))
+                .make(reinterpret_cast<const char*>(data.data()), data.size())),
         raw_data_(std::move(raw_data)),
-        id_(id),
-        image_asset_metadata_(image_asset_metadata),
-        image_assets_(image_assets) {}
+        id_(base::FastHash(data)),
+        // The underlying assumption here is that |skottie::Animation::Builder|
+        // loads image assets on initialization rather than doing so lazily at
+        // |render()| time. This is the case currently, and there will be unit
+        // test failures if this does not hold at some point in the future.
+        image_asset_metadata_(mru_resource_provider->GetImageAssetMetadata()) {}
 
   ~SkottieWrapperImpl() override = default;
 
-  base::Lock lock_;
+  FrameDataFetchResult RunCurrentFrameDataCallback(
+      SkottieResourceIdHash asset_id_hash,
+      float t,
+      sk_sp<SkImage>& image_out,
+      SkSamplingOptions& sampling_out) EXCLUSIVE_LOCKS_REQUIRED(lock_) {
+    lock_.AssertAcquired();
+    DCHECK(current_frame_data_cb_);
+    return current_frame_data_cb_.Run(asset_id_hash, t, image_out,
+                                      sampling_out);
+  }
+
+  mutable base::Lock lock_;
+  FrameDataCallback current_frame_data_cb_ GUARDED_BY(lock_);
+  sk_sp<PropertyHandler> property_handler_ GUARDED_BY(lock_);
   sk_sp<skottie::Animation> animation_;
 
   // The raw byte data is stored for serialization across OOP-R. This is only
@@ -131,7 +259,6 @@ class SkottieWrapperImpl : public SkottieWrapper {
   const uint32_t id_;
 
   const SkottieResourceMetadataMap image_asset_metadata_;
-  const SkottieMRUResourceProvider::ImageAssetMap image_assets_;
 };
 
 }  // namespace
@@ -140,14 +267,16 @@ class SkottieWrapperImpl : public SkottieWrapper {
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateSerializable(
     std::vector<uint8_t> data) {
   base::span<const uint8_t> data_span(data);
-  return SkottieWrapperImpl::Create(data_span, std::move(data));
+  return base::WrapRefCounted(
+      new SkottieWrapperImpl(data_span, std::move(data)));
 }
 
 // static
 scoped_refptr<SkottieWrapper> SkottieWrapper::CreateNonSerializable(
     base::span<const uint8_t> data) {
-  return SkottieWrapperImpl::Create(data,
-                                    /*owned_data=*/std::vector<uint8_t>());
+  return base::WrapRefCounted(
+      new SkottieWrapperImpl(data,
+                             /*owned_data=*/std::vector<uint8_t>()));
 }
 
 }  // namespace cc

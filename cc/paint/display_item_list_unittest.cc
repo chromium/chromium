@@ -74,13 +74,13 @@ class DisplayItemListTest : public testing::Test {
   }
 };
 
-#define EXPECT_TRACED_RECT(x, y, width, height, rect_list)    \
-  do {                                                        \
-    ASSERT_EQ(4u, rect_list->GetList().size());               \
-    EXPECT_EQ(x, rect_list->GetList()[0].GetIfDouble());      \
-    EXPECT_EQ(y, rect_list->GetList()[1].GetIfDouble());      \
-    EXPECT_EQ(width, rect_list->GetList()[2].GetIfDouble());  \
-    EXPECT_EQ(height, rect_list->GetList()[3].GetIfDouble()); \
+#define EXPECT_TRACED_RECT(x, y, width, height, rect_list)              \
+  do {                                                                  \
+    ASSERT_EQ(4u, rect_list->GetListDeprecated().size());               \
+    EXPECT_EQ(x, rect_list->GetListDeprecated()[0].GetIfDouble());      \
+    EXPECT_EQ(y, rect_list->GetListDeprecated()[1].GetIfDouble());      \
+    EXPECT_EQ(width, rect_list->GetListDeprecated()[2].GetIfDouble());  \
+    EXPECT_EQ(height, rect_list->GetListDeprecated()[3].GetIfDouble()); \
   } while (false)
 
 // AddToValue should not crash if there are different numbers of visual_rect
@@ -111,14 +111,14 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   ASSERT_TRUE(root_dict->GetDictionary("params", &params_dict));
   const base::ListValue* items;
   ASSERT_TRUE(params_dict->GetList("items", &items));
-  ASSERT_EQ(2u, items->GetList().size());
+  ASSERT_EQ(2u, items->GetListDeprecated().size());
 
   const base::Value* item_value;
   const base::DictionaryValue* item_dict;
   const base::ListValue* visual_rect;
   std::string name;
 
-  item_value = &items->GetList()[0];
+  item_value = &items->GetListDeprecated()[0];
   ASSERT_TRUE(item_value->is_dict());
   item_dict = &base::Value::AsDictionaryValue(*item_value);
   ASSERT_TRUE(item_dict->GetList("visual_rect", &visual_rect));
@@ -126,7 +126,7 @@ TEST_F(DisplayItemListTest, TraceEmptyVisualRect) {
   EXPECT_TRUE(item_dict->GetString("name", &name));
   EXPECT_EQ("DrawRect", name);
 
-  item_value = &items->GetList()[1];
+  item_value = &items->GetListDeprecated()[1];
   ASSERT_TRUE(item_value->is_dict());
   item_dict = &base::Value::AsDictionaryValue(*item_value);
   ASSERT_TRUE(item_dict->GetList("visual_rect", &visual_rect));
@@ -476,7 +476,7 @@ TEST_F(DisplayItemListTest, AsValueWithNoOps) {
 
       // The items list is there but empty.
       ASSERT_TRUE(params_dict->GetList("items", &params_list));
-      EXPECT_EQ(0u, params_list->GetList().size());
+      EXPECT_EQ(0u, params_list->GetListDeprecated().size());
     }
   }
 
@@ -558,7 +558,7 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       // The items list has 3 things in it since we built 3 visual rects.
       const base::ListValue* items;
       ASSERT_TRUE(params_dict->GetList("items", &items));
-      ASSERT_EQ(7u, items->GetList().size());
+      ASSERT_EQ(7u, items->GetListDeprecated().size());
 
       const char* expected_names[] = {"Save",      "Concat",   "SaveLayer",
                                       "Translate", "DrawRect", "Restore",
@@ -566,7 +566,7 @@ TEST_F(DisplayItemListTest, AsValueWithOps) {
       bool expected_has_skp[] = {false, true, true, true, true, false, false};
 
       for (int i = 0; i < 7; ++i) {
-        const base::Value& item_value = items->GetList()[i];
+        const base::Value& item_value = items->GetListDeprecated()[i];
         ASSERT_TRUE(item_value.is_dict());
         const base::DictionaryValue& item_dict =
             base::Value::AsDictionaryValue(item_value);

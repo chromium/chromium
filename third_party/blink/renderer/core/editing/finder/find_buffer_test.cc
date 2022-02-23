@@ -452,6 +452,12 @@ TEST_P(FindBufferSeparatorTest, FindSeparatedElements) {
   EXPECT_EQ(0u, buffer.FindMatches("aa", kCaseInsensitive).CountForTesting());
 }
 
+TEST_P(FindBufferSeparatorTest, FindBRSeparatedElements) {
+  SetBodyContent("a<br>a");
+  FindBuffer buffer(WholeDocumentRange());
+  EXPECT_EQ(1u, buffer.FindMatches("a\na", kCaseInsensitive).CountForTesting());
+}
+
 TEST_F(FindBufferTest, WhiteSpaceCollapsingPreWrap) {
   SetBodyContent(
       " a  \n   b  <b> c </b> d  <span style='white-space: pre-wrap'> e  "
@@ -662,20 +668,20 @@ TEST_F(FindBufferTest, SelectMultipleTest) {
   SetBodyContent("<select multiple><option>find me</option></select>");
   {
     FindBuffer buffer(WholeDocumentRange());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
 #else
     EXPECT_EQ(1u, buffer.FindMatches("find", 0).CountForTesting());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
   SetBodyContent("<select size=2><option>find me</option></select>");
   {
     FindBuffer buffer(WholeDocumentRange());
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(0u, buffer.FindMatches("find", 0).CountForTesting());
 #else
     EXPECT_EQ(1u, buffer.FindMatches("find", 0).CountForTesting());
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   }
   SetBodyContent("<select size=1><option>find me</option></select>");
   {
@@ -692,7 +698,8 @@ TEST_F(FindBufferTest, NullRange) {
 
 TEST_F(FindBufferTest, FindObjectReplacementCharacter) {
   SetBodyContent(
-      "some text with <br> and \uFFFC (object replacement character)");
+      "some text with <script></script> and \uFFFC (object replacement "
+      "character)");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\uFFFC", 0);
   ASSERT_EQ(1u, results.CountForTesting());
@@ -700,7 +707,8 @@ TEST_F(FindBufferTest, FindObjectReplacementCharacter) {
 
 TEST_F(FindBufferTest,
        FindMaxCodepointWithReplacedElementAndMaxCodepointUTF32) {
-  SetBodyContent("some text with <img/> <br> and \U0010FFFF (max codepoint)");
+  SetBodyContent(
+      "some text with <img/> <script></script> and \U0010FFFF (max codepoint)");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\U0010FFFF", 0);
   ASSERT_EQ(1u, results.CountForTesting());
@@ -714,7 +722,7 @@ TEST_F(FindBufferTest, FindMaxCodepointNormalTextUTF32) {
 }
 
 TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF32) {
-  SetBodyContent("some text with <img/> <br>");
+  SetBodyContent("some text with <img/> <script></script>");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\U0010FFFF", 0);
   ASSERT_EQ(0u, results.CountForTesting());
@@ -722,7 +730,8 @@ TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF32) {
 
 TEST_F(FindBufferTest,
        FindMaxCodepointWithReplacedElementAndMaxCodepointUTF16) {
-  SetBodyContent("some text with <img/> <br> and \uFFFF (max codepoint)");
+  SetBodyContent(
+      "some text with <img/> <scrip></script> and \uFFFF (max codepoint)");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\uFFFF", 0);
   ASSERT_EQ(1u, results.CountForTesting());
@@ -736,7 +745,7 @@ TEST_F(FindBufferTest, FindMaxCodepointNormalTextUTF16) {
 }
 
 TEST_F(FindBufferTest, FindMaxCodepointWithReplacedElementUTF16) {
-  SetBodyContent("some text with <img/> <br>");
+  SetBodyContent("some text with <img/> <script></script>");
   FindBuffer buffer(WholeDocumentRange());
   const auto results = buffer.FindMatches("\uFFFF", 0);
   ASSERT_EQ(0u, results.CountForTesting());

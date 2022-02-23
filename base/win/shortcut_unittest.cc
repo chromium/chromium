@@ -95,10 +95,15 @@ class ShortcutTest : public testing::Test {
 }  // namespace
 
 TEST_F(ShortcutTest, CreateAndResolveShortcutProperties) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   // Test all properties.
   FilePath file_1(temp_dir_.GetPath().Append(FILE_PATH_LITERAL("Link1.lnk")));
   ASSERT_TRUE(CreateOrUpdateShortcutLink(file_1, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ShortcutProperties properties_read_1;
   ASSERT_TRUE(ResolveShortcutProperties(
@@ -122,7 +127,7 @@ TEST_F(ShortcutTest, CreateAndResolveShortcutProperties) {
   ShortcutProperties only_target_properties;
   only_target_properties.set_target(link_properties_.target);
   ASSERT_TRUE(CreateOrUpdateShortcutLink(file_2, only_target_properties,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ShortcutProperties properties_read_2;
   ASSERT_TRUE(ResolveShortcutProperties(
@@ -142,11 +147,15 @@ TEST_F(ShortcutTest, CreateAndResolveShortcutProperties) {
 }
 
 TEST_F(ShortcutTest, CreateAndResolveShortcut) {
+  // TODO(crbug.com/1264563): Disabled on Win7 bots for being flaky.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ShortcutProperties only_target_properties;
   only_target_properties.set_target(link_properties_.target);
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, only_target_properties,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   FilePath resolved_name;
   EXPECT_TRUE(ResolveShortcut(link_file_, &resolved_name, nullptr));
@@ -157,8 +166,12 @@ TEST_F(ShortcutTest, CreateAndResolveShortcut) {
 }
 
 TEST_F(ShortcutTest, ResolveShortcutWithArgs) {
+  // TODO(crbug.com/1264563): Disabled on Win7 bots for being flaky.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   FilePath resolved_name;
   std::wstring args;
@@ -171,29 +184,39 @@ TEST_F(ShortcutTest, ResolveShortcutWithArgs) {
 }
 
 TEST_F(ShortcutTest, CreateShortcutWithOnlySomeProperties) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1291225): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
   ShortcutProperties target_and_args_properties;
   target_and_args_properties.set_target(link_properties_.target);
   target_and_args_properties.set_arguments(link_properties_.arguments);
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, target_and_args_properties,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ValidateShortcut(link_file_, target_and_args_properties);
 }
 
 TEST_F(ShortcutTest, CreateShortcutVerifyProperties) {
+  // TODO(crbug.com/1264563) Flaky on Win 7.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ValidateShortcut(link_file_, link_properties_);
 }
 
-TEST_F(ShortcutTest, UpdateShortcutVerifyProperties) {
+TEST_F(ShortcutTest, UpdateShortcutVerifyPropertiess) {
+  // TODO(crbug.com/1264563) Flaky on Win 7.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_2_,
-                                         SHORTCUT_UPDATE_EXISTING));
+                                         ShortcutOperation::kUpdateExisting));
 
   ValidateShortcut(link_file_, link_properties_2_);
 }
@@ -205,13 +228,14 @@ TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
     GTEST_SKIP() << "Skipping test for win7";
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ShortcutProperties update_only_target_properties;
   update_only_target_properties.set_target(link_properties_2_.target);
 
-  ASSERT_TRUE(CreateOrUpdateShortcutLink(
-      link_file_, update_only_target_properties, SHORTCUT_UPDATE_EXISTING));
+  ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_,
+                                         update_only_target_properties,
+                                         ShortcutOperation::kUpdateExisting));
 
   ShortcutProperties expected_properties = link_properties_;
   expected_properties.set_target(link_properties_2_.target);
@@ -226,14 +250,19 @@ TEST_F(ShortcutTest, UpdateShortcutUpdateOnlyTargetAndResolve) {
 }
 
 TEST_F(ShortcutTest, UpdateShortcutMakeDualMode) {
+  // This test is extremely flaky on Win7, so disable.
+  // TODO(crbug.com/1264563): Investigate why it's so flaky on Win7 bots.
+  if (base::win::OSInfo::GetInstance()->version() <= base::win::Version::WIN7)
+    GTEST_SKIP() << "Skipping test for win7";
+
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ShortcutProperties make_dual_mode_properties;
   make_dual_mode_properties.set_dual_mode(true);
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, make_dual_mode_properties,
-                                         SHORTCUT_UPDATE_EXISTING));
+                                         ShortcutOperation::kUpdateExisting));
 
   ShortcutProperties expected_properties = link_properties_;
   expected_properties.set_dual_mode(true);
@@ -247,13 +276,14 @@ TEST_F(ShortcutTest, UpdateShortcutRemoveDualMode) {
     GTEST_SKIP() << "Skipping test for win7";
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_2_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ShortcutProperties remove_dual_mode_properties;
   remove_dual_mode_properties.set_dual_mode(false);
 
-  ASSERT_TRUE(CreateOrUpdateShortcutLink(
-      link_file_, remove_dual_mode_properties, SHORTCUT_UPDATE_EXISTING));
+  ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_,
+                                         remove_dual_mode_properties,
+                                         ShortcutOperation::kUpdateExisting));
 
   ShortcutProperties expected_properties = link_properties_2_;
   expected_properties.set_dual_mode(false);
@@ -267,13 +297,13 @@ TEST_F(ShortcutTest, UpdateShortcutClearArguments) {
     GTEST_SKIP() << "Skipping test for win7";
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ShortcutProperties clear_arguments_properties;
   clear_arguments_properties.set_arguments(std::wstring());
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, clear_arguments_properties,
-                                         SHORTCUT_UPDATE_EXISTING));
+                                         ShortcutOperation::kUpdateExisting));
 
   ShortcutProperties expected_properties = link_properties_;
   expected_properties.set_arguments(std::wstring());
@@ -282,7 +312,7 @@ TEST_F(ShortcutTest, UpdateShortcutClearArguments) {
 
 TEST_F(ShortcutTest, FailUpdateShortcutThatDoesNotExist) {
   ASSERT_FALSE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                          SHORTCUT_UPDATE_EXISTING));
+                                          ShortcutOperation::kUpdateExisting));
   ASSERT_FALSE(PathExists(link_file_));
 }
 
@@ -293,10 +323,10 @@ TEST_F(ShortcutTest, ReplaceShortcutAllProperties) {
     GTEST_SKIP() << "Skipping test for win7";
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_2_,
-                                         SHORTCUT_REPLACE_EXISTING));
+                                         ShortcutOperation::kReplaceExisting));
 
   ValidateShortcut(link_file_, link_properties_2_);
 }
@@ -308,14 +338,14 @@ TEST_F(ShortcutTest, ReplaceShortcutSomeProperties) {
     GTEST_SKIP() << "Skipping test for win7";
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   ShortcutProperties new_properties;
   new_properties.set_target(link_properties_2_.target);
   new_properties.set_arguments(link_properties_2_.arguments);
   new_properties.set_description(link_properties_2_.description);
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, new_properties,
-                                         SHORTCUT_REPLACE_EXISTING));
+                                         ShortcutOperation::kReplaceExisting));
 
   // Expect only properties in |new_properties| to be set, all other properties
   // should have been overwritten.
@@ -329,7 +359,7 @@ TEST_F(ShortcutTest, ReplaceShortcutSomeProperties) {
 
 TEST_F(ShortcutTest, FailReplaceShortcutThatDoesNotExist) {
   ASSERT_FALSE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                          SHORTCUT_REPLACE_EXISTING));
+                                          ShortcutOperation::kReplaceExisting));
   ASSERT_FALSE(PathExists(link_file_));
 }
 
@@ -342,12 +372,12 @@ TEST_F(ShortcutTest, ReplaceShortcutKeepOldArguments) {
     GTEST_SKIP() << "Skipping test for win7";
 
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_,
-                                         SHORTCUT_CREATE_ALWAYS));
+                                         ShortcutOperation::kCreateAlways));
 
   // Do not explicitly set the arguments.
   link_properties_2_.options &= ~ShortcutProperties::PROPERTIES_ARGUMENTS;
   ASSERT_TRUE(CreateOrUpdateShortcutLink(link_file_, link_properties_2_,
-                                         SHORTCUT_REPLACE_EXISTING));
+                                         ShortcutOperation::kReplaceExisting));
 
   ShortcutProperties expected_properties(link_properties_2_);
   expected_properties.set_arguments(link_properties_.arguments);

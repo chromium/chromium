@@ -6,6 +6,7 @@
 #define COMPONENTS_FEED_CORE_V2_ENUMS_H_
 
 #include <iosfwd>
+#include "base/strings/string_piece_forward.h"
 
 namespace feed {
 
@@ -23,6 +24,7 @@ enum class NetworkRequestType : int {
   kQueryBackgroundFeed = 9,
   kQueryNextPage = 10,
 };
+std::ostream& operator<<(std::ostream& out, NetworkRequestType value);
 
 // Denotes how the stream content loading is used for.
 enum class LoadType {
@@ -81,7 +83,10 @@ enum class LoadStreamStatus {
   kAbortWithPendingClearAll = 24,
   kAlreadyHaveUnreadContent = 25,
   kNotAWebFeedSubscriber = 26,
-  kMaxValue = kNotAWebFeedSubscriber,
+  kAccountTokenFetchFailedWrongAccount = 27,
+  kAccountTokenFetchTimedOut = 28,
+  kNetworkFetchTimedOut = 29,
+  kMaxValue = kNetworkFetchTimedOut,
 };
 
 // Were we able to load fresh Feed data. This should be 'true' unless some kind
@@ -100,6 +105,7 @@ enum class UploadActionsStatus {
   kUpdatedConsistencyToken = 4,
   kFinishedWithoutUpdatingConsistencyToken = 5,
   kAbortUploadForSignedOutUser = 6,
+  // TODO(b/213622639): This is unused, remove it.
   kAbortUploadBecauseDisabled = 7,
   kAbortUploadForWrongUser = 8,
   kAbortUploadActionsWithPendingClearAll = 9,
@@ -150,6 +156,35 @@ enum class NoticeAcknowledgementPath {
   kViaDismissal = 2,
   kMaxValue = kViaDismissal,
 };
+
+// This must be kept in sync with FeedUserSettingsOnStart in enums.xml.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+// Reports last known state of user settings which affect Feed content.
+// This includes WAA (whether activity is recorded), and DP (whether
+// Discover personalization is enabled).
+enum class UserSettingsOnStart {
+  // The Feed is disabled by enterprise policy.
+  kFeedNotEnabledByPolicy = 0,
+  // The Feed is enabled by enterprise policy, but the user has hidden and
+  // disabled the Feed, so other user settings beyond sign-in status are not
+  // available.
+  kFeedNotVisibleSignedOut = 1,
+  kFeedNotVisibleSignedIn = 2,
+  // The Feed is enabled, the user is not signed in.
+  kSignedOut = 3,
+  // The Feed is enabled, the user is signed in, and setting states are known.
+  kSignedInWaaOnDpOn = 4,
+  kSignedInWaaOnDpOff = 5,
+  kSignedInWaaOffDpOn = 6,
+  kSignedInWaaOffDpOff = 7,
+  // The Feed is enabled, but there is no recent Feed data, so user settings
+  // state is unknown.
+  kSignedInNoRecentData = 8,
+  kMaxValue = kSignedInNoRecentData,
+};
+base::StringPiece ToString(UserSettingsOnStart v);
+std::ostream& operator<<(std::ostream& out, UserSettingsOnStart value);
 
 }  // namespace feed
 

@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace storage {
 
@@ -32,7 +32,7 @@ class ScopedTextBlob {
 
  private:
   const std::string blob_id_;
-  BlobStorageContext* context_;
+  raw_ptr<BlobStorageContext> context_;
   std::unique_ptr<BlobDataHandle> handle_;
 };
 

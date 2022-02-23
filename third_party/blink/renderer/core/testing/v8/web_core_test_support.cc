@@ -25,7 +25,7 @@
 
 #include "third_party/blink/renderer/core/testing/v8/web_core_test_support.h"
 
-#include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
@@ -45,15 +45,16 @@ namespace {
 
 v8::Local<v8::Value> CreateInternalsObject(v8::Local<v8::Context> context) {
   ScriptState* script_state = ScriptState::From(context);
-  v8::Local<v8::Object> global = script_state->GetContext()->Global();
   ExecutionContext* execution_context = ExecutionContext::From(script_state);
   if (execution_context->IsWindow()) {
-    return ToV8(MakeGarbageCollected<Internals>(execution_context), global,
-                script_state->GetIsolate());
+    return ToV8Traits<Internals>::ToV8(
+               script_state, MakeGarbageCollected<Internals>(execution_context))
+        .ToLocalChecked();
   }
   if (execution_context->IsWorkerGlobalScope()) {
-    return ToV8(MakeGarbageCollected<WorkerInternals>(), global,
-                script_state->GetIsolate());
+    return ToV8Traits<WorkerInternals>::ToV8(
+               script_state, MakeGarbageCollected<WorkerInternals>())
+        .ToLocalChecked();
   }
   return v8::Local<v8::Value>();
 }

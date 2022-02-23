@@ -143,11 +143,13 @@ class CORE_EXPORT InspectorDOMDebuggerAgent final
  private:
   String MatchXHRBreakpoints(const String& url) const;
 
-  static void EventListenersInfoForTarget(v8::Isolate*,
-                                          v8::Local<v8::Value>,
-                                          int depth,
-                                          bool pierce,
-                                          V8EventListenerInfoList* listeners);
+  static void EventListenersInfoForTarget(
+      v8::Isolate*,
+      v8::Local<v8::Value>,
+      int depth,
+      bool pierce,
+      InspectorDOMAgent::IncludeWhitespaceEnum include_whitespace,
+      V8EventListenerInfoList* listeners);
   void AllowNativeBreakpoint(const String& breakpoint_name,
                              const String* target_name,
                              bool sync);

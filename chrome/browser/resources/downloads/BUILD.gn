@@ -6,9 +6,11 @@ import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../tools/optimize_webui.gni")
+import("downloads.gni")
 
 preprocess_folder = "preprocessed"
 
@@ -53,28 +55,19 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "browser_proxy.ts",
-    "constants.ts",
-    "data.ts",
-    "downloads.ts",
-    "icon_loader.ts",
-    "search_service.ts",
-  ]
+  in_files = ts_files
 }
 
-preprocess_if_expr("preprocess_web_components") {
-  deps = [ ":web_components" ]
+preprocess_if_expr("preprocess_generated") {
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "toolbar.ts",
-  ]
+  in_files = html_wrapper_files + css_wrapper_files
 }
 
 copy("copy_mojo") {
@@ -100,13 +93,12 @@ grit("resources") {
   output_dir = "$root_gen_dir/chrome"
 }
 
-html_to_js("web_components") {
-  js_files = [
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "toolbar.ts",
-  ]
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 ts_library("build_ts") {
@@ -114,19 +106,8 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "browser_proxy.ts",
-    "constants.ts",
-    "data.ts",
-    "downloads.mojom-webui.js",
-    "downloads.ts",
-    "icon_loader.ts",
-    "icons.ts",
-    "item.ts",
-    "manager.ts",
-    "search_service.ts",
-    "toolbar.ts",
-  ]
+  in_files = ts_files + css_wrapper_files + html_wrapper_files +
+             [ "downloads.mojom-webui.js" ]
   deps = [
     "//third_party/polymer/v3_0:library",
     "//ui/webui/resources:library",
@@ -135,6 +116,6 @@ ts_library("build_ts") {
   extra_deps = [
     ":copy_mojo",
     ":preprocess",
-    ":preprocess_web_components",
+    ":preprocess_generated",
   ]
 }

@@ -25,7 +25,7 @@ UserApprovedAccountListManager::GetApprovedAccountIDList() const {
   const base::Value* accounts_pref =
       pref_service_->GetList(prefs::kSigninLastAccounts);
   std::vector<CoreAccountId> accounts;
-  for (const auto& value : accounts_pref->GetList()) {
+  for (const auto& value : accounts_pref->GetListDeprecated()) {
     DCHECK(value.is_string());
     DCHECK(!value.GetString().empty());
     accounts.push_back(CoreAccountId::FromString(value.GetString()));

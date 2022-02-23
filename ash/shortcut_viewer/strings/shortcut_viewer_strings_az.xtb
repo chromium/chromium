@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Anonim rejimində yeni pəncərə açın</translation>
 <translation id="152892567002884378">Səsi artırın</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, sonra <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1-8 sayl; masaya keçin</translation>
 <translation id="1652741121070700329">Öncəki sözün əvvəlinə qayıdın</translation>
 <translation id="1679841710523778799">Parlaqlığı artırın</translation>
 <translation id="168356808214100546">Açmaq istədiyiniz pəncərəni əldə edənə qədər <ph name="ALT" /> düyməsinə basıb saxlayın, sonra <ph name="TAB" /> düyməsinə klikləyin və buraxın.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> düyməsinə basın və linkə klikləyin</translation>
 <translation id="561814908794220892">Veb səhifəni yeni tabda açın</translation>
 <translation id="5620219513321115856">Aktiv pəncərəni sağdakı masaya köçürün</translation>
+<translation id="5699366815052349604">Aktiv pəncərəni bütün masalara təyin edin</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> və ya <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Linki yeni tabda açın</translation>
 <translation id="5757474750054631686">Klaviaturanı qaraldın (yalnız arxa planda işıqlandırılan klaviaturalar üçün)</translation>
@@ -155,6 +157,7 @@
 <translation id="6445033640292336367">Tabı orijinal vəziyyətinə qaytarın</translation>
 <translation id="6474744297082284761">Kiçildin (daxili OR tam ekran böyüdücüləri aktiv olduqda)</translation>
 <translation id="649811797655257835">Faylı seçin sonra <ph name="SPACE" /> düyməsinə basın</translation>
+<translation id="6515089016094047210">Təqvim vidcetini açın və ya bağlayın.</translation>
 <translation id="6551886416582667425">Yarımçıq skrinşot çəkin/yazın</translation>
 <translation id="6556040137485212400">Uzun müddətdir istifadə olunmayan pəncərəni açın</translation>
 <translation id="666343722268997814">Seçilmiş element üçün sağ düymə ilə açılan menyuya klikləyin</translation>
@@ -204,6 +207,7 @@
 <translation id="8644639153978066712">Gizlədilmiş faylları Fayl tətbiqində göstərin</translation>
 <translation id="8717459106217102612">Əvvəlki söz və ya hərfi seçin</translation>
 <translation id="8727232706774971183">Bildirişlərə baxın</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-8</translation>
 <translation id="8855885154700222542">Tam ekran açarı</translation>
 <translation id="8881584919399569791">Aktiv pəncərəni soldakı masaya köçürün</translation>
 <translation id="88986195241502842">Aşağı səhifə</translation>

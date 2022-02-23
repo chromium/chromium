@@ -45,19 +45,41 @@ void CaptureModeTestApi::StartForRegion(bool for_video) {
   controller_->Start(CaptureModeEntryType::kQuickSettings);
 }
 
+bool CaptureModeTestApi::IsSessionActive() const {
+  return controller_->IsActive();
+}
+
 void CaptureModeTestApi::SetUserSelectedRegion(const gfx::Rect& region) {
   controller_->SetUserCaptureRegion(region, /*by_user=*/true);
 }
 
-void CaptureModeTestApi::PerformCapture() {
+void CaptureModeTestApi::PerformCapture(bool skip_count_down) {
   DCHECK(controller_->IsActive());
-  base::AutoReset<bool> skip_count_down(&controller_->skip_count_down_ui_,
-                                        true);
-  controller_->PerformCapture();
+  if (skip_count_down) {
+    base::AutoReset<bool> skip_count_down_resetter(
+        &controller_->skip_count_down_ui_, true);
+    controller_->PerformCapture();
+  } else {
+    controller_->PerformCapture();
+  }
 }
 
 bool CaptureModeTestApi::IsVideoRecordingInProgress() const {
   return controller_->is_recording_in_progress();
+}
+
+bool CaptureModeTestApi::IsPendingDlpCheck() const {
+  return controller_->pending_dlp_check_;
+}
+
+bool CaptureModeTestApi::IsSessionWaitingForDlpConfirmation() const {
+  return controller_->IsActive() &&
+         controller_->capture_mode_session_->is_waiting_for_dlp_confirmation_;
+}
+
+bool CaptureModeTestApi::IsInCountDownAnimation() const {
+  return controller_->IsActive() &&
+         controller_->capture_mode_session_->IsInCountDownAnimation();
 }
 
 void CaptureModeTestApi::StopVideoRecording() {

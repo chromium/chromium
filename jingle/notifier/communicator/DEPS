@@ -1,5 +1,0 @@
-include_rules = [
-  "+services/network/public/cpp",
-  # Need for cricket::ProtocolType.
-  "+webrtc/p2p/base/port.h",
-]

@@ -60,6 +60,11 @@ interface VizMain {
   CreateInfoCollectionGpuService(
       pending_receiver<InfoCollectionGpuService> info_collection_gpu_service);
 
+  // Pass the process ID of the browser process to the viz process. Used for
+  // Android performance hinting.
+  [EnableIf=is_android]
+  SetHostProcessId(int32 pid);
+
   // Initiates the devtools enabled stream connection for the Viz Debugger.
   // This is only called if the flag --enable-viz-devtools is used.
   [EnableIf=use_viz_debugger]

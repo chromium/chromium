@@ -19,7 +19,6 @@ schema_sources = [
   "braille_display_private.idl",
   "command_line_private.json",
   "history.json",
-  "i18n.json",
   "identity.idl",
   "login_state.idl",
   "notifications.idl",

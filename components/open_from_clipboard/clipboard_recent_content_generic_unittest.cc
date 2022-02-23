@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -16,6 +17,7 @@
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/test/test_clipboard.h"
+#include "ui/gfx/image/image_unittest_util.h"
 #include "ui/gfx/skia_util.h"
 #include "url/gurl.h"
 #include "url/url_util.h"
@@ -82,7 +84,7 @@ class ClipboardRecentContentGenericTest : public testing::Test {
     ui::Clipboard::DestroyClipboardForCurrentThread();
   }
 
-  ui::TestClipboard* test_clipboard_;
+  raw_ptr<ui::TestClipboard> test_clipboard_;
   url::ScopedSchemeRegistryForTests scoped_scheme_registry_;
 };
 
@@ -219,9 +221,7 @@ TEST_F(ClipboardRecentContentGenericTest, ClearClipboardContent) {
 TEST_F(ClipboardRecentContentGenericTest, HasRecentImageFromClipboard) {
   ClipboardRecentContentGeneric recent_content;
   base::Time now = base::Time::Now();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(3, 2);
-  bitmap.eraseARGB(255, 0, 255, 0);
+  SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
 
   EXPECT_FALSE(recent_content.HasRecentImageFromClipboard());
   test_clipboard_->WriteBitmap(bitmap);
@@ -240,14 +240,14 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_URL) {
   base::Time now = base::Time::Now();
   std::string title = "foo";
   std::string url_text = "http://example.com/";
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   // The linux and chromeos clipboard treats the presence of text on the
   // clipboard as the url format being available.
   test_clipboard_->WriteText(url_text.data(), url_text.length());
 #else
   test_clipboard_->WriteBookmark(title.data(), title.length(), url_text.data(),
                                  url_text.length());
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 
   HasDataCallbackWaiter waiter(&recent_content);
@@ -274,9 +274,7 @@ TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Text) {
 TEST_F(ClipboardRecentContentGenericTest, HasRecentContentFromClipboard_Image) {
   ClipboardRecentContentGeneric recent_content;
   base::Time now = base::Time::Now();
-  SkBitmap bitmap;
-  bitmap.allocN32Pixels(3, 2);
-  bitmap.eraseARGB(255, 0, 255, 0);
+  SkBitmap bitmap = gfx::test::CreateBitmap(3, 2);
   test_clipboard_->WriteBitmap(bitmap);
   test_clipboard_->SetLastModifiedTime(now - base::Seconds(10));
 

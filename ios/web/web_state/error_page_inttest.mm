@@ -48,8 +48,7 @@ namespace {
 
 // Waits for text for and error in NSURLErrorDomain and
 // kCFURLErrorNetworkConnectionLost error code.
-bool WaitForErrorText(WebState* web_state, const GURL& url) WARN_UNUSED_RESULT;
-bool WaitForErrorText(WebState* web_state, const GURL& url) {
+[[nodiscard]] bool WaitForErrorText(WebState* web_state, const GURL& url) {
   return test::WaitForWebViewContainingText(
       web_state, testing::GetErrorText(
                      web_state, url, web::testing::CreateConnectionLostError(),

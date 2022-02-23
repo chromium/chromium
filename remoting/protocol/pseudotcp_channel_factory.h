@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "remoting/protocol/stream_channel_factory.h"
 
 namespace remoting {
@@ -44,7 +44,7 @@ class PseudoTcpChannelFactory : public StreamChannelFactory {
                             ChannelCreatedCallback callback,
                             int result);
 
-  DatagramChannelFactory* datagram_channel_factory_;
+  raw_ptr<DatagramChannelFactory> datagram_channel_factory_;
 
   PendingSocketsMap pending_sockets_;
 };

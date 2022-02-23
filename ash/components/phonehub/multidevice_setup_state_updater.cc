@@ -6,18 +6,21 @@
 
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "base/callback_helpers.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
-using multidevice_setup::mojom::HostStatus;
+
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::HostStatus;
+
 }  // namespace
 
 // static
@@ -54,7 +57,7 @@ void MultideviceSetupStateUpdater::OnNotificationAccessChanged() {
       break;
 
     case NotificationAccessManager::AccessStatus::kAvailableButNotGranted:
-      FALLTHROUGH;
+      [[fallthrough]];
     case NotificationAccessManager::AccessStatus::kProhibited:
       // Disable kPhoneHubNotifications if notification access has been revoked
       // by the phone.
@@ -86,7 +89,7 @@ bool MultideviceSetupStateUpdater::
   //   2. the phone has granted access.
   // We do *not* want disrupt the feature state if it was already explicitly set
   // by the user.
-  return multidevice_setup::IsDefaultFeatureEnabledValue(
+  return chromeos::multidevice_setup::IsDefaultFeatureEnabledValue(
              Feature::kPhoneHubNotifications, pref_service_) &&
          multidevice_setup_client_->GetFeatureState(Feature::kPhoneHub) ==
              FeatureState::kEnabledByUser;
@@ -144,4 +147,4 @@ void MultideviceSetupStateUpdater::UpdateIsAwaitingVerifiedHost() {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

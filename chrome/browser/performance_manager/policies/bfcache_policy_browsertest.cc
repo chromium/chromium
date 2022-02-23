@@ -9,10 +9,11 @@
 #include "base/files/file_path.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
-#include "build/os_buildflags.h"
+#include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -31,29 +32,71 @@
 #include "ui/base/ui_base_features.h"
 #endif
 
-namespace performance_manager {
-namespace policies {
+namespace performance_manager::policies {
 
 namespace {
 
-struct PolicyTestParams {
-  const std::string scenario;
-  bool enable_policy = false;
-  bool flush_on_moderate_pressure = false;
-  int delay_to_flush_background_tab_in_seconds = -1;
+using MemoryPressureLevel = base::MemoryPressureListener::MemoryPressureLevel;
+
+struct PolicyTestParam {
+  const MemoryPressureLevel memory_pressure_level =
+      MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_MODERATE;
+  bool tab_backgrounded = false;
+  bool enable_policy = true;
+  int foreground_cache_size_on_moderate_pressure = 3;
+  int background_cache_size_on_moderate_pressure = 2;
+  int foreground_cache_size_on_critical_pressure = 1;
+  int background_cache_size_on_critical_pressure = 0;
+  int expected_cached_pages = 4;
 };
+
+const PolicyTestParam kPolicyTestParams[] = {
+    // When BFCachePolicy is disabled, the bfcached pages are kept as it is.
+    {.enable_policy = false},
+    // Tab foregrounded, moderate memory pressure.
+    {.expected_cached_pages = 3},
+    // Tab backgrounded, moderate memory pressure.
+    {.tab_backgrounded = true, .expected_cached_pages = 2},
+    // Tab foregrounded, critical memory pressure.
+    {.memory_pressure_level =
+         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+     .expected_cached_pages = 1},
+    // Tab backgrounded, critical memory pressure.
+    {.memory_pressure_level =
+         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+     .tab_backgrounded = true,
+     .expected_cached_pages = 0},
+    // Tab foregrounded, moderate memory pressure, cache limit is -1 (no limit).
+    {.foreground_cache_size_on_moderate_pressure = -1},
+    // Tab backgrounded, moderate memory pressure, cache limit is -1 (no limit).
+    {.tab_backgrounded = true,
+     .background_cache_size_on_moderate_pressure = -1},
+    // Tab foregrounded, critical memory pressure, cache limit is -1 (no limit).
+    {.memory_pressure_level =
+         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+     .foreground_cache_size_on_critical_pressure = -1},
+    // Tab backgrounded, critical memory pressure, cache limit is -1 (no limit).
+    {.memory_pressure_level =
+         MemoryPressureLevel::MEMORY_PRESSURE_LEVEL_CRITICAL,
+     .tab_backgrounded = true,
+     .background_cache_size_on_critical_pressure = -1}};
 
 class BFCachePolicyBrowserTest
     : public InProcessBrowserTest,
-      public ::testing::WithParamInterface<PolicyTestParams> {
+      public ::testing::WithParamInterface<PolicyTestParam> {
  public:
   ~BFCachePolicyBrowserTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     EnableFeature(::features::kBackForwardCache,
-                  {{"TimeToLiveInBackForwardCacheInSeconds", "3600"},
+                  {{"foreground_cache_size", "10"},
+                   {"cache_size", "10"},
+                   {"TimeToLiveInBackForwardCacheInSeconds", "3600"},
                    {"ignore_outstanding_network_request_for_testing", "true"}});
     DisableFeature(::features::kBackForwardCacheMemoryControls);
+    // Disable discarding of pages directly from PerformanceManager for test.
+    DisableFeature(::performance_manager::features::
+                       kUrgentDiscardingFromPerformanceManager);
     // Occlusion can cause the web_contents to be marked visible between the
     // time the test calls WasHidden and BFCachePolicy::MaybeFlushBFCache is
     // called, which kills the timer set by BFCachePolicy::OnIsVisibleChanged.
@@ -63,11 +106,18 @@ class BFCachePolicyBrowserTest
     if (GetParam().enable_policy) {
       EnableFeature(
           performance_manager::features::kBFCachePerformanceManagerPolicy,
-          {{"flush_on_moderate_pressure",
-            GetParam().flush_on_moderate_pressure ? "true" : "false"},
-           {"delay_to_flush_background_tab_in_seconds",
+          {{"foreground_cache_size_on_moderate_pressure",
             base::NumberToString(
-                GetParam().delay_to_flush_background_tab_in_seconds)}});
+                GetParam().foreground_cache_size_on_moderate_pressure)},
+           {"background_cache_size_on_moderate_pressure",
+            base::NumberToString(
+                GetParam().background_cache_size_on_moderate_pressure)},
+           {"foreground_cache_size_on_critical_pressure",
+            base::NumberToString(
+                GetParam().foreground_cache_size_on_critical_pressure)},
+           {"background_cache_size_on_critical_pressure",
+            base::NumberToString(
+                GetParam().background_cache_size_on_critical_pressure)}});
     } else {
       DisableFeature(
           performance_manager::features::kBFCachePerformanceManagerPolicy);
@@ -101,25 +151,23 @@ class BFCachePolicyBrowserTest
     return web_contents()->GetMainFrame();
   }
 
-  void VerifyEvictionExpectation(bool should_be_evicted,
-                                 content::RenderFrameHostWrapper& rfh) {
-    if (should_be_evicted) {
-      // When the page is evicted the RenderFrame will be deleted.
-      ASSERT_TRUE(rfh.WaitUntilRenderFrameDeleted());
-    } else {
-      // BFCachePolicy runs asynchronously. So we need to wait for the result
-      // before checking.
-      base::RunLoop run_loop;
-      base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
-          FROM_HERE, base::BindLambdaForTesting([&]() {
-            EXPECT_EQ(
-                rfh->GetLifecycleState(),
-                content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-            run_loop.Quit();
-          }),
-          base::Seconds(std::max(
-              0, GetParam().delay_to_flush_background_tab_in_seconds)));
-      run_loop.Run();
+  void VerifyEvictionExpectation(
+      std::vector<content::RenderFrameHostWrapper>& render_frame_hosts) {
+    // Wait for memory pressure signal processed and handled by BFCachePolicy.
+    content::RunAllTasksUntilIdle();
+
+    size_t expected_deleted_pages =
+        render_frame_hosts.size() - GetParam().expected_cached_pages;
+
+    for (size_t i = 0; i < render_frame_hosts.size(); i++) {
+      content::RenderFrameHostWrapper& rfh = render_frame_hosts[i];
+      if (i < expected_deleted_pages) {
+        ASSERT_TRUE(rfh.IsRenderFrameDeleted());
+      } else {
+        EXPECT_EQ(
+            rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+      }
     }
   }
 
@@ -134,95 +182,44 @@ class BFCachePolicyBrowserTest
 
 IN_PROC_BROWSER_TEST_P(BFCachePolicyBrowserTest, CacheFlushed) {
   memory_pressure::test::FakeMemoryPressureMonitor fake_memory_pressure_monitor;
-  const GURL url_a(embedded_test_server()->GetURL("a.com", "/title1.html"));
-  const GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  const std::vector<std::string> hostnames{"a.com", "b.com", "c.com", "d.com"};
+  std::vector<content::RenderFrameHostWrapper> render_frame_hosts;
+  render_frame_hosts.reserve(hostnames.size());
+  for (std::string hostname : hostnames) {
+    const GURL url(embedded_test_server()->GetURL(hostname, "/title1.html"));
+    EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+    render_frame_hosts.emplace_back(
+        content::RenderFrameHostWrapper(top_frame_host()));
+  }
+
+  const GURL url(embedded_test_server()->GetURL("last.com", "/title1.html"));
+  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  content::RenderFrameHostWrapper last_rfh =
+      content::RenderFrameHostWrapper(top_frame_host());
 
   EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::VISIBLE);
-
-  // Navigate to A.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_a));
-  content::RenderFrameHostWrapper rfh_a(top_frame_host());
-
-  // Navigate to B.
-  EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url_b));
-  content::RenderFrameHostWrapper rfh_b(top_frame_host());
-
-  // Ensure A is cached.
-  EXPECT_EQ(rfh_a->GetLifecycleState(),
-            content::RenderFrameHost::LifecycleState::kInBackForwardCache);
-
-  if (GetParam().scenario == "FlushWhenTabBackgrounded") {
-    // Backgrounding the page will evict it from BFCache.
+  if (GetParam().tab_backgrounded) {
     web_contents()->WasHidden();
-    VerifyEvictionExpectation(
-        /* should_be_evicted = */
-        (GetParam().enable_policy &&
-         (GetParam().delay_to_flush_background_tab_in_seconds >= 0)),
-        rfh_a);
-  } else if (GetParam().scenario == "FlushWhenTabBackgroundDuringNavigation") {
-    web_contents()->GetController().GoBack();
-    // Make the tab backgrounded before the back navigation completes. |rfh_a|
-    // will become the active frame and the cache will be flushed (i.e. |rfh_b|
-    // will be deleted).
-    web_contents()->WasHidden();
-    EXPECT_TRUE(WaitForLoadStop(web_contents()));
-    EXPECT_EQ(rfh_a.get(), top_frame_host());
-    VerifyEvictionExpectation(
-        /* should_be_evicted = */
-        (GetParam().enable_policy &&
-         (GetParam().delay_to_flush_background_tab_in_seconds >= 0)),
-        rfh_b);
-  } else if (GetParam().scenario == "FlushOnModerateMemoryPressure") {
-    // A moderate memory pressure signal will evict the page from BFCache.
-    fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_MODERATE);
-    VerifyEvictionExpectation(
-        /* should_be_evicted = */
-        (GetParam().enable_policy && GetParam().flush_on_moderate_pressure),
-        rfh_a);
-  } else if (GetParam().scenario == "FlushOnCriticalMemoryPressure") {
-    // A critical memory pressure signal will evict the page from BFCache.
-    fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
-        base::MemoryPressureListener::MemoryPressureLevel::
-            MEMORY_PRESSURE_LEVEL_CRITICAL);
-    VerifyEvictionExpectation(
-        /* should_be_evicted = */ GetParam().enable_policy, rfh_a);
-  }
-}
-
-std::vector<PolicyTestParams> BFCachePolicyBrowserTestValues() {
-  std::vector<PolicyTestParams> test_cases;
-
-  for (const std::string scenario :
-       {"FlushWhenTabBackgrounded", "FlushWhenTabBackgroundDuringNavigation"}) {
-    test_cases.push_back({.scenario = scenario});
-
-    test_cases.push_back({.scenario = scenario, .enable_policy = true});
-
-    test_cases.push_back({.scenario = scenario,
-                          .enable_policy = true,
-                          .delay_to_flush_background_tab_in_seconds = 1});
+    EXPECT_EQ(web_contents()->GetVisibility(), content::Visibility::HIDDEN);
   }
 
-  test_cases.push_back({.scenario = "FlushOnModerateMemoryPressure"});
+  // Ensure pages are cached.
+  for (const auto& render_frame_host : render_frame_hosts) {
+    EXPECT_EQ(render_frame_host->GetLifecycleState(),
+              content::RenderFrameHost::LifecycleState::kInBackForwardCache);
+  }
+  // Ensure the last page is not cached.
+  EXPECT_EQ(last_rfh->GetLifecycleState(),
+            content::RenderFrameHost::LifecycleState::kActive);
 
-  test_cases.push_back(
-      {.scenario = "FlushOnModerateMemoryPressure", .enable_policy = true});
+  fake_memory_pressure_monitor.SetAndNotifyMemoryPressure(
+      GetParam().memory_pressure_level);
 
-  test_cases.push_back({.scenario = "FlushOnModerateMemoryPressure",
-                        .enable_policy = true,
-                        .flush_on_moderate_pressure = true});
-
-  test_cases.push_back({.scenario = "FlushWhenTabBackgroundDuringNavigation",
-                        .enable_policy = true});
-
-  return test_cases;
+  VerifyEvictionExpectation(render_frame_hosts);
 }
 
 INSTANTIATE_TEST_SUITE_P(All,
                          BFCachePolicyBrowserTest,
-                         testing::ValuesIn(BFCachePolicyBrowserTestValues()));
+                         testing::ValuesIn(kPolicyTestParams));
 
-}  // namespace policies
-}  // namespace performance_manager
+}  // namespace performance_manager::policies

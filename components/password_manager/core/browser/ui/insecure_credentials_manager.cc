@@ -15,6 +15,7 @@
 #include "base/containers/flat_set.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/post_task.h"
@@ -27,7 +28,7 @@
 #include "components/password_manager/core/browser/ui/saved_passwords_presenter.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 #include "components/password_manager/core/browser/ui/weak_check_utility.h"
 #endif
 
@@ -38,6 +39,7 @@ struct CredentialMetadata {
   std::vector<PasswordForm> forms;
   InsecureCredentialTypeFlags type = InsecureCredentialTypeFlags::kSecure;
   base::Time latest_time;
+  IsMuted is_muted;
 };
 
 namespace {
@@ -123,6 +125,7 @@ CredentialPasswordsMap GetInsecureCredentialsFromPasswords(
         credential_to_form.type |= ConvertInsecureType(pair.first);
         credential_to_form.latest_time =
             std::max(credential_to_form.latest_time, pair.second.create_time);
+        credential_to_form.is_muted = pair.second.is_muted;
       }
       // Populate the map. The values are vectors, because it is
       // possible that multiple saved passwords match to the same
@@ -155,6 +158,7 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
       CredentialWithPassword credential(credential_to_forms.first);
       credential.insecure_type = credential_to_forms.second.type;
       credential.create_time = credential_to_forms.second.latest_time;
+      credential.is_muted = credential_to_forms.second.is_muted;
       credentials.push_back(std::move(credential));
     }
   }
@@ -162,13 +166,13 @@ std::vector<CredentialWithPassword> ExtractInsecureCredentials(
 }
 
 // The function is only used by the weak check.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 base::flat_set<std::u16string> ExtractPasswords(
     SavedPasswordsPresenter::SavedPasswordsView password_forms) {
   return base::MakeFlatSet<std::u16string>(password_forms, {},
                                            &PasswordForm::password_value);
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 }  // namespace
 
@@ -214,7 +218,8 @@ CredentialWithPassword::CredentialWithPassword(
                      /*password=*/{},
                      /*last_used_time=*/base::Time()),
       create_time(credential.create_time),
-      insecure_type(ConvertInsecureType(credential.insecure_type)) {}
+      insecure_type(ConvertInsecureType(credential.insecure_type)),
+      is_muted(credential.is_muted) {}
 
 CredentialWithPassword& CredentialWithPassword::operator=(
     const CredentialWithPassword& other) = default;
@@ -228,14 +233,14 @@ InsecureCredentialsManager::InsecureCredentialsManager(
     : presenter_(presenter),
       profile_store_(std::move(profile_store)),
       account_store_(std::move(account_store)) {
-  observed_saved_password_presenter_.Observe(presenter_);
+  observed_saved_password_presenter_.Observe(presenter_.get());
 }
 
 InsecureCredentialsManager::~InsecureCredentialsManager() = default;
 
 void InsecureCredentialsManager::Init() {}
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 void InsecureCredentialsManager::StartWeakCheck(
     base::OnceClosure on_check_done) {
   base::ThreadPool::PostTaskAndReplyWithResult(
@@ -246,7 +251,7 @@ void InsecureCredentialsManager::StartWeakCheck(
                      weak_ptr_factory_.GetWeakPtr(), base::ElapsedTimer())
           .Then(std::move(on_check_done)));
 }
-#endif  // !defined(OS_ANDROID) && !defined(OS_IOS)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
 void InsecureCredentialsManager::SaveInsecureCredential(
     const LeakCheckCredential& credential) {
@@ -257,7 +262,8 @@ void InsecureCredentialsManager::SaveInsecureCredential(
   for (const PasswordForm& saved_password : presenter_->GetSavedPasswords()) {
     if (saved_password.password_value == credential.password() &&
         CanonicalizeUsername(saved_password.username_value) ==
-            canonicalized_username) {
+            canonicalized_username &&
+        !saved_password.password_issues.contains(InsecureType::kLeaked)) {
       PasswordForm form_to_update = saved_password;
       form_to_update.password_issues.insert_or_assign(
           InsecureType::kLeaked,
@@ -265,6 +271,69 @@ void InsecureCredentialsManager::SaveInsecureCredential(
       GetStoreFor(saved_password).UpdateLogin(form_to_update);
     }
   }
+}
+
+bool InsecureCredentialsManager::MuteCredential(
+    const CredentialView& credential) {
+  auto it = credentials_to_forms_.find(credential);
+  if (it == credentials_to_forms_.end())
+    return false;
+
+  // Mute all matching compromised credentials from the store.
+  // For a match, all insecureity types saved in the store are muted.
+  // Return whether any credentials were muted.
+  const auto& saved_passwords = it->second.forms;
+  bool muted = false;
+  for (const PasswordForm& saved_password : saved_passwords) {
+    PasswordForm form_to_update = saved_password;
+    bool form_changed = false;
+    for (const auto& password_issue : saved_password.password_issues) {
+      if (!password_issue.second.is_muted.value()) {
+        form_to_update.password_issues.insert_or_assign(
+            password_issue.first,
+            InsecurityMetadata(password_issue.second.create_time,
+                               IsMuted(true)));
+        form_changed = true;
+      }
+    }
+    if (form_changed) {
+      GetStoreFor(saved_password).UpdateLogin(form_to_update);
+      muted = true;
+    }
+  }
+  return muted;
+}
+
+bool InsecureCredentialsManager::UnmuteCredential(
+    const CredentialView& credential) {
+  auto it = credentials_to_forms_.find(credential);
+  if (it == credentials_to_forms_.end())
+    return false;
+
+  // Unmute all matching compromised credentials from the store.
+  // For a match, all insecureity types saved in the store are unmuted.
+  // Return whether any credentials were unmuted.
+  const auto& saved_passwords = it->second.forms;
+  bool unmuted = false;
+
+  for (const PasswordForm& saved_password : saved_passwords) {
+    PasswordForm form_to_update = saved_password;
+    bool form_changed = false;
+    for (const auto& password_issue : saved_password.password_issues) {
+      if (password_issue.second.is_muted.value()) {
+        form_to_update.password_issues.insert_or_assign(
+            password_issue.first,
+            InsecurityMetadata(password_issue.second.create_time,
+                               IsMuted(false)));
+        form_changed = true;
+      }
+    }
+    if (form_changed) {
+      GetStoreFor(saved_password).UpdateLogin(form_to_update);
+      unmuted = true;
+    }
+  }
+  return unmuted;
 }
 
 bool InsecureCredentialsManager::UpdateCredential(
@@ -356,7 +425,7 @@ void InsecureCredentialsManager::OnWeakCheckDone(
 void InsecureCredentialsManager::OnEdited(const PasswordForm& form) {
   // The WeakCheck is a Desktop only feature for now. Disable on Mobile to avoid
   // pulling in a big dependency on zxcvbn.
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   const std::u16string& password = form.password_value;
   if (weak_passwords_.contains(password) || !IsWeak(password)) {
     // Either the password is already known to be weak, or it is not weak at

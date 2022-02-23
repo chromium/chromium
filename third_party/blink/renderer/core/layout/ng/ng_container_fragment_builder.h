@@ -58,8 +58,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   };
 
   using ChildrenVector = Vector<ChildWithOffset, 4>;
-  using MulticolCollection = HashMap<UntracedMember<LayoutBox>,
-                                     NGMulticolWithPendingOOFs<LogicalOffset>>;
+  using MulticolCollection =
+      HeapHashMap<Member<LayoutBox>, NGMulticolWithPendingOOFs<LogicalOffset>>;
 
   LayoutUnit BfcLineOffset() const { return bfc_line_offset_; }
   void SetBfcLineOffset(LayoutUnit bfc_line_offset) {
@@ -324,7 +324,7 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
 
   const NGConstraintSpace* ConstraintSpace() const { return space_; }
 
-  scoped_refptr<const NGLayoutResult> Abort(NGLayoutResult::EStatus);
+  const NGLayoutResult* Abort(NGLayoutResult::EStatus);
 
 #if DCHECK_IS_ON()
   String ToString() const;
@@ -389,8 +389,8 @@ class CORE_EXPORT NGContainerFragmentBuilder : public NGFragmentBuilder {
   // See NGLayoutResult::BlockEndAnotationSpace().
   LayoutUnit block_end_annotation_space_;
 
-  // The number of line boxes added to the builder. Only updated if we're
-  // performing block fragmentation.
+  // The number of line boxes or flex lines added to the builder. Only updated
+  // if we're performing block fragmentation.
   int line_count_ = 0;
 
   NGAdjoiningObjectTypes adjoining_object_types_ = kAdjoiningNone;

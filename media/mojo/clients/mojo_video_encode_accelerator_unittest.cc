@@ -13,6 +13,8 @@
 #include "media/mojo/clients/mojo_video_encode_accelerator.h"
 #include "media/mojo/mojom/video_encode_accelerator.mojom.h"
 #include "media/video/video_encode_accelerator.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
+#include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -45,7 +47,7 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   // mojom::VideoEncodeAccelerator impl.
   void Initialize(
       const media::VideoEncodeAccelerator::Config& config,
-      mojo::PendingRemote<mojom::VideoEncodeAcceleratorClient> client,
+      mojo::PendingAssociatedRemote<mojom::VideoEncodeAcceleratorClient> client,
       InitializeCallback success_callback) override {
     if (initialization_success_) {
       ASSERT_TRUE(client);
@@ -62,13 +64,14 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
     }
     std::move(success_callback).Run(initialization_success_);
   }
-  MOCK_METHOD6(DoInitialize,
-               void(media::VideoPixelFormat,
-                    const gfx::Size&,
-                    media::VideoCodecProfile,
-                    media::Bitrate,
-                    media::VideoEncodeAccelerator::Config::ContentType,
-                    mojo::Remote<mojom::VideoEncodeAcceleratorClient>*));
+  MOCK_METHOD6(
+      DoInitialize,
+      void(media::VideoPixelFormat,
+           const gfx::Size&,
+           media::VideoCodecProfile,
+           media::Bitrate,
+           media::VideoEncodeAccelerator::Config::ContentType,
+           mojo::AssociatedRemote<mojom::VideoEncodeAcceleratorClient>*));
 
   void Encode(const scoped_refptr<VideoFrame>& frame,
               bool keyframe,
@@ -120,7 +123,7 @@ class MockMojoVideoEncodeAccelerator : public mojom::VideoEncodeAccelerator {
   }
 
  private:
-  mojo::Remote<mojom::VideoEncodeAcceleratorClient> client_;
+  mojo::AssociatedRemote<mojom::VideoEncodeAcceleratorClient> client_;
   int32_t configured_bitstream_buffer_id_ = -1;
   bool initialization_success_ = true;
 };
@@ -161,17 +164,16 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
         std::make_unique<MockMojoVideoEncodeAccelerator>(),
         mojo_vea.InitWithNewPipeAndPassReceiver());
 
-    mojo_vea_ =
-        base::WrapUnique<VideoEncodeAccelerator>(new MojoVideoEncodeAccelerator(
-            std::move(mojo_vea),
-            media::VideoEncodeAccelerator::SupportedProfiles()));
+    mojo_vea_ = base::WrapUnique<VideoEncodeAccelerator>(
+        new MojoVideoEncodeAccelerator(std::move(mojo_vea)));
   }
 
   void TearDown() override {
     // The destruction of a mojo::SelfOwnedReceiver closes the bound message
     // pipe but does not destroy the implementation object(s): this needs to
     // happen manually by Close()ing it.
-    mojo_vea_receiver_->Close();
+    if (mojo_vea_receiver_)
+      mojo_vea_receiver_->Close();
   }
 
   MockMojoVideoEncodeAccelerator* mock_mojo_vea() {
@@ -206,7 +208,7 @@ class MojoVideoEncodeAcceleratorTest : public ::testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
- private:
+ protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
 
   // This member holds on to the mock implementation of the "service" side.
@@ -303,7 +305,7 @@ TEST_F(MojoVideoEncodeAcceleratorTest,
   VideoBitrateAllocation bitrate_allocation;
   for (size_t i = 0; i <= kMaxNumBitrates; ++i) {
     if (i > 0) {
-      int layer_bitrate = i * 1000;
+      uint32_t layer_bitrate = i * 1000;
       const size_t si = (i - 1) / VideoBitrateAllocation::kMaxTemporalLayers;
       const size_t ti = (i - 1) % VideoBitrateAllocation::kMaxTemporalLayers;
       bitrate_allocation.SetBitrate(si, ti, layer_bitrate);
@@ -331,6 +333,23 @@ TEST_F(MojoVideoEncodeAcceleratorTest, InitializeFailure) {
       PIXEL_FORMAT_I420, kInputVisibleSize, VIDEO_CODEC_PROFILE_UNKNOWN,
       kInitialBitrate);
   EXPECT_FALSE(mojo_vea()->Initialize(config, mock_vea_client.get()));
+  base::RunLoop().RunUntilIdle();
+}
+
+// Test that mojo disconnect is surfaced as a platform error
+TEST_F(MojoVideoEncodeAcceleratorTest, MojoDisconnect) {
+  std::unique_ptr<MockVideoEncodeAcceleratorClient> mock_vea_client =
+      std::make_unique<MockVideoEncodeAcceleratorClient>();
+
+  constexpr Bitrate kInitialBitrate = Bitrate::ConstantBitrate(100000u);
+  const VideoEncodeAccelerator::Config config(
+      PIXEL_FORMAT_I420, kInputVisibleSize, VIDEO_CODEC_PROFILE_UNKNOWN,
+      kInitialBitrate);
+  EXPECT_TRUE(mojo_vea()->Initialize(config, mock_vea_client.get()));
+  mojo_vea_receiver_->Close();
+  EXPECT_CALL(
+      *mock_vea_client,
+      NotifyError(VideoEncodeAccelerator::Error::kPlatformFailureError));
   base::RunLoop().RunUntilIdle();
 }
 

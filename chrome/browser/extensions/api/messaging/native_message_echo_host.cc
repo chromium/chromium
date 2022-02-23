@@ -64,9 +64,9 @@ scoped_refptr<base::SingleThreadTaskRunner> NativeMessageEchoHost::task_runner()
 
 void NativeMessageEchoHost::ProcessEcho(const base::DictionaryValue& request) {
   base::DictionaryValue response;
-  response.SetInteger("id", ++message_number_);
+  response.SetIntKey("id", ++message_number_);
   response.SetKey("echo", request.Clone());
-  response.SetString("caller_url", kOrigins[0]);
+  response.SetStringKey("caller_url", kOrigins[0]);
   std::string response_string;
   base::JSONWriter::Write(response, &response_string);
   client_->PostMessageFromNativeHost(response_string);

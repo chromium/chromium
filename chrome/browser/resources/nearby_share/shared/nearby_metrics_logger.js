@@ -31,7 +31,8 @@ const NearbyShareOnboardingEntryPoint = {
   SETTINGS: 0,
   TRAY: 1,
   SHARE_SHEET: 2,
-  MAX: 3,
+  NEARBY_DEVICE_TRYING_TO_SHARE_NOTIFICATION: 3,
+  MAX: 4,
 };
 
 const NearbyShareOnboardingResultHistogramName =
@@ -63,9 +64,7 @@ let onboardingInitiatedTimestamp;
     const urlParams = new URLSearchParams(url.search);
 
     nearbyShareOnboardingEntryPoint =
-        (urlParams.get('entrypoint') === 'settings') ?
-        NearbyShareOnboardingEntryPoint.SETTINGS :
-        NearbyShareOnboardingEntryPoint.TRAY;
+        getOnboardingEntrypointFromQueryParam(urlParams.get('entrypoint'));
   } else {
     assertNotReached('Invalid nearbyShareOnboardingEntryPoint');
   }
@@ -77,6 +76,22 @@ let onboardingInitiatedTimestamp;
 
   // Set time at which onboarding was initiated to track duration.
   onboardingInitiatedTimestamp = window.performance.now();
+}
+
+/**
+ * @param {?string} queryParam
+ * @return {NearbyShareOnboardingEntryPoint}
+ */
+function getOnboardingEntrypointFromQueryParam(queryParam) {
+  switch (queryParam) {
+    case 'settings':
+      return NearbyShareOnboardingEntryPoint.SETTINGS;
+    case 'notification':
+      return NearbyShareOnboardingEntryPoint
+          .NEARBY_DEVICE_TRYING_TO_SHARE_NOTIFICATION;
+    default:
+      return NearbyShareOnboardingEntryPoint.TRAY;
+  }
 }
 
 /**

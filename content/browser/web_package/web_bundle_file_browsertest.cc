@@ -4,6 +4,7 @@
 
 #include "base/files/file_util.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "content/browser/web_package/web_bundle_browsertest_base.h"
 #include "content/browser/web_package/web_bundle_utils.h"
 
@@ -32,12 +33,12 @@ class WebBundleFileBrowserTest
         web_bundle_browsertest_utils::TestFilePathMode::kNormalFilePath) {
       content_uri = net::FilePathToFileURL(file_path);
     } else {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       DCHECK_EQ(web_bundle_browsertest_utils::TestFilePathMode::kContentURI,
                 GetParam());
       web_bundle_browsertest_utils::CopyFileAndGetContentUri(
           file_path, &content_uri, nullptr /* new_file_path */);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
     }
     return content_uri;
   }
@@ -189,7 +190,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, IframeSameDocumentNavigation) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_InvalidWebBundleFile DISABLED_InvalidWebBundleFile
 #else
 #define MAYBE_InvalidWebBundleFile InvalidWebBundleFile
@@ -209,7 +210,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_InvalidWebBundleFile) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_ResponseParseErrorInMainResource \
   DISABLED_ResponseParseErrorInMainResource
 #else
@@ -306,8 +307,8 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, DataDecoderRestart) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_MAC)
 #define MAYBE_ParseMetadataCrash DISABLED_ParseMetadataCrash
 #else
 #define MAYBE_ParseMetadataCrash ParseMetadataCrash
@@ -330,7 +331,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, MAYBE_ParseMetadataCrash) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX) || defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
 #define MAYBE_ParseResponseCrash DISABLED_ParseResponseCrash
 #else
 #define MAYBE_ParseResponseCrash ParseResponseCrash
@@ -464,7 +465,7 @@ IN_PROC_BROWSER_TEST_P(WebBundleFileBrowserTest, WindowOpen) {
 }
 
 // TODO(https://crbug.com/1225178): flaky
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_NoPrimaryURLFound DISABLED_NoPrimaryURLFound
 #else
 #define MAYBE_NoPrimaryURLFound NoPrimaryURLFound

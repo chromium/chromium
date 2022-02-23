@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router.h"
 #include "chrome/browser/sync/sessions/sync_sessions_web_contents_router_factory.h"
@@ -122,7 +123,7 @@ class SyncSessionsRouterTabHelperBrowserTest : public InProcessBrowserTest {
 
  protected:
  private:
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   content::test::PrerenderTestHelper prerender_helper_;
   TestLocalSessionEventHandler handler;
   TestTranslateDriverObserver observer_;
@@ -154,8 +155,8 @@ IN_PROC_BROWSER_TEST_F(SyncSessionsRouterTabHelperBrowserTest,
   // OnLocalTabModified() by SyncSessionsRouterTabHelper::TitleWasSet(). Except
   // it, SyncSessionsRouterTabHelper doesn't trigger OnLocalTabModified() on
   // prerendering.
-  auto prerender_url = embedded_test_server()->GetURL("/title1.html");
-  auto prerender_id = prerender_helper()->AddPrerender(prerender_url);
+  GURL prerender_url = embedded_test_server()->GetURL("/title1.html");
+  int prerender_id = prerender_helper()->AddPrerender(prerender_url);
   content::test::PrerenderHostObserver host_observer(*web_contents(),
                                                      prerender_id);
   // Make sure that OnLocalTabModified() is not called.

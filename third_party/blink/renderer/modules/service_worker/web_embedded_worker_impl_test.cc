@@ -21,6 +21,7 @@
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-blink.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_registration.mojom-blink.h"
 #include "third_party/blink/public/mojom/timing/worker_timing_container.mojom-blink.h"
+#include "third_party/blink/public/platform/modules/service_worker/web_service_worker_error.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_back_forward_cache_loader_helper.h"
 #include "third_party/blink/public/platform/web_content_settings_client.h"
@@ -139,9 +140,6 @@ class FakeWebServiceWorkerFetchContext final
     return {};
   }
   void SetIsOfflineMode(bool is_offline_mode) override {}
-  mojom::SubresourceLoaderUpdater* GetSubresourceLoaderUpdater() override {
-    return nullptr;
-  }
 
  private:
   FakeWebURLLoaderFactory fake_web_url_loader_factory_;
@@ -214,7 +212,6 @@ class MockServiceWorkerContextClient final
             KURL("https://example.com"), std::move(service_worker_object_host),
             service_worker_object.InitWithNewEndpointAndPassReceiver()),
         mojom::blink::FetchHandlerExistence::EXISTS,
-        /*subresource_loader_factories=*/nullptr,
         /*reporting_observer_receiver=*/mojo::NullReceiver());
 
     // To make the other side callable.
@@ -235,6 +232,21 @@ class MockServiceWorkerContextClient final
   CreateWorkerFetchContextOnInitiatorThread() override {
     return base::MakeRefCounted<FakeWebServiceWorkerFetchContext>();
   }
+
+  void OnNavigationPreloadResponse(
+      int fetch_event_id,
+      std::unique_ptr<WebURLResponse> response,
+      mojo::ScopedDataPipeConsumerHandle data_pipe) override {}
+
+  void OnNavigationPreloadComplete(int fetch_event_id,
+                                   base::TimeTicks completion_time,
+                                   int64_t encoded_data_length,
+                                   int64_t encoded_body_length,
+                                   int64_t decoded_body_length) override {}
+
+  void OnNavigationPreloadError(
+      int fetch_event_id,
+      std::unique_ptr<WebServiceWorkerError> error) override {}
 
   void WorkerContextDestroyed() override { termination_event_.Signal(); }
 

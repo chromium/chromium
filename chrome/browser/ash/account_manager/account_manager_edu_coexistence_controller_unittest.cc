@@ -14,7 +14,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/child_accounts/edu_coexistence_tos_store_utils.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/browser/ui/webui/chromeos/edu_coexistence/edu_coexistence_login_handler_chromeos.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
@@ -108,7 +107,7 @@ class AccountManagerEducoexistenceControllerTest : public testing::Test {
 };
 
 void AccountManagerEducoexistenceControllerTest::SetUp() {
-  testing_profile_.SetSupervisedUserId(supervised_users::kChildAccountSUID);
+  testing_profile_.SetIsSupervisedProfile();
   account_manager_ = g_browser_process->platform_part()
                          ->GetAccountManagerFactory()
                          ->GetAccountManager(profile()->GetPath().value());

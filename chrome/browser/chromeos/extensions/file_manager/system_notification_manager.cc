@@ -4,10 +4,12 @@
 
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drivefs_native_message_host.h"
@@ -21,7 +23,6 @@
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -529,10 +530,13 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   }
   base::Value::ListView event_arguments;
 
-  event_arguments = event.event_args->GetList();
+  event_arguments = event.event_args->GetListDeprecated();
   if (event_arguments.size() < 1) {
     return;
   }
+  // For some events we always display a system notification regardless of if
+  // there are any SWA windows open.
+  bool force_as_system_notification = false;
   std::unique_ptr<message_center::Notification> notification;
   switch (event.histogram_value) {
     case extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_SYNC_ERROR:
@@ -540,6 +544,7 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
       break;
     case extensions::events::FILE_MANAGER_PRIVATE_ON_DRIVE_CONFIRM_DIALOG:
       notification = MakeDriveConfirmDialogNotification(event, event_arguments);
+      force_as_system_notification = true;
       break;
     case extensions::events::FILE_MANAGER_PRIVATE_ON_FILE_TRANSFERS_UPDATED:
     case extensions::events::FILE_MANAGER_PRIVATE_ON_PIN_TRANSFERS_UPDATED:
@@ -553,7 +558,7 @@ void SystemNotificationManager::HandleEvent(const extensions::Event& event) {
   if (notification) {
     // Check if we need to remove any progress notification when there
     // are active SWA windows.
-    if (DoFilesSwaWindowsExist()) {
+    if (!force_as_system_notification && DoFilesSwaWindowsExist()) {
       GetNotificationDisplayService()->Close(
           NotificationHandler::Type::TRANSIENT, notification->id());
       return;
@@ -659,9 +664,7 @@ void SystemNotificationManager::HandleIOTaskProgress(
     return;
   }
 
-  if (status.state == io_task::State::kError ||
-      status.state == io_task::State::kCancelled ||
-      status.state == io_task::State::kSuccess) {
+  if (status.IsCompleted()) {
     GetNotificationDisplayService()->Close(NotificationHandler::Type::TRANSIENT,
                                            id);
     return;
@@ -701,7 +704,8 @@ void SystemNotificationManager::HandleRemovableNotificationClick(
       chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
           profile_, chromeos::settings::mojom::kExternalStorageSubpagePath);
     }
-    if (button_index.value() < uma_types_for_buttons.size()) {
+    if (base::checked_cast<size_t>(button_index.value()) <
+        uma_types_for_buttons.size()) {
       RecordDeviceNotificationUserActionMetric(
           uma_types_for_buttons.at(button_index.value()));
     }
@@ -818,7 +822,7 @@ SystemNotificationManager::UpdateDeviceMountStatus(
         GetNotificationDisplayService()->Close(
             NotificationHandler::Type::TRANSIENT, kDeviceFailNotificationId);
       }
-      FALLTHROUGH;
+      [[fallthrough]];
     case MOUNT_STATUS_NO_RESULT:
       if (event.status ==
           file_manager_private::MOUNT_COMPLETED_STATUS_SUCCESS) {

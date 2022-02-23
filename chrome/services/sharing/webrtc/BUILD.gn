@@ -24,14 +24,15 @@ source_set("webrtc") {
   ]
 
   deps = [
-    "//jingle:webrtc_glue",
+    "//components/webrtc:net_address_utils",
+    "//components/webrtc:thread_wrapper",
     "//third_party/webrtc_overrides:webrtc_component",
   ]
 
   public_deps = [
+    "//ash/services/nearby/public/mojom",
     "//base",
     "//chrome/services/sharing/public/cpp",
-    "//chromeos/services/nearby/public/mojom",
     "//mojo/public/cpp/bindings",
   ]
 }

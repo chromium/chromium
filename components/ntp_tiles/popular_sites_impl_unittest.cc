@@ -71,7 +71,7 @@ using TestPopularSectionVector = std::vector<TestPopularSection>;
 }
 
 size_t GetNumberOfDefaultPopularSitesForPlatform() {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   return 8ul;
 #else
   return 0ul;
@@ -298,7 +298,7 @@ TEST_F(PopularSitesTest, PopulatesWithDefaultResoucesOnFailure) {
   EXPECT_THAT(sites.size(), Eq(GetNumberOfDefaultPopularSitesForPlatform()));
 }
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 TEST_F(PopularSitesTest, AddsIconResourcesToDefaultPages) {
   std::unique_ptr<PopularSites> popular_sites = CreatePopularSites();
 

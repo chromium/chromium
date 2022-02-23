@@ -89,7 +89,7 @@ int NumProcessesWithName(base::Value* dump_json,
                          std::vector<int>* pids) {
   int num_processes = 0;
   base::Value* events = dump_json->FindKey("traceEvents");
-  for (const base::Value& event : events->GetList()) {
+  for (const base::Value& event : events->GetListDeprecated()) {
     const base::Value* found_name =
         event.FindKeyOfType("name", base::Value::Type::STRING);
     if (!found_name)
@@ -128,7 +128,7 @@ base::Value* FindArgDump(base::ProcessId pid,
   base::Value* events = dump_json->FindKey("traceEvents");
   base::Value* dumps = nullptr;
   base::Value* heaps_v2 = nullptr;
-  for (base::Value& event : events->GetList()) {
+  for (base::Value& event : events->GetListDeprecated()) {
     const base::Value* found_name =
         event.FindKeyOfType("name", base::Value::Type::STRING);
     if (!found_name)
@@ -160,7 +160,7 @@ using NodeMap = std::unordered_map<uint64_t, Node>;
 // Parses maps.types and maps.strings. Returns |true| on success.
 bool ParseTypes(base::Value* heaps_v2, NodeMap* output) {
   base::Value* types = heaps_v2->FindPath({"maps", "types"});
-  for (const base::Value& type_value : types->GetList()) {
+  for (const base::Value& type_value : types->GetListDeprecated()) {
     const base::Value* id = type_value.FindKey("id");
     const base::Value* name_sid = type_value.FindKey("name_sid");
     if (!id || !name_sid) {
@@ -174,7 +174,7 @@ bool ParseTypes(base::Value* heaps_v2, NodeMap* output) {
   }
 
   base::Value* strings = heaps_v2->FindPath({"maps", "strings"});
-  for (const base::Value& string_value : strings->GetList()) {
+  for (const base::Value& string_value : strings->GetListDeprecated()) {
     const base::Value* id = string_value.FindKey("id");
     const base::Value* string = string_value.FindKey("string");
     if (!id || !string) {
@@ -206,7 +206,7 @@ bool GetAllocatorSubarray(base::Value* heaps_v2,
     return false;
   }
 
-  base::Value::ConstListView subarray_list = subarray->GetList();
+  base::Value::ConstListView subarray_list = subarray->GetListDeprecated();
   if (expected_size && subarray_list.size() != expected_size) {
     LOG(ERROR) << subarray_name << " has wrong size";
     return false;
@@ -300,7 +300,7 @@ bool ValidateProcessMmaps(base::Value* process_mmaps,
   size_t count = 0;
   if (process_mmaps) {
     vm_regions = process_mmaps->FindKey("vm_regions");
-    count = vm_regions->GetList().size();
+    count = vm_regions->GetListDeprecated().size();
   }
   if (!should_have_contents) {
     if (count != 0) {
@@ -317,7 +317,7 @@ bool ValidateProcessMmaps(base::Value* process_mmaps,
 
   // File paths may contain PII. Make sure that "mf" entries only contain the
   // basename, rather than a full path.
-  for (const base::Value& vm_region : vm_regions->GetList()) {
+  for (const base::Value& vm_region : vm_regions->GetListDeprecated()) {
     const base::Value* file_path_value = vm_region.FindKey("mf");
     if (file_path_value) {
       std::string file_path = file_path_value->GetString();
@@ -343,13 +343,14 @@ TestDriver::TestDriver()
     : wait_for_ui_thread_(base::WaitableEvent::ResetPolicy::AUTOMATIC,
                           base::WaitableEvent::InitialState::NOT_SIGNALED) {
   base::PartitionAllocGlobalInit(HandleOOM);
-  partition_allocator_.init({base::PartitionOptions::AlignedAlloc::kDisallowed,
-                             base::PartitionOptions::ThreadCache::kDisabled,
-                             base::PartitionOptions::Quarantine::kDisallowed,
-                             base::PartitionOptions::Cookie::kAllowed,
-                             base::PartitionOptions::BackupRefPtr::kDisabled,
-                             base::PartitionOptions::UseConfigurablePool::kNo,
-                             base::PartitionOptions::LazyCommit::kEnabled});
+  partition_allocator_.init({
+      base::PartitionOptions::AlignedAlloc::kDisallowed,
+      base::PartitionOptions::ThreadCache::kDisabled,
+      base::PartitionOptions::Quarantine::kDisallowed,
+      base::PartitionOptions::Cookie::kAllowed,
+      base::PartitionOptions::BackupRefPtr::kDisabled,
+      base::PartitionOptions::UseConfigurablePool::kNo,
+  });
 }
 TestDriver::~TestDriver() {
   base::PartitionAllocGlobalUninitForTesting();
@@ -633,7 +634,7 @@ bool TestDriver::ValidateBrowserAllocations(base::Value* dump_json) {
   bool result = false;
 
   bool should_validate_dumps = true;
-#if defined(OS_ANDROID) && !defined(OFFICIAL_BUILD)
+#if BUILDFLAG(IS_ANDROID) && !defined(OFFICIAL_BUILD)
   // TODO(ajwong): This step fails on Nexus 5X devices running kit-kat. It works
   // on Nexus 5X devices running oreo. The problem is that all allocations have
   // the same [an effectively empty] backtrace and get glommed together. More

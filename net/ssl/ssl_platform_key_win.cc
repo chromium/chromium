@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "crypto/openssl_util.h"
 #include "crypto/scoped_capi_types.h"

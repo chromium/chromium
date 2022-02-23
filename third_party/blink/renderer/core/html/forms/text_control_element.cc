@@ -62,8 +62,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
@@ -449,7 +448,7 @@ unsigned TextControlElement::IndexForPosition(HTMLElement* inner_editor,
 
 bool TextControlElement::ShouldApplySelectionCache() const {
   const auto& doc = GetDocument();
-  return doc.FocusedElement() != this || doc.WillUpdateFocusAppearance();
+  return doc.FocusedElement() != this || doc.ShouldUpdateSelectionAfterLayout();
 }
 
 bool TextControlElement::SetSelectionRange(

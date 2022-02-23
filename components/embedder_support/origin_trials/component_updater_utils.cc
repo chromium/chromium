@@ -36,32 +36,22 @@ void ReadOriginTrialsConfigAndPopulateLocalState(PrefService* local_state,
     local_state->ClearPref(prefs::kOriginTrialPublicKey);
   }
 
-  // TODO(crbug.com/1187062): Modernize use of base::ListValue once
-  // ListPrefUpdate is converted.
-  base::ListValue* override_disabled_feature_list = nullptr;
-  if (base::Value* raw_override_disabled_feature_list =
-          manifest.FindListPath(kManifestDisabledFeaturesPath)) {
-    raw_override_disabled_feature_list->GetAsList(
-        &override_disabled_feature_list);
-  }
+  base::Value* override_disabled_feature_list =
+      manifest.FindListPath(kManifestDisabledFeaturesPath);
   if (override_disabled_feature_list &&
-      !override_disabled_feature_list->GetList().empty()) {
+      !override_disabled_feature_list->GetListDeprecated().empty()) {
     ListPrefUpdate update(local_state, prefs::kOriginTrialDisabledFeatures);
-    update->Swap(override_disabled_feature_list);
+    *update = std::move(*override_disabled_feature_list);
   } else {
     local_state->ClearPref(prefs::kOriginTrialDisabledFeatures);
   }
 
-  // TODO(crbug.com/1187062): Modernize use of base::ListValue once
-  // ListPrefUpdate is converted.
-  base::ListValue* disabled_tokens_list = nullptr;
-  if (base::Value* raw_disabled_tokens_list =
-          manifest.FindListPath(kManifestDisabledTokenSignaturesPath)) {
-    raw_disabled_tokens_list->GetAsList(&disabled_tokens_list);
-  }
-  if (disabled_tokens_list && !disabled_tokens_list->GetList().empty()) {
+  base::Value* disabled_tokens_list =
+      manifest.FindListPath(kManifestDisabledTokenSignaturesPath);
+  if (disabled_tokens_list &&
+      !disabled_tokens_list->GetListDeprecated().empty()) {
     ListPrefUpdate update(local_state, prefs::kOriginTrialDisabledTokens);
-    update->Swap(disabled_tokens_list);
+    *update = std::move(*disabled_tokens_list);
   } else {
     local_state->ClearPref(prefs::kOriginTrialDisabledTokens);
   }

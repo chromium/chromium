@@ -60,7 +60,7 @@ class SubscriberCrosapi : public KeyedService,
       override;
   void Launch(crosapi::mojom::LaunchParamsPtr launch_params) override;
   void LoadIcon(const std::string& app_id,
-                apps::mojom::IconKeyPtr icon_key,
+                IconKeyPtr icon_key,
                 IconType icon_type,
                 int32_t size_hint_in_dip,
                 apps::LoadIconCallback callback) override;

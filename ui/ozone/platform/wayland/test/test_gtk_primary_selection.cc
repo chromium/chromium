@@ -78,6 +78,10 @@ struct GtkPrimarySelectionSource : public TestSelectionSource::Delegate {
     wl_client_flush(wl_resource_get_client(source->resource()));
   }
 
+  void SendFinished() override {
+    NOTREACHED() << "The interface does not support this method.";
+  }
+
   void SendCancelled() override {
     gtk_primary_selection_source_send_cancelled(source->resource());
   }

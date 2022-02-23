@@ -164,6 +164,10 @@ void CrostiniHandler::RegisterMessages() {
         base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
                             handler_weak_ptr_factory_.GetWeakPtr()));
     web_ui()->RegisterMessageCallback(
+        "setContainerBadgeColor",
+        base::BindRepeating(&CrostiniHandler::HandleSetContainerBadgeColor,
+                            handler_weak_ptr_factory_.GetWeakPtr()));
+    web_ui()->RegisterMessageCallback(
         "stopContainer",
         base::BindRepeating(&CrostiniHandler::HandleStopContainer,
                             handler_weak_ptr_factory_.GetWeakPtr()));
@@ -196,9 +200,10 @@ void CrostiniHandler::OnJavascriptAllowed() {
   // Observe changes to containers in general
   pref_change_registrar_.Add(
       crostini::prefs::kCrostiniContainers,
-      base::BindRepeating(&CrostiniHandler::HandleRequestContainerInfo,
-                          handler_weak_ptr_factory_.GetWeakPtr(),
-                          base::Value(base::Value::Type::LIST).GetList()));
+      base::BindRepeating(
+          &CrostiniHandler::HandleRequestContainerInfo,
+          handler_weak_ptr_factory_.GetWeakPtr(),
+          base::Value(base::Value::Type::LIST).GetListDeprecated()));
 }
 
 void CrostiniHandler::OnJavascriptDisallowed() {
@@ -660,13 +665,15 @@ void CrostiniHandler::HandleCheckCrostiniIsRunning(
 void CrostiniHandler::OnContainerStarted(
     const crostini::ContainerId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(true));
-  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
+  HandleRequestContainerInfo(
+      base::Value(base::Value::Type::LIST).GetListDeprecated());
 }
 
 void CrostiniHandler::OnContainerShutdown(
     const crostini::ContainerId& container_id) {
   FireWebUIListener("crostini-status-changed", base::Value(false));
-  HandleRequestContainerInfo(base::Value(base::Value::Type::LIST).GetList());
+  HandleRequestContainerInfo(
+      base::Value(base::Value::Type::LIST).GetListDeprecated());
 }
 
 void CrostiniHandler::HandleShutdownCrostini(base::Value::ConstListView args) {
@@ -704,13 +711,14 @@ void CrostiniHandler::HandleCreateContainer(base::Value::ConstListView args) {
     options.image_alias = image_alias;
     VLOG(1) << "image_alias = " << image_alias;
   }
-  if (options.image_server_url || options.image_alias) {
-    auto* crostini_manager = crostini::CrostiniManager::GetForProfile(profile_);
-    crostini_manager->SetRestartOptions(container_id, std::move(options));
-  }
 
+  crostini::CrostiniManager::GetForProfile(profile_)
+      ->RestartCrostiniWithOptions(container_id, std::move(options),
+                                   base::DoNothing());
   apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
   intent->extras = container_id.ToMap();
+
+  // The Terminal will be added as an observer to the above restart.
   LaunchTerminal(std::move(intent));
 }
 
@@ -759,7 +767,7 @@ void CrostiniHandler::HandleRequestContainerInfo(
   base::Value::ConstListView containers =
       profile_->GetPrefs()
           ->GetList(crostini::prefs::kCrostiniContainers)
-          ->GetList();
+          ->GetListDeprecated();
 
   for (const auto& dict : containers) {
     crostini::ContainerId container_id(dict);
@@ -771,9 +779,28 @@ void CrostiniHandler::HandleRequestContainerInfo(
     if (info) {
       container_info_value.SetStringKey(kIpv4Key, info->ipv4_address);
     }
+
+    SkColor badge_color =
+        crostini::GetContainerBadgeColor(profile_, container_id);
+    std::string badge_color_str =
+        base::StringPrintf("#%02x%02x%02x", SkColorGetR(badge_color),
+                           SkColorGetG(badge_color), SkColorGetB(badge_color));
+    container_info_value.SetStringKey("badge_color", badge_color_str);
+
     container_info_list.Append(std::move(container_info_value));
   }
+
   FireWebUIListener("crostini-container-info", container_info_list);
+}
+
+void CrostiniHandler::HandleSetContainerBadgeColor(
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
+
+  crostini::ContainerId container_id(args[0]);
+  SkColor badge_color(args[1].FindDoubleKey("value").value());
+
+  crostini::SetContainerBadgeColor(profile_, container_id, badge_color);
 }
 
 void CrostiniHandler::HandleStopContainer(base::Value::ConstListView args) {

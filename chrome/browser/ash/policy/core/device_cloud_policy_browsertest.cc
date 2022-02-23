@@ -15,7 +15,7 @@
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/values.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/policy/core/device_cloud_policy_store_ash.h"
 #include "chrome/browser/ash/policy/core/device_policy_cros_browser_test.h"
@@ -81,8 +81,6 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
 
   KeyRotationDeviceCloudPolicyTest() {
     UpdateBuiltTestPolicyValue(kInitialPolicyValue);
-    local_policy_mixin_.EnableCannedSigningKeys();
-    local_policy_mixin_.EnableAutomaticRotationOfSigningKeys();
   }
 
   void SetUpInProcessBrowserTestFixture() override {
@@ -110,8 +108,7 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
   }
 
   void UpdateServedTestPolicy() {
-    EXPECT_TRUE(
-        local_policy_mixin_.UpdateDevicePolicy(device_policy()->payload()));
+    policy_test_server_mixin_.UpdateDevicePolicy(device_policy()->payload());
   }
 
   void StartDevicePolicyRefresh() {
@@ -191,7 +188,11 @@ class KeyRotationDeviceCloudPolicyTest : public DevicePolicyCrosBrowserTest {
     }
   }
 
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{
+      &mixin_host_,
+      {ash::EmbeddedPolicyTestServerMixin::ENABLE_CANNED_SIGNING_KEYS,
+       ash::EmbeddedPolicyTestServerMixin::
+           ENABLE_AUTOMATIC_ROTATION_OF_SIGNINGKEYS}};
   std::unique_ptr<PolicyChangeRegistrar> policy_change_registrar_;
   int awaited_policy_value_ = -1;
   std::unique_ptr<base::RunLoop> policy_change_waiting_run_loop_;
@@ -270,8 +271,8 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
     DevicePolicyCrosBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(chromeos::switches::kLoginManager);
-    command_line->AppendSwitch(chromeos::switches::kForceLoginManagerInTests);
+    command_line->AppendSwitch(ash::switches::kLoginManager);
+    command_line->AppendSwitch(ash::switches::kForceLoginManagerInTests);
     // The test app has to be allowlisted for sign-in screen.
     // This test is intentionally not migrated to the new
     // kAllowlistedExtensionID switch to test that the deprecated one keeps
@@ -285,11 +286,10 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
     DevicePolicyCrosBrowserTest::SetUpInProcessBrowserTestFixture();
     SetFakeDevicePolicy();
 
-    EXPECT_TRUE(
-        local_policy_mixin_.UpdateDevicePolicy(device_policy()->payload()));
-    EXPECT_TRUE(local_policy_mixin_.server()->UpdatePolicy(
+    policy_test_server_mixin_.UpdateDevicePolicy(device_policy()->payload());
+    policy_test_server_mixin_.UpdatePolicy(
         dm_protocol::kChromeSigninExtensionPolicyType, kTestExtensionId,
-        BuildTestComponentPolicyPayload().SerializeAsString()));
+        BuildTestComponentPolicyPayload().SerializeAsString());
   }
 
   void SetUpOnMainThread() override {
@@ -386,7 +386,7 @@ class SigninExtensionsDeviceCloudPolicyBrowserTest
     builder->Build();
   }
 
-  ash::LocalPolicyTestServerMixin local_policy_mixin_{&mixin_host_};
+  ash::EmbeddedPolicyTestServerMixin policy_test_server_mixin_{&mixin_host_};
 };
 
 }  // namespace

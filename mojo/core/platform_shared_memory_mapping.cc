@@ -13,7 +13,7 @@
 #include "base/system/sys_info.h"
 #include "build/build_config.h"
 
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
 // For getpagesize() on NaCl.
 #include <unistd.h>
 #endif
@@ -24,7 +24,7 @@ namespace core {
 namespace {
 
 size_t GetPageSize() {
-#if defined(OS_NACL)
+#if BUILDFLAG(IS_NACL)
   // base::SysInfo isn't available under NaCl.
   return getpagesize();
 #else

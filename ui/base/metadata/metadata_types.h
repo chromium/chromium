@@ -12,8 +12,8 @@
 
 #include "base/callback.h"
 #include "base/callback_list.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 
 namespace ui {
 namespace metadata {
@@ -59,9 +59,9 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) MetaDataProvider {
   virtual class ClassMetaData* GetClassMetaData() = 0;
 
  protected:
-  base::CallbackListSubscription AddPropertyChangedCallback(
+  [[nodiscard]] base::CallbackListSubscription AddPropertyChangedCallback(
       PropertyKey property,
-      PropertyChangedCallback callback) WARN_UNUSED_RESULT;
+      PropertyChangedCallback callback);
   void TriggerChangedCallback(PropertyKey property);
 
  private:
@@ -143,7 +143,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
     explicit ClassMemberIterator(ClassMetaData* starting_container);
     void IncrementHelper();
 
-    ClassMetaData* current_collection_;
+    raw_ptr<ClassMetaData> current_collection_;
     size_t current_vector_index_;
   };
 
@@ -156,7 +156,7 @@ class COMPONENT_EXPORT(UI_BASE_METADATA) ClassMetaData {
  private:
   std::string type_name_;
   std::vector<MemberMetaDataBase*> members_;
-  ClassMetaData* parent_class_meta_data_ = nullptr;
+  raw_ptr<ClassMetaData> parent_class_meta_data_ = nullptr;
   std::string file_;
   const int line_ = 0;
 };

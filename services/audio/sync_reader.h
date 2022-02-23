@@ -12,18 +12,14 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/process/process.h"
 #include "base/sync_socket.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "media/base/audio_bus.h"
+#include "media/base/audio_latency.h"
 #include "services/audio/output_controller.h"
-
-#if defined(OS_POSIX)
-#include "base/file_descriptor_posix.h"
-#endif
 
 namespace audio {
 
@@ -73,6 +69,8 @@ class SyncReader : public OutputController::SyncReader {
 
   base::UnsafeSharedMemoryRegion shared_memory_region_;
   base::WritableSharedMemoryMapping shared_memory_mapping_;
+
+  const media::AudioLatency::LatencyType latency_tag_;
 
   // Mutes all incoming samples. This is used to prevent audible sound
   // during automated testing.

@@ -338,7 +338,8 @@ void DefaultState::HandleBoundsEvents(WindowState* window_state,
 void DefaultState::HandleTransitionEvents(WindowState* window_state,
                                           const WMEvent* event) {
   WindowStateType current_state_type = window_state->GetStateType();
-  WindowStateType next_state_type = GetStateForTransitionEvent(event);
+  WindowStateType next_state_type =
+      GetStateForTransitionEvent(window_state, event);
   if (event->IsPinEvent()) {
     // If there already is a pinned window, it is not allowed to set it
     // to this window.

@@ -758,7 +758,9 @@ struct AnnotatedVisit {
                  VisitID opener_visit_of_redirect_chain_start,
                  VisitSource visit);
   AnnotatedVisit(const AnnotatedVisit&);
+  AnnotatedVisit(AnnotatedVisit&&);
   AnnotatedVisit& operator=(const AnnotatedVisit&);
+  AnnotatedVisit& operator=(AnnotatedVisit&&);
   ~AnnotatedVisit();
 
   URLRow url_row;
@@ -805,6 +807,9 @@ struct ClusterVisit {
   ClusterVisit();
   ~ClusterVisit();
   ClusterVisit(const ClusterVisit&);
+  ClusterVisit(ClusterVisit&&);
+  ClusterVisit& operator=(const ClusterVisit&);
+  ClusterVisit& operator=(ClusterVisit&&);
 
   AnnotatedVisit annotated_visit;
 
@@ -812,14 +817,36 @@ struct ClusterVisit {
   // visit is to the containing cluster.
   float score = 0.0;
 
-  // A list of `VisitID`s considered duplicates of this cluster visit. The best
-  // visit among all the duplicates will list the worse duplicate visit IDs in
-  // its vector. The worse duplicates will have an empty vector here.
-  std::vector<VisitID> duplicate_visit_ids;
+  // Flagged as true if this cluster visit matches the user's search query.
+  // This value depends on the user's search query, and is not meant to be ever
+  // persisted. It's a UI-state-specific flag that's convenient to buffer here.
+  bool matches_search_query = false;
+
+  // A list of visits that have been de-duplicated into this visit. The parent
+  // visit is considered the best visit among all the duplicates, and the worse
+  // visits are now contained here.
+  std::vector<ClusterVisit> duplicate_visits;
+
+  // The site engagement score of the URL associated with this visit. This
+  // should not be used by the UI.
+  float engagement_score = 0.0;
+
+  // The visit URL modified for better dupe finding.  The result may not be
+  // navigable or even valid; it's only meant to be used for detecting
+  // duplicates. This is similar in intent to
+  // `AutocompleteMatch::stripped_destination_url`, but is not the same, as
+  // History Clusters and Omnibox have different deduping requirements.
+  GURL url_for_deduping;
+
+  // TODO(crbug/1296394): Remove the below fields once most clients have
+  // persisted search metadata.
 
   // The normalized URL for the visit (i.e. a SRP URL normalized based on the
   // user's default search provider).
   GURL normalized_url;
+
+  // The user-input search query if this visit is a search visit.
+  std::u16string search_terms;
 };
 
 // A cluster of `ClusterVisit`s with associated metadata (i.e. `keywords` and
@@ -831,7 +858,9 @@ struct Cluster {
           const std::vector<std::u16string>& keywords,
           bool should_show_on_prominent_ui_surfaces = true);
   Cluster(const Cluster&);
+  Cluster(Cluster&&);
   Cluster& operator=(const Cluster&);
+  Cluster& operator=(Cluster&&);
   ~Cluster();
 
   int64_t cluster_id = 0;

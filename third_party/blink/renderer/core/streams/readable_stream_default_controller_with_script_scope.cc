@@ -10,7 +10,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream_default_controller.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/scoped_persistent.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 
 namespace blink {
 
@@ -25,7 +25,7 @@ ReadableStreamDefaultControllerWithScriptScope::
   DCHECK(controller_);
 }
 
-void ReadableStreamDefaultControllerWithScriptScope::NoteHasBeenCanceled() {
+void ReadableStreamDefaultControllerWithScriptScope::Deactivate() {
   controller_ = nullptr;
 }
 

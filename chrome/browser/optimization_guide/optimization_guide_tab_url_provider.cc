@@ -9,7 +9,7 @@
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
@@ -63,7 +63,7 @@ const std::vector<GURL> OptimizationGuideTabUrlProvider::GetUrlsOfActiveTabs(
 
 const std::vector<content::WebContents*>
 OptimizationGuideTabUrlProvider::GetAllWebContentsForProfile(Profile* profile) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
   return {};
 #else

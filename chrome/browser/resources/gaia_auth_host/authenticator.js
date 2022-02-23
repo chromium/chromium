@@ -59,6 +59,7 @@ cr.define('cr.login', function() {
 
   /**
    * Credentials passed with 'authCompleted' message.
+   * `isAvailableInArc` field is optional and is used only on Chrome OS.
    * @typedef {{
    *   email: string,
    *   gaiaId: string,
@@ -71,7 +72,8 @@ cr.define('cr.login', function() {
    *   trusted: boolean,
    *   services: Array,
    *   passwordAttributes: !PasswordAttributes,
-   *   syncTrustedVaultKeys: !SyncTrustedVaultKeys
+   *   syncTrustedVaultKeys: !SyncTrustedVaultKeys,
+   *   isAvailableInArc: (boolean|undefined),
    * }}
    */
   /* #export */ let AuthCompletedCredentials;
@@ -148,7 +150,7 @@ cr.define('cr.login', function() {
    * @type {!Array<string>}
    * @const
    */
-  const SUPPORTED_PARAMS = [
+  /* #export */ const SUPPORTED_PARAMS = [
     'gaiaId',        // Obfuscated GAIA ID to skip the email prompt page
                      // during the re-auth flow.
     'gaiaUrl',       // Gaia url to use.
@@ -340,6 +342,11 @@ cr.define('cr.login', function() {
       this.syncTrustedVaultKeys_ = msg.value;
     },
     'closeView'(msg) {
+      // We need to resend the message to make sure it comes after the API
+      // 'confirm' call. The API calls go via different channel.
+      window.postMessage({method: 'resendCloseView'}, window.origin);
+    },
+    'resendCloseView'(msg) {
       if (!this.enableCloseView_) {
         return;
       }
@@ -946,7 +953,7 @@ cr.define('cr.login', function() {
      * Returns true if given HTML5 message is received from the webview element.
      * @param {Object} e Payload of the received HTML5 message.
      */
-    isGaiaMessage(e) {
+    isGaiaMessage_(e) {
       if (!this.isWebviewEvent_(e)) {
         return false;
       }
@@ -965,12 +972,28 @@ cr.define('cr.login', function() {
     }
 
     /**
+     * Returns true if given HTML5 message is received from the current window.
+     * @param {Object} e Payload of the received HTML5 message.
+     */
+    isSelfMessage_(e) {
+      if (e.origin !== window.origin) {
+        return false;
+      }
+
+      if (typeof e.data != 'object' || !e.data.hasOwnProperty('method')) {
+        return false;
+      }
+
+      return true;
+    }
+
+    /**
      * Invoked when an HTML5 message is received from the webview element.
      * @param {Object} e Payload of the received HTML5 message.
      * @private
      */
     onMessageFromWebview_(e) {
-      if (!this.isGaiaMessage(e)) {
+      if (!this.isGaiaMessage_(e) && !this.isSelfMessage_(e)) {
         return;
       }
 
@@ -1453,19 +1476,28 @@ cr.define('cr.login', function() {
    * The current auth flow of the hosted auth page.
    * @type {AuthFlow}
    */
-  cr.defineProperty(Authenticator, 'authFlow');
+  Authenticator.prototype.authFlow;
+  Object.defineProperty(
+      Authenticator.prototype, 'authFlow',
+      cr.getPropertyDescriptor('authFlow'));
 
   /**
    * The domain name of the current auth page.
    * @type {string}
    */
-  cr.defineProperty(Authenticator, 'authDomain');
+  Authenticator.prototype.authDomain;
+  Object.defineProperty(
+      Authenticator.prototype, 'authDomain',
+      cr.getPropertyDescriptor('authDomain'));
 
   /**
    * True if the page has requested media access.
    * @type {boolean}
    */
-  cr.defineProperty(Authenticator, 'videoEnabled');
+  Authenticator.prototype.videoEnabled;
+  Object.defineProperty(
+      Authenticator.prototype, 'videoEnabled',
+      cr.getPropertyDescriptor('videoEnabled'));
 
   Authenticator.AuthFlow = AuthFlow;
   Authenticator.AuthMode = AuthMode;

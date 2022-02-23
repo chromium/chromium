@@ -5,6 +5,7 @@
 #include "base/base_switches.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
@@ -39,9 +40,9 @@
 #include "net/base/filename_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "content/public/browser/browser_child_process_host.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 using content::RenderViewHost;
 using content::RenderWidgetHost;
@@ -72,7 +73,7 @@ WebContents* FindFirstDevToolsContents() {
 
 // TODO(rvargas) crbug.com/417532: Remove this code.
 base::Process ProcessFromHandle(base::ProcessHandle handle) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (handle == GetCurrentProcess())
     return base::Process::Current();
 
@@ -82,7 +83,7 @@ base::Process ProcessFromHandle(base::ProcessHandle handle) {
     return base::Process();
   }
   handle = out_handle;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   return base::Process(handle);
 }
 
@@ -269,7 +270,7 @@ class ChromeRenderProcessHostTestWithCommandLine
 };
 
 // TODO(crbug.com/1241506): Enable this test on macOS after the issue is fixed.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ProcessPerTab DISABLED_ProcessPerTab
 #else
 #define MAYBE_ProcessPerTab ProcessPerTab
@@ -386,7 +387,7 @@ class ChromeRenderProcessHostBackgroundingTest
     if (base::Process::CanBackgroundProcesses()) {
       base::Process p = ProcessFromHandle(process->GetProcess().Handle());
       ASSERT_TRUE(p.IsValid());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       base::PortProvider* port_provider =
           content::BrowserChildProcessHost::GetPortProvider();
       EXPECT_EQ(expected_is_backgrounded,
@@ -411,7 +412,7 @@ class ChromeRenderProcessHostBackgroundingTest
   } while (0);
 
 // Flaky on Mac: https://crbug.com/888308
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MultipleTabs DISABLED_MultipleTabs
 #else
 #define MAYBE_MultipleTabs MultipleTabs
@@ -594,7 +595,7 @@ class WindowDestroyer : public content::WebContentsObserver {
   }
 
  private:
-  TabStripModel* tab_strip_model_;
+  raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 // Test to ensure that while iterating through all listeners in
@@ -688,9 +689,9 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
     ASSERT_NE(audio_process_.Pid(), no_audio_process_.Pid());
     ASSERT_TRUE(no_audio_process_.IsValid());
     ASSERT_TRUE(audio_process_.IsValid());
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     port_provider_ = content::BrowserChildProcessHost::GetPortProvider();
-#endif  //  defined(OS_MAC)
+#endif  //  BUILDFLAG(IS_MAC)
   }
 
  protected:
@@ -711,18 +712,18 @@ class ChromeRenderProcessHostBackgroundingTestWithAudio
   base::Process audio_process_;
   base::Process no_audio_process_;
 
-  content::WebContents* audio_tab_web_contents_;
+  raw_ptr<content::WebContents> audio_tab_web_contents_;
 
  private:
   bool IsProcessBackgrounded(const base::Process& process) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     return process.IsProcessBackgrounded(port_provider_);
 #else
     return process.IsProcessBackgrounded();
 #endif
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::PortProvider* port_provider_;
 #endif
 };
@@ -742,7 +743,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
   WaitUntilBackgrounded(no_audio_process_, true, audio_process_, false);
   // Pause the audio and immediately switch to the no audio tab.
   ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_,
+      audio_tab_web_contents_.get(),
       "document.getElementById('audioPlayer').pause();"));
   ShowSingletonTab(no_audio_url_);
 
@@ -763,7 +764,7 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
   WaitUntilBackgrounded(audio_process_, false, no_audio_process_, false);
   // Stop the audio.
   ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_,
+      audio_tab_web_contents_.get(),
       "document.getElementById('audioPlayer').pause();"));
 
   // Wait until the no audio page is not backgrounded and the audio page is
@@ -782,14 +783,14 @@ IN_PROC_BROWSER_TEST_F(ChromeRenderProcessHostBackgroundingTestWithAudio,
 
   // Stop the audio.
   ASSERT_TRUE(content::ExecuteScript(
-      audio_tab_web_contents_,
+      audio_tab_web_contents_.get(),
       "document.getElementById('audioPlayer').pause();"));
 
   WaitUntilBackgrounded(no_audio_process_, false, audio_process_, true);
 
   // Start the audio from the backgrounded tab.
   ASSERT_TRUE(
-      content::ExecuteScript(audio_tab_web_contents_,
+      content::ExecuteScript(audio_tab_web_contents_.get(),
                              "document.getElementById('audioPlayer').play();"));
 
   // Wait until the two pages are not backgrounded.

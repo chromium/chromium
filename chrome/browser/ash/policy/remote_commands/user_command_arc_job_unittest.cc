@@ -7,16 +7,16 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_bridge.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/arc/test/fake_policy_instance.h"
 #include "components/policy/core/common/remote_commands/remote_command_job.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "content/public/test/browser_task_environment.h"
@@ -41,7 +41,8 @@ std::unique_ptr<policy::RemoteCommandJob> CreateArcJob(
   // Create the job and validate.
   auto job = std::make_unique<policy::UserCommandArcJob>(profile);
 
-  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto, nullptr));
+  EXPECT_TRUE(job->Init(base::TimeTicks::Now(), command_proto,
+                        enterprise_management::SignedData()));
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(policy::RemoteCommandJob::NOT_STARTED, job->status());
 

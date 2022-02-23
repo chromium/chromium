@@ -6,8 +6,6 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/feature_list.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/perf/metric_provider.h"
@@ -22,20 +20,12 @@ namespace metrics {
 
 namespace {
 
-const base::Feature kBrowserJankinessProfiling{
-    "BrowserJankinessProfiling", base::FEATURE_DISABLED_BY_DEFAULT};
-
 const char kJankinessTriggerStatusHistogram[] =
     "ChromeOS.CWP.JankinessTriggerStatus";
 
 // The default value of minimum interval between jankiness collections is 30
 // minutes.
 const int kDefaultJankinessCollectionMinIntervalSec = 30 * 60;
-
-// Feature parameters that control the behavior of the jankiness trigger.
-constexpr base::FeatureParam<int> kJankinessCollectionMinIntervalSec{
-    &kBrowserJankinessProfiling, "JankinessCollectionMinIntervalSec",
-    kDefaultJankinessCollectionMinIntervalSec};
 
 enum class JankinessTriggerStatus {
   // Attempt to collect a profile triggered by browser jankiness.
@@ -55,7 +45,7 @@ bool IsNormalUserLoggedIn() {
 
 ProfileProvider::ProfileProvider()
     : jankiness_collection_min_interval_(
-          base::Seconds(kJankinessCollectionMinIntervalSec.Get())) {
+          base::Seconds(kDefaultJankinessCollectionMinIntervalSec)) {
   // Initialize the WindowedIncognitoMonitor on the UI thread.
   WindowedIncognitoMonitor::Init();
   // Register a perf events collector.
@@ -95,12 +85,10 @@ void ProfileProvider::Init() {
   // ProfileProvider will recognize that the system is already logged in.
   LoggedInStateChanged();
 
-  if (base::FeatureList::IsEnabled(kBrowserJankinessProfiling)) {
-    // Set up the JankMonitor for watching browser jankiness.
-    jank_monitor_ = content::JankMonitor::Create();
-    jank_monitor_->SetUp();
-    jank_monitor_->AddObserver(this);
-  }
+  // Set up the JankMonitor for watching browser jankiness.
+  jank_monitor_ = content::JankMonitor::Create();
+  jank_monitor_->SetUp();
+  jank_monitor_->AddObserver(this);
 }
 
 bool ProfileProvider::GetSampledProfiles(

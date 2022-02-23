@@ -69,7 +69,8 @@ class COMPONENTS_PREFS_EXPORT JsonPrefStore
                 scoped_refptr<base::SequencedTaskRunner> file_task_runner =
                     base::ThreadPool::CreateSequencedTaskRunner(
                         {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-                         base::TaskShutdownBehavior::BLOCK_SHUTDOWN}));
+                         base::TaskShutdownBehavior::BLOCK_SHUTDOWN}),
+                bool read_only = false);
 
   JsonPrefStore(const JsonPrefStore&) = delete;
   JsonPrefStore& operator=(const JsonPrefStore&) = delete;

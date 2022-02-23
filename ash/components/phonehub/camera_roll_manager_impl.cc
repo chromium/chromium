@@ -14,24 +14,26 @@
 #include "ash/components/phonehub/message_sender.h"
 #include "ash/components/phonehub/pref_names.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/components/phonehub/util/histogram_util.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/bind.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "base/time/time.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
+
 namespace {
 
-bool IsCameraRollSupportedOnAndroidDevice(
-    const proto::CameraRollAccessState& access_state) {
-  return access_state.feature_enabled() &&
-         access_state.storage_permission_granted();
-}
+// TODO(https://crbug.com/1164001): remove after migrating to ash.
+namespace multidevice_setup = ::chromeos::multidevice_setup;
+namespace secure_channel = ::chromeos::secure_channel;
 
 constexpr int kMaxCameraRollItemCount = 4;
 
@@ -59,11 +61,13 @@ CameraRollManagerImpl::CameraRollManagerImpl(
       thumbnail_decoder_(std::make_unique<CameraRollThumbnailDecoderImpl>()) {
   message_receiver->AddObserver(this);
   multidevice_setup_client_->AddObserver(this);
+  connection_manager_->AddObserver(this);
 }
 
 CameraRollManagerImpl::~CameraRollManagerImpl() {
   message_receiver_->RemoveObserver(this);
   multidevice_setup_client_->RemoveObserver(this);
+  connection_manager_->RemoveObserver(this);
 }
 
 void CameraRollManagerImpl::DownloadItem(
@@ -77,8 +81,9 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
     const proto::FetchCameraRollItemDataResponse& response) {
   if (response.file_availability() !=
       proto::FetchCameraRollItemDataResponse::AVAILABLE) {
-    // TODO(http://crbug.com/1221297): notify the user that the item cannot be
-    // downloaded.
+    NotifyCameraRollDownloadError(
+        CameraRollManager::Observer::DownloadErrorType::kGenericError,
+        response.metadata());
     return;
   }
 
@@ -91,20 +96,35 @@ void CameraRollManagerImpl::OnFetchCameraRollItemDataResponseReceived(
 void CameraRollManagerImpl::OnPayloadFilesCreated(
     const proto::FetchCameraRollItemDataResponse& response,
     CameraRollDownloadManager::CreatePayloadFilesResult result,
-    absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files) {
-  if (result != CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess) {
-    // TODO(http://crbug.com/1221297): notify the user that the item cannot be
-    // downloaded and log the result code.
-    return;
+    absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+        payload_files) {
+  switch (result) {
+    case CameraRollDownloadManager::CreatePayloadFilesResult::kSuccess:
+      connection_manager_->RegisterPayloadFile(
+          response.payload_id(), std::move(payload_files.value()),
+          base::BindRepeating(&CameraRollManagerImpl::OnFileTransferUpdate,
+                              weak_ptr_factory_.GetWeakPtr(),
+                              response.metadata()),
+          base::BindOnce(&CameraRollManagerImpl::OnPayloadFileRegistered,
+                         weak_ptr_factory_.GetWeakPtr(), response.metadata(),
+                         response.payload_id()));
+      break;
+    case CameraRollDownloadManager::CreatePayloadFilesResult::
+        kInsufficientDiskSpace:
+      PA_LOG(WARNING) << "CreatePayloadFilesResult: "
+                      << static_cast<int>(result);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kInsufficientStorage,
+          response.metadata());
+      break;
+    default:
+      PA_LOG(WARNING) << "CreatePayloadFilesResult: "
+                      << static_cast<int>(result);
+      NotifyCameraRollDownloadError(
+          CameraRollManager::Observer::DownloadErrorType::kGenericError,
+          response.metadata());
+      break;
   }
-
-  connection_manager_->RegisterPayloadFile(
-      response.payload_id(), std::move(payload_files.value()),
-      base::BindRepeating(&CameraRollManagerImpl::OnFileTransferUpdate,
-                          weak_ptr_factory_.GetWeakPtr()),
-      base::BindOnce(&CameraRollManagerImpl::OnPayloadFileRegistered,
-                     weak_ptr_factory_.GetWeakPtr(), response.metadata(),
-                     response.payload_id()));
 }
 
 void CameraRollManagerImpl::OnPayloadFileRegistered(
@@ -113,8 +133,9 @@ void CameraRollManagerImpl::OnPayloadFileRegistered(
     bool success) {
   if (!success) {
     camera_roll_download_manager_->DeleteFile(payload_id);
-    // TODO(http://crbug.com/1221297): notify the user that the item cannot be
-    // downloaded.
+    NotifyCameraRollDownloadError(
+        CameraRollManager::Observer::DownloadErrorType::kGenericError,
+        metadata);
     return;
   }
 
@@ -125,7 +146,16 @@ void CameraRollManagerImpl::OnPayloadFileRegistered(
 }
 
 void CameraRollManagerImpl::OnFileTransferUpdate(
+    const proto::CameraRollItemMetadata& metadata,
     chromeos::secure_channel::mojom::FileTransferUpdatePtr update) {
+  if (update->status ==
+          chromeos::secure_channel::mojom::FileTransferStatus::kFailure ||
+      update->status ==
+          chromeos::secure_channel::mojom::FileTransferStatus::kCanceled) {
+    NotifyCameraRollDownloadError(
+        CameraRollManager::Observer::DownloadErrorType::kNetworkConnection,
+        metadata);
+  }
   camera_roll_download_manager_->UpdateDownloadProgress(std::move(update));
 }
 
@@ -133,9 +163,10 @@ void CameraRollManagerImpl::OnPhoneStatusSnapshotReceived(
     proto::PhoneStatusSnapshot phone_status_snapshot) {
   UpdateCameraRollAccessStateAndNotifyIfNeeded(
       phone_status_snapshot.properties().camera_roll_access_state());
-  if (!is_camera_roll_accessible_ || !IsCameraRollSettingEnabled()) {
+  if (!is_android_storage_granted_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
+    resetViewRefreshingFlagIfNeeded();
     return;
   }
 
@@ -146,9 +177,10 @@ void CameraRollManagerImpl::OnPhoneStatusUpdateReceived(
     proto::PhoneStatusUpdate phone_status_update) {
   UpdateCameraRollAccessStateAndNotifyIfNeeded(
       phone_status_update.properties().camera_roll_access_state());
-  if (!is_camera_roll_accessible_ || !IsCameraRollSettingEnabled()) {
+  if (!is_android_storage_granted_ || !IsCameraRollSettingEnabled()) {
     ClearCurrentItems();
     CancelPendingThumbnailRequests();
+    resetViewRefreshingFlagIfNeeded();
     return;
   }
 
@@ -171,6 +203,14 @@ void CameraRollManagerImpl::SendFetchCameraRollItemsRequest() {
   // thumbnails will be invalidated anyway when the new response is received.
   CancelPendingThumbnailRequests();
 
+  // Do not update the timestamp if it is already set. It means that there's an
+  // in-progress request. We want to measure the time it takes from the first
+  // time we request an update to when the UI is updated. This is the time the
+  // user spends waiting.
+  if (!fetch_items_request_start_timestamp_) {
+    fetch_items_request_start_timestamp_ = base::TimeTicks::Now();
+  }
+
   proto::FetchCameraRollItemsRequest request;
   request.set_max_item_count(kMaxCameraRollItemCount);
   for (const CameraRollItem& current_item : current_items()) {
@@ -182,10 +222,16 @@ void CameraRollManagerImpl::SendFetchCameraRollItemsRequest() {
 void CameraRollManagerImpl::OnItemThumbnailsDecoded(
     CameraRollThumbnailDecoder::BatchDecodeResult result,
     const std::vector<CameraRollItem>& items) {
-  if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kSuccess) {
+  resetViewRefreshingFlagIfNeeded();
+  if (result == CameraRollThumbnailDecoder::BatchDecodeResult::kCompleted) {
+    if (fetch_items_request_start_timestamp_) {
+      base::UmaHistogramMediumTimes(
+          "PhoneHub.CameraRoll.Latency.RefreshItems",
+          base::TimeTicks::Now() - *fetch_items_request_start_timestamp_);
+      fetch_items_request_start_timestamp_.reset();
+    }
     SetCurrentItems(items);
   }
-  // TODO(http://crbug.com/1221297): log and handle failed decode requests.
 }
 
 void CameraRollManagerImpl::CancelPendingThumbnailRequests() {
@@ -194,8 +240,9 @@ void CameraRollManagerImpl::CancelPendingThumbnailRequests() {
 
 void CameraRollManagerImpl::EnableCameraRollFeatureInSystemSetting() {
   multidevice_setup_client_->SetFeatureEnabledState(
-      multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
+      chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll,
       /*enabled=*/true, /*auth_token=*/absl::nullopt, base::DoNothing());
+  is_refreshing_after_user_opt_in_ = true;
   // Re-compute and update ui immediately instead of waiting for the callback to
   // finish would hide the view on user's tap action, giving a indicator for the
   // user that the action is performed. When camera items are received, camera
@@ -204,11 +251,15 @@ void CameraRollManagerImpl::EnableCameraRollFeatureInSystemSetting() {
 }
 
 bool CameraRollManagerImpl::IsCameraRollSettingEnabled() {
-  multidevice_setup::mojom::FeatureState camera_roll_feature_state =
+  chromeos::multidevice_setup::mojom::FeatureState camera_roll_feature_state =
       multidevice_setup_client_->GetFeatureState(
-          multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
   return camera_roll_feature_state ==
-         multidevice_setup::mojom::FeatureState::kEnabledByUser;
+         chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser;
+}
+
+void CameraRollManagerImpl::resetViewRefreshingFlagIfNeeded() {
+  is_refreshing_after_user_opt_in_ = false;
 }
 
 void CameraRollManagerImpl::OnFeatureStatesChanged(
@@ -223,11 +274,22 @@ void CameraRollManagerImpl::OnFeatureStatesChanged(
   }
 }
 
+void CameraRollManagerImpl::OnConnectionStatusChanged() {
+  if (connection_manager_->GetStatus() ==
+      secure_channel::ConnectionManager::Status::kDisconnected) {
+    ClearCurrentItems();
+    CancelPendingThumbnailRequests();
+  }
+}
+
 void CameraRollManagerImpl::UpdateCameraRollAccessStateAndNotifyIfNeeded(
     const proto::CameraRollAccessState& access_state) {
-  bool updated_state = IsCameraRollSupportedOnAndroidDevice(access_state);
-  if (is_camera_roll_accessible_ != updated_state) {
-    is_camera_roll_accessible_ = updated_state;
+  bool updated_storage_granted = access_state.storage_permission_granted();
+  if (is_android_storage_granted_ != updated_storage_granted) {
+    is_android_storage_granted_ = updated_storage_granted;
+
+    util::LogCameraRollAndroidHasStorageAccessPermission(
+        is_android_storage_granted_);
     ComputeAndUpdateUiState();
   }
 }
@@ -239,20 +301,37 @@ void CameraRollManagerImpl::OnCameraRollOnboardingUiDismissed() {
 }
 
 void CameraRollManagerImpl::ComputeAndUpdateUiState() {
-  if (!is_camera_roll_accessible_) {
-    ui_state_ = CameraRollUiState::SHOULD_HIDE;
-  } else if (!IsCameraRollSettingEnabled()) {
-    ui_state_ =
-        (pref_service_->GetBoolean(prefs::kHasDismissedCameraRollOnboardingUi))
-            ? CameraRollUiState::SHOULD_HIDE
-            : CameraRollUiState::CAN_OPT_IN;
-  } else if (current_items().empty()) {
-    ui_state_ = CameraRollUiState::SHOULD_HIDE;
-  } else {
-    ui_state_ = CameraRollUiState::ITEMS_VISIBLE;
+  if (!is_android_storage_granted_) {
+    ui_state_ = CameraRollUiState::NO_STORAGE_PERMISSION;
+    NotifyCameraRollViewUiStateUpdated();
+    return;
+  }
+
+  chromeos::multidevice_setup::mojom::FeatureState feature_state =
+      multidevice_setup_client_->GetFeatureState(
+          chromeos::multidevice_setup::mojom::Feature::kPhoneHubCameraRoll);
+  switch (feature_state) {
+    case chromeos::multidevice_setup::mojom::FeatureState::kDisabledByUser:
+      ui_state_ =
+          pref_service_->GetBoolean(prefs::kHasDismissedCameraRollOnboardingUi)
+              ? CameraRollUiState::SHOULD_HIDE
+              : CameraRollUiState::CAN_OPT_IN;
+      break;
+    case chromeos::multidevice_setup::mojom::FeatureState::kEnabledByUser:
+      if (is_refreshing_after_user_opt_in_) {
+        ui_state_ = CameraRollUiState::LOADING_VIEW;
+      } else if (current_items().empty()) {
+        ui_state_ = CameraRollUiState::SHOULD_HIDE;
+      } else {
+        ui_state_ = CameraRollUiState::ITEMS_VISIBLE;
+      }
+      break;
+    default:
+      ui_state_ = CameraRollUiState::SHOULD_HIDE;
+      break;
   }
   NotifyCameraRollViewUiStateUpdated();
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

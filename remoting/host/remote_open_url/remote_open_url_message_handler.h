@@ -8,7 +8,9 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "remoting/proto/remote_open_url.pb.h"
@@ -18,32 +20,34 @@ class GURL;
 
 namespace remoting {
 
-class IpcServer;
-
 class RemoteOpenUrlMessageHandler final
     : public mojom::RemoteUrlOpener,
       public protocol::NamedMessagePipeHandler {
  public:
   RemoteOpenUrlMessageHandler(const std::string& name,
                               std::unique_ptr<protocol::MessagePipe> pipe);
-  ~RemoteOpenUrlMessageHandler() override;
-
-  // protocol::NamedMessagePipeHandler implementation.
-  void OnConnected() override;
-  void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
-  void OnDisconnecting() override;
-
   RemoteOpenUrlMessageHandler(const RemoteOpenUrlMessageHandler&) = delete;
   RemoteOpenUrlMessageHandler& operator=(const RemoteOpenUrlMessageHandler&) =
       delete;
+  ~RemoteOpenUrlMessageHandler() override;
+
+  // Adds a receiver to the receiver set.
+  void AddReceiver(mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver);
+  void ClearReceivers();
+
+  // protocol::NamedMessagePipeHandler overrides.
+  void OnIncomingMessage(std::unique_ptr<CompoundBuffer> message) override;
+  void OnDisconnecting() override;
+
+  base::WeakPtr<RemoteOpenUrlMessageHandler> GetWeakPtr();
 
  private:
   friend class RemoteOpenUrlMessageHandlerTest;
 
-  // Used by unittests.
-  RemoteOpenUrlMessageHandler(const std::string& name,
-                              std::unique_ptr<protocol::MessagePipe> pipe,
-                              std::unique_ptr<IpcServer> ipc_server);
+  // Adds a receiver and returns the receiver ID of the added receiver. Used by
+  // the unit test.
+  mojo::ReceiverId AddReceiverAndGetReceiverId(
+      mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver);
 
   void OnIpcDisconnected();
 
@@ -51,8 +55,6 @@ class RemoteOpenUrlMessageHandler final
   void OpenUrl(const GURL& url, OpenUrlCallback callback) override;
 
   SEQUENCE_CHECKER(sequence_checker_);
-
-  std::unique_ptr<IpcServer> ipc_server_;
 
   static_assert(
       std::is_same<
@@ -62,8 +64,12 @@ class RemoteOpenUrlMessageHandler final
       "mojo::ReceiverId must have the same type as the |id| field of "
       "OpenUrlRequest.");
 
+  mojo::ReceiverSet<mojom::RemoteUrlOpener> receivers_;
+
   // Receiver ID => OpenUrl callback mapping.
   base::flat_map<mojo::ReceiverId, OpenUrlCallback> callbacks_;
+
+  base::WeakPtrFactory<RemoteOpenUrlMessageHandler> weak_factory_{this};
 };
 
 }  // namespace remoting

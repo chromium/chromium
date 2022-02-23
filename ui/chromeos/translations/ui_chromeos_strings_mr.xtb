@@ -21,6 +21,7 @@
 <translation id="115443833402798225">हँगल Ahnmatae</translation>
 <translation id="1155759005174418845">कॅटलान</translation>
 <translation id="1168100932582989117">Google नाव सर्व्हर</translation>
+<translation id="1171082344678443012">XZ काँप्रेस केलेले संग्रहण</translation>
 <translation id="1172970565351728681">सुमारे <ph name="REMAINING_TIME" /> शिल्लक आहे/आहेत</translation>
 <translation id="1173894706177603556">नाव बदला</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, फोन बॅटरी <ph name="BATTERY_STATUS" />%, तपशील</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">हे नेटवर्क Linux सोबत शेअर केलेले आहे</translation>
 <translation id="1864756863218646478">फाइल आढळू शकली नाही.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, कनेक्ट करा</translation>
+<translation id="1914901738028575085">CloudReady 2.0 डिव्हाइस</translation>
 <translation id="1920670151694390848">मल्याळम लिप्यंतरण</translation>
 <translation id="1920798810075583923">कलिंगड</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> फॉरमॅट केली आहे</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">ड्राइव्ह फॉरमॅट त्यावर स्टोअर केलेला डेटा हटवेल. ही क्रिया पहिल्यासारखी केली जाऊ शकत नाही.</translation>
 <translation id="2025955442973426285">टिग्रीन्या</translation>
 <translation id="2028997212275086731">RAR संग्रहण</translation>
+<translation id="2036414735548252477">LZMA काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="2037845485764049925">रशियन</translation>
 <translation id="2044023416777079300">मोडेमची नोंदणी केलेली नाही</translation>
 <translation id="2046702855113914483">रामेन</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> सह शेअर करा</translation>
 <translation id="3083975830683400843">Chromebits</translation>
 <translation id="3085752524577180175">SOCKS होस्ट</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटर ने ब्लॉक केलेले नेटवर्क, तपशील</translation>
 <translation id="3113153474486991170">या स्थानावरून "<ph name="PATH" />" उघडता आले नाही. कृपया उघडण्यासाठी "माझ्या फाइल" मध्ये कॉपी करा.</translation>
 <translation id="3113592018909187986">तुमच्याकडे एक प्रयत्न शिल्लक आहे. तुम्ही नवीन पिन सेट करेपर्यंत तुम्हाला हे नेटवर्क वापरता येणार नाही.</translation>
 <translation id="3124404833828281817">विचारात मग्न असलेली व्यक्ती</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">आंतरराष्ट्रीय पीसी कीबोर्डसह इंग्रजी (यूएस)</translation>
 <translation id="3567221313191587603">फाइल निवडा आणि तुमच्या फाइल ऑफलाइन अ‍ॅक्सेस करण्यासाठी <ph name="OFFLINE_CHECKBOX_NAME" /> वर टॉगल करा.</translation>
 <translation id="357479282490346887">लिथुआनियन</translation>
+<translation id="3587482841069643663">सर्व</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ऑफलाइन उपलब्ध करता आली नाही</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">कॅनेडियन फ्रेंच</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">सर्व बॅकअप घेतला!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, तपशील</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> आयटम हलवले.</translation>
-<translation id="3645531960514756307">फोल्डर अनपिन करा</translation>
 <translation id="3685122418104378273">मोबाइल डेटा वापरला जातो, तेव्हा Google ड्राइव्ह सिंक बाय डीफॉल्ट बंद केले जाते.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> रद्द करा.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_NAME" /> चे <ph name="NETWORK_INDEX" /> पैकी <ph name="NETWORK_COUNT" /> नेटवर्क, ॲक्टिव्हेट केलेले नाही, <ph name="CONNECTION_STATUS" /> सिग्नलची क्षमता <ph name="SIGNAL_STRENGTH" />%, तपशील</translation>
 <translation id="3691184985318546178">सिंहली</translation>
 <translation id="3726463242007121105">हे डिव्हाइस उघडले जाऊ शकत नाही कारण त्याचे फाइलसिस्टम समर्थित नाही.</translation>
 <translation id="3727148787322499904">हे सेटिंग बदलल्याने सर्व शेअर केलेले नेटवर्क प्रभावित होतील</translation>
+<translation id="3737576078404241332">साइडबारमधून काढून टाका</translation>
 <translation id="3741243925913727067">Google ड्राइव्हवर तुमच्या मीडिया डिव्हाइसच्या फोटो आणि व्हिडिओंचा बॅकअप घ्या.</translation>
 <translation id="3749289110408117711">फाइल नाव</translation>
 <translation id="3780536599611287598">तुम्हाला '<ph name="FOLDER_NAME" />' या फोल्डरमध्ये फाइल हलवण्यास परवानगी नाही.</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">वनस्पति शास्त्रज्ञ</translation>
 <translation id="4326192123064055915">कॉफी</translation>
 <translation id="4336032328163998280">कॉपी ऑपरेशन अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">साइडबारमध्ये जोडा</translation>
 <translation id="4348495354623233847">अरेबिक आधारित कीबोर्डसह सोरानी कुर्दिश</translation>
 <translation id="4363958938297989186">फोनेटिक कीबोर्डसह रशियन</translation>
 <translation id="4364327530094270451">खरबूज</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> बाइट</translation>
 <translation id="4880214202172289027">व्हॉल्यूम स्लायडर</translation>
 <translation id="4881695831933465202">उघडा</translation>
+<translation id="4886199584824489598">Bzip2 काँप्रेस केलेले संग्रहण</translation>
 <translation id="4900532980794411603">Parallels Desktop सोबत शेअर करा</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करा</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> चा बॅकअप घेण्यास तयार</translation>
@@ -453,7 +460,7 @@
 <translation id="4984616446166309645">जपानी</translation>
 <translation id="4988205478593450158">तुम्हाला "<ph name="FILE_NAME" />" नक्की हटवायची आहे का?</translation>
 <translation id="498902553138568924">लाल फुलपाखरू</translation>
-<translation id="4992066212339426712">सशब्द करा</translation>
+<translation id="4992066212339426712">अनम्यूट करा</translation>
 <translation id="5004584466530475658"><ph name="FILE_COUNT" /> नवीन फोटो</translation>
 <translation id="5010406651457630570">काँप्युटर</translation>
 <translation id="5011233892417813670">Chromebook</translation>
@@ -584,6 +591,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> नेटवर्क, कनेक्ट केलेले नाही</translation>
 <translation id="6074825444536523002">Google Forms</translation>
 <translation id="6079871810119356840">क्वर्टी कीबोर्डसह हंगेरीयन</translation>
+<translation id="6082256976217156453">LZMA काँप्रेस केलेले संग्रहण</translation>
 <translation id="6096979789310008754">शोध मजकूर साफ केला, सर्व फाइल आणि फोल्डर दाखवत आहे.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> वर हलवत आहे</translation>
 <translation id="6129953537138746214">जागा</translation>
@@ -679,6 +687,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="6935521024859866267">उलट सुलट</translation>
 <translation id="6943836128787782965">HTTP अयशस्वी झाले</translation>
 <translation id="6949408524333579394">सर्बियन लिप्यंतरण</translation>
+<translation id="6954309393500027528">ही फाइल पेस्ट करणे हे तुमच्या अ‍ॅडमिनिस्ट्रेटरने ब्लॉक केले आहे</translation>
 <translation id="6960565108681981554">अ‍ॅक्टिव्हेट केलेले नाही. तुमच्या वाहकाशी संपर्क साधा.</translation>
 <translation id="696203921837389374">मोबाइल डेटावर सिंक सुरू करा</translation>
 <translation id="6965382102122355670">ठीक आहे</translation>
@@ -839,6 +848,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8297012244086013755">हानगुल 3 संच (Shift नाही)</translation>
 <translation id="8299269255470343364">जपानी</translation>
 <translation id="8300849813060516376">OTASP बिघडले</translation>
+<translation id="8308481408797647857">XZ काँप्रेस केलेले tar संग्रहण</translation>
 <translation id="8312871300878166382">फोल्डरमध्ये पेस्ट करा</translation>
 <translation id="8329978297633540474">साधा मजकूर</translation>
 <translation id="8335587457941836791">शेल्फपासून अनपिन करा</translation>
@@ -875,6 +885,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8551494947769799688">ला‍ट्वियन</translation>
 <translation id="8560515948038859357">कँटोनीज</translation>
 <translation id="8561206103590473338">हत्ती</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटर ने ब्लॉक केलेले नेटवर्क, तपशील</translation>
 <translation id="8569764466147087991">उघडण्यासाठी फाइल निवडा</translation>
 <translation id="8577897833047451336">क्रोएशियन</translation>
 <translation id="8578308463707544055">इंडोनेशियन</translation>
@@ -892,6 +903,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="8714406895390098252">सायकल</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> निवडले.</translation>
 <translation id="872537912056138402">क्रोएशियन</translation>
+<translation id="873847021056608403">CloudReady 2.0 डिव्हाइस</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> पैकी <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, तुमच्या अ‍ॅडमिनिस्ट्रेटरने व्यवस्थापित केलेले, कनेक्ट करा</translation>
 <translation id="8750438273876807512">फाइलला स्पर्श करा आणि धरून ठेवा आणि <ph name="ICON" /> वर टॅप करा व शेल्फमध्ये तुमच्या फाइल झटपट अ‍ॅक्सेस करण्यासाठी "शेल्फवर पिन करा" निवडा.</translation>
 <translation id="8787254343425541995">शेअर नेटवर्कसाठी प्रॉक्सीला अनुमती द्या</translation>
@@ -927,7 +939,6 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="9110990317705400362">आम्ही तुमचे ब्राउझिंग सुरक्षित करण्यासाठी सातत्याने मार्ग शोधत आहोत. मागे, तुमच्या ब्राउझरमध्ये एक्स्टेंशन जोडण्यासाठी कोणतीही वेबसाइट तुम्हाला सूचित करू शकत होती. Google Chrome च्या नवीनतम आवृत्तीमध्ये, एक्स्टेंशन पेजद्वारे ते जोडून हे एक्स्टेंशन तुम्ही इंस्टॉल करू इच्छित आहात हे तुम्ही Chrome ला स्पष्टपणे सांगणे आवश्यक आहे. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">अनलॉक करा</translation>
 <translation id="912419004897138677">कोडेक</translation>
-<translation id="9129931661813833980">फोल्डर पिन करा</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' चे सदस्य या आयटमचा ॲक्सेस मिळवतील.</translation>
 <translation id="9131598836763251128">एक किंवा अधिक फाइल निवडा</translation>
 <translation id="9133055936679483811">झिप करणे अयशस्वी. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +959,7 @@ Google ड्राइव्ह मधील फाइल अपडेट के
 <translation id="943972244133411984">ने सुधारित केली</translation>
 <translation id="945522503751344254">अभिप्राय पाठवा</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> ते <ph name="TO_ENTRY_NAME" /> मधील <ph name="ENTRY_COUNT" /> नोंदींची रेंज निवडली आहे.</translation>
+<translation id="961973045258256291">Gzip काँप्रेस केलेले संग्रहण</translation>
 <translation id="965477715979482472">इंग्रजी (दक्षिण आफ्रिका)</translation>
 <translation id="981121421437150478">ऑफलाइन</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" नावाची फाइल आधीच अस्तित्वात आहे. तुम्हाला ती बदलायची आहे का?</translation>

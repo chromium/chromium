@@ -87,7 +87,7 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
  public:
   BookmarkBrowsertest() {
     // This needs to be disabled so that animations are guaranteed to work.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     feature_list_.InitWithFeatures(
         {}, {features::kApplyNativeOcclusionToCompositor});
 #endif
@@ -127,7 +127,7 @@ class BookmarkBrowsertest : public InProcessBrowserTest {
   base::HistogramTester* histogram_tester() { return &histogram_tester_; }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::test::ScopedFeatureList feature_list_;
 #endif
 
@@ -157,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, PRE_Persist) {
                                 kPersistBookmarkTitle);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // TODO(crbug.com/935607): The test fails on Windows.
 #define MAYBE_Persist DISABLED_Persist
 #else
@@ -334,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragSingleBookmark) {
             ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
         EXPECT_EQ(page_url, url);
         EXPECT_EQ(page_title, title);
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS
         // API.
@@ -376,7 +376,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
                                   gfx::NativeView native_view,
                                   ui::mojom::DragEventSource source,
                                   gfx::Point point, int operation) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
         GURL url;
         std::u16string title;
         // On Mac 10.11 and 10.12, this returns true, even though we set no url.
@@ -384,7 +384,7 @@ IN_PROC_BROWSER_TEST_F(BookmarkBrowsertest, DragMultipleBookmarks) {
         EXPECT_FALSE(drag_data->provider().GetURLAndTitle(
             ui::FilenameToURLPolicy::DO_NOT_CONVERT_FILENAMES, &url, &title));
 #endif
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
         // On Windows, GetDragImage() is a NOTREACHED() as the Windows
         // implementation of OSExchangeData just sets the drag image on the OS
         // API.

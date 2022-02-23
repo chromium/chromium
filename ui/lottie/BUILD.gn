@@ -21,4 +21,11 @@ component("lottie") {
     "//cc/paint",
     "//ui/gfx",
   ]
+
+  if (is_chromeos_ash) {
+    deps += [
+      "//ui/base",
+      "//ui/color",
+    ]
+  }
 }

@@ -77,6 +77,6 @@ case {{ length }}:
 {% if predicate %}{{str}}{% endif %}
 {%- endmacro %}
 
-{%- macro platform_define(platform) -%}
-defined(OS_{{platform | upper}})
+{%- macro platform_buildflag(platform) -%}
+BUILDFLAG(IS_{{platform | upper}})
 {%- endmacro -%}

@@ -11,12 +11,6 @@
 #include "components/sync/driver/sync_client.h"
 #include "components/sync/model/model_type_controller_delegate.h"
 
-class BookmarkUndoService;
-
-namespace bookmarks {
-class BookmarkModel;
-}  // namespace bookmarks
-
 namespace favicon {
 class FaviconService;
 }  // namespace favicon
@@ -66,14 +60,12 @@ class BrowserSyncClient : public syncer::SyncClient {
 
   // DataType specific service getters.
   virtual syncer::DeviceInfoSyncService* GetDeviceInfoSyncService() = 0;
-  virtual bookmarks::BookmarkModel* GetBookmarkModel() = 0;
   virtual favicon::FaviconService* GetFaviconService() = 0;
   virtual history::HistoryService* GetHistoryService() = 0;
   virtual sync_preferences::PrefServiceSyncable* GetPrefServiceSyncable() = 0;
   virtual sync_sessions::SessionSyncService* GetSessionSyncService() = 0;
   virtual send_tab_to_self::SendTabToSelfSyncService*
   GetSendTabToSelfSyncService() = 0;
-  virtual BookmarkUndoService* GetBookmarkUndoService() = 0;
 };
 
 }  // namespace browser_sync

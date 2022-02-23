@@ -8,6 +8,37 @@ if (is_android) {
   import("//build/config/android/rules.gni")
 }
 
+source_set("feature_list") {
+  sources = [
+    "commerce_feature_list.cc",
+    "commerce_feature_list.h",
+    "flag_descriptions.cc",
+    "flag_descriptions.h",
+  ]
+
+  deps = [
+    "//base",
+    "//components/flags_ui",
+    "//third_party/re2:re2",
+    "//url:url",
+  ]
+}
+
+static_library("metrics") {
+  sources = [
+    "metrics/metrics_utils.cc",
+    "metrics/metrics_utils.h",
+  ]
+
+  deps = [
+    ":proto",
+    "//base",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//components/prefs",
+  ]
+}
+
 proto_library("proto") {
   proto_in_dir = "//"
   sources = [ "proto/price_tracking.proto" ]

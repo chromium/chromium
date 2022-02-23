@@ -80,10 +80,9 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
       const FillLayer&,
       BackgroundBleedAvoidance,
       bool is_painting_background_in_contents_space) const override;
-  bool IsPaintingBackgroundInContentsSpace(const PaintInfo&) const override;
 
   void PaintTextClipMask(const PaintInfo&,
-                         const IntRect& mask_rect,
+                         const gfx::Rect& mask_rect,
                          const PhysicalOffset& paint_offset,
                          bool object_has_multiple_boxes) override;
   void PaintTextClipMask(const PaintInfo& paint_info,
@@ -111,7 +110,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   // shadows and border image outsets. |paint_rect| is the border box rect in
   // paint coordinates.
   void PaintBoxDecorationBackgroundWithRect(const PaintInfo&,
-                                            const IntRect& visual_rect,
+                                            const gfx::Rect& visual_rect,
                                             const PhysicalRect& paint_rect,
                                             const DisplayItemClient&);
 
@@ -142,7 +141,6 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
   void PaintLineBox(const NGPhysicalFragment& line_box_fragment,
                     const DisplayItemClient& display_item_client,
                     const NGFragmentItem& line_box_item,
-                    wtf_size_t line_fragment_id,
                     const PaintInfo&,
                     const PhysicalOffset& paint_offset);
   void PaintBackplate(NGInlineCursor* descendants,
@@ -208,7 +206,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
 
     // Add |node| to |HitTestResult|. Returns true if the hit-testing should
     // stop.
-    // T is PhysicalRect or FloatQuad.
+    // T is PhysicalRect or gfx::QuadF.
     template <typename T>
     bool AddNodeToResult(Node* node,
                          const NGPhysicalBoxFragment* box_fragment,
@@ -217,7 +215,7 @@ class CORE_EXPORT NGBoxFragmentPainter : public BoxPainterBase {
     // Same as |AddNodeToResult|, except that |offset| is in the content
     // coordinate system rather than the container coordinate system. They
     // differ when |container| is a scroll container.
-    // T is PhysicalRect or FloatQuad.
+    // T is PhysicalRect or gfx::QuadF.
     template <typename T>
     bool AddNodeToResultWithContentOffset(
         Node* node,
@@ -324,7 +322,7 @@ inline NGBoxFragmentPainter::NGBoxFragmentPainter(
     const DisplayItemClient& display_item_client,
     const NGInlineCursor* inline_box_cursor,
     const NGFragmentItem* box_item)
-    : BoxPainterBase(&box.GetDocument(), box.Style(), box.GeneratingNode()),
+    : BoxPainterBase(&box.GetDocument(), box.Style(), box.GetNode()),
       box_fragment_(box),
       display_item_client_(display_item_client),
       items_(box.Items()),

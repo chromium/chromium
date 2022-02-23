@@ -82,15 +82,15 @@ void H264DPB::UpdatePicPositions() {
   }
 }
 
-void H264DPB::DeleteByPOC(int poc) {
+void H264DPB::Delete(scoped_refptr<H264Picture> pic) {
   for (auto it = pics_.begin(); it != pics_.end(); ++it) {
-    if ((*it)->pic_order_cnt == poc) {
+    if ((*it) == pic) {
       pics_.erase(it);
       UpdatePicPositions();
       return;
     }
   }
-  NOTREACHED() << "Missing POC: " << poc;
+  NOTREACHED() << "Missing pic with POC: " << pic->pic_order_cnt;
 }
 
 void H264DPB::DeleteUnused() {

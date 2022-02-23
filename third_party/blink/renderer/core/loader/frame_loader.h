@@ -52,7 +52,7 @@
 #include "third_party/blink/renderer/core/frame/policy_container.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/loader_freeze_mode.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
@@ -68,6 +68,7 @@ class ProgressTracker;
 class ResourceRequest;
 class TracedValue;
 struct FrameLoadRequest;
+struct UnloadEventTimingInfo;
 struct WebNavigationInfo;
 struct WebNavigationParams;
 
@@ -141,6 +142,7 @@ class CORE_EXPORT FrameLoader final {
   void DidExplicitOpen();
 
   String UserAgent() const;
+  String FullUserAgent() const;
   String ReducedUserAgent() const;
   absl::optional<blink::UserAgentMetadata> UserAgentMetadata() const;
 
@@ -184,8 +186,11 @@ class CORE_EXPORT FrameLoader final {
   // This will attempt to detach the current document. It will dispatch unload
   // events and abort XHR requests. Returns true if the frame is ready to
   // receive the next document commit, or false otherwise.
-  bool DetachDocument(SecurityOrigin* committing_origin,
-                      absl::optional<Document::UnloadEventTiming>*);
+  // `unload_timing_info` will be updated with the timing details if non-null.
+  // This parameter should be non-null when unloading a document that will be
+  // replaced by a new Document (e.g. committing a new cross-document
+  // navigation).
+  bool DetachDocument(UnloadEventTimingInfo* unload_timing_info);
 
   bool ShouldClose(bool is_reload = false);
 
@@ -195,10 +200,11 @@ class CORE_EXPORT FrameLoader final {
   // |committing_origin| is the origin of the document that is being committed.
   // If it is allowed to access the unload timings of the current document, the
   // Document::UnloadEventTiming will be created and populated.
-  // If the dispatch of the unload event is not due to a commit, both parameters
-  // should be null.
-  void DispatchUnloadEvent(SecurityOrigin* committing_origin,
-                           absl::optional<Document::UnloadEventTiming>*);
+  // `unload_timing_info` will be updated with the timing details if non-null.
+  // This parameter should be non-null when unloading a document that will be
+  // replaced by a new Document (e.g. committing a new cross-document
+  // navigation).
+  void DispatchUnloadEvent(UnloadEventTimingInfo* unload_timing_info);
 
   bool AllowPlugins();
 
@@ -259,6 +265,7 @@ class CORE_EXPORT FrameLoader final {
 
  private:
   bool AllowRequestForThisFrame(const FrameLoadRequest&);
+
   WebFrameLoadType HandleInitialEmptyDocumentReplacementIfNeeded(
       const KURL& url,
       WebFrameLoadType);
@@ -286,7 +293,7 @@ class CORE_EXPORT FrameLoader final {
 
   // Commits the given |document_loader|.
   void CommitDocumentLoader(DocumentLoader* document_loader,
-                            const absl::optional<Document::UnloadEventTiming>&,
+                            const absl::optional<UnloadEventTiming>&,
                             HistoryItem* previous_history_item,
                             CommitReason);
 

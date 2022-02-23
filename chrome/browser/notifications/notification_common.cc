@@ -52,7 +52,7 @@ void NotificationCommon::OpenNotificationSettings(Profile* profile,
 // TODO(peter): Use the |origin| to direct the user to a more appropriate
 // settings page to toggle permission.
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
 // Android settings are handled through Java. Chrome OS settings are handled
 // through the tray's setting panel.
 NOTREACHED();

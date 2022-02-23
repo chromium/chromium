@@ -20,5 +20,6 @@
         android:id="@+id/title"
         android:layout_width="wrap_content"
         android:layout_height="match_parent"
+        android:ellipsize="end"
         android:textAppearance="@style/TextAppearance.AlertDialogTitleStyle" />
 </LinearLayout>

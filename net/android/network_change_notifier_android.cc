@@ -50,7 +50,7 @@
 // platform.
 // Notifications from the Java side always arrive on the main thread. The
 // delegate then forwards these notifications to the threads of each observer
-// (network change notifier). The network change notifier than processes the
+// (network change notifier). The network change notifier then processes the
 // state change, and notifies each of its observers on their threads.
 //
 // This can also be seen as:
@@ -198,6 +198,10 @@ void NetworkChangeNotifierAndroid::OnNetworkMadeDefault(NetworkHandle network) {
       NetworkChangeType::kMadeDefault, network);
 }
 
+void NetworkChangeNotifierAndroid::OnDefaultNetworkActive() {
+  NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActive();
+}
+
 NetworkChangeNotifierAndroid::NetworkChangeNotifierAndroid(
     NetworkChangeNotifierDelegateAndroid* delegate)
     : NetworkChangeNotifier(NetworkChangeCalculatorParamsAndroid()),
@@ -243,6 +247,18 @@ NetworkChangeNotifierAndroid::NetworkChangeCalculatorParamsAndroid() {
   params.connection_type_offline_delay_ = base::Seconds(0);
   params.connection_type_online_delay_ = base::Seconds(0);
   return params;
+}
+
+bool NetworkChangeNotifierAndroid::IsDefaultNetworkActiveInternal() {
+  return delegate_->IsDefaultNetworkActive();
+}
+
+void NetworkChangeNotifierAndroid::DefaultNetworkActiveObserverAdded() {
+  delegate_->DefaultNetworkActiveObserverAdded();
+}
+
+void NetworkChangeNotifierAndroid::DefaultNetworkActiveObserverRemoved() {
+  delegate_->DefaultNetworkActiveObserverRemoved();
 }
 
 }  // namespace net

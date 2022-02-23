@@ -11,7 +11,7 @@
 namespace cc {
 
 std::unique_ptr<LayerImpl> SolidColorLayer::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return SolidColorLayerImpl::Create(tree_impl, id());
 }
 
@@ -24,7 +24,6 @@ SolidColorLayer::SolidColorLayer() = default;
 SolidColorLayer::~SolidColorLayer() = default;
 
 void SolidColorLayer::SetBackgroundColor(SkColor color) {
-  DCHECK(IsMutationAllowed());
   SetContentsOpaque(SkColorGetA(color) == 255);
   Layer::SetBackgroundColor(color);
 }

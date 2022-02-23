@@ -13,8 +13,7 @@ def _CheckSemanticCssColors(input_api, output_api):
   try:
     # Change the system path to SemanticCssChecker's directory to be
     # able to import it.
-    sys.path.append(join(src_root, 'chrome', 'browser', 'resources',
-                        'chromeos'))
+    sys.path.append(join(src_root, 'ui', 'chromeos', 'styles'))
     from semantic_css_checker import SemanticCssChecker
   finally:
     sys.path = original_sys_path

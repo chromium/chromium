@@ -17,7 +17,7 @@ limitations under the License.
 
 #include <string>
 
-#include "absl/memory/memory.h"
+#include "absl/memory/memory.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.h"
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer_jni_lib.h"
 #include "tensorflow_lite_support/cc/utils/jni_utils.h"

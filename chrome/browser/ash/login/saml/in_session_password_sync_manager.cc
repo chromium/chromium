@@ -6,6 +6,9 @@
 
 #include <utility>
 
+#include "ash/components/login/auth/extended_authenticator.h"
+#include "ash/components/login/auth/user_context.h"
+#include "ash/components/proximity_auth/screenlock_bridge.h"
 #include "ash/constants/ash_switches.h"
 #include "base/command_line.h"
 #include "base/time/default_clock.h"
@@ -18,9 +21,7 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_fetcher.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/cros_settings.h"
-#include "chromeos/components/proximity_auth/screenlock_bridge.h"
-#include "chromeos/login/auth/extended_authenticator.h"
-#include "chromeos/login/auth/user_context.h"
+#include "chrome/browser/browser_process.h"
 #include "components/prefs/pref_service.h"
 #include "components/session_manager/core/session_manager.h"
 #include "components/session_manager/core/session_manager_observer.h"
@@ -124,8 +125,8 @@ void InSessionPasswordSyncManager::UpdateOnlineAuth() {
 
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       primary_user_->GetAccountId(), false);
-  user_manager::known_user::SetLastOnlineSignin(primary_user_->GetAccountId(),
-                                                now);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), now);
 }
 
 void InSessionPasswordSyncManager::CreateTokenAsync() {
@@ -141,8 +142,8 @@ void InSessionPasswordSyncManager::OnTokenCreated(const std::string& token) {
   // Set token value in prefs for in-session operations and ephemeral users and
   // local settings for login screen sync.
   prefs->SetString(prefs::kSamlPasswordSyncToken, token);
-  user_manager::known_user::SetPasswordSyncToken(primary_user_->GetAccountId(),
-                                                 token);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
   lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
 }
 
@@ -158,8 +159,8 @@ void InSessionPasswordSyncManager::OnTokenFetched(const std::string& token) {
     // Set token fetched from the endpoint in prefs and local settings.
     PrefService* prefs = primary_profile_->GetPrefs();
     prefs->SetString(prefs::kSamlPasswordSyncToken, token);
-    user_manager::known_user::SetPasswordSyncToken(
-        primary_user_->GetAccountId(), token);
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    known_user.SetPasswordSyncToken(primary_user_->GetAccountId(), token);
     lock_screen_reauth_reason_ = ReauthenticationReason::kNone;
   } else {
     // This is the first time a sync token is created for the user: we need to
@@ -233,8 +234,7 @@ void InSessionPasswordSyncManager::UpdateUserPassword(
 
 // TODO(crbug.com/1163777): Add UMA histograms for lockscreen online
 // re-authentication.
-void InSessionPasswordSyncManager::OnAuthFailure(
-    const chromeos::AuthFailure& error) {
+void InSessionPasswordSyncManager::OnAuthFailure(const AuthFailure& error) {
   password_changed_callback_.Run();
 }
 

@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2018 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -12,11 +12,7 @@ import os
 import subprocess
 import sys
 import tempfile
-
-try:
-  from StringIO import StringIO  # for Python 2
-except ImportError:
-  from io import StringIO  # for Python 3
+import io
 
 sys.path.append(os.path.join(os.path.dirname(__file__), '..', 'common'))
 import path_util
@@ -67,7 +63,7 @@ def get_diff(revision):
 
     # Just store the contents in memory. histograms.xml is big, but it isn't
     # _that_ big.
-    return StringIO(contents)
+    return io.StringIO(contents)
 
   prev_files = []
   for p in histogram_paths.ALL_XMLS_RELATIVE:
@@ -111,7 +107,8 @@ def main(argv):
   if args.diff is not None:
     print_diff_names(args.diff)
   else:
-    for name in get_names(histogram_xml_files()):
+    name_set, _ = get_names(histogram_xml_files())
+    for name in sorted(list(name_set)):
       print(name)
 
 

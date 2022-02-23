@@ -17,8 +17,8 @@
 #include "components/permissions/permission_request.h"
 #include "components/permissions/permission_util.h"
 #include "components/permissions/permissions_client.h"
+#include "components/permissions/prediction_service/prediction_common.h"
 #include "components/permissions/prediction_service/prediction_request_features.h"
-#include "components/permissions/prediction_service/prediction_service.h"
 #include "components/permissions/request_type.h"
 #include "components/ukm/content/source_url_recorder.h"
 #include "content/public/browser/permission_type.h"
@@ -29,7 +29,7 @@
 #include "services/network/public/cpp/is_potentially_trustworthy.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "components/permissions/android/jni_headers/PermissionUmaUtil_jni.h"
 #endif
@@ -60,7 +60,7 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_ACCESSIBILITY_EVENTS;
     case RequestType::kArSession:
       return RequestTypeForUma::PERMISSION_AR;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kCameraPanTiltZoom:
       return RequestTypeForUma::PERMISSION_CAMERA_PAN_TILT_ZOOM;
 #endif
@@ -70,11 +70,9 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_CLIPBOARD_READ_WRITE;
     case RequestType::kDiskQuota:
       return RequestTypeForUma::QUOTA;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kFontAccess:
       return RequestTypeForUma::PERMISSION_FONT_ACCESS;
-    case RequestType::kFileHandling:
-      return RequestTypeForUma::PERMISSION_FILE_HANDLING;
 #endif
     case RequestType::kGeolocation:
       return RequestTypeForUma::PERMISSION_GEOLOCATION;
@@ -86,17 +84,17 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_MIDI_SYSEX;
     case RequestType::kMultipleDownloads:
       return RequestTypeForUma::DOWNLOAD;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case RequestType::kNfcDevice:
       return RequestTypeForUma::PERMISSION_NFC;
 #endif
     case RequestType::kNotifications:
       return RequestTypeForUma::PERMISSION_NOTIFICATIONS;
-#if defined(OS_ANDROID) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
     case RequestType::kProtectedMediaIdentifier:
       return RequestTypeForUma::PERMISSION_PROTECTED_MEDIA_IDENTIFIER;
 #endif
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kRegisterProtocolHandler:
       return RequestTypeForUma::REGISTER_PROTOCOL_HANDLER;
     case RequestType::kSecurityAttestation:
@@ -108,7 +106,7 @@ RequestTypeForUma GetUmaValueForRequestType(RequestType request_type) {
       return RequestTypeForUma::PERMISSION_STORAGE_ACCESS;
     case RequestType::kVrSession:
       return RequestTypeForUma::PERMISSION_VR;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     case RequestType::kWindowPlacement:
       return RequestTypeForUma::PERMISSION_WINDOW_PLACEMENT;
 #endif
@@ -161,8 +159,6 @@ std::string GetPermissionRequestString(RequestTypeForUma type) {
       return "FontAccess";
     case RequestTypeForUma::PERMISSION_IDLE_DETECTION:
       return "IdleDetection";
-    case RequestTypeForUma::PERMISSION_FILE_HANDLING:
-      return "FileHandling";
     case RequestTypeForUma::PERMISSION_U2F_API_REQUEST:
       return "U2fApiRequest";
     default:
@@ -247,68 +243,57 @@ void RecordPermissionActionUkm(
 
   builder
       .SetStats_LoudPromptsOfType_DenyRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.denies,
-              loud_ui_prompts_count_for_request_type))
-      .SetStats_LoudPromptsOfType_DismissRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.dismissals,
-              loud_ui_prompts_count_for_request_type))
+          GetRoundedRatioForUkm(loud_ui_actions_counts_for_request_type.denies,
+                                loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_DismissRate(GetRoundedRatioForUkm(
+          loud_ui_actions_counts_for_request_type.dismissals,
+          loud_ui_prompts_count_for_request_type))
       .SetStats_LoudPromptsOfType_GrantRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.grants,
-              loud_ui_prompts_count_for_request_type))
+          GetRoundedRatioForUkm(loud_ui_actions_counts_for_request_type.grants,
+                                loud_ui_prompts_count_for_request_type))
       .SetStats_LoudPromptsOfType_IgnoreRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts_for_request_type.ignores,
-              loud_ui_prompts_count_for_request_type))
-      .SetStats_LoudPromptsOfType_Count(PredictionService::BucketizeValue(
-          loud_ui_prompts_count_for_request_type));
+          GetRoundedRatioForUkm(loud_ui_actions_counts_for_request_type.ignores,
+                                loud_ui_prompts_count_for_request_type))
+      .SetStats_LoudPromptsOfType_Count(
+          BucketizeValue(loud_ui_prompts_count_for_request_type));
 
   builder
-      .SetStats_LoudPrompts_DenyRate(PredictionService::GetRoundedRatioForUkm(
+      .SetStats_LoudPrompts_DenyRate(GetRoundedRatioForUkm(
           loud_ui_actions_counts.denies, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_DismissRate(
-          PredictionService::GetRoundedRatioForUkm(
-              loud_ui_actions_counts.dismissals, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_GrantRate(PredictionService::GetRoundedRatioForUkm(
+      .SetStats_LoudPrompts_DismissRate(GetRoundedRatioForUkm(
+          loud_ui_actions_counts.dismissals, loud_ui_prompts_count))
+      .SetStats_LoudPrompts_GrantRate(GetRoundedRatioForUkm(
           loud_ui_actions_counts.grants, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_IgnoreRate(PredictionService::GetRoundedRatioForUkm(
+      .SetStats_LoudPrompts_IgnoreRate(GetRoundedRatioForUkm(
           loud_ui_actions_counts.ignores, loud_ui_prompts_count))
-      .SetStats_LoudPrompts_Count(
-          PredictionService::BucketizeValue(loud_ui_prompts_count));
+      .SetStats_LoudPrompts_Count(BucketizeValue(loud_ui_prompts_count));
 
   builder
       .SetStats_AllPromptsOfType_DenyRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.denies,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.denies,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_DismissRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.dismissals,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.dismissals,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_GrantRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.grants,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.grants,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_IgnoreRate(
-          PredictionService::GetRoundedRatioForUkm(
-              actions_counts_for_request_type.ignores,
-              prompts_count_for_request_type))
+          GetRoundedRatioForUkm(actions_counts_for_request_type.ignores,
+                                prompts_count_for_request_type))
       .SetStats_AllPromptsOfType_Count(
-          PredictionService::BucketizeValue(prompts_count_for_request_type));
+          BucketizeValue(prompts_count_for_request_type));
 
   builder
-      .SetStats_AllPrompts_DenyRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.denies, prompts_count))
-      .SetStats_AllPrompts_DismissRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.dismissals, prompts_count))
-      .SetStats_AllPrompts_GrantRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.grants, prompts_count))
-      .SetStats_AllPrompts_IgnoreRate(PredictionService::GetRoundedRatioForUkm(
-          actions_counts.ignores, prompts_count))
-      .SetStats_AllPrompts_Count(
-          PredictionService::BucketizeValue(prompts_count));
+      .SetStats_AllPrompts_DenyRate(
+          GetRoundedRatioForUkm(actions_counts.denies, prompts_count))
+      .SetStats_AllPrompts_DismissRate(
+          GetRoundedRatioForUkm(actions_counts.dismissals, prompts_count))
+      .SetStats_AllPrompts_GrantRate(
+          GetRoundedRatioForUkm(actions_counts.grants, prompts_count))
+      .SetStats_AllPrompts_IgnoreRate(
+          GetRoundedRatioForUkm(actions_counts.ignores, prompts_count))
+      .SetStats_AllPrompts_Count(BucketizeValue(prompts_count));
 
   if (ui_reason.has_value())
     builder.SetPromptDispositionReason(static_cast<int64_t>(ui_reason.value()));
@@ -526,6 +511,7 @@ void PermissionUmaUtil::RecordEmbargoPromptSuppressionFromSource(
     case PermissionStatusSource::FEATURE_POLICY:
     case PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN:
     case PermissionStatusSource::PORTAL:
+    case PermissionStatusSource::FENCED_FRAME:
       // The permission wasn't under embargo, so don't record anything. We may
       // embargo it later.
       break;
@@ -618,7 +604,7 @@ void PermissionUmaUtil::PermissionPromptResolved(
     RecordPermissionPromptPriorCount(
         permission, priorIgnorePrefix,
         autoblocker->GetIgnoreCount(requesting_origin, permission));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (permission == ContentSettingsType::GEOLOCATION &&
         permission_action != PermissionAction::IGNORED) {
       RecordWithBatteryBucket("Permissions.BatteryLevel." + action_string +
@@ -653,25 +639,33 @@ void PermissionUmaUtil::PermissionPromptResolved(
 
   if (permission_action == PermissionAction::IGNORED &&
       ui_disposition !=
-          PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE) {
+          PermissionPromptDisposition::LOCATION_BAR_LEFT_CHIP_AUTO_BUBBLE &&
+      ui_disposition != PermissionPromptDisposition::ANCHORED_BUBBLE) {
     base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
                                   permission_disposition +
                                   ".Ignored.DidShowBubble",
                               did_show_prompt);
   }
 
-  if (ui_disposition ==
-      PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition + "." + action_string +
-                                  ".DidClickManage",
-                              did_click_managed);
-  } else if (ui_disposition == PermissionPromptDisposition::
-                                   LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP) {
-    base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
-                                  permission_disposition + "." + action_string +
-                                  ".DidClickLearnMore",
-                              did_click_learn_more);
+  if (requests[0]->request_type() == RequestType::kGeolocation ||
+      requests[0]->request_type() == RequestType::kNotifications) {
+    if (ui_disposition ==
+            PermissionPromptDisposition::LOCATION_BAR_LEFT_QUIET_CHIP ||
+        ui_disposition == PermissionPromptDisposition::MESSAGE_UI ||
+        ui_disposition == PermissionPromptDisposition::MINI_INFOBAR) {
+      base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
+                                    permission_disposition + "." +
+                                    action_string + ".DidClickManage",
+                                did_click_managed);
+    } else if (ui_disposition == PermissionPromptDisposition::
+                                     LOCATION_BAR_LEFT_QUIET_ABUSIVE_CHIP ||
+               ui_disposition == PermissionPromptDisposition::MESSAGE_UI ||
+               ui_disposition == PermissionPromptDisposition::MINI_INFOBAR) {
+      base::UmaHistogramBoolean("Permissions.Prompt." + permission_type + "." +
+                                    permission_disposition + "." +
+                                    action_string + ".DidClickLearnMore",
+                                did_click_learn_more);
+    }
   }
 }  // namespace permissions
 
@@ -691,7 +685,7 @@ void PermissionUmaUtil::RecordPermissionPromptPriorCount(
       ->Add(count);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PermissionUmaUtil::RecordWithBatteryBucket(const std::string& histogram) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_PermissionUmaUtil_recordWithBatteryBucket(
@@ -955,10 +949,6 @@ void PermissionUmaUtil::RecordPermissionAction(
       base::UmaHistogramEnumeration("Permissions.Action.IdleDetection", action,
                                     PermissionAction::NUM);
       break;
-    case ContentSettingsType::FILE_HANDLING:
-      base::UmaHistogramEnumeration("Permissions.Action.FileHandling", action,
-                                    PermissionAction::NUM);
-      break;
     // The user is not prompted for these permissions, thus there is no
     // permission action recorded for them.
     default:
@@ -1065,6 +1055,31 @@ void PermissionUmaUtil::RecordDSEEffectiveSetting(
   base::UmaHistogramEnumeration(
       "Permissions.DSE.EffectiveSetting." + permission_string, setting,
       CONTENT_SETTING_NUM_SETTINGS);
+}
+
+// static
+void PermissionUmaUtil::RecordPermissionPredictionSource(
+    PermissionPredictionSource prediction_source) {
+  base::UmaHistogramEnumeration(
+      "Permissions.PredictionService.PredictionSource", prediction_source);
+}
+
+// static
+void PermissionUmaUtil::RecordPermissionPredictionServiceHoldback(
+    RequestType request_type,
+    bool is_on_device,
+    bool is_heldback) {
+  if (is_on_device) {
+    base::UmaHistogramBoolean(
+        "Permissions.OnDevicePredictionService.Response." +
+            GetPermissionRequestString(GetUmaValueForRequestType(request_type)),
+        is_heldback);
+  } else {
+    base::UmaHistogramBoolean(
+        "Permissions.PredictionService.Response." +
+            GetPermissionRequestString(GetUmaValueForRequestType(request_type)),
+        is_heldback);
+  }
 }
 
 std::string PermissionUmaUtil::GetPermissionActionString(

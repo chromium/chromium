@@ -14,8 +14,13 @@ class BluetoothDevice;
 namespace chromeos {
 namespace bluetooth_config {
 
+class FastPairDelegate;
+
+// If |fast_pair_delegate| is non-null it will load device images into
+// the returned BluetoothDevicePropertiesPtr.
 mojom::BluetoothDevicePropertiesPtr GenerateBluetoothDeviceMojoProperties(
-    const device::BluetoothDevice* device);
+    const device::BluetoothDevice* device,
+    FastPairDelegate* fast_pair_delegate);
 
 }  // namespace bluetooth_config
 }  // namespace chromeos

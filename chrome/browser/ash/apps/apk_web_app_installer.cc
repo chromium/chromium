@@ -11,10 +11,10 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_installed_web_app_prefs.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/data_decoder/public/cpp/decode_image.h"
@@ -63,37 +63,38 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (!weak_owner_.get()) {
     CompleteInstallation(web_app::AppId(),
-                         web_app::InstallResultCode::kApkWebAppInstallFailed);
+                         webapps::InstallResultCode::kApkWebAppInstallFailed);
     return;
   }
 
-  // We can't install without |web_app_info| or |icon_png_data|. They may be
-  // null if there was an error generating the data.
+  // We can't install without |web_app_info| or |icon_png_data|. They
+  // may be null if there was an error generating the data.
   if (web_app_info.is_null() || !icon || !icon->icon_png_data ||
       !icon->icon_png_data.has_value() || icon->icon_png_data->empty()) {
     LOG(ERROR) << "Insufficient data to install a web app";
     CompleteInstallation(web_app::AppId(),
-                         web_app::InstallResultCode::kApkWebAppInstallFailed);
+                         webapps::InstallResultCode::kApkWebAppInstallFailed);
     return;
   }
 
-  DCHECK(!web_app_info_);
-  web_app_info_ = std::make_unique<WebApplicationInfo>();
+  DCHECK(!web_app_install_info_);
+  web_app_install_info_ = std::make_unique<WebAppInstallInfo>();
 
-  web_app_info_->title = base::UTF8ToUTF16(web_app_info->title);
+  web_app_install_info_->title = base::UTF8ToUTF16(web_app_info->title);
 
-  web_app_info_->start_url = GURL(web_app_info->start_url);
-  DCHECK(web_app_info_->start_url.is_valid());
+  web_app_install_info_->start_url = GURL(web_app_info->start_url);
+  DCHECK(web_app_install_info_->start_url.is_valid());
 
-  web_app_info_->scope = GURL(web_app_info->scope_url);
-  DCHECK(web_app_info_->scope.is_valid());
+  web_app_install_info_->scope = GURL(web_app_info->scope_url);
+  DCHECK(web_app_install_info_->scope.is_valid());
 
   if (web_app_info->theme_color != kInvalidColor) {
-    web_app_info_->theme_color = SkColorSetA(
+    web_app_install_info_->theme_color = SkColorSetA(
         static_cast<SkColor>(web_app_info->theme_color), SK_AlphaOPAQUE);
   }
-  web_app_info_->display_mode = blink::mojom::DisplayMode::kStandalone;
-  web_app_info_->user_display_mode = blink::mojom::DisplayMode::kStandalone;
+  web_app_install_info_->display_mode = blink::mojom::DisplayMode::kStandalone;
+  web_app_install_info_->user_display_mode =
+      blink::mojom::DisplayMode::kStandalone;
 
   is_web_only_twa_ = web_app_info->is_web_only_twa;
   sha256_fingerprint_ = web_app_info->certificate_sha256_fingerprint;
@@ -110,24 +111,24 @@ void ApkWebAppInstaller::Start(arc::mojom::WebAppInfoPtr web_app_info,
 }
 
 void ApkWebAppInstaller::CompleteInstallation(const web_app::AppId& id,
-                                              web_app::InstallResultCode code) {
+                                              webapps::InstallResultCode code) {
   std::move(callback_).Run(id, is_web_only_twa_, sha256_fingerprint_, code);
   delete this;
 }
 
 void ApkWebAppInstaller::OnWebAppCreated(const GURL& start_url,
                                          const web_app::AppId& app_id,
-                                         web_app::InstallResultCode code) {
+                                         webapps::InstallResultCode code) {
   // It is assumed that if |weak_owner_| is gone, |profile_| is gone too. The
   // web app will be automatically cleaned up by provider.
   if (!weak_owner_.get()) {
     CompleteInstallation(
         web_app::AppId(),
-        web_app::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
     return;
   }
 
-  if (code != web_app::InstallResultCode::kSuccessNewInstall) {
+  if (code != webapps::InstallResultCode::kSuccessNewInstall) {
     CompleteInstallation(app_id, code);
     return;
   }
@@ -141,17 +142,18 @@ void ApkWebAppInstaller::OnWebAppCreated(const GURL& start_url,
 }
 
 void ApkWebAppInstaller::OnImageDecoded(const SkBitmap& decoded_image) {
-  DCHECK(web_app_info_);
+  DCHECK(web_app_install_info_);
 
   if (decoded_image.width() == decoded_image.height())
-    web_app_info_->icon_bitmaps.any[decoded_image.width()] = decoded_image;
+    web_app_install_info_->icon_bitmaps.any[decoded_image.width()] =
+        decoded_image;
 
   if (!weak_owner_.get()) {
     // Assume |profile_| is no longer valid - destroy this object and
     // terminate.
     CompleteInstallation(
         web_app::AppId(),
-        web_app::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
+        webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown);
     return;
   }
   DoInstall();
@@ -161,12 +163,13 @@ void ApkWebAppInstaller::DoInstall() {
   auto* provider = web_app::WebAppProvider::GetDeprecated(profile_);
   DCHECK(provider);
 
-  GURL start_url = web_app_info_->start_url;
+  GURL start_url = web_app_install_info_->start_url;
 
   // Doesn't overwrite already existing web app with manifest fields from the
   // apk.
   provider->install_manager().InstallWebAppFromInfo(
-      std::move(web_app_info_), /*overwrite_existing_manifest_fields=*/false,
+      std::move(web_app_install_info_),
+      /*overwrite_existing_manifest_fields=*/false,
       web_app::ForInstallableSite::kYes, webapps::WebappInstallSource::ARC,
       base::BindOnce(&ApkWebAppInstaller::OnWebAppCreated,
                      base::Unretained(this), std::move(start_url)));

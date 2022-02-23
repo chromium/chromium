@@ -23,9 +23,9 @@ class WebFramesManagerImpl : public WebFramesManager {
   ~WebFramesManagerImpl() override;
 
   // Adds |frame| to the list of web frames. A frame with the same frame ID must
-  // not already be registered). If |frame| is a main frame, the frame manager
-  // must not already have a main frame.
-  void AddFrame(std::unique_ptr<WebFrame> frame);
+  // not already be registered). Returns |false| and |frame| will be ignored if
+  // |frame| is a main frame and a main frame has already been set.
+  bool AddFrame(std::unique_ptr<WebFrame> frame);
   // Removes the web frame with |frame_id|, if one exists, from the list of
   // associated web frames. If the frame manager does not contain a frame with
   // |frame_id|, operation is a no-op.

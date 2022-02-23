@@ -17,7 +17,7 @@
 #include "content/public/test/test_navigation_observer.h"
 #include "content/shell/browser/shell.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/files/scoped_temp_dir.h"
 #include "content/browser/renderer_host/dwrite_font_lookup_table_builder_win.h"
 #endif
@@ -25,7 +25,7 @@
 namespace content {
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char* kExpectedFontFamilyNames[] = {"AndroidClock",
                                           "Roboto",
                                           "Droid Sans Mono",
@@ -67,7 +67,7 @@ const char* kExpectedFontFamilyNames[] = {"AndroidClock",
                                           "Roboto Condensed",
                                           "Roboto Condensed",
                                           "Roboto"};
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const char* kExpectedFontFamilyNames[] = {"Ahem",
                                           "Arimo",
                                           "Arimo",
@@ -94,7 +94,7 @@ const char* kExpectedFontFamilyNames[] = {"Ahem",
                                           "Tinos",
                                           "Mukti Narrow",
                                           "Tinos"};
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 const char* kExpectedFontFamilyNames[] = {"American Typewriter",
                                           "Arial Narrow",
                                           "Baskerville",
@@ -105,7 +105,7 @@ const char* kExpectedFontFamilyNames[] = {"American Typewriter",
                                           "Malayalam Sangam MN",
                                           "Hiragino Maru Gothic Pro",
                                           "Hiragino Kaku Gothic StdN"};
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 const char* kExpectedFontFamilyNames[] = {"Cambria Math", "MingLiU_HKSCS-ExtB",
                                           "NSimSun", "Calibri"};
 #endif
@@ -119,23 +119,6 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
     feature_list_.InitAndEnableFeature(features::kFontSrcLocalMatching);
   }
 
-#if defined(OS_WIN)
-  void PreRunTestOnMainThread() override {
-    DWriteFontLookupTableBuilder* table_builder =
-        DWriteFontLookupTableBuilder::GetInstance();
-    table_builder->ResetStateForTesting();
-    table_builder->SchedulePrepareFontUniqueNameTableIfNeeded();
-    DevToolsProtocolTest::PreRunTestOnMainThread();
-  }
-
-  void PostRunTestOnMainThread() override {
-    DWriteFontLookupTableBuilder* table_builder =
-        DWriteFontLookupTableBuilder::GetInstance();
-    table_builder->ResetStateForTesting();
-    DevToolsProtocolTest::PostRunTestOnMainThread();
-  }
-#endif
-
   void LoadAndWait(const std::string& url) {
     base::ScopedAllowBlockingForTesting blocking_for_load;
     ASSERT_TRUE(embedded_test_server()->Start());
@@ -148,13 +131,21 @@ class FontUniqueNameBrowserTest : public DevToolsProtocolTest {
 
  private:
   base::test::ScopedFeatureList feature_list_;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ScopedTempDir cache_directory_;
 #endif
 };
 
-#if !defined(OS_FUCHSIA)
-IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
+// TODO(crbug.com/949181): Make this work on Fuchsia.
+#if !BUILDFLAG(IS_FUCHSIA)
+// TODO(crbug.com/1270151): Fix this on Android 11 and 12.
+#if BUILDFLAG(IS_ANDROID)
+#define MAYBE_ContentLocalFontsMatching DISABLED_ContentLocalFontsMatching
+#else
+#define MAYBE_ContentLocalFontsMatching ContentLocalFontsMatching
+#endif
+IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest,
+                       MAYBE_ContentLocalFontsMatching) {
   LoadAndWait("/font_src_local_matching.html");
   Attach();
 
@@ -184,7 +175,7 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
   // next SendCommand call.
   base::Value node_list =
       result->FindKeyOfType("nodeIds", base::Value::Type::LIST)->Clone();
-  base::Value::ConstListView nodes_view = node_list.GetList();
+  base::Value::ConstListView nodes_view = node_list.GetListDeprecated();
   ASSERT_EQ(nodes_view.size(), num_added_nodes);
   ASSERT_EQ(nodes_view.size(), base::size(kExpectedFontFamilyNames));
   for (size_t i = 0; i < nodes_view.size(); ++i) {
@@ -198,7 +189,8 @@ IN_PROC_BROWSER_TEST_F(FontUniqueNameBrowserTest, ContentLocalFontsMatching) {
     const base::Value* font_list = font_info->FindKey("fonts");
     ASSERT_TRUE(font_list);
     ASSERT_TRUE(font_list->is_list());
-    base::span<const base::Value> font_info_list = font_list->GetList();
+    base::span<const base::Value> font_info_list =
+        font_list->GetListDeprecated();
     ASSERT_TRUE(font_info_list.size());
     const base::Value& first_font_info = font_info_list[0];
     ASSERT_TRUE(first_font_info.is_dict());

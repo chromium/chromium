@@ -15,6 +15,7 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/chrome_command_ids.h"
+#include "chrome/browser/app_controller_mac.h"
 #include "chrome/browser/favicon/favicon_service_factory.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/sessions/chrome_tab_restore_service_client.h"
@@ -60,12 +61,25 @@ class MockBridge : public HistoryMenuBridge {
 
 class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
  public:
+  bool ShouldMenuItemBeVisible(NSMenuItem* item) {
+    return bridge_->ShouldMenuItemBeVisible(item);
+  }
+
+ protected:
   void SetUp() override {
     BrowserWithTestWindowTest::SetUp();
+
+    appController_.reset([[AppController alloc] init]);
+    [appController_ setLastProfileForTesting:profile()];
+    previousApplicationDelegate_ = [NSApp delegate];
+    [NSApp setDelegate:appController_];
+
     bridge_ = std::make_unique<MockBridge>(profile());
   }
 
   void TearDown() override {
+    [NSApp setDelegate:previousApplicationDelegate_];
+    appController_.reset();
     bridge_.reset();
     BrowserWithTestWindowTest::TearDown();
   }
@@ -171,17 +185,20 @@ class HistoryMenuBridgeTest : public BrowserWithTestWindowTest {
     bridge_->CancelFaviconRequest(item);
   }
 
-  bool ShouldMenuItemBeVisible(NSMenuItem* item) {
-    return bridge_->ShouldMenuItemBeVisible(item);
-  }
-
   const std::map<NSMenuItem*, std::unique_ptr<HistoryMenuBridge::HistoryItem>>&
   menu_item_map() {
     return bridge_->menu_item_map_;
   }
 
+ private:
   CocoaTestHelper cocoa_test_helper_;
+
+ protected:
   std::unique_ptr<MockBridge> bridge_;
+
+ private:
+  base::scoped_nsobject<AppController> appController_;
+  id<NSApplicationDelegate> previousApplicationDelegate_;
 };
 
 void CheckMenuItemVisibility(HistoryMenuBridgeTest* test, bool is_incognito) {

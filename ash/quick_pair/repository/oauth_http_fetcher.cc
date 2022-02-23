@@ -4,6 +4,7 @@
 
 #include "ash/quick_pair/repository/oauth_http_fetcher.h"
 
+#include "ash/quick_pair/common/fast_pair/fast_pair_http_result.h"
 #include "ash/quick_pair/common/logging.h"
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "components/signin/public/base/consent_level.h"
@@ -11,6 +12,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/signin/public/identity_manager/primary_account_access_token_fetcher.h"
 #include "google_apis/gaia/gaia_constants.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
@@ -87,7 +89,7 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
   if (error.state() != GoogleServiceAuthError::NONE) {
     QP_LOG(WARNING) << __func__ << ": Failed to retrieve access token. "
                     << error.ToString();
-    std::move(callback_).Run(nullptr);
+    std::move(callback_).Run(nullptr, nullptr);
     return;
   }
 
@@ -95,7 +97,7 @@ void OAuthHttpFetcher::OnAccessTokenFetched(
       QuickPairBrowserDelegate::Get()->GetURLLoaderFactory();
   if (!url_loader_factory) {
     QP_LOG(WARNING) << __func__ << ": No SharedURLLoaderFactory is available.";
-    std::move(callback_).Run(nullptr);
+    std::move(callback_).Run(nullptr, nullptr);
     return;
   }
 
@@ -148,7 +150,11 @@ void OAuthHttpFetcher::ProcessApiCallSuccess(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   QP_LOG(INFO) << __func__;
-  std::move(callback_).Run(std::move(body));
+
+  std::move(callback_).Run(
+      std::move(body),
+      std::make_unique<FastPairHttpResult>(/*net_error=*/net::OK,
+                                           /*head=*/head));
 }
 
 void OAuthHttpFetcher::ProcessApiCallFailure(
@@ -156,7 +162,10 @@ void OAuthHttpFetcher::ProcessApiCallFailure(
     const network::mojom::URLResponseHead* head,
     std::unique_ptr<std::string> body) {
   QP_LOG(WARNING) << __func__ << ": net_err=" << net_error;
-  std::move(callback_).Run(nullptr);
+
+  std::move(callback_).Run(
+      nullptr, std::make_unique<FastPairHttpResult>(/*net_error=*/net_error,
+                                                    /*head=*/head));
 }
 
 net::PartialNetworkTrafficAnnotationTag

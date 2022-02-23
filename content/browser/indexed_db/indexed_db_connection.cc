@@ -8,12 +8,12 @@
 
 #include "base/check_op.h"
 #include "base/containers/contains.h"
+#include "base/trace_event/base_tracing.h"
 #include "content/browser/indexed_db/indexed_db_class_factory.h"
 #include "content/browser/indexed_db/indexed_db_database_callbacks.h"
 #include "content/browser/indexed_db/indexed_db_database_error.h"
 #include "content/browser/indexed_db/indexed_db_factory_impl.h"
 #include "content/browser/indexed_db/indexed_db_storage_key_state.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "content/browser/indexed_db/indexed_db_transaction.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 
@@ -131,7 +131,8 @@ void IndexedDBConnection::AbortTransactionAndTearDownOnError(
     IndexedDBTransaction* transaction,
     const IndexedDBDatabaseError& error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IDB_TRACE1("IndexedDBDatabase::Abort(error)", "txn.id", transaction->id());
+  TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::Abort(error)", "txn.id",
+               transaction->id());
   leveldb::Status status = transaction->Abort(error);
   if (!status.ok())
     storage_key_state_handle_.storage_key_state()->tear_down_callback().Run(
@@ -144,8 +145,8 @@ leveldb::Status IndexedDBConnection::AbortAllTransactions(
   for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
     if (transaction->state() != IndexedDBTransaction::FINISHED) {
-      IDB_TRACE1("IndexedDBDatabase::Abort(error)", "transaction.id",
-                 transaction->id());
+      TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::Abort(error)",
+                   "transaction.id", transaction->id());
       leveldb::Status status = transaction->Abort(error);
       if (!status.ok())
         return status;
@@ -161,8 +162,8 @@ leveldb::Status IndexedDBConnection::AbortAllTransactionsAndIgnoreErrors(
   for (const auto& pair : transactions_) {
     auto& transaction = pair.second;
     if (transaction->state() != IndexedDBTransaction::FINISHED) {
-      IDB_TRACE1("IndexedDBDatabase::Abort(error)", "transaction.id",
-                 transaction->id());
+      TRACE_EVENT1("IndexedDB", "IndexedDBDatabase::Abort(error)",
+                   "transaction.id", transaction->id());
       leveldb::Status status = transaction->Abort(error);
       if (!status.ok())
         last_error = status;

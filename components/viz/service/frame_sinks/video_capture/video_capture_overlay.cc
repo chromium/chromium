@@ -98,11 +98,13 @@ gfx::Rect ToAbsoluteBoundsForI420(const gfx::RectF& relative,
 }
 
 // Shrinks the given |rect| by the minimum amount necessary to align its corners
-// to even-numbered coordinates. |rect| is assumed to have non-negative values
-// for its coordinates.
+// to even-numbered coordinates. |rect| is assumed to have bounded limit values,
+// and may have negative bounds.
 gfx::Rect MinimallyShrinkRectForI420(const gfx::Rect& rect) {
-  DCHECK(gfx::Rect(0, 0, media::limits::kMaxDimension,
-                   media::limits::kMaxDimension)
+  constexpr int kMinDimension = -1 * media::limits::kMaxDimension;
+  DCHECK(gfx::Rect(kMinDimension, kMinDimension,
+                   media::limits::kMaxDimension * 2,
+                   media::limits::kMaxDimension * 2)
              .Contains(rect));
   const int left = rect.x() + (rect.x() % 2);
   const int top = rect.y() + (rect.y() % 2);
@@ -112,15 +114,47 @@ gfx::Rect MinimallyShrinkRectForI420(const gfx::Rect& rect) {
                    std::max(0, bottom - top));
 }
 
+// Uses the mapping of a region R that exists in coordinate system A
+// as |from_region| and in coordinate system B as |to_region|. The |source|
+// rectangle is in coordinate system A and mapped to coordinate system B
+// in three steps:
+//   1. translate to remove the origin of the old coordinate space.
+//   2. scale values to the new space.
+//   3. translate to add the origin of the new coordinate space.
+gfx::Rect Transform(const gfx::Rect& source,
+                    const gfx::Rect& from_region,
+                    const gfx::Rect& to_region) {
+  // Transforming from or to a zero space is undefined behavior.
+  if (from_region.IsEmpty() || to_region.IsEmpty())
+    return {};
+
+  const gfx::Vector2dF scale{static_cast<float>(to_region.width()) /
+                                 static_cast<float>(from_region.width()),
+                             static_cast<float>(to_region.height()) /
+                                 static_cast<float>(from_region.height())};
+
+  const gfx::Rect old_translated =
+      gfx::Rect(source.x() - from_region.x(), source.y() - from_region.y(),
+                source.width(), source.height());
+  const gfx::Rect scaled =
+      gfx::ScaleToEnclosingRect(old_translated, scale.x(), scale.y());
+  const gfx::Rect new_translated =
+      gfx::Rect(scaled.x() + to_region.x(), scaled.y() + to_region.y(),
+                scaled.width(), scaled.height());
+
+  return MinimallyShrinkRectForI420(new_translated);
+}
+
 }  // namespace
 
 VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
-    const gfx::Rect& region_in_frame,
-    const VideoPixelFormat frame_format) {
+    const CapturedFrameProperties& properties) {
+  // The sub region should always be a subset of the frame region.
+  DCHECK(properties.compositor_region.Contains(properties.sub_region));
+
   // If there's no image set yet, punt.
-  if (image_.drawsNothing()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+  if (image_.drawsNothing())
+    return {};
 
   // Determine the bounds of the sprite to be blitted onto the video frame. The
   // calculations here align to the 2x2 pixel-quads, since dealing with
@@ -128,59 +162,61 @@ VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeRenderer(
   // complexify the blitting algorithm later on. This introduces a little
   // inaccuracy in the size and position of the overlay in the final result, but
   // should be an acceptable trade-off for all use cases.
-  const gfx::Rect bounds_in_frame =
-      ToAbsoluteBoundsForI420(bounds_, region_in_frame);
+  //
+  // Rescale the relative bounds (scoped between [0, 1]) to absolute bounds
+  // based on the entire region of the frame sink being captured. This allows
+  // for calculations such as mouse cursor position (which is retrieved in
+  // relationship to the entire tab or window) to be scaled properly.
+  const gfx::Rect absolute_bounds =
+      ToAbsoluteBoundsForI420(bounds_, properties.compositor_region);
+  if (!absolute_bounds.Intersects(properties.sub_region))
+    return {};
+
+  // The bounds are currently in the coordinate space of the captured compositor
+  // frame, however blitting is actually done in the coordinate space of the
+  // outputted video frame and must be scaled and translated.
+  const gfx::Rect bounds_in_target = Transform(
+      absolute_bounds, properties.sub_region, properties.content_region);
+
   // If the sprite's size will be unreasonably large, punt.
-  if (bounds_in_frame.width() > media::limits::kMaxDimension ||
-      bounds_in_frame.height() > media::limits::kMaxDimension) {
-    return VideoCaptureOverlay::OnceRenderer();
+  if (bounds_in_target.width() > media::limits::kMaxDimension ||
+      bounds_in_target.height() > media::limits::kMaxDimension)
+    return {};
+
+  // If the cached sprite does not match the computed scaled size and/or
+  // pixel format, create a new instance for this (and future) renderers.
+  if (!sprite_ || sprite_->size() != bounds_in_target.size() ||
+      sprite_->format() != properties.format) {
+    sprite_ = base::MakeRefCounted<Sprite>(image_, bounds_in_target.size(),
+                                           properties.format);
   }
 
-  // Compute the blit rect: the region of the frame to be modified by future
-  // Sprite::Blit() calls. First, |region_in_frame| must be shrunk to have
-  // even-valued coordinates to ensure the final blit rect is I420-friendly.
-  // Then, the shrunk |region_in_frame| is used to clip |bounds_in_frame|.
-  gfx::Rect blit_rect = MinimallyShrinkRectForI420(region_in_frame);
-  blit_rect.Intersect(bounds_in_frame);
-  // If the two rects didn't intersect at all (i.e., everything has been
-  // clipped), punt.
-  if (blit_rect.IsEmpty()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+  gfx::Rect blit_rect = bounds_in_target;
+  blit_rect.Intersect(properties.content_region);
+  if (blit_rect.IsEmpty())
+    return {};
 
-  // If the cached sprite does not match the computed scaled size and/or pixel
-  // format, create a new instance for this (and future) renderers.
-  if (!sprite_ || sprite_->size() != bounds_in_frame.size() ||
-      sprite_->format() != frame_format) {
-    sprite_ = base::MakeRefCounted<Sprite>(image_, bounds_in_frame.size(),
-                                           frame_format);
-  }
-
-  return base::BindOnce(&Sprite::Blit, sprite_, bounds_in_frame.origin(),
+  return base::BindOnce(&Sprite::Blit, sprite_, bounds_in_target.origin(),
                         blit_rect);
 }
 
 // static
 VideoCaptureOverlay::OnceRenderer VideoCaptureOverlay::MakeCombinedRenderer(
     const std::vector<VideoCaptureOverlay*>& overlays,
-    const gfx::Rect& region_in_frame,
-    const VideoPixelFormat frame_format) {
-  if (overlays.empty()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+    const CapturedFrameProperties& properties) {
+  if (overlays.empty())
+    return {};
 
   std::vector<OnceRenderer> renderers;
   for (VideoCaptureOverlay* overlay : overlays) {
-    renderers.emplace_back(
-        overlay->MakeRenderer(region_in_frame, frame_format));
+    renderers.emplace_back(overlay->MakeRenderer(properties));
     if (renderers.back().is_null()) {
       renderers.pop_back();
     }
   }
 
-  if (renderers.empty()) {
-    return VideoCaptureOverlay::OnceRenderer();
-  }
+  if (renderers.empty())
+    return {};
 
   return base::BindOnce(
       [](std::vector<OnceRenderer> renderers, VideoFrame* frame) {
@@ -199,7 +235,7 @@ gfx::Rect VideoCaptureOverlay::ComputeSourceMutationRect() const {
     result.Intersect(gfx::Rect(source_size));
     return result;
   }
-  return gfx::Rect();
+  return {};
 }
 
 VideoCaptureOverlay::Sprite::Sprite(const SkBitmap& image,

@@ -22,6 +22,7 @@
 
 #include "base/logging.h"
 #include "build/build_config.h"
+#include "util/file/directory_reader.h"
 
 namespace crashpad {
 
@@ -32,9 +33,9 @@ bool FileModificationTime(const base::FilePath& path, timespec* mtime) {
     return false;
   }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   *mtime = st.st_mtimespec;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // This is needed to compile with traditional NDK headers.
   mtime->tv_sec = st.st_mtime;
   mtime->tv_nsec = st.st_mtime_nsec;
@@ -112,4 +113,38 @@ bool LoggingRemoveDirectory(const base::FilePath& path) {
   return true;
 }
 
+uint64_t GetFileSize(const base::FilePath& filepath) {
+  if (!IsRegularFile(filepath)) {
+    return 0;
+  }
+  struct stat statbuf;
+  if (stat(filepath.value().c_str(), &statbuf) == 0) {
+    return statbuf.st_size;
+  }
+  PLOG(ERROR) << "stat " << filepath.value().c_str();
+  return 0;
+}
+
+uint64_t GetDirectorySize(const base::FilePath& dirpath) {
+  if (!IsDirectory(dirpath, /*allow_symlinks=*/false)) {
+    return 0;
+  }
+  DirectoryReader reader;
+  if (!reader.Open(dirpath)) {
+    return 0;
+  }
+  base::FilePath filename;
+  DirectoryReader::Result result;
+  uint64_t size = 0;
+  while ((result = reader.NextFile(&filename)) ==
+         DirectoryReader::Result::kSuccess) {
+    const base::FilePath filepath(dirpath.Append(filename));
+    if (IsDirectory(filepath, /*allow_symlinks=*/false)) {
+      size += GetDirectorySize(filepath);
+    } else {
+      size += GetFileSize(filepath);
+    }
+  }
+  return size;
+}
 }  // namespace crashpad

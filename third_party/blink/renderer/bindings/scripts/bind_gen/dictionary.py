@@ -1039,9 +1039,10 @@ def generate_dictionary(dictionary_identifier):
     # Assemble the parts.
     header_node.accumulator.add_class_decls(["ExceptionState"])
     header_node.accumulator.add_include_headers([
-        (PathManager(dictionary.inherited).api_path(ext="h")
-         if dictionary.inherited else
+        (PathManager(dictionary.inherited).api_path(
+            ext="h") if dictionary.inherited else
          "third_party/blink/renderer/platform/bindings/dictionary_base.h"),
+        "base/containers/span.h",
         component_export_header(api_component, for_testing),
     ])
     source_node.accumulator.add_include_headers([

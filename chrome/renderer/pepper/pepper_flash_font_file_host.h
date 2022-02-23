@@ -8,14 +8,13 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "ppapi/c/private/pp_private_font_charset.h"
 #include "ppapi/host/resource_host.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_OPENBSD)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_OPENBSD)
 #include "base/files/file.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/core/SkTypeface.h"
 #endif
@@ -53,9 +52,9 @@ class PepperFlashFontFileHost : public ppapi::host::ResourceHost {
                          uint32_t table);
   bool GetFontData(uint32_t table, void* buffer, size_t* length);
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   base::File font_file_;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   sk_sp<SkTypeface> typeface_;
 #endif
 };

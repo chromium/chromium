@@ -11,6 +11,7 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -104,7 +105,7 @@ ui::Accelerator ParseImpl(const std::string& accelerator,
         // Mac the developer has to specify MacCtrl). Therefore we treat this
         // as Command.
         modifiers |= ui::EF_COMMAND_DOWN;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       } else if (platform_key == values::kKeybindingPlatformDefault) {
         // If we see "Command+foo" in the Default section it can mean two
         // things, depending on the platform:
@@ -249,7 +250,7 @@ std::string NormalizeShortcutSuggestion(const std::string& suggestion,
   if (platform == values::kKeybindingPlatformMac) {
     normalize = true;
   } else if (platform == values::kKeybindingPlatformDefault) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     normalize = true;
 #endif
   }
@@ -288,13 +289,13 @@ Command::~Command() {}
 
 // static
 std::string Command::CommandPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return values::kKeybindingPlatformWin;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return values::kKeybindingPlatformMac;
 #elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return values::kKeybindingPlatformChromeOs;
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   return values::kKeybindingPlatformLinux;
 #else
   return "";
@@ -423,12 +424,14 @@ bool Command::Parse(const base::DictionaryValue* command,
 
   std::u16string description;
   if (IsNamedCommand(command_name)) {
-    if (!command->GetString(keys::kDescription, &description) ||
-        description.empty()) {
+    const std::string* description_ptr =
+        command->FindStringKey(keys::kDescription);
+    if (!description_ptr || description_ptr->empty()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(
           errors::kInvalidKeyBindingDescription, base::NumberToString(index));
       return false;
     }
+    description = base::UTF8ToUTF16(*description_ptr);
   }
 
   // We'll build up a map of platform-to-shortcut suggestions.
@@ -456,19 +459,18 @@ bool Command::Parse(const base::DictionaryValue* command,
     // No dictionary was found, fall back to using just a string, so developers
     // don't have to specify a dictionary if they just want to use one default
     // for all platforms.
-    std::string suggested_key_string;
-    if (command->GetString(keys::kSuggestedKey, &suggested_key_string) &&
-        !suggested_key_string.empty()) {
+    const std::string* suggested_key_string =
+        command->FindStringKey(keys::kSuggestedKey);
+    if (suggested_key_string && !suggested_key_string->empty()) {
       // If only a single string is provided, it must be default for all.
-      suggestions[values::kKeybindingPlatformDefault] = suggested_key_string;
+      suggestions[values::kKeybindingPlatformDefault] = *suggested_key_string;
     } else {
       suggestions[values::kKeybindingPlatformDefault] = "";
     }
   }
 
   // Check if this is a global or a regular shortcut.
-  bool global = false;
-  command->GetBoolean(keys::kGlobal, &global);
+  bool global = command->FindBoolPath(keys::kGlobal).value_or(false);
 
   // Normalize the suggestions.
   for (auto iter = suggestions.begin(); iter != suggestions.end(); ++iter) {

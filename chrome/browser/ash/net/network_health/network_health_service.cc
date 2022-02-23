@@ -12,6 +12,9 @@
 namespace ash {
 namespace network_health {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_health::mojom;
+
 NetworkHealthService::NetworkHealthService() {
   network_health_ = std::make_unique<NetworkHealth>();
   network_diagnostics_ =
@@ -26,9 +29,11 @@ NetworkHealthService::GetHealthRemoteAndBindReceiver() {
   return remote;
 }
 
-mojo::PendingRemote<network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+mojo::PendingRemote<
+    chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
 NetworkHealthService::GetDiagnosticsRemoteAndBindReceiver() {
-  mojo::PendingRemote<network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+  mojo::PendingRemote<
+      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
       remote;
   BindDiagnosticsReceiver(remote.InitWithNewPipeAndPassReceiver());
   return remote;
@@ -41,7 +46,8 @@ void NetworkHealthService::BindHealthReceiver(
 
 void NetworkHealthService::BindDiagnosticsReceiver(
     mojo::PendingReceiver<
-        network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
+        chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+        receiver) {
   network_diagnostics_->BindReceiver(std::move(receiver));
 }
 

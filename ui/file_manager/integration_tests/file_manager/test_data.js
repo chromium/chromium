@@ -12,6 +12,19 @@ import {ENTRIES} from '../test_util.js';
 export const FILE_MANAGER_EXTENSIONS_ID = 'hhaomjibdihmijegdhdafkllkbggdgoj';
 
 /**
+ * App ID of Files app SWA.
+ * @type {string}
+ * @const
+ */
+export const FILE_MANAGER_SWA_APP_ID = 'fkiggjmkendpmbegkagpmagjepfkpmeb';
+
+/**
+ * Base URL of Files app SWA.
+ * @const {string}
+ */
+export const FILE_SWA_BASE_URL = 'chrome://file-manager/';
+
+/**
  * Basic entry set for the local volume.
  *
  * @type {!Array<TestEntryInfo>}

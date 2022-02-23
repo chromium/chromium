@@ -155,6 +155,19 @@ void CheckTraceVisitor::CheckCXXDependentScopeMemberExpr(
     }
   }
 
+  // Check for T::Trace(visitor).
+  if (NestedNameSpecifier* qual = expr->getQualifier()) {
+    if (const Type* type = qual->getAsType()) {
+      if (const TemplateTypeParmType* tmpl_parm_type =
+              type->getAs<TemplateTypeParmType>()) {
+        const unsigned param_index = tmpl_parm_type->getIndex();
+        if (param_index >= info_->GetBases().size())
+          return;
+        info_->GetBases()[param_index].second.MarkTraced();
+      }
+    }
+  }
+
   CXXRecordDecl* tmpl = GetDependentTemplatedDecl(expr);
   if (!tmpl)
     return;

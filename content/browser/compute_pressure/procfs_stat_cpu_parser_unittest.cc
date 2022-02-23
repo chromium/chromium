@@ -33,7 +33,7 @@ class ProcfsStatCpuParserTest : public testing::Test {
     parser_ = std::make_unique<ProcfsStatCpuParser>(fake_stat_path_);
   }
 
-  bool WriteFakeStat(base::StringPiece contents) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WriteFakeStat(base::StringPiece contents) {
     if (!stat_file_.SetLength(0))
       return false;
     if (contents.size() > 0) {

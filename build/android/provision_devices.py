@@ -46,7 +46,7 @@ _CHROME_PACKAGE_REGEX = re.compile('.*chrom.*')
 _TOMBSTONE_REGEX = re.compile('tombstone.*')
 
 
-class _DEFAULT_TIMEOUTS(object):
+class _DEFAULT_TIMEOUTS:
   # L can take a while to reboot after a wipe.
   LOLLIPOP = 600
   PRE_LOLLIPOP = 180
@@ -54,7 +54,7 @@ class _DEFAULT_TIMEOUTS(object):
   HELP_TEXT = '{}s on L, {}s on pre-L'.format(LOLLIPOP, PRE_LOLLIPOP)
 
 
-class _PHASES(object):
+class _PHASES:
   WIPE = 'wipe'
   PROPERTIES = 'properties'
   FINISH = 'finish'
@@ -398,10 +398,9 @@ def FinishProvisioning(device, options):
     if tdelta <= 1:
       logging.info('Date/time successfully set on %s', device)
       return True
-    else:
-      logging.error('Date mismatch. Device: %s Correct: %s',
-                    device_time.isoformat(), correct_time.isoformat())
-      return False
+    logging.error('Date mismatch. Device: %s Correct: %s',
+                  device_time.isoformat(), correct_time.isoformat())
+    return False
 
   # Sometimes the date is not set correctly on the devices. Retry on failure.
   if device.IsUserBuild():

@@ -12,7 +12,7 @@
 #include "chrome/common/webui_url_constants.h"
 #include "ui/gfx/geometry/rect.h"
 
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 class Browser;
 
 class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
@@ -20,8 +20,9 @@ class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
   explicit TerminalSystemAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldReuseExistingWindow() const override;
+  bool ShouldShowNewWindowMenuOption() const override;
   bool ShouldHaveTabStrip() const override;
   bool HasTitlebarTerminalSelectNewTabButton() const override;
   gfx::Rect GetDefaultBounds(Browser* browser) const override;
@@ -32,8 +33,8 @@ class TerminalSystemAppDelegate : public web_app::SystemWebAppDelegate {
                                         int command_id) const override;
 };
 
-// Returns a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForTerminalSystemWebApp();
+// Returns a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForTerminalSystemWebApp();
 
 // Returns the default bounds.
 gfx::Rect GetDefaultBoundsForTerminal(Browser* browser);

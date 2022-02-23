@@ -82,6 +82,8 @@ import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.chrome.test.util.browser.Features.EnableFeatures;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.widget.InsetObserverView;
+import org.chromium.components.browser_ui.widget.InsetObserverViewSupplier;
 import org.chromium.components.embedder_support.view.ContentView;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.display.DisplayAndroid;
@@ -125,6 +127,8 @@ public class ManualFillingControllerTest {
     private ConfirmationDialogHelper mMockConfirmationHelper;
     @Mock
     private FullscreenManager mMockFullscreenManager;
+    @Mock
+    private InsetObserverView mInsetObserver;
 
     @Rule
     public Features.JUnitProcessor mFeaturesProcessor = new Features.JUnitProcessor();
@@ -315,6 +319,7 @@ public class ManualFillingControllerTest {
         when(mMockContentView.getRootView()).thenReturn(mock(View.class));
         mLastMockWebContents = mock(WebContents.class);
         when(mMockActivity.getCurrentWebContents()).then(i -> mLastMockWebContents);
+        InsetObserverViewSupplier.setInstanceForTesting(mInsetObserver);
         setContentAreaDimensions(2.f, 80, 300);
         Configuration config = new Configuration();
         config.hardKeyboardHidden = HARDKEYBOARDHIDDEN_UNDEFINED;

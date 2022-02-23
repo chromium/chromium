@@ -10,7 +10,6 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/sync/browser_synced_tab_delegate.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/sync_sessions/switches.h"
 
 BrowserSyncedWindowDelegate::BrowserSyncedWindowDelegate(Browser* browser)
     : browser_(browser) {}
@@ -73,7 +72,5 @@ bool BrowserSyncedWindowDelegate::ShouldSync() const {
   }
 
   // Do not sync windows which are about to be closed.
-  return !browser_->IsAttemptingToCloseBrowser() ||
-         !base::FeatureList::IsEnabled(
-             switches::kSyncConsiderEmptyWindowsSyncable);
+  return !browser_->IsAttemptingToCloseBrowser();
 }

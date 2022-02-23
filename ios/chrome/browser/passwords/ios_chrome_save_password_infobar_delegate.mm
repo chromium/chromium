@@ -129,16 +129,17 @@ IOSChromeSavePasswordInfoBarDelegate::FromInfobarDelegate(
 }
 
 IOSChromeSavePasswordInfoBarDelegate::IOSChromeSavePasswordInfoBarDelegate(
+    NSString* user_email,
     bool is_sync_user,
     bool password_update,
     std::unique_ptr<PasswordFormManagerForUI> form_manager)
-    : IOSChromePasswordManagerInfoBarDelegate(is_sync_user,
+    : IOSChromePasswordManagerInfoBarDelegate(user_email,
+                                              is_sync_user,
                                               std::move(form_manager)),
       password_update_(password_update),
       infobar_type_(password_update
                         ? PasswordInfobarType::kPasswordInfobarTypeUpdate
-                        : PasswordInfobarType::kPasswordInfobarTypeSave) {
-}
+                        : PasswordInfobarType::kPasswordInfobarTypeSave) {}
 
 IOSChromeSavePasswordInfoBarDelegate::~IOSChromeSavePasswordInfoBarDelegate() {
     // If by any reason this delegate gets dealloc before the Infobar is

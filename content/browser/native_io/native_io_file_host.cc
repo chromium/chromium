@@ -20,15 +20,15 @@ namespace content {
 NativeIOFileHost::NativeIOFileHost(
     NativeIOHost* origin_host,
     std::string file_name,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     bool allow_set_length_ipc,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
     mojo::PendingReceiver<blink::mojom::NativeIOFileHost> file_host_receiver)
     : origin_host_(origin_host),
       file_name_(std::move(file_name)),
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       allow_set_length_ipc_(allow_set_length_ipc),
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       receiver_(this, std::move(file_host_receiver)) {
   // base::Unretained is safe here because this NativeIOFileHost owns
   // |receiver_|. So, the unretained NativeIOFileHost is guaranteed to outlive

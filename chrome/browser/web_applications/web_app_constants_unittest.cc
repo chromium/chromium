@@ -8,13 +8,6 @@
 
 namespace web_app {
 
-TEST(WebAppConstants, IsSuccess) {
-  EXPECT_TRUE(IsSuccess(InstallResultCode::kSuccessNewInstall));
-  EXPECT_TRUE(IsSuccess(InstallResultCode::kSuccessAlreadyInstalled));
-
-  EXPECT_FALSE(IsSuccess(InstallResultCode::kExpectedAppIdCheckFailed));
-}
-
 TEST(WebAppConstants, ResolveEffectiveDisplayMode) {
   // When user_display_mode indicates a user preference for opening in
   // a browser tab, we open in a browser tab.

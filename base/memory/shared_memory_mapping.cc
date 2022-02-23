@@ -12,20 +12,20 @@
 #include "base/unguessable_token.h"
 #include "build/build_config.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/mman.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <aclapi.h>
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <mach/mach_vm.h>
 #include "base/mac/mach_logging.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/vmar.h>
 #include "base/fuchsia/fuchsia_logging.h"
 #endif
@@ -68,15 +68,15 @@ void SharedMemoryMapping::Unmap() {
 
   SharedMemorySecurityPolicy::ReleaseReservationForMapping(size_);
   SharedMemoryTracker::GetInstance()->DecrementMemoryUsage(*this);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (!UnmapViewOfFile(memory_))
     DPLOG(ERROR) << "UnmapViewOfFile";
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   uintptr_t addr = reinterpret_cast<uintptr_t>(memory_);
   zx_status_t status = zx::vmar::root_self()->unmap(addr, mapped_size_);
   if (status != ZX_OK)
     ZX_DLOG(ERROR, status) << "zx_vmar_unmap";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   kern_return_t kr = mach_vm_deallocate(
       mach_task_self(), reinterpret_cast<mach_vm_address_t>(memory_),
       mapped_size_);

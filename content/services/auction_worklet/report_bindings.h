@@ -6,6 +6,7 @@
 #define CONTENT_SERVICES_AUCTION_WORKLET_REPORT_BINDINGS_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "content/services/auction_worklet/auction_v8_helper.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
@@ -32,7 +33,7 @@ class ReportBindings {
  private:
   static void SendReportTo(const v8::FunctionCallbackInfo<v8::Value>& args);
 
-  AuctionV8Helper* const v8_helper_;
+  const raw_ptr<AuctionV8Helper> v8_helper_;
 
   // This cleared if an exception is thrown.
   absl::optional<GURL> report_url_;

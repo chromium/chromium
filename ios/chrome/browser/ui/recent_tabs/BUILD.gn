@@ -18,6 +18,7 @@ source_set("recent_tabs") {
   ]
   deps = [
     ":recent_tabs_ui",
+    ":synced_sessions",
     "resources:show_history",
     "//base",
     "//components/sessions",
@@ -27,6 +28,7 @@ source_set("recent_tabs") {
     "//ios/chrome/browser/browser_state",
     "//ios/chrome/browser/favicon",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
@@ -66,14 +68,14 @@ source_set("recent_tabs_ui") {
     "recent_tabs_transitioning_delegate.h",
     "recent_tabs_transitioning_delegate.mm",
     "sessions_sync_user_state.h",
-    "synced_sessions.h",
-    "synced_sessions.mm",
   ]
   deps = [
     ":recent_tabs_ui_constants",
+    ":synced_sessions",
     "resources:recent_tabs_other_devices_empty",
     "//base",
     "//components/prefs",
+    "//components/search_engines",
     "//components/sessions",
     "//components/strings",
     "//components/sync",
@@ -83,10 +85,14 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/drag_and_drop",
     "//ios/chrome/browser/main:public",
     "//ios/chrome/browser/metrics:metrics_internal",
+    "//ios/chrome/browser/net:crurl",
+    "//ios/chrome/browser/search_engines",
     "//ios/chrome/browser/sessions",
     "//ios/chrome/browser/sessions:serialisation",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
+    "//ios/chrome/browser/tabs_search",
+    "//ios/chrome/browser/tabs_search:tabs_search_factory",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/alert_coordinator",
     "//ios/chrome/browser/ui/authentication",
@@ -96,6 +102,7 @@ source_set("recent_tabs_ui") {
     "//ios/chrome/browser/ui/authentication/signin:signin_headers",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/settings/sync/utils",
+    "//ios/chrome/browser/ui/tab_switcher/tab_grid:features",
     "//ios/chrome/browser/ui/table_view",
     "//ios/chrome/browser/ui/table_view:presentation",
     "//ios/chrome/browser/ui/table_view:styler",
@@ -111,6 +118,15 @@ source_set("recent_tabs_ui") {
     "//ios/public/provider/chrome/browser/modals:modals_api",
     "//ui/base",
   ]
+}
+
+source_set("synced_sessions") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "synced_sessions.h",
+    "synced_sessions.mm",
+  ]
+  deps = [ "//ios/chrome/browser/sync" ]
   public_deps = [ "//components/sync_sessions" ]
 }
 

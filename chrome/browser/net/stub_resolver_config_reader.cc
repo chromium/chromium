@@ -31,17 +31,18 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/network_service_instance.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/public/util.h"
 #include "services/network/public/mojom/host_resolver.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #include "chrome/browser/enterprise/util/android_enterprise_info.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/enterprise_util.h"
 #include "base/win/windows_version.h"
 #include "chrome/browser/win/parental_controls.h"
@@ -74,7 +75,7 @@ enum class SecureDnsModeDetailsForHistogram {
   kMaxValue = kSecureByEnterprisePolicy,
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool ShouldDisableDohForWindowsParentalControls() {
   const WinParentalControls& parental_controls = GetWinParentalControls();
   if (parental_controls.web_filter)
@@ -89,13 +90,13 @@ bool ShouldDisableDohForWindowsParentalControls() {
 
   return false;
 }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Check the AsyncDns field trial and return true if it should be enabled. On
 // Android this includes checking the Android version in the field trial.
 bool ShouldEnableAsyncDns() {
   bool feature_can_be_enabled = true;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   int min_sdk =
       base::GetFieldTrialParamByFeatureAsInt(features::kAsyncDns, "min_sdk", 0);
   if (base::android::BuildInfo::GetInstance()->sdk_int() < min_sdk)
@@ -177,7 +178,7 @@ StubResolverConfigReader::StubResolverConfigReader(PrefService* local_state,
       base::BindOnce(&StubResolverConfigReader::OnParentalControlsDelayTimer,
                      base::Unretained(this)));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   chrome::enterprise_util::AndroidEnterpriseInfo::GetInstance()
       ->GetAndroidEnterpriseInfoState(base::BindOnce(
           &StubResolverConfigReader::OnAndroidOwnedStateCheckComplete,
@@ -216,7 +217,7 @@ void StubResolverConfigReader::UpdateNetworkService(bool record_metrics) {
 
 bool StubResolverConfigReader::ShouldDisableDohForManaged() {
 // This function ignores cloud policies which are loaded on a per-profile basis.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Check for MDM/management/owner apps. android_has_owner_ is true if either a
   // device or policy owner app is discovered by
   // GetAndroidEnterpriseInfoState(). If android_has_owner_ is nullopt, take a
@@ -226,11 +227,11 @@ bool StubResolverConfigReader::ShouldDisableDohForManaged() {
   // sufficient to check for the prescences of policies as well.
   if (android_has_owner_.value_or(false))
     return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   if (base::IsMachineExternallyManaged())
     return true;
 #endif
-#if !defined(OS_ANDROID) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS)
   if (g_browser_process->browser_policy_connector()->HasMachineLevelPolicies())
     return true;
 #endif
@@ -241,7 +242,7 @@ bool StubResolverConfigReader::ShouldDisableDohForParentalControls() {
   if (parental_controls_testing_override_.has_value())
     return parental_controls_testing_override_.value();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return ShouldDisableDohForWindowsParentalControls();
 #else
   return false;
@@ -364,47 +365,22 @@ SecureDnsConfig StubResolverConfigReader::GetAndUpdateConfiguration(
     }
   }
 
-  std::string doh_templates =
-      local_state_->GetString(prefs::kDnsOverHttpsTemplates);
-  std::string server_method;
-  std::vector<net::DnsOverHttpsServerConfig> dns_over_https_servers;
-  absl::optional<std::vector<network::mojom::DnsOverHttpsServerPtr>>
-      servers_mojo;
-  if (!doh_templates.empty() && secure_dns_mode != net::SecureDnsMode::kOff) {
-    for (base::StringPiece server_template :
-         chrome_browser_net::secure_dns::SplitGroup(doh_templates)) {
-      if (!net::dns_util::IsValidDohTemplate(server_template, &server_method)) {
-        continue;
-      }
-
-      bool use_post = server_method == "POST";
-      dns_over_https_servers.emplace_back(std::string(server_template),
-                                          use_post);
-
-      if (!servers_mojo.has_value()) {
-        servers_mojo = absl::make_optional<
-            std::vector<network::mojom::DnsOverHttpsServerPtr>>();
-      }
-
-      network::mojom::DnsOverHttpsServerPtr server_mojo =
-          network::mojom::DnsOverHttpsServer::New();
-      server_mojo->server_template = std::string(server_template);
-      server_mojo->use_post = use_post;
-      servers_mojo->emplace_back(std::move(server_mojo));
-    }
+  net::DnsOverHttpsConfig doh_config;
+  if (secure_dns_mode != net::SecureDnsMode::kOff) {
+    doh_config = net::DnsOverHttpsConfig::FromStringLax(
+        local_state_->GetString(prefs::kDnsOverHttpsTemplates));
   }
-
   if (update_network_service) {
     content::GetNetworkService()->ConfigureStubHostResolver(
-        GetInsecureStubResolverEnabled(), secure_dns_mode,
-        std::move(servers_mojo), additional_dns_query_types_enabled);
+        GetInsecureStubResolverEnabled(), secure_dns_mode, doh_config,
+        additional_dns_query_types_enabled);
   }
 
-  return SecureDnsConfig(secure_dns_mode, std::move(dns_over_https_servers),
+  return SecureDnsConfig(secure_dns_mode, std::move(doh_config),
                          forced_management_mode);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void StubResolverConfigReader::OnAndroidOwnedStateCheckComplete(
     bool has_profile_owner,
     bool has_device_owner) {

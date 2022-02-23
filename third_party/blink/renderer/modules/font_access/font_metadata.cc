@@ -27,7 +27,7 @@ namespace {
 // unique names, on platforms that apply.
 void SetUpFontUniqueLookupIfNecessary() {
   FontUniqueNameLookup* unique_name_lookup =
-      FontGlobalContext::Get()->GetFontUniqueNameLookup();
+      FontGlobalContext::Get().GetFontUniqueNameLookup();
   if (!unique_name_lookup)
     return;
   // Contrary to what the method name might imply, this is not an idempotent
@@ -43,10 +43,7 @@ FontMetadata::FontMetadata(const FontEnumerationEntry& entry)
     : postscriptName_(entry.postscript_name),
       fullName_(entry.full_name),
       family_(entry.family),
-      style_(entry.style),
-      italic_(entry.italic),
-      stretch_(entry.stretch),
-      weight_(entry.weight) {}
+      style_(entry.style) {}
 
 FontMetadata* FontMetadata::Create(const FontEnumerationEntry& entry) {
   return MakeGarbageCollected<FontMetadata>(entry);
@@ -79,9 +76,8 @@ void FontMetadata::BlobImpl(ScriptPromiseResolver* resolver,
 
   FontDescription description;
   scoped_refptr<SimpleFontData> font_data =
-      FontCache::GetFontCache()->GetFontData(
-          description, AtomicString(postscriptName),
-          AlternateFontName::kLocalUniqueFace);
+      FontCache::Get().GetFontData(description, AtomicString(postscriptName),
+                                   AlternateFontName::kLocalUniqueFace);
   if (!font_data) {
     auto message = String::Format("The font %s could not be accessed.",
                                   postscriptName.Latin1().c_str());

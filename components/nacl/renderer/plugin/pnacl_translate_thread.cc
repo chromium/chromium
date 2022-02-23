@@ -14,7 +14,6 @@
 #include "base/time/time.h"
 #include "components/nacl/renderer/plugin/plugin.h"
 #include "components/nacl/renderer/plugin/plugin_error.h"
-#include "content/public/common/sandbox_init.h"
 #include "ppapi/c/ppb_file_io.h"
 #include "ppapi/cpp/var.h"
 #include "ppapi/proxy/ppapi_messages.h"

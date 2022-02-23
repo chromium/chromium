@@ -4,6 +4,7 @@
 
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
@@ -655,7 +656,7 @@ IN_PROC_BROWSER_TEST_P(ViewSourceWithSplitCacheEnabledTest,
   // |view_source_contents| to make sure it will not be put into the back
   // forward cache.
   view_source_contents->GetController().GetBackForwardCache().DisableForTesting(
-      content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // 4. Navigate the view-source page to a c.com/title1.html
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -792,7 +793,7 @@ class ViewSourcePrerenderTest : public ViewSourceTest {
                           base::Unretained(this))};
 
   // The WebContents which is expected to request prerendering.
-  content::WebContents* target_ = nullptr;
+  raw_ptr<content::WebContents> target_ = nullptr;
 };
 
 // A frame in a prerendered page should be able to have its source viewed, like

@@ -62,10 +62,10 @@ class CORE_EXPORT CSSQuadValue : public CSSValue {
   String CustomCSSText() const;
 
   bool Equals(const CSSQuadValue& other) const {
-    return DataEquivalent(top_, other.top_) &&
-           DataEquivalent(right_, other.right_) &&
-           DataEquivalent(left_, other.left_) &&
-           DataEquivalent(bottom_, other.bottom_);
+    return base::ValuesEquivalent(top_, other.top_) &&
+           base::ValuesEquivalent(right_, other.right_) &&
+           base::ValuesEquivalent(left_, other.left_) &&
+           base::ValuesEquivalent(bottom_, other.bottom_);
   }
 
   void TraceAfterDispatch(blink::Visitor*) const;

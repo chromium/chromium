@@ -7,8 +7,8 @@
 
 #include <map>
 #include <string>
-#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "build/chromeos_buildflags.h"
@@ -21,7 +21,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "components/user_manager/user_manager.h"
+#include "components/user_manager/user_type.h"  // nogncheck
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 class Profile;
@@ -471,7 +471,7 @@ class InstallStageTracker : public KeyedService {
                                 FailureReason reason,
                                 const InstallationData& data);
 
-  const content::BrowserContext* browser_context_;
+  raw_ptr<const content::BrowserContext> browser_context_;
 
   std::map<ExtensionId, InstallationData> installation_data_map_;
 

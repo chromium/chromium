@@ -15,7 +15,6 @@
 #include "base/compiler_specific.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/sequence_checker.h"
 #include "base/strings/string_piece.h"

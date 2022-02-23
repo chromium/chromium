@@ -23,7 +23,7 @@ base::File::Error LockTable::LockFile(FileImpl* file) {
     return base::File::FILE_ERROR_FAILED;
   }
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // Fuchsia doesn't provide a file locking mechanism, so file locks work only
   // within a single process. File locking is used only by LevelDB which stores
   // all files in the profile directory and normally there shouldn't be more
@@ -36,7 +36,7 @@ base::File::Error LockTable::LockFile(FileImpl* file) {
     // Locking failed for some reason.
     return lock_err;
   }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   locked_files_.insert(file->path());
   return base::File::FILE_OK;
@@ -45,14 +45,14 @@ base::File::Error LockTable::LockFile(FileImpl* file) {
 base::File::Error LockTable::UnlockFile(FileImpl* file) {
   auto it = locked_files_.find(file->path());
   if (it != locked_files_.end()) {
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     base::File::Error lock_err = file->RawUnlockFile();
     if (lock_err != base::File::FILE_OK) {
       // TODO(erg): When can we fail to release a lock?
       NOTREACHED();
       return lock_err;
     }
-#endif  // !OS_FUCHSIA
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
     locked_files_.erase(it);
   }

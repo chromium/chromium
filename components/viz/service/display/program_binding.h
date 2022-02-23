@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/check_op.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
 #include "components/viz/service/display/shader.h"
@@ -150,7 +151,7 @@ class VIZ_SERVICE_EXPORT ProgramKey {
   UVTextureMode uv_texture_mode_ = UV_TEXTURE_MODE_NA;
 
   ColorConversionMode color_conversion_mode_ = COLOR_CONVERSION_MODE_NONE;
-  const gfx::ColorTransform* color_transform_ = nullptr;
+  raw_ptr<const gfx::ColorTransform> color_transform_ = nullptr;
 
   bool has_tex_clamp_rect_ = false;
 
@@ -349,7 +350,7 @@ class VIZ_SERVICE_EXPORT Program : public ProgramBindingBase {
   void InitializeSolidColorProgram(const ProgramKey& key) {
     // Initialize vertex program.
     vertex_shader_.position_source_ = POSITION_SOURCE_ATTRIBUTE_INDEXED_UNIFORM;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     if (key.aa_mode_ == NO_AA)
       vertex_shader_.has_dummy_variables_ = true;
 #endif

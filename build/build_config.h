@@ -2,33 +2,46 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// This file adds defines about the platform we're currently building on.
+// This file doesn't belong to any GN target by design for faster build and
+// less developer overhead.
+
+// This file adds build flags about the OS we're currently building on. They are
+// defined directly in this file instead of via a `buildflag_header` target in a
+// GN file for faster build. They are defined using the corresponding OS defines
+// (e.g. OS_WIN) which are also defined in this file (except for OS_CHROMEOS,
+// which is set by the build system). These defines are deprecated and should
+// NOT be used directly. For example:
+//    Please Use: #if BUILDFLAG(IS_WIN)
+//    Deprecated: #if defined(OS_WIN)
 //
 //  Operating System:
-//    OS_AIX / OS_ANDROID / OS_ASMJS / OS_FREEBSD / OS_FUCHSIA / OS_IOS /
-//    OS_LINUX / OS_MAC / OS_NACL (SFI or NONSFI) / OS_NETBSD / OS_OPENBSD /
-//    OS_QNX / OS_SOLARIS / OS_WIN
+//    IS_AIX / IS_ANDROID / IS_ASMJS / IS_CHROMEOS / IS_FREEBSD / IS_FUCHSIA /
+//    IS_IOS / IS_LINUX / IS_MAC / IS_NACL / IS_NETBSD / IS_OPENBSD / IS_QNX /
+//    IS_SOLARIS / IS_WIN
 //  Operating System family:
-//    OS_APPLE: IOS or MAC
-//    OS_BSD: FREEBSD or NETBSD or OPENBSD
-//    OS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
+//    IS_APPLE: IOS or MAC
+//    IS_BSD: FREEBSD or NETBSD or OPENBSD
+//    IS_POSIX: AIX or ANDROID or ASMJS or CHROMEOS or FREEBSD or IOS or LINUX
 //              or MAC or NACL or NETBSD or OPENBSD or QNX or SOLARIS
-//
-//  /!\ Note: OS_CHROMEOS is set by the build system, not this file
+
+// This file also adds defines specific to the platform, architecture etc.
 //
 //  Compiler:
 //    COMPILER_MSVC / COMPILER_GCC
 //
 //  Processor:
-//    ARCH_CPU_ARM64 / ARCH_CPU_ARMEL / ARCH_CPU_MIPS / ARCH_CPU_MIPS64 /
-//    ARCH_CPU_MIPS64EL / ARCH_CPU_MIPSEL / ARCH_CPU_PPC64 / ARCH_CPU_S390 /
-//    ARCH_CPU_S390X / ARCH_CPU_X86 / ARCH_CPU_X86_64
+//    ARCH_CPU_ARM64 / ARCH_CPU_ARMEL / ARCH_CPU_LOONG32 / ARCH_CPU_LOONG64 /
+//    ARCH_CPU_MIPS / ARCH_CPU_MIPS64 / ARCH_CPU_MIPS64EL / ARCH_CPU_MIPSEL /
+//    ARCH_CPU_PPC64 / ARCH_CPU_S390 / ARCH_CPU_S390X / ARCH_CPU_X86 /
+//    ARCH_CPU_X86_64 / ARCH_CPU_RISCV64
 //  Processor family:
 //    ARCH_CPU_ARM_FAMILY: ARMEL or ARM64
+//    ARCH_CPU_LOONG_FAMILY: LOONG32 or LOONG64
 //    ARCH_CPU_MIPS_FAMILY: MIPS64EL or MIPSEL or MIPS64 or MIPS
 //    ARCH_CPU_PPC64_FAMILY: PPC64
 //    ARCH_CPU_S390_FAMILY: S390 or S390X
 //    ARCH_CPU_X86_FAMILY: X86 or X86_64
+//    ARCH_CPU_RISCV_FAMILY: Riscv64
 //  Processor features:
 //    ARCH_CPU_31_BITS / ARCH_CPU_32_BITS / ARCH_CPU_64_BITS
 //    ARCH_CPU_BIG_ENDIAN / ARCH_CPU_LITTLE_ENDIAN
@@ -36,18 +49,12 @@
 #ifndef BUILD_BUILD_CONFIG_H_
 #define BUILD_BUILD_CONFIG_H_
 
+#include "build/buildflag.h"
+
 // A set of macros to use for platform detection.
 #if defined(__native_client__)
 // __native_client__ must be first, so that other OS_ defines are not set.
 #define OS_NACL 1
-// OS_NACL comes in two sandboxing technology flavors, SFI or Non-SFI.
-// PNaCl toolchain defines __native_client_nonsfi__ macro in Non-SFI build
-// mode, while it does not in SFI build mode.
-#if defined(__native_client_nonsfi__)
-#define OS_NACL_NONSFI
-#else
-#define OS_NACL_SFI
-#endif
 #elif defined(ANDROID)
 #define OS_ANDROID 1
 #elif defined(__APPLE__)
@@ -67,7 +74,7 @@
 #define OS_LINUX 1
 #endif  // !defined(OS_CHROMEOS)
 // Include a system header to pull in features.h for glibc/uclibc macros.
-#include <unistd.h>
+#include <assert.h>
 #if defined(__GLIBC__) && !defined(__UCLIBC__)
 // We really are using glibc, not uClibc pretending to be glibc.
 #define LIBC_GLIBC 1
@@ -116,6 +123,115 @@
     defined(OS_NETBSD) || defined(OS_OPENBSD) || defined(OS_QNX) || \
     defined(OS_SOLARIS) || defined(OS_ZOS)
 #define OS_POSIX 1
+#endif
+
+// OS build flags
+#if defined(OS_AIX)
+#define BUILDFLAG_INTERNAL_IS_AIX() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_AIX() (0)
+#endif
+
+#if defined(OS_ANDROID)
+#define BUILDFLAG_INTERNAL_IS_ANDROID() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_ANDROID() (0)
+#endif
+
+#if defined(OS_APPLE)
+#define BUILDFLAG_INTERNAL_IS_APPLE() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_APPLE() (0)
+#endif
+
+#if defined(OS_ASMJS)
+#define BUILDFLAG_INTERNAL_IS_ASMJS() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_ASMJS() (0)
+#endif
+
+#if defined(OS_BSD)
+#define BUILDFLAG_INTERNAL_IS_BSD() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_BSD() (0)
+#endif
+
+#if defined(OS_CHROMEOS)
+#define BUILDFLAG_INTERNAL_IS_CHROMEOS() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_CHROMEOS() (0)
+#endif
+
+#if defined(OS_FREEBSD)
+#define BUILDFLAG_INTERNAL_IS_FREEBSD() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_FREEBSD() (0)
+#endif
+
+#if defined(OS_FUCHSIA)
+#define BUILDFLAG_INTERNAL_IS_FUCHSIA() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_FUCHSIA() (0)
+#endif
+
+#if defined(OS_IOS)
+#define BUILDFLAG_INTERNAL_IS_IOS() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_IOS() (0)
+#endif
+
+#if defined(OS_LINUX)
+#define BUILDFLAG_INTERNAL_IS_LINUX() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_LINUX() (0)
+#endif
+
+#if defined(OS_MAC)
+#define BUILDFLAG_INTERNAL_IS_MAC() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_MAC() (0)
+#endif
+
+#if defined(OS_NACL)
+#define BUILDFLAG_INTERNAL_IS_NACL() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_NACL() (0)
+#endif
+
+#if defined(OS_NETBSD)
+#define BUILDFLAG_INTERNAL_IS_NETBSD() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_NETBSD() (0)
+#endif
+
+#if defined(OS_OPENBSD)
+#define BUILDFLAG_INTERNAL_IS_OPENBSD() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_OPENBSD() (0)
+#endif
+
+#if defined(OS_POSIX)
+#define BUILDFLAG_INTERNAL_IS_POSIX() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_POSIX() (0)
+#endif
+
+#if defined(OS_QNX)
+#define BUILDFLAG_INTERNAL_IS_QNX() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_QNX() (0)
+#endif
+
+#if defined(OS_SOLARIS)
+#define BUILDFLAG_INTERNAL_IS_SOLARIS() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_SOLARIS() (0)
+#endif
+
+#if defined(OS_WIN)
+#define BUILDFLAG_INTERNAL_IS_WIN() (1)
+#else
+#define BUILDFLAG_INTERNAL_IS_WIN() (0)
 #endif
 
 // Compiler detection. Note: clang masquerades as GCC on POSIX and as MSVC on
@@ -199,6 +315,21 @@
 #define ARCH_CPU_32_BITS 1
 #define ARCH_CPU_BIG_ENDIAN 1
 #endif
+#elif defined(__loongarch32)
+#define ARCH_CPU_LOONG_FAMILY 1
+#define ARCH_CPU_LOONG32 1
+#define ARCH_CPU_32_BITS 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
+#elif defined(__loongarch64)
+#define ARCH_CPU_LOONG_FAMILY 1
+#define ARCH_CPU_LOONG64 1
+#define ARCH_CPU_64_BITS 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
+#elif defined(__riscv) && (__riscv_xlen == 64)
+#define ARCH_CPU_RISCV_FAMILY 1
+#define ARCH_CPU_RISCV64 1
+#define ARCH_CPU_64_BITS 1
+#define ARCH_CPU_LITTLE_ENDIAN 1
 #else
 #error Please add support for your architecture in build/build_config.h
 #endif

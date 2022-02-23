@@ -47,7 +47,7 @@ void AnimationDelegateViews::OnViewRemovedFromWidget(View* observed_view) {
 }
 
 void AnimationDelegateViews::OnViewIsDeleting(View* observed_view) {
-  DCHECK(scoped_observation_.IsObservingSource(view_));
+  DCHECK(scoped_observation_.IsObservingSource(view_.get()));
   scoped_observation_.Reset();
   view_ = nullptr;
   UpdateAnimationRunner(FROM_HERE);

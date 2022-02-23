@@ -76,11 +76,12 @@ class MediaMobile(_MediaBenchmark):
   # SUPPORTED_PLATFORMS is deprecated, please put system specifier tags
   # from expectations.config in SUPPORTED_PLATFORM_TAGS.
   SUPPORTED_PLATFORM_TAGS = [
-      platforms.ANDROID_NOT_WEBVIEW, platforms.FUCHSIA_ASTRO
+      platforms.ANDROID_NOT_WEBVIEW, platforms.FUCHSIA_ASTRO,
+      platforms.FUCHSIA_SHERLOCK
   ]
   SUPPORTED_PLATFORMS = [
-      story.expectations.ANDROID_NOT_WEBVIEW,
-      story.expectations.FUCHSIA_WEB_ENGINE_SHELL
+      story.expectations.ANDROID_NOT_WEBVIEW, story.expectations.FUCHSIA_ASTRO,
+      story.expectations.FUCHSIA_SHERLOCK
   ]
 
   def CreateStorySet(self, options):

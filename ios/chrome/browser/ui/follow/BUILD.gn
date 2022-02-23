@@ -1,0 +1,34 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("follow") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "follow_site_info.h",
+    "follow_site_info.mm",
+  ]
+  deps = []
+}
+
+source_set("utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "follow_util.h",
+    "follow_util.mm",
+  ]
+  deps = [
+    ":enums",
+    "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/signin",
+    "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/web/public",
+    "//url",
+  ]
+}
+
+source_set("enums") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "follow_action_state.h" ]
+  deps = []
+}

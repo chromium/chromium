@@ -35,7 +35,7 @@
 
 namespace blink {
 
-LayoutRubyText::LayoutRubyText(Element* element) : LayoutBlockFlow(element) {}
+LayoutRubyText::LayoutRubyText(ContainerNode* node) : LayoutBlockFlow(node) {}
 
 LayoutRubyText::~LayoutRubyText() = default;
 

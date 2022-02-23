@@ -14,6 +14,7 @@
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/browser_app_launcher.h"
+#include "chrome/browser/apps/app_service/launch_result_type.h"
 #include "chromeos/crosapi/mojom/app_service.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/services/app_service/public/cpp/app_capability_access_cache.h"
@@ -44,6 +45,8 @@ namespace apps {
 class BrowserAppInstanceForwarder;
 class BrowserAppInstanceTracker;
 
+struct AppLaunchParams;
+
 struct IntentLaunchInfo {
   std::string app_id;
   std::string activity_name;
@@ -72,6 +75,8 @@ class AppServiceProxyLacros : public KeyedService,
 
   void ReInitializeForTesting(Profile* profile);
 
+  Profile* profile() const { return profile_; }
+
   apps::AppRegistryCache& AppRegistryCache();
   apps::AppCapabilityAccessCache& AppCapabilityAccessCache();
 
@@ -82,7 +87,18 @@ class AppServiceProxyLacros : public KeyedService,
   apps::BrowserAppInstanceTracker* BrowserAppInstanceTracker();
 
   // apps::IconLoader overrides.
-  apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
+  absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+  std::unique_ptr<Releaser> LoadIconFromIconKey(
+      AppType app_type,
+      const std::string& app_id,
+      const IconKey& icon_key,
+      IconType icon_type,
+      int32_t size_hint_in_dip,
+      bool allow_placeholder_icon,
+      apps::LoadIconCallback callback) override;
+
+  // TODO(crbug.com/1253250): Will be removed soon. Please use the non mojom
+  // interface.
   std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
       apps::mojom::AppType app_type,
       const std::string& app_id,
@@ -136,6 +152,11 @@ class AppServiceProxyLacros : public KeyedService,
                         GURL url,
                         apps::mojom::LaunchSource launch_source,
                         apps::mojom::WindowInfoPtr window_info = nullptr);
+
+  // Launches an app for the given |params.app_id|. The |params| can also
+  // contain other param such as launch container, window diposition, etc.
+  void LaunchAppWithParams(AppLaunchParams&& params,
+                           LaunchCallback callback = base::DoNothing());
 
   // Sets |permission| for the app identified by |app_id|.
   void SetPermission(const std::string& app_id,
@@ -270,7 +291,17 @@ class AppServiceProxyLacros : public KeyedService,
     explicit InnerIconLoader(AppServiceProxyLacros* host);
 
     // apps::IconLoader overrides.
-    apps::mojom::IconKeyPtr GetIconKey(const std::string& app_id) override;
+    absl::optional<IconKey> GetIconKey(const std::string& app_id) override;
+    std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
+        AppType app_type,
+        const std::string& app_id,
+        const IconKey& icon_key,
+        IconType icon_type,
+        int32_t size_hint_in_dip,
+        bool allow_placeholder_icon,
+        apps::LoadIconCallback callback) override;
+
+    // TODO(crbug.com/1253250): Will be removed soon.
     std::unique_ptr<IconLoader::Releaser> LoadIconFromIconKey(
         apps::mojom::AppType app_type,
         const std::string& app_id,
@@ -287,8 +318,6 @@ class AppServiceProxyLacros : public KeyedService,
     apps::IconLoader* overriding_icon_loader_for_testing_;
   };
 
-  Profile* profile() const { return profile_; }
-
   bool IsValidProfile();
 
   void Initialize();
@@ -297,8 +326,8 @@ class AppServiceProxyLacros : public KeyedService,
   void Shutdown() override;
 
   // crosapi::mojom::AppServiceSubscriber overrides.
-  void OnApps(std::vector<apps::mojom::AppPtr> deltas,
-              apps::mojom::AppType app_type,
+  void OnApps(std::vector<AppPtr> deltas,
+              AppType app_type,
               bool should_notify_initialized) override;
   void OnPreferredAppsChanged(
       apps::mojom::PreferredAppChangesPtr changes) override;

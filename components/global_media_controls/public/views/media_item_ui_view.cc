@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/observer_list.h"
 #include "components/global_media_controls/public/constants.h"
 #include "components/global_media_controls/public/media_item_manager.h"
 #include "components/global_media_controls/public/media_item_ui_observer.h"

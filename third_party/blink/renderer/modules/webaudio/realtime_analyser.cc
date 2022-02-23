@@ -63,8 +63,9 @@ bool RealtimeAnalyser::SetFftSize(uint32_t size) {
 
   // Only allow powers of two within the allowed range.
   if (size > kMaxFFTSize || size < kMinFFTSize ||
-      !audio_utilities::IsPowerOfTwo(size))
+      !audio_utilities::IsPowerOfTwo(size)) {
     return false;
+  }
 
   if (fft_size_ != size) {
     analysis_frame_ = std::make_unique<FFTFrame>(size);
@@ -98,8 +99,9 @@ void RealtimeAnalyser::WriteInput(AudioBus* bus, uint32_t frames_to_process) {
          frames_to_process * sizeof(*dest));
 
   write_index += frames_to_process;
-  if (write_index >= kInputBufferSize)
+  if (write_index >= kInputBufferSize) {
     write_index = 0;
+  }
   SetWriteIndex(write_index);
 }
 
@@ -118,7 +120,7 @@ void ApplyWindow(float* p, size_t n) {
     double x = static_cast<double>(i) / static_cast<double>(n);
     double window =
         a0 - a1 * cos(kTwoPiDouble * x) + a2 * cos(kTwoPiDouble * 2.0 * x);
-    p[i] *= float(window);
+    p[i] *= static_cast<float>(window);
   }
 }
 
@@ -181,7 +183,8 @@ void RealtimeAnalyser::DoFFTAnalysis() {
   for (size_t i = 0; i < n; ++i) {
     std::complex<double> c(real_p_data[i], imag_p_data[i]);
     double scalar_magnitude = abs(c) * magnitude_scale;
-    destination[i] = float(k * destination[i] + (1 - k) * scalar_magnitude);
+    destination[i] =
+        static_cast<float>(k * destination[i] + (1 - k) * scalar_magnitude);
   }
 }
 
@@ -196,7 +199,7 @@ void RealtimeAnalyser::ConvertFloatToDb(DOMFloat32Array* destination_array) {
     for (unsigned i = 0; i < len; ++i) {
       float linear_value = source[i];
       double db_mag = audio_utilities::LinearToDecibels(linear_value);
-      destination[i] = float(db_mag);
+      destination[i] = static_cast<float>(db_mag);
     }
   }
 }
@@ -241,10 +244,12 @@ void RealtimeAnalyser::ConvertToByteData(DOMUint8Array* destination_array) {
           UCHAR_MAX * (db_mag - min_decibels) * range_scale_factor;
 
       // Clip to valid range.
-      if (scaled_value < 0)
+      if (scaled_value < 0) {
         scaled_value = 0;
-      if (scaled_value > UCHAR_MAX)
+      }
+      if (scaled_value > UCHAR_MAX) {
         scaled_value = UCHAR_MAX;
+      }
 
       destination[i] = static_cast<unsigned char>(scaled_value);
     }
@@ -325,10 +330,12 @@ void RealtimeAnalyser::GetByteTimeDomainData(DOMUint8Array* destination_array) {
       double scaled_value = 128 * (value + 1);
 
       // Clip to valid range.
-      if (scaled_value < 0)
+      if (scaled_value < 0) {
         scaled_value = 0;
-      if (scaled_value > UCHAR_MAX)
+      }
+      if (scaled_value > UCHAR_MAX) {
         scaled_value = UCHAR_MAX;
+      }
 
       destination[i] = static_cast<unsigned char>(scaled_value);
     }

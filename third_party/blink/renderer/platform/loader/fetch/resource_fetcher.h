@@ -35,6 +35,7 @@
 #include "third_party/blink/public/mojom/fetch/fetch_api_request.mojom-blink-forward.h"
 #include "third_party/blink/public/mojom/service_worker/controller_service_worker_mode.mojom-blink-forward.h"
 #include "third_party/blink/public/platform/web_url_loader.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_parameters.h"
@@ -249,8 +250,9 @@ class PLATFORM_EXPORT ResourceFetcher
 
   enum IsImageSet { kImageNotImageSet, kImageIsImageSet };
 
-  WARN_UNUSED_RESULT static mojom::blink::RequestContextType
-      DetermineRequestContext(ResourceType, IsImageSet);
+  [[nodiscard]] static mojom::blink::RequestContextType DetermineRequestContext(
+      ResourceType,
+      IsImageSet);
 
   static network::mojom::RequestDestination DetermineRequestDestination(
       ResourceType);
@@ -352,7 +354,7 @@ class PLATFORM_EXPORT ResourceFetcher
                                       ResourceClient*);
 
   Resource* MatchPreload(const FetchParameters& params, ResourceType);
-  void PrintPreloadWarning(Resource*, Resource::MatchStatus);
+  void PrintPreloadMismatch(Resource*, Resource::MatchStatus);
   void InsertAsPreloadIfNecessary(Resource*,
                                   const FetchParameters& params,
                                   ResourceType);

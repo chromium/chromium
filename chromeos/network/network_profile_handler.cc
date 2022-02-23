@@ -24,13 +24,14 @@ namespace chromeos {
 
 namespace {
 
-bool ConvertListValueToStringVector(const base::ListValue& string_list,
-                                    std::vector<std::string>* result) {
-  for (size_t i = 0; i < string_list.GetList().size(); ++i) {
-    std::string str;
-    if (!string_list.GetString(i, &str))
+bool ConvertListValueToStringVector(
+    const base::Value::ConstListView string_list,
+    std::vector<std::string>* result) {
+  for (const base::Value& i : string_list) {
+    const std::string* str = i.GetIfString();
+    if (!str)
       return false;
-    result->push_back(str);
+    result->push_back(*str);
   }
   return true;
 }
@@ -102,12 +103,10 @@ void NetworkProfileHandler::OnPropertyChanged(const std::string& name,
   if (name != shill::kProfilesProperty)
     return;
 
-  const base::ListValue* profiles_value = NULL;
-  value.GetAsList(&profiles_value);
-  DCHECK(profiles_value);
+  DCHECK(value.is_list());
 
   std::vector<std::string> new_profile_paths;
-  bool result = ConvertListValueToStringVector(*profiles_value,
+  bool result = ConvertListValueToStringVector(value.GetListDeprecated(),
                                                &new_profile_paths);
   DCHECK(result);
 

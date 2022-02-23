@@ -9,7 +9,7 @@
 
 #include "base/threading/thread_checker.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "ui/ozone/public/mojom/wayland/wayland_buffer_manager.mojom.h"
+#include "ui/ozone/platform/wayland/mojom/wayland_buffer_manager.mojom.h"
 
 namespace ui {
 

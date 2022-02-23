@@ -15,9 +15,9 @@
 #import "ios/chrome/browser/main/browser_list_factory.h"
 #import "ios/chrome/browser/snapshots/snapshot_browser_agent.h"
 #import "ios/chrome/browser/snapshots/snapshot_cache.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
+#import "ios/web/public/web_state.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -34,8 +34,7 @@ Browser* FindBrowser(NSString* tab_id,
     WebStateList* web_state_list = browser->GetWebStateList();
     for (int i = 0; i < web_state_list->count(); ++i) {
       web::WebState* web_state = web_state_list->GetWebStateAt(i);
-      NSString* current_tab_id =
-          TabIdTabHelper::FromWebState(web_state)->tab_id();
+      NSString* current_tab_id = web_state->GetStableIdentifier();
       if ([current_tab_id isEqualToString:tab_id]) {
         tab_index = i;
         return browser;

@@ -7,33 +7,39 @@
 
 #include <string>
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
 namespace content {
 class WebUIDataSource;
 }  // namespace content
 
 namespace printing {
 
+// Result of `ParseDataPath()`.
+struct PrintPreviewIdAndPageIndex {
+  // Print Preview UI ID.
+  int ui_id;
+
+  // Zero-based page index, or `COMPLETE_PREVIEW_DOCUMENT_INDEX` for a
+  // print-ready PDF.
+  int page_index;
+};
+
 // Adds a request filter for serving preview PDF data.
 void AddDataRequestFilter(content::WebUIDataSource& source);
 
 // Parses a preview PDF data path (i.e., what comes after chrome://print/ or
-// chrome-untrusted://print/), and returns true if the path seems to be valid.
-// `ui_id` and `page_index` are set to the parsed values if the provided
-// pointers aren't `nullptr`.
+// chrome-untrusted://print/).
 //
 // The format for requesting preview PDF data is as follows:
-//   chrome://print/<PrintPreviewUIID>/<PageIndex>/print.pdf
-//   chrome-untrusted://print/<PrintPreviewUIID>/<PageIndex>/print.pdf
-//
-// Required parameters:
-//   <PrintPreviewUIID> = PrintPreview UI ID
-//   <PageIndex> = Page index is zero-based or `COMPLETE_PREVIEW_DOCUMENT_INDEX`
-//                 to represent a print ready PDF.
+//   chrome://print/<ui_id>/<page_index>/print.pdf
+//   chrome-untrusted://print/<ui_id>/<page_index>/print.pdf
 //
 // Example:
 //   chrome://print/123/10/print.pdf
 //   chrome-untrusted://print/123/10/print.pdf
-bool ParseDataPath(const std::string& path, int* ui_id, int* page_index);
+absl::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
+    const std::string& path);
 
 }  // namespace printing
 

@@ -47,8 +47,6 @@ MagnifierE2ETest = class extends E2ETestBase {
     super.testGenCppIncludes();
     GEN(`
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
-#include "chrome/common/extensions/extension_constants.h"
-#include "content/public/test/browser_test.h"
     `);
   }
 
@@ -181,15 +179,85 @@ TEST_F(
       });
     });
 
-TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
+TEST_F(
+    'MagnifierE2ETest', 'MovesFullscreenMagnifierSelectionEvent', function() {
+      this.runWithLoadedDesktop(async function(desktop) {
+        const magnifier = accessibilityCommon.getMagnifierForTest();
+        magnifier.setIsInitializingForTest(false);
+
+        const moveMenuSelectionAssertBounds = async (targetBounds) => {
+          // Send arrow up key.
+          chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+            type:
+                chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+            keyCode: KeyCode.UP
+          });
+
+          // Verify new magnifier bounds include |targetBounds|.
+          await new Promise(resolve => {
+            const boundsChangedListener = newBounds => {
+              if (RectUtil.contains(newBounds, targetBounds)) {
+                chrome.accessibilityPrivate.onMagnifierBoundsChanged
+                    .removeListener(boundsChangedListener);
+                resolve();
+              }
+            };
+            chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+                boundsChangedListener);
+          });
+        };
+
+        // Trigger Chrome menu.
+        chrome.accessibilityPrivate.sendSyntheticKeyEvent({
+          type: chrome.accessibilityPrivate.SyntheticKeyboardEventType.KEYDOWN,
+          keyCode: KeyCode.E,
+          modifiers: {alt: true}
+        });
+
+        // Wait for Chrome menu to open.
+        await new Promise(
+            resolve => desktop.addEventListener(
+                chrome.automation.EventType.MENU_START, resolve, false));
+
+        // Move menu selection to end of menu, and await new magnifier bounds.
+        await moveMenuSelectionAssertBounds(
+            {left: 650, top: 450, width: 0, height: 0});
+      });
+    });
+
+TEST_F('MagnifierE2ETest', 'IgnoresRootNodeFocus', function() {
+  const magnifier = accessibilityCommon.getMagnifierForTest();
+  magnifier.setIsInitializingForTest(false);
+
+  this.runWithLoadedTree('', async function(root) {
+    chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
+        newBounds => {
+          throw new Error(
+              'Magnifier did not ignore focus change on document load - ' +
+              'moved to following location: ' + JSON.stringify(newBounds));
+        });
+
+    // Wait seven seconds to verify magnifier successfully ignored focus on root
+    // node.
+    await new Promise(resolve => setTimeout(resolve, 7000));
+  });
+});
+
+// TODO(crbug.com/1295685): Test is flaky.
+TEST_F('MagnifierE2ETest', 'DISABLED_MagnifierCenterOnPoint', function() {
   this.runWithLoadedTree('', async function(root) {
     const magnifier = accessibilityCommon.getMagnifierForTest();
     magnifier.setIsInitializingForTest(false);
 
     const movePointAssertBounds = async (targetPoint, targetBounds) => {
-      return new Promise(resolve => {
+      // Repeatedly center magnifier on |targetPoint|.
+      const id = setInterval(() => {
+        chrome.accessibilityPrivate.magnifierCenterOnPoint(targetPoint);
+      }, 500);
+
+      // Verify new magnifier bounds include |targetBounds|.
+      await new Promise(resolve => {
         const boundsChangedListener = newBounds => {
-          // Verify new magnifier bounds include |targetBounds|.
           if (RectUtil.contains(newBounds, targetBounds)) {
             chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
                 boundsChangedListener);
@@ -199,10 +267,6 @@ TEST_F('MagnifierE2ETest', 'MagnifierCenterOnPoint', function() {
         };
         chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
             boundsChangedListener);
-        const id = setInterval(() => {
-          // Center magnifier on |targetPoint|.
-          chrome.accessibilityPrivate.magnifierCenterOnPoint(targetPoint);
-        }, 500);
       });
     };
 
@@ -237,9 +301,14 @@ TEST_F('MagnifierE2ETest', 'OnCaretBoundsChanged', function() {
     input.doDefault();
 
     const typeWordsAssertBounds = async targetBounds => {
-      return new Promise(resolve => {
+      // Type words in the input field to move the text caret forward.
+      const id = setInterval(() => {
+        button.doDefault();
+      }, 500);
+
+      // Verify new magnifier bounds include |targetBounds|.
+      await new Promise(resolve => {
         const boundsChangedListener = newBounds => {
-          // Verify new magnifier bounds include |targetBounds|.
           if (RectUtil.contains(newBounds, targetBounds)) {
             chrome.accessibilityPrivate.onMagnifierBoundsChanged.removeListener(
                 boundsChangedListener);
@@ -249,11 +318,6 @@ TEST_F('MagnifierE2ETest', 'OnCaretBoundsChanged', function() {
         };
         chrome.accessibilityPrivate.onMagnifierBoundsChanged.addListener(
             boundsChangedListener);
-
-        const id = setInterval(() => {
-          // Type words in the input field to move the text caret forward.
-          button.doDefault();
-        }, 500);
       });
     };
 

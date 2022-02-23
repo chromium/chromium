@@ -25,8 +25,8 @@
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
 #include "base/trace_event/trace_event.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_custom_extension_provider.h"
-#include "chrome/browser/extensions/api/content_settings/content_settings_service.h"
+#include "extensions/browser/api/content_settings/content_settings_custom_extension_provider.h"
+#include "extensions/browser/api/content_settings/content_settings_service.h"
 #endif
 
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -36,11 +36,11 @@
 #include "chrome/browser/supervised_user/supervised_user_settings_service_factory.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/flags/android/chrome_feature_list.h"
 #include "chrome/browser/installable/installed_webapp_provider.h"
 #include "chrome/browser/notifications/notification_channels_provider_android.h"
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_SESSION_SERVICE)
 #include "chrome/browser/sessions/exit_type_service_factory.h"
@@ -144,7 +144,7 @@ scoped_refptr<RefcountedKeyedService>
   }
 #endif // BUILDFLAG(ENABLE_SUPERVISED_USERS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!profile->IsOffTheRecord()) {
     auto channels_provider =
         std::make_unique<NotificationChannelsProviderAndroid>();

@@ -8,10 +8,8 @@
 #import <objc/runtime.h>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 // Within a given scope, swaps method implementations of a class interface, or
 // between two class interfaces. The argument and return types must match.
@@ -54,7 +52,6 @@ class BASE_EXPORT ScopedObjCClassSwizzler {
   Method new_selector_impl_;
 };
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_OBJC_CLASS_SWIZZLER_H_

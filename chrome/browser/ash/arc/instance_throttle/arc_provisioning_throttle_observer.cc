@@ -11,8 +11,7 @@
 namespace arc {
 
 ArcProvisioningThrottleObserver::ArcProvisioningThrottleObserver()
-    : ThrottleObserver(ThrottleObserver::PriorityLevel::CRITICAL,
-                       "ArcIsProvisioning") {}
+    : ThrottleObserver("ArcIsProvisioning") {}
 
 void ArcProvisioningThrottleObserver::StartObserving(
     content::BrowserContext* context,

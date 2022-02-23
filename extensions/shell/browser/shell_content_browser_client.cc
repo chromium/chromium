@@ -10,7 +10,6 @@
 
 #include "base/command_line.h"
 #include "base/cxx17_backports.h"
-#include "components/guest_view/browser/guest_view_message_filter.h"
 #include "components/nacl/common/buildflags.h"
 #include "content/public/browser/browser_main_runner.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -26,6 +25,7 @@
 #include "content/public/common/user_agent.h"
 #include "content/shell/browser/shell_browser_context.h"
 #include "content/shell/browser/shell_devtools_manager_delegate.h"
+#include "extensions/browser/api/messaging/messaging_api_message_filter.h"
 #include "extensions/browser/api/web_request/web_request_api.h"
 #include "extensions/browser/event_router.h"
 #include "extensions/browser/extension_message_filter.h"
@@ -34,7 +34,7 @@
 #include "extensions/browser/extension_protocols.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_web_contents_observer.h"
-#include "extensions/browser/guest_view/extensions_guest_view_message_filter.h"
+#include "extensions/browser/guest_view/extensions_guest_view.h"
 #include "extensions/browser/guest_view/web_view/web_view_guest.h"
 #include "extensions/browser/process_map.h"
 #include "extensions/browser/url_loader_factory_manager.h"
@@ -109,8 +109,7 @@ void ShellContentBrowserClient::RenderProcessWillLaunch(
   host->AddFilter(
       new ExtensionMessageFilter(render_process_id, browser_context));
   host->AddFilter(
-      new ExtensionsGuestViewMessageFilter(
-          render_process_id, browser_context));
+      new MessagingAPIMessageFilter(render_process_id, browser_context));
   // PluginInfoMessageFilter is not required because app_shell does not have
   // the concept of disabled plugins.
 #if BUILDFLAG(ENABLE_NACL)
@@ -233,21 +232,24 @@ void ShellContentBrowserClient::ExposeInterfacesToRenderer(
     content::RenderProcessHost* render_process_host) {
   associated_registry->AddInterface(base::BindRepeating(
       &EventRouter::BindForRenderer, render_process_host->GetID()));
+  associated_registry->AddInterface(base::BindRepeating(
+      &ExtensionsGuestView::CreateForComponents, render_process_host->GetID()));
+  associated_registry->AddInterface(base::BindRepeating(
+      &ExtensionsGuestView::CreateForExtensions, render_process_host->GetID()));
 }
 
-bool ShellContentBrowserClient::BindAssociatedReceiverFromFrame(
-    content::RenderFrameHost* render_frame_host,
-    const std::string& interface_name,
-    mojo::ScopedInterfaceEndpointHandle* handle) {
-  if (interface_name == extensions::mojom::LocalFrameHost::Name_) {
-    ExtensionWebContentsObserver::BindLocalFrameHost(
-        mojo::PendingAssociatedReceiver<extensions::mojom::LocalFrameHost>(
-            std::move(*handle)),
-        render_frame_host);
-    return true;
-  }
-
-  return false;
+void ShellContentBrowserClient::
+    RegisterAssociatedInterfaceBindersForRenderFrameHost(
+        content::RenderFrameHost& render_frame_host,
+        blink::AssociatedInterfaceRegistry& associated_registry) {
+  associated_registry.AddInterface(base::BindRepeating(
+      [](content::RenderFrameHost* render_frame_host,
+         mojo::PendingAssociatedReceiver<extensions::mojom::LocalFrameHost>
+             receiver) {
+        ExtensionWebContentsObserver::BindLocalFrameHost(std::move(receiver),
+                                                         render_frame_host);
+      },
+      &render_frame_host));
 }
 
 std::vector<std::unique_ptr<content::NavigationThrottle>>
@@ -309,6 +311,7 @@ void ShellContentBrowserClient::
 void ShellContentBrowserClient::RegisterNonNetworkSubresourceURLLoaderFactories(
     int render_process_id,
     int render_frame_id,
+    const absl::optional<url::Origin>& request_initiator_origin,
     NonNetworkURLLoaderFactoryMap* factories) {
   DCHECK(factories);
 
@@ -353,6 +356,7 @@ bool ShellContentBrowserClient::HandleExternalProtocol(
     ui::PageTransition page_transition,
     bool has_user_gesture,
     const absl::optional<url::Origin>& initiating_origin,
+    content::RenderFrameHost* initiator_document,
     mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory) {
   return false;
 }
@@ -399,8 +403,6 @@ void ShellContentBrowserClient::AppendRendererSwitches(
                                  kSwitchNames, base::size(kSwitchNames));
 
 #if BUILDFLAG(ENABLE_NACL)
-  // NOTE: app_shell does not support non-SFI mode, so it does not pass through
-  // SFI switches either here or for the zygote process.
   static const char* const kNaclSwitchNames[] = {
       ::switches::kEnableNaClDebug,
   };

@@ -15,7 +15,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/free_deleter.h"
 #include "base/strings/string_piece_forward.h"
 #include "net/base/net_export.h"

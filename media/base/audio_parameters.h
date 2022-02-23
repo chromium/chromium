@@ -29,7 +29,7 @@ namespace media {
 // instead of in Audio{Input,Output}Buffer to be able to calculate size like so.
 // Use a macro for the alignment value that's the same as
 // AudioBus::kChannelAlignment, since MSVC doesn't accept the latter to be used.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #pragma warning(push)
 #pragma warning(disable : 4324)  // Disable warning for added padding.
 #endif
@@ -56,7 +56,7 @@ struct MEDIA_SHMEM_EXPORT ALIGNAS(PARAMETERS_ALIGNMENT)
   uint32_t bitstream_frames;
 };
 #undef PARAMETERS_ALIGNMENT
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #pragma warning(pop)
 #endif
 
@@ -126,13 +126,20 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
  public:
   // TODO(miu): Rename this enum to something that correctly reflects its
   // semantics, such as "TransportScheme."
+  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.media
+  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: AudioEncodingFormat
+  // GENERATED_JAVA_PREFIX_TO_STRIP: AUDIO_
   enum Format {
-    AUDIO_PCM_LINEAR = 0,            // PCM is 'raw' amplitude samples.
-    AUDIO_PCM_LOW_LATENCY,           // Linear PCM, low latency requested.
-    AUDIO_BITSTREAM_AC3,             // Compressed AC3 bitstream.
-    AUDIO_BITSTREAM_EAC3,            // Compressed E-AC3 bitstream.
-    AUDIO_FAKE,                      // Creates a fake AudioOutputStream object.
-    AUDIO_FORMAT_LAST = AUDIO_FAKE,  // Only used for validation of format.
+    AUDIO_FAKE = 0x00,                // Creates a fake AudioOutputStream object
+    AUDIO_PCM_LINEAR = 0x01,          // PCM is 'raw' amplitude samples.
+    AUDIO_PCM_LOW_LATENCY = 0x02,     // Linear PCM, low latency requested.
+    AUDIO_BITSTREAM_AC3 = 0x04,       // Compressed AC3 bitstream.
+    AUDIO_BITSTREAM_EAC3 = 0x08,      // Compressed E-AC3 bitstream.
+    AUDIO_BITSTREAM_DTS = 0x10,       // Compressed DTS bitstream.
+    AUDIO_BITSTREAM_DTS_HD = 0x20,    // Compressed DTS-HD bitstream.
+    AUDIO_BITSTREAM_IEC61937 = 0x40,  // Compressed IEC61937 bitstream.
+    AUDIO_FORMAT_LAST =
+        AUDIO_BITSTREAM_IEC61937,     // Only used for validation of format.
   };
 
   enum {
@@ -154,7 +161,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     NO_EFFECTS = 0x0,
     ECHO_CANCELLER = 1 << 0,
     DUCKING = 1 << 1,  // Enables ducking if the OS supports it.
-    KEYBOARD_MIC = 1 << 2,
+    // KEYBOARD_MIC used to hold 1 << 2, but has been deprecated.
     HOTWORD = 1 << 3,
     NOISE_SUPPRESSION = 1 << 4,
     AUTOMATIC_GAIN_CONTROL = 1 << 5,
@@ -163,14 +170,24 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
                                            // experimentally be enabled.
     MULTIZONE = 1 << 7,
     AUDIO_PREFETCH = 1 << 8,
+    ALLOW_DSP_ECHO_CANCELLER = 1 << 9,
+    ALLOW_DSP_NOISE_SUPPRESSION = 1 << 10,
+    ALLOW_DSP_AUTOMATIC_GAIN_CONTROL = 1 << 11,
   };
 
   struct HardwareCapabilities {
     HardwareCapabilities(int min_frames_per_buffer, int max_frames_per_buffer)
         : min_frames_per_buffer(min_frames_per_buffer),
-          max_frames_per_buffer(max_frames_per_buffer) {}
+          max_frames_per_buffer(max_frames_per_buffer),
+          bitstream_formats(0) {}
+    HardwareCapabilities(int bitstream_formats)
+        : min_frames_per_buffer(0),
+          max_frames_per_buffer(0),
+          bitstream_formats(bitstream_formats) {}
     HardwareCapabilities()
-        : min_frames_per_buffer(0), max_frames_per_buffer(0) {}
+        : min_frames_per_buffer(0),
+          max_frames_per_buffer(0),
+          bitstream_formats(0) {}
 
     // Minimum and maximum buffer sizes supported by the audio hardware. Opening
     // a device with frames_per_buffer set to a value between min and max should
@@ -179,6 +196,7 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
     // Either value can be 0 and means that the min or max is not known.
     int min_frames_per_buffer;
     int max_frames_per_buffer;
+    int bitstream_formats;
   };
 
   AudioParameters();
@@ -256,6 +274,11 @@ class MEDIA_SHMEM_EXPORT AudioParameters {
 
   absl::optional<HardwareCapabilities> hardware_capabilities() const {
     return hardware_capabilities_;
+  }
+
+  void set_hardware_capabilities(
+      const absl::optional<HardwareCapabilities>& hwc) {
+    hardware_capabilities_ = hwc;
   }
 
   void set_effects(int effects) { effects_ = effects; }

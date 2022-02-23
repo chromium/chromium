@@ -4,7 +4,9 @@
 
 module ash.personalization_app.mojom;
 
+import "mojo/public/mojom/base/big_buffer.mojom";
 import "mojo/public/mojom/base/file_path.mojom";
+import "mojo/public/mojom/base/string16.mojom";
 import "url/mojom/url.mojom";
 
 // This should be kept in sync with |ash::WallpaperLayout|
@@ -32,13 +34,14 @@ enum WallpaperType {
   kPolicy = 5,        // Controlled by policy, can't be changed by the user.
   kThirdParty = 6,    // Current wallpaper is set by a third party app.
   kDevice = 7,        // Current wallpaper is the device policy controlled
-                     // wallpaper. It shows on the login screen if the device
-                     // is an enterprise managed device.
-  kOneShot = 8,      // Current wallpaper is shown one-time only, which doesn't
-                     // belong to a particular user and isn't saved to file. It
-                     // goes away when another wallpaper is shown or the browser
-                     // process exits. Note: the image will never be blurred or
-                     // dimmed.
+                      // wallpaper. It shows on the login screen if the device
+                      // is an enterprise managed device.
+  kOneShot = 8,       // Current wallpaper is shown one-time only, which doesn't
+                      // belong to a particular user and isn't saved to file. It
+                      // goes away when another wallpaper is shown or the
+                      // browser process exits. Note: the image will never be
+                      // blurred or dimmed.
+  kGooglePhotos = 9,  // WallpaperInfo.location contains the Google Photos id.
 };
 
 // The image type specific to online wallpapers. This should be kept in sync
@@ -61,6 +64,32 @@ struct WallpaperCollection {
     url.mojom.Url? preview;
 };
 
+// Encapsulates metadata for a Google Photos album, which is itself displayed in
+// the UI and from which a user may select a photo as their wallpaper.
+struct GooglePhotosAlbum {
+    // Unique identifier for this album.
+    string id;
+
+    // User-generated album title to be displayed.
+    string title;
+
+    // Number of photos stored within this album.
+    int32 photo_count;
+
+    // URL to the bytes of the album's displayed cover photo.
+    url.mojom.Url preview;
+};
+
+// Represents the server-provided response to a Google Photos albums request.
+struct FetchGooglePhotosAlbumsResponse {
+    // List of non-empty Google Photos albums (absent on error).
+    array<GooglePhotosAlbum>? albums;
+
+    // Token that allows the client to fetch more albums not returned in the
+    // current query (absent if the last of the albums was returned).
+    string? resume_token;
+};
+
 // Represents a single image that can be set as user wallpaper.
 struct WallpaperImage {
     // URL of the image file to be displayed in the UI.
@@ -74,10 +103,38 @@ struct WallpaperImage {
 
     // The identifier of a unit of images e.g. Dark/Light variants of the same
     // wallpaper.
-    int32 unit_id;
+    uint64 unit_id;
 
     // The type of the online image .i.e kLight, kDark, etc.
     OnlineImageType type;
+};
+
+// Encapsulates metadata for a Google Photos photo, which can be displayed as a
+// tile in the wallpaper picker UI or chosen as the device wallpaper.
+struct GooglePhotosPhoto {
+    // Unique identifier for this photo.
+    string id;
+
+    // Display name of the photo, derived from the photo's server-side filename.
+    string name;
+
+    // Human-readable string representation of the date the photo was
+    // taken, e.g., "Monday, March 6, 2008", translated into the user's current
+    // locale.
+    mojo_base.mojom.String16 date;
+
+    // URL of the image to be displayed in the UI.
+    url.mojom.Url url;
+};
+
+// Represents the server-provided response to a Google Photos photos request.
+struct FetchGooglePhotosPhotosResponse {
+    // List of photos from the user's Google Photos library (absent on error).
+    array<GooglePhotosPhoto>? photos;
+
+    // Token that allows the client to fetch more photos not returned in the
+    // current query (absent if the last of the photos was returned).
+    string? resume_token;
 };
 
 // Represents the currently selected wallpaper image.
@@ -110,7 +167,8 @@ interface WallpaperObserver {
 
 // Provides APIs to retrieve Wallpaper information. This API is exposed only to
 // the Personalization App (chrome://personalization). It is a mojom wrapper for
-// APIs found in |backdrop_wallpaper.proto|.
+// APIs found in |backdrop_wallpaper.proto| and |WallpaperController| APIs to
+// change the user's wallpaper in Ash.
 interface WallpaperProvider {
     // Called to force the browser window to make the native views transparent
     // so that the user can see wallpaper in fullscreen on their desktop. Safe
@@ -124,8 +182,32 @@ interface WallpaperProvider {
 
     // Fetch a list of WallpaperImage objects from the Backdrop API that can be
     // set as the user's wallpaper. |images| will be null on error.
-    FetchImagesForCollection(string collection_id) => (
-        array<WallpaperImage>? images);
+    FetchImagesForCollection(string collection_id) =>
+        (array<WallpaperImage>? images);
+
+    // Fetch the list of albums the user has created in Google Photos. Albums
+    // with no photo assets will not be returned. On error, |response.albums|
+    // will be absent. |response.resume_token| will be present when there are
+    // more results to fetch; |resume_token| will be present when this is a
+    // follow-up query to one that indicated there were more results to fetch.
+    FetchGooglePhotosAlbums(string? resume_token) =>
+        (FetchGooglePhotosAlbumsResponse response);
+
+    // Fetch the number of photos the user has stored in Google Photos. |count|
+    // will be -1 on failure.
+    FetchGooglePhotosCount() => (int32 count);
+
+    // Fetch photo(s) the user has stored in Google Photos. If provided,
+    // |item_id| specifies one photo to fetch. If provided, |album_id| specifies
+    // an album whose photos are fetched. At most one of |item_id| or |album_id|
+    // should be provided. If neither ID is provided, then the user's entire
+    // library is fetched. Only visible photos will be returned. On error,
+    // |response.photos| will be absent. |response.resume_token| will be present
+    // when there are more results to fetch; |resume_token| will be present when
+    // this is a follow-up query to one that indicated there were more results
+    // to fetch.
+    FetchGooglePhotosPhotos(string? item_id, string? album_id,
+        string? resume_token) => (FetchGooglePhotosPhotosResponse response);
 
     // Fetch a list of FilePath objects from the local file system. |images|
     // will be null on failure.
@@ -147,6 +229,9 @@ interface WallpaperProvider {
     // against list of file paths returned by |GetLocalImages|.
     SelectLocalImage(mojo_base.mojom.FilePath path, WallpaperLayout layout,
         bool preview_mode) => (bool success);
+
+    // Sets the Google Photos photo with the given id as the wallpaper.
+    SelectGooglePhotosPhoto(string id) => (bool success);
 
     // Sets the custom layout for current wallpaper
     SetCustomWallpaperLayout(WallpaperLayout layout);
@@ -171,4 +256,154 @@ interface WallpaperProvider {
     // Cancels the wallpaper preview and reverts to the user wallpaper. Must be
     // called in preview mode.
     CancelPreviewWallpaper();
+};
+
+// Receives information whenever there are theme related changes such as color
+// mode.
+interface ThemeObserver {
+  // Triggered by |ColorModeObserver::OnColorModeChanged|. Retrieves information
+  // whether dark mode is enabled
+  OnColorModeChanged(bool dark_mode_enabled);
+};
+
+// Provides APIs to expose theme settings such dark/light color mode.
+interface ThemeProvider {
+  // Binds a listener to start receiving updates on color mode changes.
+  SetThemeObserver(pending_remote<ThemeObserver> observer);
+
+  // Disables or enables dark color mode.
+  SetColorModePref(bool dark_mode_enabled);
+};
+
+// Contains information about the current user.
+struct UserInfo {
+  // The display email of the user.
+  string email;
+
+  // The display name of the user.
+  string name;
+};
+
+// Receives necessary information to display and change user image for the
+// current user.
+interface UserImageObserver {
+  // Triggered by |UserManager::Observer::OnUserImageChanged|.
+  OnUserImageChanged(url.mojom.Url image);
+
+  // Triggered by |UserManager::Observer::OnUserProfileImageUpdated|.
+  OnUserProfileImageUpdated(url.mojom.Url profile_image);
+
+  // Triggered by
+  // |ash::CameraPresenceNotifier::Observer::OnCameraPresenceCheckDone|.
+  OnCameraPresenceCheckDone(bool is_camera_present);
+};
+
+// A default user image stored on the device that can be set as the user's
+// device avatar image.
+struct DefaultUserImage {
+  // A user image is identified by an index.
+  int32 index;
+
+  // The title of the image to display to the user.
+  mojo_base.mojom.String16 title;
+
+  // A url to display the image. Typically |chrome://theme/IDR_LOGIN_DEFAULT_X|.
+  url.mojom.Url url;
+};
+
+// Provides APIs to view information about the current user. This API is exposed
+// only to the Personalization App (chrome://personalization), and is
+// implemented by |PersonalizationAppUserProviderImpl| in chrome.
+interface UserProvider {
+  // Binds an observer for the current user's device image.
+  SetUserImageObserver(pending_remote<UserImageObserver> observer);
+
+  // Return information about the current user.
+  GetUserInfo() => (UserInfo user_info);
+
+  // Returns an array of default user images to choose from.
+  GetDefaultUserImages() => (array<DefaultUserImage> default_user_images);
+
+  // Select one of the default images from the provided default user images.
+  SelectDefaultImage(int32 index);
+
+  // Select the downloaded profile image as the user image.
+  SelectProfileImage();
+
+  // Set a camera image as the user's device avatar. |data| is a uint8 array of
+  // the png data.
+  SelectCameraImage(mojo_base.mojom.BigBuffer data);
+
+  // Select one of the available images on disk as user's device image.
+  // This opens a file dialog box from which the user can select a file.
+  SelectImageFromDisk();
+};
+
+// The source of the screensaver images come from.
+enum TopicSource {
+  // Google Photos.
+  kGooglePhotos = 0,
+
+  // Art related sources in Backdrop server.
+  kArtGallery = 1,
+};
+
+// Temperature unit for screensaver weather section.
+enum TemperatureUnit {
+  kFahrenheit = 0,
+  kCelsius = 1,
+};
+
+// Album metadaba to display. Contains necessary data for both topic sources.
+struct AmbientModeAlbum {
+  // Unique identifier for this album. It assumes unique id across different
+  // topic sources.
+  string id;
+
+  // Whether this album is selected.
+  bool checked;
+
+  // Title of the settings or the album name of the Google Photos.
+  string title;
+
+  string description;
+
+  int32 number_of_photos;
+
+  // Indicates which topic source this album belongs to.
+  TopicSource topic_source;
+
+  // The image URL for preview.
+  url.mojom.Url url;
+};
+
+// Receives information whenever there are ambient mode pref changes.
+interface AmbientObserver {
+  // Retrieves information whether ambient mode is enabled.
+  OnAmbientModeEnabledChanged(bool ambient_mode_enabled);
+
+  // Notifies the JS side about the current state of TopicSource.
+  OnTopicSourceChanged(TopicSource topic_source);
+
+  // Notifies the JS side about the current state of TemperatureUnit.
+  OnTemperatureUnitChanged(TemperatureUnit temperature_unit);
+
+  // Notifies the JS side about the current albums.
+  OnAlbumsChanged(array<AmbientModeAlbum> albums);
+};
+
+// Provides APIs to expose Ambient mode settings.
+// Used by the Personalization Hub.
+interface AmbientProvider {
+  // Boolean pref for whether ambient mode is enabled.
+  IsAmbientModeEnabled() => (bool enabled);
+
+  // Enables or disables ambient mode.
+  SetAmbientModeEnabled(bool enabled);
+
+  // Binds a listener to start receiving updates on ambient mode pref changes.
+  SetAmbientObserver(pending_remote<AmbientObserver> observer);
+
+  // Sets the ambient mode topic source.
+  SetTopicSource(TopicSource topic_source);
 };

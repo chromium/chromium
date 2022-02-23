@@ -14,7 +14,7 @@ class TestLauncherDelegateImpl : public content::TestLauncherDelegate {
  public:
   int RunTestSuite(int argc, char** argv) override;
   std::string GetUserDataDirectoryCommandLineSwitch() override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content::ContentMainDelegate* CreateContentMainDelegate() override;
 #endif
 };

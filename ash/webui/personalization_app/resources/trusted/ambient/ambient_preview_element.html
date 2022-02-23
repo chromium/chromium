@@ -1,0 +1,36 @@
+<style include="common-style">
+  #container {
+    display: grid;
+    grid-template-areas:
+      '. slot        .'
+      '. image       .'
+      '. description .'
+      '. .           .';
+    grid-template-columns: 20px 1fr 20px;
+    grid-template-rows: minmax(0, 48px) minmax(158px, 220px) 1fr 20px;
+  }
+
+  ::slotted(div[id='ambientLabel']) {
+    align-items: center;
+    background: none;
+    border: none;
+    display: flex;
+    flex-flow: row nowrap;
+    grid-area: slot;
+    justify-content: space-between;
+    padding: 0;
+  }
+
+  #imageContainer {
+    grid-area: image;
+  }
+
+  #description {
+    grid-area: description;
+  }
+</style>
+<div class="preview-container" id="container">
+  <slot></slot>
+  <div id="imageContainer"></div>
+  <div id="description"></div>
+</div>

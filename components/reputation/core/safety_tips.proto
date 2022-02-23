@@ -34,6 +34,35 @@ message HostPattern {
   optional string regex = 1;
 }
 
+message HeuristicLaunchConfig {
+  // The heuristic to be launched with a warning UI.
+  // Important: Changes to heuristics MUST be added as a NEW heuristic (e.g.
+  // by adding a new enum value with "_V2" at the end).
+  // Otherwise, rolling out the new version will also enable the buggy version
+  // of the heuristic on older versions of Chrome.
+  //
+  // The values in this enum are intended to be temporary and used only for
+  // new heuristic launches. Do not reuse this enum for any other purpose,
+  // use the existing LookalikeHeuristic enum in this file.
+  enum Heuristic {
+    HEURISTIC_UNKNOWN = 0;
+    HEURISTIC_CHARACTER_SWAP_ENGAGED_SITES = 1;
+    HEURISTIC_CHARACTER_SWAP_TOP_SITES = 2;
+  }
+  optional Heuristic heuristic = 1;
+
+  // Percentage of all sites this heuristic should be enabled on the Stable
+  // Channel. The determination of which sites are enabled is based on hash
+  // prefixes of the sites.
+  // A value of 0 means the heuristic isn't enabled on any site on Stable.
+  // A value of 100 means the heuristic is enabled on all sites on Stable.
+  //
+  // If a launch config is found for a heuristic, the heuristic is enabled for
+  // 90% of sites on Canary/Dev and 50% on Beta, regardless of the value of this
+  // field.
+  optional uint32 launch_percentage = 2;
+}
+
 // Configuration for the safety tips component. A binary version of this proto
 // will be distributed to Chrome clients via component updater. The binary will
 // contain a single instance of this message.
@@ -70,4 +99,8 @@ message SafetyTipsConfig {
   // components/url_formatter/spoof_checks/common_words. The combined list is
   // used in some lookalike heuristics to prevent common false positives.
   repeated string common_word = 5;
+
+  // Launch configurations for new heuristics. Each new heuristic being launched
+  // gets its own config. Multiple heuristics can be enabled at the same time.
+  repeated HeuristicLaunchConfig launch_config = 6;
 }

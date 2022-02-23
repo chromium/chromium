@@ -8,8 +8,6 @@ source_set("lib") {
   sources = [
     "audio_source_fetcher_impl.cc",
     "audio_source_fetcher_impl.h",
-    "cloud_speech_recognition_client.cc",
-    "cloud_speech_recognition_client.h",
     "speech_recognition_recognizer_impl.cc",
     "speech_recognition_recognizer_impl.h",
     "speech_recognition_service_impl.cc",
@@ -44,22 +42,5 @@ source_set("lib") {
     "//services/audio/public/cpp",
     "//services/network/public/cpp",
     "//services/network/public/mojom",
-  ]
-}
-
-source_set("unit_tests") {
-  testonly = true
-
-  sources = [ "cloud_speech_recognition_client_unittest.cc" ]
-
-  deps = [
-    ":lib",
-    "//base",
-    "//base/test:test_support",
-    "//chrome/test:test_support",
-    "//components/speech",
-    "//content/public/browser:proto",
-    "//testing/gmock",
-    "//testing/gtest",
   ]
 }

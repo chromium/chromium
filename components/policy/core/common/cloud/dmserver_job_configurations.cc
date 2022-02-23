@@ -7,6 +7,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "components/policy/core/common/cloud/cloud_policy_client.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
+#include "components/policy/core/common/cloud/device_management_service.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -95,6 +96,8 @@ const char* JobTypeToRequestType(
       break;
     case DeviceManagementService::JobConfiguration::TYPE_UPLOAD_EUICC_INFO:
       return dm_protocol::kValueRequestUploadEuiccInfo;
+    case DeviceManagementService::JobConfiguration::TYPE_CHROME_PROFILE_REPORT:
+      return dm_protocol::kValueRequestChromeProfileReport;
   }
   NOTREACHED() << "Invalid job type " << type;
   return "";

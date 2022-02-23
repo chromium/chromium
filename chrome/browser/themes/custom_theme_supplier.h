@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_THEMES_CUSTOM_THEME_SUPPLIER_H_
 
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/layout.h"
 #include "ui/color/color_provider_manager.h"
@@ -63,8 +64,8 @@ class CustomThemeSupplier
   // writes the corresponding value to the output parameter. These methods
   // should not return the default data. These methods should only be called
   // from the UI thread.
-  virtual bool GetTint(int id, color_utils::HSL* hsl) const;
-  virtual bool GetColor(int id, SkColor* color) const;
+  bool GetTint(int id, color_utils::HSL* hsl) const override;
+  bool GetColor(int id, SkColor* color) const override;
   virtual bool GetDisplayProperty(int id, int* result) const;
 
   // Returns the theme image for |id|. Returns an empty image if no image is
@@ -78,7 +79,7 @@ class CustomThemeSupplier
       ui::ResourceScaleFactor scale_factor) const;
 
   // Whether this theme provides an image for |id|.
-  virtual bool HasCustomImage(int id) const;
+  bool HasCustomImage(int id) const override;
 
   // Returns whether or not the default incognito colors can be used with this
   // theme. This is a workaround for the IncreasedContrastThemeSupplier that

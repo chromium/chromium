@@ -28,6 +28,8 @@ class GLEGLUtilityX11 : public PlatformGLEGLUtility {
                            gfx::GpuExtraInfo& gpu_extra_info) const override;
   bool X11DoesVisualHaveAlphaForTest() const override;
   bool HasVisualManager() override;
+  absl::optional<base::ScopedEnvironmentVariableOverride>
+  MaybeGetScopedDisplayUnsetForVulkan() override;
 };
 
 }  // namespace ui

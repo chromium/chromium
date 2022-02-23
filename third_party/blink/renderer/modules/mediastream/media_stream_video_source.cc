@@ -15,9 +15,9 @@
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/token.h"
+#include "build/build_config.h"
 #include "third_party/blink/public/mojom/mediastream/media_stream.mojom-blink.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util_video_device.h"
@@ -104,9 +104,13 @@ void MediaStreamVideoSource::AddTrack(
       // and OnRestartDone().
       break;
     }
-    case ENDED:
+    case ENDED: {
+      FinalizeAddPendingTracks(
+          mojom::blink::MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO);
+      break;
+    }
     case STARTED: {
-      FinalizeAddPendingTracks();
+      FinalizeAddPendingTracks(mojom::blink::MediaStreamRequestResult::OK);
       break;
     }
   }
@@ -259,7 +263,7 @@ void MediaStreamVideoSource::OnStopForRestartDone(bool did_stop_for_restart) {
   } else {
     state_ = STARTED;
     StartFrameMonitoring();
-    FinalizeAddPendingTracks();
+    FinalizeAddPendingTracks(mojom::blink::MediaStreamRequestResult::OK);
   }
   DCHECK(restart_callback_);
 
@@ -299,7 +303,7 @@ void MediaStreamVideoSource::OnRestartDone(bool did_restart) {
   if (did_restart) {
     state_ = STARTED;
     StartFrameMonitoring();
-    FinalizeAddPendingTracks();
+    FinalizeAddPendingTracks(mojom::blink::MediaStreamRequestResult::OK);
   } else {
     state_ = STOPPED_FOR_RESTART;
   }
@@ -427,20 +431,15 @@ void MediaStreamVideoSource::OnStartDone(
 
   // This object can be deleted after calling FinalizeAddPendingTracks. See
   // comment in the header file.
-  FinalizeAddPendingTracks();
+  FinalizeAddPendingTracks(result);
 }
 
-void MediaStreamVideoSource::FinalizeAddPendingTracks() {
+void MediaStreamVideoSource::FinalizeAddPendingTracks(
+    mojom::blink::MediaStreamRequestResult result) {
   DCHECK(GetTaskRunner()->BelongsToCurrentThread());
   Vector<PendingTrackInfo> pending_track_descriptors;
   pending_track_descriptors.swap(pending_tracks_);
   for (auto& track_info : pending_track_descriptors) {
-    auto result = mojom::blink::MediaStreamRequestResult::OK;
-    if (state_ != STARTED) {
-      result =
-          mojom::blink::MediaStreamRequestResult::TRACK_START_FAILURE_VIDEO;
-    }
-
     if (result == mojom::blink::MediaStreamRequestResult::OK) {
       GetTrackAdapter()->AddTrack(
           track_info.track, track_info.frame_callback,
@@ -518,11 +517,14 @@ bool MediaStreamVideoSource::SupportsEncodedOutput() const {
   return false;
 }
 
+#if !BUILDFLAG(IS_ANDROID)
 void MediaStreamVideoSource::Crop(
     const base::Token& crop_id,
+    uint32_t crop_version,
     base::OnceCallback<void(media::mojom::CropRequestResult)> callback) {
   std::move(callback).Run(media::mojom::CropRequestResult::kErrorGeneric);
 }
+#endif
 
 VideoCaptureFeedbackCB MediaStreamVideoSource::GetFeedbackCallback() const {
   // Each source implementation has to implement its own feedback callbacks.

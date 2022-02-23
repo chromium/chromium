@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/logging.h"
 #include "base/no_destructor.h"
 #include "base/posix/eintr_wrapper.h"
 #include "base/process/kill.h"

@@ -9,13 +9,16 @@
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/unguessable_token.h"
 #include "chromeos/components/cdm_factory_daemon/cdm_storage_adapter.h"
+#include "chromeos/components/cdm_factory_daemon/chromeos_cdm_context.h"
 #include "chromeos/components/cdm_factory_daemon/content_decryption_module_adapter.h"
 #include "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom.h"
 #include "media/base/content_decryption_module.h"
+#include "media/base/decrypt_config.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
@@ -56,6 +59,44 @@ void GetOutputProtectionOnTaskRunner(
       std::move(output_protection));
 }
 
+class SingletonCdmContextRef : public media::CdmContextRef {
+ public:
+  explicit SingletonCdmContextRef(media::CdmContext* cdm_context)
+      : cdm_context_(cdm_context) {}
+  ~SingletonCdmContextRef() override = default;
+
+  // media::CdmContextRef
+  media::CdmContext* GetCdmContext() override {
+    // Safe because we are a singleton for the process.
+    return cdm_context_;
+  }
+
+ private:
+  media::CdmContext* cdm_context_;
+};
+
+class ArcCdmContext : public ChromeOsCdmContext, public media::CdmContext {
+ public:
+  ArcCdmContext() = default;
+  ~ArcCdmContext() override = default;
+
+  // ChromeOsCdmContext implementation.
+  void GetHwKeyData(const media::DecryptConfig* decrypt_config,
+                    const std::vector<uint8_t>& hw_identifier,
+                    GetHwKeyDataCB callback) override {
+    // TODO(jkardatzke): We will need to implement this for Intel, but it is not
+    // used by AMD.
+    NOTREACHED();
+  }
+  std::unique_ptr<media::CdmContextRef> GetCdmContextRef() override {
+    return std::make_unique<SingletonCdmContextRef>(this);
+  }
+  bool UsingArcCdm() const override { return true; }
+
+  // media::CdmContext implementation.
+  ChromeOsCdmContext* GetChromeOsCdmContext() override { return this; }
+};
+
 }  // namespace
 
 ChromeOsCdmFactory::ChromeOsCdmFactory(
@@ -78,14 +119,13 @@ ChromeOsCdmFactory::GetBrowserCdmFactoryReceiver() {
 }
 
 void ChromeOsCdmFactory::Create(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     const media::SessionMessageCB& session_message_cb,
     const media::SessionClosedCB& session_closed_cb,
     const media::SessionKeysChangeCB& session_keys_change_cb,
     const media::SessionExpirationUpdateCB& session_expiration_update_cb,
     media::CdmCreatedCB cdm_created_cb) {
-  DVLOG(1) << __func__ << " key system=" << key_system;
+  DVLOG(1) << __func__ << " cdm_config=" << cdm_config;
   // Check that the user has Verified Access enabled in their Chrome settings
   // and if they do not then block this connection since OEMCrypto utilizes
   // remote attestation as part of verification.
@@ -98,9 +138,8 @@ void ChromeOsCdmFactory::Create(
   }
   cdm_document_service_->IsVerifiedAccessEnabled(base::BindOnce(
       &ChromeOsCdmFactory::OnVerifiedAccessEnabled, weak_factory_.GetWeakPtr(),
-      key_system, cdm_config, session_message_cb, session_closed_cb,
-      session_keys_change_cb, session_expiration_update_cb,
-      std::move(cdm_created_cb)));
+      cdm_config, session_message_cb, session_closed_cb, session_keys_change_cb,
+      session_expiration_update_cb, std::move(cdm_created_cb)));
 }
 
 // static
@@ -125,8 +164,13 @@ void ChromeOsCdmFactory::GetScreenResolutions(GetScreenResolutionsCB callback) {
   GetBrowserCdmFactoryRemote()->GetScreenResolutions(std::move(callback));
 }
 
+// static
+media::CdmContext* ChromeOsCdmFactory::GetArcCdmContext() {
+  static base::NoDestructor<ArcCdmContext> arc_cdm_context;
+  return arc_cdm_context.get();
+}
+
 void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
-    const std::string& key_system,
     const media::CdmConfig& cdm_config,
     const media::SessionMessageCB& session_message_cb,
     const media::SessionClosedCB& session_closed_cb,
@@ -151,7 +195,7 @@ void ChromeOsCdmFactory::OnVerifiedAccessEnabled(
     GetFactoryTaskRunner()->PostTask(
         FROM_HERE,
         base::BindOnce(
-            &CreateFactoryOnTaskRunner, key_system,
+            &CreateFactoryOnTaskRunner, cdm_config.key_system,
             base::BindOnce(
                 &CreateFactoryCallback, base::ThreadTaskRunnerHandle::Get(),
                 base::BindOnce(

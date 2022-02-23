@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/storage_partition_impl.h"
@@ -77,7 +78,7 @@ class OriginPolicyThrottleTest : public RenderViewHostTestHarness,
   std::unique_ptr<MockNavigationHandle> nav_handle_;
   base::test::ScopedFeatureList features_;
   OriginPolicyErrorPageContentBrowserClient test_client_;
-  ContentBrowserClient* old_client_;
+  raw_ptr<ContentBrowserClient> old_client_;
 };
 
 INSTANTIATE_TEST_SUITE_P(OriginPolicyThrottleTests,

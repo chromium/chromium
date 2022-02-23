@@ -37,6 +37,10 @@ class ASH_EXPORT AppListBubbleEventFilter : public ui::EventHandler {
   AppListBubbleEventFilter& operator=(const AppListBubbleEventFilter&) = delete;
   ~AppListBubbleEventFilter() override;
 
+  // Changes the button to check (see class comment). Useful if the app list
+  // has changed displays, so a different home button needs to be checked.
+  void SetButton(views::View* button);
+
   // ui::EventHandler:
   void OnMouseEvent(ui::MouseEvent* event) override;
   void OnTouchEvent(ui::TouchEvent* event) override;
@@ -45,7 +49,7 @@ class ASH_EXPORT AppListBubbleEventFilter : public ui::EventHandler {
   void ProcessPressedEvent(const ui::LocatedEvent& event);
 
   views::Widget* const widget_;
-  views::View* const button_;
+  views::View* button_;  // May be null.
   base::RepeatingClosure on_click_outside_;
 };
 

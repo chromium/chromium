@@ -24,6 +24,7 @@
 #include "third_party/blink/renderer/core/layout/table_layout_algorithm.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
 namespace blink {

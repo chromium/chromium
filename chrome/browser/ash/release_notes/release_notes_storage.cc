@@ -28,7 +28,7 @@ namespace {
 // This stores the latest milestone with new Release Notes content. If the last
 // milestone the user has seen the notification is before this, a new
 // notification will be shown.
-constexpr int kLastChromeVersionWithReleaseNotes = 96;
+constexpr int kLastChromeVersionWithReleaseNotes = 100;
 constexpr int kTimesToShowSuggestionChip = 3;
 
 int GetMilestone() {

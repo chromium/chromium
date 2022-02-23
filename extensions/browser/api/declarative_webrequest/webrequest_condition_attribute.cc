@@ -12,7 +12,6 @@
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
@@ -138,21 +137,21 @@ WebRequestConditionAttributeResourceType::Create(
     std::string* error,
     bool* bad_message) {
   DCHECK(instance_type == keys::kResourceTypeKey);
-  const base::ListValue* value_as_list = nullptr;
-  if (!value->GetAsList(&value_as_list)) {
+  if (!value->is_list()) {
     *error = ErrorUtils::FormatErrorMessage(kInvalidValue,
                                             keys::kResourceTypeKey);
     return nullptr;
   }
-
-  size_t number_types = value_as_list->GetList().size();
+  base::Value::ConstListView list = value->GetListDeprecated();
 
   std::vector<WebRequestResourceType> passed_types;
-  passed_types.reserve(number_types);
-  for (size_t i = 0; i < number_types; ++i) {
+  passed_types.reserve(list.size());
+  for (const auto& item : list) {
     std::string resource_type_string;
+    if (item.is_string())
+      resource_type_string = item.GetString();
     passed_types.push_back(WebRequestResourceType::OTHER);
-    if (!value_as_list->GetString(i, &resource_type_string) ||
+    if (resource_type_string.empty() ||
         !ParseWebRequestResourceType(resource_type_string,
                                      &passed_types.back())) {
       *error = ErrorUtils::FormatErrorMessage(kInvalidValue,
@@ -224,7 +223,7 @@ WebRequestConditionAttributeContentType::Create(
     return nullptr;
   }
   std::vector<std::string> content_types;
-  for (const auto& entry : value->GetList()) {
+  for (const auto& entry : value->GetListDeprecated()) {
     if (!entry.is_string()) {
       *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
       return nullptr;
@@ -296,7 +295,7 @@ class HeaderMatcher {
   // dictionaries of the type declarativeWebRequest.HeaderFilter (see
   // declarative_web_request.json).
   static std::unique_ptr<const HeaderMatcher> Create(
-      const base::ListValue* tests);
+      const base::Value::ConstListView tests);
 
   // Does |this| match the header "|name|: |value|"?
   bool TestNameValue(const std::string& name, const std::string& value) const;
@@ -368,13 +367,13 @@ class HeaderMatcher {
 
 // HeaderMatcher implementation.
 
-HeaderMatcher::~HeaderMatcher() {}
+HeaderMatcher::~HeaderMatcher() = default;
 
 // static
 std::unique_ptr<const HeaderMatcher> HeaderMatcher::Create(
-    const base::ListValue* tests) {
+    const base::Value::ConstListView tests) {
   std::vector<std::unique_ptr<const HeaderMatchTest>> header_tests;
-  for (const auto& entry : tests->GetList()) {
+  for (const auto& entry : tests) {
     const base::DictionaryValue* tests_dict = nullptr;
     if (!entry.GetAsDictionary(&tests_dict))
       return nullptr;
@@ -497,9 +496,8 @@ HeaderMatcher::HeaderMatchTest::Create(const base::DictionaryValue* tests) {
         is_name ? &name_match : &value_match;
     switch (content->type()) {
       case base::Value::Type::LIST: {
-        const base::ListValue* list = nullptr;
-        CHECK(content->GetAsList(&list));
-        for (const auto& elem : list->GetList()) {
+        CHECK(content->is_list());
+        for (const auto& elem : content->GetListDeprecated()) {
           matching_tests->push_back(
               StringMatchTest::Create(elem, match_type, !is_name));
         }
@@ -555,15 +553,14 @@ std::unique_ptr<const HeaderMatcher> PrepareHeaderMatcher(
     const std::string& name,
     const base::Value* value,
     std::string* error) {
-  const base::ListValue* value_as_list = nullptr;
-  if (!value->GetAsList(&value_as_list)) {
+  if (!value->is_list()) {
     *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
     return nullptr;
   }
 
   std::unique_ptr<const HeaderMatcher> header_matcher(
-      HeaderMatcher::Create(value_as_list));
-  if (header_matcher.get() == nullptr)
+      HeaderMatcher::Create(value->GetListDeprecated()));
+  if (!header_matcher.get())
     *error = ErrorUtils::FormatErrorMessage(kInvalidValue, name);
   return header_matcher;
 }
@@ -730,7 +727,7 @@ bool ParseListOfStages(const base::Value& value, int* out_stages) {
     return false;
 
   int stages = 0;
-  for (const auto& entry : value.GetList()) {
+  for (const auto& entry : value.GetListDeprecated()) {
     if (!entry.is_string())
       return false;
     const std::string& stage_name = entry.GetString();

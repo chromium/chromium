@@ -7,8 +7,10 @@ import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://test/chai_assert.js';
 
 import {EntryList, FakeEntryImpl} from '../../common/js/files_app_entry_types.js';
+import {metrics} from '../../common/js/metrics.js';
 import {installMockChrome} from '../../common/js/mock_chrome.js';
 import {VolumeManagerCommon} from '../../common/js/volume_manager_types.js';
+import {DirectoryChangeEvent} from '../../externs/directory_change_event.js';
 import {FakeEntry} from '../../externs/files_app_entry_interfaces.js';
 
 import {DirectoryModel} from './directory_model.js';
@@ -39,9 +41,18 @@ let myFilesEntry;
  */
 let fileTypeFiltersController;
 
+/**
+ * Mock metrics.
+ * @param {string} name
+ * @param {*} value
+ * @param {Array<*>|number=} opt_validValues
+ */
+metrics.recordEnum = function(name, value, opt_validValues) {};
+
 export function setUp() {
   // Mock loadTimeData strings.
   loadTimeData.resetForTesting({
+    MEDIA_VIEW_ALL_ROOT_LABEL: 'All',
     MEDIA_VIEW_AUDIO_ROOT_LABEL: 'Audio',
     MEDIA_VIEW_IMAGES_ROOT_LABEL: 'Images',
     MEDIA_VIEW_VIDEOS_ROOT_LABEL: 'Videos',
@@ -86,7 +97,7 @@ export function setUp() {
       this.currentDirEntry = dirEntry;
 
       // Emit 'directory-changed' event synchronously to simplify testing.
-      const event = new Event('directory-changed');
+      const event = new DirectoryChangeEvent('directory-changed');
       event.previousDirEntry = previousDirEntry;
       event.newDirEntry = this.currentDirEntry;
       this.dispatchEvent(event);
@@ -103,7 +114,8 @@ export function setUp() {
   directoryModel = MockDirectoryModel.create();
   recentEntry = new FakeEntryImpl(
       'Recent', VolumeManagerCommon.RootType.RECENT,
-      chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE);
+      chrome.fileManagerPrivate.SourceRestriction.ANY_SOURCE,
+      chrome.fileManagerPrivate.RecentFileType.ALL);
   fileTypeFiltersController =
       new FileTypeFiltersController(container, directoryModel, recentEntry);
 
@@ -113,68 +125,83 @@ export function setUp() {
 }
 
 /**
- * Tests that creating FileTypeFiltersController generates three buttons in the
+ * Tests that creating FileTypeFiltersController generates four buttons in the
  * given container element.
  */
 export function testCreatedButtonLabels() {
   const buttons = container.children;
-  assertEquals(buttons.length, 3);
+  assertEquals(buttons.length, 4);
 
-  assertEquals(buttons[0].textContent, 'Audio');
-  assertEquals(buttons[1].textContent, 'Images');
-  assertEquals(buttons[2].textContent, 'Videos');
+  assertEquals(buttons[0].textContent, 'All');
+  assertEquals(buttons[1].textContent, 'Audio');
+  assertEquals(buttons[2].textContent, 'Images');
+  assertEquals(buttons[3].textContent, 'Videos');
 }
 
 /**
- * Tests that initial states of all buttons inside container are inactive.
+ * Tests that initial states of all buttons inside container are inactive
+ * except the first button (button with label "All").
  */
 export function testButtonInitialActiveState() {
   const buttons = container.children;
-  assertEquals(buttons.length, 3);
+  assertEquals(buttons.length, 4);
 
-  assertFalse(buttons[0].classList.contains('active'));
-  assertFalse(buttons[0].classList.contains('active'));
-  assertFalse(buttons[0].classList.contains('active'));
+  assertTrue(buttons[0].classList.contains('active'));
+  assertFalse(buttons[1].classList.contains('active'));
+  assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
 }
 
 /**
- * Tests that click events toggle button state (inactive -> active -> inactive).
+ * Tests that click events can only change button state from inactive to active,
+ * if the button is already active, nothing happens.
  */
 export function testButtonToggleState() {
   const buttons = container.children;
-  assertEquals(buttons.length, 3);
+  assertEquals(buttons.length, 4);
 
-  assertFalse(buttons[0].classList.contains('active'));
-  buttons[0].click();
-  assertTrue(buttons[0].classList.contains('active'));
-  buttons[0].click();
-  assertFalse(buttons[0].classList.contains('active'));
+  assertFalse(buttons[1].classList.contains('active'));
+  buttons[1].click();
+  assertTrue(buttons[1].classList.contains('active'));
+  buttons[1].click();
+  assertTrue(buttons[1].classList.contains('active'));
 }
 
 /**
- * Tests that only one button can be inactive.
- * If button_1 is clicked then button_0 is active, button_0 becomes inactive and
+ * Tests that only one button can be active.
+ * If button_1 is clicked when button_0 is active, button_0 becomes inactive and
  * button_1 becomes active.
  */
 export function testOnlyOneButtonCanActive() {
   const buttons = container.children;
-  assertEquals(buttons.length, 3);
+  assertEquals(buttons.length, 4);
 
-  assertFalse(buttons[0].classList.contains('active'));
-  buttons[0].click();
   assertTrue(buttons[0].classList.contains('active'));
-  assertFalse(buttons[1].classList.contains('active'));
-  assertFalse(buttons[2].classList.contains('active'));
 
+  assertFalse(buttons[1].classList.contains('active'));
   buttons[1].click();
   assertFalse(buttons[0].classList.contains('active'));
   assertTrue(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
 
   buttons[2].click();
   assertFalse(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertTrue(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
+
+  buttons[3].click();
+  assertFalse(buttons[0].classList.contains('active'));
+  assertFalse(buttons[1].classList.contains('active'));
+  assertFalse(buttons[2].classList.contains('active'));
+  assertTrue(buttons[3].classList.contains('active'));
+
+  buttons[0].click();
+  assertTrue(buttons[0].classList.contains('active'));
+  assertFalse(buttons[1].classList.contains('active'));
+  assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
 }
 
 /**
@@ -190,24 +217,39 @@ export function testContainerIsShownOnlyInRecents() {
 }
 
 /**
- * Tests that button's active state is reset to inactive when the user leaves
- * Recents view.
+ * Tests that button's active state is reset when the user leaves
+ * Recents view and go back again.
  */
 export function testActiveButtonIsResetOnLeavingRecents() {
   const buttons = container.children;
-  assertEquals(buttons.length, 3);
+  assertEquals(buttons.length, 4);
 
   directoryModel.changeDirectoryEntry(recentEntry);
 
-  buttons[0].click();
+  buttons[1].click();
+  assertFalse(buttons[0].classList.contains('active'));
+  assertTrue(buttons[1].classList.contains('active'));
+  assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
+
+  // Changing directory to the same Recent doesn't reset states.
+  directoryModel.changeDirectoryEntry(recentEntry);
+  assertFalse(buttons[0].classList.contains('active'));
+  assertTrue(buttons[1].classList.contains('active'));
+  assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
+
+  directoryModel.changeDirectoryEntry(myFilesEntry);
   assertTrue(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
 
-  directoryModel.changeDirectoryEntry(myFilesEntry);
-  assertFalse(buttons[0].classList.contains('active'));
+  directoryModel.changeDirectoryEntry(recentEntry);
+  assertTrue(buttons[0].classList.contains('active'));
   assertFalse(buttons[1].classList.contains('active'));
   assertFalse(buttons[2].classList.contains('active'));
+  assertFalse(buttons[3].classList.contains('active'));
 }
 
 /**
@@ -217,32 +259,32 @@ export function testActiveButtonIsResetOnLeavingRecents() {
  */
 export function testAppliedFilters() {
   const buttons = container.children;
-  assertEquals(buttons.length, 3);
+  assertEquals(buttons.length, 4);
 
   directoryModel.changeDirectoryEntry(recentEntry);
 
-  buttons[0].click();
+  buttons[1].click();
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.AUDIO);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 
-  buttons[1].click();
+  buttons[2].click();
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.IMAGE);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 
-  buttons[2].click();
+  buttons[3].click();
   assertEquals(
       recentEntry.recentFileType,
       chrome.fileManagerPrivate.RecentFileType.VIDEO);
   assertTrue(window.isRescanCalled);
   window.isRescanCalled = false;
 
-  buttons[2].click();
+  buttons[0].click();
   assertEquals(
       recentEntry.recentFileType, chrome.fileManagerPrivate.RecentFileType.ALL);
   assertTrue(window.isRescanCalled);

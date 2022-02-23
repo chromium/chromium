@@ -4,7 +4,10 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 
+#include <utility>
+
 #include "third_party/blink/public/platform/task_type.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 

@@ -99,19 +99,4 @@ export function onboardingWaitForManualWpDisablePageTest() {
 
     assertDeepEquals(savedResult, expectedResult);
   });
-
-  test('ManualWpDisablePageRendersQrCode', async () => {
-    await initializeWaitForManualWpDisablePage();
-
-    const expectedCanvasSize = 60;
-
-    assertEquals(suppressedComponentCanvasSize_(component), expectedCanvasSize);
-    const canvas = component.shadowRoot.querySelector('#qrCodeCanvas');
-    assertTrue(!!canvas);
-    assertEquals(canvas.width, expectedCanvasSize);
-    assertEquals(canvas.height, expectedCanvasSize);
-
-    const context = canvas.getContext('2d');
-    assertTrue(!!context);
-  });
 }

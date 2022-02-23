@@ -10,7 +10,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_checker.h"
@@ -52,6 +52,7 @@ class IceConnectionToClient : public ConnectionToClient,
   Session* session() override;
   void Disconnect(ErrorCode error) override;
   std::unique_ptr<VideoStream> StartVideoStream(
+      const std::string& stream_name,
       std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) override;
   std::unique_ptr<AudioStream> StartAudioStream(
       std::unique_ptr<AudioSource> audio_source) override;
@@ -85,7 +86,7 @@ class IceConnectionToClient : public ConnectionToClient,
   base::ThreadChecker thread_checker_;
 
   // Event handler for handling events sent from this object.
-  ConnectionToClient::EventHandler* event_handler_;
+  raw_ptr<ConnectionToClient::EventHandler> event_handler_;
 
   std::unique_ptr<Session> session_;
 

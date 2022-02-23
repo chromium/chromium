@@ -13,7 +13,7 @@
 
 TEST(ShouldRecordActiveUse, OrdinaryCommand) {
   base::CommandLine cmd_line(base::FilePath(FILE_PATH_LITERAL("foo.exe")));
-#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(ShouldRecordActiveUse(cmd_line));
 #else
   EXPECT_FALSE(ShouldRecordActiveUse(cmd_line));
@@ -25,7 +25,7 @@ TEST(ShouldRecordActiveUse, OrdinaryCommand) {
 TEST(ShouldRecordActiveUse, FakeTryChromeAgainCommand) {
   base::CommandLine cmd_line(base::FilePath(FILE_PATH_LITERAL("foo.exe")));
   cmd_line.AppendSwitch(switches::kTryChromeAgain);
-#if !defined(OS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#if !BUILDFLAG(IS_WIN) || BUILDFLAG(GOOGLE_CHROME_BRANDING)
   EXPECT_TRUE(ShouldRecordActiveUse(cmd_line));
 #else
   EXPECT_FALSE(ShouldRecordActiveUse(cmd_line));

@@ -4,6 +4,12 @@
 
 #include "chrome/browser/ash/tether/tether_service.h"
 
+#include "ash/components/tether/gms_core_notifications_state_tracker_impl.h"
+#include "ash/components/tether/tether_component.h"
+#include "ash/components/tether/tether_component_impl.h"
+#include "ash/components/tether/tether_host_fetcher_impl.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
@@ -14,15 +20,9 @@
 #include "chrome/browser/ui/ash/network/tether_notification_presenter.h"
 #include "chrome/common/pref_names.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/components/tether/gms_core_notifications_state_tracker_impl.h"
-#include "chromeos/components/tether/tether_component.h"
-#include "chromeos/components/tether/tether_component_impl.h"
-#include "chromeos/components/tether/tether_host_fetcher_impl.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_connect.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
-#include "chromeos/services/secure_channel/public/cpp/client/secure_channel_client.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -42,7 +42,7 @@ TetherService* TetherService::Get(Profile* profile) {
   // TetherService object should be created for secondary users. If multiple
   // instances were created for each user, inconsistencies could lead to browser
   // crashes. See https://crbug.com/809357.
-  if (!chromeos::ProfileHelper::Get()->IsPrimaryProfile(profile))
+  if (!ProfileHelper::Get()->IsPrimaryProfile(profile))
     return nullptr;
 
   return TetherServiceFactory::GetForBrowserContext(profile);
@@ -51,7 +51,7 @@ TetherService* TetherService::Get(Profile* profile) {
 // static
 void TetherService::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
-  chromeos::tether::TetherComponentImpl::RegisterProfilePrefs(registry);
+  TetherComponentImpl::RegisterProfilePrefs(registry);
 }
 
 // static.
@@ -111,12 +111,10 @@ TetherService::TetherService(
               profile_,
               chromeos::NetworkConnect::Get())),
       gms_core_notifications_state_tracker_(
-          std::make_unique<
-              chromeos::tether::GmsCoreNotificationsStateTrackerImpl>()),
+          std::make_unique<GmsCoreNotificationsStateTrackerImpl>()),
       tether_host_fetcher_(
-          chromeos::tether::TetherHostFetcherImpl::Factory::Create(
-              device_sync_client_,
-              multidevice_setup_client_)),
+          TetherHostFetcherImpl::Factory::Create(device_sync_client_,
+                                                 multidevice_setup_client_)),
       timer_(std::make_unique<base::OneShotTimer>()) {
   tether_host_fetcher_->AddObserver(this);
   power_manager_client_->AddObserver(this);
@@ -153,7 +151,7 @@ void TetherService::StartTetherIfPossible() {
     return;
 
   PA_LOG(VERBOSE) << "Starting up TetherComponent.";
-  tether_component_ = chromeos::tether::TetherComponentImpl::Factory::Create(
+  tether_component_ = TetherComponentImpl::Factory::Create(
       device_sync_client_, secure_channel_client_, tether_host_fetcher_.get(),
       notification_presenter_.get(),
       gms_core_notifications_state_tracker_.get(), profile_->GetPrefs(),
@@ -164,62 +162,55 @@ void TetherService::StartTetherIfPossible() {
       session_manager_);
 }
 
-chromeos::tether::GmsCoreNotificationsStateTracker*
+GmsCoreNotificationsStateTracker*
 TetherService::GetGmsCoreNotificationsStateTracker() {
   return gms_core_notifications_state_tracker_.get();
 }
 
 void TetherService::StopTetherIfNecessary() {
   if (!tether_component_ ||
-      tether_component_->status() !=
-          chromeos::tether::TetherComponent::Status::ACTIVE) {
+      tether_component_->status() != TetherComponent::Status::ACTIVE) {
     return;
   }
 
   PA_LOG(VERBOSE) << "Shutting down TetherComponent.";
 
-  chromeos::tether::TetherComponent::ShutdownReason shutdown_reason;
+  TetherComponent::ShutdownReason shutdown_reason;
   switch (GetTetherFeatureState()) {
     case SHUT_DOWN:
-      shutdown_reason =
-          chromeos::tether::TetherComponent::ShutdownReason::USER_LOGGED_OUT;
+      shutdown_reason = TetherComponent::ShutdownReason::USER_LOGGED_OUT;
       break;
     case SUSPENDED:
-      shutdown_reason =
-          chromeos::tether::TetherComponent::ShutdownReason::USER_CLOSED_LID;
+      shutdown_reason = TetherComponent::ShutdownReason::USER_CLOSED_LID;
       break;
     case CELLULAR_DISABLED:
-      shutdown_reason =
-          chromeos::tether::TetherComponent::ShutdownReason::CELLULAR_DISABLED;
+      shutdown_reason = TetherComponent::ShutdownReason::CELLULAR_DISABLED;
       break;
     case BLUETOOTH_DISABLED:
-      shutdown_reason =
-          chromeos::tether::TetherComponent::ShutdownReason::BLUETOOTH_DISABLED;
+      shutdown_reason = TetherComponent::ShutdownReason::BLUETOOTH_DISABLED;
       break;
     case USER_PREFERENCE_DISABLED:
-      shutdown_reason =
-          chromeos::tether::TetherComponent::ShutdownReason::PREF_DISABLED;
+      shutdown_reason = TetherComponent::ShutdownReason::PREF_DISABLED;
       break;
     case BLE_NOT_PRESENT:
-      shutdown_reason = chromeos::tether::TetherComponent::ShutdownReason::
-          BLUETOOTH_CONTROLLER_DISAPPEARED;
+      shutdown_reason =
+          TetherComponent::ShutdownReason::BLUETOOTH_CONTROLLER_DISAPPEARED;
       break;
     case NO_AVAILABLE_HOSTS:
       // If |tether_component_| was previously active but now has been shut down
       // due to no longer having a host, this means that the host became
       // unverified.
-      shutdown_reason = chromeos::tether::TetherComponent::ShutdownReason::
-          MULTIDEVICE_HOST_UNVERIFIED;
+      shutdown_reason =
+          TetherComponent::ShutdownReason::MULTIDEVICE_HOST_UNVERIFIED;
       break;
     case BETTER_TOGETHER_SUITE_DISABLED:
-      shutdown_reason = chromeos::tether::TetherComponent::ShutdownReason::
-          BETTER_TOGETHER_SUITE_DISABLED;
+      shutdown_reason =
+          TetherComponent::ShutdownReason::BETTER_TOGETHER_SUITE_DISABLED;
       break;
     default:
       PA_LOG(ERROR) << "Unexpected shutdown reason. FeatureState is "
                     << GetTetherFeatureState() << ".";
-      shutdown_reason =
-          chromeos::tether::TetherComponent::ShutdownReason::OTHER;
+      shutdown_reason = TetherComponent::ShutdownReason::OTHER;
       break;
   }
 
@@ -327,8 +318,7 @@ void TetherService::UpdateEnabledState() {
 }
 
 void TetherService::OnShutdownComplete() {
-  DCHECK(tether_component_->status() ==
-         chromeos::tether::TetherComponent::Status::SHUT_DOWN);
+  DCHECK(tether_component_->status() == TetherComponent::Status::SHUT_DOWN);
   tether_component_->RemoveObserver(this);
   tether_component_.reset();
   PA_LOG(VERBOSE) << "TetherComponent was shut down.";
@@ -555,10 +545,10 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
       // Note that because of the early return above after
       // !HasSyncedTetherHosts, if this point is hit, there are synced tether
       // hosts available, but the multidevice state is unverified.
-      FALLTHROUGH;
+      [[fallthrough]];
     case chromeos::multidevice_setup::mojom::FeatureState::
         kUnavailableNoVerifiedHost_ClientNotReady:
-      FALLTHROUGH;
+      [[fallthrough]];
     case chromeos::multidevice_setup::mojom::FeatureState::
         kNotSupportedByChromebook:
       // CryptAuth may not yet know that this device supports
@@ -566,7 +556,7 @@ TetherService::TetherFeatureState TetherService::GetTetherFeatureState() {
       // that). This should be resolved shortly once DeviceReenroller realizes
       // reconciles the discrepancy. For now, fall through to mark as
       // unavailable.
-      FALLTHROUGH;
+      [[fallthrough]];
     case chromeos::multidevice_setup::mojom::FeatureState::kNotSupportedByPhone:
       return NO_AVAILABLE_HOSTS;
     default:
@@ -655,8 +645,7 @@ void TetherService::LogUserPreferenceChanged(bool is_now_enabled) {
 }
 
 void TetherService::SetTestDoubles(
-    std::unique_ptr<chromeos::tether::NotificationPresenter>
-        notification_presenter,
+    std::unique_ptr<NotificationPresenter> notification_presenter,
     std::unique_ptr<base::OneShotTimer> timer) {
   notification_presenter_ = std::move(notification_presenter);
   timer_ = std::move(timer);

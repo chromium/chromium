@@ -20,6 +20,7 @@
 #include "absl/strings/string_view.h"
 #include <openssl/evp.h>
 #include "third_party/shell-encryption/src/statusor.h"
+#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 
@@ -30,7 +31,7 @@ namespace private_membership {
 // Security: This cipher does not provide probabilistic encryption or
 // authentication of the message. This should only be used in the scenario where
 // each key will encrypt at most one message.
-class AesCtr256WithFixedIV {
+class PRIVATE_MEMBERSHIP_EXPORT AesCtr256WithFixedIV {
  public:
   // Create a cipher with the input key.
   //

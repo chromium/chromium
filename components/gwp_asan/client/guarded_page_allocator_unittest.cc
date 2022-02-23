@@ -12,6 +12,7 @@
 
 #include "base/bits.h"
 #include "base/memory/page_size.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gtest_util.h"
 #include "base/threading/simple_thread.h"
@@ -110,7 +111,7 @@ TEST_P(GuardedPageAllocatorTest, PointerIsMine) {
 TEST_P(GuardedPageAllocatorTest, GetRequestedSize) {
   void* buf = gpa_.Allocate(100);
   EXPECT_EQ(gpa_.GetRequestedSize(buf), 100U);
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   EXPECT_DEATH({ gpa_.GetRequestedSize((char*)buf + 1); }, "");
 #else
   EXPECT_EQ(gpa_.GetRequestedSize((char*)buf + 1), 0U);
@@ -223,8 +224,8 @@ class ThreadedAllocCountDelegate : public base::DelegateSimpleThread::Delegate {
   }
 
  private:
-  GuardedPageAllocator* gpa_;
-  std::array<void*, kMaxMetadata>* allocations_;
+  raw_ptr<GuardedPageAllocator> gpa_;
+  raw_ptr<std::array<void*, kMaxMetadata>> allocations_;
 };
 
 // Test that no pages are double-allocated or left unallocated, and that no
@@ -288,13 +289,13 @@ class ThreadedHighContentionDelegate
   }
 
  private:
-  GuardedPageAllocator* gpa_;
+  raw_ptr<GuardedPageAllocator> gpa_;
 };
 
 // Test that allocator remains in consistent state under high contention and
 // doesn't double-allocate pages or fail to deallocate pages.
 TEST_P(GuardedPageAllocatorTest, ThreadedHighContention) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   constexpr size_t num_threads = 200;
 #else
   constexpr size_t num_threads = 1000;

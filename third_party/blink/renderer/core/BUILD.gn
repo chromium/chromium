@@ -83,7 +83,7 @@ rel_blink_core_gen_dir = rebase_path(blink_core_output_dir, root_build_dir)
 declare_args() {
   # Set to true to enable the clang layout plugin that help you to follow the
   # layout-related restrictions during compilation.
-  use_layout_plugin = false
+  use_layout_plugin = true
 }
 
 # Config for code that builds as part of core.
@@ -133,10 +133,7 @@ config("blink_core_pch") {
   }
 }
 
-core_config_add += [
-  ":blink_core_pch",
-  "//build/config/compiler:noshadowing",
-]
+core_config_add += [ ":blink_core_pch" ]
 
 source_set("core_common") {
   sources = [ "core_export.h" ]
@@ -297,17 +294,20 @@ component("core") {
     "//third_party/blink/renderer/platform",
     "//third_party/blink/renderer/platform/wtf",
     "//ui/accessibility:ax_base",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/dragdrop/mojom:mojom_blink_headers",
     "//ui/base/dragdrop/mojom:mojom_shared",
     "//url",
     "//v8",
   ]
 
+  if (is_mac) {
+    public_deps += [ "//ui/gfx" ]
+  }
+
   deps = [
     ":generated_settings_macros",
     "//build:chromeos_buildflags",
-    "//build:os_buildflags",
     "//components/paint_preview/common",
     "//components/performance_manager/public/mojom:mojom_blink",
     "//components/power_scheduler",
@@ -330,7 +330,6 @@ component("core") {
     "//third_party/blink/public/common",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings",
     "//third_party/blink/public/strings",
-    "//ui/base/cursor:cursor_base",
     "//ui/base/cursor/mojom:cursor_type_blink",
     "//ui/base/dragdrop/mojom:mojom_blink",
     "//ui/gfx/geometry",
@@ -402,7 +401,7 @@ source_set("testing") {
     "//components/ukm:test_support",
     "//third_party/blink/renderer/bindings/core/v8:testing",
     "//third_party/blink/renderer/platform:test_support",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_blink",
   ]
 
@@ -1062,23 +1061,6 @@ blink_python_runner("make_core_generated_html_element_lookup_trie") {
   deps = make_core_generated_deps
 }
 
-blink_python_runner("make_core_generated_origin_trials") {
-  script = "../build/scripts/make_origin_trials.py"
-
-  inputs = scripts_for_json5_files + [
-             "../build/scripts/make_origin_trials.py",
-             "../platform/runtime_enabled_features.json5",
-             "../build/scripts/templates/origin_trials.cc.tmpl",
-           ]
-  outputs = [ "$blink_core_output_dir/origin_trials/origin_trials.cc" ]
-
-  args = [
-    rebase_path("../platform/runtime_enabled_features.json5", root_build_dir),
-    "--output_dir",
-    "$rel_blink_core_gen_dir/origin_trials",
-  ]
-}
-
 blink_python_runner("make_core_generated_web_origin_trials") {
   script = "../build/scripts/make_web_origin_trials.py"
 
@@ -1126,7 +1108,6 @@ targets_generating_sources = [
   ":make_core_generated_media_feature_names",
   ":make_core_generated_media_features",
   ":make_core_generated_media_type_names",
-  ":make_core_generated_origin_trials",
   ":make_core_generated_performance_entry_names",
   ":make_core_generated_permissions_policy_helper",
   ":make_core_generated_pointer_type_names",
@@ -1249,7 +1230,6 @@ source_set("unit_tests") {
     "css/mock_css_paint_image_generator.h",
     "display_lock/display_lock_context_test.cc",
     "display_lock/display_lock_utilities_test.cc",
-    "document_transition/document_transition_origin_trial_test.cc",
     "document_transition/document_transition_test.cc",
     "editing/caret_display_item_client_test.cc",
     "editing/finder/text_finder_test.cc",
@@ -1295,9 +1275,11 @@ source_set("unit_tests") {
     "fetch/readable_stream_bytes_consumer_test.cc",
     "fetch/request_test.cc",
     "fetch/response_test.cc",
+    "fragment_directive/css_selector_fragment_anchor_test.cc",
     "fragment_directive/text_fragment_anchor_metrics_test.cc",
     "fragment_directive/text_fragment_anchor_test.cc",
     "fragment_directive/text_fragment_finder_test.cc",
+    "fragment_directive/text_fragment_generation_navigation_test.cc",
     "fragment_directive/text_fragment_handler_test.cc",
     "fragment_directive/text_fragment_selector_generator_test.cc",
     "fragment_directive/text_fragment_selector_test.cc",
@@ -1404,7 +1386,6 @@ source_set("unit_tests") {
     "messaging/message_port_descriptor_mojom_traits_test.cc",
     "mobile_metrics/mobile_friendliness_checker_test.cc",
     "origin_trials/origin_trial_context_test.cc",
-    "origin_trials/origin_trials_test.cc",
     "page/autoscroll_controller_test.cc",
     "page/chrome_client_impl_test.cc",
     "page/chrome_client_test.cc",
@@ -1438,6 +1419,7 @@ source_set("unit_tests") {
     "paint/compositing/compositing_reason_finder_test.cc",
     "paint/compositing/compositing_test.cc",
     "paint/css_mask_painter_test.cc",
+    "paint/cull_rect_updater_test.cc",
     "paint/first_meaningful_paint_detector_test.cc",
     "paint/fragment_data_test.cc",
     "paint/highlight_painting_utils_test.cc",
@@ -1507,6 +1489,7 @@ source_set("unit_tests") {
     "svg/animation/smil_time_container_test.cc",
     "svg/animation/svg_smil_element_test.cc",
     "svg/graphics/svg_image_test.cc",
+    "svg/svg_element_test.cc",
     "svg/svg_foreign_object_element_test.cc",
     "svg/svg_path_parser_test.cc",
     "svg/svg_path_query_test.cc",
@@ -1516,6 +1499,7 @@ source_set("unit_tests") {
     "svg/unsafe_svg_attribute_sanitization_test.cc",
     "timing/background_tracing_helper_test.cc",
     "timing/memory_info_test.cc",
+    "timing/performance_entry_test.cc",
     "timing/performance_mark_test.cc",
     "timing/performance_navigation_timing_test.cc",
     "timing/performance_observer_test.cc",
@@ -1572,12 +1556,16 @@ source_set("unit_tests") {
     "//cc",
     "//components/paint_preview/common:common",
     "//components/shared_highlighting/core/common",
+    "//components/shared_highlighting/core/common:data_driven_testing",
     "//components/ukm:test_support",
+    "//components/viz/test:test_support",
     "//content/test:test_support",
+    "//gpu/command_buffer/client:raster",
+    "//gpu/config",
     "//mojo/public/cpp/system",
     "//mojo/public/cpp/test_support:test_utils",
     "//services/metrics/public/cpp:ukm_builders",
-    "//services/network/trust_tokens:test_support",
+    "//services/network:test_support",
     "//skia",
     "//skia:skcms",
     "//testing/gmock",
@@ -1592,7 +1580,7 @@ source_set("unit_tests") {
     "//third_party/blink/renderer/platform:test_support",
     "//third_party/blink/renderer/platform:unit_tests",
     "//ui/accessibility:ax_base",
-    "//ui/base/cursor:cursor_base",
+    "//ui/base/cursor",
     "//ui/base/cursor/mojom:cursor_type_blink",
     "//ui/base/dragdrop/mojom:mojom_blink",
     "//ui/gfx:test_support",
@@ -1675,7 +1663,6 @@ source_set("unit_test_support") {
     "frame/frame_test_helpers.h",
     "html/media/html_media_test_helper.cc",
     "html/media/html_media_test_helper.h",
-    "mobile_metrics/mobile_metrics_test_helpers.h",
     "script/mock_script_element_base.h",
     "testing/core_unit_test_helper.cc",
     "testing/core_unit_test_helper.h",
@@ -1767,6 +1754,19 @@ fuzzer_test("content_security_policy_conversion_util_fuzzer") {
   seed_corpus = "//testing/libfuzzer/fuzzers/content_security_policy_corpus"
 }
 
+css_properties("make_css_proto") {
+  script = "../build/scripts/core/css/parser/make_proto.py"
+  in_files = [ "css/css_value_keywords.json5" ]
+  other_inputs = [
+    "../build/scripts/core/css/parser/templates/css.proto.tmpl",
+    "../build/scripts/core/css/parser/templates/css_proto_converter_generated.h.tmpl",
+  ]
+  outputs = [
+    "$blink_core_output_dir/css/parser/css.proto",
+    "$blink_core_output_dir/css/parser/css_proto_converter_generated.h",
+  ]
+}
+
 fuzzer_test("css_parser_proto_fuzzer") {
   sources = [
     "css/parser/css_parser_proto_fuzzer.cc",
@@ -1783,7 +1783,9 @@ fuzzer_test("css_parser_proto_fuzzer") {
 }
 
 proto_library("css_proto") {
-  sources = [ "css/parser/css.proto" ]
+  sources = [ "$blink_core_output_dir/css/parser/css.proto" ]
+  proto_out_dir = "third_party/blink/renderer/core/css/parser"
+  deps = [ ":make_css_proto" ]
 }
 
 fuzzer_test("blink_html_tokenizer_fuzzer") {

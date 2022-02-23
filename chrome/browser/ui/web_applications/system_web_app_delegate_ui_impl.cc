@@ -11,41 +11,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
-#include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_launch/web_launch_files_helper.h"
+#include "chrome/browser/web_applications/web_launch_params_helper.h"
 #include "content/public/browser/web_contents.h"
 #include "url/gurl.h"
 
 namespace web_app {
-
-namespace {
-
-base::FilePath GetLaunchDirectory(
-    bool should_include_launch_directory,
-    const std::vector<base::FilePath>& launch_files) {
-  if (!should_include_launch_directory)
-    return base::FilePath();
-
-  // |launch_dir| is the directory that contains all |launch_files|. If
-  // there are no launch files, launch_dir is empty.
-  base::FilePath launch_dir =
-      launch_files.size() ? launch_files[0].DirName() : base::FilePath();
-
-#if DCHECK_IS_ON()
-  // Check |launch_files| all come from the same directory.
-  if (!launch_dir.empty()) {
-    for (auto path : launch_files) {
-      DCHECK_EQ(launch_dir, path.DirName());
-    }
-  }
-#endif
-
-  return launch_dir;
-}
-
-}  // namespace
 
 Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
     Profile* profile,
@@ -104,13 +77,15 @@ Browser* SystemWebAppDelegate::LaunchAndNavigateSystemWebApp(
   // Send launch files.
   if (provider->os_integration_manager().IsFileHandlingAPIAvailable(
           params.app_id)) {
-    GURL app_scope = provider->registrar().GetAppScope(params.app_id);
-    web_launch::WebLaunchFilesHelper::SetLaunchDirectoryAndLaunchPaths(
-        web_contents, app_scope,
-        /*await_navigation=*/navigating,
-        /*launch_url=*/web_contents->GetURL(),
-        GetLaunchDirectory(ShouldIncludeLaunchDirectory(), params.launch_files),
-        params.launch_files);
+    base::FilePath launch_dir = GetLaunchDirectory(params);
+
+    if (!launch_dir.empty() || !params.launch_files.empty()) {
+      WebLaunchParamsHelper::EnqueueLaunchParams(
+          web_contents, provider->registrar(), params.app_id,
+          /*await_navigation=*/navigating,
+          /*launch_url=*/web_contents->GetURL(), launch_dir,
+          params.launch_files);
+    }
   }
 
   return browser;

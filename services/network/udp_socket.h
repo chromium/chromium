@@ -11,7 +11,7 @@
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -145,7 +145,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) UDPSocket : public mojom::UDPSocket {
   void OnRecvFromCompleted(uint32_t buffer_size, int net_result);
   void OnSendToCompleted(int net_result);
 
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
 
   // Whether a Bind() has been successfully executed.
   bool is_bound_;

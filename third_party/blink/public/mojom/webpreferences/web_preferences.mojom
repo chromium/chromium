@@ -105,7 +105,6 @@ struct WebPreferences {
   map<string, mojo_base.mojom.String16> sans_serif_font_family_map;
   map<string, mojo_base.mojom.String16> cursive_font_family_map;
   map<string, mojo_base.mojom.String16> fantasy_font_family_map;
-  map<string, mojo_base.mojom.String16> pictograph_font_family_map;
   int32 default_font_size;
   int32 default_fixed_font_size;
   int32 minimum_font_size;
@@ -137,7 +136,6 @@ struct WebPreferences {
   bool data_saver_holdback_web_api_enabled;
   bool local_storage_enabled;
   bool databases_enabled;
-  bool application_cache_enabled;
   bool tabs_to_links;
   bool disable_ipc_flooding_protection;
   bool hyperlink_auditing_enabled;
@@ -153,8 +151,6 @@ struct WebPreferences {
   bool webgl_errors_to_console_enabled;
   bool hide_scrollbars;
   bool accelerated_2d_canvas_enabled;
-  bool canvas_context_lost_in_background_enabled;
-  bool new_canvas_2d_api_enabled;
   bool canvas_2d_layers_enabled;
   bool antialiased_2d_canvas_disabled;
   bool antialiased_clips_2d_canvas_enabled;
@@ -422,7 +418,6 @@ struct WebPreferences {
       lazy_frame_loading_distance_thresholds_px;
   map<EffectiveConnectionType, int32>
       lazy_image_loading_distance_thresholds_px;
-  map<EffectiveConnectionType, int32> lazy_image_first_k_fully_load;
 
   // Setting to false disables upgrades to HTTPS for HTTP resources in HTTPS
   // sites.
@@ -438,8 +433,4 @@ struct WebPreferences {
 
   // Controls whether WebXR's immersive-ar is allowed.
   bool webxr_immersive_ar_allowed;
-
-  // Origin the subresources such as images should be redirected to when the
-  // kSubresourceRedirect feature is enabled.
-  url.mojom.Origin litepage_subresource_redirect_origin;
 };

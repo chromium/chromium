@@ -12,6 +12,7 @@
 #import "remoting/ios/persistence/remoting_preferences.h"
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/no_destructor.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/base/string_resources.h"
@@ -32,6 +33,12 @@ namespace {
 // TODO(yuweih): Chain this class with UserStatusPresenter on the
 // kUserDidUpdate event.
 constexpr base::TimeDelta kFetchNotificationDelay = base::Seconds(2);
+
+// The "Don't show again" checkbox only appears if the notification has been
+// shown for at least |kTimesShownRequiredToAllowSilencing| times. Note that
+// this means the checkbox shows up starting from the
+// (|kTimesShownRequiredToAllowSilencing| + 1)th app launch.
+constexpr unsigned int kTimesShownRequiredToAllowSilencing = 2u;
 
 enum NotificationUiState : unsigned int {
   NOT_SHOWN = 0,
@@ -64,9 +71,7 @@ void NotificationPresenter::Start() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!user_update_observer_);
 
-  if ([RemotingService.instance.authentication.user isAuthenticated]) {
-    FetchNotificationIfNecessary();
-  }
+  FetchNotification();
   user_update_observer_ = [NSNotificationCenter.defaultCenter
       addObserverForName:kUserDidUpdate
                   object:nil
@@ -74,23 +79,24 @@ void NotificationPresenter::Start() {
               usingBlock:^(NSNotification*) {
                 // This implicitly captures |this|, but should be fine since
                 // |NotificationPresenter| is singleton.
-                FetchNotificationIfNecessary();
+                FetchNotification();
               }];
 }
 
-void NotificationPresenter::FetchNotificationIfNecessary() {
+void NotificationPresenter::FetchNotification() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (state_ != State::NOT_FETCHED) {
+  if (state_ == State::FETCHED) {
     return;
   }
   UserInfo* user = RemotingService.instance.authentication.user;
-  if (![user isAuthenticated]) {
-    // Can't show notification since user email is unknown.
-    return;
-  }
+  std::string user_email = [user isAuthenticated]
+                               ? base::SysNSStringToUTF8(user.userEmail)
+                               : std::string();
 
   state_ = State::FETCHING;
+  // If FetchNotification() is called when the timer is already running, this
+  // will restart the timer with the new user email.
   fetch_notification_timer_.Start(
       FROM_HERE, kFetchNotificationDelay,
       base::BindOnce(
@@ -100,7 +106,7 @@ void NotificationPresenter::FetchNotificationIfNecessary() {
                 base::BindOnce(&NotificationPresenter::OnNotificationFetched,
                                base::Unretained(that)));
           },
-          base::Unretained(this), base::SysNSStringToUTF8(user.userEmail)));
+          base::Unretained(this), user_email));
 }
 
 void NotificationPresenter::OnNotificationFetched(
@@ -135,10 +141,21 @@ void NotificationPresenter::OnNotificationFetched(
     ui_state = NOT_SHOWN;
     [RemotingPreferences.instance setObject:UiStateToNSNumber(ui_state)
                                     forFlag:RemotingFlagNotificationUiState];
+    [RemotingPreferences.instance setObject:@(0u)
+                                    forFlag:RemotingFlagNotificationShownTimes];
     [RemotingPreferences.instance synchronizeFlags];
   }
 
-  BOOL allowSilence = notification->allow_silence && ui_state == SHOWN;
+  NSNumber* notificationShownTimesNsNumber = [RemotingPreferences.instance
+      objectForFlag:RemotingFlagNotificationShownTimes];
+  unsigned int notification_shown_times =
+      notificationShownTimesNsNumber
+          ? notificationShownTimesNsNumber.unsignedIntValue
+          : 0u;
+
+  BOOL allowSilence =
+      notification->allow_silence && ui_state == SHOWN &&
+      notification_shown_times >= kTimesShownRequiredToAllowSilencing;
   NotificationDialogViewController* dialogVc =
       [[NotificationDialogViewController alloc]
           initWithNotificationMessage:*notification
@@ -147,6 +164,8 @@ void NotificationPresenter::OnNotificationFetched(
     NotificationUiState new_ui_state = isSilenced ? SILENCED : SHOWN;
     [RemotingPreferences.instance setObject:UiStateToNSNumber(new_ui_state)
                                     forFlag:RemotingFlagNotificationUiState];
+    [RemotingPreferences.instance setObject:@(notification_shown_times + 1)
+                                    forFlag:RemotingFlagNotificationShownTimes];
     [RemotingPreferences.instance synchronizeFlags];
   }];
 }

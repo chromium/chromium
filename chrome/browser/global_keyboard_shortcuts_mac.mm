@@ -131,6 +131,9 @@ CommandForKeyEventResult ShortcutCommand(int cmd) {
   return {cmd, /*from_main_menu=*/false};
 }
 
+// Returns a vector of hidden keyboard shortcuts (i.e. ones that arent present
+// in the menus). Note that the hidden "Cmd =" shortcut is somehow enabled by
+// the ui::VKEY_OEM_PLUS entry in accelerators_cocoa.mm.
 std::vector<KeyboardShortcutData> CreateKeyboardShortcutVector() {
   // clang-format off
   std::vector<KeyboardShortcutData> keys({

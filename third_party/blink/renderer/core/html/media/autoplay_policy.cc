@@ -21,7 +21,7 @@
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer.h"
 #include "third_party/blink/renderer/core/intersection_observer/intersection_observer_entry.h"
 #include "third_party/blink/renderer/core/page/page.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/assertions.h"
@@ -338,22 +338,43 @@ void AutoplayPolicy::EnsureAutoplayInitiatedSet() {
 void AutoplayPolicy::OnIntersectionChangedForAutoplay(
     const HeapVector<Member<IntersectionObserverEntry>>& entries) {
   bool is_visible = (entries.back()->intersectionRatio() > 0);
+
   if (!is_visible) {
-    if (element_->can_autoplay_ && element_->Autoplay()) {
-      element_->PauseInternal();
-      element_->can_autoplay_ = true;
-    }
+    auto pause_and_preserve_autoplay = [](AutoplayPolicy* self) {
+      if (!self)
+        return;
+
+      if (self->element_->can_autoplay_ && self->element_->Autoplay()) {
+        self->element_->PauseInternal();
+        self->element_->can_autoplay_ = true;
+      }
+    };
+
+    element_->GetDocument()
+        .GetTaskRunner(TaskType::kInternalMedia)
+        ->PostTask(FROM_HERE, WTF::Bind(pause_and_preserve_autoplay,
+                                        WrapWeakPersistent(this)));
     return;
   }
 
-  if (ShouldAutoplay()) {
-    element_->paused_ = false;
-    element_->SetShowPosterFlag(false);
-    element_->ScheduleEvent(event_type_names::kPlay);
-    element_->ScheduleNotifyPlaying();
+  auto maybe_autoplay = [](AutoplayPolicy* self) {
+    if (!self)
+      return;
 
-    element_->UpdatePlayState();
-  }
+    if (self->ShouldAutoplay()) {
+      self->element_->paused_ = false;
+      self->element_->SetShowPosterFlag(false);
+      self->element_->ScheduleEvent(event_type_names::kPlay);
+      self->element_->ScheduleNotifyPlaying();
+
+      self->element_->UpdatePlayState();
+    }
+  };
+
+  element_->GetDocument()
+      .GetTaskRunner(TaskType::kInternalMedia)
+      ->PostTask(FROM_HERE,
+                 WTF::Bind(maybe_autoplay, WrapWeakPersistent(this)));
 }
 
 bool AutoplayPolicy::IsUsingDocumentUserActivationRequiredPolicy() const {

@@ -8,17 +8,17 @@
 #include <queue>
 #include <set>
 #include <utility>
+
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/files/file_path.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/crostini/crostini_manager.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk_mount_manager.h"
 
 namespace crostini {
 
-class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
-                      ContainerShutdownObserver {
+class CrostiniSshfs : ContainerShutdownObserver {
  public:
   explicit CrostiniSshfs(Profile* profile);
 
@@ -45,11 +45,9 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   // ContainerShutdownObserver.
   void OnContainerShutdown(const ContainerId& container_id) override;
 
-  // chromeos::disks::DiskMountManager::Observer.
-  void OnMountEvent(chromeos::disks::DiskMountManager::MountEvent event,
-                    chromeos::MountError error_code,
-                    const chromeos::disks::DiskMountManager::MountPointInfo&
-                        mount_info) override;
+  void OnMountEvent(
+      chromeos::MountError error_code,
+      const ash::disks::DiskMountManager::MountPointInfo& mount_info);
 
   // Returns true if sshfs is mounted for the specified container, else false.
   bool IsSshfsMounted(const ContainerId& container);
@@ -111,9 +109,6 @@ class CrostiniSshfs : chromeos::disks::DiskMountManager::Observer,
   };
   Profile* profile_;
 
-  base::ScopedObservation<chromeos::disks::DiskMountManager,
-                          chromeos::disks::DiskMountManager::Observer>
-      disk_mount_observer_{this};
   base::ScopedObservation<CrostiniManager,
                           ContainerShutdownObserver,
                           &CrostiniManager::AddContainerShutdownObserver,

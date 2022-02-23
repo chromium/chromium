@@ -6,6 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_STYLE_STYLE_CROSSFADE_IMAGE_H_
 
 #include "third_party/blink/renderer/core/style/style_image.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -31,9 +33,9 @@ class StyleCrossfadeImage final : public StyleImage {
   bool ErrorOccurred() const override;
   bool IsAccessAllowed(String&) const override;
 
-  FloatSize ImageSize(float multiplier,
-                      const FloatSize& default_object_size,
-                      RespectImageOrientationEnum) const override;
+  gfx::SizeF ImageSize(float multiplier,
+                       const gfx::SizeF& default_object_size,
+                       RespectImageOrientationEnum) const override;
 
   bool HasIntrinsicSize() const override;
 
@@ -43,7 +45,7 @@ class StyleCrossfadeImage final : public StyleImage {
   scoped_refptr<Image> GetImage(const ImageResourceObserver&,
                                 const Document&,
                                 const ComputedStyle&,
-                                const FloatSize& target_size) const override;
+                                const gfx::SizeF& target_size) const override;
 
   WrappedImagePtr Data() const override;
   bool KnownToBeOpaque(const Document&, const ComputedStyle&) const override;

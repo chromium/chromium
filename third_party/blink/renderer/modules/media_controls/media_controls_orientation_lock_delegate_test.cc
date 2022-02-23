@@ -28,8 +28,7 @@
 #include "third_party/blink/renderer/modules/media_controls/media_controls_impl.h"
 #include "third_party/blink/renderer/modules/screen_orientation/screen_orientation_controller.h"
 #include "third_party/blink/renderer/modules/screen_orientation/web_lock_orientation_callback.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/empty_web_media_player.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
@@ -139,10 +138,19 @@ class MockChromeClientForOrientationLockDelegate final
   }
 
   const display::ScreenInfo& GetScreenInfo(LocalFrame&) const override {
-    return mock_screen_info_;
+    // This dcheck is for the assumption that MockScreenInfo gets the
+    // correct (and only) screen info to modify.
+    DCHECK_EQ(mock_screen_infos_.screen_infos.size(), 1u);
+    return mock_screen_infos_.current();
+  }
+  const display::ScreenInfos& GetScreenInfos(LocalFrame&) const override {
+    DCHECK_EQ(mock_screen_infos_.screen_infos.size(), 1u);
+    return mock_screen_infos_;
   }
 
-  display::ScreenInfo& MockScreenInfo() { return mock_screen_info_; }
+  display::ScreenInfo& MockScreenInfo() {
+    return mock_screen_infos_.mutable_current();
+  }
 
   MockScreenOrientation& ScreenOrientationClient() {
     return mock_screen_orientation_;
@@ -150,7 +158,8 @@ class MockChromeClientForOrientationLockDelegate final
 
  private:
   MockScreenOrientation mock_screen_orientation_;
-  display::ScreenInfo mock_screen_info_ = {};
+  display::ScreenInfos mock_screen_infos_ =
+      display::ScreenInfos(display::ScreenInfo());
 };
 
 class StubLocalFrameClientForOrientationLockDelegate final
@@ -369,14 +378,14 @@ class MediaControlsOrientationLockAndRotateToFullscreenDelegateTest
   void RotateScreenTo(
       display::mojom::blink::ScreenOrientation screen_orientation_type,
       uint16_t screen_orientation_angle) {
-    display::ScreenInfo new_screen_info;
-    new_screen_info.orientation_type = screen_orientation_type;
-    new_screen_info.orientation_angle = screen_orientation_angle;
-    new_screen_info.rect = ScreenRectFromAngle(screen_orientation_angle);
-    ASSERT_TRUE(new_screen_info.orientation_type ==
+    auto rect = ScreenRectFromAngle(screen_orientation_angle);
+    ASSERT_TRUE(screen_orientation_type ==
                 ScreenOrientationController::ComputeOrientation(
-                    new_screen_info.rect, new_screen_info.orientation_angle));
-    ChromeClient().MockScreenInfo() = new_screen_info;
+                    rect, screen_orientation_angle));
+    ChromeClient().MockScreenInfo().orientation_type = screen_orientation_type;
+    ChromeClient().MockScreenInfo().orientation_angle =
+        screen_orientation_angle;
+    ChromeClient().MockScreenInfo().rect = rect;
 
     // Screen Orientation API
     ScreenOrientationController::From(*GetDocument().domWindow())

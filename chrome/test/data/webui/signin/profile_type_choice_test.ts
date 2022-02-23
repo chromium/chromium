@@ -6,9 +6,8 @@ import 'chrome://profile-picker/lazy_load.js';
 
 import {ProfileTypeChoiceElement} from 'chrome://profile-picker/lazy_load.js';
 import {ManageProfilesBrowserProxyImpl} from 'chrome://profile-picker/profile_picker.js';
-import {isLacros} from 'chrome://resources/js/cr.m.js';
 
-import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {isChildVisible} from 'chrome://webui-test/test_util.js';
 
 import {TestManageProfilesBrowserProxy} from './test_manage_profiles_browser_proxy.js';
@@ -34,8 +33,7 @@ suite('ProfileTypeChoiceTest', function() {
   });
 
   test('NotNowButton', function() {
-    // Local profile creation is not enabled on Lacros.
-    assertEquals(isChildVisible(choice, '#notNowButton'), !isLacros);
+    assertTrue(isChildVisible(choice, '#notNowButton'));
   });
 
   test('VerifySignInPromoImpressionRecorded', function() {

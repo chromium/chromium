@@ -4,7 +4,6 @@
 
 package org.chromium.chrome.browser;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
@@ -14,6 +13,7 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 import android.os.Bundle;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.chrome.R;
@@ -90,7 +90,7 @@ public class LauncherShortcutActivity extends Activity {
      * @return True if adding the shortcut has succeeded. False if the call fails due to rate
      *         limiting. See {@link ShortcutManager#addDynamicShortcuts}.
      */
-    @TargetApi(Build.VERSION_CODES.N_MR1)
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private static boolean addIncognitoLauncherShortcut(Context context) {
         Intent intent = new Intent(LauncherShortcutActivity.ACTION_OPEN_NEW_INCOGNITO_TAB);
         intent.setPackage(context.getPackageName());
@@ -116,7 +116,7 @@ public class LauncherShortcutActivity extends Activity {
      * Removes the dynamic "New incognito tab" launcher shortcut.
      * @param context The context used to retrieve the system {@link ShortcutManager}.
      */
-    @TargetApi(Build.VERSION_CODES.N_MR1)
+    @RequiresApi(Build.VERSION_CODES.N_MR1)
     private static void removeIncognitoLauncherShortcut(Context context) {
         List<String> shortcutList = new ArrayList<>();
         shortcutList.add(DYNAMIC_OPEN_NEW_INCOGNITO_TAB_ID);

@@ -7,19 +7,55 @@
 #include "base/strings/strcat.h"
 #include "base/values.h"
 #include "chrome/common/extensions/api/login_screen_storage.h"
-#include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "components/user_manager/user_manager.h"
+#include "chromeos/crosapi/mojom/login_screen_storage.mojom.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#else
+#include "chrome/browser/ash/crosapi/crosapi_ash.h"
+#include "chrome/browser/ash/crosapi/crosapi_manager.h"
+#include "chrome/browser/ash/crosapi/login_screen_storage_ash.h"
+#endif
 
 namespace login_screen_storage = extensions::api::login_screen_storage;
-
-namespace extensions {
 
 namespace {
 
 const char kPersistentDataKeyPrefix[] = "persistent_data_";
 const char kCredentialsKeyPrefix[] = "credentials_";
 
+crosapi::mojom::LoginScreenStorage* GetLoginScreenStorageApi() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  return chromeos::LacrosService::Get()
+      ->GetRemote<crosapi::mojom::LoginScreenStorage>()
+      .get();
+#else
+  return crosapi::CrosapiManager::Get()
+      ->crosapi_ash()
+      ->login_screen_storage_ash();
+#endif
+}
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+const char kUnsupportedByAsh[] = "Not supported by ash.";
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Performs common crosapi validation. These errors are not caused by the
+// extension so they are considered recoverable. Returns an error message on
+// error, or nullopt on success.
+absl::optional<std::string> ValidateCrosapi() {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  if (!chromeos::LacrosService::Get()
+           ->IsAvailable<crosapi::mojom::LoginScreenStorage>()) {
+    return kUnsupportedByAsh;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+  return absl::nullopt;
+}
+
 }  // namespace
+
+namespace extensions {
 
 LoginScreenStorageExtensionFunction::LoginScreenStorageExtensionFunction() =
     default;
@@ -27,18 +63,21 @@ LoginScreenStorageExtensionFunction::~LoginScreenStorageExtensionFunction() =
     default;
 
 void LoginScreenStorageExtensionFunction::OnDataStored(
-    absl::optional<std::string> error) {
-  Respond(error ? Error(*error) : NoArguments());
+    const absl::optional<std::string>& error_message) {
+  Respond(error_message.has_value() ? Error(*error_message) : NoArguments());
 }
 
 void LoginScreenStorageExtensionFunction::OnDataRetrieved(
-    absl::optional<std::string> data,
-    absl::optional<std::string> error) {
-  if (error) {
-    Respond(Error(*error));
-    return;
+    crosapi::mojom::LoginScreenStorageRetrieveResultPtr result) {
+  using Result = crosapi::mojom::LoginScreenStorageRetrieveResult;
+  switch (result->which()) {
+    case Result::Tag::ERROR_MESSAGE:
+      Respond(Error(result->get_error_message()));
+      return;
+    case Result::Tag::DATA:
+      Respond(OneArgument(base::Value(result->get_data())));
+      return;
   }
-  Respond(OneArgument(data ? base::Value(*data) : base::Value()));
 }
 
 LoginScreenStorageStorePersistentDataFunction::
@@ -51,46 +90,31 @@ LoginScreenStorageStorePersistentDataFunction::Run() {
   std::unique_ptr<login_screen_storage::StorePersistentData::Params> params =
       login_screen_storage::StorePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  login_manager::LoginScreenStorageMetadata metadata;
-  metadata.set_clear_on_session_exit(false);
-  StoreDataForExtensions(std::move(params->extension_ids), metadata,
-                         params->data);
-  return RespondLater();
-}
 
-void LoginScreenStorageStorePersistentDataFunction::OnDataStored(
-    std::vector<std::string> extension_ids,
-    const login_manager::LoginScreenStorageMetadata& metadata,
-    const std::string& data,
-    absl::optional<std::string> error) {
-  if (error) {
-    Respond(Error(*error));
-    return;
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
   }
 
-  if (extension_ids.empty()) {
-    Respond(NoArguments());
-    return;
+  std::vector<std::string> keys;
+  const std::vector<std::string>& receiver_ids =
+      std::move(params->extension_ids);
+  for (const auto& receiver_id : receiver_ids) {
+    const std::string key = base::StrCat(
+        {kPersistentDataKeyPrefix, extension_id(), "_", receiver_id});
+    keys.push_back(key);
   }
 
-  StoreDataForExtensions(std::move(extension_ids), metadata, data);
-}
+  auto callback = base::BindOnce(
+      &LoginScreenStorageStorePersistentDataFunction::OnDataStored, this);
 
-void LoginScreenStorageStorePersistentDataFunction::StoreDataForExtensions(
-    std::vector<std::string> extension_ids,
-    const login_manager::LoginScreenStorageMetadata& metadata,
-    const std::string& data) {
-  if (extension_ids.empty())
-    return;
+  crosapi::mojom::LoginScreenStorageMetadataPtr metadata =
+      crosapi::mojom::LoginScreenStorageMetadata::New();
+  metadata->clear_on_session_exit = false;
 
-  std::string receiver_id = extension_ids.back();
-  extension_ids.pop_back();
-  chromeos::SessionManagerClient::Get()->LoginScreenStorageStore(
-      kPersistentDataKeyPrefix + extension_id() + "_" + receiver_id, metadata,
-      data,
-      base::BindOnce(
-          &LoginScreenStorageStorePersistentDataFunction::OnDataStored, this,
-          std::move(extension_ids), metadata, data));
+  GetLoginScreenStorageApi()->Store(std::move(keys), std::move(metadata),
+                                    params->data, std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 LoginScreenStorageRetrievePersistentDataFunction::
@@ -104,13 +128,19 @@ LoginScreenStorageRetrievePersistentDataFunction::Run() {
       login_screen_storage::RetrievePersistentData::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  chromeos::SessionManagerClient::Get()->LoginScreenStorageRetrieve(
-      base::StrCat(
-          {kPersistentDataKeyPrefix, params->owner_id, "_", extension_id()}),
-      base::BindOnce(
-          &LoginScreenStorageRetrievePersistentDataFunction::OnDataRetrieved,
-          this));
-  return RespondLater();
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+
+  const std::string key = base::StrCat(
+      {kPersistentDataKeyPrefix, params->owner_id, "_", extension_id()});
+
+  auto callback = base::BindOnce(
+      &LoginScreenStorageRetrievePersistentDataFunction::OnDataRetrieved, this);
+
+  GetLoginScreenStorageApi()->Retrieve(key, std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 LoginScreenStorageStoreCredentialsFunction::
@@ -123,14 +153,26 @@ LoginScreenStorageStoreCredentialsFunction::Run() {
   std::unique_ptr<login_screen_storage::StoreCredentials::Params> params =
       login_screen_storage::StoreCredentials::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
-  login_manager::LoginScreenStorageMetadata metadata;
-  metadata.set_clear_on_session_exit(true);
-  chromeos::SessionManagerClient::Get()->LoginScreenStorageStore(
-      kCredentialsKeyPrefix + params->extension_id, metadata,
-      params->credentials,
-      base::BindOnce(&LoginScreenStorageStoreCredentialsFunction::OnDataStored,
-                     this));
-  return RespondLater();
+
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+
+  std::vector<std::string> keys;
+  std::string key = base::StrCat({kCredentialsKeyPrefix, params->extension_id});
+  keys.push_back(key);
+
+  auto callback = base::BindOnce(
+      &LoginScreenStorageStoreCredentialsFunction::OnDataStored, this);
+
+  crosapi::mojom::LoginScreenStorageMetadataPtr metadata =
+      crosapi::mojom::LoginScreenStorageMetadata::New();
+  metadata->clear_on_session_exit = true;
+
+  GetLoginScreenStorageApi()->Store(std::move(keys), std::move(metadata),
+                                    params->credentials, std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 LoginScreenStorageRetrieveCredentialsFunction::
@@ -140,12 +182,18 @@ LoginScreenStorageRetrieveCredentialsFunction::
 
 ExtensionFunction::ResponseAction
 LoginScreenStorageRetrieveCredentialsFunction::Run() {
-  chromeos::SessionManagerClient::Get()->LoginScreenStorageRetrieve(
-      kCredentialsKeyPrefix + extension_id(),
-      base::BindOnce(
-          &LoginScreenStorageRetrieveCredentialsFunction::OnDataRetrieved,
-          this));
-  return RespondLater();
+  absl::optional<std::string> error = ValidateCrosapi();
+  if (error.has_value()) {
+    return RespondNow(Error(error.value()));
+  }
+
+  std::string key = base::StrCat({kCredentialsKeyPrefix, extension_id()});
+
+  auto callback = base::BindOnce(
+      &LoginScreenStorageRetrieveCredentialsFunction::OnDataRetrieved, this);
+
+  GetLoginScreenStorageApi()->Retrieve(key, std::move(callback));
+  return did_respond() ? AlreadyResponded() : RespondLater();
 }
 
 }  // namespace extensions

@@ -9,18 +9,18 @@
 
 namespace media {
 
-Status HresultToStatus(HRESULT hresult,
-                       const char* message,
-                       StatusCode code,
-                       const base::Location& location) {
+D3D11Status HresultToStatus(HRESULT hresult,
+                            D3D11Status::Codes code,
+                            const char* message,
+                            const base::Location& location) {
   if (SUCCEEDED(hresult))
-    return OkStatus();
+    return D3D11Status::Codes::kOk;
 
   std::string sys_err = logging::SystemErrorCodeToString(hresult);
   if (!base::IsStringUTF8AllowingNoncharacters(sys_err))
     sys_err = "System error string is invalid";
 
-  return Status(code, message == nullptr ? "HRESULT" : message, location)
+  return D3D11Status(code, message == nullptr ? "HRESULT" : message, location)
       .WithData("value", sys_err);
 }
 

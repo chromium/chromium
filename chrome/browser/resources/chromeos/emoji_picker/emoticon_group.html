@@ -1,0 +1,67 @@
+<style>
+    :host {
+        margin-top: 10px;
+    }
+
+    #heading {
+        color: var(--cros-text-color-secondary);
+        display: flex;
+        font-size: 10pt;
+        height: var(--emoji-group-heading-size);
+        line-height: var(--emoji-group-heading-size);
+        padding-bottom: var(--emoji-group-heading-padding-bottom);
+        padding-top: var(--emoji-group-heading-padding-top);
+        user-select: none;
+        width: 100%;
+    }
+
+    #heading:focus,
+    #heading:active {
+        outline-color: var(--cros-text-color-prominent);
+        outline-width: 2px;
+    }
+
+    #palette {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 12px 20px;
+    }
+
+    #fake-focus-target {
+        position: absolute;
+    }
+
+    .emoticon-button {
+        background: var(--emoji-background);
+        border: none;
+        color: var(--cros-text-color-primary);
+        cursor: pointer;
+        font-family: 'Noto Sans CJK JP';
+        font-size: 13px;
+        height: var(--v2-emoji-size);
+        padding: 6px;
+        width: max-content;
+    }
+
+    .emoticon-button:hover {
+        background-color: var(--emoji-hover-background);
+    }
+</style>
+
+<template is="dom-if" if="[[group]]">
+    <div id="heading" role="heading">
+        [[group]]
+    </div>
+</template>
+<!-- TODO(b/216194842): Implement emoticon group clear logic. -->
+<div id="palette">
+    <div id="fake-focus-target" tabindex="-1"></div>
+    <template is="dom-repeat" items="[[data]]" as="emoticon">
+        <button class="emoticon-button"
+            emoticon-name$="[[emoticon.base.name]]"
+            on-click="onEmoticonClick"
+            emoticon-string$="[[emoticon.base.string]]">
+            [[emoticon.base.string]]
+        </button>
+    </template>
+</div>

@@ -15,6 +15,7 @@
 #include "base/strings/stringprintf.h"
 #include "media/base/audio_parameters.h"
 #include "media/base/channel_layout.h"
+#include "media/base/decoder_status.h"
 #include "media/base/demuxer_stream.h"
 #include "media/base/media_log.h"
 #include "media/base/pipeline_status.h"
@@ -234,12 +235,22 @@ bool VerifyFakeVideoBufferForTest(const DecoderBuffer& buffer,
 std::unique_ptr<::testing::StrictMock<MockDemuxerStream>>
 CreateMockDemuxerStream(DemuxerStream::Type type, bool encrypted);
 
-// Compares two media::Status by StatusCode only.
+// Compares two media::Status by StatusCode only.  Also allows the ok helper to
+// match kOk.  It's a special case because we don't know the TypedStatus traits
+// we'll be comparing against until now.
 MATCHER_P(SameStatusCode, status, "") {
-  return arg.code() == status.code();
+  if constexpr (std::is_convertible<
+                    decltype(status),
+                    const internal::OkStatusImplicitConstructionHelper&>::
+                    value) {
+    // Cast to the correct enum type to match whatever we're compared against.
+    return arg.code() == static_cast<decltype(arg.code())>(status);
+  } else {
+    return arg.code() == status.code();
+  }
 }
 
-// Compares an `arg` Status.code() to a test-supplied StatusCode.
+// Compares an `arg` TypedStatus<T>.code() to a test-supplied StatusCode.
 MATCHER_P(HasStatusCode, status_code, "") {
   return arg.code() == status_code;
 }
@@ -251,7 +262,7 @@ MATCHER(IsOkStatus, "") {
 // True if and only if the Status would be interpreted as an error from a decode
 // callback (not okay, not aborted).
 MATCHER(IsDecodeErrorStatus, "") {
-  return !arg.is_ok() && arg.code() != StatusCode::kAborted;
+  return !arg.is_ok() && arg.code() != DecoderStatus::Codes::kAborted;
 }
 
 // Compares two {Audio|Video}DecoderConfigs
@@ -504,6 +515,47 @@ MATCHER_P3(DroppedAppendWindowUnusedPreroll,
           base::NumberToString(pts_us) + "us that ends too far (" +
           base::NumberToString(delta_us) + "us) from next buffer with PTS " +
           base::NumberToString(next_pts_us) + "us");
+}
+
+MATCHER_P(PtsUnknown, frame_type, "") {
+  return CONTAINS_STRING(
+      arg, "Unknown PTS for " + std::string(frame_type) + " frame");
+}
+
+MATCHER_P2(FrameDurationUnknown, frame_type, pts_us, "") {
+  return CONTAINS_STRING(arg, "Unknown duration for " +
+                                  std::string(frame_type) + " frame at PTS " +
+                                  base::NumberToString(pts_us) + "us");
+}
+
+MATCHER_P3(FrameTimeOutOfRange, when, pts_or_dts, frame_type, "") {
+  return CONTAINS_STRING(
+      arg, std::string(when) + ", " + pts_or_dts + " for " + frame_type +
+               " frame exceeds range allowed by implementation");
+}
+
+MATCHER(SequenceOffsetUpdateOutOfRange, "") {
+  return CONTAINS_STRING(arg,
+                         "Sequence mode timestampOffset update resulted in an "
+                         "offset that exceeds range allowed by implementation");
+}
+
+MATCHER(SequenceOffsetUpdatePreventedByOutOfRangeGroupStartTimestamp, "") {
+  return CONTAINS_STRING(
+      arg,
+      "Sequence mode timestampOffset update prevented by a group start "
+      "timestamp that exceeds range allowed by implementation");
+}
+
+MATCHER(OffsetOutOfRange, "") {
+  return CONTAINS_STRING(
+      arg, "timestampOffset exceeds range allowed by implementation");
+}
+
+MATCHER_P(FrameEndTimestampOutOfRange, frame_type, "") {
+  return CONTAINS_STRING(arg,
+                         "Frame end timestamp for " + std::string(frame_type) +
+                             " frame exceeds range allowed by implementation");
 }
 
 }  // namespace media

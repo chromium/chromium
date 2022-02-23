@@ -51,7 +51,7 @@
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -163,14 +163,24 @@ void TextFieldInputType::SetValue(const String& sanitized_value,
   else
     GetElement().SetNonAttributeValueByUserEdit(sanitized_value);
 
+  // Visible value needs update if it differs from sanitized value,
+  // if it was set with setValue().
+  // event_behavior == kDispatchNoEvent usually means this call is
+  // not a user edit.
+  bool need_editor_update =
+      value_changed ||
+      (event_behavior == TextFieldEventBehavior::kDispatchNoEvent &&
+       sanitized_value != GetElement().InnerEditorValue());
+
+  if (need_editor_update)
+    GetElement().UpdateView();
   // The following early-return can't be moved to the beginning of this
   // function. We need to update non-attribute value even if the value is not
   // changed.  For example, <input type=number> has a badInput string, that is
   // to say, IDL value=="", and new value is "", which should clear the badInput
-  // string and update validiity.
+  // string and update validity.
   if (!value_changed)
     return;
-  GetElement().UpdateView();
 
   if (selection == TextControlSetValueSelection::kSetSelectionToEnd) {
     unsigned max = VisibleValue().length();
@@ -389,8 +399,9 @@ void TextFieldInputType::ListAttributeTargetChanged() {
           MakeGarbageCollected<DataListIndicatorElement>(document);
       rp_container->AppendChild(data_list);
       data_list->InitializeInShadowTree();
-      if (GetElement().GetDocument().FocusedElement() == GetElement())
-        GetElement().UpdateFocusAppearance(SelectionBehaviorOnFocus::kRestore);
+      Element& input = GetElement();
+      if (input.GetDocument().FocusedElement() == input)
+        input.UpdateSelectionOnFocus(SelectionBehaviorOnFocus::kRestore);
     }
   } else {
     picker->remove(ASSERT_NO_EXCEPTION);
@@ -556,6 +567,13 @@ void TextFieldInputType::SubtreeHasChanged() {
   GetElement().PseudoStateChanged(CSSSelector::kPseudoOutOfRange);
 
   DidSetValueByUserEdit();
+}
+
+void TextFieldInputType::OpenPopupView() {
+  if (GetElement().IsDisabledOrReadOnly())
+    return;
+  if (ChromeClient* chrome_client = GetChromeClient())
+    chrome_client->OpenTextDataListChooser(GetElement());
 }
 
 void TextFieldInputType::DidSetValueByUserEdit() {

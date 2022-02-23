@@ -107,12 +107,8 @@ class SafeBrowsingUIManager : public BaseUIManager {
     virtual history::HistoryService* GetHistoryService(
         content::BrowserContext* browser_context) = 0;
 
-    // Gets the PingManager. This may be null.
-    virtual PingManager* GetPingManagerIfExists() = 0;
-
-    // Gets the URLLoaderFactory attached to |browser_context|. Guaranteed to be
-    // non-null if GetPingManagerIfExists() is non-null.
-    virtual scoped_refptr<network::SharedURLLoaderFactory> GetURLLoaderFactory(
+    // Gets the PingManager.
+    virtual PingManager* GetPingManager(
         content::BrowserContext* browser_context) = 0;
 
     // Returns true if metrics reporting is enabled.

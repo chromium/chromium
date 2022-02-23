@@ -18,32 +18,31 @@ namespace blink {
 
 namespace {
 
-// Safely converts a double to a non-negative int, which matches the
-// requirements of gfx::Rect.
+// Safely converts a double to a non-negative int, as required for gfx::Rect.
 int32_t ToInt31(double value,
-                const char* context,
-                const char* name,
+                const char* object_name,
+                const char* property_name,
                 ExceptionState& exception_state) {
-  // Reject NaN and +/- Infinity. Positive subnormals truncate to zero so they
-  // are fine.
+  // Reject NaN and +/- Infinity.
   if (!std::isfinite(value)) {
-    exception_state.ThrowTypeError(
-        String::Format("%s.%s must be finite.", context, name));
+    exception_state.ThrowTypeError(String::Format(
+        "Invalid %s. %s must be finite.", object_name, property_name));
     return 0;
   }
 
-  // If we didn't truncate before comparison, INT_MAX + 0.1 would be rejected.
+  // Truncate before comparison, otherwise INT_MAX + 0.1 would be rejected.
   value = std::trunc(value);
 
   if (value < 0) {
-    exception_state.ThrowTypeError(
-        String::Format("%s.%s cannot be negative.", context, name));
+    exception_state.ThrowTypeError(String::Format(
+        "Invalid %s. %s cannot be negative.", object_name, property_name));
     return 0;
   }
 
   if (value > std::numeric_limits<int32_t>::max()) {
     exception_state.ThrowTypeError(
-        String::Format("%s.%s exceeds implementation limit.", context, name));
+        String::Format("Invalid %s. %s exceeds implementation limit.",
+                       object_name, property_name));
     return 0;
   }
 
@@ -52,84 +51,137 @@ int32_t ToInt31(double value,
 
 }  // namespace
 
-gfx::Rect ToGfxRect(DOMRectInit* rect,
+gfx::Rect ToGfxRect(const DOMRectInit* rect,
+                    const char* rect_name,
                     const gfx::Size& coded_size,
-                    const char* name,
                     ExceptionState& exception_state) {
-  int32_t x = ToInt31(rect->x(), name, "x", exception_state);
+  int32_t x = ToInt31(rect->x(), rect_name, "x", exception_state);
   if (exception_state.HadException())
     return gfx::Rect();
 
-  int32_t y = ToInt31(rect->y(), name, "y", exception_state);
+  int32_t y = ToInt31(rect->y(), rect_name, "y", exception_state);
   if (exception_state.HadException())
     return gfx::Rect();
 
-  int32_t width = ToInt31(rect->width(), name, "width", exception_state);
+  int32_t width = ToInt31(rect->width(), rect_name, "width", exception_state);
   if (exception_state.HadException())
     return gfx::Rect();
 
-  int32_t height = ToInt31(rect->height(), name, "height", exception_state);
+  int32_t height =
+      ToInt31(rect->height(), rect_name, "height", exception_state);
   if (exception_state.HadException())
     return gfx::Rect();
 
-  // |right = x + width| must fit in int. Not actually required by gfx::Rect but
-  // probably not handled by code that uses them.
+  if (width == 0) {
+    exception_state.ThrowTypeError(
+        String::Format("Invalid %s. width must be nonzero.", rect_name));
+    return gfx::Rect();
+  }
+
+  if (height == 0) {
+    exception_state.ThrowTypeError(
+        String::Format("Invalid %s. height must be nonzero.", rect_name));
+    return gfx::Rect();
+  }
+
   if (static_cast<int64_t>(x) + width > std::numeric_limits<int32_t>::max()) {
-    exception_state.ThrowTypeError(
-        String::Format("%s.right exceeds implementation limit.", name));
+    exception_state.ThrowTypeError(String::Format(
+        "Invalid %s. right exceeds implementation limit.", rect_name));
     return gfx::Rect();
   }
 
-  // Same for |bottom = y + height|.
   if (static_cast<int64_t>(y) + height > std::numeric_limits<int32_t>::max()) {
-    exception_state.ThrowTypeError(
-        String::Format("%s.bottom exceeds implementation limit.", name));
+    exception_state.ThrowTypeError(String::Format(
+        "Invalid %s. bottom exceeds implementation limit.", rect_name));
     return gfx::Rect();
   }
 
-  gfx::Rect gfxRect = gfx::Rect(x, y, width, height);
-  if (gfxRect.right() > coded_size.width()) {
+  gfx::Rect gfx_rect = gfx::Rect(x, y, width, height);
+  if (gfx_rect.right() > coded_size.width()) {
     exception_state.ThrowTypeError(
-        String::Format("%s.right %i exceeds codedWidth %i.", name,
-                       gfxRect.right(), coded_size.width()));
+        String::Format("Invalid %s. right %i exceeds codedWidth %i.", rect_name,
+                       gfx_rect.right(), coded_size.width()));
     return gfx::Rect();
   }
 
-  if (gfxRect.bottom() > coded_size.height()) {
+  if (gfx_rect.bottom() > coded_size.height()) {
     exception_state.ThrowTypeError(
-        String::Format("%s.bottom %u exceeds codedHeight %u.", name,
-                       gfxRect.bottom(), coded_size.height()));
+        String::Format("Invalid %s. bottom %u exceeds codedHeight %u.",
+                       rect_name, gfx_rect.bottom(), coded_size.height()));
     return gfx::Rect();
   }
 
-  return gfxRect;
+  return gfx_rect;
 }
 
-void VerifyRectSampleAlignment(const gfx::Rect& rect,
-                               media::VideoPixelFormat format,
-                               ExceptionState& exception_state) {
-  for (size_t i = 0; i < media::VideoFrame::NumPlanes(format); i++) {
-    gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
+bool ValidateCropAlignment(media::VideoPixelFormat format,
+                           const gfx::Rect& rect,
+                           const char* rect_name,
+                           ExceptionState& exception_state) {
+  const wtf_size_t num_planes =
+      static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format));
+  for (wtf_size_t i = 0; i < num_planes; i++) {
+    const gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
     if (rect.x() % sample_size.width() != 0) {
       exception_state.ThrowTypeError(String::Format(
-          "rect.x %d is not sample-aligned in plane %zu.", rect.x(), i));
-      return;
-    } else if (rect.width() % sample_size.width() != 0) {
-      exception_state.ThrowTypeError(
-          String::Format("rect.width %d is not sample-aligned in plane %zu.",
-                         rect.width(), i));
-      return;
-    } else if (rect.y() % sample_size.height() != 0) {
+          "Invalid %s. x is not sample-aligned in plane %u.", rect_name, i));
+      return false;
+    }
+    if (rect.y() % sample_size.height() != 0) {
       exception_state.ThrowTypeError(String::Format(
-          "rect.y %d is not sample-aligned in plane %zu.", rect.y(), i));
-      return;
-    } else if (rect.height() % sample_size.height() != 0) {
+          "Invalid %s. y is not sample-aligned in plane %u.", rect_name, i));
+      return false;
+    }
+    if (rect.width() % sample_size.width() != 0) {
       exception_state.ThrowTypeError(
-          String::Format("rect.height %d is not sample-aligned in plane %zu.",
-                         rect.height(), i));
-      return;
+          String::Format("Invalid %s. width is not sample-aligned in plane %u.",
+                         rect_name, i));
+      return false;
+    }
+    if (rect.height() % sample_size.height() != 0) {
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid %s. height is not sample-aligned in plane %u.", rect_name,
+          i));
+      return false;
     }
   }
+  return true;
+}
+
+bool ValidateOffsetAlignment(media::VideoPixelFormat format,
+                             const gfx::Rect& rect,
+                             const char* rect_name,
+                             ExceptionState& exception_state) {
+  const wtf_size_t num_planes =
+      static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format));
+  for (wtf_size_t i = 0; i < num_planes; i++) {
+    const gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
+    if (rect.x() % sample_size.width() != 0) {
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid %s. x is not sample-aligned in plane %u.", rect_name, i));
+      return false;
+    }
+    if (rect.y() % sample_size.height() != 0) {
+      exception_state.ThrowTypeError(String::Format(
+          "Invalid %s. y is not sample-aligned in plane %u.", rect_name, i));
+      return false;
+    }
+  }
+  return true;
+}
+
+gfx::Rect AlignCrop(media::VideoPixelFormat format, const gfx::Rect& rect) {
+  gfx::Rect result = rect;
+  const wtf_size_t num_planes =
+      static_cast<wtf_size_t>(media::VideoFrame::NumPlanes(format));
+  for (wtf_size_t i = 0; i < num_planes; i++) {
+    const gfx::Size sample_size = media::VideoFrame::SampleSize(format, i);
+    int width_ub = result.width() + sample_size.width() - 1;
+    result.set_width(width_ub - width_ub % sample_size.width());
+    int height_ub = result.height() + sample_size.height() - 1;
+    result.set_height(height_ub - height_ub % sample_size.height());
+  }
+  return result;
 }
 
 }  // namespace blink

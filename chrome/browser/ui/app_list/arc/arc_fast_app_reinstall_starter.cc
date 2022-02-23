@@ -4,10 +4,10 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
 #include "components/prefs/pref_service.h"
 
 namespace arc {

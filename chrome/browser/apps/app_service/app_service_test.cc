@@ -7,6 +7,9 @@
 #include "base/run_loop.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/common/chrome_features.h"
+#include "components/services/app_service/public/cpp/app_types.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "ui/gfx/image/image_unittest_util.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -65,18 +68,32 @@ gfx::ImageSkia AppServiceTest::LoadAppIconBlocking(
   base::RunLoop run_loop;
   base::OnceClosure load_app_icon_callback = run_loop.QuitClosure();
 
-  app_service_proxy_->LoadIcon(
-      app_type, app_id, apps::mojom::IconType::kStandard, size_hint_in_dip,
-      false /* allow_placeholder_icon */,
-      base::BindOnce(
-          [](gfx::ImageSkia* icon, base::OnceClosure load_app_icon_callback,
-             apps::mojom::IconValuePtr icon_value) {
-            DCHECK_EQ(apps::mojom::IconType::kStandard, icon_value->icon_type);
-            *icon = icon_value->uncompressed;
-            std::move(load_app_icon_callback).Run();
-          },
-          &image_skia, std::move(load_app_icon_callback)));
-
+  if (base::FeatureList::IsEnabled(features::kAppServiceLoadIconWithoutMojom)) {
+    app_service_proxy_->LoadIcon(
+        ConvertMojomAppTypToAppType(app_type), app_id, IconType::kStandard,
+        size_hint_in_dip, false /* allow_placeholder_icon */,
+        base::BindOnce(
+            [](gfx::ImageSkia* icon, base::OnceClosure load_app_icon_callback,
+               IconValuePtr icon_value) {
+              DCHECK_EQ(IconType::kStandard, icon_value->icon_type);
+              *icon = icon_value->uncompressed;
+              std::move(load_app_icon_callback).Run();
+            },
+            &image_skia, std::move(load_app_icon_callback)));
+  } else {
+    app_service_proxy_->LoadIcon(
+        app_type, app_id, apps::mojom::IconType::kStandard, size_hint_in_dip,
+        false /* allow_placeholder_icon */,
+        base::BindOnce(
+            [](gfx::ImageSkia* icon, base::OnceClosure load_app_icon_callback,
+               apps::mojom::IconValuePtr icon_value) {
+              DCHECK_EQ(apps::mojom::IconType::kStandard,
+                        icon_value->icon_type);
+              *icon = icon_value->uncompressed;
+              std::move(load_app_icon_callback).Run();
+            },
+            &image_skia, std::move(load_app_icon_callback)));
+  }
   run_loop.Run();
   return image_skia;
 }

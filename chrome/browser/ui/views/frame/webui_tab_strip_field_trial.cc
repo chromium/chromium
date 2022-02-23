@@ -14,13 +14,13 @@
 // Platform-specific headers for detecting tablet devices.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/public/cpp/tablet_mode.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Returns whether the screen supports touch input. Returns false if it
 // couldn't be checked.
@@ -44,7 +44,7 @@ bool HasBuiltInTouchScreen() {
   return (result & NID_INTEGRATED_TOUCH) != 0;
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace
 
@@ -80,7 +80,7 @@ WebUITabStripFieldTrial::WebUITabStripFieldTrial() {
 bool WebUITabStripFieldTrial::DeviceIsTabletModeCapable() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   return ash::TabletMode::IsBoardTypeMarkedAsTabletCapable();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   return HasBuiltInTouchScreen();
 #else
   // No known way to determine tablet-capability on other platforms.

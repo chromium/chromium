@@ -113,8 +113,6 @@ cast_source_set("mixer") {
 
   if (use_alsa) {
     deps += [ "//chromecast/media/cma/backend/alsa:mixer_output" ]
-  } else if (is_fuchsia) {
-    deps += [ "//chromecast/media/cma/backend/fuchsia:mixer_output" ]
   } else {
     # If enable_video_with_mixed_audio && !use_alsa, the platform needs to
     # provide its own mixer output.

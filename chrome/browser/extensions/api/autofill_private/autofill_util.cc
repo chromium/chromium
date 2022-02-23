@@ -136,7 +136,10 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   autofill_private::CreditCardEntry card;
 
   // Add all credit card fields to the entry.
-  card.guid = std::make_unique<std::string>(credit_card.guid());
+  card.guid = std::make_unique<std::string>(
+      credit_card.record_type() == autofill::CreditCard::LOCAL_CARD
+          ? credit_card.guid()
+          : credit_card.server_id());
   card.name = std::make_unique<std::string>(base::UTF16ToUTF8(
       credit_card.GetRawInfo(autofill::CREDIT_CARD_NAME_FULL)));
   card.card_number = std::make_unique<std::string>(
@@ -145,6 +148,8 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
       credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_MONTH)));
   card.expiration_year = std::make_unique<std::string>(base::UTF16ToUTF8(
       credit_card.GetRawInfo(autofill::CREDIT_CARD_EXP_4_DIGIT_YEAR)));
+  card.network = std::make_unique<std::string>(
+      base::UTF16ToUTF8(credit_card.NetworkForDisplay()));
   if (!credit_card.nickname().empty()) {
     card.nickname = std::make_unique<std::string>(
         base::UTF16ToUTF8(credit_card.nickname()));
@@ -167,6 +172,16 @@ autofill_private::CreditCardEntry CreditCardToCreditCardEntry(
   // |personal_data|.
   metadata->is_migratable = std::make_unique<bool>(
       credit_card.IsValid() && !personal_data.IsServerCard(&credit_card));
+  metadata->is_virtual_card_enrollment_eligible = std::make_unique<bool>(
+      credit_card.virtual_card_enrollment_state() ==
+          autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED ||
+      credit_card.virtual_card_enrollment_state() ==
+          autofill::CreditCard::VirtualCardEnrollmentState::
+              UNENROLLED_AND_ELIGIBLE);
+  metadata->is_virtual_card_enrolled = std::make_unique<bool>(
+      credit_card.virtual_card_enrollment_state() ==
+      autofill::CreditCard::VirtualCardEnrollmentState::ENROLLED);
+
   card.metadata = std::move(metadata);
 
   return card;

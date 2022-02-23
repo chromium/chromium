@@ -23,9 +23,5 @@ const base::Feature kEnablePlatformHighContrastInkDrop{
 const base::Feature kEnableViewPaintOptimization{
     "EnableViewPaintOptimization", base::FEATURE_DISABLED_BY_DEFAULT};
 
-// When enabled, widgets inherit the theme from their parent widget.
-const base::Feature kInheritNativeThemeFromParentWidget{
-    "InheritNativeThemeFromParentWidget", base::FEATURE_ENABLED_BY_DEFAULT};
-
 }  // namespace features
 }  // namespace views

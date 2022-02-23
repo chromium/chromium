@@ -42,7 +42,7 @@
 #include "chrome/browser/prefs/browser_prefs.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/prefs/pref_service_syncable_util.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_key.h"
 #include "chrome/browser/ssl/stateful_ssl_host_state_delegate_factory.h"
 #include "chrome/browser/themes/theme_service.h"
@@ -81,9 +81,11 @@
 #include "ppapi/buildflags/buildflags.h"
 #include "storage/browser/database/database_tracker.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/prefs/scoped_user_pref_update.h"
-#endif  // defined(OS_ANDROID)
+#else
+#include "chrome/browser/profiles/guest_profile_creation_logger.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ash/preferences.h"
@@ -149,12 +151,17 @@ OffTheRecordProfileImpl::OffTheRecordProfileImpl(
     Profile* real_profile,
     const OTRProfileID& otr_profile_id)
     : profile_(real_profile),
-      profile_keep_alive_(profile_,
-                          ProfileKeepAliveOrigin::kOffTheRecordProfile),
       otr_profile_id_(otr_profile_id),
       start_time_(base::Time::Now()),
       key_(std::make_unique<ProfileKey>(profile_->GetPath(),
                                         profile_->GetProfileKey())) {
+  // It's OK to delete a System Profile, even if it still has an active OTR
+  // Profile.
+  if (!real_profile->IsSystemProfile()) {
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kOffTheRecordProfile);
+  }
+
   prefs_ = CreateIncognitoPrefServiceSyncable(
       PrefServiceSyncableFromProfile(profile_),
       CreateExtensionPrefStore(profile_, true));
@@ -208,6 +215,12 @@ void OffTheRecordProfileImpl::Init() {
 
   if (IsIncognitoProfile())
     base::RecordAction(base::UserMetricsAction("IncognitoMode_Started"));
+
+#if !BUILDFLAG(IS_ANDROID)
+  if (IsGuestSession()) {
+    profile::MaybeRecordGuestChildCreation(this);
+  }
+#endif
 }
 
 OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
@@ -241,7 +254,7 @@ OffTheRecordProfileImpl::~OffTheRecordProfileImpl() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Bypass profile lifetime recording for ChromeOS helper profiles (sign-in,
   // lockscreen, etc).
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile_))
+  if (!ash::ProfileHelper::IsRegularProfile(profile_))
     return;
 #endif
   // Store incognito lifetime and navigations count histogram.
@@ -370,10 +383,6 @@ const Profile* OffTheRecordProfileImpl::GetOriginalProfile() const {
 ExtensionSpecialStoragePolicy*
     OffTheRecordProfileImpl::GetExtensionSpecialStoragePolicy() {
   return GetOriginalProfile()->GetExtensionSpecialStoragePolicy();
-}
-
-bool OffTheRecordProfileImpl::IsSupervised() const {
-  return profile_->IsSupervised();
 }
 
 bool OffTheRecordProfileImpl::IsChild() const {

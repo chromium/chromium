@@ -8,7 +8,6 @@ import("//components/exo/buildflags.gni")
 assert(is_chromeos_ash)
 
 source_set("server") {
-  testonly = enable_weston_test
   sources = [
     "wayland_server_controller.cc",
     "wayland_server_controller.h",
@@ -26,12 +25,20 @@ source_set("server") {
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "arc_overlay_manager_unittest.cc" ]
+  sources = [
+    "arc_overlay_manager_unittest.cc",
+    "wayland_server_controller_unittest.cc",
+  ]
+
   deps = [
+    ":server",
+    "//ash:test_support",
     "//ash/public/cpp",
     "//ash/public/cpp/external_arc",
+    "//base/test:test_support",
     "//components/exo",
     "//components/exo:test_support",
+    "//testing/gmock",
     "//testing/gtest",
     "//ui/aura",
   ]

@@ -232,7 +232,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
    * rendering is done.
    */
   class RenderTask extends Task {
-    protected node: DomIf;
+    declare protected node: DomIf;
 
     exec() {
       const routePath = this.node.getAttribute('route-path')!;
@@ -268,7 +268,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
   }
 
   class TopLevelSearchTask extends Task {
-    protected node: HTMLElement;
+    declare protected node: HTMLElement;
 
     exec() {
       const shouldSearch = this.request.regExp !== null;
@@ -482,7 +482,7 @@ import {SettingsSubpageElement} from './settings_page/settings_subpage.js';
 
   const SANITIZE_REGEX: RegExp = /[-[\]{}()*+?.,\\^$|#\s]/g;
 
-  interface SearchManager {
+  export interface SearchManager {
     /**
      * @param text The text to search for.
      * @param page

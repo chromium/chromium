@@ -11,6 +11,7 @@
 
 #include "base/check.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 
 namespace base {
@@ -93,7 +94,7 @@ class ScopedMultiSourceObservation {
   size_t GetSourcesCount() const { return sources_.size(); }
 
  private:
-  Observer* const observer_;
+  const raw_ptr<Observer> observer_;
 
   std::vector<Source*> sources_;
 };

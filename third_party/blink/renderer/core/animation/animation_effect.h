@@ -37,7 +37,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -56,7 +56,7 @@ enum TimingUpdateReason {
 };
 
 // Represents the content of an Animation and its fractional timing state.
-// https://drafts.csswg.org/web-animations/#the-animationeffect-interface
+// https://w3.org/TR/web-animations-1/#the-animationeffect-interface
 class CORE_EXPORT AnimationEffect : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
   // Calls Attach/Detach, GetAnimation, UpdateInheritedTime.

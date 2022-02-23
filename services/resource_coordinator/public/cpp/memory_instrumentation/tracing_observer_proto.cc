@@ -231,7 +231,7 @@ void TracingObserverProto::MemoryMapsAsProtoInto(
         ApplyPathFiltering(region->mapped_file, is_argument_filtering_enabled));
 
 // The following stats are only well defined on Linux-derived OSes.
-#if !defined(OS_MAC) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
     entry->set_proportional_resident_kb(
         region->byte_stats_proportional_resident / 1024);
     entry->set_private_dirty_kb(region->byte_stats_private_dirty_resident /

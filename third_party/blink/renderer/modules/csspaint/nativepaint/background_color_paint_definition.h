@@ -10,8 +10,8 @@
 #include "third_party/blink/renderer/modules/csspaint/nativepaint/native_css_paint_definition.h"
 #include "third_party/blink/renderer/modules/csspaint/paint_rendering_context_2d.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -37,7 +37,7 @@ class MODULES_EXPORT BackgroundColorPaintDefinition final
       const CompositorPaintWorkletJob::AnimatedPropertyValues&) override;
 
   // The |container_size| is without subpixel snapping.
-  scoped_refptr<Image> Paint(const FloatSize& container_size,
+  scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
                              const Node*,
                              const Vector<Color>& animated_colors,
                              const Vector<double>& offsets,

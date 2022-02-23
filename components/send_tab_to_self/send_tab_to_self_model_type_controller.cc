@@ -19,9 +19,7 @@ SendTabToSelfModelTypeController::SendTabToSelfModelTypeController(
     : ModelTypeController(syncer::SEND_TAB_TO_SELF,
                           std::move(delegate_for_full_sync_mode),
                           std::move(delegate_for_transport_mode)) {
-  DCHECK_EQ(base::FeatureList::IsEnabled(
-                send_tab_to_self::kSendTabToSelfWhenSignedIn),
-            ShouldRunInTransportOnlyMode());
+  DCHECK(ShouldRunInTransportOnlyMode());
 }
 
 SendTabToSelfModelTypeController::~SendTabToSelfModelTypeController() = default;

@@ -1,0 +1,10 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+# List of files that don't need to be passed to html_to_js().
+task_module_non_web_component_files =
+    [ "modules/task_module/task_module_handler_proxy.ts" ]
+
+# List of files that should be passed to html_to_js().
+task_module_web_component_files = [ "modules/task_module/module.ts" ]

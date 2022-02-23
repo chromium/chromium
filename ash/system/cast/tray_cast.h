@@ -45,6 +45,9 @@ class CastDetailedView : public TrayDetailedView,
   std::map<std::string, SinkAndRoute> sinks_and_routes_;
   // A mapping from the view pointer to the associated activity sink id.
   std::map<views::View*, std::string> view_to_sink_map_;
+
+  // Special list item that, if clicked, launches the access code casting dialog
+  views::View* add_access_code_device_ = nullptr;
 };
 
 }  // namespace tray

@@ -10,7 +10,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/test/bind.h"
 #include "base/test/simple_test_tick_clock.h"
+#include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/widevine/cdm/buildflags.h"
 #include "third_party/widevine/cdm/widevine_cdm_common.h"
@@ -22,7 +24,8 @@ class TestKeySystemProperties : public media::KeySystemProperties {
   explicit TestKeySystemProperties(const std::string& key_system_name)
       : key_system_name_(key_system_name) {}
 
-  std::string GetKeySystemName() const override { return key_system_name_; }
+  std::string GetBaseKeySystemName() const override { return key_system_name_; }
+
   bool IsSupportedInitDataType(
       media::EmeInitDataType init_data_type) const override {
     return false;
@@ -38,6 +41,7 @@ class TestKeySystemProperties : public media::KeySystemProperties {
   }
 
   media::EmeConfigRule GetRobustnessConfigRule(
+      const std::string& key_system,
       media::EmeMediaType media_type,
       const std::string& requested_robustness,
       const bool* /*hw_secure_requirement*/) const override {
@@ -90,10 +94,17 @@ class TestKeySystemsProviderDelegate {
   bool include_widevine_;
 };
 
+void CopyKeySystems(media::KeySystemPropertiesVector* output,
+                    media::KeySystemPropertiesVector input) {
+  *output = std::move(input);
+}
+
 }  // namespace
 
 TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
+  base::test::TaskEnvironment task_environment_;
   ChromeKeySystemsProvider key_systems_provider;
+  media::KeySystemPropertiesVector key_systems;
 
   base::SimpleTestTickClock tick_clock;
   key_systems_provider.SetTickClockForTesting(&tick_clock);
@@ -107,15 +118,15 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
   // IsKeySystemsUpdateNeeded() always returns true after construction.
   EXPECT_TRUE(key_systems_provider.IsKeySystemsUpdateNeeded());
 
-  std::vector<std::unique_ptr<media::KeySystemProperties>> key_systems;
-  key_systems_provider.AddSupportedKeySystems(&key_systems);
+  key_systems_provider.GetSupportedKeySystems(
+      base::BindOnce(&CopyKeySystems, &key_systems));
 
-  // No update needed immediately after AddSupportedKeySystems() call.
+  // No update needed immediately after GetSupportedKeySystems() call.
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
 
   // Widevine not initially provided.
   EXPECT_EQ(key_systems.size(), 1U);
-  EXPECT_EQ(key_systems[0]->GetKeySystemName(), "com.example.foobar");
+  EXPECT_EQ(key_systems[0]->GetBaseKeySystemName(), "com.example.foobar");
 
   // This is timing related. The update interval for Widevine is 1000 ms.
   EXPECT_FALSE(key_systems_provider.IsKeySystemsUpdateNeeded());
@@ -131,12 +142,14 @@ TEST(ChromeKeySystemsProviderTest, IsKeySystemsUpdateNeeded) {
   // Now add Widevine.
   provider_delegate->set_include_widevine(true);
   key_systems.clear();
-  key_systems_provider.AddSupportedKeySystems(&key_systems);
+
+  key_systems_provider.GetSupportedKeySystems(
+      base::BindOnce(&CopyKeySystems, &key_systems));
 
   // Widevine should now be among the list.
   bool found_widevine = false;
   for (const auto& key_system_properties : key_systems) {
-    if (key_system_properties->GetKeySystemName() == kWidevineKeySystem) {
+    if (key_system_properties->GetBaseKeySystemName() == kWidevineKeySystem) {
       found_widevine = true;
       break;
     }

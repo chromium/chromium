@@ -82,10 +82,10 @@
     Device name
   </message>
   <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_IN_PROGRESS" desc="Status label: Rolling back ChromiumOS or Chrome OS.">
-    Your administrator is rolling back this device (<ph name="PROGRESS_PERCENT">$1<ex>90%</ex></ph>)
+    <ph name="MANAGER">$1<ex>google.com</ex></ph> is putting this device on a previous version (<ph name="PROGRESS_PERCENT">$2<ex>90%</ex></ph>)
   </message>
   <message name="IDS_SETTINGS_UPGRADE_ROLLBACK_SUCCESS" desc="Status label: Successfully rolled back Chrome OS. All data on the device will be deleted during the next reboot.">
-    Your administrator rolled back this device. Please save important files, then restart. All data on the device will be deleted.
+    <ph name="MANAGER">$1<ex>google.com</ex></ph> has put this device on a previous version. Please save important files, then restart. All data on the device will be deleted.
   </message>
   <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_CHANNEL_SWITCH" desc="Status label: Channel was successfully switched on ChromiumOS/ChromeOS">
     Channel changed. Restart your device to apply changes.
@@ -222,11 +222,11 @@
   <message name="IDS_SETTINGS_ABOUT_PAGE_DIAGNOSTICS" desc="Text of the button which allows the user to diagnose their device.">
     Diagnostics
   </message>
+  <message name="IDS_SETTINGS_ABOUT_PAGE_FIRMWARE_UPDATES" desc="Text of the button for the surface which allows users to update all their peripheral firmwares in one place.">
+    Firmware updates
+  </message>
 
   <!-- People (OS settings) -->
-  <message name="IDS_OS_SETTINGS_PEOPLE_V2" desc="Name of a section in the OS settings page." meaning="People and their accounts.">
-    Accounts
-  </message>
   <message name="IDS_OS_SETTINGS_PROFILE_NAME" desc="Label with device account first name, showing which user is currently signed in.">
     Currently signed in as <ph name="NAME">$1<ex>John</ex></ph>
   </message>
@@ -235,18 +235,22 @@
      =1 {1 Google Account}
      other {<ph name="EXTRA_ACCOUNTS">$2<ex>2</ex></ph> Google Accounts}}
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_PAGE_TITLE" desc="Settings sub-page title for sync.">
-    Sync your settings
-  </message>
   <message name="IDS_OS_SETTINGS_SYNC_TURN_ON" desc="Button label for turning on synchronization of settings across Chrome OS devices.">
     Turn on
   </message>
   <message name="IDS_OS_SETTINGS_SYNC_TURN_OFF" desc="Button label for turning off synchronization of settings across Chrome OS devices.">
     Turn off
   </message>
-  <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
-    Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
-  </message>
+  <if expr="reven">
+    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
+      Your apps and settings will sync across all CloudReady 2.0 devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+    </message>
+  </if>
+  <if expr="not reven">
+    <message name="IDS_OS_SETTINGS_SYNC_FEATURE_LABEL" desc="Label describing the OS sync feature.">
+      Your apps and settings will sync across all Chrome OS devices where you are signed in with your Google account. For browser sync options, go to <ph name="LINK_BEGIN">&lt;a&gt;</ph>Chrome settings<ph name="LINK_END">&lt;/a&gt;</ph>.
+    </message>
+  </if>
   <message name="IDS_OS_SETTINGS_SYNC_APPS_CHECKBOX_LABEL" desc="Label for the checkbox which enables syncing of apps across devices.">
     Apps
   </message>
@@ -518,12 +522,6 @@
   <message name="IDS_SETTINGS_SUGGESTIONS_EMOJI_SUGGESTION_DESCRIPTION" desc="The description for emoji suggestion (when an user types a word, some emojis might be suggested for the user to insert after) section.">
     Get emoji suggestions based on what you're typing
   </message>
-  <message name="IDS_SETTINGS_SUGGESTIONS_PREDICTIVE_WRITING_TITLE" desc="The label for predictive writing suggestions (when a user types a word, some text might be suggested for the user to insert after) section.">
-    Predictive writing
-  </message>
-  <message name="IDS_SETTINGS_SUGGESTIONS_PREDICTIVE_WRITING_DESCRIPTION" desc="The description for predictive writing suggestions (when a user types a word, some text might be suggested for the user to insert after) section.">
-    Show inline writing suggestions that appear as you type
-  </message>
 
   <!-- Input Method Options Section -->
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_BASIC" desc="The label for the section in input method options page containing basic options.">
@@ -537,6 +535,9 @@
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_VIRTUAL_KEYBOARD" desc="The label for the section in input method options page containing the virtual keyboard options.">
     On-screen keyboard
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_SUGGESTIONS" desc="The label for the section in input method options page containing suggestion options.">
+    Suggestions
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_ENABLE_DOUBLE_SPACE_PERIOD" desc="The label for the input method option to enable double-space to type period (when an user types two consecutive space, it outputs a period).">
     Double-space to type period
@@ -555,6 +556,9 @@
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_AUTO_CORRECTION" desc="The label for the input method option to enable auto correction.">
     Auto-correction
+  </message>
+  <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_PREDICTIVE_WRITING" desc="The label for the input method option to enable predictive writing.">
+    Predictive writing
   </message>
   <message name="IDS_SETTINGS_INPUT_METHOD_OPTIONS_XKB_LAYOUT" desc="The label for the input method option to let the users choose their keyboard layout.">
     Keyboard layout
@@ -699,6 +703,12 @@
   </message>
   <message name="IDS_OS_SETTINGS_AMBIENT_MODE_DISABLED" desc="Sub label for the ambient mode row in settings page when it is disabled.">
     Disabled
+  </message>
+  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB" desc="Title for the link to open personalization hub.">
+    Personalize your device
+  </message>
+  <message name="IDS_OS_SETTINGS_OPEN_PERSONALIZATION_HUB_SUBTITLE" desc="Description for the link to open personalization hub.">
+    Customize wallpaper, avatar, screensaver and more
   </message>
 
   <!-- Ambient Mode Page -->
@@ -1345,7 +1355,7 @@ Press an assigned switch or key to remove assignment.
     Start Switch Access setup?
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_GUIDE_WARNING_DIALOG_MESSAGE" desc="The message explaining that re-running the setup guide will clear all switch assignments. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
-    Your currently assigned switches will be cleared
+    Your current scanning setup will be reset, including any assigned switches and auto-scan speed preferences.
   </message>
   <message name="IDS_SETTINGS_SWITCH_ACCESS_SETUP_INTRO_TITLE" desc="The title for the first page of the Switch Access setup guide. Switch Access is an alternative input method designed for users with limited mobility, where the user has as little as one switch (for example, a button) to control the computer.">
     Switch Access setup guide
@@ -1571,17 +1581,20 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page.">
     You can add your additional accounts to access websites and apps.
   </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_DESCRIPTION_V2" desc="List description for additional account list in Account Manager Settings page.">
+    You can add additional accounts to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> to use with websites and Android apps. You can also control which accounts are used with Android apps.
+  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_LIST_CHILD_DESCRIPTION" desc="List description for additional account List in Account Manager Settings page for Child users.">
     <ph name="USER_EMAIL">$1<ex>user@example.com</ex></ph> is supervised by Family Link. You can add school accounts to access school resources with parental supervision.
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_PRIMARY_ACCOUNT_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings describing how to sign out.">
-    To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_NOT_USED_IN_ARC_LABEL" desc="Per-account label on OS Account Manager page that is shown only if the account is not available in ARC / Android apps. User can change this by clicking 'Use with Android apps button' for the account.">
+    Not used with Android apps
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_MANAGED_BY_ONE_PARENT_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings showing that this user is managed by parent's account.">
-    Account managed by <ph name="PARENT_EMAIL">$1<ex>user@example.com</ex></ph>. To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_USE_IN_ARC_BUTTON_LABEL" desc="Per-account button label on OS Account Manager page. Clicking this button makes account available in ARC / Android apps.">
+   Use with Android apps
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_CHILD_MANAGED_BY_TWO_PARENTS_TOOLTIP" desc="Tooltip for the primary account in accounts list in Settings showing that this user is managed by two parents' accounts.">
-    Account managed by <ph name="FIRST_PARENT_EMAIL">$1<ex>first@example.com</ex></ph> and <ph name="SECOND_PARENT_EMAIL">$2<ex>second@example.com</ex></ph>. To sign out of the primary account on this device, click the time on your screen. In the menu that appears, click "Sign out".
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_STOP_USING_IN_ARC_BUTTON_LABEL" desc="Per-account button label on OS Account Manager page. Clicking this button makes account NOT available in ARC / Android apps.">
+   Stop using with Android apps
   </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_ACCOUNT_LABEL" desc="Label of the Remove account button in Account Manager.">
     Remove this account
@@ -1622,9 +1635,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MORE_ACTIONS_TOOLTIP" desc="Tooltip text (shows on hover or for screenreaders) for a button that shows a menu with more actions when clicked or tapped.">
     More actions, <ph name="EMAIL">$1<ex>abcd@google.com</ex></ph>
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_MANAGED_ACCOUNT" desc="Management status label for managed accounts. This will be e.g. 'Managed by google.com' for Enterprise accounts and 'Managed by Family Link' for child accounts.">
-    Managed by <ph name="DOMAIN">$1<ex>google.com</ex></ph>
-  </message>
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS" desc="Management status label for managed accounts.">
     This account is managed by <ph name="BEGIN_LINK">&lt;a target="_blank"&gt;</ph><ph name="DOMAIN">$1<ex>google.com</ex></ph><ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
@@ -1637,8 +1647,17 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_SCHOOL_ACCOUNT" desc="Indicates this account is the school account, when the primary account is a child account.">
     School Account
   </message>
-  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_MANAGEMENT_STATUS_UNMANAGED_ACCOUNT" desc="Management status label for unmanaged accounts.">
-    Primary account
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_TITLE" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the title of that dialog.">
+    Remove this account?
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_BODY" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the main message of that dialog.">
+    Removing this account will also delete any Chrome profiles signed in with this account
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_REMOVE" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the title of the button that will remove the account.">
+    Remove
+  </message>
+  <message name="IDS_SETTINGS_ACCOUNT_MANAGER_REMOVE_LACROS_ACCOUNT_DIALOG_CANCEL" desc="When a user attempts to remove a secondary account, a dialog pops up asking them for confirmation. This is the title of the button that will cancel the dialog.">
+    Cancel
   </message>
 
   <!-- Used by both Crostini and Plugin VM -->
@@ -1964,6 +1983,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_ANDROID_APPS_MANAGE_APP_LINKS" desc="Label for accessing app preferrences on ARC side.">
     Manage Play app links
   </message>
+  <message name="IDS_SETTINGS_APPS_ARC_VM_SHARED_USB_DEVICES_DESCRIPTION" desc="Description for managing shared USB devices. Do not translate 'ARCVM'.">
+    Let Android apps access USB devices on this Chromebook. Permission will be requested each time you plug in a USB device. Individual Android apps will ask for additional permissions.
+  </message>
 
   <!-- Device Stylus (OS settings) -->
   <message name="IDS_SETTINGS_STYLUS_TITLE" desc="Title of the stylus settings page.">
@@ -2034,6 +2056,15 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET" desc="Bluetooth device details page: button label for button that forgets the Bluetooth device when clicked.">
     Forget
   </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_FORGET_A11Y_LABEL" desc="Bluetooth device details page: Accessibility label for button that forgets the Bluetooth device when clicked.">
+   Forget <ph name="DEVICE_NAME">$1<ex>Beats</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_HID_MESSAGE_CONNECTED" desc="Bluetooth device details page: Message displayed for devices that are currently connected that will disconnect automatically when turned off or not used.">
+    Device will disconnect automatically when it's turned off or isn't being used
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_HID_MESSAGE_DISCONNECTED" desc="Bluetooth device details page: Message displayed for devices that are currently disconnected that will connect automatically when turned on and used.">
+    Device will connect automatically when it's turned on and is being used
+  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_NAME" desc="Bluetooth device details page: label informing user the text below is the device name.">
     Device name
   </message>
@@ -2045,6 +2076,24 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage.">
     Battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_LEFT_BUD_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the left true wireless bud.">
+    Left battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CASE_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the true wireless case.">
+    Case battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_RIGHT_BUD_BATTERY_PERCENTAGE_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current battery percentage of the right true wireless bud.">
+    Right battery level <ph name="PERCENTAGE">$1<ex>90</ex></ph>%.
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_LEFT_BUD_LABEL" desc="Bluetooth True Wireless Images component: Label describing the left bud of a set of True Wireless headphones.">
+    Left
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_CASE_LABEL" desc="Bluetooth True Wireless Images component: Label describing the case of a set of True Wireless headphones.">
+    Case
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_TRUE_WIRELESS_RIGHT_BUD_LABEL" desc="Bluetooth True Wireless Images component: Label describing the right bud of a set of True Wireless headphones.">
+    Right
   </message>
   <message name="IDS_SETTINGS_BLUETOOTH_DEVICE_DETAIL_CONNECTED_A11Y_LABEL" desc="Bluetooth device details page: A11y label informing the current device is connected.">
     Connected to <ph name="DEVICE">$1<ex>Beats</ex></ph>
@@ -2124,60 +2173,6 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_BLUETOOTH_SUMMARY_PAGE_ON" desc="Label for Bluetooth summary page, when Bluetooth is on but no devices are connected.">
     On
   </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_UNKNOWN" desc="Accessibility label for paired Bluetooth device list item with a device type of unknown.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_UNKNOWN_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of unknown and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Unknown device type, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_COMPUTER" desc="Accessibility label for paired Bluetooth device list item with a device type of computer.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Computer
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_COMPUTER_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of computer and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Computer, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_PHONE" desc="Accessibility label for paired Bluetooth device list item with a device type of phone.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Phone
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_PHONE_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of phone and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Phone, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_HEADSET" desc="Accessibility label for paired Bluetooth device list item with a device type of audio device.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Audio device
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_HEADSET_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of audio device and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Audio device, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_VIDEO_CAMERA" desc="Accessibility label for paired Bluetooth device list item with a device type of video camera.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Video camera
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_VIDEO_CAMERA_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of video camera and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Video camera, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_GAME_CONTROLLER" desc="Accessibility label for paired Bluetooth device list item with a device type of game controller.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Game controller
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_GAME_CONTROLLER_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of game controller and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Game controller, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_KEYBOARD" desc="Accessibility label for paired Bluetooth device list item with a device type of keyboard.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Keyboard
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_KEYBOARD_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of keyboard and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Keyboard, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_MOUSE" desc="Accessibility label for paired Bluetooth device list item with a device type of mouse.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Mouse
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_MOUSE_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of mouse and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Mouse, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_TABLET" desc="Accessibility label for paired Bluetooth device list item with a device type of tablet.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Tablet
-  </message>
-  <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_A11Y_LABEL_TYPE_TABLET_WITH_BATTERY_INFO" desc="Accessibility label for paired Bluetooth device list item with a device type of tablet and available battery info.">
-    Device <ph name="DEVICE_INDEX">$1<ex>1</ex></ph> of <ph name="DEVICE_COUNT">$2<ex>15</ex></ph>, <ph name="DEVICE_NAME">$3<ex>Beats</ex></ph>, Tablet, Battery level <ph name="BATTERY_PERCENTAGE">$4<ex>50</ex></ph>%
-  </message>
   <message name="IDS_SETTINGS_BLUETOOTH_PAIRED_DEVICE_ITEM_SUBPAGE_BUTTON_A11Y_LABEL" desc="Accessibility label for button in a paired Bluetooth device list item that routes to the detail page for the device.">
     <ph name="DEVICE">$1<ex>Beats</ex></ph>, Details
   </message>
@@ -2198,6 +2193,12 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_BLUETOOTH_ENABLE_FAST_PAIR_SUBTITLE" desc="Subtitle that describes the toggle that enables Fast Pair on the Bluetooth settings page.">
     Easily connect and set up devices close by
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_ENABLED_A11Y_LABEL" desc="Bluetooth device details page: Accessibility announcement when Bluetooth state is enabled.">
+    Bluetooth enabled
+  </message>
+  <message name="IDS_SETTINGS_BLUETOOTH_DISABLED_A11Y_LABEL" desc="Bluetooth device details page: Accessibility announcement when Bluetooth state is disabled.">
+    Bluetooth disabled
   </message>
 
 
@@ -2288,11 +2289,14 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MOUSE_AND_TOUCHPAD_TITLE" desc="In Device Settings, the title of the mouse and touchpad settings subpage (when the user has both types of devices).">
     Mouse and touchpad
   </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_LABEL" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
-    Enable haptic feedback. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_TITLE" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
+    Haptic feedback
   </message>
-  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL" translateable="false" desc="In Device Settings, the text next to the slider for setting the touchpad haptic click sensitivity.">
-    Click feedback
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_FEEDBACK_SECONDARY_TEXT" desc="In Device Settings, the text next to the toggle for enabling touchpad haptic feedback.">
+    Receive vibration confirmation for actions like split screen and switching desks.
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_CLICK_SENSITIVITY_LABEL" desc="In Device Settings, the text next to the slider for setting the touchpad haptic click sensitivity.">
+    Click strength
   </message>
   <message name="IDS_SETTINGS_TOUCHPAD_HAPTIC_LIGHT_CLICK_LABEL" desc="In Device Settings, the text under the left (less sensitive) side of the slider for the touchpad haptic click sensitivity.">
     Light
@@ -2602,7 +2606,7 @@ Press an assigned switch or key to remove assignment.
     Add <ph name="PROVIDER_NAME">$1<ex>VPN Demo</ex></ph>...
   </message>
   <message name="IDS_SETTINGS_INTERNET_ADD_VPN" desc="Settings > Internet > Add VPN label.">
-    Add OpenVPN / L2TP...
+    Add built-in VPN...
   </message>
   <message name="IDS_SETTINGS_INTERNET_ADD_WIFI" desc="Settings > Internet > Add Wi-Fi label.">
     Add Wi-Fi...
@@ -2814,6 +2818,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_REFRESHING_PROFILE_LIST" desc="Settings > Internet > Mobile data: Message indicating that the list of eSIM profiles is being refreshed and notifying the user why mobile settings are temporarily disabled.">
     Refreshing profile list. This may take a few minutes.
   </message>
+  <message name="IDS_SETTINGS_INTERNET_NETWORK_CELLULAR_RESETTING_ESIM" desc="Settings > Internet > Mobile data: Message indicating that the eSIM is being reset and notifying the user why mobile settings are temporarily disabled.">
+    Your administrator is resetting your eSIM. This may take a few minutes.
+  </message>
   <message name="IDS_SETTINGS_INTERNET_NETWORK_REMOVE_PROFILE_DIALOG_ERROR_MESSAGE" desc="Settings > Internet > Network details > Remove eSIM cellular profile dialog: Error message shown when remove fails">
     Profile could not be removed. Please try again or contact your carrier for technical support.
   </message>
@@ -2970,7 +2977,10 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_INTERNET_TETHER_LABEL" desc="Label on Mobile data page describing list of networks as instant tether networks">
     Instant Tethering
   </message>
-  <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK" desc="Text shown when viewing the Mobile data page and no eSIM profile is available">
+  <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP" desc="Text shown when viewing the Mobile data page and no eSIM profile is available">
+    No available eSIM profiles
+  </message>
+  <message name="IDS_SETTINGS_INTERNET_ESIM_NOT_SETUP_WITH_SETUP_LINK" desc="Text shown with a download eSIM profile link when viewing the Mobile data page and no eSIM profile is available">
     No available eSIM profiles. Download a new <ph name="BEGIN_LINK">&lt;a href="#" id="cellularEsimLink"&gt;</ph>profile.<ph name="END_LINK">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_SETTINGS_INTERNET_PSIM_NOT_INSERTED_LABEL" desc="Text shown when viewing the Mobile data page and no physical SIM card is inserted">
@@ -3071,7 +3081,7 @@ Press an assigned switch or key to remove assignment.
     Phone Hub, Learn More
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SECTION_TITLE" desc="The title of the Phone Hub Recent Photo section on the settings page.">
-    Recent Photos
+    Recent photos
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Notifications section on the settings page.">
     Notifications
@@ -3079,29 +3089,47 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SECTION_TITLE" desc="The title of the Phone Hub Task Continuation section on the settings page.">
     Recent Chrome tabs
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE" translateable="false" desc="The title of the Phone Hub Apps section on the settings page.">
-    Apps
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SECTION_TITLE" desc="The title of the Phone Hub Apps section on the settings page.">
+    Messaging apps
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE" translateable="false" desc="The title of the Phone Hub Apps and Notifications section on the settings page.">
-    App streaming and notifications
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Apps and Notifications combined section on the settings page.">
+    Notifications and messaging apps
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_NOTIFICATIONS_SECTION_TITLE" desc="The title of the Phone Hub Camera Roll and Notifications combined section on the settings page.">
+    Recent photos and notifications
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_APPS_SECTION_TITLE" desc="The title of the Phone Hub Camera Roll and Apps combined section on the settings page.">
+    Recent photos and messaging apps
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SECTION_TITLE" desc="The title of the Phone Hub Camera Roll, Notifications and Apps combined section on the settings page.">
+    Recent photos, notifications, and messaging apps
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_SUMMARY" desc="Description of for the 'Phone Hub' setting. This feature lets the user stay productive on Chrome OS by ensuring that their phones' apps, content, and connectivity are available on their Chrome OS device.">
     Access your phone's capabilities from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll' setting. This feature populates most recent photos from a connected Android phone to Chrome OS devices.">
-    View photos from your phone's camera roll on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    View your phone's recent photos and media on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Notifications' setting. This feature mirrors notifications from a connected Android phone to Chrome OS devices.">
-    View notifications from your chat apps on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+    View, dismiss, and reply to your phone’s notifications
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
     View recent Chrome tabs from your phone
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY" translateable="false" desc="Description of for the 'Phone Hub Apps' setting. This feature lets users streaming apps from a Android phone to Chrome OS device.">
-    Temporarily use your phone apps right from your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_SUMMARY" desc="Description of for the 'Phone Hub Apps' setting. This feature lets users streaming apps from a Android phone to Chrome OS device.">
+    Stream your phone’s messaging apps
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY" translateable="false" desc="Description of for the 'Phone Hub Apps and Notifications' setting. This feature mirrors notifications and lets users streaming apps from a Android phone to Chrome OS device.">
-    View your phones notifications and open apps on the <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_APPS_AND_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Apps and Notifications' setting. This feature mirrors notifications and lets users streaming apps from a Android phone to Chrome OS device.">
+    View, dismiss, and reply to your phone’s notifications. Stream your phone’s messaging apps.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_NOTIFICATIONS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll and Notifications' combined setting.">
+    View your phone's recent photos, media, and notifications on your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_AND_APPS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll and Apps' combined setting.">
+    View your phone's recent photos and media. Stream your phone’s messaging apps.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_CAMERA_ROLL_NOTIFICATIONS_AND_APPS_SUMMARY" desc="Description of for the 'Phone Hub Camera Roll, Notifications and Apps' combined setting.">
+    View your phone's recent photos, media, and notifications. Stream your phone’s messaging apps.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_PHONE_HUB_TASK_CONTINUATION_DISABLED_SUMMARY" desc="Description of for the 'Phone Hub Task Continuation' setting when Chrome sync is not enabled. This feature lets users resume in-app actions and chrome tabs that are open on a connected Android phone from Chrome OS devices.">
     Turn on <ph name="LINK1_BEGIN">&lt;a id="chromeSyncLink"&gt;</ph>Chrome Sync<ph name="LINK1_END">&lt;/a&gt;</ph> to view recent Chrome tabs. <ph name="LINK2_BEGIN">&lt;a target="_blank" id="learnMoreLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>Learn More<ph name="LINK2_END">&lt;/a&gt;</ph>
@@ -3125,13 +3153,13 @@ Press an assigned switch or key to remove assignment.
     Connecting to your phone
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_TITLE" desc="The title of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
-    Set a PIN or password to continue
+    Set a PIN or password
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_SUBTITLE" desc="The subtitle of the screen lock dialog containing the Phone Hub notification opt-in flow shown when the user has confirmed to enable the app stream that will stream phone to their Chromebook.">
-    Protect your phone's data when this Chromebook wakes from sleep.
+    This PIN or password protects your data on this <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>, including any content you stream from your phone.
   </message>
-  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION" desc="The instruction message of the screen lock dialog containing the smart lock will log in when the phone is nearby.">
-    Smart lock will automatically log you in when your phone is nearby.
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_SCREEN_LOCK_INSTRUCTION" desc="The instruction message of the screen lock dialog.">
+    Choose either one each time you sign in
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_INSTRUCTIONS" desc="The second paragraph of text shown in the dialog containing the Phone Hub notification opt-in flow. Alerts the user that to enable notifications, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
     Make sure your phone is nearby, unlocked, and has Bluetooth and Wi-Fi turned on.
@@ -3163,6 +3191,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub notification syncing feature. The tooltip describes how users with work profiles cannot opt into this feature.">
     Notification syncing is not supported for phones in a work profile
   </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_PROHIBITED_DISABLED_BY_ADMIN_TOOLTIP" desc="Tooltip shown to users when hovering the help icon in settings next to the Phone Hub notification syncing feature. The tooltip describes how users with notification access disabled by their phones' administrator cannot opt into this feature.">
+    Notification syncing is disabled by your phone's administrator
+  </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_NOTIFICATION_ACCESS_SETUP_DIALOG_GET_STARTED_BUTTON_LABEL" desc="The label to a button in the Phone Hub notification opt-in flow that appears when the dialog first opens. Clicking the button will allow the user to try enabling the feature.">
     Get started
   </message>
@@ -3183,6 +3214,39 @@ Press an assigned switch or key to remove assignment.
   </message>
   <message name="IDS_SETTINGS_MULTIDEVICE_WIFI_SYNC_LEARN_MORE_LABEL" desc="Accessibility label (used by screen readers, not shown in UI) for a link that leads to a page with more information about the 'Wifi Sync' feature. This feature lets the user sync wifi network configurations between Chrome OS devices and a connected Android phone.">
     Wi-Fi Sync, Learn More
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when a user clicks the Phone Hub 'Notifications' or 'Apps' setup button.">
+    Be more productive when you connect your phone to your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph>
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_ACK_SUBTITLE" desc="The subtitle of the dialog containing the phone permissions opt-in flow shown when a user clicks the Phone Hub 'Notifications' or 'Apps' setup button.">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> can then:
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Notifications' setup button. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+    Get phone notifications
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_NOTIFICATION_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Notifications' setup button. Explains to the user that they need to grant permission to use notifications by enabling access to the Google Play Services app on their phone.">
+    Receive and respond to messages
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Apps' setup button. Explains to the user that they need to grant phone permission to steam apps.">
+    Stream messaging apps
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_APPS_ITEM_SUMMARY" desc="The summary of the dialog containing the phone permissions opt-in flow shown when when a user clicks the Phone Hub 'Apps' setup button. Explains to the user that they need to grant phone permission to stream apps.">
+    View conversations, react to messages, and add people to group chats
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_AWAITING_RESPONSE_TITLE" desc="The title of the dialog containing the phone permissions opt-in flow shown when the user needs to follow the setup flow instructions on their phone.">
+    Finish setup on your phone
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_OPERATION_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to enable notifications and apps permissionss on the phone.">
+    Go to your phone to review a few more permissions.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_INSTRUCTIONS" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that to enable notifications and apps, they need to have their phone unlocked, nearby, and with Bluetooth/Wi-Fi on to complete setup.">
+    Make sure your phone is nearby, unlocked, and that Bluetooth and Wi-Fi are turned on.
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_TITLE" desc="The title shown in the dialog containing the phone permissions opt-in flow when the feature is successfully turned on.">
+    Your phone and <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> are connected
+  </message>
+  <message name="IDS_SETTINGS_MULTIDEVICE_PERMISSIONS_SETUP_DIALOG_COMPLETED_SUMMARY" desc="The text shown in the dialog containing the phone permissions opt-in flow. Alerts the user that dismiss notifications on the Chromebook will also dismiss them on the phone.">
+    Keep in mind, dismissing notifications on your Chromebook will also dismiss them on your phone.
   </message>
 
   <!-- Lock Screen Page (OS settings) -->
@@ -3288,7 +3352,7 @@ Press an assigned switch or key to remove assignment.
     Set up PIN
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOCK" desc="Text on the people page which opens up the quick unlock subpage and the title of the quick unlock subpage.">
-    Screen lock
+    Lock screen
   </message>
   <message name="IDS_SETTINGS_PEOPLE_LOCK_SCREEN_TITLE_LOGIN_LOCK" desc="Text on the people page which opens up the security and sign-in section.">
     Security and sign-in
@@ -3966,6 +4030,9 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating the number of Chrome OS apps installed.">
     <ph name="APP_COUNT">$1<ex>3</ex></ph> apps
   </message>
+  <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DND_ENABLED_SUBLABEL_TEXT" desc="The sublabel for the settings row button in the App section of OS Settings which links to the App Notifications page indicating that Do Not Disturb is on.">
+    Do not disturb enabled
+  </message>
   <message name="IDS_SETTINGS_APP_NOTIFICATIONS_DO_NOT_DISTURB_TOGGLE_TITLE" desc="The label for the notfications DoNotDisturb toggle that lets the user silence all app notifications.">
     Do not disturb
   </message>
@@ -4101,10 +4168,20 @@ Press an assigned switch or key to remove assignment.
   </message>
 
   <!-- Privacy Page -->
-  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in Chrome OS.">
-    Help improve Chrome OS features and performance
+  <if expr="reven">
+    <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in CloudReady 2.0.">
+      Help improve CloudReady 2.0 features and performance
+    </message>
+  </if>
+  <if expr="not reven">
+    <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable crash and user metrics logging in Chrome OS.">
+      Help improve Chrome OS features and performance
+    </message>
+  </if>
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_OWNER_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in Chrome OS for the owner of the device.">
+    Automatically sends crash reports as well as diagnostic and usage data to Google
   </message>
-  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_DESC" desc="The description of the checkbox to enable/disable crash and user metrics logging in Chrome OS.">
+  <message name="IDS_SETTINGS_ENABLE_LOGGING_TOGGLE_USER_DESC" desc="The description of the checkbox to enable/disable user metrics logging in Chrome OS for non-owners of the device.">
     Automatically sends diagnostic and usage data to Google
   </message>
   <message name="IDS_SETTINGS_ENABLE_SUGGESTED_CONTENT_TITLE" desc="The label of the checkbox to enable/disable Suggested Content in Chrome OS settings. Suggested Content includes app search recommendations and website recommendations which can show up in places such as the launcher search and suggestion chips.">
@@ -4137,32 +4214,32 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_OS_SETTINGS_DATA_ACCESS_PROTECTION_CONFIRM_DIALOG_DISABLE_BUTTON_LABEL" desc="The label of the confirmation button to disable data access protection">
     Disable
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_TITLE" desc="Do not translate (string not final). Text on the privacy page that opens up the smart privacy section.">
-    Smart privacy protections
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_TITLE" desc="Text on the privacy page that opens up the smart privacy section.">
+    Screen privacy
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SUBTEXT" desc="Do not translate (string not final). The sub-label describing the purpose of the smart privacy section.">
-    Smart display lock and detect if others peeking from behind
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_DESC" desc="The text explaining to the user the manner in which their presence is sensed and data usage policy.">
+    Your <ph name="DEVICE_TYPE">$1<ex>Chromebook</ex></ph> uses a built-in sensor to detect people in front of your device. All data is processed on your device immediately and then deleted. Sensor data is never sent to Google. <ph name="LINK_BEGIN">&lt;a&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_DESC" desc="Do not translate (string not final). The text explaining to the user the manner in which their presence is sensed and data usage policy.">
-    This feature uses the front camera for detection. The data is securely processed and discarded afterwards. Google doesn't use your data for any other purposes.
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_TITLE" desc="The name of the quick dim feature shown as the label of a toggle in the smart privacy subpage.">
+    Lock on Leave
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_TITLE" desc="Do not translate (string not final). The name of the smart screen lock feature shown as the label of a toggle in the smart privacy subpage.">
-    Smart screen lock
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_QUICK_DIM_SUBTEXT" desc="Sub-label elaborating on the meaning of smart screen locking.">
+    If you move away from your device, your screen will lock automatically. When you're in front of your device, your screen will stay awake.
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SCREEN_LOCK_SUBTEXT" desc="Do not translate (string not final). Sub-label elaborating on the meaning of smart screen locking.">
-    Screen locks automatically if you walk off, and won't turn off if you're in front of it
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE" desc="Text in the smart privacy section which is the subheader for snooping protection options.">
+    Viewing protection
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_TITLE" desc="Do not translate (string not final). Text in the smart privacy section which is the subheader for snooping protection options.">
-    Snooping protection
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT" desc="Sub-label elaborating on the meaning of snooping protection.">
+    When someone else looks at your screen, show the Privacy eye icon on the bottom right of your screen
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_SUBTEXT" desc="Do not translate (string not final). Sub-label elaborating on the meaning of snooping protection.">
-    Notify you or temporary dim your screen when someone is snooping from behind
+  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_NOTIFICATIONS" desc="Text for the name of the toggle in the smart privacy section requesting notification hiding when a snooper is detected.">
+    Hide notification content when someone else is detected
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_ICON" desc="Do not translate (string not final). The radio button option in the smart privacy section requesting an eye icon when a snooper is detected.">
-    Show me an eye icon in the status area
+  <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_TITLE" desc="The label of the checkbox to enable/disable device hardware data collection and usage in CloudReady 2.0.">
+    <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph> hardware support and stability
   </message>
-  <message name="IDS_OS_SETTINGS_SMART_PRIVACY_SNOOPING_DIM" desc="Do not translate (string not final). The radio button option in the smart privacy section requesting screen dim when a snooper is detected.">
-    Temporary dim screen
+  <message name="IDS_OS_SETTINGS_HW_DATA_USAGE_TOGGLE_DESC" desc="The description of the checkbox to enable/disable device hardware data collection and usage in CloudReady 2.0.">
+    Let Google use your hardware data to help improve <ph name="DEVICE_OS">$1<ex>CloudReady 2.0</ex></ph>. If you decline, this data is still sent to Google to determine proper updates, but is not stored or used otherwise.
   </message>
 
 

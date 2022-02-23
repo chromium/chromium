@@ -27,94 +27,53 @@ enum InstanceState {
 };
 
 // Instance is used to represent an App Instance, or a running app.
+// `instance_id_` is the unique id for instance. For any two instances, if the
+// instance id is the same, the app id must be the same, well, the window might
+// be different. For example, When a web app opened in tab is pulled to a new
+// Lacros window, the window might be changed. Instance should exist on Ash side
+// only.
 class Instance {
  public:
-  // InstanceKey is the unique key for the instance.
-  class InstanceKey {
-   public:
-    // Create an InstanceKey for an app instance backed by a WebContents.
-    static InstanceKey ForWebBasedApp(aura::Window* window);
-
-    // Create an InstanceKey for any non-web app type.
-    static InstanceKey ForWindowBasedApp(aura::Window* window);
-
-    InstanceKey(const InstanceKey& instance_key) = default;
-    InstanceKey(InstanceKey&& instance_key) = default;
-    ~InstanceKey() = default;
-
-    // Return enclosing app windows for the |app_id|. If the app is in a browser
-    // tab, the window returned will be the window of the browser.
-    aura::Window* GetEnclosingAppWindow() const;
-    bool IsValid() const { return window_ != nullptr; }
-    bool operator<(const InstanceKey& other) const;
-    bool operator==(const InstanceKey& other) const;
-    bool operator!=(const InstanceKey& other) const;
-    InstanceKey& operator=(InstanceKey&&) = default;
-
-    bool IsForWebBasedApp() const { return is_web_contents_backed_; }
-
-    friend struct InstanceKeyHash;
-    friend std::ostream& operator<<(
-        std::ostream& os,
-        const apps::Instance::InstanceKey& instance_key);
-
-   private:
-    explicit InstanceKey(aura::Window* window, bool is_web_contents_backed);
-
-    // window_ is owned by ash and will be deleted when the user closes the
-    // window. Instance itself doesn't observe the window. The window's observer
-    // is responsible to delete Instance from InstanceRegistry when the window
-    // is destroyed.
-    aura::Window* window_;
-
-    // Whether the app is a WebContents backed app. Will eventually be replaced
-    // by an ID representing the WebContents which may live remotely.
-    bool is_web_contents_backed_;
-  };
-
-  Instance(const std::string& app_id, const base::UnguessableToken& id);
-  // TODO(crbug.com/1251501): Deprecated. Implement updating the instance
-  // registry using instance ID as a key.
-  Instance(const std::string& app_id, InstanceKey&& instance_key);
-  ~Instance();
+  Instance(const std::string& app_id,
+           const base::UnguessableToken& instance_id,
+           aura::Window* window);
 
   Instance(const Instance&) = delete;
   Instance& operator=(const Instance&) = delete;
+  ~Instance();
 
   std::unique_ptr<Instance> Clone();
 
   void SetLaunchId(const std::string& launch_id) { launch_id_ = launch_id; }
   void UpdateState(InstanceState state, const base::Time& last_updated_time);
-  void SetBrowserContext(content::BrowserContext* browser_context);
-  void SetWindow(aura::Window* window);
+  void SetBrowserContext(content::BrowserContext* browser_context) {
+    browser_context_ = browser_context;
+  }
+  void SetWindow(aura::Window* window) { window_ = window; }
 
   const std::string& AppId() const { return app_id_; }
-  const base::UnguessableToken& Id() const { return id_; }
-  const InstanceKey& GetInstanceKey() const { return instance_key_; }
+  const base::UnguessableToken& InstanceId() const { return instance_id_; }
+  aura::Window* Window() const { return window_; }
   const std::string& LaunchId() const { return launch_id_; }
   InstanceState State() const { return state_; }
   const base::Time& LastUpdatedTime() const { return last_updated_time_; }
   content::BrowserContext* BrowserContext() const { return browser_context_; }
-  aura::Window* Window() const { return window_; }
 
  private:
-  std::string app_id_;
-  const base::UnguessableToken id_;
-  // TODO(crbug.com/1251501): Deprecated field. Implement updating the instance
-  // registry using instance ID as a key.
-  InstanceKey instance_key_;
+  friend class InstanceRegistry;
+  friend class InstanceTest;
+
+  const std::string app_id_;
+
+  // The unique id for instance.
+  base::UnguessableToken instance_id_;
+
+  aura::Window* window_ = nullptr;
+
   std::string launch_id_;
-  InstanceState state_;
+  InstanceState state_ = InstanceState::kUnknown;
   base::Time last_updated_time_;
   content::BrowserContext* browser_context_ = nullptr;
-  aura::Window* window_{nullptr};
-};
-
-std::ostream& operator<<(std::ostream& os,
-                         const apps::Instance::InstanceKey& instance_key);
-
-struct InstanceKeyHash {
-  size_t operator()(const apps::Instance::InstanceKey& key) const;
 };
 
 }  // namespace apps

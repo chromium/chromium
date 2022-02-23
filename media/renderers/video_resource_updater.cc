@@ -15,6 +15,7 @@
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/shared_memory_mapping.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/strings/stringprintf.h"
@@ -60,6 +61,19 @@ namespace {
 // Generates process-unique IDs to use for tracing video resources.
 base::AtomicSequenceNumber g_next_video_resource_updater_id;
 
+gfx::ProtectedVideoType ProtectedVideoTypeFromMetadata(
+    const VideoFrameMetadata& metadata) {
+  gfx::ProtectedVideoType video_type = gfx::ProtectedVideoType::kClear;
+  if (metadata.protected_video) {
+    if (metadata.hw_protected) {
+      video_type = gfx::ProtectedVideoType::kHardwareProtected;
+    } else {
+      video_type = gfx::ProtectedVideoType::kSoftwareProtected;
+    }
+  }
+  return video_type;
+}
+
 VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
     VideoPixelFormat format,
     GLuint target,
@@ -92,7 +106,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
           // stack about stream video quads. Investigate alternative solutions.
           if (use_stream_video_draw_quad || dcomp_surface)
             return VideoFrameResourceType::STREAM_TEXTURE;
-          FALLTHROUGH;
+          [[fallthrough]];
         case GL_TEXTURE_2D:
         case GL_TEXTURE_RECTANGLE_ARB:
           return (format == PIXEL_FORMAT_XRGB)
@@ -152,7 +166,7 @@ VideoFrameResourceType ExternalResourceTypeForHardwarePlanes(
 
     case PIXEL_FORMAT_UYVY:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case PIXEL_FORMAT_YV12:
     case PIXEL_FORMAT_I422:
     case PIXEL_FORMAT_I444:
@@ -223,8 +237,8 @@ class SyncTokenClientImpl : public VideoFrame::SyncTokenClient {
   }
 
  private:
-  gpu::gles2::GLES2Interface* gl_;
-  gpu::SharedImageInterface* sii_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  raw_ptr<gpu::SharedImageInterface> sii_;
   gpu::SyncToken sync_token_;
 };
 
@@ -368,7 +382,7 @@ class VideoResourceUpdater::SoftwarePlaneResource
   }
 
  private:
-  viz::SharedBitmapReporter* const shared_bitmap_reporter_;
+  const raw_ptr<viz::SharedBitmapReporter> shared_bitmap_reporter_;
   const viz::SharedBitmapId shared_bitmap_id_;
   base::WritableSharedMemoryMapping shared_mapping_;
 };
@@ -398,7 +412,7 @@ class VideoResourceUpdater::HardwarePlaneResource
     GLuint texture_id() const { return texture_id_; }
 
    private:
-    gpu::gles2::GLES2Interface* gl_;
+    raw_ptr<gpu::gles2::GLES2Interface> gl_;
     GLuint texture_id_;
   };
 
@@ -465,8 +479,8 @@ class VideoResourceUpdater::HardwarePlaneResource
     return gl;
   }
 
-  viz::ContextProvider* const context_provider_;
-  viz::RasterContextProvider* const raster_context_provider_;
+  const raw_ptr<viz::ContextProvider> context_provider_;
+  const raw_ptr<viz::RasterContextProvider> raster_context_provider_;
   gpu::Mailbox mailbox_;
   GLenum texture_target_ = GL_TEXTURE_2D;
   bool overlay_candidate_ = false;
@@ -635,15 +649,8 @@ void VideoResourceUpdater::AppendQuads(
           frame_resource_multiplier_, frame_bits_per_channel_);
       if (frame->hdr_metadata().has_value())
         yuv_video_quad->hdr_metadata = frame->hdr_metadata().value();
-      if (frame->metadata().protected_video) {
-        if (frame->metadata().hw_protected) {
-          yuv_video_quad->protected_video_type =
-              gfx::ProtectedVideoType::kHardwareProtected;
-        } else {
-          yuv_video_quad->protected_video_type =
-              gfx::ProtectedVideoType::kSoftwareProtected;
-        }
-      }
+      yuv_video_quad->protected_video_type =
+          ProtectedVideoTypeFromMetadata(frame->metadata());
 
       for (viz::ResourceId resource_id : yuv_video_quad->resources) {
         resource_provider_->ValidateResource(resource_id);
@@ -663,14 +670,7 @@ void VideoResourceUpdater::AppendQuads(
       bool flipped = !frame->metadata().texture_origin_is_top_left;
       bool nearest_neighbor = false;
       gfx::ProtectedVideoType protected_video_type =
-          gfx::ProtectedVideoType::kClear;
-      if (frame->metadata().protected_video) {
-        if (frame->metadata().hw_protected)
-          protected_video_type = gfx::ProtectedVideoType::kHardwareProtected;
-        else
-          protected_video_type = gfx::ProtectedVideoType::kSoftwareProtected;
-      }
-
+          ProtectedVideoTypeFromMetadata(frame->metadata());
       auto* texture_quad =
           render_pass->CreateAndAppendDrawQuad<viz::TextureDrawQuad>();
       texture_quad->SetNew(shared_quad_state, quad_rect, visible_quad_rect,
@@ -924,12 +924,16 @@ VideoFrameExternalResources VideoResourceUpdater::CreateForHardwarePlanes(
       transfer_resource.format = viz::GetResourceFormat(buffer_formats[i]);
       transfer_resource.ycbcr_info = video_frame->ycbcr_info();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       transfer_resource.is_backed_by_surface_texture =
           video_frame->metadata().texture_owner;
+#endif
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
       transfer_resource.wants_promotion_hint =
           video_frame->metadata().wants_promotion_hint;
 #endif
+
       external_resources.resources.push_back(std::move(transfer_resource));
       if (copy_mode == VideoFrameMetadata::CopyMode::kCopyMailboxesOnly) {
         // Adding a ref on |video_frame| to make sure lifetime of |video frame|

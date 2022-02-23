@@ -26,7 +26,7 @@ CONTENT_EXPORT extern const char kViewSourceScheme[];
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 CONTENT_EXPORT extern const char kExternalFileScheme[];
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 CONTENT_EXPORT extern const char kAndroidAppScheme[];
 #endif
 
@@ -48,6 +48,7 @@ CONTENT_EXPORT extern const char kChromeUINetworkErrorHost[];
 CONTENT_EXPORT extern const char kChromeUINetworkErrorsListingHost[];
 CONTENT_EXPORT extern const char kChromeUIPrerenderInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIProcessInternalsHost[];
+CONTENT_EXPORT extern const char kChromeUIQuotaInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUIResourcesHost[];
 CONTENT_EXPORT extern const char kChromeUIServiceWorkerInternalsHost[];
 CONTENT_EXPORT extern const char kChromeUITracingHost[];

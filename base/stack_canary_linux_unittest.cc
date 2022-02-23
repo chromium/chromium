@@ -4,7 +4,6 @@
 
 #include "base/stack_canary_linux.h"
 
-#include "base/compiler_specific.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -19,8 +18,7 @@ __attribute__((noinline, optnone)) void ResetCanaryAndReturn() {
   // which should work as long as -fno-stack-protector isn't passed in the
   // default options. We compile this file with -fstack-protector-all, but it
   // may be overridden with -fstack-protector or -fstack-protector-strong.
-  char buffer[10];
-  ALLOW_UNUSED_LOCAL(buffer);
+  [[maybe_unused]] char buffer[10];
   ResetStackCanaryIfPossible();
 }
 }  // namespace

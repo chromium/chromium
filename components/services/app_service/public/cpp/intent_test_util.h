@@ -34,6 +34,10 @@ apps::mojom::IntentFilterPtr CreateFileFilterForView(
     const std::string& file_extension,
     const std::string& activity_label);
 
+apps::mojom::IntentFilterPtr CreateURLFilterForView(
+    const std::string& url_pattern,
+    const std::string& activity_label);
+
 // Matches against intent.mime_type only, and not the mime type of files in the
 // intent.
 apps::mojom::IntentFilterPtr CreateIntentFilterForMimeType(

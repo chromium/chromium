@@ -9,7 +9,6 @@
 
 #include "base/callback.h"
 #include "base/files/file_path.h"
-#include "content/public/common/cdm_info.h"
 #include "media/cdm/cdm_capability.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 

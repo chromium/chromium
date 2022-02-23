@@ -6,7 +6,6 @@
 #define IOS_CHROME_BROWSER_OPTIMIZATION_GUIDE_OPTIMIZATION_GUIDE_TAB_HELPER_H_
 
 #import "base/containers/flat_map.h"
-#import "base/macros.h"
 #import "base/memory/weak_ptr.h"
 #import "components/optimization_guide/core/insertion_ordered_set.h"
 #import "components/optimization_guide/core/optimization_guide_navigation_data.h"

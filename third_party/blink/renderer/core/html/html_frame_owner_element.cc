@@ -58,7 +58,6 @@
 #include "third_party/blink/renderer/core/timing/dom_window_performance.h"
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
 #include "third_party/blink/renderer/platform/instrumentation/resource_coordinator/renderer_resource_coordinator.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/network_state_notifier.h"
@@ -134,30 +133,11 @@ bool ShouldLazilyLoadFrame(const Document& document,
     return false;
   }
 
-  // Disable explicit and automatic lazyload for backgrounded pages.
+  // Disable explicit lazyload for backgrounded pages.
   if (!document.IsPageVisible())
     return false;
 
-  if (is_loading_attr_lazy)
-    return true;
-  if (!RuntimeEnabledFeatures::AutomaticLazyFrameLoadingEnabled())
-    return false;
-
-  // If lazy loading is restricted to only Data Saver users, then avoid
-  // lazy loading unless Data Saver is enabled, taking the Data Saver
-  // holdback into consideration.
-  if (RuntimeEnabledFeatures::
-          RestrictAutomaticLazyFrameLoadingToDataSaverEnabled() &&
-      !GetNetworkStateNotifier().SaveDataEnabled()) {
-    return false;
-  }
-
-  // Skip automatic lazyload when reloading a page.
-  if (!RuntimeEnabledFeatures::AutoLazyLoadOnReloadsEnabled() &&
-      document.Loader() && IsReloadLoadType(document.Loader()->LoadType())) {
-    return false;
-  }
-  return true;
+  return is_loading_attr_lazy;
 }
 
 using AllowedListForLazyLoading =
@@ -561,6 +541,16 @@ EmbeddedContentView* HTMLFrameOwnerElement::ReleaseEmbeddedContentView() {
   return embedded_content_view_.Release();
 }
 
+bool HTMLFrameOwnerElement::LoadImmediatelyIfLazy() {
+  if (!lazy_load_frame_observer_)
+    return false;
+
+  bool lazy_load_pending = lazy_load_frame_observer_->IsLazyLoadPending();
+  if (lazy_load_pending)
+    lazy_load_frame_observer_->LoadImmediately();
+  return lazy_load_pending;
+}
+
 bool HTMLFrameOwnerElement::LazyLoadIfPossible(
     const KURL& url,
     const ResourceRequestHead& request,
@@ -592,12 +582,22 @@ bool HTMLFrameOwnerElement::LazyLoadIfPossible(
     lazy_load_frame_observer_->StartTrackingVisibilityMetrics();
 
   if (ShouldLazilyLoadFrame(GetDocument(), loading_lazy_set) ||
-      IsLazyLoadableUrl(url)) {
+      IsLazyLoadableUrl(url) || IsLazyLoadableAd()) {
     lazy_load_frame_observer_->DeferLoadUntilNearViewport(request,
                                                           frame_load_type);
     return true;
   }
   return false;
+}
+
+bool HTMLFrameOwnerElement::IsCurrentlyWithinFrameLimit() const {
+  LocalFrame* frame = GetDocument().GetFrame();
+  if (!frame)
+    return false;
+  Page* page = frame->GetPage();
+  if (!page)
+    return false;
+  return page->SubframeCount() < Page::MaxNumberOfFrames();
 }
 
 bool HTMLFrameOwnerElement::LoadOrRedirectSubframe(
@@ -765,6 +765,15 @@ bool HTMLFrameOwnerElement::IsAdRelated() const {
     return false;
 
   return content_frame_->IsAdSubframe();
+}
+
+bool HTMLFrameOwnerElement::IsLazyLoadableAd() const {
+  if (!base::FeatureList::IsEnabled(
+          features::kAutomaticLazyFrameLoadingToAds)) {
+    return false;
+  }
+
+  return IsAdRelated();
 }
 
 mojom::blink::ColorScheme HTMLFrameOwnerElement::GetColorScheme() const {

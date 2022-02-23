@@ -15,6 +15,7 @@
 namespace signin_metrics {
 
 // Track all the ways a profile can become signed out as a histogram.
+// Enum SigninSignoutProfile.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
 // GENERATED_JAVA_CLASS_NAME_OVERRIDE: SignoutReason
 // These values are persisted to logs. Entries should not be renumbered and
@@ -43,8 +44,7 @@ enum ProfileSignout : int {
   AUTHENTICATION_FAILED_WITH_FORCE_SIGNIN = 7,
   // The user disables sync from the DICE UI.
   USER_TUNED_OFF_SYNC_FROM_DICE_UI = 8,
-  // Android specific. Signout forced because the account was removed from the
-  // device.
+  // Signout forced because the account was removed from the device.
   ACCOUNT_REMOVED_FROM_DEVICE = 9,
   // Signin is no longer allowed when the profile is initialized.
   SIGNIN_NOT_ALLOWED_ON_PROFILE_INIT = 10,
@@ -57,6 +57,9 @@ enum ProfileSignout : int {
   MOBILE_IDENTITY_CONSISTENCY_ROLLBACK = 13,
   // Sign-out when the account id migration to Gaia ID did not finish,
   ACCOUNT_ID_MIGRATION = 14,
+  // iOS Specific. Sign-out forced because the account was removed from the
+  // device after a device restore.
+  IOS_ACCOUNT_REMOVED_FROM_DEVICE_AFTER_RESTORE = 15,
   // Keep this as the last enum.
   NUM_PROFILE_SIGNOUT_METRICS,
 };
@@ -165,6 +168,9 @@ enum class AccessPoint : int {
   ACCESS_POINT_SAFETY_CHECK = 32,
   ACCESS_POINT_KALEIDOSCOPE = 33,
   ACCESS_POINT_ENTERPRISE_SIGNOUT_COORDINATOR = 34,
+  ACCESS_POINT_SIGNIN_INTERCEPT_FIRST_RUN_EXPERIENCE = 35,
+  // Add values above this line with a corresponding label to the
+  // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
   ACCESS_POINT_MAX,  // This must be last.
 };
 
@@ -177,13 +183,18 @@ enum class ReauthAccessPoint {
 
   // Account password storage opt-in:
   kAutofillDropdown = 1,
+  // The password save bubble, which included the destination picker (set to
+  // "Save to your Google Account").
   kPasswordSaveBubble = 2,
   kPasswordSettings = 3,
   kGeneratePasswordDropdown = 4,
   kGeneratePasswordContextMenu = 5,
   kPasswordMoveBubble = 6,
+  // The password save bubble *without* a destination picker, i.e. the password
+  // was already saved locally.
+  kPasswordSaveLocallyBubble = 7,
 
-  kMaxValue = kPasswordMoveBubble
+  kMaxValue = kPasswordSaveLocallyBubble
 };
 
 // Enum values which enumerates all user actions on the sign-in promo.
@@ -202,7 +213,7 @@ enum class PromoAction : int {
   PROMO_ACTION_NEW_ACCOUNT_EXISTING_ACCOUNT
 };
 
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 // This class is used to record user action that was taken after
 // receiving the header from Gaia in the web sign-in flow.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.signin.metrics
@@ -254,10 +265,11 @@ enum class AccountConsistencyPromoAction : int {
   // The bottom sheet was suppressed as the user hit consecutive active
   // dismissal limit.
   SUPPRESSED_CONSECUTIVE_DISMISSALS = 16,
-
-  MAX = 17,
+  // The timeout erreur was shown to the user.
+  TIMEOUT_ERROR_SHOWN = 17,
+  MAX = 18,
 };
-#endif  // defined(OS_ANDROID) || defined(OS_IOS)
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 
 // Enum values which enumerates all reasons to start sign in process.
 // These values are persisted to logs. Entries should not be renumbered and
@@ -294,8 +306,11 @@ enum AccountReconcilorState {
   ACCOUNT_RECONCILOR_ERROR,
   // The account reconcilor will start running soon.
   ACCOUNT_RECONCILOR_SCHEDULED,
+  // The account reconcilor is inactive, e.g. initializing or disabled.
+  ACCOUNT_RECONCILOR_INACTIVE,
+
   // Always the last enumerated type.
-  ACCOUNT_RECONCILOR_HISTOGRAM_COUNT,
+  kMaxValue = ACCOUNT_RECONCILOR_SCHEDULED,
 };
 
 // Values of histogram comparing account id and email.
@@ -393,14 +408,14 @@ enum class SourceForRefreshTokenOperation {
   kAccountReconcilor_Reconcile = 12,
   kDiceResponseHandler_Signin = 13,
   kDiceResponseHandler_Signout = 14,
-  kDiceTurnOnSyncHelper_Abort = 15,
+  kTurnOnSyncHelper_Abort = 15,
   kMachineLogon_CredentialProvider = 16,
   kTokenService_ExtractCredentials = 17,
   // DEPRECATED on 09/2021 (used for force migration to DICE)
   // kAccountReconcilor_RevokeTokensNotInCookies = 18,
-  kLogoutTabHelper_DidFinishNavigation = 19,
+  kLogoutTabHelper_PrimaryPageChanged = 19,
 
-  kMaxValue = kLogoutTabHelper_DidFinishNavigation,
+  kMaxValue = kLogoutTabHelper_PrimaryPageChanged,
 };
 
 // Different types of reporting. This is used as a histogram suffix.
@@ -531,10 +546,10 @@ void RecordSigninImpressionWithAccountUserActionForAccessPoint(
     AccessPoint access_point,
     bool with_account);
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Records |Signin.AccountConsistencyPromoAction| histogram.
 void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action);
-#endif  // defined(OS_IOS)
+#endif  // BUILDFLAG(IS_IOS)
 
 }  // namespace signin_metrics
 

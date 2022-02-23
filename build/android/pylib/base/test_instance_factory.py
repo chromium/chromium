@@ -15,12 +15,13 @@ def CreateTestInstance(args, error_func):
   if args.command == 'gtest':
     return gtest_test_instance.GtestTestInstance(
         args, device_dependencies.GetDataDependencies, error_func)
-  elif args.command == 'instrumentation':
+  if args.command == 'instrumentation':
     return instrumentation_test_instance.InstrumentationTestInstance(
         args, device_dependencies.GetDataDependencies, error_func)
-  elif args.command == 'junit':
+  if args.command == 'junit':
     return junit_test_instance.JunitTestInstance(args, error_func)
-  elif args.command == 'monkey':
+  if args.command == 'monkey':
     return monkey_test_instance.MonkeyTestInstance(args, error_func)
 
   error_func('Unable to create %s test instance.' % args.command)
+  raise RuntimeError('error_func must call exit inside.')

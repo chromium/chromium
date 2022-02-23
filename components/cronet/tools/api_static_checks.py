@@ -5,7 +5,7 @@
 
 """api_static_checks.py - Enforce Cronet API requirements."""
 
-from __future__ import print_function
+
 
 import argparse
 import os

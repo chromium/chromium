@@ -302,9 +302,9 @@ void FileSystemAccessDirectoryHandleImpl::ResolveImpl(
     return;
   }
 
-  std::vector<base::FilePath::StringType> components;
-  relative_path.GetComponents(&components);
-#if defined(OS_WIN)
+  std::vector<base::FilePath::StringType> components =
+      relative_path.GetComponents();
+#if BUILDFLAG(IS_WIN)
   std::vector<std::string> result;
   result.reserve(components.size());
   for (const auto& component : components) {
@@ -482,7 +482,7 @@ bool FileSystemAccessDirectoryHandleImpl::IsSafePathComponent(
   }
 
   std::u16string component16;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   component16.assign(component.value().begin(), component.value().end());
 #else
   std::string component8 = component.AsUTF8Unsafe();

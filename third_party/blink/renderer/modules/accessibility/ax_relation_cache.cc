@@ -186,19 +186,27 @@ bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
   if (!child)
     return false;
 
-  if (!child->GetNode()) {
+  Node* node = child->GetNode();
+  if (!node) {
     NOTREACHED() << "Cannot use aria-owns without a node on both ends";
     return false;
   }
+
+  // Require a layout object, in order to avoid strange situations where
+  // a node tries to parent an AXObject that cannot exist because its node
+  // cannot partake in layout tree building (e.g. unused fallback content of a
+  // media element). This is the simplest way to avoid many types of abnormal
+  // situations, and there's no known use case for pairing aria-owns with
+  // invisible content.
+  if (!node->GetLayoutObject())
+    return false;
 
   if (child->IsImageMapLink())
     return false;  // An area can't be owned, only parented by <img usemap>.
 
   // <select> options can only be children of AXMenuListPopup or AXListBox.
-  if (IsA<HTMLOptionElement>(child->GetNode()) ||
-      IsA<HTMLOptGroupElement>(child->GetNode())) {
+  if (IsA<HTMLOptionElement>(node) || IsA<HTMLOptGroupElement>(node))
     return false;
-  }
 
   // Problematic for cycles, and does not solve a known use case.
   // Easiest to omit the possibility.
@@ -208,9 +216,10 @@ bool AXRelationCache::IsValidOwnedChild(AXObject* child) {
   return true;
 }
 
-void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
-                                         const Vector<AXID>& removed_child_ids,
-                                         const Vector<AXID>& newly_owned_ids) {
+void AXRelationCache::UnmapOwnedChildrenWithCleanLayout(
+    const AXObject* owner,
+    const Vector<AXID>& removed_child_ids,
+    const Vector<AXID>& newly_owned_ids) {
   DCHECK(owner);
   DCHECK(!owner->IsDetached());
   for (AXID removed_child_id : removed_child_ids) {
@@ -235,10 +244,8 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
       // Don't do this if it's also in the newly owned ids, as it's about to
       // get a new parent, and we want to avoid accidentally pruning it.
       if (!newly_owned_ids.Contains(removed_child_id)) {
-        if (AXObject* real_parent =
-                object_cache_->RestoreParentOrPrune(removed_child)) {
-          ChildrenChanged(real_parent);
-        }
+        MaybeRestoreParentOfOwnedChild(removed_child);
+
         // Now that the child is not owned, it's "included in tree" state must
         // be recomputed because while owned children are always included in the
         // tree, unowned children may not be included.
@@ -248,8 +255,9 @@ void AXRelationCache::UnmapOwnedChildren(const AXObject* owner,
   }
 }
 
-void AXRelationCache::MapOwnedChildren(const AXObject* owner,
-                                       const Vector<AXID>& child_ids) {
+void AXRelationCache::MapOwnedChildrenWithCleanLayout(
+    const AXObject* owner,
+    const Vector<AXID>& child_ids) {
   DCHECK(owner);
   DCHECK(!owner->IsDetached());
   for (AXID added_child_id : child_ids) {
@@ -266,8 +274,17 @@ void AXRelationCache::MapOwnedChildren(const AXObject* owner,
     if (original_parent != owner) {
       added_child->DetachFromParent();
       added_child->SetParent(const_cast<AXObject*>(owner));
-      if (original_parent)
+      if (original_parent) {
         ChildrenChanged(original_parent);
+        // Reparenting detection requires the parent of the original parent to
+        // be reserialized.
+        // This change prevents several DumpAccessibilityEventsTest failures:
+        // - AccessibilityEventsSubtreeReparentedViaAriaOwns/linux
+        // - AccessibilityEventsSubtreeReparentedViaAriaOwns2/linux
+        // TODO(crbug.com/1299031) Find out why this is necessary.
+        object_cache_->MarkAXObjectDirtyWithCleanLayout(
+            original_parent->ParentObject());
+      }
     }
     // Now that the child is owned, it's "included in tree" state must be
     // recomputed because owned children are always included in the tree.
@@ -432,9 +449,9 @@ void AXRelationCache::UpdateAriaOwnerToChildrenMappingWithCleanLayout(
   // The list of owned children has changed. Even if they were just reordered,
   // to be safe and handle all cases we remove all of the current owned
   // children and add the new list of owned children.
-  UnmapOwnedChildren(owner, previously_owned_child_ids,
-                     validated_owned_child_axids);
-  MapOwnedChildren(owner, validated_owned_child_axids);
+  UnmapOwnedChildrenWithCleanLayout(owner, previously_owned_child_ids,
+                                    validated_owned_child_axids);
+  MapOwnedChildrenWithCleanLayout(owner, validated_owned_child_axids);
 
 #if DCHECK_IS_ON()
   // Owned children must be in tree to avoid serialization issues.
@@ -526,7 +543,11 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
   // TODO(crbug.com/1109265): It's very likely this loop should only walk the
   // unignored AXObject chain, but doing so breaks a number of tests related to
   // name or description computation / invalidation.
-  for (Node* current_node = node; current_node;
+  int count = 0;
+  constexpr int kMaxAncestorsForNameChangeCheck = 8;
+  for (Node* current_node = node;
+       ++count < kMaxAncestorsForNameChangeCheck && current_node &&
+       !IsA<HTMLBodyElement>(current_node);
        current_node = current_node->parentNode()) {
     // Reverse relations via aria-labelledby, aria-describedby, aria-owns.
     HeapVector<Member<AXObject>> related_sources;
@@ -543,12 +564,15 @@ void AXRelationCache::UpdateRelatedText(Node* node) {
       if (obj && obj->AccessibilityIsIncludedInTree() &&
           obj->SupportsNameFromContents(/*recursive=*/false)) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
+        break;  // Unlikely/unusual to need multiple name/description changes.
       }
     }
 
     // Forward relation via <label for="[id]">.
-    if (IsA<HTMLLabelElement>(*current_node))
+    if (IsA<HTMLLabelElement>(*current_node)) {
       LabelChanged(current_node);
+      break;  // Unlikely/unusual to need multiple name/description changes.
+    }
   }
 }
 
@@ -559,11 +583,24 @@ void AXRelationCache::RemoveAXID(AXID obj_id) {
 
   // |obj_id| owned others:
   if (aria_owner_to_children_mapping_.Contains(obj_id)) {
-    // |obj_id| longer owns anything.
+    // |obj_id| no longer owns anything.
     Vector<AXID> child_axids = aria_owner_to_children_mapping_.at(obj_id);
     aria_owned_child_to_owner_mapping_.RemoveAll(child_axids);
     // Owned children are no longer owned by |obj_id|
     aria_owner_to_children_mapping_.erase(obj_id);
+    // When removing nodes in AXObjectCacheImpl::Dispose we do not need to
+    // reparent (that could anyway fail trying to attach to an already removed
+    // node.
+    // TODO(jdapena@igalia.com): explore if we can skip all processing of the
+    // mappings in AXRelationCache in dispose case.
+    if (!object_cache_->HasBeenDisposed()) {
+      for (const auto& child_axid : child_axids) {
+        if (AXObject* owned_child = ObjectFromAXID(child_axid)) {
+          owned_child->DetachFromParent();
+          MaybeRestoreParentOfOwnedChild(owned_child);
+        }
+      }
+    }
   }
 
   // Another id owned |obj_id|:
@@ -584,6 +621,8 @@ void AXRelationCache::RemoveOwnedRelation(AXID obj_id) {
         break;
       }
     }
+    if (AXObject* owned_child = ObjectFromAXID(obj_id))
+      owned_child->DetachFromParent();
   }
 }
 
@@ -613,6 +652,14 @@ void AXRelationCache::LabelChanged(Node* node) {
         object_cache_->MarkAXObjectDirtyWithCleanLayout(obj);
     }
   }
+}
+
+void AXRelationCache::MaybeRestoreParentOfOwnedChild(AXObject* child) {
+  DCHECK(child);
+  if (child->IsDetached())
+    return;
+  if (AXObject* new_parent = object_cache_->RestoreParentOrPrune(child))
+    ChildrenChanged(new_parent);
 }
 
 }  // namespace blink

@@ -195,7 +195,7 @@ TEST_F(ExternallyInstalledWebAppPrefsTest, OldPrefFormat) {
   // Set up the old format for this pref {url -> app_id}.
   DictionaryPrefUpdate update(profile()->GetPrefs(),
                               prefs::kWebAppsExtensionIDs);
-  update->SetKey("https://example.com", base::Value("add_id_string"));
+  update->SetStringKey("https://example.com", "add_id_string");
   // This should not crash on invalid pref data.
   EXPECT_FALSE(ExternallyInstalledWebAppPrefs(profile()->GetPrefs())
                    .IsPlaceholderApp("app_id_string"));

@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "components/viz/common/resources/resource_sizes.h"
@@ -119,7 +120,7 @@ class ScopedRestoreTexture {
   ~ScopedRestoreTexture() { api_->glBindTextureFn(target_, prev_binding_); }
 
  private:
-  gl::GLApi* const api_;
+  const raw_ptr<gl::GLApi> api_;
   const GLenum target_;
   GLuint prev_binding_ = 0;
 };
@@ -638,12 +639,12 @@ SharedImageBackingD3D::ProduceDawn(SharedImageManager* manager,
     const HANDLE shared_handle = dxgi_shared_handle_state_->GetSharedHandle();
     DCHECK(base::win::HandleTraits::IsHandleValid(shared_handle));
 
-    dawn_native::d3d12::ExternalImageDescriptorDXGISharedHandle
+    dawn::native::d3d12::ExternalImageDescriptorDXGISharedHandle
         externalImageDesc;
     externalImageDesc.cTextureDescriptor = &texture_descriptor;
     externalImageDesc.sharedHandle = shared_handle;
 
-    external_image_ = dawn_native::d3d12::ExternalImageDXGI::Create(
+    external_image_ = dawn::native::d3d12::ExternalImageDXGI::Create(
         device, &externalImageDesc);
 
     if (!external_image_) {

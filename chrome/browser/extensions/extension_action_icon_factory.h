@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_EXTENSION_ACTION_ICON_FACTORY_H_
 #define CHROME_BROWSER_EXTENSIONS_EXTENSION_ACTION_ICON_FACTORY_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_icon_image.h"
 
@@ -59,9 +60,9 @@ class ExtensionActionIconFactory : public extensions::IconImage::Observer {
   gfx::Image GetIcon(int tab_id);
 
  private:
-  Profile* profile_;
-  const extensions::ExtensionAction* action_;
-  Observer* observer_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<const extensions::ExtensionAction> action_;
+  raw_ptr<Observer> observer_;
   const bool should_check_icons_;
   gfx::Image cached_default_icon_image_;
 

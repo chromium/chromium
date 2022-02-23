@@ -45,8 +45,7 @@
   E_CPONLY(kColorBubbleFooterBorder) \
   E_CPONLY(kColorButtonBackground) \
   E_CPONLY(kColorButtonBackgroundPressed) \
-  E(kColorButtonBackgroundProminent, \
-    NativeTheme::kColorId_ProminentButtonColor) \
+  E_CPONLY(kColorButtonBackgroundProminent) \
   E_CPONLY(kColorButtonBackgroundProminentDisabled) \
   E_CPONLY(kColorButtonBackgroundProminentFocused) \
   E_CPONLY(kColorButtonBorder) \
@@ -54,8 +53,7 @@
   E_CPONLY(kColorButtonForeground) \
   E_CPONLY(kColorButtonForegroundChecked) \
   E_CPONLY(kColorButtonForegroundDisabled) \
-  E(kColorButtonForegroundProminent, \
-    NativeTheme::kColorId_TextOnProminentButtonColor) \
+  E_CPONLY(kColorButtonForegroundProminent) \
   E_CPONLY(kColorButtonForegroundUnchecked) \
   E_CPONLY(kColorDialogBackground) \
   E_CPONLY(kColorDialogForeground) \
@@ -63,13 +61,13 @@
   E_CPONLY(kColorDropdownBackgroundSelected) \
   E_CPONLY(kColorDropdownForeground) \
   E_CPONLY(kColorDropdownForegroundSelected) \
-  E(kColorFocusableBorderFocused, NativeTheme::kColorId_FocusedBorderColor) \
+  E_CPONLY(kColorFocusableBorderFocused) \
   E_CPONLY(kColorFocusableBorderUnfocused) \
   E_CPONLY(kColorFrameActive) \
   E_CPONLY(kColorFrameInactive) \
   E_CPONLY(kColorHelpIconActive) \
   E_CPONLY(kColorHelpIconInactive) \
-  E(kColorIcon, NativeTheme::kColorId_DefaultIconColor) \
+  E_CPONLY(kColorIcon) \
   E_CPONLY(kColorIconDisabled) \
   E_CPONLY(kColorIconSecondary) \
   E_CPONLY(kColorLabelForeground) \
@@ -80,21 +78,20 @@
   E_CPONLY(kColorLinkForeground) \
   E_CPONLY(kColorLinkForegroundDisabled) \
   E_CPONLY(kColorLinkForegroundPressed) \
-  E(kColorMenuBackground, NativeTheme::kColorId_MenuBackgroundColor) \
+  E_CPONLY(kColorMenuBackground) \
   E_CPONLY(kColorMenuBorder) \
   E_CPONLY(kColorMenuDropmarker) \
-  E(kColorMenuIcon, NativeTheme::kColorId_MenuIconColor) \
+  E_CPONLY(kColorMenuIcon) \
   E_CPONLY(kColorMenuItemBackgroundAlertedInitial) \
   E_CPONLY(kColorMenuItemBackgroundAlertedTarget) \
   E_CPONLY(kColorMenuItemBackgroundHighlighted) \
-  E(kColorMenuItemBackgroundSelected, \
-    NativeTheme::kColorId_FocusedMenuItemBackgroundColor) \
+  E_CPONLY(kColorMenuItemBackgroundSelected) \
   E_CPONLY(kColorMenuItemForeground) \
   E_CPONLY(kColorMenuItemForegroundDisabled) \
   E_CPONLY(kColorMenuItemForegroundHighlighted) \
   E_CPONLY(kColorMenuItemForegroundSecondary) \
   E_CPONLY(kColorMenuItemForegroundSelected) \
-  E(kColorMenuSeparator, NativeTheme::kColorId_MenuSeparatorColor) \
+  E_CPONLY(kColorMenuSeparator) \
   E_CPONLY(kColorNotificationActionsBackground) \
   E_CPONLY(kColorNotificationBackgroundActive) \
   E_CPONLY(kColorNotificationBackgroundInactive) \
@@ -105,14 +102,18 @@
   E_CPONLY(kColorNotificationInputBackground) \
   E_CPONLY(kColorNotificationInputForeground) \
   E_CPONLY(kColorNotificationInputPlaceholderForeground) \
-  E(kColorOverlayScrollbarFill, \
-    NativeTheme::kColorId_OverlayScrollbarThumbFill) \
-  E(kColorOverlayScrollbarFillHovered, \
-    NativeTheme::kColorId_OverlayScrollbarThumbHoveredFill) \
-  E(kColorOverlayScrollbarStroke, \
-    NativeTheme::kColorId_OverlayScrollbarThumbStroke) \
-  E(kColorOverlayScrollbarStrokeHovered, \
-    NativeTheme::kColorId_OverlayScrollbarThumbHoveredStroke) \
+  E_CPONLY(kColorOverlayScrollbarFill) \
+  E_CPONLY(kColorOverlayScrollbarFillDark) \
+  E_CPONLY(kColorOverlayScrollbarFillLight) \
+  E_CPONLY(kColorOverlayScrollbarFillHovered) \
+  E_CPONLY(kColorOverlayScrollbarFillHoveredDark) \
+  E_CPONLY(kColorOverlayScrollbarFillHoveredLight) \
+  E_CPONLY(kColorOverlayScrollbarStroke) \
+  E_CPONLY(kColorOverlayScrollbarStrokeDark) \
+  E_CPONLY(kColorOverlayScrollbarStrokeLight) \
+  E_CPONLY(kColorOverlayScrollbarStrokeHovered) \
+  E_CPONLY(kColorOverlayScrollbarStrokeHoveredDark) \
+  E_CPONLY(kColorOverlayScrollbarStrokeHoveredLight) \
   E_CPONLY(kColorProgressBar) \
   E_CPONLY(kColorPwaSecurityChipForeground) \
   E_CPONLY(kColorPwaSecurityChipForegroundDangerous) \
@@ -157,8 +158,8 @@
   E_CPONLY(kColorTextfieldForegroundPlaceholder) \
   E_CPONLY(kColorTextfieldSelectionBackground) \
   E_CPONLY(kColorTextfieldSelectionForeground) \
-  E(kColorThrobber, NativeTheme::kColorId_ThrobberSpinningColor) \
-  E(kColorThrobberPreconnect, NativeTheme::kColorId_ThrobberWaitingColor) \
+  E_CPONLY(kColorThrobber) \
+  E_CPONLY(kColorThrobberPreconnect) \
   E_CPONLY(kColorToggleButtonShadow) \
   E_CPONLY(kColorToggleButtonThumbOff) \
   E_CPONLY(kColorToggleButtonThumbOn) \
@@ -172,50 +173,131 @@
   E_CPONLY(kColorTreeNodeForeground) \
   E_CPONLY(kColorTreeNodeForegroundSelectedFocused) \
   E_CPONLY(kColorTreeNodeForegroundSelectedUnfocused) \
-  E(kColorWindowBackground, NativeTheme::kColorId_WindowBackground)
+  E_CPONLY(kColorWindowBackground)
 
-#if defined(OS_WIN)
-#define WIN_COLOR_IDS \
-  /* Windows native colors */ \
-  E(kColorNative3dDkShadow, COLOR_3DDKSHADOW) \
-  E(kColorNative3dLight, COLOR_3DLIGHT) \
-  E(kColorNativeActiveBorder, COLOR_ACTIVEBORDER) \
-  E(kColorNativeActiveCaption, COLOR_ACTIVECAPTION) \
-  E(kColorNativeAppWorkspace, COLOR_APPWORKSPACE) \
-  E(kColorNativeBackground, COLOR_BACKGROUND) \
-  E(kColorNativeBtnFace, COLOR_BTNFACE) \
-  E(kColorNativeBtnHighlight, COLOR_BTNHIGHLIGHT) \
-  E(kColorNativeBtnShadow, COLOR_BTNSHADOW) \
-  E(kColorNativeBtnText, COLOR_BTNTEXT) \
-  E(kColorNativeCaptionText, COLOR_CAPTIONTEXT) \
-  E(kColorNativeGradientActiveCaption, COLOR_GRADIENTACTIVECAPTION) \
-  E(kColorNativeGradientInactiveCaption, COLOR_GRADIENTINACTIVECAPTION) \
-  E(kColorNativeGrayText, COLOR_GRAYTEXT) \
-  E(kColorNativeHighlight, COLOR_HIGHLIGHT) \
-  E(kColorNativeHighlightText, COLOR_HIGHLIGHTTEXT) \
-  E(kColorNativeHotlight, COLOR_HOTLIGHT) \
-  E(kColorNativeInactiveBorder, COLOR_INACTIVEBORDER) \
-  E(kColorNativeInactiveCaption, COLOR_INACTIVECAPTION) \
-  E(kColorNativeInactiveCaptionText, COLOR_INACTIVECAPTIONTEXT) \
-  E(kColorNativeInfoBk, COLOR_INFOBK) \
-  E(kColorNativeInfoText, COLOR_INFOTEXT) \
-  E(kColorNativeMenu, COLOR_MENU) \
-  E(kColorNativeMenuBar, COLOR_MENUBAR) \
-  E(kColorNativeMenuHilight, COLOR_MENUHILIGHT) \
-  E(kColorNativeMenuText, COLOR_MENUTEXT) \
-  E(kColorNativeScrollbar, COLOR_SCROLLBAR) \
-  E(kColorNativeWindow, COLOR_WINDOW) \
-  E(kColorNativeWindowFrame, COLOR_WINDOWFRAME) \
-  E(kColorNativeWindowText, COLOR_WINDOWTEXT)
+#if BUILDFLAG(IS_CHROMEOS)
+#define PLATFORM_SPECIFIC_COLOR_IDS \
+  E_CPONLY(kColorAshSystemUIMenuBackground) \
+  E_CPONLY(kColorAshSystemUIMenuIcon) \
+  E_CPONLY(kColorAshSystemUIMenuItemBackgroundSelected) \
+  E_CPONLY(kColorAshSystemUIMenuSeparator) \
+  E_CPONLY(kColorNativeColor1) \
+  E_CPONLY(kColorNativeColor1Shade1) \
+  E_CPONLY(kColorNativeColor1Shade2) \
+  E_CPONLY(kColorNativeColor2) \
+  E_CPONLY(kColorNativeColor3) \
+  E_CPONLY(kColorNativeColor4) \
+  E_CPONLY(kColorNativeColor5) \
+  E_CPONLY(kColorNativeColor6) \
+  E_CPONLY(kColorNativeBaseColor) \
+  E_CPONLY(kColorNativeSecondaryColor)
+#elif BUILDFLAG(IS_LINUX)
+#define PLATFORM_SPECIFIC_COLOR_IDS \
+  E_CPONLY(kColorNativeButtonBackground) \
+  E_CPONLY(kColorNativeButtonBackgroundDisabled) \
+  E_CPONLY(kColorNativeButtonBorder) \
+  E_CPONLY(kColorNativeButtonForeground) \
+  E_CPONLY(kColorNativeButtonForegroundDisabled) \
+  E_CPONLY(kColorNativeButtonIcon) \
+  E_CPONLY(kColorNativeComboboxBackground) \
+  E_CPONLY(kColorNativeComboboxBackgroundHovered) \
+  E_CPONLY(kColorNativeComboboxForeground) \
+  E_CPONLY(kColorNativeComboboxForegroundHovered) \
+  E_CPONLY(kColorNativeFrameBorder) \
+  E_CPONLY(kColorNativeImageButtonForeground) \
+  E_CPONLY(kColorNativeImageButtonForegroundHovered) \
+  E_CPONLY(kColorNativeLabelBackgroundSelected) \
+  E_CPONLY(kColorNativeLabelForeground) \
+  E_CPONLY(kColorNativeLabelForegroundDisabled) \
+  E_CPONLY(kColorNativeLabelForegroundSelected) \
+  E_CPONLY(kColorNativeLinkForeground) \
+  E_CPONLY(kColorNativeLinkForegroundDisabled) \
+  E_CPONLY(kColorNativeLinkForegroundHovered) \
+  E_CPONLY(kColorNativeMenuBackground) \
+  E_CPONLY(kColorNativeMenuBorder) \
+  E_CPONLY(kColorNativeMenuItemAccelerator) \
+  E_CPONLY(kColorNativeMenuItemBackgroundHovered) \
+  E_CPONLY(kColorNativeMenuItemForeground) \
+  E_CPONLY(kColorNativeMenuItemForegroundDisabled) \
+  E_CPONLY(kColorNativeMenuItemForegroundHovered) \
+  E_CPONLY(kColorNativeMenuRadio) \
+  E_CPONLY(kColorNativeMenuSeparator) \
+  E_CPONLY(kColorNativeScaleHighlightBackground) \
+  E_CPONLY(kColorNativeScaleHighlightBackgroundDisabled) \
+  E_CPONLY(kColorNativeScaleTroughBackground) \
+  E_CPONLY(kColorNativeScaleTroughBackgroundDisabled) \
+  E_CPONLY(kColorNativeScrollbarSliderBackground) \
+  E_CPONLY(kColorNativeScrollbarSliderBackgroundHovered) \
+  E_CPONLY(kColorNativeScrollbarTroughBackground) \
+  E_CPONLY(kColorNativeScrollbarTroughBackgroundHovered) \
+  E_CPONLY(kColorNativeSeparator) \
+  E_CPONLY(kColorNativeSpinner) \
+  E_CPONLY(kColorNativeSpinnerDisabled) \
+  E_CPONLY(kColorNativeStatusbarBackground) \
+  E_CPONLY(kColorNativeTabBackgroundChecked) \
+  E_CPONLY(kColorNativeTabBackgroundCheckedFocused) \
+  E_CPONLY(kColorNativeTextareaBackground) \
+  E_CPONLY(kColorNativeTextareaBackgroundDisabled) \
+  E_CPONLY(kColorNativeTextareaBackgroundSelected) \
+  E_CPONLY(kColorNativeTextareaForeground) \
+  E_CPONLY(kColorNativeTextareaForegroundDisabled) \
+  E_CPONLY(kColorNativeTextareaForegroundSelected) \
+  E_CPONLY(kColorNativeTextfieldBorderUnfocused) \
+  E_CPONLY(kColorNativeTextfieldBorderFocused) \
+  E_CPONLY(kColorNativeTextfieldForegroundPlaceholder) \
+  E_CPONLY(kColorNativeToggleButtonBackgroundChecked) \
+  E_CPONLY(kColorNativeToggleButtonBackgroundUnchecked) \
+  E_CPONLY(kColorNativeTooltipBackground) \
+  E_CPONLY(kColorNativeTooltipForeground) \
+  E_CPONLY(kColorNativeTreeHeaderBackground) \
+  E_CPONLY(kColorNativeTreeHeaderBorder) \
+  E_CPONLY(kColorNativeTreeHeaderForeground) \
+  E_CPONLY(kColorNativeTreeNodeBackground) \
+  E_CPONLY(kColorNativeTreeNodeBackgroundSelected) \
+  E_CPONLY(kColorNativeTreeNodeBackgroundSelectedFocused) \
+  E_CPONLY(kColorNativeTreeNodeForeground) \
+  E_CPONLY(kColorNativeTreeNodeForegroundSelected) \
+  E_CPONLY(kColorNativeTreeNodeForegroundSelectedFocused) \
+  E_CPONLY(kColorNativeWindowBackground)
+#elif BUILDFLAG(IS_WIN)
+#define PLATFORM_SPECIFIC_COLOR_IDS \
+  E_CPONLY(kColorNative3dDkShadow) \
+  E_CPONLY(kColorNative3dLight) \
+  E_CPONLY(kColorNativeActiveBorder) \
+  E_CPONLY(kColorNativeActiveCaption) \
+  E_CPONLY(kColorNativeAppWorkspace) \
+  E_CPONLY(kColorNativeBackground) \
+  E_CPONLY(kColorNativeBtnFace) \
+  E_CPONLY(kColorNativeBtnHighlight) \
+  E_CPONLY(kColorNativeBtnShadow) \
+  E_CPONLY(kColorNativeBtnText) \
+  E_CPONLY(kColorNativeCaptionText) \
+  E_CPONLY(kColorNativeGradientActiveCaption) \
+  E_CPONLY(kColorNativeGradientInactiveCaption) \
+  E_CPONLY(kColorNativeGrayText) \
+  E_CPONLY(kColorNativeHighlight) \
+  E_CPONLY(kColorNativeHighlightText) \
+  E_CPONLY(kColorNativeHotlight) \
+  E_CPONLY(kColorNativeInactiveBorder) \
+  E_CPONLY(kColorNativeInactiveCaption) \
+  E_CPONLY(kColorNativeInactiveCaptionText) \
+  E_CPONLY(kColorNativeInfoBk) \
+  E_CPONLY(kColorNativeInfoText) \
+  E_CPONLY(kColorNativeMenu) \
+  E_CPONLY(kColorNativeMenuBar) \
+  E_CPONLY(kColorNativeMenuHilight) \
+  E_CPONLY(kColorNativeMenuText) \
+  E_CPONLY(kColorNativeScrollbar) \
+  E_CPONLY(kColorNativeWindow) \
+  E_CPONLY(kColorNativeWindowFrame) \
+  E_CPONLY(kColorNativeWindowText)
+#else
+#define PLATFORM_SPECIFIC_COLOR_IDS
 #endif
 
-#if defined(OS_WIN)
 #define COLOR_IDS \
   CROSS_PLATFORM_COLOR_IDS \
-  WIN_COLOR_IDS
-#else
-#define COLOR_IDS CROSS_PLATFORM_COLOR_IDS
-#endif
+  PLATFORM_SPECIFIC_COLOR_IDS
 // clang-format on
 
 namespace ui {
@@ -246,35 +328,6 @@ enum ColorIds : ColorId {
 // clang-format on
 
 #include "ui/color/color_id_macros.inc"
-
-// ColorSetId contains identifiers for all distinct color sets known to the core
-// UI layer.  As with ColorId, embedders can extend this enum with additional
-// values that are understood by the ColorProvider implementation.  Embedders
-// define enum values from kUiColorSetsEnd.  Values named beginning with
-// "kColorSet" represent the actual colors; the rest are markers.
-using ColorSetId = int;
-enum ColorSetIds : ColorSetId {
-  kUiColorSetsStart = kUiColorsLast + 1,
-
-  // A set of color IDs whose values match the native platform as closely as
-  // possible.
-  kColorSetNative = kUiColorSetsStart,
-
-  // A set of color IDs representing the default values for core color concepts,
-  // in the absence of native colors.
-  kColorSetCoreDefaults,
-
-  // Embedders must start color set IDs from this value.
-  kUiColorSetsEnd,
-};
-
-// Verifies that |id| is a color ID, not a color set ID.
-#define DCHECK_COLOR_ID_VALID(id) \
-  DCHECK_GE(id, kUiColorsStart);  \
-  DCHECK_LE(id, kUiColorsLast)
-
-// Verifies that |id| is a color set ID, not a color ID.
-#define DCHECK_COLOR_SET_ID_VALID(id) DCHECK_GE(id, kUiColorSetsStart)
 
 }  // namespace ui
 

@@ -23,6 +23,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/simple_url_loader.h"
+#include "services/network/public/cpp/simple_url_loader_throttle.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/metrics_proto/chrome_user_metrics_extension.pb.h"
 #include "third_party/metrics_proto/reporting_info.pb.h"
@@ -237,8 +238,7 @@ NetMetricsLogUploader::NetMetricsLogUploader(
       service_type_(service_type),
       on_upload_complete_(on_upload_complete) {}
 
-NetMetricsLogUploader::~NetMetricsLogUploader() {
-}
+NetMetricsLogUploader::~NetMetricsLogUploader() = default;
 
 void NetMetricsLogUploader::UploadLog(const std::string& compressed_log_data,
                                       const std::string& log_hash,
@@ -324,8 +324,13 @@ void NetMetricsLogUploader::UploadLogToURL(
     resource_request->headers.SetHeader("content-encoding", "gzip");
   }
 
-  url_loader_ = network::SimpleURLLoader::Create(
-      std::move(resource_request), GetNetworkTrafficAnnotation(service_type_));
+  net::NetworkTrafficAnnotationTag traffic_annotation =
+      GetNetworkTrafficAnnotation(service_type_);
+  url_loader_ = network::SimpleURLLoader::Create(std::move(resource_request),
+                                                 traffic_annotation);
+
+  if (network::SimpleURLLoaderThrottle::IsBatchingEnabled(traffic_annotation))
+    url_loader_->SetAllowBatching();
 
   if (should_encrypt) {
     std::string encrypted_message;

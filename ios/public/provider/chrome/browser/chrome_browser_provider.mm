@@ -45,12 +45,6 @@ ChromeBrowserProvider::~ChromeBrowserProvider() {
     observer.OnChromeBrowserProviderWillBeDestroyed();
 }
 
-void ChromeBrowserProvider::AppendSwitchesFromExperimentalSettings(
-    NSUserDefaults* experimental_settings,
-    base::CommandLine* command_line) const {}
-
-void ChromeBrowserProvider::Initialize() const {}
-
 void ChromeBrowserProvider::SetChromeIdentityServiceForTesting(
     std::unique_ptr<ChromeIdentityService> service) {
   chrome_identity_service_ = std::move(service);
@@ -69,18 +63,6 @@ ChromeBrowserProvider::GetChromeTrustedVaultService() {
   return nullptr;
 }
 
-UITextField* ChromeBrowserProvider::CreateStyledTextField() const {
-  return nil;
-}
-
-void ChromeBrowserProvider::AttachBrowserAgents(Browser* browser) const {}
-
-id<LogoVendor> ChromeBrowserProvider::CreateLogoVendor(
-    Browser* browser,
-    web::WebState* web_state) const {
-  return nil;
-}
-
 UserFeedbackProvider* ChromeBrowserProvider::GetUserFeedbackProvider() const {
   return nullptr;
 }
@@ -89,13 +71,13 @@ DiscoverFeedProvider* ChromeBrowserProvider::GetDiscoverFeedProvider() const {
   return nullptr;
 }
 
+FollowProvider* ChromeBrowserProvider::GetFollowProvider() const {
+  return nullptr;
+}
+
 MailtoHandlerProvider* ChromeBrowserProvider::GetMailtoHandlerProvider() const {
   return mailto_handler_provider_.get();
 }
-
-void ChromeBrowserProvider::HideModalViewStack() const {}
-
-void ChromeBrowserProvider::LogIfModalViewsArePresented() const {}
 
 void ChromeBrowserProvider::AddObserver(Observer* observer) {
   observer_list_.AddObserver(observer);

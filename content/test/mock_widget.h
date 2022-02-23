@@ -41,13 +41,18 @@ class MockWidget : public blink::mojom::Widget {
   void ClearHidden() { is_hidden_ = absl::nullopt; }
   const absl::optional<bool>& IsHidden() const { return is_hidden_; }
 
+  const absl::optional<bool>& IsInActiveWindow() const {
+    return is_in_active_window_;
+  }
+  absl::optional<bool>& IsInActiveWindow() { return is_in_active_window_; }
+
+  void FlushWidgetForTesting();
+
   // blink::mojom::Widget overrides.
   void ForceRedraw(ForceRedrawCallback callback) override;
-
   void GetWidgetInputHandler(
       mojo::PendingReceiver<blink::mojom::WidgetInputHandler> request,
       mojo::PendingRemote<blink::mojom::WidgetInputHandlerHost> host) override;
-
   void UpdateVisualProperties(
       const blink::VisualProperties& visual_properties) override;
 
@@ -55,18 +60,19 @@ class MockWidget : public blink::mojom::Widget {
                          const gfx::Rect& window_screen_rect,
                          UpdateScreenRectsCallback callback) override;
   void WasHidden() override;
-  void WasShown(base::TimeTicks show_request_timestamp,
-                bool was_evicted,
+  void WasShown(bool was_evicted,
+                bool in_active_window,
                 blink::mojom::RecordContentToVisibleTimeRequestPtr
                     record_tab_switch_time_request) override;
+  void OnActiveWindowChanged(bool in_active_window) override;
   void RequestPresentationTimeForNextFrame(
-      base::TimeTicks show_request_timestamp,
       blink::mojom::RecordContentToVisibleTimeRequestPtr visible_time_request)
       override;
   void CancelPresentationTimeRequest() override;
 
  private:
   absl::optional<bool> is_hidden_;
+  absl::optional<bool> is_in_active_window_;
   base::RepeatingClosure shown_hidden_callback_;
   std::vector<blink::VisualProperties> visual_properties_;
   std::vector<std::pair<gfx::Rect, gfx::Rect>> screen_rects_;

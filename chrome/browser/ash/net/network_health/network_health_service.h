@@ -5,8 +5,8 @@
 #ifndef CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_
 #define CHROME_BROWSER_ASH_NET_NETWORK_HEALTH_NETWORK_HEALTH_SERVICE_H_
 
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace ash {
@@ -26,18 +26,23 @@ class NetworkHealthService {
   NetworkHealthService();
   ~NetworkHealthService() = delete;
 
-  mojo::PendingRemote<mojom::NetworkHealthService>
+  mojo::PendingRemote<chromeos::network_health::mojom::NetworkHealthService>
   GetHealthRemoteAndBindReceiver();
-  mojo::PendingRemote<network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+  mojo::PendingRemote<
+      chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
   GetDiagnosticsRemoteAndBindReceiver();
 
   void BindHealthReceiver(
-      mojo::PendingReceiver<mojom::NetworkHealthService> receiver);
+      mojo::PendingReceiver<
+          chromeos::network_health::mojom::NetworkHealthService> receiver);
   void BindDiagnosticsReceiver(
       mojo::PendingReceiver<
-          network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver);
+          chromeos::network_diagnostics::mojom::NetworkDiagnosticsRoutines>
+          receiver);
 
-  void AddObserver(mojo::PendingRemote<mojom::NetworkEventsObserver> observer);
+  void AddObserver(
+      mojo::PendingRemote<
+          chromeos::network_health::mojom::NetworkEventsObserver> observer);
 
  private:
   std::unique_ptr<NetworkHealth> network_health_;

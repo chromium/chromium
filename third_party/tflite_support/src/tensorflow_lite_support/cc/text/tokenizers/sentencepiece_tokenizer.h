@@ -20,7 +20,7 @@ limitations under the License.
 #include <string>
 #include <vector>
 
-#include "src/sentencepiece_processor.h"
+#include "src/sentencepiece_processor.h"  // from @com_google_sentencepiece
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer.h"
 
 namespace tflite {

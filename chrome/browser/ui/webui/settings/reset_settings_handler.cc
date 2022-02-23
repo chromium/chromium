@@ -37,10 +37,10 @@
 #include "chrome/common/pref_names.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/profile_resetter/triggered_profile_resetter.h"
 #include "chrome/browser/profile_resetter/triggered_profile_resetter_factory.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace settings {
 
@@ -97,33 +97,33 @@ void ResetSettingsHandler::OnJavascriptDisallowed() {
 }
 
 void ResetSettingsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "performResetProfileSettings",
       base::BindRepeating(&ResetSettingsHandler::HandleResetProfileSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "onShowResetProfileDialog",
       base::BindRepeating(&ResetSettingsHandler::OnShowResetProfileDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getReportedSettings",
       base::BindRepeating(&ResetSettingsHandler::HandleGetReportedSettings,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "onHideResetProfileDialog",
       base::BindRepeating(&ResetSettingsHandler::OnHideResetProfileDialog,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "onHideResetProfileBanner",
       base::BindRepeating(&ResetSettingsHandler::OnHideResetProfileBanner,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getTriggeredResetToolName",
       base::BindRepeating(
           &ResetSettingsHandler::HandleGetTriggeredResetToolName,
           base::Unretained(this)));
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "onPowerwashDialogShow",
       base::BindRepeating(&ResetSettingsHandler::OnShowPowerwashDialog,
                           base::Unretained(this)));
@@ -131,13 +131,13 @@ void ResetSettingsHandler::RegisterMessages() {
 }
 
 void ResetSettingsHandler::HandleResetProfileSettings(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(3U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
-  const bool& send_settings = args->GetList()[1].GetBool();
-  std::string request_origin_string = args->GetList()[2].GetString();
+  CHECK_EQ(3U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const bool& send_settings = args[1].GetBool();
+  std::string request_origin_string = args[2].GetString();
   reset_report::ChromeResetReport::ResetRequestOrigin request_origin =
       ResetRequestOriginFromString(request_origin_string);
 
@@ -174,11 +174,11 @@ void ResetSettingsHandler::OnResetProfileSettingsDone(
 }
 
 void ResetSettingsHandler::HandleGetReportedSettings(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   setting_snapshot_->RequestShortcuts(
       base::BindOnce(&ResetSettingsHandler::OnGetReportedSettingsDone,
@@ -192,7 +192,7 @@ void ResetSettingsHandler::OnGetReportedSettingsDone(std::string callback_id) {
 }
 
 void ResetSettingsHandler::OnShowResetProfileDialog(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   if (!GetResetter()->IsActive()) {
     setting_snapshot_ = std::make_unique<ResettableSettingsSnapshot>(profile_);
   }
@@ -208,13 +208,13 @@ void ResetSettingsHandler::OnShowResetProfileDialog(
 }
 
 void ResetSettingsHandler::OnHideResetProfileDialog(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   if (!GetResetter()->IsActive())
     setting_snapshot_.reset();
 }
 
 void ResetSettingsHandler::OnHideResetProfileBanner(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   chrome_prefs::ClearResetTime(profile_);
 }
 
@@ -262,16 +262,16 @@ ProfileResetter* ResetSettingsHandler::GetResetter() {
 }
 
 void ResetSettingsHandler::HandleGetTriggeredResetToolName(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const base::Value& callback_id = args->GetList()[0];
+  CHECK_EQ(1U, args.size());
+  const base::Value& callback_id = args[0];
 
   // Set up the localized strings for the triggered profile reset dialog.
   // Custom reset tool names are supported on Windows only.
   std::u16string reset_tool_name;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   Profile* profile = Profile::FromWebUI(web_ui());
   TriggeredProfileResetter* triggered_profile_resetter =
       TriggeredProfileResetterFactory::GetForBrowserContext(profile);
@@ -282,7 +282,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
     // Now that a reset UI has been shown, don't trigger again for this profile.
     triggered_profile_resetter->ClearResetTrigger();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   if (reset_tool_name.empty()) {
     reset_tool_name = l10n_util::GetStringUTF16(
@@ -295,7 +295,7 @@ void ResetSettingsHandler::HandleGetTriggeredResetToolName(
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 void ResetSettingsHandler::OnShowPowerwashDialog(
-     const base::ListValue* args) {
+    base::Value::ConstListView args) {
   UMA_HISTOGRAM_ENUMERATION(
       "Reset.ChromeOS.PowerwashDialogShown",
       ash::reset::DialogViewType::kFromOptions,

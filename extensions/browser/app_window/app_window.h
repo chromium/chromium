@@ -12,7 +12,7 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/sessions/core/session_id.h"
 #include "components/web_modal/web_contents_modal_dialog_manager_delegate.h"
@@ -443,9 +443,7 @@ class AppWindow : public content::WebContentsDelegate,
                              const blink::WebGestureEvent& event) override;
   bool TakeFocus(content::WebContents* source, bool reverse) override;
   content::PictureInPictureResult EnterPictureInPicture(
-      content::WebContents* web_contents,
-      const viz::SurfaceId& surface_id,
-      const gfx::Size& natural_size) override;
+      content::WebContents* web_contents) override;
   void ExitPictureInPicture() override;
   bool ShouldShowStaleContentOnEviction(content::WebContents* source) override;
 
@@ -521,7 +519,7 @@ class AppWindow : public content::WebContentsDelegate,
 
   // The browser context with which this window is associated. AppWindow does
   // not own this object.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   const std::string extension_id_;
 

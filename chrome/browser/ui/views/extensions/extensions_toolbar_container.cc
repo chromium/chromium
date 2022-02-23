@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "build/build_config.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -92,7 +93,7 @@ ExtensionsToolbarContainer::ExtensionsToolbarContainer(Browser* browser,
   // The container shouldn't show unless / until we have extensions available.
   SetVisible(false);
 
-  model_observation_.Observe(model_);
+  model_observation_.Observe(model_.get());
 
   const views::FlexSpecification hide_icon_flex_specification =
       views::FlexSpecification(views::LayoutOrientation::kHorizontal,
@@ -168,7 +169,7 @@ void ExtensionsToolbarContainer::UpdateAllIcons() {
 // redesigned menu and toolbar with access control is released.
 ExtensionsToolbarButton* ExtensionsToolbarContainer::GetExtensionsButton()
     const {
-  return extensions_button_ ? extensions_button_
+  return extensions_button_ ? extensions_button_.get()
                             : extensions_controls_->extensions_button();
 }
 
@@ -196,7 +197,7 @@ ExtensionsToolbarContainer::GetAnchoredWidgetForExtensionForTesting(
                            [extension_id](const auto& info) {
                              return info.extension_id == extension_id;
                            });
-  return iter == anchored_widgets_.end() ? nullptr : iter->widget;
+  return iter == anchored_widgets_.end() ? nullptr : iter->widget.get();
 }
 
 bool ExtensionsToolbarContainer::ShouldForceVisibility(
@@ -305,7 +306,7 @@ void ExtensionsToolbarContainer::OnContextMenuShown(
   // Only update the extension's toolbar visibility if the context menu is being
   // shown from an extension visible in the toolbar.
   if (!ExtensionsMenuView::IsShowing()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // TODO(crbug/1065584): Remove hiding active popup here once this bug is
     // fixed.
     HideActivePopup();
@@ -390,7 +391,6 @@ bool ExtensionsToolbarContainer::CloseOverflowMenuIfOpen() {
 
 void ExtensionsToolbarContainer::PopOutAction(
     ToolbarActionViewController* action,
-    bool is_sticky,
     base::OnceClosure closure) {
   // TODO(pbos): Highlight popout differently.
   DCHECK(!popped_out_action_);
@@ -401,18 +401,17 @@ void ExtensionsToolbarContainer::PopOutAction(
 }
 
 bool ExtensionsToolbarContainer::ShowToolbarActionPopupForAPICall(
-    const std::string& action_id) {
+    const std::string& action_id,
+    ShowPopupCallback callback) {
   // Don't override another popup, and only show in the active window.
   if (popped_out_action_ || !browser_->window()->IsActive())
     return false;
 
   ToolbarActionViewController* action = GetActionForId(action_id);
-  // Since this was triggered by an API call, we never want to grant activeTab
-  // to the extension.
-  constexpr bool kGrantActiveTab = false;
-  return action && action->ExecuteAction(
-                       kGrantActiveTab,
-                       ToolbarActionViewController::InvocationSource::kApi);
+  DCHECK(action);
+  action->TriggerPopupForAPI(std::move(callback));
+
+  return true;
 }
 
 void ExtensionsToolbarContainer::ShowToolbarActionBubble(
@@ -512,6 +511,8 @@ void ExtensionsToolbarContainer::OnToolbarPinnedActionsChanged() {
   for (const auto& it : icons_)
     UpdateIconVisibility(it.first);
   ReorderViews();
+
+  drop_weak_ptr_factory_.InvalidateWeakPtrs();
 }
 
 void ExtensionsToolbarContainer::ReorderViews() {
@@ -620,7 +621,11 @@ bool ExtensionsToolbarContainer::CanStartDragForView(View* sender,
                          [this, sender](const std::string& action_id) {
                            return GetViewForId(action_id) == sender;
                          });
-  return it != model_->pinned_action_ids().cend();
+  if (it == model_->pinned_action_ids().cend())
+    return false;
+
+  // TODO(crbug.com/1275586): Force-pinned extensions are not draggable.
+  return !model_->IsActionForcePinned(*it);
 }
 
 bool ExtensionsToolbarContainer::GetDropFormats(
@@ -759,6 +764,9 @@ void ExtensionsToolbarContainer::SetExtensionIconVisibility(
                          [this, id](const std::string& action_id) {
                            return GetViewForId(action_id) == GetViewForId(id);
                          });
+  if (it == model_->pinned_action_ids().cend())
+    return;
+
   ToolbarActionView* extension_view = GetViewForId(*it);
   if (!extension_view)
     return;

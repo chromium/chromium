@@ -173,9 +173,10 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
 
 - (void)signInIdentity:(ChromeIdentity*)identity
       withHostedDomain:(NSString*)hostedDomain
-        toBrowserState:(ChromeBrowserState*)browserState {
+        toBrowserState:(ChromeBrowserState*)browserState
+            completion:(signin_ui::CompletionCallback)completion {
   AuthenticationServiceFactory::GetForBrowserState(browserState)
-      ->SignIn(identity);
+      ->SignIn(identity, completion);
 }
 
 - (void)signOutBrowserState:(ChromeBrowserState*)browserState {
@@ -278,15 +279,12 @@ const int64_t kAuthenticationFlowTimeoutSeconds = 10;
                                browser:browser];
     return;
   }
-  BOOL isCurrentUserSyncing =
-      identityManager->HasPrimaryAccount(signin::ConsentLevel::kSync);
   _navigationController = [SettingsNavigationController
       importDataControllerForBrowser:browser
                             delegate:self
                   importDataDelegate:self
                            fromEmail:lastSyncingEmail
-                             toEmail:[identity userEmail]
-                           isSyncing:isCurrentUserSyncing];
+                             toEmail:[identity userEmail]];
   [_delegate presentViewController:_navigationController
                           animated:YES
                         completion:nil];

@@ -189,15 +189,17 @@ class AccountManagerMojoServiceTest : public ::testing::Test {
   mojom::AccountAdditionResultPtr ShowAddAccountDialog(
       base::OnceClosure quit_closure) {
     auto add_account_result = mojom::AccountAdditionResult::New();
-    account_manager_mojo_service_->ShowAddAccountDialog(base::BindOnce(
-        [](base::OnceClosure quit_closure,
-           mojom::AccountAdditionResultPtr* add_account_result,
-           mojom::AccountAdditionResultPtr result) {
-          (*add_account_result)->status = result->status;
-          (*add_account_result)->account = std::move(result->account);
-          std::move(quit_closure).Run();
-        },
-        std::move(quit_closure), &add_account_result));
+    account_manager_mojo_service_->ShowAddAccountDialog(
+        crosapi::mojom::AccountAdditionOptions::New(),
+        base::BindOnce(
+            [](base::OnceClosure quit_closure,
+               mojom::AccountAdditionResultPtr* add_account_result,
+               mojom::AccountAdditionResultPtr result) {
+              (*add_account_result)->status = result->status;
+              (*add_account_result)->account = std::move(result->account);
+              std::move(quit_closure).Run();
+            },
+            std::move(quit_closure), &add_account_result));
     return add_account_result;
   }
 
@@ -369,7 +371,7 @@ TEST_F(AccountManagerMojoServiceTest,
   GetFakeAccountManagerUI()->SetIsDialogShown(true);
   mojom::AccountAdditionResultPtr account_addition_result;
   account_manager_async_waiter()->ShowAddAccountDialog(
-      &account_addition_result);
+      crosapi::mojom::AccountAdditionOptions::New(), &account_addition_result);
 
   // Check status.
   EXPECT_EQ(mojom::AccountAdditionResult::Status::kAlreadyInProgress,

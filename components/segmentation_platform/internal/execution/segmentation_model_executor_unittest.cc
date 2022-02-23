@@ -73,7 +73,7 @@ class SegmentationModelExecutorTest : public testing::Test {
     model_executor_handle_ = std::make_unique<SegmentationModelHandler>(
         optimization_guide_model_provider_.get(),
         task_environment_.GetMainThreadTaskRunner(), kOptimizationTarget,
-        callback);
+        callback, absl::nullopt);
   }
 
   void ResetModelExecutor() {

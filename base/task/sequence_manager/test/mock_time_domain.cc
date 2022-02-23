@@ -22,14 +22,8 @@ void MockTimeDomain::SetNowTicks(TimeTicks now_ticks) {
   now_ticks_ = now_ticks;
 }
 
-TimeTicks MockTimeDomain::GetNextDelayedTaskTime(
-    DelayedWakeUp next_wake_up,
-    sequence_manager::LazyNow* lazy_now) const {
-  return TimeTicks::Max();
-}
-
 bool MockTimeDomain::MaybeFastForwardToWakeUp(
-    absl::optional<DelayedWakeUp> next_wake_up,
+    absl::optional<WakeUp> next_wake_up,
     bool quit_when_idle_requested) {
   return false;
 }

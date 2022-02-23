@@ -565,6 +565,28 @@ TEST_F(ScriptRunIteratorTest, CJKConsecutiveParens10) {
                      {"」", USCRIPT_BOPOMOFO}});
 }
 
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin1) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"「", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"」」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin2) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"（", USCRIPT_BOPOMOFO},
+                     {"A", USCRIPT_LATIN},
+                     {"）」", USCRIPT_BOPOMOFO}});
+}
+
+TEST_F(ScriptRunIteratorTest, CJKConsecutiveParensLatin3) {
+  CHECK_SCRIPT_RUNS({{"「", USCRIPT_BOPOMOFO},  // See CJKConsecutiveParens4
+                     {"A", USCRIPT_LATIN},
+                     {"（国）」", USCRIPT_HAN}});
+}
+
 // Emojies are resolved to the leading script.
 TEST_F(ScriptRunIteratorTest, EmojiCommon) {
   CHECK_SCRIPT_RUNS({{"百家姓🌱🌲🌳🌴", USCRIPT_HAN}});

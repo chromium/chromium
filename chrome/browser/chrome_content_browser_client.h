@@ -21,10 +21,12 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/startup_data.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/safe_browsing/content/browser/web_api_handshake_checker.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "extensions/buildflags/buildflags.h"
 #include "media/media_buildflags.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -55,7 +57,6 @@ class URLLoaderThrottle;
 
 namespace content {
 class BrowserContext;
-class FontAccessDelegate;
 class QuotaPermissionContext;
 enum class SmsFetchFailureType;
 struct ServiceWorkerVersionBaseInfo;
@@ -96,7 +97,6 @@ namespace version_info {
 enum class Channel;
 }  // namespace version_info
 
-class ChromeFontAccessDelegate;
 class ChromeHidDelegate;
 class ChromeSerialDelegate;
 class ChromeWebAuthenticationDelegate;
@@ -105,6 +105,10 @@ class ChromeWebAuthenticationDelegate;
 namespace vr {
 class ChromeXrIntegrationClient;
 }
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+class BackgroundAttributionFlusher;
 #endif
 
 class ChromeContentBrowserClient : public content::ContentBrowserClient {
@@ -160,8 +164,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                                        const GURL& site_url) override;
   bool DoesSiteRequireDedicatedProcess(content::BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
-  bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
-                               const GURL& effective_site_url) override;
   bool DoesWebUISchemeRequireProcessLock(base::StringPiece scheme) override;
   bool ShouldTreatURLSchemeAsFirstPartyWhenTopLevel(
       base::StringPiece scheme,
@@ -229,6 +231,8 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   bool ShouldUrlUseApplicationIsolationLevel(
       content::BrowserContext* browser_context,
       const GURL& url) override;
+  bool AreDirectSocketsAllowedByPolicy(
+      content::BrowserContext* context) override;
   bool IsFileAccessAllowed(const base::FilePath& path,
                            const base::FilePath& absolute_path,
                            const base::FilePath& profile_path) override;
@@ -250,6 +254,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const absl::optional<url::Origin>& top_frame_origin,
       const GURL& script_url,
       content::BrowserContext* context) override;
+  void WillStartServiceWorker(
+      content::BrowserContext* context,
+      const GURL& script_url,
+      content::RenderProcessHost* render_process_host) override;
   bool AllowSharedWorker(const GURL& worker_url,
                          const net::SiteForCookies& site_for_cookies,
                          const absl::optional<url::Origin>& top_frame_origin,
@@ -284,16 +292,17 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const url::Origin& requesting_origin,
       const url::Origin& embedding_origin) override;
   std::string GetWebBluetoothBlocklist() override;
-  bool IsInterestGroupAPIAllowed(content::BrowserContext* browser_context,
+  bool IsInterestGroupAPIAllowed(content::RenderFrameHost* render_frame_host,
+                                 InterestGroupApiOperation operation,
                                  const url::Origin& top_frame_origin,
-                                 const GURL& api_url) override;
+                                 const url::Origin& api_origin) override;
   bool IsConversionMeasurementOperationAllowed(
       content::BrowserContext* browser_context,
       ConversionMeasurementOperation operation,
       const url::Origin* impression_origin,
       const url::Origin* conversion_origin,
       const url::Origin* reporting_origin) override;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   void OnTrustAnchorUsed(content::BrowserContext* browser_context) override;
 #endif
   scoped_refptr<network::SharedURLLoaderFactory>
@@ -302,7 +311,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::string GetGeolocationApiKey() override;
   device::GeolocationManager* GetGeolocationManager() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   bool ShouldUseGmsCoreGeolocationProvider() override;
 #endif
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
@@ -318,7 +327,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       bool strict_enforcement,
       base::OnceCallback<void(content::CertificateRequestResultType)> callback)
       override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool ShouldDenyRequestOnCertificateError(const GURL main_page_url) override;
 #endif
   base::OnceClosure SelectClientCertificate(
@@ -361,6 +370,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   base::FilePath GetShaderDiskCacheDirectory() override;
   base::FilePath GetGrShaderDiskCacheDirectory() override;
   base::FilePath GetNetLogDefaultDirectory() override;
+  base::FilePath GetFirstPartySetsDirectory() override;
   void DidCreatePpapiPlugin(content::BrowserPpapiHost* browser_host) override;
   content::BrowserPpapiHost* GetExternalBrowserPpapiHost(
       int plugin_process_id) override;
@@ -404,13 +414,13 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void OverridePageVisibilityState(
       content::RenderFrameHost* render_frame_host,
       content::PageVisibilityState* visibility_state) override;
-#if defined(OS_POSIX) && !defined(OS_MAC)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
-#endif  // defined(OS_POSIX) && !defined(OS_MAC)
-#if defined(OS_WIN)
+#endif  // BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_MAC)
+#if BUILDFLAG(IS_WIN)
   bool PreSpawnChild(sandbox::TargetPolicy* policy,
                      sandbox::mojom::Sandbox sandbox_type,
                      ChildSpawnFlags flags) override;
@@ -438,10 +448,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void RegisterBrowserInterfaceBindersForServiceWorker(
       mojo::BinderMapWithContext<const content::ServiceWorkerVersionBaseInfo&>*
           map) override;
-  bool BindAssociatedReceiverFromFrame(
-      content::RenderFrameHost* render_frame_host,
-      const std::string& interface_name,
-      mojo::ScopedInterfaceEndpointHandle* handle) override;
+  void RegisterAssociatedInterfaceBindersForRenderFrameHost(
+      content::RenderFrameHost& render_frame_host,
+      blink::AssociatedInterfaceRegistry& associated_registry) override;
   void BindGpuHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void BindUtilityHostReceiver(mojo::GenericPendingReceiver receiver) override;
   void BindHostReceiverForRenderer(
@@ -459,6 +468,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::WebContents* web_contents) override;
   std::vector<std::unique_ptr<content::NavigationThrottle>>
   CreateThrottlesForNavigation(content::NavigationHandle* handle) override;
+  std::vector<std::unique_ptr<content::CommitDeferringCondition>>
+  CreateCommitDeferringConditionsForNavigation(
+      content::NavigationHandle* navigation_handle,
+      content::CommitDeferringCondition::NavigationType type) override;
   std::unique_ptr<content::NavigationUIData> GetNavigationUIData(
       content::NavigationHandle* navigation_handle) override;
 #if BUILDFLAG(ENABLE_MEDIA_REMOTING)
@@ -489,6 +502,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
+      const absl::optional<url::Origin>& request_initiator_origin,
       NonNetworkURLLoaderFactoryMap* factories) override;
   bool WillCreateURLLoaderFactory(
       content::BrowserContext* browser_context,
@@ -561,7 +575,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) override;
   content::BluetoothDelegate* GetBluetoothDelegate() override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void CreateDeviceInfoService(
       content::RenderFrameHost* render_frame_host,
       mojo::PendingReceiver<blink::mojom::DeviceAPIService> receiver) override;
@@ -571,16 +585,10 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       override;
   content::SerialDelegate* GetSerialDelegate() override;
   content::HidDelegate* GetHidDelegate() override;
-  content::FontAccessDelegate* GetFontAccessDelegate() override;
   content::WebAuthenticationDelegate* GetWebAuthenticationDelegate() override;
   std::unique_ptr<content::AuthenticatorRequestClientDelegate>
   GetWebAuthenticationRequestDelegate(
       content::RenderFrameHost* render_frame_host) override;
-  void ShowDirectSocketsConnectionDialog(
-      content::RenderFrameHost* owner,
-      const std::string& address,
-      base::OnceCallback<void(bool, const std::string&, const std::string&)>
-          callback) override;
 #endif
   bool ShowPaymentHandlerWindow(
       content::BrowserContext* browser_context,
@@ -608,10 +616,15 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       ui::PageTransition page_transition,
       bool has_user_gesture,
       const absl::optional<url::Origin>& initiating_origin,
+      content::RenderFrameHost* initiator_document,
       mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
       override;
-  std::unique_ptr<content::OverlayWindow> CreateWindowForPictureInPicture(
-      content::PictureInPictureWindowController* controller) override;
+  std::unique_ptr<content::VideoOverlayWindow>
+  CreateWindowForVideoPictureInPicture(
+      content::VideoPictureInPictureWindowController* controller) override;
+  std::unique_ptr<content::DocumentOverlayWindow>
+  CreateWindowForDocumentPictureInPicture(
+      content::DocumentPictureInPictureWindowController* controller) override;
   void RegisterRendererPreferenceWatcher(
       content::BrowserContext* browser_context,
       mojo::PendingRemote<blink::mojom::RendererPreferenceWatcher> watcher)
@@ -620,11 +633,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       network::OriginPolicyState error_reason,
       content::NavigationHandle* handle) override;
   bool CanAcceptUntrustedExchangesIfNeeded() override;
-  void OnNetworkServiceDataUseUpdate(int process_id,
-                                     int routing_id,
-                                     int32_t network_traffic_annotation_id_hash,
-                                     int64_t recv_bytes,
-                                     int64_t sent_bytes) override;
+  void OnNetworkServiceDataUseUpdate(
+      content::GlobalRenderFrameHostId render_frame_host_id,
+      int32_t network_traffic_annotation_id_hash,
+      int64_t recv_bytes,
+      int64_t sent_bytes) override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
   bool ShouldSandboxAudioService() override;
   bool ShouldSandboxNetworkService() override;
@@ -634,6 +647,9 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   std::string GetProduct() override;
   std::string GetUserAgent() override;
+  std::string GetUserAgentBasedOnPolicy(
+      content::BrowserContext* context) override;
+  std::string GetFullUserAgent() override;
   std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
 
@@ -648,7 +664,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   ui::AXMode GetAXModeForBrowserContext(
       content::BrowserContext* browser_context) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ContentBrowserClient::WideColorGamutHeuristic GetWideColorGamutHeuristic()
       override;
 #endif
@@ -660,11 +676,6 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::RenderFrameHost* frame_host,
       bool user_gesture,
       blink::NavigationDownloadPolicy* download_policy) override;
-
-  blink::mojom::InterestCohortPtr GetInterestCohortForJsApi(
-      content::WebContents* web_contents,
-      const GURL& url,
-      const absl::optional<url::Origin>& top_frame_origin) override;
 
   bool IsBluetoothScanningBlocked(content::BrowserContext* browser_context,
                                   const url::Origin& requesting_origin,
@@ -682,7 +693,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const net::SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin) override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   base::OnceClosure FetchRemoteSms(
       content::WebContents* web_contents,
       const std::vector<url::Origin>& origin_list,
@@ -701,6 +712,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       const ui::ClipboardFormatType& data_type,
       const std::string& data,
       IsClipboardPasteContentAllowedCallback callback) override;
+
+  bool IsClipboardCopyAllowed(content::BrowserContext* browser_context,
+                              const GURL& url,
+                              size_t data_size_in_bytes,
+                              std::u16string& replacement_data) override;
 
 #if BUILDFLAG(ENABLE_PLUGINS)
   bool ShouldAllowPluginCreation(
@@ -726,11 +742,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
       content::BrowserContext* browser_context) override;
   void OnKeepaliveRequestFinished() override;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool SetupEmbedderSandboxParameters(
       sandbox::mojom::Sandbox sandbox_type,
       sandbox::SeatbeltExecClient* client) override;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
@@ -741,17 +757,37 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   std::unique_ptr<content::IdentityRequestDialogController>
   CreateIdentityRequestDialogController() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   base::TimeDelta GetKeepaliveTimerTimeout(content::BrowserContext* context);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   bool SuppressDifferentOriginSubframeJSDialogs(
       content::BrowserContext* browser_context) override;
   std::unique_ptr<content::SpeculationHostDelegate>
   CreateSpeculationHostDelegate(
       content::RenderFrameHost& render_frame_host) override;
+  void OnWebContentsCreated(content::WebContents* web_contents) override;
 
   bool IsFindInPageDisabledForOrigin(const url::Origin& origin) override;
+  bool IsFirstPartySetsEnabled() override;
+
+  void FlushBackgroundAttributions(base::OnceClosure callback) override;
+  bool ShouldPreconnectNavigation(
+      content::BrowserContext* browser_context) override;
+
+  enum UserAgentReductionEnterprisePolicyState {
+    kDefault = 0,
+    kForceDisabled = 1,
+    kForceEnabled = 2,
+  };
+
+  bool ShouldDisableOriginAgentClusterDefault(
+      content::BrowserContext* browser_context) override;
+
+  content::mojom::AlternativeErrorPageOverrideInfoPtr
+  GetAlternativeErrorPageOverrideInfo(const GURL& url,
+                                      content::BrowserContext* browser_context,
+                                      int32_t error_code) override;
 
  protected:
   static bool HandleWebUI(GURL* url, content::BrowserContext* browser_context);
@@ -834,10 +870,16 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
           handshake_client,
       WillCreateWebTransportCallback callback);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   void OnKeepaliveTimerFired(
       std::unique_ptr<ScopedKeepAlive> keep_alive_handle);
 #endif
+
+  UserAgentReductionEnterprisePolicyState
+  GetUserAgentReductionEnterprisePolicyState(content::BrowserContext* context);
+
+  embedder_support::ForceMajorVersionToMinorPosition
+  GetForceMajorVersionToMinorPosition(content::BrowserContext* context);
 
   // Vector of additional ChromeContentBrowserClientParts.
   // Parts are deleted in the reverse order they are added.
@@ -849,10 +891,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
 
   StartupData startup_data_;
 
-#if !defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
+  std::unique_ptr<BackgroundAttributionFlusher> background_attribution_flusher_;
+#else
   std::unique_ptr<ChromeSerialDelegate> serial_delegate_;
   std::unique_ptr<ChromeHidDelegate> hid_delegate_;
-  std::unique_ptr<ChromeFontAccessDelegate> font_access_delegate_;
   std::unique_ptr<ChromeWebAuthenticationDelegate> web_authentication_delegate_;
 #endif
   std::unique_ptr<permissions::BluetoothDelegateImpl> bluetooth_delegate_;
@@ -865,7 +908,7 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
   // thread because it needs to access the Local State prefs.
   std::vector<base::FilePath> network_contexts_parent_directory_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   uint64_t num_keepalive_requests_ = 0;
   base::OneShotTimer keepalive_timer_;
   base::TimeTicks keepalive_deadline_;

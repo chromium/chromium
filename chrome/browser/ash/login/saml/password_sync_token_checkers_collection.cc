@@ -5,6 +5,7 @@
 #include "chrome/browser/ash/login/saml/password_sync_token_checkers_collection.h"
 
 #include "base/containers/contains.h"
+#include "chrome/browser/browser_process.h"
 #include "components/user_manager/known_user.h"
 #include "components/user_manager/user_manager.h"
 
@@ -36,29 +37,32 @@ void PasswordSyncTokenCheckersCollection::StartPasswordSyncCheckers(
     if (!user->using_saml() || user->force_online_signin())
       continue;
 
-    const std::string sync_token =
-        user_manager::known_user::GetPasswordSyncToken(user->GetAccountId());
-    if (!sync_token.empty() &&
-        !base::Contains(sync_token_checkers_, sync_token)) {
+    user_manager::KnownUser known_user(g_browser_process->local_state());
+    const std::string* sync_token =
+        known_user.GetPasswordSyncToken(user->GetAccountId());
+    if (sync_token && !sync_token->empty() &&
+        !base::Contains(sync_token_checkers_, *sync_token)) {
       sync_token_checkers_.insert(
-          {sync_token,
+          {*sync_token,
            std::make_unique<PasswordSyncTokenLoginChecker>(
-               user->GetAccountId(), sync_token, &sync_token_retry_backoff_)});
+               user->GetAccountId(), *sync_token, &sync_token_retry_backoff_)});
       if (observer)
-        sync_token_checkers_[sync_token]->AddObserver(observer);
-      sync_token_checkers_[sync_token]->AddObserver(this);
-      sync_token_checkers_[sync_token]->RecordTokenPollingStart();
-      sync_token_checkers_[sync_token]->CheckForPasswordNotInSync();
+        sync_token_checkers_[*sync_token]->AddObserver(observer);
+      sync_token_checkers_[*sync_token]->AddObserver(this);
+      sync_token_checkers_[*sync_token]->RecordTokenPollingStart();
+      sync_token_checkers_[*sync_token]->CheckForPasswordNotInSync();
     }
   }
 }
 
 void PasswordSyncTokenCheckersCollection::OnInvalidSyncToken(
     const AccountId& account_id) {
-  const std::string sync_token =
-      user_manager::known_user::GetPasswordSyncToken(account_id);
-  if (base::Contains(sync_token_checkers_, sync_token))
-    sync_token_checkers_.erase(sync_token);
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  const std::string* sync_token = known_user.GetPasswordSyncToken(account_id);
+  if (!sync_token)
+    return;
+  if (base::Contains(sync_token_checkers_, *sync_token))
+    sync_token_checkers_.erase(*sync_token);
 }
 
 }  // namespace ash

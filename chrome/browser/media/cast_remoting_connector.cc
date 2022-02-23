@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "components/media_router/browser/media_router.h"
@@ -124,7 +125,7 @@ class CastRemotingConnector::RemotingBridge final
 
   // Weak pointer. Will be set to nullptr if the CastRemotingConnector is
   // destroyed before this RemotingBridge.
-  CastRemotingConnector* connector_;
+  raw_ptr<CastRemotingConnector> connector_;
 };
 
 // static
@@ -463,7 +464,7 @@ void CastRemotingConnector::OnSinkAvailable(
     return;
   }
   sink_metadata_ = *metadata;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   sink_metadata_.features.push_back(
       media::mojom::RemotingSinkFeature::RENDERING);
 #endif
@@ -511,7 +512,7 @@ void CastRemotingConnector::OnDataSendFailed() {
 
 void CastRemotingConnector::StartObservingPref() {
   pref_change_registrar_.Init(pref_service_);
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   pref_change_registrar_.Add(
       media_router::prefs::kMediaRouterMediaRemotingEnabled,
       base::BindRepeating(&CastRemotingConnector::OnPrefChanged,
@@ -520,7 +521,7 @@ void CastRemotingConnector::StartObservingPref() {
 }
 
 void CastRemotingConnector::OnPrefChanged() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const PrefService::Preference* pref = pref_service_->FindPreference(
       media_router::prefs::kMediaRouterMediaRemotingEnabled);
   bool enabled = pref->GetValue()->GetIfBool().value_or(false);

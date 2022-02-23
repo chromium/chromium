@@ -166,12 +166,36 @@ TEST_F(BrowserWindowDefaultTouchBarUnitTest, ReloadOrStopTouchBarItem) {
     NSTouchBarItem* item =
         [touch_bar itemForIdentifier:BrowserWindowDefaultTouchBar
                                          .reloadOrStopItemIdentifier];
-    EXPECT_EQ(IDC_RELOAD, [[item view] tag]);
+    NSButton* button = base::mac::ObjCCast<NSButton>([item view]);
+    EXPECT_EQ(IDC_RELOAD, [button tag]);
+    EXPECT_EQ([BrowserWindowDefaultTouchBar reloadIcon], [button image]);
 
     [touch_bar_ setIsPageLoading:YES];
     item = [touch_bar itemForIdentifier:BrowserWindowDefaultTouchBar
                                             .reloadOrStopItemIdentifier];
-    EXPECT_EQ(IDC_STOP, [[item view] tag]);
+    button = base::mac::ObjCCast<NSButton>([item view]);
+    EXPECT_EQ(IDC_STOP, [button tag]);
+    EXPECT_EQ([BrowserWindowDefaultTouchBar navigateStopIcon], [button image]);
+  }
+}
+
+// Tests the bookmark star touch bar item.
+TEST_F(BrowserWindowDefaultTouchBarUnitTest, BookmkarStarTouchBarItem) {
+  if (@available(macOS 10.12.2, *)) {
+    NSTouchBar* touch_bar = [touch_bar_ makeTouchBar];
+
+    [touch_bar_ setIsStarred:NO];
+    NSTouchBarItem* item =
+        [touch_bar itemForIdentifier:BrowserWindowDefaultTouchBar
+                                         .bookmarkStarItemIdentifier];
+    NSButton* button = base::mac::ObjCCast<NSButton>([item view]);
+    EXPECT_EQ([BrowserWindowDefaultTouchBar starDefaultIcon], [button image]);
+
+    [touch_bar_ setIsStarred:YES];
+    item = [touch_bar itemForIdentifier:BrowserWindowDefaultTouchBar
+                                            .bookmarkStarItemIdentifier];
+    button = base::mac::ObjCCast<NSButton>([item view]);
+    EXPECT_EQ([BrowserWindowDefaultTouchBar starActiveIcon], [button image]);
   }
 }
 

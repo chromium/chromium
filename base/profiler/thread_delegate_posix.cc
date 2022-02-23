@@ -12,7 +12,7 @@
 #include "build/build_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/files/file_util.h"
 #include "base/files/scoped_file.h"
 #endif
@@ -21,7 +21,7 @@ namespace base {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 absl::optional<uintptr_t> GetAndroidMainThreadStackBaseAddressImpl() {
   char line[1024];
   base::ScopedFILE fp(base::OpenFile(base::FilePath("/proc/self/maps"), "r"));
@@ -54,7 +54,7 @@ uintptr_t GetThreadStackBaseAddressImpl(
 
 absl::optional<uintptr_t> GetThreadStackBaseAddress(
     SamplingProfilerThreadToken thread_token) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // The implementation of pthread_getattr_np() in Bionic reads proc/self/maps
   // to find the main thread base address, and throws SIGABRT when it fails to
   // read or parse the file. So, try to read the maps to get the main thread

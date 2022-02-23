@@ -5,6 +5,8 @@
 #import "ios/chrome/browser/sessions/session_ios.h"
 
 #import "base/mac/foundation_util.h"
+#include "ios/chrome/browser/sessions/session_features.h"
+#import "ios/chrome/browser/sessions/session_window_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -47,6 +49,15 @@ NSString* const kSessionWindowsKey = @"sessionWindows";
 
 - (void)encodeWithCoder:(NSCoder*)aCoder {
   [aCoder encodeObject:_sessionWindows forKey:kSessionWindowsKey];
+}
+
+- (NSDictionary*)sessionTabContents {
+  DCHECK(sessions::ShouldSaveSessionTabsToSeparateFiles());
+  NSMutableDictionary* sessionContents = [[NSMutableDictionary alloc] init];
+  for (SessionWindowIOS* sessionWindow : _sessionWindows) {
+    [sessionContents addEntriesFromDictionary:sessionWindow.tabContents];
+  }
+  return sessionContents;
 }
 
 @end

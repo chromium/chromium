@@ -183,16 +183,68 @@ struct TestShortcutData shortcut_test_db[] = {
      AutocompleteMatch::DocumentType::NONE, "Trailing2 - Space in Shortcut",
      "0,1", "Trailing2 - Space in Shortcut", "0,1", ui::PAGE_TRANSITION_TYPED,
      AutocompleteMatchType::HISTORY_URL, "", 1, 100},
+
+    // 4 shortcuts to verify aggregating shortcuts.
+    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FD", "wikipedia", "",
+     "https://wikipedia.org/wilson7", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 1},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FE", "wilson7", "",
+     "https://wikipedia.org/wilson7", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 2, 2},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E90880FF", "winston", "",
+     "https://wikipedia.org/winston", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 3},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088100", "wilson7", "",
+     "https://wikipedia.org/wilson7-other",
+     AutocompleteMatch::DocumentType::NONE, "", "0,1", "", "0,1",
+     ui::PAGE_TRANSITION_TYPED, AutocompleteMatchType::HISTORY_URL, "", 2, 2},
+
+    // 7 shortcuts to verify the interaction of the provider limit and
+    // aggregating shortcuts.
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088101", "zebra1", "",
+     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 1},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088102", "zebra2", "",
+     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 2},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088103", "zebra3", "",
+     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 3},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088104", "zebra4", "",
+     "https://wikipedia.org/zebra-a", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 4},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088105", "zebra5", "",
+     "https://wikipedia.org/zebra-b", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 6},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088106", "zebra6", "",
+     "https://wikipedia.org/zebra-b", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 4},
+    {"BD85DBA2-8C29-49F9-84AE-48E1E9088107", "zebra7", "",
+     "https://wikipedia.org/zebra-c", AutocompleteMatch::DocumentType::NONE, "",
+     "0,1", "", "0,1", ui::PAGE_TRANSITION_TYPED,
+     AutocompleteMatchType::HISTORY_URL, "", 1, 10},
 };
 
-ShortcutsDatabase::Shortcut MakeShortcutWithText(std::u16string text) {
+ShortcutsDatabase::Shortcut MakeShortcut(
+    std::u16string text,
+    const base::Time& last_access_time = base::Time::Now(),
+    int number_of_hits = 1) {
   return {std::string(), text,
           ShortcutsDatabase::Shortcut::MatchCore(
               u"www.test.com", GURL("http://www.test.com"),
               AutocompleteMatch::DocumentType::NONE, u"www.test.com",
               "0,1,4,3,8,1", u"A test", "0,0,2,2", ui::PAGE_TRANSITION_TYPED,
               AutocompleteMatchType::HISTORY_URL, std::u16string()),
-          base::Time::Now(), 1};
+          last_access_time, number_of_hits};
 }
 
 }  // namespace
@@ -210,13 +262,25 @@ class ShortcutsProviderTest : public testing::Test {
   // Passthrough to the private function in provider_.
   int CalculateScore(const std::string& terms,
                      const ShortcutsDatabase::Shortcut& shortcut);
+  int CalculateAggregateScore(
+      const std::string& terms,
+      const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts);
 
+  // ScopedFeatureList needs to be defined before TaskEnvironment, so that it is
+  // destroyed after TaskEnvironment, to prevent data races on the
+  // ScopedFeatureList.
+  base::test::ScopedFeatureList scoped_feature_list_;
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakeAutocompleteProviderClient> client_;
   scoped_refptr<ShortcutsProvider> provider_;
 };
 
-ShortcutsProviderTest::ShortcutsProviderTest() {}
+ShortcutsProviderTest::ShortcutsProviderTest() {
+  // `scoped_feature_list_` needs to be initialized as early as possible, to
+  // avoid data races caused by tasks on other threads accessing it.
+  scoped_feature_list_.InitAndDisableFeature(
+      omnibox::kPreserveLongerShortcutsText);
+}
 
 void ShortcutsProviderTest::SetUp() {
   client_ = std::make_unique<FakeAutocompleteProviderClient>();
@@ -241,6 +305,15 @@ int ShortcutsProviderTest::CalculateScore(
       ShortcutsProvider::kShortcutsProviderDefaultMaxRelevance;
   return provider_->CalculateScore(ASCIIToUTF16(terms), shortcut,
                                    max_relevance);
+}
+
+int ShortcutsProviderTest::CalculateAggregateScore(
+    const std::string& terms,
+    const std::vector<const ShortcutsDatabase::Shortcut*>& shortcuts) {
+  const int max_relevance =
+      ShortcutsProvider::kShortcutsProviderDefaultMaxRelevance;
+  return provider_->CalculateAggregateScore(ASCIIToUTF16(terms), shortcuts,
+                                            max_relevance);
 }
 
 // Actual tests ---------------------------------------------------------------
@@ -467,7 +540,7 @@ TEST_F(ShortcutsProviderTest, DaysAgoMatches) {
 }
 
 TEST_F(ShortcutsProviderTest, CalculateScore) {
-  auto shortcut = MakeShortcutWithText(u"test");
+  auto shortcut = MakeShortcut(u"test");
 
   // Maximal score.
   const int kMaxScore = CalculateScore("test", shortcut);
@@ -508,12 +581,21 @@ TEST_F(ShortcutsProviderTest, CalculateScore) {
   EXPECT_LT(score_more_popular_two_weeks_old, kMaxScore);
 }
 
-TEST_F(ShortcutsProviderTest, CalculateScore_LongTextFeature) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      omnibox::kPreserveLongerShortcutsText);
+class ShortcutsProviderPreserveLongerShortcutsTest
+    : public ShortcutsProviderTest {
+ public:
+  ShortcutsProviderPreserveLongerShortcutsTest() {
+    // `scoped_feature_list_` needs to be initialized as early as possible, to
+    // avoid data races caused by tasks on other threads accessing it.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(
+        omnibox::kPreserveLongerShortcutsText);
+  }
+};
 
-  auto long_shortcut = MakeShortcutWithText(u"test Yerevan");
+TEST_F(ShortcutsProviderPreserveLongerShortcutsTest,
+       CalculateScore_LongTextFeature) {
+  auto long_shortcut = MakeShortcut(u"test Yerevan");
   // Maximal score.
   const int kMaxScore = CalculateScore("test Yerevan", long_shortcut);
   // Score does not decrease when up to 3 chars are missing.
@@ -521,7 +603,7 @@ TEST_F(ShortcutsProviderTest, CalculateScore_LongTextFeature) {
   // Score decreases if more than 3 chars are missing.
   EXPECT_LT(CalculateScore("test Yer", long_shortcut), kMaxScore);
 
-  auto short_shortcut = MakeShortcutWithText(u"ab");
+  auto short_shortcut = MakeShortcut(u"ab");
   // Make sure there's no negative or weird scores when the shortcut text is
   // shorter than the 3 char adjustment.
   EXPECT_EQ(CalculateScore("ab", short_shortcut), kMaxScore);
@@ -596,4 +678,112 @@ TEST_F(ShortcutsProviderTest, DoesNotProvideOnFocus) {
   input.set_focus_type(OmniboxFocusType::ON_FOCUS);
   provider_->Start(input, false);
   EXPECT_TRUE(provider_->matches().empty());
+}
+
+class ShortcutsProviderAggregateShortcutsTest : public ShortcutsProviderTest {
+ public:
+  ShortcutsProviderAggregateShortcutsTest() {
+    // `scoped_feature_list_` needs to be initialized as early as possible, to
+    // avoid data races caused by tasks on other threads accessing it.
+    scoped_feature_list_.Reset();
+    scoped_feature_list_.InitAndEnableFeature(omnibox::kAggregateShortcuts);
+  }
+};
+
+TEST_F(ShortcutsProviderAggregateShortcutsTest, GetMatches) {
+  {
+    // When multiple shortcuts with the same destination URL match the input,
+    // they should be scored together (i.e. their visit counts summed, the most
+    // recent visit date and shortest text considered).
+    AutocompleteInput input(u"wi", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 3u);
+    // There are 2 shortcuts with the wilson7 url which have the same aggregate
+    // text length, visit count, and last visit as the 1 winston shortcut.
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://wikipedia.org/winston");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://wikipedia.org/wilson7");
+    // Matches with the same score otherwise, are demoted by 1, hence the `+ 1`.
+    EXPECT_EQ(matches[0].relevance, matches[1].relevance + 1);
+    EXPECT_EQ(matches[2].destination_url.spec(),
+              "https://wikipedia.org/wilson7-other");
+    EXPECT_GT(matches[0].relevance, matches[2].relevance + 1);
+    EXPECT_GT(matches[2].relevance, 0);
+  }
+
+  {
+    // When multiple shortcuts have the same destination URL but only 1 matches
+    // the input, they should not be scored together.
+    AutocompleteInput input(u"wilson", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 2u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://wikipedia.org/wilson7");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://wikipedia.org/wilson7-other");
+    EXPECT_EQ(matches[0].relevance, matches[1].relevance + 1);
+    EXPECT_GT(matches[1].relevance, 0);
+  }
+
+  {
+    // The provider limit should not affect number of shortcuts aggregated, only
+    // the matches returned, i.e. the number of aggregate shortcuts. There are
+    // 7 shortcuts matching the input with 3 unique URLs. The 3 aggregate
+    // shortcuts have the same aggregate score factors and should be scored the
+    // same (other than the `+ 1` limitation).
+    AutocompleteInput input(u"zebra", metrics::OmniboxEventProto::OTHER,
+                            TestSchemeClassifier());
+    provider_->Start(input, false);
+    const auto& matches = provider_->matches();
+    EXPECT_EQ(matches.size(), 3u);
+    EXPECT_EQ(matches[0].destination_url.spec(),
+              "https://wikipedia.org/zebra-c");
+    EXPECT_EQ(matches[1].destination_url.spec(),
+              "https://wikipedia.org/zebra-a");
+    EXPECT_EQ(matches[2].destination_url.spec(),
+              "https://wikipedia.org/zebra-b");
+    EXPECT_EQ(matches[0].relevance, matches[1].relevance + 1);
+    EXPECT_EQ(matches[1].relevance, matches[2].relevance + 1);
+    EXPECT_GT(matches[2].relevance, 0);
+  }
+}
+
+TEST_F(ShortcutsProviderTest, CalculateAggregateScore) {
+  const auto days_ago = [](int n) { return base::Time::Now() - base::Days(n); };
+
+  // Aggregate score should consider the shortest text length, most recent visit
+  // time, and sum of visit counts.
+  auto shortcut_a_short = MakeShortcut(u"size5", days_ago(3), 1);
+  auto shortcut_a_frequent = MakeShortcut(u"size____10", days_ago(3), 10);
+  auto shortcut_a_recent = MakeShortcut(u"size____10", days_ago(1), 1);
+  auto score_a = CalculateAggregateScore(
+      "a", {&shortcut_a_short, &shortcut_a_frequent, &shortcut_a_recent});
+  auto shortcut_b = MakeShortcut(u"size5", days_ago(1), 12);
+  auto score_b = CalculateAggregateScore("a", {&shortcut_b});
+  EXPECT_EQ(score_a, score_b);
+  EXPECT_GT(score_a, 0);
+
+  // `CalculateAggregateScore` should give the same scores as `CalculateScore`
+  // when there is only 1 shortcut (i.e. no aggregation).
+  auto score_b_non_aggregate = CalculateScore("a", shortcut_b);
+  EXPECT_EQ(score_b_non_aggregate, score_b);
+
+  // Typing more of the text increases score.
+  auto score_b_long_query = CalculateAggregateScore("ab", {&shortcut_b});
+  EXPECT_GT(score_b_long_query, score_b);
+
+  // More recent shortcuts should be scored higher.
+  auto shortcut_b_old = MakeShortcut(u"size5", days_ago(2), 12);
+  auto score_b_old = CalculateAggregateScore("a", {&shortcut_b_old});
+  EXPECT_LT(score_b_old, score_b);
+
+  // Shortcuts with higher visit counts should be scored higher.
+  auto shortcut_b_frequent = MakeShortcut(u"size5", days_ago(1), 13);
+  auto score_b_frequent = CalculateAggregateScore("a", {&shortcut_b_frequent});
+  EXPECT_GT(score_b_frequent, score_b);
 }

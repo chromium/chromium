@@ -5,9 +5,10 @@
 #ifndef IOS_CHROME_BROWSER_APPLICATION_CONTEXT_H_
 #define IOS_CHROME_BROWSER_APPLICATION_CONTEXT_H_
 
+#import <Foundation/Foundation.h>
+
 #include <string>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 
 namespace breadcrumbs {
@@ -68,6 +69,7 @@ class BrowserPolicyConnectorIOS;
 class IOSChromeIOThread;
 class PrefService;
 class SafeBrowsingService;
+@protocol SingleSignOnService;
 
 // Gets the global application context. Cannot return null.
 ApplicationContext* GetApplicationContext();
@@ -160,6 +162,9 @@ class ApplicationContext {
   // Will be null if breadcrumb collection is not enabled.
   virtual breadcrumbs::BreadcrumbPersistentStorageManager*
   GetBreadcrumbPersistentStorageManager() = 0;
+
+  // Returns the SingleSignOnService instance used by this application.
+  virtual id<SingleSignOnService> GetSSOService() = 0;
 
  protected:
   // Sets the global ApplicationContext instance.

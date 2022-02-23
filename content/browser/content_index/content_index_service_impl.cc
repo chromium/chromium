@@ -134,8 +134,7 @@ void ContentIndexServiceImpl::Add(
     }
   }
 
-  if (!launch_url.is_valid() || !origin_.IsSameOriginWith(url::Origin::Create(
-                                    launch_url.DeprecatedGetOriginAsURL()))) {
+  if (!launch_url.is_valid() || !origin_.IsSameOriginWith(launch_url)) {
     mojo::ReportBadMessage("Invalid launch URL");
     std::move(callback).Run(blink::mojom::ContentIndexError::INVALID_PARAMETER);
     return;

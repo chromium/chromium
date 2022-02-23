@@ -7,6 +7,6 @@
 
 int main(int argc, char* argv[]) {
   say_hello();
-  say_hello_via_callbacks();
+  add_two_ints_via_rust_then_cpp(3, 4);
   return 0;
 }

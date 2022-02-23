@@ -26,6 +26,7 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/cdm_type.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -43,10 +44,9 @@ using base::test::RunOnceCallback;
 using testing::_;
 
 const char kTestCdmName[] = "Test Content Decryption Module";
-const base::Token kTestCdmGuid{1234, 5678};
+const media::CdmType kTestCdmType{base::Token{1234, 5678}, "file_system_id"};
 const char kVersion[] = "1.1.1.1";
 const char kTestPath[] = "/aa/bb";
-const char kTestFileSystemId[] = "file_system_id";
 
 // Helper function to convert a VideoCodecMap to a list of VideoCodec values
 // so that they can be compared. VideoCodecProfiles are ignored.
@@ -104,12 +104,11 @@ class KeySystemSupportImplTest : public testing::Test {
     // `CdmRegistryImpl` so each test starts with a clean state.
     CdmRegistryImpl::GetInstance()->ResetForTesting();
 
-    auto key_system_support_impl = std::make_unique<KeySystemSupportImpl>();
-    key_system_support_impl->SetHardwareSecureCapabilityCBForTesting(
-        hw_secure_capability_cb_.Get());
+    KeySystemSupportImpl::GetInstance()
+        ->SetHardwareSecureCapabilityCBForTesting(
+            hw_secure_capability_cb_.Get());
 
-    mojo::MakeSelfOwnedReceiver(
-        std::move(key_system_support_impl),
+    KeySystemSupportImpl::BindReceiver(
         key_system_support_.BindNewPipeAndPassReceiver());
   }
 
@@ -127,25 +126,35 @@ class KeySystemSupportImplTest : public testing::Test {
                 Robustness robustness = Robustness::kSoftwareSecure) {
     DVLOG(1) << __func__;
 
-    CdmRegistry::GetInstance()->RegisterCdm(
-        CdmInfo(key_system, robustness, std::move(capability),
-                /*supports_sub_key_systems=*/false, kTestCdmName, kTestCdmGuid,
-                base::Version(kVersion),
-                base::FilePath::FromUTF8Unsafe(kTestPath), kTestFileSystemId));
+    CdmRegistry::GetInstance()->RegisterCdm(CdmInfo(
+        key_system, robustness, std::move(capability),
+        /*supports_sub_key_systems=*/false, kTestCdmName, kTestCdmType,
+        base::Version(kVersion), base::FilePath::FromUTF8Unsafe(kTestPath)));
+  }
+
+  void OnIsKeySystemSupported(base::OnceClosure done_cb,
+                              bool is_supported,
+                              media::mojom::KeySystemCapabilityPtr capability) {
+    is_supported_ = is_supported;
+    capability_ = std::move(capability);
+    std::move(done_cb).Run();
   }
 
   // Determines if |key_system| is registered. If it is, updates |codecs_|
   // and |persistent_|.
   bool IsSupported(const std::string& key_system) {
     DVLOG(1) << __func__;
-    bool is_supported = false;
-    key_system_support_->IsKeySystemSupported(key_system, &is_supported,
-                                              &capability_);
-    return is_supported;
+    base::RunLoop run_loop;
+    key_system_support_->IsKeySystemSupported(
+        key_system,
+        base::BindOnce(&KeySystemSupportImplTest::OnIsKeySystemSupported,
+                       base::Unretained(this), run_loop.QuitClosure()));
+    run_loop.Run();
+    return is_supported_;
   }
 
-  gpu::GpuFeatureInfo ALLOW_UNUSED_TYPE
-  GetGpuFeatureInfoWithOneDisabled(gpu::GpuFeatureType disabled_feature) {
+  [[maybe_unused]] gpu::GpuFeatureInfo GetGpuFeatureInfoWithOneDisabled(
+      gpu::GpuFeatureType disabled_feature) {
     gpu::GpuFeatureInfo gpu_feature_info;
     for (auto& status : gpu_feature_info.status_values)
       status = gpu::GpuFeatureStatus::kGpuFeatureStatusEnabled;
@@ -181,6 +190,7 @@ class KeySystemSupportImplTest : public testing::Test {
   BrowserTaskEnvironment task_environment_;
 
   // Updated by IsSupported().
+  bool is_supported_ = false;
   media::mojom::KeySystemCapabilityPtr capability_;
 };
 

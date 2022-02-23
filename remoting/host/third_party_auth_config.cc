@@ -75,7 +75,9 @@ void ExtractHelper(const base::DictionaryValue& policy_dict,
                    const std::string& policy_name,
                    bool* policy_present,
                    std::string* policy_value) {
-  if (policy_dict.GetString(policy_name, policy_value)) {
+  DCHECK(policy_value);
+  if (const std::string* value = policy_dict.FindStringKey(policy_name)) {
+    *policy_value = *value;
     *policy_present = true;
   } else {
     policy_value->clear();

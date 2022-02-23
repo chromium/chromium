@@ -216,7 +216,7 @@ pid_t ZygoteHostImpl::LaunchZygote(
   return pid;
 }
 
-#if !defined(OS_OPENBSD)
+#if !BUILDFLAG(IS_OPENBSD)
 void ZygoteHostImpl::AdjustRendererOOMScore(base::ProcessHandle pid,
                                             int score) {
   // 1) You can't change the oom_score_adj of a non-dumpable process
@@ -265,12 +265,6 @@ void ZygoteHostImpl::AdjustRendererOOMScore(base::ProcessHandle pid,
   }
 
   if (selinux)
-    return;
-
-  // If heap profiling is running, these processes are not exiting, at least
-  // on ChromeOS. The easiest thing to do is not launch them when profiling.
-  // TODO(stevenjb): Investigate further and fix.
-  if (base::allocator::IsHeapProfilerRunning())
     return;
 
   std::vector<std::string> adj_oom_score_cmdline;

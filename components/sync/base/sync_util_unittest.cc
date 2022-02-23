@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/strings/string_util.h"
-#include "components/sync/base/sync_base_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
@@ -25,7 +25,7 @@ TEST(SyncUtilTest, GetSyncServiceURLWithoutCommandLineSwitch) {
 TEST(SyncUtilTest, GetSyncServiceURLWithCommandLineSwitch) {
   // See that we can set the URL via the command line.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kSyncServiceURL, "https://foo/bar");
+  command_line.AppendSwitchASCII(kSyncServiceURL, "https://foo/bar");
   ASSERT_EQ(
       "https://foo/bar",
       GetSyncServiceURL(command_line, version_info::Channel::UNKNOWN).spec());
@@ -34,7 +34,7 @@ TEST(SyncUtilTest, GetSyncServiceURLWithCommandLineSwitch) {
 TEST(SyncUtilTest, GetSyncServiceURLWithBadCommandLineSwitch) {
   // If the command line value is not a valid url it is ignored.
   base::CommandLine command_line(base::CommandLine::NO_PROGRAM);
-  command_line.AppendSwitchASCII(switches::kSyncServiceURL, "invalid_url");
+  command_line.AppendSwitchASCII(kSyncServiceURL, "invalid_url");
   std::string url =
       GetSyncServiceURL(command_line, version_info::Channel::UNKNOWN).spec();
   ASSERT_TRUE(internal::kSyncServerUrl == url ||

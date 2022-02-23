@@ -26,12 +26,12 @@ constexpr int kMetricsUploadIntervalSecMinimum = 20;
 // then we will discard the log, and not try to retransmit it. We also don't
 // persist the log to the prefs for transmission during the next chrome session
 // if this limit is exceeded.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Increase CrOS limit to accommodate SampledProfile data (crbug.com/1210595).
 constexpr size_t kMaxOngoingLogSize = 1024 * 1024;  // 1 MiB
 #else
 constexpr size_t kMaxOngoingLogSize = 100 * 1024;  // 100 KiB
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // The number of bytes of logs to save of each type (initial/ongoing). This
 // ensures that a reasonable amount of history will be stored even if there is a
@@ -161,6 +161,15 @@ void MetricsServiceClient::UpdateRunningServices() {
 
 bool MetricsServiceClient::IsMetricsReportingForceEnabled() const {
   return ::metrics::IsMetricsReportingForceEnabled();
+}
+
+absl::optional<bool> MetricsServiceClient::GetCurrentUserMetricsConsent()
+    const {
+  return absl::nullopt;
+}
+
+absl::optional<std::string> MetricsServiceClient::GetCurrentUserId() const {
+  return absl::nullopt;
 }
 
 }  // namespace metrics

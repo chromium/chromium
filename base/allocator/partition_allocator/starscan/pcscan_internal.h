@@ -68,8 +68,8 @@ class PCScanInternal final {
   void SetCurrentPCScanTask(TaskHandle task);
   void ResetCurrentPCScanTask();
 
-  void RegisterScannableRoot(Root* root);
-  void RegisterNonScannableRoot(Root* root);
+  void RegisterScannableRoot(Root*);
+  void RegisterNonScannableRoot(Root*);
 
   RootsMap& scannable_roots() { return scannable_roots_; }
   const RootsMap& scannable_roots() const { return scannable_roots_; }

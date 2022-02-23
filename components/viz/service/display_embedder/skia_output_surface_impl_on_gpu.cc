@@ -9,10 +9,13 @@
 #include "base/atomic_sequence_num.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/debug/crash_logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/bind_post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
+#include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "components/viz/common/frame_sinks/copy_output_util.h"
@@ -60,9 +63,8 @@
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan.h"
 #include "gpu/vulkan/vulkan_util.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb.h"
-#include "components/viz/service/display_embedder/skia_output_device_vulkan_secondary_cb_offscreen.h"
 #endif
 #endif
 
@@ -83,12 +85,12 @@
 
 #if BUILDFLAG(SKIA_USE_DAWN)
 #include "components/viz/common/gpu/dawn_context_provider.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display_embedder/skia_output_device_dawn.h"
 #endif
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "components/viz/service/display_embedder/output_presenter_fuchsia.h"
 #endif
 
@@ -113,6 +115,13 @@ base::RepeatingCallback<void(Args...)> CreateSafeRepeatingCallback(
     const base::RepeatingCallback<void(Args...)>& callback) {
   return base::BindRepeating(&PostAsyncTaskRepeatedly<Args...>, impl_on_gpu,
                              callback);
+}
+
+void FailedSkiaFlush(base::StringPiece msg) {
+  static auto* kCrashKey = base::debug::AllocateCrashKeyString(
+      "sk_flush_failed", base::debug::CrashKeySize::Size64);
+  base::debug::SetCrashKeyString(kCrashKey, msg);
+  LOG(ERROR) << msg;
 }
 
 #if BUILDFLAG(ENABLE_VULKAN)
@@ -222,8 +231,8 @@ class SkiaOutputSurfaceImplOnGpu::DisplayContext : public gpu::DisplayContext {
   }
 
  private:
-  SkiaOutputSurfaceDependency* const dependency_;
-  SkiaOutputSurfaceImplOnGpu* const owner_;
+  const raw_ptr<SkiaOutputSurfaceDependency> dependency_;
+  const raw_ptr<SkiaOutputSurfaceImplOnGpu> owner_;
 };
 
 // static
@@ -463,7 +472,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintCurrentFrame(
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores_empty)) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "output_sk_surface()->flush() failed.";
+      FailedSkiaFlush("output_sk_surface()->flush() failed.");
       return;
     }
   }
@@ -487,9 +496,16 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffers(OutputSurfaceFrame frame,
   SwapBuffersInternal(std::move(frame));
 }
 
-void SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers(int n) {
+void SkiaOutputSurfaceImplOnGpu::AllocateFrameBuffers(size_t n) {
   MakeCurrent(/*need_framebuffer=*/false);
-  for (int i = 0; i < n; ++i) {
+  if (!output_device_->AllocateFrameBuffers(n)) {
+    MarkContextLost(CONTEXT_LOST_ALLOCATE_FRAME_BUFFERS_FAILED);
+  }
+}
+
+void SkiaOutputSurfaceImplOnGpu::ReleaseFrameBuffers(size_t n) {
+  MakeCurrent(/*need_framebuffer=*/false);
+  for (size_t i = 0; i < n; ++i) {
     output_device_->ReleaseOneFrameBuffer();
   }
 }
@@ -577,7 +593,7 @@ void SkiaOutputSurfaceImplOnGpu::FinishPaintRenderPass(
     if (result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "offscreen.surface()->flush() failed.";
+      FailedSkiaFlush("offscreen.surface()->flush() failed.");
       return;
     }
     bool sync_cpu =
@@ -760,7 +776,7 @@ bool SkiaOutputSurfaceImplOnGpu::RenderSurface(
   if (flush_result != GrSemaphoresSubmitted::kYes &&
       !(begin_semaphores.empty() && end_semaphores.empty())) {
     // TODO(penghuang): handle vulkan device lost.
-    DLOG(ERROR) << "dest_surface->flush() failed.";
+    FailedSkiaFlush("dest_surface->flush() failed.");
     return false;
   }
 
@@ -1015,7 +1031,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     if (flush_result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "plane_surfaces[i]->flush() failed for i=" << i;
+      FailedSkiaFlush("plane_surfaces[i]->flush()");
       return;
     }
   }
@@ -1119,10 +1135,11 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
         mailbox, context_state_.get());
     DCHECK(backing_representation);
 
+    SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
     // TODO(https://crbug.com/1226672): Use BeginScopedReadAccess instead
     scoped_access = backing_representation->BeginScopedWriteAccess(
-        /*final_msaa_count=*/0, skia::LegacyDisplayGlobals::GetSkSurfaceProps(),
-        &begin_semaphores, &end_semaphores,
+        /*final_msaa_count=*/0, surface_props, &begin_semaphores,
+        &end_semaphores,
         gpu::SharedImageRepresentation::AllowUnclearedAccess::kNo);
     surface = scoped_access->surface();
     if (!begin_semaphores.empty()) {
@@ -1243,7 +1260,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutput(
     if (flush_result != GrSemaphoresSubmitted::kYes &&
         !(begin_semaphores.empty() && end_semaphores.empty())) {
       // TODO(penghuang): handle vulkan device lost.
-      DLOG(ERROR) << "surface->flush() failed.";
+      FailedSkiaFlush("surface->flush() failed.");
       return;
     }
   }
@@ -1348,7 +1365,7 @@ void SkiaOutputSurfaceImplOnGpu::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ImageContextImpl*> image_contexts,
     base::OnceClosure on_finished) {
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   if (context_is_lost_)
     return;
 
@@ -1502,19 +1519,20 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
     if (MakeCurrent(/*need_framebuffer=*/true)) {
       if (gl_surface_->IsSurfaceless()) {
 #if defined(USE_OZONE)
-        bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                          ->GetPlatformProperties()
-                                          .needs_background_image;
-        bool supports_non_backed_solid_color_images =
+        [[maybe_unused]] bool needs_background_image =
+            ui::OzonePlatform::GetInstance()
+                ->GetPlatformRuntimeProperties()
+                .needs_background_image;
+        [[maybe_unused]] bool supports_non_backed_solid_color_images =
             ui::OzonePlatform::GetInstance()
                 ->GetPlatformRuntimeProperties()
                 .supports_non_backed_solid_color_buffers;
 #else   // defined(USE_OZONE)
-        bool needs_background_image = false;
-        bool supports_non_backed_solid_color_images = false;
+        [[maybe_unused]] bool needs_background_image = false;
+        [[maybe_unused]] bool supports_non_backed_solid_color_images = false;
 #endif  // !defined(USE_OZONE)
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
         output_device_ = std::make_unique<SkiaOutputDeviceBufferQueue>(
             std::make_unique<OutputPresenterGL>(
                 gl_surface_, dependency_, shared_image_factory_.get(),
@@ -1523,11 +1541,9 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForGL() {
             shared_gpu_deps_->memory_tracker(),
             GetDidSwapBuffersCompleteCallback(), needs_background_image,
             supports_non_backed_solid_color_images);
-#else   // !defined(OS_WIN)
+#else   // !BUILDFLAG(IS_WIN)
         NOTIMPLEMENTED();
-        ALLOW_UNUSED_LOCAL(needs_background_image);
-        ALLOW_UNUSED_LOCAL(supports_non_backed_solid_color_images);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
       } else {
         if (dependency_->NeedsSupportForExternalStencil()) {
           output_device_ = std::make_unique<SkiaOutputDeviceWebView>(
@@ -1564,38 +1580,31 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
     return true;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (vulkan_context_provider_->GetGrSecondaryCBDrawContext()) {
-    if (base::FeatureList::IsEnabled(
-            features::kWebViewVulkanIntermediateBuffer)) {
-      output_device_ =
-          std::make_unique<SkiaOutputDeviceVulkanSecondaryCBOffscreen>(
-              context_state_, shared_gpu_deps_->memory_tracker(),
-              GetDidSwapBuffersCompleteCallback());
-    } else {
-      output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
-          vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
-          GetDidSwapBuffersCompleteCallback());
-    }
+    output_device_ = std::make_unique<SkiaOutputDeviceVulkanSecondaryCB>(
+        vulkan_context_provider_, shared_gpu_deps_->memory_tracker(),
+        GetDidSwapBuffersCompleteCallback());
     return true;
   }
 #endif
 
 #if defined(USE_OZONE)
-  bool needs_background_image = ui::OzonePlatform::GetInstance()
-                                    ->GetPlatformProperties()
-                                    .needs_background_image;
-  bool supports_non_backed_solid_color_images =
+  [[maybe_unused]] bool needs_background_image =
+      ui::OzonePlatform::GetInstance()
+          ->GetPlatformRuntimeProperties()
+          .needs_background_image;
+  [[maybe_unused]] bool supports_non_backed_solid_color_images =
       ui::OzonePlatform::GetInstance()
           ->GetPlatformRuntimeProperties()
           .supports_non_backed_solid_color_buffers;
 #else   // defined(USE_OZONE)
-  bool needs_background_image = false;
-  bool supports_non_backed_solid_color_images = false;
+  [[maybe_unused]] bool needs_background_image = false;
+  [[maybe_unused]] bool supports_non_backed_solid_color_images = false;
 #endif  // !defined(USE_OZONE)
 
-#if !defined(OS_WIN)
-#if defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_FUCHSIA)
   auto output_presenter = OutputPresenterFuchsia::Create(
       window_surface_.get(), dependency_, shared_image_factory_.get(),
       shared_image_representation_factory_.get());
@@ -1616,9 +1625,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
         needs_background_image, supports_non_backed_solid_color_images);
     return true;
   }
-#endif  // !defined(OS_WIN)
-  ALLOW_UNUSED_LOCAL(needs_background_image);
-  ALLOW_UNUSED_LOCAL(supports_non_backed_solid_color_images);
+#endif  // !BUILDFLAG(IS_WIN)
 
   std::unique_ptr<SkiaOutputDeviceVulkan> output_device;
   if (!gpu_preferences_.disable_vulkan_surface) {
@@ -1644,13 +1651,13 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForVulkan() {
   if (!output_device)
     return false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   gpu::SurfaceHandle child_surface = output_device->GetChildSurfaceHandle();
   if (child_surface != gpu::kNullSurfaceHandle) {
     DidCreateAcceleratedSurfaceChildWindow(dependency_->GetSurfaceHandle(),
                                            child_surface);
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
   output_device_ = std::move(output_device);
   return true;
 }
@@ -1678,7 +1685,7 @@ bool SkiaOutputSurfaceImplOnGpu::InitializeForDawn() {
           shared_gpu_deps_->memory_tracker(),
           GetDidSwapBuffersCompleteCallback());
     }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     std::unique_ptr<SkiaOutputDeviceDawn> output_device =
         std::make_unique<SkiaOutputDeviceDawn>(
             dawn_context_provider_, dependency_->GetSurfaceHandle(),
@@ -1739,7 +1746,7 @@ void SkiaOutputSurfaceImplOnGpu::SwapBuffersInternal(
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   DCHECK(output_device_);
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // Release any backings which are not reused by the current frame, probably
   // because the properties of render passes are changed or render passes are
   // removed
@@ -1791,8 +1798,6 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
 
     if (output_surface_plane_)
       DCHECK(output_device_->IsPrimaryPlaneOverlay());
-    output_device_->SchedulePrimaryPlane(output_surface_plane_);
-    output_surface_plane_.reset();
 
     if (frame->sub_buffer_rect) {
       if (capabilities().supports_post_sub_buffer) {
@@ -1802,6 +1807,17 @@ void SkiaOutputSurfaceImplOnGpu::PostSubmit(
                                         frame->sub_buffer_rect->y() -
                                         frame->sub_buffer_rect->height());
         }
+      }
+
+      if (output_surface_plane_)
+        output_surface_plane_->damage_rect = frame->sub_buffer_rect;
+    }
+
+    output_device_->SchedulePrimaryPlane(output_surface_plane_);
+    output_surface_plane_.reset();
+
+    if (frame->sub_buffer_rect) {
+      if (capabilities().supports_post_sub_buffer) {
         output_device_->PostSubBuffer(*frame->sub_buffer_rect,
                                       buffer_presented_callback_,
                                       std::move(*frame));
@@ -1828,7 +1844,7 @@ bool SkiaOutputSurfaceImplOnGpu::IsDisplayedAsOverlay() {
   return output_device_->IsPrimaryPlaneOverlay();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void SkiaOutputSurfaceImplOnGpu::DidCreateAcceleratedSurfaceChildWindow(
     gpu::SurfaceHandle parent_window,
     gpu::SurfaceHandle child_window) {
@@ -1889,7 +1905,7 @@ void SkiaOutputSurfaceImplOnGpu::DidSwapBuffersCompleteInternal(
     waiting_for_full_damage_ = true;
   }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // |available_render_pass_overlay_backings_| are used or released in
   // SwapBuffers() for every frames. For Ozone-Wayland
   // |available_render_pass_overlay_backings_| is not always empty because the
@@ -1978,7 +1994,7 @@ void SkiaOutputSurfaceImplOnGpu::PreserveChildSurfaceControls() {
     gl_surface_->PreserveChildSurfaceControls();
 }
 
-#if defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 std::unique_ptr<gpu::SharedImageRepresentationSkia>
 SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
     const SkSurfaceCharacterization& characterization) {
@@ -2045,7 +2061,7 @@ SkiaOutputSurfaceImplOnGpu::GetOrCreateRenderPassOverlayBacking(
 
   return backing;
 }
-#endif  // defined(OS_APPLE)  || defined(USE_OZONE)
+#endif  // BUILDFLAG(IS_APPLE)  || defined(USE_OZONE)
 
 void SkiaOutputSurfaceImplOnGpu::InitDelegatedInkPointRendererReceiver(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>

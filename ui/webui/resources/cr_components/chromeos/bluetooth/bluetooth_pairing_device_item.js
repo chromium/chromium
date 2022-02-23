@@ -12,9 +12,8 @@ import './bluetooth_icon.js';
 
 import {I18nBehavior, I18nBehaviorInterface} from '//resources/js/i18n_behavior.m.js';
 import {html, mixinBehaviors, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-
+import {FocusRowBehavior} from 'chrome://resources/js/cr/ui/focus_row_behavior.m.js';
 import {assertNotReached} from '../../../js/assert.m.js';
-
 import {DeviceItemState} from './bluetooth_types.js';
 import {mojoString16ToString} from './bluetooth_utils.js';
 
@@ -24,7 +23,7 @@ import {mojoString16ToString} from './bluetooth_utils.js';
  * @extends {PolymerElement}
  */
 const SettingsBluetoothPairingDeviceItemElementBase =
-    mixinBehaviors([I18nBehavior], PolymerElement);
+    mixinBehaviors([I18nBehavior, FocusRowBehavior], PolymerElement);
 
 /** @polymer */
 export class SettingsBluetoothPairingDeviceItemElement extends
@@ -40,7 +39,7 @@ export class SettingsBluetoothPairingDeviceItemElement extends
   static get properties() {
     return {
       /**
-       * @type {!chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
+       * @type {?chromeos.bluetoothConfig.mojom.BluetoothDeviceProperties}
        */
       device: Object,
 
@@ -49,6 +48,15 @@ export class SettingsBluetoothPairingDeviceItemElement extends
         type: Object,
         value: DeviceItemState.DEFAULT,
       },
+
+      /** The index of this item in its parent list, used for its a11y label. */
+      itemIndex: Number,
+
+      /**
+       * The total number of elements in this item's parent list, used for its
+       * a11y label.
+       */
+      listSize: Number,
 
       /** @private {string} */
       secondaryLabel_: {
@@ -63,6 +71,16 @@ export class SettingsBluetoothPairingDeviceItemElement extends
         computed: 'computePairingFailed_(deviceItemState)',
       },
     };
+  }
+
+  /** @override */
+  focus() {
+    // Prevent scroll stops iron list from trying to bring this element to view,
+    // if it is the |lastFocused| element and scrolled out of view. This can
+    // happen if this element is tabbed to or selected and then scrolled out of
+    // view.
+    // TODO(b/210743107) Add a test for this.
+    this.$.container.focus({preventScroll: true});
   }
 
   /**
@@ -130,6 +148,71 @@ export class SettingsBluetoothPairingDeviceItemElement extends
       composed: true,
       detail: {device: this.device},
     }));
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getAriaLabel_() {
+    if (!this.device) {
+      return '';
+    }
+
+    return this.i18n(
+               'bluetoothA11yDeviceName', this.itemIndex + 1, this.listSize,
+               this.getDeviceName_()) +
+        ' ' + this.i18n(this.getA11yDeviceTypeTextName_());
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getA11yDeviceTypeTextName_() {
+    const deviceType = chromeos.bluetoothConfig.mojom.DeviceType;
+    switch (this.device.deviceType) {
+      case deviceType.kUnknown:
+        return 'bluetoothA11yDeviceTypeUnknown';
+      case deviceType.kComputer:
+        return 'bluetoothA11yDeviceTypeComputer';
+      case deviceType.kPhone:
+        return 'bluetoothA11yDeviceTypePhone';
+      case deviceType.kHeadset:
+        return 'bluetoothA11yDeviceTypeHeadset';
+      case deviceType.kVideoCamera:
+        return 'bluetoothA11yDeviceTypeVideoCamera';
+      case deviceType.kGameController:
+        return 'bluetoothA11yDeviceTypeGameController';
+      case deviceType.kKeyboard:
+        return 'bluetoothA11yDeviceTypeKeyboard';
+      case deviceType.kMouse:
+        return 'bluetoothA11yDeviceTypeMouse';
+      case deviceType.kTablet:
+        return 'bluetoothA11yDeviceTypeTablet';
+      default:
+        assertNotReached();
+    }
+  }
+
+  /**
+   * @return {string}
+   * @private
+   */
+  getSecondaryAriaLabel_() {
+    const deviceName = this.getDeviceName_();
+    switch (this.deviceItemState) {
+      case DeviceItemState.FAILED:
+        return this.i18n(
+            'bluetoothPairingDeviceItemSecondaryErrorA11YLabel', deviceName);
+      case DeviceItemState.PAIRING:
+        return this.i18n(
+            'bluetoothPairingDeviceItemSecondaryPairingA11YLabel', deviceName);
+      case DeviceItemState.DEFAULT:
+        return '';
+      default:
+        assertNotReached();
+    }
   }
 }
 

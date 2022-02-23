@@ -57,12 +57,12 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
   bool show_vm_called() const { return show_vm_called_; }
 
   void set_start_vm_response(
-      const vm_tools::plugin_dispatcher::StartVmResponse& response) {
+      absl::optional<vm_tools::plugin_dispatcher::StartVmResponse> response) {
     start_vm_response_ = response;
   }
 
   void set_list_vms_response(
-      const vm_tools::plugin_dispatcher::ListVmResponse& response) {
+      absl::optional<vm_tools::plugin_dispatcher::ListVmResponse> response) {
     list_vms_response_ = response;
   }
 
@@ -84,8 +84,10 @@ class COMPONENT_EXPORT(CHROMEOS_DBUS_VM_PLUGIN_DISPATCHER)
   bool suspend_vm_called_ = false;
   bool show_vm_called_ = false;
 
-  vm_tools::plugin_dispatcher::StartVmResponse start_vm_response_;
-  vm_tools::plugin_dispatcher::ListVmResponse list_vms_response_;
+  absl::optional<vm_tools::plugin_dispatcher::StartVmResponse>
+      start_vm_response_;
+  absl::optional<vm_tools::plugin_dispatcher::ListVmResponse>
+      list_vms_response_;
 
   base::ObserverList<Observer> observer_list_;
 };

@@ -48,8 +48,7 @@ in PNG format: 16×16, 32×32, 128×128, 256×256, and 512×512, named `16.png`,
 1. Process the `.png` files with:
     1. `optipng -o7 -zm1-9`
     1. `advpng -z4 -i50`
-    1. `png_make_srgb.py`
-    1. `png_check.py`
+    1. `png_fix.py`
 1. Create the `.icns` file with the `makeicns2` you compiled:
 `makeicns2 <name>.iconset`
 

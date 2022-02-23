@@ -66,12 +66,12 @@ class PermissionRequest {
   // need to be shown in the UI.
   virtual bool IsDuplicateOf(PermissionRequest* other_request) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns prompt text appropriate for displaying in an Android dialog.
   virtual std::u16string GetDialogMessageText() const;
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Returns prompt icon appropriate for displaying on the chip button in the
   // location bar.
   IconId GetIconForChip();

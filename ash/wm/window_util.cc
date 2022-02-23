@@ -5,6 +5,7 @@
 #include "ash/wm/window_util.h"
 
 #include <memory>
+#include <tuple>
 
 #include "ash/constants/app_types.h"
 #include "ash/multi_user/multi_user_window_manager_impl.h"
@@ -29,7 +30,6 @@
 #include "ash/wm/wm_event.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "chromeos/ui/base/chromeos_ui_constants.h"
 #include "chromeos/ui/frame/interior_resize_handler_targeter.h"
 #include "ui/aura/client/aura_constants.h"
@@ -45,6 +45,7 @@
 #include "ui/compositor/layer_tree_owner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
+#include "ui/events/event.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/geometry/transform_util.h"
@@ -385,10 +386,10 @@ void SendBackKeyEvent(aura::Window* root_window) {
   // TODO: Investigate if we should be using the current modifiers.
   ui::KeyEvent press_key_event(ui::ET_KEY_PRESSED, ui::VKEY_BROWSER_BACK,
                                ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&press_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&press_key_event);
   ui::KeyEvent release_key_event(ui::ET_KEY_RELEASED, ui::VKEY_BROWSER_BACK,
                                  ui::EF_NONE);
-  ignore_result(root_window->GetHost()->SendEventToSink(&release_key_event));
+  std::ignore = root_window->GetHost()->SendEventToSink(&release_key_event);
 }
 
 WindowTransientDescendantIteratorRange GetVisibleTransientTreeIterator(
@@ -443,6 +444,16 @@ bool ShouldShowForCurrentUser(aura::Window* window) {
     return true;
 
   return account_id == multi_user_window_manager->CurrentAccountId();
+}
+
+aura::Window* GetEventHandlerForEvent(const ui::LocatedEvent& event) {
+  gfx::Point location_in_screen = event.location();
+  ::wm::ConvertPointToScreen(static_cast<aura::Window*>(event.target()),
+                             &location_in_screen);
+  aura::Window* root_window_at_point = GetRootWindowAt(location_in_screen);
+  gfx::Point location_in_root = location_in_screen;
+  ::wm::ConvertPointFromScreen(root_window_at_point, &location_in_root);
+  return root_window_at_point->GetEventHandlerForPoint(location_in_root);
 }
 
 }  // namespace window_util

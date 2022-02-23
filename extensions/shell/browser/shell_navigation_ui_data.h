@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "content/public/browser/navigation_ui_data.h"
 #include "extensions/browser/extension_navigation_ui_data.h"
 

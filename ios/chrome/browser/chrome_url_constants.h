@@ -68,6 +68,12 @@ extern const size_t kNumberOfChromeHostURLs;
 // URL to the sync google dashboard.
 extern const char kSyncGoogleDashboardURL[];
 
+// URL to opt-in to on-device encryption.
+extern const char kOnDeviceEncryptionOptInURL[];
+
+// URL to learn more about on-device encryption when the user opted-in.
+extern const char kOnDeviceEncryptionLearnMoreURL[];
+
 // "What do these mean?" URL for the Page Info bubble.
 extern const char kPageInfoHelpCenterURL[];
 

@@ -29,8 +29,11 @@ function assertRedirectFails(url) {
 
 chrome.test.getConfig(function(config) {
   var onHeadersReceivedExtraInfoSpec = ['blocking'];
-  if (config.customArg === 'useExtraHeaders')
-    onHeadersReceivedExtraInfoSpec.push('extraHeaders');
+  if (config.customArg) {
+    let args = JSON.parse(config.customArg);
+    if (args.useExtraHeaders)
+      onHeadersReceivedExtraInfoSpec.push('extraHeaders');
+  }
 
   runTests([
     function redirectToDataUrlOnHeadersReceived() {

@@ -3,38 +3,36 @@ Even though the fixed-position element's container is nonscrollable, it should s
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
-      "bounds": [453, 453],
+      "position": [2, 2],
+      "bounds": [428, 428],
+      "drawsContent": false,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
-      "position": [1, 430],
-      "bounds": [428, 22],
+      "name": "HorizontalScrollbar",
+      "position": [1, 429],
+      "bounds": [450, 23],
+      "contentsOpaqueForText": true,
       "transform": 1
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [430, 1],
       "bounds": [22, 428],
       "transform": 1
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [429, 429],
-      "bounds": [22, 22],
-      "transform": 1
-    },
-    {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow DIV class='scrollable bigBox'",
       "position": [2, 2],
       "bounds": [428, 1200],
+      "contentsOpaque": true,
       "transform": 1
     },
     {

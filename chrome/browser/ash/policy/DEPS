@@ -7,4 +7,7 @@ include_rules = [
   # Allow includes for shell-encryption and private_membership third_party libs.
   "+third_party/private_membership",
   "+third_party/shell-encryption",
+
+  # Allow includes for remoting events reporting.
+  "+remoting/host/chromeos",
 ]

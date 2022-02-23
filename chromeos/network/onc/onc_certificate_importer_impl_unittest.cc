@@ -15,9 +15,9 @@
 #include "base/test/test_simple_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_parsed_certificates.h"
+#include "chromeos/components/onc/onc_test_utils.h"
 #include "chromeos/network/certificate_helper.h"
-#include "chromeos/network/onc/onc_parsed_certificates.h"
-#include "chromeos/network/onc/onc_test_utils.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_test_nss_db.h"
 #include "net/base/hash_value.h"
@@ -74,10 +74,9 @@ class ONCCertificateImporterImplTest : public testing::Test {
                                ImportType import_type,
                                bool expected_parse_success,
                                bool expected_import_success) {
-    std::unique_ptr<base::DictionaryValue> onc =
-        test_utils::ReadTestDictionary(filename);
+    base::Value onc = test_utils::ReadTestDictionaryValue(filename);
     absl::optional<base::Value> certificates_value =
-        onc->ExtractKey(::onc::toplevel_config::kCertificates);
+        onc.ExtractKey(::onc::toplevel_config::kCertificates);
     onc_certificates_ = std::move(*certificates_value);
 
     CertificateImporterImpl importer(task_runner_, test_nssdb_.get());
@@ -131,7 +130,7 @@ class ONCCertificateImporterImplTest : public testing::Test {
                 certificate::GetCertType(private_list_[0].get()));
     }
 
-    const base::Value& certificate = onc_certificates_.GetList()[0];
+    const base::Value& certificate = onc_certificates_.GetListDeprecated()[0];
     const std::string* guid_value =
         certificate.FindStringKey(::onc::certificate::kGUID);
     *guid = *guid_value;
@@ -186,7 +185,7 @@ TEST_F(ONCCertificateImporterImplTest, MultipleCertificates) {
   AddCertificatesFromFile("managed_toplevel2.onc", ImportType::kAllCertificates,
                           true /* expected_parse_success */,
                           true /* expected_import_success */);
-  EXPECT_EQ(onc_certificates_.GetList().size(), public_list_.size());
+  EXPECT_EQ(onc_certificates_.GetListDeprecated().size(), public_list_.size());
   EXPECT_TRUE(private_list_.empty());
   EXPECT_EQ(2ul, public_list_.size());
 }
@@ -206,7 +205,7 @@ TEST_F(ONCCertificateImporterImplTest, MultipleCertificatesWithFailures) {
   AddCertificatesFromFile(
       "toplevel_partially_invalid.onc", ImportType::kAllCertificates,
       false /* expected_parse_success */, true /* expected_import_success */);
-  EXPECT_EQ(3ul, onc_certificates_.GetList().size());
+  EXPECT_EQ(3ul, onc_certificates_.GetListDeprecated().size());
   EXPECT_EQ(1ul, private_list_.size());
   EXPECT_TRUE(public_list_.empty());
 }

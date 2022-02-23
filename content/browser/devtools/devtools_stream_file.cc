@@ -105,11 +105,16 @@ void DevToolsStreamFile::ReadOnFileSequence(off_t position,
       // Provided client has requested sufficient large block, make their
       // life easier by not truncating in the middle of a UTF-8 character.
       if (size_got > 6 && !CBU8_IS_SINGLE(buffer[size_got - 1])) {
-        base::TruncateUTF8ToByteSize(buffer, size_got, &buffer);
-        size_got = buffer.size();
-      } else {
-        buffer.resize(size_got);
+        std::string truncated;
+        base::TruncateUTF8ToByteSize(buffer, size_got, &truncated);
+        // If the above failed, we're dealing with binary files, so
+        // don't mess with them.
+        if (truncated.size()) {
+          buffer = std::move(truncated);
+          size_got = buffer.size();
+        }
       }
+      buffer.resize(size_got);
       status = size_got ? StatusSuccess : StatusEOF;
       last_read_pos_ = position + size_got;
       if (binary_) {

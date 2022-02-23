@@ -55,14 +55,14 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
   std::vector<std::string> languages;
 
   ListPrefUpdate update(prefs_, kCachedGeoLanguagesPref);
-  base::ListValue* celllangs_cached = update.Get();
+  base::Value* celllangs_cached = update.Get();
   for (size_t index = 0; index < serialized_langtrees_.size(); index++) {
     std::string language;
 
     bool is_cached = false;
     const base::Value* celllang_cached = nullptr;
-    if (index < celllangs_cached->GetList().size()) {
-      celllang_cached = &celllangs_cached->GetList()[index];
+    if (index < celllangs_cached->GetListDeprecated().size()) {
+      celllang_cached = &celllangs_cached->GetListDeprecated()[index];
       is_cached = celllang_cached->is_dict();
     }
 
@@ -84,7 +84,7 @@ std::vector<std::string> UlpLanguageCodeLocator::GetLanguageCodes(
       language = root.Get(cell, &level);
       if (level != -1) {
         if (is_cached) {
-          celllangs_cached->GetList()[index] =
+          celllangs_cached->GetListDeprecated()[index] =
               GetCellLanguagePairValue(cell.parent(level), language);
         } else {
           celllangs_cached->Append(

@@ -11,6 +11,8 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
 #include "components/password_manager/core/browser/http_password_store_migrator.h"
 #include "components/password_manager/core/browser/password_store_consumer.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
@@ -78,6 +80,7 @@ class CredentialManagerPendingRequestTask
   void OnGetPasswordStoreResultsFrom(
       PasswordStoreInterface* store,
       std::vector<std::unique_ptr<PasswordForm>> results) override;
+  base::WeakPtr<PasswordStoreConsumer> GetWeakPtr();
 
  private:
   // HttpPasswordStoreMigrator::Consumer:
@@ -89,7 +92,7 @@ class CredentialManagerPendingRequestTask
 
   void ProcessForms(std::vector<std::unique_ptr<PasswordForm>> results);
 
-  CredentialManagerPendingRequestTaskDelegate* delegate_;  // Weak;
+  raw_ptr<CredentialManagerPendingRequestTaskDelegate> delegate_;  // Weak;
   SendCredentialCallback send_callback_;
   const CredentialMediationRequirement mediation_;
   const url::Origin origin_;
@@ -104,6 +107,9 @@ class CredentialManagerPendingRequestTask
   base::flat_map<PasswordStoreInterface*,
                  std::unique_ptr<HttpPasswordStoreMigrator>>
       http_migrators_;
+
+  base::WeakPtrFactory<CredentialManagerPendingRequestTask> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace password_manager

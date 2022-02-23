@@ -4,22 +4,26 @@
      found in the LICENSE file.
 -->
 
-<LinearLayout
+
+<org.chromium.chrome.browser.feed.sort_ui.FeedOptionsView
     xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/options_content"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+    android:paddingHorizontal="@dimen/ntp_header_lateral_paddings_v2"
+    android:paddingVertical="@dimen/feed_options_vertical_margins"
+    android:layout_marginBottom="@dimen/feed_options_vertical_margins"
     android:orientation="vertical"
-    android:paddingVertical="@dimen/feed_options_vertical_margins" >
-  <TextView
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      style="@style/TextAppearance.TextAccentMediumThick.Secondary"
-      android:text="@string/sort_by"
-      android:paddingVertical="@dimen/feed_options_vertical_margins"/>
-  <org.chromium.chrome.browser.feed.sort_ui.SortView
-      android:id="@+id/button_bar"
-      android:layout_width="match_parent"
-      android:layout_height="wrap_content"
-      android:orientation="horizontal"
-      android:paddingBottom="@dimen/feed_options_vertical_margins" />
-</LinearLayout>
+    android:visibility="gone">
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/TextAppearance.TextAccentMediumThick.Secondary"
+        android:text="@string/sort_by"
+        android:paddingVertical="@dimen/feed_options_vertical_margins" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/chips_container"
+        android:orientation="horizontal" />
+</org.chromium.chrome.browser.feed.sort_ui.FeedOptionsView>

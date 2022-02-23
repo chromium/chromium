@@ -75,6 +75,7 @@ class KioskDelegate;
 class ProcessManagerDelegate;
 class ProcessMap;
 class RuntimeAPIDelegate;
+class ScopedExtensionUpdaterKeepAlive;
 class UserScriptListener;
 
 // Interface to allow the extensions module to make browser-process-specific
@@ -303,9 +304,10 @@ class ExtensionsBrowserClient {
   virtual scoped_refptr<update_client::UpdateClient> CreateUpdateClient(
       content::BrowserContext* context);
 
-  virtual std::unique_ptr<content::BluetoothChooser> CreateBluetoothChooser(
-      content::RenderFrameHost* frame,
-      const content::BluetoothChooser::EventHandler& event_handler);
+  // Returns a new ScopedExtensionUpdaterKeepAlive, or nullptr if the embedder
+  // does not support keeping the context alive while the updater is running.
+  virtual std::unique_ptr<ScopedExtensionUpdaterKeepAlive>
+  CreateUpdaterKeepAlive(content::BrowserContext* context);
 
   // Returns true if activity logging is enabled for the given |context|.
   virtual bool IsActivityLoggingEnabled(content::BrowserContext* context);
@@ -378,6 +380,14 @@ class ExtensionsBrowserClient {
 
   // Returns true if the given |tab_id| exists.
   virtual bool IsValidTabId(content::BrowserContext* context, int tab_id) const;
+
+  // TODO(anunoy): This is a temporary implementation of notifying the
+  // extension telemetry service of the tabs.executeScript API invocation
+  // while its usefulness is evaluated.
+  virtual void NotifyExtensionApiTabExecuteScript(
+      content::BrowserContext* context,
+      const ExtensionId& extension_id,
+      const std::string& code) const;
 
  private:
   std::vector<std::unique_ptr<ExtensionsBrowserAPIProvider>> providers_;

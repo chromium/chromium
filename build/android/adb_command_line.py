@@ -27,7 +27,7 @@ def CheckBuildTypeSupportsFlags(device, command_line_flags_file):
     raise device_errors.CommandFailedError(
         'WebView only respects flags on a userdebug or eng device, yours '
         'is a user build.', device)
-  elif device.IsUserBuild():
+  if device.IsUserBuild():
     logging.warning(
         'Your device (%s) is a user build; Chrome may or may not pick up '
         'your commandline flags. Check your '

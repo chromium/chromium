@@ -10,8 +10,8 @@
 #include "base/memory/ptr_util.h"
 #include "cc/animation/scroll_offset_animation_curve_factory.h"
 #include "third_party/blink/renderer/platform/animation/compositor_animation_curve.h"
-#include "third_party/blink/renderer/platform/geometry/float_point.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
+#include "ui/gfx/geometry/point_f.h"
 
 namespace cc {
 class ScrollOffsetAnimationCurve;
@@ -24,7 +24,7 @@ class PLATFORM_EXPORT CompositorScrollOffsetAnimationCurve
  public:
   using ScrollType = cc::ScrollOffsetAnimationCurveFactory::ScrollType;
 
-  CompositorScrollOffsetAnimationCurve(FloatPoint, ScrollType);
+  CompositorScrollOffsetAnimationCurve(gfx::PointF, ScrollType);
   explicit CompositorScrollOffsetAnimationCurve(
       cc::ScrollOffsetAnimationCurve*);
   CompositorScrollOffsetAnimationCurve(
@@ -34,12 +34,12 @@ class PLATFORM_EXPORT CompositorScrollOffsetAnimationCurve
 
   ~CompositorScrollOffsetAnimationCurve() override;
 
-  void SetInitialValue(FloatPoint);
-  FloatPoint GetValue(double time) const;
+  void SetInitialValue(gfx::PointF);
+  gfx::PointF GetValue(double time) const;
   base::TimeDelta Duration() const;
-  FloatPoint TargetValue() const;
-  void ApplyAdjustment(IntSize);
-  void UpdateTarget(base::TimeDelta time, FloatPoint new_target);
+  gfx::PointF TargetValue() const;
+  void ApplyAdjustment(gfx::Vector2d);
+  void UpdateTarget(base::TimeDelta time, gfx::PointF new_target);
 
   // CompositorAnimationCurve implementation.
   std::unique_ptr<gfx::AnimationCurve> CloneToAnimationCurve() const override;

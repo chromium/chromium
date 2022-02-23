@@ -48,8 +48,8 @@ class HeadlessCompositorBrowserTest : public HeadlessProtocolBrowserTest {
 // chromium/src/headless/lib/browser/protocol/target_handler.cc?
 // rcl=5811aa08e60ba5ac7622f029163213cfbdb682f7&l=32
 // TODO(crbug.com/1020046): Suite is flaky on TSan Linux.
-#if defined(OS_MAC) || \
-    ((defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER))
+#if BUILDFLAG(IS_MAC) || ((BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+                          defined(THREAD_SANITIZER))
 #define HEADLESS_COMPOSITOR_TEST(TEST_NAME, SCRIPT_NAME) \
   IN_PROC_BROWSER_TEST_F(HeadlessCompositorBrowserTest,  \
                          DISABLED_##TEST_NAME) {         \
@@ -72,8 +72,8 @@ HEADLESS_COMPOSITOR_TEST(CompositorImageAnimation,
                          "emulation/compositor-image-animation-test.js")
 
 // Flaky on all platforms. TODO(crbug.com/986027): Re-enable.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA)
 #define MAYBE_CompositorCssAnimation DISABLED_CompositorCssAnimation
 #else
 #define MAYBE_CompositorCssAnimation CompositorCssAnimation
@@ -154,7 +154,13 @@ HEADLESS_COMPOSITOR_TEST(RendererCssUrlFilter,
                          "sanity/renderer-css-url-filter.js")
 HEADLESS_COMPOSITOR_TEST(RendererCanvas, "sanity/renderer-canvas.js")
 
-HEADLESS_COMPOSITOR_TEST(RendererOpacityAnimation,
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
+// Flaky on at least Linux and Windows: crbug.com/1294751.
+#define MAYBE_RendererOpacityAnimation DISABLED_RendererOpacityAnimation
+#else
+#define MAYBE_RendererOpacityAnimation RendererOpacityAnimation
+#endif
+HEADLESS_COMPOSITOR_TEST(MAYBE_RendererOpacityAnimation,
                          "sanity/renderer-opacity-animation.js")
 HEADLESS_COMPOSITOR_TEST(ScreenshotAfterMetricsOverride,
                          "sanity/screenshot-after-metrics-override.js")

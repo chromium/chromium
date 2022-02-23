@@ -12,6 +12,7 @@
 
 #include "base/auto_reset.h"
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,14 +31,14 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #endif
 
 namespace {
 
 // The following are not used on Android due to the |SelectFileDialog| being
 // unused.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const base::FilePath::CharType kFileExtension[] = FILE_PATH_LITERAL("csv");
 
 // Returns the file extensions corresponding to supported formats.
@@ -54,7 +55,7 @@ base::FilePath GetDefaultFilepathForPasswordFile(
     const base::FilePath::StringType& default_extension) {
   base::FilePath default_path;
   base::PathService::Get(chrome::DIR_USER_DOCUMENTS, &default_path);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::wstring file_name = base::UTF8ToWide(
       l10n_util::GetStringUTF8(IDS_PASSWORD_MANAGER_DEFAULT_EXPORT_FILENAME));
 #else
@@ -77,7 +78,7 @@ class PasswordImportConsumer {
                        password_manager::CSVPasswordSequence seq);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   SEQUENCE_CHECKER(sequence_checker_);
 };
 
@@ -179,7 +180,7 @@ void PasswordManagerPorter::PresentFileSelector(
     Type type) {
 // This method should never be called on Android (as there is no file selector),
 // and the relevant IDS constants are not present for Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(web_contents);
   profile_ = Profile::FromBrowserContext(web_contents->GetBrowserContext());
 

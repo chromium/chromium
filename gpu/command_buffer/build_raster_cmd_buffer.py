@@ -353,7 +353,7 @@ _FUNCTION_INFO = {
                 'GLsizeiptr raster_shm_size, GLuint font_shm_id,'
                 'GLuint font_shm_offset, GLsizeiptr font_shm_size',
     'extension': 'CHROMIUM_raster_transport',
-    'extension_flag': 'chromium_raster_transport',
+    'unit_test': False,
   },
   'EndRasterCHROMIUM': {
     'decoder_func': 'DoEndRasterCHROMIUM',

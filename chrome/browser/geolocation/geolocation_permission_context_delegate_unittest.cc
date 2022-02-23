@@ -9,20 +9,21 @@
 #include "chrome/test/base/testing_profile.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/permissions/features.h"
 #include "components/permissions/permission_manager.h"
 #include "components/permissions/permission_request_manager.h"
 #include "components/permissions/permission_result.h"
 #include "components/permissions/test/mock_permission_prompt_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/search_permissions/search_permissions_service.h"
 #include "components/location/android/location_settings_dialog_outcome.h"
 #include "components/location/android/mock_location_settings.h"
 #include "components/permissions/contexts/geolocation_permission_context_android.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 constexpr char kDSETestUrl[] = "https://www.dsetest.com";
 
@@ -34,15 +35,6 @@ class TestSearchEngineDelegate
   url::Origin GetDSEOrigin() override {
     return url::Origin::Create(GURL(kDSETestUrl));
   }
-
-  void SetDSEChangedCallback(base::RepeatingClosure callback) override {
-    dse_changed_callback_ = std::move(callback);
-  }
-
-  void UpdateDSEOrigin() { dse_changed_callback_.Run(); }
-
- private:
-  base::RepeatingClosure dse_changed_callback_;
 };
 }  // namespace
 #endif
@@ -59,7 +51,7 @@ class GeolocationPermissionContextDelegateTests
         web_contents(),
         std::make_unique<chrome::PageSpecificContentSettingsDelegate>(
             web_contents()));
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     static_cast<permissions::GeolocationPermissionContextAndroid*>(
         PermissionManagerFactory::GetForProfile(profile())
             ->GetPermissionContextForTesting(ContentSettingsType::GEOLOCATION))
@@ -80,7 +72,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   permissions::MockPermissionPromptFactory mock_prompt_factory(manager);
   NavigateAndCommit(requesting_frame);
-  manager->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  manager->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   base::RunLoop run_loop;
   PermissionManagerFactory::GetForProfile(profile())->RequestPermission(
@@ -102,7 +94,7 @@ TEST_F(GeolocationPermissionContextDelegateTests, TabContentSettingIsUpdated) {
       content_settings->IsContentAllowed(ContentSettingsType::GEOLOCATION));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(GeolocationPermissionContextDelegateTests,
        SearchGeolocationInIncognito) {
   GURL requesting_frame(kDSETestUrl);
@@ -111,12 +103,11 @@ TEST_F(GeolocationPermissionContextDelegateTests,
       SearchPermissionsService::Factory::GetForBrowserContext(profile());
   std::unique_ptr<TestSearchEngineDelegate> delegate =
       std::make_unique<TestSearchEngineDelegate>();
-  TestSearchEngineDelegate* delegate_ptr = delegate.get();
   service->SetSearchEngineDelegateForTest(std::move(delegate));
-  delegate_ptr->UpdateDSEOrigin();
+  service->InitializeSettingsIfNeeded();
 
-  // The DSE should be auto-granted geolocation.
-  ASSERT_EQ(CONTENT_SETTING_ALLOW,
+  // The DSE geolocation should not be auto-granted even in a non-OTR profile.
+  ASSERT_EQ(CONTENT_SETTING_ASK,
             PermissionManagerFactory::GetForProfile(profile())
                 ->GetPermissionStatus(ContentSettingsType::GEOLOCATION,
                                       requesting_frame, requesting_frame)
@@ -125,7 +116,7 @@ TEST_F(GeolocationPermissionContextDelegateTests,
   Profile* otr_profile =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
-  // A DSE setting of ALLOW should not flow through to incognito.
+  // The DSE geolocation should not be auto-granted in an OTR profile.
   ASSERT_EQ(CONTENT_SETTING_ASK,
             PermissionManagerFactory::GetForProfile(otr_profile)
                 ->GetPermissionStatus(ContentSettingsType::GEOLOCATION,

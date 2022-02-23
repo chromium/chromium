@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/net_export.h"
@@ -106,9 +105,9 @@ class NET_EXPORT ProxyResolutionService {
   // implementation. For example, one might need to fetch the set of proxy
   // configurations determined by the proxy, something which not all
   // implementations of the ProxyResolutionService would have an answer for.
-  virtual bool CastToConfiguredProxyResolutionService(
-      ConfiguredProxyResolutionService** configured_proxy_resolution_service)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool CastToConfiguredProxyResolutionService(
+      ConfiguredProxyResolutionService**
+          configured_proxy_resolution_service) = 0;
 };
 
 }  // namespace net

@@ -13,17 +13,17 @@
 #include "services/network/public/cpp/features.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/navigation/renderer_eviction_reason.mojom-blink.h"
+#include "third_party/blink/renderer/platform/back_forward_cache_buffer_limit_tracker.h"
 #include "third_party/blink/renderer/platform/back_forward_cache_utils.h"
 #include "third_party/blink/renderer/platform/loader/fetch/back_forward_cache_loader_helper.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/navigation_body_loader.h"
+#include "third_party/blink/renderer/platform/wtf/deque.h"
 #include "third_party/blink/renderer/platform/wtf/shared_buffer.h"
 
 namespace blink {
-
-constexpr size_t kDefaultMaxBufferedBodyBytesPerRequest = 200 * 1000;
 
 class ResponseBodyLoader::DelegatingBytesConsumer final
     : public BytesConsumer,
@@ -289,11 +289,7 @@ class ResponseBodyLoader::DelegatingBytesConsumer final
 class ResponseBodyLoader::Buffer final
     : public GarbageCollected<ResponseBodyLoader::Buffer> {
  public:
-  explicit Buffer(ResponseBodyLoader* owner)
-      : owner_(owner),
-        max_bytes_to_read_(GetLoadingTasksUnfreezableParamAsInt(
-            "max_buffered_bytes",
-            kDefaultMaxBufferedBodyBytesPerRequest)) {}
+  explicit Buffer(ResponseBodyLoader* owner) : owner_(owner) {}
 
   bool IsEmpty() const { return buffered_data_.IsEmpty(); }
 
@@ -305,15 +301,6 @@ class ResponseBodyLoader::Buffer final
     Vector<char> new_chunk;
     new_chunk.Append(buffer, base::checked_cast<wtf_size_t>(available));
     buffered_data_.emplace_back(std::move(new_chunk));
-  }
-
-  void AddToPerRequestBytes(size_t available) {
-    total_bytes_read_ += available;
-  }
-
-  // Return false if the data size exceeds |max_bytes_to_read_|.
-  bool IsUnderPerRequestBytesLimit() {
-    return total_bytes_read_ <= max_bytes_to_read_;
   }
 
   // Dispatches the frontmost chunk in |buffered_data_|. Returns the size of
@@ -349,7 +336,6 @@ class ResponseBodyLoader::Buffer final
   Deque<Vector<char>> buffered_data_;
   size_t offset_in_current_chunk_ = 0;
   size_t total_bytes_read_ = 0;
-  const size_t max_bytes_to_read_;
 };
 
 ResponseBodyLoader::ResponseBodyLoader(
@@ -471,18 +457,12 @@ void ResponseBodyLoader::DidBufferLoadWhileInBackForwardCache(
     return;
   back_forward_cache_loader_helper_->DidBufferLoadWhileInBackForwardCache(
       num_bytes);
-  body_buffer_->AddToPerRequestBytes(num_bytes);
 }
 
 bool ResponseBodyLoader::CanContinueBufferingWhileInBackForwardCache() {
-  if (!back_forward_cache_loader_helper_)
-    return false;
-  if (!OnlyUsePerProcessBufferLimit() &&
-      !body_buffer_->IsUnderPerRequestBytesLimit())
-    return false;
-
-  return back_forward_cache_loader_helper_
-      ->CanContinueBufferingWhileInBackForwardCache();
+  return OnlyUsePerProcessBufferLimit() &&
+         BackForwardCacheBufferLimitTracker::Get()
+             .IsUnderPerProcessBufferLimit();
 }
 
 void ResponseBodyLoader::Start() {

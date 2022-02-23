@@ -19,6 +19,7 @@ public interface SettingsFragmentArgs {
     String CATEGORY_LIST = "category_list";
     String SINGLE_CATEGORY = "single_category";
     String SINGLE_WEBSITE = "single_website";
+    String ACCESSIBILITY = "accessibility";
 
     // SINGLE_WEBSITE argument names
     String SINGLE_WEBSITE_URL = "url";

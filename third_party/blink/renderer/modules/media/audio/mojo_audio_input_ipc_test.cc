@@ -16,6 +16,7 @@
 #include "media/base/audio_capturer_source.h"
 #include "media/base/audio_parameters.h"
 #include "media/mojo/mojom/audio_data_pipe.mojom-blink.h"
+#include "media/mojo/mojom/audio_processing.mojom-blink.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -50,6 +51,15 @@ media::AudioSourceParameters SourceParams() {
       base::UnguessableToken::Deserialize(1234, 5678));
 }
 
+media::AudioSourceParameters SourceParamsWithProcessing() {
+  media::AudioSourceParameters params(
+      base::UnguessableToken::Deserialize(1234, 5678));
+  params.processing = media::AudioSourceParameters::ProcessingConfig(
+      base::UnguessableToken::Deserialize(9876, 4321),
+      media::AudioProcessingSettings());
+  return params;
+}
+
 class MockStream : public media::mojom::blink::AudioInputStream {
  public:
   MOCK_METHOD0(Record, void());
@@ -76,15 +86,19 @@ class MockDelegate : public media::AudioInputIPCDelegate {
 class FakeStreamCreator {
  public:
   FakeStreamCreator(media::mojom::blink::AudioInputStream* stream,
-                    bool initially_muted)
+                    bool initially_muted,
+                    bool expect_processing_config = false)
       : stream_(stream),
         receiver_(stream_),
-        initially_muted_(initially_muted) {}
+        initially_muted_(initially_muted),
+        expect_processing_config_(expect_processing_config) {}
 
   void Create(
       const media::AudioSourceParameters& source_params,
       mojo::PendingRemote<mojom::blink::RendererAudioInputStreamFactoryClient>
           factory_client,
+      mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+          controls_receiver,
       const media::AudioParameters& params,
       bool automatic_gain_control,
       uint32_t total_segments) {
@@ -96,6 +110,9 @@ class FakeStreamCreator {
     base::CancelableSyncSocket foreign_socket;
     EXPECT_TRUE(
         base::CancelableSyncSocket::CreatePair(&socket_, &foreign_socket));
+
+    EXPECT_EQ(!!controls_receiver, expect_processing_config_);
+
     factory_client_->StreamCreated(
         receiver_.BindNewPipeAndPassRemote(),
         stream_client_.BindNewPipeAndPassReceiver(),
@@ -128,6 +145,7 @@ class FakeStreamCreator {
       factory_client_;
   mojo::Receiver<media::mojom::blink::AudioInputStream> receiver_;
   bool initially_muted_;
+  bool expect_processing_config_;
   base::CancelableSyncSocket socket_;
 };
 
@@ -158,20 +176,42 @@ TEST(MojoAudioInputIPC, OnStreamCreated_Propagates) {
   base::RunLoop().RunUntilIdle();
 }
 
-TEST(MojoAudioInputIPC, FactoryDisconnected_SendsError) {
+TEST(MojoAudioInputIPC, OnStreamCreated_Propagates_WithProcessingConfig) {
+  StrictMock<MockStream> stream;
   StrictMock<MockDelegate> delegate;
+  FakeStreamCreator creator(&stream, false,
+                            /*expect_processing_config*/ true);
 
   const std::unique_ptr<media::AudioInputIPC> ipc =
       std::make_unique<MojoAudioInputIPC>(
-          SourceParams(),
-          base::BindRepeating(
-              [](const media::AudioSourceParameters&,
-                 mojo::PendingRemote<
-                     mojom::blink::RendererAudioInputStreamFactoryClient>
-                     factory_client,
-                 const media::AudioParameters& params,
-                 bool automatic_gain_control, uint32_t total_segments) {}),
+          SourceParamsWithProcessing(), creator.GetCallback(),
           base::BindRepeating(&AssociateOutputForAec));
+
+  EXPECT_CALL(delegate, GotOnStreamCreated(false));
+
+  ipc->CreateStream(&delegate, Params(), false, kTotalSegments);
+  base::RunLoop().RunUntilIdle();
+
+  ipc->CloseStream();
+  base::RunLoop().RunUntilIdle();
+}
+
+TEST(MojoAudioInputIPC, FactoryDisconnected_SendsError) {
+  StrictMock<MockDelegate> delegate;
+
+  const std::unique_ptr<media::AudioInputIPC> ipc = std::make_unique<
+      MojoAudioInputIPC>(
+      SourceParams(),
+      base::BindRepeating(
+          [](const media::AudioSourceParameters&,
+             mojo::PendingRemote<
+                 mojom::blink::RendererAudioInputStreamFactoryClient>
+                 factory_client,
+             mojo::PendingReceiver<media::mojom::blink::AudioProcessorControls>
+                 controls_receiver,
+             const media::AudioParameters& params, bool automatic_gain_control,
+             uint32_t total_segments) {}),
+      base::BindRepeating(&AssociateOutputForAec));
 
   EXPECT_CALL(delegate,
               OnError(media::AudioCapturerSource::ErrorCode::kUnknown));

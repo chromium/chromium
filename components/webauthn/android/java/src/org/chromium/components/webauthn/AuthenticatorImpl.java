@@ -4,10 +4,15 @@
 
 package org.chromium.components.webauthn;
 
-import android.annotation.TargetApi;
+import android.app.PendingIntent;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Build;
+import android.util.Pair;
 
+import androidx.annotation.RequiresApi;
+
+import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.PackageUtils;
 import org.chromium.base.metrics.RecordHistogram;
@@ -20,7 +25,10 @@ import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.WebAuthenticationDelegate;
+import org.chromium.content_public.browser.WebContentsStatics;
 import org.chromium.mojo.system.MojoException;
+import org.chromium.ui.base.WindowAndroid;
 import org.chromium.url.Origin;
 
 import java.util.LinkedList;
@@ -29,8 +37,10 @@ import java.util.Queue;
 /**
  * Android implementation of the authenticator.mojom interface.
  */
-public class AuthenticatorImpl implements Authenticator {
+public final class AuthenticatorImpl implements Authenticator {
+    private final WebAuthenticationDelegate.IntentSender mIntentSender;
     private final RenderFrameHost mRenderFrameHost;
+    private final @WebAuthenticationDelegate.Support int mSupportLevel;
 
     private static final String GMSCORE_PACKAGE_NAME = "com.google.android.gms";
 
@@ -46,10 +56,8 @@ public class AuthenticatorImpl implements Authenticator {
     /** The payment information to be added to the "clientDataJson". */
     private PaymentOptions mPayment;
 
-    private org.chromium.mojo.bindings.Callbacks
-            .Callback2<Integer, MakeCredentialAuthenticatorResponse> mMakeCredentialCallback;
-    private org.chromium.mojo.bindings.Callbacks
-            .Callback2<Integer, GetAssertionAuthenticatorResponse> mGetAssertionCallback;
+    private MakeCredential_Response mMakeCredentialCallback;
+    private GetAssertion_Response mGetAssertionCallback;
     // A queue is used to store pending IsUserVerifyingPlatformAuthenticatorAvailable request
     // callbacks when there are multiple requests pending on the result from GMSCore. Noted that
     // the callbacks may not be invoked in the same order as the pending requests, which in this
@@ -61,10 +69,24 @@ public class AuthenticatorImpl implements Authenticator {
      * Builds the Authenticator service implementation.
      *
      * @param renderFrameHost The host of the frame that has invoked the API.
+     * @param intentSender If present then an interface that will be used to start {@link Intent}s
+     *         from Play Services.
+     * @param supportLevel Whether this code should use the privileged or non-privileged Play
+     *         Services API. (Note that a value of `NONE` is not allowed.)
      */
-    public AuthenticatorImpl(RenderFrameHost renderFrameHost) {
+    public AuthenticatorImpl(WebAuthenticationDelegate.IntentSender intentSender,
+            RenderFrameHost renderFrameHost, @WebAuthenticationDelegate.Support int supportLevel) {
         assert renderFrameHost != null;
+        assert supportLevel != WebAuthenticationDelegate.Support.NONE;
+
+        if (intentSender != null) {
+            mIntentSender = intentSender;
+        } else {
+            mIntentSender = new WindowIntentSender(renderFrameHost);
+        }
+
         mRenderFrameHost = renderFrameHost;
+        mSupportLevel = supportLevel;
         mOrigin = mRenderFrameHost.getLastCommittedOrigin();
     }
 
@@ -87,9 +109,9 @@ public class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void makeCredential(
-            PublicKeyCredentialCreationOptions options, MakeCredentialResponse callback) {
+            PublicKeyCredentialCreationOptions options, MakeCredential_Response callback) {
         if (mIsOperationPending) {
-            callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
+            callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
             return;
         }
 
@@ -102,7 +124,8 @@ public class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        Fido2ApiHandler.getInstance().makeCredential(options, mRenderFrameHost, mOrigin,
+        Fido2ApiHandler.getInstance().makeCredential(options, mIntentSender, mRenderFrameHost,
+                mOrigin, mSupportLevel,
                 (status, response)
                         -> onRegisterResponse(status, response),
                 status -> onError(status));
@@ -110,9 +133,9 @@ public class AuthenticatorImpl implements Authenticator {
 
     @Override
     public void getAssertion(
-            PublicKeyCredentialRequestOptions options, GetAssertionResponse callback) {
+            PublicKeyCredentialRequestOptions options, GetAssertion_Response callback) {
         if (mIsOperationPending) {
-            callback.call(AuthenticatorStatus.PENDING_REQUEST, null);
+            callback.call(AuthenticatorStatus.PENDING_REQUEST, null, null);
             return;
         }
 
@@ -126,15 +149,16 @@ public class AuthenticatorImpl implements Authenticator {
             return;
         }
 
-        Fido2ApiHandler.getInstance().getAssertion(options, mRenderFrameHost, mOrigin, mPayment,
+        Fido2ApiHandler.getInstance().getAssertion(options, mIntentSender, mRenderFrameHost,
+                mOrigin, mPayment, mSupportLevel,
                 (status, response) -> onSignResponse(status, response), status -> onError(status));
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.N)
     public void isUserVerifyingPlatformAuthenticatorAvailable(
-            final IsUserVerifyingPlatformAuthenticatorAvailableResponse callback) {
-        IsUserVerifyingPlatformAuthenticatorAvailableResponse decoratedCallback = (isUvpaa) -> {
+            final IsUserVerifyingPlatformAuthenticatorAvailable_Response callback) {
+        IsUserVerifyingPlatformAuthenticatorAvailable_Response decoratedCallback = (isUvpaa) -> {
             RecordHistogram.recordBooleanHistogram(
                     "WebAuthentication.IsUVPlatformAuthenticatorAvailable2", isUvpaa);
             callback.call(isUvpaa);
@@ -159,8 +183,8 @@ public class AuthenticatorImpl implements Authenticator {
         }
 
         mIsUserVerifyingPlatformAuthenticatorAvailableCallbackQueue.add(decoratedCallback);
-        Fido2ApiHandler.getInstance().isUserVerifyingPlatformAuthenticatorAvailable(
-                mRenderFrameHost,
+        Fido2ApiHandler.getInstance().isUserVerifyingPlatformAuthenticatorAvailable(mIntentSender,
+                mRenderFrameHost, mSupportLevel,
                 isUvpaa -> onIsUserVerifyingPlatformAuthenticatorAvailableResponse(isUvpaa));
     }
 
@@ -178,7 +202,8 @@ public class AuthenticatorImpl implements Authenticator {
         if (!mIsOperationPending) return;
 
         assert mMakeCredentialCallback != null;
-        mMakeCredentialCallback.call(status, response);
+        assert status == AuthenticatorStatus.SUCCESS;
+        mMakeCredentialCallback.call(status, response, null);
         close();
     }
 
@@ -187,7 +212,7 @@ public class AuthenticatorImpl implements Authenticator {
         if (!mIsOperationPending) return;
 
         assert mGetAssertionCallback != null;
-        mGetAssertionCallback.call(status, response);
+        mGetAssertionCallback.call(status, response, null);
         close();
     }
 
@@ -202,10 +227,11 @@ public class AuthenticatorImpl implements Authenticator {
 
         assert ((mMakeCredentialCallback != null && mGetAssertionCallback == null)
                 || (mMakeCredentialCallback == null && mGetAssertionCallback != null));
+        assert status != AuthenticatorStatus.ERROR_WITH_DOM_EXCEPTION_DETAILS;
         if (mMakeCredentialCallback != null) {
-            mMakeCredentialCallback.call(status, null);
+            mMakeCredentialCallback.call(status, null, null);
         } else if (mGetAssertionCallback != null) {
-            mGetAssertionCallback.call(status, null);
+            mGetAssertionCallback.call(status, null, null);
         }
         close();
     }
@@ -220,5 +246,37 @@ public class AuthenticatorImpl implements Authenticator {
     @Override
     public void onConnectionError(MojoException e) {
         close();
+    }
+
+    /**
+     * Provides a default implementation of {@link IntentSender} when none is provided.
+     */
+    public static class WindowIntentSender implements WebAuthenticationDelegate.IntentSender {
+        private final WindowAndroid mWindow;
+
+        WindowIntentSender(RenderFrameHost renderFrameHost) {
+            mWindow = WebContentsStatics.fromRenderFrameHost(renderFrameHost)
+                              .getTopLevelNativeWindow();
+        }
+
+        @Override
+        public boolean showIntent(PendingIntent intent, Callback<Pair<Integer, Intent>> callback) {
+            return mWindow != null && mWindow.getActivity().get() != null
+                    && mWindow.showCancelableIntent(intent, new CallbackWrapper(callback), null)
+                    != WindowAndroid.START_INTENT_FAILURE;
+        }
+
+        private static class CallbackWrapper implements WindowAndroid.IntentCallback {
+            private final Callback<Pair<Integer, Intent>> mCallback;
+
+            CallbackWrapper(Callback<Pair<Integer, Intent>> callback) {
+                mCallback = callback;
+            }
+
+            @Override
+            public void onIntentCompleted(int resultCode, Intent data) {
+                mCallback.onResult(new Pair(resultCode, data));
+            }
+        }
     }
 }

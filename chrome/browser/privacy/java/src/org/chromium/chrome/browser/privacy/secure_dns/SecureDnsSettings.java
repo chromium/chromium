@@ -43,12 +43,12 @@ public class SecureDnsSettings extends PreferenceFragmentCompat {
         } else if (mode == SecureDnsMode.AUTOMATIC) {
             return context.getString(R.string.settings_automatic_mode_summary);
         } else {
-            String templateGroup = SecureDnsBridge.getTemplates();
+            String config = SecureDnsBridge.getConfig();
             List<SecureDnsBridge.Entry> providers = SecureDnsBridge.getProviders();
-            String serverName = templateGroup;
+            String serverName = config;
             for (int i = 0; i < providers.size(); i++) {
                 SecureDnsBridge.Entry entry = providers.get(i);
-                if (entry.template.equals(templateGroup)) {
+                if (entry.config.equals(config)) {
                     serverName = entry.name;
                     break;
                 }
@@ -114,13 +114,12 @@ public class SecureDnsSettings extends PreferenceFragmentCompat {
     private boolean storePreferenceState(boolean enabled, State controlState) {
         if (!enabled) {
             SecureDnsBridge.setMode(SecureDnsMode.OFF);
-            SecureDnsBridge.setTemplates("");
+            SecureDnsBridge.setConfig("");
         } else if (!controlState.secure) {
             SecureDnsBridge.setMode(SecureDnsMode.AUTOMATIC);
-            SecureDnsBridge.setTemplates("");
+            SecureDnsBridge.setConfig("");
         } else {
-            if (controlState.template.isEmpty()
-                    || !SecureDnsBridge.setTemplates(controlState.template)) {
+            if (controlState.config.isEmpty() || !SecureDnsBridge.setConfig(controlState.config)) {
                 return false;
             }
             SecureDnsBridge.setMode(SecureDnsMode.SECURE);
@@ -138,9 +137,9 @@ public class SecureDnsSettings extends PreferenceFragmentCompat {
         mSecureDnsProviderPreference.setEnabled(enabled && !enforced);
 
         boolean secure = mode == SecureDnsMode.SECURE;
-        String template = SecureDnsBridge.getTemplates();
+        String config = SecureDnsBridge.getConfig();
         boolean valid = true; // States loaded from storage are presumed valid.
-        mSecureDnsProviderPreference.setState(new State(secure, template, valid));
+        mSecureDnsProviderPreference.setState(new State(secure, config, valid));
     }
 
     @Override

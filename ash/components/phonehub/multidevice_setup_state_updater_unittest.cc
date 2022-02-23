@@ -5,17 +5,20 @@
 #include "ash/components/phonehub/multidevice_setup_state_updater.h"
 
 #include "ash/components/phonehub/fake_notification_access_manager.h"
-#include "chromeos/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/cpp/prefs.h"
+#include "ash/services/multidevice_setup/public/cpp/fake_multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/cpp/prefs.h"
 #include "components/prefs/testing_pref_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
-using multidevice_setup::mojom::Feature;
-using multidevice_setup::mojom::FeatureState;
-using multidevice_setup::mojom::HostStatus;
+using ::chromeos::multidevice_setup::mojom::Feature;
+using ::chromeos::multidevice_setup::mojom::FeatureState;
+using ::chromeos::multidevice_setup::mojom::HostStatus;
+
+// TODO(https://crbug.com/1164001): remove after migrating to namespace ash.
+namespace multidevice_setup = ::chromeos::multidevice_setup;
 
 class MultideviceSetupStateUpdaterTest : public testing::Test {
  protected:
@@ -265,4 +268,4 @@ TEST_F(MultideviceSetupStateUpdaterTest,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

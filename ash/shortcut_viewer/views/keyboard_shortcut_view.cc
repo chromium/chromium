@@ -17,11 +17,11 @@
 #include "ash/public/cpp/resources/grit/ash_public_unscaled_resources.h"
 #include "ash/public/cpp/shelf_item.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_view_base.h"
 #include "ash/shell.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
-#include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_list_view.h"
 #include "ash/shortcut_viewer/views/keyboard_shortcut_item_view.h"
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
@@ -82,7 +82,7 @@ std::unique_ptr<views::View> CreateNoSearchResultView() {
           gfx::Insets(kTopPadding, 0, 0, 0)));
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   auto image_view = std::make_unique<views::ImageView>();
-  image_view->SetImage(gfx::CreateVectorIcon(kKsvSearchNoResultIcon,
+  image_view->SetImage(gfx::CreateVectorIcon(ash::kKsvSearchNoResultIcon,
                                              kSearchIllustrationIconColor));
   image_view->SetImageSize(
       gfx::Size(kSearchIllustrationIconSize, kSearchIllustrationIconSize));

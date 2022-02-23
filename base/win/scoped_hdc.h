@@ -9,7 +9,6 @@
 
 #include "base/check.h"
 #include "base/debug/gdi_debug_util_win.h"
-#include "base/macros.h"
 #include "base/win/scoped_handle.h"
 
 namespace base {

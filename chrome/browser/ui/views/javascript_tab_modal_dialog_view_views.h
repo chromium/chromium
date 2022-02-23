@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "components/javascript_dialogs/tab_modal_dialog_view.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -65,7 +66,7 @@ class JavaScriptTabModalDialogViewViews
   base::OnceClosure dialog_force_closed_callback_;
 
   // The message box view whose commands we handle.
-  views::MessageBoxView* message_box_view_;
+  raw_ptr<views::MessageBoxView> message_box_view_;
 
   base::WeakPtrFactory<JavaScriptTabModalDialogViewViews> weak_factory_{this};
 };

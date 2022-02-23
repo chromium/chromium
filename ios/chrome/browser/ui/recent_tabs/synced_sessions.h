@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "components/sessions/core/session_id.h"
 #include "components/sync_sessions/synced_session.h"
@@ -44,6 +43,22 @@ struct DistantTab {
   // By design, two tabs in the same distant session can have the same
   // |hashOfUserVisibleProperties|.
   size_t hashOfUserVisibleProperties();
+};
+
+// Data holder that contains a set of distant tabs to show in the UI.
+struct DistantTabsSet {
+  DistantTabsSet();
+  ~DistantTabsSet();
+
+  DistantTabsSet(const DistantTabsSet&);
+
+  // The tag of the DistantSession which owns the tabs referenced in |tabs|.
+  std::string session_tag;
+  // A selection of |DistantTab|s from the session with tag |session_tag|. A
+  // null value for |filtered_tabs| represents that the session's tabs are
+  // not filtered. This shortcut representation prevents having to copy over
+  // pointers to each tab within a session when every tab is included.
+  absl::optional<std::vector<DistantTab*>> filtered_tabs;
 };
 
 // Data holder that contains the data of the distant sessions and their tabs to
@@ -91,7 +106,7 @@ class SyncedSessions {
   DistantSession const* GetSession(size_t index) const;
   DistantSession const* GetSessionWithTag(const std::string& tag) const;
   size_t GetSessionCount() const;
-  void EraseSession(size_t index);
+  void EraseSessionWithTag(const std::string& tag);
 
   // Used by tests only.
   void AddDistantSessionForTest(

@@ -88,6 +88,11 @@ struct GetUserDataForAllRegistrationsResult {
   std::vector<mojom::ServiceWorkerUserDataPtr> values;
 };
 
+struct GetUsageForStorageKeyResult {
+  DatabaseStatus status;
+  int64_t usage;
+};
+
 ReadResponseHeadResult ReadResponseHead(
     mojom::ServiceWorkerResourceReader* reader) {
   ReadResponseHeadResult result;
@@ -568,6 +573,21 @@ class ServiceWorkerStorageControlImplTest : public testing::Test {
         }));
     loop.Run();
     return return_value;
+  }
+
+  GetUsageForStorageKeyResult GetUsageForStorageKey(
+      const blink::StorageKey& key) {
+    GetUsageForStorageKeyResult result;
+    base::RunLoop loop;
+    storage()->GetUsageForStorageKey(
+        key,
+        base::BindLambdaForTesting([&](DatabaseStatus status, int64_t usage) {
+          result.status = status;
+          result.usage = usage;
+          loop.Quit();
+        }));
+    loop.Run();
+    return result;
   }
 
   // Creates a registration with the given resource records.
@@ -1421,6 +1441,92 @@ TEST_F(ServiceWorkerStorageControlImplTest,
   result = GetUserDataForAllRegistrationsByKeyPrefix("prefix");
   ASSERT_EQ(result.status, DatabaseStatus::kOk);
   EXPECT_EQ(result.values.size(), 0UL);
+}
+
+// Tests that getting usage for a storage key works at different stages of
+// registration resource update.
+TEST_F(ServiceWorkerStorageControlImplTest, GetUsageForStorageKey) {
+  const GURL kScope("https://www.example.com/");
+  const blink::StorageKey kKey(url::Origin::Create(kScope));
+  const GURL kScriptUrl("https://www.example.com/sw.js");
+  const GURL kImportedScriptUrl("https://www.example.com/imported.js");
+
+  LazyInitializeForTest();
+
+  // No data has written yet for a given storage key.
+  {
+    GetUsageForStorageKeyResult result = GetUsageForStorageKey(kKey);
+    ASSERT_EQ(result.status, DatabaseStatus::kOk);
+    ASSERT_EQ(result.usage, 0);
+  }
+
+  // Preparation: Create a registration with two resources. These aren't written
+  // to storage yet.
+  std::vector<ResourceRecord> resources;
+  const int64_t resource_id1 = GetNewResourceId();
+  const std::string resource_data1 = "main script data";
+  resources.push_back(mojom::ServiceWorkerResourceRecord::New(
+      resource_id1, kScriptUrl, resource_data1.size()));
+
+  const int64_t resource_id2 = GetNewResourceId();
+  const std::string resource_data2 = "imported script data";
+  resources.push_back(mojom::ServiceWorkerResourceRecord::New(
+      resource_id2, kImportedScriptUrl, resource_data2.size()));
+
+  const int64_t registration_id = GetNewRegistrationId();
+  const int64_t version_id = GetNewVersionId().version_id;
+  RegistrationData registration_data = CreateRegistrationData(
+      registration_id, version_id, kScope, kKey, kScriptUrl, resources);
+
+  // Put these resources ids on the uncommitted list in storage.
+  DatabaseStatus status;
+  status = StoreUncommittedResourceId(resource_id1);
+  ASSERT_EQ(status, DatabaseStatus::kOk);
+  status = StoreUncommittedResourceId(resource_id2);
+  ASSERT_EQ(status, DatabaseStatus::kOk);
+
+  {
+    GetUsageForStorageKeyResult result = GetUsageForStorageKey(kKey);
+    ASSERT_EQ(result.status, DatabaseStatus::kOk);
+    ASSERT_EQ(result.usage, 0)
+        << "Resources that aren't stored with the registration "
+        << "don't use quota.";
+  }
+
+  // Write responses and the registration data.
+  {
+    int result = WriteResource(resource_id1, resource_data1);
+    ASSERT_GT(result, 0);
+  }
+  {
+    int result = WriteResource(resource_id2, resource_data2);
+    ASSERT_GT(result, 0);
+  }
+  status =
+      StoreRegistration(std::move(registration_data), std::move(resources));
+  ASSERT_EQ(status, DatabaseStatus::kOk);
+
+  // Expect the storage usage for resources stored.
+  {
+    GetUsageForStorageKeyResult result = GetUsageForStorageKey(kKey);
+    ASSERT_EQ(result.status, DatabaseStatus::kOk);
+    const int64_t expected_usage =
+        resource_data1.size() + resource_data2.size();
+    ASSERT_EQ(result.usage, expected_usage);
+  }
+
+  // Delete the registration.
+  {
+    DeleteRegistrationResult result = DeleteRegistration(registration_id, kKey);
+    ASSERT_EQ(result.status, DatabaseStatus::kOk);
+  }
+
+  // Expect no storage usage.
+  {
+    GetUsageForStorageKeyResult result = GetUsageForStorageKey(kKey);
+    ASSERT_EQ(result.status, DatabaseStatus::kOk);
+    ASSERT_EQ(result.usage, 0);
+  }
 }
 
 // Tests that apply policy updates work.

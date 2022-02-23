@@ -1,0 +1,8 @@
+Name: cfg-if
+URL: https://crates.io/crates/cfg-if
+Description: A macro to ergonomically define an item depending on a large number of #[cfg]
+parameters. Structured like an if-else chain, the first matching branch is the
+item that gets emitted.
+Version: 1.0.0
+Security Critical: no
+License: Apache 2.0

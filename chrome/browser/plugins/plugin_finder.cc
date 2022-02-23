@@ -54,7 +54,7 @@ void LoadMimeTypes(bool matching_mime_types,
   if (!plugin_dict->GetList(list_key, &mime_types))
     return;
 
-  for (const auto& mime_type : mime_types->GetList()) {
+  for (const auto& mime_type : mime_types->GetListDeprecated()) {
     const std::string& mime_type_str = mime_type.GetString();
     if (matching_mime_types)
       plugin->AddMatchingMimeType(mime_type_str);
@@ -67,38 +67,54 @@ std::unique_ptr<PluginMetadata> CreatePluginMetadata(
     const std::string& identifier,
     const base::DictionaryValue* plugin_dict) {
   std::string url;
-  bool success = plugin_dict->GetString("url", &url);
+  if (const std::string* ptr = plugin_dict->FindStringKey("url"))
+    url = *ptr;
   std::string help_url;
-  plugin_dict->GetString("help_url", &help_url);
+  if (const std::string* ptr = plugin_dict->FindStringKey("help_url"))
+    help_url = *ptr;
   std::u16string name;
-  success = plugin_dict->GetString("name", &name);
+  bool success = true;
+  if (const std::string* ptr = plugin_dict->FindStringKey("name"))
+    name = base::UTF8ToUTF16(*ptr);
+  else
+    success = false;
   DCHECK(success);
-  bool display_url = true;
-  plugin_dict->GetBoolean("displayurl", &display_url);
+  bool display_url = plugin_dict->FindBoolKey("displayurl").value_or(true);
   std::u16string group_name_matcher;
-  success = plugin_dict->GetString("group_name_matcher", &group_name_matcher);
+  if (const std::string* ptr = plugin_dict->FindStringKey("group_name_matcher"))
+    group_name_matcher = base::UTF8ToUTF16(*ptr);
+  else
+    success = false;
   DCHECK(success);
   std::string language_str;
-  plugin_dict->GetString("lang", &language_str);
-  bool plugin_is_deprecated = false;
-  plugin_dict->GetBoolean("plugin_is_deprecated", &plugin_is_deprecated);
+  if (const std::string* ptr = plugin_dict->FindStringKey("lang"))
+    language_str = *ptr;
+  bool plugin_is_deprecated =
+      plugin_dict->FindBoolKey("plugin_is_deprecated").value_or(false);
 
   std::unique_ptr<PluginMetadata> plugin = std::make_unique<PluginMetadata>(
       identifier, name, display_url, GURL(url), GURL(help_url),
       group_name_matcher, language_str, plugin_is_deprecated);
   const base::ListValue* versions = NULL;
   if (plugin_dict->GetList("versions", &versions)) {
-    for (const auto& entry : versions->GetList()) {
+    for (const auto& entry : versions->GetListDeprecated()) {
       const base::DictionaryValue* version_dict = nullptr;
       if (!entry.GetAsDictionary(&version_dict)) {
         NOTREACHED();
         continue;
       }
       std::string version;
-      success = version_dict->GetString("version", &version);
+      success = true;
+      if (const std::string* ptr = version_dict->FindStringKey("version"))
+        version = *ptr;
+      else
+        success = false;
       DCHECK(success);
       std::string status_str;
-      success = version_dict->GetString("status", &status_str);
+      if (const std::string* ptr = version_dict->FindStringKey("status"))
+        status_str = *ptr;
+      else
+        success = false;
       DCHECK(success);
       PluginMetadata::SecurityStatus status =
           PluginMetadata::SECURITY_STATUS_UP_TO_DATE;
@@ -178,9 +194,10 @@ bool PluginFinder::FindPluginWithIdentifier(
 void PluginFinder::ReinitializePlugins(
     const base::DictionaryValue* plugin_list) {
   base::AutoLock lock(mutex_);
-  int version = 0;  // If no version is defined, we default to 0.
   const char kVersionKey[] = "x-version";
-  plugin_list->GetInteger(kVersionKey, &version);
+
+  // If no version is defined, we default to 0.
+  int version = plugin_list->FindIntKey(kVersionKey).value_or(0);
   if (version <= version_)
     return;
 

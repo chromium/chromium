@@ -10,14 +10,11 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chromecast/chromecast_buildflags.h"
-#include "chromecast/external_mojo/broker_service/broker_service.h"
-#include "chromecast/external_mojo/external_service_support/external_connector.h"
 #include "chromecast/metrics/cast_metrics_service_client.h"
 #include "content/public/browser/certificate_request_result_type.h"
 #include "content/public/browser/content_browser_client.h"
@@ -63,8 +60,10 @@ class X509Certificate;
 namespace chromecast {
 class CastService;
 class CastSystemMemoryPressureEvaluatorAdjuster;
+class CastWebService;
 class CastWindowManager;
 class CastFeatureListCreator;
+class DisplaySettingsManager;
 class GeneralAudienceBrowsingService;
 class MemoryPressureControllerImpl;
 class ServiceConnector;
@@ -81,6 +80,7 @@ class VideoResolutionPolicy;
 }
 
 namespace shell {
+class AccessibilityServiceImpl;
 class CastBrowserMainParts;
 class CastNetworkContexts;
 
@@ -103,14 +103,6 @@ class CastContentBrowserClient
 
   ~CastContentBrowserClient() override;
 
-  // Generally we discourage Initialize methods. Unfortunately, we can't do
-  // total RAII in ContentBrowserClient subclasses because we're missing a lot
-  // of foundational browser state/context at creation time, such as task
-  // runners. The earliest time that we can create most Cast objects is in
-  // CastBrowserMainParts::PostCreateThreads(), which is when this method is
-  // called.
-  void InitializeExternalConnector();
-
   // Creates a ServiceConnector for routing Cast-related service interface
   // binding requests.
   virtual std::unique_ptr<chromecast::ServiceConnector>
@@ -123,7 +115,10 @@ class CastContentBrowserClient
           cast_system_memory_pressure_evaluator_adjuster,
       PrefService* pref_service,
       media::VideoPlaneController* video_plane_controller,
-      CastWindowManager* window_manager);
+      CastWindowManager* window_manager,
+      CastWebService* web_service,
+      DisplaySettingsManager* display_settings_manager,
+      AccessibilityServiceImpl* accessibility_service);
 
   virtual media::VideoModeSwitcher* GetVideoModeSwitcher();
 
@@ -151,13 +146,13 @@ class CastContentBrowserClient
   bool OverridesAudioManager() override;
   media::MediaCapsImpl* media_caps();
 
-#if !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
   // Create a BluetoothAdapter for WebBluetooth support.
   // TODO(slan): This further couples the browser to the Cast service. Remove
   // this once the dedicated Bluetooth service has been implemented.
   // (b/76155468)
   virtual scoped_refptr<device::BluetoothAdapterCast> CreateBluetoothAdapter();
-#endif  // !defined(OS_ANDROID) && !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_FUCHSIA)
 
   // chromecast::metrics::CastMetricsServiceDelegate implementation:
   void SetMetricsClientId(const std::string& client_id) override;
@@ -255,6 +250,7 @@ class CastContentBrowserClient
   void RegisterNonNetworkSubresourceURLLoaderFactories(
       int render_process_id,
       int render_frame_id,
+      const absl::optional<url::Origin>& request_initiator_origin,
       NonNetworkURLLoaderFactoryMap* factories) override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
@@ -268,12 +264,24 @@ class CastContentBrowserClient
   std::string GetUserAgent() override;
   bool DoesSiteRequireDedicatedProcess(content::BrowserContext* browser_context,
                                        const GURL& effective_site_url) override;
+  bool IsWebUIAllowedToMakeNetworkRequests(const url::Origin& origin) override;
+  bool ShouldAllowInsecurePrivateNetworkRequests(
+      content::BrowserContext* browser_context,
+      const url::Origin& origin) override;
   // New Mojo bindings should be added to
   // cast_content_browser_client_receiver_bindings.cc, so that they go through
   // security review.
   void BindHostReceiverForRenderer(
       content::RenderProcessHost* render_process_host,
       mojo::GenericPendingReceiver receiver) override;
+  std::vector<std::unique_ptr<blink::URLLoaderThrottle>>
+  CreateURLLoaderThrottles(
+      const network::ResourceRequest& request,
+      content::BrowserContext* browser_context,
+      const base::RepeatingCallback<content::WebContents*()>& wc_getter,
+      content::NavigationUIData* navigation_ui_data,
+      int frame_tree_node_id) override;
+
   CastFeatureListCreator* GetCastFeatureListCreator() {
     return cast_feature_list_creator_;
   }
@@ -290,22 +298,14 @@ class CastContentBrowserClient
   CastNetworkContexts* cast_network_contexts() {
     return cast_network_contexts_.get();
   }
-  external_mojo::BrokerService* broker_service() {
-    CHECK(broker_service_);
-    return broker_service_.get();
-  }
-  external_service_support::ExternalConnector* connector() {
-    CHECK(connector_);
-    return connector_.get();
-  }
-  external_service_support::ExternalConnector* media_connector() {
-    CHECK(media_connector_);
-    return media_connector_.get();
-  }
 
  protected:
   explicit CastContentBrowserClient(
       CastFeatureListCreator* cast_feature_list_creator);
+
+  CastBrowserMainParts* browser_main_parts() {
+    return cast_browser_main_parts_;
+  }
 
   void BindMediaRenderer(
       mojo::PendingReceiver<::media::mojom::Renderer> receiver);
@@ -313,6 +313,10 @@ class CastContentBrowserClient
   void GetApplicationMediaInfo(std::string* application_session_id,
                                bool* mixer_audio_enabled,
                                content::RenderFrameHost* render_frame_host);
+
+  // Returns whether buffering should be used for the CMA Pipeline created for
+  // this runtime instance. May be called from any thread.
+  virtual bool IsBufferingEnabled();
 
  private:
   // Create device cert/key
@@ -335,11 +339,11 @@ class CastContentBrowserClient
                               scoped_refptr<net::SSLPrivateKey>)>
           continue_callback);
 
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
   // Returns the crash signal FD corresponding to the current process type.
   int GetCrashSignalFD(const base::CommandLine& command_line);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Creates a CrashHandlerHost instance for the given process type.
   breakpad::CrashHandlerHostLinux* CreateCrashHandlerHost(
       const std::string& process_type);
@@ -350,8 +354,8 @@ class CastContentBrowserClient
   // Notify renderers of memory pressure (Android renderers register directly
   // with OS for this).
   std::unique_ptr<MemoryPressureControllerImpl> memory_pressure_controller_;
-#endif  // !defined(OS_ANDROID)
-#endif  // !defined(OS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_ANDROID)
+#endif  // !BUILDFLAG(IS_FUCHSIA)
 
   // CMA thread used by AudioManager, MojoRenderer, and MediaPipelineBackend.
   std::unique_ptr<base::Thread> media_thread_;
@@ -379,14 +383,6 @@ class CastContentBrowserClient
   std::unique_ptr<media::CmaBackendFactory> cma_backend_factory_;
   std::unique_ptr<GeneralAudienceBrowsingService>
       general_audience_browsing_service_;
-
-  // These need to be accessible from internal code, so they live here instead
-  // of CastBrowserMainParts.
-  std::unique_ptr<external_mojo::BrokerService> broker_service_;
-  std::unique_ptr<external_service_support::ExternalConnector> connector_;
-
-  // ExternalConnector for running on the media task runner.
-  std::unique_ptr<external_service_support::ExternalConnector> media_connector_;
 
   CastFeatureListCreator* cast_feature_list_creator_;
 };

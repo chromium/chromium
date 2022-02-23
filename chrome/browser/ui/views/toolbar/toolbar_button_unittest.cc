@@ -7,6 +7,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/layout_constants.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/test_tab_strip_model_delegate.h"
@@ -46,7 +47,7 @@ class ToolbarButtonTestApi {
   }
 
  private:
-  ToolbarButton* button_;
+  raw_ptr<ToolbarButton> button_;
 };
 
 }  // namespace test
@@ -72,7 +73,7 @@ class CheckActiveWebContentsMenuModel : public ui::SimpleMenuModel {
   }
 
  private:
-  TabStripModel* const tab_strip_model_;
+  const raw_ptr<TabStripModel> tab_strip_model_;
 };
 
 class TestToolbarButton : public ToolbarButton {
@@ -163,7 +164,7 @@ class ToolbarButtonUITest : public ChromeViewsTestBase {
   views::Widget* widget() { return widget_.get(); }
 
  protected:
-  TestToolbarButton* button_ = nullptr;
+  raw_ptr<TestToolbarButton> button_ = nullptr;
 
  private:
   std::unique_ptr<views::Widget> widget_;

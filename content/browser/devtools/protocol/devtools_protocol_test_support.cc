@@ -98,7 +98,7 @@ bool DevToolsProtocolTest::HasListItem(const std::string& path_to_list,
   if (!result_->GetList(path_to_list, &list))
     return false;
 
-  for (const base::Value& item_value : list->GetList()) {
+  for (const base::Value& item_value : list->GetListDeprecated()) {
     if (!item_value.is_dict())
       return false;
     const base::DictionaryValue& item =
@@ -186,24 +186,28 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
     std::unique_ptr<base::DictionaryValue> params =
         WaitForNotification("Network.requestIntercepted");
 
-    std::string interception_id;
-    ASSERT_TRUE(params->GetString("interceptionId", &interception_id));
-    bool is_redirect = params->HasKey("redirectUrl");
+    const std::string* interception_id =
+        params->FindStringKey("interceptionId");
+    ASSERT_TRUE(interception_id);
+    bool is_redirect = params->FindKey("redirectUrl");
     absl::optional<bool> is_navigation =
-        params->FindBoolPath("isNavigationRequest");
+        params->FindBoolKey("isNavigationRequest");
     ASSERT_TRUE(is_navigation);
-    std::string resource_type;
-    ASSERT_TRUE(params->GetString("resourceType", &resource_type));
-    std::string url;
-    ASSERT_TRUE(params->GetString("request.url", &url));
-    if (is_redirect)
-      ASSERT_TRUE(params->GetString("redirectUrl", &url));
+    const std::string* resource_type = params->FindStringKey("resourceType");
+    ASSERT_TRUE(resource_type);
+
+    const std::string* url_in = params->FindStringPath("request.url");
+    ASSERT_TRUE(url_in);
+    if (is_redirect) {
+      url_in = params->FindStringKey("redirectUrl");
+      ASSERT_TRUE(url_in);
+    }
     // The url will typically have a random port which we want to remove.
-    url = RemovePort(GURL(url));
+    const std::string url = RemovePort(GURL(*url_in));
 
     if (*is_navigation) {
       params = std::make_unique<base::DictionaryValue>();
-      params->SetString("interceptionId", interception_id);
+      params->SetStringKey("interceptionId", *interception_id);
       SendCommand("Network.continueInterceptedRequest", std::move(params),
                   false);
       continue;
@@ -216,9 +220,9 @@ void DevToolsProtocolTest::ProcessNavigationsAnyOrder(
         continue;
 
       params = std::make_unique<base::DictionaryValue>();
-      params->SetString("interceptionId", interception_id);
+      params->SetStringKey("interceptionId", *interception_id);
       if (it->abort)
-        params->SetString("errorReason", "Aborted");
+        params->SetStringKey("errorReason", "Aborted");
       SendCommand("Network.continueInterceptedRequest", std::move(params),
                   false);
 

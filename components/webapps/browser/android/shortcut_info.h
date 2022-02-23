@@ -121,6 +121,10 @@ struct ShortcutInfo {
   // Updates the info based on the given |manifest|.
   void UpdateFromManifest(const blink::mojom::Manifest& manifest);
 
+  // Update the splash screen icon URL based on the given |manifest| for the
+  // later download.
+  void UpdateBestSplashIcon(const blink::mojom::Manifest& manifest);
+
   // Updates the source of the shortcut.
   void UpdateSource(const Source source);
 

@@ -29,7 +29,7 @@ BrowserSigninPolicyHandler::~BrowserSigninPolicyHandler() {}
 
 void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
                                                      PrefValueMap* prefs) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Browser sign in policies shouldn't be enforced on gcpw signin
   // mode as gcpw is invoked in windows login UI screen.
   // Also note that GCPW launches chrome in incognito mode using a
@@ -43,13 +43,13 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
   const base::Value* value = policies.GetValue(policy_name());
   switch (static_cast<BrowserSigninMode>(value->GetInt())) {
     case BrowserSigninMode::kForced:
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS)
       prefs->SetValue(prefs::kForceBrowserSignin, base::Value(true));
 #endif
-      FALLTHROUGH;
+      [[fallthrough]];
     case BrowserSigninMode::kEnabled:
       prefs->SetValue(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
           // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
           // Keep the old kSigninAllowed pref for Android until the policy is
           // fully deprecated in M71 and can be removed.
@@ -61,7 +61,7 @@ void BrowserSigninPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
       break;
     case BrowserSigninMode::kDisabled:
       prefs->SetValue(
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
           // The new kSigninAllowedOnNextStartup pref is only used on Desktop.
           // Keep the old kSigninAllowed pref for Android until the policy is
           // fully deprecated in M71 and can be removed.

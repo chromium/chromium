@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/post_task.h"
 #include "base/task/task_traits.h"
@@ -114,7 +115,7 @@ class SystemDnsConfigChangeNotifierTest : public TestWithTaskEnvironment {
   scoped_refptr<base::SequencedTaskRunner> notifier_task_runner_;
   std::unique_ptr<SystemDnsConfigChangeNotifier> notifier_;
   // Owned by |notifier_|.
-  TestDnsConfigService* test_config_service_;
+  raw_ptr<TestDnsConfigService> test_config_service_;
 };
 
 TEST_F(SystemDnsConfigChangeNotifierTest, ReceiveNotification) {

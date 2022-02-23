@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Gizli modda yeni bir pencere açılır</translation>
 <translation id="152892567002884378">Sesi açar</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, daha sonra <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1 ile 8 arasındaki masalara git</translation>
 <translation id="1652741121070700329">Önceki kelimenin başına gider</translation>
 <translation id="1679841710523778799">Parlaklığı artırır</translation>
 <translation id="168356808214100546"><ph name="ALT" /> tuşunu basılı tutarken açmak istediğiniz pencereye gelinceye kadar <ph name="TAB" /> tuşuna basın, daha sonra tuşları bırakın.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> tuşlarına basın ve bir bağlantıyı tıklayın</translation>
 <translation id="561814908794220892">Web sayfasını yeni bir sekmede açar</translation>
 <translation id="5620219513321115856">Etkin pencereyi sağdaki masaya taşı</translation>
+<translation id="5699366815052349604">Etkin pencereyi tüm masalara ata</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> veya <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Bağlantıyı sekmede açar</translation>
 <translation id="5757474750054631686">Klavyenin ışığını kısar (yalnızca arkadan aydınlatmalı klavyeler için)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Dosyalar uygulamasındaki gizli dosyaları görüntüler</translation>
 <translation id="8717459106217102612">Önceki kelimeyi veya harfi seçer</translation>
 <translation id="8727232706774971183">Bildirimlerinizi gösterir</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 ile 8 arasındaki tuşlar</translation>
 <translation id="8855885154700222542">Tam ekran tuşu</translation>
 <translation id="8881584919399569791">Etkin pencereyi soldaki masaya taşı</translation>
 <translation id="88986195241502842">Bir sayfa aşağı gider</translation>

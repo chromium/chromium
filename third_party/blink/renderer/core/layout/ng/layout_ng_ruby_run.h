@@ -22,7 +22,10 @@ class CORE_EXPORT LayoutNGRubyRun final
   explicit LayoutNGRubyRun();
   ~LayoutNGRubyRun() override;
 
-  const char* GetName() const override { return "LayoutNGRubyRun"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGRubyRun";
+  }
   void UpdateBlockLayout(bool relayout_children) override;
 };
 

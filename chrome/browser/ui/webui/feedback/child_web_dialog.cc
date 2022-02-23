@@ -22,7 +22,8 @@ constexpr gfx::Size kMinSize{400, 120};
 ///////////////////////////////////////////////////////////////////////////////
 // ChildWebDialog, public:
 
-ChildWebDialog::ChildWebDialog(views::Widget* parent_widget,
+ChildWebDialog::ChildWebDialog(Profile* profile,
+                               views::Widget* parent_widget,
                                const GURL& url,
                                const std::u16string& title,
                                ui::ModalType modal_type,
@@ -30,7 +31,8 @@ ChildWebDialog::ChildWebDialog(views::Widget* parent_widget,
                                int dialog_height,
                                bool can_resize,
                                bool can_minimize)
-    : parent_widget_(parent_widget),
+    : profile_(profile),
+      parent_widget_(parent_widget),
       title_(title),
       url_(url),
       modal_type_(modal_type),
@@ -43,8 +45,7 @@ ChildWebDialog::ChildWebDialog(views::Widget* parent_widget,
 ChildWebDialog::~ChildWebDialog() = default;
 
 void ChildWebDialog::Show() {
-  chrome::ShowWebDialog(parent_widget_->GetNativeView(),
-                        ProfileManager::GetActiveUserProfile(), this);
+  chrome::ShowWebDialog(parent_widget_->GetNativeView(), profile_, this);
 }
 
 ///////////////////////////////////////////////////////////////////////////////

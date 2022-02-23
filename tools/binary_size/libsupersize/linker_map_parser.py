@@ -13,14 +13,12 @@ file uses "coded linker name" to identify formats and variants:
   'lld-lto_v0': LLD linker with ThinLTO, old format.
   'lld_v1': LLD linker (no LTO), new format.
   'lld-lto_v1': LLD linker with ThinLTO, new format.
-
-The |linker_name| parameter in various functions must take one of the above
-coded linker name values.
 """
 
 import argparse
 import code
 import collections
+import gzip
 import itertools
 import logging
 import os
@@ -45,6 +43,13 @@ _STRIP_NAME_PREFIX = {
     models.FLAG_REL: 4,
     models.FLAG_HOT: 4,
 }
+
+
+def _OpenMaybeGzAsText(path):
+  """Calls `gzip.open()` if |path| ends in ".gz", otherwise calls `open()`."""
+  if path.endswith('.gz'):
+    return gzip.open(path, 'rt')
+  return open(path, 'rt')
 
 
 def _FlagsFromMangledName(name):
@@ -695,7 +700,7 @@ def _DetectLto(lines):
   return False
 
 
-def DetectLinkerNameFromMapFile(lines):
+def _DetectLinkerName(lines):
   """Heuristic linker detection from partial scan of the linker map.
 
   Args:
@@ -703,7 +708,6 @@ def DetectLinkerNameFromMapFile(lines):
 
   Returns:
     A coded linker name.
-
   """
   first_line = next(lines)
 
@@ -719,33 +723,42 @@ def DetectLinkerNameFromMapFile(lines):
   raise Exception('Invalid map file: ' + first_line)
 
 
-class MapFileParser:
-  """Parses a linker map file generated from a specified linker."""
-  def Parse(self, linker_name, lines):
-    """Parses a linker map file.
+def ParseLines(lines):
+  """Parses a linker map file given an iterable of its lines.
 
-    Args:
-      linker_name: Coded linker name to specify a linker.
-      lines: Iterable of lines from the linker map.
+  Returns:
+    A tuple of (section_ranges, symbols, extras).
+  """
+  # Buffer 1000 lines for format detection.
+  header = list(itertools.islice(lines, 1000))
+  lines = itertools.chain(header, lines)
+  linker_name = _DetectLinkerName(iter(header))
+  logging.info('Detected map file of type %s', linker_name)
+  if linker_name.startswith('lld'):
+    inner_parser = MapFileParserLld(linker_name)
+  elif linker_name == 'gold':
+    inner_parser = MapFileParserGold()
+  else:
+    raise Exception('.map file is from a unsupported linker.')
 
-    Returns:
-      A tuple of (section_ranges, symbols, extras).
-    """
-    next(lines)  # Consume the first line of headers.
-    if linker_name.startswith('lld'):
-      inner_parser = MapFileParserLld(linker_name)
-    elif linker_name == 'gold':
-      inner_parser = MapFileParserGold()
-    else:
-      raise Exception('.map file is from a unsupported linker.')
+  next(lines)  # Consume the first line of headers.
+  section_ranges, syms, extras = inner_parser.Parse(lines)
+  for sym in syms:
+    if sym.object_path and not sym.object_path.endswith(')'):
+      # Don't want '' to become '.'.
+      # Thin archives' paths will get fixed in |ar.CreateThinObjectPath|.
+      sym.object_path = os.path.normpath(sym.object_path)
+  return section_ranges, syms, extras
 
-    section_ranges, syms, extras = inner_parser.Parse(lines)
-    for sym in syms:
-      if sym.object_path and not sym.object_path.endswith(')'):
-        # Don't want '' to become '.'.
-        # Thin archives' paths will get fixed in |ar.CreateThinObjectPath|.
-        sym.object_path = os.path.normpath(sym.object_path)
-    return (section_ranges, syms, extras)
+
+def ParseFile(path):
+  """Parses a linker map file pointed to by |path|.
+
+  Returns:
+    A tuple of (section_ranges, symbols, extras).
+  """
+  with _OpenMaybeGzAsText(path) as f:
+    return ParseLines(f)
 
 
 def DeduceObjectPathsFromThinMap(raw_symbols, extras):
@@ -817,12 +830,7 @@ def main():
       level=logging.WARNING - args.verbose * 10,
       format='%(levelname).1s %(relativeCreated)6d %(message)s')
 
-  with open(args.linker_file, 'r') as map_file:
-    linker_name = DetectLinkerNameFromMapFile(map_file)
-  print('Linker type: %s' % linker_name)
-
-  with open(args.linker_file, 'r') as map_file:
-    section_ranges, syms, extras = MapFileParser().Parse(linker_name, map_file)
+  section_ranges, syms, extras = ParseFile(args.linker_file)
 
   if args.dump:
     print(section_ranges)

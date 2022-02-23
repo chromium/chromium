@@ -21,6 +21,11 @@ const TranslateBubbleModel* GetCurrentModel(Browser* browser) {
   return view ? view->model() : nullptr;
 }
 
+void CloseCurrentBubble(Browser* browser) {
+  DCHECK(browser);
+  TranslateBubbleView::CloseCurrentBubble();
+}
+
 void PressTranslate(Browser* browser) {
   DCHECK(browser);
   TranslateBubbleView* bubble = TranslateBubbleView::GetCurrentBubble();

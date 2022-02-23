@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
 #include "third_party/blink/renderer/core/testing/null_execution_context.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -49,52 +49,27 @@ namespace {
 typedef ScriptPromise::InternalResolver Resolver;
 
 template <typename T, typename... Args>
-NewScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
-  return MakeGarbageCollected<NewScriptFunction>(
+ScriptFunction* CreateFunction(ScriptState* script_state, Args&&... args) {
+  return MakeGarbageCollected<ScriptFunction>(
       script_state, MakeGarbageCollected<T>(std::forward<Args>(args)...));
 }
 
-class FunctionForScriptPromiseTest : public ScriptFunction {
+class FunctionForScriptPromiseTest : public ScriptFunction::Callable {
  public:
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state,
-                                                ScriptValue* output) {
-    FunctionForScriptPromiseTest* self =
-        MakeGarbageCollected<FunctionForScriptPromiseTest>(script_state,
-                                                           output);
-    return self->BindToV8Function();
-  }
+  explicit FunctionForScriptPromiseTest(ScriptValue* output)
+      : output_(output) {}
 
-  FunctionForScriptPromiseTest(ScriptState* script_state, ScriptValue* output)
-      : ScriptFunction(script_state), output_(output) {}
-
- private:
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState*, ScriptValue value) override {
     DCHECK(!value.IsEmpty());
     *output_ = value;
     return value;
   }
 
+ private:
   ScriptValue* output_;
 };
 
-class ThrowingFunction : public ScriptFunction {
- public:
-  static v8::Local<v8::Function> CreateFunction(ScriptState* script_state) {
-    auto* self = MakeGarbageCollected<ThrowingFunction>(script_state);
-    return self->BindToV8Function();
-  }
-
-  ThrowingFunction(ScriptState* script_state) : ScriptFunction(script_state) {}
-
- private:
-  ScriptValue Call(ScriptValue value) override {
-    v8::Isolate* isolate = GetScriptState()->GetIsolate();
-    isolate->ThrowException(v8::Undefined(isolate));
-    return ScriptValue();
-  }
-};
-
-class ThrowingCallable : public NewScriptFunction::Callable {
+class ThrowingCallable : public ScriptFunction::Callable {
  public:
  private:
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
@@ -104,7 +79,7 @@ class ThrowingCallable : public NewScriptFunction::Callable {
   }
 };
 
-class NotReached : public NewScriptFunction::Callable {
+class NotReached : public ScriptFunction::Callable {
   ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     ADD_FAILURE() << "This function should not be called.";
     return ScriptValue();
@@ -121,7 +96,7 @@ class ScriptValueHolder final : public GarbageCollected<ScriptValueHolder> {
   ScriptValue value_;
 };
 
-class CapturingCallable final : public NewScriptFunction::Callable {
+class CapturingCallable final : public ScriptFunction::Callable {
  public:
   explicit CapturingCallable(ScriptValueHolder* holder) : holder_(holder) {}
   ScriptValue Call(ScriptState*, ScriptValue value) override {
@@ -161,9 +136,9 @@ TEST(ScriptPromiseTest, ThenResolve) {
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
   ScriptValue on_fulfilled, on_rejected;
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -210,9 +185,9 @@ TEST(ScriptPromiseTest, ResolveThen) {
   ScriptPromise promise = resolver.Promise();
   ScriptValue on_fulfilled, on_rejected;
   resolver.Resolve(V8String(scope.GetIsolate(), "hello"));
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -248,9 +223,9 @@ TEST(ScriptPromiseTest, ThenReject) {
   Resolver resolver(scope.GetScriptState());
   ScriptPromise promise = resolver.Promise();
   ScriptValue on_fulfilled, on_rejected;
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -298,12 +273,12 @@ TEST(ScriptPromiseTest, ThrowingOnFulfilled) {
   ScriptValue on_rejected, on_fulfilled2, on_rejected2;
 
   promise =
-      promise.Then(ThrowingFunction::CreateFunction(scope.GetScriptState()),
-                   FunctionForScriptPromiseTest::CreateFunction(
+      promise.Then(CreateFunction<ThrowingCallable>(scope.GetScriptState()),
+                   CreateFunction<FunctionForScriptPromiseTest>(
                        scope.GetScriptState(), &on_rejected));
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled2),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected2));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -358,12 +333,12 @@ TEST(ScriptPromiseTest, ThrowingOnRejected) {
   ScriptValue on_fulfilled, on_fulfilled2, on_rejected2;
 
   promise =
-      promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+      promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                        scope.GetScriptState(), &on_fulfilled2),
-                   ThrowingFunction::CreateFunction(scope.GetScriptState()));
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+                   CreateFunction<ThrowingCallable>(scope.GetScriptState()));
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled2),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected2));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -417,9 +392,9 @@ TEST(ScriptPromiseTest, RejectThen) {
   ScriptPromise promise = resolver.Promise();
   ScriptValue on_fulfilled, on_rejected;
   resolver.Reject(V8String(scope.GetIsolate(), "hello"));
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -470,13 +445,13 @@ TEST(ScriptPromiseTest, CastNonPromise) {
       ScriptPromise::Cast(scope.GetScriptState(), ScriptValue(value));
   ScriptPromise promise2 =
       ScriptPromise::Cast(scope.GetScriptState(), ScriptValue(value));
-  promise1.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise1.Then(CreateFunction<FunctionForScriptPromiseTest>(
                     scope.GetScriptState(), &on_fulfilled1),
-                FunctionForScriptPromiseTest::CreateFunction(
+                CreateFunction<FunctionForScriptPromiseTest>(
                     scope.GetScriptState(), &on_rejected1));
-  promise2.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise2.Then(CreateFunction<FunctionForScriptPromiseTest>(
                     scope.GetScriptState(), &on_fulfilled2),
-                FunctionForScriptPromiseTest::CreateFunction(
+                CreateFunction<FunctionForScriptPromiseTest>(
                     scope.GetScriptState(), &on_rejected2));
 
   ASSERT_FALSE(promise1.IsEmpty());
@@ -507,9 +482,9 @@ TEST(ScriptPromiseTest, Reject) {
       ScriptValue(scope.GetIsolate(), V8String(scope.GetIsolate(), "hello"));
   ScriptPromise promise =
       ScriptPromise::Reject(scope.GetScriptState(), ScriptValue(value));
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -531,9 +506,9 @@ TEST(ScriptPromiseTest, RejectWithExceptionState) {
       scope.GetScriptState(),
       MakeGarbageCollected<DOMException>(DOMExceptionCode::kSyntaxError,
                                          "some syntax error"));
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   ASSERT_FALSE(promise.IsEmpty());
@@ -555,9 +530,9 @@ TEST(ScriptPromiseTest, AllWithEmptyPromises) {
       ScriptPromise::All(scope.GetScriptState(), HeapVector<ScriptPromise>());
   ASSERT_FALSE(promise.IsEmpty());
 
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
@@ -582,9 +557,9 @@ TEST(ScriptPromiseTest, AllWithResolvedPromises) {
 
   ScriptPromise promise = ScriptPromise::All(scope.GetScriptState(), promises);
   ASSERT_FALSE(promise.IsEmpty());
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());
@@ -612,9 +587,9 @@ TEST(ScriptPromiseTest, AllWithRejectedPromise) {
 
   ScriptPromise promise = ScriptPromise::All(scope.GetScriptState(), promises);
   ASSERT_FALSE(promise.IsEmpty());
-  promise.Then(FunctionForScriptPromiseTest::CreateFunction(
+  promise.Then(CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_fulfilled),
-               FunctionForScriptPromiseTest::CreateFunction(
+               CreateFunction<FunctionForScriptPromiseTest>(
                    scope.GetScriptState(), &on_rejected));
 
   EXPECT_TRUE(on_fulfilled.IsEmpty());

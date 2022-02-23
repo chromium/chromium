@@ -37,11 +37,7 @@
 #include "ui/views/controls/textfield/textfield.h"
 #endif
 
-#if defined(OS_MAC)
-#include "ui/base/cocoa/defaults_utils.h"
-#endif
-
-#if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "ui/views/linux_ui/linux_ui.h"
@@ -87,10 +83,10 @@ void ParsePortRange(const std::string& range,
 
 // Extracts the string representation of URLs allowed for local IP exposure.
 std::vector<std::string> GetLocalIpsAllowedUrls(
-    const base::ListValue* allowed_urls) {
+    const base::Value* allowed_urls) {
   std::vector<std::string> ret;
   if (allowed_urls) {
-    const auto& urls = allowed_urls->GetList();
+    const auto& urls = allowed_urls->GetListDeprecated();
     for (const auto& url : urls)
       ret.push_back(url.GetString());
   }
@@ -127,7 +123,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   prefs->enable_encrypted_media =
       pref_service->GetBoolean(prefs::kEnableEncryptedMedia);
   prefs->webrtc_ip_handling_policy = std::string();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   prefs->caret_browsing_enabled =
       pref_service->GetBoolean(prefs::kCaretBrowsingEnabled);
   content::BrowserAccessibilityState::GetInstance()->SetCaretBrowsingState(
@@ -143,7 +139,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   ParsePortRange(webrtc_udp_port_range, &prefs->webrtc_udp_min_port,
                  &prefs->webrtc_udp_max_port);
 
-  const base::ListValue* allowed_urls =
+  const base::Value* allowed_urls =
       pref_service->GetList(prefs::kWebRtcLocalIpsAllowedUrls);
   prefs->webrtc_local_ips_allowed_urls = GetLocalIpsAllowedUrls(allowed_urls);
   prefs->webrtc_allow_legacy_tls_protocols =
@@ -163,13 +159,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   prefs->caret_blink_interval = views::Textfield::GetCaretBlinkInterval();
 #endif
 
-#if defined(OS_MAC)
-  base::TimeDelta interval;
-  if (ui::TextInsertionCaretBlinkPeriod(&interval))
-    prefs->caret_blink_interval = interval;
-#endif
-
-#if defined(USE_AURA) && (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if defined(USE_AURA) && (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   views::LinuxUI* linux_ui = views::LinuxUI::instance();
   if (linux_ui) {
     if (ThemeServiceFactory::GetForProfile(profile)->UsingSystemTheme()) {
@@ -188,12 +178,12 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
   }
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID) || \
-    defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID) || \
+    BUILDFLAG(IS_WIN)
   content::UpdateFontRendererPreferencesFromSystemSettings(prefs);
 #endif
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   prefs->plugin_fullscreen_allowed =
       pref_service->GetBoolean(prefs::kFullscreenAllowed);
 #endif
@@ -207,7 +197,7 @@ void UpdateFromSystemSettings(blink::RendererPreferences* prefs,
         ConvertExplicitlyAllowedNetworkPortsPref(local_state);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   prefs->focus_ring_color = SkColorSetRGB(0x00, 0x5F, 0xCC);
 #else
   prefs->focus_ring_color = SkColorSetRGB(0x10, 0x10, 0x10);

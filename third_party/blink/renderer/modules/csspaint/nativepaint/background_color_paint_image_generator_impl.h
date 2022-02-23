@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/css/background_color_paint_image_generator.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
+#include "ui/gfx/geometry/size_f.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -25,7 +25,7 @@ class MODULES_EXPORT BackgroundColorPaintImageGeneratorImpl final
   ~BackgroundColorPaintImageGeneratorImpl() override = default;
 
   // The |container_size| is without subpixel snapping.
-  scoped_refptr<Image> Paint(const FloatSize& container_size,
+  scoped_refptr<Image> Paint(const gfx::SizeF& container_size,
                              const Node*,
                              const Vector<Color>& animated_colors,
                              const Vector<double>& offsets,

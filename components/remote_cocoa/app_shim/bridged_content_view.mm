@@ -26,12 +26,10 @@
 #include "ui/events/keycodes/dom/dom_code.h"
 #import "ui/events/keycodes/keyboard_code_conversion_mac.h"
 #include "ui/events/platform/platform_event_source.h"
-#include "ui/gfx/canvas_paint_mac.h"
 #include "ui/gfx/decorated_text.h"
 #import "ui/gfx/decorated_text_mac.h"
 #include "ui/gfx/geometry/rect.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
-#import "ui/gfx/path_mac.h"
 #include "ui/gfx/scoped_ns_graphics_context_save_gstate_mac.h"
 
 namespace {
@@ -758,7 +756,19 @@ ui::TextEditCommand GetTextEditCommandForMenuAction(SEL action) {
   _keyDownEvent = theEvent;
   _hasUnhandledKeyDownEvent = YES;
   _wantsKeyHandledForInsert = NO;
-  [self interpretKeyEvents:@[ theEvent ]];
+
+  // interpretKeyEvents treats Mac Eisu / Kana keydown as insertion of space
+  // character in omnibox when the current input source is not Japanese.
+  // processInputKeyBindings should be called to switch input sources.
+  if (theEvent.keyCode == kVK_JIS_Eisu || theEvent.keyCode == kVK_JIS_Kana) {
+    if ([NSTextInputContext
+            respondsToSelector:@selector(processInputKeyBindings:)]) {
+      [NSTextInputContext performSelector:@selector(processInputKeyBindings:)
+                               withObject:theEvent];
+    }
+  } else {
+    [self interpretKeyEvents:@[ theEvent ]];
+  }
 
   // When there is marked text, -[NSView interpretKeyEvents:] may handle the
   // event by updating the IME state without updating the composition text.

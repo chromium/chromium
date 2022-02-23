@@ -362,6 +362,10 @@ TEST_F(NGFieldsetLayoutAlgorithmTest, ZeroMaxHeight) {
   )HTML");
 
   String dump = DumpFragmentTree(GetElementById("container"));
+  // The fieldset height should be the legend height + padding-top +
+  // padding-bottom + border-bottom == 53px.
+  // The anonymous content block height should be 20px due to the padding
+  // delegation.
   String expectation = R"DUMP(.:: LayoutNG Physical Fragment Tree ::.
   offset:unplaced size:1000x53
     offset:0,0 size:126x53

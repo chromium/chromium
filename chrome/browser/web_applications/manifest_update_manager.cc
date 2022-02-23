@@ -8,7 +8,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/common/chrome_features.h"
@@ -26,6 +26,7 @@ ManifestUpdateManager::ManifestUpdateManager() = default;
 ManifestUpdateManager::~ManifestUpdateManager() = default;
 
 void ManifestUpdateManager::SetSubsystems(
+    raw_ptr<WebAppInstallManager> install_manager,
     WebAppRegistrar* registrar,
     WebAppIconManager* icon_manager,
     WebAppUiManager* ui_manager,
@@ -33,6 +34,7 @@ void ManifestUpdateManager::SetSubsystems(
     SystemWebAppManager* system_web_app_manager,
     OsIntegrationManager* os_integration_manager,
     WebAppSyncBridge* sync_bridge) {
+  install_manager_ = install_manager;
   registrar_ = registrar;
   icon_manager_ = icon_manager;
   ui_manager_ = ui_manager;
@@ -43,14 +45,14 @@ void ManifestUpdateManager::SetSubsystems(
 }
 
 void ManifestUpdateManager::Start() {
-  registrar_observation_.Observe(registrar_);
+  install_manager_observation_.Observe(install_manager_.get());
 
   DCHECK(!started_);
   started_ = true;
 }
 
 void ManifestUpdateManager::Shutdown() {
-  registrar_observation_.Reset();
+  install_manager_observation_.Reset();
 
   tasks_.clear();
   started_ = false;
@@ -108,7 +110,7 @@ bool ManifestUpdateManager::IsUpdateConsumed(const AppId& app_id) {
   return false;
 }
 
-// AppRegistrarObserver:
+// WebAppInstallManager:
 void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   DCHECK(started_);
 
@@ -120,6 +122,10 @@ void ManifestUpdateManager::OnWebAppWillBeUninstalled(const AppId& app_id) {
   }
   DCHECK(!tasks_.contains(app_id));
   last_update_check_.erase(app_id);
+}
+
+void ManifestUpdateManager::OnWebAppInstallManagerDestroyed() {
+  install_manager_observation_.Reset();
 }
 
 // Throttling updates to at most once per day is consistent with Android.

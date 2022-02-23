@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_KEY_ROTATION_LAUNCHER_IMPL_H_
 #define CHROME_BROWSER_ENTERPRISE_CONNECTORS_DEVICE_TRUST_KEY_MANAGEMENT_BROWSER_KEY_ROTATION_LAUNCHER_IMPL_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/browser/key_rotation_launcher.h"
 
 namespace policy {
@@ -22,11 +23,12 @@ class KeyRotationLauncherImpl : public KeyRotationLauncher {
   ~KeyRotationLauncherImpl() override;
 
   // KeyRotationLauncher:
-  bool LaunchKeyRotation(const std::string& nonce) override;
+  void LaunchKeyRotation(const std::string& nonce,
+                         KeyRotationCommand::Callback callback) override;
 
  private:
-  policy::BrowserDMTokenStorage* dm_token_storage_;
-  policy::DeviceManagementService* device_management_service_;
+  raw_ptr<policy::BrowserDMTokenStorage> dm_token_storage_;
+  raw_ptr<policy::DeviceManagementService> device_management_service_;
 };
 
 }  // namespace enterprise_connectors

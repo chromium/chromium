@@ -8,8 +8,8 @@ import("//extensions/buildflags/buildflags.gni")
 source_set("password_protection") {
   if (safe_browsing_mode == 1 || safe_browsing_mode == 2) {
     sources = [
-      "password_protection_navigation_throttle.cc",
-      "password_protection_navigation_throttle.h",
+      "password_protection_commit_deferring_condition.cc",
+      "password_protection_commit_deferring_condition.h",
       "password_protection_request_content.cc",
       "password_protection_request_content.h",
       "password_protection_service.cc",
@@ -65,7 +65,7 @@ source_set("password_protection_unittest") {
   testonly = true
   if (safe_browsing_mode > 0) {
     sources = [
-      "password_protection_navigation_throttle_unittest.cc",
+      "password_protection_commit_deferring_condition_unittest.cc",
       "password_protection_service_unittest.cc",
     ]
 

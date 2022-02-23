@@ -97,6 +97,7 @@ struct RecentTabHelper::SnapshotProgressInfo {
 
 RecentTabHelper::RecentTabHelper(content::WebContents* web_contents)
     : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<RecentTabHelper>(*web_contents),
       delegate_(new DefaultRecentTabHelperDelegate()) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 }
@@ -269,16 +270,14 @@ void RecentTabHelper::DidFinishNavigation(
       << " - Page can not be saved by last_n";
 }
 
-void RecentTabHelper::DocumentAvailableInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void RecentTabHelper::PrimaryMainDocumentElementAvailable() {
   EnsureInitialized();
-  snapshot_controller_->DocumentAvailableInMainFrame();
+  snapshot_controller_->PrimaryMainDocumentElementAvailable();
 }
 
-void RecentTabHelper::DocumentOnLoadCompletedInMainFrame(
-    content::RenderFrameHost* render_frame_host) {
+void RecentTabHelper::DocumentOnLoadCompletedInPrimaryMainFrame() {
   EnsureInitialized();
-  snapshot_controller_->DocumentOnLoadCompletedInMainFrame();
+  snapshot_controller_->DocumentOnLoadCompletedInPrimaryMainFrame();
 }
 
 void RecentTabHelper::WebContentsDestroyed() {

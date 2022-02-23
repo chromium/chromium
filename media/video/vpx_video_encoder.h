@@ -27,14 +27,14 @@ class MEDIA_EXPORT VpxVideoEncoder : public VideoEncoder {
   void Initialize(VideoCodecProfile profile,
                   const Options& options,
                   OutputCB output_cb,
-                  StatusCB done_cb) override;
+                  EncoderStatusCB done_cb) override;
   void Encode(scoped_refptr<VideoFrame> frame,
               bool key_frame,
-              StatusCB done_cb) override;
+              EncoderStatusCB done_cb) override;
   void ChangeOptions(const Options& options,
                      OutputCB output_cb,
-                     StatusCB done_cb) override;
-  void Flush(StatusCB done_cb) override;
+                     EncoderStatusCB done_cb) override;
+  void Flush(EncoderStatusCB done_cb) override;
 
  private:
   base::TimeDelta GetFrameDuration(const VideoFrame& frame);

@@ -67,6 +67,9 @@ struct MasterPrefs {
   std::vector<GURL> bookmarks;
   std::string import_bookmarks_path;
   std::string suppress_default_browser_prompt_for_version;
+#if BUILDFLAG(IS_MAC)
+  bool confirm_to_quit;
+#endif
 };
 
 void RegisterProfilePrefs(
@@ -76,7 +79,7 @@ void RegisterProfilePrefs(
 // run for this user.
 bool IsChromeFirstRun();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Returns true if |command_line|'s switches explicitly specify that first run
 // should be suppressed in the current run.
 bool IsFirstRunSuppressed(const base::CommandLine& command_line);

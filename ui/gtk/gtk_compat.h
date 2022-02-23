@@ -87,10 +87,12 @@ void GtkCssProviderLoadFromData(GtkCssProvider* css_provider,
 
 ScopedGObject<GListModel> Gtk4FileChooserGetFiles(GtkFileChooser* dialog);
 
-ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGicon(GtkIconTheme* theme,
-                                                      GIcon* icon,
-                                                      int size,
-                                                      GtkIconLookupFlags flags);
+ScopedGObject<GtkIconInfo> Gtk3IconThemeLookupByGiconForScale(
+    GtkIconTheme* theme,
+    GIcon* icon,
+    int size,
+    int scale,
+    GtkIconLookupFlags flags);
 
 ScopedGObject<GtkIconPaintable> Gtk4IconThemeLookupByGicon(
     GtkIconTheme* theme,

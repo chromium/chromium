@@ -4,10 +4,12 @@
 
 #include "content/browser/renderer_host/isolated_app_throttle.h"
 
-#include "base/test/scoped_feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/public/browser/content_browser_client.h"
+#include "content/public/browser/site_isolation_policy.h"
 #include "content/public/common/content_client.h"
+#include "content/public/common/content_switches.h"
 #include "content/public/common/page_type.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -16,7 +18,7 @@
 #include "content/test/test_render_frame_host.h"
 #include "net/base/net_errors.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "third_party/blink/public/common/features.h"
+#include "ui/base/page_transition_types.h"
 #include "url/origin.h"
 
 namespace content {
@@ -37,19 +39,55 @@ class IsolatedAppContentBrowserClient : public ContentBrowserClient {
  public:
   bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
                                              const GURL& url) override {
-    return url::Origin::Create(url) == url::Origin::Create(GURL(kAppUrl));
+    return true;
   }
+
+  bool HandleExternalProtocol(
+      const GURL& url,
+      base::RepeatingCallback<WebContents*()> web_contents_getter,
+      int child_id,
+      int frame_tree_node_id,
+      NavigationUIData* navigation_data,
+      bool is_main_frame,
+      network::mojom::WebSandboxFlags sandbox_flags,
+      ui::PageTransition page_transition,
+      bool has_user_gesture,
+      const absl::optional<url::Origin>& initiating_origin,
+      RenderFrameHost* initiator_document,
+      mojo::PendingRemote<network::mojom::URLLoaderFactory>* out_factory)
+      override {
+    external_protocol_call_count_++;
+    last_page_transition_ = page_transition;
+    return true;
+  }
+
+  unsigned int GetExternalProtocolCallCount() const {
+    return external_protocol_call_count_;
+  }
+
+  ui::PageTransition GetLastPageTransition() { return last_page_transition_; }
+
+  void ResetExternalProtocolCallCount() {
+    external_protocol_call_count_ = 0;
+    last_page_transition_ = ui::PageTransition::PAGE_TRANSITION_QUALIFIER_MASK;
+  }
+
+ private:
+  unsigned int external_protocol_call_count_ = 0;
+  ui::PageTransition last_page_transition_ =
+      ui::PageTransition::PAGE_TRANSITION_QUALIFIER_MASK;
 };
 
 }  // namespace
 
 class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
  public:
-  IsolatedAppThrottleTest()
-      : feature_list_(blink::features::kWebAppEnableIsolatedStorage) {}
-
   void SetUp() override {
     RenderViewHostTestHarness::SetUp();
+
+    base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
+        switches::kRestrictedApiOrigins, kAppUrl);
+    content::SiteIsolationPolicy::DisableFlagCachingForTesting();
 
     old_client_ = SetBrowserClientForTesting(&test_client_);
 
@@ -130,6 +168,8 @@ class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
     return coop_coep_headers_;
   }
 
+  IsolatedAppContentBrowserClient& GetBrowserClient() { return test_client_; }
+
   scoped_refptr<net::HttpResponseHeaders> corp_coep_headers() {
     return corp_coep_headers_;
   }
@@ -163,9 +203,8 @@ class IsolatedAppThrottleTest : public RenderViewHostTestHarness {
     CHECK_EQ(GURL(url), rfh->GetLastCommittedURL());
   }
 
-  base::test::ScopedFeatureList feature_list_;
   IsolatedAppContentBrowserClient test_client_;
-  ContentBrowserClient* old_client_;
+  raw_ptr<ContentBrowserClient> old_client_;
   scoped_refptr<net::HttpResponseHeaders> coop_coep_headers_;
   scoped_refptr<net::HttpResponseHeaders> corp_coep_headers_;
 };
@@ -215,6 +254,18 @@ TEST_F(IsolatedAppThrottleTest, CancelCrossOriginNavigation) {
 
   auto start_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, start_result.action());
+  EXPECT_EQ(1u, GetBrowserClient().GetExternalProtocolCallCount());
+  EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+      GetBrowserClient().GetLastPageTransition(),
+      ui::PageTransition::PAGE_TRANSITION_LINK));
+
+  simulator = StartRendererInitiatedNavigation(main_frame_id(), kNonAppUrl2);
+  start_result = simulator->GetLastThrottleCheckResult();
+  EXPECT_EQ(NavigationThrottle::CANCEL, start_result.action());
+  EXPECT_EQ(2u, GetBrowserClient().GetExternalProtocolCallCount());
+  EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+      GetBrowserClient().GetLastPageTransition(),
+      ui::PageTransition::PAGE_TRANSITION_LINK));
 }
 
 TEST_F(IsolatedAppThrottleTest, BlockNavigationWithinIsolatedAppWithBadCoop) {
@@ -250,6 +301,10 @@ TEST_F(IsolatedAppThrottleTest, BlockRedirectOutOfIsolatedApp) {
 
   auto redirect_result = simulator->GetLastThrottleCheckResult();
   EXPECT_EQ(NavigationThrottle::CANCEL, redirect_result.action());
+  EXPECT_EQ(1u, GetBrowserClient().GetExternalProtocolCallCount());
+  EXPECT_TRUE(ui::PageTransitionTypeIncludingQualifiersIs(
+      GetBrowserClient().GetLastPageTransition(),
+      ui::PageTransition::PAGE_TRANSITION_SERVER_REDIRECT));
 }
 
 TEST_F(IsolatedAppThrottleTest, AllowIframeNavigationOutOfApp) {

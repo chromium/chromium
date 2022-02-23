@@ -45,7 +45,7 @@ namespace {
 const char kPermissionBlockedKillSwitchMessage[] =
     "%s permission has been blocked.";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const char kPermissionBlockedRepeatedDismissalsMessage[] =
     "%s permission has been blocked as the user has dismissed the permission "
     "prompt several times. This can be reset in Site Settings. See "
@@ -81,10 +81,14 @@ const char kPermissionBlockedPortalsMessage[] =
     "%s permission has been blocked because it was requested inside a portal. "
     "Portals don't currently support permission requests.";
 
-void LogPermissionBlockedMessage(content::WebContents* web_contents,
+const char kPermissionBlockedFencedFrameMessage[] =
+    "%s permission has been blocked because it was requested inside a fenced "
+    "frame. Fenced frames don't currently support permission requests.";
+
+void LogPermissionBlockedMessage(content::RenderFrameHost* rfh,
                                  const char* message,
                                  ContentSettingsType type) {
-  web_contents->GetMainFrame()->AddMessageToConsole(
+  rfh->GetOutermostMainFrame()->AddMessageToConsole(
       blink::mojom::ConsoleMessageLevel::kWarning,
       base::StringPrintf(message,
                          PermissionUtil::GetPermissionString(type).c_str()));
@@ -152,29 +156,31 @@ void PermissionContextBase::RequestPermission(
     switch (result.source) {
       case PermissionStatusSource::KILL_SWITCH:
         // Block the request and log to the developer console.
-        LogPermissionBlockedMessage(web_contents,
-                                    kPermissionBlockedKillSwitchMessage,
+        LogPermissionBlockedMessage(rfh, kPermissionBlockedKillSwitchMessage,
                                     content_settings_type_);
         std::move(callback).Run(CONTENT_SETTING_BLOCK);
         return;
       case PermissionStatusSource::MULTIPLE_DISMISSALS:
-        LogPermissionBlockedMessage(web_contents,
+        LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedRepeatedDismissalsMessage,
                                     content_settings_type_);
         break;
       case PermissionStatusSource::MULTIPLE_IGNORES:
-        LogPermissionBlockedMessage(web_contents,
+        LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedRepeatedIgnoresMessage,
                                     content_settings_type_);
         break;
       case PermissionStatusSource::FEATURE_POLICY:
-        LogPermissionBlockedMessage(web_contents,
+        LogPermissionBlockedMessage(rfh,
                                     kPermissionBlockedPermissionsPolicyMessage,
                                     content_settings_type_);
         break;
       case PermissionStatusSource::PORTAL:
-        LogPermissionBlockedMessage(web_contents,
-                                    kPermissionBlockedPortalsMessage,
+        LogPermissionBlockedMessage(rfh, kPermissionBlockedPortalsMessage,
+                                    content_settings_type_);
+        break;
+      case PermissionStatusSource::FENCED_FRAME:
+        LogPermissionBlockedMessage(rfh, kPermissionBlockedFencedFrameMessage,
                                     content_settings_type_);
         break;
       case PermissionStatusSource::INSECURE_ORIGIN:
@@ -269,6 +275,12 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
                               PermissionStatusSource::PORTAL);
     }
 
+    // Permissions are denied for fenced frames.
+    if (render_frame_host->IsNestedWithinFencedFrame()) {
+      return PermissionResult(CONTENT_SETTING_BLOCK,
+                              PermissionStatusSource::FENCED_FRAME);
+    }
+
     // Automatically deny all HTTP or HTTPS requests where the virtual URL and
     // the loaded URL are for different origins. The loaded URL is the one
     // actually in the renderer, but the virtual URL is the one
@@ -281,8 +293,7 @@ PermissionResult PermissionContextBase::GetPermissionStatus(
       const GURL loaded_url = entry->GetURL();
       if (virtual_url.SchemeIsHTTPOrHTTPS() &&
           loaded_url.SchemeIsHTTPOrHTTPS() &&
-          !url::Origin::Create(virtual_url)
-               .IsSameOriginWith(url::Origin::Create(loaded_url))) {
+          !url::IsSameOriginWith(virtual_url, loaded_url)) {
         return PermissionResult(
             CONTENT_SETTING_BLOCK,
             PermissionStatusSource::VIRTUAL_URL_DIFFERENT_ORIGIN);

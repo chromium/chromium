@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 #define CHROME_BROWSER_EXTENSIONS_API_PASSWORDS_PRIVATE_TEST_PASSWORDS_PRIVATE_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_delegate.h"
 #include "chrome/browser/profiles/profile.h"
@@ -79,6 +80,14 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
   // delegate knows of a insecure credential with the same id.
   bool RemoveInsecureCredential(
       const api::passwords_private::InsecureCredential& credential) override;
+  // Fake implementation of MuteInsecureCredential. This succeeds if the
+  // delegate knows of a insecure credential with the same id.
+  bool MuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential) override;
+  // Fake implementation of UnmuteInsecureCredential. This succeeds if the
+  // delegate knows of a insecure credential with the same id.
+  bool UnmuteInsecureCredential(
+      const api::passwords_private::InsecureCredential& credential) override;
   void StartPasswordCheck(StartPasswordCheckCallback callback) override;
   void StopPasswordCheck() override;
   api::passwords_private::PasswordCheckStatus GetPasswordCheckStatus() override;
@@ -115,7 +124,8 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
  private:
   void SendSavedPasswordsList();
   void SendPasswordExceptionsList();
-
+  bool IsCredentialPresentInInsecureCredentialsList(
+      const api::passwords_private::InsecureCredential& credential);
   // The current list of entries/exceptions. Cached here so that when new
   // observers are added, this delegate can send the current lists without
   // having to request them from |password_manager_presenter_| again.
@@ -134,7 +144,7 @@ class TestPasswordsPrivateDelegate : public PasswordsPrivateDelegate {
 
   // List of insecure credentials.
   std::vector<api::passwords_private::InsecureCredential> insecure_credentials_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 
   bool is_opted_in_for_account_storage_ = false;
   bool is_account_store_default_ = false;

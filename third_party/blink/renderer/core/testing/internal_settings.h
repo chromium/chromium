@@ -31,10 +31,10 @@
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/internal_settings_generated.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/size.h"
 
 namespace blink {
 
@@ -57,7 +57,7 @@ class InternalSettings final : public InternalSettingsGenerated,
     bool original_overlay_scrollbars_enabled_;
     mojom::EditingBehavior original_editing_behavior_;
     bool original_text_autosizing_enabled_;
-    IntSize original_text_autosizing_window_size_override_;
+    gfx::Size original_text_autosizing_window_size_override_;
     float original_accessibility_font_scale_factor_;
     String original_media_type_override_;
     blink::mojom::DisplayMode original_display_mode_override_;
@@ -92,9 +92,6 @@ class InternalSettings final : public InternalSettingsGenerated,
   void setFantasyFontFamily(const AtomicString& family,
                             const String& script,
                             ExceptionState&);
-  void setPictographFontFamily(const AtomicString& family,
-                               const String& script,
-                               ExceptionState&);
   void setDefaultVideoPosterURL(const String& url, ExceptionState&);
   void setEditingBehavior(const String&, ExceptionState&);
   void setImagesEnabled(bool, ExceptionState&);

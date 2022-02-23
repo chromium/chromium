@@ -576,13 +576,16 @@ public class TabSwitcherCoordinator
                         MessageService.MessageType.PRICE_MESSAGE, PriceMessageType.PRICE_WELCOME)) {
             return;
         }
-        mPriceMessageService.preparePriceMessage(PriceMessageType.PRICE_WELCOME, priceTabData);
-        appendNextMessage(MessageService.MessageType.PRICE_MESSAGE);
-        // To make the message card in view when user enters tab switcher, we should scroll to
-        // current tab with 0 offset. See {@link TabSwitcherMediator#setInitialScrollIndexOffset}
-        // for more details.
-        mMediator.scrollToTab(
-                mTabModelSelector.getTabModelFilterProvider().getCurrentTabModelFilter().index());
+        if (mPriceMessageService.preparePriceMessage(
+                    PriceMessageType.PRICE_WELCOME, priceTabData)) {
+            appendNextMessage(MessageService.MessageType.PRICE_MESSAGE);
+            // To make the message card in view when user enters tab switcher, we should scroll to
+            // current tab with 0 offset. See {@link
+            // TabSwitcherMediator#setInitialScrollIndexOffset} for more details.
+            mMediator.scrollToTab(mTabModelSelector.getTabModelFilterProvider()
+                                          .getCurrentTabModelFilter()
+                                          .index());
+        }
     }
 
     private void appendMessagesTo(int index) {

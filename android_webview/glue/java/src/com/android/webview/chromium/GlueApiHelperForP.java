@@ -4,10 +4,11 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.TracingController;
 import android.webkit.WebViewDelegate;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.VerifiesOnP;
 
@@ -19,7 +20,7 @@ import org.chromium.base.annotations.VerifiesOnP;
  * specific to glue layer.
  */
 @VerifiesOnP
-@TargetApi(Build.VERSION_CODES.P)
+@RequiresApi(Build.VERSION_CODES.P)
 public final class GlueApiHelperForP {
     private GlueApiHelperForP() {}
 

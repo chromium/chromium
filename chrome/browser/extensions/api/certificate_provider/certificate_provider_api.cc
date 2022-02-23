@@ -104,9 +104,9 @@ class RequestPinExceptFirstQuotaBucketMapper final
   void GetBucketsForArgs(const base::Value* args,
                          QuotaLimitHeuristic::BucketList* buckets) override {
     DCHECK(args->is_list());
-    if (args->GetList().empty())
+    if (args->GetListDeprecated().empty())
       return;
-    const base::Value& details = args->GetList()[0];
+    const base::Value& details = args->GetListDeprecated()[0];
     if (!details.is_dict())
       return;
     const base::Value* sign_request_id =

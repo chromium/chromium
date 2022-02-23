@@ -19,7 +19,6 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
     GetPipelineStatsCB get_pipeline_stats_cb,
     media::VideoCodecProfile codec_profile,
     const gfx::Size& natural_size,
-    std::string key_system,
     absl::optional<media::CdmConfig> cdm_config,
     scoped_refptr<base::SingleThreadTaskRunner> task_runner,
     const base::TickClock* tick_clock)
@@ -29,7 +28,7 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
       get_pipeline_stats_cb_(std::move(get_pipeline_stats_cb)),
       codec_profile_(codec_profile),
       natural_size_(media::GetSizeBucket(natural_size)),
-      key_system_(key_system),
+      key_system_(cdm_config ? cdm_config->key_system : ""),
       use_hw_secure_codecs_(cdm_config ? cdm_config->use_hw_secure_codecs
                                        : false),
       tick_clock_(tick_clock),
@@ -37,7 +36,6 @@ VideoDecodeStatsReporter::VideoDecodeStatsReporter(
   DCHECK(recorder_remote_.is_bound());
   DCHECK(get_pipeline_stats_cb_);
   DCHECK_NE(media::VIDEO_CODEC_PROFILE_UNKNOWN, codec_profile_);
-  DCHECK(!cdm_config || !key_system_.empty());
 
   recorder_remote_.set_disconnect_handler(base::BindOnce(
       &VideoDecodeStatsReporter::OnIpcConnectionError, base::Unretained(this)));

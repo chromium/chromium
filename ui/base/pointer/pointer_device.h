@@ -10,7 +10,7 @@
 #include "base/component_export.h"
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #endif
 

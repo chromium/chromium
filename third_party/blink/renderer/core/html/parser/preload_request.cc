@@ -105,13 +105,6 @@ Resource* PreloadRequest::Start(Document* document) {
 
   resource_request.SetFetchImportanceMode(importance_);
 
-  if (resource_type_ == ResourceType::kImage && url.ProtocolIsInHTTPFamily() &&
-      base::FeatureList::IsEnabled(blink::features::kSubresourceRedirect) &&
-      blink::GetNetworkStateNotifier().SaveDataEnabled()) {
-    resource_request.SetPreviewsState(resource_request.GetPreviewsState() |
-                                      PreviewsTypes::kSubresourceRedirectOn);
-  }
-
   ResourceLoaderOptions options(document->domWindow()->GetCurrentWorld());
   options.initiator_info = initiator_info;
   FetchParameters params(std::move(resource_request), options);

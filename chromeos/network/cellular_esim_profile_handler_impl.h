@@ -16,6 +16,12 @@ class PrefRegistrySimple;
 
 namespace chromeos {
 
+namespace network_ui {
+
+class NetworkConfigMessageHandler;
+
+}  // namespace network_ui
+
 // CellularESimProfileHandler implementation which utilizes the local state
 // PrefService to track eSIM profiles.
 //
@@ -49,12 +55,14 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
 
  private:
   friend class CellularESimProfileHandlerImplTest;
-  friend class NetworkConfigMessageHandler;
+  friend class network_ui::NetworkConfigMessageHandler;
 
   // CellularESimProfileHandler:
   void InitInternal() override;
   std::vector<CellularESimProfile> GetESimProfiles() override;
   bool HasRefreshedProfilesForEuicc(const std::string& eid) override;
+  bool HasRefreshedProfilesForEuicc(
+      const dbus::ObjectPath& euicc_path) override;
   void SetDevicePrefs(PrefService* device_prefs) override;
   void OnHermesPropertiesUpdated() override;
 
@@ -74,6 +82,15 @@ class COMPONENT_EXPORT(CHROMEOS_NETWORK) CellularESimProfileHandlerImpl
   // Used by chrome://network debug page; not meant to be called during normal
   // usage.
   void ResetESimProfileCache();
+  // Disabled the current active eSIM profile.
+  void DisableActiveESimProfile();
+
+  void PerformDisableProfile(
+      const dbus::ObjectPath& profile_path,
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock);
+  void OnProfileDisabled(
+      std::unique_ptr<CellularInhibitor::InhibitLock> inhibit_lock,
+      HermesResponseStatus status);
 
   // Initialized to null and set once SetDevicePrefs() is called.
   PrefService* device_prefs_ = nullptr;

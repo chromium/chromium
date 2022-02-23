@@ -13,7 +13,7 @@
 
 namespace mojo {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct GPU_EXPORT
     EnumTraits<gpu::mojom::Direct3DFeatureLevel, D3D_FEATURE_LEVEL> {
@@ -22,7 +22,7 @@ struct GPU_EXPORT
   static bool FromMojom(gpu::mojom::Direct3DFeatureLevel input,
                         D3D_FEATURE_LEVEL* out);
 };
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 struct GPU_EXPORT EnumTraits<gpu::mojom::HasDiscreteGpu, gpu::HasDiscreteGpu> {
@@ -50,7 +50,7 @@ struct GPU_EXPORT
     return info.hardware_concurrency;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static uint32_t system_commit_limit_mb(const gpu::DevicePerfInfo& info) {
     return info.system_commit_limit_mb;
   }

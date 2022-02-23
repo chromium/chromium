@@ -4,6 +4,7 @@
 
 #include "gpu/ipc/client/client_shared_image_interface.h"
 
+#include "build/build_config.h"
 #include "gpu/ipc/client/shared_image_interface_proxy.h"
 #include "ui/gfx/gpu_fence.h"
 #include "ui/gfx/gpu_memory_buffer.h"
@@ -38,7 +39,7 @@ void ClientSharedImageInterface::PresentSwapChain(const SyncToken& sync_token,
   proxy_->PresentSwapChain(sync_token, mailbox);
 }
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 void ClientSharedImageInterface::RegisterSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id,
     zx::channel token,
@@ -53,7 +54,7 @@ void ClientSharedImageInterface::ReleaseSysmemBufferCollection(
     gfx::SysmemBufferCollectionId id) {
   proxy_->ReleaseSysmemBufferCollection(id);
 }
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
 SyncToken ClientSharedImageInterface::GenUnverifiedSyncToken() {
   return proxy_->GenUnverifiedSyncToken();
@@ -116,7 +117,7 @@ Mailbox ClientSharedImageInterface::CreateSharedImage(
       surface_origin, alpha_type, usage));
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::vector<Mailbox> ClientSharedImageInterface::CreateSharedImageVideoPlanes(
     gfx::GpuMemoryBuffer* gpu_memory_buffer,
     GpuMemoryBufferManager* gpu_memory_buffer_manager,
@@ -137,7 +138,7 @@ void ClientSharedImageInterface::CopyToGpuMemoryBuffer(
 }
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 Mailbox ClientSharedImageInterface::CreateSharedImageWithAHB(
     const Mailbox& mailbox,
     uint32_t usage,

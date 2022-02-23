@@ -131,19 +131,19 @@ ui::Layer* AccessibilityFocusHighlight::GetLayerForTesting() {
 }
 
 SkColor AccessibilityFocusHighlight::GetHighlightColor() {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Match behaviour with renderer_preferences_util::UpdateFromSystemSettings
   // setting prefs->focus_ring_color
   return default_color_;
 #else
-  ui::NativeTheme* native_theme = ui::NativeTheme::GetInstanceForWeb();
-  SkColor theme_color = native_theme->GetSystemColor(
-      ui::NativeTheme::kColorId_FocusedBorderColor);
+  const ui::ColorProvider* color_provider = browser_view_->GetColorProvider();
+  SkColor theme_color =
+      color_provider->GetColor(ui::kColorFocusableBorderFocused);
 
   if (theme_color == SK_ColorTRANSPARENT || use_default_color_for_testing_)
     return default_color_;
 
-  return native_theme->FocusRingColorForBaseColor(theme_color);
+  return theme_color;
 #endif
 }
 

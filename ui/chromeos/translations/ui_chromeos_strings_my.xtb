@@ -21,6 +21,7 @@
 <translation id="115443833402798225">ဟံဂူလ် Ahnmatae</translation>
 <translation id="1155759005174418845">ကက်တလန်</translation>
 <translation id="1168100932582989117">Google အမည် ဆာဗာများ</translation>
+<translation id="1171082344678443012">XZ ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="1172970565351728681"><ph name="REMAINING_TIME" /> ခန့် ကျန်ပါသေးသည်</translation>
 <translation id="1173894706177603556">အမည်ပြောင်းရန်</translation>
 <translation id="1173916544412572294">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="PHONE_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ဖုန်းဘက်ထရီ <ph name="BATTERY_STATUS" />%၊ အသေးစိတ်များ</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">ဤဖိုင်တွဲကို Linux အား မျှဝေထားသည်</translation>
 <translation id="1864756863218646478">ဖိုင်ကို မတွေ့နိုင်ပါ။</translation>
 <translation id="1884013283844450420">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ ချိတ်ဆက်ရန်</translation>
+<translation id="1914901738028575085">CloudReady 2.0 စက်ပစ္စည်း</translation>
 <translation id="1920670151694390848">မလေယာလမ် အက္ခရာဖလှယ်ခြင်း</translation>
 <translation id="1920798810075583923">ဖရဲသီး</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> ကို ဖော်မက်ချထားသည်</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">ဒရိုက်ဗ်တစ်ခုကို ဖော်မက်ချခြင်းသည် ၎င်းပေါ်ရှိ ဒေတာများအားလုံးကို ဖျက်လိုက်ပါမည်။ ဤလုပ်ဆောင်ချက်ကို ပြန်ပြင်၍ မရပါ။</translation>
 <translation id="2025955442973426285">တီဂရင်းညာ</translation>
 <translation id="2028997212275086731">RAR စနစ်ဖြင့် ချုံ့ထားသော ဖိုင်မှတ်တမ်း</translation>
+<translation id="2036414735548252477">LZMA ဖြင့် ချုံ့ထားသည့် tar မှတ်တမ်း</translation>
 <translation id="2037845485764049925">ရုရှား</translation>
 <translation id="2044023416777079300">မိုဒမ်ကို မှတ်ပုံတင်မထားပါ</translation>
 <translation id="2046702855113914483">ခေါက်ဆွဲ</translation>
@@ -130,7 +133,7 @@
 <translation id="2088690981887365033">VPN ကွန်ရက်</translation>
 <translation id="2122305276694332719">ဝှက်ထားသည့် ကွန်ရက်သို့ အလိုအလျောက် ချိတ်ဆက်ခြင်းဖြင့် အခြားသူများသည် သင့်စက်ပစ္စည်းနှင့် အချို့သော ကွန်ရက်ဆက်တင်များကို မြင်ရနိုင်သောကြောင့် အကြံမပြုပါ။</translation>
 <translation id="2125607626296734455">ခမာ</translation>
-<translation id="2139545522194199494">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ ချိတ်ဆက်ရန်</translation>
+<translation id="2139545522194199494">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားပါသည်၊ ချိတ်ဆက်ရန်</translation>
 <translation id="2141347188420181405">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
 <translation id="2142680004883808240">အသံထွက် YaZHert ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="2143778271340628265">လက်ဖြင့် ပရောက်စီ စီစဉ်ပေးခြင်း</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> နှင့်မျှဝေပါ</translation>
 <translation id="3083975830683400843">Chromebit များ</translation>
 <translation id="3085752524577180175">SOCKS လက်ခံဝန်ဆောင်ပေးသည့်ပရောက်စီ</translation>
+<translation id="3104793765551262433">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" /> %၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
 <translation id="3113153474486991170">ဤနေရာမှ “<ph name="PATH" />” ကို ဖွင့်၍မရပါ။ ဖွင့်ရန် “ကျွန်ုပ်၏ဖိုင်များ” သို့ မိတ္တူကူးပါ။</translation>
 <translation id="3113592018909187986">သင့်တွင် ကြိုးစားခွင့် 1 ကြိမ် ကျန်သည်။ ပင်နံပါတ်အသစ် မသတ်မှတ်မချင်း ဤကွန်ရက်ကို သုံးနိုင်မည်မဟုတ်ပါ။</translation>
 <translation id="3124404833828281817">စိတ်ကူးယဉ်နေသူ</translation>
@@ -274,7 +278,7 @@
 <translation id="3358452157379365236">ဂစ်တာ</translation>
 <translation id="3368922792935385530">ချိတ်ဆက်ထားပြီ</translation>
 <translation id="3382143449143186018">InScript ကီးဘုတ်ဖြင့် နီပေါ</translation>
-<translation id="338691029516748599">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ ချိတ်ဆက်ရန်</translation>
+<translation id="338691029516748599">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ ချိတ်ဆက်ရန်</translation>
 <translation id="3408072735282270043">စဖွင့်ရန်၊ <ph name="NETWORK_NAME" /></translation>
 <translation id="3408236822532681288">Neo 2 ကီးဘုတ်ဖြင့် ဂျာမန် (ဂျာမနီ)</translation>
 <translation id="3414856743105198592">ဖြုတ်တပ်ရသော မီဒီယာကို ပြန်လည်ပြင်ဆင်ခြင်းသည် ဒေတာအားလုံးကို ဖျက်ပစ်လိမ့်မည်။သင်ရှေ့ဆက်လိုပါသလား?</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">နိုင်ငံတကာ PC ကီးဘုတ်ဖြင့် အင်္ဂလိပ် (ယူအက်စ်)</translation>
 <translation id="3567221313191587603">သင့်ဖိုင်များကို အော့ဖ်လိုင်း ကြည့်ရှုခွင့်ရရန် ဖိုင်တစ်ဖိုင်ရွေးပြီး <ph name="OFFLINE_CHECKBOX_NAME" /> ကိုဖွင့်ပိတ်လုပ်ပါ။</translation>
 <translation id="357479282490346887">လီသွေနီယံ</translation>
+<translation id="3587482841069643663">အားလုံး</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> ကို အော့ဖ်လိုင်းသုံးနိုင်အောင် ပြုလုပ်၍မရပါ</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">ကနေဒါမွေး ပြင်သစ်</translation>
@@ -303,15 +308,15 @@
 <translation id="3616113530831147358">အသံ</translation>
 <translation id="3619115746895587757">ကာပူချီနို</translation>
 <translation id="3620292326130836921">အားလုံးအရံသိမ်းဆည်းပြီးပါပြီ!</translation>
-<translation id="3634507049637220048">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ အသေးစိတ်များ</translation>
+<translation id="3634507049637220048">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ခု ရွှေ့ပြီးပြီ။</translation>
-<translation id="3645531960514756307">ဖိုင်တွဲကို ပင်ဖြုတ်ရန်</translation>
 <translation id="3685122418104378273">မိုဘိုင်း ဒေတာကို အသုံးပြုချိန်မှာ ပုံသေအားဖြင့် Google ဒရိုက်ဗ် စင့်ကို ပိတ်ထားသည်။</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> ကို ပယ်ဖျက်မည်။</translation>
 <translation id="3690128548376345212">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" />၊<ph name="NETWORK_NAME" />၊ ဖွင့်မထားပါ၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ အသေးစိတ်</translation>
 <translation id="3691184985318546178">ဆင်ဟာလာ</translation>
 <translation id="3726463242007121105">ဤစက်ပစ္စည်း၏ ဖိုင်စနစ်ကို မထောက်ပံ့သောကြောင့် ဖွင့်၍မရပါ။</translation>
 <translation id="3727148787322499904">ဤဆက်တင်ကို ပြောင်းလဲခြင်းအားဖြင့် မျှဝေထားသည့် ကွန်ရက်အားလုံးကို အကျိုးသက်ရောက်စေပါလိမ့်မည်</translation>
+<translation id="3737576078404241332">ဆိုက်ဘားမှ ဖယ်ရှားရန်</translation>
 <translation id="3741243925913727067">Google Drive သို့သင့်မီဒီယာ၏ ဓာတ်ပုံများနှင့် ဗီဒီယိုများကို အရံသိမ်းဆည်းမည်။</translation>
 <translation id="3749289110408117711">ဖိုင် အမည်</translation>
 <translation id="3780536599611287598">ဖိုင်များကို '<ph name="FOLDER_NAME" />' သို့ ရွှေ့ရန် သင့်ထံတွင် ခွင့်ပြုချက်မရှိပါ။</translation>
@@ -372,11 +377,12 @@
 <translation id="4326142238881453352">ရုက္ခဗေဒပညာရှင်</translation>
 <translation id="4326192123064055915">ကော်ဖီ</translation>
 <translation id="4336032328163998280">ကူးယူရန် လုပ်ကိုင်မှု မအောင်မြင်ခဲ့ပါ။ <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">ဆိုက်ဘားသို့ ထည့်ရန်</translation>
 <translation id="4348495354623233847">အာရဗီအခြေခံ ကီးဘုတ်ဖြင့် ဆိုရာနီကဒ်</translation>
 <translation id="4363958938297989186">အသံထွက်ကီးဘုတ်ဖြင့် ရုရှား</translation>
 <translation id="4364327530094270451">ဖရဲသီး</translation>
 <translation id="4378551569595875038">ချိတ်ဆက်ရန်...</translation>
-<translation id="4380245540200674032">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ အသေးစိတ်</translation>
+<translation id="4380245540200674032">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံသည်၊ အသေးစိတ်</translation>
 <translation id="4387004326333427325">အထောက်အထား စိစစ်ရေး လက်မှတ်ကို အဝေးမှ ငြင်းပယ်ခဲ့သည်။</translation>
 <translation id="4394214039309501350">ပြင်ပလင့်ခ်</translation>
 <translation id="4418686080762064601">သင့်ဖိုင်များအတွက် ဖြတ်လမ်းလင့်ခ် ပြုလုပ်ပါ</translation>
@@ -384,7 +390,7 @@
 <translation id="4439427728133035643">ကွန်ရက် <ph name="NETWORK_COUNT" />ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ရန်</translation>
 <translation id="4442424173763614572">DNS ကြည့်ရှုမှု မအောင်မြင်ခဲ့</translation>
 <translation id="4462159676511157176">စိတ်ကြိုက်အမည် ဆာဗာများ</translation>
-<translation id="4465725236958772856">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ ချိတ်ဆက်ရန်</translation>
+<translation id="4465725236958772856">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ ချိတ်ဆက်ရန်</translation>
 <translation id="4470564870223067757">ဟံဂူလ် ၂ စုံ</translation>
 <translation id="4477002475007461989">ရိုမေနီယား</translation>
 <translation id="4477219268485577442">ဘာလ်ဂေရီယမ် အသံထွက်</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> ဘိုက်</translation>
 <translation id="4880214202172289027">အတိုးအကျယ် ဆလိုက်ဒါး</translation>
 <translation id="4881695831933465202">ဖွင့်</translation>
+<translation id="4886199584824489598">Bzip2 ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="4900532980794411603">Parallels Desktop အား မျှဝေရန်</translation>
 <translation id="4902546322522096650">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ ချိတ်ဆက်ရန်</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> ကို မိတ္ထူပွားရန် အသင့်ဖြစ်ပါပြီ</translation>
@@ -583,6 +590,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ကွန်ရက်၊ ချိတ်ဆက်မထားပါ</translation>
 <translation id="6074825444536523002">Google ပုံစံ</translation>
 <translation id="6079871810119356840">Qwerty ကီးဘုတ်ဖြင့် ဟန်ဂေရီ</translation>
+<translation id="6082256976217156453">LZMA ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="6096979789310008754">ရှာဖွေမှုစာသားကို ရှင်းလင်းထားသည်၊ ဖိုင်နှင့် ဖိုင်တွဲများအားလုံးကို ပြထားသည်</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> ကို <ph name="FOLDER_NAME" /> သို့ ရွှေ့နေသည်</translation>
 <translation id="6129953537138746214">နေရာခြား</translation>
@@ -626,7 +634,7 @@
 <translation id="642282551015776456">ဒီအမည်ကို ဖိုင် သို့မဟုတ် ဖိုလ်ဒါ အမည် အဖြစ် သုံးမရနိုင်</translation>
 <translation id="6423031066725912715">TCVN ကီးဘုတ်ဖြင့် ဗီယက်နမ်</translation>
 <translation id="6485131920355264772">နေရာခြားအချက်လက် ရယူခြင်း မအောင်မြင်ပါ</translation>
-<translation id="6495925982925244349">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />% သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ အသေးစိတ်များ</translation>
+<translation id="6495925982925244349">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />% သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="6499681088828539489">မျှဝေထားသည့် ကွန်ရက်များအတွက် ပရောက်စီများကို ခွင့်မပြုရန်</translation>
 <translation id="6509122719576673235">နော်ဝေ ဂျီယန်</translation>
 <translation id="6528513914570774834">ဤစက်ပစ္စည်း၏ အခြားအသုံးပြုသူများအား ဤကွန်ရက်ကို အသုံးပြုခွင့်ပေးရန်</translation>
@@ -678,6 +686,7 @@
 <translation id="6935521024859866267">ဇောက်ထိုး မိုးမျှော်</translation>
 <translation id="6943836128787782965">HTTP မှာ မအောင်မြင်ခဲ့</translation>
 <translation id="6949408524333579394">ဆားဘီးယား အက္ခရာဖလှယ်ခြင်း</translation>
+<translation id="6954309393500027528">ဤဖိုင်ကူးယူခြင်းကို သင်၏စီမံခန့်ခွဲသူက ပိတ်ထားသည်</translation>
 <translation id="6960565108681981554">ဖွင့်မထားပါ။ သင်၏ မိုဘိုင်းဖုန်းကုမ္ပဏီကို ဆက်သွယ်ပါ။</translation>
 <translation id="696203921837389374">မိုဘိုင်း ဒေတာ ပေါ်မှာ စင့်က်လုပ်မှုကို ဖွင့်ပေးရန်</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -838,6 +847,7 @@
 <translation id="8297012244086013755">ဟံဂူလ် ၃ စုံ(Shift မသုံး)</translation>
 <translation id="8299269255470343364">ဂျပန်</translation>
 <translation id="8300849813060516376">OTASP မအောင်မြင်ပါ</translation>
+<translation id="8308481408797647857">XZ ဖြင့် ချုံ့ထားသည့် tar မှတ်တမ်း</translation>
 <translation id="8312871300878166382">ဖိုင်တွဲထဲသို့ ကူးထည့်ရန်</translation>
 <translation id="8329978297633540474">ရိုးရိုး စာသား</translation>
 <translation id="8335587457941836791">စင် ပေါ်မှ ထုတ်ပစ်ရန်</translation>
@@ -874,6 +884,7 @@
 <translation id="8551494947769799688">လာတ်ဗီယန်း</translation>
 <translation id="8560515948038859357">ကွမ်တုံ</translation>
 <translation id="8561206103590473338">ဆင်</translation>
+<translation id="8566466896628108558">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက် <ph name="NETWORK_INDEX" /> ခုမြောက်၊ <ph name="NETWORK_NAME" />၊ <ph name="SECURITY_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့်စီမံခန့်ခွဲသူက ပိတ်ထားသည်၊ အသေးစိတ်</translation>
 <translation id="8569764466147087991">ဖွင့်ရန် ဖိုင်ရွေးပါ</translation>
 <translation id="8577897833047451336">ခရိုအေးရှား</translation>
 <translation id="8578308463707544055">အင်ဒိုနီးရှား</translation>
@@ -891,7 +902,8 @@
 <translation id="8714406895390098252">စက်ဘီး</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> ကို ရွေးချယ်ထားသည်။</translation>
 <translation id="872537912056138402">ခရိုအေးရှန်း</translation>
-<translation id="8743164338060742337">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /> လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ ချိတ်ဆက်ရန်</translation>
+<translation id="873847021056608403">CloudReady 2.0 စက်ပစ္စည်းများ</translation>
+<translation id="8743164338060742337">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="NETWORK_PROVIDER_NAME" /> လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ ချိတ်ဆက်ရန်</translation>
 <translation id="8750438273876807512">ဖိုင်တစ်ဖိုင်ကို တို့ထိ၍ဖိထားပြီး <ph name="ICON" /> ကို တို့ပါ၊ ထို့နောက် စင်ပေါ်ရှိ သင့်ဖိုင်များကို အမြန်သုံးခွင့်အတွက် "စင်တွင်ပင်ထိုးရန်" ကို ရွေးပါ။</translation>
 <translation id="8787254343425541995">မျှဝေထားသော ကွန်ယက်များအတွက် ပရောက်စီများကို ခွင့်ပြုမည်</translation>
 <translation id="8790981080411996443">အပင်ရေလောင်းနေသူ</translation>
@@ -912,7 +924,7 @@
 <translation id="8965697826696209160">နေရာ လုံလုံလောက်လောက် မရှိပါ။</translation>
 <translation id="8970501467542182729">ဤဖိုင်ကို Macintosh ဆော့ဖ်ဝဲသုံးသည့် ကွန်ပျူတာအတွက် ထုတ်လုပ်ထားသည်။ ၎င်းကို Chrome OS သုံးသော သင့်စက်ပစ္စည်းတွင် ဖွင့်၍မရပါ။ Chrome OS တွင် ဖိုင်များဖွင့်ခြင်းအကြောင်း <ph name="BEGIN_LINK_HELP" />ပိုမိုလေ့လာပါ<ph name="END_LINK_HELP" />။</translation>
 <translation id="8997962250644902079">တရုတ် (ရိုးရာ) ပင်ယင်</translation>
-<translation id="9003940392834790328">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'စီမံခန့်ခွဲသူ' က ကြီးကြပ်ထားသည်၊ အသေးစိတ်များ</translation>
+<translation id="9003940392834790328">ကွန်ရက် <ph name="NETWORK_COUNT" /> ခုအနက်မှ <ph name="NETWORK_INDEX" />၊ <ph name="NETWORK_NAME" />၊ <ph name="CONNECTION_STATUS" />၊ လိုင်းဆွဲအား <ph name="SIGNAL_STRENGTH" />%၊ သင့် 'ကြီးကြပ်သူ' က စီမံထားသည်၊ အသေးစိတ်များ</translation>
 <translation id="9017798300203431059">ရုရှားအသံထွက်</translation>
 <translation id="9034924485347205037">Linux ဖိုင်များ</translation>
 <translation id="9035012421917565900">၎င်းတို့ကို '<ph name="DESTINATION_NAME" />' သို့ ပြန်ရွှေ့၍မရသည့်အတွက် ဤလုပ်ဆောင်ချက်ကို တစ်ဆင့်နောက်ပြန်၍ ရမည်မဟုတ်ပါ။</translation>
@@ -926,7 +938,6 @@
 <translation id="9110990317705400362">သင်၏ ဘရောင်ဇာ သုံးမှု ပိုလုံခြုုံလာရေး နည်းလမ်းများကို ကျွန်ုပ်တို့ တချိန်လုံး ရှာကြံနေကြပါသည်။ အရင်တုန်းက၊ ဘယ် ဝက်ဘ်ဆိုက်မဆို သင်၏ ဘရောက်ဇာ ထဲသို့ တိုးချဲ့မှု တစ်ခုခိုကို ထည့်ပေးရန် တိုက်တွန်းခဲ့ပါမည်။ Google Chrome ၏ နောက်ဆုံး ဗားရှင်း ထဲမှာ၊ သင်သည် တိုးချဲ့မှု စာမျက်နှာ ထဲကို ထည့်ပေးခြင်း မှတစ်ဆင့် ထိုတိုးချဲ့မှုများကို ထည့်သွင်းလိုကြောင်း သင်သည် အတိအလင်း ပြောရန် လိုပါသည်။ <ph name="BEGIN_LINK" />ပိုမို လေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">သော့ဖွင့်ရန်</translation>
 <translation id="912419004897138677">ကိုးဒက်ခ်</translation>
-<translation id="9129931661813833980">ဖိုင်တွဲကို ပင်ထိုးရန်</translation>
 <translation id="9130775360844693113">'<ph name="DESTINATION_NAME" />' ၏ အဖွဲ့ဝင်များသည် ဤအရာများကို အသုံးပြုခွင့်ရရှိမည်ဖြစ်သည်။</translation>
 <translation id="9131598836763251128">ဖိုင်များကို တစ်ခု သို့မဟုတ် ပိုများပြီး ရွေးရန်</translation>
 <translation id="9133055936679483811">ဇစ်လုပ်ခြင်း မအောင်မြင်ပါ။ <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +958,7 @@
 <translation id="943972244133411984">ပြုပြင်ထားသူ</translation>
 <translation id="945522503751344254">အကြံပြုချက် ပေးပို့မည်</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" /> မှ<ph name="TO_ENTRY_NAME" /> သို့ ထည့်သွင်းမှု အပိုင်းအခြား <ph name="ENTRY_COUNT" /> ခု ကို ရွေးထားသည်။</translation>
+<translation id="961973045258256291">Gzip ဖြင့် ချုံ့ထားသည့် မှတ်တမ်း</translation>
 <translation id="965477715979482472">အင်္ဂလိပ် (တောင်အာဖရိက)</translation>
 <translation id="981121421437150478">အော့ဖ်လိုင်း</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" အမည်ဖြင့် ဖိုင်ရှိပြီးဖြစ်ပါသည်။ ၎င်းကို အစားထိုးလိုပါသလား။</translation>

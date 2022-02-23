@@ -149,7 +149,7 @@ class ChromeURLDataManagerWebUITrustedTypesTest
  public:
   ChromeURLDataManagerWebUITrustedTypesTest() {
     std::vector<base::Feature> enabled_features;
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
     if (GetParam() == std::string("chrome://welcome"))
       enabled_features.push_back(welcome::kForceEnabled);
 #endif
@@ -205,9 +205,7 @@ IN_PROC_BROWSER_TEST_P(ChromeURLDataManagerWebUITrustedTypesTest,
 // This list was derived from chrome://about. :)
 static constexpr const char* const kChromeUrls[] = {
     "chrome://accessibility",
-    // TODO(crbug.com/1114074): DCHECK failure when opening
-    // chrome://appcache-internals.
-    // "chrome://appcache-internals",
+    "chrome://attribution-internals",
     "chrome://autofill-internals",
     "chrome://blob-internals",
     "chrome://bookmarks",
@@ -215,7 +213,6 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://components",
     "chrome://connection-help",
     "chrome://connection-monitoring-detected",
-    "chrome://conversion-internals",
     "chrome://crashes",
     "chrome://credits",
     "chrome://device-log",
@@ -288,7 +285,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://web-app-internals",
     "chrome://webrtc-internals",
     "chrome://webrtc-logs",
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     "chrome://explore-sites-internals",
     "chrome://internals/notifications",
     "chrome://internals/query-tiles",
@@ -331,21 +328,21 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://sys-internals",
     "chrome-untrusted://terminal",
 #endif
-#if !defined(OS_CHROMEOS)
+#if !BUILDFLAG(IS_CHROMEOS)
     "chrome://apps",
     "chrome://browser-switch",
+    "chrome://welcome",
 #endif
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
     "chrome://signin-email-confirmation",
-    "chrome://welcome",
 #endif
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     "chrome://sandbox",
     "chrome://nacl",
     // TODO(https://crbug.com/1219651): this test is flaky on mac.
     "chrome://bluetooth-internals",
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     "chrome://conflicts",
 #endif
 };

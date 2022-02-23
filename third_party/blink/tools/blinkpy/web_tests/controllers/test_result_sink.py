@@ -20,6 +20,7 @@ import requests
 from blinkpy.common.path_finder import RELATIVE_WEB_TESTS
 from blinkpy.web_tests.models.typ_types import ResultType
 
+logging.getLogger("urllib3").setLevel(logging.WARNING)
 _log = logging.getLogger(__name__)
 
 
@@ -126,7 +127,7 @@ class TestResultSink(object):
             pair('web_tests_flag_specific_config_name',
                  self._port.flag_specific_config_name() or ''),
             pair('web_tests_base_timeout',
-                 str(self._port.timeout_ms() / 1000)),
+                 str(int(self._port.timeout_ms() / 1000))),
         ]
 
         for used_file in self._port.used_expectations_files():

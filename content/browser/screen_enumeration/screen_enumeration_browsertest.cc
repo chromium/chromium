@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
@@ -153,14 +154,14 @@ class FakeScreenEnumerationTest : public ScreenEnumerationTest {
   Shell* test_shell() { return test_shell_; }
 
  private:
-  display::Screen* original_screen_ = nullptr;
+  raw_ptr<display::Screen> original_screen_ = nullptr;
   display::ScreenBase screen_;
-  Shell* test_shell_ = nullptr;
+  raw_ptr<Shell> test_shell_ = nullptr;
 };
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_GetScreensFaked DISABLED_GetScreensFaked
 #else
 // TODO(crbug.com/1119974): Need content_browsertests permission controls.
@@ -181,7 +182,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_GetScreensFaked) {
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_IsExtendedFaked DISABLED_IsExtendedFaked
 #else
 #define MAYBE_IsExtendedFaked IsExtendedFaked
@@ -200,7 +201,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest, MAYBE_IsExtendedFaked) {
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenOnchangeNoPermission DISABLED_ScreenOnchangeNoPermission
 #else
 #define MAYBE_ScreenOnchangeNoPermission ScreenOnchangeNoPermission
@@ -251,7 +252,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenOnChangeForIsExtended DISABLED_ScreenOnChangeForIsExtended
 #else
 #define MAYBE_ScreenOnChangeForIsExtended ScreenOnChangeForIsExtended
@@ -300,7 +301,7 @@ IN_PROC_BROWSER_TEST_F(FakeScreenEnumerationTest,
 
 // TODO(crbug.com/1042990): Windows crashes static casting to ScreenWin.
 // TODO(crbug.com/1042990): Android requires a GetDisplayNearestView overload.
-#if defined(OS_ANDROID) || defined(OS_WIN)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN)
 #define MAYBE_ScreenOnChangeForAttributes DISABLED_ScreenOnChangeForAttributes
 #else
 #define MAYBE_ScreenOnChangeForAttributes ScreenOnChangeForAttributes

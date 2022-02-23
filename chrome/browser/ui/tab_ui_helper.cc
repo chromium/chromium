@@ -34,8 +34,10 @@ TabUIHelper::TabUIData::TabUIData(const GURL& url)
     : title(FormatUrlToSubdomain(url)), favicon(favicon::GetDefaultFavicon()) {}
 
 TabUIHelper::TabUIHelper(content::WebContents* contents)
-    : WebContentsObserver(contents) {}
-TabUIHelper::~TabUIHelper() {}
+    : WebContentsObserver(contents),
+      content::WebContentsUserData<TabUIHelper>(*contents) {}
+
+TabUIHelper::~TabUIHelper() = default;
 
 std::u16string TabUIHelper::GetTitle() const {
   const std::u16string& contents_title = web_contents()->GetTitle();
@@ -45,7 +47,7 @@ std::u16string TabUIHelper::GetTitle() const {
   if (tab_ui_data_)
     return tab_ui_data_->title;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return l10n_util::GetStringUTF16(IDS_BROWSER_WINDOW_MAC_TAB_UNTITLED);
 #else
   return std::u16string();

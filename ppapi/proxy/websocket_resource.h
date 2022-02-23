@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "ppapi/c/ppb_websocket.h"
 #include "ppapi/proxy/plugin_resource.h"
 #include "ppapi/shared_impl/tracked_callback.h"

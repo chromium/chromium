@@ -37,7 +37,7 @@ IN_PROC_BROWSER_TEST_F(L10nUtilBrowserTest, CheckAndResolveLocaleIO) {
     bool resolved_with_io = l10n_util::CheckAndResolveLocale(
         locale, &resolved_locale_with_io, /*perform_io=*/true);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // False positives may occur on Android and iOS (and chrome/ isn't used on
     // iOS, so we only need to check for Android).
     // False negatives should never occur - so if the call without IO returns

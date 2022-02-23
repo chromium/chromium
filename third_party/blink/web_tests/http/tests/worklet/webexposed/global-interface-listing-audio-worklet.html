@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+<script>
+    if (window.testRunner) {
+        testRunner.waitUntilDone();
+        testRunner.dumpAsText();
+    }
+
+    console.log("This test logs exposed APIs from AudioWorkletGlobalScope");
+    let audioContext = new AudioContext()
+    audioContext.audioWorklet.addModule('/js-test-resources/global-interface-listing.js')
+      .then(function() {
+        if (window.testRunner) {
+            testRunner.notifyDone();
+        }
+    });
+</script>
+</body>
+</html>

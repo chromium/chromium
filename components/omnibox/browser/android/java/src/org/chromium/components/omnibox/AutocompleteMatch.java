@@ -14,6 +14,8 @@ import androidx.core.util.ObjectsCompat;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.omnibox.MatchClassificationStyle;
+import org.chromium.chrome.browser.omnibox.OmniboxSuggestionType;
+import org.chromium.components.omnibox.action.OmniboxPedal;
 import org.chromium.components.query_tiles.QueryTile;
 import org.chromium.url.GURL;
 
@@ -102,6 +104,7 @@ public class AutocompleteMatch {
     private boolean mHasTabMatch;
     private final @Nullable List<NavsuggestTile> mNavsuggestTiles;
     private long mNativeMatch;
+    private final @Nullable OmniboxPedal mOmniboxPedal;
 
     public AutocompleteMatch(int nativeType, Set<Integer> subtypes, boolean isSearchType,
             int relevance, int transition, String displayText,
@@ -110,7 +113,7 @@ public class AutocompleteMatch {
             String fillIntoEdit, GURL url, GURL imageUrl, String imageDominantColor,
             boolean isDeletable, String postContentType, byte[] postData, int groupId,
             List<QueryTile> queryTiles, byte[] clipboardImageData, boolean hasTabMatch,
-            List<NavsuggestTile> navsuggestTiles) {
+            List<NavsuggestTile> navsuggestTiles, OmniboxPedal omniboxPedal) {
         if (subtypes == null) {
             subtypes = Collections.emptySet();
         }
@@ -138,6 +141,7 @@ public class AutocompleteMatch {
         mClipboardImageData = clipboardImageData;
         mHasTabMatch = hasTabMatch;
         mNavsuggestTiles = navsuggestTiles;
+        mOmniboxPedal = omniboxPedal;
     }
 
     @CalledByNative
@@ -149,7 +153,7 @@ public class AutocompleteMatch {
             GURL url, GURL imageUrl, String imageDominantColor, boolean isDeletable,
             String postContentType, byte[] postData, int groupId, List<QueryTile> tiles,
             byte[] clipboardImageData, boolean hasTabMatch, String[] navsuggestTitles,
-            GURL[] navsuggestUrls) {
+            GURL[] navsuggestUrls, OmniboxPedal omniboxPedal) {
         assert contentClassificationOffsets.length == contentClassificationStyles.length;
         List<MatchClassification> contentClassifications = new ArrayList<>();
         for (int i = 0; i < contentClassificationOffsets.length; i++) {
@@ -172,7 +176,7 @@ public class AutocompleteMatch {
                 relevance, transition, contents, contentClassifications, description,
                 new ArrayList<>(), answer, fillIntoEdit, url, imageUrl, imageDominantColor,
                 isDeletable, postContentType, postData, groupId, tiles, clipboardImageData,
-                hasTabMatch, navsuggestTiles);
+                hasTabMatch, navsuggestTiles, omniboxPedal);
         match.updateNativeObjectRef(nativeObject);
         match.setDescription(
                 description, descriptionClassificationOffsets, descriptionClassificationStyles);
@@ -241,7 +245,7 @@ public class AutocompleteMatch {
         mHasTabMatch = hasTabMatch;
     }
 
-    public int getType() {
+    public @OmniboxSuggestionType int getType() {
         return mType;
     }
 
@@ -315,6 +319,11 @@ public class AutocompleteMatch {
 
     public boolean hasTabMatch() {
         return mHasTabMatch;
+    }
+
+    @Nullable
+    public OmniboxPedal getOmniboxPedal() {
+        return mOmniboxPedal;
     }
 
     /**

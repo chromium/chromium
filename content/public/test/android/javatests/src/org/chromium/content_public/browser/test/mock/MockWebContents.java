@@ -11,6 +11,7 @@ import android.os.Parcel;
 
 import androidx.annotation.Nullable;
 
+import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -136,7 +137,7 @@ public class MockWebContents implements WebContents {
     }
 
     @Override
-    public boolean isLoadingToDifferentDocument() {
+    public boolean shouldShowLoadingUI() {
         return false;
     }
 
@@ -181,7 +182,8 @@ public class MockWebContents implements WebContents {
     public void scrollFocusedEditableNodeIntoView() {}
 
     @Override
-    public void selectWordAroundCaret() {}
+    public void selectAroundCaret(@SelectionGranularity int granularity, boolean shouldShowHandle,
+            boolean shouldShowContextMenu) {}
 
     @Override
     public void adjustSelectionByCharacterOffset(

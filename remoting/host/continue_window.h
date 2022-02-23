@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_CONTINUE_WINDOW_H_
 #define REMOTING_HOST_CONTINUE_WINDOW_H_
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/host/host_window.h"

@@ -13,17 +13,21 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/optimization_guide/chrome_hints_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/optimization_guide/prediction/prediction_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "components/leveldb_proto/public/proto_database_provider.h"
 #include "components/optimization_guide/core/command_line_top_host_provider.h"
 #include "components/optimization_guide/core/hints_processing_util.h"
+#include "components/optimization_guide/core/model_util.h"
 #include "components/optimization_guide/core/optimization_guide_constants.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
+#include "components/optimization_guide/core/optimization_guide_logger.h"
 #include "components/optimization_guide/core/optimization_guide_navigation_data.h"
 #include "components/optimization_guide/core/optimization_guide_permissions_util.h"
 #include "components/optimization_guide/core/optimization_guide_store.h"
@@ -40,7 +44,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/commerce/price_tracking/android/price_tracking_notification_bridge.h"
 #include "chrome/browser/optimization_guide/android/android_push_notification_manager.h"
 #include "chrome/browser/optimization_guide/android/optimization_guide_tab_url_provider_android.h"
@@ -68,13 +72,66 @@ void DeleteOldStorePaths(const base::FilePath& profile_path) {
                   kOptimizationGuidePredictionModelAndFeaturesStore)));
 }
 
+// Returns the profile to use for when setting up the keyed service when the
+// profile is Off-The-Record. For guest profiles, returns a loaded profile if
+// one exists, otherwise just the original profile of the OTR profile. Note:
+// guest profiles are off-the-record and "original" profiles.
+Profile* GetProfileForOTROptimizationGuide(Profile* profile) {
+  DCHECK(profile);
+  DCHECK(profile->IsOffTheRecord());
+
+  if (profile->IsGuestSession()) {
+    // Guest sessions need to rely on the stores from real profiles
+    // as guest profiles cannot fetch or store new models. Note: only
+    // loaded profiles should be used as we do not want to force load
+    // another profile as that can lead to start up regressions.
+    std::vector<Profile*> profiles =
+        g_browser_process->profile_manager()->GetLoadedProfiles();
+    if (!profiles.empty()) {
+      return profiles[0];
+    }
+  }
+  return profile->GetOriginalProfile();
+}
+
+// Logs info about the common optimization guide feature flags.
+void LogFeatureFlagsInfo(OptimizationGuideLogger* optimization_guide_logger,
+                         Profile* profile) {
+  if (!optimization_guide::switches::IsDebugLogsEnabled())
+    return;
+  if (!optimization_guide::features::IsOptimizationHintsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
+                           "FEATURE_FLAG Hints component disabled");
+  }
+  if (!optimization_guide::features::IsRemoteFetchingEnabled(
+          profile->GetPrefs())) {
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
+                           "FEATURE_FLAG remote fetching feature disabled");
+  }
+  if (!optimization_guide::IsUserPermittedToFetchFromRemoteOptimizationGuide(
+          profile->IsOffTheRecord(), profile->GetPrefs())) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_logger,
+        "FEATURE_FLAG remote fetching user permission disabled");
+  }
+  if (!optimization_guide::features::IsPushNotificationsEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(
+        optimization_guide_logger,
+        "FEATURE_FLAG remote push notification feature disabled");
+  }
+  if (!optimization_guide::features::IsModelDownloadingEnabled()) {
+    OPTIMIZATION_GUIDE_LOG(optimization_guide_logger,
+                           "FEATURE_FLAG model downloading feature disabled");
+  }
+}
+
 }  // namespace
 
 // static
 std::unique_ptr<optimization_guide::PushNotificationManager>
 OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
     Profile* profile) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (optimization_guide::features::IsPushNotificationsEnabled()) {
     auto push_notification_manager = std::make_unique<
         optimization_guide::android::AndroidPushNotificationManager>(
@@ -115,13 +172,13 @@ void OptimizationGuideKeyedService::Initialize() {
   // For incognito profiles, we act in "read-only" mode of the original
   // profile's store and do not fetch any new hints or models.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory;
-  optimization_guide::OptimizationGuideStore* hint_store;
-  optimization_guide::OptimizationGuideStore*
+  base::WeakPtr<optimization_guide::OptimizationGuideStore> hint_store;
+  base::WeakPtr<optimization_guide::OptimizationGuideStore>
       prediction_model_and_features_store;
   if (profile->IsOffTheRecord()) {
     OptimizationGuideKeyedService* original_ogks =
         OptimizationGuideKeyedServiceFactory::GetForProfile(
-            profile->GetOriginalProfile());
+            GetProfileForOTROptimizationGuide(profile));
     DCHECK(original_ogks);
     hint_store = original_ogks->GetHintsManager()->hint_store();
     prediction_model_and_features_store =
@@ -143,7 +200,7 @@ void OptimizationGuideKeyedService::Initialize() {
         "SyntheticOptimizationGuideRemoteFetching",
         optimization_guide_fetching_enabled ? "Enabled" : "Disabled");
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     tab_url_provider_ = std::make_unique<
         optimization_guide::android::OptimizationGuideTabUrlProviderAndroid>(
         profile);
@@ -161,7 +218,7 @@ void OptimizationGuideKeyedService::Initialize() {
                   base::ThreadPool::CreateSequencedTaskRunner(
                       {base::MayBlock(), base::TaskPriority::BEST_EFFORT}))
             : nullptr;
-    hint_store = hint_store_.get();
+    hint_store = hint_store_ ? hint_store_->AsWeakPtr() : nullptr;
 
     prediction_model_and_features_store_ =
         std::make_unique<optimization_guide::OptimizationGuideStore>(
@@ -172,25 +229,28 @@ void OptimizationGuideKeyedService::Initialize() {
             base::ThreadPool::CreateSequencedTaskRunner(
                 {base::MayBlock(), base::TaskPriority::BEST_EFFORT}));
     prediction_model_and_features_store =
-        prediction_model_and_features_store_.get();
+        prediction_model_and_features_store_->AsWeakPtr();
   }
 
+  optimization_guide_logger_ = std::make_unique<OptimizationGuideLogger>();
   hints_manager_ = std::make_unique<optimization_guide::ChromeHintsManager>(
       profile, profile->GetPrefs(), hint_store, top_host_provider_.get(),
       tab_url_provider_.get(), url_loader_factory,
-      content::GetNetworkConnectionTracker(),
-      MaybeCreatePushNotificationManager(profile));
+      MaybeCreatePushNotificationManager(profile),
+      optimization_guide_logger_.get());
   prediction_manager_ = std::make_unique<optimization_guide::PredictionManager>(
       prediction_model_and_features_store, url_loader_factory,
-      profile->GetPrefs(), profile);
+      profile->GetPrefs(), profile, optimization_guide_logger_.get());
 
   // The previous store paths were written in incorrect locations. Delete the
   // old paths. Remove this code in 04/2022 since it should be assumed that all
   // clients that had the previous path have had their previous stores deleted.
   DeleteOldStorePaths(profile_path);
-  if (optimization_guide::switches::IsDebugLogsEnabled()) {
-    DVLOG(0) << "OptimizationGuide: KeyedService is initalized";
-  }
+
+  OPTIMIZATION_GUIDE_LOG(optimization_guide_logger_,
+                         "OptimizationGuide: KeyedService is initalized");
+
+  LogFeatureFlagsInfo(optimization_guide_logger_.get(), profile);
 }
 
 optimization_guide::ChromeHintsManager*
@@ -277,6 +337,21 @@ void OptimizationGuideKeyedService::CanApplyOptimizationAsync(
       navigation_handle->GetURL(), optimization_type, std::move(callback));
 }
 
+void OptimizationGuideKeyedService::CanApplyOptimizationOnDemand(
+    const std::vector<GURL>& urls,
+    const base::flat_set<optimization_guide::proto::OptimizationType>&
+        optimization_types,
+    optimization_guide::proto::RequestContext request_context,
+    optimization_guide::OnDemandOptimizationGuideDecisionRepeatingCallback
+        callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(request_context !=
+         optimization_guide::proto::RequestContext::CONTEXT_UNSPECIFIED);
+
+  hints_manager_->CanApplyOptimizationOnDemand(urls, optimization_types,
+                                               request_context, callback);
+}
+
 void OptimizationGuideKeyedService::AddHintForTesting(
     const GURL& url,
     optimization_guide::proto::OptimizationType optimization_type,
@@ -286,7 +361,6 @@ void OptimizationGuideKeyedService::AddHintForTesting(
 
 void OptimizationGuideKeyedService::ClearData() {
   hints_manager_->ClearFetchedHints();
-  prediction_manager_->ClearHostModelFeatures();
 }
 
 void OptimizationGuideKeyedService::Shutdown() {

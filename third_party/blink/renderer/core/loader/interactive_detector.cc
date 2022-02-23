@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/profiler/sample_metadata.h"
 #include "base/time/default_tick_clock.h"
@@ -36,10 +37,6 @@ constexpr base::TimeDelta kFirstInputDelayTraceEventThreshold =
 
 }  // namespace
 
-// A fix for FID computation.
-const base::Feature kFixFirstInputDelayForDesktop{
-    "FixFirstInputDelayForDesktop", base::FEATURE_DISABLED_BY_DEFAULT};
-
 // Required length of main thread and network quiet window for determining
 // Time to Interactive.
 constexpr auto kTimeToInteractiveWindow = base::Seconds(5);
@@ -50,6 +47,10 @@ constexpr int kNetworkQuietMaximumConnections = 2;
 const char kHistogramInputDelay[] = "PageLoad.InteractiveTiming.InputDelay3";
 const char kHistogramInputTimestamp[] =
     "PageLoad.InteractiveTiming.InputTimestamp3";
+const char kHistogramProcessingTime[] =
+    "PageLoad.InteractiveTiming.ProcessingTime";
+const char kHistogramTimeToNextPaint[] =
+    "PageLoad.InteractiveTiming.TimeToNextPaint";
 
 // static
 const char InteractiveDetector::kSupplementName[] = "InteractiveDetector";
@@ -218,10 +219,6 @@ void InteractiveDetector::HandleForInputDelay(
   if (event_platform_timestamp.is_null())
     return;
 
-  if (event.type() == event_type_names::kMouseup &&
-      !base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop))
-    return;
-
   // These variables track the values which will be reported to histograms.
   base::TimeDelta delay;
   base::TimeTicks event_timestamp;
@@ -244,24 +241,19 @@ void InteractiveDetector::HandleForInputDelay(
     delay = pending_pointerdown_delay_;
     event_timestamp = pending_pointerdown_timestamp_;
   } else {
-    if (base::FeatureList::IsEnabled(kFixFirstInputDelayForDesktop)) {
-      if (event.type() == event_type_names::kMousedown) {
-        pending_mousedown_delay_ = processing_start - event_platform_timestamp;
-        pending_mousedown_timestamp_ = event_platform_timestamp;
+    if (event.type() == event_type_names::kMousedown) {
+      pending_mousedown_delay_ = processing_start - event_platform_timestamp;
+      pending_mousedown_timestamp_ = event_platform_timestamp;
+      return;
+    } else if (event.type() == event_type_names::kMouseup) {
+      if (pending_mousedown_timestamp_.is_null())
         return;
-      } else if (event.type() == event_type_names::kMouseup) {
-        if (pending_mousedown_timestamp_.is_null())
-          return;
-        delay = pending_mousedown_delay_;
-        event_timestamp = pending_mousedown_timestamp_;
-        pending_mousedown_delay_ = base::TimeDelta();
-        pending_mousedown_timestamp_ = base::TimeTicks();
-      } else {
-        // Record delays for click, keydown.
-        delay = processing_start - event_platform_timestamp;
-        event_timestamp = event_platform_timestamp;
-      }
+      delay = pending_mousedown_delay_;
+      event_timestamp = pending_mousedown_timestamp_;
+      pending_mousedown_delay_ = base::TimeDelta();
+      pending_mousedown_timestamp_ = base::TimeTicks();
     } else {
+      // Record delays for click, keydown.
       delay = processing_start - event_platform_timestamp;
       event_timestamp = event_platform_timestamp;
     }
@@ -692,6 +684,10 @@ void InteractiveDetector::RecordInputEventTimingUKM(
           time_to_next_paint.InMilliseconds())
       .Record(GetUkmRecorder());
 
+  UmaHistogramCustomTimes(kHistogramProcessingTime, processing_time,
+                          base::Milliseconds(1), base::Seconds(60), 50);
+  UmaHistogramCustomTimes(kHistogramTimeToNextPaint, time_to_next_paint,
+                          base::Milliseconds(1), base::Seconds(60), 50);
   if (!page_event_times_.first_input_processing_time) {
     page_event_times_.first_input_processing_time = processing_time;
     if (GetSupplementable()->Loader()) {

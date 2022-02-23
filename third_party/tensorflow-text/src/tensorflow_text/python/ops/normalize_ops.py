@@ -39,15 +39,16 @@ def case_fold_utf8(input, name=None):
   output has the same shape as the input. Note that NFKC normalization is
   implicitly applied to the strings.
 
-  For example:
+  #### Examples:
 
-  ```python
+  >>> # input: <string>[num_strings]
   >>> case_fold_utf8(['The   Quick-Brown',
   ...                 'CAT jumped over',
-  ...                 'the lazy dog  !!  ']
-  tf.Tensor(['the   quick-brown' 'cat jumped over' 'the lazy dog  !!  '],
-            shape=(3,), dtype=string)
-  ```
+  ...                 'the lazy dog  !!  '])
+  >>> # output: <string>[num_strings]
+  <tf.Tensor: shape=(3,), dtype=string, numpy=
+    array([b'the   quick-brown', b'cat jumped over', b'the lazy dog  !!  '],
+          dtype=object)>
 
   Args:
     input: A `Tensor` or `RaggedTensor` of UTF-8 encoded strings.
@@ -68,9 +69,18 @@ def case_fold_utf8(input, name=None):
 
 # pylint: disable=redefined-builtin)
 def normalize_utf8(input, normalization_form="NFKC", name=None):
-  """Normalizes each UTF-8 string in the input tensor using the specified rule.
+  r"""Normalizes each UTF-8 string in the input tensor using the specified rule.
 
   See http://unicode.org/reports/tr15/
+
+  #### Examples:
+
+  >>> # input: <string>[num_strings]
+  >>> normalize_utf8(["株式会社", "ＫＡＤＯＫＡＷＡ"])
+  >>> # output: <string>[num_strings]
+  <tf.Tensor: shape=(2,), dtype=string, numpy=
+  array([b'\xe6\xa0\xaa\xe5\xbc\x8f\xe4\xbc\x9a\xe7\xa4\xbe', b'KADOKAWA'],
+        dtype=object)>
 
   Args:
     input: A `Tensor` or `RaggedTensor` of type string. (Must be UTF-8.)
@@ -96,19 +106,30 @@ def normalize_utf8(input, normalization_form="NFKC", name=None):
 def normalize_utf8_with_offsets_map(input,
                                     normalization_form="NFKC",
                                     name=None):
-  """Normalizes each UTF-8 string in the input tensor using the specified rule.
+  r"""Normalizes each UTF-8 string in the input tensor using the specified rule.
 
   Returns normalized strings and an offset map used by another operation to map
   post-normalized string offsets to pre-normalized string offsets.
 
   See http://unicode.org/reports/tr15/
 
+  #### Examples:
+
+  >>> # input: <string>[num_strings]
+  >>> normalize_utf8_with_offsets_map(["株式会社", "ＫＡＤＯＫＡＷＡ"])
+  >>> # output: <string>[num_strings], <variant>[num_strings]
+  NormalizeUTF8WithOffsetsMap(output=<tf.Tensor: shape=(2,), dtype=string,
+  numpy=
+  array([b'\xe6\xa0\xaa\xe5\xbc\x8f\xe4\xbc\x9a\xe7\xa4\xbe', b'KADOKAWA'],
+        dtype=object)>, offsets_map=<tf.Tensor: shape=(2,), dtype=variant,
+        numpy=<unprintable>>)
+
   Args:
     input: A `Tensor` or `RaggedTensor` of type string. (Must be UTF-8.)
       normalization_form: One of the following string values ('NFC', 'NFKC',
       'NFD', 'NFKD'). Default is 'NFKC'. NOTE: `NFD` and `NFKD` for
-      `normalize_utf8_with_offsets_map` will not be available until the tf.text
-      release w/ ICU 69 (scheduled after 4/2021).
+        `normalize_utf8_with_offsets_map` will not be available until the
+        tf.text release w/ ICU 69 (scheduled after 4/2021).
     name: The name for this op (optional).
 
   Returns:
@@ -143,17 +164,18 @@ def find_source_offsets(offsets_map, input_offsets, name=None):
   from the `normalize_utf8_with_offsets_map` op. offsets_map can be indexed or
   sliced along with the input_offsets.
 
-  Example usage:
+  #### Examples:
 
-  ```python
+  >>> # input: <string>[num_strings]
   >>> post_normalized_str, offsets_map = normalize_utf8_with_offsets_map(
-  ...                                 ["株式会社",
-  ...                                  "ＫＡＤＯＫＡＷＡ"])
+  ...     ["株式会社", "ＫＡＤＯＫＡＷＡ"])
+  >>> # input: <variant>[num_strings], <int64>[num_strings, num_offsets]
   >>> find_source_offsets(offsets_map, [[0, 1, 2], [0, 1, 2]])
-  tf.Tensor([[0, 1, 2], [0, 3, 6]], shape=(2, 3), dtype=int64)
-  >>> find_source_offsets(offsets_map[1], [[0, 1, 2]])  # indexed offsets_map
-  tf.Tensor([[0, 3, 6]], shape=(1, 3), dtype=int64)
-  ```
+  >>> # output: <int64>[num_strings, num_offsets]
+  <tf.Tensor: shape=(2, 3), dtype=int64, numpy=array([[0, 1, 2], [0, 3, 6]])>
+  >>> # Offsets map can be indexed.
+  >>> find_source_offsets(offsets_map[1], [[0, 1, 2]])
+  <tf.Tensor: shape=(1, 3), dtype=int64, numpy=array([[0, 3, 6]])>
 
   Args:
     offsets_map: A `Tensor` or `RaggedTensor` of type `variant`, used to map the

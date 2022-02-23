@@ -52,6 +52,9 @@ enum RequestContext {
   CONTEXT_BATCH_UPDATE_ACTIVE_TABS = 5;
   // Requesting a batch of models to update.
   CONTEXT_BATCH_UPDATE_MODELS = 6;
+  // Requesting page load metadata for a user's bookmarks when visiting the
+  // bookmarks surface.
+  CONTEXT_BOOKMARKS = 7;
 }
 
 message FieldTrial {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/task/sequence_manager/sequence_manager.h"
 
 #include <stddef.h>
@@ -60,18 +61,7 @@ class PerfTestTimeDomain : public MockTimeDomain {
   PerfTestTimeDomain& operator=(const PerfTestTimeDomain&) = delete;
   ~PerfTestTimeDomain() override = default;
 
-  base::TimeTicks GetNextDelayedTaskTime(DelayedWakeUp next_wake_up,
-                                         LazyNow* lazy_now) const override {
-    // Check if we have a task that should be running now.
-    if (next_wake_up.time <= NowTicks())
-      return base::TimeTicks();
-
-    // Rely on MaybeFastForwardToWakeUp to be called to advance
-    // time.
-    return base::TimeTicks::Max();
-  }
-
-  bool MaybeFastForwardToWakeUp(absl::optional<DelayedWakeUp> wake_up,
+  bool MaybeFastForwardToWakeUp(absl::optional<WakeUp> wake_up,
                                 bool quit_when_idle_requested) override {
     if (wake_up) {
       SetNowTicks(wake_up->time);
@@ -242,7 +232,7 @@ class TestCase {
   virtual void Start() = 0;
 
  protected:
-  PerfTestDelegate* const delegate_;  // NOT OWNED
+  const raw_ptr<PerfTestDelegate> delegate_;  // NOT OWNED
 };
 
 class TaskSource {
@@ -404,7 +394,7 @@ class SingleThreadImmediateTestCase : public TestCase {
 
     void SignalDone() override { delegate_->SignalDone(); }
 
-    PerfTestDelegate* delegate_;  // NOT OWNED.
+    raw_ptr<PerfTestDelegate> delegate_;  // NOT OWNED.
   };
 
   const std::unique_ptr<TaskSource> task_source_;
@@ -444,7 +434,7 @@ class SingleThreadDelayedTestCase : public TestCase {
 
     void SignalDone() override { delegate_->SignalDone(); }
 
-    PerfTestDelegate* delegate_;  // NOT OWNED.
+    raw_ptr<PerfTestDelegate> delegate_;  // NOT OWNED.
   };
 
   const std::unique_ptr<TaskSource> task_source_;
@@ -497,7 +487,7 @@ class TwoThreadTestCase : public TestCase {
     // Will be called on the main thread.
     void SignalDone() override { two_thread_test_case_->SignalDone(); }
 
-    TwoThreadTestCase* two_thread_test_case_;  // NOT OWNED.
+    raw_ptr<TwoThreadTestCase> two_thread_test_case_;  // NOT OWNED.
   };
 
   class CrossThreadImmediateTaskSource : public CrossThreadTaskSource {
@@ -518,7 +508,7 @@ class TwoThreadTestCase : public TestCase {
     // Will be called on the main thread.
     void SignalDone() override { two_thread_test_case_->SignalDone(); }
 
-    TwoThreadTestCase* two_thread_test_case_;  // NOT OWNED.
+    raw_ptr<TwoThreadTestCase> two_thread_test_case_;  // NOT OWNED.
   };
 
   void SignalDone() {

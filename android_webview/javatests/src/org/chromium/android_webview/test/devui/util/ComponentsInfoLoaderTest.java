@@ -6,20 +6,19 @@ package org.chromium.android_webview.test.devui.util;
 
 import androidx.test.filters.SmallTest;
 
-import org.junit.After;
 import org.junit.Assert;
-import org.junit.BeforeClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.junit.runner.RunWith;
 
 import org.chromium.android_webview.devui.util.ComponentInfo;
 import org.chromium.android_webview.devui.util.ComponentsInfoLoader;
-import org.chromium.android_webview.services.ComponentsProviderPathUtil;
 import org.chromium.android_webview.test.AwJUnit4ClassRunner;
-import org.chromium.base.FileUtils;
 import org.chromium.base.test.util.Batch;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 
 /**
@@ -28,37 +27,22 @@ import java.util.ArrayList;
 @RunWith(AwJUnit4ClassRunner.class)
 @Batch(Batch.UNIT_TESTS)
 public class ComponentsInfoLoaderTest {
-    private static File sComponentsDownloadDir =
-            new File(ComponentsProviderPathUtil.getComponentUpdateServiceDirectoryPath());
-
-    @BeforeClass
-    public static void deleteOriginalComponentsDownloadDir() {
-        if (sComponentsDownloadDir.exists()) {
-            Assert.assertTrue(FileUtils.recursivelyDeleteFile(sComponentsDownloadDir, null));
-        }
-    }
-
-    @After
-    public void tearDown() {
-        if (sComponentsDownloadDir.exists()) {
-            Assert.assertTrue(FileUtils.recursivelyDeleteFile(sComponentsDownloadDir, null));
-        }
-    }
+    @Rule
+    public TemporaryFolder mTempDir = new TemporaryFolder();
 
     @Test
     @SmallTest
-    public void testMultipleComponents_withOneVersionSubDirectory() {
+    public void testMultipleComponents_withOneVersionSubDirectory() throws IOException {
         ComponentInfo[] expectedList =
                 new ComponentInfo[] {new ComponentInfo("MockComponent A", "1.0.2.1"),
                         new ComponentInfo("MockComponent B", "2021.1.2.1")};
 
         for (ComponentInfo mockComponent : expectedList) {
-            new File(sComponentsDownloadDir,
-                    mockComponent.getComponentName() + "/" + mockComponent.getComponentVersion())
-                    .mkdirs();
+            mTempDir.newFolder(
+                    mockComponent.getComponentName(), mockComponent.getComponentVersion());
         }
 
-        ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader();
+        ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader(mTempDir.getRoot());
         ArrayList<ComponentInfo> retrievedComponentsInfoList =
                 componentsInfoLoader.getComponentsInfo();
 
@@ -67,10 +51,8 @@ public class ComponentsInfoLoaderTest {
 
     @Test
     @SmallTest
-    public void testComponentsDownloadDirectory_isEmpty() {
-        sComponentsDownloadDir.mkdirs();
-
-        ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader();
+    public void testComponentsDownloadDirectory_isEmpty() throws IOException {
+        ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader(mTempDir.getRoot());
         ArrayList<ComponentInfo> retrievedComponentsInfoList =
                 componentsInfoLoader.getComponentsInfo();
 
@@ -80,8 +62,9 @@ public class ComponentsInfoLoaderTest {
 
     @Test
     @SmallTest
-    public void testComponentsDownloadDirectory_doesNotExist() {
-        ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader();
+    public void testComponentsDownloadDirectory_doesNotExist() throws IOException {
+        ComponentsInfoLoader componentsInfoLoader =
+                new ComponentsInfoLoader(new File(mTempDir.getRoot(), "nonexistent"));
         ArrayList<ComponentInfo> retrievedComponentsInfoList =
                 componentsInfoLoader.getComponentsInfo();
 
@@ -91,10 +74,10 @@ public class ComponentsInfoLoaderTest {
 
     @Test
     @SmallTest
-    public void testVersionSubDirectory_doesNotExist() {
-        new File(sComponentsDownloadDir, "MockComponent A").mkdirs();
+    public void testVersionSubDirectory_doesNotExist() throws IOException {
+        mTempDir.newFolder("MockComponent A");
 
-        ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader();
+        ComponentsInfoLoader componentsInfoLoader = new ComponentsInfoLoader(mTempDir.getRoot());
         ArrayList<ComponentInfo> retrievedComponentsInfoList =
                 componentsInfoLoader.getComponentsInfo();
 

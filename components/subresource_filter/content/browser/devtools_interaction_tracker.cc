@@ -9,7 +9,8 @@
 namespace subresource_filter {
 
 DevtoolsInteractionTracker::DevtoolsInteractionTracker(
-    content::WebContents* web_contents) {}
+    content::WebContents* web_contents)
+    : content::WebContentsUserData<DevtoolsInteractionTracker>(*web_contents) {}
 
 DevtoolsInteractionTracker::~DevtoolsInteractionTracker() = default;
 

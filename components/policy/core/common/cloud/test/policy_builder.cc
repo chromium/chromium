@@ -378,7 +378,7 @@ TypedPolicyBuilder<em::CloudPolicySettings>::TypedPolicyBuilder()
 // Have the instantiation compiled into the module.
 template class TypedPolicyBuilder<em::CloudPolicySettings>;
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 template <>
 TypedPolicyBuilder<em::ExternalPolicyData>::TypedPolicyBuilder() {
   CreatePayload();

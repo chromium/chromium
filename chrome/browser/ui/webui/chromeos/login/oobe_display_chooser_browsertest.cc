@@ -48,9 +48,8 @@ int64_t GetPrimaryDisplayId() {
 
 // Test that display removal does not trigger CHECK in
 // WindowTreeHostManager::GetPrimaryDisplayId().
-// TODO(crbug.com/1183020): Align with RWHI::GetVisualProperties and re-enable.
 IN_PROC_BROWSER_TEST_F(OobeDisplayChooserTest,
-                       DISABLED_RemovingPrimaryDisplaySanityCheck) {
+                       RemovingPrimaryDisplaySanityCheck) {
   display::ManagedDisplayInfo info1(1, "x-1", false);
   info1.SetBounds(gfx::Rect(0, 0, 1280, 800));
   display::ManagedDisplayInfo info2(2, "x-2", false);

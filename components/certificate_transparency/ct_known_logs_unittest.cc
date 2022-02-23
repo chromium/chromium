@@ -26,7 +26,7 @@ TEST(CTKnownLogsTest, GoogleIDsAreSorted) {
 }
 
 TEST(CTKnownLogsTest, DisallowedLogsAreSortedByLogID) {
-  std::vector<std::pair<std::string, base::TimeDelta>> disqualified_logs =
+  std::vector<std::pair<std::string, base::Time>> disqualified_logs =
       GetDisqualifiedLogs();
   ASSERT_TRUE(std::is_sorted(
       std::begin(disqualified_logs), std::end(disqualified_logs),

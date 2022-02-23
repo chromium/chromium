@@ -13,10 +13,9 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -98,12 +97,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
 
   // Following 3 methods return false if the result was an error and the socket
   // was destroyed. The caller should stop using |this| in that case.
-  WARN_UNUSED_RESULT bool HandleReadResult(int result);
-  WARN_UNUSED_RESULT bool HandleSendResult(uint64_t packet_id,
-                                           int32_t transport_sequence_number,
-                                           int64_t send_time_ms,
-                                           int result);
-  WARN_UNUSED_RESULT bool DoSend(const PendingPacket& packet);
+  [[nodiscard]] bool HandleReadResult(int result);
+  [[nodiscard]] bool HandleSendResult(uint64_t packet_id,
+                                      int32_t transport_sequence_number,
+                                      int64_t send_time_ms,
+                                      int result);
+  [[nodiscard]] bool DoSend(const PendingPacket& packet);
 
   void OnSend(uint64_t packet_id,
               int32_t transport_sequence_number,
@@ -123,9 +122,9 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) P2PSocketUdp : public P2PSocket {
   // Set of peer for which we have received STUN binding request or
   // response or relay allocation request or response.
   ConnectedPeerSet connected_peers_;
-  P2PMessageThrottler* throttler_;
+  raw_ptr<P2PMessageThrottler> throttler_;
 
-  net::NetLog* net_log_;
+  raw_ptr<net::NetLog> net_log_;
 
   // Callback object that returns a new socket when invoked.
   DatagramServerSocketFactory socket_factory_;

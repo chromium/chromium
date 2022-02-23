@@ -68,18 +68,22 @@ std::unique_ptr<ShelfContextMenu> ShelfContextMenu::Create(
   DCHECK(item);
   DCHECK(!item->id.IsNull());
 
+  auto app_type =
+      apps::AppServiceProxyFactory::GetForProfile(controller->profile())
+          ->AppRegistryCache()
+          .GetAppType(item->id.app_id);
   // AppServiceShelfContextMenu supports context menus for apps registered in
   // AppService, Arc shortcuts and Crostini apps with the prefix "crostini:".
-  if (apps::AppServiceProxyFactory::GetForProfile(controller->profile())
-              ->AppRegistryCache()
-              .GetAppType(item->id.app_id) != apps::mojom::AppType::kUnknown ||
+  if ((app_type != apps::mojom::AppType::kUnknown &&
+       app_type != apps::mojom::AppType::kExtension) ||
       crostini::IsUnmatchedCrostiniShelfAppId(item->id.app_id) ||
       arc::IsArcItem(controller->profile(), item->id.app_id)) {
     return std::make_unique<AppServiceShelfContextMenu>(controller, item,
                                                         display_id);
   }
 
-  // Create an ExtensionShelfContextMenu for other items.
+  // Create an ExtensionShelfContextMenu for other items, including browser
+  // extensions.
   return std::make_unique<ExtensionShelfContextMenu>(controller, item,
                                                      display_id);
 }
@@ -264,7 +268,7 @@ bool ShelfContextMenu::ExecuteCommonCommand(int command_id, int event_flags) {
     case ash::MENU_OPEN_NEW:
       ash::full_restore::FullRestoreService::MaybeCloseNotification(
           controller()->profile());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ash::MENU_CLOSE:
     case ash::MENU_PIN:
     case ash::SWAP_WITH_NEXT:
@@ -288,7 +292,7 @@ void ShelfContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
   if (!icon.is_empty()) {
     menu_model->AddItemWithStringIdAndIcon(
         type, string_id,
-        ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+        ui::ImageModel::FromVectorIcon(icon, ui::kColorAshSystemUIMenuIcon,
                                        ash::kAppContextMenuIconSize));
     return;
   }

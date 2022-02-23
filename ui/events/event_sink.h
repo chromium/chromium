@@ -17,8 +17,8 @@ class EVENTS_EXPORT EventSink {
   virtual ~EventSink() {}
 
   // Receives events from EventSource.
-  virtual EventDispatchDetails OnEventFromSource(Event* event)
-      WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual EventDispatchDetails OnEventFromSource(
+      Event* event) = 0;
 };
 
 }  // namespace ui

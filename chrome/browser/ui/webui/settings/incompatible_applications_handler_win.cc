@@ -28,27 +28,27 @@ IncompatibleApplicationsHandler::IncompatibleApplicationsHandler() = default;
 IncompatibleApplicationsHandler::~IncompatibleApplicationsHandler() = default;
 
 void IncompatibleApplicationsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "requestIncompatibleApplicationsList",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleRequestIncompatibleApplicationsList,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "startApplicationUninstallation",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleStartApplicationUninstallation,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSubtitlePluralString",
       base::BindRepeating(
           &IncompatibleApplicationsHandler::HandleGetSubtitlePluralString,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getSubtitleNoAdminRightsPluralString",
       base::BindRepeating(&IncompatibleApplicationsHandler::
                               HandleGetSubtitleNoAdminRightsPluralString,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getListTitlePluralString",
       base::BindRepeating(
           &IncompatibleApplicationsHandler::HandleGetListTitlePluralString,
@@ -62,8 +62,8 @@ void IncompatibleApplicationsHandler::OnJavascriptDisallowed() {
 }
 
 void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
-    const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetList().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(1u, args.size());
 
   AllowJavascript();
 
@@ -111,46 +111,47 @@ void IncompatibleApplicationsHandler::HandleRequestIncompatibleApplicationsList(
   UMA_HISTOGRAM_COUNTS_100("IncompatibleApplicationsPage.NumApplications",
                            incompatible_applications.size());
 
-  const base::Value& callback_id = args->GetList().front();
+  const base::Value& callback_id = args.front();
   ResolveJavascriptCallback(callback_id, application_list);
 }
 
 void IncompatibleApplicationsHandler::HandleStartApplicationUninstallation(
-    const base::ListValue* args) {
-  CHECK_EQ(1u, args->GetList().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(1u, args.size());
   base::RecordAction(base::UserMetricsAction(
       "IncompatibleApplicationsPage.UninstallationStarted"));
 
   // Open the Apps & Settings page with the application name highlighted.
   uninstall_application::LaunchUninstallFlow(
-      base::UTF8ToWide(args->GetList()[0].GetString()));
+      base::UTF8ToWide(args[0].GetString()));
 }
 
 void IncompatibleApplicationsHandler::HandleGetSubtitlePluralString(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   GetPluralString(IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE,
                   args);
 }
 
 void IncompatibleApplicationsHandler::
-    HandleGetSubtitleNoAdminRightsPluralString(const base::ListValue* args) {
+    HandleGetSubtitleNoAdminRightsPluralString(
+        base::Value::ConstListView args) {
   GetPluralString(
       IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_SUBPAGE_SUBTITLE_NO_ADMIN_RIGHTS,
       args);
 }
 
 void IncompatibleApplicationsHandler::HandleGetListTitlePluralString(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   GetPluralString(IDS_SETTINGS_INCOMPATIBLE_APPLICATIONS_LIST_TITLE, args);
 }
 
 void IncompatibleApplicationsHandler::GetPluralString(
     int id,
-    const base::ListValue* args) {
-  CHECK_EQ(2U, args->GetList().size());
+    base::Value::ConstListView args) {
+  CHECK_EQ(2U, args.size());
 
-  const base::Value& callback_id = args->GetList()[0];
-  int num_applications = args->GetList()[1].GetInt();
+  const base::Value& callback_id = args[0];
+  int num_applications = args[1].GetInt();
   DCHECK_GT(num_applications, 0);
 
   ResolveJavascriptCallback(

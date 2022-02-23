@@ -5,9 +5,9 @@
 #include "ash/shortcut_viewer/views/ksv_search_box_view.h"
 
 #include "ash/public/cpp/app_list/app_list_color_provider.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/search_box/search_box_view_delegate.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
-#include "ash/shortcut_viewer/vector_icons/vector_icons.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -43,7 +43,7 @@ KSVSearchBoxView::KSVSearchBoxView(ash::SearchBoxViewDelegate* delegate)
   search_box()->SetPlaceholderText(search_box_name);
   search_box()->SetAccessibleName(search_box_name);
   SetSearchIconImage(gfx::CreateVectorIcon(
-      kKsvSearchBarIcon,
+      ash::kKsvSearchBarIcon,
       ash::AppListColorProvider::Get()->GetSearchBoxIconColor(
           gfx::kGoogleGrey900)));
 }
@@ -103,7 +103,7 @@ void KSVSearchBoxView::SetupCloseButton() {
   close->SetHasInkDropActionOnClick(true);
   close->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(kKsvSearchCloseIcon, gfx::kGoogleGrey700));
+      gfx::CreateVectorIcon(ash::kKsvSearchCloseIcon, gfx::kGoogleGrey700));
   close->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
   close->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   close->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
@@ -119,7 +119,7 @@ void KSVSearchBoxView::SetupBackButton() {
   back->SetHasInkDropActionOnClick(true);
   back->SetImage(
       views::ImageButton::STATE_NORMAL,
-      gfx::CreateVectorIcon(kKsvSearchBackIcon, gfx::kGoogleBlue500));
+      gfx::CreateVectorIcon(ash::kKsvSearchBackIcon, gfx::kGoogleBlue500));
   back->SetPreferredSize(gfx::Size(kIconSize, kIconSize));
   back->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   back->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);

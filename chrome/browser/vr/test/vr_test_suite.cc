@@ -28,11 +28,11 @@ void VrTestSuite::Initialize() {
   mojo::core::Init();
 
   base::FilePath pak_path;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   ui::RegisterPathProvider();
   base::PathService::Get(ui::DIR_RESOURCE_PAKS_ANDROID, &pak_path);
 #else
-  base::PathService::Get(base::DIR_MODULE, &pak_path);
+  base::PathService::Get(base::DIR_ASSETS, &pak_path);
 #endif
   ui::ResourceBundle::InitSharedInstanceWithPakPath(
       pak_path.AppendASCII("vr_test.pak"));

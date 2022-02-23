@@ -23,7 +23,7 @@
 #include "crypto/sha2.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -65,7 +65,7 @@ class BaseFileTest : public testing::Test {
         expected_error_(DOWNLOAD_INTERRUPT_REASON_NONE) {}
 
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     ASSERT_TRUE(com_initializer_.Succeeded());
 #endif
     ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -151,13 +151,13 @@ class BaseFileTest : public testing::Test {
     DownloadInterruptReason reason = duplicate_file.Initialize(
         file_name, temp_dir_.GetPath(), base::File(), 0, std::string(),
         std::unique_ptr<crypto::SecureHash>(), false, &kTestDataBytesWasted);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(reason, DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
 #else
     EXPECT_EQ(reason, DOWNLOAD_INTERRUPT_REASON_NONE);
     // Write something into it.
     duplicate_file.AppendDataToFile(kTestData4, kTestDataLength4);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     // Detach the file so it isn't deleted on destruction of |duplicate_file|.
     duplicate_file.Detach();
@@ -193,7 +193,7 @@ class BaseFileTest : public testing::Test {
   }
 
  private:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This must occur early in the member list to ensure COM is initialized first
   // and uninitialized last.
   base::win::ScopedCOMInitializer com_initializer_;
@@ -436,9 +436,9 @@ TEST_F(BaseFileTest, WriteWithError) {
                                    std::string(),
                                    std::unique_ptr<crypto::SecureHash>(), false,
                                    &kTestDataBytesWasted));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   set_expected_error(DOWNLOAD_INTERRUPT_REASON_FILE_ACCESS_DENIED);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   set_expected_error(DOWNLOAD_INTERRUPT_REASON_FILE_FAILED);
 #endif
   ASSERT_FALSE(AppendDataToFile(kTestData1));

@@ -7,6 +7,7 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_suite.h"
 #include "ash/webui/common/mojom/accessibility_features.mojom.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
@@ -71,33 +72,10 @@ class AccessibilityFeaturesTest : public AshTestBase {
 
   ~AccessibilityFeaturesTest() override = default;
 
-  void LoadResourceBundle() {
-    ui::ResourceBundle::CleanupSharedInstance();
-    // Load ash test resources and en-US strings; not 'common' (Chrome)
-    // resources.
-    base::FilePath path;
-    base::PathService::Get(base::DIR_MODULE, &path);
-    base::FilePath ash_test_strings =
-        path.Append(FILE_PATH_LITERAL("ash_test_strings.pak"));
-    ui::ResourceBundle::InitSharedInstanceWithPakPath(ash_test_strings);
-
-    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k100Percent)) {
-      base::FilePath ash_test_resources_100 =
-          path.AppendASCII("ash_test_resources_100_percent.pak");
-      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-          ash_test_resources_100, ui::k100Percent);
-    }
-    if (ui::ResourceBundle::IsScaleFactorSupported(ui::k200Percent)) {
-      base::FilePath ash_test_resources_200 =
-          path.Append(FILE_PATH_LITERAL("ash_test_resources_200_percent.pak"));
-      ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
-          ash_test_resources_200, ui::k200Percent);
-    }
-  }
-
   // AshTestBase:
   void SetUp() override {
-    LoadResourceBundle();
+    ui::ResourceBundle::CleanupSharedInstance();
+    AshTestSuite::LoadTestResources();
     AshTestBase::SetUp();
 
     accessibility_features_ = std::make_unique<AccessibilityFeatures>();

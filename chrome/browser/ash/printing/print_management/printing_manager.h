@@ -8,8 +8,8 @@
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
-#include "chrome/browser/chromeos/printing/cups_print_job_manager.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
+#include "chrome/browser/ash/printing/cups_print_job_manager.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/history/core/browser/history_service_observer.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -36,11 +36,11 @@ class PrintingManager
     : public printing_manager::mojom::PrintingMetadataProvider,
       public KeyedService,
       public history::HistoryServiceObserver,
-      public chromeos::CupsPrintJobManager::Observer {
+      public CupsPrintJobManager::Observer {
  public:
   PrintingManager(PrintJobHistoryService* print_job_history_service,
                   history::HistoryService* history_service,
-                  chromeos::CupsPrintJobManager* cups_print_job_manager,
+                  CupsPrintJobManager* cups_print_job_manager,
                   PrefService* pref_service);
 
   ~PrintingManager() override;
@@ -74,20 +74,20 @@ class PrintingManager
                      const history::DeletionInfo& deletion_info) override;
 
   // CupsPrintJobManager::Observer impls
-  void OnPrintJobCreated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobStarted(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobUpdated(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobSuspended(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobResumed(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobDone(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobError(base::WeakPtr<chromeos::CupsPrintJob> job) override;
-  void OnPrintJobCancelled(base::WeakPtr<chromeos::CupsPrintJob> job) override;
+  void OnPrintJobCreated(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobStarted(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobUpdated(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobSuspended(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobResumed(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobDone(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobError(base::WeakPtr<CupsPrintJob> job) override;
+  void OnPrintJobCancelled(base::WeakPtr<CupsPrintJob> job) override;
 
   // PrintJobHistoryObserver
-  void OnPrintJobsRetrieved(GetPrintJobsCallback callback,
-                            bool success,
-                            std::vector<chromeos::printing::proto::PrintJobInfo>
-                                print_job_info_protos);
+  void OnPrintJobsRetrieved(
+      GetPrintJobsCallback callback,
+      bool success,
+      std::vector<proto::PrintJobInfo> print_job_info_protos);
 
   // Callback function that is called when the print jobs are cleared from the
   // local database.
@@ -97,19 +97,18 @@ class PrintingManager
   bool IsHistoryDeletionAllowedByPolicy();
 
   // Stores |job| to local cache and notifies observers of an update to |job|.
-  void UpdatePrintJob(base::WeakPtr<chromeos::CupsPrintJob> job);
+  void UpdatePrintJob(base::WeakPtr<CupsPrintJob> job);
 
   // Removes |job| from the local cache and notifies observers of an update to
   // |job|.
-  void RemoveAndUpdatePrintJob(base::WeakPtr<chromeos::CupsPrintJob> job);
+  void RemoveAndUpdatePrintJob(base::WeakPtr<CupsPrintJob> job);
 
   // Notifies all observers in |print_job_observers_| of an update to a print
   // job.
-  void NotifyPrintJobObservers(base::WeakPtr<chromeos::CupsPrintJob> job);
+  void NotifyPrintJobObservers(base::WeakPtr<CupsPrintJob> job);
 
   // Local cache that stores all ongoing print jobs.
-  std::map<std::string, base::WeakPtr<chromeos::CupsPrintJob>>
-      active_print_jobs_;
+  std::map<std::string, base::WeakPtr<CupsPrintJob>> active_print_jobs_;
 
   // Set of PrintJobsObserver mojom::remotes, each remote is bound to a
   // renderer process receiver. Automatically handles removing disconnected
@@ -134,7 +133,7 @@ class PrintingManager
 
   // Not owned, this provides the necessary observers to observe when an
   // ongoing print job has been updated.
-  chromeos::CupsPrintJobManager* cups_print_job_manager_;
+  CupsPrintJobManager* cups_print_job_manager_;
 
   IntegerPrefMember print_job_history_expiration_period_;
 

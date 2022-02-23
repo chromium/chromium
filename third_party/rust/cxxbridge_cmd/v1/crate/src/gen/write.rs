@@ -1637,6 +1637,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
         "static_assert(alignof(::std::unique_ptr<{}>) == alignof(void *), \"\");",
         inner,
     );
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$unique_ptr${}$null(::std::unique_ptr<{}> *ptr) noexcept {{",
@@ -1646,6 +1647,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     writeln!(out, "}}");
     if can_construct_from_value {
         out.builtin.maybe_uninit = true;
+        begin_function_definition(out);
         writeln!(
             out,
             "{} *cxxbridge1$unique_ptr${}$uninit(::std::unique_ptr<{}> *ptr) noexcept {{",
@@ -1660,6 +1662,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
         writeln!(out, "  return uninit;");
         writeln!(out, "}}");
     }
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$unique_ptr${}$raw(::std::unique_ptr<{}> *ptr, {} *raw) noexcept {{",
@@ -1667,6 +1670,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     );
     writeln!(out, "  ::new (ptr) ::std::unique_ptr<{}>(raw);", inner);
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "const {} *cxxbridge1$unique_ptr${}$get(const ::std::unique_ptr<{}>& ptr) noexcept {{",
@@ -1674,6 +1678,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     );
     writeln!(out, "  return ptr.get();");
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "{} *cxxbridge1$unique_ptr${}$release(::std::unique_ptr<{}>& ptr) noexcept {{",
@@ -1681,6 +1686,7 @@ fn write_unique_ptr_common(out: &mut OutFile, ty: UniquePtr) {
     );
     writeln!(out, "  return ptr.release();");
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$unique_ptr${}$drop(::std::unique_ptr<{}> *ptr) noexcept {{",
@@ -1724,6 +1730,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
         "static_assert(alignof(::std::shared_ptr<{}>) == alignof(void *), \"\");",
         inner,
     );
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$shared_ptr${}$null(::std::shared_ptr<{}> *ptr) noexcept {{",
@@ -1733,6 +1740,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
     writeln!(out, "}}");
     if can_construct_from_value {
         out.builtin.maybe_uninit = true;
+        begin_function_definition(out);
         writeln!(
             out,
             "{} *cxxbridge1$shared_ptr${}$uninit(::std::shared_ptr<{}> *ptr) noexcept {{",
@@ -1747,6 +1755,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
         writeln!(out, "  return uninit;");
         writeln!(out, "}}");
     }
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$shared_ptr${}$clone(const ::std::shared_ptr<{}>& self, ::std::shared_ptr<{}> *ptr) noexcept {{",
@@ -1754,6 +1763,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(out, "  ::new (ptr) ::std::shared_ptr<{}>(self);", inner);
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "const {} *cxxbridge1$shared_ptr${}$get(const ::std::shared_ptr<{}>& self) noexcept {{",
@@ -1761,6 +1771,7 @@ fn write_shared_ptr(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(out, "  return self.get();");
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$shared_ptr${}$drop(::std::shared_ptr<{}> *self) noexcept {{",
@@ -1795,6 +1806,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(out, "  ::new (ptr) ::std::weak_ptr<{}>();", inner);
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$weak_ptr${}$clone(const ::std::weak_ptr<{}>& self, ::std::weak_ptr<{}> *ptr) noexcept {{",
@@ -1802,6 +1814,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(out, "  ::new (ptr) ::std::weak_ptr<{}>(self);", inner);
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$weak_ptr${}$downgrade(const ::std::shared_ptr<{}>& shared, ::std::weak_ptr<{}> *weak) noexcept {{",
@@ -1809,6 +1822,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
     );
     writeln!(out, "  ::new (weak) ::std::weak_ptr<{}>(shared);", inner);
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$weak_ptr${}$upgrade(const ::std::weak_ptr<{}>& weak, ::std::shared_ptr<{}> *shared) noexcept {{",
@@ -1820,6 +1834,7 @@ fn write_weak_ptr(out: &mut OutFile, key: NamedImplKey) {
         inner,
     );
     writeln!(out, "}}");
+    begin_function_definition(out);
     writeln!(
         out,
         "void cxxbridge1$weak_ptr${}$drop(::std::weak_ptr<{}> *self) noexcept {{",
@@ -1846,6 +1861,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
     writeln!(out, "  return s.size();");
     writeln!(out, "}}");
 
+    begin_function_definition(out);
     writeln!(
         out,
         "{} *cxxbridge1$std$vector${}$get_unchecked(::std::vector<{}> *s, ::std::size_t pos) noexcept {{",
@@ -1855,6 +1871,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
     writeln!(out, "}}");
 
     if out.types.is_maybe_trivial(element) {
+        begin_function_definition(out);
         writeln!(
             out,
             "void cxxbridge1$std$vector${}$push_back(::std::vector<{}> *v, {} *value) noexcept {{",
@@ -1864,6 +1881,7 @@ fn write_cxx_vector(out: &mut OutFile, key: NamedImplKey) {
         writeln!(out, "  ::rust::destroy(value);");
         writeln!(out, "}}");
 
+        begin_function_definition(out);
         writeln!(
             out,
             "void cxxbridge1$std$vector${}$pop_back(::std::vector<{}> *v, {} *out) noexcept {{",

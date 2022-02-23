@@ -43,7 +43,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/tab_model/tab_model.h"
 #include "chrome/browser/ui/android/tab_model/tab_model_list.h"
 #else
@@ -156,7 +156,7 @@ void PushMessagingNotificationManager::DidCountVisibleNotifications(
                               notification_count);
 
   // Sites with a currently visible tab don't need to show notifications.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   for (const TabModel* model : TabModelList::models()) {
     Profile* profile = model->GetProfile();
     WebContents* active_web_contents = model->GetActiveWebContents();

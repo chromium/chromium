@@ -15,9 +15,9 @@ import unittest
 class FindInvalidCSSVariablesTest(unittest.TestCase):
     def testUnspecified(self):
         def GitResult(command):
-            return b'''--test-not-specified
---test-only-rgb-used-rgb
---test-toolbar'''
+            return b'''a:1:--test-not-specified
+a:1:--test-only-rgb-used-rgb
+a:1:--test-toolbar'''
 
         json_string = '''
 {
@@ -37,12 +37,12 @@ class FindInvalidCSSVariablesTest(unittest.TestCase):
                                          git_runner=GitResult)
         unused = set()
         self.assertEqual(result['unused'], unused)
-        unspecified = set(['--test-not-specified'])
+        unspecified = ['a:1:--test-not-specified']
         self.assertEqual(result['unspecified'], unspecified)
 
     def testUnused(self):
         def GitResult(command):
-            return b'''--test-toolbar'''
+            return b'''a:1:--test-toolbar'''
 
         json_string = '''
 {
@@ -54,15 +54,41 @@ class FindInvalidCSSVariablesTest(unittest.TestCase):
   colors: {
     toolbar: "rgb(255, 255, 255)",
     unused: "rgb(255, 255, 255)",
-  }
+  },
+  opacities: {
+    unused_opacity: 0.3,
+  },
+  typography: {
+    font_families: {
+      font_family_unused: 'unused',
+    },
+    typefaces: {
+      headline_1: {
+        font_family: '$font_family_unused',
+        font_size: 15,
+        font_weight: 500,
+        line_height: 22,
+      },
+    },
+  },
+  untyped_css: {
+    custom_type: {
+      unused_css: 'box-shadow',
+    },
+  },
 }
         '''
 
         result = FindInvalidCSSVariables({'test': json_string},
                                          git_runner=GitResult)
-        unused = set(['--test-unused'])
+        unused = set([
+            'unused_opacity',
+            'unused_css',
+            'headline_1',
+            'unused',
+        ])
         self.assertEqual(result['unused'], unused)
-        unspecified = set()
+        unspecified = []
         self.assertEqual(result['unspecified'], unspecified)
 
     def testNoPrefix(self):

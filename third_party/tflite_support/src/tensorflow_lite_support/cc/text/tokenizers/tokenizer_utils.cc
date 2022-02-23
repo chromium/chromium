@@ -15,7 +15,7 @@ limitations under the License.
 
 #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer_utils.h"
 
-#include "absl/status/status.h"
+#include "absl/status/status.h"  // from @com_google_absl
 #include "tensorflow_lite_support/cc/common.h"
 #include "tensorflow_lite_support/cc/port/status_macros.h"
 #include "tensorflow_lite_support/cc/text/tokenizers/bert_tokenizer.h"
@@ -28,7 +28,6 @@ namespace text {
 namespace tokenizer {
 
 using ::tflite::ProcessUnit;
-using ::tflite::SentencePieceTokenizerOptions;
 using ::tflite::support::CreateStatusWithPayload;
 using ::tflite::support::StatusOr;
 using ::tflite::support::TfLiteSupportStatus;
@@ -72,6 +71,12 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
       return absl::make_unique<BertTokenizer>(vocab_buffer.data(),
                                               vocab_buffer.size());
     }
+    case ProcessUnitOptions_SentencePieceTokenizerOptions: {
+      return CreateStatusWithPayload(
+          absl::StatusCode::kInvalidArgument,
+          "Chromium does not support sentencepiece tokenization",
+          TfLiteSupportStatus::kMetadataInvalidTokenizerError);
+    }
     case ProcessUnitOptions_RegexTokenizerOptions: {
       const tflite::RegexTokenizerOptions* options =
           tokenizer_process_unit->options_as<RegexTokenizerOptions>();
@@ -106,7 +111,7 @@ StatusOr<std::unique_ptr<Tokenizer>> CreateTokenizerFromProcessUnit(
             TfLiteSupportStatus::kMetadataInvalidTokenizerError);
       }
 
-      return regex_tokenizer;
+      return std::move(regex_tokenizer);
     }
     default:
       return CreateStatusWithPayload(

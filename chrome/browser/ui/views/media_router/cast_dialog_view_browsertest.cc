@@ -9,6 +9,7 @@
 #include "chrome/browser/ui/media_router/ui_media_sink.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
+#include "components/media_router/browser/presentation/start_presentation_context.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
 #include "content/public/test/browser_test.h"
 
@@ -33,7 +34,7 @@ media_router::UIMediaSink CreateConnectedSink() {
   sink.cast_modes = {media_router::TAB_MIRROR, media_router::DESKTOP_MIRROR};
   sink.route = media_router::MediaRoute(
       "route_id", media_router::MediaSource("https://example.com"), sink.id, "",
-      true, true);
+      true);
   return sink;
 }
 
@@ -62,10 +63,12 @@ class MockCastDialogController : public media_router::CastDialogController {
   void StartCasting(const media_router::MediaSink::Id& sink_id,
                     media_router::MediaCastMode cast_mode) override {}
   void StopCasting(const media_router::MediaRoute::Id& route_id) override {}
-  void ChooseLocalFile(
-      base::OnceCallback<void(const ui::SelectedFileInfo*)> callback) override {
-  }
   void ClearIssue(const media_router::Issue::Id& issue_id) override {}
+  content::WebContents* GetInitiator() override { return nullptr; }
+  std::unique_ptr<media_router::StartPresentationContext>
+  TakeStartPresentationContext() override {
+    return nullptr;
+  }
 };
 
 }  // namespace

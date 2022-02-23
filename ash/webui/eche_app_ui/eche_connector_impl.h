@@ -7,11 +7,11 @@
 
 #include "ash/webui/eche_app_ui/eche_connector.h"
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
 #include "ash/webui/eche_app_ui/eche_feature_status_provider.h"
 #include "ash/webui/eche_app_ui/feature_status_provider.h"
 #include "base/containers/queue.h"
-// TODO(https://crbug.com/1164001): move to forward declaration.
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
 
 namespace ash {
 namespace eche_app {
@@ -22,7 +22,7 @@ namespace eche_app {
 class EcheConnectorImpl : public EcheConnector,
                           public FeatureStatusProvider::Observer {
  public:
-  EcheConnectorImpl(EcheFeatureStatusProvider* eche_feature_status_provider,
+  EcheConnectorImpl(FeatureStatusProvider* eche_feature_status_provider,
                     secure_channel::ConnectionManager* connection_manager);
   ~EcheConnectorImpl() override;
 
@@ -31,6 +31,7 @@ class EcheConnectorImpl : public EcheConnector,
   void SendAppsSetupRequest() override;
   void GetAppsAccessStateRequest() override;
   void AttemptNearbyConnection() override;
+  int GetMessageCount();
 
  private:
   // FeatureStatusProvider::Observer:
@@ -38,7 +39,7 @@ class EcheConnectorImpl : public EcheConnector,
 
   void FlushQueue();
 
-  EcheFeatureStatusProvider* eche_feature_status_provider_;
+  FeatureStatusProvider* eche_feature_status_provider_;
   secure_channel::ConnectionManager* connection_manager_;
   base::queue<std::string> message_queue_;
 };

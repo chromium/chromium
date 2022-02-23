@@ -18,7 +18,7 @@
 #include "media/base/audio_bus.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #else
 #include <unistd.h>
@@ -152,7 +152,7 @@ TEST_F(SodaClientUnitTest, CreateSodaClient) {
 
       // Sleep for 20ms to simulate real-time audio. SODA requires audio
       // streaming in order to return events.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       ::Sleep(20);
 #else
       usleep(20000);

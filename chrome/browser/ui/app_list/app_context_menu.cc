@@ -8,7 +8,9 @@
 
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_model.h"
+#include "ash/resources/vector_icons/vector_icons.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/apps/app_service/menu_util.h"
 #include "chrome/browser/ui/app_list/app_context_menu_delegate.h"
 #include "chrome/browser/ui/app_list/app_list_controller_delegate.h"
 #include "chrome/grit/generated_resources.h"
@@ -76,7 +78,7 @@ ui::ImageModel AppContextMenu::GetIconForCommandId(int command_id) const {
       GetMenuItemVectorIcon(command_id, controller_->IsAppPinned(app_id_)
                                             ? IDS_APP_LIST_CONTEXT_MENU_UNPIN
                                             : IDS_APP_LIST_CONTEXT_MENU_PIN);
-  return ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+  return ui::ImageModel::FromVectorIcon(icon, apps::GetColorIdForMenuItemIcon(),
                                         ash::kAppContextMenuIconSize);
 }
 
@@ -101,6 +103,7 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
     case ash::UNINSTALL:
       return views::kUninstallIcon;
     case ash::APP_CONTEXT_MENU_NEW_WINDOW:
+    case ash::MENU_OPEN_NEW:
       return views::kNewWindowIcon;
     case ash::APP_CONTEXT_MENU_NEW_INCOGNITO_WINDOW:
       return views::kNewIncognitoWindowIcon;
@@ -115,6 +118,12 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
     case ash::USE_LAUNCH_TYPE_WINDOW:
       // Check items use the default icon.
       return gfx::kNoneIcon;
+    case ash::REORDER_SUBMENU:
+      return ash::kReorderIcon;
+    case ash::REORDER_BY_NAME_ALPHABETICAL:
+      return ash::kSortAlphabeticalIcon;
+    case ash::REORDER_BY_COLOR:
+      return ash::kSortColorIcon;
     case ash::NOTIFICATION_CONTAINER:
       NOTREACHED() << "NOTIFICATION_CONTAINER does not have an icon, and it is "
                       "added to the model by NotificationMenuController.";
@@ -122,7 +131,7 @@ const gfx::VectorIcon& AppContextMenu::GetMenuItemVectorIcon(int command_id,
     case ash::SHUTDOWN_GUEST_OS:
       return kShutdownGuestOsIcon;
     default:
-      NOTREACHED();
+      NOTREACHED() << "No icon for command_id: " << command_id;
       return gfx::kNoneIcon;
   }
 }
@@ -159,7 +168,7 @@ void AppContextMenu::AddContextMenuOption(ui::SimpleMenuModel* menu_model,
   if (!icon.is_empty()) {
     menu_model->AddItemWithStringIdAndIcon(
         command_id, string_id,
-        ui::ImageModel::FromVectorIcon(icon, ui::kColorMenuIcon,
+        ui::ImageModel::FromVectorIcon(icon, apps::GetColorIdForMenuItemIcon(),
                                        ash::kAppContextMenuIconSize));
     return;
   }

@@ -6,6 +6,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/accelerators/test_accelerator_target.h"
@@ -220,7 +221,7 @@ TEST_F(AcceleratorManagerTest, NewMappingSuperseded) {
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 
 TEST_F(AcceleratorManagerTest, PositionalShortcuts_AllEqual) {
   base::test::ScopedFeatureList scoped_feature_list;
@@ -338,7 +339,7 @@ TEST_F(AcceleratorManagerTest, PositionalShortcuts_NonPositionalNonMatch) {
   EXPECT_FALSE(manager.Process(trigger));
 }
 
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 }  // namespace test

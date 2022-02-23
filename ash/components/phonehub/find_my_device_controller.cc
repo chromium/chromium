@@ -4,7 +4,7 @@
 
 #include "ash/components/phonehub/find_my_device_controller.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FindMyDeviceController::FindMyDeviceController() = default;
@@ -41,4 +41,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

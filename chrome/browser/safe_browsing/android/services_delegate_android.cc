@@ -98,8 +98,7 @@ void ServicesDelegateAndroid::CreateTelemetryService(Profile* profile) {
     return;
 
   DCHECK(!telemetry_service_);
-  telemetry_service_ = std::make_unique<AndroidTelemetryService>(
-      safe_browsing_service_, profile);
+  telemetry_service_ = std::make_unique<AndroidTelemetryService>(profile);
 }
 
 void ServicesDelegateAndroid::RemoveTelemetryService(Profile* profile) {

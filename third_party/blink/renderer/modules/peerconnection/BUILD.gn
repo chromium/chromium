@@ -143,11 +143,13 @@ blink_modules_sources("peerconnection") {
     "webrtc_media_stream_track_adapter_map.h",
     "webrtc_set_description_observer.cc",
     "webrtc_set_description_observer.h",
+    "webrtc_video_perf_reporter.cc",
+    "webrtc_video_perf_reporter.h",
   ]
 
   public_deps = [ "//third_party/webrtc_overrides:webrtc_component" ]
   deps = [
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//services/metrics/public/cpp:ukm_builders",
     "//third_party/abseil-cpp:absl",
     "//third_party/blink/public/mojom:web_feature_mojo_bindings",

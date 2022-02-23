@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/platform/wtf/deque.h"
+#include "ui/gfx/geometry/point_conversions.h"
 
 namespace blink {
 
@@ -154,11 +155,10 @@ Node* MouseWheelEventManager::FindTargetNode(const WebMouseWheelEvent& event,
                                              const Document* doc,
                                              const LocalFrameView* view) {
   DCHECK(doc && doc->GetLayoutView() && view);
-  PhysicalOffset v_point(
-      view->ConvertFromRootFrame(FlooredIntPoint(event.PositionInRootFrame())));
+  PhysicalOffset v_point(view->ConvertFromRootFrame(
+      gfx::ToFlooredPoint(event.PositionInRootFrame())));
 
-  HitTestRequest request(HitTestRequest::kReadOnly |
-                         HitTestRequest::kRetargetForInert);
+  HitTestRequest request(HitTestRequest::kReadOnly);
   HitTestLocation location(v_point);
   HitTestResult result(request, location);
   doc->GetLayoutView()->HitTest(location, result);

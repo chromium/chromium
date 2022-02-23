@@ -13,8 +13,10 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
+#include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/predictors/autocomplete_action_predictor_table.h"
 #include "components/history/core/browser/history_service.h"
@@ -77,6 +79,15 @@ class AutocompleteActionPredictor
 
   ~AutocompleteActionPredictor() override;
 
+  class Observer : public base::CheckedObserver {
+   public:
+    // Called once per FinishInitialization() call.
+    virtual void OnInitialized() {}
+  };
+
+  void AddObserver(Observer* observer);
+  void RemoveObserver(Observer* observer);
+
   // Registers an AutocompleteResult for a given |user_text|. This will be used
   // when the user navigates from the Omnibox to determine early opportunities
   // to predict their actions.
@@ -101,10 +112,11 @@ class AutocompleteActionPredictor
   Action RecommendAction(const std::u16string& user_text,
                          const AutocompleteMatch& match) const;
 
-  // Begin prerendering |url|. The |size| gives the initial size for the target
-  // prerender. The predictor will run at most one prerender at a time, so
-  // launching a prerender will cancel our previous prerenders (if any).
-  void StartPrerendering(const GURL& url,
+  // Begin prerendering or prefetch with `match`. The `size` gives the initial
+  // size for the target prefetch. The predictor will run at most one prerender
+  // at a time, so launching a prerender will cancel our previous prerenders (if
+  // any).
+  void StartPrerendering(const AutocompleteMatch& match,
                          content::WebContents& web_contents,
                          const gfx::Size& size);
 
@@ -117,6 +129,8 @@ class AutocompleteActionPredictor
 
   // Should be called when a URL is opened from the omnibox.
   void OnOmniboxOpenedUrl(const OmniboxLog& log);
+
+  bool initialized() { return initialized_; }
 
  private:
   friend class AutocompleteActionPredictorTest;
@@ -231,15 +245,15 @@ class AutocompleteActionPredictor
   void OnHistoryServiceLoaded(
       history::HistoryService* history_service) override;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Set when this is a predictor for an incognito profile.
-  AutocompleteActionPredictor* main_profile_predictor_;
+  raw_ptr<AutocompleteActionPredictor> main_profile_predictor_;
 
   // Set when this is a predictor for a non-incognito profile, and the incognito
   // profile creates a predictor.  If this is non-NULL when we finish
   // initialization, we should call CopyFromMainProfile() on it.
-  AutocompleteActionPredictor* incognito_predictor_;
+  raw_ptr<AutocompleteActionPredictor> incognito_predictor_;
 
   // The backing data store.  This is nullptr for incognito-owned predictors.
   scoped_refptr<AutocompleteActionPredictorTable> table_;
@@ -253,7 +267,8 @@ class AutocompleteActionPredictor
 
   std::unique_ptr<prerender::NoStatePrefetchHandle> no_state_prefetch_handle_;
 
-  std::unique_ptr<content::PrerenderHandle> prerender_handle_;
+  base::WeakPtr<content::PrerenderHandle> search_prerender_handle_;
+  base::WeakPtr<content::PrerenderHandle> direct_url_input_prerender_handle_;
 
   // Local caches of the data store.  For incognito-owned predictors this is the
   // only copy of the data.
@@ -261,6 +276,8 @@ class AutocompleteActionPredictor
   DBIdCacheMap db_id_cache_;
 
   bool initialized_;
+
+  base::ObserverList<Observer> observers_;
 
   base::ScopedObservation<history::HistoryService,
                           history::HistoryServiceObserver>

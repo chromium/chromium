@@ -101,7 +101,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
     cras_audio_handler_ = CrasAudioHandler::Get();
     cras_audio_handler_->SetPrefHandlerForTesting(audio_pref_handler_);
 
-    tray_model_ = std::make_unique<UnifiedSystemTrayModel>(nullptr);
+    tray_model_ = base::MakeRefCounted<UnifiedSystemTrayModel>(nullptr);
     tray_controller_ =
         std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     audio_detailed_view_controller_ =
@@ -178,7 +178,7 @@ class UnifiedAudioDetailedViewControllerTest : public AshTestBase {
   scoped_refptr<AudioDevicesPrefHandlerStub> audio_pref_handler_;
   std::unique_ptr<UnifiedAudioDetailedViewController>
       audio_detailed_view_controller_;
-  std::unique_ptr<UnifiedSystemTrayModel> tray_model_;
+  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
   std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<tray::AudioDetailedView> audio_detailed_view_;
@@ -228,8 +228,6 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
 TEST_F(UnifiedAudioDetailedViewControllerTest,
        NoiseCancellationToggleNotDisplayedIfNotSupported) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableInputNoiseCancellationUi);
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kMicJack, kFrontMic, kRearMic}));
   fake_cras_audio_client()->SetNoiseCancellationSupported(false);
@@ -245,9 +243,6 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
 TEST_F(UnifiedAudioDetailedViewControllerTest,
        NoiseCancellationToggleDisplayedIfSupportedAndInternal) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableInputNoiseCancellationUi);
-
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kMicJack, kFrontMic, kRearMic}));
   fake_cras_audio_client()->SetNoiseCancellationSupported(true);
@@ -267,9 +262,6 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
 
 TEST_F(UnifiedAudioDetailedViewControllerTest,
        NoiseCancellationToggleChangesPrefAndSendsDbusSignal) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableInputNoiseCancellationUi);
-
   audio_pref_handler_->SetNoiseCancellationState(false);
 
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
@@ -307,29 +299,8 @@ TEST_F(UnifiedAudioDetailedViewControllerTest,
   EXPECT_FALSE(audio_pref_handler_->GetNoiseCancellationState());
 }
 
-// TODO(1205197): Remove this test once the flag is removed.
-TEST_F(UnifiedAudioDetailedViewControllerTest,
-       NoiseCancellationToggleNotDisplayedIfFlagIsOff) {
-  scoped_feature_list_.InitAndDisableFeature(
-      features::kEnableInputNoiseCancellationUi);
-  fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
-      GenerateAudioNodeList({kInternalMic, kMicJack, kFrontMic, kRearMic}));
-  fake_cras_audio_client()->SetNoiseCancellationSupported(true);
-
-  cras_audio_handler_->SwitchToDevice(
-      AudioDevice(GenerateAudioNode(kInternalMic)), true,
-      CrasAudioHandler::ACTIVATE_BY_USER);
-
-  std::unique_ptr<views::View> view =
-      base::WrapUnique(audio_detailed_view_controller_->CreateView());
-  EXPECT_EQ(0u, toggles_map_.size());
-}
-
 TEST_F(UnifiedAudioDetailedViewControllerTest,
        NoiseCancellationUpdatedWhenDeviceChanges) {
-  scoped_feature_list_.InitAndEnableFeature(
-      features::kEnableInputNoiseCancellationUi);
-
   fake_cras_audio_client()->SetAudioNodesAndNotifyObserversForTesting(
       GenerateAudioNodeList({kInternalMic, kMicJack, kFrontMic, kRearMic}));
   fake_cras_audio_client()->SetNoiseCancellationSupported(true);

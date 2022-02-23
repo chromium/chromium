@@ -2,8 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="eu">
 <translation id="1096883626080133124">Egin gauza gehiago Chrome-rekin: sinplea, segurua eta inoiz baino bizkorragoa da</translation>
+<translation id="1143896152279775643"><ph name="EMAIL" /> kontuko pasahitza Google-ren Pasahitz-kudeatzailea atalean gordeko da.</translation>
 <translation id="1282031177488366470">Lagundu Chrome-ren eginbideak eta funtzionamendua hobetzen</translation>
-<translation id="1314663809820920746">Gailuan dituzu oraindik laster-marka, historia, pasahitz eta bestelako ezarpen guztiak. Aldaketarik eginez gero, ez dira sinkronizatuko Google-ko kontuarekin.</translation>
 <translation id="1479202195792305274">Saioa Google-ko kontu batekin hasten baduzu, Chrome-k pasahitzak egiazta ditzake.</translation>
 <translation id="1493827051843127077">Ezarri Chrome arakatzaile lehenetsi gisa fitxak, pasahitzak eta ordainketa-informazioa gailu guztietan sinkronizatzeko</translation>
 <translation id="1504372625950710826">Chrome-k ezin izan ditu bilatu eguneratzeak. Egiaztatu Internetera konektatuta zaudela.</translation>
@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Webgunearen ziurtagiria <ph name="ISSUER" /> hornitzaileak jaulki duela egiaztatu du Chrome-k.</translation>
 <translation id="2199719347983604670">Chrome-ren sinkronizazioaren datuak</translation>
 <translation id="2313070403598893276">Sinplea, segurua eta inoiz baino bizkorragoa da Google Chrome</translation>
+<translation id="2339201583852607431">Pasahitza Google-ko kontuan gordeko da (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Onartzen dituzun webguneekin partekatuko du kokapena Chrome-k.</translation>
 <translation id="2347208864470321755">Eginbide hau aktibatzen denean, beste hizkuntzetan dauden orriak Google Translate bidez itzuli nahi dituzun galdetuko dizu Chrome-k. <ph name="BEGIN_LINK" />Lortu informazio gehiago<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome-ren eginbide batzuekin errazagoa da Interneteko datuak eta web-orriak kargatzeko behar den denbora kudeatzea.
@@ -24,6 +25,7 @@
 <translation id="2574249610672786438">Chrome erabiltzen duzun gailu guztietan zure fitxak eskura izateko, hasi saioa gailu guztietan</translation>
 <translation id="2576431527583832481">Chrome hobetu egin dugu! Bertsio berria duzu erabilgarri.</translation>
 <translation id="257708665678654955">Webgune honetara zatozen hurrengo aldian Google Chrome-k <ph name="LANGUAGE_NAME" /> hizkuntzan dauden orriak itzultzea eskaintzea nahi duzu?</translation>
+<translation id="2671426118752779020">iPhone-ko beste aplikazio batzuk erabiltzen ari zinela Google-ren Pasahitz-kudeatzailea atalean gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="2695886661449553974">Chrome-k ezin izan ditu bilatu eguneratzeak. Saiatu berriro geroago.</translation>
 <translation id="2732745070297234559">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar.</translation>
 <translation id="2869959624320573933">Hasi saioa Chrome-n</translation>
@@ -54,8 +56,10 @@
 <translation id="4698415050768537821">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro bihar edo <ph name="BEGIN_LINK" />egiaztatu pasahitzak Google-ko kontuan<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">Ez da bateragarria Chrome Beta-rekin</translation>
 <translation id="5030102366287574140">Datuen isilpekotasunaren urratzeen, seguruak ez diren webguneen eta abarren aurrean babes zaitzake Chrome-k.</translation>
+<translation id="5119391094379141756">Hautatu Chrome.</translation>
 <translation id="5162467219239570114">Chrome zaharkituta dago. Ez badago eguneratzerik <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> dendan, baliteke gailua Chrome-ren bertsio berriekin bateragarria ez izatea.</translation>
 <translation id="5389212809648216794">Google Chrome-k ezin du erabili kamera, beste aplikazio bat ari delako hura erabiltzen</translation>
+<translation id="5460571915754665838">4. Hautatu Chrome.</translation>
 <translation id="5639704535586432836">Ireki Ezarpenak &gt; Pribatutasuna &gt; Kamera &gt; Google Chrome, eta aktibatu kamera.</translation>
 <translation id="5642200033778930880">Google Chrome-k ezin du erabili kamera Ikuspegi zatitua moduan</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -67,11 +71,13 @@
 <translation id="6063091872902370735">Eman Chrome-n saioa hasteko baimena</translation>
 <translation id="6181930887571472871">Aldatu Chrome-ra</translation>
 <translation id="6238746320622508509">Utzi Chrome-ri ezkutuko moduko fitxak blokeatzen.</translation>
+<translation id="6387994324662817823">Pasahitzak gailu honetan soilik gordetzen dira Google-ren Pasahitz-kudeatzailea atalean.</translation>
 <translation id="6427126399757991875">Zure erakundea Chrome konfiguratzen ari da…</translation>
 <translation id="6600954340915313787">Chrome-n kopiatu da</translation>
 <translation id="6634107063912726160">Saioa amaitzen duzunean, Chrome-k ez du datu berririk sinkronizatuko Google-ko kontuarekin. Lehendik sinkronizatuta dauden datuak kontuan geratuko dira.</translation>
 <translation id="6648150602980899529"><ph name="DOMAIN" /> domeinuak kudeatutako kontu batekin hasi duzu saioa eta Chrome datuen kontrola administratzaileari eman diozu. Datuak betiko lotuko dira kontu honekin. Saioa amaitzen baduzu Chrome-ko datuak ezabatu egingo dira gailutik, baina Google-ko kontuan izango dituzu gordeta.</translation>
 <translation id="6676840375528380067">Gailu honetan dituzun Chrome-ko datuak garbitu nahi dituzu?</translation>
+<translation id="6709398533399187136">Pasahitza arriskuan jarri da, datuen isilpekotasuna urratu delako. Google-ren Pasahitz-kudeatzailea eginbideak hura orain aldatzea gomendatzen du.</translation>
 <translation id="6822673484890854830">Chrome-k ezin izan ditu egiaztatu pasahitz guztiak. Saiatu berriro geroago.</translation>
 <translation id="6964931465519938134">Orain, mezuetan, dokumentuetan eta aplikazioetan estekak sakatzen dituzunean, Chrome erabili ahalko duzu.</translation>
 <translation id="7059914902409643750">Pertsonalizatu Chrome</translation>
@@ -80,6 +86,7 @@
 <translation id="7165736900384873061">Hasi Google Chrome QR eskanerra erabiltzen</translation>
 <translation id="7172660552945675509">Aholkua: <ph name="BEGIN_LINK" />ainguratu Chrome dock-ean<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome-k aurpegi bidezko identifikazioa erabiltzen du pasahitzak baimena dutenek bakarrik atzitzen dituztela ziurtatzeko.</translation>
+<translation id="72119412072970160">iPad-eko beste aplikazio batzuk erabiltzen ari zinela Google-ren Pasahitz-kudeatzailea atalean gorde zenituen pasahitzak erabil ditzakezu.</translation>
 <translation id="7261678641327190792">Chrome-k ezin ditu egiaztatu pasahitzak</translation>
 <translation id="7272930098487145294">Irudiak gordetzeko, sakatu Ezarpenak eta eman argazkiak gehitzeko baimena Chrome-ri</translation>
 <translation id="7275945473750112644">Kontua <ph name="HOSTED_DOMAIN" /> domeinuak kudeatzen duenez, Chrome-ko datuak garbitu egingo dira gailu honetatik</translation>
@@ -107,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">Egon babestuta Google Chrome-rekin</translation>
 <translation id="8772179140489533211">Chrome-n saioa hasteko onarpen-mezuak erakusten ditu.</translation>
+<translation id="8788269841521769222">Ez duzu pasahitza gogoratu beharko. <ph name="EMAIL" /> kontuko Google-ren Pasahitz-kudeatzailea atalean gordeko da.</translation>
 <translation id="9112744793181547300">Arakatzaile lehenetsi gisa ezarri nahi duzu Chrome?</translation>
 </translationbundle>

@@ -8,7 +8,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/web_applications/web_app_protocol_handler_manager.h"
+#include "chrome/browser/web_applications/os_integration/web_app_protocol_handler_manager.h"
 
 namespace web_app {
 

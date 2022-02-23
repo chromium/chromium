@@ -14,15 +14,19 @@
 
 #include "util/linux/exception_handler_protocol.h"
 
+#include "build/build_config.h"
+
 namespace crashpad {
 
 ExceptionHandlerProtocol::ClientInformation::ClientInformation()
     : exception_information_address(0),
       sanitization_information_address(0)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-      , crash_loop_before_time(0)
-#endif  // OS_LINUX || OS_CHROMEOS
-{}
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+      ,
+      crash_loop_before_time(0)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+{
+}
 
 ExceptionHandlerProtocol::ClientToServerMessage::ClientToServerMessage()
     : version(kVersion),

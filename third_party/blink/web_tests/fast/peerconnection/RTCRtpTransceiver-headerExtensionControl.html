@@ -1,0 +1,24 @@
+<meta charset=utf-8>
+<title>RTCRtpTransceiver-headerExtensionsControl</title>
+<script src="../../resources/testharness.js"></script>
+<script src="../../resources/testharnessreport.js"></script>
+<script>
+'use strict';
+
+// This file contains tests for parameters that are available in Chrome, but
+// not mandatory in WebRTC, so tests can't be in the wpt directory.
+
+test(function(t) {
+  const pc = new RTCPeerConnection();
+  t.add_cleanup(() => pc.close());
+  const transceiver = pc.addTransceiver('video');
+  const capabilities = transceiver.headerExtensionsToOffer;
+  let capability = capabilities.find((capability) => {
+    return capability.uri == "http://www.webrtc.org/experiments/rtp-hdrext/video-layers-allocation00";
+  });
+  assert_not_equals(capability, undefined);
+  assert_equals(capability.direction, "stopped");
+}, `The VideoLayersAllocation is available but not enabled`);
+
+
+</script>

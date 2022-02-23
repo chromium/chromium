@@ -145,11 +145,19 @@ void FakeNavigationManager::ReloadWithUserAgentType(
 }
 
 std::vector<NavigationItem*> FakeNavigationManager::GetBackwardItems() const {
-  return std::vector<NavigationItem*>();
+  std::vector<NavigationItem*> back_items;
+  for (int i = static_cast<int>(items_index_ - 1); i >= 0; --i) {
+    back_items.push_back(items_[i].get());
+  }
+  return back_items;
 }
 
 std::vector<NavigationItem*> FakeNavigationManager::GetForwardItems() const {
-  return std::vector<NavigationItem*>();
+  std::vector<NavigationItem*> forward_items;
+  for (unsigned int i = items_index_ + 1; i < items_.size(); ++i) {
+    forward_items.push_back(items_[i].get());
+  }
+  return forward_items;
 }
 
 void FakeNavigationManager::Restore(

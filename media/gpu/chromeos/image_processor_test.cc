@@ -53,10 +53,6 @@ media::test::VideoTestEnvironment* g_env;
 // Files for pixel format conversion test.
 const base::FilePath::CharType* kNV12Image =
     FILE_PATH_LITERAL("bear_320x192.nv12.yuv");
-const base::FilePath::CharType* kRGBAImage =
-    FILE_PATH_LITERAL("bear_320x192.rgba");
-const base::FilePath::CharType* kBGRAImage =
-    FILE_PATH_LITERAL("bear_320x192.bgra");
 const base::FilePath::CharType* kYV12Image =
     FILE_PATH_LITERAL("bear_320x192.yv12.yuv");
 const base::FilePath::CharType* kI420Image =
@@ -118,8 +114,6 @@ YuvSubsampling ToYuvSubsampling(VideoPixelFormat format) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsFormatTestedForDmabufAndGbm(VideoPixelFormat format) {
   switch (format) {
-    case PIXEL_FORMAT_ABGR:
-    case PIXEL_FORMAT_ARGB:
     case PIXEL_FORMAT_NV12:
     case PIXEL_FORMAT_YV12:
       return true;
@@ -352,9 +346,7 @@ TEST_P(ImageProcessorParamTest, ConvertOneTime_GmbToGmb) {
 INSTANTIATE_TEST_SUITE_P(
     PixelFormatConversionToNV12,
     ImageProcessorParamTest,
-    ::testing::Values(std::make_tuple(kBGRAImage, kNV12Image),
-                      std::make_tuple(kI420Image, kNV12Image),
-                      std::make_tuple(kRGBAImage, kNV12Image),
+    ::testing::Values(std::make_tuple(kI420Image, kNV12Image),
                       std::make_tuple(kYV12Image, kNV12Image),
                       std::make_tuple(kI422Image, kNV12Image),
                       std::make_tuple(kYUYVImage, kNV12Image)));

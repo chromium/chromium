@@ -128,6 +128,7 @@ message TouchEvent {
   // treated as an ACTION_UP (END) event but might not perform the exact same
   // actions as a normal ACTION_UP event.
   enum TouchEventType {
+    TOUCH_POINT_UNDEFINED = 0;
     TOUCH_POINT_START = 1;
     TOUCH_POINT_MOVE = 2;
     TOUCH_POINT_END = 3;

@@ -8,8 +8,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
-
 namespace extensions {
 
 // Implemented by event handlers so they are notified when a change event

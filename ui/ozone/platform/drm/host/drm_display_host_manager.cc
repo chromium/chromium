@@ -55,11 +55,8 @@ base::FilePath MapDevPathToSysPath(const base::FilePath& device_path) {
   base::FilePath sys_path = base::MakeAbsoluteFilePath(
       base::FilePath("/sys/class/drm").Append(device_path.BaseName()));
 
-  std::vector<base::FilePath::StringType> components;
-  sys_path.GetComponents(&components);
   base::FilePath path_thus_far;
-
-  for (const auto& component : components) {
+  for (const auto& component : sys_path.GetComponents()) {
     if (path_thus_far.empty()) {
       path_thus_far = base::FilePath(component);
     } else {
@@ -100,29 +97,47 @@ void OpenDeviceAsync(const base::FilePath& device_path,
                                 std::move(handle)));
 }
 
+struct DisplayCard {
+  base::FilePath path;
+  absl::optional<std::string> driver;
+};
+
 base::FilePath GetPrimaryDisplayCardPath() {
   struct drm_mode_card_res res;
+  std::vector<DisplayCard> cards;
   for (int i = 0; /* end on first card# that does not exist */; i++) {
     std::string card_path = base::StringPrintf(kDefaultGraphicsCardPattern, i);
 
     if (access(card_path.c_str(), F_OK) != 0)
       break;
 
-    int fd = open(card_path.c_str(), O_RDWR | O_CLOEXEC);
-    if (fd < 0) {
+    base::ScopedFD fd(open(card_path.c_str(), O_RDWR | O_CLOEXEC));
+    if (!fd.is_valid()) {
       VPLOG(1) << "Failed to open '" << card_path << "'";
       continue;
     }
 
     memset(&res, 0, sizeof(struct drm_mode_card_res));
-    int ret = drmIoctl(fd, DRM_IOCTL_MODE_GETRESOURCES, &res);
-    close(fd);
-    if (ret == 0 && res.count_crtcs > 0) {
-      return base::FilePath(card_path);
-    }
-
+    int ret = drmIoctl(fd.get(), DRM_IOCTL_MODE_GETRESOURCES, &res);
     VPLOG_IF(1, ret) << "Failed to get DRM resources for '" << card_path << "'";
+
+    if (ret == 0 && res.count_crtcs > 0)
+      cards.push_back(
+          {base::FilePath(card_path), GetDrmDriverNameFromFd(fd.get())});
   }
+
+  // Find the card with the most preferred driver.
+  const auto preferred_drivers = GetPreferredDrmDrivers();
+  for (const auto* preferred_driver : preferred_drivers) {
+    for (const auto& card : cards) {
+      if (card.driver == preferred_driver)
+        return card.path;
+    }
+  }
+
+  // Fall back to the first usable card.
+  if (!cards.empty())
+    return cards[0].path;
 
   LOG(FATAL) << "Failed to open primary graphics device.";
   return base::FilePath();  // Not reached.

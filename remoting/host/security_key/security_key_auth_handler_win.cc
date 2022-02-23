@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
@@ -62,7 +63,7 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   ~SecurityKeyAuthHandlerWin() override;
 
  private:
-  typedef std::map<int, std::unique_ptr<SecurityKeyIpcServer>> ActiveChannels;
+  using ActiveChannels = std::map<int, std::unique_ptr<SecurityKeyIpcServer>>;
 
   // SecurityKeyAuthHandler interface.
   void CreateSecurityKeyConnection() override;
@@ -94,7 +95,7 @@ class SecurityKeyAuthHandlerWin : public SecurityKeyAuthHandler {
   SendMessageCallback send_message_callback_;
 
   // Interface which provides details about the client session.
-  ClientSessionDetails* client_session_details_ = nullptr;
+  raw_ptr<ClientSessionDetails> client_session_details_ = nullptr;
 
   // Tracks the IPC channel created for each security key forwarding session.
   ActiveChannels active_channels_;

@@ -14,13 +14,15 @@ source_set("share_target") {
     "share_target.h",
     "text_attachment.cc",
     "text_attachment.h",
+    "wifi_credentials_attachment.cc",
+    "wifi_credentials_attachment.h",
   ]
 
   deps = [
+    "//ash/services/nearby/public/mojom",
+    "//ash/services/nearby/public/mojom:nearby_share_target_types",
     "//base",
     "//chrome/browser/ui/webui/nearby_share:share_type",
-    "//chromeos/services/nearby/public/mojom",
-    "//chromeos/services/nearby/public/mojom:nearby_share_target_types",
     "//components/drive",
     "//net",
     "//url",

@@ -77,7 +77,7 @@
 #include "base/compiler_specific.h"
 #include "base/containers/span.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/bucket_ranges.h"
 #include "base/metrics/histogram_base.h"
 #include "base/metrics/histogram_samples.h"
@@ -201,8 +201,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   // function on non-dcheck builds without crashing.
   // Note. Currently it allow some bad input, e.g. 0 as minimum, but silently
   // converts it to good input: 1.
-  // TODO(bcwhite): Use false returns to create "sink" histograms so that bad
-  // data doesn't create confusion on the servers.
   static bool InspectConstructionArguments(StringPiece name,
                                            Sample* minimum,
                                            Sample* maximum,
@@ -222,10 +220,6 @@ class BASE_EXPORT Histogram : public HistogramBase {
   void AddSamples(const HistogramSamples& samples) override;
   bool AddSamplesFromPickle(base::PickleIterator* iter) override;
   base::Value ToGraphDict() const override;
-
-  // Validates the histogram contents and CHECKs on errors.
-  // TODO(bcwhite): Remove this after https://crbug/836875.
-  void ValidateHistogramContents() const override;
 
  protected:
   // This class, defined entirely within the .cc file, contains all the
@@ -457,7 +451,7 @@ class BASE_EXPORT ScaledLinearHistogram {
   // Pointer to the underlying histogram. Ownership of it remains with
   // the statistics-recorder. This is typed as HistogramBase because it may be a
   // DummyHistogram if expired.
-  HistogramBase* const histogram_;
+  const raw_ptr<HistogramBase> histogram_;
 
   // The scale factor of the sample counts.
   const int32_t scale_;

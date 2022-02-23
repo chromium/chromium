@@ -26,7 +26,7 @@
 #include "ui/gfx/buffer_format_util.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/gpu_memory_buffer.h"
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -73,7 +73,7 @@ std::string VideoFrame::StorageTypeToString(
       return "OWNED_MEMORY";
     case VideoFrame::STORAGE_SHMEM:
       return "SHMEM";
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     case VideoFrame::STORAGE_DMABUFS:
       return "DMABUFS";
 #endif
@@ -90,7 +90,7 @@ std::string VideoFrame::StorageTypeToString(
 // static
 bool VideoFrame::IsStorageTypeMappable(VideoFrame::StorageType storage_type) {
   return
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // This is not strictly needed but makes explicit that, at VideoFrame
       // level, DmaBufs are not mappable from userspace.
       storage_type != VideoFrame::STORAGE_DMABUFS &&
@@ -278,7 +278,7 @@ static absl::optional<VideoFrameLayout> GetDefaultLayout(
   return VideoFrameLayout::CreateWithPlanes(format, coded_size, planes);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // This class allows us to embed a vector<ScopedFD> into a scoped_refptr, and
 // thus to have several VideoFrames share the same set of DMABUF FDs.
 class VideoFrame::DmabufHolder
@@ -296,7 +296,7 @@ class VideoFrame::DmabufHolder
   friend class base::RefCountedThreadSafe<DmabufHolder>;
   ~DmabufHolder() = default;
 };
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 // static
 bool VideoFrame::IsValidConfig(VideoPixelFormat format,
@@ -617,7 +617,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   for (size_t i = 0; i < num_planes; ++i)
     planes[i].stride = gpu_memory_buffer->stride(i);
   uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   if (gpu_memory_buffer->GetType() == gfx::NATIVE_PIXMAP) {
     const auto gmb_handle = gpu_memory_buffer->CloneHandle();
     if (gmb_handle.is_null() ||
@@ -663,7 +663,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalGpuMemoryBuffer(
   return frame;
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
     const VideoFrameLayout& layout,
@@ -706,7 +706,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapExternalDmabufs(
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // static
 scoped_refptr<VideoFrame> VideoFrame::WrapUnacceleratedIOSurface(
     gfx::GpuMemoryBufferHandle handle,
@@ -887,7 +887,7 @@ scoped_refptr<VideoFrame> VideoFrame::WrapVideoFrame(
     }
   }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   DCHECK(frame->dmabuf_fds_);
   // If there are any |dmabuf_fds_| plugged in, we should refer them too.
   wrapping_frame->dmabuf_fds_ = frame->dmabuf_fds_;
@@ -1253,7 +1253,7 @@ const gpu::MailboxHolder& VideoFrame::mailbox_holder(
                         : mailbox_holders_[texture_index];
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const std::vector<base::ScopedFD>& VideoFrame::DmabufFds() const {
   DCHECK_EQ(storage_type_, STORAGE_DMABUFS);
 
@@ -1271,7 +1271,7 @@ bool VideoFrame::IsSameDmaBufsAs(const VideoFrame& frame) const {
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 CVPixelBufferRef VideoFrame::CvPixelBuffer() const {
   return cv_pixel_buffer_.get();
 }
@@ -1365,7 +1365,7 @@ VideoFrame::VideoFrame(const VideoFrameLayout& layout,
       storage_type_(storage_type),
       visible_rect_(Intersection(visible_rect, gfx::Rect(layout.coded_size()))),
       natural_size_(natural_size),
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       dmabuf_fds_(base::MakeRefCounted<DmabufHolder>()),
 #endif
       timestamp_(timestamp),
@@ -1421,21 +1421,23 @@ gfx::Size VideoFrame::DetermineAlignedSize(VideoPixelFormat format,
   return adjusted;
 }
 
+// static
 bool VideoFrame::IsValidSize(const gfx::Size& coded_size,
                              const gfx::Rect& visible_rect,
                              const gfx::Size& natural_size) {
-  int coded_size_area = coded_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  int natural_size_area = natural_size.GetCheckedArea().ValueOrDefault(INT_MAX);
-  static_assert(limits::kMaxCanvas < INT_MAX, "");
-  return !(coded_size_area > limits::kMaxCanvas ||
-           coded_size.width() > limits::kMaxDimension ||
-           coded_size.height() > limits::kMaxDimension ||
-           visible_rect.x() < 0 || visible_rect.y() < 0 ||
+  return IsValidCodedSize(coded_size) && IsValidCodedSize(natural_size) &&
+         !(visible_rect.x() < 0 || visible_rect.y() < 0 ||
            visible_rect.right() > coded_size.width() ||
-           visible_rect.bottom() > coded_size.height() ||
-           natural_size_area > limits::kMaxCanvas ||
-           natural_size.width() > limits::kMaxDimension ||
-           natural_size.height() > limits::kMaxDimension);
+           visible_rect.bottom() > coded_size.height());
+}
+
+// static
+bool VideoFrame::IsValidCodedSize(const gfx::Size& size) {
+  const int size_area = size.GetCheckedArea().ValueOrDefault(INT_MAX);
+  static_assert(limits::kMaxCanvas < INT_MAX, "");
+  return size_area <= limits::kMaxCanvas &&
+         size.width() <= limits::kMaxDimension &&
+         size.height() <= limits::kMaxDimension;
 }
 
 // static

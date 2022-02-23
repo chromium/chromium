@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/components/attestation/attestation_flow_utils.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
-#include "chromeos/attestation/attestation_flow_utils.h"
 #include "chromeos/dbus/attestation/attestation.pb.h"
 #include "chromeos/dbus/attestation/attestation_client.h"
 #include "components/policy/proto/device_management_backend.pb.h"
@@ -54,7 +54,7 @@ TEST_F(TpmEnrollmentKeySigningServiceTest, SigningSuccess) {
       ->GetTestInterface()
       ->AllowlistSignSimpleChallengeKey(
           /*username=*/"",
-          chromeos::attestation::GetKeyNameForProfile(
+          ash::attestation::GetKeyNameForProfile(
               chromeos::attestation::PROFILE_ENTERPRISE_ENROLLMENT_CERTIFICATE,
               ""));
 

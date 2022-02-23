@@ -13,7 +13,8 @@
 
 WebContentsCanGoBackObserver::WebContentsCanGoBackObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsUserData<WebContentsCanGoBackObserver>(*web_contents),
+      content::WebContentsObserver(web_contents) {}
 
 WebContentsCanGoBackObserver::~WebContentsCanGoBackObserver() = default;
 

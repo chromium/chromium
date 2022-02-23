@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/renderer/renderer_ppapi_host.h"
 #include "content/renderer/pepper/pepper_device_enumeration_host_helper.h"

@@ -47,7 +47,7 @@ class ASH_EXPORT WallpaperColorCalculator {
   // Initiates the calculation and returns false if the calculation fails to be
   // initiated. Observers may be notified synchronously or asynchronously.
   // Callers should be aware that this will make |image_| read-only.
-  bool StartCalculation() WARN_UNUSED_RESULT;
+  [[nodiscard]] bool StartCalculation();
 
   std::vector<SkColor> prominent_colors() const { return prominent_colors_; }
 

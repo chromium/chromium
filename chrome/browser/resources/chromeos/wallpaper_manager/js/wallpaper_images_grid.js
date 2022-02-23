@@ -106,7 +106,9 @@ cr.define('wallpapers', function() {
       imageEl.setAttribute('aria-hidden', 'true');
 
       imageEl.classList.add('thumbnail');
-      cr.defineProperty(imageEl, 'offline', cr.PropertyKind.BOOL_ATTR);
+      Object.defineProperty(
+          imageEl, 'offline',
+          cr.getPropertyDescriptor('offline', cr.PropertyKind.BOOL_ATTR));
       imageEl.offline = this.dataItem.availableOffline;
       this.appendChild(imageEl);
 

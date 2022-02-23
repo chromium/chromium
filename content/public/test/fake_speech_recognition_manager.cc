@@ -95,8 +95,10 @@ void FakeSpeechRecognitionManager::OnFakeResponseSent() {
   }
 }
 
-void FakeSpeechRecognitionManager::SetFakeResult(const std::string& value) {
+void FakeSpeechRecognitionManager::SetFakeResult(const std::string& value,
+                                                 bool is_final) {
   fake_result_ = value;
+  is_final_ = is_final;
 }
 
 int FakeSpeechRecognitionManager::CreateSession(
@@ -104,7 +106,7 @@ int FakeSpeechRecognitionManager::CreateSession(
   VLOG(1) << "FAKE CreateSession invoked.";
   // FakeSpeechRecognitionManager only allows one active session at a time.
   EXPECT_EQ(0, session_id_);
-  EXPECT_EQ(nullptr, listener_);
+  EXPECT_EQ(nullptr, listener_.get());
   listener_ = config.event_listener.get();
   if (config.grammars.size() > 0)
     grammar_ = config.grammars[0].url.spec();
@@ -197,6 +199,10 @@ void FakeSpeechRecognitionManager::SetFakeRecognitionResult(
       blink::mojom::SpeechRecognitionResult::New();
   result->hypotheses.push_back(blink::mojom::SpeechRecognitionHypothesis::New(
       base::ASCIIToUTF16(fake_result_), 1.0));
+  // If `is_provisional` is true, then the result is an interim result that
+  // could be changed. Otherwise, it's a final result. Consequently,
+  // `is_provisional` is the converse of `is_final`.
+  result->is_provisional = !is_final_;
   std::vector<blink::mojom::SpeechRecognitionResultPtr> results;
   results.push_back(std::move(result));
   listener_->OnRecognitionResults(session_id_, results);

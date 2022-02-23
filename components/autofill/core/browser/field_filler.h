@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/common/form_field_data.h"
@@ -25,13 +26,26 @@ class FieldFiller {
               AddressNormalizer* address_normalizer);
   ~FieldFiller();
 
+  // Based on |field.Type()|, returns value that is supposed to be filled in the
+  // |field_data|.
+  std::u16string GetValueForFilling(
+      const AutofillField& field,
+      absl::variant<const AutofillProfile*, const CreditCard*>
+          profile_or_credit_card,
+      FormFieldData* field_data,
+      const std::u16string& cvc,
+      mojom::RendererFormDataAction action,
+      std::string* failure_to_fill);
+
   // Set |field_data|'s value to the right value in |profile_or_credit_card|.
   // Uses |field| to determine which field type should be filled, and
   // |app_locale_| as hint when filling exceptional cases like phone number
   // values. If |action| indicates that the value will be used for the
   // autofill preview (aka. suggestion) state, the data to be filled may be
   // obfuscated.
-  // Returns |true| if the field has been filled, false otherwise. If
+  //
+  // Returns |true| if the field has been filled, false otherwise. This is
+  // independent of whether the field was filled or autofilled before. If
   // |failure_to_fill| is not null, errors are reported to that string.
   bool FillFormField(const AutofillField& field,
                      absl::variant<const AutofillProfile*, const CreditCard*>
@@ -44,7 +58,7 @@ class FieldFiller {
   // Returns the phone number value for the given |field|. The returned value
   // might be |number|, or |phone_home_city_and_number|, or could possibly be a
   // meaningful subset |number|, if that's appropriate for the field.
-  static std::u16string GetPhoneNumberValue(
+  static std::u16string GetPhoneNumberValueForInput(
       const AutofillField& field,
       const std::u16string& number,
       const std::u16string& phone_home_city_and_number,
@@ -59,7 +73,7 @@ class FieldFiller {
  private:
   const std::string app_locale_;
   // Weak, should outlive this object. May be null.
-  AddressNormalizer* address_normalizer_;
+  raw_ptr<AddressNormalizer> address_normalizer_;
 };
 
 }  // namespace autofill

@@ -8,7 +8,7 @@
 #ifndef NET_QUIC_QUIC_CHROMIUM_CONNECTION_HELPER_H_
 #define NET_QUIC_QUIC_CHROMIUM_CONNECTION_HELPER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
 #include "net/socket/datagram_client_socket.h"
@@ -42,8 +42,8 @@ class NET_EXPORT_PRIVATE QuicChromiumConnectionHelper
   quic::QuicBufferAllocator* GetStreamSendBufferAllocator() override;
 
  private:
-  const quic::QuicClock* clock_;
-  quic::QuicRandom* random_generator_;
+  raw_ptr<const quic::QuicClock> clock_;
+  raw_ptr<quic::QuicRandom> random_generator_;
 };
 
 }  // namespace net

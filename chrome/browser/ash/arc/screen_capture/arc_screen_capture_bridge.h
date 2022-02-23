@@ -9,8 +9,8 @@
 #include <string>
 #include <unordered_map>
 
+#include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "chrome/browser/media/webrtc/desktop_media_picker.h"
-#include "components/arc/mojom/screen_capture.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/desktop_media_id.h"
 

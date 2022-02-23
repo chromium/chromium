@@ -50,6 +50,28 @@ tensor as specified by the sequence_lengths tensor. Finally, if a RaggedTensor
 is provided, the sequence_lengths will be ignored and the variable length
 sequences in the RaggedTensor will be used.
 
+```
+>>> scores = np.array([[10.0, 12.0, 6.0, 4.0],
+...                    [13.0, 12.0, 11.0, 10.0]], dtype=np.float32)
+>>> sequence_length = np.array([2])
+>>> transition_weights = np.array([[ .1,  .2,  .3,  .4],
+...                                [ .5,  .6,  .7,  .8],
+...                                [ .9,  .1, .15,  .2],
+...                                [.25, .35, .45, .55]], dtype=np.float32)
+>>> allowed_transitions = np.array([[True,  True,  True,  True],
+...                                 [True,  True,  True,  True],
+...                                 [True, False,  True, False],
+...                                 [True,  True,  True,  True]])
+>>> viterbi_constrained_sequence(
+...      scores=scores,
+...      sequence_length=sequence_length,
+...      allowed_transitions=allowed_transitions,
+...      transition_weights=transition_weights,
+...      use_log_space=False,
+...      use_start_and_end_states=False)
+<tf.RaggedTensor [[1, 3]]>
+```
+
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -82,41 +104,41 @@ to be the length of the score tensor.
 `allowed_transitions`
 </td>
 <td>
-if use_start_and_end_states is TRUE:
-`<bool>[num_states+1, num_states+1]`
+  if use_start_and_end_states is TRUE:
+  `<bool>[num_states+1, num_states+1]`
 if use_start_and_end_states is FALSE:
-`<bool>[num_states, num_states]`
+  `<bool>[num_states, num_states]`
 A rank-2 tensor representing allowed transitions.
 - allowed_transitions[i][j] is true if the transition from state i to
-state j is allowed for i and j in 0...(num_states).
+    state j is allowed for i and j in 0...(num_states).
 - allowed_transitions[num_states][num_states] is ignored.
 If use_start_and_end_states is TRUE:
-- allowed_transitions[num_states][j] is true if the sequence is allowed
-to start from state j.
-- allowed_transitions[i][num_states] is true if the sequence is allowed
-to end on state i.
+  - allowed_transitions[num_states][j] is true if the sequence is allowed
+      to start from state j.
+  - allowed_transitions[i][num_states] is true if the sequence is allowed
+      to end on state i.
 Default - An empty tensor. This allows all sequence states to transition
-to all other sequence states.
+  to all other sequence states.
 </td>
 </tr><tr>
 <td>
 `transition_weights`
 </td>
 <td>
-if use_start_and_end_states is TRUE:
-`<float32>[num_states+1, num_states+1]`
+  if use_start_and_end_states is TRUE:
+  `<float32>[num_states+1, num_states+1]`
 if use_start_and_end_states is FALSE:
-`<float32>[num_states, num_states]`
+  `<float32>[num_states, num_states]`
 A rank-2 tensor representing transition weights.
 - transition_weights[i][j] is the coefficient that a candidate transition
-score will be multiplied by if that transition is from state i to
-state j.
+    score will be multiplied by if that transition is from state i to
+    state j.
 - transition_weights[num_states][num_states] is ignored.
 If use_start_and_end_states is TRUE:
-- transition_weights[num_states][j] is the coefficient that will be used
-if the transition starts with state j.
-- transition_weights[i][num_states] is the coefficient that will be used
-if the final state in the sequence is state i.
+  - transition_weights[num_states][j] is the coefficient that will be used
+      if the transition starts with state j.
+  - transition_weights[i][num_states] is the coefficient that will be used
+      if the final state in the sequence is state i.
 Default - An empty tensor. This assigns a wieght of 1.0 all transitions
 </td>
 </tr><tr>

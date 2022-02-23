@@ -9,7 +9,9 @@
 #include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_cookie_change_event_init.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_extendable_event_init.h"
 #include "third_party/blink/renderer/modules/event_modules.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {

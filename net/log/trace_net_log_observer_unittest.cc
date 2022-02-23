@@ -122,7 +122,7 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
       base::RunLoop* run_loop,
       const scoped_refptr<base::RefCountedString>& events_str,
       bool has_more_events) {
-    DCHECK(trace_events_->GetList().empty());
+    DCHECK(trace_events_->GetListDeprecated().empty());
     trace_buffer_.Start();
     trace_buffer_.AddFragment(events_str->data());
     trace_buffer_.Finish();
@@ -158,8 +158,8 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
     std::unique_ptr<base::Value> filtered_trace_events =
         std::make_unique<base::Value>(base::Value::Type::LIST);
 
-    for (size_t i = 0; i < trace_events->GetList().size(); i++) {
-      const base::Value* dict = &trace_events->GetList()[i];
+    for (size_t i = 0; i < trace_events->GetListDeprecated().size(); i++) {
+      const base::Value* dict = &trace_events->GetListDeprecated()[i];
       if (!dict->is_dict()) {
         ADD_FAILURE() << "Unexpected non-dictionary event in trace_events";
         continue;
@@ -179,7 +179,9 @@ class TraceNetLogObserverTest : public TestWithTaskEnvironment {
 
   base::Value* trace_events() const { return trace_events_.get(); }
 
-  size_t trace_events_size() const { return trace_events_->GetList().size(); }
+  size_t trace_events_size() const {
+    return trace_events_->GetListDeprecated().size();
+  }
 
   RecordingNetLogObserver* net_log_observer() { return &net_log_observer_; }
 
@@ -243,12 +245,12 @@ TEST_F(TraceNetLogObserverTest, TraceEventCaptured) {
   EndTraceAndFlush();
   trace_net_log_observer()->StopWatchForTraceStart();
   EXPECT_EQ(3u, trace_events_size());
-  const base::Value* item1 = &trace_events()->GetList()[0];
+  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
   ASSERT_TRUE(item1->is_dict());
-  const base::Value* item2 = &trace_events()->GetList()[1];
+  const base::Value* item2 = &trace_events()->GetListDeprecated()[1];
   ;
   ASSERT_TRUE(item2->is_dict());
-  const base::Value* item3 = &trace_events()->GetList()[2];
+  const base::Value* item3 = &trace_events()->GetListDeprecated()[2];
   ;
   ASSERT_TRUE(item3->is_dict());
 
@@ -298,9 +300,9 @@ TEST_F(TraceNetLogObserverTest, EnableAndDisableTracing) {
   auto entries = net_log_observer()->GetEntries();
   EXPECT_EQ(3u, entries.size());
   EXPECT_EQ(2u, trace_events_size());
-  const base::Value* item1 = &trace_events()->GetList()[0];
+  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
   ASSERT_TRUE(item1->is_dict());
-  const base::Value* item2 = &trace_events()->GetList()[1];
+  const base::Value* item2 = &trace_events()->GetListDeprecated()[1];
   ASSERT_TRUE(item2->is_dict());
 
   TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(*item1);
@@ -338,7 +340,7 @@ TEST_F(TraceNetLogObserverTest, DestroyObserverWhileTracing) {
   EXPECT_EQ(2u, entries.size());
   EXPECT_EQ(1u, trace_events_size());
 
-  const base::Value* item1 = &trace_events()->GetList()[0];
+  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
   ASSERT_TRUE(item1->is_dict());
 
   TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(*item1);
@@ -418,9 +420,9 @@ TEST_F(TraceNetLogObserverTest, EventsWithAndWithoutParameters) {
   auto entries = net_log_observer()->GetEntries();
   EXPECT_EQ(2u, entries.size());
   EXPECT_EQ(2u, trace_events_size());
-  const base::Value* item1 = &trace_events()->GetList()[0];
+  const base::Value* item1 = &trace_events()->GetListDeprecated()[0];
   ASSERT_TRUE(item1->is_dict());
-  const base::Value* item2 = &trace_events()->GetList()[1];
+  const base::Value* item2 = &trace_events()->GetListDeprecated()[1];
   ASSERT_TRUE(item2->is_dict());
 
   TraceEntryInfo actual_item1 = GetTraceEntryInfoFromValue(*item1);

@@ -45,7 +45,7 @@ IN_PROC_BROWSER_TEST_F(DictionarySyncPerfTest, P0) {
   ASSERT_TRUE(
       dictionary_helper::DictionaryChecker(/*expected_words=*/{}).Wait());
 
-  auto reporter = SetUpReporter(
+  perf_test::PerfResultReporter reporter = SetUpReporter(
       base::NumberToString(spellcheck::kMaxSyncableDictionaryWords) + "_words");
   base::TimeDelta dt;
   for (size_t i = 0; i < spellcheck::kMaxSyncableDictionaryWords; ++i) {

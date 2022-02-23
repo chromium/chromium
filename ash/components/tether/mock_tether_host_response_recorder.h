@@ -1,0 +1,42 @@
+// Copyright 2017 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_COMPONENTS_TETHER_MOCK_TETHER_HOST_RESPONSE_RECORDER_H_
+#define ASH_COMPONENTS_TETHER_MOCK_TETHER_HOST_RESPONSE_RECORDER_H_
+
+#include <vector>
+
+#include "ash/components/tether/tether_host_response_recorder.h"
+#include "chromeos/components/multidevice/remote_device_ref.h"
+#include "testing/gmock/include/gmock/gmock.h"
+
+namespace ash {
+
+namespace tether {
+
+// Test double for TetherHostResponseRecorder.
+class MockTetherHostResponseRecorder : public TetherHostResponseRecorder {
+ public:
+  MockTetherHostResponseRecorder();
+
+  MockTetherHostResponseRecorder(const MockTetherHostResponseRecorder&) =
+      delete;
+  MockTetherHostResponseRecorder& operator=(
+      const MockTetherHostResponseRecorder&) = delete;
+
+  ~MockTetherHostResponseRecorder() override;
+
+  MOCK_METHOD1(RecordSuccessfulTetherAvailabilityResponse,
+               void(multidevice::RemoteDeviceRef));
+  MOCK_METHOD1(RecordSuccessfulConnectTetheringResponse,
+               void(multidevice::RemoteDeviceRef));
+  MOCK_CONST_METHOD0(GetPreviouslyAvailableHostIds, std::vector<std::string>());
+  MOCK_CONST_METHOD0(GetPreviouslyConnectedHostIds, std::vector<std::string>());
+};
+
+}  // namespace tether
+
+}  // namespace ash
+
+#endif  // ASH_COMPONENTS_TETHER_MOCK_TETHER_HOST_RESPONSE_RECORDER_H_

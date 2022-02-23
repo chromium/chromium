@@ -4,414 +4,583 @@
 
 #include "chrome/browser/hid/hid_chooser_context.h"
 
+#include "base/barrier_closure.h"
+#include "base/guid.h"
+#include "base/json/json_reader.h"
 #include "base/run_loop.h"
+#include "base/scoped_observation.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
+#include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
 #include "chrome/browser/hid/mock_hid_device_observer.h"
+#include "chrome/common/pref_names.h"
+#include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
+#include "chrome/test/base/testing_profile_manager.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
+#include "components/content_settings/core/common/pref_names.h"
 #include "components/permissions/test/object_permission_context_base_mock_permission_observer.h"
+#include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/device/public/cpp/hid/fake_hid_manager.h"
+#include "services/device/public/cpp/hid/hid_blocklist.h"
 #include "services/device/public/mojom/hid.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
+#include "components/account_id/account_id.h"
+#include "components/user_manager/scoped_user_manager.h"
+#endif
 
 using ::base::test::RunClosure;
-using ::testing::_;
 
 namespace {
 
+// The device IDs used by the simulated HID device.
+constexpr uint16_t kTestVendorId = 0x1234;
+constexpr uint16_t kTestProductId = 0xabcd;
+constexpr char kTestSerialNumber[] = "serial-number";
+constexpr char kTestProductName[] = "product-name";
+constexpr char kTestPhysicalDeviceId[] = "physical-device-id";
+
+// The HID usages assigned to the top-level collection of the simulated device.
+constexpr uint16_t kTestUsagePage = device::mojom::kPageGenericDesktop;
+constexpr uint16_t kTestUsage = device::mojom::kGenericDesktopGamePad;
+
+std::unique_ptr<base::Value> ReadJson(base::StringPiece json) {
+  absl::optional<base::Value> value = base::JSONReader::Read(json);
+  EXPECT_TRUE(value);
+  return value ? base::Value::ToUniquePtrValue(std::move(*value)) : nullptr;
+}
+
 // Main text fixture.
-class HidChooserContextTest : public testing::Test {
+class HidChooserContextTestBase {
  public:
-  HidChooserContextTest()
-      : origin_(url::Origin::Create(GURL("https://google.com"))) {}
-  HidChooserContextTest(const HidChooserContextTest&) = delete;
-  HidChooserContextTest& operator=(const HidChooserContextTest&) = delete;
-  ~HidChooserContextTest() override = default;
+  HidChooserContextTestBase() = default;
+  HidChooserContextTestBase(const HidChooserContextTestBase&) = delete;
+  HidChooserContextTestBase& operator=(const HidChooserContextTestBase&) =
+      delete;
+  ~HidChooserContextTestBase() = default;
 
-  const url::Origin& origin() { return origin_; }
-  Profile* profile() { return &profile_; }
-  permissions::MockPermissionObserver& permission_observer() {
-    return mock_permission_observer_;
-  }
-  MockHidDeviceObserver& device_observer() { return mock_device_observer_; }
+  void DoSetUp(bool is_affiliated) {
+    constexpr char kTestUserEmail[] = "user@example.com";
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    constexpr char kTestUserGaiaId[] = "1111111111";
+    auto fake_user_manager = std::make_unique<ash::FakeChromeUserManager>();
+    auto* fake_user_manager_ptr = fake_user_manager.get();
+    scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
+        std::move(fake_user_manager));
 
-  HidChooserContext* GetContext() {
-    auto* context = HidChooserContextFactory::GetForProfile(&profile_);
-    if (!observers_added_) {
-      context->AddObserver(&mock_permission_observer_);
-      context->AddDeviceObserver(&mock_device_observer_);
-      observers_added_ = true;
-    }
-    return context;
-  }
+    auto account_id =
+        AccountId::FromUserEmailGaiaId(kTestUserEmail, kTestUserGaiaId);
+    fake_user_manager_ptr->AddUserWithAffiliation(account_id, is_affiliated);
+    fake_user_manager_ptr->LoginUser(account_id);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-  void SetUp() override {
+    testing_profile_manager_ = std::make_unique<TestingProfileManager>(
+        TestingBrowserProcess::GetGlobal());
+    ASSERT_TRUE(testing_profile_manager_->SetUp());
+    profile_ = testing_profile_manager_->CreateTestingProfile(kTestUserEmail);
+    ASSERT_TRUE(profile_);
+
     mojo::PendingRemote<device::mojom::HidManager> hid_manager;
     hid_manager_.Bind(hid_manager.InitWithNewPipeAndPassReceiver());
-    auto* chooser_context = HidChooserContextFactory::GetForProfile(&profile_);
+    context_ = HidChooserContextFactory::GetForProfile(profile_);
 
     // Connect the HidManager and ensure we've received the initial enumeration
     // before continuing.
     base::RunLoop run_loop;
-    chooser_context->SetHidManagerForTesting(
+    context_->SetHidManagerForTesting(
         std::move(hid_manager),
         base::BindLambdaForTesting(
             [&run_loop](std::vector<device::mojom::HidDeviceInfoPtr> devices) {
               run_loop.Quit();
             }));
     run_loop.Run();
+
+    scoped_permission_observation_.Observe(context_);
+    scoped_device_observation_.Observe(context_);
   }
 
-  void TearDown() override {
-    if (observers_added_) {
-      auto* context = HidChooserContextFactory::GetForProfile(&profile_);
-      context->RemoveObserver(&mock_permission_observer_);
-      context->RemoveDeviceObserver(&mock_device_observer_);
-    }
+  void DoTearDown() {
+    // Because HidBlocklist is a singleton it must be cleared after tests run to
+    // prevent leakage between tests.
+    feature_list_.Reset();
+    device::HidBlocklist::Get().ResetToDefaultValuesForTest();
   }
 
-  device::mojom::HidDeviceInfoPtr ConnectEphemeralDevice() {
-    return hid_manager_.CreateAndAddDevice(
-        "physical-device-id", 0x1234, 0xabcd, "product-name",
-        /*serial_number=*/"", device::mojom::HidBusType::kHIDBusTypeUSB);
+  HidChooserContext* context() { return context_; }
+  permissions::MockPermissionObserver& permission_observer() {
+    return permission_observer_;
+  }
+  MockHidDeviceObserver& device_observer() { return device_observer_; }
+
+  device::mojom::HidDeviceInfoPtr CreateDevice(
+      base::StringPiece serial_number) {
+    auto collection = device::mojom::HidCollectionInfo::New();
+    collection->usage =
+        device::mojom::HidUsageAndPage::New(kTestUsage, kTestUsagePage);
+    collection->collection_type = device::mojom::kHIDCollectionTypeApplication;
+    collection->input_reports.push_back(
+        device::mojom::HidReportDescription::New());
+
+    auto device = device::mojom::HidDeviceInfo::New();
+    device->guid = base::GenerateGUID();
+    device->physical_device_id = kTestPhysicalDeviceId;
+    device->vendor_id = kTestVendorId;
+    device->product_id = kTestProductId;
+    device->product_name = kTestProductName;
+    device->serial_number = std::string{serial_number};
+    device->bus_type = device::mojom::HidBusType::kHIDBusTypeUSB;
+    device->collections.push_back(std::move(collection));
+    device->protected_input_report_ids =
+        device::HidBlocklist::Get().GetProtectedReportIds(
+            device::HidBlocklist::kReportTypeInput, kTestVendorId,
+            kTestProductId, device->collections);
+    device->protected_output_report_ids =
+        device::HidBlocklist::Get().GetProtectedReportIds(
+            device::HidBlocklist::kReportTypeOutput, kTestVendorId,
+            kTestProductId, device->collections);
+    device->protected_feature_report_ids =
+        device::HidBlocklist::Get().GetProtectedReportIds(
+            device::HidBlocklist::kReportTypeFeature, kTestVendorId,
+            kTestProductId, device->collections);
+    return device;
   }
 
-  device::mojom::HidDeviceInfoPtr ConnectPersistentUsbDevice() {
-    return hid_manager_.CreateAndAddDevice(
-        "physical-device-id", 0x1234, 0xabcd, "product-name", "serial-number",
-        device::mojom::HidBusType::kHIDBusTypeUSB);
+  device::mojom::HidDeviceInfoPtr ConnectEphemeralDeviceBlocking() {
+    return ConnectDeviceBlocking(CreateDevice(/*serial_number=*/""));
   }
 
-  void ConnectDevice(const device::mojom::HidDeviceInfo& device) {
-    hid_manager_.AddDevice(device.Clone());
+  device::mojom::HidDeviceInfoPtr ConnectPersistentUsbDeviceBlocking() {
+    return ConnectDeviceBlocking(CreateDevice(kTestSerialNumber));
   }
 
-  void DisconnectDevice(const device::mojom::HidDeviceInfo& device) {
-    hid_manager_.RemoveDevice(device.guid);
+  device::mojom::HidDeviceInfoPtr ConnectFidoDeviceBlocking() {
+    auto device = CreateDevice(/*serial_number=*/"");
+    device->collections[0]->usage->usage_page = device::mojom::kPageFido;
+    device->collections[0]->usage->usage = 1;
+    return ConnectDeviceBlocking(std::move(device));
   }
 
-  void UpdateDevice(const device::mojom::HidDeviceInfo& device) {
-    hid_manager_.ChangeDevice(device.Clone());
+  device::mojom::HidDeviceInfoPtr ConnectDeviceBlocking(
+      device::mojom::HidDeviceInfoPtr device) {
+    base::test::TestFuture<device::mojom::HidDeviceInfoPtr> future_device;
+    EXPECT_CALL(device_observer_, OnDeviceAdded).WillOnce([&](const auto& d) {
+      future_device.SetValue(d.Clone());
+    });
+    hid_manager_.AddDevice(std::move(device));
+    return future_device.Take();
+  }
+
+  device::mojom::HidDeviceInfoPtr DisconnectDeviceBlocking(
+      const std::string& device_guid) {
+    base::test::TestFuture<device::mojom::HidDeviceInfoPtr> future_device;
+    EXPECT_CALL(device_observer_, OnDeviceRemoved).WillOnce([&](const auto& d) {
+      future_device.SetValue(d.Clone());
+    });
+    hid_manager_.RemoveDevice(device_guid);
+    return future_device.Take();
+  }
+
+  device::mojom::HidDeviceInfoPtr UpdateDeviceBlocking(
+      device::mojom::HidDeviceInfoPtr device) {
+    base::test::TestFuture<device::mojom::HidDeviceInfoPtr> future_device;
+    EXPECT_CALL(device_observer_, OnDeviceChanged).WillOnce([&](const auto& d) {
+      future_device.SetValue(d.Clone());
+    });
+    hid_manager_.ChangeDevice(std::move(device));
+    return future_device.Take();
   }
 
   void SimulateHidManagerConnectionError() {
     hid_manager_.SimulateConnectionError();
   }
 
+  void GrantDevicePermissionBlocking(
+      const url::Origin& origin,
+      const device::mojom::HidDeviceInfo& device) {
+    base::RunLoop loop;
+    EXPECT_CALL(permission_observer_,
+                OnObjectPermissionChanged(
+                    absl::make_optional(ContentSettingsType::HID_GUARD),
+                    ContentSettingsType::HID_CHOOSER_DATA))
+        .WillOnce(RunClosure(loop.QuitClosure()));
+    context()->GrantDevicePermission(origin, device);
+    loop.Run();
+  }
+
+  void RevokeObjectPermissionBlocking(const url::Origin& origin,
+                                      const base::Value& object) {
+    base::RunLoop loop;
+    EXPECT_CALL(permission_observer_,
+                OnObjectPermissionChanged(
+                    absl::make_optional(ContentSettingsType::HID_GUARD),
+                    ContentSettingsType::HID_CHOOSER_DATA))
+        .WillOnce(RunClosure(loop.QuitClosure()));
+    context()->RevokeObjectPermission(origin, object);
+    loop.Run();
+  }
+
+  void SetDynamicBlocklist(base::StringPiece value) {
+    feature_list_.Reset();
+
+    std::map<std::string, std::string> parameters;
+    parameters[device::kWebHidBlocklistAdditions.name] = std::string{value};
+    feature_list_.InitWithFeaturesAndParameters(
+        {{device::kWebHidBlocklist, parameters}}, {});
+
+    device::HidBlocklist::Get().ResetToDefaultValuesForTest();
+  }
+
+  void SetContentSettingDefaultForOrigin(const url::Origin& origin,
+                                         ContentSetting content_setting) {
+    HostContentSettingsMapFactory::GetForProfile(profile_)
+        ->SetContentSettingDefaultScope(origin.GetURL(), origin.GetURL(),
+                                        ContentSettingsType::HID_GUARD,
+                                        content_setting);
+  }
+
+  void SetContentSettingDefaultPolicy(ContentSetting content_setting) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedDefaultWebHidGuardSetting,
+        std::make_unique<base::Value>(content_setting));
+  }
+
+  void SetAskForUrlsPolicy(base::StringPiece policy) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedWebHidAskForUrls, ReadJson(policy));
+  }
+
+  void SetBlockedForUrlsPolicy(base::StringPiece policy) {
+    profile_->GetTestingPrefService()->SetManagedPref(
+        prefs::kManagedWebHidBlockedForUrls, ReadJson(policy));
+  }
+
+  void SetAllowDevicesForUrlsPolicy(base::StringPiece policy) {
+    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+        prefs::kManagedWebHidAllowDevicesForUrls, ReadJson(policy));
+  }
+
+  void SetAllowDevicesWithHidUsagesForUrlsPolicy(base::StringPiece policy) {
+    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+        prefs::kManagedWebHidAllowDevicesWithHidUsagesForUrls,
+        ReadJson(policy));
+  }
+
+  void SetAllowAllDevicesForUrlsPolicy(base::StringPiece policy) {
+    testing_profile_manager_->local_state()->Get()->SetManagedPref(
+        prefs::kManagedWebHidAllowAllDevicesForUrls, ReadJson(policy));
+  }
+
  private:
-  url::Origin origin_;
   device::FakeHidManager hid_manager_;
   content::BrowserTaskEnvironment task_environment_;
-  TestingProfile profile_;
-  permissions::MockPermissionObserver mock_permission_observer_;
-  MockHidDeviceObserver mock_device_observer_;
-  bool observers_added_ = false;
+  base::test::ScopedFeatureList feature_list_;
+  std::unique_ptr<TestingProfileManager> testing_profile_manager_;
+  TestingProfile* profile_ = nullptr;
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
+#endif
+
+  HidChooserContext* context_;
+  permissions::MockPermissionObserver permission_observer_;
+  base::ScopedObservation<
+      permissions::ObjectPermissionContextBase,
+      permissions::ObjectPermissionContextBase::PermissionObserver>
+      scoped_permission_observation_{&permission_observer_};
+  MockHidDeviceObserver device_observer_;
+  base::ScopedObservation<HidChooserContext,
+                          HidChooserContext::DeviceObserver,
+                          &HidChooserContext::AddDeviceObserver,
+                          &HidChooserContext::RemoveDeviceObserver>
+      scoped_device_observation_{&device_observer_};
+};
+
+class HidChooserContextTest : public HidChooserContextTestBase,
+                              public testing::Test {
+ public:
+  void SetUp() override { DoSetUp(/*is_affiliated=*/true); }
+  void TearDown() override { DoTearDown(); }
 };
 
 }  // namespace
 
 TEST_F(HidChooserContextTest, GrantAndRevokeEphemeralDevice) {
-  base::RunLoop device_added_loop;
-  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
-      .WillOnce(RunClosure(device_added_loop.QuitClosure()));
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
 
-  base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(),
-              OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA))
-      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
-      .WillOnce([]() {
-        // Expect a 2nd permission change event when the permission is revoked.
-      });
+  // Connect a device that is only eligible for ephemeral permissions.
+  auto device = ConnectEphemeralDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 
-  base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
-      .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
-
-  HidChooserContext* context = GetContext();
-
-  // 1. Connect a device that is only eligible for ephemeral permissions.
-  auto device = ConnectEphemeralDevice();
-  device_added_loop.Run();
-
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
-
-  // 2. Grant an ephemeral permission.
-  context->GrantDevicePermission(origin(), *device);
-  permission_granted_loop.Run();
-
-  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
+  // Grant an ephemeral permission.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
 
   std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
-      context->GetGrantedObjects(origin());
+      context()->GetGrantedObjects(kOrigin);
   ASSERT_EQ(1u, origin_objects.size());
 
   std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
-      context->GetAllGrantedObjects();
+      context()->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin().GetURL(), objects[0]->origin);
+  EXPECT_EQ(kOrigin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
-  // 3. Revoke the permission.
-  context->RevokeObjectPermission(origin(), objects[0]->value);
-  permission_revoked_loop.Run();
+  // Revoke the permission.
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
+  RevokeObjectPermissionBlocking(kOrigin, objects[0]->value);
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+}
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
-  origin_objects = context->GetGrantedObjects(origin());
-  EXPECT_EQ(0u, origin_objects.size());
-  objects = context->GetAllGrantedObjects();
-  EXPECT_EQ(0u, objects.size());
+TEST_F(HidChooserContextTest, GrantAndForgetEphemeralDevice) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect a device with multiple HID interfaces that is only eligible for
+  // ephemeral permissions.
+  auto device1 = ConnectEphemeralDeviceBlocking();
+  auto device2 = ConnectEphemeralDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Grant ephemeral permissions.
+  GrantDevicePermissionBlocking(kOrigin, *device1);
+  GrantDevicePermissionBlocking(kOrigin, *device2);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(2u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(2u, context()->GetAllGrantedObjects().size());
+
+  // Forget the ephemeral device.
+  base::RunLoop permissions_revoked_loop;
+  auto permissions_revoked_barrier =
+      base::BarrierClosure(2, permissions_revoked_loop.QuitClosure());
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin))
+      .Times(2)
+      .WillRepeatedly(RunClosure(permissions_revoked_barrier));
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA))
+      .Times(2);
+  context()->RevokeDevicePermission(kOrigin, *device1);
+  permissions_revoked_loop.Run();
+
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 }
 
 TEST_F(HidChooserContextTest, GrantAndDisconnectEphemeralDevice) {
-  base::RunLoop device_added_loop;
-  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
-      .WillOnce(RunClosure(device_added_loop.QuitClosure()));
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
 
-  EXPECT_CALL(device_observer(), OnDeviceRemoved(_));
+  // Connect a device that is only eligible for ephemeral permissions.
+  auto device = ConnectEphemeralDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 
-  base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(),
-              OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA))
-      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
-      .WillOnce([]() {
-        // Expect a 2nd permission change event when the permission is revoked.
-      });
+  // Grant an ephemeral permission.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
 
-  base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
-      .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
-
-  HidChooserContext* context = GetContext();
-
-  // 1. Connect a device that is only eligible for ephemeral permissions.
-  auto device = ConnectEphemeralDevice();
-  device_added_loop.Run();
-
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
-
-  // 2. Grant an ephemeral permission.
-  context->GrantDevicePermission(origin(), *device);
-  permission_granted_loop.Run();
-
-  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
-
-  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
-      context->GetGrantedObjects(origin());
+  auto origin_objects = context()->GetGrantedObjects(kOrigin);
   ASSERT_EQ(1u, origin_objects.size());
 
-  std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
-      context->GetAllGrantedObjects();
+  auto objects = context()->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin().GetURL(), objects[0]->origin);
+  EXPECT_EQ(kOrigin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
-  // 3. Disconnect the device. Because an ephemeral permission was granted, the
+  // Disconnect the device. Because an ephemeral permission was granted, the
   // permission should be revoked on disconnect.
-  DisconnectDevice(*device);
-  permission_revoked_loop.Run();
-
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
-  origin_objects = context->GetGrantedObjects(origin());
-  EXPECT_EQ(0u, origin_objects.size());
-  objects = context->GetAllGrantedObjects();
-  EXPECT_EQ(0u, objects.size());
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
+  EXPECT_CALL(permission_observer(),
+              OnObjectPermissionChanged(
+                  absl::make_optional(ContentSettingsType::HID_GUARD),
+                  ContentSettingsType::HID_CHOOSER_DATA));
+  DisconnectDeviceBlocking(device->guid);
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 }
 
 TEST_F(HidChooserContextTest, GrantDisconnectRevokeUsbPersistentDevice) {
-  base::RunLoop device_added_loop;
-  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
-      .WillOnce(RunClosure(device_added_loop.QuitClosure()));
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
 
-  base::RunLoop device_removed_loop;
-  EXPECT_CALL(device_observer(), OnDeviceRemoved(_))
-      .WillOnce(RunClosure(device_removed_loop.QuitClosure()));
+  // Connect a USB device eligible for persistent permissions.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 
-  base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(),
-              OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA))
-      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
-      .WillOnce([]() {
-        // Expect a 2nd permission change event when the permission is revoked.
-      });
+  // Grant a persistent permission.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
 
-  base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
-      .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
-
-  HidChooserContext* context = GetContext();
-
-  // 1. Connect a USB device eligible for persistent permissions.
-  auto device = ConnectPersistentUsbDevice();
-  device_added_loop.Run();
-
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
-
-  // 2. Grant a persistent permission.
-  context->GrantDevicePermission(origin(), *device);
-  permission_granted_loop.Run();
-
-  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
-
-  std::vector<std::unique_ptr<HidChooserContext::Object>> origin_objects =
-      context->GetGrantedObjects(origin());
+  auto origin_objects = context()->GetGrantedObjects(kOrigin);
   ASSERT_EQ(1u, origin_objects.size());
-
-  std::vector<std::unique_ptr<HidChooserContext::Object>> objects =
-      context->GetAllGrantedObjects();
+  auto objects = context()->GetAllGrantedObjects();
   ASSERT_EQ(1u, objects.size());
-  EXPECT_EQ(origin().GetURL(), objects[0]->origin);
+  EXPECT_EQ(kOrigin.GetURL(), objects[0]->origin);
   EXPECT_EQ(origin_objects[0]->value, objects[0]->value);
   EXPECT_EQ(content_settings::SettingSource::SETTING_SOURCE_USER,
             objects[0]->source);
   EXPECT_FALSE(objects[0]->incognito);
 
-  // 3. Disconnect the device. The permission should not be revoked.
-  DisconnectDevice(*device);
-  device_removed_loop.Run();
+  // Disconnect the device. The permission should not be revoked.
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin)).Times(0);
+  DisconnectDeviceBlocking(device->guid);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  objects = context()->GetAllGrantedObjects();
+  EXPECT_EQ(1u, objects.size());
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
+  // Revoke the persistent permission.
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
+  RevokeObjectPermissionBlocking(kOrigin, objects[0]->value);
 
-  // 4. Revoke the persistent permission.
-  context->RevokeObjectPermission(origin(), objects[0]->value);
-  permission_revoked_loop.Run();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+}
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
-  origin_objects = context->GetGrantedObjects(origin());
-  EXPECT_EQ(0u, origin_objects.size());
-  objects = context->GetAllGrantedObjects();
-  EXPECT_EQ(0u, objects.size());
+TEST_F(HidChooserContextTest, GrantForgetUsbPersistentDevice) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect a USB device with multiple HID interfaces eligible for
+  // persistent permissions.
+  auto device1 = ConnectPersistentUsbDeviceBlocking();
+  auto device2 = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device2));
+
+  // Grant persistent permissions.
+  GrantDevicePermissionBlocking(kOrigin, *device1);
+  GrantDevicePermissionBlocking(kOrigin, *device2);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  auto objects = context()->GetAllGrantedObjects();
+  ASSERT_EQ(1u, objects.size());
+
+  // Forget the device by revoking the persistent permission.
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin));
+  RevokeObjectPermissionBlocking(kOrigin, objects[0]->value);
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device1));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device2));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 }
 
 TEST_F(HidChooserContextTest, GuardPermission) {
-  base::RunLoop device_added_loop;
-  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
-      .WillOnce(RunClosure(device_added_loop.QuitClosure()));
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
 
-  base::RunLoop permission_granted_loop;
-  EXPECT_CALL(permission_observer(),
-              OnObjectPermissionChanged(
-                  absl::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA))
-      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()));
+  // Connect a device that is only eligible for ephemeral permissions.
+  auto device = ConnectEphemeralDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 
-  HidChooserContext* context = GetContext();
+  // Grant an ephemeral device permission.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
 
-  // 1. Connect a device that is only eligible for ephemeral permissions.
-  auto device = ConnectEphemeralDevice();
-  device_added_loop.Run();
+  // Set the guard permission to CONTENT_SETTING_BLOCK.
+  SetContentSettingDefaultForOrigin(kOrigin, CONTENT_SETTING_BLOCK);
 
-  // 2. Grant an ephemeral device permission.
-  context->GrantDevicePermission(origin(), *device);
-  permission_granted_loop.Run();
-
-  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
-
-  // 3. Set the guard permission to CONTENT_SETTING_BLOCK.
-  auto* map = HostContentSettingsMapFactory::GetForProfile(profile());
-  map->SetContentSettingDefaultScope(origin().GetURL(), origin().GetURL(),
-                                     ContentSettingsType::HID_GUARD,
-                                     CONTENT_SETTING_BLOCK);
-
-  // 4. Check that the device permission is no longer granted.
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
-
-  auto objects = context->GetGrantedObjects(origin());
-  EXPECT_EQ(0u, objects.size());
-
-  auto all_origin_objects = context->GetAllGrantedObjects();
-  EXPECT_EQ(0u, all_origin_objects.size());
+  // Check that the device permission is no longer granted.
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 }
 
 TEST_F(HidChooserContextTest, ConnectionErrorWithEphemeralPermission) {
-  base::RunLoop device_added_loop;
-  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
-      .WillOnce(RunClosure(device_added_loop.QuitClosure()));
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
 
-  EXPECT_CALL(device_observer(), OnHidManagerConnectionError());
+  // Connect a device that is only eligible for ephemeral permissions.
+  auto device = ConnectEphemeralDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 
-  base::RunLoop permission_granted_loop;
+  // Grant an ephemeral device permission.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+
+  // Simulate a connection error. The ephemeral permission should be revoked.
+  base::RunLoop loop;
+  EXPECT_CALL(permission_observer(), OnPermissionRevoked(kOrigin))
+      .WillOnce(RunClosure(loop.QuitClosure()));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA))
-      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
-      .WillOnce([]() {
-        // Expect a 2nd permission change event when the permission is revoked.
-      });
-
-  base::RunLoop permission_revoked_loop;
-  EXPECT_CALL(permission_observer(), OnPermissionRevoked(origin()))
-      .WillOnce(RunClosure(permission_revoked_loop.QuitClosure()));
-
-  HidChooserContext* context = GetContext();
-
-  // 1. Connect a device that is only eligible for persistent permissions.
-  auto device = ConnectEphemeralDevice();
-  device_added_loop.Run();
-
-  // 2. Grant an ephemeral device permission.
-  context->GrantDevicePermission(origin(), *device);
-  permission_granted_loop.Run();
-
-  // 3. Simulate a connection error. The ephemeral permission should be revoked.
+                  ContentSettingsType::HID_CHOOSER_DATA));
+  EXPECT_CALL(device_observer(), OnHidManagerConnectionError());
   SimulateHidManagerConnectionError();
-  permission_revoked_loop.Run();
+  loop.Run();
 
-  EXPECT_FALSE(context->HasDevicePermission(origin(), *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
 }
 
 TEST_F(HidChooserContextTest, ConnectionErrorWithPersistentPermission) {
-  base::RunLoop device_added_loop;
-  EXPECT_CALL(device_observer(), OnDeviceAdded(_))
-      .WillOnce(RunClosure(device_added_loop.QuitClosure()));
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
 
-  base::RunLoop connection_error_loop;
+  // Connect a USB device eligible for persistent permissions.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Grant a persistent device permission.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+
+  // Simulate a connection error. The persistent permission should not be
+  // affected.
+  base::RunLoop loop;
   EXPECT_CALL(device_observer(), OnHidManagerConnectionError())
-      .WillOnce(RunClosure(connection_error_loop.QuitClosure()));
-
-  base::RunLoop permission_granted_loop;
+      .WillOnce(RunClosure(loop.QuitClosure()));
   EXPECT_CALL(permission_observer(),
               OnObjectPermissionChanged(
                   absl::make_optional(ContentSettingsType::HID_GUARD),
-                  ContentSettingsType::HID_CHOOSER_DATA))
-      .WillOnce(RunClosure(permission_granted_loop.QuitClosure()))
-      .WillOnce([]() {
-        // Expect a 2nd permission change event when the permission is revoked.
-      });
-
-  HidChooserContext* context = GetContext();
-
-  // 1. Connect a device that is only eligible for persistent permissions.
-  auto device = ConnectPersistentUsbDevice();
-  device_added_loop.Run();
-
-  // 2. Grant a persistent device permission.
-  context->GrantDevicePermission(origin(), *device);
-  permission_granted_loop.Run();
-
-  // 3. Simulate a connection error. The persistent permission should not be
-  // affected.
+                  ContentSettingsType::HID_CHOOSER_DATA));
   SimulateHidManagerConnectionError();
-  connection_error_loop.Run();
+  loop.Run();
 
-  EXPECT_TRUE(context->HasDevicePermission(origin(), *device));
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
 }
 
 namespace {
@@ -444,49 +613,622 @@ device::mojom::HidDeviceInfoPtr CreateDeviceWithTwoCollections(
 TEST_F(HidChooserContextTest, AddChangeRemoveDevice) {
   const char kTestGuid[] = "guid";
 
-  HidChooserContext* context = GetContext();
-
-  EXPECT_FALSE(context->GetDeviceInfo(kTestGuid));
+  EXPECT_FALSE(context()->GetDeviceInfo(kTestGuid));
 
   // Connect a partially-initialized device.
-  base::RunLoop device_added_loop;
-  EXPECT_CALL(device_observer(), OnDeviceAdded).WillOnce([&](const auto& d) {
-    EXPECT_EQ(d.guid, kTestGuid);
-    EXPECT_EQ(d.collections.size(), 1u);
-    device_added_loop.Quit();
-  });
-  auto partial_device = CreateDeviceWithOneCollection(kTestGuid);
-  ConnectDevice(*partial_device);
-  device_added_loop.Run();
-
-  auto* device_info = context->GetDeviceInfo(kTestGuid);
+  auto partial_device =
+      ConnectDeviceBlocking(CreateDeviceWithOneCollection(kTestGuid));
+  EXPECT_EQ(partial_device->guid, kTestGuid);
+  EXPECT_EQ(partial_device->collections.size(), 1u);
+  auto* device_info = context()->GetDeviceInfo(kTestGuid);
   ASSERT_TRUE(device_info);
   EXPECT_EQ(device_info->collections.size(), 1u);
 
   // Update the device to add another collection.
-  base::RunLoop device_changed_loop;
-  EXPECT_CALL(device_observer(), OnDeviceChanged).WillOnce([&](const auto& d) {
-    EXPECT_EQ(d.guid, kTestGuid);
-    EXPECT_EQ(d.collections.size(), 2u);
-    device_changed_loop.Quit();
-  });
-  auto complete_device = CreateDeviceWithTwoCollections(kTestGuid);
-  UpdateDevice(*complete_device);
-  device_changed_loop.Run();
-
-  device_info = context->GetDeviceInfo(kTestGuid);
+  auto complete_device =
+      UpdateDeviceBlocking(CreateDeviceWithTwoCollections(kTestGuid));
+  EXPECT_EQ(complete_device->guid, kTestGuid);
+  EXPECT_EQ(complete_device->collections.size(), 2u);
+  device_info = context()->GetDeviceInfo(kTestGuid);
   ASSERT_TRUE(device_info);
   EXPECT_EQ(device_info->collections.size(), 2u);
 
   // Disconnect the device.
-  base::RunLoop device_removed_loop;
-  EXPECT_CALL(device_observer(), OnDeviceRemoved).WillOnce([&](const auto& d) {
-    EXPECT_EQ(d.guid, kTestGuid);
-    EXPECT_EQ(d.collections.size(), 2u);
-    device_removed_loop.Quit();
-  });
-  DisconnectDevice(*complete_device);
-  device_removed_loop.Run();
-
-  ASSERT_FALSE(context->GetDeviceInfo(kTestGuid));
+  auto removed_device = DisconnectDeviceBlocking(complete_device->guid);
+  EXPECT_EQ(removed_device->guid, kTestGuid);
+  EXPECT_EQ(removed_device->collections.size(), 2u);
+  ASSERT_FALSE(context()->GetDeviceInfo(kTestGuid));
 }
+
+namespace {
+
+struct BlocklistTestData {
+  const char* blocklist;
+  bool expect_device_permission;
+} kBlocklistTestData[]{
+    {nullptr, true},          {"", true},
+    {"1234:abcd::::", false}, {"1234:0001::::", true},
+    {"1234:::::", false},     {"2468:::::", true},
+    {"::0001:0005::", false}, {"::0001:0006::", true},
+    {"::0001:::", false},     {"::ff00:::", true},
+};
+
+class HidChooserContextBlocklistTest
+    : public HidChooserContextTestBase,
+      public testing::TestWithParam<BlocklistTestData> {
+ public:
+  HidChooserContextBlocklistTest() = default;
+
+  void SetUp() override { DoSetUp(/*is_affiliated=*/true); }
+  void TearDown() override { DoTearDown(); }
+};
+
+}  // namespace
+
+TEST_P(HidChooserContextBlocklistTest, Blocklist) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  if (GetParam().blocklist)
+    SetDynamicBlocklist(GetParam().blocklist);
+
+  // Connect a device.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Try to grant permission.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_EQ(GetParam().expect_device_permission,
+            context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+}
+
+INSTANTIATE_TEST_SUITE_P(HidChooserContextBlocklistTestInstance,
+                         HidChooserContextBlocklistTest,
+                         ::testing::ValuesIn(kBlocklistTestData));
+
+TEST_F(HidChooserContextTest, PolicyGuardPermission) {
+  const auto kOrigin = url::Origin::Create(GURL("https://google.com"));
+
+  // Connect a device.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Grant permission and check that the permission was granted.
+  GrantDevicePermissionBlocking(kOrigin, *device);
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kOrigin));
+  EXPECT_TRUE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+
+  // Set a policy to block access to HID devices. After setting the policy, no
+  // permissions should be granted and requesting permissions should be blocked.
+  SetContentSettingDefaultPolicy(CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+}
+
+TEST_F(HidChooserContextTest, PolicyAskForUrls) {
+  const auto kAskOrigin = url::Origin::Create(GURL("https://ask.origin"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Connect a device.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kAskOrigin));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Grant permission for kAskOrigin and kOtherOrigin to access |device|.
+  GrantDevicePermissionBlocking(kAskOrigin, *device);
+  GrantDevicePermissionBlocking(kOtherOrigin, *device);
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kAskOrigin));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_TRUE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_TRUE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(2u, context()->GetAllGrantedObjects().size());
+
+  // Set the default guard policy to "block", overriding the granted
+  // permissions.
+  SetContentSettingDefaultPolicy(CONTENT_SETTING_BLOCK);
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kAskOrigin));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Set the AskForUrls policy to allow kAskOrigin to request permissions.
+  // This policy overrides the default guard policy.
+  SetAskForUrlsPolicy(R"( [ "https://ask.origin" ] )");
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kAskOrigin));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_TRUE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+}
+
+TEST_F(HidChooserContextTest, PolicyBlockedForUrls) {
+  const auto kBlockedOrigin =
+      url::Origin::Create(GURL("https://blocked.origin"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Connect a device.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kBlockedOrigin));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Grant permission for kBlockedOrigin and kOtherOrigin to access |device|.
+  GrantDevicePermissionBlocking(kBlockedOrigin, *device);
+  GrantDevicePermissionBlocking(kOtherOrigin, *device);
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kBlockedOrigin));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_TRUE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_TRUE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kBlockedOrigin).size());
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(2u, context()->GetAllGrantedObjects().size());
+
+  // Set the BlockedForUrls policy to block kBlockedOrigin from accessing
+  // devices or requesting permissions. This policy overrides user-granted
+  // permissions and the default guard setting.
+  SetBlockedForUrlsPolicy(R"([ "https://blocked.origin" ])");
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kBlockedOrigin));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_TRUE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+  EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+}
+
+namespace {
+
+class HidChooserContextAffiliatedTest : public HidChooserContextTestBase,
+                                        public testing::TestWithParam<bool> {
+ public:
+  HidChooserContextAffiliatedTest() : is_affiliated_(GetParam()) {}
+
+  void SetUp() override { DoSetUp(is_affiliated_); }
+  void TearDown() override { DoTearDown(); }
+
+  bool is_affiliated() const { return is_affiliated_; }
+
+ private:
+  bool is_affiliated_;
+};
+
+}  // namespace
+
+TEST_P(HidChooserContextAffiliatedTest, PolicyAllowForUrls) {
+  const auto kBlockedOrigin =
+      url::Origin::Create(GURL("https://blocked.origin"));
+  const auto kAskOrigin = url::Origin::Create(GURL("https://ask.origin"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Connect a device.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+
+  // Set the default content settings to "block" by policy, and set the
+  // AskForUrls and BlockedForUrls policies to override the default for
+  // kAskOrigin and kBlockedOrigin.
+  SetContentSettingDefaultPolicy(CONTENT_SETTING_BLOCK);
+  SetAskForUrlsPolicy(R"([ "https://ask.origin" ])");
+  SetBlockedForUrlsPolicy(R"([ "https://blocked.origin" ])");
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kBlockedOrigin));
+  EXPECT_TRUE(context()->CanRequestObjectPermission(kAskOrigin));
+  EXPECT_FALSE(context()->CanRequestObjectPermission(kOtherOrigin));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Set the AllowAllDevicesForUrls policy to grant all three origins permission
+  // to access any device.
+  SetAllowAllDevicesForUrlsPolicy(R"(
+      [
+          "https://blocked.origin",
+          "https://ask.origin",
+          "https://other.origin"
+      ])");
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kOtherOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(3u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  // Set the AllowAllDevicesForUrls policy back to the default value.
+  SetAllowAllDevicesForUrlsPolicy("[]");
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Set the AllowDevicesForUrls policy to grant permissions to kAskOrigin and
+  // kOtherOrigin by matching kTestVendorId and kTestProductId.
+  SetAllowDevicesForUrlsPolicy(R"(
+      [
+        {
+          "devices": [{ "vendor_id": 4660, "product_id": 43981 }],
+          "urls": [ "https://ask.origin", "https://other.origin" ]
+        }
+      ])");
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kOtherOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(2u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  // Set the AllowDevicesForUrls policy to give permissions to kBlockedOrigin.
+  // This policy overrides the BlockedForUrls policy.
+  SetAllowDevicesForUrlsPolicy(R"(
+      [
+        {
+          "devices": [{ "vendor_id": 4660, "product_id": 43981 }],
+          "urls": [ "https://blocked.origin" ]
+        }
+      ])");
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  // Set the AllowDevicesForUrls policy to grant permission to kOtherOrigin to
+  // access devices with kTestVendorId and any product ID. A second rule grants
+  // permission for kAskOrigin to access a different device with the same vendor
+  // ID and a third rule grants permission for kBlockedOrigin to access a
+  // different vendor ID. Only the first rule matches the device.
+  SetAllowDevicesForUrlsPolicy(R"(
+      [
+        {
+          "devices": [{ "vendor_id": 4660 }],
+          "urls": [ "https://other.origin" ]
+        },
+        {
+          "devices": [{ "vendor_id": 4660, "product_id": 1 }],
+          "urls": [ "https://ask.origin" ]
+        },
+        {
+          "devices": [{ "vendor_id": 123 }],
+          "urls": [ "https://blocked.origin" ]
+        }
+      ])");
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kOtherOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(3u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  // Set the AllowDevicesForUrls policy back to the default value.
+  SetAllowDevicesForUrlsPolicy("[]");
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // Set the AllowDevicesWithHidUsagesForUrls policy to grant permissions to
+  // kAskOrigin and kOtherOrigin by matching kTestUsagePage and kTestUsage.
+  SetAllowDevicesWithHidUsagesForUrlsPolicy(R"(
+      [
+        {
+          "usages": [{ "usage_page": 1, "usage": 5 }],
+          "urls": [ "https://ask.origin", "https://other.origin" ]
+        }
+      ])");
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kOtherOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(2u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  // Set the AllowDevicesWithHidUsagesForUrls policy to give permissions to
+  // kBlockedOrigin. This policy overrides the BlockedForUrls policy.
+  SetAllowDevicesWithHidUsagesForUrlsPolicy(R"(
+      [
+        {
+          "usages": [{ "usage_page": 1, "usage": 5 }],
+          "urls": [ "https://blocked.origin" ]
+        }
+      ])");
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  // Set the AllowDevicesWithHidUsagesForUrls policy to grant permission to
+  // kOtherOrigin to access devices with any usage from kTestUsagePage. A
+  // second rule grants permission for kAskOrigin to access devices with a
+  // different usage from kTestUsagePage and a third rule grants permission for
+  // kBlockedOrigin to access a different usage page. Only the first rule
+  // matches the device.
+  SetAllowDevicesWithHidUsagesForUrlsPolicy(R"(
+      [
+        {
+          "usages": [{ "usage_page": 1 }],
+          "urls": [ "https://other.origin" ]
+        },
+        {
+          "usages": [{ "usage_page": 1, "usage": 1 }],
+          "urls": [ "https://ask.origin" ]
+        },
+        {
+          "usages": [{ "usage_page": 123 }],
+          "urls": [ "https://blocked.origin" ]
+        }
+      ])");
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_EQ(is_affiliated(),
+            context()->HasDevicePermission(kOtherOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(3u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  // Set the AllowDevicesWithHidUsagesForUrls policy back to the default value.
+  SetAllowDevicesWithHidUsagesForUrlsPolicy("[]");
+  EXPECT_FALSE(context()->HasDevicePermission(kBlockedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kAskOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kBlockedOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kAskOrigin).size());
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOtherOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+}
+
+TEST_P(HidChooserContextAffiliatedTest, BlocklistOverridesPolicy) {
+  const auto kOrigin = url::Origin::Create(GURL("https://test.origin"));
+
+  // Set the blocklist to deny access to devices with kTestVendorId and
+  // kTestProductId.
+  SetDynamicBlocklist("1234:abcd::::");
+
+  // Connect a device.
+  auto device = ConnectPersistentUsbDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // The AllowAllDevicesForUrls policy cannot override the blocklist.
+  SetAllowAllDevicesForUrlsPolicy(R"([ "https://test.origin" ])");
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+    EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  SetAllowAllDevicesForUrlsPolicy("[]");
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // The AllowDevicesForUrls policy cannot override the blocklist.
+  SetAllowDevicesForUrlsPolicy(R"(
+      [
+        {
+          "devices": [{ "vendor_id": 4660, "product_id": 43981 }],
+          "urls": [ "https://test.origin" ]
+        }
+      ])");
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+    EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  SetAllowDevicesForUrlsPolicy("[]");
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+
+  // The AllowDevicesWithHidUsagesForUrls policy cannot override the blocklist.
+  SetAllowDevicesWithHidUsagesForUrlsPolicy(R"(
+      [
+        {
+          "usages": [{ "usage_page": 1, "usage": 5 }],
+          "urls": [ "https://test.origin" ]
+        }
+      ])");
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  if (is_affiliated()) {
+    EXPECT_EQ(1u, context()->GetGrantedObjects(kOrigin).size());
+    EXPECT_EQ(1u, context()->GetAllGrantedObjects().size());
+  } else {
+    EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+    EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+  }
+
+  SetAllowDevicesWithHidUsagesForUrlsPolicy("[]");
+  EXPECT_FALSE(context()->HasDevicePermission(kOrigin, *device));
+  EXPECT_EQ(0u, context()->GetGrantedObjects(kOrigin).size());
+  EXPECT_EQ(0u, context()->GetAllGrantedObjects().size());
+}
+
+TEST_F(HidChooserContextTest, FidoAllowlistOverridesBlocklistFidoRule) {
+  const auto kFidoAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Connect a FIDO device. It should be blocked by the blocklist because it
+  // has a top-level collection with a usage from the FIDO usage page.
+  auto device = ConnectFidoDeviceBlocking();
+  EXPECT_FALSE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+
+  // Granting permission to the privileged origin succeeds.
+  GrantDevicePermissionBlocking(kFidoAllowedOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+
+  // Granting permission to the non-privileged origin fails.
+  GrantDevicePermissionBlocking(kOtherOrigin, *device);
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+}
+
+TEST_F(HidChooserContextTest, FidoAllowlistOverridesBlocklistDeviceIdRule) {
+  const auto kFidoAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  // Connect a FIDO device.
+  auto device = ConnectFidoDeviceBlocking();
+
+  // Configure the blocklist to deny access to devices with kTestVendorId and
+  // kTestProductId.
+  SetDynamicBlocklist("1234:abcd::::");
+
+  // Check that the FIDO device is still blocked. Now it is blocked both for
+  // being FIDO and also for matching the device ID rule.
+  EXPECT_FALSE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+
+  // Granting permission to the privileged origin succeeds.
+  GrantDevicePermissionBlocking(kFidoAllowedOrigin, *device);
+  EXPECT_TRUE(context()->HasDevicePermission(kFidoAllowedOrigin, *device));
+
+  // Granting permission to the non-privileged origin fails.
+  GrantDevicePermissionBlocking(kOtherOrigin, *device);
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+}
+
+TEST_P(HidChooserContextAffiliatedTest, FidoAllowlistAndPolicy) {
+  const auto kFidoAndPolicyAllowedOrigin = url::Origin::Create(
+      GURL("chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok"));
+  const auto kOtherOrigin = url::Origin::Create(GURL("https://other.origin"));
+
+  SetAllowDevicesWithHidUsagesForUrlsPolicy(R"(
+      [
+        {
+          "usages": [{ "usage_page": 61904 }],
+          "urls": [ "chrome-extension://ckcendljdlmgnhghiaomidhiiclmapok" ]
+        }
+      ])");
+
+  // Connect a device matching the first policy rule. If the policy could be set
+  // then the policy-granted origin should already have permission.
+  auto device = ConnectFidoDeviceBlocking();
+  EXPECT_EQ(is_affiliated(), context()->HasDevicePermission(
+                                 kFidoAndPolicyAllowedOrigin, *device));
+  EXPECT_FALSE(context()->HasDevicePermission(kOtherOrigin, *device));
+}
+
+// Boolean parameter means if user is affiliated on the device. Affiliated
+// users belong to the domain that owns the device and is only meaningful
+// on Chrome OS.
+//
+// The WebHidAllowDevicesForUrls, WebHidAllowDevicesWithHidUsagesForUrls, and
+// WebHidAllowAllDevicesForUrls policies only take effect for affiliated users.
+INSTANTIATE_TEST_SUITE_P(
+    HidChooserContextAffiliatedTestInstance,
+    HidChooserContextAffiliatedTest,
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    testing::Values(true, false),
+#else
+    testing::Values(true),
+#endif
+    [](const testing::TestParamInfo<HidChooserContextAffiliatedTest::ParamType>&
+           info) { return info.param ? "affiliated" : "unaffiliated"; });

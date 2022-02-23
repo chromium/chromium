@@ -59,12 +59,12 @@
 #include "third_party/blink/renderer/core/svg/svg_view_element.h"
 #include "third_party/blink/renderer/core/svg/svg_view_spec.h"
 #include "third_party/blink/renderer/core/svg_names.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/geometry/length_functions.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/transforms/affine_transform.h"
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -322,7 +322,7 @@ bool SVGSVGElement::CheckIntersectionOrEnclosure(
   LayoutObject* layout_object = element.GetLayoutObject();
   DCHECK(!layout_object || layout_object->Style());
   if (!layout_object ||
-      layout_object->StyleRef().PointerEvents() == EPointerEvents::kNone)
+      layout_object->StyleRef().UsedPointerEvents() == EPointerEvents::kNone)
     return false;
 
   if (!IsIntersectionOrEnclosureTarget(layout_object))
@@ -584,13 +584,8 @@ bool SVGSVGElement::SelfHasRelativeLengths() const {
          height_->CurrentValue()->IsRelative();
 }
 
-bool SVGSVGElement::HasValidViewBox() const {
-  return viewBox()->CurrentValue()->IsValid();
-}
-
 bool SVGSVGElement::HasEmptyViewBox() const {
-  const SVGRect* view_box = viewBox()->CurrentValue();
-  return view_box->IsValid() && view_box->Rect().IsEmpty();
+  return HasValidViewBox() && viewBox()->CurrentValue()->Rect().IsEmpty();
 }
 
 bool SVGSVGElement::ShouldSynthesizeViewBox() const {

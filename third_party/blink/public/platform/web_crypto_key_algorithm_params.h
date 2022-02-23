@@ -35,10 +35,6 @@
 #include "third_party/blink/public/platform/web_crypto_algorithm.h"
 #include "third_party/blink/public/platform/web_vector.h"
 
-#if INSIDE_BLINK
-#include "third_party/blink/renderer/platform/heap/handle.h"  // nogncheck
-#endif
-
 namespace blink {
 
 // Interface used for serializing WebCryptoKeyAlgorithmParams to a javascript

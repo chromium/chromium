@@ -1,7 +1,7 @@
 Name: Braille Translation Library
 Short Name: liblouis
 URL: https://github.com/liblouis/liblouis
-Version: 3.12.0
+Version: 3.19.0
 CPEPrefix: cpe:/a:liblouis:liblouis:3.12.0
 License: LGPL3 and GPL3
 License Android Compatible: No
@@ -15,30 +15,38 @@ contracted and uncontracted translation for many languages.
 
 LibLouis is used as a web assembly module.
 
-Local Modifications: * Add liblouis_wrapper.js, a js wrapper to wasm binary.  *
-Add tables.json, a list of tables with metadata.  * Add cvox-common.cti with
-common definitions for all tables mentioned in tables.json.  * The web assembly
-module is compiled by using emscripten.  As of writing, the fastcomp sdk (the
-older compiler) picks up on LibLouis' C exports while the non-fastcomp compiler
-does not.
+Local Modifications:
+  * Add liblouis_wrapper.js, a js wrapper to wasm binary.
+  * Add tables.json, a list of tables with metadata.
+  * Add cvox-common.cti with
+common definitions for all tables mentioned in tables.json.
+  * The web assembly module is compiled by using emscripten.
+
+Use the following command to get the Emscripten sdk:
+git clone https://github.com/emscripten-core/emsdk.git
 
 Use the following commands to set up your environment:
 cd <PATH_TO_EMSDK>
 source ./emsdk_env.sh
-emsdk install latest-fastcomp
-emsdk activate latest-fastcomp
+emsdk install latest
+emsdk activate latest
+# To refresh paths for the activated sdk.
+source ./emsdk_env.sh
 
 Use the following commands to compile:
-
 cd third_party/liblouis/src
 cp ../cvox-common.cti tables/
 ./autogen.sh
+
 emconfigure ./configure --disable-shared
 emmake make
-emcc ./liblouis/.libs/liblouis.a -s RESERVED_FUNCTION_POINTERS=1 -s MODULARIZE=1 \
+
+em++ ./liblouis/.libs/liblouis.a -s RESERVED_FUNCTION_POINTERS=1 -s MODULARIZE=1 \
 -s TOTAL_MEMORY=167772160 -s EXPORT_NAME="'liblouisBuild'" \
--s EXTRA_EXPORTED_RUNTIME_METHODS="['ccall','ALLOC_NORMAL', \
-'Pointer_stringify', 'allocate','FS', 'cwrap', 'stringToUTF16', \
+-s EXPORTED_FUNCTIONS="[_lou_free, _lou_checkTable, _lou_backTranslateString, _lou_translate]" \
+-s EXPORTED_RUNTIME_METHODS="['ccall','ALLOC_NORMAL', \
+'allocate','FS', 'cwrap', 'stringToUTF16', \
 'UTF16ToString','intArrayFromString', 'intArrayToString', 'setValue',\
 'getValue']" --preload-file tables@/ -o liblouis_wasm.js
+
 cp liblouis_wasm.* ../wasm

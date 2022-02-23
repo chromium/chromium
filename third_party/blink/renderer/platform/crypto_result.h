@@ -33,6 +33,7 @@
 
 #include "base/synchronization/atomic_flag.h"
 #include "third_party/blink/public/platform/web_crypto.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/thread_safe_ref_counted.h"
 

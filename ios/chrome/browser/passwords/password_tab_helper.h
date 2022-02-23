@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_PASSWORDS_PASSWORD_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "ios/web/public/web_state_observer.h"
 #import "ios/web/public/web_state_user_data.h"
 
@@ -21,6 +20,7 @@ namespace password_manager {
 class PasswordGenerationFrameHelper;
 class PasswordManager;
 class PasswordManagerClient;
+class PasswordManagerDriver;
 }
 
 // Class binding a PasswordController to a WebState.
@@ -56,6 +56,9 @@ class PasswordTabHelper : public web::WebStateObserver,
 
   // Returns the PasswordManagerClient owned by the PasswordController.
   password_manager::PasswordManagerClient* GetPasswordManagerClient();
+
+  // Returns the PasswordManagerDriver owned by the PasswordController.
+  password_manager::PasswordManagerDriver* GetPasswordManagerDriver();
 
   // Returns an object that can provide password generation from the
   // PasswordController. May return nil.

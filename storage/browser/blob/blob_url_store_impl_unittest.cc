@@ -82,7 +82,7 @@ class BlobURLStoreImplTest : public testing::Test {
                    const GURL& url) {
     base::RunLoop loop;
     store->Register(std::move(blob), url, agent_cluster_id_,
-                    loop.QuitClosure());
+                    net::SchemefulSite(), loop.QuitClosure());
     loop.Run();
   }
 
@@ -284,7 +284,8 @@ TEST_F(BlobURLStoreImplTest, ResolveAsURLLoaderFactory) {
           [](base::OnceClosure done,
              const base::UnguessableToken& agent_registered,
              const absl::optional<base::UnguessableToken>&
-                 unsafe_agent_cluster_id) {
+                 unsafe_agent_cluster_id,
+             const absl::optional<net::SchemefulSite>& unsafe_top_level_site) {
             EXPECT_EQ(agent_registered, unsafe_agent_cluster_id);
             std::move(done).Run();
           },

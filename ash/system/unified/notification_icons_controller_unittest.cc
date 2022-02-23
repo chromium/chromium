@@ -94,37 +94,47 @@ TEST_P(NotificationIconsControllerTest, DisplayChanged) {
   AddNotification(true /* is_pinned */, false /* is_critical_warning */);
   AddNotification(false /* is_pinned */, false /* is_critical_warning */);
 
+  // Icons get added from RTL, so we check the end of the vector first.
+
   // Notification icons should be shown in medium screen size.
   UpdateDisplay("800x700");
   EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items().front()->GetVisible());
+            notification_icons_controller_->tray_items().back()->GetVisible());
   EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
 
   // Notification icons should not be shown in small screen size.
   UpdateDisplay("600x500");
   EXPECT_FALSE(
-      notification_icons_controller_->tray_items().front()->GetVisible());
+      notification_icons_controller_->tray_items().back()->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
 
   // Notification icons should be shown in large screen size.
   UpdateDisplay("1680x800");
   EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items().front()->GetVisible());
+            notification_icons_controller_->tray_items().back()->GetVisible());
   EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
 }
 
 TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   UpdateDisplay("800x700");
 
+  // Icons get added from RTL, so we check the end of the vector first.
+  const int end = notification_icons_controller_->tray_items().size() - 1;
+
+  // Ensure that the indexes that will be accessed exist.
+  ASSERT_TRUE(notification_icons_controller_->tray_items().size() >= 2);
+
   // If there's no notification, no notification icons should be shown.
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[1]->GetVisible());
+  EXPECT_FALSE(notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items()[end - 1]->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
 
   // Same case for non pinned or non critical warning notification.
   AddNotification(false /* is_pinned */, false /* is_critical_warning */);
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[1]->GetVisible());
+  EXPECT_FALSE(notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items()[end - 1]->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
 
   // Notification icons should be shown when pinned or critical warning
@@ -132,16 +142,18 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   std::string id0 =
       AddNotification(true /* is_pinned */, false /* is_critical_warning */);
   EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items()[0]->GetVisible());
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[1]->GetVisible());
+            notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items()[end - 1]->GetVisible());
   EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
 
   std::string id1 =
       AddNotification(false /* is_pinned */, true /* is_critical_warning */);
   EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items()[0]->GetVisible());
-  EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items()[1]->GetVisible());
+            notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_EQ(
+      IsScalableStatusAreaEnabled(),
+      notification_icons_controller_->tray_items()[end - 1]->GetVisible());
   EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
 
   // Remove the critical warning notification should make the tray show only one
@@ -149,27 +161,33 @@ TEST_P(NotificationIconsControllerTest, ShowNotificationIcons) {
   message_center::MessageCenter::Get()->RemoveNotification(id1,
                                                            false /* by_user */);
   EXPECT_EQ(IsScalableStatusAreaEnabled(),
-            notification_icons_controller_->tray_items()[0]->GetVisible());
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[1]->GetVisible());
+            notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items()[end - 1]->GetVisible());
   EXPECT_EQ(IsScalableStatusAreaEnabled(), separator()->GetVisible());
 
   // Remove the pinned notification, no icon is shown.
   message_center::MessageCenter::Get()->RemoveNotification(id0,
                                                            false /* by_user */);
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[1]->GetVisible());
+  EXPECT_FALSE(notification_icons_controller_->tray_items()[end]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items()[end - 1]->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
 }
 
 TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   UpdateDisplay("800x700");
 
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+  // Icons get added from RTL, so we check the end of the vector first.
+
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
 
   AddNotification(true /* is_pinned */, false /* is_critical_warning */,
                   kBatteryNotificationNotifierId);
   // Battery notification should not be shown.
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
   // Notification count does update for this notification.
   notification_icons_controller_->notification_counter_view()->Update();
@@ -179,7 +197,8 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   AddNotification(true /* is_pinned */, false /* is_critical_warning */,
                   kUsbNotificationNotifierId);
   // Usb charging notification should not be shown.
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
   // Notification count does update for this notification.
   notification_icons_controller_->notification_counter_view()->Update();
@@ -189,7 +208,8 @@ TEST_P(NotificationIconsControllerTest, NotShowNotificationIcons) {
   AddNotification(true /* is_pinned */, false /* is_critical_warning */,
                   kVmCameraMicNotifierId);
   // VM camera/mic notification should not be shown.
-  EXPECT_FALSE(notification_icons_controller_->tray_items()[0]->GetVisible());
+  EXPECT_FALSE(
+      notification_icons_controller_->tray_items().back()->GetVisible());
   EXPECT_FALSE(separator()->GetVisible());
   // Notification count does not update for this notification (since there's
   // another tray item for this).

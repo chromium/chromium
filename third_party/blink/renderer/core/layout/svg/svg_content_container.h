@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/layout/api/hit_test_action.h"
 #include "third_party/blink/renderer/core/layout/layout_object_child_list.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {

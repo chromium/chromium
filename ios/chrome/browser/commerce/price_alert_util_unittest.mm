@@ -5,16 +5,19 @@
 #import "ios/chrome/browser/commerce/price_alert_util.h"
 
 #include "base/test/scoped_feature_list.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/unified_consent/pref_names.h"
 #include "components/unified_consent/unified_consent_service.h"
 #import "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
+#import "ios/chrome/browser/pref_names.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/authentication_service_fake.h"
 #import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/web/public/test/web_task_environment.h"
-#import "ios/web/public/test/web_test_with_web_state.h"
+#include "testing/platform_test.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -52,17 +55,22 @@ class PriceAlertUtilTest : public PlatformTest {
         enabled);
   }
 
+  void SetUserSetting(bool enabled) {
+    browser_state_->GetPrefs()->SetBoolean(prefs::kTrackPricesOnTabsEnabled,
+                                           enabled);
+  }
+
   void SetFeatureFlag(bool enabled) {
     if (enabled) {
       scoped_feature_list_.InitAndEnableFeatureWithParameters(
-          kCommercePriceTracking,
+          commerce::kCommercePriceTracking,
           {{kPriceTrackingWithOptimizationGuideParam, "true"}});
     } else {
       scoped_feature_list_.InitWithFeatures({}, {});
     }
   }
 
-  void SignIn() { auth_service_->SignIn(fake_identity_); }
+  void SignIn() { auth_service_->SignIn(fake_identity_, nil); }
 
   void SignOut() {
     auth_service_->SignOut(signin_metrics::SIGNOUT_TEST,
@@ -71,6 +79,7 @@ class PriceAlertUtilTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   AuthenticationServiceFake* auth_service_ = nullptr;
   FakeChromeIdentity* fake_identity_ = nullptr;
@@ -116,10 +125,25 @@ TEST_F(PriceAlertUtilTest, TestPriceAlertsEligibleThenSignOut) {
 }
 
 TEST_F(PriceAlertUtilTest, TestIncognito) {
-  web::FakeBrowserState fake_browser_state;
-  fake_browser_state.SetOffTheRecord(true);
   SignIn();
   SetFeatureFlag(true);
   SetMSBB(true);
-  EXPECT_FALSE(IsPriceAlertsEligible(&fake_browser_state));
+  EXPECT_FALSE(IsPriceAlertsEligible(
+      browser_state_->GetOffTheRecordChromeBrowserState()));
+}
+
+TEST_F(PriceAlertUtilTest, TestUserSettingOn) {
+  SignIn();
+  SetFeatureFlag(true);
+  SetMSBB(true);
+  SetUserSetting(true);
+  EXPECT_TRUE(IsPriceAlertsEligible(browser_state_.get()));
+}
+
+TEST_F(PriceAlertUtilTest, TestUserSettingOff) {
+  SignIn();
+  SetFeatureFlag(true);
+  SetMSBB(true);
+  SetUserSetting(false);
+  EXPECT_FALSE(IsPriceAlertsEligible(browser_state_.get()));
 }

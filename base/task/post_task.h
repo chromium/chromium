@@ -183,7 +183,7 @@ BASE_EXPORT scoped_refptr<SingleThreadTaskRunner> CreateSingleThreadTaskRunner(
     SingleThreadTaskRunnerThreadMode thread_mode =
         SingleThreadTaskRunnerThreadMode::SHARED);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns a SingleThreadTaskRunner whose PostTask invocations result in
 // scheduling tasks using |traits| in a COM Single-Threaded Apartment on a
 // thread determined by |thread_mode|. See
@@ -200,7 +200,7 @@ BASE_EXPORT scoped_refptr<SingleThreadTaskRunner> CreateCOMSTATaskRunner(
     const TaskTraits& traits,
     SingleThreadTaskRunnerThreadMode thread_mode =
         SingleThreadTaskRunnerThreadMode::SHARED);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Helpers to send a Delete/ReleaseSoon to a new SequencedTaskRunner created
 // from |traits|. The semantics match base::PostTask in that the deletion is

@@ -5,24 +5,11 @@
 
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="21"
     tools:ignore="VectorRaster"
     android:width="412dp"
     android:height="129dp"
     android:viewportWidth="412"
     android:viewportHeight="129">
-  <path
-      android:pathData="M358.064,-6.508L45.311,-6.508C40.761,-6.508 37.071,-2.818 37.071,1.732L37.071,86.055L366.304,86.055L366.304,1.732C366.304,-2.818 362.614,-6.508 358.064,-6.508Z"
-      android:strokeWidth="1"
-      android:fillColor="#F8F9FA"
-      android:fillType="evenOdd"
-      android:strokeColor="#00000000"/>
-  <path
-      android:pathData="M427,-6.508l-460.925,0l-0,121.025l460.925,0z"
-      android:strokeWidth="1"
-      android:fillColor="#202124"
-      android:fillType="evenOdd"
-      android:strokeColor="#00000000"/>
   <path
       android:pathData="M148.9,95.729L148.9,104.445C153.828,106.017 159.328,107.063 165.265,107.088C180.692,107.155 195.369,100.337 208.885,86.826L203.081,81.024C191.195,92.907 178.51,98.917 165.38,98.886C159.338,98.871 153.765,97.568 148.9,95.729Z"
       android:strokeWidth="1"

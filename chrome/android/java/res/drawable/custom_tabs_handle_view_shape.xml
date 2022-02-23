@@ -13,5 +13,5 @@
         android:bottomLeftRadius="0dp"
         android:bottomRightRadius="0dp" />
     <solid
-        android:color="@color/default_bg_color" />
+        android:color="@macro/default_bg_color" />
 </shape>

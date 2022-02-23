@@ -9,7 +9,7 @@
 
 #import "ios/chrome/browser/ui/table_view/cells/table_view_item.h"
 
-// SyncSwitchItem is a model class that uses SettingsSwitchCell.
+// SyncSwitchItem is a model class that uses TableViewSwitchCell.
 @interface SyncSwitchItem : TableViewItem
 
 // The text to display.

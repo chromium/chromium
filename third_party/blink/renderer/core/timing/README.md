@@ -1,6 +1,6 @@
 # renderer/core/timing
 
-[Live version](https://chromium.googlesource.com/chromium/src/+/master/third_party/blink/renderer/core/timing/README.md)
+[Live version](https://chromium.googlesource.com/chromium/src/+/main/third_party/blink/renderer/core/timing/README.md)
 
 The `renderer/core/timing` directory contains files related to various web performance APIs.
 

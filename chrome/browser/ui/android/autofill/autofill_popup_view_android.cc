@@ -35,7 +35,7 @@ using base::android::ScopedJavaLocalRef;
 namespace autofill {
 
 AutofillPopupViewAndroid::AutofillPopupViewAndroid(
-    AutofillPopupController* controller)
+    base::WeakPtr<AutofillPopupController> controller)
     : controller_(controller), deleting_index_(-1) {}
 
 AutofillPopupViewAndroid::~AutofillPopupViewAndroid() {}
@@ -104,11 +104,7 @@ void AutofillPopupViewAndroid::OnSuggestionsChanged() {
         suggestion.frontend_id == POPUP_ITEM_ID_MIXED_FORM_MESSAGE;
     // Set the offer title to display as the item tag.
     ScopedJavaLocalRef<jstring> item_tag =
-        base::android::ConvertUTF16ToJavaString(
-            env, base::FeatureList::IsEnabled(
-                     features::kAutofillEnableOffersInDownstream)
-                     ? suggestion.offer_label
-                     : std::u16string());
+        base::android::ConvertUTF16ToJavaString(env, suggestion.offer_label);
     Java_AutofillPopupBridge_addToAutofillSuggestionArray(
         env, data_array, i, value, label, item_tag, android_icon_id,
         /*icon_at_start=*/false, suggestion.frontend_id, is_deletable,
@@ -207,15 +203,14 @@ AutofillPopupView* AutofillPopupView::Create(
     auto adapter =
         std::make_unique<AutofillKeyboardAccessoryAdapter>(controller);
     auto accessory_view =
-        std::make_unique<AutofillKeyboardAccessoryView>(adapter.get());
+        std::make_unique<AutofillKeyboardAccessoryView>(adapter->GetWeakPtr());
     if (!accessory_view->Initialize())
       return nullptr;  // Don't create an adapter without initialized view.
     adapter->SetAccessoryView(std::move(accessory_view));
     return adapter.release();
   }
 
-  auto popup_view =
-      std::make_unique<AutofillPopupViewAndroid>(controller.get());
+  auto popup_view = std::make_unique<AutofillPopupViewAndroid>(controller);
   if (!popup_view->Init() || popup_view->WasSuppressed())
     return nullptr;
   return popup_view.release();

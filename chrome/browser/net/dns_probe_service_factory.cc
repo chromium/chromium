@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/sequence_checker.h"
 #include "base/threading/sequenced_task_runner_handle.h"
@@ -30,7 +31,6 @@
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"
-#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -163,7 +163,7 @@ class DnsProbeServiceImpl
   std::unique_ptr<DnsProbeRunner> google_config_runner_;
 
   // Time source for cache expiry.
-  const base::TickClock* tick_clock_;  // Not owned.
+  raw_ptr<const base::TickClock> tick_clock_;  // Not owned.
 
   SEQUENCE_CHECKER(sequence_checker_);
 };
@@ -236,9 +236,9 @@ void DnsProbeServiceImpl::SetUpCurrentConfigRunner() {
   current_config_overrides.attempts = 1;
 
   if (current_config_secure_dns_mode_ == net::SecureDnsMode::kSecure) {
-    if (!secure_dns_config.servers().empty()) {
-      current_config_overrides.dns_over_https_servers.emplace(
-          secure_dns_config.servers());
+    if (!secure_dns_config.doh_servers().servers().empty()) {
+      current_config_overrides.dns_over_https_config =
+          secure_dns_config.doh_servers();
     }
     current_config_overrides.secure_dns_mode = net::SecureDnsMode::kSecure;
   } else {

@@ -12,7 +12,7 @@
     android:layout_height="wrap_content"
     android:clickable="true"
     android:focusable="true"
-    android:background="@color/default_bg_color_secondary" >
+    android:background="@drawable/rectangle_surface_1" >
 
     <!-- Set the src attribute in Java to wrap the drawable properly. -->
     <ImageView

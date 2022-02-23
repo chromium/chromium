@@ -50,7 +50,7 @@
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/network_time/network_time_tracker.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -105,8 +105,8 @@ std::unique_ptr<KeyedService> BuildSyncService(
 // included
 // in lacros-chrome once build flag switch of lacros-chrome is
 // complete.
-#if defined(OS_WIN) || defined(OS_MAC) || \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   syncer::SyncPrefs prefs(profile->GetPrefs());
   local_sync_backend_enabled = prefs.IsLocalSyncEnabled();
   UMA_HISTOGRAM_BOOLEAN("Sync.Local.Enabled", local_sync_backend_enabled);
@@ -124,7 +124,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
 
     init_params.start_behavior = syncer::SyncServiceImpl::AUTO_START;
   }
-#endif  // defined(OS_WIN) || defined(OS_MAC) || (defined(OS_LINUX) ||
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || (BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS_LACROS))
 
   if (!local_sync_backend_enabled) {
@@ -147,10 +147,7 @@ std::unique_ptr<KeyedService> BuildSyncService(
     // need to take care that SyncServiceImpl doesn't get tripped up between
     // those two cases. Bug 88109.
     bool is_auto_start = browser_defaults::kSyncAutoStarts;
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-    if (chromeos::features::IsSyncConsentOptionalEnabled())
-      is_auto_start = false;
-#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
     // TODO(https://crbug.com/1194983): Figure out how split sync settings will
     // work here. For now, we will mimic Ash's behaviour of having sync turned
     // on by default.
@@ -184,7 +181,7 @@ SyncServiceFactory* SyncServiceFactory::GetInstance() {
 
 // static
 syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
-  if (!switches::IsSyncAllowedByFlag()) {
+  if (!syncer::IsSyncAllowedByFlag()) {
     return nullptr;
   }
 
@@ -196,13 +193,6 @@ syncer::SyncService* SyncServiceFactory::GetForProfile(Profile* profile) {
 syncer::SyncServiceImpl* SyncServiceFactory::GetAsSyncServiceImplForProfile(
     Profile* profile) {
   return static_cast<syncer::SyncServiceImpl*>(GetForProfile(profile));
-}
-
-content::BrowserContext* SyncServiceFactory::GetBrowserContextToUse(
-    content::BrowserContext* context) const {
-  if (context->IsOffTheRecord())
-    return nullptr;
-  return context;
 }
 
 SyncServiceFactory::SyncServiceFactory()
@@ -239,9 +229,9 @@ SyncServiceFactory::SyncServiceFactory()
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
   DependsOn(SessionSyncServiceFactory::GetInstance());
   DependsOn(TemplateURLServiceFactory::GetInstance());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DependsOn(ThemeServiceFactory::GetInstance());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
   DependsOn(WebDataServiceFactory::GetInstance());
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   DependsOn(
@@ -285,7 +275,7 @@ bool SyncServiceFactory::IsSyncAllowed(Profile* profile) {
   // No SyncServiceImpl created yet - we don't want to create one, so just
   // infer the accessible state by looking at prefs/command line flags.
   syncer::SyncPrefs prefs(profile->GetPrefs());
-  return switches::IsSyncAllowedByFlag() &&
+  return syncer::IsSyncAllowedByFlag() &&
          (!prefs.IsManaged() || prefs.IsLocalSyncEnabled());
 }
 

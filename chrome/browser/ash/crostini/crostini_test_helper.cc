@@ -31,7 +31,7 @@ CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
     : profile_(profile) {
   scoped_feature_list_.InitAndEnableFeature(features::kCrostini);
 
-  chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
+  ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(true);
   scoped_user_manager_ = std::make_unique<user_manager::ScopedUserManager>(
       std::make_unique<ash::FakeChromeUserManager>());
   auto* fake_user_manager = static_cast<ash::FakeChromeUserManager*>(
@@ -49,7 +49,7 @@ CrostiniTestHelper::CrostiniTestHelper(TestingProfile* profile,
 }
 
 CrostiniTestHelper::~CrostiniTestHelper() {
-  chromeos::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
+  ash::ProfileHelper::SetAlwaysReturnPrimaryUserForTesting(false);
   DisableCrostini(profile_);
 }
 

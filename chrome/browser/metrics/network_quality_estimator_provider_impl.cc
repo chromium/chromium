@@ -41,7 +41,7 @@ void NetworkQualityEstimatorProviderImpl::PostReplyOnNetworkQualityChanged(
     return;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(tbansal): https://crbug.com/898304: Tasks posted at BEST_EFFORT
   // may take up to ~20 seconds to execute. Figure out a way to call
   // g_browser_process->network_quality_tracker earlier rather than waiting for

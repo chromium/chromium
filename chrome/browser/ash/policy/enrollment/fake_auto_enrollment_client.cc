@@ -40,7 +40,8 @@ FakeAutoEnrollmentClient::FactoryImpl::CreateForInitialEnrollment(
     const std::string& device_brand_code,
     int power_initial,
     int power_limit,
-    PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) {
+    PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
+    PsmRlweIdProvider* psm_rlwe_id_provider) {
   std::unique_ptr<FakeAutoEnrollmentClient> fake_client =
       std::make_unique<FakeAutoEnrollmentClient>(progress_callback);
   fake_client_created_callback_.Run(fake_client.get());

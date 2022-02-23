@@ -10,7 +10,6 @@
 #include <map>
 #include <set>
 
-#include "base/feature_list.h"
 #include "components/sessions/core/session_id.h"
 
 namespace sync_sessions {
@@ -27,10 +26,6 @@ namespace sync_sessions {
 // 1. Associated   : Sync node is used and associated with a tab.
 // 2. Free         : Sync node is unused.
 
-// TODO(crbug.com/882489): Remove feature toggle during code cleanup when a
-// satisfying solution is found for closed tabs.
-extern const base::Feature kTabNodePoolImmediateDeletion;
-
 class TabNodePool {
  public:
   TabNodePool();
@@ -39,13 +34,6 @@ class TabNodePool {
   TabNodePool& operator=(const TabNodePool&) = delete;
 
   ~TabNodePool();
-
-  // If free nodes > kFreeNodesHighWatermark, delete all free nodes until
-  // free nodes <= kFreeNodesLowWatermark.
-  static const size_t kFreeNodesLowWatermark;
-
-  // Maximum limit of FreeNodes allowed on the client.
-  static const size_t kFreeNodesHighWatermark;
 
   static const int kInvalidTabNodeID;
 

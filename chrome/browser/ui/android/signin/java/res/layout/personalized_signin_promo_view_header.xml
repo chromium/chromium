@@ -28,5 +28,5 @@
         android:scaleType="center"
         android:src="@drawable/btn_close"
         android:visibility="gone"
-        app:tint="?attr/default_icon_color" />
+        app:tint="@macro/default_icon_color" />
 </merge>

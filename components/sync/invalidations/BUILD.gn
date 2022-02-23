@@ -13,8 +13,6 @@ static_library("invalidations") {
     "interested_data_types_manager.cc",
     "interested_data_types_manager.h",
     "invalidations_listener.h",
-    "switches.cc",
-    "switches.h",
     "sync_invalidations_service.h",
     "sync_invalidations_service_impl.cc",
     "sync_invalidations_service_impl.h",

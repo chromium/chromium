@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 #include <utility>
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 
 #include "base/bind.h"
@@ -98,6 +99,8 @@ class MockVideoCaptureControllerEventHandler
   MOCK_METHOD2(DoBufferReady,
                void(ControllerIDAndSize buffer,
                     std::vector<ControllerIDAndSize> scaled_buffers));
+  MOCK_METHOD1(OnFrameWithEmptyRegionCapture,
+               void(const VideoCaptureControllerID&));
   MOCK_METHOD1(DoEnded, void(const VideoCaptureControllerID&));
   MOCK_METHOD2(DoError,
                void(const VideoCaptureControllerID&, media::VideoCaptureError));
@@ -151,7 +154,7 @@ class MockVideoCaptureControllerEventHandler
                                   base::Unretained(controller_), id, this));
   }
 
-  VideoCaptureController* controller_;
+  raw_ptr<VideoCaptureController> controller_;
   media::VideoPixelFormat expected_pixel_format_ = media::PIXEL_FORMAT_I420;
   gfx::ColorSpace expected_color_space_ = gfx::ColorSpace::CreateREC709();
   media::VideoCaptureFeedback feedback_;
@@ -246,7 +249,7 @@ class VideoCaptureControllerTest
   NiceMock<MockEmitLogMessageCb> emit_log_message_mock_;
   scoped_refptr<VideoCaptureController> controller_;
   std::unique_ptr<media::VideoCaptureDevice::Client> device_client_;
-  MockLaunchedVideoCaptureDevice* mock_launched_device_;
+  raw_ptr<MockLaunchedVideoCaptureDevice> mock_launched_device_;
   const float arbitrary_frame_rate_ = 10.0f;
   const base::TimeTicks arbitrary_reference_time_ = base::TimeTicks();
   const base::TimeDelta arbitrary_timestamp_ = base::TimeDelta();
@@ -624,7 +627,7 @@ TEST_P(VideoCaptureControllerTest, NormalCaptureMultipleClients) {
 // VideoCaptureControllerTest.CaptureWithScaledFrames should run on those
 // platforms as well.
 // TODO(https://crbug.com/1174481): Update test to work on other platforms.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_P(VideoCaptureControllerTest, CaptureWithScaledFrames) {
   const gfx::Size kFrameSize(444, 200);
@@ -677,7 +680,7 @@ TEST_P(VideoCaptureControllerTest, CaptureWithScaledFrames) {
   }
   gfx::GpuMemoryBufferHandle frame_handle;
   frame_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  frame_handle.id.id = -1;
+  frame_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   frame_handle.io_surface.reset(
       gfx::CreateIOSurface(kFrameSize, gfx::BufferFormat::BGRA_8888));
   media::CapturedExternalVideoBuffer external_buffer(
@@ -685,7 +688,7 @@ TEST_P(VideoCaptureControllerTest, CaptureWithScaledFrames) {
 
   gfx::GpuMemoryBufferHandle scaled_frame_handle;
   scaled_frame_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  scaled_frame_handle.id.id = -1;
+  scaled_frame_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   scaled_frame_handle.io_surface.reset(
       gfx::CreateIOSurface(kScaledFrameSize, gfx::BufferFormat::BGRA_8888));
   std::vector<media::CapturedExternalVideoBuffer> scaled_external_buffers;

@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">Harjoittelualue: avattavat listat</translation>
 <translation id="1195238899008218998">Jälkipuhe</translation>
 <translation id="1197088940767939838">Oranssi</translation>
+<translation id="1198865190323699001">Kosketuseleet</translation>
 <translation id="1201402288615127009">Seuraava</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">Ei seuraavia tason 4 otsikoita</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{oikea hakasulje}other{# oikeaa hakasuljetta}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{kysymysmerkki}other{# kysymysmerkkiä}}</translation>
+<translation id="3505359110822747654">Sulje ChromeVox-valikot</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{poisjääntimerkki}other{# poisjääntimerkkiä}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{valkoinen luettelomerkki}other{# valkoista luettelomerkkiä}}</translation>
 <translation id="352577523970648069">Muokattava tekstikenttä</translation>
 <translation id="3538907380453898475">kuvluett</translation>
 <translation id="3549141990712742152">leikkaa <ph name="TEXT" />.</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">Pikaopastus suoritettu!</translation>
 <translation id="5534303576632885660">header</translation>
 <translation id="5539820223028224601">Gainsboro</translation>
+<translation id="554893713779400387">Laita sanelu päälle tai pois päältä</translation>
 <translation id="5549179427201066174">Ota äänipalaute (earcon-äänimerkit) käyttöön tai poista se käytöstä</translation>
 <translation id="556042886152191864">Painike</translation>
 <translation id="5561345396546889625">Seuraava luettelo</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">Seuraava valintaruutu</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, valintanappia ei valittu</translation>
 <translation id="5601172225407283979">Suorita oletustoiminto</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{neliöluettelomerkki}other{# neliöluettelomerkkiä}}</translation>
 <translation id="5608798115546226984">Ennakoiva tekstin syöttö upotettuna</translation>
 <translation id="5616029807486814372">Seuraava harjoitus</translation>
 <translation id="561939826962581046">time</translation>
@@ -728,7 +733,7 @@
 <translation id="5937336320314038555">{COUNT,plural, =1{yhtäläisyys}other{# yhtäläisyysmerkkiä}}</translation>
 <translation id="5948123859135882163">Vaihda matemaattisten lausekkeiden tulkintatapaa rakenteellisen ja semanttisen välillä</translation>
 <translation id="5955304353782037793">sov.</translation>
-<translation id="5956928062748260866">Dialogi</translation>
+<translation id="5956928062748260866">Valintaikkuna</translation>
 <translation id="5963413905009737549">Osio</translation>
 <translation id="5968607524793740041">Näytä kontekstivalikko</translation>
 <translation id="597121107011153418">{COUNT,plural, =1{jossa # kohde}other{jossa # kohdetta}}</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">Avattavat listat</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> loppuu</translation>
 <translation id="867187640362843212">Otsikko 5</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}other{sisällytetty taso #}}</translation>
 <translation id="8693391540059827073">Suosikkivuodenaikani</translation>
 <translation id="8696284982970258155">Hunaja</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{pystyviiva}other{# pystyviivaa}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">Tummanpunainen</translation>
 <translation id="923331726185079994">ChromeVox päivitetty</translation>
 <translation id="93384979447910801">Tumma merenvihreä</translation>
+<translation id="937605981140327129">TalkBack ei ole asennettuna. Asenna Android AccessibilitySuite Play Kaupasta ja yritä uudelleen.</translation>
 <translation id="948171205378458592">Vähennä puhenopeutta</translation>
 <translation id="957570623732056069">Siirry harjoituksessa kohteesta toiseen pyyhkäisemällä sormella vasemmalle tai oikealle</translation>
 <translation id="958854023026327378">Pyyhkäise alas yhdellä sormella</translation>

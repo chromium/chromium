@@ -99,9 +99,9 @@ public class ItemChooserDialogTest implements ItemChooserDialog.ItemSelectedCall
     }
 
     private Drawable getNewTestDrawable() {
-        Drawable drawable =
-                VectorDrawableCompat.create(sActivityTestRule.getActivity().getResources(),
-                        R.drawable.ic_bluetooth_connected, null);
+        final Activity activity = sActivityTestRule.getActivity();
+        Drawable drawable = VectorDrawableCompat.create(
+                activity.getResources(), R.drawable.ic_bluetooth_connected, activity.getTheme());
         // Calling mutate() on a Drawable should typically create a new ConstantState
         // for that Drawable. Ensure the new drawable doesn't share a state with other
         // drwables.

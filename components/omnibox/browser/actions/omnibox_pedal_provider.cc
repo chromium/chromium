@@ -220,12 +220,9 @@ void OmniboxPedalProvider::TokenizeAndExpandDictionary(
           out_tokens.Clear();
           break;
         }
-        const auto token = token_sequence_string.substr(left, right - left);
-        // TODO(orinj): Consider checking an IsTokenValid(token) function
-        // before adding token to dictionary, as we don't want to include
-        // capitals, punctuation, etc. Alternatively, we could modify
-        // tokens (lowercase, remove unexpected characters, etc.) but
-        // processing should be limited since this could affect startup.
+        const std::u16string raw_token =
+            token_sequence_string.substr(left, right - left);
+        const std::u16string token = base::i18n::FoldCase(raw_token);
         const auto iter = dictionary_.find(token);
         if (iter == dictionary_.end()) {
           // Token not in dictionary; expand dictionary.
@@ -296,12 +293,14 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     tokenize_characters_ = u" -";
   }
 
-  const auto& dictionary = concept_data->FindKey("dictionary")->GetList();
+  const auto& dictionary =
+      concept_data->FindKey("dictionary")->GetListDeprecated();
   dictionary_.reserve(dictionary.size());
   int token_id = 0;
   for (const auto& token_value : dictionary) {
     std::u16string token;
-    token_value.GetAsString(&token);
+    if (token_value.is_string())
+      token = base::UTF8ToUTF16(token_value.GetString());
     dictionary_.insert({token, token_id});
     ++token_id;
   }
@@ -319,6 +318,7 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
       ignore_group_.AddSynonym(
           OmniboxPedal::TokenSequence(std::vector<int>({dictionary_[u" "]})));
     }
+    ignore_group_.SortSynonyms();
   } else {
     const base::Value* ignore_group_value =
         concept_data->FindKey("ignore_group");
@@ -326,7 +326,8 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     ignore_group_ = LoadSynonymGroupValue(*ignore_group_value);
   }
 
-  for (const auto& pedal_value : concept_data->FindKey("pedals")->GetList()) {
+  for (const auto& pedal_value :
+       concept_data->FindKey("pedals")->GetListDeprecated()) {
     DCHECK(pedal_value.is_dict());
     const int id = pedal_value.FindIntKey("id").value();
     if (!locale_is_english) {
@@ -369,25 +370,30 @@ void OmniboxPedalProvider::LoadPedalConcepts() {
     pedal->AddVerbatimSequence(std::move(verbatim_sequence));
 
     std::vector<OmniboxPedal::SynonymGroupSpec> specs =
-        pedal->SpecifySynonymGroups();
+        pedal->SpecifySynonymGroups(locale_is_english);
     // `specs` will be empty for any pedals not yet processed by l10n because
     // the appropriate string names won't be defined. In such cases, we fall
     // back to loading from JSON to robustly handle partial presence of data.
     if (specs.empty() ||
         !OmniboxFieldTrial::IsPedalsTranslationConsoleEnabled()) {
-      for (const auto& group_value : pedal_value.FindKey("groups")->GetList()) {
+      for (const auto& group_value :
+           pedal_value.FindKey("groups")->GetListDeprecated()) {
         // Note, group JSON values are preprocessed by the data generation tool.
         pedal->AddSynonymGroup(LoadSynonymGroupValue(group_value));
       }
     } else {
-      for (const auto& spec : pedal->SpecifySynonymGroups()) {
+      for (const auto& spec : specs) {
         // Note, group strings are not preprocessed; they are the raw outputs
         // from translators in the localization pipeline, so we need to remove
-        // ignore group sequences and validate remaining data.
+        // ignore group sequences and validate remaining data. The groups
+        // are sorted *after* erasing the ignore group to ensure no synonym
+        // token sequences are made shorter than sequences later in the order,
+        // which would break an invariant expected by the matching algorithm.
         OmniboxPedal::SynonymGroup group =
             LoadSynonymGroupString(spec.required, spec.match_once,
                                    l10n_util::GetStringUTF16(spec.message_id));
         group.EraseIgnoreGroup(ignore_group_);
+        group.SortSynonyms();
         if (group.IsValid()) {
           pedal->AddSynonymGroup(std::move(group));
         }
@@ -401,19 +407,17 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupValue(
   DCHECK(group_value.is_dict());
   const bool required = group_value.FindKey("required")->GetBool();
   const bool single = group_value.FindKey("single")->GetBool();
-  const auto& synonyms = group_value.FindKey("synonyms")->GetList();
+  const auto& synonyms = group_value.FindKey("synonyms")->GetListDeprecated();
   OmniboxPedal::SynonymGroup synonym_group(required, single, synonyms.size());
   for (const auto& synonyms_value : synonyms) {
     DCHECK(synonyms_value.is_list());
-    const auto& synonyms_value_list = synonyms_value.GetList();
+    const auto& synonyms_value_list = synonyms_value.GetListDeprecated();
     OmniboxPedal::TokenSequence synonym_all_tokens(synonyms_value_list.size());
     for (const auto& token_index_value : synonyms_value_list) {
       synonym_all_tokens.Add(token_index_value.GetInt());
     }
     synonym_group.AddSynonym(std::move(synonym_all_tokens));
   }
-  // Note: Here would be the place to call `SortSynonyms`, but it isn't
-  // needed when loading from a Value because such values are preprocessed.
   return synonym_group;
 }
 
@@ -423,13 +427,13 @@ OmniboxPedal::SynonymGroup OmniboxPedalProvider::LoadSynonymGroupString(
     std::u16string synonyms_csv) {
   base::RemoveChars(synonyms_csv, kRemoveChars, &synonyms_csv);
   OmniboxPedal::SynonymGroup group(required, match_once, 0);
-  // Note, 'ar' language uses '،' instead of ',' to delimit synonyms.
-  StringTokenizer16 tokenizer(synonyms_csv, u",،");
+  // Note, 'ar' language uses '،' instead of ',' to delimit synonyms and
+  // in some cases the 'ja' language data uses '、' to delimit synonyms.
+  StringTokenizer16 tokenizer(synonyms_csv, u",،、");
   while (tokenizer.GetNext()) {
     OmniboxPedal::TokenSequence sequence(0);
     TokenizeAndExpandDictionary(sequence, tokenizer.token());
     group.AddSynonym(std::move(sequence));
   }
-  group.SortSynonyms();
   return group;
 }

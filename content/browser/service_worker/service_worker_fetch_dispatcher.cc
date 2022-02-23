@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/containers/queue.h"
 #include "base/feature_list.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
@@ -138,7 +139,8 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override {
     client_->OnReceiveEarlyHints(std::move(early_hints));
   }
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override {
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override {
     if (devtools_enabled_) {
       // Make a deep copy of URLResponseHead before posting it to a task.
       auto deep_copied_response = head.Clone();
@@ -151,7 +153,7 @@ class DelegatingURLLoaderClient final : public network::mojom::URLLoaderClient {
           base::BindOnce(&NotifyNavigationPreloadResponseReceived, url_,
                          std::move(deep_copied_response)));
     }
-    client_->OnReceiveResponse(std::move(head));
+    client_->OnReceiveResponse(std::move(head), std::move(body));
   }
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override {
@@ -273,20 +275,20 @@ const net::NetworkTrafficAnnotationTag kNavigationPreloadTrafficAnnotation =
         "be done by disabling cookie and site data under Settings, Content "
         "Settings, Cookies."
       chrome_policy {
-        URLBlacklist {
-          URLBlacklist: { entries: '*' }
+        URLBlocklist {
+          URLBlocklist: { entries: '*' }
         }
       }
       chrome_policy {
-        URLWhitelist {
-          URLWhitelist { }
+        URLAllowlist {
+          URLAllowlist { }
         }
       }
     }
     comments:
       "Chrome would be unable to use service workers if this feature were "
       "disabled, which could result in a degraded experience for websites that "
-      "register a service worker. Using either URLBlacklist or URLWhitelist "
+      "register a service worker. Using either URLBlocklist or URLAllowlist "
       "policies (or a combination of both) limits the scope of these requests."
 )");
 
@@ -435,7 +437,7 @@ class ServiceWorkerFetchDispatcher::ResponseCallback
   mojo::Receiver<blink::mojom::ServiceWorkerFetchResponseCallback> receiver_;
   base::WeakPtr<ServiceWorkerFetchDispatcher> fetch_dispatcher_;
   // Owns |this| via pending_requests_.
-  ServiceWorkerVersion* version_;
+  raw_ptr<ServiceWorkerVersion> version_;
   // Must be set to a non-nullopt value before the corresponding mojo
   // handle is passed to the other end (i.e. before any of OnResponse*
   // is called).

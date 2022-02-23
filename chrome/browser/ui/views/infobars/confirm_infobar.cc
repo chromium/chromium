@@ -23,7 +23,7 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
   auto* delegate_ptr = GetDelegate();
   label_ = CreateLabel(delegate_ptr->GetMessageText());
   label_->SetElideBehavior(delegate_ptr->GetMessageElideBehavior());
-  AddChildView(label_);
+  AddChildView(label_.get());
 
   const auto create_button = [this](ConfirmInfoBarDelegate::InfoBarButton type,
                                     void (ConfirmInfoBar::*click_function)()) {
@@ -48,20 +48,32 @@ ConfirmInfoBar::ConfirmInfoBar(std::unique_ptr<ConfirmInfoBarDelegate> delegate)
           ok_button_,
           base::BindOnce(&ConfirmInfoBar::Layout, base::Unretained(this)));
     }
+    ok_button_->SetImageModel(
+        views::Button::STATE_NORMAL,
+        delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_OK));
+    ok_button_->SetEnabled(
+        delegate_ptr->GetButtonEnabled(ConfirmInfoBarDelegate::BUTTON_OK));
+    ok_button_->SetTooltipText(
+        delegate_ptr->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_OK));
   }
 
   if (buttons & ConfirmInfoBarDelegate::BUTTON_CANCEL) {
     cancel_button_ = create_button(ConfirmInfoBarDelegate::BUTTON_CANCEL,
                                    &ConfirmInfoBar::CancelButtonPressed);
-    if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL)
+    if (buttons == ConfirmInfoBarDelegate::BUTTON_CANCEL) {
       cancel_button_->SetProminent(true);
+    }
     cancel_button_->SetImageModel(
         views::Button::STATE_NORMAL,
         delegate_ptr->GetButtonImage(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+    cancel_button_->SetEnabled(
+        delegate_ptr->GetButtonEnabled(ConfirmInfoBarDelegate::BUTTON_CANCEL));
+    cancel_button_->SetTooltipText(
+        delegate_ptr->GetButtonTooltip(ConfirmInfoBarDelegate::BUTTON_CANCEL));
   }
 
   link_ = CreateLink(delegate_ptr->GetLinkText());
-  AddChildView(link_);
+  AddChildView(link_.get());
 }
 
 ConfirmInfoBar::~ConfirmInfoBar() {

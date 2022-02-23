@@ -35,7 +35,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -255,10 +255,10 @@ bool IsCreditCardFidoAuthenticationEnabled() {
   if (base::FeatureList::IsEnabled(features::kAutofillCreditCardAuthentication))
     return true;
 
-#if defined(OS_WIN) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_ANDROID)
   // Better Auth project is fully launched on Windows and Clank.
   return true;
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // Mac OS X 10.12 and earlier has a OS-level bug that causes crashes,
   // therefore only enable for 10.13+.
   return base::mac::IsAtLeastOS10_13();

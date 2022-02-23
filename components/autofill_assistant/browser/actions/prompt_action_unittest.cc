@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
@@ -47,7 +48,7 @@ class PromptActionTest : public testing::Test {
           std::move(callback).Run(ClientStatus(ELEMENT_RESOLUTION_FAILED),
                                   std::make_unique<ElementFinder::Result>());
         }));
-    EXPECT_CALL(mock_action_delegate_, WaitForDom(_, _, _, _, _))
+    EXPECT_CALL(mock_action_delegate_, WaitForDom)
         .WillRepeatedly(Invoke(this, &PromptActionTest::FakeWaitForDom));
     ON_CALL(mock_action_delegate_, Prompt(_, _, _, _, _))
         .WillByDefault(
@@ -67,6 +68,7 @@ class PromptActionTest : public testing::Test {
   // until it gets a successful callback, then calls done_waiting_callback.
   void FakeWaitForDom(
       base::TimeDelta max_wait_time,
+      bool allow_observer_mode,
       bool allow_interrupt,
       WaitForDomObserver* observer,
       base::RepeatingCallback<
@@ -138,7 +140,7 @@ class PromptActionTest : public testing::Test {
   base::OnceCallback<void(const ClientStatus&, base::TimeDelta)>
       fake_wait_for_dom_done_;
   ActionProto proto_;
-  PromptProto* prompt_proto_;
+  raw_ptr<PromptProto> prompt_proto_;
   std::unique_ptr<std::vector<UserAction>> user_actions_;
   std::unique_ptr<BatchElementChecker> checker_;
   bool has_check_elements_result_ = false;
@@ -162,6 +164,7 @@ TEST_F(PromptActionTest, SelectButtons) {
   chip->set_text("Ok");
   chip->set_type(HIGHLIGHTED_ACTION);
   ok_proto->set_server_payload("ok");
+  ok_proto->set_tag("oktag");
 
   auto* cancel_proto = prompt_proto_->add_choices();
   cancel_proto->mutable_chip()->set_text("Cancel");
@@ -186,9 +189,11 @@ TEST_F(PromptActionTest, SelectButtons) {
           Property(&ProcessedActionProto::prompt_choice,
                    Property(&PromptProto::Result::navigation_ended, false)),
           Property(&ProcessedActionProto::prompt_choice,
-                   Property(&PromptProto::Result::server_payload, "ok"))))));
+                   Property(&PromptProto::Result::server_payload, "ok")),
+          Property(&ProcessedActionProto::prompt_choice,
+                   Property(&PromptProto::Result::choice_tag, "oktag"))))));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
+  (*user_actions_)[0].RunCallback();
 }
 
 TEST_F(PromptActionTest, ShowOnlyIfElementExists) {
@@ -253,7 +258,7 @@ TEST_F(PromptActionTest, TimingStatsUserAction) {
   ProcessedActionProto capture;
   EXPECT_CALL(callback_, Run(_)).WillOnce(SaveArgPointee<0>(&capture));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
+  (*user_actions_)[0].RunCallback();
   EXPECT_EQ(capture.timing_stats().active_time_ms(), 700);
   EXPECT_EQ(capture.timing_stats().wait_time_ms(), 2500);
 }
@@ -384,7 +389,7 @@ TEST_F(PromptActionTest, Terminate) {
   // Chips pointing to a deleted action do nothing.
   ASSERT_THAT(user_actions_, Pointee(SizeIs(1)));
   EXPECT_TRUE((*user_actions_)[0].HasCallback());
-  (*user_actions_)[0].Call(std::make_unique<TriggerContext>());
+  (*user_actions_)[0].RunCallback();
 }
 
 TEST_F(PromptActionTest, NoMessageSet) {

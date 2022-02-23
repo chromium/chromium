@@ -13,6 +13,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "net/base/completion_once_callback.h"
@@ -55,10 +56,10 @@ class ServiceWorkerDiskCacheEntry {
 
  private:
   // The disk_cache::Entry is owned by this entry and closed on destruction.
-  disk_cache::Entry* disk_cache_entry_;
+  raw_ptr<disk_cache::Entry> disk_cache_entry_;
 
   // The cache that this entry belongs to.
-  ServiceWorkerDiskCache* const cache_;
+  const raw_ptr<ServiceWorkerDiskCache> cache_;
 };
 
 // net::DiskCache wrapper for the cache used by service worker resources.

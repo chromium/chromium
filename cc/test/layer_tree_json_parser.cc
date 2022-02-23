@@ -34,7 +34,8 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   const base::Value* bounds_list_value = val.FindListKey("Bounds");
   if (!bounds_list_value)
     return nullptr;
-  base::Value::ConstListView bounds_list = bounds_list_value->GetList();
+  base::Value::ConstListView bounds_list =
+      bounds_list_value->GetListDeprecated();
   if (bounds_list.size() < 2)
     return nullptr;
 
@@ -62,7 +63,8 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     const base::Value* aperture_list_value = val.FindListKey("ImageAperture");
     if (!aperture_list_value)
       return nullptr;
-    base::Value::ConstListView aperture_list = aperture_list_value->GetList();
+    base::Value::ConstListView aperture_list =
+        aperture_list_value->GetListDeprecated();
     if (aperture_list.size() < 4)
       return nullptr;
 
@@ -78,7 +80,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     if (!image_bounds_list_value)
       return nullptr;
     base::Value::ConstListView image_bounds_list =
-        image_bounds_list_value->GetList();
+        image_bounds_list_value->GetListDeprecated();
     if (image_bounds_list.size() < 2)
       return nullptr;
 
@@ -90,7 +92,8 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
     const base::Value* border_list_value = val.FindListKey("Border");
     if (!border_list_value)
       return nullptr;
-    base::Value::ConstListView border_list = border_list_value->GetList();
+    base::Value::ConstListView border_list =
+        border_list_value->GetListDeprecated();
     if (border_list.size() < 4)
       return nullptr;
 
@@ -143,7 +146,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
 
   if (touch_region_list_value) {
     base::Value::ConstListView touch_region_list =
-        touch_region_list_value->GetList();
+        touch_region_list_value->GetListDeprecated();
 
     TouchActionRegion touch_action_region;
     for (size_t i = 0; i + 3 < touch_region_list.size(); i += 4) {
@@ -166,7 +169,8 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   const base::Value* transform_list_value = val.FindListKey("Transform");
   if (!transform_list_value)
     return nullptr;
-  base::Value::ConstListView transform_list = transform_list_value->GetList();
+  base::Value::ConstListView transform_list =
+      transform_list_value->GetListDeprecated();
   if (transform_list.size() < 16)
     return nullptr;
 
@@ -189,7 +193,7 @@ scoped_refptr<Layer> ParseTreeFromValue(const base::Value& val,
   const base::Value* child_list_value = val.FindListKey("Children");
   if (!child_list_value)
     return nullptr;
-  for (const auto& value : child_list_value->GetList()) {
+  for (const auto& value : child_list_value->GetListDeprecated()) {
     new_layer->AddChild(ParseTreeFromValue(value, content_client));
   }
 

@@ -10,26 +10,24 @@
 #include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_testing.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_drawing_segment.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_feature_query.h"
-#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_feature_query_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_hints.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_hints_query_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_input_type.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_model_constraint.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_point.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_prediction.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognition_type.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_recognizer_query_result.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_segment.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_handwriting_stroke.h"
+#include "third_party/blink/renderer/modules/handwriting/handwriting_stroke.h"
 #include "third_party/blink/renderer/modules/handwriting/handwriting_type_converters.h"
 
 namespace blink {
 
 using handwriting::mojom::blink::HandwritingDrawingSegmentPtr;
-using handwriting::mojom::blink::HandwritingFeatureQueryPtr;
-using handwriting::mojom::blink::HandwritingFeatureQueryResultPtr;
-using handwriting::mojom::blink::HandwritingFeatureStatus;
 using handwriting::mojom::blink::HandwritingHintsPtr;
+using handwriting::mojom::blink::HandwritingModelConstraintPtr;
 using handwriting::mojom::blink::HandwritingPointPtr;
 using handwriting::mojom::blink::HandwritingPredictionPtr;
 using handwriting::mojom::blink::HandwritingSegmentPtr;
@@ -61,6 +59,34 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingPointToMojoWithoutT) {
   EXPECT_NEAR(mojo_point->location.x(), 3.1, 1e-5);
   EXPECT_NEAR(mojo_point->location.y(), 4.3, 1e-5);
   ASSERT_FALSE(mojo_point->t.has_value());
+}
+
+TEST(HandwritingTypeConvertersTest, IdlHandwritingModelConstraintToMojo) {
+  auto* idl_constraint = blink::HandwritingModelConstraint::Create();
+  idl_constraint->setLanguages({"en", "zh"});
+
+  auto mojo_constraint =
+      mojo::ConvertTo<HandwritingModelConstraintPtr>(idl_constraint);
+  EXPECT_FALSE(mojo_constraint.is_null());
+  EXPECT_EQ(mojo_constraint->languages.size(), 2u);
+  EXPECT_EQ(mojo_constraint->languages[0], "en");
+  EXPECT_EQ(mojo_constraint->languages[1], "zh");
+}
+
+TEST(HandwritingTypeConvertersTest, IdlEmptyHandwritingModelConstraintToMojo) {
+  auto* idl_constraint = blink::HandwritingModelConstraint::Create();
+
+  auto mojo_constraint =
+      mojo::ConvertTo<HandwritingModelConstraintPtr>(idl_constraint);
+  EXPECT_FALSE(mojo_constraint.is_null());
+  EXPECT_EQ(mojo_constraint->languages.size(), 0u);
+}
+
+TEST(HandwritingTypeConvertersTest, IdlNullHandwritingModelConstraintToMojo) {
+  HandwritingModelConstraint* idl_constraint = nullptr;
+  auto mojo_constraint =
+      mojo::ConvertTo<HandwritingModelConstraintPtr>(idl_constraint);
+  EXPECT_TRUE(mojo_constraint.is_null());
 }
 
 TEST(HandwritingTypeConvertersTest, IdlHandwritingStrokeToMojo) {
@@ -116,39 +142,6 @@ TEST(HandwritingTypeConvertersTest, IdlHandwritingHintsToDefaultValue) {
   EXPECT_EQ(mojo_hints->alternatives, 3u);
 }
 
-TEST(HandwritingTypeConvertersTest, IdlHandwritingFeatureQueryToMojo) {
-  V8TestingScope v8_testing_scope;
-  auto* idl_query = blink::HandwritingFeatureQuery::Create();
-  idl_query->setLanguages({"en", "fr"});
-  idl_query->setAlternatives(
-      blink::ScriptValue::From(v8_testing_scope.GetScriptState(), 10));
-  // Intentionally does not set `segmentationResult`.
-
-  auto mojo_query = mojo::ConvertTo<HandwritingFeatureQueryPtr>(idl_query);
-  ASSERT_FALSE(mojo_query.is_null());
-  ASSERT_EQ(mojo_query->languages.size(), 2u);
-  EXPECT_EQ(mojo_query->languages[0], "en");
-  EXPECT_EQ(mojo_query->languages[1], "fr");
-  EXPECT_EQ(mojo_query->alternatives, true);
-  EXPECT_EQ(mojo_query->segmentation_result, false);
-}
-
-TEST(HandwritingTypeConvertersTest,
-     IdlEmptyLanguageHandwritingFeatureQueryToMojo) {
-  V8TestingScope v8_testing_scope;
-  auto* idl_query = blink::HandwritingFeatureQuery::Create();
-  // Intentionally does not set `languages`.
-  // Intentionally does not set `alternatives`.
-  idl_query->setSegmentationResult(
-      blink::ScriptValue::From(v8_testing_scope.GetScriptState(), "a"));
-
-  auto mojo_query = mojo::ConvertTo<HandwritingFeatureQueryPtr>(idl_query);
-  ASSERT_FALSE(mojo_query.is_null());
-  ASSERT_EQ(mojo_query->languages.size(), 0u);
-  EXPECT_EQ(mojo_query->alternatives, false);
-  EXPECT_EQ(mojo_query->segmentation_result, true);
-}
-
 TEST(HandwritingTypeConvertersTest, MojoHandwritingPointToIdl) {
   auto mojo_point = handwriting::mojom::blink::HandwritingPoint::New();
   mojo_point->location = gfx::PointF(0.3, 0.4);
@@ -193,24 +186,6 @@ TEST(HandwritingTypeConvertersTest, MojoHandwritingStrokeToIdl) {
   EXPECT_NEAR(idl_stroke->getPoints()[1]->x(), 3.1, 1e-5);
   EXPECT_NEAR(idl_stroke->getPoints()[1]->y(), 3.2, 1e-5);
   ASSERT_FALSE(idl_stroke->getPoints()[1]->hasT());
-}
-
-TEST(HandwritingTypeConvertersTest, MojoHandwritingFeatureQueryResultIdl) {
-  auto mojo_query_result =
-      handwriting::mojom::blink::HandwritingFeatureQueryResult::New();
-  mojo_query_result->languages = HandwritingFeatureStatus::kNotQueried;
-  mojo_query_result->alternatives = HandwritingFeatureStatus::kSupported;
-  mojo_query_result->segmentation_result =
-      HandwritingFeatureStatus::kNotSupported;
-
-  auto* idl_query_result =
-      mojo::ConvertTo<blink::HandwritingFeatureQueryResult*>(mojo_query_result);
-  ASSERT_NE(idl_query_result, nullptr);
-  EXPECT_FALSE(idl_query_result->hasLanguages());
-  ASSERT_TRUE(idl_query_result->hasAlternatives());
-  EXPECT_TRUE(idl_query_result->alternatives());
-  ASSERT_TRUE(idl_query_result->hasSegmentationResult());
-  EXPECT_FALSE(idl_query_result->segmentationResult());
 }
 
 TEST(HandwritingTypeConvertersTest, MojoHandwritingDrawingSegmentIdl) {

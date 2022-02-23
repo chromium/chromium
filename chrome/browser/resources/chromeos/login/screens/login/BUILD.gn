@@ -10,21 +10,14 @@ import("../../oobe_auto_imports.gni")
 group("polymer3_elements") {
   public_deps = [
     ":active_directory_password_change_module",
+    ":checking_downloading_update_module",
     ":encryption_migration_module",
     ":gaia_password_changed_module",
     ":lacros_data_migration_module",
     ":management_transition_module",
     ":offline_login_module",
+    ":update_required_card_module",
   ]
-}
-
-group("closure_compile") {
-  deps = [ ":closure_compile_local" ]
-}
-
-js_type_check("closure_compile_local") {
-  uses_legacy_modules = true
-  deps = [ ":update_required_card" ]
 }
 
 js_type_check("closure_compile_module") {
@@ -32,27 +25,18 @@ js_type_check("closure_compile_module") {
   closure_flags = default_closure_args
   deps = [
     ":active_directory_password_change.m",
+    ":checking_downloading_update.m",
     ":encryption_migration.m",
     ":gaia_password_changed.m",
     ":lacros_data_migration.m",
     ":management_transition.m",
     ":offline_login.m",
+    ":update_required_card.m",
   ]
 }
 
 ###############################
 # Closure compiler libraries below
-
-js_library("update_required_card") {
-  deps = [
-    "../../components/behaviors:login_screen_behavior",
-    "../../components/behaviors:multi_step_behavior",
-    "../../components/behaviors:oobe_dialog_host_behavior",
-    "../../components/behaviors:oobe_i18n_behavior",
-    "../../components/buttons:oobe_text_button",
-    "../../components/dialogs:oobe_modal_dialog",
-  ]
-}
 
 js_library("active_directory_password_change.m") {
   sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/active_directory_password_change.m.js" ]
@@ -133,6 +117,36 @@ js_library("offline_login.m") {
   extra_deps = [ ":offline_login_module" ]
 }
 
+js_library("update_required_card.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/update_required_card.m.js" ]
+  deps = [
+    ":checking_downloading_update.m",
+    "../../components/behaviors:login_screen_behavior.m",
+    "../../components/behaviors:multi_step_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_modal_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":update_required_card_module" ]
+  externs_list = [ "$externs_path/tts.js" ]
+}
+
+js_library("checking_downloading_update.m") {
+  sources = [ "$root_gen_dir/chrome/browser/resources/chromeos/login/screens/login/checking_downloading_update.m.js" ]
+  deps = [
+    "../../components/behaviors:oobe_dialog_host_behavior.m",
+    "../../components/behaviors:oobe_i18n_behavior.m",
+    "../../components/buttons:oobe_next_button.m",
+    "../../components/buttons:oobe_text_button.m",
+    "../../components/dialogs:oobe_adaptive_dialog.m",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+  extra_deps = [ ":checking_downloading_update_module" ]
+  externs_list = [ "$externs_path/tts.js" ]
+}
+
 polymer_modulizer("active_directory_password_change") {
   js_file = "active_directory_password_change.js"
   html_file = "active_directory_password_change.html"
@@ -177,6 +191,22 @@ polymer_modulizer("management_transition") {
 polymer_modulizer("offline_login") {
   js_file = "offline_login.js"
   html_file = "offline_login.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("update_required_card") {
+  js_file = "update_required_card.js"
+  html_file = "update_required_card.html"
+  html_type = "dom-module"
+  auto_imports = oobe_auto_imports
+  namespace_rewrites = oobe_namespace_rewrites
+}
+
+polymer_modulizer("checking_downloading_update") {
+  js_file = "checking_downloading_update.js"
+  html_file = "checking_downloading_update.html"
   html_type = "dom-module"
   auto_imports = oobe_auto_imports
   namespace_rewrites = oobe_namespace_rewrites

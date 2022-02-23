@@ -29,7 +29,6 @@
 
 #include <algorithm>
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dark_mode_settings_builder.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
 #include "third_party/blink/renderer/platform/graphics/paint/paint_shader.h"
@@ -38,6 +37,7 @@
 #include "third_party/skia/include/core/SkMatrix.h"
 #include "third_party/skia/include/core/SkShader.h"
 #include "third_party/skia/include/effects/SkGradientShader.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -171,7 +171,7 @@ sk_sp<PaintShader> Gradient::CreateShaderInternal(
   return shader;
 }
 
-void Gradient::ApplyToFlags(PaintFlags& flags,
+void Gradient::ApplyToFlags(cc::PaintFlags& flags,
                             const SkMatrix& local_matrix,
                             const ImageDrawOptions& draw_options) {
   if (is_dark_mode_enabled_ != draw_options.apply_dark_mode) {
@@ -203,8 +203,8 @@ namespace {
 
 class LinearGradient final : public Gradient {
  public:
-  LinearGradient(const FloatPoint& p0,
-                 const FloatPoint& p1,
+  LinearGradient(const gfx::PointF& p0,
+                 const gfx::PointF& p1,
                  GradientSpreadMethod spread_method,
                  ColorInterpolation interpolation,
                  DegenerateHandling degenerate_handling)
@@ -234,15 +234,15 @@ class LinearGradient final : public Gradient {
   }
 
  private:
-  const FloatPoint p0_;
-  const FloatPoint p1_;
+  const gfx::PointF p0_;
+  const gfx::PointF p1_;
 };
 
 class RadialGradient final : public Gradient {
  public:
-  RadialGradient(const FloatPoint& p0,
+  RadialGradient(const gfx::PointF& p0,
                  float r0,
-                 const FloatPoint& p1,
+                 const gfx::PointF& p1,
                  float r1,
                  float aspect_ratio,
                  GradientSpreadMethod spread_method,
@@ -293,8 +293,8 @@ class RadialGradient final : public Gradient {
   }
 
  private:
-  const FloatPoint p0_;
-  const FloatPoint p1_;
+  const gfx::PointF p0_;
+  const gfx::PointF p1_;
   const float r0_;
   const float r1_;
   const float aspect_ratio_;  // For elliptical gradient, width / height.
@@ -302,7 +302,7 @@ class RadialGradient final : public Gradient {
 
 class ConicGradient final : public Gradient {
  public:
-  ConicGradient(const FloatPoint& position,
+  ConicGradient(const gfx::PointF& position,
                 float rotation,
                 float start_angle,
                 float end_angle,
@@ -348,7 +348,7 @@ class ConicGradient final : public Gradient {
   }
 
  private:
-  const FloatPoint position_;  // center point
+  const gfx::PointF position_;  // center point
   const float rotation_;       // global rotation (deg)
   const float start_angle_;    // angle (deg) corresponding to color position 0
   const float end_angle_;      // angle (deg) corresponding to color position 1
@@ -357,8 +357,8 @@ class ConicGradient final : public Gradient {
 }  // namespace
 
 scoped_refptr<Gradient> Gradient::CreateLinear(
-    const FloatPoint& p0,
-    const FloatPoint& p1,
+    const gfx::PointF& p0,
+    const gfx::PointF& p1,
     GradientSpreadMethod spread_method,
     ColorInterpolation interpolation,
     DegenerateHandling degenerate_handling) {
@@ -367,9 +367,9 @@ scoped_refptr<Gradient> Gradient::CreateLinear(
 }
 
 scoped_refptr<Gradient> Gradient::CreateRadial(
-    const FloatPoint& p0,
+    const gfx::PointF& p0,
     float r0,
-    const FloatPoint& p1,
+    const gfx::PointF& p1,
     float r1,
     float aspect_ratio,
     GradientSpreadMethod spread_method,
@@ -381,7 +381,7 @@ scoped_refptr<Gradient> Gradient::CreateRadial(
 }
 
 scoped_refptr<Gradient> Gradient::CreateConic(
-    const FloatPoint& position,
+    const gfx::PointF& position,
     float rotation,
     float start_angle,
     float end_angle,

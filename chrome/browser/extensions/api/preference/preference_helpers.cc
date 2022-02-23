@@ -112,7 +112,7 @@ void DispatchEventToExtensions(Profile* profile,
         extension->permissions_data()->HasAPIPermission(permission) &&
         (!incognito || util::IsIncognitoEnabled(extension->id(), profile))) {
       // Inject level of control key-value.
-      base::Value::ListView args_list = args->GetList();
+      base::Value::ListView args_list = args->GetListDeprecated();
       DCHECK(!args_list.empty());
       DCHECK(args_list[0].is_dict());
 
@@ -149,9 +149,9 @@ void DispatchEventToExtensions(Profile* profile,
       }
 
       base::Value args_copy = args->Clone();
-      auto event = std::make_unique<Event>(histogram_value, event_name,
-                                           std::move(args_copy).TakeList(),
-                                           restrict_to_profile);
+      auto event = std::make_unique<Event>(
+          histogram_value, event_name,
+          std::move(args_copy).TakeListDeprecated(), restrict_to_profile);
       router->DispatchEventToExtension(extension->id(), std::move(event));
     }
   }

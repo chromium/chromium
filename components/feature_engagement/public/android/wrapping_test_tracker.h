@@ -11,6 +11,7 @@
 #include "base/android/jni_android.h"
 #include "base/callback.h"
 #include "components/feature_engagement/public/tracker.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace feature_engagement {
 // This class wraps a Tracker from Java and forwards to it all calls received.
@@ -37,6 +38,12 @@ class WrappingTestTracker : public Tracker {
   void DismissedWithSnooze(const base::Feature& feature,
                            absl::optional<SnoozeAction> snooze_action) override;
   std::unique_ptr<DisplayLockHandle> AcquireDisplayLock() override;
+  absl::optional<std::string> GetPendingPriorityNotification() override;
+  void SetPriorityNotification(const base::Feature& feature) override;
+  void RegisterPriorityNotificationHandler(const base::Feature& feature,
+                                           base::OnceClosure callback) override;
+  void UnregisterPriorityNotificationHandler(
+      const base::Feature& feature) override;
   bool IsInitialized() const override;
   void AddOnInitializedCallback(OnInitializedCallback callback) override;
 

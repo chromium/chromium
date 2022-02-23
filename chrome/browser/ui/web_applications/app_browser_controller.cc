@@ -244,10 +244,6 @@ const SystemWebAppDelegate* AppBrowserController::system_app() const {
 }
 
 std::u16string AppBrowserController::GetLaunchFlashText() const {
-  if (base::FeatureList::IsEnabled(
-          features::kDesktopPWAsFlashAppNameInsteadOfOrigin)) {
-    return GetAppShortName();
-  }
   return GetFormattedUrlOrigin();
 }
 
@@ -278,9 +274,6 @@ void AppBrowserController::DidStartNavigation(
     content::NavigationHandle* navigation_handle) {
   if (!initial_url().is_empty())
     return;
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
   if (!navigation_handle->IsInPrimaryMainFrame())
     return;
   if (navigation_handle->GetURL().is_empty())
@@ -290,7 +283,8 @@ void AppBrowserController::DidStartNavigation(
 
 void AppBrowserController::DidFinishNavigation(
     content::NavigationHandle* navigation_handle) {
-  if (!navigation_handle->IsInMainFrame())
+  if (!navigation_handle->IsInPrimaryMainFrame() ||
+      navigation_handle->IsSameDocument())
     return;
 
   // Reset the draggable regions so they are not cached on navigation.

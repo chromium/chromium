@@ -51,7 +51,7 @@ em::RemoteCommand GenerateScreenshotCommandProto(
   command_proto.set_age_of_command(age_of_command.InMilliseconds());
   std::string payload;
   base::DictionaryValue root_dict;
-  root_dict.SetString(kUploadUrlFieldName, upload_url);
+  root_dict.SetStringKey(kUploadUrlFieldName, upload_url);
   base::JSONWriter::Write(root_dict, &payload);
   command_proto.set_payload(payload);
   return command_proto;
@@ -90,8 +90,7 @@ MockUploadJob::MockUploadJob(const GURL& upload_url,
       delegate_(delegate),
       error_code_(std::move(error_code)) {}
 
-MockUploadJob::~MockUploadJob() {
-}
+MockUploadJob::~MockUploadJob() {}
 
 void MockUploadJob::AddDataSegment(
     const std::string& name,
@@ -144,7 +143,7 @@ class MockScreenshotDelegate : public DeviceCommandScreenshotJob::Delegate {
   bool IsScreenshotAllowed() override;
   void TakeSnapshot(gfx::NativeWindow window,
                     const gfx::Rect& source_rect,
-                    ui::GrabWindowSnapshotAsyncPNGCallback callback) override;
+                    OnScreenshotTakenCallback callback) override;
   std::unique_ptr<UploadJob> CreateUploadJob(const GURL&,
                                              UploadJob::Delegate*) override;
 
@@ -159,17 +158,15 @@ MockScreenshotDelegate::MockScreenshotDelegate(
     : upload_job_error_code_(std::move(upload_job_error_code)),
       screenshot_allowed_(screenshot_allowed) {}
 
-MockScreenshotDelegate::~MockScreenshotDelegate() {
-}
+MockScreenshotDelegate::~MockScreenshotDelegate() {}
 
 bool MockScreenshotDelegate::IsScreenshotAllowed() {
   return screenshot_allowed_;
 }
 
-void MockScreenshotDelegate::TakeSnapshot(
-    gfx::NativeWindow window,
-    const gfx::Rect& source_rect,
-    ui::GrabWindowSnapshotAsyncPNGCallback callback) {
+void MockScreenshotDelegate::TakeSnapshot(gfx::NativeWindow window,
+                                          const gfx::Rect& source_rect,
+                                          OnScreenshotTakenCallback callback) {
   const int width = source_rect.width();
   const int height = source_rect.height();
   scoped_refptr<base::RefCountedBytes> test_png =
@@ -219,8 +216,7 @@ class DeviceCommandScreenshotTest : public ChromeAshTestBase {
 };
 
 DeviceCommandScreenshotTest::DeviceCommandScreenshotTest()
-    : task_runner_(new base::TestMockTimeTaskRunner()) {
-}
+    : task_runner_(new base::TestMockTimeTaskRunner()) {}
 
 void DeviceCommandScreenshotTest::SetUp() {
   ChromeAshTestBase::SetUp();
@@ -236,7 +232,7 @@ void DeviceCommandScreenshotTest::InitializeScreenshotJob(
       base::TimeTicks::Now(),
       GenerateScreenshotCommandProto(
           unique_id, base::TimeTicks::Now() - issued_time, upload_url),
-      nullptr));
+      em::SignedData()));
   EXPECT_EQ(unique_id, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
 }

@@ -50,7 +50,8 @@ bool GbmPixmapWayland::InitializeBuffer(
 
   widget_ = widget;
 
-  if (!buffer_manager_->gbm_device())
+  auto* gbm_device = buffer_manager_->GetGbmDevice();
+  if (!gbm_device)
     return false;
 
   const uint32_t fourcc_format = GetFourCCFormatFromBufferFormat(format);
@@ -60,16 +61,15 @@ bool GbmPixmapWayland::InitializeBuffer(
   // Create buffer object without format modifiers unless they are explicitly
   // advertised by the Wayland compositor, via linux-dmabuf protocol.
   if (modifiers.empty()) {
-    gbm_bo_ = buffer_manager_->gbm_device()->CreateBuffer(fourcc_format, size,
-                                                          gbm_flags);
+    gbm_bo_ = gbm_device->CreateBuffer(fourcc_format, size, gbm_flags);
   } else {
     // When buffer |usage| implies on GBM_BO_USE_LINEAR, pass in
     // DRM_FORMAT_MOD_LINEAR, i.e: no tiling, when creating gbm buffers,
     // otherwise it fails to create BOs.
     if (gbm_flags & GBM_BO_USE_LINEAR)
       modifiers = {DRM_FORMAT_MOD_LINEAR};
-    gbm_bo_ = buffer_manager_->gbm_device()->CreateBufferWithModifiers(
-        fourcc_format, size, gbm_flags, modifiers);
+    gbm_bo_ = gbm_device->CreateBufferWithModifiers(fourcc_format, size,
+                                                    gbm_flags, modifiers);
   }
 
   if (!gbm_bo_) {
@@ -94,13 +94,14 @@ bool GbmPixmapWayland::InitializeBufferFromHandle(
     gfx::BufferFormat format,
     gfx::NativePixmapHandle handle) {
   TRACE_EVENT0("wayland", "GbmPixmapWayland::InitializeBufferFromHandle");
-  if (!buffer_manager_->gbm_device())
+  auto* gbm_device = buffer_manager_->GetGbmDevice();
+  if (!gbm_device)
     return false;
 
   widget_ = widget;
 
   // Create a buffer object from handle.
-  gbm_bo_ = buffer_manager_->gbm_device()->CreateBufferFromHandle(
+  gbm_bo_ = gbm_device->CreateBufferFromHandle(
       GetFourCCFormatFromBufferFormat(format), size, std::move(handle));
   if (!gbm_bo_) {
     LOG(ERROR) << "Cannot create bo with format= "

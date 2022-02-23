@@ -123,7 +123,7 @@ public class PasswordChangeFixtureTest implements PasswordStoreBridge.PasswordSt
         TestThreadUtils.runOnUiThreadBlocking(
                 ()
                         -> PasswordChangeLauncher.start(getWebContents().getTopLevelNativeWindow(),
-                                mParameters.getDomainUrl(), username,
+                                mParameters.getDomainUrl(), username, /*skipLogin=*/false,
                                 mParameters.getDebugBundleId(), mParameters.getDebugSocketId()));
     }
 

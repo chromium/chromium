@@ -11,9 +11,9 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "base/containers/flat_map.h"
 #include "chrome/browser/ash/arc/accessibility/accessibility_info_data_wrapper.h"
-#include "components/arc/mojom/accessibility_helper.mojom-forward.h"
 #include "extensions/browser/api/automation_internal/automation_event_router.h"
 #include "ui/accessibility/ax_action_handler.h"
 #include "ui/accessibility/ax_node.h"

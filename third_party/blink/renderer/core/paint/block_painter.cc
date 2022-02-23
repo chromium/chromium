@@ -56,26 +56,19 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     local_paint_info.phase = PaintPhase::kDescendantOutlinesOnly;
   } else if (ShouldPaintSelfBlockBackground(original_phase)) {
     local_paint_info.phase = PaintPhase::kSelfBlockBackgroundOnly;
-    // With CompositeAfterPaint we need to call PaintObject twice: once for the
-    // background painting that does not scroll, and a second time for the
-    // background painting that scrolls.
-    // Without CompositeAfterPaint, this happens as the main graphics layer
-    // paints the background, and then the scrolling contents graphics layer
-    // paints the background.
-    if (RuntimeEnabledFeatures::CompositeAfterPaintEnabled()) {
-      auto paint_location = layout_block_.GetBackgroundPaintLocation();
-      if (!(paint_location & kBackgroundPaintInBorderBoxSpace))
-        local_paint_info.SetSkipsBackground(true);
-      layout_block_.PaintObject(local_paint_info, paint_offset);
-      local_paint_info.SetSkipsBackground(false);
+    // We need to call PaintObject twice: one for painting background in the
+    // border box space, and the other for painting background in the scrolling
+    // contents space.
+    auto paint_location = layout_block_.GetBackgroundPaintLocation();
+    if (!(paint_location & kBackgroundPaintInBorderBoxSpace))
+      local_paint_info.SetSkipsBackground(true);
+    layout_block_.PaintObject(local_paint_info, paint_offset);
+    local_paint_info.SetSkipsBackground(false);
 
-      if (paint_location & kBackgroundPaintInContentsSpace) {
-        local_paint_info.SetIsPaintingBackgroundInContentsSpace(true);
-        layout_block_.PaintObject(local_paint_info, paint_offset);
-        local_paint_info.SetIsPaintingBackgroundInContentsSpace(false);
-      }
-    } else {
+    if (paint_location & kBackgroundPaintInContentsSpace) {
+      local_paint_info.SetIsPaintingBackgroundInContentsSpace(true);
       layout_block_.PaintObject(local_paint_info, paint_offset);
+      local_paint_info.SetIsPaintingBackgroundInContentsSpace(false);
     }
     if (ShouldPaintDescendantBlockBackgrounds(original_phase))
       local_paint_info.phase = PaintPhase::kDescendantBlockBackgroundsOnly;
@@ -85,9 +78,8 @@ void BlockPainter::Paint(const PaintInfo& paint_info) {
     layout_block_.PaintObject(local_paint_info, paint_offset);
   } else if (original_phase != PaintPhase::kSelfBlockBackgroundOnly &&
              original_phase != PaintPhase::kSelfOutlineOnly &&
-             // For now all scrollers with overlay overflow controls are
-             // self-painting layers, so we don't need to traverse descendants
-             // here.
+             // kOverlayOverflowControls is for the current object itself,
+             // so we don't need to traverse descendants here.
              original_phase != PaintPhase::kOverlayOverflowControls) {
     ScopedBoxContentsPaintState contents_paint_state(paint_state,
                                                      layout_block_);
@@ -348,17 +340,12 @@ PhysicalRect BlockPainter::OverflowRectForCullRectTesting() const {
     // which covers the continuations, as if we included <a>'s PDF URL rect into
     // layout_block_'s visual overflow.
     auto rects = layout_block_.OutlineRects(
-        PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
+        nullptr, PhysicalOffset(), NGOutlineType::kIncludeBlockVisualOverflow);
     overflow_rect = UnionRect(rects);
   }
   overflow_rect.Unite(layout_block_.PhysicalVisualOverflowRect());
 
-  bool include_layout_overflow =
-      layout_block_.ScrollsOverflow() &&
-      (layout_block_.UsesCompositedScrolling() ||
-       RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
-
-  if (include_layout_overflow) {
+  if (layout_block_.ScrollsOverflow()) {
     overflow_rect.Unite(layout_block_.PhysicalLayoutOverflowRect());
     overflow_rect.Move(
         -PhysicalOffset(layout_block_.PixelSnappedScrolledContentOffset()));

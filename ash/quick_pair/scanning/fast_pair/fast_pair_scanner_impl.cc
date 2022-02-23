@@ -4,9 +4,15 @@
 
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner_impl.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/quick_pair/common/constants.h"
+#include "ash/quick_pair/common/fast_pair/fast_pair_metrics.h"
 #include "ash/quick_pair/common/logging.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake.h"
+#include "ash/quick_pair/fast_pair_handshake/fast_pair_handshake_lookup.h"
+#include "base/bind.h"
 #include "base/containers/contains.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "base/time/time.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_filter.h"
@@ -14,9 +20,15 @@
 namespace {
 
 constexpr base::TimeDelta kFilterDeviceFoundTimeout = base::Seconds(1);
-constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(5);
+constexpr base::TimeDelta kFilterDeviceLostTimeout = base::Seconds(6);
 constexpr uint8_t kFilterPatternStartPosition = 0;
 const std::vector<uint8_t> kFastPairFilterPatternValue = {0x2c, 0xfe};
+constexpr base::TimeDelta kRssiSamplingPeriod = base::Milliseconds(500);
+
+}  // namespace
+
+namespace ash {
+namespace quick_pair {
 
 std::ostream& operator<<(
     std::ostream& out,
@@ -28,12 +40,30 @@ std::ostream& operator<<(
   }
   return out;
 }
-}  // namespace
 
-namespace ash {
-namespace quick_pair {
+// static
+FastPairScannerImpl::Factory* FastPairScannerImpl::Factory::g_test_factory_ =
+    nullptr;
 
-FastPairScannerImpl::FastPairScannerImpl() {
+// static
+scoped_refptr<FastPairScanner> FastPairScannerImpl::Factory::Create() {
+  if (g_test_factory_) {
+    return g_test_factory_->CreateInstance();
+  }
+
+  return base::MakeRefCounted<FastPairScannerImpl>();
+}
+
+// static
+void FastPairScannerImpl::Factory::SetFactoryForTesting(
+    Factory* g_test_factory) {
+  g_test_factory_ = g_test_factory;
+}
+
+FastPairScannerImpl::Factory::~Factory() = default;
+
+FastPairScannerImpl::FastPairScannerImpl()
+    : task_runner_(base::SequencedTaskRunnerHandle::Get()) {
   device::BluetoothAdapterFactory::Get()->GetAdapter(base::BindOnce(
       &FastPairScannerImpl::OnGetAdapter, weak_ptr_factory_.GetWeakPtr()));
 }
@@ -45,13 +75,22 @@ void FastPairScannerImpl::OnGetAdapter(
   adapter_ = adapter;
   adapter_observation_.Observe(adapter_.get());
 
+  task_runner_->PostTask(FROM_HERE,
+                         base::BindOnce(&FastPairScannerImpl::StartScanning,
+                                        weak_ptr_factory_.GetWeakPtr()));
+}
+
+void FastPairScannerImpl::StartScanning() {
   device::BluetoothLowEnergyScanFilter::Pattern pattern(
       kFilterPatternStartPosition,
       device::BluetoothLowEnergyScanFilter::AdvertisementDataType::kServiceData,
       kFastPairFilterPatternValue);
   auto filter = device::BluetoothLowEnergyScanFilter::Create(
       device::BluetoothLowEnergyScanFilter::Range::kNear,
-      kFilterDeviceFoundTimeout, kFilterDeviceLostTimeout, {pattern});
+      kFilterDeviceFoundTimeout, kFilterDeviceLostTimeout, {pattern},
+      kRssiSamplingPeriod);
+
+  RecordBluetoothLowEnergyScanFilterResult(/*success=*/filter != nullptr);
   if (!filter) {
     QP_LOG(ERROR) << "Bluetooth Low Energy Scan Session failed to start due to "
                      "failure to create filter.";
@@ -60,6 +99,26 @@ void FastPairScannerImpl::OnGetAdapter(
 
   background_scan_session_ = adapter_->StartLowEnergyScanSession(
       std::move(filter), weak_ptr_factory_.GetWeakPtr());
+
+  if (features::IsFastPairLowPowerEnabled()) {
+    task_runner_->PostDelayedTask(
+        FROM_HERE,
+        base::BindOnce(&FastPairScannerImpl::StopScanning,
+                       weak_ptr_factory_.GetWeakPtr()),
+        base::Seconds(features::kFastPairLowPowerActiveSeconds.Get()));
+  }
+}
+
+void FastPairScannerImpl::StopScanning() {
+  DCHECK(features::IsFastPairLowPowerEnabled());
+
+  background_scan_session_.reset();
+
+  task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&FastPairScannerImpl::StartScanning,
+                     weak_ptr_factory_.GetWeakPtr()),
+      base::Seconds(features::kFastPairLowPowerInactiveSeconds.Get()));
 }
 
 void FastPairScannerImpl::AddObserver(FastPairScanner::Observer* observer) {
@@ -74,6 +133,9 @@ void FastPairScannerImpl::OnSessionStarted(
     device::BluetoothLowEnergyScanSession* scan_session,
     absl::optional<device::BluetoothLowEnergyScanSession::ErrorCode>
         error_code) {
+  RecordBluetoothLowEnergyScannerStartSessionResult(
+      /*success=*/!error_code.has_value());
+
   if (error_code) {
     QP_LOG(ERROR) << "Bluetooth Low Energy Scan Session failed to start with "
                      "the following error: "
@@ -87,7 +149,6 @@ void FastPairScannerImpl::OnSessionInvalidated(
   // TODO(crbug.com/1227519) Handle Session Invalidation by adding exponential
   // retry to restart the scanner.
   background_scan_session_.reset();
-  device_address_advertisement_data_map_.clear();
 }
 
 void FastPairScannerImpl::OnDeviceFound(
@@ -95,8 +156,26 @@ void FastPairScannerImpl::OnDeviceFound(
     device::BluetoothDevice* device) {
   const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
+
   if (!service_data) {
     QP_LOG(WARNING) << "No Fast Pair service data found on device";
+    return;
+  }
+
+  if (base::Contains(device_address_advertisement_data_map_,
+                     device->GetAddress())) {
+    QP_LOG(INFO) << __func__
+                 << ": Ignoring found device because it was already found.";
+    return;
+  }
+
+  FastPairHandshake* handshake =
+      FastPairHandshakeLookup::GetInstance()->Get(device->GetAddress());
+
+  if (handshake) {
+    QP_LOG(INFO) << __func__
+                 << ": We have an active handshake for this device, which "
+                    "means we never 'lost' it. We ignore this event.";
     return;
   }
 
@@ -111,6 +190,9 @@ void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
   const std::vector<uint8_t>* service_data =
       device->GetServiceDataForUUID(kFastPairBluetoothUuid);
 
+  if (!service_data || service_data->empty())
+    return;
+
   // If the advertisement data we have received does not pertain to a device
   // we have seen already from the scanner, or if the advertisement data for
   // a device we have already seen is not new, then early return and do not
@@ -121,8 +203,33 @@ void FastPairScannerImpl::DeviceChanged(device::BluetoothAdapter* adapter,
     return;
   }
 
+  // TODO(b/219600346): Handle Subsequent pair service data changing more
+  // robustly. During Subsequent pair, the service data can change during
+  // handshake--we can differentiate this from other pairing scenarios by
+  // checking that the service data is the same size. Don't notify observers in
+  // this case.
+  if (!device_address_advertisement_data_map_[device_address].empty() &&
+      (device_address_advertisement_data_map_[device_address]
+           .rbegin()
+           ->size() == service_data->size())) {
+    device_address_advertisement_data_map_[device_address].insert(
+        *service_data);
+    return;
+  }
+
   device_address_advertisement_data_map_[device_address].insert(*service_data);
   NotifyDeviceFound(device);
+}
+
+void FastPairScannerImpl::DeviceRemoved(device::BluetoothAdapter* adapter,
+                                        device::BluetoothDevice* device) {
+  device_address_advertisement_data_map_.erase(device->GetAddress());
+}
+
+void FastPairScannerImpl::DevicePairedChanged(device::BluetoothAdapter* adapter,
+                                              device::BluetoothDevice* device,
+                                              bool new_paired_status) {
+  device_address_advertisement_data_map_.erase(device->GetAddress());
 }
 
 void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
@@ -133,6 +240,19 @@ void FastPairScannerImpl::NotifyDeviceFound(device::BluetoothDevice* device) {
 void FastPairScannerImpl::OnDeviceLost(
     device::BluetoothLowEnergyScanSession* scan_session,
     device::BluetoothDevice* device) {
+  FastPairHandshake* handshake =
+      FastPairHandshakeLookup::GetInstance()->Get(device->GetAddress());
+
+  // If we have a connected handshake, it means that the device was lost because
+  // it stopped advertising while the GATT connection is active.
+  // We ignore this event in that case, and expect to get another OnDeviceFound
+  // event.
+  if (handshake && handshake->IsConnected()) {
+    QP_LOG(WARNING) << __func__
+                    << ": Active handshake exists, ignoring lost event.";
+    return;
+  }
+
   device_address_advertisement_data_map_.erase(device->GetAddress());
   for (auto& observer : observers_)
     observer.OnDeviceLost(device);

@@ -42,21 +42,21 @@ The supported reductions are as follows:
 MEAN<a id="MEAN"></a>
 </td>
 <td>
-<a href="../text/Reduction.md"><code>text.Reduction</code></a>
+`<Reduction.MEAN: 2>`
 </td>
 </tr><tr>
 <td>
 STRING_JOIN<a id="STRING_JOIN"></a>
 </td>
 <td>
-<a href="../text/Reduction.md"><code>text.Reduction</code></a>
+`<Reduction.STRING_JOIN: 3>`
 </td>
 </tr><tr>
 <td>
 SUM<a id="SUM"></a>
 </td>
 <td>
-<a href="../text/Reduction.md"><code>text.Reduction</code></a>
+`<Reduction.SUM: 1>`
 </td>
 </tr>
 </table>

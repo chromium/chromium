@@ -21,18 +21,18 @@
 class PrefRegistrySimple;
 class PrefService;
 
-namespace enterprise_management {
-class PolicyData;
-}
-
-namespace chromeos {
-
-class InstallAttributes;
-
+namespace ash {
 namespace attestation {
 class AttestationFlow;
-}
+}  // namespace attestation
+}  // namespace ash
 
+namespace enterprise_management {
+class PolicyData;
+}  // namespace enterprise_management
+
+namespace chromeos {
+class InstallAttributes;
 }  // namespace chromeos
 
 namespace policy {
@@ -45,10 +45,11 @@ class BluetoothPolicyHandler;
 class DeviceActiveDirectoryPolicyManager;
 class DeviceCloudPolicyInitializer;
 class ActiveDirectoryDeviceStateUploader;
+class ActiveDirectoryMigrationManager;
 class DeviceDockMacAddressHandler;
 class DeviceLocalAccountPolicyService;
 class DeviceNamePolicyHandler;
-class DeviceNetworkConfigurationUpdater;
+class DeviceNetworkConfigurationUpdaterAsh;
 class DeviceWiFiAllowedHandler;
 struct EnrollmentConfig;
 class MinimumVersionPolicyHandler;
@@ -174,7 +175,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
     return minimum_version_policy_handler_.get();
   }
 
-  DeviceNetworkConfigurationUpdater* GetDeviceNetworkConfigurationUpdater()
+  DeviceNetworkConfigurationUpdaterAsh* GetDeviceNetworkConfigurationUpdater()
       const {
     return device_network_configuration_updater_.get();
   }
@@ -208,13 +209,13 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // attestation flow is needed for testing.
   // TODO(crbug.com/1235325): Remove AttestationFlow completely from the
   // connector and a fake one directly to |EnterpriseEnrollmentHelperImpl|.
-  chromeos::attestation::AttestationFlow* GetAttestationFlow() const {
+  ash::attestation::AttestationFlow* GetAttestationFlow() const {
     return attestation_flow_.get();
   }
 
   // Sets the attestation flow for testing.
   void SetAttestationFlowForTesting(
-      std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow);
+      std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow);
 
   // Returns device's market segment.
   MarketSegment GetEnterpriseMarketSegment() const;
@@ -278,6 +279,8 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
       nullptr;
   std::unique_ptr<ActiveDirectoryDeviceStateUploader>
       active_directory_device_state_uploader_;
+  std::unique_ptr<ActiveDirectoryMigrationManager>
+      active_directory_migration_manager_;
   PrefService* local_state_ = nullptr;
   std::unique_ptr<DeviceCloudPolicyInitializer>
       device_cloud_policy_initializer_;
@@ -316,11 +319,11 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // pointer to get to the ProxyPolicyProvider at SetUserPolicyDelegate().
   ProxyPolicyProvider* global_user_cloud_policy_provider_ = nullptr;
 
-  std::unique_ptr<DeviceNetworkConfigurationUpdater>
+  std::unique_ptr<DeviceNetworkConfigurationUpdaterAsh>
       device_network_configuration_updater_;
 
   // The ConfigurationPolicyProviders created in the constructor are initially
-  // added here, and then pushed to the super class in BuildPolicyProviders().
+  // added here, and then pushed to the super class in CreatePolicyProviders().
   std::vector<std::unique_ptr<ConfigurationPolicyProvider>> providers_for_init_;
 
   // Manages provisioning of certificates from
@@ -333,7 +336,7 @@ class BrowserPolicyConnectorAsh : public ChromeBrowserPolicyConnector,
   // needed for testing.
   // TODO(crbug.com/1235325): Remove AttestationFlow completely from the
   // connector and a fake one directly to |EnterpriseEnrollmentHelperImpl|.
-  std::unique_ptr<chromeos::attestation::AttestationFlow> attestation_flow_;
+  std::unique_ptr<ash::attestation::AttestationFlow> attestation_flow_;
 
   base::WeakPtrFactory<BrowserPolicyConnectorAsh> weak_ptr_factory_{this};
 };

@@ -84,6 +84,17 @@ apps::mojom::ConditionPtr MakeCondition(
   return condition;
 }
 
+void AddSingleValueCondition(apps::ConditionType condition_type,
+                             const std::string& value,
+                             apps::PatternMatchType pattern_match_type,
+                             apps::IntentFilterPtr& intent_filter) {
+  apps::ConditionValues condition_values;
+  condition_values.push_back(
+      std::make_unique<apps::ConditionValue>(value, pattern_match_type));
+  intent_filter->conditions.push_back(std::make_unique<apps::Condition>(
+      condition_type, std::move(condition_values)));
+}
+
 void AddSingleValueCondition(apps::mojom::ConditionType condition_type,
                              const std::string& value,
                              apps::mojom::PatternMatchType pattern_match_type,

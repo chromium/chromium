@@ -9,13 +9,6 @@
 
 using StaticAppId = const char* const;
 
-namespace {
-
-base::span<StaticAppId> GetDefaultPinnedApps();
-base::span<StaticAppId> GetTabletFormFactorDefaultPinnedApps();
-
-}  // namespace
-
 base::span<StaticAppId> GetDefaultPinnedAppsForFormFactor();
 
 #endif  // CHROME_BROWSER_UI_ASH_DEFAULT_PINNED_APPS_H_

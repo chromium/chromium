@@ -7,7 +7,7 @@
 
 #include <EGL/egl.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 namespace gl {
 class GLSurface;
@@ -38,7 +38,7 @@ class Surface : public base::RefCountedThreadSafe<Surface> {
   ~Surface();
   bool is_current_in_some_thread_;
   scoped_refptr<gl::GLSurface> gl_surface_;
-  const Config* config_;
+  raw_ptr<const Config> config_;
 };
 
 }  // namespace egl

@@ -86,9 +86,9 @@ class EffectTreeLayerListIteratorTest : public LayerTreeImplTestBase,
     }
 
     target_surface_count_ = std::vector<int>(
-        host_impl()->active_tree()->property_trees()->effect_tree.size(), -1);
+        host_impl()->active_tree()->property_trees()->effect_tree().size(), -1);
     contributing_surface_count_ = std::vector<int>(
-        host_impl()->active_tree()->property_trees()->effect_tree.size(), -1);
+        host_impl()->active_tree()->property_trees()->effect_tree().size(), -1);
   }
 
  protected:

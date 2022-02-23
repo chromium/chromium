@@ -10,6 +10,7 @@
 #include "ash/public/cpp/tablet_mode_observer.h"
 #include "ash/shelf/shelf_observer.h"
 #include "ash/system/screen_layout_observer.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/tray/time_to_click_recorder.h"
 #include "ash/system/tray/tray_bubble_base.h"
 #include "base/time/time.h"
@@ -19,12 +20,17 @@
 #include "ui/views/widget/widget_observer.h"
 #include "ui/wm/public/activation_change_observer.h"
 
+namespace ui {
+class Event;
+}  // namespace ui
+
 namespace views {
 class Widget;
 }  // namespace views
 
 namespace ash {
 
+class SystemShadow;
 class UnifiedSystemTray;
 class UnifiedSystemTrayController;
 class UnifiedSystemTrayView;
@@ -74,7 +80,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   void ShowAudioDetailedView();
 
   // Show calendar view.
-  void ShowCalendarView();
+  void ShowCalendarView(calendar_metrics::CalendarViewShowSource show_source,
+                        calendar_metrics::CalendarEventSource event_source);
 
   // Show network settings detailed view.
   void ShowNetworkDetailedView(bool force);
@@ -114,6 +121,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble
   void OnDisplayConfigurationChanged() override;
 
   // views::WidgetObserver:
+  void OnWidgetBoundsChanged(views::Widget* widget,
+                             const gfx::Rect& new_bounds) override;
   void OnWidgetDestroying(views::Widget* widget) override;
 
   // ::wm::ActivationChangeObserver:
@@ -142,13 +151,6 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   void UpdateBubbleBounds();
 
-  // Called when the tray animation is finished.
-  void OnAnimationFinished();
-
-  // Set visibility of bubble frame border. Used for disabling the border during
-  // animation.
-  void SetFrameVisible(bool visible);
-
   // Controller of UnifiedSystemTrayView. As the view is owned by views
   // hierarchy, we have to own the controller here.
   std::unique_ptr<UnifiedSystemTrayController> controller_;
@@ -171,6 +173,8 @@ class ASH_EXPORT UnifiedSystemTrayBubble
 
   TrayBubbleView* bubble_view_ = nullptr;
   UnifiedSystemTrayView* unified_view_ = nullptr;
+
+  std::unique_ptr<SystemShadow> shadow_;
 };
 
 }  // namespace ash

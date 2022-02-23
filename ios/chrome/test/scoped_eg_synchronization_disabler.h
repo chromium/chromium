@@ -6,7 +6,6 @@
 #define IOS_CHROME_TEST_SCOPED_EG_SYNCHRONIZATION_DISABLER_H_
 
 #import <Foundation/Foundation.h>
-#include "base/macros.h"
 
 // Disables EarlGrey synchronization in constructor and returns back to the
 // original value in destructor.

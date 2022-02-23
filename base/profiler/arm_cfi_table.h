@@ -9,7 +9,6 @@
 
 #include "base/containers/buffer_iterator.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace base {

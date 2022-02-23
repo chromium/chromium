@@ -13,7 +13,7 @@
 
 
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 crbug.com/24182 storage/indexeddb/objectstore-cursor.html [ Slow ]
 crbug.com/24182 storage/indexeddb/mozilla/test_objectStore_openKeyCursor.html [ Slow ]
@@ -80,6 +80,7 @@ crbug.com/902685 virtual/split-http-cache-not-site-per-process/http/tests/devtoo
 crbug.com/243492 inspector-protocol/injected-script-discard.js [ Slow ]
 crbug.com/678482 http/tests/devtools/debugger/fetch-breakpoints.js [ Slow ]
 crbug.com/1236466 inspector-protocol/runtime/runtime-execution-contexts-events.js [ Slow ]
+crbug.com/1229701 http/tests/inspector-protocol/network/disable-cache-media-resource.js [ Slow ]
 
 crbug.com/510337 cssom/cssvalue-comparison.html [ Slow ]
 
@@ -171,8 +172,8 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-imag
 crbug.com/1152496 virtual/oopr-canvas2d/fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Slow ]
 crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite.html [ Slow ]
-crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Slow ]
-crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Slow ]
+crbug.com/1081534 [ Linux ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Slow ]
+crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/canvas-composite-image.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-shadow-part4.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
@@ -195,8 +196,19 @@ crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blend-solid.h
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-incremental-repaint.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/fillrect_gradient.html [ Slow ]
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
-crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Slow ]
 crbug.com/1081534 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
+crbug.com/1041847 virtual/oopr-canvas2d/fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html [ Slow ]
+
+# Slow canvas tests
+crbug.com/1170041 external/wpt/html/canvas/element/manual/wide-gamut-canvas/canvas-createImageBitmap-e_srgb.html [ Slow ]
+crbug.com/1205133 virtual/gpu/fast/canvas/canvas-blending-gradient-over-color.html [ Slow ]
+crbug.com/1243943 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-gradient.html [ Slow ]
+crbug.com/1243943 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-transforms.html [ Slow ]
+crbug.com/1243943 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-canvas.html [ Slow ]
+crbug.com/1243943 [ Mac ] virtual/gpu/fast/canvas/canvas-blending-fill-style.html [ Slow ]
+
+# Slow canvas gpu tests
+crbug.com/1221326 virtual/gpu/fast/canvas/canvas-composite-image.html [ Slow ]
 
 # Media controls tests have to wait for panel to fade out.
 crbug.com/722825 media/controls/video-enter-exit-fullscreen-without-hovering-doesnt-show-controls.html [ Slow ]
@@ -270,6 +282,7 @@ crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/color-space/canvas-createImageB
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ Slow ]
+crbug.com/866850 [ Mac11 ] virtual/gpu/fast/canvas/getPutImageDataPairTest.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter.html [ Slow ]
 crbug.com/866850 [ Linux ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
 crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worker.html [ Slow ]
@@ -318,6 +331,7 @@ crbug.com/874695 fast/dom/timer-throttling-hidden-page.html [ Slow ]
 crbug.com/874695 fast/events/frame-detached-in-mousedown.html [ Slow ]
 crbug.com/874695 fast/events/popup-blocking-timers4.html [ Slow ]
 crbug.com/874695 fast/forms/color/* [ Slow ]
+crbug.com/874695 fast/forms/color-scheme/* [ Slow ]
 crbug.com/874695 fast/forms/number/number-spinbutton-gets-disabled-or-readonly.html [ Slow ]
 crbug.com/874695 fast/forms/select/input-select-after-resize.html [ Slow ]
 crbug.com/874695 fast/history/history-back-twice-with-subframes-assert.html [ Slow ]
@@ -377,7 +391,6 @@ crbug.com/874695 http/tests/notifications/permission-behaviour.html [ Slow ]
 crbug.com/874695 http/tests/permissions/chromium/test-request-multiple-sharedworker.html [ Slow ]
 crbug.com/874695 http/tests/permissions/chromium/test-request-multiple-window.html [ Slow ]
 crbug.com/874695 http/tests/permissions/chromium/test-request-multiple-worker.html [ Slow ]
-crbug.com/874695 http/tests/permissions/chromium/test-request-sharedworker.html [ Slow ]
 crbug.com/874695 http/tests/permissions/chromium/test-request-window.html [ Slow ]
 crbug.com/874695 http/tests/permissions/chromium/test-request-worker.html [ Slow ]
 crbug.com/874695 http/tests/permissions/test-query.html [ Slow ]
@@ -446,7 +459,6 @@ crbug.com/874695 storage/websql/transaction-success-callback-isolated-world.html
 crbug.com/874695 virtual/android/fullscreen/video-specified-size.html [ Slow ]
 crbug.com/874695 virtual/display-compositor-pixel-dump/fast/canvas/display-compositor-pixel-dump/OffscreenCanvas-opaque-background-compositing.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-blending-image-over-color.html [ Slow ]
-crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-canvas.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-composite-video.html [ Slow ]
 crbug.com/874695 virtual/gpu/fast/canvas/canvas-createImageBitmap-svg-image.html [ Slow ]
@@ -500,14 +512,14 @@ crbug.com/980804 fast/scrolling/scrollbars/mouse-autoscrolling-on-scrollbar.html
 crbug.com/983642 virtual/gpu/fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/983642 [ Debug Mac ] fast/canvas/canvas-composite-alpha.html [ Slow ]
 crbug.com/983642 fast/canvas/canvas-composite-text-alpha.html [ Slow ]
-crbug.com/983642 virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
+crbug.com/983642 [ Linux ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
+crbug.com/983642 [ Win ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
 crbug.com/983642 [ Mac ] fast/canvas/color-space/canvas-createImageBitmap-e_srgb.html [ Slow ]
 crbug.com/983642 [ Win ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-p3.html [ Slow ]
 crbug.com/983642 [ Win ] virtual/gpu/fast/canvas/color-space/canvas-createImageBitmap-rec2020.html [ Slow ]
 
 crbug.com/626703 external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
 crbug.com/626703 virtual/plz-dedicated-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
-crbug.com/626703 virtual/without-coep-for-shared-worker/external/wpt/html/cross-origin-embedder-policy/multi-globals/workers-coep-report.https.html [ Slow ]
 
 # Slow when using Vulkan.
 crbug.com/994331 compositing/lots-of-img-layers.html [ Slow ]
@@ -715,7 +727,6 @@ crbug.com/1046784 http/tests/devtools/forced-layout-in-microtask.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 http/tests/inspector-protocol/network/navigate-iframe-out2in.js [ Slow ]
-crbug.com/1041847 virtual/gpu/fast/canvas/color-space/canvas-colorManaged-convertToBlob-roundtrip.html [ Slow ]
 crbug.com/1048597 [ Linux ] virtual/android/fullscreen/video-scrolled-iframe.html [ Slow ]
 crbug.com/1057807 http/tests/misc/destroy-middle-click-locked-target-crash.html [ Slow ]
 crbug.com/1042694 fast/forms/form-control-with-state-eager-tracing-crashTest.html [ Slow ]
@@ -732,7 +743,6 @@ crbug.com/1105270 [ Mac10.15 ] fast/events/open-window-from-another-frame.html [
 crbug.com/1046784 http/tests/devtools/sources/source-frame-toolbar-items.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/profiler/cpu-profiler-bottom-up-large-tree-search.js [ Slow ]
 crbug.com/1108423 external/wpt/referrer-policy/gen/worker-classic.http-rp/unset/worker-classic.http.html [ Slow ]
-crbug.com/1115091 [ Linux ] external/wpt/secure-payment-confirmation/secure-payment-confirmation.tentative.https.html [ Slow ]
 crbug.com/1135978 [ Linux Release ] fast/dom/css-delete-doc.html [ Slow ]
 crbug.com/1145424 [ Linux ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
 crbug.com/1145424 [ Win ] http/tests/devtools/sources/debugger-ui/reveal-execution-line.js [ Slow ]
@@ -741,8 +751,6 @@ crbug.com/1146221 [ Linux ] http/tests/devtools/sources/debugger-ui/debugger-inl
 crbug.com/1182691 external/wpt/webcodecs/audio-encoder.https.any.html [ Slow ]
 crbug.com/1182691 external/wpt/webcodecs/video-encoder.https.any.html [ Slow ]
 crbug.com/1182691 external/wpt/webcodecs/video-encoder.https.any.worker.html [ Slow ]
-crbug.com/1176474 wpt_internal/webcodecs/temporal_svc.https.any.html [ Slow ]
-crbug.com/1176474 wpt_internal/webcodecs/temporal_svc.https.any.worker.html [ Slow ]
 
 # Composited scroll snap is not accelerated for testing.
 crbug.com/1186753 virtual/threaded-prefer-compositing/fast/scroll-snap/snaps-after-scrollbar-scrolling-arrow.html [ Slow ]
@@ -785,3 +793,5 @@ crbug.com/1195814 [ Mac11 ] storage/indexeddb/key-generator.html [ Slow ]
 crbug.com/1195814 [ Mac11 ] storage/indexeddb/odd-strings.html [ Slow ]
 
 crbug.com/1263580 editing/deleting/delete-many-lines-of-text.html [ Slow ]
+
+crbug.com/1255482 external/wpt/css/css-fonts/crash-large-grapheme-cluster.html [ Slow ]

@@ -111,6 +111,7 @@ void BrandcodeConfigFetcher::OnSimpleLoaderComplete(
       simple_url_loader_->ResponseInfo()->mime_type == "text/xml") {
     data_decoder::DataDecoder::ParseXmlIsolated(
         *response_body,
+        data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
         base::BindOnce(&BrandcodeConfigFetcher::OnXmlConfigParsed,
                        weak_ptr_factory_.GetWeakPtr()));
   } else {

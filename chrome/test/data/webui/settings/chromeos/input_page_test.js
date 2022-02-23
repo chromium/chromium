@@ -29,7 +29,6 @@ suite('input page', () => {
 
   suiteSetup(() => {
     CrSettingsPrefs.deferInitialization = true;
-    loadTimeData.overrideValues({imeOptionsInSettings: true});
   });
 
   setup(() => {

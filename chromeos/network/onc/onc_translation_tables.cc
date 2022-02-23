@@ -43,6 +43,7 @@ const FieldTranslationEntry eap_fields[] = {
      shill::kEapUseProactiveKeyCachingProperty},
     {nullptr}};
 
+// This group of fields are for L2TP/IPsec, see |kIPsecIKEv2Table| for IKEv2.
 const FieldTranslationEntry ipsec_fields[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::ipsec::kAuthenticationType, shill::kL2tpIpsecAuthenticationType
@@ -343,6 +344,7 @@ const StringTranslationEntry kNetworkTypeTable[] = {
     {nullptr}};
 
 const StringTranslationEntry kVPNTypeTable[] = {
+    {::onc::vpn::kIPsec, shill::kProviderIKEv2},
     {::onc::vpn::kTypeL2TP_IPsec, shill::kProviderL2tpIpsec},
     {::onc::vpn::kOpenVPN, shill::kProviderOpenVpn},
     {::onc::vpn::kWireGuard, shill::kProviderWireGuard},
@@ -363,6 +365,7 @@ const StringTranslationEntry kEAPOuterTable[] = {
     {::onc::eap::kEAP_TLS, shill::kEapMethodTLS},
     {::onc::eap::kEAP_TTLS, shill::kEapMethodTTLS},
     {::onc::eap::kLEAP, shill::kEapMethodLEAP},
+    {::onc::eap::kMSCHAPv2, shill::kEapMethodMSCHAPV2},
     {nullptr}};
 
 // Translation of the EAP.Inner field in case of EAP.Outer == PEAP
@@ -401,6 +404,7 @@ const StringTranslationEntry kNetworkTechnologyTable[] = {
     {::onc::cellular::kTechnologyLteAdvanced,
      shill::kNetworkTechnologyLteAdvanced},
     {::onc::cellular::kTechnologyUmts, shill::kNetworkTechnologyUmts},
+    {::onc::cellular::kTechnology5gNr, shill::kNetworkTechnology5gNr},
     {nullptr}};
 
 const StringTranslationEntry kRoamingStateTable[] = {
@@ -417,12 +421,17 @@ const StringTranslationEntry kOpenVpnCompressionAlgorithmTable[] = {
     {::onc::openvpn_compression_algorithm::kLzo, shill::kOpenVPNCompressLzo},
     {nullptr}};
 
+const StringTranslationEntry kIKEv2AuthenticationTypeTable[] = {
+    {::onc::ipsec::kPSK, shill::kIKEv2AuthenticationTypePSK},
+    {::onc::ipsec::kCert, shill::kIKEv2AuthenticationTypeCert},
+    {::onc::ipsec::kEAP, shill::kIKEv2AuthenticationTypeEAP},
+    {nullptr}};
+
 // This must contain only Shill Device properties and no Service properties.
 // For Service properties see cellular_fields.
 const FieldTranslationEntry kCellularDeviceTable[] = {
     // This field is converted during translation, see onc_translator_*.
     // { ::onc::cellular::kAPNList, shill::kCellularApnListProperty},
-    {::onc::cellular::kAllowRoaming, shill::kCellularAllowRoamingProperty},
     {::onc::cellular::kESN, shill::kEsnProperty},
     {::onc::cellular::kFamily, shill::kTechnologyFamilyProperty},
     {::onc::cellular::kFirmwareRevision, shill::kFirmwareRevisionProperty},
@@ -442,6 +451,13 @@ const FieldTranslationEntry kCellularDeviceTable[] = {
     // { ::onc::cellular::kSIMLockStatus, shill::kSIMLockStatusProperty},
     {::onc::cellular::kSIMPresent, shill::kSIMPresentProperty},
     {::onc::cellular::kSupportNetworkScan, shill::kSupportNetworkScanProperty},
+    {nullptr}};
+
+const FieldTranslationEntry kIPsecIKEv2Table[] = {
+    {::onc::ipsec::kPSK, shill::kIKEv2PskProperty},
+    {::onc::ipsec::kServerCAPEMs, shill::kIKEv2CaCertPemProperty},
+    {::onc::ipsec::kLocalIdentity, shill::kIKEv2LocalIdentityProperty},
+    {::onc::ipsec::kRemoteIdentity, shill::kIKEv2RemoteIdentityProperty},
     {nullptr}};
 
 const FieldTranslationEntry* GetFieldTranslationTable(

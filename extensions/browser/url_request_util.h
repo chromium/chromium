@@ -52,18 +52,6 @@ bool AllowCrossRendererResourceLoadHelper(bool is_guest,
                                           ui::PageTransition page_transition,
                                           bool* allowed);
 
-// Checks whether the given |extension| and |resource_path| are part of a
-// special case where an extension URL is permitted to load in any guest
-// process, rather than only in guests of a given platform app. If
-// |resource_path| is absl::nullopt, then the check is based solely on which
-// extension is passed in, allowing this to be used for origin checks as well as
-// URL checks.
-// TODO(creis): Remove this method when the special cases (listed by bug number
-// in the definition of this method) are gone.
-bool AllowSpecialCaseExtensionURLInGuest(
-    const Extension* extension,
-    absl::optional<base::StringPiece> resource_path);
-
 }  // namespace url_request_util
 }  // namespace extensions
 

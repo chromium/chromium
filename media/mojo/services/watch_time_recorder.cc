@@ -183,8 +183,8 @@ void WatchTimeRecorder::FinalizeWatchTime(
   watch_time_info_.clear();
 }
 
-void WatchTimeRecorder::OnError(PipelineStatus status) {
-  pipeline_status_ = status;
+void WatchTimeRecorder::OnError(const PipelineStatus& status) {
+  pipeline_status_ = status.code();
 }
 
 void WatchTimeRecorder::UpdateSecondaryProperties(

@@ -34,6 +34,14 @@ using component_updater::ComponentUpdateService;
 
 namespace {
 
+// This is the last version of CT log lists that this version of Chrome will
+// accept. If a list is delivered with a compatibility version higher than this,
+// it will be ignored (though the emergency disable flag will still be followed
+// if it is set). This should never be decreased since that will cause CT
+// enforcement to eventually stop. This should also only be increased if Chrome
+// is compatible with the version it is being incremented to.
+const uint64_t kMaxSupportedCTCompatibilityVersion = 2;
+
 const char kGoogleOperatorName[] = "Google";
 
 // The SHA256 of the SubjectPublicKeyInfo used to sign the extension.
@@ -149,6 +157,11 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
     return;
   }
 
+  if (proto->log_list().compatibility_version() >
+      kMaxSupportedCTCompatibilityVersion) {
+    return;
+  }
+
   std::vector<network::mojom::CTLogInfoPtr> log_list_mojo;
 
   // The log list shipped via component updater is a single message of CTLogList
@@ -158,19 +171,46 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
   // required by Chrome to enforce its CT policy. Non Chrome used fields are
   // left unset.
   for (auto log : proto->log_list().logs()) {
+    std::string decoded_id;
+    if (!base::Base64Decode(log.log_id(), &decoded_id)) {
+      continue;
+    }
     std::string decoded_key;
     if (!base::Base64Decode(log.key(), &decoded_key)) {
       continue;
     }
     network::mojom::CTLogInfoPtr log_ptr = network::mojom::CTLogInfo::New();
+    log_ptr->id = std::move(decoded_id);
     log_ptr->name = log.description();
-    log_ptr->public_key = decoded_key;
+    log_ptr->public_key = std::move(decoded_key);
     // Operator history is ordered in inverse chronological order, so the 0th
     // element will be the current operator.
-    if (!log.operator_history().empty() &&
-        log.operator_history().Get(0).name() == kGoogleOperatorName) {
-      log_ptr->operated_by_google = true;
+    if (!log.operator_history().empty()) {
+      if (log.operator_history().Get(0).name() == kGoogleOperatorName) {
+        log_ptr->operated_by_google = true;
+      }
+      log_ptr->current_operator = log.operator_history().Get(0).name();
+      if (log.operator_history().size() > 1) {
+        // The protobuffer includes operator history in reverse chronological
+        // order, but we need it in chronological order, so we iterate in
+        // reverse (and ignoring the current operator).
+        for (auto it = log.operator_history().rbegin();
+             it != log.operator_history().rend() - 1; ++it) {
+          network::mojom::PreviousOperatorEntryPtr previous_operator =
+              network::mojom::PreviousOperatorEntry::New();
+          previous_operator->name = it->name();
+          // We use the next element's start time as the current element end
+          // time.
+          base::Time end_time =
+              base::Time::UnixEpoch() +
+              base::Seconds((it + 1)->operator_start().seconds()) +
+              base::Nanoseconds((it + 1)->operator_start().nanos());
+          previous_operator->end_time = end_time;
+          log_ptr->previous_operators.push_back(std::move(previous_operator));
+        }
+      }
     }
+
     // State history is ordered in inverse chronological order, so the 0th
     // element will be the current state.
     if (!log.state().empty()) {
@@ -181,12 +221,15 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
         // Note: RETIRED is a terminal state for the log, so other states do not
         // need to be checked, because once RETIRED, the state will never
         // change.
-        base::TimeDelta retired_since =
+        base::Time retired_since =
+            base::Time::UnixEpoch() +
             base::Seconds(log.state()[0].state_start().seconds()) +
             base::Nanoseconds(log.state()[0].state_start().nanos());
         log_ptr->disqualified_at = retired_since;
       }
     }
+
+    log_ptr->mmd = base::Seconds(log.mmd_secs());
     log_list_mojo.push_back(std::move(log_ptr));
   }
 
@@ -195,6 +238,17 @@ void PKIMetadataComponentInstallerPolicy::UpdateNetworkServiceOnUI(
       base::Seconds(proto->log_list().timestamp().seconds()) +
       base::Nanoseconds(proto->log_list().timestamp().nanos());
   network_service->UpdateCtLogList(std::move(log_list_mojo), update_time);
+
+  // Send the updated popular SCTs list to the network service, if available.
+  std::vector<std::vector<uint8_t>> popular_scts;
+  popular_scts.reserve(proto->popular_scts().size());
+  std::transform(
+      proto->popular_scts().begin(), proto->popular_scts().end(),
+      popular_scts.begin(), [](std::string sct) {
+        const uint8_t* raw_data = reinterpret_cast<const uint8_t*>(sct.data());
+        return std::vector<uint8_t>(raw_data, raw_data + sct.length());
+      });
+  network_service->UpdateCtKnownPopularSCTs(std::move(popular_scts));
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 }
 

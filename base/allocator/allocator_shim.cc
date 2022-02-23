@@ -16,13 +16,13 @@
 #include "base/threading/platform_thread.h"
 #include "build/build_config.h"
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #include <unistd.h>
 #else
 #include "base/allocator/winheap_stubs_win.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <malloc/malloc.h>
 
 #include "base/allocator/allocator_interception_mac.h"
@@ -51,7 +51,7 @@ ALWAYS_INLINE size_t GetCachedPageSize() {
 // Calls the std::new handler thread-safely. Returns true if a new_handler was
 // set and called, false if no new_handler was set.
 bool CallNewHandler(size_t size) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::allocator::WinCallNewHandler(size);
 #else
   std::new_handler nh = std::get_new_handler();
@@ -80,6 +80,11 @@ void SetCallNewHandlerOnMallocFailure(bool value) {
 void* UncheckedAlloc(size_t size) {
   const allocator::AllocatorDispatch* const chain_head = GetChainHead();
   return chain_head->alloc_unchecked_function(chain_head, size, nullptr);
+}
+
+void UncheckedFree(void* ptr) {
+  const allocator::AllocatorDispatch* const chain_head = GetChainHead();
+  return chain_head->free_function(chain_head, ptr, nullptr);
 }
 
 void InsertAllocatorDispatch(AllocatorDispatch* dispatch) {
@@ -141,7 +146,7 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
   void* ptr;
   do {
     void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_function(chain_head, size, context);
@@ -151,7 +156,7 @@ ALWAYS_INLINE void* ShimCppNew(size_t size) {
 
 ALWAYS_INLINE void* ShimCppNewNoThrow(size_t size) {
   void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
 #endif
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
@@ -163,7 +168,7 @@ ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
   void* ptr;
   do {
     void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
     context = malloc_default_zone();
 #endif
     ptr = chain_head->alloc_aligned_function(chain_head, alignment, size,
@@ -174,7 +179,7 @@ ALWAYS_INLINE void* ShimCppAlignedNew(size_t size, size_t alignment) {
 
 ALWAYS_INLINE void ShimCppDelete(void* address) {
   void* context = nullptr;
-#if defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
+#if BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
   context = malloc_default_zone();
 #endif
   const base::allocator::AllocatorDispatch* const chain_head = GetChainHead();
@@ -323,8 +328,8 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 
 }  // extern "C"
 
-#if !defined(OS_WIN) && \
-    !(defined(OS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+#if !BUILDFLAG(IS_WIN) && \
+    !(BUILDFLAG(IS_APPLE) && !BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
 // Cpp symbols (new / delete) should always be routed through the shim layer
 // except on Windows and macOS (except for PartitionAlloc-Everywhere) where the
 // malloc intercept is deep enough that it also catches the cpp calls.
@@ -336,14 +341,14 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #include "base/allocator/allocator_shim_override_cpp_symbols.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android does not support symbol interposition. The way malloc symbols are
 // intercepted on Android is by using link-time -wrap flags.
 #include "base/allocator/allocator_shim_override_linker_wrapped_symbols.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 // On Windows we use plain link-time overriding of the CRT symbols.
 #include "base/allocator/allocator_shim_override_ucrt_symbols_win.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #if BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_override_mac_default_zone.h"
 #else  // BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
@@ -353,11 +358,6 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 #include "base/allocator/allocator_shim_override_libc_symbols.h"
 #endif
 
-// In the case of tcmalloc we also want to plumb into the glibc hooks
-// to avoid that allocations made in glibc itself (e.g., strdup()) get
-// accidentally performed on the glibc heap.
-//
-// More details:
 // Some glibc versions (until commit 6c444ad6e953dbdf9c7be065308a0a777)
 // incorrectly call __libc_memalign() to allocate memory (see elf/dl-tls.c in
 // glibc 2.23 for instance), and free() to free it. This causes issues for us,
@@ -369,16 +369,14 @@ ALWAYS_INLINE void ShimAlignedFree(void* address, void* context) {
 // the allocation and the free() are caught by the shim.
 //
 // This seems fragile, and is, but there is ample precedent for it, making it
-// quite likely to keep working in the future. For instance, both tcmalloc (in
-// libc_override_glibc.h, see in third_party/tcmalloc) and LLVM for LSAN use the
-// same mechanism.
+// quite likely to keep working in the future. For instance, LLVM for LSAN uses
+// this mechanism.
 
-#if defined(LIBC_GLIBC) && \
-    (BUILDFLAG(USE_TCMALLOC) || BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC))
+#if defined(LIBC_GLIBC) && BUILDFLAG(USE_PARTITION_ALLOC_AS_MALLOC)
 #include "base/allocator/allocator_shim_override_glibc_weak_symbols.h"
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 namespace base {
 namespace allocator {
 

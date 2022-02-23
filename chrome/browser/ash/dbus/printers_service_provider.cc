@@ -5,8 +5,8 @@
 #include "chrome/browser/ash/dbus/printers_service_provider.h"
 
 #include "base/logging.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_proxy.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_proxy.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "dbus/message.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
@@ -20,7 +20,7 @@ PrintersServiceProvider::~PrintersServiceProvider() = default;
 void PrintersServiceProvider::Start(
     scoped_refptr<dbus::ExportedObject> exported_object) {
   exported_object_ = exported_object;
-  auto* proxy = chromeos::CupsPrintersManagerFactory::GetInstance()->GetProxy();
+  auto* proxy = CupsPrintersManagerFactory::GetInstance()->GetProxy();
   DCHECK(proxy);
   printers_manager_observation_.Observe(proxy);
 }

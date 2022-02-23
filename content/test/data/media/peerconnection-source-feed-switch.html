@@ -40,7 +40,7 @@ class TestRunner {
         this.videoElements.push(videoElement);
       }
       this.peerConnections.push(new PeerConnection(
-          videoElement, [MAIN_FEED_RESOLUTION], false));
+          videoElement, [MAIN_FEED_RESOLUTION]));
     }
     const promises = this.peerConnections.map((conn) => conn.start());
     Promise.all(promises)

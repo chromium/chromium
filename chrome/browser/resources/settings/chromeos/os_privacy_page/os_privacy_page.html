@@ -9,6 +9,11 @@
   #dataAccessProtectionWrapper:focus {
     outline: none;
   }
+
+  .peripheral-data-access-protection {
+    /* Remove the unecessary spacing infront of the learn-more link. */
+    --cr-subsequent-anchors-of-span-margin: 0px;
+  }
 </style>
 <settings-animated-pages id="pages" section="osPrivacy"
     focus-config="[[focusConfig_]]">
@@ -28,11 +33,10 @@
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
       <div class="hr"></div>
-      <template is="dom-if" if="[[isSnoopingProtectionEnabled_]]" restamp>
+      <template is="dom-if" if="[[isSmartPrivacyEnabled_]]" restamp>
         <cr-link-row id="smartPrivacySubpageTrigger"
             on-click="onSmartPrivacy_"
             label="$i18n{smartPrivacyTitle}"
-            sub-label="$i18n{smartPrivacySubtext}"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <div class="hr"></div>
@@ -42,12 +46,24 @@
 <if expr="_google_chrome">
     <settings-toggle-button
         id="enable-logging"
-        pref="{{prefs.cros.metrics.reportingEnabled}}"
+        pref="[[metricsConsentPref_]]"
         label="$i18n{enableLogging}"
-        sub-label="$i18n{enableLoggingDesc}"
-        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]">
+        sub-label="[[metricsConsentDesc_]]"
+        deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+        disabled$="[[!isMetricsConsentConfigurable_]]"
+        on-settings-boolean-control-change="onMetricsConsentChange_"
+        no-set-pref>
     </settings-toggle-button>
     <div class="hr"></div>
+    <template is="dom-if" if="[[isRevenBranding_]]">
+      <settings-toggle-button
+          id="enable-hw-data-usage"
+          pref="{{prefs.cros.reven.enable_hw_data_usage}}"
+          label="[[i18n('enableHWDataUsage')]]"
+          sub-label="[[i18n('enableHWDataUsageDesc')]]">
+        </settings-toggle-button>
+      <div class="hr"></div>
+    </template>
 </if>
     <settings-toggle-button
         id="suggested-content"
@@ -64,9 +80,9 @@
         label="$i18n{enableContentProtectionAttestation}"
         deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
     </settings-toggle-button>
-    <div class="hr"></div>
     <template is="dom-if" if="[[isThunderboltSupported_]]">
       <template is="dom-if" if="[[isPciguardUiEnabled_]]">
+        <div class="hr"></div>
         <!-- This toggle is always disabled. The underlying pref state is
              handled by the JS impl. This is to prevent toggling the pref
              before the user confirms the action. -->

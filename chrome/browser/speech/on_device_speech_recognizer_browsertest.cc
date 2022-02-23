@@ -46,6 +46,7 @@ class MockSpeechRecognizerDelegate : public SpeechRecognizerDelegate {
            const absl::optional<media::SpeechRecognitionResult>& timing));
   MOCK_METHOD1(OnSpeechSoundLevelChanged, void(int16_t));
   MOCK_METHOD1(OnSpeechRecognitionStateChanged, void(SpeechRecognizerStatus));
+  MOCK_METHOD0(OnSpeechRecognitionStopped, void());
 
  private:
   base::WeakPtrFactory<MockSpeechRecognizerDelegate> weak_factory_{this};
@@ -187,9 +188,19 @@ IN_PROC_BROWSER_TEST_F(OnDeviceSpeechRecognizerTest, StartsCapturingAudio) {
     EXPECT_TRUE(fake_service_->is_capturing_audio());
 
     EXPECT_CALL(*mock_speech_delegate_,
+                OnSpeechRecognitionStateChanged(SPEECH_RECOGNITION_STOPPING))
+        .Times(1)
+        .RetiresOnSaturation();
+
+    EXPECT_CALL(*mock_speech_delegate_,
                 OnSpeechRecognitionStateChanged(SPEECH_RECOGNIZER_READY))
         .Times(1)
         .RetiresOnSaturation();
+
+    EXPECT_CALL(*mock_speech_delegate_, OnSpeechRecognitionStopped())
+        .Times(1)
+        .RetiresOnSaturation();
+
     recognizer_->Stop();
     base::RunLoop().RunUntilIdle();
     EXPECT_FALSE(fake_service_->is_capturing_audio());

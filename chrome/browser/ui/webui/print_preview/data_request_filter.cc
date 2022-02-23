@@ -21,24 +21,24 @@
 #include "base/strings/string_util.h"
 #include "chrome/browser/printing/print_preview_data_service.h"
 #include "content/public/browser/web_ui_data_source.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace printing {
 
 namespace {
 
 bool ShouldHandleRequestCallback(const std::string& path) {
-  return ParseDataPath(path, nullptr, nullptr);
+  return !!ParseDataPath(path);
 }
 
 void HandleRequestCallback(const std::string& path,
                            content::WebUIDataSource::GotDataCallback callback) {
-  int preview_ui_id;
-  int page_index;
-  CHECK(ParseDataPath(path, &preview_ui_id, &page_index));
+  absl::optional<PrintPreviewIdAndPageIndex> parsed = ParseDataPath(path);
+  CHECK(parsed);
 
   scoped_refptr<base::RefCountedMemory> data;
-  PrintPreviewDataService::GetInstance()->GetDataEntry(preview_ui_id,
-                                                       page_index, &data);
+  PrintPreviewDataService::GetInstance()->GetDataEntry(
+      parsed->ui_id, parsed->page_index, &data);
   if (data.get()) {
     std::move(callback).Run(data.get());
     return;
@@ -71,32 +71,32 @@ void AddDataRequestFilter(content::WebUIDataSource& source) {
                           base::BindRepeating(&HandleRequestCallback));
 }
 
-bool ParseDataPath(const std::string& path, int* ui_id, int* page_index) {
+absl::optional<PrintPreviewIdAndPageIndex> ParseDataPath(
+    const std::string& path) {
+  PrintPreviewIdAndPageIndex parsed = {
+      .ui_id = -1,
+      .page_index = 0,
+  };
+
   std::string file_path = path.substr(0, path.find_first_of('?'));
   if (base::EndsWith(file_path, "/test.pdf", base::CompareCase::SENSITIVE))
-    return true;
+    return parsed;
 
   if (!base::EndsWith(file_path, "/print.pdf", base::CompareCase::SENSITIVE))
-    return false;
+    return absl::nullopt;
 
   std::vector<std::string> url_substr =
       base::SplitString(path, "/", base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
   if (url_substr.size() != 3)
-    return false;
+    return absl::nullopt;
 
-  int preview_ui_id = -1;
-  if (!base::StringToInt(url_substr[0], &preview_ui_id) || preview_ui_id < 0)
-    return false;
+  if (!base::StringToInt(url_substr[0], &parsed.ui_id) || parsed.ui_id < 0)
+    return absl::nullopt;
 
-  int preview_page_index = 0;
-  if (!base::StringToInt(url_substr[1], &preview_page_index))
-    return false;
+  if (!base::StringToInt(url_substr[1], &parsed.page_index))
+    return absl::nullopt;
 
-  if (ui_id)
-    *ui_id = preview_ui_id;
-  if (page_index)
-    *page_index = preview_page_index;
-  return true;
+  return parsed;
 }
 
 }  // namespace printing

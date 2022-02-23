@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 #define COMPONENTS_VIZ_COMMON_QUADS_COMPOSITOR_FRAME_TRANSITION_DIRECTIVE_H_
 
+#include <string>
 #include <vector>
 
 #include "base/time/time.h"
@@ -105,6 +106,7 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
   CompositorFrameTransitionDirective(
       uint32_t sequence_id,
       Type type,
+      bool is_renderer_driven_animation = false,
       Effect effect = Effect::kNone,
       const TransitionConfig& root_config = TransitionConfig(),
       std::vector<SharedElement> shared_elements = {});
@@ -133,10 +135,17 @@ class VIZ_COMMON_EXPORT CompositorFrameTransitionDirective {
     return shared_elements_;
   }
 
+  // Returns true if this is a directive for a renderer driven animation.
+  bool is_renderer_driven_animation() const {
+    return is_renderer_driven_animation_;
+  }
+
  private:
   uint32_t sequence_id_ = 0;
 
   Type type_ = Type::kSave;
+
+  bool is_renderer_driven_animation_ = false;
 
   Effect effect_ = Effect::kNone;
 

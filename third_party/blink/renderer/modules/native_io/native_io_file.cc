@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/scheduler/public/worker_pool.h"
@@ -42,7 +42,7 @@
 #include "third_party/blink/renderer/platform/wtf/threading_primitives.h"
 #include "third_party/blink/renderer/platform/wtf/wtf.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -127,7 +127,7 @@ class NativeIOFile::FileState
     return {actual_length, error};
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Used to implement browser-side SetLength() on macOS < 10.15.
   base::File TakeFile() {
     WTF::MutexLocker mutex_locker(mutex_);
@@ -143,7 +143,7 @@ class NativeIOFile::FileState
 
     file_ = std::move(file);
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Returns {read byte count, base::File::FILE_OK} in case of success.
   // Returns {invalid number, error} in case of failure.
@@ -345,7 +345,7 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
   io_pending_ = true;
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(script_state);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS < 10.15, a sandboxing limitation causes failures in ftruncate()
   // syscalls issued from renderers. For this reason, base::File::SetLength()
   // fails in the renderer. We work around this problem by calling ftruncate()
@@ -364,7 +364,7 @@ ScriptPromise NativeIOFile::setLength(ScriptState* script_state,
                   WrapPersistent(resolver)));
     return resolver->Promise();
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   worker_pool::PostTask(
       FROM_HERE, {base::MayBlock()},
@@ -621,9 +621,7 @@ void NativeIOFile::DoGetLength(
       << "File I/O operation queued after file closed";
   DCHECK(resolver_task_runner);
 
-  int64_t length;
-  base::File::Error get_length_error;
-  std::tie(length, get_length_error) = file_state->GetLength();
+  auto [length, get_length_error] = file_state->GetLength();
 
   PostCrossThreadTask(
       *resolver_task_runner, FROM_HERE,
@@ -639,7 +637,6 @@ void NativeIOFile::DidGetLength(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   if (get_length_error == base::File::FILE_OK) {
@@ -680,9 +677,7 @@ void NativeIOFile::DoSetLength(
   DCHECK(resolver_task_runner);
   DCHECK_GE(expected_length, 0);
 
-  int64_t actual_length;
-  base::File::Error set_length_error;
-  std::tie(actual_length, set_length_error) =
+  auto [actual_length, set_length_error] =
       file_state->SetLength(expected_length);
 
   PostCrossThreadTask(
@@ -739,7 +734,7 @@ void NativeIOFile::DidSetLengthIo(
   resolver->Resolve();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void NativeIOFile::DidSetLengthIpc(
     ScriptPromiseResolver* resolver,
     base::File backing_file,
@@ -791,7 +786,7 @@ void NativeIOFile::DidSetLengthIpc(
 
   resolver->Resolve();
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 // static
 void NativeIOFile::DoRead(
@@ -814,9 +809,7 @@ void NativeIOFile::DoRead(
   DCHECK_LE(static_cast<size_t>(read_size), result_buffer_data->DataLength());
 #endif  // DCHECK_IS_ON()
 
-  int read_bytes;
-  base::File::Error read_error;
-  std::tie(read_bytes, read_error) =
+  auto [read_bytes, read_error] =
       file_state->Read(result_buffer_data.get(), file_offset, read_size);
 
   PostCrossThreadTask(
@@ -837,7 +830,6 @@ void NativeIOFile::DidRead(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;
@@ -879,10 +871,7 @@ void NativeIOFile::DoWrite(
   DCHECK_LE(static_cast<size_t>(write_size), result_buffer_data->DataLength());
 #endif  // DCHECK_IS_ON()
 
-  int written_bytes;
-  int64_t actual_file_length_on_failure = 0;
-  base::File::Error write_error;
-  std::tie(actual_file_length_on_failure, written_bytes, write_error) =
+  auto [actual_file_length_on_failure, written_bytes, write_error] =
       file_state->Write(result_buffer_data.get(), file_offset, write_size);
 
   PostCrossThreadTask(
@@ -975,7 +964,6 @@ void NativeIOFile::DidFlush(
   ScriptState* script_state = resolver->GetScriptState();
   if (!script_state->ContextIsValid())
     return;
-  ScriptState::Scope scope(script_state);
 
   DCHECK(io_pending_) << "I/O operation performed without io_pending_ set";
   io_pending_ = false;

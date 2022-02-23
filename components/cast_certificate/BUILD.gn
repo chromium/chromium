@@ -2,10 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-declare_args() {
-  # Allow use of custom Cast root certificate for authentication.
-  cast_allow_developer_certificate = false
-}
+import("//third_party/openscreen/src/build/config/cast.gni")
 
 config("certificate_config") {
   defines = []

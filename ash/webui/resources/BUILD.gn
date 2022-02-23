@@ -10,6 +10,8 @@ import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
 
+ash_webui_grit_output_dir = "$root_gen_dir/ash/webui"
+
 # Convenience template for WebUIs using generate_grd.
 # TODO(calamity): Further deduplicate with non-generated grit targets.
 template("ash_generated_grit") {
@@ -22,13 +24,14 @@ template("ash_generated_grit") {
 
     # These arguments are needed since the grd is generated at build time.
     enable_input_discovery_for_gn_analyze = false
+
     outputs = [
-      "ash_$target_name.pak",
-      "grit/ash_$target_name.h",
+      "ash_${target_name}.pak",
+      "grit/ash_${target_name}.h",
       "grit/ash_${target_name}_map.cc",
       "grit/ash_${target_name}_map.h",
     ]
-    output_dir = "$root_gen_dir/ash"
+    output_dir = "$ash_webui_grit_output_dir"
   }
 }
 
@@ -46,6 +49,19 @@ ash_generated_grit("os_feedback_resources") {
     "//ash/webui/os_feedback_ui/resources:build_grd",
     "//ash/webui/os_feedback_ui/resources:web_components",
   ]
+}
+
+# Resources used by chrome-untrusted://os-feedback
+ash_generated_grit("os_feedback_untrusted_resources") {
+  os_feedback_gen_dir =
+      "$root_gen_dir/ash/webui/os_feedback_ui/untrusted_resources"
+  source = "$os_feedback_gen_dir/ash_os_feedback_untrusted_resources.grd"
+  deps = [ "//ash/webui/os_feedback_ui/untrusted_resources:build_grd" ]
+}
+
+ash_generated_grit("color_internals_resources") {
+  source = "$root_gen_dir/ash/webui/color_internals/resources/ash_color_internals_resources.grd"
+  deps = [ "//ash/webui/color_internals/resources:build_grd" ]
 }
 
 ash_generated_grit("shortcut_customization_app_resources") {
@@ -76,6 +92,11 @@ ash_generated_grit("firmware_update_app_resources") {
   deps = [ "//ash/webui/firmware_update_ui/resources:build_grd" ]
 }
 
+ash_generated_grit("system_extensions_internals_resources") {
+  source = "$root_gen_dir/ash/webui/system_extensions_internals_ui/ash_system_extensions_internals_resources.grd"
+  deps = [ "//ash/webui/system_extensions_internals_ui:build_grd" ]
+}
+
 if (!is_official_build) {
   # Resources used by chrome://demo-mode-app
   ash_generated_grit("demo_mode_app_resources") {
@@ -85,14 +106,17 @@ if (!is_official_build) {
 
   # Resources used by chrome://sample-system-web-app
   ash_generated_grit("sample_system_web_app_resources") {
-    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/ash_sample_system_web_app_resources.grd"
-    deps = [ "//ash/webui/sample_system_web_app_ui:build_trusted_grd" ]
+    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/resources/trusted/ash_sample_system_web_app_resources.grd"
+    deps =
+        [ "//ash/webui/sample_system_web_app_ui/resources/trusted:trusted_grd" ]
   }
 
   # Resources used by chrome-untrusted://sample-system-web-app
   ash_generated_grit("sample_system_web_app_untrusted_resources") {
-    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/ash_sample_system_web_app_untrusted_resources.grd"
-    deps = [ "//ash/webui/sample_system_web_app_ui:build_untrusted_grd" ]
+    source = "$root_gen_dir/ash/webui/sample_system_web_app_ui/resources/untrusted/ash_sample_system_web_app_untrusted_resources.grd"
+    deps = [
+      "//ash/webui/sample_system_web_app_ui/resources/untrusted:untrusted_grd",
+    ]
   }
 }
 
@@ -112,7 +136,7 @@ grit("scanning_app_resources") {
     "grit/ash_scanning_app_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 grit("diagnostics_app_resources") {
@@ -130,23 +154,7 @@ grit("diagnostics_app_resources") {
     "grit/ash_diagnostics_app_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/ash"
-}
-
-# Resources used by chrome://telemetry-extension
-grit("telemetry_extension_resources") {
-  source = "//ash/webui/telemetry_extension_ui/resources/telemetry_extension_resources.grd"
-
-  deps = [ "//ash/webui/telemetry_extension_ui/mojom:mojom_js" ]
-
-  outputs = [
-    "grit/ash_telemetry_extension_resources.h",
-    "grit/ash_telemetry_extension_resources_map.cc",
-    "grit/ash_telemetry_extension_resources_map.h",
-    "ash_telemetry_extension_resources.pak",
-  ]
-
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 # Resources used by chrome://help-app, and parts of the sandboxed app it hosts
@@ -160,7 +168,7 @@ grit("help_app_resources") {
     "grit/ash_help_app_resources_map.h",
     "ash_help_app_resources.pak",
   ]
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 
   deps = [
     "//ash/webui/help_app_ui:mojo_bindings_js",
@@ -223,7 +231,7 @@ grit("media_app_resources") {
     "grit/ash_media_app_resources.h",
     "ash_media_app_resources.pak",
   ]
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 
   use_brotli = true
 
@@ -274,7 +282,7 @@ grit("print_management_resources") {
     "ash_print_management_resources.pak",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 # Resources used by chrome-untrusted://projector SWA.
@@ -322,23 +330,21 @@ grit("eche_bundle_resources") {
   # Obtained via an internal CIPD package in src/DEPS.
   if (enable_cros_eche_app) {
     # Obtained via an internal CIPD package in src/DEPS.
-    source = "//ash/webui/eche_app_ui/resources/prod/eche_bundle_resources.grd"
-  } else {
     source =
-        "//ash/webui/eche_app_ui/resources/mock/eche_bundle_mock_resources.grd"
+        "//ash/webui/eche_app_ui/resources/prod/ash_eche_bundle_resources.grd"
+  } else {
+    source = "//ash/webui/eche_app_ui/resources/mock/ash_eche_bundle_mock_resources.grd"
   }
 
   use_brotli = true
 
-  # TODO(https://crbug.com/1164001): Prefix of outputs should be changed to ash
-  # when .grd from internal CIPD package is updated.
   outputs = [
-    "grit/chromeos_eche_bundle_resources.h",
-    "grit/chromeos_eche_bundle_resources_map.cc",
-    "grit/chromeos_eche_bundle_resources_map.h",
-    "chromeos_eche_bundle_resources.pak",
+    "grit/ash_eche_bundle_resources.h",
+    "grit/ash_eche_bundle_resources_map.cc",
+    "grit/ash_eche_bundle_resources_map.h",
+    "ash_eche_bundle_resources.pak",
   ]
-  output_dir = "$root_gen_dir/chromeos"
+  output_dir = "$ash_webui_grit_output_dir"
 }
 
 # Resources used by chrome://connectivity-diagnostics
@@ -358,5 +364,19 @@ grit("connectivity_diagnostics_resources") {
     "grit/connectivity_diagnostics_resources_map.h",
   ]
 
-  output_dir = "$root_gen_dir/ash"
+  output_dir = "$ash_webui_grit_output_dir"
+}
+
+grit("multidevice_debug_resources") {
+  source =
+      "//ash/webui/multidevice_debug/resources/multidevice_debug_resources.grd"
+
+  outputs = [
+    "grit/ash_multidevice_debug_resources.h",
+    "grit/ash_multidevice_debug_resources_map.cc",
+    "grit/ash_multidevice_debug_resources_map.h",
+    "ash_multidevice_debug_resources.pak",
+  ]
+
+  output_dir = "$ash_webui_grit_output_dir"
 }

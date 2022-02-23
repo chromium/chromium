@@ -15,7 +15,7 @@
 #include "third_party/blink/public/common/mime_util/mime_util.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/download/android/download_utils.h"
 #endif
 
@@ -78,7 +78,7 @@ OfflineItemFilter MimeTypeToOfflineItemFilter(const std::string& mime_type) {
 
 bool IsInterruptedDownloadAutoResumable(download::DownloadItem* item) {
   int auto_resumption_size_limit = 0;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto_resumption_size_limit = DownloadUtils::GetAutoResumptionSizeLimit();
 #endif
 
@@ -112,7 +112,7 @@ OfflineItem OfflineItemUtils::CreateOfflineItem(const std::string& name_space,
   item.is_openable = download_item->CanOpenDownload();
   item.file_path = download_item->GetTargetFilePath();
   item.mime_type = download_item->GetMimeType();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   item.mime_type = DownloadUtils::RemapGenericMimeType(
       item.mime_type, download_item->GetOriginalUrl(),
       download_item->GetTargetFilePath().value());
@@ -265,9 +265,9 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_FILE_SAME_AS_SOURCE;
       break;
     case FailState::NETWORK_INVALID_REQUEST:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::NETWORK_FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::NETWORK_INSTABILITY:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS_NETWORK_ERROR;
       break;
@@ -313,15 +313,15 @@ std::u16string OfflineItemUtils::GetFailStateMessage(FailState fail_state) {
 
     case FailState::NO_FAILURE:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::CANNOT_DOWNLOAD:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::SERVER_NO_RANGE:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::SERVER_CROSS_ORIGIN_REDIRECT:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::FILE_FAILED:
-      FALLTHROUGH;
+      [[fallthrough]];
     case FailState::FILE_HASH_MISMATCH:
       string_id = IDS_DOWNLOAD_INTERRUPTED_STATUS;
   }

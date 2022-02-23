@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "components/keyed_service/core/service_access_type.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "ios/chrome/browser/passwords/ios_chrome_bulk_leak_check_service_factory.h"
@@ -133,8 +134,21 @@ base::Time IOSChromePasswordCheckManager::GetLastPasswordCheckTime() const {
 }
 
 std::vector<CredentialWithPassword>
-IOSChromePasswordCheckManager::GetCompromisedCredentials() const {
-  return insecure_credentials_manager_.GetInsecureCredentials();
+IOSChromePasswordCheckManager::GetUnmutedCompromisedCredentials() const {
+  const std::vector<CredentialWithPassword> compromised_crendentials =
+      insecure_credentials_manager_.GetInsecureCredentials();
+
+  // Only filter out the muted compromised credentials if the flag is enabled.
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::kMuteCompromisedPasswords)) {
+    std::vector<CredentialWithPassword> unmuted_compromised_crendentials;
+    std::copy_if(
+        compromised_crendentials.begin(), compromised_crendentials.end(),
+        std::back_inserter(unmuted_compromised_crendentials),
+        [](CredentialWithPassword credential) { return !credential.is_muted; });
+    return unmuted_compromised_crendentials;
+  }
+  return compromised_crendentials;
 }
 
 password_manager::SavedPasswordsPresenter::SavedPasswordsView

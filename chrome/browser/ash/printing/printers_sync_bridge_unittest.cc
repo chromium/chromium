@@ -28,7 +28,8 @@ class PrintersSyncBridgeTest : public testing::Test {
     bridge_ = std::make_unique<PrintersSyncBridge>(
         syncer::ModelTypeStoreTestUtil::FactoryForInMemoryStoreForTest(),
         base::BindRepeating(
-            base::IgnoreResult(&base::debug::DumpWithoutCrashing)));
+            base::IgnoreResult(&base::debug::DumpWithoutCrashing), FROM_HERE,
+            base::Minutes(5)));
   }
 
  protected:

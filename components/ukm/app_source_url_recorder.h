@@ -65,6 +65,11 @@ class AppSourceUrlRecorder {
   // Get a UKM SourceId for a PWA.
   static SourceId GetSourceIdForPWA(const GURL& url);
 
+  // Get a UKM SourceId with the prefix "app://borealis/" for a Borealis app.
+  // `app` could be a numeric Borealis App ID, or a string identifying a
+  // special case such as the main client app or an unregistered app.
+  static SourceId GetSourceIdForBorealis(const std::string& app);
+
   // Get a UKM SourceId with the prefix "app://" for a Crostini app with an XDG
   // desktop id of `desktop_id` and app name of `app_name`.
   static SourceId GetSourceIdForCrostini(const std::string& desktop_id,

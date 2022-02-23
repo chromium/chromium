@@ -216,13 +216,6 @@ void WebAppSyncBridge::SetAppUserDisplayMode(const AppId& app_id,
   registrar_->NotifyWebAppUserDisplayModeChanged(app_id, user_display_mode);
 }
 
-void WebAppSyncBridge::SetAppRunOnOsLoginMode(const AppId& app_id,
-                                              RunOnOsLoginMode mode) {
-  ScopedRegistryUpdate update(this);
-  WebApp* web_app = update->UpdateApp(app_id);
-  if (web_app)
-    web_app->SetRunOnOsLoginMode(mode);
-}
 void WebAppSyncBridge::SetAppWindowControlsOverlayEnabled(const AppId& app_id,
                                                           bool enabled) {
   ScopedRegistryUpdate update(this);
@@ -421,6 +414,15 @@ void WebAppSyncBridge::RemoveDisallowedLaunchProtocol(
   }
   // Notify observers that the list of disallowed protocols was updated.
   registrar_->NotifyWebAppProtocolSettingsChanged();
+}
+
+void WebAppSyncBridge::SetAppFileHandlerApprovalState(const AppId& app_id,
+                                                      ApiApprovalState state) {
+  {
+    ScopedRegistryUpdate(this)->UpdateApp(app_id)->SetFileHandlerApprovalState(
+        state);
+  }
+  registrar_->NotifyWebAppFileHandlerApprovalStateChanged(app_id);
 }
 
 void WebAppSyncBridge::CheckRegistryUpdateData(
@@ -771,8 +773,10 @@ std::string WebAppSyncBridge::GetClientTag(
 
   const sync_pb::WebAppSpecifics& specifics = entity_data.specifics.web_app();
   const GURL start_url(specifics.start_url());
-  DCHECK(!start_url.is_empty());
-  DCHECK(start_url.is_valid());
+  if (start_url.is_empty() || !start_url.is_valid()) {
+    DLOG(ERROR) << "GetClientTag: start_url parse error.";
+    return std::string();
+  }
 
   absl::optional<std::string> manifest_id = absl::nullopt;
   if (specifics.has_manifest_id())

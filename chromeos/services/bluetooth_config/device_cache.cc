@@ -6,6 +6,7 @@
 
 #include "chromeos/services/bluetooth_config/adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/public/cpp/cros_bluetooth_config_util.h"
+#include "components/device_event_log/device_event_log.h"
 
 namespace chromeos {
 namespace bluetooth_config {
@@ -22,8 +23,11 @@ DeviceCache::GetPairedDevices() const {
   // amount of time in which Bluetooth is still enabled but is in the process of
   // turning off. We should still return an empty list in this case to ensure
   // that the UI does not show a list of devices when the toggle is off.
-  if (!IsBluetoothEnabledOrEnabling())
+  if (!IsBluetoothEnabledOrEnabling()) {
+    BLUETOOTH_LOG(EVENT) << "GetPairedDevices() called when Bluetooth is not "
+                         << "enabled nor enabling, returning an empty list.";
     return {};
+  }
 
   return PerformGetPairedDevices();
 }
@@ -35,8 +39,11 @@ DeviceCache::GetUnpairedDevices() const {
   // amount of time in which Bluetooth is still enabled but is in the process of
   // turning off. We should still return an empty list in this case to ensure
   // that the UI does not show a list of devices when the toggle is off.
-  if (!IsBluetoothEnabledOrEnabling())
+  if (!IsBluetoothEnabledOrEnabling()) {
+    BLUETOOTH_LOG(EVENT) << "GetUnpairedDevices() called when Bluetooth is not "
+                         << "enabled nor enabling, returning an empty list.";
     return {};
+  }
 
   return PerformGetUnpairedDevices();
 }

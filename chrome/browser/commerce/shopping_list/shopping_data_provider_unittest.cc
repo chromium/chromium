@@ -19,6 +19,7 @@ const char kCurrencyCode[] = "USD";
 const char kMainTitle[] = "Title";
 const char kFallbackTitle[] = "Fallback Title";
 
+const uint64_t kOfferId = 12345;
 const uint64_t kClusterId = 67890;
 
 TEST(ShoppingDataProviderTest, TestDataMergeWithLeadImage) {
@@ -26,7 +27,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithLeadImage) {
   meta.mutable_lead_image()->set_url(kLeadImageUrl);
 
   base::DictionaryValue data_map;
-  data_map.SetString("image", kFallbackImageUrl);
+  data_map.SetStringKey("image", kFallbackImageUrl);
 
   MergeData(&meta, data_map);
 
@@ -39,7 +40,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithNoLeadImage) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("image", kFallbackImageUrl);
+  data_map.SetStringKey("image", kFallbackImageUrl);
 
   MergeData(&meta, data_map);
 
@@ -52,7 +53,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithTitle) {
   meta.mutable_shopping_specifics()->set_title(kMainTitle);
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kFallbackTitle);
+  data_map.SetStringKey("title", kFallbackTitle);
 
   MergeData(&meta, data_map);
 
@@ -63,7 +64,7 @@ TEST(ShoppingDataProviderTest, TestDataMergeWithNoTitle) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kFallbackTitle);
+  data_map.SetStringKey("title", kFallbackTitle);
 
   MergeData(&meta, data_map);
 
@@ -76,7 +77,7 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecifics) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kMainTitle);
+  data_map.SetStringKey("title", kMainTitle);
 
   commerce::BuyableProduct product;
   product.set_title(kMainTitle);
@@ -84,6 +85,7 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecifics) {
   product.set_product_cluster_id(kClusterId);
   product.mutable_current_price()->set_amount_micros(100L);
   product.mutable_current_price()->set_currency_code(kCurrencyCode);
+  product.set_offer_id(kOfferId);
 
   power_bookmarks::ShoppingSpecifics out_specifics;
 
@@ -94,13 +96,14 @@ TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecifics) {
   EXPECT_EQ(kClusterId, out_specifics.product_cluster_id());
   EXPECT_EQ(100L, out_specifics.current_price().amount_micros());
   EXPECT_EQ(kCurrencyCode, out_specifics.current_price().currency_code());
+  EXPECT_EQ(kOfferId, out_specifics.offer_id());
 }
 
 TEST(ShoppingDataProviderTest, TestPopulateShoppingSpecificsMissingData) {
   power_bookmarks::PowerBookmarkMeta meta;
 
   base::DictionaryValue data_map;
-  data_map.SetString("title", kMainTitle);
+  data_map.SetStringKey("title", kMainTitle);
 
   commerce::BuyableProduct product;
   product.set_title(kMainTitle);

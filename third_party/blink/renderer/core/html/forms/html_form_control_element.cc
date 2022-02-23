@@ -339,8 +339,7 @@ int32_t HTMLFormControlElement::GetAxId() const {
     return 0;
   if (AXObjectCache* cache = document.ExistingAXObjectCache()) {
     if (document.NeedsLayoutTreeUpdate() || document.View()->NeedsLayout() ||
-        document.Lifecycle().GetState() <
-            DocumentLifecycle::kCompositingAssignmentsClean) {
+        document.Lifecycle().GetState() < DocumentLifecycle::kPrePaintClean) {
       document.View()->UpdateAllLifecyclePhasesExceptPaint(
           DocumentUpdateReason::kAccessibility);
     }

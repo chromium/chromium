@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/i18n/unicodestring.h"
+#include "base/memory/raw_ptr.h"
 #include "base/rand_util.h"
 #include "base/task/thread_pool.h"
 #include "base/test/bind.h"
@@ -87,8 +88,8 @@ bool TestAutoMountForURLRequest(
   if (request_info.storage_domain != "automount")
     return false;
 
-  std::vector<base::FilePath::StringType> components;
-  filesystem_url.path().GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      filesystem_url.path().GetComponents();
   std::string mount_point = base::FilePath(components[0]).AsUTF8Unsafe();
 
   if (mount_point == kValidExternalMountPoint) {
@@ -504,7 +505,7 @@ class FileSystemURLLoaderFactoryTest
   scoped_refptr<storage::MockQuotaManager> quota_manager_;
   scoped_refptr<storage::MockQuotaManagerProxy> quota_manager_proxy_;
   // Owned by `file_system_context_` and only usable on `blocking_task_runner_`.
-  storage::FileSystemFileUtil* file_util_ = nullptr;
+  raw_ptr<storage::FileSystemFileUtil> file_util_ = nullptr;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
@@ -543,9 +544,9 @@ IN_PROC_BROWSER_TEST_P(FileSystemURLLoaderFactoryTest, DirectoryListing) {
       listing_entries.push_back(line);
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_EQ("<script>start(\"foo\\\\bar\");</script>", listing_header);
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   EXPECT_EQ("<script>start(\"/foo/bar\");</script>", listing_header);
 #endif
 

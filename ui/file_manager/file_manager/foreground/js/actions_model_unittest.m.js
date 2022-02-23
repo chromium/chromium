@@ -249,6 +249,7 @@ export function testDriveFileEntry(callback) {
   const metadataModel = new MockMetadataModel({
     hosted: false,
     pinned: false,
+    canPin: true,
   });
 
   let model = new ActionsModel(
@@ -355,8 +356,8 @@ export function testDriveHostedFileEntry(callback) {
   driveFileSystem.entries['/test.txt'] = testFile;
 
   const metadataModel = new MockMetadataModel({});
-  metadataModel.set(testDocument, {hosted: true, pinned: false});
-  metadataModel.set(testFile, {hosted: false, pinned: false});
+  metadataModel.set(testDocument, {hosted: true, pinned: false, canPin: true});
+  metadataModel.set(testFile, {hosted: false, pinned: false, canPin: true});
   volumeManager.driveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
     hasCellularNetworkAccess: false,
@@ -454,18 +455,18 @@ export function testDriveHostedFileEntry(callback) {
 }
 
 /**
- * Tests that the correct actions are available for a Google Drive hosted file
- * when the user does not have the required extension installed.
+ * Tests that the correct actions are available for a Drive file that cannot be
+ * pinned.
  */
-export function testDriveHostedFileEntryWithoutExtension(callback) {
+export function testUnpinnableDriveHostedFileEntry(callback) {
   const testDocument = MockFileEntry.create(driveFileSystem, '/test.gdoc');
   const testFile = MockFileEntry.create(driveFileSystem, '/test.txt');
   driveFileSystem.entries['/test.gdoc'] = testDocument;
   driveFileSystem.entries['/test.txt'] = testFile;
 
   const metadataModel = new MockMetadataModel({});
-  metadataModel.set(testDocument, {hosted: true, pinned: false});
-  metadataModel.set(testFile, {hosted: false, pinned: false});
+  metadataModel.set(testDocument, {hosted: true, pinned: false, canPin: false});
+  metadataModel.set(testFile, {hosted: false, pinned: false, canPin: true});
   volumeManager.driveConnectionState = {
     type: chrome.fileManagerPrivate.DriveConnectionStateType.ONLINE,
     hasCellularNetworkAccess: false,
@@ -610,6 +611,7 @@ export function testTeamDriveDirectoryEntry(callback) {
 
   const metadataModel = new MockMetadataModel({
     canShare: true,
+    canPin: true,
   });
 
   const model = new ActionsModel(
@@ -664,6 +666,7 @@ export function testTeamDriveFileEntry(callback) {
   const metadataModel = new MockMetadataModel({
     hosted: false,
     pinned: false,
+    canPin: true,
   });
 
   const model = new ActionsModel(

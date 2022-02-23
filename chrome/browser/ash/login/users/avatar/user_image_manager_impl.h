@@ -10,7 +10,6 @@
 #include <set>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
@@ -67,7 +66,11 @@ class UserImageManagerImpl : public UserImageManager,
   void OnExternalDataFetched(const std::string& policy,
                              std::unique_ptr<std::string> data) override;
 
+  // Sets the `downloaded_profile_image_` without downloading for testing.
+  void SetDownloadedProfileImageForTesting(const gfx::ImageSkia& image);
+
   static void IgnoreProfileDataDownloadDelayForTesting();
+  static void SkipProfileImageDownloadForTesting();
 
   // Key for a dictionary that maps user IDs to user image data with images
   // stored in JPEG format.

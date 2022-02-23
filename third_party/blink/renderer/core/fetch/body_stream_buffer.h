@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 #include "third_party/blink/renderer/core/streams/underlying_source_base.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 
 namespace blink {
@@ -70,6 +70,9 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   void DrainAsChunkedDataPipeGetter(
       ScriptState*,
       mojo::PendingReceiver<network::mojom::blink::ChunkedDataPipeGetter>);
+  // While loading is in progress, a SelfKeepAlive is used to prevent this
+  // object from being garbage collected. If the context is destroyed, the
+  // SelfKeepAlive is cleared. See https://crbug.com/1292744 for details.
   void StartLoading(FetchDataLoader*,
                     FetchDataLoader::Client* /* client */,
                     ExceptionState&);
@@ -78,7 +81,6 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
   // UnderlyingSourceBase
   ScriptPromise pull(ScriptState*) override;
   ScriptPromise Cancel(ScriptState*, ScriptValue reason) override;
-  bool HasPendingActivity() const override;
   void ContextDestroyed() override;
 
   // BytesConsumer::Client
@@ -159,6 +161,9 @@ class CORE_EXPORT BodyStreamBuffer final : public UnderlyingSourceBase,
 
   // TODO(ricea): Remove remaining uses of |stream_broken_|.
   bool stream_broken_ = false;
+
+  // Used to remain alive when there's a loader_.
+  SelfKeepAlive<BodyStreamBuffer> keep_alive_;
 };
 
 }  // namespace blink

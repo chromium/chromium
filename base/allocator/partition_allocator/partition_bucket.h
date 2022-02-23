@@ -5,8 +5,8 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_H_
 
-#include <stddef.h>
-#include <stdint.h>
+#include <cstddef>
+#include <cstdint>
 
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "base/allocator/partition_allocator/partition_alloc_constants.h"
@@ -15,12 +15,9 @@
 #include "base/compiler_specific.h"
 #include "base/thread_annotations.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
-namespace {
-constexpr int kPartitionNumSystemPagesPerSlotSpanBits = 8;
-}
+constexpr inline int kPartitionNumSystemPagesPerSlotSpanBits = 8;
 
 template <bool thread_safe>
 struct PartitionBucket {
@@ -63,11 +60,11 @@ struct PartitionBucket {
   // them. (See |PartitionRoot::AllocFromBucket|.)
   //
   // Note the matching Free() functions are in SlotSpanMetadata.
-  BASE_EXPORT NOINLINE void* SlowPathAlloc(PartitionRoot<thread_safe>* root,
-                                           int flags,
-                                           size_t raw_size,
-                                           size_t slot_span_alignment,
-                                           bool* is_already_zeroed)
+  BASE_EXPORT NOINLINE uintptr_t SlowPathAlloc(PartitionRoot<thread_safe>* root,
+                                               int flags,
+                                               size_t raw_size,
+                                               size_t slot_span_alignment,
+                                               bool* is_already_zeroed)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   ALWAYS_INLINE bool CanStoreRawSize() const {
@@ -99,13 +96,15 @@ struct PartitionBucket {
     static_assert(kPartitionNumSystemPagesPerSlotSpanBits <= 8, "");
     return num_system_pages_per_slot_span << SystemPageShift();
   }
-  ALWAYS_INLINE uint16_t get_slots_per_span() const {
-    return static_cast<uint16_t>(GetSlotNumber(get_bytes_per_span()));
+  ALWAYS_INLINE size_t get_slots_per_span() const {
+    size_t ret = GetSlotNumber(get_bytes_per_span());
+    PA_DCHECK(ret <= SlotSpanMetadata<thread_safe>::kMaxSlotsPerSlotSpan);
+    return ret;
   }
   // Returns a natural number of partition pages (calculated by
   // ComputeSystemPagesPerSlotSpan()) to allocate from the current super page
   // when the bucket runs out of slots.
-  ALWAYS_INLINE uint16_t get_pages_per_slot_span() const {
+  ALWAYS_INLINE size_t get_pages_per_slot_span() const {
     // Rounds up to nearest multiple of NumSystemPagesPerPartitionPage().
     return (num_system_pages_per_slot_span +
             (NumSystemPagesPerPartitionPage() - 1)) /
@@ -159,10 +158,11 @@ struct PartitionBucket {
       int flags,
       size_t slot_span_alignment) EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
-  // Allocates a new super page from the current extent. All slot-spans will be
-  // in the decommitted state. Returns nullptr on error.
-  ALWAYS_INLINE void* AllocNewSuperPage(PartitionRoot<thread_safe>* root,
-                                        int flags)
+  // Allocates a new super page from the current extent, if possible. All
+  // slot-spans will be in the decommitted state. Returns the address of the
+  // super page's payload, or 0 on error.
+  ALWAYS_INLINE uintptr_t AllocNewSuperPage(PartitionRoot<thread_safe>* root,
+                                            int flags)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 
   // Each bucket allocates a slot span when it runs out of slots.
@@ -183,13 +183,20 @@ struct PartitionBucket {
   //
   // If |slot_span| was freshly allocated, it must have been passed through
   // InitializeSlotSpan() first.
-  ALWAYS_INLINE char* ProvisionMoreSlotsAndAllocOne(
-      PartitionRoot<thread_safe>* root,
-      SlotSpanMetadata<thread_safe>* slot_span)
+  ALWAYS_INLINE uintptr_t
+  ProvisionMoreSlotsAndAllocOne(PartitionRoot<thread_safe>* root,
+                                SlotSpanMetadata<thread_safe>* slot_span)
       EXCLUSIVE_LOCKS_REQUIRED(root->lock_);
 };
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal
+
+namespace base::internal {
+
+// TODO(https://crbug.com/1288247): Remove these 'using' declarations once
+// the migration to the new namespaces gets done.
+using ::partition_alloc::internal::PartitionBucket;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PARTITION_BUCKET_H_

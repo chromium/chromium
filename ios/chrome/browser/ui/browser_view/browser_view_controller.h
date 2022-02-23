@@ -82,6 +82,12 @@ class Browser;
 @property(nonatomic, strong)
     UIViewController* infobarModalOverlayContainerViewController;
 
+// The sad tab view controller. Only used to add the sad tab view (if any) to
+// snapshots.
+// TODO(crbug.com/1272491): Refactor snapshotting to remove the need for this
+// property.
+@property(nonatomic, strong) UIViewController* sadTabViewController;
+
 // Presenter used to display accessories over the toolbar (e.g. Find In Page).
 @property(nonatomic, strong)
     ToolbarAccessoryPresenter* toolbarAccessoryPresenter;
@@ -123,6 +129,9 @@ class Browser;
 
 // Shows the voice search UI.
 - (void)startVoiceSearch;
+
+// Returns the number of tabs with the NTP open.
+- (int)liveNTPCount;
 
 @end
 

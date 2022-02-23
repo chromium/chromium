@@ -12,12 +12,13 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/policy_export.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/url_matcher/url_matcher.h"
+#include "components/url_matcher/url_util.h"
 #include "url/gurl.h"
 
 class PrefService;
@@ -70,11 +71,13 @@ class POLICY_EXPORT URLBlocklist {
 
  private:
   // Returns true if |lhs| takes precedence over |rhs|.
-  static bool FilterTakesPrecedence(const url_util::FilterComponents& lhs,
-                                    const url_util::FilterComponents& rhs);
+  static bool FilterTakesPrecedence(
+      const url_matcher::util::FilterComponents& lhs,
+      const url_matcher::util::FilterComponents& rhs);
 
-  url_matcher::URLMatcherConditionSet::ID id_;
-  std::map<url_matcher::URLMatcherConditionSet::ID, url_util::FilterComponents>
+  url_matcher::URLMatcherConditionSet::ID id_ = 0;
+  std::map<url_matcher::URLMatcherConditionSet::ID,
+           url_matcher::util::FilterComponents>
       filters_;
   std::unique_ptr<url_matcher::URLMatcher> url_matcher_;
 };
@@ -82,8 +85,11 @@ class POLICY_EXPORT URLBlocklist {
 // Tracks the blocklist policies for a given profile, and updates it on changes.
 class POLICY_EXPORT URLBlocklistManager {
  public:
-  // Must be constructed on the UI thread.
-  explicit URLBlocklistManager(PrefService* pref_service);
+  // Must be constructed on the UI thread and either of |blocklist_pref_path| or
+  // |allowlist_pref_path| should be valid.
+  URLBlocklistManager(PrefService* pref_service,
+                      absl::optional<std::string> blocklist_pref_path,
+                      absl::optional<std::string> allowlist_pref_path);
   URLBlocklistManager(const URLBlocklistManager&) = delete;
   URLBlocklistManager& operator=(const URLBlocklistManager&) = delete;
   virtual ~URLBlocklistManager();
@@ -112,7 +118,10 @@ class POLICY_EXPORT URLBlocklistManager {
  private:
   // Used to track the policies and update the blocklist on changes.
   PrefChangeRegistrar pref_change_registrar_;
-  PrefService* pref_service_;  // Weak.
+  raw_ptr<PrefService> pref_service_;  // Weak.
+
+  const absl::optional<std::string> blocklist_pref_path_;
+  const absl::optional<std::string> allowlist_pref_path_;
 
   // Used to post tasks to a background thread.
   scoped_refptr<base::SequencedTaskRunner> background_task_runner_;

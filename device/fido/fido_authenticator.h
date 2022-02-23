@@ -11,7 +11,6 @@
 #include "base/callback_forward.h"
 #include "base/component_export.h"
 #include "base/containers/span.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -212,6 +211,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
       const PublicKeyCredentialDescriptor& credential_id,
       DeleteCredentialCallback callback);
 
+  virtual bool SupportsUpdateUserInformation() const;
   virtual void UpdateUserInformation(
       const pin::TokenResponse& pin_token,
       const PublicKeyCredentialDescriptor& credential_id,
@@ -286,12 +286,12 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoAuthenticator {
   virtual bool IsInPairingMode() const = 0;
   virtual bool IsPaired() const = 0;
   virtual bool RequiresBlePairingPin() const = 0;
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual bool IsWinNativeApiAuthenticator() const = 0;
-#endif  // defined(OS_WIN)
-#if defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN)
+#if BUILDFLAG(IS_MAC)
   virtual bool IsTouchIdAuthenticator() const = 0;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   virtual bool IsChromeOSAuthenticator() const = 0;
 #endif

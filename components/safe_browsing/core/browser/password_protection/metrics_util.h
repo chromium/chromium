@@ -191,6 +191,7 @@ void LogSyncAccountType(SyncAccountType sync_account_type);
 // Logs the network response and duration of a password protection ping.
 void LogPasswordProtectionNetworkResponseAndDuration(
     int response_code,
+    int net_error,
     const base::TimeTicks& request_start_time);
 
 // Logs when a sample ping of allowlist URLs is sent to Safe Browsing.

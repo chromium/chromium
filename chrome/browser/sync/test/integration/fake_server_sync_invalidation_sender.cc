@@ -56,7 +56,7 @@ void FakeServerSyncInvalidationSender::OnCommit(
     }
 
     gcm::IncomingMessage message;
-    message.data["payload"] = payload.SerializeAsString();
+    message.raw_data = payload.SerializeAsString();
     fcm_handler->OnMessage(kSyncInvalidationsAppId, message);
   }
 }

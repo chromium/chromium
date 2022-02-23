@@ -9,7 +9,7 @@
 #include <utility>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_type.h"
 #include "base/run_loop.h"
 #include "base/synchronization/lock.h"
@@ -267,7 +267,7 @@ class SecureDnsInterceptor : public net::URLRequestInterceptor {
     return nullptr;
   }
 
-  bool* invoked_interceptor_;
+  raw_ptr<bool> invoked_interceptor_;
 };
 
 class CertNetFetcherURLRequestTestWithSecureDnsInterceptor
@@ -292,7 +292,7 @@ class CertNetFetcherURLRequestTestWithSecureDnsInterceptor
 };
 
 // Helper to start an AIA fetch using default parameters.
-WARN_UNUSED_RESULT std::unique_ptr<CertNetFetcher::Request> StartRequest(
+[[nodiscard]] std::unique_ptr<CertNetFetcher::Request> StartRequest(
     CertNetFetcher* fetcher,
     const GURL& url) {
   return fetcher->FetchCaIssuers(url, CertNetFetcher::DEFAULT,

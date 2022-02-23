@@ -15,16 +15,20 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_mach_port.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <signal.h>
+#endif
+
+#if BUILDFLAG(IS_IOS)
+#include "base/containers/span.h"
 #endif
 
 namespace base {
@@ -38,7 +42,7 @@ class CrashReportDatabase;
 
 namespace crash_reporter {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 bool IsCrashpadEnabled();
 #endif
 
@@ -75,7 +79,7 @@ bool IsCrashpadEnabled();
 // On iOS, this will return false if Crashpad initialization fails.
 bool InitializeCrashpad(bool initial_client, const std::string& process_type);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // This is the same as InitializeCrashpad(), but rather than launching a
 // crashpad_handler executable, relaunches the executable at |exe_path| or the
 // current executable if |exe_path| is empty with a command line argument of
@@ -99,7 +103,7 @@ void InitializeCrashpadWithDllEmbeddedHandler(
     const std::string& user_data_dir,
     const base::FilePath& exe_path,
     const std::vector<std::string>& initial_arguments);
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 // Returns the CrashpadClient for this process. This will lazily create it if
 // it does not already exist. This is called as part of InitializeCrashpad.
@@ -148,16 +152,28 @@ void RequestSingleCrashUpload(const std::string& local_id);
 
 void DumpWithoutCrashing();
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void DumpWithoutCrashAndDeferProcessing();
 void DumpWithoutCrashAndDeferProcessingAtPath(const base::FilePath& path);
+
+// Processes an externally generated dump.
+// An empty minidump is generated and an attachment is created with |dump_data|.
+// |source_name| is used as attachment name and is appended to the product name.
+// |override_annotations| overrides the standard simple annotations sent with
+// the report.
+// Returns whether the external dump was processed successfully.
+bool ProcessExternalDump(
+    const std::string& source_name,
+    base::span<const uint8_t> dump_data,
+    const std::map<std::string, std::string>& override_annotations = {});
 #endif
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
 // Logs message and immediately crashes the current process without triggering a
 // crash dump.
 void CrashWithoutDumping(const std::string& message);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
 
 // Returns the Crashpad database path, only valid in the browser.
 base::FilePath GetCrashpadDatabasePath();
@@ -177,13 +193,13 @@ base::FilePath::StringType::const_pointer GetCrashpadDatabasePathImpl();
 // The implementation function for ClearReportsBetween.
 void ClearReportsBetweenImpl(time_t begin, time_t end);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Captures a minidump for the process named by its |task_port| and stores it
 // in the current crash report database.
 void DumpProcessWithoutCrashing(task_t task_port);
 #endif
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Convert intermediate dumps into minidumps and trigger an upload if
 // StartProcessingPendingReports() has been called. Optional |annotations| will
 // merge with any process annotations. These are useful for adding annotations
@@ -204,19 +220,13 @@ void ProcessIntermediateDump(
 void StartProcessingPendingReports();
 #endif
 
-#if defined(OS_ANDROID)
-// This is used by WebView to generate a dump on behalf of the embedding app.
-// This function can only be called from the browser process. Returns `true` on
-// success.
-class CrashReporterClient;
-bool DumpWithoutCrashingForClient(CrashReporterClient* client);
-
+#if BUILDFLAG(IS_ANDROID)
 // If a CrashReporterClient has enabled sanitization, this function specifies
 // regions of memory which are allowed to be collected by Crashpad.
 void AllowMemoryRange(void* begin, size_t size);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Install a handler that gets a chance to handle faults before Crashpad. This
 // is used by V8 for trap-based bounds checks.
 void SetFirstChanceExceptionHandler(bool (*handler)(int, siginfo_t*, void*));
@@ -224,11 +234,11 @@ void SetFirstChanceExceptionHandler(bool (*handler)(int, siginfo_t*, void*));
 // Gets the socket and process ID of the Crashpad handler connected to this
 // process, valid if this function returns `true`.
 bool GetHandlerSocket(int* sock, pid_t* pid);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 namespace internal {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Returns platform specific annotations. This is broken out on Windows only so
 // that it may be reused by GetCrashKeysForKasko.
 void GetPlatformCrashpadAnnotations(
@@ -238,15 +248,15 @@ void GetPlatformCrashpadAnnotations(
 // target process.
 DWORD WINAPI DumpProcessForHungInputThread(void* param);
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Starts the handler process with an initial client connected on fd,
 // the handler will write minidump to database if write_minidump_to_database is
 // true.
 // Returns `true` on success.
 bool StartHandlerForClient(int fd, bool write_minidump_to_database);
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // The platform-specific portion of InitializeCrashpad(). On Windows, if
 // |user_data_dir| is non-empty, the user data directory will be passed to the
@@ -266,6 +276,11 @@ bool PlatformCrashpadInitialization(
 // Returns the current crash report database object, or null if it has not
 // been initialized yet.
 crashpad::CrashReportDatabase* GetCrashReportDatabase();
+
+// Sets the global database and database path for testing. Must be called when
+// crashpad is not running.
+void SetCrashReportDatabaseForTesting(crashpad::CrashReportDatabase* database,
+                                      base::FilePath* database_path);
 
 }  // namespace internal
 

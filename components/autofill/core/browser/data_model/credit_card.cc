@@ -49,14 +49,8 @@ using structured_address::VerificationStatus;
 //  - \u2022 - Bullet.
 //  - \u2006 - SIX-PER-EM SPACE (small space between bullets).
 //  - \u2060 - WORD-JOINER (makes obfuscated string undivisible).
-constexpr char16_t kMidlineEllipsis4Dots[] =
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060";
-constexpr char16_t kMidlineEllipsis2Dots[] =
-    u"\u2022\u2060\u2006\u2060"
-    u"\u2022\u2060\u2006\u2060";
+constexpr char16_t kMidlineEllipsisDot[] = u"\u2022\u2060\u2006\u2060";
+constexpr char16_t kMidlineEllipsisPlainDot = u'\u2022';
 
 namespace {
 
@@ -140,11 +134,9 @@ namespace internal {
 
 std::u16string GetObfuscatedStringForCardDigits(const std::u16string& digits,
                                                 int obfuscation_length) {
-  DCHECK(obfuscation_length == 2 || obfuscation_length == 4);
   std::u16string obfuscated_string =
-      std::u16string(obfuscation_length == 2 ? kMidlineEllipsis2Dots
-                                             : kMidlineEllipsis4Dots) +
-      digits;
+      CreditCard::GetMidlineEllipsisDots(obfuscation_length);
+  obfuscated_string.append(digits);
   base::i18n::WrapStringWithLTRFormatting(&obfuscated_string);
   return obfuscated_string;
 }
@@ -165,6 +157,13 @@ CreditCard::CreditCard(RecordType type, const std::string& server_id)
   DCHECK(type == MASKED_SERVER_CARD || type == FULL_SERVER_CARD);
   record_type_ = type;
   server_id_ = server_id;
+}
+
+CreditCard::CreditCard(RecordType type, const int64_t& instrument_id)
+    : CreditCard() {
+  DCHECK(type == MASKED_SERVER_CARD || type == FULL_SERVER_CARD);
+  record_type_ = type;
+  instrument_id_ = instrument_id;
 }
 
 CreditCard::CreditCard() : CreditCard(base::GenerateGUID(), std::string()) {}
@@ -363,6 +362,18 @@ bool CreditCard::IsNicknameValid(const std::u16string& nickname) {
   }
 
   return true;
+}
+
+// static
+std::u16string CreditCard::GetMidlineEllipsisDots(size_t num_dots) {
+  DCHECK(num_dots > 0);
+  std::u16string dots;
+  dots.reserve(sizeof(kMidlineEllipsisDot) * num_dots);
+
+  for (size_t i = 0; i < num_dots; i++) {
+    dots.append(kMidlineEllipsisDot);
+  }
+  return dots;
 }
 
 void CreditCard::SetNetworkForMaskedCard(base::StringPiece network) {
@@ -889,6 +900,13 @@ std::u16string CreditCard::ObfuscatedLastFourDigits(
                                                     obfuscation_length);
 }
 
+std::u16string CreditCard::ObfuscatedLastFourDigitsForSplitFields() const {
+  // For split credit card number fields, use plain dots without spacing and no
+  // LTR formatting. Only obfuscate 12 dots and append the last four digits of
+  // the credit card number.
+  return std::u16string(12, kMidlineEllipsisPlainDot) + LastFourDigits();
+}
+
 std::string CreditCard::CardIconStringForAutofillSuggestion() const {
   if (base::FeatureList::IsEnabled(features::kAutofillEnableGoogleIssuedCard) &&
       IsGoogleIssuedCard()) {
@@ -931,7 +949,7 @@ std::u16string CreditCard::CardIdentifierStringForAutofillDisplay(
   return networkAndLastFourDigits;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
   std::u16string obfuscated_number = ObfuscatedLastFourDigits();
   if (record_type_ == VIRTUAL_CARD) {
@@ -941,7 +959,7 @@ std::u16string CreditCard::CardIdentifierStringForManualFilling() const {
   }
   return obfuscated_number;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 std::u16string CreditCard::CardIdentifierStringAndDescriptiveExpiration(
     const std::string& app_locale,
@@ -983,6 +1001,10 @@ std::u16string CreditCard::Expiration2DigitMonthAsString() const {
   return data_util::Expiration2DigitMonthAsString(expiration_month_);
 }
 
+std::u16string CreditCard::Expiration2DigitYearAsString() const {
+  return data_util::Expiration2DigitYearAsString(expiration_year_);
+}
+
 std::u16string CreditCard::Expiration4DigitYearAsString() const {
   return data_util::Expiration4DigitYearAsString(expiration_year_);
 }
@@ -1019,10 +1041,6 @@ std::unique_ptr<CreditCard> CreditCard::CreateVirtualCard(
   // server card.
   virtual_card->set_guid(card.guid() + kVirtualCardIdentifierSuffix);
   return virtual_card;
-}
-
-std::u16string CreditCard::Expiration2DigitYearAsString() const {
-  return data_util::Expiration2DigitYearAsString(expiration_year_);
 }
 
 void CreditCard::GetSupportedTypes(ServerFieldTypeSet* supported_types) const {

@@ -47,7 +47,7 @@ std::unique_ptr<base::FieldTrialList> SetUpFieldTrialsAndFeatureList() {
 }
 
 namespace {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Mobile config, for iOS see ios/web/app/web_main_loop.cc.
 constexpr int kThreadPoolDefaultMin = 6;
 constexpr int kThreadPoolMax = 8;
@@ -78,7 +78,7 @@ void StartBrowserThreadPool() {
       base::RecommendedMaxNumberOfThreadsInThreadGroup(
           min, kThreadPoolMax, kThreadPoolCoresMultiplier, kThreadPoolOffset)};
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   thread_pool_init_params.common_thread_pool_environment = base::
       ThreadPoolInstance::InitParams::CommonThreadPoolEnvironment::COM_MTA;
 #endif

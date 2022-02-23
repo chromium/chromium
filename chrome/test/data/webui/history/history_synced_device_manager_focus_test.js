@@ -3,9 +3,11 @@
 // found in the LICENSE file.
 
 import {ensureLazyLoaded} from 'chrome://history/history.js';
+import {getDeepActiveElement} from 'chrome://resources/js/util.m.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
-import {createSession, createWindow, polymerSelectAll} from 'chrome://test/history/test_util.js';
-import {flushTasks} from 'chrome://test/test_util.js';
+import {flushTasks} from 'chrome://webui-test/test_util.js';
+
+import {createSession, createWindow, polymerSelectAll} from './test_util.js';
 
 suite('<history-synced-device-manager>', function() {
   let element;
@@ -32,14 +34,8 @@ suite('<history-synced-device-manager>', function() {
 
     element.sessionList = sessionList;
 
-    let lastFocused;
     let cards;
     let focused;
-    const onFocusHandler = element.focusGrid_.onFocus;
-    element.focusGrid_.onFocus = function(row, e) {
-      onFocusHandler.call(element.focusGrid_, row, e);
-      lastFocused = e.currentTarget;
-    };
 
     await flushTasks();
     cards = polymerSelectAll(element, 'history-synced-device-card');
@@ -50,36 +46,36 @@ suite('<history-synced-device-manager>', function() {
     // Go to the collapse button.
     pressAndReleaseKeyOn(focused, 39, [], 'ArrowRight');
     focused = cards[0].$['collapse-button'];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
 
     // Go to the first url.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = polymerSelectAll(cards[0], '.website-link')[0];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
 
     // Collapse the first card.
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     focused = cards[0].$['collapse-button'];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
     focused.click();
     await flushTasks();
 
     // Pressing down goes to the next card.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = cards[1].$['collapse-button'];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
 
     // Expand the first card.
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     focused = cards[0].$['collapse-button'];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
     focused.click();
     await flushTasks();
 
     // First card's urls are focusable again.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = polymerSelectAll(cards[0], '.website-link')[0];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
 
     // Remove the second URL from the first card.
     sessionList[0].windows[0].tabs.splice(1, 1);
@@ -91,11 +87,11 @@ suite('<history-synced-device-manager>', function() {
     // Go to the next card's menu buttons.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = cards[1].$['collapse-button'];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
 
     pressAndReleaseKeyOn(focused, 38, [], 'ArrowUp');
     focused = polymerSelectAll(cards[0], '.website-link')[0];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
 
     // Remove the second card.
     sessionList.splice(1, 1);
@@ -107,6 +103,6 @@ suite('<history-synced-device-manager>', function() {
     // Pressing down goes to the next card.
     pressAndReleaseKeyOn(focused, 40, [], 'ArrowDown');
     focused = cards[1].$['collapse-button'];
-    assertEquals(focused, lastFocused);
+    assertEquals(focused, getDeepActiveElement());
   });
 });

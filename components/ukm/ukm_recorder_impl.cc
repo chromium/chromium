@@ -22,6 +22,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
 #include "components/ukm/scheme_constants.h"
+#include "components/ukm/ukm_recorder_observer.h"
 #include "components/variations/variations_associated_data.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "services/metrics/public/cpp/ukm_decode.h"
@@ -41,19 +42,17 @@ const base::Feature kUkmSamplingRateFeature{"UkmSamplingRate",
 
 namespace {
 
-// Gets the list of whitelisted Entries as string. Format is a comma separated
-// list of Entry names (as strings).
-std::string GetWhitelistEntries() {
-  return base::GetFieldTrialParamValueByFeature(kUkmFeature,
-                                                "WhitelistEntries");
-}
-
 bool IsWhitelistedSourceId(SourceId source_id) {
   SourceIdType type = GetSourceIdType(source_id);
   return type == SourceIdType::NAVIGATION_ID || type == SourceIdType::APP_ID ||
          type == SourceIdType::HISTORY_ID || type == SourceIdType::WEBAPK_ID ||
          type == SourceIdType::PAYMENT_APP_ID ||
          type == SourceIdType::NO_URL_ID;
+}
+
+bool IsAppIdType(SourceId source_id) {
+  SourceIdType type = GetSourceIdType(source_id);
+  return type == SourceIdType::APP_ID;
 }
 
 // Returns whether |url| has one of the schemes supported for logging to UKM.
@@ -94,6 +93,12 @@ void RecordDroppedSource(DroppedDataReason reason) {
   UMA_HISTOGRAM_ENUMERATION(
       "UKM.Sources.Dropped", static_cast<int>(reason),
       static_cast<int>(DroppedDataReason::NUM_DROPPED_DATA_REASONS));
+}
+
+void RecordDroppedSource(bool already_recorded_another_reason,
+                         DroppedDataReason reason) {
+  if (!already_recorded_another_reason)
+    RecordDroppedSource(reason);
 }
 
 void RecordDroppedEntry(uint64_t event_hash, DroppedDataReason reason) {
@@ -263,6 +268,8 @@ void UkmRecorderImpl::Purge() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   recordings_.Reset();
   recording_is_continuous_ = false;
+
+  NotifyAllObservers(&UkmRecorderObserver::OnPurge);
 }
 
 void UkmRecorderImpl::PurgeRecordingsWithUrlScheme(
@@ -280,6 +287,9 @@ void UkmRecorderImpl::PurgeRecordingsWithUrlScheme(
 
   PurgeSourcesAndEventsBySourceIds(relevant_source_ids);
   recording_is_continuous_ = false;
+
+  NotifyAllObservers(&UkmRecorderObserver::OnPurgeRecordingsWithUrlScheme,
+                     url_scheme);
 }
 
 void UkmRecorderImpl::PurgeRecordingsWithSourceIdType(
@@ -329,6 +339,32 @@ void UkmRecorderImpl::SetEntryFilter(
   entry_filter_ = std::move(entry_filter);
 }
 
+void UkmRecorderImpl::AddUkmRecorderObserver(
+    const base::flat_set<uint64_t>& event_hashes,
+    UkmRecorderObserver* observer) {
+  DCHECK(observer);
+  base::AutoLock auto_lock(lock_);
+  scoped_refptr<UkmRecorderObserverList> observers;
+  if (observers_.find(event_hashes) == observers_.end()) {
+    observers_.insert(
+        {event_hashes, base::MakeRefCounted<UkmRecorderObserverList>()});
+  }
+
+  observers_[event_hashes]->AddObserver(observer);
+}
+
+void UkmRecorderImpl::RemoveUkmRecorderObserver(UkmRecorderObserver* observer) {
+  base::AutoLock auto_lock(lock_);
+  for (auto it = observers_.begin(); it != observers_.end();) {
+    if (it->second->RemoveObserver(observer) ==
+        UkmRecorderObserverList::RemoveObserverResult::kWasOrBecameEmpty) {
+      it = observers_.erase(it);
+    } else {
+      ++it;
+    }
+  }
+}
+
 // TODO(rkaplow): This should be refactored.
 void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -340,6 +376,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     StoreEntryProto(*entry, proto_entry);
     source_ids_seen.insert(entry->source_id);
   }
+
   // Number of sources excluded from this report because no entries referred to
   // them.
   const int num_sources_unsent =
@@ -353,6 +390,7 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
 
   // Number of sources discarded due to not matching a navigation URL.
   int num_sources_unmatched = 0;
+
   std::unordered_map<SourceIdType, int> serialized_source_type_counts;
 
   for (const auto& kv : recordings_.sources) {
@@ -382,12 +420,15 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
       // Omit entryless sources from the report.
       if (!base::Contains(source_ids_seen, kv.first)) {
         continue;
-      } else {
-        // Source of ukm::SourceIdObj::Type::DEFAULT type will not be kept
-        // after entries are logged.
-        MarkSourceForDeletion(kv.first);
       }
+
+      // Non-whitelisted Source types will not be kept after entries are logged.
+      MarkSourceForDeletion(kv.first);
     }
+    // Minimal validations before serializing into a proto message.
+    // See crbug/1274876.
+    DCHECK_NE(kv.second->id(), ukm::kInvalidSourceId);
+    DCHECK_NE(kv.second->urls().size(), 0u);
     Source* proto_source = report->add_sources();
     kv.second->PopulateProto(proto_source);
 
@@ -404,8 +445,6 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
         event_aggregate.dropped_due_to_limits);
     proto_aggregate->set_dropped_due_to_sampling(
         event_aggregate.dropped_due_to_sampling);
-    proto_aggregate->set_dropped_due_to_whitelist(
-        event_aggregate.dropped_due_to_whitelist);
     proto_aggregate->set_dropped_due_to_filter(
         event_aggregate.dropped_due_to_filter);
     proto_aggregate->set_dropped_due_to_unconfigured(
@@ -429,11 +468,6 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
         proto_metric->set_dropped_due_to_sampling(
             aggregate.dropped_due_to_sampling);
       }
-      if (aggregate.dropped_due_to_whitelist !=
-          event_aggregate.dropped_due_to_whitelist) {
-        proto_metric->set_dropped_due_to_whitelist(
-            aggregate.dropped_due_to_whitelist);
-      }
       if (aggregate.dropped_due_to_filter !=
           event_aggregate.dropped_due_to_filter) {
         proto_metric->set_dropped_due_to_filter(
@@ -447,8 +481,8 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
     }
   }
   int num_serialized_sources = 0;
-  for (const auto& entry : serialized_source_type_counts) {
-    num_serialized_sources += entry.second;
+  for (const auto& source_type_and_count : serialized_source_type_counts) {
+    num_serialized_sources += source_type_and_count.second;
   }
 
   UMA_HISTOGRAM_COUNTS_1000("UKM.Sources.SerializedCount2",
@@ -512,16 +546,151 @@ void UkmRecorderImpl::StoreRecordingsInReport(Report* report) {
   report->set_is_continuous(recording_is_continuous_);
   recording_is_continuous_ = true;
 
-  // Defer at most GetMaxKeptSources() sources to the next report,
-  // prioritizing most recently created ones.
-  int pruned_sources_age = PruneOldSources(max_kept_sources_);
+  // Modify the set source_ids_seen by removing sources that aren't in
+  // recordings_. We do this here as there is a few places for
+  // recordings_.sources to be modified. The resulting set will be currently
+  // existing sources that were seen in this report.
+  auto it = source_ids_seen.begin();
+  while (it != source_ids_seen.end()) {
+    if (!base::Contains(recordings_.sources, *it)) {
+      it = source_ids_seen.erase(it);
+    } else {
+      it++;
+    }
+  }
+
+  // Build the set of sources that exist in recordings_.sources that were not
+  // seen in this report.
+  std::set<SourceId> source_ids_unseen;
+  for (const auto& kv : recordings_.sources) {
+    if (!base::Contains(source_ids_seen, kv.first)) {
+      source_ids_unseen.insert(kv.first);
+    }
+  }
+
+  // Special case APP_IDs. Ideally this is not going to exist for too long, as
+  // it would be preferable to have a more general purpose solution.
+  std::set<SourceId> source_ids_app_id;
+
+  // Only done if we are in the experiment that will leave APP_ID metrics for
+  // last when pruning. This block extracts out all source_ids from the
+  // seen/unseen lists and stores them in |source_ids_app_id|.
+  if (base::GetFieldTrialParamByFeatureAsBool(kUkmFeature, "PruneAppIdLast",
+                                              false)) {
+    it = source_ids_seen.begin();
+    while (it != source_ids_seen.end()) {
+      if (IsAppIdType(*it)) {
+        source_ids_app_id.insert(*it);
+        it = source_ids_seen.erase(it);
+      } else {
+        it++;
+      }
+    }
+
+    it = source_ids_unseen.begin();
+    while (it != source_ids_unseen.end()) {
+      if (IsAppIdType(*it)) {
+        source_ids_app_id.insert(*it);
+        it = source_ids_unseen.erase(it);
+      } else {
+        it++;
+      }
+    }
+  }
+
+  int pruned_sources_age_sec = 0;
+  int num_sources = recordings_.sources.size();
+  // Setup an experiment to test what will occur if we prune unseen sources
+  // first.
+  if (base::GetFieldTrialParamByFeatureAsBool(
+          kUkmFeature, "PruneUnseenSourcesFirst", false)) {
+    int pruned_sources_age_from_unseen_sec =
+        PruneOldSources(max_kept_sources_, source_ids_unseen);
+
+    UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NumUnseen",
+                               num_sources - recordings_.sources.size());
+    num_sources = recordings_.sources.size();
+
+    // Prune again from seen sources. Note that if we've already pruned enough
+    // from the unseen sources, this will be a noop.
+    int pruned_sources_age_from_seen_sec =
+        PruneOldSources(max_kept_sources_, source_ids_seen);
+
+    UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NumSeen",
+                               num_sources - recordings_.sources.size());
+    num_sources = recordings_.sources.size();
+
+    int pruned_sources_age_from_app_id_sec = 0;
+
+    // Technically this should be fine without the feature, since the group
+    // will be empty, but might as well add the feature check.
+    // Still prune the APP_ID entries. We don't want it to be unbounded, but
+    // providing a higher default here in case.
+    if (base::GetFieldTrialParamByFeatureAsBool(kUkmFeature, "PruneAppIdLast",
+                                                false)) {
+      pruned_sources_age_from_app_id_sec =
+          PruneOldSources(500, source_ids_app_id);
+
+      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NumAppId",
+                                 num_sources - recordings_.sources.size());
+    }
+
+    // We're looking for the newest age, which will be the largest between the
+    // two sets we pruned from.
+    pruned_sources_age_sec = std::max({pruned_sources_age_from_unseen_sec,
+                                       pruned_sources_age_from_seen_sec,
+                                       pruned_sources_age_from_app_id_sec});
+
+  } else {
+    // In this case, we prune all sources without caring if they were seen or
+    // not. Make a set of all existing sources so we can use the same
+    // PruneOldSources method.
+    std::set<SourceId> all_sources;
+    for (const auto& kv : recordings_.sources) {
+      all_sources.insert(kv.first);
+    }
+    if (base::GetFieldTrialParamByFeatureAsBool(kUkmFeature, "PruneAppIdLast",
+                                                false)) {
+      std::set<SourceId> all_sources_without_app_id;
+
+      // This will put into |all_sources_without_app_id| the set of
+      // |all_sources| - |source_ids_app_id|.
+      std::set_difference(all_sources.begin(), all_sources.end(),
+                          source_ids_app_id.begin(), source_ids_app_id.end(),
+                          std::inserter(all_sources_without_app_id,
+                                        all_sources_without_app_id.end()));
+
+      // Now, prune the non-APP_ID, then the APP_ID.
+      int pruned_sources_age_sec_non_app_id =
+          PruneOldSources(max_kept_sources_, all_sources_without_app_id);
+
+      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.AppExpNumNonAppId",
+                                 num_sources - recordings_.sources.size());
+      num_sources = recordings_.sources.size();
+
+      int pruned_sources_age_sec_app_id =
+          PruneOldSources(500, source_ids_app_id);
+
+      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.AppExpNumAppId",
+                                 num_sources - recordings_.sources.size());
+
+      pruned_sources_age_sec = std::max(pruned_sources_age_sec_non_app_id,
+                                        pruned_sources_age_sec_app_id);
+
+    } else {
+      pruned_sources_age_sec = PruneOldSources(max_kept_sources_, all_sources);
+      UMA_HISTOGRAM_COUNTS_10000("UKM.PrunedSources.NoExp",
+                                 num_sources - recordings_.sources.size());
+    }
+  }
+
   // Record how old the newest truncated source is.
-  source_counts_proto->set_pruned_sources_age_seconds(pruned_sources_age);
+  source_counts_proto->set_pruned_sources_age_seconds(pruned_sources_age_sec);
 
   // Set deferred sources count after pruning.
   source_counts_proto->set_deferred_sources(recordings_.sources.size());
-  // Same value as the deferred source count, for setting the carryover count in
-  // the next reporting cycle.
+  // Same value as the deferred source count, for setting the carryover count
+  // in the next reporting cycle.
   recordings_.source_counts.carryover_sources = recordings_.sources.size();
 
   // We already matched these deferred sources against the URL whitelist.
@@ -554,10 +723,6 @@ bool UkmRecorderImpl::ShouldRestrictToWhitelistedSourceIds() const {
       kUkmFeature, "RestrictToWhitelistedSourceIds", false);
 }
 
-bool UkmRecorderImpl::ShouldRestrictToWhitelistedEntries() const {
-  return true;
-}
-
 bool UkmRecorderImpl::ApplyEntryFilter(mojom::UkmEntry* entry) {
   base::flat_set<uint64_t> dropped_metric_hashes;
 
@@ -579,29 +744,62 @@ bool UkmRecorderImpl::ApplyEntryFilter(mojom::UkmEntry* entry) {
   return true;
 }
 
-int UkmRecorderImpl::PruneOldSources(size_t max_kept_sources) {
-  if (recordings_.sources.size() <= max_kept_sources)
+int UkmRecorderImpl::PruneOldSources(size_t max_kept_sources,
+                                     const std::set<SourceId>& pruning_set) {
+  long num_prune_required = recordings_.sources.size() - max_kept_sources;
+  // In either case here, nothing to be done.
+  if (num_prune_required <= 0 || pruning_set.size() == 0)
     return 0;
 
-  std::vector<std::pair<base::TimeTicks, SourceId>> timestamp_source_id_pairs;
-  for (const auto& kv : recordings_.sources) {
-    timestamp_source_id_pairs.push_back(
-        std::make_pair(kv.second->creation_time(), kv.first));
+  // We can prune everything, so let's do that directly.
+  if (static_cast<unsigned long>(num_prune_required) >= pruning_set.size()) {
+    base::TimeTicks pruned_sources_age = base::TimeTicks();
+    for (const auto& source_id : pruning_set) {
+      auto creation_time = recordings_.sources[source_id]->creation_time();
+      if (creation_time > pruned_sources_age)
+        pruned_sources_age = creation_time;
+
+      recordings_.sources.erase(source_id);
+    }
+    base::TimeDelta age_delta = base::TimeTicks::Now() - pruned_sources_age;
+    // Technically the age we return here isn't quite right, this is the age of
+    // the newest element of the pruned set, while we actually want the age of
+    // the last one kept. However it's very unlikely to make a difference in
+    // practice as if all are pruned here, it is very likely we'll need to prune
+    // from the seen set next. Since it would be logically quite a bit more
+    // complex to get this exactly right, it's ok for this to be very slightly
+    // off in an edge case just to keep complexity down.
+    return age_delta.InSeconds();
   }
-  // Partially sort so that the last |max_kept_sources| elements are the
+
+  // In this case we cannot prune everything, so we will select only the oldest
+  // sources to prune.
+
+  // Build a list of timestamp->source pairs for all source we consider for
+  // pruning.
+  std::vector<std::pair<base::TimeTicks, SourceId>> timestamp_source_id_pairs;
+  for (const auto& source_id : pruning_set) {
+    auto creation_time = recordings_.sources[source_id]->creation_time();
+    timestamp_source_id_pairs.emplace_back(
+        std::make_pair(creation_time, source_id));
+  }
+
+  // Partially sort so that the last |num_prune_required| elements are the
   // newest.
   std::nth_element(timestamp_source_id_pairs.begin(),
-                   timestamp_source_id_pairs.end() - max_kept_sources,
+                   timestamp_source_id_pairs.end() - num_prune_required,
                    timestamp_source_id_pairs.end());
 
-  for (auto kv = timestamp_source_id_pairs.begin();
-       kv != timestamp_source_id_pairs.end() - max_kept_sources; ++kv) {
-    recordings_.sources.erase(kv->second);
+  // Actually prune |num_prune_required| sources.
+  for (int i = 0; i < num_prune_required; i++) {
+    auto source_id = timestamp_source_id_pairs[i].second;
+    recordings_.sources.erase(source_id);
   }
 
   base::TimeDelta pruned_sources_age =
       base::TimeTicks::Now() -
-      (timestamp_source_id_pairs.end() - (max_kept_sources + 1))->first;
+      (timestamp_source_id_pairs.end() - (num_prune_required + 1))->first;
+
   return pruned_sources_age.InSeconds();
 }
 
@@ -614,9 +812,10 @@ void UkmRecorderImpl::UpdateSourceURL(SourceId source_id,
     return;
 
   const GURL sanitized_url = SanitizeURL(unsanitized_url);
-  if (!ShouldRecordUrl(source_id, sanitized_url))
+  if (ShouldRecordUrl(source_id, sanitized_url) ==
+      ShouldRecordUrlResult::kDropped) {
     return;
-
+  }
   RecordSource(std::make_unique<UkmSource>(source_id, sanitized_url));
 }
 
@@ -641,8 +840,10 @@ void UkmRecorderImpl::RecordNavigation(
   std::vector<GURL> urls;
   for (const GURL& url : unsanitized_navigation_data.urls) {
     const GURL sanitized_url = SanitizeURL(url);
-    if (ShouldRecordUrl(source_id, sanitized_url))
+    if (ShouldRecordUrl(source_id, sanitized_url) !=
+        ShouldRecordUrlResult::kDropped) {
       urls.push_back(std::move(sanitized_url));
+    }
   }
 
   // None of the URLs passed the ShouldRecordUrl check, so do not create a new
@@ -656,54 +857,73 @@ void UkmRecorderImpl::RecordNavigation(
       std::make_unique<UkmSource>(source_id, sanitized_navigation_data));
 }
 
-bool UkmRecorderImpl::ShouldRecordUrl(SourceId source_id,
-                                      const GURL& sanitized_url) const {
+UkmRecorderImpl::ShouldRecordUrlResult UkmRecorderImpl::ShouldRecordUrl(
+    SourceId source_id,
+    const GURL& sanitized_url) const {
+  ShouldRecordUrlResult result = ShouldRecordUrlResult::kOk;
+  bool has_recorded_reason = false;
   if (!recording_enabled_) {
     RecordDroppedSource(DroppedDataReason::RECORDING_DISABLED);
-    return false;
+    // Don't return the result yet. Check if the we are allowed to notify
+    // observers, as they may rely on the not uploaded metrics to determine
+    // how some features should work.
+    result = ShouldRecordUrlResult::kObserverOnly;
+    has_recorded_reason = true;
   }
 
   if (recordings_.sources.size() >= max_sources_) {
-    RecordDroppedSource(DroppedDataReason::MAX_HIT);
-    return false;
+    RecordDroppedSource(has_recorded_reason, DroppedDataReason::MAX_HIT);
+    return ShouldRecordUrlResult::kDropped;
   }
 
   if (ShouldRestrictToWhitelistedSourceIds() &&
       !IsWhitelistedSourceId(source_id)) {
-    RecordDroppedSource(DroppedDataReason::NOT_WHITELISTED);
-    return false;
+    RecordDroppedSource(has_recorded_reason,
+                        DroppedDataReason::NOT_WHITELISTED);
+    return ShouldRecordUrlResult::kDropped;
   }
 
   if (sanitized_url.is_empty()) {
-    RecordDroppedSource(DroppedDataReason::EMPTY_URL);
-    return false;
+    RecordDroppedSource(has_recorded_reason, DroppedDataReason::EMPTY_URL);
+    return ShouldRecordUrlResult::kDropped;
   }
 
   if (!HasSupportedScheme(sanitized_url)) {
-    RecordDroppedSource(DroppedDataReason::UNSUPPORTED_URL_SCHEME);
+    RecordDroppedSource(has_recorded_reason,
+                        DroppedDataReason::UNSUPPORTED_URL_SCHEME);
     DVLOG(2) << "Dropped Unsupported UKM URL:" << source_id << ":"
              << sanitized_url.spec();
-    return false;
+    return ShouldRecordUrlResult::kDropped;
   }
 
   // Extension URLs need to be specifically enabled and the extension synced.
   if (sanitized_url.SchemeIs(kExtensionScheme)) {
     DCHECK_EQ(sanitized_url.GetWithEmptyPath(), sanitized_url);
     if (!extensions_enabled_) {
-      RecordDroppedSource(DroppedDataReason::EXTENSION_URLS_DISABLED);
-      return false;
+      RecordDroppedSource(has_recorded_reason,
+                          DroppedDataReason::EXTENSION_URLS_DISABLED);
+      return ShouldRecordUrlResult::kDropped;
     }
     if (!is_webstore_extension_callback_ ||
         !is_webstore_extension_callback_.Run(sanitized_url.host_piece())) {
-      RecordDroppedSource(DroppedDataReason::EXTENSION_NOT_SYNCED);
-      return false;
+      RecordDroppedSource(has_recorded_reason,
+                          DroppedDataReason::EXTENSION_NOT_SYNCED);
+      return ShouldRecordUrlResult::kDropped;
     }
   }
-  return true;
+  return result;
 }
 
 void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
   SourceId source_id = source->id();
+  // If UKM recording is disabled due to |recording_enabled_|, still notify
+  // observers as they might be interested in it.
+  NotifyAllObservers(&UkmRecorderObserver::OnUpdateSourceURL, source_id,
+                     source->urls());
+  if (!recording_enabled_) {
+    return;
+  }
+
   if (GetSourceIdType(source_id) == SourceIdType::NAVIGATION_ID)
     recordings_.source_counts.navigation_sources++;
   recordings_.source_counts.observed++;
@@ -713,6 +933,8 @@ void UkmRecorderImpl::RecordSource(std::unique_ptr<UkmSource> source) {
 void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!HasUnknownMetrics(decode_map_, *entry));
+
+  NotifyObserversWithNewEntry(*entry);
 
   if (!recording_enabled_) {
     RecordDroppedEntry(entry->event_hash,
@@ -743,15 +965,6 @@ void UkmRecorderImpl::AddEntry(mojom::UkmEntryPtr entry) {
     event_aggregate.dropped_due_to_unconfigured++;
     for (auto& metric : entry->metrics)
       event_aggregate.metrics[metric.first].dropped_due_to_unconfigured++;
-    return;
-  }
-
-  if (ShouldRestrictToWhitelistedEntries() &&
-      !base::Contains(whitelisted_entry_hashes_, entry->event_hash)) {
-    RecordDroppedEntry(entry->event_hash, DroppedDataReason::NOT_WHITELISTED);
-    event_aggregate.dropped_due_to_whitelist++;
-    for (auto& metric : entry->metrics)
-      event_aggregate.metrics[metric.first].dropped_due_to_whitelist++;
     return;
   }
 
@@ -882,14 +1095,30 @@ bool UkmRecorderImpl::IsSampledIn(int64_t source_id,
   return sampled_num % sampling_rate == 0;
 }
 
-void UkmRecorderImpl::StoreWhitelistedEntries() {
+void UkmRecorderImpl::InitDecodeMap() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  const auto entries =
-      base::SplitString(GetWhitelistEntries(), ",", base::TRIM_WHITESPACE,
-                        base::SPLIT_WANT_NONEMPTY);
-  for (const auto& entry_string : entries)
-    whitelisted_entry_hashes_.insert(base::HashMetricName(entry_string));
   decode_map_ = builders::CreateDecodeMap();
+}
+
+void UkmRecorderImpl::NotifyObserversWithNewEntry(
+    const mojom::UkmEntry& entry) {
+  base::AutoLock auto_lock(lock_);
+
+  for (const auto& observer : observers_) {
+    if (observer.first.contains(entry.event_hash)) {
+      mojom::UkmEntryPtr cloned = entry.Clone();
+      observer.second->Notify(FROM_HERE, &UkmRecorderObserver::OnEntryAdded,
+                              base::Passed(&cloned));
+    }
+  }
+}
+
+template <typename Method, typename... Params>
+void UkmRecorderImpl::NotifyAllObservers(Method m, Params&&... params) {
+  base::AutoLock auto_lock(lock_);
+  for (const auto& observer : observers_) {
+    observer.second->Notify(FROM_HERE, m, std::forward<Params>(params)...);
+  }
 }
 
 }  // namespace ukm

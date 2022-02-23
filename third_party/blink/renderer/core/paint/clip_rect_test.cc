@@ -71,7 +71,7 @@ TEST_F(ClipRectTest, IntersectEmptyRect) {
 TEST_F(ClipRectTest, IntersectsInfinite) {
   ClipRect rect;
 
-  EXPECT_TRUE(rect.Intersects(HitTestLocation(FloatPoint(100000, -3333333))));
+  EXPECT_TRUE(rect.Intersects(HitTestLocation(gfx::PointF(100000, -3333333))));
 }
 
 TEST_F(ClipRectTest, ToString) {

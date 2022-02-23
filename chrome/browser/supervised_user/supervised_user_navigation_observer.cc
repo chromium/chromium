@@ -30,14 +30,6 @@
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_process_host.h"
 
-namespace {
-
-bool IsMainFrame(content::RenderFrameHost* render_frame_host) {
-  return !render_frame_host->GetParent();
-}
-
-}  // namespace
-
 using content::NavigationEntry;
 
 SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
@@ -46,7 +38,9 @@ SupervisedUserNavigationObserver::~SupervisedUserNavigationObserver() {
 
 SupervisedUserNavigationObserver::SupervisedUserNavigationObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents),
+    : content::WebContentsUserData<SupervisedUserNavigationObserver>(
+          *web_contents),
+      content::WebContentsObserver(web_contents),
       receivers_(web_contents, this) {
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
@@ -143,7 +137,7 @@ void SupervisedUserNavigationObserver::FrameDeleted(int frame_tree_node_id) {
 void SupervisedUserNavigationObserver::DidFinishLoad(
     content::RenderFrameHost* render_frame_host,
     const GURL& validated_url) {
-  if (IsMainFrame(render_frame_host)) {
+  if (render_frame_host->IsInPrimaryMainFrame()) {
     bool main_frame_blocked =
         base::Contains(supervised_user_interstitials_,
                        render_frame_host->GetFrameTreeNodeId());
@@ -177,11 +171,10 @@ void SupervisedUserNavigationObserver::OnURLFilterChanged() {
 
   MaybeUpdateRequestedHosts();
 
-
   // Iframe filtering has been enabled.
-  web_contents()->ForEachFrame(
+  main_frame->ForEachRenderFrameHost(
       base::BindRepeating(&SupervisedUserNavigationObserver::FilterRenderFrame,
-                          weak_ptr_factory_.GetWeakPtr()));
+                          base::Unretained(this)));
 }
 
 void SupervisedUserNavigationObserver::OnInterstitialDone(int frame_id) {
@@ -258,7 +251,7 @@ void SupervisedUserNavigationObserver::URLFilterCheckCallback(
   // if an interstitial error page is not being shown but it should be shown,
   // then reloading will trigger the navigation throttle to show the error page.
   if (is_showing_interstitial != should_show_interstitial) {
-    if (IsMainFrame(render_frame_host)) {
+    if (render_frame_host->IsInPrimaryMainFrame()) {
       web_contents()->GetController().Reload(content::ReloadType::NORMAL,
                                              /* check_for_repost */ false);
       return;
@@ -295,7 +288,8 @@ void SupervisedUserNavigationObserver::FilterRenderFrame(
   // If the RenderFrameHost belongs to the main frame, return. This is because
   // the main frame is already filtered in
   // |SupervisedUserNavigationObserver::OnURLFilterChanged|.
-  if (!render_frame_host->IsRenderFrameLive() || IsMainFrame(render_frame_host))
+  if (!render_frame_host->IsRenderFrameLive() ||
+      render_frame_host->IsInPrimaryMainFrame())
     return;
 
   const GURL& last_committed_url = render_frame_host->GetLastCommittedURL();
@@ -312,7 +306,7 @@ void SupervisedUserNavigationObserver::GoBack() {
   auto id = render_frame_host->GetFrameTreeNodeId();
 
   // Request can come only from the main frame.
-  if (!IsMainFrame(render_frame_host))
+  if (!render_frame_host->IsInPrimaryMainFrame())
     return;
 
   if (base::Contains(supervised_user_interstitials_, id))

@@ -48,6 +48,7 @@ enum class VideoPlayerEvent : size_t {
   kResetting,
   kResetDone,
   kConfigInfo,  // A config info was encountered in an H.264/HEVC video stream.
+  kNewBuffersRequested,
   kNumEvents,
 };
 

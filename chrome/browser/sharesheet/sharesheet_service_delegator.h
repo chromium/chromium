@@ -9,9 +9,11 @@
 #include <string>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
 #include "chrome/browser/sharesheet/sharesheet_ui_delegate.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
@@ -74,7 +76,7 @@ class SharesheetServiceDelegator {
 
   // Invoked immediately after an action has launched in the event that UI
   // changes need to occur at this point.
-  void OnActionLaunched();
+  void OnActionLaunched(bool has_action_view);
 
   void CloseBubble(SharesheetResult result);
 
@@ -96,7 +98,7 @@ class SharesheetServiceDelegator {
   // SharesheetServiceDelegator.
   gfx::NativeWindow native_window_;
 
-  SharesheetService* sharesheet_service_;
+  raw_ptr<SharesheetService> sharesheet_service_;
 
   std::unique_ptr<SharesheetUiDelegate> sharesheet_controller_;
 };

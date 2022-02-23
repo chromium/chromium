@@ -7,6 +7,19 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/metrics/stability_metrics_manager.h"
+#include "ash/components/arc/session/arc_data_remover.h"
+#include "ash/components/arc/session/arc_dlc_installer.h"
+#include "ash/components/arc/session/arc_instance_mode.h"
+#include "ash/components/arc/session/arc_management_transition.h"
+#include "ash/components/arc/session/arc_session.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_switches.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
@@ -47,25 +60,13 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/browser/ui/app_list/arc/arc_pai_starter.h"
+#include "chrome/browser/ui/app_list/arc/intent.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/webui/chromeos/diagnostics_dialog.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
 #include "chromeos/system/statistics_provider.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
-#include "components/arc/metrics/arc_metrics_service.h"
-#include "components/arc/metrics/stability_metrics_manager.h"
-#include "components/arc/session/arc_data_remover.h"
-#include "components/arc/session/arc_dlc_installer.h"
-#include "components/arc/session/arc_instance_mode.h"
-#include "components/arc/session/arc_management_transition.h"
-#include "components/arc/session/arc_session.h"
-#include "components/arc/session/arc_session_runner.h"
 #include "components/exo/wm_helper_chromeos.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
@@ -472,7 +473,7 @@ ArcSessionManager::ExpansionResult ReadSaltInternal() {
 // for the presence of kEnableHoudiniDlc flag in the command line.
 bool IsDlcRequired() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kEnableHoudiniDlc);
+      ash::switches::kEnableHoudiniDlc);
 }
 
 }  // namespace
@@ -810,7 +811,7 @@ void ArcSessionManager::SetUserInfo() {
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile_));
   const cryptohome::Identification cryptohome_id(account);
   const std::string user_id_hash =
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_);
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_);
 
   std::string serialno = GetSerialNumber();
   arc_session_runner_->SetUserInfo(cryptohome_id, user_id_hash, serialno);
@@ -826,7 +827,7 @@ std::string ArcSessionManager::GetSerialNumber() const {
 
   const AccountId account(multi_user_util::GetAccountIdFromProfile(profile_));
   const std::string user_id_hash =
-      chromeos::ProfileHelper::GetUserIdHashFromProfile(profile_);
+      ash::ProfileHelper::GetUserIdHashFromProfile(profile_);
 
   std::string serialno;
   // ARC container doesn't need the serial number.
@@ -1297,6 +1298,11 @@ void ArcSessionManager::MaybeStartTermsOfServiceNegotiation() {
                      weak_ptr_factory_.GetWeakPtr()));
 }
 
+void ArcSessionManager::StartArcForTesting() {
+  enable_requested_ = true;
+  StartArc();
+}
+
 void ArcSessionManager::OnTermsOfServiceNegotiated(bool accepted) {
   DCHECK_EQ(state_, State::NEGOTIATING_TERMS_OF_SERVICE);
   DCHECK(profile_);
@@ -1589,6 +1595,7 @@ void ArcSessionManager::OnArcDataRemoved(absl::optional<bool> result) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK_EQ(state_, State::REMOVING_DATA_DIR);
   DCHECK(profile_);
+
   state_ = State::STOPPED;
 
   if (result.has_value()) {
@@ -1773,7 +1780,8 @@ void ArcSessionManager::EmitLoginPromptVisibleCalled() {
     VLOG(1) << "Starting ARCVM on login screen is not supported.";
     return;
   }
-  StartMiniArc();
+  if (!ShouldArcStartManually())
+    StartMiniArc();
 }
 
 void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
@@ -1784,7 +1792,7 @@ void ArcSessionManager::ExpandPropertyFilesAndReadSalt() {
   const bool is_arcvm = arc::IsArcVmEnabled();
   bool add_native_bridge_64bit_support = false;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kArcEnableNativeBridge64BitSupportExperiment)) {
+          ash::switches::kArcEnableNativeBridge64BitSupportExperiment)) {
     PrefService* local_pref_service = g_browser_process->local_state();
     if (base::FeatureList::IsEnabled(
             arc::kNativeBridge64BitSupportExperimentFeature)) {

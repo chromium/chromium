@@ -9,7 +9,6 @@
 
 #include "base/files/file_path.h"
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
@@ -161,8 +160,8 @@ bool ExternalMountPoints::CrackVirtualPath(
     return false;
 
   // The virtual_path should comprise of <mount_name> and <relative_path> parts.
-  std::vector<base::FilePath::StringType> components;
-  virtual_path.GetComponents(&components);
+  std::vector<base::FilePath::StringType> components =
+      virtual_path.GetComponents();
   if (components.size() < 1)
     return false;
 

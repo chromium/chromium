@@ -9,7 +9,6 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
 #include "device/bluetooth/bluetooth_advertisement.h"
 
 namespace device {

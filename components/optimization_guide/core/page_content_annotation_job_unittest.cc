@@ -54,8 +54,7 @@ TEST_F(PageContentAnnotationJobTest, Callback) {
   }
 
   BatchAnnotationResult expected =
-      BatchAnnotationResult::CreatePageTopicsResult(
-          "input", ExecutionStatus::kSuccess, absl::nullopt);
+      BatchAnnotationResult::CreatePageTopicsResult("input", absl::nullopt);
 
   job.PostNewResult(expected);
   job.OnComplete();

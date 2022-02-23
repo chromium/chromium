@@ -10,7 +10,9 @@
 #include "ash/public/cpp/system_tray_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "base/bind.h"
+#include "base/files/file_path.h"
 #include "base/files/file_util.h"
+#include "base/path_service.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_path_override.h"
 #include "base/test/task_environment.h"
@@ -116,12 +118,20 @@ class WelcomeScreenBrowserTest : public OobeBaseTest {
   bool SetUpUserDataDirectory() override {
     if (!OobeBaseTest::SetUpUserDataDirectory())
       return false;
+
     EXPECT_TRUE(data_dir_.CreateUniqueTempDir());
     const base::FilePath startup_manifest =
         data_dir_.GetPath().AppendASCII("startup_manifest.json");
     EXPECT_TRUE(base::WriteFile(startup_manifest, kStartupManifestEnglish));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
-        chromeos::FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest);
+        FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest);
+
+    // Make sure chrome paths are overridden before proceeding - this is usually
+    // done in chrome main, which has not happened yet.
+    base::FilePath user_data_dir;
+    EXPECT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
+    ash::RegisterStubPathOverrides(user_data_dir);
+
     return true;
   }
 
@@ -142,18 +152,6 @@ class WelcomeScreenBrowserTest : public OobeBaseTest {
  private:
   std::unique_ptr<base::ScopedPathOverride> path_override_;
   base::ScopedTempDir data_dir_;
-};
-
-class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
- public:
-  WelcomeScreenSystemDevModeBrowserTest() = default;
-  ~WelcomeScreenSystemDevModeBrowserTest() override = default;
-
-  // WelcomeScreenBrowserTest:
-  void SetUpCommandLine(base::CommandLine* command_line) override {
-    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
-    command_line->AppendSwitch(switches::kSystemDevMode);
-  }
 };
 
 IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, WelcomeScreenElements) {
@@ -457,6 +455,18 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenBrowserTest, A11yVirtualKeyboard) {
   histogram_tester_.ExpectTotalCount("OOBE.WelcomeScreen.A11yUserActions", 2);
 }
 
+class WelcomeScreenSystemDevModeBrowserTest : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenSystemDevModeBrowserTest() = default;
+  ~WelcomeScreenSystemDevModeBrowserTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitch(chromeos::switches::kSystemDevMode);
+  }
+};
+
 IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
                        DebuggerModeTest) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
@@ -472,6 +482,52 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenSystemDevModeBrowserTest,
       {"debugging", "removeProtectionCancelButton"});
   test::OobeJS().ExpectVisiblePath({"debugging", "help-link"});
   test::OobeJS().ClickOnPath({"debugging", "removeProtectionCancelButton"});
+}
+
+class WelcomeScreenHandsOffBrowserTest : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenHandsOffBrowserTest() = default;
+  ~WelcomeScreenHandsOffBrowserTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  void SetUpCommandLine(base::CommandLine* command_line) override {
+    WelcomeScreenBrowserTest::SetUpCommandLine(command_line);
+    command_line->AppendSwitchASCII(
+        switches::kEnterpriseEnableZeroTouchEnrollment, "hands-off");
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenHandsOffBrowserTest, SkipScreen) {
+  WaitForScreenExit();
+}
+
+class WelcomeScreenChromadMigrationBrowserTest
+    : public WelcomeScreenBrowserTest {
+ public:
+  WelcomeScreenChromadMigrationBrowserTest() = default;
+  ~WelcomeScreenChromadMigrationBrowserTest() override = default;
+
+  // WelcomeScreenBrowserTest:
+  bool SetUpUserDataDirectory() override {
+    if (!WelcomeScreenBrowserTest::SetUpUserDataDirectory())
+      return false;
+
+    base::FilePath preinstalled_components_dir;
+    EXPECT_TRUE(base::PathService::Get(ash::DIR_PREINSTALLED_COMPONENTS,
+                                       &preinstalled_components_dir));
+
+    base::FilePath preserve_dir =
+        preinstalled_components_dir.AppendASCII("preserve/");
+    EXPECT_TRUE(base::CreateDirectory(preserve_dir));
+    EXPECT_TRUE(base::WriteFile(
+        preserve_dir.AppendASCII("chromad_migration_skip_oobe"), "1"));
+
+    return true;
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(WelcomeScreenChromadMigrationBrowserTest, SkipScreen) {
+  WaitForScreenExit();
 }
 
 class WelcomeScreenTimezone : public WelcomeScreenBrowserTest {
@@ -581,15 +637,16 @@ class WelcomeScreenChromeVoxHintTest : public WelcomeScreenBrowserTest {
 // Clicking the 'activate' button in the dialog should activate ChromeVox.
 IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, LaptopClick) {
   OobeScreenWaiter(WelcomeView::kScreenId).Wait();
-  // A sanity check to ensure the ChromeVox hint idle detector is disabled for
-  // this and similar tests.
+  // A consistency check to ensure the ChromeVox hint idle detector is disabled
+  // for this and similar tests.
   ASSERT_FALSE(IdleDetectionActivatedForTesting());
   TtsExtensionEngine::GetInstance()->DisableBuiltInTTSEngineForTesting();
   test::ExecuteOobeJS(kSetAvailableVoices);
   test::SpeechMonitor monitor;
   test::OobeJS().ExpectAttributeEQ("open", kChromeVoxHintDialog, false);
   GiveChromeVoxHintForTesting();
-  // A sanity check to ensure we stop idle detection after the hint is given.
+  // A consistency check to ensure we stop idle detection after the hint is
+  // given.
   ASSERT_TRUE(IdleDetectionCancelledForTesting());
   monitor.ExpectSpeech(kChromeVoxHintLaptopSpokenString);
   monitor.Call([this]() {
@@ -699,7 +756,7 @@ IN_PROC_BROWSER_TEST_F(WelcomeScreenChromeVoxHintTest, CancelHint) {
   ASSERT_TRUE(IdleDetectionCancelledForTesting());
 }
 
-#if defined(OS_CHROMEOS) && !defined(NDEBUG)
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
 #define MAYBE_ActivateChromeVoxBeforeHint DISABLED_ActivateChromeVoxBeforeHint
 #else
 #define MAYBE_ActivateChromeVoxBeforeHint ActivateChromeVoxBeforeHint
@@ -833,7 +890,7 @@ class WelcomeScreenInternationalChromeVoxHintTest
         data_dir_.GetPath().AppendASCII("startup_manifest.json");
     EXPECT_TRUE(base::WriteFile(startup_manifest, kStartupManifestFrench));
     path_override_ = std::make_unique<base::ScopedPathOverride>(
-        chromeos::FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest);
+        FILE_STARTUP_CUSTOMIZATION_MANIFEST, startup_manifest);
     return true;
   }
 

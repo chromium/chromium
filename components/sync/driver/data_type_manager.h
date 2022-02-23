@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_H__
 #define COMPONENTS_SYNC_DRIVER_DATA_TYPE_MANAGER_H__
 
-#include <list>
 #include <set>
 #include <string>
 

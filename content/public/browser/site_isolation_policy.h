@@ -6,15 +6,13 @@
 #define CONTENT_PUBLIC_BROWSER_SITE_ISOLATION_POLICY_H_
 
 #include <string>
-#include <vector>
 
-#include "base/gtest_prod_util.h"
-#include "base/strings/string_piece_forward.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/site_isolation_mode.h"
-#include "url/origin.h"
+#include "url/gurl.h"
 
 namespace content {
+
+class BrowserContext;
 
 // A centralized place for making policy decisions about out-of-process iframes,
 // site isolation, --site-per-process, and related features.
@@ -22,7 +20,7 @@ namespace content {
 // This is currently static because all these modes are controlled by command-
 // line flags or field trials.
 //
-// These methods can be called from any thread.
+// Unless otherwise stated, these methods can be called from any thread.
 class CONTENT_EXPORT SiteIsolationPolicy {
  public:
   SiteIsolationPolicy(const SiteIsolationPolicy&) = delete;
@@ -30,6 +28,9 @@ class CONTENT_EXPORT SiteIsolationPolicy {
 
   // Returns true if every site should be placed in a dedicated process.
   static bool UseDedicatedProcessesForAllSites();
+
+  // Returns true if sandboxed iframes should be isolated.
+  static bool AreIsolatedSandboxedIframesEnabled();
 
   // Returns true if isolated origins feature is enabled.
   static bool AreIsolatedOriginsEnabled();
@@ -67,12 +68,26 @@ class CONTENT_EXPORT SiteIsolationPolicy {
   // persisted across restarts.
   static bool ShouldPersistIsolatedCOOPSites();
 
+  // Returns true when site isolation is turned on for <webview> guests.
+  static bool IsSiteIsolationForGuestsEnabled();
+
   // Applies isolated origins from all available sources, including the
   // command-line switch, field trials, enterprise policy, and the embedder.
   // See also AreIsolatedOriginsEnabled. These origins apply globally to the
   // whole browser in all profiles.  This should be called once on browser
   // startup.
   static void ApplyGlobalIsolatedOrigins();
+
+  // Returns true if the application isolation level is enabled.
+  // This must be called on the UI thread.
+  static bool IsApplicationIsolationLevelEnabled();
+
+  // Returns true if the given URL should be assigned the application isolation
+  // level.
+  // This must be called on the UI thread.
+  static bool ShouldUrlUseApplicationIsolationLevel(
+      BrowserContext* browser_context,
+      const GURL& url);
 
   // Forces other methods in this class to reread flag values instead of using
   // their cached value.

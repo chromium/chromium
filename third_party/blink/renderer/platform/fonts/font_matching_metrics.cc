@@ -238,13 +238,16 @@ void FontMatchingMetrics::ReportFontFamilyLookupByGenericFamily(
   }
   OnFontLookup();
 
-  // kStandardFamily lookups override the |generic_font_family_name|. See
-  // FontSelector::FamilyNameFromSettings. No need to be case-insensitive as
-  // generic names should already be lowercase.
+  // kStandardFamily/kWebkitBodyFamily lookups override the
+  // |generic_font_family_name|. See FontSelector::FamilyNameFromSettings.
+  // No need to be case-insensitive as generic names should already be
+  // lowercase.
   DCHECK(generic_family_type == FontDescription::kStandardFamily ||
+         generic_family_type == FontDescription::kWebkitBodyFamily ||
          generic_font_family_name == generic_font_family_name.LowerASCII());
   IdentifiableToken lookup_name_token = IdentifiabilityBenignStringToken(
-      generic_family_type == FontDescription::kStandardFamily
+      (generic_family_type == FontDescription::kStandardFamily ||
+       generic_family_type == FontDescription::kWebkitBodyFamily)
           ? font_family_names::kWebkitStandard
           : generic_font_family_name);
 
@@ -369,7 +372,7 @@ void FontMatchingMetrics::PublishAllMetrics() {
 
 int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
   return font_data ? FontGlobalContext::Get()
-                         ->GetOrComputeTypefaceDigest(font_data->PlatformData())
+                         .GetOrComputeTypefaceDigest(font_data->PlatformData())
                          .ToUkmMetricValue()
                    : 0;
 }
@@ -377,7 +380,7 @@ int64_t FontMatchingMetrics::GetHashForFontData(SimpleFontData* font_data) {
 IdentifiableToken FontMatchingMetrics::GetPostScriptNameTokenForFontData(
     SimpleFontData* font_data) {
   DCHECK(font_data);
-  return FontGlobalContext::Get()->GetOrComputePostScriptNameDigest(
+  return FontGlobalContext::Get().GetOrComputePostScriptNameDigest(
       font_data->PlatformData());
 }
 

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -266,15 +267,15 @@ class PageInfoBubbleViewTestApi {
     quit_closure.Run();
   }
 
-  views::BubbleDialogDelegateView* bubble_delegate_;
-  PageInfo* presenter_ = nullptr;
-  std::vector<PermissionToggleRowView*>* toggle_rows_ = nullptr;
+  raw_ptr<views::BubbleDialogDelegateView> bubble_delegate_;
+  raw_ptr<PageInfo> presenter_ = nullptr;
+  raw_ptr<std::vector<PermissionToggleRowView*>> toggle_rows_ = nullptr;
 
-  PageInfoNavigationHandler* navigation_handler_ = nullptr;
+  raw_ptr<PageInfoNavigationHandler> navigation_handler_ = nullptr;
 
   // For recreating the view.
   gfx::NativeWindow parent_;
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   base::RunLoop run_loop_;
   absl::optional<bool> reload_prompt_;
   absl::optional<views::Widget::ClosedReason> closed_reason_;
@@ -336,9 +337,9 @@ class ScopedWebContentsTestHelper {
 #endif
 
   TestingProfileManager testing_profile_manager_;
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
   content::TestWebContentsFactory factory_;
-  content::WebContents* web_contents_;  // Weak. Owned by factory_.
+  raw_ptr<content::WebContents> web_contents_;  // Weak. Owned by factory_.
 };
 
 class PageInfoBubbleViewTest : public testing::Test {
@@ -383,9 +384,10 @@ class PageInfoBubbleViewTest : public testing::Test {
  protected:
   std::unique_ptr<ScopedWebContentsTestHelper> web_contents_helper_;
   std::unique_ptr<views::ScopedViewsTestHelper> views_helper_;
-  MockTrustSafetySentimentService* mock_sentiment_service_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 
-  views::Widget* parent_window_ = nullptr;  // Weak. Owned by the NativeWidget.
+  raw_ptr<views::Widget> parent_window_ =
+      nullptr;  // Weak. Owned by the NativeWidget.
   std::unique_ptr<test::PageInfoBubbleViewTestApi> api_;
 };
 
@@ -585,7 +587,7 @@ TEST_F(PageInfoBubbleViewOffTheRecordTest, ResetBlockedInIncognitoPermission) {
   // Show state label for user managed permission, indicating that permission
   // is in the default ask state now. Autoblocked permission doesn't change.
   EXPECT_FALSE(api_->GetStateLabelAt(0));
-  EXPECT_EQ(u"Can ask to open and place windows on your screens",
+  EXPECT_EQ(u"Can ask to use info about your screens",
             api_->GetStateLabelAt(1)->GetText());
 
   // In the ask state, the toggle is in the off state, indicating that
@@ -885,7 +887,7 @@ TEST_F(PageInfoBubbleViewTest, SetPermissionInfoWithPolicySerialPorts) {
 // Test that updating the number of cookies used by the current page doesn't add
 // any extra views to Page Info.
 TEST_F(PageInfoBubbleViewTest, UpdatingSiteDataRetainsLayout) {
-#if defined(OS_WIN) && BUILDFLAG(ENABLE_VR)
+#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VR)
   constexpr size_t kExpectedChildren = 6;
 #else
   constexpr size_t kExpectedChildren = 5;

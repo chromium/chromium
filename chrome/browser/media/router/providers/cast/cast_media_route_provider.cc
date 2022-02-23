@@ -181,23 +181,6 @@ void CastMediaRouteProvider::JoinRoute(const std::string& media_source,
                                  incognito, std::move(callback));
 }
 
-void CastMediaRouteProvider::ConnectRouteByRouteId(
-    const std::string& media_source,
-    const std::string& route_id,
-    const std::string& presentation_id,
-    const url::Origin& origin,
-    int32_t tab_id,
-    base::TimeDelta timeout,
-    bool incognito,
-    ConnectRouteByRouteIdCallback callback) {
-  // TODO(crbug.com/951061): We'll need to implement this to allow joining from
-  // the dialog.
-  NOTIMPLEMENTED();
-  std::move(callback).Run(
-      absl::nullopt, nullptr, std::string("Not implemented"),
-      RouteRequestResult::ResultCode::NO_SUPPORTED_PROVIDER);
-}
-
 void CastMediaRouteProvider::TerminateRoute(const std::string& route_id,
                                             TerminateRouteCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -248,16 +231,9 @@ void CastMediaRouteProvider::StopObservingMediaSinks(
   sink_queries_.erase(media_source);
 }
 
-void CastMediaRouteProvider::StartObservingMediaRoutes(
-    const std::string& media_source) {
+void CastMediaRouteProvider::StartObservingMediaRoutes() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  activity_manager_->AddRouteQuery(media_source);
-}
-
-void CastMediaRouteProvider::StopObservingMediaRoutes(
-    const std::string& media_source) {
-  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  activity_manager_->RemoveRouteQuery(media_source);
+  activity_manager_->NotifyAllOnRoutesUpdated();
 }
 
 void CastMediaRouteProvider::StartListeningForRouteMessages(

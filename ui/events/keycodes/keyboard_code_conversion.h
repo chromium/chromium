@@ -5,8 +5,6 @@
 #ifndef UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 #define UI_EVENTS_KEYCODES_KEYBOARD_CODE_CONVERSION_H_
 
-
-#include "base/compiler_specific.h"
 #include "ui/events/events_base_export.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -42,21 +40,21 @@ enum class DomCode;
 // parameters are untouched.
 EVENTS_BASE_EXPORT char16_t DomCodeToUsLayoutCharacter(DomCode dom_code,
                                                        int flags);
-EVENTS_BASE_EXPORT bool DomCodeToUsLayoutDomKey(DomCode dom_code,
-                                                int flags,
-                                                DomKey* dom_key,
-                                                KeyboardCode* key_code)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] EVENTS_BASE_EXPORT bool DomCodeToUsLayoutDomKey(
+    DomCode dom_code,
+    int flags,
+    DomKey* dom_key,
+    KeyboardCode* key_code);
 
 // Helper function to map a physical key (dom_code) to a meaning (dom_key
 // and character, together corresponding to the DOM keyboard event |key|
 // value), along with a corresponding non-located Windows-based key_code.
 // Unlike |DomCodeToUsLayoutDomKey| this function only maps non-printable,
 // or action, keys.
-EVENTS_BASE_EXPORT bool DomCodeToNonPrintableDomKey(DomCode dom_code,
-                                                    DomKey* dom_key,
-                                                    KeyboardCode* key_code)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] EVENTS_BASE_EXPORT bool DomCodeToNonPrintableDomKey(
+    DomCode dom_code,
+    DomKey* dom_key,
+    KeyboardCode* key_code);
 
 // Obtains the control character corresponding to a physical key;
 // that is, the meaning of the physical key state (dom_code, and flags
@@ -64,11 +62,11 @@ EVENTS_BASE_EXPORT bool DomCodeToNonPrintableDomKey(DomCode dom_code,
 // Returns true and sets the output parameters if the (dom_code, flags) pair
 // is interpreted as a control character; otherwise the output parameters
 // are untouched.
-EVENTS_BASE_EXPORT bool DomCodeToControlCharacter(DomCode dom_code,
-                                                  int flags,
-                                                  DomKey* dom_key,
-                                                  KeyboardCode* key_code)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] EVENTS_BASE_EXPORT bool DomCodeToControlCharacter(
+    DomCode dom_code,
+    int flags,
+    DomKey* dom_key,
+    KeyboardCode* key_code);
 
 // Returns a Windows-based VKEY for a non-printable DOM Level 3 |key|.
 // The returned VKEY is non-located (e.g. VKEY_SHIFT).

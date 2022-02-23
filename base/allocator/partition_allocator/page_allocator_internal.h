@@ -5,13 +5,18 @@
 #ifndef BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNAL_H_
 #define BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNAL_H_
 
-namespace base {
+#include <cstddef>
+#include <cstdint>
 
-void* SystemAllocPages(void* hint,
-                       size_t length,
-                       PageAccessibilityConfiguration accessibility,
-                       PageTag page_tag);
+#include "base/allocator/partition_allocator/page_allocator.h"
 
-}  // namespace base
+namespace partition_alloc::internal {
+
+uintptr_t SystemAllocPages(uintptr_t hint,
+                           size_t length,
+                           PageAccessibilityConfiguration accessibility,
+                           PageTag page_tag);
+
+}  // namespace partition_alloc::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_PAGE_ALLOCATOR_INTERNAL_H_

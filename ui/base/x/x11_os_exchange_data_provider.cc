@@ -33,6 +33,7 @@ namespace {
 
 const char kDndSelection[] = "XdndSelection";
 const char kRendererTaint[] = "chromium/x-renderer-taint";
+const char kFromPrivileged[] = "chromium/from-privileged";
 
 const char kNetscapeURL[] = "_NETSCAPE_URL";
 
@@ -93,6 +94,17 @@ void XOSExchangeDataProvider::MarkOriginatedFromRenderer() {
 
 bool XOSExchangeDataProvider::DidOriginateFromRenderer() const {
   return format_map_.find(x11::GetAtom(kRendererTaint)) != format_map_.end();
+}
+
+void XOSExchangeDataProvider::MarkAsFromPrivileged() {
+  std::string empty;
+  format_map_.Insert(x11::GetAtom(kFromPrivileged),
+                     scoped_refptr<base::RefCountedMemory>(
+                         base::RefCountedString::TakeString(&empty)));
+}
+
+bool XOSExchangeDataProvider::IsFromPrivileged() const {
+  return format_map_.find(x11::GetAtom(kFromPrivileged)) != format_map_.end();
 }
 
 void XOSExchangeDataProvider::SetString(const std::u16string& text_data) {

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/plugin_vm/plugin_vm_engagement_metrics_service.h"
 
+#include "base/no_destructor.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_features.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_pref_names.h"
 #include "chrome/browser/ash/plugin_vm/plugin_vm_util.h"

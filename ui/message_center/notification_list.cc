@@ -23,9 +23,11 @@ namespace message_center {
 namespace {
 
 bool ShouldShowNotificationAsPopup(const Notification& notification,
-                                   const NotificationBlockers& blockers) {
+                                   const NotificationBlockers& blockers,
+                                   const NotificationBlocker* except) {
   for (auto* blocker : blockers) {
-    if (!blocker->ShouldShowNotificationAsPopup(notification))
+    if (blocker != except &&
+        !blocker->ShouldShowNotificationAsPopup(notification))
       return false;
   }
   return true;
@@ -187,7 +189,8 @@ bool NotificationList::HasPopupNotifications(
     if (tuple.first->priority() < DEFAULT_PRIORITY)
       break;
     if (!tuple.second.shown_as_popup &&
-        ShouldShowNotificationAsPopup(*tuple.first, blockers)) {
+        ShouldShowNotificationAsPopup(*tuple.first, blockers,
+                                      /*except=*/nullptr)) {
       return true;
     }
   }
@@ -216,7 +219,8 @@ NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
     if (notification->group_child())
       continue;
 
-    if (!ShouldShowNotificationAsPopup(*notification, blockers)) {
+    if (!ShouldShowNotificationAsPopup(*notification, blockers,
+                                       /*except=*/nullptr)) {
       if (state->is_read)
         state->shown_as_popup = true;
       if (blocked)
@@ -234,6 +238,40 @@ NotificationList::PopupNotifications NotificationList::GetPopupNotifications(
 
     result.insert(notification);
   }
+  return result;
+}
+
+NotificationList::PopupNotifications
+NotificationList::GetPopupNotificationsWithoutBlocker(
+    const NotificationBlockers& blockers,
+    const NotificationBlocker& blocker) const {
+  PopupNotifications result;
+
+  // Collect notifications that should be shown as popups, starting with the
+  // newest.
+  // TODO(1276903): see if we can merge this logic with `GetPopupNotifications`.
+  // In particular, we could pass an optional blocker argument that would be
+  // bypassed if specified.
+  for (const auto& iter : notifications_) {
+    const NotificationState* state = &iter.second;
+    Notification* notification = iter.first.get();
+    if (state->shown_as_popup)
+      continue;
+
+    // No popups for LOW/MIN priority.
+    if (notification->priority() < DEFAULT_PRIORITY)
+      continue;
+
+    // Group child notifications are shown in their parent's popup.
+    if (notification->group_child())
+      continue;
+
+    if (!ShouldShowNotificationAsPopup(*notification, blockers, &blocker))
+      continue;
+
+    result.insert(notification);
+  }
+
   return result;
 }
 

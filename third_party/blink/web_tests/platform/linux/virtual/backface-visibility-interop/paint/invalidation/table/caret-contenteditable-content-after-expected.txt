@@ -1,0 +1,34 @@
+{
+  "layers": [
+    {
+      "name": "Scrolling background of LayoutView #document",
+      "bounds": [800, 600],
+      "contentsOpaque": true,
+      "backgroundColor": "#FFFFFF",
+      "invalidations": [
+        [8, 48, 22, 19],
+        [30, 48, 8, 19],
+        [23, 48, 8, 19]
+      ]
+    },
+    {
+      "name": "Caret",
+      "position": [30, 48],
+      "bounds": [1, 19],
+      "contentsOpaque": true,
+      "invalidations": [
+        [0, 0, 1, 19]
+      ]
+    },
+    {
+      "name": "LayoutNGBlockFlow HTML",
+      "position": [6, 46],
+      "bounds": [788, 24],
+      "contentsOpaqueForText": true,
+      "invalidations": [
+        [0, 0, 788, 24]
+      ]
+    }
+  ]
+}
+

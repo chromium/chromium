@@ -17,8 +17,7 @@
 // allocation will report being part of the previously-deallocated large region.
 // That will cause the GetRegionInfo() expectations to fail.
 
-namespace base {
-namespace mac {
+namespace base::mac {
 namespace {
 
 void GetRegionInfo(vm_address_t* region_address, vm_size_t* region_size) {
@@ -230,5 +229,4 @@ TEST(ScopedMachVMTest, ResetMustBeAligned) {
 #endif  // DCHECK_IS_ON()
 
 }  // namespace
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac

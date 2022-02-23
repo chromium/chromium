@@ -13,8 +13,8 @@
 #include "base/memory/ref_counted_memory.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/cookie_controls_handler.h"
 #include "chrome/browser/ui/webui/ntp/core_app_launcher_handler.h"
 #include "chrome/browser/ui/webui/ntp/ntp_resource_cache.h"
@@ -34,6 +34,10 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/native_theme/native_theme.h"
 #include "url/gurl.h"
+
+#if !BUILDFLAG(IS_CHROMEOS)
+#include "chrome/browser/ui/webui/ntp/app_launcher_handler.h"
+#endif
 
 namespace {
 
@@ -86,7 +90,9 @@ NewTabUI::~NewTabUI() {}
 void NewTabUI::RegisterProfilePrefs(
     user_prefs::PrefRegistrySyncable* registry) {
   CoreAppLauncherHandler::RegisterProfilePrefs(registry);
+#if !BUILDFLAG(IS_CHROMEOS)
   AppLauncherHandler::RegisterProfilePrefs(registry);
+#endif
 }
 
 // static
@@ -132,8 +138,9 @@ void NewTabUI::SetUrlTitleAndDirection(base::Value* dictionary,
 // static
 void NewTabUI::SetFullNameAndDirection(const std::u16string& full_name,
                                        base::DictionaryValue* dictionary) {
-  dictionary->SetString("full_name", full_name);
-  dictionary->SetString("full_name_direction", GetHtmlTextDirection(full_name));
+  dictionary->SetStringKey("full_name", full_name);
+  dictionary->SetStringKey("full_name_direction",
+                           GetHtmlTextDirection(full_name));
 }
 
 Profile* NewTabUI::GetProfile() const {
@@ -171,13 +178,13 @@ void NewTabUI::NewTabHTMLSource::StartDataRequest(
   Profile* profile_for_window_type =
       web_contents
           ? Profile::FromBrowserContext(web_contents->GetBrowserContext())
-          : profile_;
+          : profile_.get();
 
   NTPResourceCache::WindowType win_type =
       NTPResourceCache::GetWindowType(profile_for_window_type);
   scoped_refptr<base::RefCountedMemory> html_bytes(
       NTPResourceCacheFactory::GetForProfile(profile_)->GetNewTabHTML(
-          win_type));
+          win_type, wc_getter));
 
   std::move(callback).Run(html_bytes.get());
 }

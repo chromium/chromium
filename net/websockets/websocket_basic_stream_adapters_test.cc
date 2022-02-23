@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -64,10 +65,12 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
   ~WebSocketClientSocketHandleAdapterTest() override = default;
 
   bool InitClientSocketHandle(ClientSocketHandle* connection) {
+    auto ssl_config_for_origin = std::make_unique<SSLConfig>();
+    ssl_config_for_origin->alpn_protos = {kProtoHTTP11};
     scoped_refptr<ClientSocketPool::SocketParams> socks_params =
         base::MakeRefCounted<ClientSocketPool::SocketParams>(
-            std::make_unique<SSLConfig>() /* ssl_config_for_origin */,
-            nullptr /* ssl_config_for_proxy */);
+            std::move(ssl_config_for_origin),
+            /*ssl_config_for_proxy=*/nullptr);
     TestCompletionCallback callback;
     int rv = connection->Init(
         ClientSocketPool::GroupId(
@@ -86,7 +89,7 @@ class WebSocketClientSocketHandleAdapterTest : public TestWithTaskEnvironment {
 
   SpdySessionDependencies session_deps_;
   std::unique_ptr<HttpNetworkSession> network_session_;
-  WebSocketEndpointLockManager* websocket_endpoint_lock_manager_;
+  raw_ptr<WebSocketEndpointLockManager> websocket_endpoint_lock_manager_;
 };
 
 TEST_F(WebSocketClientSocketHandleAdapterTest, Uninitialized) {

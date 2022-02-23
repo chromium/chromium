@@ -7,11 +7,10 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
 #include "content/browser/attribution_reporting/attribution_manager.h"
-#include "content/browser/attribution_reporting/storable_source.h"
+#include "content/browser/attribution_reporting/common_source_info.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/render_frame_host_receiver_set.h"
 #include "content/public/browser/web_contents_observer.h"
@@ -43,7 +42,7 @@ class CONTENT_EXPORT AttributionHost
       mojo::PendingAssociatedReceiver<blink::mojom::ConversionHost> receiver,
       RenderFrameHost* rfh);
 
-  // Normally, Attributions should be reported at the start of a navigation.
+  // Normally, attributions should be reported at the start of a navigation.
   // However, in some cases, like with speculative navigation on Android, the
   // attribution parameters aren't available at the start of the navigation.
   //
@@ -59,7 +58,7 @@ class CONTENT_EXPORT AttributionHost
       const blink::Impression& impression);
 
   static blink::mojom::ImpressionPtr MojoImpressionFromImpression(
-      const blink::Impression& impression) WARN_UNUSED_RESULT;
+      const blink::Impression& impression);
 
   // Overrides the target object to bind |receiver| to in BindReceiver().
   static void SetReceiverImplForTesting(AttributionHost* impl);
@@ -80,6 +79,8 @@ class CONTENT_EXPORT AttributionHost
   // blink::mojom::ConversionHost:
   void RegisterConversion(blink::mojom::ConversionPtr conversion) override;
   void RegisterImpression(const blink::Impression& impression) override;
+  void RegisterDataHost(mojo::PendingReceiver<blink::mojom::AttributionDataHost>
+                            data_host) override;
 
   // WebContentsObserver:
   void DidStartNavigation(NavigationHandle* navigation_handle) override;
@@ -93,7 +94,7 @@ class CONTENT_EXPORT AttributionHost
   // impression origin and reporting origin and the impressionorigin, reporting
   // origin, and conversion destination are potentially trustworthy. Returns
   // whether the impression was stored.
-  bool VerifyAndStoreImpression(StorableSource::SourceType source_type,
+  bool VerifyAndStoreImpression(CommonSourceInfo::SourceType source_type,
                                 const url::Origin& impression_origin,
                                 const blink::Impression& impression,
                                 AttributionManager& attribution_manager);

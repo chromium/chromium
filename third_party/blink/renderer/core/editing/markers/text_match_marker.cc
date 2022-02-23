@@ -9,7 +9,7 @@ namespace blink {
 TextMatchMarker::TextMatchMarker(unsigned start_offset,
                                  unsigned end_offset,
                                  MatchStatus status)
-    : TextMarkerBase(start_offset, end_offset), match_status_(status) {}
+    : DocumentMarker(start_offset, end_offset), match_status_(status) {}
 
 DocumentMarker::MarkerType TextMatchMarker::GetType() const {
   return DocumentMarker::kTextMatch;

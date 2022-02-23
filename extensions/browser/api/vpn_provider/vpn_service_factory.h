@@ -5,7 +5,6 @@
 #ifndef EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_
 #define EXTENSIONS_BROWSER_API_VPN_PROVIDER_VPN_SERVICE_FACTORY_H_
 
-#include "base/macros.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 
 namespace content {

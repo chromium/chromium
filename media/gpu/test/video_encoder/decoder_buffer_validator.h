@@ -22,7 +22,8 @@ class DecoderBuffer;
 namespace test {
 class DecoderBufferValidator : public BitstreamProcessor {
  public:
-  explicit DecoderBufferValidator(const gfx::Rect& visible_rect);
+  DecoderBufferValidator(const gfx::Rect& visible_rect,
+                         size_t num_temporal_layers);
   ~DecoderBufferValidator() override;
 
   // BitstreamProcessor implementation.
@@ -37,6 +38,8 @@ class DecoderBufferValidator : public BitstreamProcessor {
 
   // The expected visible rectangle that |decoder_buffer| has.
   const gfx::Rect visible_rect_;
+  // The number of temporal layers.
+  const size_t num_temporal_layers_;
 
  private:
   // The number of detected errors by Validate().
@@ -80,13 +83,11 @@ class H264Validator : public DecoderBufferValidator {
   // The expected h264 level of |decoder_buffer|. Check if it is not
   // absl::nullopt.
   absl::optional<uint8_t> level_;
-
-  size_t num_temporal_layers_;
 };
 
 class VP8Validator : public DecoderBufferValidator {
  public:
-  explicit VP8Validator(const gfx::Rect& visible_rect);
+  VP8Validator(const gfx::Rect& visible_rect, size_t num_temporal_layers);
   ~VP8Validator() override;
 
  private:
@@ -124,7 +125,6 @@ class VP9Validator : public DecoderBufferValidator {
   const size_t max_num_spatial_layers_;
   size_t cur_num_spatial_layers_;
   std::vector<gfx::Size> spatial_layer_resolutions_;
-  const size_t num_temporal_layers_;
   int next_picture_id_;
 
   // An optional state for each specified VP9 reference buffer.

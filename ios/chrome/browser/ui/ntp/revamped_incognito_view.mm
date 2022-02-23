@@ -90,9 +90,11 @@ UIColor* TextBackgroudColor() {
 // properly in a UILabel.  Removes the "<ul>" tag and replaces "<li>" with a
 // bullet unicode character.
 NSAttributedString* FormatHTMLListForUILabel(NSString* listString) {
-  listString =
-      [listString stringByReplacingOccurrencesOfString:@"\n        <ul>"
-                                            withString:@""];
+  listString = [listString
+      stringByReplacingOccurrencesOfString:@"\n +<ul>"
+                                withString:@""
+                                   options:NSRegularExpressionSearch
+                                     range:NSMakeRange(0, [listString length])];
   listString = [listString stringByReplacingOccurrencesOfString:@"</ul>"
                                                      withString:@""];
 
@@ -342,6 +344,7 @@ NSAttributedString* FormatHTMLForLearnMoreSection() {
   learnMore.editable = NO;
   learnMore.delegate = self;
   learnMore.attributedText = FormatHTMLForLearnMoreSection();
+  learnMore.textAlignment = NSTextAlignmentCenter;
   learnMore.layer.masksToBounds = YES;
   learnMore.layer.cornerRadius = 17;
   learnMore.backgroundColor = TextBackgroudColor();

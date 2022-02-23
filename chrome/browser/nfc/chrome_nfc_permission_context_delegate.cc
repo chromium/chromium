@@ -4,7 +4,9 @@
 
 #include "chrome/browser/nfc/chrome_nfc_permission_context_delegate.h"
 
-#if defined(OS_ANDROID)
+#include "build/build_config.h"
+
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/tab_android.h"
 #endif
 
@@ -14,7 +16,7 @@ ChromeNfcPermissionContextDelegate::ChromeNfcPermissionContextDelegate() =
 ChromeNfcPermissionContextDelegate::~ChromeNfcPermissionContextDelegate() =
     default;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool ChromeNfcPermissionContextDelegate::IsInteractable(
     content::WebContents* web_contents) {
   TabAndroid* tab = TabAndroid::FromWebContents(web_contents);

@@ -7,7 +7,7 @@
 #include "ui/accessibility/ax_enums.mojom.h"
 
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/strings/grit/ui_strings.h"
+#include "ui/strings/grit/ax_strings.h"
 
 namespace ui {
 

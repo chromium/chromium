@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "media/base/limits.h"
@@ -79,7 +80,7 @@ class VideoCaptureDeviceClientTest : public ::testing::Test {
   ~VideoCaptureDeviceClientTest() override = default;
 
  protected:
-  NiceMock<MockVideoFrameReceiver>* receiver_;
+  raw_ptr<NiceMock<MockVideoFrameReceiver>> receiver_;
   std::unique_ptr<unittest_internal::MockGpuMemoryBufferManager>
       gpu_memory_buffer_manager_;
   std::unique_ptr<VideoCaptureDeviceClient> device_client_;
@@ -230,7 +231,7 @@ TEST_F(VideoCaptureDeviceClientTest, DataCaptureGoodPixelFormats) {
     PIXEL_FORMAT_NV21,
     PIXEL_FORMAT_YUY2,
     PIXEL_FORMAT_UYVY,
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     PIXEL_FORMAT_RGB24,
 #endif
     PIXEL_FORMAT_ARGB,

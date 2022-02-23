@@ -3,8 +3,6 @@
 // found in the LICENSE file.
 
 var nativeDeepCopy = requireNative('utils').deepCopy;
-var logActivity = requireNative('activityLogger');
-var exceptionHandler = require('uncaught_exception_handler');
 
 /**
  * An object forEach. Calls |f| with each (key, value) pair of |obj|, using
@@ -175,38 +173,8 @@ function deepCopy(value) {
   return nativeDeepCopy(value);
 }
 
-// DO NOT USE. This causes problems with safe builtins, and makes migration to
-// native bindings more difficult.
-function handleRequestWithPromiseDoNotUse(
-    binding, apiName, methodName, customizedFunction) {
-  var fullName = apiName + '.' + methodName;
-  var extensionId = requireNative('process').GetExtensionId();
-  binding.setHandleRequest(methodName, function() {
-    logActivity.LogAPICall(extensionId, fullName, $Array.slice(arguments));
-    var stack = exceptionHandler.getExtensionStackTrace();
-    var callback = arguments[arguments.length - 1];
-    var args = $Array.slice(arguments, 0, arguments.length - 1);
-    var keepAlive = require('keep_alive').createKeepAlive();
-    $Function.apply(customizedFunction, this, args).then(function(result) {
-      if (callback) {
-        exceptionHandler.safeCallbackApply(
-            fullName, {__proto__: null, stack: stack}, callback, [result]);
-      }
-    }).catch(function(error) {
-      if (callback) {
-        var message = exceptionHandler.safeErrorToString(error, true);
-        bindingUtil.runCallbackWithLastError(message, callback);
-      }
-    }).then(function() {
-      keepAlive.close();
-    });
-  });
-};
-
 exports.$set('forEach', forEach);
 exports.$set('lookup', lookup);
 exports.$set('defineProperty', defineProperty);
 exports.$set('expose', expose);
 exports.$set('deepCopy', deepCopy);
-exports.$set('handleRequestWithPromiseDoNotUse',
-             handleRequestWithPromiseDoNotUse);

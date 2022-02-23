@@ -101,7 +101,7 @@ bool ExtractFormsData(NSString* forms_json,
 
   // Iterate through all the extracted forms and copy the data from JSON into
   // BrowserAutofillManager structures.
-  for (const auto& form_dict : forms_value->GetList()) {
+  for (const auto& form_dict : forms_value->GetListDeprecated()) {
     autofill::FormData form;
     if (ExtractFormData(form_dict, filtered, form_name, main_frame_url,
                         frame_origin, &form))
@@ -165,7 +165,7 @@ bool ExtractFormData(const base::Value& form_value,
   const base::ListValue* fields_list = nullptr;
   if (!form_dictionary->GetList("fields", &fields_list))
     return false;
-  for (const auto& field_dict : fields_list->GetList()) {
+  for (const auto& field_dict : fields_list->GetListDeprecated()) {
     const base::DictionaryValue* field;
     autofill::FormFieldData field_data;
     if (field_dict.GetAsDictionary(&field) &&
@@ -233,17 +233,17 @@ bool ExtractFormFieldData(const base::DictionaryValue& field,
   const base::ListValue* option_contents;
   if (field.GetList("option_values", &option_values) &&
       field.GetList("option_contents", &option_contents)) {
-    auto value_list = option_values->GetList();
-    auto content_list = option_contents->GetList();
+    auto value_list = option_values->GetListDeprecated();
+    auto content_list = option_contents->GetListDeprecated();
     if (value_list.size() != content_list.size())
       return false;
     auto value_it = value_list.begin();
     auto content_it = content_list.begin();
     while (value_it != value_list.end() && content_it != content_list.end()) {
-      std::u16string value;
-      std::u16string content;
-      if (value_it->GetAsString(&value) && content_it->GetAsString(&content)) {
-        field_data->options.push_back({.value = value, .content = content});
+      if (value_it->is_string() && content_it->is_string()) {
+        field_data->options.push_back(
+            {.value = base::UTF8ToUTF16(value_it->GetString()),
+             .content = base::UTF8ToUTF16(content_it->GetString())});
       }
       ++value_it;
       ++content_it;
@@ -308,12 +308,11 @@ bool ExtractIDs(NSString* json_string, std::vector<FieldRendererId>* ids) {
   if (!ids_value->is_list())
     return false;
 
-  for (const auto& unique_id : ids_value->GetList()) {
-    std::string id_string;
-    if (!unique_id.GetAsString(&id_string))
+  for (const auto& unique_id : ids_value->GetListDeprecated()) {
+    if (!unique_id.is_string())
       return false;
     uint32_t id_num = 0;
-    StringToUint(id_string, &id_num);
+    StringToUint(unique_id.GetString(), &id_num);
     ids->push_back(FieldRendererId(id_num));
   }
   return true;
@@ -336,9 +335,7 @@ bool ExtractFillingResults(
     std::string id_string = result.first;
     uint32_t id_num = 0;
     StringToUint(id_string, &id_num);
-    std::u16string value;
-    result.second.GetAsString(&value);
-    (*filling_results)[id_num] = value;
+    (*filling_results)[id_num] = base::UTF8ToUTF16(result.second.GetString());
   }
   return true;
 }

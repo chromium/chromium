@@ -5,7 +5,6 @@
 import("//chromeos/components/chromebox_for_meetings/buildflags/buildflags.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
-import("use_real_dbus_clients.gni")
 
 assert(is_chromeos, "Non-Chrome-OS builds must not depend on //chromeos")
 
@@ -30,6 +29,7 @@ component("dbus") {
     ":plugin_vm_service_proto",
     ":vm_applications_apps_proto",
     ":vm_disk_management_proto",
+    ":vm_launch_proto",
     ":vm_permission_service_proto",
     ":vm_sk_forwarding_proto",
     "//base",
@@ -75,17 +75,12 @@ component("dbus") {
   ]
 }
 
-config("use_real_dbus_clients_config") {
-  if (use_real_dbus_clients) {
-    defines = [ "USE_REAL_DBUS_CLIENTS" ]
-  }
-}
-
 component("common") {
   output_name = "chromeos_dbus_common"
   defines = [ "IS_CHROMEOS_DBUS_IMPL" ]
 
-  all_dependent_configs = [ ":use_real_dbus_clients_config" ]
+  all_dependent_configs =
+      [ "//chromeos/dbus/config:use_real_dbus_clients_config" ]
   public_deps = [ "//chromeos/dbus/constants" ]
 
   deps = [
@@ -131,6 +126,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chromeos/dbus/audio",
     "//chromeos/dbus/authpolicy",
+    "//chromeos/dbus/authpolicy:authpolicy_proto",
     "//chromeos/dbus/biod:test_support",
     "//chromeos/dbus/cec_service:unit_tests",
     "//chromeos/dbus/cros_disks:unit_tests",
@@ -141,6 +137,7 @@ source_set("unit_tests") {
     "//chromeos/dbus/fwupd:test_support",
     "//chromeos/dbus/gnubby:unit_tests",
     "//chromeos/dbus/hermes:test_support",
+    "//chromeos/dbus/hiberman",
     "//chromeos/dbus/ip_peripheral:test_support",
     "//chromeos/dbus/lorgnette_manager:test_support",
     "//chromeos/dbus/oobe_config:unit_tests",
@@ -177,6 +174,7 @@ source_set("unit_tests") {
     "biod/fake_biod_client_unittest.cc",
     "blocking_method_caller_unittest.cc",
     "dbus_thread_manager_unittest.cc",
+    "hiberman/hiberman_client_unittest.cc",
     "native_timer_unittest.cc",
     "pipe_reader_unittest.cc",
     "tpm_manager/tpm_manager_client_unittest.cc",
@@ -234,6 +232,12 @@ proto_library("vm_disk_management_proto") {
   sources = [ "//third_party/cros_system_api/dbus/vm_disk_management/disk_management.proto" ]
 
   proto_out_dir = "chromeos/dbus/vm_disk_management"
+}
+
+proto_library("vm_launch_proto") {
+  sources = [ "//third_party/cros_system_api/dbus/vm_launch/launch.proto" ]
+
+  proto_out_dir = "chromeos/dbus/vm_launch"
 }
 
 proto_library("vm_sk_forwarding_proto") {

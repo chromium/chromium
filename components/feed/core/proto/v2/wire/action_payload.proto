@@ -9,5 +9,5 @@ package feedwire;
 option optimize_for = LITE_RUNTIME;
 
 message ActionPayload {
-  optional bytes action_payload_data = 257605906;
+  repeated bytes batched_action_payload_data = 370974597;
 }

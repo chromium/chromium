@@ -31,7 +31,7 @@ import org.chromium.components.browser_ui.widget.selectable_list.SelectionDelega
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.Arrays;
 import java.util.HashSet;
@@ -42,7 +42,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
  */
 @SuppressWarnings("ArraysAsListWithZeroOrOneArgument")
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TabSelectionEditorLayoutBinderTest extends DummyUiActivityTestCase {
+public class TabSelectionEditorLayoutBinderTest extends BlankUiTestActivityTestCase {
     private TabSelectionEditorLayout mEditorLayoutView;
     private PropertyModel mModel;
     private PropertyModelChangeProcessor mMCP;

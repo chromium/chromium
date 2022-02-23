@@ -135,10 +135,11 @@ void OverviewGridEventHandler::OnGestureEvent(ui::GestureEvent* event) {
 void OverviewGridEventHandler::HandleClickOrTap(ui::Event* event) {
   CHECK_EQ(ui::EP_PRETARGET, event->phase());
 
-  // If the user is renaming a desk, rather than closing overview the focused
-  // `DeskNameView` should lose focus.
-  if (grid_->IsDeskNameBeingModified()) {
-    grid_->CommitDeskNameChanges();
+  // If the user is renaming a desk or template, rather than closing overview
+  // the focused name view should lose focus.
+  if (grid_->IsDeskNameBeingModified() ||
+      grid_->IsTemplateNameBeingModified()) {
+    grid_->CommitNameChanges();
     event->StopPropagation();
     return;
   }

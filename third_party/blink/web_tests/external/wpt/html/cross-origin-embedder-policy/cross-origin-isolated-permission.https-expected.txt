@@ -22,6 +22,6 @@ PASS dedicated worker: scheme = blob, value = (\)
 PASS shared worker: withCoopCoep = false
 FAIL shared worker: withCoopCoep = true assert_equals: expected true but got false
 PASS service worker: withCoopCoep = false
-FAIL service worker: withCoopCoep = true assert_equals: expected true but got false
+PASS service worker: withCoopCoep = true
 Harness: the test ran to completion.
 

@@ -6,6 +6,8 @@
 
 #include <utility>
 
+#include "ash/components/arc/arc_browser_context_keyed_service_factory_base.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "base/memory/singleton.h"
@@ -13,8 +15,6 @@
 #include "chrome/services/keymaster/public/mojom/cert_store.mojom.h"
 #include "chromeos/dbus/arc/arc_keymaster_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/arc_browser_context_keyed_service_factory_base.h"
-#include "components/arc/session/arc_bridge_service.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/platform/platform_channel.h"
 #include "mojo/public/cpp/system/invitation.h"

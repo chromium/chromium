@@ -14,7 +14,6 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
-#include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/shelf_layout_manager.h"
 #include "ash/shelf/shelf_layout_manager_observer.h"
 #include "base/callback.h"
@@ -47,15 +46,6 @@ class ASH_EXPORT AppListPresenterImpl
       public display::DisplayObserver,
       public ShelfLayoutManagerObserver {
  public:
-  static constexpr std::array<int, 7> kIdsOfContainersThatWontHideAppList = {
-      kShellWindowId_AppListContainer,
-      kShellWindowId_HomeScreenContainer,
-      kShellWindowId_MenuContainer,
-      kShellWindowId_PowerMenuContainer,
-      kShellWindowId_SettingBubbleContainer,
-      kShellWindowId_ShelfBubbleContainer,
-      kShellWindowId_ShelfContainer};
-
   // Callback which fills out the passed settings object. Used by
   // UpdateYPositionAndOpacityForHomeLauncher so different callers can do
   // similar animations with different settings.
@@ -104,6 +94,13 @@ class ASH_EXPORT AppListPresenterImpl
   ShelfAction ToggleAppList(int64_t display_id,
                             AppListShowSource show_source,
                             base::TimeTicks event_time_stamp);
+
+  // Handles `AppListController::UpdateAppListWithNewSortingOrder()` for the
+  // app list presenter.
+  void UpdateForNewSortingOrder(
+      const absl::optional<AppListSortOrder>& new_order,
+      bool animate,
+      base::OnceClosure update_position_closure);
 
   // Returns current visibility of the app list. Deprecated, use
   // |IsAtLeastPartiallyVisible| instead.

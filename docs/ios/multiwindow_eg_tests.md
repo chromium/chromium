@@ -8,7 +8,7 @@ limited set of helper functions.
 ## Window Number
 
 Windows are numbered, through their `accessibilityIdentifier`, in the order they
-are created. The first window will be `@”0”`, the second window will be `@”1”`,
+are created. The first window will be `@"0"`, the second window will be `@"1"`,
 etc. In most helper functions, the integer is used to identify windows.
 
 Windows are not automatically renumbered so it is possible to end up with two

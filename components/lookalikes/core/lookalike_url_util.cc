@@ -10,12 +10,12 @@
 #include "base/callback.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
+#include "base/hash/sha1.h"
 #include "base/i18n/char_iterator.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -92,6 +92,16 @@ Top500DomainsParams* GetTopDomainParams() {
       top500_domains::kNumTop500EditDistanceSkeletons};
   return &params;
 }
+
+// Minimum length of the eTLD+1 without registry needed to show the punycode
+// interstitial. IDN whose eTLD+1 without registry is shorter than this are
+// still displayed in punycode, but don't show an interstitial.
+const size_t kMinimumE2LDLengthToShowPunycodeInterstitial = 2;
+
+// Default launch percentage of a new heuristic on Canary/Dev and Beta. These
+// are used if there is a launch config for the heuristic in the proto.
+const int kDefaultLaunchPercentageOnCanaryDev = 90;
+const int kDefaultLaunchPercentageOnBeta = 50;
 
 bool SkeletonsMatch(const url_formatter::Skeletons& skeletons1,
                     const url_formatter::Skeletons& skeletons2) {
@@ -715,7 +725,7 @@ bool ShouldBlockLookalikeUrlNavigation(LookalikeUrlMatchType match_type) {
     return true;
   }
   if (match_type == LookalikeUrlMatchType::kTargetEmbedding) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     // TODO(crbug.com/1104384): Only enable target embedding on iOS once we can
     //    check engaged sites. Otherwise, false positives are too high.
     return false;
@@ -1021,6 +1031,16 @@ bool IsASCIIAndEmojiOnly(const base::StringPiece16& text) {
   return true;
 }
 
+// Returns true if the e2LD of domain is long enough to display a punycode
+// interstitial.
+bool IsPunycodeInterstitialCandidate(const DomainInfo& domain) {
+  const url_formatter::IDNConversionResult idn_result =
+      url_formatter::UnsafeIDNToUnicodeWithDetails(
+          domain.domain_without_registry);
+  return idn_result.result.size() >=
+         kMinimumE2LDLengthToShowPunycodeInterstitial;
+}
+
 bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
   // Here, only a subset of spoof checks that cause an IDN to fallback to
   // punycode are configured to show an interstitial.
@@ -1031,7 +1051,8 @@ bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
 
     case url_formatter::IDNSpoofChecker::Result::kICUSpoofChecks:
       // If the eTLD+1 contains only a mix of ASCII + Emoji, allow.
-      return !IsASCIIAndEmojiOnly(navigated_domain.idn_result.result);
+      return !IsASCIIAndEmojiOnly(navigated_domain.idn_result.result) &&
+             IsPunycodeInterstitialCandidate(navigated_domain);
 
     case url_formatter::IDNSpoofChecker::Result::kDeviationCharacters:
       // Failures because of deviation characters, especially ß, is common.
@@ -1044,7 +1065,7 @@ bool ShouldBlockBySpoofCheckResult(const DomainInfo& navigated_domain) {
     case url_formatter::IDNSpoofChecker::Result::
         kNonAsciiLatinCharMixedWithNonLatin:
     case url_formatter::IDNSpoofChecker::Result::kDangerousPattern:
-      return true;
+      return IsPunycodeInterstitialCandidate(navigated_domain);
   }
 }
 
@@ -1052,7 +1073,7 @@ bool IsAllowedByEnterprisePolicy(const PrefService* pref_service,
                                  const GURL& url) {
   const auto* list =
       pref_service->GetList(prefs::kLookalikeWarningAllowlistDomains);
-  for (const auto& domain_val : list->GetList()) {
+  for (const auto& domain_val : list->GetListDeprecated()) {
     auto domain = domain_val.GetString();
     if (url.DomainIs(domain)) {
       return true;
@@ -1113,4 +1134,44 @@ void ResetTop500DomainsParamsForTesting() {
   Top500DomainsParams* params = GetTopDomainParams();
   *params = {top500_domains::kTop500EditDistanceSkeletons,
              top500_domains::kNumTop500EditDistanceSkeletons};
+}
+
+bool IsHeuristicEnabledForHostname(
+    const reputation::SafetyTipsConfig* config_proto,
+    const reputation::HeuristicLaunchConfig::Heuristic heuristic,
+    const std::string& lookalike_etld_plus_one,
+    version_info::Channel channel) {
+  DCHECK(!lookalike_etld_plus_one.empty());
+  if (!config_proto) {
+    return false;
+  }
+  const unsigned char* bytes =
+      reinterpret_cast<const unsigned char*>(lookalike_etld_plus_one.c_str());
+  unsigned char data[base::kSHA1Length];
+  base::SHA1HashBytes(bytes, lookalike_etld_plus_one.length(), data);
+
+  float cohort = data[0] / 2.56;
+  for (const reputation::HeuristicLaunchConfig& config :
+       config_proto->launch_config()) {
+    if (heuristic == config.heuristic()) {
+      switch (channel) {
+        // Enable by default on local builds.
+        case version_info::Channel::UNKNOWN:
+          return true;
+
+        // Use pre-defined launch percentages for Canary/Dev and Beta. Use the
+        // launch percentage from config for Stable.
+        case version_info::Channel::CANARY:
+        case version_info::Channel::DEV:
+          return kDefaultLaunchPercentageOnCanaryDev > cohort;
+
+        case version_info::Channel::BETA:
+          return kDefaultLaunchPercentageOnBeta > cohort;
+
+        case version_info::Channel::STABLE:
+          return config.launch_percentage() > cohort;
+      }
+    }
+  }
+  return false;
 }

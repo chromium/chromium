@@ -5,7 +5,7 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_H_
 #define GPU_COMMAND_BUFFER_SERVICE_RASTER_DECODER_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/command_buffer/service/common_decoder.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/gpu_gles2_export.h"
@@ -105,7 +105,7 @@ class GPU_GLES2_EXPORT RasterDecoder : public DecoderContext,
   bool initialized_ = false;
   bool debug_ = false;
   bool log_commands_ = false;
-  gles2::Outputter* outputter_ = nullptr;
+  raw_ptr<gles2::Outputter> outputter_ = nullptr;
 };
 
 }  // namespace raster

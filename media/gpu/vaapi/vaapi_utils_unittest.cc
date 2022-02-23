@@ -94,7 +94,7 @@ TEST_F(VaapiUtilsTest, ScopedVAImage) {
     // surface format. However when context has not been executed the output
     // image format seems to default to I420. https://crbug.com/828119
     VAImageFormat va_image_format = kImageFormatI420;
-    base::AutoLock auto_lock(*vaapi_wrapper_->va_lock_);
+    base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_);
     scoped_image = std::make_unique<ScopedVAImage>(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
         &va_image_format, coded_size);
@@ -119,7 +119,7 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
   std::unique_ptr<ScopedVAImage> scoped_image;
   {
     VAImageFormat va_image_format = kImageFormatI420;
-    base::AutoLock auto_lock(*vaapi_wrapper_->va_lock_);
+    base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_);
     scoped_image = std::make_unique<ScopedVAImage>(
         vaapi_wrapper_->va_lock_, vaapi_wrapper_->va_display_, va_surfaces[0],
         &va_image_format, coded_size);
@@ -137,7 +137,7 @@ TEST_F(VaapiUtilsTest, BadScopedVAImage) {
 // This test exercises creation of a ScopedVABufferMapping with bad VABufferIDs.
 TEST_F(VaapiUtilsTest, BadScopedVABufferMapping) {
   ::testing::FLAGS_gtest_death_test_style = "threadsafe";
-  base::AutoLock auto_lock(*vaapi_wrapper_->va_lock_);
+  base::AutoLockMaybe auto_lock(vaapi_wrapper_->va_lock_);
 
   // A ScopedVABufferMapping with a VA_INVALID_ID VABufferID is DCHECK()ed.
   EXPECT_DCHECK_DEATH(std::make_unique<ScopedVABufferMapping>(

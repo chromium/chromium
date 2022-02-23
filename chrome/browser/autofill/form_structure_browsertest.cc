@@ -41,7 +41,7 @@
 #include "testing/data_driven_testing/data_driven_test.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -91,9 +91,9 @@ std::vector<base::FilePath> GetTestFiles() {
   }
   std::sort(files.begin(), files.end());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ClearAmIBundledCache();
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   return files;
 }
@@ -186,8 +186,6 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        features::kAutofillEnableSupportForMoreStructureInNames,
        // TODO(crbug.com/1125978): Remove once launched.
        features::kAutofillEnableSupportForMoreStructureInAddresses,
-       // TODO(crbug.com/896689): Remove once launched.
-       features::kAutofillNameSectionsWithRendererIds,
        // TODO(crbug.com/1076175) Remove once launched.
        features::kAutofillUseNewSectioningMethod,
        // Remove once launched
@@ -195,16 +193,19 @@ FormStructureBrowserTest::FormStructureBrowserTest()
        // TODO(crbug.com/1157405) Remove once launched.
        features::kAutofillEnableDependentLocalityParsing,
        // TODO(crbug.com/1150895) Remove once launched.
-       features::kAutofillParsingPatternsLanguageDetection,
+       features::kAutofillParsingPatternProvider,
+       features::kAutofillPageLanguageDetection,
        // TODO(crbug/1165780): Remove once shared labels are launched.
        features::kAutofillEnableSupportForParsingWithSharedLabels,
+       // TODO(crbug.com/1277480): Remove once launched.
+       features::kAutofillEnableNameSurenameParsing,
        // TODO(crbug/1190334): Remove once launched.
        features::kAutofillParseMerchantPromoCodeFields},
       // Disabled
       {});
 }
 
-FormStructureBrowserTest::~FormStructureBrowserTest() {}
+FormStructureBrowserTest::~FormStructureBrowserTest() = default;
 
 void FormStructureBrowserTest::SetUpCommandLine(
     base::CommandLine* command_line) {

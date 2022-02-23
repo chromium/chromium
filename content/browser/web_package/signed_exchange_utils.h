@@ -37,6 +37,9 @@ struct URLWithRawString {
       : url(url_string), raw_string(url_string) {}
 };
 
+// Records SignedExchange.LoadResult2 UMA histogram.
+void RecordLoadResultHistogram(SignedExchangeLoadResult result);
+
 // Utility method to call SignedExchangeDevToolsProxy::ReportError() and
 // TRACE_EVENT_INSTANT1 to report the error to both DevTools and about:tracing.
 // If |devtools_proxy| is nullptr, it just calls TRACE_EVENT_INSTANT1().
@@ -100,6 +103,8 @@ base::Time GetVerificationTime();
 // Override the time which is used for verifying signed exchange.
 CONTENT_EXPORT void SetVerificationTimeForTesting(
     absl::optional<base::Time> verification_time_for_testing);
+
+bool IsCookielessOnlyExchange(const net::HttpResponseHeaders& inner_headers);
 
 }  // namespace signed_exchange_utils
 }  // namespace content

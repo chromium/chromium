@@ -337,6 +337,12 @@ void CleanAfterInstallFailure(UpdaterScope scope) {
 
 bool RemoveQuarantineAttributes(const base::FilePath& updater_bundle_path,
                                 const base::FilePath& updater_executable_path) {
+  if (!base::PathExists(updater_bundle_path)) {
+    VPLOG(1) << "Updater bundle path not found: "
+             << updater_bundle_path.value();
+    return false;
+  }
+
   if (!base::mac::RemoveQuarantineAttribute(updater_bundle_path)) {
     VPLOG(1) << "Could not remove com.apple.quarantine for the bundle.";
     return false;
@@ -356,9 +362,9 @@ int DoSetup(UpdaterScope scope) {
       GetVersionedUpdaterFolderPath(scope);
 
   if (!dest_path)
-    return setup_exit_codes::kFailedToGetVersionedUpdaterFolderPath;
+    return kErrorFailedToGetVersionedUpdaterFolderPath;
   if (!CopyBundle(*dest_path, scope))
-    return setup_exit_codes::kFailedToCopyBundle;
+    return kErrorFailedToCopyBundle;
 
   const base::FilePath updater_executable_path =
       dest_path->Append(GetExecutableRelativePath());
@@ -369,27 +375,26 @@ int DoSetup(UpdaterScope scope) {
   const absl::optional<base::FilePath> bundle_path =
       GetUpdaterAppBundlePath(scope);
   if (!bundle_path)
-    return setup_exit_codes::kFailedToGetAppBundlePath;
+    return kErrorFailedToGetAppBundlePath;
   if (!RemoveQuarantineAttributes(*bundle_path, updater_executable_path)) {
     VLOG(1) << "Couldn't remove quarantine bits for updater. This will likely "
                "cause Gatekeeper to show a prompt to the user.";
   }
 
   if (!CreateWakeLaunchdJobPlist(scope, updater_executable_path))
-    return setup_exit_codes::kFailedToCreateWakeLaunchdJobPlist;
+    return kErrorFailedToCreateWakeLaunchdJobPlist;
 
   if (!CreateUpdateServiceInternalLaunchdJobPlist(scope,
                                                   updater_executable_path))
-    return setup_exit_codes::
-        kFailedToCreateUpdateServiceInternalLaunchdJobPlist;
+    return kErrorFailedToCreateUpdateServiceInternalLaunchdJobPlist;
 
   if (!StartUpdateServiceInternalVersionedLaunchdJob(scope))
-    return setup_exit_codes::kFailedToStartLaunchdUpdateServiceInternalJob;
+    return kErrorFailedToStartLaunchdUpdateServiceInternalJob;
 
   if (!StartUpdateWakeVersionedLaunchdJob(scope))
-    return setup_exit_codes::kFailedToStartLaunchdWakeJob;
+    return kErrorFailedToStartLaunchdWakeJob;
 
-  return setup_exit_codes::kSuccess;
+  return kErrorOk;
 }
 
 }  // namespace
@@ -405,52 +410,52 @@ int PromoteCandidate(UpdaterScope scope) {
   const absl::optional<base::FilePath> dest_path =
       GetVersionedUpdaterFolderPath(scope);
   if (!dest_path)
-    return setup_exit_codes::kFailedToGetVersionedUpdaterFolderPath;
+    return kErrorFailedToGetVersionedUpdaterFolderPath;
   const base::FilePath updater_executable_path =
       dest_path->Append(GetExecutableRelativePath());
 
   if (!CreateUpdateServiceLaunchdJobPlist(scope, updater_executable_path))
-    return setup_exit_codes::kFailedToCreateUpdateServiceLaunchdJobPlist;
+    return kErrorFailedToCreateUpdateServiceLaunchdJobPlist;
 
   if (!StartLaunchdServiceJob(scope))
-    return setup_exit_codes::kFailedToStartLaunchdActiveServiceJob;
+    return kErrorFailedToStartLaunchdActiveServiceJob;
 
   // Wait for launchd to finish the load operation for the update service.
   base::PlatformThread::Sleep(base::Seconds(2));
 
-  return setup_exit_codes::kSuccess;
+  return kErrorOk;
 }
 
 #pragma mark Uninstall
 int UninstallCandidate(UpdaterScope scope) {
   if (!DeleteCandidateInstallFolder(scope))
-    return setup_exit_codes::kFailedToDeleteFolder;
+    return kErrorFailedToDeleteFolder;
 
   if (!RemoveUpdateWakeJobFromLaunchd(scope))
-    return setup_exit_codes::kFailedToRemoveWakeJobFromLaunchd;
+    return kErrorFailedToRemoveWakeJobFromLaunchd;
 
   // Removing the Update Internal job has to be the last step because launchd is
   // likely to terminate the current process. Clients should expect the
   // connection to invalidate (possibly with an interruption beforehand) as a
   // result of service uninstallation.
   if (!RemoveUpdateServiceInternalJobFromLaunchd(scope))
-    return setup_exit_codes::kFailedToRemoveUpdateServiceInternalJobFromLaunchd;
+    return kErrorFailedToRemoveUpdateServiceInternalJobFromLaunchd;
 
-  return setup_exit_codes::kSuccess;
+  return kErrorOk;
 }
 
 int Uninstall(UpdaterScope scope) {
   VLOG(1) << base::CommandLine::ForCurrentProcess()->GetCommandLineString()
           << " : " << __func__;
   const int exit = UninstallCandidate(scope);
-  if (exit != setup_exit_codes::kSuccess)
+  if (exit != kErrorOk)
     return exit;
 
   if (!RemoveUpdateServiceJobFromLaunchd(scope))
-    return setup_exit_codes::kFailedToRemoveActiveUpdateServiceJobFromLaunchd;
+    return kErrorFailedToRemoveActiveUpdateServiceJobFromLaunchd;
 
   if (!DeleteInstallFolder(scope))
-    return setup_exit_codes::kFailedToDeleteFolder;
+    return kErrorFailedToDeleteFolder;
 
   base::ThreadPool::PostTask(FROM_HERE,
                              {base::MayBlock(), base::WithBaseSyncPrimitives()},
@@ -461,7 +466,7 @@ int Uninstall(UpdaterScope scope) {
   // it is not always possible to delete the data folder.
   DeleteDataFolder(scope);
 
-  return setup_exit_codes::kSuccess;
+  return kErrorOk;
 }
 
 }  // namespace updater

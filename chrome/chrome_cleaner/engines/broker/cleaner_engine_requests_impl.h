@@ -77,7 +77,7 @@ class CleanerEngineRequestsImpl : public mojom::CleanerEngineRequests {
 
   scoped_refptr<MojoTaskRunner> mojo_task_runner_;
   mojo::AssociatedReceiver<mojom::CleanerEngineRequests> receiver_{this};
-  InterfaceMetadataObserver* metadata_observer_ = nullptr;
+  [[maybe_unused]] InterfaceMetadataObserver* metadata_observer_ = nullptr;
   std::unique_ptr<chrome_cleaner::FileRemoverAPI> file_remover_;
 };
 

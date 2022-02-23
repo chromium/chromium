@@ -14,7 +14,6 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/webdata/autofill_entry.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "content/public/test/browser_test.h"
 #include "testing/perf/perf_result_reporter.h"
 
@@ -156,7 +155,7 @@ const std::string AutofillProfileSyncPerfTest::NextName() {
 IN_PROC_BROWSER_TEST_F(AutofillProfileSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter =
+  perf_test::PerfResultReporter reporter =
       SetUpReporter(base::NumberToString(kNumProfiles) + "_profiles");
   AddProfiles(0, kNumProfiles);
   base::TimeDelta dt = TimeMutualSyncCycle(GetClient(0), GetClient(1));
@@ -213,7 +212,8 @@ const std::string AutocompleteSyncPerfTest::NextName() {
 IN_PROC_BROWSER_TEST_F(AutocompleteSyncPerfTest, P0) {
   ASSERT_TRUE(SetupSync()) << "SetupSync() failed.";
 
-  auto reporter = SetUpReporter(base::NumberToString(kNumKeys) + "_keys");
+  perf_test::PerfResultReporter reporter =
+      SetUpReporter(base::NumberToString(kNumKeys) + "_keys");
   AddKeys(0, kNumKeys);
   // TODO(lipalani): fix this. The following line is added to force sync.
   ForceSync(0);

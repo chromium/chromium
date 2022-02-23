@@ -34,7 +34,7 @@ class InvertLowBrightnessColorsClassifier : public DarkModeColorClassifier {
   explicit InvertLowBrightnessColorsClassifier(int brightness_threshold)
       : brightness_threshold_(brightness_threshold) {
     DCHECK_GT(brightness_threshold_, 0);
-    DCHECK_LT(brightness_threshold_, 256);
+    DCHECK_LT(brightness_threshold_, 255);
   }
 
   DarkModeResult ShouldInvertColor(SkColor color) override {
@@ -52,7 +52,7 @@ class InvertHighBrightnessColorsClassifier : public DarkModeColorClassifier {
   explicit InvertHighBrightnessColorsClassifier(int brightness_threshold)
       : brightness_threshold_(brightness_threshold) {
     DCHECK_GT(brightness_threshold_, 0);
-    DCHECK_LT(brightness_threshold_, 256);
+    DCHECK_LT(brightness_threshold_, 255);
   }
 
   DarkModeResult ShouldInvertColor(SkColor color) override {
@@ -82,12 +82,12 @@ int DarkModeColorClassifier::CalculateColorBrightness(SkColor color) {
 std::unique_ptr<DarkModeColorClassifier>
 DarkModeColorClassifier::MakeForegroundColorClassifier(
     const DarkModeSettings& settings) {
-  DCHECK_LE(settings.foreground_brightness_threshold, 256);
+  DCHECK_LE(settings.foreground_brightness_threshold, 255);
   DCHECK_GE(settings.foreground_brightness_threshold, 0);
 
-  // The value should be between 0 and 256, but check for values outside that
+  // The value should be between 0 and 255, but check for values outside that
   // range here to preserve correct behavior in non-debug builds.
-  if (settings.foreground_brightness_threshold >= 256)
+  if (settings.foreground_brightness_threshold >= 255)
     return SimpleColorClassifier::AlwaysInvert();
   if (settings.foreground_brightness_threshold <= 0)
     return SimpleColorClassifier::NeverInvert();
@@ -99,12 +99,12 @@ DarkModeColorClassifier::MakeForegroundColorClassifier(
 std::unique_ptr<DarkModeColorClassifier>
 DarkModeColorClassifier::MakeBackgroundColorClassifier(
     const DarkModeSettings& settings) {
-  DCHECK_LE(settings.background_brightness_threshold, 256);
+  DCHECK_LE(settings.background_brightness_threshold, 255);
   DCHECK_GE(settings.background_brightness_threshold, 0);
 
-  // The value should be between 0 and 256, but check for values outside that
+  // The value should be between 0 and 255, but check for values outside that
   // range here to preserve correct behavior in non-debug builds.
-  if (settings.background_brightness_threshold >= 256)
+  if (settings.background_brightness_threshold >= 255)
     return SimpleColorClassifier::NeverInvert();
   if (settings.background_brightness_threshold <= 0)
     return SimpleColorClassifier::AlwaysInvert();

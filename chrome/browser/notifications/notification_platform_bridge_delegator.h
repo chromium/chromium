@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/notifications/displayed_notifications_dispatch_callback.h"
 #include "chrome/browser/notifications/notification_common.h"
@@ -54,12 +55,12 @@ class NotificationPlatformBridgeDelegator {
   // Called when the |system_bridge_| may have been initialized.
   void OnSystemNotificationPlatformBridgeReady(bool success);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   // Bridge responsible for displaying notifications on the platform. The
   // message center's bridge is maintained for platforms where it is available.
-  NotificationPlatformBridge* message_center_bridge_;
-  NotificationPlatformBridge* system_bridge_;
+  raw_ptr<NotificationPlatformBridge> message_center_bridge_;
+  raw_ptr<NotificationPlatformBridge> system_bridge_;
   base::OnceClosure ready_callback_;
 
   base::WeakPtrFactory<NotificationPlatformBridgeDelegator> weak_factory_{this};

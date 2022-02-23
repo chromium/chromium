@@ -22,6 +22,7 @@
 #include "base/files/file_enumerator.h"
 #include "base/files/file_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "base/process/process.h"
@@ -75,7 +76,7 @@ struct PortData {
   }
   DWORD job_id;
   HANDLE printer_handle;
-  FILE* file;
+  raw_ptr<FILE> file;
   base::FilePath file_path;
 };
 

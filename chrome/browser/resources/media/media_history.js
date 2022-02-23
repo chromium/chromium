@@ -2,24 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js';
-import 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/url.mojom-lite.js';
-import 'chrome://resources/mojo/url/mojom/origin.mojom-lite.js';
-import './ui/gfx/geometry/mojom/geometry.mojom-lite.js';
-import './media_session.mojom-lite.js';
-import './media_history_store.mojom-lite.js';
-
 import {assertNotReached} from 'chrome://resources/js/assert.m.js';
 import {decorate} from 'chrome://resources/js/cr/ui.m.js';
 import {TabBox} from 'chrome://resources/js/cr/ui/tabs.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
 import {$} from 'chrome://resources/js/util.m.js';
+import {String16} from 'chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js';
 
 import {MediaDataTable, MediaDataTableDelegate} from './media_data_table.js';
+import {MediaHistoryStats, MediaHistoryStore} from './media_history_store.mojom-webui.js';
 
 // Allow a function to be provided by tests, which will be called when
 // the page has been populated.
@@ -89,7 +80,7 @@ class MediaHistoryTableDelegate {
         key === 'sourceTitle') {
       // Format a mojo string16.
       td.textContent = decodeString16(
-          /** @type {mojoBase.mojom.String16} */ (data));
+          /** @type {String16} */ (data));
     } else if (key === 'artwork') {
       // Format an array of mojo media images.
       data.forEach((image) => {
@@ -127,7 +118,7 @@ class MediaHistoryTableDelegate {
       return val1.url > val2.url ? 1 : -1;
     }
 
-    // Compare mojo_base.mojom.TimeDelta microseconds value.
+    // Compare TimeDelta microseconds value.
     if (sortKey === 'cachedAudioVideoWatchtime' ||
         sortKey === 'actualAudioVideoWatchtime' || sortKey === 'watchtime' ||
         sortKey === 'duration' || sortKey === 'position') {
@@ -158,7 +149,7 @@ class MediaHistoryTableDelegate {
 
 /**
  * Parses utf16 coded string.
- * @param {mojoBase.mojom.String16} arr
+ * @param {String16} arr
  * @return {string}
  */
 function decodeString16(arr) {
@@ -171,7 +162,7 @@ function decodeString16(arr) {
 
 /**
  * Regenerates the stats table.
- * @param {!mediaHistory.mojom.MediaHistoryStats} stats The stats for the Media
+ * @param {!MediaHistoryStats} stats The stats for the Media
  *     History store.
  */
 function renderStatsTable(stats) {
@@ -211,7 +202,7 @@ function showTab(name) {
 }
 
 document.addEventListener('DOMContentLoaded', function() {
-  store = mediaHistory.mojom.MediaHistoryStore.getRemote();
+  store = MediaHistoryStore.getRemote();
 
   statsTableBody = $('stats-table-body');
 

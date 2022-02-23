@@ -204,8 +204,7 @@ template <typename Dst,
           typename Src>
 constexpr Dst saturated_cast(Src value) {
   using SrcType = typename UnderlyingType<Src>::type;
-  return !IsCompileTimeConstant(value) &&
-                 SaturateFastOp<Dst, SrcType>::is_supported &&
+  return !IsConstantEvaluated() && SaturateFastOp<Dst, SrcType>::is_supported &&
                  std::is_same<SaturationHandler<Dst>,
                               SaturationDefaultLimits<Dst>>::value
              ? SaturateFastOp<Dst, SrcType>::Do(static_cast<SrcType>(value))
@@ -312,15 +311,6 @@ constexpr StrictNumeric<typename UnderlyingType<T>::type> MakeStrictNum(
     const T value) {
   return value;
 }
-
-#if !BASE_NUMERICS_DISABLE_OSTREAM_OPERATORS
-// Overload the ostream output operator to make logging work nicely.
-template <typename T>
-std::ostream& operator<<(std::ostream& os, const StrictNumeric<T>& value) {
-  os << static_cast<T>(value);
-  return os;
-}
-#endif
 
 #define BASE_NUMERIC_COMPARISON_OPERATORS(CLASS, NAME, OP)              \
   template <typename L, typename R,                                     \

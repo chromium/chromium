@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_timeouts.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -22,7 +23,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
 #endif
 
@@ -51,7 +52,7 @@ class TestBrowserClient : public ContentBrowserClient {
   TestBrowserClient& operator=(const TestBrowserClient&) = delete;
 
  private:
-  FeatureObserverClient* feature_observer_client_;
+  raw_ptr<FeatureObserverClient> feature_observer_client_;
 };
 
 class MockObserverClient : public FeatureObserverClient {
@@ -76,7 +77,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
   // Check if the test can run on the current system. If the test can run,
   // navigates to the test page and returns true. Otherwise, returns false.
   bool CheckShouldRunTestAndNavigate() const {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     // Don't run the test if we couldn't override BrowserClient. It happens only
     // on Android Kitkat or older systems.
     if (!original_client_)
@@ -88,7 +89,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
         base::android::SDK_VERSION_KITKAT) {
       return false;
     }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
     EXPECT_TRUE(NavigateToURL(shell(), GetTestURL("a.com")));
     return true;
   }
@@ -135,7 +136,7 @@ class IndexedDBFeatureObserverBrowserTest : public ContentBrowserTest {
 
   content::ContentMockCertVerifier mock_cert_verifier_;
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   TestBrowserClient test_browser_client_{&mock_observer_client_};
 
   IndexedDBFeatureObserverBrowserTest(
@@ -273,7 +274,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest, ObserverNavigate) {
       ->web_contents()
       ->GetController()
       .GetBackForwardCache()
-      .DisableForTesting(content::BackForwardCache::TEST_ASSUMES_NO_CACHING);
+      .DisableForTesting(content::BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   if (!CheckShouldRunTestAndNavigate())
     return;
@@ -336,7 +337,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
 }
 
 // SharedWorkers are not enabled on Android. https://crbug.com/154571
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Verify that content::FeatureObserver is *not* notified when a shared worker
 // opens/closes an IndexedDB connection.
 IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
@@ -359,7 +360,7 @@ IN_PROC_BROWSER_TEST_F(IndexedDBFeatureObserverBrowserTest,
   // Wait a short timeout to make sure that the observer is not notified.
   RunLoopWithTimeout();
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that content::FeatureObserver is *not* notified when a service worker
 // opens/closes an IndexedDB connection.

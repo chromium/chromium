@@ -62,14 +62,12 @@ class SafeBrowsingPrivateApiUnitTest;
 }  // namespace extensions
 
 namespace safe_browsing {
-class PingManager;
 class VerdictCacheManager;
 #if BUILDFLAG(FULL_SAFE_BROWSING)
 class DownloadProtectionService;
 #endif
 class PasswordProtectionService;
 class SafeBrowsingDatabaseManager;
-class SafeBrowsingNetworkContext;
 class SafeBrowsingServiceFactory;
 class SafeBrowsingUIManager;
 class TriggerManager;
@@ -133,7 +131,8 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
       content::BrowserContext* browser_context);
 
   // Flushes above two interfaces to avoid races in tests.
-  void FlushNetworkInterfaceForTesting();
+  void FlushNetworkInterfaceForTesting(
+      content::BrowserContext* browser_context);
 
   const scoped_refptr<SafeBrowsingUIManager>& ui_manager() const;
 
@@ -143,13 +142,10 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   ReferrerChainProvider* GetReferrerChainProviderFromBrowserContext(
       content::BrowserContext* browser_context) override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   LoginReputationClientRequest::ReferringAppInfo GetReferringAppInfo(
       content::WebContents* web_contents) override;
 #endif
-
-  // Called on UI thread.
-  PingManager* ping_manager() const;
 
   TriggerManager* trigger_manager() const;
 
@@ -184,7 +180,9 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   virtual void SendSerializedDownloadReport(Profile* profile,
                                             const std::string& report);
 
-  // Create the default v4 protocol config struct.
+  // Create the default v4 protocol config struct. This just calls into a helper
+  // function, but it's still useful so that TestSafeBrowsingService can
+  // override it.
   virtual V4ProtocolConfig GetV4ProtocolConfig() const;
 
   // Get the cache manager by profile.
@@ -217,9 +215,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   friend class TestSafeBrowsingService;
   friend class TestSafeBrowsingServiceFactory;
   friend class V4SafeBrowsingServiceTest;
-
-  // Returns the client_name to use for Safe Browsing requests..
-  std::string GetProtocolConfigClientName() const;
 
   void SetDatabaseManagerForTest(SafeBrowsingDatabaseManager* database_manager);
 
@@ -271,13 +266,6 @@ class SafeBrowsingService : public SafeBrowsingServiceInterface,
   void RecordCookieMetrics(Profile* profile);
 
   std::unique_ptr<ProxyConfigMonitor> proxy_config_monitor_;
-
-  // This owns the URLRequestContext inside the network service. This is used by
-  // SimpleURLLoader for safe browsing requests.
-  std::unique_ptr<safe_browsing::SafeBrowsingNetworkContext> network_context_;
-
-  // Provides phishing and malware statistics. Accessed on UI thread.
-  std::unique_ptr<PingManager> ping_manager_;
 
   // Whether SafeBrowsing Extended Reporting is enabled by the current set of
   // profiles. Updated on the UI thread.

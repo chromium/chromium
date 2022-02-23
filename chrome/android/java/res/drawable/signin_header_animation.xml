@@ -4,9 +4,7 @@
      found in the LICENSE file. -->
 <animated-vector
     xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:aapt="http://schemas.android.com/aapt"
-    xmlns:tools="http://schemas.android.com/tools"
-    tools:targetApi="21">
+    xmlns:aapt="http://schemas.android.com/aapt">
     <aapt:attr name="android:drawable">
         <vector
             android:width="360dp"
@@ -108,7 +106,7 @@
                 android:rotation="0">
 
                 <path
-                    android:fillColor="?attr/default_icon_color_inverse"
+                    android:fillColor="@color/default_icon_color_inverse_baseline"
                     android:pathData="M297.722,54.149L297.722,51.997L297.981,51.997L297.981,53.479L299.925,51.391L297.981,49.303L297.981,50.785L297.722,50.785L297.722,48.632L300.291,51.391L297.722,54.149ZM297.98,45.667L295.412,42.909L297.98,40.15L297.98,42.303L297.721,42.303L297.721,40.821L295.777,42.909L297.721,44.997L297.721,43.515L297.98,43.515L297.98,45.667ZM301.395,49.392L301.173,49.251C301.521,48.617 301.705,47.89 301.705,47.15C301.705,44.868 299.976,43.011 297.852,43.011L297.852,42.733C300.119,42.733 301.964,44.715 301.964,47.149C301.963,47.939 301.767,48.715 301.395,49.392ZM297.851,51.566C295.584,51.566 293.739,49.585 293.739,47.149C293.739,46.359 293.936,45.583 294.307,44.907L294.529,45.048C294.181,45.682 293.997,46.408 293.997,47.148C293.997,49.431 295.726,51.287 297.851,51.287L297.851,51.566Z"/>
             </group>
             <!-- Blue dot -->

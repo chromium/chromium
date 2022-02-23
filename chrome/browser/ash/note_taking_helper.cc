@@ -8,6 +8,14 @@
 #include <utility>
 
 #include "apps/launcher.h"
+#include "ash/components/arc/metrics/arc_metrics_constants.h"
+#include "ash/components/arc/metrics/arc_metrics_service.h"
+#include "ash/components/arc/mojom/file_system.mojom.h"
+#include "ash/components/arc/mojom/intent_common.mojom.h"
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/connection_holder.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/public/cpp/stylus_utils.h"
 #include "base/bind.h"
@@ -34,14 +42,6 @@
 #include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/metrics/arc_metrics_constants.h"
-#include "components/arc/metrics/arc_metrics_service.h"
-#include "components/arc/mojom/file_system.mojom.h"
-#include "components/arc/mojom/intent_common.mojom.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/connection_holder.h"
 #include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_update.h"
@@ -216,7 +216,7 @@ std::unique_ptr<std::set<std::string>> GetAllowedLockScreenApps(
 
   auto allowed_apps = std::make_unique<std::set<std::string>>();
   for (const base::Value& app_value :
-       allowed_lock_screen_apps_value->GetList()) {
+       allowed_lock_screen_apps_value->GetListDeprecated()) {
     if (!app_value.is_string()) {
       LOG(ERROR) << "Invalid app ID value " << app_value;
       continue;
@@ -830,7 +830,7 @@ void NoteTakingHelper::OnShutdown(extensions::ExtensionRegistry* registry) {
 void NoteTakingHelper::OnAppUpdate(const apps::AppUpdate& update) {
   bool is_web_app = update.AppType() == apps::mojom::AppType::kWeb;
   bool is_chrome_app =
-      update.AppType() == apps::mojom::AppType::kStandaloneBrowserExtension;
+      update.AppType() == apps::mojom::AppType::kStandaloneBrowserChromeApp;
   if (!is_web_app && !is_chrome_app)
     return;
   // App was added, removed, enabled, or disabled.

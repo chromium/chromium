@@ -6,7 +6,6 @@
 #define COMPONENTS_METRICS_METRICS_SERVICE_CLIENT_H_
 
 #include <stdint.h>
-
 #include <memory>
 #include <string>
 
@@ -203,6 +202,27 @@ class MetricsServiceClient {
   // Since the concept of a user is only applicable on Ash Chrome, this function
   // should no-op for other platforms.
   virtual void UpdateCurrentUserMetricsConsent(bool user_metrics_consent) {}
+
+  // Returns the current user metrics consent if it should be applied to decide
+  // the current metrics reporting state. This allows embedders to determine
+  // when a user metric consent state should not be applied (ie no logged in
+  // user or managed policy).
+  //
+  // Will return absl::nullopt if there is no current user or current user
+  // metrics consent should not be applied to determine metrics reporting state.
+  //
+  // Not all platforms support per-user consent. If per-user consent is not
+  // supported, this function should return absl::nullopt.
+  virtual absl::optional<bool> GetCurrentUserMetricsConsent() const;
+
+  // Returns the current user id.
+  //
+  // Will return absl::nullopt if there is no current user, metrics reporting is
+  // disabled, or current user should not have a user id.
+  //
+  // Not all platforms support per-user consent. If per-user consent is not
+  // supported, this function should return absl::nullopt.
+  virtual absl::optional<std::string> GetCurrentUserId() const;
 
  private:
   base::RepeatingClosure update_running_services_;

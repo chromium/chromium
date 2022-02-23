@@ -159,7 +159,7 @@ LayoutUnit ResolveInlineLengthInternal(
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
-      FALLTHROUGH;
+      [[fallthrough]];
     case Length::kAuto:
     case Length::kNone:
     default:
@@ -224,7 +224,7 @@ LayoutUnit ResolveBlockLengthInternal(
     case Length::kDeviceHeight:
     case Length::kExtendToZoom:
       NOTREACHED() << "These should only be used for viewport definitions";
-      FALLTHROUGH;
+      [[fallthrough]];
     case Length::kAuto:
     case Length::kNone:
     default:
@@ -750,17 +750,16 @@ LayoutUnit ComputeBlockSizeForFragment(
   DCHECK(available_block_size_adjustment == LayoutUnit() ||
          style.IsDisplayTableBox());
 
-  if (constraint_space.IsLegacyTableCell() && intrinsic_size != kIndefiniteSize)
-    return intrinsic_size;
-
   if (constraint_space.IsFixedBlockSize()) {
-    return (constraint_space.AvailableSize().block_size -
-            available_block_size_adjustment)
-        .ClampNegativeToZero();
+    LayoutUnit block_size = (constraint_space.AvailableSize().block_size -
+                             available_block_size_adjustment)
+                                .ClampNegativeToZero();
+    if (constraint_space.MinBlockSizeShouldEncompassIntrinsicSize())
+      return std::max(intrinsic_size, block_size);
+    return block_size;
   }
 
-  if (constraint_space.IsTableCell() && !constraint_space.IsLegacyTableCell() &&
-      intrinsic_size != kIndefiniteSize)
+  if (constraint_space.IsTableCell() && intrinsic_size != kIndefiniteSize)
     return intrinsic_size;
 
   if (constraint_space.IsAnonymous())
@@ -866,6 +865,13 @@ LogicalSize ComputeReplacedSize(const NGBlockNode& node,
   // LayoutInline instead.
   if (node.IsFrame())
     return LogicalSize();
+
+  LogicalSize size_override = node.GetReplacedSizeOverrideIfAny(space);
+  if (!size_override.IsEmpty()) {
+    DCHECK_GE(size_override.block_size, border_padding.BlockSum());
+    DCHECK_GE(size_override.inline_size, border_padding.InlineSum());
+    return size_override;
+  }
 
   const ComputedStyle& style = node.Style();
   const EBoxSizing box_sizing = style.BoxSizingForAspectRatio();
@@ -1293,26 +1299,6 @@ NGBoxStrut ComputeBordersForTest(const ComputedStyle& style) {
   return ComputeBordersInternal(style);
 }
 
-NGBoxStrut ComputeIntrinsicPadding(const NGConstraintSpace& constraint_space,
-                                   const ComputedStyle& style,
-                                   const NGBoxStrut& scrollbar) {
-  DCHECK(constraint_space.IsTableCell());
-
-  // During the "layout" table phase, adjust the given intrinsic-padding to
-  // accommodate the scrollbar.
-  NGBoxStrut intrinsic_padding = constraint_space.TableCellIntrinsicPadding();
-  if (constraint_space.IsFixedBlockSize()) {
-    if (style.VerticalAlign() == EVerticalAlign::kMiddle) {
-      intrinsic_padding.block_start -= scrollbar.block_end / 2;
-      intrinsic_padding.block_end -= scrollbar.block_end / 2;
-    } else {
-      intrinsic_padding.block_end -= scrollbar.block_end;
-    }
-  }
-
-  return intrinsic_padding;
-}
-
 NGBoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
                           const ComputedStyle& style) {
   // If we are producing an anonymous fragment (e.g. a column) we shouldn't
@@ -1332,21 +1318,11 @@ NGBoxStrut ComputePadding(const NGConstraintSpace& constraint_space,
   LayoutUnit percentage_resolution_size =
       constraint_space.PercentageResolutionInlineSizeForParentWritingMode()
           .ClampIndefiniteToZero();
-  NGBoxStrut padding = {
+  return {
       MinimumValueForLength(style.PaddingStart(), percentage_resolution_size),
       MinimumValueForLength(style.PaddingEnd(), percentage_resolution_size),
       MinimumValueForLength(style.PaddingBefore(), percentage_resolution_size),
       MinimumValueForLength(style.PaddingAfter(), percentage_resolution_size)};
-
-  if (!RuntimeEnabledFeatures::LayoutNGTableEnabled() &&
-      style.Display() == EDisplay::kTableCell) {
-    // Compatibility hack to mach legacy layout. Legacy layout floors padding on
-    // the block sides, but not on the inline sides. o.O
-    padding.block_start = LayoutUnit(padding.block_start.Floor());
-    padding.block_end = LayoutUnit(padding.block_end.Floor());
-  }
-
-  return padding;
 }
 
 NGBoxStrut ComputeScrollbarsForNonAnonymous(const NGBlockNode& node) {
@@ -1634,10 +1610,30 @@ LayoutUnit ClampIntrinsicBlockSize(
   DCHECK(!node.IsTable());
   const ComputedStyle& style = node.Style();
 
+  // Check if the intrinsic size was overridden.
+  LayoutUnit override_intrinsic_size = node.OverrideIntrinsicContentBlockSize();
+  if (override_intrinsic_size != kIndefiniteSize)
+    return override_intrinsic_size + border_scrollbar_padding.BlockSum();
+
+  // Check if we have a "default" block-size (e.g. a <textarea>).
+  LayoutUnit default_intrinsic_size = node.DefaultIntrinsicContentBlockSize();
+  if (default_intrinsic_size != kIndefiniteSize) {
+    // <textarea>'s intrinsic size should ignore scrollbar existence.
+    if (node.IsTextArea()) {
+      return default_intrinsic_size + border_scrollbar_padding.BlockSum() -
+             ComputeScrollbars(space, node).BlockSum();
+    }
+    return default_intrinsic_size + border_scrollbar_padding.BlockSum();
+  }
+
+  // If we have size containment, we ignore child contributions to intrinsic
+  // sizing.
+  if (node.ShouldApplyBlockSizeContainment())
+    return border_scrollbar_padding.BlockSum();
+
   // Apply the "fills viewport" quirk if needed.
-  LayoutUnit available_block_size = space.AvailableSize().block_size;
   if (node.IsQuirkyAndFillsViewport() && style.LogicalHeight().IsAuto() &&
-      available_block_size != kIndefiniteSize) {
+      space.AvailableSize().block_size != kIndefiniteSize) {
     DCHECK_EQ(node.IsBody() && !node.CreatesNewFormattingContext(),
               body_margin_block_sum.has_value());
     LayoutUnit margin_sum = body_margin_block_sum.value_or(
@@ -1647,26 +1643,6 @@ LayoutUnit ClampIntrinsicBlockSize(
         (space.AvailableSize().block_size - margin_sum).ClampNegativeToZero());
   }
 
-  // If the intrinsic size was overridden, then use that.
-  LayoutUnit intrinsic_size_override = node.OverrideIntrinsicContentBlockSize();
-  if (intrinsic_size_override != kIndefiniteSize) {
-    return intrinsic_size_override + border_scrollbar_padding.BlockSum();
-  } else {
-    LayoutUnit default_intrinsic_size = node.DefaultIntrinsicContentBlockSize();
-    if (default_intrinsic_size != kIndefiniteSize) {
-      // <textarea>'s intrinsic size should ignore scrollbar existence.
-      if (node.IsTextArea()) {
-        return default_intrinsic_size + border_scrollbar_padding.BlockSum() -
-               ComputeScrollbars(space, node).BlockSum();
-      }
-      return default_intrinsic_size + border_scrollbar_padding.BlockSum();
-    }
-  }
-
-  // If we have size containment, we ignore child contributions to intrinsic
-  // sizing.
-  if (node.ShouldApplyBlockSizeContainment())
-    return border_scrollbar_padding.BlockSum();
   return current_intrinsic_block_size;
 }
 

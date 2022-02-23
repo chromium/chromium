@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_STORE_KIT_STORE_KIT_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_STORE_KIT_STORE_KIT_TAB_HELPER_H_
 
-#include "base/macros.h"
 #import "ios/chrome/browser/store_kit/store_kit_launcher.h"
 #import "ios/web/public/web_state_user_data.h"
 

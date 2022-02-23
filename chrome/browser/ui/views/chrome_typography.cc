@@ -94,7 +94,7 @@ void ApplyCommonFontStyles(int context,
       details.size_delta = omnibox_decoration_delta;
       break;
     }
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case CONTEXT_WINDOWS10_NATIVE:
       // Adjusts default font size up to match Win10 modern UI.
       details.size_delta = 15 - gfx::PlatformFont::kDefaultBaseFontSize;

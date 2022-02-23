@@ -41,7 +41,7 @@ void TextControlSingleLinePainter::Paint(const PaintInfo& paint_info) {
   // Convert the rect into the coords used for painting the content.
   ScopedPaintState paint_state(text_control_, paint_info);
   contents_rect.Move(paint_state.PaintOffset());
-  IntRect snapped_rect = PixelSnappedIntRect(contents_rect);
+  gfx::Rect snapped_rect = ToPixelSnappedRect(contents_rect);
 
   BoxDrawingRecorder recorder(paint_info.context, text_control_,
                               DisplayItem::kCapsLockIndicator,

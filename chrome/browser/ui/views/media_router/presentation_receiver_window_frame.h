@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/views/widget/widget.h"
 
 namespace gfx {
@@ -45,7 +46,7 @@ class PresentationReceiverWindowFrame final : public views::Widget {
   ui::ColorProviderManager::InitializerSupplier* GetCustomTheme() const final;
 
   // The profile from which we get the theme.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_MEDIA_ROUTER_PRESENTATION_RECEIVER_WINDOW_FRAME_H_

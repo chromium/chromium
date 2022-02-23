@@ -107,7 +107,7 @@ DictionaryLocalStateValueWaiter::DictionaryLocalStateValueWaiter(
 DictionaryLocalStateValueWaiter::~DictionaryLocalStateValueWaiter() {}
 
 bool DictionaryLocalStateValueWaiter::ExpectedValueFound() {
-  const base::DictionaryValue* pref =
+  const base::Value* pref =
       pref_change_registrar_.prefs()->GetDictionary(pref_.c_str());
   if (!pref) {
     // Can't use ASSERT_* in non-void functions so this is the next best
@@ -144,7 +144,7 @@ void DevicePolicyCrosTestHelper::OverridePaths() {
   base::FilePath user_data_dir;
   ASSERT_TRUE(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
   base::ScopedAllowBlockingForTesting allow_io;
-  chromeos::RegisterStubPathOverrides(user_data_dir);
+  ash::RegisterStubPathOverrides(user_data_dir);
   chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
 }
 

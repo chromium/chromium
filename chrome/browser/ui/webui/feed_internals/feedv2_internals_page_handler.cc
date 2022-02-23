@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/metrics/statistics_recorder.h"
 #include "base/time/time.h"
@@ -106,7 +107,7 @@ void FeedV2InternalsPageHandler::RefreshFollowingFeed() {
 }
 
 void FeedV2InternalsPageHandler::RefreshWebFeedSuggestions() {
-  feed_stream_->subscriptions().RefreshRecommendedFeeds();
+  feed_stream_->subscriptions().RefreshRecommendedFeeds(base::DoNothing());
 }
 
 void FeedV2InternalsPageHandler::GetFeedProcessScopeDump(

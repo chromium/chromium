@@ -282,8 +282,6 @@ void VideoDecoderTraits::InitializeDecoder(
 void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
                                           const MediaConfigType& media_config,
                                           media::MediaLog* media_log) {
-  media_log->SetProperty<media::MediaLogProperty::kFrameTitle>(
-      std::string("VideoDecoder(WebCodecs)"));
   media_log->SetProperty<media::MediaLogProperty::kVideoDecoderName>(
       decoder.GetDecoderType());
   media_log->SetProperty<media::MediaLogProperty::kIsPlatformVideoDecoder>(
@@ -297,9 +295,9 @@ void VideoDecoderTraits::UpdateDecoderLog(const MediaDecoderType& decoder,
 }
 
 // static
-media::StatusOr<VideoDecoderTraits::OutputType*> VideoDecoderTraits::MakeOutput(
-    scoped_refptr<MediaOutputType> output,
-    ExecutionContext* context) {
+media::DecoderStatus::Or<VideoDecoderTraits::OutputType*>
+VideoDecoderTraits::MakeOutput(scoped_refptr<MediaOutputType> output,
+                               ExecutionContext* context) {
   return MakeGarbageCollected<VideoDecoderTraits::OutputType>(std::move(output),
                                                               context);
 }
@@ -520,7 +518,7 @@ CodecConfigEval VideoDecoder::MakeMediaConfig(const ConfigType& config,
   return result;
 }
 
-media::StatusOr<scoped_refptr<media::DecoderBuffer>>
+media::DecoderStatus::Or<scoped_refptr<media::DecoderBuffer>>
 VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
   scoped_refptr<media::DecoderBuffer> decoder_buffer = chunk.buffer();
 #if BUILDFLAG(USE_PROPRIETARY_CODECS)
@@ -532,16 +530,18 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
     uint32_t output_size = h264_converter_->CalculateNeededOutputBufferSize(
         src, static_cast<uint32_t>(src_size), h264_avcc_.get());
     if (!output_size) {
-      return media::Status(media::StatusCode::kH264ParsingError,
-                           "Unable to determine size of bitstream buffer.");
+      return media::DecoderStatus(
+          media::DecoderStatus::Codes::kMalformedBitstream,
+          "Unable to determine size of bitstream buffer.");
     }
 
     std::vector<uint8_t> buf(output_size);
     if (!h264_converter_->ConvertNalUnitStreamToByteStream(
             src, static_cast<uint32_t>(src_size), h264_avcc_.get(), buf.data(),
             &output_size)) {
-      return media::Status(media::StatusCode::kH264ParsingError,
-                           "Unable to convert NALU to byte stream.");
+      return media::DecoderStatus(
+          media::DecoderStatus::Codes::kMalformedBitstream,
+          "Unable to convert NALU to byte stream.");
     }
 
     decoder_buffer = media::DecoderBuffer::CopyFrom(buf.data(), output_size);
@@ -561,8 +561,11 @@ VideoDecoder::MakeDecoderBuffer(const InputType& chunk, bool verify_key_frame) {
       ParseH264KeyFrame(*decoder_buffer, &is_key_frame);
     }
 
-    if (!is_key_frame)
-      return media::Status(media::StatusCode::kKeyFrameRequired);
+    if (!is_key_frame) {
+      return media::DecoderStatus(
+          media::DecoderStatus::Codes::kKeyFrameRequired,
+          "A key frame is required after configure() or flush().");
+    }
   }
 
   return decoder_buffer;

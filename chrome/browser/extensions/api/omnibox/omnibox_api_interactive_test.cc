@@ -33,13 +33,15 @@
 #include "content/public/test/test_utils.h"
 #include "extensions/test/extension_test_message_listener.h"
 #include "extensions/test/result_catcher.h"
+#include "extensions/test/test_extension_dir.h"
 #include "third_party/metrics_proto/omnibox_event.pb.h"
 #include "ui/base/window_open_disposition.h"
+
+namespace extensions {
 
 namespace {
 
 using base::ASCIIToUTF16;
-using extensions::ResultCatcher;
 using metrics::OmniboxEventProto;
 using ui_test_utils::WaitForAutocompleteDone;
 
@@ -74,19 +76,80 @@ std::u16string AutocompleteResultAsString(const AutocompleteResult& result) {
   return base::UTF8ToUTF16(output);
 }
 
-using OmniboxApiTest = extensions::ExtensionApiTest;
+struct ExpectedMatchComponent {
+  std::u16string text;
+  ACMatchClassification::Style style;
+};
+using ExpectedMatchComponents = std::vector<ExpectedMatchComponent>;
+
+// A helper method to verify the expected styled components of an autocomplete
+// match.
+// TODO(devlin): Update other tests to use this handy check.
+void VerifyMatchComponents(const ExpectedMatchComponents& expected,
+                           const AutocompleteMatch& match) {
+  std::u16string expected_string;
+  for (const auto& component : expected)
+    expected_string += component.text;
+
+  EXPECT_EQ(expected_string, match.contents);
+
+  // Check if we have the right number of components. If we don't, safely bail
+  // so that we don't access out-of-bounds elements.
+  if (expected.size() != match.contents_class.size()) {
+    ADD_FAILURE() << "Improper number of components: " << expected.size()
+                  << " vs " << match.contents_class.size();
+    return;
+  }
+
+  // Iterate over the string and match each component.
+  size_t curr_offset = 0;
+  for (size_t i = 0; i < expected.size(); ++i) {
+    SCOPED_TRACE(expected[i].text);
+
+    EXPECT_EQ(curr_offset, match.contents_class[i].offset);
+    EXPECT_EQ(expected[i].style, match.contents_class[i].style);
+    curr_offset += expected[i].text.size();
+  }
+}
+
+using OmniboxApiTest = ExtensionApiTest;
 
 }  // namespace
 
-// http://crbug.com/167158
-IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
-  ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
-
+IN_PROC_BROWSER_TEST_F(OmniboxApiTest, SendSuggestions) {
   // The results depend on the TemplateURLService being loaded. Make sure it is
   // loaded so that the autocomplete results are consistent.
   Profile* profile = browser()->profile();
   search_test_utils::WaitForTemplateURLServiceToLoad(
       TemplateURLServiceFactory::GetForProfile(profile));
+
+  constexpr char kManifest[] =
+      R"({
+           "name": "Basic Send Suggestions",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "alpha" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  constexpr char kBackground[] =
+      R"(chrome.omnibox.onInputChanged.addListener((text, suggest) => {
+           let richDescription =
+               'Description with style: <match>&lt;match&gt;</match>, ' +
+               '<dim>[dim]</dim>, <url>(url)</url>';
+           let simpleDescription = 'simple description';
+           suggest([
+             {content: text + ' first', description: richDescription},
+             {content: text + ' second', description: simpleDescription},
+             {content: text + ' third', description: simpleDescription},
+           ]);
+         });)";
+
+  extensions::TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  const extensions::Extension* extension =
+      LoadExtension(test_dir.UnpackedPath());
+  ASSERT_TRUE(extension);
 
   AutocompleteController* autocomplete_controller =
       GetAutocompleteController(browser());
@@ -94,7 +157,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
   // Test that our extension's keyword is suggested to us when we partially type
   // it.
   {
-    AutocompleteInput input(u"keywor", metrics::OmniboxEventProto::NTP,
+    AutocompleteInput input(u"alph", metrics::OmniboxEventProto::NTP,
                             ChromeAutocompleteSchemeClassifier(profile));
     autocomplete_controller->Start(input);
     WaitForAutocompleteDone(browser());
@@ -110,99 +173,80 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_Basic) {
     EXPECT_FALSE(match.deletable);
 
     match = result.match_at(1);
-    EXPECT_EQ(u"kw", match.keyword);
+    EXPECT_EQ(u"alpha", match.keyword);
   }
 
   // Test that our extension can send suggestions back to us.
+  AutocompleteInput input(u"alpha input", metrics::OmniboxEventProto::NTP,
+                          ChromeAutocompleteSchemeClassifier(profile));
+  autocomplete_controller->Start(input);
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  // Now, peek into the controller to see if it has the results we expect.
+  // First result should be to invoke the keyword with what we typed, 2-4
+  // should be to invoke with suggestions from the extension, and the last
+  // should be to search for what we typed.
+  const AutocompleteResult& result = autocomplete_controller->result();
+  ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
+
+  // Invoke the keyword with what we typed.
+  EXPECT_EQ(u"alpha", result.match_at(0).keyword);
+  EXPECT_EQ(u"alpha input", result.match_at(0).fill_into_edit);
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE,
+            result.match_at(0).type);
+  EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
+            result.match_at(0).provider->type());
+
+  // First suggestion, complete with rich description.
   {
-    AutocompleteInput input(u"kw suggestio", metrics::OmniboxEventProto::NTP,
-                            ChromeAutocompleteSchemeClassifier(profile));
-    autocomplete_controller->Start(input);
-    WaitForAutocompleteDone(browser());
-    EXPECT_TRUE(autocomplete_controller->done());
-
-    // Now, peek into the controller to see if it has the results we expect.
-    // First result should be to invoke the keyword with what we typed, 2-4
-    // should be to invoke with suggestions from the extension, and the last
-    // should be to search for what we typed.
-    const AutocompleteResult& result = autocomplete_controller->result();
-    ASSERT_EQ(5U, result.size()) << AutocompleteResultAsString(result);
-
-    EXPECT_EQ(u"kw", result.match_at(0).keyword);
-    EXPECT_EQ(u"kw suggestio", result.match_at(0).fill_into_edit);
-    EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE,
-              result.match_at(0).type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
-              result.match_at(0).provider->type());
-    EXPECT_EQ(u"kw", result.match_at(1).keyword);
-    EXPECT_EQ(u"kw suggestion1", result.match_at(1).fill_into_edit);
+    EXPECT_EQ(u"alpha", result.match_at(1).keyword);
+    EXPECT_EQ(u"alpha input first", result.match_at(1).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(1).provider->type());
-    EXPECT_EQ(u"kw", result.match_at(2).keyword);
-    EXPECT_EQ(u"kw suggestion2", result.match_at(2).fill_into_edit);
+
+    std::u16string rich_description =
+        u"Description with style: <match>, [dim], (url)";
+    EXPECT_EQ(rich_description, result.match_at(1).contents);
+    const ExpectedMatchComponents expected_components = {
+        {u"Description with style: ", ACMatchClassification::NONE},
+        {u"<match>", ACMatchClassification::MATCH},
+        {u", ", ACMatchClassification::NONE},
+        {u"[dim]", ACMatchClassification::DIM},
+        {u", ", ACMatchClassification::NONE},
+        {u"(url)", ACMatchClassification::URL},
+    };
+    VerifyMatchComponents(expected_components, result.match_at(1));
+  }
+
+  // Second and third suggestions, with simple descriptions.
+  {
+    std::u16string simple_description = u"simple description";
+    const ExpectedMatchComponents expected_components = {
+        {simple_description, ACMatchClassification::NONE},
+    };
+
+    EXPECT_EQ(u"alpha", result.match_at(2).keyword);
+    EXPECT_EQ(u"alpha input second", result.match_at(2).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(2).provider->type());
-    EXPECT_EQ(u"kw", result.match_at(3).keyword);
-    EXPECT_EQ(u"kw suggestion3", result.match_at(3).fill_into_edit);
+    EXPECT_EQ(simple_description, result.match_at(2).contents);
+    VerifyMatchComponents(expected_components, result.match_at(2));
+
+    EXPECT_EQ(u"alpha", result.match_at(3).keyword);
+    EXPECT_EQ(u"alpha input third", result.match_at(3).fill_into_edit);
     EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD,
               result.match_at(3).provider->type());
-
-    std::u16string description =
-        u"Description with style: <match>, [dim], (url till end)";
-    EXPECT_EQ(description, result.match_at(1).contents);
-    ASSERT_EQ(6u, result.match_at(1).contents_class.size());
-
-    EXPECT_EQ(0u, result.match_at(1).contents_class[0].offset);
-    EXPECT_EQ(ACMatchClassification::NONE,
-              result.match_at(1).contents_class[0].style);
-
-    EXPECT_EQ(description.find('<'),
-              result.match_at(1).contents_class[1].offset);
-    EXPECT_EQ(ACMatchClassification::MATCH,
-              result.match_at(1).contents_class[1].style);
-
-    EXPECT_EQ(description.find('>') + 1u,
-              result.match_at(1).contents_class[2].offset);
-    EXPECT_EQ(ACMatchClassification::NONE,
-              result.match_at(1).contents_class[2].style);
-
-    EXPECT_EQ(description.find('['),
-              result.match_at(1).contents_class[3].offset);
-    EXPECT_EQ(ACMatchClassification::DIM,
-              result.match_at(1).contents_class[3].style);
-
-    EXPECT_EQ(description.find(']') + 1u,
-              result.match_at(1).contents_class[4].offset);
-    EXPECT_EQ(ACMatchClassification::NONE,
-              result.match_at(1).contents_class[4].style);
-
-    EXPECT_EQ(description.find('('),
-              result.match_at(1).contents_class[5].offset);
-    EXPECT_EQ(ACMatchClassification::URL,
-              result.match_at(1).contents_class[5].style);
-
-    AutocompleteMatch match = result.match_at(4);
-    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
-    EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
-              result.match_at(4).provider->type());
-    EXPECT_FALSE(match.deletable);
+    EXPECT_EQ(simple_description, result.match_at(3).contents);
+    VerifyMatchComponents(expected_components, result.match_at(3));
   }
 
-  // Flaky, see http://crbug.com/167158
-  /*
-  {
-    LocationBar* location_bar = GetLocationBar(browser());
-    ResultCatcher catcher;
-    OmniboxView* omnibox_view = location_bar->GetOmniboxView();
-    omnibox_view->OnBeforePossibleChange();
-    omnibox_view->SetUserText(u"kw command");
-    omnibox_view->OnAfterPossibleChange(true);
-    location_bar->AcceptInput();
-    // This checks that the keyword provider (via javascript)
-    // gets told to navigate to the string "command".
-    EXPECT_TRUE(catcher.GetNextResult()) << catcher.message();
-  }
-  */
+  // Final option, search what you typed.
+  AutocompleteMatch match = result.match_at(4);
+  EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+  EXPECT_EQ(AutocompleteProvider::TYPE_SEARCH,
+            result.match_at(4).provider->type());
+  EXPECT_FALSE(match.deletable);
 }
 
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, OnInputEntered) {
@@ -306,7 +350,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, DISABLED_IncognitoSplitMode) {
 }
 
 // The test is flaky on Win10. crbug.com/1045731.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PopupStaysClosed DISABLED_PopupStaysClosed
 #else
 #define MAYBE_PopupStaysClosed PopupStaysClosed
@@ -339,7 +383,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
   // Quickly type another query and accept it before getting suggestions back
   // for the query. The popup will close after accepting input - ensure that it
   // does not reopen when the extension returns its suggestions.
-  extensions::ResultCatcher catcher;
+  ResultCatcher catcher;
 
   // TODO: Rather than send this second request by talking to the controller
   // directly, figure out how to send it via the proper calls to
@@ -357,8 +401,8 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_PopupStaysClosed) {
 }
 
 // Tests deleting a deletable omnibox extension suggestion result.
-// Flaky on Windows. https://crbug.com/801316
-#if defined(OS_WIN)
+// Flaky on Windows and Linux TSan. https://crbug.com/1287949
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_LINUX) && defined(THREAD_SANITIZER))
 #define MAYBE_DeleteOmniboxSuggestionResult \
   DISABLED_DeleteOmniboxSuggestionResult
 #else
@@ -414,7 +458,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 // This test portion is excluded from Mac because the Mac key combination
 // FN+SHIFT+DEL used to delete an omnibox suggestion cannot be reproduced.
 // This is because the FN key is not supported in interactive_test_util.h.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   ExtensionTestMessageListener delete_suggestion_listener(
       "onDeleteSuggestion: des1", false);
 
@@ -439,12 +483,6 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, MAYBE_DeleteOmniboxSuggestionResult) {
 // Tests typing something but not staying in keyword mode.
 IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
   ASSERT_TRUE(RunExtensionTest("omnibox")) << message_;
-
-  // This test covers the behavior of entering keyword mode by space, then
-  // exiting by pressing backspace.  AcceptKeywordBySpace is disabled when
-  // keyword search button is enabled, so for that case do not run this test.
-  if (OmniboxFieldTrial::IsKeywordSearchButtonEnabled())
-    return;
 
   // The results depend on the TemplateURLService being loaded. Make sure it is
   // loaded so that the autocomplete results are consistent.
@@ -517,3 +555,156 @@ IN_PROC_BROWSER_TEST_F(OmniboxApiTest, ExtensionSuggestionsOnlyInKeywordMode) {
               result.match_at(1).provider->type());
   }
 }
+
+using ContextType = ExtensionBrowserTest::ContextType;
+
+class OmniboxApiTestWithContextType
+    : public ExtensionApiTest,
+      public testing::WithParamInterface<ContextType> {
+ public:
+  OmniboxApiTestWithContextType() : ExtensionApiTest(GetParam()) {}
+  ~OmniboxApiTestWithContextType() override = default;
+};
+
+IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType,
+                       SetDefaultSuggestionFailures) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "SetDefaultSuggestion",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "word" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  constexpr char kBackground[] =
+      R"(chrome.test.runTests([
+           function testSetDefaultSuggestionThrowsWithContentField() {
+             // Note: This test is mostly for historical benefit. Previously,
+             // we had manual coverage to ensure developers did not pass an
+             // object with `content`; now, this is handled by the bindings
+             // system. There's no special handling in this API, but given the
+             // historical behavior, we add extra coverage here.
+             const invalidSuggestion = {
+                 description: 'description',
+                 content: 'content',
+             };
+             const expectedError = /Unexpected property: 'content'./;
+             chrome.test.assertThrows(
+                 chrome.omnibox.setDefaultSuggestion,
+                 [invalidSuggestion],
+                 expectedError);
+             chrome.test.succeed();
+           },
+           async function invalidXml_NoClosingTag() {
+             // Service worker-based and background page-based extensions behave
+             // differently here. In the background page case, the description
+             // is parsed synchronously in the renderer; this results in an
+             // error being emitted that must be caught with a try/catch. In
+             // service worker contexts, we parse the description
+             // asynchronously from the browser, and the error is returned via
+             // runtime.lastError.
+             // Because of this difference, getting the emitted error is a bit
+             // of a pain.
+             let error = await new Promise((resolve) => {
+               try {
+                 chrome.omnibox.setDefaultSuggestion(
+                     {description: '<tag> <match>match</match> world'},
+                     () => {
+                       resolve(chrome.runtime.lastError.message);
+                     });
+               } catch (e) {
+                 resolve(e.message);
+               }
+             });
+             let expectedError = /Opening and ending tag mismatch/;
+             chrome.test.assertTrue(expectedError.test(error), error);
+             chrome.test.succeed();
+           }
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+}
+
+IN_PROC_BROWSER_TEST_P(OmniboxApiTestWithContextType, SetDefaultSuggestion) {
+  constexpr char kManifest[] =
+      R"({
+           "name": "SetDefaultSuggestion",
+           "manifest_version": 2,
+           "version": "0.1",
+           "omnibox": { "keyword": "word" },
+           "background": { "scripts": [ "background.js" ], "persistent": true }
+         })";
+  constexpr char kBackground[] =
+      R"(chrome.test.runTests([
+           function setDefaultSuggestion() {
+             chrome.omnibox.setDefaultSuggestion(
+                 {description: 'hello <match>match</match> world'},
+                 () => {
+                   chrome.test.succeed();
+                 });
+           }
+         ]);)";
+  TestExtensionDir test_dir;
+  test_dir.WriteManifest(kManifest);
+  test_dir.WriteFile(FILE_PATH_LITERAL("background.js"), kBackground);
+  ASSERT_TRUE(RunExtensionTest(test_dir.UnpackedPath(), {}, {})) << message_;
+
+  // The results depend on the TemplateURLService being loaded. Make sure it is
+  // loaded so that the autocomplete results are consistent.
+  // TODO(devlin): Hoist this into a SetUp() method?
+  search_test_utils::WaitForTemplateURLServiceToLoad(
+      TemplateURLServiceFactory::GetForProfile(profile()));
+
+  AutocompleteController* autocomplete_controller =
+      GetAutocompleteController(browser());
+
+  chrome::FocusLocationBar(browser());
+  ASSERT_TRUE(ui_test_utils::IsViewFocused(browser(), VIEW_ID_OMNIBOX));
+
+  // Input a keyword query and wait for suggestions from the extension.
+  // Note that we need to add a character after the keyword for the service to
+  // trigger the extension.
+  InputKeys(browser(), {ui::VKEY_W, ui::VKEY_O, ui::VKEY_R, ui::VKEY_D,
+                        ui::VKEY_SPACE, ui::VKEY_D});
+  WaitForAutocompleteDone(browser());
+  EXPECT_TRUE(autocomplete_controller->done());
+
+  const AutocompleteResult& result = autocomplete_controller->result();
+  ASSERT_EQ(2u, result.size()) << AutocompleteResultAsString(result);
+
+  {
+    const AutocompleteMatch& match = result.match_at(0);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_OTHER_ENGINE, match.type);
+    EXPECT_EQ(AutocompleteProvider::TYPE_KEYWORD, match.provider->type());
+
+    // The "description" given by the extension is shown as the "contents" in
+    // the AutocompleteMatch. The XML-marked string is
+    // "hello <match>match</match> world", which is then shown as
+    // "hello match world".
+    // It should have 3 "components": an unstyled "hello ", a match-styled
+    // "match", and an unstyled " world".
+    const ExpectedMatchComponents expected_components = {
+        {u"hello ", ACMatchClassification::NONE},
+        {u"match", ACMatchClassification::MATCH},
+        {u" world", ACMatchClassification::NONE},
+    };
+    VerifyMatchComponents(expected_components, match);
+  }
+
+  {
+    const AutocompleteMatch& match = result.match_at(1);
+    EXPECT_EQ(u"word d", match.fill_into_edit);
+    EXPECT_EQ(AutocompleteMatchType::SEARCH_WHAT_YOU_TYPED, match.type);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(ServiceWorker,
+                         OmniboxApiTestWithContextType,
+                         testing::Values(ContextType::kServiceWorker));
+INSTANTIATE_TEST_SUITE_P(PersistentBackground,
+                         OmniboxApiTestWithContextType,
+                         testing::Values(ContextType::kPersistentBackground));
+
+}  // namespace extensions

@@ -107,6 +107,10 @@ constexpr webui::LocalizedString kElementLocalizedStrings[] = {
      IDS_NETWORK_LIST_ITEM_CELLULAR_BLOCKED_A11Y_LABEL},
     {"networkListItemCellularBlockedWithConnectionStatusA11yLabel",
      IDS_NETWORK_LIST_ITEM_CELLULAR_BLOCKED_WITH_CONNECTION_STATUS_A11Y_LABEL},
+    {"networkListItemWiFiBlockedA11yLabel",
+     IDS_NETWORK_LIST_ITEM_WIFI_BLOCKED_A11Y_LABEL},
+    {"networkListItemWiFiBlockedWithConnectionStatusA11yLabel",
+     IDS_NETWORK_LIST_ITEM_WIFI_BLOCKED_WITH_CONNECTION_STATUS_A11Y_LABEL},
     {"networkListItemUnavailableSimNetwork",
      IDS_NETWORK_LIST_ITEM_UNAVAILABLE_SIM_NETWORK},
     {"networkListItemDownload", IDS_NETWORK_LIST_ITEM_DOWNLOAD},
@@ -231,9 +235,15 @@ void AddOncLocalizedStrings(content::WebUIDataSource* html_source) {
       {"OncVPN-IPsec-PSK", IDS_ONC_VPN_IPSEC_PSK},
       {"OncVPN-L2TP-Password", IDS_ONC_VPN_PASSWORD},
       {"OncVPN-L2TP-Username", IDS_ONC_VPN_USERNAME},
+      {"OncVPN-OpenVPN-Auth", IDS_ONC_VPN_OPENVPN_AUTH},
+      {"OncVPN-OpenVPN-Cipher", IDS_ONC_VPN_OPENVPN_CIPHER},
+      {"OncVPN-OpenVPN-CompressionAlgorithm",
+       IDS_ONC_VPN_OPENVPN_COMPRESSION_ALGORITHM},
       {"OncVPN-OpenVPN-ExtraHosts", IDS_ONC_VPN_OPENVPN_EXTRA_HOSTS},
+      {"OncVPN-OpenVPN-KeyDirection", IDS_ONC_VPN_OPENVPN_KEY_DIRECTION},
       {"OncVPN-OpenVPN-OTP", IDS_ONC_VPN_OPENVPN_OTP},
       {"OncVPN-OpenVPN-Password", IDS_ONC_VPN_PASSWORD},
+      {"OncVPN-OpenVPN-TlsAuthContents", IDS_ONC_VPN_OPENVPN_TLS_AUTH_CONTENTS},
       {"OncVPN-OpenVPN-Username", IDS_ONC_VPN_USERNAME},
       {"OncVPN-ProviderName", IDS_ONC_VPN_THIRD_PARTY_VPN_PROVIDER_NAME},
       {"OncVPN-Type", IDS_ONC_VPN_TYPE},
@@ -409,6 +419,10 @@ void AddDetailsLocalizedStrings(content::WebUIDataSource* html_source) {
 
   html_source->AddBoolean("useAttachApn",
                           chromeos::features::ShouldUseAttachApn());
+  html_source->AddBoolean("esimPolicyEnabled",
+                          chromeos::features::IsESimPolicyEnabled());
+  html_source->AddBoolean("extendedOpenVpnSettingsEnabled",
+                          ash::features::IsExtendedOpenVpnSettingsEnabled());
 }
 
 void AddConfigLocalizedStrings(content::WebUIDataSource* html_source) {

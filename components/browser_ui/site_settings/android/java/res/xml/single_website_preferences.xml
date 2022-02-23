@@ -23,7 +23,7 @@
         android:key="intrusive_ads_info"
         android:title="@string/intrusive_ads_information"
         android:icon="@drawable/btn_info"
-        app:iconTint="@color/default_icon_color" />
+        app:iconTint="@macro/default_icon_color" />
     <Preference
         android:selectable="false"
         android:key="intrusive_ads_info_divider"

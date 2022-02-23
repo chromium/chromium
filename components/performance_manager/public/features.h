@@ -13,13 +13,12 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 
-namespace performance_manager {
-namespace features {
+namespace performance_manager::features {
 
 // The feature that gates whether or not the PM runs on the main (UI) thread.
 extern const base::Feature kRunOnMainThread;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Enables urgent discarding of pages directly from PerformanceManager rather
 // than via TabManager.
 extern const base::Feature kUrgentDiscardingFromPerformanceManager;
@@ -67,52 +66,6 @@ extern const base::Feature kBackgroundTabLoadingFromPerformanceManager;
 // BFCache of all pages when the system is under memory pressure.
 extern const base::Feature kBFCachePerformanceManagerPolicy;
 
-// Parameters allowing to control some aspects of the
-// |kBFCachePerformanceManagerPolicy|.
-class BFCachePerformanceManagerPolicyParams {
- public:
-  BFCachePerformanceManagerPolicyParams(
-      BFCachePerformanceManagerPolicyParams&&) = default;
-  BFCachePerformanceManagerPolicyParams& operator=(
-      BFCachePerformanceManagerPolicyParams&&) = default;
-  BFCachePerformanceManagerPolicyParams(
-      const BFCachePerformanceManagerPolicyParams&) = delete;
-  BFCachePerformanceManagerPolicyParams& operator=(
-      const BFCachePerformanceManagerPolicyParams&) = delete;
-  ~BFCachePerformanceManagerPolicyParams() = default;
-
-  static BFCachePerformanceManagerPolicyParams GetParams();
-
-  // Whether or not the BFCache of all pages should be flushed when the system
-  // is under *moderate* memory pressure. The policy always flushes the bfcache
-  // under critical pressure.
-  bool flush_on_moderate_pressure() const {
-    return flush_on_moderate_pressure_;
-  }
-
-  base::TimeDelta delay_to_flush_background_tab() const {
-    return delay_to_flush_background_tab_;
-  }
-
-  static constexpr base::FeatureParam<bool> kFlushOnModeratePressure{
-      &features::kBFCachePerformanceManagerPolicy, "flush_on_moderate_pressure",
-      false};
-
-  // The back forward cache should be flushed after the tab goes to background
-  // and elapses this delay. If the value is negative (such as -1), the back
-  // forward cache in the background tabs will not be flushed.
-  static constexpr base::FeatureParam<int> kDelayToFlushBackgroundTabInSeconds{
-      &features::kBFCachePerformanceManagerPolicy,
-      "delay_to_flush_background_tab_in_seconds", -1};
-
- private:
-  BFCachePerformanceManagerPolicyParams() = default;
-
-  bool flush_on_moderate_pressure_;
-  base::TimeDelta delay_to_flush_background_tab_;
-};
-
-}  // namespace features
-}  // namespace performance_manager
+}  // namespace performance_manager::features
 
 #endif  // COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_FEATURES_H_

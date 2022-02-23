@@ -31,13 +31,13 @@
 #include <memory>
 #include "base/memory/weak_ptr.h"
 #include "third_party/blink/public/mojom/webpreferences/web_preferences.mojom-blink.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/deferred_image_decoder.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
 #include "third_party/blink/renderer/platform/image-decoders/image_animation.h"
 #include "third_party/blink/renderer/platform/timer.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "ui/gfx/geometry/size.h"
 
 #include "third_party/skia/include/core/SkRefCnt.h"
 
@@ -64,7 +64,7 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   bool CurrentFrameHasSingleSecurityOrigin() const override;
 
-  IntSize SizeWithConfig(SizeConfig) const override;
+  gfx::Size SizeWithConfig(SizeConfig) const override;
   bool GetHotSpot(gfx::Point&) const override;
   String FilenameExtension() const override;
 
@@ -128,8 +128,8 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
 
   void Draw(cc::PaintCanvas*,
             const cc::PaintFlags&,
-            const FloatRect& dst_rect,
-            const FloatRect& src_rect,
+            const gfx::RectF& dst_rect,
+            const gfx::RectF& src_rect,
             const ImageDrawOptions&) override;
 
   PaintImage CreatePaintImage();
@@ -154,9 +154,9 @@ class PLATFORM_EXPORT BitmapImage final : public Image {
   bool ShouldReportByteSizeUMAs(bool data_now_completely_received);
 
   std::unique_ptr<DeferredImageDecoder> decoder_;
-  mutable IntSize size_;  // The size to use for the overall image (will just
-                          // be the size of the first image).
-  mutable IntSize density_corrected_size_;
+  mutable gfx::Size size_;  // The size to use for the overall image (will just
+                            // be the size of the first image).
+  mutable gfx::Size density_corrected_size_;
 
   // This caches the PaintImage created with the last updated encoded data to
   // ensure re-use of generated decodes. This is cleared each time the encoded

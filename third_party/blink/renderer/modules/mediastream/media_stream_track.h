@@ -64,6 +64,9 @@ class MODULES_EXPORT MediaStreamTrack
     virtual void TrackChangedState() = 0;
   };
 
+  // TODO(1288839): Implement to recreate MST after transfer
+  static MediaStreamTrack* Create(ExecutionContext* context);
+
   MediaStreamTrack(ExecutionContext*, MediaStreamComponent*);
   MediaStreamTrack(ExecutionContext*,
                    MediaStreamComponent*,
@@ -124,7 +127,7 @@ class MODULES_EXPORT MediaStreamTrack
 
   ImageCapture* GetImageCapture() { return image_capture_; }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Only relevant for focusable streams (FocusableMediaStreamTrack).
   // When called on one of these, it signals that Conditional Focus
   // no longer applies - the browser will now decide whether

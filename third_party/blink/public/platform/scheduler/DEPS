@@ -1,7 +1,6 @@
 include_rules = [
     "+base/bind.h",
     "+base/location.h",
-    "+base/macros.h",
     "+base/memory/ptr_util.h",
     "+base/memory/ref_counted.h",
     "+base/message_loop/message_loop.h",

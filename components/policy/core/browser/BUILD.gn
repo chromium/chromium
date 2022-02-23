@@ -42,8 +42,8 @@ source_set("internal") {
     "url_blocklist_manager.h",
     "url_blocklist_policy_handler.cc",
     "url_blocklist_policy_handler.h",
-    "url_util.cc",
-    "url_util.h",
+    "url_scheme_list_policy_handler.cc",
+    "url_scheme_list_policy_handler.h",
     "webui/json_generation.cc",
     "webui/json_generation.h",
     "webui/machine_level_user_cloud_policy_status_provider.cc",
@@ -102,14 +102,9 @@ static_library("test_support") {
   sources = [
     "configuration_policy_pref_store_test.cc",
     "configuration_policy_pref_store_test.h",
+    "policy_pref_mapping_test.cc",
+    "policy_pref_mapping_test.h",
   ]
-
-  if (!is_fuchsia) {
-    sources += [
-      "policy_pref_mapping_test.cc",
-      "policy_pref_mapping_test.h",
-    ]
-  }
 
   public_deps = [
     ":browser",
@@ -142,7 +137,7 @@ source_set("unit_tests") {
     "url_allowlist_policy_handler_unittest.cc",
     "url_blocklist_manager_unittest.cc",
     "url_blocklist_policy_handler_unittest.cc",
-    "url_util_unittest.cc",
+    "url_scheme_list_policy_handler_unittest.cc",
   ]
   deps = [
     ":browser",
@@ -153,6 +148,7 @@ source_set("unit_tests") {
     "//components/signin/public/identity_manager:identity_manager",
     "//components/signin/public/identity_manager:test_support",
     "//components/url_formatter",
+    "//components/url_matcher",
     "//google_apis",
     "//net",
     "//services/network:test_support",

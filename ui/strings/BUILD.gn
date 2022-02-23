@@ -5,13 +5,22 @@
 import("//build/config/locales.gni")
 import("//tools/grit/grit_rule.gni")
 
-# Meta target that includes both ui_strings and app_locale_settings. Most
-# targets want both. You can depend on the individually if you need to.
+# Meta target that includes both ax/ui_strings and app_locale_settings. Most
+# targets want them all. You can depend on the individually if you need to.
 group("strings") {
   public_deps = [
     ":app_locale_settings",
+    ":ax_strings",
     ":ui_strings",
   ]
+}
+
+grit("ax_strings") {
+  source = "ax_strings.grd"
+  outputs = [ "grit/ax_strings.h" ]
+  foreach(locale, locales_with_pseudolocales) {
+    outputs += [ "ax_strings_$locale.pak" ]
+  }
 }
 
 grit("ui_strings") {

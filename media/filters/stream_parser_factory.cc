@@ -28,7 +28,7 @@
 #include "media/formats/webm/webm_stream_parser.h"
 #include "media/media_buildflags.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "media/base/android/media_codec_util.h"
 #endif
 
@@ -65,8 +65,9 @@ struct CodecInfo {
     HISTOGRAM_FLAC,
     HISTOGRAM_AV1,
     HISTOGRAM_MPEG_H_AUDIO,
-    HISTOGRAM_MAX =
-        HISTOGRAM_MPEG_H_AUDIO  // Must be equal to largest logged entry.
+    HISTOGRAM_DTS,
+    HISTOGRAM_DTSXP2,
+    HISTOGRAM_MAX = HISTOGRAM_DTSXP2  // Must be equal to largest logged entry.
   };
 
   const char* pattern;
@@ -214,6 +215,27 @@ static const CodecInfo kEAC3CodecInfo3 = {"mp4a.A6", CodecInfo::AUDIO, nullptr,
                                           CodecInfo::HISTOGRAM_EAC3};
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
 
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+// The 'dtsc' and 'dtsx' are mime codec ids for DTS and DTSX according to
+// http://mp4ra.org/#/codecs
+// The object types for DTS and DTSX in MP4 container are 0xa9 and 0xb2, so
+// according to RFC 6381 this corresponds to codec ids 'mp4a.A9' and 'mp4a.B2'.
+// Codec ids with lower case oti (mp4a.a9 and mp4a.b2) are supported for
+// backward compatibility.
+static const CodecInfo kDTSCodecInfo1 = {"dtsc", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_DTS};
+static const CodecInfo kDTSCodecInfo2 = {"mp4a.a9", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_DTS};
+static const CodecInfo kDTSCodecInfo3 = {"mp4a.A9", CodecInfo::AUDIO, nullptr,
+                                         CodecInfo::HISTOGRAM_DTS};
+static const CodecInfo kDTSXCodecInfo1 = {"dtsx", CodecInfo::AUDIO, nullptr,
+                                          CodecInfo::HISTOGRAM_DTSXP2};
+static const CodecInfo kDTSXCodecInfo2 = {"mp4a.b2", CodecInfo::AUDIO, nullptr,
+                                          CodecInfo::HISTOGRAM_DTSXP2};
+static const CodecInfo kDTSXCodecInfo3 = {"mp4a.B2", CodecInfo::AUDIO, nullptr,
+                                          CodecInfo::HISTOGRAM_DTSXP2};
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+
 #if BUILDFLAG(ENABLE_PLATFORM_MPEG_H_AUDIO)
 static const CodecInfo kMpegHAudioCodecInfo1 = {
     "mhm1.*", CodecInfo::AUDIO, nullptr, CodecInfo::HISTOGRAM_MPEG_H_AUDIO};
@@ -284,6 +306,14 @@ static const CodecInfo* const kAudioMP4Codecs[] = {&kMPEG4FLACCodecInfo,
                                                    &kEAC3CodecInfo2,
                                                    &kEAC3CodecInfo3,
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+                                                   &kDTSCodecInfo1,
+                                                   &kDTSCodecInfo2,
+                                                   &kDTSCodecInfo3,
+                                                   &kDTSXCodecInfo1,
+                                                   &kDTSXCodecInfo2,
+                                                   &kDTSXCodecInfo3,
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
                                                    nullptr};
 
@@ -327,6 +357,16 @@ static StreamParser* BuildMP4Parser(base::span<const std::string> codecs,
                base::MatchPattern(codec_id, kEAC3CodecInfo3.pattern)) {
       audio_object_types.insert(mp4::kEAC3);
 #endif  // BUILDFLAG(ENABLE_PLATFORM_AC3_EAC3_AUDIO)
+#if BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
+    } else if (base::MatchPattern(codec_id, kDTSCodecInfo1.pattern) ||
+               base::MatchPattern(codec_id, kDTSCodecInfo2.pattern) ||
+               base::MatchPattern(codec_id, kDTSCodecInfo3.pattern)) {
+      audio_object_types.insert(mp4::kDTS);
+    } else if (base::MatchPattern(codec_id, kDTSXCodecInfo1.pattern) ||
+               base::MatchPattern(codec_id, kDTSXCodecInfo2.pattern) ||
+               base::MatchPattern(codec_id, kDTSXCodecInfo3.pattern)) {
+      audio_object_types.insert(mp4::kDTSX);
+#endif  // BUILDFLAG(ENABLE_PLATFORM_DTS_AUDIO)
 #endif  // BUILDFLAG(USE_PROPRIETARY_CODECS)
     }
   }
@@ -413,15 +453,6 @@ static bool VerifyCodec(const CodecInfo* codec_info,
         audio_codecs->push_back(codec_info->tag);
       return true;
     case CodecInfo::VIDEO:
-#if defined(OS_ANDROID)
-      // TODO(wolenetz, dalecurtis): This should instead use MimeUtil() to avoid
-      // duplication of subtle Android behavior.  http://crbug.com/587303.
-      if (codec_info->tag == CodecInfo::HISTOGRAM_H264 &&
-          !media::HasPlatformDecoderSupport()) {
-        return false;
-      }
-#endif
-
       if (video_codecs)
         video_codecs->push_back(codec_info->tag);
       return true;

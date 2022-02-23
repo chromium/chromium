@@ -8,7 +8,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <memory>
 #include <string>
 
@@ -50,7 +49,7 @@
 #include "third_party/perfetto/include/perfetto/tracing/traced_value_forward.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/child_process_importance.h"
 #endif
 
@@ -79,11 +78,11 @@ class BrowserContext;
 class BrowserMessageFilter;
 class IsolationContext;
 class ProcessLock;
+class RenderFrameHost;
 class RenderProcessHostObserver;
 class StoragePartition;
-class RenderFrameHost;
 struct GlobalRenderFrameHostId;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 enum class ChildProcessImportance;
 #endif
 
@@ -107,7 +106,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
     bool is_hidden;
     unsigned int frame_depth;
     bool intersects_viewport;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ChildProcessImportance importance;
 #endif
   };
@@ -315,7 +314,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual bool HasPriorityOverride() = 0;
   virtual void ClearPriorityOverride() = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Return the highest importance of all widgets in this process.
   virtual ChildProcessImportance GetEffectiveImportance() = 0;
 
@@ -453,6 +452,18 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   //    the renderer process to be alive. The ref count is incremented when
   //    a shared worker is created in the process, and decremented when
   //    it is terminated (it self-destructs when it no longer has clients).
+  //  - Shared Storage Worklet:
+  //    (https://github.com/pythagoraskitty/shared-storage)
+  //    While there are shared storage worklets who live in this process, they
+  //    wish the renderer process to be alive. The ref count is incremented when
+  //    a shared storage worklet is created in the process, and decremented when
+  //    it is terminated (after the document is destroyed, the worklet
+  //    will be destroyed when all pending operations have finished or a timeout
+  //    is reached). Note that this is only relevant for the implementation of
+  //    shared storage worklets that run in the renderer process. The actual
+  //    process that the shared storage worklets are going to use is determined
+  //    by the concrete implementation of
+  //    `SharedStorageRenderThreadWorkletDriver`.
   virtual void IncrementWorkerRefCount() = 0;
   virtual void DecrementWorkerRefCount() = 0;
 
@@ -509,11 +520,21 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
   virtual bool HostHasNotBeenUsed() = 0;
 
   // Locks this RenderProcessHost to documents compatible with |process_lock|.
-  // This method is public so that it can be called from SiteInstanceImpl, and
+  // This method is public so that it can be called from within //content, and
   // used by MockRenderProcessHost. It isn't meant to be called outside of
-  // content.
+  // //content.
   virtual void SetProcessLock(const IsolationContext& isolation_context,
                               const ProcessLock& process_lock) = 0;
+
+  // Enable the given list of blink runtime features
+  virtual void EnableBlinkRuntimeFeatures(
+      const std::vector<std::string>& features) = 0;
+
+  // Returns the ProcessLock associated with this process.
+  // This method is public so that it can be called from within //content, and
+  // used by MockRenderProcessHost. It isn't meant to be called outside of
+  // //content.
+  virtual ProcessLock GetProcessLock() = 0;
 
   // Returns true if this process is locked to a particular site-specific
   // ProcessLock.  See the SetProcessLock() call above.
@@ -563,8 +584,7 @@ class CONTENT_EXPORT RenderProcessHost : public IPC::Sender,
       const url::Origin& origin,
       mojo::PendingReceiver<blink::mojom::QuotaManagerHost> receiver) = 0;
   virtual void CreateLockManager(
-      int render_frame_id,
-      const url::Origin& origin,
+      const blink::StorageKey& storage_key,
       mojo::PendingReceiver<blink::mojom::LockManager> receiver) = 0;
   virtual void CreatePermissionService(
       const url::Origin& origin,

@@ -6,6 +6,7 @@
 
 #include "base/callback.h"
 #include "base/lazy_instance.h"
+#include "build/build_config.h"
 #include "components/policy/core/common/external_data_fetcher.h"
 #include "components/policy/core/common/policy_map.h"
 
@@ -78,5 +79,12 @@ void ConfigurationPolicyProvider::OnSchemaRegistryUpdated(
     bool has_new_schemas) {}
 
 void ConfigurationPolicyProvider::OnSchemaRegistryReady() {}
+
+#if BUILDFLAG(IS_ANDROID)
+void ConfigurationPolicyProvider::ShutdownForTesting() {
+  observer_list_.Clear();
+  Shutdown();
+}
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace policy

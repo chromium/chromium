@@ -290,8 +290,8 @@ class ActiveDirectoryJoinTest : public EnterpriseEnrollmentTest {
     base::DictionaryValue custom_option;
     custom_option.SetKey("name", base::Value("Custom"));
     options->Append(std::move(custom_option));
-    for (size_t i = 0; i < options->GetList().size(); ++i) {
-      const base::Value& option = options->GetList()[i];
+    for (size_t i = 0; i < options->GetListDeprecated().size(); ++i) {
+      const base::Value& option = options->GetListDeprecated()[i];
       // Select configuration value.
       test::OobeJS().SelectElementInPath(base::NumberToString(i),
                                          kAdConfigurationSelect);

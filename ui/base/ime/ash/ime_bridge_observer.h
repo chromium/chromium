@@ -14,9 +14,6 @@ namespace ui {
 class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEBridgeObserver
     : public base::CheckedObserver {
  public:
-  // Called when requesting to switch the engine handler from ui::InputMethod.
-  virtual void OnRequestSwitchEngine() = 0;
-
   // Called when the input context handler has changed, a signal of IME change.
   virtual void OnInputContextHandlerChanged() = 0;
 };

@@ -26,15 +26,14 @@
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_forbidden_scope.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 
 namespace blink {
 
 class CustomElementRegistryTest : public PageTestBase {
  protected:
-  void SetUp() override { PageTestBase::SetUp(IntSize(1, 1)); }
+  void SetUp() override { PageTestBase::SetUp(gfx::Size(1, 1)); }
 
   CustomElementRegistry& Registry() {
     return *GetFrame().DomWindow()->customElements();

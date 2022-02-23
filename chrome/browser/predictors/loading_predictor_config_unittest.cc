@@ -5,7 +5,7 @@
 #include "chrome/browser/predictors/loading_predictor_config.h"
 
 #include "base/test/scoped_feature_list.h"
-#include "chrome/browser/net/prediction_options.h"
+#include "chrome/browser/prefetch/prefetch_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/prefs/pref_service.h"
@@ -16,8 +16,8 @@ namespace predictors {
 
 class LoadingPredictorConfigTest : public testing::Test {
  public:
-  void SetPreference(chrome_browser_net::NetworkPredictionOptions value) {
-    profile_.GetPrefs()->SetInteger(prefs::kNetworkPredictionOptions, value);
+  void SetPreference(prefetch::PreloadPagesState value) {
+    prefetch::SetPreloadPagesState(profile_.GetPrefs(), value);
   }
 
   Profile* profile() { return &profile_; }
@@ -30,7 +30,7 @@ class LoadingPredictorConfigTest : public testing::Test {
 TEST_F(LoadingPredictorConfigTest, FeatureAndPrefEnabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(predictors::kSpeculativePreconnectFeature);
-  SetPreference(chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+  SetPreference(prefetch::PreloadPagesState::kStandardPreloading);
 
   EXPECT_TRUE(IsPreconnectFeatureEnabled());
   EXPECT_TRUE(IsLoadingPredictorEnabled(profile()));
@@ -40,7 +40,7 @@ TEST_F(LoadingPredictorConfigTest, FeatureAndPrefEnabled) {
 TEST_F(LoadingPredictorConfigTest, FeatureDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndDisableFeature(predictors::kSpeculativePreconnectFeature);
-  SetPreference(chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+  SetPreference(prefetch::PreloadPagesState::kStandardPreloading);
 
   EXPECT_FALSE(IsPreconnectFeatureEnabled());
   EXPECT_FALSE(IsLoadingPredictorEnabled(profile()));
@@ -50,7 +50,7 @@ TEST_F(LoadingPredictorConfigTest, FeatureDisabled) {
 TEST_F(LoadingPredictorConfigTest, FeatureEnabledAndPrefDisabled) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(predictors::kSpeculativePreconnectFeature);
-  SetPreference(chrome_browser_net::NETWORK_PREDICTION_NEVER);
+  SetPreference(prefetch::PreloadPagesState::kNoPreloading);
 
   EXPECT_TRUE(IsPreconnectFeatureEnabled());
   EXPECT_TRUE(IsLoadingPredictorEnabled(profile()));
@@ -60,7 +60,7 @@ TEST_F(LoadingPredictorConfigTest, FeatureEnabledAndPrefDisabled) {
 TEST_F(LoadingPredictorConfigTest, IncognitoProfile) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(predictors::kSpeculativePreconnectFeature);
-  SetPreference(chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+  SetPreference(prefetch::PreloadPagesState::kStandardPreloading);
   Profile* incognito =
       profile()->GetPrimaryOTRProfile(/*create_if_needed=*/true);
 
@@ -72,7 +72,7 @@ TEST_F(LoadingPredictorConfigTest, IncognitoProfile) {
 TEST_F(LoadingPredictorConfigTest, NonPrimaryOffTheRecordProfile) {
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(predictors::kSpeculativePreconnectFeature);
-  SetPreference(chrome_browser_net::NETWORK_PREDICTION_ALWAYS);
+  SetPreference(prefetch::PreloadPagesState::kStandardPreloading);
   Profile* otr_profile = profile()->GetOffTheRecordProfile(
       Profile::OTRProfileID::CreateUniqueForTesting(),
       /*create_if_needed=*/true);

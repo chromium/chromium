@@ -26,9 +26,9 @@
 #include "third_party/blink/renderer/core/css/css_gradient_value.h"
 #include "third_party/blink/renderer/core/css/css_image_generator_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/geometry/layout_size.h"
 #include "third_party/blink/renderer/platform/graphics/image.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -61,9 +61,9 @@ CSSValue* StyleGeneratedImage::ComputedCSSValue(
   return image_generator_value_;
 }
 
-FloatSize StyleGeneratedImage::ImageSize(float multiplier,
-                                         const FloatSize& default_object_size,
-                                         RespectImageOrientationEnum) const {
+gfx::SizeF StyleGeneratedImage::ImageSize(float multiplier,
+                                          const gfx::SizeF& default_object_size,
+                                          RespectImageOrientationEnum) const {
   return default_object_size;
 }
 
@@ -82,11 +82,15 @@ bool StyleGeneratedImage::IsUsingCustomProperty(
                                                        document);
 }
 
+bool StyleGeneratedImage::IsUsingCurrentColor() const {
+  return image_generator_value_->IsUsingCurrentColor();
+}
+
 scoped_refptr<Image> StyleGeneratedImage::GetImage(
     const ImageResourceObserver& observer,
     const Document& document,
     const ComputedStyle& style,
-    const FloatSize& target_size) const {
+    const gfx::SizeF& target_size) const {
   return image_generator_value_->GetImage(observer, document, style,
                                           target_size);
 }

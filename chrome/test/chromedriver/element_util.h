@@ -8,12 +8,8 @@
 #include <memory>
 #include <string>
 
+#include "base/values.h"
 #include "chrome/test/chromedriver/basic_types.h"
-
-namespace base {
-class DictionaryValue;
-class Value;
-}
 
 struct Session;
 class Status;
@@ -21,8 +17,7 @@ class WebView;
 
 std::string GetElementKey();
 
-std::unique_ptr<base::DictionaryValue> CreateElement(
-    const std::string& element_id);
+base::Value CreateElement(const std::string& element_id);
 
 std::unique_ptr<base::DictionaryValue> CreateValueFrom(const WebPoint& point);
 

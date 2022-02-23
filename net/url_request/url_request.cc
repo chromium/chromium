@@ -26,7 +26,6 @@
 #include "net/cert/x509_certificate.h"
 #include "net/cookies/cookie_store.h"
 #include "net/cookies/cookie_util.h"
-#include "net/cookies/same_party_context.h"
 #include "net/dns/public/secure_dns_policy.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_util.h"
@@ -588,7 +587,6 @@ URLRequest::URLRequest(const GURL& url,
           RedirectInfo::FirstPartyURLPolicy::NEVER_CHANGE_URL),
       load_flags_(LOAD_NORMAL),
       allow_credentials_(true),
-      privacy_mode_(PRIVACY_MODE_DISABLED),
       secure_dns_policy_(SecureDnsPolicy::kAllow),
 #if BUILDFLAG(ENABLE_REPORTING)
       reporting_upload_depth_(0),
@@ -649,19 +647,10 @@ void URLRequest::StartJob(std::unique_ptr<URLRequestJob> job) {
   DCHECK(!is_pending_);
   DCHECK(!job_);
 
-  set_same_party_context(
-      context()->cookie_store()
-          ? cookie_util::ComputeSamePartyContext(
-                SchemefulSite(url()), isolation_info(),
-                context()->cookie_store()->cookie_access_delegate(),
-                force_ignore_top_frame_party_for_cookies())
-          : SamePartyContext());
-  privacy_mode_ = DeterminePrivacyMode();
-
   net_log_.BeginEvent(NetLogEventType::URL_REQUEST_START_JOB, [&] {
     return NetLogURLRequestStartParams(
-        url(), method_, load_flags_, privacy_mode_, isolation_info_,
-        site_for_cookies_, initiator_,
+        url(), method_, load_flags_, isolation_info_, site_for_cookies_,
+        initiator_,
         upload_data_stream_ ? upload_data_stream_->identifier() : -1);
   });
 
@@ -824,7 +813,18 @@ bool URLRequest::failed() const {
 
 int URLRequest::NotifyConnected(const TransportInfo& info,
                                 CompletionOnceCallback callback) {
-  return delegate_->OnConnected(this, info, std::move(callback));
+  OnCallToDelegate(NetLogEventType::URL_REQUEST_DELEGATE_CONNECTED);
+  int result = delegate_->OnConnected(
+      this, info,
+      base::BindOnce(
+          [](URLRequest* request, CompletionOnceCallback callback, int result) {
+            request->OnCallToDelegateComplete(result);
+            std::move(callback).Run(result);
+          },
+          this, std::move(callback)));
+  if (result != ERR_IO_PENDING)
+    OnCallToDelegateComplete(result);
+  return result;
 }
 
 void URLRequest::NotifyReceivedRedirect(const RedirectInfo& redirect_info,
@@ -993,6 +993,11 @@ void URLRequest::Redirect(
   Start();
 }
 
+// static
+bool URLRequest::DefaultCanUseCookies() {
+  return g_default_can_use_cookies;
+}
+
 const URLRequestContext* URLRequest::context() const {
   return context_;
 }
@@ -1056,21 +1061,6 @@ void URLRequest::NotifySSLCertificateError(int net_error,
   delegate_->OnSSLCertificateError(this, net_error, ssl_info, fatal);
 }
 
-void URLRequest::AnnotateAndMoveUserBlockedCookies(
-    CookieAccessResultList& maybe_included_cookies,
-    CookieAccessResultList& excluded_cookies) const {
-  DCHECK_EQ(privacy_mode_, PrivacyMode::PRIVACY_MODE_DISABLED);
-  bool can_get_cookies = g_default_can_use_cookies;
-  if (network_delegate()) {
-    can_get_cookies = network_delegate()->AnnotateAndMoveUserBlockedCookies(
-        *this, maybe_included_cookies, excluded_cookies,
-        /*allowed_from_caller=*/true);
-  }
-
-  if (!can_get_cookies)
-    net_log_.AddEvent(NetLogEventType::COOKIE_GET_BLOCKED_BY_NETWORK_DELEGATE);
-}
-
 bool URLRequest::CanSetCookie(const net::CanonicalCookie& cookie,
                               CookieOptions* options) const {
   DCHECK(!(load_flags_ & LOAD_DO_NOT_SAVE_COOKIES));
@@ -1083,30 +1073,6 @@ bool URLRequest::CanSetCookie(const net::CanonicalCookie& cookie,
   if (!can_set_cookies)
     net_log_.AddEvent(NetLogEventType::COOKIE_SET_BLOCKED_BY_NETWORK_DELEGATE);
   return can_set_cookies;
-}
-
-PrivacyMode URLRequest::DeterminePrivacyMode() const {
-  if (!allow_credentials_) {
-    // |allow_credentials_| implies LOAD_DO_NOT_SAVE_COOKIES.
-    DCHECK(load_flags_ & LOAD_DO_NOT_SAVE_COOKIES);
-
-    // TODO(https://crbug.com/775438): Client certs should always be
-    // affirmatively omitted for these requests.
-    return send_client_certs_ ? PRIVACY_MODE_ENABLED
-                              : PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS;
-  }
-
-  // Otherwise, check with the delegate if present, or base it off of
-  // |g_default_can_use_cookies| if not.
-  // TODO(mmenke): Looks like |g_default_can_use_cookies| is not too useful,
-  // with the network service - remove it.
-  bool enable_privacy_mode = !g_default_can_use_cookies;
-  if (network_delegate()) {
-    enable_privacy_mode = network_delegate()->ForcePrivacyMode(
-        url(), site_for_cookies_, isolation_info_.top_frame_origin(),
-        same_party_context().context_type());
-  }
-  return enable_privacy_mode ? PRIVACY_MODE_ENABLED : PRIVACY_MODE_DISABLED;
 }
 
 void URLRequest::NotifyReadCompleted(int bytes_read) {
@@ -1175,13 +1141,13 @@ void URLRequest::OnCallToDelegate(NetLogEventType type) {
   net_log_.BeginEvent(type);
 }
 
-void URLRequest::OnCallToDelegateComplete() {
+void URLRequest::OnCallToDelegateComplete(int error) {
   // This should have been cleared before resuming the request.
   DCHECK(blocked_by_.empty());
   if (!calling_delegate_)
     return;
   calling_delegate_ = false;
-  net_log_.EndEvent(delegate_event_type_);
+  net_log_.EndEventWithNetErrorCode(delegate_event_type_, error);
   delegate_event_type_ = NetLogEventType::FAILED;
 }
 

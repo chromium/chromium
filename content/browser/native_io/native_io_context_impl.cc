@@ -10,9 +10,9 @@
 #include "content/public/browser/browser_thread.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 namespace content {
 
@@ -58,8 +58,7 @@ void NativeIOContextImpl::BindReceiver(
 
 void NativeIOContextImpl::DeleteStorageKeyData(
     const blink::StorageKey& storage_key,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback
-        success_callback) {
+    storage::mojom::QuotaClient::DeleteBucketDataCallback success_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 #if DCHECK_IS_ON()
   DCHECK(initialize_called_) << __func__ << " called before Initialize()";
@@ -71,8 +70,7 @@ void NativeIOContextImpl::DeleteStorageKeyData(
           scoped_refptr<NativeIOContextImpl>(this), std::move(storage_key),
           base::BindOnce(
               [](scoped_refptr<base::SequencedTaskRunner> task_runner,
-                 storage::mojom::QuotaClient::DeleteStorageKeyDataCallback
-                     callback,
+                 storage::mojom::QuotaClient::DeleteBucketDataCallback callback,
                  blink::mojom::QuotaStatusCode result) {
                 task_runner->PostTask(
                     FROM_HERE, base::BindOnce(std::move(callback), result));
@@ -114,9 +112,9 @@ void NativeIOContextImpl::InitializeOnIOThread(
 
   native_io_manager_ = std::make_unique<NativeIOManager>(
       profile_root,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       !base::mac::IsAtLeastOS10_15(),
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
       std::move(special_storage_policy), std::move(quota_manager_proxy));
 }
 
@@ -132,7 +130,7 @@ void NativeIOContextImpl::BindReceiverOnIOThread(
 
 void NativeIOContextImpl::DeleteStorageKeyDataOnIOThread(
     const blink::StorageKey& storage_key,
-    storage::mojom::QuotaClient::DeleteStorageKeyDataCallback callback) {
+    storage::mojom::QuotaClient::DeleteBucketDataCallback callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
 
   native_io_manager_->DeleteStorageKeyData(storage_key, std::move(callback));

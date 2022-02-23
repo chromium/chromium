@@ -19,7 +19,7 @@ class Button;
 namespace ash {
 
 class CollapseButton;
-class TopShortcutButton;
+class IconButton;
 class TopShortcutsViewTest;
 class UnifiedSystemTrayController;
 
@@ -76,9 +76,9 @@ class ASH_EXPORT TopShortcutsView : public views::View {
   views::Button* user_avatar_button_ = nullptr;
   views::Button* sign_out_button_ = nullptr;
   TopShortcutButtonContainer* container_ = nullptr;
-  TopShortcutButton* lock_button_ = nullptr;
-  TopShortcutButton* settings_button_ = nullptr;
-  TopShortcutButton* power_button_ = nullptr;
+  IconButton* lock_button_ = nullptr;
+  IconButton* settings_button_ = nullptr;
+  IconButton* power_button_ = nullptr;
   CollapseButton* collapse_button_ = nullptr;
 
   PrefChangeRegistrar local_state_pref_change_registrar_;

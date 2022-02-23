@@ -60,6 +60,10 @@ class StructTraits<media::mojom::VideoEncoderInfoDataView,
       const media::VideoEncoderInfo& video_encoder_info) {
     return video_encoder_info.supports_simulcast;
   }
+  static bool reports_average_qp(
+      const media::VideoEncoderInfo& video_encoder_info) {
+    return video_encoder_info.reports_average_qp;
+  }
   static base::span<const std::vector<uint8_t>,
                     media::VideoEncoderInfo::kMaxSpatialLayers>
   fps_allocation(const media::VideoEncoderInfo& video_encoder_info) {

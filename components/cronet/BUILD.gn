@@ -160,6 +160,7 @@ if (is_android) {
     }
 
     if (is_fuchsia) {
+      use_cfv2 = false
       additional_manifest_fragments =
           [ "//build/config/fuchsia/test/network_capabilities.test-cmx" ]
     }

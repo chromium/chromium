@@ -5,9 +5,11 @@
 #include "components/segmentation_platform/internal/segmentation_platform_service_impl.h"
 
 #include <string>
+#include <utility>
 
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/metrics_hashes.h"
 #include "base/metrics/user_metrics.h"
 #include "base/run_loop.h"
@@ -27,6 +29,7 @@
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database_impl.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
+#include "components/segmentation_platform/internal/dummy_ukm_data_manager.h"
 #include "components/segmentation_platform/internal/execution/feature_aggregator_impl.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager.h"
 #include "components/segmentation_platform/internal/execution/model_execution_manager_factory.h"
@@ -40,12 +43,16 @@
 #include "components/segmentation_platform/internal/signals/histogram_signal_handler.h"
 #include "components/segmentation_platform/internal/signals/signal_filter_processor.h"
 #include "components/segmentation_platform/internal/signals/user_action_signal_handler.h"
+#include "components/segmentation_platform/internal/ukm_data_manager_impl.h"
 #include "components/segmentation_platform/public/config.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
 #include "components/segmentation_platform/internal/execution/model_execution_manager_impl.h"
 #endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB
+
+using ::testing::_;
 
 namespace segmentation_platform {
 namespace {
@@ -82,14 +89,41 @@ std::vector<std::unique_ptr<Config>> CreateTestConfigs() {
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_NEW_TAB};
     configs.push_back(std::move(config));
   }
+  {
+    // Empty config.
+    std::unique_ptr<Config> config = std::make_unique<Config>();
+    configs.push_back(std::move(config));
+  }
+
   return configs;
 }
 
 }  // namespace
 
+// A mock of the ServiceProxy::Observer.
+class MockServiceProxyObserver : public ServiceProxy::Observer {
+ public:
+  MockServiceProxyObserver() = default;
+  ~MockServiceProxyObserver() override = default;
+
+  MOCK_METHOD(void, OnServiceStatusChanged, (bool, int), (override));
+  MOCK_METHOD(void,
+              OnClientInfoAvailable,
+              (const std::vector<ServiceProxy::ClientInfo>& client_info),
+              (override));
+};
+
 class SegmentationPlatformServiceImplTest : public testing::Test {
  public:
-  SegmentationPlatformServiceImplTest() = default;
+  explicit SegmentationPlatformServiceImplTest(
+      std::unique_ptr<UkmDataManager> ukm_data_manager = nullptr) {
+    if (ukm_data_manager) {
+      ukm_data_manager_ = std::move(ukm_data_manager);
+    } else {
+      ukm_data_manager_ = std::make_unique<UkmDataManagerImpl>();
+    }
+  }
+
   ~SegmentationPlatformServiceImplTest() override = default;
 
   void SetUp() override {
@@ -117,8 +151,11 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     segmentation_platform_service_impl_ =
         std::make_unique<SegmentationPlatformServiceImpl>(
             std::move(segment_db), std::move(signal_db),
-            std::move(segment_storage_config_db), &model_provider_,
-            &pref_service_, task_runner_, &test_clock_, std::move(configs));
+            std::move(segment_storage_config_db), ukm_data_manager_.get(),
+            &model_provider_, &pref_service_, task_runner_, &test_clock_,
+            std::move(configs));
+    segmentation_platform_service_impl_->GetServiceProxy()->AddObserver(
+        &observer_);
   }
 
   void TearDown() override {
@@ -130,13 +167,17 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
 
   virtual void SetUpPrefs() {
     DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
-    base::DictionaryValue* dictionary = update.Get();
+    base::Value* dictionary = update.Get();
 
     base::Value segmentation_result(base::Value::Type::DICTIONARY);
     segmentation_result.SetIntKey(
         "segment_id",
         OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
     dictionary->SetKey(kTestSegmentationKey1, std::move(segmentation_result));
+  }
+
+  virtual std::vector<std::unique_ptr<Config>> CreateConfigs() {
+    return CreateTestConfigs();
   }
 
   void OnGetSelectedSegment(base::RepeatingClosure closure,
@@ -164,7 +205,133 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
     loop.Run();
   }
 
+  void AssertCachedSegment(
+      const std::string& segmentation_key,
+      bool is_ready,
+      OptimizationTarget expected =
+          OptimizationTarget::OPTIMIZATION_TARGET_UNKNOWN) {
+    SegmentSelectionResult result;
+    result.is_ready = is_ready;
+    if (is_ready)
+      result.segment = expected;
+    ASSERT_EQ(result,
+              segmentation_platform_service_impl_->GetCachedSegmentResult(
+                  segmentation_key));
+  }
+
  protected:
+  void TestInitializationFlow() {
+    // Let the DB loading complete successfully.
+    EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
+    segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+    signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+    segment_storage_config_db_->InitStatusCallback(
+        leveldb_proto::Enums::InitStatus::kOK);
+    segment_storage_config_db_->LoadCallback(true);
+
+    // If initialization is succeeded, model execution scheduler should start
+    // querying segment db.
+    segment_db_->LoadCallback(true);
+
+    // If we build with TF Lite, we need to also inspect whether the
+    // ModelExecutionManagerImpl is publishing the correct data and whether that
+    // leads to the SegmentationPlatformServiceImpl doing the right thing.
+#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+    ModelExecutionManagerImpl* mem_impl =
+        static_cast<ModelExecutionManagerImpl*>(
+            segmentation_platform_service_impl_->model_execution_manager_
+                .get());
+
+    base::HistogramTester histogram_tester;
+    proto::SegmentationModelMetadata metadata;
+    metadata.set_time_unit(proto::TimeUnit::DAY);
+    metadata.set_bucket_duration(42u);
+    // Add a test feature, which will later cause the signal storage DB to be
+    // updated.
+    auto* feature = metadata.add_features();
+    feature->set_type(proto::SignalType::HISTOGRAM_VALUE);
+    feature->set_name("other");
+    feature->set_name_hash(base::HashMetricName("other"));
+    feature->set_aggregation(proto::Aggregation::BUCKETED_SUM);
+    feature->set_bucket_count(3);
+    feature->set_tensor_length(3);
+
+    // This method is invoked from SegmentationModelHandler whenever a model has
+    // been updated and every time at startup. This will first read the old info
+    // from the database, and then write the merged result of the old and new to
+    // the database.
+    mem_impl->OnSegmentationModelUpdated(
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata);
+    segment_db_->GetCallback(true);
+    segment_db_->UpdateCallback(true);
+
+    // Since the updated config had a new feature, the SignalStorageConfigs DB
+    // should have been updated.
+    segment_storage_config_db_->UpdateCallback(true);
+
+    // The SignalFilterProcessor needs to read the segment information from the
+    // database before starting to listen to the updated signals.
+    segment_db_->LoadCallback(true);
+    //  We should have started recording 1 value histogram, once.
+    EXPECT_EQ(
+        1,
+        histogram_tester.GetBucketCount(
+            "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 1));
+
+    AssertSelectedSegment(
+        kTestSegmentationKey1, true,
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertSelectedSegment(kTestSegmentationKey2, false);
+    AssertSelectedSegment(kTestSegmentationKey3, false);
+    AssertCachedSegment(
+        kTestSegmentationKey1, true,
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertCachedSegment(kTestSegmentationKey2, false);
+    AssertCachedSegment(kTestSegmentationKey3, false);
+
+    // ServiceProxy will load new segment info from the DB.
+    EXPECT_CALL(observer_, OnClientInfoAvailable(_));
+    task_environment_.RunUntilIdle();
+    segment_db_->LoadCallback(true);
+
+    mem_impl->OnSegmentationModelUpdated(
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata);
+    segment_db_->GetCallback(true);
+    segment_db_->UpdateCallback(true);
+
+    // The SignalFilterProcessor needs to read the segment information from the
+    // database before starting to listen to the updated signals.
+    segment_db_->LoadCallback(true);
+    //  We should have started recording 1 value histogram, twice.
+    EXPECT_EQ(
+        2,
+        histogram_tester.GetBucketCount(
+            "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 1));
+
+    // ServiceProxy will load new segment info from the DB.
+    EXPECT_CALL(observer_, OnClientInfoAvailable(_));
+    task_environment_.RunUntilIdle();
+    segment_db_->LoadCallback(true);
+#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
+
+    // Database maintenance tasks should try to cleanup the signals after a
+    // short delay, which starts with looking up data from the
+    // SegmentInfoDatabase.
+    task_environment_.FastForwardUntilNoTasksRemain();
+    segment_db_->LoadCallback(true);
+
+    AssertSelectedSegment(
+        kTestSegmentationKey1, true,
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertSelectedSegment(kTestSegmentationKey2, false);
+    AssertSelectedSegment(kTestSegmentationKey3, false);
+    AssertCachedSegment(
+        kTestSegmentationKey1, true,
+        OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+    AssertCachedSegment(kTestSegmentationKey2, false);
+    AssertCachedSegment(kTestSegmentationKey3, false);
+  }
+
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
@@ -172,101 +339,21 @@ class SegmentationPlatformServiceImplTest : public testing::Test {
   std::map<std::string, proto::SignalData> signal_db_entries_;
   std::map<std::string, proto::SignalStorageConfigs>
       segment_storage_config_db_entries_;
-  leveldb_proto::test::FakeDB<proto::SegmentInfo>* segment_db_;
-  leveldb_proto::test::FakeDB<proto::SignalData>* signal_db_;
-  leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>*
+  raw_ptr<leveldb_proto::test::FakeDB<proto::SegmentInfo>> segment_db_;
+  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalData>> signal_db_;
+  raw_ptr<leveldb_proto::test::FakeDB<proto::SignalStorageConfigs>>
       segment_storage_config_db_;
   optimization_guide::TestOptimizationGuideModelProvider model_provider_;
   TestingPrefServiceSimple pref_service_;
   base::SimpleTestClock test_clock_;
+  std::unique_ptr<UkmDataManager> ukm_data_manager_;
   std::unique_ptr<SegmentationPlatformServiceImpl>
       segmentation_platform_service_impl_;
+  MockServiceProxyObserver observer_;
 };
 
 TEST_F(SegmentationPlatformServiceImplTest, InitializationFlow) {
-  // Let the DB loading complete successfully.
-  segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-  signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
-  segment_storage_config_db_->InitStatusCallback(
-      leveldb_proto::Enums::InitStatus::kOK);
-  segment_storage_config_db_->LoadCallback(true);
-
-  // If initialization is succeeded, model execution scheduler should start
-  // querying segment db.
-  segment_db_->LoadCallback(true);
-
-  // If we build with TF Lite, we need to also inspect whether the
-  // ModelExecutionManagerImpl is publishing the correct data and whether that
-  // leads to the SegmentationPlatformServiceImpl doing the right thing.
-#if BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-  ModelExecutionManagerImpl* mem_impl = static_cast<ModelExecutionManagerImpl*>(
-      segmentation_platform_service_impl_->model_execution_manager_.get());
-
-  base::HistogramTester histogram_tester;
-  proto::SegmentationModelMetadata metadata;
-  metadata.set_time_unit(proto::TimeUnit::DAY);
-  metadata.set_bucket_duration(42u);
-  // Add a test feature, which will later cause the signal storage DB to be
-  // updated.
-  auto* feature = metadata.add_features();
-  feature->set_type(proto::SignalType::HISTOGRAM_VALUE);
-  feature->set_name("other");
-  feature->set_name_hash(base::HashMetricName("other"));
-  feature->set_aggregation(proto::Aggregation::BUCKETED_SUM);
-  feature->set_bucket_count(3);
-  feature->set_tensor_length(3);
-
-  // This method is invoked from SegmentationModelHandler whenever a model has
-  // been updated and every time at startup. This will first read the old info
-  // from the database, and then write the merged result of the old and new to
-  // the database.
-  mem_impl->OnSegmentationModelUpdated(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE, metadata);
-  segment_db_->GetCallback(true);
-  segment_db_->UpdateCallback(true);
-
-  // Since the updated config had a new feature, the SignalStorageConfigs DB
-  // should have been updated.
-  segment_storage_config_db_->UpdateCallback(true);
-
-  // The SignalFilterProcessor needs to read the segment information from the
-  // database before starting to listen to the updated signals.
-  segment_db_->LoadCallback(true);
-  //  We should have started recording 1 value histogram, once.
-  EXPECT_EQ(
-      1, histogram_tester.GetBucketCount(
-             "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 1));
-
-  AssertSelectedSegment(
-      kTestSegmentationKey1, true,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-  AssertSelectedSegment(kTestSegmentationKey2, false);
-  AssertSelectedSegment(kTestSegmentationKey3, false);
-
-  mem_impl->OnSegmentationModelUpdated(
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE, metadata);
-  segment_db_->GetCallback(true);
-  segment_db_->UpdateCallback(true);
-
-  // The SignalFilterProcessor needs to read the segment information from the
-  // database before starting to listen to the updated signals.
-  segment_db_->LoadCallback(true);
-  //  We should have started recording 1 value histogram, twice.
-  EXPECT_EQ(
-      2, histogram_tester.GetBucketCount(
-             "SegmentationPlatform.Signals.ListeningCount.HistogramValue", 1));
-#endif  // BUILDFLAG(BUILD_WITH_TFLITE_LIB)
-
-  // Database maintenance tasks should try to cleanup the signals after a short
-  // delay, which starts with looking up data from the SegmentInfoDatabase.
-  task_environment_.FastForwardUntilNoTasksRemain();
-  segment_db_->LoadCallback(true);
-
-  AssertSelectedSegment(
-      kTestSegmentationKey1, true,
-      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
-  AssertSelectedSegment(kTestSegmentationKey2, false);
-  AssertSelectedSegment(kTestSegmentationKey3, false);
+  TestInitializationFlow();
 }
 
 TEST_F(SegmentationPlatformServiceImplTest,
@@ -282,11 +369,32 @@ TEST_F(SegmentationPlatformServiceImplTest,
   loop.Run();
 }
 
+class SegmentationPlatformServiceImplEmptyConfigTest
+    : public SegmentationPlatformServiceImplTest {
+  std::vector<std::unique_ptr<Config>> CreateConfigs() override {
+    return std::vector<std::unique_ptr<Config>>();
+  }
+};
+
+TEST_F(SegmentationPlatformServiceImplEmptyConfigTest, InitializationFlow) {
+  // Let the DB loading complete successfully.
+  EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
+  segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
+  segment_storage_config_db_->InitStatusCallback(
+      leveldb_proto::Enums::InitStatus::kOK);
+  segment_storage_config_db_->LoadCallback(true);
+
+  // If initialization is succeeded, model execution scheduler should start
+  // querying segment db.
+  segment_db_->LoadCallback(true);
+}
+
 class SegmentationPlatformServiceImplMultiClientTest
     : public SegmentationPlatformServiceImplTest {
   void SetUpPrefs() override {
     DictionaryPrefUpdate update(&pref_service_, kSegmentationResultPref);
-    base::DictionaryValue* dictionary = update.Get();
+    base::Value* dictionary = update.Get();
 
     base::Value segmentation_result(base::Value::Type::DICTIONARY);
     segmentation_result.SetIntKey(
@@ -304,6 +412,7 @@ class SegmentationPlatformServiceImplMultiClientTest
 
 TEST_F(SegmentationPlatformServiceImplMultiClientTest, InitializationFlow) {
   // Let the DB loading complete successfully.
+  EXPECT_CALL(observer_, OnServiceStatusChanged(true, 7));
   segment_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   signal_db_->InitStatusCallback(leveldb_proto::Enums::InitStatus::kOK);
   segment_storage_config_db_->InitStatusCallback(
@@ -321,6 +430,25 @@ TEST_F(SegmentationPlatformServiceImplMultiClientTest, InitializationFlow) {
       kTestSegmentationKey2, true,
       OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
   AssertSelectedSegment(kTestSegmentationKey3, false);
+  AssertCachedSegment(
+      kTestSegmentationKey1, true,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_SHARE);
+  AssertCachedSegment(
+      kTestSegmentationKey2, true,
+      OptimizationTarget::OPTIMIZATION_TARGET_SEGMENTATION_VOICE);
+  AssertCachedSegment(kTestSegmentationKey3, false);
+}
+
+class SegmentationPlatformDummyUkmManagerTest
+    : public SegmentationPlatformServiceImplTest {
+ public:
+  SegmentationPlatformDummyUkmManagerTest()
+      : SegmentationPlatformServiceImplTest(
+            std::make_unique<DummyUkmDataManager>()) {}
+};
+
+TEST_F(SegmentationPlatformDummyUkmManagerTest, InitializationFlow) {
+  TestInitializationFlow();
 }
 
 }  // namespace segmentation_platform

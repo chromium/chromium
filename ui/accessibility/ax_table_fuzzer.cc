@@ -2,7 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/macros.h"
+#include <tuple>
+
 #include "build/build_config.h"
 #include "ui/accessibility/ax_node.h"
 #include "ui/accessibility/ax_tree.h"
@@ -81,18 +82,18 @@ ax::mojom::IntAttribute GetInterestingTableAttribute(unsigned char byte) {
 // table. We don't care about any of the results, we just want
 // to make sure none of these crash or hang.
 void TestTableAPIs(const ui::AXNode* node) {
-  ignore_result(node->IsTable());
-  ignore_result(node->GetTableColCount());
-  ignore_result(node->GetTableRowCount());
-  ignore_result(node->GetTableAriaColCount());
-  ignore_result(node->GetTableAriaRowCount());
-  ignore_result(node->GetTableCellCount());
-  ignore_result(node->GetTableCaption());
+  std::ignore = node->IsTable();
+  std::ignore = node->GetTableColCount();
+  std::ignore = node->GetTableRowCount();
+  std::ignore = node->GetTableAriaColCount();
+  std::ignore = node->GetTableAriaRowCount();
+  std::ignore = node->GetTableCellCount();
+  std::ignore = node->GetTableCaption();
   for (int i = 0; i < 8; i++)
-    ignore_result(node->GetTableCellFromIndex(i));
+    std::ignore = node->GetTableCellFromIndex(i);
   for (int i = 0; i < 3; i++)
     for (int j = 0; j < 3; j++)
-      ignore_result(node->GetTableCellFromCoords(i, j));
+      std::ignore = node->GetTableCellFromCoords(i, j);
   // Note: some of the APIs return IDs - we don't care what's
   // returned, we just want to make sure these APIs don't
   // crash. Normally |ids| is an out argument only, but
@@ -113,20 +114,20 @@ void TestTableAPIs(const ui::AXNode* node) {
   std::vector<ui::AXNodeID> unique_cell_ids = node->GetTableUniqueCellIds();
   ids.insert(ids.end(), unique_cell_ids.begin(), unique_cell_ids.end());
 
-  ignore_result(node->IsTableRow());
-  ignore_result(node->GetTableRowRowIndex());
-#if defined(OS_APPLE)
-  ignore_result(node->IsTableColumn());
-  ignore_result(node->GetTableColColIndex());
+  std::ignore = node->IsTableRow();
+  std::ignore = node->GetTableRowRowIndex();
+#if BUILDFLAG(IS_APPLE)
+  std::ignore = node->IsTableColumn();
+  std::ignore = node->GetTableColColIndex();
 #endif
-  ignore_result(node->IsTableCellOrHeader());
-  ignore_result(node->GetTableCellIndex());
-  ignore_result(node->GetTableCellColIndex());
-  ignore_result(node->GetTableCellRowIndex());
-  ignore_result(node->GetTableCellColSpan());
-  ignore_result(node->GetTableCellRowSpan());
-  ignore_result(node->GetTableCellAriaColIndex());
-  ignore_result(node->GetTableCellAriaRowIndex());
+  std::ignore = node->IsTableCellOrHeader();
+  std::ignore = node->GetTableCellIndex();
+  std::ignore = node->GetTableCellColIndex();
+  std::ignore = node->GetTableCellRowIndex();
+  std::ignore = node->GetTableCellColSpan();
+  std::ignore = node->GetTableCellRowSpan();
+  std::ignore = node->GetTableCellAriaColIndex();
+  std::ignore = node->GetTableCellAriaRowIndex();
   std::vector<ui::AXNodeID> cell_col_header_node_ids =
       node->GetTableCellColHeaderNodeIds();
   ids.insert(ids.end(), cell_col_header_node_ids.begin(),

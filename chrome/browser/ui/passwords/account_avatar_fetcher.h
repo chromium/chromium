@@ -37,7 +37,8 @@ class AccountAvatarFetcher : public BitmapFetcherDelegate {
 
   ~AccountAvatarFetcher() override;
 
-  void Start(network::mojom::URLLoaderFactory* loader_factory);
+  void Start(network::mojom::URLLoaderFactory* loader_factory,
+             const url::Origin& initiator);
 
  private:
   // BitmapFetcherDelegate:

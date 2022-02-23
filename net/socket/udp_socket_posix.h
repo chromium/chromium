@@ -12,7 +12,7 @@
 #include <memory>
 
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
@@ -35,7 +35,7 @@
 
 #if defined(__ANDROID__) && defined(__aarch64__)
 #define HAVE_SENDMMSG 1
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define HAVE_SENDMMSG 1
 #else
 #define HAVE_SENDMMSG 0
@@ -257,8 +257,8 @@ class NET_EXPORT UDPSocketPosix {
 
   // Requests that packets sent by this socket not be fragment, either locally
   // by the host, or by routers (via the DF bit in the IPv4 packet header).
-  // May not be supported by all platforms. Returns a return a network error
-  // code if there was a problem, but the socket will still be usable. Can not
+  // May not be supported by all platforms. Returns a network error code if
+  // there was a problem, but the socket will still be usable. Can not
   // return ERR_IO_PENDING.
   int SetDoNotFragment();
 
@@ -343,6 +343,10 @@ class NET_EXPORT UDPSocketPosix {
   // Returns a net error code.
   int SetDiffServCodePoint(DiffServCodePoint dscp);
 
+  // Exposes the underlying socket descriptor for testing its state. Does not
+  // release ownership of the descriptor.
+  SocketDescriptor SocketDescriptorForTesting() const { return socket_; }
+
   // Resets the thread to be used for thread-safety checks.
   void DetachFromThread();
 
@@ -404,7 +408,7 @@ class NET_EXPORT UDPSocketPosix {
     bool watching() { return watching_; }
 
    private:
-    UDPSocketPosix* const socket_;
+    const raw_ptr<UDPSocketPosix> socket_;
     bool watching_;
   };
 
@@ -448,7 +452,7 @@ class NET_EXPORT UDPSocketPosix {
     void OnFileCanWriteWithoutBlocking(int /* fd */) override {}
 
    private:
-    UDPSocketPosix* const socket_;
+    const raw_ptr<UDPSocketPosix> socket_;
   };
 
   class WriteWatcher : public base::MessagePumpForIO::FdWatcher {
@@ -465,7 +469,7 @@ class NET_EXPORT UDPSocketPosix {
     void OnFileCanWriteWithoutBlocking(int /* fd */) override;
 
    private:
-    UDPSocketPosix* const socket_;
+    const raw_ptr<UDPSocketPosix> socket_;
   };
 
   int InternalWriteAsync(CompletionOnceCallback callback,
@@ -594,7 +598,7 @@ class NET_EXPORT UDPSocketPosix {
   // The buffer used by InternalRead() to retry Read requests
   scoped_refptr<IOBuffer> read_buf_;
   int read_buf_len_;
-  IPEndPoint* recv_from_address_;
+  raw_ptr<IPEndPoint> recv_from_address_;
 
   // The buffer used by InternalWrite() to retry Write requests
   scoped_refptr<IOBuffer> write_buf_;

@@ -12,7 +12,6 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotSource;
 import org.chromium.chrome.browser.share.screenshot.EditorScreenshotTask;
 import org.chromium.chrome.browser.share.share_sheet.ChromeOptionShareCallback;
-import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.SheetState;
@@ -24,7 +23,6 @@ import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
  */
 public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
     protected final Activity mActivity;
-    protected final Tab mTab;
     protected final String mShareUrl;
     protected final ChromeOptionShareCallback mChromeOptionShareCallback;
     protected final BottomSheetController mBottomSheetController;
@@ -37,15 +35,14 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
      * {@link BottomSheet} is hidden.
      *
      * @param activity The parent activity.
-     * @param tab The Tab which contains the content to share.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      */
-    public BaseScreenshotCoordinator(Activity activity, Tab tab, String shareUrl,
+    public BaseScreenshotCoordinator(Activity activity, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController) {
-        this(activity, tab, shareUrl, chromeOptionShareCallback, sheetController,
+        this(activity, shareUrl, chromeOptionShareCallback, sheetController,
                 new EditorScreenshotTask(activity, sheetController));
     }
 
@@ -53,18 +50,16 @@ public abstract class BaseScreenshotCoordinator implements BottomSheetObserver {
      * Constructor for testing and inner construction.
      *
      * @param activity The parent activity.
-     * @param tab The Tab which contains the content to share.
      * @param shareUrl The URL associated with the screenshot.
      * @param chromeOptionShareCallback An interface to share sheet APIs.
      * @param sheetController The {@link BottomSheetController} for the current activity.
      * @param screenshotSource The Source interface to use to take a screenshot.
      */
     @VisibleForTesting
-    protected BaseScreenshotCoordinator(Activity activity, Tab tab, String shareUrl,
+    protected BaseScreenshotCoordinator(Activity activity, String shareUrl,
             ChromeOptionShareCallback chromeOptionShareCallback,
             BottomSheetController sheetController, EditorScreenshotSource screenshotSource) {
         mActivity = activity;
-        mTab = tab;
         mShareUrl = shareUrl;
         mChromeOptionShareCallback = chromeOptionShareCallback;
         mBottomSheetController = sheetController;

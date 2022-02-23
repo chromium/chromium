@@ -15,6 +15,7 @@
 #include <va/va.h>
 #include <va/va_drmcommon.h>
 #include <va/va_str.h>
+#include <xf86drm.h>
 
 #include "base/bits.h"
 #include "base/callback_helpers.h"
@@ -418,7 +419,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       VAConfigAttrib attrib{};
       attrib.type = VAConfigAttribEncQualityRange;
       {
-        base::AutoLock auto_lock(*wrapper->va_lock_);
+        base::AutoLockMaybe auto_lock(wrapper->va_lock_);
         VAStatus va_res = vaGetConfigAttributes(
             wrapper->va_display_, va_profile, entrypoint, &attrib, 1);
         ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
@@ -438,7 +439,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
       ASSERT_TRUE(wrapper->CreateContext(gfx::Size(640, 368)));
       ASSERT_EQ(wrapper->pending_va_buffers_.size(), 1u);
       {
-        base::AutoLock auto_lock(*wrapper->va_lock_);
+        base::AutoLockMaybe auto_lock(wrapper->va_lock_);
         ScopedVABufferMapping mapping(wrapper->va_lock_, wrapper->va_display_,
                                       wrapper->pending_va_buffers_.front());
         ASSERT_TRUE(mapping.IsValid());
@@ -459,7 +460,7 @@ TEST_F(VaapiTest, LowQualityEncodingSetting) {
 
 // This test checks the supported SVC scalability mode.
 TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   const std::vector<SVCScalabilityMode> kSupportedTemporalSVC = {
       SVCScalabilityMode::kL1T2, SVCScalabilityMode::kL1T3};
   const std::vector<SVCScalabilityMode> kSupportedTemporalAndKeySVC = {
@@ -471,7 +472,7 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
   const auto scalability_modes_vp9_profile0 =
       VaapiWrapper::GetSupportedScalabilityModes(VP9PROFILE_PROFILE0,
                                                  VAProfileVP9Profile0);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   if (base::FeatureList::IsEnabled(kVaapiVp9kSVCHWEncoding) &&
       VaapiWrapper::GetDefaultVaEntryPoint(
           VaapiWrapper::kEncodeConstantQuantizationParameter,
@@ -489,10 +490,22 @@ TEST_F(VaapiTest, CheckSupportedSVCScalabilityModes) {
                                                  VAProfileVP9Profile2);
   EXPECT_TRUE(scalability_modes_vp9_profile2.empty());
 
+  const auto scalability_modes_vp8 = VaapiWrapper::GetSupportedScalabilityModes(
+      VP8PROFILE_ANY, VAProfileVP8Version0_3);
+#if BUILDFLAG(IS_CHROMEOS)
+  if (base::FeatureList::IsEnabled(kVaapiVp8TemporalLayerHWEncoding)) {
+    EXPECT_EQ(scalability_modes_vp8, kSupportedTemporalSVC);
+  } else {
+    EXPECT_TRUE(scalability_modes_vp8.empty());
+  }
+#else
+  EXPECT_TRUE(scalability_modes_vp8.empty());
+#endif
+
   const auto scalability_modes_h264_baseline =
       VaapiWrapper::GetSupportedScalabilityModes(
           H264PROFILE_BASELINE, VAProfileH264ConstrainedBaseline);
-#if BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_CHROMEOS)
   // TODO(b/199487660): Enable H.264 temporal layer encoding on AMD once their
   // drivers support them.
   const auto implementation = VaapiWrapper::GetImplementationType();
@@ -679,7 +692,7 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
   // Request the underlying DRM metadata for |scoped_va_surface|.
   VADRMPRIMESurfaceDescriptor va_descriptor{};
   {
-    base::AutoLock auto_lock(*wrapper->va_lock_);
+    base::AutoLockMaybe auto_lock(wrapper->va_lock_);
     VAStatus va_res =
         vaSyncSurface(wrapper->va_display_, scoped_va_surface->id());
     ASSERT_EQ(va_res, VA_STATUS_SUCCESS);
@@ -733,12 +746,33 @@ TEST_P(VaapiMinigbmTest, AllocateAndCompareWithMinigbm) {
 
   // Now open minigbm pointing to the DRM primary node, allocate a gbm_bo, and
   // compare its width/height/stride/etc with the |va_descriptor|s.
-  base::File drm_fd(
-      base::FilePath("/dev/dri/card0"),
-      base::File::FLAG_OPEN | base::File::FLAG_READ | base::File::FLAG_WRITE);
+  constexpr char kPrimaryNodeFilePattern[] = "/dev/dri/card%d";
+  struct gbm_device* gbm = nullptr;
+  base::File drm_fd;
+  // This loop ends on either the first card that does not exist or the first
+  // primary node that is not vgem.
+  for (int i = 0;; i++) {
+    base::FilePath dev_path(FILE_PATH_LITERAL(
+        base::StringPrintf(kPrimaryNodeFilePattern, i).c_str()));
+    drm_fd =
+        base::File(dev_path, base::File::FLAG_OPEN | base::File::FLAG_READ |
+                                 base::File::FLAG_WRITE);
+    ASSERT_TRUE(drm_fd.IsValid());
+    // Skip the virtual graphics memory manager device.
+    drmVersionPtr version = drmGetVersion(drm_fd.GetPlatformFile());
+    if (!version)
+      continue;
+    std::string version_name(
+        version->name,
+        base::checked_cast<std::string::size_type>(version->name_len));
+    drmFreeVersion(version);
+    if (base::LowerCaseEqualsASCII(version_name, "vgem"))
+      continue;
 
-  ASSERT_TRUE(drm_fd.IsValid());
-  struct gbm_device* gbm = gbm_create_device(drm_fd.GetPlatformFile());
+    gbm = gbm_create_device(drm_fd.GetPlatformFile());
+    break;
+  }
+
   ASSERT_TRUE(gbm);
 
   const auto gbm_format = ToGBMFormat(va_rt_format);

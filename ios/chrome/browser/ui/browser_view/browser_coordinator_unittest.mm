@@ -15,6 +15,7 @@
 #include "ios/chrome/browser/main/test_browser.h"
 #include "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/ui/commands/activity_service_commands.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
 #import "ios/chrome/browser/ui/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
@@ -63,15 +64,18 @@ class BrowserCoordinatorTest : public PlatformTest {
     test_cbs_builder.AddTestingFactory(
         ios::FaviconServiceFactory::GetInstance(),
         ios::FaviconServiceFactory::GetDefaultFactory());
+    test_cbs_builder.AddTestingFactory(
+        ios::HistoryServiceFactory::GetInstance(),
+        ios::HistoryServiceFactory::GetDefaultFactory());
 
     chrome_browser_state_ = test_cbs_builder.Build();
-    CHECK(chrome_browser_state_->CreateHistoryService());
     browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     UrlLoadingNotifierBrowserAgent::CreateForBrowser(browser_.get());
     SceneStateBrowserAgent::CreateForBrowser(browser_.get(), scene_state_);
     WebNavigationBrowserAgent::CreateForBrowser(browser_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
-    WebStateDelegateBrowserAgent::CreateForBrowser(browser_.get());
+    WebStateDelegateBrowserAgent::CreateForBrowser(
+        browser_.get(), TabInsertionBrowserAgent::FromBrowser(browser_.get()));
 
     IncognitoReauthSceneAgent* reauthAgent = [[IncognitoReauthSceneAgent alloc]
         initWithReauthModule:[[ReauthenticationModule alloc] init]];
@@ -80,6 +84,19 @@ class BrowserCoordinatorTest : public PlatformTest {
     CommandDispatcher* dispatcher = browser_->GetCommandDispatcher();
     [dispatcher startDispatchingToTarget:reauthAgent
                              forProtocol:@protocol(IncognitoReauthCommands)];
+
+    // Set up ApplicationCommands mock. Because ApplicationCommands conforms
+    // to ApplicationSettingsCommands, that needs to be mocked and dispatched
+    // as well.
+    id mockApplicationCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationCommands));
+    id mockApplicationSettingsCommandHandler =
+        OCMProtocolMock(@protocol(ApplicationSettingsCommands));
+    [dispatcher startDispatchingToTarget:mockApplicationCommandHandler
+                             forProtocol:@protocol(ApplicationCommands)];
+    [dispatcher
+        startDispatchingToTarget:mockApplicationSettingsCommandHandler
+                     forProtocol:@protocol(ApplicationSettingsCommands)];
   }
 
   BrowserCoordinator* GetBrowserCoordinator() {

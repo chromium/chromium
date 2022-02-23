@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -121,7 +122,7 @@ class GeoLanguageProvider {
 
   // The pref service used to cached the latest latitude/longitude pair
   // obtained.
-  PrefService* prefs_;
+  raw_ptr<PrefService> prefs_;
 };
 
 }  // namespace language

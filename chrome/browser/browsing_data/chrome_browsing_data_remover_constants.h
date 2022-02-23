@@ -23,7 +23,7 @@ enum DataType : uint64_t {
   DATA_TYPE_FORM_DATA = DATA_TYPE_EMBEDDER_BEGIN << 1,
   DATA_TYPE_PASSWORDS = DATA_TYPE_EMBEDDER_BEGIN << 2,
   DATA_TYPE_PLUGIN_DATA = DATA_TYPE_EMBEDDER_BEGIN << 3,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DATA_TYPE_WEB_APP_DATA = DATA_TYPE_EMBEDDER_BEGIN << 4,
 #endif
   DATA_TYPE_SITE_USAGE_DATA = DATA_TYPE_EMBEDDER_BEGIN << 5,
@@ -45,13 +45,14 @@ enum DataType : uint64_t {
       content::BrowsingDataRemover::DATA_TYPE_DOM_STORAGE |
       content::BrowsingDataRemover::DATA_TYPE_MEDIA_LICENSES |
       DATA_TYPE_PLUGIN_DATA |
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
       DATA_TYPE_WEB_APP_DATA |
 #endif
       DATA_TYPE_SITE_USAGE_DATA | DATA_TYPE_DURABLE_PERMISSION |
       DATA_TYPE_EXTERNAL_PROTOCOL_DATA | DATA_TYPE_ISOLATED_ORIGINS |
       content::BrowsingDataRemover::DATA_TYPE_TRUST_TOKENS |
-      content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS,
+      content::BrowsingDataRemover::DATA_TYPE_CONVERSIONS |
+      content::BrowsingDataRemover::DATA_TYPE_AGGREGATION_SERVICE,
 
   // Datatypes protected by Important Sites.
   IMPORTANT_SITES_DATA_TYPES =

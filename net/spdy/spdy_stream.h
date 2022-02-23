@@ -12,8 +12,7 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "net/base/io_buffer.h"
@@ -32,6 +31,10 @@
 #include "url/gurl.h"
 
 namespace net {
+
+namespace test {
+class SpdyStreamTest;
+}
 
 class IPEndPoint;
 struct LoadTimingInfo;
@@ -134,7 +137,8 @@ class NET_EXPORT_PRIVATE SpdyStream {
              int32_t initial_send_window_size,
              int32_t max_recv_window_size,
              const NetLogWithSource& net_log,
-             const NetworkTrafficAnnotationTag& traffic_annotation);
+             const NetworkTrafficAnnotationTag& traffic_annotation,
+             bool detect_broken_connection);
 
   SpdyStream(const SpdyStream&) = delete;
   SpdyStream& operator=(const SpdyStream&) = delete;
@@ -190,7 +194,7 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // Returns true if successful.  Returns false if |send_window_size_|
   // would exceed 2^31-1 after the update, see RFC7540 Section 6.9.2.
   // Note that |send_window_size_| should not possibly underflow.
-  bool AdjustSendWindowSize(int32_t delta_window_size) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool AdjustSendWindowSize(int32_t delta_window_size);
 
   // Called when bytes are consumed from a SpdyBuffer for a DATA frame
   // that is to be written or is being written. Increases the send
@@ -404,7 +408,11 @@ class NET_EXPORT_PRIVATE SpdyStream {
     return traffic_annotation_;
   }
 
+  bool detect_broken_connection() const { return detect_broken_connection_; }
+
  private:
+  friend class test::SpdyStreamTest;
+
   class HeadersBufferProducer;
 
   // SpdyStream states and transitions are modeled
@@ -489,10 +497,13 @@ class NET_EXPORT_PRIVATE SpdyStream {
   // are sent.
   int32_t unacked_recv_window_bytes_;
 
+  // Time of the last WINDOW_UPDATE for the receive window
+  base::TimeTicks last_recv_window_update_;
+
   const base::WeakPtr<SpdySession> session_;
 
   // The transaction should own the delegate.
-  SpdyStream::Delegate* delegate_;
+  raw_ptr<SpdyStream::Delegate> delegate_;
 
   // The headers for the request to send.
   bool request_headers_valid_;
@@ -556,6 +567,10 @@ class NET_EXPORT_PRIVATE SpdyStream {
   bool write_handler_guard_;
 
   const NetworkTrafficAnnotationTag traffic_annotation_;
+
+  // Used by SpdySession to remember if this stream requested broken connection
+  // detection.
+  bool detect_broken_connection_;
 
   base::WeakPtrFactory<SpdyStream> weak_ptr_factory_{this};
 };

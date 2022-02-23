@@ -43,10 +43,17 @@ bool InvokeShellExecute(const std::wstring& path,
                         const std::wstring& working_directory,
                         const std::wstring& args,
                         const std::wstring& verb,
+                        const std::wstring& class_name,
                         DWORD mask) {
   base::ScopedBlockingCall scoped_blocking_call(FROM_HERE,
                                                 base::BlockingType::WILL_BLOCK);
+
   SHELLEXECUTEINFO sei = {sizeof(sei)};
+  if (!class_name.empty()) {
+    sei.lpClass = class_name.c_str();
+    mask = (mask | SEE_MASK_CLASSNAME);
+  }
+
   sei.fMask = mask;
   sei.nShow = SW_SHOWNORMAL;
   sei.lpVerb = (verb.empty() ? nullptr : verb.c_str());
@@ -67,7 +74,7 @@ bool InvokeShellExecute(const std::wstring& path,
 bool OpenFileViaShell(const base::FilePath& full_path) {
   // Invoke the default verb on the file with no arguments.
   return InvokeShellExecute(full_path.value(), full_path.DirName().value(),
-                            std::wstring(), std::wstring(),
+                            std::wstring(), std::wstring(), std::wstring(),
                             kDefaultShellExecuteFlags);
 }
 
@@ -75,7 +82,7 @@ bool OpenFolderViaShell(const base::FilePath& full_path) {
   // The "explore" verb causes the folder at |full_path| to be displayed in a
   // file browser. This will fail if |full_path| is not a directory.
   return InvokeShellExecute(full_path.value(), full_path.value(),
-                            std::wstring(), L"explore",
+                            std::wstring(), L"explore", L"folder",
                             kDefaultShellExecuteFlags);
 }
 

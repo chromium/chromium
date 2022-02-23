@@ -7,11 +7,13 @@
 #include <map>
 #include <memory>
 
+#include "ash/constants/ash_pref_names.h"
 #include "base/containers/contains.h"
 #include "base/values.h"
 #include "chrome/browser/ui/app_list/app_list_syncable_service.h"
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
+#include "components/app_constants/constants.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/model/string_ordinal.h"
@@ -84,7 +86,7 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
   ChromeShelfPrefsFake(const ChromeShelfPrefsFake&) = delete;
   ChromeShelfPrefsFake& operator=(const ChromeShelfPrefsFake&) = delete;
 
-  app_list::AppListSyncableService* const GetSyncableService() override {
+  app_list::AppListSyncableService* GetSyncableService() override {
     return syncable_service_;
   }
 
@@ -106,7 +108,7 @@ class ChromeShelfPrefsFake : public ChromeShelfPrefs {
     return app_type_map_[app_id];
   }
   bool IsAshExtensionApp(const std::string& app_id) override {
-    return app_type_map_[app_id] == apps::mojom::AppType::kExtension;
+    return app_type_map_[app_id] == apps::mojom::AppType::kChromeApp;
   }
   bool IsAshKeepListApp(const std::string& app_id) override { return false; }
 
@@ -135,6 +137,8 @@ class ChromeShelfPrefsTest : public testing::Test {
         prefs::kShelfDefaultPinLayoutRolls);
     pref_service_.registry()->RegisterListPref(
         prefs::kPolicyPinnedLauncherApps);
+    pref_service_.registry()->RegisterBooleanPref(
+        ash::prefs::kFilesAppUIPrefsMigrated, true);
   }
 
   void TearDown() override { shelf_prefs_.reset(); }
@@ -158,7 +162,7 @@ TEST_F(ChromeShelfPrefsTest, AddChromePinNoExistingOrdinal) {
   shelf_prefs_->EnsureChromePinned(&syncable_service_);
 
   // Check that chrome now has a valid ordinal.
-  EXPECT_TRUE(syncable_service_.item_map_[extension_misc::kChromeAppId]
+  EXPECT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
 }
 
@@ -166,15 +170,15 @@ TEST_F(ChromeShelfPrefsTest, AddChromePinExistingOrdinal) {
   // Set up the initial ordinals.
   syncer::StringOrdinal initial_ordinal =
       syncer::StringOrdinal::CreateInitialOrdinal();
-  syncable_service_.item_map_[extension_misc::kChromeAppId] =
-      MakeSyncItem(extension_misc::kChromeAppId, initial_ordinal);
+  syncable_service_.item_map_[app_constants::kChromeAppId] =
+      MakeSyncItem(app_constants::kChromeAppId, initial_ordinal);
 
   shelf_prefs_->EnsureChromePinned(&syncable_service_);
 
   // Check that the chrome ordinal did not change.
-  ASSERT_TRUE(syncable_service_.item_map_[extension_misc::kChromeAppId]
+  ASSERT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
-  auto& pin_ordinal = syncable_service_.item_map_[extension_misc::kChromeAppId]
+  auto& pin_ordinal = syncable_service_.item_map_[app_constants::kChromeAppId]
                           ->item_pin_ordinal;
   EXPECT_TRUE(pin_ordinal.Equals(initial_ordinal));
 }
@@ -183,7 +187,7 @@ TEST_F(ChromeShelfPrefsTest, AddDefaultApps) {
   shelf_prefs_->EnsureChromePinned(&syncable_service_);
   shelf_prefs_->AddDefaultApps(&pref_service_, &syncable_service_);
 
-  ASSERT_TRUE(syncable_service_.item_map_[extension_misc::kChromeAppId]
+  ASSERT_TRUE(syncable_service_.item_map_[app_constants::kChromeAppId]
                   ->item_pin_ordinal.IsValid());
 
   // Check that a pin was added for the gmail app.
@@ -203,7 +207,7 @@ TEST_F(ChromeShelfPrefsTest, ProfileChanged) {
 
   // Pinned apps should have the chrome app as the first item.
   ASSERT_GE(pinned_apps_strs.size(), 1u);
-  EXPECT_EQ(pinned_apps_strs[0], extension_misc::kChromeAppId);
+  EXPECT_EQ(pinned_apps_strs[0], app_constants::kChromeAppId);
 
   // Pinned apps should have the gmail app.
   EXPECT_TRUE(base::Contains(pinned_apps_strs, extension_misc::kGmailAppId));
@@ -240,9 +244,9 @@ TEST_F(ChromeShelfPrefsTest, TransformationForStandaloneBrowserChromeApps) {
   syncable_service_.item_map_[kNeitherId] = MakeSyncItem(kNeitherId, ordinal3);
 
   shelf_prefs_->app_type_map_[kAshChromeAppId] =
-      apps::mojom::AppType::kExtension;
+      apps::mojom::AppType::kChromeApp;
   shelf_prefs_->app_type_map_[kLacrosChromeAppIdWithUsualPrefix] =
-      apps::mojom::AppType::kStandaloneBrowserExtension;
+      apps::mojom::AppType::kStandaloneBrowserChromeApp;
 
   std::vector<ash::ShelfID> pinned_apps =
       shelf_prefs_->GetPinnedAppsFromSync(nullptr);

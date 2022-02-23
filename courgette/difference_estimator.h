@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "courgette/region.h"
 
 namespace courgette {

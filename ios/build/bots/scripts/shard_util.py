@@ -7,6 +7,7 @@ import logging
 import os
 import re
 import subprocess
+import sys
 
 import test_runner_errors
 
@@ -119,7 +120,7 @@ def fetch_test_names_for_release(stdout):
       //build/scripts/slave/recipe_modules/ios/api.py
 
     Args:
-        stdout: (string) response of 'otool -ov'
+        stdout: (bytes) response of 'otool -ov'
 
     Returns:
         (list) a list of (TestCase, testMethod), containing disabled tests.
@@ -130,6 +131,10 @@ def fetch_test_names_for_release(stdout):
   # 1. Parse test class names.
   # 2. If they are not in ignored list, parse test method names.
   # 3. Calculate test count per test class.
+  # |stdout| will be bytes on python3, and therefore must be decoded prior
+  # to running a regex.
+  if sys.version_info.major == 3:
+    stdout = stdout.decode('utf-8')
   res = re.split(TEST_CLASS_RELEASE_APP_PATTERN, stdout)
   # Ignore 1st element in split since it does not have any test class data
   test_classes_output = res[1:]
@@ -163,16 +168,18 @@ def fetch_test_names_for_debug(stdout):
      format of (TestCase, testMethod) including disabled tests, in debug app.
 
     Args:
-        stdout: (string) response of 'otool -ov'
+        stdout: (bytes) response of 'otool -ov'
 
     Returns:
         (list) a list of (TestCase, testMethod), containing disabled tests.
     """
-  test_names = TEST_NAMES_DEBUG_APP_PATTERN.findall(stdout.decode('utf-8'))
+  # |stdout| will be bytes on python3, and therefore must be decoded prior
+  # to running a regex.
+  if sys.version_info.major == 3:
+    stdout = stdout.decode('utf-8')
+  test_names = TEST_NAMES_DEBUG_APP_PATTERN.findall(stdout)
   test_names = list(
-      map(
-          lambda test_name: (test_name[0].encode('utf-8'), test_name[1].encode(
-              'utf-8')), test_names))
+      map(lambda test_name: (test_name[0], test_name[1]), test_names))
   return list(
       filter(lambda test_name: test_name[0] not in IGNORED_CLASSES, test_names))
 

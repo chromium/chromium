@@ -4,11 +4,11 @@
 
 package org.chromium.chrome.browser.notifications.channels;
 
-import android.annotation.TargetApi;
 import android.app.NotificationManager;
 import android.os.Build;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringDef;
 
 import org.chromium.chrome.browser.notifications.R;
@@ -36,14 +36,14 @@ import java.util.Set;
  * <br/>
  * See the README.md in this directory for more information before adding or changing any channels.
  */
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public class ChromeChannelDefinitions extends ChannelDefinitions {
     /**
      * Version number identifying the current set of channels. This must be incremented whenever the
      * set of channels returned by {@link #getStartupChannelIds()} or {@link #getLegacyChannelIds()}
      * changes.
      */
-    static final int CHANNELS_VERSION = 2;
+    static final int CHANNELS_VERSION = 3;
 
     private static class LazyHolder {
         private static ChromeChannelDefinitions sInstance = new ChromeChannelDefinitions();
@@ -73,7 +73,8 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             ChannelId.WEBAPP_ACTIONS, ChannelId.SITES, ChannelId.SHARING, ChannelId.UPDATES,
             ChannelId.COMPLETED_DOWNLOADS, ChannelId.PERMISSION_REQUESTS,
             ChannelId.PERMISSION_REQUESTS_HIGH, ChannelId.ANNOUNCEMENT, ChannelId.WEBAPPS,
-            ChannelId.WEBAPPS_QUIET, ChannelId.PRICE_DROP})
+            ChannelId.WEBAPPS_QUIET, ChannelId.PRICE_DROP, ChannelId.SECURITY_KEY,
+            ChannelId.CHROME_TIPS})
     @Retention(RetentionPolicy.SOURCE)
     public @interface ChannelId {
         String BROWSER = "browser";
@@ -97,6 +98,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
         String WEBRTC_CAM_AND_MIC = "webrtc_cam_and_mic";
         String PRICE_DROP = "shopping_price_drop_alerts";
         String SECURITY_KEY = "security_key";
+        String CHROME_TIPS = "chrome_tips";
     }
 
     @StringDef({ChannelGroupId.GENERAL, ChannelGroupId.SITES})
@@ -107,7 +109,7 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
     }
 
     // Map defined in static inner class so it's only initialized lazily.
-    @TargetApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
+    @RequiresApi(Build.VERSION_CODES.N) // for NotificationManager.IMPORTANCE_* constants
     private static class PredefinedChannels {
         /**
          * Definitions for predefined channels. Any channel listed in STARTUP must have an entry in
@@ -234,6 +236,13 @@ public class ChromeChannelDefinitions extends ChannelDefinitions {
             map.put(ChannelId.SECURITY_KEY,
                     PredefinedChannel.create(ChannelId.SECURITY_KEY,
                             R.string.notification_category_security_key,
+                            NotificationManager.IMPORTANCE_HIGH, ChannelGroupId.GENERAL));
+
+            // The chrome tips notification channel will only appear for users
+            // who are targeted for this feature.
+            map.put(ChannelId.CHROME_TIPS,
+                    PredefinedChannel.create(ChannelId.CHROME_TIPS,
+                            R.string.notification_category_feature_guide,
                             NotificationManager.IMPORTANCE_HIGH, ChannelGroupId.GENERAL));
 
             MAP = Collections.unmodifiableMap(map);

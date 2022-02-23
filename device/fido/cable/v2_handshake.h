@@ -108,6 +108,11 @@ namespace qr {
 struct COMPONENT_EXPORT(DEVICE_FIDO) Components {
   std::array<uint8_t, device::kP256X962Length> peer_identity;
   std::array<uint8_t, 16> secret;
+  // num_known_domains is the number of registered tunnel server domains known
+  // to the device showing the QR code. Authenticators can use this to fallback
+  // to a hashed domain if their registered domain isn't going to work with this
+  // client.
+  int64_t num_known_domains;
 };
 
 COMPONENT_EXPORT(DEVICE_FIDO)
@@ -214,14 +219,21 @@ class COMPONENT_EXPORT(DEVICE_FIDO) Crypter {
   bool Decrypt(base::span<const uint8_t> ciphertext,
                std::vector<uint8_t>* out_plaintext);
 
+  // Encrypt and decrypt with big-endian nonces and no additional data. This
+  // is the format in the spec and that we want to transition to.
+  void UseNewConstruction();
+
   // IsCounterpartyOfForTesting returns true if |other| is the mirror-image of
   // this object. (I.e. read/write keys are equal but swapped.)
   bool IsCounterpartyOfForTesting(const Crypter& other) const;
+
+  bool& GetNewConstructionFlagForTesting();
 
  private:
   const std::array<uint8_t, 32> read_key_, write_key_;
   uint32_t read_sequence_num_ = 0;
   uint32_t write_sequence_num_ = 0;
+  bool new_construction_ = false;
 };
 
 // HandshakeHash is the hashed transcript of a handshake. This can be used as a

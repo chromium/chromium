@@ -9,13 +9,13 @@
 #include <string>
 #include <unordered_map>
 
+#include "ash/components/arc/mojom/notifications.mojom.h"
+#include "ash/components/arc/session/connection_holder.h"
+#include "ash/components/arc/session/connection_observer.h"
 #include "ash/public/cpp/message_center/arc_notification_manager_base.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list_types.h"
 #include "components/account_id/account_id.h"
-#include "components/arc/mojom/notifications.mojom.h"
-#include "components/arc/session/connection_holder.h"
-#include "components/arc/session/connection_observer.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "ui/message_center/message_center.h"
 

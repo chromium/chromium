@@ -20,11 +20,10 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/interaction/interaction_sequence.h"
-#include "ui/events/base_event_utils.h"
-#include "ui/events/event.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/interaction/interaction_sequence_views.h"
+#include "ui/views/interaction/interaction_test_util_views.h"
 
 // This test ensures basic compatibility of InteractionSequence[Views] and a
 // live browser. It verifies that a simple journey of opening the main menu and
@@ -79,15 +78,10 @@ IN_PROC_BROWSER_TEST_F(InteractionSequenceUITest, OpenMainMenuAndViewHelpItem) {
   sequence->Start();
 
   // Click the app menu button, displaying the target element.
-  EXPECT_CALL_IN_SCOPE(completed, Run, {
-    app_menu_button->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED,
-                                               ui::VKEY_SPACE, ui::EF_NONE,
-                                               ui::EventTimeForNow()));
-
-    app_menu_button->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED,
-                                                ui::VKEY_SPACE, ui::EF_NONE,
-                                                ui::EventTimeForNow()));
-  });
+  EXPECT_CALL_IN_SCOPE(
+      completed, Run,
+      views::test::InteractionTestUtilSimulatorViews::PressButton(
+          app_menu_button));
 
   // Verify that we found the correct element and it is visible.
   EXPECT_TRUE(ui::ElementTracker::GetElementTracker()->IsElementVisible(

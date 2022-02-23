@@ -42,7 +42,7 @@ void MockBluetoothAdapter::Initialize(base::OnceClosure callback) {
   std::move(callback).Run();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void MockBluetoothAdapter::Shutdown() {
 }
 #endif
@@ -108,7 +108,7 @@ void MockBluetoothAdapter::RegisterAdvertisement(
   std::move(callback).Run(new MockBluetoothAdvertisement);
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 void MockBluetoothAdapter::SetAdvertisingInterval(
     const base::TimeDelta& min,
     const base::TimeDelta& max,

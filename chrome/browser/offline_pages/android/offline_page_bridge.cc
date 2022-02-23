@@ -26,7 +26,6 @@
 #include "base/time/time.h"
 #include "chrome/android/chrome_jni_headers/OfflinePageBridge_jni.h"
 #include "chrome/browser/android/tab_android.h"
-#include "chrome/browser/offline_pages/measurements/proto/system_state.pb.h"
 #include "chrome/browser/offline_pages/offline_page_mhtml_archiver.h"
 #include "chrome/browser/offline_pages/offline_page_model_factory.h"
 #include "chrome/browser/offline_pages/offline_page_tab_helper.h"
@@ -870,29 +869,6 @@ ScopedJavaLocalRef<jobject> OfflinePageBridge::CreateClientId(
   return Java_OfflinePageBridge_createClientId(
       env, ConvertUTF8ToJavaString(env, client_id.name_space),
       ConvertUTF8ToJavaString(env, client_id.id));
-}
-
-// static
-offline_measurements_system_state::proto::SystemStateList
-OfflinePageBridge::GetSystemStateListFromOfflineMeasurementsAsString() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-
-  std::string system_state_list_str;
-  JavaByteArrayToString(
-      env,
-      Java_OfflinePageBridge_getSystemStateListFromOfflineMeasurementsAsBytes(
-          env),
-      &system_state_list_str);
-
-  offline_measurements_system_state::proto::SystemStateList system_state_list;
-  system_state_list.ParseFromString(system_state_list_str);
-  return system_state_list;
-}
-
-// static
-void OfflinePageBridge::ReportOfflineMeasurementMetricsToUma() {
-  JNIEnv* env = base::android::AttachCurrentThread();
-  Java_OfflinePageBridge_reportOfflineMeasurementMetricsToUmaAndClear(env);
 }
 
 }  // namespace android

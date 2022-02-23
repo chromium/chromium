@@ -18,11 +18,14 @@ enum class CSSMathOperator {
   kDivide,
   kMin,
   kMax,
+  kClamp,
   kInvalid
 };
 
 CSSMathOperator ParseCSSArithmeticOperator(const CSSParserToken& token);
 String ToString(CSSMathOperator);
+
+bool IsComparison(CSSMathOperator);
 
 }  // namespace blink
 

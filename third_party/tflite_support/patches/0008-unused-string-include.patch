@@ -1,0 +1,25 @@
+From 731c17145b6421250793e49c72d384edc49edce4 Mon Sep 17 00:00:00 2001
+From: Robert Ogden <robertogden@chromium.org>
+Date: Mon, 7 Feb 2022 12:13:50 -0800
+Subject: [PATCH 08/12] unused string include
+
+---
+ .../cc/text/tokenizers/tokenizer_jni_lib.h                      | 2 --
+ 1 file changed, 2 deletions(-)
+
+diff --git a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_jni_lib.h b/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_jni_lib.h
+index fc7285c6807b0..33677d305a853 100644
+--- a/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_jni_lib.h
++++ b/third_party/tflite_support/src/tensorflow_lite_support/cc/text/tokenizers/tokenizer_jni_lib.h
+@@ -17,8 +17,6 @@ limitations under the License.
+ 
+ #include <jni.h>
+ 
+-#include <string>
+-
+ #include "tensorflow_lite_support/cc/text/tokenizers/tokenizer.h"
+ #include "tensorflow_lite_support/cc/utils/jni_utils.h"
+ 
+-- 
+2.35.0.263.gb82422642f-goog
+

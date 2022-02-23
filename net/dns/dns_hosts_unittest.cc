@@ -5,6 +5,7 @@
 #include "net/dns/dns_hosts.h"
 
 #include "base/cxx17_backports.h"
+#include "build/build_config.h"
 #include "net/base/ip_address.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -111,7 +112,7 @@ TEST(DnsHostsTest, ParseHosts_CommaModeByPlatform) {
   DnsHosts actual_hosts;
   ParseHosts(kContents, &actual_hosts);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   const ExpectedHostsEntry kEntries[] = {
     { "comma1", ADDRESS_FAMILY_IPV4, "127.0.0.1" },
     { "comma2", ADDRESS_FAMILY_IPV4, "127.0.0.1" },

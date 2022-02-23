@@ -57,9 +57,11 @@
           </slot>
         </template>
         <div id="item-text-container"
-          class$="[[getItemTextContainerClassName_(isFeatureIconHidden)]]" 
+          class$="[[getItemTextContainerClassName_(isFeatureIconHidden)]]"
           aria-hidden="true">
-          <div id="featureName">[[getFeatureName(feature)]]</div>
+          <slot name="feature-name">
+            <div id="featureName">[[getFeatureName(feature)]]</div>
+          </slot>
           <slot name="feature-summary">
             <localized-link
                 class="secondary"
@@ -77,13 +79,13 @@
               aria-roledescription="$i18n{subpageArrowRoleDescription}">
           </cr-icon-button>
         </template>
-        <template is="dom-if" if="[[infoTooltip]]" restamp>
-          <iron-icon id="help-icon" tabindex="0" icon="cr:info-outline"
+        <template is="dom-if" if="[[iconTooltip]]" restamp>
+          <iron-icon id="help-icon" tabindex="0" icon="[[icon]]"
               aria-labelledby="tooltip">
           </iron-icon>
           <paper-tooltip id="tooltip" for="help-icon" position="top"
               aria-hidden="true" fit-to-visible-bounds>
-            [[infoTooltip]]
+            [[iconTooltip]]
           </paper-tooltip>
         </template>
       </div>

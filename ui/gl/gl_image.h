@@ -23,7 +23,7 @@
 #include "ui/gfx/overlay_transform.h"
 #include "ui/gl/gl_export.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <android/hardware_buffer.h>
 #include <memory>
 #include "base/android/scoped_hardware_buffer_handle.h"
@@ -126,7 +126,7 @@ class GL_EXPORT GLImage : public base::RefCounted<GLImage> {
   // If called, then IsInUseByWindowServer will always return false.
   virtual void DisableInUseByWindowServer();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Provides the buffer backing this image, if it is backed by an
   // AHardwareBuffer. The ScopedHardwareBuffer returned may include a fence
   // which will be signaled when all pending work for the buffer has been

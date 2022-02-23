@@ -35,6 +35,7 @@ import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
+import static org.chromium.chrome.browser.flags.ChromeFeatureList.GRID_TAB_SWITCHER_FOR_TABLETS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.START_SURFACE_ANDROID;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.STORE_HOURS;
 import static org.chromium.chrome.browser.flags.ChromeFeatureList.TAB_GROUPS_ANDROID;
@@ -83,10 +84,13 @@ import org.mockito.MockitoAnnotations;
 import org.mockito.invocation.InvocationOnMock;
 import org.mockito.stubbing.Answer;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FeatureList;
+import org.chromium.base.metrics.RecordHistogram;
+import org.chromium.base.metrics.test.ShadowRecordHistogram;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.build.BuildConfig;
@@ -101,6 +105,8 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowUtils;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridge.OptimizationGuideCallback;
 import org.chromium.chrome.browser.optimization_guide.OptimizationGuideBridgeJni;
+import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
+import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
 import org.chromium.chrome.browser.tab.MockTab;
@@ -158,13 +164,19 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 /**
  * Tests for {@link TabListMediator}.
  */
 @SuppressWarnings(
         {"ArraysAsListWithZeroOrOneArgument", "ResultOfMethodCallIgnored", "ConstantConditions"})
 @RunWith(BaseRobolectricTestRunner.class)
-@Config(manifest = Config.NONE)
+@Config(manifest = Config.NONE, shadows = {ShadowRecordHistogram.class},
+        instrumentedPackages =
+                {
+                        "androidx.recyclerview.widget.RecyclerView" // required to mock final
+                })
+@LooperMode(LooperMode.Mode.LEGACY)
 // clang-format off
 @Features.EnableFeatures(ChromeFeatureList.TAB_TO_GTS_ANIMATION)
 @Features.DisableFeatures({
@@ -382,7 +394,7 @@ public class TabListMediatorUnitTest {
                 .openTabGridDialog(any(Tab.class));
         doNothing().when(mActivity).registerComponentCallbacks(mComponentCallbacksCaptor.capture());
         doReturn(mGridLayoutManager).when(mRecyclerView).getLayoutManager();
-        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT)
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT)
                 .when(mGridLayoutManager)
                 .getSpanCount();
         doReturn(mSpanSizeLookup).when(mGridLayoutManager).getSpanSizeLookup();
@@ -415,8 +427,7 @@ public class TabListMediatorUnitTest {
         doAnswer(invocation -> {
             int position = invocation.getArgument(0);
             int itemType = mModel.get(position).type;
-            if (itemType == TabProperties.UiType.MESSAGE
-                    || itemType == TabProperties.UiType.LARGE_MESSAGE) {
+            if (itemType == UiType.MESSAGE || itemType == UiType.LARGE_MESSAGE) {
                 return mGridLayoutManager.getSpanCount();
             }
             return 1;
@@ -1475,12 +1486,13 @@ public class TabListMediatorUnitTest {
         // Mock that we are switching to portrait mode.
         Configuration configuration = new Configuration();
         configuration.orientation = Configuration.ORIENTATION_PORTRAIT;
+        configuration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         // Mock that we are in single window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
 
         mComponentCallbacksCaptor.getValue().onConfigurationChanged(configuration);
 
-        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
     }
 
     @Test
@@ -1489,22 +1501,24 @@ public class TabListMediatorUnitTest {
         // Mock that we are switching to landscape mode.
         Configuration configuration = new Configuration();
         configuration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        configuration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         // Mock that we are in single window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
 
         mComponentCallbacksCaptor.getValue().onConfigurationChanged(configuration);
 
-        verify(mGridLayoutManager)
-                .setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM);
     }
 
     @Test
     public void updateSpanCount_MultiWindow() {
         initAndAssertAllProperties();
         Configuration portraitConfiguration = new Configuration();
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
         Configuration landscapeConfiguration = new Configuration();
         landscapeConfiguration.orientation = Configuration.ORIENTATION_LANDSCAPE;
+        landscapeConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
         // Mock that we are in multi window mode.
         MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(true);
 
@@ -1514,7 +1528,36 @@ public class TabListMediatorUnitTest {
 
         // The span count is fixed to 2 for multi window mode regardless of the orientation change.
         verify(mGridLayoutManager, times(3))
-                .setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT);
+                .setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
+    }
+
+    @Test
+    @Features.EnableFeatures(GRID_TAB_SWITCHER_FOR_TABLETS)
+    public void updateSpanCount_onTablet_multipleScreenWidths() {
+        initAndAssertAllProperties();
+        // Mock tablet
+        when(mResources.getInteger(R.integer.min_screen_width_bucket))
+                .thenReturn(TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1);
+        Configuration portraitConfiguration = new Configuration();
+        portraitConfiguration.orientation = Configuration.ORIENTATION_PORTRAIT;
+
+        // Mock that we are in single window mode.
+        MultiWindowUtils.getInstance().setIsInMultiWindowModeForTesting(false);
+
+        // Compact width
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_COMPACT_DP - 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT);
+
+        // Medium width
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP - 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM);
+
+        // Large width
+        portraitConfiguration.screenWidthDp = TabListCoordinator.MAX_SCREEN_WIDTH_MEDIUM_DP + 1;
+        mComponentCallbacksCaptor.getValue().onConfigurationChanged(portraitConfiguration);
+        verify(mGridLayoutManager).setSpanCount(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LARGE);
     }
 
     @Test
@@ -2598,12 +2641,12 @@ public class TabListMediatorUnitTest {
     public void testGetPriceWelcomeMessageInsertionIndex() {
         initWithThreeTabs();
 
-        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_PORTRAIT)
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_COMPACT)
                 .when(mGridLayoutManager)
                 .getSpanCount();
         assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(2));
 
-        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_LANDSCAPE)
+        doReturn(TabListCoordinator.GRID_LAYOUT_SPAN_COUNT_MEDIUM)
                 .when(mGridLayoutManager)
                 .getSpanCount();
         assertThat(mMediator.getPriceWelcomeMessageInsertionIndex(), equalTo(3));
@@ -2975,6 +3018,35 @@ public class TabListMediatorUnitTest {
         assertThat(mModel.get(POSITION1).model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING),
                 equalTo(targetString));
         TabUiFeatureUtilities.ENABLE_LAUNCH_POLISH.setForTesting(false);
+    }
+
+    @Test
+    public void testRecordPriceAnnotationsEnabledMetrics() {
+        ShadowRecordHistogram.reset();
+        setPriceTrackingEnabledForTesting(true);
+        PriceTrackingUtilities.setIsSignedInAndSyncEnabledForTesting(true);
+        mMediator.setActionOnAllRelatedTabsForTesting(true);
+        String histogramName = "Commerce.PriceDrop.AnnotationsEnabled";
+
+        SharedPreferencesManager preferencesManager = SharedPreferencesManager.getInstance();
+        long presetTime = System.currentTimeMillis() - TimeUnit.DAYS.toMillis(1);
+        preferencesManager.writeLong(
+                ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                presetTime);
+        mMediator.recordPriceAnnotationsEnabledMetrics();
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(histogramName), equalTo(1));
+        long updatedTime = preferencesManager.readLong(
+                ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                presetTime);
+        assertNotEquals(presetTime, updatedTime);
+
+        // This metrics should only be recorded once within one day.
+        mMediator.recordPriceAnnotationsEnabledMetrics();
+        assertThat(RecordHistogram.getHistogramTotalCountForTesting(histogramName), equalTo(1));
+        assertEquals(updatedTime,
+                preferencesManager.readLong(
+                        ChromePreferenceKeys.PRICE_TRACKING_ANNOTATIONS_ENABLED_METRICS_TIMESTAMP,
+                        -1));
     }
 
     private void setUpCloseButtonDescriptionString(boolean isGroup) {

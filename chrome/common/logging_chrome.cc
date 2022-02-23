@@ -3,7 +3,6 @@
 // found in the LICENSE file.
 
 #include "build/build_config.h"
-#include "build/os_buildflags.h"
 
 // Need to include this before most other files because it defines
 // IPC_MESSAGE_LOG_ENABLED. We need to use it to define
@@ -15,7 +14,7 @@
 // logger in this file.  (We implement about:ipc on Mac but implement
 // the loggers here anyway).  We need to do this real early to be sure
 // IPC_MESSAGE_MACROS_LOG_ENABLED doesn't get undefined.
-#if defined(OS_POSIX) && BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#if BUILDFLAG(IS_POSIX) && BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
 #define IPC_MESSAGE_MACROS_LOG_ENABLED
 #include "content/public/common/content_ipc_logging.h"
 #define IPC_LOG_TABLE_ADD_ENTRY(msg_id, logger) \
@@ -23,7 +22,7 @@
 #include "chrome/common/all_messages.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -60,7 +59,7 @@
 #include "ash/constants/ash_switches.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <initguid.h>
 #include "base/logging_win.h"
 #include "base/syslog_logging.h"
@@ -86,7 +85,7 @@ bool chrome_logging_failed_ = false;
 // InitChromeLogging() and the beginning of CleanupChromeLogging().
 bool chrome_logging_redirected_ = false;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // {7FE69228-633E-4f06-80C1-527FEA23E3A7}
 const GUID kChromeTraceProviderName = {
     0x7fe69228, 0x633e, 0x4f06,
@@ -112,7 +111,7 @@ void SuppressDialogs() {
   assert_handler_ = new ScopedLogAssertHandler(
       base::BindRepeating(SilentRuntimeAssertHandler));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UINT new_flags = SEM_FAILCRITICALERRORS |
                    SEM_NOGPFAULTERRORBOX |
                    SEM_NOOPENFILEERRORBOX;
@@ -246,11 +245,11 @@ base::FilePath GetSessionLogDir(const base::CommandLine& command_line) {
   if (env->GetVar(env_vars::kSessionLogDir, &log_dir_str) &&
       !log_dir_str.empty()) {
     log_dir = base::FilePath(log_dir_str);
-  } else if (command_line.HasSwitch(chromeos::switches::kLoginProfile)) {
+  } else if (command_line.HasSwitch(ash::switches::kLoginProfile)) {
     base::PathService::Get(chrome::DIR_USER_DATA, &log_dir);
     base::FilePath profile_dir;
     std::string login_profile_value =
-        command_line.GetSwitchValueASCII(chromeos::switches::kLoginProfile);
+        command_line.GetSwitchValueASCII(ash::switches::kLoginProfile);
     if (login_profile_value == chrome::kLegacyProfileDir ||
         login_profile_value == chrome::kTestUserProfileDir) {
       profile_dir = base::FilePath(login_profile_value);
@@ -292,7 +291,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
     // For BWSI (Incognito) logins, we want to put the logs in the user
     // profile directory that is created for the temporary session instead
     // of in the system log directory, for privacy reasons.
-    if (command_line.HasSwitch(chromeos::switches::kGuestSession))
+    if (command_line.HasSwitch(ash::switches::kGuestSession))
       log_path = GetSessionLogFile(command_line);
 
     // On ChromeOS we log to the symlink.  We force creation of a new
@@ -373,7 +372,7 @@ void InitChromeLogging(const base::CommandLine& command_line,
     }
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Enable trace control and transport through event tracing for Windows.
   LogEventProvider::Initialize(kChromeTraceProviderName);
 
@@ -404,11 +403,14 @@ void CleanupChromeLogging() {
 }
 
 base::FilePath GetLogFileName(const base::CommandLine& command_line) {
-  std::string filename = command_line.GetSwitchValueASCII(switches::kLogFile);
-  if (filename.empty())
-    base::Environment::Create()->GetVar(env_vars::kLogFileName, &filename);
+  auto filename = command_line.GetSwitchValueNative(switches::kLogFile);
   if (!filename.empty())
-    return base::FilePath::FromUTF8Unsafe(filename);
+    return base::FilePath(filename);
+
+  std::string env_filename;
+  base::Environment::Create()->GetVar(env_vars::kLogFileName, &env_filename);
+  if (!env_filename.empty())
+    return base::FilePath::FromUTF8Unsafe(env_filename);
 
   const base::FilePath log_filename(FILE_PATH_LITERAL("chrome_debug.log"));
   base::FilePath log_path;
@@ -430,7 +432,7 @@ bool DialogsAreSuppressed() {
 base::FilePath GenerateTimestampedName(const base::FilePath& base_path,
                                        base::Time timestamp) {
   base::Time::Exploded time_deets;
-  timestamp.LocalExplode(&time_deets);
+  timestamp.UTCExplode(&time_deets);
   std::string suffix = base::StringPrintf("_%02d%02d%02d-%02d%02d%02d",
                                           time_deets.year,
                                           time_deets.month,

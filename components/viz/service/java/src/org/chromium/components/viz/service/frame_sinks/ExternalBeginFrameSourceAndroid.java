@@ -4,41 +4,49 @@
 
 package org.chromium.components.viz.service.frame_sinks;
 
-import org.chromium.base.ContextUtils;
+import android.view.Choreographer;
+
+import org.chromium.base.TraceEvent;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.MainDex;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.ui.VSyncMonitor;
 
 /**
  * Provides a VSyncMonitor backed BeginFrameSource.
  */
 @JNINamespace("viz")
 @MainDex
-public class ExternalBeginFrameSourceAndroid {
+public class ExternalBeginFrameSourceAndroid implements Choreographer.FrameCallback {
+    private static final long NANOSECONDS_PER_SECOND = 1000000000;
+    private static final long NANOSECONDS_PER_MICROSECOND = 1000;
+
+    // Conservative guess about vsync's consecutivity.
+    // If true, next tick is guaranteed to be consecutive.
+    private boolean mConsecutiveVSync;
+    private boolean mInsideVSync;
+
+    // Display refresh rate as reported by the system.
+    private long mRefreshPeriodNano;
+    private boolean mUseEstimatedRefreshRate;
+
+    private boolean mHaveRequestInFlight;
+
+    private final Choreographer mChoreographer;
+    private long mGoodStartingPointNano;
+
     private final long mNativeExternalBeginFrameSourceAndroid;
     private boolean mVSyncNotificationsEnabled;
-    private final VSyncMonitor mVSyncMonitor;
-    private final VSyncMonitor.Listener mVSyncListener = new VSyncMonitor.Listener() {
-        @Override
-        public void onVSync(VSyncMonitor monitor, long vsyncTimeMicros) {
-            if (!mVSyncNotificationsEnabled) {
-                return;
-            }
-            ExternalBeginFrameSourceAndroidJni.get().onVSync(mNativeExternalBeginFrameSourceAndroid,
-                    ExternalBeginFrameSourceAndroid.this, vsyncTimeMicros,
-                    mVSyncMonitor.getVSyncPeriodInMicroseconds());
-            mVSyncMonitor.requestUpdate();
-        }
-    };
 
     @CalledByNative
     private ExternalBeginFrameSourceAndroid(
             long nativeExternalBeginFrameSourceAndroid, float refreshRate) {
+        updateRefreshRate(refreshRate);
+
+        mChoreographer = Choreographer.getInstance();
+        mGoodStartingPointNano = getCurrentNanoTime();
+
         mNativeExternalBeginFrameSourceAndroid = nativeExternalBeginFrameSourceAndroid;
-        mVSyncMonitor =
-                new VSyncMonitor(ContextUtils.getApplicationContext(), mVSyncListener, refreshRate);
     }
 
     @CalledByNative
@@ -49,13 +57,58 @@ public class ExternalBeginFrameSourceAndroid {
 
         mVSyncNotificationsEnabled = enabled;
         if (mVSyncNotificationsEnabled) {
-            mVSyncMonitor.requestUpdate();
+            postCallback();
         }
     }
 
     @CalledByNative
     private void updateRefreshRate(float refreshRate) {
-        mVSyncMonitor.updateRefreshRate(refreshRate);
+        mUseEstimatedRefreshRate = refreshRate < 30;
+        if (refreshRate <= 0) refreshRate = 60;
+        mRefreshPeriodNano = (long) (NANOSECONDS_PER_SECOND / refreshRate);
+    }
+
+    private void postCallback() {
+        if (mHaveRequestInFlight) return;
+        mHaveRequestInFlight = true;
+        mConsecutiveVSync = mInsideVSync;
+        mChoreographer.postFrameCallback(this);
+    }
+
+    @Override
+    public void doFrame(long frameTimeNanos) {
+        TraceEvent.begin("VSync");
+        try {
+            if (mUseEstimatedRefreshRate && mConsecutiveVSync) {
+                // Display.getRefreshRate() is unreliable on some platforms.
+                // Adjust refresh period- initial value is based on Display.getRefreshRate()
+                // after that it asymptotically approaches the real value.
+                long lastRefreshDurationNano = frameTimeNanos - mGoodStartingPointNano;
+                float lastRefreshDurationWeight = 0.1f;
+                mRefreshPeriodNano += (long) (lastRefreshDurationWeight
+                        * (lastRefreshDurationNano - mRefreshPeriodNano));
+            }
+            mGoodStartingPointNano = frameTimeNanos;
+            mInsideVSync = true;
+            assert mHaveRequestInFlight;
+            mHaveRequestInFlight = false;
+
+            if (!mVSyncNotificationsEnabled) {
+                return;
+            }
+            ExternalBeginFrameSourceAndroidJni.get().onVSync(mNativeExternalBeginFrameSourceAndroid,
+                    ExternalBeginFrameSourceAndroid.this,
+                    frameTimeNanos / NANOSECONDS_PER_MICROSECOND,
+                    mRefreshPeriodNano / NANOSECONDS_PER_MICROSECOND);
+            postCallback();
+        } finally {
+            mInsideVSync = false;
+            TraceEvent.end("VSync");
+        }
+    }
+
+    private long getCurrentNanoTime() {
+        return System.nanoTime();
     }
 
     @NativeMethods
@@ -64,4 +117,4 @@ public class ExternalBeginFrameSourceAndroid {
                 ExternalBeginFrameSourceAndroid caller, long vsyncTimeMicros,
                 long vsyncPeriodMicros);
     }
-};
+}

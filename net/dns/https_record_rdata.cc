@@ -55,7 +55,7 @@ bool ParseMandatoryKeys(base::StringPiece param_value,
                         std::set<uint16_t>* out_parsed) {
   DCHECK(out_parsed);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::set<uint16_t> mandatory_keys;
   // Do/while to require at least one key.
@@ -82,7 +82,7 @@ bool ParseAlpnIds(base::StringPiece param_value,
                   std::vector<std::string>* out_parsed) {
   DCHECK(out_parsed);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::vector<std::string> alpn_ids;
   // Do/while to require at least one ID.
@@ -106,7 +106,7 @@ bool ParseIpAddresses(base::StringPiece param_value,
                       std::vector<IPAddress>* out_addresses) {
   DCHECK(out_addresses);
 
-  base::BigEndianReader reader(param_value.data(), param_value.size());
+  auto reader = base::BigEndianReader::FromStringPiece(param_value);
 
   std::vector<IPAddress> addresses;
   uint8_t addr_bytes[ADDRESS_SIZE];
@@ -127,23 +127,16 @@ bool ParseIpAddresses(base::StringPiece param_value,
 std::unique_ptr<HttpsRecordRdata> HttpsRecordRdata::Parse(
     base::StringPiece data) {
   if (!HasValidSize(data, kType))
-    return std::make_unique<MalformedHttpsRecordRdata>();
+    return nullptr;
 
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
   uint16_t priority;
   CHECK(reader.ReadU16(&priority));
 
-  std::unique_ptr<HttpsRecordRdata> parsed;
   if (priority == 0) {
-    parsed = AliasFormHttpsRecordRdata::Parse(data);
-  } else {
-    parsed = ServiceFormHttpsRecordRdata::Parse(data);
+    return AliasFormHttpsRecordRdata::Parse(data);
   }
-
-  if (!parsed)
-    return std::make_unique<MalformedHttpsRecordRdata>();
-
-  return parsed;
+  return ServiceFormHttpsRecordRdata::Parse(data);
 }
 
 HttpsRecordRdata::~HttpsRecordRdata() = default;
@@ -164,7 +157,6 @@ uint16_t HttpsRecordRdata::Type() const {
 
 AliasFormHttpsRecordRdata* HttpsRecordRdata::AsAliasForm() {
   CHECK(IsAlias());
-  CHECK(!IsMalformed());
   return static_cast<AliasFormHttpsRecordRdata*>(this);
 }
 
@@ -174,31 +166,11 @@ const AliasFormHttpsRecordRdata* HttpsRecordRdata::AsAliasForm() const {
 
 ServiceFormHttpsRecordRdata* HttpsRecordRdata::AsServiceForm() {
   CHECK(!IsAlias());
-  CHECK(!IsMalformed());
   return static_cast<ServiceFormHttpsRecordRdata*>(this);
 }
 
 const ServiceFormHttpsRecordRdata* HttpsRecordRdata::AsServiceForm() const {
   return const_cast<HttpsRecordRdata*>(this)->AsServiceForm();
-}
-
-bool HttpsRecordRdata::IsMalformed() const {
-  return false;
-}
-
-MalformedHttpsRecordRdata::MalformedHttpsRecordRdata() = default;
-
-bool MalformedHttpsRecordRdata::IsEqual(const HttpsRecordRdata* other) const {
-  DCHECK(other);
-  return other->IsMalformed();
-}
-
-bool MalformedHttpsRecordRdata::IsAlias() const {
-  return false;
-}
-
-bool MalformedHttpsRecordRdata::IsMalformed() const {
-  return true;
 }
 
 AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
@@ -207,7 +179,7 @@ AliasFormHttpsRecordRdata::AliasFormHttpsRecordRdata(std::string alias_name)
 // static
 std::unique_ptr<AliasFormHttpsRecordRdata> AliasFormHttpsRecordRdata::Parse(
     base::StringPiece data) {
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
   if (!reader.ReadU16(&priority))
@@ -252,7 +224,7 @@ bool AliasFormHttpsRecordRdata::IsAlias() const {
 constexpr uint16_t ServiceFormHttpsRecordRdata::kSupportedKeys[];
 
 ServiceFormHttpsRecordRdata::ServiceFormHttpsRecordRdata(
-    uint16_t priority,
+    HttpsRecordPriority priority,
     std::string service_name,
     std::set<uint16_t> mandatory_keys,
     std::vector<std::string> alpn_ids,
@@ -294,7 +266,7 @@ ServiceFormHttpsRecordRdata::~ServiceFormHttpsRecordRdata() = default;
 bool ServiceFormHttpsRecordRdata::IsEqual(const HttpsRecordRdata* other) const {
   DCHECK(other);
 
-  if (other->IsAlias() || other->IsMalformed())
+  if (other->IsAlias())
     return false;
 
   const ServiceFormHttpsRecordRdata* service = other->AsServiceForm();
@@ -315,7 +287,7 @@ bool ServiceFormHttpsRecordRdata::IsAlias() const {
 // static
 std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     base::StringPiece data) {
-  base::BigEndianReader reader(data.data(), data.size());
+  auto reader = base::BigEndianReader::FromStringPiece(data);
 
   uint16_t priority;
   if (!reader.ReadU16(&priority))
@@ -330,7 +302,7 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
 
   if (reader.remaining() == 0) {
     return std::make_unique<ServiceFormHttpsRecordRdata>(
-        priority, std::move(service_name).value(),
+        HttpsRecordPriority{priority}, std::move(service_name).value(),
         std::set<uint16_t>() /* mandatory_keys */,
         std::vector<std::string>() /* alpn_ids */, true /* default_alpn */,
         absl::nullopt /* port */, std::vector<IPAddress>() /* ipv4_hint */,
@@ -388,7 +360,8 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
     if (param_value.size() != 2)
       return nullptr;
     uint16_t port_val;
-    base::ReadBigEndian(param_value.data(), &port_val);
+    base::ReadBigEndian(reinterpret_cast<const uint8_t*>(param_value.data()),
+                        &port_val);
     port = port_val;
     if (reader.remaining() > 0 &&
         !ReadNextServiceParam(param_key, reader, &param_key, &param_value)) {
@@ -445,9 +418,10 @@ std::unique_ptr<ServiceFormHttpsRecordRdata> ServiceFormHttpsRecordRdata::Parse(
   }
 
   return std::make_unique<ServiceFormHttpsRecordRdata>(
-      priority, std::move(service_name).value(), std::move(mandatory_keys),
-      std::move(alpn_ids), default_alpn, port, std::move(ipv4_hint),
-      std::move(ech_config), std::move(ipv6_hint), std::move(unparsed_params));
+      HttpsRecordPriority{priority}, std::move(service_name).value(),
+      std::move(mandatory_keys), std::move(alpn_ids), default_alpn, port,
+      std::move(ipv4_hint), std::move(ech_config), std::move(ipv6_hint),
+      std::move(unparsed_params));
 }
 
 bool ServiceFormHttpsRecordRdata::IsCompatible() const {

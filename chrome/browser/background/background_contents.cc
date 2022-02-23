@@ -7,7 +7,6 @@
 #include <utility>
 
 #include "chrome/browser/background/background_contents_service.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/renderer_preferences_util.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
@@ -34,7 +33,7 @@ BackgroundContents::BackgroundContents(
     content::RenderFrameHost* opener,
     bool is_new_browsing_instance,
     Delegate* delegate,
-    const content::StoragePartitionId& partition_id,
+    const content::StoragePartitionConfig& partition_config,
     content::SessionStorageNamespace* session_storage_namespace)
     : delegate_(delegate),
       extension_host_delegate_(extensions::ExtensionsBrowserClient::Get()
@@ -52,7 +51,7 @@ BackgroundContents::BackgroundContents(
   if (session_storage_namespace) {
     content::SessionStorageNamespaceMap session_storage_namespace_map;
     session_storage_namespace_map.insert(
-        std::make_pair(partition_id, session_storage_namespace));
+        std::make_pair(partition_config, session_storage_namespace));
     web_contents_ = WebContents::CreateWithSessionStorage(
         create_params, session_storage_namespace_map);
   } else {
@@ -62,8 +61,6 @@ BackgroundContents::BackgroundContents(
                           extensions::mojom::ViewType::kBackgroundContents);
   web_contents_->SetDelegate(this);
   content::WebContentsObserver::Observe(web_contents_.get());
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents_.get());
 
   // Add the TaskManager-specific tag for the BackgroundContents.
   task_manager::WebContentsTags::CreateForBackgroundContents(

@@ -52,10 +52,10 @@
 #include "third_party/blink/renderer/core/frame/web_feature.h"
 #include "third_party/blink/renderer/core/media_type_names.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
 #include "third_party/blink/renderer/platform/graphics/color_space_gamut.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
+#include "ui/gfx/geometry/rect_f.h"
 
 namespace blink {
 
@@ -101,8 +101,12 @@ bool MediaQueryEvaluator::MediaTypeMatch(
          EqualIgnoringASCIICase(media_type_to_match, MediaType());
 }
 
-static bool ApplyRestrictor(MediaQuery::RestrictorType r, bool value) {
-  return r == MediaQuery::kNot ? !value : value;
+static bool ApplyRestrictor(MediaQuery::RestrictorType r, KleeneValue value) {
+  if (value == KleeneValue::kUnknown)
+    return false;
+  if (r == MediaQuery::kNot)
+    return value == KleeneValue::kFalse;
+  return value == KleeneValue::kTrue;
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
@@ -111,9 +115,10 @@ bool MediaQueryEvaluator::Eval(const MediaQuery& query) const {
 
 bool MediaQueryEvaluator::Eval(const MediaQuery& query, Results results) const {
   if (!MediaTypeMatch(query.MediaType()))
-    return ApplyRestrictor(query.Restrictor(), false);
-  return ApplyRestrictor(query.Restrictor(),
-                         !query.ExpNode() || Eval(*query.ExpNode(), results));
+    return ApplyRestrictor(query.Restrictor(), KleeneValue::kFalse);
+  if (!query.ExpNode())
+    return ApplyRestrictor(query.Restrictor(), KleeneValue::kTrue);
+  return ApplyRestrictor(query.Restrictor(), Eval(*query.ExpNode(), results));
 }
 
 bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set) const {
@@ -134,36 +139,80 @@ bool MediaQueryEvaluator::Eval(const MediaQuerySet& query_set,
   return result;
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
+KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node) const {
   return Eval(node, Results());
 }
 
-bool MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
-                               Results results) const {
+KleeneValue MediaQueryEvaluator::Eval(const MediaQueryExpNode& node,
+                                      Results results) const {
   if (auto* n = DynamicTo<MediaQueryNestedExpNode>(node))
     return Eval(n->Operand(), results);
+  if (auto* n = DynamicTo<MediaQueryFunctionExpNode>(node))
+    return Eval(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryNotExpNode>(node))
-    return !Eval(n->Operand(), results);
+    return EvalNot(n->Operand(), results);
   if (auto* n = DynamicTo<MediaQueryAndExpNode>(node))
-    return Eval(n->Left(), results) && Eval(n->Right(), results);
+    return EvalAnd(n->Left(), n->Right(), results);
   if (auto* n = DynamicTo<MediaQueryOrExpNode>(node))
-    return Eval(n->Left(), results) || Eval(n->Right(), results);
-  return Eval(To<MediaQueryFeatureExpNode>(node).Expression(), results);
+    return EvalOr(n->Left(), n->Right(), results);
+  if (auto* n = DynamicTo<MediaQueryUnknownExpNode>(node))
+    return KleeneValue::kUnknown;
+  return EvalFeature(To<MediaQueryFeatureExpNode>(node).Expression(), results);
 }
 
-bool MediaQueryEvaluator::DidResultsChange(
-    const MediaQueryResultList& results) const {
-  base::AutoReset<bool> skip(&skip_ukm_reporting_, true);
-  for (auto& result : results) {
-    if (Eval(result.Expression()) != result.Result())
-      return true;
+KleeneValue MediaQueryEvaluator::EvalNot(const MediaQueryExpNode& operand_node,
+                                         Results results) const {
+  switch (Eval(operand_node, results)) {
+    case KleeneValue::kTrue:
+      return KleeneValue::kFalse;
+    case KleeneValue::kFalse:
+      return KleeneValue::kTrue;
+    case KleeneValue::kUnknown:
+      return KleeneValue::kUnknown;
   }
-  return false;
+}
+
+KleeneValue MediaQueryEvaluator::EvalAnd(const MediaQueryExpNode& left_node,
+                                         const MediaQueryExpNode& right_node,
+                                         Results results) const {
+  KleeneValue left = Eval(left_node, results);
+  // Short-circuiting before calling Eval on |right_node| prevents
+  // unnecessary entries in |results|.
+  if (left != KleeneValue::kTrue)
+    return left;
+  return Eval(right_node, results);
+}
+
+KleeneValue MediaQueryEvaluator::EvalOr(const MediaQueryExpNode& left_node,
+                                        const MediaQueryExpNode& right_node,
+                                        Results results) const {
+  KleeneValue left = Eval(left_node, results);
+  // Short-circuiting before calling Eval on |right_node| prevents
+  // unnecessary entries in |results|.
+  if (left == KleeneValue::kTrue)
+    return left;
+  return Eval(right_node, results);
+}
+
+KleeneValue MediaQueryEvaluator::EvalFeature(const MediaQueryExp& expr,
+                                             Results results) const {
+  if (media_values_) {
+    if (!media_values_->Width().has_value() && expr.IsWidthDependent())
+      return KleeneValue::kUnknown;
+    if (!media_values_->Height().has_value() && expr.IsHeightDependent())
+      return KleeneValue::kUnknown;
+    if (!media_values_->InlineSize().has_value() &&
+        expr.IsInlineSizeDependent()) {
+      return KleeneValue::kUnknown;
+    }
+    if (!media_values_->BlockSize().has_value() && expr.IsBlockSizeDependent())
+      return KleeneValue::kUnknown;
+  }
+  return Eval(expr, results) ? KleeneValue::kTrue : KleeneValue::kFalse;
 }
 
 bool MediaQueryEvaluator::DidResultsChange(
     const Vector<MediaQuerySetResult>& results) const {
-  base::AutoReset<bool> skip(&skip_ukm_reporting_, true);
   for (const auto& result : results) {
     if (result.Result() != Eval(result.MediaQueries()))
       return true;
@@ -221,7 +270,7 @@ static bool CompareAspectRatioValue(const MediaQueryExpValue& value,
 static bool NumberValue(const MediaQueryExpValue& value, float& result) {
   if (value.IsNumeric() &&
       value.Unit() == CSSPrimitiveValue::UnitType::kNumber) {
-    result = value.Value();
+    result = ClampTo<float>(value.Value());
     return true;
   }
   return false;
@@ -299,8 +348,8 @@ static bool DisplayModeMediaFeatureEval(const MediaQueryExpValue& value,
 static bool OrientationMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator,
                                         const MediaValues& media_values) {
-  int width = media_values.Width();
-  int height = media_values.Height();
+  int width = *media_values.Width();
+  int height = *media_values.Height();
 
   if (value.IsId()) {
     if (width > height)  // Square viewport is portrait.
@@ -316,8 +365,8 @@ static bool AspectRatioMediaFeatureEval(const MediaQueryExpValue& value,
                                         MediaQueryOperator op,
                                         const MediaValues& media_values) {
   if (value.IsValid()) {
-    return CompareAspectRatioValue(value, media_values.Width(),
-                                   media_values.Height(), op);
+    return CompareAspectRatioValue(value, *media_values.Width(),
+                                   *media_values.Height(), op);
   }
 
   // ({,min-,max-}aspect-ratio)
@@ -344,14 +393,12 @@ static bool DynamicRangeMediaFeatureEval(const MediaQueryExpValue& value,
   if (!value.IsId())
     return false;
 
-  bool const supports_hdr = media_values.DeviceSupportsHDR();
-
   switch (value.Id()) {
     case CSSValueID::kStandard:
-      return !supports_hdr;
+      return true;
 
     case CSSValueID::kHigh:
-      return supports_hdr;
+      return media_values.DeviceSupportsHDR();
 
     default:
       NOTREACHED();
@@ -504,7 +551,7 @@ static bool DeviceWidthMediaFeatureEval(const MediaQueryExpValue& value,
 static bool HeightMediaFeatureEval(const MediaQueryExpValue& value,
                                    MediaQueryOperator op,
                                    const MediaValues& media_values) {
-  double height = media_values.Height();
+  double height = *media_values.Height();
   if (value.IsValid())
     return ComputeLengthAndCompare(value, op, media_values, height);
 
@@ -514,11 +561,31 @@ static bool HeightMediaFeatureEval(const MediaQueryExpValue& value,
 static bool WidthMediaFeatureEval(const MediaQueryExpValue& value,
                                   MediaQueryOperator op,
                                   const MediaValues& media_values) {
-  double width = media_values.Width();
+  double width = *media_values.Width();
   if (value.IsValid())
     return ComputeLengthAndCompare(value, op, media_values, width);
 
   return width;
+}
+
+static bool InlineSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                       MediaQueryOperator op,
+                                       const MediaValues& media_values) {
+  double size = *media_values.InlineSize();
+  if (value.IsValid())
+    return ComputeLengthAndCompare(value, op, media_values, size);
+
+  return size;
+}
+
+static bool BlockSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                      MediaQueryOperator op,
+                                      const MediaValues& media_values) {
+  double size = *media_values.BlockSize();
+  if (value.IsValid())
+    return ComputeLengthAndCompare(value, op, media_values, size);
+
+  return size;
 }
 
 // Rest of the functions are trampolines which set the prefix according to the
@@ -638,6 +705,34 @@ static bool MaxWidthMediaFeatureEval(const MediaQueryExpValue& value,
                                      MediaQueryOperator,
                                      const MediaValues& media_values) {
   return WidthMediaFeatureEval(value, MediaQueryOperator::kLe, media_values);
+}
+
+static bool MinBlockSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                         MediaQueryOperator,
+                                         const MediaValues& media_values) {
+  return BlockSizeMediaFeatureEval(value, MediaQueryOperator::kGe,
+                                   media_values);
+}
+
+static bool MaxBlockSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                         MediaQueryOperator,
+                                         const MediaValues& media_values) {
+  return BlockSizeMediaFeatureEval(value, MediaQueryOperator::kLe,
+                                   media_values);
+}
+
+static bool MinInlineSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                          MediaQueryOperator,
+                                          const MediaValues& media_values) {
+  return InlineSizeMediaFeatureEval(value, MediaQueryOperator::kGe,
+                                    media_values);
+}
+
+static bool MaxInlineSizeMediaFeatureEval(const MediaQueryExpValue& value,
+                                          MediaQueryOperator,
+                                          const MediaValues& media_values) {
+  return InlineSizeMediaFeatureEval(value, MediaQueryOperator::kLe,
+                                    media_values);
 }
 
 static bool MinDeviceHeightMediaFeatureEval(const MediaQueryExpValue& value,
@@ -1094,6 +1189,9 @@ bool MediaQueryEvaluator::Eval(const MediaQueryExp& expr,
     NOTREACHED();
     return false;
   }
+
+  DCHECK(media_values_->Width().has_value() || !expr.IsWidthDependent());
+  DCHECK(media_values_->Height().has_value() || !expr.IsHeightDependent());
 
   DCHECK(g_function_map);
 

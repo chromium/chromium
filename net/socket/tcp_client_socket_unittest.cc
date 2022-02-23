@@ -10,6 +10,7 @@
 
 #include <stddef.h>
 
+#include <set>
 #include <string>
 #include <vector>
 
@@ -38,7 +39,7 @@
 // This matches logic in tcp_client_socket.cc. Only used once, but defining it
 // in this file instead of just inlining the OS checks where its used makes it
 // more grep-able.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #define TCP_CLIENT_SOCKET_OBSERVES_SUSPEND
 #endif
 
@@ -252,12 +253,12 @@ TEST_F(TCPClientSocketTest, DnsAliasesPersistForReuse) {
   EXPECT_TRUE(socket.GetDnsAliases().empty());
 
   // Set the aliases.
-  std::vector<std::string> dns_aliases({"alias1", "alias2", "host"});
+  std::set<std::string> dns_aliases({"alias1", "alias2", "host"});
   socket.SetDnsAliases(dns_aliases);
 
   // Verify that the aliases are set.
   EXPECT_THAT(socket.GetDnsAliases(),
-              testing::ElementsAre("alias1", "alias2", "host"));
+              testing::UnorderedElementsAre("alias1", "alias2", "host"));
 
   // Connect the socket.
   TestCompletionCallback connect_callback;
@@ -316,7 +317,7 @@ class TestSocketPerformanceWatcher : public SocketPerformanceWatcher {
 
 // TestSocketPerformanceWatcher requires kernel support for tcp_info struct, and
 // so it is enabled only on certain platforms.
-#if defined(TCP_INFO) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if defined(TCP_INFO) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestSocketPerformanceWatcher TestSocketPerformanceWatcher
 #else
 #define MAYBE_TestSocketPerformanceWatcher TestSocketPerformanceWatcher
@@ -351,7 +352,7 @@ TEST_F(TCPClientSocketTest, MAYBE_TestSocketPerformanceWatcher) {
 
 // On Android, where socket tagging is supported, verify that
 // TCPClientSocket::Tag works as expected.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(TCPClientSocketTest, Tag) {
   if (!CanGetTaggedBytes()) {
     DVLOG(0) << "Skipping test - GetTaggedBytes unsupported.";
@@ -461,7 +462,7 @@ TEST_F(TCPClientSocketTest, TagAfterConnect) {
 
   s.Disconnect();
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 // TCP socket that hangs indefinitely when establishing a connection.
 class NeverConnectingTCPClientSocket : public TCPClientSocket {

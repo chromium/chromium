@@ -8,8 +8,6 @@
 #include <array>
 #include <string>
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Transposes matrix [ m0, m1, m2, m3, m4, m5, m6, m7, m8 ]:

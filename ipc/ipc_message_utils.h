@@ -9,8 +9,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <algorithm>
-#include <bitset>
 #include <map>
 #include <memory>
 #include <set>
@@ -19,31 +17,39 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/check.h"
+#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "base/containers/flat_map.h"
-#include "base/containers/small_map.h"
 #include "base/containers/stack_container.h"
 #include "base/files/file.h"
-#include "base/format_macros.h"
 #include "base/memory/platform_shared_memory_region.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/unsafe_shared_memory_region.h"
 #include "base/memory/writable_shared_memory_region.h"
 #include "base/numerics/safe_conversions.h"
-#include "base/strings/string_util.h"
+#include "base/pickle.h"
 #include "base/types/id_type.h"
 #include "build/build_config.h"
+#include "ipc/ipc_buildflags.h"
 #include "ipc/ipc_param_traits.h"
-#include "ipc/ipc_sync_message.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_hardware_buffer_handle.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/channel.h>
 #include <lib/zx/vmo.h>
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include "base/strings/string_util_win.h"
+#endif
+
+#if BUILDFLAG(IPC_MESSAGE_LOG_ENABLED)
+#include "ipc/ipc_message.h"
 #endif
 
 namespace base {
@@ -60,9 +66,10 @@ struct FileDescriptor;
 
 namespace IPC {
 
+class Message;
 struct ChannelHandle;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 class PlatformFileForTransit;
 #endif
 
@@ -114,9 +121,9 @@ inline void WriteParam(base::Pickle* m, const P& p) {
 }
 
 template <class P>
-inline bool WARN_UNUSED_RESULT ReadParam(const base::Pickle* m,
-                                         base::PickleIterator* iter,
-                                         P* p) {
+[[nodiscard]] inline bool ReadParam(const base::Pickle* m,
+                                    base::PickleIterator* iter,
+                                    P* p) {
   typedef typename SimilarTypeTraits<P>::Type Type;
   return ParamTraits<Type>::Read(m, iter, reinterpret_cast<Type* >(p));
 }
@@ -206,8 +213,9 @@ struct ParamTraits<unsigned int> {
 //   3) Android 64 bit and Fuchsia also have int64_t typedef'd to long.
 // Since we want to support Android 32<>64 bit IPC, as long as we don't have
 // these traits for 32 bit ARM then that'll catch any errors.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS) || \
-    defined(OS_FUCHSIA) || (defined(OS_ANDROID) && defined(ARCH_CPU_64_BITS))
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || \
+    BUILDFLAG(IS_FUCHSIA) ||                                              \
+    (BUILDFLAG(IS_ANDROID) && defined(ARCH_CPU_64_BITS))
 template <>
 struct ParamTraits<long> {
   typedef long param_type;
@@ -343,7 +351,7 @@ struct ParamTraits<std::u16string> {
   COMPONENT_EXPORT(IPC) static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<std::wstring> {
   typedef std::wstring param_type;
@@ -417,42 +425,6 @@ struct ParamTraits<std::vector<P>> {
       if (i != 0)
         l->append(" ");
       LogParam((p[i]), l);
-    }
-  }
-};
-
-template <std::size_t N>
-struct ParamTraits<std::bitset<N>> {
-  typedef std::bitset<N> param_type;
-  static void Write(base::Pickle* m, const param_type& p) {
-    WriteParam(m, base::checked_cast<int>(p.size()));
-    for (size_t i = 0; i < p.size(); i++)
-      WriteParam(m, p.test(i));
-  }
-
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r) {
-    int size;
-    // ReadLength() checks for < 0 itself.
-    if (!iter->ReadLength(&size))
-      return false;
-    if (static_cast<size_t>(size) != r->size())
-      return false;
-    for (size_t i = 0; i < r->size(); i++) {
-      bool value;
-      if (!ReadParam(m, iter, &value))
-        return false;
-      (*r)[i] = value;
-    }
-    return true;
-  }
-
-  static void Log(const param_type& p, std::string* l) {
-    for (size_t i = 0; i < p.size(); ++i) {
-      if (i != 0)
-        l->push_back(' ');
-      LogParam(p.test(i), l);
     }
   }
 };
@@ -580,7 +552,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::DictionaryValue> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 // FileDescriptors may be serialised over IPC channels on POSIX. On the
 // receiving side, the FileDescriptor is a valid duplicate of the file
 // descriptor which was transmitted: *it is not just a copy of the integer like
@@ -616,9 +588,9 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::ScopedFD> {
   static void Log(const param_type& p, std::string* l);
 };
 
-#endif  // defined(OS_POSIX) || defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::win::ScopedHandle> {
   using param_type = base::win::ScopedHandle;
@@ -630,7 +602,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<base::win::ScopedHandle> {
 };
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<zx::vmo> {
   typedef zx::vmo param_type;
@@ -650,9 +622,9 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<zx::channel> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 template <>
 struct COMPONENT_EXPORT(IPC)
     ParamTraits<base::android::ScopedHardwareBufferHandle> {
@@ -717,7 +689,7 @@ struct COMPONENT_EXPORT(IPC)
   static void Log(const param_type& p, std::string* l);
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<PlatformFileForTransit> {
   typedef PlatformFileForTransit param_type;
@@ -727,7 +699,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<PlatformFileForTransit> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::FilePath> {
@@ -774,12 +746,12 @@ struct SimilarTypeTraits<base::File::Error> {
   typedef int Type;
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct SimilarTypeTraits<HWND> {
   typedef HANDLE Type;
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<base::Time> {
@@ -915,43 +887,6 @@ struct ParamTraits<base::StackVector<P, stack_capacity> > {
         l->append(" ");
       LogParam((p[i]), l);
     }
-  }
-};
-
-template <typename NormalMap,
-          int kArraySize,
-          typename EqualKey,
-          typename MapInit>
-struct ParamTraits<base::small_map<NormalMap, kArraySize, EqualKey, MapInit>> {
-  using param_type = base::small_map<NormalMap, kArraySize, EqualKey, MapInit>;
-  using K = typename param_type::key_type;
-  using V = typename param_type::data_type;
-  static void Write(base::Pickle* m, const param_type& p) {
-    WriteParam(m, base::checked_cast<int>(p.size()));
-    typename param_type::const_iterator iter;
-    for (iter = p.begin(); iter != p.end(); ++iter) {
-      WriteParam(m, iter->first);
-      WriteParam(m, iter->second);
-    }
-  }
-  static bool Read(const base::Pickle* m,
-                   base::PickleIterator* iter,
-                   param_type* r) {
-    int size;
-    if (!iter->ReadLength(&size))
-      return false;
-    for (int i = 0; i < size; ++i) {
-      K key;
-      if (!ReadParam(m, iter, &key))
-        return false;
-      V& value = (*r)[key];
-      if (!ReadParam(m, iter, &value))
-        return false;
-    }
-    return true;
-  }
-  static void Log(const param_type& p, std::string* l) {
-    l->append("<base::small_map>");
   }
 };
 
@@ -1138,7 +1073,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<Message> {
 
 // Windows ParamTraits ---------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 template <>
 struct COMPONENT_EXPORT(IPC) ParamTraits<HANDLE> {
   typedef HANDLE param_type;
@@ -1158,7 +1093,7 @@ struct COMPONENT_EXPORT(IPC) ParamTraits<MSG> {
                    param_type* r);
   static void Log(const param_type& p, std::string* l);
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 //-----------------------------------------------------------------------------
 // Generic message subclasses

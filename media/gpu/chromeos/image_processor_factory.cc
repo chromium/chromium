@@ -12,6 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "media/base/video_types.h"
 #include "media/gpu/buildflags.h"
+#include "media/gpu/chromeos/image_processor.h"
 #include "media/gpu/chromeos/libyuv_image_processor_backend.h"
 #include "media/gpu/macros.h"
 
@@ -30,9 +31,11 @@ namespace media {
 
 namespace {
 
+using PixelLayoutCandidate = ImageProcessor::PixelLayoutCandidate;
+
 #if BUILDFLAG(USE_VAAPI)
 std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
-    const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
+    const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
@@ -40,10 +43,10 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
     ImageProcessor::ErrorCB error_cb) {
   std::vector<Fourcc> vpp_supported_formats =
       VaapiWrapper::GetVppSupportedFormats();
-  absl::optional<std::pair<Fourcc, gfx::Size>> chosen_input_candidate;
+  absl::optional<PixelLayoutCandidate> chosen_input_candidate;
   for (const auto& input_candidate : input_candidates) {
-    if (base::Contains(vpp_supported_formats, input_candidate.first) &&
-        VaapiWrapper::IsVppResolutionAllowed(input_candidate.second)) {
+    if (base::Contains(vpp_supported_formats, input_candidate.fourcc) &&
+        VaapiWrapper::IsVppResolutionAllowed(input_candidate.size)) {
       chosen_input_candidate = input_candidate;
       break;
     }
@@ -56,32 +59,31 @@ std::unique_ptr<ImageProcessor> CreateVaapiImageProcessorWithInputCandidates(
   // |input_candidates| either {NV12} or {P010} depending on the bitdepth. So
   // choosing the first (and only) element will keep the bitdepth of the frame
   // which is needed to display HDR content.
-  auto chosen_output_format =
-      out_format_picker.Run(/*candidates=*/vpp_supported_formats,
-                            /*preferred_fourcc=*/input_candidates[0].first);
+  auto chosen_output_format = out_format_picker.Run(
+      /*candidates=*/vpp_supported_formats, input_candidates[0].fourcc);
   if (!chosen_output_format)
     return nullptr;
 
   // Note: the VaapiImageProcessorBackend doesn't use the ColorPlaneLayouts in
   // the PortConfigs, so we just pass an empty list of plane layouts.
   ImageProcessor::PortConfig input_config(
-      /*fourcc=*/chosen_input_candidate->first,
-      /*size=*/chosen_input_candidate->second, /*planes=*/{},
-      input_visible_rect, {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
+      chosen_input_candidate->fourcc, chosen_input_candidate->size,
+      /*planes=*/{}, input_visible_rect,
+      {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
   ImageProcessor::PortConfig output_config(
       /*fourcc=*/*chosen_output_format, /*size=*/output_size, /*planes=*/{},
       /*visible_rect=*/gfx::Rect(output_size),
       {VideoFrame::STORAGE_GPU_MEMORY_BUFFER});
   return ImageProcessor::Create(
       base::BindRepeating(&VaapiImageProcessorBackend::Create), input_config,
-      output_config, {ImageProcessor::OutputMode::IMPORT}, VIDEO_ROTATION_0,
+      output_config, ImageProcessor::OutputMode::IMPORT, VIDEO_ROTATION_0,
       std::move(error_cb), std::move(client_task_runner));
 }
 #endif  // BUILDFLAG(USE_VAAPI)
 
-#if BUILDFLAG(USE_V4L2_CODEC)
+#if BUILDFLAG(USE_V4L2_CODEC) && !BUILDFLAG(USE_VAAPI)
 std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
-    const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
+    const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Size& visible_size,
     size_t num_buffers,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
@@ -102,20 +104,36 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 
   const auto output_fourcc = out_format_picker.Run(
       /*candidates=*/supported_fourccs, /*preferred_fourcc=*/absl::nullopt);
-  if (!output_fourcc)
+  if (!output_fourcc) {
+#if DCHECK_IS_ON()
+    std::string output_fourccs_string;
+    for (const auto fourcc : supported_fourccs) {
+      output_fourccs_string += fourcc.ToString();
+      output_fourccs_string += " ";
+    }
+    DVLOGF(1) << "None of " << output_fourccs_string << "formats is supported.";
+#endif
     return nullptr;
+  }
 
   const auto supported_input_pixfmts =
       V4L2ImageProcessorBackend::GetSupportedInputFormats();
   for (const auto& input_candidate : input_candidates) {
-    const Fourcc input_fourcc = input_candidate.first;
-    const gfx::Size& input_size = input_candidate.second;
+    const Fourcc input_fourcc = input_candidate.fourcc;
+    const gfx::Size& input_size = input_candidate.size;
 
     if (!base::Contains(supported_input_pixfmts, input_fourcc.ToV4L2PixFmt()))
       continue;
 
-    // Try to get an image size as close as possible to the final size.
-    gfx::Size output_size = visible_size;
+    // Some Image Processors (e.g. MTK8183) are not able to produce the ideal
+    // output resolution (which would be the |visible_size|) -- and the call to
+    // TryOutputFormat() doesn't return a "corrected" |output_size| in those
+    // cases (see b/213396803). To avoid those situations, we set here the
+    // |output_size| to be the same as the |input_size|, and will let the
+    // |visible_size| carry the information of exactly what part of the output
+    // video frame contains meaningful pixels.
+    // TODO(b/191450183): Use a gfx::Rect instead of |visible_size|.
+    gfx::Size output_size = input_size;
     size_t num_planes = 0;
     if (!V4L2ImageProcessorBackend::TryOutputFormat(
             input_fourcc.ToV4L2PixFmt(), output_fourcc->ToV4L2PixFmt(),
@@ -132,7 +150,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
   }
   return nullptr;
 }
-#endif  // BUILDFLAG(USE_V4L2_CODEC)
+#endif  // BUILDFLAG(USE_V4L2_CODEC) && !BUILDFLAG(USE_VAAPI)
 
 }  // namespace
 
@@ -140,7 +158,7 @@ std::unique_ptr<ImageProcessor> CreateV4L2ImageProcessorWithInputCandidates(
 std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
     const ImageProcessor::PortConfig& input_config,
     const ImageProcessor::PortConfig& output_config,
-    const std::vector<ImageProcessor::OutputMode>& preferred_output_modes,
+    ImageProcessor::OutputMode output_mode,
     size_t num_buffers,
     VideoRotation relative_rotation,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner,
@@ -158,10 +176,9 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
 
   std::unique_ptr<ImageProcessor> image_processor;
   for (auto& create_func : create_funcs) {
-    image_processor =
-        ImageProcessor::Create(std::move(create_func), input_config,
-                               output_config, preferred_output_modes,
-                               relative_rotation, error_cb, client_task_runner);
+    image_processor = ImageProcessor::Create(
+        std::move(create_func), input_config, output_config, output_mode,
+        relative_rotation, error_cb, client_task_runner);
     if (image_processor)
       return image_processor;
   }
@@ -171,7 +188,7 @@ std::unique_ptr<ImageProcessor> ImageProcessorFactory::Create(
 // static
 std::unique_ptr<ImageProcessor>
 ImageProcessorFactory::CreateWithInputCandidates(
-    const std::vector<std::pair<Fourcc, gfx::Size>>& input_candidates,
+    const std::vector<PixelLayoutCandidate>& input_candidates,
     const gfx::Rect& input_visible_rect,
     const gfx::Size& output_size,
     size_t num_buffers,

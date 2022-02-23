@@ -25,6 +25,10 @@
 #include "ui/views/accessibility/ax_aura_obj_cache.h"
 #include "ui/views/widget/widget.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "ui/views/widget/desktop_aura/desktop_window_tree_host_platform.h"
+#endif
+
 namespace views {
 namespace {
 
@@ -82,21 +86,34 @@ std::string GetWindowName(aura::Window* window) {
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
 std::string GetPlatformWindowId(aura::Window* window) {
-  // This is a top level root window.
-  if (window->IsRootWindow() && !window->parent()) {
-    // On desktop aura there is one WindowTreeHost per top-level window.
-    aura::WindowTreeHost* window_tree_host = window->GetHost();
-    if (window_tree_host) {
-      // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
-      // aura::WindowTreeHostPlatform.
-      aura::WindowTreeHostPlatform* window_tree_host_platform =
-          static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
+  // Ignore non-top level windows.
+  if (!window->IsRootWindow() || window->parent())
+    return std::string();
 
-      return window_tree_host_platform->platform_window()->GetWindowUniqueId();
-    }
+  // On desktop aura there is one WindowTreeHost per top-level window.
+  aura::WindowTreeHost* window_tree_host = window->GetHost();
+  if (!window_tree_host)
+    return std::string();
+
+  // Lacros is based on Ozone/Wayland, which uses PlatformWindow and
+  // aura::WindowTreeHostPlatform.
+  aura::WindowTreeHostPlatform* window_tree_host_platform =
+      static_cast<aura::WindowTreeHostPlatform*>(window_tree_host);
+
+  // Prefer the DesktopWindowTreeHostPlatform if it exists.
+  DesktopWindowTreeHostPlatform* desktop_window_tree_host_platform =
+      DesktopWindowTreeHostPlatform::GetHostForWidget(
+          window_tree_host->GetAcceleratedWidget());
+  if (!desktop_window_tree_host_platform)
+    return window_tree_host_platform->platform_window()->GetWindowUniqueId();
+
+  while (desktop_window_tree_host_platform->window_parent()) {
+    desktop_window_tree_host_platform =
+        desktop_window_tree_host_platform->window_parent();
   }
 
-  return std::string();
+  return desktop_window_tree_host_platform->platform_window()
+      ->GetWindowUniqueId();
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 

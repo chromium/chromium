@@ -30,27 +30,27 @@ class {{union.name}}DataView {
 
 {%-   if kind|is_object_kind %}
   inline void Get{{name|under_to_camel}}DataView(
-      {{kind|cpp_data_view_type}}* output);
+      {{kind|cpp_data_view_type}}* output) const;
 
   template <typename UserType>
-  WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) {
+  [[nodiscard]] bool Read{{name|under_to_camel}}(UserType* output) const {
     {{struct_macros.assert_nullable_output_type_if_necessary(kind, name)}}
-    DCHECK(is_{{name}}());
+    CHECK(is_{{name}}());
     return mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
         data_->data.f_{{name}}.Get(), output, message_);
   }
 
 {%-   elif kind|is_enum_kind %}
   template <typename UserType>
-  WARN_UNUSED_RESULT bool Read{{name|under_to_camel}}(UserType* output) const {
-    DCHECK(is_{{name}}());
+  [[nodiscard]] bool Read{{name|under_to_camel}}(UserType* output) const {
+    CHECK(is_{{name}}());
     return mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
         data_->data.f_{{name}}, output);
   }
 
 {%-     if not kind|is_typemapped_kind %}
   {{kind|cpp_data_view_type}} {{name}}() const {
-    DCHECK(is_{{name}}());
+    CHECK(is_{{name}}());
     // TODO(dcheng): This seems incorrect, as it bypasses enum traits.
     return ::mojo::internal::ToKnownEnumValueHelper(
         static_cast<{{kind|unmapped_type_for_serializer}}>(data_->data.f_{{name}}));
@@ -59,30 +59,30 @@ class {{union.name}}DataView {
 
 {%-   elif kind|is_any_handle_kind %}
   {{kind|cpp_data_view_type}} Take{{name|under_to_camel}}() {
-    DCHECK(is_{{name}}());
+    CHECK(is_{{name}}());
     {{kind|cpp_data_view_type}} result;
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
             &data_->data.f_{{name}}, &result, message_);
-    DCHECK(ret);
+    CHECK(ret);
     return result;
   }
 
 {%-   elif kind|is_any_interface_kind %}
   template <typename UserType>
   UserType Take{{name|under_to_camel}}() {
-    DCHECK(is_{{name}}());
+    CHECK(is_{{name}}());
     UserType result;
     bool ret =
         mojo::internal::Deserialize<{{kind|unmapped_type_for_serializer}}>(
             &data_->data.f_{{name}}, &result, message_);
-    DCHECK(ret);
+    CHECK(ret);
     return result;
   }
 
 {%-   else %}
   {{kind|cpp_data_view_type}} {{name}}() const {
-    DCHECK(is_{{name}}());
+    CHECK(is_{{name}}());
     return data_->data.f_{{name}};
   }
 

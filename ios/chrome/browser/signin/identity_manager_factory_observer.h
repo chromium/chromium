@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_OBSERVER_H_
 #define IOS_CHROME_BROWSER_SIGNIN_IDENTITY_MANAGER_FACTORY_OBSERVER_H_
 
-#include "base/macros.h"
 #include "base/observer_list_types.h"
 
 namespace signin {

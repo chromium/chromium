@@ -78,10 +78,10 @@ static inline int NonASCIISequenceLength(uint8_t first_byte) {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
-      0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
-      2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
+      0, 0, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2, 2,
       2, 2, 2, 2, 2, 2, 2, 2, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3,
       4, 4, 4, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
   return kLengths[first_byte];
@@ -91,9 +91,8 @@ static inline int DecodeNonASCIISequence(const uint8_t* sequence,
                                          unsigned length) {
   DCHECK(!IsASCII(sequence[0]));
   if (length == 2) {
+    DCHECK_GE(sequence[0], 0xC2);
     DCHECK_LE(sequence[0], 0xDF);
-    if (sequence[0] < 0xC2)
-      return kNonCharacter1;
     if (sequence[1] < 0x80 || sequence[1] > 0xBF)
       return kNonCharacter1;
     return ((sequence[0] << 6) + sequence[1]) - 0x00003080;
@@ -197,27 +196,36 @@ bool TextCodecUTF8::HandlePartialSequence<LChar>(LChar*& destination,
     if (!count)
       return true;
 
-    if (count > partial_sequence_size_) {
-      if (count - partial_sequence_size_ > end - source) {
-        if (!flush) {
-          // The new data is not enough to complete the sequence, so
-          // add it to the existing partial sequence.
-          memcpy(partial_sequence_ + partial_sequence_size_, source,
-                 end - source);
-          partial_sequence_size_ += end - source;
-          return false;
-        }
-        // An incomplete partial sequence at the end is an error, but it will
-        // create a 16 bit string due to the replacementCharacter. Let the 16
-        // bit path handle the error.
-        return true;
-      }
+    // Copy from `source` until we have `count` bytes.
+    if (count > partial_sequence_size_ && end > source) {
+      size_t additional_bytes =
+          std::min<size_t>(count - partial_sequence_size_, end - source);
       memcpy(partial_sequence_ + partial_sequence_size_, source,
-             count - partial_sequence_size_);
-      source += count - partial_sequence_size_;
-      partial_sequence_size_ = count;
+             additional_bytes);
+      source += additional_bytes;
+      partial_sequence_size_ += additional_bytes;
     }
+
+    // If we still don't have `count` bytes, fill the rest with zeros (any other
+    // lead byte would do), so we can run `DecodeNonASCIISequence` to tell if
+    // the chunk that we have is valid. These bytes are not part of the partial
+    // sequence, so don't increment `partial_sequence_size`.
+    if (count > partial_sequence_size_) {
+      memset(partial_sequence_ + partial_sequence_size_, 0,
+             count - partial_sequence_size_);
+    }
+
     int character = DecodeNonASCIISequence(partial_sequence_, count);
+    if (count > partial_sequence_size_) {
+      DCHECK(IsNonCharacter(character));
+      DCHECK_LE(-character, partial_sequence_size_);
+      // If we're not at the end, and the partial sequence that we have is
+      // incomplete but otherwise valid, a non-character is not an error.
+      if (!flush && -character == partial_sequence_size_) {
+        return false;
+      }
+    }
+
     if (character & ~0xff)
       return true;
 
@@ -249,28 +257,37 @@ bool TextCodecUTF8::HandlePartialSequence<UChar>(UChar*& destination,
         return false;
       continue;
     }
-    if (count > partial_sequence_size_) {
-      if (count - partial_sequence_size_ > end - source) {
-        if (!flush) {
-          // The new data is not enough to complete the sequence, so
-          // add it to the existing partial sequence.
-          memcpy(partial_sequence_ + partial_sequence_size_, source,
-                 end - source);
-          partial_sequence_size_ += end - source;
-          return false;
-        }
-        // An incomplete partial sequence at the end is an error.
-        HandleError(kNonCharacter1, destination, stop_on_error, saw_error);
-        if (stop_on_error)
-          return false;
-        continue;
-      }
+
+    // Copy from `source` until we have `count` bytes.
+    if (count > partial_sequence_size_ && end > source) {
+      size_t additional_bytes =
+          std::min<size_t>(count - partial_sequence_size_, end - source);
       memcpy(partial_sequence_ + partial_sequence_size_, source,
-             count - partial_sequence_size_);
-      source += count - partial_sequence_size_;
-      partial_sequence_size_ = count;
+             additional_bytes);
+      source += additional_bytes;
+      partial_sequence_size_ += additional_bytes;
     }
+
+    // If we still don't have `count` bytes, fill the rest with zeros (any other
+    // lead byte would do), so we can run `DecodeNonASCIISequence` to tell if
+    // the chunk that we have is valid. These bytes are not part of the partial
+    // sequence, so don't increment `partial_sequence_size`.
+    if (count > partial_sequence_size_) {
+      memset(partial_sequence_ + partial_sequence_size_, 0,
+             count - partial_sequence_size_);
+    }
+
     int character = DecodeNonASCIISequence(partial_sequence_, count);
+    if (count > partial_sequence_size_) {
+      DCHECK(IsNonCharacter(character));
+      DCHECK_LE(-character, partial_sequence_size_);
+      // If we're not at the end, and the partial sequence that we have is
+      // incomplete but otherwise valid, a non-character is not an error.
+      if (!flush && -character == partial_sequence_size_) {
+        return false;
+      }
+    }
+
     if (IsNonCharacter(character)) {
       HandleError(character, destination, stop_on_error, saw_error);
       if (stop_on_error)
@@ -371,7 +388,7 @@ String TextCodecUTF8::Decode(const char* bytes,
       source += count;
       *destination++ = static_cast<LChar>(character);
     }
-  } while (do_flush && partial_sequence_size_);
+  } while (partial_sequence_size_);
 
   buffer.Shrink(static_cast<wtf_size_t>(destination - buffer.Characters()));
 
@@ -457,7 +474,7 @@ upConvertTo16Bit:
       source += count;
       destination16 = AppendCharacter(destination16, character);
     }
-  } while (do_flush && partial_sequence_size_);
+  } while (partial_sequence_size_);
 
   buffer16.Shrink(
       static_cast<wtf_size_t>(destination16 - buffer16.Characters()));

@@ -12,7 +12,7 @@ namespace {
 
 // On Fuchsia NativePixmap depends on Vulkan, which is not initialized in tests.
 // See crbug.com/957700
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 GTEST_ALLOW_UNINSTANTIATED_PARAMETERIZED_TEST(GpuMemoryBufferFactoryTest);
 #else
 INSTANTIATE_TYPED_TEST_SUITE_P(GpuMemoryBufferFactoryNativePixmap,

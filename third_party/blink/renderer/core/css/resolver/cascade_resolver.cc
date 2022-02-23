@@ -43,7 +43,7 @@ bool CascadeResolver::InCycle() const {
 wtf_size_t CascadeResolver::Find(const CSSProperty& property) const {
   wtf_size_t index = 0;
   for (const CSSProperty* p : stack_) {
-    if (p->GetCSSPropertyName() == property.GetCSSPropertyName())
+    if (p->HasEqualCSSPropertyName(property))
       return index;
     ++index;
   }

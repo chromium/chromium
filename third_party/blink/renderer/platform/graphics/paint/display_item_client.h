@@ -6,13 +6,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_GRAPHICS_PAINT_DISPLAY_ITEM_CLIENT_H_
 
 #include "base/dcheck_is_on.h"
-#include "third_party/blink/renderer/platform/geometry/int_rect.h"
 #include "third_party/blink/renderer/platform/graphics/dom_node_id.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/paint_invalidation_reason.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
+#include "ui/gfx/geometry/rect.h"
 
 namespace blink {
 
@@ -96,6 +96,7 @@ class PLATFORM_EXPORT DisplayItemClient : public GarbageCollectedMixin {
   friend class ObjectPaintInvalidatorTest;
   friend class PaintChunker;
   friend class PaintController;
+  friend class PaintControllerCycleScope;
 
   void MarkForValidation() const { marked_for_validation_ = 1; }
   bool IsMarkedForValidation() const { return marked_for_validation_; }

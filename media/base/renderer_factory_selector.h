@@ -29,7 +29,7 @@ enum class RendererType {
   kMediaFoundation = 6,  // MediaFoundationRendererClientFactory
   // kFuchsia = 7,       // Deprecated
   kRemoting = 8,       // RemotingRendererFactory for remoting::Receiver
-  kCastStreaming = 9,  // CastStreamingRendererFactory
+  kCastStreaming = 9,  // PlaybackCommandForwardingRendererFactory
   kContentEmbedderDefined = 10,  // Defined by the content embedder
   kMaxValue = kContentEmbedderDefined,
 };
@@ -91,7 +91,7 @@ class MEDIA_EXPORT RendererFactorySelector {
   // NOTE: SetBaseRendererType() must be called before calling this method.
   RendererFactory* GetCurrentFactory();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Starts a request to receive a RemotePlayStateChangeCB, to be fulfilled
   // later by passing a request via SetRemotePlayStateChangeCB().
   // NOTE: There should be no pending request (this new one would overwrite it).

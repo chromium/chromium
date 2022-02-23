@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/utf_string_conversions.h"
@@ -50,7 +51,7 @@
 #include "ui/views/controls/textarea/textarea.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
-#include "ui/views/layout/grid_layout.h"
+#include "ui/views/layout/table_layout.h"
 #include "ui/views/widget/widget.h"
 
 using content::OpenURLParams;
@@ -175,7 +176,7 @@ class CustomScrollableView : public views::View {
  private:
   // This view is an child of the dialog view (via |scroll_view_|) and thus will
   // not outlive it.
-  ExtensionInstallDialogView* parent_;
+  raw_ptr<ExtensionInstallDialogView> parent_;
 };
 
 BEGIN_METADATA(CustomScrollableView, views::View)
@@ -250,7 +251,7 @@ class ExtensionInstallDialogView::ExtensionJustificationView
   }
 
  private:
-  views::Textfield* justification_field_;
+  raw_ptr<views::Textfield> justification_field_;
 };
 
 ExtensionInstallDialogView::ExtensionInstallDialogView(
@@ -371,24 +372,23 @@ void ExtensionInstallDialogView::AddedToWidget() {
   auto title_container = std::make_unique<views::View>();
 
   ChromeLayoutProvider* provider = ChromeLayoutProvider::Get();
-  views::GridLayout* layout =
-      title_container->SetLayoutManager(std::make_unique<views::GridLayout>());
-  constexpr int kTitleColumnSetId = 0;
-  views::ColumnSet* column_set = layout->AddColumnSet(kTitleColumnSetId);
+  views::TableLayout* layout =
+      title_container->SetLayoutManager(std::make_unique<views::TableLayout>());
   constexpr int icon_size = extension_misc::EXTENSION_ICON_SMALL;
-  column_set->AddColumn(views::GridLayout::CENTER, views::GridLayout::LEADING,
-                        views::GridLayout::kFixedSize,
-                        views::GridLayout::ColumnSize::kFixed, icon_size, 0);
+  layout->AddColumn(views::LayoutAlignment::kCenter,
+                    views::LayoutAlignment::kStart,
+                    views::TableLayout::kFixedSize,
+                    views::TableLayout::ColumnSize::kFixed, icon_size, 0);
 
   // Equalize padding on the left and the right of the icon.
-  column_set->AddPaddingColumn(
-      views::GridLayout::kFixedSize,
+  layout->AddPaddingColumn(
+      views::TableLayout::kFixedSize,
       provider->GetInsetsMetric(views::INSETS_DIALOG).left());
   // Set a resize weight so that the title label will be expanded to the
   // available width.
-  column_set->AddColumn(views::GridLayout::FILL, views::GridLayout::LEADING,
-                        1.0, views::GridLayout::ColumnSize::kUsePreferred, 0,
-                        0);
+  layout->AddColumn(views::LayoutAlignment::kStretch,
+                    views::LayoutAlignment::kStart, 1.0f,
+                    views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
 
   // Scale down to icon size, but allow smaller icons (don't scale up).
   const gfx::ImageSkia* image = prompt_->icon().ToImageSkia();
@@ -398,13 +398,13 @@ void ExtensionInstallDialogView::AddedToWidget() {
   icon->SetImageSize(size);
   icon->SetImage(*image);
 
-  layout->StartRow(views::GridLayout::kFixedSize, kTitleColumnSetId);
-  layout->AddView(std::move(icon));
+  layout->AddRows(1, views::GridLayout::kFixedSize);
+  title_container->AddChildView(std::move(icon));
 
   std::unique_ptr<views::Label> title_label =
       views::BubbleFrameView::CreateDefaultTitleLabel(title_);
   // Setting the title's preferred size to 0 ensures it won't influence the
-  // overall size of the dialog. It will be expanded by GridLayout.
+  // overall size of the dialog. It will be expanded by TableLayout.
   title_label->SetPreferredSize(gfx::Size(0, 0));
   if (prompt_->has_webstore_data()) {
     auto webstore_data_container = std::make_unique<views::View>();
@@ -438,9 +438,9 @@ void ExtensionInstallDialogView::AddedToWidget() {
     user_count->SetHorizontalAlignment(gfx::ALIGN_LEFT);
     webstore_data_container->AddChildView(std::move(user_count));
 
-    layout->AddView(std::move(webstore_data_container));
+    title_container->AddChildView(std::move(webstore_data_container));
   } else {
-    layout->AddView(std::move(title_label));
+    title_container->AddChildView(std::move(title_label));
   }
 
   GetBubbleFrameView()->SetTitleView(std::move(title_container));
@@ -644,7 +644,7 @@ void ExtensionInstallDialogView::CreateContents() {
   scroll_view_->ClipHeightTo(
       0, provider->GetDistanceMetric(
              views::DISTANCE_DIALOG_SCROLLABLE_AREA_MAX_HEIGHT));
-  AddChildView(scroll_view_);
+  AddChildView(scroll_view_.get());
 }
 
 void ExtensionInstallDialogView::EnableInstallButton() {

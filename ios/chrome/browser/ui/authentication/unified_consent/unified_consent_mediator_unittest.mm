@@ -15,6 +15,7 @@
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
 #import "ios/chrome/browser/ui/authentication/unified_consent/unified_consent_view_controller.h"
 #import "ios/chrome/browser/unified_consent/unified_consent_service_factory.h"
+#import "ios/chrome/test/ios_chrome_scoped_testing_local_state.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity.h"
 #import "ios/public/provider/chrome/browser/signin/fake_chrome_identity_service.h"
 #import "ios/web/public/test/web_task_environment.h"
@@ -92,6 +93,7 @@ class UnifiedConsentMediatorTest : public PlatformTest {
  protected:
   // Needed for test browser state created by TestChromeBrowserState().
   web::WebTaskEnvironment task_environment_;
+  IOSChromeScopedTestingLocalState scoped_testing_local_state_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
 
   FakeChromeIdentity* identity1_ = nullptr;
@@ -146,7 +148,7 @@ TEST_F(UnifiedConsentMediatorTest, SelectDefaultIdentityForSignedInUser) {
   AddIdentities();
   CreateMediator();
 
-  GetAuthenticationService()->SignIn(identity2_);
+  GetAuthenticationService()->SignIn(identity2_, nil);
   [mediator_ start];
 
   ASSERT_EQ(identity2_, mediator_.selectedIdentity);
@@ -159,7 +161,7 @@ TEST_F(UnifiedConsentMediatorTest,
   AddIdentities();
   CreateMediator();
 
-  GetAuthenticationService()->SignIn(identity3_);
+  GetAuthenticationService()->SignIn(identity3_, nil);
   [mediator_ start];
   ASSERT_EQ(identity3_, mediator_.selectedIdentity);
   GetAuthenticationService()->SignOut(signin_metrics::SIGNOUT_TEST, false, nil);
@@ -186,7 +188,7 @@ TEST_F(UnifiedConsentMediatorTest, DontOverrideIdentityForSignedInUser) {
   AddIdentities();
   CreateMediator();
 
-  GetAuthenticationService()->SignIn(identity1_);
+  GetAuthenticationService()->SignIn(identity1_, nil);
   mediator_.selectedIdentity = identity2_;
   [mediator_ start];
 

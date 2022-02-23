@@ -7,14 +7,11 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #import "base/ios/block_types.h"
 #include "base/task/task_observer.h"
 #include "ios/web/public/test/web_test.h"
 #include "ui/base/page_transition_types.h"
 #include "url/gurl.h"
-
-@class WKContentWorld;
 
 namespace web {
 
@@ -43,12 +40,22 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // Adds a pending item to the NavigationManager associated with the WebState.
   void AddPendingItem(const GURL& url, ui::PageTransition transition);
 
-  // Loads the specified HTML content with URL into the WebState.
+  // Loads the specified HTML content with URL into the WebState. Equivalent
+  // to calling `LoadHtmlInWebState(html, url, web_state())`.
   void LoadHtml(NSString* html, const GURL& url);
   // Loads the specified HTML content into the WebState, using test url name.
+  // Equivalent to calling `LoadHtmlInWebState(html, web_state())`.
   void LoadHtml(NSString* html);
   // Loads the specified HTML content into the WebState, using test url name.
-  bool LoadHtml(const std::string& html) WARN_UNUSED_RESULT;
+  // Equivalent to calling `LoadHtmlInWebState(html, web_state())`.
+  [[nodiscard]] bool LoadHtml(const std::string& html);
+  // Loads the specified HTML content with URL into |web_state|.
+  void LoadHtmlInWebState(NSString* html, const GURL& url, WebState* web_state);
+  // Loads the specified HTML content into |web_state|, using test url name.
+  void LoadHtmlInWebState(NSString* html, WebState* web_state);
+  // Loads the specified HTML content into |web_state|, using test url name.
+  [[nodiscard]] bool LoadHtmlInWebState(const std::string& html,
+                                        WebState* web_state);
   // Loads the specified HTML content with URL into the WebState. None of the
   // subresources will be fetched.
   // This function is only supported on iOS11+. On iOS10, this function simply
@@ -78,11 +85,6 @@ class WebTestWithWebState : public WebTest, public base::TaskObserver {
   // |feature| and returns the result as id.
   id ExecuteJavaScriptForFeature(NSString* script, JavaScriptFeature* feature)
       API_AVAILABLE(ios(14.0));
-#if defined(__IPHONE_14_0) && __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_14_0
-  // Synchronously executes |script| in |content_world| and returns result.
-  id ExecuteJavaScript(WKContentWorld* content_world, NSString* script)
-      API_AVAILABLE(ios(14.0));
-#endif  // defined(__IPHONE14_0)
 
   // Returns the base URL of the loaded page.
   std::string BaseUrl() const;

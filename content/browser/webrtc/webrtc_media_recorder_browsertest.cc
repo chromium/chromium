@@ -38,7 +38,7 @@ namespace content {
 
 // All tests in this fixture experience flaky DCHECK failures on macOS; see
 // https://crbug.com/810321.
-#if defined(OS_MAC) && DCHECK_IS_ON()
+#if BUILDFLAG(IS_MAC) && DCHECK_IS_ON()
 #define MAYBE_WebRtcMediaRecorderTest DISABLED_WebRtcMediaRecorderTest
 #else
 #define MAYBE_WebRtcMediaRecorderTest WebRtcMediaRecorderTest
@@ -83,7 +83,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, StartAndStop) {
   MakeTypicalCall("testStartStopAndRecorderState();", kMediaRecorderHtmlFile);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222675
 #define MAYBE_StartAndDataAvailable DISABLED_StartAndDataAvailable
 #else
@@ -99,7 +99,7 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest,
 
 // TODO(crbug.com/805341): It seems to be flaky on Android. More details in
 // the bug.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_StartWithTimeSlice DISABLED_StartWithTimeSlice
 #else
 #define MAYBE_StartWithTimeSlice StartWithTimeSlice
@@ -121,7 +121,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
   MakeTypicalCall("testIllegalResumeThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222675
 #define MAYBE_ResumeAndDataAvailable DISABLED_ResumeAndDataAvailable
 #else
@@ -140,7 +140,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest, Pause) {
 }
 
 // TODO(crbug.com/571389): Flaky on TSAN bots.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_PauseStop DISABLED_PauseStop
 #else
 #define MAYBE_PauseStop PauseStop
@@ -156,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
 }
 
 // TODO (crbug.com/736268): Flaky on Linux TSan bots.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_IllegalPauseThrowsDOMError DISABLED_IllegalPauseThrowsDOMError
 #else
 #define MAYBE_IllegalPauseThrowsDOMError IllegalPauseThrowsDOMError
@@ -166,7 +166,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
   MakeTypicalCall("testIllegalPauseThrowsDOMError();", kMediaRecorderHtmlFile);
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1222675
 #define MAYBE_TwoChannelAudioRecording DISABLED_TwoChannelAudioRecording
 #else
@@ -202,7 +202,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_IllegalRequestDataThrowsDOMError \
   DISABLED_IllegalRequestDataThrowsDOMError
 #else
@@ -214,17 +214,18 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcMediaRecorderTest,
                   kMediaRecorderHtmlFile);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // These tests are flakily timing out on emulators (https://crbug.com/716691)
 // and/or under Android ASAN (https://crbug.com/693565);
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif (defined(OS_LINUX) || defined(OS_CHROMEOS)) && defined(THREAD_SANITIZER)
+#elif (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && \
+    defined(THREAD_SANITIZER)
 // Flaky on Linux TSan, https://crbug.com/694373.
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif defined(OS_WIN) && !defined(NDEBUG)
+#elif BUILDFLAG(IS_WIN) && !defined(NDEBUG)
 // Fails on Win7 debug, https://crbug.com/703844.
 #define MAYBE_PeerConnection DISABLED_PeerConnection
-#elif defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#elif BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // Fails on Mac/Arm, https://crbug.com/1222675
 #define MAYBE_PeerConnection DISABLED_PeerConnection
 #else
@@ -239,10 +240,10 @@ IN_PROC_BROWSER_TEST_P(MAYBE_WebRtcMediaRecorderTest, MAYBE_PeerConnection) {
 }
 
 // Flaky on Linux Tsan (crbug.com/736268)
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   DISABLED_AddingTrackToMediaStreamFiresErrorEvent
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 // Flaky on Android (crbug.com/1174634).
 #define MAYBE_AddingTrackToMediaStreamFiresErrorEvent \
   DISABLED_AddingTrackToMediaStreamFiresErrorEvent

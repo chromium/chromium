@@ -565,7 +565,8 @@ void SpeechRecognitionEngineTest::ProvideMockResponseStartDownstreamIfNeeded() {
   std::string headers("HTTP/1.1 200 OK\n\n");
   head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
       net::HttpUtil::AssembleRawHeaders(headers));
-  downstream_request->client->OnReceiveResponse(std::move(head));
+  downstream_request->client->OnReceiveResponse(
+      std::move(head), mojo::ScopedDataPipeConsumerHandle());
 
   mojo::ScopedDataPipeProducerHandle producer_handle;
   mojo::ScopedDataPipeConsumerHandle consumer_handle;
@@ -637,7 +638,8 @@ void SpeechRecognitionEngineTest::CloseMockDownstream(
     std::string headers("HTTP/1.1 500 Server Sad\n\n");
     head->headers = base::MakeRefCounted<net::HttpResponseHeaders>(
         net::HttpUtil::AssembleRawHeaders(headers));
-    downstream_request->client->OnReceiveResponse(std::move(head));
+    downstream_request->client->OnReceiveResponse(
+        std::move(head), mojo::ScopedDataPipeConsumerHandle());
     // Wait for the response to be handled.
     base::RunLoop().RunUntilIdle();
     return;
@@ -696,9 +698,9 @@ bool SpeechRecognitionEngineTest::ResultsAreEqual(
 void SpeechRecognitionEngineTest::ExpectFramedChunk(
     const std::string& chunk, uint32_t type) {
   uint32_t value;
-  base::ReadBigEndian(&chunk[0], &value);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&chunk[0]), &value);
   EXPECT_EQ(chunk.size() - 8, value);
-  base::ReadBigEndian(&chunk[4], &value);
+  base::ReadBigEndian(reinterpret_cast<const uint8_t*>(&chunk[4]), &value);
   EXPECT_EQ(type, value);
 }
 

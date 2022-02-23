@@ -74,6 +74,7 @@ class ASH_EXPORT StatusAreaWidgetDelegate : public views::AccessiblePaneView,
   void Shutdown();
 
   // views::AccessiblePaneView:
+  void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
   View* GetDefaultFocusableChild() override;
   const char* GetClassName() const override;
   views::Widget* GetWidget() override;

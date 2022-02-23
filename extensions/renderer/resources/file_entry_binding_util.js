@@ -7,7 +7,6 @@ var GetIsolatedFileSystem = fileSystemNatives.GetIsolatedFileSystem;
 var GetModuleSystem = requireNative('v8_context').GetModuleSystem;
 // TODO(sammc): Don't require extension. See http://crbug.com/235689.
 var GetExtensionViews = requireNative('runtime').GetExtensionViews;
-var safeCallbackApply = require('uncaught_exception_handler').safeCallbackApply;
 
 var WINDOW = {};
 try {
@@ -40,7 +39,7 @@ function getFileBindingsForApi(apiName) {
   if (WINDOW == backgroundPage) {
     var bindFileEntryCallback = function(functionName, apiFunctions) {
       apiFunctions.setCustomCallback(functionName,
-          function(name, request, callback, response) {
+          function(callback, response) {
         if (callback) {
           if (!response) {
             callback();
@@ -81,14 +80,9 @@ function getFileBindingsForApi(apiName) {
                 // event of an error, this condition will never be satisfied so
                 // the callback will not be called with any entries.
                 if (entries.length == response.entries.length) {
-                  if (response.multiple) {
-                    safeCallbackApply(apiName + '.' + functionName, request,
-                                      callback, [entries]);
-                  } else {
-                    safeCallbackApply(
-                        apiName + '.' + functionName, request, callback,
-                        [entries[0]]);
-                  }
+                  var extensionResult =
+                      response.multiple ? entries : entries[0];
+                  callback(extensionResult);
                 }
               }
               // TODO(koz): fs.root.getFile() makes a trip to the browser
@@ -139,7 +133,7 @@ function getBindDirectoryEntryCallback() {
   // context as their own. This allows them to be used from other windows
   // (including the background page) after the original window is closed.
   if (WINDOW == backgroundPage) {
-    return function(name, request, callback, response) {
+    return function(callback, response) {
       if (callback) {
         if (!response) {
           callback();

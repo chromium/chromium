@@ -21,7 +21,10 @@ class IdGeneratorCustomBindings : public ObjectBackedNativeHandler {
   void AddRoutes() override;
 
  private:
+  // Generate a unique ID global to the renderer.
   void GetNextId(const v8::FunctionCallbackInfo<v8::Value>& args);
+  // Generate a unique ID scoped to the ScriptContext.
+  void GetNextScopedId(const v8::FunctionCallbackInfo<v8::Value>& args);
 };
 
 }  // namespace extensions

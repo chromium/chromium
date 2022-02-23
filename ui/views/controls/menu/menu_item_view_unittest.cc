@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -213,7 +214,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
     menu_delegate_ = std::make_unique<test::TestMenuDelegate>();
     menu_item_view_ = new TestMenuItemView(menu_delegate_.get());
     menu_runner_ = std::make_unique<MenuRunner>(
-        menu_item_view_, MenuRunner::USE_TOUCHABLE_LAYOUT);
+        menu_item_view_, MenuRunner::USE_ASH_SYS_UI_LAYOUT);
     menu_runner_->RunMenuAt(widget_.get(), nullptr, gfx::Rect(),
                             MenuAnchorPosition::kTopLeft,
                             ui::MENU_SOURCE_KEYBOARD);
@@ -234,7 +235,7 @@ class TouchableMenuItemViewTest : public ViewsTestBase {
   std::unique_ptr<Widget> widget_;
 
   // Owned by MenuRunner.
-  TestMenuItemView* menu_item_view_ = nullptr;
+  raw_ptr<TestMenuItemView> menu_item_view_ = nullptr;
 };
 
 // Test that touchable menu items are sized to fit the menu item titles within
@@ -289,7 +290,7 @@ class MenuItemViewLayoutTest : public ViewsTestBase {
 
  private:
   std::unique_ptr<TestMenuItemView> root_menu_;
-  MenuItemView* test_item_ = nullptr;
+  raw_ptr<MenuItemView> test_item_ = nullptr;
   std::unique_ptr<View> submenu_parent_;
 };
 
@@ -406,7 +407,7 @@ class MenuItemViewPaintUnitTest : public ViewsTestBase {
 
  private:
   // Owned by MenuRunner.
-  MenuItemView* menu_item_view_;
+  raw_ptr<MenuItemView> menu_item_view_;
 
   std::unique_ptr<test::TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> menu_runner_;
@@ -476,6 +477,68 @@ TEST_F(MenuItemViewPaintUnitTest, DontSchedulePaintFromOnPaint) {
   gfx::Canvas canvas(submenu_item->size(), 1.f, false /* opaque */);
   submenu_item->OnPaint(&canvas);
   EXPECT_FALSE(ViewTestApi(submenu_arrow_image_view).needs_paint());
+}
+
+// Tests to ensure that selection based state is not updated if a menu item or
+// an anscestor item has been scheduled for deletion. This guards against
+// removed but not-yet-deleted MenuItemViews using stale model data to update
+// state.
+TEST_F(MenuItemViewPaintUnitTest,
+       SelectionBasedStateNotUpdatedWhenScheduledForDeletion) {
+  MenuItemView* submenu_item =
+      menu_item_view()->AppendSubMenu(1, u"submenu_item");
+  MenuItemView* submenu_child =
+      submenu_item->AppendMenuItem(1, u"submenu_child");
+
+  menu_runner()->RunMenuAt(widget(), nullptr, gfx::Rect(),
+                           MenuAnchorPosition::kTopLeft,
+                           ui::MENU_SOURCE_KEYBOARD);
+
+  // Show both the root and nested menus.
+  SubmenuView* submenu = submenu_item->GetSubmenu();
+  MenuHost::InitParams params;
+  params.parent = widget();
+  params.bounds = submenu_item->bounds();
+  submenu->ShowAt(params);
+
+  // The selected bit and selection based state should both update for all menu
+  // items while they and their anscestors remain part of the menu.
+  EXPECT_FALSE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  submenu_item->SetSelected(true);
+  EXPECT_TRUE(submenu_item->IsSelected());
+  EXPECT_TRUE(submenu_item->last_paint_as_selected_for_testing());
+  submenu_item->SetSelected(false);
+  EXPECT_FALSE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+
+  EXPECT_FALSE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
+  submenu_child->SetSelected(true);
+  EXPECT_TRUE(submenu_child->IsSelected());
+  EXPECT_TRUE(submenu_child->last_paint_as_selected_for_testing());
+  submenu_child->SetSelected(false);
+  EXPECT_FALSE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
+
+  // Remove the child items from the root.
+  menu_item_view()->RemoveAllMenuItems();
+
+  // The selected bit should still update but selection based state, proxied by
+  // `last_paint_as_selected_`, should remain unchanged.
+  submenu_item->SetSelected(true);
+  EXPECT_TRUE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+  submenu_item->SetSelected(false);
+  EXPECT_FALSE(submenu_item->IsSelected());
+  EXPECT_FALSE(submenu_item->last_paint_as_selected_for_testing());
+
+  submenu_child->SetSelected(true);
+  EXPECT_TRUE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
+  submenu_child->SetSelected(false);
+  EXPECT_FALSE(submenu_child->IsSelected());
+  EXPECT_FALSE(submenu_child->last_paint_as_selected_for_testing());
 }
 
 // Sets up a custom MenuDelegate that expects functions aren't called. See

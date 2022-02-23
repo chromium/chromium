@@ -2,11 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
-#include "chrome/browser/policy/policy_test_utils.h"
+#include "chrome/browser/policy/extension_policy_test_base.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -42,8 +43,8 @@ class TestAddAppWindowObserver
   extensions::AppWindow* WaitForAppWindow();
 
  private:
-  extensions::AppWindowRegistry* registry_;  // Not owned.
-  extensions::AppWindow* window_;            // Not owned.
+  raw_ptr<extensions::AppWindowRegistry> registry_;  // Not owned.
+  raw_ptr<extensions::AppWindow> window_;            // Not owned.
   base::RunLoop run_loop_;
 };
 
@@ -70,7 +71,9 @@ extensions::AppWindow* TestAddAppWindowObserver::WaitForAppWindow() {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, FullscreenAllowedBrowser) {
+typedef ExtensionPolicyTestBase FullscreenPolicyTest;
+
+IN_PROC_BROWSER_TEST_F(FullscreenPolicyTest, FullscreenAllowedBrowser) {
   PolicyMap policies;
   policies.Set(key::kFullscreenAllowed, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
@@ -85,7 +88,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FullscreenAllowedBrowser) {
   EXPECT_FALSE(browser_window->IsFullscreen());
 }
 
-IN_PROC_BROWSER_TEST_F(PolicyTest, FullscreenAllowedApp) {
+IN_PROC_BROWSER_TEST_F(FullscreenPolicyTest, FullscreenAllowedApp) {
   PolicyMap policies;
   policies.Set(key::kFullscreenAllowed, POLICY_LEVEL_MANDATORY,
                POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
@@ -101,7 +104,7 @@ IN_PROC_BROWSER_TEST_F(PolicyTest, FullscreenAllowedApp) {
       extensions::AppWindowRegistry::Get(browser()->profile()));
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));

@@ -13,13 +13,4 @@ ChildProcessData::ChildProcessData(ChildProcessData&& rhs) = default;
 
 ChildProcessData::~ChildProcessData() {}
 
-ChildProcessData ChildProcessData::Duplicate() const {
-  ChildProcessData result(process_type);
-  result.name = name;
-  result.metrics_name = metrics_name;
-  result.id = id;
-  result.SetProcess(process_.Duplicate());
-  return result;
-}
-
 }  // namespace content

@@ -44,7 +44,7 @@ static const int kLayoutToChannels[] = {
     8,   // CHANNEL_LAYOUT_7_1_WIDE_BACK
     8,   // CHANNEL_LAYOUT_OCTAGONAL
     0,   // CHANNEL_LAYOUT_DISCRETE
-    3,   // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC
+    3,   // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, deprecated
     5,   // CHANNEL_LAYOUT_4_1_QUAD_SIDE
     0,   // CHANNEL_LAYOUT_BITSTREAM
 };
@@ -152,7 +152,7 @@ static const int kChannelOrderings[CHANNEL_LAYOUT_MAX + 1][CHANNELS_MAX + 1] = {
     // CHANNEL_LAYOUT_DISCRETE
     {  -1 , -1 , -1 , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
-    // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC
+    // CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC, deprecated
     {  0  , 1  , 2  , -1  , -1 , -1 , -1    , -1    , -1 , -1 , -1 },
 
     // CHANNEL_LAYOUT_4_1_QUAD_SIDE
@@ -264,7 +264,7 @@ const char* ChannelLayoutToString(ChannelLayout layout) {
     case CHANNEL_LAYOUT_DISCRETE:
       return "DISCRETE";
     case CHANNEL_LAYOUT_STEREO_AND_KEYBOARD_MIC:
-      return "STEREO_AND_KEYBOARD_MIC";
+      return "STEREO_AND_KEYBOARD_MIC";  // deprecated
     case CHANNEL_LAYOUT_4_1_QUAD_SIDE:
       return "4.1_QUAD_SIDE";
     case CHANNEL_LAYOUT_BITSTREAM:

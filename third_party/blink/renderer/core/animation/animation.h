@@ -53,7 +53,7 @@
 #include "third_party/blink/renderer/platform/animation/compositor_animation_delegate.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 
 namespace blink {
@@ -84,12 +84,12 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
     kFinished
   };
 
-  // https://drafts.csswg.org/web-animations/#animation-replace-state
+  // https://w3.org/TR/web-animations-1/#animation-replace-state
   enum ReplaceState { kActive, kRemoved, kPersisted };
 
   // Priority for sorting getAnimation by Animation class, arranged from lowest
   // priority to highest priority as per spec:
-  // https://drafts.csswg.org/web-animations/#dom-document-getanimations
+  // https://w3.org/TR/web-animations-1/#dom-document-getanimations
   enum AnimationClassPriority {
     kCssTransitionPriority,
     kCssAnimationPriority,
@@ -103,7 +103,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
   enum CompareAnimationsOrdering { kTreeOrder, kPointerOrder };
 
   // Only expect timing accuracy to within 1 microsecond.
-  // drafts.csswg.org/web-animations/#precision-of-time-values.
+  // https://w3.org/TR/web-animations-1/#precision-of-time-values.
   static constexpr double kTimeToleranceMs = 0.001;
 
   static Animation* Create(AnimationEffect*,
@@ -156,7 +156,7 @@ class CORE_EXPORT Animation : public EventTargetWithInlineData,
 
   absl::optional<AnimationTimeDelta> UnlimitedCurrentTime() const;
 
-  // https://drafts.csswg.org/web-animations/#play-states
+  // https://w3.org/TR/web-animations-1/#play-states
   String PlayStateString() const;
   static const char* PlayStateString(AnimationPlayState);
   AnimationPlayState CalculateAnimationPlayState() const;

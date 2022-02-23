@@ -14,7 +14,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "dbus/dbus_export.h"
 #include "dbus/message.h"
 #include "dbus/object_proxy.h"

@@ -53,7 +53,6 @@ js_library("oobe_loading_dialog") {
     ":oobe_content_dialog",
     "../behaviors:oobe_dialog_host_behavior",
     "../behaviors:oobe_i18n_behavior",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie",
   ]
 }
 
@@ -92,10 +91,10 @@ js_library("oobe_loading_dialog.m") {
   deps = [
     ":oobe_adaptive_dialog.m",
     ":oobe_content_dialog.m",
+    "..:oobe_cr_lottie.m",
     "../behaviors:oobe_dialog_host_behavior.m",
     "../behaviors:oobe_i18n_behavior.m",
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_lottie:cr_lottie.m",
     "//ui/webui/resources/js:cr.m",
   ]
   extra_deps = [ ":oobe_loading_dialog_module" ]

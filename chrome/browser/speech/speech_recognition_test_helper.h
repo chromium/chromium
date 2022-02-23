@@ -23,9 +23,8 @@ class FakeSpeechRecognitionManager;
 
 namespace speech {
 class FakeSpeechRecognitionService;
+enum class SpeechRecognitionType;
 }  // namespace speech
-
-enum class SpeechRecognitionType { kNetwork, kOnDevice };
 
 // This class provides on-device and network speech recognition test
 // infrastructure. Test classes can use this one to easily interact with
@@ -40,7 +39,7 @@ enum class SpeechRecognitionType { kNetwork, kOnDevice };
 // DictationBaseTest.
 class SpeechRecognitionTestHelper {
  public:
-  explicit SpeechRecognitionTestHelper(SpeechRecognitionType type);
+  explicit SpeechRecognitionTestHelper(speech::SpeechRecognitionType type);
   ~SpeechRecognitionTestHelper();
   SpeechRecognitionTestHelper(const SpeechRecognitionTestHelper&) = delete;
   SpeechRecognitionTestHelper& operator=(const SpeechRecognitionTestHelper&) =
@@ -71,7 +70,7 @@ class SpeechRecognitionTestHelper {
   std::unique_ptr<KeyedService> CreateTestOnDeviceSpeechRecognitionService(
       content::BrowserContext* context);
 
-  SpeechRecognitionType type_;
+  speech::SpeechRecognitionType type_;
   // For network recognition.
   std::unique_ptr<content::FakeSpeechRecognitionManager>
       fake_speech_recognition_manager_;

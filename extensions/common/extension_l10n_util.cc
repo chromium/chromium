@@ -17,6 +17,7 @@
 #include "base/json/json_string_value_serializer.h"
 #include "base/logging.h"
 #include "base/no_destructor.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -105,16 +106,16 @@ std::unique_ptr<base::DictionaryValue> LoadMessageFile(
 // Localizes manifest value of string type for a given key.
 bool LocalizeManifestValue(const std::string& key,
                            const extensions::MessageBundle& messages,
-                           base::DictionaryValue* manifest,
+                           base::Value* manifest,
                            std::string* error) {
-  std::string result;
-  if (!manifest->GetString(key, &result))
+  std::string* result = manifest->FindStringPath(key);
+  if (!result)
     return true;
 
-  if (!messages.ReplaceMessages(&result, error))
+  if (!messages.ReplaceMessages(result, error))
     return false;
 
-  manifest->SetString(key, result);
+  manifest->SetStringPath(key, *result);
   return true;
 }
 
@@ -128,11 +129,12 @@ bool LocalizeManifestListValue(const std::string& key,
     return true;
 
   bool ret = true;
-  for (size_t i = 0; i < list->GetList().size(); ++i) {
-    std::string result;
-    if (list->GetString(i, &result)) {
+  base::Value::ListView list_view = list->GetListDeprecated();
+  for (size_t i = 0; i < list_view.size(); ++i) {
+    if (list_view[i].is_string()) {
+      std::string result = list_view[i].GetString();
       if (messages.ReplaceMessages(&result, error))
-        list->Set(i, std::make_unique<base::Value>(result));
+        list_view[i] = base::Value(result);
       else
         ret = false;
     }
@@ -193,9 +195,10 @@ void SetPreferredLocale(const std::string& locale) {
 
 std::string GetDefaultLocaleFromManifest(const base::DictionaryValue& manifest,
                                          std::string* error) {
-  std::string default_locale;
-  if (manifest.GetString(keys::kDefaultLocale, &default_locale))
-    return default_locale;
+  if (const std::string* default_locale =
+          manifest.FindStringKey(keys::kDefaultLocale)) {
+    return *default_locale;
+  }
 
   *error = errors::kInvalidDefaultLocale;
   return std::string();
@@ -205,11 +208,14 @@ bool ShouldRelocalizeManifest(const base::DictionaryValue* manifest) {
   if (!manifest)
     return false;
 
-  if (!manifest->HasKey(keys::kDefaultLocale))
+  if (!manifest->FindKey(keys::kDefaultLocale))
     return false;
 
   std::string manifest_current_locale;
-  manifest->GetString(keys::kCurrentLocale, &manifest_current_locale);
+  const std::string* manifest_current_locale_in =
+      manifest->FindStringKey(keys::kCurrentLocale);
+  if (manifest_current_locale_in)
+    manifest_current_locale = *manifest_current_locale_in;
   return manifest_current_locale != LocaleForLocalization();
 }
 
@@ -217,8 +223,8 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
                       base::DictionaryValue* manifest,
                       std::string* error) {
   // Initialize name.
-  std::string result;
-  if (!manifest->GetString(keys::kName, &result)) {
+  const std::string* result = manifest->FindStringKey(keys::kName);
+  if (!result) {
     *error = errors::kInvalidName;
     return false;
   }
@@ -234,27 +240,29 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   if (!LocalizeManifestValue(keys::kDescription, messages, manifest, error))
     return false;
 
+  // Returns the key for the "default_title" entry in the given
+  // `action_key`'s manifest entry.
+  auto get_title_key = [](const char* action_key) {
+    return base::StrCat({action_key, ".", keys::kActionDefaultTitle});
+  };
+
   // Initialize browser_action.default_title
-  std::string key(keys::kBrowserAction);
-  key.append(".");
-  key.append(keys::kActionDefaultTitle);
-  if (!LocalizeManifestValue(key, messages, manifest, error))
+  if (!LocalizeManifestValue(get_title_key(keys::kBrowserAction), messages,
+                             manifest, error)) {
     return false;
+  }
 
   // Initialize page_action.default_title
-  key.assign(keys::kPageAction);
-  key.append(".");
-  key.append(keys::kActionDefaultTitle);
-  if (!LocalizeManifestValue(key, messages, manifest, error))
+  if (!LocalizeManifestValue(get_title_key(keys::kPageAction), messages,
+                             manifest, error)) {
     return false;
+  }
 
   // Initialize action.default_title
-  // TODO(devlin): These could easily use something like base::StrCat().
-  key.assign(keys::kAction);
-  key.append(".");
-  key.append(keys::kActionDefaultTitle);
-  if (!LocalizeManifestValue(key, messages, manifest, error))
+  if (!LocalizeManifestValue(get_title_key(keys::kAction), messages, manifest,
+                             error)) {
     return false;
+  }
 
   // Initialize omnibox.keyword.
   if (!LocalizeManifestValue(keys::kOmniboxKeyword, messages, manifest, error))
@@ -262,14 +270,12 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
 
   base::ListValue* file_handlers = NULL;
   if (manifest->GetList(keys::kFileBrowserHandlers, &file_handlers)) {
-    key.assign(keys::kFileBrowserHandlers);
-    for (size_t i = 0; i < file_handlers->GetList().size(); i++) {
-      base::DictionaryValue* handler = NULL;
-      if (!file_handlers->GetDictionary(i, &handler)) {
+    for (base::Value& handler : file_handlers->GetListDeprecated()) {
+      if (!handler.is_dict()) {
         *error = errors::kInvalidFileBrowserHandler;
         return false;
       }
-      if (!LocalizeManifestValue(keys::kActionDefaultTitle, messages, handler,
+      if (!LocalizeManifestValue(keys::kActionDefaultTitle, messages, &handler,
                                  error))
         return false;
     }
@@ -278,15 +284,14 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
   // Initialize all input_components
   base::ListValue* input_components = NULL;
   if (manifest->GetList(keys::kInputComponents, &input_components)) {
-    for (size_t i = 0; i < input_components->GetList().size(); ++i) {
-      base::DictionaryValue* module = NULL;
-      if (!input_components->GetDictionary(i, &module)) {
+    for (base::Value& module : input_components->GetListDeprecated()) {
+      if (!module.is_dict()) {
         *error = errors::kInvalidInputComponents;
         return false;
       }
-      if (!LocalizeManifestValue(keys::kName, messages, module, error))
+      if (!LocalizeManifestValue(keys::kName, messages, &module, error))
         return false;
-      if (!LocalizeManifestValue(keys::kDescription, messages, module, error))
+      if (!LocalizeManifestValue(keys::kDescription, messages, &module, error))
         return false;
     }
   }
@@ -305,8 +310,8 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
     for (base::DictionaryValue::Iterator iter(*commands_handler);
          !iter.IsAtEnd();
          iter.Advance()) {
-      key.assign(
-          base::StringPrintf("commands.%s.description", iter.key().c_str()));
+      std::string key =
+          base::StringPrintf("commands.%s.description", iter.key().c_str());
       if (!LocalizeManifestValue(key, messages, manifest, error))
         return false;
     }
@@ -319,8 +324,8 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
     for (base::DictionaryValue::Iterator iter(*search_provider);
          !iter.IsAtEnd();
          iter.Advance()) {
-      key.assign(base::StringPrintf(
-          "%s.%s", keys::kOverrideSearchProvider, iter.key().c_str()));
+      std::string key = base::StrCat(
+          {keys::kOverrideSearchProvider, ".", iter.key().c_str()});
       bool success =
           (key == keys::kSettingsOverrideAlternateUrls)
               ? LocalizeManifestListValue(key, messages, manifest, error)
@@ -342,7 +347,7 @@ bool LocalizeManifest(const extensions::MessageBundle& messages,
 
   // Add desired locale key to the manifest, so we can overwrite prefs
   // with new manifest when chrome locale changes.
-  manifest->SetString(keys::kCurrentLocale, LocaleForLocalization());
+  manifest->SetStringKey(keys::kCurrentLocale, LocaleForLocalization());
   return true;
 }
 

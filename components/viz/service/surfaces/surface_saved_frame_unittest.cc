@@ -130,7 +130,7 @@ TEST_F(SurfaceSavedFrameTest, OnlyRootSnapshotNoSharedPass) {
 
   const uint32_t sequence_id = 2u;
   CompositorFrameTransitionDirective directive(
-      sequence_id, CompositorFrameTransitionDirective::Type::kSave,
+      sequence_id, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kCoverDown);
   auto saved_frame = CreateSavedFrame(directive);
   saved_frame->RequestCopyOfOutput(GetSurface());
@@ -152,7 +152,7 @@ TEST_F(SurfaceSavedFrameTest, OnlyRootSnapshotNullSharedPass) {
 
   const uint32_t sequence_id = 2u;
   CompositorFrameTransitionDirective directive(
-      sequence_id, CompositorFrameTransitionDirective::Type::kSave,
+      sequence_id, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kCoverDown,
       CompositorFrameTransitionDirective::TransitionConfig(),
       CreateSharedElements({CompositorRenderPassId(0u)}));
@@ -192,7 +192,7 @@ TEST_F(SurfaceSavedFrameTest, RemoveSharedElementQuadOnly) {
 
   const uint32_t sequence_id = 2u;
   CompositorFrameTransitionDirective directive(
-      sequence_id, CompositorFrameTransitionDirective::Type::kSave,
+      sequence_id, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kCoverDown,
       CompositorFrameTransitionDirective::TransitionConfig(),
       CreateSharedElements({shared_pass_id}));
@@ -265,7 +265,7 @@ TEST_F(SurfaceSavedFrameTest, SharedElementNestedInNonSharedElementPass) {
 
   const uint32_t sequence_id = 2u;
   CompositorFrameTransitionDirective directive(
-      sequence_id, CompositorFrameTransitionDirective::Type::kSave,
+      sequence_id, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kCoverDown,
       CompositorFrameTransitionDirective::TransitionConfig(),
       CreateSharedElements({shared_pass_id}));
@@ -345,7 +345,7 @@ TEST_F(SurfaceSavedFrameTest, SharedElementNestedInSharedElementPass) {
 
   const uint32_t sequence_id = 2u;
   CompositorFrameTransitionDirective directive(
-      sequence_id, CompositorFrameTransitionDirective::Type::kSave,
+      sequence_id, CompositorFrameTransitionDirective::Type::kSave, false,
       CompositorFrameTransitionDirective::Effect::kCoverDown,
       CompositorFrameTransitionDirective::TransitionConfig(),
       CreateSharedElements({child_shared_pass_id, parent_shared_pass->id}));

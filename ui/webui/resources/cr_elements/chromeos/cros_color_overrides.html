@@ -38,14 +38,20 @@ To get Chrome OS System Colors, an element must:
       }
 
       :host-context([cros]) cr-toggle {
-        --cr-toggle-checked-bar-color: var(--cros-toggle-color);
-        --cr-toggle-checked-button-color: var(--cros-toggle-color);
-        --cr-toggle-checked-ripple-color: var(--cros-toggle-ripple-color);
-        --cr-toggle-unchecked-bar-color: var(--cros-toggle-bg-color-inactive);
-        --cr-toggle-unchecked-button-color:
-            var(--cros-toggle-button-color-inactive);
-        --cr-toggle-unchecked-ripple-color:
-            var(--cros-toggle-ripple-color-inactive);
+        --cr-toggle-checked-bar-color: var(--cros-switch-track-color-active);
+        /* |--cros-switch-track-color-active| already includes opacity. */
+        --cr-toggle-checked-bar-opacity: 100%;
+        --cr-toggle-checked-button-color: var(--cros-switch-knob-color-active);
+        --cr-toggle-checked-ripple-color: var(--cros-focus-aura-color);
+        --cr-toggle-unchecked-bar-color: var(--cros-switch-track-color-inactive);
+        --cr-toggle-unchecked-button-color: var(--cros-switch-knob-color-inactive);
+        --cr-toggle-unchecked-ripple-color: var(--cros-ripple-color);
+        --cr-toggle-box-shadow: var(--cros-elevation-1-shadow);
+        --cr-toggle-ripple-diameter: 32px;
+      }
+
+      :host-context([cros]) cr-toggle:focus {
+        --cr-toggle-ripple-ring: 2px solid var(--cros-focus-ring-color);
       }
 
       :host-context([cros]) .primary-toggle {
@@ -58,6 +64,10 @@ To get Chrome OS System Colors, an element must:
 
       :host-context([cros]) paper-spinner-lite {
         --paper-spinner-color: var(--cros-icon-color-prominent);
+      }
+
+      :host-context([cros]) cr-tooltip-icon {
+        --cr-link-color: var(--cros-tooltip-link-color);
       }
     </style>
   </template>

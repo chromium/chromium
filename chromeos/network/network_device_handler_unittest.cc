@@ -67,7 +67,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
                            "cellular1");
     device_test->AddDevice(kDefaultWifiDevicePath, shill::kTypeWifi, "wifi1");
 
-    base::ListValue test_ip_configs;
+    base::Value test_ip_configs(base::Value::Type::LIST);
     test_ip_configs.Append("ip_config1");
     device_test->SetDeviceProperty(kDefaultWifiDevicePath,
                                    shill::kIPConfigsProperty, test_ip_configs,
@@ -93,8 +93,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
                           base::Unretained(this));
   }
 
-  void ErrorCallback(const std::string& error_name,
-                     std::unique_ptr<base::DictionaryValue> error_data) {
+  void ErrorCallback(const std::string& error_name) {
     VLOG(1) << "ErrorCallback: " << error_name;
     result_ = error_name;
   }
@@ -108,8 +107,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
       return;
     }
     result_ = kResultSuccess;
-    properties_ = base::DictionaryValue::From(
-        std::make_unique<base::Value>(std::move(*properties)));
+    properties_ = std::move(*properties);
   }
 
   void StringSuccessCallback(const std::string& result) {
@@ -131,7 +129,7 @@ class NetworkDeviceHandlerTest : public testing::Test {
                             const std::string& property_name,
                             const std::string& expected_value) {
     GetDeviceProperties(device_path, kResultSuccess);
-    std::string* value = properties_->FindStringKey(property_name);
+    std::string* value = properties_.FindStringKey(property_name);
     ASSERT_NE(value, nullptr);
     ASSERT_EQ(*value, expected_value);
   }
@@ -142,14 +140,14 @@ class NetworkDeviceHandlerTest : public testing::Test {
   ShillDeviceClient* fake_device_client_ = nullptr;
   std::unique_ptr<NetworkDeviceHandler> network_device_handler_;
   std::unique_ptr<NetworkStateHandler> network_state_handler_;
-  std::unique_ptr<base::DictionaryValue> properties_;
+  base::Value properties_;
 };
 
 TEST_F(NetworkDeviceHandlerTest, GetDeviceProperties) {
   GetDeviceProperties(kDefaultWifiDevicePath, kResultSuccess);
-  std::string type;
-  properties_->GetString(shill::kTypeProperty, &type);
-  EXPECT_EQ(shill::kTypeWifi, type);
+  std::string* type = properties_.FindStringKey(shill::kTypeProperty);
+  ASSERT_TRUE(type);
+  EXPECT_EQ(shill::kTypeWifi, *type);
 }
 
 TEST_F(NetworkDeviceHandlerTest, SetDeviceProperty) {
@@ -165,7 +163,7 @@ TEST_F(NetworkDeviceHandlerTest, SetDeviceProperty) {
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
   absl::optional<int> interval =
-      properties_->FindIntKey(shill::kScanIntervalProperty);
+      properties_.FindIntKey(shill::kScanIntervalProperty);
   EXPECT_TRUE(interval.has_value());
   EXPECT_EQ(1, interval.value());
 
@@ -178,7 +176,7 @@ TEST_F(NetworkDeviceHandlerTest, SetDeviceProperty) {
 
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
-  interval = properties_->FindIntKey(shill::kScanIntervalProperty);
+  interval = properties_.FindIntKey(shill::kScanIntervalProperty);
   EXPECT_TRUE(interval.has_value());
   EXPECT_EQ(2, interval.value());
 
@@ -192,56 +190,36 @@ TEST_F(NetworkDeviceHandlerTest, SetDeviceProperty) {
   // Setting a owner-protected device property through SetDeviceProperty must
   // fail.
   network_device_handler_->SetDeviceProperty(
-      kDefaultCellularDevicePath, shill::kCellularAllowRoamingProperty,
+      kDefaultCellularDevicePath, shill::kCellularPolicyAllowRoamingProperty,
       base::Value(true), GetSuccessCallback(), GetErrorCallback());
   base::RunLoop().RunUntilIdle();
   EXPECT_NE(kResultSuccess, result_);
 }
 
-// TODO(crbug.com/1232818): Update test to no longer reference
-// Device.AllowRoaming when the property is fully deprecated by Shill.
 TEST_F(NetworkDeviceHandlerTest, CellularAllowRoaming) {
-  // Start with disabled Device.AllowRoaming and Device.PolicyAllowRoaming.
   ShillDeviceClient::TestInterface* device_test =
       fake_device_client_->GetTestInterface();
-  device_test->SetDeviceProperty(kDefaultCellularDevicePath,
-                                 shill::kCellularAllowRoamingProperty,
-                                 base::Value(false), /*notify_changed=*/true);
   device_test->SetDeviceProperty(kDefaultCellularDevicePath,
                                  shill::kCellularPolicyAllowRoamingProperty,
                                  base::Value(false), /*notify_changed=*/true);
 
-  network_device_handler_->SetCellularAllowRoaming(true, true);
+  network_device_handler_->SetCellularPolicyAllowRoaming(true);
   base::RunLoop().RunUntilIdle();
 
-  // Only Device.PolicyAllowRoaming should be updated when per-network cellular
-  // roaming is enabled.
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
-  absl::optional<bool> allow_roaming =
-      properties_->FindBoolKey(shill::kCellularAllowRoamingProperty);
-  EXPECT_TRUE(allow_roaming.has_value());
-  EXPECT_FALSE(allow_roaming.value());
-
   absl::optional<bool> policy_allow_roaming =
-      properties_->FindBoolKey(shill::kCellularPolicyAllowRoamingProperty);
+      properties_.FindBoolKey(shill::kCellularPolicyAllowRoamingProperty);
   EXPECT_TRUE(policy_allow_roaming.has_value());
   EXPECT_TRUE(policy_allow_roaming.value());
 
-  network_device_handler_->SetCellularAllowRoaming(false, false);
+  network_device_handler_->SetCellularPolicyAllowRoaming(false);
   base::RunLoop().RunUntilIdle();
 
-  // Both Device.AllowRoaming and Device.PolicyAllowRoaming should be disabled
-  // again.
   GetDeviceProperties(kDefaultCellularDevicePath, kResultSuccess);
 
-  allow_roaming =
-      properties_->FindBoolKey(shill::kCellularAllowRoamingProperty);
-  EXPECT_TRUE(allow_roaming.has_value());
-  EXPECT_FALSE(allow_roaming.value());
-
   policy_allow_roaming =
-      properties_->FindBoolKey(shill::kCellularPolicyAllowRoamingProperty);
+      properties_.FindBoolKey(shill::kCellularPolicyAllowRoamingProperty);
   EXPECT_TRUE(policy_allow_roaming.has_value());
   EXPECT_FALSE(policy_allow_roaming.value());
 }

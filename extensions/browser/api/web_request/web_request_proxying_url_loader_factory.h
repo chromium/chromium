@@ -9,7 +9,7 @@
 #include <map>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/ref_counted_delete_on_sequence.h"
 #include "base/memory/weak_ptr.h"
@@ -90,7 +90,8 @@ class WebRequestProxyingURLLoaderFactory
     // network::mojom::URLLoaderClient:
     void OnReceiveEarlyHints(
         network::mojom::EarlyHintsPtr early_hints) override;
-    void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+    void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                           mojo::ScopedDataPipeConsumerHandle body) override;
     void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                            network::mojom::URLResponseHeadPtr head) override;
     void OnUploadProgress(int64_t current_position,
@@ -183,7 +184,7 @@ class WebRequestProxyingURLLoaderFactory
         int error_code,
         bool collapse_initiator = false);
 
-    WebRequestProxyingURLLoaderFactory* const factory_;
+    const raw_ptr<WebRequestProxyingURLLoaderFactory> factory_;
     network::ResourceRequest request_;
     const absl::optional<url::Origin> original_initiator_;
     const uint64_t request_id_ = 0;
@@ -208,6 +209,7 @@ class WebRequestProxyingURLLoaderFactory
     // these fields are stored in a |BlockedRequest| (created and owned by
     // ExtensionWebRequestEventRouter) through much of the request's lifetime.
     network::mojom::URLResponseHeadPtr current_response_;
+    mojo::ScopedDataPipeConsumerHandle current_body_;
     scoped_refptr<net::HttpResponseHeaders> override_headers_;
     GURL redirect_url_;
 
@@ -337,11 +339,11 @@ class WebRequestProxyingURLLoaderFactory
   void RemoveRequest(int32_t network_service_request_id, uint64_t request_id);
   void MaybeRemoveProxy();
 
-  content::BrowserContext* const browser_context_;
+  const raw_ptr<content::BrowserContext> browser_context_;
   const int render_process_id_;
   const int frame_routing_id_;
   const int view_routing_id_;
-  WebRequestAPI::RequestIDGenerator* const request_id_generator_;
+  const raw_ptr<WebRequestAPI::RequestIDGenerator> request_id_generator_;
   std::unique_ptr<ExtensionNavigationUIData> navigation_ui_data_;
   absl::optional<int64_t> navigation_id_;
   mojo::ReceiverSet<network::mojom::URLLoaderFactory> proxy_receivers_;
@@ -349,7 +351,7 @@ class WebRequestProxyingURLLoaderFactory
   mojo::Receiver<network::mojom::TrustedURLLoaderHeaderClient>
       url_loader_header_client_receiver_{this};
   // Owns |this|.
-  WebRequestAPI::ProxySet* const proxies_;
+  const raw_ptr<WebRequestAPI::ProxySet> proxies_;
 
   const content::ContentBrowserClient::URLLoaderFactoryType
       loader_factory_type_;

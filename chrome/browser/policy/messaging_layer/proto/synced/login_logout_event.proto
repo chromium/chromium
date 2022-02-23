@@ -21,6 +21,19 @@ enum LoginFailureReason {
   TPM_UPDATE_REQUIRED = 5;
   MISSING_CRYPTOHOME = 6;
   UNRECOVERABLE_CRYPTOHOME = 7;
+  INTERNAL_LOGIN_FAILURE_REASON = 8;
+}
+
+enum LoginLogoutSessionType {
+  UNSPECIFIED_LOGIN_LOGOUT_SESSION_TYPE = 0;
+  // Regular guest session.
+  GUEST_SESSION = 1;
+  // Managed guest session.
+  PUBLIC_ACCOUNT_SESSION = 2;
+  // Regular user session.
+  REGULAR_USER_SESSION = 3;
+  // Kiosk session.
+  KIOSK_SESSION = 4;
 }
 
 message LoginFailure {
@@ -38,10 +51,13 @@ message LoginLogoutRecord {
 
   optional .reporting.SessionAffiliatedUser affiliated_user = 2;
 
+  // True for regular guest and managed guest accounts.
   optional bool is_guest_session = 3;
 
   oneof event {
     LoginEvent login_event = 4;
     LogoutEvent logout_event = 5;
   }
+
+  optional LoginLogoutSessionType session_type = 6;
 }

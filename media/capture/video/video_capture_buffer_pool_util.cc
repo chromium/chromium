@@ -16,7 +16,7 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   // those frames get dropped.
   static int max_buffer_count = kVideoCaptureDefaultMaxBufferPoolSize;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On macOS, we allow a few more buffers as it's routinely observed that it
   // runs out of three when just displaying 60 FPS media in a video element.
   max_buffer_count = 10;
@@ -28,7 +28,7 @@ int DeviceVideoCaptureMaxBufferPoolSize() {
   if (switches::IsVideoCaptureUseGpuMemoryBufferEnabled()) {
     max_buffer_count = 36;
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // On Windows, for GMB backed zero-copy more buffers are needed because it's
   // routinely observed that it runs out of default buffer count when just
   // displaying 60 FPS media in a video element

@@ -4,20 +4,20 @@
 
 #include "chrome/browser/ash/secure_channel/nearby_connector_impl.h"
 
+#include "ash/services/nearby/public/cpp/nearby_process_manager.h"
+#include "ash/services/secure_channel/public/cpp/client/nearby_connector.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/secure_channel/nearby_connection_broker_impl.h"
 #include "chrome/browser/ash/secure_channel/nearby_endpoint_finder_impl.h"
 #include "chrome/browser/ash/secure_channel/util/histogram_util.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/services/nearby/public/cpp/nearby_process_manager.h"
-#include "chromeos/services/secure_channel/public/cpp/client/nearby_connector.h"
 #include "components/keyed_service/core/keyed_service.h"
 
 namespace ash {
 namespace secure_channel {
 
 // TODO(https://crbug.com/1164001): remove after
-// chromeos/services/secure_channel is moved to namespace ash.
+// ash/services/secure_channel is moved to namespace ash.
 namespace mojom = ::chromeos::secure_channel::mojom;
 
 using NearbyProcessShutdownReason =

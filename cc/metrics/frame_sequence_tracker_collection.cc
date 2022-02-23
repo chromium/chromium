@@ -18,7 +18,7 @@ namespace cc {
 
 namespace {
 
-using ThreadType = FrameSequenceMetrics::ThreadType;
+using ThreadType = FrameInfo::SmoothEffectDrivingThread;
 
 bool IsScrollType(FrameSequenceTrackerType type) {
   return type == FrameSequenceTrackerType::kTouchScroll ||
@@ -45,7 +45,7 @@ FrameSequenceTrackerCollection::~FrameSequenceTrackerCollection() {
 
 FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequenceInternal(
     FrameSequenceTrackerType type,
-    FrameSequenceMetrics::ThreadType scrolling_thread) {
+    FrameInfo::SmoothEffectDrivingThread scrolling_thread) {
   DCHECK_NE(FrameSequenceTrackerType::kCustom, type);
   if (is_single_threaded_)
     return nullptr;
@@ -98,7 +98,7 @@ FrameSequenceTracker* FrameSequenceTrackerCollection::StartSequence(
 
 FrameSequenceTracker* FrameSequenceTrackerCollection::StartScrollSequence(
     FrameSequenceTrackerType type,
-    FrameSequenceMetrics::ThreadType scrolling_thread) {
+    FrameInfo::SmoothEffectDrivingThread scrolling_thread) {
   DCHECK(IsScrollType(type));
   return StartSequenceInternal(type, scrolling_thread);
 }
@@ -360,7 +360,7 @@ void FrameSequenceTrackerCollection::RecreateTrackers(
 
     // The frame sequence is still active, so create a new tracker to keep
     // tracking this sequence.
-    if (thread_type != FrameSequenceMetrics::ThreadType::kUnknown) {
+    if (thread_type != FrameInfo::SmoothEffectDrivingThread::kUnknown) {
       DCHECK(IsScrollType(tracker_type));
       StartScrollSequence(tracker_type, thread_type);
     } else {
@@ -405,6 +405,15 @@ void FrameSequenceTrackerCollection::AddCustomTrackerResult(
   CustomTrackerResults results;
   results[custom_sequence_id] = data;
   custom_tracker_results_added_callback_.Run(results);
+}
+
+void FrameSequenceTrackerCollection::AddSortedFrame(
+    const viz::BeginFrameArgs& args,
+    const FrameInfo& frame_info) {
+  for (auto& tracker : frame_trackers_)
+    tracker.second->AddSortedFrame(args, frame_info);
+  for (auto& tracker : custom_frame_trackers_)
+    tracker.second->AddSortedFrame(args, frame_info);
 }
 
 }  // namespace cc

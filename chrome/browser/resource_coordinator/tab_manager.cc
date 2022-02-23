@@ -14,9 +14,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/process/process.h"
@@ -112,7 +112,7 @@ class TabManager::TabManagerSessionRestoreObserver final
   }
 
  private:
-  TabManager* tab_manager_;
+  raw_ptr<TabManager> tab_manager_;
 };
 
 TabManager::TabManager(TabLoadTracker* tab_load_tracker)
@@ -143,7 +143,7 @@ void TabManager::Start() {
 
 // MemoryPressureMonitor is not implemented on Linux so far and tabs are never
 // discarded.
-#if defined(OS_WIN) || defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
   // Don't handle memory pressure events here if this is done by
   // PerformanceManager.
   if (!base::FeatureList::IsEnabled(
@@ -226,7 +226,7 @@ void TabManager::DiscardTabFromMemoryPressure() {
   DCHECK(!base::FeatureList::IsEnabled(
       performance_manager::features::kUrgentDiscardingFromPerformanceManager));
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Output a log with per-process memory usage and number of file descriptors,
   // as well as GPU memory details. Discard happens without waiting for the log
   // (https://crbug.com/850545) Per comment at
@@ -235,7 +235,7 @@ void TabManager::DiscardTabFromMemoryPressure() {
   // platforms since it is not used and data shows it can create IO thread hangs
   // (https://crbug.com/1040522).
   memory::OomMemoryDetails::Log("Tab Discards Memory details");
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Start handling memory pressure. Suppress further notifications before
   // completion in case a slow handler queues up multiple dispatches of this

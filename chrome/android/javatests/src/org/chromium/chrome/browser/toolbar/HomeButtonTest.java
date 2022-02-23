@@ -10,8 +10,6 @@ import static androidx.test.espresso.action.ViewActions.longClick;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
-import android.view.ContextMenu;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.FrameLayout;
 
@@ -35,20 +33,19 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * Test related to {@link HomeButton}.
  * TODO: Add more test when features related has update.
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class HomeButtonTest extends DummyUiActivityTestCase {
+public class HomeButtonTest extends BlankUiTestActivityTestCase {
     private static final String ASSERT_MSG_MENU_IS_CREATED =
             "ContextMenu is not created after long press.";
     private static final String ASSERT_MSG_MENU_SIZE =
             "ContextMenu has a different size than test setting.";
-    private static final String ASSERT_MSG_MENU_ITEM_TEXT =
-            "MenuItem does shows different text than test setting.";
 
     @Rule
     public TestRule mProcessor = new Features.JUnitProcessor();
@@ -95,14 +92,9 @@ public class HomeButtonTest extends DummyUiActivityTestCase {
     public void testContextMenu_AfterConversion() {
         onView(withId(mIdHomeButton)).perform(longClick());
 
-        ContextMenu menu = mHomeButton.getMenuForTests();
+        ModelList menu = mHomeButton.getMenuForTests();
         Assert.assertNotNull(ASSERT_MSG_MENU_IS_CREATED, menu);
         Assert.assertEquals(ASSERT_MSG_MENU_SIZE, 1, menu.size());
-
-        MenuItem item_settings = menu.findItem(HomeButton.ID_SETTINGS);
-        Assert.assertNotNull("MenuItem 'Edit Homepage' is not added to menu", item_settings);
-        Assert.assertEquals(ASSERT_MSG_MENU_ITEM_TEXT, item_settings.getTitle().toString(),
-                getActivity().getResources().getString(R.string.options_homepage_edit_title));
 
         // Test click on context menu item
         onView(withText(R.string.options_homepage_edit_title)).perform(click());

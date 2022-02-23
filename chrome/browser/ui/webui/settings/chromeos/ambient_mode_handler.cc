@@ -234,7 +234,7 @@ void AmbientModeHandler::HandleSetSelectedAlbums(
       // For Google Photos, we will populate the |selected_album_ids| with IDs
       // of selected albums.
       settings_->selected_album_ids.clear();
-      for (const auto& album : albums->GetList()) {
+      for (const auto& album : albums->GetListDeprecated()) {
         const base::Value* album_id = album.FindKey("albumId");
         const std::string& id = album_id->GetString();
         ash::PersonalAlbum* personal_album = FindPersonalAlbumById(id);
@@ -259,11 +259,11 @@ void AmbientModeHandler::HandleSetSelectedAlbums(
       for (auto& art_setting : settings_->art_settings) {
         const std::string& album_id = art_setting.album_id;
         auto it = std::find_if(
-            albums->GetList().begin(), albums->GetList().end(),
-            [&album_id](const auto& album) {
+            albums->GetListDeprecated().begin(),
+            albums->GetListDeprecated().end(), [&album_id](const auto& album) {
               return album.FindKey("albumId")->GetString() == album_id;
             });
-        const bool checked = it != albums->GetList().end();
+        const bool checked = it != albums->GetListDeprecated().end();
         art_setting.enabled = checked;
         // A setting must be visible to be enabled.
         if (art_setting.enabled)

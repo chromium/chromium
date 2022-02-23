@@ -5,8 +5,6 @@
 #ifndef CONTENT_BROWSER_RENDERER_HOST_PAGE_DELEGATE_H_
 #define CONTENT_BROWSER_RENDERER_HOST_PAGE_DELEGATE_H_
 
-#include "content/common/content_export.h"
-
 namespace content {
 
 class PageImpl;
@@ -14,7 +12,7 @@ class PageImpl;
 // Interface implemented by an object (in practice, WebContentsImpl) which
 // owns (possibly indirectly) and is interested in knowing about the state of
 // one or more Pages. It must outlive the Page.
-class CONTENT_EXPORT PageDelegate {
+class PageDelegate {
  public:
   // Called when a paint happens after the first non empty layout. In other
   // words, after the page has painted something.
@@ -25,6 +23,9 @@ class CONTENT_EXPORT PageDelegate {
 
   // Called when the main document background color has changed.
   virtual void OnBackgroundColorChanged(PageImpl& page) {}
+
+  // Called when the main document color scheme was inferred.
+  virtual void DidInferColorScheme(PageImpl& page) {}
 };
 
 }  // namespace content

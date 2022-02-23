@@ -78,11 +78,14 @@ action("generate_graph_tab") {
   ]
   outputs = [ "$target_gen_dir/graph_tab.js" ]
 
-  args = rebase_path(outputs) + rebase_path([
-                                              "graph_doc_template.html",
-                                              "graph_doc.js",
-                                            ]) +
-         rebase_path([ "$target_gen_dir/graph_tab_template.js" ])
+  args =
+      rebase_path(outputs, root_build_dir) +
+      rebase_path([
+                    "graph_doc_template.html",
+                    "graph_doc.js",
+                  ],
+                  root_build_dir) +
+      rebase_path([ "$target_gen_dir/graph_tab_template.js" ], root_build_dir)
   deps = [ ":web_components" ]
 }
 

@@ -12,9 +12,13 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/disks/disk.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "base/bind.h"
+#include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/memory/weak_ptr.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_running_on_chromeos.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
@@ -27,8 +31,6 @@
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power_manager/suspend.pb.h"
-#include "chromeos/disks/disk.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/prefs/pref_service.h"
 #include "components/storage_monitor/storage_info.h"
 #include "components/user_manager/user.h"
@@ -37,11 +39,11 @@
 #include "services/device/public/mojom/mtp_storage_info.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-using chromeos::disks::Disk;
-using chromeos::disks::DiskMountManager;
-
 namespace file_manager {
 namespace {
+
+using ::ash::disks::Disk;
+using ::ash::disks::DiskMountManager;
 
 class LoggingObserver : public VolumeManagerObserver {
  public:
@@ -250,8 +252,8 @@ class VolumeManagerTest : public testing::Test {
               AccountId::FromUserEmailGaiaId(profile_->GetProfileUserName(),
                                              "id")),
           user_(account_id_) {
-      chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
-      chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
+      ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
+      ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(
           &user_, profile_.get());
     }
 
@@ -619,7 +621,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_MountingAndUnmounting) {
 
   const DiskMountManager::MountPointInfo kMountPoint(
       "device1", "mount1", chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
                                  chromeos::MOUNT_ERROR_NONE, kMountPoint);
@@ -648,13 +650,13 @@ TEST_F(VolumeManagerTest, OnMountEvent_Remounting) {
                                    .SetFileSystemUUID("uuid1")
                                    .Build();
   disk_mount_manager_->AddDiskForTest(std::move(disk));
-  disk_mount_manager_->MountPath("device1", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+  disk_mount_manager_->MountPath(
+      "device1", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
 
   const DiskMountManager::MountPointInfo kMountPoint(
       "device1", "mount1", chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::MOUNTING,
                                  chromeos::MOUNT_ERROR_NONE, kMountPoint);
@@ -693,7 +695,7 @@ TEST_F(VolumeManagerTest, OnMountEvent_UnmountingWithoutMounting) {
 
   const DiskMountManager::MountPointInfo kMountPoint(
       "device1", "mount1", chromeos::MOUNT_TYPE_DEVICE,
-      chromeos::disks::MOUNT_CONDITION_NONE);
+      ash::disks::MOUNT_CONDITION_NONE);
 
   volume_manager()->OnMountEvent(DiskMountManager::UNMOUNTING,
                                  chromeos::MOUNT_ERROR_NONE, kMountPoint);
@@ -877,18 +879,18 @@ TEST_F(VolumeManagerTest, OnPartitionEvent_CompletedFailed) {
 
 TEST_F(VolumeManagerTest, OnExternalStorageDisabledChanged) {
   // Here create four mount points.
-  disk_mount_manager_->MountPath("mount1", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
-  disk_mount_manager_->MountPath("mount2", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_ONLY);
-  disk_mount_manager_->MountPath("mount3", "", "", {},
-                                 chromeos::MOUNT_TYPE_NETWORK_STORAGE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_ONLY);
-  disk_mount_manager_->MountPath("failed_unmount", "", "", {},
-                                 chromeos::MOUNT_TYPE_DEVICE,
-                                 chromeos::MOUNT_ACCESS_MODE_READ_WRITE);
+  disk_mount_manager_->MountPath(
+      "mount1", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
+  disk_mount_manager_->MountPath(
+      "mount2", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_ONLY, base::DoNothing());
+  disk_mount_manager_->MountPath(
+      "mount3", "", "", {}, chromeos::MOUNT_TYPE_NETWORK_STORAGE,
+      chromeos::MOUNT_ACCESS_MODE_READ_ONLY, base::DoNothing());
+  disk_mount_manager_->MountPath(
+      "failed_unmount", "", "", {}, chromeos::MOUNT_TYPE_DEVICE,
+      chromeos::MOUNT_ACCESS_MODE_READ_WRITE, base::DoNothing());
   disk_mount_manager_->FailUnmountRequest("failed_unmount",
                                           chromeos::MOUNT_ERROR_UNKNOWN);
 
@@ -997,9 +999,7 @@ TEST_F(VolumeManagerTest, GetVolumeList) {
   volume_manager()->Initialize();  // Adds "Downloads"
   std::vector<base::WeakPtr<Volume>> volume_list =
       volume_manager()->GetVolumeList();
-  ASSERT_EQ(1u, volume_list.size());
-  EXPECT_EQ("downloads:MyFiles", volume_list[0]->volume_id());
-  EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, volume_list[0]->type());
+  ASSERT_GT(volume_list.size(), 0u);
 }
 
 TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
@@ -1008,10 +1008,12 @@ TEST_F(VolumeManagerTest, VolumeManagerInitializeMyFilesVolume) {
   volume_manager()->Initialize();  // Adds "Downloads"
   std::vector<base::WeakPtr<Volume>> volume_list =
       volume_manager()->GetVolumeList();
-  ASSERT_EQ(1u, volume_list.size());
-  auto volume = volume_list[0];
-  EXPECT_EQ("downloads:MyFiles", volume->volume_id());
-  EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, volume->type());
+  ASSERT_GT(volume_list.size(), 0);
+  auto volume = base::ranges::find_if(volume_list, [](auto& v) {
+    return v->volume_id() == "downloads:MyFiles";
+  });
+  EXPECT_FALSE(volume == volume_list.end());
+  EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, (*volume)->type());
 }
 
 TEST_F(VolumeManagerTest, FindVolumeById) {
@@ -1026,6 +1028,44 @@ TEST_F(VolumeManagerTest, FindVolumeById) {
   EXPECT_EQ(VOLUME_TYPE_DOWNLOADS_DIRECTORY, good_volume->type());
 }
 
+TEST_F(VolumeManagerTest, VolumeManagerInitializeShareCacheVolume) {
+  volume_manager()->Initialize();
+  base::WeakPtr<Volume> share_cache_volume =
+      volume_manager()->FindVolumeById("system_internal:ShareCache");
+  ASSERT_TRUE(share_cache_volume.get());
+  EXPECT_EQ("system_internal:ShareCache", share_cache_volume->volume_id());
+  EXPECT_EQ(VOLUME_TYPE_SYSTEM_INTERNAL, share_cache_volume->type());
+}
+
+TEST_F(VolumeManagerTest, FindVolumeFromPath) {
+  volume_manager()->Initialize();  // Adds "Downloads"
+  base::WeakPtr<Volume> downloads_volume = volume_manager()->GetVolumeList()[0];
+  EXPECT_EQ("downloads:MyFiles", downloads_volume->volume_id());
+  base::FilePath downloads_mount_path = downloads_volume->mount_path();
+  // FindVolumeFromPath(downloads_mount_path.DirName()) should return null
+  // because the path is the parent folder of the Downloads mount path.
+  base::WeakPtr<Volume> volume_from_path =
+      volume_manager()->FindVolumeFromPath(downloads_mount_path.DirName());
+  ASSERT_FALSE(volume_from_path);
+  // FindVolumeFromPath("MyFiles") should return null because it's only the last
+  // component of the Downloads mount path.
+  volume_from_path =
+      volume_manager()->FindVolumeFromPath(downloads_mount_path.BaseName());
+  ASSERT_FALSE(volume_from_path);
+  // FindVolumeFromPath(<Downloads mount path>) should point to the Downloads
+  // volume.
+  volume_from_path = volume_manager()->FindVolumeFromPath(downloads_mount_path);
+  ASSERT_TRUE(volume_from_path);
+  EXPECT_EQ("downloads:MyFiles", volume_from_path->volume_id());
+  // FindVolumeFromPath(<Downloads mount path>/folder) is on the Downloads
+  // volume, it should also point to the Downloads volume, even if the folder
+  // doesn't exist.
+  volume_from_path = volume_manager()->FindVolumeFromPath(
+      downloads_mount_path.Append("folder"));
+  ASSERT_TRUE(volume_from_path);
+  EXPECT_EQ("downloads:MyFiles", volume_from_path->volume_id());
+}
+
 TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
   LoggingObserver observer;
   volume_manager()->AddObserver(&observer);
@@ -1035,14 +1075,14 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo("/removable/usb", "/removable/usb",
                                        chromeos::MOUNT_TYPE_DEVICE,
-                                       chromeos::disks::MOUNT_CONDITION_NONE));
+                                       ash::disks::MOUNT_CONDITION_NONE));
 
   // Mount a zip archive in the stick.
   volume_manager()->OnMountEvent(
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo("/removable/usb/1.zip", "/archive/1",
                                        chromeos::MOUNT_TYPE_ARCHIVE,
-                                       chromeos::disks::MOUNT_CONDITION_NONE));
+                                       ash::disks::MOUNT_CONDITION_NONE));
   base::WeakPtr<Volume> volume = volume_manager()->FindVolumeById("archive:1");
   ASSERT_TRUE(volume.get());
   EXPECT_EQ("/archive/1", volume->mount_path().AsUTF8Unsafe());
@@ -1053,7 +1093,7 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo("/archive/1/2.zip", "/archive/2",
                                        chromeos::MOUNT_TYPE_ARCHIVE,
-                                       chromeos::disks::MOUNT_CONDITION_NONE));
+                                       ash::disks::MOUNT_CONDITION_NONE));
   base::WeakPtr<Volume> second_volume =
       volume_manager()->FindVolumeById("archive:2");
   ASSERT_TRUE(second_volume.get());
@@ -1066,7 +1106,7 @@ TEST_F(VolumeManagerTest, ArchiveSourceFiltering) {
       DiskMountManager::MOUNTING, chromeos::MOUNT_ERROR_NONE,
       DiskMountManager::MountPointInfo(
           "/other/profile/drive/folder/3.zip", "/archive/3",
-          chromeos::MOUNT_TYPE_ARCHIVE, chromeos::disks::MOUNT_CONDITION_NONE));
+          chromeos::MOUNT_TYPE_ARCHIVE, ash::disks::MOUNT_CONDITION_NONE));
   base::WeakPtr<Volume> third_volume =
       volume_manager()->FindVolumeById("archive:3");
   ASSERT_FALSE(third_volume.get());

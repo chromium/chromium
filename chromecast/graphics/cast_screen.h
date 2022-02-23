@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_GRAPHICS_CAST_SCREEN_H_
 #define CHROMECAST_GRAPHICS_CAST_SCREEN_H_
 
-#include "base/macros.h"
 #include "chromecast/public/graphics_types.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/display/display.h"

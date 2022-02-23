@@ -24,13 +24,18 @@
     const c1 = new SDK.Cookie('a', 'b');
     c1.addAttribute('path', '/path');
     c1.addAttribute('domain', 'example.com');
-    request.includedRequestCookiesInternal = [
-      c1,
-      new SDK.Cookie('a1', 'b1'),
-      new SDK.Cookie('c1', 'd1'),
-    ];
+    request.addExtraRequestInfo({
+      includedRequestCookies: [
+        c1,
+        new SDK.Cookie('a1', 'b1'),
+        new SDK.Cookie('c1', 'd1'),
+      ],
+      blockedRequestCookies: [],
+      requestHeaders: [{name: 'version', value: 'HTTP/1.1'}],
+      connectTiming: {}
+    });
 
-    request.responseHeadersInternal = [{
+    request.responseHeaders = [{
       name: 'Set-Cookie',
       value:
           'x=y; Path=/path; Domain=example.com; Discard; httpOnly; Secure; Version=1\nx1=y1; SameSite=Strict\nz2=y2; SameSite=Lax'

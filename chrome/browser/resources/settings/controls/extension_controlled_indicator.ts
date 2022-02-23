@@ -8,9 +8,11 @@ import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {I18nMixin} from '//resources/js/i18n_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {ExtensionControlBrowserProxyImpl} from '../extension_control_browser_proxy.js';
+
+import {getTemplate} from './extension_controlled_indicator.html.js';
 
 const ExtensionControlledIndicatorElementBase = I18nMixin(PolymerElement);
 
@@ -21,7 +23,7 @@ export class ExtensionControlledIndicatorElement extends
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {

@@ -61,7 +61,7 @@ class TestClient: public DevToolsAgentHostClient {
 };
 
 // Fails on Android, http://crbug.com/464993.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_CrossSiteIframeAgentHost DISABLED_CrossSiteIframeAgentHost
 #else
 #define MAYBE_CrossSiteIframeAgentHost CrossSiteIframeAgentHost

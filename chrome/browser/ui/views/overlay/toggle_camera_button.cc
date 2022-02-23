@@ -8,12 +8,11 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/gfx/paint_vector_icon.h"
 
 ToggleCameraButton::ToggleCameraButton(PressedCallback callback)
-    : ImageButton(std::move(callback)) {
-  SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
-  SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
+    : OverlayWindowImageButton(std::move(callback)) {
   UpdateImageAndTooltipText();
 }
 
@@ -42,3 +41,6 @@ void ToggleCameraButton::UpdateImageAndTooltipText() {
            gfx::CreateVectorIcon(icon, width(), kPipWindowIconColor));
   SetTooltipText(l10n_util::GetStringUTF16(text));
 }
+
+BEGIN_METADATA(ToggleCameraButton, OverlayWindowImageButton)
+END_METADATA

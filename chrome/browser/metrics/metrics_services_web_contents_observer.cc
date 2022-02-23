@@ -11,7 +11,9 @@ namespace metrics {
 
 MetricsServicesWebContentsObserver::MetricsServicesWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<MetricsServicesWebContentsObserver>(
+          *web_contents) {}
 
 MetricsServicesWebContentsObserver::~MetricsServicesWebContentsObserver() =
     default;

@@ -31,8 +31,10 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_INSPECTOR_INSPECTOR_PAGE_AGENT_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/v8_cache_options.mojom-blink.h"
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/frame/ad_tracker.h"
 #include "third_party/blink/renderer/core/inspector/inspector_base_agent.h"
 #include "third_party/blink/renderer/core/inspector/protocol/page.h"
 #include "third_party/blink/renderer/core/loader/frame_loader_types.h"
@@ -43,6 +45,8 @@
 
 namespace blink {
 
+class GenericFontFamilySettings;
+
 namespace probe {
 class RecalculateStyle;
 class UpdateLayout;
@@ -51,10 +55,11 @@ class UpdateLayout;
 class Resource;
 class Document;
 class DocumentLoader;
+enum class FrameDetachType;
 class InspectedFrames;
 class InspectorResourceContentLoader;
 class LocalFrame;
-class ScriptSourceCode;
+class ClassicScript;
 enum class ResourceType : uint8_t;
 
 using blink::protocol::Maybe;
@@ -170,7 +175,9 @@ class CORE_EXPORT InspectorPageAgent final
                                          Maybe<bool> grant_universal_access,
                                          int* execution_context_id) override;
   protocol::Response setFontFamilies(
-      std::unique_ptr<protocol::Page::FontFamilies>) override;
+      std::unique_ptr<protocol::Page::FontFamilies>,
+      Maybe<protocol::Array<protocol::Page::ScriptFontFamilies>> forScripts)
+      override;
   protocol::Response setFontSizes(
       std::unique_ptr<protocol::Page::FontSizes>) override;
   protocol::Response generateTestReport(const String& message,
@@ -193,7 +200,9 @@ class CORE_EXPORT InspectorPageAgent final
   void WillCommitLoad(LocalFrame*, DocumentLoader*);
   void DidRestoreFromBackForwardCache(LocalFrame*);
   void DidOpenDocument(LocalFrame*, DocumentLoader*);
-  void FrameAttachedToParent(LocalFrame*);
+  void FrameAttachedToParent(
+      LocalFrame*,
+      const absl::optional<AdTracker::AdScriptIdentifier>& ad_script_on_stack);
   void FrameDetachedFromParent(LocalFrame*, FrameDetachType);
   void FrameStartedLoading(LocalFrame*);
   void FrameStoppedLoading(LocalFrame*);
@@ -223,10 +232,10 @@ class CORE_EXPORT InspectorPageAgent final
                   const AtomicString&,
                   const WebWindowFeatures&,
                   bool);
-  void ApplyCompilationModeOverride(const ScriptSourceCode& source,
+  void ApplyCompilationModeOverride(const ClassicScript&,
                                     v8::ScriptCompiler::CachedData**,
                                     v8::ScriptCompiler::CompileOptions*);
-  void DidProduceCompilationCache(const ScriptSourceCode& source,
+  void DidProduceCompilationCache(const ClassicScript&,
                                   v8::Local<v8::Script> script);
   void FileChooserOpened(LocalFrame* frame,
                          HTMLInputElement* element,
@@ -259,6 +268,9 @@ class CORE_EXPORT InspectorPageAgent final
 
   void PageLayoutInvalidated(bool resized);
 
+  protocol::Response setFontFamilies(
+      GenericFontFamilySettings& family_settings,
+      const protocol::Array<protocol::Page::ScriptFontFamilies>& forScripts);
   std::unique_ptr<protocol::Page::Frame> BuildObjectForFrame(LocalFrame*);
   std::unique_ptr<protocol::Page::FrameTree> BuildObjectForFrameTree(
       LocalFrame*);
@@ -277,8 +289,8 @@ class CORE_EXPORT InspectorPageAgent final
   String pending_script_to_evaluate_on_load_once_;
   String script_to_evaluate_on_load_once_;
   Member<InspectorResourceContentLoader> inspector_resource_content_loader_;
-  bool intercept_file_chooser_ = false;
   int resource_content_loader_client_id_;
+  InspectorAgentState::Boolean intercept_file_chooser_;
   InspectorAgentState::Boolean enabled_;
   InspectorAgentState::Boolean screencast_enabled_;
   InspectorAgentState::Boolean lifecycle_events_enabled_;
@@ -287,15 +299,9 @@ class CORE_EXPORT InspectorPageAgent final
   InspectorAgentState::StringMap worlds_to_evaluate_on_load_;
   InspectorAgentState::BooleanMap
       include_command_line_api_for_scripts_to_evaluate_on_load_;
-  InspectorAgentState::String standard_font_family_;
-  InspectorAgentState::String fixed_font_family_;
-  InspectorAgentState::String serif_font_family_;
-  InspectorAgentState::String sans_serif_font_family_;
-  InspectorAgentState::String cursive_font_family_;
-  InspectorAgentState::String fantasy_font_family_;
-  InspectorAgentState::String pictograph_font_family_;
   InspectorAgentState::Integer standard_font_size_;
   InspectorAgentState::Integer fixed_font_size_;
+  InspectorAgentState::Bytes script_font_families_cbor_;
 };
 
 }  // namespace blink

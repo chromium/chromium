@@ -147,8 +147,12 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
       base::TimeTicks reference_time,
       base::TimeDelta timestamp,
       VideoCaptureFrameDropReason& frame_drop_reason);
+  bool RecreateMFSource();
+  void AllocateAndStartLocked(
+      const VideoCaptureParams& params,
+      std::unique_ptr<VideoCaptureDevice::Client> client);
 
-  VideoFacingMode facing_mode_;
+  VideoCaptureDeviceDescriptor device_descriptor_;
   CreateMFPhotoCallbackCB create_mf_photo_callback_;
   scoped_refptr<MFVideoCallback> video_callback_;
   bool is_initialized_;
@@ -161,7 +165,7 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   base::Lock lock_;
 
   std::unique_ptr<VideoCaptureDevice::Client> client_;
-  const Microsoft::WRL::ComPtr<IMFMediaSource> source_;
+  Microsoft::WRL::ComPtr<IMFMediaSource> source_;
   Microsoft::WRL::ComPtr<IAMCameraControl> camera_control_;
   Microsoft::WRL::ComPtr<IAMVideoProcAmp> video_control_;
   Microsoft::WRL::ComPtr<IMFCaptureEngine> engine_;
@@ -177,8 +181,13 @@ class CAPTURE_EXPORT VideoCaptureDeviceMFWin : public VideoCaptureDevice {
   base::queue<TakePhotoCallback> video_stream_take_photo_callbacks_;
   base::WaitableEvent capture_initialize_;
   base::WaitableEvent capture_error_;
+  base::WaitableEvent capture_stopped_;
+  base::WaitableEvent capture_started_;
+  HRESULT last_error_hr_ = S_OK;
   scoped_refptr<DXGIDeviceManager> dxgi_device_manager_;
   absl::optional<int> camera_rotation_;
+  VideoCaptureParams params_;
+  int num_restarts_ = 0;
 
   media::VideoCaptureFeedback last_feedback_;
 

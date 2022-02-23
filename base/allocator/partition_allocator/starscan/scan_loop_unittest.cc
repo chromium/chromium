@@ -31,8 +31,8 @@ class TestScanLoop final : public ScanLoop<TestScanLoop> {
   static constexpr uintptr_t kCageMask = 0xffffff0000000000;
   static constexpr uintptr_t kBasePtr = 0x1234560000000000;
 
-  uintptr_t CageBase() const { return kBasePtr; }
-  static constexpr uintptr_t CageMask() { return kCageMask; }
+  static uintptr_t CageBase() { return kBasePtr; }
+  static uintptr_t CageMask() { return kCageMask; }
 
   void CheckPointer(uintptr_t maybe_ptr) { ++visited_; }
 

@@ -25,8 +25,15 @@ Polymer({
       type: Boolean,
       reflectToAttribute: true,
       observer: 'disabledChanged_',
-      computed: 'computeDisabled_(deviceState, deviceState.inhibitReason)'
+      computed: 'computeDisabled_(deviceState, deviceState.inhibitReason,' +
+          'disableItem)'
     },
+
+    /**
+     * Set by network-list to force disable this network item.
+     * @type {boolean}
+     */
+    disableItem: Boolean,
 
     /** @type {!NetworkList.NetworkListItemType|undefined} */
     item: {
@@ -189,6 +196,15 @@ Polymer({
       reflectToAttribute: true,
       value: false,
       computed: 'computeIsESimInstallingProfile_(item, item.customItemType)',
+    },
+
+    /** @private {boolean} */
+    isESimPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('esimPolicyEnabled') &&
+            loadTimeData.getBoolean('esimPolicyEnabled');
+      }
     },
 
     /**
@@ -357,6 +373,9 @@ Polymer({
    * @private
    */
   computeDisabled_() {
+    if (this.disableItem) {
+      return true;
+    }
     if (!this.deviceState) {
       return false;
     }
@@ -528,11 +547,26 @@ Polymer({
               this.item.typeState.wifi.signalStrength);
         }
         if (status) {
+          if (this.isBlockedNetwork_) {
+            return this.i18n(
+                'networkListItemWiFiBlockedWithConnectionStatusA11yLabel',
+                index, total, this.getItemName_(), secured, status,
+                this.item.typeState.wifi.signalStrength);
+          }
+
           return this.i18n(
               'networkListItemLabelWifiWithConnectionStatus', index, total,
               this.getItemName_(), secured, status,
               this.item.typeState.wifi.signalStrength);
         }
+
+        if (this.isBlockedNetwork_) {
+          return this.i18n(
+              'networkListItemWiFiBlockedA11yLabel', index, total,
+              this.getItemName_(), secured,
+              this.item.typeState.wifi.signalStrength);
+        }
+
         return this.i18n(
             'networkListItemLabelWifi', index, total, this.getItemName_(),
             secured, this.item.typeState.wifi.signalStrength);
@@ -701,8 +735,6 @@ Polymer({
     } else if (
         this.showButtons &&
         (this.isPSimUnavailableNetwork_ || this.isPSimActivatingNetwork_)) {
-      this.fireShowDetails_(event);
-    } else if (this.isBlockedNetwork_) {
       this.fireShowDetails_(event);
     } else {
       this.fire('selected', this.item);
@@ -898,21 +930,60 @@ Polymer({
    * @return {boolean}
    * @private
    */
-  computeIsBlockedNetwork_() {
-    // The blocked cellular network item will be gray out in the network list.
-    // TODO(crbug.com/1254917). WiFi list behavior should be consistent with
-    // Cellular.
-    if (!this.globalPolicy || !this.item ||
-        this.isPolicySource(this.item.source)) {
+  isBlockedWifiNetwork_() {
+    if (!this.item) {
       return false;
     }
 
-    if (this.item.type === chromeos.networkConfig.mojom.NetworkType.kCellular &&
-        !!this.globalPolicy.allowOnlyPolicyCellularNetworks) {
+    const mojom = chromeos.networkConfig.mojom;
+    if (this.item.type !== mojom.NetworkType.kWiFi) {
+      return false;
+    }
+
+    if (!this.globalPolicy || this.isPolicySource(this.item.source)) {
+      return false;
+    }
+
+    if (this.globalPolicy.allowOnlyPolicyWifiNetworksToConnect) {
       return true;
     }
 
-    return false;
+    if (!!this.globalPolicy.allowOnlyPolicyWifiNetworksToConnectIfAvailable &&
+        !!this.deviceState && !!this.deviceState.managedNetworkAvailable) {
+      return true;
+    }
+
+    return !!this.globalPolicy.blockedHexSsids &&
+        this.globalPolicy.blockedHexSsids.includes(
+            this.item.typeState.wifi.hexSsid);
+  },
+
+  /**
+   * @return {boolean}
+   * @private
+   */
+  computeIsBlockedNetwork_() {
+    if (!this.item) {
+      return false;
+    }
+
+    // Only Cellular and WiFi networks can be blocked by administrators.
+    const mojom = chromeos.networkConfig.mojom;
+    if (this.item.type !== mojom.NetworkType.kCellular &&
+        this.item.type !== mojom.NetworkType.kWiFi) {
+      return false;
+    }
+
+    if (!this.globalPolicy || this.isPolicySource(this.item.source)) {
+      return false;
+    }
+
+    if (this.item.type === mojom.NetworkType.kCellular) {
+      return this.isESimPolicyEnabled_ &&
+          !!this.globalPolicy.allowOnlyPolicyCellularNetworks;
+    }
+
+    return this.isBlockedWifiNetwork_();
   },
 
   /**

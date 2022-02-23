@@ -74,7 +74,9 @@ TEST(PaymentMethodData, FromValueFailure) {
   method_data_dict.SetKey("data", std::move(data_dict));
   EXPECT_FALSE(actual.FromValue(method_data_dict));
 
-  method_data_dict.FindKey("data")->FindKey("supportedNetworks")->GetList()[0] =
+  method_data_dict.FindKey("data")
+      ->FindKey("supportedNetworks")
+      ->GetListDeprecated()[0] =
       base::Value("\xD0\xA2\xD0\xB5\xD1\x81\xD1\x82");
   EXPECT_FALSE(actual.FromValue(method_data_dict));
 }

@@ -10,6 +10,7 @@
 #include "base/files/file_util.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/share/core/share_targets_observer.h"
 #include "chrome/browser/share/proto/share_target.pb.h"

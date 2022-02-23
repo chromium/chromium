@@ -2,6 +2,32 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/ios/swift_source_set.gni")
+
+swift_source_set("popup_swift") {
+  bridge_header = "popup_swift_bridge.h"
+  sources = [
+    "omnibox_popup_view_provider.swift",
+    "shared/omnibox_pedal.swift",
+    "shared/popup_match.swift",
+    "shared/popup_match_row_view.swift",
+    "shared/popup_model.swift",
+    "shared/popup_view.swift",
+  ]
+
+  deps = [
+    ":popup_ui_protocols",
+    "//base",
+    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/common/ui/colors:swift",
+  ]
+
+  frameworks = [
+    "Foundation.framework",
+    "SwiftUI.framework",
+  ]
+}
+
 source_set("popup") {
   sources = [
     "omnibox_popup_coordinator.h",
@@ -17,7 +43,9 @@ source_set("popup") {
   ]
   deps = [
     ":popup_internal",
+    ":popup_swift",
     ":popup_ui",
+    ":popup_ui_protocols",
     "//base",
     "//components/image_fetcher/core",
     "//components/omnibox/browser",
@@ -78,6 +106,7 @@ source_set("popup_ui") {
   ]
   deps = [
     ":popup_accessibility_identifier_constants",
+    ":popup_ui_protocols",
     "resources:omnibox_popup_tab_match",
     "resources:omnibox_suggestion_answer_icon_color",
     "resources:omnibox_suggestion_answer_icon_dark_color",
@@ -90,8 +119,8 @@ source_set("popup_ui") {
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/colors",
     "//ios/chrome/browser/ui/commands",
+    "//ios/chrome/browser/ui/content_suggestions/cells",
     "//ios/chrome/browser/ui/elements",
-    "//ios/chrome/browser/ui/ntp_tile_views",
     "//ios/chrome/browser/ui/omnibox:omnibox_popup_shared",
     "//ios/chrome/browser/ui/omnibox:omnibox_suggestion_icon_util",
     "//ios/chrome/browser/ui/toolbar/buttons",
@@ -126,6 +155,11 @@ source_set("popup_internal") {
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
   ]
+  configs += [ "//build/config/compiler:enable_arc" ]
+}
+
+source_set("popup_ui_protocols") {
+  sources = [ "content_providing.h" ]
   configs += [ "//build/config/compiler:enable_arc" ]
 }
 

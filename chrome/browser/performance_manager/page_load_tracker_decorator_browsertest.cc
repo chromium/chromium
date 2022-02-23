@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -74,7 +75,8 @@ class PageLoadingStateObserver : public PageNode::ObserverDefaultImpl,
   }
 
   // PageNodeObserver:
-  void OnLoadingStateChanged(const PageNode* page_node) override {
+  void OnLoadingStateChanged(const PageNode* page_node,
+                             PageNode::LoadingState previous_state) override {
     EXPECT_EQ(page_node_.get(), page_node);
 
     if (page_node->GetLoadingState() == PageNode::LoadingState::kLoadedIdle) {
@@ -97,7 +99,7 @@ class PageLoadingStateObserver : public PageNode::ObserverDefaultImpl,
   std::vector<PageNode::LoadingState> observed_loading_states_;
 
   // Set when registering |this| as a PageNodeObserver. Used to unregister.
-  GraphImpl* graph_ = nullptr;
+  raw_ptr<GraphImpl> graph_ = nullptr;
 };
 
 }  // namespace

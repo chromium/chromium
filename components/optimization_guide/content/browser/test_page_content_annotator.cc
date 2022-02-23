@@ -12,23 +12,17 @@ TestPageContentAnnotator::TestPageContentAnnotator() = default;
 void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
                                         const std::vector<std::string>& inputs,
                                         AnnotationType annotation_type) {
-  if (status_ != ExecutionStatus::kSuccess) {
-    std::move(callback).Run(
-        CreateEmptyBatchAnnotationResultsWithStatus(inputs, status_));
-    return;
-  }
-
   std::vector<BatchAnnotationResult> results;
 
   if (annotation_type == AnnotationType::kPageTopics) {
     for (const std::string& input : inputs) {
       auto it = topics_by_input_.find(input);
-      absl::optional<std::vector<WeightedString>> output;
+      absl::optional<std::vector<WeightedIdentifier>> output;
       if (it != topics_by_input_.end()) {
         output = it->second;
       }
-      results.emplace_back(BatchAnnotationResult::CreatePageTopicsResult(
-          input, status_, output));
+      results.emplace_back(
+          BatchAnnotationResult::CreatePageTopicsResult(input, output));
     }
   }
 
@@ -39,8 +33,8 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
       if (it != entities_by_input_.end()) {
         output = it->second;
       }
-      results.emplace_back(BatchAnnotationResult::CreatePageEntitiesResult(
-          input, status_, output));
+      results.emplace_back(
+          BatchAnnotationResult::CreatePageEntitiesResult(input, output));
     }
   }
 
@@ -51,20 +45,16 @@ void TestPageContentAnnotator::Annotate(BatchAnnotationCallback callback,
       if (it != visibility_scores_for_input_.end()) {
         output = it->second;
       }
-      results.emplace_back(BatchAnnotationResult::CreateContentVisibilityResult(
-          input, status_, output));
+      results.emplace_back(
+          BatchAnnotationResult::CreateContentVisibilityResult(input, output));
     }
   }
 
   std::move(callback).Run(results);
 }
 
-void TestPageContentAnnotator::UseExecutionStatus(ExecutionStatus status) {
-  status_ = status;
-}
-
 void TestPageContentAnnotator::UsePageTopics(
-    const base::flat_map<std::string, std::vector<WeightedString>>&
+    const base::flat_map<std::string, std::vector<WeightedIdentifier>>&
         topics_by_input) {
   topics_by_input_ = topics_by_input;
 }

@@ -4,6 +4,7 @@
 
 #include "components/password_manager/core/browser/password_save_manager_impl.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_mock_time_task_runner.h"
@@ -249,7 +250,7 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
 // current navigation.
 // TODO(crbug.com/896689): Expand the logic/application of this to other
 // platforms and/or merge this concept with |unique_renderer_id|.
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
     for (auto& f : observed_form_.fields) {
       f.unique_id = f.id_attribute;
     }
@@ -412,8 +413,8 @@ class PasswordSaveManagerImplTestBase : public testing::Test {
   // needs to outlive the latter.
   std::unique_ptr<FakeFormFetcher> fetcher_;
   std::unique_ptr<PasswordSaveManagerImpl> password_save_manager_impl_;
-  NiceMock<MockFormSaver>* mock_account_form_saver_ = nullptr;
-  NiceMock<MockFormSaver>* mock_profile_form_saver_ = nullptr;
+  raw_ptr<NiceMock<MockFormSaver>> mock_account_form_saver_ = nullptr;
+  raw_ptr<NiceMock<MockFormSaver>> mock_profile_form_saver_ = nullptr;
   NiceMock<MockAutofillDownloadManager> mock_autofill_download_manager_;
 };
 
@@ -1925,8 +1926,7 @@ class MultiStorePasswordSaveManagerGenerationConflictTest
   // The test parameters determine which of the conflicts should be included.
   std::vector<PasswordForm> CreateProfileStoreMatchesForTestParameters(
       const std::u16string& username) const {
-    bool add_same_username_match, add_empty_username_match;
-    std::tie(add_same_username_match, add_empty_username_match) = GetParam();
+    auto [add_same_username_match, add_empty_username_match] = GetParam();
 
     std::vector<PasswordForm> profile_store_matches;
     if (add_same_username_match) {

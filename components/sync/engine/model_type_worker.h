@@ -12,6 +12,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -243,14 +244,14 @@ class ModelTypeWorker : public UpdateHandler,
 
   const ModelType type_;
 
-  Cryptographer* const cryptographer_;
+  const raw_ptr<Cryptographer> cryptographer_;
 
   // Interface used to access and send nudges to the sync scheduler. Not owned.
-  NudgeHandler* const nudge_handler_;
+  const raw_ptr<NudgeHandler> nudge_handler_;
 
   // Cancellation signal is used to cancel blocking operation on engine
   // shutdown.
-  CancelationSignal* const cancelation_signal_;
+  const raw_ptr<CancelationSignal> cancelation_signal_;
 
   // Pointer to the ModelTypeProcessor associated with this worker. Initialized
   // with ConnectSync().
@@ -281,7 +282,10 @@ class ModelTypeWorker : public UpdateHandler,
       unknown_encryption_keys_by_name_;
 
   // Accumulates all the updates from a single GetUpdates cycle in memory so
-  // they can all be sent to the processor at once.
+  // they can all be sent to the processor at once. Some updates may be
+  // deduplicated, e.g. in DeduplicatePendingUpdatesBasedOnServerId(). The
+  // ordering here is NOT guaranteed to stick to the download ordering or any
+  // other.
   UpdateResponseDataList pending_updates_;
 
   // Indicates if processor has local changes. Processor only nudges worker once
@@ -345,7 +349,7 @@ class GetLocalChangesRequest
   friend class base::RefCountedThreadSafe<GetLocalChangesRequest>;
   ~GetLocalChangesRequest() override;
 
-  CancelationSignal* cancelation_signal_;
+  raw_ptr<CancelationSignal> cancelation_signal_;
   base::WaitableEvent response_accepted_;
   CommitRequestDataList response_;
 };

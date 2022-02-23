@@ -6,32 +6,6 @@ import("//media/media_options.gni")
 import("//testing/test.gni")
 import("//third_party/protobuf/proto_library.gni")
 
-# This target is separate from "remoting" because this code is shared by the
-# receiver implementation (currently outside of the Chromium project).
-source_set("rpc") {
-  sources = [
-    "proto_enum_utils.cc",
-    "proto_enum_utils.h",
-    "proto_utils.cc",
-    "proto_utils.h",
-  ]
-
-  public_configs =
-      [ "//third_party/openscreen/src/build:openscreen_include_dirs" ]
-
-  deps = [
-    "//base",
-    "//components/openscreen_platform:openscreen_platform",
-    "//components/openscreen_platform:openscreen_platform_network_service",
-    "//media",
-  ]
-
-  public_deps = [
-    "//third_party/openscreen/src/cast/streaming:common",
-    "//third_party/openscreen/src/cast/streaming:remoting_proto",
-  ]
-}
-
 source_set("remoting_sender") {
   sources = [
     "courier_renderer_factory.cc",
@@ -65,7 +39,7 @@ source_set("remoting_sender") {
 
     # Consumers of the CourierRenderer implicitly take a dependency on the
     # generated remoting.pb.h file.
-    public_deps += [ ":rpc" ]
+    public_deps += [ "//components/cast_streaming/public:remoting_utils" ]
   }
 }
 
@@ -87,14 +61,14 @@ source_set("remoting_renderer") {
 
   deps = [
     ":remoting_constants",
-    ":rpc",
+    "//components/cast_streaming/public:remoting_utils",
     "//media/mojo/common:common",
     "//media/mojo/mojom:remoting",
   ]
 
   # Consumers of the ReceiverController implicitly take a dependency on the
   # generated remoting.pb.h file.
-  public_deps = [ ":rpc" ]
+  public_deps = [ "//components/cast_streaming/public:remoting_utils" ]
 }
 
 source_set("media_remoting_tests") {
@@ -114,9 +88,9 @@ source_set("media_remoting_tests") {
   deps = [
     ":remoting_renderer",
     ":remoting_sender",
-    ":rpc",
     "//base",
     "//base/test:test_support",
+    "//components/cast_streaming/public:remoting_utils",
     "//media:test_support",
     "//media/mojo/common",
     "//media/mojo/mojom:remoting",
@@ -135,11 +109,10 @@ source_set("media_remoting_tests") {
       "fake_media_resource.h",
       "integration_test.cc",
       "metrics_unittest.cc",
-      "proto_utils_unittest.cc",
     ]
 
     deps += [
-      ":rpc",
+      "//components/cast_streaming/public:remoting_utils",
       "//media/test:pipeline_integration_test_base",
       "//services/service_manager/public/cpp:cpp",
       "//ui/gfx:test_support",

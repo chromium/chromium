@@ -84,7 +84,7 @@ bool ReadTestNamesFromFile(const FilePath& path,
     return false;
 
   std::vector<TestIdentifier> result;
-  for (const Value& item : value->GetList()) {
+  for (const Value& item : value->GetListDeprecated()) {
     if (!item.is_dict())
       return false;
 

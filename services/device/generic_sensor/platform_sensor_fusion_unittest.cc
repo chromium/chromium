@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "services/device/generic_sensor/absolute_orientation_euler_angles_fusion_algorithm_using_accelerometer_and_magnetometer.h"
 #include "services/device/generic_sensor/fake_platform_sensor_and_provider.h"
 #include "services/device/generic_sensor/linear_acceleration_fusion_algorithm_using_accelerometer.h"
@@ -35,37 +35,18 @@ class PlatformSensorFusionTest : public testing::Test {
   PlatformSensorFusionTest& operator=(const PlatformSensorFusionTest&) = delete;
 
  protected:
-  void AccelerometerCallback(scoped_refptr<PlatformSensor> sensor) {
-    accelerometer_callback_called_ = true;
-    accelerometer_ = static_cast<FakePlatformSensor*>(sensor.get());
-  }
-
-  void MagnetometerCallback(scoped_refptr<PlatformSensor> sensor) {
-    magnetometer_callback_called_ = true;
-    magnetometer_ = static_cast<FakePlatformSensor*>(sensor.get());
-  }
-
-  void PlatformSensorFusionCallback(scoped_refptr<PlatformSensor> sensor) {
-    platform_sensor_fusion_callback_called_ = true;
-    fusion_sensor_ = static_cast<PlatformSensorFusion*>(sensor.get());
-  }
-
   void CreateAccelerometer() {
-    auto callback =
-        base::BindOnce(&PlatformSensorFusionTest::AccelerometerCallback,
-                       base::Unretained(this));
-    provider_->CreateSensor(SensorType::ACCELEROMETER, std::move(callback));
-    EXPECT_TRUE(accelerometer_callback_called_);
+    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    provider_->CreateSensor(SensorType::ACCELEROMETER, future.GetCallback());
+    accelerometer_ = static_cast<FakePlatformSensor*>(future.Get().get());
     EXPECT_TRUE(accelerometer_);
     EXPECT_EQ(SensorType::ACCELEROMETER, accelerometer_->GetType());
   }
 
   void CreateMagnetometer() {
-    auto callback =
-        base::BindOnce(&PlatformSensorFusionTest::MagnetometerCallback,
-                       base::Unretained(this));
-    provider_->CreateSensor(SensorType::MAGNETOMETER, std::move(callback));
-    EXPECT_TRUE(magnetometer_callback_called_);
+    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    provider_->CreateSensor(SensorType::MAGNETOMETER, future.GetCallback());
+    magnetometer_ = static_cast<FakePlatformSensor*>(future.Get().get());
     EXPECT_TRUE(magnetometer_);
     EXPECT_EQ(SensorType::MAGNETOMETER, magnetometer_->GetType());
   }
@@ -84,23 +65,18 @@ class PlatformSensorFusionTest : public testing::Test {
 
   void CreateFusionSensor(
       std::unique_ptr<PlatformSensorFusionAlgorithm> fusion_algorithm) {
-    auto callback =
-        base::BindOnce(&PlatformSensorFusionTest::PlatformSensorFusionCallback,
-                       base::Unretained(this));
-    SensorType type = fusion_algorithm->fused_type();
+    base::test::TestFuture<scoped_refptr<PlatformSensor>> future;
+    const SensorType type = fusion_algorithm->fused_type();
     PlatformSensorFusion::Create(provider_->GetSensorReadingBuffer(type),
                                  provider_.get(), std::move(fusion_algorithm),
-                                 std::move(callback));
-    EXPECT_TRUE(platform_sensor_fusion_callback_called_);
+                                 future.GetCallback());
+    fusion_sensor_ = static_cast<PlatformSensorFusion*>(future.Get().get());
   }
 
   base::test::TaskEnvironment task_environment_;
   std::unique_ptr<FakePlatformSensorProvider> provider_;
-  bool accelerometer_callback_called_ = false;
   scoped_refptr<FakePlatformSensor> accelerometer_;
-  bool magnetometer_callback_called_ = false;
   scoped_refptr<FakePlatformSensor> magnetometer_;
-  bool platform_sensor_fusion_callback_called_ = false;
   scoped_refptr<PlatformSensorFusion> fusion_sensor_;
 };
 

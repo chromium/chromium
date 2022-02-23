@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/file_manager/file_manager_string_util.h"
 
+#include "ash/components/arc/arc_features.h"
 #include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -16,7 +17,6 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_features.h"
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/webui/web_ui_util.h"
@@ -99,8 +99,17 @@ void AddStringsForFileTypes(base::Value* dict) {
   SET_STRING("TAR_ARCHIVE_FILE_TYPE", IDS_FILE_BROWSER_TAR_ARCHIVE_FILE_TYPE);
   SET_STRING("TAR_BZIP2_ARCHIVE_FILE_TYPE",
              IDS_FILE_BROWSER_TAR_BZIP2_ARCHIVE_FILE_TYPE);
+  SET_STRING("BZIP2_ARCHIVE_FILE_TYPE",
+             IDS_FILE_BROWSER_BZIP2_ARCHIVE_FILE_TYPE);
   SET_STRING("TAR_GZIP_ARCHIVE_FILE_TYPE",
              IDS_FILE_BROWSER_TAR_GZIP_ARCHIVE_FILE_TYPE);
+  SET_STRING("GZIP_ARCHIVE_FILE_TYPE", IDS_FILE_BROWSER_GZIP_ARCHIVE_FILE_TYPE);
+  SET_STRING("TAR_LZMA_ARCHIVE_FILE_TYPE",
+             IDS_FILE_BROWSER_TAR_LZMA_ARCHIVE_FILE_TYPE);
+  SET_STRING("LZMA_ARCHIVE_FILE_TYPE", IDS_FILE_BROWSER_LZMA_ARCHIVE_FILE_TYPE);
+  SET_STRING("TAR_XZ_ARCHIVE_FILE_TYPE",
+             IDS_FILE_BROWSER_TAR_XZ_ARCHIVE_FILE_TYPE);
+  SET_STRING("XZ_ARCHIVE_FILE_TYPE", IDS_FILE_BROWSER_XZ_ARCHIVE_FILE_TYPE);
   SET_STRING("VIDEO_FILE_TYPE", IDS_FILE_BROWSER_VIDEO_FILE_TYPE);
   SET_STRING("WORD_DOCUMENT_FILE_TYPE",
              IDS_FILE_BROWSER_WORD_DOCUMENT_FILE_TYPE);
@@ -174,6 +183,8 @@ void AddStringsForDrive(base::Value* dict) {
 }
 
 void AddStringsForMediaView(base::Value* dict) {
+  SET_STRING("MEDIA_VIEW_ALL_ROOT_LABEL",
+             IDS_FILE_BROWSER_MEDIA_VIEW_ALL_ROOT_LABEL);
   SET_STRING("MEDIA_VIEW_AUDIO_ROOT_LABEL",
              IDS_FILE_BROWSER_MEDIA_VIEW_AUDIO_ROOT_LABEL);
   SET_STRING("MEDIA_VIEW_IMAGES_ROOT_LABEL",
@@ -912,6 +923,8 @@ void AddStringsGeneric(base::Value* dict) {
   SET_STRING("GRID_VIEW_FILES_TITLE", IDS_FILE_BROWSER_GRID_VIEW_FILES_TITLE);
   SET_STRING("LOCATION_BREADCRUMB_ELIDER_BUTTON_LABEL",
              IDS_FILE_BROWSER_LOCATION_BREADCRUMB_ELIDER_BUTTON_LABEL);
+  SET_STRING("DLP_BLOCK_COPY_TOAST", IDS_FILE_BROWSER_DLP_BLOCK_COPY_TOAST);
+  SET_STRING("DLP_TOAST_BUTTON_LABEL", IDS_FILE_BROWSER_DLP_TOAST_BUTTON_LABEL);
 }
 
 #undef SET_STRING
@@ -976,8 +989,6 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    base::FeatureList::IsEnabled(chromeos::features::kFilesSWA));
   dict->SetBoolKey("FILES_TRASH_ENABLED", base::FeatureList::IsEnabled(
                                               chromeos::features::kFilesTrash));
-  dict->SetBoolKey("ZIP_UNPACK", base::FeatureList::IsEnabled(
-                                     chromeos::features::kFilesZipUnpack));
   dict->SetBoolKey(
       "DRIVE_DSS_PIN_ENABLED",
       base::FeatureList::IsEnabled(
@@ -989,8 +1000,14 @@ void AddFileManagerFeatureStrings(const std::string& locale,
                    base::FeatureList::IsEnabled(
                        chromeos::features::kFilesSinglePartitionFormat));
   dict->SetBoolKey(
-      "FILES_BANNER_FRAMEWORK",
-      base::FeatureList::IsEnabled(chromeos::features::kFilesBannerFramework));
+      "EXTRACT_ARCHIVE",
+      base::FeatureList::IsEnabled(chromeos::features::kFilesExtractArchive));
+
+  dict->SetBoolKey("FUSEBOX",
+                   base::FeatureList::IsEnabled(chromeos::features::kFuseBox));
+
+  dict->SetBoolKey("GUEST_OS", base::FeatureList::IsEnabled(
+                                   chromeos::features::kGuestOsFiles));
 
   dict->SetStringKey("UI_LOCALE", locale);
 }

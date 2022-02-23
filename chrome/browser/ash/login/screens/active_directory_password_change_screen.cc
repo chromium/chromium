@@ -6,13 +6,13 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/cryptohome_key_constants.h"
+#include "ash/components/login/auth/key.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ui/webui/chromeos/login/active_directory_password_change_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/grit/generated_resources.h"
-#include "chromeos/login/auth/cryptohome_key_constants.h"
-#include "chromeos/login/auth/key.h"
 #include "components/user_manager/known_user.h"
 #include "ui/base/l10n/l10n_util.h"
 

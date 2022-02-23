@@ -53,11 +53,11 @@
 #include "ui/views/window/vector_icons/vector_icons.h"
 #include "ui/views/window/window_shape.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "ui/views/controls/menu/menu_runner.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/screen_win.h"
 #endif
 
@@ -221,9 +221,9 @@ void OpaqueBrowserFrameView::InitViews() {
   window_title_->SetSubpixelRenderingEnabled(false);
   window_title_->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   window_title_->SetID(VIEW_ID_WINDOW_TITLE);
-  AddChildView(window_title_);
+  AddChildView(window_title_.get());
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (browser_view()->AppUsesWindowControlsOverlay())
     UpdateCaptionButtonToolTipsForWindowControlsOverlay();
 #endif
@@ -259,11 +259,11 @@ void OpaqueBrowserFrameView::WindowControlsOverlayEnabledChanged() {
         AddChildView(std::make_unique<CaptionButtonPlaceholderContainer>());
     UpdateCaptionButtonPlaceholderContainerBackground();
   } else {
-    RemoveChildViewT(caption_button_placeholder_container_);
+    RemoveChildViewT(caption_button_placeholder_container_.get());
     caption_button_placeholder_container_ = nullptr;
   }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UpdateCaptionButtonToolTipsForWindowControlsOverlay();
 #endif
 
@@ -462,7 +462,7 @@ std::u16string OpaqueBrowserFrameView::GetWindowTitle() const {
 }
 
 int OpaqueBrowserFrameView::GetIconSize() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // This metric scales up if either the titlebar height or the titlebar font
   // size are increased.
   return display::win::ScreenWin::GetSystemMetricsInDIP(SM_CYSMICON);
@@ -541,7 +541,7 @@ OpaqueBrowserFrameView::FrameButtonStyle
 OpaqueBrowserFrameView::GetFrameButtonStyle() const {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return FrameButtonStyle::kMdButton;
 #else
   return FrameButtonStyle::kImageButton;
@@ -574,7 +574,7 @@ void OpaqueBrowserFrameView::OnPaint(gfx::Canvas* canvas) {
     return;  // Nothing is visible, so don't bother to paint.
 
   const bool active = ShouldPaintAsActive();
-  SkColor frame_color = GetFrameColor();
+  SkColor frame_color = GetFrameColor(BrowserFrameActiveState::kUseCurrent);
   window_title_->SetEnabledColor(
       GetCaptionColor(BrowserFrameActiveState::kUseCurrent));
   window_title_->SetBackgroundColor(frame_color);
@@ -751,12 +751,12 @@ gfx::Rect OpaqueBrowserFrameView::GetIconBounds() const {
 }
 
 void OpaqueBrowserFrameView::WindowIconPressed() {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
-  // TODO(pbos): Figure out / document why this is Linux only. This needs a
-  // comment.
-  views::MenuRunner menu_runner(frame()->GetSystemMenuModel(),
-                                views::MenuRunner::HAS_MNEMONICS);
-  menu_runner.RunMenuAt(
+#if BUILDFLAG(IS_LINUX)
+  // Chrome OS doesn't show the window icon, and Windows handles this on its own
+  // due to the hit test being HTSYSMENU.
+  menu_runner_ = std::make_unique<views::MenuRunner>(
+      frame()->GetSystemMenuModel(), views::MenuRunner::HAS_MNEMONICS);
+  menu_runner_->RunMenuAt(
       browser_view()->GetWidget(), window_icon_->button_controller(),
       window_icon_->GetBoundsInScreen(), views::MenuAnchorPosition::kTopLeft,
       ui::MENU_SOURCE_MOUSE);
@@ -837,11 +837,12 @@ void OpaqueBrowserFrameView::
     UpdateCaptionButtonPlaceholderContainerBackground() {
   if (caption_button_placeholder_container_) {
     caption_button_placeholder_container_->SetBackground(
-        views::CreateSolidBackground(GetFrameColor()));
+        views::CreateSolidBackground(
+            GetFrameColor(BrowserFrameActiveState::kUseCurrent)));
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void OpaqueBrowserFrameView::
     UpdateCaptionButtonToolTipsForWindowControlsOverlay() {
   if (browser_view()->IsWindowControlsOverlayEnabled()) {

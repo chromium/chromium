@@ -32,6 +32,8 @@
 #include "chrome/browser/extensions/load_error_reporter.h"
 #include "chrome/browser/extensions/permissions_updater.h"
 #include "chrome/browser/extensions/webstore_installer.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
@@ -127,6 +129,8 @@ CrxInstaller::CrxInstaller(base::WeakPtr<ExtensionService> service_weak,
       shared_file_task_runner_(GetExtensionFileTaskRunner()),
       update_from_settings_page_(false),
       install_flags_(kInstallFlagNone) {
+  profile_observation_.Observe(profile_);
+
   if (!approval)
     return;
 
@@ -371,13 +375,11 @@ absl::optional<CrxInstallError> CrxInstaller::AllowInstall(
           l10n_util::GetStringUTF16(IDS_EXTENSION_MANIFEST_INVALID));
   }
 
-  // The checks below are skipped for themes, external installs, and bookmark
-  // apps.
+  // The checks below are skipped for themes and external installs.
   // TODO(pamg): After ManagementPolicy refactoring is complete, remove this
   // and other uses of install_source_ that are no longer needed now that the
   // SandboxedUnpacker sets extension->location.
-  if (extension->is_theme() || extension->from_bookmark() ||
-      Manifest::IsExternalLocation(install_source_)) {
+  if (extension->is_theme() || Manifest::IsExternalLocation(install_source_)) {
     return absl::nullopt;
   }
 
@@ -599,6 +601,12 @@ void CrxInstaller::OnStageChanged(InstallationStage stage) {
   ReportInstallationStage(stage);
 }
 
+void CrxInstaller::OnProfileWillBeDestroyed(Profile* profile) {
+  DCHECK_EQ(profile, profile_);
+  profile_keep_alive_.reset();
+  profile_observation_.Reset();
+}
+
 void CrxInstaller::CheckInstall() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   ExtensionService* service = service_weak_.get();
@@ -651,12 +659,6 @@ void CrxInstaller::CheckInstall() {
         return;
       }
     }
-  }
-
-  // Skip the checks if the extension is a bookmark app.
-  if (extension()->from_bookmark()) {
-    ConfirmInstall();
-    return;
   }
 
   // Run the policy, requirements and blocklist checks in parallel.
@@ -863,13 +865,6 @@ void CrxInstaller::InitializeCreationFlagsForUpdate(const Extension* extension,
     creation_flags_ |= Extension::FROM_WEBSTORE;
   }
 
-  // Bookmark apps being updated is kind of a contradiction, but that's because
-  // we mark the default apps as bookmark apps, and they're hosted in the web
-  // store, thus they can get updated. See http://crbug.com/101605 for more
-  // details.
-  if (extension->from_bookmark())
-    creation_flags_ |= Extension::FROM_BOOKMARK;
-
   if (extension->was_installed_by_default())
     creation_flags_ |= Extension::WAS_INSTALLED_BY_DEFAULT;
 
@@ -1072,6 +1067,9 @@ void CrxInstaller::ReportInstallationStage(InstallationStage stage) {
 }
 
 void CrxInstaller::NotifyCrxInstallBegin() {
+  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+      profile_, ProfileKeepAliveOrigin::kCrxInstaller);
+
   InstallTrackerFactory::GetForBrowserContext(profile())
       ->OnBeginCrxInstall(expected_id_);
 }
@@ -1136,6 +1134,8 @@ void CrxInstaller::NotifyCrxInstallComplete(
           FROM_HERE, base::BindOnce(std::move(installer_callback_), error))) {
     NOTREACHED();
   }
+
+  profile_keep_alive_.reset();
 }
 
 void CrxInstaller::CleanupTempFiles() {

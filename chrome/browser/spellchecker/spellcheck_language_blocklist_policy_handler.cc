@@ -40,7 +40,7 @@ bool SpellcheckLanguageBlocklistPolicyHandler::CheckPolicySettings(
   std::vector<std::string> duplicates;
   SortBlocklistedLanguages(policies, &blocklisted, &unknown, &duplicates);
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   for (const std::string& language : duplicates) {
     errors->AddError(policy_name(), IDS_POLICY_SPELLCHECK_BLOCKLIST_IGNORE,
                      language);
@@ -107,13 +107,14 @@ void SpellcheckLanguageBlocklistPolicyHandler::SortBlocklistedLanguages(
       policies.GetValue(policy::key::kSpellcheckLanguage);
   std::unordered_set<std::string> forced_languages_lookup;
   if (forced_enabled_value) {
-    for (const auto& forced_language : forced_enabled_value->GetList())
+    for (const auto& forced_language :
+         forced_enabled_value->GetListDeprecated())
       forced_languages_lookup.insert(forced_language.GetString());
   }
 
   // Separate the valid languages from the unknown / unsupported languages and
   // the languages that also appear in the SpellcheckLanguage policy.
-  for (const base::Value& language : value->GetList()) {
+  for (const base::Value& language : value->GetListDeprecated()) {
     std::string candidate_language(
         base::TrimWhitespaceASCII(language.GetString(), base::TRIM_ALL));
     std::string current_language =

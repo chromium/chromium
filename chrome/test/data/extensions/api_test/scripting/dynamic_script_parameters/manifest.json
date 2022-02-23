@@ -1,0 +1,12 @@
+{
+  "manifest_version": 3,
+  "name": "Dynamic content script parameters test extension",
+  "version": "0.1",
+  "description": "Tests dynamic content script parameters",
+  "background": {
+    "service_worker": "worker.js",
+    "type": "module"
+  },
+  "permissions": ["scripting", "tabs"],
+  "host_permissions": ["*://a.com/*"]
+}

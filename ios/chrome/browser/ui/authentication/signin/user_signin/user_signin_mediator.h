@@ -6,12 +6,14 @@
 #define IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_USER_SIGNIN_USER_SIGNIN_MEDIATOR_H_
 
 #import <Foundation/Foundation.h>
+#import "base/ios/block_types.h"
 #import "components/signin/public/base/signin_metrics.h"
 #include "components/sync/driver/sync_service.h"
 #import "ios/chrome/browser/ui/authentication/signin/signin_constants.h"
 
 @class AuthenticationFlow;
 class AuthenticationService;
+class ChromeAccountManagerService;
 @class ChromeIdentity;
 class SyncSetupService;
 
@@ -50,6 +52,8 @@ class UnifiedConsentService;
 
 // User's sign-in state before starting the coordinator.
 @property(nonatomic, assign, readonly) IdentitySigninState signinStateOnStart;
+// Users's sign-in identity before starting the coordinator.
+@property(nonatomic, strong, readonly) ChromeIdentity* signinIdentityOnStart;
 
 @end
 
@@ -60,6 +64,8 @@ class UnifiedConsentService;
 - (instancetype)
     initWithAuthenticationService:(AuthenticationService*)authenticationService
                   identityManager:(signin::IdentityManager*)identityManager
+            accountManagerService:
+                (ChromeAccountManagerService*)accountManagerService
                    consentAuditor:
                        (consent_auditor::ConsentAuditor*)consentAuditor
             unifiedConsentService:
@@ -85,10 +91,14 @@ class UnifiedConsentService;
 
 // Cancels and dismisses with animation if |animated| the authentication flow
 // when sign-in is in progress.
-- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated;
+- (void)cancelAndDismissAuthenticationFlowAnimated:(BOOL)animated
+                                        completion:(ProceduralBlock)completion;
 
 // Called when signin is finished and advanced settings link was tapped.
 - (void)onAccountSigninCompletionForAdvancedSettingsWithSuccess:(BOOL)success;
+
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 

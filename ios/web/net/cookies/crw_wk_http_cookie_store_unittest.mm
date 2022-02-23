@@ -60,7 +60,7 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
   }
 
   // Adds |cookie| to the CRWWKHTTPCookieStore.
-  bool SetCookie(NSHTTPCookie* cookie) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool SetCookie(NSHTTPCookie* cookie) {
     __block bool cookie_set = false;
     [crw_cookie_store_ setCookie:cookie
                completionHandler:^{
@@ -72,7 +72,7 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
   }
 
   // Deletes |cookie| from the CRWWKHTTPCookieStore.
-  bool DeleteCookie(NSHTTPCookie* cookie) WARN_UNUSED_RESULT {
+  [[nodiscard]] bool DeleteCookie(NSHTTPCookie* cookie) {
     __block bool cookie_deleted = false;
     [crw_cookie_store_ deleteCookie:cookie
                   completionHandler:^{
@@ -85,7 +85,7 @@ class CRWWKHTTPCookieStoreTest : public PlatformTest {
 
   // Gets all cookies from CRWWKHTTPCookieStore and ensures that getAllCookies
   // callback was called.
-  NSArray<NSHTTPCookie*>* GetCookies() WARN_UNUSED_RESULT {
+  [[nodiscard]] NSArray<NSHTTPCookie*>* GetCookies() {
     __block NSArray<NSHTTPCookie*>* result_cookies = nil;
     __block bool callback_called = false;
     [crw_cookie_store_ getAllCookies:^(NSArray<NSHTTPCookie*>* cookies) {

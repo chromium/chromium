@@ -1,0 +1,54 @@
+Tests that vision deficiencies can be emulated.
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFRJREFUWIXt18ENACAMw8DA5N0chnCQePgGiKz+ujI5aZru3K6uPWAgZSBlIGUgZSBlIGUgZSBlILWS030iyr6/oIGUgZSBlIGUgZSBlIGUgZSB1AXNwwVLtuf+dAAAAABJRU5ErkJggg==">
+<p>Emulating "achromatopsia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFdJREFUWIXt18ENACAMw0BArNuVuwoM4SDx8A0QWf11VtUZQd2dnBsruvaAgZSBlIGUgZSBlIGUgZSBlIHUTv8Qad9f0EDKQMpAykDKQMpAykDKQMpA6gKkyAfMkeetfgAAAABJRU5ErkJggg==">
+<p>Emulating "blurredVision":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAj5JREFUWIXtlstu2zAQRQ8flqz41QRG4q/oT/e7ujSQVZDAtiwxFNnF0HFStLFaKoAXusAAAiwNji+lmav4/iOy3ML0CYoalAcdgcjnmkEsgRX4e+geoNnAfg27FRwreLaAhoO60Ovvsiy3cPsT5o9Q7ME4UFHqU80hTiFuwB/BKYEyMwg3EEqoIjT/zZYAqydYPMJiC9MX0A5U4LKDC4hLuc9PwN2CqcG30HRQB1BIZQFOapjsoXyB6bMA6j6AHcQIcQ6vNdBA4cB2YANM8sDOgNqDdXK02oFpewIWEFup4MF6MAFMTK7FbPcEUAXeSqdSocc7GCAGcVEnGDUM1EfAN8VzqT5fcfxD8dt1vvRgnb5II2CuRsBcjYC5ejcHF0AHFECfTVKlew1f+T8t3AFriD7t1lY2RK9VN4U4gXiCVAySED4AxhWETYKrzqAXAU2CW8hzoYBgIJzcHAbS0t1Dd4SuhG4vi79XYNXJuQr8HXQz6XGC9EMB+gdoFbS3QAPGp1fqEqCCqCAW4GfQrsHNwU3BWYZzsNlIEtY1vKYsqHsu+6AAA76E1zkcvkmv1oLXcMyHtOzXEtN9K2HT9In7Jyk5zmDEuWMFhxtoCtgb+X2XB2nZrYAbiek2nMNmX0AQyM5CbQWutuJeJlwCrMCVUCY4+49Z7vQxeA1OgzPpaE9jJ0+KmY9U75JwTs9jmoG74WahgiCWLTI77d61HFAqTeWr1dWHhREwVyNgrkbAXI2AuRoBczUC5urqAX8BQkfph8RN0rgAAAAASUVORK5CYII=">
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFRJREFUWIXt18ENACAMw8DA5N0chnCQePgGiKz+ujI5aZru3K6uPWAgZSBlIGUgZSBlIGUgZSBlILWS030iyr6/oIGUgZSBlIGUgZSBlIGUgZSB1AXNwwVLtuf+dAAAAABJRU5ErkJggg==">
+<p>Emulating "deuteranopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAGNJREFUWIXt10ENgDAQBdFtReAGQzVQDdWHBlRwABHzSXqYJ+BnsrdtcxxvBa3rTs5Vj679wEDKQMpAykDKQMpAykDKQMpAqtX5RH+StO0vaCBlIGUgZSBlIGUgZSBlIGUg9QEgIQa9hKQMdAAAAABJRU5ErkJggg==">
+<p>Emulating "none":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFRJREFUWIXt18ENACAMw8DA5N0chnCQePgGiKz+ujI5aZru3K6uPWAgZSBlIGUgZSBlIGUgZSBlILWS030iyr6/oIGUgZSBlIGUgZSBlIGUgZSB1AXNwwVLtuf+dAAAAABJRU5ErkJggg==">
+<p>Emulating "protanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFxJREFUWIXt17ENACEMBEFDldRB/hG90gYUsYf0wU4Bp5UztzXrVNC3o3PVo2sPGEgZSBlIGUgZSBlIGUgZSBlItRon+0SE/f6CBlIGUgZSBlIGUgZSBlIGUgZSF6dNBvu7bH4DAAAAAElFTkSuQmCC">
+<p>Emulating "tritanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFlJREFUWIXt10ENACAQxEAgqEEbEhCNAxDRJeHREbBp7ne1rHlK0h7RuRZde8BAykDKQMpAykDKQMpAykDKQKqnf4i07y9oIGUgZSBlIGUgZSBlIGUgZSB1AS8fBG2mWYWcAAAAAElFTkSuQmCC">
+<p>Emulating "tritanopia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAEVJREFUWIXtzjEBwCAQALEH/55bCQw3wJAoyJqZbx62bwdOBCvBSrASrAQrwUqwEqwEK8FKsBKsBCvBSrASrAQrwUqw+gET9wFPp/w1TAAAAABJRU5ErkJggg==">
+<p>Emulating "some-invalid-deficiency":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "achromatomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "deuteranomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "protanomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Emulating "tritanomaly":
+{
+  "code": -32602,
+  "message": "Unknown vision deficiency type"
+}
+<p>Navigating&mldr;
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFlJREFUWIXt10ENACAQxEAgqEEbEhCNAxDRJeHREbBp7ne1rHlK0h7RuRZde8BAykDKQMpAykDKQMpAykDKQKqnf4i07y9oIGUgZSBlIGUgZSBlIGUgZSB1AS8fBG2mWYWcAAAAAElFTkSuQmCC">
+<p>Emulating "achromatopsia":
+<img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACgAAAAoCAYAAACM/rhtAAAAAXNSR0IArs4c6QAAAFdJREFUWIXt18ENACAMw0BArNuVuwoM4SDx8A0QWf11VtUZQd2dnBsruvaAgZSBlIGUgZSBlIGUgZSBlIHUTv8Qad9f0EDKQMpAykDKQMpAykDKQMpA6gKkyAfMkeetfgAAAABJRU5ErkJggg==">
+

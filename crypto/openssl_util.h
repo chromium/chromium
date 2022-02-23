@@ -9,7 +9,7 @@
 #include <string.h>
 
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "crypto/crypto_export.h"
 
 namespace crypto {
@@ -42,13 +42,13 @@ class ScopedOpenSSLSafeSizeBuffer {
   }
 
   unsigned char* safe_buffer() {
-    return output_len_ < MIN_SIZE ? min_sized_buffer_ : output_;
+    return output_len_ < MIN_SIZE ? min_sized_buffer_ : output_.get();
   }
 
  private:
   // Pointer to the caller's data area and its associated size, where data
   // written via safe_buffer() will [eventually] end up.
-  unsigned char* output_;
+  raw_ptr<unsigned char> output_;
   size_t output_len_;
 
   // Temporary buffer writen into in the case where the caller's

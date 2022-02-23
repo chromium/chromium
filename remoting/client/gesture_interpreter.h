@@ -7,7 +7,7 @@
 
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/input/touch_input_strategy.h"
 #include "remoting/client/ui/desktop_viewport.h"
@@ -116,8 +116,8 @@ class GestureInterpreter {
   InputMode input_mode_ = UNDEFINED_INPUT_MODE;
   std::unique_ptr<TouchInputStrategy> input_strategy_;
   DesktopViewport viewport_;
-  RendererProxy* renderer_ = nullptr;
-  ChromotingSession* input_stub_ = nullptr;
+  raw_ptr<RendererProxy> renderer_ = nullptr;
+  raw_ptr<ChromotingSession> input_stub_ = nullptr;
   TouchInputStrategy::Gesture gesture_in_progress_;
 
   FlingAnimation pan_animation_;

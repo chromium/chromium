@@ -52,9 +52,9 @@ TEST_F(FileSystemAccessUIHelpersTest, GetPathForDisplay) {
     {FILE_PATH_LITERAL("[:"), u"[:"},
     {FILE_PATH_LITERAL("`:"), u"`:"},
     {FILE_PATH_LITERAL("{:"), u"{:"},
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     {FILE_PATH_LITERAL("\x0143:"), u"\x0143:"},
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 #if defined(FILE_PATH_USES_DRIVE_LETTERS)
     {FILE_PATH_LITERAL("c:"), u"c:"},
     {FILE_PATH_LITERAL("C:"), u"C:"},

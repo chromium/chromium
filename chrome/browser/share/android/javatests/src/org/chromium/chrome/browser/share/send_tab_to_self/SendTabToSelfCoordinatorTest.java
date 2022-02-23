@@ -4,49 +4,116 @@
 
 package org.chromium.chrome.browser.share.send_tab_to_self;
 
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.eq;
-import static org.mockito.Mockito.verify;
+import android.view.View;
 
-import androidx.test.filters.SmallTest;
+import androidx.annotation.IdRes;
+import androidx.test.filters.LargeTest;
 
 import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.Mock;
-import org.mockito.MockitoAnnotations;
 
-import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.DisabledTest;
+import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeTabbedActivity;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
+import org.chromium.chrome.browser.sync.SyncService;
+import org.chromium.chrome.browser.sync.SyncTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
-import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
+import org.chromium.components.sync.ModelType;
+import org.chromium.components.sync.protocol.DeviceInfoSpecifics;
+import org.chromium.components.sync.protocol.EntitySpecifics;
+import org.chromium.components.sync.protocol.FeatureSpecificFields;
+import org.chromium.components.sync.protocol.SyncEnums.DeviceType;
+import org.chromium.content_public.browser.test.util.TestThreadUtils;
+import org.chromium.ui.base.WindowAndroid;
 
 /** Tests for SendTabToSelfCoordinator */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
-@Batch(Batch.UNIT_TESTS)
 public class SendTabToSelfCoordinatorTest {
-    @Mock
-    private BottomSheetController mBottomSheetController;
-    @Mock
-    private BottomSheetContent mBottomSheetContent;
+    @Rule
+    public SyncTestRule mSyncTestRule = new SyncTestRule();
 
     @Before
     public void setUp() {
-        MockitoAnnotations.initMocks(this);
+        addTargetDeviceToSyncServer();
     }
 
     @Test
-    @SmallTest
-    public void testShow() {
-        SendTabToSelfCoordinator.setBottomSheetContentForTesting(mBottomSheetContent);
-        SendTabToSelfCoordinator coordinator = new SendTabToSelfCoordinator(/*context*/ null,
-                "test", "test", mBottomSheetController, /*settingsLauncher=*/null,
-                /*isSyncEnabled=*/true, /*navigationTime=*/0);
-        coordinator.show();
-        verify(mBottomSheetController).requestShowContent(any(BottomSheetContent.class), eq(true));
-        SendTabToSelfCoordinator.setBottomSheetContentForTesting(null);
+    @LargeTest
+    @DisabledTest(message = "https://crbug.com/1299410")
+    public void testShowDeviceListIfSignedIn() {
+        // Sign in and wait for the device list to be downloaded.
+        mSyncTestRule.setUpAccountAndSignInForTesting();
+        CriteriaHelper.pollUiThread(
+                () -> SyncService.get().getActiveDataTypes().contains(ModelType.DEVICE_INFO));
+
+        buildAndShowCoordinator();
+
+        waitForViewShown(R.id.device_picker_list);
+    }
+
+    @Test
+    @LargeTest
+    public void testShowFeatureUnavailablePromptIfSignedOut() {
+        buildAndShowCoordinator();
+
+        waitForViewShown(R.id.send_tab_to_self_feature_unavailable_prompt);
+    }
+
+    private void addTargetDeviceToSyncServer() {
+        FeatureSpecificFields features =
+                FeatureSpecificFields.newBuilder().setSendTabToSelfReceivingEnabled(true).build();
+        // Setting a recent timestamp here is necessary, otherwise the device will be considered
+        // expired and won't be displayed.
+        DeviceInfoSpecifics deviceInfo =
+                DeviceInfoSpecifics.newBuilder()
+                        .setCacheGuid("CacheGuid")
+                        .setClientName("Device")
+                        .setDeviceType(DeviceType.TYPE_PHONE)
+                        .setSyncUserAgent("UserAgent")
+                        .setChromeVersion("1.0")
+                        .setSigninScopedDeviceId("Id")
+                        .setLastUpdatedTimestamp(System.currentTimeMillis())
+                        .setFeatureFields(features)
+                        .build();
+        EntitySpecifics specifics = EntitySpecifics.newBuilder().setDeviceInfo(deviceInfo).build();
+        // TODO(crbug.com/1219434): Don't duplicate DeviceInfo's SpecificsToTag() logic for the
+        // clientTag value, instead expose the function to Java and call it here.
+        mSyncTestRule.getFakeServerHelper().injectUniqueClientEntity(
+                "nonUniqueName", /*clientTag=*/"DeviceInfo_CacheGuid", specifics);
+    }
+
+    private void buildAndShowCoordinator() {
+        ChromeTabbedActivity activity = mSyncTestRule.getActivity();
+        WindowAndroid windowAndroid = activity.getWindowAndroid();
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            SendTabToSelfCoordinator coordinator =
+                    new SendTabToSelfCoordinator(activity, windowAndroid, "page-to-share.com",
+                            "Page", BottomSheetControllerProvider.from(windowAndroid),
+                            /*navigationTime=*/0);
+            coordinator.show();
+        });
+    }
+
+    private View getBottomSheetView() {
+        WindowAndroid windowAndroid = mSyncTestRule.getActivity().getWindowAndroid();
+        return TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return BottomSheetControllerProvider.from(windowAndroid)
+                    .getCurrentSheetContent()
+                    .getContentView();
+        });
+    }
+
+    private void waitForViewShown(@IdRes int id) {
+        CriteriaHelper.pollUiThread(() -> {
+            View view = getBottomSheetView().findViewById(id);
+            return view != null && view.getVisibility() == View.VISIBLE;
+        });
     }
 }

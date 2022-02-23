@@ -7,6 +7,9 @@
 #include <utility>
 #include <vector>
 
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "base/containers/adapters.h"
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
@@ -17,7 +20,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/file_manager/fake_disk_mount_manager.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
-#include "chrome/browser/ui/webui/settings/chromeos/calculator/size_calculator_test_api.h"
+#include "chrome/browser/ui/webui/settings/ash/calculator/size_calculator_test_api.h"
 #include "chrome/browser/ui/webui/settings/chromeos/device_storage_handler.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/webui_url_constants.h"
@@ -26,8 +29,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/spaced/spaced_client.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "content/public/browser/web_ui_data_source.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/test_web_ui.h"
@@ -71,7 +72,7 @@ class StorageHandlerTest : public testing::Test {
 
     // The storage handler requires an instance of DiskMountManager,
     // ArcServiceManager and ArcSessionManager.
-    chromeos::disks::DiskMountManager::InitializeForTesting(
+    ash::disks::DiskMountManager::InitializeForTesting(
         new file_manager::FakeDiskMountManager);
     arc_service_manager_ = std::make_unique<arc::ArcServiceManager>();
     arc_session_manager_ = arc::CreateTestArcSessionManager(
@@ -90,27 +91,26 @@ class StorageHandlerTest : public testing::Test {
     handler_ = std::make_unique<TestStorageHandler>(profile_, html_source);
     handler_->set_web_ui(&web_ui_);
     handler_->AllowJavascriptForTesting();
+    content::WebUIDataSource::Add(profile_, html_source);
 
     // Initialize tests APIs.
     total_disk_space_test_api_ =
-        std::make_unique<calculator::TotalDiskSpaceTestAPI>(
-            handler_.get(), new calculator::TotalDiskSpaceCalculator(profile_));
+        std::make_unique<calculator::TotalDiskSpaceTestAPI>(handler_.get(),
+                                                            profile_);
     free_disk_space_test_api_ =
-        std::make_unique<calculator::FreeDiskSpaceTestAPI>(
-            handler_.get(), new calculator::FreeDiskSpaceCalculator(profile_));
+        std::make_unique<calculator::FreeDiskSpaceTestAPI>(handler_.get(),
+                                                           profile_);
     my_files_size_test_api_ = std::make_unique<calculator::MyFilesSizeTestAPI>(
-        handler_.get(), new calculator::MyFilesSizeCalculator(profile_));
+        handler_.get(), profile_);
     browsing_data_size_test_api_ =
-        std::make_unique<calculator::BrowsingDataSizeTestAPI>(
-            handler_.get(),
-            new calculator::BrowsingDataSizeCalculator(profile_));
-    apps_size_test_api_ = std::make_unique<calculator::AppsSizeTestAPI>(
-        handler_.get(), new calculator::AppsSizeCalculator(profile_));
+        std::make_unique<calculator::BrowsingDataSizeTestAPI>(handler_.get(),
+                                                              profile_);
+    apps_size_test_api_ =
+        std::make_unique<calculator::AppsSizeTestAPI>(handler_.get(), profile_);
     crostini_size_test_api_ = std::make_unique<calculator::CrostiniSizeTestAPI>(
-        handler_.get(), new calculator::CrostiniSizeCalculator(profile_));
+        handler_.get(), profile_);
     other_users_size_test_api_ =
-        std::make_unique<calculator::OtherUsersSizeTestAPI>(
-            handler_.get(), new calculator::OtherUsersSizeCalculator());
+        std::make_unique<calculator::OtherUsersSizeTestAPI>(handler_.get());
 
     // Create and register My files directory.
     // By emulating chromeos running, GetMyFilesFolderForProfile will return the
@@ -136,7 +136,7 @@ class StorageHandlerTest : public testing::Test {
     other_users_size_test_api_.reset();
     arc_session_manager_.reset();
     arc_service_manager_.reset();
-    chromeos::disks::DiskMountManager::Shutdown();
+    ash::disks::DiskMountManager::Shutdown();
     storage::ExternalMountPoints::GetSystemInstance()->RevokeAllFileSystems();
     chromeos::SpacedClient::Shutdown();
     chromeos::ConciergeClient::Shutdown();
@@ -161,9 +161,8 @@ class StorageHandlerTest : public testing::Test {
   // base::Value is returned if the callback message is found and has associated
   // data.
   const base::Value* GetWebUICallbackMessage(const std::string& event_name) {
-    for (auto it = web_ui_.call_data().rbegin();
-         it != web_ui_.call_data().rend(); ++it) {
-      const content::TestWebUI::CallData* data = it->get();
+    for (const std::unique_ptr<content::TestWebUI::CallData>& data :
+         base::Reversed(web_ui_.call_data())) {
       const std::string* name = data->arg1()->GetIfString();
       if (data->function_name() != "cr.webUIListenerCallback" || !name) {
         continue;

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ssl/sct_reporting_service.h"
 
+#include "base/feature_list.h"
 #include "base/no_destructor.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/net/system_network_context_manager.h"
@@ -12,6 +13,8 @@
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/storage_partition.h"
+#include "google_apis/google_api_keys.h"
+#include "net/base/escape.h"
 #include "net/traffic_annotation/network_traffic_annotation.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "services/network/public/mojom/network_service.mojom.h"
@@ -53,9 +56,47 @@ constexpr net::NetworkTrafficAnnotationTag kSCTAuditReportTrafficAnnotation =
           }
         })");
 
+constexpr net::NetworkTrafficAnnotationTag kSCTHashdanceTrafficAnnotation =
+    net::DefineNetworkTrafficAnnotation("sct_auditing_hashdance", R"(
+        semantics {
+          sender: "Safe Browsing"
+          description:
+            "When a user connects to a site, clients with Safe Browsing "
+            "enabled may query Google about similar Signed Certificate "
+            "Timestamps. If the SCT has not been seen before, this indicates a "
+            "security incident and the client will upload a full report. This "
+            "helps improve the security and trustworthiness of the HTTPS "
+            "ecosystem."
+          trigger:
+            "The browser will query Google when a connection to a website "
+            "includes Signed Certificate Timestamps, and the user is opted in "
+            "to Safe Browsing."
+          data:
+            "A short prefix of the SCT leaf hash, the length of the prefix, "
+            "and a short user agent string."
+          destination: GOOGLE_OWNED_SERVICE
+        }
+        policy {
+          cookies_allowed: NO
+          setting:
+            "Users can enable or disable this feature by enabling or disabling "
+            "'Safe Browsing' in Chrome's settings under Security, "
+            "Safe Browsing. This feature is enabled by default."
+          chrome_policy {
+            SafeBrowsingProtectionLevel {
+              policy_options {mode: MANDATORY}
+              SafeBrowsingProtectionLevel: 0
+            }
+          }
+        })");
+
 constexpr char kSBSCTAuditingReportURL[] =
     "https://safebrowsing.google.com/safebrowsing/clientreport/"
     "chrome-sct-auditing";
+
+constexpr char kHashdanceLookupQueryURL[] =
+    "https://sctauditing-pa.googleapis.com/v1/knownscts/"
+    "length/$1/prefix/$2?key=";
 
 // static
 GURL& SCTReportingService::GetReportURLInstance() {
@@ -64,18 +105,23 @@ GURL& SCTReportingService::GetReportURLInstance() {
 }
 
 // static
+GURL& SCTReportingService::GetHashdanceLookupQueryURLInstance() {
+  static base::NoDestructor<GURL> instance(
+      std::string(kHashdanceLookupQueryURL) +
+      net::EscapeQueryParamValue(google_apis::GetAPIKey(), /*use_plus=*/true));
+  return *instance;
+}
+
+// static
 void SCTReportingService::ReconfigureAfterNetworkRestart() {
-  bool is_sct_auditing_enabled =
-      base::FeatureList::IsEnabled(features::kSCTAuditing);
-  double sct_sampling_rate = features::kSCTAuditingSamplingRate.Get();
-  mojo::PendingRemote<network::mojom::URLLoaderFactory> factory_remote;
-  SystemNetworkContextManager::GetInstance()->GetURLLoaderFactory()->Clone(
-      factory_remote.InitWithNewPipeAndPassReceiver());
   content::GetNetworkService()->ConfigureSCTAuditing(
-      is_sct_auditing_enabled, sct_sampling_rate,
+      features::kSCTAuditingSamplingRate.Get(),
+      features::kSCTLogExpectedIngestionDelay.Get(),
+      features::kSCTLogMaxIngestionRandomDelay.Get(),
       SCTReportingService::GetReportURLInstance(),
+      SCTReportingService::GetHashdanceLookupQueryURLInstance(),
       net::MutableNetworkTrafficAnnotationTag(kSCTAuditReportTrafficAnnotation),
-      std::move(factory_remote));
+      net::MutableNetworkTrafficAnnotationTag(kSCTHashdanceTrafficAnnotation));
 }
 
 SCTReportingService::SCTReportingService(
@@ -102,25 +148,36 @@ SCTReportingService::~SCTReportingService() = default;
 
 namespace {
 void SetSCTAuditingEnabledForStoragePartition(
-    bool enabled,
+    network::mojom::SCTAuditingMode mode,
     content::StoragePartition* storage_partition) {
-  storage_partition->GetNetworkContext()->SetSCTAuditingEnabled(enabled);
+  storage_partition->GetNetworkContext()->SetSCTAuditingMode(mode);
 }
 }  // namespace
 
-void SCTReportingService::SetReportingEnabled(bool enabled) {
-  // Iterate over StoragePartitions for this Profile, and for each get the
-  // NetworkContext and enable or disable SCT auditing.
-  profile_->ForEachStoragePartition(
-      base::BindRepeating(&SetSCTAuditingEnabledForStoragePartition, enabled));
-
-  if (!enabled)
-    content::GetNetworkService()->ClearSCTAuditingCache();
+network::mojom::SCTAuditingMode SCTReportingService::GetReportingMode() {
+  if (profile_->IsOffTheRecord() ||
+      !base::FeatureList::IsEnabled(features::kSCTAuditing)) {
+    return network::mojom::SCTAuditingMode::kDisabled;
+  }
+  if (safe_browsing::IsSafeBrowsingEnabled(pref_service_)) {
+    if (safe_browsing::IsExtendedReportingEnabled(pref_service_)) {
+      return network::mojom::SCTAuditingMode::kEnhancedSafeBrowsingReporting;
+    }
+    if (base::FeatureList::IsEnabled(features::kSCTAuditingHashdance)) {
+      return network::mojom::SCTAuditingMode::kHashdance;
+    }
+  }
+  return network::mojom::SCTAuditingMode::kDisabled;
 }
 
 void SCTReportingService::OnPreferenceChanged() {
-  const bool enabled = safe_browsing_service_ &&
-                       safe_browsing_service_->enabled_by_prefs() &&
-                       safe_browsing::IsExtendedReportingEnabled(pref_service_);
-  SetReportingEnabled(enabled);
+  network::mojom::SCTAuditingMode mode = GetReportingMode();
+
+  // Iterate over StoragePartitions for this Profile, and for each get the
+  // NetworkContext and set the SCT auditing mode.
+  profile_->ForEachStoragePartition(
+      base::BindRepeating(&SetSCTAuditingEnabledForStoragePartition, mode));
+
+  if (mode == network::mojom::SCTAuditingMode::kDisabled)
+    content::GetNetworkService()->ClearSCTAuditingCache();
 }

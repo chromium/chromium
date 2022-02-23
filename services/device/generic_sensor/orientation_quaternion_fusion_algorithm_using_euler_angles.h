@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_GENERIC_SENSOR_ORIENTATION_QUATERNION_FUSION_ALGORITHM_USING_EULER_ANGLES_H_
 #define SERVICES_DEVICE_GENERIC_SENSOR_ORIENTATION_QUATERNION_FUSION_ALGORITHM_USING_EULER_ANGLES_H_
 
-#include "base/macros.h"
 #include "services/device/generic_sensor/platform_sensor_fusion_algorithm.h"
 
 namespace device {

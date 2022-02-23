@@ -4,7 +4,11 @@
 
 #include "ash/public/cpp/desk_template.h"
 
+#include "ash/constants/app_types.h"
+#include "ash/constants/ash_features.h"
 #include "base/strings/utf_string_conversions.h"
+#include "ui/aura/client/aura_constants.h"
+#include "ui/aura/window.h"
 
 namespace ash {
 
@@ -19,12 +23,38 @@ DeskTemplate::DeskTemplate(const std::string& uuid,
 
 DeskTemplate::~DeskTemplate() = default;
 
+// static
+bool DeskTemplate::IsAppTypeSupported(aura::Window* window) {
+  // For now we'll crostini and lacros windows in desk template. We'll also
+  // ignore ARC apps unless the flag is turned on.
+  const AppType app_type =
+      static_cast<AppType>(window->GetProperty(aura::client::kAppType));
+  switch (app_type) {
+    case AppType::NON_APP:
+    case AppType::CROSTINI_APP:
+    case AppType::LACROS:
+      return false;
+    case AppType::ARC_APP:
+      if (!features::AreDesksTemplatesEnabled())
+        return false;
+      break;
+    case AppType::BROWSER:
+    case AppType::CHROME_APP:
+    case AppType::SYSTEM_APP:
+      break;
+  }
+
+  return true;
+}
+
+constexpr char DeskTemplate::kIncognitoWindowIdentifier[];
+
 DeskTemplate::DeskTemplate()
     : uuid_(base::GUID::GenerateRandomV4()),
       source_(DeskTemplateSource::kUnknownSource),
       created_time_(base::Time::Now()) {}
 
-std::unique_ptr<DeskTemplate> DeskTemplate::Clone() {
+std::unique_ptr<DeskTemplate> DeskTemplate::Clone() const {
   std::unique_ptr<DeskTemplate> desk_template = std::make_unique<DeskTemplate>(
       uuid_.AsLowercaseString(), source_, base::UTF16ToUTF8(template_name_),
       created_time_);
@@ -33,6 +63,27 @@ std::unique_ptr<DeskTemplate> DeskTemplate::Clone() {
   if (desk_restore_data_)
     desk_template->set_desk_restore_data(desk_restore_data_->Clone());
   return desk_template;
+}
+
+std::string DeskTemplate::ToString() const {
+  std::string result =
+      "Template name: " + base::UTF16ToASCII(template_name_) + "\n";
+  result += "Source: ";
+  switch (source_) {
+    case DeskTemplateSource::kUnknownSource:
+      result += "unknown\n";
+      break;
+    case DeskTemplateSource::kUser:
+      result += "user\n";
+      break;
+    case DeskTemplateSource::kPolicy:
+      result += "policy\n";
+      break;
+  }
+
+  if (desk_restore_data_)
+    result += desk_restore_data_->ToString();
+  return result;
 }
 
 }  // namespace ash

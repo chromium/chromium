@@ -13,7 +13,7 @@
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/update_client/background_downloader_win.h"
 #endif
 #include "components/update_client/network.h"

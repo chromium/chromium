@@ -12,7 +12,7 @@
 
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "sandbox/win/src/ipc_tags.h"
 #include "sandbox/win/src/policy_engine_opcodes.h"
 #include "sandbox/win/src/policy_engine_params.h"
@@ -107,7 +107,7 @@ class LowLevelPolicy {
     IpcTag service;
   };
   std::list<RuleNode> rules_;
-  PolicyGlobal* policy_store_;
+  raw_ptr<PolicyGlobal> policy_store_;
 };
 
 // There are 'if' rules and 'if not' comparisons
@@ -182,8 +182,8 @@ class PolicyRule {
                   size_t opcode_size,
                   char* data_start,
                   size_t* data_size) const;
-  PolicyBuffer* buffer_;
-  OpcodeFactory* opcode_factory_;
+  raw_ptr<PolicyBuffer> buffer_;
+  raw_ptr<OpcodeFactory> opcode_factory_;
   EvalResult action_;
   bool done_;
 };

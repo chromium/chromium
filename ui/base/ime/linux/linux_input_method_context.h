@@ -21,12 +21,13 @@ namespace ui {
 struct CompositionText;
 class KeyEvent;
 struct ImeTextSpan;
+class VirtualKeyboardController;
 
 // An interface of input method context for input method frameworks on
 // GNU/Linux and likes.
 class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
  public:
-  virtual ~LinuxInputMethodContext() {}
+  virtual ~LinuxInputMethodContext() = default;
 
   // Dispatches the key event to an underlying IME.  Returns true if the key
   // event is handled, otherwise false.  A client must set the text input type
@@ -44,6 +45,9 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
   virtual void SetSurroundingText(const std::u16string& text,
                                   const gfx::Range& selection_range) = 0;
 
+  // Tells the system IME the content type of the text input client is changed.
+  virtual void SetContentType(TextInputType input_type, int input_flags) = 0;
+
   // Resets the context.  A client needs to call OnTextInputTypeChanged() again
   // before calling DispatchKeyEvent().
   virtual void Reset() = 0;
@@ -53,6 +57,10 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) LinuxInputMethodContext {
 
   // Blurs the context.
   virtual void Blur() = 0;
+
+  // Returns the corresponding VirtualKeyboardController instance.
+  // Or nullptr, if not supported.
+  virtual VirtualKeyboardController* GetVirtualKeyboardController() = 0;
 };
 
 // An interface of callback functions called from LinuxInputMethodContext.

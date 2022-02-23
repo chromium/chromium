@@ -6,7 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
-#include "components/policy/core/browser/url_util.h"
+#include "components/url_matcher/url_util.h"
 
 namespace enterprise_connectors {
 
@@ -36,8 +36,8 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   matcher_ = std::make_unique<url_matcher::URLMatcher>();
   url_matcher::URLMatcherConditionSet::ID id(0);
   const base::Value* enable = settings_value.FindListKey(kKeyEnable);
-  if (enable && enable->is_list() && !enable->GetList().empty()) {
-    for (const base::Value& value : enable->GetList())
+  if (enable && enable->is_list() && !enable->GetListDeprecated().empty()) {
+    for (const base::Value& value : enable->GetListDeprecated())
       AddUrlPatternSettings(value, true, &id);
   } else {
     return;
@@ -45,7 +45,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
 
   const base::Value* disable = settings_value.FindListKey(kKeyDisable);
   if (disable && disable->is_list()) {
-    for (const base::Value& value : disable->GetList())
+    for (const base::Value& value : disable->GetListDeprecated())
       AddUrlPatternSettings(value, false, &id);
   }
 
@@ -67,7 +67,7 @@ AnalysisServiceSettings::AnalysisServiceSettings(
   const base::Value* custom_messages =
       settings_value.FindListKey(kKeyCustomMessages);
   if (custom_messages && custom_messages->is_list()) {
-    for (const base::Value& value : custom_messages->GetList()) {
+    for (const base::Value& value : custom_messages->GetListDeprecated()) {
       // As of now, this list will contain one message per tag. At some point,
       // the server may start sending one message per language/tag pair. If this
       // is the case, this code should be changed to match the language to
@@ -92,6 +92,15 @@ AnalysisServiceSettings::AnalysisServiceSettings(
       data.learn_more_url = url ? GURL(*url) : GURL();
 
       custom_message_data_[*tag] = data;
+    }
+  }
+
+  const base::Value* require_justification_tags =
+      settings_value.FindListKey(kKeyRequireJustificationTags);
+  if (require_justification_tags && require_justification_tags->is_list()) {
+    for (const base::Value& tag :
+         require_justification_tags->GetListDeprecated()) {
+      tags_requiring_justification_.insert(tag.GetString());
     }
   }
 }
@@ -142,6 +151,7 @@ absl::optional<AnalysisSettings> AnalysisServiceSettings::GetAnalysisSettings(
   DCHECK(settings.analysis_url.is_valid());
   settings.minimum_data_size = minimum_data_size_;
   settings.custom_message_data = custom_message_data_;
+  settings.tags_requiring_justification = tags_requiring_justification_;
 
   return settings;
 }
@@ -193,7 +203,7 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
   if (!tags)
     return;
 
-  for (const base::Value& tag : tags->GetList()) {
+  for (const base::Value& tag : tags->GetListDeprecated()) {
     if (tag.is_string() &&
         (service_provider_->analysis_tags().count(tag.GetString()) == 1)) {
       setting.tags.insert(tag.GetString());
@@ -205,8 +215,8 @@ void AnalysisServiceSettings::AddUrlPatternSettings(
   if (!url_list)
     return;
 
-  policy::url_util::AddFilters(matcher_.get(), enabled, id,
-                               &base::Value::AsListValue(*url_list));
+  url_matcher::util::AddFilters(matcher_.get(), enabled, id,
+                                &base::Value::AsListValue(*url_list));
 
   if (enabled)
     enabled_patterns_settings_[*id] = std::move(setting);

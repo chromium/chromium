@@ -13,9 +13,11 @@
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/time/time.h"
+#include "build/buildflag.h"
 #include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/grpc_transport/request_utils.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/assistant/internal/proto/shared/proto/conversation.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/settings_ui.pb.h"
 #include "chromeos/assistant/internal/proto/shared/proto/update_settings_ui.pb.h"
@@ -31,22 +33,6 @@
 #include "chromeos/services/libassistant/grpc/utils/settings_utils.h"
 #include "chromeos/services/libassistant/grpc/utils/timer_utils.h"
 #include "chromeos/services/libassistant/public/cpp/assistant_timer.h"
-#include "libassistant/shared/internal_api/alarm_timer_manager.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
-#include "libassistant/shared/internal_api/display_connection.h"
-#include "libassistant/shared/internal_api/fuchsia_api_helper.h"
-#include "libassistant/shared/internal_api/speaker_id_enrollment.h"
-#include "libassistant/shared/internal_api/voiceless_response.h"
-#include "libassistant/shared/public/device_state_listener.h"
-#include "libassistant/shared/public/media_manager.h"
-
-#if BUILDFLAG(BUILD_LIBASSISTANT_146S)
-#include "libassistant/shared/internal_api/alarm_timer_types.h"
-#endif  // BUILD_LIBASSISTANT_146S
-
-#if BUILDFLAG(BUILD_LIBASSISTANT_152S)
-#include "libassistant/shared/public/alarm_timer_types.h"
-#endif  // BUILD_LIBASSISTANT_152S
 
 namespace chromeos {
 namespace libassistant {
@@ -112,7 +98,7 @@ OnSpeakerIdEnrollmentEventRequest ConvertToGrpcEventRequest(
   return request;
 }
 
-assistant_client::InternalOptions* WARN_UNUSED_RESULT CreateInternalOptions(
+[[nodiscard]] assistant_client::InternalOptions* CreateInternalOptions(
     assistant_client::AssistantManagerInternal* assistant_manager_internal,
     const std::string& locale,
     bool spoken_feedback_enabled,
@@ -296,9 +282,11 @@ void AssistantClientV1::StartServices(
 
 void AssistantClientV1::SetChromeOSApiDelegate(
     assistant_client::ChromeOSApiDelegate* delegate) {
+#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   assistant_manager_internal()
       ->GetFuchsiaApiHelperOrDie()
       ->SetChromeOSApiDelegate(delegate);
+#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 }
 
 bool AssistantClientV1::StartGrpcServices() {
@@ -535,49 +523,67 @@ void AssistantClientV1::ResumeTimer(const std::string& timer_id) {
     alarm_timer_manager()->ResumeTimer(timer_id);
 }
 
-std::vector<assistant::AssistantTimer> AssistantClientV1::GetTimers() {
-  if (alarm_timer_manager())
-    return GetAllCurrentTimersFromEvents(alarm_timer_manager()->GetAllEvents());
-
-  return std::vector<assistant::AssistantTimer>();
+void AssistantClientV1::GetTimers(
+    base::OnceCallback<void(const std::vector<assistant::AssistantTimer>&)>
+        on_done) {
+  std::vector<assistant::AssistantTimer> timers;
+  if (alarm_timer_manager()) {
+    timers =
+        GetAllCurrentTimersFromEvents(alarm_timer_manager()->GetAllEvents());
+  }
+  std::move(on_done).Run(std::move(timers));
 }
 
-void AssistantClientV1::RegisterAlarmTimerEventObserver(
-    base::WeakPtr<GrpcServicesObserver<OnAlarmTimerEventRequest>> observer) {
+void AssistantClientV1::AddAlarmTimerEventObserver(
+    GrpcServicesObserver<::assistant::api::OnAlarmTimerEventRequest>*
+        observer) {
+  timer_event_observer_list_.AddObserver(observer);
+
   // We always want to know when a timer has started ringing.
   alarm_timer_manager()->RegisterRingingStateListener(
       ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
-          [](const base::WeakPtr<
-                 GrpcServicesObserver<OnAlarmTimerEventRequest>>& observer,
-             const base::WeakPtr<AssistantClientV1>& self) {
-            if (self && observer) {
-              observer->OnGrpcMessage(
-                  CreateOnAlarmTimerEventRequestProtoForV1(self->GetTimers()));
+          [](const base::WeakPtr<AssistantClientV1>& self) {
+            if (self) {
+              self->GetAndNotifyTimerStatus();
             }
           },
-          observer, weak_factory_.GetWeakPtr())));
+          weak_factory_.GetWeakPtr())));
 
   // In timers v2, we also want to know when timers are scheduled,
   // updated, and/or removed so that we can represent those states
   // in UI.
   alarm_timer_manager()->RegisterTimerActionListener(
       ToStdFunctionRepeating(BindToCurrentSequenceRepeating(
-          [](const base::WeakPtr<
-                 GrpcServicesObserver<OnAlarmTimerEventRequest>>& observer,
-             const base::WeakPtr<AssistantClientV1>& self,
+          [](const base::WeakPtr<AssistantClientV1>& self,
              const assistant_client::AlarmTimerManager::EventActionType&
                  ignore) {
-            if (self && observer) {
-              observer->OnGrpcMessage(
-                  CreateOnAlarmTimerEventRequestProtoForV1(self->GetTimers()));
+            if (self) {
+              self->GetAndNotifyTimerStatus();
             }
           },
-          observer, weak_factory_.GetWeakPtr())));
+          weak_factory_.GetWeakPtr())));
 }
 
 assistant_client::AlarmTimerManager* AssistantClientV1::alarm_timer_manager() {
   DCHECK(assistant_manager_internal());
   return assistant_manager_internal()->GetAlarmTimerManager();
+}
+
+void AssistantClientV1::GetAndNotifyTimerStatus() {
+  GetTimers(base::BindOnce(
+      [](const base::WeakPtr<AssistantClientV1>& self,
+         const std::vector<assistant::AssistantTimer>& timers) {
+        // Observers outlive `this`. Observers are added when
+        // `OnAssistantClientRunning()`, and destroyed when
+        // `OnDestroyingAssistantClient()`.
+        if (self) {
+          for (auto& observer : self->timer_event_observer_list_) {
+            observer.OnGrpcMessage(
+                CreateOnAlarmTimerEventRequestProtoForV1(timers));
+          }
+        }
+      },
+      weak_factory_.GetWeakPtr()));
 }
 
 }  // namespace libassistant

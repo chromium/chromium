@@ -1,0 +1,19 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+source_set("screen_ai_service_router_factory") {
+  sources = [
+    "screen_ai_service_router.cc",
+    "screen_ai_service_router.h",
+    "screen_ai_service_router_factory.cc",
+    "screen_ai_service_router_factory.h",
+  ]
+
+  deps = [
+    "//components/keyed_service/content",
+    "//components/keyed_service/core",
+    "//components/services/screen_ai/public/mojom",
+    "//content/public/browser",
+  ]
+}

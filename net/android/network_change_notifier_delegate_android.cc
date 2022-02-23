@@ -4,10 +4,12 @@
 
 #include "net/android/network_change_notifier_delegate_android.h"
 
+#include "base/android/build_info.h"
 #include "base/android/jni_array.h"
 #include "base/check.h"
 #include "base/notreached.h"
 #include "net/android/network_change_notifier_android.h"
+#include "net/net_jni_headers/NetworkActiveNotifier_jni.h"
 #include "net/net_jni_headers/NetworkChangeNotifier_jni.h"
 
 using base::android::JavaParamRef;
@@ -72,7 +74,12 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
       register_network_callback_failed_(
           Java_NetworkChangeNotifier_registerNetworkCallbackFailed(
               base::android::AttachCurrentThread(),
-              java_network_change_notifier_)) {
+              java_network_change_notifier_)),
+      // TODO(crbug.com/1042122): Remove once Cronet drops Kitkat support.
+      is_default_network_active_api_supported_(
+          base::android::BuildInfo::GetInstance()->sdk_int() >=
+          base::android::SDK_VERSION_LOLLIPOP),
+      default_network_active_observers_(0) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NetworkChangeNotifier_addNativeObserver(
       env, java_network_change_notifier_, reinterpret_cast<intptr_t>(this));
@@ -90,10 +97,14 @@ NetworkChangeNotifierDelegateAndroid::NetworkChangeNotifierDelegateAndroid()
           env, java_network_change_notifier_);
   JavaLongArrayToNetworkMap(env, networks_and_types, &network_map);
   SetCurrentNetworksAndTypes(network_map);
+  if (is_default_network_active_api_supported_)
+    java_network_active_notifier_ = Java_NetworkActiveNotifier_build(
+        base::android::AttachCurrentThread(), reinterpret_cast<intptr_t>(this));
 }
 
 NetworkChangeNotifierDelegateAndroid::~NetworkChangeNotifierDelegateAndroid() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  DCHECK_EQ(default_network_active_observers_, 0);
   {
     base::AutoLock auto_lock(observer_lock_);
     DCHECK(!observer_);
@@ -148,6 +159,16 @@ void NetworkChangeNotifierDelegateAndroid::GetCurrentlyConnectedNetworks(
   base::AutoLock auto_lock(connection_lock_);
   for (auto i : network_map_)
     network_list->push_back(i.first);
+}
+
+bool NetworkChangeNotifierDelegateAndroid::IsDefaultNetworkActive() {
+  // If the API is not available always return true to avoid indefinitely
+  // batching.
+  if (!is_default_network_active_api_supported_)
+    return true;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  return Java_NetworkActiveNotifier_isDefaultNetworkActive(
+      env, java_network_active_notifier_);
 }
 
 void NetworkChangeNotifierDelegateAndroid::NotifyConnectionTypeChanged(
@@ -299,6 +320,13 @@ void NetworkChangeNotifierDelegateAndroid::NotifyPurgeActiveNetworkList(
     NotifyOfNetworkDisconnect(env, obj, disconnected_network);
 }
 
+void NetworkChangeNotifierDelegateAndroid::NotifyOfDefaultNetworkActive(
+    JNIEnv* env) {
+  base::AutoLock auto_lock(observer_lock_);
+  if (observer_)
+    observer_->OnDefaultNetworkActive();
+}
+
 void NetworkChangeNotifierDelegateAndroid::RegisterObserver(
     Observer* observer) {
   base::AutoLock auto_lock(observer_lock_);
@@ -311,6 +339,39 @@ void NetworkChangeNotifierDelegateAndroid::UnregisterObserver(
   base::AutoLock auto_lock(observer_lock_);
   DCHECK_EQ(observer_, observer);
   observer_ = nullptr;
+}
+
+void NetworkChangeNotifierDelegateAndroid::DefaultNetworkActiveObserverAdded() {
+  if (!is_default_network_active_api_supported_)
+    return;
+  if (default_network_active_observers_.fetch_add(1) == 0)
+    EnableDefaultNetworkActiveNotifications();
+}
+
+void NetworkChangeNotifierDelegateAndroid::
+    DefaultNetworkActiveObserverRemoved() {
+  if (!is_default_network_active_api_supported_)
+    return;
+  if (default_network_active_observers_.fetch_sub(1) == 1)
+    DisableDefaultNetworkActiveNotifications();
+}
+
+void NetworkChangeNotifierDelegateAndroid::
+    EnableDefaultNetworkActiveNotifications() {
+  if (!is_default_network_active_api_supported_)
+    return;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_NetworkActiveNotifier_enableNotifications(env,
+                                                 java_network_active_notifier_);
+}
+
+void NetworkChangeNotifierDelegateAndroid::
+    DisableDefaultNetworkActiveNotifications() {
+  if (!is_default_network_active_api_supported_)
+    return;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_NetworkActiveNotifier_disableNotifications(
+      env, java_network_active_notifier_);
 }
 
 void NetworkChangeNotifierDelegateAndroid::SetCurrentConnectionType(
@@ -384,6 +445,14 @@ void NetworkChangeNotifierDelegateAndroid::FakeConnectionSubtypeChanged(
     ConnectionSubtype subtype) {
   JNIEnv* env = base::android::AttachCurrentThread();
   Java_NetworkChangeNotifier_fakeConnectionSubtypeChanged(env, subtype);
+}
+
+void NetworkChangeNotifierDelegateAndroid::FakeDefaultNetworkActive() {
+  if (!is_default_network_active_api_supported_)
+    return;
+  JNIEnv* env = base::android::AttachCurrentThread();
+  Java_NetworkActiveNotifier_fakeDefaultNetworkActive(
+      env, java_network_active_notifier_);
 }
 
 }  // namespace net

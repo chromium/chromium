@@ -13,6 +13,7 @@
 #include "base/format_macros.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/stringprintf.h"
 #include "base/threading/thread_restrictions.h"
@@ -88,7 +89,7 @@ class AudioInputDevice::AudioThreadCallback
   size_t current_segment_id_;
   uint32_t last_buffer_id_;
   std::vector<std::unique_ptr<const media::AudioBus>> audio_buses_;
-  CaptureCallback* capture_callback_;
+  raw_ptr<CaptureCallback> capture_callback_;
 
   // Used for informing AudioInputDevice that we have gotten data, i.e. the
   // stream is alive. |got_data_callback_| is run every
@@ -210,6 +211,10 @@ void AudioInputDevice::SetOutputDeviceForAec(
   TRACE_EVENT1("audio", "AudioInputDevice::SetOutputDeviceForAec",
                "output_device_id", output_device_id);
 
+  if (output_device_id_for_aec_ &&
+      *output_device_id_for_aec_ == output_device_id)
+    return;
+
   output_device_id_for_aec_ = output_device_id;
   if (state_ > CREATING_STREAM)
     ipc_->SetOutputDeviceForAec(output_device_id);
@@ -222,7 +227,7 @@ void AudioInputDevice::OnStreamCreated(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   TRACE_EVENT0("audio", "AudioInputDevice::OnStreamCreated");
   DCHECK(shared_memory_region.IsValid());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(socket_handle.IsValid());
 #else
   DCHECK(socket_handle.is_valid());
@@ -254,7 +259,7 @@ void AudioInputDevice::OnStreamCreated(
 // here. See comments in AliveChecker and PowerObserverHelper for details and
 // todos.
   if (detect_dead_stream_ == DeadStreamDetection::kEnabled) {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     const bool stop_at_first_alive_notification = true;
     const bool pause_check_during_suspend = false;
 #else

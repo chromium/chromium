@@ -1,0 +1,87 @@
+<html>
+  <head>
+    <link rel="icon" href="data:," />
+    <script>
+      "use strict";
+
+      let capturedStream;
+      let capturedVideoTrack;
+
+      async function startCapture() {
+        if (capturedStream) {
+          window.domAutomationController.send("error-multiple-embedded-captures");
+          return;
+        }
+
+        try {
+          capturedStream = await navigator.mediaDevices.getDisplayMedia();
+          [capturedVideoTrack] = capturedStream.getVideoTracks();
+          window.domAutomationController.send("embedded-capture-success");
+        } catch (e) {
+          window.domAutomationController.send("embedded-capture-failure");
+        }
+      }
+
+      async function produceCropId(elementId) {
+        const element = document.getElementById(elementId);
+        let cropId;
+        try {
+          cropId = await navigator.mediaDevices.produceCropId(element);
+          // Explicitly note emptiness to make it clear this is genuine emptiness
+          // and not a test error on the C++/JS boundary.
+          window.domAutomationController.send(
+              cropId == "" ? "empty-crop-id" : cropId);
+        } catch (e) {
+          window.domAutomationController.send("embedded-produce-crop-id-error");
+        }
+      }
+
+      async function crop(cropId) {
+        if (!capturedVideoTrack) {
+          window.domAutomationController.send("embedded-crop-error-no-track");
+          return;
+        }
+
+        try {
+          await capturedVideoTrack.cropTo(cropId);
+          window.domAutomationController.send("embedded-crop-success");
+          return;
+        } catch (e) {
+          window.domAutomationController.send("embedded-crop-error");
+        }
+      }
+
+      // Allows creating new div-elements for which new crop-IDs may be created.
+      async function createNewDivElement(divId) {
+        let newDiv = document.createElement("div");
+        newDiv.id = divId;
+        document.body.appendChild(newDiv);
+        window.domAutomationController.send("embedded-new-div-success");
+      }
+
+      window.addEventListener("message", (event) => {
+        if (event.data == "start-capture") {
+          startCapture();
+        } else if (event.data.startsWith("produce-crop-id:")) {
+          produceCropId(event.data.substr("produce-crop-id:".length));
+        } else if (event.data.startsWith("crop-to:")) {
+          crop(event.data.substr("crop-to:".length));
+        } else if (event.data.startsWith("create-new-div-element:")) {
+          createNewDivElement(event.data.substr("create-new-div-element:".length));
+        } else {
+          window.domAutomationController.send("unrecognized-message");
+        }
+      });
+
+      function reportEmbeddingSuccess() {
+        window.domAutomationController.send("embedding-done");
+      }
+    </script>
+  </head>
+  <body onload="reportEmbeddingSuccess();">
+    <div id="div">
+      <!-- This DIV is just a convenient target for produceCropId. -->
+      <h1>Region Capture Test - Page 1 (Embedded)</h1>
+    </div>
+  </body>
+</html>

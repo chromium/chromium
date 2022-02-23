@@ -1,0 +1,13 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+// https://drafts.csswg.org/css-fonts-4/#om-fontpalettevalues
+
+[Exposed=Window,RuntimeEnabled=FontPalette]
+interface CSSFontPaletteValuesRule : CSSRule {
+  readonly attribute CSSOMString name;
+  readonly attribute CSSOMString fontFamily;
+  readonly attribute CSSOMString basePalette;
+  readonly attribute CSSOMString overrideColors;
+};

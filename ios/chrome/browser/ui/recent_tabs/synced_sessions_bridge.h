@@ -7,9 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
-
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 

@@ -23,8 +23,9 @@ Are you a Google employee? See
 
 ### Visual Studio
 
-Chromium requires Visual Studio 2017 (>=15.7.2) to build, but VS2019 (>=16.0.0)
-is preferred. Visual Studio can also be used to debug Chromium, and VS2019 is
+Chromium requires [Visual Studio 2017](https://docs.microsoft.com/en-us/visualstudio/releasenotes/vs2017-relnotes) (>=15.7.2)
+to build, but [Visual Studio 2019](https://docs.microsoft.com/en-us/visualstudio/releases/2019/release-notes) (>=16.0.0)
+is preferred. Visual Studio can also be used to debug Chromium, and version 2019 is
 preferred for this as it handles Chromium's large debug information much better.
 The clang-cl compiler is used but Visual Studio's header files, libraries, and
 some tools are required. Visual Studio Community Edition should work if its
@@ -50,7 +51,8 @@ $ PATH_TO_INSTALLER.EXE ^
 --includeRecommended
 ```
 
-You must have the version 10.0.19041 or higher Windows 10 SDK installed. This
+-You must have the version 10.0.19041 or higher [Windows 10 SDK](https://developer.microsoft.com/en-us/windows/downloads/sdk-archive/)
+installed. This
 can be installed separately or by checking the appropriate box in the Visual
 Studio Installer.
 
@@ -90,10 +92,12 @@ Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN system variable in the same way, and set
 it to 0. This tells depot_tools to use your locally installed version of Visual
 Studio (by default, depot_tools will try to use a google-internal version).
 
-You may also have to set variable `vs2017_install` or `vs2019_install` to your
-installation path of Visual Studio 2017 or 19, like
+You may also have to set variable `vs2017_install` or `vs2019_install` or
+`vs2022_install` to your installation path of Visual Studio 2017 or 19 or 22, like
 `set vs2019_install=C:\Program Files (x86)\Microsoft Visual Studio\2019\Professional`
-for Visual Studio 2019.
+for Visual Studio 2019, or
+`set vs2022_install=C:\Program Files\Microsoft Visual Studio\2022\Professional`
+for Visual Studio 2022.
 
 From a cmd.exe shell, run:
 
@@ -108,7 +112,7 @@ with the code, including msysgit and python.
   it may appear to run properly, but msysgit, python, and other tools
   may not get installed correctly.
 * If you see strange errors with the file system on the first run of gclient,
-  you may want to [disable Windows Indexing](http://tortoisesvn.tigris.org/faq.html#cantmove2).
+  you may want to [disable Windows Indexing](https://tortoisesvn.net/faq.html#cantmove2).
 
 ## Check python install
 
@@ -214,6 +218,8 @@ support incremental linking for more targets. Note that if you set this but
 don't' set enable_nacl = false then build times may get worse.
 * `blink_symbol_level = 0` - turn off source-level debugging for
 blink to reduce build times, appropriate if you don't plan to debug blink.
+* `v8_symbol_level = 0` - turn off source-level debugging for v8 to reduce
+build times, appropriate if you don't plan to debug v8.
 
 In order to speed up linking you can set `symbol_level = 1` or
 `symbol_level = 0` - these options reduce the work the compiler and linker have

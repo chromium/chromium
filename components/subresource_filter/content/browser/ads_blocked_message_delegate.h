@@ -47,6 +47,8 @@ class AdsBlockedMessageDelegate
   void ShowMessage();
   void DismissMessage(messages::DismissReason dismiss_reason);
 
+  void DismissMessageForTesting(messages::DismissReason dismiss_reason);
+
   messages::MessageWrapper* message_for_testing() { return message_.get(); }
   bool reprompt_required_flag_for_testing() { return reprompt_required_; }
 
@@ -82,7 +84,7 @@ class AdsBlockedMessageDelegate
   // explicitly in the code or automatically.
   void HandleDialogDismissed();
 
-  void ShowDialog();
+  void ShowDialog(bool should_post_dialog);
 
   std::unique_ptr<messages::MessageWrapper> message_;
 

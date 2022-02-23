@@ -6,7 +6,6 @@
 #define IOS_CHROME_TEST_IOS_CHROME_UNIT_TEST_SUITE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ios/web/public/test/web_test_suite.h"
 

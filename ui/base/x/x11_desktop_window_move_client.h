@@ -6,11 +6,14 @@
 #define UI_BASE_X_X11_DESKTOP_WINDOW_MOVE_CLIENT_H_
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/component_export.h"
 #include "ui/base/x/x11_move_loop_delegate.h"
 #include "ui/base/x/x11_whole_screen_move_loop.h"
 #include "ui/gfx/geometry/point.h"
+
+namespace gfx {
+class Rect;
+}
 
 namespace ui {
 

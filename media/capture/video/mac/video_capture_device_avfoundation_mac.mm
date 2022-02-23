@@ -536,10 +536,15 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 
             char* baseAddress = 0;
             size_t length = 0;
-            media::ExtractBaseAddressAndLength(&baseAddress, &length,
-                                               sampleBuffer);
-            _frameReceiver->OnPhotoTaken(
-                reinterpret_cast<uint8_t*>(baseAddress), length, "image/jpeg");
+            const bool sample_buffer_addressable =
+                media::ExtractBaseAddressAndLength(&baseAddress, &length,
+                                                   sampleBuffer);
+            DCHECK(sample_buffer_addressable);
+            if (sample_buffer_addressable) {
+              _frameReceiver->OnPhotoTaken(
+                  reinterpret_cast<uint8_t*>(baseAddress), length,
+                  "image/jpeg");
+            }
           }
         }
       }
@@ -623,11 +628,22 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // Trust |_frameReceiver| to do decompression.
   char* baseAddress = 0;
   size_t frameSize = 0;
-  media::ExtractBaseAddressAndLength(&baseAddress, &frameSize, sampleBuffer);
   _lock.AssertAcquired();
-  _frameReceiver->ReceiveFrame(reinterpret_cast<const uint8_t*>(baseAddress),
-                               frameSize, captureFormat, colorSpace, 0, 0,
-                               timestamp);
+  const bool sample_buffer_addressable = media::ExtractBaseAddressAndLength(
+      &baseAddress, &frameSize, sampleBuffer);
+  DCHECK(sample_buffer_addressable);
+  if (sample_buffer_addressable) {
+    const bool safe_to_forward =
+        captureFormat.pixel_format == media::PIXEL_FORMAT_MJPEG ||
+        media::VideoFrame::AllocationSize(
+            captureFormat.pixel_format, captureFormat.frame_size) <= frameSize;
+    DCHECK(safe_to_forward);
+    if (safe_to_forward) {
+      _frameReceiver->ReceiveFrame(
+          reinterpret_cast<const uint8_t*>(baseAddress), frameSize,
+          captureFormat, colorSpace, 0, 0, timestamp);
+    }
+  }
 }
 
 - (BOOL)processPixelBufferPlanes:(CVImageBufferRef)pixelBuffer
@@ -812,7 +828,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
                                           (const gfx::ColorSpace&)colorSpace {
   DCHECK(ioSurface);
   gfx::GpuMemoryBufferHandle handle;
-  handle.id.id = -1;
+  handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   handle.io_surface.reset(ioSurface, base::scoped_policy::RETAIN);
 
@@ -825,8 +841,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   gfx::ColorSpace overriddenColorSpace = colorSpace;
   if (colorSpace == kColorSpaceRec709Apple) {
     overriddenColorSpace = gfx::ColorSpace(
-        gfx::ColorSpace::PrimaryID::BT709,
-        gfx::ColorSpace::TransferID::IEC61966_2_1,
+        gfx::ColorSpace::PrimaryID::BT709, gfx::ColorSpace::TransferID::SRGB,
         gfx::ColorSpace::MatrixID::BT709, gfx::ColorSpace::RangeID::LIMITED);
     IOSurfaceSetValue(ioSurface, CFSTR("IOSurfaceColorSpace"),
                       kCGColorSpaceSRGB);
@@ -907,7 +922,13 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   if (!_frameReceiver)
     return;
 
-  const base::TimeDelta timestamp = GetCMSampleBufferTimestamp(sampleBuffer);
+  const base::TimeDelta pres_timestamp =
+      GetCMSampleBufferTimestamp(sampleBuffer);
+  if (start_timestamp_.is_zero()) {
+    start_timestamp_ = pres_timestamp;
+  }
+  const base::TimeDelta timestamp = pres_timestamp - start_timestamp_;
+
   bool logUma = !std::exchange(_capturedFirstFrame, true);
   if (logUma) {
     media::LogFirstCapturedVideoFrame(_bestCaptureFormat, sampleBuffer);

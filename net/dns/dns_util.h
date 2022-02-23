@@ -26,8 +26,6 @@ class BigEndianReader;
 
 namespace net {
 
-class AddressList;
-
 // DNSDomainFromDot - convert a domain string to DNS format. From DJB's
 // public domain DNS library. |dotted| may include only characters a-z, A-Z,
 // 0-9, -, and _.
@@ -96,26 +94,6 @@ base::TimeDelta GetTimeDeltaForConnectionTypeFromFieldTrialOrDefault(
     base::TimeDelta default_delta,
     NetworkChangeNotifier::ConnectionType connection_type);
 
-// How similar or different two AddressLists are (see values for details).
-// Used in histograms; do not modify existing values.
-enum AddressListDeltaType {
-  // Both lists contain the same addresses in the same order.
-  DELTA_IDENTICAL = 0,
-  // Both lists contain the same addresses in a different order.
-  DELTA_REORDERED = 1,
-  // The two lists have at least one address in common, but not all of them.
-  DELTA_OVERLAP = 2,
-  // The two lists have no addresses in common.
-  DELTA_DISJOINT = 3,
-  MAX_DELTA_TYPE
-};
-
-// Compares two AddressLists to see how similar or different their addresses
-// are. (See |AddressListDeltaType| for details of exactly what's checked.)
-NET_EXPORT
-AddressListDeltaType FindAddressListDeltaType(const AddressList& a,
-                                              const AddressList& b);
-
 // Creates a 2-byte string that represents the name pointer defined in Section
 // 4.1.1 of RFC 1035 for the given offset. The first two bits in the first byte
 // of the name pointer are ones, and the rest 14 bits are given to |offset|,
@@ -148,7 +126,7 @@ GetDohUpgradeServersFromNameservers(
 
 // Returns the provider id to use in UMA histogram names. If there is no
 // provider id that matches |doh_server|, returns "Other".
-NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromDohConfig(
+NET_EXPORT_PRIVATE std::string GetDohProviderIdForHistogramFromServerConfig(
     const DnsOverHttpsServerConfig& doh_server);
 
 // Returns the provider id to use in UMA histogram names. If there is no

@@ -118,7 +118,7 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
     // If |configure_timer_| is started, stops the timer, runs
     // ConfigureDisplays(), and returns true; returns false otherwise.
-    bool TriggerConfigureTimeout() WARN_UNUSED_RESULT;
+    [[nodiscard]] bool TriggerConfigureTimeout();
 
     // Gets the current delay of the |configure_timer_| if it's running, or zero
     // time delta otherwise.
@@ -272,7 +272,11 @@ class DISPLAY_MANAGER_EXPORT DisplayConfigurator
 
   // Enable/disable the privacy screen on display with |display_id|.
   // For this to succeed, privacy screen must be supported by the display.
-  void SetPrivacyScreen(int64_t display_id, bool enabled);
+  // After privacy screen is set, |callback| is called with the outcome
+  // (success/failure) of the operation.
+  void SetPrivacyScreen(int64_t display_id,
+                        bool enabled,
+                        ConfigurationCallback callback);
 
   // Returns the requested power state if set or the default power state.
   chromeos::DisplayPowerState GetRequestedPowerState() const;

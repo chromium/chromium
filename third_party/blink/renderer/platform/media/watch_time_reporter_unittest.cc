@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "media/base/mock_media_log.h"
 #include "media/base/pipeline_status.h"
+#include "media/base/test_helpers.h"
 #include "media/base/watch_time_keys.h"
 #include "media/mojo/mojom/media_metrics_provider.mojom.h"
 #include "media/mojo/mojom/watch_time_recorder.mojom.h"
@@ -201,7 +202,7 @@ class WatchTimeReporterTest
       }
     }
 
-    void OnError(media::PipelineStatus status) override {
+    void OnError(const media::PipelineStatus& status) override {
       parent_->OnError(status);
     }
 
@@ -270,7 +271,7 @@ class WatchTimeReporterTest
     void Initialize(bool is_mse,
                     media::mojom::MediaURLScheme url_scheme,
                     media::mojom::MediaStreamType media_stream_type) override {}
-    void OnError(media::PipelineStatus status) override {}
+    void OnError(const media::PipelineStatus& status) override {}
     void SetIsEME() override {}
     void SetTimeToMetadata(base::TimeDelta elapsed) override {}
     void SetTimeToFirstFrame(base::TimeDelta elapsed) override {}
@@ -677,7 +678,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporter) {
   wtr_->OnPlaying();
   EXPECT_TRUE(IsMonitoring());
 
-  EXPECT_CALL(*this, OnError(media::PIPELINE_ERROR_DECODE))
+  EXPECT_CALL(*this,
+              OnError(media::HasStatusCode(media::PIPELINE_ERROR_DECODE)))
       .Times((has_audio_ && has_video_) ? 3 : 2);
   wtr_->OnError(media::PIPELINE_ERROR_DECODE);
 
@@ -1205,7 +1207,8 @@ TEST_P(WatchTimeReporterTest, WatchTimeReporterShownHidden) {
 
   // One call for the background, one for the foreground, and one for the muted
   // reporter if we have audio+video.
-  EXPECT_CALL(*this, OnError(media::PIPELINE_ERROR_DECODE))
+  EXPECT_CALL(*this,
+              OnError(media::HasStatusCode(media::PIPELINE_ERROR_DECODE)))
       .Times((has_audio_ && has_video_) ? 3 : 2);
   wtr_->OnError(media::PIPELINE_ERROR_DECODE);
 

@@ -3,9 +3,9 @@
     /* Colors: */
     --memory-background-color: var(--google-grey-200);
     --memory-title-color: rgb(255, 255, 255);
-    --shape-blue-color: var(--google-blue-refresh-500);
-    --shape-green-color: var(--google-green-refresh-500);
-    --shape-yellow-color: var(--google-yellow-refresh-500);
+    --shape-blue-color: var(--google-blue-500);
+    --shape-green-color: var(--google-green-500);
+    --shape-yellow-color: var(--google-yellow-500);
     /* Other: */
     --memory-shadow: 0 1px 2px rgba(60, 64, 67, 0.3),
         0 2px 6px 2px rgba(60, 64, 67, 0.15);
@@ -15,9 +15,9 @@
     :host {
       /* Colors: */
       --memory-background-color: var(--google-grey-800);
-      --shape-blue-color: var(--google-blue-refresh-400);
-      --shape-green-color: var(--google-green-refresh-400);
-      --shape-yellow-color: var(--google-yellow-refresh-400);
+      --shape-blue-color: var(--google-blue-400);
+      --shape-green-color: var(--google-green-400);
+      --shape-yellow-color: var(--google-yellow-400);
       /* Other: */
       --memory-shadow: 0px 2px 6px 2px rgba(0, 0, 0, 0.15),
           0px 1px 2px rgba(0, 0, 0, 0.3);
@@ -194,6 +194,20 @@
     overflow: hidden;
     position: relative;
     right: 0;
+    z-index: -1;
+  }
+
+  #customArtWork {
+    display: flex;
+    flex-grow: 1;
+    flex-shrink: 1;
+    height: 236px;
+    margin-top: -46px;
+    max-width: 240px;
+    overflow: hidden;
+    position: relative;
+    right: 0;
+    z-index: -1;
   }
 
   #yellowShape {
@@ -314,10 +328,11 @@
 </style>
 <ntp-module-header
     chip-text="[[headerChipText_]]"
-    hide-menu-button="[[showOptInScreen]]"
+    hide-menu-button="[[hideMenuButton]]"
     show-info-button="[[!showOptInScreen]]"
     on-info-button-click="onInfoButtonClick_"
-    show-dismiss-button on-dismiss-button-click="onDismissButtonClick_"
+    show-dismiss-button="[[!showSoftOptOutButton]]"
+    on-dismiss-button-click="onDismissButtonClick_"
     dismiss-text="[[i18nRecursive('',
                                   'modulesDismissButtonText',
                                   'modulesPhotosMemoriesHideToday')]]"
@@ -325,7 +340,7 @@
     disable-text="[[i18nRecursive('',
                                   'modulesDisableButtonText',
                                   'modulesPhotosMemoriesDisable')]]">
-  [[i18n('modulesPhotosTitle')]]
+  $i18n{modulesPhotosTitle}
 </ntp-module-header>
 <div id="memories">
   <template id="welcomeCardElement" is="dom-if" if="[[showOptInScreen]]">
@@ -333,34 +348,49 @@
       <div id="optInContent">
         <div>
           <h1 id="optInTitleText">
-            [[i18n('modulesPhotosMemoriesWelcomeTitle')]]
+            [[optInTitleText]]
           </h1>
           <span id="optInTitleDesc">
-            [[i18n('modulesPhotosMemoriesWelcomeText')]]
+            $i18n{modulesPhotosMemoriesWelcomeText}
           </span>
         </div>
         <div>
           <cr-button id="optInButton" class="action-button"
               on-click="onOptInClick_">
-            [[i18n('modulesPhotosMemoriesWelcomeButtonOptIn')]]
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptIn}
           </cr-button>
-          <cr-button id="optOutButton" on-click="onOptOutClick_">
-            [[i18n('modulesPhotosMemoriesWelcomeButtonOptOut')]]
+          <cr-button id="optOutButton"
+              on-click="onOptOutClick_"
+              hidden="[[showSoftOptOutButton]]">
+            $i18n{modulesPhotosMemoriesWelcomeButtonOptOut}
+          </cr-button>
+          <cr-button id="softOptOutButton"
+            on-click="onSoftOptOutClick_"
+            hidden="[[!showSoftOptOutButton]]">
+              $i18n{modulesPhotosMemoriesWelcomeButtonSoftOptOut}
           </cr-button>
         </div>
       </div>
-      <div id="optInArtwork">
-        <div id="yellowShape"></div>
-        <div id="blueShape"></div>
-        <div id="greenShape"></div>
-        <div id="memoryMain" class="memory card">
-          <div class="memory-title" dir="auto">
-            [[i18n('modulesPhotosMemoriesWelcomeExample')]]
+
+      <template is="dom-if" if="[[!showCustomArtWork_]]">
+        <div id="optInArtwork">
+          <div id="yellowShape"></div>
+          <div id="blueShape"></div>
+          <div id="greenShape"></div>
+          <div id="memoryMain" class="memory card">
+            <div class="memory-title" dir="auto">
+              $i18n{modulesPhotosMemoriesWelcomeExample}
+            </div>
           </div>
+          <div id="memorySecond" class="memory card no-title"></div>
+          <div id="memoryThird" class="memory card no-title"></div>
         </div>
-        <div id="memorySecond" class="memory card no-title"></div>
-        <div id="memoryThird" class="memory card no-title"></div>
-      </div>
+      </template>
+      <template is="dom-if" if="[[showCustomArtWork_]]">
+        <div id="customArtWork">
+          <img src="[[customArtworkUrl_]]">
+        </div>
+      </template>
     </div>
   </template>
   <template id="memoriesElement" is="dom-if" if="[[!showOptInScreen]]">
@@ -382,7 +412,7 @@
           <div id="exploreIcon"></div>
         </div>
         <div id="exploreText">
-          [[i18n('modulesPhotosMemoriesExplore')]]
+          $i18n{modulesPhotosMemoriesExplore}
         </div>
       </a>
     </template>

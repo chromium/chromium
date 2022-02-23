@@ -7,11 +7,12 @@
 #include <string>
 #include <utility>
 
+#include "build/build_config.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/navigation_handle.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/callback_helpers.h"
 #include "base/feature_list.h"
 #include "base/logging.h"
@@ -30,7 +31,7 @@ namespace content {
 
 namespace {
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // Remove the pieces of the URL we don't want to send back with the error
 // reports. In particular, do not send query or fragments as those can have
 // privacy-sensitive information in them.
@@ -44,7 +45,7 @@ std::string RedactURL(const GURL& url) {
   base::StrAppend(&redacted_url, {url.path_piece()});
   return redacted_url;
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace
 
@@ -66,7 +67,7 @@ void WebUIMainFrameObserver::DidFinishNavigation(
   web_ui_->DisallowJavascriptOnAllHandlers();
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     RenderFrameHost* source_frame,
     blink::mojom::ConsoleMessageLevel log_level,
@@ -74,7 +75,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
     int32_t line_no,
     const std::u16string& source_id,
     const absl::optional<std::u16string>& untrusted_stack_trace) {
-  // TODO(iby) Change all VLOGs to DVLOGs once tast tests are stable.
   DVLOG(3) << "OnDidAddMessageToConsole called for " << message;
   if (untrusted_stack_trace) {
     DVLOG(3) << "stack is " << *untrusted_stack_trace;
@@ -134,8 +134,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
   if (untrusted_stack_trace) {
     report.stack_trace = base::UTF16ToUTF8(*untrusted_stack_trace);
   }
-  report.send_to_production_servers =
-      features::kWebUIJavaScriptErrorReportsSendToProductionParam.Get();
 
   GURL page_url = source_frame->GetLastCommittedURL();
   if (page_url.is_valid()) {
@@ -149,12 +147,6 @@ void WebUIMainFrameObserver::OnDidAddMessageToConsole(
 
 void WebUIMainFrameObserver::MaybeEnableWebUIJavaScriptErrorReporting(
     NavigationHandle* navigation_handle) {
-  if (!base::FeatureList::IsEnabled(
-          features::kSendWebUIJavaScriptErrorReports)) {
-    DVLOG(3) << "Experiment is off";
-    return;
-  }
-
   error_reporting_enabled_ =
       web_ui_->GetController()->IsJavascriptErrorReportingEnabled();
 
@@ -171,7 +163,7 @@ void WebUIMainFrameObserver::MaybeEnableWebUIJavaScriptErrorReporting(
   }
 }
 
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 void WebUIMainFrameObserver::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
@@ -183,9 +175,9 @@ void WebUIMainFrameObserver::ReadyToCommitNavigation(
 
 // TODO(crbug.com/1129544) This is currently disabled due to Windows DLL
 // thunking issues. Fix & re-enable.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   MaybeEnableWebUIJavaScriptErrorReporting(navigation_handle);
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 }
 
 void WebUIMainFrameObserver::PrimaryPageChanged(Page& page) {

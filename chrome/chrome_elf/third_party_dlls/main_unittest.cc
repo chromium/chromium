@@ -196,7 +196,7 @@ class ThirdPartyTest : public testing::Test {
     // Create the blacklist file empty.
     base::File file(base::FilePath(bl_test_file_path_),
                     base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_WRITE |
-                        base::File::FLAG_SHARE_DELETE |
+                        base::File::FLAG_WIN_SHARE_DELETE |
                         base::File::FLAG_DELETE_ON_CLOSE);
     ASSERT_TRUE(file.IsValid());
 
@@ -249,7 +249,7 @@ class ThirdPartyTest : public testing::Test {
 // configurations.
 //------------------------------------------------------------------------------
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Base DISABLED_Base
 #else
 #define MAYBE_Base Base
@@ -481,7 +481,7 @@ TEST_F(ThirdPartyTest, SHA1SanityCheck) {
 }
 
 // Flaky: crbug.com/868233
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_PathCaseSensitive DISABLED_PathCaseSensitive
 #else
 #define MAYBE_PathCaseSensitive PathCaseSensitive

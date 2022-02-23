@@ -485,6 +485,13 @@ GURL test_url(const std::string& file_name) {
   return url;
 }
 
+GURL ext_test_url(const std::string& file_name) {
+  GURL url =
+      GURL("filesystem:chrome-extension://extensionid/external/" + file_name);
+  EXPECT_TRUE(url.is_valid());
+  return url;
+}
+
 std::vector<apps::mojom::IntentFilePtr> vectorise(
     const apps::mojom::IntentFilePtr& file) {
   std::vector<apps::mojom::IntentFilePtr> vector;
@@ -542,6 +549,60 @@ TEST_F(IntentUtilTest, FileExtensionMatch) {
   file->mime_type = mime_type_mpeg;
   intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
   EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, file_filter_dot));
+}
+
+TEST_F(IntentUtilTest, FileURLMatch) {
+  std::string mp3_url_pattern = R"(filesystem:chrome-extension://.*/.*\.mp3)";
+
+  auto url_filter = apps_util::CreateURLFilterForView(mp3_url_pattern, "label");
+
+  auto file = apps::mojom::IntentFile::New();
+  file->url = ext_test_url("abc.mp3");
+  file->is_directory = apps::mojom::OptionalBool::kFalse;
+
+  // Test match with mp3 file extension.
+  file->mime_type = "";
+  auto intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, url_filter));
+
+  // Test non-match with mp4 file extension.
+  file->url = ext_test_url("abc.mp4");
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, url_filter));
+
+  // Test non-match with just the end of a file extension.
+  file->url = ext_test_url("abc.testmp3");
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, url_filter));
+
+  std::string single_wild_url_pattern = "filesystem:chrome-extension://.*/.*";
+  auto wild_filter =
+      apps_util::CreateURLFilterForView(single_wild_url_pattern, "label");
+
+  // Test that mp3 matches with *
+  file->url = ext_test_url("abc.mp3");
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, wild_filter));
+
+  // Test that no file extension matches with *
+  file->url = ext_test_url("abc");
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, wild_filter));
+
+  std::string ext_wild_url_pattern =
+      R"(filesystem:chrome-extension://.*/.*\..*)";
+  auto ext_wild_filter =
+      apps_util::CreateURLFilterForView(ext_wild_url_pattern, "label");
+
+  // Test that mp3 matches with *.*
+  file->url = ext_test_url("abc.mp3");
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_TRUE(apps_util::IntentMatchesFilter(intent, ext_wild_filter));
+
+  // Test that no file extension does not match with *.*
+  file->url = ext_test_url("abc");
+  intent = apps_util::CreateViewIntentFromFiles(vectorise(file));
+  EXPECT_FALSE(apps_util::IntentMatchesFilter(intent, ext_wild_filter));
 }
 
 TEST_F(IntentUtilTest, FileWithTitleText) {
@@ -789,4 +850,9 @@ TEST_F(IntentUtilTest, IsGenericFileHandler) {
   IntentFilterPtr filter11 =
       apps_util::CreateFileFilterForView("text/*", "", kLabel);
   EXPECT_TRUE(apps_util::IsGenericFileHandler(intent3, filter11));
+
+  // File is a directory, but filter is inode/directory.
+  IntentFilterPtr filter12 =
+      apps_util::CreateFileFilterForView("inode/directory", "", kLabel);
+  EXPECT_FALSE(apps_util::IsGenericFileHandler(intent3, filter12));
 }

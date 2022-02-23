@@ -19,7 +19,7 @@ SigninReauthHandler::SigninReauthHandler(
     : controller_(controller),
       string_to_grd_id_map_(std::move(string_to_grd_id_map)) {
   DCHECK(controller_);
-  controller_observation_.Observe(controller_);
+  controller_observation_.Observe(controller_.get());
 }
 
 SigninReauthHandler::~SigninReauthHandler() = default;
@@ -77,9 +77,11 @@ void SigninReauthHandler::HandleCancel(const base::ListValue* args) {
 
 sync_pb::UserConsentTypes::AccountPasswordsConsent
 SigninReauthHandler::BuildConsent(const base::ListValue* args) const {
-  CHECK_EQ(2U, args->GetList().size());
-  base::Value::ConstListView consent_description = args->GetList()[0].GetList();
-  const std::string& consent_confirmation = args->GetList()[1].GetString();
+  CHECK_EQ(2U, args->GetListDeprecated().size());
+  base::Value::ConstListView consent_description =
+      args->GetListDeprecated()[0].GetListDeprecated();
+  const std::string& consent_confirmation =
+      args->GetListDeprecated()[1].GetString();
 
   // The strings returned by the WebUI are not free-form, they must belong into
   // a pre-determined set of strings (stored in |string_to_grd_id_map_|). As

@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/ash/test_wallpaper_controller.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/wallpaper/online_wallpaper_params.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_observer.h"
 #include "ash/public/cpp/wallpaper/wallpaper_types.h"
@@ -24,6 +25,7 @@ void TestWallpaperController::ShowWallpaperImage(const gfx::ImageSkia& image) {
 
 void TestWallpaperController::ClearCounts() {
   set_online_wallpaper_count_ = 0;
+  set_google_photos_wallpaper_count_ = 0;
   remove_user_wallpaper_count_ = 0;
   collection_id_ = std::string();
   wallpaper_info_ = absl::nullopt;
@@ -64,6 +66,18 @@ void TestWallpaperController::SetOnlineWallpaper(
     const ash::OnlineWallpaperParams& params,
     SetOnlineWallpaperCallback callback) {
   ++set_online_wallpaper_count_;
+  wallpaper_info_ = ash::WallpaperInfo(params);
+  std::move(callback).Run(/*success=*/true);
+}
+
+void TestWallpaperController::SetGooglePhotosWallpaper(
+    const ash::GooglePhotosWallpaperParams& params,
+    SetGooglePhotosWallpaperCallback callback) {
+  ++set_google_photos_wallpaper_count_;
+  if (!ash::features::IsWallpaperGooglePhotosIntegrationEnabled()) {
+    std::move(callback).Run(/*success=*/false);
+    return;
+  }
   wallpaper_info_ = ash::WallpaperInfo(params);
   std::move(callback).Run(/*success=*/true);
 }

@@ -12,6 +12,7 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
@@ -30,16 +31,22 @@
 #include "components/policy/core/common/configuration_policy_provider.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "components/enterprise/browser/reporting/report_generator.h"
 #include "components/enterprise/browser/reporting/report_scheduler.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 namespace policy {
 
 const base::FilePath::CharType
     ChromeBrowserCloudManagementController::kPolicyDir[] =
         FILE_PATH_LITERAL("Policy");
+
+std::unique_ptr<enterprise_connectors::DeviceTrustKeyManager>
+ChromeBrowserCloudManagementController::Delegate::
+    CreateDeviceTrustKeyManager() {
+  return nullptr;
+}
 
 void ChromeBrowserCloudManagementController::Delegate::DeferInitialization(
     base::OnceClosure callback) {
@@ -330,6 +337,14 @@ void ChromeBrowserCloudManagementController::ShutDown() {
     report_scheduler_.reset();
 }
 
+enterprise_connectors::DeviceTrustKeyManager*
+ChromeBrowserCloudManagementController::GetDeviceTrustKeyManager() {
+  if (!device_trust_key_manager_) {
+    device_trust_key_manager_ = delegate_->CreateDeviceTrustKeyManager();
+  }
+  return device_trust_key_manager_.get();
+}
+
 void ChromeBrowserCloudManagementController::SetGaiaURLLoaderFactory(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   delegate_->SetGaiaURLLoaderFactory(url_loader_factory);
@@ -350,7 +365,7 @@ void ChromeBrowserCloudManagementController::NotifyBrowserUnenrolled(
 
 void ChromeBrowserCloudManagementController::NotifyCloudReportingLaunched() {
   for (auto& observer : observers_) {
-    observer.OnCloudReportingLaunched();
+    observer.OnCloudReportingLaunched(report_scheduler_.get());
   }
 }
 
@@ -430,14 +445,17 @@ void ChromeBrowserCloudManagementController::CreateReportScheduler() {
   cloud_policy_client_->AddObserver(this);
   auto reporting_delegate_factory = delegate_->GetReportingDelegateFactory();
 
-  auto generator = std::make_unique<enterprise_reporting::ReportGenerator>(
-      reporting_delegate_factory.get());
-  auto real_time_generator =
+  enterprise_reporting::ReportScheduler::CreateParams params;
+  params.client = cloud_policy_client_.get();
+  params.delegate = reporting_delegate_factory->GetReportSchedulerDelegate();
+  params.report_generator =
+      std::make_unique<enterprise_reporting::ReportGenerator>(
+          reporting_delegate_factory.get());
+  params.real_time_report_generator =
       std::make_unique<enterprise_reporting::RealTimeReportGenerator>(
           reporting_delegate_factory.get());
   report_scheduler_ = std::make_unique<enterprise_reporting::ReportScheduler>(
-      cloud_policy_client_.get(), std::move(generator),
-      std::move(real_time_generator), reporting_delegate_factory.get());
+      std::move(params));
 
   NotifyCloudReportingLaunched();
 }

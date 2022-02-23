@@ -141,11 +141,11 @@ class MultiprocessExec : public Multiprocess {
 
   base::FilePath command_;
   std::vector<std::string> arguments_;
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   std::vector<const char*> argv_;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   std::wstring command_line_;
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 };
 
 }  // namespace test

@@ -6,7 +6,6 @@
 #define EXTENSIONS_SHELL_BROWSER_SHELL_NACL_BROWSER_DELEGATE_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/nacl/browser/nacl_browser_delegate.h"
 
 namespace content {
@@ -43,8 +42,6 @@ class ShellNaClBrowserDelegate : public NaClBrowserDelegate {
       const base::FilePath& profile_directory) override;
   void SetDebugPatterns(const std::string& debug_patterns) override;
   bool URLMatchesDebugPatterns(const GURL& manifest_url) override;
-  bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
-                           const GURL& manifest_url) override;
 
  private:
   content::BrowserContext* browser_context_;  // Not owned.

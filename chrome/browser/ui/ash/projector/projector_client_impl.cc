@@ -10,10 +10,12 @@
 #include "ash/webui/projector_app/projector_app_client.h"
 #include "ash/webui/projector_app/public/cpp/projector_app_constants.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/speech/on_device_speech_recognizer.h"
+#include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/system_web_app_ui_utils.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_types.h"
 #include "chromeos/login/login_state/login_state.h"
@@ -30,18 +32,18 @@
 #include "url/gurl.h"
 
 namespace {
-// On-device speech recognition is only available in US English.
-const char kEnglishLanguageCode[] = "en-US";
 
-bool ShouldUseWebSpeechFallback() {
-  return !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption);
+inline const std::string& GetLocale() {
+  return g_browser_process->GetApplicationLocale();
 }
 
 }  // namespace
 
 // static
 void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
-  web_view->LoadInitialURL(GURL(ash::kChromeUITrustedAnnotatorUrl));
+  if (!ash::features::IsProjectorAnnotatorEnabled())
+    return;
+  web_view->LoadInitialURL(GURL(ash::kChromeUIAnnotatorUrl));
 
   content::WebContents* web_contents = web_view->GetWebContents();
   content::WebUI* web_ui = web_contents->GetWebUI();
@@ -51,19 +53,6 @@ void ProjectorClientImpl::InitForProjectorAnnotator(views::WebView* web_view) {
 ProjectorClientImpl::ProjectorClientImpl(ash::ProjectorController* controller)
     : controller_(controller) {
   controller_->SetClient(this);
-  if (ash::ProjectorController::AreExtendedProjectorFeaturesDisabled())
-    return;
-
-  bool recognition_available =
-      OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-          kEnglishLanguageCode) ||
-      ShouldUseWebSpeechFallback();
-
-  controller_->OnSpeechRecognitionAvailable(recognition_available);
-  if (!recognition_available &&
-      base::FeatureList::IsEnabled(ash::features::kOnDeviceSpeechRecognition)) {
-    speech::SodaInstaller::GetInstance()->AddObserver(this);
-  }
 }
 
 ProjectorClientImpl::ProjectorClientImpl()
@@ -76,24 +65,23 @@ void ProjectorClientImpl::StartSpeechRecognition() {
   // has been informed that recognition is available.
   // TODO(crbug.com/1165437): Dynamically determine language code.
   DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-             kEnglishLanguageCode) ||
-         ShouldUseWebSpeechFallback());
+      GetLocale()));
+
   DCHECK_EQ(speech_recognizer_.get(), nullptr);
   recognizer_status_ = SPEECH_RECOGNIZER_OFF;
   speech_recognizer_ = std::make_unique<OnDeviceSpeechRecognizer>(
-      weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetPrimaryUserProfile(),
-      kEnglishLanguageCode, /*recognition_mode_ime=*/false,
+      weak_ptr_factory_.GetWeakPtr(), ProfileManager::GetActiveUserProfile(),
+      GetLocale(), /*recognition_mode_ime=*/false,
       /*enable_formatting=*/true);
 }
 
 void ProjectorClientImpl::StopSpeechRecognition() {
-  speech_recognizer_.reset();
-  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
+  speech_recognizer_->Stop();
 }
 
 void ProjectorClientImpl::ShowSelfieCam() {
   selfie_cam_bubble_manager_.Show(
-      ProfileManager::GetPrimaryUserProfile(),
+      ProfileManager::GetActiveUserProfile(),
       display::Screen::GetScreen()->GetPrimaryDisplay().work_area());
 }
 
@@ -130,11 +118,10 @@ void ProjectorClientImpl::OnSpeechRecognitionStateChanged(
   recognizer_status_ = new_state;
 }
 
-void ProjectorClientImpl::OnSodaInstalled() {
-  // OnDevice has been installed! Notify ProjectorController in ash.
-  DCHECK(OnDeviceSpeechRecognizer::IsOnDeviceSpeechRecognizerAvailable(
-      kEnglishLanguageCode));
-  controller_->OnSpeechRecognitionAvailable(true);
+void ProjectorClientImpl::OnSpeechRecognitionStopped() {
+  speech_recognizer_.reset();
+  recognizer_status_ = SPEECH_RECOGNIZER_OFF;
+  controller_->OnSpeechRecognitionStopped();
 }
 
 bool ProjectorClientImpl::GetDriveFsMountPointPath(
@@ -154,7 +141,7 @@ bool ProjectorClientImpl::GetDriveFsMountPointPath(
 
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(
-          ProfileManager::GetPrimaryUserProfile());
+          ProfileManager::GetActiveUserProfile());
   *result = integration_service->GetMountPointPath();
   return true;
 }
@@ -169,18 +156,27 @@ bool ProjectorClientImpl::IsDriveFsMounted() const {
     return true;
   }
 
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* profile = ProfileManager::GetActiveUserProfile();
   drive::DriveIntegrationService* integration_service =
       drive::DriveIntegrationServiceFactory::FindForProfile(profile);
   return integration_service && integration_service->IsMounted();
 }
 
 void ProjectorClientImpl::OpenProjectorApp() const {
-  auto* profile = ProfileManager::GetPrimaryUserProfile();
+  auto* profile = ProfileManager::GetActiveUserProfile();
   web_app::LaunchSystemWebAppAsync(profile, web_app::SystemAppType::PROJECTOR);
 }
 
+void ProjectorClientImpl::MinimizeProjectorApp() const {
+  auto* profile = ProfileManager::GetActiveUserProfile();
+  auto* browser =
+      FindSystemWebAppBrowser(profile, web_app::SystemAppType::PROJECTOR);
+  if (browser)
+    browser->window()->Minimize();
+}
+
 void ProjectorClientImpl::OnNewScreencastPreconditionChanged(
-    bool can_start) const {
-  ash::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(can_start);
+    const ash::NewScreencastPrecondition& precondition) const {
+  ash::ProjectorAppClient::Get()->OnNewScreencastPreconditionChanged(
+      precondition);
 }

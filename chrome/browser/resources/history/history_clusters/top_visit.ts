@@ -9,9 +9,10 @@ import 'chrome://resources/cr_elements/cr_icons_css.m.js';
 import 'chrome://resources/polymer/v3_0/iron-collapse/iron-collapse.js';
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {URLVisit} from './history_clusters.mojom-webui.js';
+import {getTemplate} from './top_visit.html.js';
 
 /**
  * @fileoverview This file provides a custom element displaying a top visit
@@ -31,7 +32,7 @@ class TopVisitElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -68,14 +69,6 @@ class TopVisitElement extends PolymerElement {
       },
 
       /**
-       * Whether there are related visits.
-       */
-      hasRelatedVisits_: {
-        type: Boolean,
-        computed: 'computeHasRelatedVisits_(visit.relatedVisits.*)',
-      },
-
-      /**
        * The default-hidden related visits.
        */
       hiddenRelatedVisits_: {
@@ -100,7 +93,6 @@ class TopVisitElement extends PolymerElement {
   visit: URLVisit;
   private expanded_: boolean;
   private hiddenRelatedVisits_: Array<URLVisit>;
-  private relatedVisits_: Array<URLVisit>;
 
   //============================================================================
   // Event handlers
@@ -141,10 +133,6 @@ class TopVisitElement extends PolymerElement {
 
   private computeHasHiddenRelatedVisits_(): boolean {
     return this.hiddenRelatedVisits_.length > 0;
-  }
-
-  private computeHasRelatedVisits_(): boolean {
-    return this.visit.relatedVisits.length > 0;
   }
 
   private computeHiddenRelatedVisits_(): Array<URLVisit> {

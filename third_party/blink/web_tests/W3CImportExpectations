@@ -11,7 +11,7 @@
 # used to make it easier to work on getting them running and passing.
 #
 # Further documentation:
-# https://chromium.googlesource.com/chromium/src/+/master/docs/testing/web_test_expectations.md
+# https://chromium.googlesource.com/chromium/src/+/main/docs/testing/web_test_expectations.md
 
 external/wpt/.codecov.yml [ Skip ]
 external/wpt/.github [ Skip ]
@@ -56,6 +56,7 @@ external/wpt/css/CSS2/inline-svg-100-percent-in-body.html [ Skip ]
 external/wpt/css/CSS2/inline-svg-intrinsic-size-100-percent-1.html [ Skip ]
 external/wpt/css/CSS2/inline-svg-intrinsic-size-100-percent-2.html [ Skip ]
 external/wpt/css/CSS2/inline-svg-margin-padding-border.html [ Skip ]
+external/wpt/css/CSS2/linebox/inline-formatting-context-012.xht [ Skip ]
 external/wpt/css/CSS2/lists [ Skip ]
 external/wpt/css/CSS2/margin-padding-clear [ Skip ]
 external/wpt/css/CSS2/media [ Skip ]
@@ -310,11 +311,6 @@ external/wpt/gamepad/getgamepads-polling-manual.html [ Skip ]
 external/wpt/gamepad/idlharness-manual.html [ Skip ]
 external/wpt/gamepad/timestamp-manual.html [ Skip ]
 external/wpt/html/browsers/history/the-location-interface/non-automated [ Skip ]
-external/wpt/html/browsers/offline/application-cache-api/api_status_checking-manual.html [ Skip ]
-external/wpt/html/browsers/offline/application-cache-api/api_status_downloading-manual.html [ Skip ]
-external/wpt/html/browsers/offline/application-cache-api/api_status_obsolete-manual.html [ Skip ]
-external/wpt/html/browsers/offline/application-cache-api/api_status_updateready-manual.html [ Skip ]
-external/wpt/html/browsers/offline/application-cache-api/api_swapcache-manual.html [ Skip ]
 external/wpt/html/browsers/offline/introduction-4/event_downloading-manual.html [ Skip ]
 external/wpt/html/browsers/offline/introduction-4/event_error-manual.html [ Skip ]
 external/wpt/html/browsers/offline/introduction-4/event_obsolete-manual.html [ Skip ]
@@ -377,7 +373,9 @@ external/wpt/webdriver/tests/find_elements_from_element/find.py [ Skip ]
 external/wpt/webdriver/tests/new_session/invalid_capabilities.py [ Skip ]
 external/wpt/webdriver/tests/new_session/response.py [ Skip ]
 external/wpt/webdriver/tests/send_alert_text/send.py [ Skip ]
-external/wpt/webdriver/tests/bidi/session_subscribe/subscribe.py [ Skip ]
+
+# Skip all bidi tests for now
+external/wpt/webdriver/tests/bidi [ Skip ]
 
 # WebVr was never supported on Chrome more than as an experimental feature,
 # and even that level of support is now removed. WebVr was replaced with WebXr.
@@ -427,10 +425,6 @@ external/wpt/css/css-page/page-size-012.xht [ Skip ]
 external/wpt/webdriver/tests/find_element_from_shadow_root/find.py [ Skip ]
 external/wpt/webdriver/tests/find_elements_from_shadow_root/find.py [ Skip ]
 
-# Sheriff 09/2021, crbug.com/1249864
-external/wpt/webdriver/tests/bidi/new_session/connect.py [ Skip ]
-external/wpt/webdriver/tests/bidi/log_entry_added/console.py [ Skip ]
-
 # Sheriff 16/09/2021, crbug.com/1250215
 external/wpt/html/dom/idlharness.worker.html [ Skip ]
 external/wpt/html/dom/idlharness.https.html [ Skip ]
@@ -444,7 +438,6 @@ external/wpt/service-workers/idlharness.https.any.worker.html [ Skip ]
 external/wpt/streams/idlharness.any.html [ Skip ]
 external/wpt/streams/idlharness.any.sharedworker.html [ Skip ]
 external/wpt/webhid/idlharness.https.window.html [ Skip ]
-external/wpt/webrtc-encoded-transform/idlharness.https.window.html [ Skip ]
 external/wpt/webtransport/idlharness.any.html [ Skip ]
 external/wpt/webtransport/idlharness.any.sharedworker.html [ Skip ]
 external/wpt/webtransport/idlharness.any.worker.html [ Skip ]

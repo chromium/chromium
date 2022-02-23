@@ -27,6 +27,8 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
         return ui::mojom::WindowOpenDisposition::NEW_FOREGROUND_TAB;
       case WindowOpenDisposition::NEW_BACKGROUND_TAB:
         return ui::mojom::WindowOpenDisposition::NEW_BACKGROUND_TAB;
+      case WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+        return ui::mojom::WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
       case WindowOpenDisposition::NEW_POPUP:
         return ui::mojom::WindowOpenDisposition::NEW_POPUP;
       case WindowOpenDisposition::NEW_WINDOW:
@@ -60,6 +62,9 @@ struct EnumTraits<ui::mojom::WindowOpenDisposition, WindowOpenDisposition> {
         return true;
       case ui::mojom::WindowOpenDisposition::NEW_BACKGROUND_TAB:
         *out = WindowOpenDisposition::NEW_BACKGROUND_TAB;
+        return true;
+      case ui::mojom::WindowOpenDisposition::NEW_PICTURE_IN_PICTURE:
+        *out = WindowOpenDisposition::NEW_PICTURE_IN_PICTURE;
         return true;
       case ui::mojom::WindowOpenDisposition::NEW_POPUP:
         *out = WindowOpenDisposition::NEW_POPUP;

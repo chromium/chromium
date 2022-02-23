@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/time/time.h"
 #include "net/base/net_export.h"
 #include "net/base/request_priority.h"
 #include "net/http/http_request_headers.h"
@@ -41,6 +42,14 @@ struct NET_EXPORT BidirectionalStreamRequestInfo {
 
   // Whether END_STREAM should be set on the request HEADER frame.
   bool end_stream_on_headers;
+
+  // Whether the implementor of the BidirectionalStream should monitor
+  // the status of the connection for the lifetime of this stream.
+  bool detect_broken_connection;
+
+  // Suggests the period the broken connection detector should use to check
+  // the status of the connection.
+  base::TimeDelta heartbeat_interval;
 };
 
 }  // namespace net

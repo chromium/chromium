@@ -49,6 +49,7 @@ class CONTENT_EXPORT WebContentsVideoCaptureDevice
   // VideoCaptureDevice overrides.
   void Crop(
       const base::Token& crop_id,
+      uint32_t crop_version,
       base::OnceCallback<void(media::mojom::CropRequestResult)> callback) final;
 
   // For testing, we need the ability to create a device without its tracker.

@@ -1,0 +1,9 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN
+++++++UNKNOWN
+++++++++UNKNOWN hidden
+++++++++++PARAGRAPH
+++++++++++++STATIC_TEXT label='Hello world'
+++++++++++++++UNKNOWN label='Hello '
+++++++++++++++UNKNOWN label='world'

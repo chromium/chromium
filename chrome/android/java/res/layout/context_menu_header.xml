@@ -16,8 +16,11 @@
     android:paddingEnd="@dimen/context_menu_list_lateral_padding">
 
     <FrameLayout
+        android:id="@+id/menu_header_image_container"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/context_menu_header_vertical_padding"
+        android:layout_marginBottom="@dimen/context_menu_bottom_padding"
         android:layout_marginEnd="16dp">
 
         <!-- Circle background for when we have a favicon or monogram -->
@@ -26,9 +29,7 @@
             android:background="@drawable/tile_view_icon_background_modern"
             android:layout_width="@dimen/context_menu_header_circle_bg_diameter"
             android:layout_height="@dimen/context_menu_header_circle_bg_diameter"
-            android:layout_marginTop="@dimen/context_menu_header_circle_bg_vertical_margin"
-            android:layout_marginStart="@dimen/context_menu_header_circle_bg_lateral_margin"
-            android:layout_marginEnd="@dimen/context_menu_header_circle_bg_lateral_margin"
+            android:layout_margin="@dimen/context_menu_header_circle_bg_margin"
             android:visibility="invisible" />
 
         <ImageView
@@ -37,8 +38,6 @@
             android:layout_height="@dimen/context_menu_header_image_max_size"
             android:scaleType="centerInside"
             android:importantForAccessibility="no"
-            android:layout_marginTop="@dimen/context_menu_header_vertical_padding"
-            android:layout_marginBottom="@dimen/context_menu_bottom_padding"
             android:src="@color/thumbnail_placeholder_on_primary_bg" />
     </FrameLayout>
 

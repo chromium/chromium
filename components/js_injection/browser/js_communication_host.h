@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "components/js_injection/common/interfaces.mojom.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -76,7 +77,7 @@ class JsCommunicationHost : public content::WebContentsObserver {
   struct RegisteredFactory {
     std::u16string js_name;
     OriginMatcher allowed_origin_rules;
-    WebMessageHostFactory* factory = nullptr;
+    raw_ptr<WebMessageHostFactory> factory = nullptr;
   };
 
   // Returns the registered factories.

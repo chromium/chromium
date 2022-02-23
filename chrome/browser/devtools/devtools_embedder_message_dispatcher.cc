@@ -246,6 +246,8 @@ DevToolsEmbedderMessageDispatcher::CreateForDevToolsFrontend(
                      delegate);
   d->RegisterHandlerWithCallback("getPreferences",
                                  &Delegate::GetPreferences, delegate);
+  d->RegisterHandlerWithCallback("getPreference", &Delegate::GetPreference,
+                                 delegate);
   d->RegisterHandler("setPreference",
                      &Delegate::SetPreference, delegate);
   d->RegisterHandler("removePreference",

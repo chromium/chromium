@@ -6,13 +6,13 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/user_metrics.h"
 #include "base/no_destructor.h"
@@ -152,7 +152,7 @@ void ImportFromFile(Profile* profile,
   source_profile.importer_type = importer::TYPE_BOOKMARKS_FILE;
 
   const base::FilePath::StringType& import_bookmarks_path_str =
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       base::UTF8ToWide(import_bookmarks_path);
 #else
       import_bookmarks_path;
@@ -276,12 +276,17 @@ void SetupInitialPrefsFromInstallPrefs(
   install_prefs.GetString(
       installer::initial_preferences::kDistroSuppressDefaultBrowserPromptPref,
       &out_prefs->suppress_default_browser_prompt_for_version);
+
+#if BUILDFLAG(IS_MAC)
+  if (install_prefs.GetBool(prefs::kConfirmToQuitEnabled, &value) && value)
+    out_prefs->confirm_to_quit = true;
+#endif  // BUILDFLAG(IS_MAC)
 }
 
 // -- Platform-specific functions --
 
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_BSD) && \
-    !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_BSD) && \
+    !BUILDFLAG(IS_FUCHSIA)
 bool IsOrganicFirstRun() {
   std::string brand;
   google_brand::GetBrand(&brand);
@@ -325,7 +330,7 @@ bool IsChromeFirstRun() {
   return g_first_run == internal::FIRST_RUN_TRUE;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool IsFirstRunSuppressed(const base::CommandLine& command_line) {
   return command_line.HasSwitch(switches::kNoFirstRun);
 }
@@ -344,7 +349,7 @@ void CreateSentinelIfNeeded() {
 
   // Causes the first run sentinel creation time to be read and cached, while
   // I/O is still allowed.
-  ignore_result(GetFirstRunSentinelCreationTime());
+  std::ignore = GetFirstRunSentinelCreationTime();
 }
 
 base::Time GetFirstRunSentinelCreationTime() {
@@ -369,7 +374,7 @@ bool ShouldShowWelcomePage() {
 }
 
 bool IsOnWelcomePage(content::WebContents* contents) {
-  return contents->GetURL().GetWithEmptyPath() ==
+  return contents->GetVisibleURL().GetWithEmptyPath() ==
          GURL(chrome::kChromeUIWelcomeURL);
 }
 

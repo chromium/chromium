@@ -17,7 +17,7 @@
 #include "base/containers/span.h"
 #include "base/containers/unique_ptr_adapters.h"
 #include "base/feature_list.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -28,6 +28,7 @@
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/dns/host_resolver.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/log/net_log.h"
 #include "net/log/trace_net_log_observer.h"
@@ -57,6 +58,7 @@ class FileNetLogObserver;
 class HostResolverManager;
 class HttpAuthHandlerFactory;
 class LoggingNetworkChangeObserver;
+class NetworkChangeNotifier;
 class NetworkQualityEstimator;
 class URLRequestContext;
 }  // namespace net
@@ -77,20 +79,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
  public:
   static const base::TimeDelta kInitialDohProbeTimeout;
 
-  NetworkService(std::unique_ptr<service_manager::BinderRegistry> registry,
-                 mojo::PendingReceiver<mojom::NetworkService> receiver =
-                     mojo::NullReceiver(),
-                 bool delay_initialization_until_set_client = false);
+  explicit NetworkService(
+      std::unique_ptr<service_manager::BinderRegistry> registry,
+      mojo::PendingReceiver<mojom::NetworkService> receiver =
+          mojo::NullReceiver(),
+      bool delay_initialization_until_set_client = false);
 
   NetworkService(const NetworkService&) = delete;
   NetworkService& operator=(const NetworkService&) = delete;
 
   ~NetworkService() override;
-
-  // Call to inform the NetworkService that OSCrypt::SetConfig() has already
-  // been invoked, so OSCrypt::SetConfig() does not need to be called before
-  // encrypted storage can be used.
-  void set_os_crypt_is_configured();
 
   // Allows late binding if the mojo receiver wasn't specified in the
   // constructor.
@@ -100,6 +98,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // TODO(jam): remove this once the old path is gone.
   void Initialize(mojom::NetworkServiceParamsPtr params,
                   bool mock_network_change_notifier = false);
+
+  // Pretends that the system DNS configuration just changed to a basic,
+  // single-server, localhost-only configuration. This method also effectively
+  // unsubscribes the singleton `net::SystemDnsConfigChangeNotifier` owned by
+  // `net::NetworkChangeNotifier` from future changes to the real configuration,
+  // ensuring that our fake configuration will not be clobbered by network
+  // changes that occur while tests run.
+  void ReplaceSystemDnsConfigForTesting();
+
+  void SetTestDohConfigForTesting(const net::DnsOverHttpsConfig& doh_config);
 
   // Creates a NetworkService instance on the current thread.
   static std::unique_ptr<NetworkService> Create(
@@ -140,8 +148,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void ConfigureStubHostResolver(
       bool insecure_dns_client_enabled,
       net::SecureDnsMode secure_dns_mode,
-      absl::optional<std::vector<mojom::DnsOverHttpsServerPtr>>
-          dns_over_https_servers,
+      const net::DnsOverHttpsConfig& dns_over_https_config,
       bool additional_dns_types_enabled) override;
   void DisableQuic() override;
   void SetUpHttpAuth(
@@ -165,12 +172,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       base::span<const uint8_t> crl_set,
       mojom::NetworkService::UpdateCRLSetCallback callback) override;
   void OnCertDBChanged() override;
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
-  void SetCryptConfig(mojom::CryptConfigPtr crypt_config) override;
-#endif
-#if defined(OS_WIN) || defined(OS_MAC)
   void SetEncryptionKey(const std::string& encryption_key) override;
-#endif
   void AddAllowedRequestInitiatorForPlugin(
       int32_t process_id,
       const url::Origin& allowed_request_initiator) override;
@@ -178,7 +180,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   void OnMemoryPressure(base::MemoryPressureListener::MemoryPressureLevel
                             memory_pressure_level) override;
   void OnPeerToPeerConnectionsCountChange(uint32_t count) override;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state) override;
 #endif
   void SetEnvironment(
@@ -191,22 +193,27 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
 #if BUILDFLAG(IS_CT_SUPPORTED)
   void ClearSCTAuditingCache() override;
   void ConfigureSCTAuditing(
-      bool enabled,
       double sampling_rate,
+      base::TimeDelta log_expected_ingestion_delay,
+      base::TimeDelta log_max_ingestion_random_delay,
       const GURL& reporting_uri,
+      const GURL& hashdance_lookup_uri,
       const net::MutableNetworkTrafficAnnotationTag& traffic_annotation,
-      mojo::PendingRemote<mojom::URLLoaderFactory> factory) override;
+      const net::MutableNetworkTrafficAnnotationTag&
+          hashdance_traffic_annotation) override;
   void UpdateCtLogList(std::vector<mojom::CTLogInfoPtr> log_list,
                        base::Time update_time) override;
+  void UpdateCtKnownPopularSCTs(
+      const std::vector<std::vector<uint8_t>>& sct_hashes) override;
   void SetCtEnforcementEnabled(bool enabled) override;
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void DumpWithoutCrashing(base::Time dump_request_time) override;
 #endif
   void BindTestInterface(
       mojo::PendingReceiver<mojom::NetworkServiceTest> receiver) override;
-  void SetFirstPartySets(const std::string& raw_sets) override;
+  void SetFirstPartySets(base::File sets_file) override;
   void SetPersistedFirstPartySetsAndGetCurrentSets(
       const std::string& persisted_sets,
       mojom::NetworkService::SetPersistedFirstPartySetsAndGetCurrentSetsCallback
@@ -250,11 +257,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   }
 #endif
 
-  const FirstPartySets* first_party_sets() const {
-    return first_party_sets_.get();
-  }
-
-  bool os_crypt_config_set() const { return os_crypt_config_set_; }
+  FirstPartySets* first_party_sets() const { return first_party_sets_.get(); }
 
   void set_host_resolver_factory_for_testing(
       std::unique_ptr<net::HostResolver::Factory> host_resolver_factory) {
@@ -291,15 +294,28 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
  private:
   class DelayedDohProbeActivator;
 
+  void InitMockNetworkChangeNotifierForTesting();
+
   void DestroyNetworkContexts();
 
   // Called by a NetworkContext when its mojo pipe is closed. Deletes the
   // context.
   void OnNetworkContextConnectionClosed(NetworkContext* network_context);
 
+  // Sets First-Party Set data after having read it from a file.
+  void OnReadFirstPartySetsFile(const std::string& raw_sets);
+
   bool initialized_ = false;
 
-  net::NetLog* net_log_;
+  enum class FunctionTag : uint8_t {
+    None,
+    ConfigureStubHostResolver,
+    SetTestDohConfigForTesting,
+  };
+
+  FunctionTag dns_config_overrides_set_by_ = FunctionTag::None;
+
+  raw_ptr<net::NetLog> net_log_;
 
   std::unique_ptr<NetLogProxySink> net_log_proxy_sink_;
 
@@ -317,6 +333,12 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   std::unique_ptr<net::LoggingNetworkChangeObserver> network_change_observer_;
 
   std::unique_ptr<service_manager::BinderRegistry> registry_;
+
+  // Globally-scoped state for First-Party Sets. Must be above the `receiver_`
+  // so it's destroyed after, to make sure even when the reply callback owned by
+  // the `first_party_sets_` is never run when destroyed, the receiver which the
+  // reply callback associated with is already disconnected.
+  std::unique_ptr<FirstPartySets> first_party_sets_;
 
   mojo::Receiver<mojom::NetworkService> receiver_{this};
 
@@ -337,9 +359,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // HttpAuthPreferences.
   mojom::HttpAuthDynamicParamsPtr http_auth_dynamic_network_service_params_;
   mojom::HttpAuthStaticParamsPtr http_auth_static_network_service_params_;
-
-  // Globally-scoped state for First-Party Sets.
-  std::unique_ptr<FirstPartySets> first_party_sets_;
 
   // NetworkContexts created by CreateNetworkContext(). They call into the
   // NetworkService when their connection is closed so that it can delete
@@ -365,8 +384,6 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
       raw_headers_access_origins_by_pid_;
 
   bool quic_disabled_ = false;
-
-  bool os_crypt_config_set_ = false;
 
   std::unique_ptr<CRLSetDistributor> crl_set_distributor_;
 
@@ -395,6 +412,10 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkService
   // that renderer process (the renderer will proxy requests from PPAPI - such
   // requests should have their initiator origin within the set stored here).
   std::map<int, std::set<url::Origin>> plugin_origins_;
+
+  // This is used only in tests. It avoids leaky SystemDnsConfigChangeNotifiers
+  // leaking stale listeners between tests.
+  std::unique_ptr<net::NetworkChangeNotifier> mock_network_change_notifier_;
 };
 
 }  // namespace network

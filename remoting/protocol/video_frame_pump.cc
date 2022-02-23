@@ -103,7 +103,7 @@ void VideoFramePump::SetObserver(Observer* observer) {
   observer_ = observer;
 }
 
-void VideoFramePump::SelectSource(int id) {}
+void VideoFramePump::SelectSource(webrtc::ScreenId id) {}
 
 void VideoFramePump::OnCaptureResult(
     webrtc::DesktopCapturer::Result result,

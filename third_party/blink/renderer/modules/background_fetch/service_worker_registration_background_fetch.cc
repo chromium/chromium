@@ -5,7 +5,7 @@
 #include "third_party/blink/renderer/modules/background_fetch/service_worker_registration_background_fetch.h"
 
 #include "third_party/blink/renderer/modules/background_fetch/background_fetch_manager.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 

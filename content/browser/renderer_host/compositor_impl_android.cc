@@ -19,8 +19,10 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/lazy_instance.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/synchronization/lock.h"
@@ -65,6 +67,7 @@
 #include "gpu/ipc/client/gpu_channel_host.h"
 #include "gpu/ipc/common/gpu_surface_tracker.h"
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "services/viz/public/mojom/compositing/compositor_frame_sink.mojom.h"
 #include "third_party/khronos/GLES2/gl2.h"
@@ -216,7 +219,34 @@ class CompositorImpl::AndroidHostDisplayClient : public viz::HostDisplayClient {
   }
 
  private:
-  CompositorImpl* compositor_;
+  raw_ptr<CompositorImpl> compositor_;
+};
+
+class CompositorImpl::HostBeginFrameObserver
+    : public viz::mojom::BeginFrameObserver {
+ public:
+  explicit HostBeginFrameObserver(
+      const base::flat_set<SimpleBeginFrameObserver*>& observers)
+      : simple_begin_frame_observers_(observers) {}
+
+  void OnStandaloneBeginFrame(const viz::BeginFrameArgs& args) override {
+    if (args.type == viz::BeginFrameArgs::MISSED)
+      return;
+
+    for (auto* simple_observer : simple_begin_frame_observers_) {
+      simple_observer->OnBeginFrame(args.frame_time);
+    }
+  }
+
+  mojo::PendingRemote<viz::mojom::BeginFrameObserver> GetBoundRemote() {
+    return receiver_.BindNewPipeAndPassRemote();
+  }
+
+ private:
+  const base::flat_set<SimpleBeginFrameObserver*>&
+      simple_begin_frame_observers_;
+
+  mojo::Receiver<viz::mojom::BeginFrameObserver> receiver_{this};
 };
 
 class CompositorImpl::ScopedCachedBackBuffer {
@@ -291,7 +321,8 @@ CompositorImpl::CompositorImpl(CompositorClient* client,
       client_(client),
       needs_animate_(false),
       pending_frames_(0U),
-      layer_tree_frame_sink_request_pending_(false) {
+      layer_tree_frame_sink_request_pending_(false),
+      lock_manager_(base::ThreadTaskRunnerHandle::Get()) {
   DCHECK(client);
 
   SetRootWindow(root_window);
@@ -485,6 +516,7 @@ void CompositorImpl::TearDownDisplayAndUnregisterRootFrameSink() {
   display_private_.reset();
   GetHostFrameSinkManager()->InvalidateFrameSinkId(frame_sink_id_);
   display_client_.reset();
+  host_begin_frame_observer_.reset();
 }
 
 void CompositorImpl::RegisterRootFrameSink() {
@@ -674,6 +706,14 @@ bool CompositorImpl::SupportsETC1NonPowerOfTwo() const {
   return gpu_capabilities_.texture_format_etc1_npot;
 }
 
+std::unique_ptr<ui::CompositorLock> CompositorImpl::GetCompositorLock(
+    base::TimeDelta timeout) {
+  if (!host_)
+    return nullptr;
+  return lock_manager_.GetCompositorLock(/*client=*/nullptr, timeout,
+                                         host_->DeferMainFrameUpdate());
+}
+
 void CompositorImpl::DidSubmitCompositorFrame() {
   TRACE_EVENT0("compositor", "CompositorImpl::DidSubmitCompositorFrame");
   pending_frames_++;
@@ -855,6 +895,7 @@ void CompositorImpl::InitializeVizLayerTreeFrameSink(
   display_private_->SetVSyncPaused(vsync_paused_);
   display_private_->SetSupportedRefreshRates(
       root_window_->GetSupportedRefreshRates());
+  MaybeUpdateObserveBeginFrame();
 
   // Create LayerTreeFrameSink with the browser end of CompositorFrameSink.
   cc::mojo_embedder::AsyncLayerTreeFrameSink::InitParams params;
@@ -939,6 +980,41 @@ void CompositorImpl::SetDidSwapBuffersCallbackEnabled(bool enable) {
 void CompositorImpl::DecrementPendingReadbacks() {
   DCHECK_GT(pending_readbacks_, 0u);
   --pending_readbacks_;
+}
+
+void CompositorImpl::AddSimpleBeginFrameObserver(
+    SimpleBeginFrameObserver* obs) {
+  DCHECK(obs);
+  DCHECK(!base::Contains(simple_begin_frame_observers_, obs));
+  simple_begin_frame_observers_.insert(obs);
+  MaybeUpdateObserveBeginFrame();
+}
+
+void CompositorImpl::RemoveSimpleBeginFrameObserver(
+    SimpleBeginFrameObserver* obs) {
+  DCHECK(obs);
+  DCHECK(base::Contains(simple_begin_frame_observers_, obs));
+
+  simple_begin_frame_observers_.erase(obs);
+  MaybeUpdateObserveBeginFrame();
+}
+
+void CompositorImpl::MaybeUpdateObserveBeginFrame() {
+  if (simple_begin_frame_observers_.empty()) {
+    host_begin_frame_observer_.reset();
+    return;
+  }
+
+  if (host_begin_frame_observer_)
+    return;
+
+  if (!display_private_)
+    return;
+
+  host_begin_frame_observer_ =
+      std::make_unique<HostBeginFrameObserver>(simple_begin_frame_observers_);
+  display_private_->SetStandaloneBeginFrameObserver(
+      host_begin_frame_observer_->GetBoundRemote());
 }
 
 }  // namespace content

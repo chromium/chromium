@@ -54,14 +54,44 @@ TEST_F(WebFramesManagerImplTest, MainWebFrame) {
   ASSERT_TRUE(main_frame);
   ASSERT_TRUE(main_frame_by_id);
   EXPECT_EQ(main_frame, main_frame_by_id);
+  EXPECT_EQ(main_frame_ptr, main_frame_by_id);
   EXPECT_TRUE(main_frame->IsMainFrame());
   EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
-            main_frame_ptr->GetSecurityOrigin());
+            main_frame->GetSecurityOrigin());
 
   SendFrameBecameUnavailableMessage(kMainFakeFrameId);
   EXPECT_EQ(0ul, GetWebFramesManager().GetAllWebFrames().size());
   EXPECT_FALSE(GetWebFramesManager().GetMainWebFrame());
   EXPECT_FALSE(GetWebFramesManager().GetFrameWithId(kMainFakeFrameId));
+}
+
+// Tests duplicate registration of the main web frame.
+TEST_F(WebFramesManagerImplTest, DuplicateMainWebFrame) {
+  auto frame = FakeWebFrame::Create(kMainFakeFrameId,
+                                    /*is_main_frame=*/true,
+                                    GURL("https://www.main.test"));
+  FakeWebFrame* main_frame_ptr = frame.get();
+
+  auto second_main_frame = FakeWebFrame::Create(kChildFakeFrameId,
+                                                /*is_main_frame=*/true,
+                                                GURL("https://www.main2.test"));
+
+  SendFrameBecameAvailableMessage(std::move(frame));
+  SendFrameBecameAvailableMessage(std::move(second_main_frame));
+
+  // Validate that |frame| remains the main frame and |second_main_frame| is
+  // ignored.
+  EXPECT_EQ(1ul, GetWebFramesManager().GetAllWebFrames().size());
+  WebFrame* main_frame = GetWebFramesManager().GetMainWebFrame();
+  WebFrame* main_frame_by_id =
+      GetWebFramesManager().GetFrameWithId(kMainFakeFrameId);
+  ASSERT_TRUE(main_frame);
+  ASSERT_TRUE(main_frame_by_id);
+  EXPECT_EQ(main_frame, main_frame_by_id);
+  EXPECT_EQ(main_frame_ptr, main_frame_by_id);
+  EXPECT_TRUE(main_frame->IsMainFrame());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
+            main_frame->GetSecurityOrigin());
 }
 
 // Tests WebStateImpl::RemoveAllWebFrames. Removing all frames must go through
@@ -88,6 +118,28 @@ TEST_F(WebFramesManagerImplTest, RemoveAllWebFrames) {
   EXPECT_FALSE(GetWebFramesManager().GetFrameWithId(kChildFakeFrameId));
   // Check frame 2.
   EXPECT_FALSE(GetWebFramesManager().GetFrameWithId(kChildFakeFrameId2));
+}
+
+// Tests removing a frame which doesn't exist.
+TEST_F(WebFramesManagerImplTest, RemoveNonexistantFrame) {
+  auto frame = FakeWebFrame::Create(kMainFakeFrameId,
+                                    /*is_main_frame=*/true,
+                                    GURL("https://www.main.test"));
+  FakeWebFrame* main_frame_ptr = frame.get();
+  SendFrameBecameAvailableMessage(std::move(frame));
+
+  SendFrameBecameUnavailableMessage(kChildFakeFrameId);
+  EXPECT_EQ(1ul, GetWebFramesManager().GetAllWebFrames().size());
+  WebFrame* main_frame = GetWebFramesManager().GetMainWebFrame();
+  WebFrame* main_frame_by_id =
+      GetWebFramesManager().GetFrameWithId(kMainFakeFrameId);
+  ASSERT_TRUE(main_frame);
+  ASSERT_TRUE(main_frame_by_id);
+  EXPECT_EQ(main_frame, main_frame_by_id);
+  EXPECT_EQ(main_frame_ptr, main_frame_by_id);
+  EXPECT_TRUE(main_frame->IsMainFrame());
+  EXPECT_EQ(main_frame_ptr->GetSecurityOrigin(),
+            main_frame->GetSecurityOrigin());
 }
 
 }  // namespace web

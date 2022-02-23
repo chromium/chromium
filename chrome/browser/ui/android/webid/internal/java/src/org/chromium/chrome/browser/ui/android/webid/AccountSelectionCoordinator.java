@@ -21,13 +21,11 @@ import org.chromium.chrome.browser.ui.android.webid.data.IdentityProviderMetadat
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.browser_ui.util.GlobalDiscardableReferencePool;
-import org.chromium.components.favicon.LargeIconBridge;
 import org.chromium.components.image_fetcher.ImageFetcher;
 import org.chromium.components.image_fetcher.ImageFetcherConfig;
 import org.chromium.components.image_fetcher.ImageFetcherFactory;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.SimpleRecyclerViewAdapter;
-import org.chromium.url.GURL;
 
 import java.util.List;
 
@@ -68,13 +66,10 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
                 GlobalDiscardableReferencePool.getReferencePool(), MAX_IMAGE_CACHE_SIZE);
 
         @Px
-        int avatar_size =
-                context.getResources().getDimensionPixelSize(R.dimen.list_item_start_icon_width);
-        @Px
-        int idp_icon_size = Math.round(avatar_size * 0.4f);
+        int avatarSize = context.getResources().getDimensionPixelSize(
+                R.dimen.account_selection_account_avatar_size);
         mMediator = new AccountSelectionMediator(delegate, sheetItems, mBottomSheetController,
-                mBottomSheetContent, imageFetcher, avatar_size, new LargeIconBridge(profile),
-                idp_icon_size);
+                mBottomSheetContent, imageFetcher, avatarSize);
     }
 
     static View setupContentView(Context context, ModelList sheetItems) {
@@ -133,9 +128,15 @@ public class AccountSelectionCoordinator implements AccountSelectionComponent {
     }
 
     @Override
-    public void showAccounts(GURL rpUrl, GURL idpUrl, List<Account> accounts,
+    public void showAccounts(String rpEtldPlusOne, String idpEtldPlusOne, List<Account> accounts,
             IdentityProviderMetadata idpMetadata, ClientIdMetadata clientMetadata,
             boolean isAutoSignIn) {
-        mMediator.showAccounts(rpUrl, idpUrl, accounts, idpMetadata, clientMetadata, isAutoSignIn);
+        mMediator.showAccounts(
+                rpEtldPlusOne, idpEtldPlusOne, accounts, idpMetadata, clientMetadata, isAutoSignIn);
+    }
+
+    @Override
+    public void hideBottomSheet() {
+        mMediator.hideBottomSheet();
     }
 }

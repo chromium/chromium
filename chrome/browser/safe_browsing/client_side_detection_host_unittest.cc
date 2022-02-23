@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/safe_browsing/chrome_client_side_detection_host_delegate.h"
 
 #include <memory>
@@ -291,7 +292,7 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
 
    private:
     // The raw pointer is safe because `harness_` owns this.
-    ClientSideDetectionHostTestBase* harness_;
+    raw_ptr<ClientSideDetectionHostTestBase> harness_;
   };
 
   explicit ClientSideDetectionHostTestBase(bool is_incognito)
@@ -437,7 +438,8 @@ class ClientSideDetectionHostTestBase : public ChromeRenderViewHostTestHarness {
   scoped_refptr<StrictMock<MockSafeBrowsingUIManager> > ui_manager_;
   scoped_refptr<StrictMock<MockSafeBrowsingDatabaseManager>> database_manager_;
   FakePhishingDetector fake_phishing_detector_;
-  StrictMock<MockSafeBrowsingTokenFetcher>* raw_token_fetcher_ = nullptr;
+  raw_ptr<StrictMock<MockSafeBrowsingTokenFetcher>> raw_token_fetcher_ =
+      nullptr;
   base::SimpleTestTickClock clock_;
   const bool is_incognito_;
   signin::IdentityTestEnvironment identity_test_env_;

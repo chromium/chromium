@@ -16,16 +16,18 @@
 #include "base/callback_helpers.h"
 #include "base/location.h"
 #include "base/logging.h"
+#include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "base/time/clock.h"
+#include "base/values.h"
+#include "chromeos/components/onc/variable_expander.h"
 #include "chromeos/dbus/shill/shill_service_client.h"
 #include "chromeos/network/certificate_helper.h"
 #include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_event_log.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/onc/onc_certificate_pattern.h"
-#include "chromeos/network/onc/variable_expander.h"
 #include "components/onc/onc_constants.h"
 #include "crypto/scoped_nss_types.h"
 #include "dbus/object_path.h"
@@ -39,6 +41,10 @@
 namespace chromeos {
 
 namespace {
+
+std::string GetNetworkIdWithGuid(const NetworkState* network_state) {
+  return NetworkId(network_state) + "[guid='" + network_state->guid() + "']";
+}
 
 // Global override for the getter function. This is used for testing purposes.
 // See SetProvisioningIdForCertGetterForTesting for details.
@@ -524,7 +530,7 @@ bool ClientCertResolver::IsAnyResolveTaskRunning() const {
 bool ClientCertResolver::ResolveClientCertificateSync(
     const client_cert::ConfigType client_cert_type,
     const client_cert::ClientCertConfig& client_cert_config,
-    base::DictionaryValue* shill_properties) {
+    base::Value* shill_properties) {
   if (!ShouldResolveCert(client_cert_config))
     return false;
 
@@ -627,7 +633,7 @@ void ClientCertResolver::NetworkConnectionStateChanged(
     return;
   if (!network->IsConnectingOrConnected()) {
     NET_LOG(EVENT) << "ClientCertResolver: ConnectionStateChanged: "
-                   << NetworkId(network);
+                   << GetNetworkIdWithGuid(network);
     ResolveNetworks(NetworkStateHandler::NetworkStateList(1, network));
   }
 }
@@ -664,16 +670,27 @@ void ClientCertResolver::PolicyAppliedToNetwork(
     return;
   }
   NET_LOG(EVENT) << "ClientCertResolver: PolicyAppliedToNetwork: "
-                 << NetworkId(network);
+                 << GetNetworkIdWithGuid(network);
+
+  // Policy application may have wiped e.g. the 'EAP.Identity' field, so
+  // forget the resolved certificate and make sure to re-apply it.
+  ForgetResolvedCert(network);
+
   NetworkStateHandler::NetworkStateList networks;
   networks.push_back(network);
   ResolveNetworks(networks);
+}
+
+void ClientCertResolver::ForgetResolvedCert(const NetworkState* network) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  networks_status_.erase(network->path());
 }
 
 void ClientCertResolver::ResolveNetworks(
     const NetworkStateHandler::NetworkStateList& networks) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   std::vector<NetworkAndCertConfig> networks_to_resolve;
+  std::vector<std::string> networks_to_resolve_info;
 
   // Filter networks with ClientCertPattern, ClientCertRef, or
   // ProvisioningProfileId. As these can only be set by policy, we check there.
@@ -690,7 +707,7 @@ void ClientCertResolver::ResolveNetworks(
       continue;
 
     ::onc::ONCSource onc_source = ::onc::ONC_SOURCE_NONE;
-    const base::DictionaryValue* policy =
+    const base::Value* policy =
         managed_network_config_handler_->FindPolicyByGuidAndProfile(
             network->guid(), network->profile_path(), &onc_source);
 
@@ -712,6 +729,7 @@ void ClientCertResolver::ResolveNetworks(
 
     networks_to_resolve.push_back(
         NetworkAndCertConfig(network->path(), cert_config));
+    networks_to_resolve_info.push_back(GetNetworkIdWithGuid(network));
   }
 
   if (networks_to_resolve.empty()) {
@@ -730,7 +748,8 @@ void ClientCertResolver::ResolveNetworks(
     return;
   }
 
-  VLOG(2) << "Start task for resolving client cert patterns.";
+  NET_LOG(EVENT) << "Start task for resolving client cert patterns for "
+                 << base::JoinString(networks_to_resolve_info, ", ");
   resolve_task_running_ = true;
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -765,11 +784,23 @@ void ClientCertResolver::ResolvePendingNetworks() {
 void ClientCertResolver::ConfigureCertificates(
     std::vector<NetworkAndMatchingCert> matches) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  std::vector<std::string> resolved_networks_info;
   for (const NetworkAndMatchingCert& match : matches) {
+    const NetworkState* network_state =
+        network_state_handler_->GetNetworkStateFromServicePath(
+            match.service_path, /*configured_only=*/true);
+    if (!network_state) {
+      resolved_networks_info.push_back(
+          "Skipping " + match.service_path +
+          " because it is not configured anymore.");
+      continue;
+    }
     MatchingCertAndResolveStatus& network_status =
         networks_status_[match.service_path];
     if (network_status.resolve_status == ResolveStatus::kResolved &&
         network_status.matching_cert == match.matching_cert) {
+      resolved_networks_info.push_back(GetNetworkIdWithGuid(network_state) +
+                                       ":match,no_change");
       // The same certificate was configured in the last ConfigureCertificates
       // call, so don't do anything for this network.
       continue;
@@ -779,19 +810,24 @@ void ClientCertResolver::ConfigureCertificates(
     network_properties_changed_ = true;
 
     NET_LOG(EVENT) << "Configuring certificate for network: "
-                   << NetworkPathId(match.service_path);
+                   << GetNetworkIdWithGuid(network_state);
 
-    base::DictionaryValue shill_properties;
+    base::Value shill_properties{base::Value::Type::DICTIONARY};
     if (match.matching_cert.has_value()) {
       const MatchingCert& matching_cert = match.matching_cert.value();
       client_cert::SetShillProperties(
           match.cert_config_type, matching_cert.key_slot_id,
           matching_cert.pkcs11_id, &shill_properties);
+      resolved_networks_info.push_back(GetNetworkIdWithGuid(network_state) +
+                                       ":match,identity='" +
+                                       matching_cert.identity + "'");
       if (!matching_cert.identity.empty()) {
         shill_properties.SetKey(shill::kEapIdentityProperty,
                                 base::Value(matching_cert.identity));
       }
     } else {
+      resolved_networks_info.push_back(GetNetworkIdWithGuid(network_state) +
+                                       ":no_match");
       client_cert::SetEmptyShillProperties(match.cert_config_type,
                                            &shill_properties);
     }
@@ -800,6 +836,9 @@ void ClientCertResolver::ConfigureCertificates(
         base::DoNothing(), base::BindOnce(&LogError, match.service_path));
     network_state_handler_->RequestUpdateForNetwork(match.service_path);
   }
+
+  NET_LOG(EVENT) << "Summary: "
+                 << base::JoinString(resolved_networks_info, ", ");
   resolve_task_running_ = false;
   if (queued_networks_to_resolve_.empty())
     NotifyResolveRequestCompleted();

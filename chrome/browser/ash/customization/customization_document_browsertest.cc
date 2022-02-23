@@ -235,24 +235,24 @@ IN_PROC_BROWSER_TEST_P(CustomizationVPDTest, GetUILanguageList) {
       << "', locales=" << Print(locales);
 
   std::unique_ptr<base::ListValue> ui_language_list =
-      GetUILanguageList(NULL, "");
-  EXPECT_GE(ui_language_list->GetList().size(), locales.size())
+      GetUILanguageList(NULL, "", input_method::InputMethodManager::Get());
+  EXPECT_GE(ui_language_list->GetListDeprecated().size(), locales.size())
       << "Test failed for initial_locale='" << GetParam() << "'";
 
-  for (size_t i = 0; i < ui_language_list->GetList().size(); ++i) {
+  for (size_t i = 0; i < ui_language_list->GetListDeprecated().size(); ++i) {
     base::DictionaryValue* language_info = NULL;
     ASSERT_TRUE(ui_language_list->GetDictionary(i, &language_info))
         << "Test failed for initial_locale='" << GetParam() << "', i=" << i;
 
-    std::string value;
-    ASSERT_TRUE(language_info->GetString("value", &value))
-        << "Test failed for initial_locale='" << GetParam() << "', i=" << i;
+    const std::string* value = language_info->FindStringKey("value");
+    ASSERT_TRUE(value) << "Test failed for initial_locale='" << GetParam()
+                       << "', i=" << i;
 
     if (i < locales.size()) {
-      EXPECT_EQ(locales[i], value) << "Test failed for initial_locale='"
-                                   << GetParam() << "', i=" << i;
+      EXPECT_EQ(locales[i], *value)
+          << "Test failed for initial_locale='" << GetParam() << "', i=" << i;
     } else {
-      EXPECT_EQ(kMostRelevantLanguagesDivider, value)
+      EXPECT_EQ(kMostRelevantLanguagesDivider, *value)
           << "Test failed for initial_locale='" << GetParam() << "', i=" << i;
       break;
     }

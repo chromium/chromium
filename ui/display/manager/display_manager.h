@@ -18,7 +18,6 @@
 
 #include "base/callback.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
@@ -653,6 +652,7 @@ class DISPLAY_MANAGER_EXPORT DisplayManager
   DisplayIdList hardware_mirroring_display_id_list_;
 
   // Stores external displays that were in mirror mode before.
+  // These are display ids without output index.
   std::set<int64_t> external_display_mirror_info_;
 
   // This is set to true when the display prefs have been loaded from local

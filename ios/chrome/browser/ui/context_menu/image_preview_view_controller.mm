@@ -25,17 +25,40 @@ const CGFloat kDefaultSize = 50;
 
 #pragma mark - Public
 
+- (instancetype)initWithPreferredContentSize:(CGSize)preferredContentSize {
+  self = [super initWithNibName:nil bundle:nil];
+  if (self) {
+    if (preferredContentSize.width <= 0.0 ||
+        preferredContentSize.height <= 0.0) {
+      self.preferredContentSize = CGSizeMake(kDefaultSize, kDefaultSize);
+    } else {
+      self.preferredContentSize = preferredContentSize;
+    }
+  }
+  return self;
+}
+
 - (void)loadView {
   self.view = [[UIImageView alloc] init];
+}
 
-  self.preferredContentSize = CGSizeMake(kDefaultSize, kDefaultSize);
+- (void)updateImage:(UIImage*)image {
+  self.view.image = image;
 }
 
 - (void)updateImageData:(NSData*)data {
   UIImage* image = [UIImage imageWithData:data];
   self.view.image = image;
 
-  self.preferredContentSize = image.size;
+  // UIPreviewProvider cannot animate |preferredContentSize| changes.
+  // Changing |preferredContentSize| during animation will make it glitch.
+  // See crbug.com/1288017.
+  // Here we set |preferredContentSize| as a last resort, if
+  // the |preferredContentSize| provided during initialization is invalid.
+  if (self.preferredContentSize.width == kDefaultSize &&
+      self.preferredContentSize.height == kDefaultSize) {
+    self.preferredContentSize = image.size;
+  }
 }
 
 @end

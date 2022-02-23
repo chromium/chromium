@@ -19,15 +19,16 @@ enum {
   DIR_CAST_HOME,  // Return a modified $HOME which works for both
                   // development use and the actual device.
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   FILE_CAST_ANDROID_LOG,  // Log file location for Android.
-#endif                    // defined(OS_ANDROID)
+#endif
   FILE_CAST_CONFIG,       // Config/preferences file path.
   FILE_CAST_CRL,          // CRL persistent cache file path.
   FILE_CAST_PAK,          // cast_shell.pak file path.
 #if BUILDFLAG(BUNDLE_WIDEVINE_CDM)
   DIR_BUNDLED_WIDEVINE_CDM,
-#endif  // BUILDFLAG(BUNDLE_WIDEVINE_CDM)
+#endif
+  FILE_CAST_BROWSER_CONFIG,
   PATH_END
 };
 

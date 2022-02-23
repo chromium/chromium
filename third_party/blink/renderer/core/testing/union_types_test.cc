@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/testing/union_types_test.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_internalenum.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_double_string_stringsequence.h"

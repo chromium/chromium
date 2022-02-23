@@ -17,7 +17,7 @@ const int kReportIntervalSeconds = 10;
 
 const base::Feature kWebRtcThermalResource {
   "WebRtcThermalResource",
-#if defined(OS_MAC) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS)
       base::FEATURE_ENABLED_BY_DEFAULT
 #else
       base::FEATURE_DISABLED_BY_DEFAULT
@@ -73,12 +73,14 @@ void ThermalResource::ReportMeasurementWhileHoldingLock(size_t measurement_id) {
     case mojom::blink::DeviceThermalState::kNominal:
     case mojom::blink::DeviceThermalState::kFair:
       listener_->OnResourceUsageStateMeasured(
-          this, webrtc::ResourceUsageState::kUnderuse);
+          rtc::scoped_refptr<Resource>(this),
+          webrtc::ResourceUsageState::kUnderuse);
       break;
     case mojom::blink::DeviceThermalState::kSerious:
     case mojom::blink::DeviceThermalState::kCritical:
       listener_->OnResourceUsageStateMeasured(
-          this, webrtc::ResourceUsageState::kOveruse);
+          rtc::scoped_refptr<Resource>(this),
+          webrtc::ResourceUsageState::kOveruse);
       break;
   }
   // Repeat the reporting every 10 seconds until a new measurement is made or

@@ -4,8 +4,8 @@
 
 #include "ash/webui/print_management/print_management_ui.h"
 
-#include "ash/grit/ash_print_management_resources.h"
-#include "ash/grit/ash_print_management_resources_map.h"
+#include "ash/webui/grit/ash_print_management_resources.h"
+#include "ash/webui/grit/ash_print_management_resources_map.h"
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "ash/webui/print_management/url_constants.h"
 #include "base/memory/ptr_util.h"

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 #include <d3d11.h>
+#include <dxgi1_2.h>
 #include <wrl.h>
 
 #include "base/bind.h"

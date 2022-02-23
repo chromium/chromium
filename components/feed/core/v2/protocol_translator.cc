@@ -270,7 +270,7 @@ absl::optional<feedstore::DataOperation> TranslateDataOperation(
 RefreshResponseData TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
-    bool was_signed_in_request,
+    const AccountInfo& account_info,
     base::Time current_time) {
   if (response.response_version() != feedwire::Response::FEED_RESPONSE)
     return {};
@@ -322,7 +322,17 @@ RefreshResponseData TranslateWireResponse(
 
   const auto& chrome_response_metadata =
       response_metadata.chrome_feed_response_metadata();
-  result->stream_data.set_signed_in(was_signed_in_request);
+  // Note that we're storing the raw proto bytes for the root event ID because
+  // we want to retain any unknown fields. This value is ignored in next-page
+  // responses. Because time_usec is a required field, we can only serialize
+  // this message if it is set.
+  if (response_metadata.event_id().has_time_usec()) {
+    result->stream_data.set_root_event_id(
+        response_metadata.event_id().SerializeAsString());
+  }
+  result->stream_data.set_signed_in(!account_info.IsEmpty());
+  result->stream_data.set_gaia(account_info.gaia);
+  result->stream_data.set_email(account_info.email);
   result->stream_data.set_logging_enabled(
       chrome_response_metadata.logging_enabled());
   result->stream_data.set_privacy_notice_fulfilled(
@@ -332,7 +342,7 @@ RefreshResponseData TranslateWireResponse(
   }
 
   absl::optional<std::string> session_id = absl::nullopt;
-  if (was_signed_in_request) {
+  if (!account_info.IsEmpty()) {
     // Signed-in requests don't use session_id tokens; set an empty value to
     // ensure that there are no old session_id tokens left hanging around.
     session_id = std::string();
@@ -367,6 +377,10 @@ RefreshResponseData TranslateWireResponse(
       feed_response->feed_response_metadata().event_id().time_usec() * 1'000;
   response_data.server_response_sent_timestamp_ns =
       feed_response->feed_response_metadata().response_time_ms() * 1'000'000;
+  response_data.web_and_app_activity_enabled =
+      chrome_response_metadata.web_and_app_activity_enabled();
+  response_data.discover_personalization_enabled =
+      chrome_response_metadata.discover_personalization_enabled();
 
   return response_data;
 }

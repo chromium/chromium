@@ -4,13 +4,21 @@
 
 #include "chrome/updater/mac/privileged_helper/server.h"
 
+#include "base/bind.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/sequence_checker.h"
 #include "base/strings/sys_string_conversions.h"
+#include "base/task/post_task.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "base/time/time.h"
 #include "chrome/updater/updater_branding.h"
 
 namespace updater {
+
+namespace {
+int kServerKeepAliveSeconds = 10;
+}
 
 PrivilegedHelperServer::PrivilegedHelperServer()
     : main_task_runner_(base::SequencedTaskRunnerHandle::Get()),
@@ -37,6 +45,36 @@ void PrivilegedHelperServer::Uninitialize() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   service_delegate_.reset();
   service_listener_.reset();
+}
+
+void PrivilegedHelperServer::TaskStarted() {
+  main_task_runner_->PostTask(
+      FROM_HERE, BindOnce(&PrivilegedHelperServer::MarkTaskStarted, this));
+}
+
+void PrivilegedHelperServer::MarkTaskStarted() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  ++tasks_running_;
+}
+
+base::TimeDelta PrivilegedHelperServer::ServerKeepAlive() {
+  int seconds = kServerKeepAliveSeconds;
+  return base::Seconds(seconds);
+}
+
+void PrivilegedHelperServer::TaskCompleted() {
+  main_task_runner_->PostDelayedTask(
+      FROM_HERE,
+      base::BindOnce(&PrivilegedHelperServer::AcknowledgeTaskCompletion, this),
+      ServerKeepAlive());
+}
+
+void PrivilegedHelperServer::AcknowledgeTaskCompletion() {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (--tasks_running_ < 1) {
+    main_task_runner_->PostTask(
+        FROM_HERE, base::BindOnce(&PrivilegedHelperServer::Shutdown, this, 0));
+  }
 }
 
 scoped_refptr<App> PrivilegedHelperServerInstance() {

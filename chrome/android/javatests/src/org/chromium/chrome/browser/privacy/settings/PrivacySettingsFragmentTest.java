@@ -5,9 +5,12 @@
 package org.chromium.chrome.browser.privacy.settings;
 
 import static androidx.test.espresso.Espresso.onView;
+import static androidx.test.espresso.action.ViewActions.click;
 import static androidx.test.espresso.assertion.ViewAssertions.matches;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
+
+import static org.chromium.base.test.util.Batch.PER_CLASS;
 
 import android.os.Build;
 import android.text.TextUtils;
@@ -18,17 +21,18 @@ import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.contrib.RecyclerViewActions;
 import androidx.test.filters.LargeTest;
 
-import org.junit.Before;
+import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
-import org.junit.rules.RuleChain;
 import org.junit.runner.RunWith;
 
+import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.DisableIf;
 import org.chromium.base.test.util.Feature;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthManager;
 import org.chromium.chrome.browser.incognito.reauth.IncognitoReauthSettingUtils;
@@ -36,6 +40,7 @@ import org.chromium.chrome.browser.settings.SettingsActivityTestRule;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.io.IOException;
@@ -45,26 +50,19 @@ import java.io.IOException;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
+@Batch(PER_CLASS)
 public class PrivacySettingsFragmentTest {
-    public final ChromeTabbedActivityTestRule mActivityTestRule =
+    @ClassRule
+    public static final ChromeTabbedActivityTestRule sActivityTestRule =
             new ChromeTabbedActivityTestRule();
+
+    @Rule
     public final SettingsActivityTestRule<PrivacySettings> mSettingsActivityTestRule =
             new SettingsActivityTestRule<>(PrivacySettings.class);
-
-    // SettingsActivity has to be finished before the outer CTA can be finished or trying to finish
-    // CTA won't work.
-    @Rule
-    public final RuleChain mRuleChain =
-            RuleChain.outerRule(mActivityTestRule).around(mSettingsActivityTestRule);
 
     @Rule
     public ChromeRenderTestRule mRenderTestRule =
             ChromeRenderTestRule.Builder.withPublicCorpus().build();
-
-    @Before
-    public void setUp() {
-        mActivityTestRule.startMainActivityOnBlankPage();
-    }
 
     private void waitForOptionsMenu() {
         CriteriaHelper.pollUiThread(() -> {
@@ -116,6 +114,38 @@ public class PrivacySettingsFragmentTest {
                             .findViewById(android.R.id.content)
                             .getRootView();
         mRenderTestRule.render(view, "privacy_and_security_settings_bottom_view");
+    }
+
+    @Test
+    @LargeTest
+    public void testPrivacySandboxView() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and open Privacy Sandbox page.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        onView(withText(R.string.prefs_privacy_sandbox)).perform(click());
+        // Verify that the right view is shown depending on feature state.
+        onView(withText(R.string.privacy_sandbox_toggle)).check(matches(isDisplayed()));
+    }
+
+    @Test
+    @LargeTest
+    @Features.EnableFeatures(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
+    public void testPrivacySandboxViewV3() throws IOException {
+        mSettingsActivityTestRule.startSettingsActivity();
+        PrivacySettings fragment = mSettingsActivityTestRule.getFragment();
+        // Scroll down and open Privacy Sandbox page.
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            RecyclerView recyclerView = fragment.getView().findViewById(R.id.recycler_view);
+            recyclerView.scrollToPosition(recyclerView.getAdapter().getItemCount() - 1);
+        });
+        onView(withText(R.string.prefs_privacy_sandbox)).perform(click());
+        // Verify that the right view is shown depending on feature state.
+        onView(withText(R.string.privacy_sandbox_ad_personalization_title))
+                .check(matches(isDisplayed()));
     }
 
     @Test

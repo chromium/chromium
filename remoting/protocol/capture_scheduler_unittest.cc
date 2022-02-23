@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/test/task_environment.h"
 #include "base/timer/mock_timer.h"
@@ -35,7 +36,7 @@ class CaptureSchedulerTest : public testing::Test {
         base::Milliseconds(kMinumumFrameIntervalMs));
     scheduler_->SetTickClockForTest(&tick_clock_);
     capture_timer_ = new base::MockOneShotTimer();
-    scheduler_->SetTimerForTest(base::WrapUnique(capture_timer_));
+    scheduler_->SetTimerForTest(base::WrapUnique(capture_timer_.get()));
     scheduler_->Start();
   }
 
@@ -81,7 +82,7 @@ class CaptureSchedulerTest : public testing::Test {
   base::SimpleTestTickClock tick_clock_;
 
   // Owned by |scheduler_|.
-  base::MockOneShotTimer* capture_timer_;
+  raw_ptr<base::MockOneShotTimer> capture_timer_;
 
   bool capture_called_;
 };

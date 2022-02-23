@@ -45,6 +45,8 @@ class CSSSupportsRule final : public CSSConditionRule {
 
   String cssText() const override;
 
+  void SetConditionText(const ExecutionContext*, String);
+
  private:
   CSSRule::Type GetType() const override { return kSupportsRule; }
 };

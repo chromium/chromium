@@ -11,7 +11,7 @@ namespace gpu {
 
 // Implementation of SharedImageBacking that creates a GL Texture that is not
 // backed by a GLImage.
-class SharedImageBackingGLTexture : public SharedImageBacking {
+class SharedImageBackingGLTexture : public ClearTrackingSharedImageBacking {
  public:
   SharedImageBackingGLTexture(const Mailbox& mailbox,
                               viz::ResourceFormat format,

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -72,7 +73,7 @@ class GeometryCacheChangeHelper : AppWindowGeometryCache::Observer {
   }
 
  private:
-  AppWindowGeometryCache* cache_;
+  raw_ptr<AppWindowGeometryCache> cache_;
   std::string extension_id_;
   std::string window_id_;
   gfx::Rect bounds_;
@@ -153,7 +154,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, DISABLED_TestMaximize) {
 // Flaky on Linux. http://crbug.com/424399.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_TestMinimize DISABLED_TestMinimize
 #else
 #define MAYBE_TestMinimize TestMinimize
@@ -172,7 +173,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest, DISABLED_TestRestoreAfterClose) {
 }
 
 // These tests will be flaky in Linux as window bounds change asynchronously.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestDeprecatedBounds DISABLED_TestDeprecatedBounds
 #define MAYBE_TestInitialBounds DISABLED_TestInitialBounds
 #define MAYBE_TestInitialConstraints DISABLED_TestInitialConstraints
@@ -227,7 +228,7 @@ IN_PROC_BROWSER_TEST_F(AppWindowAPITest,
 
   apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
       ->BrowserAppLauncher()
-      ->LaunchAppWithParams(apps::AppLaunchParams(
+      ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
           extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
           WindowOpenDisposition::NEW_WINDOW,
           apps::mojom::LaunchSource::kFromTest));

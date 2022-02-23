@@ -5,9 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_FRAME_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
-#include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/pointer/touch_ui_controller.h"
 #include "ui/views/context_menu_controller.h"
@@ -16,6 +15,7 @@
 class BrowserDesktopWindowTreeHost;
 class BrowserNonClientFrameView;
 class BrowserRootView;
+enum class BrowserThemeChangeType;
 class BrowserView;
 class NativeBrowserFrame;
 class NonClientFrameView;
@@ -164,18 +164,18 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // regenerated.
   bool RegenerateFrameOnThemeChange(BrowserThemeChangeType theme_change_type);
 
-  NativeBrowserFrame* native_browser_frame_;
+  raw_ptr<NativeBrowserFrame> native_browser_frame_;
 
   // A weak reference to the root view associated with the window. We save a
   // copy as a BrowserRootView to avoid evil casting later, when we need to call
   // functions that only exist on BrowserRootView (versus RootView).
-  BrowserRootView* root_view_;
+  raw_ptr<BrowserRootView> root_view_;
 
   // A pointer to our NonClientFrameView as a BrowserNonClientFrameView.
-  BrowserNonClientFrameView* browser_frame_view_;
+  raw_ptr<BrowserNonClientFrameView> browser_frame_view_;
 
   // The BrowserView is our ClientView. This is a pointer to it.
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
   std::unique_ptr<SystemMenuModelBuilder> menu_model_builder_;
 
@@ -188,7 +188,8 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
           base::BindRepeating(&BrowserFrame::OnTouchUiChanged,
                               base::Unretained(this)));
 
-  BrowserDesktopWindowTreeHost* browser_desktop_window_tree_host_ = nullptr;
+  raw_ptr<BrowserDesktopWindowTreeHost> browser_desktop_window_tree_host_ =
+      nullptr;
 
   // Indicates the drag state for this window. The value can be kWindowDrag
   // if the accociated browser is the dragged browser or kTabDrag

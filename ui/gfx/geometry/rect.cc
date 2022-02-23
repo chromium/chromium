@@ -6,19 +6,20 @@
 
 #include <algorithm>
 
-#if defined(OS_WIN)
-#include <windows.h>
-#elif defined(OS_IOS)
-#include <CoreGraphics/CoreGraphics.h>
-#elif defined(OS_MAC)
-#include <ApplicationServices/ApplicationServices.h>
-#endif
-
 #include "base/check.h"
 #include "base/numerics/clamped_math.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
 #include "ui/gfx/geometry/insets.h"
+#include "ui/gfx/geometry/outsets.h"
+
+#if BUILDFLAG(IS_WIN)
+#include <windows.h>
+#elif BUILDFLAG(IS_IOS)
+#include <CoreGraphics/CoreGraphics.h>
+#elif BUILDFLAG(IS_MAC)
+#include <ApplicationServices/ApplicationServices.h>
+#endif
 
 namespace {
 
@@ -73,7 +74,7 @@ void SaturatedClampRange(int min, int max, int* origin, int* span) {
 
 namespace gfx {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 Rect::Rect(const RECT& r)
     : origin_(r.left, r.top),
@@ -88,7 +89,7 @@ RECT Rect::ToRECT() const {
   return r;
 }
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 
 Rect::Rect(const CGRect& r)
     : origin_(r.origin.x, r.origin.y), size_(r.size.width, r.size.height) {}
@@ -123,6 +124,10 @@ void Rect::Inset(int left, int top, int right, int bottom) {
   // overflow as well.
   set_width(base::ClampSub(width(), base::ClampAdd(left, right)));
   set_height(base::ClampSub(height(), base::ClampAdd(top, bottom)));
+}
+
+void Rect::Outset(const Outsets& outsets) {
+  Outset(outsets.left(), outsets.top(), outsets.right(), outsets.bottom());
 }
 
 void Rect::Offset(const Vector2d& distance) {

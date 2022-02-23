@@ -60,13 +60,6 @@ base::Value* OncGetEap(base::Value* network) {
   return const_cast<base::Value*>(OncGetEap(*network));
 }
 
-bool OncEapHasClientCertType(const base::Value& network) {
-  const base::Value* eap = OncGetEap(network);
-  const std::string* client_cert_type =
-      eap->FindStringKey(onc::client_cert::kClientCertType);
-  return client_cert_type != nullptr;
-}
-
 base::Value ManagedOncCreatePasswordDict(const base::Value& network,
                                          const std::string& password) {
   std::string source = onc::kAugmentationDevicePolicy;

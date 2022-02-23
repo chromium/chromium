@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_GEOLOCATION_GEOLOCATION_PERMISSION_CONTEXT_EXTENSIONS_H_
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "components/content_settings/core/common/content_settings.h"
 #include "extensions/buildflags/buildflags.h"
 
@@ -47,7 +48,7 @@ class GeolocationPermissionContextExtensions {
 
  private:
 #if BUILDFLAG(ENABLE_EXTENSIONS)
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 #endif
 };
 

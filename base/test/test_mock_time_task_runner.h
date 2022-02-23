@@ -14,7 +14,7 @@
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/synchronization/lock.h"
@@ -206,6 +206,11 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
   bool PostDelayedTask(const Location& from_here,
                        OnceClosure task,
                        TimeDelta delay) override;
+  bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                         const Location& from_here,
+                         OnceClosure task,
+                         TimeTicks delayed_run_time,
+                         subtle::DelayPolicy deadline_policy) override;
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure task,
                                   TimeDelta delay) override;
@@ -245,7 +250,7 @@ class TestMockTimeTaskRunner : public SingleThreadTaskRunner,
     Time Now() const override;
 
    private:
-    TestMockTimeTaskRunner* task_runner_;
+    raw_ptr<TestMockTimeTaskRunner> task_runner_;
   };
 
   struct TestOrderedPendingTask;

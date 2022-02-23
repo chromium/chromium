@@ -138,6 +138,7 @@ public class TosAndUmaFirstRunFragmentWithEnterpriseSupport
 
     @Override
     public void onHideLoadingUIComplete() {
+        super.onHideLoadingUIComplete();
         assert mSkipTosDialogPolicyListener.get() != null;
 
         RecordHistogram.recordTimesHistogram("MobileFre.CctTos.LoadingDuration",

@@ -52,7 +52,8 @@ void EncodePinnedTabs(Browser* browser, base::Value* serialized_tabs) {
 // on success.
 absl::optional<StartupTab> DecodeTab(const base::Value& value) {
   const std::string* const url_string = value.FindStringPath(kURL);
-  return url_string ? absl::make_optional(StartupTab(GURL(*url_string), true))
+  return url_string ? absl::make_optional(StartupTab(GURL(*url_string),
+                                                     StartupTab::Type::kPinned))
                     : absl::nullopt;
 }
 
@@ -108,7 +109,7 @@ StartupTabs PinnedTabCodec::ReadPinnedTabs(const base::Value* value) {
   if (!value->is_list())
     return results;
 
-  for (const auto& serialized_tab : value->GetList()) {
+  for (const auto& serialized_tab : value->GetListDeprecated()) {
     if (!serialized_tab.is_dict())
       continue;
     absl::optional<StartupTab> tab = DecodeTab(serialized_tab);

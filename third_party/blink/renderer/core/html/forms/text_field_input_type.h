@@ -91,6 +91,7 @@ class TextFieldInputType : public InputType,
   void UpdatePlaceholderText(bool is_suggested_value) final;
   void AppendToFormData(FormData&) const override;
   void SubtreeHasChanged() final;
+  void OpenPopupView() override;
 
   // SpinButtonElement::SpinButtonOwner functions.
   void FocusAndSelectSpinButtonOwner() final;

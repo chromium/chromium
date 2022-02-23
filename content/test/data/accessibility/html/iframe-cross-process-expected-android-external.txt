@@ -1,0 +1,7 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++TextView text:"Before frame" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer"]
+++++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="iframe"]
+++++++View text:"Error" focusable scrollable actions:[FOCUS, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="rootWebArea"]
+++++++++TextView text:"Could not load the requested resource.\nError code: -6 (net::ERR_FILE_NOT_FOUND)" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="genericContainer"]
+++TextView text:"After frame" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="paragraph"]

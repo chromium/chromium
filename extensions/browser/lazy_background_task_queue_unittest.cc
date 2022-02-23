@@ -7,7 +7,7 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
@@ -127,7 +127,7 @@ class LazyBackgroundTaskQueueTest : public ExtensionsTest {
 
   // The total number of pending tasks that have been executed.
   int task_run_count_;
-  TestProcessManager* process_manager_ = nullptr;
+  raw_ptr<TestProcessManager> process_manager_ = nullptr;
 };
 
 // Tests that only extensions with background pages should have tasks queued.

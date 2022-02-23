@@ -45,7 +45,7 @@ class MockWebsiteLoginManager : public WebsiteLoginManager {
                base::OnceCallback<void(bool)> callback),
               (override));
 
-  MOCK_METHOD(std::string,
+  MOCK_METHOD(absl::optional<std::string>,
               GeneratePassword,
               (autofill::FormSignature form_signature,
                autofill::FieldSignature field_signature,

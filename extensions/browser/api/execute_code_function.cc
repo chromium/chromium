@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "extensions/browser/api/extension_types_utils.h"
 #include "extensions/browser/extension_api_frame_id_map.h"
+#include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/load_and_localize_file.h"
 #include "extensions/common/error_utils.h"
 #include "extensions/common/extension.h"
@@ -130,9 +131,12 @@ bool ExecuteCodeFunction::Execute(const std::string& code_string,
     bool wants_result = has_callback();
     std::vector<mojom::JSSourcePtr> sources;
     sources.push_back(mojom::JSSource::New(code_string, script_url_));
+    // tabs.executeScript does not support waiting for promises (only
+    // scripting.executeScript does).
+    constexpr bool kWaitForPromises = false;
     injection = mojom::CodeInjection::NewJs(mojom::JSInjection::New(
         std::move(sources), mojom::ExecutionWorld::kIsolated, wants_result,
-        user_gesture()));
+        user_gesture(), kWaitForPromises));
   }
 
   executor->ExecuteScript(
@@ -167,6 +171,11 @@ ExtensionFunction::ResponseAction ExecuteCodeFunction::Run() {
     return RespondNow(Error(std::move(error)));
 
   if (details_->code) {
+    if (!IsWebView() && extension()) {
+      ExtensionsBrowserClient::Get()->NotifyExtensionApiTabExecuteScript(
+          browser_context(), extension_id(), *details_->code);
+    }
+
     if (!Execute(*details_->code, &error))
       return RespondNow(Error(std::move(error)));
     return did_respond() ? AlreadyResponded() : RespondLater();

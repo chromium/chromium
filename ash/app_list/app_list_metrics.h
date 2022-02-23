@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "base/time/time.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/events/event.h"
 
 namespace ash {
@@ -17,6 +18,16 @@ class SearchResult;
 // The UMA histogram that logs how the app list transitions from peeking to
 // fullscreen. Exposed in this header because it is recorded in multiple files.
 ASH_EXPORT extern const char kAppListPeekingToFullscreenHistogram[];
+
+// UMA histograms that record app list reorder animation smoothness. Exposed
+// in this header because it is needed in tests.
+ASH_EXPORT extern const char kClamshellReorderAnimationSmoothnessHistogram[];
+ASH_EXPORT extern const char kTabletReorderAnimationSmoothnessHistogram[];
+
+// UMA histograms that record app list reorder actions. Exposed in this header
+// because it is needed in tests.
+ASH_EXPORT extern const char kClamshellReorderActionHistogram[];
+ASH_EXPORT extern const char kTabletReorderActionHistogram[];
 
 // The different ways to create a new page in the apps grid. These values are
 // written to logs. New enum values can be added, but existing enums must never
@@ -40,9 +51,9 @@ enum class ZeroStateSearchResultUserActionType {
 
 // These are used in histograms, do not remove/renumber entries. If you're
 // adding to this enum with the intention that it will be logged, update the
-// AppListZeroStateResultRemovalConfirmation enum listing in
+// AppListResultRemovalConfirmation enum listing in
 // tools/metrics/histograms/enums.xml.
-enum class ZeroStateSearchResutRemovalConfirmation {
+enum class SearchResultRemovalConfirmation {
   kRemovalConfirmed = 0,
   kRemovalCanceled = 1,
   kMaxValue = kRemovalCanceled,
@@ -182,14 +193,47 @@ enum TabletModeAnimationTransition {
   kFadeOutOverview,
 };
 
+// Different actions that complete a user workflow within the launcher UI.
+// Used as bucket values in histograms that track completed user actions within
+// the launcher - do not remove/renumber existing items.
+enum class AppListUserAction {
+  // User launched an app from the apps grid within the app list UI.
+  kAppLaunchFromAppsGrid = 0,
+
+  // User launched an app from list of recent apps within the app list UI.
+  kAppLaunchFromRecentApps = 1,
+
+  // User opened a non-app search result from the app list search results page.
+  kOpenSearchResult = 2,
+
+  // User opened an app search result from the app list search result page.
+  kOpenAppSearchResult = 3,
+
+  // User opened an item shown in continue section within the app list UI.
+  kOpenContinueSectionTask = 4,
+
+  // User opened a suggestion chip shown in the app list UI.
+  kOpenSuggestionChip = 5,
+
+  kMaxValue = kOpenSuggestionChip,
+};
+
 // Parameters to call RecordAppListAppLaunched. Passed to code that does not
 // directly have access to them, such ash AppListMenuModelAdapter.
 struct AppLaunchedMetricParams {
+  AppLaunchedMetricParams();
+  AppLaunchedMetricParams(AppListLaunchedFrom launched_from,
+                          AppListLaunchType launch_type);
+  AppLaunchedMetricParams(const AppLaunchedMetricParams&);
+  AppLaunchedMetricParams& operator=(const AppLaunchedMetricParams&);
+  ~AppLaunchedMetricParams();
+
   AppListLaunchedFrom launched_from = AppListLaunchedFrom::kLaunchedFromGrid;
-  AppListLaunchType search_launch_type = AppListLaunchType::kSearchResult;
+  AppListLaunchType launch_type = AppListLaunchType::kSearchResult;
   AppListViewState app_list_view_state = AppListViewState::kClosed;
   bool is_tablet_mode = false;
   bool app_list_shown = false;
+  absl::optional<base::TimeTicks> launcher_show_timestamp;
 };
 
 void AppListRecordPageSwitcherSourceByEventType(ui::EventType type,
@@ -202,7 +246,10 @@ void RecordZeroStateSearchResultUserActionHistogram(
     ZeroStateSearchResultUserActionType action);
 
 void RecordZeroStateSearchResultRemovalHistogram(
-    ZeroStateSearchResutRemovalConfirmation removal_decision);
+    SearchResultRemovalConfirmation removal_decision);
+
+void RecordSearchResultRemovalDialogDecision(
+    SearchResultRemovalConfirmation removal_decision);
 
 void RecordAppListUserJourneyTime(AppListShowSource source,
                                   base::TimeDelta time);
@@ -223,12 +270,21 @@ ASH_EXPORT void RecordAppListAppLaunched(AppListLaunchedFrom launched_from,
                                          bool is_tablet_mode,
                                          bool app_list_shown);
 
+ASH_EXPORT void RecordLauncherWorkflowMetrics(
+    AppListUserAction action,
+    bool is_tablet_mode,
+    absl::optional<base::TimeTicks> launcher_show_time);
+
 ASH_EXPORT bool IsCommandIdAnAppLaunch(int command_id);
 
 ASH_EXPORT void ReportPaginationSmoothness(bool is_tablet_mode, int smoothness);
 
 ASH_EXPORT void ReportCardifiedSmoothness(bool is_entering_cardified,
                                           int smoothness);
+
+void ReportReorderAnimationSmoothness(bool in_tablet, int smoothness);
+
+void RecordAppListSortAction(AppListSortOrder new_order, bool in_tablet);
 
 }  // namespace ash
 

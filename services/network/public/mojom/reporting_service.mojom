@@ -81,4 +81,6 @@ interface ReportingApiObserver {
   OnReportAdded(ReportingApiReport report);
   // Called whenever a report is updated (status change or attempts incremented)
   OnReportUpdated(ReportingApiReport report);
+  // Called on every update to the Reporting API endpoints
+  OnEndpointsUpdatedForOrigin(array<ReportingApiEndpoint> endpoints);
 };

@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Нууцлалтай горимд шинэ цонх нээх</translation>
 <translation id="152892567002884378">Дууны түвшинг нэмэх</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> дараа нь <ph name="ESC" /></translation>
+<translation id="1586324912145647027">1-ээс 8 дахь дэлгэц рүү очно уу</translation>
 <translation id="1652741121070700329">Өмнөх үгийн эхлэх хэсэгт шилжинэ үү</translation>
 <translation id="1679841710523778799">Гэрэлтүүлэг нэмэх</translation>
 <translation id="168356808214100546">Нээх цонхоо олох хүртлээ <ph name="ALT" />-г удаан дараад <ph name="TAB" />-г товшино уу. Цонхыг олсны дараа суллана уу.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829"><ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />-г дараад холбоосыг дарах</translation>
 <translation id="561814908794220892">Чихтэй хуудсанд веб хуудсыг нээх</translation>
 <translation id="5620219513321115856">Идэвхтэй цонхыг баруун талын дэлгэц рүү шилжүүлэх</translation>
+<translation id="5699366815052349604">Бүх дэлгэцэд идэвхтэй цонх онооно</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> эсвэл <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Чихтэй хуудсанд холбоос нээх</translation>
 <translation id="5757474750054631686">Бүдэг гар (зөвхөн арын гэрэлтэй гаранд)</translation>
@@ -155,6 +157,7 @@
 <translation id="6445033640292336367">Табыг үндсэн байрлалд нь буцаах</translation>
 <translation id="6474744297082284761">Жижгэрүүлэх (суурилуулсан ЭСВЭЛ бүтэн дэлгэцийн томруулагч идэвхжүүлсэн үед)</translation>
 <translation id="649811797655257835">Файлаа сонгоод <ph name="SPACE" />-г дарах</translation>
+<translation id="6515089016094047210">Календарийн виджетийг нээх эсвэл хаана уу.</translation>
 <translation id="6551886416582667425">Хэсэгчилсэн дэлгэцийн агшныг авах/бичих</translation>
 <translation id="6556040137485212400">Хамгийн удаан хугацаанд ашиглаагүй цонхыг нээх</translation>
 <translation id="666343722268997814">Тодруулсан зүйлд баруун товчлуурын цэсийг нээх</translation>
@@ -204,6 +207,7 @@
 <translation id="8644639153978066712">Файлс аппад нуусан файлыг харуулах</translation>
 <translation id="8717459106217102612">Өмнөх үг эсвэл үсгийг сонгох</translation>
 <translation id="8727232706774971183">Мэдэгдлээ харах</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1-ээс 8</translation>
 <translation id="8855885154700222542">Бүтэн дэлгэцийн түлхүүр</translation>
 <translation id="8881584919399569791">Идэвхтэй цонхыг зүүн талын дэлгэц рүү шилжүүлэх</translation>
 <translation id="88986195241502842">Page down</translation>

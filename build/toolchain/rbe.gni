@@ -23,7 +23,7 @@ declare_args() {
   rbe_cc_cfg_file = ""
 
   # Set to the path of the RBE recleint wrapper for ChromeOS.
-  rbe_cros_cc_wrapper = ""
+  rbe_cros_cc_wrapper = "${rbe_bin_dir}/rewrapper"
 }
 
 # Set use_remoteexec if use_rbe is set.  Remove this once use_rbe is no longer
@@ -33,7 +33,7 @@ if (!use_remoteexec && use_rbe) {
 }
 
 # Configuration file selection based on operating system.
-if (is_linux || is_android || is_chromeos) {
+if (is_linux || is_android || is_chromeos || is_fuchsia) {
   rbe_cc_cfg_file = "${rbe_cfg_dir}/chromium-browser-clang/rewrapper_linux.cfg"
 }
 if (is_win) {

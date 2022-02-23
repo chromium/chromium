@@ -3,55 +3,27 @@
 # found in the LICENSE file.
 
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
-
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args
-  deps = [ ":new_tab_page_third_party" ]
-}
-
-js_library("new_tab_page_third_party") {
-  deps = [
-    ":browser_proxy",
-    "//ui/webui/resources/cr_components/most_visited",
-  ]
-}
-
-js_library("browser_proxy") {
-  deps = [
-    "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_js_library_for_compile",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:cr.m",
-  ]
-}
 
 grd_prefix = "new_tab_page_third_party"
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
   in_files = [
-    "browser_proxy.js",
-    "new_tab_page_third_party.js",
+    "browser_proxy.ts",
+    "new_tab_page_third_party.ts",
   ]
 }
-
-generate_grd("build_new_tab_page_third_party_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/new_tab_page_third_party_mojo_resources.grdp"
-  input_files = [ "new_tab_page_third_party.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path(
-          "$root_gen_dir/chrome/browser/ui/webui/new_tab_page_third_party",
-          root_build_dir)
+copy("copy_mojo") {
+  deps = [ "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_js__generator" ]
+  sources = [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page_third_party/new_tab_page_third_party.mojom-webui.js" ]
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
 generate_grd("build_grd") {
@@ -59,23 +31,15 @@ generate_grd("build_grd") {
   out_grd = "$target_gen_dir/resources.grd"
   input_files = [ "new_tab_page_third_party.html" ]
   input_files_base_dir = rebase_path(".", "//")
-  grdp_files =
-      [ "$target_gen_dir/new_tab_page_third_party_mojo_resources.grdp" ]
-  deps = [
-    ":build_new_tab_page_third_party_mojo_grdp",
-    ":preprocess",
-  ]
-  manifest_files = [ "$target_gen_dir/$preprocess_manifest" ]
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
 }
 
 grit("resources") {
   defines = chrome_grit_defines
   enable_input_discovery_for_gn_analyze = false
   source = "$target_gen_dir/resources.grd"
-  deps = [
-    ":build_grd",
-    "//chrome/browser/ui/webui/new_tab_page_third_party:mojo_bindings_js",
-  ]
+  deps = [ ":build_grd" ]
   outputs = [
     "grit/new_tab_page_third_party_resources.h",
     "grit/new_tab_page_third_party_resources_map.cc",
@@ -83,4 +47,25 @@ grit("resources") {
     "new_tab_page_third_party_resources.pak",
   ]
   output_dir = "$root_gen_dir/chrome"
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  in_files = [
+    "browser_proxy.ts",
+    "new_tab_page_third_party.ts",
+    "new_tab_page_third_party.mojom-webui.js",
+  ]
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/most_visited:build_ts",
+    "//ui/webui/resources/mojo:library",
+  ]
+  extra_deps = [
+    ":copy_mojo",
+    ":preprocess",
+  ]
 }

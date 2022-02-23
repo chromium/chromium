@@ -5,16 +5,17 @@
 #ifndef DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_UUID_H_
 #define DEVICE_BLUETOOTH_PUBLIC_CPP_BLUETOOTH_UUID_H_
 
+#include <ostream>
 #include <string>
 #include <vector>
 
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <rpc.h>
 
 #include "base/strings/string_piece_forward.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace device {
 
@@ -44,11 +45,11 @@ class BluetoothUUID {
   // after construction.
   explicit BluetoothUUID(const std::string& uuid);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows exclusive constructor converting a GUID structure to a
   // BluetoothUUID. This will always result in a 128 bit Format.
   explicit BluetoothUUID(GUID uuid);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Default constructor does nothing. Since BluetoothUUID is copyable, this
   // constructor is useful for initializing member variables and assigning a
@@ -57,10 +58,10 @@ class BluetoothUUID {
   BluetoothUUID();
   ~BluetoothUUID();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // The canonical UUID string format is device::BluetoothUUID.value().
   static GUID GetCanonicalValueAsGUID(base::StringPiece uuid);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Returns true, if the UUID is in a valid canonical format.
   bool IsValid() const;
@@ -108,8 +109,8 @@ class BluetoothUUID {
   std::string canonical_value_;
 };
 
-// This is required by gtest to print a readable output on test failures.
-void PrintTo(const BluetoothUUID& uuid, std::ostream* out);
+// Output the 128-bit canonical string representation of `uuid` to `os`.
+std::ostream& operator<<(std::ostream& os, BluetoothUUID uuid);
 
 struct BluetoothUUIDHash {
   size_t operator()(const device::BluetoothUUID& uuid) const {

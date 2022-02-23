@@ -54,11 +54,11 @@ bool IsOfficialBuild() {
 }
 
 std::string GetOSType() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return "Windows";
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
   return "iOS";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return "Mac OS X";
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
 # if BUILDFLAG(GOOGLE_CHROME_BRANDING)
@@ -66,17 +66,17 @@ std::string GetOSType() {
 # else
   return "Chromium OS";
 # endif
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   return "Android";
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return "Linux";
-#elif defined(OS_FREEBSD)
+#elif BUILDFLAG(IS_FREEBSD)
   return "FreeBSD";
-#elif defined(OS_OPENBSD)
+#elif BUILDFLAG(IS_OPENBSD)
   return "OpenBSD";
-#elif defined(OS_SOLARIS)
+#elif BUILDFLAG(IS_SOLARIS)
   return "Solaris";
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return "Fuchsia";
 #else
   return "Unknown";

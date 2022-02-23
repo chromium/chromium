@@ -5,14 +5,34 @@
 _tcache_tool_supported = target_cpu == "x64" && target_os == "linux"
 
 if (_tcache_tool_supported) {
+  source_set("pa_tool_utils") {
+    sources = [
+      "inspect_utils.cc",
+      "inspect_utils.h",
+    ]
+    deps = [ "//base" ]
+  }
   executable("pa_tcache_inspect") {
     sources = [ "pa_tcache_inspect.cc" ]
-    deps = [ "//base" ]
+    deps = [
+      ":pa_tool_utils",
+      "//base",
+    ]
+  }
+  executable("pa_buckets_inspect") {
+    sources = [ "pa_buckets_inspect.cc" ]
+    deps = [
+      ":pa_tool_utils",
+      "//base",
+    ]
   }
 }
 
 group("all") {
   if (_tcache_tool_supported) {
-    deps = [ ":pa_tcache_inspect" ]
+    deps = [
+      ":pa_buckets_inspect",
+      ":pa_tcache_inspect",
+    ]
   }
 }

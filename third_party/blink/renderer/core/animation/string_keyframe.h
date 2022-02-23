@@ -7,7 +7,7 @@
 
 #include "third_party/blink/renderer/core/animation/keyframe.h"
 #include "third_party/blink/renderer/core/css/css_property_value_set.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 
 namespace blink {
@@ -238,7 +238,7 @@ class CORE_EXPORT StringKeyframe : public Keyframe {
   // resolving longhand name collisions.  The resolver also knows how to
   // create serialized text for a shorthand, which is required for getKeyframes
   // calls.
-  // See: https://drafts.csswg.org/web-animations/#keyframes-section
+  // See: https://w3.org/TR/web-animations-1/#keyframes-section
   HeapHashMap<PropertyHandle, Member<PropertyResolver>> input_properties_;
 
   // The resolved properties are computed from unresolved ones applying these

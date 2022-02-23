@@ -4,6 +4,8 @@
 
 #include "components/viz/test/fake_display_client.h"
 
+#include "build/build_config.h"
+
 namespace viz {
 
 FakeDisplayClient::FakeDisplayClient() = default;
@@ -13,17 +15,17 @@ mojo::PendingRemote<mojom::DisplayClient> FakeDisplayClient::BindRemote() {
   return receiver_.BindNewPipeAndPassRemote();
 }
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 void FakeDisplayClient::OnDisplayReceivedCALayerParams(
     const gfx::CALayerParams& ca_layer_params) {}
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void FakeDisplayClient::CreateLayeredWindowUpdater(
     mojo::PendingReceiver<mojom::LayeredWindowUpdater> receiver) {}
 #endif
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 void FakeDisplayClient::DidCompleteSwapWithNewSize(const gfx::Size& size) {}
 #endif
 

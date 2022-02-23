@@ -6,7 +6,7 @@
 #define EXTENSIONS_BROWSER_MOJO_KEEP_ALIVE_IMPL_H_
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extension_registry_observer.h"
@@ -59,8 +59,8 @@ class KeepAliveImpl : public KeepAlive,
   // Invoked when the mojo connection is disconnected.
   void OnDisconnected();
 
-  content::BrowserContext* context_;
-  const Extension* extension_;
+  raw_ptr<content::BrowserContext> context_;
+  raw_ptr<const Extension> extension_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
   base::ScopedObservation<ProcessManager, ProcessManagerObserver>

@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Открыть новое окно в режиме инкогнито</translation>
 <translation id="152892567002884378">Увеличить громкость</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, затем <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="1652741121070700329">Перейти к началу предыдущего слова</translation>
 <translation id="1679841710523778799">Увеличить яркость</translation>
 <translation id="168356808214100546">Нажать и удерживать клавишу <ph name="ALT" />, нажимать <ph name="TAB" />, пока не откроется нужное окно.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Нажать <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> и перейти по ссылке</translation>
 <translation id="561814908794220892">Открыть веб-страницу в новой вкладке</translation>
 <translation id="5620219513321115856">Переместить активное окно на рабочий стол справа</translation>
+<translation id="5699366815052349604">Назначить в качестве активного окна всем рабочим столам</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> или <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Открыть ссылку в этой вкладке</translation>
 <translation id="5757474750054631686">Приглушить подсветку клавиатуры (для клавиатур с подсветкой)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Показать скрытые файлы в приложении "Файлы"</translation>
 <translation id="8717459106217102612">Выбрать предыдущее слово или букву</translation>
 <translation id="8727232706774971183">Посмотреть уведомления</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /> <ph name="SEPARATOR1" /> <ph name="SEARCH" /> <ph name="SEPARATOR2" /> клавиши от 1 до 8</translation>
 <translation id="8855885154700222542">Клавиша полноэкранного режима</translation>
 <translation id="8881584919399569791">Переместить активное окно на рабочий стол слева</translation>
 <translation id="88986195241502842">На страницу вниз</translation>

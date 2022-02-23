@@ -2,9 +2,11 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/strings/string_util.h"
 #include "net/http/http_auth_filter.h"
+
+#include "base/strings/string_util.h"
 #include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -32,14 +34,15 @@ bool HttpAuthFilterAllowlist::AddFilter(const std::string& filter,
   return true;
 }
 
-bool HttpAuthFilterAllowlist::IsValid(const GURL& url,
-                                      HttpAuth::Target target) const {
+bool HttpAuthFilterAllowlist::IsValid(
+    const url::SchemeHostPort& scheme_host_port,
+    HttpAuth::Target target) const {
   if ((target != HttpAuth::AUTH_SERVER) && (target != HttpAuth::AUTH_PROXY))
     return false;
   // All proxies pass
   if (target == HttpAuth::AUTH_PROXY)
     return true;
-  return rules_.Matches(url);
+  return rules_.Matches(scheme_host_port.GetURL());
 }
 
 void HttpAuthFilterAllowlist::SetAllowlist(

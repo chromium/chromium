@@ -22,8 +22,8 @@ android_library("javatests") {
   sources = [
     "android/java/src/org/chromium/chrome/browser/settings/ChromeBasePreferenceTest.java",
     "android/java/src/org/chromium/chrome/browser/settings/ChromeImageViewPreferenceTest.java",
-    "android/java/src/org/chromium/chrome/browser/settings/DummySettingsForTest.java",
     "android/java/src/org/chromium/chrome/browser/settings/ManagedPreferencesUtilsTest.java",
+    "android/java/src/org/chromium/chrome/browser/settings/PlaceholderSettingsForTest.java",
   ]
 
   deps = [

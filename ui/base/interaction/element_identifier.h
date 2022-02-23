@@ -11,7 +11,6 @@
 #include <set>
 
 #include "base/component_export.h"
-#include "base/containers/contains.h"
 #include "ui/base/class_property.h"
 
 // Overview:
@@ -34,7 +33,7 @@
 // "MyClass::kMyIdentifierName":
 //
 //   class MyClass {
-//     DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(MyClass, kMyIdentifierName);
+//     DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kMyIdentifierName);
 //   };
 //
 // Then in the corresponding .cc file, add the following:
@@ -270,18 +269,17 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 
 // Use this code in your class declaration in its .h file to declare an
 // identifier that is scoped to your class.
-#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName) \
-  static constexpr ui::internal::ElementIdentifierImpl                    \
-      IdentifierName##Provider{#ClassName "::" #IdentifierName};          \
-  static constexpr ui::ElementIdentifier IdentifierName {                 \
-    &IdentifierName##Provider                                             \
+#define DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(IdentifierName)               \
+  static const ui::internal::ElementIdentifierImpl IdentifierName##Provider; \
+  static constexpr ui::ElementIdentifier IdentifierName {                    \
+    &IdentifierName##Provider                                                \
   }
 
 // Use this code in your class definition .cc file to define the member
 // variables
-#define DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName) \
-  constexpr ui::internal::ElementIdentifierImpl                          \
-      ClassName::IdentifierName##Provider;                               \
+#define DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(ClassName, IdentifierName)    \
+  const ui::internal::ElementIdentifierImpl                                 \
+      ClassName::IdentifierName##Provider{#ClassName "::" #IdentifierName}; \
   constexpr ui::ElementIdentifier ClassName::IdentifierName
 
 // Declaring local identifiers in functions, class methods, or local to a .cc
@@ -289,8 +287,17 @@ class ClassPropertyCaster<ui::ElementIdentifier> {
 // text of the name generated is unique, though that makes the exact text
 // harder to predict.
 
-#define LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, Name) \
+// This helper macro is required because of how __LINE__ is handled when passed
+// between macros, you need an intermediate macro in order to stringify it.
+// DO NOT CALL DIRECTLY; used by DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE().
+#define LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER(File, Line, Name) \
   File "::" #Line "::" #Name
+
+// Intermediate macro required to stringify __LINE__; see
+// LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER().
+// DO NOT CALL DIRECTLY; used by DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE().
+#define LOCAL_ELEMENT_IDENTIFIER_NAME(File, Line, Name) \
+  LOCAL_ELEMENT_IDENTIFIER_NAME_HELPER(File, Line, Name)
 
 // Use this code to declare a local identifier in a function body.
 #define DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(IdentifierName)                 \

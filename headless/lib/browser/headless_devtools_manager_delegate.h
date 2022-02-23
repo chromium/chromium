@@ -33,7 +33,6 @@ class HeadlessDevToolsManagerDelegate
                      NotHandledCallback callback) override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url) override;
-  std::string GetDiscoveryPageHTML() override;
   bool HasBundledFrontendResources() override;
   void ClientAttached(
       content::DevToolsAgentHostClientChannel* channel) override;

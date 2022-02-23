@@ -1,0 +1,6 @@
+This is a testharness.js-based test.
+FAIL Check basic hover operation assert_equals: expected "2012-01-02" but got "2012-W02"
+PASS Scroll using the mouse wheel
+PASS Scroll using the scroll bar
+Harness: the test ran to completion.
+

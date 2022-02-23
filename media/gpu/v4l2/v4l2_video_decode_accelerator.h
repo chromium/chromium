@@ -12,7 +12,6 @@
 #include <stddef.h>
 #include <stdint.h>
 
-#include <list>
 #include <map>
 #include <memory>
 #include <queue>
@@ -315,7 +314,7 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   void NofityFlushDone();
   // Returns true if VIDIOC_DECODER_CMD is supported.
   bool IsDecoderCmdSupported();
-  // Send V4L2_DEC_CMD_START to the driver. Return true if success.
+  // Send V4L2_DEC_CMD_STOP to the driver. Return true if success.
   bool SendDecoderCmdStop();
 
   // Reset() task.  Drop all input buffers. If V4L2VDA is not doing resolution
@@ -534,6 +533,9 @@ class MEDIA_GPU_EXPORT V4L2VideoDecodeAccelerator
   // Workaround for V4L2VideoDecodeAccelerator. This is created only if some
   // workaround is necessary for the V4L2VideoDecodeAccelerator.
   std::vector<std::unique_ptr<V4L2StatefulWorkaround>> workarounds_;
+
+  // Color space passed in from Initialize().
+  VideoColorSpace container_color_space_;
 
   //
   // Hardware state and associated queues.  Since decoder_thread_ services

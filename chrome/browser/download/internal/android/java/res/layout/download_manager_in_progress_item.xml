@@ -12,7 +12,7 @@
     android:minHeight="64dp"
     android:clickable="true"
     android:focusable="true"
-    android:background="@color/default_bg_color"
+    android:background="@macro/default_bg_color"
     app:columnCount="3"
     app:rowCount="2">
 
@@ -54,6 +54,6 @@
         android:background="?attr/selectableItemBackground"
         android:contentDescription="@string/download_notification_cancel_button"
         android:src="@drawable/btn_close"
-        app:tint="?attr/default_icon_color" />
+        app:tint="@macro/default_icon_color" />
 
 </androidx.gridlayout.widget.GridLayout>

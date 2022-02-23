@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ppapi/c/pp_completion_callback.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 #include "ppapi/shared_impl/resource.h"

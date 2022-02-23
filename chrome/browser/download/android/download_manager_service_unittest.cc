@@ -10,6 +10,7 @@
 #include "base/android/jni_string.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/profiles/profile_key_android.h"
 #include "chrome/test/base/testing_profile.h"
@@ -79,7 +80,7 @@ class DownloadManagerServiceTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  DownloadManagerService* service_;
+  raw_ptr<DownloadManagerService> service_;
   download::SimpleDownloadManagerCoordinator coordinator_;
   std::unique_ptr<download::MockDownloadItem> download_;
   content::MockDownloadManager manager_;

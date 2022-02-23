@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "build/build_config.h"
+#include "chrome/browser/prefetch/prefetch_headers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
 #include "chrome/common/pref_names.h"
@@ -33,9 +34,9 @@
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/android/omnibox/geolocation_header.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 
@@ -81,17 +82,29 @@ class CheckForCancelledOrPausedDelegate
   bool cancelled_or_paused_ = false;
 };
 
+bool DoesHeaderContainClientHint(
+    const net::HttpRequestHeaders& headers,
+    const network::mojom::WebClientHintsType hint) {
+  const std::string& header = network::GetClientHintToNameMap().at(hint);
+  std::string value;
+  return headers.GetHeader(header, &value) && value == "?1";
+}
+
 // Computes the user agent value that should set for the User-Agent header.
 std::string GetUserAgentValue(const net::HttpRequestHeaders& headers) {
-  // If Sec-CH-UA-Reduced is set on the headers, it means that the token for the
-  // UserAgentReduction Origin Trial has been validated and we should send a
-  // reduced UA string on the request.
-  std::string header = network::GetClientHintToNameMap().at(
-      network::mojom::WebClientHintsType::kUAReduced);
-  std::string value;
-  return headers.GetHeader(header, &value) && value == "?1"
-             ? embedder_support::GetReducedUserAgent()
-             : embedder_support::GetUserAgent();
+  // If Sec-CH-UA-Full is set on the headers, it means that the token for the
+  // SendFullUserAgentAfterReduction Origin Trial has been validated and we
+  // should send a reduced UA string on the request.  Then check if
+  // Sec-CH-UA-Reduced is set on the headers, it means that the token for the
+  // UserAgentReduction Origin Trial has been validated and we
+  // should send a reduced UA string on the request.
+  const bool ua_reduced = DoesHeaderContainClientHint(
+      headers, network::mojom::WebClientHintsType::kUAReduced);
+  const bool ua_full = DoesHeaderContainClientHint(
+      headers, network::mojom::WebClientHintsType::kFullUserAgent);
+  return ua_full ? embedder_support::GetUserAgent()
+                 : (ua_reduced ? embedder_support::GetReducedUserAgent()
+                               : embedder_support::GetUserAgent());
 }
 
 }  // namespace
@@ -189,16 +202,19 @@ bool BaseSearchPrefetchRequest::StartPrefetchRequest(Profile* profile) {
   resource_request->headers.SetHeader(content::kCorsExemptPurposeHeaderName,
                                       "prefetch");
   resource_request->headers.SetHeader(
+      prefetch::headers::kSecPurposeHeaderName,
+      prefetch::headers::kSecPurposePrefetchHeaderValue);
+  resource_request->headers.SetHeader(
       net::HttpRequestHeaders::kAccept,
       content::FrameAcceptHeaderValue(/*allow_sxg_responses=*/true, profile));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   absl::optional<std::string> geo_header =
       GetGeolocationHeaderIfAllowed(resource_request->url, profile);
   if (geo_header) {
     resource_request->headers.AddHeaderFromString(geo_header.value());
   }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // Before sending out the request, allow throttles to modify the request (not
   // the URL). The rest of the URL Loader throttle calls are captured in the

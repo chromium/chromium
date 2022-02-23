@@ -2,7 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+include!(concat!(env!("OUT_DIR"), "/generated/generated.rs"));
+
 pub fn say_hello_from_crate() {
+    assert_eq!(run_some_generated_code(), 42);
     #[cfg(is_new_rustc)]
     println!("Is new rustc!");
     #[cfg(is_old_rustc)]
@@ -11,4 +14,28 @@ pub fn say_hello_from_crate() {
     println!("Is android!");
     #[cfg(is_mac)]
     println!("Is darwin!");
+    #[cfg(has_feature_a)]
+    println!("Has feature A!");
+    #[cfg(not(has_feature_a))]
+    panic!("Wasn't passed feature a");
+    #[cfg(not(has_feature_b))]
+    panic!("Wasn't passed feature b");
+}
+
+#[cfg(test)]
+mod tests {
+    /// Test features are passed through from BUILD.gn
+    /// correctly
+    #[test]
+    fn test_features_passed() {
+        #[cfg(not(has_feature_a))]
+        panic!("Wasn't passed feature a");
+        #[cfg(not(has_feature_b))]
+        panic!("Wasn't passed feature b");
+    }
+
+    #[test]
+    fn test_generated_code_works() {
+        assert_eq!(crate::run_some_generated_code(), 42);
+    }
 }

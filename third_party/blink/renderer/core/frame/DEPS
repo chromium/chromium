@@ -27,6 +27,9 @@ specific_include_rules = {
   "local_frame\.cc": [
     "+ui/gfx/transform.h"
   ],
+  "local_frame_ukm_aggregator\.cc": [
+    "+base/cpu_reduction_experiment.h",
+  ],
   "local_frame_ukm_aggregator_test\.cc": [
     "+base/metrics/statistics_recorder.h"
   ],
@@ -62,6 +65,7 @@ specific_include_rules = {
   "web_frame_widget_impl\.h": [
     "+services/viz/public/mojom/hit_test/input_target_client.mojom-blink.h",
     "+ui/base/mojom/ui_base_types.mojom-shared.h",
+    "+ui/gfx/ca_layer_result.h",
   ],
   "web_frame_test\.cc": [
     "+ui/base/mojom/ui_base_types.mojom-shared.h",

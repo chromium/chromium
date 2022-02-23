@@ -9,6 +9,7 @@
 #include <queue>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -55,7 +56,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
   gfx::OverlayTransform GetDisplayTransform() override;
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   void SetNeedsSwapSizeNotifications(
       bool needs_swap_size_notifications) override;
 #endif
@@ -66,7 +67,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
   void UpdateVSyncParameters(base::TimeTicks timebase,
                              base::TimeDelta interval);
 
-  OutputSurfaceClient* client_ = nullptr;
+  raw_ptr<OutputSurfaceClient> client_ = nullptr;
 
   UpdateVSyncParametersCallback update_vsync_parameters_callback_;
   base::TimeTicks refresh_timebase_;
@@ -77,7 +78,7 @@ class VIZ_SERVICE_EXPORT SoftwareOutputSurface : public OutputSurface {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   bool needs_swap_size_notifications_ = false;
 #endif
 

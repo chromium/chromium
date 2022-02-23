@@ -39,5 +39,10 @@ constexpr base::FeatureParam<double> kShouldRemainAvailableRatio{
     &kStorageQuotaSettings, "ShouldRemainAvailableRatio", 0.1 /* 10% */
 };
 
+// Whether the StoragePolicyObserver only sends updates for modified origins.
+const base::Feature kOnlySendStoragePolicyUpdatesForModifiedOrigins{
+    "OnlySendStoragePolicyUpdatesForModifiedOrigins",
+    base::FEATURE_DISABLED_BY_DEFAULT};
+
 }  // namespace features
 }  // namespace storage

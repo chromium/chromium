@@ -1,0 +1,7 @@
+rootWebArea
+++genericContainer ignored
+++++genericContainer
+++++++labelText
+++++++++staticText name='This label should be visible'
+++++++++++inlineTextBox name='This label should be visible'
+++++++checkBox ignored invisible

@@ -1,0 +1,65 @@
+<style include="privacy-guide-fragment-shared">
+  :host {
+    display: flex;
+    flex-flow: column;
+    min-height: calc(432px - var(--privacy-guide-footer-total-height));
+  }
+
+  .headline-container {
+    outline: none;
+    padding: 36px 120px 16px 120px;
+    row-gap: 8px;
+  }
+
+  .footer {
+    align-items: center;
+    bottom: calc(-1 * var(--privacy-guide-footer-total-height));
+    display: flex;
+    justify-content: space-between;
+    padding: var(--privacy-guide-footer-vertical-padding) 0;
+    position: absolute;
+    width: calc(100% - 48px);  /* 48px = 2x :host horizontal padding */
+  }
+</style>
+<div class="headline-container" focus-element tabindex="-1">
+  <picture>
+    <source
+        srcset="./images/privacy_guide/completion_banner_dark.svg"
+        media="(prefers-color-scheme: dark)">
+    <img alt="" src="./images/privacy_guide/completion_banner.svg">
+  </picture>
+  <div class="headline">$i18n{privacyGuideCompletionCardHeader}</div>
+  <div class="cr-secondary-text">
+    $i18n{privacyGuideCompletionCardSubHeader}
+  </div>
+</div>
+<privacy-guide-completion-link-row id="privacySandboxRow"
+    label="$i18n{privacyGuideCompletionCardPrivacySandboxLabel}"
+    sub-label="$i18n{privacyGuideCompletionCardPrivacySandboxSubLabel}"
+    light-img-src="./images/privacy_guide/privacy_sandbox_graphic.svg"
+    dark-img-src="./images/privacy_guide/privacy_sandbox_graphic_dark.svg"
+    on-click="onPrivacySandboxClick_">
+</privacy-guide-completion-link-row>
+<div aria-disabled="true" role="none">
+  <a id="privacySandboxLink" href="privacySandbox"
+      target="_blank" tabindex="-1" aria-disabled="true"
+      role="none"></a>
+</div>
+<template is="dom-if" if="[[shouldShowWaa_]]">
+  <privacy-guide-completion-link-row id="waaRow"
+      label="$i18n{privacyGuideCompletionCardWaaLabel}"
+      sub-label="$i18n{privacyGuideCompletionCardWaaSubLabel}"
+      light-img-src="./images/privacy_guide/waa_graphic.svg"
+      dark-img-src="./images/privacy_guide/waa_graphic_dark.svg"
+      on-click="onWaaClick_">
+  </privacy-guide-completion-link-row>
+</template>
+<div class="footer">
+  <cr-button id="backButton" role="button" on-click="onBackButtonClick_">
+    $i18n{privacyGuideBackButton}
+  </cr-button>
+  <cr-button class="action-button" id="leaveButton"
+      on-click="onLeaveButtonClick_">
+    $i18n{privacyGuideCompletionCardLeaveButton}
+  </cr-button>
+</div>

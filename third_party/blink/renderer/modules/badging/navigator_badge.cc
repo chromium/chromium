@@ -82,7 +82,7 @@ ScriptPromise NavigatorBadge::SetAppBadgeHelper(
   if (badge_value->is_number() && badge_value->get_number() == 0)
     return ClearAppBadgeHelper(script_state);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   From(script_state).badge_service()->SetBadge(std::move(badge_value));
 #endif
   return ScriptPromise::CastUndefined(script_state);
@@ -90,7 +90,7 @@ ScriptPromise NavigatorBadge::SetAppBadgeHelper(
 
 // static
 ScriptPromise NavigatorBadge::ClearAppBadgeHelper(ScriptState* script_state) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   From(script_state).badge_service()->ClearBadge();
 #endif
   return ScriptPromise::CastUndefined(script_state);

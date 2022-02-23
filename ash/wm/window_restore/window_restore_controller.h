@@ -85,6 +85,10 @@ class ASH_EXPORT WindowRestoreController
   // Stacks the window according to its activation index.
   void StackWindow(aura::Window* window);
 
+  // Returns true if `window` is currently in the process of being restored by
+  // `this`.
+  bool IsRestoringWindow(aura::Window* window) const;
+
   // TabletModeObserver:
   void OnTabletModeStarted() override;
   void OnTabletModeEnded() override;
@@ -95,7 +99,7 @@ class ASH_EXPORT WindowRestoreController
                             bool could_restore) override;
   void OnAppLaunched(aura::Window* window) override;
   void OnWidgetInitialized(views::Widget* widget) override;
-  void OnARCTaskReadyForUnparentedWindow(aura::Window* window) override;
+  void OnParentWindowToValidContainer(aura::Window* window) override;
 
   // aura::WindowObserver:
   void OnWindowPropertyChanged(aura::Window* window,

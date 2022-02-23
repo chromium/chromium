@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Abrir una ventana nueva en modo Incógnito</translation>
 <translation id="152892567002884378">Subir el volumen</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, luego <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Ir al escritorio 1 al 8</translation>
 <translation id="1652741121070700329">Ir al principio de la palabra anterior</translation>
 <translation id="1679841710523778799">Aumentar el brillo</translation>
 <translation id="168356808214100546">Mantén presionado <ph name="ALT" /> y, luego, presiona <ph name="TAB" /> hasta que se muestre la ventana que deseas abrir; a continuación, suelta las teclas.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Presiona <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> y haz clic en un vínculo</translation>
 <translation id="561814908794220892">Abrir la página web en una pestaña nueva</translation>
 <translation id="5620219513321115856">Mover la ventana activa al escritorio de la derecha</translation>
+<translation id="5699366815052349604">Asignar la ventana activa a todos los escritorios</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> o <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Abrir el vínculo en la pestaña</translation>
 <translation id="5757474750054631686">Atenuar el teclado (solo para teclados retroiluminados)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Mostrar archivos ocultos en la app de Archivos</translation>
 <translation id="8717459106217102612">Seleccionar la palabra o letra anterior</translation>
 <translation id="8727232706774971183">Ver tus notificaciones</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 a 8</translation>
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8881584919399569791">Mover la ventana activa al escritorio de la izquierda</translation>
 <translation id="88986195241502842">Avanzar página</translation>

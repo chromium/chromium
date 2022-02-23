@@ -35,6 +35,10 @@ source_set("decoder") {
 
 source_set("lib") {
   sources = [
+    "associated_rule_based_engine.cc",
+    "associated_rule_based_engine.h",
+    "connection_factory.cc",
+    "connection_factory.h",
     "decoder/decoder_engine.cc",
     "decoder/decoder_engine.h",
     "decoder/system_engine.cc",
@@ -53,7 +57,6 @@ source_set("lib") {
     "//ash/services/ime/public/cpp:rulebased",
     "//ash/services/ime/public/cpp/shared_lib:interfaces",
     "//ash/services/ime/public/mojom",
-    "//ash/services/ime/public/proto:messages_proto",
     "//base",
   ]
 }
@@ -86,7 +89,6 @@ source_set("services_unittests") {
     "//ash/constants",
     "//ash/services/ime:decoder",
     "//ash/services/ime/public/mojom",
-    "//ash/services/ime/public/proto:messages_proto",
     "//base",
     "//base/test:test_support",
     "//mojo/public/cpp/bindings",
@@ -96,6 +98,7 @@ source_set("services_unittests") {
   ]
   sources = [
     "decoder/system_engine_unittest.cc",
+    "ime_service_associated_unittest.cc",
     "ime_service_unittest.cc",
   ]
 }

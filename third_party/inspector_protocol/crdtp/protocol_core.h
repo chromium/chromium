@@ -348,6 +348,16 @@ struct ProtocolTypeTraits<
   }
 };
 
+template <typename T, typename F>
+bool ConvertProtocolValue(const F& from, T* to) {
+  std::vector<uint8_t> bytes;
+  ProtocolTypeTraits<F>::Serialize(from, &bytes);
+  auto deserializer =
+      DeferredMessage::FromSpan(span<uint8_t>(bytes.data(), bytes.size()))
+          ->MakeDeserializer();
+  return ProtocolTypeTraits<T>::Deserialize(&deserializer, to);
+}
+
 #define DECLARE_DESERIALIZATION_SUPPORT()  \
   friend DeserializableBase<ProtocolType>; \
   static const DeserializerDescriptorType& deserializer_descriptor()

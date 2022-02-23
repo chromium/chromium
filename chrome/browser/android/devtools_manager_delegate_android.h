@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
@@ -29,7 +28,6 @@ class DevToolsManagerDelegateAndroid : public content::DevToolsManagerDelegate {
   content::DevToolsAgentHost::List RemoteDebuggingTargets() override;
   scoped_refptr<content::DevToolsAgentHost> CreateNewTarget(
       const GURL& url) override;
-  std::string GetDiscoveryPageHTML() override;
   bool IsBrowserTargetDiscoverable() override;
 };
 

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/client/raster_interface.h"
@@ -57,7 +58,8 @@ class ScopedAcceleratedSkImage {
     GrGLTextureInfo gl_info = {
         mailbox_holder.texture_target,
         texture_id,
-        viz::TextureStorageFormat(format),
+        viz::TextureStorageFormat(
+            format, provider->ContextCapabilities().angle_rgbx_internal_format),
     };
     GrBackendTexture backend_texture(size.width(), size.height(),
                                      GrMipmapped::kNo, gl_info);
@@ -100,7 +102,7 @@ class ScopedAcceleratedSkImage {
                            sk_sp<SkImage> sk_image)
       : provider_(provider), texture_id_(texture_id), sk_image_(sk_image) {}
 
-  viz::RasterContextProvider* const provider_;
+  const raw_ptr<viz::RasterContextProvider> provider_;
   uint32_t texture_id_ = 0;
   sk_sp<SkImage> sk_image_;
 };
@@ -192,10 +194,14 @@ bool CopyRGBATextureToVideoFrame(viz::RasterContextProvider* provider,
       sii->CopyToGpuMemoryBuffer(blit_done_sync_token, mailbox);
     }
 
-    completion_sync_token = sii->GenVerifiedSyncToken();
-  } else {
-    ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
+    auto copy_to_gmb_done_sync_token = sii->GenUnverifiedSyncToken();
+    ri->WaitSyncTokenCHROMIUM(copy_to_gmb_done_sync_token.GetData());
   }
+
+  // We want to generate a SyncToken from the RasterInterface since callers may
+  // be using RasterInterface::Finish() to ensure synchronization in cases where
+  // SignalSyncToken can't be used.
+  ri->GenSyncTokenCHROMIUM(completion_sync_token.GetData());
 
   // Make access to the `dst_video_frame` wait on copy completion. We also
   // update the ReleaseSyncToken here since it's used when the underlying

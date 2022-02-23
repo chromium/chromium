@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/process/process.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -44,7 +43,7 @@ class Mapper : public QuotaLimitHeuristic::BucketMapper {
   void GetBucketsForArgs(const base::Value* args,
                          BucketList* buckets) override {
     ASSERT_TRUE(args->is_list());
-    for (const auto& val : args->GetList()) {
+    for (const auto& val : args->GetListDeprecated()) {
       absl::optional<int> id = val.GetIfInt();
       ASSERT_TRUE(id.has_value());
       if (buckets_.find(*id) == buckets_.end())

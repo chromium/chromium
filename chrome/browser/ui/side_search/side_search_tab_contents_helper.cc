@@ -6,9 +6,14 @@
 
 #include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/extensions/tab_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/task_manager/web_contents_tags.h"
+#include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/prefs/prefs_tab_helper.h"
 #include "chrome/browser/ui/side_search/side_search_config.h"
+#include "chrome/browser/ui/side_search/side_search_utils.h"
+#include "components/sessions/content/session_tab_helper.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/navigation_handle.h"
@@ -118,7 +123,9 @@ void SideSearchTabContentsHelper::SetSidePanelContentsForTesting(
 
 SideSearchTabContentsHelper::SideSearchTabContentsHelper(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<SideSearchTabContentsHelper>(*web_contents) {
+}
 
 SideSearchSideContentsHelper*
 SideSearchTabContentsHelper::GetSideContentsHelper() {
@@ -137,8 +144,6 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
 
   // Sets helpers required for the side contents.
   PrefsTabHelper::CreateForWebContents(side_panel_contents_.get());
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      side_panel_contents_.get());
   extensions::TabHelper::CreateForWebContents(side_panel_contents_.get());
 
   SideSearchSideContentsHelper::CreateForWebContents(
@@ -149,9 +154,11 @@ void SideSearchTabContentsHelper::CreateSidePanelContents() {
 void SideSearchTabContentsHelper::UpdateSideContentsNavigation() {
   DCHECK(side_panel_contents_);
   // Only update the side panel contents with the latest `last_search_url_` if
-  // present
-  if (last_search_url_ && GetConfig()->is_side_panel_srp_available())
+  // present.
+  if (last_search_url_ && GetConfig()->is_side_panel_srp_available()) {
     GetSideContentsHelper()->LoadURL(last_search_url_.value());
+    side_search::MaybeSaveSideSearchTabSessionData(web_contents());
+  }
 }
 
 void SideSearchTabContentsHelper::TestSRPAvailability() {

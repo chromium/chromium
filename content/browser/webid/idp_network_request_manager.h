@@ -12,10 +12,17 @@
 #include "base/callback.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/identity_request_dialog_controller.h"
+#include "content/public/browser/web_contents.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "services/network/public/mojom/client_security_state.mojom-forward.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 #include "url/origin.h"
+
+namespace net {
+enum class ReferrerPolicy;
+}
 
 namespace network {
 class SimpleURLLoader;
@@ -23,10 +30,10 @@ class SimpleURLLoader;
 
 namespace content {
 
-class RenderFrameHost;
+class RenderFrameHostImpl;
 
 // Manages network requests and maintains relevant state for interaction with
-// the Identity Provider across a WebID transaction. Owned by
+// the Identity Provider across a FedCM transaction. Owned by
 // FederatedAuthRequestImpl and has a lifetime limited to a single identity
 // transaction between an RP and an IDP.
 //
@@ -35,7 +42,7 @@ class RenderFrameHost;
 //  |Browser|                           |IDP|
 //  '-------'                           '---'
 //      |                                 |
-//      |     GET /.well-known/webid      |
+//      |     GET /fedcm.json             |
 //      |-------------------------------->|
 //      |                                 |
 //      |        JSON{idp_url}            |
@@ -57,9 +64,10 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
  public:
   enum class FetchStatus {
     kSuccess,
-    kWebIdNotSupported,
-    kFetchError,
+    kHttpNotFoundError,
+    kNoResponseError,
     kInvalidResponseError,
+    kInvalidRequestError,
   };
 
   enum class SigninResponse {
@@ -69,20 +77,12 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     kInvalidResponseError,
   };
 
-  enum class AccountsResponse {
-    kSuccess,
-    kNetError,
-    kInvalidResponseError,
-  };
-
-  enum class TokenResponse {
-    kSuccess,
-    kNetError,
-    kInvalidRequestError,
-    kInvalidResponseError,
-  };
-
   enum class LogoutResponse {
+    kSuccess,
+    kError,
+  };
+
+  enum class RevokeResponse {
     kSuccess,
     kError,
   };
@@ -95,49 +95,54 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
     std::string idp;
     std::string token;
     std::string accounts;
-    std::string client_id_metadata;
+    std::string client_metadata;
+    std::string revoke;
   };
 
-  struct ClientIdMetadata {
+  struct ClientMetadata {
     std::string privacy_policy_url;
     std::string terms_of_service_url;
   };
 
-  static constexpr char kWellKnownFilePath[] = ".well-known/webid";
+  static constexpr char kManifestFilePath[] = "fedcm.json";
 
   using AccountList = std::vector<content::IdentityRequestAccount>;
-  using FetchWellKnownCallback =
-      base::OnceCallback<void(FetchStatus, Endpoints)>;
-  using FetchClientIdMetadataCallback =
-      base::OnceCallback<void(FetchStatus, ClientIdMetadata)>;
+  using FetchManifestCallback = base::OnceCallback<
+      void(FetchStatus, Endpoints, IdentityProviderMetadata)>;
+  using FetchClientMetadataCallback =
+      base::OnceCallback<void(FetchStatus, ClientMetadata)>;
   using SigninRequestCallback =
       base::OnceCallback<void(SigninResponse, const std::string&)>;
-  using AccountsRequestCallback = base::OnceCallback<
-      void(AccountsResponse, AccountList, IdentityProviderMetadata)>;
+  using AccountsRequestCallback =
+      base::OnceCallback<void(FetchStatus, AccountList)>;
   using TokenRequestCallback =
-      base::OnceCallback<void(TokenResponse, const std::string&)>;
+      base::OnceCallback<void(FetchStatus, const std::string&)>;
+  using RevokeCallback = base::OnceCallback<void(RevokeResponse)>;
   using LogoutCallback = base::OnceCallback<void()>;
 
   static std::unique_ptr<IdpNetworkRequestManager> Create(
       const GURL& provider,
-      RenderFrameHost* host);
+      RenderFrameHostImpl* host);
 
   IdpNetworkRequestManager(
       const GURL& provider,
       const url::Origin& relying_party,
-      scoped_refptr<network::SharedURLLoaderFactory> loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> loader_factory,
+      network::mojom::ClientSecurityStatePtr client_security_state);
 
   virtual ~IdpNetworkRequestManager();
 
   IdpNetworkRequestManager(const IdpNetworkRequestManager&) = delete;
   IdpNetworkRequestManager& operator=(const IdpNetworkRequestManager&) = delete;
 
-  // Attempt to fetch the IDP's WebID parameters from the its .well-known file.
-  virtual void FetchIdpWellKnown(FetchWellKnownCallback);
+  // Attempt to fetch the IDP's FedCM parameters from the fedcm.json manifest.
+  virtual void FetchManifest(absl::optional<int> idp_brand_icon_ideal_size,
+                             absl::optional<int> idp_brand_icon_minimum_size,
+                             FetchManifestCallback);
 
-  virtual void FetchClientIdMetadata(const GURL& endpoint,
-                                     const std::string& client_id,
-                                     FetchClientIdMetadataCallback);
+  virtual void FetchClientMetadata(const GURL& endpoint,
+                                   const std::string& client_id,
+                                   FetchClientMetadataCallback);
 
   // Transmit the OAuth request to the IDP.
   virtual void SendSigninRequest(const GURL& signin_url,
@@ -146,7 +151,8 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   // Fetch accounts list for this user from the IDP.
   virtual void SendAccountsRequest(const GURL& accounts_url,
-                                   AccountsRequestCallback);
+                                   const std::string& client_id,
+                                   AccountsRequestCallback callback);
 
   // Request a new token for this user account and RP from the IDP.
   virtual void SendTokenRequest(const GURL& token_url,
@@ -154,23 +160,46 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
                                 const std::string& request,
                                 TokenRequestCallback callback);
 
+  // Send a revoke token request to the IDP.
+  virtual void SendRevokeRequest(const GURL& revoke_url,
+                                 const std::string& client_id,
+                                 const std::string& account_id,
+                                 RevokeCallback callback);
+
   // Send logout request to a single target.
   virtual void SendLogout(const GURL& logout_url, LogoutCallback);
 
+  virtual bool IsMockIdpNetworkRequestManager() const;
+
  private:
-  void OnWellKnownLoaded(std::unique_ptr<std::string> response_body);
-  void OnWellKnownParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnClientIdMetadataLoaded(std::unique_ptr<std::string> response_body);
-  void OnClientIdMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnManifestLoaded(absl::optional<int> idp_brand_icon_ideal_size,
+                        absl::optional<int> idp_brand_icon_minimum_size,
+                        std::unique_ptr<std::string> response_body);
+  void OnManifestParsed(absl::optional<int> idp_brand_icon_ideal_size,
+                        absl::optional<int> idp_brand_icon_minimum_size,
+                        data_decoder::DataDecoder::ValueOrError result);
+  void OnClientMetadataLoaded(std::unique_ptr<std::string> response_body);
+  void OnClientMetadataParsed(data_decoder::DataDecoder::ValueOrError result);
   void OnSigninRequestResponse(std::unique_ptr<std::string> response_body);
   void OnSigninRequestParsed(data_decoder::DataDecoder::ValueOrError result);
-  void OnAccountsRequestResponse(std::unique_ptr<std::string> response_body);
-  void OnAccountsRequestParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnAccountsRequestResponse(AccountsRequestCallback callback,
+                                 std::string client_id,
+                                 std::unique_ptr<std::string> response_body);
+  void OnAccountsRequestParsed(AccountsRequestCallback callback,
+                               std::string client_id,
+                               data_decoder::DataDecoder::ValueOrError result);
   void OnTokenRequestResponse(std::unique_ptr<std::string> response_body);
   void OnTokenRequestParsed(data_decoder::DataDecoder::ValueOrError result);
+  void OnRevokeResponse(std::unique_ptr<std::string> response_body);
   void OnLogoutCompleted(std::unique_ptr<std::string> response_body);
 
-  void SetupUncredentialedUrlLoader(const GURL& url);
+  std::unique_ptr<network::SimpleURLLoader> CreateUncredentialedUrlLoader(
+      const GURL& url,
+      bool send_referrer) const;
+  std::unique_ptr<network::SimpleURLLoader> CreateCredentialedUrlLoader(
+      const GURL& url,
+      bool send_referrer,
+      absl::optional<std::string> request_body = absl::nullopt) const;
 
   // URL of the Identity Provider.
   GURL provider_;
@@ -179,14 +208,15 @@ class CONTENT_EXPORT IdpNetworkRequestManager {
 
   scoped_refptr<network::SharedURLLoaderFactory> loader_factory_;
 
-  FetchWellKnownCallback idp_well_known_callback_;
-  FetchClientIdMetadataCallback client_metadata_callback_;
+  FetchManifestCallback idp_manifest_callback_;
+  FetchClientMetadataCallback client_metadata_callback_;
   SigninRequestCallback signin_request_callback_;
-  AccountsRequestCallback accounts_request_callback_;
   TokenRequestCallback token_request_callback_;
+  RevokeCallback revoke_callback_;
   LogoutCallback logout_callback_;
 
   std::unique_ptr<network::SimpleURLLoader> url_loader_;
+  network::mojom::ClientSecurityStatePtr client_security_state_;
 
   base::WeakPtrFactory<IdpNetworkRequestManager> weak_ptr_factory_{this};
 };

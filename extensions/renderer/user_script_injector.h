@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #include "extensions/common/mojom/css_origin.mojom-shared.h"
 #include "extensions/common/mojom/host_id.mojom.h"
@@ -51,6 +50,7 @@ class UserScriptInjector : public ScriptInjector,
   mojom::CSSOrigin GetCssOrigin() const override;
   mojom::CSSInjection::Operation GetCSSInjectionOperation() const override;
   bool ExpectsResults() const override;
+  bool ShouldWaitForPromise() const override;
   bool ShouldInjectJs(
       mojom::RunLocation run_location,
       const std::set<std::string>& executing_scripts) const override;

@@ -8,10 +8,8 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/ui/webui/signin/signin_web_dialog_ui.h"
 #include "content/public/browser/web_ui_controller.h"
 
-class Browser;
 class SigninReauthViewController;
 
 namespace content {
@@ -32,7 +30,7 @@ class WebUIDataSource;
 //
 // Contact chrome-signin@chromium.org if you want to reuse this dialog for other
 // reauth use-cases.
-class SigninReauthUI : public SigninWebDialogUI {
+class SigninReauthUI : public content::WebUIController {
  public:
   explicit SigninReauthUI(content::WebUI* web_ui);
   ~SigninReauthUI() override;
@@ -44,11 +42,6 @@ class SigninReauthUI : public SigninWebDialogUI {
   // to the web UI.
   void InitializeMessageHandlerWithReauthController(
       SigninReauthViewController* controller);
-
-  // SigninWebDialogUI:
-  // This class relies on InitializeMessageHandlerWithReauthController() so this
-  // method does nothing.
-  void InitializeMessageHandlerWithBrowser(Browser* browser) override;
 
  private:
   // Adds a string resource with the given GRD |ids| to the WebUI data |source|

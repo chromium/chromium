@@ -7,9 +7,7 @@
 
 #include <stdint.h>
 
-#include <map>
 #include <memory>
-#include <vector>
 
 #include "base/auto_reset.h"
 #include "base/observer_list.h"

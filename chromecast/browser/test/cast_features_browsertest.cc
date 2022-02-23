@@ -8,7 +8,6 @@
 #include <memory>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "base/metrics/field_trial_params.h"
 #include "build/build_config.h"
 #include "chromecast/base/pref_names.h"
@@ -125,8 +124,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
   // setting features from the server.
   virtual void SetFeatures(const base::DictionaryValue& dcs_features) {
     auto pref_features = GetOverriddenFeaturesForStorage(dcs_features);
-    ScopedUserPrefUpdate<base::DictionaryValue, base::Value::Type::DICTIONARY>
-        dict(pref_service(), prefs::kLatestDCSFeatures);
+    DictionaryPrefUpdate dict(pref_service(), prefs::kLatestDCSFeatures);
     dict->MergeDictionary(&pref_features);
     pref_service()->CommitPendingWrite();
   }
@@ -134,8 +132,7 @@ class CastFeaturesBrowserTest : public CastBrowserTest {
   // Clears |features| from the PrefStore. Should be called in a PRE_PRE_*
   // method for any tested feature in a test to ensure consistent state.
   void ClearFeaturesFromPrefs(std::vector<base::Feature> features) {
-    ScopedUserPrefUpdate<base::DictionaryValue, base::Value::Type::DICTIONARY>
-        dict(pref_service(), prefs::kLatestDCSFeatures);
+    DictionaryPrefUpdate dict(pref_service(), prefs::kLatestDCSFeatures);
     for (auto f : features)
       dict->RemoveKey(f.name);
     pref_service()->CommitPendingWrite();
@@ -308,7 +305,7 @@ IN_PROC_BROWSER_TEST_F(CastFeaturesBrowserTest,
   ASSERT_TRUE(GetDCSExperimentIds().empty());
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_TestExperimentIdsPersisted DISABLED_TestExperimentIdsPersisted
 #else
 #define MAYBE_TestExperimentIdsPersisted TestExperimentIdsPersisted

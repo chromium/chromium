@@ -21,6 +21,9 @@ namespace network_diagnostics {
 
 namespace {
 
+// TODO(https://crbug.com/1164001): remove when migrated to namespace ash.
+namespace mojom = ::chromeos::network_diagnostics::mojom;
+
 const int kFakePortNumber = 1234;
 const char kFakeTestProfile[] = "test";
 

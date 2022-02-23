@@ -68,9 +68,13 @@ component("services") {
     "video_decode_stats_recorder.h",
     "watch_time_recorder.cc",
     "watch_time_recorder.h",
+    "webrtc_video_perf_history.cc",
+    "webrtc_video_perf_history.h",
+    "webrtc_video_perf_recorder.cc",
+    "webrtc_video_perf_recorder.h",
   ]
 
-  defines = [ "MEDIA_MOJO_IMPLEMENTATION" ]
+  defines = [ "IS_MEDIA_MOJO_IMPL" ]
 
   public_deps = [
     "//base",
@@ -204,6 +208,8 @@ source_set("unit_tests") {
     "video_decode_perf_history_unittest.cc",
     "video_decode_stats_recorder_unittest.cc",
     "watch_time_recorder_unittest.cc",
+    "webrtc_video_perf_history_unittest.cc",
+    "webrtc_video_perf_recorder_unittest.cc",
   ]
 
   deps = [

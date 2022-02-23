@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "ui/gfx/geometry/rect.h"
 
 namespace aura {

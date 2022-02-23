@@ -23,7 +23,7 @@
 #include "ui/events/test/events_test_utils.h"
 #include "ui/gfx/geometry/vector2d_conversions.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "ui/events/keycodes/keyboard_code_conversion.h"
@@ -646,7 +646,7 @@ void EventGenerator::DispatchKeyEvent(bool is_press,
                                       ui::KeyboardCode key_code,
                                       int flags,
                                       int source_device_id) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   UINT key_press = WM_KEYDOWN;
   uint16_t character = ui::DomCodeToUsLayoutCharacter(
       ui::UsLayoutKeyboardCodeToDomCode(key_code), flags);
@@ -680,7 +680,7 @@ void EventGenerator::DispatchKeyEvent(bool is_press,
         std::vector<uint8_t>{kPropertyKeyboardImeIgnoredFlag},
     }});
   }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
   keyev.set_source_device_id(source_device_id);
   Dispatch(&keyev);
 }

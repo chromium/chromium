@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <algorithm>
+#include <deque>
 #include <map>
 #include <memory>
 #include <unordered_map>
@@ -16,13 +17,13 @@
 
 #include "base/base64.h"
 #include "base/command_line.h"
+#include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
 #include "base/i18n/case_conversion.h"
 #include "base/logging.h"
 #include "base/metrics/field_trial.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
@@ -356,6 +357,18 @@ HtmlFieldType FieldTypeFromAutocompleteAttributeValue(
   if (autocomplete_attribute_value == "one-time-code")
     return HTML_TYPE_ONE_TIME_CODE;
 
+  if (autocomplete_attribute_value == "promo-code" ||
+      autocomplete_attribute_value == "promo_code" ||
+      autocomplete_attribute_value == "promotion-code" ||
+      autocomplete_attribute_value == "promotion_code" ||
+      autocomplete_attribute_value == "promotional-code" ||
+      autocomplete_attribute_value == "promotional_code" ||
+      autocomplete_attribute_value == "coupon-code" ||
+      autocomplete_attribute_value == "coupon_code" ||
+      autocomplete_attribute_value == "gift-code" ||
+      autocomplete_attribute_value == "gift_code")
+    return HTML_TYPE_MERCHANT_PROMO_CODE;
+
   return HTML_TYPE_UNRECOGNIZED;
 }
 
@@ -549,9 +562,9 @@ LogBufferSubmitter LogRationalization(LogManager* log_manager) {
 
 // Creates a unique name for the section that starts with |field|.
 //
-// The section is either named by the field's unique_name() or by a string of
-// the form "%s_%u_%u", where the first string is the field's name and the two
-// integers are the field's frame ID and its renderer ID.
+// The section name is a string of the form "%s_%u_%u", where the first string
+// is the field's name and the two integers are the field's frame ID and its
+// renderer ID.
 //
 // For the frame ID, we do not use LocalFrameTokens but instead map them to
 // consecutive integers using |frame_token_ids|, which uniquely identify a frame
@@ -561,16 +574,10 @@ LogBufferSubmitter LogRationalization(LogManager* log_manager) {
 // We intentionally do not include the LocalFrameToken in the section string
 // because frame tokens should not be sent to a renderer.
 //
-// TODO(crbug.com/896689): Remove unique_name.
 // TODO(crbug.com/1257141): Remove special handling of FrameTokens.
 std::u16string GetSectionName(
     const AutofillField& field,
     base::flat_map<LocalFrameToken, size_t>& frame_token_ids) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAutofillNameSectionsWithRendererIds)) {
-    return field.unique_name();
-  }
-
   size_t id = frame_token_ids.emplace(field.host_frame, frame_token_ids.size())
                   .first->second;
   return base::StrCat(
@@ -644,7 +651,6 @@ FormStructure::FormStructure(const FormData& form)
       host_frame_(form.host_frame),
       unique_renderer_id_(form.unique_renderer_id) {
   // Copy the form fields.
-  std::map<std::u16string, size_t> unique_names;
   for (const FormFieldData& field : form.fields) {
     if (!ShouldSkipField(field))
       ++active_field_count_;
@@ -654,12 +660,7 @@ FormStructure::FormStructure(const FormData& form)
     else
       all_fields_are_passwords_ = false;
 
-    // Generate a unique name for this field by appending a counter to the name.
-    // Make sure to prepend the counter with a non-numeric digit so that we are
-    // guaranteed to avoid collisions.
-    std::u16string unique_name =
-        field.name + u"_" + base::NumberToString16(++unique_names[field.name]);
-    fields_.push_back(std::make_unique<AutofillField>(field, unique_name));
+    fields_.push_back(std::make_unique<AutofillField>(field));
   }
 
   form_signature_ = autofill::CalculateFormSignature(form);
@@ -731,8 +732,7 @@ void FormStructure::DetermineHeuristicTypes(
         1 << AutofillMetrics::FORM_CONTAINS_UPI_VPA_HINT;
   }
 
-  if (base::FeatureList::IsEnabled(
-          features::kAutofillParsingPatternsLanguageDetection)) {
+  if (base::FeatureList::IsEnabled(features::kAutofillPageLanguageDetection)) {
     RationalizeRepeatedFields(form_interactions_ukm_logger, log_manager);
   }
   RationalizeFieldTypePredictions(log_manager);
@@ -1221,6 +1221,8 @@ void FormStructure::RetrieveFromCache(
       }
       field->set_server_predictions(cached_field->server_predictions());
       field->set_previously_autofilled(cached_field->previously_autofilled());
+      field->set_value_not_autofilled_over_existing_value(
+          cached_field->value_not_autofilled_over_existing_value());
 
       // Only retrieve an overall prediction from cache if a server prediction
       // is set.
@@ -1261,6 +1263,7 @@ void FormStructure::LogQualityMetrics(
   bool card_form = base::Contains(form_types, FormType::kCreditCardForm);
   bool address_form = base::Contains(form_types, FormType::kAddressForm);
 
+  ServerFieldTypeSet autofilled_field_types;
   size_t num_detected_field_types = 0;
   size_t num_edited_autofilled_fields = 0;
   size_t num_of_accepted_autofilled_fields = 0;
@@ -1273,6 +1276,10 @@ void FormStructure::LogQualityMetrics(
   // A perfectly filled form is submitted as it was filled from Autofill without
   // subsequent changes.
   bool perfect_filling = true;
+  // Contain the frames across which the fields are distributed.
+  base::flat_set<LocalFrameToken> frames_of_detected_fields;
+  base::flat_set<LocalFrameToken> frames_of_detected_credit_card_fields;
+  base::flat_set<LocalFrameToken> frames_of_autofilled_credit_card_fields;
 
   // Determine the correct suffix for the metric, depending on whether or
   // not a submission was observed.
@@ -1282,10 +1289,12 @@ void FormStructure::LogQualityMetrics(
 
   for (size_t i = 0; i < field_count(); ++i) {
     auto* const field = this->field(i);
+    AutofillType type = field->Type();
+
     if (IsUPIVirtualPaymentAddress(field->value)) {
       has_upi_vpa_field = true;
       AutofillMetrics::LogUserHappinessMetric(
-          AutofillMetrics::USER_DID_ENTER_UPI_VPA, field->Type().group(),
+          AutofillMetrics::USER_DID_ENTER_UPI_VPA, type.group(),
           security_state::SecurityLevel::SECURITY_LEVEL_COUNT,
           data_util::DetermineGroups(*this));
     }
@@ -1304,7 +1313,7 @@ void FormStructure::LogQualityMetrics(
     if (field->previously_autofilled())
       num_edited_autofilled_fields++;
 
-    if (field->Type().html_type() == HTML_TYPE_ONE_TIME_CODE)
+    if (type.html_type() == HTML_TYPE_ONE_TIME_CODE)
       has_observed_one_time_code_field = true;
 
     // The form was not perfectly filled if a non-empty field was not
@@ -1314,6 +1323,7 @@ void FormStructure::LogQualityMetrics(
 
     const ServerFieldTypeSet& field_types = field->possible_types();
     DCHECK(!field_types.empty());
+
     if (field_types.count(EMPTY_TYPE) || field_types.count(UNKNOWN_TYPE)) {
       DCHECK_EQ(field_types.size(), 1u);
       continue;
@@ -1332,12 +1342,39 @@ void FormStructure::LogQualityMetrics(
     else if (!field->only_fill_when_focused())
       did_autofill_all_possible_fields = false;
 
+    if (field->is_autofilled)
+      autofilled_field_types.insert(type.GetStorableType());
+
+    // Keep track of the frames of detected and autofilled (credit card) fields.
+    frames_of_detected_fields.insert(field->host_frame);
+    if (type.group() == FieldTypeGroup::kCreditCard) {
+      frames_of_detected_credit_card_fields.insert(field->host_frame);
+      if (field->is_autofilled)
+        frames_of_autofilled_credit_card_fields.insert(field->host_frame);
+    }
+
     // If the form was submitted, record if field types have been filled and
     // subsequently edited by the user.
     if (observed_submission) {
       if (field->is_autofilled || field->previously_autofilled()) {
         AutofillMetrics::LogEditedAutofilledFieldAtSubmission(
             form_interactions_ukm_logger, *this, *field);
+
+        // If the field was a |ADDRESS_HOME_STATE| field which was autofilled,
+        // record the source of the autofilled value between
+        // |AlternativeStateNameMap| or the profile value.
+        if (field->is_autofilled &&
+            type.GetStorableType() == ADDRESS_HOME_STATE) {
+          AutofillMetrics::
+              LogAutofillingSourceForStateSelectionFieldAtSubmission(
+                  field->state_is_a_matching_type()
+                      ? AutofillMetrics::
+                            AutofilledSourceMetricForStateSelectionField::
+                                AUTOFILL_BY_ALTERNATIVE_STATE_NAME_MAP
+                      : AutofillMetrics::
+                            AutofilledSourceMetricForStateSelectionField::
+                                AUTOFILL_BY_VALUE);
+        }
       }
     }
   }
@@ -1430,6 +1467,22 @@ void FormStructure::LogQualityMetrics(
         AutofillMetrics::LogAutofillPerfectFilling(/*is_address=*/false,
                                                    perfect_filling);
       }
+    }
+
+    AutofillMetrics::LogNumberOfFramesWithDetectedFields(
+        frames_of_detected_fields.size());
+    AutofillMetrics::LogNumberOfFramesWithDetectedCreditCardFields(
+        frames_of_detected_credit_card_fields.size());
+    AutofillMetrics::LogNumberOfFramesWithAutofilledCreditCardFields(
+        frames_of_autofilled_credit_card_fields.size());
+
+    if (card_form) {
+      AutofillMetrics::LogCreditCardNumberFills(
+          autofilled_field_types,
+          AutofillMetrics::MeasurementTime::kSubmissionTime);
+      AutofillMetrics::LogCreditCardSeamlessFills(
+          autofilled_field_types,
+          AutofillMetrics::MeasurementTime::kSubmissionTime);
     }
   }
 }
@@ -2596,16 +2649,6 @@ DenseSet<FormType> FormStructure::GetFormTypes() const {
     form_types.insert(FieldTypeGroupToFormType(field->Type().group()));
   }
   return form_types;
-}
-
-std::u16string FormStructure::GetIdentifierForRefill() const {
-  if (!form_name().empty())
-    return form_name();
-
-  if (field_count() && !field(0)->unique_name().empty())
-    return field(0)->unique_name();
-
-  return std::u16string();
 }
 
 void FormStructure::set_randomized_encoder(

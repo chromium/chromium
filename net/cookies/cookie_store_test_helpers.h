@@ -7,11 +7,11 @@
 
 #include "net/cookies/cookie_monster.h"
 
+#include <memory>
 #include <string>
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "net/cookies/cookie_change_dispatcher.h"
 #include "net/log/net_log_with_source.h"
@@ -33,17 +33,17 @@ class DelayedCookieMonsterChangeDispatcher : public CookieChangeDispatcher {
   ~DelayedCookieMonsterChangeDispatcher() override;
 
   // net::CookieChangeDispatcher
-  std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
+  [[nodiscard]] std::unique_ptr<CookieChangeSubscription> AddCallbackForCookie(
       const GURL& url,
       const std::string& name,
       const absl::optional<CookiePartitionKey>& cookie_partition_key,
-      CookieChangeCallback callback) override WARN_UNUSED_RESULT;
-  std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
+      CookieChangeCallback callback) override;
+  [[nodiscard]] std::unique_ptr<CookieChangeSubscription> AddCallbackForUrl(
       const GURL& url,
       const absl::optional<CookiePartitionKey>& cookie_partition_key,
-      CookieChangeCallback callback) override WARN_UNUSED_RESULT;
-  std::unique_ptr<CookieChangeSubscription> AddCallbackForAllChanges(
-      CookieChangeCallback callback) override WARN_UNUSED_RESULT;
+      CookieChangeCallback callback) override;
+  [[nodiscard]] std::unique_ptr<CookieChangeSubscription>
+  AddCallbackForAllChanges(CookieChangeCallback callback) override;
 };
 
 class DelayedCookieMonster : public CookieStore {
@@ -59,15 +59,17 @@ class DelayedCookieMonster : public CookieStore {
   // invoke the internal callback.
   // Post a delayed task to invoke the original callback with the results.
 
-  void SetCanonicalCookieAsync(std::unique_ptr<CanonicalCookie> cookie,
-                               const GURL& source_url,
-                               const CookieOptions& options,
-                               SetCookiesCallback callback) override;
+  void SetCanonicalCookieAsync(
+      std::unique_ptr<CanonicalCookie> cookie,
+      const GURL& source_url,
+      const CookieOptions& options,
+      SetCookiesCallback callback,
+      const CookieAccessResult* cookie_access_result = nullptr) override;
 
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const CookieOptions& options,
-      const CookiePartitionKeychain& cookie_partition_keychain,
+      const CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override;
 
   void GetAllCookiesAsync(GetAllCookiesCallback callback) override;

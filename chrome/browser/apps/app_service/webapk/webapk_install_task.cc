@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <utility>
 
+#include "ash/components/arc/mojom/webapk.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
@@ -20,13 +23,10 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_prefs.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_switches.h"
-#include "components/arc/mojom/webapk.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/services/app_service/public/cpp/share_target.h"
 #include "components/version_info/version_info.h"
 #include "components/webapk/webapk.pb.h"
@@ -132,7 +132,8 @@ bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
   }
 
   // Compare share files.
-  if (share_param.files_size() != share_info->file_names.size()) {
+  if (share_param.files_size() !=
+      static_cast<int>(share_info->file_names.size())) {
     return true;
   }
 
@@ -142,7 +143,7 @@ bool DoesShareTargetDiffer(webapk::WebAppManifest manifest,
     }
 
     if (share_param.files(i).accept_size() !=
-        share_info->file_accepts[i].size()) {
+        static_cast<int>(share_info->file_accepts[i].size())) {
       return true;
     }
 

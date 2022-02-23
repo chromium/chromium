@@ -14,7 +14,6 @@
 #include "base/callback_helpers.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "remoting/host/chromeos/point_transformer.h"

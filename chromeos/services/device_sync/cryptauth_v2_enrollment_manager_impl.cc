@@ -425,13 +425,13 @@ void CryptAuthV2EnrollmentManagerImpl::AddV1UserKeyPairToRegistryIfNecessary() {
 
   switch (user_key_pair_state) {
     case (UserKeyPairState::kNoV1KeyNoV2Key):
-      FALLTHROUGH;
+      [[fallthrough]];
     case (UserKeyPairState::kNoV1KeyYesV2Key):
-      FALLTHROUGH;
+      [[fallthrough]];
     case (UserKeyPairState::kYesV1KeyYesV2KeyAgree):
       return;
     case (UserKeyPairState::kYesV1KeyNoV2Key):
-      FALLTHROUGH;
+      [[fallthrough]];
     case (UserKeyPairState::kYesV1KeyYesV2KeyDisagree):
       key_registry_->AddKey(CryptAuthKeyBundle::Name::kUserKeyPair,
                             CryptAuthKey(public_key_v1, private_key_v1,

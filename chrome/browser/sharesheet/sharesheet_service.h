@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_forward.h"
@@ -17,7 +18,9 @@
 #include "chrome/browser/sharesheet/sharesheet_controller.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "components/keyed_service/core/keyed_service.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/base/accelerators/accelerator.h"
 #include "ui/gfx/native_widget_types.h"
@@ -49,6 +52,8 @@ class SharesheetUiDelegate;
 // Chrome desktop.
 class SharesheetService : public KeyedService {
  public:
+  using GetNativeWindowCallback = base::OnceCallback<gfx::NativeWindow()>;
+
   explicit SharesheetService(Profile* profile);
   ~SharesheetService() override;
 
@@ -67,15 +72,22 @@ class SharesheetService : public KeyedService {
   // dialog has closed (this includes separate UI, e.g. Nearby Sharing).
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
-                  SharesheetMetrics::LaunchSource source,
+                  LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
   void ShowBubble(content::WebContents* web_contents,
                   apps::mojom::IntentPtr intent,
                   bool contains_hosted_document,
-                  SharesheetMetrics::LaunchSource source,
+                  LaunchSource source,
                   DeliveredCallback delivered_callback,
                   CloseCallback close_callback = base::NullCallback());
+  void ShowBubble(apps::mojom::IntentPtr intent,
+                  bool contains_hosted_document,
+                  LaunchSource source,
+                  GetNativeWindowCallback get_native_window_callback,
+                  DeliveredCallback delivered_callback,
+                  CloseCallback close_callback = base::NullCallback());
+
   // Gets the sharesheet controller for the given |native_window|.
   SharesheetController* GetSharesheetController(
       gfx::NativeWindow native_window);
@@ -84,7 +96,7 @@ class SharesheetService : public KeyedService {
   // NearbyShare bubble dialog for ARC.
   void ShowNearbyShareBubbleForArc(gfx::NativeWindow native_window,
                                    apps::mojom::IntentPtr intent,
-                                   SharesheetMetrics::LaunchSource source,
+                                   LaunchSource source,
                                    DeliveredCallback delivered_callback,
                                    CloseCallback close_callback,
                                    ActionCleanupCallback cleanup_callback);
@@ -111,7 +123,7 @@ class SharesheetService : public KeyedService {
   void ShowBubbleForTesting(gfx::NativeWindow native_window,
                             apps::mojom::IntentPtr intent,
                             bool contains_hosted_document,
-                            SharesheetMetrics::LaunchSource source,
+                            LaunchSource source,
                             DeliveredCallback delivered_callback,
                             CloseCallback close_callback);
   SharesheetUiDelegate* GetUiDelegateForTesting(
@@ -122,9 +134,9 @@ class SharesheetService : public KeyedService {
   using SharesheetServiceIconLoaderCallback =
       base::OnceCallback<void(std::vector<TargetInfo> targets)>;
 
-  void PrepareToShowBubble(base::WeakPtr<content::WebContents> web_contents,
-                           apps::mojom::IntentPtr intent,
+  void PrepareToShowBubble(apps::mojom::IntentPtr intent,
                            bool contains_hosted_document,
+                           GetNativeWindowCallback get_native_window_callback,
                            DeliveredCallback delivered_callback,
                            CloseCallback close_callback);
 
@@ -141,10 +153,10 @@ class SharesheetService : public KeyedService {
                     std::vector<TargetInfo> targets,
                     size_t index,
                     SharesheetServiceIconLoaderCallback callback,
-                    apps::mojom::IconValuePtr icon_value);
+                    apps::IconValuePtr icon_value);
 
-  void OnAppIconsLoaded(base::WeakPtr<content::WebContents> web_contents,
-                        apps::mojom::IntentPtr intent,
+  void OnAppIconsLoaded(apps::mojom::IntentPtr intent,
+                        GetNativeWindowCallback get_native_window_callback,
                         DeliveredCallback delivered_callback,
                         CloseCallback close_callback,
                         std::vector<TargetInfo> targets);
@@ -168,9 +180,9 @@ class SharesheetService : public KeyedService {
   // Makes |intent| related UMA recordings.
   void RecordShareDataMetrics(const apps::mojom::IntentPtr& intent);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<ShareActionCache> share_action_cache_;
-  apps::AppServiceProxy* app_service_proxy_;
+  raw_ptr<apps::AppServiceProxy> app_service_proxy_;
 
   // Record of all active SharesheetServiceDelegators. These can be retrieved
   // by ShareActions and used as SharesheetControllers to make bubble changes.

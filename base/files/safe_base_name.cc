@@ -26,4 +26,8 @@ absl::optional<SafeBaseName> SafeBaseName::Create(
 
 SafeBaseName::SafeBaseName(const FilePath& path) : path_(path) {}
 
+bool SafeBaseName::operator==(const SafeBaseName& that) const {
+  return path_ == that.path_;
+}
+
 }  // namespace base

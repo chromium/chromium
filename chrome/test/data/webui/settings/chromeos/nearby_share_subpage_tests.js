@@ -182,7 +182,11 @@ suite('NearbyShare', function() {
     assertEquals(false, featureToggleButton.checked);
     assertEquals(false, subpage.prefs.nearby_sharing.enabled.value);
     assertEquals('Off', featureToggleButton.label.trim());
-    subpageControlsHidden(true);
+    if (loadTimeData.getValue('isNearbyShareBackgroundScanningEnabled')) {
+      subpageControlsHidden(false);
+    } else {
+      subpageControlsHidden(true);
+    }
   });
 
   test('toggle row controls preference', function() {
@@ -198,12 +202,19 @@ suite('NearbyShare', function() {
   });
 
   suite('Deeplinking', () => {
+    suiteSetup(function() {
+      loadTimeData.overrideValues({
+        isNearbyShareBackgroundScanningEnabled: true,
+      });
+    });
+
     const deepLinkTestData = [
       {settingId: '208', deepLinkElement: '#featureToggleButton'},
       {settingId: '214', deepLinkElement: '#editDeviceNameButton'},
       {settingId: '215', deepLinkElement: '#editVisibilityButton'},
       {settingId: '216', deepLinkElement: '#manageContactsLinkRow'},
       {settingId: '217', deepLinkElement: '#editDataUsageButton'},
+      {settingId: '220', deepLinkElement: '#fastInitiationNotificationToggle'},
     ];
 
     deepLinkTestData.forEach((testData) => {
@@ -546,12 +557,20 @@ suite('NearbyShare', function() {
     assertEquals('Off', featureToggleButton.label.trim());
     assertEquals('none', subpageContent.style.display);
     assertEquals('none', subpage.$$('#helpContent').style.display);
-    subpageControlsHidden(true);
+    if (loadTimeData.getValue('isNearbyShareBackgroundScanningEnabled')) {
+      subpageControlsHidden(false);
+    } else {
+      subpageControlsHidden(true);
+    }
     assertFalse(doesElementExist('#help'));
   });
 
   test('Fast init toggle doesn\'t exist', function() {
-    assertFalse(!!subpage.$$('#fastInitiationNotificationToggle'));
+    if (loadTimeData.getValue('isNearbyShareBackgroundScanningEnabled')) {
+      assertTrue(!!subpage.$$('#fastInitiationNotificationToggle'));
+    } else {
+      assertFalse(!!subpage.$$('#fastInitiationNotificationToggle'));
+    }
   });
 
   suite('Background Scanning Enabled', function() {

@@ -28,9 +28,12 @@
 #include "media/base/video_decoder_config.h"
 #include "media/base/video_frame.h"
 #include "media/base/video_util.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/gpu/windows/d3d11_av1_accelerator.h"
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+#include "media/gpu/windows/d3d11_h265_accelerator.h"
+#endif
 #include "media/gpu/windows/d3d11_picture_buffer.h"
+#include "media/gpu/windows/d3d11_status.h"
 #include "media/gpu/windows/d3d11_video_context_wrapper.h"
 #include "media/gpu/windows/d3d11_video_decoder_impl.h"
 #include "media/gpu/windows/d3d11_video_device_format_support.h"
@@ -186,6 +189,16 @@ HRESULT D3D11VideoDecoder::InitializeAcceleratedDecoder(
         std::make_unique<D3D11AV1Accelerator>(
             this, media_log_.get(), video_device_, std::move(video_context)),
         profile_, config.color_space_info());
+  } else if (config.codec() == VideoCodec::kHEVC) {
+#if BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
+    DCHECK(base::FeatureList::IsEnabled(kD3D11HEVCDecoding));
+    accelerated_video_decoder_ = std::make_unique<H265Decoder>(
+        std::make_unique<D3D11H265Accelerator>(
+            this, media_log_.get(), video_device_, std::move(video_context)),
+        profile_, config.color_space_info());
+#else
+    return E_FAIL;
+#endif  // BUILDFLAG(ENABLE_PLATFORM_HEVC_DECODING)
   } else {
     return E_FAIL;
   }
@@ -211,11 +224,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
                  ? 10
                  : 8);
 
-  // OS prevent read any content from encrypted video frame. No need to support
-  // shared handle and keyed_mutex system for the encrypted frame.
   const bool use_shared_handle =
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle) &&
-      !config_.is_encrypted();
+      base::FeatureList::IsEnabled(kD3D11VideoDecoderUseSharedHandle);
 
   // TODO: supported check?
   decoder_configurator_ = D3D11DecoderConfigurator::Create(
@@ -250,8 +260,8 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
   auto hr = video_device_->GetVideoDecoderConfigCount(
       decoder_configurator_->DecoderDescriptor(), &config_count);
   if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kGetDecoderConfigCountFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr,
+                           D3D11Status::Codes::kGetDecoderConfigCountFailed);
   }
 
   if (config_count == 0)
@@ -264,14 +274,15 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
     hr = video_device_->GetVideoDecoderConfig(
         decoder_configurator_->DecoderDescriptor(), i, &dec_config);
     if (FAILED(hr)) {
-      return D3D11Status(D3D11Status::Codes::kGetDecoderConfigFailed)
-          .AddCause(HresultToStatus(hr));
+      return HresultToStatus(hr, D3D11Status::Codes::kGetDecoderConfigFailed);
     }
 
-    if ((config_.codec() == VideoCodec::kVP9 ||
-         config_.codec() == VideoCodec::kAV1) &&
-        dec_config.ConfigBitstreamRaw == 1) {
-      // DXVA VP9 and AV1 specifications say ConfigBitstreamRaw "shall be 1".
+    if (dec_config.ConfigBitstreamRaw == 1 &&
+        (config_.codec() == VideoCodec::kVP9 ||
+         config_.codec() == VideoCodec::kAV1 ||
+         config_.codec() == VideoCodec::kHEVC)) {
+      // DXVA HEVC, VP9, and AV1 specifications say ConfigBitstreamRaw
+      // "shall be 1".
       found = true;
       break;
     }
@@ -320,8 +331,7 @@ D3D11Status::Or<ComD3D11VideoDecoder> D3D11VideoDecoder::CreateD3D11Decoder() {
     return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed);
 
   if (FAILED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kDecoderCreationFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr, D3D11Status::Codes::kDecoderCreationFailed);
   }
 
   return {std::move(video_decoder)};
@@ -360,13 +370,13 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   }
 
   if (!is_supported) {
-    NotifyError("D3D11VideoDecoder does not support this config");
-    return;
+    return PostDecoderStatus(
+        DecoderStatus(DecoderStatus::Codes::kUnsupportedConfig)
+            .WithData("config", config));
   }
 
   if (config.is_encrypted()) {
-    NotifyError("D3D11VideoDecoder does not support encrypted stream");
-    return;
+    return PostDecoderStatus(DecoderStatus::Codes::kUnsupportedEncryptionMode);
   }
 
   // Initialize the video decoder.
@@ -389,14 +399,12 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
   if (!device_) {
     // This happens if, for example, if chrome is configured to use
     // D3D9 for ANGLE.
-    NotifyError("ANGLE did not provide D3D11 device");
-    return;
+    return NotifyError(D3D11Status::Codes::kFailedToGetAngleDevice);
   }
 
   if (!GetD3D11FeatureLevel(device_, gpu_workarounds_,
                             &usable_feature_level_)) {
-    NotifyError("D3D11 feature level not supported");
-    return;
+    return NotifyError(D3D11Status::Codes::kUnsupportedFeatureLevel);
   }
 
   device_->GetImmediateContext(&device_context_);
@@ -408,45 +416,35 @@ void D3D11VideoDecoder::Initialize(const VideoDecoderConfig& config,
 
   ComD3D11Multithread multi_threaded;
   hr = device_->QueryInterface(IID_PPV_ARGS(&multi_threaded));
+
   if (FAILED(hr)) {
     return NotifyError(
-        D3D11Status(D3D11Status::Codes::kQueryID3D11MultithreadFailed)
-            .AddCause(HresultToStatus(hr)));
+        HresultToStatus(hr, D3D11Status::Codes::kQueryID3D11MultithreadFailed));
   }
 
   multi_threaded->SetMultithreadProtected(TRUE);
 
   hr = device_.As(&video_device_);
   if (!SUCCEEDED(hr)) {
-    NotifyError("Failed to get video device");
-    return;
+    return NotifyError(
+        HresultToStatus(hr, D3D11Status::Codes::kFailedToGetVideoDevice));
   }
 
   auto video_decoder_or_error = CreateD3D11Decoder();
   if (video_decoder_or_error.has_error()) {
-    NotifyError(std::move(video_decoder_or_error).error());
-    return;
+    return NotifyError(std::move(video_decoder_or_error).error());
   }
 
   hr = InitializeAcceleratedDecoder(config,
                                     std::move(video_decoder_or_error).value());
 
   if (!SUCCEEDED(hr)) {
-    NotifyError("Failed to get device context");
-    return;
+    return NotifyError(D3D11Status::Codes::kFailedToGetDeviceContext);
   }
 
   // At this point, playback is supported so add a line in the media log to help
   // us figure that out.
   MEDIA_LOG(INFO, media_log_) << "Video is supported by D3D11VideoDecoder";
-
-  if (base::FeatureList::IsEnabled(kD3D11PrintCodecOnCrash)) {
-    static base::debug::CrashKeyString* codec_name =
-        base::debug::AllocateCrashKeyString("d3d11_playback_video_codec",
-                                            base::debug::CrashKeySize::Size32);
-    base::debug::SetCrashKeyString(codec_name,
-                                   config.GetHumanReadableCodecName());
-  }
 
   auto impl_init_cb = base::BindOnce(&D3D11VideoDecoder::OnGpuInitComplete,
                                      weak_factory_.GetWeakPtr());
@@ -504,14 +502,13 @@ void D3D11VideoDecoder::OnGpuInitComplete(
   DCHECK_EQ(state_, State::kInitializing);
 
   if (!success) {
-    NotifyError("Gpu init failed");
-    return;
+    return NotifyError(D3D11Status::Codes::kFailedToInitializeGPUProcess);
   }
 
   release_mailbox_cb_ = std::move(release_mailbox_cb);
 
   state_ = State::kRunning;
-  std::move(init_cb_).Run(OkStatus());
+  std::move(init_cb_).Run(DecoderStatus::Codes::kOk);
 }
 
 void D3D11VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
@@ -526,7 +523,7 @@ void D3D11VideoDecoder::Decode(scoped_refptr<DecoderBuffer> buffer,
 
   if (state_ == State::kError) {
     // TODO(liberato): consider posting, though it likely doesn't matter.
-    std::move(decode_cb).Run(DecodeStatus::DECODE_ERROR);
+    std::move(decode_cb).Run(DecoderStatus::Codes::kInterrupted);
     return;
   }
 
@@ -572,7 +569,7 @@ void D3D11VideoDecoder::DoDecode() {
       }
       // Pictures out output synchronously during Flush.  Signal the decode
       // cb now.
-      std::move(current_decode_cb_).Run(DecodeStatus::OK);
+      std::move(current_decode_cb_).Run(DecoderStatus::Codes::kOk);
       return;
     }
     // This must be after checking for EOS because there is no timestamp for an
@@ -615,7 +612,7 @@ void D3D11VideoDecoder::DoDecode() {
     // TODO(liberato): switch + class enum.
     if (result == media::AcceleratedVideoDecoder::kRanOutOfStreamData) {
       current_buffer_ = nullptr;
-      std::move(current_decode_cb_).Run(DecodeStatus::OK);
+      std::move(current_decode_cb_).Run(DecoderStatus::Codes::kOk);
       break;
     } else if (result == media::AcceleratedVideoDecoder::kRanOutOfSurfaces) {
       // At this point, we know the picture size.
@@ -655,8 +652,7 @@ void D3D11VideoDecoder::DoDecode() {
       // accelerated decoder asked for any.
       auto video_decoder_or_error = CreateD3D11Decoder();
       if (video_decoder_or_error.has_error()) {
-        NotifyError(std::move(video_decoder_or_error).error());
-        return;
+        return NotifyError(std::move(video_decoder_or_error).error());
       }
       DCHECK(set_accelerator_decoder_cb_);
       set_accelerator_decoder_cb_.Run(
@@ -667,11 +663,8 @@ void D3D11VideoDecoder::DoDecode() {
       NotifyError(D3D11Status::Codes::kTryAgainNotSupported);
       return;
     } else {
-      std::ostringstream message;
-      message << "VDA Error " << result;
-      NotifyError(
-          D3D11Status(D3D11Status::Codes::kDecoderFailedDecode, message.str()));
-      return;
+      return NotifyError(D3D11Status(D3D11Status::Codes::kDecoderFailedDecode)
+                             .WithData("VDA Error", result));
     }
   }
 
@@ -687,10 +680,10 @@ void D3D11VideoDecoder::Reset(base::OnceClosure closure) {
 
   current_buffer_ = nullptr;
   if (current_decode_cb_)
-    std::move(current_decode_cb_).Run(DecodeStatus::ABORTED);
+    std::move(current_decode_cb_).Run(DecoderStatus::Codes::kAborted);
 
   for (auto& queue_pair : input_buffer_queue_)
-    std::move(queue_pair.second).Run(DecodeStatus::ABORTED);
+    std::move(queue_pair.second).Run(DecoderStatus::Codes::kAborted);
   input_buffer_queue_.clear();
 
   // TODO(liberato): how do we signal an error?
@@ -761,8 +754,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
       if (result.has_value()) {
         in_texture = std::move(result).value();
       } else {
-        NotifyError(std::move(result).error().AddHere());
-        return;
+        return NotifyError(std::move(result).error().AddHere());
       }
     }
 
@@ -770,8 +762,8 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
 
     auto tex_wrapper = texture_selector_->CreateTextureWrapper(device_, size);
     if (!tex_wrapper) {
-      NotifyError(D3D11Status::Codes::kAllocateTextureForCopyingWrapperFailed);
-      return;
+      return NotifyError(
+          D3D11Status::Codes::kAllocateTextureForCopyingWrapperFailed);
     }
 
     const size_t array_slice = use_single_video_decoder_texture_ ? 0 : i;
@@ -782,8 +774,7 @@ void D3D11VideoDecoder::CreatePictureBuffers() {
         gpu_task_runner_, get_helper_cb_, video_device_,
         decoder_configurator_->DecoderGuid(), media_log_->Clone());
     if (!result.is_ok()) {
-      NotifyError(std::move(result).AddHere());
-      return;
+      return NotifyError(std::move(result).AddHere());
     }
 
     // If we're using one texture per buffer, rather than an array, then clear
@@ -864,7 +855,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
   if (!frame) {
     // This can happen if, somehow, we get an unsupported combination of
     // pixel format, etc.
-    NotifyError(D3D11Status::Codes::kDecoderVideoFrameConstructionFailed);
+    PostDecoderStatus(DecoderStatus::Codes::kFailedToGetVideoFrame);
     return false;
   }
 
@@ -894,7 +885,7 @@ bool D3D11VideoDecoder::OutputResult(const CodecPicture* picture,
 
   frame->metadata().power_efficient = true;
   frame->set_color_space(output_color_space);
-  if (is_hdr_supported_)
+  if (output_color_space.IsHDR())
     frame->set_hdr_metadata(config_.hdr_metadata());
   output_cb_.Run(frame);
   return true;
@@ -904,42 +895,36 @@ void D3D11VideoDecoder::SetDecoderCB(const SetAcceleratorDecoderCB& cb) {
   set_accelerator_decoder_cb_ = cb;
 }
 
-// TODO(tmathmeyer): Please don't add new uses of this overload.
-void D3D11VideoDecoder::NotifyError(const char* reason) {
-  NotifyError(D3D11Status(D3D11Status::Codes::kDecoderInitializeNeverCompleted,
-                          reason));
-}
-
-void D3D11VideoDecoder::NotifyError(D3D11Status reason) {
+void D3D11VideoDecoder::NotifyError(D3D11Status reason,
+                                    DecoderStatus::Codes opt_decoder_code) {
   TRACE_EVENT0("gpu", "D3D11VideoDecoder::NotifyError");
-  state_ = State::kError;
 
-  // Log why this failed.
   base::UmaHistogramSparse("Media.D3D11.NotifyErrorStatus",
                            static_cast<int>(reason.code()));
 
+  PostDecoderStatus(
+      DecoderStatus(opt_decoder_code).AddCause(std::move(reason)));
+}
+
+void D3D11VideoDecoder::PostDecoderStatus(DecoderStatus status) {
+  TRACE_EVENT0("gpu", "D3D11VideoDecoder::PostDecoderStatus");
+
+  state_ = State::kError;
+  current_buffer_ = nullptr;
+
   if (init_cb_) {
-    // TODO(liberato): VideoDecoder::InitCB should have either its own status
-    // codes, or should use a common one that has "succeeded / didn't succeed"
-    // as its only options.
-    std::move(init_cb_).Run(
-        Status(Status::Codes::kDecoderInitializeNeverCompleted)
-            .AddCause(std::move(reason)));
-  } else {
-    // TODO(tmathmeyer) - Remove this after plumbing Status through the
-    // decode_cb and input_buffer_queue cb's.
-    // Let the init handler set the error string if this is an init failure.
-    MEDIA_LOG(ERROR, media_log_)
-        << "D3D11VideoDecoder error: 0x" << std::hex
-        << static_cast<int>(reason.code()) << " " << reason.message();
+    std::move(init_cb_).Run(status);
   }
 
-  current_buffer_ = nullptr;
-  if (current_decode_cb_)
-    std::move(current_decode_cb_).Run(DecodeStatus::DECODE_ERROR);
+  if (current_decode_cb_) {
+    std::move(current_decode_cb_).Run(status);
+  }
 
-  for (auto& queue_pair : input_buffer_queue_)
-    std::move(queue_pair.second).Run(DecodeStatus::DECODE_ERROR);
+  for (auto& queue_pair : input_buffer_queue_) {
+    std::move(queue_pair.second).Run(status);
+  }
+
+  // Also clear |input_buffer_queue_| since the callbacks have been consumed.
   input_buffer_queue_.clear();
 }
 
@@ -955,11 +940,8 @@ bool D3D11VideoDecoder::GetD3D11FeatureLevel(
   if (*feature_level < D3D_FEATURE_LEVEL_11_0)
     return false;
 
-  // TODO(tmathmeyer) should we log this to UMA?
-  if (gpu_workarounds.limit_d3d11_video_decoder_to_11_0 &&
-      !base::FeatureList::IsEnabled(kD3D11VideoDecoderIgnoreWorkarounds)) {
+  if (gpu_workarounds.limit_d3d11_video_decoder_to_11_0)
     *feature_level = D3D_FEATURE_LEVEL_11_0;
-  }
 
   return true;
 }
@@ -970,15 +952,9 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
     const gpu::GpuPreferences& gpu_preferences,
     const gpu::GpuDriverBugWorkarounds& gpu_workarounds,
     GetD3D11DeviceCB get_d3d11_device_cb) {
-  const std::string uma_name("Media.D3D11.WasVideoSupported");
-
-  if (!base::FeatureList::IsEnabled(kD3D11VideoDecoderIgnoreWorkarounds)) {
-    // Allow all of d3d11 to be turned off by workaround.
-    if (gpu_workarounds.disable_d3d11_video_decoder) {
-      UMA_HISTOGRAM_ENUMERATION(uma_name, NotSupportedReason::kOffByWorkaround);
-      return {};
-    }
-  }
+  // Allow all of d3d11 to be turned off by workaround.
+  if (gpu_workarounds.disable_d3d11_video_decoder)
+    return {};
 
   // Remember that this might query the angle device, so this won't work if
   // we're not on the GPU main thread.  Also remember that devices are thread
@@ -989,33 +965,21 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
   //
   // Note also that, currently, we are called from the GPU main thread only.
   auto d3d11_device = get_d3d11_device_cb.Run();
-  if (!d3d11_device) {
-    UMA_HISTOGRAM_ENUMERATION(uma_name,
-                              NotSupportedReason::kCouldNotGetD3D11Device);
+  if (!d3d11_device)
     return {};
-  }
 
   D3D_FEATURE_LEVEL usable_feature_level;
   if (!GetD3D11FeatureLevel(d3d11_device, gpu_workarounds,
                             &usable_feature_level)) {
-    UMA_HISTOGRAM_ENUMERATION(
-        uma_name, NotSupportedReason::kInsufficientD3D11FeatureLevel);
     return {};
   }
 
-  const auto supported_resolutions = GetSupportedD3D11VideoDecoderResolutions(
-      d3d11_device, gpu_workarounds,
-      base::FeatureList::IsEnabled(kD3D11VideoDecoderAV1) &&
-          !gpu_workarounds.disable_accelerated_av1_decode_d3d11);
+  const auto supported_resolutions =
+      GetSupportedD3D11VideoDecoderResolutions(d3d11_device, gpu_workarounds);
 
   std::vector<SupportedVideoDecoderConfig> configs;
   for (const auto& kv : supported_resolutions) {
     const auto profile = kv.first;
-    if (profile == VP9PROFILE_PROFILE2 &&
-        !base::FeatureList::IsEnabled(kD3D11VideoDecoderVP9Profile2)) {
-      continue;
-    }
-
     // TODO(liberato): Add VP8 support to D3D11VideoDecoder.
     if (profile == VP8PROFILE_ANY)
       continue;
@@ -1034,9 +998,6 @@ D3D11VideoDecoder::GetSupportedVideoDecoderConfigs(
                            /*require_encrypted=*/false);
     }
   }
-
-  // TODO(liberato): Should we separate out h264 and vp9?
-  UMA_HISTOGRAM_ENUMERATION(uma_name, NotSupportedReason::kVideoIsSupported);
 
   return configs;
 }

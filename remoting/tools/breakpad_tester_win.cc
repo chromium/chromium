@@ -8,7 +8,7 @@
 #include "base/at_exit.h"
 #include "base/command_line.h"
 #include "base/win/scoped_handle.h"
-#include "remoting/host/logging.h"
+#include "remoting/base/logging.h"
 
 namespace {
 

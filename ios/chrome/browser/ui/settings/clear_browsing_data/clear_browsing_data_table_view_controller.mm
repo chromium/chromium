@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/clear_browsing_data/clear_browsing_data_table_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "components/browsing_data/core/pref_names.h"
@@ -14,6 +15,7 @@
 #include "ios/chrome/browser/browsing_data/browsing_data_remove_mask.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/browser.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/alert_coordinator/action_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/alert_coordinator/alert_coordinator.h"
 #import "ios/chrome/browser/ui/commands/application_commands.h"
@@ -297,8 +299,25 @@
 
 #pragma mark - TableViewLinkHeaderFooterItemDelegate
 
-- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(GURL)url {
-  [self.delegate openURL:url];
+- (void)view:(TableViewLinkHeaderFooterView*)view didTapLinkURL:(CrURL*)url {
+  NSString* baseURL =
+      [NSString stringWithCString:(url.gurl.host() + url.gurl.path()).c_str()
+                         encoding:[NSString defaultCStringEncoding]];
+  if ([[NSString stringWithCString:(kClearBrowsingDataDSESearchUrlInFooterURL)
+                          encoding:[NSString defaultCStringEncoding]]
+          rangeOfString:baseURL]
+          .length > 0) {
+    base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
+                                  MyActivityNavigation::kSearchHistory);
+  } else if ([[NSString stringWithCString:
+                            (kClearBrowsingDataDSEMyActivityUrlInFooterURL)
+                                 encoding:[NSString defaultCStringEncoding]]
+                 rangeOfString:baseURL]
+                 .length > 0) {
+    base::UmaHistogramEnumeration("Settings.ClearBrowsingData.OpenMyActivity",
+                                  MyActivityNavigation::kTopLevel);
+  }
+  [self.delegate openURL:url.gurl];
 }
 
 #pragma mark - ClearBrowsingDataConsumer

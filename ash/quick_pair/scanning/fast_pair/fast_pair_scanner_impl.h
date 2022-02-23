@@ -10,12 +10,17 @@
 #include <string>
 
 #include "ash/quick_pair/scanning/fast_pair/fast_pair_scanner.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_device.h"
 #include "device/bluetooth/bluetooth_low_energy_scan_session.h"
+
+namespace base {
+class SequencedTaskRunner;
+}  // namespace base
 
 namespace ash {
 namespace quick_pair {
@@ -27,20 +32,42 @@ class FastPairScannerImpl
       public device::BluetoothAdapter::Observer,
       public device::BluetoothLowEnergyScanSession::Delegate {
  public:
-  FastPairScannerImpl();
-  FastPairScannerImpl(const FastPairScannerImpl&) = delete;
-  FastPairScannerImpl& operator=(const FastPairScannerImpl&) = delete;
+  class Factory {
+   public:
+    static scoped_refptr<FastPairScanner> Create();
+
+    static void SetFactoryForTesting(Factory* g_test_factory);
+
+   protected:
+    virtual ~Factory();
+    virtual scoped_refptr<FastPairScanner> CreateInstance() = 0;
+
+   private:
+    static Factory* g_test_factory_;
+  };
 
   // FastPairScanner::Observer
   void AddObserver(FastPairScanner::Observer* observer) override;
   void RemoveObserver(FastPairScanner::Observer* observer) override;
 
+  FastPairScannerImpl();
+  FastPairScannerImpl(const FastPairScannerImpl&) = delete;
+  FastPairScannerImpl& operator=(const FastPairScannerImpl&) = delete;
+
  private:
   ~FastPairScannerImpl() override;
+
+  void StartScanning();
+  void StopScanning();
 
   // device::BluetoothAdapter::Observer
   void DeviceChanged(device::BluetoothAdapter* adapter,
                      device::BluetoothDevice* device) override;
+  void DeviceRemoved(device::BluetoothAdapter* adapter,
+                     device::BluetoothDevice* device) override;
+  void DevicePairedChanged(device::BluetoothAdapter* adapter,
+                           device::BluetoothDevice* device,
+                           bool new_paired_status) override;
 
   // device::BluetoothLowEnergyScanSession::Delegate
   void OnDeviceFound(device::BluetoothLowEnergyScanSession* scan_session,
@@ -59,6 +86,8 @@ class FastPairScannerImpl
   void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
 
   void NotifyDeviceFound(device::BluetoothDevice* device);
+
+  scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
   // Map of a Bluetooth device address to a set of advertisement data we have
   // seen.

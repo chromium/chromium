@@ -5,6 +5,8 @@
 #include "services/network/test/test_shared_url_loader_factory.h"
 
 #include "base/notreached.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/network_context.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
@@ -14,7 +16,8 @@ namespace network {
 TestSharedURLLoaderFactory::TestSharedURLLoaderFactory(
     NetworkService* network_service,
     bool is_trusted) {
-  url_request_context_ = std::make_unique<net::TestURLRequestContext>();
+  auto context_builder = net::CreateTestURLRequestContextBuilder();
+  url_request_context_ = context_builder->Build();
   mojo::Remote<mojom::NetworkContext> network_context;
   network_context_ = std::make_unique<NetworkContext>(
       network_service, network_context.BindNewPipeAndPassReceiver(),

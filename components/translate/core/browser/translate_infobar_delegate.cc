@@ -82,16 +82,14 @@ void TranslateInfoBarDelegate::Create(
   if (step != translate::TRANSLATE_STEP_TRANSLATE_ERROR) {
     DCHECK(TranslateDownloadManager::IsSupportedLanguage(target_language));
     if (!TranslateDownloadManager::IsSupportedLanguage(source_language)) {
-      // If the detected source language experiment is active, then the source
-      // language can be unknown at any translate step. If it is disabled, then
-      // the source language can only be unknown for the "translating"
-      // infobar, which is the case when the user started a translation from the
-      // context menu.
-      if (!base::FeatureList::IsEnabled(
-              language::kDetectedSourceLanguageOption)) {
-        DCHECK(step == translate::TRANSLATE_STEP_TRANSLATING ||
-               step == translate::TRANSLATE_STEP_AFTER_TRANSLATE);
-      }
+      // If the source language is unsupported than it must be the unknown
+      // language. On iOS, the source language can only be unknown for the
+      // "translating" infobar, which is the case when the user started a
+      // translation from the context menu.
+#if BUILDFLAG(IS_IOS)
+      DCHECK(step == translate::TRANSLATE_STEP_TRANSLATING ||
+             step == translate::TRANSLATE_STEP_AFTER_TRANSLATE);
+#endif
       DCHECK_EQ(translate::kUnknownLanguageCode, source_language);
     }
   }
@@ -276,7 +274,7 @@ bool TranslateInfoBarDelegate::ShouldShowMessageInfoBarButton() {
 }
 
 bool TranslateInfoBarDelegate::ShouldShowAlwaysTranslateShortcut() {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // On mobile, the option to always translate is shown after the translation.
   DCHECK_EQ(translate::TRANSLATE_STEP_AFTER_TRANSLATE, step_);
 #else
@@ -291,7 +289,7 @@ bool TranslateInfoBarDelegate::ShouldShowNeverTranslateShortcut() {
   return ui_delegate_.ShouldShowNeverTranslateShortcut();
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 void TranslateInfoBarDelegate::ShowNeverTranslateInfobar() {
   // Return if the infobar is not owned.
   if (!infobar()->owner())

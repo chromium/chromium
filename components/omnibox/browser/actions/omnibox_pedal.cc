@@ -11,14 +11,22 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "build/build_config.h"
 #include "components/omnibox/browser/buildflags.h"
 #include "components/omnibox/browser/omnibox_client.h"
 #include "components/omnibox/browser/omnibox_edit_controller.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 #include "components/omnibox/browser/vector_icons.h"  // nogncheck
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/jni_android.h"
+#include "base/android/jni_string.h"
+#include "components/omnibox/browser/jni_headers/OmniboxPedal_jni.h"
+#include "url/android/gurl_android.h"
 #endif
 
 OmniboxPedal::TokenSequence::TokenSequence(size_t reserve_size) {
@@ -232,7 +240,11 @@ bool OmniboxPedal::SynonymGroup::IsValid() const {
 OmniboxPedal::OmniboxPedal(OmniboxPedalId id, LabelStrings strings, GURL url)
     : OmniboxAction(strings, url),
       id_(id),
-      verbatim_synonym_group_(false, true, 0) {}
+      verbatim_synonym_group_(false, true, 0) {
+#if BUILDFLAG(IS_ANDROID)
+  CreateOrUpdateJavaObject();
+#endif
+}
 
 OmniboxPedal::~OmniboxPedal() = default;
 
@@ -240,20 +252,29 @@ void OmniboxPedal::SetLabelStrings(const base::Value& ui_strings) {
   DCHECK(ui_strings.is_dict());
   // The pedal_processor tool ensures that this dictionary is either omitted,
   //  or else included with all these keys populated.
-  ui_strings.FindKey("button_text")->GetAsString(&strings_.hint);
-  ui_strings.FindKey("description_text")
-      ->GetAsString(&strings_.suggestion_contents);
-  ui_strings.FindKey("spoken_button_focus_announcement")
-      ->GetAsString(&strings_.accessibility_hint);
-  ui_strings.FindKey("spoken_suggestion_description_suffix")
-      ->GetAsString(&strings_.accessibility_suffix);
+  if (const std::string* string = ui_strings.FindStringKey("button_text"))
+    strings_.hint = base::UTF8ToUTF16(*string);
+  if (const std::string* string = ui_strings.FindStringKey("description_text"))
+    strings_.suggestion_contents = base::UTF8ToUTF16(*string);
+  if (const std::string* string =
+          ui_strings.FindStringKey("spoken_button_focus_announcement"))
+    strings_.accessibility_hint = base::UTF8ToUTF16(*string);
+  if (const std::string* string =
+          ui_strings.FindStringKey("spoken_suggestion_description_suffix"))
+    strings_.accessibility_suffix = base::UTF8ToUTF16(*string);
+#if BUILDFLAG(IS_ANDROID)
+  CreateOrUpdateJavaObject();
+#endif
 }
 
 void OmniboxPedal::SetNavigationUrl(const GURL& url) {
   url_ = url;
+#if BUILDFLAG(IS_ANDROID)
+  CreateOrUpdateJavaObject();
+#endif
 }
 
-#if (!defined(OS_ANDROID) || BUILDFLAG(ENABLE_VR)) && !defined(OS_IOS)
+#if defined(SUPPORT_PEDALS_VECTOR_ICONS)
 // static
 const gfx::VectorIcon& OmniboxPedal::GetDefaultVectorIcon() {
   return omnibox::kPedalIcon;
@@ -273,8 +294,8 @@ void OmniboxPedal::AddSynonymGroup(SynonymGroup&& group) {
   synonym_groups_.push_back(std::move(group));
 }
 
-std::vector<OmniboxPedal::SynonymGroupSpec> OmniboxPedal::SpecifySynonymGroups()
-    const {
+std::vector<OmniboxPedal::SynonymGroupSpec> OmniboxPedal::SpecifySynonymGroups(
+    bool locale_is_english) const {
   return {};
 }
 
@@ -318,3 +339,21 @@ int32_t OmniboxPedal::GetID() const {
   return static_cast<int32_t>(id());
 }
 
+#if BUILDFLAG(IS_ANDROID)
+base::android::ScopedJavaGlobalRef<jobject> OmniboxPedal::GetJavaObject()
+    const {
+  return j_omnibox_action_;
+}
+
+void OmniboxPedal::CreateOrUpdateJavaObject() {
+  JNIEnv* env = base::android::AttachCurrentThread();
+  j_omnibox_action_.Reset(Java_OmniboxPedal_build(
+      env, GetID(), base::android::ConvertUTF16ToJavaString(env, strings_.hint),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              strings_.suggestion_contents),
+      base::android::ConvertUTF16ToJavaString(env,
+                                              strings_.accessibility_suffix),
+      base::android::ConvertUTF16ToJavaString(env, strings_.accessibility_hint),
+      url::GURLAndroid::FromNativeGURL(env, url_)));
+}
+#endif

@@ -407,6 +407,8 @@ base::Value BetterTogetherDeviceMetadataToReadableDictionary(
   dict.SetStringKey("Public key",
                     TruncateStringForLogs(Encode(metadata.public_key())));
   dict.SetStringKey("PII-free device name", metadata.no_pii_device_name());
+  dict.SetStringKey("Bluetooth MAC address",
+                    metadata.bluetooth_public_address());
 
   base::Value beacon_seed_list(base::Value::Type::LIST);
   for (const auto& seed : metadata.beacon_seeds()) {

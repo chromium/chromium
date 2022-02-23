@@ -939,7 +939,7 @@ std::unique_ptr<TransientElement> CreateTextToast(
   return parent;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void BindIndicatorTranscienceForWin(
     TransientElement* e,
     Model* model,
@@ -1098,7 +1098,7 @@ void BindIndicatorTranscience(
 int GetIndicatorsTimeout() {
   // Some runtimes on Windows have quite lengthy animations that may cause
   // indicators to not be visible at our normal timeout length.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return kWindowsInitialIndicatorsTimeoutSeconds;
 #else
   return kToastTimeoutSeconds;
@@ -1542,7 +1542,7 @@ void UiSceneCreator::CreateContentQuad() {
 }
 
 void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   auto phase = kPhaseForeground;
   auto icon = Create<VectorIcon>(kNone, phase, 100);
   icon->SetType(kTypePromptIcon);
@@ -1643,7 +1643,7 @@ void UiSceneCreator::CreateExternalPromptNotifcationOverlay() {
           base::Unretained(line1_text), base::Unretained(vector_icon))));
 
   scene_->AddUiElement(kWebVrViewportAwareRoot, std::move(scaler));
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 void UiSceneCreator::CreateWebVrSubtree() {
@@ -1755,7 +1755,7 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
   timeout_text->SetFieldWidth(kTimeoutMessageTextWidthDMM);
   timeout_text->set_hit_testable(true);
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   auto button_scaler =
       std::make_unique<ScaledDepthAdjuster>(kTimeoutButtonDepthOffset);
 
@@ -1790,15 +1790,15 @@ void UiSceneCreator::CreateWebVrTimeoutScreen() {
 
   button->AddChild(std::move(timeout_button_text));
   button_scaler->AddChild(std::move(button));
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   timeout_layout->AddChild(std::move(timeout_icon));
   timeout_layout->AddChild(std::move(timeout_text));
   timeout_message->AddChild(std::move(timeout_layout));
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   timeout_message->AddChild(std::move(button_scaler));
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
   scaler->AddChild(std::move(timeout_message));
   scaler->AddChild(std::move(spinner));
@@ -1880,7 +1880,7 @@ void UiSceneCreator::CreateViewportAwareRoot() {
   // On Windows, allow the viewport-aware UI to translate as well as rotate, so
   // it remains centered appropriately if the user moves.  Only enabled for
   // OS_WIN, since it conflicts with browser UI that isn't shown on Windows.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   element->SetRecenterOnRotate(true);
 #endif
   scene_->AddUiElement(kWebVrRoot, std::move(element));
@@ -1888,7 +1888,7 @@ void UiSceneCreator::CreateViewportAwareRoot() {
   element = std::make_unique<ViewportAwareRoot>();
   element->SetName(k2dBrowsingViewportAwareRoot);
   element->set_contributes_to_parent_bounds(false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   element->SetRecenterOnRotate(true);
 #endif
   scene_->AddUiElement(k2dBrowsingRepositioner, std::move(element));
@@ -2040,7 +2040,7 @@ void UiSceneCreator::CreateContentRepositioningAffordance() {
 namespace {
 
 bool ControllerVisibility(Model* model) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return model->browsing_enabled() ||
          model->hosted_platform_ui.hosted_ui_enabled;
 #else
@@ -2990,7 +2990,7 @@ void UiSceneCreator::CreateWebVrOverlayElements() {
   auto parent = CreateTransientParent(kWebVrIndicatorTransience,
                                       GetIndicatorsTimeout(), true);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   parent->AddBinding(
       std::make_unique<
           Binding<std::tuple<bool, CapturingStateModel, CapturingStateModel>>>(

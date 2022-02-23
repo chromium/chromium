@@ -21,10 +21,7 @@ class MockDeviceTrustService : public DeviceTrustService {
               BuildChallengeResponse,
               (const std::string&, AttestationCallback),
               (override));
-  MOCK_METHOD(base::CallbackListSubscription,
-              RegisterTrustedUrlPatternsChangedCallback,
-              (TrustedUrlPatternsChangedCallback),
-              (override));
+  MOCK_METHOD(bool, Watches, (const GURL&), (const, override));
 };
 
 }  // namespace test

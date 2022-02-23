@@ -4,13 +4,16 @@
 
 package org.chromium.chrome.browser.download;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link DownloadForegroundServiceImpl}. */
 public class DownloadForegroundService extends SplitCompatService {
+    @IdentifierNameString
+    private static String sImplClassName =
+            "org.chromium.chrome.browser.download.DownloadForegroundServiceImpl";
+
     public DownloadForegroundService() {
-        super(SplitCompatUtils.getIdentifierName(
-                "org.chromium.chrome.browser.download.DownloadForegroundServiceImpl"));
+        super(sImplClassName);
     }
 }

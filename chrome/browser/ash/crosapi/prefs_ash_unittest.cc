@@ -101,7 +101,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
   EXPECT_TRUE(observer1->value_->GetBool());
   EXPECT_TRUE(prefs_ash.local_state_registrar_.IsObserved(
       metrics::prefs::kMetricsReportingEnabled));
-  EXPECT_EQ(1, prefs_ash.observers_[path].size());
+  EXPECT_EQ(1u, prefs_ash.observers_[path].size());
 
   // Multiple observers is ok.
   auto observer2 = std::make_unique<TestObserver>();
@@ -109,7 +109,7 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
                             observer2->receiver_.BindNewPipeAndPassRemote());
   prefs_remote.FlushForTesting();
   EXPECT_TRUE(observer2->value_->GetBool());
-  EXPECT_EQ(2, prefs_ash.observers_[path].size());
+  EXPECT_EQ(2u, prefs_ash.observers_[path].size());
 
   // Observer should be notified when value changes.
   local_state()->SetBoolean(metrics::prefs::kMetricsReportingEnabled, false);
@@ -120,10 +120,10 @@ TEST_F(PrefsAshTest, LocalStatePrefs) {
   // Disconnect should remove PrefChangeRegistrar.
   observer1.reset();
   prefs_remote.FlushForTesting();
-  EXPECT_EQ(1, prefs_ash.observers_[path].size());
+  EXPECT_EQ(1u, prefs_ash.observers_[path].size());
   observer2.reset();
   prefs_remote.FlushForTesting();
-  EXPECT_EQ(0, prefs_ash.observers_[path].size());
+  EXPECT_EQ(0u, prefs_ash.observers_[path].size());
   EXPECT_FALSE(prefs_ash.local_state_registrar_.IsObserved(
       metrics::prefs::kMetricsReportingEnabled));
 }

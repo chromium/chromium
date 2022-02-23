@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_
 #define CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/updates/announcement_notification/announcement_notification_service.h"
 
 class NotificationDisplayService;
@@ -33,7 +34,7 @@ class AnnouncementNotificationDelegate
   bool IsFirstRun() override;
 
   // Used to show the notification.
-  NotificationDisplayService* display_service_;
+  raw_ptr<NotificationDisplayService> display_service_;
 };
 
 #endif  // CHROME_BROWSER_UPDATES_ANNOUNCEMENT_NOTIFICATION_ANNOUNCEMENT_NOTIFICATION_DELEGATE_H_

@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_features.h"
 #include "ash/display/display_util.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/screen_util.h"
 #include "ash/shell.h"
@@ -161,8 +162,17 @@ gfx::Rect GetSnappedWindowBounds(const gfx::Rect& work_area,
     min_size = is_horizontal ? minimum_size.width() : minimum_size.height();
   }
 
-  const int axis_length = GetSnappedWindowAxisLength(
+  int axis_length = GetSnappedWindowAxisLength(
       snap_ratio, work_area_axis_length, min_size, is_primary_snap);
+  const gfx::Size* preferred_size =
+      window->GetProperty(kUnresizableSnappedSizeKey);
+  if (preferred_size && !WindowState::Get(window)->CanResize()) {
+    DCHECK(preferred_size->width() == 0 || preferred_size->height() == 0);
+    if (is_horizontal && preferred_size->width() > 0)
+      axis_length = preferred_size->width();
+    if (!is_horizontal && preferred_size->height() > 0)
+      axis_length = preferred_size->height();
+  }
 
   // Set the size of such side and the window position based on a given snap
   // position.

@@ -39,26 +39,24 @@ void NetworkThrottlingObserver::OnPreferenceChanged(
     const std::string& pref_name) {
   DCHECK(pref_name == prefs::kNetworkThrottlingEnabled);
 
-  const base::DictionaryValue* throttling_policy =
+  const base::Value* throttling_policy =
       local_state_->GetDictionary(prefs::kNetworkThrottlingEnabled);
 
   // Default is to disable throttling if the policy is not found.
   bool enabled = false;
   uint32_t upload_rate = 0, download_rate = 0;
   if (throttling_policy) {
-    int upload_rate_read = 0;
-    int download_rate_read = 0;
+    enabled = throttling_policy->FindBoolKey("enabled").value_or(false);
 
-    throttling_policy->GetBoolean("enabled", &enabled);
-
-    if (throttling_policy->GetInteger("upload_rate_kbits", &upload_rate_read) &&
-        upload_rate_read > 0) {
+    int upload_rate_read =
+        throttling_policy->FindIntKey("upload_rate_kbits").value_or(0);
+    if (upload_rate_read > 0) {
       upload_rate = upload_rate_read;
     }
 
-    if (throttling_policy->GetInteger("download_rate_kbits",
-                                      &download_rate_read) &&
-        download_rate_read > 0) {
+    int download_rate_read =
+        throttling_policy->FindIntKey("download_rate_kbits").value_or(0);
+    if (download_rate_read > 0) {
       download_rate = download_rate_read;
     }
   }

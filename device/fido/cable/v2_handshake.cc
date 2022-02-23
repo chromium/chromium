@@ -16,6 +16,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
+#include "base/sys_byteorder.h"
 #include "components/cbor/reader.h"
 #include "components/cbor/values.h"
 #include "components/cbor/writer.h"
@@ -47,16 +48,24 @@ namespace {
 // will ever reach.
 constexpr uint32_t kMaxSequence = (1 << 24) - 1;
 
-bool ConstructNonce(uint32_t counter, base::span<uint8_t, 12> out_nonce) {
+bool ConstructNonce(uint32_t counter,
+                    bool big_endian,
+                    base::span<uint8_t, 12> out_nonce) {
   if (counter > kMaxSequence) {
     return false;
   }
 
-  // Nonce is just a little-endian counter.
   std::array<uint8_t, sizeof(counter)> counter_bytes;
-  memcpy(counter_bytes.data(), &counter, sizeof(counter));
-  std::copy(counter_bytes.begin(), counter_bytes.end(), out_nonce.begin());
-  std::fill(out_nonce.begin() + counter_bytes.size(), out_nonce.end(), 0);
+  if (big_endian) {
+    std::fill(out_nonce.begin(), out_nonce.end(), 0);
+    counter = base::ByteSwap(counter);
+    memcpy(out_nonce.data() + out_nonce.size() - sizeof(counter), &counter,
+           sizeof(counter));
+  } else {
+    memcpy(counter_bytes.data(), &counter, sizeof(counter));
+    std::copy(counter_bytes.begin(), counter_bytes.end(), out_nonce.begin());
+    std::fill(out_nonce.begin() + counter_bytes.size(), out_nonce.end(), 0);
+  }
   return true;
 }
 
@@ -99,13 +108,18 @@ bssl::UniquePtr<EC_KEY> ECKeyFromSeed(
       EC_KEY_derive_from_secret(p256.get(), seed.data(), seed.size()));
 }
 
+// kAdditionalDataBytes is the AD input to the AEAD used in caBLEv2. We're
+// transitioning away from this towards not supplying an AD in order to better
+// match Noise.
+const uint8_t kAdditionalDataBytes[1] = {/*version=*/2};
+
 }  // namespace
 
 namespace tunnelserver {
 
 // kAssignedDomains is the list of defined tunnel server domains. These map
 // to values 0..256.
-static const char* kAssignedDomains[] = {"cable.ua5v.com"};
+static const char* kAssignedDomains[] = {"cable.ua5v.com", "cable.auth.com"};
 
 absl::optional<KnownDomainID> ToKnownDomainID(uint16_t domain) {
   if (domain >= 256 || domain < base::size(kAssignedDomains)) {
@@ -124,8 +138,10 @@ std::string DecodeDomain(KnownDomainID domain_id) {
   }
 
   char templ[] = "caBLEv2 tunnel server domain\x00\x00";
-  memcpy(&templ[sizeof(templ) - 2], &domain, sizeof(domain));
+  memcpy(&templ[sizeof(templ) - 1 - sizeof(domain)], &domain, sizeof(domain));
   uint8_t digest[SHA256_DIGEST_LENGTH];
+  // The input should be NUL-terminated, thus the trailing NUL in |templ| is
+  // included here.
   SHA256(reinterpret_cast<const uint8_t*>(templ), sizeof(templ), digest);
   uint64_t result;
   static_assert(sizeof(result) <= sizeof(digest), "");
@@ -390,8 +406,18 @@ absl::optional<Components> Parse(const std::string& qr_url) {
     FIDO_LOG(ERROR) << "Invalid compressed public key in QR data";
     return absl::nullopt;
   }
-
   ret.peer_identity = *peer_identity;
+
+  const auto it = qr_contents_map.find(cbor::Value(2));
+  if (it != qr_contents_map.end()) {
+    if (!it->second.is_integer()) {
+      return absl::nullopt;
+    }
+    ret.num_known_domains = it->second.GetInteger();
+  } else {
+    ret.num_known_domains = 0;
+  }
+
   return ret;
 }
 
@@ -567,6 +593,15 @@ bssl::UniquePtr<EC_KEY> IdentityKey(base::span<const uint8_t, 32> root_secret) {
 
 absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
     cbor::Value::MapValue map) {
+  // The number of padding bytes is a uint16_t, so the granularity cannot be
+  // larger than that.
+  static_assert(kPostHandshakeMsgPaddingGranularity > 0, "");
+  static_assert(kPostHandshakeMsgPaddingGranularity - 1 <=
+                std::numeric_limits<uint16_t>::max());
+  // The granularity must also be a power of two.
+  static_assert((kPostHandshakeMsgPaddingGranularity &
+                 (kPostHandshakeMsgPaddingGranularity - 1)) == 0);
+
   absl::optional<std::vector<uint8_t>> cbor_bytes =
       cbor::Writer::Write(cbor::Value(std::move(map)));
   if (!cbor_bytes) {
@@ -574,60 +609,39 @@ absl::optional<std::vector<uint8_t>> EncodePaddedCBORMap(
   }
 
   base::CheckedNumeric<size_t> padded_size_checked = cbor_bytes->size();
-  padded_size_checked += 1;  // padding-length byte
-  padded_size_checked = (padded_size_checked + 255) & ~255;
+  padded_size_checked += sizeof(uint16_t);  // padding-length bytes
+  padded_size_checked =
+      (padded_size_checked + kPostHandshakeMsgPaddingGranularity - 1) &
+      ~(kPostHandshakeMsgPaddingGranularity - 1);
   if (!padded_size_checked.IsValid()) {
     return absl::nullopt;
   }
 
   const size_t padded_size = padded_size_checked.ValueOrDie();
-  DCHECK_GT(padded_size, cbor_bytes->size());
-  const size_t extra_padding = padded_size - cbor_bytes->size();
+  DCHECK_GE(padded_size, cbor_bytes->size() + sizeof(uint16_t));
+  const size_t extra_bytes = padded_size - cbor_bytes->size();
+  const size_t num_padding_bytes =
+      extra_bytes - sizeof(uint16_t) /* length of padding length */;
 
   cbor_bytes->resize(padded_size);
-  DCHECK_LE(extra_padding, 256u);
-  cbor_bytes->at(padded_size - 1) = static_cast<uint8_t>(extra_padding - 1);
+  const uint16_t num_padding_bytes16 =
+      base::checked_cast<uint16_t>(num_padding_bytes);
+  memcpy(&cbor_bytes.value()[padded_size - sizeof(num_padding_bytes16)],
+         &num_padding_bytes16, sizeof(num_padding_bytes16));
 
   return *cbor_bytes;
 }
 
-// DecodePaddedCBORMap16 is the future replacement for |DecodePaddedCBORMap|,
-// below. It parses a slightly different format that allows for more padding.
-// (This is needed because some structures ended up larger than initially
-// expected.) In order to transition, |DecodePaddedCBORMap| calls this function
-// if it fails to parse. In the future we can drop supporting the old format and
-// start sending new-format messages. This works because CBOR parsing doesn't
-// depend on the length of the input (other than to fail on truncation) so
-// there's no ambiguity about the parse.
-absl::optional<cbor::Value> DecodePaddedCBORMap16(
-    base::span<const uint8_t> input) {
-  if (input.size() < sizeof(uint16_t)) {
-    return absl::nullopt;
-  }
+namespace {
 
-  uint16_t padding_length16;
-  memcpy(&padding_length16, &input[input.size() - sizeof(padding_length16)],
-         sizeof(padding_length16));
-  const size_t padding_length = padding_length16;
-  if (padding_length + sizeof(uint16_t) > input.size()) {
-    FIDO_LOG(DEBUG) << "Invalid padding in caBLE handshake message";
-    return absl::nullopt;
-  }
-  input = input.subspan(0, input.size() - padding_length - sizeof(uint16_t));
-
-  absl::optional<cbor::Value> payload = cbor::Reader::Read(input);
-  if (!payload || !payload->is_map()) {
-    FIDO_LOG(DEBUG) << "CBOR parse failure in caBLE handshake message";
-    return absl::nullopt;
-  }
-
-  return payload;
-}
-
-absl::optional<cbor::Value> DecodePaddedCBORMap(
+// DecodePaddedCBORMap8 performs the actions of |DecodePaddedCBORMap| using the
+// old padding format. We still support this format for backwards compatibility.
+// See comment in |DecodePaddedCBORMap|.
+//
+// TODO(agl): remove support for this padding format. (Chromium started sending
+// the new format with M99.)
+absl::optional<cbor::Value> DecodePaddedCBORMap8(
     const base::span<const uint8_t> input) {
-  // TODO: replace this with the body of |DecodePaddedCBORMap16| once M92 is
-  // everywhere.
   if (input.empty()) {
     return absl::nullopt;
   }
@@ -640,10 +654,52 @@ absl::optional<cbor::Value> DecodePaddedCBORMap(
 
   absl::optional<cbor::Value> payload = cbor::Reader::Read(unpadded_input);
   if (!payload || !payload->is_map()) {
-    return DecodePaddedCBORMap16(input);
+    return absl::nullopt;
   }
 
   return payload;
+}
+
+// DecodePaddedCBORMap16 performs the actions of |DecodePaddedCBORMap| using the
+// new padding format. See comment in |DecodePaddedCBORMap|.
+absl::optional<cbor::Value> DecodePaddedCBORMap16(
+    base::span<const uint8_t> input) {
+  if (input.size() < sizeof(uint16_t)) {
+    return absl::nullopt;
+  }
+
+  uint16_t padding_length16;
+  memcpy(&padding_length16, &input[input.size() - sizeof(padding_length16)],
+         sizeof(padding_length16));
+  const size_t padding_length = padding_length16;
+  if (padding_length + sizeof(uint16_t) > input.size()) {
+    return absl::nullopt;
+  }
+  input = input.subspan(0, input.size() - padding_length - sizeof(uint16_t));
+
+  absl::optional<cbor::Value> payload = cbor::Reader::Read(input);
+  if (!payload || !payload->is_map()) {
+    return absl::nullopt;
+  }
+
+  return payload;
+}
+
+}  // namespace
+
+absl::optional<cbor::Value> DecodePaddedCBORMap(
+    base::span<const uint8_t> input) {
+  // Two padding formats are currently in use. They are unambiguous so we try
+  // each, new first. Eventually the old format can be removed once enough time
+  // has passed since M99.
+  absl::optional<cbor::Value> result = DecodePaddedCBORMap16(input);
+  if (!result) {
+    result = DecodePaddedCBORMap8(input);
+  }
+  if (!result) {
+    FIDO_LOG(DEBUG) << "Invalid padding in caBLE handshake message";
+  }
+  return result;
 }
 
 Crypter::Crypter(base::span<const uint8_t, 32> read_key,
@@ -685,7 +741,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   padded_message[padded_message.size() - 1] = static_cast<uint8_t>(num_zeros);
 
   std::array<uint8_t, 12> nonce;
-  if (!ConstructNonce(write_sequence_num_++, nonce)) {
+  if (!ConstructNonce(write_sequence_num_++, new_construction_, nonce)) {
     return false;
   }
 
@@ -693,7 +749,11 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
   aes_key.Init(write_key_);
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
-  const uint8_t additional_data[1] = {/*version=*/2};
+  base::span<const uint8_t> additional_data;
+  if (!new_construction_) {
+    additional_data = kAdditionalDataBytes;
+  }
+
   std::vector<uint8_t> ciphertext =
       aes_key.Seal(padded_message, nonce, additional_data);
   message_to_encrypt->swap(ciphertext);
@@ -703,7 +763,7 @@ bool Crypter::Encrypt(std::vector<uint8_t>* message_to_encrypt) {
 bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
                       std::vector<uint8_t>* out_plaintext) {
   std::array<uint8_t, 12> nonce;
-  if (!ConstructNonce(read_sequence_num_, nonce)) {
+  if (!ConstructNonce(read_sequence_num_, new_construction_, nonce)) {
     return false;
   }
 
@@ -711,11 +771,21 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   aes_key.Init(read_key_);
   DCHECK_EQ(nonce.size(), aes_key.NonceLength());
 
-  const uint8_t additional_data[1] = {/*version=*/2};
+  base::span<const uint8_t> additional_data;
+  if (!new_construction_) {
+    additional_data = kAdditionalDataBytes;
+  }
+
   absl::optional<std::vector<uint8_t>> plaintext =
       aes_key.Open(ciphertext, nonce, additional_data);
 
   if (!plaintext) {
+    // We're transitioning to a different construction. If we failed to decrypt
+    // the first message with the old one, try again with the new.
+    if (!new_construction_ && read_sequence_num_ == 0) {
+      new_construction_ = true;
+      return Decrypt(ciphertext, out_plaintext);
+    }
     return false;
   }
   read_sequence_num_++;
@@ -736,8 +806,16 @@ bool Crypter::Decrypt(base::span<const uint8_t> ciphertext,
   return true;
 }
 
+void Crypter::UseNewConstruction() {
+  new_construction_ = true;
+}
+
 bool Crypter::IsCounterpartyOfForTesting(const Crypter& other) const {
   return read_key_ == other.write_key_ && write_key_ == other.read_key_;
+}
+
+bool& Crypter::GetNewConstructionFlagForTesting() {
+  return new_construction_;
 }
 
 HandshakeInitiator::HandshakeInitiator(
@@ -857,8 +935,7 @@ HandshakeResult HandshakeInitiator::ProcessResponse(
     return absl::nullopt;
   }
 
-  std::array<uint8_t, 32> read_key, write_key;
-  std::tie(write_key, read_key) = noise_.traffic_keys();
+  auto [write_key, read_key] = noise_.traffic_keys();
   return std::make_pair(std::make_unique<cablev2::Crypter>(read_key, write_key),
                         noise_.handshake_hash());
 }
@@ -964,8 +1041,7 @@ HandshakeResult RespondToHandshake(
   out_response->insert(out_response->end(), my_ciphertext.begin(),
                        my_ciphertext.end());
 
-  std::array<uint8_t, 32> read_key, write_key;
-  std::tie(read_key, write_key) = noise.traffic_keys();
+  auto [read_key, write_key] = noise.traffic_keys();
   return std::make_pair(std::make_unique<cablev2::Crypter>(read_key, write_key),
                         noise.handshake_hash());
 }

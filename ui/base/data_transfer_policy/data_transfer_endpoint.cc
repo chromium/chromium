@@ -5,6 +5,7 @@
 #include "ui/base/data_transfer_policy/data_transfer_endpoint.h"
 
 #include "base/check_op.h"
+#include "base/stl_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/origin.h"
 
@@ -42,6 +43,10 @@ bool DataTransferEndpoint::operator==(const DataTransferEndpoint& other) const {
 }
 
 DataTransferEndpoint::~DataTransferEndpoint() = default;
+
+const url::Origin* DataTransferEndpoint::GetOrigin() const {
+  return base::OptionalOrNullptr(origin_);
+}
 
 bool DataTransferEndpoint::IsSameOriginWith(
     const DataTransferEndpoint& other) const {

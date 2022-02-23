@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -19,6 +20,7 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/prefs/pref_member.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/model_type.h"
 #include "components/sync/driver/sync_service_impl.h"
 #include "components/sync/protocol/sync_protocol_error.h"
 #include "components/sync/protocol/user_event_specifics.pb.h"
@@ -68,7 +70,7 @@ class TypeDisabledChecker : public SingleClientStatusChangeChecker {
 
   // StatusChangeChecker implementation.
   bool IsExitConditionSatisfied(std::ostream* os) override {
-    *os << "Waiting for type " << syncer::ModelTypeToString(type_)
+    *os << "Waiting for type " << syncer::ModelTypeToDebugString(type_)
         << " to become disabled";
     return !service()->GetActiveDataTypes().Has(type_);
   }
@@ -103,7 +105,7 @@ class UserEventCommitChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  fake_server::FakeServer* const fake_server_ = nullptr;
+  const raw_ptr<fake_server::FakeServer> fake_server_ = nullptr;
   const int64_t expected_event_time_usec_;
 };
 
@@ -356,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest,
   }
 }
 
-#if defined(OS_MAC) && defined(ARCH_CPU_ARM64)
+#if BUILDFLAG(IS_MAC) && defined(ARCH_CPU_ARM64)
 // https://crbug.com/1223092
 #define MAYBE_ShouldResendUncommittedEntitiesAfterBrowserRestart \
   DISABLED_ShouldResendUncommittedEntitiesAfterBrowserRestart
@@ -388,10 +390,12 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
   GetProfile(0)->GetPrefs()->SetBoolean(prefs::kHomePageIsNewTabPage, false);
   ASSERT_TRUE(SetupSync());
   ASSERT_TRUE(preferences_helper::GetPreferenceInFakeServer(
-                  prefs::kHomePageIsNewTabPage, GetFakeServer())
+                  syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                  GetFakeServer())
                   .has_value());
   ASSERT_EQ(preferences_helper::GetPreferenceInFakeServer(
-                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                GetFakeServer())
                 ->value(),
             "false");
 
@@ -413,7 +417,8 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // The preference should remain unsynced (still set to the previous value).
   EXPECT_EQ(preferences_helper::GetPreferenceInFakeServer(
-                prefs::kHomePageIsNewTabPage, GetFakeServer())
+                syncer::ModelType::PREFERENCES, prefs::kHomePageIsNewTabPage,
+                GetFakeServer())
                 ->value(),
             "false");
 
@@ -426,9 +431,10 @@ IN_PROC_BROWSER_TEST_F(SyncErrorTest, ShouldThrottleOneDatatypeButNotOthers) {
 
   // Eventually (depending on throttling delay, which is short in tests) the
   // preference should be committed.
-  EXPECT_TRUE(
-      FakeServerPrefMatchesValueChecker(prefs::kHomePageIsNewTabPage, "true")
-          .Wait());
+  EXPECT_TRUE(FakeServerPrefMatchesValueChecker(syncer::ModelType::PREFERENCES,
+                                                prefs::kHomePageIsNewTabPage,
+                                                "true")
+                  .Wait());
   EXPECT_EQ(GetThrottledDataTypes(GetSyncService(0)), syncer::ModelTypeSet());
 }
 

@@ -13,8 +13,9 @@ namespace favicon {
 class LargeIconService;
 }
 
-@protocol ContentSuggestionsDataSink;
+@protocol ContentSuggestionsConsumer;
 @class ContentSuggestionsMostVisitedItem;
+@class ContentSuggestionsParentItem;
 @class FaviconAttributesProvider;
 class LargeIconCache;
 
@@ -31,8 +32,8 @@ class LargeIconCache;
 
 - (instancetype)init NS_UNAVAILABLE;
 
-// The data sink which should be notified of the changes in the items.
-@property(nonatomic, weak) id<ContentSuggestionsDataSink> dataSink;
+// The consumer that will be notified when the data change.
+@property(nonatomic, weak) id<ContentSuggestionsConsumer> consumer;
 
 // FaviconAttributesProvider to fetch the favicon for the most visited tiles.
 @property(nonatomic, strong, readonly)
@@ -44,6 +45,11 @@ class LargeIconCache;
 
 // Fetches the favicon for this |item|.
 - (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item;
+// Fetches the favicon for |item| within |parentItem|.
+// TODO(crbug.com/1285378): Remove this after fully migrating ContentSuggestions
+// to UIViewController.
+- (void)fetchFaviconForMostVisited:(ContentSuggestionsMostVisitedItem*)item
+                        parentItem:(ContentSuggestionsParentItem*)parentItem;
 
 @end
 

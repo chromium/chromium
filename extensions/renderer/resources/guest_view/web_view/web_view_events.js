@@ -27,7 +27,7 @@ function WebViewEvents(webViewImpl) {
 }
 
 function createOnMessageEvent(name, schema, options, webviewId) {
-  var subEventName = name + '/' + IdGenerator.GetNextId();
+  var subEventName = name + '/' + IdGenerator.GetNextScopedId();
   var newEvent = bindingUtil.createCustomEvent(
       subEventName, false /* supports filters */,
       false /* supports lazy listeners */);

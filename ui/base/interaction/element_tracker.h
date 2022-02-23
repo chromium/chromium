@@ -12,12 +12,25 @@
 #include "base/callback_list.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/observer_list_types.h"
 #include "ui/base/interaction/element_identifier.h"
+#include "ui/base/interaction/framework_specific_implementation.h"
 
 namespace ui {
+
+// Represents a unique type of event, you may create these as needed using the
+// DECLARE_CUSTOM_ELEMENT_EVENT_TYPE() and DEFINE_CUSTOM_ELEMENT_EVENT_TYPE()
+// macros (see definitions at the bottom of this file).
+//
+// For testing purposes, if you need a local event type guaranteed to avoid
+// global name collisions, use DEFINE_LOCAL_ELEMENT_EVENT_TYPE() instead.
+//
+// Currently, custom event types are imlpemented using ElementIdentifier, since
+// both have the same API requirements.
+using CustomElementEventType = ElementIdentifier;
 
 // Represents a visible UI element in a platform-agnostic manner.
 //
@@ -29,50 +42,16 @@ namespace ui {
 // You should derive a class for each UI framework whose elements you wish to
 // track. See README.md for information on how to create your own framework
 // implementations.
-class COMPONENT_EXPORT(UI_BASE) TrackedElement {
+class COMPONENT_EXPORT(UI_BASE) TrackedElement
+    : public FrameworkSpecificImplementation {
  public:
-  // Used by IsA() and AsA() methods to do runtime type-checking.
-  using FrameworkIdentifier = ElementIdentifier;
-
-  virtual ~TrackedElement();
+  ~TrackedElement() override;
 
   ElementIdentifier identifier() const { return identifier_; }
   ElementContext context() const { return context_; }
 
-  // Returns whether this element is a specific subtype - for example, a
-  // views::ViewsTrackedElement.
-  template <typename T>
-  bool IsA() const {
-    return AsA<T>();
-  }
-
-  // Dynamically casts this element to a specific subtype, such as a
-  // views::ViewsTrackedElement, returning null if the element is the
-  // wrong type.
-  template <typename T>
-  T* AsA() {
-    return GetInstanceFrameworkIdentifier() == T::GetFrameworkIdentifier()
-               ? static_cast<T*>(this)
-               : nullptr;
-  }
-
-  // Dynamically casts this element to a specific subtype, such as a
-  // views::ViewsTrackedElement, returning null if the element is the
-  // wrong type. This version converts const objects.
-  template <typename T>
-  const T* AsA() const {
-    return GetInstanceFrameworkIdentifier() == T::GetFrameworkIdentifier()
-               ? static_cast<const T*>(this)
-               : nullptr;
-  }
-
  protected:
   TrackedElement(ElementIdentifier identifier, ElementContext context);
-
-  // Override this in derived classes with a unique FrameworkIdentifier.
-  // You must also define a static GetFrameworkIdentifier() method that returns
-  // the same value.
-  virtual FrameworkIdentifier GetInstanceFrameworkIdentifier() const = 0;
 
  private:
   // The identifier for this element that will be used by ElementTracker to
@@ -86,22 +65,6 @@ class COMPONENT_EXPORT(UI_BASE) TrackedElement {
   const ElementContext context_;
 };
 
-// These macros can be used to help define platform-specific subclasses of
-// `TrackedElement`.
-#define DECLARE_ELEMENT_TRACKER_METADATA()             \
-  static FrameworkIdentifier GetFrameworkIdentifier(); \
-  FrameworkIdentifier GetInstanceFrameworkIdentifier() const override;
-#define DEFINE_ELEMENT_TRACKER_METADATA(ClassName)                   \
-  ui::TrackedElement::FrameworkIdentifier                            \
-  ClassName::GetFrameworkIdentifier() {                              \
-    DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(k##ClassName##Identifier); \
-    return k##ClassName##Identifier;                                 \
-  }                                                                  \
-  ui::TrackedElement::FrameworkIdentifier                            \
-  ClassName::GetInstanceFrameworkIdentifier() const {                \
-    return GetFrameworkIdentifier();                                 \
-  }
-
 // Provides a delegate for UI framework-specific implementations to notify of
 // element tracker events.
 //
@@ -113,6 +76,8 @@ class COMPONENT_EXPORT(UI_BASE) ElementTrackerFrameworkDelegate {
   virtual void NotifyElementShown(TrackedElement* element) = 0;
   virtual void NotifyElementActivated(TrackedElement* element) = 0;
   virtual void NotifyElementHidden(TrackedElement* element) = 0;
+  virtual void NotifyCustomEvent(TrackedElement* element,
+                                 CustomElementEventType event_type) = 0;
 };
 
 // Tracks elements as they become visible, are activated by the user, and
@@ -133,7 +98,7 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   // element completes, but in the future we may implement a ref-counting
   // system for systems that use a temporary identifier so that it does not
   // persist longer than it is needed.
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(ElementTracker, kTemporaryIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kTemporaryIdentifier);
 
   // Gets the element tracker to be used by clients to subscribe to and receive
   // events.
@@ -193,6 +158,12 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
                                         ElementContext context,
                                         Callback callback);
 
+  // Adds a callback that will be called whenever an event of `event_type` is
+  // generated within `context` by any element.
+  Subscription AddCustomEventCallback(CustomElementEventType event_type,
+                                      ElementContext context,
+                                      Callback callback);
+
  private:
   friend class base::NoDestructor<ElementTracker>;
   class ElementData;
@@ -209,14 +180,15 @@ class COMPONENT_EXPORT(UI_BASE) ElementTracker
   void NotifyElementShown(TrackedElement* element) override;
   void NotifyElementActivated(TrackedElement* element) override;
   void NotifyElementHidden(TrackedElement* element) override;
+  void NotifyCustomEvent(TrackedElement* element,
+                         CustomElementEventType event_type) override;
 
   ElementData* GetOrAddElementData(ElementIdentifier id,
                                    ElementContext context);
 
   void MaybeCleanup(ElementData* data);
 
-  std::map<LookupKey, std::unique_ptr<ElementData>> element_data_;
-  std::map<TrackedElement*, ElementData*> element_to_data_lookup_;
+  std::map<LookupKey, ElementData> element_data_;
   std::unique_ptr<GarbageCollector> gc_;
 };
 
@@ -241,9 +213,24 @@ class COMPONENT_EXPORT(UI_BASE) SafeElementReference {
   void OnElementHidden(TrackedElement* element);
 
   ElementTracker::Subscription subscription_;
-  TrackedElement* element_ = nullptr;
+  raw_ptr<TrackedElement> element_ = nullptr;
 };
 
 }  // namespace ui
+
+// Macros for declaring custom element event types. Put the DECLARE call in
+// your public header file and the DEFINE in corresponding .cc file. For local
+// values to be used in tests, use DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE()
+// defined below instead.
+#define DECLARE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DECLARE_ELEMENT_IDENTIFIER_VALUE(EventName)
+#define DEFINE_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DEFINE_ELEMENT_IDENTIFIER_VALUE(EventName)
+
+// This produces a unique, mangled name that can safely be used in tests
+// without having to worry about global name collisions. For production code,
+// use DECLARE/DEFINE above instead.
+#define DEFINE_LOCAL_CUSTOM_ELEMENT_EVENT_TYPE(EventName) \
+  DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(EventName)
 
 #endif  // UI_BASE_INTERACTION_ELEMENT_TRACKER_H_

@@ -25,6 +25,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_recipe.h"
 #include "ui/color/color_test_ids.h"
 #include "ui/gfx/color_utils.h"
 #include "ui/gfx/image/image.h"
@@ -378,7 +379,7 @@ void BrowserThemePackTest::VerifyHiDpiTheme(BrowserThemePack* pack) {
 
   // The high DPI theme does not define the following images:
   EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_TAB_BACKGROUND));
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_TAB_BACKGROUND_INCOGNITO));
 #endif
   EXPECT_FALSE(pack->HasCustomImage(IDR_THEME_TAB_BACKGROUND_V));
@@ -756,10 +757,10 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxNoValues) {
   // Tests to make sure that existing colors within the color provider are not
   // overwritten or lost in the absence of any user provided theme values.
   ui::ColorProvider provider;
-  provider.AddMixer().AddSet({ui::kColorSetTest0,
-                              {{kColorToolbar, SK_ColorRED},
-                               {kColorOmniboxText, SK_ColorGREEN},
-                               {kColorOmniboxBackground, SK_ColorBLUE}}});
+  ui::ColorMixer& mixer = provider.AddMixer();
+  mixer[kColorToolbar] = {SK_ColorRED};
+  mixer[kColorOmniboxText] = {SK_ColorGREEN};
+  mixer[kColorOmniboxBackground] = {SK_ColorBLUE};
   theme_pack().AddColorMixers(&provider, ui::ColorProviderManager::Key());
   provider.GenerateColorMap();
   EXPECT_EQ(SK_ColorRED, provider.GetColor(kColorToolbar));
@@ -771,10 +772,10 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxPartialValues) {
   // Tests to make sure that only provided theme values are replicated into the
   // color provider.
   ui::ColorProvider provider;
-  provider.AddMixer().AddSet({ui::kColorSetTest0,
-                              {{kColorToolbar, SK_ColorRED},
-                               {kColorOmniboxText, SK_ColorGREEN},
-                               {kColorOmniboxBackground, SK_ColorBLUE}}});
+  ui::ColorMixer& mixer = provider.AddMixer();
+  mixer[kColorToolbar] = {SK_ColorRED};
+  mixer[kColorOmniboxText] = {SK_ColorGREEN};
+  mixer[kColorOmniboxBackground] = {SK_ColorBLUE};
   std::string color_json = R"({ "toolbar": [0, 20, 40],
                                 "omnibox_text": [60, 80, 100] })";
   LoadColorJSON(color_json);
@@ -789,10 +790,10 @@ TEST_F(BrowserThemePackTest, TestCreateColorMixersOmniboxAllValues) {
   // Tests to make sure that all available colors are properly loaded into the
   // color provider.
   ui::ColorProvider provider;
-  provider.AddMixer().AddSet({ui::kColorSetTest0,
-                              {{kColorToolbar, SK_ColorRED},
-                               {kColorOmniboxText, SK_ColorGREEN},
-                               {kColorOmniboxBackground, SK_ColorBLUE}}});
+  ui::ColorMixer& mixer = provider.AddMixer();
+  mixer[kColorToolbar] = {SK_ColorRED};
+  mixer[kColorOmniboxText] = {SK_ColorGREEN};
+  mixer[kColorOmniboxBackground] = {SK_ColorBLUE};
   std::string color_json = R"({ "toolbar": [0, 20, 40],
                                 "omnibox_text": [60, 80, 100],
                                 "omnibox_background": [120, 140, 160] })";
@@ -1085,20 +1086,16 @@ TEST_F(BrowserThemePackTest, BuildFromColor_BasicTestColors) {
     EXPECT_EQ(frame_color, background_tab);
     EXPECT_TRUE(has_readable_contrast(background_tab_text, background_tab));
 
-    SkColor toolbar_color, ntp_background, tab_text, bookmark_text,
-        toolbar_button_icon;
-    EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR, &toolbar_color));
+    SkColor ntp_background, toolbar_color, toolbar_button_icon, toolbar_text;
     EXPECT_TRUE(pack->GetColor(TP::COLOR_NTP_BACKGROUND, &ntp_background));
-    EXPECT_TRUE(pack->GetColor(TP::COLOR_TAB_FOREGROUND_ACTIVE_FRAME_ACTIVE,
-                               &tab_text));
+    EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR, &toolbar_color));
     EXPECT_TRUE(
         pack->GetColor(TP::COLOR_TOOLBAR_BUTTON_ICON, &toolbar_button_icon));
-    EXPECT_TRUE(pack->GetColor(TP::COLOR_BOOKMARK_TEXT, &bookmark_text));
+    EXPECT_TRUE(pack->GetColor(TP::COLOR_TOOLBAR_TEXT, &toolbar_text));
 
     EXPECT_EQ(toolbar_color, ntp_background);
-    EXPECT_EQ(tab_text, toolbar_button_icon);
-    EXPECT_EQ(tab_text, bookmark_text);
-    EXPECT_TRUE(has_readable_contrast(tab_text, toolbar_color));
+    EXPECT_EQ(toolbar_text, toolbar_button_icon);
+    EXPECT_TRUE(has_readable_contrast(toolbar_text, toolbar_color));
 
     EXPECT_NE(frame_color, toolbar_color);
     EXPECT_GE(color_utils::GetContrastRatio(frame_color, toolbar_color),

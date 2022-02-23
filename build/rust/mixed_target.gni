@@ -104,6 +104,10 @@ template("mixed_target") {
 
   if (_rs_enable) {
     rust_source_set("${_target_name}_rs") {
+      # Normally we forward both testonly and visibility from the invoker. But
+      # here we exclude "visibility" since the Rust parts are only visible to
+      # the C++ parts of the same mixed target by default.
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY, [ "visibility" ])
       mutually_dependent_target = ":${_target_name}"
       if (defined(invoker.rs_epoch)) {
         epoch = invoker.rs_epoch
@@ -112,7 +116,9 @@ template("mixed_target") {
         edition = invoker.rs_edition
       }
       if (defined(invoker.rs_configs)) {
-        configs = invoker.rs_configs
+        # The `configs` will always be non-empty due to `set_defaults()` which
+        # sets them for each type of rust target.
+        configs += invoker.rs_configs
       }
       if (defined(invoker.rs_test_deps)) {
         test_deps = invoker.rs_test_deps
@@ -166,7 +172,6 @@ template("mixed_target") {
       if (!defined(configs)) {
         configs = []
       }
-      configs += [ "//build/rust:rust_enabled" ]
       if (defined(invoker.rs_cxx_bindings)) {
         deps += [
           # Generate the C++ side of any Rust bindings.
@@ -199,7 +204,7 @@ template("mixed_target") {
           if (defined(invoker.rs_unit_test_target)) {
             _unit_test_target = invoker.rs_unit_test_target
           }
-          visibility += [ ":${_unit_test_target}" ]
+          visibility += [ ":${_unit_test_target}_exe" ]
         }
       }
     }

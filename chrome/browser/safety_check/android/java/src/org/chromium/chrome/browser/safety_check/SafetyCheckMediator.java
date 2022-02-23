@@ -22,9 +22,10 @@ import org.chromium.base.metrics.RecordUserAction;
 import org.chromium.build.BuildConfig;
 import org.chromium.chrome.browser.password_check.PasswordCheck;
 import org.chromium.chrome.browser.password_check.PasswordCheckFactory;
-import org.chromium.chrome.browser.password_check.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_check.PasswordCheckUIStatus;
+import org.chromium.chrome.browser.password_manager.CredentialManagerLauncherFactory;
 import org.chromium.chrome.browser.password_manager.ManagePasswordsReferrer;
+import org.chromium.chrome.browser.password_manager.PasswordCheckReferrer;
 import org.chromium.chrome.browser.password_manager.PasswordManagerHelper;
 import org.chromium.chrome.browser.preferences.ChromePreferenceKeys;
 import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
@@ -33,6 +34,7 @@ import org.chromium.chrome.browser.safe_browsing.settings.SafeBrowsingSettingsFr
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.PasswordsState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.SafeBrowsingState;
 import org.chromium.chrome.browser.safety_check.SafetyCheckProperties.UpdatesState;
+import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
@@ -495,9 +497,11 @@ class SafetyCheckMediator implements PasswordCheck.Observer {
             };
         } else {
             listener = (p) -> {
-                // Open the Passwords settings.
-                PasswordManagerHelper.showPasswordSettings(
-                        p.getContext(), ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher);
+                // Open the Password Manager.
+                PasswordManagerHelper.showPasswordSettings(p.getContext(),
+                        ManagePasswordsReferrer.SAFETY_CHECK, mSettingsLauncher,
+                        CredentialManagerLauncherFactory.getInstance().createLauncher(),
+                        SyncService.get());
                 return true;
             };
         }

@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "content/browser/accessibility/browser_accessibility_manager.h"
+#include "content/common/content_export.h"
 
 namespace content {
 class BrowserAccessibilityAuraLinux;
@@ -35,7 +36,8 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   // Implementation of BrowserAccessibilityManager methods.
   void FireFocusEvent(BrowserAccessibility* node) override;
   void FireBlinkEvent(ax::mojom::Event event_type,
-                      BrowserAccessibility* node) override;
+                      BrowserAccessibility* node,
+                      int action_request_id) override;
   void FireGeneratedEvent(ui::AXEventGenerator::Event event_type,
                           BrowserAccessibility* node) override;
 
@@ -45,6 +47,7 @@ class CONTENT_EXPORT BrowserAccessibilityManagerAuraLinux
   void FireShowingEvent(BrowserAccessibility* node, bool is_showing);
   void FireInvalidStatusChangedEvent(BrowserAccessibility* node);
   void FireAriaCurrentChangedEvent(BrowserAccessibility* node);
+  void FireBusyChangedEvent(BrowserAccessibility* node, bool is_busy);
   void FireLoadingEvent(BrowserAccessibility* node, bool is_loading);
   void FireNameChangedEvent(BrowserAccessibility* node);
   void FireDescriptionChangedEvent(BrowserAccessibility* node);

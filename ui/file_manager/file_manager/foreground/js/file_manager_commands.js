@@ -9,6 +9,7 @@ import {Command} from 'chrome://resources/js/cr/ui/command.m.js';
 import {contextMenuHandler} from 'chrome://resources/js/cr/ui/context_menu_handler.m.js';
 import {List} from 'chrome://resources/js/cr/ui/list.m.js';
 
+import {getHoldingSpaceState} from '../../common/js/api.js';
 import {DialogType} from '../../common/js/dialog_type.js';
 import {FileOperationProgressEvent} from '../../common/js/file_operation_common.js';
 import {FileType} from '../../common/js/file_type.js';
@@ -1531,20 +1532,18 @@ CommandHandler.COMMANDS_['rename'] = new class extends FilesCommand {
     if (util.isNonModifiable(fileManager.volumeManager, entry)) {
       return;
     }
+    let isRemovableRoot = false;
+    let volumeInfo = null;
+    if (entry) {
+      volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
+      // Checks whether the target is an external drive.
+      if (volumeInfo &&
+          CommandUtil.isRootEntry(fileManager.volumeManager, entry)) {
+        isRemovableRoot = true;
+      }
+    }
     if (event.target instanceof DirectoryTree ||
         event.target instanceof DirectoryItem) {
-      let isRemovableRoot = false;
-      let volumeInfo = null;
-      if (entry) {
-        volumeInfo = fileManager.volumeManager.getVolumeInfo(entry);
-        // Checks whether the target is actually external drive or just a folder
-        // inside the drive.
-        if (volumeInfo &&
-            CommandUtil.isRootEntry(fileManager.volumeManager, entry)) {
-          isRemovableRoot = true;
-        }
-      }
-
       if (event.target instanceof DirectoryTree) {
         const directoryTree = event.target;
         assert(fileManager.directoryTreeNamingController)
@@ -1557,7 +1556,7 @@ CommandHandler.COMMANDS_['rename'] = new class extends FilesCommand {
             .attachAndStart(directoryItem, isRemovableRoot, volumeInfo);
       }
     } else {
-      fileManager.namingController.initiateRename();
+      fileManager.namingController.initiateRename(isRemovableRoot, volumeInfo);
     }
   }
 
@@ -1757,7 +1756,6 @@ CommandHandler.COMMANDS_['open-with'] = new class extends FilesCommand {
 CommandHandler.COMMANDS_['invoke-sharesheet'] = new class extends FilesCommand {
   execute(event, fileManager) {
     const entries = fileManager.selectionHandler.selection.entries;
-    FileTasks.recordSharingFileTypesUMA_(entries);
     const launchSource = CommandUtil.getSharesheetLaunchSource(event);
     chrome.fileManagerPrivate.invokeSharesheet(entries, launchSource, () => {
       if (chrome.runtime.lastError) {
@@ -1868,25 +1866,32 @@ CommandHandler.COMMANDS_['toggle-holding-space'] =
     event.canExecute = true;
     command.setHidden(false);
 
+    this.checkHoldingSpaceState(entries, command);
+  }
+
+  /**
+   * @param {!Array<Entry|FilesAppEntry>} entries
+   * @param {!Command} command
+   */
+  async checkHoldingSpaceState(entries, command) {
     // Update the command to add or remove holding space items depending on the
     // current holding space state - the command will remove items only if all
     // currently selected items are already in the holding space.
-    chrome.fileManagerPrivate.getHoldingSpaceState((state) => {
-      if (!state) {
-        command.setHidden(true);
-        return;
-      }
+    const state = await getHoldingSpaceState();
+    if (!state) {
+      command.setHidden(true);
+      return;
+    }
 
-      const itemsSet = {};
-      state.itemUrls.forEach((item) => itemsSet[item] = true);
+    const itemsSet = {};
+    state.itemUrls.forEach((item) => itemsSet[item] = true);
 
-      const selectedUrls = util.entriesToURLs(entries);
-      this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
+    const selectedUrls = util.entriesToURLs(entries);
+    this.addsItems_ = selectedUrls.some(url => !itemsSet[url]);
 
-      command.label = this.addsItems_ ?
-          str('HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL') :
-          str('HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL');
-    });
+    command.label = this.addsItems_ ?
+        str('HOLDING_SPACE_PIN_TO_SHELF_COMMAND_LABEL') :
+        str('HOLDING_SPACE_UNPIN_FROM_SHELF_COMMAND_LABEL');
   }
 };
 
@@ -2912,9 +2917,15 @@ CommandHandler.COMMANDS_['show-providers-submenu'] =
 
   /** @override */
   canExecute(event, fileManager) {
-    event.canExecute =
-        (fileManager.dialogType === DialogType.FULL_PAGE &&
-         !chrome.extension.inIncognitoContext);
+    if (fileManager.dialogType !== DialogType.FULL_PAGE) {
+      event.canExecute = false;
+    } else {
+      if (window.isSWA) {
+        event.canExecute = !fileManager.guestMode;
+      } else {
+        event.canExecute = !chrome.extension.inIncognitoContext;
+      }
+    }
   }
 };
 

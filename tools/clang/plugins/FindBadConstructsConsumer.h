@@ -84,10 +84,14 @@ class FindBadConstructsConsumer
   void CheckVirtualSpecifiers(const clang::CXXMethodDecl* method);
   void CheckVirtualBodies(const clang::CXXMethodDecl* method);
 
-  void CountType(const clang::Type* type,
-                 int* trivial_member,
-                 int* non_trivial_member,
-                 int* templated_non_trivial_member);
+  enum class TypeClassification {
+    kTrivial,
+    kNonTrivial,
+    kTrivialTemplate,
+    kNonTrivialTemplate,
+    kNonTrivialExternTemplate
+  };
+  TypeClassification ClassifyType(const clang::Type* type);
 
   static RefcountIssue CheckRecordForRefcountIssue(
       const clang::CXXRecordDecl* record,

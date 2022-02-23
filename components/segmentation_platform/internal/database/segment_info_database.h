@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SEGMENT_INFO_DATABASE_H_
 #define COMPONENTS_SEGMENTATION_PLATFORM_INTERNAL_DATABASE_SEGMENT_INFO_DATABASE_H_
 
+#include <memory>
 #include <vector>
 
 #include "base/callback.h"
@@ -28,8 +29,10 @@ class PredictionResult;
 class SegmentInfoDatabase {
  public:
   using SuccessCallback = base::OnceCallback<void(bool)>;
-  using MultipleSegmentInfoCallback = base::OnceCallback<void(
-      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>)>;
+  using SegmentInfoList =
+      std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>;
+  using MultipleSegmentInfoCallback =
+      base::OnceCallback<void(std::unique_ptr<SegmentInfoList>)>;
   using SegmentInfoCallback =
       base::OnceCallback<void(absl::optional<proto::SegmentInfo>)>;
   using SegmentInfoProtoDb = leveldb_proto::ProtoDatabase<proto::SegmentInfo>;

@@ -2,6 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="af">
 <translation id="102360288709523007">Help om Chromium te verbeter deur gebruikstatistieke en omvalverslae na Google te stuur.</translation>
+<translation id="1047130070405668746">Kies Chromium</translation>
+<translation id="1091252999271033193">Dit beteken dat Chromium elke keer die mobiele werf sal versoek.</translation>
 <translation id="1185134272377778587">Meer oor Chromium</translation>
 <translation id="1257458525759135959">Om prente te stoor, moet jy op Instellings tik om Chromium toe te laat om foto's by te voeg</translation>
 <translation id="1289216811211435351">Skakel oor na Chromium</translation>
@@ -13,16 +15,19 @@
 <translation id="1531155317299575425">Wys porboodskappe om by Chromium aan te meld.</translation>
 <translation id="1584569488888892906">Chromium is eenvoudig, veilig en vinniger as ooit vantevore</translation>
 <translation id="1617663976202781617">Data van Chromium-sinkronisering af</translation>
+<translation id="1722370509450468186">Jou wagwoord sal in jou rekening (<ph name="EMAIL" />) gestoor word.</translation>
 <translation id="1736662517232558588">Chromium-data is uitgevee</translation>
 <translation id="1838412507805038478">Chromium het geverifieer dat <ph name="ISSUER" /> hierdie webwerf se sertifikaat uitgereik het.</translation>
 <translation id="1843424232666537147">Chromium het kenmerke wat jou help om jou internetdata te bestuur en hoe vinnig jy webblaaie kan laai.
 <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Kies Chromium</translation>
 <translation id="2006345422933397527">Chromium kon nie vir opdaterings kyk nie. Probeer jou internetverbinding nagaan.</translation>
 <translation id="2054703085270098503">Bly veilig met Chromium</translation>
 <translation id="2168108852149185974">Sekere byvoegings veroorsaak dat Chromium omval. Probeer om hulle te deïnstalleer:</translation>
 <translation id="2178608107313874732">Chromium kan nie nou jou kamera gebruik nie</translation>
 <translation id="2195025571279539885">Wil jy hê dat Chromium volgende keer moet aanbied om bladsye in <ph name="LANGUAGE_NAME" /> van hierdie werf af te vertaal?</translation>
 <translation id="2218146227246548550">Jou organisasie vereis dat jy aanmeld om Chromium te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
+<translation id="2236584955986023187">Dit beteken dat Chromium elke keer die rekenaarwerf sal versoek.</translation>
 <translation id="2426113998523353159">Jou organisasie vereis dat jy aanmeld om Chromium te gebruik.</translation>
 <translation id="2450140762465183767">Jy kan Chromium nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
 <translation id="2478931088402984578">Kies <ph name="BEGIN_BOLD" />Chromium<ph name="END_BOLD" /></translation>
@@ -40,7 +45,7 @@
 <translation id="3472200483164753384">Nie gesteun in Chromium Kanarie nie</translation>
 <translation id="3639997914391704523">Chromium kan jou wagwoorde nagaan as jy met jou Google-rekening aanmeld.</translation>
 <translation id="3805899903892079518">Chromium het nie toegang tot jou foto's of video's nie. Aktiveer toegang in iOS-instellings &gt; Privacy &gt; Photos.</translation>
-<translation id="3946918322491238254">Jy kan steeds al jou boekmerke, geskiedenis, wagwoorde en ander instellings op hierdie toestel sien. As jy veranderinge aanbring, sal hulle nie na jou rekening sinkroniseer nie.</translation>
+<translation id="4043291146360695975">Wagwoorde word slegs op hierdie toestel in Wagwoordbestuurder gestoor.</translation>
 <translation id="4099085513035183040">Nie op Chromium Beta gesteun nie</translation>
 <translation id="4555020257205549924">Wanneer hierdie kenmerk aangeskakel is, sal Chromium aanbied om bladsye wat in ander tale geskryf is, te vertaal deur Google Vertaal te gebruik. <ph name="BEGIN_LINK" />Kom meer te wete<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Jy kan Chromium nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
@@ -73,17 +78,20 @@
 <translation id="6424492062988593837">Chromium het pas beter geword! 'n Nuwe weergawe is beskikbaar.</translation>
 <translation id="6752854822223394465">Jou organisasie stel tans Chromium op …</translation>
 <translation id="6820823224820483452">Chromium kon nie alle wagwoorde nagaan nie. Probeer môre weer.</translation>
+<translation id="7006920032187763988">Jy kan die wagwoorde wat jy in Wagwoordbestuurder gestoor het in ander programme op jou iPad gebruik.</translation>
 <translation id="7018284295775193585">Chromium kan nie opdateer nie</translation>
 <translation id="7045244423563602563">Maak Chromium jou eie</translation>
 <translation id="7099326575020694068">Chromium kan nie jou kamera in deelaansigmodus gebruik nie</translation>
 <translation id="7108914401277488191">Kry meer gedoen met Chromium</translation>
 <translation id="7118091470949186573">Jy kan Chromium nou enige tyd gebruik wanneer jy op skakels in boodskappe, dokumente en ander programme tik.</translation>
+<translation id="7175400662502680481">Jou wagwoord is in 'n dataskending blootgestel. Wagwoordbestuurder beveel aan dat jy dit nou verander.</translation>
 <translation id="7208566199746267865">Chromium spaar jou tyd deur jou rekeninge na die web te bring. Jy kan rekeninge in Instellings byvoeg of verwyder.</translation>
 <translation id="725427773388857052">Chromium kan help om jou teen dataskendings, onveilige webwerwe en meer te beskerm.</translation>
 <translation id="7269362888766543920">Sekere byvoegings veroorsaak dat Chromium omval. Probeer om hulle te deïnstalleer.</translation>
 <translation id="7313655110045230863">Maak Instellings oop om Chromium jou verstekblaaier te maak. Tik op Verstekblaaierprogram en kies dan Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Die gekose data is van Chromium en gesinkroniseerde toestelle af verwyder. Jou Google-rekening het dalk ander vorme van blaaigeskiedenis, soos soektogte en aktiwiteit, vanaf ander Google-dienste by history.google.com.</translation>
+<translation id="7395825497086981028">Jou wagwoord sal vir <ph name="EMAIL" /> in Wagwoordbestuurder gestoor word.</translation>
 <translation id="7400689562045506105">Gebruik Chromium oral</translation>
 <translation id="766897673682622022">Jou wagwoord is in 'n dataskending blootgestel. Chromium beveel aan dat jy die wagwoord nou verander.</translation>
 <translation id="7674213385180944843">Maak Instellings &gt; Privaatheid &gt; Kamera &gt; Chromium oop en skakel kamera aan.</translation>
@@ -98,11 +106,13 @@
 <translation id="8073677936375100957">Vee jou Chromium-data op hierdie toestel uit?</translation>
 <translation id="8175055321229419309">Wenk: <ph name="BEGIN_LINK" />Skuif Chromium na jou dok<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kon nie vir opdaterings kyk nie. Probeer later weer.</translation>
+<translation id="858114650497379505">Jy kan die wagwoorde wat jy in Wagwoordbestuurder gestoor het in ander programme op jou iPhone gebruik.</translation>
 <translation id="8586442755830160949">Kopiereg <ph name="YEAR" /> Die Chromium-outeurs. Alle regte voorbehou.</translation>
 <translation id="8663480472502753423">Hou Chromium op datum</translation>
 <translation id="8776843108004031667">Hierdie rekening en enige ongstoorde data sal uit Chromium verwyder word.</translation>
 <translation id="894437814105052438">Chromium sal nie enige nuwe data na jou Google-rekening sinkroniseer nadat jy afgemeld het nie. Data wat voorheen gesinkroniseer is, bly in hierdie rekening.</translation>
 <translation id="9022552996538154597">Meld by Chromium aan</translation>
+<translation id="9059693977935746710">Jy hoef nie hierdie wagwoord te onthou nie. Dit sal vir <ph name="EMAIL" /> in Wagwoordbestuurder gestoor word</translation>
 <translation id="9089354809943900324">Chromium is verouderd</translation>
 <translation id="9110075932708282655">Gebruik Chromium by verstek</translation>
 <translation id="921174536258924340">Chromium kon nie alle wagwoorde nagaan nie. Probeer môre weer of <ph name="BEGIN_LINK" />gaan wagwoorde in jou Google-rekening na<ph name="END_LINK" />.</translation>

@@ -23,8 +23,8 @@
 #include "ui/gfx/vsync_provider.h"
 #include "ui/ozone/platform/drm/common/display_types.h"
 #include "ui/ozone/platform/drm/gpu/drm_device_generator.h"
-#include "ui/ozone/public/mojom/device_cursor.mojom.h"
-#include "ui/ozone/public/mojom/drm_device.mojom.h"
+#include "ui/ozone/platform/drm/mojom/device_cursor.mojom.h"
+#include "ui/ozone/platform/drm/mojom/drm_device.mojom.h"
 #include "ui/ozone/public/overlay_surface_candidate.h"
 #include "ui/ozone/public/swap_completion_callback.h"
 
@@ -169,7 +169,9 @@ class DrmThread : public base::Thread,
       int64_t display_id,
       const std::vector<display::GammaRampRGBEntry>& degamma_lut,
       const std::vector<display::GammaRampRGBEntry>& gamma_lut) override;
-  void SetPrivacyScreen(int64_t display_id, bool enabled) override;
+  void SetPrivacyScreen(int64_t display_id,
+                        bool enabled,
+                        base::OnceCallback<void(bool)> callback) override;
   void GetDeviceCursor(
       mojo::PendingAssociatedReceiver<ozone::mojom::DeviceCursor> receiver)
       override;

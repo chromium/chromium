@@ -9,7 +9,6 @@ namespace safe_browsing {
 
 extern const char kChromeUISafeBrowsingURL[];
 extern const char kChromeUISafeBrowsingHost[];
-extern const char kSbUnderConstruction[];
 extern const char kChromeUISafeBrowsingMatchBillingUrl[];
 extern const char kChromeUISafeBrowsingMatchMalwareUrl[];
 extern const char kChromeUISafeBrowsingMatchPhishingUrl[];

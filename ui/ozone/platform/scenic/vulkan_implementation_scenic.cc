@@ -8,13 +8,13 @@
 #include <lib/ui/scenic/cpp/session.h>
 #include <lib/zx/channel.h>
 #include <vulkan/vulkan.h>
+
 #include <memory>
+#include <tuple>
 
 #include "base/callback_helpers.h"
 #include "base/files/file_path.h"
 #include "base/fuchsia/fuchsia_logging.h"
-#include "base/macros.h"
-#include "base/native_library.h"
 #include "gpu/ipc/common/vulkan_ycbcr_info.h"
 #include "gpu/vulkan/fuchsia/vulkan_fuchsia_ext.h"
 #include "gpu/vulkan/vulkan_function_pointers.h"
@@ -64,20 +64,9 @@ VulkanImplementationScenic::~VulkanImplementationScenic() = default;
 
 bool VulkanImplementationScenic::InitializeVulkanInstance(bool using_surface) {
   DCHECK(using_surface);
-  base::NativeLibraryLoadError error;
-  base::NativeLibrary handle =
-      base::LoadNativeLibrary(base::FilePath("libvulkan.so"), &error);
-  if (!handle) {
-    LOG(ERROR) << "Failed to load vulkan: " << error.ToString();
-    return false;
-  }
 
-  gpu::VulkanFunctionPointers* vulkan_function_pointers =
-      gpu::GetVulkanFunctionPointers();
-  vulkan_function_pointers->vulkan_loader_library = handle;
-
-  if (!vulkan_function_pointers->BindUnassociatedFunctionPointers())
-    return false;
+  vulkan_instance_.BindUnassignedFunctionPointers(
+      base::FilePath("libvulkan.so"));
 
   std::vector<const char*> required_extensions = {
       VK_KHR_GET_PHYSICAL_DEVICE_PROPERTIES_2_EXTENSION_NAME,
@@ -90,7 +79,8 @@ bool VulkanImplementationScenic::InitializeVulkanInstance(bool using_surface) {
     required_extensions.push_back(VK_FUCHSIA_IMAGEPIPE_SURFACE_EXTENSION_NAME);
   };
 
-  return vulkan_instance_.Initialize(required_extensions, required_layers);
+  return vulkan_instance_.InitializeInstace(required_extensions,
+                                            required_layers);
 }
 
 gpu::VulkanInstance* VulkanImplementationScenic::GetVulkanInstance() {
@@ -138,7 +128,7 @@ bool VulkanImplementationScenic::GetPhysicalDevicePresentationSupport(
 std::vector<const char*>
 VulkanImplementationScenic::GetRequiredDeviceExtensions() {
   std::vector<const char*> result = {
-      VK_FUCHSIA_BUFFER_COLLECTION_X_EXTENSION_NAME,
+      VK_FUCHSIA_BUFFER_COLLECTION_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_MEMORY_EXTENSION_NAME,
       VK_FUCHSIA_EXTERNAL_SEMAPHORE_EXTENSION_NAME,
       VK_KHR_BIND_MEMORY_2_EXTENSION_NAME,
@@ -212,7 +202,7 @@ VkSemaphore VulkanImplementationScenic::ImportSemaphoreHandle(
   }
 
   // Vulkan took ownership of the handle.
-  ignore_result(event.release());
+  std::ignore = event.release();
 
   return semaphore;
 }

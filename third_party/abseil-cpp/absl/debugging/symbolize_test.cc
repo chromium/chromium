@@ -392,12 +392,14 @@ TEST(Symbolize, InstallAndRemoveSymbolDecorators) {
                 DummySymbolDecorator, &c_message),
             0);
 
-  char *address = reinterpret_cast<char *>(1);
-  EXPECT_STREQ("abc", TrySymbolize(address++));
+  // Use addresses 4 and 8 here to ensure that we always use valid addresses
+  // even on systems that require instructions to be 32-bit aligned.
+  char *address = reinterpret_cast<char *>(4);
+  EXPECT_STREQ("abc", TrySymbolize(address));
 
   EXPECT_TRUE(absl::debugging_internal::RemoveSymbolDecorator(ticket_b));
 
-  EXPECT_STREQ("ac", TrySymbolize(address++));
+  EXPECT_STREQ("ac", TrySymbolize(address + 4));
 
   // Cleanup: remove all remaining decorators so other stack traces don't
   // get mystery "ac" decoration.

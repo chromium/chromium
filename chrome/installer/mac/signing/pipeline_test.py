@@ -80,6 +80,24 @@ def _get_adjacent_item(l, o):
     return l[index + 1]
 
 
+def _filter_distributions(d, b, c):
+    _filter_distributions.brands = b
+    _filter_distributions.channels = c
+    return d
+
+
+_filter_distributions.brands = None
+_filter_distributions.channels = None
+
+
+def _last_brand_filter():
+    return _filter_distributions.brands
+
+
+def _last_channel_filter():
+    return _filter_distributions.channels
+
+
 @mock.patch.multiple(
     'signing.commands', **{
         m: mock.DEFAULT
@@ -889,6 +907,94 @@ framework dir is 'App Product.app/Contents/Frameworks/Product Framework.framewor
         self.assertEqual(len(copied_files), len(files_to_copy))
         self.assertEqual(set(copied_files), files_to_copy)
 
+    def test_filter_distributions(self, **kwargs):
+        dist1 = model.Distribution()
+        dist2 = model.Distribution(branding_code='MOO', channel='beta')
+        dist3 = model.Distribution(branding_code='ARF', channel='dev')
+        dist4 = model.Distribution(branding_code='MOOF', channel='canary')
+
+        distributions = [dist1, dist2, dist3, dist4]
+
+        # --- Neither ---
+
+        # No filters should yield no change to the distribution list.
+        self.assertEqual(distributions,
+                         pipeline._filter_distributions(distributions, [], []))
+
+        # --- Brands only ---
+
+        # Filtering a brand code not being built should throw.
+        with self.assertRaises(ValueError) as cm:
+            pipeline._filter_distributions(distributions, ['MOOG'], [])
+        self.assertEqual(
+            cm.exception.args[0],
+            "Brand codes do not match any distribution: %r" % {'MOOG'})
+
+        # Filtering one or more brand codes explicitly should remove them.
+        self.assertEqual([dist1, dist2, dist3],
+                         pipeline._filter_distributions(distributions, ['MOOF'],
+                                                        []))
+        self.assertEqual([dist1, dist3],
+                         pipeline._filter_distributions(distributions,
+                                                        ['MOO', 'MOOF'], []))
+
+        # Filtering a '*' should remove all brand coded distributions.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions(distributions, ['*'],
+                                                        []))
+
+        # Filtering a specific brand code and '*' should remove all brand coded
+        # distributions.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions(distributions,
+                                                        ['*', 'MOOF'], []))
+
+        # Filtering all brand codes when there aren't any should yield no change
+        # to the distribution list.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions([dist1], ['*'], []))
+
+        # --- Channels ---
+
+        # Filtering for a channel not being built should throw.
+        with self.assertRaises(ValueError) as cm:
+            pipeline._filter_distributions(distributions, [], ['hyper'])
+        self.assertEqual(
+            cm.exception.args[0],
+            "Channels do not match any distribution: %r" % {'hyper'})
+
+        # Filtering for 'stable' should result in the distribution with None
+        # as a channel.
+        self.assertEqual([dist1],
+                         pipeline._filter_distributions(distributions, [],
+                                                        ['stable']))
+
+        # Filtering for any other string as channel name should work.
+        self.assertEqual([dist2],
+                         pipeline._filter_distributions(distributions, [],
+                                                        ['beta']))
+
+        # Filtering for 'stable' along with other strings should work.
+        self.assertEqual([dist1, dist3],
+                         pipeline._filter_distributions(distributions, [],
+                                                        ['stable', 'dev']))
+
+        # --- Both ---
+
+        # Filtering on both in a way that allows a result should work.
+        self.assertEqual([dist2],
+                         pipeline._filter_distributions(distributions, ['MOOF'],
+                                                        ['beta']))
+
+        # Filtering for inclusion of a channel that is filtered out due to brand
+        # code should throw.
+        with self.assertRaises(ValueError) as cm:
+            pipeline._filter_distributions(distributions, ['MOO'], ['beta'])
+        self.assertEqual(
+            cm.exception.args[0],
+            "All distributions for channels were filtered out by brand: %r" %
+            {'beta'})
+
 
 @mock.patch.multiple(
     'signing.commands', **{
@@ -1310,3 +1416,31 @@ class TestSignAll(unittest.TestCase):
             # Finally the installer tools.
             mock.call._package_installer_tools(mock.ANY, mock.ANY),
         ])
+
+    @mock.patch('signing.pipeline._filter_distributions', _filter_distributions)
+    def test_sign_calls_filters(self, **kwargs):
+        manager = mock.Mock()
+        for attr in kwargs:
+            manager.attach_mock(kwargs[attr], attr)
+
+        skip_brands = ['MOO']
+        include_channels = ['beta']
+
+        class Config(test_config.TestConfig):
+
+            @property
+            def distributions(self):
+                return [
+                    model.Distribution(),
+                ]
+
+        config = Config()
+        pipeline.sign_all(
+            self.paths,
+            config,
+            do_notarization=False,
+            skip_brands=skip_brands,
+            channels=include_channels)
+
+        self.assertEqual(_last_brand_filter(), skip_brands)
+        self.assertEqual(_last_channel_filter(), include_channels)

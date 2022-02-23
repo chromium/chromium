@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "third_party/blink/public/common/origin_trials/origin_trial_feature.h"
 #include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
@@ -19,17 +20,6 @@
                 #feature " must be part of an origin trial");
 
 namespace blink {
-
-enum class OriginTrialFeature : int32_t {
-  // For testing
-  kNonExisting = 0,
-
-  {% for feature in features %}
-  {% if feature.origin_trial_feature_name %}
-  k{{feature.name}},
-  {% endif %}
-  {% endfor %}
-};
 
 // A pure virtual interface for checking the availability of origin trial
 // features in a context.
@@ -87,12 +77,6 @@ class PLATFORM_EXPORT RuntimeEnabledFeaturesBase {
   static bool {{feature.name}}Enabled(const FeatureContext*);
 
   {% endfor %}
-
-  // TODO(crbug.com/471333): This is temporary during removal of
-  // pre-CompositeAfterPaint code after M97 branch, to reduce chance of conflict
-  // when merging into M97. This will be removed before M98 branch.
-  static bool CompositeAfterPaintEnabled() { return true; }
-  static bool CullRectUpdateEnabled() { return true; }
 
  protected:
   // See the comment in RuntimeEnabledFeatures for why these are protected.

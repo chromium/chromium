@@ -8,7 +8,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
-#include "components/safe_browsing/content/browser/password_protection/password_protection_navigation_throttle.h"
+#include "components/safe_browsing/content/browser/password_protection/password_protection_commit_deferring_condition.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_service.h"
 #include "components/safe_browsing/content/browser/web_ui/safe_browsing_ui.h"
 #include "components/safe_browsing/core/browser/password_protection/request_canceler.h"
@@ -24,7 +24,7 @@
 #include "content/public/browser/web_contents.h"
 #endif  // BUILDFLAG(SAFE_BROWSING_AVAILABLE)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/android/view_android.h"
 #endif
 
@@ -37,7 +37,7 @@ namespace {
 const int kDomFeatureTimeoutMs = 3000;
 
 // Parameters chosen to ensure privacy is preserved by visual features.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const int kMinWidthForVisualFeatures = 258;
 const int kMinHeightForVisualFeatures = 258;
 #else
@@ -122,19 +122,18 @@ void PasswordProtectionRequestContent::Cancel(bool timed_out) {
   // If request is canceled because |password_protection_service_| is shutting
   // down, ignore all these deferred navigations.
   if (!timed_out) {
-    throttles_.clear();
+    deferred_navigations_.clear();
   }
   PasswordProtectionRequest::Cancel(timed_out);
 }
 
-void PasswordProtectionRequestContent::HandleDeferredNavigations() {
-  for (auto* throttle : throttles_) {
-    if (is_modal_warning_showing())
-      throttle->CancelNavigation(content::NavigationThrottle::CANCEL);
-    else
-      throttle->ResumeNavigation();
+void PasswordProtectionRequestContent::ResumeDeferredNavigations() {
+  for (PasswordProtectionCommitDeferringCondition* condition :
+       deferred_navigations_) {
+    condition->ResumeNavigation();
   }
-  throttles_.clear();
+
+  deferred_navigations_.clear();
 }
 
 void PasswordProtectionRequestContent::MaybeLogPasswordReuseLookupEvent(
@@ -257,7 +256,7 @@ void PasswordProtectionRequestContent::OnGetDomFeatureTimeout() {
 void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
   // TODO(drubery): Unify this with the code to populate content_area_width and
   // content_area_height on desktop.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (password_protection_service()->IsExtendedReporting() &&
       !password_protection_service()->IsIncognito()) {
     content::RenderWidgetHostView* view =
@@ -276,7 +275,7 @@ void PasswordProtectionRequestContent::MaybeCollectVisualFeatures() {
       !password_protection_service()->IsIncognito() &&
       request_proto_->content_area_width() >= GetMinWidthForVisualFeatures() &&
       request_proto_->content_area_height() >= GetMinHeightForVisualFeatures();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   can_collect_visual_features &=
       zoom::ZoomController::GetZoomLevelForWebContents(web_contents_) <=
       kMaxZoomForVisualFeatures;
@@ -334,7 +333,7 @@ void PasswordProtectionRequestContent::OnVisualFeatureCollectionDone(
   SendRequest();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void PasswordProtectionRequestContent::SetReferringAppInfo() {
   PasswordProtectionService* service =
       static_cast<PasswordProtectionService*>(password_protection_service());
@@ -347,6 +346,6 @@ void PasswordProtectionRequestContent::SetReferringAppInfo() {
           1);
   *request_proto_->mutable_referring_app_info() = std::move(referring_app_info);
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace safe_browsing

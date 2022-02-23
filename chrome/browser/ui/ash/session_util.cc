@@ -70,7 +70,7 @@ bool CanShowWindowForUser(
 }
 
 gfx::ImageSkia GetAvatarImageForContext(content::BrowserContext* context) {
-  return GetAvatarImageForUser(chromeos::ProfileHelper::Get()->GetUserByProfile(
+  return GetAvatarImageForUser(ash::ProfileHelper::Get()->GetUserByProfile(
       Profile::FromBrowserContext(context)));
 }
 

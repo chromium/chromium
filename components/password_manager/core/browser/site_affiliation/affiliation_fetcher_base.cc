@@ -29,9 +29,32 @@ enum class AffiliationFetchResult {
 
 namespace {
 
-void LogFetchResult(AffiliationFetchResult result) {
+void LogFetchResult(AffiliationFetchResult result,
+                    base::TimeDelta fetch_time,
+                    size_t response_size = 0) {
   base::UmaHistogramEnumeration(
       "PasswordManager.AffiliationFetcher.FetchResult", result);
+
+  switch (result) {
+    case AffiliationFetchResult::kSuccess:
+      base::UmaHistogramTimes(
+          "PasswordManager.AffiliationFetcher.FetchTime.Success", fetch_time);
+      base::UmaHistogramCounts1M(
+          "PasswordManager.AffiliationFetcher.ResponseSize.Success",
+          response_size);
+      break;
+    case AffiliationFetchResult::kMalformed:
+      base::UmaHistogramTimes(
+          "PasswordManager.AffiliationFetcher.FetchTime.Malformed", fetch_time);
+      base::UmaHistogramCounts1M(
+          "PasswordManager.AffiliationFetcher.ResponseSize.Malformed",
+          response_size);
+      break;
+    case AffiliationFetchResult::kFailure:
+      base::UmaHistogramTimes(
+          "PasswordManager.AffiliationFetcher.FetchTime.Failure", fetch_time);
+      break;
+  }
 }
 
 }  // namespace
@@ -102,9 +125,12 @@ bool AffiliationFetcherBase::ParseResponse(
   //     case so the caller can be notified and it can act accordingly.
   //   * The |result| will be free of duplicate or empty equivalence classes.
 
-  affiliation_pb::LookupAffiliationResponse response;
-  if (!response.ParseFromString(serialized_response))
+  affiliation_pb::LookupAffiliationByHashPrefixResponse response;
+  if (!response.ParseFromString(serialized_response)) {
+    base::UmaHistogramBoolean(
+        "PasswordManager.AffiliationFetcher.FailedToParseResponse", true);
     return false;
+  }
 
   return ParseLookupAffiliationResponse(GetRequestedFacetURIs(), response,
                                         result);
@@ -112,21 +138,22 @@ bool AffiliationFetcherBase::ParseResponse(
 
 void AffiliationFetcherBase::OnSimpleLoaderComplete(
     std::unique_ptr<std::string> response_body) {
-  base::UmaHistogramTimes("PasswordManager.AffiliationFetcher.FetchTime",
-                          fetch_timer_.Elapsed());
+  base::TimeDelta fetch_time = fetch_timer_.Elapsed();
   // Note that invoking the |delegate_| may destroy |this| synchronously, so the
   // invocation must happen last.
   auto result_data = std::make_unique<AffiliationFetcherDelegate::Result>();
   if (response_body) {
     if (ParseResponse(*response_body, result_data.get())) {
-      LogFetchResult(AffiliationFetchResult::kSuccess);
+      LogFetchResult(AffiliationFetchResult::kSuccess, fetch_time,
+                     response_body->size());
       delegate_->OnFetchSucceeded(this, std::move(result_data));
     } else {
-      LogFetchResult(AffiliationFetchResult::kMalformed);
+      LogFetchResult(AffiliationFetchResult::kMalformed, fetch_time,
+                     response_body->size());
       delegate_->OnMalformedResponse(this);
     }
   } else {
-    LogFetchResult(AffiliationFetchResult::kFailure);
+    LogFetchResult(AffiliationFetchResult::kFailure, fetch_time);
     int response_code = -1;
     if (simple_url_loader_->ResponseInfo() &&
         simple_url_loader_->ResponseInfo()->headers) {

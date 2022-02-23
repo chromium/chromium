@@ -39,6 +39,7 @@ class SequencedTaskRunner;
 
 namespace ash {
 
+class CaptureModeCameraController;
 class CaptureModeSession;
 
 // Defines a callback type that will be invoked when an attempt to delete the
@@ -47,9 +48,16 @@ using OnFileDeletedCallback =
     base::OnceCallback<void(const base::FilePath& path,
                             bool delete_successful)>;
 
-// Controls starting and ending a Capture Mode session and its behavior.
+// Controls starting and ending a Capture Mode session and its behavior. There
+// are various checks that are run when a capture session start is attempted,
+// and when a capture operation is performed, to make sure they're allowed. For
+// example, checking that policy allows screen capture, and there are no content
+// on the screen restricted by DLP (Data Leak Prevention). In the case of video
+// recording, HDCP is also checked to ensure no protected content is being
+// recorded.
 class ASH_EXPORT CaptureModeController
     : public recording::mojom::RecordingServiceClient,
+      public recording::mojom::DriveFsQuotaDelegate,
       public SessionObserver,
       public chromeos::PowerManagerClient::Observer {
  public:
@@ -74,6 +82,9 @@ class ASH_EXPORT CaptureModeController
 
   static void RegisterProfilePrefs(PrefRegistrySimple* registry);
 
+  CaptureModeCameraController* camera_controller() {
+    return camera_controller_.get();
+  }
   CaptureModeType type() const { return type_; }
   CaptureModeSource source() const { return source_; }
   CaptureModeSession* capture_mode_session() const {
@@ -113,13 +124,13 @@ class ASH_EXPORT CaptureModeController
   void SetUserCaptureRegion(const gfx::Rect& region, bool by_user);
 
   // Returns true if we can show a user nudge animation and a toast message to
-  // alert the user about the new settings to customize the save folder path.
-  bool CanShowFolderSelectionNudge() const;
+  // alert users any available new features.
+  bool CanShowUserNudge() const;
 
-  // Disables showing the folder selection nudge from now on. Calling the above
-  // CanShowFolderSelectionNudge() will return false for the current active user
-  // going forward.
-  void DisableFolderSelectionNudgeForever();
+  // Disables showing the user nudge from now on. Calling the above
+  // CanShowUserNudge() will return false for the current active user going
+  // forward.
+  void DisableUserNudgeForever();
 
   // Sets whether the currently logged in user selected to use the default
   // "Downloads" folder as the current save location, even while they already
@@ -188,9 +199,35 @@ class ASH_EXPORT CaptureModeController
   // content view of the recording overlay widget.
   std::unique_ptr<RecordingOverlayView> CreateRecordingOverlayView();
 
+  // Returns true if the given `path` is the root folder of DriveFS, false
+  // otherwise.
+  bool IsRootDriveFsPath(const base::FilePath& path) const;
+
+  // Returns true if the given `path` is the same as the Android Play files
+  // path, false otherwise.
+  bool IsAndroidFilesPath(const base::FilePath& path) const;
+
+  // Returns true if the given `path` is the same as the Linux Files path, false
+  // otherwise.
+  bool IsLinuxFilesPath(const base::FilePath& path) const;
+
+  // Returns the current parent window for
+  // `CaptureModeCameraController::camera_preview_widget_`.
+  aura::Window* GetCameraPreviewParentWindow() const;
+
+  // Returns the camera preview's confine bounds, which actually indicates the
+  // bounds of the surface that will be recorded. The bounds is in screen
+  // coordinate when capture source is `kFullscreen` or 'kRegion', but in
+  // window's coordinate when it is 'kWindow' type.
+  gfx::Rect GetCameraPreviewConfineBounds() const;
+
   // recording::mojom::RecordingServiceClient:
   void OnRecordingEnded(recording::mojom::RecordingStatus status,
                         const gfx::ImageSkia& thumbnail) override;
+
+  // recording::mojom::DriveFsQuotaDelegate:
+  void GetDriveFsFreeSpaceBytes(
+      GetDriveFsFreeSpaceBytesCallback callback) override;
 
   // SessionObserver:
   void OnActiveUserSessionChanged(const AccountId& account_id) override;
@@ -270,12 +307,6 @@ class ASH_EXPORT CaptureModeController
 
   // Called back when the mojo pipe to the recording service gets disconnected.
   void OnRecordingServiceDisconnected();
-
-  // Returns whether doing a screen capture is currently allowed by enterprise
-  // policies and a reason otherwise.
-  // ShouldBlockRecordingForContentProtection() should be used for HDCP checks.
-  CaptureAllowance IsCaptureAllowedByEnterprisePolicies(
-      const CaptureParams& capture_params) const;
 
   // Terminates the recording service process, closes any recording-related UI
   // elements (only if |success| is false as this indicates that recording was
@@ -387,6 +418,24 @@ class ASH_EXPORT CaptureModeController
   // allowed to be captured.
   void InterruptVideoRecording();
 
+  // Called by the DLP manager when it's checked for any on-screen content
+  // restriction at the time when the capture operation is attempted. `proceed`
+  // will be set to true if the capture operation should continue, false if it
+  // should be aborted.
+  void OnDlpRestrictionCheckedAtPerformingCapture(bool proceed);
+
+  // Called by the DLP manager when it's checked again for any on-screen content
+  // restriction at the time when the video capture 3-second countdown ends.
+  // `proceed` will be set to true if video recording should begin, or false if
+  // it should be aborted.
+  void OnDlpRestrictionCheckedAtCountDownFinished(bool proceed);
+
+  // Bound to a callback that will be called by the DLP manager to let us know
+  // whether a pending session initialization should `proceed` or abort due to
+  // some restricted contents on the screen.
+  void OnDlpRestrictionCheckedAtSessionInit(CaptureModeEntryType entry_type,
+                                            bool proceed);
+
   // At the end of a video recording, the DLP manager is checked to see if there
   // were any restricted content of a warning level type during the recording
   // (warning-level restrictions do not result in interrupting the video
@@ -399,10 +448,19 @@ class ASH_EXPORT CaptureModeController
                                          bool in_projector_mode,
                                          bool proceed);
 
+  // Bound to a callback that will be called by DLP manager to let the user know
+  // whether full screen capture on all displays should `proceed` or abort due
+  // to some restricted contents on the screen.
+  void OnDlpRestrictionCheckedAtCaptureScreenshotsOfAllDisplays(bool proceed);
+
   // Gets the corresponding `SaveLocation` enum value on the given `path`.
   CaptureModeSaveToLocation GetSaveToOption(const base::FilePath& path);
 
   std::unique_ptr<CaptureModeDelegate> delegate_;
+
+  // Controls the selfie camera feature of capture mode. This is only available
+  // when the feature `kCaptureModeSelfieCamera` is enabled.
+  std::unique_ptr<CaptureModeCameraController> camera_controller_;
 
   CaptureModeType type_ = CaptureModeType::kImage;
   CaptureModeSource source_ = CaptureModeSource::kRegion;
@@ -412,7 +470,9 @@ class ASH_EXPORT CaptureModeController
 
   mojo::Remote<recording::mojom::RecordingService> recording_service_remote_;
   mojo::Receiver<recording::mojom::RecordingServiceClient>
-      recording_service_client_receiver_;
+      recording_service_client_receiver_{this};
+  mojo::Receiver<recording::mojom::DriveFsQuotaDelegate>
+      drive_fs_quota_delegate_receiver_{this};
 
   // This is the file path of the video file currently being recorded. It is
   // empty when no video recording is in progress or when no video is being
@@ -440,6 +500,11 @@ class ASH_EXPORT CaptureModeController
   // determine the message shown to the user in the video preview notification
   // to explain why the recording was ended, and is then reset back to false.
   bool low_disk_space_threshold_reached_ = false;
+
+  // Set to true when we're waiting for a callback from the DLP manager to check
+  // content restrictions that may block capture mode at any of its stages
+  // (initialization or performing the capture).
+  bool pending_dlp_check_ = false;
 
   // Watches events that lead to ending video recording.
   std::unique_ptr<VideoRecordingWatcher> video_recording_watcher_;

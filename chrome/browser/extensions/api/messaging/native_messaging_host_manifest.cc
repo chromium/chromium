@@ -110,7 +110,7 @@ bool NativeMessagingHostManifest::Parse(base::DictionaryValue* dictionary,
     return false;
   }
   allowed_origins_.ClearPatterns();
-  for (const auto& entry : allowed_origins_list->GetList()) {
+  for (const auto& entry : allowed_origins_list->GetListDeprecated()) {
     if (!entry.is_string()) {
       *error_message = "allowed_origins must be list of strings.";
       return false;

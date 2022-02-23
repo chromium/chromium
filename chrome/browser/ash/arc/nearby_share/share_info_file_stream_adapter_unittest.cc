@@ -153,7 +153,7 @@ class ShareInfoFileStreamAdapterTest : public testing::Test {
 
 TEST_F(ShareInfoFileStreamAdapterTest, ReadEntireStreamAndWriteFile) {
   constexpr int kOffset = 0;
-  const int kSize = test_data_.size();
+  const size_t kSize = test_data_.size();
   base::RunLoop run_loop;
   stream_adapter_ = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
       file_system_context_, url_, kOffset, kSize, kDefaultBufSize,
@@ -230,7 +230,7 @@ TEST_F(ShareInfoFileStreamAdapterTest, ReadMidStreamAndWriteFile) {
 
 TEST_F(ShareInfoFileStreamAdapterTest, ReadEntireStreamAndWritePipe) {
   constexpr int kOffset = 0;
-  const int kSize = test_data_.size();
+  const size_t kSize = test_data_.size();
   constexpr int kDataPipeCapacity = 64 * 1024;
   base::RunLoop run_loop;
   SetupDataPipe(kDataPipeCapacity);
@@ -251,8 +251,11 @@ TEST_F(ShareInfoFileStreamAdapterTest, ReadEntireStreamAndWritePipe) {
 
 TEST_F(ShareInfoFileStreamAdapterTest, ReadPartialStreamAndWritePipe) {
   constexpr int kOffset = 0;
-  constexpr int kSize = 40 * 1024;  // Test value greater than kDefaultBufSize.
   constexpr int kDataPipeCapacity = 64 * 1024;
+
+  // Test value greater than kDefaultBufSize.
+  constexpr size_t kSize = 40 * 1024;
+
   base::RunLoop run_loop;
   SetupDataPipe(kDataPipeCapacity);
   stream_adapter_ = base::MakeRefCounted<ShareInfoFileStreamAdapter>(
@@ -272,7 +275,7 @@ TEST_F(ShareInfoFileStreamAdapterTest, ReadPartialStreamAndWritePipe) {
 
 TEST_F(ShareInfoFileStreamAdapterTest, ReadStreamAndWritePipeSmallCapacity) {
   constexpr int kOffset = 0;
-  constexpr int kSize = 72 * 1024;
+  constexpr size_t kSize = 72 * 1024;
   // Pipe capacity is smaller than |kDefaultBufSize}, so the producer side needs
   // to wait for the consumer side to catch up.
   constexpr int kDataPipeCapacity = 16 * 1024;

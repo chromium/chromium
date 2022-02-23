@@ -45,7 +45,7 @@ class PreloaderNetworkHintsMock : public WebPrescientNetworking {
 class HTMLResourcePreloaderTest : public PageTestBase {
  protected:
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     GetFrame().SetPrescientNetworkingForTesting(
         std::make_unique<PreloaderNetworkHintsMock>());
     mock_network_hints_ = static_cast<PreloaderNetworkHintsMock*>(

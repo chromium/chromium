@@ -5,6 +5,9 @@
 #include "content/browser/renderer_host/policy_container_host.h"
 
 #include "base/lazy_instance.h"
+#include "content/browser/renderer_host/frame_navigation_entry.h"
+#include "content/browser/renderer_host/frame_tree_node.h"
+#include "content/browser/renderer_host/render_frame_host_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 
@@ -44,7 +47,9 @@ bool operator==(const PolicyContainerPolicies& lhs,
                     lhs.content_security_policies.end(),
                     rhs.content_security_policies.begin(),
                     rhs.content_security_policies.end()) &&
-         lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy;
+         lhs.cross_origin_opener_policy == rhs.cross_origin_opener_policy &&
+         lhs.cross_origin_embedder_policy == rhs.cross_origin_embedder_policy &&
+         lhs.sandbox_flags == rhs.sandbox_flags;
 }
 
 bool operator!=(const PolicyContainerPolicies& lhs,
@@ -83,6 +88,20 @@ std::ostream& operator<<(std::ostream& out,
       << ", soap_by_default_value: "
       << policies.cross_origin_opener_policy.soap_by_default_value << " }";
 
+  out << ", cross_origin_embedder_policy: "
+      << "{ value: " << policies.cross_origin_embedder_policy.value
+      << ", reporting_endpoint: "
+      << policies.cross_origin_embedder_policy.reporting_endpoint.value_or(
+             "<null>")
+      << ", report_only_value: "
+      << policies.cross_origin_embedder_policy.report_only_value
+      << ", report_only_reporting_endpoint: "
+      << policies.cross_origin_embedder_policy.report_only_reporting_endpoint
+             .value_or("<null>")
+      << " }";
+
+  out << ", sandbox_flags: " << policies.sandbox_flags;
+
   return out << " }";
 }
 
@@ -94,12 +113,16 @@ PolicyContainerPolicies::PolicyContainerPolicies(
     bool is_web_secure_context,
     std::vector<network::mojom::ContentSecurityPolicyPtr>
         content_security_policies,
-    const network::CrossOriginOpenerPolicy& cross_origin_opener_policy)
+    const network::CrossOriginOpenerPolicy& cross_origin_opener_policy,
+    const network::CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
+    network::mojom::WebSandboxFlags sandbox_flags)
     : referrer_policy(referrer_policy),
       ip_address_space(ip_address_space),
       is_web_secure_context(is_web_secure_context),
       content_security_policies(std::move(content_security_policies)),
-      cross_origin_opener_policy(cross_origin_opener_policy) {}
+      cross_origin_opener_policy(cross_origin_opener_policy),
+      cross_origin_embedder_policy(cross_origin_embedder_policy),
+      sandbox_flags(sandbox_flags) {}
 
 PolicyContainerPolicies::~PolicyContainerPolicies() = default;
 
@@ -107,7 +130,8 @@ std::unique_ptr<PolicyContainerPolicies> PolicyContainerPolicies::Clone()
     const {
   return std::make_unique<PolicyContainerPolicies>(
       referrer_policy, ip_address_space, is_web_secure_context,
-      mojo::Clone(content_security_policies), cross_origin_opener_policy);
+      mojo::Clone(content_security_policies), cross_origin_opener_policy,
+      cross_origin_embedder_policy, sandbox_flags);
 }
 
 void PolicyContainerPolicies::AddContentSecurityPolicies(
@@ -134,10 +158,12 @@ PolicyContainerHost::~PolicyContainerHost() {
 }
 
 void PolicyContainerHost::AssociateWithFrameToken(
-    const blink::LocalFrameToken& frame_token) {
+    const blink::LocalFrameToken& frame_token,
+    int process_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   DCHECK(!frame_token_);
   frame_token_ = frame_token;
+  process_id_ = process_id;
   g_token_policy_container_map.Get().erase(frame_token);
   g_token_policy_container_map.Get().emplace(frame_token, this);
 }
@@ -154,6 +180,12 @@ PolicyContainerHost* PolicyContainerHost::FromFrameToken(
 void PolicyContainerHost::SetReferrerPolicy(
     network::mojom::ReferrerPolicy referrer_policy) {
   policies_->referrer_policy = referrer_policy;
+  if (frame_token_) {
+    if (RenderFrameHostImpl* rfh = RenderFrameHostImpl::FromFrameToken(
+            process_id_, frame_token_.value())) {
+      rfh->DidChangeReferrerPolicy(referrer_policy);
+    }
+  }
 }
 
 void PolicyContainerHost::AddContentSecurityPolicies(

@@ -60,10 +60,8 @@ void FakeLayerTreeFrameSink::DetachFromClient() {
   LayerTreeFrameSink::DetachFromClient();
 }
 
-void FakeLayerTreeFrameSink::SubmitCompositorFrame(
-    viz::CompositorFrame frame,
-    bool hit_test_data_changed,
-    bool submit_hit_test_borders) {
+void FakeLayerTreeFrameSink::SubmitCompositorFrame(viz::CompositorFrame frame,
+                                                   bool hit_test_data_changed) {
   ReturnResourcesHeldByParent();
 
   last_sent_frame_ = std::make_unique<viz::CompositorFrame>(std::move(frame));

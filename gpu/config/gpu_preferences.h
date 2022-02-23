@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "gpu/gpu_export.h"
@@ -23,7 +22,7 @@
 namespace gpu {
 
 // The size to set for the program cache for default and low-end device cases.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const size_t kDefaultMaxProgramCacheMemoryBytes = 6 * 1024 * 1024;
 #else
 const size_t kDefaultMaxProgramCacheMemoryBytes = 2 * 1024 * 1024;
@@ -36,6 +35,12 @@ enum class VulkanImplementationName : uint32_t {
   kForcedNative = 2,  // Cannot be overridden by GPU blocklist.
   kSwiftshader = 3,
   kLast = kSwiftshader,
+};
+
+enum class WebGPUAdapterName : uint32_t {
+  kDefault = 0,
+  kCompat = 1,
+  kSwiftShader = 2,
 };
 
 enum class GrContextType : uint32_t {
@@ -198,13 +203,6 @@ struct GPU_EXPORT GpuPreferences {
   // Ignores GPU blocklist.
   bool ignore_gpu_blocklist = false;
 
-  // Oop rasterization preferences in the GPU process.  disable wins over
-  // enable, and neither means use defaults from GpuFeatureInfo.
-  bool enable_oop_rasterization = false;
-  bool disable_oop_rasterization = false;
-
-  bool enable_oop_rasterization_ddl = false;
-
   // Start the watchdog suspended, as the app is already backgrounded and won't
   // send a background/suspend signal.
   bool watchdog_starts_backgrounded = false;
@@ -248,16 +246,15 @@ struct GPU_EXPORT GpuPreferences {
   // Enable the WebGPU command buffer.
   bool enable_webgpu = false;
 
-  // Enable usage of SPIR-V with WebGPU. This is unsafe since SPIR-V from the
-  // renderer process isn't fully validated.
-  bool enable_webgpu_spirv = false;
+  // Enable usage of unsafe WebGPU features.
+  bool enable_unsafe_webgpu = false;
 
   // Enable validation layers in Dawn backends.
   DawnBackendValidationLevel enable_dawn_backend_validation =
       DawnBackendValidationLevel::kDisabled;
 
-  // Force the use of the WebGPU/Compat (GLES) backend for all WebGPU content.
-  bool force_webgpu_compat = false;
+  // The adapter to use for WebGPU content.
+  WebGPUAdapterName use_webgpu_adapter = WebGPUAdapterName::kDefault;
 
   // The Dawn features(toggles) enabled on the creation of Dawn devices.
   std::vector<std::string> enabled_dawn_features_list;
@@ -286,7 +283,7 @@ struct GPU_EXPORT GpuPreferences {
   // ===================================
   // Settings from //media/base/media_switches.h
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Enable the hardware-accelerated direct video decoder on ChromeOS.
   bool enable_chromeos_direct_video_decoder = false;
 #endif

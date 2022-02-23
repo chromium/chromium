@@ -9,6 +9,7 @@
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "media/base/bit_reader.h"
+#include "media/base/stream_parser_buffer.h"
 #include "media/base/timestamp_constants.h"
 #include "media/formats/mp2t/es_parser.h"
 #include "media/formats/mp2t/mp2t_common.h"
@@ -223,7 +224,7 @@ bool TsSectionPes::ParseInternal(const uint8_t* raw_pes, int raw_pes_size) {
 
   // Convert and unroll the timestamps.
   base::TimeDelta media_pts(kNoTimestamp);
-  DecodeTimestamp media_dts(kNoDecodeTimestamp());
+  DecodeTimestamp media_dts(kNoDecodeTimestamp);
   if (is_pts_valid) {
     int64_t pts = timestamp_unroller_->GetUnrolledTimestamp(
         ConvertTimestampSectionToTimestamp(pts_section));

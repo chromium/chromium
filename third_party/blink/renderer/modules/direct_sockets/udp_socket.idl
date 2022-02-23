@@ -2,16 +2,19 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// https://github.com/WICG/raw-sockets/blob/main/docs/explainer.md#udp
+// https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#udp
 
 [
     Exposed=Window,
-    RuntimeEnabled=DirectSockets,
+    ActiveScriptWrappable,
     DirectSocketEnabled
 ] interface UDPSocket {
-  // TODO(crbug.com/1119620): Add support for sending, receiving
-  // TODO(crbug.com/1119620): Add measurement
-
-  [RaisesException, CallWith=ScriptState]
+  [RaisesException, CallWith=ScriptState, Measure]
   Promise<void> close();
+
+  [Measure] readonly attribute DOMString remoteAddress;
+  [Measure] readonly attribute unsigned short remotePort;
+  [Measure] readonly attribute unsigned short localPort;
+  [Measure] readonly attribute ReadableStream readable;
+  [Measure] readonly attribute WritableStream writable;
 };

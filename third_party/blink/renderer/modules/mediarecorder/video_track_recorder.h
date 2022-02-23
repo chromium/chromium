@@ -8,7 +8,6 @@
 #include <atomic>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/sequenced_task_runner.h"
@@ -24,7 +23,6 @@
 #include "third_party/blink/renderer/modules/mediarecorder/buildflags.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
-#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/cross_thread_copier.h"
 #include "third_party/blink/renderer/platform/wtf/functional.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
@@ -45,7 +43,7 @@ class VideoFrame;
 }  // namespace media
 
 namespace video_track_recorder {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 const int kVEAEncoderMinResolutionWidth = 176;
 const int kVEAEncoderMinResolutionHeight = 144;
 #else
@@ -75,14 +73,14 @@ class WebGraphicsContext3DProvider;
 // from media from a source.
 class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
  public:
-  // Do not change the order of codecs; add new ones right before LAST.
+  // Do not change the order of codecs; add new ones right before kLast.
   enum class CodecId {
-    VP8,
-    VP9,
+    kVp8,
+    kVp9,
 #if BUILDFLAG(RTC_USE_H264)
-    H264,
+    kH264,
 #endif
-    LAST
+    kLast
   };
 
   // Video codec and its encoding profile/level.
@@ -288,7 +286,7 @@ class VideoTrackRecorder : public TrackRecorder<MediaStreamVideoSink> {
     // VEA-supported profiles grouped by CodecId.
     HashMap<CodecId, media::VideoEncodeAccelerator::SupportedProfiles>
         supported_profiles_;
-    CodecId preferred_codec_id_ = CodecId::LAST;
+    CodecId preferred_codec_id_ = CodecId::kLast;
   };
 
   explicit VideoTrackRecorder(base::OnceClosure on_track_source_ended_cb);

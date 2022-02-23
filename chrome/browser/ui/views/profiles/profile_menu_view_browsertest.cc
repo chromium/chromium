@@ -8,6 +8,7 @@
 #include "base/command_line.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
@@ -27,7 +28,9 @@
 #include "chrome/browser/profiles/profile_metrics.h"
 #include "chrome/browser/profiles/profiles_state.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/signin/signin_promo.h"
 #include "chrome/browser/sync/sync_service_factory.h"
+#include "chrome/browser/sync/sync_ui_util.h"
 #include "chrome/browser/sync/test/integration/secondary_account_helper.h"
 #include "chrome/browser/sync/test/integration/status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
@@ -42,17 +45,19 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/profiles/profile_menu_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_view.h"
-#include "chrome/browser/ui/views/user_education/feature_promo_controller_views.h"
+#include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
 #include "chrome/browser/ui/webui/signin/login_ui_test_utils.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/autofill/core/common/autofill_payments_features.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/feature_engagement/public/tracker.h"
 #include "components/feature_engagement/test/test_tracker.h"
+#include "components/google/core/common/google_util.h"
 #include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_pref_names.h"
@@ -74,6 +79,11 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/webview/webview.h"
 #include "ui/views/test/widget_test.h"
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
+#include "components/account_manager_core/chromeos/fake_account_manager_ui.h"
+#endif
 
 namespace {
 
@@ -103,7 +113,7 @@ class UnconsentedPrimaryAccountChecker
   }
 
  private:
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 };
 
 Profile* CreateTestingProfile(const base::FilePath& path) {
@@ -127,6 +137,29 @@ std::unique_ptr<KeyedService> CreateTestTracker(content::BrowserContext*) {
   return feature_engagement::CreateTestTracker();
 }
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+class FakeAccountManagerUITestObserver : public FakeAccountManagerUI::Observer {
+ public:
+  explicit FakeAccountManagerUITestObserver(
+      FakeAccountManagerUI* account_manager_ui)
+      : account_manager_ui_(account_manager_ui) {
+    scoped_observation_.Observe(account_manager_ui_);
+  }
+  ~FakeAccountManagerUITestObserver() override = default;
+
+  void WaitForReauthAccountDialogShown() { reauth_run_loop_.Run(); }
+
+  // FakeAccountManagerUI::Observer:
+  void OnReauthAccountDialogShown() override { reauth_run_loop_.Quit(); }
+
+ private:
+  FakeAccountManagerUI* account_manager_ui_;
+  base::RunLoop reauth_run_loop_;
+  base::ScopedObservation<FakeAccountManagerUI, FakeAccountManagerUI::Observer>
+      scoped_observation_{this};
+};
+#endif
+
 }  // namespace
 
 class ProfileMenuViewTestBase {
@@ -145,7 +178,7 @@ class ProfileMenuViewTestBase {
     ASSERT_TRUE(profile_menu_view());
     profile_menu_view()->set_close_on_deactivate(false);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     base::RunLoop().RunUntilIdle();
 #else
     // If possible wait until the menu is active.
@@ -233,8 +266,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
   ASSERT_EQ(0, tab_strip->active_index());
 
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
-  AddTabAtIndex(1, GURL("https://test_url.com"),
-                ui::PageTransition::PAGE_TRANSITION_LINK);
+  ASSERT_FALSE(AddTabAtIndex(1, GURL("https://test_url.com"),
+                             ui::PageTransition::PAGE_TRANSITION_LINK));
   EXPECT_EQ(1, tab_strip->active_index());
   base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(ProfileMenuView::IsShowing());
@@ -245,8 +278,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseBubbleOnTadAdded) {
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnActiveTabChanged) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
-  AddTabAtIndex(1, GURL("https://test_url.com"),
-                ui::PageTransition::PAGE_TRANSITION_LINK);
+  ASSERT_FALSE(AddTabAtIndex(1, GURL("https://test_url.com"),
+                             ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_EQ(2, tab_strip->count());
   ASSERT_EQ(1, tab_strip->active_index());
 
@@ -261,8 +294,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
                        CloseBubbleOnActiveTabClosed) {
   TabStripModel* tab_strip = browser()->tab_strip_model();
-  AddTabAtIndex(1, GURL("https://test_url.com"),
-                ui::PageTransition::PAGE_TRANSITION_LINK);
+  ASSERT_FALSE(AddTabAtIndex(1, GURL("https://test_url.com"),
+                             ui::PageTransition::PAGE_TRANSITION_LINK));
   ASSERT_EQ(2, tab_strip->count());
   ASSERT_EQ(1, tab_strip->active_index());
 
@@ -290,10 +323,10 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest,
 // Regression test for https://crbug.com/1205901
 IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
   // Display the IPH.
-  FeaturePromoControllerViews::BlockActiveWindowCheckForTesting();
-  FeaturePromoControllerViews* promo_controller =
-      BrowserView::GetBrowserViewForBrowser(browser())
-          ->feature_promo_controller();
+  auto lock = BrowserFeaturePromoController::BlockActiveWindowCheckForTesting();
+  BrowserFeaturePromoController* const promo_controller =
+      static_cast<BrowserFeaturePromoController*>(
+          browser()->window()->GetFeaturePromoController());
   feature_engagement::Tracker* tracker =
       promo_controller->feature_engagement_tracker();
   base::RunLoop loop;
@@ -312,14 +345,14 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewExtensionsTest, CloseIPH) {
 #endif
   EXPECT_EQ(should_show, promo_controller->MaybeShowPromo(
                              feature_engagement::kIPHProfileSwitchFeature));
-  EXPECT_EQ(should_show, promo_controller->BubbleIsShowing(
+  EXPECT_EQ(should_show, promo_controller->IsPromoActive(
                              feature_engagement::kIPHProfileSwitchFeature));
 
   // Open the menu.
   ASSERT_NO_FATAL_FAILURE(OpenProfileMenu(browser()));
 
   // Check the IPH is no longer showing.
-  EXPECT_FALSE(promo_controller->BubbleIsShowing(
+  EXPECT_FALSE(promo_controller->IsPromoActive(
       feature_engagement::kIPHProfileSwitchFeature));
 }
 
@@ -382,7 +415,8 @@ IN_PROC_BROWSER_TEST_F(ProfileMenuViewSignoutTest, OpenLogoutTab) {
 // Checks that the NTP is navigated to the logout URL, instead of creating
 // another tab.
 // Flaky on Linux, at least. crbug.com/1116606
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+// Flaky on Mac because of crbug.com/1273102.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_MAC)
 #define MAYBE_SignoutFromNTP DISABLED_SignoutFromNTP
 #else
 #define MAYBE_SignoutFromNTP SignoutFromNTP
@@ -495,6 +529,77 @@ INSTANTIATE_TEST_SUITE_P(NetworkOnOrOff,
                          ProfileMenuViewSignoutTestWithNetwork,
                          ::testing::Bool());
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
+
+// Test suite that sets up a primary sync account in an error state and
+// simulates a click on the sync error button.
+class ProfileMenuViewSyncErrorButtonTest : public ProfileMenuViewTestBase,
+                                           public InProcessBrowserTest {
+ public:
+  ProfileMenuViewSyncErrorButtonTest() = default;
+
+  CoreAccountInfo account_info() const { return account_info_; }
+
+  bool Reauth() {
+    OpenProfileMenu(browser());
+    if (HasFatalFailure())
+      return false;
+    static_cast<ProfileMenuView*>(profile_menu_view())
+        ->OnSyncErrorButtonClicked(AvatarSyncErrorType::kAuthError);
+    return true;
+  }
+
+  void SetUpOnMainThread() override {
+    // Add an account.
+    signin::IdentityManager* identity_manager =
+        IdentityManagerFactory::GetForProfile(browser()->profile());
+    account_info_ = signin::MakePrimaryAccountAvailable(
+        identity_manager, "foo@example.com", signin::ConsentLevel::kSync);
+    signin::SetInvalidRefreshTokenForPrimaryAccount(identity_manager);
+    ASSERT_TRUE(
+        identity_manager->HasAccountWithRefreshTokenInPersistentErrorState(
+            account_info_.account_id));
+  }
+
+ private:
+  CoreAccountInfo account_info_;
+};
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthDialog) {
+  FakeAccountManagerUI* account_manager_ui = GetFakeAccountManagerUI();
+  ASSERT_TRUE(account_manager_ui);
+  FakeAccountManagerUITestObserver observer(account_manager_ui);
+
+  ASSERT_TRUE(Reauth());
+
+  observer.WaitForReauthAccountDialogShown();
+  EXPECT_TRUE(account_manager_ui->IsDialogShown());
+  EXPECT_EQ(1,
+            account_manager_ui->show_account_reauthentication_dialog_calls());
+}
+#else
+IN_PROC_BROWSER_TEST_F(ProfileMenuViewSyncErrorButtonTest, OpenReauthTab) {
+  // Start from a page that is not the NTP.
+  ASSERT_TRUE(
+      ui_test_utils::NavigateToURL(browser(), GURL("https://www.google.com")));
+  TabStripModel* tab_strip = browser()->tab_strip_model();
+  EXPECT_EQ(1, tab_strip->count());
+  EXPECT_EQ(0, tab_strip->active_index());
+  EXPECT_NE(GURL(chrome::kChromeUINewTabURL),
+            tab_strip->GetActiveWebContents()->GetURL());
+
+  // Reauth creates a new tab.
+  ui_test_utils::TabAddedWaiter tab_waiter(browser());
+  ASSERT_TRUE(Reauth());
+  tab_waiter.Wait();
+  EXPECT_EQ(2, tab_strip->count());
+  EXPECT_EQ(1, tab_strip->active_index());
+  content::WebContents* reauth_page = tab_strip->GetActiveWebContents();
+  EXPECT_EQ(signin::GetChromeSyncURLForDice(account_info().email,
+                                            google_util::kGoogleHomepageURL),
+            reauth_page->GetURL());
+}
+#endif
 
 // This class is used to test the existence, the correct order and the call to
 // the correct action of the buttons in the profile menu. This is done by
@@ -752,8 +857,15 @@ constexpr ProfileMenuViewBase::ActionableItem kActionableItems_SyncPaused[] = {
     // there are no other buttons at the end.
     ProfileMenuViewBase::ActionableItem::kEditProfileButton};
 
+// TODO(crbug.com/1298490): flaky on Windows.
+#if BUILDFLAG(IS_WIN)
+#define MAYBE_ProfileMenuClickTest_SyncPaused \
+  DISABLED_ProfileMenuClickTest_SyncPaused
+#else
+#define MAYBE_ProfileMenuClickTest_SyncPaused ProfileMenuClickTest_SyncPaused
+#endif
 PROFILE_MENU_CLICK_TEST(kActionableItems_SyncPaused,
-                        ProfileMenuClickTest_SyncPaused) {
+                        MAYBE_ProfileMenuClickTest_SyncPaused) {
   ASSERT_TRUE(sync_harness()->SetupSync());
   sync_harness()->EnterSyncPausedStateForPrimaryAccount();
   // Check that the setup was successful.
@@ -798,7 +910,6 @@ IN_PROC_BROWSER_TEST_P(ProfileMenuClickTest_SigninDisallowed,
   browser()->profile()->GetPrefs()->SetBoolean(
       prefs::kSigninAllowedOnNextStartup, false);
 }
-#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.
@@ -831,6 +942,7 @@ PROFILE_MENU_CLICK_TEST(kActionableItems_WithUnconsentedPrimaryAccount,
 
   RunTest();
 }
+#endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // List of actionable items in the correct order as they appear in the menu.
 // If a new button is added to the menu, it should also be added to this list.

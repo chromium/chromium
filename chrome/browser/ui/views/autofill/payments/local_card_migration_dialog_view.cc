@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/i18n/message_formatter.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/branding_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
@@ -147,7 +148,7 @@ class TipTextContainer : public views::View {
   }
 
  private:
-  views::Label* tip_ = nullptr;
+  raw_ptr<views::Label> tip_ = nullptr;
 };
 
 BEGIN_METADATA(TipTextContainer, views::View)
@@ -371,13 +372,13 @@ class LocalCardMigrationOfferView : public views::View {
  private:
   friend class LocalCardMigrationDialogView;
 
-  LocalCardMigrationDialogController* controller_;
+  raw_ptr<LocalCardMigrationDialogController> controller_;
 
-  views::View* card_list_view_ = nullptr;
+  raw_ptr<views::View> card_list_view_ = nullptr;
 
   // The view that contains legal message and handles legal message links
   // clicking.
-  LegalMessageView* legal_message_container_ = nullptr;
+  raw_ptr<LegalMessageView> legal_message_container_ = nullptr;
 };
 
 BEGIN_METADATA(LocalCardMigrationOfferView, views::View)
@@ -387,7 +388,7 @@ END_METADATA
 LocalCardMigrationDialogView::LocalCardMigrationDialogView(
     LocalCardMigrationDialogController* controller,
     content::WebContents* web_contents)
-    : controller_(controller), web_contents_(web_contents) {
+    : controller_(controller), web_contents_(web_contents->GetWeakPtr()) {
   SetButtons(controller_->AllCardsInvalid()
                  ? ui::DIALOG_BUTTON_OK
                  : ui::DIALOG_BUTTON_OK | ui::DIALOG_BUTTON_CANCEL);
@@ -398,8 +399,6 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
                      base::Unretained(this)));
   SetAcceptCallback(base::BindOnce(
       &LocalCardMigrationDialogView::OnDialogAccepted, base::Unretained(this)));
-  RegisterWindowClosingCallback(base::BindOnce(
-      &LocalCardMigrationDialogView::OnWindowClosing, base::Unretained(this)));
   // This should be a modal dialog blocking the browser since we don't want
   // users to lose progress in the migration workflow until they are done.
   SetModalType(ui::MODAL_TYPE_WINDOW);
@@ -410,9 +409,21 @@ LocalCardMigrationDialogView::LocalCardMigrationDialogView(
   SetShowCloseButton(false);
 }
 
-LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {}
+LocalCardMigrationDialogView::~LocalCardMigrationDialogView() {
+  if (controller_) {
+    controller_->OnDialogClosed();
+    controller_ = nullptr;
+  }
+}
 
 void LocalCardMigrationDialogView::ShowDialog() {
+  if (!web_contents_) {
+    // If web_contents does not exist, delete this because at this step this
+    // View is not owned by any class.
+    delete this;
+    return;
+  }
+
   ConstructView();
   constrained_window::CreateBrowserModalDialogViews(
       this, web_contents_->GetTopLevelNativeWindow())
@@ -446,13 +457,6 @@ void LocalCardMigrationDialogView::OnDialogCancelled() {
     case LocalCardMigrationDialogState::kActionRequired:
       controller_->OnViewCardsButtonClicked();
       break;
-  }
-}
-
-void LocalCardMigrationDialogView::OnWindowClosing() {
-  if (controller_) {
-    controller_->OnDialogClosed();
-    controller_ = nullptr;
   }
 }
 

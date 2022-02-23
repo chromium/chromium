@@ -20,14 +20,19 @@ SegmentationModelHandler::SegmentationModelHandler(
     optimization_guide::OptimizationGuideModelProvider* model_provider,
     scoped_refptr<base::SequencedTaskRunner> background_task_runner,
     optimization_guide::proto::OptimizationTarget optimization_target,
-    const ModelUpdatedCallback& model_updated_callback)
+    const ModelUpdatedCallback& model_updated_callback,
+    absl::optional<optimization_guide::proto::Any>&& model_metadata)
     : optimization_guide::ModelHandler<float, const std::vector<float>&>(
           model_provider,
           background_task_runner,
           std::make_unique<SegmentationModelExecutor>(),
           optimization_target,
-          /*model_metadata=*/absl::nullopt),
-      model_updated_callback_(model_updated_callback) {}
+          model_metadata),
+      model_updated_callback_(model_updated_callback) {
+  stats::RecordModelAvailability(
+      optimization_target,
+      stats::SegmentationModelAvailability::kModelHandlerCreated);
+}
 
 SegmentationModelHandler::~SegmentationModelHandler() = default;
 
@@ -53,8 +58,14 @@ void SegmentationModelHandler::OnModelUpdated(
     // expected to pass this along. Either something failed horribly on the way,
     // we failed to read the metadata, or the server side configuration is
     // wrong.
+    stats::RecordModelAvailability(
+        optimization_target,
+        stats::SegmentationModelAvailability::kMetadataInvalid);
     return;
   }
+  stats::RecordModelAvailability(
+      optimization_target,
+      stats::SegmentationModelAvailability::kModelAvailable);
 
   model_updated_callback_.Run(optimization_target,
                               std::move(*segmentation_model_metadata));

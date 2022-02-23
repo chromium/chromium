@@ -189,7 +189,7 @@ class CronetEnvironment {
   std::string accept_language_;
   std::string experimental_options_;
   // Effective experimental options. Kept for NetLog.
-  std::unique_ptr<base::DictionaryValue> effective_experimental_options_;
+  base::Value effective_experimental_options_;
   std::string ssl_key_log_file_name_;
   URLRequestContextConfig::HttpCacheType http_cache_;
   PkpVector pkp_list_;

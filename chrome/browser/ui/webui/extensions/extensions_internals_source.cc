@@ -95,7 +95,7 @@ const char* LocationToString(ManifestLocation loc) {
 
 base::Value CreationFlagsToList(int creation_flags) {
   base::Value flags_value(base::Value::Type::LIST);
-  if (creation_flags & extensions::Extension::NO_FLAGS)
+  if (creation_flags == extensions::Extension::NO_FLAGS)
     flags_value.Append("NO_FLAGS");
   if (creation_flags & extensions::Extension::REQUIRE_KEY)
     flags_value.Append("REQUIRE_KEY");
@@ -344,8 +344,7 @@ template <typename T>
 base::Value FormatDetailedPermissionSet(const T& permissions) {
   base::Value value_list(base::Value::Type::LIST);
   for (const auto& permission : permissions) {
-    std::unique_ptr<base::Value> detail(permission->ToValue());
-    if (detail) {
+    if (auto detail = permission->ToValue()) {
       base::Value tmp(base::Value::Type::DICTIONARY);
       tmp.SetKey(permission->name(),
                  base::Value::FromUniquePtrValue(std::move(detail)));
@@ -442,7 +441,7 @@ void AddEventListenerData(extensions::EventRouter* event_router,
   }
 
   // Move all of the entries from the map into the output data.
-  for (auto& output_entry : data->GetList()) {
+  for (auto& output_entry : data->GetListDeprecated()) {
     const base::Value* const value = output_entry.FindKey(kInternalsIdKey);
     CHECK(value && value->is_string());
     const auto it = listeners_map.find(value->GetString());
@@ -454,9 +453,9 @@ void AddEventListenerData(extensions::EventRouter* event_router,
                              base::Value(base::Value::Type::LIST));
     } else {
       // Set the count and the events values.
-      event_listeners.SetKey(
-          kCountKey,
-          base::Value(base::checked_cast<int>(it->second.GetList().size())));
+      event_listeners.SetKey(kCountKey,
+                             base::Value(base::checked_cast<int>(
+                                 it->second.GetListDeprecated().size())));
       event_listeners.SetKey(kListenersKey, std::move(it->second));
     }
     output_entry.SetKey(kEventsListenersKey, std::move(event_listeners));

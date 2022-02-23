@@ -33,9 +33,7 @@ namespace translate {
 class TranslateAgent : public content::RenderFrameObserver,
                        public mojom::TranslateAgent {
  public:
-  TranslateAgent(content::RenderFrame* render_frame,
-                 int world_id,
-                 const std::string& extension_scheme);
+  TranslateAgent(content::RenderFrame* render_frame, int world_id);
 
   TranslateAgent(const TranslateAgent&) = delete;
   TranslateAgent& operator=(const TranslateAgent&) = delete;
@@ -178,9 +176,6 @@ class TranslateAgent : public content::RenderFrameObserver,
 
   // The world ID to use for script execution.
   int world_id_;
-
-  // The URL scheme for translate extensions.
-  std::string extension_scheme_;
 
   // The page content length at language detection time. Recorded to UMA when a
   // user translates the page.

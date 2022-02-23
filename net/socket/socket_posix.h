@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/threading/thread_checker.h"
@@ -130,7 +130,7 @@ class NET_EXPORT_PRIVATE SocketPosix
   SocketDescriptor socket_fd_;
 
   base::MessagePumpForIO::FdWatchController accept_socket_watcher_;
-  std::unique_ptr<SocketPosix>* accept_socket_;
+  raw_ptr<std::unique_ptr<SocketPosix>> accept_socket_;
   CompletionOnceCallback accept_callback_;
 
   base::MessagePumpForIO::FdWatchController read_socket_watcher_;

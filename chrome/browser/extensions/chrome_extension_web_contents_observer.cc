@@ -34,7 +34,9 @@ namespace extensions {
 
 ChromeExtensionWebContentsObserver::ChromeExtensionWebContentsObserver(
     content::WebContents* web_contents)
-    : ExtensionWebContentsObserver(web_contents) {}
+    : ExtensionWebContentsObserver(web_contents),
+      content::WebContentsUserData<ChromeExtensionWebContentsObserver>(
+          *web_contents) {}
 
 ChromeExtensionWebContentsObserver::~ChromeExtensionWebContentsObserver() {}
 
@@ -143,8 +145,8 @@ void ChromeExtensionWebContentsObserver::InitializeRenderFrame(
   ExtensionWebContentsObserver::InitializeRenderFrame(render_frame_host);
   WindowController* controller = dispatcher()->GetExtensionWindowController();
   if (controller) {
-    render_frame_host->Send(new ExtensionMsg_UpdateBrowserWindowId(
-        render_frame_host->GetRoutingID(), controller->GetWindowId()));
+    GetLocalFrame(render_frame_host)
+        ->UpdateBrowserWindowId(controller->GetWindowId());
   }
 }
 

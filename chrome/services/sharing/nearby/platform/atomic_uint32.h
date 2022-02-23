@@ -7,7 +7,7 @@
 
 #include <atomic>
 
-#include "third_party/nearby/src/cpp/platform/api/atomic_reference.h"
+#include "third_party/nearby/src/internal/platform/implementation/atomic_reference.h"
 
 namespace location {
 namespace nearby {

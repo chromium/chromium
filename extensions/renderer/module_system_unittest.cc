@@ -155,7 +155,7 @@ TEST_F(ModuleSystemTest, TestLazyField) {
 
   v8::Local<v8::Object> object = env()->CreateGlobal("object");
 
-  env()->module_system()->SetLazyField(object, "blah", "lazy", "x");
+  env()->SetLazyField(object, "blah", "lazy", "x");
 
   env()->RegisterModule("test",
                         "var assert = requireNative('assert');"
@@ -176,7 +176,7 @@ TEST_F(ModuleSystemTest, TestLazyFieldYieldingObject) {
 
   v8::Local<v8::Object> object = env()->CreateGlobal("object");
 
-  env()->module_system()->SetLazyField(object, "thing", "lazy", "object");
+  env()->SetLazyField(object, "thing", "lazy", "object");
 
   env()->RegisterModule("test",
                         "var assert = requireNative('assert');"
@@ -198,7 +198,7 @@ TEST_F(ModuleSystemTest, TestLazyFieldIsOnlyEvaledOnce) {
 
   v8::Local<v8::Object> object = env()->CreateGlobal("object");
 
-  env()->module_system()->SetLazyField(object, "x", "lazy", "x");
+  env()->SetLazyField(object, "x", "lazy", "x");
 
   env()->RegisterModule("test",
                         "var assert = requireNative('assert');"
@@ -217,7 +217,7 @@ TEST_F(ModuleSystemTest, TestRequireNativesAfterLazyEvaluation) {
   env()->RegisterModule("lazy", "exports.$set('x', 5);");
   v8::Local<v8::Object> object = env()->CreateGlobal("object");
 
-  env()->module_system()->SetLazyField(object, "x", "lazy", "x");
+  env()->SetLazyField(object, "x", "lazy", "x");
   env()->RegisterModule("test",
                         "object.x;"
                         "requireNative('assert').AssertTrue(true);");
@@ -233,7 +233,7 @@ TEST_F(ModuleSystemTest, TestTransitiveRequire) {
 
   v8::Local<v8::Object> object = env()->CreateGlobal("object");
 
-  env()->module_system()->SetLazyField(object, "thing", "lazy", "output");
+  env()->SetLazyField(object, "thing", "lazy", "output");
 
   env()->RegisterModule("test",
                         "var assert = requireNative('assert');"

@@ -12,6 +12,7 @@
 #include "components/autofill_assistant/browser/action_value.pb.h"
 #include "components/autofill_assistant/browser/actions/action_delegate.h"
 #include "components/autofill_assistant/browser/client_status.h"
+#include "components/autofill_assistant/browser/metrics.h"
 #include "components/autofill_assistant/browser/service.pb.h"
 #include "components/autofill_assistant/browser/user_data.h"
 #include "components/autofill_assistant/browser/web/element_finder.h"
@@ -25,6 +26,11 @@ std::vector<std::string> GetContactValidationErrors(
     const autofill::AutofillProfile* profile,
     const CollectUserDataOptions& collect_user_data_options);
 
+// Validate the completeness of a phone number.
+std::vector<std::string> GetPhoneNumberValidationErrors(
+    const autofill::AutofillProfile* profile,
+    const CollectUserDataOptions& collect_user_data_options);
+
 // Sorts the given contacts based on completeness, and returns a vector of
 // indices in sorted order. Full contacts will be ordered before empty ones,
 // and for equally complete contacts, this falls back to sorting based on last
@@ -33,10 +39,24 @@ std::vector<int> SortContactsByCompleteness(
     const CollectUserDataOptions& collect_user_data_options,
     const std::vector<std::unique_ptr<Contact>>& contacts);
 
+// Sorts the given phone numbers based on completeness, and returns a vector of
+// indices in sorted order. Full phone numbers will be ordered before empty
+// ones, and for equally complete phone numbers, this falls back to sorting
+// based on last used.
+std::vector<int> SortPhoneNumbersByCompleteness(
+    const CollectUserDataOptions& collect_user_data_options,
+    const std::vector<std::unique_ptr<PhoneNumber>>& phone_numbers);
+
 // Get the default selection for the current list of contacts. Returns -1 if no
 // default selection is possible.
 int GetDefaultContact(const CollectUserDataOptions& collect_user_data_options,
                       const std::vector<std::unique_ptr<Contact>>& contacts);
+
+// Get the default selection for the current list of phone numbers. Returns -1
+// if no default selection is possible.
+int GetDefaultPhoneNumber(
+    const CollectUserDataOptions& collect_user_data_options,
+    const std::vector<std::unique_ptr<PhoneNumber>>& contacts);
 
 // Validate the completeness of a shipping address.
 std::vector<std::string> GetShippingAddressValidationErrors(
@@ -78,14 +98,6 @@ int GetDefaultPaymentInstrument(
 
 std::unique_ptr<autofill::AutofillProfile> MakeUniqueFromProfile(
     const autofill::AutofillProfile& profile);
-
-// Compare contact fields only. This comparison checks a subset of
-// AutofillProfile::Compare. Falls back to comparing the GUIDs if nothing else
-// is to be compared.
-bool CompareContactDetails(
-    const CollectUserDataOptions& collect_user_data_options,
-    const autofill::AutofillProfile* a,
-    const autofill::AutofillProfile* b);
 
 // Get a formatted client value. The replacement is treated as strict,
 // meaning a missing value will lead to a failed ClientStatus.
@@ -133,6 +145,37 @@ void ResolveTextValue(
     const ElementFinder::Result& target_element,
     const ActionDelegate* action_delegate,
     base::OnceCallback<void(const ClientStatus&, const std::string&)> callback);
+
+// Returns the next selection state for when an event of type |event_type|
+// happens while the current state is |old_state|.
+Metrics::UserDataSelectionState GetNewSelectionState(
+    Metrics::UserDataSelectionState old_state,
+    UserDataEventType event_type);
+
+// Returns the bit array describing which fields are present in |profile|, using
+// Metrics::AutofillAssistantProfileFields as columns.
+// If |profile| is nullptr, returns zero (i.e. all fields are considered
+// missing).
+int GetFieldBitArrayForAddress(const autofill::AutofillProfile* profile);
+
+// Returns the bit array describing which fields are present in |profile|, using
+// Metrics::AutofillAssistantProfileFields as columns.
+// Phone number fields are checked on |phone_number_profile| instead of
+// |profile|.
+int GetFieldBitArrayForAddressAndPhoneNumber(
+    const autofill::AutofillProfile* profile,
+    const autofill::AutofillProfile* phone_number_profile);
+
+// Returns the bit array describing which fields are present in |card|, using
+// Metrics::AutofillAssistantCreditCardFields as columns.
+// If |card| is nullptr, returns zero (i.e. all fields are considered
+// missing).
+int GetFieldBitArrayForCreditCard(const autofill::CreditCard* card);
+
+// Resolves |selector|'s references to user data with the actual values.
+// Modifies |selector| in place.
+ClientStatus ResolveSelectorUserData(SelectorProto* selector,
+                                     const UserData* user_data);
 
 }  // namespace user_data
 }  // namespace autofill_assistant

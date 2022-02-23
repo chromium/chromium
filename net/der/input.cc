@@ -4,21 +4,11 @@
 
 #include "net/der/input.h"
 
-#include <string.h>
-
-#include <algorithm>
-
 #include "base/check_op.h"
 
 namespace net {
 
 namespace der {
-
-Input::Input() : data_(nullptr), len_(0) {
-}
-
-Input::Input(const uint8_t* data, size_t len) : data_(data), len_(len) {
-}
 
 Input::Input(const base::StringPiece& in)
     : data_(reinterpret_cast<const uint8_t*>(in.data())), len_(in.length()) {}
@@ -35,22 +25,6 @@ base::StringPiece Input::AsStringPiece() const {
 
 base::span<const uint8_t> Input::AsSpan() const {
   return base::make_span(data_, len_);
-}
-
-bool operator==(const Input& lhs, const Input& rhs) {
-  if (lhs.Length() != rhs.Length())
-    return false;
-  return memcmp(lhs.UnsafeData(), rhs.UnsafeData(), lhs.Length()) == 0;
-}
-
-bool operator!=(const Input& lhs, const Input& rhs) {
-  return !(lhs == rhs);
-}
-
-bool operator<(const Input& lhs, const Input& rhs) {
-  return std::lexicographical_compare(
-      lhs.UnsafeData(), lhs.UnsafeData() + lhs.Length(), rhs.UnsafeData(),
-      rhs.UnsafeData() + rhs.Length());
 }
 
 ByteReader::ByteReader(const Input& in)

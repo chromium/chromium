@@ -6,7 +6,7 @@
 
 namespace blink {
 
-AppliedTextDecoration::AppliedTextDecoration(TextDecoration line,
+AppliedTextDecoration::AppliedTextDecoration(TextDecorationLine line,
                                              ETextDecorationStyle style,
                                              Color color,
                                              TextDecorationThickness thickness,

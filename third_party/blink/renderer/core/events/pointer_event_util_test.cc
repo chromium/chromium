@@ -59,7 +59,7 @@ TEST_P(AzimuthInValidRangeWithParameterTests,
       PointerEventUtil::TransformToAzimuthInValidRange(azimuth_angle_));
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     AzimuthInValidRangeTests,
     AzimuthInValidRangeWithParameterTests,
     ::testing::Values(
@@ -78,7 +78,7 @@ TEST_P(AltitudeInValidRangeWithParameterTests,
       PointerEventUtil::TransformToAltitudeInValidRange(altitude_angle_));
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     AltitudeInValidRangeTests,
     AltitudeInValidRangeWithParameterTests,
     ::testing::Values(std::make_tuple(0, 0),
@@ -92,14 +92,14 @@ TEST_P(TiltInValidRangeWithParameterTests, CheckTiltTransformedCorrectly) {
             PointerEventUtil::TransformToTiltInValidRange(tilt_angle_));
 }
 
-INSTANTIATE_TEST_CASE_P(TiltInValidRangeTests,
-                        TiltInValidRangeWithParameterTests,
-                        ::testing::Values(std::make_tuple(0, 0),
-                                          std::make_tuple(45, 45),
-                                          std::make_tuple(90, 90),
-                                          std::make_tuple(135, -45),
-                                          std::make_tuple(180, 0),
-                                          std::make_tuple(225, 45),
-                                          std::make_tuple(270, 90),
-                                          std::make_tuple(360, 0)));
+INSTANTIATE_TEST_SUITE_P(TiltInValidRangeTests,
+                         TiltInValidRangeWithParameterTests,
+                         ::testing::Values(std::make_tuple(0, 0),
+                                           std::make_tuple(45, 45),
+                                           std::make_tuple(90, 90),
+                                           std::make_tuple(135, -45),
+                                           std::make_tuple(180, 0),
+                                           std::make_tuple(225, 45),
+                                           std::make_tuple(270, 90),
+                                           std::make_tuple(360, 0)));
 }  // namespace blink

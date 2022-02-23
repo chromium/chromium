@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-#include "components/arc/mojom/input_method_manager.mojom.h"
+#include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 
 namespace arc {

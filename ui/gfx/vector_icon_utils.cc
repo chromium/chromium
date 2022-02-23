@@ -4,7 +4,9 @@
 
 #include "ui/gfx/vector_icon_utils.h"
 
-#include "base/check.h"
+#include <ostream>
+
+#include "base/check_op.h"
 #include "ui/gfx/vector_icon_types.h"
 
 namespace gfx {

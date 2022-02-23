@@ -13,6 +13,6 @@ stime_t StimeNow();
 
 extern const GesturesTimerProvider kGestureTimerProvider;
 
-}  // namspace ui
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_LIBGESTURES_GLUE_GESTURE_TIMER_PROVIDER_H_

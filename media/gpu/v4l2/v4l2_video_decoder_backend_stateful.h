@@ -6,6 +6,7 @@
 #define MEDIA_GPU_V4L2_V4L2_VIDEO_DECODER_BACKEND_STATEFUL_H_
 
 #include <memory>
+#include <string>
 #include <vector>
 
 #include "base/containers/queue.h"
@@ -28,6 +29,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
       Client* const client,
       scoped_refptr<V4L2Device> device,
       VideoCodecProfile profile,
+      const VideoColorSpace& color_space,
       scoped_refptr<base::SequencedTaskRunner> task_runner);
   ~V4L2StatefulVideoDecoderBackend() override;
 
@@ -49,7 +51,7 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
                        const gfx::Rect& visible_rect,
                        const size_t num_output_frames) override;
   void OnChangeResolutionDone(CroStatus status) override;
-  void ClearPendingRequests(DecodeStatus status) override;
+  void ClearPendingRequests(DecoderStatus status) override;
   bool StopInputQueueOnResChange() const override;
 
  private:
@@ -117,8 +119,14 @@ class V4L2StatefulVideoDecoderBackend : public V4L2VideoDecoderBackend {
   // Process all the event in the event queue
   void ProcessEventQueue();
 
+  // The name of the running driver.
+  const std::string driver_name_;
+
   // Video profile we are decoding.
   VideoCodecProfile profile_;
+
+  // Video color space we are decoding.
+  VideoColorSpace color_space_;
 
   // The task runner we are running on, for convenience.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

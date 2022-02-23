@@ -14,8 +14,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/fixed_flat_map.h"
 #include "base/feature_list.h"
-#include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/policy/dlp/data_transfer_dlp_controller.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_histogram_helper.h"
@@ -24,14 +24,11 @@
 #include "chrome/common/chrome_features.h"
 #include "chromeos/dbus/dlp/dlp_client.h"
 #include "chromeos/dbus/dlp/dlp_service.pb.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/reporting/client/report_queue_factory.h"
+#include "components/url_matcher/url_util.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "url/gurl.h"
-#include "url/origin.h"
 
 namespace policy {
 
@@ -104,14 +101,14 @@ void AddUrlConditions(url_matcher::URLMatcher* matcher,
   std::string path;
   std::string query;
   bool match_subdomains = true;
-  for (const auto& list_entry : urls->GetList()) {
+  for (const auto& list_entry : urls->GetListDeprecated()) {
     std::string url = list_entry.GetString();
-    if (!url_util::FilterToComponents(url, &scheme, &host, &match_subdomains,
-                                      &port, &path, &query)) {
+    if (!url_matcher::util::FilterToComponents(
+            url, &scheme, &host, &match_subdomains, &port, &path, &query)) {
       LOG(ERROR) << "Invalid pattern " << url;
       continue;
     }
-    auto condition_set = url_util::CreateConditionSet(
+    auto condition_set = url_matcher::util::CreateConditionSet(
         matcher, ++condition_id, scheme, host, match_subdomains, port, path,
         query, /*allow=*/true);
 
@@ -178,12 +175,14 @@ std::pair<DlpRulesManager::Level, absl::optional<T>> GetMaxJoinRestrictionLevel(
   return max_level;
 }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 void OnSetDlpFilesPolicy(const ::dlp::SetDlpFilesPolicyResponse response) {
   if (response.has_error_message()) {
     LOG(ERROR) << "Failed to set DLP Files policy and start DLP daemon, error: "
                << response.error_message();
   }
 }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 ::dlp::DlpRuleLevel GetLevelProtoEnum(const DlpRulesManager::Level level) {
   static constexpr auto kLevelsMap =
@@ -251,8 +250,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
          restriction == Restriction::kFiles);
 
   // Allow copy/paste within the same document.
-  if (url::Origin::Create(source).IsSameOriginWith(
-          url::Origin::Create(destination)))
+  if (url::IsSameOriginWith(source, destination))
     return Level::kAllow;
 
   const RulesConditionsMap src_rules_map = MatchUrlAndGetRulesMapping(
@@ -289,8 +287,10 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedDestination(
       out_destination_pattern) {
     UrlConditionId src_condition_id = level_urls_pair.second.value().first;
     UrlConditionId dst_condition_id = level_urls_pair.second.value().second;
-    *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
-    *out_destination_pattern = dst_pattterns_mapping_.at(dst_condition_id);
+    if (out_source_pattern)
+      *out_source_pattern = src_pattterns_mapping_.at(src_condition_id);
+    if (out_destination_pattern)
+      *out_destination_pattern = dst_pattterns_mapping_.at(dst_condition_id);
   }
   return level_urls_pair.first;
 }
@@ -338,8 +338,7 @@ DlpRulesManager::Level DlpRulesManagerImpl::IsRestrictedComponent(
   return level_url_pair.first;
 }
 
-DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
-                                         base::StringPiece dm_token_value) {
+DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state) {
   pref_change_registrar_.Init(local_state);
   pref_change_registrar_.Add(
       policy_prefs::kDlpRulesList,
@@ -350,9 +349,6 @@ DlpRulesManagerImpl::DlpRulesManagerImpl(PrefService* local_state,
   if (!IsReportingEnabled())
     return;
   reporting_manager_ = std::make_unique<DlpReportingManager>();
-  reporting::ReportQueueFactory::Create(
-      dm_token_value, reporting::Destination::DLP_EVENTS,
-      reporting_manager_->GetReportQueueSetter());
 }
 
 bool DlpRulesManagerImpl::IsReportingEnabled() const {
@@ -394,7 +390,7 @@ std::string DlpRulesManagerImpl::GetSourceUrlPattern(const GURL& source_url,
   return std::string();
 }
 
-int DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
+size_t DlpRulesManagerImpl::GetClipboardCheckSizeLimitInBytes() const {
   return pref_change_registrar_.prefs()->GetInteger(
       policy_prefs::kDlpClipboardCheckSizeLimit);
 }
@@ -419,8 +415,8 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
       g_browser_process->local_state()->GetList(policy_prefs::kDlpRulesList);
 
   DlpBooleanHistogram(dlp::kDlpPolicyPresentUMA,
-                      rules_list && !rules_list->GetList().empty());
-  if (!rules_list || rules_list->GetList().empty()) {
+                      rules_list && !rules_list->GetListDeprecated().empty());
+  if (!rules_list || rules_list->GetListDeprecated().empty()) {
     DataTransferDlpController::DeleteInstance();
     return;
   }
@@ -432,7 +428,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
   // Constructing request to send the policy to DLP Files daemon.
   ::dlp::SetDlpFilesPolicyRequest request_to_daemon;
 
-  for (const base::Value& rule : rules_list->GetList()) {
+  for (const base::Value& rule : rules_list->GetListDeprecated()) {
     DCHECK(rule.is_dict());
     const auto* sources = rule.FindDictKey("sources");
     DCHECK(sources);
@@ -456,7 +452,8 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     const auto* destinations_components =
         destinations ? destinations->FindListKey("components") : nullptr;
     if (destinations_components) {
-      for (const auto& component : destinations_components->GetList()) {
+      for (const auto& component :
+           destinations_components->GetListDeprecated()) {
         DCHECK(component.is_string());
         components_rules_[GetComponentMapping(component.GetString())].insert(
             rules_counter);
@@ -465,7 +462,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
     const auto* restrictions = rule.FindListKey("restrictions");
     DCHECK(restrictions);
-    for (const auto& restriction : restrictions->GetList()) {
+    for (const auto& restriction : restrictions->GetListDeprecated()) {
       const auto* rule_class_str = restriction.FindStringKey("class");
       DCHECK(rule_class_str);
       const auto* rule_level_str = restriction.FindStringKey("level");
@@ -481,13 +478,14 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
 
       // TODO(crbug.com/1172959): Implement Warn level for Files.
       if (rule_restriction == Restriction::kFiles && destinations_urls &&
-          !destinations_urls->GetList().empty() && rule_level != Level::kWarn) {
+          !destinations_urls->GetListDeprecated().empty() &&
+          rule_level != Level::kWarn) {
         ::dlp::DlpFilesRule files_rule;
-        for (const auto& url : sources_urls->GetList()) {
+        for (const auto& url : sources_urls->GetListDeprecated()) {
           DCHECK(url.is_string());
           files_rule.add_source_urls(url.GetString());
         }
-        for (const auto& url : destinations_urls->GetList()) {
+        for (const auto& url : destinations_urls->GetListDeprecated()) {
           DCHECK(url.is_string());
           files_rule.add_destination_urls(url.GetString());
         }
@@ -510,6 +508,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     DataTransferDlpController::DeleteInstance();
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   // TODO(crbug.com/1174501) Shutdown the daemon when restrictions are empty.
   if (request_to_daemon.rules_size() > 0 &&
       base::FeatureList::IsEnabled(
@@ -518,6 +517,7 @@ void DlpRulesManagerImpl::OnPolicyUpdate() {
     chromeos::DlpClient::Get()->SetDlpFilesPolicy(
         request_to_daemon, base::BindOnce(&OnSetDlpFilesPolicy));
   }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace policy

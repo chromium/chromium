@@ -8,6 +8,7 @@
 
 goog.provide('CommandHandler');
 
+goog.require('AutoScrollHandler');
 goog.require('ChromeVoxState');
 goog.require('Color');
 goog.require('CustomAutomationEvent');
@@ -283,11 +284,20 @@ CommandHandler.onCommand = function(command) {
       return false;
     case 'enableChromeVoxArcSupportForCurrentApp':
       chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
-          true);
+          true, (response) => {});
       break;
     case 'disableChromeVoxArcSupportForCurrentApp':
       chrome.accessibilityPrivate.setNativeChromeVoxArcSupportForCurrentApp(
-          false);
+          false, (response) => {
+            if (response ===
+                chrome.accessibilityPrivate.SetNativeChromeVoxResponse
+                    .TALKBACK_NOT_INSTALLED) {
+              ChromeVox.braille.write(NavBraille.fromText(
+                  Msgs.getMsg('announce_install_talkback')));
+              ChromeVox.tts.speak(
+                  Msgs.getMsg('announce_install_talkback'), QueueMode.FLUSH);
+            }
+          });
       break;
     case 'showTtsSettings':
       chrome.accessibilityPrivate.openSettingsSubpage(
@@ -354,6 +364,9 @@ CommandHandler.onCommand = function(command) {
       // to set this manually.
       ChromeVoxState.instance.readNextClipboardDataChange();
       return false;
+    case 'toggleDictation':
+      EventGenerator.sendKeyPress(KeyCode.D, {search: true});
+      return false;
   }
 
   // Require a current range.
@@ -385,47 +398,72 @@ CommandHandler.onCommand = function(command) {
   let pred = null;
   let predErrorMsg = undefined;
   let rootPred = AutomationPredicate.rootOrEditableRoot;
+  let unit = null;
   let shouldWrap = true;
   const speechProps = {};
   let skipSync = false;
   let didNavigate = false;
   let tryScrolling = true;
-  let shouldSetSelection = false;
+  let skipSettingSelection = false;
   let skipInitialAncestry = true;
   switch (command) {
     case 'nextCharacter':
-      shouldSetSelection = true;
       didNavigate = true;
       speechProps['phoneticCharacters'] = true;
+      unit = cursors.Unit.CHARACTER;
       current = current.move(cursors.Unit.CHARACTER, Dir.FORWARD);
       break;
     case 'previousCharacter':
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       didNavigate = true;
       speechProps['phoneticCharacters'] = true;
+      unit = cursors.Unit.CHARACTER;
       current = current.move(cursors.Unit.CHARACTER, dir);
       break;
+    case 'nativeNextCharacter':
+    case 'nativePreviousCharacter':
+      if (DesktopAutomationHandler.instance.textEditHandler) {
+        DesktopAutomationHandler.instance.textEditHandler.injectInferredIntents(
+            [{
+              command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+              textBoundary: chrome.automation.IntentTextBoundaryType.CHARACTER
+            }]);
+      }
+      return true;
     case 'nextWord':
-      shouldSetSelection = true;
       didNavigate = true;
+      unit = cursors.Unit.WORD;
       current = current.move(cursors.Unit.WORD, Dir.FORWARD);
       break;
     case 'previousWord':
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       didNavigate = true;
+      unit = cursors.Unit.WORD;
       current = current.move(cursors.Unit.WORD, dir);
       break;
+    case 'nativeNextWord':
+    case 'nativePreviousWord':
+      if (DesktopAutomationHandler.instance.textEditHandler) {
+        DesktopAutomationHandler.instance.textEditHandler.injectInferredIntents(
+            [{
+              command: chrome.automation.IntentCommandType.MOVE_SELECTION,
+              textBoundary: command === 'nativeNextWord' ?
+                  chrome.automation.IntentTextBoundaryType.WORD_END :
+                  chrome.automation.IntentTextBoundaryType.WORD_START
+            }]);
+      }
+      return true;
     case 'forward':
     case 'nextLine':
       didNavigate = true;
+      unit = cursors.Unit.LINE;
       current = current.move(cursors.Unit.LINE, Dir.FORWARD);
       break;
     case 'backward':
     case 'previousLine':
       dir = Dir.BACKWARD;
       didNavigate = true;
+      unit = cursors.Unit.LINE;
       current = current.move(cursors.Unit.LINE, dir);
       break;
     case 'nextButton':
@@ -457,33 +495,39 @@ CommandHandler.onCommand = function(command) {
       predErrorMsg = 'no_previous_combo_box';
       break;
     case 'nextEditText':
+      skipSettingSelection = true;
       pred = AutomationPredicate.editText;
       predErrorMsg = 'no_next_edit_text';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'previousEditText':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
       pred = AutomationPredicate.editText;
       predErrorMsg = 'no_previous_edit_text';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'nextFormField':
+      skipSettingSelection = true;
       pred = AutomationPredicate.formField;
       predErrorMsg = 'no_next_form_field';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'previousFormField':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
       pred = AutomationPredicate.formField;
       predErrorMsg = 'no_previous_form_field';
       CommandHandler.smartStickyMode_.startIgnoringRangeChanges();
       break;
     case 'previousGraphic':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
       pred = AutomationPredicate.image;
       predErrorMsg = 'no_previous_graphic';
       break;
     case 'nextGraphic':
+      skipSettingSelection = true;
       pred = AutomationPredicate.image;
       predErrorMsg = 'no_next_graphic';
       break;
@@ -586,19 +630,18 @@ CommandHandler.onCommand = function(command) {
       pred = AutomationPredicate.landmark;
       predErrorMsg = 'no_previous_landmark';
       break;
-    case 'right':
-    case 'nextObject':
-      didNavigate = true;
-      current = current.move(cursors.Unit.NODE, Dir.FORWARD);
-      current = CommandHandler.skipLabelOrDescriptionFor_(current, Dir.FORWARD);
-      break;
     case 'left':
     case 'previousObject':
+      skipSettingSelection = true;
       dir = Dir.BACKWARD;
+      // Falls through.
+    case 'right':
+    case 'nextObject':
+      skipSettingSelection = true;
       didNavigate = true;
+      unit = cursors.Unit.NODE;
       current = current.move(cursors.Unit.NODE, dir);
-      current =
-          CommandHandler.skipLabelOrDescriptionFor_(current, Dir.BACKWARD);
+      current = CommandHandler.skipLabelOrDescriptionFor(current, dir);
       break;
     case 'previousGroup':
       skipSync = true;
@@ -773,14 +816,7 @@ CommandHandler.onCommand = function(command) {
       }
       return false;
     case 'contextMenu':
-      if (ChromeVoxState.instance.currentRange) {
-        let actionNode = ChromeVoxState.instance.currentRange.start.node;
-        if (actionNode.role === RoleType.INLINE_TEXT_BOX) {
-          actionNode = actionNode.parent;
-        }
-        actionNode.showContextMenu();
-        return false;
-      }
+      EventGenerator.sendKeyPress(KeyCode.APPS);
       break;
     case 'showHeadingsList':
       (new PanelCommand(PanelCommandType.OPEN_MENUS, 'role_heading')).send();
@@ -857,7 +893,6 @@ CommandHandler.onCommand = function(command) {
       output.withString(target.docUrl || '').go();
       return false;
     case 'toggleSelection':
-      shouldSetSelection = true;
       if (!ChromeVoxState.instance.pageSel_) {
         ChromeVoxState.instance.pageSel_ = ChromeVoxState.instance.currentRange;
         DesktopAutomationHandler.instance.ignoreDocumentSelectionFromAction(
@@ -894,7 +929,6 @@ CommandHandler.onCommand = function(command) {
     // Table commands.
     case 'previousRow': {
       skipSync = true;
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       const tableOpts = {row: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
@@ -905,7 +939,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'previousCol': {
       skipSync = true;
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       const tableOpts = {col: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
@@ -916,7 +949,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'nextRow': {
       skipSync = true;
-      shouldSetSelection = true;
       const tableOpts = {row: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
           current.start.node, tableOpts);
@@ -926,7 +958,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'nextCol': {
       skipSync = true;
-      shouldSetSelection = true;
       const tableOpts = {col: true, dir};
       pred = AutomationPredicate.makeTableCellPredicate(
           current.start.node, tableOpts);
@@ -937,7 +968,6 @@ CommandHandler.onCommand = function(command) {
     case 'goToRowFirstCell':
     case 'goToRowLastCell': {
       skipSync = true;
-      shouldSetSelection = true;
       while (node && node.role !== RoleType.ROW) {
         node = node.parent;
       }
@@ -953,7 +983,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToColFirstCell': {
       skipSync = true;
-      shouldSetSelection = true;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -971,7 +1000,6 @@ CommandHandler.onCommand = function(command) {
     } break;
     case 'goToColLastCell': {
       skipSync = true;
-      shouldSetSelection = true;
       dir = Dir.BACKWARD;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
@@ -1001,7 +1029,6 @@ CommandHandler.onCommand = function(command) {
     case 'goToFirstCell':
     case 'goToLastCell': {
       skipSync = true;
-      shouldSetSelection = true;
       while (node && node.role !== RoleType.TABLE) {
         node = node.parent;
       }
@@ -1066,10 +1093,10 @@ CommandHandler.onCommand = function(command) {
       return false;
     case 'readPhoneticPronunciation': {
       // Get node info.
-      let index = ChromeVoxState.instance.currentRange.start.index;
-      const text = node.name;
+      const index = ChromeVoxState.instance.currentRange.start.index;
+      const name = node.name;
       // If there is no text to speak, inform the user and return early.
-      if (!text) {
+      if (!name) {
         new Output()
             .withString(Msgs.getMsg('empty_name'))
             .withQueueMode(QueueMode.CATEGORY_FLUSH)
@@ -1087,21 +1114,21 @@ CommandHandler.onCommand = function(command) {
         wordEnds = node.nonInlineTextWordEnds;
       }
       // Find the word we want to speak phonetically. If index === -1, then the
-      // index represents an entire node. If that is the case, we want to find
-      // the first word in the node's name. We do this by setting index to 0.
+      // index represents an entire node.
+      let text = '';
       if (index === -1) {
-        index = 0;
-      }
-      let word = '';
-      for (let z = 0; z < wordStarts.length; ++z) {
-        if (wordStarts[z] <= index && wordEnds[z] > index) {
-          word = text.substring(wordStarts[z], wordEnds[z]);
-          break;
+        text = name;
+      } else {
+        for (let z = 0; z < wordStarts.length; ++z) {
+          if (wordStarts[z] <= index && wordEnds[z] > index) {
+            text = name.substring(wordStarts[z], wordEnds[z]);
+            break;
+          }
         }
       }
 
       const language = chrome.i18n.getUILanguage();
-      const phoneticText = PhoneticData.forText(word, language);
+      const phoneticText = PhoneticData.forText(text, language);
       if (phoneticText) {
         new Output()
             .withString(phoneticText)
@@ -1232,75 +1259,14 @@ CommandHandler.onCommand = function(command) {
     }
   }
 
-  if (tryScrolling && current && current.start && current.start.node &&
-      ChromeVoxState.instance.currentRange.start.node) {
-    const exited = AutomationUtil.getUniqueAncestors(
-        current.start.node, ChromeVoxState.instance.currentRange.start.node);
-    let scrollable = null;
-    for (let i = 0; i < exited.length; i++) {
-      if (AutomationPredicate.autoScrollable(exited[i])) {
-        scrollable = exited[i];
-        break;
-      }
-    }
-
-    // TODO(dtseng): handle more precise positioning after scroll e.g. list with
-    // 10 items shoing 1-7, scroll forward, should position at item 8.
-    if (scrollable) {
-      const callback = function(result) {
-        if (result) {
-          const innerCallback = function(currentNode, evt) {
-            scrollable.removeEventListener(
-                EventType.SCROLL_POSITION_CHANGED, innerCallback);
-            scrollable.removeEventListener(
-                EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback);
-            scrollable.removeEventListener(
-                EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback);
-
-            if (pred || (currentNode && currentNode.root)) {
-              // Jump or if there is a valid current range, then move from it
-              // since we have refreshed node data.
-              CommandHandler.onCommand(command);
-              CommandHandler.onFinishCommand();
-              return;
-            }
-
-            // Otherwise, sync to the directed deepest child.
-            let sync = scrollable;
-            if (dir === Dir.FORWARD) {
-              while (sync.firstChild) {
-                sync = sync.firstChild;
-              }
-            } else {
-              while (sync.lastChild) {
-                sync = sync.lastChild;
-              }
-            }
-            ChromeVoxState.instance.navigateToRange(
-                cursors.Range.fromNode(sync), false, speechProps);
-          }.bind(this, current.start.node);
-          // This is sent by ARC++.
-          scrollable.addEventListener(
-              EventType.SCROLL_POSITION_CHANGED, innerCallback, true);
-          // These two events are sent by Web and Views via AXEventGenerator.
-          scrollable.addEventListener(
-              EventType.SCROLL_HORIZONTAL_POSITION_CHANGED, innerCallback,
-              true);
-          scrollable.addEventListener(
-              EventType.SCROLL_VERTICAL_POSITION_CHANGED, innerCallback, true);
-        } else {
-          ChromeVoxState.instance.navigateToRange(current, false, speechProps);
-        }
-      };
-
-      if (dir === Dir.FORWARD) {
-        scrollable.scrollForward(callback);
-      } else {
-        scrollable.scrollBackward(callback);
-      }
-      CommandHandler.onFinishCommand();
-      return false;
-    }
+  if (tryScrolling &&
+      !AutoScrollHandler.getInstance().onCommandNavigation(
+          current, dir, pred, unit, speechProps, rootPred, () => {
+            CommandHandler.onCommand(command);
+            CommandHandler.onFinishCommand();
+          })) {
+    CommandHandler.onFinishCommand();
+    return false;
   }
 
   if (current) {
@@ -1309,7 +1275,7 @@ CommandHandler.onCommand = function(command) {
     }
 
     ChromeVoxState.instance.navigateToRange(
-        current, undefined, speechProps, shouldSetSelection);
+        current, undefined, speechProps, skipSettingSelection);
   }
 
   CommandHandler.onFinishCommand();
@@ -1513,7 +1479,7 @@ CommandHandler.onEditCommand_ = function(command) {
  * @param {Dir} dir
  * @return {cursors.Range} The resulting range.
  */
-CommandHandler.skipLabelOrDescriptionFor_ = function(current, dir) {
+CommandHandler.skipLabelOrDescriptionFor = function(current, dir) {
   if (!current) {
     return null;
   }

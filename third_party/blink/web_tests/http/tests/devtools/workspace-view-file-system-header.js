@@ -5,8 +5,7 @@
 (async function() {
   TestRunner.addResult('Tests workspace view file system headers\n');
   await TestRunner.loadTestModule('bindings_test_runner');
-
-  const fs = new BindingsTestRunner.TestFileSystem('file:///this/is/a/test');
+  const fs = new BindingsTestRunner.TestFileSystem('/this/is/a/test');
   await fs.reportCreatedPromise();
 
   await UI.viewManager.showView('workspace');
@@ -17,6 +16,5 @@
 
   TestRunner.addResult(`File system name: ${fsName}`);
   TestRunner.addResult(`File system path: ${fsPath}`);
-
   TestRunner.completeTest();
 })();

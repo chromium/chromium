@@ -27,16 +27,16 @@ MinimumChromeVersionChecker::~MinimumChromeVersionChecker() {
 
 bool MinimumChromeVersionChecker::Parse(Extension* extension,
                                         std::u16string* error) {
-  std::string minimum_version_string;
-  if (!extension->manifest()->GetString(keys::kMinimumChromeVersion,
-                                        &minimum_version_string)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidMinimumChromeVersion);
+  const std::string* minimum_version_string =
+      extension->manifest()->FindStringPath(keys::kMinimumChromeVersion);
+  if (minimum_version_string == nullptr) {
+    *error = errors::kInvalidMinimumChromeVersion;
     return false;
   }
 
-  base::Version minimum_version(minimum_version_string);
+  base::Version minimum_version(*minimum_version_string);
   if (!minimum_version.IsValid()) {
-    *error = base::ASCIIToUTF16(errors::kInvalidMinimumChromeVersion);
+    *error = errors::kInvalidMinimumChromeVersion;
     return false;
   }
 
@@ -49,8 +49,7 @@ bool MinimumChromeVersionChecker::Parse(Extension* extension,
   if (current_version.CompareTo(minimum_version) < 0) {
     *error = ErrorUtils::FormatErrorMessageUTF16(
         errors::kChromeVersionTooLow,
-        l10n_util::GetStringUTF8(IDS_PRODUCT_NAME),
-        minimum_version_string);
+        l10n_util::GetStringUTF8(IDS_PRODUCT_NAME), *minimum_version_string);
     return false;
   }
   return true;

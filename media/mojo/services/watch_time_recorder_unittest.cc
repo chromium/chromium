@@ -72,6 +72,8 @@ class WatchTimeRecorderTest : public testing::Test {
         base::BindRepeating(
             &WatchTimeRecorderTest::GetRecordAggregateWatchTimeCallback,
             base::Unretained(this)),
+        base::BindRepeating(&WatchTimeRecorderTest::IsShuttingDown,
+                            base::Unretained(this)),
         provider_.BindNewPipeAndPassReceiver());
   }
 
@@ -199,6 +201,7 @@ class WatchTimeRecorderTest : public testing::Test {
         nullptr, GURL());
   }
 
+  MOCK_METHOD(bool, IsShuttingDown, ());
   MOCK_METHOD0(GetCurrentMediaTime, base::TimeDelta());
 
  protected:

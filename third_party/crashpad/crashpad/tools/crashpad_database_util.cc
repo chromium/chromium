@@ -44,6 +44,7 @@ namespace crashpad {
 namespace {
 
 void Usage(const base::FilePath& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %" PRFilePath " [OPTION]... PID\n"
 "Operate on Crashpad crash report databases.\n"
@@ -66,6 +67,7 @@ void Usage(const base::FilePath& me) {
 "      --help                      display this help and exit\n"
 "      --version                   output version information and exit\n",
           me.value().c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 
@@ -619,12 +621,12 @@ int DatabaseUtilMain(int argc, char* argv[]) {
 }  // namespace
 }  // namespace crashpad
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 int main(int argc, char* argv[]) {
   return crashpad::DatabaseUtilMain(argc, argv);
 }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 int wmain(int argc, wchar_t* argv[]) {
   return crashpad::ToolSupport::Wmain(argc, argv, crashpad::DatabaseUtilMain);
 }
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)

@@ -356,6 +356,9 @@ base::WeakPtr<InputDeviceFactoryEvdev> InputDeviceFactoryEvdev::GetWeakPtr() {
 void InputDeviceFactoryEvdev::ApplyInputDeviceSettings() {
   TRACE_EVENT0("evdev", "ApplyInputDeviceSettings");
 
+  SetIntPropertyForOneType(
+      DT_TOUCHPAD, "Haptic Button Sensitivity",
+      input_device_settings_.touchpad_haptic_click_sensitivity);
   SetIntPropertyForOneType(DT_TOUCHPAD, "Pointer Sensitivity",
                            input_device_settings_.touchpad_sensitivity);
   SetIntPropertyForOneType(DT_TOUCHPAD, "Scroll Sensitivity",
@@ -462,6 +465,26 @@ void InputDeviceFactoryEvdev::StopVibration(int id) {
     if (it.second->id() == id) {
       it.second->StopVibration();
       return;
+    }
+  }
+}
+
+void InputDeviceFactoryEvdev::PlayHapticTouchpadEffect(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  for (const auto& it : converters_) {
+    if (it.second->HasHapticTouchpad()) {
+      it.second->PlayHapticTouchpadEffect(effect, strength);
+    }
+  }
+}
+
+void InputDeviceFactoryEvdev::SetHapticTouchpadEffectForNextButtonRelease(
+    ui::HapticTouchpadEffect effect,
+    ui::HapticTouchpadEffectStrength strength) {
+  for (const auto& it : converters_) {
+    if (it.second->HasHapticTouchpad()) {
+      it.second->SetHapticTouchpadEffectForNextButtonRelease(effect, strength);
     }
   }
 }
@@ -591,13 +614,16 @@ void InputDeviceFactoryEvdev::NotifyMouseDevicesUpdated() {
 
 void InputDeviceFactoryEvdev::NotifyTouchpadDevicesUpdated() {
   std::vector<InputDevice> touchpads;
-  for (auto it = converters_.begin(); it != converters_.end(); ++it) {
-    if (it->second->HasTouchpad()) {
-      touchpads.push_back(it->second->input_device());
+  bool has_haptic_touchpad = false;
+  for (const auto& it : converters_) {
+    if (it.second->HasTouchpad()) {
+      if (it.second->HasHapticTouchpad())
+        has_haptic_touchpad = true;
+      touchpads.push_back(it.second->input_device());
     }
   }
 
-  dispatcher_->DispatchTouchpadDevicesUpdated(touchpads);
+  dispatcher_->DispatchTouchpadDevicesUpdated(touchpads, has_haptic_touchpad);
 }
 
 void InputDeviceFactoryEvdev::NotifyGamepadDevicesUpdated() {

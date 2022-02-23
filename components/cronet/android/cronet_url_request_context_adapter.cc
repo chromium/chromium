@@ -249,24 +249,26 @@ static jlong JNI_CronetUrlRequestContext_CreateRequestContextConfig(
     jboolean jenable_network_quality_estimator,
     jboolean jbypass_public_key_pinning_for_local_trust_anchors,
     jint jnetwork_thread_priority) {
-  return reinterpret_cast<jlong>(new URLRequestContextConfig(
-      jquic_enabled,
-      ConvertNullableJavaStringToUTF8(env, jquic_default_user_agent_id),
-      jhttp2_enabled, jbrotli_enabled,
-      static_cast<URLRequestContextConfig::HttpCacheType>(jhttp_cache_mode),
-      jhttp_cache_max_size, jdisable_cache,
-      ConvertNullableJavaStringToUTF8(env, jstorage_path),
-      /* accept_languages */ std::string(),
-      ConvertNullableJavaStringToUTF8(env, juser_agent),
-      ConvertNullableJavaStringToUTF8(env,
-                                      jexperimental_quic_connection_options),
-      base::WrapUnique(
-          reinterpret_cast<net::CertVerifier*>(jmock_cert_verifier)),
-      jenable_network_quality_estimator,
-      jbypass_public_key_pinning_for_local_trust_anchors,
-      jnetwork_thread_priority >= -20 && jnetwork_thread_priority <= 19
-          ? absl::optional<double>(jnetwork_thread_priority)
-          : absl::optional<double>()));
+  std::unique_ptr<URLRequestContextConfig> url_request_context_config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          jquic_enabled,
+          ConvertNullableJavaStringToUTF8(env, jquic_default_user_agent_id),
+          jhttp2_enabled, jbrotli_enabled,
+          static_cast<URLRequestContextConfig::HttpCacheType>(jhttp_cache_mode),
+          jhttp_cache_max_size, jdisable_cache,
+          ConvertNullableJavaStringToUTF8(env, jstorage_path),
+          /* accept_languages */ std::string(),
+          ConvertNullableJavaStringToUTF8(env, juser_agent),
+          ConvertNullableJavaStringToUTF8(
+              env, jexperimental_quic_connection_options),
+          base::WrapUnique(
+              reinterpret_cast<net::CertVerifier*>(jmock_cert_verifier)),
+          jenable_network_quality_estimator,
+          jbypass_public_key_pinning_for_local_trust_anchors,
+          jnetwork_thread_priority >= -20 && jnetwork_thread_priority <= 19
+              ? absl::optional<double>(jnetwork_thread_priority)
+              : absl::optional<double>());
+  return reinterpret_cast<jlong>(url_request_context_config.release());
 }
 
 // Add a QUIC hint to a URLRequestContextConfig.

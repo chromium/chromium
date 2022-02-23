@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/main/test/fake_scene_state.h"
 
+#import "base/mac/foundation_util.h"
+#include "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/ui/main/test/stub_browser_interface.h"
@@ -20,42 +22,48 @@
 // Redeclare interface provider readwrite.
 @property(nonatomic, strong, readwrite) id<BrowserInterfaceProvider>
     interfaceProvider;
+
 @end
 
 @implementation FakeSceneState {
   // Owning pointer for the browser that backs the interface provider.
   std::unique_ptr<TestBrowser> _browser;
   std::unique_ptr<TestBrowser> _incognito_browser;
-  UIWindow* _window;
 }
 
 @synthesize interfaceProvider = _interfaceProvider;
 
-- (instancetype)initWithAppState:(AppState*)appState {
+@synthesize window = _window;
+
+- (instancetype)initWithAppState:(AppState*)appState
+                    browserState:(ChromeBrowserState*)browserState {
   if (self = [super initWithAppState:appState]) {
+    DCHECK(browserState);
+    DCHECK(!browserState->IsOffTheRecord());
     self.activationLevel = SceneActivationLevelForegroundInactive;
     self.interfaceProvider = [[StubBrowserInterfaceProvider alloc] init];
-    StubBrowserInterface* mainInterface = static_cast<StubBrowserInterface*>(
-        self.interfaceProvider.mainInterface);
-    StubBrowserInterface* incognitoInterface =
-        static_cast<StubBrowserInterface*>(
-            self.interfaceProvider.incognitoInterface);
-    _browser = std::make_unique<TestBrowser>();
-    _incognito_browser = std::make_unique<TestBrowser>();
-    mainInterface.browser = _browser.get();
-    incognitoInterface.browser = _incognito_browser.get();
+
+    _browser = std::make_unique<TestBrowser>(browserState);
+    base::mac::ObjCCastStrict<StubBrowserInterface>(
+        self.interfaceProvider.mainInterface)
+        .browser = _browser.get();
+
+    _incognito_browser = std::make_unique<TestBrowser>(
+        browserState->GetOffTheRecordChromeBrowserState());
+    base::mac::ObjCCastStrict<StubBrowserInterface>(
+        self.interfaceProvider.incognitoInterface)
+        .browser = _incognito_browser.get();
   }
   return self;
 }
 
-//- (id<BrowserInterfaceProvider>)interfaceProvider {
-//    return _interfaceProvider;
-//}
-
-+ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count {
++ (NSArray<FakeSceneState*>*)sceneArrayWithCount:(int)count
+                                    browserState:
+                                        (ChromeBrowserState*)browserState {
   NSMutableArray<SceneState*>* scenes = [NSMutableArray array];
   for (int i = 0; i < count; i++) {
-    [scenes addObject:[[self alloc] initWithAppState:nil]];
+    [scenes addObject:[[self alloc] initWithAppState:nil
+                                        browserState:browserState]];
   }
   return [scenes copy];
 }
@@ -74,14 +82,6 @@
   for (int i = 0; i < count; i++) {
     [self appendWebStateWithURL:URL];
   }
-}
-
-- (UIWindow*)window {
-  return _window;
-}
-
-- (void)setWindow:(UIWindow*)window {
-  _window = window;
 }
 
 @end

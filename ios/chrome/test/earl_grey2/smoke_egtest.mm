@@ -53,9 +53,7 @@
   [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
       performAction:grey_tap()];
 
-  // Tap a second time to close the menu.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
+  [ChromeEarlGreyUI closeToolsMenu];
 }
 
 // Tests that helpers from chrome_actions.h are available for use in tests.
@@ -67,10 +65,10 @@
   // Toggle the passwords switch off and on.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSavePasswordSwitchTableViewId)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(NO)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(NO)];
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSavePasswordSwitchTableViewId)]
-      performAction:chrome_test_util::TurnSettingsSwitchOn(YES)];
+      performAction:chrome_test_util::TurnTableViewSwitchOn(YES)];
 
   // Close the settings menu.
   [[EarlGrey
@@ -88,16 +86,9 @@
 // Tests that string resources are loaded into the ResourceBundle and available
 // for use in tests.
 - (void)testAppResourcesArePresent {
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
-
   NSString* settingsLabel = l10n_util::GetNSString(IDS_IOS_TOOLBAR_SETTINGS);
   [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(settingsLabel)]
       assertWithMatcher:grey_sufficientlyVisible()];
-
-  // Tap a second time to close the menu.
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::ToolsMenuButton()]
-      performAction:grey_tap()];
 }
 
 // Tests that helpers in chrome_earl_grey_ui.h are available for use in tests.
@@ -170,7 +161,8 @@
 
 // Tests executeJavaScript:error: in chrome_earl_grey.h
 - (void)testExecuteJavaScript {
-  id actualResult = [ChromeEarlGrey executeJavaScript:@"0"];
+  auto result = [ChromeEarlGrey evaluateJavaScript:@"0"];
+  NSNumber* actualResult = [NSNumber numberWithInt:result.GetDouble()];
   GREYAssertEqualObjects(@0, actualResult,
                          @"Actual JavaScript execution result: %@",
                          actualResult);

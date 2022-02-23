@@ -574,6 +574,9 @@ NSString* GetSizeString(long long size_in_bytes) {
       }
       break;
     }
+    case kDownloadManagerStateFailedNotResumable:
+      // The button should not be visible
+      break;
   }
 }
 
@@ -710,6 +713,10 @@ NSString* GetSizeString(long long size_in_bytes) {
       statusText =
           l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_COULDNT_DOWNLOAD);
       break;
+    case kDownloadManagerStateFailedNotResumable:
+      statusText =
+          l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_CANNOT_BE_RETRIED);
+      break;
   }
 
   self.statusLabel.text = statusText;
@@ -730,10 +737,14 @@ NSString* GetSizeString(long long size_in_bytes) {
     case kDownloadManagerStateFailed:
       title = l10n_util::GetNSString(IDS_IOS_DOWNLOAD_MANAGER_TRY_AGAIN);
       break;
+    case kDownloadManagerStateFailedNotResumable:
+      break;
   }
 
   [self.actionButton setTitle:title forState:UIControlStateNormal];
-  self.actionButton.hidden = _state == kDownloadManagerStateInProgress;
+  self.actionButton.hidden =
+      (_state == kDownloadManagerStateInProgress ||
+       _state == kDownloadManagerStateFailedNotResumable);
 }
 
 - (void)updateProgressView {

@@ -23,7 +23,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/test/base/android/android_browser_test.h"
 #else
 #include "chrome/test/base/in_process_browser_test.h"
@@ -51,6 +51,15 @@ class PaymentRequestPlatformBrowserTestBase
   // (relative to components/test/data/payments) using |hostname| or 127.0.0.1.
   void NavigateTo(const std::string& file_path);
   void NavigateTo(const std::string& hostname, const std::string& file_path);
+
+  // Install the payment app specified by `hostname`, e.g., "a.com". Specify the
+  // filename of the service worker with `service_worker_filename`. Note that
+  // the origin has to be initialized first to be supported here. The payment
+  // method of the installed payment app will be outputted in
+  // `url_method_output`, e.g., "https://a.com:12345".
+  void InstallPaymentApp(const std::string& hostname,
+                         const std::string& service_worker_filename,
+                         std::string* url_method_output);
 
   // Will expect that the expected string is present in output.
   void ExpectBodyContains(const std::string& expected_string);

@@ -94,8 +94,6 @@ bool IsSceneStartupEnabled() {
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions
     API_AVAILABLE(ios(13)) {
-  // Unittests do not support multiple scenes.
-  DCHECK(![[UIApplication sharedApplication] supportsMultipleScenes]);
   // Yes, this is leaked, it's just to make what's running visible.
   _window.reset([[UIWindow alloc]
       initWithWindowScene:static_cast<UIWindowScene*>(scene)]);

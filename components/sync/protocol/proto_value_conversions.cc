@@ -10,6 +10,7 @@
 #include <utility>
 
 #include "base/base64.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/values.h"
 #include "components/sync/base/unique_position.h"
@@ -108,8 +109,8 @@ namespace {
 //
 //    std::unique_ptr<base::DictionaryValue> ToValue(
 //        const sync_pb::GreenProto& proto) const {
-//      auto value = ToValueImpl(proto);
-//      value->SetString("secret", "<clobbered>");
+//      std::unique_ptr<base::DictionaryValue> value = ToValueImpl(proto);
+//      value->SetStringKey("secret", "<clobbered>");
 //      return value;
 //    }
 //
@@ -190,7 +191,7 @@ class ToValueVisitor {
   // AutofillWalletSpecifics
   std::unique_ptr<base::DictionaryValue> ToValue(
       const sync_pb::AutofillWalletSpecifics& proto) const {
-    auto value = ToValueImpl(proto);
+    std::unique_ptr<base::DictionaryValue> value = ToValueImpl(proto);
     if (proto.type() != sync_pb::AutofillWalletSpecifics::POSTAL_ADDRESS) {
       value->RemoveKey("address");
     }
@@ -267,7 +268,7 @@ class ToValueVisitor {
     value_->Set(field_name, ToValue(field));
   }
 
-  base::DictionaryValue* value_;
+  raw_ptr<base::DictionaryValue> value_;
   bool include_specifics_;
 };
 

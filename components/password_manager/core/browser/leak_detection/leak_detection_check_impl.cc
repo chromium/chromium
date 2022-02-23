@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/timer/elapsed_timer.h"
@@ -50,7 +51,8 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
   RequestPayloadHelper(
       LeakDetectionCheckImpl* leak_check,
       signin::IdentityManager* identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory);
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      absl::optional<std::string> api_key);
   ~RequestPayloadHelper() = default;
 
   // Neither copyable nor movable.
@@ -87,17 +89,20 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
   // Bitmask of steps done.
   int steps_ = 0;
   // Owns |this|.
-  LeakDetectionCheckImpl* leak_check_;
+  raw_ptr<LeakDetectionCheckImpl> leak_check_;
   // Identity manager for the profile.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
   // URL loader factory required for the network request to the identity
   // endpoint.
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
   // Actual request for the needed token.
   std::unique_ptr<signin::AccessTokenFetcher> token_fetcher_;
-  // The token to be used for request. It should be |absl::nullopt| for
-  // signed-out users.
+  // The token to be used for request for signed-in user. It should be
+  // |absl::nullopt| for signed-out users.
   absl::optional<std::string> access_token_;
+  // Api key required to authenticate signed-out user. It should be
+  // |absl::nullopt| for signed-in users.
+  const absl::optional<std::string> api_key_;
   // Payload for the actual request.
   LookupSingleLeakData payload_;
 };
@@ -105,10 +110,12 @@ class LeakDetectionCheckImpl::RequestPayloadHelper {
 LeakDetectionCheckImpl::RequestPayloadHelper::RequestPayloadHelper(
     LeakDetectionCheckImpl* leak_check,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    absl::optional<std::string> api_key)
     : leak_check_(leak_check),
       identity_manager_(identity_manager),
-      url_loader_factory_(std::move(url_loader_factory)) {
+      url_loader_factory_(std::move(url_loader_factory)),
+      api_key_(std::move(api_key)) {
   DCHECK(identity_manager_);
   DCHECK(url_loader_factory_);
 }
@@ -151,6 +158,7 @@ void LeakDetectionCheckImpl::RequestPayloadHelper::OnGotPayload(
 void LeakDetectionCheckImpl::RequestPayloadHelper::CheckAllStepsDone() {
   if (steps_ == kAll) {
     leak_check_->DoLeakRequest(std::move(payload_), std::move(access_token_),
+                               std::move(api_key_),
                                std::move(url_loader_factory_));
   }
 }
@@ -158,11 +166,13 @@ void LeakDetectionCheckImpl::RequestPayloadHelper::CheckAllStepsDone() {
 LeakDetectionCheckImpl::LeakDetectionCheckImpl(
     LeakDetectionDelegateInterface* delegate,
     signin::IdentityManager* identity_manager,
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    absl::optional<std::string> api_key)
     : delegate_(delegate),
       payload_helper_(new RequestPayloadHelper(this,
                                                identity_manager,
-                                               std::move(url_loader_factory))),
+                                               std::move(url_loader_factory),
+                                               std::move(api_key))),
       network_request_factory_(
           std::make_unique<LeakDetectionRequestFactory>()) {
   DCHECK(delegate_);
@@ -234,12 +244,13 @@ void LeakDetectionCheckImpl::OnRequestDataReady(LookupSingleLeakData data) {
 void LeakDetectionCheckImpl::DoLeakRequest(
     LookupSingleLeakData data,
     absl::optional<std::string> access_token,
+    absl::optional<std::string> api_key,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory) {
   payload_helper_.reset();
   encryption_key_ = std::move(data.encryption_key);
   request_ = network_request_factory_->CreateNetworkRequest();
   request_->LookupSingleLeak(
-      url_loader_factory.get(), access_token, std::move(data.payload),
+      url_loader_factory.get(), access_token, api_key, std::move(data.payload),
       TimeCallback(
           base::BindOnce(&LeakDetectionCheckImpl::OnLookupSingleLeakResponse,
                          weak_ptr_factory_.GetWeakPtr()),

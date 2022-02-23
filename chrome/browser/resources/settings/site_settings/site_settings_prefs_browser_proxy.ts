@@ -51,6 +51,7 @@ export type OriginInfo = {
   numCookies: number,
   hasPermissionSettings: boolean,
   isInstalled: boolean,
+  isPartitioned: boolean
 };
 
 /**
@@ -76,7 +77,6 @@ export type RawSiteException = {
   isEmbargoed: boolean,
   origin: string,
   displayName: string,
-  settingDetail: string|null,
   type: string,
   setting: ContentSetting,
   source: SiteSettingSource,
@@ -93,7 +93,6 @@ export type SiteException = {
   isEmbargoed: boolean,
   origin: string,
   displayName: string,
-  settingDetail: string|null,
   setting: ContentSetting,
   enforcement: chrome.settingsPrivate.Enforcement|null,
   controlledBy: chrome.settingsPrivate.ControlledBy,
@@ -163,7 +162,9 @@ type ProtocolHandlerEntry = {
 };
 
 export type ZoomLevelEntry = {
+  displayName: string,
   origin: string,
+  originForFavicon: string,
   setting: string,
   source: string,
   zoom: string,
@@ -424,10 +425,18 @@ export interface SiteSettingsPrefsBrowserProxy {
   clearEtldPlus1DataAndCookies(etldPlus1: string): void;
 
   /**
-   * Clears all the web storage data and cookies for a given origin.
+   * Clears all the unpartitioned web storage data and cookies for a given
+   * origin.
    * @param origin The origin to clear data from.
    */
-  clearOriginDataAndCookies(origin: string): void;
+  clearUnpartitionedOriginDataAndCookies(origin: string): void;
+
+  /**
+   * Clears all the storage for |origin| which is partitioned on |etldPlus1|.
+   * @param origin The origin to clear data from.
+   * @param etldPlus1 The etld+1 which the data is partitioned for.
+   */
+  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string): void;
 
   /**
    * Record All Sites Page action for metrics.
@@ -577,8 +586,12 @@ export class SiteSettingsPrefsBrowserProxyImpl implements
     chrome.send('clearEtldPlus1DataAndCookies', [etldPlus1]);
   }
 
-  clearOriginDataAndCookies(origin: string) {
-    chrome.send('clearUsage', [origin]);
+  clearUnpartitionedOriginDataAndCookies(origin: string) {
+    chrome.send('clearUnpartitionedUsage', [origin]);
+  }
+
+  clearPartitionedOriginDataAndCookies(origin: string, etldPlus1: string) {
+    chrome.send('clearPartitionedUsage', [origin, etldPlus1]);
   }
 
   recordAction(action: number) {

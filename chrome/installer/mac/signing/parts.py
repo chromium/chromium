@@ -117,13 +117,15 @@ def get_parts(config):
                 verify_options=verify_options),
     }
 
-    dylibs = (
+    dylibs = [
         'libEGL.dylib',
         'libGLESv2.dylib',
         'libswiftshader_libEGL.dylib',
         'libswiftshader_libGLESv2.dylib',
         'libvk_swiftshader.dylib',
-    )
+    ]
+    if config.is_chrome_branded():
+        dylibs.append('liboptimization_guide_internal.dylib')
     for library in dylibs:
         library_basename = os.path.basename(library)
         parts[library_basename] = CodeSignedProduct(

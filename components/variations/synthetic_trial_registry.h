@@ -91,15 +91,23 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
   // Registers a field trial name and group to be used to annotate a UMA report
   // with a particular Chrome configuration state.
   //
-  // A UMA report will be annotated with this trial group if and only if all
-  // events in the report were created after the trial is registered. Only one
-  // group name may be registered at a time for a given trial_name. Only the
-  // last group name that is registered for a given trial name will be recorded.
-  // The values passed in must not correspond to any real field trial in the
-  // code.
+  // If the |trial_group|'s |annotation_mode| is set to |kNextLog|,
+  // then a UMA report will be annotated with this trial group if and
+  // only if all events in the report were created after the trial's
+  // registration. If the |annotation_mode| is set to |kCurrentLog|, then a
+  // UMA report will be annotated with this trial group even if there are events
+  // in the report that were created before this trial's registration.
+  //
+  // Only one group name may be registered at a time for a given trial name.
+  // Only the last group name that is registered for a given trial name will be
+  // recorded. The values passed in must not correspond to any real field trial
+  // in the code.
   //
   // The registered trials are not persisted to disk and will not be applied
   // after a restart.
+  //
+  // TODO(crbug.com/754877): Note that UKM is intentionally not mentioned.
+  // Currently, UKM does not record synthetic field trials.
   //
   // Note: Should not be used to replace trials that were
   // registered with RegisterExternalExperiments().
@@ -113,7 +121,8 @@ class COMPONENT_EXPORT(VARIATIONS) SyntheticTrialRegistry {
                                          const base::FieldTrialParams& params,
                                          const std::string& experiment_id);
 
-  // Returns a list of synthetic field trials that are older than |time|.
+  // Returns a list of synthetic field trials that are either (1) older than
+  // |time|, or (2) specify |kCurrentLog| as |annotation_mode|.
   void GetSyntheticFieldTrialsOlderThan(
       base::TimeTicks time,
       std::vector<ActiveGroupId>* synthetic_trials) const;

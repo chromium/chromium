@@ -5,7 +5,6 @@
 #ifndef SANDBOX_POLICY_LINUX_SANDBOX_DEBUG_HANDLING_LINUX_H_
 #define SANDBOX_POLICY_LINUX_SANDBOX_DEBUG_HANDLING_LINUX_H_
 
-#include "base/macros.h"
 #include "sandbox/policy/export.h"
 
 namespace sandbox {

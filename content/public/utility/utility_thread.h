@@ -6,6 +6,7 @@
 #define CONTENT_PUBLIC_UTILITY_UTILITY_THREAD_H_
 
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/child/child_thread.h"
 
 namespace content {
@@ -25,7 +26,7 @@ class CONTENT_EXPORT UtilityThread : virtual public ChildThread {
   // Initializes blink if it hasn't already been initialized.
   virtual void EnsureBlinkInitialized() = 0;
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   // Initializes blink with web sandbox support.
   virtual void EnsureBlinkInitializedWithSandboxSupport() = 0;
 #endif

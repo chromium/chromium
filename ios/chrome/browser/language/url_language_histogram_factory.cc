@@ -4,6 +4,7 @@
 
 #include "ios/chrome/browser/language/url_language_histogram_factory.h"
 
+#include "base/no_destructor.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/keyed_service/ios/browser_state_dependency_manager.h"
 #include "components/language/core/browser/url_language_histogram.h"

@@ -361,8 +361,9 @@ bool UpdateVersionIfMatch(const base::FilePath& image_file,
   }
 
   uint32_t flags = base::File::FLAG_OPEN | base::File::FLAG_READ |
-                   base::File::FLAG_WRITE | base::File::FLAG_EXCLUSIVE_READ |
-                   base::File::FLAG_EXCLUSIVE_WRITE;
+                   base::File::FLAG_WRITE |
+                   base::File::FLAG_WIN_EXCLUSIVE_READ |
+                   base::File::FLAG_WIN_EXCLUSIVE_WRITE;
   base::File file(image_file, flags);
   // It turns out that the underlying CreateFile can fail due to unhelpful
   // security software locking the newly created DLL. So add a few brief

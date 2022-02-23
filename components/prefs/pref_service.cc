@@ -28,7 +28,7 @@
 #include "components/prefs/pref_notifier_impl.h"
 #include "components/prefs/pref_registry.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/prefs/android/pref_service_android.h"
 #endif
 
@@ -89,10 +89,22 @@ void CheckForNewPrefChangesInPrefStore(
 
 }  // namespace
 
+PrefService::PersistentPrefStoreLoadingObserver::
+    PersistentPrefStoreLoadingObserver(PrefService* pref_service)
+    : pref_service_(pref_service) {
+  DCHECK(pref_service_);
+}
+
+void PrefService::PersistentPrefStoreLoadingObserver::OnInitializationCompleted(
+    bool succeeded) {
+  pref_service_->CheckPrefsLoaded();
+}
+
 PrefService::PrefService(
     std::unique_ptr<PrefNotifierImpl> pref_notifier,
     std::unique_ptr<PrefValueStore> pref_value_store,
     scoped_refptr<PersistentPrefStore> user_prefs,
+    scoped_refptr<PersistentPrefStore> standalone_browser_prefs,
     scoped_refptr<PrefRegistry> pref_registry,
     base::RepeatingCallback<void(PersistentPrefStore::PrefReadError)>
         read_error_callback,
@@ -100,8 +112,12 @@ PrefService::PrefService(
     : pref_notifier_(std::move(pref_notifier)),
       pref_value_store_(std::move(pref_value_store)),
       user_pref_store_(std::move(user_prefs)),
+      standalone_browser_pref_store_(std::move(standalone_browser_prefs)),
       read_error_callback_(std::move(read_error_callback)),
-      pref_registry_(std::move(pref_registry)) {
+      pref_registry_(std::move(pref_registry)),
+      pref_store_observer_(
+          std::make_unique<PrefService::PersistentPrefStoreLoadingObserver>(
+              this)) {
   pref_notifier_->SetPrefService(this);
 
   DCHECK(pref_registry_);
@@ -112,6 +128,13 @@ PrefService::PrefService(
 
 PrefService::~PrefService() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  // Remove observers. This could be necessary if this service is destroyed
+  // before the prefs are fully loaded.
+  user_pref_store_->RemoveObserver(pref_store_observer_.get());
+  if (standalone_browser_pref_store_) {
+    standalone_browser_pref_store_->RemoveObserver(pref_store_observer_.get());
+  }
 
   // TODO(crbug.com/942491, 946668, 945772) The following code collects
   // augments stack dumps created by ~PrefNotifierImpl() with information
@@ -129,16 +152,71 @@ PrefService::~PrefService() {
 }
 
 void PrefService::InitFromStorage(bool async) {
-  if (user_pref_store_->IsInitializationComplete()) {
-    read_error_callback_.Run(user_pref_store_->GetReadError());
-  } else if (!async) {
-    read_error_callback_.Run(user_pref_store_->ReadPrefs());
+  if (!async) {
+    if (!user_pref_store_->IsInitializationComplete()) {
+      user_pref_store_->ReadPrefs();
+    }
+    if (standalone_browser_pref_store_ &&
+        !standalone_browser_pref_store_->IsInitializationComplete()) {
+      standalone_browser_pref_store_->ReadPrefs();
+    }
+    CheckPrefsLoaded();
+    return;
+  }
+
+  CheckPrefsLoaded();
+
+  if (!user_pref_store_->IsInitializationComplete()) {
+    user_pref_store_->AddObserver(pref_store_observer_.get());
+    user_pref_store_->ReadPrefsAsync(nullptr);
+  }
+
+  if (standalone_browser_pref_store_ &&
+      !standalone_browser_pref_store_->IsInitializationComplete()) {
+    standalone_browser_pref_store_->AddObserver(pref_store_observer_.get());
+    standalone_browser_pref_store_->ReadPrefsAsync(nullptr);
+  }
+}
+
+void PrefService::CheckPrefsLoaded() {
+  if (!(user_pref_store_->IsInitializationComplete() &&
+        (!standalone_browser_pref_store_ ||
+         standalone_browser_pref_store_->IsInitializationComplete()))) {
+    // Not done initializing both prefstores.
+    return;
+  }
+
+  user_pref_store_->RemoveObserver(pref_store_observer_.get());
+  if (standalone_browser_pref_store_) {
+    standalone_browser_pref_store_->RemoveObserver(pref_store_observer_.get());
+  }
+
+  // Both prefstores are initialized, get the read errors.
+  PersistentPrefStore::PrefReadError user_store_error =
+      user_pref_store_->GetReadError();
+  if (!standalone_browser_pref_store_) {
+    read_error_callback_.Run(user_store_error);
+    return;
+  }
+  PersistentPrefStore::PrefReadError standalone_browser_store_error =
+      standalone_browser_pref_store_->GetReadError();
+
+  // If both stores have the same error (or no error), run the callback with
+  // either one. This avoids double-reporting (either way prefs weren't
+  // successfully fully loaded)
+  if (user_store_error == standalone_browser_store_error) {
+    read_error_callback_.Run(user_store_error);
+  } else if (user_store_error == PersistentPrefStore::PREF_READ_ERROR_NONE ||
+             user_store_error == PersistentPrefStore::PREF_READ_ERROR_NO_FILE) {
+    // Prefer to report the standalone_browser_pref_store error if the
+    // user_pref_store error is not significant.
+    read_error_callback_.Run(standalone_browser_store_error);
   } else {
-    // Guarantee that initialization happens after this function returned.
-    base::SequencedTaskRunnerHandle::Get()->PostTask(
-        FROM_HERE,
-        base::BindOnce(&PersistentPrefStore::ReadPrefsAsync, user_pref_store_,
-                       new ReadErrorHandler(read_error_callback_)));
+    // Either the user_pref_store error is significant, or
+    // both stores failed to load but for different reasons.
+    // The user_store error is more significant in essentially all cases,
+    // so prefer to report that.
+    read_error_callback_.Run(user_store_error);
   }
 }
 
@@ -298,8 +376,7 @@ const base::Value* PrefService::Get(const std::string& path) const {
   return GetPreferenceValueChecked(path);
 }
 
-const base::DictionaryValue* PrefService::GetDictionary(
-    const std::string& path) const {
+const base::Value* PrefService::GetDictionary(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value* value = GetPreferenceValueChecked(path);
@@ -309,7 +386,7 @@ const base::DictionaryValue* PrefService::GetDictionary(
     NOTREACHED();
     return nullptr;
   }
-  return static_cast<const base::DictionaryValue*>(value);
+  return value;
 }
 
 const base::Value* PrefService::GetUserPrefValue(
@@ -352,7 +429,7 @@ const base::Value* PrefService::GetDefaultPrefValue(
   return value;
 }
 
-const base::ListValue* PrefService::GetList(const std::string& path) const {
+const base::Value* PrefService::GetList(const std::string& path) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   const base::Value* value = GetPreferenceValueChecked(path);
@@ -362,7 +439,7 @@ const base::ListValue* PrefService::GetList(const std::string& path) const {
     NOTREACHED();
     return nullptr;
   }
-  return static_cast<const base::ListValue*>(value);
+  return value;
 }
 
 void PrefService::AddPrefObserver(const std::string& path, PrefObserver* obs) {
@@ -435,8 +512,8 @@ void PrefService::ChangePrefValueStore(
   pref_value_store_ = pref_value_store_->CloneAndSpecialize(
       managed_prefs, supervised_user_prefs, extension_prefs,
       nullptr /* command_line_prefs */, nullptr /* user_prefs */,
-      recommended_prefs, nullptr /* default_prefs */, pref_notifier_.get(),
-      std::move(delegate));
+      nullptr /* standalone_browser_prefs */, recommended_prefs,
+      nullptr /* default_prefs */, pref_notifier_.get(), std::move(delegate));
 
   // Notify |pref_notifier_| on all changed values.
   for (const auto& kv : pref_changed_map) {
@@ -453,7 +530,7 @@ void PrefService::RemovePrefObserverAllPrefs(PrefObserver* obs) {
   pref_notifier_->RemovePrefObserverAllPrefs(obs);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject> PrefService::GetJavaObject() {
   if (!pref_service_android_) {
     pref_service_android_ = std::make_unique<PrefServiceAndroid>(this);

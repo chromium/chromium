@@ -117,7 +117,7 @@ ClipboardHostImpl::ClipboardHostImpl(
       render_frame_host->GetBrowserContext()->IsOffTheRecord()
           ? nullptr
           : std::make_unique<ui::DataTransferEndpoint>(
-                render_frame_host->GetLastCommittedOrigin()));
+                render_frame_host->GetMainFrame()->GetLastCommittedOrigin()));
 }
 
 void ClipboardHostImpl::Create(
@@ -172,7 +172,7 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
       result =
           clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextType(),
                                        clipboard_buffer, data_endpoint.get());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       result |= clipboard->IsFormatAvailable(
           ui::ClipboardFormatType::PlainTextAType(), clipboard_buffer,
           data_endpoint.get());
@@ -189,7 +189,7 @@ void ClipboardHostImpl::IsFormatAvailable(blink::mojom::ClipboardFormat format,
           data_endpoint.get());
       break;
     case blink::mojom::ClipboardFormat::kBookmark:
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
       result =
           clipboard->IsFormatAvailable(ui::ClipboardFormatType::UrlType(),
                                        clipboard_buffer, data_endpoint.get());
@@ -214,7 +214,7 @@ void ClipboardHostImpl::ReadText(ui::ClipboardBuffer clipboard_buffer,
                                    clipboard_buffer, data_dst.get())) {
     clipboard->ReadText(clipboard_buffer, data_dst.get(), &result);
   } else {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (clipboard->IsFormatAvailable(ui::ClipboardFormatType::PlainTextAType(),
                                      clipboard_buffer, data_dst.get())) {
       std::string ascii;
@@ -424,12 +424,18 @@ void ClipboardHostImpl::ReadCustomData(ui::ClipboardBuffer clipboard_buffer,
 }
 
 void ClipboardHostImpl::WriteText(const std::u16string& text) {
-  clipboard_writer_->WriteText(text);
+  CopyIfAllowed(
+      text.size() * sizeof(std::u16string::value_type),
+      base::BindOnce(&ui::ScopedClipboardWriter::WriteText,
+                     base::Unretained(clipboard_writer_.get()), text));
 }
 
 void ClipboardHostImpl::WriteHtml(const std::u16string& markup,
                                   const GURL& url) {
-  clipboard_writer_->WriteHTML(markup, url.spec());
+  CopyIfAllowed(markup.size() * sizeof(std::u16string::value_type),
+                base::BindOnce(&ui::ScopedClipboardWriter::WriteHTML,
+                               base::Unretained(clipboard_writer_.get()),
+                               markup, url.spec()));
 }
 
 void ClipboardHostImpl::WriteSvg(const std::u16string& markup) {
@@ -611,6 +617,19 @@ void ClipboardHostImpl::FinishPasteIfContentAllowed(
   request.Complete(allowed);
 }
 
+void ClipboardHostImpl::CopyIfAllowed(size_t data_size_in_bytes,
+                                      CopyAllowedCallback callback) {
+  std::u16string replacement_data;
+  if (GetContentClient()->browser()->IsClipboardCopyAllowed(
+          render_frame_host()->GetBrowserContext(),
+          render_frame_host()->GetLastCommittedURL(), data_size_in_bytes,
+          replacement_data)) {
+    std::move(callback).Run();
+  } else {
+    clipboard_writer_->WriteText(replacement_data);
+  }
+}
+
 void ClipboardHostImpl::CleanupObsoleteRequests() {
   for (auto it = is_allowed_requests_.begin();
        it != is_allowed_requests_.end();) {
@@ -626,7 +645,7 @@ ClipboardHostImpl::CreateDataEndpoint() {
     return nullptr;
   }
   return std::make_unique<ui::DataTransferEndpoint>(
-      render_frame_host()->GetLastCommittedOrigin(),
+      render_frame_host()->GetMainFrame()->GetLastCommittedOrigin(),
       render_frame_host()->HasTransientUserActivation());
 }
 }  // namespace content

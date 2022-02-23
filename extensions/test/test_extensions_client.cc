@@ -96,7 +96,7 @@ const GURL& TestExtensionsClient::GetWebstoreUpdateURL() const {
   return webstore_update_url_;
 }
 
-bool TestExtensionsClient::IsBlacklistUpdateURL(const GURL& url) const {
+bool TestExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   return false;
 }
 

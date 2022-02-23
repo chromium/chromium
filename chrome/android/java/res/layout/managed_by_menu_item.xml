@@ -13,7 +13,7 @@
 
     <View style="@style/HorizontalDivider"
         android:layout_width="match_parent"
-        android:background="@color/divider_line_bg_color" />
+        android:background="@macro/divider_line_bg_color" />
 
     <org.chromium.components.browser_ui.widget.text.TextViewWithCompoundDrawables
         android:id="@+id/menu_item_text"
@@ -26,10 +26,9 @@
         android:singleLine="true"
         android:drawableStart="@drawable/ic_business"
         android:drawablePadding="12dp"
-        app:chromeDrawableTint="?attr/default_icon_color_secondary"
+        app:chromeDrawableTint="@macro/default_icon_color_secondary"
         android:tintMode="src_in"
         app:drawableWidth="20dp"
         app:drawableHeight="20dp"/>
-
 
 </LinearLayout>

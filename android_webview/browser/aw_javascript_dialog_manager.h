@@ -5,7 +5,6 @@
 #ifndef ANDROID_WEBVIEW_BROWSER_AW_JAVASCRIPT_DIALOG_MANAGER_H_
 #define ANDROID_WEBVIEW_BROWSER_AW_JAVASCRIPT_DIALOG_MANAGER_H_
 
-#include "base/macros.h"
 #include "content/public/browser/javascript_dialog_manager.h"
 
 namespace android_webview {

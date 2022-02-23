@@ -5,12 +5,12 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_REPORTING_LOGIN_LOGOUT_REPORTER_H_
 #define CHROME_BROWSER_ASH_LOGIN_REPORTING_LOGIN_LOGOUT_REPORTER_H_
 
+#include "ash/components/login/auth/auth_status_consumer.h"
 #include "base/containers/queue.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/ash/policy/status_collector/managed_session_service.h"
 #include "chrome/browser/policy/messaging_layer/proto/synced/login_logout_event.pb.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chromeos/login/auth/auth_status_consumer.h"
 #include "components/policy/core/common/cloud/dm_token.h"
 #include "components/reporting/client/report_queue_provider.h"
 
@@ -56,7 +56,7 @@ class LoginLogoutReporter : public policy::ManagedSessionService::Observer {
       std::unique_ptr<Delegate> delegate);
 
   // Report user device failed login attempt.
-  void OnLoginFailure(const chromeos::AuthFailure& error) override;
+  void OnLoginFailure(const AuthFailure& error) override;
 
   // Report user device successful login.
   void OnLogin(Profile* profile) override;

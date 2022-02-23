@@ -7,7 +7,6 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "net/base/io_buffer.h"
 #include "net/base/net_errors.h"

@@ -60,7 +60,7 @@ class WebContentsDelegateAndroid : public content::WebContentsDelegate {
   void VisibleSecurityStateChanged(content::WebContents* source) override;
   void ActivateContents(content::WebContents* contents) override;
   void LoadingStateChanged(content::WebContents* source,
-                           bool to_different_document) override;
+                           bool should_show_loading_ui) override;
   void RendererUnresponsive(
       content::WebContents* source,
       content::RenderWidgetHost* render_widget_host,

@@ -204,7 +204,7 @@ void WaylandOzoneUIControlsTestHelper::SendMouseEvent(
 
   WaylandGlobalEventWaiter::Create(
       WaylandGlobalEventWaiter::WaylandEventType::kButton, changed_button,
-      button_state & UP, std::move(closure), input_emulate_.get());
+      button_state & DOWN, std::move(closure), input_emulate_.get());
 
   if (button_state & DOWN) {
     input_emulate_->EmulatePointerButton(

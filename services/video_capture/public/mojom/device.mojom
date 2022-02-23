@@ -29,4 +29,23 @@ interface Device {
   // |feedback| contains consumer feedback like resource utilization,
   // maximum requested frame-rate and resolution.
   ProcessFeedback(media.mojom.VideoCaptureFeedback feedback);
+
+  // In cases where the video capturer self-pauses (e.g., a screen capturer
+  // where the screen's content has not changed in a while), consumers may call
+  // this to request a "refresh frame" be delivered to the Client.  This is used
+  // in a number of circumstances, such as:
+  //
+  //   1. An additional consumer of video frames is starting up and requires a
+  //      first frame (as opposed to not receiving a frame for an indeterminate
+  //      amount of time).
+  //   2. A few repeats of the same frame would allow a lossy video encoder to
+  //      improve the video quality of unchanging content.
+  //
+  // The default implementation is a no-op. VideoCaptureDevice implementations
+  // are not required to honor this request, especially if they do not
+  // self-pause and/or if honoring the request would cause them to exceed their
+  // configured maximum frame rate. Any VideoCaptureDevice that does self-pause,
+  // however, should provide an implementation of this method that makes
+  // reasonable attempts to honor these requests.
+  RequestRefreshFrame();
 };

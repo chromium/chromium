@@ -126,21 +126,24 @@ void DeviceDisablingManager::CheckWhetherDeviceDisabledDuringOOBE(
 
   // Update the enrollment domain.
   enrollment_domain_.clear();
-  g_browser_process->local_state()->GetDictionary(
-      prefs::kServerBackedDeviceState)->GetString(
-          policy::kDeviceStateManagementDomain,
-          &enrollment_domain_);
+  const std::string* maybe_enrollment_domain =
+      g_browser_process->local_state()
+          ->GetDictionary(prefs::kServerBackedDeviceState)
+          ->FindStringKey(policy::kDeviceStateManagementDomain);
+  enrollment_domain_ =
+      maybe_enrollment_domain ? *maybe_enrollment_domain : std::string();
 
   // Update the serial number.
   serial_number_ = chromeos::system::StatisticsProvider::GetInstance()
                        ->GetEnterpriseMachineID();
 
   // Update the disabled message.
-  std::string disabled_message;
-  g_browser_process->local_state()->GetDictionary(
-      prefs::kServerBackedDeviceState)->GetString(
-          policy::kDeviceStateDisabledMessage,
-          &disabled_message);
+  const std::string* maybe_disabled_message =
+      g_browser_process->local_state()
+          ->GetDictionary(prefs::kServerBackedDeviceState)
+          ->FindStringKey(policy::kDeviceStateDisabledMessage);
+  std::string disabled_message =
+      maybe_disabled_message ? *maybe_disabled_message : std::string();
   CacheDisabledMessageAndNotify(disabled_message);
 
   // Indicate that the device is disabled.

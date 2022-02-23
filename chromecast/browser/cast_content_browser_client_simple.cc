@@ -6,7 +6,7 @@
 
 #include "base/memory/ptr_util.h"
 #include "chromecast/browser/cast_content_browser_client.h"
-
+#include "chromecast/common/cors_exempt_headers.h"
 
 namespace chromecast {
 namespace shell {
@@ -20,7 +20,8 @@ std::unique_ptr<CastContentBrowserClient> CastContentBrowserClient::Create(
 
 // static
 std::vector<std::string> CastContentBrowserClient::GetCorsExemptHeadersList() {
-  return std::vector<std::string>();
+  const base::span<const char*> headers = GetLegacyCorsExemptHeaders();
+  return std::vector<std::string>(headers.begin(), headers.end());
 }
 
 }  // namespace shell

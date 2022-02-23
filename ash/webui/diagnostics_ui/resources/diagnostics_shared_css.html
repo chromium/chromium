@@ -6,32 +6,49 @@
 <template>
   <style include="cr-shared-style diagnostics-fonts">
     :host {
-      --diagnostics-box-shadow: var(--cr-card-shadow);
-      --diagnostics-box-shadow-elevation-2: var(--cr-elevation-2);
+      --diagnostics-box-shadow: var(--cros-elevation-1-shadow);
+      --diagnostics-box-shadow-elevation-2: var(--cros-elevation-2-shadow);
 
       --diagnostics-card-icon: {
-        --iron-icon-fill-color: var(--google-blue-600);
+        --iron-icon-fill-color: var(--cros-color-prominent);
         --iron-icon-height: 20px;
         --iron-icon-width: 20px;
-        background-color: var(--google-blue-50);
+        background-color: var(--cros-highlight-color);
         border-radius: 50%;
         padding: 8px;
       };
-    }
-
-    html {
-      background-color: var(--cros-bg-color);
+      --diagnostics-card-bg-color: var(--cros-bg-color);
+      --diagnostics-chip-bg-color: var(--cros-bg-color-dropped-elevation-2);
     }
 
     hr {
       border: 0;
-      border-top: 1px solid var(--google-grey-200);
+      border-top: 1px solid var(--cros-separator-color);
       display: block;
       height: 1px;
       margin: 0;
       padding: 0;
       position: relative;
       top: 2px;
+    }
+
+    /* Style overrides variables with CrOS colors to match classic button.
+       Action buttons are primary and regular buttons are secondary. Diagnostics
+       only uses secondary, thus action variables are not overridden. */
+    cr-button {
+      --border-color: var(--cros-button-stroke-color-secondary);
+      --disabled-bg: var(--cros-button-background-color-secondary-disabled);
+      --disabled-border-color: var(--cros-button-stroke-color-secondary-disabled);
+      --focus-shadow-color: var(--cros-focus-ring-color);
+      --ink-color: var(--cros-button-label-color-secondary);
+      --hover-bg-color: var(--cros-button-background-color-secondary-hover);
+      --hover-border-color: var(--cros-button-stroke-color-secondary-hover);
+      --text-color: var(--cros-button-label-color-secondary);
+    }
+
+    cr-toast {
+      --cr-toast-background: var(--cros-toast-background-color);
+      --cr-toast-text-color: var(--cros-toast-text-color);
     }
 
     .card-width {
@@ -86,7 +103,7 @@
 
     .diagnostics-chip {
       @apply --diagnostics-overview-font;
-      background-color: var(--google-grey-200);
+      background-color: var(--diagnostics-chip-bg-color);
       border-radius: 16px;
       height: 20px;
       line-height: 20px;
@@ -94,7 +111,7 @@
     }
 
     .divider {
-      border-left: 1px solid var(--google-grey-200);
+      border-left: 1px solid var(--cros-separator-color);
       height: 32px;
       padding-inline: 16px;
       position: relative;
@@ -103,13 +120,13 @@
 
     .divider-horizontal {
       align-self: center;
-      border-left: 1px solid var(--google-grey-200);
+      border-left: 1px solid var(--cros-separator-color);
       height: var(--divider-horizontal-height, 94px);
       margin: 10px 20px;
     }
 
     .grey-container {
-      background-color: rgba(var(--google-grey-200-rgb), .38);
+      background-color: rgba(var(--cros-bg-color-dropped-elevation-2-rgb), .38);
       border-radius: 4px;
       padding: 8px 20px;
     }
@@ -125,7 +142,7 @@
     }
 
     .link-text {
-      color: var(--google-blue-600);
+      color: var(--cros-color-prominent);
       cursor: pointer;
     }
 
@@ -236,6 +253,17 @@
         --content-container-width: 720px;
         --chart-width: 620px;
         --data-point-container-padding: 64px;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :host {
+        --diagnostics-card-bg-color: var(--cros-bg-color-elevation-1);
+        --diagnostics-chip-bg-color: var(--cros-bg-color-elevation-3);
+      }
+
+      .grey-container {
+        background-color: var(--cros-bg-color-dropped-elevation-2);
       }
     }
   </style>

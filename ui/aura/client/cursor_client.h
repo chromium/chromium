@@ -5,13 +5,16 @@
 #ifndef UI_AURA_CLIENT_CURSOR_CLIENT_H_
 #define UI_AURA_CLIENT_CURSOR_CLIENT_H_
 
-
 #include "ui/aura/aura_export.h"
 #include "ui/base/cursor/cursor.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace display {
 class Display;
+}
+
+namespace gfx {
+class Size;
 }
 
 namespace ui {
@@ -89,6 +92,9 @@ class AURA_EXPORT CursorClient {
 
   // Returns true if the mouse cursor should be hidden on |event|.
   virtual bool ShouldHideCursorOnKeyEvent(const ui::KeyEvent& event) const = 0;
+
+  // Returns the OS cursor size in DIP.
+  virtual gfx::Size GetSystemCursorSize() const = 0;
 
  protected:
   virtual ~CursorClient() {}

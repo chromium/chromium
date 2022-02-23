@@ -10,7 +10,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/synchronization/lock.h"
 #include "gles2_impl_export.h"
 #include "gpu/command_buffer/client/client_discardable_manager.h"

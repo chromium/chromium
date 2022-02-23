@@ -98,6 +98,13 @@ component("views_examples_lib") {
     "widget_example.h",
   ]
 
+  if (is_linux || is_chromeos || is_fuchsia) {
+    sources += [
+      "color_chooser_example.cc",
+      "color_chooser_example.h",
+    ]
+  }
+
   defines = [
     "GFX_VECTOR_ICONS_UNSAFE",
     "VIEWS_EXAMPLES_IMPLEMENTATION",
@@ -318,12 +325,14 @@ test("views_examples_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments =
         [ "//build/config/fuchsia/test/vulkan_capabilities.test-cmx" ]
   }
 
   data_deps = [
     ":views_examples_resources_pak",
+    "//testing/buildbot/filters:views_examples_unittests_filters",
     "//ui/resources:ui_test_pak_data",
   ]
 

@@ -30,7 +30,7 @@ enum FileSystemHandleKind {
     [
         CallWith=ScriptState,
         RuntimeEnabled=FileSystemAccessAPIExperimental
-    ]  Promise<void> rename(USVString new_entry_name);
+    ]  Promise<void> move(USVString new_entry_name);
     [
         CallWith=ScriptState,
         RuntimeEnabled=FileSystemAccessAPIExperimental

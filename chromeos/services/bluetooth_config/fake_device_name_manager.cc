@@ -27,5 +27,10 @@ void FakeDeviceNameManager::SetDeviceNickname(const std::string& device_id,
   NotifyDeviceNicknameChanged(device_id, nickname);
 }
 
+void FakeDeviceNameManager::RemoveDeviceNickname(const std::string& device_id) {
+  device_id_to_nickname_map_.erase(device_id);
+  NotifyDeviceNicknameChanged(device_id, /*nickname=*/absl::nullopt);
+}
+
 }  // namespace bluetooth_config
 }  // namespace chromeos

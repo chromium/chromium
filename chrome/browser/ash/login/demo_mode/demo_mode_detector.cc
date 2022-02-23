@@ -55,7 +55,7 @@ void DemoModeDetector::InitDetection() {
   // Devices in retail won't be in dev mode, and DUTs (devices under test) often
   // sit unused at OOBE for a while.
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
-          switches::kSystemDevMode) &&
+          chromeos::switches::kSystemDevMode) &&
       !has_derelict_switch) {
     return;
   }

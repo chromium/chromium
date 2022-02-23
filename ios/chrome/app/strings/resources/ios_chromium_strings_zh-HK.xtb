@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="zh-HK">
 <translation id="102360288709523007">將使用情況統計資料及當機報告傳送給 Google，協助我們改善 Chromium 的功能。</translation>
+<translation id="1047130070405668746">選取 [Chromium]</translation>
 <translation id="1185134272377778587">關於 Chromium</translation>
 <translation id="1257458525759135959">如要儲存圖片，請輕按 [設定] 並允許 Chromium 新增您的相片</translation>
 <translation id="1289216811211435351">切換至 Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">顯示登入 Chromium 的指示。</translation>
 <translation id="1584569488888892906">Chromium 不但簡便安全，速度更勝從前</translation>
 <translation id="1617663976202781617">來自 Chromium Sync 的資料</translation>
+<translation id="1722370509450468186">密碼將會儲存在您的帳戶 (<ph name="EMAIL" />) 中。</translation>
 <translation id="1736662517232558588">已清除 Chromium 的資料</translation>
 <translation id="1838412507805038478">Chromium 驗證到由「<ph name="ISSUER" />」發出的網站憑證。</translation>
 <translation id="1843424232666537147">Chromium 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. 選取 [Chromium]</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2054703085270098503">讓 Chromium 確保您的安全</translation>
 <translation id="2168108852149185974">部份外掛程式造成 Chromium 當機。請解除安裝以下程式：</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Chromium Canary 上不支援此功能</translation>
 <translation id="3639997914391704523">Chromium 可在您使用 Google 帳戶登入時檢查密碼。</translation>
 <translation id="3805899903892079518">Chromium 沒有存取相片或影片的權限。請前往「iOS 設定」&gt;「私隱」&gt;「相片」開放權限。</translation>
-<translation id="3946918322491238254">您仍可在此裝置上查看自己的所有書籤、記錄、密碼和其他設定，但您作出的變更將不會同步到 Google 帳戶。</translation>
+<translation id="4043291146360695975">密碼只會儲存至此裝置上的「密碼管理工具」。</translation>
 <translation id="4099085513035183040">Chromium Beta 版本上不支援此功能</translation>
 <translation id="4555020257205549924">開啟這項功能後，Chromium 會使用「Google 翻譯」來翻譯其他語言的網頁。<ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">Chromium 現在更進一步！歡迎您升級使用新版本。</translation>
 <translation id="6752854822223394465">您的機構正在設定 Chromium…</translation>
 <translation id="6820823224820483452">Chromium 無法檢查所有密碼。請明天再試。</translation>
+<translation id="7006920032187763988">您可在 iPad 上的其他應用程式使用您儲存到「密碼管理工具」的密碼。</translation>
 <translation id="7018284295775193585">Chromium 無法更新</translation>
 <translation id="7045244423563602563">自訂屬於您的 Chromium</translation>
 <translation id="7099326575020694068">Chromium 無法在「分割檢視」模式中使用相機</translation>
 <translation id="7108914401277488191">Chromium 讓您事半功倍</translation>
 <translation id="7118091470949186573">您現在只要在訊息、文件或其他應用程式中輕按連結，即可使用 Chromium。</translation>
+<translation id="7175400662502680481">您的密碼因資料外洩而被洩露。密碼管理工具建議您立即變更密碼。</translation>
 <translation id="7208566199746267865">Chromium 允許您將帳戶同步至網路上，以節省時間。您可在設定中新增或移除帳戶。</translation>
 <translation id="725427773388857052">Chromium 能確保系統安全，避免發生資料外洩或瀏覽不安全網站等問題。</translation>
 <translation id="7269362888766543920">部份外掛程式導致 Chromium 當機，請解除安裝那些外掛程式。</translation>
 <translation id="7313655110045230863">如要將 Chromium 設定為預設瀏覽器，請開啟 [設定]。輕按 [預設的瀏覽器應用程式]，然後選取 Chromium。</translation>
 <translation id="7337881442233988129">ChromiumHelper</translation>
 <translation id="7357211569052832586">所選資料已從 Chromium 和已同步的裝置中移除。不過，您仍可前往 history.google.com 存取 Google 帳戶中保存的其他各種瀏覽紀錄，例如在其他 Google 服務中的搜尋和活動紀錄。</translation>
+<translation id="7395825497086981028">系統會將密碼儲存在 <ph name="EMAIL" /> 的「密碼管理工具」。</translation>
 <translation id="7400689562045506105">隨時隨地使用 Chromium</translation>
 <translation id="766897673682622022">您的密碼因資料外洩而被洩露。Chromium 建議立即變更密碼。</translation>
 <translation id="7674213385180944843">開啟 [設定] &gt; [私隱權] &gt; [相機] &gt; [Chromium]，然後開啟相機。</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">要清除此裝置上的 Chromium 資料嗎？</translation>
 <translation id="8175055321229419309">提示：<ph name="BEGIN_LINK" />請將 Chromium 移至工具列<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium 無法檢查更新，請稍後再試。</translation>
+<translation id="858114650497379505">您可在 iPhone 上的其他應用程式使用您儲存到「密碼管理工具」的密碼。</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. 保留所有權利。</translation>
 <translation id="8663480472502753423">取得 Chromium 最新更新</translation>
 <translation id="8776843108004031667">此帳戶和所有未儲存的資料將從 Chromium 中移除。</translation>
 <translation id="894437814105052438">登出時，Chromium 將不會同步任何新資料至您的 Google 帳戶。不過，先前已同步處理的資料仍會保存在帳戶中。</translation>
 <translation id="9022552996538154597">登入 Chromium</translation>
+<translation id="9059693977935746710">您不需記住此密碼。密碼將會儲存至 <ph name="EMAIL" /> 的「密碼管理工具」</translation>
 <translation id="9089354809943900324">Chromium 版本過舊</translation>
 <translation id="9110075932708282655">預設為使用 Chromium</translation>
 <translation id="921174536258924340">Chromium 無法檢查所有密碼。請明天再試，或<ph name="BEGIN_LINK" />檢查 Google 帳戶中的密碼<ph name="END_LINK" />。</translation>

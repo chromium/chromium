@@ -8,7 +8,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/test/task_environment.h"
 #include "extensions/renderer/bindings/test_js_runner.h"
 #include "testing/gtest/include/gtest/gtest.h"

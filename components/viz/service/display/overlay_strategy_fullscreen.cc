@@ -22,7 +22,7 @@ OverlayStrategyFullscreen::OverlayStrategyFullscreen(
 OverlayStrategyFullscreen::~OverlayStrategyFullscreen() {}
 
 bool OverlayStrategyFullscreen::Attempt(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -51,9 +51,10 @@ bool OverlayStrategyFullscreen::Attempt(
     return false;
 
   OverlayCandidate candidate;
-  if (!OverlayCandidate::FromDrawQuad(
+  if (OverlayCandidate::FromDrawQuad(
           resource_provider, surface_damage_rect_list, output_color_matrix,
-          quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+          quad, GetPrimaryPlaneDisplayRect(primary_plane),
+          &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
     return false;
   }
 
@@ -66,25 +67,27 @@ bool OverlayStrategyFullscreen::Attempt(
   candidate.plane_z_order = 0;
   OverlayCandidateList new_candidate_list;
   new_candidate_list.push_back(candidate);
-  capability_checker_->CheckOverlaySupport(primary_plane, &new_candidate_list);
+  capability_checker_->CheckOverlaySupport(nullptr, &new_candidate_list);
   if (!new_candidate_list.front().overlay_handled)
     return false;
 
   candidate_list->swap(new_candidate_list);
 
-  render_pass->quad_list = QuadList();  // Remove all the quads
+  OverlayProposedCandidate proposed_candidate(front, candidate, this);
+  CommitCandidate(proposed_candidate, render_pass);
+
   return true;
 }
 
 void OverlayStrategyFullscreen::ProposePrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
     AggregatedRenderPassList* render_pass_list,
     SurfaceDamageRectList* surface_damage_rect_list,
     const PrimaryPlane* primary_plane,
-    OverlayProposedCandidateList* candidates,
+    std::vector<OverlayProposedCandidate>* candidates,
     std::vector<gfx::Rect>* content_bounds) {
   auto* render_pass = render_pass_list->back().get();
   QuadList* quad_list = &render_pass->quad_list;
@@ -105,9 +108,10 @@ void OverlayStrategyFullscreen::ProposePrioritized(
     return;
 
   OverlayCandidate candidate;
-  if (!OverlayCandidate::FromDrawQuad(
+  if (OverlayCandidate::FromDrawQuad(
           resource_provider, surface_damage_rect_list, output_color_matrix,
-          quad, GetPrimaryPlaneDisplayRect(primary_plane), &candidate)) {
+          quad, GetPrimaryPlaneDisplayRect(primary_plane),
+          &candidate) != OverlayCandidate::CandidateStatus::kSuccess) {
     return;
   }
 
@@ -122,7 +126,7 @@ void OverlayStrategyFullscreen::ProposePrioritized(
 }
 
 bool OverlayStrategyFullscreen::AttemptPrioritized(
-    const skia::Matrix44& output_color_matrix,
+    const SkM44& output_color_matrix,
     const OverlayProcessorInterface::FilterOperationsMap&
         render_pass_backdrop_filters,
     DisplayResourceProvider* resource_provider,
@@ -131,20 +135,26 @@ bool OverlayStrategyFullscreen::AttemptPrioritized(
     const PrimaryPlane* primary_plane,
     OverlayCandidateList* candidate_list,
     std::vector<gfx::Rect>* content_bounds,
-    OverlayProposedCandidate* proposed_candidate) {
+    const OverlayProposedCandidate& proposed_candidate) {
   // Before we attempt an overlay strategy, the candidate list should be empty.
   DCHECK(candidate_list->empty());
 
   OverlayCandidateList new_candidate_list;
-  new_candidate_list.push_back(proposed_candidate->candidate);
-  capability_checker_->CheckOverlaySupport(primary_plane, &new_candidate_list);
+  new_candidate_list.push_back(proposed_candidate.candidate);
+  capability_checker_->CheckOverlaySupport(nullptr, &new_candidate_list);
   if (!new_candidate_list.front().overlay_handled)
     return false;
 
   candidate_list->swap(new_candidate_list);
   auto* render_pass = render_pass_list->back().get();
-  render_pass->quad_list = QuadList();  // Remove all the quads
+  CommitCandidate(proposed_candidate, render_pass);
   return true;
+}
+
+void OverlayStrategyFullscreen::CommitCandidate(
+    const OverlayProposedCandidate& proposed_candidate,
+    AggregatedRenderPass* render_pass) {
+  render_pass->quad_list = QuadList();  // Remove all the quads
 }
 
 OverlayStrategy OverlayStrategyFullscreen::GetUMAEnum() const {

@@ -77,17 +77,18 @@ import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.UiRestriction;
+import org.chromium.url.JUnitTestGURLs;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
-/** Tests the DownloadActivity home V2. */
+/** Tests the download home V2. */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
-public class DownloadActivityV2Test extends DummyUiActivityTestCase {
+public class DownloadActivityV2Test extends BlankUiTestActivityTestCase {
     @Mock
     private Tracker mTracker;
     @Mock
@@ -301,8 +302,8 @@ public class DownloadActivityV2Test extends DummyUiActivityTestCase {
 
         // Add an item. The new item should be visible and the storage text should be updated.
         OfflineItem item5 = StubbedProvider.createOfflineItem("offline_guid_5",
-                "http://stuff_and_things.com", OfflineItemState.COMPLETE, 1024, "page 5",
-                "/data/fake_path/Downloads/file_5", System.currentTimeMillis(), 100000,
+                JUnitTestGURLs.getGURL(JUnitTestGURLs.URL_2), OfflineItemState.COMPLETE, 1024,
+                "page 5", "/data/fake_path/Downloads/file_5", System.currentTimeMillis(), 100000,
                 OfflineItemFilter.OTHER);
 
         TestThreadUtils.runOnUiThreadBlocking(() -> mStubbedOfflineContentProvider.addItem(item5));

@@ -8,8 +8,6 @@ blink_modules_sources("launch") {
   sources = [
     "dom_window_launch_queue.cc",
     "dom_window_launch_queue.h",
-    "file_handling_expiry_impl.cc",
-    "file_handling_expiry_impl.h",
     "launch_params.cc",
     "launch_params.h",
     "launch_queue.cc",

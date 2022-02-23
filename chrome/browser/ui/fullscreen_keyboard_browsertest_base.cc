@@ -29,7 +29,7 @@
 #include "url/gurl.h"
 #include "url/url_constants.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -45,7 +45,7 @@ constexpr char kFullscreenKeyboardLockHTML[] =
 // On MacOSX command key is used for most of the shortcuts, so replace it with
 // control to reduce the complexity of comparison of the results.
 void NormalizeMetaKeyForMacOS(std::string* output) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::ReplaceSubstringsAfterOffset(output, 0, "MetaLeft", "ControlLeft");
 #endif
 }
@@ -137,7 +137,8 @@ void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
   ASSERT_EQ(0, GetActiveTabIndex());
   ASSERT_EQ(1U, GetBrowserCount());
   // Add a second tab for counting and focus purposes.
-  AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK);
+  ASSERT_TRUE(
+      AddTabAtIndex(1, GURL(url::kAboutBlankURL), ui::PAGE_TRANSITION_LINK));
   ASSERT_EQ(2, GetTabCount());
   ASSERT_EQ(1U, GetBrowserCount());
 
@@ -152,7 +153,7 @@ void FullscreenKeyboardBrowserTestBase::StartFullscreenLockPage() {
 
 void FullscreenKeyboardBrowserTestBase::SendShortcut(ui::KeyboardCode key,
                                                      bool shift /* = false */) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool control_modifier = false;
   const bool command_modifier = true;
 #else
@@ -185,7 +186,7 @@ void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
   // for the observer to notice the change of fullscreen state.
   FullscreenNotificationObserver observer(GetActiveBrowser());
 // Enter fullscreen.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On MACOSX, Command + Control + F is used.
   ASSERT_TRUE(ui_test_utils::SendKeyPressSync(GetActiveBrowser(), ui::VKEY_F,
                                               true, false, false, true));
@@ -203,7 +204,7 @@ void FullscreenKeyboardBrowserTestBase::SendFullscreenShortcutAndWait() {
 // fullscreen. For more details, see ScopedFakeNSWindowFullscreen.
 // TODO(crbug.com/837438): Remove this once ScopedFakeNSWindowFullscreen fires
 // OnFullscreenStateChanged.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   observer.Wait();
 #endif
 }

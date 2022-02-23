@@ -70,7 +70,8 @@ std::vector<TabAlertState> GetTabAlertStatesForContents(
   if (vr::VrTabHelper::IsContentDisplayedInHeadset(contents))
     states.push_back(TabAlertState::VR_PRESENTING_IN_HEADSET);
 
-  if (contents->HasPictureInPictureVideo())
+  if (contents->HasPictureInPictureVideo() ||
+      contents->HasPictureInPictureDocument())
     states.push_back(TabAlertState::PIP_PLAYING);
 
   // Only tabs have a RecentlyAudibleHelper, but this function is abused for
@@ -196,5 +197,8 @@ bool AreAllSitesMuted(const TabStripModel& tab_strip,
 }
 
 }  // namespace chrome
+
+LastMuteMetadata::LastMuteMetadata(content::WebContents* contents)
+    : content::WebContentsUserData<LastMuteMetadata>(*contents) {}
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(LastMuteMetadata);

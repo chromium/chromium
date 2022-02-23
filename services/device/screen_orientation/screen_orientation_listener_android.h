@@ -5,7 +5,6 @@
 #ifndef SERVICES_DEVICE_SCREEN_ORIENTATION_SCREEN_ORIENTATION_LISTENER_ANDROID_H_
 #define SERVICES_DEVICE_SCREEN_ORIENTATION_SCREEN_ORIENTATION_LISTENER_ANDROID_H_
 
-#include "base/macros.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "services/device/public/mojom/screen_orientation.mojom.h"
 

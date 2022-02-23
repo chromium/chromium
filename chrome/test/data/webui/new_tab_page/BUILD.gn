@@ -1,55 +1,60 @@
-# Copyright 2020 The Chromium Authors. All rights reserved.
+# Copyright 2022 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("./modules/modules.gni")
+import("./realbox/realbox.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://new-tab-page/=../../chrome/browser/resources/new_tab_page/\"",
-                    "browser_resolver_prefix_replacements=\"chrome://test/=./\"",
-                    "js_module_root=../../chrome/test/data/webui/",
-                    "js_module_root=./gen/chrome/test/data/webui/",
-                  ]
-  deps = [
-    ":metrics_utils_test",
-    ":test_support",
-    "modules:info_dialog_test",
-    "modules:module_descriptor_test",
-    "modules:module_header_test",
-    "modules:module_registry_test",
-    "modules:module_wrapper_test",
-    "modules:modules_test",
-    "modules/cart:module_test",
-    "modules/cart_v2:module_test",
-    "modules/drive:module_test",
-    "modules/drive_v2:module_test",
-    "modules/recipes_v2:module_test",
-    "modules/task_module:module_test",
-  ]
-  if (!is_official_build) {
-    deps += [
-      "modules/dummy:module_test",
-      "modules/photos:module_test",
-    ]
-  }
+# Test files that do not require preprocessing.
+non_preprocessed_files = [
+                           "app_test.ts",
+                           "background_manager_test.ts",
+                           "customize_backgrounds_test.ts",
+                           "customize_dialog_focus_test.ts",
+                           "customize_dialog_test.ts",
+                           "customize_modules_test.ts",
+                           "customize_shortcuts_test.ts",
+                           "doodle_share_dialog_focus_test.ts",
+                           "doodle_share_dialog_test.ts",
+                           "logo_test.ts",
+                           "metrics_test_support.ts",
+                           "metrics_utils_test.ts",
+                           "middle_slot_promo_test.ts",
+                           "test_support.ts",
+                           "utils_test.ts",
+                           "voice_search_overlay_test.ts",
+                         ] + modules_test_files + realbox_test_files
+
+generate_grd("build_grdp") {
+  grd_prefix = "webui_new_tab_page"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "new_tab_page"
 }
 
-js_library("metrics_test_support") {
-}
-
-js_library("metrics_utils_test") {
-  deps = [
-    ":metrics_test_support",
-    "//chrome/browser/resources/new_tab_page",
-    "//ui/webui/resources/js:load_time_data.m",
+ts_library("build_ts") {
+  root_dir = "."
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://new-tab-page/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/new_tab_page/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
   ]
-}
+  in_files = non_preprocessed_files
 
-js_library("test_support") {
-  deps = [
-    "//chrome/browser/resources/new_tab_page",
-    "//chrome/test/data/webui:test_browser_proxy",
+  definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
   ]
+
+  deps = [ "//chrome/browser/resources/new_tab_page:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
 }

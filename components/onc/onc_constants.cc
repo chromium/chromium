@@ -146,6 +146,7 @@ const char kTechnologyHspaPlus[] = "HSPAPlus";
 const char kTechnologyLte[] = "LTE";
 const char kTechnologyLteAdvanced[] = "LTEAdvanced";
 const char kTechnologyUmts[] = "UMTS";
+const char kTechnology5gNr[] = "5GNR";
 }  // namespace cellular
 
 namespace cellular_provider {
@@ -365,7 +366,9 @@ const char kCert[] = "Cert";
 const char kEAP[] = "EAP";
 const char kGroup[] = "Group";
 const char kIKEVersion[] = "IKEVersion";
+const char kLocalIdentity[] = "LocalIdentity";
 const char kPSK[] = "PSK";
+const char kRemoteIdentity[] = "RemoteIdentity";
 const char kServerCAPEMs[] = "ServerCAPEMs";
 const char kServerCARef[] = "ServerCARef";
 const char kServerCARefs[] = "ServerCARefs";

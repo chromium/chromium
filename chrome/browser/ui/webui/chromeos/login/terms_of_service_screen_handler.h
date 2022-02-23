@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ui/webui/chromeos/login/base_screen_handler.h"
 

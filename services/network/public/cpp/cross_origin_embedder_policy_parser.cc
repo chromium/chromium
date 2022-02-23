@@ -20,6 +20,7 @@ constexpr char kHeaderName[] = "cross-origin-embedder-policy";
 constexpr char kReportOnlyHeaderName[] =
     "cross-origin-embedder-policy-report-only";
 
+// [spec]: https://html.spec.whatwg.org/C/#obtain-an-embedder-policy
 std::pair<mojom::CrossOriginEmbedderPolicyValue, absl::optional<std::string>>
 Parse(base::StringPiece header_value) {
   using Item = net::structured_headers::Item;

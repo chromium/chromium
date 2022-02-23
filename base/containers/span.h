@@ -15,6 +15,7 @@
 #include <utility>
 
 #include "base/check_op.h"
+#include "base/compiler_specific.h"
 #include "base/containers/checked_iterators.h"
 #include "base/containers/contiguous_iterator.h"
 #include "base/cxx17_backports.h"
@@ -225,10 +226,6 @@ constexpr size_t must_not_be_dynamic_extent() {
 //   sized container (e.g. std::vector) requires an explicit conversion (in the
 //   C++20 draft this is simply UB)
 //
-// Differences from [span.obs]:
-// - empty() is marked with WARN_UNUSED_RESULT instead of [[nodiscard]]
-//   ([[nodiscard]] is a C++17 feature)
-//
 // Furthermore, all constructors and methods are marked noexcept due to the lack
 // of exceptions in Chromium.
 //
@@ -237,7 +234,7 @@ constexpr size_t must_not_be_dynamic_extent() {
 
 // [span], class template span
 template <typename T, size_t Extent>
-class span : public internal::ExtentStorage<Extent> {
+class GSL_POINTER span : public internal::ExtentStorage<Extent> {
  private:
   using ExtentStorage = internal::ExtentStorage<Extent>;
 
@@ -408,9 +405,7 @@ class span : public internal::ExtentStorage<Extent> {
   // [span.obs], span observers
   constexpr size_t size() const noexcept { return ExtentStorage::size(); }
   constexpr size_t size_bytes() const noexcept { return size() * sizeof(T); }
-  constexpr bool empty() const noexcept WARN_UNUSED_RESULT {
-    return size() == 0;
-  }
+  [[nodiscard]] constexpr bool empty() const noexcept { return size() == 0; }
 
   // [span.elem], span element access
   constexpr T& operator[](size_t idx) const noexcept {

@@ -5,6 +5,11 @@
 #ifndef COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 #define COMPONENTS_AUTOFILL_ASSISTANT_CONTENT_BROWSER_CONTENT_AUTOFILL_ASSISTANT_DRIVER_H_
 
+#include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/time/time.h"
+#include "base/timer/timer.h"
+#include "components/autofill_assistant/content/browser/annotate_dom_model_service.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_agent.mojom.h"
 #include "components/autofill_assistant/content/common/autofill_assistant_driver.mojom.h"
 #include "content/public/browser/document_user_data.h"
@@ -28,6 +33,14 @@ class ContentAutofillAssistantDriver
   ContentAutofillAssistantDriver& operator=(
       const ContentAutofillAssistantDriver&) = delete;
 
+  static void BindDriver(mojo::PendingAssociatedReceiver<
+                             mojom::AutofillAssistantDriver> pending_receiver,
+                         content::RenderFrameHost* render_frame_host);
+
+  static ContentAutofillAssistantDriver* GetOrCreateForRenderFrameHost(
+      content::RenderFrameHost* render_frame_host,
+      AnnotateDomModelService* annotate_dom_model_service);
+
   void BindPendingReceiver(
       mojo::PendingAssociatedReceiver<mojom::AutofillAssistantDriver>
           pending_receiver);
@@ -35,17 +48,36 @@ class ContentAutofillAssistantDriver
   const mojo::AssociatedRemote<mojom::AutofillAssistantAgent>&
   GetAutofillAssistantAgent();
 
+  // autofill_assistant::mojom::AutofillAssistantDriver:
+  void GetAnnotateDomModel(base::TimeDelta timeout,
+                           GetAnnotateDomModelCallback callback) override;
+
+  void SetAnnotateDomModelService(
+      AnnotateDomModelService* annotate_dom_model_service);
+
  private:
+  friend class ContentAutofillAssistantDriverTest;
   explicit ContentAutofillAssistantDriver(
       content::RenderFrameHost* render_frame_host);
 
   friend DocumentUserData;
   DOCUMENT_USER_DATA_KEY_DECL();
 
+  void OnTimeout();
+  void OnModelAvailabilityChanged(bool is_available);
+
+  raw_ptr<AnnotateDomModelService> annotate_dom_model_service_ = nullptr;
+
+  std::unique_ptr<base::OneShotTimer> timer_;
+  GetAnnotateDomModelCallback callback_;
+
   mojo::AssociatedReceiver<mojom::AutofillAssistantDriver> receiver_{this};
 
   mojo::AssociatedRemote<mojom::AutofillAssistantAgent>
       autofill_assistant_agent_;
+
+  base::WeakPtrFactory<ContentAutofillAssistantDriver> weak_pointer_factory_{
+      this};
 };
 
 }  // namespace autofill_assistant

@@ -19,20 +19,6 @@ export class BasePageElement extends PolymerElement {
     return html`{__html_template__}`;
   }
 
-  static get properties() {
-    return {
-      /**
-       * Orientation of the page, either row or column.
-       * @type {string}
-       */
-      orientation: {
-        type: String,
-        value: 'row',
-        reflectToAttribute: true,
-      },
-    };
-  }
-
   /** @override */
   ready() {
     super.ready();

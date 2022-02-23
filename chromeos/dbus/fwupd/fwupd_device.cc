@@ -12,7 +12,7 @@ FwupdDevice::FwupdDevice(const std::string& id, const std::string& device_name)
     : id(id), device_name(device_name) {}
 
 FwupdDevice::FwupdDevice(const FwupdDevice& other) = default;
-
+FwupdDevice& FwupdDevice::operator=(const FwupdDevice& other) = default;
 FwupdDevice::~FwupdDevice() = default;
 
 }  // namespace chromeos

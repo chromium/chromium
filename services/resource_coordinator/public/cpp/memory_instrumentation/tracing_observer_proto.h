@@ -6,7 +6,6 @@
 #define SERVICES_RESOURCE_COORDINATOR_PUBLIC_CPP_MEMORY_INSTRUMENTATION_TRACING_OBSERVER_PROTO_H_
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/thread_annotations.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"

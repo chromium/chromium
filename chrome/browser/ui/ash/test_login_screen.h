@@ -48,6 +48,7 @@ class TestLoginScreen : public ash::LoginScreen {
                                    const base::RepeatingClosure& fling_callback,
                                    base::OnceClosure exit_callback) override;
   void ClearLoginShelfGestureHandler() override;
+  views::Widget* GetLoginWindowWidget() override;
 
  private:
   TestLoginScreenModel test_screen_model_;

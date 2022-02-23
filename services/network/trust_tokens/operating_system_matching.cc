@@ -9,7 +9,7 @@
 namespace network {
 
 bool IsCurrentOperatingSystem(mojom::TrustTokenKeyCommitmentResult::Os os) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return os == mojom::TrustTokenKeyCommitmentResult::Os::kAndroid;
 #else
   return false;

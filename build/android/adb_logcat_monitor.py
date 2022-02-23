@@ -33,12 +33,10 @@ devices = {}
 
 class TimeoutException(Exception):
   """Exception used to signal a timeout."""
-  pass
 
 
 class SigtermError(Exception):
   """Exception used to catch a sigterm."""
-  pass
 
 
 def StartLogcatIfNecessary(device_id, adb_cmd, base_dir):
@@ -48,12 +46,11 @@ def StartLogcatIfNecessary(device_id, adb_cmd, base_dir):
     if process.poll() is None:
       # Logcat process is still happily running
       return
-    else:
-      logging.info('Logcat for device %s has died', device_id)
-      error_filter = re.compile('- waiting for device -')
-      for line in process.stderr:
-        if not error_filter.match(line):
-          logging.error(device_id + ':   ' + line)
+    logging.info('Logcat for device %s has died', device_id)
+    error_filter = re.compile('- waiting for device -')
+    for line in process.stderr:
+      if not error_filter.match(line):
+        logging.error(device_id + ':   ' + line)
 
   logging.info('Starting logcat %d for device %s', logcat_num,
                device_id)
@@ -153,6 +150,8 @@ def main(base_dir, adb_cmd='adb'):
 if __name__ == '__main__':
   if 2 <= len(sys.argv) <= 3:
     print('adb_logcat_monitor: Initializing')
-    sys.exit(main(*sys.argv[1:3]))
+    if len(sys.argv) == 2:
+      sys.exit(main(sys.argv[1]))
+  sys.exit(main(sys.argv[1], sys.argv[2]))
 
   print('Usage: %s <base_dir> [<adb_binary_path>]' % sys.argv[0])

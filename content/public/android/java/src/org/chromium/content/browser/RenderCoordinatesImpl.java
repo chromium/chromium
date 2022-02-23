@@ -246,4 +246,12 @@ public class RenderCoordinatesImpl implements RenderCoordinates {
     private float getMaxVerticalScrollPix() {
         return getContentHeightPix() - getLastFrameViewportHeightPix();
     }
+
+    /**
+     * @return whether the first frame info was passed in and cached. Rendered content
+     *     area dimension, page scale factor, etc. is available if true.
+     */
+    public boolean frameInfoUpdatedForTesting() {
+        return mContentWidthCss != 0.f || mContentHeightCss != 0.f;
+    }
 }

@@ -62,6 +62,7 @@ class EnrollmentUIMixin : public InProcessBrowserTestMixin {
 
   void ExpectErrorMessage(int error_message_id, bool can_retry);
   void RetryAfterError();
+  void CancelAfterError();
 
   // Fills out the UI with device attribute information and submits it.
   void SubmitDeviceAttributes(const std::string& asset_id,

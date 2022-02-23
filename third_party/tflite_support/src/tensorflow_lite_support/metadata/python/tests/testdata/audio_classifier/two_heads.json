@@ -1,0 +1,95 @@
+{
+  "name": "AudioClassifier",
+  "subgraph_metadata": [
+    {
+      "input_tensor_metadata": [
+        {
+          "name": "audio_clip",
+          "content": {
+            "content_properties_type": "AudioProperties",
+            "content_properties": {
+              "sample_rate": 2,
+              "channels": 1
+            }
+          },
+          "stats": {
+          }
+        }
+      ],
+      "output_tensor_metadata": [
+        {
+          "name": "head2",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "process_units": [
+            {
+              "options_type": "ScoreCalibrationOptions",
+              "options": {
+                "score_transformation": "LOG",
+                "default_score": 0.2
+              }
+            }
+          ],
+          "stats": {
+          },
+          "associated_files": [
+            {
+              "name": "labels_en_2.txt",
+              "description": "Labels for categories that the model can recognize.",
+              "type": "TENSOR_AXIS_LABELS"
+            },
+            {
+              "name": "labels_cn_2.txt",
+              "description": "Labels for categories that the model can recognize.",
+              "type": "TENSOR_AXIS_LABELS"
+            },
+            {
+              "name": "score_cali_2.txt",
+              "description": "Contains sigmoid-based score calibration parameters. The main purposes of score calibration is to make scores across classes comparable, so that a common threshold can be used for all output classes.",
+              "type": "TENSOR_AXIS_SCORE_CALIBRATION"
+            }
+          ]
+        },
+        {
+          "name": "head1",
+          "content": {
+            "content_properties_type": "FeatureProperties",
+            "content_properties": {
+            }
+          },
+          "process_units": [
+            {
+              "options_type": "ScoreCalibrationOptions",
+              "options": {
+                "score_transformation": "LOG",
+                "default_score": 0.2
+              }
+            }
+          ],
+          "stats": {
+          },
+          "associated_files": [
+            {
+              "name": "labels_en_1.txt",
+              "description": "Labels for categories that the model can recognize.",
+              "type": "TENSOR_AXIS_LABELS"
+            },
+            {
+              "name": "labels_cn_1.txt",
+              "description": "Labels for categories that the model can recognize.",
+              "type": "TENSOR_AXIS_LABELS"
+            },
+            {
+              "name": "score_cali_1.txt",
+              "description": "Contains sigmoid-based score calibration parameters. The main purposes of score calibration is to make scores across classes comparable, so that a common threshold can be used for all output classes.",
+              "type": "TENSOR_AXIS_SCORE_CALIBRATION"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}

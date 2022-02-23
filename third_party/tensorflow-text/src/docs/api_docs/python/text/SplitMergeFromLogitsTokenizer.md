@@ -24,7 +24,10 @@ description: Tokenizes a tensor of UTF-8 string into words according to logits.
 
 Tokenizes a tensor of UTF-8 string into words according to logits.
 
-Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md), [`Tokenizer`](../text/Tokenizer.md), [`Splitter`](../text/Splitter.md)
+Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md),
+[`Tokenizer`](../text/Tokenizer.md),
+[`SplitterWithOffsets`](../text/SplitterWithOffsets.md),
+[`Splitter`](../text/Splitter.md)
 
 <pre class="devsite-click-to-copy prettyprint lang-py tfo-signature-link">
 <code>text.SplitMergeFromLogitsTokenizer(
@@ -42,20 +45,16 @@ Inherits From: [`TokenizerWithOffsets`](../text/TokenizerWithOffsets.md), [`Toke
 <colgroup><col width="214px"><col></colgroup>
 <tr><th colspan="2"><h2 class="add-link">Args</h2></th></tr>
 
-<tr>
-<td>
-`force_split_at_break_character`
-</td>
-<td>
-a bool that indicates whether to force
-start a new word after an ICU-defined whitespace character.  Regardless
-of this parameter, we never include a whitespace into a token, and we
-always ignore the split/merge action for the whitespace character
-itself.  This parameter indicates what happens after a whitespace.
--if force_split_at_break_character is true, create a new word starting
-at the first non-space character, regardless of the 0/1 label for
-that character, for instance:
+<tr> <td> `force_split_at_break_character` </td> <td> a bool that indicates
+whether to force start a new word after an ICU-defined whitespace character.
+Regardless of this parameter, we never include a whitespace into a token, and we
+always ignore the split/merge action for the whitespace character itself. This
+parameter indicates what happens after a whitespace. * if
+force_split_at_break_character is true, create a new word starting at the first
+non-space character, regardless of the 0/1 label for that character, for
+instance:
 
+~~~
 ```python
 s = [2.0, 1.0]  # sample pair of logits indicating a split action
 m = [1.0, 3.0]  # sample pair of logits indicating a merge action
@@ -72,30 +71,31 @@ strings=["New York"],
 logits=[[s, m, m, m, s, m, m, m]]
 output tokens=[["New", "York"]]
 ```
--otherwise, create a new word / continue the current one depending on
-the action for the first non-whitespace character.
+~~~
 
-```python
-s = [2.0, 1.0]  # sample pair of logits indicating a split action
-m = [1.0, 3.0]  # sample pair of logits indicating a merge action
+*   otherwise, create a new word / continue the current one depending on the
+    action for the first non-whitespace character.
 
-strings=["New York"],
-logits=[[s, m, m, s, m, m, m, m]]
-output tokens=[["NewYork"]]
+    ```python
+    s = [2.0, 1.0]  # sample pair of logits indicating a split action
+    m = [1.0, 3.0]  # sample pair of logits indicating a merge action
 
-strings=["New York"],
-logits=[[s, m, m, m, m, m, m, m]]
-output tokens=[["NewYork"]]
+    strings=["New York"],
+    logits=[[s, m, m, s, m, m, m, m]]
+    output tokens=[["NewYork"]]
 
-strings=["New York"],
-logits=[[s, m, m, m, s, m, m, m]]
-output tokens=[["New", "York"]]
-```
-</td>
-</tr>
-</table>
+    strings=["New York"],
+    logits=[[s, m, m, m, m, m, m, m]]
+    output tokens=[["NewYork"]]
 
+    strings=["New York"],
+    logits=[[s, m, m, m, s, m, m, m]]
+    output tokens=[["New", "York"]]
+    ```
 
+    </td>
+    </tr>
+    </table>
 
 ## Methods
 
@@ -109,42 +109,8 @@ output tokens=[["New", "York"]]
 )
 </code></pre>
 
-Splits the strings from the input tensor.
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-An N+1-dimensional UTF-8 string or integer `Tensor` or `RaggedTensor`.
-For each string from the input tensor, the final, extra dimension contains
-the pieces that string was split into.
-</td>
-</tr>
-
-</table>
-
-
+Alias for
+<a href="../text/Tokenizer.md#tokenize"><code>Tokenizer.tokenize</code></a>.
 
 <h3 id="split_with_offsets"><code>split_with_offsets</code></h3>
 
@@ -156,49 +122,8 @@ the pieces that string was split into.
 )
 </code></pre>
 
-Splits the input tensor, returns the resulting pieces with offsets.
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Args</th></tr>
-
-<tr>
-<td>
-`input`
-</td>
-<td>
-An N-dimensional UTF-8 string (or optionally integer) `Tensor` or
-`RaggedTensor`.
-</td>
-</tr>
-</table>
-
-
-
-<!-- Tabular view -->
- <table class="responsive fixed orange">
-<colgroup><col width="214px"><col></colgroup>
-<tr><th colspan="2">Returns</th></tr>
-<tr class="alt">
-<td colspan="2">
-A tuple `(pieces, start_offsets, end_offsets)` where:
-
-* `pieces` is an N+1-dimensional UTF-8 string or integer `Tensor` or
-`RaggedTensor`.
-* `start_offsets` is an N+1-dimensional integer `Tensor` or
-`RaggedTensor` containing the starting indices of each piece (byte
-indices for input strings).
-* `end_offsets` is an N+1-dimensional integer `Tensor` or
-`RaggedTensor` containing the exclusive ending indices of each piece
-(byte indices for input strings).
-</td>
-</tr>
-
-</table>
-
-
+Alias for
+<a href="../text/TokenizerWithOffsets.md#tokenize_with_offsets"><code>TokenizerWithOffsets.tokenize_with_offsets</code></a>.
 
 <h3 id="tokenize"><code>tokenize</code></h3>
 
@@ -216,51 +141,50 @@ The logits refer to the split / merge action we should take for each
 character.  For more info, see the doc for the logits argument below.
 
 ### Example:
-```python
+
 ```
->>> strings = ["IloveFlume!", "and tensorflow"])
+>>> strings = ['IloveFlume!', 'and tensorflow']
 >>> logits = [
-    [
-        # "I"
-        [5.0, -3.2],  # I: split
-        # "love"
-        [2.2, -1.0],  # l: split
-        [0.2, 12.0],  # o: merge
-        [0.0, 11.0],  # v: merge
-        [-3.0, 3.0],  # e: merge
-        # "Flume"
-        [10.0, 0.0],  # F: split
-        [0.0, 11.0],  # l: merge
-        [0.0, 11.0],  # u: merge
-        [0.0, 12.0],  # m: merge
-        [0.0, 12.0],  # e: merge
-        # "!"
-        [5.2, -7.0],  # !: split
-        # padding:
-        [1.0, 0.0], [1.0, 1.0], [1.0, 0.0],
-    ], [
-        # "and"
-        [2.0, 0.7],  # a: split
-        [0.2, 1.5],  # n: merge
-        [0.5, 2.3],  # d: merge
-        # " "
-        [1.7, 7.0],  # <space>: merge
-        # "tensorflow"
-        [2.2, 0.1],  # t: split
-        [0.2, 3.1],  # e: merge
-        [1.1, 2.5],  # n: merge
-        [0.7, 0.9],  # s: merge
-        [0.6, 1.0],  # o: merge
-        [0.3, 1.0],  # r: merge
-        [0.2, 2.2],  # f: merge
-        [0.7, 3.1],  # l: merge
-        [0.4, 5.0],  # o: merge
-        [0.8, 6.0],  # w: merge
-    ]]
->>> tokenizer = TokenizerFromLogits()
->>> tokenizer.tokenize(strings, logits).to_list()
-[["I", "love", "Flume", "!"], ["and", "tensorflow"]]
-```
+... [
+...     # 'I'
+...     [5.0, -3.2],  # I: split
+...     # 'love'
+...     [2.2, -1.0],  # l: split
+...     [0.2, 12.0],  # o: merge
+...     [0.0, 11.0],  # v: merge
+...     [-3.0, 3.0],  # e: merge
+...     # 'Flume'
+...     [10.0, 0.0],  # F: split
+...     [0.0, 11.0],  # l: merge
+...     [0.0, 11.0],  # u: merge
+...     [0.0, 12.0],  # m: merge
+...     [0.0, 12.0],  # e: merge
+...     # '!'
+...     [5.2, -7.0],  # !: split
+...     # padding:
+...     [1.0, 0.0], [1.0, 1.0], [1.0, 0.0],
+... ], [
+...     # 'and'
+...     [2.0, 0.7],  # a: split
+...     [0.2, 1.5],  # n: merge
+...     [0.5, 2.3],  # d: merge
+...     # ' '
+...     [1.7, 7.0],  # <space>: merge
+...     # 'tensorflow'
+...     [2.2, 0.1],  # t: split
+...     [0.2, 3.1],  # e: merge
+...     [1.1, 2.5],  # n: merge
+...     [0.7, 0.9],  # s: merge
+...     [0.6, 1.0],  # o: merge
+...     [0.3, 1.0],  # r: merge
+...     [0.2, 2.2],  # f: merge
+...     [0.7, 3.1],  # l: merge
+...     [0.4, 5.0],  # o: merge
+...     [0.8, 6.0],  # w: merge
+... ]]
+>>> tokenizer = SplitMergeFromLogitsTokenizer()
+>>> tokenizer.tokenize(strings, logits)
+<tf.RaggedTensor [[b'I', b'love', b'Flume', b'!'], [b'and', b'tensorflow']]>
 ```
 
 <!-- Tabular view -->
@@ -344,57 +268,54 @@ Tokenizes a tensor of UTF-8 strings into tokens with [start,end) offsets.
 
 ### Example:
 
-```python
 ```
->>> strings = ["IloveFlume!", "and tensorflow"])
+>>> strings = ['IloveFlume!', 'and tensorflow']
 >>> logits = [
-    [
-    [
-        # "I"
-        [5.0, -3.2],  # I: split
-        # "love"
-        [2.2, -1.0],  # l: split
-        [0.2, 12.0],  # o: merge
-        [0.0, 11.0],  # v: merge
-        [-3.0, 3.0],  # e: merge
-        # "Flume"
-        [10.0, 0.0],  # F: split
-        [0.0, 11.0],  # l: merge
-        [0.0, 11.0],  # u: merge
-        [0.0, 12.0],  # m: merge
-        [0.0, 12.0],  # e: merge
-        # "!"
-        [5.2, -7.0],  # !: split
-        # padding:
-        [1.0, 0.0], [1.0, 1.0], [1.0, 0.0],
-    ], [
-        # "and"
-        [2.0, 0.7],  # a: split
-        [0.2, 1.5],  # n: merge
-        [0.5, 2.3],  # d: merge
-        # " "
-        [1.7, 7.0],  # <space>: merge
-        # "tensorflow"
-        [2.2, 0.1],  # t: split
-        [0.2, 3.1],  # e: merge
-        [1.1, 2.5],  # n: merge
-        [0.7, 0.9],  # s: merge
-        [0.6, 1.0],  # o: merge
-        [0.3, 1.0],  # r: merge
-        [0.2, 2.2],  # f: merge
-        [0.7, 3.1],  # l: merge
-        [0.4, 5.0],  # o: merge
-        [0.8, 6.0],  # w: merge
-    ]]
->>> tokenizer = TokenizerFromLogits()
->>> result = tokenizer.tokenize_with_offsets(strings, logits)
->>> result[0].to_list()
-[["I", "love", "Flume", "!"], ["and", "tensorflow"]]
->>> result[1].to_list()
->>> [[0, 1, 5, 10], [0, 4]]
->>> result[2].to_list()
->>> [[1, 5, 10, 11], [3, 14]]
-```
+... [
+...     # 'I'
+...     [5.0, -3.2],  # I: split
+...     # 'love'
+...     [2.2, -1.0],  # l: split
+...     [0.2, 12.0],  # o: merge
+...     [0.0, 11.0],  # v: merge
+...     [-3.0, 3.0],  # e: merge
+...     # 'Flume'
+...     [10.0, 0.0],  # F: split
+...     [0.0, 11.0],  # l: merge
+...     [0.0, 11.0],  # u: merge
+...     [0.0, 12.0],  # m: merge
+...     [0.0, 12.0],  # e: merge
+...     # '!'
+...     [5.2, -7.0],  # !: split
+...     # padding:
+...     [1.0, 0.0], [1.0, 1.0], [1.0, 0.0],
+... ], [
+...     # 'and'
+...     [2.0, 0.7],  # a: split
+...     [0.2, 1.5],  # n: merge
+...     [0.5, 2.3],  # d: merge
+...     # ' '
+...     [1.7, 7.0],  # <space>: merge
+...     # 'tensorflow'
+...     [2.2, 0.1],  # t: split
+...     [0.2, 3.1],  # e: merge
+...     [1.1, 2.5],  # n: merge
+...     [0.7, 0.9],  # s: merge
+...     [0.6, 1.0],  # o: merge
+...     [0.3, 1.0],  # r: merge
+...     [0.2, 2.2],  # f: merge
+...     [0.7, 3.1],  # l: merge
+...     [0.4, 5.0],  # o: merge
+...     [0.8, 6.0],  # w: merge
+... ]]
+>>> tokenizer = SplitMergeFromLogitsTokenizer()
+>>> tokens, starts, ends = tokenizer.tokenize_with_offsets(strings, logits)
+>>> tokens
+<tf.RaggedTensor [[b'I', b'love', b'Flume', b'!'], [b'and', b'tensorflow']]>
+>>> starts
+<tf.RaggedTensor [[0, 1, 5, 10], [0, 4]]>
+>>> ends
+<tf.RaggedTensor [[1, 5, 10, 11], [3, 14]]>
 ```
 
 <!-- Tabular view -->
@@ -428,8 +349,6 @@ extra (padding) pairs of logits are ignored.
 </tr>
 </table>
 
-
-
 <!-- Tabular view -->
  <table class="responsive fixed orange">
 <colgroup><col width="214px"><col></colgroup>
@@ -438,13 +357,13 @@ extra (padding) pairs of logits are ignored.
 <td colspan="2">
 A tuple `(tokens, start_offsets, end_offsets)` where:
 * `tokens` is a `RaggedTensor` of strings where `tokens[i, k]` is
-the string content of the `k-th` token in `strings[i]`
+  the string content of the `k-th` token in `strings[i]`
 * `start_offsets` is a `RaggedTensor` of int64s where
-`start_offsets[i, k]` is the byte offset for the start of the
-`k-th` token in `strings[i]`.
+  `start_offsets[i, k]` is the byte offset for the start of the
+  `k-th` token in `strings[i]`.
 * `end_offsets` is a `RaggedTensor` of int64s where
-`end_offsets[i, k]` is the byte offset immediately after the
-end of the `k-th` token in `strings[i]`.
+  `end_offsets[i, k]` is the byte offset immediately after the
+  end of the `k-th` token in `strings[i]`.
 </td>
 </tr>
 

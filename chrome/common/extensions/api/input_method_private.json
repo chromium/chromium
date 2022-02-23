@@ -939,6 +939,17 @@
           }
         ]
       }, {
+        "name": "onTouch",
+        "type": "function",
+        "description": "This event is sent when a touch occurs in a text field. Should only happen after onFocus()",
+        "parameters": [
+          {
+            "$ref": "FocusReason",
+            "name": "pointerType",
+            "description": "Pointer type used to touch the text field"
+          }
+        ]
+      }, {
         "name": "onSettingsChanged",
         "type": "function",
         "description": "This event is sent when the settings for any input method changed. It is sent to all extensions that are listening to this event, and enabled by the user.",

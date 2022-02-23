@@ -16,9 +16,9 @@ import argparse
 import logging
 import os
 import re
-import six
 import subprocess
 import sys
+import six
 
 if six.PY2:
   import cgi as html
@@ -27,6 +27,7 @@ else:
 
 sys.path.append(os.path.join(
     os.path.dirname(__file__), os.pardir, os.pardir, 'build', 'android'))
+# pylint: disable=wrong-import-position,import-error
 import devil_chromium
 from devil.android import apk_helper
 from devil.android import device_errors
@@ -43,7 +44,7 @@ _SUPPORTED_ARCH_DICT = {
 }
 
 
-class StackAddressInterpreter(object):
+class StackAddressInterpreter:
   """A class to interpret addresses in simpleperf using stack script."""
   def __init__(self, args, tmp_dir):
     self.args = args
@@ -122,7 +123,7 @@ class StackAddressInterpreter(object):
     return address_function_pairs
 
 
-class SimplePerfRunner(object):
+class SimplePerfRunner:
   """A runner for simpleperf and its postprocessing."""
 
   def __init__(self, device, args, tmp_dir, address_interpreter):
@@ -145,7 +146,7 @@ class SimplePerfRunner(object):
   def GetWebViewLibraryNameAndPath(self, package_name):
     """Get WebView library name and path on the device."""
     apk_path = self._GetWebViewApkPath(package_name)
-    logging.debug('WebView APK path:' + apk_path)
+    logging.debug('WebView APK path: %s', apk_path)
     # TODO(changwan): check if we need support for bundle.
     tmp_apk_path = os.path.join(self.tmp_dir, 'base.apk')
     self.device.adb.Pull(apk_path, tmp_apk_path)
@@ -157,7 +158,8 @@ class SimplePerfRunner(object):
         lib_name = value
 
     lib_path = os.path.join(apk_path, 'lib', self._GetFormattedArch(), lib_name)
-    logging.debug("WebView's library path on the device should be:" + lib_path)
+    logging.debug("WebView's library path on the device should be: %s",
+                  lib_path)
     return lib_name, lib_path
 
   def Run(self):
@@ -282,8 +284,7 @@ class SimplePerfRunner(object):
       address = match.group(0)
       if address in address_function_dict:
         return address_function_dict[address]
-      else:
-        return address
+      return address
 
     # Line-by-line assignment to avoid creating a temp list.
     for i, line in enumerate(lines):

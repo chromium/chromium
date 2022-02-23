@@ -4,22 +4,39 @@
 
 #include "base/task/sequence_manager/tasks.h"
 
+#include "base/task/sequence_manager/task_order.h"
+
 namespace base {
 namespace sequence_manager {
 
 Task::Task(internal::PostedTask posted_task,
-           TimeTicks delayed_run_time,
            EnqueueOrder sequence_order,
            EnqueueOrder enqueue_order,
-           WakeUpResolution resolution)
+           TimeTicks queue_time,
+           WakeUpResolution resolution,
+           TimeDelta leeway)
     : PendingTask(posted_task.location,
                   std::move(posted_task.callback),
-                  posted_task.queue_time,
-                  delayed_run_time),
+                  queue_time,
+                  absl::holds_alternative<base::TimeTicks>(
+                      posted_task.delay_or_delayed_run_time)
+                      ? absl::get<base::TimeTicks>(
+                            posted_task.delay_or_delayed_run_time)
+                      : base::TimeTicks()),
       nestable(posted_task.nestable),
+      leeway(leeway),
+      delay_policy(posted_task.delay_policy
+                       ? *posted_task.delay_policy
+                       : subtle::DelayPolicy::kFlexibleNoSooner),
       task_type(posted_task.task_type),
       task_runner(std::move(posted_task.task_runner)),
-      enqueue_order_(enqueue_order) {
+      enqueue_order_(enqueue_order),
+      delayed_task_handle_delegate_(
+          std::move(posted_task.delayed_task_handle_delegate)) {
+  DCHECK(!absl::holds_alternative<base::TimeDelta>(
+             posted_task.delay_or_delayed_run_time) ||
+         absl::get<base::TimeDelta>(posted_task.delay_or_delayed_run_time)
+             .is_zero());
   // We use |sequence_num| when comparing PendingTask for ordering purposes
   // and it may wrap around to a negative number during the static cast, hence,
   // TaskQueueImpl::DelayedIncomingQueue is especially sensitive to a potential
@@ -35,29 +52,106 @@ Task::~Task() = default;
 
 Task& Task::operator=(Task&& other) = default;
 
+TimeTicks Task::earliest_delayed_run_time() const {
+  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly)
+    return delayed_run_time - leeway;
+  return delayed_run_time;
+}
+
+TimeTicks Task::latest_delayed_run_time() const {
+  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner)
+    return delayed_run_time + leeway;
+  return delayed_run_time;
+}
+
+TaskOrder Task::task_order() const {
+  return TaskOrder(enqueue_order(), latest_delayed_run_time(), sequence_num);
+}
+
+void Task::SetHeapHandle(HeapHandle heap_handle) {
+  if (!delayed_task_handle_delegate_)
+    return;
+
+  delayed_task_handle_delegate_->SetHeapHandle(heap_handle);
+}
+
+void Task::ClearHeapHandle() {
+  if (!delayed_task_handle_delegate_)
+    return;
+  delayed_task_handle_delegate_->ClearHeapHandle();
+}
+
+HeapHandle Task::GetHeapHandle() const {
+  if (!delayed_task_handle_delegate_)
+    return HeapHandle::Invalid();
+  return delayed_task_handle_delegate_->GetHeapHandle();
+}
+
+bool Task::IsCanceled() const {
+  CHECK(task);
+  if (task.IsCancelled()) {
+    DCHECK(!delayed_task_handle_delegate_);
+    return true;
+  }
+
+  return delayed_task_handle_delegate_.WasInvalidated();
+}
+
+void Task::WillRunTask() {
+  if (!delayed_task_handle_delegate_)
+    return;
+
+  delayed_task_handle_delegate_->WillRunTask();
+}
+
+TimeTicks WakeUp::earliest_time() const {
+  if (delay_policy == subtle::DelayPolicy::kFlexiblePreferEarly)
+    return time - leeway;
+  return time;
+}
+
+TimeTicks WakeUp::latest_time() const {
+  if (delay_policy == subtle::DelayPolicy::kFlexibleNoSooner)
+    return time + leeway;
+  return time;
+}
+
 namespace internal {
-PostedTask::PostedTask(scoped_refptr<SequencedTaskRunner> task_runner,
-                       OnceClosure callback,
-                       Location location,
-                       TimeDelta delay,
-                       Nestable nestable,
-                       TaskType task_type)
+PostedTask::PostedTask(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    OnceClosure callback,
+    Location location,
+    TimeDelta delay,
+    Nestable nestable,
+    TaskType task_type,
+    WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate)
     : callback(std::move(callback)),
       location(location),
-      delay(delay),
       nestable(nestable),
       task_type(task_type),
-      task_runner(std::move(task_runner)) {}
+      delay_or_delayed_run_time(delay),
+      task_runner(std::move(task_runner)),
+      delayed_task_handle_delegate(std::move(delayed_task_handle_delegate)) {}
 
-PostedTask::PostedTask(PostedTask&& move_from) noexcept
-    : callback(std::move(move_from.callback)),
-      location(move_from.location),
-      delay(move_from.delay),
-      nestable(move_from.nestable),
-      task_type(move_from.task_type),
-      task_runner(std::move(move_from.task_runner)),
-      queue_time(move_from.queue_time) {}
+PostedTask::PostedTask(
+    scoped_refptr<SequencedTaskRunner> task_runner,
+    OnceClosure callback,
+    Location location,
+    TimeTicks delayed_run_time,
+    subtle::DelayPolicy delay_policy,
+    Nestable nestable,
+    TaskType task_type,
+    WeakPtr<DelayedTaskHandleDelegate> delayed_task_handle_delegate)
+    : callback(std::move(callback)),
+      location(location),
+      nestable(nestable),
+      task_type(task_type),
+      delay_or_delayed_run_time(delayed_run_time),
+      delay_policy(delay_policy),
+      task_runner(std::move(task_runner)),
+      delayed_task_handle_delegate(std::move(delayed_task_handle_delegate)) {}
 
+PostedTask::PostedTask(PostedTask&& move_from) noexcept = default;
 PostedTask::~PostedTask() = default;
 
 }  // namespace internal

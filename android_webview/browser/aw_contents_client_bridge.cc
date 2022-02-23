@@ -13,7 +13,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/task/current_thread.h"
 #include "content/public/browser/browser_thread.h"
@@ -59,7 +59,7 @@ class UserData : public base::SupportsUserData::Data {
       return NULL;
     UserData* data = static_cast<UserData*>(
         web_contents->GetUserData(kAwContentsClientBridge));
-    return data ? data->contents_ : NULL;
+    return data ? data->contents_.get() : NULL;
   }
 
   explicit UserData(AwContentsClientBridge* ptr) : contents_(ptr) {}
@@ -68,7 +68,7 @@ class UserData : public base::SupportsUserData::Data {
   UserData& operator=(const UserData&) = delete;
 
  private:
-  AwContentsClientBridge* contents_;
+  raw_ptr<AwContentsClientBridge> contents_;
 };
 
 }  // namespace
@@ -92,25 +92,6 @@ void AwContentsClientBridge::Dissociate(WebContents* web_contents) {
 // static
 AwContentsClientBridge* AwContentsClientBridge::FromWebContents(
     WebContents* web_contents) {
-  return UserData::GetContents(web_contents);
-}
-
-// static
-AwContentsClientBridge* AwContentsClientBridge::FromWebContentsGetter(
-    const content::WebContents::Getter& web_contents_getter) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  WebContents* web_contents = web_contents_getter.Run();
-  return UserData::GetContents(web_contents);
-}
-
-// static
-AwContentsClientBridge* AwContentsClientBridge::FromID(int render_process_id,
-                                                       int render_frame_id) {
-  DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  content::RenderFrameHost* rfh =
-      content::RenderFrameHost::FromID(render_process_id, render_frame_id);
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(rfh);
   return UserData::GetContents(web_contents);
 }
 

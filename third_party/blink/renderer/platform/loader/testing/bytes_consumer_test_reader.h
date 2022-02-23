@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_BYTES_CONSUMER_TEST_READER_H_
 #define THIRD_PARTY_BLINK_RENDERER_PLATFORM_LOADER_TESTING_BYTES_CONSUMER_TEST_READER_H_
 
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
+#include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 

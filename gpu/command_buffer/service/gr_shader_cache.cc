@@ -279,9 +279,6 @@ void GrShaderCache::StoreVkPipelineCacheIfNeeded(GrDirectContext* gr_context) {
   // thread. Calling it from multiple gpu threads and hence multiple context is
   // redundant and expensive since each GrContext will have same key. Hence
   // adding a DCHECK here.
-  // TODO(vikassoni) : https://crbug.com/1211085. Ensure that we call this
-  // method from only one gpu thread when multiple gpu threads aka dr-dc is
-  // implemented.
   DCHECK_CALLED_ON_VALID_THREAD(gpu_main_thread_checker_);
 
   bool need_store_pipeline_cache = false;

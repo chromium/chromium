@@ -94,7 +94,7 @@ void ActivateWindow(gfx::NativeWindow window);
 // whether the view has the visible attribute set.
 bool IsVisible(gfx::NativeView view);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // On 10.7+, back and forward swipe gestures can be triggered using a scroll
 // gesture, if enabled in System Preferences. This function returns true if
 // the feature is supported and enabled, and false otherwise.

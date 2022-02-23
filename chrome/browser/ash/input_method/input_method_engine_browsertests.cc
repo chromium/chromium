@@ -37,6 +37,7 @@
 #include "ui/base/ime/ash/mock_ime_input_context_handler.h"
 #include "ui/base/ime/composition_text.h"
 #include "ui/base/ime/dummy_text_input_client.h"
+#include "ui/base/ime/fake_text_input_client.h"
 #include "ui/base/ime/text_input_flags.h"
 #include "ui/events/event.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -74,7 +75,7 @@ class InputMethodEngineBrowserTest
 
   virtual ~InputMethodEngineBrowserTest() = default;
 
-  void TearDownInProcessBrowserTestFixture() override { extension_ = NULL; }
+  void TearDownInProcessBrowserTestFixture() override { extension_ = nullptr; }
 
   ui::IMEEngineHandlerInterface::InputContext CreateInputContextWithInputType(
       ui::TextInputType type) {
@@ -1162,10 +1163,6 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest,
     EXPECT_EQ("LABEL3", props[3].label);
     EXPECT_EQ("LABEL4", props[4].label);
 
-    EXPECT_TRUE(props[2].is_selection_item);
-    // TODO(nona): Add tests for style: ["toggle" and "separator"]
-    // and visible:, when implement them.
-
     EXPECT_TRUE(props[4].is_selection_item_checked);
   }
   {
@@ -1512,7 +1509,7 @@ IN_PROC_BROWSER_TEST_P(InputMethodEngineBrowserTest, MojoInteractionTest) {
     SCOPED_TRACE("Verifies onBlur event");
     ExtensionTestMessageListener blur_listener("onBlur", false);
 
-    ui::DummyTextInputClient dtic;
+    ui::FakeTextInputClient dtic(ui::TEXT_INPUT_TYPE_TEXT);
     im->SetFocusedTextInputClient(&dtic);
 
     ASSERT_TRUE(blur_listener.WaitUntilSatisfied());

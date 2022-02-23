@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_FEED_CORE_V2_STREAM_PRIVACY_NOTICE_CARD_TRACKER_H_
 #define COMPONENTS_FEED_CORE_V2_STREAM_PRIVACY_NOTICE_CARD_TRACKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 
 class PrefService;
@@ -39,7 +40,7 @@ class PrivacyNoticeCardTracker {
  private:
   void MaybeUpdateNoticeCardClicksCount(int index);
 
-  PrefService* profile_prefs_;
+  raw_ptr<PrefService> profile_prefs_;
 
   // The number of views of the notice card.
   int views_count_;

@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 260 tests; 149 PASS, 111 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 260 tests; 155 PASS, 105 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS Setting protocol with leading U+0000 (https:)
 PASS Setting protocol with U+0000 before inserted colon (https:)
 PASS Setting username with leading U+0000 (https:)
@@ -112,12 +112,12 @@ PASS Setting username with trailing U+001F (https:)
 PASS Setting password with leading U+001F (https:)
 PASS Setting password with middle U+001F (https:)
 PASS Setting password with trailing U+001F (https:)
-FAIL Setting host with leading U+001F (https:) assert_equals: property expected "\x1ftest:8000" but got "host:8000"
-FAIL Setting hostname with leading U+001F (https:) assert_equals: property expected "\x1ftest" but got "host"
-FAIL Setting host with middle U+001F (https:) assert_equals: property expected "te\x1fst:8000" but got "host:8000"
-FAIL Setting hostname with middle U+001F (https:) assert_equals: property expected "te\x1fst" but got "host"
-FAIL Setting host with trailing U+001F (https:) assert_equals: property expected "test\x1f:8000" but got "host:8000"
-FAIL Setting hostname with trailing U+001F (https:) assert_equals: property expected "test\x1f" but got "host"
+PASS Setting host with leading U+001F (https:)
+PASS Setting hostname with leading U+001F (https:)
+PASS Setting host with middle U+001F (https:)
+PASS Setting hostname with middle U+001F (https:)
+PASS Setting host with trailing U+001F (https:)
+PASS Setting hostname with trailing U+001F (https:)
 PASS Setting port with leading U+001F (https:)
 PASS Setting port with middle U+001F (https:)
 PASS Setting port with trailing U+001F (https:)

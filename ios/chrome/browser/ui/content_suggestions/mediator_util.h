@@ -8,7 +8,6 @@
 #include "components/ntp_snippets/content_suggestion.h"
 #include "components/ntp_snippets/status.h"
 #include "components/ntp_tiles/ntp_tile.h"
-#import "ios/chrome/browser/ui/content_suggestions/content_suggestions_data_source.h"
 #import "ios/chrome/browser/ui/content_suggestions/identifier/content_suggestions_section_information.h"
 
 @class ContentSuggestionsMostVisitedActionItem;
@@ -28,17 +27,14 @@ ContentSuggestionsSectionInformation* PromoSectionInformation();
 // Creates and returns a SectionInfo for the Most Visited section.
 ContentSuggestionsSectionInformation* MostVisitedSectionInformation();
 
-// Creates and returns a SectionInfo for the Discover feed section.
-ContentSuggestionsSectionInformation* DiscoverSectionInformation(
-    BOOL isGoogleDefaultSearchProvider);
+// Creates and returns a SectionInfo for the single cell parent item.
+ContentSuggestionsSectionInformation* SingleCellSectionInformation();
 
 // Converts a ntp_tiles::NTPTile |tile| to a ContentSuggestionsMostVisitedItem
 // with a |sectionInfo|.
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
     const ntp_tiles::NTPTile& tile,
     ContentSuggestionsSectionInformation* sectionInfo);
-
-content_suggestions::StatusCode ConvertStatusCode(ntp_snippets::Status status);
 
 // Creates and returns a Bookmarks action item.
 ContentSuggestionsMostVisitedActionItem* BookmarkActionItem();

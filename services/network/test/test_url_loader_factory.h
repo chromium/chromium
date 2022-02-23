@@ -9,7 +9,6 @@
 #include <string>
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -19,7 +18,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
-#include "services/network/public/mojom/url_response_head.mojom-forward.h"
+#include "services/network/public/mojom/url_response_head.mojom.h"
 
 namespace network {
 class WeakWrapperSharedURLLoaderFactory;

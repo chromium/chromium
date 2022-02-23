@@ -6,9 +6,7 @@
 
 #include "components/sync/protocol/sync.pb.h"
 
-namespace syncer {
-
-namespace commit_util {
+namespace syncer::commit_util {
 
 void AddExtensionsActivityToMessage(
     ExtensionsActivity* activity,
@@ -25,12 +23,12 @@ void AddExtensionsActivityToMessage(
   activity->GetAndClearRecords(extensions_activity_buffer);
 
   const ExtensionsActivity::Records& records = *extensions_activity_buffer;
-  for (const auto& id_and_record : records) {
+  for (const auto& [id, record] : records) {
     sync_pb::ChromiumExtensionsActivity* activity_message =
         message->add_extensions_activity();
-    activity_message->set_extension_id(id_and_record.second.extension_id);
+    activity_message->set_extension_id(record.extension_id);
     activity_message->set_bookmark_writes_since_last_commit(
-        id_and_record.second.bookmark_write_count);
+        record.bookmark_write_count);
   }
 }
 
@@ -55,6 +53,4 @@ void AddClientConfigParamsToMessage(
   }
 }
 
-}  // namespace commit_util
-
-}  // namespace syncer
+}  // namespace syncer::commit_util

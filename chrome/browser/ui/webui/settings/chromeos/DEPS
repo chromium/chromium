@@ -1,5 +1,5 @@
 include_rules = [
-  "+ash/components/pcie_peripheral",
+  "+ash/components/peripheral_notification",
   "+components/account_manager_core",
   "+chrome/services/local_search_service",
   "+chromeos/tpm:tpm",

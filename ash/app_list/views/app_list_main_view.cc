@@ -133,7 +133,6 @@ void AppListMainView::QueryChanged(SearchBoxViewBase* sender) {
                                     !query.empty());
 
   delegate_->StartSearch(raw_query);
-  contents_view_->search_result_page_view()->UpdateResultContainersVisibility();
 }
 
 void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
@@ -149,8 +148,14 @@ void AppListMainView::ActiveChanged(SearchBoxViewBase* sender) {
     const std::u16string raw_query = search_model->search_box()->text();
     std::u16string query;
     base::TrimWhitespace(raw_query, base::TRIM_ALL, &query);
-    if (query.empty())
-      search_box_view_->ShowZeroStateSuggestions();
+    if (features::IsProductivityLauncherEnabled()) {
+      app_list_view_->SetStateFromSearchBoxView(
+          query.empty(), true /*triggered_by_contents_change*/);
+      contents_view_->ShowSearchResults(true);
+    } else {
+      if (query.empty())
+        search_box_view_->ShowZeroStateSuggestions();
+    }
   } else {
     // Close the search results page if the search box is inactive.
     contents_view_->ShowSearchResults(false);
@@ -187,7 +192,7 @@ void AppListMainView::OnSearchBoxKeyEvent(ui::KeyEvent* event) {
 
 bool AppListMainView::CanSelectSearchResults() {
   // If there's a result, keyboard selection is allowed.
-  return !!contents_view_->search_result_page_view()->first_result_view();
+  return !!contents_view_->search_result_page_view()->CanSelectSearchResults();
 }
 
 void AppListMainView::AssistantButtonPressed() {

@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/core/loader/resource/image_resource.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_content.h"
 #include "third_party/blink/renderer/core/loader/resource/image_resource_observer.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
 #include "third_party/blink/renderer/platform/wtf/hash_set.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
@@ -76,9 +76,11 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
     kUpdateForcedReload
   };
 
-  void UpdateFromElement(UpdateFromElementBehavior = kUpdateNormal,
-                         network::mojom::ReferrerPolicy =
-                             network::mojom::ReferrerPolicy::kDefault);
+  // force_blocking ensures that the image will block the load event.
+  void UpdateFromElement(
+      UpdateFromElementBehavior = kUpdateNormal,
+      network::mojom::ReferrerPolicy = network::mojom::ReferrerPolicy::kDefault,
+      bool force_blocking = false);
 
   void ElementDidMoveToNewDocument();
 
@@ -140,7 +142,9 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
 
   ScriptPromise Decode(ScriptState*, ExceptionState&);
 
-  void LoadDeferredImage(network::mojom::ReferrerPolicy);
+  // force_blocking ensures that the image will block the load event.
+  void LoadDeferredImage(network::mojom::ReferrerPolicy,
+                         bool force_blocking = false);
 
  protected:
   void ImageChanged(ImageResourceContent*, CanDeferInvalidation) override;
@@ -159,18 +163,20 @@ class CORE_EXPORT ImageLoader : public GarbageCollected<ImageLoader>,
     kNone,      // LazyImages not active.
     kDeferred,  // Full image load not started, and image load event will not be
                 // fired. Image will not block the document's load event.
-    kFullImage  // Full image is loading/loaded, due to element coming near the
-                // viewport. image_complete_ can be used to differentiate if the
-                // fetch is complete or not. After the fetch, image load event
-                // is fired.
+    kFullImage,  // Full image is loading/loaded, due to element coming near the
+                 // viewport. image_complete_ can be used to differentiate if
+                 // the fetch is complete or not. After the fetch, image load
+                 // event is fired.
   };
 
   // Called from the task or from updateFromElement to initiate the load.
+  // force_blocking ensures that the image will block the load event.
   void DoUpdateFromElement(
       scoped_refptr<const DOMWrapperWorld> world,
       UpdateFromElementBehavior,
       network::mojom::ReferrerPolicy = network::mojom::ReferrerPolicy::kDefault,
-      UpdateType = UpdateType::kAsync);
+      UpdateType = UpdateType::kAsync,
+      bool force_blocking = false);
 
   virtual void DispatchLoadEvent() = 0;
   virtual void NoImageResourceToLoad() {}

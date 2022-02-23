@@ -13,9 +13,10 @@
 #include "android_webview/browser/renderer_host/aw_render_view_host_ext.h"
 #include "android_webview/browser_jni_headers/AwSettings_jni.h"
 #include "android_webview/common/aw_content_client.h"
+#include "android_webview/common/aw_features.h"
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/supports_user_data.h"
 #include "components/viz/common/features.h"
 #include "content/public/browser/navigation_controller.h"
@@ -62,11 +63,11 @@ class AwSettingsUserData : public base::SupportsUserData::Data {
       return NULL;
     AwSettingsUserData* data = static_cast<AwSettingsUserData*>(
         web_contents->GetUserData(kAwSettingsUserDataKey));
-    return data ? data->settings_ : NULL;
+    return data ? data->settings_.get() : NULL;
   }
 
  private:
-  AwSettings* settings_;
+  raw_ptr<AwSettings> settings_;
 };
 
 AwSettings::AwSettings(JNIEnv* env,
@@ -114,6 +115,25 @@ AwSettings* AwSettings::FromWebContents(content::WebContents* web_contents) {
 bool AwSettings::GetAllowSniffingFileUrls() {
   JNIEnv* env = base::android::AttachCurrentThread();
   return Java_AwSettings_getAllowSniffingFileUrls(env);
+}
+
+AwSettings::RequestedWithHeaderMode
+AwSettings::GetDefaultRequestedWithHeaderMode() {
+  if (base::FeatureList::IsEnabled(features::kWebViewXRequestedWithHeader)) {
+    int configuredValue = features::kWebViewXRequestedWithHeaderMode.Get();
+    switch (configuredValue) {
+      case AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW:
+        return AwSettings::RequestedWithHeaderMode::CONSTANT_WEBVIEW;
+      case AwSettings::RequestedWithHeaderMode::NO_HEADER:
+        return AwSettings::RequestedWithHeaderMode::NO_HEADER;
+      default:
+        // If the field trial config is broken for some reason, use the
+        // package name, since the feature is still enabled.
+        return AwSettings::RequestedWithHeaderMode::APP_PACKAGE_NAME;
+    }
+  } else {
+    return AwSettings::RequestedWithHeaderMode::NO_HEADER;
+  }
 }
 
 AwRenderViewHostExt* AwSettings::GetAwRenderViewHostExt() {
@@ -405,10 +425,6 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
 
   web_prefs->plugins_enabled = false;
 
-  // TODO(enne): Remove this pref, and clean up Android settings.
-  web_prefs->application_cache_enabled =
-      Java_AwSettings_getAppCacheEnabledLocked(env, obj);
-
   web_prefs->local_storage_enabled =
       Java_AwSettings_getDomStorageEnabledLocked(env, obj);
 
@@ -512,7 +528,8 @@ void AwSettings::PopulateWebPreferencesLocked(JNIEnv* env,
   if (AwDarkMode* aw_dark_mode = AwDarkMode::FromWebContents(web_contents())) {
     aw_dark_mode->PopulateWebPreferences(
         web_prefs, Java_AwSettings_getForceDarkModeLocked(env, obj),
-        Java_AwSettings_getForceDarkBehaviorLocked(env, obj));
+        Java_AwSettings_getForceDarkBehaviorLocked(env, obj),
+        Java_AwSettings_isAlgorithmicDarkeningAllowedLocked(env, obj));
   }
 }
 

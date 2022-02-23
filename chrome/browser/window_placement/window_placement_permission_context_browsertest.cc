@@ -162,8 +162,16 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, GestureToPrompt) {
   EXPECT_FALSE(tab->GetMainFrame()->HasTransientUserActivation());
 }
 
+// TODO(crbug.com/1290805): Test failing on linux-chromeos-chrome.
+// TODO(crbug.com/1290660): Test failing on linux.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
+#define MAYBE_DismissAndDeny DISABLED_DismissAndDeny
+#else
+#define MAYBE_DismissAndDeny DismissAndDeny
+#endif
 // Tests user activation after dimissing and denying the permission request.
-IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest, DismissAndDeny) {
+IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
+                       MAYBE_DismissAndDeny) {
   const GURL url(https_test_server()->GetURL("a.test", "/empty.html"));
   EXPECT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
   auto* tab = browser()->tab_strip_model()->GetActiveWebContents();
@@ -299,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(WindowPlacementPermissionContextTest,
 
 // TODO(enne): Windows assumes that display::GetScreen() is a ScreenWin
 // which is not true here.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 
 // Verify that window.screen.isExtended returns true in a same-origin
 // iframe without the window placement permission policy allowed.
@@ -365,6 +373,6 @@ IN_PROC_BROWSER_TEST_F(MultiscreenWindowPlacementPermissionContextTest,
                          content::EXECUTE_SCRIPT_NO_USER_GESTURE));
 }
 
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 }  // namespace

@@ -192,22 +192,22 @@ bool CrostiniFeatures::CouldBeAllowed(Profile* profile, std::string* reason) {
     return false;
   }
 
-  if (!chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  if (!ash::ProfileHelper::IsPrimaryProfile(profile)) {
     VLOG(1) << "Crostini UI is not allowed on non-primary profiles.";
     *reason = "Crostini is only allowed in primary user sessions";
     return false;
   }
 
   if (!profile || profile->IsChild() || profile->IsOffTheRecord() ||
-      chromeos::ProfileHelper::IsEphemeralUserProfile(profile) ||
-      chromeos::ProfileHelper::IsLockScreenAppProfile(profile)) {
+      ash::ProfileHelper::IsEphemeralUserProfile(profile) ||
+      ash::ProfileHelper::IsLockScreenAppProfile(profile)) {
     VLOG(1) << "Profile is not allowed to run crostini.";
     *reason = "This user session is not allowed to run crostini";
     return false;
   }
 
   bool kernelnext = base::CommandLine::ForCurrentProcess()->HasSwitch(
-      chromeos::switches::kKernelnextRestrictVMs);
+      ash::switches::kKernelnextRestrictVMs);
   bool kernelnext_override =
       base::FeatureList::IsEnabled(features::kKernelnextVMs);
   if (kernelnext && !kernelnext_override) {
@@ -234,7 +234,7 @@ bool CrostiniFeatures::IsAllowedNow(Profile* profile, std::string* reason) {
   }
 
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!IsUnaffiliatedCrostiniAllowedByPolicy() && !user->IsAffiliated()) {
     VLOG(1) << "Policy blocks unaffiliated user from running Crostini.";
     *reason = "Crostini for unaffiliated users is disabled by policy";
@@ -310,15 +310,14 @@ void CrostiniFeatures::CanChangeAdbSideloading(
   bool is_device_enterprise_managed = connector->IsDeviceEnterpriseManaged();
   bool is_profile_enterprise_managed =
       profile->GetProfilePolicyConnector()->IsManaged();
-  bool is_owner_profile = chromeos::ProfileHelper::IsOwnerProfile(profile);
+  bool is_owner_profile = ash::ProfileHelper::IsOwnerProfile(profile);
   if (is_device_enterprise_managed || is_profile_enterprise_managed) {
     auto user_policy =
         static_cast<crostini::CrostiniArcAdbSideloadingUserAllowanceMode>(
             profile->GetPrefs()->GetInteger(
                 crostini::prefs::kCrostiniArcAdbSideloadingUserPref));
 
-    const auto* user =
-        chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+    const auto* user = ash::ProfileHelper::Get()->GetUserByProfile(profile);
     bool is_affiliated_user = user && user->IsAffiliated();
 
     CanChangeManagedAdbSideloading(

@@ -121,12 +121,9 @@ class WindowCaptureParams : public VideoCaptureParams {
     DCHECK_NE(frame_sink_id_, new_frame_sink_id);
 
     frame_sink_id_ = new_frame_sink_id;
-
-    auto sub_target =
-        subtree_capture_id_.is_valid()
-            ? viz::mojom::SubTarget::NewSubtreeCaptureId(subtree_capture_id_)
-            : nullptr;
-    capturer->ChangeTarget(frame_sink_id_, std::move(sub_target));
+    capturer->ChangeTarget(
+        viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_),
+        /*crop_version=*/0);
 
     // If the movement to another display results in changes in the frame sink
     // size or DSF, OnVideoSizeMayHaveChanged() will be called by the below
@@ -292,13 +289,10 @@ void VideoCaptureParams::InitializeVideoCapturer(
   capturer->SetAutoThrottlingEnabled(false);
   // TODO(afakhry): Discuss with //media/ team the implications of color space
   // conversions.
-  capturer->SetFormat(media::PIXEL_FORMAT_I420, kColorSpace);
-
-  auto sub_target =
-      subtree_capture_id_.is_valid()
-          ? viz::mojom::SubTarget::NewSubtreeCaptureId(subtree_capture_id_)
-          : nullptr;
-  capturer->ChangeTarget(frame_sink_id_, std::move(sub_target));
+  capturer->SetFormat(media::PIXEL_FORMAT_I420);
+  capturer->ChangeTarget(
+      viz::VideoCaptureTarget(frame_sink_id_, subtree_capture_id_),
+      /*crop_version=*/0);
 }
 
 gfx::Rect VideoCaptureParams::GetVideoFrameVisibleRect(

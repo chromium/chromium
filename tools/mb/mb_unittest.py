@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # Copyright 2020 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -48,7 +48,7 @@ class FakeMBW(mb.MetaBuildWrapper):
       self.default_config = '/fake_src/tools/mb/mb_config.pyl'
       self.default_isolate_map = '/fake_src/testing/buildbot/gn_isolate_map.pyl'
       self.executable = '/usr/bin/python'
-      self.platform = 'linux2'
+      self.platform = 'linux'
       self.sep = '/'
       self.cwd = '/fake_src/out/Default'
 
@@ -122,10 +122,12 @@ class FakeMBW(mb.MetaBuildWrapper):
     abpath = self._AbsPath(path)
     self.files[abpath] = None
 
-  def RemoveDirectory(self, path):
-    abpath = self._AbsPath(path)
-    self.rmdirs.append(abpath)
-    files_to_delete = [f for f in self.files if f.startswith(abpath)]
+  def RemoveDirectory(self, abs_path):
+    # Normalize the passed-in path to handle different working directories
+    # used during unit testing.
+    abs_path = self._AbsPath(abs_path)
+    self.rmdirs.append(abs_path)
+    files_to_delete = [f for f in self.files if f.startswith(abs_path)]
     for f in files_to_delete:
       self.files[f] = None
 
@@ -135,8 +137,7 @@ class FakeMBW(mb.MetaBuildWrapper):
       path = self.PathJoin(self.cwd, path)
     if self.sep == '\\':
       return re.sub(r'\\+', r'\\', path)
-    else:
-      return re.sub('/+', '/', path)
+    return re.sub('/+', '/', path)
 
 
 class FakeFile(object):
@@ -292,6 +293,8 @@ TRYSERVER_CONFIG = """\
 
 
 class UnitTest(unittest.TestCase):
+  maxDiff = None
+
   def fake_mbw(self, files=None, win32=False):
     mbw = FakeMBW(win32=win32)
     mbw.files.setdefault(mbw.default_config, TEST_CONFIG)
@@ -749,8 +752,13 @@ class UnitTest(unittest.TestCase):
         '/fake_src/out/Default/base_unittests.runtime_deps':
         ("base_unittests\n"),
     }
-    self.check(['run', '-c', 'debug_goma', '//out/Default',
-                'base_unittests'], files=files, ret=0)
+    mbw = self.check(['run', '-c', 'debug_goma', '//out/Default',
+                     'base_unittests'], files=files, ret=0)
+    # pylint: disable=line-too-long
+    self.assertEqual(
+        mbw.files['/fake_src/out/Default/base_unittests.isolate'],
+          '{"variables": {"command": ["vpython3", "../../testing/test_env.py", "./base_unittests", "--test-launcher-bot-mode", "--asan=0", "--lsan=0", "--msan=0", "--tsan=0", "--cfi-diag=0"], "files": ["../../.vpython3", "../../testing/test_env.py"]}}\n')
+    # pylint: enable=line-too-long
 
   def test_run_swarmed(self):
     files = {

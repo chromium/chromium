@@ -97,6 +97,7 @@ bool EventFilter::IsEventAllowed(ui::EventType type) {
     case ui::ET_GESTURE_TAP_UNCONFIRMED:
     case ui::ET_GESTURE_DOUBLE_TAP:
     case ui::ET_GESTURE_TWO_FINGER_TAP:
+    case ui::ET_GESTURE_SHORT_PRESS:
     case ui::ET_GESTURE_LONG_PRESS:
     case ui::ET_GESTURE_LONG_TAP:
       return IsTypeEnabled(InputTypes::GESTURE_TAP);
@@ -135,7 +136,7 @@ bool EventFilter::IsEventAllowed(ui::EventType type) {
 
     case ui::ET_LAST:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
 
     case ui::ET_UNKNOWN:
       break;

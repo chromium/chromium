@@ -195,6 +195,8 @@ void MediaOverlayImpl::OnAudioPipelineInitialized(
     const ::media::AudioDecoderConfig& config) {
   if (config.codec() == ::media::AudioCodec::kAC3 ||
       config.codec() == ::media::AudioCodec::kEAC3 ||
+      config.codec() == ::media::AudioCodec::kDTS ||
+      config.codec() == ::media::AudioCodec::kDTSXP2 ||
       config.codec() == ::media::AudioCodec::kMpegHAudio) {
     passthrough_pipelines_.insert(pipeline);
   }

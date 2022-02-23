@@ -10,6 +10,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sync_file_system/drive_backend/sync_task.h"
 #include "chrome/browser/sync_file_system/file_change.h"
@@ -109,7 +110,7 @@ class LocalToRemoteSyncer : public SyncTask {
   drive::DriveUploaderInterface* drive_uploader();
   MetadataDatabase* metadata_database();
 
-  SyncEngineContext* sync_context_;  // Not owned.
+  raw_ptr<SyncEngineContext> sync_context_;  // Not owned.
 
   FileChange local_change_;
   bool local_is_missing_;

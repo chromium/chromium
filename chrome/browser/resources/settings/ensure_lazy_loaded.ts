@@ -28,7 +28,7 @@ export function ensureLazyLoaded(): Promise<void> {
               'settings-languages-page',
               // </if>
               'settings-reset-page',
-              // <if expr="not chromeos and not lacros">
+              // <if expr="not chromeos">
               'settings-system-page',
               // </if>
               // <if expr="not chromeos and not is_macosx">

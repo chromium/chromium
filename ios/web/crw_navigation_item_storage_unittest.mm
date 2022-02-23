@@ -108,22 +108,23 @@ TEST_F(CRWNavigationItemStorageTest, Histograms) {
 // as "URL" to save memory. This test verifies that virtualURL actually gets
 // restored correctly.
 TEST_F(CRWNavigationItemStorageTest, EncodeDecodeSameVirtualURL) {
-  web::NavigationItemStorageBuilder builder;
-
   web::NavigationItemImpl item_to_store;
   item_to_store.SetURL(GURL("http://url.test"));
   item_to_store.SetVirtualURL(item_to_store.GetURL());
 
+  CRWNavigationItemStorage* item_storage =
+      web::NavigationItemStorageBuilder::BuildStorage(item_to_store);
+
   // Serialize and deserialize navigation item.
-  NSData* data = [NSKeyedArchiver
-      archivedDataWithRootObject:builder.BuildStorage(&item_to_store)
-           requiringSecureCoding:NO
-                           error:nil];
+  NSData* data = [NSKeyedArchiver archivedDataWithRootObject:item_storage
+                                       requiringSecureCoding:NO
+                                                       error:nil];
+
   NSKeyedUnarchiver* unarchiver =
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
   std::unique_ptr<web::NavigationItemImpl> restored_item =
-      builder.BuildNavigationItemImpl(
+      web::NavigationItemStorageBuilder::BuildNavigationItemImpl(
           [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey]);
 
   EXPECT_EQ(item_to_store.GetURL(), restored_item->GetURL());

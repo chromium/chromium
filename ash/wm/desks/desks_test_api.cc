@@ -4,7 +4,7 @@
 
 #include "ash/wm/desks/desks_test_api.h"
 
-#include "ash/shelf/gradient_layer_delegate.h"
+#include "ash/controls/gradient_layer_delegate.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desks_bar_view.h"
@@ -83,6 +83,11 @@ DesksTestApi::GetPersistentDesksBarContextMenu() {
 const std::vector<PersistentDesksBarDeskButton*>
 DesksTestApi::GetPersistentDesksBarDeskButtons() {
   return GetPersistentDesksBarView()->desk_buttons_;
+}
+
+// static
+bool DesksTestApi::HasVerticalDotsButton() {
+  return GetDesksBarView()->vertical_dots_button_;
 }
 
 // static

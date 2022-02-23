@@ -4,11 +4,15 @@
 
 #include "chrome/browser/metrics/per_user_state_manager_chromeos.h"
 
+#include "base/callback_list.h"
 #include "base/guid.h"
+#include "base/metrics/histogram_functions.h"
+#include "chrome/browser/ash/policy/core/browser_policy_connector_ash.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/ash/settings/device_settings_service.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/metrics/profile_pref_names.h"
 #include "chrome/browser/policy/profile_policy_connector.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -22,8 +26,22 @@ namespace metrics {
 
 namespace {
 
+absl::optional<bool> g_is_managed_for_testing;
+
 std::string GenerateUserId() {
   return base::GenerateGUID();
+}
+
+// Keep in sync with PerUserIdType enum.
+enum IdResetType {
+  kClientId = 0,
+  kUserId = 1,
+  kMaxValue = kUserId,
+};
+
+// Keep in sync with enum PerUserIdType.
+void RecordIdReset(IdResetType id_type) {
+  base::UmaHistogramEnumeration("UMA.CrosPerUser.IdReset", id_type);
 }
 
 }  // namespace
@@ -75,20 +93,36 @@ void PerUserStateManagerChromeOS::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kMetricsUserConsent, false);
   registry->RegisterBooleanPref(prefs::kMetricsRequiresClientIdResetOnConsent,
                                 false);
+  registry->RegisterBooleanPref(prefs::kMetricsUserInheritOwnerConsent, true);
 }
 
 absl::optional<std::string> PerUserStateManagerChromeOS::GetCurrentUserId()
     const {
   if (state_ != State::USER_LOG_STORE_HANDLED)
     return absl::nullopt;
-  return GetCurrentUserPrefs()->GetString(prefs::kMetricsUserId);
+  auto user_id = GetCurrentUserPrefs()->GetString(prefs::kMetricsUserId);
+  if (user_id.empty())
+    return absl::nullopt;
+  return user_id;
 }
 
-absl::optional<bool> PerUserStateManagerChromeOS::GetCurrentUserConsent()
+absl::optional<bool>
+PerUserStateManagerChromeOS::GetCurrentUserReportingConsentIfApplicable()
     const {
   if (state_ != State::USER_LOG_STORE_HANDLED)
     return absl::nullopt;
-  return GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent);
+
+  // Guest sessions with no device owner should use the guest's metrics
+  // consent set during guest OOBE flow with no device owner.
+  bool is_guest_with_no_owner =
+      current_user_->GetType() == user_manager::USER_TYPE_GUEST &&
+      !IsDeviceOwned();
+
+  // Cases in which user permissions should be applied to metrics reporting.
+  if (IsUserAllowedToChangeConsent(current_user_) || is_guest_with_no_owner)
+    return GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent);
+
+  return absl::nullopt;
 }
 
 void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
@@ -103,13 +137,10 @@ void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
   }
 
   DCHECK(current_user_);
-  if (!IsUserAllowedToChangeConsent(current_user_)) {
-    // This case is expected to be handled by the caller by calling
-    // IsUserAllowedToChangeConsent().
-    NOTREACHED()
-        << "User that shouldn't have per-user control trying to control "
-           "metrics consent.";
-  }
+
+  // No-op if user should not be able to change metrics consent.
+  if (!IsUserAllowedToChangeConsent(current_user_))
+    return;
 
   DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
 
@@ -126,33 +157,11 @@ void PerUserStateManagerChromeOS::SetCurrentUserMetricsConsent(
   // off -> on state.
   if (metrics_consent) {
     new_user_id = GenerateUserId();
-
-    // Current user may have sent data with the same client ID, so resetting
-    // only the user id exposes some risks to the pseudo-anonymous identifier
-    // <client_id, user_id> pair.
-    //
-    // To mitgate risks, users who enabled metrics collection before will have
-    // the client id reset as well.
-    //
-    // TODO(crbug/1266086): In the case that multiple users toggle consent off
-    // to on, this will cause the client ID to be reset each time, which is not
-    // necessary. Look for a way to allow resetting client id less eager.
-    if (user_prefs->GetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent)) {
-      // Reset the client id. The pref above doesn't get cleared because we want
-      // to clear this new client id too if metrics consent is toggled again.
-      ForceClientIdReset();
-    } else {
-      user_prefs->SetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent,
-                             true);
-    }
   }
 
-  // Notify metrics service of the consent change.
   UpdateCurrentUserId(new_user_id);
-  user_prefs->SetBoolean(prefs::kMetricsUserConsent, metrics_consent);
-
-  if (!IsReportingPolicyManaged())
-    SetReportingState(metrics_consent);
+  SetReportingState(metrics_consent);
+  UpdateLocalStatePrefs(metrics_consent);
 }
 
 bool PerUserStateManagerChromeOS::ShouldUseUserLogStore() const {
@@ -179,6 +188,10 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
   if (IsReportingPolicyManaged())
     return false;
 
+  // Owner should not use per-user. Owner should use the device local pref.
+  if (user->GetAccountId() == user_manager_->GetOwnerAccountId())
+    return false;
+
   auto user_type = user->GetType();
 
   // Guest sessions for non-owned devices should be allowed to modify metrics
@@ -188,8 +201,24 @@ bool PerUserStateManagerChromeOS::IsUserAllowedToChangeConsent(
            ash::DeviceSettingsService::OWNERSHIP_NONE;
   }
 
+  // Non-managed devices only have control if owner has enabled metrics
+  // reporting.
+  if (!GetDeviceMetricsConsent())
+    return false;
+
   return user_type == user_manager::USER_TYPE_REGULAR ||
          user_type == user_manager::USER_TYPE_ACTIVE_DIRECTORY;
+}
+
+base::CallbackListSubscription PerUserStateManagerChromeOS::AddObserver(
+    const MetricsConsentHandler& callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  return callback_list_.Add(callback);
+}
+
+// static
+void PerUserStateManagerChromeOS::SetIsManagedForTesting(bool is_managed) {
+  g_is_managed_for_testing = is_managed;
 }
 
 void PerUserStateManagerChromeOS::SetUserLogStore(
@@ -207,23 +236,22 @@ void PerUserStateManagerChromeOS::UnsetUserLogStore() {
 }
 
 void PerUserStateManagerChromeOS::ForceClientIdReset() {
-  DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
   metrics_service_client_->GetMetricsService()->ResetClientId();
 }
 
 void PerUserStateManagerChromeOS::SetReportingState(bool metrics_consent) {
   DCHECK_EQ(state_, State::USER_LOG_STORE_HANDLED);
-  // Should not be called if metrics reporting is managed.
-  DCHECK(!IsReportingPolicyManaged());
+  DCHECK(IsUserAllowedToChangeConsent(current_user_));
 
-  if (metrics_consent) {
-    metrics_service_client_->GetMetricsService()->EnableReporting();
-  } else {
-    metrics_service_client_->GetMetricsService()->DisableReporting();
-  }
+  GetCurrentUserPrefs()->SetBoolean(prefs::kMetricsUserConsent,
+                                    metrics_consent);
+  NotifyObservers(metrics_consent);
 }
 
 bool PerUserStateManagerChromeOS::IsReportingPolicyManaged() const {
+  if (g_is_managed_for_testing.has_value())
+    return g_is_managed_for_testing.value();
+
   return metrics_service_client_->IsReportingPolicyManaged();
 }
 
@@ -238,6 +266,11 @@ bool PerUserStateManagerChromeOS::GetDeviceMetricsConsent() const {
 
 bool PerUserStateManagerChromeOS::HasUserLogStore() const {
   return metrics_service_client_->GetMetricsService()->HasUserLogStore();
+}
+
+bool PerUserStateManagerChromeOS::IsDeviceOwned() const {
+  return ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
+         ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_TAKEN;
 }
 
 void PerUserStateManagerChromeOS::ActiveUserChanged(user_manager::User* user) {
@@ -288,16 +321,46 @@ void PerUserStateManagerChromeOS::InitializeProfileMetricsState() {
   }
   state_ = State::USER_LOG_STORE_HANDLED;
 
-  // Sets the current logged-in user ID to handle crashes.
-  local_state_->SetString(prefs::kMetricsCurrentUserId,
-                          GetCurrentUserId().value());
+  // Sets the current logged-in user ID to handle crashes. Assigns a user ID if
+  // current user has one. Otherwise, clear the pref to reflect that current
+  // user does not have a user id.
+  auto user_id = GetCurrentUserId();
+  if (user_id.has_value()) {
+    local_state_->SetString(prefs::kMetricsCurrentUserId, user_id.value());
+  } else {
+    RecordIdReset(kUserId);
+    local_state_->ClearPref(prefs::kMetricsCurrentUserId);
+  }
 
-  // If the reporting policy is managed, then metrics reporting should be
-  // controlled by the reporting policy. This should be handled by
-  // ash::StatsReportingController.
-  if (!IsReportingPolicyManaged()) {
-    SetReportingState(
-        GetCurrentUserPrefs()->GetBoolean(prefs::kMetricsUserConsent));
+  auto* user_prefs = GetCurrentUserPrefs();
+
+  // Inherit owner consent if needed. This is to migrate existing users logging
+  // in for the first time since the feature was enabled.
+  //
+  // New users will inherit the device owner consent initially but will be asked
+  // on OOBE to set the consent.
+  bool should_inherit_owner_consent =
+      user_prefs->GetBoolean(prefs::kMetricsUserInheritOwnerConsent) &&
+      IsUserAllowedToChangeConsent(current_user_);
+
+  if (should_inherit_owner_consent) {
+    bool device_metrics_reporting = GetDeviceMetricsConsent();
+
+    user_prefs->SetBoolean(prefs::kMetricsUserConsent,
+                           device_metrics_reporting);
+    user_prefs->SetBoolean(prefs::kMetricsUserInheritOwnerConsent, false);
+
+    // Generate and set user ID if device owner enabled metrics reporting.
+    if (device_metrics_reporting) {
+      UpdateCurrentUserId(GenerateUserId());
+      UpdateLocalStatePrefs(device_metrics_reporting);
+    }
+  }
+
+  // Only initialize metrics consent to user metrics consent if user is
+  // allowed to change the metrics consent.
+  if (IsUserAllowedToChangeConsent(current_user_)) {
+    SetReportingState(user_prefs->GetBoolean(prefs::kMetricsUserConsent));
   }
 }
 
@@ -375,8 +438,30 @@ bool PerUserStateManagerChromeOS::ShouldWaitForFirstConsent() const {
   // decision which log store to use must be deferred until the first consent
   // (done in ToS) is established.
   return current_user_->GetType() == user_manager::USER_TYPE_GUEST &&
-         ash::DeviceSettingsService::Get()->GetOwnershipStatus() ==
-             ash::DeviceSettingsService::OwnershipStatus::OWNERSHIP_NONE;
+         !IsDeviceOwned();
+}
+
+void PerUserStateManagerChromeOS::NotifyObservers(bool metrics_consent) {
+  callback_list_.Notify(metrics_consent);
+}
+
+void PerUserStateManagerChromeOS::UpdateLocalStatePrefs(bool metrics_enabled) {
+  // If user consent is turned off, client ID does not need to be reset. Only
+  // profile prefs (ie user_id) should be reset.
+  if (!metrics_enabled)
+    return;
+
+  auto* user_prefs = GetCurrentUserPrefs();
+
+  // TODO(crbug/1266086): In the case that multiple users toggle consent off
+  // to on, this will cause the client ID to be reset each time, which is not
+  // necessary. Look for a way to allow resetting client id less eager.
+  if (user_prefs->GetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent)) {
+    RecordIdReset(kClientId);
+    ForceClientIdReset();
+  } else {
+    user_prefs->SetBoolean(prefs::kMetricsRequiresClientIdResetOnConsent, true);
+  }
 }
 
 }  // namespace metrics

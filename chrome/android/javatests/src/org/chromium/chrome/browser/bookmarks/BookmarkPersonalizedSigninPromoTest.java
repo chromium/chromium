@@ -34,6 +34,7 @@ import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.base.test.util.MetricsUtils.HistogramDelta;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -95,6 +96,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1294402")
     public void testSigninButtonDefaultAccount() {
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);
@@ -113,6 +115,7 @@ public class BookmarkPersonalizedSigninPromoTest {
 
     @Test
     @MediumTest
+    @FlakyTest(message = "crbug.com/1294402")
     public void testSigninButtonNotDefaultAccount() {
         HistogramDelta signinHistogram =
                 new HistogramDelta("Signin.SyncPromo.Continued.Count.Bookmarks", 1);

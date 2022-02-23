@@ -13,6 +13,7 @@
 #include "base/base64url.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
@@ -389,15 +390,15 @@ class PushMessagingBrowserTestBase : public InProcessBrowserTest {
   gcm::GCMProfileServiceFactory::ScopedTestingFactoryInstaller
       scoped_testing_factory_installer_;
 
-  gcm::FakeGCMProfileService* gcm_service_;
-  instance_id::FakeGCMDriverForInstanceID* gcm_driver_;
+  raw_ptr<gcm::FakeGCMProfileService> gcm_service_;
+  raw_ptr<instance_id::FakeGCMDriverForInstanceID> gcm_driver_;
   base::HistogramTester histogram_tester_;
 
   std::unique_ptr<NotificationDisplayServiceTester> notification_tester_;
 
  private:
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
-  PushMessagingServiceImpl* push_service_;
+  raw_ptr<PushMessagingServiceImpl> push_service_;
 };
 
 void PushMessagingBrowserTestBase::RequestAndAcceptPermission() {
@@ -2171,7 +2172,7 @@ IN_PROC_BROWSER_TEST_F(PushMessagingBrowserTest, UnsubscribeSuccess) {
 // Push subscriptions used to be non-InstanceID GCM registrations. Still need
 // to be able to unsubscribe these, even though new ones are no longer created.
 // Flaky on some Win and Linux buildbots.  See crbug.com/835382.
-#if defined(OS_WIN) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_LegacyUnsubscribeSuccess DISABLED_LegacyUnsubscribeSuccess
 #else
 #define MAYBE_LegacyUnsubscribeSuccess LegacyUnsubscribeSuccess
@@ -2818,7 +2819,7 @@ class PushMessagingIncognitoBrowserTest : public PushMessagingBrowserTestBase {
 
  protected:
   content::test::PrerenderTestHelper prerender_helper_;
-  Browser* incognito_browser_ = nullptr;
+  raw_ptr<Browser> incognito_browser_ = nullptr;
 };
 
 // Regression test for https://crbug.com/476474

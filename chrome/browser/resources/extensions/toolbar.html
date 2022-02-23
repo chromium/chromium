@@ -7,17 +7,6 @@
     --padding-top-bottom: 10px;
   }
 
-  /* This toggle needs special styling because it's on blue background. */
-  @media (prefers-color-scheme: light) {
-    :host(:not([enable-branding-update])) cr-toolbar cr-toggle {
-      --cr-toggle-checked-bar-color: var(--google-grey-refresh-100);
-      --cr-toggle-checked-button-color: white;
-      --cr-toggle-checked-ripple-color: rgba(255, 255, 255, .2);
-      --cr-toggle-unchecked-bar-color: var(--google-grey-600);
-      --cr-toggle-unchecked-ripple-color: rgba(255, 255, 255, .15);
-    }
-  }
-
   cr-tooltip-icon {
     margin-inline-end: 20px;
   }
@@ -67,20 +56,17 @@
     align-items: center;
     display: flex;
     justify-content: flex-end;
+    white-space: nowrap;
   }
 
   .more-actions span {
     margin-inline-end: 16px;
   }
 
-  :host([enable-branding-update]) cr-toolbar {
+  cr-toolbar {
     --cr-toolbar-center-basis: 680px;
     --cr-toolbar-field-max-width: var(--cr-toolbar-center-basis);
     --cr-toolbar-field-width: 100%;
-  }
-
-  :host([enable-branding-update]) .more-actions {
-    white-space: nowrap;
   }
 </style>
 <cr-toolbar page-name="$i18n{toolbarTitle}" search-prompt="$i18n{search}"
@@ -89,14 +75,14 @@
   <div class="more-actions">
     <span id="devModeLabel">$i18n{toolbarDevMode}</span>
     <cr-tooltip-icon hidden="[[!shouldDisableDevMode_(
-        devModeControlledByPolicy, isSupervised)]]"
-        tooltip-text="[[getTooltipText_(isSupervised)]]"
-        icon-class="[[getIcon_(isSupervised)]]"
-        icon-aria-label="[[getTooltipText_(isSupervised)]]">
+        devModeControlledByPolicy, isChildAccount)]]"
+        tooltip-text="[[getTooltipText_(isChildAccount)]]"
+        icon-class="[[getIcon_(isChildAccount)]]"
+        icon-aria-label="[[getTooltipText_(isChildAccount)]]">
     </cr-tooltip-icon>
     <cr-toggle id="devMode" on-change="onDevModeToggleChange_"
         disabled="[[shouldDisableDevMode_(
-            devModeControlledByPolicy, isSupervised)]]"
+            devModeControlledByPolicy, isChildAccount)]]"
         checked="[[inDevMode]]" aria-labelledby="devModeLabel">
     </cr-toggle>
   </div>

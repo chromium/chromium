@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "components/download/public/background_service/client.h"
 
@@ -46,6 +47,11 @@ enum class DownloadClient {
   // New clients should be added above here.
   BOUNDARY = 7,
 };
+
+// Get a string that represents a particular client. Used in histograms and
+// debugging web UI. Must never change existing value and sync value with
+// variants "DownloadClient" in histograms.xml.
+std::string BackgroundDownloadClientToString(DownloadClient client);
 
 using DownloadClientMap = std::map<DownloadClient, std::unique_ptr<Client>>;
 

@@ -69,6 +69,10 @@ namespace device_reauth {
 class BiometricAuthenticator;
 }
 
+namespace version_info {
+enum class Channel;
+}
+
 namespace password_manager {
 
 class FieldInfoManager;
@@ -77,6 +81,7 @@ class PasswordFormManagerForUI;
 class PasswordManagerDriver;
 class PasswordManagerMetricsRecorder;
 class HttpAuthManager;
+class PasswordChangeSuccessTracker;
 class PasswordRequirementsService;
 class PasswordReuseManager;
 class PasswordScriptsFetcher;
@@ -279,18 +284,15 @@ class PasswordManagerClient {
   // Returns the PasswordScriptsFetcher associated with this instance.
   virtual PasswordScriptsFetcher* GetPasswordScriptsFetcher() = 0;
 
+  // Returns the PasswordChangeSuccessTracker associated with this instance.
+  virtual PasswordChangeSuccessTracker* GetPasswordChangeSuccessTracker() = 0;
+
   // Reports whether and how passwords are synced in the embedder. The default
   // implementation always returns kNotSyncing.
   virtual SyncState GetPasswordSyncState() const;
 
   // Returns true if last navigation page had HTTP error i.e 5XX or 4XX
   virtual bool WasLastNavigationHTTPError() const;
-
-  // Returns true if a credential leak dialog was shown. Used by Autofill
-  // Assistance to verify a password change intent. TODO(b/151391231): At the
-  // moment, password change scripts don't need validation, but it may change.
-  // If it doesn't change, remove this method and related code.
-  virtual bool WasCredentialLeakDialogShown() const;
 
   // Obtains the cert status for the main frame.
   virtual net::CertStatus GetMainFrameCertStatus() const;
@@ -437,6 +439,9 @@ class PasswordManagerClient {
 
   // Returns the WebAuthnCredentialsDelegate, if available.
   virtual WebAuthnCredentialsDelegate* GetWebAuthnCredentialsDelegate();
+
+  // Returns the Chrome channel for the installation.
+  virtual version_info::Channel GetChannel() const;
 };
 
 }  // namespace password_manager

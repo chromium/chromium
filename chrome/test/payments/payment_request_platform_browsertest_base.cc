@@ -64,6 +64,24 @@ void PaymentRequestPlatformBrowserTestBase::NavigateTo(
       GetActiveWebContents(), https_server_->GetURL(hostname, file_path)));
 }
 
+void PaymentRequestPlatformBrowserTestBase::InstallPaymentApp(
+    const std::string& hostname,
+    const std::string& service_worker_filename,
+    std::string* url_method_output) {
+  NavigateTo(hostname, "/payment_handler_installer.html");
+  *url_method_output = https_server()->GetURL(hostname, "/").spec();
+  *url_method_output =
+      url_method_output->substr(0, url_method_output->length() - 1);
+  ASSERT_NE('/', (*url_method_output)[url_method_output->length() - 1]);
+  ASSERT_EQ("success",
+            content::EvalJs(GetActiveWebContents(),
+                            content::JsReplace("install($1, [$2], false)",
+                                               service_worker_filename,
+                                               *url_method_output)));
+  // Can't output `url_method_output` by return because the ASSERTs require the
+  // method to return void.
+}
+
 void PaymentRequestPlatformBrowserTestBase::ExpectBodyContains(
     const std::string& expected_string) {
   EXPECT_THAT(content::EvalJs(GetActiveWebContents(),

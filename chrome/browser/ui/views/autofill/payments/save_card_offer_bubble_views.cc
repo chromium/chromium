@@ -140,8 +140,8 @@ void SaveCardOfferBubbleViews::AddedToWidget() {
   auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
       *bundle.GetImageSkiaNamed(IDR_SAVE_CARD),
       *bundle.GetImageSkiaNamed(IDR_SAVE_CARD_DARK),
-      base::BindRepeating(&views::BubbleFrameView::GetBackgroundColor,
-                          base::Unretained(GetBubbleFrameView())));
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
   GetBubbleFrameView()->SetHeaderView(std::move(image_view));
 }
 
@@ -230,7 +230,7 @@ std::unique_ptr<views::View> SaveCardOfferBubbleViews::CreateMainContentView() {
         views::BoxLayout::Orientation::kVertical, gfx::Insets(),
         provider->GetDistanceMetric(views::DISTANCE_RELATED_CONTROL_VERTICAL)));
     cardholder_name_view->AddChildView(cardholder_name_label_row.release());
-    cardholder_name_view->AddChildView(cardholder_name_textfield_);
+    cardholder_name_view->AddChildView(cardholder_name_textfield_.get());
     view->AddChildView(cardholder_name_view.release());
   }
 
@@ -284,8 +284,8 @@ SaveCardOfferBubbleViews::CreateRequestExpirationDateView() {
   input_row->SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kHorizontal, gfx::Insets(),
       provider->GetDistanceMetric(DISTANCE_RELATED_CONTROL_HORIZONTAL_SMALL)));
-  input_row->AddChildView(month_input_dropdown_);
-  input_row->AddChildView(year_input_dropdown_);
+  input_row->AddChildView(month_input_dropdown_.get());
+  input_row->AddChildView(year_input_dropdown_.get());
 
   // Set up expiration date label.
   auto expiration_date_label = std::make_unique<views::Label>(

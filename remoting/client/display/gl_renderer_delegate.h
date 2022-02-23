@@ -5,8 +5,6 @@
 #ifndef REMOTING_CLIENT_DISPLAY_GL_RENDERER_DELEGATE_H_
 #define REMOTING_CLIENT_DISPLAY_GL_RENDERER_DELEGATE_H_
 
-#include "base/macros.h"
-
 namespace remoting {
 
 // Interface to interact with GlRenderer. All functions will be called on the

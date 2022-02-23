@@ -92,7 +92,7 @@ bool CanSpecifyHostPermission(const Extension* extension,
 bool ParseHostsFromJSON(Extension* extension,
                         std::vector<std::string>* hosts,
                         std::u16string* error) {
-  if (!extension->manifest()->HasKey(keys::kHostPermissions))
+  if (!extension->manifest()->FindKey(keys::kHostPermissions))
     return true;
 
   const base::Value* permissions = nullptr;
@@ -102,7 +102,7 @@ bool ParseHostsFromJSON(Extension* extension,
   }
 
   // Add all permissions parsed from the manifest to |hosts|.
-  base::Value::ConstListView list_view = permissions->GetList();
+  base::Value::ConstListView list_view = permissions->GetListDeprecated();
   for (size_t i = 0; i < list_view.size(); ++i) {
     if (list_view[i].is_string()) {
       hosts->push_back(list_view[i].GetString());
@@ -204,7 +204,7 @@ bool ParseHelper(Extension* extension,
                  APIPermissionSet* api_permissions,
                  URLPatternSet* host_permissions,
                  std::u16string* error) {
-  if (!extension->manifest()->HasKey(key))
+  if (!extension->manifest()->FindKey(key))
     return true;
 
   const base::Value* permissions = nullptr;
@@ -246,7 +246,7 @@ bool ParseHelper(Extension* extension,
     }
 
     // Sneaky check for "experimental", which we always allow for extensions
-    // installed from the Webstore. This way we can whitelist extensions to
+    // installed from the Webstore. This way we can allowlist extensions to
     // have access to experimental in just the store, and not have to push a
     // new version of the client. Otherwise, experimental goes through the
     // usual features check.

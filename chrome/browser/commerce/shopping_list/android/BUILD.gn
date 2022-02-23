@@ -8,8 +8,14 @@ import("//third_party/protobuf/proto_library.gni")
 android_library("java") {
   deps = [
     "//base:base_java",
+    "//base:base_java",
     "//base:jni_java",
+    "//chrome/browser/flags:java",
     "//chrome/browser/power_bookmarks:proto_java",
+    "//chrome/browser/profiles/android:java",
+    "//chrome/browser/signin/services/android:java",
+    "//chrome/browser/sync/android:java",
+    "//components/signin/public/android:java",
     "//content/public/android:content_java",
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -17,5 +23,8 @@ android_library("java") {
 
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  sources = [ "java/src/org/chromium/chrome/browser/commerce/shopping_list/ShoppingDataProviderBridge.java" ]
+  sources = [
+    "java/src/org/chromium/chrome/browser/commerce/shopping_list/ShoppingDataProviderBridge.java",
+    "java/src/org/chromium/chrome/browser/commerce/shopping_list/ShoppingFeatures.java",
+  ]
 }

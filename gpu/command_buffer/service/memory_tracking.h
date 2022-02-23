@@ -7,7 +7,7 @@
 
 #include <stdint.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
@@ -82,7 +82,7 @@ class GPU_EXPORT MemoryTypeTracker {
  private:
   void TrackMemoryAllocatedChange(int64_t delta);
 
-  MemoryTracker* const memory_tracker_;
+  const raw_ptr<MemoryTracker> memory_tracker_;
 
   size_t mem_represented_ GUARDED_BY(lock_) = 0;
   mutable base::Lock lock_;

@@ -11,6 +11,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <tuple>
 
 #include "base/dcheck_is_on.h"
 #include "base/feature_list.h"
@@ -19,7 +20,7 @@
 #include "base/format_macros.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
@@ -66,7 +67,7 @@ class ScopedBusyTimeout {
   }
 
  private:
-  sqlite3* db_;
+  raw_ptr<sqlite3> db_;
 };
 
 // Helper to "safely" enable writable_schema.  No error checking
@@ -85,7 +86,7 @@ class ScopedWritableSchema {
   }
 
  private:
-  sqlite3* db_;
+  raw_ptr<sqlite3> db_;
 };
 
 // Helper to wrap the sqlite3_backup_*() step of Raze().  Return
@@ -152,9 +153,9 @@ int GetSqlite3FileAndSize(sqlite3* db,
 }
 
 std::string AsUTF8ForSQL(const base::FilePath& path) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(path.value());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return path.value();
 #endif
 }
@@ -229,8 +230,13 @@ void Database::StatementRef::Close(bool forced) {
     // of the function. http://crbug.com/136655.
     absl::optional<base::ScopedBlockingCall> scoped_blocking_call;
     InitScopedBlockingCall(FROM_HERE, &scoped_blocking_call);
-    sqlite3_finalize(stmt_);
+
+    // `stmt_` references memory loaned from the sqlite3 library. Stop
+    // referencing it from the raw_ptr<> before returning it. This avoids the
+    // raw_ptr<> becoming dangling.
+    sqlite3_stmt* statement = stmt_;
     stmt_ = nullptr;
+    sqlite3_finalize(statement);
   }
   database_ = nullptr;  // The Database may be getting deleted.
 
@@ -451,10 +457,12 @@ base::FilePath Database::DbPath() const {
     return base::FilePath();
 
   const char* path = sqlite3_db_filename(db_, "main");
+  if (!path)
+    return base::FilePath();
   const base::StringPiece db_path(path);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::FilePath(base::UTF8ToWide(db_path));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return base::FilePath(db_path);
 #else
   NOTREACHED();
@@ -481,9 +489,9 @@ std::string Database::CollectErrorInfo(int error, Statement* stmt) const {
 
 // System error information.  Interpretation of Windows errors is different
 // from posix.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::StringAppendF(&debug_info, "LastError: %d\n", GetLastErrno());
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   base::StringAppendF(&debug_info, "errno: %d\n", GetLastErrno());
 #else
   NOTREACHED();  // Add appropriate log info.
@@ -806,7 +814,7 @@ bool Database::Raze() {
     return false;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android compiles with SQLITE_DEFAULT_AUTOVACUUM.  Unfortunately,
   // in-memory databases do not respect this define.
   // TODO(shess): Figure out a way to set this without using platform
@@ -838,13 +846,13 @@ bool Database::Raze() {
   // page_size" can be used to query such a database.
   ScopedWritableSchema writable_schema(db_);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, truncate silently fails when applied to memory-mapped files.
   // Disable memory-mapping so that the truncate succeeds.  Note that other
   // Database connections may have memory-mapped the file, so this may not
   // entirely prevent the problem.
   // [Source: <https://sqlite.org/mmap.html> plus experiments.]
-  ignore_result(Execute("PRAGMA mmap_size = 0"));
+  std::ignore = Execute("PRAGMA mmap_size = 0");
 #endif
 
   const char* kMain = "main";
@@ -885,17 +893,17 @@ bool Database::Raze() {
     // Enter TRUNCATE mode to change page size.
     // TODO(shuagga@microsoft.com): Need a guarantee here that there is no other
     // database connection open.
-    ignore_result(Execute("PRAGMA journal_mode=TRUNCATE;"));
+    std::ignore = Execute("PRAGMA journal_mode=TRUNCATE;");
     const std::string page_size_sql = base::StrCat(
         {"PRAGMA page_size=", base::NumberToString(options_.page_size)});
     if (!Execute(page_size_sql.c_str())) {
       return false;
     }
     // Page size isn't changed until the database is vacuumed.
-    ignore_result(Execute("VACUUM"));
+    std::ignore = Execute("VACUUM");
     // Re-enter WAL mode.
     if (UseWALMode()) {
-      ignore_result(Execute("PRAGMA journal_mode=WAL;"));
+      std::ignore = Execute("PRAGMA journal_mode=WAL;");
     }
 
     rc = BackupDatabase(null_db.db_, db_, kMain);
@@ -1552,15 +1560,14 @@ bool Database::OpenInternal(const std::string& file_name,
   // disparate features with their own databases, and having separate page
   // caches makes it easier to reason about each feature's performance in
   // isolation.
-  int err = sqlite3_open_v2(
-      file_name.c_str(), &db_,
-      SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE | SQLITE_OPEN_PRIVATECACHE,
-      vfs_name);
-  if (err != SQLITE_OK) {
-    // Extended error codes cannot be enabled until a handle is
-    // available, fetch manually.
-    err = sqlite3_extended_errcode(db_);
+  //
+  // SQLITE_OPEN_EXRESCODE enables the full range of SQLite error codes. See
+  // https://www.sqlite.org/rescode.html for details.
+  constexpr int open_flags = SQLITE_OPEN_READWRITE | SQLITE_OPEN_CREATE |
+                             SQLITE_OPEN_EXRESCODE | SQLITE_OPEN_PRIVATECACHE;
 
+  int err = sqlite3_open_v2(file_name.c_str(), &db_, open_flags, vfs_name);
+  if (err != SQLITE_OK) {
     OnSqliteError(err, nullptr, "-- sqlite3_open()");
     bool was_poisoned = poisoned_;
     Close();
@@ -1637,7 +1644,7 @@ bool Database::OpenInternal(const std::string& file_name,
   // time the database is being opened in WAL mode.
   const std::string page_size_sql =
       base::StringPrintf("PRAGMA page_size=%d", options_.page_size);
-  ignore_result(ExecuteWithTimeout(page_size_sql.c_str(), kBusyTimeout));
+  std::ignore = ExecuteWithTimeout(page_size_sql.c_str(), kBusyTimeout);
 
   // http://www.sqlite.org/pragma.html#pragma_journal_mode
   // WAL - Use a write-ahead log instead of a journal file.
@@ -1657,21 +1664,21 @@ bool Database::OpenInternal(const std::string& file_name,
     // loss (but still durable after an application crash).
     // TODO(shuagga@microsoft.com): Evaluate if this loss of durability is a
     // concern.
-    ignore_result(Execute("PRAGMA synchronous=NORMAL"));
+    std::ignore = Execute("PRAGMA synchronous=NORMAL");
 
     // Opening the db in WAL mode can fail (eg if the underlying VFS doesn't
     // support shared memory and we are not in exclusive locking mode).
     //
     // TODO(shuagga@microsoft.com): We should probably catch a failure here.
-    ignore_result(Execute("PRAGMA journal_mode=WAL"));
+    std::ignore = Execute("PRAGMA journal_mode=WAL");
   } else {
-    ignore_result(Execute("PRAGMA journal_mode=TRUNCATE"));
+    std::ignore = Execute("PRAGMA journal_mode=TRUNCATE");
   }
 
   if (options_.cache_size != 0) {
     const std::string cache_size_sql =
         base::StringPrintf("PRAGMA cache_size=%d", options_.cache_size);
-    ignore_result(ExecuteWithTimeout(cache_size_sql.c_str(), kBusyTimeout));
+    std::ignore = ExecuteWithTimeout(cache_size_sql.c_str(), kBusyTimeout);
   }
 
   static_assert(SQLITE_SECURE_DELETE == 1,
@@ -1702,7 +1709,7 @@ bool Database::OpenInternal(const std::string& file_name,
   size_t mmap_size = mmap_disabled_ ? 0 : GetAppropriateMmapSize();
   std::string mmap_sql =
       base::StringPrintf("PRAGMA mmap_size=%" PRIuS, mmap_size);
-  ignore_result(Execute(mmap_sql.c_str()));
+  std::ignore = Execute(mmap_sql.c_str());
 
   // Determine if memory-mapping has actually been enabled.  The Execute() above
   // can succeed without changing the amount mapped.
@@ -1865,7 +1872,7 @@ bool Database::IntegrityCheckHelper(const char* pragma_sql,
 
   // Best effort to put things back as they were before.
   static const char kNoWritableSchemaSql[] = "PRAGMA writable_schema=OFF";
-  ignore_result(Execute(kNoWritableSchemaSql));
+  std::ignore = Execute(kNoWritableSchemaSql);
 
   return ret;
 }
@@ -1877,7 +1884,7 @@ bool Database::ReportMemoryUsage(base::trace_event::ProcessMemoryDump* pmd,
 }
 
 bool Database::UseWALMode() const {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // WAL mode is only enabled on Fuchsia for databases with exclusive
   // locking, because this case does not require shared memory support.
   // At the time this was implemented (May 2020), Fuchsia's shared
@@ -1885,7 +1892,7 @@ bool Database::UseWALMode() const {
   return options_.wal_mode && options_.exclusive_locking;
 #else
   return options_.wal_mode;
-#endif  // defined(OS_FUCHSIA)
+#endif  // BUILDFLAG(IS_FUCHSIA)
 }
 
 bool Database::CheckpointDatabase() {

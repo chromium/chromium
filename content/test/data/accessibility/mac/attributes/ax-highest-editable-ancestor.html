@@ -1,0 +1,19 @@
+<!--
+@SCRIPT:
+  editable.accessibilityAttributeValue(AXHighestEditableAncestor)
+  editable.accessibilityAttributeNames.has(AXHighestEditableAncestor)
+  not_applicable.accessibilityAttributeValue(AXHighestEditableAncestor)
+  not_applicable.accessibilityAttributeNames.has(AXHighestEditableAncestor)
+  p.accessibilityAttributeValue(AXHighestEditableAncestor)
+  p.accessibilityAttributeNames.has(AXHighestEditableAncestor)
+  document.accessibilityAttributeNames.has(AXHighestEditableAncestor)
+  document.accessibilityAttributeValue(AXHighestEditableAncestor)
+-->
+<!DOCTYPE html>
+<textarea id="editable"></textarea>
+<div id="not_applicable"></div>
+<div contenteditable>
+  <div contenteditable>
+    <p id="p">Paragraph</p>
+  <div>
+</div>

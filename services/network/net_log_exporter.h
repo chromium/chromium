@@ -8,7 +8,7 @@
 #include <memory>
 
 #include "base/files/file.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread_checker.h"
 #include "base/values.h"
 #include "net/log/net_log.h"
@@ -73,7 +73,7 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetLogExporter
 
   // NetworkContext owns |this| via UniqueReceiverSet, so this object can't
   // outlive it.
-  NetworkContext* network_context_;
+  raw_ptr<NetworkContext> network_context_;
   enum State { STATE_IDLE, STATE_WAITING_DIR, STATE_RUNNING } state_;
 
   std::unique_ptr<net::FileNetLogObserver> file_net_observer_;

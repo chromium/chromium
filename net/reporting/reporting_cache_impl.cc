@@ -80,8 +80,9 @@ void ReportingCacheImpl::GetReports(
   reports_out->clear();
   for (const auto& report : reports_) {
     if (report->status != ReportingReport::Status::DOOMED &&
-        report->status != ReportingReport::Status::SUCCESS)
+        report->status != ReportingReport::Status::SUCCESS) {
       reports_out->push_back(report.get());
+    }
   }
 }
 
@@ -164,8 +165,6 @@ ReportingCacheImpl::GetReportsToDeliverForSource(
 
 void ReportingCacheImpl::ClearReportsPending(
     const std::vector<const ReportingReport*>& reports) {
-  std::vector<const ReportingReport*> reports_to_remove;
-
   for (const ReportingReport* report : reports) {
     auto it = reports_.find(report);
     DCHECK(it != reports_.end());
@@ -190,6 +189,53 @@ void ReportingCacheImpl::IncrementReportsAttempts(
   }
 
   context_->NotifyCachedReportsUpdated();
+}
+
+std::vector<ReportingEndpoint> FilterEndpointsByOrigin(
+    const std::map<base::UnguessableToken, std::vector<ReportingEndpoint>>&
+        document_endpoints,
+    const url::Origin& origin) {
+  std::set<std::string> group_names;
+  std::vector<ReportingEndpoint> result;
+  for (const auto& token_and_endpoints : document_endpoints) {
+    for (const auto& endpoint : token_and_endpoints.second) {
+      if (endpoint.group_key.origin == origin) {
+        if (group_names.insert(endpoint.group_key.group_name).second) {
+          // Push the endpoint only when the insertion succeeds.
+          result.push_back(endpoint);
+        }
+      }
+    }
+  }
+  return result;
+}
+
+base::flat_map<url::Origin, std::vector<ReportingEndpoint>>
+ReportingCacheImpl::GetV1ReportingEndpointsByOrigin() const {
+  base::flat_map<url::Origin, std::vector<ReportingEndpoint>> result;
+  base::flat_map<url::Origin, base::flat_set<std::string>> group_name_helper;
+  for (const auto& token_and_endpoints : document_endpoints_) {
+    for (const auto& endpoint : token_and_endpoints.second) {
+      auto origin = endpoint.group_key.origin;
+      if (result.count(origin)) {
+        if (group_name_helper.at(origin)
+                .insert(endpoint.group_key.group_name)
+                .second) {
+          // Push the endpoint only when the insertion succeeds.
+          result.at(origin).push_back(endpoint);
+        }
+      } else {
+        std::vector<ReportingEndpoint> endpoints_for_origin;
+        endpoints_for_origin.push_back(endpoint);
+        result.emplace(origin, endpoints_for_origin);
+
+        base::flat_set<std::string> group_names;
+        group_names.insert(endpoint.group_key.group_name);
+        group_name_helper.emplace(origin, group_names);
+      }
+    }
+  }
+  return result;
 }
 
 ReportingEndpoint::Statistics* ReportingCacheImpl::GetEndpointStats(
@@ -400,10 +446,15 @@ void ReportingCacheImpl::RemoveSourceAndEndpoints(
                report->status != ReportingReport::Status::DOOMED &&
                report->status != ReportingReport::Status::SUCCESS;
       }));
+  url::Origin origin;
+  if (document_endpoints_.count(reporting_source) > 0) {
+    origin = document_endpoints_.at(reporting_source)[0].group_key.origin;
+  }
   document_endpoints_.erase(reporting_source);
   isolation_info_.erase(reporting_source);
   expired_sources_.erase(reporting_source);
-  context_->NotifyEndpointsUpdated();
+  context_->NotifyEndpointsUpdatedForOrigin(
+      FilterEndpointsByOrigin(document_endpoints_, origin));
 }
 
 void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
@@ -414,9 +465,11 @@ void ReportingCacheImpl::OnParsedReportingEndpointsHeader(
   DCHECK(!endpoints.empty());
   DCHECK_EQ(0u, document_endpoints_.count(reporting_source));
   DCHECK_EQ(0u, isolation_info_.count(reporting_source));
+  url::Origin origin = endpoints[0].group_key.origin;
   document_endpoints_.insert({reporting_source, std::move(endpoints)});
   isolation_info_.insert({reporting_source, isolation_info});
-  context_->NotifyEndpointsUpdated();
+  context_->NotifyEndpointsUpdatedForOrigin(
+      FilterEndpointsByOrigin(document_endpoints_, origin));
 }
 
 std::set<url::Origin> ReportingCacheImpl::GetAllOrigins() const {
@@ -570,7 +623,7 @@ void ReportingCacheImpl::AddClientsLoadedFromStore(
       continue;
     }
 
-    DCHECK(group_key == endpoints_it->group_key);
+    DCHECK_EQ(group_key, endpoints_it->group_key);
 
     size_t cur_group_endpoints_count = 0;
 
@@ -684,8 +737,9 @@ ReportingCacheImpl::GetCandidateEndpointsForDelivery(
       // Client for a superdomain of |origin|
       const Client& client = client_it->second;
       if (client.network_isolation_key !=
-          v0_lookup_group_key.network_isolation_key)
+          v0_lookup_group_key.network_isolation_key) {
         continue;
+      }
       ReportingEndpointGroupKey superdomain_lookup_group_key(
           v0_lookup_group_key.network_isolation_key, client.origin,
           v0_lookup_group_key.group_name);
@@ -831,7 +885,8 @@ void ReportingCacheImpl::SetV1EndpointForTesting(
     DCHECK(isolation_info_.at(reporting_source)
                .IsEqualForTesting(isolation_info));  // IN-TEST
   }
-  context_->NotifyEndpointsUpdated();
+  context_->NotifyEndpointsUpdatedForOrigin(
+      FilterEndpointsByOrigin(document_endpoints_, group_key.origin));
 }
 
 void ReportingCacheImpl::SetEndpointForTesting(
@@ -941,6 +996,8 @@ ReportingCacheImpl::FindReportToEvict() const {
 }
 
 void ReportingCacheImpl::ConsistencyCheckClients() const {
+  // TODO(crbug.com/1165308): Remove this CHECK once the investigation is done.
+  CHECK_LE(endpoint_groups_.size(), context_->policy().max_endpoint_count);
 #if DCHECK_IS_ON()
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -955,16 +1012,16 @@ void ReportingCacheImpl::ConsistencyCheckClients() const {
     total_endpoint_count += client.endpoint_count;
     total_endpoint_group_count += ConsistencyCheckClient(domain, client);
 
-    // We have not seen a duplicate client with the same NIK and origin.
-    DCHECK(!base::Contains(
-        nik_origin_pairs_in_cache,
-        std::make_pair(client.network_isolation_key, client.origin)));
-    nik_origin_pairs_in_cache.insert(
+    auto inserted = nik_origin_pairs_in_cache.insert(
         std::make_pair(client.network_isolation_key, client.origin));
+    // We have not seen a duplicate client with the same NIK and origin.
+    DCHECK(inserted.second);
   }
 
   // Global endpoint cap is respected.
   DCHECK_LE(GetEndpointCount(), context_->policy().max_endpoint_count);
+  // The number of endpoint groups must not exceed the number of endpoints.
+  DCHECK_LE(endpoint_groups_.size(), GetEndpointCount());
 
   // All the endpoints and endpoint groups are accounted for.
   DCHECK_EQ(total_endpoint_count, endpoints_.size());
@@ -1039,10 +1096,10 @@ size_t ReportingCacheImpl::ConsistencyCheckEndpointGroup(
 
     ConsistencyCheckEndpoint(key, endpoint, it);
 
+    auto inserted = endpoint_urls_in_group.insert(endpoint.info.url);
     // We have not seen a duplicate endpoint with the same URL in this
     // group.
-    DCHECK(!base::Contains(endpoint_urls_in_group, endpoint.info.url));
-    endpoint_urls_in_group.insert(endpoint.info.url);
+    DCHECK(inserted.second);
 
     ++endpoint_count_in_group;
   }
@@ -1337,14 +1394,13 @@ ReportingCacheImpl::RemoveEndpointGroupInternal(
   if (context_->IsClientDataPersisted())
     store()->DeleteReportingEndpointGroup(group_it->second);
 
-  absl::optional<EndpointGroupMap::iterator> rv =
-      endpoint_groups_.erase(group_it);
+  EndpointGroupMap::iterator rv = endpoint_groups_.erase(group_it);
 
   // Delete client if empty.
   if (client.endpoint_count == 0) {
     DCHECK(client.endpoint_group_names.empty());
     clients_.erase(client_it);
-    rv = absl::nullopt;
+    return absl::nullopt;
   }
   return rv;
 }

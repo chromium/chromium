@@ -9,7 +9,6 @@
 
 #include "base/check_op.h"
 #include "base/containers/stack_container.h"
-#include "base/stl_util.h"
 #include "cc/paint/paint_export.h"
 #include "cc/paint/paint_image.h"
 #include "cc/paint/paint_shader.h"
@@ -95,9 +94,7 @@ class CC_PAINT_EXPORT PaintFilter : public SkRefCnt {
       return 0;
     return cached_sk_filter_->countInputs();
   }
-  const CropRect* crop_rect() const {
-    return base::OptionalOrNullptr(crop_rect_);
-  }
+  const CropRect* GetCropRect() const;
 
   bool has_discardable_images() const { return has_discardable_images_; }
   ImageAnalysisState image_analysis_state() const {

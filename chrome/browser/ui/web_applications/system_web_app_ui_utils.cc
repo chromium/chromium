@@ -10,6 +10,7 @@
 #include "base/check_op.h"
 #include "base/debug/dump_without_crashing.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
@@ -23,15 +24,15 @@
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_manager.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_launch/web_launch_files_helper.h"
 #include "chrome/common/webui_url_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/base/window_open_disposition.h"
+#include "ui/display/scoped_display_for_new_windows.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
@@ -49,7 +50,7 @@ Profile* GetProfileForSystemWebAppLaunch(Profile* profile) {
   if (profile->IsSystemProfile())
     return nullptr;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (chromeos::ProfileHelper::IsSigninProfile(profile))
+  if (ash::ProfileHelper::IsSigninProfile(profile))
     return nullptr;
 #endif
 
@@ -193,16 +194,23 @@ Browser* LaunchSystemWebAppImpl(Profile* profile,
   if (!provider)
     return nullptr;
 
+  auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
+
+#if BUILDFLAG(IS_CHROMEOS)
   DCHECK(url.DeprecatedGetOriginAsURL() == provider->registrar()
                                                .GetAppLaunchUrl(params.app_id)
-                                               .DeprecatedGetOriginAsURL());
+                                               .DeprecatedGetOriginAsURL() ||
+         system_app && system_app->IsUrlInSystemAppScope(url));
+#endif
 
-  auto* system_app = provider->system_web_app_manager().GetSystemApp(app_type);
   if (!system_app) {
     LOG(ERROR) << "Can't find delegate for system app url: " << url
                << " Not launching.";
     return nullptr;
   }
+
+  // Place new windows on the specified display.
+  display::ScopedDisplayForNewWindows scoped_display(params.display_id);
 
   Browser* browser =
       system_app->LaunchAndNavigateSystemWebApp(profile, provider, url, params);
@@ -237,7 +245,8 @@ void FlushSystemWebAppLaunchesForTesting(Profile* profile) {
 
 Browser* FindSystemWebAppBrowser(Profile* profile,
                                  SystemAppType app_type,
-                                 Browser::Type browser_type) {
+                                 Browser::Type browser_type,
+                                 const GURL& url) {
   // TODO(calamity): Determine whether, during startup, we need to wait for
   // app install and then provide a valid answer here.
   absl::optional<AppId> app_id = GetAppIdForSystemWebApp(profile, app_type);
@@ -259,6 +268,15 @@ Browser* FindSystemWebAppBrowser(Profile* profile,
 
     if (GetAppIdFromApplicationName(browser->app_name()) != app_id.value())
       continue;
+
+    if (!url.is_empty()) {
+      // In case a URL is provided, only allow a browser which shows it.
+      TabStripModel* tab_strip = browser->tab_strip_model();
+      content::WebContents* content =
+          tab_strip->GetWebContentsAt(tab_strip->active_index());
+      if (!content->GetVisibleURL().EqualsIgnoringRef(url))
+        continue;
+    }
 
     if (browser->window()->IsActive()) {
       return browser;

@@ -5,6 +5,7 @@ include_rules = [
   "+components/pref_registry",
   "+components/query_parser",
   "+components/search_engines",
+  "+components/site_engagement/core",
   "+components/url_formatter",
   "+net",
   "+services/network/public/cpp",

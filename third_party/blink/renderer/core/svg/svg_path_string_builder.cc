@@ -19,6 +19,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_path_string_builder.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_path_data.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 #include "ui/gfx/geometry/point_f.h"

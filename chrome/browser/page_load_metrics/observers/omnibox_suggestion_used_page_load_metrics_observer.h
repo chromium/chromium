@@ -31,7 +31,15 @@ class OmniboxSuggestionUsedMetricsObserver
   void OnFirstMeaningfulPaintInMainFrameDocument(
       const page_load_metrics::mojom::PageLoadTiming& timing) override;
 
+  ObservePolicy FlushMetricsOnAppEnterBackground(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+  void OnComplete(
+      const page_load_metrics::mojom::PageLoadTiming& timing) override;
+
  private:
+  void RecordSessionEndHistograms(
+      const page_load_metrics::mojom::PageLoadTiming& timing);
+
   ui::PageTransition transition_type_ = ui::PAGE_TRANSITION_LINK;
 };
 

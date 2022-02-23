@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/css/parser/css_tokenizer.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/geometry/calculation_expression_node.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -56,11 +56,11 @@ void TestAccumulatePixelsAndPercent(
     float expected_percent) {
   scoped_refptr<const CalculationExpressionNode> value =
       expression->ToCalculationExpression(conversion_data);
-  EXPECT_TRUE(value->IsLeaf());
+  EXPECT_TRUE(value->IsPixelsAndPercent());
   EXPECT_EQ(expected_pixels,
-            To<CalculationExpressionLeafNode>(*value).Pixels());
+            To<CalculationExpressionPixelsAndPercentNode>(*value).Pixels());
   EXPECT_EQ(expected_percent,
-            To<CalculationExpressionLeafNode>(*value).Percent());
+            To<CalculationExpressionPixelsAndPercentNode>(*value).Percent());
 
   absl::optional<PixelsAndPercent> pixels_and_percent =
       expression->ToPixelsAndPercent(conversion_data);
@@ -105,7 +105,7 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
 
   TestAccumulatePixelsAndPercent(
       conversion_data,
-      CSSMathExpressionBinaryOperation::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
           CSSMathExpressionNumericLiteral::Create(
               CSSNumericLiteralValue::Create(
                   10, CSSPrimitiveValue::UnitType::kPixels)),
@@ -117,7 +117,7 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
 
   TestAccumulatePixelsAndPercent(
       conversion_data,
-      CSSMathExpressionBinaryOperation::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
           CSSMathExpressionNumericLiteral::Create(
               CSSNumericLiteralValue::Create(
                   1, CSSPrimitiveValue::UnitType::kInches)),
@@ -129,8 +129,8 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
 
   TestAccumulatePixelsAndPercent(
       conversion_data,
-      CSSMathExpressionBinaryOperation::Create(
-          CSSMathExpressionBinaryOperation::Create(
+      CSSMathExpressionOperation::CreateArithmeticOperation(
+          CSSMathExpressionOperation::CreateArithmeticOperation(
               CSSMathExpressionNumericLiteral::Create(
                   CSSNumericLiteralValue::Create(
                       50, CSSPrimitiveValue::UnitType::kPixels)),
@@ -138,7 +138,7 @@ TEST(CSSCalculationValue, AccumulatePixelsAndPercent) {
                   CSSNumericLiteralValue::Create(
                       0.25, CSSPrimitiveValue::UnitType::kNumber)),
               CSSMathOperator::kMultiply),
-          CSSMathExpressionBinaryOperation::Create(
+          CSSMathExpressionOperation::CreateArithmeticOperation(
               CSSMathExpressionNumericLiteral::Create(
                   CSSNumericLiteralValue::Create(
                       20, CSSPrimitiveValue::UnitType::kPixels)),
@@ -206,10 +206,10 @@ TEST(CSSCalculationValue, AddToLengthUnitValues) {
 
 TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
   enum Kind {
-    calc,
-    min,
-    max,
-    clamp,
+    kCalc,
+    kMin,
+    kMax,
+    kClamp,
   };
 
   // Ref: https://bugs.chromium.org/p/chromium/issues/detail?id=1211283
@@ -218,26 +218,26 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
     const int nest_num;
     const bool expected;
   } test_cases[] = {
-      {calc, 1, true},
-      {calc, 10, true},
-      {calc, kMaxExpressionDepth - 1, true},
-      {calc, kMaxExpressionDepth, false},
-      {calc, kMaxExpressionDepth + 1, false},
-      {min, 1, true},
-      {min, 10, true},
-      {min, kMaxExpressionDepth - 1, true},
-      {min, kMaxExpressionDepth, false},
-      {min, kMaxExpressionDepth + 1, false},
-      {max, 1, true},
-      {max, 10, true},
-      {max, kMaxExpressionDepth - 1, true},
-      {max, kMaxExpressionDepth, false},
-      {max, kMaxExpressionDepth + 1, false},
-      {clamp, 1, true},
-      {clamp, 10, true},
-      {clamp, kMaxExpressionDepth - 1, true},
-      {clamp, kMaxExpressionDepth, false},
-      {clamp, kMaxExpressionDepth + 1, false},
+      {kCalc, 1, true},
+      {kCalc, 10, true},
+      {kCalc, kMaxExpressionDepth - 1, true},
+      {kCalc, kMaxExpressionDepth, false},
+      {kCalc, kMaxExpressionDepth + 1, false},
+      {kMin, 1, true},
+      {kMin, 10, true},
+      {kMin, kMaxExpressionDepth - 1, true},
+      {kMin, kMaxExpressionDepth, false},
+      {kMin, kMaxExpressionDepth + 1, false},
+      {kMax, 1, true},
+      {kMax, 10, true},
+      {kMax, kMaxExpressionDepth - 1, true},
+      {kMax, kMaxExpressionDepth, false},
+      {kMax, kMaxExpressionDepth + 1, false},
+      {kClamp, 1, true},
+      {kClamp, 10, true},
+      {kClamp, kMaxExpressionDepth - 1, true},
+      {kClamp, kMaxExpressionDepth, false},
+      {kClamp, kMaxExpressionDepth + 1, false},
   };
 
   for (const auto& test_case : test_cases) {
@@ -252,16 +252,16 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
       if (i)
         ss << " + ";
       switch (test_case.kind) {
-        case calc:
+        case kCalc:
           ss << "calc(1px";
           break;
-        case min:
+        case kMin:
           ss << "min(1px, 1px";
           break;
-        case max:
+        case kMax:
           ss << "max(1px, 1px";
           break;
-        case clamp:
+        case kClamp:
           ss << "clamp(1px, 1px, 1px";
           break;
       }
@@ -273,7 +273,8 @@ TEST(CSSMathExpressionNode, TestParseDeeplyNestedExpression) {
     CSSTokenizer tokenizer(String(ss.str().c_str()));
     const auto tokens = tokenizer.TokenizeToEOF();
     const CSSParserTokenRange range(tokens);
-    const CSSMathExpressionNode* res = CSSMathExpressionNode::ParseCalc(range);
+    const CSSMathExpressionNode* res =
+        CSSMathExpressionNode::ParseMathFunction(CSSValueID::kCalc, range);
 
     if (test_case.expected) {
       EXPECT_TRUE(res);

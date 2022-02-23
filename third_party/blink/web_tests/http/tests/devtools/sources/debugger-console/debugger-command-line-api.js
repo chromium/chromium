@@ -19,7 +19,7 @@
       }
   `);
 
-  TestRunner.addSniffer(SDK.RuntimeModel.prototype, '_inspectRequested', inspect);
+  TestRunner.addSniffer(SDK.RuntimeModel.prototype, 'inspectRequested', inspect);
   const originalReveal = Common.Revealer.reveal;
   Common.Revealer.setRevealForTest((node) => {
     if (!(node instanceof SDK.RemoteObject)) {

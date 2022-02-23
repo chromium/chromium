@@ -188,7 +188,8 @@ void WebApkIconHasher::OnSimpleLoaderComplete(
         0,            // no max size
         false,        // normal cache policy
         base::BindOnce(&WebApkIconHasher::OnImageDownloaded,
-                       base::Unretained(this), std::move(response_body)));
+                       weak_ptr_factory_.GetWeakPtr(),
+                       std::move(response_body)));
     return;
   }
 

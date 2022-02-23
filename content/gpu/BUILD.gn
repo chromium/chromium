@@ -99,6 +99,13 @@ target(link_target_type, "gpu_sources") {
     ]
   }
 
+  if (is_chromeos_ash) {
+    deps += [
+      "//components/services/font/public/cpp",
+      "//components/services/font/public/mojom",
+    ]
+  }
+
   if (is_android) {
     deps += [
       "//components/tracing:graphics_provider",

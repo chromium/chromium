@@ -7,6 +7,7 @@
 #import "base/ios/ios_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/ui/coordinators/chrome_coordinator.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_histograms.h"
@@ -73,10 +74,14 @@
     NSMutableArray<UIMenuElement*>* menuElements =
         [[NSMutableArray alloc] init];
 
+    GURL gurl;
+    if (item.URL) {
+      gurl = item.URL.gurl;
+    }
     [menuElements
         addObject:
             [actionFactory
-                actionToOpenInNewTabWithURL:item.URL
+                actionToOpenInNewTabWithURL:gurl
                                  completion:^{
                                    [weakSelf.recentTabsPresentationDelegate
                                            showActiveRegularTabFromRecentTabs];
@@ -85,16 +90,16 @@
     if (base::ios::IsMultipleScenesSupported()) {
       [menuElements
           addObject:[actionFactory
-                        actionToOpenInNewWindowWithURL:item.URL
+                        actionToOpenInNewWindowWithURL:gurl
                                         activityOrigin:
                                             WindowActivityRecentTabsOrigin]];
     }
 
-    [menuElements addObject:[actionFactory actionToCopyURL:item.URL]];
+    [menuElements addObject:[actionFactory actionToCopyURL:gurl]];
 
     [menuElements addObject:[actionFactory actionToShareWithBlock:^{
                     [weakSelf.contextMenuDelegate
-                        shareURL:item.URL
+                        shareURL:gurl
                            title:item.title
                         scenario:ActivityScenario::RecentTabsEntry
                         fromView:view];

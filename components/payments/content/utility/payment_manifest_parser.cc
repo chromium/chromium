@@ -77,16 +77,17 @@ bool ParseDefaultApplications(const GURL& manifest_url,
   DCHECK(dict);
   DCHECK(web_app_manifest_urls);
 
-  base::ListValue* list = nullptr;
-  if (!dict->GetList(kDefaultApplications, &list)) {
+  const base::Value* list = dict->FindListKey(kDefaultApplications);
+  if (!list) {
     // TODO(crbug.com/1065337): Move the error message strings to
     // components/payments/core/native_error_strings.cc.
     log.Error(
         base::StringPrintf("\"%s\" must be a list.", kDefaultApplications));
     return false;
   }
+  base::Value::ConstListView list_view = list->GetListDeprecated();
 
-  size_t apps_number = list->GetList().size();
+  size_t apps_number = list_view.size();
   if (apps_number > kMaximumNumberOfItems) {
     log.Error(base::StringPrintf("\"%s\" must contain at most %zu entries.",
                                  kDefaultApplications, kMaximumNumberOfItems));
@@ -94,22 +95,21 @@ bool ParseDefaultApplications(const GURL& manifest_url,
   }
 
   for (size_t i = 0; i < apps_number; ++i) {
-    std::string item;
-    if (!list->GetString(i, &item) || item.empty() ||
-        !base::IsStringUTF8(item)) {
+    const std::string* item = list_view[i].GetIfString();
+    if (!item || item->empty() || !base::IsStringUTF8(*item)) {
       log.Error(base::StringPrintf("Each entry in \"%s\" must be UTF8 string.",
                                    kDefaultApplications));
       web_app_manifest_urls->clear();
       return false;
     }
 
-    GURL url = manifest_url.Resolve(item);
+    GURL url = manifest_url.Resolve(*item);
     // TODO(crbug.com/1065337): Check that |url| is the same origin with
     // |manifest_url|. Currently that's checked by callers, but the earlier this
     // is caught, the fewer resources Chrome consumes.
     if (!UrlUtil::IsValidManifestUrl(url)) {
       const std::string item_to_print =
-          ValidateAndTruncateIfNeeded(item, nullptr);
+          ValidateAndTruncateIfNeeded(*item, nullptr);
       log.Error(
           base::StringPrintf("\"%s\" entry in \"%s\" is not a valid URL with "
                              "HTTPS scheme and is "
@@ -133,14 +133,15 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
   DCHECK(dict);
   DCHECK(supported_origins);
 
-  base::ListValue* list = nullptr;
-  if (!dict->GetList(kSupportedOrigins, &list)) {
+  const base::Value* list = dict->FindListKey(kSupportedOrigins);
+  if (!list) {
     log.Error(base::StringPrintf("\"%s\" must be a list of origins.",
                                  kSupportedOrigins));
     return false;
   }
+  base::Value::ConstListView list_view = list->GetListDeprecated();
 
-  size_t supported_origins_number = list->GetList().size();
+  size_t supported_origins_number = list_view.size();
   if (supported_origins_number > kMaximumNumberOfSupportedOrigins) {
     log.Error(base::StringPrintf("\"%s\" must contain at most %zu entires.",
                                  kSupportedOrigins,
@@ -149,11 +150,10 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
   }
 
   for (size_t i = 0; i < supported_origins_number; ++i) {
-    std::string item;
-    if (!list->GetString(i, &item) || item.empty() ||
-        !base::IsStringUTF8(item) ||
-        !(base::StartsWith(item, kHttpsPrefix, base::CompareCase::SENSITIVE) ||
-          base::StartsWith(item, kHttpPrefix, base::CompareCase::SENSITIVE))) {
+    const std::string* item = list_view[i].GetIfString();
+    if (!item || item->empty() || !base::IsStringUTF8(*item) ||
+        !(base::StartsWith(*item, kHttpsPrefix, base::CompareCase::SENSITIVE) ||
+          base::StartsWith(*item, kHttpPrefix, base::CompareCase::SENSITIVE))) {
       supported_origins->clear();
       log.Error(base::StringPrintf(
           "Each entry in \"%s\" must be UTF8 string that starts with \"%s\" or "
@@ -162,11 +162,11 @@ bool ParseSupportedOrigins(base::DictionaryValue* dict,
       return false;
     }
 
-    GURL url(item);
+    GURL url(*item);
     if (!UrlUtil::IsValidSupportedOrigin(url)) {
       supported_origins->clear();
       const std::string item_to_print =
-          ValidateAndTruncateIfNeeded(item, nullptr);
+          ValidateAndTruncateIfNeeded(*item, nullptr);
       log.Error(base::StringPrintf(
           "\"%s\" entry in \"%s\" is not a valid origin with HTTPS scheme "
           "and "
@@ -193,7 +193,7 @@ void ParseIcons(const base::DictionaryValue& dict,
     return;
   }
 
-  for (const auto& icon : icons_list->GetList()) {
+  for (const auto& icon : icons_list->GetListDeprecated()) {
     if (!icon.is_dict()) {
       log.Warn(base::StringPrintf(
           "Each item in the list \"%s\" should be a dictionary.",
@@ -248,7 +248,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
     std::vector<std::string>* ids) {
   DCHECK(ids);
 
-  if (!dict.HasKey(kPreferRelatedApplications))
+  if (!dict.FindKey(kPreferRelatedApplications))
     return;
 
   absl::optional<bool> prefer_related_applications =
@@ -270,7 +270,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
     return;
   }
 
-  size_t size = related_applications->GetList().size();
+  size_t size = related_applications->GetListDeprecated().size();
   if (size == 0) {
     log.Warn(base::StringPrintf(
         "Did not find any entries in \"%s\", even though \"%s\" is true.",
@@ -280,7 +280,7 @@ void ParsePreferredRelatedApplicationIdentifiers(
 
   for (size_t i = 0; i < size; ++i) {
     const base::Value& related_application_value =
-        related_applications->GetList()[i];
+        related_applications->GetListDeprecated()[i];
     if (!related_application_value.is_dict()) {
       log.Warn(
           base::StringPrintf("Element #%zu in \"%s\" should be a dictionary.",
@@ -290,9 +290,8 @@ void ParsePreferredRelatedApplicationIdentifiers(
 
     const base::DictionaryValue& related_application =
         base::Value::AsDictionaryValue(related_application_value);
-    std::string platform;
-    if (!related_application.GetString(kPlatform, &platform) ||
-        platform != kPlay) {
+    const std::string* platform = related_application.FindStringKey(kPlatform);
+    if (!platform || *platform != kPlay) {
       continue;
     }
 
@@ -304,23 +303,34 @@ void ParsePreferredRelatedApplicationIdentifiers(
       break;
     }
 
-    std::string id;
-    if (!related_application.GetString(kId, &id)) {
+    const std::string* id = related_application.FindStringKey(kId);
+    if (!id) {
       log.Warn(base::StringPrintf(
           "Elements in \"%s\" with \"%s\":\"%s\" should have \"%s\" field.",
           kRelatedApplications, kPlatform, kPlay, kId));
       continue;
     }
 
-    if (id.empty() || !base::IsStringASCII(id)) {
+    if (id->empty() || !base::IsStringASCII(*id)) {
       log.Warn(base::StringPrintf(
           "\"%s\".\"%s\" should be a non-empty ASCII string.",
           kRelatedApplications, kId));
       continue;
     }
 
-    ids->emplace_back(id);
+    ids->emplace_back(*id);
   }
+}
+
+bool GetString(const base::Value* dict,
+               base::StringPiece key,
+               std::string& result) {
+  DCHECK(dict);
+  const std::string* value = dict->FindStringKey(key);
+  if (value) {
+    result = *value;
+  }
+  return value;
 }
 
 }  // namespace
@@ -385,13 +395,13 @@ void PaymentManifestParser::ParsePaymentMethodManifestIntoVectors(
     return;
   }
 
-  if (dict->HasKey(kDefaultApplications) &&
+  if (dict->FindKey(kDefaultApplications) &&
       !ParseDefaultApplications(manifest_url, dict.get(), web_app_manifest_urls,
                                 log)) {
     return;
   }
 
-  if (dict->HasKey(kSupportedOrigins) &&
+  if (dict->FindKey(kSupportedOrigins) &&
       !ParseSupportedOrigins(dict.get(), supported_origins, log)) {
     web_app_manifest_urls->clear();
   }
@@ -416,7 +426,8 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     return false;
   }
 
-  for (const base::Value& related_application_value : list->GetList()) {
+  for (const base::Value& related_application_value :
+       list->GetListDeprecated()) {
     if (!related_application_value.is_dict()) {
       log.Error(base::StringPrintf("\"%s\" must be a list of dictionaries.",
                                    kRelatedApplications));
@@ -427,9 +438,8 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     const base::DictionaryValue& related_application =
         base::Value::AsDictionaryValue(related_application_value);
 
-    std::string platform;
-    if (!related_application.GetString(kPlatform, &platform) ||
-        platform != kPlay) {
+    const std::string* platform = related_application.FindStringKey(kPlatform);
+    if (!platform || *platform != kPlay) {
       continue;
     }
 
@@ -441,9 +451,9 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
       return false;
     }
 
-    if (!related_application.HasKey(kId) ||
-        !related_application.HasKey(kMinVersion) ||
-        !related_application.HasKey(kFingerprints)) {
+    if (!related_application.FindKey(kId) ||
+        !related_application.FindKey(kMinVersion) ||
+        !related_application.FindKey(kFingerprints)) {
       log.Error(
           base::StringPrintf("Each \"%s\": \"%s\" entry in \"%s\" must contain "
                              "\"%s\", \"%s\", and \"%s\".",
@@ -455,18 +465,21 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     WebAppManifestSection section;
     section.min_version = 0;
 
-    if (!related_application.GetString(kId, &section.id) ||
-        section.id.empty() || !base::IsStringASCII(section.id)) {
+    const std::string* section_id = related_application.FindStringKey(kId);
+    if (!section_id || section_id->empty() ||
+        !base::IsStringASCII(*section_id)) {
       log.Error(
           base::StringPrintf("\"%s\" must be a non-empty ASCII string.", kId));
       output->clear();
       return false;
     }
+    section.id = *section_id;
 
-    std::string min_version;
-    if (!related_application.GetString(kMinVersion, &min_version) ||
-        min_version.empty() || !base::IsStringASCII(min_version) ||
-        !base::StringToInt64(min_version, &section.min_version)) {
+    const std::string* min_version =
+        related_application.FindStringKey(kMinVersion);
+    if (!min_version || min_version->empty() ||
+        !base::IsStringASCII(*min_version) ||
+        !base::StringToInt64(*min_version, &section.min_version)) {
       log.Error(base::StringPrintf(
           "\"%s\" must be a string convertible into a number.", kMinVersion));
       output->clear();
@@ -475,8 +488,8 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
 
     const base::ListValue* fingerprints_list = nullptr;
     if (!related_application.GetList(kFingerprints, &fingerprints_list) ||
-        fingerprints_list->GetList().empty() ||
-        fingerprints_list->GetList().size() > kMaximumNumberOfItems) {
+        fingerprints_list->GetListDeprecated().empty() ||
+        fingerprints_list->GetListDeprecated().size() > kMaximumNumberOfItems) {
       log.Error(base::StringPrintf(
           "\"%s\" must be a non-empty list of at most %zu items.",
           kFingerprints, kMaximumNumberOfItems));
@@ -485,7 +498,7 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
     }
 
     for (const base::Value& fingerprint_dict_value :
-         fingerprints_list->GetList()) {
+         fingerprints_list->GetListDeprecated()) {
       const base::DictionaryValue* fingerprint_dict = nullptr;
       if (fingerprint_dict_value.is_dict()) {
         fingerprint_dict =
@@ -494,9 +507,9 @@ bool PaymentManifestParser::ParseWebAppManifestIntoVector(
       std::string fingerprint_type;
       std::string fingerprint_value;
       if (!fingerprint_dict ||
-          !fingerprint_dict->GetString("type", &fingerprint_type) ||
+          !GetString(fingerprint_dict, "type", fingerprint_type) ||
           fingerprint_type != "sha256_cert" ||
-          !fingerprint_dict->GetString("value", &fingerprint_value) ||
+          !GetString(fingerprint_dict, "value", fingerprint_value) ||
           fingerprint_value.empty() ||
           !base::IsStringASCII(fingerprint_value)) {
         log.Error(base::StringPrintf(
@@ -548,18 +561,21 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
       return false;
     }
 
-    if (!service_worker_dict->GetString(kServiceWorkerSrc,
-                                        &installation_info->sw_js_url) ||
-        installation_info->sw_js_url.empty() ||
-        !base::IsStringUTF8(installation_info->sw_js_url)) {
+    const std::string* sw_js_url =
+        service_worker_dict->FindStringKey(kServiceWorkerSrc);
+    if (!sw_js_url || sw_js_url->empty() || !base::IsStringUTF8(*sw_js_url)) {
       log.Error(
           base::StringPrintf("\"%s\".\"%s\" must be a non-empty UTF8 string.",
                              kServiceWorker, kServiceWorkerSrc));
       return false;
     }
+    installation_info->sw_js_url = *sw_js_url;
 
-    service_worker_dict->GetString(kServiceWorkerScope,
-                                   &installation_info->sw_scope);
+    const std::string* sw_scope =
+        service_worker_dict->FindStringKey(kServiceWorkerScope);
+    if (sw_scope) {
+      installation_info->sw_scope = *sw_scope;
+    }
 
     absl::optional<bool> use_cache =
         service_worker_dict->FindBoolKey(kServiceWorkerUseCache);
@@ -568,7 +584,10 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
     }
   }
 
-  dict->GetString(kWebAppName, &installation_info->name);
+  const std::string* name = dict->FindStringKey(kWebAppName);
+  if (name) {
+    installation_info->name = *name;
+  }
   if (installation_info->name.empty()) {
     log.Warn(
         base::StringPrintf("No \"%s\" string in the manifest.", kWebAppName));
@@ -582,8 +601,8 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
   if (dict->GetDictionary(kPayment, &payment_dict)) {
     const base::ListValue* delegation_list = nullptr;
     if (payment_dict->GetList(kSupportedDelegations, &delegation_list)) {
-      if (delegation_list->GetList().empty() ||
-          delegation_list->GetList().size() >
+      if (delegation_list->GetListDeprecated().empty() ||
+          delegation_list->GetListDeprecated().size() >
               kMaximumNumberOfSupportedDelegations) {
         log.Error(base::StringPrintf(
             "\"%s.%s\" must be a non-empty list of at most %zu entries.",
@@ -591,7 +610,7 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
             kMaximumNumberOfSupportedDelegations));
         return false;
       }
-      for (const auto& delegation_item : delegation_list->GetList()) {
+      for (const auto& delegation_item : delegation_list->GetListDeprecated()) {
         std::string delegation_name = delegation_item.GetString();
         if (delegation_name == "shippingAddress") {
           installation_info->supported_delegations.shipping_address = true;
@@ -620,7 +639,7 @@ bool PaymentManifestParser::ParseWebAppInstallationInfoIntoStructs(
                                    kPayment, kSupportedDelegations));
       return false;
     }
-  } else if (dict->HasKey(kPayment)) {
+  } else if (dict->FindKey(kPayment)) {
     log.Error(
         base::StringPrintf("\"%s\" member must be a dictionary", kPayment));
     return false;

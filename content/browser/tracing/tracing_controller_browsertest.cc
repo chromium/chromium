@@ -332,7 +332,7 @@ class TracingControllerTest : public ContentBrowserTest {
 };
 
 // Consistent failures on Android Asan https://crbug.com/1045519
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 #define MAYBE_EnableAndStopTracing DISABLED_EnableAndStopTracing
 #define MAYBE_DisableRecordingStoresMetadata \
   DISABLED_DisableRecordingStoresMetadata
@@ -494,7 +494,7 @@ IN_PROC_BROWSER_TEST_F(TracingControllerTest, MAYBE_DoubleStopTracing) {
 // complete.
 #if BUILDFLAG(IS_CHROMEOS_ASH) || \
     (BUILDFLAG(IS_CHROMECAST) &&  \
-     (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
+     (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)))
 #define MAYBE_SystemTraceEvents SystemTraceEvents
 #else
 #define MAYBE_SystemTraceEvents DISABLED_SystemTraceEvents

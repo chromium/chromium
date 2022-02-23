@@ -32,7 +32,7 @@ class MockDelegate : public CrostiniUnsupportedActionNotifier::Delegate {
               (const InputMethodDescriptor& descriptor),
               (override));
   MOCK_METHOD(InputMethodDescriptor, GetCurrentInputMethod, (), (override));
-  MOCK_METHOD(int, ToastTimeoutMs, (), (override));
+  MOCK_METHOD(base::TimeDelta, ToastTimeout, (), (override));
   MOCK_METHOD(void,
               AddFocusObserver,
               (aura::client::FocusChangeObserver * observer),
@@ -189,8 +189,8 @@ TEST_P(CrostiniUnsupportedActionNotifierTest,
   notifier.OnWindowFocused({}, {});
 }
 
-INSTANTIATE_TEST_CASE_P(CrostiniUnsupportedActionNotifierTestCombination,
-                        CrostiniUnsupportedActionNotifierTest,
-                        Combine(Bool(), Bool(), Bool(), Bool()));
+INSTANTIATE_TEST_SUITE_P(CrostiniUnsupportedActionNotifierTestCombination,
+                         CrostiniUnsupportedActionNotifierTest,
+                         Combine(Bool(), Bool(), Bool(), Bool()));
 
 }  // namespace crostini

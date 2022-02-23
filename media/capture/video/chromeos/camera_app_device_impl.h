@@ -226,8 +226,9 @@ class CAPTURE_EXPORT CameraAppDeviceImpl : public cros::mojom::CameraAppDevice {
   CameraDeviceContext* camera_device_context_
       GUARDED_BY(camera_device_context_lock_);
 
+  base::Lock document_corners_observers_lock_;
   mojo::RemoteSet<cros::mojom::DocumentCornersObserver>
-      document_corners_observers_;
+      document_corners_observers_ GUARDED_BY(document_corners_observers_lock_);
   bool has_ongoing_document_detection_task_ = false;
   std::unique_ptr<base::ElapsedTimer> document_detection_timer_ = nullptr;
 

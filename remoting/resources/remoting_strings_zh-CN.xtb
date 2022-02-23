@@ -26,7 +26,6 @@
 <translation id="225614027745146050">欢迎</translation>
 <translation id="2320166752086256636">隐藏键盘</translation>
 <translation id="2329392777730037872">未能在客户端上打开 <ph name="URL" />。</translation>
-<translation id="2333212046079545895">版权所有 2021 Google LLC。保留所有权利。</translation>
 <translation id="2359808026110333948">继续</translation>
 <translation id="2366718077645204424">无法连接到主机，这可能是由您所使用网络的配置导致的。</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" />上次在线时间：<ph name="RELATIVE_TIMESTAMP" />。</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">此服务允许来自 Chrome 远程桌面客户端的连接。</translation>
 <translation id="2647232381348739934">Chrome 远程访问服务</translation>
 <translation id="2676780859508944670">运行中…</translation>
+<translation id="2692522824157224199">版权所有 2022 Google LLC。保留所有权利。</translation>
 <translation id="2699970397166997657">Chrome 远程访问</translation>
 <translation id="2758123043070977469">验证您的身份时出问题了，请重新登录。</translation>
 <translation id="2803375539583399270">输入 PIN 码</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" />地址转发工具</translation>
 <translation id="4277736576214464567">访问代码无效，请重试。</translation>
 <translation id="4281844954008187215">服务条款</translation>
+<translation id="4372650392690220936">版权所有 2022 The Chromium Authors。保留所有权利。</translation>
 <translation id="4405930547258349619">核心数据库</translation>
 <translation id="443560535555262820">打开“无障碍”偏好设置</translation>
 <translation id="4450893287417543264">不再显示</translation>
-<translation id="4512952200932940229">版权所有 2021 The Chromium Authors。保留所有权利。</translation>
 <translation id="4513946894732546136">反馈</translation>
 <translation id="4563926062592110512">与下列客户端的连接已中断：<ph name="CLIENT_USERNAME" />。</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" />未正确配置。请选择其他默认网络浏览器，然后重新启用网址转发功能。</translation>

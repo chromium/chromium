@@ -99,8 +99,6 @@ void ChromeExtensionsClient::FilterHostPermissions(
     const URLPatternSet& hosts,
     URLPatternSet* new_hosts,
     PermissionIDSet* permissions) const {
-  // When editing this function, be sure to add the same functionality to
-  // FilterHostPermissions() above.
   for (auto i = hosts.begin(); i != hosts.end(); ++i) {
     // Filters out every URL pattern that matches chrome:// scheme.
     if (i->scheme() == content::kChromeUIScheme) {
@@ -166,12 +164,12 @@ const GURL& ChromeExtensionsClient::GetWebstoreUpdateURL() const {
   return webstore_update_url_;
 }
 
-bool ChromeExtensionsClient::IsBlacklistUpdateURL(const GURL& url) const {
+bool ChromeExtensionsClient::IsBlocklistUpdateURL(const GURL& url) const {
   // The extension blocklist URL is returned from the update service and
   // therefore not determined by Chromium. If the location of the blocklist file
   // ever changes, we need to update this function. A DCHECK in the
   // ExtensionUpdater ensures that we notice a change. This is the full URL
-  // of a blacklist:
+  // of a blocklist:
   // http://www.gstatic.com/chrome/extensions/blocklist/l_0_0_0_7.txt
   return base::StartsWith(url.spec(), kExtensionBlocklistUrlPrefix,
                           base::CompareCase::SENSITIVE) ||
@@ -225,7 +223,7 @@ void ChromeExtensionsClient::AddOriginAccessPermissions(
   }
 
   // TODO(jstritar): We should try to remove this special case. Also, these
-  // whitelist entries need to be updated when the kManagement permission
+  // allowed entries need to be updated when the kManagement permission
   // changes.
   if (is_extension_active && extension.permissions_data()->HasAPIPermission(
                                  mojom::APIPermissionID::kManagement)) {

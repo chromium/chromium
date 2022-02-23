@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/bind.h"
-#include "base/macros.h"
 #include "extensions/renderer/native_handler.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-util.h"

@@ -6,9 +6,9 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "base/observer_list.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
 #include "components/autofill/core/common/autofill_features.h"
-#include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "third_party/blink/public/web/modules/autofill/web_form_element_observer.h"
 #include "third_party/blink/public/web/web_input_element.h"
@@ -53,7 +53,8 @@ void FormTracker::AjaxSucceeded() {
 
 void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(form_tracker_sequence_checker_);
-  DCHECK(ToWebInputElement(&element) || form_util::IsTextAreaElement(element));
+  DCHECK(!element.DynamicTo<WebInputElement>().IsNull() ||
+         form_util::IsTextAreaElement(element));
 
   if (ignore_control_changes_)
     return;
@@ -63,8 +64,8 @@ void FormTracker::TextFieldDidChange(const WebFormControlElement& element) {
   if (!element.Focused())
     return;
 
-  const WebInputElement* input_element = ToWebInputElement(&element);
-  if (!input_element)
+  const WebInputElement input_element = element.DynamicTo<WebInputElement>();
+  if (input_element.IsNull())
     return;
 
   // Disregard text changes that aren't caused by user gestures or pastes. Note

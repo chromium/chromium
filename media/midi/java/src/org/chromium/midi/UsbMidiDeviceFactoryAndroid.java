@@ -33,6 +33,10 @@ import java.util.Set;
  */
 @JNINamespace("midi")
 class UsbMidiDeviceFactoryAndroid {
+    // Used to verify Pre-T that the broadcast sender was Chrome. This extra can be removed when the
+    // min supported version is Android T.
+    private static final String EXTRA_RECEIVER_TOKEN = "receiver_token";
+
     /**
      * The UsbManager of this system.
      */
@@ -84,7 +88,11 @@ class UsbMidiDeviceFactoryAndroid {
                     onUsbDeviceDetached((UsbDevice) extra);
                 }
                 if (ACTION_USB_PERMISSION.equals(intent.getAction())) {
-                    onUsbDevicePermissionRequestDone(context, intent);
+                    if (intent.hasExtra(EXTRA_RECEIVER_TOKEN)
+                            && intent.getIntExtra(EXTRA_RECEIVER_TOKEN, 0)
+                                    == mReceiver.hashCode()) {
+                        onUsbDevicePermissionRequestDone(context, intent);
+                    }
                 }
             }
         };
@@ -92,7 +100,8 @@ class UsbMidiDeviceFactoryAndroid {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         filter.addAction(ACTION_USB_PERMISSION);
-        ContextUtils.getApplicationContext().registerReceiver(mReceiver, filter);
+        ContextUtils.registerNonExportedBroadcastReceiver(
+                ContextUtils.getApplicationContext(), mReceiver, filter);
         mRequestedDevices = new HashSet<UsbDevice>();
     }
 
@@ -148,10 +157,11 @@ class UsbMidiDeviceFactoryAndroid {
             UsbInterface iface = device.getInterface(i);
             if (iface.getInterfaceClass() == UsbConstants.USB_CLASS_AUDIO
                     && iface.getInterfaceSubclass() == UsbMidiDeviceAndroid.MIDI_SUBCLASS) {
+                Intent intent = new Intent(ACTION_USB_PERMISSION);
+                intent.putExtra(EXTRA_RECEIVER_TOKEN, mReceiver.hashCode());
                 // There is at least one interface supporting MIDI.
                 mUsbManager.requestPermission(device,
-                        PendingIntent.getBroadcast(ContextUtils.getApplicationContext(), 0,
-                                new Intent(ACTION_USB_PERMISSION),
+                        PendingIntent.getBroadcast(ContextUtils.getApplicationContext(), 0, intent,
                                 IntentUtils.getPendingIntentMutabilityFlag(true)));
                 mRequestedDevices.add(device);
                 break;

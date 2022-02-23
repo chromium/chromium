@@ -10,7 +10,7 @@
 #include "components/drive/drive_notification_manager.h"
 #include "components/invalidation/impl/profile_invalidation_provider.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
-#include "components/sync/driver/sync_driver_switches.h"
+#include "components/sync/base/command_line_switches.h"
 
 namespace drive {
 namespace {
@@ -41,7 +41,7 @@ DriveNotificationManagerFactory::FindForBrowserContext(
 DriveNotificationManager*
 DriveNotificationManagerFactory::GetForBrowserContext(
     content::BrowserContext* context) {
-  if (!switches::IsSyncAllowedByFlag())
+  if (!syncer::IsSyncAllowedByFlag())
     return NULL;
   if (!GetInvalidationService(Profile::FromBrowserContext(context))) {
     // Do not create a DriveNotificationManager for |context|s that do not

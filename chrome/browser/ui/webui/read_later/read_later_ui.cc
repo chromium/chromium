@@ -7,13 +7,13 @@
 #include <string>
 #include <utility>
 
-#include "base/containers/cxx20_erase.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/read_later/reading_list_model_factory.h"
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/webui/favicon_source.h"
 #include "chrome/browser/ui/webui/read_later/read_later_page_handler.h"
 #include "chrome/browser/ui/webui/read_later/side_panel/bookmarks_page_handler.h"
+#include "chrome/browser/ui/webui/read_later/side_panel/reader_mode/reader_mode_page_handler.h"
 #include "chrome/browser/ui/webui/webui_util.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
@@ -27,19 +27,9 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
 #include "content/public/browser/web_ui_data_source.h"
-#include "ui/base/l10n/l10n_util.h"
+#include "ui/accessibility/accessibility_features.h"
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/views/style/platform_style.h"
-
-namespace {
-void AddLocalizedString(content::WebUIDataSource* source,
-                        const std::string& message,
-                        int id) {
-  std::u16string str = l10n_util::GetStringUTF16(id);
-  base::Erase(str, '&');
-  source->AddString(message, str);
-}
-}  // namespace
 
 ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
     : ui::MojoBubbleWebUIController(web_ui),
@@ -51,10 +41,16 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
   static constexpr webui::LocalizedString kLocalizedStrings[] = {
       {"addCurrentTab", IDS_READ_LATER_ADD_CURRENT_TAB},
       {"bookmarksTabTitle", IDS_BOOKMARK_MANAGER_TITLE},
+      {"bookmarkCopied", IDS_BOOKMARK_MANAGER_TOAST_ITEM_COPIED},
+      {"bookmarkDeleted", IDS_BOOKMARK_MANAGER_TOAST_ITEM_DELETED},
+      {"bookmarkCreated", IDS_BOOKMARK_SCREEN_READER_CREATED},
+      {"bookmarkReordered", IDS_BOOKMARK_SCREEN_READER_REORDERED},
+      {"bookmarkMoved", IDS_BOOKMARK_SCREEN_READER_MOVED},
       {"emptyStateAddFromDialogSubheader",
        IDS_READ_LATER_MENU_EMPTY_STATE_ADD_FROM_DIALOG_SUBHEADER},
       {"emptyStateHeader", IDS_READ_LATER_MENU_EMPTY_STATE_HEADER},
       {"emptyStateSubheader", IDS_READ_LATER_MENU_EMPTY_STATE_SUBHEADER},
+      {"readerModeTabTitle", IDS_READER_MODE_TITLE},
       {"readHeader", IDS_READ_LATER_MENU_READ_HEADER},
       {"title", IDS_READ_LATER_TITLE},
       {"sidePanelTitle", IDS_SIDE_PANEL_TITLE},
@@ -65,7 +61,7 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
       {"unreadHeader", IDS_READ_LATER_MENU_UNREAD_HEADER},
   };
   for (const auto& str : kLocalizedStrings)
-    AddLocalizedString(source, str.name, str.id);
+    webui::AddLocalizedString(source, str.name, str.id);
 
   const bool show_side_panel =
       base::FeatureList::IsEnabled(features::kSidePanel);
@@ -90,13 +86,21 @@ ReadLaterUI::ReadLaterUI(content::WebUI* web_ui)
       "hasUnseenReadingListEntries",
       reading_list_model->loaded() ? reading_list_model->unseen_size() : false);
 
+  source->AddBoolean("readerModeSidePanelEnabled",
+                     features::IsReaderModeSidePanelEnabled());
+  source->AddBoolean("unifiedSidePanel",
+                     base::FeatureList::IsEnabled(features::kUnifiedSidePanel));
+
   content::URLDataSource::Add(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
+  const int resource = show_side_panel && !base::FeatureList::IsEnabled(
+                                              features::kUnifiedSidePanel)
+                           ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
+                           : IDR_READ_LATER_READ_LATER_HTML;
   webui::SetupWebUIDataSource(
       source, base::make_span(kReadLaterResources, kReadLaterResourcesSize),
-      show_side_panel ? IDR_READ_LATER_SIDE_PANEL_SIDE_PANEL_HTML
-                      : IDR_READ_LATER_READ_LATER_HTML);
+      resource);
   content::WebUIDataSource::Add(web_ui->GetWebContents()->GetBrowserContext(),
                                 source);
 }
@@ -130,6 +134,20 @@ void ReadLaterUI::CreateBookmarksPageHandler(
     mojo::PendingReceiver<side_panel::mojom::BookmarksPageHandler> receiver) {
   bookmarks_page_handler_ =
       std::make_unique<BookmarksPageHandler>(std::move(receiver), this);
+}
+
+void ReadLaterUI::BindInterface(
+    mojo::PendingReceiver<reader_mode::mojom::PageHandlerFactory> receiver) {
+  reader_mode_page_factory_receiver_.reset();
+  reader_mode_page_factory_receiver_.Bind(std::move(receiver));
+}
+
+void ReadLaterUI::CreatePageHandler(
+    mojo::PendingRemote<reader_mode::mojom::Page> page,
+    mojo::PendingReceiver<reader_mode::mojom::PageHandler> receiver) {
+  DCHECK(page);
+  reader_mode_page_handler_ = std::make_unique<ReaderModePageHandler>(
+      std::move(page), std::move(receiver));
 }
 
 void ReadLaterUI::SetActiveTabURL(const GURL& url) {

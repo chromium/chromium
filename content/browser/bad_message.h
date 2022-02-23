@@ -6,7 +6,6 @@
 #define CONTENT_BROWSER_BAD_MESSAGE_H_
 
 #include "base/debug/crash_logging.h"
-#include "content/common/content_export.h"
 
 namespace content {
 class BrowserMessageFilter;
@@ -281,6 +280,19 @@ enum BadMessageReason {
   RFH_INTERECEPT_DOWNLOAD_WHILE_INACTIVE = 253,
   RFH_CREATE_CHILD_FRAME_SANDBOX_FLAGS = 254,
   RFPH_FOCUSED_FENCED_FRAME = 255,
+  WCI_REQUEST_LOCK_MOUSE_FENCED_FRAME = 256,
+  BFSI_CREATE_FOR_FRAME_FENCED_FRAME = 257,
+  RFH_FENCED_FRAME_MOJO_WHEN_DISABLED = 258,
+  PMM_SUBSCRIBE_INVALID_ORIGIN = 259,
+  PMM_UNSUBSCRIBE_INVALID_ORIGIN = 260,
+  PMM_GET_SUBSCRIPTION_INVALID_ORIGIN = 261,
+  RFH_INACTIVE_CHECK_FROM_PENDING_COMMIT_RFH = 262,
+  MSDH_INVALID_STREAM_TYPE_COMBINATION = 263,
+  AUTH_INVALID_FENCED_FRAME = 264,
+  BIBI_BIND_GAMEPAD_MONITOR_FOR_FENCED_FRAME = 265,
+  BIBI_BIND_GAMEPAD_HAPTICS_MANAGER_FOR_FENCED_FRAME = 266,
+  BIBI_BIND_BATTERY_MONITOR_FOR_FENCED_FRAME = 267,
+  RFH_CREATE_FENCED_FRAME_IN_SANDBOXED_FRAME = 268,
 
   // Please add new elements here. The naming convention is abbreviated class
   // name (e.g. RenderFrameHost becomes RFH) plus a unique description of the
@@ -295,8 +307,7 @@ enum BadMessageReason {
 void ReceivedBadMessage(RenderProcessHost* host, BadMessageReason reason);
 
 // Equivalent to the above, but callable from any thread.
-CONTENT_EXPORT void ReceivedBadMessage(int render_process_id,
-                                       BadMessageReason reason);
+void ReceivedBadMessage(int render_process_id, BadMessageReason reason);
 
 // Called when a browser message filter receives a bad IPC message from a
 // renderer or other child process. Logs the event, records a histogram metric

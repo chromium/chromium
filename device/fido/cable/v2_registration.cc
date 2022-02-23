@@ -4,6 +4,7 @@
 
 #include "device/fido/cable/v2_registration.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "build/build_config.h"
 #include "components/cbor/reader.h"
@@ -44,7 +45,7 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     // number of new registrations with the FCM service. Thus this code does not
     // compile on other platforms. Check with //components/gcm_driver owners
     // before changing this.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     CHECK(false) << "Do not use outside of Android.";
 #endif
 
@@ -73,7 +74,9 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
     instance_id_->GetToken(
         kFCMSenderId, instance_id::kGCMScope,
         /*time_to_live=*/base::TimeDelta(),
-        /*flags=*/{},
+        // This flag causes high-priority messages to be processed immediately
+        // rather than deferred until the device is not dozing.
+        {instance_id::InstanceID::Flags::kBypassScheduler},
         base::BindOnce(&FCMHandler::GetTokenComplete, base::Unretained(this)));
   }
 
@@ -241,8 +244,8 @@ class FCMHandler : public gcm::GCMAppHandler, public Registration {
   base::OnceCallback<void()> ready_callback_;
   base::RepeatingCallback<void(std::unique_ptr<Registration::Event>)>
       event_callback_;
-  instance_id::InstanceIDDriver* const instance_id_driver_;
-  instance_id::InstanceID* const instance_id_;
+  const raw_ptr<instance_id::InstanceIDDriver> instance_id_driver_;
+  const raw_ptr<instance_id::InstanceID> instance_id_;
   bool registration_token_pending_ = false;
   absl::optional<std::string> registration_token_;
 

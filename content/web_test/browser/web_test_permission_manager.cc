@@ -61,6 +61,10 @@ void WebTestPermissionManager::RequestPermission(
     bool user_gesture,
     base::OnceCallback<void(blink::mojom::PermissionStatus)> callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    std::move(callback).Run(blink::mojom::PermissionStatus::DENIED);
+    return;
+  }
 
   std::move(callback).Run(
       GetPermissionStatus(permission, requesting_origin,
@@ -77,6 +81,11 @@ void WebTestPermissionManager::RequestPermissions(
     base::OnceCallback<void(const std::vector<blink::mojom::PermissionStatus>&)>
         callback) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (render_frame_host->IsNestedWithinFencedFrame()) {
+    std::move(callback).Run(std::vector<blink::mojom::PermissionStatus>(
+        permissions.size(), blink::mojom::PermissionStatus::DENIED));
+    return;
+  }
 
   std::vector<blink::mojom::PermissionStatus> result;
   result.reserve(permissions.size());
@@ -138,6 +147,8 @@ WebTestPermissionManager::GetPermissionStatusForFrame(
     PermissionType permission,
     content::RenderFrameHost* render_frame_host,
     const GURL& requesting_origin) {
+  if (render_frame_host->IsNestedWithinFencedFrame())
+    return blink::mojom::PermissionStatus::DENIED;
   return GetPermissionStatus(
       permission, requesting_origin,
       content::WebContents::FromRenderFrameHost(render_frame_host)

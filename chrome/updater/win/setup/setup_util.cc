@@ -4,6 +4,7 @@
 
 #include "chrome/updater/win/setup/setup_util.h"
 
+#include <regstr.h>
 #include <shlobj.h>
 #include <windows.h>
 
@@ -24,6 +25,7 @@
 #include "base/win/win_util.h"
 #include "build/branding_buildflags.h"
 #include "chrome/installer/util/install_service_work_item.h"
+#include "chrome/installer/util/install_util.h"
 #include "chrome/installer/util/work_item_list.h"
 #include "chrome/updater/app/server/win/updater_idl.h"
 #include "chrome/updater/app/server/win/updater_internal_idl.h"
@@ -35,47 +37,73 @@
 #include "chrome/updater/win/win_constants.h"
 #include "chrome/updater/win/win_util.h"
 
-// Specialization for std::hash so that IID instances can be stored in an
-// associative container. This implementation of the hash function adds
-// together four 32-bit integers which make up an IID. The function does not
-// have to be efficient or guarantee no collisions. It is used infrequently,
-// for a small number of IIDs, and the container deals with collisions.
-template <>
-struct std::hash<IID> {
-  size_t operator()(const IID& iid) const {
-    return iid.Data1 + (iid.Data2 + (iid.Data3 << 16)) + [&iid]() {
-      size_t val = 0;
-      for (int i = 0; i < 2; ++i) {
-        for (int j = 0; j < 4; ++j) {
-          val += (iid.Data4[j + i * 4] << (j * 4));
-        }
-      }
-      return val;
-    }();
-  }
-};
-
 namespace updater {
 namespace {
+
+std::wstring GetTaskName(UpdaterScope scope) {
+  return TaskScheduler::CreateInstance()->FindFirstTaskName(
+      GetTaskNamePrefix(scope));
+}
+
+std::wstring CreateRandomTaskName(UpdaterScope scope) {
+  GUID random_guid = {0};
+  return SUCCEEDED(::CoCreateGuid(&random_guid))
+             ? base::StrCat({GetTaskNamePrefix(scope),
+                             base::win::WStringFromGUID(random_guid)})
+             : std::wstring();
+}
 
 }  // namespace
 
 bool RegisterWakeTask(const base::CommandLine& run_command,
                       UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
-  if (!task_scheduler->RegisterTask(
-          scope, GetTaskName(scope).c_str(), GetTaskDisplayName(scope).c_str(),
-          run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
-    LOG(ERROR) << "RegisterWakeTask failed.";
+
+  std::wstring task_name = GetTaskName(scope);
+  if (!task_name.empty()) {
+    // Update the currently installed scheduled task.
+    if (task_scheduler->RegisterTask(
+            scope, task_name.c_str(), GetTaskDisplayName(scope).c_str(),
+            run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY,
+            true)) {
+      VLOG(1) << "RegisterWakeTask succeeded." << task_name;
+      return true;
+    } else {
+      task_scheduler->DeleteTask(task_name.c_str());
+    }
+  }
+
+  // Create a new task name and fall through to install that.
+  task_name = CreateRandomTaskName(scope);
+  if (task_name.empty()) {
+    LOG(ERROR) << "Unexpected empty task name.";
     return false;
   }
-  VLOG(1) << "RegisterWakeTask succeeded.";
-  return true;
+
+  DCHECK(!task_scheduler->IsTaskRegistered(task_name.c_str()));
+
+  if (task_scheduler->RegisterTask(
+          scope, task_name.c_str(), GetTaskDisplayName(scope).c_str(),
+          run_command, TaskScheduler::TriggerType::TRIGGER_TYPE_HOURLY, true)) {
+    VLOG(1) << "RegisterWakeTask succeeded: " << task_name;
+    return true;
+  }
+
+  LOG(ERROR) << "RegisterWakeTask failed: " << task_name;
+  return false;
 }
 
 void UnregisterWakeTask(UpdaterScope scope) {
   auto task_scheduler = TaskScheduler::CreateInstance();
-  task_scheduler->DeleteTask(GetTaskName(scope).c_str());
+
+  const std::wstring task_name = GetTaskName(scope);
+  if (task_name.empty()) {
+    LOG(ERROR) << "Empty task name during uninstall.";
+    return;
+  }
+
+  task_scheduler->DeleteTask(task_name.c_str());
+  VLOG(1) << "UnregisterWakeTask succeeded: " << task_name;
 }
 
 std::vector<IID> GetSideBySideInterfaces() {
@@ -218,7 +246,7 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   // This assumes the COM service runs elevated and in the system updater scope.
   base::CommandLine com_service_command(com_service_path);
   com_service_command.AppendSwitch(kSystemSwitch);
-  com_service_command.AppendSwitch(kComServiceSwitch);
+  com_service_command.AppendSwitch(kWindowsServiceSwitch);
   com_service_command.AppendSwitchASCII(
       kServerServiceSwitch, internal_service
                                 ? kServerUpdateServiceInternalSwitchValue
@@ -226,10 +254,14 @@ void AddComServiceWorkItems(const base::FilePath& com_service_path,
   com_service_command.AppendSwitch(kEnableLoggingSwitch);
   com_service_command.AppendSwitchASCII(kLoggingModuleSwitch,
                                         kLoggingModuleSwitchValue);
+
+  base::CommandLine com_switch(base::CommandLine::NO_PROGRAM);
+  com_switch.AppendSwitch(kComServiceSwitch);
+
   list->AddWorkItem(new installer::InstallServiceWorkItem(
       GetServiceName(internal_service).c_str(),
-      GetServiceDisplayName(internal_service).c_str(), com_service_command,
-      UPDATER_KEY,
+      GetServiceDisplayName(internal_service).c_str(), SERVICE_AUTO_START,
+      com_service_command, com_switch, UPDATER_KEY,
       internal_service ? GetSideBySideServers(UpdaterScope::kSystem)
                        : GetActiveServers(UpdaterScope::kSystem),
       {}));
@@ -313,6 +345,24 @@ std::vector<base::FilePath> ParseFilesFromDeps(const base::FilePath& deps) {
     }
   }
   return result;
+}
+
+void RegisterUserRunAtStartup(const std::wstring& run_value_name,
+                              const base::CommandLine& command,
+                              WorkItemList* list) {
+  DCHECK(list);
+  VLOG(1) << __func__;
+
+  list->AddSetRegValueWorkItem(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
+                               run_value_name, command.GetCommandLineString(),
+                               true);
+}
+
+bool UnregisterUserRunAtStartup(const std::wstring& run_value_name) {
+  VLOG(1) << __func__;
+
+  return InstallUtil::DeleteRegistryValue(HKEY_CURRENT_USER, REGSTR_PATH_RUN, 0,
+                                          run_value_name);
 }
 
 }  // namespace updater

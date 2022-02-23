@@ -24,7 +24,6 @@ import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.LaunchIntentDispatcher;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.browser.locale.LocaleManager;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.SearchEnginePromoType;
 import org.chromium.chrome.browser.signin.services.FREMobileIdentityConsistencyFieldTrial;
@@ -34,8 +33,6 @@ import org.chromium.chrome.browser.vr.VrModuleProvider;
 import org.chromium.components.embedder_support.util.UrlConstants;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
 import org.chromium.components.signin.AccountUtils;
-import org.chromium.components.signin.ChildAccountStatus;
-import org.chromium.components.signin.ChildAccountStatus.Status;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.signin.identitymanager.IdentityManager;
 
@@ -61,8 +58,8 @@ public abstract class FirstRunFlowSequencer  {
     public static class FirstRunFlowSequencerDelegate {
         /** Returns true if the sync consent promo page should be shown. */
         boolean shouldShowSyncConsentPage(
-                Activity activity, List<Account> accounts, @Status int childAccountStatus) {
-            if (ChildAccountStatus.isChild(childAccountStatus)) {
+                Activity activity, List<Account> accounts, boolean isChild) {
+            if (isChild) {
                 // Always show the sync consent page for child account.
                 return true;
             }
@@ -83,22 +80,6 @@ public abstract class FirstRunFlowSequencer  {
                 // - "skip the first use hints" is set, but there is at least one account.
                 return !shouldSkipFirstUseHints(activity) || !accounts.isEmpty();
             }
-        }
-
-        /**
-         * @param openAdvancedSyncSettings Whether the user wants to open the advanced sync
-         *         settings.
-         * @return true if the Data Reduction promo page should be shown.
-         */
-        boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
-            if (FREMobileIdentityConsistencyFieldTrial.isEnabled() && openAdvancedSyncSettings) {
-                // Skip the data reduction page when the user wants to open the advanced sync
-                // settings.
-                return false;
-            }
-            return !DataReductionProxySettings.getInstance().isDataReductionProxyManaged()
-                    && DataReductionProxySettings.getInstance()
-                               .isDataReductionProxyFREPromoAllowed();
         }
 
         /** @return true if the Search Engine promo page should be shown. */
@@ -129,7 +110,7 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     private final Activity mActivity;
-    private @ChildAccountStatus.Status int mChildAccountStatus;
+    private boolean mIsChild;
     private List<Account> mGoogleAccounts;
 
     /**
@@ -162,21 +143,17 @@ public abstract class FirstRunFlowSequencer  {
     void start() {
         long childAccountStatusStart = SystemClock.elapsedRealtime();
         AccountManagerFacadeProvider.getInstance().getAccounts().then(accounts -> {
-            AccountUtils.checkChildAccountStatus(AccountManagerFacadeProvider.getInstance(),
-                    accounts, (status, childAccount) -> {
+            AccountUtils.checkChildAccountStatus(
+                    AccountManagerFacadeProvider.getInstance(), accounts, (isChild, account) -> {
                         RecordHistogram.recordCountHistogram(
                                 "Signin.AndroidDeviceAccountsNumberWhenEnteringFRE",
                                 Math.min(accounts.size(), 2));
                         RecordHistogram.recordTimesHistogram("MobileFre.ChildAccountStatusDuration",
                                 SystemClock.elapsedRealtime() - childAccountStatusStart);
-                        initializeSharedState(status, accounts);
+                        initializeSharedState(isChild, accounts);
                         processFreEnvironmentPreNative();
                     });
         });
-    }
-
-    private boolean shouldShowDataReductionPage(boolean openAdvancedSyncSettings) {
-        return mDelegate.shouldShowDataReductionPage(openAdvancedSyncSettings);
     }
 
     @VisibleForTesting
@@ -185,7 +162,7 @@ public abstract class FirstRunFlowSequencer  {
     }
 
     private boolean shouldShowSyncConsentPage() {
-        return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mChildAccountStatus);
+        return mDelegate.shouldShowSyncConsentPage(mActivity, mGoogleAccounts, mIsChild);
     }
 
     @VisibleForTesting
@@ -193,18 +170,17 @@ public abstract class FirstRunFlowSequencer  {
         FirstRunSignInProcessor.setFirstRunFlowSignInComplete(true);
     }
 
-    private void initializeSharedState(
-            @ChildAccountStatus.Status int childAccountStatus, List<Account> accounts) {
-        mChildAccountStatus = childAccountStatus;
+    private void initializeSharedState(boolean isChild, List<Account> accounts) {
+        mIsChild = isChild;
         mGoogleAccounts = accounts;
     }
 
     private void processFreEnvironmentPreNative() {
         Bundle freProperties = new Bundle();
-        freProperties.putInt(SyncConsentFirstRunFragment.CHILD_ACCOUNT_STATUS, mChildAccountStatus);
+        freProperties.putBoolean(SyncConsentFirstRunFragment.IS_CHILD_ACCOUNT, mIsChild);
 
         onFlowIsKnown(freProperties);
-        if (ChildAccountStatus.isChild(mChildAccountStatus)) {
+        if (mIsChild) {
             setFirstRunFlowSignInComplete();
         }
     }
@@ -217,9 +193,6 @@ public abstract class FirstRunFlowSequencer  {
     public void updateFirstRunProperties(Bundle freProperties) {
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SYNC_CONSENT_PAGE, shouldShowSyncConsentPage());
-        freProperties.putBoolean(FirstRunActivity.SHOW_DATA_REDUCTION_PAGE,
-                shouldShowDataReductionPage(
-                        freProperties.getBoolean(FirstRunActivity.OPEN_ADVANCED_SYNC_SETTINGS)));
         freProperties.putBoolean(
                 FirstRunActivity.SHOW_SEARCH_ENGINE_PAGE, shouldShowSearchEnginePage());
     }

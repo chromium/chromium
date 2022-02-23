@@ -1,3 +1,4 @@
+<link rel="import" href="chrome://resources/cr_elements/cr_icons_css.html">
 <style include="cr-shared-style settings-shared">
   cr-dialog::part(dialog) {
     height: 380px;
@@ -26,10 +27,11 @@
   .illustration {
     background-position: center center;
     background-repeat: no-repeat;
-    background-size: 215px;
-    height: 205px;
+    background-size: 183px;
+    height: 173px;
     margin-top: 15px;
-    width: 215px;
+    padding: 16px;
+    width: 183px;
   }
 
   #intro .illustration {
@@ -77,6 +79,53 @@
       url(chrome://os-settings/images/switch_access_setup_guide_closing.svg);
   }
 
+  @media(prefers-color-scheme: dark) {
+    #intro .illustration {
+       background-image:
+          url(chrome://os-settings/images/computer_and_bluetooth_switch_dark.svg);
+    }
+
+    #assign-switch .illustration.select {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_assign_select_dark.svg);
+    }
+
+    #assign-switch .illustration.next {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_assign_next_dark.svg);
+    }
+
+    #assign-switch .illustration.previous {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_assign_previous_dark.svg);
+    }
+
+    #choose-switch-count .illustration.one-switch {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_choose_one_switch_dark.svg);
+    }
+
+    #choose-switch-count .illustration.two-switches {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_choose_two_switches_dark.svg);
+    }
+
+    #choose-switch-count .illustration.three-switches {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_choose_three_switches_dark.svg);
+    }
+
+    #auto-scan-enabled .illustration {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_auto_scan_enabled_dark.svg);
+    }
+
+    #closing .illustration {
+      background-image:
+        url(chrome://os-settings/images/switch_access_setup_guide_closing_dark.svg);
+    }
+  }
+
   #button-container {
     padding: 24px;
   }
@@ -95,12 +144,22 @@
   }
 
   #bluetooth {
-    margin-inline-end: 250px;
+    margin-inline-end: 324px;
+  }
+
+  #exit {
+    float: right;
+    margin-top: -6px;
+    padding: none;
   }
 </style>
 <cr-dialog id="switchAccessSetupGuideDialog" show-on-attach>
   <div slot="title" class="sa-setup-title" id="title">
-    $i18n{switchAccessSetupIntroTitle}
+    <span id="titleText">
+      $i18n{switchAccessSetupIntroTitle}
+    </span>
+    <cr-icon-button iron-icon="cr:close" id="exit" on-click="onExitClick_">
+    </cr-icon-button>
   </div>
   <div slot="body" class="sa-setup-body">
     <div id="intro" class="flex">
@@ -189,9 +248,6 @@
     </cr-button>
     <cr-button on-click="onStartOverClick_" id="start-over" hidden>
       $i18n{switchAccessSetupStartOver}
-    </cr-button>
-    <cr-button on-click="onExitClick_" id="exit">
-      $i18n{switchAccessDialogExit}
     </cr-button>
     <cr-button class="action-button" on-click="onExitClick_"
         id="done" hidden>

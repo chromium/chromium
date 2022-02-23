@@ -4,19 +4,18 @@
 
 package org.chromium.chrome.browser.management;
 
-import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 
-import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.chrome.browser.ui.native_page.NativePageHost;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * The class responsible for setting up ManagementPage.
  */
 class ManagementCoordinator {
+    private final ManagementMediator mMediator;
     private final ManagementView mView;
 
     /**
@@ -24,18 +23,12 @@ class ManagementCoordinator {
      * @param context Environment Context.
      * @param profile The current Profile.
      */
-    public ManagementCoordinator(Context context, Profile profile) {
-        PropertyModel model = new PropertyModel.Builder(ManagementProperties.ALL_KEYS)
-                                      .with(ManagementProperties.BROWSER_IS_MANAGED,
-                                              ManagedBrowserUtils.isBrowserManaged(profile))
-                                      .with(ManagementProperties.ACCOUNT_MANAGER_NAME,
-                                              ManagedBrowserUtils.getAccountManagerName(profile))
-                                      .build();
-
-        mView = (ManagementView) LayoutInflater.from(context).inflate(
-                R.layout.enterprise_management, null);
-
-        PropertyModelChangeProcessor.create(model, mView, ManagementViewBinder::bind);
+    public ManagementCoordinator(NativePageHost host, Profile profile) {
+        mMediator = new ManagementMediator(host, profile);
+        mView = (ManagementView) LayoutInflater.from(host.getContext())
+                        .inflate(R.layout.enterprise_management, null);
+        PropertyModelChangeProcessor.create(
+                mMediator.getModel(), mView, ManagementViewBinder::bind);
     }
 
     /** Returns the intended view for ManagementPage tab. */

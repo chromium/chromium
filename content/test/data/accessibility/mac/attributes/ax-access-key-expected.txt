@@ -1,4 +1,8 @@
-focusable.AXAccessKey='s'
-restriction.AXAccessKey='s'
-invalid.AXAccessKey=n/a
-not_applicable.AXAccessKey=n/a
+focusable.accessibilityAttributeNames.has(AXAccessKey)='yes'
+focusable.accessibilityAttributeValue(AXAccessKey)='s'
+restriction.accessibilityAttributeNames.has(AXAccessKey)='yes'
+restriction.accessibilityAttributeValue(AXAccessKey)='s'
+invalid.accessibilityAttributeNames.has(AXAccessKey)='no'
+invalid.accessibilityAttributeValue(AXAccessKey)='s'
+not_applicable.accessibilityAttributeNames.has(AXAccessKey)='no'
+not_applicable.accessibilityAttributeValue(AXAccessKey)='s'

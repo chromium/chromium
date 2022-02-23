@@ -51,7 +51,7 @@ class AutofillPopupViewDelegate {
   virtual bool IsRTL() const = 0;
 
  protected:
-  virtual ~AutofillPopupViewDelegate() {}
+  virtual ~AutofillPopupViewDelegate() = default;
 };
 
 }  // namespace autofill

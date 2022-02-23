@@ -1,0 +1,88 @@
+<style>
+  #container {
+    align-items: flex-start;
+    display: grid;
+    gap: 16px;
+    grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+    padding: 16px 0;
+  }
+  .image-container {
+    cursor: pointer;
+    height: 64px;
+    position: relative;
+    width: 64px;
+  }
+  .image-container img {
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 50%;
+    height: 62px;
+    width: 62px;
+  }
+  .image-container img:hover {
+    background-color: var(--cros-highlight-color-focus);
+  }
+  paper-ripple {
+    color: rgba(var(--cros-ripple-color-rgb), 1);
+    --paper-ripple-opacity: var(--cros-button-primary-ripple-opacity);
+  }
+  avatar-camera {
+    bottom: 0;
+    left: 0;
+    position: fixed;
+    right: 0;
+    top: 0;
+  }
+  .folder-container {
+    background-color: var(--cros-highlight-color);
+    border-radius: 100%;
+    cursor: pointer;
+    display: inline-block;
+    height: 64px;
+    line-height: 64px;
+    text-align: center;
+    vertical-align: middle;
+    width: 64px;
+  }
+  #folderIcon {
+    line-height: inherit;
+    --iron-icon-height: 20px;
+    --iron-icon-width: 20px;
+    --iron-icon-fill-color: var(--cros-link-color);
+  }
+</style>
+<div id="container">
+  <template is="dom-if" if="[[isCameraPresent_]]">
+    <div id="openCamera" on-click="openCamera_">
+      <!-- TODO(cowmoo) placeholder string -->
+      <p>Open Camera</p>
+    </div>
+    <div id="openVideo" on-click="openVideo_">
+      <!-- TODO(cowmoo) placeholder string -->
+      <p>Open Video</p>
+    </div>
+  </template>
+  <div class="folder-container">
+    <iron-icon id="folderIcon" icon="personalization:folder"
+        on-click="onSelectImageFromDisk_" on-keypress="onSelectImageFromDisk_">
+    </iron-icon>
+  </div>
+  <template is="dom-if" if="[[profileImage_]]">
+    <div class="image-container">
+      <paper-ripple class="circle"></paper-ripple>
+      <img id="profileImage" src="[[profileImage_.url]]"
+          on-click="onSelectProfileImage_"
+          on-keypress="onSelectProfileImage_">
+    </div>
+  </template>
+  <template is="dom-repeat" items="[[defaultUserImages_]]">
+    <div class="image-container">
+      <paper-ripple class="circle"></paper-ripple>
+      <img src="[[item.url.url]]" data-id$="[[item.index]]"
+          on-click="onSelectDefaultImage_" on-keypress="onSelectDefaultImage_">
+    </div>
+  </template>
+</div>
+<template is="dom-if" if="[[cameraMode_]]" restamp>
+  <avatar-camera on-close="onCameraClosed_" mode="[[cameraMode_]]">
+  </avatar-camera>
+</template>

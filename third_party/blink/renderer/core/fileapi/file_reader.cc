@@ -95,7 +95,7 @@ class FileReader::ThrottlingController final
     if (!controller)
       return;
 
-    probe::AsyncTaskScheduled(context, "FileReader", reader->async_task_id());
+    reader->async_task_context()->Schedule(context, "FileReader");
     controller->PushReader(reader);
   }
 
@@ -116,7 +116,7 @@ class FileReader::ThrottlingController final
       return;
 
     controller->FinishReader(reader, next_step);
-    probe::AsyncTaskCanceled(context, reader->async_task_id());
+    reader->async_task_context()->Cancel();
   }
 
   explicit ThrottlingController(ExecutionContext& context)
@@ -408,7 +408,7 @@ void FileReader::DidFinishLoading() {
     return;
   DCHECK_EQ(loading_state_, kLoadingStateLoading);
 
-  // TODO(jochen): When we set m_state to DONE below, we still need to fire
+  // When we set m_state to DONE below, we still need to fire
   // the load and loadend events. To avoid GC to collect this FileReader, we
   // use this separate variable to keep the wrapper of this FileReader alive.
   // An alternative would be to keep any ActiveScriptWrappables alive that is on
@@ -464,7 +464,8 @@ void FileReader::DidFail(FileErrorCode error_code) {
 }
 
 void FileReader::FireEvent(const AtomicString& type) {
-  probe::AsyncTask async_task(GetExecutionContext(), async_task_id(), "event");
+  probe::AsyncTask async_task(GetExecutionContext(), async_task_context(),
+                              "event");
   if (!loader_) {
     DispatchEvent(*ProgressEvent::Create(type, false, 0, 0));
     return;

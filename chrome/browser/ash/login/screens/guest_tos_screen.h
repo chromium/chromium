@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_LOGIN_SCREENS_GUEST_TOS_SCREEN_H_
 #define CHROME_BROWSER_ASH_LOGIN_SCREENS_GUEST_TOS_SCREEN_H_
 
+#include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "chrome/browser/ash/login/screens/base_screen.h"
 #include "chrome/browser/ui/webui/chromeos/login/guest_tos_screen_handler.h"
@@ -39,8 +40,13 @@ class GuestTosScreen : public BaseScreen {
   void HideImpl() override;
   void OnUserAction(const std::string& action_id) override;
 
+  // Callback to make when the guest OOBE prefs are done writing.
+  void OnOobeGuestPrefWriteDone();
+
   GuestTosScreenView* view_ = nullptr;
   ScreenExitCallback exit_callback_;
+
+  base::WeakPtrFactory<GuestTosScreen> weak_ptr_factory_{this};
 };
 
 }  // namespace ash

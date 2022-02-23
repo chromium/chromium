@@ -118,20 +118,17 @@ class CORE_EXPORT NGTableTypes {
   struct CellBlockConstraint {
     DISALLOW_NEW();
     LayoutUnit min_block_size;
-    NGBoxStrut border_box_borders;
-    wtf_size_t row_index;
+    NGBoxStrut borders;
     wtf_size_t column_index;
     wtf_size_t rowspan;
     bool is_constrained;  // True if this cell has a specified block-size.
     CellBlockConstraint(LayoutUnit min_block_size,
-                        NGBoxStrut border_box_borders,
-                        wtf_size_t row_index,
+                        NGBoxStrut borders,
                         wtf_size_t column_index,
                         wtf_size_t rowspan,
                         bool is_constrained)
         : min_block_size(min_block_size),
-          border_box_borders(border_box_borders),
-          row_index(row_index),
+          borders(borders),
           column_index(column_index),
           rowspan(rowspan),
           is_constrained(is_constrained) {}
@@ -140,15 +137,13 @@ class CORE_EXPORT NGTableTypes {
   // RowspanCells span multiple rows.
   struct RowspanCell {
     DISALLOW_NEW();
-    CellBlockConstraint cell_block_constraint;
     wtf_size_t start_row;
     wtf_size_t span;
+    LayoutUnit min_block_size;
     RowspanCell(wtf_size_t start_row,
                 wtf_size_t span,
-                const CellBlockConstraint& cell_block_constraint)
-        : cell_block_constraint(cell_block_constraint),
-          start_row(start_row),
-          span(span) {}
+                LayoutUnit min_block_size)
+        : start_row(start_row), span(span), min_block_size(min_block_size) {}
 
     // Original Legacy sorting criteria from
     // CompareRowspanCellsInHeightDistributionOrder
@@ -161,17 +156,16 @@ class CORE_EXPORT NGTableTypes {
                (c1.start_row + c1.span) <= (c2.start_row + c2.span);
       };
 
-      // If cells span the same rows, bigger cell is distributed first.
-      if (start_row == rhs.start_row && span == rhs.span) {
-        return cell_block_constraint.min_block_size >
-               rhs.cell_block_constraint.min_block_size;
-      }
-      // If one cell is fully enclosed by another, inner cell wins.
+      // If cells span the same rows, the bigger cell is distributed first.
+      if (start_row == rhs.start_row && span == rhs.span)
+        return min_block_size > rhs.min_block_size;
+
+      // If one cell is fully enclosed by another, the inner cell wins.
       if (IsEnclosed(*this, rhs))
         return true;
       if (IsEnclosed(rhs, *this))
         return false;
-      // Lower rows wins.
+      // Lowest row wins.
       return start_row < rhs.start_row;
     }
   };
@@ -199,7 +193,7 @@ class CORE_EXPORT NGTableTypes {
 
   struct Section {
     wtf_size_t start_row;
-    wtf_size_t rowspan;
+    wtf_size_t row_count;
     LayoutUnit block_size;
     absl::optional<float> percent;
     bool is_constrained;
@@ -220,23 +214,9 @@ class CORE_EXPORT NGTableTypes {
 
   static Section CreateSection(const NGLayoutInputNode&,
                                wtf_size_t start_row,
-                               wtf_size_t rowspan,
+                               wtf_size_t row_count,
                                LayoutUnit block_size,
                                bool treat_as_tbody);
-
-  static CellBlockConstraint CreateCellBlockConstraint(
-      const NGLayoutInputNode&,
-      LayoutUnit computed_block_size,
-      const NGBoxStrut& border_box_borders,
-      wtf_size_t row_index,
-      wtf_size_t column_index,
-      wtf_size_t rowspan);
-
-  static RowspanCell CreateRowspanCell(
-      wtf_size_t row_index,
-      wtf_size_t rowspan,
-      CellBlockConstraint*,
-      absl::optional<LayoutUnit> css_block_size);
 
   // Columns are cached by LayoutNGTable, and need to be RefCounted.
   typedef base::RefCountedData<WTF::Vector<Column>> Columns;

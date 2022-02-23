@@ -13,7 +13,11 @@ extern const base::Feature kNearbySharing;
 extern const base::Feature kNearbySharingBackgroundScanning;
 extern const base::Feature kNearbySharingChildAccounts;
 extern const base::Feature kNearbySharingDeviceContacts;
+extern const base::Feature kNearbySharingOnePageOnboarding;
+extern const base::Feature kNearbySharingReceiveWifiCredentials;
+extern const base::Feature kNearbySharingSelfShare;
 extern const base::Feature kNearbySharingWebRtc;
+extern const base::Feature kNearbySharingWifiLan;
 
 }  // namespace features
 

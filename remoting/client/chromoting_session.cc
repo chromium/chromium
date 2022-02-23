@@ -15,10 +15,11 @@
 #include "base/callback_helpers.h"
 #include "base/format_macros.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/task_runner_util.h"
 #include "base/timer/timer.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/socket/client_socket_factory.h"
 #include "remoting/base/chromoting_event.h"
 #include "remoting/base/service_urls.h"
@@ -185,7 +186,7 @@ class ChromotingSession::Core : public ClientUserInterface,
 
   // |runtime_| and |logger_| are stored separately from |session_context_| so
   // that they won't be destroyed after the core is invalidated.
-  ChromotingClientRuntime* const runtime_;
+  const raw_ptr<ChromotingClientRuntime> runtime_;
   std::unique_ptr<ClientTelemetryLogger> logger_;
 
   std::unique_ptr<SessionContext> session_context_;
@@ -511,7 +512,7 @@ void ChromotingSession::Core::ConnectOnNetworkThread() {
     return;
   }
 
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
   client_context_ = std::make_unique<ClientContext>(network_task_runner());
   client_context_->Start();

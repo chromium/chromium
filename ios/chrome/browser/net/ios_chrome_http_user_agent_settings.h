@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "components/prefs/pref_member.h"
 #include "net/base/http_user_agent_settings.h"
 

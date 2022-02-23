@@ -1,6 +1,12 @@
 <?xml version="1.0" encoding="utf-8"?>
 <!-- Settings-specific Chromium strings (included from chromium_strings.grd). -->
 <grit-part>
+  <!-- Shared across multiple page -->
+  <if expr="not chromeos">
+    <message name="IDS_RELAUNCH_CONFIRMATION_DIALOG_TITLE" desc="The title of the modal dialog that we show when users click on relaunch and they have open Incognito windows. The dialog serves to warn the users about losing their Incognito windows if they proceed with the relaunch.">
+      Relaunch Chromium?
+    </message>
+  </if>
   <!-- About Page -->
   <message name="IDS_SETTINGS_ABOUT_PROGRAM" desc="Menu title for the About Chromium page.">
     About Chromium
@@ -16,7 +22,7 @@
       Updating Chromium (<ph name="PROGRESS_PERCENT">$1<ex>90%</ex></ph>)
     </message>
     <message name="IDS_SETTINGS_UPGRADE_SUCCESSFUL_RELAUNCH" desc="Status label: Successfully updated Chromium">
-      Nearly up to date! Relaunch Chromium to finish updating. Incognito windows won't reopen.
+      Nearly up to date! Relaunch Chromium to finish updating.
     </message>
     <message name="IDS_SETTINGS_UPGRADE_UP_TO_DATE" desc="Status label: Already up to date (Chromium)">
       Chromium is up to date
@@ -91,7 +97,7 @@
   </if>
 
   <!-- Main Page -->
-  <if expr="chromeos or lacros">
+  <if expr="chromeos_ash or chromeos_lacros">
     <!-- No target="_blank" because OS settings opens its own window. -->
     <message name="IDS_SETTINGS_OS_SETTINGS_BANNER" desc="Banner displayed in browser settings page that links to OS settings.">
       If a setting doesn't show on this page, look in your <ph name="LINK_BEGIN">&lt;a href="$1<ex>https://google.com/</ex>"&gt;</ph>
@@ -121,33 +127,33 @@
     Open PDFs in Chromium
   </message>
 
-  <!-- Privacy Review -->
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+  <!-- Privacy Guide -->
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_PROMO_BODY" desc="Body text of a card in the settings page that explains what the 'Privacy Guide' feature is.">
+    Review key privacy and security controls in Chromium
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_CLEAR_ON_EXIT_FEATURE_DESCRIPTION1" desc="A part of the feature description of 'clear cookies on exit' card in the 'Privacy Guide'.">
     When you close all Chromium windows, cookies and site data are automatically cleared
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_CLEAR_ON_EXIT_FEATURE_DESCRIPTION2" desc="A part of the feature description of 'clear cookies on exit' card in the 'Privacy Guide'.">
     You will be <ph name="BEGIN_BOLD">&lt;b&gt;</ph>signed out of most sites<ph name="END_BOLD">&lt;/b&gt;</ph> when you close Chromium. If sync is off, you will also be <ph name="BEGIN_BOLD">&lt;b&gt;</ph>signed out of Google services and Chromium<ph name="END_BOLD">&lt;/b&gt;</ph>.
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_CLEAR_ON_EXIT_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'clear cookies on exit' card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_CLEAR_ON_EXIT_FEATURE_DESCRIPTION3" desc="A part of the feature description of 'clear cookies on exit' card in the 'Privacy Guide'.">
     Sites you visit remember your information until you close Chromium
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_HEADER" desc="A header shown at the top of the welcome card in the privacy review, explaining to users that they can review their most important privacy and security settings in the privacy review.">
-    Customize some of Chromium’s most important privacy choices
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_WELCOME_CARD_SUB_HEADER" desc="A subheader shown at on the welcome card in the privacy review, explaining to users that Chromium has default settings but they can customize them if they like.">
-    The default settings work for most people, but you can customize them to fit how you like to use Chromium
-  </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2" desc="A part of the feature description of the standard protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_FEATURE_DESCRIPTION2" desc="A part of the feature description of the standard protection section of the safe browsing card in the 'Privacy Guide'.">
     Checks URLs with a list of unsafe sites stored in Chromium
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the standard protection section of the safe browsing card in the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_SAFE_BROWSING_CARD_STANDARD_PROTECTION_PRIVACY_DESCRIPTION1" desc="A part of the privacy description of the standard protection section of the safe browsing card in the 'Privacy Guide'.">
     If a site tries to steal your password, or when you download a harmful file, Chromium may also send URLs, including bits of page content, to Safe Browsing
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL" desc="Text of the Privacy Sandbox sublabel in the completion card of the privacy review.">
-    See how Chromium plans to safeguard you from cross-site tracking while preserving the open web
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_PRIVACY_SANDBOX_SUB_LABEL" desc="Text of the Privacy Sandbox sublabel in the completion card of the 'Privacy Guide'.">
+    Chromium is exploring new features that allow sites to deliver the same browsing experience using less of your data
   </message>
-  <message name="IDS_SETTINGS_PRIVACY_REVIEW_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the privacy review.">
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_COMPLETION_CARD_WAA_SUB_LABEL" desc="Text of the Web and App Activity sublabel in the completion card of the 'Privacy Guide'.">
     Choose whether to include Chromium history for more personalized experiences in Google services
+  </message>
+  <message name="IDS_SETTINGS_PRIVACY_GUIDE_MSBB_PRIVACY_DESCRIPTION2" desc="A part of the privacy description of 'make searches and browsing better' in the 'Privacy Guide'.">
+    If you also share Chromium usage reports, those reports include the URLs you visit
   </message>
 
   <!-- Safety check -->

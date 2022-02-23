@@ -30,6 +30,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/elapsed_timer.h"
 #include "base/timer/timer.h"
+#include "base/trace_event/base_tracing.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/process_memory_dump.h"
 #include "components/services/storage/filesystem_proxy_factory.h"
@@ -53,7 +54,6 @@
 #include "content/browser/indexed_db/indexed_db_storage_key_state.h"
 #include "content/browser/indexed_db/indexed_db_task_helper.h"
 #include "content/browser/indexed_db/indexed_db_tombstone_sweeper.h"
-#include "content/browser/indexed_db/indexed_db_tracing.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/indexeddb/indexeddb.mojom.h"
 #include "third_party/leveldatabase/env_chromium.h"
@@ -190,7 +190,7 @@ void IndexedDBFactoryImpl::GetDatabaseInfo(
     const blink::StorageKey& storage_key,
     const base::FilePath& data_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IDB_TRACE("IndexedDBFactoryImpl::GetDatabaseInfo");
+  TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::GetDatabaseInfo");
   IndexedDBStorageKeyStateHandle storage_key_state_handle;
   leveldb::Status s;
   IndexedDBDatabaseError error;
@@ -236,7 +236,7 @@ void IndexedDBFactoryImpl::Open(
     const blink::StorageKey& storage_key,
     const base::FilePath& data_directory) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IDB_TRACE("IndexedDBFactoryImpl::Open");
+  TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::Open");
   IndexedDBDatabase::Identifier unique_identifier(storage_key, name);
   IndexedDBStorageKeyStateHandle storage_key_state_handle;
   leveldb::Status s;
@@ -294,7 +294,7 @@ void IndexedDBFactoryImpl::DeleteDatabase(
     const base::FilePath& data_directory,
     bool force_close) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IDB_TRACE("IndexedDBFactoryImpl::DeleteDatabase");
+  TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::DeleteDatabase");
   IndexedDBDatabase::Identifier unique_identifier(storage_key, name);
   IndexedDBStorageKeyStateHandle storage_key_state_handle;
   leveldb::Status s;
@@ -388,7 +388,8 @@ void IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase(
     base::OnceCallback<void(leveldb::Status)> callback,
     const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IDB_TRACE("IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase");
+  TRACE_EVENT0("IndexedDB",
+               "IndexedDBFactoryImpl::AbortTransactionsAndCompactDatabase");
   auto it = factories_per_storage_key_.find(storage_key);
   if (it == factories_per_storage_key_.end()) {
     std::move(callback).Run(leveldb::Status::OK());
@@ -403,7 +404,8 @@ void IndexedDBFactoryImpl::AbortTransactionsForDatabase(
     base::OnceCallback<void(leveldb::Status)> callback,
     const blink::StorageKey& storage_key) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  IDB_TRACE("IndexedDBFactoryImpl::AbortTransactionsForDatabase");
+  TRACE_EVENT0("IndexedDB",
+               "IndexedDBFactoryImpl::AbortTransactionsForDatabase");
   auto it = factories_per_storage_key_.find(storage_key);
   if (it == factories_per_storage_key_.end()) {
     std::move(callback).Run(leveldb::Status::OK());
@@ -636,7 +638,7 @@ IndexedDBFactoryImpl::GetOrOpenStorageKeyFactory(
     const blink::StorageKey& storage_key,
     const base::FilePath& data_directory,
     bool create_if_missing) {
-  IDB_TRACE("indexed_db::GetOrOpenStorageKeyFactory");
+  TRACE_EVENT0("IndexedDB", "indexed_db::GetOrOpenStorageKeyFactory");
   // Please see docs/open_and_verify_leveldb_database.code2flow, and the
   // generated pdf (from https://code2flow.com).
   // The intended strategy here is to have this function match that flowchart,
@@ -832,7 +834,7 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
   // check the git history of both to make sure they are in sync.
   DCHECK_EQ(database_path.empty(), data_directory.empty());
   DCHECK_EQ(blob_path.empty(), data_directory.empty());
-  IDB_TRACE("indexed_db::OpenAndVerifyLevelDBDatabase");
+  TRACE_EVENT0("IndexedDB", "indexed_db::OpenAndVerifyLevelDBDatabase");
 
   bool is_incognito_and_in_memory = data_directory.empty();
   leveldb::Status status;
@@ -872,7 +874,7 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
   scoped_refptr<LevelDBState> database_state;
   bool is_disk_full;
   {
-    IDB_TRACE("IndexedDBFactoryImpl::OpenLevelDB");
+    TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::OpenLevelDB");
     base::TimeTicks begin_time = base::TimeTicks::Now();
     size_t write_buffer_size = leveldb_env::WriteBufferSize(
         base::SysInfo::AmountOfTotalDiskSpace(database_path));
@@ -893,7 +895,7 @@ IndexedDBFactoryImpl::OpenAndVerifyIndexedDBBackingStore(
   // Create the LevelDBScopes wrapper.
   std::unique_ptr<LevelDBScopes> scopes;
   {
-    IDB_TRACE("IndexedDBFactoryImpl::OpenLevelDBScopes");
+    TRACE_EVENT0("IndexedDB", "IndexedDBFactoryImpl::OpenLevelDBScopes");
     DCHECK(scopes_factory);
     std::tie(scopes, status) = scopes_factory->CreateAndInitializeLevelDBScopes(
         std::move(scopes_options), database_state);

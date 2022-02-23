@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_PRINTING_SECTION_H_
 
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 
 namespace content {
@@ -14,9 +14,6 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace chromeos {
-
-class CupsPrintersManager;
-
 namespace settings {
 
 class SearchTagRegistry;

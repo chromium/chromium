@@ -28,8 +28,10 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+
 import androidx.annotation.VisibleForTesting;
 import androidx.appcompat.content.res.AppCompatResources;
+
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.annotations.UsedByReflection;
 import org.chromium.chrome.R;
@@ -38,6 +40,7 @@ import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabFavicon;
 import org.chromium.chrome.browser.tab.TabObserver;
 import org.chromium.components.browser_ui.styles.ChromeColors;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 
 /**
  * A widget that shows a single row of the {@link AccessibilityTabModelListView} list.
@@ -219,8 +222,8 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
         mDefaultIconColor = ChromeColors.getPrimaryIconTint(context, false);
         mIncognitoIconColor =
                 AppCompatResources.getColorStateList(context, R.color.default_icon_color_dark);
-        mDefaultCloseIconColor =
-                AppCompatResources.getColorStateList(context, R.color.default_icon_color_secondary);
+        mDefaultCloseIconColor = AppCompatResources.getColorStateList(
+                context, R.color.default_icon_color_secondary_tint_list);
         mIncognitoCloseIconColor =
                 AppCompatResources.getColorStateList(context, R.color.white_alpha_70);
         mDefaultLevel = getResources().getInteger(R.integer.list_item_level_default);
@@ -335,7 +338,7 @@ public class AccessibilityTabModelListItem extends FrameLayout implements OnClic
                     mDescriptionView, R.style.TextAppearance_TextMedium_Primary_Baseline_Light);
             ApiCompatibilityUtils.setImageTintList(mCloseButton, mIncognitoCloseIconColor);
         } else {
-            setBackgroundResource(R.color.default_bg_color);
+            setBackgroundColor(SemanticColorUtils.getDefaultBgColor(getContext()));
             mFaviconView.getBackground().setLevel(mDefaultLevel);
             ApiCompatibilityUtils.setTextAppearance(
                     mTitleView, R.style.TextAppearance_TextLarge_Primary);

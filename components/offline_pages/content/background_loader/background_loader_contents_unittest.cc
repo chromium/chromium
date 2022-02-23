@@ -184,16 +184,4 @@ TEST_F(BackgroundLoaderContentsTest, CheckMediaAccessPermissionFalse) {
       blink::mojom::MediaStreamType::GUM_TAB_VIDEO_CAPTURE /* type */));
 }
 
-TEST_F(BackgroundLoaderContentsTest, AdjustPreviewsState) {
-  blink::PreviewsState previews_state;
-
-  // If the state starts out as off or disabled, it should stay that way.
-  previews_state = blink::PreviewsTypes::PREVIEWS_OFF;
-  contents()->AdjustPreviewsStateForNavigation(nullptr, &previews_state);
-  EXPECT_EQ(previews_state, blink::PreviewsTypes::PREVIEWS_OFF);
-  previews_state = blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM;
-  contents()->AdjustPreviewsStateForNavigation(nullptr, &previews_state);
-  EXPECT_EQ(previews_state, blink::PreviewsTypes::PREVIEWS_NO_TRANSFORM);
-}
-
 }  // namespace background_loader

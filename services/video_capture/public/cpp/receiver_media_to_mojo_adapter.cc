@@ -4,33 +4,20 @@
 
 #include "services/video_capture/public/cpp/receiver_media_to_mojo_adapter.h"
 
+#include "media/capture/video/video_frame_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/platform_handle.h"
 
 namespace video_capture {
 
 namespace {
-
-// Lets the mojo handler know that the buffer is no longer used upon going out
-// of scope.
-class ScopedVideoAccessHandlerNotifier
-    : public media::VideoCaptureDevice::Client::Buffer::ScopedAccessPermission {
- public:
-  ScopedVideoAccessHandlerNotifier(
-      scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote,
-      int32_t buffer_id)
-      : frame_access_handler_remote_(std::move(frame_access_handler_remote)),
-        buffer_id_(buffer_id) {}
-  ~ScopedVideoAccessHandlerNotifier() override {
-    (*frame_access_handler_remote_)->OnFinishedConsumingBuffer(buffer_id_);
-  }
-
- private:
-  scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote_;
-  int32_t buffer_id_;
-};
-
-}  // anonymous namespace
+void OnFramePropagationComplete(
+    scoped_refptr<VideoFrameAccessHandlerRemote> frame_access_handler_remote,
+    int32_t buffer_id) {
+  // Notify the VideoFrameAccessHandler that the buffer is no longer valid.
+  (*frame_access_handler_remote)->OnFinishedConsumingBuffer(buffer_id);
+}
+}  // namespace
 
 ReceiverMediaToMojoAdapter::ReceiverMediaToMojoAdapter(
     std::unique_ptr<media::VideoFrameReceiver> receiver)
@@ -60,8 +47,9 @@ void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
 
   media::ReadyFrameInBuffer media_buffer(
       buffer->buffer_id, buffer->frame_feedback_id,
-      std::make_unique<ScopedVideoAccessHandlerNotifier>(frame_access_handler_,
-                                                         buffer->buffer_id),
+      std::make_unique<media::ScopedFrameDoneHelper>(
+          base::BindOnce(&OnFramePropagationComplete, frame_access_handler_,
+                         buffer->buffer_id)),
       std::move(buffer->frame_info));
 
   std::vector<media::ReadyFrameInBuffer> media_scaled_buffers;
@@ -69,8 +57,9 @@ void ReceiverMediaToMojoAdapter::OnFrameReadyInBuffer(
   for (auto& scaled_buffer : scaled_buffers) {
     media_scaled_buffers.emplace_back(
         scaled_buffer->buffer_id, scaled_buffer->frame_feedback_id,
-        std::make_unique<ScopedVideoAccessHandlerNotifier>(
-            frame_access_handler_, scaled_buffer->buffer_id),
+        std::make_unique<media::ScopedFrameDoneHelper>(
+            base::BindOnce(&OnFramePropagationComplete, frame_access_handler_,
+                           scaled_buffer->buffer_id)),
         std::move(scaled_buffer->frame_info));
   }
   receiver_->OnFrameReadyInBuffer(std::move(media_buffer),
@@ -88,6 +77,10 @@ void ReceiverMediaToMojoAdapter::OnError(media::VideoCaptureError error) {
 void ReceiverMediaToMojoAdapter::OnFrameDropped(
     media::VideoCaptureFrameDropReason reason) {
   receiver_->OnFrameDropped(reason);
+}
+
+void ReceiverMediaToMojoAdapter::OnFrameWithEmptyRegionCapture() {
+  receiver_->OnFrameWithEmptyRegionCapture();
 }
 
 void ReceiverMediaToMojoAdapter::OnLog(const std::string& message) {

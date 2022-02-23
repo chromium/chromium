@@ -9,9 +9,10 @@
 
 #include "base/callback_list.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 namespace gfx {
 class SingletonHwndObserver;
 }
@@ -44,7 +45,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
     void UpdateState(bool enabled);
 
    private:
-    TouchUiController* const controller_;
+    const raw_ptr<TouchUiController> controller_;
     const TouchUiState old_state_;
   };
 
@@ -73,7 +74,7 @@ class COMPONENT_EXPORT(UI_BASE) TouchUiController {
   bool tablet_mode_ = false;
   TouchUiState touch_ui_state_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<gfx::SingletonHwndObserver> singleton_hwnd_observer_;
 #endif
 

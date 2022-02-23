@@ -14,7 +14,6 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -24,8 +23,8 @@
 #include "base/threading/thread_restrictions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/threading/watchdog.h"
-#include "jingle/glue/thread_wrapper.h"
-#include "jingle/glue/utils.h"
+#include "components/webrtc/net_address_utils.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/constants.h"
 #include "remoting/protocol/authenticator.h"
 #include "remoting/protocol/port_allocator_factory.h"
@@ -144,6 +143,26 @@ TransportRoute::RouteType CandidateTypeToTransportRouteType(
   } else {
     LOG(ERROR) << "Unknown candidate type: " << candidate_type;
     return TransportRoute::DIRECT;
+  }
+}
+
+// Initializes default parameters for a sender that may be different from
+// WebRTC's defaults.
+void SetDefaultSenderParameters(
+    rtc::scoped_refptr<webrtc::RtpSenderInterface> sender) {
+  if (sender->media_type() == cricket::MEDIA_TYPE_VIDEO) {
+    webrtc::RtpParameters parameters = sender->GetParameters();
+    if (parameters.encodings.empty()) {
+      LOG(ERROR) << "No encodings found for sender " << sender->id();
+      return;
+    }
+
+    for (auto& encoding : parameters.encodings) {
+      encoding.max_framerate = kTargetFrameRate;
+    }
+
+    webrtc::RTCError result = sender->SetParameters(parameters);
+    DCHECK(result.ok()) << "SetParameters() failed: " << result.message();
   }
 }
 
@@ -501,10 +520,10 @@ void WebrtcTransport::Start(
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK(send_transport_info_callback_.is_null());
 
-  jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+  webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
   // TODO(sergeyu): Investigate if it's possible to avoid Send().
-  jingle_glue::JingleThreadWrapper::current()->set_send_allowed(true);
+  webrtc::ThreadWrapper::current()->set_send_allowed(true);
 
   send_transport_info_callback_ = std::move(send_transport_info_callback);
 
@@ -592,8 +611,7 @@ bool WebrtcTransport::ProcessTransportInfo(XmlElement* transport_info) {
     // so (re)apply them here. This might happen if ICE state were already
     // connected and OnIceSelectedCandidatePairChanged() had already set the
     // caps.
-    int min_bitrate_bps, max_bitrate_bps;
-    std::tie(min_bitrate_bps, max_bitrate_bps) = BitratesForConnection();
+    auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
     SetPeerConnectionBitrates(min_bitrate_bps, max_bitrate_bps);
   }
 
@@ -649,8 +667,7 @@ void WebrtcTransport::SetPreferredBitrates(
   preferred_min_bitrate_bps_ = min_bitrate_bps;
   preferred_max_bitrate_bps_ = max_bitrate_bps;
   if (connected_) {
-    int actual_min_bitrate_bps, actual_max_bitrate_bps;
-    std::tie(actual_min_bitrate_bps, actual_max_bitrate_bps) =
+    auto [actual_min_bitrate_bps, actual_max_bitrate_bps] =
         BitratesForConnection();
     SetPeerConnectionBitrates(actual_min_bitrate_bps, actual_max_bitrate_bps);
     SetSenderBitrates(actual_min_bitrate_bps, actual_max_bitrate_bps);
@@ -778,9 +795,13 @@ void WebrtcTransport::OnAudioTransceiverCreated(
 void WebrtcTransport::OnVideoTransceiverCreated(
     rtc::scoped_refptr<webrtc::RtpTransceiverInterface> transceiver) {
   video_transceiver_ = transceiver;
-  int min_bitrate_bps, max_bitrate_bps;
-  std::tie(min_bitrate_bps, max_bitrate_bps) = BitratesForConnection();
+  auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
   SetSenderBitrates(min_bitrate_bps, max_bitrate_bps);
+
+  // Sender is always present, regardless of the direction of media
+  // (see rtp_transceiver_interface.h).
+  auto sender = transceiver->sender();
+  SetDefaultSenderParameters(sender);
 }
 
 void WebrtcTransport::OnLocalSessionDescriptionCreated(
@@ -862,6 +883,14 @@ void WebrtcTransport::OnLocalDescriptionSet(bool success,
   }
 
   AddPendingCandidatesIfPossible();
+
+  // The sender "encodings" parameters are initialized after the local
+  // description is set. At this point, it is possible to set parameters such as
+  // maximum framerate.
+  auto senders = peer_connection()->GetSenders();
+  for (const auto& sender : senders) {
+    SetDefaultSenderParameters(sender);
+  }
 }
 
 void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
@@ -873,7 +902,7 @@ void WebrtcTransport::OnRemoteDescriptionSet(bool send_answer,
     return;
 
   if (!success) {
-    LOG(ERROR) << "Failed to set local description: " << error;
+    LOG(ERROR) << "Failed to set remote description: " << error;
     Close(CHANNEL_CONNECTION_ERROR);
     return;
   }
@@ -1011,8 +1040,7 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
     // default value (~600kbps).
     // Set the global bitrate caps in addition to the VideoSender bitrates. The
     // global caps affect the probing configuration used by b/w estimator.
-    int min_bitrate_bps, max_bitrate_bps;
-    std::tie(min_bitrate_bps, max_bitrate_bps) = BitratesForConnection();
+    auto [min_bitrate_bps, max_bitrate_bps] = BitratesForConnection();
     SetPeerConnectionBitrates(min_bitrate_bps, max_bitrate_bps);
     SetSenderBitrates(min_bitrate_bps, max_bitrate_bps);
   }
@@ -1042,12 +1070,12 @@ void WebrtcTransport::OnIceSelectedCandidatePairChanged(
   // for example, a "relay" or "prflx" candidate from a relay connection
   // might have the IP address stripped away by WebRTC - see
   // http://crbug.com/1128667.
-  if (!jingle_glue::SocketAddressToIPEndPoint(remote_candidate.address(),
-                                              &route.remote_address)) {
+  if (!webrtc::SocketAddressToIPEndPoint(remote_candidate.address(),
+                                         &route.remote_address)) {
     VLOG(0) << "Peer IP address is invalid.";
   }
-  if (!jingle_glue::SocketAddressToIPEndPoint(local_candidate.address(),
-                                              &route.local_address)) {
+  if (!webrtc::SocketAddressToIPEndPoint(local_candidate.address(),
+                                         &route.local_address)) {
     VLOG(0) << "Local IP address is invalid.";
   }
 

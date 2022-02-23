@@ -9,7 +9,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "content/public/browser/web_contents_user_data.h"
 #include "extensions/browser/extension_web_contents_observer.h"
 #include "extensions/common/stack_frame.h"

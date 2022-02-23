@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile_window.h"
 
 #include <stddef.h>
@@ -145,7 +146,7 @@ class ProfileWindowCountBrowserTest : public ProfileWindowBrowserTest,
   }
 
  private:
-  Profile* profile_ = nullptr;
+  raw_ptr<Profile> profile_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
@@ -170,7 +171,7 @@ IN_PROC_BROWSER_TEST_P(ProfileWindowCountBrowserTest, CountProfileWindows) {
 
 // |OpenDevToolsWindowSync| is slow on Linux Debug and can result in flacky test
 // failure. See (crbug.com/1186994).
-#if defined(OS_LINUX) && !defined(NDEBUG)
+#if BUILDFLAG(IS_LINUX) && !defined(NDEBUG)
 #define MAYBE_DevToolsWindowsNotCounted DISABLED_DevToolsWindowsNotCounted
 #else
 #define MAYBE_DevToolsWindowsNotCounted DevToolsWindowsNotCounted
@@ -257,8 +258,8 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
   // Open a second guest window and close one. This should not affect the find
   // in page cache as the guest session hasn't been ended.
   profiles::FindOrCreateNewWindowForProfile(
-      guest_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
-      chrome::startup::IS_NOT_FIRST_RUN, true /*always_create*/);
+      guest_profile, chrome::startup::IsProcessStartup::kNo,
+      chrome::startup::IsFirstRun::kNo, true /*always_create*/);
   CloseBrowserSynchronously(guest_browser);
   EXPECT_EQ(fip_text, FindBarStateFactory::GetForBrowserContext(guest_profile)
                           ->GetSearchPrepopulateText());
@@ -271,9 +272,9 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestClearsFindInPageCache) {
 
   // Open a new guest browser window. Since this is a separate session, the find
   // in page text should have been cleared (along with all other browsing data).
-    profiles::FindOrCreateNewWindowForProfile(
-        guest_profile, chrome::startup::IS_NOT_PROCESS_STARTUP,
-        chrome::startup::IS_NOT_FIRST_RUN, true /*always_create*/);
+  profiles::FindOrCreateNewWindowForProfile(
+      guest_profile, chrome::startup::IsProcessStartup::kNo,
+      chrome::startup::IsFirstRun::kNo, true /*always_create*/);
 
   EXPECT_EQ(std::u16string(),
             FindBarStateFactory::GetForBrowserContext(guest_profile)
@@ -306,16 +307,15 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, GuestAppMenuLacksBookmarks) {
 IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest, OpenBrowserWindowForProfile) {
   Profile* profile = browser()->profile();
   size_t num_browsers = BrowserList::GetInstance()->size();
-  profiles::OpenBrowserWindowForProfile(
-      ProfileManager::CreateCallback(), true, false, false, profile,
-      Profile::CreateStatus::CREATE_STATUS_INITIALIZED);
+  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
+                                        true, false, false, profile);
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(num_browsers + 1, BrowserList::GetInstance()->size());
   EXPECT_FALSE(ProfilePicker::IsOpen());
 }
 
 // TODO(crbug.com/935746): Test is flaky on Win and Linux.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
 #define MAYBE_OpenBrowserWindowForProfileWithSigninRequired \
   DISABLED_OpenBrowserWindowForProfileWithSigninRequired
 #else
@@ -336,9 +336,8 @@ IN_PROC_BROWSER_TEST_F(ProfileWindowBrowserTest,
   base::RunLoop run_loop;
   ProfilePicker::AddOnProfilePickerOpenedCallbackForTesting(
       run_loop.QuitClosure());
-  profiles::OpenBrowserWindowForProfile(
-      ProfileManager::CreateCallback(), true, false, false, profile,
-      Profile::CreateStatus::CREATE_STATUS_INITIALIZED);
+  profiles::OpenBrowserWindowForProfile(base::OnceCallback<void(Profile*)>(),
+                                        true, false, false, profile);
   run_loop.Run();
   EXPECT_EQ(num_browsers, BrowserList::GetInstance()->size());
   EXPECT_TRUE(ProfilePicker::IsOpen());

@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/streams/readable_stream.h"
 #include "third_party/blink/renderer/core/streams/readable_stream_default_reader.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/bytes_consumer.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -43,8 +43,8 @@ class CORE_EXPORT ReadableStreamBytesConsumer final : public BytesConsumer {
   void Trace(Visitor*) const override;
 
  private:
-  class OnFulfilled;
-  class OnRejected;
+  class Fulfilled;
+  class Rejected;
 
   void OnRead(DOMUint8Array*);
   void OnReadDone();

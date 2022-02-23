@@ -63,6 +63,9 @@ BoolExpr RestrictSocketArguments(const Arg<int>& domain,
 BaselinePolicyAndroid::BaselinePolicyAndroid()
     : BaselinePolicy() {}
 
+BaselinePolicyAndroid::BaselinePolicyAndroid(bool allow_sched_affinity)
+    : BaselinePolicy(), allow_sched_affinity_(allow_sched_affinity) {}
+
 BaselinePolicyAndroid::~BaselinePolicyAndroid() {}
 
 ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
@@ -116,12 +119,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     case __NR_rt_sigtimedwait_time64:
 #endif
-    // sched_getaffinity() and sched_setaffinity() are required for an
-    // experiment to schedule all Chromium threads onto LITTLE cores
-    // (crbug.com/1111789). Should be removed or reconsidered once
-    // the experiment is complete.
-    case __NR_sched_getaffinity:
-    case __NR_sched_setaffinity:
     case __NR_sched_getparam:
     case __NR_sched_getscheduler:
     case __NR_sched_setscheduler:
@@ -131,7 +128,6 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
     case __NR_set_thread_area:
 #endif
     case __NR_set_tid_address:
-    case __NR_sigaltstack:
 #if defined(__i386__) || defined(__arm__)
     case __NR_ugetrlimit:
 #else
@@ -154,17 +150,20 @@ ResultExpr BaselinePolicyAndroid::EvaluateSyscall(int sysno) const {
       break;
   }
 
+  // sched_getaffinity() and sched_setaffinity() are required for an
+  // experiment to schedule all Chromium threads onto LITTLE cores
+  // (crbug.com/1111789). Should be removed or reconsidered once
+  // the experiment is complete.
+  if (sysno == __NR_sched_setaffinity || sysno == __NR_sched_getaffinity) {
+    if (allow_sched_affinity_)
+      return Allow();
+    return Error(EPERM);
+  }
+
   // Ptrace is allowed so the crash reporter can fork in a renderer
   // and then ptrace the parent. https://crbug.com/933418
   if (sysno == __NR_ptrace) {
     return RestrictPtrace();
-  }
-
-  // https://crbug.com/644759
-  if (sysno == __NR_rt_tgsigqueueinfo) {
-    const Arg<pid_t> tgid(0);
-    return If(tgid == policy_pid(), Allow())
-           .Else(Error(EPERM));
   }
 
   // https://crbug.com/766245

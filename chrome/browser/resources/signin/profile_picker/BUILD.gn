@@ -7,9 +7,11 @@ import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("../../tools/optimize_webui.gni")
+import("profile_picker.gni")
 
 assert(!is_chromeos_ash)
 
@@ -69,37 +71,27 @@ generate_grd("build_grd") {
 }
 
 preprocess_if_expr("preprocess") {
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "ensure_lazy_loaded.ts",
-    "icons.ts",
-    "lazy_load.ts",
-    "manage_profiles_browser_proxy.ts",
-    "navigation_mixin.ts",
-    "policy_helper.ts",
-    "profile_picker.ts",
-  ]
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [ ":web_components" ]
+  deps = [
+    ":css_wrapper_files",
+    ":html_wrapper_files",
+  ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = [
-    "profile_picker_app.ts",
-    "profile_picker_main_view.ts",
-    "profile_card.ts",
-    "profile_card_menu.ts",
-    "profile_creation_flow/local_profile_customization.ts",
-    "profile_creation_flow/profile_type_choice.ts",
-    "profile_picker_shared_css.ts",
-    "profile_creation_flow/shared_css.ts",
-    "profile_switch.ts",
-  ]
-  if (is_chromeos_lacros) {
-    in_files += [ "profile_creation_flow/account_selection_lacros.ts" ]
-  }
+  in_files = html_wrapper_files + css_wrapper_files
+}
+
+html_to_js("css_wrapper_files") {
+  js_files = css_wrapper_files
+}
+
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 grit("resources") {
@@ -124,27 +116,7 @@ ts_library("build_ts") {
   out_dir = "$target_gen_dir/tsc"
   composite = true
   tsconfig_base = "tsconfig_base.json"
-  in_files = [
-    "ensure_lazy_loaded.ts",
-    "icons.ts",
-    "lazy_load.ts",
-    "manage_profiles_browser_proxy.ts",
-    "navigation_mixin.ts",
-    "policy_helper.ts",
-    "profile_card.ts",
-    "profile_card_menu.ts",
-    "profile_creation_flow/local_profile_customization.ts",
-    "profile_creation_flow/profile_type_choice.ts",
-    "profile_creation_flow/shared_css.ts",
-    "profile_picker_app.ts",
-    "profile_picker.ts",
-    "profile_picker_main_view.ts",
-    "profile_picker_shared_css.ts",
-    "profile_switch.ts",
-  ]
-  if (is_chromeos_lacros) {
-    in_files += [ "profile_creation_flow/account_selection_lacros.ts" ]
-  }
+  in_files = ts_files + css_wrapper_files + html_wrapper_files
   definitions = [
     "//tools/typescript/definitions/chrome_send.d.ts",
     "//tools/typescript/definitions/metrics_private.d.ts",
@@ -158,23 +130,5 @@ ts_library("build_ts") {
   extra_deps = [
     ":preprocess",
     ":preprocess_generated",
-  ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "profile_creation_flow:web_components",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "profile_card.ts",
-    "profile_card_menu.ts",
-    "profile_picker_app.ts",
-    "profile_picker_main_view.ts",
-    "profile_picker_shared_css.ts",
-    "profile_switch.ts",
   ]
 }

@@ -7,7 +7,7 @@
 
 #include "base/no_destructor.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
-#include "components/translate/content/browser/translate_model_service.h"
+#include "components/translate/core/browser/translate_model_service.h"
 
 namespace content {
 class BrowserContext;

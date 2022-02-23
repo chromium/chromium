@@ -9,12 +9,12 @@
 #include "build/build_config.h"
 #include "content/public/common/trust_tokens.mojom.h"
 #include "content/public/test/content_browser_test.h"
-#include "services/network/trust_tokens/test/trust_token_request_handler.h"
+#include "services/network/test/trust_token_request_handler.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/android/java_interfaces.h"
 #include "services/service_manager/public/cpp/interface_provider.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace content {
 
@@ -66,7 +66,7 @@ class TrustTokenBrowsertest : virtual public ContentBrowserTest {
   net::EmbeddedTestServer server_{net::EmbeddedTestServer::TYPE_HTTPS};
 };
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // HandlerWrappingLocalTrustTokenFulfiller serves two purposes:
 //
 // 1. Its lifetime scopes an override to content::GetGlobalJavaInterfaces()'s

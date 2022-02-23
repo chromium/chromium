@@ -87,8 +87,13 @@ V4L2VideoDecoderDelegateH264::H264DPBToV4L2DPB(const H264DPB& dpb) {
 
     struct v4l2_h264_dpb_entry& entry = priv_->v4l2_decode_param.dpb[i++];
     entry.reference_ts = index;
-    entry.pic_num = pic->pic_num;
-    entry.frame_num = pic->frame_num;
+    if (pic->long_term) {
+      entry.frame_num = pic->long_term_pic_num;
+      entry.pic_num = pic->long_term_frame_idx;
+    } else {
+      entry.frame_num = pic->frame_num;
+      entry.pic_num = pic->pic_num;
+    }
     entry.top_field_order_cnt = pic->top_field_order_cnt;
     entry.bottom_field_order_cnt = pic->bottom_field_order_cnt;
     entry.flags = V4L2_H264_DPB_ENTRY_FLAG_VALID |
@@ -374,10 +379,9 @@ H264Decoder::H264Accelerator::Status V4L2VideoDecoderDelegateH264::SubmitDecode(
 
 bool V4L2VideoDecoderDelegateH264::OutputPicture(
     scoped_refptr<H264Picture> pic) {
-  // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(H264PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
-                                 VideoColorSpace());
+                                 pic->get_colorspace());
   return true;
 }
 

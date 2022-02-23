@@ -1,0 +1,24 @@
+From 55d9cc2c539871fc335b0083feea2679a7bd0c63 Mon Sep 17 00:00:00 2001
+From: Mohamed Heikal <mheikal@google.com>
+Date: Wed, 26 May 2021 19:03:39 -0400
+Subject: [PATCH 2/3] Add disassemble command to keeps
+
+---
+ src/main/keep.txt | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/src/main/keep.txt b/src/main/keep.txt
+index e37692451..cdf5cdf4c 100644
+--- a/src/main/keep.txt
++++ b/src/main/keep.txt
+@@ -11,6 +11,7 @@
+ 
+ -keep public class com.android.tools.r8.D8 { public static void main(java.lang.String[]); }
+ -keep public class com.android.tools.r8.R8 { public static void main(java.lang.String[]); }
++-keep public class com.android.tools.r8.Disassemble { public static void main(java.lang.String[]); }
+ -keep public class com.android.tools.r8.ExtractMarker { public static void main(java.lang.String[]); }
+ -keep public class com.android.tools.r8.dexsplitter.DexSplitter { public static void main(java.lang.String[]); }
+ 
+-- 
+2.35.0.rc0.227.g00780c9af4-goog
+

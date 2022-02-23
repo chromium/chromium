@@ -18,9 +18,6 @@ enum AshTextContext {
   // A button that appears in the launcher's status area.
   CONTEXT_LAUNCHER_BUTTON = ASH_TEXT_CONTEXT_START,
 
-  // Buttons and labels that appear in the fullscreen toast overlay UI.
-  CONTEXT_TOAST_OVERLAY,
-
   // A button that appears within a row of the tray popup.
   CONTEXT_TRAY_POPUP_BUTTON,
 
@@ -49,6 +46,9 @@ enum AshTextContext {
 
   // Title and details text label used in search result view. Usually 14 pt.
   CONTEXT_SEARCH_RESULT_VIEW,
+
+  // Big title text label used in search result view. Usually 36 pt.
+  CONTEXT_SEARCH_RESULT_BIG_TITLE,
 
   // Details text label used for inline answer search result view. Usually 12pt.
   // Used when productivity launcher is enabled.

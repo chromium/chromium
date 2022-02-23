@@ -31,7 +31,7 @@
 #include "components/account_manager_core/chromeos/account_manager_facade_factory.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/signin/internal/identity_manager/profile_oauth2_token_service_delegate_android.h"
 #include "components/signin/public/android/test_support_jni_headers/AccountManagerFacadeUtil_jni.h"
 #endif
@@ -40,7 +40,7 @@ namespace signin {
 
 namespace {
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // Whether identity_test_utils uses `AccountManagerFacade` or
 // `ProfileOAuth2TokenService` for managing credentials.
 bool ShouldUseAccountManagerFacade(IdentityManager* identity_manager) {
@@ -54,7 +54,7 @@ bool ShouldUseAccountManagerFacade(IdentityManager* identity_manager) {
   return true;
 #endif
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // Helper function that updates the refresh token for |account_id| to
 // |new_token|. Before updating the refresh token, blocks until refresh tokens
@@ -162,13 +162,7 @@ CoreAccountInfo SetPrimaryAccount(IdentityManager* identity_manager,
 
   PrimaryAccountManager* primary_account_manager =
       identity_manager->GetPrimaryAccountManager();
-  switch (consent_level) {
-    case ConsentLevel::kSync:
-      primary_account_manager->SetSyncPrimaryAccountInfo(account_info);
-      break;
-    case ConsentLevel::kSignin:
-      primary_account_manager->SetUnconsentedPrimaryAccountInfo(account_info);
-  }
+  primary_account_manager->SetPrimaryAccountInfo(account_info, consent_level);
 
   DCHECK(identity_manager->HasPrimaryAccount(consent_level));
   DCHECK_EQ(account_info.gaia,
@@ -486,7 +480,7 @@ void EnableAccountCapabilitiesFetches(IdentityManager* identity_manager) {
       ->EnableAccountCapabilitiesFetcherForTest(true);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void SetUpMockAccountManagerFacade() {
   Java_AccountManagerFacadeUtil_setUpMockFacade(
       base::android::AttachCurrentThread());

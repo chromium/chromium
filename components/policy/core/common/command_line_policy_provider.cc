@@ -11,9 +11,9 @@
 #include "build/build_config.h"
 #include "components/policy/core/common/policy_bundle.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace policy {
 
@@ -22,7 +22,7 @@ std::unique_ptr<CommandLinePolicyProvider>
 CommandLinePolicyProvider::CreateIfAllowed(
     const base::CommandLine& command_line,
     version_info::Channel channel) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (channel == version_info::Channel::STABLE ||
       channel == version_info::Channel::BETA) {
     return nullptr;
@@ -34,7 +34,7 @@ CommandLinePolicyProvider::CreateIfAllowed(
   return base::WrapUnique(new CommandLinePolicyProvider(command_line));
 #else
   return nullptr;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 
 // static

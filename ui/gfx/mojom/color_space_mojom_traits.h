@@ -37,8 +37,8 @@ struct EnumTraits<gfx::mojom::ColorSpacePrimaryID, gfx::ColorSpace::PrimaryID> {
         return gfx::mojom::ColorSpacePrimaryID::SMPTEST428_1;
       case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
         return gfx::mojom::ColorSpacePrimaryID::SMPTEST431_2;
-      case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
-        return gfx::mojom::ColorSpacePrimaryID::SMPTEST432_1;
+      case gfx::ColorSpace::PrimaryID::P3:
+        return gfx::mojom::ColorSpacePrimaryID::P3;
       case gfx::ColorSpace::PrimaryID::XYZ_D50:
         return gfx::mojom::ColorSpacePrimaryID::XYZ_D50;
       case gfx::ColorSpace::PrimaryID::ADOBE_RGB:
@@ -87,8 +87,8 @@ struct EnumTraits<gfx::mojom::ColorSpacePrimaryID, gfx::ColorSpace::PrimaryID> {
       case gfx::mojom::ColorSpacePrimaryID::SMPTEST431_2:
         *out = gfx::ColorSpace::PrimaryID::SMPTEST431_2;
         return true;
-      case gfx::mojom::ColorSpacePrimaryID::SMPTEST432_1:
-        *out = gfx::ColorSpace::PrimaryID::SMPTEST432_1;
+      case gfx::mojom::ColorSpacePrimaryID::P3:
+        *out = gfx::ColorSpace::PrimaryID::P3;
         return true;
       case gfx::mojom::ColorSpacePrimaryID::XYZ_D50:
         *out = gfx::ColorSpace::PrimaryID::XYZ_D50;
@@ -145,20 +145,20 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
         return gfx::mojom::ColorSpaceTransferID::IEC61966_2_4;
       case gfx::ColorSpace::TransferID::BT1361_ECG:
         return gfx::mojom::ColorSpaceTransferID::BT1361_ECG;
-      case gfx::ColorSpace::TransferID::IEC61966_2_1:
-        return gfx::mojom::ColorSpaceTransferID::IEC61966_2_1;
+      case gfx::ColorSpace::TransferID::SRGB:
+        return gfx::mojom::ColorSpaceTransferID::SRGB;
       case gfx::ColorSpace::TransferID::BT2020_10:
         return gfx::mojom::ColorSpaceTransferID::BT2020_10;
       case gfx::ColorSpace::TransferID::BT2020_12:
         return gfx::mojom::ColorSpaceTransferID::BT2020_12;
-      case gfx::ColorSpace::TransferID::SMPTEST2084:
-        return gfx::mojom::ColorSpaceTransferID::SMPTEST2084;
+      case gfx::ColorSpace::TransferID::PQ:
+        return gfx::mojom::ColorSpaceTransferID::PQ;
       case gfx::ColorSpace::TransferID::SMPTEST428_1:
         return gfx::mojom::ColorSpaceTransferID::SMPTEST428_1;
-      case gfx::ColorSpace::TransferID::ARIB_STD_B67:
-        return gfx::mojom::ColorSpaceTransferID::ARIB_STD_B67;
-      case gfx::ColorSpace::TransferID::IEC61966_2_1_HDR:
-        return gfx::mojom::ColorSpaceTransferID::IEC61966_2_1_HDR;
+      case gfx::ColorSpace::TransferID::HLG:
+        return gfx::mojom::ColorSpaceTransferID::HLG;
+      case gfx::ColorSpace::TransferID::SRGB_HDR:
+        return gfx::mojom::ColorSpaceTransferID::SRGB_HDR;
       case gfx::ColorSpace::TransferID::LINEAR_HDR:
         return gfx::mojom::ColorSpaceTransferID::LINEAR_HDR;
       case gfx::ColorSpace::TransferID::CUSTOM:
@@ -217,8 +217,8 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
       case gfx::mojom::ColorSpaceTransferID::BT1361_ECG:
         *out = gfx::ColorSpace::TransferID::BT1361_ECG;
         return true;
-      case gfx::mojom::ColorSpaceTransferID::IEC61966_2_1:
-        *out = gfx::ColorSpace::TransferID::IEC61966_2_1;
+      case gfx::mojom::ColorSpaceTransferID::SRGB:
+        *out = gfx::ColorSpace::TransferID::SRGB;
         return true;
       case gfx::mojom::ColorSpaceTransferID::BT2020_10:
         *out = gfx::ColorSpace::TransferID::BT2020_10;
@@ -226,17 +226,17 @@ struct EnumTraits<gfx::mojom::ColorSpaceTransferID,
       case gfx::mojom::ColorSpaceTransferID::BT2020_12:
         *out = gfx::ColorSpace::TransferID::BT2020_12;
         return true;
-      case gfx::mojom::ColorSpaceTransferID::SMPTEST2084:
-        *out = gfx::ColorSpace::TransferID::SMPTEST2084;
+      case gfx::mojom::ColorSpaceTransferID::PQ:
+        *out = gfx::ColorSpace::TransferID::PQ;
         return true;
       case gfx::mojom::ColorSpaceTransferID::SMPTEST428_1:
         *out = gfx::ColorSpace::TransferID::SMPTEST428_1;
         return true;
-      case gfx::mojom::ColorSpaceTransferID::ARIB_STD_B67:
-        *out = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+      case gfx::mojom::ColorSpaceTransferID::HLG:
+        *out = gfx::ColorSpace::TransferID::HLG;
         return true;
-      case gfx::mojom::ColorSpaceTransferID::IEC61966_2_1_HDR:
-        *out = gfx::ColorSpace::TransferID::IEC61966_2_1_HDR;
+      case gfx::mojom::ColorSpaceTransferID::SRGB_HDR:
+        *out = gfx::ColorSpace::TransferID::SRGB_HDR;
         return true;
       case gfx::mojom::ColorSpaceTransferID::LINEAR_HDR:
         *out = gfx::ColorSpace::TransferID::LINEAR_HDR;

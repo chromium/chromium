@@ -18,8 +18,8 @@
 #include "base/callback_helpers.h"
 #include "base/containers/circular_deque.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/safe_ref.h"
 #include "base/memory/weak_ptr.h"
@@ -55,6 +55,7 @@
 #include "net/dns/dns_udp_tracker.h"
 #include "net/dns/dns_util.h"
 #include "net/dns/host_cache.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/dns_protocol.h"
 #include "net/dns/public/dns_query_type.h"
@@ -350,7 +351,7 @@ class DnsUDPAttempt : public DnsAttempt {
 
   // Should be owned by the DnsSession, to which the transaction should own a
   // reference.
-  DnsUdpTracker* const udp_tracker_;
+  const raw_ptr<DnsUdpTracker> udp_tracker_;
 
   std::unique_ptr<DnsResponse> response_;
 
@@ -434,8 +435,9 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
     }
 
     request_->SetExtraRequestHeaders(extra_request_headers);
-    // Disable secure DNS for any DoH server hostname lookups to avoid deadlock.
-    request_->SetSecureDnsPolicy(SecureDnsPolicy::kDisable);
+    // Apply special policy to DNS lookups for for a DoH server hostname to
+    // avoid deadlock and enable the use of preconfigured IP addresses.
+    request_->SetSecureDnsPolicy(SecureDnsPolicy::kBootstrap);
     request_->SetLoadFlags(request_->load_flags() | LOAD_DISABLE_CACHE |
                            LOAD_BYPASS_PROXY);
     request_->set_allow_credentials(false);
@@ -449,11 +451,13 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
 
   int Start(CompletionOnceCallback callback) override {
     callback_ = std::move(callback);
-    request_->Start();
+    // Start the request asynchronously to avoid reentrancy in
+    // the network stack.
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(&DnsHTTPAttempt::StartAsync,
+                                  weak_factory_.GetWeakPtr()));
     return ERR_IO_PENDING;
   }
-
-  void Cancel() { request_.reset(); }
 
   const DnsQuery* GetQuery() const override { return query_.get(); }
   const DnsResponse* GetResponse() const override {
@@ -559,6 +563,11 @@ class DnsHTTPAttempt : public DnsAttempt, public URLRequest::Delegate {
   bool IsPending() const override { return !callback_.is_null(); }
 
  private:
+  void StartAsync() {
+    DCHECK(request_);
+    request_->Start();
+  }
+
   void ResponseCompleted(int net_error) {
     request_.reset();
     std::move(callback_).Run(CompleteResponse(net_error));
@@ -616,14 +625,14 @@ void ConstructDnsHTTPAttempt(DnsSession* session,
     query = std::make_unique<DnsQuery>(*attempts->at(0)->GetQuery());
   }
 
-  DCHECK_LT(doh_server_index, session->config().dns_over_https_servers.size());
-  const DnsOverHttpsServerConfig& doh_config =
-      session->config().dns_over_https_servers[doh_server_index];
+  DCHECK_LT(doh_server_index, session->config().doh_config.servers().size());
+  const DnsOverHttpsServerConfig& doh_server =
+      session->config().doh_config.servers()[doh_server_index];
   GURL gurl_without_parameters(
-      GetURLFromTemplateWithoutParameters(doh_config.server_template));
+      GetURLFromTemplateWithoutParameters(doh_server.server_template()));
   attempts->push_back(std::make_unique<DnsHTTPAttempt>(
-      doh_server_index, std::move(query), doh_config.server_template,
-      gurl_without_parameters, doh_config.use_post, url_request_context,
+      doh_server_index, std::move(query), doh_server.server_template(),
+      gurl_without_parameters, doh_server.use_post(), url_request_context,
       isolation_info, request_priority));
 }
 
@@ -803,7 +812,9 @@ class DnsTCPAttempt : public DnsAttempt {
       return OK;
     }
 
-    base::ReadBigEndian<uint16_t>(length_buffer_->data(), &response_length_);
+    base::ReadBigEndian(
+        reinterpret_cast<const uint8_t*>(length_buffer_->data()),
+        &response_length_);
     // Check if advertised response is too short. (Optimization only.)
     if (response_length_ < query_->io_buffer()->size())
       return ERR_DNS_MALFORMED_RESPONSE;
@@ -900,20 +911,21 @@ const net::BackoffEntry::Policy kProbeBackoffPolicy = {
 // servers to determine availability.
 //
 // Expected to be contained in request classes owned externally to HostResolver,
-// so no assumptions are made regarding cancellation compared to the DnsSession.
-// Instead, uses WeakPtrs to gracefully clean itself up and stop probing after
-// session destruction.
+// so no assumptions are made regarding cancellation compared to the DnsSession
+// or ResolveContext. Instead, uses WeakPtrs to gracefully clean itself up and
+// stop probing after session or context destruction.
 class DnsOverHttpsProbeRunner : public DnsProbeRunner {
  public:
   DnsOverHttpsProbeRunner(base::WeakPtr<DnsSession> session,
-                          ResolveContext* context)
-      : session_(std::move(session)), context_(context->AsSafeRef()) {
+                          base::WeakPtr<ResolveContext> context)
+      : session_(session), context_(context) {
     DCHECK(session_);
-    DCHECK(!session_->config().dns_over_https_servers.empty());
+    DCHECK(!session_->config().doh_config.servers().empty());
+    DCHECK(context_);
 
     DNSDomainFromDot(kDoHProbeHostname, &formatted_probe_hostname_);
 
-    for (size_t i = 0; i < session_->config().dns_over_https_servers.size();
+    for (size_t i = 0; i < session_->config().doh_config.servers().size();
          i++) {
       probe_stats_list_.push_back(nullptr);
     }
@@ -923,10 +935,11 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
   void Start(bool network_change) override {
     DCHECK(session_);
+    DCHECK(context_);
 
+    const auto& config = session_->config().doh_config;
     // Start probe sequences for any servers where it is not currently running.
-    for (size_t i = 0; i < session_->config().dns_over_https_servers.size();
-         i++) {
+    for (size_t i = 0; i < config.servers().size(); i++) {
       if (!probe_stats_list_[i]) {
         probe_stats_list_[i] = std::make_unique<ProbeStats>();
         ContinueProbe(i, probe_stats_list_[i]->weak_factory.GetWeakPtr(),
@@ -961,8 +974,9 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                      base::WeakPtr<ProbeStats> probe_stats,
                      bool network_change,
                      base::TimeTicks sequence_start_time) {
-    // If the DnsSession has been destroyed, no reason to continue probing.
-    if (!session_) {
+    // If the DnsSession or ResolveContext has been destroyed, no reason to
+    // continue probing.
+    if (!session_ || !context_) {
       probe_stats_list_.clear();
       return;
     }
@@ -1016,7 +1030,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
                      base::TimeTicks query_start_time,
                      int rv) {
     bool success = false;
-    if (rv == OK && probe_stats && session_) {
+    if (rv == OK && probe_stats && session_ && context_) {
       // Check that the response parses properly before considering it a
       // success.
       DCHECK_LT(attempt_number, probe_stats->probe_attempts.size());
@@ -1031,7 +1045,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
 
         if (extraction_error ==
                 DnsResponseResultExtractor::ExtractionError::kOk &&
-            results.addresses() && !results.addresses().value().empty()) {
+            results.ip_endpoints() && !results.ip_endpoints()->empty()) {
           // The DoH probe queries don't go through the standard DnsAttempt
           // path, so the ServerStats have not been updated yet.
           context_->RecordServerSuccess(
@@ -1058,7 +1072,7 @@ class DnsOverHttpsProbeRunner : public DnsProbeRunner {
   }
 
   base::WeakPtr<DnsSession> session_;
-  base::SafeRef<ResolveContext> context_;
+  base::WeakPtr<ResolveContext> context_;
   std::string formatted_probe_hostname_;
 
   // List of ProbeStats, one for each DoH server, indexed by the DoH server
@@ -1245,8 +1259,8 @@ class DnsTransactionImpl : public DnsTransaction,
     absl::optional<std::string> doh_provider_id;
     if (secure_ && result.attempt) {
       size_t server_index = result.attempt->server_index();
-      doh_provider_id = GetDohProviderIdForHistogramFromDohConfig(
-          session_->config().dns_over_https_servers[server_index]);
+      doh_provider_id = GetDohProviderIdForHistogramFromServerConfig(
+          session_->config().doh_config.servers()[server_index]);
     }
 
     std::move(callback_).Run(this, result.rv, response, doh_provider_id);
@@ -1262,7 +1276,7 @@ class DnsTransactionImpl : public DnsTransaction,
 
     DnsConfig config = session_->config();
     if (secure_) {
-      DCHECK_GT(config.dns_over_https_servers.size(), 0u);
+      DCHECK(!config.doh_config.servers().empty());
       RecordAttemptUma(DnsAttemptType::kHttp);
       return MakeHTTPAttempt();
     }
@@ -1642,7 +1656,7 @@ class DnsTransactionImpl : public DnsTransaction,
   scoped_refptr<DnsSession> session_;
   std::string hostname_;
   uint16_t qtype_;
-  const OptRecordRdata* opt_rdata_;
+  raw_ptr<const OptRecordRdata> opt_rdata_;
   const bool secure_;
   const SecureDnsMode secure_dns_mode_;
   // Cleared in DoCallback.
@@ -1706,8 +1720,8 @@ class DnsTransactionFactoryImpl : public DnsTransactionFactory {
 
   std::unique_ptr<DnsProbeRunner> CreateDohProbeRunner(
       ResolveContext* resolve_context) override {
-    return std::make_unique<DnsOverHttpsProbeRunner>(session_->GetWeakPtr(),
-                                                     resolve_context);
+    return std::make_unique<DnsOverHttpsProbeRunner>(
+        session_->GetWeakPtr(), resolve_context->GetWeakPtr());
   }
 
   void AddEDNSOption(const OptRecordRdata::Opt& opt) override {

@@ -37,7 +37,7 @@
 #include "components/update_client/utils.h"
 #include "content/public/browser/browser_thread.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -147,13 +147,13 @@ bool CheckPnaclComponentManifest(const base::Value& manifest,
   }
 
   // Now check the |pnacl_manifest|.
-  std::string arch;
-  if (!pnacl_manifest.GetStringASCII("pnacl-arch", &arch)) {
+  const std::string* arch = pnacl_manifest.FindStringKey("pnacl-arch");
+  if (!arch || !base::IsStringASCII(*arch)) {
     LOG(WARNING) << "'pnacl-arch' field is missing from pnacl-manifest!";
     return false;
   }
-  if (arch.compare(UpdateQueryParams::GetNaclArch()) != 0) {
-    LOG(WARNING) << "'pnacl-arch' field in manifest is invalid (" << arch
+  if (arch->compare(UpdateQueryParams::GetNaclArch()) != 0) {
+    LOG(WARNING) << "'pnacl-arch' field in manifest is invalid (" << *arch
                  << " vs " << UpdateQueryParams::GetNaclArch() << ")";
     return false;
   }

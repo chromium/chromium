@@ -16,7 +16,6 @@ android_library("java") {
     "java/src/org/chromium/components/messages/MessageScopeChange.java",
     "java/src/org/chromium/components/messages/MessageStateHandler.java",
     "java/src/org/chromium/components/messages/MessagesFactory.java",
-    "java/src/org/chromium/components/messages/MessagesMetrics.java",
     "java/src/org/chromium/components/messages/ScopeChangeController.java",
     "java/src/org/chromium/components/messages/ScopeKey.java",
     "java/src/org/chromium/components/messages/SingleActionMessage.java",
@@ -45,6 +44,7 @@ java_library("junit") {
   testonly = true
   sources = [
     "java/src/org/chromium/components/messages/MessageAutoDismissTimerTest.java",
+    "java/src/org/chromium/components/messages/MessageBannerCoordinatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageBannerMediatorUnitTest.java",
     "java/src/org/chromium/components/messages/MessageDispatcherUnitTest.java",
     "java/src/org/chromium/components/messages/MessageQueueManagerTest.java",
@@ -82,6 +82,7 @@ android_library("javatests") {
     "//base:base_java",
     "//base:base_java_test_support",
     "//components/browser_ui/test/android:test_support_java",
+    "//components/browser_ui/widget/android:java",
     "//content/public/test/android:content_java_test_support",
     "//third_party/android_deps:espresso_java",
     "//third_party/androidx:androidx_test_runner_java",
@@ -94,8 +95,10 @@ android_library("javatests") {
 
 android_resources("java_resources") {
   sources = [
-    "java/res/drawable/message_bg_tinted.xml",
+    "java/res/drawable-v23/message_bg_tinted.xml",
+    "java/res/drawable-v31/message_bg_tinted.xml",
     "java/res/layout/message_banner_view.xml",
+    "java/res/values-night/dimens.xml",
     "java/res/values/dimens.xml",
   ]
   deps = [

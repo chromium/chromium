@@ -21,6 +21,20 @@ using ::ash::AccessibilityManager;
 using ::ash::MagnificationManager;
 using ::ash::MagnifierType;
 
+namespace {
+
+void SetEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  keyboard_client->SetEnableFlag(flag);
+}
+
+void ClearEnableFlag(const keyboard::KeyboardEnableFlag& flag) {
+  auto* keyboard_client = ChromeKeyboardControllerClient::Get();
+  keyboard_client->ClearEnableFlag(flag);
+}
+
+}  // namespace
+
 class AccessibilityPolicyTest : public PolicyTest {};
 
 IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, LargeCursorEnabled) {
@@ -340,7 +354,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, CursorHighlightEnabled) {
 }
 
 // https://crbug.com/1225510
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CaretHighlightEnabled DISABLED_CaretHighlightEnabled
 #else
 #define MAYBE_CaretHighlightEnabled CaretHighlightEnabled
@@ -417,13 +431,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MonoAudioEnabled) {
   EXPECT_TRUE(accessibility_manager->IsMonoAudioEnabled());
 }
 
-// Flaky on chromeos: crbug.com/1184225
-#if defined(OS_CHROMEOS)
-#define MAYBE_AutoclickEnabled DISABLED_AutoclickEnabled
-#else
-#define MAYBE_AutoclickEnabled AutoclickEnabled
-#endif
-IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MAYBE_AutoclickEnabled) {
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, AutoclickEnabled) {
   // Verifies that the autoclick accessibility feature can be controlled through
   // policy.
   AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
@@ -457,6 +465,9 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, MAYBE_AutoclickEnabled) {
   // Verify that the autoclick cannot be disabled manually anymore.
   accessibility_manager->EnableAutoclick(false);
   EXPECT_TRUE(accessibility_manager->IsAutoclickEnabled());
+
+  // Verify that no confirmation dialog has been shown.
+  EXPECT_FALSE(accessibility_manager->IsDisableAutoclickDialogVisibleForTest());
 }
 
 }  // namespace policy

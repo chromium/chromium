@@ -9,7 +9,6 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "build/chromeos_buildflags.h"
 #include "crypto/crypto_export.h"
 

@@ -252,6 +252,16 @@ through APIs like the tabs and windows APIs. This is critical for certain types
 of extensions, such as tab and session managers, bookmark managers, and history
 managers.
 
+### Why do we not allow extensions to open or close chrome-untrusted:-scheme pages?
+
+The chrome-untrusted:-scheme (such as chrome-untrusted://terminal) is generally
+used for Chrome OS System Web Apps. Some of these apps such as Terminal which
+starts the Linux VM can perform operations on startup, or start other systems
+which may have security vulnerabilities. We
+[intentionally](../../security/chromeos_security_whitepaper.md#principles-of-chrome-os-security)
+disallow auto-start to avoid
+[persistent attacks](https://chromium.googlesource.com/chromiumos/docs/+/HEAD/containers_and_vms.md#security-persistence).
+
 ### Why are extensions allowed to bypass a web page's Content Security Policy?
 
 Extensions are considered more privileged than the web pages they are allowed to

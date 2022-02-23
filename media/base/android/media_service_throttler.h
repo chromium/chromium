@@ -9,6 +9,7 @@
 
 #include "base/callback_forward.h"
 #include "base/cancelable_callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/time/tick_clock.h"
 #include "base/time/time.h"
@@ -81,7 +82,7 @@ class MEDIA_EXPORT MediaServiceThrottler {
   // based on |current_crashes_|.
   base::TimeDelta GetThrottlingDelayFromServerCrashes();
 
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
 
   // Effective number of media server crashes.
   // NOTE: This is of type double because we decay the number of crashes at a

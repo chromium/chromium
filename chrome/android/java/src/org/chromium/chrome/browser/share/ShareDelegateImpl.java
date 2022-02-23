@@ -22,12 +22,12 @@ import org.chromium.chrome.browser.printing.PrintShareActivity;
 import org.chromium.chrome.browser.printing.TabPrinter;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.send_tab_to_self.SendTabToSelfShareActivity;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.share.link_to_text.LinkToTextHelper;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetCoordinator;
 import org.chromium.chrome.browser.share.share_sheet.ShareSheetPropertyModelBuilder;
-import org.chromium.chrome.browser.sync.SyncService;
 import org.chromium.chrome.browser.tab.SadTab;
 import org.chromium.chrome.browser.tab.Tab;
+import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.share.ShareParams;
 import org.chromium.components.embedder_support.util.UrlConstants;
@@ -53,6 +53,7 @@ public class ShareDelegateImpl implements ShareDelegate {
     private final BottomSheetController mBottomSheetController;
     private final ActivityLifecycleDispatcher mLifecycleDispatcher;
     private final Supplier<Tab> mTabProvider;
+    private final Supplier<TabModelSelector> mTabModelSelectorProvider;
     private final ShareSheetDelegate mDelegate;
     private final boolean mIsCustomTab;
     private long mShareStartTime;
@@ -64,15 +65,19 @@ public class ShareDelegateImpl implements ShareDelegate {
      * @param lifecycleDispatcher Dispatcher for activity lifecycle events, e.g. configuration
      * changes.
      * @param tabProvider Supplier for the current activity tab.
+     * @param tabModelSelectorProvider Supplier for the {@link TabModelSelector}. Used to determine
+     * whether incognito mode is selected or not.
      * @param delegate The ShareSheetDelegate for the current activity.
      * @param isCustomTab This share delegate is associated with a CCT.
      */
     public ShareDelegateImpl(BottomSheetController controller,
             ActivityLifecycleDispatcher lifecycleDispatcher, Supplier<Tab> tabProvider,
-            ShareSheetDelegate delegate, boolean isCustomTab) {
+            Supplier<TabModelSelector> tabModelSelectorProvider, ShareSheetDelegate delegate,
+            boolean isCustomTab) {
         mBottomSheetController = controller;
         mLifecycleDispatcher = lifecycleDispatcher;
         mTabProvider = tabProvider;
+        mTabModelSelectorProvider = tabModelSelectorProvider;
         mDelegate = delegate;
         mIsCustomTab = isCustomTab;
     }
@@ -84,10 +89,9 @@ public class ShareDelegateImpl implements ShareDelegate {
         if (mShareStartTime == 0L) {
             mShareStartTime = System.currentTimeMillis();
         }
-        boolean isSyncEnabled = SyncService.get() != null && SyncService.get().isSyncRequested();
         mDelegate.share(params, chromeShareExtras, mBottomSheetController, mLifecycleDispatcher,
-                mTabProvider, this::printTab, shareOrigin, isSyncEnabled, mShareStartTime,
-                isSharingHubEnabled());
+                mTabProvider, mTabModelSelectorProvider, this::printTab, shareOrigin,
+                mShareStartTime, isSharingHubEnabled());
         mShareStartTime = 0;
     }
 
@@ -96,7 +100,7 @@ public class ShareDelegateImpl implements ShareDelegate {
     public void share(Tab currentTab, boolean shareDirectly, @ShareOrigin int shareOrigin) {
         mShareStartTime = System.currentTimeMillis();
         onShareSelected(currentTab.getWindowAndroid().getActivity().get(), currentTab, shareOrigin,
-                shareDirectly, currentTab.isIncognito());
+                shareDirectly);
     }
 
     /**
@@ -106,10 +110,9 @@ public class ShareDelegateImpl implements ShareDelegate {
      * @param shareOrigin Where the share originated.
      * @param shareDirectly Whether it should share directly with the activity that was most
      * recently used to share.
-     * @param isIncognito Whether currentTab is incognito.
      */
     private void onShareSelected(Activity activity, Tab currentTab, @ShareOrigin int shareOrigin,
-            boolean shareDirectly, boolean isIncognito) {
+            boolean shareDirectly) {
         if (currentTab == null) return;
 
         List<Class<? extends Activity>> classesToEnable = new ArrayList<>(2);
@@ -124,16 +127,15 @@ public class ShareDelegateImpl implements ShareDelegate {
 
         if (!classesToEnable.isEmpty()) {
             OptionalShareTargetsManager.getInstance().enableOptionalShareActivities(activity,
-                    classesToEnable,
-                    () -> triggerShare(currentTab, shareOrigin, shareDirectly, isIncognito));
+                    classesToEnable, () -> triggerShare(currentTab, shareOrigin, shareDirectly));
             return;
         }
 
-        triggerShare(currentTab, shareOrigin, shareDirectly, isIncognito);
+        triggerShare(currentTab, shareOrigin, shareDirectly);
     }
 
-    private void triggerShare(final Tab currentTab, @ShareOrigin final int shareOrigin,
-            final boolean shareDirectly, boolean isIncognito) {
+    private void triggerShare(
+            final Tab currentTab, @ShareOrigin final int shareOrigin, final boolean shareDirectly) {
         OfflinePageUtils.maybeShareOfflinePage(currentTab, (ShareParams p) -> {
             if (p != null) {
                 share(p, new ChromeShareExtras.Builder().setIsUrlOfVisiblePage(true).build(),
@@ -148,16 +150,28 @@ public class ShareDelegateImpl implements ShareDelegate {
                     webContents.getMainFrame().getCanonicalUrlForSharing(new Callback<GURL>() {
                         @Override
                         public void onResult(GURL result) {
-                            logCanonicalUrlResult(visibleUrl, result);
-
-                            triggerShareWithCanonicalUrlResolved(window, webContents, title,
-                                    visibleUrl, result, shareOrigin, shareDirectly, isIncognito);
+                            if (LinkToTextHelper.hasTextFragment(visibleUrl)) {
+                                LinkToTextHelper.getExistingSelectorsAllFrames(
+                                        currentTab, (selectors) -> {
+                                            GURL canonicalUrl =
+                                                    new GURL(LinkToTextHelper.getUrlToShare(
+                                                            result.getSpec(), selectors));
+                                            logCanonicalUrlResult(visibleUrl, canonicalUrl);
+                                            triggerShareWithCanonicalUrlResolved(window,
+                                                    webContents, title, visibleUrl, canonicalUrl,
+                                                    shareOrigin, shareDirectly);
+                                        });
+                            } else {
+                                logCanonicalUrlResult(visibleUrl, result);
+                                triggerShareWithCanonicalUrlResolved(window, webContents, title,
+                                        visibleUrl, result, shareOrigin, shareDirectly);
+                            }
                         }
                     });
                 } else {
                     triggerShareWithCanonicalUrlResolved(window, currentTab.getWebContents(),
                             currentTab.getTitle(), currentTab.getUrl(), GURL.emptyGURL(),
-                            shareOrigin, shareDirectly, isIncognito);
+                            shareOrigin, shareDirectly);
                 }
             }
         });
@@ -166,7 +180,7 @@ public class ShareDelegateImpl implements ShareDelegate {
     private void triggerShareWithCanonicalUrlResolved(final WindowAndroid window,
             final WebContents webContents, final String title, final @NonNull GURL visibleUrl,
             final GURL canonicalUrl, @ShareOrigin final int shareOrigin,
-            final boolean shareDirectly, boolean isIncognito) {
+            final boolean shareDirectly) {
         ShareParams.Builder builder =
                 new ShareParams.Builder(window, title, getUrlToShare(visibleUrl, canonicalUrl))
                         .setScreenshotUri(null);
@@ -260,8 +274,8 @@ public class ShareDelegateImpl implements ShareDelegate {
          */
         void share(ShareParams params, ChromeShareExtras chromeShareExtras,
                 BottomSheetController controller, ActivityLifecycleDispatcher lifecycleDispatcher,
-                Supplier<Tab> tabProvider, Callback<Tab> printCallback,
-                @ShareOrigin int shareOrigin, boolean isSyncEnabled, long shareStartTime,
+                Supplier<Tab> tabProvider, Supplier<TabModelSelector> tabModelSelectorSupplier,
+                Callback<Tab> printCallback, @ShareOrigin int shareOrigin, long shareStartTime,
                 boolean sharingHubEnabled) {
             Profile profile = null;
             if (tabProvider.get() != null && tabProvider.get().getWebContents() != null) {
@@ -271,18 +285,19 @@ public class ShareDelegateImpl implements ShareDelegate {
                 ShareHelper.shareWithLastUsedComponent(params);
             } else if (sharingHubEnabled && !chromeShareExtras.sharingTabGroup()
                     && tabProvider.get() != null) {
+                // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
+                // Re-enable it when tab group sharing is supported by sharing hub.
                 RecordHistogram.recordEnumeratedHistogram(
                         "Sharing.SharingHubAndroid.Opened", shareOrigin, ShareOrigin.COUNT);
                 ShareHelper.recordShareSource(ShareHelper.ShareSourceAndroid.CHROME_SHARE_SHEET);
-                // TODO(crbug.com/1085078): Sharing hub is suppressed for tab group sharing.
-                // Re-enable it when tab group sharing is supported by sharing hub.
+                boolean isIncognito = tabModelSelectorSupplier.hasValue()
+                        && tabModelSelectorSupplier.get().isIncognitoSelected();
                 ShareSheetCoordinator coordinator = new ShareSheetCoordinator(controller,
                         lifecycleDispatcher, tabProvider,
                         new ShareSheetPropertyModelBuilder(controller,
                                 ContextUtils.getApplicationContext().getPackageManager(), profile),
                         printCallback, new LargeIconBridge(Profile.getLastUsedRegularProfile()),
-                        new SettingsLauncherImpl(), isSyncEnabled,
-                        AppHooks.get().getImageEditorModuleProvider(),
+                        isIncognito, AppHooks.get().getImageEditorModuleProvider(),
                         TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile()));
                 // TODO(crbug/1009124): open custom share sheet.
                 coordinator.showInitialShareSheet(params, chromeShareExtras, shareStartTime);

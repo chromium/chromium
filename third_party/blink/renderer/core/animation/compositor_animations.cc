@@ -68,6 +68,7 @@
 #include "third_party/blink/renderer/platform/animation/compositor_transform_animation_curve.h"
 #include "third_party/blink/renderer/platform/animation/compositor_transform_keyframe.h"
 #include "third_party/blink/renderer/platform/graphics/compositing/paint_artifact_compositor.h"
+#include "third_party/blink/renderer/platform/graphics/platform_paint_worklet_layer_painter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
@@ -517,6 +518,10 @@ CompositorAnimations::CheckCanStartElementOnCompositor(
     const EffectModel& model) {
   FailureReasons reasons = kNoFailure;
 
+  // TODO(crbug.com/1287221): Add a more specific reason.
+  if (target_element.GetDocument().ShouldForceReduceMotion())
+    reasons |= kAcceleratedAnimationsDisabled;
+
   // Both of these checks are required. It is legal to enable the compositor
   // thread but disable threaded animations, and there are situations where
   // threaded animations are enabled globally but this particular LocalFrame
@@ -771,7 +776,7 @@ void AddKeyframeToCurve(CompositorFilterAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function) {
-  FilterEffectBuilder builder(FloatRect(), 1);
+  FilterEffectBuilder builder(gfx::RectF(), 1);
   CompositorFilterKeyframe filter_keyframe(
       keyframe->Offset(),
       builder.BuildFilterOperations(
@@ -804,7 +809,7 @@ void AddKeyframeToCurve(CompositorTransformAnimationCurve& curve,
                         Keyframe::PropertySpecificKeyframe* keyframe,
                         const CompositorKeyframeValue* value,
                         const TimingFunction& keyframe_timing_function,
-                        const FloatSize& box_size) {
+                        const gfx::SizeF& box_size) {
   CompositorTransformOperations ops;
   ToCompositorTransformOperations(
       To<CompositorKeyframeTransform>(value)->GetTransformOperations(), &ops,
@@ -849,10 +854,9 @@ void CompositorAnimations::GetAnimationOnCompositor(
     double animation_playback_rate) {
   DCHECK(keyframe_models.IsEmpty());
   CompositorTiming compositor_timing;
-  bool timing_valid =
+  [[maybe_unused]] bool timing_valid =
       ConvertTimingForCompositor(timing, normalized_timing, time_offset,
                                  compositor_timing, animation_playback_rate);
-  ALLOW_UNUSED_LOCAL(timing_valid);
 
   PropertyHandleSet properties = effect.Properties();
   DCHECK(!properties.IsEmpty());
@@ -899,9 +903,9 @@ void CompositorAnimations::GetAnimationOnCompositor(
       case CSSPropertyID::kScale:
       case CSSPropertyID::kTranslate:
       case CSSPropertyID::kTransform: {
-        FloatSize box_size(ComputedStyleUtils::ReferenceBoxForTransform(
-                               *target_element.GetLayoutObject())
-                               .size());
+        gfx::SizeF box_size(ComputedStyleUtils::ReferenceBoxForTransform(
+                                *target_element.GetLayoutObject())
+                                .size());
         auto transform_curve =
             std::make_unique<CompositorTransformAnimationCurve>();
         AddKeyframesToCurve(*transform_curve, values, box_size);
@@ -988,7 +992,7 @@ bool CompositorAnimations::CheckUsesCompositedScrolling(Node* target) {
   if (!target)
     return false;
   DCHECK(target->GetDocument().Lifecycle().GetState() >=
-         DocumentLifecycle::kCompositingAssignmentsClean);
+         DocumentLifecycle::kPrePaintClean);
   auto* layout_box_model_object = target->GetLayoutBoxModelObject();
   if (!layout_box_model_object)
     return false;

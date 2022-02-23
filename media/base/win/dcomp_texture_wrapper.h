@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/unguessable_token.h"
+#include "ui/gfx/gpu_memory_buffer.h"
 
 namespace gfx {
 class Rect;
@@ -42,6 +43,14 @@ class DCOMPTextureWrapper {
       base::OnceCallback<void(scoped_refptr<VideoFrame>)>;
   virtual void CreateVideoFrame(const gfx::Size& natural_size,
                                 CreateVideoFrameCB create_video_frame_cb) = 0;
+
+  using CreateDXVideoFrameCB =
+      base::OnceCallback<void(scoped_refptr<VideoFrame>,
+                              const base::UnguessableToken& token)>;
+  virtual void CreateVideoFrame(const gfx::Size& natural_size,
+                                gfx::GpuMemoryBufferHandle dx_handle,
+                                const base::UnguessableToken& token,
+                                CreateDXVideoFrameCB create_video_frame_cb) = 0;
 };
 
 }  // namespace media

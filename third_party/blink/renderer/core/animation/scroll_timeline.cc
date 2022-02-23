@@ -6,6 +6,7 @@
 
 #include <tuple>
 
+#include "base/memory/values_equivalent.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_scroll_timeline_options.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_csskeywordvalue_cssnumericvalue_scrolltimelineelementbasedoffset_string.h"
@@ -22,7 +23,6 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/layout/layout_box.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/paint/compositing/paint_layer_compositor.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
 #include "third_party/blink/renderer/core/paint/paint_layer_scrollable_area.h"
 #include "third_party/blink/renderer/core/scroll/scroll_types.h"
@@ -44,19 +44,19 @@ ScrollTimelineSet& GetScrollTimelineSet() {
 bool StringToScrollDirection(String scroll_direction,
                              ScrollTimeline::ScrollDirection& result) {
   if (scroll_direction == "block") {
-    result = ScrollTimeline::Block;
+    result = ScrollTimeline::kBlock;
     return true;
   }
   if (scroll_direction == "inline") {
-    result = ScrollTimeline::Inline;
+    result = ScrollTimeline::kInline;
     return true;
   }
   if (scroll_direction == "horizontal") {
-    result = ScrollTimeline::Horizontal;
+    result = ScrollTimeline::kHorizontal;
     return true;
   }
   if (scroll_direction == "vertical") {
-    result = ScrollTimeline::Vertical;
+    result = ScrollTimeline::kVertical;
     return true;
   }
   return false;
@@ -67,13 +67,13 @@ ScrollOrientation ToPhysicalScrollOrientation(
     const LayoutBox& source_box) {
   bool is_horizontal = source_box.IsHorizontalWritingMode();
   switch (direction) {
-    case ScrollTimeline::Block:
+    case ScrollTimeline::kBlock:
       return is_horizontal ? kVerticalScroll : kHorizontalScroll;
-    case ScrollTimeline::Inline:
+    case ScrollTimeline::kInline:
       return is_horizontal ? kHorizontalScroll : kVerticalScroll;
-    case ScrollTimeline::Horizontal:
+    case ScrollTimeline::kHorizontal:
       return kHorizontalScroll;
-    case ScrollTimeline::Vertical:
+    case ScrollTimeline::kVertical:
       return kVerticalScroll;
   }
 }
@@ -273,7 +273,7 @@ bool ScrollTimeline::ScrollOffsetsEqual(
     return false;
   wtf_size_t size = scroll_offsets_.size();
   for (wtf_size_t i = 0; i < size; ++i) {
-    if (!DataEquivalent(scroll_offsets_.at(i), other.at(i)))
+    if (!base::ValuesEquivalent(scroll_offsets_.at(i), other.at(i)))
       return false;
   }
   return true;
@@ -434,13 +434,13 @@ Element* ScrollTimeline::source() const {
 
 String ScrollTimeline::orientation() {
   switch (orientation_) {
-    case Block:
+    case kBlock:
       return "block";
-    case Inline:
+    case kInline:
       return "inline";
-    case Horizontal:
+    case kHorizontal:
       return "horizontal";
-    case Vertical:
+    case kVertical:
       return "vertical";
     default:
       NOTREACHED();
@@ -474,10 +474,10 @@ void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
   // Using the absolute value of the scroll offset only makes sense if either
   // the max or min scroll offset for a given axis is 0. This should be
   // guaranteed by the scroll origin code, but these DCHECKs ensure that.
-  DCHECK(scrollable_area->MaximumScrollOffset().height() == 0 ||
-         scrollable_area->MinimumScrollOffset().height() == 0);
-  DCHECK(scrollable_area->MaximumScrollOffset().width() == 0 ||
-         scrollable_area->MinimumScrollOffset().width() == 0);
+  DCHECK(scrollable_area->MaximumScrollOffset().y() == 0 ||
+         scrollable_area->MinimumScrollOffset().y() == 0);
+  DCHECK(scrollable_area->MaximumScrollOffset().x() == 0 ||
+         scrollable_area->MinimumScrollOffset().x() == 0);
   ScrollOffset scroll_offset = scrollable_area->GetScrollOffset();
   ScrollOffset scroll_dimensions = scrollable_area->MaximumScrollOffset() -
                                    scrollable_area->MinimumScrollOffset();
@@ -486,11 +486,11 @@ void ScrollTimeline::GetCurrentAndMaxOffset(const LayoutBox* layout_box,
       ToPhysicalScrollOrientation(orientation_, *layout_box);
 
   if (physical_orientation == kHorizontalScroll) {
-    current_offset = scroll_offset.width();
-    max_offset = scroll_dimensions.width();
+    current_offset = scroll_offset.x();
+    max_offset = scroll_dimensions.x();
   } else {
-    current_offset = scroll_offset.height();
-    max_offset = scroll_dimensions.height();
+    current_offset = scroll_offset.y();
+    max_offset = scroll_dimensions.y();
   }
   // When using a rtl direction, current_offset grows correctly from 0 to
   // max_offset, but is negative. Since our offsets are all just deltas along

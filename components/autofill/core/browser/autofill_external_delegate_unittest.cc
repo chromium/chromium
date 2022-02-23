@@ -126,8 +126,9 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
               (const FormData& form, const FormFieldData& field),
               (override));
   MOCK_METHOD(void,
-              FillVirtualCardInformation,
-              (const std::string& guid,
+              FillOrPreviewVirtualCardInformation,
+              (mojom::RendererFormDataAction action,
+               const std::string& guid,
                int query_id,
                const FormData& form,
                const FormFieldData& field),
@@ -363,7 +364,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateDataList) {
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   auto element_ids = testing::ElementsAre(
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
@@ -418,7 +419,7 @@ TEST_F(AutofillExternalDelegateUnitTest, UpdateDataListWhileShowingPopup) {
   // The enums must be cast to ints to prevent compile errors on linux_rel.
   auto element_ids = testing::ElementsAre(
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
@@ -469,7 +470,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutofillDatalistValues) {
   auto element_ids = testing::ElementsAre(
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       kAutofillProfileId, static_cast<int>(POPUP_ITEM_ID_AUTOFILL_OPTIONS));
@@ -509,7 +510,7 @@ TEST_F(AutofillExternalDelegateUnitTest, DuplicateAutocompleteDatalistValues) {
       // We are expecting only two data list entries.
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
       static_cast<int>(POPUP_ITEM_ID_DATALIST_ENTRY),
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
       static_cast<int>(POPUP_ITEM_ID_SEPARATOR),
 #endif
       static_cast<int>(POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY));
@@ -598,7 +599,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateInvalidUniqueId) {
   EXPECT_CALL(*browser_autofill_manager_, FillOrPreviewForm(_, _, _, _, _))
       .Times(0);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  external_delegate_->DidSelectSuggestion(std::u16string(), -1);
+  external_delegate_->DidSelectSuggestion(std::u16string(), -1, std::string());
 
   // Ensure it doesn't try to fill the form in with the negative id.
   EXPECT_CALL(autofill_client_,
@@ -616,21 +617,30 @@ TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearPreviewedForm) {
   // cause any previews to get cleared.
   IssueOnQuery(123);
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
-  external_delegate_->DidSelectSuggestion(u"baz foo",
-                                          POPUP_ITEM_ID_PASSWORD_ENTRY);
+  external_delegate_->DidSelectSuggestion(
+      u"baz foo", POPUP_ITEM_ID_PASSWORD_ENTRY, std::string());
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(
       *browser_autofill_manager_,
       FillOrPreviewForm(mojom::RendererFormDataAction::kPreview, _, _, _, _));
-  external_delegate_->DidSelectSuggestion(u"baz foo", 1);
+  external_delegate_->DidSelectSuggestion(u"baz foo", 1, std::string());
 
   // Ensure selecting an autocomplete entry will cause any previews to
   // get cleared.
   EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
   EXPECT_CALL(*autofill_driver_, RendererShouldPreviewFieldWithValue(
                                      field_id_, std::u16string(u"baz foo")));
-  external_delegate_->DidSelectSuggestion(u"baz foo",
-                                          POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY);
+  external_delegate_->DidSelectSuggestion(
+      u"baz foo", POPUP_ITEM_ID_AUTOCOMPLETE_ENTRY, std::string());
+
+  // Ensure selecting a virtual card entry will cause any previews to
+  // get cleared.
+  EXPECT_CALL(*autofill_driver_, RendererShouldClearPreviewedForm()).Times(1);
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewVirtualCardInformation(
+                  mojom::RendererFormDataAction::kPreview, _, _, _, _));
+  external_delegate_->DidSelectSuggestion(
+      std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY, std::string());
 }
 
 // Test that the popup is hidden once we are done editing the autofill field.
@@ -848,7 +858,7 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldShowGooglePayIcon) {
       true);
 
   // On Desktop, the GPay icon should be stored in the store indicator icon.
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   EXPECT_THAT(open_args.suggestions, SuggestionVectorIconsAre(element_icons));
 #else
   EXPECT_THAT(open_args.suggestions,
@@ -905,12 +915,22 @@ TEST_F(AutofillExternalDelegateUnitTest, ShouldUseNewSettingName) {
 
 // Test that browser autofill manager will handle the unmasking request for the
 // virtual card after users accept the suggestion to use a virtual card.
-TEST_F(AutofillExternalDelegateUnitTest, VirtualCardOptionItem) {
+TEST_F(AutofillExternalDelegateUnitTest, AcceptVirtualCardOptionItem) {
+  FormData form;
   EXPECT_CALL(*browser_autofill_manager_,
-              FillVirtualCardInformation(_, _, _, _));
+              FillOrPreviewVirtualCardInformation(
+                  mojom::RendererFormDataAction::kFill, _, _, _, _));
   external_delegate_->DidAcceptSuggestion(
       std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY, std::string(),
       0);
+}
+
+TEST_F(AutofillExternalDelegateUnitTest, SelectVirtualCardOptionItem) {
+  EXPECT_CALL(*browser_autofill_manager_,
+              FillOrPreviewVirtualCardInformation(
+                  mojom::RendererFormDataAction::kPreview, _, _, _, _));
+  external_delegate_->DidSelectSuggestion(
+      std::u16string(), POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY, std::string());
 }
 
 // Tests that the prompt to show account cards shows up when the corresponding
@@ -960,7 +980,7 @@ TEST_F(AutofillExternalDelegateCardsFromAccountTest,
   EXPECT_EQ(open_args.popup_type, PopupType::kPersonalInformation);
 }
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 // Tests that outdated returned suggestions are discarded.
 TEST_F(AutofillExternalDelegateCardsFromAccountTest,
        ShouldDiscardOutdatedSuggestions) {

@@ -49,7 +49,7 @@ bool OverlayProcessorSurfaceControl::NeedsSurfaceDamageRectList() const {
   return true;
 }
 
-void OverlayProcessorSurfaceControl::CheckOverlaySupport(
+void OverlayProcessorSurfaceControl::CheckOverlaySupportImpl(
     const OverlayProcessorInterface::OutputSurfaceOverlayPlane* primary_plane,
     OverlayCandidateList* candidates) {
   DCHECK(!candidates->empty());

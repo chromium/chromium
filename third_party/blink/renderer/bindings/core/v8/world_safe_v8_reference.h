@@ -8,7 +8,7 @@
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
 #include "third_party/blink/renderer/platform/bindings/trace_wrapper_v8_reference.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -70,8 +70,8 @@ class WorldSafeV8Reference final {
       WorldSafeV8ReferenceInternal::MaybeCheckCreationContextWorld(
           *world_.get(), value);
     } else if (value->IsObject()) {
-      ScriptState* script_state =
-          ScriptState::From(value.template As<v8::Object>()->CreationContext());
+      ScriptState* script_state = ScriptState::From(
+          value.template As<v8::Object>()->GetCreationContextChecked());
       world_ = &script_state->World();
     }
   }

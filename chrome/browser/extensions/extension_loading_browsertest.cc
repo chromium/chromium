@@ -33,7 +33,7 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 
@@ -85,8 +85,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
       embedded_test_server()->GetURL("/README.chromium");
   EXPECT_THAT(test_link_from_NTP.spec(), testing::EndsWith("/README.chromium"))
       << "Check that the test server started.";
-  NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
-                     test_link_from_NTP);
+  EXPECT_TRUE(
+      NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
+                         test_link_from_NTP));
 
   // Increase the extension's version.
   extension_dir.WriteManifest(base::StringPrintf(kManifestTemplate, 2));
@@ -99,9 +100,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
 
   // The extension takes a couple round-trips to the renderer in order
   // to crash, so open a new tab to wait long enough.
-  AddTabAtIndex(browser()->tab_strip_model()->count(),
-                GURL("http://www.google.com/"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_FALSE(AddTabAtIndex(browser()->tab_strip_model()->count(),
+                             GURL("http://www.google.com/"),
+                             ui::PAGE_TRANSITION_TYPED));
 
   // Check that the extension hasn't crashed.
   ExtensionRegistry* registry = ExtensionRegistry::Get(profile());
@@ -140,8 +141,9 @@ IN_PROC_BROWSER_TEST_F(ExtensionLoadingTest,
       embedded_test_server()->GetURL("/README.chromium");
   EXPECT_THAT(test_link_from_ntp.spec(), testing::EndsWith("/README.chromium"))
       << "Check that the test server started.";
-  NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
-                     test_link_from_ntp);
+  EXPECT_TRUE(
+      NavigateInRenderer(browser()->tab_strip_model()->GetActiveWebContents(),
+                         test_link_from_ntp));
 
   // Increase the extension's version and add the NTP url override which will
   // add the kNewTabPageOverride permission.

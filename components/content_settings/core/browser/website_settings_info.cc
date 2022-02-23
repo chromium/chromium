@@ -27,14 +27,13 @@ std::string GetPreferenceName(const std::string& name, const char* prefix) {
 
 namespace content_settings {
 
-WebsiteSettingsInfo::WebsiteSettingsInfo(
-    ContentSettingsType type,
-    const std::string& name,
-    std::unique_ptr<base::Value> initial_default_value,
-    SyncStatus sync_status,
-    LossyStatus lossy_status,
-    ScopingType scoping_type,
-    IncognitoBehavior incognito_behavior)
+WebsiteSettingsInfo::WebsiteSettingsInfo(ContentSettingsType type,
+                                         const std::string& name,
+                                         base::Value initial_default_value,
+                                         SyncStatus sync_status,
+                                         LossyStatus lossy_status,
+                                         ScopingType scoping_type,
+                                         IncognitoBehavior incognito_behavior)
     : type_(type),
       name_(name),
       pref_name_(GetPreferenceName(name, kPrefPrefix)),
@@ -44,13 +43,14 @@ WebsiteSettingsInfo::WebsiteSettingsInfo(
       lossy_status_(lossy_status),
       scoping_type_(scoping_type),
       incognito_behavior_(incognito_behavior) {
-  // For legacy reasons the default value is currently restricted to be an int.
+  // For legacy reasons the default value is currently restricted to be an int
+  // or none.
   // TODO(raymes): We should migrate the underlying pref to be a dictionary
   // rather than an int.
-  DCHECK(!initial_default_value_ || initial_default_value_->is_int());
+  DCHECK(initial_default_value_.is_none() || initial_default_value_.is_int());
 }
 
-WebsiteSettingsInfo::~WebsiteSettingsInfo() {}
+WebsiteSettingsInfo::~WebsiteSettingsInfo() = default;
 
 uint32_t WebsiteSettingsInfo::GetPrefRegistrationFlags() const {
   uint32_t flags = PrefRegistry::NO_REGISTRATION_FLAGS;

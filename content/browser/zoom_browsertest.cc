@@ -4,6 +4,7 @@
 
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
 #include "build/build_config.h"
@@ -139,7 +140,7 @@ struct FrameResizeObserver {
 
   FrameResizeObserver* toThis() {return this;}
 
-  RenderFrameHost* frame_host;
+  raw_ptr<RenderFrameHost> frame_host;
   std::string msg_label;
   bool zoomed_correctly;
   double expected_inner_width;
@@ -165,7 +166,7 @@ struct ResizeObserver {
     return status_msg == "Resized";
   }
 
-  RenderFrameHost* frame_host;
+  raw_ptr<RenderFrameHost> frame_host;
 };
 
 void WaitForResize(DOMMessageQueue& msg_queue, ResizeObserver& observer) {
@@ -430,7 +431,7 @@ IN_PROC_BROWSER_TEST_F(IFrameZoomBrowserTest,
 }
 
 // Flaky on mac, https://crbug.com/1055282
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SiblingFramesZoom DISABLED_SiblingFramesZoom
 #else
 #define MAYBE_SiblingFramesZoom SiblingFramesZoom

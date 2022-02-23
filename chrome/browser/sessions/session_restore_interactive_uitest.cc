@@ -5,14 +5,15 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
 #include "chrome/browser/sessions/session_service_factory.h"
 #include "chrome/browser/sessions/session_service_test_helper.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/startup/startup_tab.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -130,7 +131,10 @@ class SessionRestoreInteractiveTest : public InProcessBrowserTest {
 };
 
 // TODO(https://crbug.com/1152160): Enable FocusOnLaunch on Lacros builds.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(https://crbug.com/1284590): Flaky on Linux ASAN/TSAN builders.
+#if BUILDFLAG(IS_CHROMEOS_LACROS) || \
+    (BUILDFLAG(IS_LINUX) &&          \
+     (defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER)))
 #define MAYBE_FocusOnLaunch DISABLED_FocusOnLaunch
 #else
 #define MAYBE_FocusOnLaunch FocusOnLaunch
@@ -152,7 +156,8 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest, MAYBE_FocusOnLaunch) {
 
 // TODO(https://crbug.com/1152160): Enable RestoreMinimizedWindow on Lacros
 // builds.
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// TODO(crbug.com/1291651): Flaky failures.
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RestoreMinimizedWindow DISABLED_RestoreMinimizedWindow
 #else
 #define MAYBE_RestoreMinimizedWindow RestoreMinimizedWindow
@@ -175,7 +180,7 @@ IN_PROC_BROWSER_TEST_F(SessionRestoreInteractiveTest,
   EXPECT_TRUE(restored->window()->IsVisible());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_RestoreMinimizedWindowTwice RestoreMinimizedWindowTwice
 #else
 #define MAYBE_RestoreMinimizedWindowTwice DISABLED_RestoreMinimizedWindowTwice

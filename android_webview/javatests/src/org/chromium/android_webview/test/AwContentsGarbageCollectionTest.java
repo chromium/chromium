@@ -33,7 +33,6 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
-import org.chromium.base.test.util.MinAndroidSdkLevel;
 import org.chromium.content_public.browser.ImeAdapter;
 import org.chromium.content_public.browser.WebContentsAccessibility;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
@@ -47,12 +46,7 @@ import java.util.concurrent.Callable;
  * garbage collected to release memory. These tests ensure that nothing
  * accidentally prevents AwContents from garbage collected, leading to leaks.
  * See crbug.com/544098 for why @DisableHardwareAccelerationForTest is needed.
- * These tests are flaky on non-cq L bot (crbug.com/1085101) because the trick
- * to remove InputMethodManager reference does not work on L. This is ok as
- * long as these tests are running and passing on some cq bot, so just
- * disabling them on L.
  */
-@MinAndroidSdkLevel(Build.VERSION_CODES.M)
 @RunWith(AwJUnit4ClassRunner.class)
 public class AwContentsGarbageCollectionTest {
     @Rule

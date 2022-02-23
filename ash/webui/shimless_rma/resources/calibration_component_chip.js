@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import './shimless_rma_fonts_css.js';
 import './shimless_rma_shared_css.js';
 import './icons.js';
 
@@ -30,13 +31,7 @@ export class CalibrationComponentChipElement extends PolymerElement {
   static get properties() {
     return {
       /** @type {boolean} */
-      disabled: {
-        type: Boolean,
-        value: false,
-      },
-
-      /** @type {boolean} */
-      skip: {
+      checked: {
         notify: true,
         reflectToAttribute: true,
         type: Boolean,
@@ -44,36 +39,36 @@ export class CalibrationComponentChipElement extends PolymerElement {
       },
 
       /** @type {boolean} */
-      completed: {
-        notify: true,
-        reflectToAttribute: true,
-        type: Boolean,
-        value: false,
-      },
-
-      /** @type {boolean} */
-      failed: {
-        notify: true,
-        reflectToAttribute: true,
-        type: Boolean,
-        value: false,
-      },
+      failed: {type: Boolean, value: false},
 
       /** @type {string} */
       componentName: {type: String, value: ''},
 
-      /** @type {string} */
-      componentStatus: {type: String, value: ''}
+      /** @type {boolean} */
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
   /** @protected */
   onComponentButtonClicked_() {
-    this.skip = !this.skip;
+    this.checked = !this.checked;
   }
 
   click() {
     this.onComponentButtonClicked_();
+  }
+
+  /**
+   * Show the checked icon for disabled calibration components because if it's
+   * disabled, that means it alerady passed calibration.
+   * @return {boolean}
+   * @protected
+   */
+  shouldShowCheckIcon_() {
+    return this.checked || this.disabled;
   }
 }
 

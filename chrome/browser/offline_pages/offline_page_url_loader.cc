@@ -20,7 +20,6 @@
 #include "net/url_request/referrer_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/mojom/loader/resource_load_info.mojom-shared.h"
 
 namespace offline_pages {
@@ -283,7 +282,8 @@ void OfflinePageURLLoader::OnReceiveResponse(
   response_head->mime_type = "multipart/related";
   response_head->content_length = file_size;
 
-  client_->OnReceiveResponse(std::move(response_head));
+  client_->OnReceiveResponse(std::move(response_head),
+                             mojo::ScopedDataPipeConsumerHandle());
   client_->OnStartLoadingResponseBody(std::move(consumer_handle));
 
   handle_watcher_ = std::make_unique<mojo::SimpleWatcher>(

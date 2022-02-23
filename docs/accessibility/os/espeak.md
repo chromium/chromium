@@ -45,10 +45,26 @@ The source code to the Chrome OS port of eSpeak-NG can be found here:
 
   https://chromium.googlesource.com/chromiumos/third_party/espeak-ng
 
-All of the Chrome-specific changes are in the "chrome" branch. Clone
-the repository, switch to the "chrome" branch, and check out
+All of the Chrome-specific changes are in the "chrome" branch. 
+
+To get the source code locally:
+
+1. Clone the repository
+```
+git clone https://chromium.googlesource.com/chromiumos/third_party/espeak-ng
+```
+2. Enter the espeak-ng directory
+```
+cd espeak-ng/
+```
+3. Switch to the "chrome" branch
+```
+git checkout chrome
+```
+
+From there,
 [README.chrome](https://chromium.googlesource.com/chromiumos/third_party/espeak-ng/+/chrome/README.chrome)
-for build instructions.
+has instructions on building eSpeak.
 
 ## Releasing a new version of eSpeak for Chrome OS
 

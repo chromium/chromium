@@ -11,6 +11,7 @@
 
 #include "base/containers/flat_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -73,13 +74,6 @@ class CastActivityManager : public CastActivityManagerBase,
                       const std::string& hash_token);
   ~CastActivityManager() override;
 
-  // Adds or removes a route query with |source|. When adding a route query, if
-  // the current list of routes is non-empty, the query will be immediately
-  // updated with the current list.
-  // TODO(https://crbug.com/882481): Simplify the route query API.
-  void AddRouteQuery(const MediaSource::Id& source);
-  void RemoveRouteQuery(const MediaSource::Id& source);
-
   // Launches a Cast session with parameters given by |cast_source| to |sink|.
   // Returns the created MediaRoute and notifies existing route queries.
   void LaunchSession(const CastMediaSource& cast_source,
@@ -109,6 +103,7 @@ class CastActivityManager : public CastActivityManagerBase,
 
   const MediaRoute* GetRoute(const MediaRoute::Id& route_id) const;
   std::vector<MediaRoute> GetRoutes() const;
+  void NotifyAllOnRoutesUpdated();
   CastSessionTracker* GetCastSessionTracker() const { return session_tracker_; }
 
   // cast_channel::CastMessageHandler::Observer overrides.
@@ -144,6 +139,8 @@ class CastActivityManager : public CastActivityManagerBase,
                            LaunchSessionTerminatesExistingSessionOnSink);
   FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest,
                            LaunchSessionTerminatesExistingSessionFromTab);
+  FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest,
+                           LaunchSessionTerminatesPendingLaunchFromTab);
   FRIEND_TEST_ALL_PREFIXES(CastActivityManagerTest, SendMediaRequestToReceiver);
 
   using ActivityMap =
@@ -218,16 +215,12 @@ class CastActivityManager : public CastActivityManagerBase,
 
   // Removes an activity without sending the usual notification.
   //
-  // TODO(jrw): Figure out why it's desirable to avoid sending the usual
-  // notification sometimes.
+  // TODO(crbug.com/1291719): Figure out why it's desirable to avoid sending the
+  // usual notification sometimes.
   void RemoveActivityWithoutNotification(
       ActivityMap::iterator activity_it,
       blink::mojom::PresentationConnectionState state,
       blink::mojom::PresentationConnectionCloseReason close_reason);
-
-  void NotifyAllOnRoutesUpdated();
-  void NotifyOnRoutesUpdated(const MediaSource::Id& source_id,
-                             const std::vector<MediaRoute>& routes);
 
   void HandleLaunchSessionResponse(
       DoLaunchSessionParams params,
@@ -285,8 +278,6 @@ class CastActivityManager : public CastActivityManagerBase,
 
   static CastActivityFactoryForTest* cast_activity_factory_for_test_;
 
-  base::flat_set<MediaSource::Id> route_queries_;
-
   // This map contains all activities--both presentation activities and
   // mirroring activities.
   ActivityMap activities_;
@@ -309,11 +300,11 @@ class CastActivityManager : public CastActivityManagerBase,
   absl::optional<DoLaunchSessionParams> pending_launch_;
 
   // The following raw pointer fields are assumed to outlive |this|.
-  MediaSinkServiceBase* const media_sink_service_;
-  CastSessionTracker* const session_tracker_;
-  cast_channel::CastMessageHandler* const message_handler_;
-  mojom::MediaRouter* const media_router_;
-  mojom::Logger* const logger_;
+  const raw_ptr<MediaSinkServiceBase> media_sink_service_;
+  const raw_ptr<CastSessionTracker> session_tracker_;
+  const raw_ptr<cast_channel::CastMessageHandler> message_handler_;
+  const raw_ptr<mojom::MediaRouter> media_router_;
+  const raw_ptr<mojom::Logger> logger_;
 
   const std::string hash_token_;
 

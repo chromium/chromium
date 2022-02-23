@@ -14,6 +14,7 @@
 
 namespace ash {
 class AccountManager;
+class AccountAppsAvailability;
 }
 
 namespace chromeos {
@@ -26,11 +27,36 @@ namespace chromeos {
 // itself after its work is complete.
 class SigninHelper : public GaiaAuthConsumer {
  public:
+  // A helper class that is responsible for setting the ARC availability
+  // after account addition depending on the flags passed in the constructor.
+  class ArcHelper {
+   public:
+    // If `is_account_addition` is `false` - the account is reauthenticated.
+    ArcHelper(bool is_available_in_arc,
+              bool is_account_addition,
+              ash::AccountAppsAvailability* account_apps_availability);
+    ArcHelper(const ArcHelper&) = delete;
+    ArcHelper& operator=(const ArcHelper&) = delete;
+    virtual ~ArcHelper();
+
+    // Sets the availability for the `account` in ARC.
+    // Should be called only once after the account is added.
+    void OnAccountAdded(const account_manager::Account& account);
+
+   private:
+    bool is_available_in_arc_ = false;
+    bool is_account_addition_ = false;
+    // A non-owning pointer to AccountAppsAvailability which is a KeyedService
+    // and should outlive this class.
+    ash::AccountAppsAvailability* account_apps_availability_ = nullptr;
+  };
+
   SigninHelper(
       account_manager::AccountManager* account_manager,
       crosapi::AccountManagerMojoService* account_manager_mojo_service,
       const base::RepeatingClosure& close_dialog_closure,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<ArcHelper> arc_helper,
       const std::string& gaia_id,
       const std::string& email,
       const std::string& auth_code,
@@ -65,6 +91,9 @@ class SigninHelper : public GaiaAuthConsumer {
   account_manager::AccountManager* const account_manager_;
   // A non-owning pointer to AccountManagerMojoService.
   crosapi::AccountManagerMojoService* const account_manager_mojo_service_;
+  // Sets the ARC availability
+  // after account addition. Owned by this class.
+  std::unique_ptr<ArcHelper> arc_helper_;
   // A closure to close the hosting dialog window.
   base::RepeatingClosure close_dialog_closure_;
   // The user's AccountKey for which |this| object has been created.

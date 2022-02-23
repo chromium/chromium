@@ -13,6 +13,7 @@ android_library("java") {
     "//chrome/browser/first_run/android:java",
     "//chrome/browser/flags:java",
     "//chrome/browser/preferences:java",
+    "//chrome/browser/privacy:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/signin/services/android:java",
     "//chrome/browser/tab:java",
@@ -71,6 +72,7 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunCoordinator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunMediator.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunProperties.java",
+    "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunView.java",
     "java/src/org/chromium/chrome/browser/ui/signin/fre/SigninFirstRunViewBinder.java",
   ]
   resources_package = "org.chromium.chrome.browser.ui.signin"

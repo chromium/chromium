@@ -5,7 +5,6 @@
 #ifndef SERVICES_SERVICE_MANAGER_PUBLIC_CPP_TEST_TEST_SERVICE_H_
 #define SERVICES_SERVICE_MANAGER_PUBLIC_CPP_TEST_TEST_SERVICE_H_
 
-#include "base/macros.h"
 #include "services/service_manager/public/cpp/connector.h"
 #include "services/service_manager/public/cpp/service.h"
 #include "services/service_manager/public/cpp/service_receiver.h"

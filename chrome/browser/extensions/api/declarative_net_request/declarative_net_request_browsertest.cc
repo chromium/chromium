@@ -16,6 +16,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/json/json_string_value_serializer.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/path_service.h"
 #include "base/rand_util.h"
@@ -170,7 +171,7 @@ class RulesetLoadObserver : public RulesMonitorService::TestObserver {
       run_loop_.Quit();
   }
 
-  RulesMonitorService* const service_;
+  const raw_ptr<RulesMonitorService> service_;
   const ExtensionId extension_id_;
   base::RunLoop run_loop_;
 };
@@ -183,7 +184,8 @@ class DeclarativeNetRequestBrowserTest
     feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kInterestGroupStorage,
-         blink::features::kAdInterestGroupAPI, blink::features::kFledge},
+         blink::features::kAdInterestGroupAPI, blink::features::kFledge,
+         blink::features::kFencedFrames},
         /*disabled_features=*/
         {});
     net::test_server::RegisterDefaultHandlers(embedded_test_server());
@@ -731,7 +733,7 @@ class DeclarativeNetRequestBrowserTest
     size_t expected_enabled_rulesets_count = has_dynamic_ruleset ? 1 : 0;
     size_t expected_manifest_enabled_rules_count = 0;
     for (const TestRulesetInfo& info : rulesets) {
-      size_t rules_count = info.rules_value.GetList().size();
+      size_t rules_count = info.rules_value.GetListDeprecated().size();
 
       if (info.enabled) {
         expected_enabled_rulesets_count++;
@@ -848,7 +850,7 @@ using DeclarativeNetRequestBrowserTest_Packed =
 using DeclarativeNetRequestBrowserTest_Unpacked =
     DeclarativeNetRequestBrowserTest;
 
-#if defined(OS_WIN) || (defined(OS_MAC) && !defined(NDEBUG))
+#if BUILDFLAG(IS_WIN) || (BUILDFLAG(IS_MAC) && !defined(NDEBUG))
 // TODO: test times out on win. http://crbug.com/900447.
 // Also times out on mac-debug: https://crbug.com/900447
 #define MAYBE_BlockRequests_UrlFilter DISABLED_BlockRequests_UrlFilter
@@ -1333,7 +1335,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, AllowRedirect) {
 }
 
 // Test is flaky on win. http://crbug.com/1241762.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_Enable_Disable_Reload_Uninstall \
   DISABLED_Enable_Disable_Reload_Uninstall
 #else
@@ -1914,7 +1916,7 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest, HostAccessPermission) {
   }
 }
 
-#if defined(OS_MAC) && !defined(NDEBUG)
+#if BUILDFLAG(IS_MAC) && !defined(NDEBUG)
 // Times out on mac-debug: https://crbug.com/1159418
 #define MAYBE_ChromeURLS DISABLED_ChromeURLS
 #else
@@ -2695,8 +2697,10 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
 // Tests that redirecting requests using the declarativeNetRequest API works
 // with runtime host permissions.
+// Disabled due to flakes across all desktop platforms; see
+// https://crbug.com/1274533
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       WithheldPermissions_Redirect) {
+                       DISABLED_WithheldPermissions_Redirect) {
   // Load an extension which redirects all script requests made to
   // "b.com/subresources/not_a_valid_script.js", to
   // "b.com/subresources/script.js".
@@ -3652,8 +3656,16 @@ IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
 
 // Test that the action matched badge text for an extension is visible in an
 // incognito context if the extension is incognito enabled.
+// Test is disabled on Mac. See https://crbug.com/1280116
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ActionsMatchedCountAsBadgeTextIncognito \
+  DISABLED_ActionsMatchedCountAsBadgeTextIncognito
+#else
+#define MAYBE_ActionsMatchedCountAsBadgeTextIncognito \
+  ActionsMatchedCountAsBadgeTextIncognito
+#endif
 IN_PROC_BROWSER_TEST_P(DeclarativeNetRequestBrowserTest,
-                       ActionsMatchedCountAsBadgeTextIncognito) {
+                       MAYBE_ActionsMatchedCountAsBadgeTextIncognito) {
   TestRule rule = CreateGenericRule();
   rule.condition->url_filter = "abc.com";
   rule.id = kMinValidID;

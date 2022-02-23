@@ -49,6 +49,8 @@ class ImageProcessorWithPool {
   void Reset();
 
  private:
+  friend class VideoDecoderPipelineTest;
+
   ImageProcessorWithPool(
       std::unique_ptr<ImageProcessor> image_processor,
       DmabufVideoFramePool* const frame_pool,

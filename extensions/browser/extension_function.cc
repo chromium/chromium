@@ -6,12 +6,13 @@
 
 #include <memory>
 #include <numeric>
+#include <tuple>
 #include <utility>
 
 #include "base/bind.h"
 #include "base/dcheck_is_on.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
@@ -35,8 +36,8 @@
 #include "extensions/browser/blob_holder.h"
 #include "extensions/browser/extension_function_dispatcher.h"
 #include "extensions/browser/extension_function_registry.h"
-#include "extensions/browser/extension_message_filter.h"
 #include "extensions/browser/extension_registry.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/extensions_browser_client.h"
 #include "extensions/browser/renderer_startup_helper.h"
 #include "extensions/common/constants.h"
@@ -137,7 +138,7 @@ class ExtensionFunctionMemoryDumpProvider
 };
 
 void EnsureMemoryDumpProviderExists() {
-  ALLOW_UNUSED_LOCAL(ExtensionFunctionMemoryDumpProvider::GetInstance());
+  std::ignore = ExtensionFunctionMemoryDumpProvider::GetInstance();
 }
 
 // Logs UMA about the performance for a given extension function run.
@@ -408,7 +409,7 @@ class ExtensionFunction::RenderFrameHostTracker
         function_->OnMessageReceived(message);
   }
 
-  ExtensionFunction* function_;  // Owns us.
+  raw_ptr<ExtensionFunction> function_;  // Owns us.
 };
 
 ExtensionFunction::ExtensionFunction() {
@@ -475,7 +476,7 @@ bool ExtensionFunction::HasPermission() const {
   Feature::Availability availability =
       ExtensionAPI::GetSharedInstance()->IsAvailable(
           name_, extension_.get(), source_context_type_, source_url(),
-          extensions::CheckAliasStatus::ALLOWED);
+          extensions::CheckAliasStatus::ALLOWED, context_id_);
   return availability.is_available();
 }
 
@@ -525,7 +526,7 @@ void ExtensionFunction::OnQuotaExceeded(std::string violation_error) {
 void ExtensionFunction::SetArgs(base::Value args) {
   DCHECK(args.is_list());
   DCHECK(!args_.has_value());
-  args_ = std::move(args).TakeList();
+  args_ = std::move(args).TakeListDeprecated();
 }
 
 const base::ListValue* ExtensionFunction::GetResultList() const {
@@ -586,6 +587,7 @@ void ExtensionFunction::SetDispatcher(
     return;
   }
   browser_context_ = dispatcher_->browser_context();
+  context_id_ = extensions::util::GetBrowserContextId(browser_context_);
   shutdown_subscription_ =
       BrowserContextShutdownNotifierFactory::GetInstance()
           ->Get(browser_context_)
@@ -594,6 +596,10 @@ void ExtensionFunction::SetDispatcher(
 }
 
 void ExtensionFunction::Shutdown() {
+  // Wait until the end of this function to delete |this|, in case
+  // OnBrowserContextShutdown() decrements the refcount.
+  scoped_refptr<ExtensionFunction> keep_alive{this};
+
   // Allow the extension function to perform any cleanup before nulling out
   // `browser_context_`.
   OnBrowserContextShutdown();
@@ -764,10 +770,7 @@ void ExtensionFunction::WriteToConsole(blink::mojom::ConsoleMessageLevel level,
   // RenderFrameHost.
   if (!render_frame_host_)
     return;
-  // Only the main frame handles dev tools messages.
-  WebContents::FromRenderFrameHost(render_frame_host_)
-      ->GetMainFrame()
-      ->AddMessageToConsole(level, message);
+  render_frame_host_->AddMessageToConsole(level, message);
 }
 
 void ExtensionFunction::SetTransferredBlobUUIDs(

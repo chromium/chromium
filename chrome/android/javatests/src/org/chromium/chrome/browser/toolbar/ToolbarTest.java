@@ -31,7 +31,6 @@ import org.chromium.chrome.R;
 import org.chromium.chrome.browser.app.ChromeActivity;
 import org.chromium.chrome.browser.findinpage.FindToolbar;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
-import org.chromium.chrome.browser.omnibox.UrlBar;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
@@ -147,12 +146,8 @@ public class ToolbarTest {
     @Feature({"Omnibox"})
     public void testFindInPageDismissedOnOmniboxFocus() {
         findInPageFromMenu();
-
-        UrlBar urlBar = (UrlBar) mActivityTestRule.getActivity().findViewById(R.id.url_bar);
-        OmniboxTestUtils.toggleUrlBarFocus(urlBar, true);
-        OmniboxTestUtils.waitForFocusAndKeyboardActive(urlBar, true);
-
+        OmniboxTestUtils omnibox = new OmniboxTestUtils(mActivityTestRule.getActivity());
+        omnibox.requestFocus();
         waitForFindInPageVisibility(false);
     }
-
 }

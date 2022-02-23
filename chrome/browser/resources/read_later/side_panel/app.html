@@ -9,14 +9,14 @@
   }
 
   header {
-    border-bottom: solid 1px var(--google-grey-refresh-300);
+    border-bottom: solid 1px var(--google-grey-300);
     display: flex;
     padding-block-start: 4px;
   }
 
   @media (prefers-color-scheme: dark) {
     header {
-      border-bottom: solid 1px var(--google-grey-refresh-700);
+      border-bottom: solid 1px var(--google-grey-700);
     }
   }
 
@@ -75,6 +75,11 @@
     <div>
       <template is="dom-if" if="[[isSelectedTab_(selectedTab_, 1)]]">
         <bookmarks-list></bookmarks-list>
+      </template>
+    </div>
+    <div>
+      <template is="dom-if" if="[[isSelectedTab_(selectedTab_, 2)]]">
+        <reader-mode-app></reader-mode-app>
       </template>
     </div>
   </iron-pages>

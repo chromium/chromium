@@ -140,6 +140,8 @@ class TestSurfaceBase : public FeedStreamSurface {
   std::string DescribeState();
 
   std::map<std::string, std::string> GetDataStoreEntries() const;
+  // Returns the logging parameters last sent to the surface.
+  LoggingParameters GetLoggingParameters() const;
 
   // The initial state of the stream, if it was received. This is nullopt if
   // only the loading spinner was seen.
@@ -158,6 +160,7 @@ class TestSurfaceBase : public FeedStreamSurface {
   base::WeakPtr<FeedStream> stream_;
   std::vector<std::string> described_updates_;
   std::map<std::string, std::string> data_store_entries_;
+  std::string last_logging_parameters_description_;
 };
 
 class TestForYouSurface : public TestSurfaceBase {
@@ -199,7 +202,7 @@ class TestFeedNetwork : public FeedNetwork {
   void SendQueryRequest(
       NetworkRequestType request_type,
       const feedwire::Request& request,
-      const std::string& gaia,
+      const AccountInfo& account_info,
       base::OnceCallback<void(QueryRequestResult)> callback) override;
 
   void SendDiscoverApiRequest(
@@ -207,7 +210,8 @@ class TestFeedNetwork : public FeedNetwork {
       base::StringPiece api_path,
       base::StringPiece method,
       std::string request_bytes,
-      const std::string& gaia,
+      const AccountInfo& account_info,
+      absl::optional<RequestMetadata> request_metadata,
       base::OnceCallback<void(RawResponse)> callback) override;
 
   void CancelRequests() override;
@@ -226,6 +230,7 @@ class TestFeedNetwork : public FeedNetwork {
     response.response_info.status_code = 200;
     response.response_bytes = response_message.SerializeAsString();
     response.response_info.response_body_bytes = response.response_bytes.size();
+    response.response_info.account_info = last_account_info;
     InjectApiRawResponse<API>(std::move(response));
   }
 
@@ -258,6 +263,9 @@ class TestFeedNetwork : public FeedNetwork {
       *response.add_web_feeds() = feed;
     }
     InjectResponse(response);
+  }
+  void InjectListWebFeedsResponse(const FeedNetwork::RawResponse& response) {
+    InjectApiRawResponse<ListWebFeedsDiscoverApi>(response);
   }
 
   void InjectEmptyActionRequestResult();
@@ -302,6 +310,10 @@ class TestFeedNetwork : public FeedNetwork {
     return GetApiRequestCount<ListWebFeedsDiscoverApi>();
   }
 
+  std::vector<NetworkRequestType> sent_request_types() const {
+    return sent_request_types_;
+  }
+
   void ClearTestData();
 
   // Enable (or disable) manual triggering of sending responses. When enabled,
@@ -313,7 +325,7 @@ class TestFeedNetwork : public FeedNetwork {
   absl::optional<feedwire::Request> query_request_sent;
   // Number of FeedQuery requests sent (including Web Feed ListContents).
   int send_query_call_count = 0;
-  std::string last_gaia;
+  AccountInfo last_account_info;
   // The consistency token to use when constructing default network responses.
   std::string consistency_token;
   bool forced_signed_out_request = false;
@@ -330,6 +342,7 @@ class TestFeedNetwork : public FeedNetwork {
       injected_api_responses_;
   std::map<NetworkRequestType, std::string> api_requests_sent_;
   std::map<NetworkRequestType, int> api_request_count_;
+  std::vector<NetworkRequestType> sent_request_types_;
   absl::optional<feedwire::Response> injected_response_;
 };
 
@@ -342,7 +355,7 @@ class TestWireResponseTranslator : public WireResponseTranslator {
   RefreshResponseData TranslateWireResponse(
       feedwire::Response response,
       StreamModelUpdateRequest::Source source,
-      bool was_signed_in_request,
+      const AccountInfo& account_info,
       base::Time current_time) const override;
   void InjectResponse(std::unique_ptr<StreamModelUpdateRequest> response,
                       absl::optional<std::string> session_id = absl::nullopt);
@@ -438,10 +451,11 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   std::string GetLanguageTag() override;
   bool IsAutoplayEnabled() override;
   void ClearAll() override;
-  std::string GetSyncSignedInGaia() override;
+  AccountInfo GetAccountInfo() override;
   void PrefetchImage(const GURL& url) override;
   void RegisterExperiments(const Experiments& experiments) override {}
   void RegisterFollowingFeedFollowCountFieldTrial(size_t follow_count) override;
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override;
 
   // For tests.
 
@@ -458,6 +472,9 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   std::string DumpStoreState(bool print_keys = false);
 
   void UploadActions(std::vector<feedwire::FeedAction> actions);
+  // Returns some logging parameters for the current signed in user. Prefer to
+  // use the logging parameters passed to TestSurface*.
+  LoggingParameters CreateLoggingParameters();
 
  protected:
   base::test::TaskEnvironment task_environment_{
@@ -488,11 +505,12 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   std::unique_ptr<FeedStream> stream_;
   bool is_eula_accepted_ = true;
   bool is_offline_ = false;
-  std::string signed_in_gaia_ = "examplegaia";
+  AccountInfo account_info_ = TestAccountInfo();
   int prefetch_image_call_count_ = 0;
   std::vector<GURL> prefetched_images_;
   base::RepeatingClosure on_clear_all_;
   std::vector<size_t> register_following_feed_follow_count_field_trial_calls_;
+  std::vector<std::string> register_feed_user_settings_field_trial_calls_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

@@ -1980,11 +1980,11 @@ void Inference(const float* __restrict features /* shape: 1,FEATURES_SIZE */
 
   // dnn/hiddenlayer_0/hiddenlayer_0/Relu
   Relu<float>(2,  // rank
-              fixed->shape0, fixed->alloc1, fixed->alloc1);
+              fixed->shape0, fixed->alloc1, fixed->alloc0);
 
   // dnn/logits/MatMul_merged_with_dnn/logits/BiasAdd
   FullyConnected<float>(
-      fixed->shape0, fixed->alloc1, dnn_logits_kernel__3__cf__3_shape,
+      fixed->shape0, fixed->alloc0, dnn_logits_kernel__3__cf__3_shape,
       dnn_logits_kernel__3__cf__3.values, dnn_logits_bias__2__cf__2_shape,
       dnn_logits_bias__2__cf__2.values, prediction);
 }

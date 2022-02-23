@@ -13,16 +13,17 @@ import 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-thresh
 import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.m.js';
 import {CrLazyRenderElement} from 'chrome://resources/cr_elements/cr_lazy_render/cr_lazy_render.m.js';
 import {CrToastElement} from 'chrome://resources/cr_elements/cr_toast/cr_toast.js';
-import {assert} from 'chrome://resources/js/assert.m.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FocusOutlineManager} from 'chrome://resources/js/cr/ui/focus_outline_manager.m.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
 import {Time} from 'chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js';
 import {IronListElement} from 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import {IronScrollThresholdElement} from 'chrome://resources/polymer/v3_0/iron-scroll-threshold/iron-scroll-threshold.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
-import {Cluster, PageCallbackRouter, PageHandlerRemote, QueryParams, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
+import {getTemplate} from './clusters.html.js';
+import {Cluster, PageCallbackRouter, PageHandlerRemote, QueryResult, URLVisit} from './history_clusters.mojom-webui.js';
 import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
 
 /**
@@ -57,7 +58,7 @@ class HistoryClustersElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -90,8 +91,6 @@ class HistoryClustersElement extends PolymerElement {
       /**
        * The browser response to a request for the freshest clusters related to
        * a given query until an optional given end time (or the present time).
-       * Contains the clusters, the optional continuation end time to be used in
-       * the follow-up request to load older clusters, and the original query.
        */
       result_: Object,
 
@@ -149,11 +148,11 @@ class HistoryClustersElement extends PolymerElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.callbackRouter_.removeListener(
-        assert(this.onClustersQueryResultListenerId_!));
+    assert(this.onClustersQueryResultListenerId_);
+    this.callbackRouter_.removeListener(this.onClustersQueryResultListenerId_);
     this.onClustersQueryResultListenerId_ = null;
-    this.callbackRouter_.removeListener(
-        assert(this.onVisitsRemovedListenerId_!));
+    assert(this.onVisitsRemovedListenerId_);
+    this.callbackRouter_.removeListener(this.onVisitsRemovedListenerId_);
     this.onVisitsRemovedListenerId_ = null;
   }
 
@@ -171,11 +170,10 @@ class HistoryClustersElement extends PolymerElement {
   }
 
   private onLoadMoreButtonClick_() {
-    if (this.result_ && this.result_.continuationEndTime) {
-      this.queryClusters_({
-        query: this.result_.query,
-        endTime: this.result_.continuationEndTime,
-      });
+    if (this.result_ && this.result_.canLoadMore) {
+      // Prevent sending further load-more requests until this one finishes.
+      this.set('result_.canLoadMore', false);
+      this.pageHandler_.loadMoreClusters(this.result_.query);
     }
   }
 
@@ -211,7 +209,7 @@ class HistoryClustersElement extends PolymerElement {
     }
 
     this.visitsToBeRemoved_ = event.detail;
-    if (assert(this.visitsToBeRemoved_.length) > 1) {
+    if (this.visitsToBeRemoved_.length > 1) {
       this.$.confirmationDialog.get().showModal();
     } else {
       // Bypass the confirmation dialog if removing one visit only.
@@ -276,9 +274,9 @@ class HistoryClustersElement extends PolymerElement {
    */
   private getLoadMoreButtonHidden_(
       _result: QueryResult, _result_clusters: Array<Cluster>,
-      _result_continuation_time: Time): boolean {
+      _result_can_load_more: Time): boolean {
     return !this.result_ || this.result_.clusters.length === 0 ||
-        !this.result_.continuationEndTime;
+        !this.result_.canLoadMore;
   }
 
   /**
@@ -297,7 +295,7 @@ class HistoryClustersElement extends PolymerElement {
       // Do not replace the existing result when `result` contains a partial
       // set of clusters that should be appended to the existing ones.
       this.push('result_.clusters', ...result.clusters);
-      this.set('result_.continuationEndTime', result.continuationEndTime);
+      this.set('result_.canLoadMore', result.canLoadMore);
     } else {
       // Scroll to the top when `result` contains a new set of clusters.
       this.scrollTop = 0;
@@ -325,12 +323,17 @@ class HistoryClustersElement extends PolymerElement {
     });
   }
 
+  /**
+   * Called when the user entered search query changes. Also used to fetch the
+   * initial set of clusters when the page loads.
+   */
   private onQueryChanged_() {
     this.onBrowserIdle_().then(() => {
-      this.queryClusters_({
-        query: this.query.trim(),
-        endTime: undefined,
-      });
+      if (this.result_ && this.result_.canLoadMore) {
+        // Prevent sending further load-more requests until this one finishes.
+        this.set('result_.canLoadMore', false);
+      }
+      this.pageHandler_.startQueryClusters(this.query.trim());
     });
   }
 
@@ -340,20 +343,10 @@ class HistoryClustersElement extends PolymerElement {
   private onVisitsRemoved_() {
     // Show the confirmation toast once done removing one visit only; since a
     // confirmation dialog was not shown prior to the action.
-    if (assert(this.visitsToBeRemoved_.length) === 1) {
+    if (this.visitsToBeRemoved_.length === 1) {
       this.$.confirmationToast.get().show();
     }
     this.visitsToBeRemoved_ = [];
-  }
-
-  private queryClusters_(queryParams: QueryParams) {
-    // Invalidate the existing `continuationEndTime`, if any, in order to
-    // prevent sending additional requests while a request is in-flight. A new
-    // `continuationEndTime` will be supplied with the new set of results.
-    if (this.result_) {
-      this.result_.continuationEndTime = undefined;
-    }
-    this.pageHandler_.queryClusters(queryParams);
   }
 }
 

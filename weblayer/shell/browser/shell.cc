@@ -10,7 +10,6 @@
 #include <utility>
 
 #include "base/command_line.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
@@ -39,7 +38,7 @@ Shell::Shell(std::unique_ptr<Browser> browser)
   if (tab()) {
     tab()->AddObserver(this);
     tab()->GetNavigationController()->AddObserver(this);
-#if !defined(OS_ANDROID)  // Android does this in Java.
+#if !BUILDFLAG(IS_ANDROID)  // Android does this in Java.
     static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(this);
 #endif
   }
@@ -49,7 +48,7 @@ Shell::~Shell() {
   if (tab()) {
     tab()->GetNavigationController()->RemoveObserver(this);
     tab()->RemoveObserver(this);
-#if !defined(OS_ANDROID)  // Android does this in Java.
+#if !BUILDFLAG(IS_ANDROID)  // Android does this in Java.
     static_cast<TabImpl*>(tab())->profile()->SetDownloadDelegate(nullptr);
 #endif
   }
@@ -113,7 +112,7 @@ Tab* Shell::tab() {
 }
 
 Browser* Shell::browser() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // TODO(jam): this won't work if we need more than one Shell in a test.
   const auto& browsers = BrowserList::GetInstance()->browsers();
   if (browsers.empty())
@@ -132,11 +131,11 @@ void Shell::DisplayedUrlChanged(const GURL& url) {
   PlatformSetAddressBarURL(url);
 }
 
-void Shell::LoadStateChanged(bool is_loading, bool to_different_document) {
+void Shell::LoadStateChanged(bool is_loading, bool should_show_loading_ui) {
   NavigationController* navigation_controller =
       tab()->GetNavigationController();
 
-  PlatformEnableUIControl(STOP_BUTTON, is_loading && to_different_document);
+  PlatformEnableUIControl(STOP_BUTTON, is_loading && should_show_loading_ui);
 
   // TODO(estade): These should be updated in callbacks that correspond to the
   // back/forward list changing, such as NavigationEntriesDeleted.
@@ -171,7 +170,7 @@ gfx::Size Shell::AdjustWindowSize(const gfx::Size& initial_size) {
   return GetShellDefaultSize();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 Shell* Shell::CreateNewWindow(const GURL& url, const gfx::Size& initial_size) {
   // On Android, the browser is owned by the Java side.
   return CreateNewWindowWithBrowser(nullptr, url, initial_size);

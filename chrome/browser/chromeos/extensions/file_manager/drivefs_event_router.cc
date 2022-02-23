@@ -190,16 +190,16 @@ void DriveFsEventRouter::OnFilesChanged(
             FILE_WATCH_EVENT_TYPE_CHANGED;
         event.changed_files = std::make_unique<
             std::vector<extensions::api::file_manager_private::FileChange>>();
-        event.entry.additional_properties.SetString(
+        event.entry.additional_properties.SetStringKey(
             "fileSystemRoot", base::StrCat({ConvertDrivePathToFileSystemUrl(
                                                 base::FilePath(), listener_url)
                                                 .spec(),
                                             "/"}));
-        event.entry.additional_properties.SetString("fileSystemName",
-                                                    GetDriveFileSystemName());
-        event.entry.additional_properties.SetString(
+        event.entry.additional_properties.SetStringKey(
+            "fileSystemName", GetDriveFileSystemName());
+        event.entry.additional_properties.SetStringKey(
             "fileFullPath", change.path.DirName().value());
-        event.entry.additional_properties.SetBoolean("fileIsDirectory", true);
+        event.entry.additional_properties.SetBoolKey("fileIsDirectory", true);
       }
       event.changed_files->emplace_back();
       auto& file_manager_change = event.changed_files->back();

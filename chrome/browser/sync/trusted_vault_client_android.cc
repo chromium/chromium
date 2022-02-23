@@ -197,6 +197,11 @@ void TrustedVaultClientAndroid::AddTrustedRecoveryMethod(
   NOTREACHED();
 }
 
+void TrustedVaultClientAndroid::ClearDataForAccount(
+    const CoreAccountInfo& account_info) {
+  // Not relevant for Android implementation.
+}
+
 TrustedVaultClientAndroid::RequestId
 TrustedVaultClientAndroid::RegisterNewOngoingRequest(OngoingRequest request) {
   ongoing_requests_.emplace(++last_request_id_, std::move(request));

@@ -5,6 +5,9 @@
 #ifndef COMPONENTS_VIZ_COMMON_TRANSITION_UTILS_H_
 #define COMPONENTS_VIZ_COMMON_TRANSITION_UTILS_H_
 
+#include <memory>
+#include <string>
+
 #include "base/callback_forward.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/viz_common_export.h"
@@ -37,6 +40,9 @@ class VIZ_COMMON_EXPORT TransitionUtils {
       const CompositorRenderPassId& id) {
     return CompositorRenderPassId(id.GetUnsafeValue() + 1);
   }
+
+  static std::string RenderPassListToString(
+      const CompositorRenderPassList& render_passes);
 };
 
 }  // namespace viz

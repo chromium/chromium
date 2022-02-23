@@ -8,6 +8,8 @@
 #include <memory>
 #include <vector>
 
+#include "base/containers/flat_set.h"
+#include "base/threading/platform_thread.h"
 #include "components/viz/common/resources/returned_resource.h"
 #include "components/viz/service/surfaces/pending_copy_output_request.h"
 #include "components/viz/service/viz_service_export.h"
@@ -92,6 +94,8 @@ class VIZ_SERVICE_EXPORT SurfaceClient {
       base::TimeTicks expected_display_time) = 0;
 
   virtual bool IsVideoCaptureStarted() = 0;
+
+  virtual base::flat_set<base::PlatformThreadId> GetThreadIds() = 0;
 };
 
 }  // namespace viz

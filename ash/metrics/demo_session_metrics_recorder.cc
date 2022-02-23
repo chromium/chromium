@@ -18,6 +18,7 @@
 #include "base/scoped_multi_source_observation.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
+#include "components/app_constants/constants.h"
 #include "extensions/common/constants.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/client/window_types.h"
@@ -59,7 +60,7 @@ DemoModeApp GetAppFromAppId(const std::string& app_id) {
     return DemoModeApp::kScreensaver;
   }
 
-  if (app_id == extension_misc::kChromeAppId)
+  if (app_id == app_constants::kChromeAppId)
     return DemoModeApp::kBrowser;
   if (app_id == extension_misc::kFilesManagerAppId)
     return DemoModeApp::kFiles;
@@ -187,7 +188,7 @@ DemoModeApp GetAppFromWindow(const aura::Window* window) {
   std::string app_id = GetShelfID(window).app_id;
 
   // The Chrome "app" in the shelf is just the browser.
-  if (app_id == extension_misc::kChromeAppId)
+  if (app_id == app_constants::kChromeAppId)
     return DemoModeApp::kBrowser;
 
   // If the window is the "browser" type, having an app ID other than the

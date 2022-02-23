@@ -20,13 +20,13 @@ import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
  * search provider icon and custom image (either a thumbnail or card icon) for the current query.
  */
 public class ContextualSearchImageControl {
-    /** The {@link OverlayPanel} that this class belongs to. */
-    private final OverlayPanel mPanel;
+    /** The {@link ContextualSearchPanel} that this class belongs to. */
+    private final ContextualSearchPanel mPanel;
 
-    /** The percentage the panel is expanded. 1.f is fully expanded and 0.f is peeked. */
-    private float mExpandedPercentage;
+    /** The percentage tha the image is visible that is based upon the panel position. */
+    private float mVisibilityPercentageBasedOnPanelPosition;
 
-    public ContextualSearchImageControl(OverlayPanel panel) {
+    public ContextualSearchImageControl(ContextualSearchPanel panel) {
         mPanel = panel;
     }
 
@@ -35,10 +35,29 @@ public class ContextualSearchImageControl {
      * @param percentage The percentage to the more opened state.
      */
     public void onUpdateFromPeekToExpand(float percentage) {
-        mExpandedPercentage = percentage;
+        updateVisibilityForState(OverlayPanel.PanelState.EXPANDED, percentage);
+    }
 
-        if (mCardIconVisible || mThumbnailVisible) {
-            mCustomImageVisibilityPercentage = 1.f - percentage;
+    /**
+     * Updates the Bar image when in transition between expanded and maximized states.
+     * @param percentage The percentage to the more opened state.
+     */
+    public void onUpdateFromExpandToMaximize(float percentage) {
+        updateVisibilityForState(OverlayPanel.PanelState.MAXIMIZED, percentage);
+    }
+
+    /**
+     * Updates the visibility based on the panel state that we're moving to and the percent moved.
+     * @param toState The Panel state we are moving to.
+     * @param percentage The fraction from 0 to 1 that represents how close we are to that state.
+     */
+    void updateVisibilityForState(@OverlayPanel.PanelState int toState, float percentage) {
+        if (mPanel.isDelayedIntelligenceActive()
+                == (toState == OverlayPanel.PanelState.MAXIMIZED)) {
+            if (mCardIconVisible || mThumbnailVisible) {
+                mCustomImageVisibilityPercentage = 1.f - percentage;
+                mVisibilityPercentageBasedOnPanelPosition = percentage;
+            }
         }
     }
 
@@ -201,7 +220,7 @@ public class ContextualSearchImageControl {
     private void animateCustomImageVisibility(boolean visible) {
         // If the panel is expanded then #onUpdateFromPeekToExpand() is responsible for setting
         // mCustomImageVisibility and the custom image appearance should not be animated.
-        if (visible && mExpandedPercentage > 0.f) return;
+        if (visible && mVisibilityPercentageBasedOnPanelPosition > 0.f) return;
 
         if (mCustomImageVisibilityInterpolator == null) {
             mCustomImageVisibilityInterpolator =
@@ -213,7 +232,7 @@ public class ContextualSearchImageControl {
         mImageVisibilityAnimator = CompositorAnimator.ofFloat(mPanel.getAnimationHandler(),
                 mCustomImageVisibilityPercentage, visible ? 1.f : 0.f,
                 OverlayPanelAnimation.BASE_ANIMATION_DURATION_MS, animator -> {
-                    if (mExpandedPercentage > 0.f) return;
+                    if (mVisibilityPercentageBasedOnPanelPosition > 0.f) return;
                     mCustomImageVisibilityPercentage = animator.getAnimatedValue();
                 });
         mImageVisibilityAnimator.setInterpolator(mCustomImageVisibilityInterpolator);

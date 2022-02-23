@@ -6,6 +6,7 @@
 
 #include <algorithm>
 
+#include "base/callback.h"
 #include "base/check.h"
 
 namespace media {

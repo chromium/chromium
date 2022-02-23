@@ -20,7 +20,7 @@
 
 namespace policy {
 
-// TODO(crbug.com/1254329) Enable on LaCros once DlpRulesManager is available.
+// TODO(crbug.com/1262948): Enable and modify for lacros.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 
 const DlpContentRestrictionSet kScreenshotRestricted(
@@ -49,11 +49,10 @@ class DlpContentRestrictionSetBrowserTest : public LoginPolicyTestBase {
     std::string json;
     base::JSONWriter::Write(rules, &json);
 
-    base::DictionaryValue policy;
-    policy.SetKey(key::kDataLeakPreventionRulesList, base::Value(json));
+    enterprise_management::CloudPolicySettings policy;
+    policy.mutable_dataleakpreventionruleslist()->set_value(json);
     user_policy_helper()->SetPolicyAndWait(
-        policy, /*recommended=*/base::DictionaryValue(),
-        ProfileManager::GetActiveUserProfile());
+        policy, ProfileManager::GetActiveUserProfile());
   }
 };
 
@@ -110,11 +109,7 @@ IN_PROC_BROWSER_TEST_F(DlpContentRestrictionSetBrowserTest,
 
   SetDlpRulesPolicy(rules);
 
-  DlpContentRestrictionSet screenshot_and_videocapture(kScreenshotRestricted);
-  screenshot_and_videocapture.SetRestriction(
-      DlpContentRestriction::kVideoCapture, DlpRulesManager::Level::kBlock,
-      GURL());
-  EXPECT_EQ(screenshot_and_videocapture,
+  EXPECT_EQ(kScreenshotRestricted,
             DlpContentRestrictionSet::GetForURL(GURL(kUrl1)));
   EXPECT_EQ(kPrivacyScreenEnforced,
             DlpContentRestrictionSet::GetForURL(GURL(kUrl2)));

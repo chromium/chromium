@@ -24,13 +24,13 @@
 #include "test/scoped_module_handle.h"
 #include "test/test_paths.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <dlfcn.h>
 #include "snapshot/mac/process_snapshot_mac.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "snapshot/win/process_snapshot_win.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include <lib/zx/process.h>
 #include "snapshot/fuchsia/process_snapshot_fuchsia.h"
 #endif
@@ -79,19 +79,19 @@ class ScopedUnsetCrashpadInfoOptions {
 };
 
 CrashpadInfoClientOptions SelfProcessSnapshotAndGetCrashpadOptions() {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   ProcessSnapshotMac process_snapshot;
   EXPECT_TRUE(process_snapshot.Initialize(mach_task_self()));
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ProcessSnapshotWin process_snapshot;
   EXPECT_TRUE(process_snapshot.Initialize(
       GetCurrentProcess(), ProcessSuspensionState::kRunning, 0, 0));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   ProcessSnapshotFuchsia process_snapshot;
   EXPECT_TRUE(process_snapshot.Initialize(*zx::process::self()));
 #else
 #error Port.
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_APPLE)
 
   CrashpadInfoClientOptions options;
   process_snapshot.GetCrashpadOptions(&options);
@@ -144,7 +144,7 @@ TEST(CrashpadInfoClientOptions, OneModule) {
     EXPECT_EQ(options.crashpad_handler_behavior, TriState::kUnset);
     EXPECT_EQ(options.system_crash_reporter_forwarding, TriState::kUnset);
     EXPECT_EQ(options.gather_indirectly_referenced_memory, TriState::kEnabled);
-    EXPECT_EQ(options.indirectly_referenced_memory_cap, 1234u);
+    EXPECT_LE(options.indirectly_referenced_memory_cap, 1234u);
   }
 }
 
@@ -154,19 +154,19 @@ TEST(CrashpadInfoClientOptions, TwoModules) {
       TestPaths::BuildArtifact(FILE_PATH_LITERAL("snapshot"),
                                FILE_PATH_LITERAL("module"),
                                TestPaths::FileType::kLoadableModule);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   ScopedModuleHandle module(
       dlopen(module_path.value().c_str(), RTLD_LAZY | RTLD_LOCAL));
   ASSERT_TRUE(module.valid()) << "dlopen " << module_path.value() << ": "
                               << dlerror();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ScopedModuleHandle module(LoadLibrary(module_path.value().c_str()));
   ASSERT_TRUE(module.valid())
       << "LoadLibrary " << base::WideToUTF8(module_path.value()) << ": "
       << ErrorMessage();
 #else
 #error Port.
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_POSIX)
 
   // Get the function pointer from the module. This wraps GetCrashpadInfo(), but
   // because it runs in the module, it returns the remote module’s CrashpadInfo
@@ -252,19 +252,19 @@ TEST_P(CrashpadInfoSizes_ClientOptions, DifferentlySizedStruct) {
       TestPaths::BuildArtifact(FILE_PATH_LITERAL("snapshot"),
                                artifact,
                                TestPaths::FileType::kLoadableModule);
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   ScopedModuleHandle module(
       dlopen(module_path.value().c_str(), RTLD_LAZY | RTLD_LOCAL));
   ASSERT_TRUE(module.valid())
       << "dlopen " << module_path.value() << ": " << dlerror();
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   ScopedModuleHandle module(LoadLibrary(module_path.value().c_str()));
   ASSERT_TRUE(module.valid())
       << "LoadLibrary " << base::WideToUTF8(module_path.value()) << ": "
       << ErrorMessage();
 #else
 #error Port.
-#endif  // OS_APPLE
+#endif  // BUILDFLAG(IS_POSIX)
 
   // Get the function pointer from the module.
   CrashpadInfo* (*TestModule_GetCrashpadInfo)() =

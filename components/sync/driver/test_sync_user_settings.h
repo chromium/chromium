@@ -5,8 +5,10 @@
 #ifndef COMPONENTS_SYNC_DRIVER_TEST_SYNC_USER_SETTINGS_H_
 #define COMPONENTS_SYNC_DRIVER_TEST_SYNC_USER_SETTINGS_H_
 
+#include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/driver/sync_user_settings.h"
 
@@ -39,9 +41,6 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetSelectedOsTypes(bool sync_all_os_types,
                           UserSelectableOsTypeSet types) override;
   UserSelectableOsTypeSet GetRegisteredSelectableOsTypes() const override;
-
-  bool IsOsSyncFeatureEnabled() const override;
-  void SetOsSyncFeatureEnabled(bool enabled) override;
 #endif
 
   bool IsCustomPassphraseAllowed() const override;
@@ -61,6 +60,8 @@ class TestSyncUserSettings : public SyncUserSettings {
 
   void SetEncryptionPassphrase(const std::string& passphrase) override;
   bool SetDecryptionPassphrase(const std::string& passphrase) override;
+  void SetDecryptionNigoriKey(std::unique_ptr<Nigori> nigori) override;
+  std::unique_ptr<Nigori> GetDecryptionNigoriKey() const override;
 
   void SetFirstSetupComplete();
   void ClearFirstSetupComplete();
@@ -73,12 +74,11 @@ class TestSyncUserSettings : public SyncUserSettings {
   void SetIsUsingExplicitPassphrase(bool enabled);
 
  private:
-  TestSyncService* service_;
+  raw_ptr<TestSyncService> service_;
 
   bool first_setup_complete_ = true;
   bool sync_everything_enabled_ = true;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  bool os_sync_feature_enabled_ = true;
   bool sync_all_os_types_enabled_ = true;
 #endif
 

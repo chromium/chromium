@@ -40,14 +40,14 @@ void MigrationWatcher::OnMigrationStateChange() {
                               ->GetPendingMigrationTypesForTest());
     DVLOG(1) << harness_->profile_debug_name()
              << ": new pending migration types "
-             << syncer::ModelTypeSetToString(pending_types_);
+             << syncer::ModelTypeSetToDebugString(pending_types_);
   } else {
     // Migration just finished for a bunch of data types. Merge them into
     // |migrated_types_|.
     migrated_types_.PutAll(pending_types_);
     pending_types_.Clear();
     DVLOG(1) << harness_->profile_debug_name() << ": new migrated types "
-             << syncer::ModelTypeSetToString(migrated_types_);
+             << syncer::ModelTypeSetToDebugString(migrated_types_);
   }
 
   // Manually trigger a check of the exit condition.

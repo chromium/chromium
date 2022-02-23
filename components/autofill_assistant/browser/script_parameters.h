@@ -32,10 +32,11 @@ class ScriptParameters {
   bool Matches(const ScriptParameterMatchProto& proto) const;
 
   // Returns a proto representation of this class. If
-  // |only_trigger_script_allowlisted| is set to true, this will only return the
-  // list of trigger-script-approved script parameters.
+  // |only_non_sensitive_allowlisted| is set to true, this will only return the
+  // list of non sensitive script parameters that client requests are allowed
+  // to send to the backend.
   google::protobuf::RepeatedPtrField<ScriptParameterProto> ToProto(
-      bool only_trigger_script_allowlisted = false) const;
+      bool only_non_sensitive_allowlisted = false) const;
 
   // Update the device only parameters. New parameters always take precedence.
   void UpdateDeviceOnlyParameters(
@@ -44,6 +45,9 @@ class ScriptParameters {
   // Write parameters and device only parameters to |UserData|, by adding them
   // to the additional values with a "param:" prefix.
   void WriteToUserData(UserData* user_data) const;
+
+  // Returns whether |experiment_id| is contained in the experiments parameter.
+  bool HasExperimentId(const std::string& experiment_id) const;
 
   // Getters for specific parameters.
   absl::optional<std::string> GetOverlayColors() const;
@@ -57,6 +61,10 @@ class ScriptParameters {
   absl::optional<std::string> GetIntent() const;
   absl::optional<std::string> GetCallerEmail() const;
   absl::optional<bool> GetEnableTts() const;
+  absl::optional<bool> GetEnableObserverWaitForDom() const;
+  absl::optional<int> GetCaller() const;
+  absl::optional<int> GetSource() const;
+  std::vector<std::string> GetExperiments() const;
 
   // Details parameters.
   absl::optional<bool> GetDetailsShowInitial() const;

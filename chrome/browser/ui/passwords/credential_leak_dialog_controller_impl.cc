@@ -63,6 +63,13 @@ void CredentialLeakDialogControllerImpl::OnCloseDialog() {
   delegate_->OnLeakDialogHidden();
 }
 
+void CredentialLeakDialogControllerImpl::ResetDialog() {
+  if (credential_leak_dialog_) {
+    credential_leak_dialog_->ControllerGone();
+    credential_leak_dialog_ = nullptr;
+  }
+}
+
 std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
     const {
   return password_manager::GetAcceptButtonLabel(leak_type_);
@@ -70,7 +77,7 @@ std::u16string CredentialLeakDialogControllerImpl::GetAcceptButtonLabel()
 
 std::u16string CredentialLeakDialogControllerImpl::GetCancelButtonLabel()
     const {
-  return password_manager::GetCancelButtonLabel();
+  return password_manager::GetCancelButtonLabel(leak_type_);
 }
 
 std::u16string CredentialLeakDialogControllerImpl::GetDescription() const {
@@ -87,11 +94,4 @@ bool CredentialLeakDialogControllerImpl::ShouldCheckPasswords() const {
 
 bool CredentialLeakDialogControllerImpl::ShouldShowCancelButton() const {
   return password_manager::ShouldShowCancelButton(leak_type_);
-}
-
-void CredentialLeakDialogControllerImpl::ResetDialog() {
-  if (credential_leak_dialog_) {
-    credential_leak_dialog_->ControllerGone();
-    credential_leak_dialog_ = nullptr;
-  }
 }

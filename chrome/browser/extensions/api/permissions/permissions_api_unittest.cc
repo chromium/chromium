@@ -124,7 +124,7 @@ class PermissionsAPIUnitTest : public ExtensionServiceTestWithInstall {
         function.get(), args_string, browser(), api_test_utils::NONE);
     EXPECT_TRUE(run_result) << function->GetError();
 
-    const auto args_list = function->GetResultList()->GetList();
+    const auto args_list = function->GetResultList()->GetListDeprecated();
     if (args_list.empty()) {
       ADD_FAILURE() << "Result unexpectedly empty.";
       return false;
@@ -233,7 +233,7 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
       ADD_FAILURE() << "Running function failed: " << function->GetError();
     }
 
-    return function->GetResultList()->GetList()[0].GetBool();
+    return function->GetResultList()->GetListDeprecated()[0].GetBool();
   };
 
   auto get_all = [this, &extension]() {
@@ -248,14 +248,16 @@ TEST_F(PermissionsAPIUnitTest, ContainsAndGetAllWithRuntimeHostPermissions) {
     }
 
     const base::Value* results = function->GetResultList();
-    if (results->GetList().size() != 1u || !results->GetList()[0].is_dict()) {
+    if (results->GetListDeprecated().size() != 1u ||
+        !results->GetListDeprecated()[0].is_dict()) {
       ADD_FAILURE() << "Invalid result value";
       return origins;
     }
 
     const base::Value* origins_value =
-        results->GetList()[0].FindKeyOfType("origins", base::Value::Type::LIST);
-    for (const auto& value : origins_value->GetList())
+        results->GetListDeprecated()[0].FindKeyOfType("origins",
+                                                      base::Value::Type::LIST);
+    for (const auto& value : origins_value->GetListDeprecated())
       origins.push_back(value.GetString());
 
     return origins;

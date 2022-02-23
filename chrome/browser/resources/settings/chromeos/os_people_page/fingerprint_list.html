@@ -1,121 +1,87 @@
-<link rel="import" href="chrome://resources/html/polymer.html">
+<style include="settings-shared">
+  .add-link {
+    background-color: transparent;
+    color: var(--cros-link-color);
+  }
 
-<link rel="import" href="chrome://resources/cr_elements/cr_button/cr_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_icon_button/cr_icon_button.html">
-<link rel="import" href="chrome://resources/cr_elements/cr_input/cr_input.html">
-<link rel="import" href="chrome://resources/cr_elements/icons.html">
-<link rel="import" href="chrome://resources/cr_elements/policy/cr_tooltip_icon.html">
-<link rel="import" href="chrome://resources/html/assert.html">
-<link rel="import" href="chrome://resources/html/cr/ui/focus_without_ink.html">
-<link rel="import" href="chrome://resources/html/i18n_behavior.html">
-<link rel="import" href="chrome://resources/html/web_ui_listener_behavior.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-icon/iron-icon.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/iron-list/iron-list.html">
-<link rel="import" href="chrome://resources/polymer/v1_0/paper-ripple/paper-ripple.html">
-<link rel="import" href="fingerprint_browser_proxy.html">
-<link rel="import" href="setup_fingerprint_dialog.html">
-<link rel="import" href="../../i18n_setup.html">
-<link rel="import" href="../deep_linking_behavior.html">
-<link rel="import" href="chrome://resources/cr_components/chromeos/localized_link/localized_link.html">
-<link rel="import" href="../os_route.html">
-<link rel="import" href="../../router.html">
-<link rel="import" href="../route_observer_behavior.html">
-<link rel="import" href="../../settings_shared_css.html">
-<link rel="import" href="../metrics_recorder.html">
+  .add-link[disabled] {
+    color: var(--cros-text-color-disabled);
+  }
 
-<dom-module id="settings-fingerprint-list">
-  <template>
-    <style include="settings-shared">
-      .add-link {
-        background-color: transparent;
-        color: var(--cros-link-color);
-      }
+  .list-item {
+    background-color: var(--cros-bg-color-elevation-1);
+  }
 
-      .add-link[disabled] {
-        color: var(--cros-text-color-disabled);
-      }
+  cr-input {
+    --cr-input-error-display: none;
+  }
 
-      .list-item {
-        background-color: var(--cros-bg-color-elevation-1);
-      }
+  #fingerprintTooltip {
+    --paper-tooltip-animation: {
+      box-shadow: var(--cr-card-shadow);
+    }
+    --paper-tooltip-background: var(--cros-tooltip-background-color);
+    --paper-tooltip-border-radius: 8px;
+    --paper-tooltip-delay-out: 500ms;
+    --paper-tooltip-opacity: 1;
+    --paper-tooltip-padding: 12px 16px;
+    --paper-tooltip-text-color: var(--cros-tooltip-label-color);
+  }
 
-      cr-input {
-        --cr-input-error-display: none;
-      }
+  #fingerprintNotice {
+    --cr-localized-link-display: block;
+    font-size: 12px;
+    line-height: 18px;
+  }
 
-      #fingerprintTooltip {
-        --paper-tooltip-animation: {
-          box-shadow: var(--cr-card-shadow);
-        }
-
-        --paper-tooltip-background: var(--cros-tooltip-background-color);
-        --paper-tooltip-border-radius: 8px;
-        --paper-tooltip-delay-out: 500ms;
-        --paper-tooltip-opacity: 1;
-        --paper-tooltip-padding: 12px 16px;
-        --paper-tooltip-text-color: var(--cros-tooltip-label-color);
-      }
-
-      #fingerprintNotice {
-        --cr-localized-link-display: block;
-
-        font-size: 12px;
-        line-height: 18px;
-      }
-
-      #fingerprintWarning {
-        font-style: italic;
-      }
-    </style>
-
-    <h2 class="settings-box">$i18n{lockScreenRegisteredFingerprints}
-      <cr-tooltip-icon id="fingerprintTooltip" tooltip-position="right"
-          icon-class="cr:help-outline" icon-aria-label="$i18n{learnMore}">
-        <localized-link id="fingerprintNotice"
-            localized-string="$i18n{lockScreenFingerprintNotice}"
-            link-url="$i18n{fingerprintLearnMoreLink}"
-            slot="tooltip-text">
-          <!-- paper-tooltip probes for children textContent to decide whether
-            to show tooltip or not-->
-          _
-        </localized-link>
-      </cr-tooltip-icon>
-    </h2>
-    <div class="list-frame layout vertical">
-      <iron-list id="fingerprintsList" items="[[fingerprints_]]">
-        <template>
-          <div class="list-item">
-            <cr-input value="{{item}}" on-change="onFingerprintLabelChanged_">
-            </cr-input>
-            <cr-icon-button class="icon-delete-gray"
-                on-click="onFingerprintDeleteTapped_"
-                aria-label$="[[getButtonAriaLabel_(item)]]"
-                deep-link-focus-id$="[[Setting.kRemoveFingerprintV2]]">
-            </cr-icon-button>
-          </div>
-        </template>
-      </iron-list>
-      <div class="continuation">
-        <cr-button id="addFingerprint" class="add-link action-button"
-            on-click="openAddFingerprintDialog_"
-            deep-link-focus-id$="[[Setting.kAddFingerprintV2]]">
-          $i18n{lockScreenAddFingerprint}
-        </cr-button>
+  #fingerprintWarning {
+    font-style: italic;
+  }
+</style>
+<h2 class="settings-box">$i18n{lockScreenRegisteredFingerprints}
+  <cr-tooltip-icon id="fingerprintTooltip" tooltip-position="right"
+      icon-class="cr:help-outline" icon-aria-label="$i18n{learnMore}">
+    <localized-link id="fingerprintNotice"
+        localized-string="$i18n{lockScreenFingerprintNotice}"
+        link-url="$i18n{fingerprintLearnMoreLink}"
+        slot="tooltip-text">
+      <!-- paper-tooltip probes for children textContent to decide whether
+        to show tooltip or not-->
+      _
+    </localized-link>
+  </cr-tooltip-icon>
+</h2>
+<div class="list-frame layout vertical">
+  <iron-list id="fingerprintsList" items="[[fingerprints_]]">
+    <template>
+      <div class="list-item">
+        <cr-input value="{{item}}" on-change="onFingerprintLabelChanged_">
+        </cr-input>
+        <cr-icon-button class="icon-delete-gray"
+            on-click="onFingerprintDeleteTapped_"
+            aria-label$="[[getButtonAriaLabel_(item)]]"
+            deep-link-focus-id$="[[Setting.kRemoveFingerprintV2]]">
+        </cr-icon-button>
       </div>
-    </div>
-    <div id="fingerprintWarning" class="settings-box continuation">
-      <iron-icon icon="cr:info-outline"></iron-icon>
-      $i18n{lockScreenFingerprintWarning}
-    </div>
-
-    <template is="dom-if" if="[[showSetupFingerprintDialog_]]" restamp>
-      <settings-setup-fingerprint-dialog
-          auth-token="[[authToken]]"
-          on-add-fingerprint="updateFingerprintsList_"
-          on-close="onSetupFingerprintDialogClose_"
-          allow-add-another-finger="[[allowAddAnotherFinger_]]">
-      </settings-setup-fingerprint-dialog>
     </template>
-  </template>
-  <script src="fingerprint_list.js"></script>
-</dom-module>
+  </iron-list>
+  <div class="continuation">
+    <cr-button id="addFingerprint" class="add-link action-button"
+        on-click="openAddFingerprintDialog_"
+        deep-link-focus-id$="[[Setting.kAddFingerprintV2]]">
+      $i18n{lockScreenAddFingerprint}
+    </cr-button>
+  </div>
+</div>
+<div id="fingerprintWarning" class="settings-box continuation">
+  <iron-icon icon="cr:info-outline"></iron-icon>
+  $i18n{lockScreenFingerprintWarning}
+</div>
+<template is="dom-if" if="[[showSetupFingerprintDialog_]]" restamp>
+  <settings-setup-fingerprint-dialog
+      auth-token="[[authToken]]"
+      on-add-fingerprint="updateFingerprintsList_"
+      on-close="onSetupFingerprintDialogClose_"
+      allow-add-another-finger="[[allowAddAnotherFinger_]]">
+  </settings-setup-fingerprint-dialog>
+</template>

@@ -9,12 +9,12 @@
 #include <algorithm>
 #include <utility>
 
-#include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/callback_helpers.h"
 #include "base/containers/contains.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -159,7 +159,7 @@ class ScopedCursorHider {
   }
 
  private:
-  Window* window_;
+  raw_ptr<Window> window_;
   bool hid_cursor_;
 };
 
@@ -345,7 +345,7 @@ WindowTreeHost* Window::GetHost() {
 
 const WindowTreeHost* Window::GetHost() const {
   const Window* root_window = GetRootWindow();
-  return root_window ? root_window->host_ : nullptr;
+  return root_window ? root_window->host_.get() : nullptr;
 }
 
 void Window::Show() {
@@ -1251,11 +1251,18 @@ bool Window::CleanupGestureState() {
   // happen through some event handlers for CancelActiveTouches().
   if (cleaning_up_gesture_state_)
     return false;
+  cleaning_up_gesture_state_ = true;
 
-  base::AutoReset<bool> in_cleanup(&cleaning_up_gesture_state_, true);
+  // Cancelling active touches may end up destroying this window. We use a
+  // tracker to detect this.
+  // TODO(crbug.com/1292271): Add a regression test for this.
+  WindowTracker tracking_this({this});
+
   bool state_modified = false;
   Env* env = Env::GetInstance();
   state_modified |= env->gesture_recognizer()->CancelActiveTouches(this);
+  if (!tracking_this.Contains(this))
+    return state_modified;
   state_modified |= env->gesture_recognizer()->CleanupStateForConsumer(this);
   // Potentially event handlers for CancelActiveTouches() within
   // CleanupGestureState may change the window hierarchy (or reorder the
@@ -1266,6 +1273,7 @@ bool Window::CleanupGestureState() {
     Window* child = children.Pop();
     state_modified |= child->CleanupGestureState();
   }
+  cleaning_up_gesture_state_ = false;
   return state_modified;
 }
 

@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "base/task/post_task.h"
 #include "base/task/task_runner.h"
@@ -28,7 +29,7 @@
 namespace reporting {
 
 // DmServerUploadService uploads events to the DMServer. It does not manage
-// sequencing information, instead reporting the highest sequencing id for each
+// sequence information, instead reporting the highest sequencing id for each
 // generation id and priority.
 //
 // DmServerUploadService relies on DmServerUploader for uploading. A
@@ -39,7 +40,7 @@ namespace reporting {
 class DmServerUploadService {
  public:
   // ReportSuccessfulUploadCallback is used to pass server responses back to
-  // the owner of |this| (the respone consists of sequencing information and
+  // the owner of |this| (the respone consists of sequence information and
   // force_confirm flag).
   using ReportSuccessfulUploadCallback =
       base::RepeatingCallback<void(SequenceInformation,
@@ -50,7 +51,7 @@ class DmServerUploadService {
   using EncryptionKeyAttachedCallback =
       base::RepeatingCallback<void(SignedEncryptionInfo)>;
 
-  // Successful response consists of Sequencing information that may be
+  // Successful response consists of Sequence information that may be
   // accompanied with force_confirm flag.
   struct SuccessfulUploadResponse {
     SequenceInformation sequence_information;
@@ -90,7 +91,7 @@ class DmServerUploadService {
     policy::CloudPolicyClient* GetClient() const { return client_; }
 
    private:
-    policy::CloudPolicyClient* const client_;
+    const raw_ptr<policy::CloudPolicyClient> client_;
   };
 
   // Context runner for handling the upload of events passed to the
@@ -138,7 +139,7 @@ class DmServerUploadService {
     std::unique_ptr<std::vector<EncryptedRecord>> encrypted_records_;
     const ReportSuccessfulUploadCallback report_success_upload_cb_;
     const EncryptionKeyAttachedCallback encryption_key_attached_cb_;
-    RecordHandler* handler_;
+    raw_ptr<RecordHandler> handler_;
 
     SEQUENCE_CHECKER(sequence_checker_);
   };
@@ -175,7 +176,7 @@ class DmServerUploadService {
 
   policy::CloudPolicyClient* GetClient();
 
-  policy::CloudPolicyClient* client_;
+  raw_ptr<policy::CloudPolicyClient> client_;
   std::unique_ptr<RecordHandler> handler_;
 
   scoped_refptr<base::SequencedTaskRunner> sequenced_task_runner_;

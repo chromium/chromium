@@ -14,8 +14,10 @@
 #include "base/callback_forward.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_util.h"
+#include "base/pickle.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
+#include "build/chromeos_buildflags.h"
 #include "cc/test/pixel_comparator.h"
 #include "cc/test/pixel_test_utils.h"
 #include "components/exo/data_device.h"
@@ -24,6 +26,7 @@
 #include "components/exo/test/exo_test_base.h"
 #include "components/exo/test/exo_test_data_exchange_delegate.h"
 #include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/clipboard/clipboard.h"
 #include "ui/base/clipboard/clipboard_format_type.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/data_transfer_policy/data_transfer_policy_controller.h"
@@ -34,7 +37,13 @@
 namespace exo {
 namespace {
 
-using DataOfferTest = test::ExoTestBase;
+class DataOfferTest : public test::ExoTestBase {
+ public:
+  void TearDown() override {
+    ui::Clipboard::DestroyClipboardForCurrentThread();
+    test::ExoTestBase::TearDown();
+  }
+};
 
 class TestDataOfferDelegate : public DataOfferDelegate {
  public:
@@ -480,6 +489,204 @@ TEST_F(DataOfferTest, SetClipboardDataPlainText) {
   ASSERT_TRUE(ReadString16(std::move(read_pipe), &result16));
   EXPECT_EQ("Test data", base::UTF16ToUTF8(result16));
 }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+TEST_F(DataOfferTest, SetClipboardDataOfferDteToLacros) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kLacros);
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
+        url::Origin::Create(GURL("https://www.google.com"))));
+    writer.WriteText(u"Test data");
+  }
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
+
+  EXPECT_EQ(4u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(1u, delegate.mime_types().count("UTF8_STRING"));
+  EXPECT_EQ(1u,
+            delegate.mime_types().count("chromium/x-data-transfer-endpoint"));
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string text_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &text_result));
+  EXPECT_EQ("Test data", text_result);
+
+  // Retrieve encoded clipboard source data transfer endpoint.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("chromium/x-data-transfer-endpoint",
+                     std::move(write_pipe));
+  std::string dte_json_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
+  EXPECT_EQ(R"({"endpoint_type":"url","url_origin":"https://www.google.com"})",
+            dte_json_result);
+}
+
+TEST_F(DataOfferTest, SetClipboardDataDoNotOfferDteToNonLacros) {
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kArc);
+  {
+    ui::ScopedClipboardWriter writer(ui::ClipboardBuffer::kCopyPaste);
+    writer.SetDataSource(std::make_unique<ui::DataTransferEndpoint>(
+        url::Origin::Create(GURL("https://www.google.com"))));
+    writer.WriteText(u"Test data");
+  }
+
+  auto* window = CreateTestWindowInShellWithBounds(gfx::Rect());
+  data_offer.SetClipboardData(
+      &data_exchange_delegate, *ui::Clipboard::GetForCurrentThread(),
+      data_exchange_delegate.GetDataTransferEndpointType(window));
+
+  EXPECT_EQ(3u, delegate.mime_types().size());
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(1u, delegate.mime_types().count("UTF8_STRING"));
+  EXPECT_EQ(0u,
+            delegate.mime_types().count("chromium/x-data-transfer-endpoint"));
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string text_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &text_result));
+  EXPECT_EQ("Test data", text_result);
+
+  // Attempt to retrieve encoded clipboard source data transfer endpoint.
+  // Nothing should be returned.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("chromium/x-data-transfer-endpoint",
+                     std::move(write_pipe));
+  std::string dte_json_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
+  EXPECT_EQ("", dte_json_result);
+}
+
+TEST_F(DataOfferTest, SetDropDataOfferDteToLacros) {
+  base::flat_set<DndAction> source_actions;
+  source_actions.insert(DndAction::kCopy);
+  source_actions.insert(DndAction::kMove);
+
+  ui::OSExchangeData data;
+  data.SetString(std::u16string(u"Test data"));
+  data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      url::Origin::Create(GURL("https://www.google.com"))));
+
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  EXPECT_EQ(0u, delegate.mime_types().size());
+  EXPECT_EQ(0u, delegate.source_actions().size());
+  EXPECT_EQ(DndAction::kNone, delegate.dnd_action());
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kLacros);
+
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
+  data_offer.SetSourceActions(source_actions);
+  data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
+
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(1u,
+            delegate.mime_types().count("chromium/x-data-transfer-endpoint"));
+  EXPECT_EQ(2u, delegate.source_actions().size());
+  EXPECT_EQ(1u, delegate.source_actions().count(DndAction::kCopy));
+  EXPECT_EQ(1u, delegate.source_actions().count(DndAction::kMove));
+  EXPECT_EQ(DndAction::kMove, delegate.dnd_action());
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string text_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &text_result));
+  EXPECT_EQ("Test data", text_result);
+
+  // Retrieve encoded drag source data transfer endpoint.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("chromium/x-data-transfer-endpoint",
+                     std::move(write_pipe));
+  std::string dte_json_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
+  EXPECT_EQ(R"({"endpoint_type":"url","url_origin":"https://www.google.com"})",
+            dte_json_result);
+}
+
+TEST_F(DataOfferTest, SetDropDataDoNotOfferDteToNonLacros) {
+  base::flat_set<DndAction> source_actions;
+  source_actions.insert(DndAction::kCopy);
+  source_actions.insert(DndAction::kMove);
+
+  ui::OSExchangeData data;
+  data.SetString(std::u16string(u"Test data"));
+  data.SetSource(std::make_unique<ui::DataTransferEndpoint>(
+      url::Origin::Create(GURL("https://www.google.com"))));
+
+  TestDataOfferDelegate delegate;
+  DataOffer data_offer(&delegate);
+
+  EXPECT_EQ(0u, delegate.mime_types().size());
+  EXPECT_EQ(0u, delegate.source_actions().size());
+  EXPECT_EQ(DndAction::kNone, delegate.dnd_action());
+
+  TestDataExchangeDelegate data_exchange_delegate;
+  data_exchange_delegate.set_endpoint_type(ui::EndpointType::kCrostini);
+
+  data_offer.SetDropData(&data_exchange_delegate, nullptr, data);
+  data_offer.SetSourceActions(source_actions);
+  data_offer.SetActions(base::flat_set<DndAction>(), DndAction::kMove);
+
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-8"));
+  EXPECT_EQ(1u, delegate.mime_types().count("text/plain;charset=utf-16"));
+  EXPECT_EQ(0u,
+            delegate.mime_types().count("chromium/x-data-transfer-endpoint"));
+  EXPECT_EQ(2u, delegate.source_actions().size());
+  EXPECT_EQ(1u, delegate.source_actions().count(DndAction::kCopy));
+  EXPECT_EQ(1u, delegate.source_actions().count(DndAction::kMove));
+  EXPECT_EQ(DndAction::kMove, delegate.dnd_action());
+
+  base::ScopedFD read_pipe;
+  base::ScopedFD write_pipe;
+
+  // Read as utf-8.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("text/plain;charset=utf-8", std::move(write_pipe));
+  std::string text_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &text_result));
+  EXPECT_EQ("Test data", text_result);
+
+  // Attempt to retrieve encoded drag source data transfer endpoint.
+  // Nothing should be returned.
+  ASSERT_TRUE(base::CreatePipe(&read_pipe, &write_pipe));
+  data_offer.Receive("chromium/x-data-transfer-endpoint",
+                     std::move(write_pipe));
+  std::string dte_json_result;
+  ASSERT_TRUE(ReadString(std::move(read_pipe), &dte_json_result));
+  EXPECT_EQ("", dte_json_result);
+}
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 TEST_F(DataOfferTest, SetClipboardDataHTML) {
   TestDataOfferDelegate delegate;

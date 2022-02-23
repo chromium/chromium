@@ -1,53 +1,60 @@
 {
   "layers": [
     {
-      "name": "Scrolling Contents Layer",
+      "name": "Scrolling background of LayoutView #document",
       "bounds": [1200, 900],
       "contentsOpaque": true,
       "backgroundColor": "#FFFFFF"
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='outer'",
-      "bounds": [606, 606],
-      "transform": 1
-    },
-    {
-      "name": "Scrolling Contents Layer",
       "position": [3, 3],
-      "bounds": [600, 1056],
-      "transform": 2
+      "bounds": [600, 600],
+      "drawsContent": false,
+      "transform": 1
     },
     {
       "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
       "bounds": [306, 306],
+      "contentsOpaqueForText": true,
       "transform": 3
     },
     {
-      "name": "Scrolling Contents Layer",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
       "position": [3, 3],
-      "bounds": [7500, 13500],
+      "bounds": [300, 300],
+      "drawsContent": false,
       "transform": 3
     },
     {
-      "name": "ContentsLayer for Horizontal Scrollbar Layer",
+      "name": "LayoutNGBlockFlow (positioned) DIV id='inner'",
+      "position": [3, 3],
+      "bounds": [3000, 13500],
+      "contentsOpaqueForText": true,
+      "transform": 3
+    },
+    {
+      "name": "LayoutNGBlockFlow (positioned) DIV id='spacer'",
+      "position": [3, 3003],
+      "bounds": [7500, 1500],
+      "contentsOpaqueForText": true,
+      "drawsContent": false,
+      "transform": 3
+    },
+    {
+      "name": "HorizontalScrollbar",
       "position": [3, 293],
       "bounds": [290, 10],
       "transform": 3
     },
     {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [293, 3],
       "bounds": [10, 290],
       "transform": 3
     },
     {
-      "name": "Scroll Corner Layer",
-      "position": [293, 293],
-      "bounds": [10, 10],
-      "transform": 3
-    },
-    {
-      "name": "ContentsLayer for Vertical Scrollbar Layer",
+      "name": "VerticalScrollbar",
       "position": [593, 3],
       "bounds": [10, 600],
       "transform": 1

@@ -70,32 +70,31 @@
 
 #include "base/base_export.h"
 #include "base/check_op.h"
-#include "base/compiler_specific.h"
 #include "base/numerics/clamped_math.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include <zircon/types.h>
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 #include <mach/mach_time.h>
 // Avoid Mac system header macro leak.
 #undef TYPE_BOOL
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include <jni.h>
 #endif
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <unistd.h>
 #include <sys/time.h>
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/gtest_prod_util.h"
 #include "base/win/windows_types.h"
 
@@ -118,21 +117,21 @@ class BASE_EXPORT TimeDelta {
  public:
   constexpr TimeDelta() = default;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static TimeDelta FromQPCValue(LONGLONG qpc_value);
   // TODO(crbug.com/989694): Avoid base::TimeDelta factory functions
   // based on absolute time
   static TimeDelta FromFileTime(FILETIME ft);
   static TimeDelta FromWinrtDateTime(ABI::Windows::Foundation::DateTime dt);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static TimeDelta FromTimeSpec(const timespec& ts);
 #endif
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   static TimeDelta FromZxDuration(zx_duration_t nanos);
 #endif
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static TimeDelta FromMachTime(uint64_t mach_time);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Converts an integer value representing TimeDelta to a class. This is used
   // when deserializing a |TimeDelta| structure, using a value known to be
@@ -175,16 +174,7 @@ class BASE_EXPORT TimeDelta {
   constexpr int64_t ToInternalValue() const { return delta_; }
 
   // Returns the magnitude (absolute value) of this TimeDelta.
-  constexpr TimeDelta magnitude() const {
-    // The code below will not work correctly in this corner case.
-    if (is_min())
-      return Max();
-
-    // std::abs() is not currently constexpr.  The following is a simple
-    // branchless implementation:
-    const int64_t mask = delta_ >> (sizeof(delta_) * 8 - 1);
-    return TimeDelta((delta_ + mask) ^ mask);
-  }
+  constexpr TimeDelta magnitude() const { return TimeDelta(delta_.Abs()); }
 
   // Returns true if the time delta is a zero, positive or negative time delta.
   constexpr bool is_zero() const { return delta_ == 0; }
@@ -196,13 +186,13 @@ class BASE_EXPORT TimeDelta {
   constexpr bool is_min() const { return *this == Min(); }
   constexpr bool is_inf() const { return is_min() || is_max(); }
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   struct timespec ToTimeSpec() const;
 #endif
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   zx_duration_t ToZxDuration() const;
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ABI::Windows::Foundation::DateTime ToWinrtDateTime() const;
 #endif
 
@@ -252,19 +242,11 @@ class BASE_EXPORT TimeDelta {
   // Computations with numeric types.
   template <typename T>
   constexpr TimeDelta operator*(T a) const {
-    CheckedNumeric<int64_t> rv(delta_);
-    rv *= a;
-    if (rv.IsValid())
-      return TimeDelta(rv.ValueOrDie());
-    return ((delta_ < 0) == (a < 0)) ? Max() : Min();
+    return TimeDelta(int64_t{delta_ * a});
   }
   template <typename T>
   constexpr TimeDelta operator/(T a) const {
-    CheckedNumeric<int64_t> rv(delta_);
-    rv /= a;
-    if (rv.IsValid())
-      return TimeDelta(rv.ValueOrDie());
-    return ((delta_ < 0) == (a < 0)) ? Max() : Min();
+    return TimeDelta(int64_t{delta_ / a});
   }
   template <typename T>
   constexpr TimeDelta& operator*=(T a) {
@@ -291,7 +273,7 @@ class BASE_EXPORT TimeDelta {
   }
   constexpr int64_t IntDiv(TimeDelta a) const {
     if (!is_inf() && !a.is_zero())
-      return delta_ / a.delta_;
+      return int64_t{delta_ / a.delta_};
 
     // For consistency, use the same edge case CHECKs and behavior as the code
     // above.
@@ -341,6 +323,8 @@ class BASE_EXPORT TimeDelta {
   // to avoid confusion by callers with an integer constructor. Use
   // base::Seconds, base::Milliseconds, etc. instead.
   constexpr explicit TimeDelta(int64_t delta_us) : delta_(delta_us) {}
+  constexpr explicit TimeDelta(ClampedNumeric<int64_t> delta_us)
+      : delta_(delta_us) {}
 
   // Returns a double representation of this TimeDelta's tick count.  In
   // particular, Max()/Min() are converted to +/-infinity.
@@ -352,12 +336,12 @@ class BASE_EXPORT TimeDelta {
   }
 
   // Delta in microseconds.
-  int64_t delta_ = 0;
+  ClampedNumeric<int64_t> delta_ = 0;
 };
 
 constexpr TimeDelta TimeDelta::operator+(TimeDelta other) const {
   if (!other.is_inf())
-    return TimeDelta(int64_t{base::ClampAdd(delta_, other.delta_)});
+    return TimeDelta(delta_ + other.delta_);
 
   // Additions involving two infinities are only valid if signs match.
   CHECK(!is_inf() || (delta_ == other.delta_));
@@ -366,10 +350,10 @@ constexpr TimeDelta TimeDelta::operator+(TimeDelta other) const {
 
 constexpr TimeDelta TimeDelta::operator-(TimeDelta other) const {
   if (!other.is_inf())
-    return TimeDelta(int64_t{base::ClampSub(delta_, other.delta_)});
+    return TimeDelta(delta_ - other.delta_);
 
   // Subtractions involving two infinities are only valid if signs differ.
-  CHECK_NE(delta_, other.delta_);
+  CHECK_NE(int64_t{delta_}, int64_t{other.delta_});
   return (other.delta_ < 0) ? Max() : Min();
 }
 
@@ -488,13 +472,6 @@ class TimeBase {
   int64_t us_;
 };
 
-template <typename T>
-using EnableIfIntegral = typename std::
-    enable_if<std::is_integral<T>::value || std::is_enum<T>::value, int>::type;
-template <typename T>
-using EnableIfFloat =
-    typename std::enable_if<std::is_floating_point<T>::value, int>::type;
-
 }  // namespace time_internal
 
 template <class TimeClass>
@@ -517,7 +494,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   static constexpr int64_t kTimeTToMicrosecondsOffset =
       INT64_C(11644473600000000);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // To avoid overflow in QPC to Microseconds calculations, since we multiply
   // by kMicrosecondsPerSecond, then the QPC value should not exceed
   // (2^63 - 1) / 1E6. If it exceeds that threshold, we divide then multiply.
@@ -532,16 +509,16 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 //
 // WARNING: These are not the same limits for the inverse functionality,
 // UTCExplode() and LocalExplode(). See method comments for further details.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static constexpr int kExplodedMinYear = 1601;
   static constexpr int kExplodedMaxYear = 30827;
-#elif defined(OS_IOS) && !__LP64__
+#elif BUILDFLAG(IS_IOS) && !__LP64__
   static constexpr int kExplodedMinYear = std::numeric_limits<int>::min();
   static constexpr int kExplodedMaxYear = std::numeric_limits<int>::max();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   static constexpr int kExplodedMinYear = 1902;
   static constexpr int kExplodedMaxYear = std::numeric_limits<int>::max();
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Though we use 64-bit time APIs on both 32 and 64 bit Android, some OS
   // versions like KitKat (ARM but not x86 emulator) can't handle some early
   // dates (e.g. before 1170). So we set min conservatively here.
@@ -583,7 +560,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   constexpr Time() : TimeBase(0) {}
 
   // Returns the time for epoch in Unix-like system (Jan 1, 1970).
-  static Time UnixEpoch();
+  static constexpr Time UnixEpoch() { return Time(kTimeTToMicrosecondsOffset); }
 
   // Returns the current time. Watch out, the system might adjust its clock
   // in which case time will actually go backwards. We don't guarantee that
@@ -616,7 +593,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   TimeDelta ToDeltaSinceWindowsEpoch() const;
 
   // Converts to/from time_t in UTC and a Time class.
-  static Time FromTimeT(time_t tt);
+  static constexpr Time FromTimeT(time_t tt);
   time_t ToTimeT() const;
 
   // Converts time to/from a double which is the number of seconds since epoch
@@ -627,7 +604,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   static Time FromDoubleT(double dt);
   double ToDoubleT() const;
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   // Converts the timespec structure to time. MacOS X 10.8.3 (and tentatively,
   // earlier versions) will have the |ts|'s tv_nsec component zeroed out,
   // having a 1 second resolution, which agrees with
@@ -653,17 +630,17 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   static Time FromJavaTime(int64_t ms_since_epoch);
   int64_t ToJavaTime() const;
 
-#if defined(OS_POSIX) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   static Time FromTimeVal(struct timeval t);
   struct timeval ToTimeVal() const;
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   static Time FromZxTime(zx_time_t time);
   zx_time_t ToZxTime() const;
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   static Time FromCFAbsoluteTime(CFAbsoluteTime t);
   CFAbsoluteTime ToCFAbsoluteTime() const;
 #if defined(__OBJC__)
@@ -672,7 +649,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 #endif
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   static Time FromFileTime(FILETIME ft);
   FILETIME ToFileTime() const;
 
@@ -709,7 +686,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // undefined.
   static void ResetHighResolutionTimerUsage();
   static double GetHighResolutionTimerUsage();
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   // Converts an exploded structure representing either the local time or UTC
   // into a Time class. Returns false on a failure when, for example, a day of
@@ -717,12 +694,12 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // FromLocalExploded respects the current time zone but does not attempt to
   // use the calendar or day-of-week encoding from the current locale - see the
   // comments on base::Time::Exploded for more information.
-  static bool FromUTCExploded(const Exploded& exploded,
-                              Time* time) WARN_UNUSED_RESULT {
+  [[nodiscard]] static bool FromUTCExploded(const Exploded& exploded,
+                                            Time* time) {
     return FromExploded(false, exploded, time);
   }
-  static bool FromLocalExploded(const Exploded& exploded,
-                                Time* time) WARN_UNUSED_RESULT {
+  [[nodiscard]] static bool FromLocalExploded(const Exploded& exploded,
+                                              Time* time) {
     return FromExploded(true, exploded, time);
   }
 
@@ -740,12 +717,12 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   //
   // TODO(iyengar) Move the FromString/FromTimeT/ToTimeT/FromFileTime to
   // a new time converter class.
-  static bool FromString(const char* time_string,
-                         Time* parsed_time) WARN_UNUSED_RESULT {
+  [[nodiscard]] static bool FromString(const char* time_string,
+                                       Time* parsed_time) {
     return FromStringInternal(time_string, true, parsed_time);
   }
-  static bool FromUTCString(const char* time_string,
-                            Time* parsed_time) WARN_UNUSED_RESULT {
+  [[nodiscard]] static bool FromUTCString(const char* time_string,
+                                          Time* parsed_time) {
     return FromStringInternal(time_string, false, parsed_time);
   }
 
@@ -793,19 +770,19 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // |is_local = true| or UTC |is_local = false|. Function returns false on
   // failure and sets |time| to Time(0). Otherwise returns true and sets |time|
   // to non-exploded time.
-  static bool FromExploded(bool is_local,
-                           const Exploded& exploded,
-                           Time* time) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool FromExploded(bool is_local,
+                                         const Exploded& exploded,
+                                         Time* time);
 
   // Some platforms use the ICU library to provide To/FromExploded, when their
   // native library implementations are insufficient in some way.
   static void ExplodeUsingIcu(int64_t millis_since_unix_epoch,
                               bool is_local,
                               Exploded* exploded);
-  static bool FromExplodedUsingIcu(bool is_local,
-                                   const Exploded& exploded,
-                                   int64_t* millis_since_unix_epoch)
-      WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool FromExplodedUsingIcu(
+      bool is_local,
+      const Exploded& exploded,
+      int64_t* millis_since_unix_epoch);
 
   // Rounds down the time to the nearest day in either local time
   // |is_local = true| or UTC |is_local = false|.
@@ -818,18 +795,19 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // UTC |is_local = false| is assumed. A timezone that cannot be parsed
   // (e.g. "UTC" which is not specified in RFC822) is treated as if the
   // timezone is not specified.
-  static bool FromStringInternal(const char* time_string,
-                                 bool is_local,
-                                 Time* parsed_time) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool FromStringInternal(const char* time_string,
+                                               bool is_local,
+                                               Time* parsed_time);
 
   // Comparison does not consider |day_of_week| when doing the operation.
-  static bool ExplodedMostlyEquals(const Exploded& lhs,
-                                   const Exploded& rhs) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool ExplodedMostlyEquals(const Exploded& lhs,
+                                                 const Exploded& rhs);
 
   // Converts the provided time in milliseconds since the Unix epoch (1970) to a
   // Time object, avoiding overflows.
-  static bool FromMillisecondsSinceUnixEpoch(int64_t unix_milliseconds,
-                                             Time* time) WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool FromMillisecondsSinceUnixEpoch(
+      int64_t unix_milliseconds,
+      Time* time);
 
   // Returns the milliseconds since the Unix epoch (1970), rounding the
   // microseconds towards -infinity.
@@ -841,85 +819,45 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
 // precisely equal |t|. Hence, floating point values should not be used for
 // storage.
 
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Days(T n) {
-  return TimeDelta::FromInternalValue(
-      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerDay));
+  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+                                      Time::kMicrosecondsPerDay);
 }
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Hours(T n) {
-  return TimeDelta::FromInternalValue(
-      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerHour));
+  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+                                      Time::kMicrosecondsPerHour);
 }
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Minutes(T n) {
-  return TimeDelta::FromInternalValue(
-      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerMinute));
+  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+                                      Time::kMicrosecondsPerMinute);
 }
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Seconds(T n) {
-  return TimeDelta::FromInternalValue(
-      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerSecond));
+  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+                                      Time::kMicrosecondsPerSecond);
 }
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Milliseconds(T n) {
-  return TimeDelta::FromInternalValue(
-      ClampMul(static_cast<int64_t>(n), Time::kMicrosecondsPerMillisecond));
+  return TimeDelta::FromInternalValue(MakeClampedNum(n) *
+                                      Time::kMicrosecondsPerMillisecond);
 }
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Microseconds(T n) {
-  return TimeDelta::FromInternalValue(static_cast<int64_t>(n));
+  return TimeDelta::FromInternalValue(MakeClampedNum(n));
 }
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Nanoseconds(T n) {
-  return TimeDelta::FromInternalValue(static_cast<int64_t>(n) /
+  return TimeDelta::FromInternalValue(MakeClampedNum(n) /
                                       Time::kNanosecondsPerMicrosecond);
 }
-template <typename T, time_internal::EnableIfIntegral<T> = 0>
+template <typename T>
 constexpr TimeDelta Hertz(T n) {
   return n ? TimeDelta::FromInternalValue(Time::kMicrosecondsPerSecond /
-                                          static_cast<int64_t>(n))
+                                          MakeClampedNum(n))
            : TimeDelta::Max();
-}
-
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Days(T n) {
-  return TimeDelta::FromInternalValue(
-      saturated_cast<int64_t>(n * Time::kMicrosecondsPerDay));
-}
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Hours(T n) {
-  return TimeDelta::FromInternalValue(
-      saturated_cast<int64_t>(n * Time::kMicrosecondsPerHour));
-}
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Minutes(T n) {
-  return TimeDelta::FromInternalValue(
-      saturated_cast<int64_t>(n * Time::kMicrosecondsPerMinute));
-}
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Seconds(T n) {
-  return TimeDelta::FromInternalValue(
-      saturated_cast<int64_t>(n * Time::kMicrosecondsPerSecond));
-}
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Milliseconds(T n) {
-  return TimeDelta::FromInternalValue(
-      saturated_cast<int64_t>(n * Time::kMicrosecondsPerMillisecond));
-}
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Microseconds(T n) {
-  return TimeDelta::FromInternalValue(saturated_cast<int64_t>(n));
-}
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Nanoseconds(T n) {
-  return TimeDelta::FromInternalValue(
-      saturated_cast<int64_t>(n / Time::kNanosecondsPerMicrosecond));
-}
-template <typename T, time_internal::EnableIfFloat<T> = 0>
-constexpr TimeDelta Hertz(T n) {
-  return TimeDelta::FromInternalValue(
-      saturated_cast<int64_t>(Time::kMicrosecondsPerSecond / n));
 }
 
 // TimeDelta functions that must appear below the declarations of Time/TimeDelta
@@ -1000,6 +938,17 @@ constexpr TimeClass TimeBase<TimeClass>::operator-(TimeDelta delta) const {
 
 }  // namespace time_internal
 
+// Time functions that must appear below the declarations of Time/TimeDelta
+
+// static
+constexpr Time Time::FromTimeT(time_t tt) {
+  if (tt == 0)
+    return Time();  // Preserve 0 so we can tell it doesn't exist.
+  return (tt == std::numeric_limits<time_t>::max())
+             ? Max()
+             : (UnixEpoch() + Seconds(tt));
+}
+
 // For logging use only.
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, Time time);
 
@@ -1030,35 +979,38 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   // Now() will return high resolution values. Note that, on systems where the
   // high resolution clock works but is deemed inefficient, the low resolution
   // clock will be used instead.
-  static bool IsHighResolution() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsHighResolution();
 
   // Returns true if TimeTicks is consistent across processes, meaning that
   // timestamps taken on different processes can be safely compared with one
   // another. (Note that, even on platforms where this returns true, time values
   // from different threads that are within one tick of each other must be
   // considered to have an ambiguous ordering.)
-  static bool IsConsistentAcrossProcesses() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsConsistentAcrossProcesses();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // Converts between TimeTicks and an ZX_CLOCK_MONOTONIC zx_time_t value.
   static TimeTicks FromZxTime(zx_time_t nanos_since_boot);
   zx_time_t ToZxTime() const;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Translates an absolute QPC timestamp into a TimeTicks value. The returned
   // value has the same origin as Now(). Do NOT attempt to use this if
   // IsHighResolution() returns false.
   static TimeTicks FromQPCValue(LONGLONG qpc_value);
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   static TimeTicks FromMachAbsoluteTime(uint64_t mach_absolute_time);
 
-  static mach_timebase_info_data_t* MachTimebaseInfoForTesting();
-#endif  // defined(OS_MAC)
+  // Sets the current Mach timebase to `timebase`. Returns the old timebase.
+  static mach_timebase_info_data_t SetMachTimebaseInfoForTesting(
+      mach_timebase_info_data_t timebase);
 
-#if defined(OS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
+#endif  // BUILDFLAG(IS_MAC)
+
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_CHROMEOS_ASH)
   // Converts to TimeTicks the value obtained from SystemClock.uptimeMillis().
   // Note: this convertion may be non-monotonic in relation to previously
   // obtained TimeTicks::Now() values because of the truncation (to
@@ -1101,7 +1053,7 @@ class BASE_EXPORT TimeTicks : public time_internal::TimeBase<TimeTicks> {
   }
 
  protected:
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   typedef DWORD (*TickFunctionType)(void);
   static TickFunctionType SetMockTickFunction(TickFunctionType ticker);
 #endif
@@ -1126,11 +1078,11 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   constexpr ThreadTicks() : TimeBase(0) {}
 
   // Returns true if ThreadTicks::Now() is supported on this system.
-  static bool IsSupported() WARN_UNUSED_RESULT {
+  [[nodiscard]] static bool IsSupported() {
 #if (defined(_POSIX_THREAD_CPUTIME) && (_POSIX_THREAD_CPUTIME >= 0)) || \
-    defined(OS_MAC) || defined(OS_ANDROID) || defined(OS_FUCHSIA)
+    BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_FUCHSIA)
     return true;
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
     return IsSupportedWin();
 #else
     return false;
@@ -1140,7 +1092,7 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   // Waits until the initialization is completed. Needs to be guarded with a
   // call to IsSupported().
   static void WaitUntilInitialized() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     WaitUntilInitializedWin();
 #endif
   }
@@ -1154,7 +1106,7 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   // absolutely needed, call WaitUntilInitialized() before this method.
   static ThreadTicks Now();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Similar to Now() above except this returns thread-specific CPU time for an
   // arbitrary thread. All comments for Now() method above apply apply to this
   // method as well.
@@ -1181,7 +1133,7 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   // internal use and testing.
   constexpr explicit ThreadTicks(int64_t us) : TimeBase(us) {}
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   FRIEND_TEST_ALL_PREFIXES(TimeTicks, TSCTicksPerSecond);
 
 #if defined(ARCH_CPU_ARM64)
@@ -1196,13 +1148,17 @@ class BASE_EXPORT ThreadTicks : public time_internal::TimeBase<ThreadTicks> {
   static double TSCTicksPerSecond();
 #endif
 
-  static bool IsSupportedWin() WARN_UNUSED_RESULT;
+  [[nodiscard]] static bool IsSupportedWin();
   static void WaitUntilInitializedWin();
 #endif
 };
 
 // For logging use only.
 BASE_EXPORT std::ostream& operator<<(std::ostream& os, ThreadTicks time_ticks);
+
+// Returns a string representation of the given time in the IMF-fixdate format
+// defined by RFC 7231 (satisfying its HTTP-date format).
+BASE_EXPORT std::string TimeFormatHTTP(base::Time time);
 
 }  // namespace base
 

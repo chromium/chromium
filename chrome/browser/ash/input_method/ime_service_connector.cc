@@ -107,7 +107,7 @@ void ImeServiceConnector::DownloadImeFileTo(
 }
 
 void ImeServiceConnector::SetupImeService(
-    mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager> receiver) {
+    mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) {
   if (!remote_service_) {
     content::ServiceProcessHost::Launch(
         remote_service_.BindNewPipeAndPassReceiver(),

@@ -24,10 +24,6 @@ namespace {
 // source, before requesting refresh frames.
 constexpr base::TimeDelta kRefreshInterval = base::Milliseconds(250);
 
-// The maximum number of refresh video frames to request/receive.  After this
-// limit (60 * 250ms = 15 seconds), refresh frame requests will stop being made.
-constexpr int kMaxConsecutiveRefreshFrames = 60;
-
 }  // namespace
 
 VideoRtpStream::VideoRtpStream(
@@ -35,7 +31,6 @@ VideoRtpStream::VideoRtpStream(
     base::WeakPtr<RtpStreamClient> client)
     : video_sender_(std::move(video_sender)),
       client_(client),
-      consecutive_refresh_count_(0),
       expecting_a_refresh_frame_(false) {
   DCHECK(video_sender_);
   DCHECK(client);
@@ -64,7 +59,6 @@ void VideoRtpStream::InsertVideoFrame(
     // behavior resulting from this logic will be correct.
     expecting_a_refresh_frame_ = false;
   } else {
-    consecutive_refresh_count_ = 0;
     // The following re-starts the timer, scheduling it to fire at
     // kRefreshInterval from now.
     refresh_timer_.Reset();
@@ -92,13 +86,7 @@ void VideoRtpStream::SetTargetPlayoutDelay(base::TimeDelta playout_delay) {
 }
 
 void VideoRtpStream::OnRefreshTimerFired() {
-  ++consecutive_refresh_count_;
-  if (consecutive_refresh_count_ >= kMaxConsecutiveRefreshFrames)
-    refresh_timer_.Stop();  // Stop timer until receiving a non-refresh frame.
-
-  DVLOG(1) << "CastVideoSink is requesting another refresh frame "
-              "(consecutive count="
-           << consecutive_refresh_count_ << ").";
+  DVLOG(1) << "VideoRtpStream is requesting another refresh frame.";
   expecting_a_refresh_frame_ = true;
   client_->RequestRefreshFrame();
 }

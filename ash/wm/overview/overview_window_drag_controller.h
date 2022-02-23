@@ -12,12 +12,15 @@
 #include "base/containers/flat_map.h"
 #include "ui/gfx/geometry/point_f.h"
 
+namespace ui {
+class PresentationTimeRecorder;
+}
+
 namespace ash {
 
 class OverviewGrid;
 class OverviewItem;
 class OverviewSession;
-class PresentationTimeRecorder;
 
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
@@ -233,7 +236,7 @@ class ASH_EXPORT OverviewWindowDragController {
   bool did_move_ = false;
 
   // Records the presentation time of window drag operation in overview mode.
-  std::unique_ptr<PresentationTimeRecorder> presentation_time_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> presentation_time_recorder_;
 
   SplitViewController::SnapPosition snap_position_ = SplitViewController::NONE;
 };

@@ -10,6 +10,7 @@
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/notreached.h"
 #include "chrome/browser/profiles/profile.h"
@@ -64,7 +65,8 @@ class SigninEmailConfirmationDialog::DialogWebContentsObserver
     signin_email_confirmation_dialog_->CloseDialog();
   }
 
-  SigninEmailConfirmationDialog* const signin_email_confirmation_dialog_;
+  const raw_ptr<SigninEmailConfirmationDialog>
+      signin_email_confirmation_dialog_;
 };
 
 SigninEmailConfirmationDialog::SigninEmailConfirmationDialog(
@@ -171,8 +173,8 @@ void SigninEmailConfirmationDialog::GetDialogSize(gfx::Size* size) const {
 std::string SigninEmailConfirmationDialog::GetDialogArgs() const {
   std::string data;
   base::DictionaryValue dialog_args;
-  dialog_args.SetString("lastEmail", last_email_);
-  dialog_args.SetString("newEmail", new_email_);
+  dialog_args.SetStringKey("lastEmail", last_email_);
+  dialog_args.SetStringKey("newEmail", new_email_);
   base::JSONWriter::Write(dialog_args, &data);
   return data;
 }
@@ -183,17 +185,18 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
   std::unique_ptr<base::DictionaryValue> ret_value(base::DictionaryValue::From(
       base::JSONReader::ReadDeprecated(json_retval)));
   if (ret_value) {
-    std::string action_string;
-    if (ret_value->GetString(kSigninEmailConfirmationActionKey,
-                             &action_string)) {
-      if (action_string == kSigninEmailConfirmationActionCancel) {
+    const std::string* action_string =
+        ret_value->FindStringKey(kSigninEmailConfirmationActionKey);
+    if (action_string) {
+      if (*action_string == kSigninEmailConfirmationActionCancel) {
         action = CLOSE;
-      } else if (action_string == kSigninEmailConfirmationActionCreateNewUser) {
+      } else if (*action_string ==
+                 kSigninEmailConfirmationActionCreateNewUser) {
         action = CREATE_NEW_USER;
-      } else if (action_string == kSigninEmailConfirmationActionStartSync) {
+      } else if (*action_string == kSigninEmailConfirmationActionStartSync) {
         action = START_SYNC;
       } else {
-        NOTREACHED() << "Unexpected action value [" << action_string << "]";
+        NOTREACHED() << "Unexpected action value [" << *action_string << "]";
       }
     } else {
       NOTREACHED() << "No action in the dialog close return arguments";
@@ -204,7 +207,7 @@ void SigninEmailConfirmationDialog::OnDialogClosed(
     action = CLOSE;
   }
 
-  NotifyModalSigninClosed();
+  NotifyModalDialogClosed();
 
   if (callback_)
     std::move(callback_).Run(action);

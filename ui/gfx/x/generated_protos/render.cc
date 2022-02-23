@@ -40,6 +40,7 @@
 
 #include "render.h"
 
+#include <unistd.h>
 #include <xcb/xcb.h>
 #include <xcb/xcbext.h>
 
@@ -2697,7 +2698,7 @@ Future<void> Render::CreateLinearGradient(
   }
 
   // num_stops
-  num_stops = stops.size();
+  num_stops = colors.size();
   buf.Write(&num_stops);
 
   // stops
@@ -2810,7 +2811,7 @@ Future<void> Render::CreateRadialGradient(
   buf.Write(&outer_radius);
 
   // num_stops
-  num_stops = stops.size();
+  num_stops = colors.size();
   buf.Write(&num_stops);
 
   // stops
@@ -2908,7 +2909,7 @@ Future<void> Render::CreateConicalGradient(
   buf.Write(&angle);
 
   // num_stops
-  num_stops = stops.size();
+  num_stops = colors.size();
   buf.Write(&num_stops);
 
   // stops

@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tabs/tab_change_type.h"
 #include "components/sessions/core/session_id.h"
 #include "components/tab_groups/tab_group_id.h"
@@ -226,8 +227,8 @@ struct TabStripSelectionChange {
     return selected_tabs_were_removed || old_model != new_model;
   }
 
-  content::WebContents* old_contents = nullptr;
-  content::WebContents* new_contents = nullptr;
+  raw_ptr<content::WebContents> old_contents = nullptr;
+  raw_ptr<content::WebContents> new_contents = nullptr;
 
   ui::ListSelectionModel old_model;
   ui::ListSelectionModel new_model;
@@ -329,6 +330,12 @@ class TabStripModelObserver {
   virtual void OnTabStripModelChanged(TabStripModel* tab_strip_model,
                                       const TabStripModelChange& change,
                                       const TabStripSelectionChange& selection);
+
+  // Notification that a tab will be added to the TabStripModel, which allows
+  // an observer to react to an impending change to the TabStripModel. The only
+  // use case of this signal that is currently supported is the drag controller
+  // cancelling/completing a the drag before a tab is added during header drag.
+  virtual void OnTabWillBeAdded();
 
   // |change| is a change in the Tab Group model or metadata. These
   // changes may cause repainting of some Tab Group UI. They are

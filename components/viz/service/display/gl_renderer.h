@@ -15,6 +15,7 @@
 #include "base/cancelable_callback.h"
 #include "base/containers/circular_deque.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_cache_controller.h"
 #include "components/viz/common/quads/aggregated_render_pass_draw_quad.h"
@@ -36,11 +37,11 @@
 #include "ui/gfx/gpu_fence_handle.h"
 #include "ui/latency/latency_info.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "components/viz/service/display/ca_layer_overlay.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display/dc_layer_overlay.h"
 #endif
 
@@ -336,9 +337,9 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   // nothing.
   void ScheduleOutputSurfaceAsOverlay();
   // Schedule overlays sends overlay candidate to the GPU.
-#if defined(OS_ANDROID) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
   void ScheduleOverlays();
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   void ScheduleCALayers();
 
   // Schedules the |ca_layer_overlay|, which is guaranteed to have a non-null
@@ -362,7 +363,7 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
       const gfx::ColorSpace& color_space);
   void ReduceAvailableOverlayTextures();
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   void ScheduleDCLayers();
 #endif
 
@@ -444,12 +445,19 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
 
   const gfx::ColorTransform* GetColorTransform(const gfx::ColorSpace& src,
                                                const gfx::ColorSpace& dst);
-  std::map<gfx::ColorSpace,
-           std::map<gfx::ColorSpace, std::unique_ptr<gfx::ColorTransform>>>
+  struct ColorTransformKey {
+    gfx::ColorSpace src;
+    gfx::ColorSpace dst;
+    float sdr_max_luminance_nits = 0.f;
+    bool operator==(const ColorTransformKey& other) const;
+    bool operator!=(const ColorTransformKey& other) const;
+    bool operator<(const ColorTransformKey& other) const;
+  };
+  std::map<ColorTransformKey, std::unique_ptr<gfx::ColorTransform>>
       color_transform_cache_;
 
-  gpu::gles2::GLES2Interface* gl_;
-  gpu::ContextSupport* context_support_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
+  raw_ptr<gpu::ContextSupport> context_support_;
   std::unique_ptr<ContextCacheController::ScopedVisibility> context_visibility_;
   std::unique_ptr<ContextCacheController::ScopedBusy> context_busy_;
 
@@ -462,11 +470,11 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   bool is_scissor_enabled_ = false;
   bool stencil_shadow_ = false;
   bool blend_shadow_ = false;
-  const Program* current_program_ = nullptr;
+  raw_ptr<const Program> current_program_ = nullptr;
   TexturedQuadDrawCache draw_cache_;
   int highp_threshold_cache_ = 0;
 
-  ScopedRenderPassTexture* current_framebuffer_texture_;
+  raw_ptr<ScopedRenderPassTexture> current_framebuffer_texture_;
 
   SyncQueryCollection sync_queries_;
   bool use_discard_framebuffer_ = false;
@@ -477,11 +485,12 @@ class VIZ_SERVICE_EXPORT GLRenderer : public DirectRenderer {
   bool use_occlusion_query_ = false;
   bool use_swap_with_bounds_ = false;
   bool use_fast_path_solid_color_quad_ = false;
+  bool supports_multi_sampling_ = false;
 
   // If true, tints all the composited content to red.
   bool tint_gl_composited_content_ = true;
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // The method FlippedFramebuffer determines whether the framebuffer associated
   // with a DrawingFrame is flipped. It makes the assumption that the
   // DrawingFrame is being used as part of a render pass. If a DrawingFrame is

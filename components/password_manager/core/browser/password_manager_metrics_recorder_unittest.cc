@@ -26,7 +26,7 @@ constexpr ukm::SourceId kTestSourceId = 0x1234;
 using UkmEntry = ukm::builders::PageWithPassword;
 
 PasswordManagerMetricsRecorder CreateMetricsRecorder() {
-  return PasswordManagerMetricsRecorder(kTestSourceId, nullptr);
+  return PasswordManagerMetricsRecorder(kTestSourceId);
 }
 
 }  // namespace

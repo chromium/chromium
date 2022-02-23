@@ -4,8 +4,6 @@
 
 #include "pdf/pdf_features.h"
 
-#include "build/chromeos_buildflags.h"
-
 namespace chrome_pdf {
 namespace features {
 
@@ -24,7 +22,7 @@ const base::Feature kPdfPartialLoading = {"PdfPartialLoading",
 
 // TODO(crbug.com/702993): Remove this once the PDF viewer is Pepper-free.
 const base::Feature kPdfUnseasoned = {"PdfUnseasoned",
-                                      base::FEATURE_DISABLED_BY_DEFAULT};
+                                      base::FEATURE_ENABLED_BY_DEFAULT};
 
 // Feature has no effect if Chrome is built with no XFA support.
 const base::Feature kPdfXfaSupport = {"PdfXfaSupport",

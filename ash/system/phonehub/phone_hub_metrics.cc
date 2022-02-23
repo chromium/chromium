@@ -76,6 +76,10 @@ void LogNotificationOptInEvent(InterstitialScreenEvent event) {
   base::UmaHistogramEnumeration("PhoneHub.NotificationOptInEvents", event);
 }
 
+void LogCameraRollOptInEvent(InterstitialScreenEvent event) {
+  base::UmaHistogramEnumeration("PhoneHub.CameraRoll.OptInEvents", event);
+}
+
 void LogTabContinuationChipClicked(int tab_index) {
   base::UmaHistogramCounts100("PhoneHub.TabContinuationChipClicked", tab_index);
 }
@@ -91,6 +95,10 @@ void LogNotificationCount(int count) {
 void LogNotificationInteraction(NotificationInteraction interaction) {
   base::UmaHistogramEnumeration("PhoneHub.NotificationInteraction",
                                 interaction);
+}
+
+void LogNotificationMessageLength(int length) {
+  base::UmaHistogramCounts10000("PhoneHub.NotificationMessageLength", length);
 }
 
 std::string GetCameraRollMediaTypeSubcategoryName(

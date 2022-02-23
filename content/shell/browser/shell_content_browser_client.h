@@ -9,8 +9,8 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/public/browser/content_browser_client.h"
 #include "content/shell/browser/shell_speech_recognition_manager_delegate.h"
@@ -55,6 +55,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   std::string GetDefaultDownloadName() override;
   WebContentsViewDelegate* GetWebContentsViewDelegate(
       WebContents* web_contents) override;
+  bool ShouldUrlUseApplicationIsolationLevel(BrowserContext* browser_context,
+                                             const GURL& url) override;
   scoped_refptr<content::QuotaPermissionContext> CreateQuotaPermissionContext()
       override;
   GeneratedCodeCacheSettings GetGeneratedCodeCacheSettings(
@@ -96,7 +98,9 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       LoginAuthRequiredCallback auth_required_callback) override;
   base::DictionaryValue GetNetLogConstants() override;
   base::FilePath GetSandboxedStorageServiceDataDirectory() override;
+  base::FilePath GetFirstPartySetsDirectory() override;
   std::string GetUserAgent() override;
+  std::string GetFullUserAgent() override;
   std::string GetReducedUserAgent() override;
   blink::UserAgentMetadata GetUserAgentMetadata() override;
   void OverrideURLLoaderFactoryParams(
@@ -104,12 +108,13 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       const url::Origin& origin,
       bool is_for_isolated_world,
       network::mojom::URLLoaderFactoryParams* factory_params) override;
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_ANDROID)
   void GetAdditionalMappedFilesForChildProcess(
       const base::CommandLine& command_line,
       int child_process_id,
       content::PosixFileDescriptorInfo* mappings) override;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) ||
+        // BUILDFLAG(IS_ANDROID)
   device::GeolocationManager* GetGeolocationManager() override;
   void ConfigureNetworkContextParams(
       BrowserContext* context,
@@ -123,6 +128,8 @@ class ShellContentBrowserClient : public ContentBrowserClient {
   void GetHyphenationDictionary(
       base::OnceCallback<void(const base::FilePath&)>) override;
   bool HasErrorPage(int http_status_code) override;
+  std::unique_ptr<IdentityRequestDialogController>
+  CreateIdentityRequestDialogController() override;
   void OnNetworkServiceCreated(
       network::mojom::NetworkService* network_service) override;
 
@@ -213,12 +220,12 @@ class ShellContentBrowserClient : public ContentBrowserClient {
       create_throttles_for_navigation_callback_;
   base::RepeatingCallback<void(blink::web_pref::WebPreferences*)>
       override_web_preferences_callback_;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   std::unique_ptr<device::FakeGeolocationManager> location_manager_;
 #endif
 
   // Owned by content::BrowserMainLoop.
-  ShellBrowserMainParts* shell_browser_main_parts_ = nullptr;
+  raw_ptr<ShellBrowserMainParts> shell_browser_main_parts_ = nullptr;
 
   std::unique_ptr<PrefService> local_state_;
   std::unique_ptr<ShellFieldTrials> field_trials_;

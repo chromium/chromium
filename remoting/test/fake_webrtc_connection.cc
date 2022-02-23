@@ -4,7 +4,7 @@
 
 #include "remoting/test/fake_webrtc_connection.h"
 
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "remoting/base/logging.h"
 #include "remoting/protocol/transport_context.h"
 
@@ -18,8 +18,7 @@ FakeWebrtcConnection::FakeWebrtcConnection(
   // break the ftl_signaling_playground executable. If needed, this should be
   // replaced with a factory that supports at least one video codec.
   transport_ = std::make_unique<protocol::WebrtcTransport>(
-      jingle_glue::JingleThreadWrapper::current(), transport_context, nullptr,
-      this);
+      webrtc::ThreadWrapper::current(), transport_context, nullptr, this);
   on_closed_ = std::move(on_closed);
 }
 

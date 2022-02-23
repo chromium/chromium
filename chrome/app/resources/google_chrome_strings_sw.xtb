@@ -52,7 +52,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2121284319307530122">Fungua tena ili Usasishe &amp;Chrome</translation>
 <translation id="2123055963409958220">Saidia kuboresha Chrome kwa kuripoti kuhusu <ph name="BEGIN_LINK" />mipangilio ya sasa<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Tafadhali zima kisha uwashe Chrome sasa</translation>
-<translation id="2189289170880510015">Wekea mapendeleo baadhi ya chaguo muhimu zaidi za Chrome kuhusu faragha</translation>
+<translation id="2258103955319320201">Ili uweze kufikia vitu vyako vya kivinjari cha Chrome kwenye vifaa vyako vyote, ingia katika akaunti kisha uwashe kipengele cha kusawazisha.</translation>
 <translation id="2290014774651636340">Funguo za API za Google zinakosekana. Baadhi ya utendaji wa Google Chrome utazimwa.</translation>
 <translation id="2290095356545025170">Je, una hakika kuwa ungependa kusanidua Google Chrome?</translation>
 <translation id="2309047409763057870">Huu ni usakinishaji wa pili wa Google Chrome, na haiwezi kufanywa kuwa kivinjari chako chaguomsingi.</translation>
@@ -60,10 +60,12 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2348335408836342058">Chrome inahitaji ruhusa ya kufikia kamera na maikrofoni yako katika tovuti hii</translation>
 <translation id="234869673307233423">Chrome imeshindwa kukagua manenosiri yako. Jaribu tena baadaye.</translation>
 <translation id="235650106824528204">Data yoyote ya Chrome inayozalishwa unapotumia wasifu huu (kama vile alamisho ulizoweka, historia, manenosiri na mipangilio mingine) inaweza kuondolewa na msimamizi wa wasifu huu wa kazini. <ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">Endelea</translation>
 <translation id="2429317896000329049">Google Chrome haikuweza kusawazisha data yako kwa sababu Usawazishaji haupatikani kwa kikoa chako.</translation>
 <translation id="2467438592969358367">Google Chrome ingependa kuhamisha manenosiri yako. Andika nenosiri lako la Windows ili uruhusu shughuli hii.</translation>
 <translation id="2485422356828889247">Ondoa</translation>
 <translation id="2534507159460261402">Google Pay (imenakiliwa kwenye Chrome)</translation>
+<translation id="2563121210305478421">Ungependa kufungua Chrome tena?</translation>
 <translation id="2574930892358684005">Tayari <ph name="EXISTING_USER" /> ameingia katika akaunti kwenye wasifu huu wa Chrome. Ili utenganishe shughuli zako za kuvinjari, Chrome inaweza kukutengenezea wasifu wako mwenyewe.</translation>
 <translation id="2580411288591421699">Huwezi kusakinisha toleo la Google Chrome ambalo tayari linatumika. Tafadhali funga Google Chrome na ujaribu tena.</translation>
 <translation id="2586406160782125153">Hatua hii itafuta data yako ya kuvinjari kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
@@ -88,6 +90,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="2926952073016206995">Chrome inahitaji ruhusa ya kufikia kamera kwa ajili ya tovuti hii</translation>
 <translation id="2929907241665500097">Chrome haijasasishwa, hitilafu fulani imetokea. <ph name="BEGIN_LINK" />Rekebisha matatizo ya sasisho la Chrome na masasisho ambayo hayakuwekwa.<ph name="END_LINK" /></translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> - Kuingia katika Akaunti ya Mtandao - Chrome</translation>
+<translation id="303514781271618814">Chrome inachunguza vipengele vipya vinavyoruhusu tovuti zikupe hali ile ile ya kuvinjari kwa kutumia data kidogo</translation>
 <translation id="3037838751736561277">Google Chrome iko katika hali ya chini chini.</translation>
 <translation id="3059710691562604940">Kipengele cha Kuvinjari Salama kimezimwa. Chrome inapendekeza ukiwashe.</translation>
 <translation id="3065168410429928842">Kichupo cha Chrome</translation>
@@ -98,6 +101,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3114643501466072395">Ili uangalie kama manenosiri yako mengine ni salama dhidi ya ufichuzi haramu wa data na matatizo mengine ya usalama, <ph name="BEGIN_LINK" />ingia katika akaunti kwenye Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Mabadiliko yako yataanza kufanya kazi wakati ujao utakapozindua Google Chrome.</translation>
 <translation id="3149510190863420837">Programu za Chrome</translation>
+<translation id="3245429137663807393">Ikiwa pia unashiriki ripoti za matumizi ya Chrome, ripoti hizo zinajumuisha URL unazotembelea</translation>
 <translation id="3360895254066713204">Msaidizi wa Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome itafunguka upya sasa hivi}=1{Chrome itafunguka upya baada ya sekunde 1}other{Chrome itafunguka upya baada ya sekunde #}}</translation>
 <translation id="3395323229510056640">Pata usaidizi wa kutumia mfumo wa uendeshaji wa Chrome</translation>
@@ -115,7 +119,6 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="3596080736082218006">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="3622797965165704966">Sasa ni rahisi zaidi kutumia Chrome pamoja na Akaunti yako ya Google na kwenye kompyuta zinazoshirikiwa.</translation>
 <translation id="3673813398384385993">Chrome imegundua kwamba "<ph name="EXTENSION_NAME" />" ina programu hasidi</translation>
-<translation id="3678552270983184277">Mipangilio chaguomsingi hufanya kazi kwa watu wengi, lakini unaweza kuiwekea mapendeleo ili itosheleze jinsi unavyopenda kutumia Chrome</translation>
 <translation id="3718181793972440140">Hatua hii itafuta kipengee 1 kwenye kifaa hiki. Ili urejeshe data yako baadaye, ingia katika Chrome ukitumia <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Kiendelezi hiki "<ph name="EXTENSION_NAME" />" kimebadilisha ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>
 <translation id="3779473566290487688">Ili uweze kupokea taarifa za Google Chrome wakati ujao, utahitaji toleo la OS X 10.11 au toleo jipya zaidi. Kompyuta hii inatumia OS X 10.10.</translation>
@@ -144,6 +147,7 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="4343195214584226067"><ph name="EXTENSION_NAME" /> imeongezwa kwenye Chrome</translation>
 <translation id="4384570495110188418">Chrome imeshindwa kukagua manenosiri yako kwa sababu hujaingia katika akaunti</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
+<translation id="4427306783828095590">Kipengele cha ulinzi wa hali ya juu hufanya mengi zaidi ili kuzuia programu hasidi na wizi wa data binafsi</translation>
 <translation id="4450664632294415862">Chrome - Kuingia katika Akaunti ya Mtandao - <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">Kuna shughuli nyingine zinaendelea kwenye Google Chrome. Tafadhali jaribu tena baadaye.</translation>
 <translation id="4480040274068703980">Mfumo wa Uendeshaji wa Chrome haukuweza kusawazisha data yako kutokana na hitilafu wakati wa kuingia katika akaunti.</translation>
@@ -154,11 +158,11 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="459622048091363950">Chrome itakapopata idhini, tovuti zitaweza kukuomba idhini ya kufikia.</translation>
 <translation id="4600710005438004015">Imeshindwa kupata toleo jipya la Chrome, kwa hivyo hutapata masasisho ya usalama na vipengele vipya.</translation>
 <translation id="4633000520311261472">Ili kufanya Chrome salama zaidi, tumezima baadhi ya viendelezi ambavyo havijaorodheshwa katika <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> na ambavyo huendwa viliongezwa pasipo ridhaa yako.</translation>
-<translation id="4666328473657283332">Ili uweze kufikia vitu vyako vya Chrome kwenye vifaa vyako vyote, ingia katika akaunti ili uwashe kipengele cha kusawazisha.</translation>
 <translation id="4728575227883772061">Usanidi umeshindwa kwa sababu ya hitilafu isiyojulikana. Ikiwa Google Chrome haitumiki kwa sasa, tafadhali ifunge na ujaribu tena.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Huenda faili hii ni hatari, kwa hivyo Chrome imeizuia.</translation>
 <translation id="479167709087336770">Huduma hii hutumia kikagua tahajia sawa na kinachotumika kwenye Huduma ya Tafuta na Google. Maandishi unayoandika kwenye kivinjari yanatumwa kwa Google. Unaweza kubadilisha hali hii katika mipangilio wakati wowote.</translation>
+<translation id="4873783916118289636">Kagua vidhibiti muhimu vya faragha na usalama katika Chrome</translation>
 <translation id="4891791193823137474">Ruhusu Google Chrome iendeshe katika mandharinyuma</translation>
 <translation id="4895437082222824641">Fungua kiungo katika kichupo kipya cha Chrome</translation>
 <translation id="4953650215774548573">Weka Google Chrome iwe kivinjari chako chaguomsingi</translation>
@@ -172,10 +176,8 @@ Baadhi ya vipengele huenda visipatikane na mabadiliko katika mapendeleo hayatahi
 <translation id="5170938038195470297">Wasifu wako huenda usitumike kwa sababu unatoka katika toleo jipya la Google Chrome.
 
 Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wasifu au tumia toleo jipya la Chrome.</translation>
-<translation id="5193136243808726294">Mfumo wa Uendeshaji wa Google Chrome hauwezi kufungua ukurasa huu.</translation>
 <translation id="521447420733633466">Kama unatumia kifaa pamoja na wengine, marafiki na familia wanaweza kuvinjari kivyao na kuweka mipangilio ya Chrome wapendavyo</translation>
 <translation id="5251420635869119124">Walioalikwa wanaweza kutumia Chrome bila kuacha chochote nyuma.</translation>
-<translation id="5251679006894510177">Inakaribia kukamilisha usasishaji! Fungua Chrome tena ili ukamilishe mchakato wa kusasisha. Haitafungua upya madirisha fiche.</translation>
 <translation id="5334487786912937552">Chrome inahitaji ruhusa ya kufikia nafasi ya hifadhi ili ipakue faili</translation>
 <translation id="5386244825306882791">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome au unapotafuta kutoka Sanduku Kuu.</translation>
 <translation id="5394833366792865639">Shiriki kichupo cha Chrome</translation>
@@ -184,8 +186,6 @@ Huenda baadhi ya vipengele visipatikane. Tafadhali bainisha saraka tofauti ya wa
 Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="556024056938947818">Google Chrome inajaribu kuonyesha manenosiri.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5657226924540934362">Ikiwa mipangilio haionekani kwenye ukurasa huu, angalia katika <ph name="LINK_BEGIN" />
-      mipangilio ya mfumo wa uendeshaji wa Chrome<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Huenda <ph name="FILE_NAME" /> ni hatari, kwa hivyo Chromium imeizuia.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili}=1{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya dirisha fiche.}other{Msimamizi wako anataka ufungue Chrome tena ili utumie sasisho hili. Haitafungua upya madirisha # fiche.}}</translation>
 <translation id="5686916850681061684">Dhibiti na uweke mapendeleo kwenye Google Chrome. Unahitaji kushughulikia jambo fulani. Bofya ili upate maelezo.</translation>
@@ -204,6 +204,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="5941830788786076944">Fanya Google Chrome iwe kivinjari chaguomsingi</translation>
 <translation id="6070348360322141662">Kwa usalama wa ziada, Google Chrome itasimba data yako kwa njia fiche</translation>
 <translation id="608006075545470555">Ongeza Wasifu wa Kazini kwenye kivinjari hiki</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome imeboreshwa zaidi</translation>
 <translation id="6145313976051292476">Fungua PDF katika Chrome</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -231,6 +232,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="6989339256997917931">Google Chrome imesasishwa, lakini hujaitumia kwa angalau siku 30.</translation>
 <translation id="7025800014283535195">Unaweza kubadilisha kati ya wasifu mmoja wa Chrome na mwingine hapa</translation>
 <translation id="7062128746136194023">Mzazi wako amezima "Ruhusa za tovuti, programu na viendelezi" kwenye Chrome. Huruhusiwi kuweka <ph name="EXTENSION_TYPE_PARAMETER" /> hii.</translation>
+<translation id="7085332316435785646">Chagua iwapo ungependa kujumuisha historia kwenye Chrome ili upate hali ya utumiaji inayokufaa zaidi katika huduma za Google</translation>
 <translation id="7088681679121566888">Chrome imesasishwa</translation>
 <translation id="7098166902387133879">Google Chrome inatumia maikrofoni yako.</translation>
 <translation id="7106741999175697885">Kidhibiti cha Shughuli - Google Chrome</translation>
@@ -245,6 +247,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7398801000654795464">Uliingia kwenye Chrome kama <ph name="USER_EMAIL_ADDRESS" />. Tafadhali tumia akaunti sawa ili kuingia tena.</translation>
 <translation id="7408085963519505752">Masharti ya Chrome OS</translation>
 <translation id="7419046106786626209">Mfumo wa Uendeshaji wa Chrome haukuweza kusawazisha data yako kwa sababu Usawazishaji haupatikani katika kikoa chako.</translation>
+<translation id="7481213027396403996">Pata usalama thabiti zaidi kutoka Chrome</translation>
 <translation id="7486227612705979895">Chrome itafikia Hifadhi yako ili kutoa mapendekezo kwenye sehemu ya anwani</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Ili uone ikiwa kifaa chako kimesasishwa, nenda kwenye <ph name="LINK_BEGIN" />Mipangilio ya Mfumo wa Uendeshaji wa Chrome<ph name="LINK_END" /></translation>
@@ -255,6 +258,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="7651907282515937834">Nembo ya Chrome Enterprise</translation>
 <translation id="7665553140559834626">Fungua tena ili usasishe &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Kisakinishi hakikuweza kuunda saraka la muda. Tafadhali chunguza nafasi iliyo wazi kwenye diski na ruhusa ya kusakinisha programu.</translation>
+<translation id="7748512868279796735">Akaunti zifuatazo zinapatikana kwa ajili ya wasifu huu wa Chrome</translation>
 <translation id="7761834446675418963">Bofya jina lako ili ufungue Chrome na uanze kuvinjari.</translation>
 <translation id="7777080907402804672">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google. Unaweza kuzima mipangilio hii wakati wowote.</translation>
 <translation id="7781002470561365167">Toleo jipya la Google Chrome linapatikana.</translation>
@@ -272,7 +276,6 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8008534537613507642">Sakinisha Chrome Upya</translation>
 <translation id="8013993649590906847">Ikiwa picha haina ufafanuzi muhimu, Chrome itajaribu kukuwekea. Ili kuweka ufafanuzi, tutatuma picha kwa Google.</translation>
 <translation id="8129812357326543296">Kuhusu &amp;Google Chrome</translation>
-<translation id="822971176939352383">Akaunti zifuatazo hazijatumika kuingia kwenye wasifu wowote wa Chrome. Iwapo ungependa kutumia akaunti iliyo kwenye wasifu mwingine, ondoa wasifu huo kwanza.</translation>
 <translation id="8255190535488645436">Google Chrome inatumia kamera na maikrofoni yako.</translation>
 <translation id="8286862437124483331">Google Chrome inajaribu kuonyesha manenosiri. Chapa nenosiri lako la Windows ili uruhusu hili.</translation>
 <translation id="828798499196665338">Mzazi wako amezima "Ruhusa za tovuti, programu na viendelezi" kwenye Chrome. Huruhusiwi kuwasha <ph name="EXTENSION_TYPE_PARAMETER" /> hii.</translation>
@@ -287,6 +290,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Wasifu huu wa kazini ni tofauti kabisa na wasifu wako wa binafsi.</translation>
 <translation id="8556340503434111824">Kuna toleo jipya linalopatikana la Google Chrome, na ni la kasi kuliko la awali.</translation>
+<translation id="8571790202382503603">Ukitumia kipengele cha wasifu kwenye Chrome, unaweza kutenganisha vitu vyako vyote vya Chrome. Hali hii hukurahisishia mchakato wa kutenganisha kazi na burudani.</translation>
 <translation id="8614913330719544658">Google Chrome imelemazwa. Izindue upya sasa?</translation>
 <translation id="861702415419836452">Chrome inahitaji ruhusa ya kufikia kamera yako ili iunde ramani ya 3D ya mazingira yako</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome itafunguka upya ndani ya dakika 1}other{Chrome itafunguka upya ndani ya dakika #}}</translation>
@@ -295,6 +299,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8669527147644353129">Msaidizi wa Google Chrome</translation>
 <translation id="8679801911857917785">Pia inadhibiti ukurasa unaoonyeshwa unapoanzisha Chrome.</translation>
 <translation id="8686817260976772516">Ukitumia kipengele cha wasifu kwenye Chrome unaweza kutenganisha vitu vyako vyote vya Chrome. Tengeneza wasifu wa marafiki na familia au utenganishe kazi na burudani.</translation>
+<translation id="8712767363896337380">Inakaribia kukamilisha usasishaji! Fungua Chrome tena ili ukamilishe mchakato wa kusasisha.</translation>
 <translation id="873133009373065397">Google Chrome haijafaulu kubainisha wala kuweka kivinjari chaguomsingi</translation>
 <translation id="8823341990149967727">Toleo hili la Chrome Limepitwa na Wakati</translation>
 <translation id="8834965163890861871">Google Chrome inajaribu kubadilisha manenosiri. Andika nenosiri lako la Windows ili uiruhusu.</translation>
@@ -302,6 +307,7 @@ Google Chrome haiwezi kufufua mipangilio yako.</translation>
 <translation id="8862326446509486874">Huna haki zifaazo ili kufanya usakinishaji wa kiwango cha mfumo. Jaribu kutumia kisakinishi kama msimamiaji kompyuta.</translation>
 <translation id="8914504000324227558">Zindua upya Chrome</translation>
 <translation id="8922193594870374009">Ili uweze kutuma nambari kwa simu yako ya Android kutoka <ph name="ORIGIN" />, ingia katika akaunti kwenye Chrome ukitumia vifaa vyote viwili.</translation>
+<translation id="8983720963221508955">Umewasha Kipengele cha Kuvinjari Salama Kilichoboreshwa katika akaunti yako. Sasa kiwashe kwenye Chrome.</translation>
 <translation id="8986207147630327271">Unaongeza wasifu wa kazini kwenye kivinjari hiki na unampa msimamizi wako uwezo wa kudhibiti wasifu huo wa kazini pekee.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Sasisho la Chrome linapatikana}=1{Sasisho la Chrome linapatikana}other{Sasisho la Chrome limekuwepo kwa siku #}}</translation>
 <translation id="9026991721384951619">Mfumo wa Uendeshaji wa Chrome haukuweza kusawazisha data yako kwa sababu maelezo yako ya kuingia katika akaunti yanahitaji kusasishwa.</translation>

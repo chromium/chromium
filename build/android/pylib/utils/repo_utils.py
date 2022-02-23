@@ -20,3 +20,9 @@ def GetGitOriginMasterHeadSHA1(in_directory):
   command_line = ['git', 'rev-parse', 'origin/master']
   output = cmd_helper.GetCmdOutput(command_line, cwd=in_directory)
   return output.strip()
+
+
+def GetGitOriginMainHeadSHA1(in_directory):
+  command_line = ['git', 'rev-parse', 'origin/main']
+  output = cmd_helper.GetCmdOutput(command_line, cwd=in_directory)
+  return output.strip()

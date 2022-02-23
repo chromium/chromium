@@ -15,6 +15,10 @@ namespace shared_highlighting {
 // shared.
 bool ShouldOfferLinkToText(const GURL& url);
 
+// Returns true if given url supports link generation in iframe.
+// This will only be called if the url is an iframe.
+bool SupportsLinkGenerationInIframe(GURL url);
+
 }  // namespace shared_highlighting
 
 #endif  // COMPONENTS_SHARED_HIGHLIGHTING_CORE_COMMON_DISABLED_SITES_H_

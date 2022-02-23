@@ -87,9 +87,10 @@ public class GSAAccountChangeListener {
 
     private GSAAccountChangeListener(Context context, GSAHelper gsaHelper) {
         Context applicationContext = context.getApplicationContext();
-        applicationContext.registerReceiver(new AccountChangeBroadcastReceiver(),
+        ContextUtils.registerExportedBroadcastReceiver(applicationContext,
+                new AccountChangeBroadcastReceiver(),
                 new IntentFilter(ACCOUNT_UPDATE_BROADCAST_INTENT),
-                ACCOUNT_UPDATE_BROADCAST_PERMISSION, null);
+                ACCOUNT_UPDATE_BROADCAST_PERMISSION);
 
         createGsaClientAndConnect(applicationContext, gsaHelper);
 

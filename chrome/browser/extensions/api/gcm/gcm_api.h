@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_EXTENSIONS_API_GCM_GCM_API_H_
 #define CHROME_BROWSER_EXTENSIONS_API_GCM_GCM_API_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/gcm.h"
 #include "components/gcm_driver/gcm_client.h"
 #include "extensions/browser/extension_function.h"
@@ -102,7 +103,7 @@ class GcmJsEventRouter {
  private:
   // The application we route the event to is running in context of the
   // |profile_| and the latter outlives the event router.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

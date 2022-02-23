@@ -75,11 +75,6 @@ class NaClBrowserDelegate {
 
   // Returns whether NaCl application with this manifest URL should be debugged.
   virtual bool URLMatchesDebugPatterns(const GURL& manifest_url) = 0;
-
-  // Returns whether Non-SFI mode is allowed for a given manifest URL. Must be
-  // called on the UI thread.
-  virtual bool IsNonSfiModeAllowed(const base::FilePath& profile_directory,
-                                   const GURL& manifest_url) = 0;
 };
 
 #endif  // COMPONENTS_NACL_BROWSER_NACL_BROWSER_DELEGATE_H_

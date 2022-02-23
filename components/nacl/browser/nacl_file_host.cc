@@ -124,7 +124,6 @@ void DoOpenPnaclFile(
 void DoOpenNaClExecutableOnThreadPool(
     scoped_refptr<nacl::NaClHostMessageFilter> nacl_host_message_filter,
     const GURL& file_url,
-    bool enable_validation_caching,
     NaClBrowserDelegate::MapUrlToLocalFilePathCallback map_url_callback,
     IPC::Message* reply_msg) {
   base::FilePath file_path;
@@ -136,34 +135,22 @@ void DoOpenNaClExecutableOnThreadPool(
 
   base::File file = nacl::OpenNaClReadExecImpl(file_path,
                                                true /* is_executable */);
-  if (file.IsValid()) {
-    // Opening a NaCl executable works with or without validation caching.
-    // Validation caching requires that the file descriptor is registered now
-    // for later use, which will save time.
-    // When validation caching isn't used (e.g. Non-SFI mode), there is no
-    // reason to do that unnecessary registration.
-    if (enable_validation_caching) {
-      // This function is running on the blocking pool, but the path needs to be
-      // registered in a structure owned by the UI thread.
-      content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(
-              &DoRegisterOpenedNaClExecutableFile, nacl_host_message_filter,
-              std::move(file), file_path, reply_msg,
-              static_cast<WriteFileInfoReply>(
-                  NaClHostMsg_OpenNaClExecutable::WriteReplyParams)));
-    } else {
-      IPC::PlatformFileForTransit file_desc =
-          IPC::TakePlatformFileForTransit(std::move(file));
-      uint64_t dummy_file_token = 0;
-      NaClHostMsg_OpenNaClExecutable::WriteReplyParams(
-          reply_msg, file_desc, dummy_file_token, dummy_file_token);
-      nacl_host_message_filter->Send(reply_msg);
-    }
-  } else {
+  if (!file.IsValid()) {
     NotifyRendererOfError(nacl_host_message_filter.get(), reply_msg);
     return;
   }
+
+  // Validation caching requires that the file descriptor is registered now
+  // for later use, which will save time.
+  // This function is running on the blocking pool, but the path needs to be
+  // registered in a structure owned by the UI thread.
+  content::GetUIThreadTaskRunner({})->PostTask(
+      FROM_HERE,
+      base::BindOnce(&DoRegisterOpenedNaClExecutableFile,
+                     nacl_host_message_filter, std::move(file), file_path,
+                     reply_msg,
+                     static_cast<WriteFileInfoReply>(
+                         NaClHostMsg_OpenNaClExecutable::WriteReplyParams)));
 }
 
 }  // namespace
@@ -218,13 +205,11 @@ void OpenNaClExecutable(
     scoped_refptr<nacl::NaClHostMessageFilter> nacl_host_message_filter,
     int render_frame_id,
     const GURL& file_url,
-    bool enable_validation_caching,
     IPC::Message* reply_msg) {
   if (!BrowserThread::CurrentlyOn(BrowserThread::UI)) {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE, base::BindOnce(&OpenNaClExecutable, nacl_host_message_filter,
-                                  render_frame_id, file_url,
-                                  enable_validation_caching, reply_msg));
+                                  render_frame_id, file_url, reply_msg));
     return;
   }
 
@@ -253,11 +238,10 @@ void OpenNaClExecutable(
   // The URL is part of the current app. Now query the extension system for the
   // file path and convert that to a file descriptor. This should be done on a
   // blocking pool thread.
-  base::ThreadPool::PostTask(
-      FROM_HERE, {base::MayBlock()},
-      base::BindOnce(&DoOpenNaClExecutableOnThreadPool,
-                     nacl_host_message_filter, file_url,
-                     enable_validation_caching, map_url_callback, reply_msg));
+  base::ThreadPool::PostTask(FROM_HERE, {base::MayBlock()},
+                             base::BindOnce(&DoOpenNaClExecutableOnThreadPool,
+                                            nacl_host_message_filter, file_url,
+                                            map_url_callback, reply_msg));
 }
 
 }  // namespace nacl_file_host

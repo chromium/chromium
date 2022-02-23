@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/find_in_page/find_tab_helper.h"
 #include "components/keyed_service/core/keyed_service.h"
 
@@ -37,7 +38,7 @@ class FindBarState : public KeyedService,
   std::u16string GetSearchPrepopulateText() override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::u16string last_prepopulate_text_;
 };
 

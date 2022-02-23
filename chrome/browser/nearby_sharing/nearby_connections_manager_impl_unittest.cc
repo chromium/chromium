@@ -7,6 +7,9 @@
 #include <algorithm>
 #include <memory>
 
+#include "ash/services/nearby/public/cpp/mock_nearby_connections.h"
+#include "ash/services/nearby/public/cpp/mock_nearby_process_manager.h"
+#include "ash/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "base/callback_helpers.h"
 #include "base/files/file_util.h"
 #include "base/run_loop.h"
@@ -17,9 +20,6 @@
 #include "chrome/browser/nearby_sharing/constants.h"
 #include "chrome/browser/nearby_sharing/nearby_connection_impl.h"
 #include "chrome/test/base/testing_browser_process.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_connections.h"
-#include "chromeos/services/nearby/public/cpp/mock_nearby_process_manager.h"
-#include "chromeos/services/nearby/public/mojom/nearby_connections_types.mojom.h"
 #include "content/public/test/browser_task_environment.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/mock_network_change_notifier.h"
@@ -136,10 +136,10 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
     scoped_feature_list_.InitAndEnableFeature(features::kNearbySharingWebRtc);
 
     EXPECT_CALL(nearby_process_manager_, GetNearbyProcessReference)
-        .WillRepeatedly([&](chromeos::nearby::NearbyProcessManager::
+        .WillRepeatedly([&](ash::nearby::NearbyProcessManager::
                                 NearbyProcessStoppedCallback) {
           auto mock_reference_ptr =
-              std::make_unique<chromeos::nearby::MockNearbyProcessManager::
+              std::make_unique<ash::nearby::MockNearbyProcessManager::
                                    MockNearbyProcessReference>();
 
           EXPECT_CALL(*(mock_reference_ptr.get()), GetNearbyConnections)
@@ -399,13 +399,13 @@ class NearbyConnectionsManagerImplTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   bool should_use_web_rtc_ = true;
+  bool should_use_wifilan_ = false;
   DataUsage default_data_usage_ = DataUsage::kWifiOnly;
   std::unique_ptr<net::test::MockNetworkChangeNotifier> network_notifier_ =
       net::test::MockNetworkChangeNotifier::Create();
   base::ScopedDisallowBlocking disallow_blocking_;
-  testing::NiceMock<chromeos::nearby::MockNearbyConnections>
-      nearby_connections_;
-  testing::NiceMock<chromeos::nearby::MockNearbyProcessManager>
+  testing::NiceMock<ash::nearby::MockNearbyConnections> nearby_connections_;
+  testing::NiceMock<ash::nearby::MockNearbyProcessManager>
       nearby_process_manager_;
   NearbyConnectionsManagerImpl nearby_connections_manager_{
       &nearby_process_manager_};
@@ -496,8 +496,7 @@ TEST_F(NearbyConnectionsManagerImplTest, DiscoveryProcessStopped) {
 
   EXPECT_CALL(nearby_connections_, StopAllEndpoints).Times(0);
   nearby_connections_manager_.OnNearbyProcessStopped(
-      chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason::
-          kNormal);
+      ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason::kNormal);
 
   // Invoking OnEndpointFound will do nothing.
   EXPECT_CALL(discovery_listener, OnEndpointDiscovered(testing::_, testing::_))
@@ -514,8 +513,8 @@ TEST_F(NearbyConnectionsManagerImplTest, StopDiscoveryBeforeStart) {
 /******************************************************************************/
 // Begin: NearbyConnectionsManagerImplTestConnectionMediums
 /******************************************************************************/
-using ConnectionMediumsTestParam =
-    std::tuple<DataUsage, net::NetworkChangeNotifier::ConnectionType, bool>;
+using ConnectionMediumsTestParam = std::
+    tuple<DataUsage, net::NetworkChangeNotifier::ConnectionType, bool, bool>;
 class NearbyConnectionsManagerImplTestConnectionMediums
     : public NearbyConnectionsManagerImplTest,
       public testing::WithParamInterface<ConnectionMediumsTestParam> {};
@@ -527,25 +526,44 @@ TEST_P(NearbyConnectionsManagerImplTestConnectionMediums,
   net::NetworkChangeNotifier::ConnectionType connection_type =
       std::get<1>(param);
   bool is_webrtc_enabled = std::get<2>(GetParam());
+  bool is_wifilan_enabled = std::get<3>(GetParam());
+
+  std::vector<base::Feature> enabled_features;
+  std::vector<base::Feature> disabled_features;
+  if (is_webrtc_enabled) {
+    enabled_features.push_back(features::kNearbySharingWebRtc);
+  } else {
+    disabled_features.push_back(features::kNearbySharingWebRtc);
+  }
+  if (is_wifilan_enabled) {
+    enabled_features.push_back(features::kNearbySharingWifiLan);
+  } else {
+    disabled_features.push_back(features::kNearbySharingWifiLan);
+  }
   scoped_feature_list_.Reset();
-  scoped_feature_list_.InitWithFeatureState(features::kNearbySharingWebRtc,
-                                            is_webrtc_enabled);
+  scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
 
   network_notifier_->SetConnectionType(connection_type);
   network_notifier_->SetUseDefaultConnectionCostImplementation(true);
-  should_use_web_rtc_ =
-      is_webrtc_enabled && data_usage != DataUsage::kOffline &&
+  bool should_use_internet =
+      data_usage != DataUsage::kOffline &&
       connection_type != net::NetworkChangeNotifier::CONNECTION_NONE &&
       (data_usage != DataUsage::kWifiOnly ||
        (net::NetworkChangeNotifier::GetConnectionCost() !=
         net::NetworkChangeNotifier::CONNECTION_COST_METERED));
+  bool is_connection_wifi_or_ethernet =
+      connection_type == net::NetworkChangeNotifier::CONNECTION_WIFI ||
+      connection_type == net::NetworkChangeNotifier::CONNECTION_ETHERNET;
+  should_use_web_rtc_ = is_webrtc_enabled && should_use_internet;
+  should_use_wifilan_ = is_wifilan_enabled && should_use_internet &&
+                        is_connection_wifi_or_ethernet;
 
   // TODO(crbug.com/1129069): Update when WiFi LAN is supported.
   auto expected_mediums = MediumSelection::New(
       /*bluetooth=*/true,
       /*ble=*/false,
       /*web_rtc=*/should_use_web_rtc_,
-      /*wifi_lan=*/false);
+      /*wifi_lan=*/should_use_wifilan_);
 
   // StartDiscovery will succeed.
   mojo::Remote<EndpointDiscoveryListener> discovery_listener_remote;
@@ -587,6 +605,7 @@ INSTANTIATE_TEST_SUITE_P(
         testing::Values(net::NetworkChangeNotifier::CONNECTION_NONE,
                         net::NetworkChangeNotifier::CONNECTION_WIFI,
                         net::NetworkChangeNotifier::CONNECTION_3G),
+        testing::Bool(),
         testing::Bool()));
 /******************************************************************************/
 // End: NearbyConnectionsManagerImplTestConnectionMediums

@@ -19,7 +19,7 @@
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 #include "base/android/callback_android.h"
 #include "base/android/jni_array.h"
@@ -28,7 +28,7 @@
 #include "chrome/browser/endpoint_fetcher/jni_headers/EndpointResponse_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace {
 const char kContentTypeKey[] = "Content-Type";
@@ -158,18 +158,30 @@ EndpointFetcher::EndpointFetcher(
 EndpointFetcher::~EndpointFetcher() = default;
 
 void EndpointFetcher::Fetch(EndpointFetcherCallback endpoint_fetcher_callback) {
+  DCHECK(!access_token_fetcher_);
+  DCHECK(!simple_url_loader_);
+  DCHECK(identity_manager_);
+  // Check if we have a primary account with the default consent level "sync"
+  // before attempting to fetch a token.
+  if (!identity_manager_->HasPrimaryAccount(signin::ConsentLevel::kSync)) {
+    auto response = std::make_unique<EndpointResponse>();
+    VLOG(1) << __func__ << " No primary accounts found";
+    response->response = "No primary accounts found";
+    // TODO(crbug.com/993393) Add more detailed error messaging
+    std::move(endpoint_fetcher_callback).Run(std::move(response));
+    return;
+  }
+
   signin::AccessTokenFetcher::TokenCallback token_callback = base::BindOnce(
       &EndpointFetcher::OnAuthTokenFetched, weak_ptr_factory_.GetWeakPtr(),
       std::move(endpoint_fetcher_callback));
-  DCHECK(!access_token_fetcher_);
-  DCHECK(!simple_url_loader_);
   // TODO(crbug.com/997018) Make access_token_fetcher_ local variable passed
   // to callback
   access_token_fetcher_ =
       std::make_unique<signin::PrimaryAccountAccessTokenFetcher>(
           oauth_consumer_name_, identity_manager_, oauth_scopes_,
           std::move(token_callback),
-          signin::PrimaryAccountAccessTokenFetcher::Mode::kImmediate);
+          signin::PrimaryAccountAccessTokenFetcher::Mode::kWaitUntilAvailable);
 }
 
 void EndpointFetcher::OnAuthTokenFetched(
@@ -292,7 +304,7 @@ std::string EndpointFetcher::GetUrlForTesting() {
   return url_.spec();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 namespace {
 static void OnEndpointFetcherComplete(
     const base::android::JavaRef<jobject>& jcaller,
@@ -397,4 +409,4 @@ static void JNI_EndpointFetcher_NativeFetchWithNoAuth(
       nullptr);
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)

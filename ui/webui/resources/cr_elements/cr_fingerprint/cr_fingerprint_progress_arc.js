@@ -3,11 +3,11 @@
 // found in the LICENSE file.
 
 /** @type {string} */
-/* #export */ const FINGEPRINT_TICK_DARK_URL =
+/* #export */ const FINGERPRINT_TICK_DARK_URL =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_TICK_DARK';
 
 /** @type {string} */
-/* #export */ const FINGEPRINT_TICK_LIGHT_URL =
+/* #export */ const FINGERPRINT_TICK_LIGHT_URL =
     'chrome://theme/IDR_FINGERPRINT_COMPLETE_TICK';
 
 (function() {
@@ -116,6 +116,17 @@ Polymer({
      * @private
      */
     isComplete_: Boolean,
+
+    /**
+     * Whether the fingerprint progress page is being rendered in dark mode.
+     * @type {boolean}
+     * @private
+     */
+    isDarkModeActive_: {
+      type: Boolean,
+      value: false,
+      observer: 'onDarkModeChanged_',
+    },
   },
 
   // Also put these values as member values so they can be overridden by tests
@@ -144,36 +155,10 @@ Polymer({
    */
   updateTimerId_: undefined,
 
-  /**
-   * Media query for dark mode.
-   * @type {MediaQueryList|undefined}
-   * @private
-   */
-  darkModeQuery_: undefined,
-
-  /**
-   * Dark mode change listener callback.
-   * @type {function(MediaQueryList)|undefined}
-   * @private
-   */
-  darkModeListener_: undefined,
-
   /** @override */
   attached() {
     this.scale_ = this.circleRadius / DEFAULT_CANVAS_CIRCLE_RADIUS;
     this.updateImages_();
-
-    this.darkModeListener_ = this.updateAnimationAsset_.bind(this);
-    this.darkModeQuery_ = window.matchMedia('(prefers-color-scheme: dark)');
-    this.darkModeQuery_.addListener(this.darkModeListener_);
-    this.updateAnimationAsset_();
-  },
-
-  /** @override */
-  detached() {
-    this.darkModeQuery_.removeListener(
-        /** @type {function(MediaQueryList)} */ (this.darkModeListener_));
-    this.darkModeListener_ = undefined;
   },
 
   /**
@@ -281,6 +266,14 @@ Polymer({
   },
 
   /**
+   * Updates the current state to account for whether dark mode is enabled.
+   * @private
+   */
+  onDarkModeChanged_() {
+    this.updateAnimationAsset_();
+  },
+
+  /**
    * Updates the lottie animation taking into account the current state and
    * whether dark mode is enabled.
    * @private
@@ -289,9 +282,9 @@ Polymer({
     const scanningAnimation =
         /** @type {CrLottieElement} */ (this.$.scanningAnimation);
     if (this.isComplete_) {
-      scanningAnimation.animationUrl = this.darkModeQuery_.matches ?
-          FINGEPRINT_TICK_DARK_URL :
-          FINGEPRINT_TICK_LIGHT_URL;
+      scanningAnimation.animationUrl = this.isDarkModeActive_ ?
+          FINGERPRINT_TICK_DARK_URL :
+          FINGERPRINT_TICK_LIGHT_URL;
       return;
     }
     scanningAnimation.animationUrl =

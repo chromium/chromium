@@ -198,7 +198,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   //    to BeforeUnloadFired is proxied through HandleBeforeUnload() rather
   //    than getting called directly.
   // 3a. If |DevToolsWindow::BeforeUnloadFired| is called with |proceed|=false
-  //     it calls throught to the content's BeforeUnloadFired(), which from the
+  //     it calls through to the content's BeforeUnloadFired(), which from the
   //     WebContents perspective looks the same as the |content|'s own
   //     beforeunload dialog having had it's 'stay on this page' button clicked.
   // 3b. If |proceed| = true, then it fires beforeunload event on |contents|
@@ -228,7 +228,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
 
   // Returns true if this contents beforeunload event was intercepted by
   // devtools and false otherwise. If the event was intercepted, caller should
-  // not fire beforeunlaod event on |contents| itself as devtools window will
+  // not fire beforeunload event on |contents| itself as devtools window will
   // take care of it, otherwise caller should continue handling the event as
   // usual.
   static bool InterceptPageBeforeUnload(content::WebContents* contents);
@@ -267,7 +267,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
   // - Toggle/Open: client call;
   // - Create;
   // - ScheduleShow: setup window to be functional, but not yet show;
-  // - DocumentOnLoadCompletedInMainFrame: frontend loaded;
+  // - DocumentOnLoadCompletedInPrimaryMainFrame: frontend loaded;
   // - SetIsDocked: frontend decided on docking state;
   // - OnLoadCompleted: ready to present frontend;
   // - Show: actually placing frontend WebContents to a Browser or docked place;
@@ -318,7 +318,7 @@ class DevToolsWindow : public DevToolsUIBindings::Delegate,
                                 const std::string& settings,
                                 const std::string& panel,
                                 bool has_other_clients,
-                                bool browser_connnection);
+                                bool browser_connection);
   static GURL GetDevToolsURL(Profile* profile,
                              FrontendType frontend_type,
                              const std::string& frontend_url,

@@ -18,7 +18,7 @@ namespace chromeos {
 using TelemetryExtensionTelemetryApiBrowserTest =
     BaseTelemetryExtensionBrowserTest;
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoError) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -33,7 +33,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetVpdInfoWithSerialNumberPermission) {
   // Configure fake cros_healthd response.
   {
@@ -90,7 +90,7 @@ class TestDebugDaemonClient : public FakeDebugDaemonClient {
 
 }  // namespace
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Error) {
   DBusThreadManager::GetSetterForTesting()->SetDebugDaemonClient(
       std::make_unique<TestDebugDaemonClient>());
@@ -108,7 +108,7 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
                        GetOemDataWithSerialNumberPermission_Success) {
   CreateExtensionAndRunServiceWorker(R"(
     chrome.test.runTests([
@@ -122,11 +122,195 @@ IN_PROC_BROWSER_TEST_P(TelemetryExtensionTelemetryApiBrowserTest,
   )");
 }
 
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionTelemetryApiBrowserTest,
-    testing::ValuesIn(
-        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetMemoryInfo_Error) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getMemoryInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getMemoryInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetMemoryInfo_Success) {
+  // Configure fake cros_healthd response.
+  {
+    auto telemetry_info = cros_healthd::mojom::TelemetryInfo::New();
+
+    {
+      auto memory_info = chromeos::cros_healthd::mojom::MemoryInfo::New();
+      memory_info->total_memory_kib = 2147483647;
+      memory_info->free_memory_kib = 2147483646;
+      memory_info->available_memory_kib = 2147483645;
+      memory_info->page_faults_since_last_boot = 4611686018427388000;
+
+      telemetry_info->memory_result =
+          chromeos::cros_healthd::mojom::MemoryResult::NewMemoryInfo(
+              std::move(memory_info));
+    }
+
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+
+    cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getMemoryInfo() {
+        const result = await chrome.os.telemetry.getMemoryInfo();
+        chrome.test.assertEq(2147483647, result.totalMemoryKiB);
+        chrome.test.assertEq(2147483646, result.freeMemoryKiB);
+        chrome.test.assertEq(2147483645, result.availableMemoryKiB);
+        chrome.test.assertEq(4611686018427388000,
+          result.pageFaultsSinceLastBoot);
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetCpuInfo_Error) {
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getCpuInfo() {
+        await chrome.test.assertPromiseRejects(
+            chrome.os.telemetry.getCpuInfo(),
+            'Error: API internal error'
+        );
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionTelemetryApiBrowserTest,
+                       GetCpuInfo_Success) {
+  // Configure fake cros_healthd response.
+  {
+    auto telemetry_info = cros_healthd::mojom::TelemetryInfo::New();
+
+    {
+      auto c_state1 = chromeos::cros_healthd::mojom::CpuCStateInfo::New();
+      c_state1->name = "C1";
+      c_state1->time_in_state_since_last_boot_us = 1125899906875957;
+
+      auto c_state2 = chromeos::cros_healthd::mojom::CpuCStateInfo::New();
+      c_state2->name = "C2";
+      c_state2->time_in_state_since_last_boot_us = 1125899906877777;
+
+      auto logical_info1 = chromeos::cros_healthd::mojom::LogicalCpuInfo::New();
+      logical_info1->max_clock_speed_khz = 2147473647;
+      logical_info1->scaling_max_frequency_khz = 1073764046;
+      logical_info1->scaling_current_frequency_khz = 536904245;
+      // Idle time cannot be tested in browser test, because it requires USER_HZ
+      // system constant to convert idle_time_user_hz to milliseconds.
+      logical_info1->idle_time_user_hz = 0;
+      logical_info1->c_states.push_back(std::move(c_state1));
+      logical_info1->c_states.push_back(std::move(c_state2));
+
+      auto logical_info2 = chromeos::cros_healthd::mojom::LogicalCpuInfo::New();
+      logical_info2->max_clock_speed_khz = 1147494759;
+      logical_info2->scaling_max_frequency_khz = 1063764046;
+      logical_info2->scaling_current_frequency_khz = 936904246;
+      // Idle time cannot be tested in browser test, because it requires USER_HZ
+      // system constant to convert idle_time_user_hz to milliseconds.
+      logical_info2->idle_time_user_hz = 0;
+
+      auto physical_info1 =
+          chromeos::cros_healthd::mojom::PhysicalCpuInfo::New();
+      physical_info1->model_name = "i9";
+      physical_info1->logical_cpus.push_back(std::move(logical_info1));
+      physical_info1->logical_cpus.push_back(std::move(logical_info2));
+
+      auto logical_info3 = chromeos::cros_healthd::mojom::LogicalCpuInfo::New();
+      logical_info3->max_clock_speed_khz = 1247494759;
+      logical_info3->scaling_max_frequency_khz = 1263764046;
+      logical_info3->scaling_current_frequency_khz = 946904246;
+      // Idle time cannot be tested in browser test, because it requires USER_HZ
+      // system constant to convert idle_time_user_hz to milliseconds.
+      logical_info3->idle_time_user_hz = 0;
+
+      auto physical_info2 =
+          chromeos::cros_healthd::mojom::PhysicalCpuInfo::New();
+      physical_info2->model_name = "i9-low-powered";
+      physical_info2->logical_cpus.push_back(std::move(logical_info3));
+
+      auto cpu_info = chromeos::cros_healthd::mojom::CpuInfo::New();
+      cpu_info->num_total_threads = 2147483647;
+      cpu_info->architecture =
+          chromeos::cros_healthd::mojom::CpuArchitectureEnum::kArmv7l;
+      cpu_info->physical_cpus.push_back(std::move(physical_info1));
+      cpu_info->physical_cpus.push_back(std::move(physical_info2));
+
+      telemetry_info->cpu_result =
+          chromeos::cros_healthd::mojom::CpuResult::NewCpuInfo(
+              std::move(cpu_info));
+    }
+
+    ASSERT_TRUE(cros_healthd::FakeCrosHealthdClient::Get());
+
+    cros_healthd::FakeCrosHealthdClient::Get()
+        ->SetProbeTelemetryInfoResponseForTesting(telemetry_info);
+  }
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function getCpuInfo() {
+        const result = await chrome.os.telemetry.getCpuInfo();
+
+        chrome.test.assertEq(
+          // The dictionary members are ordered lexicographically by the Unicode
+          // codepoints that comprise their identifiers.
+          {
+            'architecture': 'armv7l',
+            'numTotalThreads': 2147483647,
+            'physicalCpus': [{
+              'logicalCpus': [{
+                'cStates': [{
+                  'name': 'C1',
+                  'timeInStateSinceLastBootUs': 1125899906875957,
+                },
+                {
+                  'name': 'C2',
+                  'timeInStateSinceLastBootUs': 1125899906877777,
+                }],
+                'idleTimeMs': 0,
+                'maxClockSpeedKhz': 2147473647,
+                'scalingCurrentFrequencyKhz': 536904245,
+                'scalingMaxFrequencyKhz': 1073764046,
+            }, {
+                'cStates': [],
+                'idleTimeMs': 0,
+                'maxClockSpeedKhz': 1147494759,
+                'scalingCurrentFrequencyKhz': 936904246,
+                'scalingMaxFrequencyKhz': 1063764046,
+            }],
+            'modelName': 'i9',
+          }, {
+            'logicalCpus': [{
+              'cStates': [],
+              'idleTimeMs': 0,
+              'maxClockSpeedKhz': 1247494759,
+              'scalingCurrentFrequencyKhz': 946904246,
+              'scalingMaxFrequencyKhz': 1263764046,
+            }],
+            'modelName': 'i9-low-powered',
+          }],
+        }, result);
+
+        chrome.test.succeed();
+      }
+    ]);
+  )");
+}
 
 class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
     : public TelemetryExtensionTelemetryApiBrowserTest {
@@ -142,8 +326,7 @@ class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
       delete;
 
  protected:
-  std::string GetManifestFile(const std::string& public_key,
-                              const std::string& matches_origin) override {
+  std::string GetManifestFile(const std::string& matches_origin) override {
     return base::StringPrintf(R"(
           {
             "key": "%s",
@@ -162,11 +345,12 @@ class TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest
             },
             "options_page": "options.html"
           }
-        )", public_key.c_str(), matches_origin.c_str());
+        )",
+                              public_key().c_str(), matches_origin.c_str());
   }
 };
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetVpdInfoWithoutSerialNumberPermission) {
   // Configure fake cros_healthd response.
@@ -208,7 +392,7 @@ IN_PROC_BROWSER_TEST_P(
   )");
 }
 
-IN_PROC_BROWSER_TEST_P(
+IN_PROC_BROWSER_TEST_F(
     TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
     GetOemDataWithoutSerialNumberPermission) {
   CreateExtensionAndRunServiceWorker(R"(
@@ -224,11 +408,5 @@ IN_PROC_BROWSER_TEST_P(
     ]);
   )");
 }
-
-INSTANTIATE_TEST_SUITE_P(
-    All,
-    TelemetryExtensionTelemetryApiWithoutSerialNumberBrowserTest,
-    testing::ValuesIn(
-        BaseTelemetryExtensionBrowserTest::kAllExtensionInfoTestParams));
 
 }  // namespace chromeos

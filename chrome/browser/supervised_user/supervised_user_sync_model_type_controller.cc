@@ -30,6 +30,6 @@ SupervisedUserSyncModelTypeController::
 syncer::DataTypeController::PreconditionState
 SupervisedUserSyncModelTypeController::GetPreconditionState() const {
   DCHECK(CalledOnValidThread());
-  return profile_->IsSupervised() ? PreconditionState::kPreconditionsMet
-                                  : PreconditionState::kMustStopAndClearData;
+  return profile_->IsChild() ? PreconditionState::kPreconditionsMet
+                             : PreconditionState::kMustStopAndClearData;
 }

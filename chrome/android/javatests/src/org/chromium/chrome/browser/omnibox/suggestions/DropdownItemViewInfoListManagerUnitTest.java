@@ -26,7 +26,7 @@ import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
-import org.chromium.chrome.browser.omnibox.styles.OmniboxTheme;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 import org.chromium.components.omnibox.AutocompleteResult.GroupDetails;
 import org.chromium.ui.modelutil.ListObservable.ListObserver;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
@@ -89,16 +89,17 @@ public class DropdownItemViewInfoListManagerUnitTest {
     /**
      * Verify that PropertyModels of all suggestions on managed list reflect the expected values.
      */
-    private void verifyPropertyValues(int layoutDirection, @OmniboxTheme int omniboxTheme) {
+    private void verifyPropertyValues(
+            int layoutDirection, @BrandedColorScheme int brandedColorScheme) {
         for (int index = 0; index < mSuggestionModels.size(); index++) {
             Assert.assertEquals("Unexpected layout direction for suggestion at position " + index,
                     layoutDirection,
                     mSuggestionModels.get(index).model.get(
                             SuggestionCommonProperties.LAYOUT_DIRECTION));
             Assert.assertEquals("Unexpected visual theme for suggestion at position " + index,
-                    omniboxTheme,
+                    brandedColorScheme,
                     mSuggestionModels.get(index).model.get(
-                            SuggestionCommonProperties.OMNIBOX_THEME));
+                            SuggestionCommonProperties.COLOR_SCHEME));
         }
     }
 
@@ -348,16 +349,16 @@ public class DropdownItemViewInfoListManagerUnitTest {
 
         mManager.setSourceViewInfoList(list, new SparseArray<GroupDetails>());
         verifyModelEquals(list);
-        verifyPropertyValues(View.LAYOUT_DIRECTION_INHERIT, OmniboxTheme.LIGHT_THEME);
+        verifyPropertyValues(View.LAYOUT_DIRECTION_INHERIT, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
         mManager.setLayoutDirection(View.LAYOUT_DIRECTION_RTL);
-        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, OmniboxTheme.LIGHT_THEME);
+        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.LIGHT_BRANDED_THEME);
 
-        mManager.setOmniboxTheme(OmniboxTheme.DARK_THEME);
-        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, OmniboxTheme.DARK_THEME);
+        mManager.setBrandedColorScheme(BrandedColorScheme.DARK_BRANDED_THEME);
+        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.DARK_BRANDED_THEME);
 
-        mManager.setOmniboxTheme(OmniboxTheme.INCOGNITO);
-        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, OmniboxTheme.INCOGNITO);
+        mManager.setBrandedColorScheme(BrandedColorScheme.INCOGNITO);
+        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
 
         // Finally, set the new list and confirm that the values are still applied.
         list = Arrays.asList(new DropdownItemViewInfo(mHeaderProcessor,
@@ -370,6 +371,6 @@ public class DropdownItemViewInfoListManagerUnitTest {
                         new PropertyModel(SuggestionCommonProperties.ALL_KEYS), 2));
         mManager.setSourceViewInfoList(list, new SparseArray<GroupDetails>());
         verifyModelEquals(list);
-        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, OmniboxTheme.INCOGNITO);
+        verifyPropertyValues(View.LAYOUT_DIRECTION_RTL, BrandedColorScheme.INCOGNITO);
     }
 }

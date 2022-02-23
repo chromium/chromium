@@ -467,6 +467,7 @@ js_unittest("import_history_unittest.m") {
 js_library("launcher") {
   deps = [
     ":app_window_wrapper",
+    "//ui/file_manager/file_manager/common/js:api",
     "//ui/file_manager/file_manager/common/js:files_app_state",
     "//ui/file_manager/file_manager/common/js:util",
   ]

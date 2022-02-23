@@ -1,0 +1,23 @@
+<style include="trusted-style common-style">
+  :host {
+    overflow: hidden;
+  }
+
+  iron-list {
+    height: 100%;
+    width: 100%;
+  }
+</style>
+<iron-list id="grid" items="[[album_]]" as="photo" grid>
+  <template>
+    <wallpaper-grid-item
+      class="photo"
+      image-src="[[photo.url.url]]"
+      on-click="onPhotoSelected_"
+      on-keypress="onPhotoSelected_"
+      selected="[[isPhotoSelected_(
+        photo, currentSelected_, pendingSelected_)]]"
+      tabindex$="[[tabIndex]]">
+    </wallpaper-grid-item>
+  </template>
+</iron-list>

@@ -5,6 +5,7 @@
 #include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
 
 #include "base/bind.h"
+#include "base/trace_event/trace_event.h"
 #include "components/viz/service/display/output_surface.h"
 
 namespace viz {

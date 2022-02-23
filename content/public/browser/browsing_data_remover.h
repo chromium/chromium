@@ -65,7 +65,7 @@ class BrowsingDataRemover {
   // Mask used for Remove.
   enum DataType : uint64_t {
     // Storage datatypes.
-    DATA_TYPE_APP_CACHE = 1 << 0,
+    DATA_TYPE_APP_CACHE_DEPRECATED = 1 << 0,
     DATA_TYPE_FILE_SYSTEMS = 1 << 1,
     DATA_TYPE_INDEXED_DB = 1 << 2,
     DATA_TYPE_LOCAL_STORAGE = 1 << 3,
@@ -82,7 +82,7 @@ class BrowsingDataRemover {
     // Has the same effect as selecting all storage datatypes listed above
     // and ones defined by the embedder.
     DATA_TYPE_DOM_STORAGE =
-        DATA_TYPE_APP_CACHE | DATA_TYPE_FILE_SYSTEMS | DATA_TYPE_INDEXED_DB |
+        DATA_TYPE_FILE_SYSTEMS | DATA_TYPE_INDEXED_DB |
         DATA_TYPE_LOCAL_STORAGE | DATA_TYPE_WEB_SQL |
         DATA_TYPE_SERVICE_WORKERS | DATA_TYPE_CACHE_STORAGE |
         DATA_TYPE_EMBEDDER_DOM_STORAGE | DATA_TYPE_BACKGROUND_FETCH,
@@ -111,8 +111,13 @@ class BrowsingDataRemover {
     // (https://github.com/WICG/conversion-measurement-api) persistent storage.
     DATA_TYPE_CONVERSIONS = 1 << 17,
 
+    // Aggregation Service
+    // (https://github.com/WICG/conversion-measurement-api/blob/main/AGGREGATE.md#data-processing-through-the-aggregation-service)
+    // persistent storage.
+    DATA_TYPE_AGGREGATION_SERVICE = 1 << 18,
+
     // Embedders can add more datatypes beyond this point.
-    DATA_TYPE_CONTENT_END = DATA_TYPE_CONVERSIONS,
+    DATA_TYPE_CONTENT_END = DATA_TYPE_AGGREGATION_SERVICE,
   };
 
   enum OriginType : uint64_t {

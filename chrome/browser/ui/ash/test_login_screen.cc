@@ -69,3 +69,7 @@ bool TestLoginScreen::SetLoginShelfGestureHandler(
 }
 
 void TestLoginScreen::ClearLoginShelfGestureHandler() {}
+
+views::Widget* TestLoginScreen::GetLoginWindowWidget() {
+  return nullptr;
+}

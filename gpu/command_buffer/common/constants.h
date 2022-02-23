@@ -87,12 +87,12 @@ enum class TransferBufferAllocationOption : int8_t {
   kReturnNullOnOOM,
 };
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Value used for DXGI keyed mutex AcquireSync and ReleaseSync. Exposed here so
 // that external clients such as media and video capture can use the same key as
 // gpu which is essential for correct operation of the keyed mutex.
 constexpr uint64_t kDXGIKeyedMutexAcquireKey = 0;
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace gpu
 

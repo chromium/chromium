@@ -10,8 +10,8 @@
 #include "base/values.h"
 #include "chrome/browser/ash/printing/history/mock_print_job_history_service.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/ash/printing/history/test_print_job_history_service_observer.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/extensions/api/printing_metrics.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -36,13 +36,13 @@ GetPrintJobFinishedEventValue(
 
   const extensions::Event& event = *iter->second;
   if (!event.event_args || !event.event_args->is_list() ||
-      event.event_args->GetList().size() != 1u) {
+      event.event_args->GetListDeprecated().size() != 1u) {
     ADD_FAILURE() << "Invalid event args";
     return nullptr;
   }
 
   return extensions::api::printing_metrics::PrintJobInfo::FromValue(
-      event.event_args->GetList()[0]);
+      event.event_args->GetListDeprecated()[0]);
 }
 
 // Creates a new MockPrintJobHistoryService for the given |context|.
@@ -123,10 +123,10 @@ TEST_F(PrintJobFinishedEventDispatcherUnittest, EventIsDispatched) {
   ash::TestPrintJobHistoryServiceObserver observer(
       print_job_history_service, run_loop.QuitWhenIdleClosure());
 
-  chromeos::printing::proto::PrintJobInfo print_job_info_proto;
+  ash::printing::proto::PrintJobInfo print_job_info_proto;
   print_job_info_proto.set_title(kTitle);
   print_job_info_proto.set_status(
-      chromeos::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
+      ash::printing::proto::PrintJobInfo_PrintJobStatus_FAILED);
   print_job_info_proto.set_number_of_pages(kPagesNumber);
   print_job_history_service->SavePrintJobProto(print_job_info_proto);
   run_loop.Run();

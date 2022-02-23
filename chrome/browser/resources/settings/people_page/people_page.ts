@@ -31,7 +31,7 @@ import {isChromeOS} from 'chrome://resources/js/cr.m.js';
 import {focusWithoutInk} from 'chrome://resources/js/cr/ui/focus_without_ink.m.js';
 import {getImage} from 'chrome://resources/js/icon.js';
 import {WebUIListenerMixin, WebUIListenerMixinInterface} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BaseMixin} from '../base_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
@@ -43,12 +43,14 @@ import {RouteObserverMixin, RouteObserverMixinInterface, Router} from '../router
 // <if expr="chromeos">
 import {AccountManagerBrowserProxyImpl} from './account_manager_browser_proxy.js';
 // </if>
-import {ProfileInfo, ProfileInfoBrowserProxy, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
+
+import {getTemplate} from './people_page.html.js';
+import {ProfileInfo, ProfileInfoBrowserProxyImpl} from './profile_info_browser_proxy.js';
 import {StoredAccount, SyncBrowserProxy, SyncBrowserProxyImpl, SyncStatus} from './sync_browser_proxy.js';
 
 type FocusConfig = Map<string, (string|(() => void))>;
 
-interface SettingsPeoplePageElement {
+export interface SettingsPeoplePageElement {
   $: {
     importDataDialogTrigger: HTMLElement,
     toast: CrToastElement,
@@ -61,13 +63,13 @@ const SettingsPeoplePageElementBase =
       RouteObserverMixinInterface
     };
 
-class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
+export class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   static get is() {
     return 'settings-people-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -186,6 +188,7 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
     };
   }
 
+  prefs: any;
   private signinAllowed_: boolean;
   syncStatus: SyncStatus|null;
   pageVisibility: PageVisibility;
@@ -387,15 +390,15 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
   }
 
   private shouldShowSyncAccountControl_(): boolean {
+    // <if expr="chromeos">
+    return false;
+    // </if>
+    // <if expr="not chromeos">
     if (this.syncStatus === undefined) {
       return false;
     }
-    // <if expr="chromeos">
-    if (!loadTimeData.getBoolean('useBrowserSyncConsent')) {
-      return false;
-    }
-    // </if>
     return !!this.syncStatus!.syncSystemEnabled && this.signinAllowed_;
+    // </if>
   }
 
   /**
@@ -403,6 +406,12 @@ class SettingsPeoplePageElement extends SettingsPeoplePageElementBase {
    */
   private getIconImageSet_(iconUrl: string): string {
     return getImage(iconUrl);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-people-page': SettingsPeoplePageElement;
   }
 }
 

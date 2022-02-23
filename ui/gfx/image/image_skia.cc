@@ -22,6 +22,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/image/image_skia_operations.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/image/image_skia_source.h"
 #include "ui/gfx/switches.h"
 
@@ -528,7 +529,7 @@ const SkBitmap& ImageSkia::GetBitmap() const {
 
   // TODO(oshima): This made a few tests flaky on Windows.
   // Fix the root cause and re-enable this. crbug.com/145623.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
   CHECK(CanRead());
 #endif
 

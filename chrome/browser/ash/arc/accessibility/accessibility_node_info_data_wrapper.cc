@@ -249,6 +249,7 @@ void AccessibilityNodeInfoDataWrapper::PopulateAXRole(
   MAP_ROLE(ui::kAXPagerClassname, ax::mojom::Role::kGroup);
   MAP_ROLE(ui::kAXProgressBarClassname, ax::mojom::Role::kProgressIndicator);
   MAP_ROLE(ui::kAXRadioButtonClassname, ax::mojom::Role::kRadioButton);
+  MAP_ROLE(ui::kAXRadioGroupClassname, ax::mojom::Role::kRadioGroup);
   MAP_ROLE(ui::kAXScrollViewClassname, ax::mojom::Role::kScrollView);
   MAP_ROLE(ui::kAXSeekBarClassname, ax::mojom::Role::kSlider);
   MAP_ROLE(ui::kAXSpinnerClassname, ax::mojom::Role::kPopUpButton);

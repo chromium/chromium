@@ -95,7 +95,7 @@ gfx::Image& ContentClient::GetNativeImageNamed(int resource_id) {
   return *kEmptyImage;
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 base::FilePath ContentClient::GetChildProcessPath(
     int child_flags,
     const base::FilePath& helpers_path) {
@@ -113,7 +113,7 @@ blink::OriginTrialPolicy* ContentClient::GetOriginTrialPolicy() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool ContentClient::UsingSynchronousCompositing() {
   return false;
 }
@@ -121,7 +121,7 @@ bool ContentClient::UsingSynchronousCompositing() {
 media::MediaDrmBridgeClient* ContentClient::GetMediaDrmBridgeClient() {
   return nullptr;
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,

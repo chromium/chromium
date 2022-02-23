@@ -31,9 +31,12 @@ import android.app.Activity;
 import android.provider.Settings;
 import android.support.test.InstrumentationRegistry;
 import android.view.View;
+import android.view.ViewGroup;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
+import androidx.core.view.ViewCompat;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.test.espresso.NoMatchingRootException;
 import androidx.test.espresso.NoMatchingViewException;
@@ -491,7 +494,8 @@ public class TabUiTestHelper {
             if (fixPendingReadbacks && previousTabIndex != TabModel.INVALID_TAB_INDEX) {
                 // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() ->
-                        previousTabModel.setIndex(previousTabIndex, TabSelectionType.FROM_USER)
+                        previousTabModel.setIndex(
+                            previousTabIndex, TabSelectionType.FROM_USER, false)
                 );
                 // clang-format on
             }
@@ -501,7 +505,7 @@ public class TabUiTestHelper {
             if (fixPendingReadbacks) {
                 // clang-format off
                 TestThreadUtils.runOnUiThreadBlocking(() -> currentTabModel.setIndex(
-                        currentTabIndex, TabSelectionType.FROM_USER)
+                        currentTabIndex, TabSelectionType.FROM_USER, false)
                 );
                 // clang-format on
             }
@@ -601,6 +605,22 @@ public class TabUiTestHelper {
         // Wait for tab list recyclerView to finish animation after tab model switch.
         RecyclerView recyclerView = cta.findViewById(R.id.tab_list_view);
         waitForStableRecyclerView(recyclerView);
+    }
+
+    /**
+     * Infers whether the tab is currently selected, by making assumptions about what the view state
+     * should look like. This method is fairly fragile to changes in implementation. Note that this
+     * does not handle tab list views correctly.
+     * @param holder The root of the tab {@link View} objects.
+     * @return Whether the tab is currently selected.
+     */
+    public static boolean isTabViewSelected(ViewGroup holder) {
+        View cardView = holder.findViewById(R.id.card_view);
+        final @ColorInt int actualColor =
+                ViewCompat.getBackgroundTintList(cardView).getDefaultColor();
+        final @ColorInt int selectedColor = TabUiThemeProvider.getCardViewBackgroundColor(
+                holder.getContext(), /*isIncognito*/ false, /*isSelected*/ true);
+        return actualColor == selectedColor;
     }
 
     /**

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/ui/browser.h"
@@ -24,7 +25,6 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/test/ash_test_helper.h"
 #include "ash/test/ash_test_views_delegate.h"
-#include "chrome/browser/ash/login/users/scoped_test_user_manager.h"
 #include "chrome/browser/ash/settings/scoped_cros_settings_test_helper.h"
 #include "chromeos/tpm/stub_install_attributes.h"
 #else
@@ -32,7 +32,7 @@
 #endif
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/base/win/scoped_ole_initializer.h"
 #endif
 
@@ -51,6 +51,10 @@ class NavigationController;
 namespace crosapi {
 class CrosapiManager;
 }
+
+namespace user_manager {
+class ScopedUserManager;
+}  // namespace user_manager
 #endif
 
 class TestingProfileManager;
@@ -123,7 +127,7 @@ class BrowserWithTestWindowTest : public testing::Test {
 
   Browser* browser() const { return browser_.get(); }
   void set_browser(Browser* browser) { browser_.reset(browser); }
-  Browser* release_browser() WARN_UNUSED_RESULT { return browser_.release(); }
+  [[nodiscard]] Browser* release_browser() { return browser_.release(); }
 
   TestingProfile* profile() const { return profile_; }
 
@@ -139,7 +143,7 @@ class BrowserWithTestWindowTest : public testing::Test {
     return &test_url_loader_factory_;
   }
 
-  BrowserWindow* release_browser_window() WARN_UNUSED_RESULT {
+  [[nodiscard]] BrowserWindow* release_browser_window() {
     return window_.release();
   }
 
@@ -224,11 +228,11 @@ class BrowserWithTestWindowTest : public testing::Test {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   ash::ScopedCrosSettingsTestHelper cros_settings_test_helper_;
-  ash::ScopedTestUserManager test_user_manager_;
+  std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<crosapi::CrosapiManager> manager_;
 #endif
 
-  TestingProfile* profile_ = nullptr;
+  raw_ptr<TestingProfile> profile_ = nullptr;
 
   // test_url_loader_factory_ is declared before profile_manager_
   // to guarantee it outlives any profiles that might use it.
@@ -255,7 +259,7 @@ class BrowserWithTestWindowTest : public testing::Test {
   // The existence of this object enables tests via RenderViewHostTester.
   std::unique_ptr<content::RenderViewHostTestEnabler> rvh_test_enabler_;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   ui::ScopedOleInitializer ole_initializer_;
 #endif
 

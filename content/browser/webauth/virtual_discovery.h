@@ -10,8 +10,8 @@
 
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
-#include "content/common/content_export.h"
 #include "device/fido/fido_device_discovery.h"
+#include "device/fido/fido_transport_protocol.h"
 
 namespace device {
 class FidoDevice;
@@ -21,7 +21,7 @@ namespace content {
 
 // A fully automated FidoDeviceDiscovery implementation, which is disconnected
 // from the real world, and discovers VirtualFidoDevice instances.
-class CONTENT_EXPORT VirtualFidoDiscovery
+class VirtualFidoDiscovery
     : public ::device::FidoDeviceDiscovery,
       public base::SupportsWeakPtr<VirtualFidoDiscovery> {
  public:

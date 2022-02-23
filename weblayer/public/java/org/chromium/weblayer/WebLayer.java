@@ -4,7 +4,6 @@
 
 package org.chromium.weblayer;
 
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -22,6 +21,7 @@ import android.webkit.ValueCallback;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
@@ -490,16 +490,13 @@ public class WebLayer {
     /**
      * Creates a new WebLayer Fragment.
      *
-     * {@link persistenceId} uniquely identifies the Browser for saving the set of tabs and
-     * navigations. A value of null does not save/restore any state. A non-null value results in
-     * asynchronously restoring the tabs and navigations. Supplying a non-null value means the
-     * Browser initially has no tabs (until restore is complete).
-     *
      * @param profileName Null to indicate in-memory profile. Otherwise, name cannot be empty
      * and should contain only alphanumeric and underscore characters since it will be used as
      * a directory name in the file system.
      * @param persistenceId If non-null and not empty uniquely identifies the Browser for saving
      * state.
+     *
+     * @see Browser for details on {@link persistenceId}
      */
     @NonNull
     public static Fragment createBrowserFragment(
@@ -826,11 +823,16 @@ public class WebLayer {
             // The id is part of the public library to avoid conflicts.
             return R.id.weblayer_remote_playback_api_notification;
         }
+
+        @Override
+        public int getMaxNavigationsPerTabForInstanceState() {
+            return Browser.getMaxNavigationsPerTabForInstanceState();
+        }
     }
 
     /** Utility class to use new APIs that were added in O (API level 26). */
     @VerifiesOnO
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     /* package */ static final class ApiHelperForO {
         /** See {@link Context.createContextForSplit(String) }. */
         public static Context createContextForSplit(Context context, String name)
@@ -850,7 +852,7 @@ public class WebLayer {
     }
 
     @VerifiesOnR
-    @TargetApi(Build.VERSION_CODES.R)
+    @RequiresApi(Build.VERSION_CODES.R)
     private static final class ApiHelperForR {
         /** See {@link Context.getAttributionTag() }. */
         public static String getAttributionTag(Context context) {

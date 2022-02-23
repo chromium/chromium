@@ -6,6 +6,7 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "base/test/scoped_feature_list.h"
+#include "net/base/features.h"
 #include "net/http/http_response_headers.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -25,6 +26,47 @@ static const OriginTrialPublicKey kTestPublicKey = {
     0x75, 0x10, 0xac, 0xf9, 0x3a, 0x1c, 0xb8, 0xa9, 0x28, 0x70, 0xd2,
     0x9a, 0xd0, 0x0b, 0x59, 0xe1, 0xac, 0x2b, 0xb7, 0xd5, 0xca, 0x1f,
     0x64, 0x90, 0x08, 0x8e, 0xa8, 0xe0, 0x56, 0x3a, 0x04, 0xd0,
+};
+
+namespace {
+
+void AddHeader(net::HttpResponseHeaders* response_headers,
+               const std::string& header,
+               const std::string& value) {
+  response_headers->AddHeader(header, value);
+}
+
+void VerifyClientHintEnabledWithOriginTrialTokenInner(
+    net::HttpResponseHeaders* response_headers,
+    const std::string& token,
+    const GURL* third_party_url,
+    const WebClientHintsType client_hint_type,
+    bool expected_client_hint_enabled) {
+  AddHeader(response_headers, "Origin-Trial", token);
+  EnabledClientHints hints;
+  hints.SetIsEnabled(GURL(kOriginUrl), third_party_url, response_headers,
+                     client_hint_type, true);
+  EXPECT_TRUE(hints.IsEnabled(client_hint_type) ==
+              expected_client_hint_enabled);
+}
+
+}  // namespace
+
+class TestOriginTrialPolicy : public OriginTrialPolicy {
+ public:
+  bool IsOriginTrialsSupported() const override { return true; }
+  bool IsOriginSecure(const GURL& url) const override {
+    return url.SchemeIs("https");
+  }
+  const std::vector<OriginTrialPublicKey>& GetPublicKeys() const override {
+    return keys_;
+  }
+  void SetPublicKeys(const std::vector<OriginTrialPublicKey>& keys) {
+    keys_ = keys;
+  }
+
+ private:
+  std::vector<OriginTrialPublicKey> keys_;
 };
 
 class EnabledClientHintsTest : public testing::Test {
@@ -53,28 +95,17 @@ class EnabledClientHintsTest : public testing::Test {
     return response_headers_.get();
   }
 
-  void AddHeader(const std::string& header, const std::string& value) {
-    response_headers_->AddHeader(header, value);
+  void VerifyClientHintEnabledWithOriginTrialToken(
+      const std::string& token,
+      const GURL* third_party_url,
+      const WebClientHintsType client_hint_type,
+      bool expected_client_hint_enabled) {
+    VerifyClientHintEnabledWithOriginTrialTokenInner(
+        response_headers_.get(), token, third_party_url, client_hint_type,
+        expected_client_hint_enabled);
   }
 
  private:
-  class TestOriginTrialPolicy : public OriginTrialPolicy {
-   public:
-    bool IsOriginTrialsSupported() const override { return true; }
-    bool IsOriginSecure(const GURL& url) const override {
-      return url.SchemeIs("https");
-    }
-    const std::vector<OriginTrialPublicKey>& GetPublicKeys() const override {
-      return keys_;
-    }
-    void SetPublicKeys(const std::vector<OriginTrialPublicKey>& keys) {
-      keys_ = keys;
-    }
-
-   private:
-    std::vector<OriginTrialPublicKey> keys_;
-  };
-
   base::test::ScopedFeatureList scoped_feature_list_;
   TestOriginTrialPolicy policy_;
   scoped_refptr<net::HttpResponseHeaders> response_headers_;
@@ -124,11 +155,10 @@ TEST_F(EnabledClientHintsTest,
       "LC"
       "AiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
-  AddHeader("Origin-Trial", kValidOriginTrialToken);
-  EnabledClientHints hints;
-  hints.SetIsEnabled(GURL(kOriginUrl), /*third_party_url=*/nullptr,
-                     response_headers(), WebClientHintsType::kUAReduced, true);
-  EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kUAReduced,
+      /*expected_client_hint_enabled=*/true);
 }
 
 TEST_F(EnabledClientHintsTest,
@@ -142,11 +172,10 @@ TEST_F(EnabledClientHintsTest,
       "LC"
       "AiZXhwaXJ5IjogMjAwMDAwMDAwMH0=";
 
-  AddHeader("Origin-Trial", kInvalidOriginTrialToken);
-  EnabledClientHints hints;
-  hints.SetIsEnabled(GURL(kOriginUrl), /*third_party_url=*/nullptr,
-                     response_headers(), WebClientHintsType::kUAReduced, true);
-  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kInvalidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kUAReduced,
+      /*expected_client_hint_enabled=*/false);
 }
 
 TEST_F(EnabledClientHintsTest,
@@ -164,12 +193,10 @@ TEST_F(EnabledClientHintsTest,
       "nR5IjogdHJ1ZSwgImZlYXR1cmUiOiAiVXNlckFnZW50UmVkdWN0aW9uIiwgImV4cGlyeSI6I"
       "DIwMDAwMDAwMDB9";
 
-  AddHeader("Origin-Trial", kValidThirdPartyOriginTrialToken);
-  EnabledClientHints hints;
   const GURL third_party_url = GURL(kThirdPartyOriginUrl);
-  hints.SetIsEnabled(GURL(kOriginUrl), &third_party_url, response_headers(),
-                     WebClientHintsType::kUAReduced, true);
-  EXPECT_TRUE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidThirdPartyOriginTrialToken, &third_party_url,
+      WebClientHintsType::kUAReduced, /*expected_client_hint_enabled=*/true);
 }
 
 TEST_F(EnabledClientHintsTest,
@@ -189,12 +216,94 @@ TEST_F(EnabledClientHintsTest,
       "ZmVhdHVyZSI6ICJVc2VyQWdlbnRSZWR1Y3Rpb24iLCAiZXhwaXJ5IjogMjAwMDAwMDAwMH0"
       "=";
 
-  AddHeader("Origin-Trial", kValidOriginTrialTokenForThirdPartyUrl);
-  EnabledClientHints hints;
   const GURL third_party_url = GURL(kThirdPartyOriginUrl);
-  hints.SetIsEnabled(GURL(kOriginUrl), &third_party_url, response_headers(),
-                     WebClientHintsType::kUAReduced, true);
-  EXPECT_FALSE(hints.IsEnabled(WebClientHintsType::kUAReduced));
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialTokenForThirdPartyUrl, &third_party_url,
+      WebClientHintsType::kUAReduced, /*expected_client_hint_enabled=*/false);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintWithValidOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44444 SendFullUserAgentAfterReduction
+  // --expire-timestamp=2000000000
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidOriginTrialToken[] =
+      "A6+Ti/9KuXTgmFzOQwkTuO8k0QFH8vUaxmv0CllAET1/"
+      "307KShF6fhskMuBqFUvqO7ViAkZ+"
+      "NSeJhQI0n5aLggsAAABpeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAi"
+      "ZmVhdHVyZSI6ICJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwgImV4cGlyeSI6"
+      "IDIwMDAwMDAwMDB9";
+
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/true);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintWithInvalidOriginTrialToken) {
+  // A slight corruption (changing a character) of a valid OT token.
+  static constexpr char kInvalidOriginTrialToken[] =
+      "A6+Ti/9KuXTgmFzOQwkTuO8k0QFH8vUaxmv0CllAET1/"
+      "307KShF6fhskMuBqFUvqO7ViAkZ+"
+      "NSeJhQI0n5aLggsAAABpeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDQiLCAi"
+      "ZmVhdHVyZSI6ICTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwgImV4cGlyeSI6"
+      "IDIwMDAwMDAwMDB9";
+
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kInvalidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/false);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintWithValidThirdPartyOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44445 SendFullUserAgentAfterReduction
+  // --expire-timestamp=2000000000 --is-third-party
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidThirdPartyOriginTrialToken[] =
+      "A0q1jQxOoBMkORITt4dborMF2TE0MVT71JbLomfT4tg8nKuEiRcDNTLVEfSffhxcwqMYEmXs"
+      "p4CXXypHENjrvwgAAAB/"
+      "eyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiaXNUaGlyZFBhcnR5Ijog"
+      "dHJ1ZSwgImZlYXR1cmUiOiAiU2VuZEZ1bGxVc2VyQWdlbnRBZnRlclJlZHVjdGlvbiIsICJl"
+      "eHBpcnkiOiAyMDAwMDAwMDAwfQ==";
+
+  const GURL third_party_url = GURL(kThirdPartyOriginUrl);
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidThirdPartyOriginTrialToken, &third_party_url,
+      WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/true);
+}
+
+TEST_F(EnabledClientHintsTest,
+       EnabledUADeprecationClientHintThirdPartyWithValidOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44445 SendFullUserAgentAfterReduction
+  // --expire-timestamp=2000000000
+  //
+  // We are using a valid first party OT token for the third-party URL, which
+  // should be rejected by the TrialTokenValidator for third-party contexts.
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidOriginTrialTokenForThirdPartyUrl[] =
+      "A0kGFcySC9Pfb0ouX/"
+      "Ks2SYCmUEIkhU0aje4kHgLaCTgeOKoUaIwcrVSsiZgs3Im2vmPHwcaoqwzr/"
+      "d0YqDtzQQAAABpeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0NDUiLCAiZmVhdH"
+      "VyZSI6ICJTZW5kRnVsbFVzZXJBZ2VudEFmdGVyUmVkdWN0aW9uIiwgImV4cGlyeSI6IDIwMD"
+      "AwMDAwMDB9";
+
+  const GURL third_party_url = GURL(kThirdPartyOriginUrl);
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialTokenForThirdPartyUrl, &third_party_url,
+      WebClientHintsType::kFullUserAgent,
+      /*expected_client_hint_enabled=*/false);
 }
 
 TEST_F(EnabledClientHintsTest, GetEnabledHints) {
@@ -206,6 +315,130 @@ TEST_F(EnabledClientHintsTest, GetEnabledHints) {
               ElementsAre(WebClientHintsType::kRtt_DEPRECATED,
                           WebClientHintsType::kUAFullVersion,
                           WebClientHintsType::kUAFullVersionList));
+}
+
+// TODO(crbug.com/1296161): Delete this when partitioned cookies Origin Trial is
+// over.
+class PartitionedCookiesEnabledClientHintsTest
+    : public testing::TestWithParam<bool> {
+ protected:
+  PartitionedCookiesEnabledClientHintsTest()
+      : response_headers_(base::MakeRefCounted<net::HttpResponseHeaders>("")) {
+    TrialTokenValidator::SetOriginTrialPolicyGetter(
+        base::BindRepeating([](OriginTrialPolicy* policy) { return policy; },
+                            base::Unretained(&policy_)));
+    policy_.SetPublicKeys({kTestPublicKey});
+  }
+
+  void SetUp() override {
+    std::vector<base::Feature> enabled_features = {
+        blink::features::kUserAgentClientHint,
+        blink::features::kUserAgentClientHintFullVersionList};
+    std::vector<base::Feature> disabled_features = {
+        blink::features::kPrefersColorSchemeClientHintHeader};
+    if (PartitionedCookiesEnabled()) {
+      enabled_features.push_back(net::features::kPartitionedCookies);
+    } else {
+      disabled_features.push_back(net::features::kPartitionedCookies);
+    }
+
+    scoped_feature_list_.InitWithFeatures(enabled_features, disabled_features);
+    testing::TestWithParam<bool>::SetUp();
+  }
+
+  bool PartitionedCookiesEnabled() { return GetParam(); }
+
+  void VerifyClientHintEnabledWithOriginTrialToken(
+      const std::string& token,
+      const GURL* third_party_url,
+      const WebClientHintsType client_hint_type,
+      bool expected_client_hint_enabled) {
+    VerifyClientHintEnabledWithOriginTrialTokenInner(
+        response_headers_.get(), token, third_party_url, client_hint_type,
+        expected_client_hint_enabled);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+  scoped_refptr<net::HttpResponseHeaders> response_headers_;
+  TestOriginTrialPolicy policy_;
+};
+
+INSTANTIATE_TEST_SUITE_P(/* no label */,
+                         PartitionedCookiesEnabledClientHintsTest,
+                         testing::Bool());
+
+TEST_P(PartitionedCookiesEnabledClientHintsTest,
+       EnabledPartitionedCookiesClientHintWithValidOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44444 PartitionedCookies
+  // --expire-timestamp=2000000000
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidOriginTrialToken[] =
+      "A1ZeT+cUjeN+YRlvnoNP67cBtEZqx9Z4Gx/AmfsCIHvyULWM6t12q1Kd6YWHdMtF/"
+      "eC6MYGv0GMwIZo2J380WQ0AAABceyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0N"
+      "DQiLCAiZmVhdHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMTY0ODE2M"
+      "jU4Mn0=";
+
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kPartitionedCookies,
+      /*expected_client_hint_enabled=*/PartitionedCookiesEnabled());
+}
+
+TEST_P(PartitionedCookiesEnabledClientHintsTest,
+       EnabledPartitionedCookiesClientHintWithInvalidOriginTrialToken) {
+  // Changed the first character of the token in the last test.
+  static constexpr char kValidOriginTrialToken[] =
+      "B1ZeT+cUjeN+YRlvnoNP67cBtEZqx9Z4Gx/AmfsCIHvyULWM6t12q1Kd6YWHdMtF/"
+      "eC6MYGv0GMwIZo2J380WQ0AAABceyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLjE6NDQ0N"
+      "DQiLCAiZmVhdHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMTY0ODE2M"
+      "jU4Mn0=";
+
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidOriginTrialToken,
+      /*third_party_url=*/nullptr, WebClientHintsType::kPartitionedCookies,
+      /*expected_client_hint_enabled=*/false);
+}
+
+TEST_P(PartitionedCookiesEnabledClientHintsTest,
+       EnabledPartitionedCookiesClientHintWithValidThirdPartyOriginTrialToken) {
+  // Generated by running (in tools/origin_trials):
+  // generate_token.py https://127.0.0.1:44445 PartitionedCookies
+  // --expire-timestamp=2000000000 --is-third-party
+  //
+  // The Origin Trial token expires in 2033.  Generate a new token by then, or
+  // find a better way to re-generate a test trial token.
+  static constexpr char kValidThirdPartyOriginTrialToken[] =
+      "A2VMEbGkZuIokMW5yBD0YFxwr8cyNw8iqteLIH7mv2bbKdoyIe4IFNC9G/"
+      "Fk7sfN5gcwcwtSJEYsMp2e6ol6cQgAAAByeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLj"
+      "E6NDQ0NDUiLCAiZmVhdHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMj"
+      "AwMDAwMDAwMCwgImlzVGhpcmRQYXJ0eSI6IHRydWV9";
+
+  const GURL third_party_url = GURL(kThirdPartyOriginUrl);
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidThirdPartyOriginTrialToken, &third_party_url,
+      WebClientHintsType::kPartitionedCookies,
+      /*expected_client_hint_enabled=*/PartitionedCookiesEnabled());
+}
+
+TEST_P(
+    PartitionedCookiesEnabledClientHintsTest,
+    EnabledPartitionedCookiesClientHintWithInvalidThirdPartyOriginTrialToken) {
+  // Changed the first character of the token in the last test.
+  static constexpr char kValidThirdPartyOriginTrialToken[] =
+      "B2VMEbGkZuIokMW5yBD0YFxwr8cyNw8iqteLIH7mv2bbKdoyIe4IFNC9G/"
+      "Fk7sfN5gcwcwtSJEYsMp2e6ol6cQgAAAByeyJvcmlnaW4iOiAiaHR0cHM6Ly8xMjcuMC4wLj"
+      "E6NDQ0NDUiLCAiZmVhdHVyZSI6ICJQYXJ0aXRpb25lZENvb2tpZXMiLCAiZXhwaXJ5IjogMj"
+      "AwMDAwMDAwMCwgImlzVGhpcmRQYXJ0eSI6IHRydWV9";
+
+  const GURL third_party_url = GURL(kThirdPartyOriginUrl);
+  VerifyClientHintEnabledWithOriginTrialToken(
+      kValidThirdPartyOriginTrialToken, &third_party_url,
+      WebClientHintsType::kPartitionedCookies,
+      /*expected_client_hint_enabled=*/false);
 }
 
 }  // namespace blink

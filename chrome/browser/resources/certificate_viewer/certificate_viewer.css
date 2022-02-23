@@ -20,12 +20,6 @@ h3 {
   margin-top: 17px;
 }
 
-#usages-title {
-  /* Workaround until webkit bug https://bugs.webkit.org/show_bug.cgi?id=80537
-   * is resolved. */
-  padding-top: 17px;
-}
-
 #tabbox {
   height: 100%;
   width: 100%;
@@ -35,7 +29,6 @@ h3 {
   overflow: auto;
 }
 
-#usages,
 #cert-field-value {
   padding-inline-start: 15px;
   white-space: pre-wrap;
@@ -54,7 +47,6 @@ h3 {
   display: table-row;
 }
 
-#usages,
 .groups > div > div {
   color: #616161;
   line-height: 18px;

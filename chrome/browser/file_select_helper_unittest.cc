@@ -13,6 +13,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
 #include "build/build_config.h"
@@ -47,7 +48,7 @@ class TestFileSelectListener : public content::FileSelectListener {
   }
   void FileSelectionCanceled() override {}
 
-  std::vector<blink::mojom::FileChooserFileInfoPtr>* files_;
+  raw_ptr<std::vector<blink::mojom::FileChooserFileInfoPtr>> files_;
 };
 
 // Fill in the arguments to be passed to the ContentAnalysisCompletionCallback()
@@ -106,7 +107,7 @@ TEST_F(FileSelectHelperTest, IsAcceptTypeValid) {
   EXPECT_FALSE(FileSelectHelper::IsAcceptTypeValid("abc/def "));
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(FileSelectHelperTest, ZipPackage) {
   // Zip the package.
   const char app_name[] = "CalculatorFake.app";
@@ -139,7 +140,7 @@ TEST_F(FileSelectHelperTest, ZipPackage) {
     EXPECT_TRUE(base::ContentsEqual(orig_file, final_file));
   }
 }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
 TEST_F(FileSelectHelperTest, GetSanitizedFileName) {
   // The empty path should be preserved.
@@ -156,7 +157,7 @@ TEST_F(FileSelectHelperTest, GetSanitizedFileName) {
             FileSelectHelper::GetSanitizedFileName(
                 base::FilePath(FILE_PATH_LITERAL("path/components/in/name"))));
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Invalid UTF-16. However, note that on Windows, the invalid UTF-16 will pass
   // through without error.
   base::FilePath::CharType kBadName[] = {0xd801, 0xdc37, 0xdc17, 0};
@@ -385,12 +386,45 @@ TEST_F(FileSelectHelperTest, GetFileTypesFromAcceptType) {
 
   std::vector<std::vector<base::FilePath::StringType>> expected_extensions{
       std::vector<base::FilePath::StringType>{
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
           L"mp4", L"斤拷锟", L"🔥", L"png"}};
 #else
           "mp4", "斤拷锟", "🔥", "png"}};
 #endif
   ASSERT_EQ(expected_extensions, file_type_info->extensions);
 }
+
+// This test depends on platform-specific mappings from mime types to file
+// extensions in PlatformMimeUtil. It would seem that Linux does not offer a way
+// to get extensions, and our Windows implementation still needs to be updated.
+#if BUILDFLAG(IS_MAC)
+TEST_F(FileSelectHelperTest, MultipleFileExtensionsForMime) {
+  content::BrowserTaskEnvironment task_environment;
+  TestingProfile profile;
+  scoped_refptr<FileSelectHelper> file_select_helper =
+      new FileSelectHelper(&profile);
+
+  std::vector<std::u16string> accept_types{u"application/vnd.ms-powerpoint"};
+  std::unique_ptr<ui::SelectFileDialog::FileTypeInfo> file_type_info =
+      file_select_helper->GetFileTypesFromAcceptType(accept_types);
+
+  std::vector<base::FilePath::StringType> expected_extensions {
+#if BUILDFLAG(IS_WIN)
+    L"ppt", L"pot", L"pps"
+  };
+#else
+    "ppt", "pot", "pps"
+  };
+#endif
+  std::sort(expected_extensions.begin(), expected_extensions.end());
+
+  ASSERT_EQ(file_type_info->extensions.size(), 1u);
+  std::vector<base::FilePath::StringType> actual_extensions =
+      file_type_info->extensions[0];
+  std::sort(actual_extensions.begin(), actual_extensions.end());
+
+  EXPECT_EQ(expected_extensions, actual_extensions);
+}
+#endif
 
 #endif  // BUILDFLAG(FULL_SAFE_BROWSING)

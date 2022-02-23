@@ -18,6 +18,7 @@
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/download_manager.h"
+#include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/blink/public/mojom/blob/serialized_blob.mojom.h"
@@ -60,28 +61,32 @@ void BackgroundFetchDelegateProxy::GetPermissionForOrigin(
     GetPermissionForOriginCallback callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
+  // Permissions need to go through the DownloadRequestLimiter for top level
+  // frames. (This may be missing in unit tests.)
+  if (rfh && !rfh->GetParent() &&
+      rfh->GetBrowserContext()->GetDownloadManager()->GetDelegate()) {
+    rfh->GetBrowserContext()
+        ->GetDownloadManager()
+        ->GetDelegate()
+        ->CheckDownloadAllowed(
+            base::BindRepeating(&WebContents::FromRenderFrameHost, rfh),
+            origin.GetURL(), "GET", absl::nullopt,
+            false /* from_download_cross_origin_redirect */,
+            true /* content_initiated */,
+            base::BindOnce(&BackgroundFetchDelegateProxy::
+                               DidGetPermissionFromDownloadRequestLimiter,
+                           weak_ptr_factory_.GetWeakPtr(),
+                           std::move(callback)));
+    return;
+  }
+
   BackgroundFetchPermission result = BackgroundFetchPermission::BLOCKED;
 
   if (auto* controller = GetPermissionController()) {
-    // Use GetPermissionStatusForFrame() only if the fetch is started from
-    // a top-level document. Permissions need to go through the
-    // DownloadRequestLimiter in that case.
-    // TODO(falken): Consider using GetPermissionStatusForFrame() for any `rfh`.
-    // The code may currently not be doing that just for historical reasons.
-    // Previously a WebContents was plumbed here instead of a
-    // RenderFrameHostImpl, and it was only set for the top-level document, so
-    // there was no way to get the RenderFrameHostImpl for subframes.
-    if (rfh && rfh->GetParent())
-      rfh = nullptr;
-
     blink::mojom::PermissionStatus permission_status =
-        rfh ? controller->GetPermissionStatusForFrame(
-                  PermissionType::BACKGROUND_FETCH, rfh,
-                  /*requesting_origin=*/origin.GetURL())
-            : controller->GetPermissionStatus(
-                  PermissionType::BACKGROUND_FETCH,
-                  /*requesting_origin=*/origin.GetURL(),
-                  /*embedding_origin=*/origin.GetURL());
+        controller->GetPermissionStatus(PermissionType::BACKGROUND_FETCH,
+                                        /*requesting_origin=*/origin.GetURL(),
+                                        /*embedding_origin=*/origin.GetURL());
     switch (permission_status) {
       case blink::mojom::PermissionStatus::GRANTED:
         result = BackgroundFetchPermission::ALLOWED;
@@ -215,6 +220,7 @@ void BackgroundFetchDelegateProxy::MarkJobComplete(
 
 void BackgroundFetchDelegateProxy::OnJobCancelled(
     const std::string& job_unique_id,
+    const std::string& download_guid,
     blink::mojom::BackgroundFetchFailureReason reason_to_abort) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(
@@ -227,8 +233,20 @@ void BackgroundFetchDelegateProxy::OnJobCancelled(
   if (it == controller_map_.end())
     return;
 
-  if (const auto& controller = it->second)
+  if (const auto& controller = it->second) {
+    if (reason_to_abort ==
+        blink::mojom::BackgroundFetchFailureReason::DOWNLOAD_TOTAL_EXCEEDED) {
+      // Mark the request as complete and failed to avoid leaking information
+      // about the size of the resource.
+      controller->DidCompleteRequest(
+          download_guid,
+          std::make_unique<BackgroundFetchResult>(
+              nullptr /* response */, base::Time::Now(),
+              BackgroundFetchResult::FailureReason::FETCH_ERROR));
+    }
+
     controller->AbortFromDelegate(reason_to_abort);
+  }
 }
 
 void BackgroundFetchDelegateProxy::OnDownloadStarted(
@@ -330,6 +348,15 @@ BackgroundFetchDelegateProxy::GetPermissionController() {
   if (!browser_context)
     return nullptr;
   return PermissionControllerImpl::FromBrowserContext(browser_context);
+}
+
+void BackgroundFetchDelegateProxy::DidGetPermissionFromDownloadRequestLimiter(
+    GetPermissionForOriginCallback callback,
+    bool has_permission) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(callback).Run(has_permission
+                              ? content::BackgroundFetchPermission::ALLOWED
+                              : content::BackgroundFetchPermission::BLOCKED);
 }
 
 }  // namespace content

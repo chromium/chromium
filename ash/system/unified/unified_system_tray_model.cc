@@ -108,10 +108,7 @@ void UnifiedSystemTrayModel::DBusObserver::ScreenBrightnessChanged(
 
 void UnifiedSystemTrayModel::DBusObserver::KeyboardBrightnessChanged(
     const power_manager::BacklightBrightnessChange& change) {
-  owner_->KeyboardBrightnessChanged(
-      change.percent() / 100.,
-      change.cause() ==
-          power_manager::BacklightBrightnessChange_Cause_USER_REQUEST);
+  owner_->KeyboardBrightnessChanged(change.percent() / 100., change.cause());
 }
 
 UnifiedSystemTrayModel::SizeObserver::SizeObserver(
@@ -231,11 +228,12 @@ void UnifiedSystemTrayModel::DisplayBrightnessChanged(float brightness,
     observer.OnDisplayBrightnessChanged(by_user);
 }
 
-void UnifiedSystemTrayModel::KeyboardBrightnessChanged(float brightness,
-                                                       bool by_user) {
+void UnifiedSystemTrayModel::KeyboardBrightnessChanged(
+    float brightness,
+    power_manager::BacklightBrightnessChange_Cause cause) {
   keyboard_brightness_ = brightness;
   for (auto& observer : observers_)
-    observer.OnKeyboardBrightnessChanged(by_user);
+    observer.OnKeyboardBrightnessChanged(cause);
 }
 
 void UnifiedSystemTrayModel::SystemTrayButtonSizeChanged(

@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/cxx17_backports.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "gin/array_buffer.h"
@@ -75,7 +76,7 @@ class Request {
     bitmap_ = result_image;
   }
 
-  ImageDecoderImpl* decoder_;
+  raw_ptr<ImageDecoderImpl> decoder_;
   SkBitmap bitmap_;
 };
 
@@ -112,7 +113,9 @@ class ImageDecoderImplTest : public testing::Test {
   ImageDecoderImpl* decoder() { return &decoder_; }
 
  private:
-  base::test::SingleThreadTaskEnvironment task_environment_;
+  // V8 is generally multi threaded and may use tasks for arbitrary reasons,
+  // such as GC and off-thread compilation.
+  base::test::TaskEnvironment task_environment_;
   ImageDecoderImpl decoder_;
 };
 
@@ -142,7 +145,7 @@ TEST_F(ImageDecoderImplTest, DecodeImageSizeLimit) {
               static_cast<uint64_t>(kTestMaxImageSize));
 // Android does its own image shrinking for memory conservation deeper in
 // the decode, so more specific tests here won't work.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     EXPECT_EQ(widths[i] >> i, request.bitmap().width());
     EXPECT_EQ(heights[i] >> i, request.bitmap().height());
 

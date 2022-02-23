@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/test/content_test_suite.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/base_paths.h"
 #include "base/base_switches.h"
@@ -18,11 +19,11 @@
 #include "ui/gl/init/gl_factory.h"
 #include "ui/gl/test/gl_surface_test_support.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "ui/display/win/dpi.h"
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/test/mock_chrome_application_mac.h"
 #endif
@@ -48,7 +49,8 @@ class TestInitializationListener : public testing::EmptyTestEventListener {
   }
 
  private:
-  content::TestContentClientInitializer* test_content_client_initializer_;
+  raw_ptr<content::TestContentClientInitializer>
+      test_content_client_initializer_;
 };
 
 }  // namespace
@@ -60,12 +62,12 @@ ContentTestSuite::ContentTestSuite(int argc, char** argv)
 ContentTestSuite::~ContentTestSuite() = default;
 
 void ContentTestSuite::Initialize() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   base::mac::ScopedNSAutoreleasePool autorelease_pool;
   mock_cr_app::RegisterMockCrApp();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   display::win::SetDefaultDeviceScaleFactor(1.0f);
 #endif
 

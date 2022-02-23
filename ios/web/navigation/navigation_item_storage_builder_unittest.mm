@@ -20,7 +20,6 @@ using NavigationItemStorageBuilderTest = PlatformTest;
 namespace web {
 
 TEST_F(NavigationItemStorageBuilderTest, DecodeDifferentScheme) {
-  NavigationItemStorageBuilder item_storage_builder;
   CRWNavigationItemStorage* item_storage =
       [[CRWNavigationItemStorage alloc] init];
 
@@ -31,7 +30,7 @@ TEST_F(NavigationItemStorageBuilderTest, DecodeDifferentScheme) {
   ASSERT_NE(item_storage.URL, item_storage.virtualURL);
 
   std::unique_ptr<NavigationItemImpl> navigation_item =
-      item_storage_builder.BuildNavigationItemImpl(item_storage);
+      NavigationItemStorageBuilder::BuildNavigationItemImpl(item_storage);
   ASSERT_EQ(item_storage.URL, navigation_item->GetURL());
   ASSERT_EQ(item_storage.virtualURL, navigation_item->GetVirtualURL());
 
@@ -40,7 +39,8 @@ TEST_F(NavigationItemStorageBuilderTest, DecodeDifferentScheme) {
 
   ASSERT_NE(item_storage.URL, item_storage.virtualURL);
 
-  navigation_item = item_storage_builder.BuildNavigationItemImpl(item_storage);
+  navigation_item =
+      NavigationItemStorageBuilder::BuildNavigationItemImpl(item_storage);
   ASSERT_EQ(item_storage.virtualURL, navigation_item->GetURL());
   ASSERT_EQ(item_storage.virtualURL, navigation_item->GetVirtualURL());
 
@@ -49,7 +49,8 @@ TEST_F(NavigationItemStorageBuilderTest, DecodeDifferentScheme) {
 
   ASSERT_NE(item_storage.URL, item_storage.virtualURL);
 
-  navigation_item = item_storage_builder.BuildNavigationItemImpl(item_storage);
+  navigation_item =
+      NavigationItemStorageBuilder::BuildNavigationItemImpl(item_storage);
   ASSERT_EQ(item_storage.virtualURL, navigation_item->GetURL());
   ASSERT_EQ(item_storage.virtualURL, navigation_item->GetVirtualURL());
 }

@@ -5,6 +5,7 @@
 import("//third_party/closure_compiler/closure_args.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//third_party/protobuf/proto_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
 
 # TODO(rockot): Maybe we can factor these dependencies out of //mojo. They're
@@ -70,7 +71,7 @@ enable_scrambled_message_ids =
     enable_mojom_message_id_scrambling &&
     (is_mac || is_win ||
      (is_linux && !is_chromeos_ash && !is_chromecast && !is_chromeos_lacros) ||
-     ((enable_nacl || is_nacl || is_nacl_nonsfi) &&
+     ((enable_nacl || is_nacl) &&
       (target_os != "chromeos" && !chromeos_is_browser_only)))
 
 _mojom_tools_root = "//mojo/public/tools"
@@ -626,13 +627,14 @@ template("mojom") {
   build_metadata_filename = "$target_gen_dir/$target_name.build_metadata"
   build_metadata = {
   }
-  build_metadata.sources = rebase_path(sources_list)
+  build_metadata.sources = rebase_path(sources_list, target_gen_dir)
   build_metadata.deps = []
   foreach(dep, all_deps) {
     dep_target_gen_dir = get_label_info(dep, "target_gen_dir")
     dep_name = get_label_info(dep, "name")
     build_metadata.deps +=
-        [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata") ]
+        [ rebase_path("$dep_target_gen_dir/$dep_name.build_metadata",
+                      target_gen_dir) ]
   }
   write_file(build_metadata_filename, build_metadata, "json")
 
@@ -702,7 +704,7 @@ template("mojom") {
 
       filelist = []
       foreach(source, sources_list) {
-        filelist += [ rebase_path(source) ]
+        filelist += [ rebase_path(source, root_build_dir) ]
       }
       response_file_contents = filelist
 
@@ -710,23 +712,23 @@ template("mojom") {
         # Resolve relative input mojom paths against both the root src dir and
         # the root gen dir.
         "--input-root",
-        rebase_path("//."),
+        rebase_path("//.", root_build_dir),
         "--input-root",
-        rebase_path(root_gen_dir),
+        rebase_path(root_gen_dir, root_build_dir),
 
         "--output-root",
-        rebase_path(root_gen_dir),
+        rebase_path(root_gen_dir, root_build_dir),
 
         "--mojom-file-list={{response_file_name}}",
 
         "--check-imports",
-        rebase_path(build_metadata_filename),
+        rebase_path(build_metadata_filename, root_build_dir),
       ]
 
       if (defined(invoker.input_root_override)) {
         args += [
           "--input-root",
-          rebase_path(invoker.input_root_override),
+          rebase_path(invoker.input_root_override, root_build_dir),
         ]
       }
 
@@ -1394,8 +1396,8 @@ template("mojom") {
       outputs = [ _typemap_stamp_filename ]
       args = [
         get_label_info(_mojom_target_name, "label_no_toolchain"),
-        rebase_path(_typemap_config_filename),
-        rebase_path(_typemap_stamp_filename),
+        rebase_path(_typemap_config_filename, root_build_dir),
+        rebase_path(_typemap_stamp_filename, root_build_dir),
       ]
     }
 
@@ -1882,6 +1884,24 @@ template("mojom") {
       } else {
         group(webui_js_target_name) {
         }
+      }
+
+      webui_grdp_target_name = "${target_name}_webui_grdp"
+      out_grd = "$target_gen_dir/${target_name}_webui_resources.grdp"
+      grd_prefix = "${target_name}_webui"
+      generate_grd(webui_grdp_target_name) {
+        grd_prefix = grd_prefix
+        out_grd = out_grd
+
+        deps = [ ":$webui_js_target_name" ]
+
+        input_files = []
+        foreach(base_path, output_file_base_paths) {
+          input_files += [ "${base_path}-webui.js" ]
+        }
+
+        input_files_base_dir =
+            rebase_path("$root_gen_dir/mojom-webui", "$root_build_dir")
       }
     }
   }

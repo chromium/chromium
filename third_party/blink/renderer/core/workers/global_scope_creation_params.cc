@@ -31,7 +31,7 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
     WorkerClients* worker_clients,
     std::unique_ptr<WebContentSettingsClient> content_settings_client,
     absl::optional<network::mojom::IPAddressSpace> response_address_space,
-    const Vector<String>* origin_trial_tokens,
+    const Vector<OriginTrialFeature>* inherited_trial_features,
     const base::UnguessableToken& parent_devtools_token,
     std::unique_ptr<WorkerSettings> worker_settings,
     mojom::blink::V8CacheOptions v8_cache_options,
@@ -82,10 +82,11 @@ GlobalScopeCreationParams::GlobalScopeCreationParams(
       parent_cross_origin_isolated_capability(
           parent_cross_origin_isolated_capability),
       parent_direct_socket_capability(parent_direct_socket_capability) {
-  this->origin_trial_tokens = std::make_unique<Vector<String>>();
-  if (origin_trial_tokens) {
-    for (const String& token : *origin_trial_tokens)
-      this->origin_trial_tokens->push_back(token.IsolatedCopy());
+  this->inherited_trial_features =
+      std::make_unique<Vector<OriginTrialFeature>>();
+  if (inherited_trial_features) {
+    for (OriginTrialFeature feature : *inherited_trial_features)
+      this->inherited_trial_features->push_back(feature);
   }
 }
 

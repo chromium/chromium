@@ -29,7 +29,7 @@ ShareActionCache::ShareActionCache(Profile* profile) {
           profile)) {
     AddShareAction(std::make_unique<NearbyShareAction>(profile));
   }
-  AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>(profile));
+  AddShareAction(std::make_unique<ash::sharesheet::DriveShareAction>());
   if (base::FeatureList::IsEnabled(features::kSharesheetCopyToClipboard)) {
     AddShareAction(
         std::make_unique<ash::sharesheet::CopyToClipboardShareAction>(profile));

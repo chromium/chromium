@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/simple_test_clock.h"
@@ -148,8 +149,8 @@ class BrowsingHistoryHandlerTest : public ChromeRenderViewHostTestHarness {
     return service;
   }
 
-  syncer::TestSyncService* sync_service_ = nullptr;
-  history::FakeWebHistoryService* web_history_service_ = nullptr;
+  raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
+  raw_ptr<history::FakeWebHistoryService> web_history_service_ = nullptr;
   std::unique_ptr<content::TestWebUI> web_ui_;
 };
 
@@ -269,7 +270,7 @@ TEST_F(BrowsingHistoryHandlerTest, ObservingWebHistoryDeletions) {
   }
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 TEST_F(BrowsingHistoryHandlerTest, MdTruncatesTitles) {
   history::BrowsingHistoryService::HistoryEntry long_url_entry;
   long_url_entry.url = GURL(
@@ -298,7 +299,7 @@ TEST_F(BrowsingHistoryHandlerTest, MdTruncatesTitles) {
   const base::Value* list = arg3->FindListKey("value");
   ASSERT_TRUE(list->is_list());
 
-  const base::Value& first_entry = list->GetList()[0];
+  const base::Value& first_entry = list->GetListDeprecated()[0];
   ASSERT_TRUE(first_entry.is_dict());
 
   const std::string* title = first_entry.FindStringKey("title");

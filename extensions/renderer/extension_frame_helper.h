@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "content/public/renderer/render_frame_observer.h"
@@ -120,6 +119,8 @@ class ExtensionFrameHelper
                                 const std::string& script_id,
                                 const GURL& url) override;
 
+  void UpdateBrowserWindowId(int32_t window_id) override;
+
   void set_did_create_script_context() { did_create_script_context_ = true; }
   bool did_create_script_context() const { return did_create_script_context_; }
 
@@ -181,7 +182,6 @@ class ExtensionFrameHelper
   void OnExtensionDispatchOnDisconnect(int worker_thread_id,
                                        const PortId& id,
                                        const std::string& error_message);
-  void OnUpdateBrowserWindowId(int browser_window_id);
 
   // Type of view associated with the RenderFrame.
   mojom::ViewType view_type_ = mojom::ViewType::kInvalid;
@@ -219,6 +219,8 @@ class ExtensionFrameHelper
   bool has_started_first_navigation_ = false;
 
   bool did_create_script_context_ = false;
+  // Whether we are currently initializing the main world script context.
+  bool is_initializing_main_world_script_context_ = false;
 
   mojo::AssociatedRemote<mojom::LocalFrameHost> local_frame_host_remote_;
 

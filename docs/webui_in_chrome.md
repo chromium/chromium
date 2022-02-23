@@ -15,7 +15,6 @@ This guide is based on [Creating WebUI Interfaces in components](webui_in_compon
 
 [TOC]
 
-<a name="creating_web_ui_page"></a>
 WebUI pages live in `chrome/browser/resources`.  You should create a folder for your project `chrome/browser/resources/hello_world`.
 When creating WebUI resources, follow the [Web Development Style Guide](https://chromium.googlesource.com/chromium/src/+/main/styleguide/web/web.md). For a sample WebUI page you could start with the following files:
 
@@ -248,7 +247,10 @@ HelloWorldUI::HelloWorldUI(content::WebUI* web_ui)
   html_source->UseStringsJs();
 
   // Add required resources.
-  webui::SetupWebUIDataSource(html_source, base::make_span(kHelloWorldResources, kHelloWorldResourcesSize), IDR_HELLO_WORLD_HELLO_WORLD_CONTAINER_HTML);
+  webui::SetupWebUIDataSource(
+      html_source,
+      base::make_span(kHelloWorldResources, kHelloWorldResourcesSize),
+      IDR_HELLO_WORLD_HELLO_WORLD_CONTAINER_HTML);
 
   content::BrowserContext* browser_context =
       web_ui->GetWebContents()->GetBrowserContext();
@@ -345,6 +347,7 @@ do that, some small changes are needed to your code.  First, we need to add a ne
 HelloWorldDialog::HelloWorldDialog() = default;
 
 void HelloWorldDialog::Show() {
+  // HelloWorldDialog is self-deleting via OnDialogClosed().
   chrome::ShowWebDialog(nullptr, ProfileManager::GetActiveUserProfile(),
                         new HelloWorldDialog());
 }

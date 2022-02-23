@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/core/style/style_variables.h"
 
-#include "third_party/blink/renderer/core/style/data_equivalency.h"
+#include "base/memory/values_equivalent.h"
 
 namespace blink {
 
@@ -18,7 +18,7 @@ bool IsEqual(const OptionalData& a, const OptionalData& b) {
     return false;
   if (!a.has_value())
     return true;
-  return DataEquivalent(a.value(), b.value());
+  return base::ValuesEquivalent(a.value(), b.value());
 }
 
 bool IsEqual(const OptionalValue& a, const OptionalValue& b) {
@@ -26,7 +26,7 @@ bool IsEqual(const OptionalValue& a, const OptionalValue& b) {
     return false;
   if (!a.has_value())
     return true;
-  return DataEquivalent(a.value(), b.value());
+  return base::ValuesEquivalent(a.value(), b.value());
 }
 
 }  // namespace

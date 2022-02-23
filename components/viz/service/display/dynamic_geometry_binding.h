@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_VIZ_SERVICE_DISPLAY_DYNAMIC_GEOMETRY_BINDING_H_
 #define COMPONENTS_VIZ_SERVICE_DISPLAY_DYNAMIC_GEOMETRY_BINDING_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/viz/service/display/geometry_binding.h"
 #include "components/viz/service/viz_service_export.h"
 
@@ -28,7 +29,7 @@ class VIZ_SERVICE_EXPORT DynamicGeometryBinding {
   void InitializeCustomQuadWithUVs(const gfx::QuadF& quad, const float uv[8]);
 
  private:
-  gpu::gles2::GLES2Interface* gl_;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_;
 
   GLuint quad_vertices_vbo_;
   GLuint quad_elements_vbo_;

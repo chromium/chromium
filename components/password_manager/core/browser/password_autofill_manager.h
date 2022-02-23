@@ -10,6 +10,7 @@
 
 #include "base/callback.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/cancelable_task_tracker.h"
 #include "base/types/strong_alias.h"
 #include "components/autofill/core/browser/autofill_client.h"
@@ -53,7 +54,8 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   void OnPopupHidden() override;
   void OnPopupSuppressed() override;
   void DidSelectSuggestion(const std::u16string& value,
-                           int frontend_id) override;
+                           int frontend_id,
+                           const std::string& backend_id) override;
   void DidAcceptSuggestion(const std::u16string& value,
                            int frontend_id,
                            const std::string& backend_id,
@@ -209,11 +211,11 @@ class PasswordAutofillManager : public autofill::AutofillPopupDelegate {
   gfx::Image page_favicon_;
 
   // The driver that owns |this|.
-  PasswordManagerDriver* password_manager_driver_;
+  raw_ptr<PasswordManagerDriver> password_manager_driver_;
 
-  autofill::AutofillClient* autofill_client_;  // weak
+  raw_ptr<autofill::AutofillClient> autofill_client_;  // weak
 
-  PasswordManagerClient* password_client_;
+  raw_ptr<PasswordManagerClient> password_client_;
 
   // If not null then it will be called in destructor.
   base::OnceClosure deletion_callback_;

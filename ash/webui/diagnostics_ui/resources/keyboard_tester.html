@@ -2,23 +2,58 @@
   #dialog {
     --cr-dialog-width: min(calc(100% - 80px), 1400px);
   }
+
+  [slot='title'] {
+    font-family: var(--diagnostics-google-sans-font-family);
+  }
+
+  #instruction {
+    text-align: center;
+  }
+
+  #diagram-border {
+    border: 1px solid var(--google-blue-600);
+    border-radius: 8px;
+    padding: 6px;
+  }
+
+  #help {
+    text-align: end;
+  }
+
+  a[href] {
+    color: var(--cros-link-color);
+    text-decoration: none;
+  }
 </style>
-<cr-dialog id="dialog" show-close-button>
-  <div slot="title">Keyboard tester</div>
+<cr-dialog id="dialog" show-close-button on-close="handleClose">
+  <div slot="title">[[dialogTitle_]]</div>
   <div slot="body">
-    <p>Physical layout: [[keyboard.physicalLayout]]</p>
-    <p>Mechanical layout: [[keyboard.mechanicalLayout]]</p>
-    <p>Number pad presence: [[keyboard.numberPadPresent]]</p>
-    <template is="dom-if" if="[[keyboard.hasAssistantKey]]">
-      <p>Has Assistant key</p>
-    </template>
+    <p id="instruction">Test your keyboard by typing</p>
     <template is="dom-if" if="[[layoutIsKnown_]]">
-      <keyboard-diagram
-          mechanical-layout="[[diagramMechanicalLayout_]]"
-          physical-layout="[[diagramPhysicalLayout_]]"
-          show-assistant-key="[[keyboard.hasAssistantKey]]"
-          show-number-pad="[[showNumberPad_]]">
-      </keyboard-diagram>
+      <div id="diagram-border">
+        <keyboard-diagram
+            id="diagram"
+            mechanical-layout="[[diagramMechanicalLayout_]]"
+            physical-layout="[[diagramPhysicalLayout_]]"
+            show-assistant-key="[[keyboard.hasAssistantKey]]"
+            show-number-pad="[[showNumberPad_]]"
+            top-row-keys="[[topRowKeys_]]">
+        </keyboard-diagram>
+      </div>
     </template>
+    <p id="help">
+      For more help, go to the
+      <!--
+        TODO(crbug.com/1207678): update this link when the Help Center is
+        ready.
+      -->
+      <a href="https://support.google.com/chromebook/">Help Center</a>
+    </p>
+  </div>
+  <div slot="button-container">
+    <cr-button class="action-button" on-click="close">
+      Done
+    </cr-button>
   </div>
 </cr-dialog>

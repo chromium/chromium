@@ -16,8 +16,10 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.PanelState;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel.StateChangeReason;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.resources.dynamics.DynamicResourceLoader;
 
@@ -148,9 +150,8 @@ abstract class OverlayPanelBase {
         mBarHeight = mContext.getResources().getDimension(bar_height_dimen) * mPxToDp;
 
         final Resources resources = mContext.getResources();
-        mBarBackgroundColor = ApiCompatibilityUtils.getColor(
-                resources, R.color.overlay_panel_bar_background_color);
-        mIconColor = ApiCompatibilityUtils.getColor(resources, R.color.default_icon_color);
+        mBarBackgroundColor = ChromeSemanticColorUtils.getOverlayPanelBarBackgroundColor(mContext);
+        mIconColor = SemanticColorUtils.getDefaultIconColor(context);
         mDragHandlebarColor =
                 ApiCompatibilityUtils.getColor(resources, R.color.drag_handlebar_color);
         mButtonPaddingDps =
@@ -458,8 +459,7 @@ abstract class OverlayPanelBase {
 
     /** @return the color to use to draw the separator between the Bar and Content. */
     public int getSeparatorLineColor() {
-        return ApiCompatibilityUtils.getColor(
-                mContext.getResources(), R.color.overlay_panel_separator_line_color);
+        return SemanticColorUtils.getOverlayPanelSeparatorLineColor(mContext);
     }
 
     /**

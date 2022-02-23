@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "components/viz/common/gpu/context_provider.h"
@@ -48,7 +49,7 @@ class ContextLostRunLoop : public viz::ContextLostObserver {
   // viz::LostContextProvider:
   void OnContextLost() override { run_loop_.Quit(); }
 
-  viz::ContextProvider* const context_provider_;
+  const raw_ptr<viz::ContextProvider> context_provider_;
   base::RunLoop run_loop_;
 };
 
@@ -81,8 +82,8 @@ class ContextTestBase : public content::ContentBrowserTest {
   }
 
  protected:
-  gpu::gles2::GLES2Interface* gl_ = nullptr;
-  gpu::ContextSupport* context_support_ = nullptr;
+  raw_ptr<gpu::gles2::GLES2Interface> gl_ = nullptr;
+  raw_ptr<gpu::ContextSupport> context_support_ = nullptr;
 
  private:
   scoped_refptr<viz::ContextProviderCommandBuffer> provider_;
@@ -150,7 +151,7 @@ class BrowserGpuChannelHostFactoryTest : public ContentBrowserTest {
 // establishes a GPU channel.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_Basic Basic
 #else
 #define MAYBE_Basic DISABLED_Basic
@@ -161,12 +162,12 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest, MAYBE_Basic) {
   EXPECT_TRUE(GetGpuChannel() != nullptr);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Test fails on Chromeos + Mac, flaky on Windows because UI Compositor
 // establishes a GPU channel.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_AlreadyEstablished AlreadyEstablished
 #else
 #define MAYBE_AlreadyEstablished DISABLED_AlreadyEstablished
@@ -188,7 +189,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 #endif
 
 // Test fails on Windows because GPU Channel set-up fails.
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
 #define MAYBE_GrContextKeepsGpuChannelAlive GrContextKeepsGpuChannelAlive
 #else
 #define MAYBE_GrContextKeepsGpuChannelAlive \
@@ -246,7 +247,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 // establishes a GPU channel.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #define MAYBE_CrashAndRecover CrashAndRecover
 #else
 #define MAYBE_CrashAndRecover DISABLED_CrashAndRecover
@@ -277,7 +278,7 @@ IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
 // crbug.com/1224892: the test if flaky on linux and lacros.
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 IN_PROC_BROWSER_TEST_F(BrowserGpuChannelHostFactoryTest,
                        DISABLED_CreateTransferBuffer) {
   DCHECK(!IsChannelEstablished());

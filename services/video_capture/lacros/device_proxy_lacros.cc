@@ -19,6 +19,12 @@ DeviceProxyLacros::DeviceProxyLacros(
     : device_(std::move(proxy_remote)) {
   receiver_.Bind(std::move(device_receiver));
   receiver_.set_disconnect_handler(std::move(cleanup_callback));
+
+  // Note that currently all versioned calls that we need to make are
+  // best effort, and can just be dropped if we haven't gotten an updated
+  // version yet. If that changes, we'll need to track that we have an
+  // outstanding query and respond accordingly.
+  device_.QueryVersion(base::DoNothing());
 }
 
 DeviceProxyLacros::~DeviceProxyLacros() = default;
@@ -58,6 +64,14 @@ void DeviceProxyLacros::TakePhoto(TakePhotoCallback callback) {
 void DeviceProxyLacros::ProcessFeedback(
     const media::VideoCaptureFeedback& feedback) {
   device_->ProcessFeedback(std::move(feedback));
+}
+
+void DeviceProxyLacros::RequestRefreshFrame() {
+  if (device_.version() >=
+      int{crosapi::mojom::VideoCaptureDevice::MethodMinVersions::
+              kRequestRefreshFrameMinVersion}) {
+    device_->RequestRefreshFrame();
+  }
 }
 
 }  // namespace video_capture

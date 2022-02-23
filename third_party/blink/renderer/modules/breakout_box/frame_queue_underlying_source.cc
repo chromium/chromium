@@ -131,7 +131,7 @@ ScriptPromise FrameQueueUnderlyingSource<NativeFrameType>::Cancel(
 template <typename NativeFrameType>
 bool FrameQueueUnderlyingSource<NativeFrameType>::HasPendingActivity() const {
   MutexLocker locker(mutex_);
-  return (num_pending_pulls_ > 0) && Controller();
+  return (num_pending_pulls_ > 0) && GetExecutionContext();
 }
 
 template <typename NativeFrameType>
@@ -154,7 +154,7 @@ void FrameQueueUnderlyingSource<NativeFrameType>::Close() {
     return;
 
   is_closed_ = true;
-  if (Controller()) {
+  if (GetExecutionContext()) {
     StopFrameDelivery();
     CloseController();
   }
@@ -278,6 +278,8 @@ void FrameQueueUnderlyingSource<NativeFrameType>::TransferSource(
 template <typename NativeFrameType>
 void FrameQueueUnderlyingSource<NativeFrameType>::CloseController() {
   DCHECK(realm_task_runner_->RunsTasksInCurrentSequence());
+  // This can be called during stream construction while Controller() is still
+  // false.
   if (Controller())
     Controller()->Close();
 }

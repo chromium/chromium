@@ -1,5 +1,6 @@
 specific_include_rules = {
   "pdf_extension_test\.cc": [
+    "+cc/input/scroll_utils.h",
     "+chrome/browser/ui/views/location_bar/zoom_bubble_view.h",
   ],
   "pdf_find_request_manager_browsertest\.cc": [

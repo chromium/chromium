@@ -49,21 +49,14 @@ BASE_EXPORT void OverridePathOfEmbeddedICU(const char* path);
 // returns invalid FilePath.
 BASE_EXPORT FilePath FilePathOfEmbeddedICU();
 
-// Returns true if multiwindow is supported on this OS version and is enabled in
-// the current build configuration. Does not check if this device can actually
-// show multiple windows (e.g. on iPhone): use [UIApplication
-// supportsMultipleScenes] instead.
-BASE_EXPORT bool IsMultiwindowSupported();
-
-// Returns true if the iOS13 UIScene-based startup flow is supported, regardless
-// of whether multiple windows are permitted. This always returns true if
-// base::ios::IsMultiwindowSupported() returns true.
-BASE_EXPORT bool IsSceneStartupSupported();
-
 // Returns true iff multiple windows can be opened, i.e. when the multiwindow
 // build flag is on, the device is running on iOS 13+ and it's a compatible
 // iPad.
 BASE_EXPORT bool IsMultipleScenesSupported();
+
+// iOS 15 introduced pre-warming, which launches and then pauses the app, to
+// speed up actual launch time.
+BASE_EXPORT bool IsApplicationPreWarmed();
 
 }  // namespace ios
 }  // namespace base

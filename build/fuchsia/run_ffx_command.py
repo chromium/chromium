@@ -26,14 +26,23 @@ def main():
                       required=True,
                       help='FFX command to run. Runtime arguments are handled '
                       'using the %%args%% placeholder.')
+  parser.add_argument('child_args',
+                      nargs='*',
+                      help='Arguments for the command.')
   AddCommonArgs(parser)
   AddTargetSpecificArgs(parser)
-  args, runtime_args = parser.parse_known_args()
+  args = parser.parse_args()
 
-  command_substituted = [
-      chunk.replace('%args%', ' '.join(runtime_args))
-      for chunk in shlex.split(args.command)
-  ]
+  # Prepare the arglist for "ffx". %args% is replaced with all positional
+  # arguments given to the script.
+  ffx_args = shlex.split(args.command)
+  # replace %args% in the command with the given arguments.
+  try:
+    args_index = ffx_args.index('%args%')
+    ffx_args[args_index:args_index + 1] = args.child_args
+  except ValueError:
+    # %args% is not present; use the command as-is.
+    pass
 
   with GetDeploymentTargetForArgs(args) as target:
     target.Start()
@@ -43,7 +52,7 @@ def main():
     # package can be instantiated after resolution.
     with target.GetPkgRepo() as pkg_repo:
       target.InstallPackage(args.package)
-      process = target.RunFFXCommand(command_substituted)
+      process = target.RunFFXCommand(ffx_args)
 
       # It's possible that components installed by this script may be
       # instantiated at arbitrary points in the future.

@@ -10,13 +10,13 @@ import android.app.Activity;
 import android.view.View;
 import android.widget.LinearLayout.LayoutParams;
 
+import androidx.appcompat.content.res.AppCompatResources;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.params.BaseJUnit4RunnerDelegate;
 import org.chromium.base.test.params.ParameterAnnotations;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
@@ -26,7 +26,7 @@ import org.chromium.base.test.util.Feature;
 import org.chromium.components.browser_ui.widget.test.R;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.NightModeTestUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -38,7 +38,7 @@ import java.util.List;
  */
 @RunWith(ParameterizedRunner.class)
 @UseRunnerDelegate(BaseJUnit4RunnerDelegate.class)
-public class ListMenuRenderTest extends DummyUiActivityTestCase {
+public class ListMenuRenderTest extends BlankUiTestActivityTestCase {
     @ParameterAnnotations.ClassParameter
     private static List<ParameterSet> sClassParams =
             new NightModeTestUtils.NightModeParams().getParameters();
@@ -49,7 +49,7 @@ public class ListMenuRenderTest extends DummyUiActivityTestCase {
     private View mView;
 
     public ListMenuRenderTest(boolean nightModeEnabled) {
-        NightModeTestUtils.setUpNightModeForDummyUiActivity(nightModeEnabled);
+        NightModeTestUtils.setUpNightModeForBlankUiTestActivity(nightModeEnabled);
         mRenderTestRule.setNightModeEnabled(nightModeEnabled);
     }
 
@@ -73,8 +73,8 @@ public class ListMenuRenderTest extends DummyUiActivityTestCase {
 
             BasicListMenu listMenu = new BasicListMenu(activity, data, null);
             mView = listMenu.getContentView();
-            mView.setBackground(ApiCompatibilityUtils.getDrawable(
-                    activity.getResources(), R.drawable.menu_bg_tinted));
+            mView.setBackground(
+                    AppCompatResources.getDrawable(activity, R.drawable.menu_bg_tinted));
             int width = activity.getResources().getDimensionPixelSize(R.dimen.list_menu_width);
             activity.setContentView(mView, new LayoutParams(width, WRAP_CONTENT));
         });
@@ -82,7 +82,7 @@ public class ListMenuRenderTest extends DummyUiActivityTestCase {
 
     @Override
     public void tearDownTest() throws Exception {
-        NightModeTestUtils.tearDownNightModeForDummyUiActivity();
+        NightModeTestUtils.tearDownNightModeForBlankUiTestActivity();
         super.tearDownTest();
     }
 

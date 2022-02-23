@@ -8,7 +8,7 @@
 namespace viz {
 
 class CapturableFrameSink;
-class FrameSinkId;
+struct VideoCaptureTarget;
 class FrameSinkVideoCapturerImpl;
 
 // Interface implemented by the owner/manager of FrameSinkVideoCapturerImpl
@@ -17,9 +17,9 @@ class FrameSinkVideoCapturerImpl;
 class FrameSinkVideoCapturerManager {
  public:
   // Returns the CapturableFrameSink implementation associated with the given
-  // |frame_sink_id|, or nullptr if unknown.
+  // |target|, or nullptr if unknown.
   virtual CapturableFrameSink* FindCapturableFrameSink(
-      const FrameSinkId& frame_sink_id) = 0;
+      const VideoCaptureTarget& target) = 0;
 
   // Called once, when the mojo binding for the given |capturer| has been
   // closed. At this point, the capturer is a zombie waiting to be destroyed.

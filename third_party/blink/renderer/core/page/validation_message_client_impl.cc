@@ -41,6 +41,12 @@
 
 namespace blink {
 
+namespace {
+// The max length of 256 is also used by other browsers:
+// https://bugs.chromium.org/p/chromium/issues/detail?id=1261191#c17
+constexpr int kMaxValidationStringLength = 256;
+}  // namespace
+
 ValidationMessageClientImpl::ValidationMessageClientImpl(Page& page)
     : page_(&page), current_anchor_(nullptr) {}
 
@@ -52,16 +58,26 @@ LocalFrameView* ValidationMessageClientImpl::CurrentView() {
 
 void ValidationMessageClientImpl::ShowValidationMessage(
     const Element& anchor,
-    const String& message,
+    const String& original_message,
     TextDirection message_dir,
     const String& sub_message,
     TextDirection sub_message_dir) {
-  if (message.IsEmpty()) {
+  if (original_message.IsEmpty()) {
     HideValidationMessage(anchor);
     return;
   }
   if (!anchor.GetLayoutObject())
     return;
+
+  // If this frame is cross origin to the main frame, then shorten the
+  // validation message to prevent validation popups that cover too much of the
+  // main frame.
+  String message = original_message;
+  if (original_message.length() > kMaxValidationStringLength &&
+      anchor.GetDocument().GetFrame()->IsCrossOriginToMainFrame()) {
+    message = original_message.Substring(0, kMaxValidationStringLength) + "...";
+  }
+
   if (current_anchor_)
     HideValidationMessageImmediately(*current_anchor_);
   current_anchor_ = &anchor;
@@ -174,7 +190,7 @@ void ValidationMessageClientImpl::CheckAnchorStatus(TimerBase*) {
     return;
   }
 
-  IntRect new_anchor_rect_in_viewport =
+  gfx::Rect new_anchor_rect_in_viewport =
       current_anchor_->VisibleBoundsInVisualViewport();
   if (new_anchor_rect_in_viewport.IsEmpty()) {
     // In a remote frame, VisibleBoundsInVisualViewport() returns an empty
@@ -211,12 +227,14 @@ void ValidationMessageClientImpl::LayoutOverlay() {
 }
 
 void ValidationMessageClientImpl::UpdatePrePaint() {
-  if (overlay_)
+  if (overlay_) {
     overlay_->UpdatePrePaint();
+    DCHECK(overlay_delegate_);
+    overlay_delegate_->UpdateFrameViewState(*overlay_);
+  }
 }
 
 void ValidationMessageClientImpl::PaintOverlay(GraphicsContext& context) {
-  DCHECK(RuntimeEnabledFeatures::CompositeAfterPaintEnabled());
   if (overlay_)
     overlay_->Paint(context);
 }

@@ -44,9 +44,9 @@ import parallel
 import path_util
 
 
-def LookupElfRodataInfo(elf_path, tool_prefix):
+def LookupElfRodataInfo(elf_path):
   """Returns (address, offset, size) for the .rodata section."""
-  args = [path_util.GetReadElfPath(tool_prefix), '-S', '--wide', elf_path]
+  args = [path_util.GetReadElfPath(), '-S', '--wide', elf_path]
   output = subprocess.check_output(args).decode('ascii')
   lines = output.splitlines()
   for line in lines:
@@ -82,14 +82,14 @@ def _ExtractArchivePath(path):
   return None
 
 
-def _LookupStringSectionPositions(target, tool_prefix, output_directory):
+def _LookupStringSectionPositions(target, output_directory):
   """Returns a dict of object_path -> [(offset, size)...] of .rodata sections.
 
   Args:
     target: An archive path string (e.g., "foo.a") or a list of object paths.
   """
   is_archive = isinstance(target, str)
-  args = [path_util.GetReadElfPath(tool_prefix), '-S', '--wide']
+  args = [path_util.GetReadElfPath(), '-S', '--wide']
   if is_archive:
     args.append(target)
   else:
@@ -254,7 +254,7 @@ def _AnnotateStringData(string_data, path_value_gen):
 
 # This is a target for BulkForkAndCall().
 def ResolveStringPiecesIndirect(encoded_string_addresses_by_path, string_data,
-                                tool_prefix, output_directory):
+                                output_directory):
   string_addresses_by_path = parallel.DecodeDictOfLists(
       encoded_string_addresses_by_path)
   # Assign |target| as archive path, or a list of object paths.
@@ -265,7 +265,7 @@ def ResolveStringPiecesIndirect(encoded_string_addresses_by_path, string_data,
 
   # Run readelf to find location of .rodata within the .o files.
   section_positions_by_path = _LookupStringSectionPositions(
-      target, tool_prefix, output_directory)
+      target, output_directory)
   # Load the .rodata sections (from object files) as strings.
   string_sections_by_path = _ReadStringSections(
       target, output_directory, section_positions_by_path)
@@ -295,7 +295,7 @@ def ResolveStringPieces(encoded_strings_by_path, string_data):
   return [parallel.EncodeDictOfLists(x) for x in ret]
 
 
-def ReadStringLiterals(symbols, elf_path, tool_prefix, all_rodata=False):
+def ReadStringLiterals(symbols, elf_path, all_rodata=False):
   """Returns an iterable of (symbol, string) for all string literal symbols.
 
   Args:
@@ -304,7 +304,7 @@ def ReadStringLiterals(symbols, elf_path, tool_prefix, all_rodata=False):
     all_rodata: Assume every symbol within .rodata that ends with a \0 is a
          string literal.
   """
-  address, offset, _ = LookupElfRodataInfo(elf_path, tool_prefix)
+  address, offset, _ = LookupElfRodataInfo(elf_path)
   adjust = offset - address
   with open(elf_path, 'rb') as f:
     for symbol in symbols:

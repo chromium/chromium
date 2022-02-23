@@ -3,7 +3,7 @@
 interface AppHistoryTransition {
   readonly attribute AppHistoryNavigationType navigationType;
   readonly attribute AppHistoryEntry from;
-  //[CallWith=ScriptState, RaisesException] readonly attribute Promise<void> finished;
+  [CallWith=ScriptState] readonly attribute Promise<void> finished;
 
   // AppHistoryResult rollback(optional AppHistoryNavigationOptions options = {});
 };

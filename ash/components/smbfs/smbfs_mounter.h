@@ -9,6 +9,8 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk_mount_manager.h"
+#include "ash/components/disks/mount_point.h"
 #include "ash/components/smbfs/mojom/smbfs.mojom.h"
 #include "ash/components/smbfs/smbfs_host.h"
 #include "base/callback.h"
@@ -17,8 +19,6 @@
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "base/unguessable_token.h"
-#include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/disks/mount_point.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "mojo/public/cpp/system/invitation.h"
 #include "net/base/ip_address.h"
@@ -76,7 +76,7 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
                const std::string& mount_dir_name,
                const MountOptions& options,
                SmbFsHost::Delegate* delegate,
-               chromeos::disks::DiskMountManager* disk_mount_manager);
+               ash::disks::DiskMountManager* disk_mount_manager);
 
   SmbFsMounter(const SmbFsMounter&) = delete;
   SmbFsMounter& operator=(const SmbFsMounter&) = delete;
@@ -95,13 +95,13 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
                const std::string& mount_dir_name,
                const MountOptions& options,
                SmbFsHost::Delegate* delegate,
-               chromeos::disks::DiskMountManager* disk_mount_manager,
+               ash::disks::DiskMountManager* disk_mount_manager,
                mojo::Remote<mojom::SmbFsBootstrap> bootstrap);
 
  private:
   // Callback for MountPoint::Mount().
   void OnMountDone(chromeos::MountError error_code,
-                   std::unique_ptr<chromeos::disks::MountPoint> mount_point);
+                   std::unique_ptr<ash::disks::MountPoint> mount_point);
 
   // Callback for receiving a Mojo bootstrap channel.
   void OnIpcChannel(base::ScopedFD mojo_fd);
@@ -125,7 +125,7 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
   const std::string mount_dir_name_;
   const MountOptions options_;
   SmbFsHost::Delegate* const delegate_;
-  chromeos::disks::DiskMountManager* const disk_mount_manager_;
+  ash::disks::DiskMountManager* const disk_mount_manager_;
   const base::UnguessableToken token_;
   const std::string mount_url_;
   bool mojo_fd_pending_ = false;
@@ -133,7 +133,7 @@ class COMPONENT_EXPORT(SMBFS) SmbFsMounter {
   base::OneShotTimer mount_timer_;
   DoneCallback callback_;
 
-  std::unique_ptr<chromeos::disks::MountPoint> mount_point_;
+  std::unique_ptr<ash::disks::MountPoint> mount_point_;
   mojo::OutgoingInvitation bootstrap_invitation_;
   mojo::Remote<mojom::SmbFsBootstrap> bootstrap_;
 

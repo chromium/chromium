@@ -4,7 +4,6 @@
 
 #include "chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h"
 
-#include "base/no_destructor.h"
 #include "chrome/grit/generated_resources.h"
 #include "chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h"
 #include "content/public/browser/service_process_host.h"

@@ -25,9 +25,9 @@ std::string GetNameForExternalFilePath(const base::FilePath& path) {
   const base::FilePath::StringType& file_path = path.value();
   size_t pos = file_path.rfind(base::FilePath::kSeparators[0]);
   CHECK(pos != base::FilePath::StringType::npos);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return base::WideToUTF8(file_path.substr(pos + 1));
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
   return file_path.substr(pos + 1);
 #else
 #error "Unsupported platform."

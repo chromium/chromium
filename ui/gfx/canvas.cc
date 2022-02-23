@@ -26,6 +26,7 @@
 #include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/skia_conversions.h"
 #include "ui/gfx/geometry/transform.h"
+#include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/scoped_canvas.h"
 #include "ui/gfx/skia_paint_util.h"
 #include "ui/gfx/switches.h"
@@ -395,9 +396,11 @@ void Canvas::DrawImageInPath(const ImageSkia& image,
 void Canvas::DrawSkottie(scoped_refptr<cc::SkottieWrapper> skottie,
                          const Rect& dst,
                          float t,
-                         cc::SkottieFrameDataMap images) {
+                         cc::SkottieFrameDataMap images,
+                         const cc::SkottieColorMap& color_map,
+                         cc::SkottieTextPropertyValueMap text_map) {
   canvas_->drawSkottie(std::move(skottie), RectToSkRect(dst), t,
-                       std::move(images));
+                       std::move(images), color_map, std::move(text_map));
 }
 
 void Canvas::DrawStringRect(const std::u16string& text,

@@ -11,10 +11,12 @@ import android.text.TextUtils;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.IntDef;
+import androidx.annotation.Nullable;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionEventProcessor;
 import org.chromium.content_public.browser.WebContents;
@@ -96,7 +98,7 @@ public class SmartSelectionClient implements SelectionClient {
     public void onSelectionEvent(@SelectionEventType int eventType, float posXPix, float posYPix) {}
 
     @Override
-    public void selectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {}
+    public void selectAroundCaretAck(@Nullable SelectAroundCaretResult result) {}
 
     @Override
     public boolean requestSelectionPopupUpdates(boolean shouldSuggest) {

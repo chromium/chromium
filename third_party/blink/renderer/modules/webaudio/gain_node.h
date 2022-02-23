@@ -76,7 +76,7 @@ class GainNode final : public AudioNode {
                           const GainOptions*,
                           ExceptionState&);
 
-  GainNode(BaseAudioContext&);
+  explicit GainNode(BaseAudioContext&);
 
   void Trace(Visitor*) const override;
 

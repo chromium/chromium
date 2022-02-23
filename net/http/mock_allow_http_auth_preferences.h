@@ -5,8 +5,11 @@
 #ifndef NET_HTTP_MOCK_ALLOW_HTTP_AUTH_PREFERENCES_H_
 #define NET_HTTP_MOCK_ALLOW_HTTP_AUTH_PREFERENCES_H_
 
-#include "base/macros.h"
 #include "net/http/http_auth_preferences.h"
+
+namespace url {
+class SchemeHostPort;
+}
 
 namespace net {
 
@@ -22,9 +25,10 @@ class MockAllowHttpAuthPreferences : public HttpAuthPreferences {
 
   ~MockAllowHttpAuthPreferences() override;
 
-  bool CanUseDefaultCredentials(const GURL& auth_origin) const override;
+  bool CanUseDefaultCredentials(
+      const url::SchemeHostPort& auth_scheme_host_port) const override;
   HttpAuth::DelegationType GetDelegationType(
-      const GURL& auth_origin) const override;
+      const url::SchemeHostPort& auth_scheme_host_port) const override;
 };
 
 }  // namespace net

@@ -495,7 +495,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
         settings.mutable_device_local_accounts();
     device_local_accounts->clear_account();
     if (value.is_list()) {
-      for (const auto& entry : value.GetList()) {
+      for (const auto& entry : value.GetListDeprecated()) {
         const base::DictionaryValue* entry_dict = nullptr;
         if (entry.GetAsDictionary(&entry_dict)) {
           em::DeviceLocalAccountInfoProto* account =
@@ -590,7 +590,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     }
     DCHECK(list);
     list->Clear();
-    for (const auto& user : value.GetList()) {
+    for (const auto& user : value.GetListDeprecated()) {
       if (user.is_string()) {
         list->Add(std::string(user.GetString()));
       }
@@ -615,7 +615,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     em::FeatureFlagsProto* feature_flags = settings.mutable_feature_flags();
     feature_flags->Clear();
     if (value.is_list()) {
-      for (const auto& flag : value.GetList()) {
+      for (const auto& flag : value.GetListDeprecated()) {
         if (flag.is_string())
           feature_flags->add_feature_flags(flag.GetString());
       }
@@ -646,6 +646,13 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     } else {
       NOTREACHED();
     }
+  } else if (path == kRevenEnableDeviceHWDataUsage) {
+    em::RevenDeviceHWDataUsageEnabledProto* hw_data_usage =
+        settings.mutable_hardware_data_usage_enabled();
+    if (value.is_bool())
+      hw_data_usage->set_hardware_data_usage_enabled(value.GetBool());
+    else
+      NOTREACHED();
   } else {
     // The remaining settings don't support Set(), since they are not
     // intended to be customizable by the user:
@@ -670,6 +677,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kReportDeviceNetworkInterfaces
     //   kReportDeviceNetworkConfiguration
     //   kReportDeviceNetworkStatus
+    //   kReportDevicePeripherals
     //   kReportDevicePowerStatus
     //   kReportDeviceStorageStatus
     //   kReportDeviceSecurityStatus
@@ -683,6 +691,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kReportDeviceSystemInfo
     //   kReportDevicePrintJobs
     //   kReportDeviceLoginLogout
+    //   kReportCRDSessions
     //   kServiceAccountIdentity
     //   kSystemTimezonePolicy
     //   kVariationsRestrictParameter
@@ -690,6 +699,7 @@ void OwnerSettingsServiceAsh::UpdateDeviceSettings(
     //   kDeviceDisabledMessage
     //   ReportDeviceNetworkTelemetryCollectionRateMs
     //   ReportDeviceNetworkTelemetryEventCheckingRateMs
+    //   ReportDeviceAudioStatusCheckingRateMs
 
     LOG(FATAL) << "Device setting " << path << " is read-only.";
   }

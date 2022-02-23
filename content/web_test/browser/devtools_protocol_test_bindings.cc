@@ -12,13 +12,15 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "build/build_config.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/web_test/common/web_test_switches.h"
+#include "ipc/ipc_channel.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "content/public/browser/devtools_frontend_host.h"
 #endif
 
@@ -70,7 +72,7 @@ GURL DevToolsProtocolTestBindings::MapTestURLIfNeeded(const GURL& test_url,
 
 void DevToolsProtocolTestBindings::ReadyToCommitNavigation(
     NavigationHandle* navigation_handle) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content::RenderFrameHost* frame = navigation_handle->GetRenderFrameHost();
   if (frame->GetParent())
     return;
@@ -89,23 +91,22 @@ void DevToolsProtocolTestBindings::WebContentsDestroyed() {
 }
 
 void DevToolsProtocolTestBindings::HandleMessageFromTest(base::Value message) {
-  std::string method;
-  base::ListValue* params = nullptr;
-  base::DictionaryValue* dict = nullptr;
-  if (!message.GetAsDictionary(&dict) || !dict->GetString("method", &method)) {
+  const std::string* method = nullptr;
+  if (!message.is_dict() || !(method = message.FindStringKey("method"))) {
     return;
   }
 
-  dict->GetList("params", &params);
-
-  if (method == "dispatchProtocolMessage" && params &&
-      params->GetList().size() == 1) {
-    std::string protocol_message;
-    if (!params->GetString(0, &protocol_message))
+  const base::Value* params = message.FindListKey("params");
+  if (*method == "dispatchProtocolMessage" && params &&
+      params->GetListDeprecated().size() == 1) {
+    const std::string* protocol_message =
+        params->GetListDeprecated()[0].GetIfString();
+    if (!protocol_message)
       return;
+
     if (agent_host_) {
       agent_host_->DispatchProtocolMessage(
-          this, base::as_bytes(base::make_span(protocol_message)));
+          this, base::as_bytes(base::make_span(*protocol_message)));
     }
     return;
   }

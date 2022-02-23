@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/onboarding_ui_tracker.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeOnboardingUiTracker : public OnboardingUiTracker {
@@ -34,6 +34,6 @@ class FakeOnboardingUiTracker : public OnboardingUiTracker {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_ONBOARDING_UI_TRACKER_H_

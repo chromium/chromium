@@ -230,7 +230,7 @@ Display::Display(int64_t id, const gfx::Rect& bounds)
   // using it. Using a not supported profile can result in fatal errors in the
   // GPU process.
   auto color_space = gfx::ColorSpace::CreateSRGB();
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (HasForceDisplayColorProfile())
     color_space = GetForcedDisplayColorProfile();
 #endif
@@ -307,7 +307,7 @@ void Display::SetScaleAndBounds(float device_scale_factor,
                                 const gfx::Rect& bounds_in_pixel) {
   gfx::Insets insets = bounds_.InsetsFrom(work_area_);
   if (!HasForceDeviceScaleFactor()) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // Unless an explicit scale factor was provided for testing, ensure the
     // scale is integral.
     device_scale_factor = static_cast<int>(device_scale_factor);

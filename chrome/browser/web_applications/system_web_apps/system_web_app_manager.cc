@@ -27,18 +27,16 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
 #include "chrome/browser/web_applications/system_web_apps/system_web_app_delegate.h"
 #include "chrome/browser/web_applications/web_app.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
@@ -47,6 +45,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user_manager.h"
 #include "components/version_info/version_info.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/url_data_source.h"
 #include "content/public/common/content_switches.h"
@@ -94,7 +93,6 @@
 #if !defined(OFFICIAL_BUILD)
 #include "chrome/browser/ash/web_applications/demo_mode_web_app_info.h"
 #include "chrome/browser/ash/web_applications/sample_system_web_app_info.h"
-#include "chrome/browser/ash/web_applications/telemetry_extension_web_app_info.h"
 #endif  // !defined(OFFICIAL_BUILD)
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -146,7 +144,6 @@ SystemAppDelegateMap CreateSystemWebApps(Profile* profile) {
   info_vec.emplace_back(std::make_unique<OsFlagsSystemWebAppDelegate>(profile));
 
 #if !defined(OFFICIAL_BUILD)
-  info_vec.emplace_back(std::make_unique<TelemetrySystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<DemoModeSystemAppDelegate>(profile));
   info_vec.emplace_back(std::make_unique<SampleSystemAppDelegate>(profile));
 #endif  // !defined(OFFICIAL_BUILD)
@@ -200,6 +197,8 @@ ExternalInstallOptions CreateInstallOptionsForSystemApp(
   install_options.uninstall_and_replace =
       delegate.GetAppIdsToUninstallAndReplace();
   install_options.system_app_type = app_type;
+  install_options.handles_file_open_intents =
+      delegate.ShouldHandleFileOpenIntents();
 
   const auto& search_terms = delegate.GetAdditionalSearchTerms();
   std::transform(search_terms.begin(), search_terms.end(),
@@ -273,13 +272,11 @@ void SystemWebAppManager::SetSubsystems(
     WebAppRegistrar* registrar,
     WebAppSyncBridge* sync_bridge,
     WebAppUiManager* ui_manager,
-    OsIntegrationManager* os_integration_manager,
     WebAppPolicyManager* web_app_policy_manager) {
   externally_managed_app_manager_ = externally_managed_app_manager;
   registrar_ = registrar;
   sync_bridge_ = sync_bridge;
   ui_manager_ = ui_manager;
-  os_integration_manager_ = os_integration_manager;
   web_app_policy_manager_ = web_app_policy_manager;
 }
 
@@ -319,14 +316,18 @@ void SystemWebAppManager::Start() {
   }
 
   const bool exceeded_retries = CheckAndIncrementRetryAttempts();
-  if (!exceeded_retries) {
-    externally_managed_app_manager_->SynchronizeInstalledApps(
-        std::move(install_options_list),
-        ExternalInstallSource::kSystemInstalled,
-        base::BindOnce(&SystemWebAppManager::OnAppsSynchronized,
-                       weak_ptr_factory_.GetWeakPtr(),
-                       should_force_install_apps, install_start_time));
+  if (exceeded_retries) {
+    LOG(ERROR)
+        << "Exceeded SWA install retry attempts.  Skipping installation, will "
+           "retry on next OS update or when locale changes.";
+    return;
   }
+
+  externally_managed_app_manager_->SynchronizeInstalledApps(
+      std::move(install_options_list), ExternalInstallSource::kSystemInstalled,
+      base::BindOnce(&SystemWebAppManager::OnAppsSynchronized,
+                     weak_ptr_factory_.GetWeakPtr(), should_force_install_apps,
+                     install_start_time));
 }
 
 void SystemWebAppManager::InstallSystemAppsForTesting() {
@@ -534,7 +535,7 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
                std::inserter(results_to_report, results_to_report.end()),
                [](const auto& url_and_result) {
                  return url_and_result.second.code !=
-                        InstallResultCode::kSuccessAlreadyInstalled;
+                        webapps::InstallResultCode::kSuccessAlreadyInstalled;
                });
 
   for (const auto& url_and_result : results_to_report) {
@@ -542,14 +543,14 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
     base::UmaHistogramEnumeration(
         kInstallResultHistogramName,
         shutting_down_
-            ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
+            ? webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown
             : url_and_result.second.code);
 
     // Record per-profile result.
     base::UmaHistogramEnumeration(
         install_result_per_profile_histogram_name_,
         shutting_down_
-            ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
+            ? webapps::InstallResultCode::kCancelledOnWebAppProviderShuttingDown
             : url_and_result.second.code);
   }
 
@@ -562,10 +563,10 @@ void SystemWebAppManager::RecordSystemWebAppInstallResults(
           std::string(kInstallResultHistogramName) + ".Apps." +
           type_and_app_info.second->GetInternalName();
       base::UmaHistogramEnumeration(
-          app_histogram_name,
-          shutting_down_
-              ? InstallResultCode::kCancelledOnWebAppProviderShuttingDown
-              : url_and_result->second.code);
+          app_histogram_name, shutting_down_
+                                  ? webapps::InstallResultCode::
+                                        kCancelledOnWebAppProviderShuttingDown
+                                  : url_and_result->second.code);
     }
   }
 }
@@ -575,21 +576,6 @@ void SystemWebAppManager::OnAppsSynchronized(
     const base::TimeTicks& install_start_time,
     std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {
-  // TODO(crbug.com/1053371): Clean up File Handler install. We install SWA file
-  // handlers here, because the code that registers file handlers for regular
-  // Web Apps, does not run when for apps installed in the background.
-  for (const auto& it : system_app_delegates_) {
-    const SystemAppType& type = it.first;
-    absl::optional<AppId> app_id = GetAppIdForSystemApp(type);
-    if (!app_id)
-      continue;
-
-    InstallOsHooksOptions options;
-    options.os_hooks[OsHookType::kFileHandlers] = true;
-    os_integration_manager_->InstallOsHooks(*app_id, base::DoNothing(),
-                                            /*web_app_info=*/nullptr, options);
-  }
-
   const base::TimeDelta install_duration =
       base::TimeTicks::Now() - install_start_time;
 
@@ -611,7 +597,7 @@ void SystemWebAppManager::OnAppsSynchronized(
   for (const auto& it : system_app_delegates_) {
     absl::optional<SystemAppBackgroundTaskInfo> background_info =
         it.second->GetTimerInfo();
-    if (background_info) {
+    if (background_info && it.second->IsAppEnabled()) {
       tasks_.push_back(std::make_unique<SystemAppBackgroundTask>(
           profile_, background_info.value()));
     }

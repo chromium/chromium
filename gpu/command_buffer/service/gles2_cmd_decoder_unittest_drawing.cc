@@ -2334,7 +2334,7 @@ TEST_P(GLES2DecoderManualInitTest, DrawClearsDepthTexture) {
   EXPECT_EQ(GL_NO_ERROR, GetGLError());
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_P(GLES2DecoderManualInitTest, DrawClearsLargeTexture) {
   InitState init;
   init.gl_version = "OpenGL ES 3.0";

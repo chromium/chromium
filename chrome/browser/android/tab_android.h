@@ -83,6 +83,7 @@ class TabAndroid : public base::SupportsUserData {
 
   int GetAndroidId() const;
   bool IsNativePage() const;
+  int GetLaunchType() const;
 
   // Return the tab title.
   std::u16string GetTitle() const;

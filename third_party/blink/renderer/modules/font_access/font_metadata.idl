@@ -13,8 +13,5 @@
   readonly attribute USVString fullName;
   readonly attribute USVString family;
   readonly attribute USVString style;
-  readonly attribute boolean italic;
-  readonly attribute float stretch;
-  readonly attribute float weight;
   [CallWith=ScriptState, Measure] Promise<Blob> blob();
 };

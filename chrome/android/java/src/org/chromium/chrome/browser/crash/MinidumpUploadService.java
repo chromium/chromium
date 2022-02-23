@@ -4,16 +4,18 @@
 
 package org.chromium.chrome.browser.crash;
 
+import org.chromium.base.annotations.IdentifierNameString;
 import org.chromium.chrome.browser.base.SplitCompatIntentService;
-import org.chromium.chrome.browser.base.SplitCompatUtils;
 
 /** See {@link MinidumpUploadServiceImpl}. */
 public class MinidumpUploadService extends SplitCompatIntentService {
     private static final String TAG = "MinidmpUploadService";
 
+    @IdentifierNameString
+    private static String sImplClassName =
+            "org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl";
+
     public MinidumpUploadService() {
-        super(SplitCompatUtils.getIdentifierName(
-                      "org.chromium.chrome.browser.crash.MinidumpUploadServiceImpl"),
-                TAG);
+        super(sImplClassName, TAG);
     }
 }

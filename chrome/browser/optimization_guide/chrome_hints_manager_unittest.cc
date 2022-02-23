@@ -11,7 +11,6 @@
 #include "chrome/browser/optimization_guide/optimization_guide_tab_url_provider.h"
 #include "chrome/browser/optimization_guide/optimization_guide_web_contents_observer.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/data_reduction_proxy/core/common/data_reduction_proxy_pref_names.h"
 #include "components/optimization_guide/content/browser/optimization_guide_decider.h"
 #include "components/optimization_guide/core/hints_fetcher.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
@@ -25,10 +24,8 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/test_web_contents_factory.h"
-#include "services/network/public/cpp/network_connection_tracker.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
-#include "services/network/test/test_network_connection_tracker.h"
 #include "services/network/test/test_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -90,8 +87,6 @@ class ChromeHintsManagerFetchingTest
     pref_service_ =
         std::make_unique<sync_preferences::TestingPrefServiceSyncable>();
     optimization_guide::prefs::RegisterProfilePrefs(pref_service_->registry());
-    pref_service_->registry()->RegisterBooleanPref(
-        data_reduction_proxy::prefs::kDataSaverEnabled, false);
     unified_consent::UnifiedConsentService::RegisterPrefs(
         pref_service_->registry());
 
@@ -106,12 +101,12 @@ class ChromeHintsManagerFetchingTest
     tab_url_provider_ = std::make_unique<FakeTabUrlProvider>();
 
     hints_manager_ = std::make_unique<ChromeHintsManager>(
-        &testing_profile_, pref_service(), hint_store_.get(),
+        &testing_profile_, pref_service(), hint_store_->AsWeakPtr(),
         /*top_host_provider=*/nullptr, tab_url_provider_.get(),
         url_loader_factory_,
-        network::TestNetworkConnectionTracker::GetInstance(),
         OptimizationGuideKeyedService::MaybeCreatePushNotificationManager(
-            &testing_profile_));
+            &testing_profile_),
+        /*optimization_guide_logger=*/nullptr);
     hints_manager_->SetClockForTesting(task_environment_.GetMockClock());
 
     // Run until hint cache is initialized and the ChromeHintsManager is ready
@@ -141,11 +136,6 @@ class ChromeHintsManagerFetchingTest
             web_contents);
     navigation_handle->set_url(url);
     return navigation_handle;
-  }
-
-  void SetConnectionOnline() {
-    network::TestNetworkConnectionTracker::GetInstance()->SetConnectionType(
-        network::mojom::ConnectionType::CONNECTION_4G);
   }
 
   content::WebContents* Navigate(GURL url) {
@@ -196,9 +186,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP_DuplicatesRemoved) {
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
 
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
-
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/page1.html");
   sorted_predicted_urls.emplace_back("https://foo.com/page2.html");
@@ -247,8 +234,6 @@ TEST_F(ChromeHintsManagerFetchingTest,
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
 
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/page1.html");
@@ -280,9 +265,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP) {
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
 
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
-
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/");
@@ -307,9 +289,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtSRP_GoogleLinksIgnored) {
       optimization_guide::switches::kDisableCheckingUserPermissionsForTesting);
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
-
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
 
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
@@ -337,8 +316,6 @@ TEST_F(ChromeHintsManagerFetchingTest, HintsFetched_AtNonSRP) {
   hints_manager()->RegisterOptimizationTypes(
       {optimization_guide::proto::DEFER_ALL_SCRIPT});
 
-  // Set to online so fetch is activated.
-  SetConnectionOnline();
   base::HistogramTester histogram_tester;
   std::vector<GURL> sorted_predicted_urls;
   sorted_predicted_urls.emplace_back("https://foo.com/");
@@ -371,7 +348,7 @@ class ChromeHintsManagerPushEnabledTest
 };
 
 TEST_F(ChromeHintsManagerPushEnabledTest, PushManagerSetOnAndroid) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(hints_manager()->push_notification_manager());
 #else
   EXPECT_FALSE(hints_manager()->push_notification_manager());

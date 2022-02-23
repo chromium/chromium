@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Åbn et nyt vindue i inkognitotilstand</translation>
 <translation id="152892567002884378">Lydstyrke op</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> og derefter <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
 <translation id="1652741121070700329">Flyt til begyndelsen af det forrige ord</translation>
 <translation id="1679841710523778799">Skru op for lysstyrken</translation>
 <translation id="168356808214100546">Hold <ph name="ALT" /> nede, og tryk på <ph name="TAB" />, indtil det vindue, du vil åbne, vises. Giv derefter slip på tasterne.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Tryk på <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />, og klik på et link</translation>
 <translation id="561814908794220892">Åbn websiden på en ny fane</translation>
 <translation id="5620219513321115856">Flyt det aktive vindue til skrivebordet til højre</translation>
+<translation id="5699366815052349604">Tildel aktivt vindue til alle skriveborde</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> eller <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Åbn linket på fanen</translation>
 <translation id="5757474750054631686">Dæmp tastaturets lys (gælder kun for tastaturer med bagbelyste taster)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Vis skjulte filer i appen Filer</translation>
 <translation id="8717459106217102612">Markér det forrige ord eller bogstav</translation>
 <translation id="8727232706774971183">Se dine notifikationer</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 til 8</translation>
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8881584919399569791">Flyt det aktive vindue til skrivebordet til venstre</translation>
 <translation id="88986195241502842">Gå en side ned</translation>

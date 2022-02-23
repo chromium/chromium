@@ -29,16 +29,19 @@ void WebContentsSetBackgroundColor::CreateForWebContentsWithColor(
 WebContentsSetBackgroundColor::WebContentsSetBackgroundColor(
     content::WebContents* web_contents,
     SkColor color)
-    : content::WebContentsObserver(web_contents), color_(color) {}
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<WebContentsSetBackgroundColor>(
+          *web_contents),
+      color_(color) {}
 
 WebContentsSetBackgroundColor::~WebContentsSetBackgroundColor() = default;
 
 void WebContentsSetBackgroundColor::RenderFrameCreated(
     content::RenderFrameHost* render_frame_host) {
-  // We set the background color just on the main frame's widget. Other frames
-  // that are local roots would have a widget of their own, but their background
-  // colors are part of, and controlled by, the webpage.
-  if (!render_frame_host->GetParent())
+  // We set the background color just on the outermost main frame's widget.
+  // Other frames that are local roots would have a widget of their own, but
+  // their background colors are part of, and controlled by, the webpage.
+  if (!render_frame_host->GetParentOrOuterDocument())
     render_frame_host->GetView()->SetBackgroundColor(color_);
 }
 

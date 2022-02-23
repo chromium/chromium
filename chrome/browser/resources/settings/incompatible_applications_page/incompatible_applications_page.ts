@@ -17,23 +17,24 @@ import './incompatible_application_item.js';
 
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {loadTimeData} from '../i18n_setup.js';
 
 import {IncompatibleApplication, IncompatibleApplicationsBrowserProxyImpl} from './incompatible_applications_browser_proxy.js';
+import {getTemplate} from './incompatible_applications_page.html.js';
 
 const SettingsIncompatibleApplicationsPageElementBase =
     WebUIListenerMixin(PolymerElement);
 
-class SettingsIncompatibleApplicationsPageElement extends
+export class SettingsIncompatibleApplicationsPageElement extends
     SettingsIncompatibleApplicationsPageElementBase {
   static get is() {
     return 'settings-incompatible-applications-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -153,6 +154,13 @@ class SettingsIncompatibleApplicationsPageElement extends
           this.subtitleNoAdminRightsText_ = strings[1];
           this.listTitleText_ = strings[2];
         });
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-incompatible-applications-page':
+        SettingsIncompatibleApplicationsPageElement;
   }
 }
 

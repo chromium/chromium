@@ -18,13 +18,13 @@ function insertStyleSheet(css)
 }
 
 function cssStrWithClassSelectors(count) {
-    var selector = '.a' + count + ' .b' + count + ' { color: red } ';
+    var selector = '.a' + count + ' .b' + count + ' { cursor: crosshair } ';
     // Intentionally repeat the same classes many times, to test duplicate optimizations.
     return selector + selector + selector + selector + selector + selector + selector;
 }
 
 function cssStrWithAttributeSelectors(count) {
-    var selector = '[attrA' + count + '="1"]' + ' [attrB' + count + '="1"]' + ' { color: red } ';
+    var selector = '[attrA' + count + '="1"]' + ' [attrB' + count + '="1"]' + ' { cursor: crosshair } ';
     // Intentionally repeat the same classes many times, to test duplicate optimizations.
     return selector + selector + selector + selector + selector + selector + selector;
 }

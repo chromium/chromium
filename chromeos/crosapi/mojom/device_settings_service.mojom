@@ -4,6 +4,8 @@
 
 module crosapi.mojom;
 
+import "mojo/public/mojom/base/values.mojom";
+
 // Copy of UsbDetachableAllowlistProto from chrome_device_policy.proto.
 [Stable, Extensible]
 struct UsbDetachableAllowlist {
@@ -56,4 +58,12 @@ interface DeviceSettingsObserver {
 interface DeviceSettingsService {
   // Adds an observer for device settings updates.
   AddDeviceSettingsObserver@0(pending_remote<DeviceSettingsObserver> observer);
+
+  // Returns all the device policy from Ash for display purpose. The
+  // |device_policy| is the DictionaryValue containing policy data and
+  // |legend_data| is DictionaryValue containing legend data - that is the data
+  // displayed at the top of the page describing the status of device policy.
+  [MinVersion=1]
+  GetDevicePolicy@1() => (mojo_base.mojom.Value device_policy,
+                          mojo_base.mojom.Value legend_data);
 };

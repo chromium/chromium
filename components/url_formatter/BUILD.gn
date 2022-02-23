@@ -29,8 +29,6 @@ static_library("url_formatter") {
     "url_formatter.h",
   ]
 
-  configs += [ "//build/config/compiler:noshadowing" ]
-
   deps = [
     "//base",
     "//base:i18n",

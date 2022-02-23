@@ -208,7 +208,7 @@ template("system_webview_apk_or_module_tmpl") {
       deps += [ "//third_party/arcore-android-sdk-client:com_google_ar_core_J__unpack_aar" ]
     }
 
-    aapt_locale_allowlist = locales
+    aapt_locale_allowlist = platform_pak_locales
 
     resource_exclusion_regex = common_resource_exclusion_regex
     resource_exclusion_exceptions = common_resource_exclusion_exceptions
@@ -220,6 +220,17 @@ template("system_webview_apk_or_module_tmpl") {
       # Note: WebLayer's resource exclusion regex deliberately does not start
       # with "|".
       resource_exclusion_regex += "|" + weblayer_resource_exclusion_regex
+    }
+
+    # We only optimize resources for bundles since APKs are not shipped.
+    # Resources only live in the base module atm as such we only need to set
+    # these on the base module
+    if (_is_bundle_module) {
+      # Removes metadata needed for Resources.getIdentifier("resource_name").
+      strip_resource_names = !is_java_debug
+
+      # Shortens resource file names in apk eg: res/drawable/button.xml -> res/a.xml
+      short_resource_paths = !is_java_debug
     }
 
     if (!_is_bundle_module) {

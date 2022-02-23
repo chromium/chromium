@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_bubble_hide_callback.h"
@@ -103,7 +104,7 @@ class KeyboardLockController : public ExclusiveAccessControllerBase {
   // Window which determines whether to reshow the exit fullscreen instructions.
   base::TimeDelta esc_repeat_window_;
 
-  const base::TickClock* esc_repeat_tick_clock_ = nullptr;
+  raw_ptr<const base::TickClock> esc_repeat_tick_clock_ = nullptr;
 
   base::circular_deque<base::TimeTicks> esc_keypress_tracker_;
 };

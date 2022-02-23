@@ -6,5 +6,6 @@
 
 dictionary EncodedVideoChunkMetadata {
   VideoDecoderConfig decoderConfig;
+  SvcOutputMetadata svc;
   [EnforceRange] unsigned long temporalLayerId;
 };

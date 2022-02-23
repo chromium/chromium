@@ -43,6 +43,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/services/heap_profiling/public/cpp/settings.h"
 #include "components/user_prefs/user_prefs.h"
+#include "components/variations/synthetic_trials.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
 #include "components/variations/variations_crash_keys.h"
 #include "components/variations/variations_ids_provider.h"
@@ -152,7 +153,8 @@ void AwBrowserMainParts::RegisterSyntheticTrials() {
       break;
   }
   AwMetricsServiceAccessor::RegisterSyntheticFieldTrial(
-      metrics, kWebViewApkTypeTrial, apk_type_string);
+      metrics, kWebViewApkTypeTrial, apk_type_string,
+      variations::SyntheticTrialAnnotationMode::kNextLog);
 }
 
 int AwBrowserMainParts::PreMainMessageLoopRun() {

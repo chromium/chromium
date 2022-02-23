@@ -8,7 +8,8 @@
     }
 
     console.log("This test logs exposed APIs once from each PaintWorkletGlobalScope");
-    CSS.paintWorklet.addModule('resources/global-interface-listing-worklet.js').then(function() {
+    CSS.paintWorklet.addModule('/js-test-resources/global-interface-listing.js')
+      .then(function() {
         if (window.testRunner) {
             testRunner.notifyDone();
         }

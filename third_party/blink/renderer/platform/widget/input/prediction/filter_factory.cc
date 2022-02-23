@@ -7,7 +7,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/strings/string_number_conversions.h"
 #include "third_party/blink/public/common/features.h"
-#include "third_party/blink/public/platform/input/predictor_factory.h"
+#include "third_party/blink/renderer/platform/widget/input/prediction/predictor_factory.h"
 #include "ui/base/prediction/empty_filter.h"
 #include "ui/base/prediction/one_euro_filter.h"
 #include "ui/base/ui_base_features.h"

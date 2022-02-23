@@ -4,12 +4,12 @@
 
 #include "third_party/blink/renderer/modules/cache_storage/cache.h"
 
+#include <algorithm>
 #include <memory>
 #include <utility>
 
 #include "base/metrics/histogram_macros.h"
 #include "services/network/public/mojom/fetch_api.mojom-blink.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/cache_storage/cache_storage_utils.h"
 #include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/cache_storage/cache_storage.mojom-blink.h"
@@ -32,9 +32,7 @@
 #include "third_party/blink/renderer/core/fetch/fetch_data_loader.h"
 #include "third_party/blink/renderer/core/fetch/request.h"
 #include "third_party/blink/renderer/core/fetch/response.h"
-#include "third_party/blink/renderer/core/frame/deprecation.h"
 #include "third_party/blink/renderer/core/html/parser/text_resource_decoder.h"
-#include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_blob_client_list.h"
 #include "third_party/blink/renderer/modules/cache_storage/cache_storage_error.h"
@@ -44,11 +42,10 @@
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_throw_exception.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/traced_value.h"
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
-#include "third_party/blink/renderer/platform/loader/fetch/data_pipe_bytes_consumer.h"
 #include "third_party/blink/renderer/platform/network/http_names.h"
 #include "third_party/blink/renderer/platform/network/http_parsers.h"
 #include "third_party/blink/renderer/platform/network/mime/mime_type_registry.h"
@@ -275,8 +272,10 @@ class Cache::BarrierCallbackForPutResponse final
   void Stop() {
     if (stopped_)
       return;
-    if (abort_controller_)
-      abort_controller_->abort();
+    if (abort_controller_) {
+      ScriptState::Scope scope(resolver_->GetScriptState());
+      abort_controller_->abort(resolver_->GetScriptState());
+    }
     blob_list_.clear();
     stopped_ = true;
   }
@@ -544,47 +543,25 @@ class Cache::BarrierCallbackForPutComplete final
 // Used to handle the ScopedFetcher::Fetch promise in AddAllImpl.
 // TODO(nhiroki): Unfortunately, we have to go through V8 to wait for the fetch
 // promise. It should be better to achieve this only within C++ world.
-class Cache::FetchHandler final : public ScriptFunction {
+class Cache::FetchHandler final : public ScriptFunction::Callable {
  public:
   // |exception_state| is passed so that the context_type, interface_name and
   // property_name can be copied and then used to construct a new ExceptionState
   // object asynchronously later.
-  static v8::Local<v8::Function> CreateForResolve(
-      ScriptState* script_state,
-      ResponseBodyLoader* response_loader,
-      BarrierCallbackForPutResponse* barrier_callback,
-      const ExceptionContext& exception_context) {
-    FetchHandler* self = MakeGarbageCollected<FetchHandler>(
-        script_state, response_loader, barrier_callback, exception_context);
-    return self->BindToV8Function();
-  }
-
-  static v8::Local<v8::Function> CreateForReject(
-      ScriptState* script_state,
-      BarrierCallbackForPutResponse* barrier_callback,
-      const ExceptionContext& exception_context) {
-    FetchHandler* self = MakeGarbageCollected<FetchHandler>(
-        script_state, /*response_loader=*/nullptr, barrier_callback,
-        exception_context);
-    return self->BindToV8Function();
-  }
-
-  FetchHandler(ScriptState* script_state,
-               ResponseBodyLoader* response_loader,
+  FetchHandler(ResponseBodyLoader* response_loader,
                BarrierCallbackForPutResponse* barrier_callback,
                const ExceptionContext& exception_context)
-      : ScriptFunction(script_state),
-        response_loader_(response_loader),
+      : response_loader_(response_loader),
         barrier_callback_(barrier_callback),
         exception_context_(exception_context) {}
 
-  ScriptValue Call(ScriptValue value) override {
+  ScriptValue Call(ScriptState* script_state, ScriptValue value) override {
     // We always resolve undefined from this promise handler since the
     // promise is never returned to script or chained to another handler.
     // If we return our real result and an exception occurs then unhandled
     // promise errors will occur.
     ScriptValue rtn =
-        ScriptPromise::CastUndefined(GetScriptState()).AsScriptValue();
+        ScriptPromise::CastUndefined(script_state).AsScriptValue();
 
     // If there is no loader, we were created as a reject handler.
     if (!response_loader_) {
@@ -592,12 +569,12 @@ class Cache::FetchHandler final : public ScriptFunction {
       return rtn;
     }
 
-    ExceptionState exception_state(GetScriptState()->GetIsolate(),
+    ExceptionState exception_state(script_state->GetIsolate(),
                                    exception_context_);
 
     // Resolve handler, so try to process a Response.
     Response* response = NativeValueTraits<Response>::NativeValue(
-        GetScriptState()->GetIsolate(), value.V8Value(), exception_state);
+        script_state->GetIsolate(), value.V8Value(), exception_state);
     if (exception_state.HadException())
       barrier_callback_->OnError(exception_state);
     else
@@ -609,7 +586,7 @@ class Cache::FetchHandler final : public ScriptFunction {
   void Trace(Visitor* visitor) const override {
     visitor->Trace(response_loader_);
     visitor->Trace(barrier_callback_);
-    ScriptFunction::Trace(visitor);
+    ScriptFunction::Callable::Trace(visitor);
   }
 
  private:
@@ -1117,21 +1094,29 @@ ScriptPromise Cache::AddAllImpl(ScriptState* script_state,
   for (wtf_size_t i = 0; i < request_list.size(); ++i) {
     // Chain the AbortSignal objects together so the requests will abort if
     // the |barrier_callback| encounters an error.
-    if (barrier_callback->Signal())
-      request_list[i]->signal()->Follow(barrier_callback->Signal());
+    if (barrier_callback->Signal()) {
+      request_list[i]->signal()->Follow(script_state,
+                                        barrier_callback->Signal());
+    }
 
     V8RequestInfo* info = MakeGarbageCollected<V8RequestInfo>(request_list[i]);
 
     auto* response_loader = MakeGarbageCollected<ResponseBodyLoader>(
         script_state, barrier_callback, i, /*require_ok_response=*/true,
         trace_id);
+    auto* on_resolve = MakeGarbageCollected<ScriptFunction>(
+        script_state,
+        MakeGarbageCollected<FetchHandler>(response_loader, barrier_callback,
+                                           exception_state.GetContext()));
+    // The |response_loader=nullptr| makes this handler a reject handler
+    // internally.
+    auto* on_reject = MakeGarbageCollected<ScriptFunction>(
+        script_state, MakeGarbageCollected<FetchHandler>(
+                          /*response_loader=*/nullptr, barrier_callback,
+                          exception_state.GetContext()));
     scoped_fetcher_
         ->Fetch(script_state, info, RequestInit::Create(), exception_state)
-        .Then(FetchHandler::CreateForResolve(script_state, response_loader,
-                                             barrier_callback,
-                                             exception_state.GetContext()),
-              FetchHandler::CreateForReject(script_state, barrier_callback,
-                                            exception_state.GetContext()));
+        .Then(on_resolve, on_reject);
   }
 
   return promise;

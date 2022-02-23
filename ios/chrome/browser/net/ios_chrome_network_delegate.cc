@@ -108,17 +108,20 @@ bool IOSChromeNetworkDelegate::OnCanSetCookie(
              request.url(), request.site_for_cookies().RepresentativeUrl());
 }
 
-bool IOSChromeNetworkDelegate::OnForcePrivacyMode(
+net::NetworkDelegate::PrivacySetting
+IOSChromeNetworkDelegate::OnForcePrivacyMode(
     const GURL& url,
     const net::SiteForCookies& site_for_cookies,
     const absl::optional<url::Origin>& top_frame_origin,
     net::SamePartyContext::Type same_party_context_type) const {
   // Null during tests, or when we're running in the system context.
   if (!cookie_settings_.get())
-    return false;
+    return net::NetworkDelegate::PrivacySetting::kStateAllowed;
 
-  return !cookie_settings_->IsFullCookieAccessAllowed(url, site_for_cookies,
-                                                      top_frame_origin);
+  return cookie_settings_->IsFullCookieAccessAllowed(url, site_for_cookies,
+                                                     top_frame_origin)
+             ? net::NetworkDelegate::PrivacySetting::kStateAllowed
+             : net::NetworkDelegate::PrivacySetting::kStateDisallowed;
 }
 
 bool IOSChromeNetworkDelegate::

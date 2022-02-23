@@ -7,6 +7,7 @@
 
 #include <stddef.h>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/extensions/extension_message_bubble_controller.h"
 
 namespace extensions {
@@ -47,7 +48,7 @@ class SuspiciousExtensionBubbleDelegate
   bool SupportsPolicyIndicator() override;
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace extensions

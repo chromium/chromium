@@ -43,7 +43,6 @@ headless_browsertests
 headless_unittests
 interactive_ui_tests
 ipc_tests
-jingle_unittests
 latency_unittests
 libjingle_xmpp_unittests
 media_mojo_unittests
@@ -52,7 +51,6 @@ media_unittests
 message_center_unittests
 midi_unittests
 mojo_unittests
-nacl_helper_nonsfi_unittests
 nacl_loader_unittests
 native_theme_unittests
 net_unittests

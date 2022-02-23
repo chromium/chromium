@@ -58,7 +58,7 @@ struct COMPONENT_EXPORT(MOJO_BASE_SHARED_TRAITS)
     StructTraits<mojo_base::mojom::ListValueDataView, base::Value> {
   static base::span<const base::Value> storage(const base::Value& value) {
     DCHECK(value.is_list());
-    return value.GetList();
+    return value.GetListDeprecated();
   }
 
   static bool Read(mojo_base::mojom::ListValueDataView data,

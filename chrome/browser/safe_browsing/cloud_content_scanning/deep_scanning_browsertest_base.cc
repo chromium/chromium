@@ -87,6 +87,8 @@ void DeepScanningBrowserTestBase::TearDownOnMainThread() {
                          enterprise_connectors::FILE_DOWNLOADED);
   ClearAnalysisConnector(browser()->profile()->GetPrefs(),
                          enterprise_connectors::BULK_DATA_ENTRY);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
+                         enterprise_connectors::PRINT);
   SetOnSecurityEventReporting(browser()->profile()->GetPrefs(), false);
 }
 

@@ -115,7 +115,8 @@ ScriptValue ModuleRecord::Instantiate(ScriptState* script_state,
 
   // Script IDs are not available on errored modules or on non-source text
   // modules, so we give them a default value.
-  probe::ExecuteScript probe(ExecutionContext::From(script_state), source_url,
+  probe::ExecuteScript probe(ExecutionContext::From(script_state), context,
+                             source_url,
                              record->GetStatus() != v8::Module::kErrored &&
                                      record->IsSourceTextModule()
                                  ? record->ScriptId()

@@ -15,6 +15,8 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/browser_resources.h"
+#include "chrome/grit/image_editor_resources.h"
+#include "chrome/grit/image_editor_untrusted_resources.h"
 #include "content/public/common/url_constants.h"
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -55,13 +57,14 @@ void EditorUntrustedSource::StartDataRequest(
     const content::WebContents::Getter& wc_getter,
     content::URLDataSource::GotDataCallback callback) {
   const std::string path = content::URLDataSource::URLToRequestPath(url);
-  if (path == "placeholder") {
-    ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
-    base::RefCountedMemory* bytes =
-        bundle.LoadDataResourceBytes(IDR_IMAGE_EDITOR_UNTRUSTED_HTML);
+
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  base::RefCountedMemory* bytes;
+  if (path == "placeholder") {  // TODO(skare): this will be replaced.
+    bytes =
+        bundle.LoadDataResourceBytes(IDR_IMAGE_EDITOR_UNTRUSTED_UNTRUSTED_HTML);
     base::StringPiece string_piece(
         reinterpret_cast<const char*>(bytes->front()), bytes->size());
-
     ui::TemplateReplacements replacements;
     replacements["textdirection"] = base::i18n::IsRTL() ? "rtl" : "ltr";
     const std::string& app_locale = g_browser_process->GetApplicationLocale();
@@ -71,7 +74,22 @@ void EditorUntrustedSource::StartDataRequest(
         /* skip_unexpected_placeholder_check= */ true);
 
     std::move(callback).Run(base::RefCountedString::TakeString(&html));
+    return;
+  } else if (path == "untrusted.js") {
+    std::move(callback).Run(
+        bundle.LoadDataResourceBytes(IDR_IMAGE_EDITOR_UNTRUSTED_UNTRUSTED_JS));
+    return;
+  } else if (path == "image_editor.mojom-webui.js") {
+    std::move(callback).Run(bundle.LoadDataResourceBytes(
+        IDR_IMAGE_EDITOR_IMAGE_EDITOR_MOJOM_WEBUI_JS));
+    return;
+  } else {
+    // error case or just ignore
+    LOG(WARNING) << "no resource found for: chrome-untrusted://image-editor/"
+                 << path;
   }
+
+  std::move(callback).Run(base::MakeRefCounted<base::RefCountedString>());
 }
 
 std::string EditorUntrustedSource::GetMimeType(const std::string& path) {

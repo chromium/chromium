@@ -30,6 +30,7 @@
 <translation id="1189258430971676908">অনুশীলন ক্ষেত্র: ড্রপ-ডাউন তালিকা</translation>
 <translation id="1195238899008218998">পরিশিষ্ট</translation>
 <translation id="1197088940767939838">কমলা</translation>
+<translation id="1198865190323699001">জেসচার মেনুতে স্পর্শ করুন</translation>
 <translation id="1201402288615127009">পরের</translation>
 <translation id="1206619573307042055">marquee</translation>
 <translation id="1207086294218137981">কোনও পরবর্তী লেভেল ৪ শিরোনাম নেই</translation>
@@ -389,7 +390,9 @@
 <translation id="3492609944033322585">{COUNT,plural, =1{ডান বন্ধনী}one{#টি বাঁ বন্ধনী}other{#টি বাঁ বন্ধনী}}</translation>
 <translation id="3494946239022273294">mnuitm</translation>
 <translation id="3497063866483065785">{COUNT,plural, =1{প্রশ্নবোধক চিহ্ন}one{#টি প্রশ্নবোধক চিহ্ন}other{#টি প্রশ্নবোধক চিহ্ন}}</translation>
+<translation id="3505359110822747654">ChromeVox Menus আড়াল করুন</translation>
 <translation id="3514822174137761109">{COUNT,plural, =1{ক্যারেট}one{# ক্যারেট}other{# ক্যারেট}}</translation>
+<translation id="3518600448524470129">{COUNT,plural, =1{সাদা বুলেট}one{#টি সাদা বুলেট}other{#টি সাদা বুলেট}}</translation>
 <translation id="352577523970648069">একটি সম্পাদনাযোগ্য পাঠ্য ফিল্ড</translation>
 <translation id="3538907380453898475">dscrplst</translation>
 <translation id="3549141990712742152"><ph name="TEXT" /> কাট করুন।</translation>
@@ -624,7 +627,7 @@
 <translation id="5302089807023311274">বিবলিওগ্রাফি রেফারেন্স</translation>
 <translation id="530391007967514163">নিচের টেক্সটে নেভিগেট করতে জাম্প কমান্ড ব্যবহার করে দেখুন।</translation>
 <translation id="5304943142864553931"><ph name="TITLE" />, ট্যাব</translation>
-<translation id="5308380583665731573">সংযুক্ত করুন</translation>
+<translation id="5308380583665731573">কানেক্ট করুন</translation>
 <translation id="5310788376443009632">সরানো হয়েছে:</translation>
 <translation id="5316825363044614340">পরের লাইনে সরান</translation>
 <translation id="5320727453979144100">স্টিকি মোড সক্ষম</translation>
@@ -663,6 +666,7 @@
 <translation id="5522423213731659107">'দ্রুত জ্ঞান অর্জন' সম্পূর্ণ হয়েছে!</translation>
 <translation id="5534303576632885660">hdr</translation>
 <translation id="5539820223028224601">খুব হালকা ধূসর</translation>
+<translation id="554893713779400387">ডিক্টেশন চালু বা বন্ধ করুন</translation>
 <translation id="5549179427201066174">আওয়াজে প্রতিক্রিয়া (ইয়ারকন) চালু বা বন্ধ করুন</translation>
 <translation id="556042886152191864">বোতাম</translation>
 <translation id="5561345396546889625">পরবর্তী তালিকা</translation>
@@ -673,6 +677,7 @@
 <translation id="5597170376237141345">পরবর্তী চেকবাক্স</translation>
 <translation id="5598905979683743333"><ph name="NAME" />, রেডিও বোতাম নির্বাচিত নেই</translation>
 <translation id="5601172225407283979">ডিফল্ট অ্যাকশন সম্পন্ন করুন</translation>
+<translation id="5604302400025591178">{COUNT,plural, =1{বর্গাকার বুলেট}one{#টি বর্গাকার বুলেট}other{#টি বর্গাকার বুলেট}}</translation>
 <translation id="5608798115546226984">স্বতসম্পূর্ণ ইনলাইন</translation>
 <translation id="5616029807486814372">পরবর্তী পাঠ</translation>
 <translation id="561939826962581046">time</translation>
@@ -1096,6 +1101,7 @@
 <translation id="8659501358298941449">ড্রপ-ডাউন তালিকা</translation>
 <translation id="8666733765751421568"><ph name="TYPE" /> শেষ</translation>
 <translation id="867187640362843212">শিরোনাম ৫</translation>
+<translation id="8690400660839620419">{COUNT,plural, =1{}one{নেস্ট করা লেভেল #}other{নেস্ট করা লেভেল #}}</translation>
 <translation id="8693391540059827073">আমার প্রিয় ঋতু</translation>
 <translation id="8696284982970258155">হানিডিউ</translation>
 <translation id="8697111817566059991">{COUNT,plural, =1{পাইপ}one{#টি উলম্ব পাইপ}other{#টি উলম্ব পাইপ}}</translation>
@@ -1163,6 +1169,7 @@
 <translation id="9223032053830369045">গাঢ় লাল</translation>
 <translation id="923331726185079994">ChromeVox আপডেট হয়েছে</translation>
 <translation id="93384979447910801">গাঢ় নীলাভ সবুজ</translation>
+<translation id="937605981140327129">টকব্যাক বর্তমানে ইনস্টল করা নেই। Play Store থেকে Android AccessibilitySuite ইনস্টল করে আবার চেষ্টা করুন।</translation>
 <translation id="948171205378458592">স্পিচের হার কমান</translation>
 <translation id="957570623732056069">এই টিউটোরিয়ালে নেভিগেট করতে একটি আঙুল দিয়ে বাঁদিকে বা ডানদিকে সোয়াইপ করুন</translation>
 <translation id="958854023026327378">এক আঙ্গুল দিয়ে নিচের দিকে সোয়াইপ করুন</translation>

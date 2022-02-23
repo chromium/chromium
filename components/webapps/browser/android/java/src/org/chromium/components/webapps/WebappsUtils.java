@@ -5,7 +5,6 @@
 package org.chromium.components.webapps;
 
 import android.annotation.SuppressLint;
-import android.annotation.TargetApi;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,6 +14,8 @@ import android.content.pm.ShortcutManager;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Icon;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -75,7 +76,7 @@ public class WebappsUtils {
         showAddedToHomescreenToast(title);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public static void addShortcutWithShortcutManager(
             String id, String title, Bitmap bitmap, boolean isMaskableIcon, Intent shortcutIntent) {
         Context context = ContextUtils.getApplicationContext();
@@ -153,7 +154,7 @@ public class WebappsUtils {
         return WebApkValidator.queryFirstWebApkPackage(ContextUtils.getApplicationContext(), url);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     private static void checkIfRequestPinShortcutSupported() {
         ShortcutManager shortcutManager =
                 ContextUtils.getApplicationContext().getSystemService(ShortcutManager.class);

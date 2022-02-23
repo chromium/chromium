@@ -14,3 +14,6 @@ per-file cross_origin_opener_policy*=clamy@chromium.org
 
 # Files and features related to component:Internals>Network>TrustTokens
 per-file trust_token*=file://services/network/trust_tokens/OWNERS
+
+# Files related to Client Hints.
+per-file client_hints*=file://components/embedder_support/OWNERS

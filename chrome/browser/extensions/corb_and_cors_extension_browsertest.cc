@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
@@ -209,7 +210,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
           "permissions": [
               "tabs",
               "*://fetch-initiator.com/*",
-              "*://127.0.0.1/*",  // Initiator in AppCache tests.
+              "*://127.0.0.1/*",
               "*://cross-site.com/*",
               "*://*.subdomain.com/*",
               "*://other-with-permission.com/*"
@@ -555,7 +556,7 @@ class CorbAndCorsExtensionBrowserTest : public CorbAndCorsExtensionTestBase {
     return PopString(&message_queue);
   }
 
-  const Extension* extension_ = nullptr;
+  raw_ptr<const Extension> extension_ = nullptr;
 };
 
 IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
@@ -1868,8 +1869,8 @@ IN_PROC_BROWSER_TEST_F(CorbAndCorsExtensionBrowserTest,
   }
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_WIN) || \
-    defined(OS_MAC)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN) || \
+    BUILDFLAG(IS_MAC)
 // Flaky on Linux, especially under sanitizers: https://crbug.com/1073052
 // Flaky UAF on Mac under ASAN: https://crbug.com/1082355
 #define MAYBE_FromBackgroundServiceWorker_NoSniffXml \

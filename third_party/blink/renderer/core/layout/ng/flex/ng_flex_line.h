@@ -5,6 +5,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_NG_FLEX_LINE_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_NG_FLEX_NG_FLEX_LINE_H_
 
+#include "third_party/blink/renderer/core/layout/geometry/flex_offset.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -16,11 +17,12 @@ struct NGFlexItem {
   const ComputedStyle& Style() const { return ng_input_node.Style(); }
 
   LayoutUnit main_axis_final_size;
-  // The main axis offset is stored in X and cross axis offset in Y.
-  //
-  // TODO(almaher): Update the type from LayoutPoint to something else.
-  // Same in FlexibleBoxAlgorithm::FlexItem.
-  LayoutPoint offset;
+  // This will originally be set to the total block size of the item before
+  // fragmentation. It will then be reduced while performing fragmentation. If
+  // it becomes negative, that means that the item expanded as a result of
+  // fragmentation.
+  LayoutUnit total_remaining_block_size;
+  FlexOffset offset;
   NGBlockNode ng_input_node;
 };
 
@@ -28,6 +30,8 @@ struct NGFlexLine {
   explicit NGFlexLine(wtf_size_t num_items) : line_items(num_items) {}
 
   LayoutUnit line_cross_size;
+  LayoutUnit cross_axis_offset;
+  LayoutUnit item_offset_adjustment;
   Vector<NGFlexItem> line_items;
 };
 

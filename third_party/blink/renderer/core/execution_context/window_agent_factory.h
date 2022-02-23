@@ -6,8 +6,8 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_EXECUTION_CONTEXT_WINDOW_AGENT_FACTORY_H_
 
 #include "base/memory/scoped_refptr.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/weborigin/security_origin_hash.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
@@ -52,7 +52,8 @@ class WindowAgentFactory final : public GarbageCollected<WindowAgentFactory> {
   WindowAgent* GetAgentForOrigin(bool has_potential_universal_access_privilege,
                                  v8::Isolate* isolate,
                                  const SecurityOrigin* origin,
-                                 bool is_origin_agent_cluster);
+                                 bool is_origin_agent_cluster,
+                                 bool origin_agent_cluster_left_as_default);
 
   void Trace(Visitor*) const;
 

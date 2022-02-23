@@ -7,10 +7,10 @@
 
 #include <memory>
 
+#include "ash/components/login/auth/user_context.h"
 #include "base/power_monitor/power_observer.h"
 #include "base/time/time.h"
 #include "base/timer/wall_clock_timer.h"
-#include "chromeos/login/auth/user_context.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "components/session_manager/core/session_manager_observer.h"

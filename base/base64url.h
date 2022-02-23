@@ -8,7 +8,6 @@
 #include <string>
 
 #include "base/base_export.h"
-#include "base/compiler_specific.h"
 #include "base/strings/string_piece.h"
 
 namespace base {
@@ -46,9 +45,9 @@ enum class Base64UrlDecodePolicy {
 //
 // The |policy| defines whether padding will be required, ignored or disallowed
 // altogether. |input| and |*output| may reference the same storage.
-BASE_EXPORT bool Base64UrlDecode(const StringPiece& input,
-                                 Base64UrlDecodePolicy policy,
-                                 std::string* output) WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_EXPORT bool Base64UrlDecode(const StringPiece& input,
+                                               Base64UrlDecodePolicy policy,
+                                               std::string* output);
 
 }  // namespace base
 

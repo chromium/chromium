@@ -193,6 +193,17 @@ public interface TabModelSelector {
     void removeIncognitoTabModelObserver(IncognitoTabModelObserver incognitoObserver);
 
     /**
+     * Sets the delegate to handle {@link TabModel} events that triggers an Incognito
+     * re-authentication. This delegate is invoked when all the observers observing
+     * onTabModelSelected event have been notified.
+     *
+     * @param incognitoReauthDialogDelegate A delegate which takes care of triggering an Incognito
+     *         re-authentication.
+     */
+    void setIncognitoReauthDialogDelegate(
+            IncognitoTabModelObserver.IncognitoReauthDialogDelegate incognitoReauthDialogDelegate);
+
+    /**
      * Destroy all owned {@link TabModel}s and {@link Tab}s referenced by this selector.
      */
     void destroy();

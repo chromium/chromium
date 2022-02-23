@@ -57,9 +57,10 @@ generated_json_strings("generated_api_json_strings") {
     "tts.json",
     "tts_engine.json",
   ]
-  if (is_chromeos_ash) {
+  if (is_chromeos_ash || is_chromeos_lacros) {
     sources += [ "file_browser_handler.json" ]
-  } else {
+  }
+  if (!is_chromeos_ash) {
     # On ChromeOS, input_method_private is fully compiled (as part of
     # schema_files), and so gets added to the bundle already. On other
     # platforms, we still need it added to the bundle.

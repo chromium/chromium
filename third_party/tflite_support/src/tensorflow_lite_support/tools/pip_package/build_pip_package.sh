@@ -92,6 +92,8 @@ function prepare_src() {
   # A helper entry.
   mkdir ${TMPDIR}/tflite_support
   cp tensorflow_lite_support/tools/pip_package/tflite_support.__init__.py ${TMPDIR}/tflite_support/__init__.py
+  mkdir ${TMPDIR}/tflite_support/metadata_writers
+  cp tensorflow_lite_support/tools/pip_package/metadata_writers.__init__.py ${TMPDIR}/tflite_support/metadata_writers/__init__.py
 }
 
 function build_wheel() {
@@ -133,8 +135,9 @@ function usage() {
   echo "                              if dstdir is not set do not build, only prepare sources"
   echo ""
   echo "  Options:"
-  echo "    --project_name <name> set project name to name"
-  echo "    --nightly_flag        build TFLite Support nightly"
+  echo "    --project_name <name>           set project name to <name>"
+  echo "    --version <version>             reset the pip package version to <version>"
+  echo "    --nightly_flag                  build TFLite Support nightly"
   echo ""
   echo "When using bazel, add the following flag: --run_under=\"cd \$PWD && \""
   echo ""
@@ -148,6 +151,7 @@ function main() {
   SRCDIR=""
   DSTDIR=""
   CLEANSRC=1
+  VERSION=""
   while true; do
     if [[ "$1" == "--help" ]]; then
       usage
@@ -160,6 +164,12 @@ function main() {
         break
       fi
       PROJECT_NAME="$1"
+    elif [[ "$1" == "--version" ]]; then
+      shift
+      if [[ -z "$1" ]]; then
+        break
+      fi
+      VERSION="$1"
     elif [[ "$1" == "--src" ]]; then
       shift
       SRCDIR="$(real_path $1)"
@@ -168,7 +178,9 @@ function main() {
       shift
       DSTDIR="$(real_path $1)"
     else
-      DSTDIR="$(real_path $1)"
+      echo "Unrecognized flag: $1"
+      usage
+      exit 1
     fi
     shift
 
@@ -188,8 +200,6 @@ function main() {
     SRCDIR="$(mktemp -d -t tmp.XXXXXXXXXX)"
   fi
 
-  prepare_src "$SRCDIR"
-
   if [[ -z "$DSTDIR" ]]; then
       # only want to prepare sources
       exit
@@ -200,6 +210,24 @@ function main() {
   elif [[ ${NIGHTLY_BUILD} == "1" ]]; then
     PKG_NAME_FLAG="--project_name tflite_support_nightly"
   fi
+
+  # Set additional package name flags (for ARM builds).
+  if [[ -n ${EXTRA_PKG_NAME_FLAG} ]]; then
+      PKG_NAME_FLAG="${PKG_NAME_FLAG} ${EXTRA_PKG_NAME_FLAG}"
+  fi
+
+  if [[ ${NIGHTLY_BUILD} == "1" ]]; then
+    # we use a script to update versions to avoid any tool differences on different platforms.
+    if [[ ! -z ${VERSION} ]]; then
+      python tensorflow_lite_support/tools/ci_build/update_version.py --src "." --version ${VERSION} --nightly
+    else
+      python tensorflow_lite_support/tools/ci_build/update_version.py --src "." --nightly
+    fi
+  elif [[ ! -z ${VERSION} ]]; then
+    python tensorflow_lite_support/tools/ci_build/update_version.py --src "." --version ${VERSION}
+  fi
+
+  prepare_src "$SRCDIR"
 
   build_wheel "$SRCDIR" "$DSTDIR" "$PKG_NAME_FLAG"
 

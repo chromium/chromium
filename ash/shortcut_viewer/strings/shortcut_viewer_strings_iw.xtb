@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">פתיחת חלון חדש במצב אנונימי</translation>
 <translation id="152892567002884378">הגברת עוצמת הקול</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" /> ואז <ph name="ESC" /></translation>
+<translation id="1586324912145647027">מעבר לשולחנות העבודה הווירטואליים 1 עד 8</translation>
 <translation id="1652741121070700329">מעבר לתחילת המילה הקודמת</translation>
 <translation id="1679841710523778799">הגברת הבהירות</translation>
 <translation id="168356808214100546">הקשה ארוכה על <ph name="ALT" />, הקשה על <ph name="TAB" /> עד ההגעה לחלון שרוצים לפתוח, ושחרור.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">הקשה על <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" /> ולחיצה על קישור</translation>
 <translation id="561814908794220892">פתיחת דף האינטרנט בכרטיסייה חדשה</translation>
 <translation id="5620219513321115856">העברת החלון הפעיל אל שולחן העבודה שמימין</translation>
+<translation id="5699366815052349604">הקצאת חלון פעיל לכל שולחנות העבודה הווירטואליים</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> או <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">פתיחת הקישור בכרטיסייה</translation>
 <translation id="5757474750054631686">עמעום המקלדת (למקלדות עם תאורה אחורית בלבד)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">הצגת קבצים מוסתרים באפליקציה 'קבצים'</translation>
 <translation id="8717459106217102612">בחירת המילה או האות הקודמת</translation>
 <translation id="8727232706774971183">הצגת ההודעות שלך</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 עד 8</translation>
 <translation id="8855885154700222542">מקש מסך מלא</translation>
 <translation id="8881584919399569791">העברת החלון הפעיל אל שולחן העבודה שמשמאל</translation>
 <translation id="88986195241502842">Page down</translation>

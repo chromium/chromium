@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/passwords/password_breach_view_controller.h"
 
+#include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/passwords/password_constants.h"
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #include "ios/chrome/grit/ios_strings.h"
@@ -18,10 +19,18 @@
 #pragma mark - Public
 
 - (void)loadView {
-  self.image = [UIImage imageNamed:@"password_breach_illustration"];
   self.helpButtonAvailable = YES;
   self.helpButtonAccessibilityLabel =
       l10n_util::GetNSString(IDS_IOS_HELP_ACCESSIBILITY_LABEL);
+
+  if (base::FeatureList::IsEnabled(
+          password_manager::features::
+              kIOSEnablePasswordManagerBrandingUpdate)) {
+    self.image = [UIImage imageNamed:@"password_breach_illustration"];
+    self.showDismissBarButton = NO;
+  } else {
+    self.image = [UIImage imageNamed:@"legacy_password_breach_illustration"];
+  }
 
   [super loadView];
 }
@@ -35,11 +44,13 @@
 #pragma mark - PasswordBreachConsumer
 
 - (void)setTitleString:(NSString*)titleString
-         subtitleString:(NSString*)subtitleString
-    primaryActionString:(NSString*)primaryActionString {
+           subtitleString:(NSString*)subtitleString
+      primaryActionString:(NSString*)primaryActionString
+    secondaryActionString:(NSString*)secondaryActionString {
   self.titleString = titleString;
   self.subtitleString = subtitleString;
   self.primaryActionString = primaryActionString;
+  self.secondaryActionString = secondaryActionString;
 }
 
 @end

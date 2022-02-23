@@ -13,7 +13,7 @@
 #include <vector>
 
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "components/url_matcher/url_matcher.h"
@@ -174,7 +174,7 @@ class WebRequestRulesRegistry : public RulesRegistry {
 
   url_matcher::URLMatcher url_matcher_;
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace extensions

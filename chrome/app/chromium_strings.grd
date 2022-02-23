@@ -38,8 +38,10 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <output filename="chromium_strings_zh-HK.pak" type="data_package" lang="zh-HK" />
       <output filename="chromium_strings_zu.pak" type="data_package" lang="zu" />
     </if>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
+      <output filename="chromium_strings_af.pak" type="data_package" lang="af" />
       <output filename="chromium_strings_is.pak" type="data_package" lang="is" />
+      <output filename="chromium_strings_zu.pak" type="data_package" lang="zu" />
     </if>
     <output filename="chromium_strings_am.pak" type="data_package" lang="am" />
     <output filename="chromium_strings_ar.pak" type="data_package" lang="ar" />
@@ -180,6 +182,9 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <output filename="java/res/values-zh-rHK/chromium_strings.xml" lang="zh-HK" type="android" context="android_java" />
       <output filename="java/res/values-zh-rTW/chromium_strings.xml" lang="zh-TW" type="android" context="android_java" />
       <output filename="java/res/values-zu/chromium_strings.xml" lang="zu" type="android" context="android_java" />
+      <!-- Pseudolocales -->
+      <output filename="java/res/values-ar-rXB/chromium_strings.xml" lang="ar-XB" type="android" context="android_java" />
+      <output filename="java/res/values-en-rXA/chromium_strings.xml" lang="en-XA" type="android" context="android_java" />
     </if>
 
     <!-- Pseudolocales -->
@@ -440,11 +445,6 @@ If you update this file, be sure also to update google_chrome_strings.grd. -->
       <message name="IDS_FR_CUSTOMIZE_DEFAULT_BROWSER" desc="Default browser checkbox label">
         Make Chromium the default browser
       </message>
-      <if expr="chromeos">
-        <message name="IDS_EXTERNAL_PROTOCOL_NO_HANDLER_TITLE" desc="External Protocol Dialog Title">
-          Chromium OS can't open this page.
-        </message>
-      </if>
       <if expr="use_titlecase">
         <message name="IDS_STATUS_TRAY_KEEP_CHROME_RUNNING_IN_BACKGROUND" desc="In Title Case: The checkbox in the status tray context menu that controls whether chrome keeps running in the background after the last window is closed">
           Let Chromium Run in the Background
@@ -480,6 +480,19 @@ Your preferences file is corrupt or invalid.
 
 Chromium is unable to recover your settings.
       </message>
+      <!-- Add account dialog -->
+      <if expr="chromeos">
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2" desc="Text body for the Welcome screen in Chromium OS 'Add account' dialog.">
+If you want to use this account one-time only, you can use Guest mode in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
+
+Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
+        </message>
+        <message name="IDS_ACCOUNT_MANAGER_DIALOG_WELCOME_BODY_V2_WITH_GUEST_MODE" desc="Text body for the Welcome screen in Chromium OS 'Add account' dialog.">
+If you want to use this account one-time only, you can use <ph name="GUEST_LINK_BEGIN">&lt;a id="guestModeLink" href="#"&gt;</ph>Guest mode<ph name="GUEST_LINK_END">&lt;/a&gt;</ph> in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN">&lt;a target="_blank" id="newPersonLink" href="$1<ex>https://google.com/</ex>"&gt;</ph>add a new person<ph name="LINK_END">&lt;/a&gt;</ph> to your <ph name="DEVICE_TYPE">$2<ex>Chromebook</ex></ph>.
+
+Permissions you've already given to websites and apps may apply to this account. You can manage your Google Accounts in <ph name="SETTINGS_LINK_BEGIN">&lt;a id="osSettingsLink" href="$3<ex>https://google.com/</ex>"&gt;</ph>Settings<ph name="SETTINGS_LINK_END">&lt;/a&gt;</ph>.
+        </message>
+      </if>
       <!-- Crash Recovery Dialog -->
       <message name="IDS_CRASH_RECOVERY_TITLE" desc="Title of dialog shown when the browser crashes.">
         Chromium
@@ -581,6 +594,9 @@ Chromium is unable to recover your settings.
       </if>
       <message name="IDS_DEFAULT_BROWSER_INFOBAR_TEXT" desc="Text to show in an infobar when Chromium is not the current default browser.">
         Chromium isn't your default browser
+      </message>
+      <message name="IDS_TAILORED_SECURITY_CONSENTED_ENABLE_NOTIFICATION_DESCRIPTION" desc="The text of the notification asking if the user wants to enable Enhanced Safe Browsing">
+        You turned on Enhanced Safe Browsing in your account. Now get it for Chromium.
       </message>
       <if expr="is_win">
         <!-- Try Chrome Toast Dialog -->
@@ -826,7 +842,7 @@ Chromium is unable to recover your settings.
         </message>
       </if>
 
-      <if expr="not chromeos and not is_android">
+      <if expr="not chromeos and not is_android and not lacros">
         <!-- Dice Web Signin Interception Bubble-->
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_CREATE_BUBBLE_TITLE" desc="Title of the web signin interception bubble">
           Continue in a new Chromium profile?
@@ -846,7 +862,9 @@ Chromium is unable to recover your settings.
         <message name="IDS_SIGNIN_DICE_WEB_INTERCEPT_ENTERPRISE_BUBBLE_DESC_MANAGED_DEVICE" desc="Body of the web signin interception bubble when the new account is personal and the existing account is managed on a managed device">
           This will create a new Chromium profile for <ph name="USER_EMAIL_ADDRESS">$1<ex>foo@gmail.com</ex></ph>
         </message>
+      </if>
 
+      <if expr="not chromeos and not is_android">
         <!-- Profile Customization Bubble-->
         <message name="IDS_PROFILE_CUSTOMIZATION_TEXT" desc="Text of the profile customization bubble">
           Customize your new Chromium profile
@@ -1362,6 +1380,20 @@ Chromium is unable to recover your settings.
       <!-- Device Chooser Prompt -->
       <message name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH" desc="Text shown in the Chooser when browser does not have Bluetooth permission. The '&#10;' is a newline character to force the desired line wrapping.">
         Chromium needs Bluetooth access to continue &#10; pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK">$1<ex>Open Preferences</ex></ph>
+      </message>
+
+      <!-- Tailored Security -->
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_NOTIFICATION_TITLE" desc="Title of notification prompting the user to enable Enhanced Safe Browsing after they have enabled account-level protections.">
+        Get Chromium's strongest security
+      </message>
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_TITLE" desc="Title shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+        Get Chromium's strongest security
+      </message>
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_DESCRIPTION" desc="Description shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+        Enhanced protection does more to block phishing and malware
+      </message>
+      <message name="IDS_TAILORED_SECURITY_UNCONSENTED_PROMOTION_MESSAGE_ACCEPT" desc="Accept button shown in the message shown when a user changes their account-level tailored security setting encouraging them to enable Enhanced Safe Browsing">
+        Continue
       </message>
     </messages>
   </release>

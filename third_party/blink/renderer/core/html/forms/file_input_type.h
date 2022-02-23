@@ -38,7 +38,7 @@
 #include "third_party/blink/renderer/core/html/forms/input_type.h"
 #include "third_party/blink/renderer/core/html/forms/keyboard_clickable_input_type_view.h"
 #include "third_party/blink/renderer/core/page/popup_opening_observer.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -54,7 +54,8 @@ class CORE_EXPORT FileInputType final : public InputType,
   void Trace(Visitor*) const override;
   using InputType::GetElement;
   static Vector<String> FilesFromFormControlState(const FormControlState&);
-  static FileList* CreateFileList(const FileChooserFileInfoList& files,
+  static FileList* CreateFileList(ExecutionContext& context,
+                                  const FileChooserFileInfoList& files,
                                   const base::FilePath& base_dir);
 
   void CountUsage() override;

@@ -77,7 +77,7 @@ class NET_EXPORT NetworkDelegateImpl : public NetworkDelegate {
                       CookieOptions* options,
                       bool allowed_from_caller) override;
 
-  bool OnForcePrivacyMode(
+  NetworkDelegate::PrivacySetting OnForcePrivacyMode(
       const GURL& url,
       const SiteForCookies& site_for_cookies,
       const absl::optional<url::Origin>& top_frame_origin,

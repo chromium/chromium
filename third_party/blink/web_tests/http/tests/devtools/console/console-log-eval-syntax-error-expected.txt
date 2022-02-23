@@ -5,7 +5,7 @@ VM:1 Uncaught SyntaxError: Unexpected token '}'
 foo @ VM:13
 setTimeout (async)
 (anonymous) @ console-log-eval-syntax-error.js:21
-boo.js:2 Uncaught SyntaxError: Unexpected token '}'
+boo.js:2 Uncaught SyntaxError: Unexpected token '}' (at boo.js:2:1)
     at boo (<anonymous>:17:11)
 boo @ VM:17
 setTimeout (async)

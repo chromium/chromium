@@ -11,6 +11,7 @@ enum SessionState {
   kInLoginScreen,
   kInSession,
   kInLockScreen,
+  [MinVersion=1] kInRmaScreen,
 };
 
 [Stable]

@@ -5,7 +5,7 @@
 #ifndef GPU_IPC_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
 #define GPU_IPC_DISPLAY_COMPOSITOR_MEMORY_AND_TASK_CONTROLLER_ON_GPU_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/sequence_checker.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -78,10 +78,10 @@ class GL_IN_PROCESS_CONTEXT_EXPORT
   const CommandBufferId command_buffer_id_;
 
   // Used for creating SharedImageFactory.
-  MailboxManager* mailbox_manager_;
-  ImageFactory* image_factory_;
-  SharedImageManager* shared_image_manager_;
-  SyncPointManager* sync_point_manager_;
+  raw_ptr<MailboxManager> mailbox_manager_;
+  raw_ptr<ImageFactory> image_factory_;
+  raw_ptr<SharedImageManager> shared_image_manager_;
+  raw_ptr<SyncPointManager> sync_point_manager_;
   const GpuPreferences& gpu_preferences_;
   GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;
   const GpuFeatureInfo& gpu_feature_info_;

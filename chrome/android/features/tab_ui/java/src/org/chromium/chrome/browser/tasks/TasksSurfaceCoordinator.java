@@ -26,10 +26,15 @@ import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
 import org.chromium.chrome.browser.ntp.IncognitoCookieControlsManager;
 import org.chromium.chrome.browser.omnibox.OmniboxStub;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.query_tiles.QueryTileSection;
+import org.chromium.chrome.browser.query_tiles.QueryTileSection.QueryInfo;
 import org.chromium.chrome.browser.share.ShareDelegate;
+import org.chromium.chrome.browser.suggestions.tile.MostVisitedListCoordinator;
+import org.chromium.chrome.browser.suggestions.tile.MvTilesLayout;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
+import org.chromium.chrome.browser.tasks.mv_tiles.MostVisitedTileNavigationDelegate;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementDelegate.TabSwitcherType;
 import org.chromium.chrome.browser.tasks.tab_management.TabManagementModuleProvider;
 import org.chromium.chrome.browser.tasks.tab_management.TabSwitcher;
@@ -53,21 +58,26 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     private final PropertyModelChangeProcessor mPropertyModelChangeProcessor;
     private final TasksSurfaceMediator mMediator;
     private MostVisitedListCoordinator mMostVisitedList;
+    private QueryTileSection mQueryTileSection;
     private final PropertyModel mPropertyModel;
     private final @TabSwitcherType int mTabSwitcherType;
     private final SnackbarManager mSnackbarManager;
     private final Supplier<DynamicResourceLoader> mDynamicResourceLoaderSupplier;
     private final TabContentManager mTabContentManager;
     private final ModalDialogManager mModalDialogManager;
+    private final Activity mActivity;
+    private final Supplier<Tab> mParentTabSupplier;
 
-    /** This flag should be reset once {@link mMostVisitedList#destroyMVTiles()} is called. */
+    /**
+     * This flag should be reset once {@link MostVisitedListCoordinator#destroyMVTiles} is called.
+     */
     private boolean mIsMVTilesInitialized;
 
     /** {@see TabManagementDelegate#createTasksSurface} */
     public TasksSurfaceCoordinator(@NonNull Activity activity,
             @NonNull ScrimCoordinator scrimCoordinator, @NonNull PropertyModel propertyModel,
             @TabSwitcherType int tabSwitcherType, @NonNull Supplier<Tab> parentTabSupplier,
-            boolean hasMVTiles, @NonNull WindowAndroid windowAndroid,
+            boolean hasMVTiles, boolean hasQueryTiles, @NonNull WindowAndroid windowAndroid,
             @NonNull ActivityLifecycleDispatcher activityLifecycleDispatcher,
             @NonNull TabModelSelector tabModelSelector, @NonNull SnackbarManager snackbarManager,
             @NonNull Supplier<DynamicResourceLoader> dynamicResourceLoaderSupplier,
@@ -79,6 +89,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
             @NonNull Supplier<ShareDelegate> shareDelegateSupplier,
             @NonNull MultiWindowModeStateDispatcher multiWindowModeStateDispatcher,
             @NonNull ViewGroup rootView) {
+        mActivity = activity;
         mView = (TasksView) LayoutInflater.from(activity).inflate(R.layout.tasks_view_layout, null);
         mView.initialize(activityLifecycleDispatcher,
                 parentTabSupplier.hasValue() && parentTabSupplier.get().isIncognito(),
@@ -91,6 +102,7 @@ public class TasksSurfaceCoordinator implements TasksSurface {
         mDynamicResourceLoaderSupplier = dynamicResourceLoaderSupplier;
         mTabContentManager = tabContentManager;
         mModalDialogManager = modalDialogManager;
+        mParentTabSupplier = parentTabSupplier;
         if (tabSwitcherType == TabSwitcherType.CAROUSEL) {
             mTabSwitcher = TabManagementModuleProvider.getDelegate().createCarouselTabSwitcher(
                     activity, activityLifecycleDispatcher, tabModelSelector, tabContentManager,
@@ -127,10 +139,19 @@ public class TasksSurfaceCoordinator implements TasksSurface {
 
         if (hasMVTiles) {
             MvTilesLayout mvTilesLayout = mView.findViewById(R.id.mv_tiles_layout);
-            mMostVisitedList = new MostVisitedListCoordinator(activity, mvTilesLayout,
-                    mPropertyModel, parentTabSupplier, snackbarManager, windowAndroid);
+            mMostVisitedList = new MostVisitedListCoordinator(
+                    activity, mvTilesLayout, mPropertyModel, snackbarManager, windowAndroid);
             mMostVisitedList.initialize();
         }
+        if (hasQueryTiles) {
+            QueryTileSection queryTileSection =
+                    new QueryTileSection(mView.findViewById(R.id.query_tiles_layout),
+                            Profile.getLastUsedRegularProfile(), this::performSearchQuery);
+        }
+    }
+
+    private void performSearchQuery(QueryInfo queryInfo) {
+        mMediator.performSearchQuery(queryInfo.queryText, queryInfo.searchParams);
     }
 
     /**
@@ -140,7 +161,8 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     public void initialize() {
         assert LibraryLoader.getInstance().isInitialized();
         if (!mIsMVTilesInitialized && mMostVisitedList != null) {
-            mMostVisitedList.initWithNative();
+            mMostVisitedList.initWithNative(new MostVisitedTileNavigationDelegate(
+                    mActivity, Profile.getLastUsedRegularProfile(), mParentTabSupplier));
             mIsMVTilesInitialized = true;
         }
         mMediator.initialize();
@@ -184,11 +206,6 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public View getTopToolbarPlaceholderView() {
-        return mView != null ? mView.findViewById(R.id.top_toolbar_placeholder) : null;
-    }
-
-    @Override
     public void onFinishNativeInitialization(Context context, OmniboxStub omniboxStub) {
         if (mTabSwitcher != null) {
             mTabSwitcher.initWithNative(context, mTabContentManager,
@@ -211,13 +228,10 @@ public class TasksSurfaceCoordinator implements TasksSurface {
     }
 
     @Override
-    public void addFakeSearchBoxShrinkAnimation() {
-        mView.addFakeSearchBoxShrinkAnimation();
-    }
-
-    @Override
-    public void removeFakeSearchBoxShrinkAnimation() {
-        mView.removeFakeSearchBoxShrinkAnimation();
+    public void updateFakeSearchBox(int height, int topMargin, int endPadding, float textSize,
+            float translationX, int buttonSize, int lensButtonLeftMargin) {
+        mView.updateFakeSearchBox(height, topMargin, endPadding, textSize, translationX, buttonSize,
+                lensButtonLeftMargin);
     }
 
     @Override

@@ -2,11 +2,12 @@
 # Use of this source code is governed by a BSD - style license that can be
 # found in the LICENSE file.
 
-source_set("constants") {
-  deps = [ "//base" ]
-
+component("constants") {
+  output_name = "chromeos_constants"
+  defines = [ "IS_CHROMEOS_CONSTANTS_IMPL" ]
   sources = [
     "chromeos_features.cc",
     "chromeos_features.h",
   ]
+  deps = [ "//base" ]
 }

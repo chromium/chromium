@@ -61,7 +61,7 @@
 #include "ui/shell_dialogs/select_file_dialog.h"
 #include "url/origin.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include <CoreFoundation/CoreFoundation.h>
 #include "base/mac/foundation_util.h"
 #endif
@@ -159,7 +159,7 @@ bool GetFileTypesFromAcceptOption(
     for (std::vector<std::string>::const_iterator iter = list->begin();
          iter != list->end(); ++iter) {
       std::string extension = base::ToLowerASCII(*iter);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       extension_set.insert(base::UTF8ToWide(*iter));
 #else
       extension_set.insert(*iter);
@@ -185,8 +185,10 @@ const char kLastChooseEntryDirectory[] = "last_choose_file_directory";
 
 const int kGraylistedPaths[] = {
     base::DIR_HOME,
-#if defined(OS_WIN)
-    base::DIR_PROGRAM_FILES, base::DIR_PROGRAM_FILESX86, base::DIR_WINDOWS,
+#if BUILDFLAG(IS_WIN)
+    base::DIR_PROGRAM_FILES,
+    base::DIR_PROGRAM_FILESX86,
+    base::DIR_WINDOWS,
 #endif
 };
 
@@ -344,7 +346,7 @@ void FileSystemEntryFunction::RegisterFileSystemsAndSendResponse(
 std::unique_ptr<base::DictionaryValue> FileSystemEntryFunction::CreateResult() {
   std::unique_ptr<base::DictionaryValue> result(new base::DictionaryValue());
   result->Set("entries", std::make_unique<base::ListValue>());
-  result->SetBoolean("multiple", multiple_);
+  result->SetBoolKey("multiple", multiple_);
   return result;
 }
 
@@ -358,13 +360,13 @@ void FileSystemEntryFunction::AddEntryToResult(const base::FilePath& path,
   DCHECK(success);
 
   std::unique_ptr<base::DictionaryValue> entry(new base::DictionaryValue());
-  entry->SetString("fileSystemId", file_entry.filesystem_id);
-  entry->SetString("baseName", file_entry.registered_name);
+  entry->SetStringKey("fileSystemId", file_entry.filesystem_id);
+  entry->SetStringKey("baseName", file_entry.registered_name);
   if (id_override.empty())
-    entry->SetString("id", file_entry.id);
+    entry->SetStringKey("id", file_entry.id);
   else
-    entry->SetString("id", id_override);
-  entry->SetBoolean("isDirectory", is_directory_);
+    entry->SetStringKey("id", id_override);
+  entry->SetBoolKey("isDirectory", is_directory_);
   entries->Append(std::move(entry));
 }
 
@@ -936,7 +938,7 @@ ExtensionFunction::ResponseAction FileSystemRetainEntryFunction::Run() {
 
     const storage::FileSystemURL url =
         file_system_context->CreateCrackedFileSystemURL(
-            blink::StorageKey(url::Origin::Create(extension()->url())),
+            blink::StorageKey(extension()->origin()),
             storage::kFileSystemTypeIsolated,
             storage::IsolatedContext::GetInstance()
                 ->CreateVirtualRootPath(filesystem_id)
@@ -1073,7 +1075,7 @@ ExtensionFunction::ResponseAction FileSystemRequestFileSystemFunction::Run() {
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
+  // Additionally it is enabled for allowlisted component extensions and apps.
   if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
                                     *extension()) ==
       FileSystemDelegate::kGrantNone) {
@@ -1094,8 +1096,8 @@ void FileSystemRequestFileSystemFunction::OnGotFileSystem(
     const std::string& id,
     const std::string& path) {
   std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("file_system_id", id);
-  dict->SetString("file_system_path", path);
+  dict->SetStringKey("file_system_id", id);
+  dict->SetStringKey("file_system_path", path);
   Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
 }
 
@@ -1112,7 +1114,7 @@ ExtensionFunction::ResponseAction FileSystemGetVolumeListFunction::Run() {
       ExtensionsAPIClient::Get()->GetFileSystemDelegate();
   DCHECK(delegate);
   // Only kiosk apps in kiosk sessions can use this API.
-  // Additionally it is enabled for whitelisted component extensions and apps.
+  // Additionally it is enabled for allowlisted component extensions and apps.
   if (delegate->GetGrantVolumesMode(browser_context(), render_frame_host(),
                                     *extension()) ==
       FileSystemDelegate::kGrantNone) {

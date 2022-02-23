@@ -275,7 +275,7 @@ class DeviceDisablingBeforeLoginHostCreated
       return false;
     // Postpone login host creation.
     base::CommandLine::ForCurrentProcess()->RemoveSwitch(
-        chromeos::switches::kForceLoginManagerInTests);
+        switches::kForceLoginManagerInTests);
     return true;
   }
 

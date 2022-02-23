@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/cc_export.h"
 #include "cc/layers/layer_impl.h"
@@ -17,6 +18,7 @@
 #include "cc/resources/memory_history.h"
 #include "cc/resources/resource_pool.h"
 #include "cc/trees/debug_rect_history.h"
+#include "cc/trees/layer_tree_impl.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkTypeface;
@@ -46,7 +48,8 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
 
   HeadsUpDisplayLayerImpl& operator=(const HeadsUpDisplayLayerImpl&) = delete;
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
 
   bool WillDraw(DrawMode draw_mode,
                 viz::ClientResourceProvider* resource_provider) override;
@@ -163,9 +166,15 @@ class CC_EXPORT HeadsUpDisplayLayerImpl : public LayerImpl {
                                int top,
                                int width) const;
 
+  int bounds_width_in_dips() const {
+    // bounds() is specified in layout coordinates, which is painted dsf away
+    // from DIPs.
+    return bounds().width() / layer_tree_impl()->painted_device_scale_factor();
+  }
+
   ResourcePool::InUsePoolResource in_flight_resource_;
   std::unique_ptr<ResourcePool> pool_;
-  viz::DrawQuad* current_quad_ = nullptr;
+  raw_ptr<viz::DrawQuad> current_quad_ = nullptr;
   // Used for software raster when it will be uploaded to a texture.
   sk_sp<SkSurface> staging_surface_;
 

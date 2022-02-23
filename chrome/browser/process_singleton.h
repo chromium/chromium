@@ -8,9 +8,9 @@
 #include "base/sequence_checker.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_types.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 #include "base/callback.h"
 #include "base/check.h"
@@ -20,13 +20,13 @@
 #include "base/process/process.h"
 #include "ui/gfx/native_widget_types.h"
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
 #include "base/files/scoped_temp_dir.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/message_window.h"
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 namespace base {
 class CommandLine;
@@ -47,10 +47,10 @@ class ProcessSingleton {
  public:
   // Used to send the reason of remote hang process termination as histogram.
   enum RemoteHungProcessTerminateReason {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     USER_ACCEPTED_TERMINATION = 1,
     NO_VISIBLE_WINDOW_FOUND = 2,
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     NOTIFY_ATTEMPTS_EXCEEDED = 3,
     SOCKET_WRITE_FAILED = 4,
     SOCKET_READ_FAILED = 5,
@@ -64,10 +64,10 @@ class ProcessSingleton {
     TERMINATE_SUCCEEDED = 0,
     TERMINATE_FAILED = 1,
     REMOTE_PROCESS_NOT_FOUND = 2,
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     TERMINATE_WAIT_TIMEOUT = 3,
     RUNNING_PROCESS_NOTIFY_ERROR = 4,
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     TERMINATE_NOT_ENOUGH_PERMISSIONS = 5,
     REMOTE_PROCESS_SHUTTING_DOWN = 6,
     PROFILE_UNLOCKED = 7,
@@ -130,12 +130,12 @@ class ProcessSingleton {
   // Clear any lock state during shutdown.
   void Cleanup();
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   static void DisablePromptForTesting();
   static void SkipIsChromeProcessCheckForTesting(bool skip);
   static void SetUserOptedUnlockInUseProfileForTesting(bool set_unlock);
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Called to query whether to kill a hung browser process that has visible
   // windows. Return true to allow killing the hung process.
   using ShouldKillRemoteProcessCallback = base::RepeatingCallback<bool()>;
@@ -150,7 +150,7 @@ class ProcessSingleton {
   // On Windows, Create() has to be called before this.
   NotifyResult NotifyOtherProcess();
 
-#if defined(OS_POSIX) && !defined(OS_ANDROID)
+#if BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   // Exposed for testing.  We use a timeout on Linux, and in tests we want
   // this timeout to be short.
   NotifyResult NotifyOtherProcessWithTimeout(
@@ -170,7 +170,7 @@ class ProcessSingleton {
  private:
   NotificationCallback notification_callback_;  // Handler for notifications.
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   bool EscapeVirtualization(const base::FilePath& user_data_dir);
 
   HWND remote_window_;  // The HWND_MESSAGE of another browser.
@@ -179,7 +179,7 @@ class ProcessSingleton {
   HANDLE lock_file_;
   base::FilePath user_data_dir_;
   ShouldKillRemoteProcessCallback should_kill_remote_process_callback_;
-#elif defined(OS_POSIX) && !defined(OS_ANDROID)
+#elif BUILDFLAG(IS_POSIX) && !BUILDFLAG(IS_ANDROID)
   // Return true if the given pid is one of our child processes.
   // Assumes that the current pid is the root of all pids of the current
   // instance.
@@ -224,7 +224,7 @@ class ProcessSingleton {
   scoped_refptr<LinuxWatcher> watcher_;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // macOS 10.13 tries to open a new Chrome instance if a user tries to
   // open an external link after Chrome has updated, but not relaunched.
   // This method extracts any waiting "open URL" AppleEvent and forwards

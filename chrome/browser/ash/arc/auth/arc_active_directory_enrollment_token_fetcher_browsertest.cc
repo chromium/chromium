@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/components/arc/test/arc_util_test_support.h"
 #include "base/bind.h"
 #include "base/callback.h"
 #include "base/command_line.h"
@@ -22,7 +23,6 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/dbus/userdataauth/fake_cryptohome_misc_client.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
-#include "components/arc/test/arc_util_test_support.h"
 #include "components/policy/core/common/cloud/device_management_service.h"
 #include "components/policy/core/common/policy_switches.h"
 #include "components/user_manager/user_manager.h"

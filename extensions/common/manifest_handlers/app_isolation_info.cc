@@ -60,16 +60,16 @@ bool AppIsolationHandler::Parse(Extension* extension, std::u16string* error) {
 
   // We should only be parsing if the extension has the key in the manifest,
   // or is a platform app (which we already handled).
-  DCHECK(extension->manifest()->HasPath(keys::kIsolation));
+  DCHECK(extension->manifest()->FindPath(keys::kIsolation));
 
   const base::Value* isolation_list = nullptr;
   if (!extension->manifest()->GetList(keys::kIsolation, &isolation_list)) {
-    *error = base::ASCIIToUTF16(manifest_errors::kInvalidIsolation);
+    *error = manifest_errors::kInvalidIsolation;
     return false;
   }
 
   bool has_isolated_storage = false;
-  base::Value::ConstListView list_view = isolation_list->GetList();
+  base::Value::ConstListView list_view = isolation_list->GetListDeprecated();
   for (size_t i = 0; i < list_view.size(); ++i) {
     if (!list_view[i].is_string()) {
       *error = ErrorUtils::FormatErrorMessageUTF16(

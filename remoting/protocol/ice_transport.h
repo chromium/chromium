@@ -8,7 +8,7 @@
 #include <list>
 #include <map>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "remoting/protocol/datagram_channel_factory.h"
@@ -90,7 +90,7 @@ class IceTransport : public Transport,
   void OnChannelError(int error);
 
   scoped_refptr<TransportContext> transport_context_;
-  EventHandler* event_handler_;
+  raw_ptr<EventHandler> event_handler_;
 
   SendTransportInfoCallback send_transport_info_callback_;
 

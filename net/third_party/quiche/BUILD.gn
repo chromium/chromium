@@ -14,6 +14,8 @@ config("quiche_config") {
     "src/common/platform/default",
     "src",
   ]
+
+  cflags = [ "-Wno-shadow" ]
 }
 
 # Since //net and //net/third_party/quiche have a circular dependency on each
@@ -29,6 +31,8 @@ source_set("quiche_public_deps") {
 
 source_set("quiche") {
   sources = [
+    "overrides/quiche_platform_impl/quic_flags_impl.cc",
+    "overrides/quiche_platform_impl/quic_flags_impl.h",
     "overrides/quiche_platform_impl/quic_mutex_impl.cc",
     "overrides/quiche_platform_impl/quic_mutex_impl.h",
     "overrides/quiche_platform_impl/quiche_bug_tracker_impl.h",
@@ -172,7 +176,6 @@ source_set("quiche") {
     "src/http2/platform/api/http2_flag_utils.h",
     "src/http2/platform/api/http2_flags.h",
     "src/http2/platform/api/http2_logging.h",
-    "src/http2/platform/api/http2_macros.h",
     "src/quic/core/congestion_control/bandwidth_sampler.cc",
     "src/quic/core/congestion_control/bandwidth_sampler.h",
     "src/quic/core/congestion_control/bbr2_drain.cc",
@@ -276,7 +279,11 @@ source_set("quiche") {
     "src/quic/core/crypto/p256_key_exchange.h",
     "src/quic/core/crypto/proof_source.cc",
     "src/quic/core/crypto/proof_source.h",
+    "src/quic/core/crypto/proof_source_x509.cc",
+    "src/quic/core/crypto/proof_source_x509.h",
     "src/quic/core/crypto/proof_verifier.h",
+    "src/quic/core/crypto/quic_client_session_cache.cc",
+    "src/quic/core/crypto/quic_client_session_cache.h",
     "src/quic/core/crypto/quic_compressed_certs_cache.cc",
     "src/quic/core/crypto/quic_compressed_certs_cache.h",
     "src/quic/core/crypto/quic_crypter.cc",
@@ -295,7 +302,6 @@ source_set("quiche") {
     "src/quic/core/crypto/quic_hkdf.h",
     "src/quic/core/crypto/quic_random.cc",
     "src/quic/core/crypto/quic_random.h",
-    "src/quic/core/crypto/server_proof_verifier.h",
     "src/quic/core/crypto/tls_client_connection.cc",
     "src/quic/core/crypto/tls_client_connection.h",
     "src/quic/core/crypto/tls_connection.cc",
@@ -641,8 +647,6 @@ source_set("quiche") {
     "src/spdy/core/spdy_bitmasks.h",
     "src/spdy/core/spdy_frame_builder.cc",
     "src/spdy/core/spdy_frame_builder.h",
-    "src/spdy/core/spdy_frame_reader.cc",
-    "src/spdy/core/spdy_frame_reader.h",
     "src/spdy/core/spdy_framer.cc",
     "src/spdy/core/spdy_framer.h",
     "src/spdy/core/spdy_header_block.cc",
@@ -1233,6 +1237,7 @@ source_set("quiche_tests") {
     "src/common/platform/api/quiche_time_utils_test.cc",
     "src/common/platform/api/quiche_url_utils_test.cc",
     "src/common/quiche_circular_deque_test.cc",
+    "src/common/quiche_data_reader_test.cc",
     "src/common/quiche_data_writer_test.cc",
     "src/common/quiche_endian_test.cc",
     "src/common/quiche_linked_hash_map_test.cc",
@@ -1357,6 +1362,8 @@ source_set("quiche_tests") {
     "src/quic/core/crypto/null_decrypter_test.cc",
     "src/quic/core/crypto/null_encrypter_test.cc",
     "src/quic/core/crypto/p256_key_exchange_test.cc",
+    "src/quic/core/crypto/proof_source_x509_test.cc",
+    "src/quic/core/crypto/quic_client_session_cache_test.cc",
     "src/quic/core/crypto/quic_compressed_certs_cache_test.cc",
     "src/quic/core/crypto/quic_crypto_client_config_test.cc",
     "src/quic/core/crypto/quic_crypto_server_config_test.cc",
@@ -1495,7 +1502,6 @@ source_set("quiche_tests") {
     "src/spdy/core/mock_spdy_framer_visitor.h",
     "src/spdy/core/spdy_alt_svc_wire_format_test.cc",
     "src/spdy/core/spdy_frame_builder_test.cc",
-    "src/spdy/core/spdy_frame_reader_test.cc",
     "src/spdy/core/spdy_framer_test.cc",
     "src/spdy/core/spdy_header_block_test.cc",
     "src/spdy/core/spdy_header_storage_test.cc",

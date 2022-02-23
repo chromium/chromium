@@ -10,6 +10,7 @@
 #include <sstream>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/platform_thread.h"
@@ -93,7 +94,7 @@ TEST(IPCMessageIntegrity, ReadVectorNegativeSize) {
   EXPECT_FALSE(ReadParam(&m, &iter, &vec));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_ReadVectorTooLarge1 DISABLED_ReadVectorTooLarge1
 #else
 #define MAYBE_ReadVectorTooLarge1 ReadVectorTooLarge1
@@ -146,7 +147,7 @@ class SimpleListener : public IPC::Listener {
     other_ = s;
   }
  protected:
-  IPC::Sender* other_;
+  raw_ptr<IPC::Sender> other_;
 };
 
 enum {
@@ -264,7 +265,7 @@ class FuzzerClientListener : public SimpleListener {
     return (type_id == last_msg_->type());
   }
 
-  IPC::Message* last_msg_;
+  raw_ptr<IPC::Message> last_msg_;
 };
 
 // Runs the fuzzing server child mode. Returns when the preset number of

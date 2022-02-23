@@ -4,6 +4,14 @@
 
 #include "chrome/browser/ui/app_list/arc/arc_app_test.h"
 
+#include "ash/components/arc/arc_util.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/containers/cxx20_erase.h"
@@ -22,15 +30,7 @@
 #include "chrome/browser/ui/app_list/arc/arc_app_list_prefs_factory.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
-#include "components/arc/arc_util.h"
-#include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
-#include "components/arc/test/fake_arc_session.h"
+#include "components/arc/test/fake_intent_helper_host.h"
 #include "components/arc/test/fake_intent_helper_instance.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -58,6 +58,15 @@ std::vector<arc::mojom::ArcPackageInfoPtr> ArcAppTest::ClonePackages(
   std::vector<arc::mojom::ArcPackageInfoPtr> result;
   for (const auto& package : packages)
     result.emplace_back(package->Clone());
+  return result;
+}
+
+// static
+std::vector<arc::mojom::AppInfoPtr> ArcAppTest::CloneApps(
+    const std::vector<arc::mojom::AppInfoPtr>& apps) {
+  std::vector<arc::mojom::AppInfoPtr> result;
+  for (const auto& app : apps)
+    result.emplace_back(app->Clone());
   return result;
 }
 
@@ -92,8 +101,7 @@ void ArcAppTest::SetUp(Profile* profile) {
   // If for any reason the garbage collector kicks in while we are waiting for
   // an icon, have the user-to-profile mapping ready to avoid using the real
   // profile manager (which is null).
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                    profile_);
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile_);
 
   // A valid |arc_app_list_prefs_| is needed for the ARC bridge service and the
   // ARC auth service.
@@ -137,8 +145,10 @@ void ArcAppTest::SetUp(Profile* profile) {
       WaitForInstanceReady(arc_service_manager_->arc_bridge_service()->app());
   }
 
-  // Ensure that the singleton apps::ArcApps is constructed.
-  apps::ArcAppsFactory::GetForProfile(profile_);
+  if (start_app_service_publisher_) {
+    // Ensure that the singleton apps::ArcApps is constructed.
+    apps::ArcAppsFactory::GetForProfile(profile_);
+  }
 }
 
 void ArcAppTest::WaitForDefaultApps() {
@@ -152,31 +162,18 @@ void ArcAppTest::CreateFakeAppsAndPackages() {
   arc::mojom::AppInfo app;
   // Make sure we have enough data for test.
   for (int i = 0; i < 3; ++i) {
-    app.name = base::StringPrintf("Fake App %d", i);
-    app.package_name = base::StringPrintf("fake.app.%d", i);
-    app.activity = base::StringPrintf("fake.app.%d.activity", i);
-    app.sticky = false;
-    fake_apps_.push_back(app);
+    fake_apps_.emplace_back(arc::mojom::AppInfo::New(
+        base::StringPrintf("Fake App %d", i),
+        base::StringPrintf("fake.app.%d", i),
+        base::StringPrintf("fake.app.%d.activity", i), false /* sticky */));
   }
-  fake_apps_[0].sticky = true;
+  fake_apps_[0]->sticky = true;
 
-  app.name = "TestApp1";
-  app.package_name = "test.app1";
-  app.activity = "test.app1.activity";
-  app.sticky = true;
-  fake_default_apps_.push_back(app);
-
-  app.name = "TestApp2";
-  app.package_name = "test.app2";
-  app.activity = "test.app2.activity";
-  app.sticky = true;
-  fake_default_apps_.push_back(app);
-
-  app.name = "TestApp3";
-  app.package_name = "test.app3";
-  app.activity = "test.app3.activity";
-  app.sticky = true;
-  fake_default_apps_.push_back(app);
+  for (int i = 1; i <= 3; ++i) {
+    fake_default_apps_.emplace_back(arc::mojom::AppInfo::New(
+        base::StringPrintf("TestApp%d", i), base::StringPrintf("test.app%d", i),
+        base::StringPrintf("test.app%d.activity", i), true /* sticky */));
+  }
 
   base::flat_map<arc::mojom::AppPermission, arc::mojom::PermissionStatePtr>
       permissions1;
@@ -237,7 +234,7 @@ void ArcAppTest::TearDown() {
     arc_service_manager_->arc_bridge_service()->intent_helper()->CloseInstance(
         intent_helper_instance_.get());
     intent_helper_instance_.reset();
-    intent_helper_bridge_.reset();
+    intent_helper_host_.reset();
   }
   app_instance_.reset();
   arc_play_store_enabled_preference_handler_.reset();
@@ -272,8 +269,8 @@ void ArcAppTest::RestartArcInstance() {
 void ArcAppTest::SetUpIntentHelper() {
   DCHECK(profile_);
   auto* arc_bridge_service = arc_service_manager_->arc_bridge_service();
-  intent_helper_bridge_ = std::make_unique<arc::ArcIntentHelperBridge>(
-      profile_, arc_bridge_service);
+  intent_helper_host_ = std::make_unique<arc::FakeIntentHelperHost>(
+      arc_bridge_service->intent_helper());
   intent_helper_instance_ = std::make_unique<arc::FakeIntentHelperInstance>();
   arc_bridge_service->intent_helper()->SetInstance(
       intent_helper_instance_.get());

@@ -168,6 +168,9 @@ class ASH_EXPORT FullscreenMagnifierController
       const ui::Event& event,
       const Continuation continuation) override;
 
+  // ui::GestureConsumer:
+  const std::string& GetName() const override;
+
   // Redraws the magnification window with the given origin position and the
   // given scale. Returns true if the window is changed; otherwise, false.
   // These methods should be called internally just after the scale and/or

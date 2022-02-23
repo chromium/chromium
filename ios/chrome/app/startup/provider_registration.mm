@@ -5,6 +5,7 @@
 #include "ios/chrome/app/startup/provider_registration.h"
 
 #include "base/check.h"
+#include "ios/public/provider/chrome/browser/app_utils/app_utils_api.h"
 #include "ios/public/provider/chrome/browser/chrome_browser_provider.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -14,6 +15,9 @@
 @implementation ProviderRegistration
 
 + (void)registerProviders {
+  // Needs to happen before any function of the provider API is used.
+  ios::provider::Initialize();
+
   std::unique_ptr<ios::ChromeBrowserProvider> provider =
       ios::CreateChromeBrowserProvider();
 

@@ -49,5 +49,6 @@ specific_include_rules = {
   ],
   ".*test\.cc": [
     "+cc/base",
+    "+cc/test",
   ]
 }

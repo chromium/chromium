@@ -48,8 +48,9 @@ ChannelMergerHandler::ChannelMergerHandler(AudioNode& node,
   SetInternalChannelCountMode(kExplicit);
 
   // Create the requested number of inputs.
-  for (unsigned i = 0; i < number_of_inputs; ++i)
+  for (unsigned i = 0; i < number_of_inputs; ++i) {
     AddInput();
+  }
 
   // Create the output with the requested number of channels.
   AddOutput(number_of_inputs);
@@ -173,8 +174,9 @@ ChannelMergerNode* ChannelMergerNode::Create(
   ChannelMergerNode* node =
       Create(*context, options->numberOfInputs(), exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 

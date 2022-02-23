@@ -41,7 +41,7 @@
 #include "third_party/blink/public/common/mediastream/media_devices.h"
 #include "third_party/blink/public/mojom/mediastream/media_devices.mojom.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/callback_helpers.h"
 #include "base/task/single_thread_task_runner.h"
 #include "content/browser/browser_main_loop.h"
@@ -477,7 +477,28 @@ uint32_t MediaDevicesManager::SubscribeDeviceChangeNotifications(
       SubscriptionRequest(render_process_id, render_frame_id, subscribe_types,
                           std::move(media_devices_listener)));
 
+  // Fetch the first device_id_salt for this subscriber's frame, to be able to
+  // later detect changes.
+  base::PostTaskAndReplyWithResult(
+      GetUIThreadTaskRunner({}).get(), FROM_HERE,
+      base::BindOnce(salt_and_origin_callback_, render_process_id,
+                     render_frame_id),
+      base::BindOnce(&MediaDevicesManager::SetSubscriptionLastSeenDeviceIdSalt,
+                     weak_factory_.GetWeakPtr(), subscription_id));
+
   return subscription_id;
+}
+
+void MediaDevicesManager::SetSubscriptionLastSeenDeviceIdSalt(
+    uint32_t subscription_id,
+    MediaDeviceSaltAndOrigin salt_and_origin) {
+  auto it = subscriptions_.find(subscription_id);
+
+  if (it == subscriptions_.end())
+    return;
+  SubscriptionRequest& request = it->second;
+
+  request.last_seen_device_id_salt_ = salt_and_origin.device_id_salt;
 }
 
 void MediaDevicesManager::UnsubscribeDeviceChangeNotifications(
@@ -510,12 +531,12 @@ void MediaDevicesManager::StartMonitoring() {
   if (!base::SystemMonitor::Get())
     return;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (!base::FeatureList::IsEnabled(features::kDeviceMonitorMac))
     return;
 #endif
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   if (base::FeatureList::IsEnabled(features::kAudioServiceOutOfProcess)) {
     DCHECK(!audio_service_device_listener_);
     audio_service_device_listener_ =
@@ -536,14 +557,14 @@ void MediaDevicesManager::StartMonitoring() {
     }
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   GetUIThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&MediaDevicesManager::StartMonitoringOnUIThread,
                                 base::Unretained(this)));
 #endif
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void MediaDevicesManager::StartMonitoringOnUIThread() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   BrowserMainLoop* browser_main_loop = content::BrowserMainLoop::GetInstance();
@@ -1015,8 +1036,22 @@ void MediaDevicesManager::UpdateSnapshot(
     current_snapshot_[static_cast<size_t>(type)] = new_snapshot;
   }
 
-  if (need_update_device_change_subscribers)
-    NotifyDeviceChangeSubscribers(type, new_snapshot);
+  // Generate salts for each subscriber even if the device list hasn't changed,
+  // as we may need to notify them anyway.
+  for (const auto& subscription : subscriptions_) {
+    const SubscriptionRequest& request = subscription.second;
+    if (request.subscribe_types[static_cast<size_t>(type)]) {
+      base::PostTaskAndReplyWithResult(
+          GetUIThreadTaskRunner({}).get(), FROM_HERE,
+          base::BindOnce(salt_and_origin_callback_, request.render_process_id,
+                         request.render_frame_id),
+          base::BindOnce(&MediaDevicesManager::OnSaltAndOriginForSubscription,
+                         weak_factory_.GetWeakPtr(), subscription.first,
+                         request.render_process_id, request.render_frame_id,
+                         type, new_snapshot,
+                         need_update_device_change_subscribers));
+    }
+  }
 }
 
 void MediaDevicesManager::ProcessRequests() {
@@ -1135,25 +1170,33 @@ void MediaDevicesManager::MaybeStopRemovedInputDevices(
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH) && !BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-void MediaDevicesManager::NotifyDeviceChangeSubscribers(
+void MediaDevicesManager::OnSaltAndOriginForSubscription(
+    uint32_t subscription_id,
+    int render_process_id,
+    int render_frame_id,
     MediaDeviceType type,
-    const blink::WebMediaDeviceInfoArray& snapshot) {
+    const blink::WebMediaDeviceInfoArray& device_infos,
+    bool devices_changed,
+    MediaDeviceSaltAndOrigin salt_and_origin) {
   DCHECK_CURRENTLY_ON(BrowserThread::IO);
-  DCHECK(blink::IsValidMediaDeviceType(type));
 
-  for (auto& subscription : subscriptions_) {
-    const SubscriptionRequest& request = subscription.second;
-    if (request.subscribe_types[static_cast<size_t>(type)]) {
-      base::PostTaskAndReplyWithResult(
-          GetUIThreadTaskRunner({}).get(), FROM_HERE,
-          base::BindOnce(salt_and_origin_callback_, request.render_process_id,
-                         request.render_frame_id),
-          base::BindOnce(&MediaDevicesManager::CheckPermissionForDeviceChange,
-                         weak_factory_.GetWeakPtr(), subscription.first,
-                         request.render_process_id, request.render_frame_id,
-                         type, snapshot));
-    }
+  auto it = subscriptions_.find(subscription_id);
+  if (it == subscriptions_.end())
+    return;
+  SubscriptionRequest& request = it->second;
+
+  // Continue to propagate a change notification if either the actual device
+  // list has changed, or the device_id_salt has changed.
+  bool salt_reset =
+      request.last_seen_device_id_salt_ &&
+      salt_and_origin.device_id_salt != request.last_seen_device_id_salt_;
+
+  if (devices_changed || salt_reset) {
+    MediaDevicesManager::CheckPermissionForDeviceChange(
+        subscription_id, render_process_id, render_frame_id, type, device_infos,
+        salt_and_origin);
   }
+  request.last_seen_device_id_salt_ = salt_and_origin.device_id_salt;
 }
 
 void MediaDevicesManager::CheckPermissionForDeviceChange(

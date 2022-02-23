@@ -13,13 +13,13 @@
 
 module chromeos.cdm.mojom;
 
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/oemcrypto.mojom";
+[EnableIf=is_chromeos_ash]
+import "ash/components/arc/mojom/protected_buffer_manager.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/cdm_storage.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/content_decryption_module.mojom";
 import "chromeos/components/cdm_factory_daemon/mojom/output_protection.mojom";
-[EnableIf=is_chromeos_ash]
-import "components/arc/mojom/oemcrypto.mojom";
-[EnableIf=is_chromeos_ash]
-import "components/arc/mojom/protected_buffer_manager.mojom";
 
 // Next Method ID: 2
 [Stable, Uuid="732a934d-8e2a-4305-b637-ccbe74ee8b88"]

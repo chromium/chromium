@@ -58,7 +58,8 @@ constexpr base::FeatureParam<std::string> kSkipPattern{
 constexpr base::FeatureParam<std::string> kAddToCartPattern{
     &ntp_features::kNtpChromeCartModule, "add-to-cart-pattern",
     "(\\b|[^a-z])"
-    "((add(ed)?(-|_|(%20))?(item)?(-|_|(%20))?to(-|_|(%20))?(cart|basket|bag)"
+    "((add(ed)?(-|_|(%20)|\\s)?(item)?(-|_|(%20)|\\s)?to(-|_|(%20)|\\s)?(cart|"
+    "basket|bag)"
     ")|(cart\\/add)|(checkout\\/basket)|(cart_type)|(isquickaddtocartbutton))"
     "(\\b|[^a-z])"};
 
@@ -75,7 +76,7 @@ constexpr base::FeatureParam<std::string> kCartPattern{
     "(^https?://cart\\.)"
     "|"
     "(/("
-      "(((my|co|shopping)[-_]?)?(cart|bag)(view|display)?)"
+      "(((my|co|shopping|view)[-_]?)?(cart|bag)(view|display)?)"
       "|"
       "(checkout/([^/]+/)?(basket|bag))"
       "|"
@@ -232,6 +233,10 @@ mojo::Remote<mojom::CommerceHintObserver> GetObserver(
     content::RenderFrame* render_frame) {
   // Connect to Mojo service on browser to notify commerce signals.
   mojo::Remote<mojom::CommerceHintObserver> observer;
+
+  // Subframes including fenced frames shouldn't be reached here.
+  DCHECK(render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree());
+
   render_frame->GetBrowserInterfaceBroker()->GetInterface(
       observer.BindNewPipeAndPassReceiver());
   return observer;
@@ -494,6 +499,9 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
         GetProductIdFromRequest(url.spec().substr(0, kLengthLimit), nullptr);
   } else if (navigation_url.host() == kGStoreHost) {
     is_add_to_cart = url.spec().find("O2JPA") != std::string::npos;
+  } else if (url.DomainIs("zappos.com")) {
+    is_add_to_cart = url.spec().find("mobileapi/v1/cart?displayRewards=true") !=
+                     std::string::npos;
   } else {
     is_add_to_cart = CommerceHintAgent::IsAddToCart(url.path_piece());
   }
@@ -554,7 +562,10 @@ bool DetectAddToCart(content::RenderFrame* render_frame,
     if (navigation_url.DomainIs("groupon.com") && buf.size() > 10000)
       return false;
 
-    if (CommerceHintAgent::IsAddToCart(str)) {
+    // Per-site skipping length limit when checking request text.
+    bool skip_length_limit = navigation_url.DomainIs("otterbox.com");
+
+    if (CommerceHintAgent::IsAddToCart(str, skip_length_limit)) {
       std::string product_id;
       if (commerce_renderer_feature::IsPartnerMerchant(url)) {
         GetProductIdFromRequest(str.substr(0, kLengthLimit), &product_id);
@@ -623,12 +634,17 @@ CommerceHintAgent::CommerceHintAgent(content::RenderFrame* render_frame)
     : content::RenderFrameObserver(render_frame),
       content::RenderFrameObserverTracker<CommerceHintAgent>(render_frame) {
   DCHECK(render_frame);
+
+  // Subframes including fenced frames shouldn't be reached here.
+  DCHECK(render_frame->IsMainFrame() && !render_frame->IsInFencedFrameTree());
 }
 
 CommerceHintAgent::~CommerceHintAgent() = default;
 
-bool CommerceHintAgent::IsAddToCart(base::StringPiece str) {
-  return PartialMatch(str.substr(0, kLengthLimit), GetAddToCartPattern());
+bool CommerceHintAgent::IsAddToCart(base::StringPiece str,
+                                    bool skip_length_limit) {
+  return PartialMatch(skip_length_limit ? str : str.substr(0, kLengthLimit),
+                      GetAddToCartPattern());
 }
 
 bool CommerceHintAgent::IsVisitCart(const GURL& url) {
@@ -839,7 +855,7 @@ void CommerceHintAgent::OnProductsExtracted(
   bool is_partner = commerce_renderer_feature::IsPartnerMerchant(
       GURL(render_frame()->GetWebFrame()->GetDocument().Url()));
   std::vector<mojom::ProductPtr> products;
-  for (const auto& product : extracted_products->GetList()) {
+  for (const auto& product : extracted_products->GetListDeprecated()) {
     if (!product.is_dict())
       continue;
     const auto* image_url = product.FindKey("imageUrl");

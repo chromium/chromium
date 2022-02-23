@@ -19,9 +19,11 @@ import '../settings_shared_css.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {WebUIListenerMixin} from 'chrome://resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {SettingsCheckboxElement} from '../controls/settings_checkbox.js';
+
+import {getTemplate} from './chrome_cleanup_page.html.js';
 import {ChromeCleanupProxy, ChromeCleanupProxyImpl} from './chrome_cleanup_proxy.js';
 import {ChromeCleanupRemovalListItem} from './items_to_remove_list.js';
 
@@ -93,12 +95,12 @@ type ChromeCleanupCardComponents = {
  * Represents the file path structure of a base::FilePath.
  * dirname ends with a separator.
  */
-type ChromeCleanupFilePath = {
+export type ChromeCleanupFilePath = {
   dirname: string,
   basename: string,
 };
 
-type ChromeCleanerScannerResults = {
+export type ChromeCleanerScannerResults = {
   files: Array<ChromeCleanupFilePath>,
   registryKeys: Array<string>,
 };
@@ -116,7 +118,7 @@ type ChromeCleanerScannerResults = {
  *    </iron-animated-pages>
  */
 
-interface SettingsChromeCleanupPageElement {
+export interface SettingsChromeCleanupPageElement {
   $: {
     chromeCleanupLogsUploadControl: SettingsCheckboxElement,
     chromeCleanupShowNotificationControl: SettingsCheckboxElement,
@@ -126,14 +128,14 @@ interface SettingsChromeCleanupPageElement {
 const SettingsChromeCleanupPageElementBase =
     WebUIListenerMixin(I18nMixin(PolymerElement));
 
-class SettingsChromeCleanupPageElement extends
+export class SettingsChromeCleanupPageElement extends
     SettingsChromeCleanupPageElementBase {
   static get is() {
     return 'settings-chrome-cleanup-page';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -251,6 +253,7 @@ class SettingsChromeCleanupPageElement extends
     };
   }
 
+  prefs: {software_reporter: {reporting: chrome.settingsPrivate.PrefObject}};
   private title_: string;
   private explanation_: string;
   private isWaitingForResult_: boolean;
@@ -715,6 +718,12 @@ class SettingsChromeCleanupPageElement extends
       Array<ChromeCleanupRemovalListItem> {
     return paths.map(
         path => ({text: path.dirname, highlightSuffix: path.basename}));
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-chrome-cleanup-page': SettingsChromeCleanupPageElement;
   }
 }
 

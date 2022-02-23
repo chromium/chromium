@@ -11,6 +11,7 @@
 #include "components/sync/driver/sync_service.h"
 #include "components/sync/driver/sync_user_settings_impl.h"
 #include "components/sync/driver/test_sync_service.h"
+#include "components/sync/engine/nigori/nigori.h"
 
 namespace syncer {
 
@@ -115,14 +116,6 @@ UserSelectableOsTypeSet TestSyncUserSettings::GetRegisteredSelectableOsTypes()
     const {
   return UserSelectableOsTypeSet::All();
 }
-
-bool TestSyncUserSettings::IsOsSyncFeatureEnabled() const {
-  return os_sync_feature_enabled_;
-}
-
-void TestSyncUserSettings::SetOsSyncFeatureEnabled(bool enabled) {
-  os_sync_feature_enabled_ = enabled;
-}
 #endif
 
 bool TestSyncUserSettings::IsCustomPassphraseAllowed() const {
@@ -194,6 +187,13 @@ void TestSyncUserSettings::SetEncryptionPassphrase(
 bool TestSyncUserSettings::SetDecryptionPassphrase(
     const std::string& passphrase) {
   return false;
+}
+
+void TestSyncUserSettings::SetDecryptionNigoriKey(
+    std::unique_ptr<Nigori> nigori) {}
+
+std::unique_ptr<Nigori> TestSyncUserSettings::GetDecryptionNigoriKey() const {
+  return nullptr;
 }
 
 void TestSyncUserSettings::SetFirstSetupComplete() {

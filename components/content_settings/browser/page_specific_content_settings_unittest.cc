@@ -105,7 +105,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
 
   // Check that after initializing, nothing is blocked.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(content_settings->IsContentBlocked(ContentSettingsType::IMAGES));
 #endif
   EXPECT_FALSE(
@@ -134,7 +134,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
                                   false});
   content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   content_settings->OnContentBlocked(ContentSettingsType::IMAGES);
 #endif
   content_settings->OnContentBlocked(ContentSettingsType::POPUPS);
@@ -149,7 +149,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
       std::string(), std::string(), std::string());
 
   // Check that only the respective content types are affected.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(content_settings->IsContentBlocked(ContentSettingsType::IMAGES));
 #endif
   EXPECT_FALSE(
@@ -211,7 +211,7 @@ TEST_F(PageSpecificContentSettingsTest, BlockedContent) {
   NavigateAndCommit(GURL("http://google.com"));
   content_settings =
       PageSpecificContentSettings::GetForFrame(web_contents()->GetMainFrame());
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(content_settings->IsContentBlocked(ContentSettingsType::IMAGES));
 #endif
   EXPECT_FALSE(
@@ -466,10 +466,9 @@ TEST_F(PageSpecificContentSettingsTest,
   ContentSettingsPattern pattern =
       ContentSettingsPattern::FromURL(web_contents()->GetVisibleURL());
 
-  map->SetWebsiteSettingCustomScope(
-      pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::CLIPBOARD_READ_WRITE,
-      std::make_unique<base::Value>(CONTENT_SETTING_ALLOW));
+  map->SetWebsiteSettingCustomScope(pattern, ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsType::CLIPBOARD_READ_WRITE,
+                                    base::Value(CONTENT_SETTING_ALLOW));
 
   // Now the indicator is set to allowed.
   EXPECT_TRUE(content_settings->IsContentAllowed(
@@ -478,10 +477,9 @@ TEST_F(PageSpecificContentSettingsTest,
       ContentSettingsType::CLIPBOARD_READ_WRITE));
 
   // Simulate the user modifying the setting back to blocked.
-  map->SetWebsiteSettingCustomScope(
-      pattern, ContentSettingsPattern::Wildcard(),
-      ContentSettingsType::CLIPBOARD_READ_WRITE,
-      std::make_unique<base::Value>(CONTENT_SETTING_BLOCK));
+  map->SetWebsiteSettingCustomScope(pattern, ContentSettingsPattern::Wildcard(),
+                                    ContentSettingsType::CLIPBOARD_READ_WRITE,
+                                    base::Value(CONTENT_SETTING_BLOCK));
 
   // Now the indicator is set to allowed.
   EXPECT_TRUE(content_settings->IsContentBlocked(

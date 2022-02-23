@@ -9,6 +9,7 @@
 
 #include "base/feature_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_observation.h"
@@ -116,7 +117,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 
 // The following functions are disabled on Android, because enterprise reporting
 // extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Triggers the safeBrowsingPrivate.OnPolicySpecifiedPasswordReuseDetected.
   virtual void MaybeReportPasswordReuseDetected(
       PasswordProtectionRequest* request,
@@ -248,6 +249,11 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   virtual ChromeUserPopulation::UserPopulation GetUserPopulationPref()
       const = 0;
 
+  std::set<scoped_refptr<PasswordProtectionRequest>>&
+  get_pending_requests_for_testing() {
+    return pending_requests_;
+  }
+
  protected:
   friend class PasswordProtectionRequest;
   friend class PasswordProtectionRequestContent;
@@ -360,9 +366,9 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
       const GURL& url,
       ReusedPasswordAccountType password_type) = 0;
 
-  // Subclasses may override this method to either cancel or resume deferred
-  // navigations. By default, deferred navigations are not handled.
-  virtual void MaybeHandleDeferredNavigations(
+  // Subclasses may override this method to resume deferred navigations when a
+  // request finishes. By default, deferred navigations are not handled.
+  virtual void ResumeDeferredNavigationsIfNeeded(
       PasswordProtectionRequest* request) {}
 
   bool CanGetAccessToken();
@@ -402,6 +408,8 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
                            TestRemoveCachedVerdictOnURLsDeleted);
   FRIEND_TEST_ALL_PREFIXES(PasswordProtectionServiceTest,
                            TestCleanUpExpiredVerdict);
+  FRIEND_TEST_ALL_PREFIXES(PasswordProtectionServiceTest,
+                           NoSendPingPrivateIpHostname);
 
   // Overridden from history::HistoryServiceObserver.
   void OnURLsDeleted(history::HistoryService* history_service,
@@ -450,7 +458,7 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
   base::CancelableTaskTracker tracker_;
 
   // Unowned object used for getting preference settings.
-  PrefService* pref_service_;
+  raw_ptr<PrefService> pref_service_;
 
   // The token fetcher used for getting access token.
   std::unique_ptr<SafeBrowsingTokenFetcher> token_fetcher_;
@@ -461,14 +469,14 @@ class PasswordProtectionServiceBase : public history::HistoryServiceObserver {
 
   // Use identity manager to check if account is signed in, before fetching
   // access token.
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   // A boolean indicates whether access token fetch should be attempted or not.
   // Use this to disable token fetches from ios and certain tests.
   bool try_token_fetch_;
 
   // Unowned object used for recording metrics/prefs.
-  SafeBrowsingMetricsCollector* metrics_collector_;
+  raw_ptr<SafeBrowsingMetricsCollector> metrics_collector_;
 
   base::WeakPtrFactory<PasswordProtectionServiceBase> weak_factory_{this};
 };

@@ -41,7 +41,7 @@
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
@@ -530,6 +530,17 @@ bool MediaSource::isTypeSupported(ExecutionContext* context,
 bool MediaSource::IsTypeSupportedInternal(ExecutionContext* context,
                                           const String& type,
                                           bool enforce_codec_specificity) {
+  // Even after ExecutionContext teardown notification, bindings may still call
+  // code-behinds for a short while. If |context| is null, this is likely
+  // happening. To prevent possible null deref of |context| in this path, claim
+  // lack of support immediately without proceeding.
+  if (!context) {
+    DVLOG(1) << __func__ << "(" << type << ", "
+             << (enforce_codec_specificity ? "true" : "false")
+             << ") -> false (context is null)";
+    return false;
+  }
+
   // Section 2.2 isTypeSupported() method steps.
   // https://dvcs.w3.org/hg/html-media/raw-file/tip/media-source/media-source.html#widl-MediaSource-isTypeSupported-boolean-DOMString-type
   // 1. If type is an empty string, then return false.
@@ -682,9 +693,7 @@ ExecutionContext* MediaSource::GetExecutionContext() const {
 // method directly.
 bool MediaSource::RunUnlessElementGoneOrClosingUs(
     MediaSourceAttachmentSupplement::RunExclusivelyCB cb) {
-  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
-  MediaSourceTracer* tracer;
-  std::tie(attachment, tracer) = AttachmentAndTracer();
+  auto [attachment, tracer] = AttachmentAndTracer();
   DCHECK(IsMainThread() ||
          !tracer);  // Cross-thread attachments do not use a tracer.
 
@@ -1060,9 +1069,7 @@ void MediaSource::DurationChangeAlgorithm(
 
   // 6. Update the media controller duration to new duration and run the
   //    HTMLMediaElement duration change algorithm.
-  scoped_refptr<MediaSourceAttachmentSupplement> attachment;
-  MediaSourceTracer* tracer;
-  std::tie(attachment, tracer) = AttachmentAndTracer();
+  auto [attachment, tracer] = AttachmentAndTracer();
   attachment->NotifyDurationChanged(tracer, new_duration);
 }
 
@@ -1300,9 +1307,7 @@ void MediaSource::EndOfStreamAlgorithm(
     // to just mark end of stream, and move the duration reduction logic to here
     // so we can just run DurationChangeAlgorithm(...) here.
     double new_duration = GetDuration_Locked(pass_key);
-    scoped_refptr<MediaSourceAttachmentSupplement> attachment;
-    MediaSourceTracer* tracer;
-    std::tie(attachment, tracer) = AttachmentAndTracer();
+    auto [attachment, tracer] = AttachmentAndTracer();
     attachment->NotifyDurationChanged(tracer, new_duration);
   } else {
     // Even though error didn't change duration, the transition to kEnded

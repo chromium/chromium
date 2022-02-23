@@ -16,6 +16,10 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1524282610922162960">Deljenje zavihka v Chromiumu</translation>
 <translation id="1553461853655228091">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimnih oken se ne bo znova odprlo.}}</translation>
+<translation id="1625909126243026060">Oglejte si ključne kontrolnike zasebnosti in varnosti v Chromiumu.</translation>
+<translation id="1632539827495546968">Če želite ta račun uporabiti samo enkrat, lahko v brskalniku Chromium uporabite <ph name="GUEST_LINK_BEGIN" />način za goste<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
+
+Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Račune Google lahko upravljate v <ph name="SETTINGS_LINK_BEGIN" />nastavitvah<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1708666629004767631">Na voljo je nova, varnejša različica Chromiuma.</translation>
 <translation id="1774152462503052664">Naj se Chromium izvaja v ozadju</translation>
 <translation id="1779356040007214683">Zaradi večje varnosti smo v Chromiumu onemogočili nekatere razširitve, ki niso navedene v storitvi <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> in so bile morda dodane brez vaše vednosti.</translation>
@@ -24,10 +28,14 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1881322772814446296">Prijavljate se z upravljanim računom in s tem njegovemu skrbniku omogočate nadzor vašega profila v Chromiumu. Vaši podatki v Chromiumu, kot so aplikacije, zaznamki, zgodovina, gesla in druge nastavitve, bodo postali trajno povezani z uporabnikom <ph name="USER_NAME" />. Te podatke boste lahko izbrisali na nadzorni plošči za Google Račune, vendar jih ne boste mogli povezati z drugim računom. Če želite, lahko ustvarite nov profil, da bodo obstoječi podatki v Chromiumu ostali ločeni. <ph name="LEARN_MORE" /></translation>
 <translation id="1911763535808217981">Če to izklopite, se lahko prijavite na Googlovih spletnih mestih, kot je Gmail, ne da bi se morali prijaviti v Chromium</translation>
 <translation id="1929939181775079593">Chromium se ne odziva. Ga želite znova zagnati?</translation>
+<translation id="1940680973325097484">Če želite ta račun uporabiti samo enkrat, lahko v brskalniku Chromium uporabite način za goste. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
+
+Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljajo za ta račun. Račune Google lahko upravljate v <ph name="SETTINGS_LINK_BEGIN" />nastavitvah<ph name="SETTINGS_LINK_END" />.</translation>
 <translation id="1966382378801805537">Chromium ne more določiti ali nastaviti privzetega brskalnika</translation>
 <translation id="1981611865800294956">Znova zaženite, če želite posodobiti &amp;Chromium OS</translation>
 <translation id="2008474315282236005">S tem bo iz te naprave izbrisan 1 element. Če želite pozneje prenesti podatke, se v Chromium prijavite kot <ph name="USER_EMAIL" />.</translation>
 <translation id="2020032459870799438">Če želite preveriti, ali so druga gesla varna pred podatkovnimi kršitvami in drugimi varnostnimi težavami, <ph name="BEGIN_LINK" />se prijavite v Chromium<ph name="END_LINK" />.</translation>
+<translation id="2049376729098081731">Izberite, ali želite, da je zaradi osebno bolj prilagojenih izkušenj v Googlovih storitvah vključena zgodovina v Chromiumu.</translation>
 <translation id="2174178932569897599">Prilagodi Chromium</translation>
 <translation id="2185166961232948079">Chromium – Prijava v omrežje – <ph name="PAGE_TITLE" /></translation>
 <translation id="2241627712206172106">Če računalnik souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chromium tako, kot ga želijo.</translation>
@@ -35,6 +43,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2313870531055795960">Preveri URL-je, tako da jih primerja s seznamom spletnih mest, ki niso varna, shranjenim v Chromiumu. Če vam spletno mesto poskusi ukrasti geslo ali če prenašate škodljivo datoteko, lahko Chromium prav tako pošlje URL-je, vključno z delčki vsebine strani, Varnemu brskanju.</translation>
 <translation id="2343156876103232566">Če želite poslati telefonsko številko od tukaj v telefon Android, se prijavite v Chromium v obeh napravah.</translation>
 <translation id="2347108572062610441">Zaradi te razširitve se je spremenila stran, ki je prikazana, ko zaženete Chromium.</translation>
+<translation id="2359808026110333948">Naprej</translation>
 <translation id="2396765026452590966">Zaradi razširitve »<ph name="EXTENSION_NAME" />« se je spremenila stran, ki je prikazana, ko zaženete Chromium.</translation>
 <translation id="2401032172288869980">Chromium potrebuje dovoljenje za fotoaparat in mikrofon za to spletno mesto.</translation>
 <translation id="2483889755041906834">V Chromiumu</translation>
@@ -42,10 +51,8 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="2535480412977113886">Chromium OS ni mogel sinhronizirati podatkov, ker so podatki za prijavo v račun zastareli.</translation>
 <translation id="2560420686485554789">Chromium potrebuje za prenos datotek dostop do shrambe</translation>
 <translation id="2572494885440352020">Pomoč za Chromium</translation>
-<translation id="2577788541081224677">Če želite do stvari v Chromiumu dostopati v vseh svojih napravah, se prijavite, da boste lahko vklopili sinhronizacijo.</translation>
 <translation id="2583187216237139145">Podatke v Chromiumu, ki se ustvarijo med uporabo tega profila (na primer zaznamke, zgodovino, gesla in druge nastavitve), lahko odstrani skrbnik delovnega profila. <ph name="LEARN_MORE" /></translation>
 <translation id="2587578672395088481">Če želite namestiti posodobitev, morate znova zagnati OS Chromium.</translation>
-<translation id="2614883797045469742">Privzete nastavitve delujejo za večino ljudi, vendar jih za uporabo Chromiuma prilagodite popolnoma po svoji meri.</translation>
 <translation id="2648074677641340862">Napaka v operacijskem sistemu med namestitvijo. Znova prenesite Chromium.</translation>
 <translation id="2661879430930417727">Če napravo souporabljate z drugimi, lahko prijatelji in sorodniki ločeno brskajo ter nastavijo Chromium tako, kot ga želijo.</translation>
 <translation id="2711502716910134313">Zavihek v Chromiumu</translation>
@@ -111,18 +118,20 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4407044323746248786">Želite vseeno zapreti Chromium?</translation>
 <translation id="4415566066719264597">Naj se Chromium izvaja v ozadju</translation>
 <translation id="4423735387467980091">Prilagajanje in nadziranje Chromiuma</translation>
+<translation id="4427306783828095590">Izboljšana zaščita učinkoviteje blokira lažno predstavljanje in zlonamerno programsko opremo.</translation>
 <translation id="452711251841752011">Pozdravljeni v Chromiumu; odprlo se je novo okno brskalnika</translation>
 <translation id="4544142686420020088">Chromium se ni posodobil, prišlo je do napake. <ph name="BEGIN_LINK" />Odpravite težave s posodobitvijo Chromiuma in neuspelimi posodobitvami Chromiuma.<ph name="END_LINK" /></translation>
 <translation id="454579500955453258">Ali želite nadaljevati v novem profilu v Chromiumu?</translation>
 <translation id="4567424176335768812">Prijavljeni ste kot <ph name="USER_EMAIL_ADDRESS" />. Zdaj imate dostop do zaznamkov, zgodovine in drugih nastavitev v vseh napravah, v katerih ste prijavljeni.</translation>
 <translation id="459535195905078186">Aplikacije za Chromium</translation>
+<translation id="4621240073146040695">Samo še malo. Znova zaženite Chromium, da dokončate posodobitev.</translation>
 <translation id="4665829708273112819">Opozorilo: Chromium razširitvam ne more preprečiti beleženja zgodovine brskanja. Če želite onemogočiti to razširitev v anonimnem načinu, počistite to možnost.</translation>
+<translation id="4673151026126227699">Če delite tudi poročila o uporabi Chromiuma, so v teh poročilih vključeni URL-ji, ki jih obiščete.</translation>
 <translation id="4677944499843243528">Videti je, da profil uporablja drug Chromiumov proces (<ph name="PROCESS_ID" />) v drugem računalniku (<ph name="HOST_NAME" />). Chromium je zaklenil profil, da se ne poškoduje. Če ste prepričani, da tega profila ne uporabljajo nobeni drugi procesi, ga lahko odklenete in znova zaženete Chromium.</translation>
 <translation id="469338717132742108">Pomoč za OS Chromium</translation>
 <translation id="4708774505295300557">Nekdo se je prijavil v Chromium v tem računalniku kot <ph name="ACCOUNT_EMAIL_LAST" />. Ustvarite nov uporabniški profil za Chromium, če želite, da bodo vaši podatki ločeni.</translation>
 <translation id="4746050847053251315">Želite vseeno zapreti Chromium?</translation>
 <translation id="4748217263233248895">Pravkar je bila nameščena posebna varnostna posodobitev za Chromium. Znova ga zaženite (vaše zavihke bomo obnovili).</translation>
-<translation id="4750035648288509542">Skoraj je posodobljen. Znova zaženite Chromium, da dokončate posodobitev. Anonimna okna se ne bodo znova odprla.</translation>
 <translation id="4788777615168560705">Chromium ne more preveriti gesel. Poskusite znova čez 24 ur ali <ph name="BEGIN_LINK" />preverite gesla v računu Google<ph name="END_LINK" />.</translation>
 <translation id="479167709087336770">Uporabljeno je isto preverjanje črkovanja kot v Iskanju Google. Besedilo, ki ga vnesete v brskalniku, je poslano Googlu. To lahko kadar koli spremenite v nastavitvah.</translation>
 <translation id="4888717733111232871">Pravilo za dohodni promet za Chromium, ki omogoča promet mDNS.</translation>
@@ -139,7 +148,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="5398878173008909840">Na voljo je nova različica Chromiuma.</translation>
 <translation id="5427571867875391349">Nastavitev Chromiuma za privzeti brskalnik</translation>
 <translation id="5438241569118040789"><ph name="PAGE_TITLE" /> – različica beta Chromiuma</translation>
-<translation id="5479196819031988440">OS Chromium ne more odpreti te strani.</translation>
 <translation id="5480860683791598150">Chromium potrebuje dostop do vaše lokacije, da jo bo lahko delil s tem spletnim mestom</translation>
 <translation id="549669000822060376">Počakajte, da Chromium namesti najnovejše sistemske posodobitve.</translation>
 <translation id="5496810170689441661">Chromium poskuša urejati gesla. Če želite to omogočiti, vnesite geslo za Windows.</translation>
@@ -212,7 +220,6 @@ Nekatere funkcije morda ne bodo na voljo. Določite drug imenik profila ali upor
 <translation id="6990124437352146030">Chromium potrebuje dovoljenje za dostop do mikrofona za to spletno mesto</translation>
 <translation id="705851970750939768">Posodobi Chromium</translation>
 <translation id="7067091210845072982">Če slika nima koristnega opisa, ga bo Chromium poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu.</translation>
-<translation id="7147279922647361552">Prilagodite nekatere najpomembnejše izbrane možnosti zasebnosti v Chromiumu</translation>
 <translation id="718435575166326686">Chromium potrebuje dovoljenje za fotoaparat za to spletno mesto.</translation>
 <translation id="7196312274710523067">Chromiuma ni bilo mogoče zagnati. Poskusite znova.</translation>
 <translation id="7197677400338048821">Chromium ne more preveriti gesel. Poskusite znova čez 24 ur.</translation>
@@ -226,17 +233,21 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7339898014177206373">Novo okno</translation>
 <translation id="734373864078049451">Tu so shranjeni vaš splet, zaznamki in druge stvari v Chromiumu.</translation>
 <translation id="7349591376906416160">Skrbnik sistema je Chromium nastavil tako, da za dostop do <ph name="TARGET_URL_HOSTNAME" /> odpre brskalnik <ph name="ALTERNATIVE_BROWSER_NAME" />.</translation>
+<translation id="7398989605938454041">S profili v Chromiumu lahko ločite vse stvari v Chromiumu. Tako laže ločite delo in zabavo.</translation>
 <translation id="7448255348454382571">Vnovičen zagon OS-a Chromium</translation>
 <translation id="7449453770951226939"><ph name="PAGE_TITLE" /> – različica Chromiuma za razvijalce</translation>
 <translation id="7451052299415159299">Chromium potrebuje dovoljenje za dostop do fotoaparata za to spletno mesto</translation>
+<translation id="7467949745582939695">Želite znova zagnati Chromium?</translation>
 <translation id="7483335560992089831">Ni mogoče namestiti iste različice Chromiuma, ki se trenutno izvaja. Zaprite Chromium in poskusite znova.</translation>
 <translation id="753534427205733210">{0,plural, =1{Chromium se bo znova zagnal čez eno minuto}one{Chromium se bo znova zagnal čez # minuto}two{Chromium se bo znova zagnal čez # minuti}few{Chromium se bo znova zagnal čez # minute}other{Chromium se bo znova zagnal čez # minut}}</translation>
 <translation id="7549178288319965365">O sistemu Chromium OS</translation>
 <translation id="7561906087460245826">Počisti tudi podatke iz Chromiuma (<ph name="URL" />)</translation>
 <translation id="7585853947355360626">Če nastavitev ni prikazana na tej strani, preverite <ph name="LINK_BEGIN" />
       nastavitve operacijskega sistema Chromium<ph name="LINK_END" /></translation>
+<translation id="7597596667193879455">V računu ste vklopili izboljšano varno brskanje. Zdaj ga omogočite za Chromium.</translation>
 <translation id="761356813943268536">Chromium uporablja vašo kamero in mikrofon.</translation>
 <translation id="7617377681829253106">Chromium je pravkar postal še boljši</translation>
+<translation id="7682601070171973634">Chromium raziskuje nove funkcije, ki spletnim mestom omogočajo, da z manjšo količino prenesenih podatkov zagotavljajo isto izkušnjo pri brskanju.</translation>
 <translation id="7686590090926151193">Chromium ni privzeti brskalnik</translation>
 <translation id="7689606757190482937">V vseh svojih napravah sinhronizirajte in prilagodite Chromium</translation>
 <translation id="7729447699958282447">Chromium ni mogel sinhronizirati podatkov, ker sinhronizacija ni na voljo za vašo domeno.</translation>
@@ -246,11 +257,11 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="7828947555739565424">Profil v Chromiumu s tem računom že obstaja v tej napravi.</translation>
 <translation id="7857220146454061152">Če želite prejemati prihodnje posodobitve Chromiuma, potrebujete OS X 10.11 ali novejšega. V tem računalniku je nameščen OS X 10.10.</translation>
 <translation id="7867198900892795913">Chromiuma ni bilo mogoče posodobiti na najnovejšo različico, zato nimate novih funkcij in varnostnih popravkov.</translation>
+<translation id="788352880609666695">Za ta profil v Chromiumu so na voljo ti računi.</translation>
 <translation id="7898472181347242998">Če želite preveriti, ali je naprava posodobljena, odprite <ph name="LINK_BEGIN" />nastavitve sistema Chromium<ph name="LINK_END" /></translation>
 <translation id="7937630085815544518">V Chromium ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
 <translation id="7975919845073681630">To je sekundarna namestitev Chromiuma in ga ni mogoče nastaviti kot privzeti brskalnik.</translation>
 <translation id="8013436988911883588">Ko bo imel Chromium dostop, vas bodo spletna mesta lahko pozvala k omogočanju dostopa.</translation>
-<translation id="8045118833343856403">Naslednji računi niso prijavljeni v noben profil v Chromiumu. Če želite uporabiti račun v drugem profilu, najprej odstranite ta profil.</translation>
 <translation id="8105840573057009683">Chromium potrebuje dovoljenje za lokacijo za to spletno mesto.</translation>
 <translation id="81770708095080097">Ta datoteka je nevarna, zato jo je Chromium blokiral.</translation>
 <translation id="8248265253516264921">Če slika nima koristnega opisa, ga bo Chromium poskušal zagotoviti. Opisi se ustvarijo tako, da se slike pošljejo Googlu. To lahko kadar koli izklopite v nastavitvah.</translation>
@@ -259,6 +270,7 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="8290862415967981663">Ta datoteka je morda nevarna, zato jo je Chromium blokiral.</translation>
 <translation id="8330519371938183845">Prijavite se, da boste lahko Chromium sinhronizirali in prilagodili v vseh svojih napravah</translation>
 <translation id="8340674089072921962">Uporabnik <ph name="USER_EMAIL_ADDRESS" /> je prej uporabljal Chromium</translation>
+<translation id="8357820681460164151">Če želite do stvari v brskalniku Chromium dostopati v vseh svojih napravah, se prijavite in nato vklopite sinhronizacijo.</translation>
 <translation id="8417404458978023919">{0,plural, =1{Chromium znova zaženite v enem dnevu}one{Chromium znova zaženite v # dnevu}two{Chromium znova zaženite v # dnevih}few{Chromium znova zaženite v # dnevih}other{Chromium znova zaženite v # dnevih}}</translation>
 <translation id="8453117565092476964">Arhiv namestitvenega programa je poškodovan ali neveljaven. Znova prenesite Chromium.</translation>
 <translation id="8493179195440786826">Chromium je zastarel</translation>
@@ -293,5 +305,6 @@ Chromium ne more obnoviti vaših nastavitev.</translation>
 <translation id="9214764063801632699">Sistem Chromium OS</translation>
 <translation id="93478295209880648">Chromium morda ne bo deloval pravilno, ker ni več podprt v sistemu Windows XP ali Windows Vista</translation>
 <translation id="965162752251293939">Kdo uporablja Chromium?</translation>
+<translation id="967427899662692980">Prejmite Chromiumovo najmočnejšo varnost</translation>
 <translation id="985602178874221306">Ustvarjalci Chromiuma</translation>
 </translationbundle>

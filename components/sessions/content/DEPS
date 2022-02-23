@@ -2,8 +2,6 @@ include_rules = [
   "+content/public/browser",
   "+content/public/common",
   "+content/public/test",
-  "+extensions/buildflags",
-  "+extensions/common",
   "+third_party/blink/public/common/page_state/page_state.h",
   "+third_party/blink/public/common/user_agent/user_agent_metadata.h",
   "+third_party/blink/public/platform",

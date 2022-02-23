@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "ios/chrome/browser/main/browser_observer.h"
 #include "ios/chrome/browser/main/browser_user_data.h"

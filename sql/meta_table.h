@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 
 namespace sql {
 
@@ -127,7 +127,7 @@ class COMPONENT_EXPORT(SQL) MetaTable {
   void PrepareSetStatement(Statement* statement, const char* key);
   bool PrepareGetStatement(Statement* statement, const char* key);
 
-  Database* db_ = nullptr;
+  raw_ptr<Database> db_ = nullptr;
 };
 
 }  // namespace sql

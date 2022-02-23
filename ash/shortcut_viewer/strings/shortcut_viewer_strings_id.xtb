@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Membuka jendela baru dalam mode Samaran</translation>
 <translation id="152892567002884378">Mengeraskan volume</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, lalu <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Membuka desktop 1 sampai 8</translation>
 <translation id="1652741121070700329">Berpindah ke awal kata sebelumnya</translation>
 <translation id="1679841710523778799">Meningkatkan kecerahan</translation>
 <translation id="168356808214100546">Tekan dan tahan <ph name="ALT" />, ketuk <ph name="TAB" /> sampai jendela yang Anda inginkan terbuka, lalu lepaskan.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Tekan <ph name="CTRL" /><ph name="SEPARATOR" /><ph name="SHIFT" />, lalu klik link</translation>
 <translation id="561814908794220892">Membuka halaman di tab baru</translation>
 <translation id="5620219513321115856">Pindahkan jendela aktif ke halaman kerja di sebelah kanan</translation>
+<translation id="5699366815052349604">Menetapkan jendela aktif ke semua desktop</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> atau <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Membuka link di tab</translation>
 <translation id="5757474750054631686">Meredupkan keyboard (khusus keyboard dengan lampu latar)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Menampilkan file tersembunyi dalam aplikasi File</translation>
 <translation id="8717459106217102612">Memilih kata atau huruf sebelumnya</translation>
 <translation id="8727232706774971183">Melihat notifikasi</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1 sampai 8</translation>
 <translation id="8855885154700222542">Tombol layar penuh</translation>
 <translation id="8881584919399569791">Pindahkan jendela aktif ke halaman kerja di sebelah kiri</translation>
 <translation id="88986195241502842">Page down</translation>

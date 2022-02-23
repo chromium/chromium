@@ -162,7 +162,7 @@ TEST_F(ImageSanitizerTest, NoImagesProvided) {
 
 TEST_F(ImageSanitizerTest, InvalidPathAbsolute) {
   base::FilePath normal_path(FILE_PATH_LITERAL("hello.png"));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::FilePath absolute_path(FILE_PATH_LITERAL("c:\\Windows\\win32"));
 #else
   base::FilePath absolute_path(FILE_PATH_LITERAL("/usr/bin/root"));

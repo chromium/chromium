@@ -182,8 +182,8 @@ class TestImporter(object):
             _log.info('Done: no changes to import.')
             return 0
 
-        if self._only_wpt_manifest_changed():
-            _log.info('Only manifest was updated; skipping the import.')
+        if not self._has_wpt_changes():
+            _log.info('Only manifest or expectations was updated; skipping the import.')
             return 0
 
         with self._expectations_updater.prepare_smoke_tests(self.chromium_git):
@@ -202,6 +202,9 @@ class TestImporter(object):
         if not options.auto_update:
             return 0
 
+        if not self.record_version():
+            return 1
+
         if not self.run_commit_queue_for_cl():
             return 1
 
@@ -210,6 +213,17 @@ class TestImporter(object):
             return 1
 
         return 0
+
+    def record_version(self):
+        _log.info('Update external/Version to record upstream ToT.')
+        path_to_version = self.finder.path_from_web_tests('external', 'Version')
+        with open(path_to_version, "w") as f:
+            f.write("Version: %s\n" % self.wpt_revision)
+
+        message = 'Update revision'
+        self._commit_changes(message)
+        self._upload_patchset(message)
+        return True
 
     def update_expectations_for_cl(self):
         """Performs the expectation-updating part of an auto-import job.
@@ -294,7 +308,7 @@ class TestImporter(object):
                 'CR+1 and commit. The sheriff has one hour to respond.')
             self.git_cl.run([
                 'upload', '-f', '--send-mail', '--enable-auto-submit',
-                '--reviewers', self.sheriff_email()
+                '--cc', self.sheriff_email()
             ])
             timeout = 3600
         else:
@@ -472,12 +486,14 @@ class TestImporter(object):
         _log.info('Committing changes.')
         self.chromium_git.commit_locally_with_message(commit_message)
 
-    def _only_wpt_manifest_changed(self):
+    def _has_wpt_changes(self):
         changed_files = self.chromium_git.changed_files()
-        wpt_base_manifest = self.fs.relpath(
-            self.fs.join(self.dest_path, '..', BASE_MANIFEST_NAME),
-            self.finder.chromium_base())
-        return changed_files == [wpt_base_manifest]
+        rel_dest_path = self.fs.relpath(self.dest_path,
+                                        self.finder.chromium_base())
+        for cf in changed_files:
+            if cf.startswith(rel_dest_path):
+                return True
+        return False
 
     def _need_sheriff_attention(self):
         # Per the rules defined for the rubber-stamper, it can not auto approve
@@ -554,7 +570,6 @@ class TestImporter(object):
         _log.info('Uploading change list.')
         directory_owners = self.get_directory_owners()
         description = self._cl_description(directory_owners)
-        sheriff_email = self.sheriff_email()
 
         temp_file, temp_path = self.fs.open_text_tempfile()
         temp_file.write(description)
@@ -603,7 +618,18 @@ class TestImporter(object):
         # Move any No-Export tag to the end of the description.
         description = description.replace('No-Export: true', '')
         description = description.replace('\n\n\n\n', '\n\n')
-        description += 'No-Export: true'
+        description += 'No-Export: true\n'
+
+        # Add the wptrunner MVP tryjobs as blocking trybots, to catch any test
+        # changes or infrastructure changes from upstream.
+        #
+        # If this starts blocking the importer unnecessarily, revert
+        # https://chromium-review.googlesource.com/c/chromium/src/+/2451504
+        # Try linux-blink-rel to make sure no breakage in webdriver tests
+        description += (
+            'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
+            'linux-wpt-input-fyi-rel,linux-blink-rel')
+
         return description
 
     @staticmethod
@@ -654,11 +680,11 @@ class TestImporter(object):
         self.rebaselined_tests, self.new_test_expectations = (
             self._expectations_updater.update_expectations())
 
-        _log.info('Adding test expectations lines for composite-after-paint')
-        self._expectations_updater.update_expectations_for_flag_specific('composite-after-paint')
-
         _log.info('Adding test expectations lines for disable-layout-ng')
         self._expectations_updater.update_expectations_for_flag_specific('disable-layout-ng')
+
+        _log.info('Adding test expectations lines for disable-site-isolation-trials')
+        self._expectations_updater.update_expectations_for_flag_specific('disable-site-isolation-trials')
 
     def fetch_wpt_override_expectations(self):
         """Modifies WPT Override expectations based on try job results.

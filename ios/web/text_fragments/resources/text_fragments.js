@@ -33,6 +33,12 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
    */
   __gCrWeb.textFragments.handleTextFragments =
       function(fragments, scroll, backgroundColor, foregroundColor) {
+    // If |marks| already exists, it's because we've already highlighted
+    // fragments on this page. This might happen if the user got here by
+    // navigating back. Stop now to avoid creating nested <mark> elements.
+    if (marks?.length)
+      return;
+
     const markDefaultStyle = backgroundColor && foregroundColor ? {
       backgroundColor: `#${backgroundColor}`,
       color: `#${foregroundColor}`
@@ -50,6 +56,7 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
 
   __gCrWeb.textFragments.removeHighlights = function(new_url) {
     utils.removeMarks(marks);
+    marks = null;
     document.removeEventListener("click", handleClick,
                                  /*useCapture=*/true);
     if (new_url) {
@@ -98,10 +105,18 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
     if (scroll && marks.length > 0)
       utils.scrollElementIntoView(marks[0]);
 
-    // Clean-up marks whenever the user taps somewhere on the page. Use capture
-    // to make sure the event listener is executed immediately and cannot be
-    // prevented by the event target (during bubble phase).
+
+    // Send events back to the browser when the user taps a mark, and when the
+    // user taps the page anywhere. We have to send both because one is consumed
+    // when kIOSSharedHighlightingV2 is enabled, and the other when it's
+    // disabled, and this JS file doesn't know about flag states.
+
+    // Use capture to make sure the event listener is executed immediately and
+    // cannot be prevented by the event target (during bubble phase).
     document.addEventListener("click", handleClick, /*useCapture=*/true);
+    for (var mark of marks) {
+      mark.addEventListener("click", handleClickWithSender.bind(mark), true);
+    }
 
     __gCrWeb.common.sendWebKitMessage('textFragments', {
       command: 'textFragments.processingComplete',
@@ -116,5 +131,23 @@ const utils = goog.require('googleChromeLabs.textFragmentPolyfill.textFragmentUt
       __gCrWeb.common.sendWebKitMessage('textFragments', {
         command: 'textFragments.onClick'
       });
-    }
+    };
+
+  const handleClickWithSender = function(event) {
+    __gCrWeb.common.sendWebKitMessage('textFragments', {
+      command: 'textFragments.onClickWithSender',
+      rect: rectFromElement(event.target),
+      text: `"${event.target.innerText}"`
+    });
+  };
+
+  const rectFromElement = function(elt) {
+    const domRect = elt.getClientRects()[0];
+    return {
+      x: domRect.x,
+      y: domRect.y,
+      width: domRect.width,
+      height: domRect.height
+    };
+  }
 })();

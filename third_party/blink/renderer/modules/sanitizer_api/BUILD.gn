@@ -8,12 +8,43 @@ import("//third_party/protobuf/proto_library.gni")
 
 blink_modules_sources("sanitizer_api") {
   sources = [
+    "$target_gen_dir/builtins/sanitizer_builtins.cc",
+    "builtins.cc",
+    "builtins.h",
+    "builtins/sanitizer_builtins.h",
+    "config_util.cc",
+    "config_util.h",
     "element_sanitizer.cc",
     "element_sanitizer.h",
     "sanitizer.cc",
     "sanitizer.h",
-    "sanitizer_config_impl.cc",
     "sanitizer_config_impl.h",
+  ]
+  deps = [ ":generate_sanitizer_builtins" ]
+}
+
+# The Sanitizer API relies on several spec-defined constants. For easier
+# maintenance we generate the constants from spec snippets.
+action("generate_sanitizer_builtins") {
+  script = "builtins/generate_builtins.py"
+  source_attributes = "builtins/baseline_attribute_allow_list.txt"
+  source_elements = "builtins/baseline_element_allow_list.txt"
+  source_default = "builtins/default_configuration.txt"
+  sources = [
+    source_attributes,
+    source_default,
+    source_elements,
+  ]
+  outputs = [ "$target_gen_dir/builtins/sanitizer_builtins.cc" ]
+  args = [
+    "--out",
+    rebase_path(outputs[0], root_build_dir),
+    "--baseline-elements",
+    rebase_path(source_elements, root_build_dir),
+    "--baseline-attributes",
+    rebase_path(source_attributes, root_build_dir),
+    "--default-configuration",
+    rebase_path(source_default, root_build_dir),
   ]
 }
 

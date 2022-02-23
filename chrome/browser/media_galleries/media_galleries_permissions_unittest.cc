@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "chrome/browser/extensions/extension_prefs_unittest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -111,8 +112,8 @@ class MediaGalleriesPermissionsTest : public extensions::ExtensionPrefsTest {
 
   void Verify() override {
     struct TestData {
-      std::string* id;
-      std::vector<MediaGalleryPermission>* expectation;
+      raw_ptr<std::string> id;
+      raw_ptr<std::vector<MediaGalleryPermission>> expectation;
     };
 
     const TestData test_data[] = {{&extension1_id_, &extension1_expectation_},

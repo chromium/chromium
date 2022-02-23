@@ -55,9 +55,9 @@ void DomainReliabilityInternalsHandler::RegisterMessages() {
 
 void DomainReliabilityInternalsHandler::HandleUpdateData(
     const base::ListValue* args) {
-  DCHECK_EQ(1u, args->GetList().size());
+  DCHECK_EQ(1u, args->GetListDeprecated().size());
   AllowJavascript();
-  callback_id_ = args->GetList()[0].GetString();
+  callback_id_ = args->GetListDeprecated()[0].GetString();
 
   Profile* profile = Profile::FromWebUI(web_ui());
   network::mojom::NetworkContext* network_context =

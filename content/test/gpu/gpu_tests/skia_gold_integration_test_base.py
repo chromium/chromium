@@ -2,8 +2,6 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-from __future__ import print_function
-
 from datetime import date
 import logging
 import os
@@ -16,25 +14,24 @@ from gpu_tests import color_profile_manager
 from gpu_tests import common_browser_args as cba
 from gpu_tests import gpu_helper
 from gpu_tests import gpu_integration_test
-from gpu_tests import path_util
 from gpu_tests.skia_gold import gpu_skia_gold_properties
 from gpu_tests.skia_gold import gpu_skia_gold_session_manager
+
+import gpu_path_util
 
 from py_utils import cloud_storage
 
 from telemetry.util import image_util
 
-GPU_RELATIVE_PATH = "content/test/data/gpu/"
-GPU_DATA_DIR = os.path.join(path_util.GetChromiumSrcDir(), GPU_RELATIVE_PATH)
 TEST_DATA_DIRS = [
-    GPU_DATA_DIR,
-    os.path.join(path_util.GetChromiumSrcDir(), 'media/test/data'),
+    gpu_path_util.GPU_DATA_DIR,
+    os.path.join(gpu_path_util.CHROMIUM_SRC_DIR, 'media', 'test', 'data'),
 ]
 
 SKIA_GOLD_CORPUS = 'chrome-gpu'
 
 
-class _ImageParameters(object):
+class _ImageParameters():
   def __init__(self):
     # Parameters for cloud storage reference images.
     self.vendor_id = None
@@ -147,7 +144,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         dest='dont_restore_color_profile_after_test',
         action='store_true',
         default=False,
-        help='(Mainly on Mac) don\'t restore the system\'s original color '
+        help="(Mainly on Mac) don't restore the system's original color "
         'profile after the test completes; leave the system using the sRGB '
         'color profile. See http://crbug.com/784456.')
     parser.add_option(
@@ -199,7 +196,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
         '--no-luci-auth',
         action='store_true',
         default=False,
-        help='Don\'t use the service account provided by LUCI for '
+        help="Don't use the service account provided by LUCI for "
         'authentication for Skia Gold, instead relying on gsutil to be '
         'pre-authenticated. Meant for testing locally instead of on the bots.')
     parser.add_option(
@@ -361,8 +358,6 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     use_luci = not (gold_properties.local_pixel_tests
                     or gold_properties.no_luci_auth)
 
-    inexact_matching_args = page.matching_algorithm.GetCmdline()
-
     # TODO(skbug.com/12149): Remove this once Gold stops clobbering earlier
     # results when running retry steps.
     force_dryrun = False
@@ -375,7 +370,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     status, error = gold_session.RunComparison(
         name=image_name,
         png_file=png_temp_file,
-        inexact_matching_args=inexact_matching_args,
+        inexact_matching_args=page.matching_algorithm.GetCmdline(),
         use_luci=use_luci,
         force_dryrun=force_dryrun)
     if not status:
@@ -446,7 +441,7 @@ class SkiaGoldIntegrationTestBase(gpu_integration_test.GpuIntegrationTest):
     del options
     return []
 
-  def RunActualGpuTest(self, options):
+  def RunActualGpuTest(self, test_path, *args):
     raise NotImplementedError(
         'RunActualGpuTest must be overridden in a subclass')
 
@@ -456,7 +451,7 @@ def _ToHex(num):
 
 
 def _ToHexOrNone(num):
-  return 'None' if num == None else _ToHex(num)
+  return 'None' if num is None else _ToHex(num)
 
 
 def _ToNonEmptyStrOrNone(val):

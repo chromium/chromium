@@ -13,18 +13,18 @@
 #include "net/der/encode_values.h"
 #include "net/der/parse_values.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "net/cert/cert_verify_proc_mac.h"
 #include "net/cert/internal/trust_store_mac.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/cert/cert_verify_proc_win.h"
 #endif
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 cert_verifier::mojom::CertVerifierDebugInfo::MacTrustImplType
 TrustImplTypeToMojom(net::TrustStoreMac::TrustImplType input) {
   switch (input) {
@@ -103,7 +103,7 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
   mojom::CertVerifierDebugInfoPtr debug_info =
       mojom::CertVerifierDebugInfo::New();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto* mac_platform_debug_info =
       net::CertVerifyProcMac::ResultDebugData::Get(&primary_result);
   if (mac_platform_debug_info) {
@@ -130,9 +130,9 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
     debug_info->mac_trust_impl =
         TrustImplTypeToMojom(mac_trust_debug_info->trust_impl());
   }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   auto* win_platform_debug_info =
       net::CertVerifyProcWin::ResultDebugData::Get(&primary_result);
   if (win_platform_debug_info) {
@@ -143,7 +143,7 @@ void TrialComparisonCertVerifierMojo::OnSendTrialReport(
     debug_info->win_platform_debug_info->authroot_sequence_number =
         win_platform_debug_info->authroot_sequence_number();
   }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
   auto* cert_verify_proc_builtin_debug_data =
       net::CertVerifyProcBuiltinResultDebugData::Get(&trial_result);

@@ -8,11 +8,10 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
+import org.chromium.chrome.browser.tab.state.SerializedCriticalPersistedTabData;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.base.WindowAndroid;
-
-import java.nio.ByteBuffer;
 
 /**
  * Builds {@link Tab} using builder pattern. All Tab classes should be instantiated
@@ -33,7 +32,7 @@ public class TabBuilder {
     private TabDelegateFactory mDelegateFactory;
     private boolean mInitiallyHidden;
     private TabState mTabState;
-    private ByteBuffer mSerializedCriticalPersistedTabData;
+    private SerializedCriticalPersistedTabData mSerializedCriticalPersistedTabData;
     private Callback<Tab> mPreInitializeAction;
 
     /**
@@ -155,7 +154,7 @@ public class TabBuilder {
      * @return {@link TabBuilder} creating the Tab
      */
     public TabBuilder setSerializedCriticalPersistedTabData(
-            @Nullable ByteBuffer serializedCriticalPersistedTabData) {
+            @Nullable SerializedCriticalPersistedTabData serializedCriticalPersistedTabData) {
         mSerializedCriticalPersistedTabData = serializedCriticalPersistedTabData;
         return this;
     }
@@ -179,7 +178,8 @@ public class TabBuilder {
         if (mParent != null) {
             parent = mParent;
         } else if (mTabResolver != null) {
-            if (mSerializedCriticalPersistedTabData != null) {
+            if (!CriticalPersistedTabData.isEmptySerialization(
+                        mSerializedCriticalPersistedTabData)) {
                 parent = mTabResolver.resolve(CriticalPersistedTabData.from(tab).getParentId());
             } else if (mTabState != null) {
                 parent = mTabResolver.resolve(mTabState.parentId);

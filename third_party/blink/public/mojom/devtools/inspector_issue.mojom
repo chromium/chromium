@@ -21,6 +21,7 @@ enum InspectorIssueCode {
   kTrustedWebActivityIssue,
   kHeavyAdIssue,
   kLowTextContrastIssue,
+  kFederatedAuthRequestIssue,
   kGenericIssue,
 };
 
@@ -175,6 +176,37 @@ struct LowTextContrastIssue {
   string font_weight;
 };
 
+// Represents the fetch result from a federated authentication request. Should
+// be updated alongside FederatedAuthRequestIssueReason in
+// third_party/blink/public/devtools_protocol/browser_protocol.pdl, which
+// includes all cases except for kSuccess.
+enum FederatedAuthRequestResult {
+  kSuccess,
+  kApprovalDeclined,
+  kErrorTooManyRequests,
+  kErrorFetchingManifestHttpNotFound,
+  kErrorFetchingManifestNoResponse,
+  kErrorFetchingManifestInvalidResponse,
+  kErrorFetchingClientMetadataHttpNotFound,
+  kErrorFetchingClientMetadataNoResponse,
+  kErrorFetchingClientMetadataInvalidResponse,
+  kErrorFetchingAccountsHttpNotFound,
+  kErrorFetchingAccountsNoResponse,
+  kErrorFetchingAccountsInvalidResponse,
+  kErrorFetchingIdTokenHttpNotFound,
+  kErrorFetchingIdTokenNoResponse,
+  kErrorFetchingIdTokenInvalidResponse,
+  kErrorFetchingIdTokenInvalidRequest,
+  kErrorFetchingSignin,
+  kErrorInvalidSigninResponse,
+  kErrorCanceled,
+  kError,
+};
+
+struct FederatedAuthRequestIssueDetails {
+  FederatedAuthRequestResult status;
+};
+
 enum GenericIssueErrorType {
   kCrossOriginPortalPostMessageError,
 };
@@ -195,6 +227,7 @@ struct InspectorIssueDetails {
   TrustedWebActivityIssueDetails? twa_issue_details;
   HeavyAdIssueDetails? heavy_ad_issue_details;
   LowTextContrastIssue? low_text_contrast_details;
+  FederatedAuthRequestIssueDetails? federated_auth_request_details;
   GenericIssueDetails? generic_issue_details;
   mojo_base.mojom.UnguessableToken? issue_id;
 };

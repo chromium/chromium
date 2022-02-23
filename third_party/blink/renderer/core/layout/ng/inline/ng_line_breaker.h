@@ -58,7 +58,8 @@ class CORE_EXPORT NGLineBreaker {
   bool IsFinished() const { return item_index_ >= Items().size(); }
 
   // Create an NGInlineBreakToken for the last line returned by NextLine().
-  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&) const;
+  // Only call once per instance.
+  const NGInlineBreakToken* CreateBreakToken(const NGLineInfo&);
 
   void PropagateBreakToken(const NGBlockBreakToken*);
   HeapVector<Member<const NGBlockBreakToken>>& PropagatedBreakTokens() {
@@ -301,6 +302,15 @@ class CORE_EXPORT NGLineBreaker {
 
   // True if ShouldCreateNewSvgSegment() should be called.
   bool needs_svg_segmentation_ = false;
+
+  // True if we need to establish a new parallel flow for contents inside a
+  // block-in-inline that overflowed the fragmentainer (although the
+  // block-in-inline itself didn't overflow).
+  bool needs_new_parallel_flow_ = false;
+
+#if DCHECK_IS_ON()
+  bool has_considered_creating_break_token_ = false;
+#endif
 
   const NGInlineItemsData& items_data_;
 

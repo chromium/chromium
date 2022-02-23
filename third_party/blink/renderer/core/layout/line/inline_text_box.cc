@@ -273,13 +273,13 @@ LayoutRect InlineTextBox::LocalSelectionRect(
   LayoutPoint starting_point = LayoutPoint(LogicalLeft(), sel_top);
   LayoutRect r;
   if (s_pos || e_pos != static_cast<int>(len_)) {
-    r = LayoutRect(EnclosingIntRect(
-        font.SelectionRectForText(text_run, FloatPoint(starting_point),
+    r = LayoutRect(gfx::ToEnclosingRect(
+        font.SelectionRectForText(text_run, gfx::PointF(starting_point),
                                   sel_height.ToInt(), s_pos, e_pos)));
   } else {
     // Avoid computing the font width when the entire line box is selected as an
     // optimization.
-    r = LayoutRect(EnclosingIntRect(
+    r = LayoutRect(ToEnclosingRect(
         LayoutRect(starting_point, LayoutSize(logical_width_, sel_height))));
   }
 
@@ -530,7 +530,7 @@ void InlineTextBox::PaintDocumentMarker(const PaintInfo& paint_info,
 
 void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
                                               const PhysicalOffset& box_origin,
-                                              const TextMarkerBase& marker,
+                                              const DocumentMarker& marker,
                                               const ComputedStyle& style,
                                               const Font& font) const {
   InlineTextBoxPainter(*this).PaintTextMarkerForeground(paint_info, box_origin,
@@ -539,7 +539,7 @@ void InlineTextBox::PaintTextMarkerForeground(const PaintInfo& paint_info,
 
 void InlineTextBox::PaintTextMarkerBackground(const PaintInfo& paint_info,
                                               const PhysicalOffset& box_origin,
-                                              const TextMarkerBase& marker,
+                                              const DocumentMarker& marker,
                                               const ComputedStyle& style,
                                               const Font& font) const {
   InlineTextBoxPainter(*this).PaintTextMarkerBackground(paint_info, box_origin,
@@ -598,7 +598,7 @@ LayoutUnit InlineTextBox::PositionForOffset(int offset) const {
   // FIXME: Do we need to add rightBearing here?
   return LayoutUnit(font.SelectionRectForText(
                             ConstructTextRun(style_to_use),
-                            FloatPoint(LogicalLeft().ToInt(), 0), 0, from, to)
+                            gfx::PointF(LogicalLeft().ToInt(), 0), 0, from, to)
                         .right());
 }
 

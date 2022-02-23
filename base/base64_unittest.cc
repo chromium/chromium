@@ -4,6 +4,7 @@
 
 #include "base/base64.h"
 
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace base {
@@ -36,6 +37,10 @@ TEST(Base64Test, Binary) {
                &string_piece_encoded);
 
   EXPECT_EQ(binary_encoded, string_piece_encoded);
+
+  EXPECT_THAT(Base64Decode(binary_encoded),
+              testing::Optional(testing::ElementsAreArray(kData)));
+  EXPECT_FALSE(Base64Decode("invalid base64!"));
 }
 
 TEST(Base64Test, InPlace) {

@@ -11,6 +11,7 @@
 #include "base/feature_list.h"
 #include "base/json/values_util.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/post_task.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -144,8 +145,8 @@ int CountAvailableOriginIds(const base::Value* origin_id_dict) {
   if (!origin_ids)
     return 0;
 
-  DVLOG(3) << "count: " << origin_ids->GetList().size();
-  return origin_ids->GetList().size();
+  DVLOG(3) << "count: " << origin_ids->GetListDeprecated().size();
+  return origin_ids->GetListDeprecated().size();
 }
 
 base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
@@ -159,10 +160,10 @@ base::UnguessableToken TakeFirstOriginId(PrefService* const pref_service) {
   if (!origin_ids)
     return base::UnguessableToken::Null();
 
-  if (origin_ids->GetList().empty())
+  if (origin_ids->GetListDeprecated().empty())
     return base::UnguessableToken::Null();
 
-  auto first_entry = origin_ids->GetList().begin();
+  auto first_entry = origin_ids->GetListDeprecated().begin();
   absl::optional<base::UnguessableToken> result =
       base::ValueToUnguessableToken(*first_entry);
   if (!result)
@@ -317,7 +318,7 @@ class MediaDrmOriginIdManager::NetworkObserver
 
  private:
   // Use of raw pointer is okay as |parent_| owns this object.
-  MediaDrmOriginIdManager* const parent_;
+  const raw_ptr<MediaDrmOriginIdManager> parent_;
   int number_of_attempts_ = 0;
 };
 

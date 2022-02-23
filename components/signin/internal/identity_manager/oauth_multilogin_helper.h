@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/signin/internal/identity_manager/oauth_multilogin_token_fetcher.h"
 #include "components/signin/public/identity_manager/accounts_cookie_mutator.h"
@@ -76,9 +77,9 @@ class OAuthMultiloginHelper : public GaiaAuthConsumer {
                    const std::string& cookie_domain,
                    net::CookieAccessResult access_result);
 
-  SigninClient* signin_client_;
-  AccountsCookieMutator::PartitionDelegate* partition_delegate_;
-  ProfileOAuth2TokenService* token_service_;
+  raw_ptr<SigninClient> signin_client_;
+  raw_ptr<AccountsCookieMutator::PartitionDelegate> partition_delegate_;
+  raw_ptr<ProfileOAuth2TokenService> token_service_;
 
   int fetcher_retries_ = 0;
 

@@ -14,6 +14,7 @@
 #include "base/strings/string_util.h"
 #include "components/ui_devtools/devtools_server.h"
 #include "components/ui_devtools/root_element.h"
+#include "components/ui_devtools/ui_devtools_features.h"
 #include "components/ui_devtools/ui_element.h"
 #include "ui/base/interaction/element_identifier.h"
 
@@ -409,6 +410,9 @@ Response DOMAgent::discardSearchResults(const protocol::String& search_id) {
 protocol::Response DOMAgent::dispatchMouseEvent(
     int node_id,
     std::unique_ptr<protocol::DOM::MouseEvent> event) {
+  if (!base::FeatureList::IsEnabled(
+          ui_devtools::kUIDebugToolsEnableSyntheticEvents))
+    return Response::ServerError("Dispatch mouse events is not enabled.");
   if (node_id_to_ui_element_.count(node_id) == 0)
     return Response::ServerError("Element not found on node id");
   if (!node_id_to_ui_element_[node_id]->DispatchMouseEvent(event.get()))
@@ -419,6 +423,9 @@ protocol::Response DOMAgent::dispatchMouseEvent(
 protocol::Response DOMAgent::dispatchKeyEvent(
     int node_id,
     std::unique_ptr<protocol::DOM::KeyEvent> event) {
+  if (!base::FeatureList::IsEnabled(
+          ui_devtools::kUIDebugToolsEnableSyntheticEvents))
+    return Response::ServerError("Dispatch key events is not enabled.");
   if (node_id_to_ui_element_.count(node_id) == 0)
     return Response::ServerError("Element not found on node id");
   if (!node_id_to_ui_element_[node_id]->DispatchKeyEvent(event.get()))

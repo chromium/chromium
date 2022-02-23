@@ -11,9 +11,9 @@
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "base/fuchsia/file_utils.h"
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "base/nix/xdg_util.h"
 #endif
 
@@ -22,21 +22,21 @@ namespace content {
 namespace {
 
 bool GetDefaultUserDataDirectory(base::FilePath* result) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   CHECK(base::PathService::Get(base::DIR_LOCAL_APP_DATA, result));
   *result = result->Append(std::wstring(L"content_shell"));
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::unique_ptr<base::Environment> env(base::Environment::Create());
   base::FilePath config_dir(base::nix::GetXDGDirectory(
       env.get(), base::nix::kXdgConfigHomeEnvVar, base::nix::kDotConfigDir));
   *result = config_dir.Append("content_shell");
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   CHECK(base::PathService::Get(base::DIR_APP_DATA, result));
   *result = result->Append("Chromium Content Shell");
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   CHECK(base::PathService::Get(base::DIR_ANDROID_APP_DATA, result));
   *result = result->Append(FILE_PATH_LITERAL("content_shell"));
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   *result = base::FilePath(base::kPersistedDataDirectoryPath)
                 .Append(FILE_PATH_LITERAL("content_shell"));
 #else

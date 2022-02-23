@@ -20,7 +20,7 @@ LoadCompletionObserver::~LoadCompletionObserver() {
 }
 
 void LoadCompletionObserver::LoadStateChanged(bool is_loading,
-                                              bool to_different_document) {
+                                              bool should_show_loading_ui) {
   if (!is_loading)
     run_loop_.Quit();
 }

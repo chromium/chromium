@@ -5,6 +5,7 @@
 #ifndef CHROMEOS_DBUS_HPS_FAKE_HPS_DBUS_CLIENT_H_
 #define CHROMEOS_DBUS_HPS_FAKE_HPS_DBUS_CLIENT_H_
 
+#include "base/observer_list.h"
 #include "chromeos/dbus/hps/hps_dbus_client.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,21 +37,41 @@ class COMPONENT_EXPORT(HPS) FakeHpsDBusClient : public HpsDBusClient {
 
   // Methods for co-ordinating GetResultHpsNotify calls in tests.
 
-  void set_hps_notify_result(absl::optional<bool> result) {
+  void set_hps_notify_result(absl::optional<hps::HpsResult> result) {
     hps_notify_result_ = result;
   }
 
   int hps_notify_count() const { return hps_notify_count_; }
 
   // Methods for co-ordinating WaitForServiceToBeAvailable calls in tests.
-  void set_hps_service_is_avaible_(bool is_available) {
-    hps_service_is_avaible_ = is_available;
+  void set_hps_service_is_available(bool is_available) {
+    hps_service_is_available_ = is_available;
   }
 
+  // Methods for co-ordinating notify enable/disable in tests.
+  int enable_hps_notify_count() const { return enable_hps_notify_count_; }
+  int disable_hps_notify_count() const { return disable_hps_notify_count_; }
+
+  // Methods for co-ordinating sense enable/disable in tests.
+  int enable_hps_sense_count() const { return enable_hps_sense_count_; }
+  int disable_hps_sense_count() const { return disable_hps_sense_count_; }
+
+  // Simulte HpsService restart.
+  void Restart();
+
+  // Resets all parameters; used in unittests.
+  void Reset();
+
  private:
-  absl::optional<bool> hps_notify_result_;
+  absl::optional<hps::HpsResult> hps_notify_result_;
   int hps_notify_count_ = 0;
-  bool hps_service_is_avaible_ = false;
+  int enable_hps_notify_count_ = 0;
+  int disable_hps_notify_count_ = 0;
+  int enable_hps_sense_count_ = 0;
+  int disable_hps_sense_count_ = 0;
+  bool hps_service_is_available_ = false;
+
+  base::ObserverList<Observer> observers_;
 };
 
 }  // namespace chromeos

@@ -168,7 +168,6 @@ class WebappActionsNotificationManager implements PauseResumeWithNativeObserver 
         if (ACTION_SHARE.equals(intent.getAction())) {
             // Not routing through onMenuOrKeyboardAction to control UMA String.
             Tab tab = customTabActivity.getActivityTab();
-            boolean isIncognito = tab.isIncognito();
             customTabActivity.getShareDelegateSupplier().get().share(
                     tab, false, ShareOrigin.WEBAPP_NOTIFICATION);
             RecordUserAction.record("Webapp.NotificationShare");

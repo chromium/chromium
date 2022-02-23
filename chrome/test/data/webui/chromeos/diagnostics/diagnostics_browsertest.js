@@ -20,6 +20,7 @@
 GEN_INCLUDE(['//chrome/test/data/webui/polymer_browser_test_base.js']);
 
 GEN('#include "ash/constants/ash_features.h"');
+GEN('#include "build/build_config.h"');
 GEN('#include "content/public/test/browser_test.h"');
 
 const dxTestSuites = 'chromeos/diagnostics/diagnostics_app_unified_test.js';
@@ -124,7 +125,13 @@ TEST_F('DiagnosticsApp', 'BrowserTest', function() {
   mocha.run();
 });
 
-TEST_F('DiagnosticsAppWithNetwork', 'BrowserTest', function() {
+// TODO(crbug.com/1288529): Flaky on ChromeOS.
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
+GEN('# define MAYBE_BrowserTest DISABLED_BrowserTest');
+GEN('#else');
+GEN('# define MAYBE_BrowserTest BrowserTest');
+GEN('#endif');
+TEST_F('DiagnosticsAppWithNetwork', 'MAYBE_BrowserTest', function() {
   mocha.run();
 });
 

@@ -18,11 +18,11 @@ namespace ntp_snippets {
 namespace {
 // All platforms proxy for whether the simplified NTP is enabled.
 bool IsSimplifiedNtpEnabled() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return true;
 #else
   return false;
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 }
 }  // namespace
 

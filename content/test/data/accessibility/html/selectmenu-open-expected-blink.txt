@@ -3,7 +3,7 @@ rootWebArea focusable
 ++++genericContainer
 ++++++genericContainer
 ++++++++genericContainer ignored
-++++++++++popUpButton name='Custom selectmenu button' setSize=0 haspopup=menu
+++++++++++comboBoxMenuButton value='Custom selectmenu button' haspopup=listbox
 ++++++++++++staticText name='Custom selectmenu button'
 ++++++++++++++inlineTextBox name='Custom selectmenu button'
 ++++++++genericContainer ignored

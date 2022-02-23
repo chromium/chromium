@@ -2,7 +2,7 @@ Tests that passing a string intestead of a protocol object does not crash crash 
 Error: {
     error : {
         code : -32602
-        data : Failed to deserialize params.headers - BINDINGS: dictionary value expected <somewhere>
+        data : Failed to deserialize params.headers - CBOR: map start expected <somewhere>
         message : Invalid parameters
     }
     id : <number>

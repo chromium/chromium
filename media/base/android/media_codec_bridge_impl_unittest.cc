@@ -105,14 +105,6 @@ static const size_t kDecodedAudioLengthInBytes = 9216u;
 
 namespace media {
 
-#define SKIP_TEST_IF_MEDIA_CODEC_IS_NOT_AVAILABLE()               \
-  do {                                                            \
-    if (!MediaCodecUtil::IsMediaCodecAvailable()) {               \
-      VLOG(0) << "Could not run test - not supported on device."; \
-      return;                                                     \
-    }                                                             \
-  } while (0)
-
 #define SKIP_TEST_IF_HW_H264_IS_NOT_AVAILABLE()                        \
   do {                                                                 \
     if (!MediaCodecUtil::IsH264EncoderAvailable()) {                   \
@@ -287,8 +279,6 @@ AudioDecoderConfig NewAudioConfig(
 }
 
 TEST(MediaCodecBridgeTest, CreateH264Decoder) {
-  SKIP_TEST_IF_MEDIA_CODEC_IS_NOT_AVAILABLE();
-
   VideoCodecConfig config;
   config.codec = VideoCodec::kH264;
   config.codec_type = CodecType::kAny;
@@ -298,8 +288,6 @@ TEST(MediaCodecBridgeTest, CreateH264Decoder) {
 }
 
 TEST(MediaCodecBridgeTest, DoNormal) {
-  SKIP_TEST_IF_MEDIA_CODEC_IS_NOT_AVAILABLE();
-
   std::unique_ptr<media::MediaCodecBridge> media_codec =
       MediaCodecBridgeImpl::CreateAudioDecoder(NewAudioConfig(AudioCodec::kMP3),
                                                nullptr);
@@ -355,8 +343,6 @@ TEST(MediaCodecBridgeTest, DoNormal) {
 }
 
 TEST(MediaCodecBridgeTest, InvalidVorbisHeader) {
-  SKIP_TEST_IF_MEDIA_CODEC_IS_NOT_AVAILABLE();
-
   // The first byte of the header is not 0x02.
   std::vector<uint8_t> invalid_first_byte = {{0x00, 0xff, 0xff, 0xff, 0xff}};
   ASSERT_THAT(
@@ -375,8 +361,6 @@ TEST(MediaCodecBridgeTest, InvalidVorbisHeader) {
 }
 
 TEST(MediaCodecBridgeTest, InvalidOpusHeader) {
-  SKIP_TEST_IF_MEDIA_CODEC_IS_NOT_AVAILABLE();
-
   std::vector<uint8_t> dummy_extra_data = {{0, 0}};
 
   // Codec Delay is < 0.

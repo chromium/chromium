@@ -16,7 +16,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "chrome/common/printing/printer_capabilities_mac.h"
 #include "printing/backend/print_backend.h"
 #include "ui/gfx/geometry/size.h"
@@ -122,7 +122,7 @@ void RecordCapability(base::OnceClosure done_closure,
   std::move(done_closure).Run();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 base::Value GetValueFromCustomPaper(
     const PrinterSemanticCapsAndDefaults::Paper& paper) {
   base::Value paper_value(base::Value::Type::DICTIONARY);
@@ -270,7 +270,7 @@ TEST_F(PdfPrinterHandlerGetCapabilityTest, GetCapability) {
   EXPECT_EQ(expected_capability.value(), capability);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(PdfPrinterHandlerGetCapabilityTest,
        GetMacCustomPaperSizesInCapabilities) {
   constexpr char kPaperOptionPath[] = "capabilities.printer.media_size.option";

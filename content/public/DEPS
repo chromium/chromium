@@ -5,10 +5,12 @@ include_rules = [
   "+services/network/public/mojom",
   "+services/service_manager/public",
 
+  # All code in content/public can use these headers.
+  "+content/public/common",
+  "+content/public/android/content_jni_headers",
+
   # This file does not belong in content/public as it should not be
   # included directly by embedders of content/.  It must however be
   # available to code in content/public.
   "+content/common/content_export.h",
-  "+content/public/common",
-  "+content/public/android/content_jni_headers",
 ]

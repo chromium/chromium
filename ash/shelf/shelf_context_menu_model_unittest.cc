@@ -4,8 +4,10 @@
 
 #include "ash/shelf/shelf_context_menu_model.h"
 
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_menu_constants.h"
 #include "ash/public/cpp/shelf_item_delegate.h"
+#include "ash/public/cpp/test/test_new_window_delegate.h"
 #include "ash/public/cpp/wallpaper/wallpaper_controller_client.h"
 #include "ash/session/test_session_controller_client.h"
 #include "ash/shelf/shelf.h"
@@ -16,7 +18,9 @@
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/user_manager/user_type.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "ui/display/display.h"
 #include "ui/views/widget/widget.h"
 
@@ -24,6 +28,13 @@ namespace ash {
 namespace {
 
 using CommandId = ShelfContextMenuModel::CommandId;
+
+class MockNewWindowDelegate
+    : public testing::StrictMock<TestNewWindowDelegate> {
+ public:
+  // TestNewWindowDelegate:
+  MOCK_METHOD(void, OpenPersonalizationHub, (), (override));
+};
 
 class ShelfContextMenuModelTest
     : public AshTestBase,
@@ -38,6 +49,8 @@ class ShelfContextMenuModelTest
   ~ShelfContextMenuModelTest() override = default;
 
   void SetUp() override {
+    delegate_provider_ = std::make_unique<TestNewWindowDelegateProvider>(
+        std::make_unique<MockNewWindowDelegate>());
     AshTestBase::SetUp();
     TestSessionControllerClient* session = GetSessionControllerClient();
     session->AddUserSession("user1@test.com", GetUserType());
@@ -46,6 +59,14 @@ class ShelfContextMenuModelTest
   }
 
   user_manager::UserType GetUserType() const { return GetParam(); }
+
+  MockNewWindowDelegate* GetMockNewWindowDelegate() {
+    return static_cast<MockNewWindowDelegate*>(
+        delegate_provider_->GetPrimary());
+  }
+
+ private:
+  std::unique_ptr<TestNewWindowDelegateProvider> delegate_provider_;
 };
 
 // A test shelf item delegate that records the commands sent for execution.
@@ -136,14 +157,37 @@ TEST_P(ShelfContextMenuModelTest, Invocation) {
   ShelfContextMenuModel menu3(nullptr, primary_id);
   submenu = menu3.GetSubmenuModelAt(1);
   EXPECT_TRUE(submenu->IsItemCheckedAt(0));
+}
 
-  TestWallpaperControllerClient client;
-  Shell::Get()->wallpaper_controller()->SetClient(&client);
-  EXPECT_EQ(0u, client.open_count());
+TEST_P(ShelfContextMenuModelTest, OpensPersonalizationHubOrWallpaper) {
+  int64_t display_id = GetPrimaryDisplay().id();
 
-  // Click the third option, wallpaper picker. It should open.
-  menu3.ActivatedAt(2);
-  EXPECT_EQ(1u, client.open_count());
+  base::test::ScopedFeatureList scoped_feature_list;
+  // Disable personalization hub feature should open wallpaper.
+  {
+    scoped_feature_list.InitAndDisableFeature(
+        ash::features::kPersonalizationHub);
+    TestWallpaperControllerClient client;
+    Shell::Get()->wallpaper_controller()->SetClient(&client);
+    EXPECT_EQ(0u, client.open_count());
+
+    ShelfContextMenuModel menu_without_feature(nullptr, display_id);
+    // Click the third option, wallpaper picker. It should open.
+    menu_without_feature.ActivatedAt(2);
+    EXPECT_EQ(1u, client.open_count());
+  }
+
+  scoped_feature_list.Reset();
+  // Enable personalization hub feature should open hub.
+  {
+    EXPECT_CALL(*GetMockNewWindowDelegate(), OpenPersonalizationHub).Times(1);
+
+    scoped_feature_list.InitAndEnableFeature(
+        ash::features::kPersonalizationHub);
+
+    ShelfContextMenuModel menu_with_feature(nullptr, display_id);
+    menu_with_feature.ActivatedAt(2);
+  }
 }
 
 // Tests custom items in a shelf context menu for an application.

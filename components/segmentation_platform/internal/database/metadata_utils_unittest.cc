@@ -71,51 +71,57 @@ TEST_F(MetadataUtilsTest, MetadataValidation) {
   metadata.set_time_unit(proto::DAY);
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
             metadata_utils::ValidateMetadata(metadata));
+
+  proto::VersionInfo* version_info = metadata.mutable_version_info();
+  version_info->set_metadata_min_version(
+      proto::CurrentVersion::METADATA_VERSION + 1);
+  EXPECT_EQ(metadata_utils::ValidationResult::kVersionNotSupported,
+            metadata_utils::ValidateMetadata(metadata));
 }
 
-TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
-  proto::Feature feature;
+TEST_F(MetadataUtilsTest, MetadataUmaFeatureValidation) {
+  proto::UMAFeature feature;
   EXPECT_EQ(metadata_utils::ValidationResult::kSignalTypeInvalid,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_type(proto::SignalType::UNKNOWN_SIGNAL_TYPE);
   EXPECT_EQ(metadata_utils::ValidationResult::kSignalTypeInvalid,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   // name not required for USER_ACTION.
   feature.set_type(proto::SignalType::USER_ACTION);
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameHashNotFound,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_type(proto::SignalType::HISTOGRAM_ENUM);
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameNotFound,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_type(proto::SignalType::HISTOGRAM_VALUE);
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameNotFound,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_name("test name");
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameHashNotFound,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_name_hash(base::HashMetricName("not the correct name"));
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureNameHashDoesNotMatchName,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_name_hash(base::HashMetricName("test name"));
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureAggregationNotFound,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_aggregation(proto::Aggregation::COUNT);
   // No bucket_count or tensor_length is valid.
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   feature.set_bucket_count(456);
   // Aggregation=COUNT requires tensor length = 1.
   EXPECT_EQ(metadata_utils::ValidationResult::kFeatureTensorLengthInvalid,
-            metadata_utils::ValidateMetadataFeature(feature));
+            metadata_utils::ValidateMetadataUmaFeature(feature));
 
   std::vector<proto::Aggregation> tensor_length_1 = {
       proto::Aggregation::COUNT,
@@ -142,21 +148,21 @@ TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
     feature.set_bucket_count(0);
     feature.set_tensor_length(1);
     EXPECT_EQ(metadata_utils::ValidationResult::kFeatureTensorLengthInvalid,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
     feature.set_tensor_length(0);
     EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
 
     // Tensor length should otherwise always be 1 for this aggregation type.
     feature.set_bucket_count(456);
     feature.set_tensor_length(10);
     EXPECT_EQ(metadata_utils::ValidationResult::kFeatureTensorLengthInvalid,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
 
     feature.set_bucket_count(456);
     feature.set_tensor_length(1);
     EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
   }
 
   for (auto aggregation : tensor_length_bucket_count) {
@@ -167,23 +173,52 @@ TEST_F(MetadataUtilsTest, MetadataFeatureValidation) {
     feature.set_bucket_count(0);
     feature.set_tensor_length(1);
     EXPECT_EQ(metadata_utils::ValidationResult::kFeatureTensorLengthInvalid,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
     feature.set_tensor_length(0);
     EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
 
     // Tensor length should otherwise always be equal to bucket_count for this
     // aggregation type.
     feature.set_bucket_count(456);
     feature.set_tensor_length(1);
     EXPECT_EQ(metadata_utils::ValidationResult::kFeatureTensorLengthInvalid,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
 
     feature.set_bucket_count(456);
     feature.set_tensor_length(456);
     EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
-              metadata_utils::ValidateMetadataFeature(feature));
+              metadata_utils::ValidateMetadataUmaFeature(feature));
   }
+}
+
+TEST_F(MetadataUtilsTest, MetadataCustomInputValidation) {
+  // Empty custom input has tensor length of 0 and result in a valid input
+  // tensor of length 0.
+  proto::CustomInput custom_input;
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  // When fill policy is unknown, the custom input is invalid if the default
+  // value list size is smaller than the input tensor length.
+  custom_input.set_tensor_length(1);
+  EXPECT_EQ(metadata_utils::ValidationResult::kCustomInputInvalid,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  custom_input.add_default_value(0);
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  // When fill policy is current time, the custom input is invalid if the tensor
+  // length is bigger than 1.
+  custom_input.set_fill_policy(proto::CustomInput::FILL_PREDICTION_TIME);
+  custom_input.set_tensor_length(2);
+  EXPECT_EQ(metadata_utils::ValidationResult::kCustomInputInvalid,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
+
+  custom_input.set_tensor_length(1);
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataCustomInput(custom_input));
 }
 
 TEST_F(MetadataUtilsTest, ValidateMetadataAndFeatures) {
@@ -225,6 +260,63 @@ TEST_F(MetadataUtilsTest, ValidateMetadataAndFeatures) {
   feature2->set_bucket_count(2);
   feature2->set_tensor_length(2);
   EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+}
+
+TEST_F(MetadataUtilsTest, ValidateMetadataAndInputFeatures) {
+  proto::SegmentationModelMetadata metadata;
+  metadata.set_time_unit(proto::DAY);
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Verify adding a single input feature adds new requirements.
+  auto* input1 = metadata.add_input_features();
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureListInvalid,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  proto::UMAFeature* feature1 = input1->mutable_uma_feature();
+  EXPECT_EQ(metadata_utils::ValidationResult::kSignalTypeInvalid,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Fully flesh out an example input feature and verify validation starts
+  // working again.
+  feature1->set_type(proto::SignalType::USER_ACTION);
+  feature1->set_name_hash(base::HashMetricName("some user action"));
+  feature1->set_aggregation(proto::Aggregation::COUNT);
+  feature1->set_bucket_count(1);
+  feature1->set_tensor_length(1);
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Verify adding another feature adds new requirements again.
+  auto* input2 = metadata.add_input_features();
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureListInvalid,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  proto::UMAFeature* feature2 = input2->mutable_uma_feature();
+  EXPECT_EQ(metadata_utils::ValidationResult::kSignalTypeInvalid,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Fully flesh out the second feature and verify validation starts working
+  // again.
+  feature2->set_type(proto::SignalType::HISTOGRAM_VALUE);
+  feature2->set_name("some histogram");
+  feature2->set_name_hash(base::HashMetricName("some histogram"));
+  feature2->set_aggregation(proto::Aggregation::BUCKETED_COUNT);
+  feature2->set_bucket_count(2);
+  feature2->set_tensor_length(2);
+  EXPECT_EQ(metadata_utils::ValidationResult::kValidationSuccess,
+            metadata_utils::ValidateMetadataAndFeatures(metadata));
+
+  // Verify that setting both features and input_features list is invalid.
+  auto* feature3 = metadata.add_features();
+  feature3->set_type(proto::SignalType::HISTOGRAM_VALUE);
+  feature3->set_name("some other histogram");
+  feature3->set_name_hash(base::HashMetricName("some other histogram"));
+  feature3->set_aggregation(proto::Aggregation::BUCKETED_COUNT);
+  feature3->set_bucket_count(2);
+  feature3->set_tensor_length(2);
+  EXPECT_EQ(metadata_utils::ValidationResult::kFeatureListInvalid,
             metadata_utils::ValidateMetadataAndFeatures(metadata));
 }
 
@@ -504,6 +596,97 @@ TEST_F(MetadataUtilsTest, CheckMissingDefaultDiscreteMapping) {
   // 'my-default', so we should get a 0 result.
   EXPECT_EQ(0, metadata_utils::ConvertToDiscreteScore("non-existing-key", 0.6,
                                                       metadata));
+}
+
+TEST_F(MetadataUtilsTest, SegmetationModelMetadataToString) {
+  proto::SegmentationModelMetadata metadata;
+  ASSERT_TRUE(
+      metadata_utils::SegmetationModelMetadataToString(metadata).empty());
+
+  proto::UMAFeature feature;
+  feature.set_type(proto::SignalType::UNKNOWN_SIGNAL_TYPE);
+  feature.set_name("test name");
+  feature.set_aggregation(proto::Aggregation::COUNT);
+  feature.set_bucket_count(456);
+  *metadata.add_features() = feature;
+
+  std::string expected =
+      "feature:{type:UNKNOWN_SIGNAL_TYPE, name:test name, bucket_count:456, "
+      "aggregation:COUNT}";
+  ASSERT_EQ(metadata_utils::SegmetationModelMetadataToString(metadata),
+            expected);
+
+  metadata.set_bucket_duration(10);
+  metadata.set_min_signal_collection_length(7);
+  ASSERT_EQ(metadata_utils::SegmetationModelMetadataToString(metadata),
+            expected + ", bucket_duration:10, min_signal_collection_length:7");
+}
+
+TEST_F(MetadataUtilsTest, GetAllUmaFeatures) {
+  proto::SegmentationModelMetadata model_metadata;
+
+  proto::UMAFeature feature1;
+  feature1.set_name("feature1");
+  *model_metadata.add_features() = feature1;
+
+  proto::UMAFeature feature2;
+  feature2.set_name("feature2");
+  *model_metadata.add_features() = feature2;
+
+  std::vector<proto::UMAFeature> expected = metadata_utils::GetAllUmaFeatures(
+      model_metadata, /*include_outputs=*/false);
+
+  ASSERT_EQ(model_metadata.features_size(), (int)expected.size());
+
+  for (int i = 0; i < model_metadata.features_size(); ++i) {
+    ASSERT_EQ(model_metadata.features(i).name(), expected[i].name());
+  }
+}
+
+TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithInputFeatures) {
+  proto::SegmentationModelMetadata model_metadata;
+
+  // Adds two inputs.
+  auto* input1 = model_metadata.add_input_features();
+  proto::UMAFeature* feature1 = input1->mutable_uma_feature();
+  feature1->set_name("feature1");
+
+  auto* input2 = model_metadata.add_input_features();
+  proto::UMAFeature* feature2 = input2->mutable_uma_feature();
+  feature2->set_name("feature2");
+
+  // Adds one output.
+  auto* output = model_metadata.mutable_training_outputs()
+                     ->add_outputs()
+                     ->mutable_uma_output()
+                     ->mutable_uma_feature();
+  output->set_name("output");
+
+  std::vector<proto::UMAFeature> expected = metadata_utils::GetAllUmaFeatures(
+      model_metadata, /*include_outputs=*/false);
+
+  // Verifies that only all the inputs are included.
+  ASSERT_EQ(model_metadata.input_features_size(), (int)expected.size());
+  for (int i = 0; i < model_metadata.input_features_size(); ++i) {
+    if (model_metadata.input_features(i).has_uma_feature()) {
+      ASSERT_EQ(model_metadata.input_features(i).uma_feature().name(),
+                expected[i].name());
+    }
+  }
+}
+
+TEST_F(MetadataUtilsTest, GetAllUmaFeaturesWithUMAOutput) {
+  proto::SegmentationModelMetadata model_metadata;
+  auto* uma_feature = model_metadata.mutable_training_outputs()
+                          ->add_outputs()
+                          ->mutable_uma_output()
+                          ->mutable_uma_feature();
+  uma_feature->set_name("output");
+
+  std::vector<proto::UMAFeature> expected = metadata_utils::GetAllUmaFeatures(
+      model_metadata, /*include_outputs=*/true);
+  EXPECT_EQ(1u, expected.size());
+  EXPECT_EQ("output", expected[0].name());
 }
 
 }  // namespace segmentation_platform

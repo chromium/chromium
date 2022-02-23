@@ -4,9 +4,16 @@
      found in the LICENSE file. -->
 
 <resources>
+    <declare-styleable name="ButtonPreference">
+        <!-- The layout that will be used for the button. -->
+        <attr name="buttonLayout" format="reference" />
+    </declare-styleable>
+
     <declare-styleable name="ChromeBasePreference">
         <!-- The tint color for the icon set by android:icon. -->
         <attr name="iconTint" format="color" />
+        <!-- Name of a user action that will be logged when this preference is clicked -->
+        <attr name="userAction" format="string" />
     </declare-styleable>
 
     <declare-styleable name="SpinnerPreference">

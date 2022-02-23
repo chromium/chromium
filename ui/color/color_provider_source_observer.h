@@ -6,6 +6,7 @@
 #define UI_COLOR_COLOR_PROVIDER_SOURCE_OBSERVER_H_
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "ui/color/color_provider_source.h"
 
@@ -40,7 +41,7 @@ class COMPONENT_EXPORT(COLOR) ColorProviderSourceObserver
 
  private:
   // The currently observed source.
-  const ui::ColorProviderSource* source_ = nullptr;
+  raw_ptr<const ui::ColorProviderSource> source_ = nullptr;
 
   // Ensure references to the observer are removed from the source should the
   // source outlive the observer.

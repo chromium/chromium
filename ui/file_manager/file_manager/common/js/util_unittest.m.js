@@ -8,6 +8,7 @@ import {MockVolumeManager} from '../../background/js/mock_volume_manager.js';
 
 import {EntryList, FakeEntryImpl, VolumeEntry} from './files_app_entry_types.js';
 import {MockFileSystem} from './mock_entry.js';
+import {LEGACY_FILES_APP_URL, SWA_FILES_APP_URL} from './url_constants.js';
 import {util} from './util.js';
 import {VolumeManagerCommon} from './volume_manager_types.js';
 
@@ -353,11 +354,11 @@ export function testExtractFilePath() {
   assertEquals(util.extractFilePath(undefined), null);
 
   // In the Extension:
-  url =
-      'filesystem:chrome-extension://hhaomjibdihmijegdhdafkllkbggdgoj/external/Downloads-u/Downloads/f.zip';
-  assertEquals(util.extractFilePath(url), '/Downloads-u/Downloads/f.zip');
+  const zipPath = '/Downloads-u/Downloads/f.zip';
+  url = `filesystem:${LEGACY_FILES_APP_URL}external${zipPath}`;
+  assertEquals(util.extractFilePath(url), zipPath);
 
   // In the SWA:
-  url = 'filesystem:chrome://file-manager/external/Downloads-u/Downloads/f.zip';
-  assertEquals(util.extractFilePath(url), '/Downloads-u/Downloads/f.zip');
+  url = `filesystem:${SWA_FILES_APP_URL}external${zipPath}`;
+  assertEquals(util.extractFilePath(url), zipPath);
 }

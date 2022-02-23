@@ -4,7 +4,6 @@
 load("@flatbuffers//:build_defs.bzl", "flatbuffer_cc_library")
 load("@org_tensorflow//tensorflow:tensorflow.bzl", "tf_gen_op_wrapper_py")
 load(":native.bzl", "micore_tf_copts", "micore_tf_deps")
-load("@org_tensorflow//tensorflow:tensorflow.bzl", "pybind_extension")
 
 package(
     default_visibility = [
@@ -274,6 +273,8 @@ cc_test(
         ":encoder_config",
         ":model_converter",
         ":optimized_encoder",
+        "//tensorflow_lite_support/cc/test:test_utils",
+        "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
         "@com_google_googletest//:gtest_main",
@@ -296,6 +297,8 @@ cc_test(
         ":double_array_trie_builder",
         ":model_converter",
         ":optimized_decoder",
+        "//tensorflow_lite_support/cc/test:test_utils",
+        "@com_google_absl//absl/flags:flag",
         "@com_google_absl//absl/status",
         "@com_google_absl//absl/strings:str_format",
         "@com_google_googletest//:gtest_main",
@@ -316,47 +319,6 @@ cc_library(
         "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
     ],
     alwayslink = 1,
-)
-
-pybind_extension(
-    name = "pywrap_tflite_registerer",
-    srcs = [
-        "pywrap_tflite_registerer.cc",
-    ],
-    hdrs = ["py_tflite_registerer.h"],
-    additional_exported_symbols = ["TFLite_SentencepieceTokenizerRegisterer"],
-    module_name = "pywrap_tflite_registerer",
-    srcs_version = "PY3ONLY",
-    deps = [
-        ":py_tflite_registerer",
-        "@local_config_python//:python_headers",
-        "@org_tensorflow//tensorflow/lite:framework",
-        "@org_tensorflow//tensorflow/lite/kernels:builtin_ops",
-        "@pybind11",
-    ],
-)
-
-pybind_extension(
-    name = "pywrap_model_converter",
-    srcs = ["pywrap_model_converter.cc"],
-    hdrs = ["model_converter.h"],
-    additional_exported_symbols = [
-        "ConvertSentencepieceModel",
-        "ConvertSentencepieceModelForDecoder",
-        "GetVocabularySize",
-    ],
-    copts = ["-fexceptions"],
-    features = ["-use_header_modules"],
-    module_name = "pywrap_model_converter",
-    srcs_version = "PY3ONLY",
-    deps = [
-        ":model_converter",
-        "//tensorflow_lite_support/cc/port:statusor",
-        "@com_google_absl//absl/status",
-        "@local_config_python//:python_headers",
-        "@org_tensorflow//tensorflow/lite:framework",
-        "@pybind11",
-    ],
 )
 
 config_setting(

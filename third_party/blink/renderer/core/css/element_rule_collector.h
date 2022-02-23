@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/css/resolver/match_request.h"
 #include "third_party/blink/renderer/core/css/resolver/match_result.h"
 #include "third_party/blink/renderer/core/css/selector_checker.h"
-#include "third_party/blink/renderer/core/css/style_recalc.h"
+#include "third_party/blink/renderer/core/css/style_recalc_context.h"
 #include "third_party/blink/renderer/core/css/style_request.h"
 #include "third_party/blink/renderer/core/style/computed_style_base_constants.h"
 #include "third_party/blink/renderer/platform/wtf/ref_counted.h"
@@ -38,6 +38,8 @@
 namespace blink {
 
 class CSSStyleSheet;
+class Element;
+class HTMLSlotElement;
 class PartNames;
 class RuleData;
 class SelectorFilter;
@@ -142,11 +144,36 @@ class CORE_EXPORT ElementRuleCollector {
   }
   void SetIncludeEmptyRules(bool include) { include_empty_rules_ = include; }
   bool IncludeEmptyRules() const { return include_empty_rules_; }
-  bool IsCollectingForPseudoElement() const {
-    return pseudo_style_request_.pseudo_id != kPseudoIdNone;
-  }
+
+  // Return the pseudo id if the style request is for rules associated with a
+  // pseudo element, or kPseudoNone if not.
+  PseudoId GetPseudoId() const { return pseudo_style_request_.pseudo_id; }
 
   void AddMatchedRulesToTracker(StyleRuleUsageTracker*) const;
+
+  // Temporarily swap the StyleRecalcContext with one which points to the
+  // closest query container for matching ::slotted rules for a given slot.
+  class SlottedRulesScope {
+   public:
+    SlottedRulesScope(ElementRuleCollector& collector, HTMLSlotElement& slot)
+        : context_(&collector.style_recalc_context_,
+                   collector.style_recalc_context_.ForSlottedRules(slot)) {}
+
+   private:
+    base::AutoReset<StyleRecalcContext> context_;
+  };
+
+  // Temporarily swap the StyleRecalcContext with one which points to the
+  // closest query container for matching ::part rules for a given host.
+  class PartRulesScope {
+   public:
+    PartRulesScope(ElementRuleCollector& collector, Element& host)
+        : context_(&collector.style_recalc_context_,
+                   collector.style_recalc_context_.ForPartRules(host)) {}
+
+   private:
+    base::AutoReset<StyleRecalcContext> context_;
+  };
 
  private:
   struct PartRequest {

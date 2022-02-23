@@ -23,7 +23,7 @@
 #include "crypto/sha2.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
-#include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/public/strings/grit/blink_accessibility_strings.h"
 #include "third_party/blink/public/web/web_ax_object.h"
 #include "third_party/blink/public/web/web_document.h"
 #include "third_party/blink/public/web/web_element.h"
@@ -32,6 +32,7 @@
 #include "ui/accessibility/accessibility_features.h"
 #include "ui/accessibility/ax_role_properties.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/transform.h"
 #include "url/gurl.h"
 
 namespace content {
@@ -39,9 +40,6 @@ namespace content {
 namespace {
 
 int GetMessageIdForIconEnum(const std::string& icon_type) {
-#if defined(OS_ANDROID) || defined(OS_FUCHSIA)
-  return 0;
-#else
   static constexpr auto kIconTypeToMessageIdMap =
       base::MakeFixedFlatMap<base::StringPiece, int>({
           {"ICON_PLUS", IDS_AX_IMAGE_ANNOTATION_ICON_PLUS},
@@ -128,7 +126,6 @@ int GetMessageIdForIconEnum(const std::string& icon_type) {
     return 0;
 
   return iter->second;
-#endif  // defined(OS_ANDROID)
 }
 
 }  // namespace
@@ -400,7 +397,7 @@ void AXImageAnnotator::OnImageAnnotated(
     // Get the image size as minimum and maximum dimension.
     blink::WebAXObject offset_container;
     gfx::RectF bounds;
-    skia::Matrix44 container_transform;
+    gfx::Transform container_transform;
     bool clips_children = false;
     image.GetRelativeBounds(offset_container, bounds, container_transform,
                             &clips_children);

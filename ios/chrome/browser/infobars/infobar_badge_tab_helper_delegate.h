@@ -8,6 +8,7 @@
 #import <Foundation/Foundation.h>
 
 @protocol BadgeItem;
+enum class InfobarType;
 
 namespace web {
 class WebState;
@@ -16,17 +17,12 @@ class WebState;
 // Delegate used by InfobarBadgeTabHelper to manage the Infobar badges.
 @protocol InfobarBadgeTabHelperDelegate
 
-// Asks the delegate to add a badge with the configuration of |badgeItem| for
-// |webState|.
-- (void)addInfobarBadge:(id<BadgeItem>)badgeItem
-            forWebState:(web::WebState*)webState;
-// Asks the delegate to remove a badge matching the badgeType of |badgeItem| for
-// |webState|.
-- (void)removeInfobarBadge:(id<BadgeItem>)badgeItem
-               forWebState:(web::WebState*)webState;
-// Asks the delegate to update the configuration of |badgeItem| for |webState|.
-- (void)updateInfobarBadge:(id<BadgeItem>)badgeItem
-               forWebState:(web::WebState*)webState;
+// Checks whether badge is supported for |infobarType|.
+- (BOOL)badgeSupportedForInfobarType:(InfobarType)infobarType;
+
+// Ask the delegate to rerender the infobar badges, as the list of badges and/or
+// their states may have changed.
+- (void)updateBadgesShownForWebState:(web::WebState*)webState;
 
 @end
 

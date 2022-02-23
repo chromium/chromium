@@ -4,8 +4,10 @@
 
 #include <memory>
 
+#include "ash/app_list/app_list_bubble_presenter.h"
 #include "ash/app_list/app_list_controller_impl.h"
 #include "ash/app_list/app_list_presenter_impl.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/shelf/home_button.h"
 #include "ash/shelf/shelf.h"
@@ -15,15 +17,37 @@
 #include "ash/shelf/shelf_widget.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
+#include "base/test/scoped_feature_list.h"
+#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/window.h"
-#include "ui/events/test/event_generator.h"
 
 namespace ash {
+namespace {
 
-using AppListTest = AshTestBase;
+// Returns visibility from the presenter's perspective.
+bool GetPresenterVisibility() {
+  auto* controller = Shell::Get()->app_list_controller();
+  if (features::IsProductivityLauncherEnabled())
+    return controller->bubble_presenter_for_test()->IsShowing();
+  return controller->fullscreen_presenter()->GetTargetVisibility();
+}
+
+}  // namespace
+
+class AppListTest : public AshTestBase,
+                    public testing::WithParamInterface<bool> {
+ public:
+  AppListTest() {
+    feature_list_.InitWithFeatureState(features::kProductivityLauncher,
+                                       GetParam());
+  }
+  base::test::ScopedFeatureList feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher, AppListTest, testing::Bool());
 
 // An integration test to toggle the app list by pressing the shelf button.
-TEST_F(AppListTest, PressHomeButtonToShowAndDismiss) {
+TEST_P(AppListTest, PressHomeButtonToShowAndDismiss) {
   aura::Window* root_window = Shell::GetPrimaryRootWindow();
   Shelf* shelf = Shelf::ForWindow(root_window);
   ShelfWidget* shelf_widget = shelf->shelf_widget();
@@ -35,24 +59,21 @@ TEST_F(AppListTest, PressHomeButtonToShowAndDismiss) {
 
   aura::Window* app_list_container =
       root_window->GetChildById(kShellWindowId_AppListContainer);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Click the home button to show the app list.
   auto* controller = Shell::Get()->app_list_controller();
-  auto* presenter = controller->presenter();
   EXPECT_FALSE(controller->GetTargetVisibility(GetPrimaryDisplay().id()));
-  EXPECT_FALSE(presenter->GetTargetVisibility());
+  EXPECT_FALSE(GetPresenterVisibility());
   EXPECT_EQ(0u, app_list_container->children().size());
   EXPECT_FALSE(home_button->IsShowingAppList());
 
-  generator->MoveMouseTo(home_button->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
-  EXPECT_TRUE(presenter->GetTargetVisibility());
+  LeftClickOn(home_button);
+  EXPECT_TRUE(GetPresenterVisibility());
   EXPECT_EQ(1u, app_list_container->children().size());
   EXPECT_TRUE(home_button->IsShowingAppList());
 
   // Click the button again to dismiss the app list; it will animate to close.
-  generator->ClickLeftButton();
+  LeftClickOn(home_button);
   EXPECT_FALSE(controller->GetTargetVisibility(GetPrimaryDisplay().id()));
   EXPECT_EQ(1u, app_list_container->children().size());
   EXPECT_FALSE(home_button->IsShowingAppList());
@@ -60,7 +81,7 @@ TEST_F(AppListTest, PressHomeButtonToShowAndDismiss) {
 
 // Tests that the app list gets toggled by pressing the shelf button on
 // secondary display.
-TEST_F(AppListTest, PressHomeButtonToShowAndDismissOnSecondDisplay) {
+TEST_P(AppListTest, PressHomeButtonToShowAndDismissOnSecondDisplay) {
   UpdateDisplay("1024x768,1024x768");
   aura::Window* root_window =
       Shell::GetRootWindowForDisplayId(GetSecondaryDisplay().id());
@@ -74,27 +95,24 @@ TEST_F(AppListTest, PressHomeButtonToShowAndDismissOnSecondDisplay) {
 
   aura::Window* app_list_container =
       root_window->GetChildById(kShellWindowId_AppListContainer);
-  ui::test::EventGenerator* generator = GetEventGenerator();
 
   // Click the home button to show the app list.
   auto* controller = Shell::Get()->app_list_controller();
-  auto* presenter = controller->presenter();
   EXPECT_FALSE(controller->GetTargetVisibility(GetPrimaryDisplay().id()));
   EXPECT_FALSE(controller->GetTargetVisibility(GetSecondaryDisplay().id()));
-  EXPECT_FALSE(presenter->GetTargetVisibility());
+  EXPECT_FALSE(GetPresenterVisibility());
   EXPECT_EQ(0u, app_list_container->children().size());
   EXPECT_FALSE(home_button->IsShowingAppList());
 
-  generator->MoveMouseTo(home_button->GetBoundsInScreen().CenterPoint());
-  generator->ClickLeftButton();
+  LeftClickOn(home_button);
   EXPECT_FALSE(controller->GetTargetVisibility(GetPrimaryDisplay().id()));
   EXPECT_TRUE(controller->GetTargetVisibility(GetSecondaryDisplay().id()));
-  EXPECT_TRUE(presenter->GetTargetVisibility());
+  EXPECT_TRUE(GetPresenterVisibility());
   EXPECT_EQ(1u, app_list_container->children().size());
   EXPECT_TRUE(home_button->IsShowingAppList());
 
   // Click the button again to dismiss the app list; it will animate to close.
-  generator->ClickLeftButton();
+  LeftClickOn(home_button);
   EXPECT_FALSE(controller->GetTargetVisibility(GetPrimaryDisplay().id()));
   EXPECT_FALSE(controller->GetTargetVisibility(GetSecondaryDisplay().id()));
   EXPECT_EQ(1u, app_list_container->children().size());

@@ -7,8 +7,20 @@
 /**
  * Launches PaymentRequest to check whether PaymentRequest.shippingAddress is
  * the same instance as PaymentResponse.shippingAddress.
+ *
+ * Legacy entry function until basic-card is removed.
  */
 function buy() { // eslint-disable-line no-unused-vars
+  buyWithMethods([{supportedMethods: 'basic-card'}]);
+}
+
+/**
+ * Launches PaymentRequest to check whether PaymentRequest.shippingAddress is
+ * the same instance as PaymentResponse.shippingAddress.
+ *
+ * @param {String} methodData - An array of payment method objects.
+ */
+function buyWithMethods(methodData) { // eslint-disable-line no-unused-vars
     try {
         var details = {
             total: {
@@ -28,11 +40,7 @@ function buy() { // eslint-disable-line no-unused-vars
                 selected: true,
             }],
         };
-        var request = new PaymentRequest(
-            [{
-                supportedMethods: 'basic-card',
-            }],
-            details, {
+        var request = new PaymentRequest(methodData, details, {
                 requestShipping: true,
             });
         request.show()

@@ -37,6 +37,8 @@ mojom::SessionState ToMojo(session_manager::SessionState state) {
       return mojom::SessionState::kInSession;
     case session_manager::SessionState::LOCKED:
       return mojom::SessionState::kInLockScreen;
+    case session_manager::SessionState::RMA:
+      return mojom::SessionState::kInRmaScreen;
   }
   NOTREACHED();
   return mojom::SessionState::kUnknown;

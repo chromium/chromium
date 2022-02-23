@@ -5,7 +5,8 @@
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/installer/key_rotation_manager_impl.h"
 
 #include "base/check.h"
-#include "base/metrics/histogram_macros.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/threading/platform_thread.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/ec_signing_key.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/network/key_network_delegate.h"
 #include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
@@ -37,17 +38,30 @@ BPKUR::KeyType AlgorithmToType(
 void RecordRotationStatus(const std::string& nonce,
                           KeyRotationManager::RotationStatus status) {
   if (nonce.empty()) {
-    UMA_HISTOGRAM_ENUMERATION(
+    base::UmaHistogramEnumeration(
         "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.Status", status);
   } else {
-    UMA_HISTOGRAM_ENUMERATION(
+    base::UmaHistogramEnumeration(
         "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.Status", status);
   }
 }
 
 void RecordRotationTryCount(int count) {
-  UMA_HISTOGRAM_CUSTOM_COUNTS("Enterprise.DeviceTrust.RotateSigningKey.Tries",
-                              count, 1, kMaxRetryCount, kMaxRetryCount + 1);
+  base::UmaHistogramCustomCounts(
+      "Enterprise.DeviceTrust.RotateSigningKey.Tries", count, 1, kMaxRetryCount,
+      kMaxRetryCount + 1);
+}
+
+void RecordUploadCode(const std::string& nonce, int status_code) {
+  if (nonce.empty()) {
+    base::UmaHistogramSparse(
+        "Enterprise.DeviceTrust.RotateSigningKey.NoNonce.UploadCode",
+        status_code);
+  } else {
+    base::UmaHistogramSparse(
+        "Enterprise.DeviceTrust.RotateSigningKey.WithNonce.UploadCode",
+        status_code);
+  }
 }
 
 }  // namespace
@@ -135,14 +149,24 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
 
     // Any attempt to reuse a nonce will result in an INVALID_SIGNATURE error
     // being returned by the server.  This will cause the loop to break early.
-    std::string response_str = network_delegate_->SendPublicKeyToDmServerSync(
-        dm_server_url, dm_token, request_str);
-    enterprise_management::DeviceManagementResponse response;
-    rc = (!response_str.empty() && response.ParseFromString(response_str) &&
-          response.has_browser_public_key_upload_response() &&
-          response.browser_public_key_upload_response().has_response_code())
-             ? response.browser_public_key_upload_response().response_code()
-             : BPKUP::UNDEFINED;
+    KeyNetworkDelegate::HttpResponseCode response_code =
+        network_delegate_->SendPublicKeyToDmServerSync(dm_server_url, dm_token,
+                                                       request_str);
+
+    RecordUploadCode(nonce, response_code);
+
+    int status_leading_digit = response_code / 100;
+    if (status_leading_digit == 2) {
+      // 2xx response codes are treated as success.
+      rc = BPKUP::SUCCESS;
+    } else if (status_leading_digit == 4) {
+      // 4xx response codes are treated as hard fails (no retries).
+      rc = BPKUP::INVALID_SIGNATURE;
+    } else {
+      // The rest are treated as retriable errors.
+      rc = BPKUP::UNDEFINED;
+    }
+
     boe.InformOfRequest(rc == BPKUP::SUCCESS);
   }
 
@@ -154,6 +178,10 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     if (key_pair_ && key_pair_->key()) {
       able_to_restore = persistence_delegate_->StoreKeyPair(
           key_pair_->trust_level(), key_pair_->key()->GetWrappedKey());
+    } else {
+      // If there was no old key we clear the registry.
+      able_to_restore = persistence_delegate_->StoreKeyPair(
+          BPKUR::KEY_TRUST_LEVEL_UNSPECIFIED, std::vector<uint8_t>());
     }
 
     RotationStatus status =
@@ -169,7 +197,8 @@ bool KeyRotationManagerImpl::RotateWithAdminRights(const GURL& dm_server_url,
     return false;
   }
 
-  key_pair_.emplace(std::move(new_key_pair), new_trust_level);
+  key_pair_ = std::make_unique<SigningKeyPair>(std::move(new_key_pair),
+                                               new_trust_level);
   RecordRotationStatus(nonce, RotationStatus::SUCCESS);
   return true;
 }

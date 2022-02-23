@@ -7,7 +7,7 @@
   "ports": {
     "http": [8001, 8081],
     "http-private": [8082],
-    "http-public": [8083],
+    "http-public": [8093],
     "https": [8444, 8445],
     "https-private": [8446],
     "https-public": [8447],

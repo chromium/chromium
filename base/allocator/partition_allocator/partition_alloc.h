@@ -36,8 +36,6 @@ struct BASE_EXPORT PartitionAllocator {
 }  // namespace internal
 
 using PartitionAllocator = internal::PartitionAllocator<internal::ThreadSafe>;
-using ThreadUnsafePartitionAllocator =
-    internal::PartitionAllocator<internal::NotThreadSafe>;
 
 }  // namespace base
 

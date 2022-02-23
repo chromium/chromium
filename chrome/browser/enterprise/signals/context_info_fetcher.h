@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/signals/signals_common.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
@@ -98,13 +99,13 @@ class ContextInfoFetcher {
 
   std::vector<std::string> GetDnsServers();
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // |connectors_service| is used to obtain the value of each Connector policy.
-  enterprise_connectors::ConnectorsService* connectors_service_;
+  raw_ptr<enterprise_connectors::ConnectorsService> connectors_service_;
 };
 
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 class ScopedUfwConfigPathForTesting {
  public:
   explicit ScopedUfwConfigPathForTesting(const char* path);
@@ -117,7 +118,7 @@ class ScopedUfwConfigPathForTesting {
  private:
   const char* initial_path_;
 };
-#endif  // defined(OS_LINUX)
+#endif  // BUILDFLAG(IS_LINUX)
 
 }  // namespace enterprise_signals
 

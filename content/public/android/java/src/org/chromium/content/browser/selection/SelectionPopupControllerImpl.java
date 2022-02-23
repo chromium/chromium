@@ -4,7 +4,6 @@
 
 package org.chromium.content.browser.selection;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.app.SearchManager;
 import android.content.Context;
@@ -29,6 +28,7 @@ import android.view.textclassifier.SelectionEvent;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Log;
@@ -53,6 +53,7 @@ import org.chromium.content.browser.webcontents.WebContentsImpl.UserDataFactory;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.ImeEventObserver;
 import org.chromium.content_public.browser.RenderFrameHost;
+import org.chromium.content_public.browser.SelectAroundCaretResult;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
@@ -784,7 +785,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         new MenuInflater(context).inflate(R.menu.select_action_menu, menu);
     }
 
-    @TargetApi(Build.VERSION_CODES.O)
+    @RequiresApi(Build.VERSION_CODES.O)
     public static void setPasteAsPlainTextMenuItemTitle(Menu menu) {
         MenuItem item = menu.findItem(R.id.select_action_menu_paste_as_plain_text);
         if (item == null) return;
@@ -904,12 +905,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static Intent createProcessTextIntent() {
         return new Intent().setAction(Intent.ACTION_PROCESS_TEXT).setType("text/plain");
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Intent createProcessTextIntentForResolveInfo(ResolveInfo info) {
         boolean isReadOnly = !isFocusedNodeEditable();
         return createProcessTextIntent()
@@ -1423,6 +1424,7 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
         if (mWebContents == null || !isActionModeSupported()) return;
         mWebContents.collapseSelection();
         mClassificationResult = null;
+        mHasSelection = false;
     }
 
     private PopupController getPopupController() {
@@ -1500,9 +1502,19 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     }
 
     @CalledByNative
-    private void onSelectWordAroundCaretAck(boolean didSelect, int startAdjust, int endAdjust) {
+    private void onSelectAroundCaretSuccess(int extendedStartAdjust, int extendedEndAdjust,
+            int wordStartAdjust, int wordEndAdjust) {
         if (mSelectionClient != null) {
-            mSelectionClient.selectWordAroundCaretAck(didSelect, startAdjust, endAdjust);
+            SelectAroundCaretResult result = new SelectAroundCaretResult(
+                    extendedStartAdjust, extendedEndAdjust, wordStartAdjust, wordEndAdjust);
+            mSelectionClient.selectAroundCaretAck(result);
+        }
+    }
+
+    @CalledByNative
+    private void onSelectAroundCaretFailure() {
+        if (mSelectionClient != null) {
+            mSelectionClient.selectAroundCaretAck(null);
         }
     }
 

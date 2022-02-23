@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
 #include "chrome/browser/performance_manager/test_support/page_discarding_utils.h"
@@ -53,7 +54,7 @@ class HighPMFDiscardPolicyTest
   }
 
  private:
-  HighPMFDiscardPolicy* policy_;
+  raw_ptr<HighPMFDiscardPolicy> policy_;
   std::unique_ptr<base::HistogramTester> histogram_tester_;
   memory_pressure::test::FakeMemoryPressureMonitor memory_pressure_monitor_;
 };
@@ -89,7 +90,7 @@ TEST_F(HighPMFDiscardPolicyTest, EndToEnd) {
       "Discarding.HighPMFPolicy.DiscardSuccess", true, 1);
   histogram_tester()->ExpectUniqueSample(
       "Discarding.HighPMFPolicy.MemoryReclaimedKbAfterDiscardingATab", 1, 1);
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
   histogram_tester()->ExpectUniqueSample(
       "Discarding.HighPMFPolicy.MemoryPressureLevel",
       base::MemoryPressureListener::MEMORY_PRESSURE_LEVEL_NONE, 1);
@@ -176,7 +177,7 @@ TEST_F(HighPMFDiscardPolicyTest, NegativeMemoryReclaimGoesInUnderflowBucket) {
       "Discarding.HighPMFPolicy.MemoryReclaimedKbAfterDiscardingATab", 0, 1);
 }
 
-#if !defined(OS_LINUX)
+#if !BUILDFLAG(IS_LINUX)
 TEST_F(HighPMFDiscardPolicyTest, MemoryPressureHistograms) {
   policy()->set_pmf_limit_for_testing(kPMFLimitKb);
   process_node()->set_private_footprint_kb(kPMFLimitKb);

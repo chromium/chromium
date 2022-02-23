@@ -16,7 +16,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 #include <memory>
 
@@ -63,6 +63,27 @@ TEST_F(DeleteSelectionCommandTest, deleteListFromTable) {
                                   .ComputeVisibleSelectionInDOMTree()
                                   .Base()
                                   .ToOffsetInAnchor());
+}
+
+// http://crbug.com/1273266
+TEST_F(DeleteSelectionCommandTest, FixupWhitespace) {
+  // Note: To make |RendersInDifferentPosition()| works correctly, font size
+  // should not be 1px.
+  InsertStyleElement("body { font-size: 10px; }");
+  Selection().SetSelection(
+      SetSelectionTextToBody(
+          "<p contenteditable>a<b>&#32;^X|</b>&#32;<ruby>&#32;</ruby></p>"),
+      SetSelectionOptions());
+
+  DeleteSelectionCommand& command =
+      *MakeGarbageCollected<DeleteSelectionCommand>(
+          GetDocument(), DeleteSelectionOptions::Builder()
+                             .SetMergeBlocksAfterDelete(true)
+                             .SetSanitizeMarkup(true)
+                             .Build());
+  EXPECT_TRUE(command.Apply()) << "the delete command should have succeeded";
+  EXPECT_EQ(u8"<p contenteditable>a<b>\u00A0|</b>\u00A0<ruby></ruby></p>",
+            GetSelectionTextFromBody());
 }
 
 TEST_F(DeleteSelectionCommandTest, ForwardDeleteWithFirstLetter) {

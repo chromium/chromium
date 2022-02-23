@@ -75,14 +75,10 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       DCHECK_GE(active_duration, AnimationTimeDelta());
 
       // Per the spec, the end time has a lower bound of 0.0:
-      // https://drafts.csswg.org/web-animations-1/#end-time
+      // https://w3.org/TR/web-animations-1/#end-time
       const AnimationTimeDelta end_time =
           std::max(timing_.start_delay + active_duration + timing_.end_delay,
                    AnimationTimeDelta());
-
-      // Exceptions should have already been thrown when trying to input values
-      // that would result in an infinite end_time for progress based timelines.
-      DCHECK(!end_time.is_inf());
 
       // Negative start_delay that is >= iteration_duration or iteration_count
       // of 0 will cause end_time to be 0 or negative.
@@ -91,6 +87,24 @@ void AnimationEffect::EnsureNormalizedTiming() const {
         normalized_->start_delay = AnimationTimeDelta();
         normalized_->end_delay = AnimationTimeDelta();
         normalized_->iteration_duration = AnimationTimeDelta();
+      } else if (end_time.is_inf()) {
+        // The iteration count or duration may be infinite; however, start and
+        // end delays are strictly finite. Thus, in the limit when end time
+        // approaches infinity:
+        //    start delay / end time = finite / infinite = 0
+        //    end delay / end time = finite / infinite = 0
+        //    iteration duration / end time = 1 / iteration count
+        // This condition can be reached by switching to a scroll timeline on
+        // an existing infinite duration animation.
+        // Note that base::TimeDelta::operator/() DCHECKS that the numerator and
+        // denominator cannot both be zero or both be infinite since both cases
+        // are undefined. Fortunately, we can evaluate the limit in the infinite
+        // end time case based on the definition of end time
+        normalized_->start_delay = AnimationTimeDelta();
+        normalized_->end_delay = AnimationTimeDelta();
+        normalized_->iteration_duration =
+            (1.0 / timing_.iteration_count) *
+            normalized_->timeline_duration.value();
       } else {
         // convert to percentages then multiply by the timeline_duration
         normalized_->start_delay = (timing_.start_delay / end_time) *
@@ -118,6 +132,7 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       // effects
     }
   } else {
+    // Monotonic timeline case.
     // Populates normalized values for use with time based timelines.
     normalized_->start_delay = timing_.start_delay;
     normalized_->end_delay = timing_.end_delay;
@@ -129,7 +144,7 @@ void AnimationEffect::EnsureNormalizedTiming() const {
       normalized_->iteration_duration, timing_.iteration_count);
 
   // Per the spec, the end time has a lower bound of 0.0:
-  // https://drafts.csswg.org/web-animations-1/#end-time
+  // https://w3.org/TR/web-animations-1/#end-time#end-time
   normalized_->end_time =
       std::max(normalized_->start_delay + normalized_->active_duration +
                    normalized_->end_delay,

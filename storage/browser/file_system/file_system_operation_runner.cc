@@ -13,7 +13,6 @@
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "net/url_request/url_request_context.h"
@@ -400,7 +399,7 @@ OperationID FileSystemOperationRunner::OpenFile(const FileSystemURL& url,
   if (file_flags &
       (base::File::FLAG_CREATE | base::File::FLAG_OPEN_ALWAYS |
        base::File::FLAG_CREATE_ALWAYS | base::File::FLAG_OPEN_TRUNCATED |
-       base::File::FLAG_WRITE | base::File::FLAG_EXCLUSIVE_WRITE |
+       base::File::FLAG_WRITE | base::File::FLAG_WIN_EXCLUSIVE_WRITE |
        base::File::FLAG_DELETE_ON_CLOSE | base::File::FLAG_WRITE_ATTRIBUTES)) {
     PrepareForWrite(id, url);
   } else {
@@ -567,7 +566,7 @@ void FileSystemOperationRunner::DidFinish(const OperationID id,
   // Calling the callback or deleting the |operations_| entry in
   // |FinishOperation| may release the FileSystemContext which owns this runner,
   // so take a reference to keep both alive until the end of this call.
-  scoped_refptr<FileSystemContext> context(file_system_context_);
+  scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
     finished_operations_.insert(id);
@@ -588,7 +587,7 @@ void FileSystemOperationRunner::DidGetMetadata(
   // Calling the callback or deleting the |operations_| entry in
   // |FinishOperation| may release the FileSystemContext which owns this runner,
   // so take a reference to keep both alive until the end of this call.
-  scoped_refptr<FileSystemContext> context(file_system_context_);
+  scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
     finished_operations_.insert(id);
@@ -611,7 +610,7 @@ void FileSystemOperationRunner::DidReadDirectory(
   // Calling the callback or deleting the |operations_| entry in
   // |FinishOperation| may release the FileSystemContext which owns this runner,
   // so take a reference to keep both alive until the end of this call.
-  scoped_refptr<FileSystemContext> context(file_system_context_);
+  scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
     finished_operations_.insert(id);
@@ -634,7 +633,7 @@ void FileSystemOperationRunner::DidWrite(const OperationID id,
   // Calling the callback or deleting the |operations_| entry in
   // |FinishOperation| may release the FileSystemContext which owns this runner,
   // so take a reference to keep both alive until the end of this call.
-  scoped_refptr<FileSystemContext> context(file_system_context_);
+  scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
     finished_operations_.insert(id);
@@ -657,7 +656,7 @@ void FileSystemOperationRunner::DidOpenFile(
   // Calling the callback or deleting the |operations_| entry in
   // |FinishOperation| may release the FileSystemContext which owns this runner,
   // so take a reference to keep both alive until the end of this call.
-  scoped_refptr<FileSystemContext> context(file_system_context_);
+  scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
     finished_operations_.insert(id);
@@ -682,7 +681,7 @@ void FileSystemOperationRunner::DidCreateSnapshot(
   // Calling the callback or deleting the |operations_| entry in
   // |FinishOperation| may release the FileSystemContext which owns this runner,
   // so take a reference to keep both alive until the end of this call.
-  scoped_refptr<FileSystemContext> context(file_system_context_);
+  scoped_refptr<FileSystemContext> context(file_system_context_.get());
 
   if (is_beginning_operation_) {
     finished_operations_.insert(id);

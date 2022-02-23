@@ -6,6 +6,7 @@
 
 #include "ash/quick_pair/proto/fastpair_data.pb.h"
 #include "ash/quick_pair/repository/fast_pair/device_metadata.h"
+#include "base/memory/ref_counted_memory.h"
 #include "base/time/time.h"
 
 namespace ash {

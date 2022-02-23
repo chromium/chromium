@@ -4,258 +4,20 @@
 
 import("//chrome/browser/resources/tools/optimize_webui.gni")
 import("//chrome/common/features.gni")
-import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
-import("//tools/polymer/html_to_js.gni")
+import("//tools/polymer/html_to_wrapper.gni")
+import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 import("//ui/webui/webui_features.gni")
+import("./new_tab_page.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-
-  closure_flags = default_closure_args + mojom_js_args
-
-  deps = [
-    ":app",
-    ":customize_dialog",
-    ":doodle_share_dialog",
-    ":iframe",
-    ":lazy_load",
-    ":logo",
-    ":new_tab_page",
-    ":new_tab_page_proxy",
-    ":utils",
-    ":voice_search_overlay",
-    ":window_proxy",
-    "modules:module_descriptor",
-    "modules:module_descriptors",
-    "modules:module_registry",
-    "modules:modules",
-    "modules/dummy:foo_proxy",
-    "realbox:realbox",
-    "realbox:realbox_browser_proxy",
-    "realbox:realbox_dropdown",
-    "realbox:realbox_icon",
-    "realbox:realbox_match",
-  ]
-}
-
-js_library("new_tab_page") {
-  deps = [
-    ":app",
-    ":background_manager",
-    ":utils",
-    ":window_proxy",
-    "modules:info_dialog",
-    "modules:module_descriptor",
-    "modules:module_header",
-    "modules:module_registry",
-    "modules:modules",
-    "realbox:realbox_browser_proxy",
-    "//ui/webui/resources/js/browser_command:browser_command_proxy",
-  ]
-}
-
-js_library("lazy_load") {
-  deps = [
-    ":customize_dialog",
-    ":middle_slot_promo",
-    ":voice_search_overlay",
-    "modules/dummy:module",
-    "//ui/webui/resources/cr_components/most_visited",
-  ]
-}
-
-js_library("window_proxy") {
-}
-
-js_library("new_tab_page_proxy") {
-  deps = [ "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js_library_for_compile" ]
-}
-
-js_library("app") {
-  deps = [
-    ":background_manager",
-    ":customize_dialog_types",
-    ":i18n_setup",
-    ":metrics_utils",
-    ":new_tab_page_proxy",
-    ":voice_search_overlay",
-    ":window_proxy",
-    "modules:module_registry",
-    "realbox:realbox",
-    "//skia/public/mojom:mojom_webui_js",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js/browser_command:browser_command_proxy",
-    "//ui/webui/resources/js/browser_command:mojo_bindings_webui_js",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-}
-
-js_library("middle_slot_promo") {
-  deps = [
-    ":new_tab_page_proxy",
-    ":window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js/browser_command:mojo_bindings_webui_js",
-  ]
-}
-
-js_library("customize_dialog") {
-  deps = [
-    ":customize_backgrounds",
-    ":customize_dialog_types",
-    ":customize_modules",
-    ":customize_shortcuts",
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    ":utils",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-  ]
-}
-
-js_library("customize_dialog_types") {
-}
-
-js_library("customize_backgrounds") {
-  deps = [
-    ":customize_dialog_types",
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("mini_page") {
-  deps = [
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-  ]
-}
-
-js_library("customize_shortcuts") {
-  deps = [
-    ":i18n_setup",
-    ":mini_page",
-    ":new_tab_page_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-  ]
-}
-
-js_library("customize_modules") {
-  deps = [
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    "modules:module_registry",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
-    "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
-    "//ui/webui/resources/cr_elements/cr_toggle:cr_toggle.m",
-    "//ui/webui/resources/cr_elements/policy:cr_policy_indicator.m",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("voice_search_overlay") {
-  deps = [
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    ":window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-  ]
-}
-
-js_library("utils") {
-}
-
-js_library("metrics_utils") {
-  deps = [ ":i18n_setup" ]
-  externs_list = [ "//third_party/closure_compiler/externs/metrics_private.js" ]
-}
-
-js_library("iframe") {
-  deps = [
-    ":utils",
-    ":window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/js:assert.m",
-  ]
-}
-
-js_library("logo") {
-  deps = [
-    ":doodle_share_dialog",
-    ":i18n_setup",
-    ":new_tab_page_proxy",
-    ":window_proxy",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-  ]
-}
-
-js_library("doodle_share_dialog") {
-  deps = [
-    ":i18n_setup",
-    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
-    "//ui/webui/resources/cr_elements/cr_button:cr_button.m",
-    "//ui/webui/resources/cr_elements/cr_dialog:cr_dialog.m",
-    "//ui/webui/resources/cr_elements/cr_icon_button:cr_icon_button.m",
-    "//ui/webui/resources/cr_elements/cr_input:cr_input.m",
-  ]
-}
-
-js_library("background_manager") {
-  deps = [
-    ":utils",
-    ":window_proxy",
-    "//ui/webui/resources/js:event_tracker.m",
-    "//ui/webui/resources/js:promise_resolver.m",
-  ]
-}
-
-js_library("i18n_setup") {
-  deps = [
-    "//ui/webui/resources/js:i18n_behavior.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-}
-
-html_to_js("web_components_local") {
-  js_files = [
-    "app.js",
-    "customize_backgrounds.js",
-    "customize_dialog.js",
-    "customize_shortcuts.js",
-    "doodle_share_dialog.js",
-    "logo.js",
-    "middle_slot_promo.js",
-    "mini_page.js",
-    "iframe.js",
-    "voice_search_overlay.js",
-    "customize_modules.js",
-  ]
-}
-
-group("web_components") {
-  public_deps = [
-    ":web_components_local",
-    "modules:web_components",
-    "realbox:web_components",
-  ]
+html_to_wrapper("html_wrapper_files") {
+  in_files = html_files
 }
 
 grd_prefix = "new_tab_page"
 preprocess_folder = "preprocessed"
-preprocess_manifest = "preprocessed_manifest.json"
-preprocess_gen_manifest = "preprocessed_gen_manifest.json"
 
 if (optimize_webui) {
   build_manifest = "build_manifest.json"
@@ -263,94 +25,59 @@ if (optimize_webui) {
 
 preprocess_if_expr("preprocess") {
   defines = [ "is_official_build=$is_official_build" ]
-  in_folder = "./"
+  in_folder = "."
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_manifest"
-  in_files = [
-    "background_manager.js",
-    "window_proxy.js",
-    "new_tab_page_proxy.js",
-    "lazy_load.js",
-    "customize_dialog_types.js",
-    "new_tab_page.js",
-    "utils.js",
-    "metrics_utils.js",
-    "i18n_setup.js",
-  ]
+  in_files = ts_files
 }
 
 preprocess_if_expr("preprocess_gen") {
-  deps = [ ":web_components" ]
+  deps = [ ":html_wrapper_files" ]
   defines = [ "is_official_build=$is_official_build" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  out_manifest = "$target_gen_dir/$preprocess_gen_manifest"
-  in_files = [
-    "app.js",
-    "middle_slot_promo.js",
-    "customize_dialog.js",
-    "voice_search_overlay.js",
-    "customize_backgrounds.js",
-    "customize_modules.js",
-    "customize_shortcuts.js",
-    "iframe.js",
-    "mini_page.js",
-    "logo.js",
-    "doodle_share_dialog.js",
+  in_files = html_wrapper_files
+}
+
+# Copy all Mojom generated JS files used by the NTP to a common location so that
+# TS compiler can find them when resolving relative paths.
+copy("copy_mojom") {
+  deps = [
+    "//chrome/browser/cart:mojo_bindings_js__generator",
+    "//chrome/browser/new_tab_page/modules/drive:mojo_bindings_js__generator",
+    "//chrome/browser/new_tab_page/modules/photos:mojo_bindings_js__generator",
+    "//chrome/browser/new_tab_page/modules/task_module:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/new_tab_page:mojo_bindings_js__generator",
+    "//chrome/browser/ui/webui/realbox:mojo_bindings_js__generator",
   ]
-}
+  sources = [
+    "$root_gen_dir/mojom-webui/chrome/browser/cart/chrome_cart.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/drive/drive.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/photos/photos.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/new_tab_page/modules/task_module/task_module.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/new_tab_page.mojom-webui.js",
+    "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/realbox/realbox.mojom-webui.js",
+  ]
 
-generate_grd("build_new_tab_page_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/new_tab_page_mojo_resources.grdp"
-  input_files = [ "new_tab_page.mojom-lite.js" ]
   if (!is_official_build) {
-    input_files += [ "foo/foo.mojom-lite.js" ]
-    resource_path_rewrites = [ "foo/foo.mojom-lite.js|foo.mojom-lite.js" ]
+    deps += [
+      "//chrome/browser/ui/webui/new_tab_page/foo:mojo_bindings_js__generator",
+    ]
+    sources += [ "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/new_tab_page/foo/foo.mojom-webui.js" ]
   }
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/ui/webui/new_tab_page",
-                  root_build_dir)
+
+  outputs = [ "$target_gen_dir/$preprocess_folder/{{source_file_part}}" ]
 }
 
-generate_grd("build_drive_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/drive_mojo_resources.grdp"
-  input_files = [ "drive.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/new_tab_page/modules/drive",
-                  root_build_dir)
-  resource_path_prefix = "modules/drive"
-}
-
-generate_grd("build_photos_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/photos_mojo_resources.grdp"
-  input_files = [ "photos.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/new_tab_page/modules/photos",
-                  root_build_dir)
-  resource_path_prefix = "modules/photos"
-}
-
-generate_grd("build_task_module_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/task_module_mojo_resources.grdp"
-  input_files = [ "task_module.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path(
-          "$root_gen_dir/chrome/browser/new_tab_page/modules/task_module",
-          root_build_dir)
-  resource_path_prefix = "modules/task_module"
-}
-
-generate_grd("build_chrome_cart_mojo_grdp") {
-  grd_prefix = grd_prefix
-  out_grd = "$target_gen_dir/chrome_cart_mojo_resources.grdp"
-  input_files = [ "chrome_cart.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/cart", root_build_dir)
-  resource_path_prefix = "modules/cart"
+if (optimize_webui) {
+  # Register all mojo files to their own grdp, since they are excluded from the
+  # bundle on optimized builds and need to be registered separately.
+  generate_grd("build_mojo_grdp") {
+    grd_prefix = grd_prefix
+    out_grd = "$target_gen_dir/mojo_resources.grdp"
+    input_files = mojo_js_files
+    input_files_base_dir = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    deps = [ ":build_ts" ]
+  }
 }
 
 generate_grd("build_grd") {
@@ -373,51 +100,32 @@ generate_grd("build_grd") {
     "$target_gen_dir/modules/photos/icons/resources.grdp",
     "$target_gen_dir/modules/photos/images/resources.grdp",
     "$target_gen_dir/modules/recipes_v2/icons/resources.grdp",
-    "$target_gen_dir/new_tab_page_mojo_resources.grdp",
     "$target_gen_dir/realbox/icons/resources.grdp",
-    "$target_gen_dir/realbox/realbox_mojo_resources.grdp",
-    "$target_gen_dir/task_module_mojo_resources.grdp",
-    "$target_gen_dir/chrome_cart_mojo_resources.grdp",
-    "$target_gen_dir/drive_mojo_resources.grdp",
-    "$target_gen_dir/photos_mojo_resources.grdp",
   ]
+
   deps = [
-    ":build_chrome_cart_mojo_grdp",
-    ":build_drive_mojo_grdp",
-    ":build_new_tab_page_mojo_grdp",
-    ":build_photos_mojo_grdp",
-    ":build_task_module_mojo_grdp",
     "icons:build_grdp",
     "modules/cart/icons:build_grdp",
     "modules/photos/icons:build_grdp",
     "modules/photos/images:build_grdp",
     "modules/recipes_v2/icons:build_grdp",
-    "realbox:build_realbox_mojo_grdp",
     "realbox/icons:build_grdp",
   ]
 
   if (optimize_webui) {
-    deps += [ ":optimized_js" ]
+    deps += [
+      ":build_mojo_grdp",
+      ":optimized_js",
+    ]
     resource_path_rewrites = [
       "new_tab_page.rollup.js|new_tab_page.js",
       "lazy_load.rollup.js|lazy_load.js",
     ]
     manifest_files = [ "$target_gen_dir/$build_manifest" ]
+    grdp_files += [ "$target_gen_dir/mojo_resources.grdp" ]
   } else {
-    deps += [
-      ":preprocess",
-      ":preprocess_gen",
-      "modules:build_grdp",
-      "realbox:build_grdp",
-    ]
-    grdp_files += [
-      "$target_gen_dir/modules/resources.grdp",
-      "$target_gen_dir/realbox/resources.grdp",
-    ]
-    manifest_files = [
-      "$target_gen_dir/$preprocess_manifest",
-      "$target_gen_dir/$preprocess_gen_manifest",
-    ]
+    deps += [ ":build_ts" ]
+    manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
   }
 }
 
@@ -453,17 +161,8 @@ grit("resources") {
 if (optimize_webui) {
   optimize_webui("optimized_js") {
     host = "new-tab-page"
-    input = rebase_path("$target_gen_dir/$preprocess_folder", root_build_dir)
-    deps = [
-      ":preprocess",
-      ":preprocess_gen",
-      "modules:preprocess",
-      "modules:preprocess_gen",
-      "realbox:preprocess",
-      "realbox:preprocess_gen",
-      "//ui/webui/resources:preprocess",
-      "//ui/webui/resources/cr_components/customize_themes:build_ts",
-    ]
+    input = rebase_path("$target_gen_dir/tsc", root_build_dir)
+    deps = [ ":build_ts" ]
     js_module_in_files = [
       "new_tab_page.js",
       "lazy_load.js",
@@ -475,30 +174,42 @@ if (optimize_webui) {
       "shared.rollup.js",
     ]
     excludes = [
-      "chrome://resources/cr_components/most_visited/most_visited.mojom-lite.js",
-      "chrome://resources/js/cr.m.js",
-      "chrome://resources/mojo/mojo/public/js/bindings.js",
-      "chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/big_buffer.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-lite.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
-      "chrome://resources/mojo/mojo/public/mojom/base/unguessable_token.mojom-lite.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-lite.js",
-      "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
-      "chrome://resources/mojo/url/mojom/origin.mojom-lite.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-lite.js",
-      "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
-      "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
-      "new_tab_page.mojom-lite.js",
-      "realbox/realbox.mojom-lite.js",
-      "modules/drive/drive.mojom-lite.js",
-      "modules/photos/photos.mojom-lite.js",
-      "modules/task_module/task_module.mojom-lite.js",
-      "foo.mojom-lite.js",
-      "modules/cart/chrome_cart.mojom-lite.js",
-    ]
+                 "chrome://resources/cr_components/most_visited/most_visited.mojom-webui.js",
+                 "chrome://resources/js/cr.m.js",
+                 "chrome://resources/mojo/mojo/public/js/bindings.js",
+                 "chrome://resources/cr_components/customize_themes/customize_themes.mojom-webui.js",
+                 "chrome://resources/js/browser_command/browser_command.mojom-webui.js",
+                 "chrome://resources/mojo/mojo/public/mojom/base/string16.mojom-webui.js",
+                 "chrome://resources/mojo/mojo/public/mojom/base/text_direction.mojom-webui.js",
+                 "chrome://resources/mojo/mojo/public/mojom/base/time.mojom-webui.js",
+                 "chrome://resources/mojo/skia/public/mojom/skcolor.mojom-webui.js",
+                 "chrome://resources/mojo/url/mojom/url.mojom-webui.js",
+               ] + mojo_js_files
   }
+}
+
+ts_library("build_ts") {
+  root_dir = "$target_gen_dir/$preprocess_folder"
+  out_dir = "$target_gen_dir/tsc"
+  composite = true
+  tsconfig_base = "tsconfig_base.json"
+  in_files = ts_files + html_wrapper_files + mojo_js_files
+
+  deps = [
+    "//third_party/polymer/v3_0:library",
+    "//ui/webui/resources:library",
+    "//ui/webui/resources/cr_components/customize_themes:build_ts",
+    "//ui/webui/resources/cr_components/most_visited:build_ts",
+  ]
+
+  definitions = [
+    "//tools/typescript/definitions/metrics_private.d.ts",
+    "//tools/typescript/definitions/pending.d.ts",
+  ]
+
+  extra_deps = [
+    ":copy_mojom",
+    ":preprocess",
+    ":preprocess_gen",
+  ]
 }

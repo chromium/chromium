@@ -20,6 +20,8 @@ import static org.hamcrest.Matchers.not;
 import androidx.test.espresso.matcher.ViewMatchers;
 import androidx.test.filters.SmallTest;
 
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
+import org.chromium.chrome.test.util.browser.Features;
 import org.junit.Assert;
 import org.junit.ClassRule;
 import org.junit.Rule;
@@ -45,6 +47,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
  */
 @RunWith(ChromeJUnit4ClassRunner.class)
 @Batch(Batch.PER_CLASS)
+@Features.DisableFeatures({ChromeFeatureList.INCOGNITO_NTP_REVAMP})
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 public class IncognitoNewTabPageTest {
     @ClassRule

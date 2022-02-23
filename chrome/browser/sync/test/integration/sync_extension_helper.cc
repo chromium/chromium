@@ -192,23 +192,23 @@ void SyncExtensionHelper::InstallExtensionsPendingForSync(Profile* profile) {
 
   std::list<std::string>::const_iterator iter;
   const extensions::PendingExtensionInfo* info = nullptr;
-  for (iter = pending_crx_ids.begin(); iter != pending_crx_ids.end(); ++iter) {
-    ASSERT_TRUE(info = pending_extension_manager->GetById(*iter));
+  for (const std::string& pending_crx_id : pending_crx_ids) {
+    ASSERT_TRUE(info = pending_extension_manager->GetById(pending_crx_id));
     if (!info->is_from_sync())
       continue;
 
-    StringMap::const_iterator iter2 = id_to_name_.find(*iter);
-    if (iter2 == id_to_name_.end()) {
-      ADD_FAILURE() << "Could not get name for id " << *iter
+    StringMap::const_iterator iter = id_to_name_.find(pending_crx_id);
+    if (iter == id_to_name_.end()) {
+      ADD_FAILURE() << "Could not get name for id " << pending_crx_id
                     << " (profile = " << profile->GetDebugName() << ")";
       continue;
     }
-    TypeMap::const_iterator iter3 = id_to_type_.find(*iter);
-    if (iter3 == id_to_type_.end()) {
-      ADD_FAILURE() << "Could not get type for id " << *iter
+    TypeMap::const_iterator iter2 = id_to_type_.find(pending_crx_id);
+    if (iter2 == id_to_type_.end()) {
+      ADD_FAILURE() << "Could not get type for id " << pending_crx_id
                     << " (profile = " << profile->GetDebugName() << ")";
     }
-    InstallExtension(profile, iter2->second, iter3->second);
+    InstallExtension(profile, iter->second, iter2->second);
   }
 }
 
@@ -274,11 +274,13 @@ bool SyncExtensionHelper::ExtensionStatesMatch(Profile* profile1,
   auto it1 = state_map1.begin();
   auto it2 = state_map2.begin();
   while (it1 != state_map1.end()) {
-    if (it1->first != it2->first) {
+    const auto& [app_id1, app_state1] = *it1;
+    const auto& [app_id2, app_state2] = *it2;
+    if (app_id1 != app_id2) {
       DVLOG(1) << "Extensions for profile " << profile1->GetDebugName()
                << " do not match profile " << profile2->GetDebugName();
       return false;
-    } else if (!it1->second.Equals(it2->second)) {
+    } else if (!app_state1.Equals(app_state2)) {
       DVLOG(1) << "Extension states for profile " << profile1->GetDebugName()
                << " do not match profile " << profile2->GetDebugName();
       return false;

@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View notVisibleToUser actions:[AX_FOCUS] bundle:[chromeRole="iframe"]
+++++View scrollable actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View notVisibleToUser actions:[AX_FOCUS] bundle:[chromeRole="iframe"]
+++++View scrollable actions:[AX_FOCUS] bundle:[chromeRole="rootWebArea"]

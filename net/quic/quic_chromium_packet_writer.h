@@ -7,7 +7,7 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/timer/timer.h"
 #include "net/base/completion_repeating_callback.h"
@@ -110,8 +110,8 @@ class NET_EXPORT_PRIVATE QuicChromiumPacketWriter
   bool MaybeRetryAfterWriteError(int rv);
   void RetryPacketAfterNoBuffers();
   quic::WriteResult WritePacketToSocketImpl();
-  DatagramClientSocket* socket_;  // Unowned.
-  Delegate* delegate_;            // Unowned.
+  raw_ptr<DatagramClientSocket> socket_;  // Unowned.
+  raw_ptr<Delegate> delegate_;            // Unowned.
   // Reused for every packet write for the lifetime of the writer.  Is
   // moved to the delegate in the case of a write error.
   scoped_refptr<ReusableIOBuffer> packet_;

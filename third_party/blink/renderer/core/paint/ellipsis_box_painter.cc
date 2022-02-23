@@ -49,11 +49,11 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
                         PhysicalSize(ellipsis_box_.LogicalWidth(),
                                      ellipsis_box_.VirtualLogicalHeight()));
   DCHECK(ellipsis_box_.KnownToHaveNoOverflow());
-  IntRect visual_rect = EnclosingIntRect(box_rect);
+  gfx::Rect visual_rect = ToEnclosingRect(box_rect);
   if (!ellipsis_box_.IsHorizontal())
-    visual_rect.set_size(visual_rect.size().TransposedSize());
+    visual_rect.set_size(gfx::TransposeSize(visual_rect.size()));
   DrawingRecorder recorder(context, ellipsis_box_, paint_info.phase,
-                           ToGfxRect(visual_rect));
+                           visual_rect);
 
   GraphicsContextStateSaver state_saver(context);
   if (!ellipsis_box_.IsHorizontal())
@@ -76,7 +76,7 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
                            ellipsis_box_.IsHorizontal());
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
 
   text_painter.Paint(0, ellipsis_box_.EllipsisStr().length(),
                      ellipsis_box_.EllipsisStr().length(), text_style,
@@ -86,7 +86,7 @@ void EllipsisBoxPainter::PaintEllipsis(const PaintInfo& paint_info,
   context.GetPaintController().SetTextPainted();
 
   if (!font.ShouldSkipDrawing())
-    PaintTimingDetector::NotifyTextPaint(ToGfxRect(visual_rect));
+    PaintTimingDetector::NotifyTextPaint(visual_rect);
 }
 
 }  // namespace blink

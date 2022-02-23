@@ -5,9 +5,7 @@
 #ifndef ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 #define ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_
 
-#include <stdint.h>
-
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class BrowserTabsModelProvider;
@@ -17,8 +15,8 @@ class DoNotDisturbController;
 class FeatureStatusProvider;
 class FindMyDeviceController;
 class NotificationAccessManager;
-class NotificationManager;
 class NotificationInteractionHandler;
+class NotificationManager;
 class OnboardingUiTracker;
 class PhoneModel;
 class RecentAppsInteractionHandler;
@@ -58,13 +56,13 @@ class PhoneHubManager {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 // TODO(https://crbug.com/1164001): remove after the migration is finished.
-namespace ash {
+namespace chromeos {
 namespace phonehub {
-using ::chromeos::phonehub::PhoneHubManager;
+using ::ash::phonehub::PhoneHubManager;
 }
-}  // namespace ash
+}  // namespace chromeos
 
 #endif  // ASH_COMPONENTS_PHONEHUB_PHONE_HUB_MANAGER_H_

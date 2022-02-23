@@ -138,7 +138,7 @@ TEST_F(MachineLevelUserCloudPolicyStoreTest, LoadImmediatelyWithoutDMToken) {
   EXPECT_FALSE(store_->policy());
   EXPECT_TRUE(store_->policy_map().empty());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_CALL(observer_, OnStoreLoaded(_)).Times(1);
 #else
   EXPECT_CALL(observer_, OnStoreLoaded(_)).Times(0);

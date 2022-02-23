@@ -41,6 +41,10 @@ TEST(AutofillCountryTest, AutofillCountry) {
   AutofillCountry canada_hu("CA", "hu");
   EXPECT_EQ("CA", canada_hu.country_code());
   EXPECT_EQ(u"Kanada", canada_hu.name());
+
+  // Unrecognizable country codes remain that way.
+  AutofillCountry unknown("Unknown", "en_US");
+  EXPECT_EQ("Unknown", unknown.country_code());
 }
 
 // Test locale to country code mapping.
@@ -64,6 +68,23 @@ TEST(AutofillCountryTest, UsaAddressRequirements) {
   EXPECT_TRUE(us_autofill_country.requires_state());
   EXPECT_TRUE(us_autofill_country.requires_city());
   EXPECT_TRUE(us_autofill_country.requires_line1());
+}
+
+// Test that unknown country codes have US requirements.
+TEST(AutofillCountryTest, UnknownAddressRequirements) {
+  AutofillCountry us_autofill_country("US", "en_US");
+  AutofillCountry unknown_autofill_country("Unknown", "en_US");
+
+  EXPECT_EQ(us_autofill_country.requires_zip_or_state(),
+            unknown_autofill_country.requires_zip_or_state());
+  EXPECT_EQ(us_autofill_country.requires_zip(),
+            unknown_autofill_country.requires_zip());
+  EXPECT_EQ(us_autofill_country.requires_state(),
+            unknown_autofill_country.requires_state());
+  EXPECT_EQ(us_autofill_country.requires_city(),
+            unknown_autofill_country.requires_city());
+  EXPECT_EQ(us_autofill_country.requires_line1(),
+            unknown_autofill_country.requires_line1());
 }
 
 // Test the address requirement method for Brazil.

@@ -9,6 +9,8 @@
 #include "base/bind.h"
 #include "base/files/file_path.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "base/path_service.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -20,14 +22,12 @@
 #include "chrome/browser/profiles/profile_observer.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/pref_names.h"
-#include "components/data_reduction_proxy/core/browser/data_reduction_proxy_prefs.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/language/core/browser/pref_names.h"
 #include "components/live_caption/pref_names.h"
 #include "components/media_router/common/pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/profile_metrics/browser_profile_type.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/variations/variations.mojom.h"
 #include "components/variations/variations_client.h"
 #include "components/variations/variations_ids_provider.h"
@@ -46,7 +46,7 @@
 #include "base/command_line.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_string.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/android/jni_headers/OTRProfileID_jni.h"
@@ -143,7 +143,7 @@ std::ostream& operator<<(std::ostream& out,
   return out;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 Profile::OTRProfileID::ConvertToJavaOTRProfileID(JNIEnv* env) const {
   return Java_OTRProfileID_Constructor(
@@ -190,7 +190,7 @@ std::string Profile::OTRProfileID::Serialize() const {
   return base::android::ConvertJavaStringToUTF8(
       env, Java_OTRProfileID_serialize(env, ConvertToJavaOTRProfileID(env)));
 }
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 Profile::Profile()
     : resource_context_(std::make_unique<content::ResourceContext>()) {
@@ -278,7 +278,7 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kSearchSuggestEnabled,
       true,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(
       prefs::kContextualSearchEnabled,
       std::string(),
@@ -287,7 +287,7 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
       prefs::kContextualSearchWasFullyPrivacyEnabled, false,
       user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
   registry->RegisterIntegerPref(prefs::kContextualSearchPromoCardShownCount, 0);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kSessionExitType, std::string());
   registry->RegisterBooleanPref(prefs::kDisableExtensions, false);
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -332,31 +332,23 @@ void Profile::RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry) {
                                std::string());
 #endif
 
-  data_reduction_proxy::RegisterSyncableProfilePrefs(registry);
-
-#if !defined(OS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_CHROMEOS_ASH)
   // Preferences related to the avatar bubble and user manager tutorials.
   registry->RegisterIntegerPref(prefs::kProfileAvatarTutorialShown, 0);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(prefs::kClickedUpdateMenuItem, false);
   registry->RegisterStringPref(prefs::kLatestVersionWhenClickedUpdateMenuItem,
                                std::string());
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   registry->RegisterStringPref(prefs::kCommerceMerchantViewerMessagesShownTime,
                                std::string());
 #endif
 
-#if !defined(OS_ANDROID)
-  registry->RegisterBooleanPref(
-      media_router::prefs::kMediaRouterCloudServicesPrefSet, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterBooleanPref(
-      media_router::prefs::kMediaRouterEnableCloudServices, false,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
+#if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(
       media_router::prefs::kMediaRouterMediaRemotingEnabled, true);
   registry->RegisterListPref(
@@ -388,7 +380,7 @@ bool Profile::IsGuestSession() const {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   static bool is_guest_session =
       base::CommandLine::ForCurrentProcess()->HasSwitch(
-          chromeos::switches::kGuestSession);
+          ash::switches::kGuestSession);
   return is_guest_session;
 #else
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -517,7 +509,7 @@ class Profile::ChromeVariationsClient : public variations::VariationsClient {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 variations::VariationsClient* Profile::GetVariationsClient() {

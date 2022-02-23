@@ -43,7 +43,6 @@ function dispatchEvent(target, name)
 var xhr = new XMLHttpRequest;
 addListener("xhr", "foo1");
 addListener("xhr.upload", "foo2");
-addListener("window.applicationCache", "foo3");
 var channel;
 try {
     channel = new MessageChannel;
@@ -62,7 +61,6 @@ gc();
 
 dispatchEvent("xhr", "foo1");
 dispatchEvent("xhr.upload", "foo2");
-dispatchEvent("window.applicationCache", "foo3");
 dispatchEvent("channel.port1", "foo4");
 dispatchEvent("window", "foo5");
 dispatchEvent("document.body", "foo6");

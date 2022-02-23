@@ -34,7 +34,11 @@ class SurfaceAugmenter : public wl::GlobalObjectRegistrar<SurfaceAugmenter> {
   SurfaceAugmenter& operator=(const SurfaceAugmenter&) = delete;
   ~SurfaceAugmenter();
 
+  bool SupportsSubpixelAccuratePosition() const;
+
   wl::Object<augmented_surface> CreateAugmentedSurface(wl_surface* surface);
+  wl::Object<augmented_sub_surface> CreateAugmentedSubSurface(
+      wl_subsurface* subsurface);
 
   wl::Object<wl_buffer> CreateSolidColorBuffer(SkColor color,
                                                const gfx::Size& size);

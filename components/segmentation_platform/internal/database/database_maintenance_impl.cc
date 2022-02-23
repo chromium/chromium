@@ -15,10 +15,12 @@
 #include "base/callback.h"
 #include "base/callback_forward.h"
 #include "base/callback_helpers.h"
+#include "base/containers/adapters.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/clock.h"
 #include "base/time/time.h"
 #include "base/trace_event/typed_macros.h"
+#include "components/segmentation_platform/internal/database/metadata_utils.h"
 #include "components/segmentation_platform/internal/database/segment_info_database.h"
 #include "components/segmentation_platform/internal/database/signal_database.h"
 #include "components/segmentation_platform/internal/database/signal_storage_config.h"
@@ -37,14 +39,14 @@ using CleanupItem = DatabaseMaintenanceImpl::CleanupItem;
 
 namespace {
 std::set<SignalIdentifier> CollectAllSignalIdentifiers(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        segment_infos) {
+    const SegmentInfoDatabase::SegmentInfoList& segment_infos) {
   std::set<SignalIdentifier> signal_ids;
   for (const auto& pair : segment_infos) {
     const proto::SegmentInfo& segment_info = pair.second;
     const auto& metadata = segment_info.model_metadata();
-    for (int i = 0; i < metadata.features_size(); i++) {
-      const auto& feature = metadata.features(i);
+    auto features =
+        metadata_utils::GetAllUmaFeatures(metadata, /*include_outputs=*/true);
+    for (auto const& feature : features) {
       if (feature.name_hash() != 0 &&
           feature.type() != proto::SignalType::UNKNOWN_SIGNAL_TYPE) {
         signal_ids.insert(std::make_pair(feature.name_hash(), feature.type()));
@@ -63,11 +65,11 @@ base::OnceClosure LinkTasks(
   // of linked list, where the last task refers to a callback that does
   // nothing.
   base::OnceClosure first_task = base::DoNothing();
-  for (auto curr_task = tasks.rbegin(); curr_task != tasks.rend();
-       ++curr_task) {
+  for (base::OnceCallback<void(base::OnceClosure)>& curr_task :
+       base::Reversed(tasks)) {
     // We need to first perform the current task, and then move on to the next
     // task which was previously stored in first_task.
-    first_task = base::BindOnce(std::move(*curr_task), std::move(first_task));
+    first_task = base::BindOnce(std::move(curr_task), std::move(first_task));
   }
   // All tasks can now be found following from the first task.
   return first_task;
@@ -110,10 +112,9 @@ void DatabaseMaintenanceImpl::ExecuteMaintenanceTasks() {
 }
 
 void DatabaseMaintenanceImpl::OnSegmentInfoCallback(
-    std::vector<std::pair<OptimizationTarget, proto::SegmentInfo>>
-        segment_infos) {
+    std::unique_ptr<SegmentInfoDatabase::SegmentInfoList> segment_infos) {
   std::set<SignalIdentifier> signal_ids =
-      CollectAllSignalIdentifiers(segment_infos);
+      CollectAllSignalIdentifiers(*segment_infos);
   stats::RecordMaintenanceSignalIdentifierCount(signal_ids.size());
 
   auto all_tasks = GetAllTasks(signal_ids);

@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/constants/ash_features.h"
 #include "base/barrier_closure.h"
 #include "base/bind.h"
@@ -17,7 +18,6 @@
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
 #include "base/metrics/histogram_functions.h"
-#include "base/no_destructor.h"
 #include "base/notreached.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -61,7 +61,6 @@
 #include "chromeos/dbus/debug_daemon/debug_daemon_client.h"
 #include "chromeos/dbus/image_loader/image_loader_client.h"
 #include "chromeos/dbus/session_manager/session_manager_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "chromeos/network/device_state.h"
 #include "chromeos/network/network_device_handler.h"
 #include "components/component_updater/component_updater_service.h"
@@ -455,7 +454,7 @@ class CrostiniManager::CrostiniRestarter
 
   // TODO(crbug/1153210): Better numbers for timeouts once we have data.
   std::map<mojom::InstallerState, base::TimeDelta> stage_timeouts_ = {
-      {mojom::InstallerState::kStart, base::Minutes(5)},
+      {mojom::InstallerState::kStart, base::Minutes(2)},
       {mojom::InstallerState::kInstallImageLoader,
        base::Hours(6)},  // May need to download DLC or component
       {mojom::InstallerState::kCreateDiskImage, base::Minutes(5)},
@@ -465,11 +464,10 @@ class CrostiniManager::CrostiniRestarter
       // messages that reset the countdown.
       {mojom::InstallerState::kCreateContainer, base::Minutes(5)},
       {mojom::InstallerState::kSetupContainer, base::Minutes(5)},
-      // StartContainer might need to do a UID remapping, which in the worst
-      // case can take a very long time.
-      // TODO(crbug/1197416) once the heartbeat change has landed in Tremplin
-      // and made it out, make this something shorter like a few minutes.
-      {mojom::InstallerState::kStartContainer, base::Days(5)},
+      // StartContainer sends heartbeat messages on a 30-second interval, but
+      // there's a bit of work that's not covered by heartbeat messages so to be
+      // safe set a 3 minute timeout.
+      {mojom::InstallerState::kStartContainer, base::Minutes(3)},
       // ConfigureContainer is special, it's not part of the restarter flow, so
       // it doesn't have a timeout.
       {mojom::InstallerState::kConfigureContainer, base::Hours(0)},
@@ -617,6 +615,18 @@ class CrostiniManager::CrostiniRestarter
       crostini_manager_->GetTerminaVmKernelVersion(
           base::BindOnce(&CrostiniRestarter::GetTerminaVmKernelVersionFinished,
                          weak_ptr_factory_.GetWeakPtr()));
+    }
+
+    // Share any non-persisted paths for the VM.
+    guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePaths(
+        container_id_.vm_name, options_.share_paths, /*persist=*/false,
+        base::BindOnce(&CrostiniRestarter::SharePathsFinished,
+                       weak_ptr_factory_.GetWeakPtr()));
+  }
+
+  void SharePathsFinished(bool success, const std::string& failure_reason) {
+    if (!success) {
+      LOG(WARNING) << "Failed to share paths: " << failure_reason;
     }
     StartStage(mojom::InstallerState::kStartLxd);
     crostini_manager_->StartLxd(
@@ -1094,8 +1104,7 @@ void CrostiniManager::InstallTermina(CrostiniResultCallback callback,
             std::move(callback).Run(res);
           },
           std::move(callback)),
-      // TODO(crbug/1228109): uncomment when Dlc issues are fixed.
-      /*is_initial_install=*/false);
+      is_initial_install);
 }
 
 void CrostiniManager::CancelInstallTermina() {
@@ -1458,6 +1467,29 @@ void CrostiniManager::StartLxdContainer(ContainerId container_id,
   GetCiceroneClient()->StartLxdContainer(
       std::move(request),
       base::BindOnce(&CrostiniManager::OnStartLxdContainer,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(container_id),
+                     std::move(callback)));
+}
+
+void CrostiniManager::StopLxdContainer(ContainerId container_id,
+                                       CrostiniResultCallback callback) {
+  if (container_id.vm_name.empty()) {
+    LOG(ERROR) << "vm_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+  if (container_id.container_name.empty()) {
+    LOG(ERROR) << "container_name is required";
+    std::move(callback).Run(CrostiniResult::CLIENT_ERROR);
+    return;
+  }
+  vm_tools::cicerone::StopLxdContainerRequest request;
+  request.set_vm_name(container_id.vm_name);
+  request.set_container_name(container_id.container_name);
+  request.set_owner_id(owner_id_);
+  GetCiceroneClient()->StopLxdContainer(
+      std::move(request),
+      base::BindOnce(&CrostiniManager::OnStopLxdContainer,
                      weak_ptr_factory_.GetWeakPtr(), std::move(container_id),
                      std::move(callback)));
 }
@@ -2020,19 +2052,8 @@ CrostiniManager::RestartId CrostiniManager::RestartCrostini(
     ContainerId container_id,
     CrostiniResultCallback callback,
     RestartObserver* observer) {
-  RestartOptions options;
-  auto it = restart_options_.find(container_id);
-  if (it != restart_options_.end()) {
-    options = std::move(it->second);
-    restart_options_.erase(it);
-  }
-  return RestartCrostiniWithOptions(std::move(container_id), std::move(options),
+  return RestartCrostiniWithOptions(std::move(container_id), RestartOptions(),
                                     std::move(callback), observer);
-}
-
-void CrostiniManager::SetRestartOptions(ContainerId container_id,
-                                        RestartOptions restart_options) {
-  restart_options_[container_id] = std::move(restart_options);
 }
 
 CrostiniManager::RestartId CrostiniManager::RestartCrostiniWithOptions(
@@ -2842,7 +2863,7 @@ void CrostiniManager::OnStartLxdContainer(
                                               CrostiniUISurface::kAppList);
       // signal.
       // Then perform the same steps as for starting.
-      FALLTHROUGH;
+      [[fallthrough]];
     case vm_tools::cicerone::StartLxdContainerResponse::STARTING: {
       VLOG(1) << "Awaiting LxdContainerStartingSignal for " << owner_id_ << ", "
               << container_id;
@@ -2857,6 +2878,44 @@ void CrostiniManager::OnStartLxdContainer(
   }
   if (response->has_os_release()) {
     SetContainerOsRelease(container_id, response->os_release());
+  }
+}
+
+void CrostiniManager::OnStopLxdContainer(
+    const ContainerId& container_id,
+    CrostiniResultCallback callback,
+    absl::optional<vm_tools::cicerone::StopLxdContainerResponse> response) {
+  if (!response) {
+    VLOG(1) << "Failed to stop lxd container in vm. Empty response.";
+    std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
+    return;
+  }
+
+  switch (response->status()) {
+    case vm_tools::cicerone::StopLxdContainerResponse::UNKNOWN:
+    case vm_tools::cicerone::StopLxdContainerResponse::FAILED:
+      LOG(ERROR) << "Failed to stop container: " << response->failure_reason();
+      std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
+      break;
+
+    case vm_tools::cicerone::StopLxdContainerResponse::STOPPED:
+      std::move(callback).Run(CrostiniResult::SUCCESS);
+      break;
+
+    case vm_tools::cicerone::StopLxdContainerResponse::STOPPING:
+      VLOG(1) << "Awaiting LxdContainerStoppingSignal for " << owner_id_ << ", "
+              << container_id;
+      stop_container_callbacks_.emplace(container_id, std::move(callback));
+      break;
+
+    case vm_tools::cicerone::StopLxdContainerResponse::DOES_NOT_EXIST:
+      VLOG(1) << "Container does not exist " << container_id;
+      std::move(callback).Run(CrostiniResult::CONTAINER_STOP_FAILED);
+      break;
+
+    default:
+      NOTREACHED();
+      break;
   }
 }
 
@@ -3067,6 +3126,40 @@ void CrostiniManager::OnLxdContainerStarting(
                                           container_id, result);
 }
 
+void CrostiniManager::OnLxdContainerStopping(
+    const vm_tools::cicerone::LxdContainerStoppingSignal& signal) {
+  if (signal.owner_id() != owner_id_)
+    return;
+  ContainerId container_id(signal.vm_name(), signal.container_name());
+  CrostiniResult result;
+  switch (signal.status()) {
+    case vm_tools::cicerone::LxdContainerStoppingSignal::UNKNOWN:
+      result = CrostiniResult::UNKNOWN_ERROR;
+      break;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::CANCELLED:
+      result = CrostiniResult::CONTAINER_STOP_CANCELLED;
+      break;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPED:
+      result = CrostiniResult::SUCCESS;
+      break;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::STOPPING:
+      // No-op
+      return;
+    case vm_tools::cicerone::LxdContainerStoppingSignal::FAILED:
+      result = CrostiniResult::CONTAINER_STOP_FAILED;
+      break;
+    default:
+      result = CrostiniResult::UNKNOWN_ERROR;
+      break;
+  }
+  if (result != CrostiniResult::SUCCESS) {
+    LOG(ERROR) << "Failed to stop container. ID: " << container_id
+               << " reason: " << signal.failure_reason();
+  }
+  InvokeAndErasePendingContainerCallbacks(&stop_container_callbacks_,
+                                          container_id, result);
+}
+
 void CrostiniManager::OnLaunchContainerApplication(
     CrostiniSuccessCallback callback,
     absl::optional<vm_tools::cicerone::LaunchContainerApplicationResponse>
@@ -3094,7 +3187,8 @@ void CrostiniManager::OnGetContainerAppIcons(
   for (auto& icon : *response->mutable_icons()) {
     icons.emplace_back(
         Icon{.desktop_file_id = std::move(*icon.mutable_desktop_file_id()),
-             .content = std::move(*icon.mutable_icon())});
+             .content = std::move(*icon.mutable_icon()),
+             .format = icon.format()});
   }
   std::move(callback).Run(/*success=*/true, icons);
 }
@@ -3290,21 +3384,6 @@ void CrostiniManager::OnExportLxdContainerProgress(
 
   CrostiniResult result;
   switch (signal.status()) {
-    // TODO(juwa): Remove EXPORTING_[PACK|DOWNLOAD] once a new version of
-    // tremplin has shipped.
-    case ProgressSignal::EXPORTING_PACK:
-    case ProgressSignal::EXPORTING_DOWNLOAD: {
-      // If we are still exporting, call progress observers.
-      const auto status = signal.status() == ProgressSignal::EXPORTING_PACK
-                              ? ExportContainerProgressStatus::PACK
-                              : ExportContainerProgressStatus::DOWNLOAD;
-      for (auto& observer : export_container_progress_observers_) {
-        observer.OnExportContainerProgress(container_id, status,
-                                           signal.progress_percent(),
-                                           signal.progress_speed());
-      }
-      return;
-    }
     case ProgressSignal::EXPORTING_STREAMING: {
       const StreamingExportStatus status{
           .total_files = signal.total_input_files(),

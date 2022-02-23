@@ -18,7 +18,6 @@ source_set("elevated_rotation") {
     "//components/policy/proto",
     "//crypto",
     "//net",
-    "//third_party/abseil-cpp:absl",
     "//url",
   ]
 

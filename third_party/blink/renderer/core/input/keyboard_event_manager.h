@@ -9,8 +9,8 @@
 #include "third_party/blink/public/common/input/web_input_event.h"
 #include "third_party/blink/public/platform/web_input_event_result.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/visitor.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -28,7 +28,7 @@ class CORE_EXPORT KeyboardEventManager final
  public:
   static const int kAccessKeyModifiers =
 // TODO(crbug.com/618397): Add a settings to control this behavior.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       WebInputEvent::kControlKey | WebInputEvent::kAltKey;
 #else
       WebInputEvent::kAltKey;

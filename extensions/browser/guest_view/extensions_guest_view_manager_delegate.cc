@@ -17,6 +17,7 @@
 #include "content/public/common/child_process_host.h"
 #include "extensions/browser/api/extensions_api_client.h"
 #include "extensions/browser/event_router.h"
+#include "extensions/browser/extension_util.h"
 #include "extensions/browser/guest_view/app_view/app_view_guest.h"
 #include "extensions/browser/guest_view/extension_options/extension_options_guest.h"
 #include "extensions/browser/guest_view/guest_view_events.h"
@@ -28,6 +29,7 @@
 #include "extensions/common/constants.h"
 #include "extensions/common/features/feature.h"
 #include "extensions/common/features/feature_provider.h"
+#include "extensions/common/mojom/event_dispatcher.mojom.h"
 #include "extensions/common/mojom/view_type.mojom.h"
 #include "third_party/blink/public/mojom/service_worker/service_worker_object.mojom-forward.h"
 
@@ -55,8 +57,9 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
     std::unique_ptr<base::DictionaryValue> args,
     GuestViewBase* guest,
     int instance_id) {
-  EventFilteringInfo info;
-  info.instance_id = instance_id;
+  mojom::EventFilteringInfoPtr info = mojom::EventFilteringInfo::New();
+  info->has_instance_id = true;
+  info->instance_id = instance_id;
   std::unique_ptr<base::ListValue> event_args(new base::ListValue());
   event_args->Append(std::move(args));
 
@@ -78,7 +81,7 @@ void ExtensionsGuestViewManagerDelegate::DispatchEvent(
       guest->owner_host(), histogram_value, event_name,
       content::ChildProcessHost::kInvalidUniqueID, extensions::kMainThreadId,
       blink::mojom::kInvalidServiceWorkerVersionId, std::move(event_args),
-      info);
+      std::move(info));
 }
 
 bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
@@ -94,6 +97,8 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
   const Extension* owner_extension = ProcessManager::Get(context_)->
       GetExtensionForWebContents(guest->owner_web_contents());
 
+  // Using `GetOwnerSiteURL` in the case of MimeHandlerViewGuest is safe, since
+  // mimeHandlerViewGuestInternal allows all urls.
   const GURL& owner_site_url = guest->GetOwnerSiteURL();
   // Ok for |owner_extension| to be nullptr, the embedder might be WebUI.
   Feature::Availability availability = feature->IsAvailableToContext(
@@ -102,7 +107,7 @@ bool ExtensionsGuestViewManagerDelegate::IsGuestAvailableToContext(
           owner_extension,
           guest->owner_web_contents()->GetMainFrame()->GetProcess()->GetID(),
           &owner_site_url),
-      owner_site_url);
+      owner_site_url, util::GetBrowserContextId(context_));
 
   return availability.is_available();
 }

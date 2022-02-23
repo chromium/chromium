@@ -10,10 +10,10 @@
 #include <memory>
 #include <set>
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/bind.h"
-#include "base/location.h"
 #include "base/strings/string_tokenizer.h"
 #include "base/task/current_thread.h"
 #include "base/task/single_thread_task_runner.h"
@@ -30,7 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
 #include "base/ios/ios_util.h"
 #endif
 
@@ -144,37 +144,38 @@ class CookieStoreTest : public testing::Test {
   std::string GetCookies(
       CookieStore* cs,
       const GURL& url,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
     DCHECK(cs);
     CookieOptions options;
     if (!CookieStoreTestTraits::supports_http_only)
       options.set_include_httponly();
     options.set_same_site_cookie_context(
         net::CookieOptions::SameSiteCookieContext::MakeInclusive());
-    return GetCookiesWithOptions(cs, url, options, cookie_partition_keychain);
+    return GetCookiesWithOptions(cs, url, options,
+                                 cookie_partition_key_collection);
   }
 
   std::string GetCookiesWithOptions(
       CookieStore* cs,
       const GURL& url,
       const CookieOptions& options,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
-    return CanonicalCookie::BuildCookieLine(
-        GetCookieListWithOptions(cs, url, options, cookie_partition_keychain));
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
+    return CanonicalCookie::BuildCookieLine(GetCookieListWithOptions(
+        cs, url, options, cookie_partition_key_collection));
   }
 
   CookieList GetCookieListWithOptions(
       CookieStore* cs,
       const GURL& url,
       const CookieOptions& options,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
     DCHECK(cs);
     GetCookieListCallback callback;
-    cs->GetCookieListWithOptionsAsync(url, options, cookie_partition_keychain,
-                                      callback.MakeCallback());
+    cs->GetCookieListWithOptionsAsync(
+        url, options, cookie_partition_key_collection, callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.cookies();
   }
@@ -183,21 +184,23 @@ class CookieStoreTest : public testing::Test {
   CookieList GetAllCookiesForURL(
       CookieStore* cs,
       const GURL& url,
-      const CookiePartitionKeychain& cookie_partition_keychain =
-          CookiePartitionKeychain()) {
+      const CookiePartitionKeyCollection& cookie_partition_key_collection =
+          CookiePartitionKeyCollection()) {
     return GetCookieListWithOptions(cs, url, CookieOptions::MakeAllInclusive(),
-                                    cookie_partition_keychain);
+                                    cookie_partition_key_collection);
   }
 
   // This does not update the access time on the cookies.
-  CookieAccessResultList GetExcludedCookiesForURL(CookieStore* cs,
-                                                  const GURL& url) {
+  CookieAccessResultList GetExcludedCookiesForURL(
+      CookieStore* cs,
+      const GURL& url,
+      const CookiePartitionKeyCollection& cookie_partition_key_collection) {
     DCHECK(cs);
     GetCookieListCallback callback;
     CookieOptions options = CookieOptions::MakeAllInclusive();
     options.set_return_excluded_cookies();
     cs->GetCookieListWithOptionsAsync(
-        url, options, CookiePartitionKeychain::Todo(), callback.MakeCallback());
+        url, options, cookie_partition_key_collection, callback.MakeCallback());
     callback.WaitUntilDone();
     return callback.excluded_cookies();
   }
@@ -218,9 +221,14 @@ class CookieStoreTest : public testing::Test {
       absl::optional<base::Time> server_time = absl::nullopt,
       absl::optional<base::Time> system_time = absl::nullopt,
       absl::optional<CookiePartitionKey> cookie_partition_key = absl::nullopt) {
-    auto cookie = CanonicalCookie::Create(
-        url, cookie_line, system_time.value_or(base::Time::Now()), server_time,
-        cookie_partition_key);
+    // Ensure a different Creation date to guarantee sort order for testing
+    static base::Time last = base::Time::Min();
+    last = base::Time::Now() == last ? last + base::Microseconds(1)
+                                     : base::Time::Now();
+
+    auto cookie =
+        CanonicalCookie::Create(url, cookie_line, system_time.value_or(last),
+                                server_time, cookie_partition_key);
 
     if (!cookie)
       return false;
@@ -842,7 +850,7 @@ TYPED_TEST_P(CookieStoreTest, SecureCookieLocalhost) {
 // behavior of most UAs in some cases, which we try to replicate. See
 // https://crbug.com/638389 for more information.
 TYPED_TEST_P(CookieStoreTest, EmptyKeyTest) {
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   CookieStore* cs = this->GetCookieStore();
 
   GURL url1("http://foo1.bar.com");
@@ -1000,15 +1008,6 @@ TYPED_TEST_P(CookieStoreTest, InvalidDomainTest) {
   // More specific sub-domain than allowed.
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "a=1; domain=.yo.foo.bar.com"));
 
-// The iOS networking stack uses the iOS cookie parser, which we do not
-// control. Its handling of multiple domain= values in cookie string varies
-// depending on iOS version. See https://crbug.com/639167
-#if !defined(OS_IOS)
-  // Regression test for https://crbug.com/601786
-  EXPECT_FALSE(
-      this->SetCookie(cs, url_foobar, "a=1; domain=.yo.foo.bar.com; domain="));
-#endif  // !defined(OS_IOS)
-
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "b=2; domain=.foo.com"));
   EXPECT_FALSE(this->SetCookie(cs, url_foobar, "c=3; domain=.bar.foo.com"));
 
@@ -1094,15 +1093,28 @@ TYPED_TEST_P(CookieStoreTest, TestIpAddress) {
 TYPED_TEST_P(CookieStoreTest, TestIpAddressNoDomainCookies) {
   GURL url_ip("http://1.2.3.4/weee");
   CookieStore* cs = this->GetCookieStore();
-  EXPECT_FALSE(this->SetCookie(cs, url_ip, "b=2; domain=.1.2.3.4"));
   EXPECT_FALSE(this->SetCookie(cs, url_ip, "c=3; domain=.3.4"));
   this->MatchCookieLines(std::string(), this->GetCookies(cs, url_ip));
   // It should be allowed to set a cookie if domain= matches the IP address
-  // exactly.  This matches IE/Firefox, even though it seems a bit wrong.
+  // by ignoring case and ignoring a leading dot.  This matches IE/Firefox, even
+  // though it seems a bit wrong.
   EXPECT_FALSE(this->SetCookie(cs, url_ip, "b=2; domain=1.2.3.3"));
   this->MatchCookieLines(std::string(), this->GetCookies(cs, url_ip));
   EXPECT_TRUE(this->SetCookie(cs, url_ip, "b=2; domain=1.2.3.4"));
   this->MatchCookieLines("b=2", this->GetCookies(cs, url_ip));
+  EXPECT_TRUE(this->SetCookie(cs, url_ip, "b=2; domain=.1.2.3.4"));
+  this->MatchCookieLines("b=2", this->GetCookies(cs, url_ip));
+
+#if !BUILDFLAG(IS_IOS)
+  // Test a couple of IPv6 addresses
+  GURL url_ip6("http://[2606:2800:220:1:248:1893:25c8:1946]");
+  EXPECT_FALSE(this->SetCookie(
+      cs, url_ip6, "e=1; domain=.2606:2800:220:1:248:1893:25c8:1946"));
+  this->MatchCookieLines(std::string(), this->GetCookies(cs, url_ip6));
+  EXPECT_TRUE(this->SetCookie(
+      cs, url_ip6, "d=1; domain=[2606:2800:220:1:248:1893:25c8:1946]"));
+  this->MatchCookieLines("d=1", this->GetCookies(cs, url_ip6));
+#endif  // !BUILDFLAG(IS_IOS)
 }
 
 // Test a TLD setting cookies on itself.

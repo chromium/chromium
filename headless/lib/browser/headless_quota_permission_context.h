@@ -5,7 +5,6 @@
 #ifndef HEADLESS_LIB_BROWSER_HEADLESS_QUOTA_PERMISSION_CONTEXT_H_
 #define HEADLESS_LIB_BROWSER_HEADLESS_QUOTA_PERMISSION_CONTEXT_H_
 
-#include "base/macros.h"
 #include "content/public/browser/quota_permission_context.h"
 
 namespace headless {

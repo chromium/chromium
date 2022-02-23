@@ -12,13 +12,18 @@
 #include "ash/public/cpp/shelf_model.h"
 #include "ash/public/cpp/shelf_model_observer.h"
 #include "ash/public/cpp/shelf_types.h"
+#include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/scoped_multi_source_observation.h"
 #include "base/scoped_observation.h"
 #include "components/services/app_service/public/cpp/icon_loader.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
+#include "components/services/app_service/public/cpp/instance.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
+#include "ui/wm/public/activation_change_observer.h"
+#include "ui/wm/public/activation_client.h"
 
 class StandaloneBrowserExtensionAppContextMenu;
 
@@ -29,8 +34,9 @@ class StandaloneBrowserExtensionAppContextMenu;
 // chrome apps. It's responsible for updating the InstanceRegistry.
 class StandaloneBrowserExtensionAppShelfItemController
     : public ash::ShelfItemDelegate,
-      ash::ShelfModelObserver,
-      public aura::WindowObserver {
+      public ash::ShelfModelObserver,
+      public aura::WindowObserver,
+      public wm::ActivationChangeObserver {
  public:
   // This constructor is used for a shelf item controller for a pinned item.
   explicit StandaloneBrowserExtensionAppShelfItemController(
@@ -61,6 +67,11 @@ class StandaloneBrowserExtensionAppShelfItemController
                       int64_t display_id) override;
   void Close() override;
 
+  // wm::ActivationChangeObserver:
+  void OnWindowActivated(wm::ActivationChangeObserver::ActivationReason reason,
+                         aura::Window* new_active,
+                         aura::Window* old_active) override;
+
   // ash::ShelfModelObserver overrides:
   // This instance is guaranteed to be constructed before the corresponding
   // shelf item is added to the ShelfModel. That's because all shelf items must
@@ -82,10 +93,22 @@ class StandaloneBrowserExtensionAppShelfItemController
   using ShelfItem = ash::ShelfItem;
 
   // Called by AppServiceProxy once an icon has been loaded.
-  void DidLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
 
   // aura::WindowObserver overrides:
+  void OnWindowVisibilityChanged(aura::Window* window, bool visible) override;
   void OnWindowDestroying(aura::Window* window) override;
+
+  // Updates AppService's instance to set the activated status for `window`.
+  void SetWindowActivated(aura::Window* window, bool is_active);
+
+  // Sets AppService's instance state when `window` is added. Based on `window`
+  // visibility and activated status, set instance status as visible or
+  // activated.
+  void InitWindowStatus(aura::Window* window);
+
+  // Updates AppService's instance state as `instance_state` for `window`.
+  void UpdateInstance(aura::Window* window, apps::InstanceState instance_state);
 
   // Returns the shelf index of the corresponding shelf item. Guaranteed to be a
   // valid index since this instance exists if and only if a shelf item exists.
@@ -121,6 +144,10 @@ class StandaloneBrowserExtensionAppShelfItemController
   // will be retained.
   std::unique_ptr<StandaloneBrowserExtensionAppContextMenu> context_menu_;
 
+  // The map to save the instance state for each window to update AppService
+  // Instance.
+  base::flat_map<aura::Window*, apps::InstanceState> window_status_;
+
   // Observes the shelf model for item additions in order to set initial state
   // on the corresponding ShelfItem.
   base::ScopedObservation<ash::ShelfModel, ash::ShelfModelObserver>
@@ -129,6 +156,9 @@ class StandaloneBrowserExtensionAppShelfItemController
   // Observes windows in |pending_windows_| for destruction.
   base::ScopedMultiSourceObservation<aura::Window, aura::WindowObserver>
       window_observations_{this};
+
+  base::ScopedObservation<wm::ActivationClient, wm::ActivationChangeObserver>
+      activation_client_observation_{this};
 
   base::WeakPtrFactory<StandaloneBrowserExtensionAppShelfItemController>
       weak_factory_{this};

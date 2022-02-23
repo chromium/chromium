@@ -56,10 +56,8 @@ absl::optional<const std::vector<uint8_t>> SavedDeviceRegistry::GetAccountKey(
     return absl::nullopt;
   }
 
-  std::string encoded;
   std::string decoded;
-  result->GetAsString(&encoded);
-  if (!base::Base64Decode(encoded, &decoded)) {
+  if (!base::Base64Decode(result->GetString(), &decoded)) {
     QP_LOG(WARNING) << __func__
                     << ": Failed to decode the account key from Base64.";
     return absl::nullopt;

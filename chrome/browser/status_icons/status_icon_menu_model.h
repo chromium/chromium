@@ -7,6 +7,7 @@
 
 #include <map>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "ui/base/models/image_model.h"
@@ -105,7 +106,7 @@ class StatusIconMenuModel
 
   base::ObserverList<Observer>::Unchecked observer_list_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 };
 
 #endif  // CHROME_BROWSER_STATUS_ICONS_STATUS_ICON_MENU_MODEL_H_

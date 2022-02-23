@@ -41,10 +41,3 @@ proto_library("cryptohome_proto") {
 
   proto_out_dir = "chromeos/dbus/cryptohome"
 }
-
-proto_library("cryptohome_signkey_proto") {
-  sources =
-      [ "//third_party/cros_system_api/dbus/cryptohome/signed_secret.proto" ]
-
-  proto_out_dir = "chromeos/dbus/cryptohome"
-}

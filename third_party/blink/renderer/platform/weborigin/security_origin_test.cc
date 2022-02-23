@@ -34,6 +34,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/test/scoped_command_line.h"
+#include "base/unguessable_token.h"
 #include "net/base/url_util.h"
 #include "services/network/public/cpp/is_potentially_trustworthy_unittest.h"
 #include "services/network/public/cpp/network_switches.h"
@@ -58,8 +59,18 @@ namespace blink {
 const uint16_t kMaxAllowedPort = UINT16_MAX;
 
 class SecurityOriginTest : public testing::Test {
- private:
+ protected:
   void TearDown() override { SecurityPolicy::ClearOriginAccessList(); }
+
+  const absl::optional<url::Origin::Nonce>& GetNonceForOrigin(
+      const SecurityOrigin& origin) {
+    return origin.nonce_if_opaque_;
+  }
+
+  const absl::optional<base::UnguessableToken>
+  GetNonceForSerializationForOrigin(const SecurityOrigin& origin) {
+    return origin.GetNonceForSerialization();
+  }
 };
 
 TEST_F(SecurityOriginTest, ValidPortsCreateTupleOrigins) {
@@ -1094,6 +1105,47 @@ TEST_F(SecurityOriginTest, PercentEncodesHost) {
   EXPECT_EQ(
       SecurityOrigin::CreateFromString("http://foo%2C.example.test/")->Host(),
       "foo%2C.example.test");
+}
+
+TEST_F(SecurityOriginTest, NewOpaqueOriginLazyInitsNonce) {
+  scoped_refptr<SecurityOrigin> opaque_origin =
+      SecurityOrigin::CreateUniqueOpaque();
+
+  scoped_refptr<SecurityOrigin> tuple_origin =
+      SecurityOrigin::Create(KURL("https://example.com/"));
+  scoped_refptr<SecurityOrigin> derived_opaque_origin =
+      tuple_origin->DeriveNewOpaqueOrigin();
+
+  EXPECT_TRUE(opaque_origin->IsOpaque());
+  // There should be a nonce...
+  EXPECT_TRUE(GetNonceForOrigin(*opaque_origin).has_value());
+  // ...but it should not be initialised yet.
+  EXPECT_TRUE(GetNonceForOrigin(*opaque_origin)->raw_token().is_empty());
+
+  EXPECT_TRUE(derived_opaque_origin->IsOpaque());
+  // There should be a nonce...
+  EXPECT_TRUE(GetNonceForOrigin(*derived_opaque_origin).has_value());
+  // ...but it should not be initialised yet.
+  EXPECT_TRUE(
+      GetNonceForOrigin(*derived_opaque_origin)->raw_token().is_empty());
+
+  // Even checking CanAccess does not need to trigger initialisation: two
+  // uninitialised nonces can only be equal if they are the same object.
+  EXPECT_TRUE(opaque_origin->CanAccess(opaque_origin));
+  EXPECT_FALSE(opaque_origin->CanAccess(derived_opaque_origin));
+  EXPECT_TRUE(derived_opaque_origin->CanAccess(derived_opaque_origin));
+
+  EXPECT_TRUE(GetNonceForOrigin(*opaque_origin)->raw_token().is_empty());
+  EXPECT_TRUE(
+      GetNonceForOrigin(*derived_opaque_origin)->raw_token().is_empty());
+
+  // However, forcing the nonce to be serialized should trigger initialisation.
+  (void)GetNonceForSerializationForOrigin(*opaque_origin);
+  (void)GetNonceForSerializationForOrigin(*derived_opaque_origin);
+
+  EXPECT_FALSE(GetNonceForOrigin(*opaque_origin)->raw_token().is_empty());
+  EXPECT_FALSE(
+      GetNonceForOrigin(*derived_opaque_origin)->raw_token().is_empty());
 }
 
 }  // namespace blink

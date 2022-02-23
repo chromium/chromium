@@ -16,7 +16,6 @@
 #include "base/logging.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/no_destructor.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -316,7 +315,7 @@ std::unique_ptr<SystemNudge> ClipboardNudgeController::CreateSystemNudge() {
 }
 
 int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kMultipasteNudges);
   if (!dictionary)
     return 0;
@@ -324,7 +323,7 @@ int ClipboardNudgeController::GetShownCount(PrefService* prefs) {
 }
 
 int ClipboardNudgeController::GetNewFeatureBadgeShownCount(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kMultipasteNudges);
   if (!dictionary)
     return 0;
@@ -332,7 +331,7 @@ int ClipboardNudgeController::GetNewFeatureBadgeShownCount(PrefService* prefs) {
 }
 
 base::Time ClipboardNudgeController::GetLastShownTime(PrefService* prefs) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs->GetDictionary(prefs::kMultipasteNudges);
   if (!dictionary)
     return base::Time();

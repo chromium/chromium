@@ -9,15 +9,15 @@
 #include <string>
 #include <vector>
 
-#include "chrome/browser/enterprise/connectors/device_trust/key_management/core/persistence/key_persistence_delegate.h"
 #include "components/policy/proto/device_management_backend.pb.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace crypto {
 class UnexportableSigningKey;
 }  // namespace crypto
 
 namespace enterprise_connectors {
+
+class KeyPersistenceDelegate;
 
 // Class in charge of using a stored signing key and providing cryptographic
 // functionality.
@@ -27,21 +27,32 @@ class SigningKeyPair {
       enterprise_management::BrowserPublicKeyUploadRequest::KeyTrustLevel;
 
   // Uses `persistence_delegate` to create a SigningKeyPair instance based on
-  // a key that has already been persisted on the system. Returns absl::nullopt
+  // a key that has already been persisted on the system. Returns nullptr
   // if no key was found.
-  static absl::optional<SigningKeyPair> Create(
+  static std::unique_ptr<SigningKeyPair> Create(
       KeyPersistenceDelegate* persistence_delegate);
+
+  // Loads the signing key pair from disk and initializes it. Returns nullptr if
+  // no key was found. Uses the KeyPersistenceDelegateFactory's default delegate
+  // to load the key from persistence.
+  // This function does IO and heavy cryptographic calculations, do not call
+  // on the main thread.
+  static std::unique_ptr<SigningKeyPair> LoadPersistedKey();
 
   SigningKeyPair(std::unique_ptr<crypto::UnexportableSigningKey> key_pair,
                  KeyTrustLevel trust_level);
-
-  SigningKeyPair(SigningKeyPair&& other);
-  SigningKeyPair& operator=(SigningKeyPair&& other);
 
   SigningKeyPair(const SigningKeyPair&) = delete;
   SigningKeyPair& operator=(const SigningKeyPair&) = delete;
 
   ~SigningKeyPair();
+
+  bool is_empty() const {
+    return trust_level_ ==
+               enterprise_management::BrowserPublicKeyUploadRequest::
+                   KEY_TRUST_LEVEL_UNSPECIFIED ||
+           !key();
+  }
 
   crypto::UnexportableSigningKey* key() const {
     return key_pair_ ? key_pair_.get() : nullptr;

@@ -5,7 +5,7 @@
 #include "ash/components/phonehub/fake_notification_interaction_handler.h"
 #include "ash/components/phonehub/notification.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 FakeNotificationInteractionHandler::FakeNotificationInteractionHandler() =
@@ -31,4 +31,4 @@ void FakeNotificationInteractionHandler::RemoveNotificationClickHandler(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

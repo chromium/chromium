@@ -28,8 +28,11 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
       const gfx::Size& size,
       gfx::BufferFormat format,
       gfx::BufferUsage usage) override {
-    return GpuMemoryBufferManager()->CreateGpuMemoryBuffer(
-        size, format, usage, gpu::kNullSurfaceHandle, nullptr);
+    auto* gmb_manager = GpuMemoryBufferManager();
+    return gmb_manager
+               ? gmb_manager->CreateGpuMemoryBuffer(
+                     size, format, usage, gpu::kNullSurfaceHandle, nullptr)
+               : nullptr;
   }
 
   void CreateSharedImage(gfx::GpuMemoryBuffer* gpu_memory_buffer,
@@ -41,11 +44,12 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
                          gpu::Mailbox& mailbox,
                          gpu::SyncToken& sync_token) override {
     auto* sii = SharedImageInterface();
-    if (!sii)
+    auto* gmb_manager = GpuMemoryBufferManager();
+    if (!sii || !gmb_manager)
       return;
-    mailbox = sii->CreateSharedImage(
-        gpu_memory_buffer, GpuMemoryBufferManager(), plane, color_space,
-        surface_origin, alpha_type, usage);
+    mailbox =
+        sii->CreateSharedImage(gpu_memory_buffer, gmb_manager, plane,
+                               color_space, surface_origin, alpha_type, usage);
     sync_token = sii->GenVerifiedSyncToken();
   }
 
@@ -68,9 +72,8 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
   }
 
   gpu::GpuMemoryBufferManager* GpuMemoryBufferManager() const {
-    media::GpuVideoAcceleratorFactories* gpu_factories =
-        Platform::Current()->GetGpuFactories();
-    return gpu_factories->GpuMemoryBufferManager();
+    auto* gpu_factories = Platform::Current()->GetGpuFactories();
+    return gpu_factories ? gpu_factories->GpuMemoryBufferManager() : nullptr;
   }
 
   base::WeakPtr<blink::WebGraphicsContext3DProviderWrapper>

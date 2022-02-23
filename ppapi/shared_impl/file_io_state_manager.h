@@ -6,7 +6,6 @@
 #define PPAPI_SHARED_IMPL_FILE_IO_STATE_MANAGER_H_
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "ppapi/c/pp_stdint.h"
 #include "ppapi/shared_impl/ppapi_shared_export.h"
 

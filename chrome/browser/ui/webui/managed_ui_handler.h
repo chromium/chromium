@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "components/policy/core/common/policy_service.h"
 #include "components/prefs/pref_change_registrar.h"
 #include "content/public/browser/web_ui_message_handler.h"
@@ -74,7 +75,7 @@ class ManagedUIHandler : public content::WebUIMessageHandler,
   PrefChangeRegistrar pref_registrar_;
 
   // Profile to update data sources on. Injected for testing.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // Whether or not this page is currently showing the managed UI footnote.
   bool managed_;

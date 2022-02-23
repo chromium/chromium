@@ -27,6 +27,7 @@ import org.chromium.base.UserDataHost;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.base.annotations.NativeMethods;
+import org.chromium.blink_public.input.SelectionGranularity;
 import org.chromium.content.browser.AppWebMessagePort;
 import org.chromium.content.browser.MediaSessionImpl;
 import org.chromium.content.browser.RenderCoordinatesImpl;
@@ -40,6 +41,7 @@ import org.chromium.content.browser.framehost.RenderFrameHostDelegate;
 import org.chromium.content.browser.framehost.RenderFrameHostImpl;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
 import org.chromium.content_public.browser.ChildProcessImportance;
+import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.GlobalRenderFrameHostId;
 import org.chromium.content_public.browser.ImageDownloadCallback;
 import org.chromium.content_public.browser.JavaScriptCallback;
@@ -364,6 +366,11 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
             throw new IllegalStateException("Attempting to destroy WebContents on non-UI thread");
         }
 
+        if (mObserverProxy != null && mObserverProxy.isHandlingObserverCall()) {
+            throw new RuntimeException(
+                    "Attempting to destroy WebContents while handling observer calls");
+        }
+
         if (mNativeWebContentsAndroid != 0) {
             WebContentsImplJni.get().destroyWebContents(mNativeWebContentsAndroid);
         }
@@ -481,9 +488,9 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public boolean isLoadingToDifferentDocument() {
+    public boolean shouldShowLoadingUI() {
         checkNotDestroyed();
-        return WebContentsImplJni.get().isLoadingToDifferentDocument(
+        return WebContentsImplJni.get().shouldShowLoadingUI(
                 mNativeWebContentsAndroid, WebContentsImpl.this);
     }
 
@@ -571,7 +578,12 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     public void onShow() {
         checkNotDestroyed();
         WebContentsAccessibilityImpl wcax = WebContentsAccessibilityImpl.fromWebContents(this);
-        if (wcax != null) wcax.refreshState();
+        if (wcax != null) {
+            wcax.refreshState();
+            if (ContentFeatureList.isEnabled(ContentFeatureList.AUTO_DISABLE_ACCESSIBILITY)) {
+                wcax.updateAXModeFromNativeAccessibilityState();
+            }
+        }
         SelectionPopupControllerImpl controller = getSelectionPopupController();
         if (controller != null) controller.restoreSelectionPopupsIfNecessary();
         WebContentsImplJni.get().onShow(mNativeWebContentsAndroid, WebContentsImpl.this);
@@ -633,10 +645,11 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
     }
 
     @Override
-    public void selectWordAroundCaret() {
+    public void selectAroundCaret(@SelectionGranularity int granularity, boolean shouldShowHandle,
+            boolean shouldShowContextMenu) {
         checkNotDestroyed();
-        WebContentsImplJni.get().selectWordAroundCaret(
-                mNativeWebContentsAndroid, WebContentsImpl.this);
+        WebContentsImplJni.get().selectAroundCaret(mNativeWebContentsAndroid, WebContentsImpl.this,
+                granularity, shouldShowHandle, shouldShowContextMenu);
     }
 
     @Override
@@ -1080,7 +1093,7 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         GURL getVisibleURL(long nativeWebContentsAndroid, WebContentsImpl caller);
         String getEncoding(long nativeWebContentsAndroid, WebContentsImpl caller);
         boolean isLoading(long nativeWebContentsAndroid, WebContentsImpl caller);
-        boolean isLoadingToDifferentDocument(long nativeWebContentsAndroid, WebContentsImpl caller);
+        boolean shouldShowLoadingUI(long nativeWebContentsAndroid, WebContentsImpl caller);
         void dispatchBeforeUnload(
                 long nativeWebContentsAndroid, WebContentsImpl caller, boolean autoCancel);
         void stop(long nativeWebContentsAndroid, WebContentsImpl caller);
@@ -1101,7 +1114,8 @@ public class WebContentsImpl implements WebContents, RenderFrameHostDelegate, Wi
         void exitFullscreen(long nativeWebContentsAndroid, WebContentsImpl caller);
         void scrollFocusedEditableNodeIntoView(
                 long nativeWebContentsAndroid, WebContentsImpl caller);
-        void selectWordAroundCaret(long nativeWebContentsAndroid, WebContentsImpl caller);
+        void selectAroundCaret(long nativeWebContentsAndroid, WebContentsImpl caller,
+                int granularity, boolean shouldShowHandle, boolean shouldShowContextMenu);
         void adjustSelectionByCharacterOffset(long nativeWebContentsAndroid, WebContentsImpl caller,
                 int startAdjust, int endAdjust, boolean showSelectionMenu);
         GURL getLastCommittedURL(long nativeWebContentsAndroid, WebContentsImpl caller);

@@ -61,7 +61,7 @@ static void RecordViewportTypeMetric(
 
 float ViewportDescription::ResolveViewportLength(
     const Length& length,
-    const FloatSize& initial_viewport_size,
+    const gfx::SizeF& initial_viewport_size,
     Direction direction) {
   if (length.IsAuto())
     return ViewportDescription::kValueAuto;
@@ -89,7 +89,7 @@ float ViewportDescription::ResolveViewportLength(
 }
 
 PageScaleConstraints ViewportDescription::Resolve(
-    const FloatSize& initial_viewport_size,
+    const gfx::SizeF& initial_viewport_size,
     const Length& legacy_fallback_width) const {
   float result_width = kValueAuto;
 

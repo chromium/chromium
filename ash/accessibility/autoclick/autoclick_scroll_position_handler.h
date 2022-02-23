@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/location.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/gfx/animation/animation_delegate.h"

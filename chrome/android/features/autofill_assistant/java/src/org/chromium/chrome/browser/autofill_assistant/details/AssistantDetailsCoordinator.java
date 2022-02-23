@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import org.chromium.chrome.autofill_assistant.R;
+import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.image_fetcher.ImageFetcher;
 
 /**
@@ -26,8 +27,8 @@ public class AssistantDetailsCoordinator {
     private final RecyclerView mView;
     private final AssistantDetailsAdapter mAdapter;
 
-    public AssistantDetailsCoordinator(
-            Context context, AssistantDetailsModel model, ImageFetcher imageFetcher) {
+    public AssistantDetailsCoordinator(Context context, AssistantInfoPageUtil infoPageUtil,
+            AssistantDetailsModel model, ImageFetcher imageFetcher) {
         mView = new RecyclerView(context);
         mView.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.WRAP_CONTENT));
@@ -35,7 +36,7 @@ public class AssistantDetailsCoordinator {
                 context, LinearLayoutManager.VERTICAL, /* reverseLayout= */ false));
         mView.setBackgroundResource(R.drawable.autofill_assistant_details_bg);
         mView.addItemDecoration(new DetailsItemDecoration(context));
-        mAdapter = new AssistantDetailsAdapter(context, imageFetcher);
+        mAdapter = new AssistantDetailsAdapter(context, infoPageUtil, imageFetcher);
         mView.setAdapter(mAdapter);
 
         // Listen to the model and set the details on the adapter when they change.

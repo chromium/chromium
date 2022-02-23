@@ -23,6 +23,7 @@
 
 #include "third_party/blink/renderer/core/dom/container_node.h"
 
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/css/selector_query.h"
 #include "third_party/blink/renderer/core/css/style_change_reason.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
@@ -1037,19 +1038,6 @@ void ContainerNode::RemovedFrom(ContainerNode& insertion_point) {
 
 DISABLE_CFI_PERF
 void ContainerNode::AttachLayoutTree(AttachContext& context) {
-  auto* element = DynamicTo<Element>(this);
-  if (element && element->ChildStyleRecalcBlockedByDisplayLock()) {
-    // Since we block style recalc on descendants of this node due to display
-    // locking, none of its descendants should have the NeedsReattachLayoutTree
-    // bit set.
-    DCHECK(!ChildNeedsReattachLayoutTree());
-    // If an element is locked we shouldn't attach the layout tree for its
-    // descendants. We should notify that we blocked a reattach so that we will
-    // correctly attach the descendants when allowed.
-    element->GetDisplayLockContext()->NotifyReattachLayoutTreeWasBlocked();
-    Node::AttachLayoutTree(context);
-    return;
-  }
   for (Node* child = firstChild(); child; child = child->nextSibling())
     child->AttachLayoutTree(context);
   Node::AttachLayoutTree(context);
@@ -1064,7 +1052,7 @@ void ContainerNode::DetachLayoutTree(bool performing_reattach) {
 
 void ContainerNode::ChildrenChanged(const ChildrenChange& change) {
   GetDocument().IncDOMTreeVersion();
-  GetDocument().NotifyChangeChildren(*this);
+  GetDocument().NotifyChangeChildren(*this, change);
   InvalidateNodeListCachesInAncestors(nullptr, nullptr, &change);
   if (change.IsChildRemoval() ||
       change.type == ChildrenChangeType::kAllChildrenRemoved) {
@@ -1124,8 +1112,7 @@ void ContainerNode::FocusStateChanged() {
       StyleChangeReasonForTracing::CreateWithExtraData(
           style_change_reason::kPseudoClass, style_change_extra_data::g_focus));
 
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocus())
+  if (auto* this_element = DynamicTo<Element>(this))
     this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
 
   InvalidateIfHasEffectiveAppearance();
@@ -1145,8 +1132,7 @@ void ContainerNode::FocusVisibleStateChanged() {
                           style_change_reason::kPseudoClass,
                           style_change_extra_data::g_focus_visible));
 
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocusVisible())
+  if (auto* this_element = DynamicTo<Element>(this))
     this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
 }
 
@@ -1161,8 +1147,7 @@ void ContainerNode::FocusWithinStateChanged() {
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_focus_within));
   }
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocusWithin())
+  if (auto* this_element = DynamicTo<Element>(this))
     this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
@@ -1176,16 +1161,6 @@ void ContainerNode::SetFocused(bool received,
       OwnerShadowHost()->SetFocused(received, focus_type);
   }
 
-  // If this is an author shadow host and indirectly focused (has focused
-  // element within its shadow root), update focus.
-  auto* this_element = DynamicTo<Element>(this);
-  if (this_element && GetDocument().FocusedElement() &&
-      GetDocument().FocusedElement() != this) {
-    if (this_element->AuthorShadowRoot()) {
-      received = received && this_element->AuthorShadowRoot()->delegatesFocus();
-    }
-  }
-
   if (IsFocused() == received)
     return;
 
@@ -1196,37 +1171,39 @@ void ContainerNode::SetFocused(bool received,
   if (GetLayoutObject() || received)
     return;
 
+  auto* this_element = DynamicTo<Element>(this);
   // If :focus sets display: none, we lose focus but still need to recalc our
   // style.
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocus()) {
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
-  } else {
+  if (!this_element || !this_element->ChildrenOrSiblingsAffectedByFocus()) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::CreateWithExtraData(
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_focus));
   }
+  if (this_element)
+    this_element->PseudoStateChanged(CSSSelector::kPseudoFocus);
 
   if (RuntimeEnabledFeatures::CSSFocusVisibleEnabled()) {
-    if (this_element &&
-        this_element->ChildrenOrSiblingsAffectedByFocusVisible()) {
-      this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
-    } else {
+    if (!this_element ||
+        !this_element->ChildrenOrSiblingsAffectedByFocusVisible()) {
       SetNeedsStyleRecalc(kLocalStyleChange,
                           StyleChangeReasonForTracing::CreateWithExtraData(
                               style_change_reason::kPseudoClass,
                               style_change_extra_data::g_focus_visible));
     }
+    if (this_element)
+      this_element->PseudoStateChanged(CSSSelector::kPseudoFocusVisible);
   }
 
-  if (this_element && this_element->ChildrenOrSiblingsAffectedByFocusWithin()) {
-    this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
-  } else {
+  if (!this_element ||
+      !this_element->ChildrenOrSiblingsAffectedByFocusWithin()) {
     SetNeedsStyleRecalc(kLocalStyleChange,
                         StyleChangeReasonForTracing::CreateWithExtraData(
                             style_change_reason::kPseudoClass,
                             style_change_extra_data::g_focus_within));
   }
+  if (this_element)
+    this_element->PseudoStateChanged(CSSSelector::kPseudoFocusWithin);
 }
 
 void ContainerNode::SetHasFocusWithinUpToAncestor(bool flag, Node* ancestor) {

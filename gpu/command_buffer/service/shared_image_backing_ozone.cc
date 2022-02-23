@@ -11,6 +11,8 @@
 
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "build/build_config.h"
+#include "components/viz/common/gpu/vulkan_context_provider.h"
 #include "components/viz/common/resources/resource_format.h"
 #include "components/viz/common/resources/resource_format_utils.h"
 #include "gpu/command_buffer/common/mailbox.h"
@@ -22,8 +24,11 @@
 #include "gpu/command_buffer/service/shared_image_representation.h"
 #include "gpu/command_buffer/service/shared_image_representation_gl_ozone.h"
 #include "gpu/command_buffer/service/shared_image_representation_skia_gl.h"
+#include "gpu/command_buffer/service/shared_image_representation_skia_vk_ozone.h"
 #include "gpu/command_buffer/service/shared_memory_region_wrapper.h"
 #include "gpu/command_buffer/service/skia_utils.h"
+#include "gpu/vulkan/vulkan_image.h"
+#include "gpu/vulkan/vulkan_implementation.h"
 #include "third_party/skia/include/core/SkPromiseImageTexture.h"
 #include "third_party/skia/include/gpu/GrBackendSemaphore.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -159,8 +164,8 @@ SharedImageBackingOzone::ProduceDawn(SharedImageManager* manager,
 std::unique_ptr<SharedImageRepresentationGLTexture>
 SharedImageBackingOzone::ProduceGLTexture(SharedImageManager* manager,
                                           MemoryTypeTracker* tracker) {
-  return SharedImageRepresentationGLTextureOzone::Create(manager, this, tracker,
-                                                         pixmap_, format());
+  return SharedImageRepresentationGLTextureOzone::Create(
+      manager, this, tracker, pixmap_, format(), plane_);
 }
 
 std::unique_ptr<SharedImageRepresentationGLTexturePassthrough>
@@ -168,7 +173,7 @@ SharedImageBackingOzone::ProduceGLTexturePassthrough(
     SharedImageManager* manager,
     MemoryTypeTracker* tracker) {
   return SharedImageRepresentationGLTexturePassthroughOzone::Create(
-      manager, this, tracker, pixmap_, format());
+      manager, this, tracker, pixmap_, format(), plane_);
 }
 
 std::unique_ptr<SharedImageRepresentationSkia>
@@ -193,6 +198,23 @@ SharedImageBackingOzone::ProduceSkia(
     }
     return skia_representation;
   }
+  if (context_state->GrContextIsVulkan()) {
+    auto* device_queue = context_state->vk_context_provider()->GetDeviceQueue();
+    gfx::GpuMemoryBufferHandle gmb_handle;
+    gmb_handle.type = gfx::GpuMemoryBufferType::NATIVE_PIXMAP;
+    gmb_handle.native_pixmap_handle = pixmap_->ExportHandle();
+    auto* vulkan_implementation =
+        context_state->vk_context_provider()->GetVulkanImplementation();
+    auto vulkan_image = vulkan_implementation->CreateImageFromGpuMemoryHandle(
+        device_queue, std::move(gmb_handle), size(), ToVkFormat(format()));
+
+    if (!vulkan_image)
+      return nullptr;
+
+    return std::make_unique<SharedImageRepresentationSkiaVkOzone>(
+        manager, this, std::move(context_state), std::move(vulkan_image),
+        tracker);
+  }
   NOTIMPLEMENTED_LOG_ONCE();
   return nullptr;
 }
@@ -203,7 +225,7 @@ SharedImageBackingOzone::ProduceOverlay(SharedImageManager* manager,
   gfx::BufferFormat buffer_format = viz::BufferFormat(format());
   auto image = base::MakeRefCounted<gl::GLImageNativePixmap>(
       pixmap_->GetBufferSize(), buffer_format);
-  image->Initialize(std::move(pixmap_));
+  image->Initialize(pixmap_);
   return std::make_unique<SharedImageRepresentationOverlayOzone>(
       manager, this, tracker, image);
 }
@@ -211,6 +233,7 @@ SharedImageBackingOzone::ProduceOverlay(SharedImageManager* manager,
 SharedImageBackingOzone::SharedImageBackingOzone(
     const Mailbox& mailbox,
     viz::ResourceFormat format,
+    gfx::BufferPlane plane,
     const gfx::Size& size,
     const gfx::ColorSpace& color_space,
     GrSurfaceOrigin surface_origin,
@@ -228,6 +251,7 @@ SharedImageBackingOzone::SharedImageBackingOzone(
                                       usage,
                                       GetPixmapSizeInBytes(*pixmap),
                                       false),
+      plane_(plane),
       pixmap_(std::move(pixmap)),
       dawn_procs_(std::move(dawn_procs)),
       context_state_(std::move(context_state)) {}

@@ -98,8 +98,6 @@ class CordRepAnalyzer {
         AnalyzeRing(repref);
       } else if (repref.rep->tag == BTREE) {
         AnalyzeBtree(repref);
-      } else if (repref.rep->tag == CONCAT) {
-        AnalyzeConcat(repref);
       } else {
         // We should have either a concat, btree, or ring node if not null.
         assert(false);
@@ -140,14 +138,6 @@ class CordRepAnalyzer {
       fair_share += static_cast<double>(size) / refcount;
     }
   };
-
-  // Returns `rr` if `rr.rep` is not null and a CONCAT type.
-  // Asserts that `rr.rep` is a concat node or null.
-  static RepRef AssertConcat(RepRef repref) {
-    const CordRep* rep = repref.rep;
-    assert(rep == nullptr || rep->tag == CONCAT);
-    return (rep != nullptr && rep->tag == CONCAT) ? repref : RepRef{nullptr, 0};
-  }
 
   // Counts a flat of the provide allocated size
   void CountFlat(size_t size) {
@@ -199,34 +189,6 @@ class CordRepAnalyzer {
     }
 
     return rep;
-  }
-
-  // Analyzes the provided concat node in a flattened recursive way.
-  void AnalyzeConcat(RepRef rep) {
-    absl::InlinedVector<RepRef, 47> pending;
-
-    while (rep.rep != nullptr) {
-      const CordRepConcat* concat = rep.rep->concat();
-      RepRef left = rep.Child(concat->left);
-      RepRef right = rep.Child(concat->right);
-
-      statistics_.node_count++;
-      statistics_.node_counts.concat++;
-      memory_usage_.Add(sizeof(CordRepConcat), rep.refcount);
-
-      right = AssertConcat(CountLinearReps(right, memory_usage_));
-      rep = AssertConcat(CountLinearReps(left, memory_usage_));
-      if (rep.rep != nullptr) {
-        if (right.rep != nullptr) {
-          pending.push_back(right);
-        }
-      } else if (right.rep != nullptr) {
-        rep = right;
-      } else if (!pending.empty()) {
-        rep = pending.back();
-        pending.pop_back();
-      }
-    }
   }
 
   // Analyzes the provided ring.

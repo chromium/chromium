@@ -17,12 +17,12 @@ class MotionMarkPage(rendering_story.RenderingStory):
                page_set,
                shared_page_state_class=shared_page_state.SharedMobilePageState,
                name_suffix='',
-               make_javascript_deterministic=False,
                extra_browser_args=None):
     super(MotionMarkPage, self).__init__(
         page_set=page_set,
         shared_page_state_class=shared_page_state_class,
         name_suffix=name_suffix,
+        make_javascript_deterministic=False,
         extra_browser_args=['--report-silk-details', '--disable-top-sites'])
     self._score = 0
     self._scoreLowerBound = 0

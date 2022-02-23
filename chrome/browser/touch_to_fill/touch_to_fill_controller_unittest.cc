@@ -7,6 +7,7 @@
 #include <memory>
 #include <tuple>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gmock_callback_support.h"
@@ -53,6 +54,7 @@ struct MockPasswordManagerDriver : password_manager::StubPasswordManagerDriver {
   MOCK_METHOD2(FillSuggestion,
                void(const std::u16string&, const std::u16string&));
   MOCK_METHOD1(TouchToFillClosed, void(ShowVirtualKeyboard));
+  MOCK_METHOD0(TriggerFormSubmission, void());
   MOCK_CONST_METHOD0(GetLastCommittedURL, const GURL&());
 };
 
@@ -97,6 +99,9 @@ class TouchToFillControllerTest : public testing::Test {
     ON_CALL(driver_, GetLastCommittedURL())
         .WillByDefault(ReturnRefOfCopy(GURL(kExampleCom)));
 
+    // By default, don't trigger a form submission.
+    EXPECT_CALL(driver_, TriggerFormSubmission()).Times(0);
+
     scoped_feature_list_.InitAndEnableFeature(
         password_manager::features::kBiometricTouchToFill);
   }
@@ -125,10 +130,14 @@ class TouchToFillControllerTest : public testing::Test {
     return touch_to_fill_controller_;
   }
 
+  base::test::ScopedFeatureList& scoped_feature_list() {
+    return scoped_feature_list_;
+  }
+
  private:
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  MockTouchToFillView* mock_view_ = nullptr;
+  raw_ptr<MockTouchToFillView> mock_view_ = nullptr;
   scoped_refptr<MockBiometricAuthenticator> authenticator_ =
       base::MakeRefCounted<MockBiometricAuthenticator>();
   MockPasswordManagerDriver driver_;
@@ -163,6 +172,9 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth) {
       "PasswordManager.TouchToFill.NumCredentialsShown", 1, 1);
   histogram_tester().ExpectUniqueSample(
       "PasswordManager.FilledCredentialWasFromAndroidApp", false, 1);
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kCredentialFilled, 1);
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
   ASSERT_EQ(1u, entries.size());
@@ -170,6 +182,33 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth) {
       entries[0], UkmBuilder::kUserActionName,
       static_cast<int64_t>(
           TouchToFillController::UserAction::kSelectedCredential));
+}
+
+TEST_F(TouchToFillControllerTest, Show_Fill_And_Submit) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitAndEnableFeature(
+      password_manager::features::kTouchToFillPasswordSubmission);
+
+  std::unique_ptr<TouchToFillController> controller_no_auth =
+      CreateNoAuthController();
+  std::unique_ptr<MockTouchToFillView> mock_view =
+      std::make_unique<MockTouchToFillView>();
+  MockTouchToFillView* weak_view = mock_view.get();
+  controller_no_auth->set_view(std::move(mock_view));
+
+  UiCredential credentials[] = {
+      MakeUiCredential({.username = "alice", .password = "p4ssw0rd"})};
+
+  EXPECT_CALL(*weak_view, Show(Eq(GURL(kExampleCom)), IsOriginSecure(true),
+                               ElementsAreArray(credentials)));
+  controller_no_auth->Show(credentials, driver().AsWeakPtr());
+
+  EXPECT_CALL(driver(), FillSuggestion(std::u16string(u"alice"),
+                                       std::u16string(u"p4ssw0rd")));
+  EXPECT_CALL(driver(), TouchToFillClosed(ShowVirtualKeyboard(false)));
+  EXPECT_CALL(driver(), TriggerFormSubmission());
+
+  controller_no_auth->OnCredentialSelected(credentials[0]);
 }
 
 TEST_F(TouchToFillControllerTest, Show_And_Fill_No_Auth_Available) {
@@ -242,6 +281,10 @@ TEST_F(TouchToFillControllerTest, Show_And_Fill_Auth_Available_Failure) {
               Authenticate(BiometricAuthRequester::kTouchToFill, _))
       .WillOnce(RunOnceCallback<1>(false));
   touch_to_fill_controller().OnCredentialSelected(credentials[0]);
+
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kReauthenticationFailed, 1);
 }
 
 TEST_F(TouchToFillControllerTest, Show_Empty) {
@@ -354,6 +397,9 @@ TEST_F(TouchToFillControllerTest, Dismiss) {
   test_recorder().ExpectEntryMetric(
       entries[0], UkmBuilder::kUserActionName,
       static_cast<int64_t>(TouchToFillController::UserAction::kDismissed));
+  histogram_tester().ExpectUniqueSample(
+      "PasswordManager.TouchToFill.Outcome",
+      TouchToFillController::TouchToFillOutcome::kSheetDismissed, 1);
 }
 
 TEST_F(TouchToFillControllerTest, DestroyedWhileAuthRunning) {

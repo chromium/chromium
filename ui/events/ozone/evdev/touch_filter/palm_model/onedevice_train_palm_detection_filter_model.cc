@@ -16,8 +16,11 @@
 #include <utility>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/logging.h"
 #include "ui/events/ozone/evdev/touch_filter/palm_model/onedevice_train_palm_detection_filter_inference.h"
+#include "ui/events/ozone/evdev/touch_filter/palm_model/onedevice_train_palm_detection_filter_inference_v2.h"
+#include "ui/events/ozone/features.h"
 #define USE_EIGEN 0
 
 namespace ui {
@@ -25,10 +28,9 @@ namespace ui {
 float OneDeviceTrainNeuralStylusPalmDetectionFilterModel::Inference(
     const std::vector<float>& features) const {
   DVLOG(1) << "In Inference.";
-  std::unique_ptr<internal_onedevice::FixedAllocations> fixed_allocations(
-      new internal_onedevice::FixedAllocations());
-  if (features.size() != 193) {
-    LOG(DFATAL) << "Bad count. Is " << features.size() << " expected " << 193;
+  if (features.size() != expected_feature_size_) {
+    LOG(DFATAL) << "Bad count. Is " << features.size() << " expected "
+                << expected_feature_size_;
     return nanf("");
   }
   // TODO(robsc): Update to DVLOG_IS_ON if relevant.
@@ -38,7 +40,17 @@ float OneDeviceTrainNeuralStylusPalmDetectionFilterModel::Inference(
     }
   }
   float output = 0;
-  internal_onedevice::Inference(&features[0], &output, fixed_allocations.get());
+  if (base::FeatureList::IsEnabled(kEnableNeuralPalmRejectionModelV2)) {
+    std::unique_ptr<v2::internal_onedevice::FixedAllocations> fixed_allocations(
+        new v2::internal_onedevice::FixedAllocations());
+    v2::internal_onedevice::Inference(&features[0], &output,
+                                      fixed_allocations.get());
+  } else {
+    std::unique_ptr<internal_onedevice::FixedAllocations> fixed_allocations(
+        new internal_onedevice::FixedAllocations());
+    internal_onedevice::Inference(&features[0], &output,
+                                  fixed_allocations.get());
+  }
   return output;
 }
 
@@ -49,16 +61,34 @@ OneDeviceTrainNeuralStylusPalmDetectionFilterModel::config() const {
 
 OneDeviceTrainNeuralStylusPalmDetectionFilterModel::
     OneDeviceTrainNeuralStylusPalmDetectionFilterModel() {
-  config_.nearest_neighbor_count = 0;
-  config_.biggest_near_neighbor_count = 2;
+  // Common configurations:
   config_.include_sequence_count_in_strokes = true;
   config_.max_neighbor_distance_in_mm = 100.0f;
-  config_.min_sample_count = 6;
-  config_.max_sample_count = 12;
   config_.max_dead_neighbor_time = base::Milliseconds(100.0f);
   config_.heuristic_palm_touch_limit = 20.0f;
   config_.heuristic_palm_area_limit = 400.0f;
   config_.max_blank_time = base::Milliseconds(100.0f);
+  config_.nearest_neighbor_count = 0;
+  config_.biggest_near_neighbor_count = 4;
+
+  if (base::FeatureList::IsEnabled(kEnableNeuralPalmRejectionModelV2)) {
+    config_.min_sample_count = 3;
+    config_.max_sample_count = 6;
+    config_.neighbor_min_sample_count = 1;
+    config_.output_threshold = 0.90271f;
+    expected_feature_size_ = 173;
+
+    if (base::FeatureList::IsEnabled(kEnableNeuralPalmAdaptiveHold)) {
+      config_.nn_delay_start_if_palm = true;
+      config_.early_stage_sample_counts = std::unordered_set<uint32_t>({2});
+    }
+  } else {
+    config_.min_sample_count = 5;
+    config_.max_sample_count = 12;
+    config_.neighbor_min_sample_count = 5;
+    config_.output_threshold = 2.519f;
+    expected_feature_size_ = 323;
+  }
 }
 
 OneDeviceTrainNeuralStylusPalmDetectionFilterModel::

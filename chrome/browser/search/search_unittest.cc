@@ -360,7 +360,7 @@ TEST_F(SearchTest, UseLocalNTPIfNTPURLIsNotSet) {
 #if BUILDFLAG(ENABLE_SUPERVISED_USERS)
 TEST_F(SearchTest, UseLocalNTPIfNTPURLIsBlockedForSupervisedUser) {
   // Mark the profile as supervised, otherwise the URL filter won't be checked.
-  profile()->SetSupervisedUserId("supervised");
+  profile()->SetIsSupervisedProfile();
   // Block access to foo.com in the URL filter.
   SupervisedUserService* supervised_user_service =
       SupervisedUserServiceFactory::GetForProfile(profile());

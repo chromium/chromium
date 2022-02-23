@@ -10,12 +10,23 @@ generate_jni("jni_headers") {
 
 android_library("java") {
   sources = [
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/AdMeasurementFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/AdPersonalizationFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/AdPersonalizationRemovedFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/FlocSettingsFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/LearnMoreFragment.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridge.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogConsent.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogController.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogNotice.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxHelpers.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxReferrer.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentV3.java",
     "java/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSnackbarController.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/SpamFraudFragment.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/Topic.java",
+    "java/src/org/chromium/chrome/browser/privacy_sandbox/TopicPreference.java",
   ]
   deps = [
     ":java_resources",
@@ -23,23 +34,34 @@ android_library("java") {
     "//chrome/browser/flags:java",
     "//chrome/browser/settings:java",
     "//chrome/browser/ui/messages/android:java",
+    "//components/browser_ui/bottomsheet/android:java",
     "//components/browser_ui/settings/android:java",
+    "//components/browser_ui/styles/android:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
+    "//third_party/androidx:androidx_appcompat_appcompat_resources_java",
     "//third_party/androidx:androidx_browser_browser_java",
+    "//third_party/androidx:androidx_core_core_java",
+    "//third_party/androidx:androidx_core_core_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
     "//third_party/androidx:androidx_preference_preference_java",
+    "//third_party/androidx:androidx_recyclerview_recyclerview_java",
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_full_java",
   ]
   annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":privacy_sandbox_enums" ]
   resources_package = "org.chromium.chrome.browser.privacy_sandbox"
 }
 
 android_library("javatests") {
   testonly = true
   sources = [
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FakePrivacySandboxBridge.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/FlocSettingsFragmentTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxBridgeTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxDialogTest.java",
     "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentTest.java",
+    "javatests/src/org/chromium/chrome/browser/privacy_sandbox/PrivacySandboxSettingsFragmentV3Test.java",
   ]
   deps = [
     ":java",
@@ -49,21 +71,38 @@ android_library("javatests") {
     "//chrome/browser/flags:java",
     "//chrome/browser/settings:test_support_java",
     "//chrome/test/android:chrome_java_test_support",
+    "//components/browser_ui/settings/android:java",
     "//content/public/test/android:content_java_test_support",
+    "//third_party/android_deps:espresso_java",
+    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_runner_java",
+    "//third_party/hamcrest:hamcrest_core_java",
     "//third_party/hamcrest:hamcrest_library_java",
     "//third_party/junit:junit",
+    "//third_party/mockito:mockito_java",
+    "//ui/android:ui_java_test_support",
   ]
 }
 
 android_resources("java_resources") {
   sources = [
+    "java/res/drawable-night/privacy_sandbox_dialog_illustration.xml",
     "java/res/drawable-night/privacy_sandbox_illustration.xml",
+    "java/res/drawable/privacy_sandbox_dialog_illustration.xml",
     "java/res/drawable/privacy_sandbox_illustration.xml",
+    "java/res/layout/privacy_sandbox_consent.xml",
+    "java/res/layout/privacy_sandbox_consent_dropdown.xml",
     "java/res/layout/privacy_sandbox_header.xml",
+    "java/res/layout/privacy_sandbox_notice.xml",
     "java/res/values/dimens.xml",
+    "java/res/xml/ad_measurement_preference.xml",
+    "java/res/xml/ad_personalization_preference.xml",
+    "java/res/xml/ad_personalization_removed_preference.xml",
     "java/res/xml/floc_preferences.xml",
+    "java/res/xml/learn_more_preference.xml",
     "java/res/xml/privacy_sandbox_preferences.xml",
+    "java/res/xml/privacy_sandbox_preferences_v3.xml",
+    "java/res/xml/spam_fraud_preference.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -73,4 +112,8 @@ android_resources("java_resources") {
     "//components/browser_ui/widget/android:java_resources",
     "//third_party/android_deps:material_design_java",
   ]
+}
+
+java_cpp_enum("privacy_sandbox_enums") {
+  sources = [ "//chrome/browser/privacy_sandbox/privacy_sandbox_service.h" ]
 }

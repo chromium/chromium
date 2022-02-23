@@ -63,13 +63,13 @@ using testing::ElementsAre;
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 bool IsSelected(const WebAXObject& obj) {
   ui::AXNodeData node_data;
   obj.Serialize(&node_data, ui::kAXModeComplete);
   return node_data.GetBoolAttribute(ax::mojom::BoolAttribute::kSelected);
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -1156,7 +1156,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
 
   gfx::RectF expected_bounds;
   blink::WebAXObject offset_container;
-  skia::Matrix44 container_transform;
+  gfx::Transform container_transform;
   input_checkbox.GetRelativeBounds(offset_container, expected_bounds,
                                    container_transform);
   gfx::Rect actual_bounds = input_checkbox_action_target->GetRelativeBounds();
@@ -1172,7 +1172,7 @@ TEST_F(BlinkAXActionTargetTest, TestMethods) {
   EXPECT_GE(scroller_action_target->MaximumScrollOffset().y(), 900);
 
   // Android does not produce accessible items for option elements.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(IsSelected(option));
   EXPECT_TRUE(option_action_target->SetSelected(true));
   // Seleting option requires layout to be clean.

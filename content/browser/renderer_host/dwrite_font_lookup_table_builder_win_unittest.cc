@@ -11,6 +11,7 @@
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/scoped_temp_dir.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
@@ -77,7 +78,7 @@ class DWriteFontLookupTableBuilderTest : public testing::Test {
  protected:
   base::test::ScopedFeatureList feature_list_;
   base::test::TaskEnvironment task_environment_;
-  DWriteFontLookupTableBuilder* font_lookup_table_builder_;
+  raw_ptr<DWriteFontLookupTableBuilder> font_lookup_table_builder_;
   base::ScopedTempDir scoped_temp_dir_;
 };
 
@@ -176,7 +177,10 @@ TEST_F(DWriteFontLookupTableBuilderTest, RepeatedScheduling) {
 }
 
 TEST_F(DWriteFontLookupTableBuilderTest, FontsHash) {
-  ASSERT_GT(font_lookup_table_builder_->ComputePersistenceHash().size(), 0u);
+  ASSERT_GT(
+      font_lookup_table_builder_->ComputePersistenceHash("6.0.1.2").size(), 0u);
+  // Validate an empty string doesn't cause problems.
+  ASSERT_GT(font_lookup_table_builder_->ComputePersistenceHash("").size(), 0u);
 }
 
 TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
@@ -194,13 +198,13 @@ TEST_F(DWriteFontLookupTableBuilderTest, HandleCorruptCacheFile) {
         // Truncate table for testing
         base::FilePath cache_file_path = scoped_temp_dir_.GetPath().Append(
             FILE_PATH_LITERAL("font_unique_name_table.pb"));
-        // Use FLAG_EXCLUSIVE_WRITE to block file and make persisting the
+        // Use FLAG_WIN_EXCLUSIVE_WRITE to block file and make persisting the
         // cache fail as well, use FLAG_OPEN to ensure it got created by the
         // table builder implementation.
         cache_file = base::File(cache_file_path,
                                 base::File::FLAG_OPEN | base::File::FLAG_READ |
                                     base::File::FLAG_WRITE |
-                                    base::File::FLAG_EXCLUSIVE_WRITE);
+                                    base::File::FLAG_WIN_EXCLUSIVE_WRITE);
         // Ensure the cache file was created in the empty scoped_temp_dir_
         // and has a non-zero length.
         ASSERT_TRUE(cache_file.IsValid());

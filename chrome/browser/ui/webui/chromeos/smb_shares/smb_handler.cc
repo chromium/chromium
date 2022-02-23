@@ -57,16 +57,17 @@ void SmbHandler::RegisterMessages() {
 }
 
 void SmbHandler::HandleSmbMount(const base::ListValue* args) {
-  CHECK_EQ(8U, args->GetList().size());
+  CHECK_EQ(8U, args->GetListDeprecated().size());
 
-  std::string callback_id = args->GetList()[0].GetString();
-  std::string mount_url = args->GetList()[1].GetString();
-  std::string mount_name = args->GetList()[2].GetString();
-  std::string username = args->GetList()[3].GetString();
-  std::string password = args->GetList()[4].GetString();
-  bool use_kerberos = args->GetList()[5].GetBool();
-  bool should_open_file_manager_after_mount = args->GetList()[6].GetBool();
-  bool save_credentials = args->GetList()[7].GetBool();
+  std::string callback_id = args->GetListDeprecated()[0].GetString();
+  std::string mount_url = args->GetListDeprecated()[1].GetString();
+  std::string mount_name = args->GetListDeprecated()[2].GetString();
+  std::string username = args->GetListDeprecated()[3].GetString();
+  std::string password = args->GetListDeprecated()[4].GetString();
+  bool use_kerberos = args->GetListDeprecated()[5].GetBool();
+  bool should_open_file_manager_after_mount =
+      args->GetListDeprecated()[6].GetBool();
+  bool save_credentials = args->GetListDeprecated()[7].GetBool();
 
   smb_client::SmbService* const service = GetSmbService(profile_);
   if (!service) {
@@ -127,11 +128,11 @@ void SmbHandler::HandleGatherSharesResponse(
 }
 
 void SmbHandler::HandleUpdateCredentials(const base::ListValue* args) {
-  CHECK_EQ(3U, args->GetList().size());
+  CHECK_EQ(3U, args->GetListDeprecated().size());
 
-  std::string mount_id = args->GetList()[0].GetString();
-  std::string username = args->GetList()[1].GetString();
-  std::string password = args->GetList()[2].GetString();
+  std::string mount_id = args->GetListDeprecated()[0].GetString();
+  std::string username = args->GetListDeprecated()[1].GetString();
+  std::string password = args->GetListDeprecated()[2].GetString();
 
   DCHECK(update_cred_callback_);
   std::move(update_cred_callback_).Run(username, password);

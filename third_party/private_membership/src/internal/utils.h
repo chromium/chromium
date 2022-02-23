@@ -17,6 +17,7 @@
 
 #include "absl/strings/string_view.h"
 #include "third_party/shell-encryption/src/statusor.h"
+#include "third_party/private_membership/base/private_membership_export.h"
 
 namespace private_membership {
 namespace rlwe {
@@ -32,7 +33,9 @@ namespace rlwe {
 //
 // Returns InvalidArgumentError if the truncation bit length is larger than the
 // bit length of the input string.
-::rlwe::StatusOr<std::string> Truncate(absl::string_view in, int bit_length);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<std::string> Truncate(
+    absl::string_view in,
+    int bit_length);
 
 // Returns the first `bit_length` leftmost bits of `in` as an unsigned 32 bit
 // integer.
@@ -44,8 +47,9 @@ namespace rlwe {
 //
 // Returns InvalidArgumentError if `bit_length` is larger than the bit length of
 // the input string or larger than 32.
-::rlwe::StatusOr<uint32_t> TruncateAsUint32(absl::string_view in,
-                                            int bit_length);
+PRIVATE_MEMBERSHIP_EXPORT ::rlwe::StatusOr<uint32_t> TruncateAsUint32(
+    absl::string_view in,
+    int bit_length);
 
 // Returns true if `in` is a valid byte representation of a value truncated to
 // `bit_length`.
@@ -53,7 +57,7 @@ namespace rlwe {
 // That is, it returns true if and only if all bits after `bit_length`th bit is
 // set to 0 and `bit_length` is in the range
 // ((in.size() - 1) * 8, in.size() * 8].
-bool IsValid(absl::string_view in, int bit_length);
+PRIVATE_MEMBERSHIP_EXPORT bool IsValid(absl::string_view in, int bit_length);
 
 }  // namespace rlwe
 }  // namespace private_membership

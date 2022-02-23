@@ -14,6 +14,7 @@
 #include "base/bits.h"
 #include "base/compiler_specific.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "base/stl_util.h"
@@ -33,7 +34,7 @@
 #include "third_party/skia/include/core/SkRRect.h"
 #include "third_party/skia/include/core/SkSerialProcs.h"
 #include "third_party/skia/include/core/SkTextBlob.h"
-#include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
 namespace cc {
 namespace {
@@ -51,7 +52,7 @@ bool IsValidPaintShaderScalingBehavior(PaintShader::ScalingBehavior behavior) {
 struct TypefaceCtx {
   explicit TypefaceCtx(SkStrikeClient* client) : client(client) {}
   bool invalid_typeface = false;
-  SkStrikeClient* client = nullptr;
+  raw_ptr<SkStrikeClient> client = nullptr;
 };
 
 sk_sp<SkTypeface> DeserializeTypeface(const void* data,
@@ -1154,6 +1155,14 @@ void PaintOpReader::ReadRecordPaintFilter(
   ReadSimple(&scaling_behavior);
   if (!IsValidPaintShaderScalingBehavior(scaling_behavior)) {
     SetInvalid(DeserializationError::kInvalidPaintShaderScalingBehavior);
+    return;
+  }
+
+  // RecordPaintFilter also requires kRasterAtScale to have {1.f, 1.f} as the
+  // raster_scale, since that is intended for kFixedScale
+  if (scaling_behavior == PaintShader::ScalingBehavior::kRasterAtScale &&
+      (raster_scale.width() != 1.f || raster_scale.height() != 1.f)) {
+    SetInvalid(DeserializationError::kInvalidRasterScale);
     return;
   }
 

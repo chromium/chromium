@@ -6,8 +6,8 @@
 #define FUCHSIA_ENGINE_RENDERER_WEB_ENGINE_RENDER_FRAME_OBSERVER_H_
 
 #include "base/callback.h"
+#include "components/url_rewrite/renderer/url_request_rules_receiver.h"
 #include "content/public/renderer/render_frame_observer.h"
-#include "fuchsia/engine/renderer/url_request_rules_receiver.h"
 
 namespace content {
 class RenderFrame;
@@ -29,7 +29,7 @@ class WebEngineRenderFrameObserver final : public content::RenderFrameObserver {
   WebEngineRenderFrameObserver& operator=(const WebEngineRenderFrameObserver&) =
       delete;
 
-  UrlRequestRulesReceiver* url_request_rules_receiver() {
+  url_rewrite::UrlRequestRulesReceiver* url_request_rules_receiver() {
     return &url_request_rules_receiver_;
   }
 
@@ -37,7 +37,7 @@ class WebEngineRenderFrameObserver final : public content::RenderFrameObserver {
   // content::RenderFrameObserver implementation.
   void OnDestruct() override;
 
-  UrlRequestRulesReceiver url_request_rules_receiver_;
+  url_rewrite::UrlRequestRulesReceiver url_request_rules_receiver_;
 
   base::OnceCallback<void(int)> on_render_frame_deleted_callback_;
 };

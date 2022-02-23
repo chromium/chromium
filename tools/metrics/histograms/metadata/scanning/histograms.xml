@@ -169,19 +169,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Scanning.ScanAppEntryPoint" enum="ScanAppEntryPoint"
-    expires_after="2022-06-15">
-  <obsolete>
-    Data no longer needed 2021-02.
-  </obsolete>
-  <owner>gavinwill@chromium.org</owner>
-  <owner>cros-peripherals@google.com</owner>
-  <summary>
-    Records the entry point of where the Scan App was launched from in Chrome
-    OS. Used to track the relative entry points of the app.
-  </summary>
-</histogram>
-
 <histogram name="Scanning.ScanCompleteAction" enum="ScanCompleteAction"
     expires_after="2022-06-15">
   <owner>gavinwill@chromium.org</owner>

@@ -4,7 +4,7 @@
 
 #import "ios/showcase/badges/sc_badge_coordinator.h"
 
-#include "ios/chrome/browser/infobars/infobar_badge_model.h"
+#import "ios/chrome/browser/infobars/badge_state.h"
 #import "ios/chrome/browser/ui/badges/badge_button_factory.h"
 #import "ios/chrome/browser/ui/badges/badge_consumer.h"
 #import "ios/chrome/browser/ui/badges/badge_delegate.h"
@@ -81,8 +81,8 @@
   AddNamedGuidesToView(@[ kBadgeOverflowMenuGuide ], self.view);
   BadgeStaticItem* incognitoItem = [[BadgeStaticItem alloc]
       initWithBadgeType:BadgeType::kBadgeTypeIncognito];
-  InfobarBadgeModel* passwordBadgeItem = [[InfobarBadgeModel alloc]
-      initWithInfobarType:InfobarType::kInfobarTypePasswordSave];
+  BadgeTappableItem* passwordBadgeItem = [[BadgeTappableItem alloc]
+      initWithBadgeType:BadgeType::kBadgeTypePasswordSave];
   passwordBadgeItem.badgeState = BadgeStateRead;
   [self.consumer setupWithDisplayedBadge:passwordBadgeItem
                          fullScreenBadge:incognitoItem];
@@ -91,8 +91,8 @@
 - (void)showAcceptedDisplayedBadge {
   BadgeStaticItem* incognitoItem = [[BadgeStaticItem alloc]
       initWithBadgeType:BadgeType::kBadgeTypeIncognito];
-  InfobarBadgeModel* passwordBadgeItem = [[InfobarBadgeModel alloc]
-      initWithInfobarType:InfobarType::kInfobarTypePasswordSave];
+  BadgeTappableItem* passwordBadgeItem = [[BadgeTappableItem alloc]
+      initWithBadgeType:BadgeType::kBadgeTypePasswordSave];
   passwordBadgeItem.badgeState = BadgeStateRead | BadgeStateAccepted;
   [self.consumer setupWithDisplayedBadge:passwordBadgeItem
                          fullScreenBadge:incognitoItem];
@@ -151,12 +151,15 @@
 - (void)translateBadgeButtonTapped:(id)sender {
 }
 
+- (void)permissionsBadgeButtonTapped:(id)sender {
+}
+
 - (void)overflowBadgeButtonTapped:(id)sender {
   self.badgePopupMenuCoordinator = [[BadgePopupMenuCoordinator alloc]
       initWithBaseViewController:self.containerViewController
                          browser:nil];
-  NSArray* badgeItems = @[ [[InfobarBadgeModel alloc]
-      initWithInfobarType:InfobarType::kInfobarTypePasswordSave] ];
+  NSArray* badgeItems = @[ [[BadgeTappableItem alloc]
+      initWithBadgeType:BadgeType::kBadgeTypePasswordSave] ];
   [self.badgePopupMenuCoordinator setBadgeItemsToShow:badgeItems];
   [self.badgePopupMenuCoordinator start];
   [self.consumer markDisplayedBadgeAsRead:YES];

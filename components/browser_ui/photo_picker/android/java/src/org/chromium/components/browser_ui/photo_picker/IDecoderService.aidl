@@ -6,7 +6,7 @@ package org.chromium.components.browser_ui.photo_picker;
 
 import android.os.Bundle;
 
-import IDecoderServiceCallback;
+import org.chromium.components.browser_ui.photo_picker.IDecoderServiceCallback;
 
 /**
  * This interface is called by the Photo Picker to start image decoding jobs in

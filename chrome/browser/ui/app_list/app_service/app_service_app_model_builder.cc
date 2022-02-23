@@ -54,10 +54,10 @@ void AppServiceAppModelBuilder::OnAppUpdate(const apps::AppUpdate& update) {
       DCHECK(item->GetItemType() == AppServiceAppItem::kItemType);
       static_cast<AppServiceAppItem*>(item)->OnAppUpdate(update);
 
-      // TODO(crbug.com/826982): drop the check for kExtension or kWeb, and
+      // TODO(crbug.com/826982): drop the check for kChromeApp or kWeb, and
       // call UpdateItem unconditionally?
       apps::mojom::AppType app_type = update.AppType();
-      if ((app_type == apps::mojom::AppType::kExtension) ||
+      if ((app_type == apps::mojom::AppType::kChromeApp) ||
           (app_type == apps::mojom::AppType::kSystemWeb) ||
           (app_type == apps::mojom::AppType::kWeb)) {
         app_list::AppListSyncableService* serv = service();

@@ -5,30 +5,45 @@
 package org.chromium.chrome.browser.autofill_assistant.onboarding;
 
 import android.content.Context;
+import android.view.View;
 
-import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
-import org.chromium.chrome.browser.compositor.CompositorViewHolder;
+import org.chromium.chrome.browser.autofill_assistant.AssistantBrowserControlsFactory;
+import org.chromium.chrome.browser.autofill_assistant.AssistantInfoPageUtil;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
+import org.chromium.content_public.browser.BrowserContextHandle;
+import org.chromium.ui.util.AccessibilityUtil;
 
+import java.util.Arrays;
+import java.util.List;
 import java.util.Map;
 
 /**
  * Onboarding coordinator factory which facilitates the creation of onboarding coordinators.
  */
 public class OnboardingCoordinatorFactory {
+    // See details and variant breakdown in b/209561294.
+    private static final String SPLIT_ONBOARDING_VARIANT_A_EXPERIMENT_ID = "4702489";
+    private static final String SPLIT_ONBOARDING_VARIANT_B_EXPERIMENT_ID = "4702490";
+
     private final Context mContext;
     private final BottomSheetController mBottomSheetController;
-    private final BrowserControlsStateProvider mBrowserControls;
-    private final CompositorViewHolder mCompositorViewHolder;
+    private final BrowserContextHandle mBrowserContext;
+    private final AssistantBrowserControlsFactory mBrowserControlsFactory;
+    private final View mRootView;
+    private final AccessibilityUtil mAccessibilityUtil;
+    private final AssistantInfoPageUtil mInfoPageUtil;
 
     public OnboardingCoordinatorFactory(Context context,
-            BottomSheetController bottomSheetController,
-            BrowserControlsStateProvider browserControls,
-            CompositorViewHolder compositorViewHolder) {
+            BottomSheetController bottomSheetController, BrowserContextHandle browserContext,
+            AssistantBrowserControlsFactory browserControlsFactory, View rootView,
+            AccessibilityUtil accessibilityUtil, AssistantInfoPageUtil infoPageUtil) {
         mContext = context;
         mBottomSheetController = bottomSheetController;
-        mBrowserControls = browserControls;
-        mCompositorViewHolder = compositorViewHolder;
+        mBrowserContext = browserContext;
+        mBrowserControlsFactory = browserControlsFactory;
+        mRootView = rootView;
+        mAccessibilityUtil = accessibilityUtil;
+        mInfoPageUtil = infoPageUtil;
     }
 
     /**
@@ -36,9 +51,22 @@ public class OnboardingCoordinatorFactory {
      */
     public BaseOnboardingCoordinator createBottomSheetOnboardingCoordinator(
             String experimentIds, Map<String, String> parameters) {
-        return new BottomSheetOnboardingCoordinator(experimentIds, parameters, mContext,
-                mBottomSheetController, mBrowserControls, mCompositorViewHolder,
-                mBottomSheetController.getScrimCoordinator());
+        List<String> experimentIdsList = Arrays.asList(experimentIds.split(","));
+        if (experimentIdsList.contains(SPLIT_ONBOARDING_VARIANT_A_EXPERIMENT_ID)) {
+            return new BottomSheetOnboardingWithPopupCoordinator(mBrowserContext, mInfoPageUtil,
+                    experimentIds, parameters, mContext, mBottomSheetController,
+                    mBrowserControlsFactory, mRootView,
+                    mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
+        } else if (experimentIdsList.contains(SPLIT_ONBOARDING_VARIANT_B_EXPERIMENT_ID)) {
+            return new BottomSheetOnboardingWithPopupAndBubbleCoordinator(mBrowserContext,
+                    mInfoPageUtil, experimentIds, parameters, mContext, mBottomSheetController,
+                    mBrowserControlsFactory, mRootView,
+                    mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
+        }
+
+        return new BottomSheetOnboardingCoordinator(mBrowserContext, mInfoPageUtil, experimentIds,
+                parameters, mContext, mBottomSheetController, mBrowserControlsFactory, mRootView,
+                mBottomSheetController.getScrimCoordinator(), mAccessibilityUtil);
     }
 
     /**
@@ -46,6 +74,7 @@ public class OnboardingCoordinatorFactory {
      */
     public BaseOnboardingCoordinator createDialogOnboardingCoordinator(
             String experimentIds, Map<String, String> parameters) {
-        return new DialogOnboardingCoordinator(experimentIds, parameters, mContext);
+        return new DialogOnboardingCoordinator(
+                mBrowserContext, mInfoPageUtil, experimentIds, parameters, mContext);
     }
 }

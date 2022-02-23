@@ -8,8 +8,7 @@
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "build/build_config.h"
 
-namespace base {
-namespace internal {
+namespace partition_alloc {
 
 #if defined(PA_HAS_ALLOCATION_GUARD)
 
@@ -32,21 +31,18 @@ class ScopedAllowAllocations {
 
 #else
 
-// TODO(lizeb): Remove once NaCl is either gone, or the compiler gets updated.
-#if defined(OS_NACL)
-#define PA_MAYBE_UNUSED __attribute__((unused))
-#else
-#define PA_MAYBE_UNUSED [[maybe_unused]]
-#endif
-
-struct PA_MAYBE_UNUSED ScopedDisallowAllocations {};
-struct PA_MAYBE_UNUSED ScopedAllowAllocations {};
-
-#undef PA_MAYBE_UNUSED
+struct [[maybe_unused]] ScopedDisallowAllocations{};
+struct [[maybe_unused]] ScopedAllowAllocations{};
 
 #endif  // defined(PA_HAS_ALLOCATION_GUARD)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc
+
+namespace base::internal {
+
+using ::partition_alloc::ScopedAllowAllocations;
+using ::partition_alloc::ScopedDisallowAllocations;
+
+}  // namespace base::internal
 
 #endif  // BASE_ALLOCATOR_PARTITION_ALLOCATOR_ALLOCATION_GUARD_H_

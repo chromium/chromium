@@ -21,7 +21,7 @@ class WebuiLoadTimer : public content::WebContentsObserver {
   // must not be empty.
   // * |document_initial_load_uma_id| - corresponds to DOMContentLoaded
   // * |document_load_completed_uma_id| - corresponds to
-  //   DocumentOnLoadCompletedInMainFrame
+  //   DocumentOnLoadCompletedInPrimaryMainFrame
   WebuiLoadTimer(content::WebContents* web_contents,
                  const std::string& document_initial_load_uma_id,
                  const std::string& document_load_completed_uma_id);
@@ -35,8 +35,7 @@ class WebuiLoadTimer : public content::WebContentsObserver {
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
-  void DocumentOnLoadCompletedInMainFrame(
-      content::RenderFrameHost* render_frame_host) override;
+  void DocumentOnLoadCompletedInPrimaryMainFrame() override;
 
  private:
   std::string document_initial_load_uma_id_;

@@ -9,19 +9,19 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/app_mode/app_mode_utils.h"
 #include "chrome/browser/apps/platform_apps/audio_focus_web_contents_observer.h"
 #include "chrome/browser/chrome_notification_types.h"
-#include "chrome/browser/extensions/chrome_extension_web_contents_observer.h"
 #include "chrome/browser/favicon/favicon_utils.h"
 #include "chrome/browser/file_select_helper.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/picture_in_picture/picture_in_picture_window_manager.h"
 #include "chrome/browser/platform_util.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/shell_integration.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_navigator.h"
@@ -55,7 +55,7 @@
 #include "chrome/browser/ash/lock_screen_apps/state_controller.h"
 #endif
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/chromeos/policy/dlp/dlp_content_tab_helper.h"
 #endif
 
@@ -202,8 +202,10 @@ ChromeAppDelegate::ChromeAppDelegate(Profile* profile, bool keep_alive)
   if (keep_alive) {
     keep_alive_ = std::make_unique<ScopedKeepAlive>(
         KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
-    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-        profile_, ProfileKeepAliveOrigin::kAppWindow);
+    if (!profile_->IsOffTheRecord()) {
+      profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+          profile_, ProfileKeepAliveOrigin::kAppWindow);
+    }
   }
   registrar_.Add(this,
                  chrome::NOTIFICATION_APP_TERMINATING,
@@ -225,12 +227,10 @@ void ChromeAppDelegate::InitWebContents(content::WebContents* web_contents) {
 #if BUILDFLAG(ENABLE_PRINTING)
   printing::InitializePrinting(web_contents);
 #endif
-  extensions::ChromeExtensionWebContentsObserver::CreateForWebContents(
-      web_contents);
 
   apps::AudioFocusWebContentsObserver::CreateForWebContents(web_contents);
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   policy::DlpContentTabHelper::MaybeCreateForWebContents(web_contents);
 #endif
 
@@ -379,8 +379,10 @@ void ChromeAppDelegate::OnShow() {
   is_hidden_ = false;
   keep_alive_ = std::make_unique<ScopedKeepAlive>(
       KeepAliveOrigin::CHROME_APP_DELEGATE, KeepAliveRestartOption::DISABLED);
-  profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
-      profile_, ProfileKeepAliveOrigin::kAppWindow);
+  if (!profile_->IsOffTheRecord()) {
+    profile_keep_alive_ = std::make_unique<ScopedProfileKeepAlive>(
+        profile_, ProfileKeepAliveOrigin::kAppWindow);
+  }
 }
 
 bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
@@ -396,11 +398,9 @@ bool ChromeAppDelegate::TakeFocus(content::WebContents* web_contents,
 }
 
 content::PictureInPictureResult ChromeAppDelegate::EnterPictureInPicture(
-    content::WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
-  return PictureInPictureWindowManager::GetInstance()->EnterPictureInPicture(
-      web_contents, surface_id, natural_size);
+    content::WebContents* web_contents) {
+  return PictureInPictureWindowManager::GetInstance()
+      ->EnterVideoPictureInPicture(web_contents);
 }
 
 void ChromeAppDelegate::ExitPictureInPicture() {

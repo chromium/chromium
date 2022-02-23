@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/big_endian.h"
+#include "base/memory/raw_ptr.h"
 #include "media/cast/net/cast_transport_defines.h"
 #include "media/cast/net/rtcp/rtcp_defines.h"
 
@@ -103,7 +104,7 @@ class TestRtcpPacketBuilder {
   // Where the length field of the current packet is.
   // Note: 0 is not a legal value, it is used for "uninitialized".
   uint8_t buffer_[kMaxIpPacketSize];
-  char* ptr_of_length_;
+  raw_ptr<char> ptr_of_length_;
   base::BigEndianWriter big_endian_writer_;
   base::BigEndianReader big_endian_reader_;
 };

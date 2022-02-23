@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="sv">
 <translation id="102360288709523007">Hjälp till att förbättra Chrome genom att skicka användningsstatistik och felrapporter till Google.</translation>
+<translation id="1047130070405668746">Välj Chromium</translation>
 <translation id="1185134272377778587">Om Chromium</translation>
 <translation id="1257458525759135959">Om du vill spara bilder trycker du på Inställningar och låter Chromium lägga till dina foton</translation>
 <translation id="1289216811211435351">Byt till Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Visar meddelanden om att logga in i Chromium.</translation>
 <translation id="1584569488888892906">Chromium är enklare, säkrare och snabbare än någonsin</translation>
 <translation id="1617663976202781617">Data från Chromium-synkronisering</translation>
+<translation id="1722370509450468186">Lösenordet sparas i kontot (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Chromium-data har rensats</translation>
 <translation id="1838412507805038478">Chromium har verifierat att <ph name="ISSUER" /> har utfärdat webbplatsens certifikat.</translation>
 <translation id="1843424232666537147">I Chromium finns det funktioner som du kan använda för att hantera dina internetuppgifter och inläsningshastigheten för webbsidor.
 <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Välj Chromium</translation>
 <translation id="2006345422933397527">Chromium kunde inte söka efter uppdateringar. Testa att kontrollera internetanslutningen.</translation>
 <translation id="2054703085270098503">Surfa säkert med Chromium</translation>
 <translation id="2168108852149185974">Några tillägg har fått Chromium att krascha. Avinstallera följande:</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Stöds inte på Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium kan kontrollera dina lösenord när du loggar in med Google-kontot.</translation>
 <translation id="3805899903892079518">Chromium har inte åtkomst till dina foton eller videor. Aktivera åtkomst i iOS-inställningar &gt; Integritet &gt; Foton.</translation>
-<translation id="3946918322491238254">Bokmärken, lösenord, historik och andra inställningar finns fortfarande kvar på enheten. Om du ändrar något synkroniseras inte detta med kontot.</translation>
+<translation id="4043291146360695975">Lösenorden sparas med Lösenordshantering endast på den här enheten.</translation>
 <translation id="4099085513035183040">Stöds inte på Chromium Beta</translation>
 <translation id="4555020257205549924">När den här funktionen har aktiverats visas alternativet i Chromium att översätta sidor som är skrivna på andra språk med hjälp av Google Översätt. <ph name="BEGIN_LINK" />Läs mer<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">Chrome har blivit ännu bättre! En ny version finns tillgänglig.</translation>
 <translation id="6752854822223394465">Organisationen konfigurerar Chromium …</translation>
 <translation id="6820823224820483452">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon.</translation>
+<translation id="7006920032187763988">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPad-appar.</translation>
 <translation id="7018284295775193585">Chromium kan inte uppdateras</translation>
 <translation id="7045244423563602563">Anpassa Chromium</translation>
 <translation id="7099326575020694068">Chromium kan inte använda kameran i delad vy</translation>
 <translation id="7108914401277488191">Få mer gjort med Chromium</translation>
 <translation id="7118091470949186573">Nu kan du använda Chromium varje gång du trycker på länkar i meddelanden, dokument och andra appar.</translation>
+<translation id="7175400662502680481">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas av Lösenordshantering att byta lösenord nu.</translation>
 <translation id="7208566199746267865">Med Chromium sparar du tid genom att dina konton blir tillgängliga på nätet. Du kan lägga till och ta bort konton i inställningarna.</translation>
 <translation id="725427773388857052">Chromium kan skydda dig från dataintrång, osäkra webbplatser med mera.</translation>
 <translation id="7269362888766543920">Några tillägg har fått Chromium att krascha. Testa att avinstallera dem.</translation>
 <translation id="7313655110045230863">Öppna inställningarna för att välja Chromium som standardwebbläsare. Tryck på Standardwebbläsarapp och välj sedan Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">Den data som markerades har tagits bort från Chromium och från synkroniserade enheter. Det kan finnas andra former av webbhistorik i Google-kontot på history.google.com, t.ex. sökningar och aktivitet på andra tjänster från Google.</translation>
+<translation id="7395825497086981028">Lösenordet sparas med Lösenordshantering för <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Använd Chromium överallt</translation>
 <translation id="766897673682622022">Ditt lösenord har läckt ut vid ett dataintrång. Du rekommenderas att ändra lösenordet nu.</translation>
 <translation id="7674213385180944843">Öppna Inställningar &gt; Integritet &gt; Kamera &gt; Chromium och aktivera kameran.</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">Vill du rensa din data i Chromium från den här enheten?</translation>
 <translation id="8175055321229419309">Tips! <ph name="BEGIN_LINK" />Flytta Chromium till Dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium kunde inte söka efter uppdateringar. Försök igen senare.</translation>
+<translation id="858114650497379505">Du kan använda lösenorden som sparats med Lösenordshantering i andra iPhone-appar.</translation>
 <translation id="8586442755830160949">Upphovsrätt <ph name="YEAR" /> The Chromium Authors. Med ensamrätt.</translation>
 <translation id="8663480472502753423">Håll Chromium uppdaterad</translation>
 <translation id="8776843108004031667">Det här kontot och data som inte har sparats tas bort från Chromium.</translation>
 <translation id="894437814105052438">När du har loggat ut synkroniseras ingen mer data med ditt Google-konto i Chromium. Data som redan har synkroniserats finns kvar i kontot.</translation>
 <translation id="9022552996538154597">Logga in i Chromium</translation>
+<translation id="9059693977935746710">Du behöver inte komma ihåg det här lösenordet. Det sparas med Lösenordshantering för <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Den här versionen av Chromium är inaktuell</translation>
 <translation id="9110075932708282655">Använd Chromium som standard</translation>
 <translation id="921174536258924340">Chromium kunde inte kontrollera alla lösenord. Försök igen i morgon eller <ph name="BEGIN_LINK" />kontrollera lösenorden i ditt Google-konto<ph name="END_LINK" />.</translation>

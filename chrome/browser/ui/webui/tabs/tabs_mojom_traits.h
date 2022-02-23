@@ -6,7 +6,7 @@
 #define CHROME_BROWSER_UI_WEBUI_TABS_TABS_MOJOM_TRAITS_H_
 
 #include "base/containers/fixed_flat_map.h"
-#include "chrome/browser/ui/tabs/tab_utils.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/webui/tabs/tabs.mojom.h"
 
 namespace mojo {

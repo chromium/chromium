@@ -25,6 +25,7 @@
 #include "base/no_destructor.h"
 #include "base/path_service.h"
 #include "base/process/launch.h"
+#include "base/process/process.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_split.h"
@@ -36,6 +37,7 @@
 #include "base/trace_event/trace_event.h"
 #include "base/win/iat_patch_function.h"
 #include "base/win/scoped_handle.h"
+#include "base/win/sid.h"
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "printing/buildflags/buildflags.h"
@@ -285,23 +287,16 @@ void AddGenericDllEvictionPolicy(TargetPolicy* policy) {
     BlocklistAddOneDll(kTroublesomeDlls[ix], true, policy);
 }
 
+DWORD GetSessionId() {
+  DWORD session_id;
+  CHECK(::ProcessIdToSessionId(::GetCurrentProcessId(), &session_id));
+  return session_id;
+}
+
 // Returns the object path prepended with the current logon session.
 std::wstring PrependWindowsSessionPath(const wchar_t* object) {
   // Cache this because it can't change after process creation.
-  static DWORD s_session_id = 0;
-  if (s_session_id == 0) {
-    HANDLE token;
-    DWORD session_id_length;
-    DWORD session_id = 0;
-
-    CHECK(::OpenProcessToken(::GetCurrentProcess(), TOKEN_QUERY, &token));
-    CHECK(::GetTokenInformation(token, TokenSessionId, &session_id,
-                                sizeof(session_id), &session_id_length));
-    CloseHandle(token);
-    if (session_id)
-      s_session_id = session_id;
-  }
-
+  static DWORD s_session_id = GetSessionId();
   return base::StringPrintf(L"\\Sessions\\%lu%ls", s_session_id, object);
 }
 
@@ -369,27 +364,6 @@ ResultCode AddGenericPolicy(sandbox::TargetPolicy* policy) {
                            L"\\\\.\\pipe\\chrome.sync.*");
   if (result != SBOX_ALL_OK)
     return result;
-
-// Add the policy for debug message only in debug
-#ifndef NDEBUG
-  base::FilePath app_dir;
-  if (!base::PathService::Get(base::DIR_MODULE, &app_dir))
-    return SBOX_ERROR_GENERIC;
-
-  wchar_t long_path_buf[MAX_PATH];
-  DWORD long_path_return_value =
-      GetLongPathName(app_dir.value().c_str(), long_path_buf, MAX_PATH);
-  if (long_path_return_value == 0 || long_path_return_value >= MAX_PATH)
-    return SBOX_ERROR_NO_SPACE;
-
-  base::FilePath debug_message(long_path_buf);
-  debug_message = debug_message.AppendASCII("debug_message.exe");
-  result = policy->AddRule(TargetPolicy::SUBSYS_PROCESS,
-                           TargetPolicy::PROCESS_MIN_EXEC,
-                           debug_message.value().c_str());
-  if (result != SBOX_ALL_OK)
-    return result;
-#endif  // NDEBUG
 
 // Add the policy for read-only PDB file access for stack traces.
 #if !defined(OFFICIAL_BUILD)
@@ -490,7 +464,7 @@ typedef BOOL(WINAPI* DuplicateHandleFunctionPtr)(HANDLE source_process_handle,
 
 DuplicateHandleFunctionPtr g_iat_orig_duplicate_handle;
 
-NtQueryObject g_QueryObject = NULL;
+NtQueryObjectFunction g_QueryObject = NULL;
 
 static const char* kDuplicateHandleWarning =
     "You are attempting to duplicate a privileged handle into a sandboxed"
@@ -688,9 +662,9 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
     // Please refer to the following design doc on why we add the capabilities:
     // https://docs.google.com/document/d/19Y4Js5v3BlzA5uSuiVTvcvPNIOwmxcMSFJWtuc1A-w8/edit#heading=h.iqvhsrml3gl9
     if (!container->AddCapability(
-            sandbox::WellKnownCapabilities::kPrivateNetworkClientServer) ||
+            base::win::WellKnownCapability::kPrivateNetworkClientServer) ||
         !container->AddCapability(
-            sandbox::WellKnownCapabilities::kInternetClient)) {
+            base::win::WellKnownCapability::kInternetClient)) {
       DLOG(ERROR)
           << "AppContainer::AddCapability() - "
           << "Sandbox::kMediaFoundationCdm internet capabilities failed";
@@ -716,7 +690,7 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
 
   if (sandbox_type == Sandbox::kWindowsSystemProxyResolver) {
     if (!container->AddCapability(
-            sandbox::WellKnownCapabilities::kInternetClient)) {
+            base::win::WellKnownCapability::kInternetClient)) {
       DLOG(ERROR) << "AppContainer::AddCapability() - "
                   << "Sandbox::kWindowsSystemProxyResolver internet "
                      "capabilities failed";
@@ -767,10 +741,10 @@ ResultCode SetupAppContainerProfile(AppContainer* container,
   // Enable LPAC for Network service.
   if (sandbox_type == Sandbox::kNetwork) {
     container->AddCapability(
-        sandbox::WellKnownCapabilities::kPrivateNetworkClientServer);
-    container->AddCapability(sandbox::WellKnownCapabilities::kInternetClient);
+        base::win::WellKnownCapability::kPrivateNetworkClientServer);
+    container->AddCapability(base::win::WellKnownCapability::kInternetClient);
     container->AddCapability(
-        sandbox::WellKnownCapabilities::kEnterpriseAuthentication);
+        base::win::WellKnownCapability::kEnterpriseAuthentication);
     container->AddCapability(L"lpacIdentityServices");
     container->AddCapability(L"lpacCryptoServices");
     container->SetEnableLowPrivilegeAppContainer(true);
@@ -832,6 +806,8 @@ ResultCode LaunchWithoutSandbox(
   }
 
   *process = base::LaunchProcess(cmd_line, options);
+  if (!process->IsValid())
+    return SBOX_ERROR_CANNOT_LAUNCH_UNSANDBOXED_PROCESS;
   return SBOX_ALL_OK;
 }
 
@@ -939,11 +915,15 @@ ResultCode SandboxWin::AddAppContainerProfileToPolicy(
   BOOL granted_access_status;
   bool access_check =
       container->AccessCheck(command_line.GetProgram().value().c_str(),
-                             SE_FILE_OBJECT, GENERIC_READ | GENERIC_EXECUTE,
-                             &granted_access, &granted_access_status) &&
+                             SecurityObjectType::kFile,
+                             GENERIC_READ | GENERIC_EXECUTE, &granted_access,
+                             &granted_access_status) &&
       granted_access_status;
-  if (!access_check)
+  if (!access_check) {
+    PLOG(ERROR) << "Sandbox cannot access executable. Check filesystem "
+                   "permissions are valid. See https://bit.ly/31yqMJR.";
     return SBOX_ERROR_CREATE_APPCONTAINER_ACCESS_CHECK;
+  }
 
   return SBOX_ALL_OK;
 }
@@ -1286,6 +1266,8 @@ std::string SandboxWin::GetSandboxTypeInEnglish(Sandbox sandbox_type) {
       return "Media Foundation CDM";
     case Sandbox::kService:
       return "Service";
+    case Sandbox::kServiceWithJit:
+      return "Service With Jit";
     case Sandbox::kIconReader:
       return "Icon Reader";
     case Sandbox::kWindowsSystemProxyResolver:

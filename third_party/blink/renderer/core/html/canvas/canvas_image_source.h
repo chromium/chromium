@@ -29,11 +29,11 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/geometry/float_size.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/image_orientation.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
+#include "ui/gfx/geometry/size_f.h"
 
 namespace blink {
 
@@ -62,7 +62,7 @@ class CORE_EXPORT CanvasImageSource {
  public:
   virtual scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) = 0;
 
   // IMPORTANT: Result must be independent of whether destinationContext is
@@ -90,10 +90,10 @@ class CORE_EXPORT CanvasImageSource {
   // https://html.spec.whatwg.org/multipage/canvas.html#offscreencanvas-placeholder
   virtual bool IsPlaceholder() const { return false; }
 
-  virtual FloatSize ElementSize(const FloatSize& default_object_size,
-                                const RespectImageOrientationEnum) const = 0;
-  virtual FloatSize DefaultDestinationSize(
-      const FloatSize& default_object_size,
+  virtual gfx::SizeF ElementSize(const gfx::SizeF& default_object_size,
+                                 const RespectImageOrientationEnum) const = 0;
+  virtual gfx::SizeF DefaultDestinationSize(
+      const gfx::SizeF& default_object_size,
       const RespectImageOrientationEnum respect_orientation) const {
     return ElementSize(default_object_size, respect_orientation);
   }

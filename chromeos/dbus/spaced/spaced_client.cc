@@ -80,9 +80,9 @@ class SpacedClientImpl : public SpacedClient {
     }
 
     dbus::MessageReader reader(response);
-    uint64_t size = 0;
+    int64_t size = 0;
 
-    if (!reader.PopUint64(&size)) {
+    if (!reader.PopInt64(&size)) {
       LOG(ERROR) << "Spaced D-Bus method " << response->GetMember()
                  << ": Invalid response. " + response->ToString();
       std::move(callback).Run(absl::nullopt);

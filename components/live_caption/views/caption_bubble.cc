@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/time/default_tick_clock.h"
@@ -52,7 +53,7 @@
 // document navigation. It is suspected that other screen readers on Windows and
 // Linux will need this behavior, too. VoiceOver and ChromeVox do not need the
 // label to be focusable.
-#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !defined(OS_MAC)
+#if BUILDFLAG_INTERNAL_HAS_NATIVE_ACCESSIBILITY() && !BUILDFLAG(IS_MAC)
 #define NEED_FOCUS_FOR_ACCESSIBILITY
 #endif
 
@@ -150,7 +151,7 @@ bool ParseNonTransparentRGBACSSColorString(std::string css_string,
   if (!match || a == 0)
     return false;
   uint16_t a_int = base::ClampRound<uint16_t>(a * 255);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // On Mac, any opacity lower than 90% leaves rendering artifacts which make
   // it appear like there is a layer of faint text beneath the actual text.
   // TODO(crbug.com/1199419): Fix the rendering issue and then remove this
@@ -371,7 +372,7 @@ class CaptionBubbleLabelAXModeObserver : public ui::AXModeObserver {
   }
 
  private:
-  CaptionBubbleLabel* owner_;
+  raw_ptr<CaptionBubbleLabel> owner_;
 };
 #endif
 

@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/core/dom/node_computed_style.h"
 #include "third_party/blink/renderer/core/html/html_element.h"
 #include "third_party/blink/renderer/core/testing/page_test_base.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
@@ -38,7 +38,7 @@ class PrepopulatedComputedStylePropertyMapTest : public PageTestBase {
   }
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize());
+    PageTestBase::SetUp(gfx::Size());
     declaration_ = MakeGarbageCollected<CSSComputedStyleDeclaration>(
         GetDocument().documentElement());
   }

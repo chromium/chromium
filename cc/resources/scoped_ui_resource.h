@@ -5,6 +5,9 @@
 #ifndef CC_RESOURCES_SCOPED_UI_RESOURCE_H_
 #define CC_RESOURCES_SCOPED_UI_RESOURCE_H_
 
+#include <memory>
+
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "cc/cc_export.h"
 #include "cc/resources/ui_resource_bitmap.h"
@@ -32,7 +35,7 @@ class CC_EXPORT ScopedUIResource : public UIResourceClient {
 
   // UIResourceClient implementation.
   UIResourceBitmap GetBitmap(UIResourceId uid, bool resource_lost) override;
-  UIResourceId id() { return id_; }
+  UIResourceId id() const { return id_; }
 
   // Returns the memory usage of the bitmap.
   size_t EstimateMemoryUsage() const { return bitmap_.SizeInBytes(); }
@@ -42,7 +45,7 @@ class CC_EXPORT ScopedUIResource : public UIResourceClient {
                    const UIResourceBitmap& bitmap);
 
   UIResourceBitmap bitmap_;
-  UIResourceManager* ui_resource_manager_;
+  raw_ptr<UIResourceManager> ui_resource_manager_;
   UIResourceId id_;
 };
 

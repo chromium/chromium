@@ -4,7 +4,7 @@
 
 #include "third_party/blink/renderer/modules/xr/type_converters.h"
 
-#include "third_party/blink/renderer/platform/geometry/float_point_3d.h"
+#include "ui/gfx/geometry/point3_f.h"
 
 namespace mojo {
 

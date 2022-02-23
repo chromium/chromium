@@ -6,7 +6,7 @@
 
 #include "build/build_config.h"
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // static
 std::unique_ptr<FindBarPlatformHelper> FindBarPlatformHelper::Create(
     FindBarController* find_bar_controller) {

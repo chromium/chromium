@@ -33,6 +33,8 @@ struct EnumTraits<tab_groups::mojom::Color, tab_groups::TabGroupColorId> {
         return MojoTabGroupColorId::kPurple;
       case TabGroupColorId::kCyan:
         return MojoTabGroupColorId::kCyan;
+      case TabGroupColorId::kOrange:
+        return MojoTabGroupColorId::kOrange;
     }
     NOTREACHED();
     return MojoTabGroupColorId::kGrey;
@@ -63,6 +65,9 @@ struct EnumTraits<tab_groups::mojom::Color, tab_groups::TabGroupColorId> {
         return true;
       case MojoTabGroupColorId::kCyan:
         *out = TabGroupColorId::kCyan;
+        return true;
+      case MojoTabGroupColorId::kOrange:
+        *out = TabGroupColorId::kOrange;
         return true;
     }
     NOTREACHED();

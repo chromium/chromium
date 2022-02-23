@@ -44,24 +44,19 @@
 #include "third_party/blink/renderer/core/imagebitmap/image_bitmap_source.h"
 #include "third_party/blink/renderer/core/page/page_visibility_observer.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_typed_array.h"
-#include "third_party/blink/renderer/platform/geometry/float_rect.h"
-#include "third_party/blink/renderer/platform/geometry/int_size.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_2d_layer_bridge.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_host.h"
-#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types.h"
 #include "third_party/blink/renderer/platform/graphics/graphics_types_3d.h"
 #include "third_party/blink/renderer/platform/graphics/offscreen_canvas_placeholder.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/surface_layer_bridge.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/prefinalizer.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size.h"
 
 #define CanvasDefaultInterpolationQuality kInterpolationLow
-
-namespace cc {
-class Layer;
-}
 
 namespace blink {
 
@@ -70,10 +65,10 @@ class CanvasContextCreationAttributesCore;
 class CanvasDrawListener;
 class CanvasRenderingContext;
 class CanvasRenderingContextFactory;
+class CanvasResourceProvider;
 class GraphicsContext;
 class HTMLCanvasElement;
 class ImageBitmapOptions;
-class IntSize;
 class StaticBitmapImageToVideoFrameCopier;
 
 class
@@ -110,12 +105,12 @@ class CORE_EXPORT HTMLCanvasElement final
   unsigned width() const { return Size().width(); }
   unsigned height() const { return Size().height(); }
 
-  const IntSize& Size() const override { return size_; }
+  const gfx::Size& Size() const override { return size_; }
 
   void setWidth(unsigned, ExceptionState&);
   void setHeight(unsigned, ExceptionState&);
 
-  void SetSize(const IntSize& new_size);
+  void SetSize(const gfx::Size& new_size);
 
   // Called by Document::getCSSCanvasContext as well as above getContext().
   CanvasRenderingContext* GetCanvasRenderingContext(
@@ -203,11 +198,11 @@ class CORE_EXPORT HTMLCanvasElement final
   // CanvasImageSource implementation
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) override;
   bool WouldTaintOrigin() const override;
-  FloatSize ElementSize(const FloatSize&,
-                        const RespectImageOrientationEnum) const override;
+  gfx::SizeF ElementSize(const gfx::SizeF&,
+                         const RespectImageOrientationEnum) const override;
   bool IsCanvasElement() const override { return true; }
   bool IsOpaque() const override;
   bool IsAccelerated() const override;
@@ -236,9 +231,9 @@ class CORE_EXPORT HTMLCanvasElement final
                                unaccelerated_bridge_used_for_testing = nullptr);
 
   // ImageBitmapSource implementation
-  IntSize BitmapSourceSize() const override;
+  gfx::Size BitmapSourceSize() const override;
   ScriptPromise CreateImageBitmap(ScriptState*,
-                                  absl::optional<IntRect> crop_rect,
+                                  absl::optional<gfx::Rect> crop_rect,
                                   const ImageBitmapOptions*,
                                   ExceptionState&) override;
 
@@ -249,7 +244,7 @@ class CORE_EXPORT HTMLCanvasElement final
 
   void SetResourceProviderForTesting(std::unique_ptr<CanvasResourceProvider>,
                                      std::unique_ptr<Canvas2DLayerBridge>,
-                                     const IntSize&);
+                                     const gfx::Size&);
 
   static void RegisterRenderingContextFactory(
       std::unique_ptr<CanvasRenderingContextFactory>);
@@ -356,7 +351,7 @@ class CORE_EXPORT HTMLCanvasElement final
       RasterMode raster_mode);
   void SetCanvas2DLayerBridgeInternal(std::unique_ptr<Canvas2DLayerBridge>);
 
-  void SetSurfaceSize(const IntSize&);
+  void SetSurfaceSize(const gfx::Size&);
 
   bool PaintsIntoCanvasBuffer() const;
 
@@ -381,16 +376,17 @@ class CORE_EXPORT HTMLCanvasElement final
 
   HeapHashSet<WeakMember<CanvasDrawListener>> listeners_;
 
-  IntSize size_;
+  gfx::Size size_;
 
   Member<CanvasRenderingContext> context_;
   // Used only for WebGL currently.
   bool context_creation_was_blocked_;
 
+  bool disposing_ = false;
   bool canvas_is_clear_ = true;
 
   bool ignore_reset_;
-  FloatRect dirty_rect_;
+  gfx::RectF dirty_rect_;
 
   bool origin_clean_;
   bool needs_unbuffered_input_ = false;

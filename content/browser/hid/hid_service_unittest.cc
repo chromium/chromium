@@ -5,6 +5,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "content/browser/hid/hid_test_utils.h"
@@ -157,7 +158,7 @@ class HidServiceTest : public RenderViewHostImplTestHarness {
 
  private:
   HidTestContentBrowserClient test_client_;
-  ContentBrowserClient* original_client_ = nullptr;
+  raw_ptr<ContentBrowserClient> original_client_ = nullptr;
   device::FakeHidManager hid_manager_;
   FakeHidConnectionClient connection_client_;
 };
@@ -667,7 +668,7 @@ TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
   // checks if the origin is allowed to access FIDO reports before returning the
   // device information to the client.
   url::Origin origin = url::Origin::Create(GURL(kTestUrl));
-  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(_, origin))
       .WillOnce(Return(is_fido_allowed));
   base::RunLoop get_devices_loop;
   service->GetDevices(base::BindLambdaForTesting(
@@ -700,7 +701,7 @@ TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
   // allowed to access FIDO reports, the device is blocked and DeviceAdded is
   // not called.
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
-  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(_, origin))
       .WillOnce(Return(is_fido_allowed));
   base::RunLoop device_added_loop;
   if (is_fido_allowed) {
@@ -726,7 +727,7 @@ TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
   // usage and should be included whether or not the origin is allowed to access
   // FIDO reports.
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
-  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(_, origin))
       .WillOnce(Return(is_fido_allowed));
   base::RunLoop device_changed_loop;
   EXPECT_CALL(mock_hid_manager_client, DeviceChanged).WillOnce([&](auto d) {
@@ -764,7 +765,7 @@ TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
 
   // Open a connection. HidService checks if the origin is allowed to access
   // FIDO reports before creating a HidConnection.
-  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(_, origin))
       .WillOnce(Return(is_fido_allowed));
   mojo::PendingRemote<device::mojom::HidConnectionClient> hid_connection_client;
   connection_client()->Bind(
@@ -811,7 +812,7 @@ TEST_P(HidServiceFidoTest, FidoDeviceAllowedWithPrivilegedOrigin) {
   // information about FIDO reports should only be included if the origin is
   // allowed to access FIDO reports.
   EXPECT_CALL(hid_delegate(), HasDevicePermission).WillOnce(Return(true));
-  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(origin))
+  EXPECT_CALL(hid_delegate(), IsFidoAllowedForOrigin(_, origin))
       .WillOnce(Return(is_fido_allowed));
   base::RunLoop device_removed_loop;
   EXPECT_CALL(mock_hid_manager_client, DeviceRemoved).WillOnce([&](auto d) {

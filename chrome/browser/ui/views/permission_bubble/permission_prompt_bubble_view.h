@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/permission_bubble/permission_prompt_style.h"
 #include "components/permissions/permission_prompt.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -32,8 +33,7 @@ class Browser;
 class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(PermissionPromptBubbleView);
-  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(PermissionPromptBubbleView,
-                                         kPermissionPromptBubbleViewIdentifier);
+  DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kPermissionPromptBubbleViewIdentifier);
   PermissionPromptBubbleView(Browser* browser,
                              permissions::PermissionPrompt::Delegate* delegate,
                              base::TimeTicks permission_requested_time,
@@ -59,7 +59,7 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   bool ShouldShowCloseButton() const override;
   std::u16string GetAccessibleWindowTitle() const override;
   std::u16string GetWindowTitle() const override;
-  void OnWidgetDestroying(views::Widget* widget) override;
+  void OnWidgetClosing(views::Widget* widget) override;
 
   void AcceptPermission();
   void AcceptPermissionThisTime();
@@ -91,8 +91,8 @@ class PermissionPromptBubbleView : public views::BubbleDialogDelegateView {
   // option.
   bool GetShowAllowThisTimeButton() const;
 
-  Browser* const browser_;
-  permissions::PermissionPrompt::Delegate* const delegate_;
+  const raw_ptr<Browser> browser_;
+  const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
   base::TimeTicks permission_requested_time_;
 

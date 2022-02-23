@@ -78,7 +78,7 @@ public class NavigationSheetTest {
         public TestNavigationEntry(int index, GURL url, GURL virtualUrl, GURL originalUrl,
                 String title, Bitmap favicon, int transition, long timestamp) {
             super(index, url, virtualUrl, originalUrl, /*referrerUrl=*/null, title, favicon,
-                    transition, timestamp);
+                    transition, timestamp, /* isInitialEntry=*/false);
         }
     }
 
@@ -128,7 +128,7 @@ public class NavigationSheetTest {
                         GURL.emptyGURL(),
                         mActivityTestRule.getActivity().getResources().getString(
                                 R.string.show_full_history),
-                        null, 0, 0));
+                        null, 0, 0, /* isInitialEntry=*/false));
             }
             return history;
         }

@@ -967,52 +967,51 @@ export class DirectoryModel extends EventTarget {
    *
    * @param {!Entry} oldEntry The old entry.
    * @param {!Entry} newEntry The new entry.
-   * @param {function()=} opt_callback Called on completion.
+   * @return {!Promise<void>} Resolves on completion.
    */
-  onRenameEntry(oldEntry, newEntry, opt_callback) {
-    this.currentDirContents_.prefetchMetadata([newEntry], true, () => {
-      // If the current directory is the old entry, then quietly change to the
-      // new one.
-      if (util.isSameEntry(oldEntry, this.getCurrentDirEntry())) {
-        this.changeDirectoryEntry(
-            /** @type {!DirectoryEntry|!FilesAppDirEntry} */ (newEntry));
-      }
-
-      // Replace the old item with the new item. oldEntry instance itself may
-      // have been removed/replaced from the list during the async process, we
-      // find an entry which should be replaced by checking toURL().
-      const list = this.getFileList();
-      let oldEntryExist = false;
-      let newEntryExist = false;
-      const oldEntryUrl = oldEntry.toURL();
-      const newEntryUrl = newEntry.toURL();
-
-      for (let i = 0; i < list.length; i++) {
-        const item = list.item(i);
-        const url = item.toURL();
-        if (url === oldEntryUrl) {
-          list.replaceItem(item, newEntry);
-          oldEntryExist = true;
-          break;
+  onRenameEntry(oldEntry, newEntry) {
+    return new Promise(resolve => {
+      this.currentDirContents_.prefetchMetadata([newEntry], true, () => {
+        // If the current directory is the old entry, then quietly change to the
+        // new one.
+        if (util.isSameEntry(oldEntry, this.getCurrentDirEntry())) {
+          this.changeDirectoryEntry(
+              /** @type {!DirectoryEntry|!FilesAppDirEntry} */ (newEntry));
         }
 
-        if (url === newEntryUrl) {
-          newEntryExist = true;
+        // Replace the old item with the new item. oldEntry instance itself may
+        // have been removed/replaced from the list during the async process, we
+        // find an entry which should be replaced by checking toURL().
+        const list = this.getFileList();
+        let oldEntryExist = false;
+        let newEntryExist = false;
+        const oldEntryUrl = oldEntry.toURL();
+        const newEntryUrl = newEntry.toURL();
+
+        for (let i = 0; i < list.length; i++) {
+          const item = list.item(i);
+          const url = item.toURL();
+          if (url === oldEntryUrl) {
+            list.replaceItem(item, newEntry);
+            oldEntryExist = true;
+            break;
+          }
+
+          if (url === newEntryUrl) {
+            newEntryExist = true;
+          }
         }
-      }
 
-      // When both old and new entries don't exist, it may be in the middle of
-      // update process. In DirectoryContent.update deletion is executed at
-      // first and insertion is executed as a async call. There is a chance that
-      // this method is called in the middle of update process.
-      if (!oldEntryExist && !newEntryExist) {
-        list.push(newEntry);
-      }
+        // When both old and new entries don't exist, it may be in the middle of
+        // update process. In DirectoryContent.update deletion is executed at
+        // first and insertion is executed as a async call. There is a chance
+        // that this method is called in the middle of update process.
+        if (!oldEntryExist && !newEntryExist) {
+          list.push(newEntry);
+        }
 
-      // Run callback, finally.
-      if (opt_callback) {
-        opt_callback();
-      }
+        resolve();
+      });
     });
   }
 

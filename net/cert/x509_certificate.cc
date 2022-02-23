@@ -16,7 +16,6 @@
 #include "base/containers/span.h"
 #include "base/cxx17_backports.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/pickle.h"
 #include "base/strings/string_piece.h"
@@ -80,8 +79,8 @@ void SplitOnChar(const base::StringPiece& src,
 
 // Sets |value| to the Value from a DER Sequence Tag-Length-Value and return
 // true, or return false if the TLV was not a valid DER Sequence.
-WARN_UNUSED_RESULT bool ParseSequenceValue(const der::Input& tlv,
-                                           der::Input* value) {
+[[nodiscard]] bool ParseSequenceValue(const der::Input& tlv,
+                                      der::Input* value) {
   der::Parser parser(tlv);
   return parser.ReadTag(der::kSequence, value) && !parser.HasMore();
 }
@@ -348,7 +347,7 @@ bool X509Certificate::GetSubjectAltName(
     return false;
 
   ParsedExtension subject_alt_names_extension;
-  if (!ConsumeExtension(SubjectAltNameOid(), &extensions,
+  if (!ConsumeExtension(der::Input(kSubjectAltNameOid), &extensions,
                         &subject_alt_names_extension)) {
     return false;
   }
@@ -655,7 +654,7 @@ bssl::UniquePtr<CRYPTO_BUFFER> X509Certificate::CreateCertBufferFromBytes(
     return nullptr;
   }
 
-  return x509_util::CreateCryptoBuffer(data.data(), data.size());
+  return x509_util::CreateCryptoBuffer(data);
 }
 
 // static

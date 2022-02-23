@@ -10,6 +10,7 @@
 
 #include "base/bind.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,9 +53,7 @@ static constexpr int kLiveCaptionImageWidthDip = 20;
 static constexpr int kLiveCaptionVerticalMarginDip = 16;
 
 std::u16string GetLiveCaptionTitle(PrefService* profile_prefs) {
-  // Live Caption multi language is only enabled when SODA is also enabled.
-  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage) ||
-      !base::FeatureList::IsEnabled(media::kUseSodaForLiveCaption)) {
+  if (!base::FeatureList::IsEnabled(media::kLiveCaptionMultiLanguage)) {
     return l10n_util::GetStringUTF16(
         IDS_GLOBAL_MEDIA_CONTROLS_LIVE_CAPTION_ENGLISH_ONLY);
   }
@@ -80,26 +79,43 @@ MediaDialogView* MediaDialogView::instance_ = nullptr;
 bool MediaDialogView::has_been_opened_ = false;
 
 // static
-views::Widget* MediaDialogView::ShowDialog(
+views::Widget* MediaDialogView::ShowDialogFromToolbar(
     views::View* anchor_view,
     MediaNotificationService* service,
-    Profile* profile,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
-  return ShowDialogForPresentationRequest(anchor_view, service, profile,
-                                          nullptr, entry_point);
+    Profile* profile) {
+  return ShowDialog(
+      anchor_view, views::BubbleBorder::TOP_RIGHT, service, profile, nullptr,
+      global_media_controls::GlobalMediaControlsEntryPoint::kToolbarIcon);
 }
 
 // static
-views::Widget* MediaDialogView::ShowDialogForPresentationRequest(
+views::Widget* MediaDialogView::ShowDialogCentered(
+    const gfx::Rect& bounds,
+    MediaNotificationService* service,
+    Profile* profile,
+    content::WebContents* contents,
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
+  auto* widget = ShowDialog(nullptr, views::BubbleBorder::TOP_CENTER, service,
+                            profile, contents, entry_point);
+  instance_->SetAnchorRect(bounds);
+  return widget;
+}
+
+// static
+views::Widget* MediaDialogView::ShowDialog(
     views::View* anchor_view,
+    views::BubbleBorder::Arrow anchor_position,
     MediaNotificationService* service,
     Profile* profile,
     content::WebContents* contents,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point) {
   DCHECK(!instance_);
   DCHECK(service);
-  instance_ =
-      new MediaDialogView(anchor_view, service, profile, contents, entry_point);
+  instance_ = new MediaDialogView(anchor_view, anchor_position, service,
+                                  profile, contents, entry_point);
+  if (!anchor_view) {
+    instance_->set_has_parent(false);
+  }
 
   views::Widget* widget =
       views::BubbleDialogDelegateView::CreateBubble(instance_);
@@ -250,11 +266,12 @@ MediaDialogView::GetListViewForTesting() const {
 
 MediaDialogView::MediaDialogView(
     views::View* anchor_view,
+    views::BubbleBorder::Arrow anchor_position,
     MediaNotificationService* service,
     Profile* profile,
     content::WebContents* contents,
     global_media_controls::GlobalMediaControlsEntryPoint entry_point)
-    : BubbleDialogDelegateView(anchor_view, views::BubbleBorder::TOP_RIGHT),
+    : BubbleDialogDelegateView(anchor_view, anchor_position),
       service_(service),
       profile_(profile->GetOriginalProfile()),
       active_sessions_view_(AddChildView(
@@ -345,7 +362,14 @@ void MediaDialogView::OnLiveCaptionButtonPressed() {
 
 void MediaDialogView::ToggleLiveCaption(bool enabled) {
   profile_->GetPrefs()->SetBoolean(prefs::kLiveCaptionEnabled, enabled);
-  live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
+
+  // Do not update the title if SODA is currently downloading.
+  if (!speech::SodaInstaller::GetInstance()->IsSodaDownloading(
+          speech::GetLanguageCode(
+              prefs::GetLiveCaptionLanguageCode(profile_->GetPrefs())))) {
+    live_caption_title_->SetText(GetLiveCaptionTitle(profile_->GetPrefs()));
+  }
+
   live_caption_button_->SetIsOn(enabled);
 }
 
@@ -379,8 +403,7 @@ MediaDialogView::BuildMediaItemUIView(
       item->SourceType() ==
       media_message_center::SourceType::kLocalMediaSession;
   const bool gmc_cast_start_stop_enabled =
-      media_router::GlobalMediaControlsCastStartStopEnabled() &&
-      media_router::MediaRouterEnabled(profile_);
+      media_router::GlobalMediaControlsCastStartStopEnabled(profile_);
 
   // Show a device selector view for media and supplemental notifications.
   std::unique_ptr<MediaItemUIDeviceSelectorView> device_selector_view;
@@ -390,8 +413,7 @@ MediaDialogView::BuildMediaItemUIView(
     const bool show_expand_button =
         !base::FeatureList::IsEnabled(media::kGlobalMediaControlsModernUI);
     std::unique_ptr<media_router::CastDialogController> cast_controller;
-    if (media_router::GlobalMediaControlsCastStartStopEnabled() &&
-        media_router::MediaRouterEnabled(profile_)) {
+    if (gmc_cast_start_stop_enabled) {
       cast_controller =
           is_local_media_session
               ? service_->CreateCastDialogControllerForSession(id)

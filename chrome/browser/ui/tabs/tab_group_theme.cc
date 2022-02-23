@@ -8,6 +8,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "chrome/browser/themes/theme_properties.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 
 using TP = ThemeProperties;
 using TabGroupColorId = tab_groups::TabGroupColorId;
@@ -40,6 +41,9 @@ int GetTabGroupTabStripColorId(TabGroupColorId group_color_id,
           {TabGroupColorId::kCyan,
            {TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_CYAN,
             TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_CYAN}},
+          {TabGroupColorId::kOrange,
+           {TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_INACTIVE_ORANGE,
+            TP::COLOR_TAB_GROUP_TABSTRIP_FRAME_ACTIVE_ORANGE}},
       });
 
   return group_id_map.at(group_color_id)[active_frame];
@@ -56,12 +60,30 @@ int GetTabGroupDialogColorId(TabGroupColorId group_color_id) {
           {TabGroupColorId::kPink, TP::COLOR_TAB_GROUP_DIALOG_PINK},
           {TabGroupColorId::kPurple, TP::COLOR_TAB_GROUP_DIALOG_PURPLE},
           {TabGroupColorId::kCyan, TP::COLOR_TAB_GROUP_DIALOG_CYAN},
+          {TabGroupColorId::kOrange, TP::COLOR_TAB_GROUP_DIALOG_ORANGE},
       });
 
   return group_id_map.at(group_color_id);
 }
 
-int GetTabGroupContextMenuColorId(TabGroupColorId group_color_id) {
+ui::ColorId GetTabGroupContextMenuColorId(TabGroupColorId group_color_id) {
+  static constexpr auto group_id_map =
+      base::MakeFixedFlatMap<TabGroupColorId, ui::ColorId>({
+          {TabGroupColorId::kGrey, kColorTabGroupContextMenuGrey},
+          {TabGroupColorId::kBlue, kColorTabGroupContextMenuBlue},
+          {TabGroupColorId::kRed, kColorTabGroupContextMenuRed},
+          {TabGroupColorId::kYellow, kColorTabGroupContextMenuYellow},
+          {TabGroupColorId::kGreen, kColorTabGroupContextMenuGreen},
+          {TabGroupColorId::kPink, kColorTabGroupContextMenuPink},
+          {TabGroupColorId::kPurple, kColorTabGroupContextMenuPurple},
+          {TabGroupColorId::kCyan, kColorTabGroupContextMenuCyan},
+          {TabGroupColorId::kOrange, kColorTabGroupContextMenuOrange},
+      });
+
+  return group_id_map.at(group_color_id);
+}
+
+int GetTabGroupContextMenuColorIdDeprecated(TabGroupColorId group_color_id) {
   static constexpr auto group_id_map =
       base::MakeFixedFlatMap<TabGroupColorId, int>({
           {TabGroupColorId::kGrey, TP::COLOR_TAB_GROUP_CONTEXT_MENU_GREY},
@@ -72,6 +94,7 @@ int GetTabGroupContextMenuColorId(TabGroupColorId group_color_id) {
           {TabGroupColorId::kPink, TP::COLOR_TAB_GROUP_CONTEXT_MENU_PINK},
           {TabGroupColorId::kPurple, TP::COLOR_TAB_GROUP_CONTEXT_MENU_PURPLE},
           {TabGroupColorId::kCyan, TP::COLOR_TAB_GROUP_CONTEXT_MENU_CYAN},
+          {TabGroupColorId::kOrange, TP::COLOR_TAB_GROUP_CONTEXT_MENU_ORANGE},
       });
 
   return group_id_map.at(group_color_id);
@@ -88,6 +111,7 @@ int GetTabGroupBookmarkColorId(tab_groups::TabGroupColorId group_color_id) {
           {TabGroupColorId::kPink, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_PINK},
           {TabGroupColorId::kPurple, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_PURPLE},
           {TabGroupColorId::kCyan, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_CYAN},
+          {TabGroupColorId::kOrange, TP::COLOR_TAB_GROUP_BOOKMARK_BAR_ORANGE},
       });
 
   return group_id_map.at(group_color_id);

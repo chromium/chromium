@@ -75,8 +75,8 @@ class KEYED_SERVICE_EXPORT DependencyManager {
   void DestroyContextServices(void* context);
 
   // Runtime assertion called as a part of GetServiceForContext() to check if
-  // |context| is considered stale. This will NOTREACHED() or
-  // base::debug::DumpWithoutCrashing() depending on the DCHECK_IS_ON() value.
+  // |context| is considered stale. This will CHECK(false) to avoid a potential 
+  // use-after-free from services created after context destruction.
   void AssertContextWasntDestroyed(void* context) const;
 
   // Marks |context| as live (i.e., not stale). This method can be called as a

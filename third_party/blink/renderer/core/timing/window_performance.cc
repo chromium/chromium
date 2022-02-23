@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/timing/window_performance.h"
 
 #include "base/trace_event/common/trace_event_common.h"
+#include "base/trace_event/trace_event.h"
 #include "services/metrics/public/cpp/ukm_builders.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/features.h"
@@ -52,6 +53,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html/html_image_element.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/loader/interactive_detector.h"
@@ -67,7 +69,7 @@
 #include "third_party/blink/renderer/core/timing/responsiveness_metrics.h"
 #include "third_party/blink/renderer/core/timing/visibility_state_entry.h"
 #include "third_party/blink/renderer/platform/heap/forward.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_timing_info.h"
@@ -227,10 +229,10 @@ MemoryInfo* WindowPerformance::memory(ScriptState* script_state) const {
   // course over time about what changes would be implemented) can be found at
   // https://groups.google.com/a/chromium.org/forum/#!topic/blink-dev/no00RdMnGio,
   // and the relevant bug is https://crbug.com/807651.
-  auto* memory_info =
-      MakeGarbageCollected<MemoryInfo>(Platform::Current()->IsLockedToSite()
-                                           ? MemoryInfo::Precision::Precise
-                                           : MemoryInfo::Precision::Bucketized);
+  auto* memory_info = MakeGarbageCollected<MemoryInfo>(
+      Platform::Current()->IsLockedToSite()
+          ? MemoryInfo::Precision::kPrecise
+          : MemoryInfo::Precision::kBucketized);
   // Record Web Memory UKM.
   const uint64_t kBytesInKB = 1024;
   auto* execution_context = ExecutionContext::From(script_state);
@@ -473,9 +475,6 @@ void WindowPerformance::ReportEventTimings(
     base::TimeDelta time_to_next_paint =
         base::Milliseconds(end_time - entry->processingEnd());
     entry->SetDuration(duration_in_ms);
-    TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
-                 entry->ToTracedValue(), "frame",
-                 ToTraceValue(DomWindow()->GetFrame()));
     if (entry->name() == "pointerdown") {
       pending_pointer_down_input_delay_ = input_delay;
       pending_pointer_down_processing_time_ = processing_time;
@@ -496,13 +495,17 @@ void WindowPerformance::ReportEventTimings(
     }
 
     if (!first_input_timing_) {
-      if (entry->name() == "pointerdown") {
+      if (entry->name() == event_type_names::kPointerdown) {
         first_pointer_down_event_timing_ =
             PerformanceEventTiming::CreateFirstInputTiming(entry);
-      } else if (entry->name() == "pointerup") {
+      } else if (entry->name() == event_type_names::kPointerup) {
         DispatchFirstInputTiming(first_pointer_down_event_timing_);
-      } else if (entry->name() == "click" || entry->name() == "keydown" ||
-                 entry->name() == "mousedown") {
+      } else if (entry->name() == event_type_names::kPointercancel) {
+        first_pointer_down_event_timing_.Clear();
+      } else if ((entry->name() == event_type_names::kMousedown ||
+                  entry->name() == event_type_names::kClick ||
+                  entry->name() == event_type_names::kKeydown) &&
+                 !first_pointer_down_event_timing_) {
         DispatchFirstInputTiming(
             PerformanceEventTiming::CreateFirstInputTiming(entry));
       }
@@ -542,6 +545,9 @@ void WindowPerformance::NotifyAndAddEventTimingBuffer(
       !IsEventTimingBufferFull()) {
     AddEventTimingBuffer(*entry);
   }
+  TRACE_EVENT2("devtools.timeline", "EventTiming", "data",
+               entry->ToTracedValue(), "frame",
+               ToTraceValue(DomWindow()->GetFrame()));
 }
 
 void WindowPerformance::MaybeNotifyInteractionAndAddEventTimingBuffer(
@@ -669,6 +675,9 @@ void WindowPerformance::OnLargestContentfulPaintUpdated(
   if (HasObserverFor(PerformanceEntry::kLargestContentfulPaint))
     NotifyObserversOfEntry(*entry);
   AddLargestContentfulPaint(entry);
+  if (HTMLImageElement* image_element = DynamicTo<HTMLImageElement>(element)) {
+    image_element->SetIsLCPElement();
+  }
 }
 
 void WindowPerformance::OnPaintFinished() {

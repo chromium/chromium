@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/time/time.h"
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"

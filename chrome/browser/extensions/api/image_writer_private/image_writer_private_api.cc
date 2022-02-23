@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/task/post_task.h"
+#include "build/build_config.h"
 #include "chrome/browser/extensions/api/image_writer_private/error_messages.h"
 #include "chrome/browser/extensions/api/image_writer_private/operation_manager.h"
 #include "chrome/browser/profiles/profile.h"
@@ -71,7 +72,7 @@ ImageWriterPrivateWriteFromUrlFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateWriteFromUrlFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (profile->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled) ||
       profile->GetPrefs()->GetBoolean(prefs::kExternalStorageReadOnly)) {
@@ -116,7 +117,7 @@ ImageWriterPrivateWriteFromFileFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateWriteFromFileFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (profile->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled) ||
       profile->GetPrefs()->GetBoolean(prefs::kExternalStorageReadOnly)) {
@@ -188,7 +189,7 @@ ImageWriterPrivateDestroyPartitionsFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateDestroyPartitionsFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (profile->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled) ||
       profile->GetPrefs()->GetBoolean(prefs::kExternalStorageReadOnly)) {
@@ -224,14 +225,14 @@ ImageWriterPrivateListRemovableStorageDevicesFunction::
 
 ExtensionFunction::ResponseAction
 ImageWriterPrivateListRemovableStorageDevicesFunction::Run() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   Profile* profile = Profile::FromBrowserContext(browser_context());
   if (profile->GetPrefs()->GetBoolean(prefs::kExternalStorageDisabled)) {
     // Return an empty device list.
     OnDeviceListReady(base::MakeRefCounted<StorageDeviceList>());
     return AlreadyResponded();
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   image_writer::ImageWriterControllerLacros::Get(browser_context())

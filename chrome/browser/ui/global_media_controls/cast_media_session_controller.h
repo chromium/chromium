@@ -39,6 +39,7 @@ class CastMediaSessionController {
   virtual void SetVolume(float volume);
 
   void FlushForTesting();
+  media_router::mojom::MediaStatusPtr GetMediaStatusForTesting();
 
  private:
   base::TimeDelta PutWithinBounds(const base::TimeDelta& time);

@@ -59,24 +59,6 @@ ShellPlatformDelegate* g_platform;
 std::vector<Shell*> Shell::windows_;
 base::OnceCallback<void(Shell*)> Shell::shell_created_callback_;
 
-class Shell::DevToolsWebContentsObserver : public WebContentsObserver {
- public:
-  DevToolsWebContentsObserver(Shell* shell, WebContents* web_contents)
-      : WebContentsObserver(web_contents), shell_(shell) {}
-
-  DevToolsWebContentsObserver(const DevToolsWebContentsObserver&) = delete;
-  DevToolsWebContentsObserver& operator=(const DevToolsWebContentsObserver&) =
-      delete;
-
-  // WebContentsObserver
-  void WebContentsDestroyed() override {
-    shell_->OnDevToolsWebContentsDestroyed();
-  }
-
- private:
-  Shell* shell_;
-};
-
 Shell::Shell(std::unique_ptr<WebContents> web_contents,
              bool should_set_delegate)
     : WebContentsObserver(web_contents.get()),
@@ -267,7 +249,7 @@ void Shell::LoadDataWithBaseURL(const GURL& url,
   LoadDataWithBaseURLInternal(url, data, base_url, load_as_string);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void Shell::LoadDataAsStringWithBaseURL(const GURL& url,
                                         const std::string& data,
                                         const GURL& base_url) {
@@ -280,7 +262,7 @@ void Shell::LoadDataWithBaseURLInternal(const GURL& url,
                                         const std::string& data,
                                         const GURL& base_url,
                                         bool load_as_string) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   DCHECK(!load_as_string);  // Only supported on Android.
 #endif
 
@@ -289,7 +271,7 @@ void Shell::LoadDataWithBaseURLInternal(const GURL& url,
   if (load_as_string) {
     params.url = GURL(data_url_header);
     std::string data_url_as_string = data_url_header + data;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     params.data_url_as_string =
         base::RefCountedString::TakeString(&data_url_as_string);
 #endif
@@ -332,7 +314,7 @@ void Shell::Stop() {
   web_contents_->Stop();
 }
 
-void Shell::UpdateNavigationControls(bool to_different_document) {
+void Shell::UpdateNavigationControls(bool should_show_loading_ui) {
   int current_index = web_contents_->GetController().GetCurrentEntryIndex();
   int max_index = web_contents_->GetController().GetEntryCount() - 1;
 
@@ -342,14 +324,13 @@ void Shell::UpdateNavigationControls(bool to_different_document) {
                               current_index < max_index);
   g_platform->EnableUIControl(
       this, ShellPlatformDelegate::STOP_BUTTON,
-      to_different_document && web_contents_->IsLoading());
+      should_show_loading_ui && web_contents_->IsLoading());
 }
 
 void Shell::ShowDevTools() {
   if (!devtools_frontend_) {
-    devtools_frontend_ = ShellDevToolsFrontend::Show(web_contents());
-    devtools_observer_ = std::make_unique<DevToolsWebContentsObserver>(
-        this, devtools_frontend_->frontend_shell()->web_contents());
+    auto* devtools_frontend = ShellDevToolsFrontend::Show(web_contents());
+    devtools_frontend_ = devtools_frontend->GetWeakPtr();
   }
 
   devtools_frontend_->Activate();
@@ -358,7 +339,6 @@ void Shell::ShowDevTools() {
 void Shell::CloseDevTools() {
   if (!devtools_frontend_)
     return;
-  devtools_observer_.reset();
   devtools_frontend_->Close();
   devtools_frontend_ = nullptr;
 }
@@ -373,13 +353,13 @@ gfx::NativeView Shell::GetContentView() {
   return web_contents_->GetNativeView();
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 gfx::NativeWindow Shell::window() {
   return g_platform->GetNativeWindow(this);
 }
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void Shell::ActionPerformed(int control) {
   switch (control) {
     case IDC_NAV_BACK:
@@ -457,12 +437,12 @@ WebContents* Shell::OpenURLFromTab(WebContents* source,
 }
 
 void Shell::LoadingStateChanged(WebContents* source,
-                                bool to_different_document) {
-  UpdateNavigationControls(to_different_document);
+                                bool should_show_loading_ui) {
+  UpdateNavigationControls(should_show_loading_ui);
   g_platform->SetIsLoading(this, source->IsLoading());
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void Shell::SetOverlayMode(bool use_overlay_mode) {
   g_platform->SetOverlayMode(this, use_overlay_mode);
 }
@@ -481,7 +461,7 @@ void Shell::ExitFullscreenModeForTab(WebContents* web_contents) {
 
 void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
                                        bool enter_fullscreen) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   g_platform->ToggleFullscreenModeForTab(this, web_contents, enter_fullscreen);
 #endif
   if (is_fullscreen_ != enter_fullscreen) {
@@ -494,7 +474,7 @@ void Shell::ToggleFullscreenModeForTab(WebContents* web_contents,
 }
 
 bool Shell::IsFullscreenForTabOrPending(const WebContents* web_contents) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return g_platform->IsFullscreenForTabOrPending(this, web_contents);
 #else
   return is_fullscreen_;
@@ -557,7 +537,7 @@ JavaScriptDialogManager* Shell::GetJavaScriptDialogManager(
   return dialog_manager_.get();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void Shell::DidNavigatePrimaryMainFramePostCommit(WebContents* contents) {
   g_platform->DidNavigatePrimaryMainFramePostCommit(this, contents);
 }
@@ -588,7 +568,7 @@ void Shell::RendererUnresponsive(
 }
 
 void Shell::ActivateContents(WebContents* contents) {
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // TODO(danakj): Move this to ShellPlatformDelegate.
   contents->Focus();
 #else
@@ -604,7 +584,7 @@ bool Shell::IsBackForwardCacheSupported() {
   return true;
 }
 
-bool Shell::IsPrerender2Supported() {
+bool Shell::IsPrerender2Supported(WebContents& web_contents) {
   return true;
 }
 
@@ -658,10 +638,7 @@ bool Shell::ShouldAllowRunningInsecureContent(WebContents* web_contents,
   return g_platform->ShouldAllowRunningInsecureContent(this);
 }
 
-PictureInPictureResult Shell::EnterPictureInPicture(
-    WebContents* web_contents,
-    const viz::SurfaceId& surface_id,
-    const gfx::Size& natural_size) {
+PictureInPictureResult Shell::EnterPictureInPicture(WebContents* web_contents) {
   // During tests, returning success to pretend the window was created and allow
   // tests to run accordingly.
   if (!switches::IsRunWebTestsSwitchPresent())
@@ -712,7 +689,7 @@ gfx::Size Shell::GetShellDefaultSize() {
   return default_shell_size;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void Shell::LoadProgressChanged(double progress) {
   g_platform->LoadProgressChanged(this, progress);
 }
@@ -721,11 +698,6 @@ void Shell::LoadProgressChanged(double progress) {
 void Shell::TitleWasSet(NavigationEntry* entry) {
   if (entry)
     g_platform->SetTitle(this, entry->GetTitle());
-}
-
-void Shell::OnDevToolsWebContentsDestroyed() {
-  devtools_observer_.reset();
-  devtools_frontend_ = nullptr;
 }
 
 }  // namespace content

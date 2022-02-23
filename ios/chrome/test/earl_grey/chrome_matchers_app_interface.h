@@ -125,6 +125,11 @@
 // Matcher for Tools menu button.
 + (id<GREYMatcher>)toolsMenuButton;
 
+// Matcher for the New Tab button, which can be long-pressed for a menu.
+// (This method can't be named +newTabButton, because starting a class method
+// with 'new' implicitly treats it as a constructor).
++ (id<GREYMatcher>)openNewTabButton;
+
 // Matcher for the Share... button.
 + (id<GREYMatcher>)shareButton;
 
@@ -140,14 +145,14 @@
 // Matcher for Add to bookmarks button.
 + (id<GREYMatcher>)addToBookmarksButton;
 
-// Matcher for SettingsSwitchCell.
-+ (id<GREYMatcher>)settingsSwitchCell:(NSString*)accessibilityIdentifier
-                          isToggledOn:(BOOL)isToggledOn;
+// Matcher for TableViewSwitchCell.
++ (id<GREYMatcher>)tableViewSwitchCell:(NSString*)accessibilityIdentifier
+                           isToggledOn:(BOOL)isToggledOn;
 
-// Matcher for SettingsSwitchCell.
-+ (id<GREYMatcher>)settingsSwitchCell:(NSString*)accessibilityIdentifier
-                          isToggledOn:(BOOL)isToggledOn
-                            isEnabled:(BOOL)isEnabled;
+// Matcher for TableViewSwitchCell.
++ (id<GREYMatcher>)tableViewSwitchCell:(NSString*)accessibilityIdentifier
+                           isToggledOn:(BOOL)isToggledOn
+                             isEnabled:(BOOL)isEnabled;
 
 // Matcher for SyncSwitchCell.
 + (id<GREYMatcher>)syncSwitchCell:(NSString*)accessibilityLabel
@@ -331,6 +336,15 @@
 // Returns matcher for the collection view of the NTP.
 + (id<GREYMatcher>)ntpCollectionView;
 
+// Returns matcher for the NTP view when the user is in incognito mode.
++ (id<GREYMatcher>)ntpIncognitoView;
+
+// Returns matcher for the NTP Feed menu button which enables the feed.
++ (id<GREYMatcher>)ntpFeedMenuEnableButton;
+
+// Returns matcher for the NTP Feed menu button which disables the feed.
++ (id<GREYMatcher>)ntpFeedMenuDisableButton;
+
 // Returns matcher for the warning message while filling in payment requests.
 + (id<GREYMatcher>)warningMessageView;
 
@@ -391,7 +405,7 @@
 // Returns matcher for the Copy item on the old-style context menu.
 + (id<GREYMatcher>)contextMenuCopyButton;
 
-// Returns matcher for defoucesed omnibox on a new tab.
+// Returns matcher for defocused omnibox on a new tab.
 + (id<GREYMatcher>)NTPOmnibox;
 
 // Returns matcher for a fake omnibox on a new tab page.
@@ -501,6 +515,9 @@
 
 // Returns a matcher for a history entry with |url| and |title|.
 + (id<GREYMatcher>)historyEntryForURL:(NSString*)URL title:(NSString*)title;
+
+// Returns a matcher to the add button in the toolbar of the settings view.
++ (id<GREYMatcher>)settingsToolbarAddButton;
 
 #pragma mark - Manual Fallback
 

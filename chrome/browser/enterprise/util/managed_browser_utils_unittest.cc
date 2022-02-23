@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
@@ -130,7 +131,8 @@ class AutoSelectCertificateTest : public testing::Test {
 
     m->SetWebsiteSettingDefaultScope(
         GURL(kRequestingUrl), GURL(),
-        ContentSettingsType::AUTO_SELECT_CERTIFICATE, std::move(root));
+        ContentSettingsType::AUTO_SELECT_CERTIFICATE,
+        base::Value::FromUniquePtrValue(std::move(root)));
   }
 
   base::Value CreateFilterValue(const std::string& issuer,
@@ -164,7 +166,7 @@ class AutoSelectCertificateTest : public testing::Test {
   scoped_refptr<net::X509Certificate> client_1_;
   scoped_refptr<net::X509Certificate> client_2_;
 
-  TestingProfile* profile_;
+  raw_ptr<TestingProfile> profile_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
 };
 

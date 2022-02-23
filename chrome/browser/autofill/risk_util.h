@@ -10,6 +10,10 @@
 #include <string>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
+#include "ui/gfx/geometry/rect.h"
+
+class PrefService;
 
 namespace content {
 class WebContents;
@@ -23,10 +27,24 @@ namespace risk_util {
 // calling |callback|. |obfuscated_gaia_id| is used in the fingerprinting
 // process if provided. |web_contents| is used during fingerprinting as well,
 // when retrieving user prefs, and in determining window bounds when not on
-// Android.
+// Android. This function ends up calling the following overloaded
+// LoadRiskData().
 void LoadRiskData(uint64_t obfuscated_gaia_id,
                   content::WebContents* web_contents,
                   base::OnceCallback<void(const std::string&)> callback);
+
+// LoadRiskDataHelper() retrieves all of the fields that do not use
+// web contents, and then gets the device's fingerprint before calling
+// |callback|. In situations where we do not have access to web contents, for
+// example from the Clank settings page, we should call this implementation
+// directly and let |web_contents| and |window_bounds| default to nullptr and
+// empty, respectively. Callers with access to web contents should call the
+// other version of this function above.
+void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
+                        const raw_ptr<PrefService> user_prefs,
+                        base::OnceCallback<void(const std::string&)> callback,
+                        const raw_ptr<content::WebContents> web_contents,
+                        gfx::Rect window_bounds);
 
 }  // namespace risk_util
 

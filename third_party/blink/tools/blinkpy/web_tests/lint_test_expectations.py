@@ -42,6 +42,8 @@ from blinkpy.web_tests.port.android import (
     ANDROID_WEBLAYER)
 from blinkpy.web_tests.port.factory import platform_options
 
+from functools import reduce
+
 _log = logging.getLogger(__name__)
 
 
@@ -50,10 +52,12 @@ def lint(host, options):
 
     # Add all extra expectation files to be linted.
     options.additional_expectations.extend(
-        PRODUCTS_TO_EXPECTATION_FILE_PATHS.values() + [ANDROID_DISABLED_TESTS] + [
-        host.filesystem.join(port.web_tests_dir(), 'WPTOverrideExpectations'),
-        host.filesystem.join(port.web_tests_dir(), 'WebGPUExpectations'),
-    ])
+        list(PRODUCTS_TO_EXPECTATION_FILE_PATHS.values()) +
+        [ANDROID_DISABLED_TESTS] + [
+            host.filesystem.join(port.web_tests_dir(),
+                                 'WPTOverrideExpectations'),
+            host.filesystem.join(port.web_tests_dir(), 'WebGPUExpectations'),
+        ])
 
     ports_to_lint = [
         host.port_factory.get(name, options=options)
@@ -253,7 +257,7 @@ def _check_not_slow_and_timeout(host, port, path, expectations):
                 (ResultType.Skip not in exp.results) and
                 (test_expectations.get_expectations(exp.test).is_slow_test or
                     port.is_slow_wpt_test(exp.test))):
-            error = "{}:{} '{}' is a [ Slow ] and [ Timeout ] test.".format(
+            error = "{}:{} '{}' is a [ Slow ] and [ Timeout ] test: you must add [ Skip ] (see crrev.com/c/3381301).".format(
                 host.filesystem.basename(path), exp.lineno, exp.test)
             _log.warning(error)
             rv.append(error)
@@ -311,7 +315,7 @@ def _check_expectations(host, port, path, test_expectations, options):
     failures, warnings = _check_test_existence(
         host, port, path, expectations)
     failures.extend(_check_directory_glob(host, port, path, expectations))
-    warnings.extend(_check_not_slow_and_timeout(host, port, path, expectations))
+    failures.extend(_check_not_slow_and_timeout(host, port, path, expectations))
     failures.extend(_check_never_fix_tests(host, port, path, expectations))
     if path in PRODUCTS_TO_EXPECTATION_FILE_PATHS.values():
         failures.extend(_check_non_wpt_in_android_override(
@@ -489,7 +493,7 @@ def main(argv, stderr, host=None):
     except KeyboardInterrupt:
         exit_status = exit_codes.INTERRUPTED_EXIT_STATUS
     except Exception as error:  # pylint: disable=broad-except
-        print >> stderr, '\n%s raised: %s' % (error.__class__.__name__, error)
+        print('\n%s raised: %s' % (error.__class__.__name__, error), stderr)
         traceback.print_exc(file=stderr)
         exit_status = exit_codes.EXCEPTIONAL_EXIT_STATUS
 

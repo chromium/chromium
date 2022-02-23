@@ -103,8 +103,9 @@ void BiquadFilterHandler::Process(uint32_t frames_to_process) {
 
 void BiquadFilterHandler::NotifyBadState() const {
   DCHECK(IsMainThread());
-  if (!Context() || !Context()->GetExecutionContext())
+  if (!Context() || !Context()->GetExecutionContext()) {
     return;
+  }
 
   Context()->GetExecutionContext()->AddConsoleMessage(
       MakeGarbageCollected<ConsoleMessage>(
@@ -162,8 +163,9 @@ BiquadFilterNode* BiquadFilterNode::Create(BaseAudioContext& context,
 
   // TODO(crbug.com/1055983): Remove this when the execution context validity
   // check is not required in the AudioNode factory methods.
-  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state))
+  if (!context.CheckExecutionContextAndThrowIfNecessary(exception_state)) {
     return nullptr;
+  }
 
   return MakeGarbageCollected<BiquadFilterNode>(context);
 }
@@ -173,8 +175,9 @@ BiquadFilterNode* BiquadFilterNode::Create(BaseAudioContext* context,
                                            ExceptionState& exception_state) {
   BiquadFilterNode* node = Create(*context, exception_state);
 
-  if (!node)
+  if (!node) {
     return nullptr;
+  }
 
   node->HandleChannelOptions(options, exception_state);
 
@@ -245,8 +248,9 @@ void BiquadFilterNode::setType(const String& type) {
 }
 
 bool BiquadFilterNode::SetType(BiquadProcessor::FilterType type) {
-  if (type > BiquadProcessor::FilterType::kAllpass)
+  if (type > BiquadProcessor::FilterType::kAllpass) {
     return false;
+  }
 
   base::UmaHistogramEnumeration("WebAudio.BiquadFilter.Type", type);
 

@@ -45,7 +45,7 @@
 #include "third_party/blink/renderer/core/workers/worker_classic_script_loader.h"
 #include "third_party/blink/renderer/core/workers/worker_or_worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_settings.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/code_cache_host.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
@@ -101,9 +101,7 @@ class CORE_EXPORT WorkerGlobalScope
   WorkerLocation* location() const;
   WorkerNavigator* navigator() const override;
   void close();
-  bool isSecureContextForBindings() const {
-    return ExecutionContext::IsSecureContext();
-  }
+  bool isSecureContextForBindings() const { return IsSecureContext(); }
 
   String origin() const;
 
@@ -237,7 +235,8 @@ class CORE_EXPORT WorkerGlobalScope
  protected:
   WorkerGlobalScope(std::unique_ptr<GlobalScopeCreationParams>,
                     WorkerThread*,
-                    base::TimeTicks time_origin);
+                    base::TimeTicks time_origin,
+                    bool is_service_worker_global_scope);
 
   // ExecutionContext
   void ExceptionThrown(ErrorEvent*) override;

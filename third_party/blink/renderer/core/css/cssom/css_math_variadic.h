@@ -72,7 +72,8 @@ class CORE_EXPORT CSSMathVariadic : public CSSMathValue {
           NumericValues()[i]->ToCalcExpressionNode();
       if (!next_arg)
         return nullptr;
-      node = CSSMathExpressionBinaryOperation::Create(node, next_arg, op);
+      node = CSSMathExpressionOperation::CreateArithmeticOperation(
+          node, next_arg, op);
     }
     return node;
   }

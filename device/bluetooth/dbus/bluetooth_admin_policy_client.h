@@ -9,7 +9,6 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
 #include "dbus/object_path.h"
 #include "dbus/property.h"
 #include "device/bluetooth/bluetooth_export.h"
@@ -31,6 +30,9 @@ class DEVICE_BLUETOOTH_EXPORT BluetoothAdminPolicyClient
     // The current value of service allow list, each service is described in
     // UUID-128 string, Read-only.
     dbus::Property<std::vector<std::string>> service_allow_list;
+
+    // Whether the device is blocked by an admin policy, read-only.
+    dbus::Property<bool> is_blocked_by_policy;
 
     Properties(dbus::ObjectProxy* object_proxy,
                const std::string& interface_name,

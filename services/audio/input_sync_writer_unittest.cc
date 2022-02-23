@@ -12,8 +12,8 @@
 #include <utility>
 
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/sync_socket.h"
 #include "base/test/mock_callback.h"
@@ -135,7 +135,7 @@ class InputSyncWriterTest : public testing::Test {
   // with a glitch summary from the destructor. Besides that only for errors
   // and fifo info.
   int GetTotalNumberOfExpectedLogCalls(int expected_calls_due_to_error) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     return expected_calls_due_to_error + 1;
 #else
     return expected_calls_due_to_error + 2;
@@ -162,7 +162,7 @@ class InputSyncWriterTest : public testing::Test {
   base::test::TaskEnvironment env_;
   MockLogger mock_logger_;
   std::unique_ptr<InputSyncWriter> writer_;
-  MockCancelableSyncSocket* socket_;
+  raw_ptr<MockCancelableSyncSocket> socket_;
   std::unique_ptr<media::AudioBus> audio_bus_;
 };
 

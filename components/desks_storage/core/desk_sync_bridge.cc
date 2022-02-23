@@ -11,6 +11,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/guid.h"
+#include "base/json/json_writer.h"
 #include "base/memory/ptr_util.h"
 #include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
@@ -18,10 +19,12 @@
 #include "base/time/time.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/account_id/account_id.h"
+#include "components/app_constants/constants.h"
 #include "components/app_restore/app_launch_info.h"
 #include "components/app_restore/window_info.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/desk_template_conversion.h"
+#include "components/desks_storage/core/desk_template_util.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/services/app_service/public/cpp/app_registry_cache_wrapper.h"
 #include "components/sync/model/entity_change.h"
@@ -31,7 +34,6 @@
 #include "components/sync/model/mutable_data_batch.h"
 #include "components/sync/protocol/model_type_state.pb.h"
 #include "components/sync/protocol/workspace_desk_specifics.pb.h"
-#include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/ui_base_types.h"
 
@@ -40,6 +42,8 @@ namespace desks_storage {
 using BrowserAppTab =
     sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow_BrowserAppTab;
 using BrowserAppWindow = sync_pb::WorkspaceDeskSpecifics_BrowserAppWindow;
+using ArcApp = sync_pb::WorkspaceDeskSpecifics_ArcApp;
+using ArcAppWindowSize = sync_pb::WorkspaceDeskSpecifics_ArcApp_WindowSize;
 using ash::DeskTemplate;
 using ash::DeskTemplateSource;
 using WindowState = sync_pb::WorkspaceDeskSpecifics_WindowState;
@@ -54,6 +58,13 @@ using syncer::ModelTypeStore;
 
 // The maximum number of templates the local storage can hold.
 constexpr std::size_t kMaxTemplateCount = 6u;
+
+// The maximum number of bytes a template can be.
+// Sync server silently ignores large items. The client-side
+// needs to check item size to avoid sending large items.
+// This limit follows precedent set by the chrome extension API:
+// chrome.storage.sync.QUOTA_BYTES_PER_ITEM.
+constexpr std::size_t kMaxTemplateSize = 8192u;
 
 // Allocate a EntityData and copies |specifics| into it.
 std::unique_ptr<syncer::EntityData> CopyToEntityData(
@@ -119,11 +130,13 @@ std::string GetAppId(const sync_pb::WorkspaceDeskSpecifics_App& app) {
       return std::string();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kBrowserAppWindow:
       // Browser app has a known app ID.
-      return std::string(extension_misc::kChromeAppId);
+      return std::string(app_constants::kChromeAppId);
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kChromeApp:
       return app.app().chrome_app().app_id();
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kProgressWebApp:
       return app.app().progress_web_app().app_id();
+    case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp:
+      return app.app().arc_app().app_id();
       // Leave out the default case to let compiler to ensure we have
       // exhaustively handled all cases.
   }
@@ -166,6 +179,9 @@ std::unique_ptr<app_restore::AppLaunchInfo> ConvertToAppLaunchInfo(
       break;
     case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kProgressWebApp:
       // |app_id| is enough to identify a Progressive Web app.
+      break;
+    case sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp:
+      // |app_id| is enough to identify an Arc app.
       break;
       // Leave out the default case to let compiler to ensure we have
       // exhaustively handled all cases.
@@ -293,6 +309,9 @@ void FillBrowserAppWindow(BrowserAppWindow* out_browser_app_window,
 }
 
 // Fill |out_window_bound| with information from |bound|.
+//
+// TOOD(crbug/1295051): here and elsewhere move out_* args to end of parameter
+// lists.
 void FillWindowBound(WindowBound* out_window_bound, const gfx::Rect& bound) {
   out_window_bound->set_left(bound.x());
   out_window_bound->set_top(bound.y());
@@ -332,6 +351,36 @@ void FillAppWithDisplayId(WorkspaceDeskSpecifics_App* out_app,
     out_app->set_display_id(app_restore_data->display_id.value());
 }
 
+void FillArcAppSize(ArcAppWindowSize* out_window_size, const gfx::Size& size) {
+  out_window_size->set_width(size.width());
+  out_window_size->set_height(size.height());
+}
+
+void FillArcBoundsInRoot(WindowBound* out_rect, const gfx::Rect& data_rect) {
+  out_rect->set_left(data_rect.x());
+  out_rect->set_top(data_rect.y());
+  out_rect->set_width(data_rect.width());
+  out_rect->set_height(data_rect.height());
+}
+
+void FillArcApp(ArcApp* out_app,
+                const app_restore::AppRestoreData* app_restore_data) {
+  if (app_restore_data->minimum_size.has_value()) {
+    FillArcAppSize(out_app->mutable_minimum_size(),
+                   app_restore_data->minimum_size.value());
+  }
+  if (app_restore_data->maximum_size.has_value()) {
+    FillArcAppSize(out_app->mutable_maximum_size(),
+                   app_restore_data->maximum_size.value());
+  }
+  if (app_restore_data->title.has_value())
+    out_app->set_title(base::UTF16ToUTF8(app_restore_data->title.value()));
+  if (app_restore_data->bounds_in_root.has_value()) {
+    FillArcBoundsInRoot(out_app->mutable_bounds_in_root(),
+                        app_restore_data->bounds_in_root.value());
+  }
+}
+
 // Fill |out_app| with |app_restore_data|.
 void FillApp(WorkspaceDeskSpecifics_App* out_app,
              const std::string& app_id,
@@ -346,7 +395,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
   // See definition components/services/app_service/public/mojom/types.mojom
   switch (app_type) {
     case apps::mojom::AppType::kWeb: {
-      if (extension_misc::kChromeAppId == app_id) {
+      if (app_constants::kChromeAppId == app_id) {
         // Chrome Browser Window.
         BrowserAppWindow* browser_app_window =
             out_app->mutable_app()->mutable_browser_app_window();
@@ -369,7 +418,7 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
       // kChromeAppId.
       break;
     }
-    case apps::mojom::AppType::kExtension: {
+    case apps::mojom::AppType::kChromeApp: {
       // Chrome extension backed app, Chrome Apps
       ChromeApp* chrome_app_window =
           out_app->mutable_app()->mutable_chrome_app();
@@ -380,10 +429,38 @@ void FillApp(WorkspaceDeskSpecifics_App* out_app,
       }
       break;
     }
+    case apps::mojom::AppType::kArc: {
+      ArcApp* arc_app = out_app->mutable_app()->mutable_arc_app();
+      arc_app->set_app_id(app_id);
+      FillArcApp(arc_app, app_restore_data);
+      break;
+    }
     default: {
       // Unhandled app type.
       break;
     }
+  }
+}
+
+void FillArcExtraInfoFromProto(app_restore::WindowInfo* out_window_info,
+                               const ArcApp& app) {
+  out_window_info->arc_extra_info.emplace();
+  app_restore::WindowInfo::ArcExtraInfo& arc_info =
+      out_window_info->arc_extra_info.value();
+  if (app.has_minimum_size()) {
+    arc_info.minimum_size.emplace(app.minimum_size().width(),
+                                  app.minimum_size().height());
+  }
+  if (app.has_maximum_size()) {
+    arc_info.maximum_size.emplace(app.maximum_size().width(),
+                                  app.maximum_size().height());
+  }
+  if (app.has_title())
+    arc_info.title.emplace(base::UTF8ToUTF16(app.title()));
+  if (app.has_bounds_in_root()) {
+    arc_info.bounds_in_root.emplace(
+        app.bounds_in_root().left(), app.bounds_in_root().top(),
+        app.bounds_in_root().width(), app.bounds_in_root().height());
   }
 }
 
@@ -412,6 +489,11 @@ void FillWindowInfoFromProto(app_restore::WindowInfo* out_window_info,
       sync_pb::WorkspaceDeskSpecifics_WindowState_IsValid(app.window_state())) {
     out_window_info->pre_minimized_show_state_type.emplace(
         ToUiWindowState(app.pre_minimized_window_state()));
+  }
+
+  if (app.app().app_case() ==
+      sync_pb::WorkspaceDeskSpecifics_AppOneOf::AppCase::kArcApp) {
+    FillArcExtraInfoFromProto(out_window_info, app.app().arc_app());
   }
 }
 
@@ -458,10 +540,10 @@ void FillWorkspaceDeskSpecifics(
       const int window_id = window_id_to_launch_info.first;
       const app_restore::AppRestoreData* app_restore_data =
           window_id_to_launch_info.second.get();
-      // The apps cache returns kExtension for browser windows, therefore we
+      // The apps cache returns kChromeApp for browser windows, therefore we
       // short circuit the cache retrieval if we get the browser ID.
       const apps::mojom::AppType app_type =
-          app_id == extension_misc::kChromeAppId
+          app_id == app_constants::kChromeAppId
               ? apps::mojom::AppType::kWeb
               : apps_cache->GetAppType(app_id);
 
@@ -579,7 +661,7 @@ absl::optional<syncer::ModelError> DeskSyncBridge::ApplySyncChanges(
 
         // Add/update the remote_entry to the model.
         entries_[uuid] = std::move(remote_entry);
-        added_or_updated.push_back(GetEntryByUUID(uuid));
+        added_or_updated.push_back(GetUserEntryByUUID(uuid));
 
         // Write to the store.
         batch->WriteData(uuid.AsLowercaseString(), serialized_remote_entry);
@@ -603,7 +685,7 @@ void DeskSyncBridge::GetData(StorageKeyList storage_keys,
 
   for (const std::string& uuid : storage_keys) {
     const DeskTemplate* entry =
-        GetEntryByUUID(base::GUID::ParseCaseInsensitive(uuid));
+        GetUserEntryByUUID(base::GUID::ParseCaseInsensitive(uuid));
     if (!entry) {
       continue;
     }
@@ -654,22 +736,27 @@ void DeskSyncBridge::GetAllEntries(GetAllEntriesCallback callback) {
 void DeskSyncBridge::GetEntryByUUID(const std::string& uuid_str,
                                     GetEntryByUuidCallback callback) {
   if (!IsReady()) {
-    std::move(callback).Run(GetEntryByUuidStatus::kFailure,
-                            std::unique_ptr<DeskTemplate>());
+    std::move(callback).Run(GetEntryByUuidStatus::kFailure, nullptr);
     return;
   }
 
   const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
   if (!uuid.is_valid()) {
-    std::move(callback).Run(GetEntryByUuidStatus::kInvalidUuid,
-                            std::unique_ptr<DeskTemplate>());
+    std::move(callback).Run(GetEntryByUuidStatus::kInvalidUuid, nullptr);
     return;
   }
 
   auto it = entries_.find(uuid);
   if (it == entries_.end()) {
-    std::move(callback).Run(GetEntryByUuidStatus::kNotFound,
-                            std::unique_ptr<DeskTemplate>());
+    std::unique_ptr<DeskTemplate> policy_entry =
+        GetAdminDeskTemplateByUUID(uuid_str);
+
+    if (policy_entry) {
+      std::move(callback).Run(GetEntryByUuidStatus::kOk,
+                              std::move(policy_entry));
+    } else {
+      std::move(callback).Run(GetEntryByUuidStatus::kNotFound, nullptr);
+    }
   } else {
     std::move(callback).Run(GetEntryByUuidStatus::kOk,
                             it->second.get()->Clone());
@@ -699,16 +786,32 @@ void DeskSyncBridge::AddOrUpdateEntry(std::unique_ptr<DeskTemplate> new_entry,
   entry->set_template_name(
       base::CollapseWhitespace(new_entry->template_name(), true));
 
+  // While we still find duplicate names iterate the duplicate number. i.e.
+  // if there are 4 duplicates of some template name then this iterates until
+  // the current template will be named 5.
+  while (HasUserTemplateWithName(entry->template_name())) {
+    entry->set_template_name(
+        desk_template_util::AppendDuplicateNumberToDuplicateName(
+            entry->template_name()));
+  }
+
   std::unique_ptr<ModelTypeStore::WriteBatch> batch =
       store_->CreateWriteBatch();
-  // Add/update this entry to the store and model.
-  auto entity_data = CopyToEntityData(ToSyncProto(entry.get()));
 
+  // Check the new entry size and ensure it is below the size limit.
+  auto sync_proto = ToSyncProto(entry.get());
+  if (sync_proto.ByteSizeLong() > kMaxTemplateSize) {
+    std::move(callback).Run(AddOrUpdateEntryStatus::kEntryTooLarge);
+    return;
+  }
+
+  // Add/update this entry to the store and model.
+  auto entity_data = CopyToEntityData(sync_proto);
   change_processor()->Put(uuid.AsLowercaseString(), std::move(entity_data),
                           batch->GetMetadataChangeList());
 
   entries_[uuid] = std::move(entry);
-  const DeskTemplate* result = GetEntryByUUID(uuid);
+  const DeskTemplate* result = GetUserEntryByUUID(uuid);
 
   batch->WriteData(uuid.AsLowercaseString(),
                    ToSyncProto(result).SerializeAsString());
@@ -729,7 +832,7 @@ void DeskSyncBridge::DeleteEntry(const std::string& uuid_str,
 
   const base::GUID uuid = base::GUID::ParseCaseInsensitive(uuid_str);
 
-  if (GetEntryByUUID(uuid) == nullptr) {
+  if (GetUserEntryByUUID(uuid) == nullptr) {
     // Consider the deletion successful if the entry does not exist.
     std::move(callback).Run(DeleteEntryStatus::kOk);
     return;
@@ -774,11 +877,11 @@ void DeskSyncBridge::DeleteAllEntries(DeleteEntryCallback callback) {
 }
 
 std::size_t DeskSyncBridge::GetEntryCount() const {
-  return entries_.size();
+  return entries_.size() + policy_entries_.size();
 }
 
 std::size_t DeskSyncBridge::GetMaxEntryCount() const {
-  return kMaxTemplateCount;
+  return kMaxTemplateCount + policy_entries_.size();
 }
 
 std::vector<base::GUID> DeskSyncBridge::GetAllEntryUuids() const {
@@ -830,7 +933,7 @@ sync_pb::WorkspaceDeskSpecifics DeskSyncBridge::ToSyncProto(
   return pb_entry;
 }
 
-const DeskTemplate* DeskSyncBridge::GetEntryByUUID(
+const DeskTemplate* DeskSyncBridge::GetUserEntryByUUID(
     const base::GUID& uuid) const {
   auto it = entries_.find(uuid);
   if (it == entries_.end())
@@ -949,6 +1052,15 @@ void DeskSyncBridge::UploadLocalOnlyData(
                             CopyToEntityData(ToSyncProto(entries_[uuid].get())),
                             metadata_change_list);
   }
+}
+
+bool DeskSyncBridge::HasUserTemplateWithName(const std::u16string& name) {
+  return std::find_if(
+             entries_.begin(), entries_.end(),
+             [&name](std::pair<const base::GUID,
+                               std::unique_ptr<ash::DeskTemplate>>& entry) {
+               return entry.second->template_name() == name;
+             }) != entries_.end();
 }
 
 }  // namespace desks_storage

@@ -5,7 +5,7 @@
 #include "ui/base/test/skia_gold_pixel_diff.h"
 
 #include "build/build_config.h"
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -37,10 +37,14 @@ namespace test {
 
 const char* kSkiaGoldInstance = "chrome";
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const wchar_t* kSkiaGoldCtl = L"tools/skia_goldctl/win/goldctl.exe";
-#elif defined(OS_APPLE)
-const char* kSkiaGoldCtl = "tools/skia_goldctl/mac/goldctl";
+#elif BUILDFLAG(IS_APPLE)
+#if defined(ARCH_CPU_ARM64)
+const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_arm64/goldctl";
+#else
+const char* kSkiaGoldCtl = "tools/skia_goldctl/mac_amd64/goldctl";
+#endif  // defined(ARCH_CPU_ARM64)
 #else
 const char* kSkiaGoldCtl = "tools/skia_goldctl/linux/goldctl";
 #endif
@@ -140,13 +144,13 @@ SkiaGoldPixelDiff::~SkiaGoldPixelDiff() = default;
 
 // static
 std::string SkiaGoldPixelDiff::GetPlatform() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return "windows";
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return "macOS";
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return "linux";
 #endif
 }

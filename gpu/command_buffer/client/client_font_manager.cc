@@ -6,6 +6,7 @@
 
 #include "base/bits.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr.h"
 
 namespace gpu {
 namespace raster {
@@ -39,7 +40,7 @@ class Serializer {
     // Due to the math below, alignment must be a power of two.
     DCHECK(base::bits::IsPowerOfTwo(alignment));
 
-    size_t memory = reinterpret_cast<size_t>(memory_);
+    size_t memory = reinterpret_cast<size_t>(memory_.get());
     size_t padding = base::bits::AlignUp(memory, alignment) - memory;
     DCHECK_LE(bytes_written_ + size + padding, memory_size_);
 
@@ -47,7 +48,7 @@ class Serializer {
     bytes_written_ += padding;
   }
 
-  char* memory_ = nullptr;
+  raw_ptr<char> memory_ = nullptr;
   uint32_t memory_size_ = 0u;
   uint32_t bytes_written_ = 0u;
 };

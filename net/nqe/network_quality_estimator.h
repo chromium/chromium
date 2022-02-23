@@ -11,9 +11,8 @@
 #include <memory>
 #include <vector>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -46,7 +45,6 @@ class TickClock;
 
 namespace net {
 
-class ConnectivityMonitor;
 class NetLog;
 
 namespace nqe {
@@ -297,20 +295,20 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // observations since |start_time|. Virtualized for testing. |rtt| should not
   // be null. If |observations_count| is not null, then it is set to the number
   // of RTT observations that were used for computing the RTT estimate.
-  virtual bool GetRecentRTT(
+  [[nodiscard]] virtual bool GetRecentRTT(
       nqe::internal::ObservationCategory observation_category,
       const base::TimeTicks& start_time,
       base::TimeDelta* rtt,
-      size_t* observations_count) const WARN_UNUSED_RESULT;
+      size_t* observations_count) const;
 
   // Returns true if median downstream throughput is available and sets |kbps|
   // to the median of downstream throughput (in kilobits per second)
   // observations since |start_time|. Virtualized for testing. |kbps|
   // should not be null. Virtualized for testing.
   // TODO(tbansal): Change it to return throughput as int32.
-  virtual bool GetRecentDownlinkThroughputKbps(
+  [[nodiscard]] virtual bool GetRecentDownlinkThroughputKbps(
       const base::TimeTicks& start_time,
-      int32_t* kbps) const WARN_UNUSED_RESULT;
+      int32_t* kbps) const;
 
   // Overrides the tick clock used by |this| for testing.
   void SetTickClockForTesting(const base::TickClock* tick_clock);
@@ -546,7 +544,7 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   bool disable_offline_check_;
 
   // Tick clock used by the network quality estimator.
-  const base::TickClock* tick_clock_;
+  raw_ptr<const base::TickClock> tick_clock_;
 
   // Time when last connection change was observed.
   base::TimeTicks last_connection_change_;
@@ -642,11 +640,6 @@ class NET_EXPORT_PRIVATE NetworkQualityEstimator
   // Whether the network id should be obtained on a worker thread.
   bool get_network_id_asynchronously_ = false;
 #endif
-
-  // Watches network activity and attempts to infer when the current network is
-  // effectively disconnected due to either substantial degradation or actual
-  // disconnection.
-  std::unique_ptr<ConnectivityMonitor> connectivity_monitor_;
 
   base::WeakPtrFactory<NetworkQualityEstimator> weak_ptr_factory_{this};
 };

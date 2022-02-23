@@ -20,6 +20,8 @@ namespace media {
 
 namespace {
 
+using PortConfig = ImageProcessorBackend::PortConfig;
+
 // Verify if the format of |frame| matches |config|.
 bool CheckVideoFrameFormat(const ImageProcessor::PortConfig& config,
                            const VideoFrame& frame) {
@@ -63,7 +65,7 @@ std::unique_ptr<ImageProcessor> ImageProcessor::Create(
     CreateBackendCB create_backend_cb,
     const PortConfig& input_config,
     const PortConfig& output_config,
-    const std::vector<OutputMode>& preferred_output_modes,
+    OutputMode output_mode,
     VideoRotation relative_rotation,
     ErrorCB error_cb,
     scoped_refptr<base::SequencedTaskRunner> client_task_runner) {
@@ -73,7 +75,7 @@ std::unique_ptr<ImageProcessor> ImageProcessor::Create(
       base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
       client_task_runner, FROM_HERE, std::move(error_cb));
   std::unique_ptr<ImageProcessorBackend> backend = create_backend_cb.Run(
-      input_config, output_config, preferred_output_modes, relative_rotation,
+      input_config, output_config, output_mode, relative_rotation,
       std::move(wrapped_error_cb), backend_task_runner);
   if (!backend)
     return nullptr;
@@ -233,6 +235,14 @@ int ImageProcessor::StoreCallback(ClientCallback cb) {
   int cb_index = next_cb_index_++;
   pending_cbs_.emplace(cb_index, std::move(cb));
   return cb_index;
+}
+
+const PortConfig& ImageProcessor::input_config() const {
+  return backend_->input_config();
+}
+
+const PortConfig& ImageProcessor::output_config() const {
+  return backend_->output_config();
 }
 
 }  // namespace media

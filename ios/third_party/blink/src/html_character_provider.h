@@ -7,7 +7,6 @@
 
 #include <stddef.h>
 
-#include "base/macros.h"
 #include "ios/third_party/blink/src/html_tokenizer_adapter.h"
 
 namespace WebCore {

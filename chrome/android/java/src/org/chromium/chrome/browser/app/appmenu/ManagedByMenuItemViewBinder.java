@@ -46,13 +46,6 @@ class ManagedByMenuItemViewBinder implements CustomViewBinder {
             assert id == R.id.managed_by_menu_id;
 
             view.setId(id);
-        } else if (key == AppMenuItemProperties.ENABLED) {
-            boolean enabled = model.get(AppMenuItemProperties.ENABLED);
-            view.setEnabled(enabled);
-            view.setFocusable(enabled);
-        } else if (key == AppMenuItemProperties.CLICK_HANDLER) {
-            view.setOnClickListener(
-                    v -> model.get(AppMenuItemProperties.CLICK_HANDLER).onItemClick(model));
         }
     }
 

@@ -4,7 +4,7 @@
 
 // Utilities that are used in multiple tests.
 
-import {LayoutOptions, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
+import {LayoutOptions, UnseasonedPdfPluginElement, Viewport} from 'chrome-extension://mhjfbmdgcfjbbpaeojofohoefgiehjai/pdf_viewer_wrapper.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 export class MockElement {
@@ -14,6 +14,9 @@ export class MockElement {
    * @param {?MockSizer} sizer
    */
   constructor(width, height, sizer) {
+    /** @type {string} */
+    this.dir = '';
+
     /** @type {number} */
     this.offsetWidth = width;
 
@@ -39,6 +42,16 @@ export class MockElement {
 
     /** @type {?Function} */
     this.resizeCallback = null;
+  }
+
+  /** @return {number} */
+  get clientWidth() {
+    return this.offsetWidth;
+  }
+
+  /** @return {number} */
+  get clientHeight() {
+    return this.offsetHeight;
   }
 
   /**
@@ -179,6 +192,53 @@ export class MockDocumentDimensions {
   }
 }
 
+export class MockUnseasonedPdfPluginElement extends UnseasonedPdfPluginElement {
+  constructor() {
+    super();
+
+    /** @private {!Array<*>} */
+    this.messages_ = [];
+  }
+
+  /** @return {!Array<*>} */
+  get messages() {
+    return this.messages_;
+  }
+
+  clearMessages() {
+    this.messages_.length = 0;
+  }
+
+  /**
+   * @param {string} type
+   * @return {*}
+   */
+  findMessage(type) {
+    return this.messages_.find(element => element.type === type);
+  }
+
+  /**
+   * @param {*} message
+   * @param {!Array<!Transferable>=} transfer
+   * @override
+   */
+  postMessage(message, transfer) {
+    this.messages_.push(message);
+  }
+}
+customElements.define(
+    'mock-unseasoned-pdf-plugin', MockUnseasonedPdfPluginElement,
+    {extends: 'embed'});
+
+/**
+ * Creates a fake element simulating the unseasoned PDF plugin.
+ * @return {!MockUnseasonedPdfPluginElement}
+ */
+export function createMockUnseasonedPdfPluginForTest() {
+  return /** @type {!MockUnseasonedPdfPluginElement} */ (
+      document.createElement('embed', {is: 'mock-unseasoned-pdf-plugin'}));
+}
+
 /**
  * @return {!Element} An element containing a dom-repeat of bookmarks, for
  *     testing the bookmarks outside of the toolbar.
@@ -214,16 +274,18 @@ export function getZoomableViewport(
   const dummyContent =
       /** @type {!HTMLDivElement} */ (document.createElement('div'));
   document.body.appendChild(dummyContent);
-  const dummyPlugin =
-      /** @type {!HTMLEmbedElement} */ (document.createElement('embed'));
-  dummyPlugin.id = 'plugin';
-  dummyPlugin.src = 'data:text/plain,plugin-content';
-  dummyContent.appendChild(dummyPlugin);
+
   const viewport = new Viewport(
       /** @type {!HTMLElement} */ (scrollParent),
       /** @type {!HTMLDivElement} */ (sizer), dummyContent, scrollbarWidth,
       defaultZoom);
   viewport.setZoomFactorRange([0.25, 0.4, 0.5, 1, 2]);
+
+  const dummyPlugin =
+      /** @type {!HTMLEmbedElement} */ (document.createElement('embed'));
+  dummyPlugin.id = 'plugin';
+  dummyPlugin.src = 'data:text/plain,plugin-content';
+  viewport.setContent(dummyPlugin);
   return viewport;
 }
 

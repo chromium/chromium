@@ -9,11 +9,16 @@
 
 #include "base/bind.h"
 #include "base/check_op.h"
+#include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_errors.h"
+#include "net/dns/dns_util.h"
 #include "net/dns/public/dns_protocol.h"
+#include "net/dns/public/dns_query_type.h"
 #include "net/dns/record_parsed.h"
 #include "net/dns/record_rdata.h"
 
@@ -122,18 +127,22 @@ class HostResolverMdnsTask::Transaction {
   std::unique_ptr<MDnsTransaction> async_transaction_;
 
   // Back pointer. Expected to destroy |this| before destroying itself.
-  HostResolverMdnsTask* const task_;
+  const raw_ptr<HostResolverMdnsTask> task_;
 };
 
-HostResolverMdnsTask::HostResolverMdnsTask(
-    MDnsClient* mdns_client,
-    std::string hostname,
-    const std::vector<DnsQueryType>& query_types)
+HostResolverMdnsTask::HostResolverMdnsTask(MDnsClient* mdns_client,
+                                           std::string hostname,
+                                           DnsQueryTypeSet query_types)
     : mdns_client_(mdns_client), hostname_(std::move(hostname)) {
-  DCHECK(!query_types.empty());
-  for (DnsQueryType query_type : query_types) {
+  DCHECK(!query_types.Empty());
+  DCHECK(!query_types.Has(DnsQueryType::UNSPECIFIED));
+
+  static constexpr DnsQueryTypeSet kUnwantedQueries(
+      DnsQueryType::HTTPS, DnsQueryType::INTEGRITY,
+      DnsQueryType::HTTPS_EXPERIMENTAL);
+
+  for (DnsQueryType query_type : Difference(query_types, kUnwantedQueries))
     transactions_.emplace_back(query_type, this);
-  }
 }
 
 HostResolverMdnsTask::~HostResolverMdnsTask() {

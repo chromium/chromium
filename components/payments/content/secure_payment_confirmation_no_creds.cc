@@ -30,9 +30,9 @@ void SecurePaymentConfirmationNoCreds::ShowDialog(
     content::WebContents* web_contents,
     const std::u16string& merchant_name,
     ResponseCallback response_callback) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   NOTREACHED();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   DCHECK(!view_);
 
   view_ = SecurePaymentConfirmationNoCredsView::Create();

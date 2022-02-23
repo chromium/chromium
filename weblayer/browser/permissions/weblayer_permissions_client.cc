@@ -4,6 +4,8 @@
 
 #include "weblayer/browser/permissions/weblayer_permissions_client.h"
 
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "components/content_settings/core/browser/cookie_settings.h"
 #include "components/subresource_filter/content/browser/subresource_filter_content_settings_manager.h"
 #include "components/subresource_filter/content/browser/subresource_filter_profile_context.h"
@@ -13,7 +15,7 @@
 #include "weblayer/browser/permissions/permission_manager_factory.h"
 #include "weblayer/browser/subresource_filter_profile_context_factory.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "weblayer/browser/android/permission_request_utils.h"
 #include "weblayer/browser/android/resource_mapper.h"
 #endif
@@ -73,7 +75,7 @@ WebLayerPermissionsClient::GetChooserContext(
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void WebLayerPermissionsClient::RepromptForAndroidPermissions(
     content::WebContents* web_contents,
     const std::vector<ContentSettingsType>& content_settings_types,

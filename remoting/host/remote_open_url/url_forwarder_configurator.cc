@@ -4,7 +4,6 @@
 
 #include "remoting/host/remote_open_url/url_forwarder_configurator.h"
 
-#include "base/macros.h"
 #include "build/build_config.h"
 
 namespace remoting {
@@ -13,7 +12,7 @@ UrlForwarderConfigurator::UrlForwarderConfigurator() = default;
 
 UrlForwarderConfigurator::~UrlForwarderConfigurator() = default;
 
-#if !defined(OS_LINUX) && !defined(OS_WIN)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
 
 // static
 std::unique_ptr<UrlForwarderConfigurator> UrlForwarderConfigurator::Create() {
@@ -23,6 +22,6 @@ std::unique_ptr<UrlForwarderConfigurator> UrlForwarderConfigurator::Create() {
   return nullptr;
 }
 
-#endif  // !defined(OS_LINUX) && !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN)
 
 }  // namespace remoting

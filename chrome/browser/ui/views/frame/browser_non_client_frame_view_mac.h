@@ -89,8 +89,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView {
   static gfx::Rect GetCaptionButtonPlaceholderBounds(bool is_rtl,
                                                      const gfx::Size& frame,
                                                      int y,
-                                                     int width,
-                                                     int extra_padding);
+                                                     int width);
 
   void PaintThemedFrame(gfx::Canvas* canvas);
 

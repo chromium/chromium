@@ -37,14 +37,6 @@ namespace url {
 class Origin;
 }
 
-namespace cloud_print {
-class CloudPrintURLFetcher;
-}
-
-namespace device {
-class UsbTestGadgetImpl;
-}
-
 namespace remoting {
 class GstaticJsonFetcher;
 }
@@ -344,8 +336,6 @@ class NET_EXPORT URLFetcher {
  private:
   // This class is deprecated, and no new code should be using it. Construction
   // methods are private and pre-existing consumers are friended.
-  friend class cloud_print::CloudPrintURLFetcher;
-  friend class device::UsbTestGadgetImpl;
   friend class remoting::GstaticJsonFetcher;
 
   // The unannotated Create() methods are not available on desktop Linux +
@@ -353,9 +343,9 @@ class NET_EXPORT URLFetcher {
   // annotations on Linux & Windows.
 // TODO(crbug.com/1052397): Revisit once build flag switch of lacros-chrome is
 // complete.
-#if (!defined(OS_WIN) &&                                       \
-     !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))) || \
-    defined(OS_CHROMEOS)
+#if (!BUILDFLAG(IS_WIN) &&                                       \
+     !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))) || \
+    BUILDFLAG(IS_CHROMEOS)
   // |url| is the URL to send the request to. It must be valid.
   // |request_type| is the type of request to make.
   // |d| the object that will receive the callback on fetch completion.

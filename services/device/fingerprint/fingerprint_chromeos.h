@@ -9,7 +9,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "chromeos/dbus/biod/biod_client.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -73,7 +72,7 @@ class SERVICES_DEVICE_FINGERPRINT_EXPORT FingerprintChromeOS
                                   bool enroll_session_complete,
                                   int percent_complete) override;
   void BiodAuthScanDoneReceived(
-      biod::ScanResult scan_result,
+      const biod::FingerprintMessage& msg,
       const chromeos::AuthScanMatches& matches) override;
   void BiodSessionFailedReceived() override;
 

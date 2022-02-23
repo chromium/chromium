@@ -7,7 +7,7 @@
 
 #include <map>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "net/base/net_errors.h"
 #include "remoting/protocol/stream_channel_factory.h"
 
@@ -50,8 +50,8 @@ class SecureChannelFactory : public StreamChannelFactory {
                               int error,
                               std::unique_ptr<P2PStreamSocket> socket);
 
-  StreamChannelFactory* channel_factory_;
-  Authenticator* authenticator_;
+  raw_ptr<StreamChannelFactory> channel_factory_;
+  raw_ptr<Authenticator> authenticator_;
 
   AuthenticatorMap channel_authenticators_;
 };

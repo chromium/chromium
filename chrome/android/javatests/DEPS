@@ -23,6 +23,7 @@ include_rules = [
   "+components/autofill/android/java/src/org/chromium/components/autofill",
   "+components/background_task_scheduler/android/java",
   "+components/bookmarks/common/android/java/src/org/chromium/components/bookmarks",
+  "+components/browser_ui/accessibility/android",
   "+components/browser_ui/notifications/android",
   "+components/browser_ui/settings/android",
   "+components/browser_ui/sms/android",

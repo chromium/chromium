@@ -252,13 +252,14 @@ bool CookiesTreeModelUtil::GetCookieTreeNodeDictionary(
     case CookieTreeNode::DetailedInfo::TYPE_MEDIA_LICENSE: {
       dict->SetStringKey(kKeyType, "media_license");
 
-      const BrowsingDataMediaLicenseHelper::MediaLicenseInfo&
-          media_license_info = *node.GetDetailedInfo().media_license_info;
-      dict->SetStringKey(kKeyOrigin, media_license_info.origin.spec());
-      dict->SetStringKey(kKeySize, ui::FormatBytes(media_license_info.size));
+      const content::StorageUsageInfo& usage_info =
+          *node.GetDetailedInfo().media_license_usage_info;
+      dict->SetStringKey(kKeyOrigin, usage_info.origin.GetURL().spec());
+      dict->SetStringKey(kKeySize,
+                         ui::FormatBytes(usage_info.total_size_bytes));
       dict->SetStringKey(kKeyModified,
                          base::UTF16ToUTF8(base::TimeFormatFriendlyDateAndTime(
-                             media_license_info.last_modified_time)));
+                             usage_info.last_modified)));
       break;
     }
     default:

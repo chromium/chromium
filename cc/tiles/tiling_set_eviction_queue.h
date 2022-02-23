@@ -112,7 +112,11 @@ class CC_EXPORT TilingSetEvictionQueue {
     bool GetFirstTileAndCheckIfValid(TilingIteratorType* iterator);
 
     PrioritizedTile prioritized_tile_;
+
+    // `tilings_` is not a raw_ptr<...> for performance reasons (based on
+    // analysis of sampling profiler data and tab_search:top100:2020).
     std::vector<PictureLayerTiling*>* tilings_;
+
     WhichTree tree_;
     PictureLayerTiling::PriorityRectType priority_rect_type_;
     size_t tiling_index_;

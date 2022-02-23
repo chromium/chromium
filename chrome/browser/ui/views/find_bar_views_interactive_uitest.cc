@@ -299,13 +299,13 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestore) {
 }
 
 // Flaky on Windows. https://crbug.com/792313
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_SelectionRestoreOnTabSwitch DISABLED_SelectionRestoreOnTabSwitch
 #else
 #define MAYBE_SelectionRestoreOnTabSwitch SelectionRestoreOnTabSwitch
 #endif
 IN_PROC_BROWSER_TEST_F(FindInPageTest, MAYBE_SelectionRestoreOnTabSwitch) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Mac intentionally changes selection on focus.
   GTEST_SKIP() << "Mac intentionally has different behavior";
 #endif
@@ -469,7 +469,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, FocusRestoreOnTabSwitchDismiss) {
 }
 
 // FindInPage on Mac doesn't use prepopulated values. Search there is global.
-#if !defined(OS_MAC) && !defined(USE_AURA)
+#if !BUILDFLAG(IS_MAC) && !defined(USE_AURA)
 // Flaky because the test server fails to start? See: http://crbug.com/96594.
 // This tests that whenever you clear values from the Find box and close it that
 // it respects that and doesn't show you the last search, as reported in bug:
@@ -584,7 +584,7 @@ IN_PROC_BROWSER_TEST_F(FindInPageTest, DISABLED_PasteWithoutTextChange) {
 }
 
 // Slow flakiness on Linux. crbug.com/803743
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #define MAYBE_CtrlEnter DISABLED_CtrlEnter
 #else
 #define MAYBE_CtrlEnter CtrlEnter

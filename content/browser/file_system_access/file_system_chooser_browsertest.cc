@@ -1474,7 +1474,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
 // Correctly saving a symlink as the starting directory should work on all OSes,
 // but `base::CreateSymbolicLink` is only available on Posix.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Symlink) {
   // Ensure test directory exists and could not be a default.
   base::FilePath test_dir;
@@ -1512,7 +1512,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Symlink) {
   EXPECT_EQ(ui::SelectFileDialog::SELECT_FOLDER, dialog_params.type);
   EXPECT_EQ(symlink, dialog_params.default_path);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   const base::FilePath test_file = CreateTestFile("");
@@ -1556,7 +1556,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   name_infos.push_back({"not_matching.jpg", ListValueOf(".txt"), false,
                         "not_matching.jpg", false});
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // ".local" and ".lnk" extensions should be sanitized on Windows.
   name_infos.push_back({"dangerous_extension.local", ListValueOf(".local"),
                         true, "dangerous_extension.download", false});
@@ -1573,9 +1573,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
                         "dangerous_extension.lnk", false});
 #endif
   // Invalid characters should be sanitized.
-  name_infos.push_back({R"(inv*l:d\\charבאמת!a<ters🤓.txt)",
+  name_infos.push_back({R"(inv*l:d\\ch%rבאמת!a<ters🤓.txt)",
                         ListValueOf(".txt"), true,
-                        R"(inv_l_d__charבאמת!a_ters🤓.txt)", true});
+                        R"(inv_l_d__ch_rבאמת!a_ters🤓.txt)", true});
 
   for (const auto& name_info : name_infos) {
     SCOPED_TRACE(name_info.suggested_name);

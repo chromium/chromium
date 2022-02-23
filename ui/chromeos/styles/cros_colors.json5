@@ -22,11 +22,11 @@
     /* =========================================================================
      * Core colors.
      * =======================================================================*/
-    light_color_primary: "$google_grey_900",
-    dark_color_primary: "$google_grey_200",
     color_primary: {
-      light: "$light_color_primary",
-      dark: "$dark_color_primary",
+      light: "$google_grey_900",
+      dark: "$google_grey_200",
+      generate_per_mode: true,
+      generate_inverted: true,
     },
     color_secondary: {
       light: "$google_grey_700",
@@ -40,18 +40,19 @@
       light: "$google_blue_600",
       dark: "$google_blue_300",
       debug: "$google_red_600",
+      generate_per_mode: true,
+      generate_inverted: true,
     },
-    light_color_alert: "$google_red_600",
-    dark_color_alert: "$google_red_300",
     color_alert: {
-      light: "$light_color_alert",
-      dark: "$dark_color_alert",
+      light: "$google_red_600",
+      dark: "$google_red_300",
+      generate_inverted: true,
     },
-    light_color_warning: "$google_yellow_600",
-    dark_color_warning: "$google_yellow_300",
     color_warning: {
-      light: "$light_color_warning",
-      dark: "$dark_color_warning",
+      light: "$google_yellow_600",
+      dark: "$google_yellow_300",
+      generate_per_mode: true,
+      generate_inverted: true,
     },
     color_positive: {
       light: "$google_green_600",
@@ -72,29 +73,28 @@
     },
     bg_color_elevation_1: {
       light: "$white",
-      dark: "#2a2a2d", /* google_grey_900 + white 4% */
+      dark: "blend(rgba($white_rgb, 0.04), $google_grey_900)",
     },
-    light_bg_color_elevation_2: "$white",
-    dark_bg_color_elevation_2: "#2e2e31", /* google_grey_900 + white 6% */
     bg_color_elevation_2: {
-      light: "$light_bg_color_elevation_2",
-      dark: "$dark_bg_color_elevation_2",
+      light: "$white",
+      dark: "blend(rgba($white_rgb, 0.06), $google_grey_900)",
+      generate_inverted: true,
     },
     bg_color_elevation_3: {
       light: "$white",
-      dark: "#333336", /* google_grey_900 + white 8% */
+      dark: "blend(rgba($white_rgb, 0.08), $google_grey_900)",
     },
     bg_color_elevation_4: {
       light: "$white",
-      dark: "#37373a", /* google_grey_900 + white 10% */
+      dark: "blend(rgba($white_rgb, 0.1), $google_grey_900)",
     },
     bg_color_elevation_5: {
       light: "$white",
-      dark: "#3c3c3e", /* google_grey_900 + white 12% */
+      dark: "blend(rgba($white_rgb, 0.12), $google_grey_900)",
     },
     bg_color_dropped_elevation_1: {
       light: "$google_grey_50",
-      dark: "#1a1a1d", /* google_grey_900 + black 20% */
+      dark: "blend(rgba($black_rgb, 0.2), $google_grey_900)",
     },
     bg_color_dropped_elevation_2: {
       light: "$google_grey_200",
@@ -121,6 +121,7 @@
     text_highlight_color: {
       light: "rgba($google_blue_600_rgb, 0.3)",
       dark: "rgba($google_blue_400_rgb, 0.3)",
+      generate_per_mode: true,
     },
 
     /*
@@ -140,11 +141,22 @@
     icon_color_positive: "$color_positive",
     icon_color_warning: "$color_warning",
     icon_color_alert: "$color_alert",
-
-    // TODO(calamity): add attribute to allow generation of named variables for
-    // each mode.
-    dark_icon_color_primary: "$google_grey_900",
-    light_icon_color_warning: "$google_yellow_300",
+    icon_color_red: {
+      light: "$google_red_600",
+      dark: "$google_red_300",
+    },
+    icon_color_blue: {
+      light: "$google_blue_600",
+      dark: "$google_blue_300",
+    },
+    icon_color_green: {
+      light: "$google_green_600",
+      dark: "$google_green_300",
+    },
+    icon_color_yellow: {
+      light: "$google_yellow_600",
+      dark: "$google_yellow_300",
+    },
 
     /*
      * App shield colors.
@@ -174,6 +186,7 @@
      * Other foundational colors.
      */
     focus_ring_color: "$color_prominent",
+    focus_ring_color_inactive: "$icon_color_secondary",
     focus_aura_color: "rgba($color_prominent_rgb, 0.24)",
     separator_color: {
       light: "rgba($black_rgb, 0.14)",
@@ -192,6 +205,11 @@
       light: "$google_blue_50",
       dark: "rgba($google_blue_300_rgb, 0.3)",
       debug: "rgba($google_red_300_rgb, 0.3)",
+      generate_per_mode: true,
+    },
+    highlight_color_error: {
+      light: "$google_red_50",
+      dark: "rgba($color_alert_rgb, 0.3)",
     },
     highlight_color_hover: {
       light: "rgba($google_grey_700_rgb, 0.2)",
@@ -224,12 +242,6 @@
     },
     menu_item_ripple_color: "$ripple_color",
 
-    toggle_color: "$color_prominent",
-    toggle_bg_color_inactive: "$google_grey_400",
-    toggle_button_color_inactive: "$white",
-    toggle_ripple_color: "rgba($toggle_color_rgb, .2)",
-    toggle_ripple_color_inactive: "rgba($google_grey_600_rgb, .15)",
-
     radio_button_color: "$color_prominent",
     radio_button_ripple_color: "rgba($radio_button_color_rgb, .2)",
     radio_button_color_unchecked: "$google_grey_700",
@@ -243,10 +255,12 @@
     },
     button_ripple_color_primary: { light: "$white", dark: "$black" },
     /* button-primary:hover */
-    button_background_color_primary_hover_overlay: {
-      light:"rgba($black_rgb, 0.08)",
-      dark: "rgba($white_rgb,0.08)"
-    },
+    button_background_color_primary_hover: "rgba($black_rgb, 0.08)",
+    /* the _preblended variant can be used directly as hover background color
+    because it's already blended on top of the background color, the above
+    _hover variable is still required because it's being used on google3 side */
+    button_background_color_primary_hover_preblended:
+      "blend($button_background_color_primary_hover, $button_background_color_primary)",
     /* button-primary:active */
     button_active_shadow_color_ambient_primary: {
       light: "rgba($google_blue_500_rgb, 0.15)",
@@ -323,6 +337,9 @@
       light: "rgba($black_rgb, 0.05)",
       dark: "rgba($white_rgb, 0.1)",
     },
+    /* when icon button is pressed, we layer the $ripple_color on top of the
+    hover color (which is also $ripple_color) */
+    icon_button_pressed_color: "blend($ripple_color, $ripple_color)",
 
     /* menu */
     menu_label_color: {
@@ -338,6 +355,14 @@
       dark: "$google_grey_500",
     },
     menu_item_background_hover: "$ripple_color",
+
+    /* scroll bar */
+    app_scrollbar_color_hover: {
+      light: "$google_grey_600",
+      dark: "$google_grey_400",
+    },
+    app_scrollbar_color:
+      "rgba($app_scrollbar_color_hover_rgb, $disabled_opacity)",
 
     /* slider */
     slider_color_active: "$color_prominent",
@@ -385,7 +410,7 @@
       light: "$google_grey_700",
       dark: "rgba($white_rgb, 0.6)",
     },
-    textfield_input_color: "$icon_color_primary",
+    textfield_input_color: "$color_primary",
     /* textfield:focus */
     textfield_cursor_color_focus: "$color_prominent",
     textfield_label_color_focus: "$color_prominent",
@@ -415,10 +440,12 @@
       light:"rgba($google_grey_900_rgb, 0.8)",
       dark:"rgba($white_rgb, 0.8)",
     },
+    tooltip_icon_color: "$color_primary_inverted",
     tooltip_label_color: {
       light:"$google_grey_100",
       dark:"$google_grey_900",
     },
+    tooltip_link_color: "$color_prominent_inverted",
 
     /* shortcut */
     shortcut_background_color: {
@@ -435,29 +462,24 @@
       light:"$google_grey_100",
       dark:"$google_grey_900",
     },
+    /* TODO(crbug.com/1284178) waiting for UX input to see how to combine
+    this variable together with `dialog_title_background_color` */
+    dialog_title_bar_color: "blend($highlight_color_hover, $bg_color)",
 
     /* toast */
     /* Toast colors are inverted for contrast. */
-    toast_background_color: {
-      light:"$dark_bg_color_elevation_2",
-      dark:"$light_bg_color_elevation_2",
-    },
-    toast_text_color: {
-      light:"$dark_color_primary",
-      dark:"$light_color_primary",
-    },
-    toast_icon_color: {
-      light:"$dark_color_primary",
-      dark:"$light_color_primary",
-    },
-    toast_icon_color_warning: {
-      light:"$dark_color_warning",
-      dark:"$light_color_warning",
-    },
-    toast_icon_color_error: {
-      light:"$dark_color_alert",
-      dark:"$light_color_alert",
-    },
+    toast_background_color: "$bg_color_elevation_2_inverted",
+    toast_button_color: "$color_prominent_inverted",
+    toast_text_color: "$color_primary_inverted",
+    toast_icon_color: "$color_primary_inverted",
+    toast_icon_color_warning: "$color_warning_inverted",
+    toast_icon_color_error: "$color_alert_inverted",
+
+    /* Drag selection box */
+    selection_outline: {
+      light: "rgba($black_rgb, 0.1)",
+      dark: "rgba($white_rgb, 0.12)",
+    }
   },
   opacities: {
     disabled_opacity: 0.38,

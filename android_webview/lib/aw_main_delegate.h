@@ -9,7 +9,6 @@
 
 #include "android_webview/browser/aw_feature_list_creator.h"
 #include "android_webview/common/aw_content_client.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "content/public/app/content_main_delegate.h"
 
@@ -49,6 +48,7 @@ class AwMainDelegate : public content::ContentMainDelegate {
       content::MainFunctionParams main_function_params) override;
   void ProcessExiting(const std::string& process_type) override;
   bool ShouldCreateFeatureList() override;
+  variations::VariationsIdsProvider* CreateVariationsIdsProvider() override;
   void PostEarlyInitialization(bool is_running_tests) override;
   void PostFieldTrialInitialization() override;
   content::ContentClient* CreateContentClient() override;

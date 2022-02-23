@@ -3,7 +3,6 @@ include_rules = [
   "+chrome/browser:resources_grit",
   "+content/public/renderer",
   "+third_party/blink",
-  "+ui/base",
   "+url",
   "+v8",
 ]

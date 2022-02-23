@@ -10,7 +10,6 @@
 #include <vector>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/strings/string_piece.h"
 #include "net/websockets/websocket_deflater.h"
 #include "net/websockets/websocket_inflater.h"

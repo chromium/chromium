@@ -12,6 +12,7 @@
 #include <unordered_map>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 
@@ -30,10 +31,10 @@ typedef std::unordered_map<
     std::unique_ptr<ClientSafeBrowsingReportRequest::Resource>>
     ResourceMap;
 
-class ThreatDetailsCacheCollector
-    : public base::RefCounted<ThreatDetailsCacheCollector> {
+class ThreatDetailsCacheCollector {
  public:
   ThreatDetailsCacheCollector();
+  ~ThreatDetailsCacheCollector();
 
   // We use |request_context_getter|, we modify |resources| and
   // |result|, and we call |callback|, so they must all remain alive
@@ -54,17 +55,15 @@ class ThreatDetailsCacheCollector
  private:
   friend class base::RefCounted<ThreatDetailsCacheCollector>;
 
-  ~ThreatDetailsCacheCollector();
-
   // Points to the url for which we are fetching the HTTP cache entry or
   // redirect chain.
   ResourceMap::iterator resources_it_;
 
   // Points to the resources_ map in the ThreatDetails.
-  ResourceMap* resources_;
+  raw_ptr<ResourceMap> resources_;
 
   // Points to the cache_result_ in the ThreatDetails.
-  bool* result_;
+  raw_ptr<bool> result_;
 
   // Method we call when we are done. The caller must be alive for the
   // whole time, we are modifying its state (see above).
@@ -78,6 +77,8 @@ class ThreatDetailsCacheCollector
 
   // The current SimpleURLLoader.
   std::unique_ptr<network::SimpleURLLoader> current_load_;
+
+  base::WeakPtrFactory<ThreatDetailsCacheCollector> weak_factory_{this};
 
   // Returns the resource from resources_ that corresponds to |url|
   ClientSafeBrowsingReportRequest::Resource* GetResource(const GURL& url);

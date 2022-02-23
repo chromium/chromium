@@ -7,7 +7,6 @@
 
 #include <string>
 
-#include "base/macros.h"
 #include "base/values.h"
 #include "chromecast/activity/queryable_data_host.h"
 

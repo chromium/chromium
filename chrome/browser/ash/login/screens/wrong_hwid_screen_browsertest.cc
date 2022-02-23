@@ -22,7 +22,8 @@ class WrongHWIDScreenTest : public OobeBaseTest {
   ~WrongHWIDScreenTest() override = default;
 
   void SetUpCommandLine(base::CommandLine* command_line) override {
-    command_line->AppendSwitch(switches::kForceHWIDCheckFailureForTest);
+    command_line->AppendSwitchASCII(switches::kForceHWIDCheckResultForTest,
+                                    "failure");
     OobeBaseTest::SetUpCommandLine(command_line);
   }
 };

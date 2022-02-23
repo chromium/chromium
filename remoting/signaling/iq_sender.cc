@@ -16,8 +16,8 @@
 #include "base/time/time.h"
 #include "remoting/signaling/signal_strategy.h"
 #include "remoting/signaling/signaling_id_util.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 
 namespace remoting {
 
@@ -26,10 +26,11 @@ std::unique_ptr<jingle_xmpp::XmlElement> IqSender::MakeIqStanza(
     const std::string& type,
     const std::string& addressee,
     std::unique_ptr<jingle_xmpp::XmlElement> iq_body) {
-  std::unique_ptr<jingle_xmpp::XmlElement> stanza(new jingle_xmpp::XmlElement(jingle_xmpp::QN_IQ));
-  stanza->AddAttr(jingle_xmpp::QN_TYPE, type);
+  std::unique_ptr<jingle_xmpp::XmlElement> stanza(
+      new jingle_xmpp::XmlElement(kQNameIq));
+  stanza->AddAttr(kQNameType, type);
   if (!addressee.empty())
-    stanza->AddAttr(jingle_xmpp::QN_TO, addressee);
+    stanza->AddAttr(kQNameTo, addressee);
   stanza->AddElement(iq_body.release());
   return stanza;
 }
@@ -46,11 +47,11 @@ IqSender::~IqSender() {
 std::unique_ptr<IqRequest> IqSender::SendIq(
     std::unique_ptr<jingle_xmpp::XmlElement> stanza,
     ReplyCallback callback) {
-  std::string addressee = stanza->Attr(jingle_xmpp::QN_TO);
-  std::string id = stanza->Attr(jingle_xmpp::QN_ID);
+  std::string addressee = stanza->Attr(kQNameTo);
+  std::string id = stanza->Attr(kQNameId);
   if (id.empty()) {
     id = signal_strategy_->GetNextId();
-    stanza->AddAttr(jingle_xmpp::QN_ID, id);
+    stanza->AddAttr(kQNameId, id);
   }
   if (!signal_strategy_->SendStanza(std::move(stanza))) {
     return nullptr;
@@ -89,12 +90,12 @@ void IqSender::OnSignalStrategyStateChange(SignalStrategy::State state) {
 }
 
 bool IqSender::OnSignalStrategyIncomingStanza(const jingle_xmpp::XmlElement* stanza) {
-  if (stanza->Name() != jingle_xmpp::QN_IQ) {
+  if (stanza->Name() != kQNameIq) {
     LOG(WARNING) << "Received unexpected non-IQ packet " << stanza->Str();
     return false;
   }
 
-  const std::string& type = stanza->Attr(jingle_xmpp::QN_TYPE);
+  const std::string& type = stanza->Attr(kQNameType);
   if (type.empty()) {
     LOG(WARNING) << "IQ packet missing type " << stanza->Str();
     return false;
@@ -104,13 +105,13 @@ bool IqSender::OnSignalStrategyIncomingStanza(const jingle_xmpp::XmlElement* sta
     return false;
   }
 
-  const std::string& id = stanza->Attr(jingle_xmpp::QN_ID);
+  const std::string& id = stanza->Attr(kQNameId);
   if (id.empty()) {
     LOG(WARNING) << "IQ packet missing id " << stanza->Str();
     return false;
   }
 
-  std::string from = stanza->Attr(jingle_xmpp::QN_FROM);
+  std::string from = stanza->Attr(kQNameFrom);
 
   auto it = requests_.find(id);
   if (it == requests_.end()) {

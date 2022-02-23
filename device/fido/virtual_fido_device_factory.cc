@@ -32,14 +32,21 @@ VirtualFidoDevice::State* VirtualFidoDeviceFactory::mutable_state() {
   return state_.get();
 }
 
+scoped_refptr<VirtualFidoDeviceDiscovery::Trace>
+VirtualFidoDeviceFactory::trace() {
+  return trace_;
+}
+
 std::vector<std::unique_ptr<FidoDiscoveryBase>>
 VirtualFidoDeviceFactory::Create(FidoTransportProtocol transport) {
   if (transport != transport_) {
     return {};
   }
+  const size_t trace_index = trace_->discoveries.size();
+  trace_->discoveries.emplace_back();
   return SingleDiscovery(std::make_unique<VirtualFidoDeviceDiscovery>(
-      transport_, state_, supported_protocol_, ctap2_config_,
-      /*disconnect_events=*/nullptr));
+      trace_, trace_index, transport_, state_, supported_protocol_,
+      ctap2_config_, /*disconnect_events=*/nullptr));
 }
 
 bool VirtualFidoDeviceFactory::IsTestOverride() {

@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_WEBUI_MESSAGE_HANDLER_H_
 #define CHROME_BROWSER_UI_WEBUI_MEDIA_ROUTER_MEDIA_ROUTER_INTERNALS_WEBUI_MESSAGE_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
 #include "components/media_router/common/mojom/media_router.mojom.h"
@@ -34,7 +35,7 @@ class MediaRouterInternalsWebUIMessageHandler
   void OnProviderState(base::Value callback_id, mojom::ProviderStatePtr state);
 
   // Pointer to the MediaRouter.
-  const MediaRouter* const router_;
+  const raw_ptr<const MediaRouter> router_;
 
   base::WeakPtrFactory<MediaRouterInternalsWebUIMessageHandler> weak_factory_{
       this};

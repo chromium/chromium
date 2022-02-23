@@ -11,7 +11,6 @@
 #include <vector>
 
 #include "base/containers/queue.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "gpu/ipc/service/image_transport_surface.h"
 #include "gpu/ipc/service/image_transport_surface_delegate.h"

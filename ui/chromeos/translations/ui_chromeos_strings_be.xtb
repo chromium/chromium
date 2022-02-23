@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Карэйскі алфавіт (хангыль), рэжым AhnMaTae</translation>
 <translation id="1155759005174418845">Каталанская</translation>
 <translation id="1168100932582989117">Серверы даменных імён Google</translation>
+<translation id="1171082344678443012">Сціснуты архіў XZ</translation>
 <translation id="1172970565351728681">Прыблізны час да завяршэння: <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Перайменаваць</translation>
 <translation id="1173916544412572294">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, зарад акумулятара тэлефона – <ph name="BATTERY_STATUS" />%, падрабязныя звесткі</translation>
@@ -47,7 +48,7 @@
 <translation id="1378727793141957596">Вітаем у Google Дыску!</translation>
 <translation id="1379911846207762492">Вы можаце зрабіць файлы даступнымі ў пазасеткавым рэжыме, каб мець магчымасць працаваць з імі, калі не будзе падключэння да інтэрнэту.</translation>
 <translation id="1383876407941801731">Пошук</translation>
-<translation id="1395262318152388157">Паўзунок пераходу</translation>
+<translation id="1395262318152388157">Паўзунок перамоткі</translation>
 <translation id="1399511500114202393">Не выкарыстоўваць сертыфікат карыстальніка</translation>
 <translation id="1404323374378969387">Нарвежская</translation>
 <translation id="1433628812591023318">Каб перацягнуць файл у Parallels Desktop, яго неабходна перамясціць у папку "Файлы Windows".</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Фармаціраванне дыска прывядзе да выдалення ўсіх захаваных на ім даных. Гэта дзеянне нельга адрабіць.</translation>
 <translation id="2025955442973426285">Тыгрынья</translation>
 <translation id="2028997212275086731">Архіў RAR</translation>
+<translation id="2036414735548252477">Сціснуты архіў LZMA у фармаце TAR</translation>
 <translation id="2037845485764049925">Руская</translation>
 <translation id="2044023416777079300">Мадэм не зарэгістраваны</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Абагуліць праз пашырэнне "<ph name="EXTENSION_NAME" />"</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">Хост SOCKS</translation>
+<translation id="3104793765551262433">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="3113153474486991170">Не ўдалося адкрыць архіў "<ph name="PATH" />" з гэтага месца. Каб адкрыць яго, скапіруйце архіў у папку "Мае файлы".</translation>
 <translation id="3113592018909187986">У вас засталася 1 спроба. Вы не зможаце выкарыстоўваць гэту мабільную сетку, пакуль не наладзіце новы PIN-код.</translation>
 <translation id="3124404833828281817">Летуценнік</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Англійская (ЗША) з міжнароднай клавіятурай для ПК</translation>
 <translation id="3567221313191587603">Каб зрабіць файл даступным па-за сеткай, выберыце яго і задайце для яго параметр "<ph name="OFFLINE_CHECKBOX_NAME" />".</translation>
 <translation id="357479282490346887">Літоўская</translation>
+<translation id="3587482841069643663">Усе</translation>
 <translation id="3592251141500063301">Не ўдалося зрабіць файл <ph name="FILE_NAME" /> даступным па-за сеткай</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Французская (канадская)</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Усё захавана ў рэзервовую копію!</translation>
 <translation id="3634507049637220048">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, знаходзіцца пад кіраваннем адміністратара, падрабязныя звесткі</translation>
 <translation id="3645233063072417428">Перамешчана элементаў: <ph name="NUMBER_OF_ITEMS" /></translation>
-<translation id="3645531960514756307">Адмацаваць папку</translation>
 <translation id="3685122418104378273">Пры выкарыстанні мабільнай перадачы даных са стандартнымі наладамі сінхранізацыя з Google Дыскам выключана.</translation>
 <translation id="3689865792480713551">Скасаваць дзеянне "<ph name="ACTIVITY_DESCRIPTION" />".</translation>
 <translation id="3690128548376345212">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, адключана, <ph name="CONNECTION_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="3691184985318546178">Сінгальская</translation>
 <translation id="3726463242007121105">Прыладу адкрыць не ўдалося: яе файлавая сістэма не падтрымліваецца.</translation>
 <translation id="3727148787322499904">Змена гэтай налады закране ўсе абагуленыя сеткі</translation>
+<translation id="3737576078404241332">Выдаліць з бакавой панэлі</translation>
 <translation id="3741243925913727067">Захоўвайце на Google Дыску рэзервовыя копіі фота і відэа з вашай мультымедыйнай прылады.</translation>
 <translation id="3749289110408117711">Назва файла</translation>
 <translation id="3780536599611287598">У вас няма дазволу на перамяшчэнне файлаў у папку "<ph name="FOLDER_NAME" />".</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Батанік</translation>
 <translation id="4326192123064055915">Кава</translation>
 <translation id="4336032328163998280">Збой аперацыі капіравання. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Дадаць на бакавую панэль</translation>
 <translation id="4348495354623233847">Курдская (сарані) (раскладка на аснове арабскай)</translation>
 <translation id="4363958938297989186">Руская (фанетычная раскладка)</translation>
 <translation id="4364327530094270451">Дыня</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> Б</translation>
 <translation id="4880214202172289027">Рэгулятар гучнасці</translation>
 <translation id="4881695831933465202">Адкрыць</translation>
+<translation id="4886199584824489598">Сціснуты архіў Bzip2</translation>
 <translation id="4900532980794411603">Абагуліць з Parallels Desktop</translation>
 <translation id="4902546322522096650">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падключыцца</translation>
 <translation id="4905417359854579806">Файлы (<ph name="FILE_COUNT" />) гатовыя да рэзервовага капіравання</translation>
@@ -583,6 +589,7 @@
 <translation id="6055907707645252013">Тып сеткі – <ph name="NETWORK_TYPE" />, не падключана</translation>
 <translation id="6074825444536523002">Форма Google</translation>
 <translation id="6079871810119356840">Венгерская з раскладкай Qwerty</translation>
+<translation id="6082256976217156453">Сціснуты архіў LZMA</translation>
 <translation id="6096979789310008754">Крытэрыі пошуку выдалены, паказваюцца ўсе файлы і папкі.</translation>
 <translation id="610101264611565198">Ідзе перамяшчэнне файла "<ph name="FILE_NAME" />" у папку "<ph name="FOLDER_NAME" />"</translation>
 <translation id="6129953537138746214">Прабел</translation>
@@ -678,6 +685,7 @@
 <translation id="6935521024859866267">Дагары нагамі</translation>
 <translation id="6943836128787782965">Памылка метаду HTTP GET</translation>
 <translation id="6949408524333579394">Сербская (транслітарацыя)</translation>
+<translation id="6954309393500027528">Магчымасць устаўляць гэты файл заблакіравана адміністратарам</translation>
 <translation id="6960565108681981554">Сетка не актывавана. Звярніцеся да аператара.</translation>
 <translation id="696203921837389374">Уключыць сінхранізацыю пры мабільнай перадачы даных</translation>
 <translation id="6965382102122355670">ОК</translation>
@@ -838,6 +846,7 @@
 <translation id="8297012244086013755">Карэйскі алфавіт (хангыль), рэжым 3 Set (без клавішы Shift)</translation>
 <translation id="8299269255470343364">Японская</translation>
 <translation id="8300849813060516376">Памылка OTASP</translation>
+<translation id="8308481408797647857">Сціснуты архіў XZ у фармаце TAR</translation>
 <translation id="8312871300878166382">Уставіць у папку</translation>
 <translation id="8329978297633540474">Звычайны тэкст</translation>
 <translation id="8335587457941836791">Адмацаваць з паліцы</translation>
@@ -874,6 +883,7 @@
 <translation id="8551494947769799688">Латышская</translation>
 <translation id="8560515948038859357">Кантонскі дыялект</translation>
 <translation id="8561206103590473338">Слон</translation>
+<translation id="8566466896628108558">Сетка <ph name="NETWORK_INDEX" /> з <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, заблакіравана адміністратарам, магутнасць сігналу – <ph name="SIGNAL_STRENGTH" />%, падрабязныя звесткі</translation>
 <translation id="8569764466147087991">Выберыце файл, які трэба адкрыць</translation>
 <translation id="8577897833047451336">Харвацкая</translation>
 <translation id="8578308463707544055">Інданезійская</translation>
@@ -926,7 +936,6 @@
 <translation id="9110990317705400362">Мы пастаянна працуем над новымі спосабамі зрабіць працу ў інтэрнэце больш бяспечнай. Раней любы сайт мог прапанаваць вам дадаць пашырэнні ў браўзер. У апошніх версіях Google Chrome пашырэнні трэба дадаваць праз старонку "Пашырэнні", даючы браўзеру яўнае ўказанне, што вы хочаце іх усталяваць. <ph name="BEGIN_LINK" />Даведацца больш<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Разблакіраваць</translation>
 <translation id="912419004897138677">Кодэк</translation>
-<translation id="9129931661813833980">Замацаваць папку</translation>
 <translation id="9130775360844693113">Да гэтых элементаў атрымаюць доступ удзельнікі дыска "<ph name="DESTINATION_NAME" />".</translation>
 <translation id="9131598836763251128">Выберыце адзін або некалькі файлаў</translation>
 <translation id="9133055936679483811">Збой архівавання. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +956,7 @@
 <translation id="943972244133411984">Зменена карыстальнікам</translation>
 <translation id="945522503751344254">Адправіць водгук</translation>
 <translation id="947144732524271678">Выбраны элементы з <ph name="FROM_ENTRY_NAME" /> да <ph name="TO_ENTRY_NAME" />, колькасць элементаў – <ph name="ENTRY_COUNT" />.</translation>
+<translation id="961973045258256291">Сціснуты архіў Gzip</translation>
 <translation id="965477715979482472">Англійская (Паўднёва-Афрыканская Рэспубліка)</translation>
 <translation id="981121421437150478">Па-за сеткай</translation>
 <translation id="988685240266037636">Файл пад назвай "<ph name="FILE_NAME" />" ужо існуе. Замяніць яго?</translation>

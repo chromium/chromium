@@ -6,7 +6,6 @@
 #define BASE_MAC_SCOPED_SENDING_EVENT_H_
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/message_loop/message_pump_mac.h"
 
 // Nested event loops can pump IPC messages, including
@@ -25,8 +24,7 @@
 - (void)setHandlingSendEvent:(BOOL)handlingSendEvent;
 @end
 
-namespace base {
-namespace mac {
+namespace base::mac {
 
 class BASE_EXPORT ScopedSendingEvent {
  public:
@@ -44,7 +42,6 @@ class BASE_EXPORT ScopedSendingEvent {
   BOOL handling_;  // Value of -[app_ handlingSendEvent] at construction.
 };
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_SCOPED_SENDING_EVENT_H_

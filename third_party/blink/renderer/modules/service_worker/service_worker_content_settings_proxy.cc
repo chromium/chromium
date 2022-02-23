@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/metrics/histogram_macros.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 
 namespace blink {
 

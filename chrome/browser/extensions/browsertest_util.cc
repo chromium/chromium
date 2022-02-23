@@ -43,7 +43,7 @@ namespace browsertest_util {
 void CreateAndInitializeLocalCache() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   base::FilePath extension_cache_dir;
-  CHECK(base::PathService::Get(chromeos::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
+  CHECK(base::PathService::Get(ash::DIR_DEVICE_EXTENSION_LOCAL_CACHE,
                                &extension_cache_dir));
   base::FilePath cache_init_file = extension_cache_dir.Append(
       extensions::LocalExtensionCache::kCacheReadyFlagFileName);
@@ -52,13 +52,13 @@ void CreateAndInitializeLocalCache() {
 }
 
 Browser* LaunchAppBrowser(Profile* profile, const Extension* extension_app) {
-  EXPECT_TRUE(
-      apps::AppServiceProxyFactory::GetForProfile(profile)
-          ->BrowserAppLauncher()
-          ->LaunchAppWithParams(apps::AppLaunchParams(
-              extension_app->id(), LaunchContainer::kLaunchContainerWindow,
-              WindowOpenDisposition::CURRENT_TAB,
-              apps::mojom::LaunchSource::kFromTest)));
+  EXPECT_TRUE(apps::AppServiceProxyFactory::GetForProfile(profile)
+                  ->BrowserAppLauncher()
+                  ->LaunchAppWithParamsForTesting(apps::AppLaunchParams(
+                      extension_app->id(),
+                      apps::mojom::LaunchContainer::kLaunchContainerWindow,
+                      WindowOpenDisposition::CURRENT_TAB,
+                      apps::mojom::LaunchSource::kFromTest)));
 
   Browser* browser = chrome::FindLastActive();
   bool is_correct_app_browser =

@@ -1,0 +1,89 @@
+/* Copyright 2021 The TensorFlow Authors. All Rights Reserved.
+
+Licensed under the Apache License, Version 2.0 (the "License");
+you may not use this file except in compliance with the License.
+You may obtain a copy of the License at
+
+    http://www.apache.org/licenses/LICENSE-2.0
+
+Unless required by applicable law or agreed to in writing, software
+distributed under the License is distributed on an "AS IS" BASIS,
+WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+See the License for the specific language governing permissions and
+limitations under the License.
+==============================================================================*/
+syntax = "proto2";
+
+package tflite.task.text;
+
+import "tensorflow_lite_support/cc/task/core/proto/base_options.proto";
+import "tensorflow_lite_support/cc/task/processor/proto/embedding.proto";
+
+// Input message for retrieval models that encode strings into vectors.
+// The input is a tuple of query text, and one or more response text with their
+// context.
+//
+// Retrieve expects both query_text and responses are not empty.
+message RetrievalInput {
+  // Input text as the user query (e.g. "When is Father's Day?").
+  optional string query_text = 1;
+
+  // A list of response entries.
+  repeated ResponseEntry responses = 2;
+  // Next Id: 3
+}
+
+// Response entry includes raw text or text_encoding.
+message ResponseEntry {
+  // We allow users to pass:
+  // (1) raw_text to encode
+  // Or (2) cached text_encoding (save computation and faster).
+  oneof response_options {
+    RawText raw_text = 1;
+    tflite.task.processor.FeatureVector text_encoding = 2;
+    // Next Id: 3
+  }
+
+  // Raw text contains the text and its context.
+  message RawText {
+    // Text for the response (e.g. "In the US, it falls on the third Sunday in
+    // June.").
+    optional string text = 1;
+
+    // Context for the response, such as the surrounding text or background
+    // information (e.g. "Father's Day is a celebration honoring fathers and
+    // celebrating fatherhood, paternal bonds, and the influence of fathers
+    // in society.").
+    optional string context = 2;
+    // Next Id: 3
+  }
+}
+
+// The result for response entry.
+message ResponseResult {
+  // The encoded vector for the response.
+  optional tflite.task.processor.FeatureVector encoding = 1;
+
+  // The score measured by encodings of query and response.
+  optional float score = 2;
+  // Next Id: 3
+}
+
+// Output message for retrieval. The retrieval model encodes query and response
+// into respective vectors, and calculates their similarity score.
+message RetrievalOutput {
+  // The encoded vector for the query.
+  optional tflite.task.processor.FeatureVector query_encoding = 1;
+
+  // Results corresponding to responses in the same input order.
+  repeated ResponseResult response_results = 2;
+  // Next Id: 3
+}
+
+// Options for setting up retrieval models.
+message RetrievalOptions {
+  // Base options for configuring retrieval models, such as specifying the
+  // TfLite model file with metadata, accelerator options, etc.
+  optional tflite.task.core.BaseOptions base_options = 1;
+  // Next Id: 2
+}

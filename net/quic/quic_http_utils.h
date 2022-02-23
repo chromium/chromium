@@ -38,12 +38,6 @@ NET_EXPORT base::Value QuicResponseNetLogParams(
     const spdy::Http2HeaderBlock* headers,
     NetLogCaptureMode capture_mode);
 
-// Parses |alt_svc_versions| into a quic::ParsedQuicVersionVector and removes
-// all entries that aren't found in |supported_versions|.
-NET_EXPORT quic::ParsedQuicVersionVector FilterSupportedAltSvcVersions(
-    const spdy::SpdyAltSvcWireFormat::AlternativeService& quic_alt_svc,
-    const quic::ParsedQuicVersionVector& supported_versions);
-
 }  // namespace net
 
 #endif  // NET_QUIC_QUIC_HTTP_UTILS_H_

@@ -24,7 +24,7 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
   ~CaptivePortalRoutine() override;
 
   // NetworkDiagnosticsRoutine:
-  mojom::RoutineType Type() override;
+  chromeos::network_diagnostics::mojom::RoutineType Type() override;
   void Run() override;
   void AnalyzeResultsAndExecuteCallback() override;
 
@@ -42,7 +42,8 @@ class CaptivePortalRoutine : public NetworkDiagnosticsRoutine {
       chromeos::network_config::mojom::PortalState::kUnknown;
   mojo::Remote<chromeos::network_config::mojom::CrosNetworkConfig>
       remote_cros_network_config_;
-  std::vector<mojom::CaptivePortalProblem> problems_;
+  std::vector<chromeos::network_diagnostics::mojom::CaptivePortalProblem>
+      problems_;
 };
 
 }  // namespace network_diagnostics

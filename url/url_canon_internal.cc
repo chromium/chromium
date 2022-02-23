@@ -435,49 +435,4 @@ int _itow_s(int value, char16_t* buffer, size_t size_in_chars, int radix) {
 
 #endif  // !WIN32
 
-EscapedHostChar EscapedHostCharToEnum(char c) {
-  switch (c) {
-    case ' ':
-      return EscapedHostChar::kSpace;
-    case '!':
-      return EscapedHostChar::kBang;
-    case '"':
-      return EscapedHostChar::kDoubleQuote;
-    case '#':
-      return EscapedHostChar::kHash;
-    case '$':
-      return EscapedHostChar::kDollar;
-    case '&':
-      return EscapedHostChar::kAmpersand;
-    case '\'':
-      return EscapedHostChar::kSingleQuote;
-    case '(':
-      return EscapedHostChar::kLeftParen;
-    case ')':
-      return EscapedHostChar::kRightParen;
-    case '*':
-      return EscapedHostChar::kAsterisk;
-    case ',':
-      return EscapedHostChar::kComma;
-    case '<':
-      return EscapedHostChar::kLeftAngle;
-    case '=':
-      return EscapedHostChar::kEquals;
-    case '>':
-      return EscapedHostChar::kRightAngle;
-    case '@':
-      return EscapedHostChar::kAt;
-    case '`':
-      return EscapedHostChar::kBackTick;
-    case '{':
-      return EscapedHostChar::kLeftCurly;
-    case '|':
-      return EscapedHostChar::kPipe;
-    case '}':
-      return EscapedHostChar::kRightCurly;
-    default:
-      return EscapedHostChar::kUnknown;
-  }
-}
-
 }  // namespace url

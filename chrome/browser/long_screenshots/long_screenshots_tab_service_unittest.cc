@@ -312,10 +312,12 @@ TEST_F(LongScreenshotsTabServiceTest, AmpPageDetection) {
   GURL amp_url("https://www.google.com/amp/s/example");
   GURL amp_cahe_url(
       "https://www-example-com.cdn.ampproject.org/c/www.example.com");
+  GURL google_news_url("https://news.google.com/articles/foo");
   GURL non_amp_url("https://foo.com/amp/bar/");
 
   ASSERT_TRUE(TabService_IsAmpUrl(amp_url));
   ASSERT_TRUE(TabService_IsAmpUrl(amp_cahe_url));
+  ASSERT_TRUE(TabService_IsAmpUrl(google_news_url));
   ASSERT_FALSE(TabService_IsAmpUrl(non_amp_url));
 
   auto* rfh = main_rfh();

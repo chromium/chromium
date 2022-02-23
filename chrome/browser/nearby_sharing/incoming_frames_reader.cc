@@ -6,10 +6,10 @@
 
 #include <type_traits>
 
+#include "ash/services/nearby/public/mojom/nearby_decoder.mojom.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/nearby_sharing/logging/logging.h"
 #include "chrome/browser/nearby_sharing/nearby_connection.h"
-#include "chromeos/services/nearby/public/mojom/nearby_decoder.mojom.h"
 
 namespace {
 
@@ -23,7 +23,7 @@ std::ostream& operator<<(std::ostream& out,
 }  // namespace
 
 IncomingFramesReader::IncomingFramesReader(
-    chromeos::nearby::NearbyProcessManager* process_manager,
+    ash::nearby::NearbyProcessManager* process_manager,
     NearbyConnection* connection)
     : process_manager_(process_manager), connection_(connection) {
   DCHECK(process_manager);
@@ -86,7 +86,7 @@ void IncomingFramesReader::ReadFrame(
 }
 
 void IncomingFramesReader::OnNearbyProcessStopped(
-    chromeos::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
+    ash::nearby::NearbyProcessManager::NearbyProcessShutdownReason) {
   is_process_stopped_ = true;
   Done(absl::nullopt);
 }

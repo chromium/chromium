@@ -25,8 +25,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service.h"
-#include "chrome/browser/ui/webui/signin/login_ui_service_factory.h"
+#include "chrome/browser/signin/signin_ui_util.h"
 #include "chrome/common/channel_info.h"
 #include "chrome/common/extensions/api/identity.h"
 #include "components/prefs/pref_service.h"
@@ -892,16 +891,12 @@ void IdentityGetAuthTokenFunction::StartGaiaRequest(
 }
 
 void IdentityGetAuthTokenFunction::ShowExtensionLoginPrompt() {
-  AccountInfo account = IdentityManagerFactory::GetForProfile(GetProfile())
-                            ->FindExtendedAccountInfoByAccountId(
-                                token_key_.account_info.account_id);
+  const CoreAccountInfo& account = token_key_.account_info;
   std::string email_hint =
       account.IsEmpty() ? email_for_default_web_account_ : account.email;
 
-  LoginUIService* login_ui_service =
-      LoginUIServiceFactory::GetForProfile(GetProfile());
-  login_ui_service->ShowExtensionLoginPrompt(IsPrimaryAccountOnly(),
-                                             email_hint);
+  signin_ui_util::ShowExtensionSigninPrompt(GetProfile(),
+                                            IsPrimaryAccountOnly(), email_hint);
 }
 
 void IdentityGetAuthTokenFunction::ShowRemoteConsentDialog(

@@ -66,13 +66,13 @@ base::Value ConvertUintToValue(uint32_t number) {
 // true.
 absl::optional<bool> GetBoolValueFromDict(const base::DictionaryValue& dict,
                                           const std::string& key_name) {
-  return dict.HasKey(key_name) ? dict.FindBoolKey(key_name) : absl::nullopt;
+  return dict.FindBoolKey(key_name);
 }
 
 // Gets int value from base::DictionaryValue, e.g. { "key": 100 } returns 100.
 absl::optional<int32_t> GetIntValueFromDict(const base::DictionaryValue& dict,
                                             const std::string& key_name) {
-  return dict.HasKey(key_name) ? dict.FindIntKey(key_name) : absl::nullopt;
+  return dict.FindIntKey(key_name);
 }
 
 // Gets uint32_t value from base::DictionaryValue, e.g. { "key": "123" } returns
@@ -80,7 +80,7 @@ absl::optional<int32_t> GetIntValueFromDict(const base::DictionaryValue& dict,
 absl::optional<uint32_t> GetUIntValueFromDict(const base::DictionaryValue& dict,
                                               const std::string& key_name) {
   uint32_t result = 0;
-  if (!dict.HasKey(key_name) ||
+  if (!dict.FindKey(key_name) ||
       !base::StringToUint(dict.FindStringKey(key_name)->c_str(), &result)) {
     return absl::nullopt;
   }
@@ -90,8 +90,6 @@ absl::optional<uint32_t> GetUIntValueFromDict(const base::DictionaryValue& dict,
 absl::optional<std::string> GetStringValueFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
   const std::string* value = dict.FindStringKey(key_name);
   return value ? absl::optional<std::string>(*value) : absl::nullopt;
 }
@@ -100,10 +98,8 @@ absl::optional<std::u16string> GetU16StringValueFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
   std::u16string result;
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
   const std::string* value = dict.FindStringKey(key_name);
-  if (!base::UTF8ToUTF16(value->c_str(), value->length(), &result))
+  if (!value || !base::UTF8ToUTF16(value->c_str(), value->length(), &result))
     return absl::nullopt;
   return result;
 }
@@ -112,9 +108,6 @@ absl::optional<std::u16string> GetU16StringValueFromDict(
 // returns 22000000.
 absl::optional<int64_t> GetDisplayIdFromDict(
     const base::DictionaryValue& dict) {
-  if (!dict.HasKey(kDisplayIdKey))
-    return absl::nullopt;
-
   const std::string* display_id_str = dict.FindStringKey(kDisplayIdKey);
   int64_t display_id_value;
   if (display_id_str &&
@@ -128,17 +121,14 @@ absl::optional<int64_t> GetDisplayIdFromDict(
 // Gets urls from the dictionary value.
 absl::optional<std::vector<GURL>> GetUrlsFromDict(
     const base::DictionaryValue& dict) {
-  if (!dict.HasKey(kUrlsKey))
-    return absl::nullopt;
-
   const base::Value* urls_path_value = dict.FindListKey(kUrlsKey);
   if (!urls_path_value || !urls_path_value->is_list() ||
-      urls_path_value->GetList().empty()) {
+      urls_path_value->GetListDeprecated().empty()) {
     return absl::nullopt;
   }
 
   std::vector<GURL> url_paths;
-  for (const auto& item : urls_path_value->GetList()) {
+  for (const auto& item : urls_path_value->GetListDeprecated()) {
     if (item.GetString().empty())
       continue;
     GURL url(item.GetString());
@@ -155,16 +145,13 @@ absl::optional<std::vector<GURL>> GetUrlsFromDict(
 // std::vector<base::FilePath>{"aa.cc", "bb.h", ...}.
 absl::optional<std::vector<base::FilePath>> GetFilePathsFromDict(
     const base::DictionaryValue& dict) {
-  if (!dict.HasKey(kFilePathsKey))
-    return absl::nullopt;
-
   const base::Value* file_paths_value = dict.FindListKey(kFilePathsKey);
   if (!file_paths_value || !file_paths_value->is_list() ||
-      file_paths_value->GetList().empty())
+      file_paths_value->GetListDeprecated().empty())
     return absl::nullopt;
 
   std::vector<base::FilePath> file_paths;
-  for (const auto& item : file_paths_value->GetList()) {
+  for (const auto& item : file_paths_value->GetListDeprecated()) {
     if (item.GetString().empty())
       continue;
     file_paths.push_back(base::FilePath(item.GetString()));
@@ -177,17 +164,14 @@ absl::optional<std::vector<base::FilePath>> GetFilePathsFromDict(
 // gfx::Size(100, 300).
 absl::optional<gfx::Size> GetSizeFromDict(const base::DictionaryValue& dict,
                                           const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
-
   const base::Value* size_value = dict.FindListKey(key_name);
   if (!size_value || !size_value->is_list() ||
-      size_value->GetList().size() != 2) {
+      size_value->GetListDeprecated().size() != 2) {
     return absl::nullopt;
   }
 
   std::vector<int> size;
-  for (const auto& item : size_value->GetList())
+  for (const auto& item : size_value->GetListDeprecated())
     size.push_back(item.GetInt());
 
   return gfx::Size(size[0], size[1]);
@@ -198,15 +182,13 @@ absl::optional<gfx::Size> GetSizeFromDict(const base::DictionaryValue& dict,
 absl::optional<gfx::Rect> GetBoundsRectFromDict(
     const base::DictionaryValue& dict,
     const std::string& key_name) {
-  if (!dict.HasKey(key_name))
-    return absl::nullopt;
-
   const base::Value* rect_value = dict.FindListKey(key_name);
-  if (!rect_value || !rect_value->is_list() || rect_value->GetList().empty())
+  if (!rect_value || !rect_value->is_list() ||
+      rect_value->GetListDeprecated().empty())
     return absl::nullopt;
 
   std::vector<int> rect;
-  for (const auto& item : rect_value->GetList())
+  for (const auto& item : rect_value->GetListDeprecated())
     rect.push_back(item.GetInt());
 
   if (rect.size() != 4)
@@ -219,7 +201,7 @@ absl::optional<gfx::Rect> GetBoundsRectFromDict(
 // 2 } returns WindowStateType::kMinimized.
 absl::optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
     const base::DictionaryValue& dict) {
-  return dict.HasKey(kWindowStateTypeKey)
+  return dict.FindKey(kWindowStateTypeKey)
              ? absl::make_optional(static_cast<chromeos::WindowStateType>(
                    dict.FindIntKey(kWindowStateTypeKey).value()))
              : absl::nullopt;
@@ -227,7 +209,7 @@ absl::optional<chromeos::WindowStateType> GetWindowStateTypeFromDict(
 
 absl::optional<ui::WindowShowState> GetPreMinimizedShowStateTypeFromDict(
     const base::DictionaryValue& dict) {
-  return dict.HasKey(kPreMinimizedShowStateTypeKey)
+  return dict.FindKey(kPreMinimizedShowStateTypeKey)
              ? absl::make_optional(static_cast<ui::WindowShowState>(
                    dict.FindIntKey(kPreMinimizedShowStateTypeKey).value()))
              : absl::nullopt;
@@ -268,7 +250,7 @@ AppRestoreData::AppRestoreData(base::Value&& value) {
   primary_color = GetUIntValueFromDict(*data_dict, kPrimaryColorKey);
   status_bar_color = GetUIntValueFromDict(*data_dict, kStatusBarColorKey);
 
-  if (data_dict->HasKey(kIntentKey)) {
+  if (data_dict->FindKey(kIntentKey)) {
     intent = apps_util::ConvertValueToIntent(
         std::move(*data_dict->FindDictKey(kIntentKey)));
   }

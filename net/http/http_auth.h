@@ -11,12 +11,15 @@
 
 #include "net/base/auth.h"
 #include "net/base/net_export.h"
-#include "net/http/http_util.h"
 
 template <class T> class scoped_refptr;
 
 namespace base {
 class Value;
+}
+
+namespace url {
+class SchemeHostPort;
 }
 
 namespace net {
@@ -165,8 +168,9 @@ class NET_EXPORT_PRIVATE HttpAuth {
   //
   // |disabled_schemes| is the set of schemes that we should not use.
   //
-  // |origin| is used by the NTLM and Negotiation authentication scheme to
-  // construct the service principal name. It is ignored by other schemes.
+  // |scheme_host_port| is used by the NTLM and Negotiation authentication
+  // scheme to construct the service principal name. It is ignored by other
+  // schemes.
   //
   // |ssl_info| is passed through to the scheme specific authentication handlers
   // to use as appropriate.
@@ -176,7 +180,7 @@ class NET_EXPORT_PRIVATE HttpAuth {
       const SSLInfo& ssl_info,
       const NetworkIsolationKey& network_isolation_key,
       Target target,
-      const GURL& origin,
+      const url::SchemeHostPort& scheme_host_port,
       const std::set<Scheme>& disabled_schemes,
       const NetLogWithSource& net_log,
       HostResolver* host_resolver,

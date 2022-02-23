@@ -58,12 +58,26 @@ const char* CoopAccessReportTypeToString(mojom::CoopAccessReportType type) {
   }
 }
 
+// [spec]: https://html.spec.whatwg.org/C/#obtain-coop
 void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
-                         const CrossOriginEmbedderPolicy& coep) {
+                         const CrossOriginEmbedderPolicy& coep,
+                         bool is_coop_soap_plus_coep_enabled) {
   // COOP:
+  //
+  // [spec]: 4.1.2. If coep's value is compatible with cross-origin isolation,
+  //                then set policy's value to "same-origin-plus-COEP".
   if (coop->value == mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
       CompatibleWithCrossOriginIsolated(coep.value)) {
     coop->value = mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  }
+
+  // COOP: SOAPPC case.
+  if (is_coop_soap_plus_coep_enabled &&
+      coop->value ==
+          mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups &&
+      CompatibleWithCrossOriginIsolated(coep.value)) {
+    coop->value =
+        mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep;
   }
 
   // COOP: SOAP by default
@@ -74,13 +88,36 @@ void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
         mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
   }
 
+  // COOP: SOAP by default SOAPPC case.
+  if (is_coop_soap_plus_coep_enabled &&
+      coop->soap_by_default_value ==
+          mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups &&
+      CompatibleWithCrossOriginIsolated(coep.value)) {
+    coop->soap_by_default_value =
+        mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep;
+  }
+
   // COOP-Report-Only:
+  //
+  // [spec]: 6.1.2. If coep's value is compatible with cross-origin isolation or
+  // coep's report-only value is compatible with cross-origin isolation, then
+  // set policy's report-only value to "same-origin-plus-COEP".
   if (coop->report_only_value ==
           mojom::CrossOriginOpenerPolicyValue::kSameOrigin &&
       (CompatibleWithCrossOriginIsolated(coep.value) ||
        CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
     coop->report_only_value =
         mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep;
+  }
+
+  // COOP-Report-Only: SOAPPC case.
+  if (is_coop_soap_plus_coep_enabled &&
+      coop->report_only_value ==
+          mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups &&
+      (CompatibleWithCrossOriginIsolated(coep.value) ||
+       CompatibleWithCrossOriginIsolated(coep.report_only_value))) {
+    coop->report_only_value =
+        mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopupsPlusCoep;
   }
 }
 

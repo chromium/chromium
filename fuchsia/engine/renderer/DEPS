@@ -1,6 +1,10 @@
 include_rules = [
+  # Do NOT add components/cast or other Cast-specific code to this file.
   "+components/cdm/renderer",
   "+components/memory_pressure",
+  "+components/url_rewrite/common",
+  "+components/url_rewrite/mojom",
+  "+components/url_rewrite/renderer",
   "+content/public/renderer",
   "+media",
   "+mojo/public/cpp/bindings",

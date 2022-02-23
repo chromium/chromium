@@ -13,6 +13,7 @@
 #include "base/callback_forward.h"
 #include "base/check_op.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -239,18 +240,6 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
       ContentBrowserClient::URLLoaderFactoryType factory_type,
       const std::string& devtools_worker_token);
 
-  // Creates a set of factory bundles for scripts and subresources. This must be
-  // called after the COEP value for the worker script is known.
-  struct CreateFactoryBundlesResult {
-    CreateFactoryBundlesResult();
-    ~CreateFactoryBundlesResult();
-    CreateFactoryBundlesResult(CreateFactoryBundlesResult&& other);
-
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> script_bundle;
-    std::unique_ptr<blink::PendingURLLoaderFactoryBundle> subresource_bundle;
-  };
-  CreateFactoryBundlesResult CreateFactoryBundles();
-
   // Returns the unique token that has been generated to identify this worker
   // instance, and its corresponding GlobalScope in the renderer process. If the
   // service worker is not currently running, this is absl::nullopt.
@@ -324,7 +313,7 @@ class CONTENT_EXPORT EmbeddedWorkerInstance
   void BindCacheStorageInternal();
 
   base::WeakPtr<ServiceWorkerContextCore> context_;
-  ServiceWorkerVersion* owner_version_;
+  raw_ptr<ServiceWorkerVersion> owner_version_;
 
   // Unique within a ServiceWorkerContextCore.
   const int embedded_worker_id_;

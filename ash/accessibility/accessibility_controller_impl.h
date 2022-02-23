@@ -43,6 +43,7 @@ class AccessibilityConfirmationDialog;
 class AccessibilityEventRewriter;
 class AccessibilityHighlightController;
 class AccessibilityObserver;
+class DictationBubbleController;
 class DictationNudgeController;
 class FloatingAccessibilityController;
 class PointScanController;
@@ -448,6 +449,12 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   void ShowSpeechRecognitionDownloadNotificationForDictation(
       bool succeeded,
       const std::u16string& display_language) override;
+  void UpdateDictationBubble(
+      bool visible,
+      DictationBubbleIconType icon,
+      const absl::optional<std::u16string>& text,
+      const absl::optional<std::vector<DictationBubbleHintType>>& hints)
+      override;
 
   // SessionObserver:
   void OnSigninScreenPrefServiceInitialized(PrefService* prefs) override;
@@ -477,6 +484,10 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
 
   int dictation_soda_download_progress() {
     return dictation_soda_download_progress_;
+  }
+
+  DictationBubbleController* GetDictationBubbleControllerForTest() {
+    return dictation_bubble_controller_.get();
   }
 
  private:
@@ -579,6 +590,9 @@ class ASH_EXPORT AccessibilityControllerImpl : public AccessibilityController,
   // with ShowDictationLanguageUpgradedNudge() and reset at Shutdown() or when
   // the Dictation feature is disabled.
   std::unique_ptr<DictationNudgeController> dictation_nudge_controller_;
+
+  // Used to control the Dictation bubble UI.
+  std::unique_ptr<DictationBubbleController> dictation_bubble_controller_;
 
   // True if ChromeVox should enable its volume slide gesture.
   bool enable_chromevox_volume_slide_gesture_ = false;

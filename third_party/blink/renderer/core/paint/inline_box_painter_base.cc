@@ -55,7 +55,7 @@ void InlineBoxPainterBase::PaintBoxDecorationBackground(
 
   PaintInsetBoxShadow(paint_info, line_style_, adjusted_frame_rect);
 
-  IntRect adjusted_clip_rect;
+  gfx::Rect adjusted_clip_rect;
   BorderPaintingType border_painting_type = GetBorderPaintType(
       adjusted_frame_rect, adjusted_clip_rect, object_has_multiple_boxes);
   switch (border_painting_type) {
@@ -122,7 +122,7 @@ void InlineBoxPainterBase::PaintFillLayer(BoxPainterBase& box_painter,
       multi_line ? PaintRectForImageStrip(paint_rect, style_.Direction())
                  : paint_rect;
   GraphicsContextStateSaver state_saver(paint_info.context);
-  paint_info.context.Clip(PixelSnappedIntRect(paint_rect));
+  paint_info.context.Clip(ToPixelSnappedRect(paint_rect));
   box_painter.PaintFillLayer(paint_info, c, fill_layer, rect,
                              kBackgroundBleedNone, geometry, multi_line,
                              paint_rect.size);
@@ -158,7 +158,7 @@ void InlineBoxPainterBase::PaintMask(BoxPainterBase& box_painter,
     // obviously not right, but it isn't even clear how this should work at all.
     mask_image_paint_rect =
         PaintRectForImageStrip(paint_rect, TextDirection::kLtr);
-    FloatRect clip_rect(ClipRectForNinePieceImageStrip(
+    gfx::RectF clip_rect(ClipRectForNinePieceImageStrip(
         style_, sides_to_include, mask_nine_piece_image, paint_rect));
     // TODO(chrishtr): this should be pixel-snapped.
     paint_info.context.Clip(clip_rect);

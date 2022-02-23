@@ -81,6 +81,11 @@ class COMPONENT_EXPORT(X11) Xinerama {
   Connection* connection() const { return connection_; }
 
   struct ScreenInfo {
+    bool operator==(const ScreenInfo& other) const {
+      return x_org == other.x_org && y_org == other.y_org &&
+             width == other.width && height == other.height;
+    }
+
     int16_t x_org{};
     int16_t y_org{};
     uint16_t width{};

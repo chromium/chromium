@@ -15,6 +15,7 @@
 #include "chrome/browser/ui/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ui/app_list/search/search_provider.h"
 #include "components/services/app_service/public/cpp/app_registry_cache.h"
+#include "components/services/app_service/public/cpp/icon_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -76,9 +77,11 @@ class HelpAppProvider : public SearchProvider,
 
   // SearchProvider:
   void Start(const std::u16string& query) override;
+  void StartZeroState() override;
   void ViewClosing() override;
   void AppListShown() override;
-  ash::AppListSearchResultType ResultType() override;
+  ash::AppListSearchResultType ResultType() const override;
+  bool ShouldBlockZeroState() const override;
 
   // apps::AppRegistryCache::Observer:
   void OnAppUpdate(const apps::AppUpdate& update) override;
@@ -93,7 +96,7 @@ class HelpAppProvider : public SearchProvider,
       const std::u16string& query,
       const base::TimeTicks& start_time,
       std::vector<ash::help_app::mojom::SearchResultPtr> results);
-  void OnLoadIcon(apps::mojom::IconValuePtr icon_value);
+  void OnLoadIcon(apps::IconValuePtr icon_value);
   void LoadIcon();
 
   Profile* const profile_;

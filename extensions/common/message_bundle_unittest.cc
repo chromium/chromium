@@ -42,7 +42,7 @@ class MessageBundleTest : public testing::Test {
                          const std::string& content,
                          base::DictionaryValue* dict) {
     auto content_tree = std::make_unique<base::DictionaryValue>();
-    content_tree->SetString(MessageBundle::kContentKey, content);
+    content_tree->SetStringKey(MessageBundle::kContentKey, content);
     dict->Set(name, std::move(content_tree));
   }
 
@@ -61,7 +61,7 @@ class MessageBundleTest : public testing::Test {
     auto message_tree = std::make_unique<base::DictionaryValue>();
     if (create_placeholder_subtree)
       CreatePlaceholdersTree(message_tree.get());
-    message_tree->SetString(MessageBundle::kMessageKey, message);
+    message_tree->SetStringKey(MessageBundle::kMessageKey, message);
     dict->Set(name, std::move(message_tree));
   }
 
@@ -82,7 +82,7 @@ class MessageBundleTest : public testing::Test {
         CreateMessageTree("n 5", "nevermind", false, dict.get());
         break;
       case NAME_NOT_A_TREE:
-        dict->SetString("n4", "whatever");
+        dict->SetStringKey("n4", "whatever");
         break;
       case EMPTY_NAME_TREE:
         dict->Set("n4", std::make_unique<base::DictionaryValue>());
@@ -91,7 +91,7 @@ class MessageBundleTest : public testing::Test {
         RemoveDictionaryPath(dict.get(), {"n1", "message"});
         break;
       case PLACEHOLDER_NOT_A_TREE:
-        dict->SetString("n1.placeholders", "whatever");
+        dict->SetStringPath("n1.placeholders", "whatever");
         break;
       case EMPTY_PLACEHOLDER_TREE:
         dict->Set("n1.placeholders", std::make_unique<base::DictionaryValue>());
@@ -194,7 +194,7 @@ TEST_F(MessageBundleTest, InitAppDictConsultedFirst) {
 
   base::DictionaryValue* app_dict = catalogs_[0].get();
   // Flip placeholders in message of n1 tree.
-  app_dict->SetString("n1.message", "message1 $b$ $a$");
+  app_dict->SetStringPath("n1.message", "message1 $b$ $a$");
   // Remove one message from app dict.
   app_dict->RemoveKey("n2");
   // Replace n3 with N3.
@@ -393,39 +393,6 @@ TEST(MessageBundle, ReplaceMessagesInText) {
                                               &error));
     EXPECT_EQ(test_cases[i].result, text);
   }
-}
-
-///////////////////////////////////////////////////////////////////////////////
-//
-// Renderer helper functions test.
-//
-///////////////////////////////////////////////////////////////////////////////
-
-TEST(GetExtensionToL10nMessagesMapTest, ReturnsTheSameObject) {
-  ExtensionToL10nMessagesMap* map1 = GetExtensionToL10nMessagesMap();
-  ASSERT_TRUE(NULL != map1);
-
-  ExtensionToL10nMessagesMap* map2 = GetExtensionToL10nMessagesMap();
-  ASSERT_EQ(map1, map2);
-}
-
-TEST(GetExtensionToL10nMessagesMapTest, ReturnsNullForUnknownExtensionId) {
-  const std::string extension_id("some_unique_12334212314234_id");
-  L10nMessagesMap* map = GetL10nMessagesMap(extension_id);
-  EXPECT_TRUE(NULL == map);
-}
-
-TEST(GetExtensionToL10nMessagesMapTest, ReturnsMapForKnownExtensionId) {
-  const std::string extension_id("some_unique_121212121212121_id");
-  // Store a map for given id.
-  L10nMessagesMap messages;
-  messages.insert(std::make_pair("message_name", "message_value"));
-  (*GetExtensionToL10nMessagesMap())[extension_id] = messages;
-
-  L10nMessagesMap* map = GetL10nMessagesMap(extension_id);
-  ASSERT_TRUE(NULL != map);
-  EXPECT_EQ(1U, map->size());
-  EXPECT_EQ("message_value", (*map)["message_name"]);
 }
 
 }  // namespace extensions

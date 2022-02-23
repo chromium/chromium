@@ -6,7 +6,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_BINDINGS_CORE_V8_V8_ITERATOR_RESULT_VALUE_H_
 
 #include "third_party/blink/renderer/bindings/core/v8/script_value.h"
-#include "third_party/blink/renderer/bindings/core/v8/to_v8_for_core.h"
+#include "third_party/blink/renderer/bindings/core/v8/to_v8_traits.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "v8/include/v8.h"
 

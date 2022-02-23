@@ -50,7 +50,7 @@ import org.chromium.payments.mojom.PaymentMethodData;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
@@ -62,7 +62,7 @@ import java.util.Map;
 /** Tests for the native Android payment app finder. */
 @RunWith(BaseJUnit4ClassRunner.class)
 @Batch(AndroidPaymentAppFinderUnitTest.PAYMENTS_BROWSER_UNIT_TESTS)
-public class AndroidPaymentAppFinderUnitTest extends DummyUiActivityTestCase {
+public class AndroidPaymentAppFinderUnitTest extends BlankUiTestActivityTestCase {
     // Collection of payments unit tests that require the browser process to be initialized.
     static final String PAYMENTS_BROWSER_UNIT_TESTS = "PaymentsBrowserUnitTests";
     private static final IntentArgumentMatcher sPayIntentArgumentMatcher =

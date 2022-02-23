@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/page.h"
 #include "content/public/browser/per_web_ui_browser_interface_broker.h"
@@ -90,7 +91,7 @@ class CONTENT_EXPORT WebUIController {
   PerWebUIBrowserInterfaceBroker* broker_for_testing() { return broker_.get(); }
 
  private:
-  WebUI* web_ui_;
+  raw_ptr<WebUI> web_ui_;
 
   // The interface broker that handles Mojo.bindInterface requests from the
   // renderer.
@@ -100,10 +101,10 @@ class CONTENT_EXPORT WebUIController {
 // This macro declares a static variable inside the class that inherits from
 // WebUIController. The address of the static variable is used as the unique
 // Type for the subclass.
-#define WEB_UI_CONTROLLER_TYPE_DECL()            \
-  static constexpr int kWebUIControllerType = 0; \
-  Type GetType() final;                          \
-  friend class content::WebUIController;         \
+#define WEB_UI_CONTROLLER_TYPE_DECL()        \
+  static const int kWebUIControllerType = 0; \
+  Type GetType() final;                      \
+  friend class content::WebUIController;     \
   friend class content::WebUIBrowserInterfaceBrokerRegistry
 
 // This macro instantiates the static variable declared by the previous macro.

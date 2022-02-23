@@ -7,7 +7,9 @@
 #include <stdint.h>
 
 #include <memory>
+#include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "components/viz/test/begin_frame_args_test.h"
 #include "components/viz/test/begin_frame_source_test.h"
@@ -25,6 +27,11 @@ namespace {
 base::TimeTicks TicksFromMicroseconds(int64_t micros) {
   return base::TimeTicks() + base::Microseconds(micros);
 }
+
+class MockBeginFrameSourceObserver : public BeginFrameSourceObserver {
+ public:
+  MOCK_METHOD1(BeginFrameRequestedChanged, void(bool));
+};
 
 // BeginFrameSource testing ----------------------------------------------------
 TEST(BeginFrameSourceTest, SourceIdsAreUnique) {
@@ -81,7 +88,8 @@ class BackToBackBeginFrameSourceTest : public ::testing::Test {
   scoped_refptr<TestTaskRunner> task_runner_;
   std::unique_ptr<BackToBackBeginFrameSource> source_;
   std::unique_ptr<MockBeginFrameObserver> obs_;
-  FakeDelayBasedTimeSource* delay_based_time_source_;  // Owned by |source_|.
+  raw_ptr<FakeDelayBasedTimeSource>
+      delay_based_time_source_;  // Owned by |source_|.
 };
 
 const int64_t BackToBackBeginFrameSourceTest::kDeadline =
@@ -350,6 +358,31 @@ TEST_F(BackToBackBeginFrameSourceTest, MultipleObserversAtOnce) {
   source_->RemoveObserver(&obs1);
   source_->DidFinishFrame(&obs2);
   source_->RemoveObserver(&obs2);
+}
+
+TEST_F(BackToBackBeginFrameSourceTest, BeginFrameRequestedChanged) {
+  std::unique_ptr<MockBeginFrameSourceObserver> source_obs_ =
+      std::make_unique<::testing::NiceMock<MockBeginFrameSourceObserver>>();
+  source_->AddStateObserver(source_obs_.get());
+
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
+  EXPECT_CALL((*source_obs_), BeginFrameRequestedChanged(true)).Times(1);
+  source_->AddObserver(obs_.get());
+  EXPECT_BEGIN_FRAME_USED(*obs_, source_->source_id(), 1, 1000,
+                          1000 + kDeadline, kInterval);
+  task_runner_->RunUntilIdle();
+
+  EXPECT_CALL((*source_obs_), BeginFrameRequestedChanged(false)).Times(1);
+  source_->RemoveObserver(obs_.get());
+  source_->DidFinishFrame(obs_.get());
+
+  // Verify no BeginFrame is sent to |obs_|. There is a pending task in the
+  // task_runner_ as a BeginFrame was posted, but it gets aborted since |obs_|
+  // is removed.
+  task_runner_->RunUntilIdle();
+  EXPECT_FALSE(task_runner_->HasPendingTask());
+
+  source_->RemoveStateObserver(source_obs_.get());
 }
 
 // DelayBasedBeginFrameSource testing
@@ -668,6 +701,25 @@ TEST_F(DelayBasedBeginFrameSourceTest, ConsecutiveArgsDelayedByMultipleVsyncs) {
   source_->AddObserver(&obs);
 }
 
+TEST_F(DelayBasedBeginFrameSourceTest, BeginFrameRequestedChanged) {
+  std::unique_ptr<MockBeginFrameSourceObserver> source_obs_ =
+      std::make_unique<::testing::NiceMock<MockBeginFrameSourceObserver>>();
+  source_->AddStateObserver(source_obs_.get());
+
+  EXPECT_CALL((*source_obs_), BeginFrameRequestedChanged(true)).Times(1);
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
+  EXPECT_BEGIN_FRAME_USED_MISSED(*obs_, source_->source_id(), 1, 0, 10000,
+                                 10000);
+  source_->AddObserver(obs_.get());
+
+  EXPECT_CALL((*source_obs_), BeginFrameRequestedChanged(false)).Times(1);
+  source_->RemoveObserver(obs_.get());
+  // No new frames....
+  task_runner_->FastForwardTo(TicksFromMicroseconds(60000));
+
+  source_->RemoveStateObserver(source_obs_.get());
+}
+
 // ExternalBeginFrameSource testing
 // --------------------------------------------
 class MockExternalBeginFrameSourceClient
@@ -818,6 +870,23 @@ TEST_F(ExternalBeginFrameSourceTest, RootsNotifiedLast) {
 
   source_->RemoveObserver(&obs1);
   source_->RemoveObserver(&obs2);
+}
+
+TEST_F(ExternalBeginFrameSourceTest, BeginFrameRequestedChanged) {
+  std::unique_ptr<MockBeginFrameSourceObserver> source_obs_ =
+      std::make_unique<::testing::NiceMock<MockBeginFrameSourceObserver>>();
+  source_->AddStateObserver(source_obs_.get());
+
+  EXPECT_BEGIN_FRAME_SOURCE_PAUSED(*obs_, false);
+  EXPECT_CALL((*client_), OnNeedsBeginFrames(true)).Times(1);
+  EXPECT_CALL((*source_obs_), BeginFrameRequestedChanged(true)).Times(1);
+  source_->AddObserver(obs_.get());
+
+  EXPECT_CALL((*client_), OnNeedsBeginFrames(false)).Times(1);
+  EXPECT_CALL((*source_obs_), BeginFrameRequestedChanged(false)).Times(1);
+  source_->RemoveObserver(obs_.get());
+
+  source_->RemoveStateObserver(source_obs_.get());
 }
 
 }  // namespace

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL fieldset multicol assert_equals: expected "18px" but got "90px"
-Harness: the test ran to completion.
-

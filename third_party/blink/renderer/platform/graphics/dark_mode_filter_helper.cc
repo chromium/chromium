@@ -32,11 +32,10 @@ bool ShouldUseRasterSidePath(Image* image) {
   return image->IsBitmapImage();
 }
 
-void ApplyToImageOnMainThread(DarkModeFilter& filter,
-                              Image* image,
-                              cc::PaintFlags* flags,
-                              const SkIRect& rounded_src,
-                              const SkIRect& rounded_dst) {
+sk_sp<SkColorFilter> GetDarkModeFilterForImageOnMainThread(
+    DarkModeFilter& filter,
+    Image* image,
+    const SkIRect& rounded_src) {
   SCOPED_BLINK_UMA_HISTOGRAM_TIMER("Blink.DarkMode.ApplyToImageOnMainThread");
 
   sk_sp<SkColorFilter> color_filter;
@@ -63,9 +62,7 @@ void ApplyToImageOnMainThread(DarkModeFilter& filter,
     if (!image->IsBitmapImage() || image->CurrentFrameIsComplete())
       cache->Add(rounded_src, color_filter);
   }
-
-  if (color_filter)
-    flags->setColorFilter(color_filter);
+  return color_filter;
 }
 
 }  // namespace
@@ -102,7 +99,10 @@ void DarkModeFilterHelper::ApplyToImageIfNeeded(DarkModeFilter& filter,
     // Blink-side dark mode path - Apply dark mode to images in main thread
     // only. If the result is not cached, calling this path is expensive and
     // will block main thread.
-    ApplyToImageOnMainThread(filter, image, flags, rounded_src, rounded_dst);
+    sk_sp<SkColorFilter> color_filter =
+        GetDarkModeFilterForImageOnMainThread(filter, image, rounded_src);
+    if (color_filter)
+      flags->setColorFilter(std::move(color_filter));
   }
 }
 

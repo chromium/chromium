@@ -15,13 +15,12 @@
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/launch_util.h"
-#include "chrome/browser/lacros/lacros_extension_apps_utility.h"
+#include "chrome/browser/lacros/lacros_extensions_util.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/extensions/application_launch.h"
-#include "components/services/app_service/public/cpp/icon_types.h"
 #include "extensions/browser/app_window/app_window.h"
 #include "extensions/browser/app_window/app_window_registry.h"
 #include "extensions/browser/app_window/native_app_window.h"
@@ -52,7 +51,7 @@ void LacrosExtensionAppsController::Uninstall(
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
   bool success =
-      lacros_extension_apps_utility::DemuxId(app_id, &profile, &extension);
+      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
   if (!success)
     return;
 
@@ -106,14 +105,14 @@ void LacrosExtensionAppsController::GetMenuModel(
 }
 
 void LacrosExtensionAppsController::LoadIcon(const std::string& app_id,
-                                             apps::mojom::IconKeyPtr icon_key,
+                                             apps::IconKeyPtr icon_key,
                                              apps::IconType icon_type,
                                              int32_t size_hint_in_dip,
                                              LoadIconCallback callback) {
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
   bool success =
-      lacros_extension_apps_utility::DemuxId(app_id, &profile, &extension);
+      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
   if (success && icon_key) {
     LoadIconFromExtension(
         icon_type, size_hint_in_dip, profile, extension->id(),
@@ -131,7 +130,7 @@ void LacrosExtensionAppsController::OpenNativeSettings(
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
   bool success =
-      lacros_extension_apps_utility::DemuxId(app_id, &profile, &extension);
+      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
   if (!success)
     return;
 
@@ -147,7 +146,7 @@ void LacrosExtensionAppsController::OpenNativeSettings(
 
 void LacrosExtensionAppsController::SetWindowMode(
     const std::string& app_id,
-    apps::mojom::WindowMode window_mode) {
+    apps::WindowMode window_mode) {
   // This method doesn't make sense for packaged v2 apps, which always run in a
   // standalone window.
   NOTIMPLEMENTED();
@@ -158,8 +157,8 @@ void LacrosExtensionAppsController::Launch(
     LaunchCallback callback) {
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
-  bool success = lacros_extension_apps_utility::DemuxId(launch_params->app_id,
-                                                        &profile, &extension);
+  bool success = lacros_extensions_util::DemuxPlatformAppId(
+      launch_params->app_id, &profile, &extension);
   crosapi::mojom::LaunchResultPtr result = crosapi::mojom::LaunchResult::New();
   if (!success) {
     std::move(callback).Run(std::move(result));
@@ -182,22 +181,9 @@ void LacrosExtensionAppsController::Launch(
     return;
   }
 
-  apps::mojom::IntentPtr intent = apps::mojom::Intent::New();
-  if (launch_params->intent) {
-    intent = apps_util::ConvertCrosapiToAppServiceIntent(launch_params->intent,
-                                                         profile);
-  }
+  auto params = apps::ConvertCrosapiToLaunchParams(launch_params, profile);
+  params.app_id = extension->id();
 
-  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
-      extensions::ExtensionPrefs::Get(profile), extension);
-  auto params = apps::CreateAppLaunchParamsForIntent(
-      extension->id(), ui::EF_NONE, launch_params->launch_source,
-      display::kInvalidDisplayId, launch_container, std::move(intent), profile);
-  if (launch_params->intent && launch_params->intent->files.has_value()) {
-    for (const auto& file : launch_params->intent->files.value()) {
-      params.launch_files.push_back(file->file_path);
-    }
-  }
   OpenApplication(profile, std::move(params));
 
   // TODO(https://crbug.com/1225848): Store the resulting instance token, which
@@ -218,7 +204,7 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
   Profile* profile = nullptr;
   const extensions::Extension* extension = nullptr;
   bool success =
-      lacros_extension_apps_utility::DemuxId(app_id, &profile, &extension);
+      lacros_extensions_util::DemuxPlatformAppId(app_id, &profile, &extension);
   if (!success)
     return;
 
@@ -232,7 +218,7 @@ void LacrosExtensionAppsController::StopApp(const std::string& app_id) {
 
 void LacrosExtensionAppsController::SetPermission(
     const std::string& app_id,
-    apps::mojom::PermissionPtr permission) {
+    apps::PermissionPtr permission) {
   NOTIMPLEMENTED();
 }
 

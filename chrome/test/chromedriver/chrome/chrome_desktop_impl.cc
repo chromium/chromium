@@ -25,7 +25,7 @@
 #include "chrome/test/chromedriver/constants/version.h"
 #include "chrome/test/chromedriver/net/timeout.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <errno.h>
 #include <signal.h>
 #include <sys/wait.h>
@@ -38,7 +38,7 @@ namespace {
 const int kDefaultConnectionType = 6;
 
 bool KillProcess(const base::Process& process, bool kill_gracefully) {
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   if (!kill_gracefully) {
     kill(process.Pid(), SIGKILL);
     base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(30);

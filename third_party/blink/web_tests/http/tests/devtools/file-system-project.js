@@ -75,8 +75,8 @@
   TestRunner.runTestSuite([
     function testFileSystems(next) {
       TestRunner.addResult('Adding first file system.');
-      var fs1 = new BindingsTestRunner.TestFileSystem('file:///var/www');
-      var fs2 = new BindingsTestRunner.TestFileSystem('file:///foo/bar');
+      var fs1 = new BindingsTestRunner.TestFileSystem('/var/www');
+      var fs2 = new BindingsTestRunner.TestFileSystem('/foo/bar');
       TestRunner.addResult('Adding second file system.');
 
       TestRunner.addResult('Adding files to file systems.');
@@ -125,7 +125,7 @@
     },
 
     function testDefaultExcludes(next) {
-      createFileSystem('file:///var/www', dumpExcludes);
+      createFileSystem('/var/www', dumpExcludes);
 
       function dumpExcludes(fs) {
         TestRunner.addResult('');
@@ -138,7 +138,7 @@
 
     function testExcludesSettings(next) {
       Common.settings.createLocalSetting('workspaceExcludedFolders', {}).set({'file:///var/www2': ['/html/']});
-      createFileSystem('file:///var/www2', dumpExcludes);
+      createFileSystem('/var/www2', dumpExcludes);
 
       function dumpExcludes(fs) {
         TestRunner.addResult('');
@@ -150,7 +150,7 @@
     },
 
     function testExcludesViaDelegate(next) {
-      createFileSystem('file:///var/www3', dumpExcludes);
+      createFileSystem('/var/www3', dumpExcludes);
 
       function dumpExcludes(fs) {
         fileSystemUISourceCodes()[0].project().excludeFolder('file:///var/www3/html2/');
@@ -163,7 +163,7 @@
     },
 
     function testFileAddedExternally(next) {
-      var fs = new BindingsTestRunner.TestFileSystem('file:///var/www4');
+      var fs = new BindingsTestRunner.TestFileSystem('/var/www4');
       var dir = fs.root.mkdir('html');
       dir.addFile('foo.js', '');
       fs.reportCreated(dumpFileSystem);
@@ -185,7 +185,7 @@
     },
 
     function testGitFolders(next) {
-      var fs = new BindingsTestRunner.TestFileSystem('file:///var/www3');
+      var fs = new BindingsTestRunner.TestFileSystem('/var/www3');
       var project1 = fs.root.mkdir('project_1');
       project1.mkdir('.git').addFile('foo.git');
       var project2 = fs.root.mkdir('project_2');
@@ -208,7 +208,7 @@
     },
 
     function testUISourceCodeMetadata(next) {
-      var fs = new BindingsTestRunner.TestFileSystem('file:///var/www3');
+      var fs = new BindingsTestRunner.TestFileSystem('/var/www3');
       var file = fs.root.mkdir('test').addFile('hello.js', '123456');
       fs.reportCreated(function() {});
       SourcesTestRunner.waitForScriptSource('hello.js', onUISourceCode);
@@ -239,7 +239,7 @@
     },
 
     function testFileRename(next) {
-      var fs = new BindingsTestRunner.TestFileSystem('file:///var/www3');
+      var fs = new BindingsTestRunner.TestFileSystem('/var/www3');
       var file = fs.root.mkdir('test').addFile('hello.js', '123456');
       fs.reportCreated(function() {});
       SourcesTestRunner.waitForScriptSource('hello.js', onUISourceCode);

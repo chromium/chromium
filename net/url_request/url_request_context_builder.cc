@@ -11,13 +11,13 @@
 
 #include "base/check_op.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "net/base/cache_type.h"
 #include "net/base/net_errors.h"
 #include "net/base/network_delegate_impl.h"
@@ -28,6 +28,7 @@
 #include "net/cert/multi_log_ct_verifier.h"
 #include "net/cert/sct_auditing_delegate.h"
 #include "net/cookies/cookie_monster.h"
+#include "net/dns/context_host_resolver.h"
 #include "net/dns/host_resolver.h"
 #include "net/dns/host_resolver_manager.h"
 #include "net/http/http_auth_handler_factory.h"
@@ -44,6 +45,7 @@
 #include "net/proxy_resolution/configured_proxy_resolution_service.h"
 #include "net/quic/quic_context.h"
 #include "net/quic/quic_stream_factory.h"
+#include "net/socket/network_binding_client_socket_factory.h"
 #include "net/ssl/ssl_config_service_defaults.h"
 #include "net/url_request/static_http_user_agent_settings.h"
 #include "net/url_request/url_request_context.h"
@@ -58,6 +60,10 @@
 #include "net/reporting/reporting_policy.h"
 #include "net/reporting/reporting_service.h"
 #endif  // BUILDFLAG(ENABLE_REPORTING)
+
+#if BUILDFLAG(IS_ANDROID)
+#include "base/android/build_info.h"
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace net {
 
@@ -128,7 +134,8 @@ URLRequestContextBuilder::~URLRequestContextBuilder() = default;
 
 void URLRequestContextBuilder::SetHttpNetworkSessionComponents(
     const URLRequestContext* request_context,
-    HttpNetworkSessionContext* session_context) {
+    HttpNetworkSessionContext* session_context,
+    bool suppress_setting_socket_performance_watcher_factory) {
   session_context->host_resolver = request_context->host_resolver();
   session_context->cert_verifier = request_context->cert_verifier();
   session_context->transport_security_state =
@@ -150,7 +157,8 @@ void URLRequestContextBuilder::SetHttpNetworkSessionComponents(
   session_context->net_log = request_context->net_log();
   session_context->network_quality_estimator =
       request_context->network_quality_estimator();
-  if (request_context->network_quality_estimator()) {
+  if (request_context->network_quality_estimator() &&
+      !suppress_setting_socket_performance_watcher_factory) {
     session_context->socket_performance_watcher_factory =
         request_context->network_quality_estimator()
             ->GetSocketPerformanceWatcherFactory();
@@ -291,6 +299,23 @@ void URLRequestContextBuilder::SetCreateHttpTransactionFactoryCallback(
       std::move(create_http_network_transaction_factory);
 }
 
+void URLRequestContextBuilder::BindToNetwork(
+    NetworkChangeNotifier::NetworkHandle network) {
+#if BUILDFLAG(IS_ANDROID)
+  DCHECK(NetworkChangeNotifier::AreNetworkHandlesSupported());
+  // DNS lookups for this context will need to target `network`. NDK to do that
+  // has been introduced in Android Marshmallow
+  // (https://developer.android.com/ndk/reference/group/networking#android_getaddrinfofornetwork)
+  // This is also checked later on in the codepath (at lookup time), but
+  // failing here should be preferred to return a more intuitive crash path.
+  CHECK(base::android::BuildInfo::GetInstance()->sdk_int() >=
+        base::android::SDK_VERSION_MARSHMALLOW);
+  bound_network_ = network;
+#else
+  NOTIMPLEMENTED();
+#endif  // BUILDFLAG(IS_ANDROID)
+}
+
 std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   std::unique_ptr<ContainerURLRequestContext> context(
       new ContainerURLRequestContext());
@@ -317,6 +342,48 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
     context->set_net_log(net_log_);
   } else {
     context->set_net_log(NetLog::Get());
+  }
+
+  if (bound_network_ != NetworkChangeNotifier::kInvalidNetworkHandle) {
+    DCHECK(!client_socket_factory_);
+    DCHECK(!host_resolver_);
+
+    context->set_bound_network(bound_network_);
+
+    // All sockets created for this context will need to be bound to
+    // `bound_network_`.
+    auto client_socket_factory =
+        std::make_unique<NetworkBindingClientSocketFactory>(bound_network_);
+    set_client_socket_factory(client_socket_factory.get());
+    storage->set_client_socket_factory(std::move(client_socket_factory));
+
+    // Currently, only the system host resolver can perform lookups for a
+    // specific network.
+    // TODO(stefanoduo): Remove this once the built-in resolver can also do
+    // this.
+    net::HostResolver::ManagerOptions host_resolver_manager_options;
+    host_resolver_manager_options.insecure_dns_client_enabled = false;
+    host_resolver_manager_options.additional_types_via_insecure_dns_enabled =
+        false;
+    host_resolver_ = HostResolver::CreateStandaloneContextResolver(
+        context->net_log(), std::move(host_resolver_manager_options));
+
+    if (!quic_context_)
+      set_quic_context(std::make_unique<QuicContext>());
+    auto* quic_params = quic_context_->params();
+    // QUIC sessions for this context should not be closed (or go away) after a
+    // network change.
+    quic_params->close_sessions_on_ip_change = false;
+    quic_params->goaway_sessions_on_ip_change = false;
+
+    // QUIC connection migration should not be enabled when binding a context
+    // to a network.
+    quic_params->migrate_sessions_on_network_change_v2 = false;
+    quic_params->go_away_on_path_degrading = false;
+
+    // Objects used by network sessions for this context shouldn't listen to
+    // network changes.
+    http_network_session_params_.ignore_ip_address_changes = true;
   }
 
   if (host_resolver_) {
@@ -365,8 +432,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   if (cookie_store_set_by_client_) {
     storage->set_cookie_store(std::move(cookie_store_));
   } else {
-    std::unique_ptr<CookieStore> cookie_store(
-        new CookieMonster(nullptr /* store */, context->net_log()));
+    std::unique_ptr<CookieStore> cookie_store(new CookieMonster(
+        nullptr /* store */, context->net_log(), first_party_sets_enabled_));
     storage->set_cookie_store(std::move(cookie_store));
   }
 
@@ -425,7 +492,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   if (!proxy_resolution_service_) {
-#if !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_ANDROID)
     // TODO(willchan): Switch to using this code when
     // ConfiguredProxyResolutionService::CreateSystemProxyConfigService()'s
     // signature doesn't suck.
@@ -434,7 +501,8 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
           ConfiguredProxyResolutionService::CreateSystemProxyConfigService(
               base::ThreadTaskRunnerHandle::Get().get());
     }
-#endif  // !defined(OS_LINUX) && !defined(OS_CHROMEOS) && !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS) &&
+        // !BUILDFLAG(IS_ANDROID)
     proxy_resolution_service_ = CreateProxyResolutionService(
         std::move(proxy_config_service_), context.get(),
         context->host_resolver(), context->network_delegate(),
@@ -455,9 +523,12 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   if (network_error_logging_enabled_) {
+    if (!network_error_logging_service_) {
+      network_error_logging_service_ = NetworkErrorLoggingService::Create(
+          persistent_reporting_and_nel_store_.get());
+    }
     storage->set_network_error_logging_service(
-        NetworkErrorLoggingService::Create(
-            persistent_reporting_and_nel_store_.get()));
+        std::move(network_error_logging_service_));
   }
 
   if (persistent_reporting_and_nel_store_) {
@@ -481,11 +552,12 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
   }
 
   HttpNetworkSessionContext network_session_context;
-  SetHttpNetworkSessionComponents(context.get(), &network_session_context);
+  SetHttpNetworkSessionComponents(
+      context.get(), &network_session_context,
+      suppress_setting_socket_performance_watcher_factory_for_testing_);
   // Unlike the other fields of HttpNetworkSession::Context,
   // |client_socket_factory| is not mirrored in URLRequestContext.
-  network_session_context.client_socket_factory =
-      client_socket_factory_for_testing_;
+  network_session_context.client_socket_factory = client_socket_factory_;
 
   storage->set_http_network_session(std::make_unique<HttpNetworkSession>(
       http_network_session_params_, network_session_context));
@@ -527,7 +599,7 @@ std::unique_ptr<URLRequestContext> URLRequestContextBuilder::Build() {
       http_cache_backend =
           HttpCache::DefaultBackend::InMemory(http_cache_params_.max_size);
     }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     http_cache_backend->SetAppStatusListener(
         http_cache_params_.app_status_listener);
 #endif

@@ -18,10 +18,13 @@ namespace bluetooth_config {
 
 class AdapterStateController;
 class BluetoothDeviceStatusNotifier;
+class BluetoothPowerController;
 class DeviceCache;
 class DeviceNameManager;
 class DeviceOperationHandler;
+class DiscoveredDevicesProvider;
 class DiscoverySessionManager;
+class FastPairDelegate;
 
 // Responsible for initializing the classes needed by the CrosBluetoothConfig
 // API.
@@ -34,21 +37,30 @@ class Initializer {
   virtual std::unique_ptr<AdapterStateController> CreateAdapterStateController(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<BluetoothDeviceStatusNotifier>
-  CreateBluetoothDeviceStatusNotifier(DeviceCache* device_cache) = 0;
+  CreateBluetoothDeviceStatusNotifier(
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceCache* device_cache) = 0;
+  virtual std::unique_ptr<BluetoothPowerController>
+  CreateBluetoothPowerController(
+      AdapterStateController* adapter_state_controller) = 0;
   virtual std::unique_ptr<DeviceNameManager> CreateDeviceNameManager(
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
   virtual std::unique_ptr<DeviceCache> CreateDeviceCache(
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      DeviceNameManager* device_name_manager) = 0;
+      DeviceNameManager* device_name_manager,
+      FastPairDelegate* fast_pair_delegate) = 0;
+  virtual std::unique_ptr<DiscoveredDevicesProvider>
+  CreateDiscoveredDevicesProvider(DeviceCache* device_cache) = 0;
   virtual std::unique_ptr<DiscoverySessionManager>
   CreateDiscoverySessionManager(
       AdapterStateController* adapter_state_controller,
       scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
-      DeviceCache* device_cache) = 0;
+      DiscoveredDevicesProvider* discovered_devices_provider) = 0;
   virtual std::unique_ptr<DeviceOperationHandler> CreateDeviceOperationHandler(
       AdapterStateController* adapter_state_controller,
-      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter) = 0;
+      scoped_refptr<device::BluetoothAdapter> bluetooth_adapter,
+      DeviceNameManager* device_name_manager) = 0;
 
  protected:
   Initializer() = default;

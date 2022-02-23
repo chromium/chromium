@@ -5,7 +5,6 @@
 #ifndef REMOTING_HOST_TEST_ECHO_EXTENSION_H_
 #define REMOTING_HOST_TEST_ECHO_EXTENSION_H_
 
-#include "base/macros.h"
 #include "remoting/host/host_extension.h"
 
 namespace remoting {

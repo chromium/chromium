@@ -11,7 +11,6 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/process/process.h"
 #include "base/scoped_native_library.h"
 #include "build/build_config.h"
@@ -23,7 +22,7 @@
 #include "ppapi/proxy/plugin_globals.h"
 #include "ppapi/proxy/plugin_proxy_delegate.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_handle.h"
 #endif
 

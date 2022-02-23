@@ -204,7 +204,7 @@ bool AudioManagerAlsa::HasAnyAlsaAudioDevice(
   int card = -1;
 
   // Loop through the sound cards.
-  // Don't use snd_device_name_hint(-1,..) since there is a access violation
+  // Don't use snd_device_name_hint(-1,..) since there is an access violation
   // inside this ALSA API with libasound.so.2.0.0.
   while (!wrapper_->CardNext(&card) && (card >= 0) && !has_device) {
     int error = wrapper_->DeviceNameHint(card, kPcmInterfaceName, &hints);

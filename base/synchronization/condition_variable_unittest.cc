@@ -193,7 +193,7 @@ TEST_F(ConditionVariableTest, TimeoutTest) {
   lock.Release();
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 const int kDiscontinuitySeconds = 2;
 
 void BackInTime(Lock* lock) {
@@ -714,7 +714,7 @@ void WorkQueue::ThreadMain() {
   }
 
   Lock private_lock;  // Used to waste time on "our work".
-  while (1) {  // This is the main consumer loop.
+  while (true) {      // This is the main consumer loop.
     TimeDelta work_time;
     bool could_use_help;
     {

@@ -99,7 +99,7 @@ void ChromeBookmarkClient::GetTypedCountForUrls(
 
 bool ChromeBookmarkClient::IsPermanentNodeVisibleWhenEmpty(
     bookmarks::BookmarkNode::Type type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   const bool is_mobile = true;
 #else
   const bool is_mobile = false;

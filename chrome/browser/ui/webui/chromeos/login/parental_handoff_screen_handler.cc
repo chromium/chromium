@@ -47,7 +47,7 @@ void ParentalHandoffScreenHandler::Initialize() {}
 
 void ParentalHandoffScreenHandler::Show(const std::u16string& username) {
   base::DictionaryValue data;
-  data.SetString(kUsername, username);
+  data.SetStringKey(kUsername, username);
 
   ShowScreenWithData(kScreenId, &data);
 }

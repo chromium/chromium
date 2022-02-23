@@ -59,40 +59,32 @@ MATCHER_P(EqualsProto,
   return expected_serialized == actual_serialized;
 }
 
-// Helper function composes JSON represented as base::Value from Sequencing
+// Helper function composes JSON represented as base::Value from Sequence
 // information in request.
-base::Value ValueFromSucceededSequencingInfo(
-    const absl::optional<base::Value> request,
-    bool force_confirm_flag) {
-  EXPECT_TRUE(request.has_value());
-  EXPECT_TRUE(request.value().is_dict());
-  base::Value response(base::Value::Type::DICTIONARY);
+base::Value ValueFromSucceededSequenceInfo(const base::Value::Dict& request,
+                                           bool force_confirm_flag) {
+  base::Value::Dict response;
 
   // Retrieve and process data
-  const base::Value* const encrypted_record_list =
-      request.value().FindListKey("encryptedRecord");
+  const base::Value::List* const encrypted_record_list =
+      request.FindList("encryptedRecord");
   EXPECT_TRUE(encrypted_record_list != nullptr);
-  EXPECT_FALSE(encrypted_record_list->GetList().empty());
+  EXPECT_FALSE(encrypted_record_list->empty());
 
-  // Retrieve and process sequencing information
-  const base::Value* unsigned_seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequencingInformation");
-  EXPECT_TRUE(unsigned_seq_info != nullptr);
-  const base::Value* seq_info =
-      encrypted_record_list->GetList().rbegin()->FindDictKey(
-          "sequenceInformation");
+  // Retrieve and process sequence information
+  const base::Value::Dict* seq_info =
+      encrypted_record_list->back().GetDict().FindDict("sequenceInformation");
   EXPECT_TRUE(seq_info != nullptr);
-  response.SetPath("lastSucceedUploadedRecord", seq_info->Clone());
+  response.Set("lastSucceedUploadedRecord", seq_info->Clone());
 
   // If forceConfirm confirm is expected, set it.
   if (force_confirm_flag) {
-    response.SetPath("forceConfirm", base::Value(true));
+    response.Set("forceConfirm", true);
   }
 
   // If attach_encryption_settings it true, process that.
   const auto attach_encryption_settings =
-      request.value().FindBoolKey("attachEncryptionSettings");
+      request.FindBool("attachEncryptionSettings");
   if (attach_encryption_settings.has_value() &&
       attach_encryption_settings.value()) {
     base::Value encryption_settings{base::Value::Type::DICTIONARY};
@@ -104,10 +96,10 @@ base::Value ValueFromSucceededSequencingInfo(
     base::Base64Encode("PUBLIC KEY SIG", &public_key_signature);
     encryption_settings.SetStringKey("publicKeySignature",
                                      public_key_signature);
-    response.SetPath("encryptionSettings", std::move(encryption_settings));
+    response.Set("encryptionSettings", std::move(encryption_settings));
   }
 
-  return response;
+  return base::Value(std::move(response));
 }
 
 class UploadClientTest : public ::testing::TestWithParam<
@@ -207,11 +199,11 @@ TEST_P(UploadClientTest, CreateUploadClientAndUploadRecords) {
   EXPECT_CALL(*client, UploadEncryptedReport(_, _, _))
       .WillOnce(WithArgs<0, 2>(
           Invoke([&force_confirm_flag](
-                     base::Value request,
+                     base::Value::Dict request,
                      policy::CloudPolicyClient::ResponseCallback response_cb) {
             std::move(response_cb)
-                .Run(ValueFromSucceededSequencingInfo(std::move(request),
-                                                      force_confirm_flag));
+                .Run(ValueFromSucceededSequenceInfo(std::move(request),
+                                                    force_confirm_flag));
           })));
 
   test::TestMultiEvent<SequenceInformation, bool> upload_success;

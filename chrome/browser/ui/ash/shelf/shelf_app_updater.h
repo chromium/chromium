@@ -21,6 +21,10 @@ class ShelfAppUpdater {
     virtual void OnAppUpdated(content::BrowserContext* browser_context,
                               const std::string& app_id,
                               bool reload_icon) {}
+    virtual void OnAppShowInShelfChanged(
+        content::BrowserContext* browser_context,
+        const std::string& app_id,
+        bool show_in_shelf) {}
     virtual void OnAppUninstalledPrepared(
         content::BrowserContext* browser_context,
         const std::string& app_id,

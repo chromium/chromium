@@ -257,8 +257,7 @@ int APIENTRY wWinMain(HINSTANCE, HINSTANCE, wchar_t*, int) {
     interface_log_file = command_line->GetSwitchValueNative(
         chrome_cleaner::kLogInterfaceCallsToSwitch);
     base::FilePath passed_name(interface_log_file);
-    std::vector<std::wstring> components;
-    passed_name.GetComponents(&components);
+    std::vector<std::wstring> components = passed_name.GetComponents();
     if (components.size() != 1) {
       LOG(ERROR) << "Invalid file name passed for logging!";
       return FinalizeWithResultCode(chrome_cleaner::RESULT_CODE_FAILED,

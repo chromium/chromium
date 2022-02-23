@@ -125,10 +125,8 @@ enum PermissionsPolicyFeature {
   // Controls access to screen capture via getDisplayMedia().
   kDisplayCapture = 81,
 
-  // Controls the access to the interest cohort as well as the eligibility for
-  // the navigation history entry to be included in the interest cohort
-  // computation. (https://github.com/WICG/floc)
-  kInterestCohort = 82,
+  // [Deprecated]
+  // kInterestCohort = 82,
 
   // Controls whether Autofill may fill fields in that frame when triggered on
   // a field with the main frame's origin.
@@ -181,6 +179,34 @@ enum PermissionsPolicyFeature {
 
   // Client Hint for the full version for each brand.
   kClientHintUAFullVersionList = 93,
+
+  // Client hint for indicating that the User-Agent header contains the full
+  // user agent string.
+  //
+  // The `Sec-CH-UA-Full` header field is a temporary client hint, which
+  // will only be sent in the presence of a valid Origin Trial token.  It was
+  // introduced to enable sites to register for the deprecation UA reduction
+  // origin trial and continue to receive the full UA string for some period, once
+  // UA reduction rolls out.
+  kClientHintUAFull = 94,
+
+  // Client Hint for Sec-CH-UA-WoW64.
+  kClientHintUAWoW64 = 95,
+
+  // Client hint for indicating that the client supports the Partitioned cookie
+  // attribute.
+  //
+  // The `Sec-CH-Partitioned-Cookies` header field is a temporary client hint,
+  // which will only be sent in the presence of a valid Origin Trial token. It
+  // was introduced to enable safely experimenting with cookies set with the
+  // Partitioned attribute.
+  //
+  // See https://chromestatus.com/feature/5179189105786880 for the Partitioned
+  // cookie attribute (a.k.a. Cookies Having Independent Partitioned State,
+  // CHIPS) Chrome feature and the explainer at https://github.com/WICG/CHIPS
+  // for details about the design of the Partitioned attribute and partitioned
+  // cookies.
+  kClientHintPartitionedCookies = 96,
 
   // Don't change assigned numbers of any item, and don't reuse removed slots.
   // Add new features at the end of the enum.

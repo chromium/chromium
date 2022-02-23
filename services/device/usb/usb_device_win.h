@@ -10,7 +10,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "services/device/usb/usb_device.h"
 

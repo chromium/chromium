@@ -4,12 +4,13 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.RenderProcessGoneDetail;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import android.webkit.WebViewDelegate;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.android_webview.AwRenderProcessGoneDetail;
 import org.chromium.base.annotations.VerifiesOnO;
@@ -22,7 +23,7 @@ import org.chromium.base.annotations.VerifiesOnO;
  * specific to glue layer.
  */
 @VerifiesOnO
-@TargetApi(Build.VERSION_CODES.O)
+@RequiresApi(Build.VERSION_CODES.O)
 public final class GlueApiHelperForO {
     private GlueApiHelperForO() {}
 

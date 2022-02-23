@@ -26,7 +26,10 @@ class CORE_EXPORT LayoutNGTableCaption final
 
   void UpdateBlockLayout(bool relayout_children) override;
 
-  const char* GetName() const override { return "LayoutNGTableCaption"; }
+  const char* GetName() const override {
+    NOT_DESTROYED();
+    return "LayoutNGTableCaption";
+  }
 
  private:
   // Legacy-only API.

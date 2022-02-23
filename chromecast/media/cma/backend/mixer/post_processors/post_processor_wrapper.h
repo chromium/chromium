@@ -16,7 +16,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "chromecast/public/media/audio_post_processor2_shlib.h"
 
 namespace chromecast {

@@ -294,7 +294,7 @@ void MirroringActivity::OnAppMessage(
   mirroring::mojom::CastMessagePtr ptr = mirroring::mojom::CastMessage::New();
   ptr->message_namespace = message.namespace_();
   ptr->json_format_data = message.payload_utf8();
-  // TODO(jrw): Do something with message.source_id() and
+  // TODO(crbug.com/1291712): Do something with message.source_id() and
   // message.destination_id()?
   channel_to_service_->Send(std::move(ptr));
 }
@@ -437,7 +437,7 @@ std::string MirroringActivity::GetScrubbedLogMessage(
     return message_str;
   }
 
-  for (base::Value& item : streams->GetList()) {
+  for (base::Value& item : streams->GetListDeprecated()) {
     if (item.FindStringKey("aesKey")) {
       item.SetStringKey("aesKey", "AES_KEY");
     }

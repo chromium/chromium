@@ -5,7 +5,6 @@
 #ifndef GPU_COMMAND_BUFFER_SERVICE_GL_SURFACE_MOCK_H_
 #define GPU_COMMAND_BUFFER_SERVICE_GL_SURFACE_MOCK_H_
 
-#include "base/macros.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "ui/gfx/swap_result.h"
 #include "ui/gl/gl_surface.h"

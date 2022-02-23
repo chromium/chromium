@@ -44,7 +44,6 @@
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/display/screen.h"
-#include "ui/events/test/event_generator.h"
 
 namespace ash {
 
@@ -80,15 +79,14 @@ int64_t GetPrimaryDisplayId() {
 }
 
 // Used to test that app launched metrics are properly recorded.
-class AppListAppLaunchedMetricTest : public AshTestBase {
+class AppListMetricsTest : public AshTestBase {
  public:
-  AppListAppLaunchedMetricTest() = default;
+  AppListMetricsTest() = default;
 
-  AppListAppLaunchedMetricTest(const AppListAppLaunchedMetricTest&) = delete;
-  AppListAppLaunchedMetricTest& operator=(const AppListAppLaunchedMetricTest&) =
-      delete;
+  AppListMetricsTest(const AppListMetricsTest&) = delete;
+  AppListMetricsTest& operator=(const AppListMetricsTest&) = delete;
 
-  ~AppListAppLaunchedMetricTest() override = default;
+  ~AppListMetricsTest() override = default;
 
   void SetUp() override {
     AshTestBase::SetUp();
@@ -117,15 +115,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     // Get location of the shelf item.
     const views::ViewModel* view_model =
         GetPrimaryShelf()->GetShelfViewForTesting()->view_model_for_test();
-    gfx::Point center = view_model->view_at(kBrowserAppIndexOnShelf)
-                            ->GetBoundsInScreen()
-                            .CenterPoint();
-
-    // Click on the shelf item.
-    ui::test::EventGenerator* generator = GetEventGenerator();
-    generator->MoveMouseTo(center);
-    generator->ClickLeftButton();
-    generator->ReleaseLeftButton();
+    LeftClickOn(view_model->view_at(kBrowserAppIndexOnShelf));
   }
 
   void PopulateAndLaunchSearchBoxTileItem() {
@@ -141,7 +131,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     // first search container.
     ContentsView* contents_view = Shell::Get()
                                       ->app_list_controller()
-                                      ->presenter()
+                                      ->fullscreen_presenter()
                                       ->GetView()
                                       ->app_list_main_view()
                                       ->contents_view();
@@ -174,7 +164,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     SearchResultContainerView* suggestions_container_ =
         Shell::Get()
             ->app_list_controller()
-            ->presenter()
+            ->fullscreen_presenter()
             ->GetView()
             ->app_list_main_view()
             ->contents_view()
@@ -198,7 +188,7 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
     model->AddItem(std::make_unique<AppListItem>("item 3"));
 
     AppListView::TestApi test_api(
-        Shell::Get()->app_list_controller()->presenter()->GetView());
+        Shell::Get()->app_list_controller()->fullscreen_presenter()->GetView());
 
     // Focus the first item in the root app grid.
     test_api.GetRootAppsGridView()->GetItemViewAt(0)->RequestFocus();
@@ -212,9 +202,21 @@ class AppListAppLaunchedMetricTest : public AshTestBase {
   std::unique_ptr<ShelfViewTestAPI> shelf_test_api_;
 };
 
+// Suite for tests that only apply to peeking launcher (and can be deleted when
+// ProductivityLauncher is the default).
+class AppListMetricsPeekingLauncherTest : public AppListMetricsTest {
+ public:
+  AppListMetricsPeekingLauncherTest() {
+    scoped_feature_list_.InitAndDisableFeature(features::kProductivityLauncher);
+  }
+  ~AppListMetricsPeekingLauncherTest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
 // Test that the histogram records an app launch from the shelf while the half
 // launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, HalfLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -234,7 +236,7 @@ TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the search box while the
 // half launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromSearchBox) {
+TEST_F(AppListMetricsPeekingLauncherTest, HalfLaunchFromSearchBox) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -254,7 +256,7 @@ TEST_F(AppListAppLaunchedMetricTest, HalfLaunchFromSearchBox) {
 
 // Test that the histogram records an app launch from the search box while the
 // fullscreen search launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromSearchBox) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenSearchLaunchFromSearchBox) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -276,7 +278,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromSearchBox) {
 
 // Test that the histogram records an app launch from the shelf while the
 // fullscreen search launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenSearchLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -297,7 +299,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenSearchLaunchFromShelf) {
 
 // Test that the histogram records an app launch from a suggestion chip while
 // the fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromChip) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenAllAppsLaunchFromChip) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -314,7 +316,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromChip) {
 
 // Test that the histogram records an app launch from the app grid while the
 // fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromGrid) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenAllAppsLaunchFromGrid) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -331,7 +333,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromGrid) {
 
 // Test that the histogram records an app launch from the shelf while the
 // fullscreen all apps launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, FullscreenAllAppsLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   // Press search + shift to transition to kFullscreenAllApps.
@@ -348,7 +350,7 @@ TEST_F(AppListAppLaunchedMetricTest, FullscreenAllAppsLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the shelf while the
 // peeking launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, PeekingLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -364,7 +366,7 @@ TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromShelf) {
 
 // Test that the histogram records an app launch from a suggestion chip while
 // the peeking launcher is showing.
-TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromChip) {
+TEST_F(AppListMetricsPeekingLauncherTest, PeekingLaunchFromChip) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->ShowAndRunLoop(GetPrimaryDisplayId());
@@ -380,7 +382,7 @@ TEST_F(AppListAppLaunchedMetricTest, PeekingLaunchFromChip) {
 
 // Test that the histogram records an app launch from the shelf while the
 // launcher is closed.
-TEST_F(AppListAppLaunchedMetricTest, ClosedLaunchFromShelf) {
+TEST_F(AppListMetricsPeekingLauncherTest, ClosedLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->CheckState(AppListViewState::kClosed);
@@ -408,9 +410,26 @@ TEST_F(AppListAppLaunchedMetricTest, ClosedLaunchFromShelf) {
       2 /* Number of times launched from shelf */);
 }
 
+// Suite for tests that run in tablet mode, parameterized by feature
+// ProductivityLauncher.
+class AppListMetricsTabletTest : public AppListMetricsTest,
+                                 public testing::WithParamInterface<bool> {
+ public:
+  AppListMetricsTabletTest() {
+    const bool enable = GetParam();
+    feature_list_.InitWithFeatureState(features::kProductivityLauncher, enable);
+  }
+  ~AppListMetricsTabletTest() override = default;
+
+  base::test::ScopedFeatureList feature_list_;
+};
+INSTANTIATE_TEST_SUITE_P(ProductivityLauncher,
+                         AppListMetricsTabletTest,
+                         testing::Bool());
+
 // Test that the histogram records an app launch from the shelf while the
 // homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromShelf) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromShelf) {
   Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
   base::HistogramTester histogram_tester;
 
@@ -426,7 +445,7 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the app grid while the
 // homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromGrid) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromGrid) {
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -443,7 +462,11 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromGrid) {
 
 // Test that the histogram records an app launch from a suggestion chip while
 // the homecher all apps state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromChip) {
+TEST_P(AppListMetricsTabletTest, HomecherAllAppsLaunchFromChip) {
+  // ProductivityLauncher does not use suggestion chips.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   base::HistogramTester histogram_tester;
 
   GetAppListTestHelper()->WaitUntilIdle();
@@ -461,7 +484,7 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherAllAppsLaunchFromChip) {
 
 // Test that the histogram records an app launch from the shelf while the
 // homecher search state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromShelf) {
+TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromShelf) {
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -483,7 +506,11 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromShelf) {
 
 // Test that the histogram records an app launch from the search box while the
 // homercher search state is showing.
-TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
+TEST_P(AppListMetricsTabletTest, HomecherSearchLaunchFromSearchBox) {
+  // ProductivityLauncher does not tile search results.
+  if (features::IsProductivityLauncherEnabled())
+    return;
+
   base::HistogramTester histogram_tester;
 
   // Enable tablet mode.
@@ -504,6 +531,77 @@ TEST_F(AppListAppLaunchedMetricTest, HomecherSearchLaunchFromSearchBox) {
       1 /* Number of times launched from search box */);
 }
 
+// Tests with feature ProductivityLauncher enabled.
+class AppListMetricsProductivityLauncherTest : public AppListMetricsTest {
+ public:
+  AppListMetricsProductivityLauncherTest() {
+    scoped_feature_list_.InitWithFeatures({features::kProductivityLauncher},
+                                          {});
+  }
+  ~AppListMetricsProductivityLauncherTest() override = default;
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+// Test that the histogram records an app launch from a recent app suggestion
+// while the bubble launcher all apps is showing.
+TEST_F(AppListMetricsProductivityLauncherTest,
+       BubbleAllAppsLaunchFromRecentApps) {
+  base::HistogramTester histogram_tester;
+  auto* helper = GetAppListTestHelper();
+
+  helper->WaitUntilIdle();
+
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  helper->ShowAppList();
+
+  helper->WaitUntilIdle();
+  views::View* recent_apps = helper->GetBubbleRecentAppsView();
+
+  // Get focus on the first chip.
+  recent_apps->children().front()->RequestFocus();
+  helper->WaitUntilIdle();
+
+  // Press return to simulate an app launch from the recent apps.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  helper->WaitUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Apps.AppListAppLaunchedV2.BubbleAllApps",
+      AppListLaunchedFrom::kLaunchedFromRecentApps,
+      1 /* Number of times launched from chip */);
+}
+
+// Test that the histogram records an app launch from a recent app suggestion
+// while the homecher all apps is showing.
+TEST_F(AppListMetricsProductivityLauncherTest, HomecherLaunchFromRecentApps) {
+  base::HistogramTester histogram_tester;
+  auto* helper = GetAppListTestHelper();
+
+  helper->WaitUntilIdle();
+
+  helper->AddRecentApps(5);
+  helper->AddAppItems(5);
+  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
+
+  helper->WaitUntilIdle();
+  views::View* recent_apps = helper->GetFullscreenRecentAppsView();
+
+  // Get focus on the first chip.
+  recent_apps->children().front()->RequestFocus();
+  helper->WaitUntilIdle();
+
+  // Press return to simulate an app launch from the recent apps.
+  PressAndReleaseKey(ui::KeyboardCode::VKEY_RETURN);
+  helper->WaitUntilIdle();
+
+  histogram_tester.ExpectBucketCount(
+      "Apps.AppListAppLaunchedV2.HomecherAllApps",
+      AppListLaunchedFrom::kLaunchedFromRecentApps,
+      1 /* Number of times launched from chip */);
+}
+
 class AppListShowSourceMetricTest : public AshTestBase {
  public:
   AppListShowSourceMetricTest() = default;
@@ -516,12 +614,7 @@ class AppListShowSourceMetricTest : public AshTestBase {
 
  protected:
   void ClickHomeButton() {
-    HomeButton* home_button =
-        GetPrimaryShelf()->navigation_widget()->GetHomeButton();
-    gfx::Point center = home_button->GetCenterPoint();
-    views::View::ConvertPointToScreen(home_button, &center);
-    GetEventGenerator()->MoveMouseTo(center);
-    GetEventGenerator()->ClickLeftButton();
+    LeftClickOn(GetPrimaryShelf()->navigation_widget()->GetHomeButton());
   }
 };
 

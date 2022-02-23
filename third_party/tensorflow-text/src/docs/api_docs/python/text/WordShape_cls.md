@@ -223,224 +223,224 @@ The supported wordshape identifiers are:
 BEGINS_WITH_OPEN_QUOTE<a id="BEGINS_WITH_OPEN_QUOTE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+``<WordShape.BEGINS_WITH_OPEN_QUOTE: '\`\`.*|["\'\`＇＂‘‚‛“«„‟‹「『〝⹂｢﹁﹃][^"\'\`＇＂‘‚‛“«„‟‹「『〝⹂｢﹁﹃]*'>``
 </td>
 </tr><tr>
 <td>
 BEGINS_WITH_PUNCT_OR_SYMBOL<a id="BEGINS_WITH_PUNCT_OR_SYMBOL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.BEGINS_WITH_PUNCT_OR_SYMBOL: '[\\p{P}\\p{S}].*'>`
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_CLOSE_QUOTE<a id="ENDS_WITH_CLOSE_QUOTE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+``<WordShape.ENDS_WITH_CLOSE_QUOTE: '.*\'\'|[^"\'\`＇＂»’”›」』〞〟﹂﹄｣]*["\'\`＇＂»’”›」』〞〟﹂﹄｣]'>``
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_ELLIPSIS<a id="ENDS_WITH_ELLIPSIS"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.ENDS_WITH_ELLIPSIS: '.*(\\.{3}|[…⋯])'>`
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_EMOTICON<a id="ENDS_WITH_EMOTICON"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.ENDS_WITH_EMOTICON: ".*(:\\-\\)|:\\)|:o\\)|:\\]|:3|:>|=\\]|=\\)|:\\}|:\\^\\)|:\\-D|:\\-\\)\\)|:\\-\\)\\)\\)|:\\-\\)\\)\\)\\)|:\\-\\)\\)\\)\\)\\)|>:\\[|:\\-\\(|:\\(|:\\-c|:c|:\\-<|:<|:\\-\\[|:\\[|:\\{|;\\(|:\\-\\|\\||:@|>:\\(|:'\\-\\(|:'\\(|:'\\-\\)|:'\\)|D:<|>:O|:\\-O|:\\-o|:\\*|:\\-\\*|:\\^\\*|;\\-\\)|;\\)|\\*\\-\\)|\\*\\)|;\\-\\]|;\\]|;\\^\\)|:\\-,|>:P|:\\-P|:p|=p|:\\-p|=p|:P|=P|;p|;\\-p|;P|;\\-P>:\\\\|>:/|:\\-/|:\\-\\.|:/|:\\\\|=/|=\\\\|:\\||:\\-\\||:\\$|:\\-\\#|:\\#|O:\\-\\)|0:\\-\\)|0:\\)|0;\\^\\)|>:\\)|>;\\)|>:\\-\\)|\\}:\\-\\)|\\}:\\)|3:\\-\\)|>_>\\^|\\^<_<|\\|;\\-\\)|\\|\\-O|:\\-J|:\\-\\&|:\\&|\\#\\-\\)|%\\-\\)|%\\)|<:\\-\\||\\~:\\-\\\\|\\*<\\|:\\-\\)|=:o\\]|,:\\-\\)|7:\\^\\]|</3|<3|8\\-\\)|\\^_\\^|:D|:\\-D|=D|\\^_\\^;;|O=\\)|\\}=\\)|B\\)|B\\-\\)|=\\||\\-_\\-|o_o;|u_u|:\\-\\\\|:s|:S|:\\-s|:\\-S|;\\*|;\\-\\*:\\(|=\\(|>\\.<|>:\\-\\(|>:\\(|>=\\(|;_;|T_T|='\\(|>_<|D:|:o|:\\-o|=o|o\\.o|:O|:\\-O|=O|O\\.O|x_x|X\\-\\(|X\\(|X\\-o|X\\-O|:X\\)|\\(=\\^\\.\\^=\\)|\\(=\\^\\.\\.\\^=\\)|=\\^_\\^=|\\-<@%|:\\(\\|\\)|:\\(:\\)|\\(\\]:\\{|<\\\\3|\\~@\\~|8'\\(|XD|DX\\:っ\\)|\\:っC|ಠ\\_ಠ)$">`
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_MULTIPLE_SENTENCE_TERMINAL<a id="ENDS_WITH_MULTIPLE_SENTENCE_TERMINAL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.ENDS_WITH_MULTIPLE_SENTENCE_TERMINAL: '.*[\\p{Sentence_Terminal}]{2}'>`
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_MULTIPLE_TERMINAL_PUNCT<a id="ENDS_WITH_MULTIPLE_TERMINAL_PUNCT"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.ENDS_WITH_MULTIPLE_TERMINAL_PUNCT: '.*[\\p{Terminal_Punctuation}]{2}'>`
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_PUNCT_OR_SYMBOL<a id="ENDS_WITH_PUNCT_OR_SYMBOL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.ENDS_WITH_PUNCT_OR_SYMBOL: '.*[\\p{P}\\p{S}]'>`
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_SENTENCE_TERMINAL<a id="ENDS_WITH_SENTENCE_TERMINAL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.ENDS_WITH_SENTENCE_TERMINAL: '.*[\\p{Sentence_Terminal}]'>`
 </td>
 </tr><tr>
 <td>
 ENDS_WITH_TERMINAL_PUNCT<a id="ENDS_WITH_TERMINAL_PUNCT"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.ENDS_WITH_TERMINAL_PUNCT: '.*[\\p{Terminal_Punctuation}]'>`
 </td>
 </tr><tr>
 <td>
 HAS_CURRENCY_SYMBOL<a id="HAS_CURRENCY_SYMBOL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_CURRENCY_SYMBOL: '.*\\p{Sc}.*'>`
 </td>
 </tr><tr>
 <td>
 HAS_EMOJI<a id="HAS_EMOJI"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_EMOJI: '.*(.*[‼⁉ℹ↔-↙↩↪⌚⌛⌨⏏⏩-⏳⏸-⏺Ⓜ▪▫▶◀◻-◾☀-⛿✂✅✈-✍✏✒✔✖✝✡✨✳✴❄❇❌❎❓-❕❗❣❤➕-➗⤴⤵⬅-⬇⬛⬜⭐⭕〰〽㊗㊙🀄🃏🅰🅱🅾🅿🆎🆑-🆚🇦-🇿🈁🈂🈚🈯🈲-🈺🉐🉑🌀-\U0001f6ff🤀-🧿\U0001fa70-\U0001fa74\U0001fa78-\U0001fa7a\U0001fa80-\U0001fa86\U0001fa90-\U0001faa8\U0001fab0-\U0001fab6\U0001fac0-\U0001fac2\U0001fad0-\U0001fad6].*)$'>`
 </td>
 </tr><tr>
 <td>
 HAS_MATH_SYMBOL<a id="HAS_MATH_SYMBOL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_MATH_SYMBOL: '.*\\p{Sm}.*'>`
 </td>
 </tr><tr>
 <td>
 HAS_MIXED_CASE<a id="HAS_MIXED_CASE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_MIXED_CASE: '.*\\p{Lu}.*\\p{Ll}.*|.*\\p{Ll}.*\\p{Lu}.*'>`
 </td>
 </tr><tr>
 <td>
 HAS_NON_LETTER<a id="HAS_NON_LETTER"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_NON_LETTER: '.*\\P{L}.*'>`
 </td>
 </tr><tr>
 <td>
 HAS_NO_DIGITS<a id="HAS_NO_DIGITS"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_NO_DIGITS: '\\P{Nd}*'>`
 </td>
 </tr><tr>
 <td>
 HAS_NO_PUNCT_OR_SYMBOL<a id="HAS_NO_PUNCT_OR_SYMBOL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_NO_PUNCT_OR_SYMBOL: '[^\\p{P}\\p{S}]*'>`
 </td>
 </tr><tr>
 <td>
 HAS_NO_QUOTES<a id="HAS_NO_QUOTES"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+``<WordShape.HAS_NO_QUOTES: '[^"\'\`\\p{Quotation_Mark}]*'>``
 </td>
 </tr><tr>
 <td>
 HAS_ONLY_DIGITS<a id="HAS_ONLY_DIGITS"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_ONLY_DIGITS: '\\p{Nd}+'>`
 </td>
 </tr><tr>
 <td>
 HAS_PUNCTUATION_DASH<a id="HAS_PUNCTUATION_DASH"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_PUNCTUATION_DASH: '.*\\p{Pd}+.*'>`
 </td>
 </tr><tr>
 <td>
 HAS_QUOTE<a id="HAS_QUOTE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+``<WordShape.HAS_QUOTE: '^[\`\\p{Quotation_Mark}].*|.*[\`\\p{Quotation_Mark}]$'>``
 </td>
 </tr><tr>
 <td>
 HAS_SOME_DIGITS<a id="HAS_SOME_DIGITS"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_SOME_DIGITS: '.*\\P{Nd}\\p{Nd}.*|.*\\p{Nd}\\P{Nd}.*'>`
 </td>
 </tr><tr>
 <td>
 HAS_SOME_PUNCT_OR_SYMBOL<a id="HAS_SOME_PUNCT_OR_SYMBOL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_SOME_PUNCT_OR_SYMBOL: '.*[^\\p{P}\\p{S}][\\p{P}\\p{S}].*|.*[\\p{P}\\p{S}][^\\p{P}\\p{S}].*'>`
 </td>
 </tr><tr>
 <td>
 HAS_TITLE_CASE<a id="HAS_TITLE_CASE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.HAS_TITLE_CASE: '\\P{L}*[\\p{Lu}\\p{Lt}]\\p{Ll}+.*'>`
 </td>
 </tr><tr>
 <td>
 IS_ACRONYM_WITH_PERIODS<a id="IS_ACRONYM_WITH_PERIODS"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_ACRONYM_WITH_PERIODS: '(\\p{Lu}\\.)+'>`
 </td>
 </tr><tr>
 <td>
 IS_EMOTICON<a id="IS_EMOTICON"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_EMOTICON: ":\\-\\)|:\\)|:o\\)|:\\]|:3|:>|=\\]|=\\)|:\\}|:\\^\\)|:\\-D|:\\-\\)\\)|:\\-\\)\\)\\)|:\\-\\)\\)\\)\\)|:\\-\\)\\)\\)\\)\\)|>:\\[|:\\-\\(|:\\(|:\\-c|:c|:\\-<|:<|:\\-\\[|:\\[|:\\{|;\\(|:\\-\\|\\||:@|>:\\(|:'\\-\\(|:'\\(|:'\\-\\)|:'\\)|D:<|>:O|:\\-O|:\\-o|:\\*|:\\-\\*|:\\^\\*|;\\-\\)|;\\)|\\*\\-\\)|\\*\\)|;\\-\\]|;\\]|;\\^\\)|:\\-,|>:P|:\\-P|:p|=p|:\\-p|=p|:P|=P|;p|;\\-p|;P|;\\-P>:\\\\|>:/|:\\-/|:\\-\\.|:/|:\\\\|=/|=\\\\|:\\||:\\-\\||:\\$|:\\-\\#|:\\#|O:\\-\\)|0:\\-\\)|0:\\)|0;\\^\\)|>:\\)|>;\\)|>:\\-\\)|\\}:\\-\\)|\\}:\\)|3:\\-\\)|>_>\\^|\\^<_<|\\|;\\-\\)|\\|\\-O|:\\-J|:\\-\\&|:\\&|\\#\\-\\)|%\\-\\)|%\\)|<:\\-\\||\\~:\\-\\\\|\\*<\\|:\\-\\)|=:o\\]|,:\\-\\)|7:\\^\\]|</3|<3|8\\-\\)|\\^_\\^|:D|:\\-D|=D|\\^_\\^;;|O=\\)|\\}=\\)|B\\)|B\\-\\)|=\\||\\-_\\-|o_o;|u_u|:\\-\\\\|:s|:S|:\\-s|:\\-S|;\\*|;\\-\\*:\\(|=\\(|>\\.<|>:\\-\\(|>:\\(|>=\\(|;_;|T_T|='\\(|>_<|D:|:o|:\\-o|=o|o\\.o|:O|:\\-O|=O|O\\.O|x_x|X\\-\\(|X\\(|X\\-o|X\\-O|:X\\)|\\(=\\^\\.\\^=\\)|\\(=\\^\\.\\.\\^=\\)|=\\^_\\^=|\\-<@%|:\\(\\|\\)|:\\(:\\)|\\(\\]:\\{|<\\\\3|\\~@\\~|8'\\(|XD|DX\\:っ\\)|\\:っC|ಠ\\_ಠ">`
 </td>
 </tr><tr>
 <td>
 IS_LOWERCASE<a id="IS_LOWERCASE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_LOWERCASE: '\\p{Ll}+'>`
 </td>
 </tr><tr>
 <td>
 IS_MIXED_CASE_LETTERS<a id="IS_MIXED_CASE_LETTERS"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_MIXED_CASE_LETTERS: '\\p{L}*\\p{Lu}\\p{L}*\\p{Ll}\\p{L}*|\\p{L}*\\p{Ll}\\p{L}*\\p{Lu}\\p{L}*'>`
 </td>
 </tr><tr>
 <td>
 IS_NUMERIC_VALUE<a id="IS_NUMERIC_VALUE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_NUMERIC_VALUE: '([+-]?((\\p{Nd}+\\.?\\p{Nd}*)|(\\.\\p{Nd}+)))([eE]-?\\p{Nd}+)?'>`
 </td>
 </tr><tr>
 <td>
 IS_PUNCT_OR_SYMBOL<a id="IS_PUNCT_OR_SYMBOL"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_PUNCT_OR_SYMBOL: '[\\p{P}|\\p{S}]+'>`
 </td>
 </tr><tr>
 <td>
 IS_UPPERCASE<a id="IS_UPPERCASE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_UPPERCASE: '\\p{Lu}+'>`
 </td>
 </tr><tr>
 <td>
 IS_WHITESPACE<a id="IS_WHITESPACE"></a>
 </td>
 <td>
-<a href="../text/WordShape_cls.md"><code>text.WordShape</code></a>
+`<WordShape.IS_WHITESPACE: '\\p{Whitespace}+'>`
 </td>
 </tr>
 </table>

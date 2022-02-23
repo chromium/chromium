@@ -20,7 +20,6 @@
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_request_callback_installer.h"
 #include "ios/chrome/browser/overlays/test/overlay_test_macros.h"
-#import "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -64,17 +63,16 @@ class InfobarOverlayBrowserAgentTest
     : public testing::TestWithParam<InfobarOverlayType> {
  public:
   InfobarOverlayBrowserAgentTest()
-      : browser_state_(browser_state_builder_.Build()),
-        web_state_list_(&web_state_list_delegate_),
-        interaction_handler_builder_(InfobarType::kInfobarTypeConfirm),
-        browser_(browser_state_.get(), &web_state_list_) {
+      : browser_state_(TestChromeBrowserState::Builder().Build()),
+        browser_(std::make_unique<TestBrowser>(browser_state_.get())),
+        interaction_handler_builder_(InfobarType::kInfobarTypeConfirm) {
     // Add an activated WebState into whose queues infobar OverlayRequests will
     // be added.
     auto web_state = std::make_unique<web::FakeWebState>();
     web_state_ = web_state.get();
-    web_state_list_.InsertWebState(/*index=*/0, std::move(web_state),
-                                   WebStateList::INSERT_ACTIVATE,
-                                   WebStateOpener());
+    browser_->GetWebStateList()->InsertWebState(
+        /*index=*/0, std::move(web_state), WebStateList::INSERT_ACTIVATE,
+        WebStateOpener());
     // Set up the OverlayPresenter's presentation context so that presentation
     // can be faked.
     presenter()->SetPresentationContext(&presentation_context_);
@@ -94,8 +92,8 @@ class InfobarOverlayBrowserAgentTest
     EXPECT_CALL(*mock_handler(InfobarOverlayType::kModal), CreateInstaller())
         .WillOnce(Return(ByMove(CreateInstaller(InfobarOverlayType::kModal))));
     // Set up the browser agent and mock interaction handler.
-    InfobarOverlayBrowserAgent::CreateForBrowser(&browser_);
-    InfobarOverlayBrowserAgent::FromBrowser(&browser_)
+    InfobarOverlayBrowserAgent::CreateForBrowser(browser_.get());
+    InfobarOverlayBrowserAgent::FromBrowser(browser_.get())
         ->AddInfobarInteractionHandler(std::move(interaction_handler));
   }
   ~InfobarOverlayBrowserAgentTest() override {
@@ -130,7 +128,7 @@ class InfobarOverlayBrowserAgentTest
                : OverlayModality::kInfobarModal;
   }
   OverlayPresenter* presenter() {
-    return OverlayPresenter::FromBrowser(&browser_, modality());
+    return OverlayPresenter::FromBrowser(browser_.get(), modality());
   }
   OverlayRequestQueue* queue() {
     return OverlayRequestQueue::FromWebState(web_state_, modality());
@@ -148,10 +146,8 @@ class InfobarOverlayBrowserAgentTest
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  TestChromeBrowserState::Builder browser_state_builder_;
   std::unique_ptr<ChromeBrowserState> browser_state_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
+  std::unique_ptr<TestBrowser> browser_;
   web::WebState* web_state_ = nullptr;
   std::map<InfobarOverlayType, FakeInfobarOverlayRequestSupport>
       request_supports_;
@@ -160,7 +156,6 @@ class InfobarOverlayBrowserAgentTest
   MockInfobarInteractionHandler::Builder interaction_handler_builder_;
   FakeOverlayPresentationContext presentation_context_;
   FakeInfobarIOS infobar_;
-  TestBrowser browser_;
 };
 
 // Tests the overlay presentation flow for a given InfobarOverlayType.

@@ -12,7 +12,6 @@ import android.graphics.drawable.BitmapDrawable;
 import androidx.test.filters.MediumTest;
 
 import org.junit.Assert;
-import org.junit.ClassRule;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -33,7 +32,6 @@ import org.chromium.components.payments.PaymentAppServiceBridge;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.payments.SupportedDelegations;
 import org.chromium.content_public.browser.WebContents;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
 
 import java.util.concurrent.TimeoutException;
 
@@ -45,10 +43,6 @@ import java.util.concurrent.TimeoutException;
         // Prevent crawling the web for real payment apps.
         "disable-features=" + PaymentFeatureList.SERVICE_WORKER_PAYMENT_APPS})
 public class PaymentRequestServiceWorkerPaymentAppTest {
-    // Disable animations to reduce flakiness.
-    @ClassRule
-    public static DisableAnimationsTestRule sNoAnimationsRule = new DisableAnimationsTestRule();
-
     @Rule
     public PaymentRequestTestRule mPaymentRequestTestRule = new PaymentRequestTestRule(
             "payment_request_bobpay_and_basic_card_with_modifier_optional_data_test.html");
@@ -158,11 +152,33 @@ public class PaymentRequestServiceWorkerPaymentAppTest {
     @Test
     @MediumTest
     @Feature({"Payments"})
-    public void testDoNotCallCanMakePayment() throws TimeoutException {
+    @CommandLineFlags.Add({"enable-features=PaymentRequestBasicCard"})
+    public void testDoNotCallCanMakePayment_WithBasicCardEnabled() throws TimeoutException {
         // Add a credit card to force showing payment sheet UI.
         addCreditCard();
         String[] supportedMethodNames = {"basic-card"};
         installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames, true, true);
+
+        // Sets setCanMakePaymentForTesting(false) to return false for CanMakePayment since there is
+        // no real sw payment app, so if CanMakePayment is called then no payment apps will be
+        // available, otherwise CanMakePayment is not called.
+        PaymentAppServiceBridge.setCanMakePaymentForTesting(false);
+
+        mPaymentRequestTestRule.triggerUIAndWait(mPaymentRequestTestRule.getReadyForInput());
+        Assert.assertEquals(2, mPaymentRequestTestRule.getNumberOfPaymentApps());
+    }
+
+    @Test
+    @MediumTest
+    @Feature({"Payments"})
+    @CommandLineFlags.Add({"disable-features=PaymentRequestBasicCard"})
+    public void testDoNotCallCanMakePayment() throws TimeoutException {
+        String[] supportedMethodNames1 = {"https://bobpay.com"};
+        installMockServiceWorkerPaymentApp("https://bobpay.com", supportedMethodNames1, true, true);
+
+        String[] supportedMethodNames2 = {"https://kylepay.com/webpay"};
+        installMockServiceWorkerPaymentApp(
+                "https://kylepay.com/webpay", supportedMethodNames2, true, true);
 
         // Sets setCanMakePaymentForTesting(false) to return false for CanMakePayment since there is
         // no real sw payment app, so if CanMakePayment is called then no payment apps will be

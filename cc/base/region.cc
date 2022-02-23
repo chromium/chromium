@@ -5,7 +5,9 @@
 #include "cc/base/region.h"
 
 #include <stddef.h>
+#include <utility>
 
+#include "base/no_destructor.h"
 #include "base/trace_event/traced_value.h"
 #include "base/values.h"
 #include "cc/base/simple_enclosed_region.h"
@@ -38,6 +40,12 @@ const Region& Region::operator=(const Region& region) {
 const Region& Region::operator+=(const gfx::Vector2d& offset) {
   skregion_.translate(offset.x(), offset.y());
   return *this;
+}
+
+// static
+const Region& Region::Empty() {
+  static base::NoDestructor<Region> kEmpty;
+  return *kEmpty;
 }
 
 void Region::Swap(Region* region) {

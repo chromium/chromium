@@ -30,6 +30,12 @@ void LacrosDataMigrationScreenHandler::DeclareLocalizedValues(
                IDS_LACROS_DATA_MIGRATION_SCREEN_TITLE);
   builder->Add("lacrosDataMigrationSubtitle",
                IDS_LACROS_DATA_MIGRATION_SCREEN_SUBTITLE);
+  builder->Add("lacrosDataMigrationSkipButton",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_BUTTON);
+  builder->Add("lacrosDataMigrationSkipSuggestion",
+               IDS_LACROS_DATA_MIGRATION_SCREEN_SKIP_SUGGESTION);
+  builder->Add("batteryWarningTitle", IDS_UPDATE_BATTERY_WARNING_TITLE);
+  builder->Add("batteryWarningText", IDS_UPDATE_BATTERY_WARNING_TEXT);
 }
 
 void LacrosDataMigrationScreenHandler::Bind(LacrosDataMigrationScreen* screen) {
@@ -52,6 +58,14 @@ void LacrosDataMigrationScreenHandler::Show() {
 
 void LacrosDataMigrationScreenHandler::SetProgressValue(int progress) {
   CallJS("login.LacrosDataMigrationScreen.setProgressValue", progress);
+}
+
+void LacrosDataMigrationScreenHandler::ShowSkipButton() {
+  CallJS("login.LacrosDataMigrationScreen.showSkipButton");
+}
+
+void LacrosDataMigrationScreenHandler::SetLowBatteryStatus(bool low_battery) {
+  CallJS("login.LacrosDataMigrationScreen.setLowBatteryStatus", low_battery);
 }
 
 void LacrosDataMigrationScreenHandler::Initialize() {

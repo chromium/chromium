@@ -109,10 +109,9 @@ class OobeDialogSizeUtilsTest : public testing::Test {
 TEST_F(OobeDialogSizeUtilsTest, Chromebook) {
   gfx::Rect usual_device(1200, 800);
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(usual_device, kShelfHeight,
-                            IsHorizontal(usual_device), &dialog, &padding);
+                            IsHorizontal(usual_device), &dialog);
   ValidateDialog(usual_device, SizeWithoutShelf(usual_device), dialog);
 }
 
@@ -120,10 +119,9 @@ TEST_F(OobeDialogSizeUtilsTest, Chromebook) {
 TEST_F(OobeDialogSizeUtilsTest, ChromebookVirtualKeyboard) {
   gfx::Rect usual_device(1200, 800);
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(SizeWithoutKeyboard(usual_device), 0,
-                            IsHorizontal(usual_device), &dialog, &padding);
+                            IsHorizontal(usual_device), &dialog);
   ValidateDialog(usual_device, SizeWithoutKeyboard(usual_device), dialog);
 }
 
@@ -131,10 +129,9 @@ TEST_F(OobeDialogSizeUtilsTest, ChromebookVirtualKeyboard) {
 TEST_F(OobeDialogSizeUtilsTest, TabletHorizontal) {
   gfx::Rect tablet_device(1080, 675);
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(tablet_device, kShelfHeight,
-                            IsHorizontal(tablet_device), &dialog, &padding);
+                            IsHorizontal(tablet_device), &dialog);
   ValidateDialog(tablet_device, SizeWithoutShelf(tablet_device), dialog);
 }
 
@@ -143,10 +140,9 @@ TEST_F(OobeDialogSizeUtilsTest, TabletHorizontal) {
 TEST_F(OobeDialogSizeUtilsTest, TabletHorizontalVirtualKeyboard) {
   gfx::Rect tablet_device(1080, 675);
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(SizeWithoutKeyboard(tablet_device), 0,
-                            IsHorizontal(tablet_device), &dialog, &padding);
+                            IsHorizontal(tablet_device), &dialog);
   ValidateDialog(tablet_device, SizeWithoutKeyboard(tablet_device), dialog);
 }
 
@@ -155,10 +151,9 @@ TEST_F(OobeDialogSizeUtilsTest, TabletHorizontalVirtualKeyboard) {
 TEST_F(OobeDialogSizeUtilsTest, TabletHorizontalDockedMagnifier) {
   gfx::Rect tablet_device(1080, 675);
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(SizeWithoutDockedMagnifier(tablet_device), 0,
-                            IsHorizontal(tablet_device), &dialog, &padding);
+                            IsHorizontal(tablet_device), &dialog);
   ValidateDialog(tablet_device, SizeWithoutDockedMagnifier(tablet_device),
                  dialog);
 }
@@ -167,13 +162,11 @@ TEST_F(OobeDialogSizeUtilsTest, TabletHorizontalDockedMagnifier) {
 // magnifier results in very few vertical space.
 TEST_F(OobeDialogSizeUtilsTest, TabletHorizontalVirtualKeyboardMagnifier) {
   gfx::Rect tablet_device(1080, 675);
-
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(
       SizeWithoutDockedMagnifier(SizeWithoutKeyboard(tablet_device)), 0,
-      IsHorizontal(tablet_device), &dialog, &padding);
+      IsHorizontal(tablet_device), &dialog);
   ValidateDialog(tablet_device,
                  SizeWithoutDockedMagnifier(SizeWithoutKeyboard(tablet_device)),
                  dialog);
@@ -183,10 +176,9 @@ TEST_F(OobeDialogSizeUtilsTest, TabletHorizontalVirtualKeyboardMagnifier) {
 TEST_F(OobeDialogSizeUtilsTest, ChromeTabVertical) {
   gfx::Rect tablet_device(461, 738);
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(tablet_device, kShelfHeight,
-                            IsHorizontal(tablet_device), &dialog, &padding);
+                            IsHorizontal(tablet_device), &dialog);
   ValidateDialog(tablet_device, SizeWithoutShelf(tablet_device), dialog);
 }
 
@@ -194,10 +186,9 @@ TEST_F(OobeDialogSizeUtilsTest, ChromeTabVertical) {
 TEST_F(OobeDialogSizeUtilsTest, ChromeTabHorizontal) {
   gfx::Rect tablet_device(738, 461);
   gfx::Rect dialog;
-  OobeDialogPaddingMode padding;
 
   CalculateOobeDialogBounds(tablet_device, kShelfHeight,
-                            IsHorizontal(tablet_device), &dialog, &padding);
+                            IsHorizontal(tablet_device), &dialog);
   ValidateDialog(tablet_device, SizeWithoutShelf(tablet_device), dialog);
 }
 

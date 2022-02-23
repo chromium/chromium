@@ -48,10 +48,10 @@ class ASH_EXPORT AutoConnectNotifier
     timer_ = std::move(test_timer);
   }
 
-  static const char kAutoConnectNotificationId[];
+  static const char kAutoConnectToastId[];
 
  private:
-  void DisplayNotification(const chromeos::NetworkState* network);
+  void DisplayToast(const chromeos::NetworkState* network);
 
   bool has_user_explicitly_requested_connection_ = false;
   std::string connected_network_guid_;

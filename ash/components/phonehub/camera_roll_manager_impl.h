@@ -12,19 +12,20 @@
 #include "ash/components/phonehub/camera_roll_thumbnail_decoder.h"
 #include "ash/components/phonehub/message_receiver.h"
 #include "ash/components/phonehub/proto/phonehub_api.pb.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "ash/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
+#include "ash/services/secure_channel/public/cpp/client/connection_manager.h"
+#include "ash/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/observer_list_types.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
-#include "chromeos/services/multidevice_setup/public/mojom/multidevice_setup.mojom.h"
-#include "chromeos/services/secure_channel/public/cpp/client/connection_manager.h"
-#include "chromeos/services/secure_channel/public/mojom/secure_channel_types.mojom.h"
+#include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class PrefRegistrySimple;
 class PrefService;
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class CameraRollDownloadManager;
@@ -35,7 +36,8 @@ class MessageSender;
 class CameraRollManagerImpl
     : public CameraRollManager,
       public MessageReceiver::Observer,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer,
+      public secure_channel::ConnectionManager::Observer {
  public:
   static void RegisterPrefs(PrefRegistrySimple* registry);
 
@@ -71,6 +73,9 @@ class CameraRollManagerImpl
       const multidevice_setup::MultiDeviceSetupClient::FeatureStatesMap&
           feature_states_map) override;
 
+  // ConnectionManager::Observer:
+  void OnConnectionStatusChanged() override;
+
   void SendFetchCameraRollItemsRequest();
   void OnItemThumbnailsDecoded(
       CameraRollThumbnailDecoder::BatchDecodeResult result,
@@ -80,20 +85,27 @@ class CameraRollManagerImpl
   void OnPayloadFilesCreated(
       const proto::FetchCameraRollItemDataResponse& response,
       CameraRollDownloadManager::CreatePayloadFilesResult result,
-      absl::optional<secure_channel::mojom::PayloadFilesPtr> payload_files);
+      absl::optional<chromeos::secure_channel::mojom::PayloadFilesPtr>
+          payload_files);
   void OnPayloadFileRegistered(const proto::CameraRollItemMetadata& metadata,
                                int64_t payload_id,
                                bool success);
   void OnFileTransferUpdate(
+      const proto::CameraRollItemMetadata& metadata,
       chromeos::secure_channel::mojom::FileTransferUpdatePtr update);
 
   bool IsCameraRollSettingEnabled();
+  void resetViewRefreshingFlagIfNeeded();
   void UpdateCameraRollAccessStateAndNotifyIfNeeded(
       const proto::CameraRollAccessState& access_state);
   void OnCameraRollOnboardingUiDismissed() override;
   void ComputeAndUpdateUiState() override;
 
-  bool is_camera_roll_accessible_ = false;
+  bool is_android_feature_enabled_ = false;
+  bool is_android_storage_granted_ = false;
+  bool is_refreshing_after_user_opt_in_ = false;
+  absl::optional<base::TimeTicks> fetch_items_request_start_timestamp_;
+
   PrefService* pref_service_;
   MessageReceiver* message_receiver_;
   MessageSender* message_sender_;
@@ -107,6 +119,6 @@ class CameraRollManagerImpl
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_CAMERA_ROLL_MANAGER_IMPL_H_

@@ -12,7 +12,6 @@
 #import "ios/chrome/common/ui/confirmation_alert/confirmation_alert_action_handler.h"
 #import "ios/chrome/credential_provider_extension/password_util.h"
 #import "ios/chrome/credential_provider_extension/reauthentication_handler.h"
-#import "ios/chrome/credential_provider_extension/ui/consent_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/consent_legacy_coordinator.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_consumer.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_details_view_controller.h"
@@ -28,7 +27,6 @@
 #endif
 
 @interface CredentialListCoordinator () <ConfirmationAlertActionHandler,
-                                         ConsentCoordinatorDelegate,
                                          ConsentLegacyCoordinatorDelegate,
                                          CredentialListUIHandler,
                                          CredentialDetailsConsumerDelegate>
@@ -56,11 +54,6 @@
 // to enable the extension. Will be used when
 // IsCredentialProviderExtensionPromoEnabled() == NO.
 @property(nonatomic, strong) ConsentLegacyCoordinator* consentLegacyCoordinator;
-
-// Consent coordinator that shows a view requesting device auth in order to
-// enable the extension. Will be used when
-// IsCredentialProviderExtensionPromoEnabled() == YES.
-@property(nonatomic, strong) ConsentCoordinator* consentCoordinator;
 
 // Coordinator that shows a view for the user to create a new password.
 @property(nonatomic, strong) NewPasswordCoordinator* createPasswordCoordinator;
@@ -110,18 +103,14 @@
                                         animated:NO
                                       completion:nil];
 
-  NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
-  BOOL isConsentGiven =
-      [user_defaults boolForKey:kUserDefaultsCredentialProviderConsentVerified];
-  if (!isConsentGiven) {
-    if (IsCredentialProviderExtensionPromoEnabled()) {
-      self.consentCoordinator = [[ConsentCoordinator alloc]
-             initWithBaseViewController:self.viewController
-                                context:self.context
-                reauthenticationHandler:self.reauthenticationHandler
-          isInitialConfigurationRequest:NO];
-      self.consentCoordinator.delegate = self;
-      [self.consentCoordinator start];
+  if (IsCredentialProviderExtensionPromoEnabled()) {
+    [self.mediator fetchCredentials];
+  } else {
+    NSUserDefaults* user_defaults = [NSUserDefaults standardUserDefaults];
+    BOOL isConsentGiven = [user_defaults
+        boolForKey:kUserDefaultsCredentialProviderConsentVerified];
+    if (isConsentGiven) {
+      [self.mediator fetchCredentials];
     } else {
       self.consentLegacyCoordinator = [[ConsentLegacyCoordinator alloc]
              initWithBaseViewController:self.viewController
@@ -131,8 +120,6 @@
       self.consentLegacyCoordinator.delegate = self;
       [self.consentLegacyCoordinator start];
     }
-  } else {
-    [self.mediator fetchCredentials];
   }
 }
 
@@ -148,14 +135,6 @@
 
 - (void)consentLegacyCoordinatorDidAcceptConsent:
     (ConsentLegacyCoordinator*)consentCoordinator {
-  [consentCoordinator stop];
-  [self.mediator fetchCredentials];
-}
-
-#pragma mark - ConsentCoordinatorDelegate
-
-- (void)consentCoordinatorDidAcceptConsent:
-    (ConsentCoordinator*)consentCoordinator {
   [consentCoordinator stop];
   [self.mediator fetchCredentials];
 }

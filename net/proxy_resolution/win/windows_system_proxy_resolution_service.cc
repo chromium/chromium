@@ -21,11 +21,11 @@ namespace net {
 
 // static
 bool WindowsSystemProxyResolutionService::IsSupported() {
-  // The WinHttp functions used in the resolver are only supported on Windows 8
-  // and above.
-  if (base::win::GetVersion() < base::win::Version::WIN8) {
+  // The sandbox required to run the WinHttp functions  used in the resolver is
+  // only supported in RS1 and later.
+  if (base::win::GetVersion() < base::win::Version::WIN10_RS1) {
     LOG(WARNING) << "WindowsSystemProxyResolutionService is only supported for "
-                    "Windows 8 and later.";
+                    "Windows 10 Version 1607 (RS1) and later.";
     return false;
   }
 

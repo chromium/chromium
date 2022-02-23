@@ -12,6 +12,7 @@
 #include "base/command_line.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/browser/ash/certificate_provider/security_token_pin_dialog_host.h"
+#include "chrome/browser/ash/login/gaia_reauth_token_fetcher.h"
 #include "chrome/browser/ash/login/login_client_cert_usage_observer.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/login/saml/public_saml_url_fetcher.h"
@@ -88,6 +89,8 @@ class GaiaView {
   virtual void Unbind() = 0;
   // Sets Gaia path for sign-in, child sign-in or child sign-up.
   virtual void SetGaiaPath(GaiaPath gaia_path) = 0;
+  // Show error UI at the end of GAIA flow when user is not allowlisted.
+  virtual void ShowAllowlistCheckFailedError() = 0;
 
   // Show sign-in screen for the given credentials. `services` is a list of
   // services returned by userInfo call as JSON array. Should be an empty array
@@ -139,6 +142,8 @@ class GaiaScreenHandler : public BaseScreenHandler,
   void Bind(ash::GaiaScreen* screen) override;
   void Unbind() override;
   void SetGaiaPath(GaiaPath gaia_path) override;
+  void ShowAllowlistCheckFailedError() override;
+
   void ShowSigninScreenForTest(const std::string& username,
                                const std::string& password,
                                const std::string& services) override;
@@ -187,12 +192,10 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // not loading right now.
   void ReloadGaia(bool force_reload);
 
-  // Show error UI at the end of GAIA flow when user is not allowlisted.
-  void ShowAllowlistCheckFailedError();
-
   // BaseScreenHandler implementation:
   void DeclareLocalizedValues(
       ::login::LocalizedValuesBuilder* builder) override;
+  void GetAdditionalParameters(base::DictionaryValue* dict) override;
   void Initialize() override;
 
   // WebUIMessageHandler implementation:
@@ -217,6 +220,7 @@ class GaiaScreenHandler : public BaseScreenHandler,
                            const std::string& typed_email,
                            const std::string& password,
                            bool using_saml);
+  void HandleLaunchSAMLPublicSession(const std::string& email);
 
   // Handles SAML/GAIA login flow metrics
   // is_third_party_idp == false means GAIA-based authentication
@@ -319,6 +323,10 @@ class GaiaScreenHandler : public BaseScreenHandler,
   // `saml_challenge_key_handler_`.
   void CreateSamlChallengeKeyHandler();
 
+  // Callback method to load Gaia screen after reauth request token is fetched.
+  void OnGaiaReauthTokenFetched(const login::GaiaContext& context,
+                                const std::string& token);
+
   // Current state of Gaia frame.
   FrameState frame_state_ = FRAME_STATE_UNKNOWN;
 
@@ -396,6 +404,11 @@ class GaiaScreenHandler : public BaseScreenHandler,
       extension_provided_client_cert_usage_observer_;
 
   std::unique_ptr<PublicSamlUrlFetcher> public_saml_url_fetcher_;
+
+  // Used to fetch and store the Gaia reauth request token for Cryptohome
+  // recovery flow.
+  std::unique_ptr<ash::GaiaReauthTokenFetcher> gaia_reauth_token_fetcher_;
+  std::string gaia_reauth_request_token_;
 
   // State of the security token PIN dialogs:
 

@@ -57,8 +57,10 @@ class MEDIA_EXPORT Renderer {
   // different than 1.0.
   virtual void SetPreservesPitch(bool preserves_pitch);
 
-  // Sets a flag indicating whether the audio stream was initiated by autoplay.
-  virtual void SetAutoplayInitiated(bool autoplay_initiated);
+  // Sets a flag indicating whether the audio stream was played with user
+  // activation.
+  virtual void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation);
 
   // The following functions must be called after Initialize().
 

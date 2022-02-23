@@ -6,10 +6,11 @@ import './page_favicon.js';
 import './shared_vars.js';
 import './top_visit.js';
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {BrowserProxyImpl} from './browser_proxy.js';
+import {getTemplate} from './cluster.html.js';
 import {Cluster, PageCallbackRouter, URLVisit} from './history_clusters.mojom-webui.js';
 import {ClusterAction, MetricsProxyImpl} from './metrics_proxy.js';
 
@@ -29,7 +30,7 @@ class HistoryClusterElement extends PolymerElement {
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -81,8 +82,8 @@ class HistoryClusterElement extends PolymerElement {
 
   disconnectedCallback() {
     super.disconnectedCallback();
-    this.callbackRouter_.removeListener(
-        assert(this.onVisitsRemovedListenerId_!));
+    assert(this.onVisitsRemovedListenerId_);
+    this.callbackRouter_.removeListener(this.onVisitsRemovedListenerId_);
     this.onVisitsRemovedListenerId_ = null;
   }
 

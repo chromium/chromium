@@ -10,15 +10,16 @@
 #include "third_party/blink/renderer/modules/webaudio/audio_param.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
 
 class AudioParam;
 
-class AudioParamMap final : public ScriptWrappable,
-                            public Maplike<String, AudioParam*> {
+class AudioParamMap final
+    : public ScriptWrappable,
+      public Maplike<String, IDLString, AudioParam*, AudioParam> {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
@@ -37,9 +38,8 @@ class AudioParamMap final : public ScriptWrappable,
   }
 
  private:
-  PairIterable<String, AudioParam*>::IterationSource* StartIteration(
-      ScriptState*,
-      ExceptionState&) override;
+  PairIterable<String, IDLString, AudioParam*, AudioParam>::IterationSource*
+  StartIteration(ScriptState*, ExceptionState&) override;
   bool GetMapEntry(ScriptState*,
                    const String& key,
                    AudioParam*&,

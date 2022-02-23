@@ -11,6 +11,7 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_split.h"
 #include "base/strings/stringprintf.h"
@@ -41,15 +42,15 @@
 #include "chrome/browser/ui/web_applications/web_app_launch_utils.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/external_install_options.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/test/base/ui_test_utils.h"
@@ -210,7 +211,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
           base::StringPrintf(kAppDotComManifest, start_url.spec().c_str()));
       SetupApp(test_app_dir.UnpackedPath());
     } else {
-      auto web_app_info = std::make_unique<WebApplicationInfo>();
+      auto web_app_info = std::make_unique<WebAppInstallInfo>();
       web_app_info->start_url = start_url;
       web_app_info->scope = start_url.GetWithoutFilename();
       web_app_info->user_display_mode = blink::mojom::DisplayMode::kStandalone;
@@ -238,7 +239,6 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
             ? extensions::Extension::NO_FLAGS
             : extensions::Extension::FROM_BOOKMARK);
     ASSERT_TRUE(app);
-    ASSERT_FALSE(app->from_bookmark());
     app_id_ = app->id();
 
     // Launch app in a window.
@@ -288,9 +288,6 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
     // By default, all SSL cert checks are valid. Can be overridden in tests.
     cert_verifier_.mock_cert_verifier()->set_default_result(net::OK);
 
-    os_hooks_suppress_ =
-        web_app::OsIntegrationManager::ScopedSuppressOsHooksForTesting();
-
     app_service_test_.SetUp(profile());
   }
 
@@ -326,7 +323,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   apps::AppServiceTest& app_service_test() { return app_service_test_; }
 
   std::string app_id_;
-  Browser* app_browser_;
+  raw_ptr<Browser> app_browser_;
 
   AppType app_type() const { return app_type_; }
 
@@ -346,7 +343,7 @@ class HostedOrWebAppTest : public extensions::ExtensionBrowserTest,
   // used by the NetworkService.
   content::ContentMockCertVerifier cert_verifier_;
 
-  web_app::ScopedOsHooksSuppress os_hooks_suppress_;
+  web_app::OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 // Tests that "Open link in new tab" opens a link in a foreground tab.
@@ -377,7 +374,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, DISABLED_OpenLinkInNewTab) {
 
 // Tests that Ctrl + Clicking a link opens a foreground tab.
 // TODO(crbug.com/1190448): Flaky on Linux.
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_CtrlClickLink DISABLED_CtrlClickLink
 #else
 #define MAYBE_CtrlClickLink CtrlClickLink
@@ -402,7 +399,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest, MAYBE_CtrlClickLink) {
             ui_test_utils::UrlLoadObserver url_observer(
                 target_url, content::NotificationService::AllSources());
             int ctrl_key;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
             ctrl_key = blink::WebInputEvent::Modifiers::kMetaKey;
 #else
             ctrl_key = blink::WebInputEvent::Modifiers::kControlKey;
@@ -487,7 +484,6 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, NotWebApp) {
   const Extension* app = ExtensionRegistry::Get(profile())->GetExtensionById(
       app_id_, ExtensionRegistry::ENABLED);
   EXPECT_TRUE(app->is_hosted_app());
-  EXPECT_FALSE(app->from_bookmark());
 }
 
 IN_PROC_BROWSER_TEST_P(HostedAppTest, HasReloadButton) {
@@ -506,7 +502,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppTest, LoadIcon) {
 
   EXPECT_TRUE(app_service_test().AreIconImageEqual(
       app_service_test().LoadAppIconBlocking(
-          apps::mojom::AppType::kExtension, app_id_,
+          apps::mojom::AppType::kChromeApp, app_id_,
           extension_misc::EXTENSION_ICON_SMALL),
       views::GetImageSkiaFromImageModel(
           app_browser_->app_controller()->GetWindowAppIcon(), nullptr)));
@@ -577,7 +573,7 @@ IN_PROC_BROWSER_TEST_P(HostedOrWebAppTest,
 }
 
 // Flaky, mostly on Windows: http://crbug.com/1032319
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_ShouldShowCustomTabBarForHTTPAppHTTPSUrl \
   DISABLED_ShouldShowCustomTabBarForHTTPAppHTTPSUrl
 #else
@@ -899,7 +895,7 @@ class HostedAppProcessModelTest : public HostedOrWebAppTest {
  protected:
   bool should_swap_for_cross_site_;
 
-  extensions::ProcessMap* process_map_;
+  raw_ptr<extensions::ProcessMap> process_map_;
 
   GURL same_dir_url_;
   GURL diff_dir_url_;
@@ -1186,7 +1182,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest, PopupsInsideHostedApp) {
 // OOPIF unless there is another reason to create it, but popups from outside
 // the app will swap into the app.
 // TODO(crbug.com/807471): Flaky on Windows 7.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_FromOutsideHostedApp DISABLED_FromOutsideHostedApp
 #else
 #define MAYBE_FromOutsideHostedApp FromOutsideHostedApp
@@ -1286,7 +1282,7 @@ IN_PROC_BROWSER_TEST_P(HostedAppProcessModelTest,
 // site URL. See https://crbug.com/1016954.
 // The navigation currently fails/results in a 404 on Windows, so it's currently
 // disabled.  TODO(crbug.com/1137323): Fix this.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NavigateToAppURLWithDoubleSlashPath \
   DISABLED_NavigateToAppURLWithDoubleSlashPath
 #else
@@ -1685,7 +1681,7 @@ class HostedAppJitTestBase : public HostedAppProcessModelTest {
 
    private:
     std::unique_ptr<JitChromeContentBrowserClient> overriden_client_;
-    content::ContentBrowserClient* original_client_;
+    raw_ptr<content::ContentBrowserClient> original_client_;
   };
 
   void JitTestInternal() {

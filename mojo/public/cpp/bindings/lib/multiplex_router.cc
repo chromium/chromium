@@ -12,8 +12,8 @@
 #include "base/containers/contains.h"
 #include "base/containers/flat_set.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/strings/string_util.h"
 #include "base/synchronization/waitable_event.h"
@@ -23,7 +23,6 @@
 #include "mojo/public/cpp/bindings/interface_endpoint_controller.h"
 #include "mojo/public/cpp/bindings/lib/may_auto_lock.h"
 #include "mojo/public/cpp/bindings/lib/message_quota_checker.h"
-#include "mojo/public/cpp/bindings/message_header_validator.h"
 #include "mojo/public/cpp/bindings/sequence_local_sync_event_watcher.h"
 
 namespace mojo {
@@ -186,7 +185,7 @@ class MultiplexRouter::InterfaceEndpoint
 
   void OnSyncEventSignaled() {
     DCHECK(task_runner_->RunsTasksInCurrentSequence());
-    scoped_refptr<MultiplexRouter> router_protector(router_);
+    scoped_refptr<MultiplexRouter> router_protector(router_.get());
 
     MayAutoLock locker(&router_->lock_);
     scoped_refptr<InterfaceEndpoint> self_protector(this);
@@ -222,7 +221,7 @@ class MultiplexRouter::InterfaceEndpoint
   // ---------------------------------------------------------------------------
   // The following members are safe to access from any sequence.
 
-  MultiplexRouter* const router_;
+  const raw_ptr<MultiplexRouter> router_;
   const InterfaceId id_;
 
   // ---------------------------------------------------------------------------
@@ -242,7 +241,7 @@ class MultiplexRouter::InterfaceEndpoint
   // The task runner on which |client_|'s methods can be called.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
   // Not owned. It is null if no client is attached to this endpoint.
-  InterfaceEndpointClient* client_;
+  raw_ptr<InterfaceEndpointClient> client_;
 
   // Indicates whether the sync watcher should be signaled for this endpoint.
   bool sync_message_event_signaled_ = false;
@@ -302,7 +301,10 @@ class MultiplexRouter::MessageWrapper {
   }
 
  private:
+  // `router_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data and tab_search:top100:2020).
   MultiplexRouter* router_ = nullptr;
+
   Message value_;
 };
 
@@ -391,14 +393,7 @@ MultiplexRouter::MultiplexRouter(
   if (quota_checker)
     connector_.SetMessageQuotaChecker(std::move(quota_checker));
 
-  std::unique_ptr<MessageHeaderValidator> header_validator =
-      std::make_unique<MessageHeaderValidator>();
-  header_validator_ = header_validator.get();
-  dispatcher_.SetValidator(std::move(header_validator));
-
   if (primary_interface_name) {
-    header_validator_->SetDescription(base::JoinString(
-        {primary_interface_name, "[primary] MessageHeaderValidator"}, " "));
     control_message_handler_.SetDescription(base::JoinString(
         {primary_interface_name, "[primary] PipeControlMessageHandler"}, " "));
   }

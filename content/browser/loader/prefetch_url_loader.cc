@@ -143,7 +143,8 @@ void PrefetchURLLoader::OnReceiveEarlyHints(
 }
 
 void PrefetchURLLoader::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr response) {
+    network::mojom::URLResponseHeadPtr response,
+    mojo::ScopedDataPipeConsumerHandle body) {
   if (is_signed_exchange_handling_enabled_ &&
       signed_exchange_utils::ShouldHandleAsSignedHTTPExchange(
           resource_request_.url, *response)) {
@@ -156,11 +157,10 @@ void PrefetchURLLoader::OnReceiveResponse(
     signed_exchange_prefetch_handler_ =
         std::make_unique<SignedExchangePrefetchHandler>(
             frame_tree_node_id_, resource_request_, std::move(response),
-            mojo::ScopedDataPipeConsumerHandle(), loader_.Unbind(),
-            client_receiver_.Unbind(), network_loader_factory_,
-            url_loader_throttles_getter_, this, network_isolation_key_,
-            signed_exchange_prefetch_metric_recorder_, accept_langs_,
-            keep_entry_for_prefetch_cache);
+            std::move(body), loader_.Unbind(), client_receiver_.Unbind(),
+            network_loader_factory_, url_loader_throttles_getter_, this,
+            network_isolation_key_, signed_exchange_prefetch_metric_recorder_,
+            accept_langs_, keep_entry_for_prefetch_cache);
     return;
   }
 
@@ -179,7 +179,10 @@ void PrefetchURLLoader::OnReceiveResponse(
     response->recursive_prefetch_token = recursive_prefetch_token;
   }
 
-  forwarding_client_->OnReceiveResponse(std::move(response));
+  forwarding_client_->OnReceiveResponse(std::move(response),
+                                        mojo::ScopedDataPipeConsumerHandle());
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 void PrefetchURLLoader::OnReceiveRedirect(

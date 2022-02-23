@@ -71,6 +71,8 @@ class CORE_EXPORT NGPhysicalFragment
     // A multi-column container creates column boxes as its children, which
     // content is flowed into. https://www.w3.org/TR/css-multicol-1/#column-box
     kColumnBox,
+    // A page box fragment. Used by printing.
+    kPageBox,
     kAtomicInline,
     kFloating,
     kOutOfFlowPositioned,
@@ -116,7 +118,8 @@ class CORE_EXPORT NGPhysicalFragment
   bool IsColumnBox() const {
     return IsBox() && BoxType() == NGBoxType::kColumnBox;
   }
-  bool IsFragmentainerBox() const { return IsColumnBox(); }
+  bool IsPageBox() const { return IsBox() && BoxType() == NGBoxType::kPageBox; }
+  bool IsFragmentainerBox() const { return IsColumnBox() || IsPageBox(); }
   bool IsColumnSpanAll() const {
     if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
       return box->IsColumnSpanAll();
@@ -284,13 +287,19 @@ class CORE_EXPORT NGPhysicalFragment
   }
   // The node to return when hit-testing on this fragment. This can be different
   // from GetNode() when this fragment is content of a pseudo node.
-  Node* NodeForHitTest() const { return layout_object_->NodeForHitTest(); }
+  Node* NodeForHitTest() const {
+    if (IsFragmentainerBox())
+      return nullptr;
+    return layout_object_->NodeForHitTest();
+  }
 
   Node* NonPseudoNode() const {
     return IsCSSBox() ? layout_object_->NonPseudoNode() : nullptr;
   }
 
   bool IsInSelfHitTestingPhase(HitTestAction action) const {
+    if (IsFragmentainerBox())
+      return false;
     if (const auto* box = DynamicTo<LayoutBox>(GetLayoutObject()))
       return box->IsInSelfHitTestingPhase(action);
     if (IsInlineBox())
@@ -351,6 +360,10 @@ class CORE_EXPORT NGPhysicalFragment
     return IsCSSBox() && layout_object_->ShouldClipOverflowAlongBothAxis();
   }
 
+  bool ShouldApplyOverflowClipMargin() const {
+    return IsCSSBox() && layout_object_->ShouldApplyOverflowClipMargin();
+  }
+
   // Return whether we can traverse this fragment and its children directly, for
   // painting, hit-testing and other layout read operations. If false is
   // returned, we need to traverse the layout object tree instead.
@@ -372,6 +385,11 @@ class CORE_EXPORT NGPhysicalFragment
   // Return true if this fragment is monolithic, as far as block fragmentation
   // is concerned.
   bool IsMonolithic() const {
+    // Line boxes are monolithic, except for line boxes that are just there to
+    // contain a block inside an inline, in which case the anonymous block child
+    // wrapper inside the line is breakable.
+    if (IsLineBox())
+      return !IsBlockInInline();
     const LayoutObject* layout_object = GetLayoutObject();
     if (!layout_object || !IsBox() || !layout_object->IsBox())
       return false;
@@ -490,7 +508,7 @@ class CORE_EXPORT NGPhysicalFragment
 
   // Same as |base::span<const NGLink>|, except that:
   // * Each |NGLink| has the latest generation of post-layout. See
-  //   |NGPhysicalFragment::UpdatedFragment()| for more details.
+  //   |NGPhysicalFragment::PostLayout()| for more details.
   // * The iterator skips fragments for destroyed or moved |LayoutObject|.
   class PostLayoutChildLinkList {
     STACK_ALLOCATED();
@@ -614,7 +632,11 @@ class CORE_EXPORT NGPhysicalFragment
             oof_data_->oof_positioned_descendants.size()};
   }
 
-  const NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
+  NGFragmentedOutOfFlowData* FragmentedOutOfFlowData() const;
+
+  // Return true if there are nested multicol container descendants with OOFs
+  // inside.
+  bool HasNestedMulticolsWithOOFs() const;
 
   // Figure out if the child has any out-of-flow positioned descendants, in
   // which case we'll need to propagate this to the fragment builder.
@@ -679,7 +701,7 @@ class CORE_EXPORT NGPhysicalFragment
   unsigned has_hanging_ : 1;
 
   const unsigned type_ : 1;           // NGFragmentType
-  const unsigned sub_type_ : 3;       // NGBoxType, NGTextType, or NGLineBoxType
+  const unsigned sub_type_ : 4;       // NGBoxType, NGTextType, or NGLineBoxType
   const unsigned style_variant_ : 2;  // NGStyleVariant
   const unsigned is_hidden_for_paint_ : 1;
   unsigned is_opaque_ : 1;

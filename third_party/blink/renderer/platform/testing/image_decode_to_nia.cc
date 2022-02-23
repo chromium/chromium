@@ -113,10 +113,23 @@ void write_nia_padding(uint32_t width, uint32_t height) {
   }
 }
 
-void write_nia_footer(int repetition_count) {
+void write_nia_footer(int repetition_count, size_t frame_count) {
+  // For still (non-animated) images, the number of animation loops has no
+  // practical effect: the pixels on screen do not change over time regardless
+  // of its value. In the wire format encoding, there might be no explicit
+  // "number of animation loops" value listed in the source bytes. Various
+  // codec implementations may therefore choose an implicit default of 0 ("loop
+  // forever") or 1 ("loop exactly once"). Either is equally valid.
+  //
+  // However, when comparing the output of this convert-to-NIA program (backed
+  // by Chromium's image codecs) with other convert-to-NIA programs, it is
+  // useful to canonicalize still images' "number of animation loops" to 0.
+  bool override_num_animation_loops = frame_count <= 1;
+
   uint8_t data[8];
   // kAnimationNone means a still image.
-  if ((repetition_count == blink::kAnimationNone) ||
+  if (override_num_animation_loops ||
+      (repetition_count == blink::kAnimationNone) ||
       (repetition_count == blink::kAnimationLoopInfinite)) {
     set_u32le(data + 0, 0);
   } else {
@@ -212,6 +225,6 @@ int main(int argc, char* argv[]) {
     }
     write_nia_padding(frame_width, frame_height);
   }
-  write_nia_footer(decoder->RepetitionCount());
+  write_nia_footer(decoder->RepetitionCount(), frame_count);
   return 0;
 }

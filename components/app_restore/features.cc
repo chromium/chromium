@@ -4,35 +4,28 @@
 
 #include "components/app_restore/features.h"
 
-namespace app_restore {
-namespace features {
-
-const base::Feature kArcAppsForDesksTemplates{
-    "ArcAppsForDesksTemplates", base::FEATURE_DISABLED_BY_DEFAULT};
-
-bool IsArcAppsForDesksTemplatesEnabled() {
-  return base::FeatureList::IsEnabled(kArcAppsForDesksTemplates);
-}
-
-}  // namespace features
-}  // namespace app_restore
-
 namespace full_restore {
 namespace features {
 
 const base::Feature kArcGhostWindow{"ArcGhostWindow",
                                     base::FEATURE_ENABLED_BY_DEFAULT};
 
-const base::Feature kFullRestore{"FullRestore",
-                                 base::FEATURE_ENABLED_BY_DEFAULT};
+const base::Feature kArcWindowPredictor{"ArcWindowPredictor",
+                                        base::FEATURE_DISABLED_BY_DEFAULT};
+
+const base::Feature kFullRestoreForLacros{"FullRestoreForLacros",
+                                          base::FEATURE_DISABLED_BY_DEFAULT};
 
 bool IsArcGhostWindowEnabled() {
-  return IsFullRestoreEnabled() &&
-         base::FeatureList::IsEnabled(kArcGhostWindow);
+  return base::FeatureList::IsEnabled(kArcGhostWindow);
 }
 
-bool IsFullRestoreEnabled() {
-  return base::FeatureList::IsEnabled(kFullRestore);
+bool IsArcWindowPredictorEnabled() {
+  return base::FeatureList::IsEnabled(kArcWindowPredictor);
+}
+
+bool IsFullRestoreForLacrosEnabled() {
+  return base::FeatureList::IsEnabled(kFullRestoreForLacros);
 }
 
 }  // namespace features

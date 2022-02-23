@@ -39,10 +39,6 @@ class FakeVideoCaptureHost : public media::mojom::VideoCaptureHost {
                void(const base::UnguessableToken&,
                     const base::UnguessableToken&,
                     const media::VideoCaptureParams&));
-  MOCK_METHOD3(Crop,
-               void(const base::UnguessableToken&,
-                    const base::Token&,
-                    CropCallback));
   MOCK_METHOD0(OnStopped, void());
   MOCK_METHOD2(OnLog, void(const base::UnguessableToken&, const std::string&));
   MOCK_METHOD2(OnFrameDropped,

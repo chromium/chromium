@@ -9,9 +9,9 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/metrics/histogram_macros_local.h"
-#include "chrome/browser/commerce/commerce_feature_list.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db.h"
 #include "chrome/browser/persisted_state_db/profile_proto_db_factory.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "content/public/browser/android/browser_context_handle.h"
 
 MerchantViewerDataManager::MerchantViewerDataManager(

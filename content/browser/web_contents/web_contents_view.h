@@ -8,7 +8,6 @@
 #include <string>
 
 #include "build/build_config.h"
-#include "content/common/content_export.h"
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 #include "ui/gfx/native_widget_types.h"
@@ -24,7 +23,7 @@ struct DropData;
 // them.
 class WebContentsView {
  public:
-  virtual ~WebContentsView() {}
+  virtual ~WebContentsView() = default;
 
   // Returns the native widget that contains the contents of the tab.
   virtual gfx::NativeView GetNativeView() const = 0;
@@ -100,7 +99,7 @@ class WebContentsView {
   // Called when the capturer-count of the WebContents changes.
   virtual void OnCapturerCountChanged() = 0;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // If we close the tab while a UI control is in an event-tracking loop, the
   // the control may message freed objects and crash. WebContents::Close will
   // call this. If it returns true, then WebContents::Close will early-out, and

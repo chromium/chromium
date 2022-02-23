@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_APPS_APP_SERVICE_METRICS_APP_PLATFORM_METRICS_UTILS_H_
 
 #include "base/time/time.h"
+#include "components/services/app_service/public/cpp/app_types.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 
 class Profile;
@@ -33,11 +34,12 @@ enum class AppTypeName {
   kBorealis = 10,
   kSystemWeb = 11,
   kChromeBrowser = 12,
-  kStandaloneBrowserExtension = 13,
+  kStandaloneBrowserChromeApp = 13,
+  kExtension = 14,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
+  kMaxValue = kExtension,
 };
 
 // This is used for logging, so do not remove or reorder existing entries.
@@ -62,11 +64,12 @@ enum class AppTypeNameV2 {
   kBorealis = 12,
   kSystemWeb = 13,
   kChromeBrowser = 14,
-  kStandaloneBrowserExtension = 15,
+  kStandaloneBrowserChromeApp = 15,
+  kExtension = 16,
 
   // Add any new values above this one, and update kMaxValue to the highest
   // enumerator value.
-  kMaxValue = kStandaloneBrowserExtension,
+  kMaxValue = kExtension,
 };
 
 extern const base::TimeDelta kMinDuration;
@@ -82,12 +85,18 @@ AppTypeName GetAppTypeNameForWebApp(Profile* profile,
                                     apps::mojom::LaunchContainer container);
 
 // Returns false if |window| is a Chrome app window or a standalone web app
-// window. Otherwise, return true;
+// window. Otherwise, return true.
 bool IsBrowser(aura::Window* window);
 
 // Returns true if the app with |app_id| is opened as a tab in a browser window.
-// Otherwise, return false;
+// Otherwise, return false.
 bool IsAppOpenedInTab(AppTypeName app_type_name, const std::string& app_id);
+
+// Returns true if the app with |app_type| is opened with a browser window.
+// Otherwise, return false.
+bool IsAppOpenedWithBrowserWindow(Profile* profile,
+                                  AppType app_type,
+                                  const std::string& app_id);
 
 // Determines what app type a web app should be logged as based on |window|. In
 // particular, web apps in tabs are logged as part of Chrome browser.
@@ -97,7 +106,7 @@ AppTypeName GetAppTypeNameForWebAppWindow(Profile* profile,
 
 // Returns AppTypeName used for app running metrics.
 AppTypeName GetAppTypeNameForWindow(Profile* profile,
-                                    apps::mojom::AppType app_type,
+                                    AppType app_type,
                                     const std::string& app_id,
                                     aura::Window* window);
 
@@ -106,26 +115,26 @@ AppTypeName GetAppTypeNameForWindow(Profile* profile,
 bool ShouldRecordUkm(Profile* profile);
 
 // Due to the privacy limitation, only ARC apps, Chrome apps and web apps(PWA),
-// system web apps, builtin apps and Crostini apps are recorded because they are
-// synced to server/cloud, or part of OS. Other app types, e.g. remote apps,
-// etc, are not recorded. So returns true if the app_type_name is allowed to
-// record UKM. Otherwise, returns false.
+// system web apps, builtin apps, Borealis apps, and Crostini apps are recorded
+// because they are synced to server/cloud, or part of OS. Other app types,
+// e.g. remote apps, etc, are not recorded. So returns true if the
+// app_type_name is allowed to record UKM. Otherwise, returns false.
 //
 // See DD: go/app-platform-metrics-using-ukm for details.
-bool ShouldRecordUkmForAppTypeName(AppTypeName app_type_name);
+bool ShouldRecordUkmForAppTypeName(AppType app_type_name);
 
 int GetUserTypeByDeviceTypeMetrics();
 
 // Returns AppTypeName used for app launch metrics.
 AppTypeName GetAppTypeName(Profile* profile,
-                           apps::mojom::AppType app_type,
+                           AppType app_type,
                            const std::string& app_id,
                            apps::mojom::LaunchContainer container);
 
 // Gets the app type of a given app_id. Checks multiple sources, not just the
 // app registry cache, so can identify apps which aren't registered with app
 // service.
-mojom::AppType GetAppType(Profile* profile, const std::string& app_id);
+AppType GetAppType(Profile* profile, const std::string& app_id);
 
 }  // namespace apps
 

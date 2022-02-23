@@ -16,7 +16,6 @@
 #include "components/safe_browsing/content/browser/safe_browsing_navigation_throttle.h"
 #include "components/safe_browsing/content/browser/safe_browsing_network_context.h"
 #include "components/safe_browsing/content/browser/triggers/trigger_manager.h"
-#include "components/safe_browsing/core/browser/ping_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 #include "content/public/browser/browser_context.h"
@@ -48,11 +47,6 @@ network::mojom::NetworkContextParamsPtr CreateDefaultNetworkContextParams(
       cert_verifier::mojom::CertVerifierCreationParams::New());
   network_context_params->user_agent = user_agent;
   return network_context_params;
-}
-
-std::string GetProtocolConfigClientName() {
-  // Return a weblayer specific client name.
-  return "weblayer";
 }
 
 // Helper method that checks the RenderProcessHost is still alive and checks the
@@ -169,16 +163,6 @@ SafeBrowsingService::GetSafeBrowsingDBManager() {
     CreateAndStartSafeBrowsingDBManager();
   }
   return safe_browsing_db_manager_;
-}
-
-safe_browsing::PingManager* SafeBrowsingService::GetPingManager() {
-  if (!ping_manager_) {
-    ping_manager_ =
-        ::safe_browsing::PingManager::Create(safe_browsing::GetV4ProtocolConfig(
-            GetProtocolConfigClientName(), false /* auto_update */));
-  }
-
-  return ping_manager_.get();
 }
 
 scoped_refptr<safe_browsing::SafeBrowsingUIManager>

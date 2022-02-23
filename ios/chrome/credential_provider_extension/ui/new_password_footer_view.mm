@@ -7,6 +7,7 @@
 #include "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/credential_provider/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -66,20 +67,32 @@ const CGFloat kLabelSpacing = 8;
   self.footerTextLabel.text = [self footerText];
 }
 
+#pragma mark - Private
+
 - (NSString*)footerText {
   NSString* userEmail = [app_group::GetGroupUserDefaults()
       stringForKey:AppGroupUserDefaultsCredentialProviderUserEmail()];
+
+  NSString* syncKey =
+      IsPasswordManagerBrandingUpdateEnable()
+          ? @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_BRANDED_SYNC"
+          : @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER";
+
+  NSString* noSyncKey =
+      IsPasswordManagerBrandingUpdateEnable()
+          ? @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_BRANDED_NO_SYNC"
+          : @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_NO_EMAIL";
+
   if (userEmail) {
     NSString* baseLocalizedString = NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER",
+        syncKey,
         @"Disclaimer telling users what will happen to their passwords");
     return [baseLocalizedString stringByReplacingOccurrencesOfString:@"$1"
                                                           withString:userEmail];
   } else {
-    return NSLocalizedString(
-        @"IDS_IOS_CREDENTIAL_PROVIDER_NEW_PASSWORD_FOOTER_NO_EMAIL",
-        @"Disclaimer telling non-logged in users what will happen to their "
-        @"passwords");
+    return NSLocalizedString(noSyncKey,
+                             @"Disclaimer telling non-logged in users what "
+                             @"will happen to their passwords");
   }
 }
 

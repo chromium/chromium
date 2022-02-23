@@ -91,6 +91,18 @@ void PersistentDesksBarController::RegisterProfilePrefs(
   registry->RegisterBooleanPref(kBentoBarEnabled, /*default_value=*/true);
 }
 
+// static
+bool PersistentDesksBarController::ShouldPersistentDesksBarBeVisible() {
+  // Only check whether the feature is overridden from command line if the
+  // FeatureList is initialized.
+  const base::FeatureList* feature_list = base::FeatureList::GetInstance();
+  return (feature_list && feature_list->IsFeatureOverriddenFromCommandLine(
+                              features::kBentoBar.name,
+                              base::FeatureList::OVERRIDE_ENABLE_FEATURE)) ||
+         (features::IsBentoBarEnabled() &&
+          desks_restore_util::HasPrimaryUserUsedDesksRecently());
+}
+
 void PersistentDesksBarController::OnSessionStateChanged(
     session_manager::SessionState state) {
   if (state == session_manager::SessionState::ACTIVE)
@@ -292,17 +304,8 @@ void PersistentDesksBarController::UpdateBarOnWindowDestroying(
 }
 
 bool PersistentDesksBarController::ShouldPersistentDesksBarBeCreated() const {
-  // `kBentoBar` feature is running as an experiment now. And we will only
-  // enable it for a specific group of existing desks users, see
-  // `kUserHasUsedDesksRecently` for more details. But we also want to enable it
-  // if the user has explicitly enabled `kBentoBar` from chrome://flags or from
-  // the command line. Even though the user is not in the group of existing
-  // desks users.
-  if (!base::FeatureList::GetInstance()->IsFeatureOverriddenFromCommandLine(
-          features::kBentoBar.name) &&
-      !desks_restore_util::HasPrimaryUserUsedDesksRecently()) {
+  if (!ShouldPersistentDesksBarBeVisible())
     return false;
-  }
 
   if (!IsEnabled())
     return false;

@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/i18n/base_i18n_export.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -115,18 +114,18 @@ BASE_I18N_EXPORT std::u16string TimeFormatWithPattern(const Time& time,
 // Formats a time duration of hours and minutes into various formats, e.g.,
 // "3:07" or "3 hours, 7 minutes", and returns true on success. See
 // DurationFormatWidth for details.
-BASE_I18N_EXPORT bool TimeDurationFormat(const TimeDelta time,
-                                         const DurationFormatWidth width,
-                                         std::u16string* out)
-    WARN_UNUSED_RESULT;
+[[nodiscard]] BASE_I18N_EXPORT bool TimeDurationFormat(
+    const TimeDelta time,
+    const DurationFormatWidth width,
+    std::u16string* out);
 
 // Formats a time duration of hours, minutes and seconds into various formats,
 // e.g., "3:07:30" or "3 hours, 7 minutes, 30 seconds", and returns true on
 // success. See DurationFormatWidth for details.
-BASE_I18N_EXPORT bool TimeDurationFormatWithSeconds(
+[[nodiscard]] BASE_I18N_EXPORT bool TimeDurationFormatWithSeconds(
     const TimeDelta time,
     const DurationFormatWidth width,
-    std::u16string* out) WARN_UNUSED_RESULT;
+    std::u16string* out);
 
 // Formats a date interval into various formats, e.g. "2 December - 4 December"
 // or "March 2016 - December 2016". See DateFormat for details.

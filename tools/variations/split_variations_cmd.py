@@ -29,6 +29,12 @@ This is because Chrome in "Command Prompt" doesn't seem to handle
 Run Chrome through "Windows PowerShell" instead.
 """
 
+try:
+  from urllib.parse import unquote
+except ImportError:
+  # ToDo(crbug/1287214): Remove Exception case upon full migration to Python 3
+  from urllib import unquote
+
 import collections
 import os
 import optparse
@@ -145,8 +151,8 @@ def _ValidateForceFieldTrialsAndParams(trials, params):
                      (len(params), len(trials)))
   trial_groups = {trial.trial_name: trial.group_name for trial in trials}
   for param in params:
-    trial_name = urllib.unquote(param.trial_name)
-    group_name = urllib.unquote(param.group_name)
+    trial_name = unquote(param.trial_name)
+    group_name = unquote(param.group_name)
     if trial_name not in trial_groups:
       raise ValueError("Fail to find trial_name %s in trials" % trial_name)
     if group_name != trial_groups[trial_name]:
@@ -161,7 +167,7 @@ def _SplitFieldTrials(trials, trial_params):
   number of elements in the input lists.
   """
   middle = (len(trials) + 1) // 2
-  params = {urllib.unquote(trial.trial_name): trial for trial in trial_params}
+  params = {unquote(trial.trial_name): trial for trial in trial_params}
 
   trials_first = trials[:middle]
   params_first = []

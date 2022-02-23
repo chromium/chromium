@@ -23,7 +23,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_IMPORT_RULE_H_
 
 #include "third_party/blink/renderer/core/css/css_rule.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 
 namespace blink {
@@ -44,6 +44,8 @@ class CSSImportRule final : public CSSRule {
   String href() const;
   MediaList* media() const;
   CSSStyleSheet* styleSheet() const;
+
+  String layerName() const;
 
   void Trace(Visitor*) const override;
 

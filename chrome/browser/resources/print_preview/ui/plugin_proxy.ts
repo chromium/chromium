@@ -2,9 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert} from 'chrome://resources/js/assert.m.js';
-
-import {PDFCreateOutOfProcessPlugin, PDFPlugin} from '../pdf/pdf_scripting_api.js';
+import {PDFCreateOutOfProcessPlugin, PDFPlugin} from 'chrome://print/pdf/pdf_scripting_api.js';
+import {assert} from 'chrome://resources/js/assert_ts.js';
 
 export type ViewportChangedCallback =
     (pageX: number, pageY: number, pageWidth: number, viewportWidth: number,

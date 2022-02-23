@@ -45,7 +45,7 @@ class MediaRouterUIServiceFactory : public BrowserContextKeyedServiceFactory {
       content::BrowserContext* context) const override;
   KeyedService* BuildServiceInstanceFor(
       content::BrowserContext* context) const override;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool ServiceIsCreatedWithBrowserContext() const override;
 #endif
   bool ServiceIsNULLWhileTesting() const override;

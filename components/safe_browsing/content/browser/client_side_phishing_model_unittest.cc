@@ -391,8 +391,8 @@ TEST(ClientSidePhishingModelTest, FlatbufferonFollowingUpdate) {
   // See https://crbug.com/815537 and base/test/gtest_util.h.
   // Can remove this if flaky.
   // Windows ASAN flake: crbug.com/1234652
-#if defined(GTEST_HAS_DEATH_TEST) && !defined(OS_ANDROID) && \
-    !(defined(OS_WIN) && defined(ADDRESS_SANITIZER))
+#if defined(GTEST_HAS_DEATH_TEST) && !BUILDFLAG(IS_ANDROID) && \
+    !(BUILDFLAG(IS_WIN) && defined(ADDRESS_SANITIZER))
   EXPECT_DEATH_IF_SUPPORTED(memset(memory_addr, 'G', 1), "");
 #endif
 }

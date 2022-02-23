@@ -52,7 +52,8 @@ class WEB_ENGINE_EXPORT WebEngineAudioRenderer final
   void SetVolume(float volume) override;
   void SetLatencyHint(absl::optional<base::TimeDelta> latency_hint) override;
   void SetPreservesPitch(bool preserves_pitch) override;
-  void SetAutoplayInitiated(bool autoplay_initiated) override;
+  void SetWasPlayedWithUserActivation(
+      bool was_played_with_user_activation) override;
 
   // TimeSource implementation.
   void StartTicking() override;

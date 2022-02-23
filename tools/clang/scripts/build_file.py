@@ -32,7 +32,7 @@ def ParseArgs():
                       help='optional prefix to prepend, e.g. --prefix=lldb')
   parser.add_argument(
       '--compiler',
-      help='compiler to override the compiler specied in the compile db')
+      help='compiler to override the compiler specified in the compile db')
   parser.add_argument('--suffix',
                       help='optional suffix to append, e.g.' +
                       ' --suffix="-Xclang -ast-dump -fsyntax-only"')

@@ -31,6 +31,7 @@ source_set("unittests") {
   deps = [
     ":sync",
     "//base/test:test_support",
+    "//components/safe_browsing/core/browser:token_fetcher",
     "//components/signin/public/identity_manager:test_support",
     "//components/sync/driver:test_support",
     "//testing/gtest",

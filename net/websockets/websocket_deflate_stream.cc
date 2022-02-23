@@ -98,6 +98,10 @@ std::string WebSocketDeflateStream::GetExtensions() const {
   return stream_->GetExtensions();
 }
 
+const NetLogWithSource& WebSocketDeflateStream::GetNetLogWithSource() const {
+  return stream_->GetNetLogWithSource();
+}
+
 void WebSocketDeflateStream::OnReadComplete(
     std::vector<std::unique_ptr<WebSocketFrame>>* frames,
     int result) {

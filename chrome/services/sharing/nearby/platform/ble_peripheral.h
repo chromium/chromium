@@ -10,7 +10,7 @@
 
 #include "device/bluetooth/public/cpp/bluetooth_uuid.h"
 #include "device/bluetooth/public/mojom/adapter.mojom.h"
-#include "third_party/nearby/src/cpp/platform/api/ble.h"
+#include "third_party/nearby/src/internal/platform/implementation/ble.h"
 
 namespace location {
 namespace nearby {

@@ -12,7 +12,7 @@
 
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -180,7 +180,7 @@ class UserScriptLoader : public content::RenderProcessHostCreationObserver {
   bool queued_load_;
 
   // The browser_context for which the scripts managed here are installed.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // ID of the host that owns these scripts, if any. This is only set to a
   // non-empty value for declarative user script shared memory regions.

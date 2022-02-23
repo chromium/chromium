@@ -33,7 +33,7 @@
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner.h"
 #include "third_party/blink/renderer/core/script/xml_parser_script_runner_host.h"
 #include "third_party/blink/renderer/core/xml/parser/xml_errors.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_client.h"
 #include "third_party/blink/renderer/platform/text/segmented_string.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"

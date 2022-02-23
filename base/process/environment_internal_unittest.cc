@@ -16,7 +16,7 @@ using EnvironmentInternalTest = PlatformTest;
 namespace base {
 namespace internal {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 namespace {
 void ExpectEnvironmentBlock(const std::vector<std::wstring>& vars,
@@ -88,7 +88,7 @@ TEST_F(EnvironmentInternalTest, AlterEnvironment) {
   ExpectEnvironmentBlock({L"B=3", L"A=1", L"C=4"}, e);
 }
 
-#else  // !OS_WIN
+#else  // !BUILDFLAG(IS_WIN)
 
 TEST_F(EnvironmentInternalTest, AlterEnvironment) {
   const char* const empty[] = {nullptr};
@@ -155,7 +155,7 @@ TEST_F(EnvironmentInternalTest, AlterEnvironment) {
   EXPECT_TRUE(e[3] == nullptr);
 }
 
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace internal
 }  // namespace base

@@ -11,6 +11,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/files/important_file_writer_cleaner.h"
@@ -21,6 +22,7 @@
 #include "base/fuchsia/process_context.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
+#include "base/no_destructor.h"
 #include "base/strings/stringprintf.h"
 #include "base/system/sys_info.h"
 #include "base/threading/thread_restrictions.h"
@@ -28,6 +30,8 @@
 #include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/browser/histogram_fetcher.h"
+#include "content/public/browser/network_quality_observer_factory.h"
+#include "content/public/browser/network_service_instance.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/common/main_function_params.h"
@@ -42,6 +46,8 @@
 #include "fuchsia/engine/common/cast_streaming.h"
 #include "fuchsia/engine/switches.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
+#include "net/http/http_util.h"
+#include "services/network/public/cpp/network_quality_tracker.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 #include "ui/aura/screen_ozone.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -74,11 +80,14 @@ void FetchHistogramsFromChildProcesses(
 // incognito browser context.
 class FrameHostImpl final : public fuchsia::web::FrameHost {
  public:
-  explicit FrameHostImpl(inspect::Node inspect_node,
-                         WebEngineDevToolsController* devtools_controller)
-      : context_(WebEngineBrowserContext::CreateIncognito(),
-                 std::move(inspect_node),
-                 devtools_controller) {}
+  explicit FrameHostImpl(
+      inspect::Node inspect_node,
+      WebEngineDevToolsController* devtools_controller,
+      network::NetworkQualityTracker* network_quality_tracker)
+      : context_(
+            WebEngineBrowserContext::CreateIncognito(network_quality_tracker),
+            std::move(inspect_node),
+            devtools_controller) {}
   ~FrameHostImpl() override = default;
 
   FrameHostImpl(const FrameHostImpl&) = delete;
@@ -209,13 +218,20 @@ int WebEngineBrowserMainParts::PreMainMessageLoopRun() {
           this, &WebEngineBrowserMainParts::HandleFrameHostRequest)));
 
   // Publish the fuchsia.process.lifecycle.Lifecycle service to allow graceful
-  // teardown.  If there is a |ui_task| then this is a browser-test and graceful
+  // teardown. If there is a |ui_task| then this is a browser-test and graceful
   // shutdown is not required.
   if (!parameters_.ui_task) {
     lifecycle_ = std::make_unique<base::ProcessLifecycle>(
         base::BindOnce(&WebEngineBrowserMainParts::BeginGracefulShutdown,
                        base::Unretained(this)));
   }
+
+  // Manage network-quality signals and send them to renderers. Provides input
+  // for networking-related Client Hints.
+  network_quality_tracker_ = std::make_unique<network::NetworkQualityTracker>(
+      base::BindRepeating(&content::GetNetworkService));
+  network_quality_observer_ =
+      content::CreateNetworkQualityObserver(network_quality_tracker_.get());
 
   // Now that all services have been published, it is safe to start processing
   // requests to the service directory.
@@ -276,10 +292,12 @@ void WebEngineBrowserMainParts::HandleContextRequest(
   // configured as requested via the command-line.
   std::unique_ptr<WebEngineBrowserContext> browser_context;
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kIncognito)) {
-    browser_context = WebEngineBrowserContext::CreateIncognito();
+    browser_context = WebEngineBrowserContext::CreateIncognito(
+        network_quality_tracker_.get());
   } else {
     browser_context = WebEngineBrowserContext::CreatePersistent(
-        base::FilePath(base::kPersistedDataDirectoryPath));
+        base::FilePath(base::kPersistedDataDirectoryPath),
+        network_quality_tracker_.get());
   }
 
   auto inspect_node_name =
@@ -314,7 +332,7 @@ void WebEngineBrowserMainParts::HandleFrameHostRequest(
   frame_host_bindings_.AddBinding(
       std::make_unique<FrameHostImpl>(
           component_inspector_->root().CreateChild(inspect_node_name),
-          devtools_controller_.get()),
+          devtools_controller_.get(), network_quality_tracker_.get()),
       std::move(request));
 }
 

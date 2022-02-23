@@ -59,6 +59,15 @@ class LocalizedError {
       const std::string& locale,
       bool is_blocked_by_extension);
 
+  // Returns a |PageState| that describes the elements that should be shown on
+  // when default offline page is shown.
+  static PageState GetPageStateForOverriddenErrorPage(
+      base::Value string_dict,
+      int error_code,
+      const std::string& error_domain,
+      const GURL& failed_url,
+      const std::string& locale);
+
   // Returns a description of the encountered error.
   static std::u16string GetErrorDetails(const std::string& error_domain,
                                         int error_code,
@@ -67,6 +76,8 @@ class LocalizedError {
 
   // Returns true if an error page exists for the specified parameters.
   static bool HasStrings(const std::string& error_domain, int error_code);
+
+  static bool IsOfflineError(const std::string& error_domain, int error_code);
 };
 
 }  // namespace error_page

@@ -840,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, SignoutAllAccounts) {
 
 // Checks that Dice request header is not set from request from WebUI.
 // See https://crbug.com/428396
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_NoDiceFromWebUI DISABLED_NoDiceFromWebUI
 #else
 #define MAYBE_NoDiceFromWebUI NoDiceFromWebUI
@@ -981,7 +981,7 @@ IN_PROC_BROWSER_TEST_F(DiceBrowserTest, EnableSyncAfterToken) {
 // refresh token.
 
 // https://crbug.com/1082858
-#if (defined(OS_LINUX) || defined(OS_CHROMEOS)) && !defined(NDEBUG)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)) && !defined(NDEBUG)
 #define MAYBE_EnableSyncBeforeToken DISABLED_EnableSyncBeforeToken
 #else
 #define MAYBE_EnableSyncBeforeToken EnableSyncBeforeToken
@@ -1181,7 +1181,7 @@ class DiceManageAccountBrowserTest : public DiceBrowserTest {
             true) {}
 
   void SetUp() override {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
     // See crbug.com/1073451.
     AppShortcutManager::SuppressShortcutsForTesting();
@@ -1202,10 +1202,10 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   // Ensure that there are not deleted profiles before running this test.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::ListValue* deleted_profiles =
+  const base::Value* deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   ASSERT_TRUE(deleted_profiles);
-  ASSERT_TRUE(deleted_profiles->GetList().empty());
+  ASSERT_TRUE(deleted_profiles->GetListDeprecated().empty());
 
   // Sign the profile in.
   SetupSignedInAccounts(signin::ConsentLevel::kSync);
@@ -1221,10 +1221,10 @@ IN_PROC_BROWSER_TEST_F(DiceManageAccountBrowserTest,
   // longer allowed.
   PrefService* local_state = g_browser_process->local_state();
   DCHECK(local_state);
-  const base::ListValue* deleted_profiles =
+  const base::Value* deleted_profiles =
       local_state->GetList(prefs::kProfilesDeleted);
   EXPECT_TRUE(deleted_profiles);
-  EXPECT_EQ(1U, deleted_profiles->GetList().size());
+  EXPECT_EQ(1U, deleted_profiles->GetListDeprecated().size());
 
   content::RunAllTasksUntilIdle();
 

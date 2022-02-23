@@ -305,8 +305,9 @@
 
 - (void)autofillController:(CWVAutofillController*)autofillController
     notifyUserOfPasswordLeakOnURL:(NSURL*)URL
-                         leakType:(CWVPasswordLeakType)leakType {
-  NSLog(@"Password on %@ is leaked!", URL);
+                         leakType:(CWVPasswordLeakType)leakType
+                         username:(NSString*)username {
+  NSLog(@"Password on %@ is leaked for username %@!", URL, username);
 }
 
 - (void)autofillController:(CWVAutofillController*)autofillController

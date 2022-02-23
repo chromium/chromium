@@ -103,7 +103,7 @@ void ShareInfoFileStreamAdapter::StartFileStreaming() {
       url_, offset_, bytes_remaining_, base::Time());
   if (!stream_reader_) {
     LOG(ERROR) << "Failed to create FileStreamReader.";
-    UpdateNearbyShareIOFail(IOErrorResult::kFilereaderFailed);
+    UpdateNearbyShareIOFail(IOErrorResult::kFileReaderFailed);
     OnStreamingFinished(false);
     return;
   }

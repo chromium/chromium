@@ -11,8 +11,8 @@
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_data_retriever.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom-forward.h"
 #include "url/gurl.h"
 
@@ -28,8 +28,8 @@ class FakeDataRetriever : public WebAppDataRetriever {
   ~FakeDataRetriever() override;
 
   // WebAppDataRetriever:
-  void GetWebApplicationInfo(content::WebContents* web_contents,
-                             GetWebApplicationInfoCallback callback) override;
+  void GetWebAppInstallInfo(content::WebContents* web_contents,
+                            GetWebAppInstallInfoCallback callback) override;
   void CheckInstallabilityAndRetrieveManifest(
       content::WebContents* web_contents,
       bool bypass_service_worker_check,
@@ -39,10 +39,10 @@ class FakeDataRetriever : public WebAppDataRetriever {
                 bool skip_page_favicons,
                 GetIconsCallback callback) override;
 
-  // Set info to respond on |GetWebApplicationInfo|.
-  void SetRendererWebApplicationInfo(
-      std::unique_ptr<WebApplicationInfo> web_app_info);
-  void SetEmptyRendererWebApplicationInfo();
+  // Set info to respond on |GetWebAppInstallInfo|.
+  void SetRendererWebAppInstallInfo(
+      std::unique_ptr<WebAppInstallInfo> web_app_info);
+  void SetEmptyRendererWebAppInstallInfo();
   // Set arguments to respond on |CheckInstallabilityAndRetrieveManifest|.
   void SetManifest(blink::mojom::ManifestPtr manifest,
                    bool is_installable,
@@ -63,7 +63,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
 
   void SetDestructionCallback(base::OnceClosure callback);
 
-  WebApplicationInfo& web_app_info() { return *web_app_info_; }
+  WebAppInstallInfo& web_app_info() { return *web_app_info_; }
 
   // Builds minimal data for install to succeed. Data includes: empty renderer
   // info, manifest with |url| and |scope|, installability checked as |true|,
@@ -75,7 +75,7 @@ class FakeDataRetriever : public WebAppDataRetriever {
   void CallCompletionCallback();
 
   base::OnceClosure completion_callback_;
-  std::unique_ptr<WebApplicationInfo> web_app_info_;
+  std::unique_ptr<WebAppInstallInfo> web_app_info_;
 
   blink::mojom::ManifestPtr manifest_;
   GURL manifest_url_;

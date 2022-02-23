@@ -164,38 +164,6 @@ void TestChannel::RunCommandOnV8Thread(int call_id,
   v8_inspector_session_->dispatchProtocolMessage(ToStringView(payload));
 }
 
-int AllocContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper) {
-  int result = AuctionV8Helper::kNoDebugContextGroupId;
-  base::RunLoop run_loop;
-  v8_helper->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](scoped_refptr<AuctionV8Helper> v8_helper,
-                        int& out_result, base::OnceClosure done_closure) {
-                       out_result =
-                           v8_helper->AllocContextGroupIdAndSetResumeCallback(
-                               base::OnceClosure());
-                       std::move(done_closure).Run();
-                     },
-                     v8_helper, std::ref(result), run_loop.QuitClosure()));
-  run_loop.Run();
-  CHECK_NE(AuctionV8Helper::kNoDebugContextGroupId, result);
-  return result;
-}
-
-void FreeContextGroupIdAndWait(scoped_refptr<AuctionV8Helper> v8_helper,
-                               int context_group_id) {
-  base::RunLoop run_loop;
-  v8_helper->v8_runner()->PostTask(
-      FROM_HERE, base::BindOnce(
-                     [](scoped_refptr<AuctionV8Helper> v8_helper,
-                        int context_group_id, base::OnceClosure done_closure) {
-                       v8_helper->FreeContextGroupId(context_group_id);
-                       std::move(done_closure).Run();
-                     },
-                     v8_helper, context_group_id, run_loop.QuitClosure()));
-  run_loop.Run();
-}
-
 ScopedInspectorSupport::ScopedInspectorSupport(AuctionV8Helper* v8_helper)
     : v8_state_(new V8State,
                 base::OnTaskRunnerDeleter(v8_helper->v8_runner())) {

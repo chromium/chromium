@@ -137,7 +137,7 @@ TEST_F(PageFreezerTest, CantFreezePageWithNotificationPermission) {
       permissions::PermissionRequestManager::FromWebContents(web_contents());
   permissions::MockPermissionPromptFactory mock_prompt_factory(manager);
   NavigateAndCommit(GURL(kUrl));
-  manager->DocumentOnLoadCompletedInMainFrame(main_rfh());
+  manager->DocumentOnLoadCompletedInPrimaryMainFrame();
 
   base::RunLoop run_loop;
   PermissionManagerFactory::GetForProfile(profile())->RequestPermission(

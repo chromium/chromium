@@ -184,6 +184,9 @@ suite('PasswordsSection_Cros', function() {
         return requestPromise;
       });
 
+  // TODO(crbug.com/1274569): add test for edit-dialog requesting token when
+  // switching from ADD to EDIT mode when other tests are fixed.
+
   // Note (rbpotter): this passes locally, but may still be flaky (see
   // https://www.crbug.com/1021474)
   test.skip(

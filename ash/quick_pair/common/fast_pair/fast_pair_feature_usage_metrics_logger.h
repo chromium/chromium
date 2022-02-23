@@ -6,7 +6,12 @@
 #define ASH_QUICK_PAIR_COMMON_FAST_PAIR_FAST_PAIR_FEATURE_USAGE_METRICS_LOGGER_H_
 
 #include "base/component_export.h"
+#include "base/memory/scoped_refptr.h"
+#include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "chromeos/components/feature_usage/feature_usage_metrics.h"
+#include "device/bluetooth/bluetooth_adapter.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace ash {
 namespace quick_pair {
@@ -27,10 +32,18 @@ class COMPONENT_EXPORT(QUICK_PAIR_COMMON)
   // feature_usage::FeatureUsageMetrics::Delegate:
   bool IsEligible() const override;
   bool IsEnabled() const override;
+  absl::optional<bool> IsAccessible() const override;
   void RecordUsage(bool success);
 
  private:
+  // Internal method called by BluetoothAdapterFactory to provide the adapter
+  // object.
+  void OnGetAdapter(scoped_refptr<device::BluetoothAdapter> adapter);
+
+  scoped_refptr<device::BluetoothAdapter> bluetooth_adapter_;
   feature_usage::FeatureUsageMetrics feature_usage_metrics_;
+  base::WeakPtrFactory<FastPairFeatureUsageMetricsLogger> weak_ptr_factory_{
+      this};
 };
 
 }  // namespace quick_pair

@@ -5,18 +5,20 @@
 #ifndef CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_AUTO_DISPLAY_SERVICE_H_
 #define CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_AUTO_DISPLAY_SERVICE_H_
 
-#include "chrome/browser/apps/intent_helper/intent_picker_auto_display_pref.h"
+#include "base/memory/raw_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/gurl.h"
 
 class Profile;
 
-// TODO(crbug.com/902660): Tie IntentPickerAutoDisplayPref to this class so
-// their life cycle is the same and they both refer to the same url or origin,
-// this way passing url as a param nor creating a new Pref every time will be
-// necessary.
+// Stores and manages user preferences about whether Intent Picker UI should be
+// automatically displayed for each origin.
 class IntentPickerAutoDisplayService : public KeyedService {
  public:
+  // The platform selected by the user to handle this URL for devices of tablet
+  // form factor.
+  enum class Platform { kNone = 0, kArc = 1, kChrome = 2, kMaxValue = kChrome };
+
   static IntentPickerAutoDisplayService* Get(Profile* profile);
 
   explicit IntentPickerAutoDisplayService(Profile* profile);
@@ -35,16 +37,14 @@ class IntentPickerAutoDisplayService : public KeyedService {
   // Returns the last platform selected by the user to handle |url|.
   // If it has not been checked then it will return |Platform::kNone|
   // for devices of tablet form factor.
-  IntentPickerAutoDisplayPref::Platform GetLastUsedPlatformForTablets(
-      const GURL& url);
+  Platform GetLastUsedPlatformForTablets(const GURL& url);
 
   // Updates the Platform to |platform| for |url| for devices of
   // tablet form factor.
-  void UpdatePlatformForTablets(const GURL& url,
-                                IntentPickerAutoDisplayPref::Platform platform);
+  void UpdatePlatformForTablets(const GURL& url, Platform platform);
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 };
 
 #endif  // CHROME_BROWSER_APPS_INTENT_HELPER_INTENT_PICKER_AUTO_DISPLAY_SERVICE_H_

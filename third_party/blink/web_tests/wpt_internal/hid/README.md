@@ -2,7 +2,7 @@
 
 Automated testing for the [WebHID API] uses [MojoJS] to override the
 implementation of the [HidService] Mojo interface with a testing version in
-`resources/hid-test-utils.js`.
+`/resources/chromium/fake-hid.js`.
 
 Most of these tests can be upstreamed to the Web Platform Tests repository by
 creating an abstraction between the test cases and this Chromium-specific test

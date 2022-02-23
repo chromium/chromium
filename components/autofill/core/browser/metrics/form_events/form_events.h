@@ -113,6 +113,19 @@ enum FormEvent {
   // Same as above, but recorded only once per page load.
   FORM_EVENT_SUGGESTIONS_SHOWN_WITH_VIRTUAL_CARD_ONCE,
 
+  // See AutofillMetrics::CreditCardSeamlessFillMetric for details.
+  FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_FULL_FILL,
+  FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_NAME_MISSING,
+  FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_CVC_MISSING,
+  FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_OPTIONAL_NAME_AND_CVC_MISSING,
+  FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_FULL_FILL_BUT_EXPDATE_MISSING,
+  FORM_EVENT_CREDIT_CARD_SEAMLESSNESS_PARTIAL_FILL,
+
+  // A cross-origin fill was prevented only because shared-autofill was disabled
+  // in the field's frame. Shared-autofill is a policy-controlled feature by
+  // which a frame can allow a child-frame to be autofilled across origin.
+  FORM_EVENT_CREDIT_CARD_MISSING_SHARED_AUTOFILL,
+
   NUM_FORM_EVENTS,
 };
 

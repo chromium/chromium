@@ -345,14 +345,14 @@ TEST_P(LogFileWriterTest, FactoryCreatesLogFileWriter) {
   EXPECT_TRUE(CreateWriter(log_file_writer_factory_->MinFileSizeBytes()));
 }
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 TEST_P(LogFileWriterTest, FactoryReturnsEmptyUniquePtrIfCantCreateFile) {
   Init(GetParam());
   RemoveWritePermissions(temp_dir_.GetPath());
   auto writer = CreateWriter(kMaxRemoteLogFileSizeBytes);
   EXPECT_FALSE(writer);
 }
-#endif  // defined(OS_POSIX)
+#endif  // BUILDFLAG(IS_POSIX)
 
 TEST_P(LogFileWriterTest, CloseSucceedsWhenNoErrorsOccurred) {
   Init(GetParam());
@@ -426,7 +426,7 @@ TEST_P(LogFileWriterTest, DeleteRemovesClosedFile) {
   EXPECT_FALSE(base::PathExists(path_));
 }
 
-#if !defined(OS_WIN)  // Deleting the open file does not work on Windows.
+#if !BUILDFLAG(IS_WIN)  // Deleting the open file does not work on Windows.
 TEST_P(LogFileWriterTest, WriteDoesNotCrashIfFileRemovedExternally) {
   Init(GetParam());
 
@@ -465,7 +465,7 @@ TEST_P(LogFileWriterTest, DeleteDoesNotCrashIfFileRemovedExternally) {
   // It's up to the OS whether this will succeed or fail, but it must not crash.
   writer->Delete();
 }
-#endif  // !defined(OS_WIN)
+#endif  // !BUILDFLAG(IS_WIN)
 
 TEST_P(LogFileWriterTest, PathReturnsTheCorrectPath) {
   Init(GetParam());
@@ -728,7 +728,7 @@ TEST_P(DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
             test_case.defaults_to_logging_enabled);
 }
 
-INSTANTIATE_TEST_CASE_P(
+INSTANTIATE_TEST_SUITE_P(
     WebRtcPolicyDefaultTests,
     DoesProfileDefaultToLoggingEnabledForUserTypeParametrizedTest,
     testing::ValuesIn(

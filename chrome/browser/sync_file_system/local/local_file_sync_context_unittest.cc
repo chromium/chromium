@@ -16,6 +16,7 @@
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/sync_file_system/local/canned_syncable_file_system.h"
 #include "chrome/browser/sync_file_system/local/local_file_change_tracker.h"
@@ -23,6 +24,8 @@
 #include "chrome/browser/sync_file_system/sync_file_metadata.h"
 #include "chrome/browser/sync_file_system/sync_status_code.h"
 #include "chrome/browser/sync_file_system/syncable_file_system_util.h"
+#include "components/services/storage/public/cpp/buckets/bucket_info.h"
+#include "components/services/storage/public/cpp/buckets/constants.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/test/browser_task_environment.h"
@@ -30,8 +33,11 @@
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
 #include "storage/browser/file_system/isolated_context.h"
+#include "storage/browser/quota/quota_manager.h"
+#include "storage/browser/quota/quota_manager_proxy.h"
 #include "storage/browser/test/mock_blob_util.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/leveldatabase/leveldb_chrome.h"
 
 #define FPL FILE_PATH_LITERAL
@@ -401,6 +407,40 @@ TEST_F(LocalFileSyncContextTest, InitializeFileSystemContext) {
   file_system.GetChangedURLsInTracker(&urls);
   ASSERT_EQ(1U, urls.size());
   EXPECT_TRUE(base::Contains(urls, kURL));
+
+  // Finishing the test.
+  sync_context_->ShutdownOnUIThread();
+  file_system.TearDown();
+}
+
+TEST_F(LocalFileSyncContextTest, CreateDefaultSyncableBucket) {
+  CannedSyncableFileSystem file_system(GURL(kOrigin1), in_memory_env_.get(),
+                                       io_task_runner_.get(),
+                                       file_task_runner_.get());
+  file_system.SetUp(CannedSyncableFileSystem::QUOTA_ENABLED);
+
+  sync_context_ = base::MakeRefCounted<LocalFileSyncContext>(
+      dir_.GetPath(), in_memory_env_.get(), ui_task_runner_.get(),
+      io_task_runner_.get());
+
+  // Initializes file_system using `sync_context_`.
+  EXPECT_EQ(SYNC_STATUS_OK,
+            file_system.MaybeInitializeFileSystemContext(sync_context_.get()));
+
+  // Opens the file_system, to verify a kSyncable bucket is created.
+  EXPECT_EQ(base::File::FILE_OK, file_system.OpenFileSystem());
+
+  base::test::TestFuture<storage::QuotaErrorOr<storage::BucketInfo>> future;
+  file_system.quota_manager()->proxy()->GetBucket(
+      blink::StorageKey::CreateFromStringForTesting(kOrigin1),
+      storage::kDefaultBucketName, blink::mojom::StorageType::kSyncable,
+      base::SequencedTaskRunnerHandle::Get(), future.GetCallback());
+
+  const auto result = future.Take();
+  EXPECT_TRUE(result.ok());
+  EXPECT_EQ(result->name, storage::kDefaultBucketName);
+  EXPECT_EQ(result->type, blink::mojom::StorageType::kSyncable);
+  EXPECT_GT(result->id.value(), 0);
 
   // Finishing the test.
   sync_context_->ShutdownOnUIThread();

@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace {
 
@@ -16,6 +17,8 @@ constexpr int16_t kRSSIThresholdMax = 20;
 constexpr base::TimeDelta kTimeoutMin = base::Seconds(1);
 constexpr base::TimeDelta kTimeoutMax = base::Seconds(300);
 constexpr uint8_t kPatternValueMaxLength = 31;
+constexpr base::TimeDelta kRSSISamplingPeriodMin = base::Milliseconds(0);
+constexpr base::TimeDelta kRSSISamplingPeriodMax = base::Milliseconds(254000);
 
 // These values are based on real-world testing with the goal that they will be
 // as high as possible without any false negatives at 1.5/6/20 feet,
@@ -51,6 +54,15 @@ int16_t GetDeviceLostRSSIThreshold(
   }
 }
 
+base::TimeDelta GetRoundedRSSISamplingPeriod(
+    base::TimeDelta rssi_sampling_period) {
+  // Do not round negative numbers to zero.
+  if (rssi_sampling_period.InMilliseconds() < 0)
+    return rssi_sampling_period;
+
+  return rssi_sampling_period.CeilToMultiple(base::Milliseconds(100));
+}
+
 }  // namespace
 
 namespace device {
@@ -80,13 +92,15 @@ bool BluetoothLowEnergyScanFilter::Pattern::IsValid() const {
 
 // static
 std::unique_ptr<BluetoothLowEnergyScanFilter>
-BluetoothLowEnergyScanFilter::Create(Range device_range,
-                                     base::TimeDelta device_found_timeout,
-                                     base::TimeDelta device_lost_timeout,
-                                     const std::vector<Pattern>& patterns) {
+BluetoothLowEnergyScanFilter::Create(
+    Range device_range,
+    base::TimeDelta device_found_timeout,
+    base::TimeDelta device_lost_timeout,
+    const std::vector<Pattern>& patterns,
+    absl::optional<base::TimeDelta> rssi_sampling_period) {
   return Create(GetDeviceFoundRSSIThreshold(device_range),
                 GetDeviceLostRSSIThreshold(device_range), device_found_timeout,
-                device_lost_timeout, patterns);
+                device_lost_timeout, patterns, rssi_sampling_period);
 }
 
 // static
@@ -96,11 +110,13 @@ BluetoothLowEnergyScanFilter::Create(
     int16_t device_lost_rssi_threshold,
     base::TimeDelta device_found_timeout,
     base::TimeDelta device_lost_timeout,
-    const std::vector<BluetoothLowEnergyScanFilter::Pattern>& patterns) {
+    const std::vector<BluetoothLowEnergyScanFilter::Pattern>& patterns,
+    absl::optional<base::TimeDelta> rssi_sampling_period) {
   // We use WrapUnique() here so that we can call the private constructor.
   auto filter = base::WrapUnique(new BluetoothLowEnergyScanFilter(
       device_found_rssi_threshold, device_lost_rssi_threshold,
-      device_found_timeout, device_lost_timeout, patterns));
+      device_found_timeout, device_lost_timeout, patterns,
+      rssi_sampling_period));
   if (!filter->IsValid()) {
     return nullptr;
   }
@@ -113,12 +129,21 @@ BluetoothLowEnergyScanFilter::BluetoothLowEnergyScanFilter(
     int16_t device_lost_rssi_threshold,
     base::TimeDelta device_found_timeout,
     base::TimeDelta device_lost_timeout,
-    std::vector<Pattern> patterns)
+    std::vector<Pattern> patterns,
+    absl::optional<base::TimeDelta> rssi_sampling_period)
     : device_found_rssi_threshold_(device_found_rssi_threshold),
       device_lost_rssi_threshold_(device_lost_rssi_threshold),
       device_found_timeout_(device_found_timeout),
       device_lost_timeout_(device_lost_timeout),
-      patterns_(patterns) {}
+      patterns_(patterns),
+      rssi_sampling_period_(rssi_sampling_period) {
+  // |rssi_sampling_period_| needs to be rounded because the BlueZ API only
+  // supports 100ms increments.
+  if (rssi_sampling_period_.has_value()) {
+    rssi_sampling_period_ =
+        GetRoundedRSSISamplingPeriod(rssi_sampling_period_.value());
+  }
+}
 
 BluetoothLowEnergyScanFilter::~BluetoothLowEnergyScanFilter() = default;
 
@@ -168,6 +193,17 @@ bool BluetoothLowEnergyScanFilter::IsValid() const {
     if (!pattern.IsValid()) {
       return false;
     }
+  }
+
+  if (rssi_sampling_period_.has_value() &&
+      (rssi_sampling_period_.value() < kRSSISamplingPeriodMin ||
+       rssi_sampling_period_.value() > kRSSISamplingPeriodMax)) {
+    DVLOG(1) << "Invalid RSSI sampling rate: "
+             << rssi_sampling_period_.value().InMilliseconds()
+             << " ms . RSSI sampling rate must be between "
+             << kRSSISamplingPeriodMin.InMilliseconds() << " ms and "
+             << kRSSISamplingPeriodMax.InMilliseconds() << " ms,  inclusive.";
+    return false;
   }
 
   return true;

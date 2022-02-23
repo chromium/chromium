@@ -1,4 +1,4 @@
-// Copyright 2021 The Chromium Authors. All rights reserved.
+// Copyright 2022 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -100,7 +100,8 @@ chrome.passwordsPrivate.PasswordExportProgress;
  * @typedef {{
  *   compromiseTime: number,
  *   elapsedTimeSinceCompromise: string,
- *   compromiseType: !chrome.passwordsPrivate.CompromiseType
+ *   compromiseType: !chrome.passwordsPrivate.CompromiseType,
+ *   isMuted: boolean
  * }}
  */
 chrome.passwordsPrivate.CompromisedInfo;
@@ -319,6 +320,24 @@ chrome.passwordsPrivate.changeInsecureCredential = function(credential, new_pass
  * @param {function(): void=} callback
  */
 chrome.passwordsPrivate.removeInsecureCredential = function(credential, callback) {};
+
+/**
+ * Requests to mute |credential| from the password store. Invokes |callback| on
+ * completion.
+ * @param {!chrome.passwordsPrivate.InsecureCredential} credential
+ * @param {function(): void=} callback
+ */
+chrome.passwordsPrivate.muteInsecureCredential = function(
+    credential, callback) {};
+
+/**
+ * Requests to unmute |credential| from the password store. Invokes |callback| on
+ * completion.
+ * @param {!chrome.passwordsPrivate.InsecureCredential} credential
+ * @param {function(): void=} callback
+ */
+ chrome.passwordsPrivate.unmuteInsecureCredential = function(
+  credential, callback) {};
 
 /**
  * Starts a check for insecure passwords. Invokes |callback| on completion.

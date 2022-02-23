@@ -36,7 +36,7 @@ CredentialFieldType DeriveFromServerFieldType(autofill::ServerFieldType type);
 struct PasswordFieldPrediction {
   // Field identifier generated in Blink on non-iOS platforms.
   autofill::FieldRendererId renderer_id;
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   std::u16string unique_id;
 #endif
   autofill::FieldSignature signature;

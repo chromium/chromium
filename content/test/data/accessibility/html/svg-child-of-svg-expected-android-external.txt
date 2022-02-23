@@ -1,0 +1,6 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea", hasImage="true"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="genericContainer", hasImage="true"]
+++++Image text:"Has two simple children" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="image", hasImage="true", roleDescription="graphic"]
+++++Image text:"Has two focusable children" actions:[AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="svgRoot", hasImage="true", roleDescription="graphic"]
+++++++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="group"]
+++++++View focusable actions:[FOCUS, AX_FOCUS] bundle:[chromeRole="group"]

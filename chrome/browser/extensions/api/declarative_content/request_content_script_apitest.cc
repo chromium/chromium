@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/stringprintf.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/ui/browser.h"
@@ -108,7 +109,7 @@ class RequestContentScriptAPITest : public ExtensionBrowserTest {
       PermissionOrMatcherType script_matcher);
 
   std::unique_ptr<TestExtensionDir> test_extension_dir_;
-  const Extension* extension_;
+  raw_ptr<const Extension> extension_;
 };
 
 RequestContentScriptAPITest::RequestContentScriptAPITest()

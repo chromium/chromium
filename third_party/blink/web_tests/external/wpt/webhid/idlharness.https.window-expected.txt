@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 64 tests; 63 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 65 tests; 64 PASS, 1 FAIL, 0 TIMEOUT, 0 NOTRUN.
 PASS idl_test setup
 PASS idl_test validation
 PASS Partial interface Navigator: original interface defined
@@ -43,6 +43,7 @@ PASS HIDDevice interface: attribute productName
 PASS HIDDevice interface: attribute collections
 PASS HIDDevice interface: operation open()
 PASS HIDDevice interface: operation close()
+PASS HIDDevice interface: operation forget()
 PASS HIDDevice interface: operation sendReport(octet, BufferSource)
 PASS HIDDevice interface: operation sendFeatureReport(octet, BufferSource)
 PASS HIDDevice interface: operation receiveFeatureReport(octet)

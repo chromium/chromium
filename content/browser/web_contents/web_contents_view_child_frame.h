@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 #define CONTENT_BROWSER_WEB_CONTENTS_WEB_CONTENTS_VIEW_CHILD_FRAME_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "content/browser/renderer_host/render_view_host_delegate_view.h"
 #include "content/browser/web_contents/web_contents_view.h"
@@ -51,7 +52,7 @@ class WebContentsViewChildFrame : public WebContentsView,
   void RenderViewHostChanged(RenderViewHost* old_host,
                              RenderViewHost* new_host) override;
   void SetOverscrollControllerEnabled(bool enabled) override;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   bool CloseTabAfterEventTrackingIfNeeded() override;
 #endif
   void OnCapturerCountChanged() override;
@@ -81,7 +82,7 @@ class WebContentsViewChildFrame : public WebContentsView,
   RenderViewHostDelegateView* GetOuterDelegateView();
 
   // The WebContentsImpl whose contents we display.
-  WebContentsImpl* web_contents_;
+  raw_ptr<WebContentsImpl> web_contents_;
 
   // The delegate ownership is passed to WebContentsView.
   std::unique_ptr<WebContentsViewDelegate> delegate_;

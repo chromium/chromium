@@ -71,13 +71,15 @@ RenderFrameHostDelegate::GetGeolocationContext() {
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RenderFrameHostDelegate::GetNFC(
     RenderFrameHost* render_frame_host,
     mojo::PendingReceiver<device::mojom::NFC> receiver) {}
 #endif
 
-bool RenderFrameHostDelegate::CanEnterFullscreenMode() {
+bool RenderFrameHostDelegate::CanEnterFullscreenMode(
+    RenderFrameHostImpl* requesting_frame,
+    const blink::mojom::FullscreenOptions& options) {
   return true;
 }
 
@@ -89,6 +91,10 @@ void RenderFrameHostDelegate::FullscreenStateChanged(
 bool RenderFrameHostDelegate::ShouldRouteMessageEvent(
     RenderFrameHostImpl* target_rfh,
     SiteInstance* source_site_instance) const {
+  return false;
+}
+
+bool RenderFrameHostDelegate::IsInnerWebContentsForGuest() {
   return false;
 }
 
@@ -120,7 +126,7 @@ bool RenderFrameHostDelegate::ShouldAllowRunningInsecureContent(
   return false;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 base::android::ScopedJavaLocalRef<jobject>
 RenderFrameHostDelegate::GetJavaRenderFrameHostDelegate() {
   return nullptr;

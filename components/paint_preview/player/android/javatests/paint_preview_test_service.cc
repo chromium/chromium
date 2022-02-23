@@ -14,6 +14,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/strings/strcat.h"
+#include "base/threading/thread_restrictions.h"
 #include "components/paint_preview/browser/paint_preview_base_service.h"
 #include "components/paint_preview/browser/test_paint_preview_policy.h"
 #include "components/paint_preview/common/file_stream.h"

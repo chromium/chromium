@@ -9,12 +9,14 @@
 #include <string>
 #include <vector>
 
+#include "build/chromeos_buildflags.h"
 #include "ui/base/clipboard/clipboard.h"
 
 namespace ui {
 
-// ClipboardOzone is not yet shipped in production. It is a work in progress
-// for desktop Linux Wayland support.
+// Clipboard implementation for Ozone-based ports. It delegates the platform
+// specifics to the PlatformClipboard instance provided by the Ozone platform.
+// Currently, used on Linux Desktop, i.e: X11 and Wayland, and Lacros platforms.
 class ClipboardOzone : public Clipboard {
  public:
   ClipboardOzone(const ClipboardOzone&) = delete;
@@ -100,6 +102,21 @@ class ClipboardOzone : public Clipboard {
   void WriteData(const ClipboardFormatType& format,
                  const char* data_data,
                  size_t data_len) override;
+
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // Used for syncing clipboard sources between Lacros and Ash in ChromeOS.
+  void AddClipboardSourceToDataOffer(const ClipboardBuffer buffer);
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+  // Retrieves the clipboard source data transfer endpoint. This source and
+  // clipboard destination are passed to the DLP stack to check if restrictions
+  // allow or prevent the clipboard read. If no clipboard source exists in the
+  // internal store (i.e. none was initially provided), an attempt to parse the
+  // source from the data offer occurs since clipboard sources from Ash are
+  // offered to Lacros through a custom MIME type.
+  bool GetSourceAndCheckIfReadIsAllowed(const ClipboardBuffer buffer,
+                                        const DataTransferEndpoint* data_dst,
+                                        const base::span<uint8_t> data) const;
 
   base::span<uint8_t> ReadPngInternal(const ClipboardBuffer buffer) const;
 

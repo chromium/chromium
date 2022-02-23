@@ -7,7 +7,6 @@
 
 #include <map>
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 
 #include "components/favicon/core/favicon_driver_observer.h"

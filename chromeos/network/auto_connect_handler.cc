@@ -4,12 +4,11 @@
 
 #include "chromeos/network/auto_connect_handler.h"
 
-#include <sstream>
-
 #include "ash/constants/ash_features.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -29,58 +28,45 @@ namespace chromeos {
 
 namespace {
 
-void DisconnectErrorCallback(
-    const std::string& network_path,
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
+constexpr char kESimPolicyDisconnectByPolicyHistogram[] =
+    "Network.Cellular.ESim.DisconnectByPolicy.Result";
+
+constexpr char kPSimPolicyDisconnectByPolicyHistogram[] =
+    "Network.Cellular.PSim.DisconnectByPolicy.Result";
+
+void RecordDisconnectByPolicyResult(const NetworkState* network, bool success) {
+  if (network->type() == shill::kTypeCellular) {
+    if (network->eid().empty()) {
+      base::UmaHistogramBoolean(kPSimPolicyDisconnectByPolicyHistogram,
+                                success);
+      return;
+    }
+    base::UmaHistogramBoolean(kESimPolicyDisconnectByPolicyHistogram, success);
+  }
+}
+
+void DisconnectErrorCallback(const NetworkState* network,
+                             const std::string& error_name) {
+  RecordDisconnectByPolicyResult(network, /*success=*/false);
 
   NET_LOG(ERROR) << "AutoConnectHandler.Disconnect failed for: "
-                 << NetworkPathId(network_path) << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << NetworkPathId(network->path())
+                 << " Error name: " << error_name;
 }
 
-void RemoveNetworkConfigurationErrorCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
+void RemoveNetworkConfigurationErrorCallback(const std::string& error_name) {
   NET_LOG(ERROR) << "AutoConnectHandler RemoveNetworkConfiguration failed."
-                 << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << " Error name: " << error_name;
 }
 
-void ConnectToNetworkErrorCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
+void ConnectToNetworkErrorCallback(const std::string& error_name) {
   NET_LOG(ERROR) << "AutoConnectHandler ConnectToNetwork failed."
-                 << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << " Error name: " << error_name;
 }
 
-void SetPropertiesErrorCallback(
-    const std::string& error_name,
-    std::unique_ptr<base::DictionaryValue> error_data) {
-  std::stringstream error_data_ss;
-  if (error_data)
-    error_data_ss << *error_data;
-  else
-    error_data_ss << "<none>";
+void SetPropertiesErrorCallback(const std::string& error_name) {
   NET_LOG(ERROR) << "AutoConnectHandler SetProperties failed."
-                 << " Error name: " << error_name
-                 << ", Data: " << error_data_ss.str();
+                 << " Error name: " << error_name;
 }
 
 std::string AutoConnectReasonsToString(int auto_connect_reasons) {
@@ -118,7 +104,6 @@ AutoConnectHandler::AutoConnectHandler()
       client_certs_resolved_(false),
       applied_autoconnect_policy_on_wifi(false),
       applied_autoconnect_policy_on_cellular(false),
-      connect_to_best_services_after_scan_(false),
       auto_connect_reasons_(0) {}
 
 AutoConnectHandler::~AutoConnectHandler() {
@@ -190,10 +175,7 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
 
   // Request to connect to the best network only if there is at least one
   // managed network. Otherwise only process existing requests.
-  const ManagedNetworkConfigurationHandler::GuidToPolicyMap* managed_networks =
-      managed_configuration_handler_->GetNetworkConfigsFromPolicy(userhash);
-  DCHECK(managed_networks);
-  if (!managed_networks->empty()) {
+  if (managed_configuration_handler_->HasAnyPolicyNetwork(userhash)) {
     RequestBestConnection(
         AutoConnectReason::AUTO_CONNECT_REASON_POLICY_APPLIED);
   } else {
@@ -201,17 +183,9 @@ void AutoConnectHandler::PoliciesApplied(const std::string& userhash) {
   }
 }
 
-void AutoConnectHandler::ScanStarted(const DeviceState* device) {
-  if (device->type() != shill::kTypeWifi)
-    return;
-  hidden_hex_ssids_at_scan_start_ = GetConfiguredHiddenHexSsids();
-}
-
 void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
   if (device->type() != shill::kTypeWifi)
     return;
-  std::set<std::string> hidden_hex_ssids_at_scan_start;
-  std::swap(hidden_hex_ssids_at_scan_start_, hidden_hex_ssids_at_scan_start);
 
   // Enforce AllowOnlyPolicyWiFiToConnectIfAvailable policy if enabled.
   const NetworkState* managed_network =
@@ -230,33 +204,6 @@ void AutoConnectHandler::ScanCompleted(const DeviceState* device) {
       return;
     }
   }
-
-  if (!connect_to_best_services_after_scan_)
-    return;
-
-  if (GetConfiguredHiddenHexSsids() != hidden_hex_ssids_at_scan_start &&
-      !rescan_triggered_due_to_hidden_ssids_) {
-    // For ConnectToBestServices to consider hidden SSIDs, they must have been
-    // discovered in a scan. This means that they must have been configured in
-    // shill before the scan started (the set of hidden SSIDs the device is
-    // trying to discover is broadcasted during the scan). If the set of hidden
-    // SSIDs has changed since the scan has started (e.g. because user policy
-    // configuring a hidden SSID has been applied), it is possible that shill is
-    // not aware that a hidden SSID would be available for AutoConnect because
-    // it was not configured at scan start time. Re-scan once before calling
-    // ConnectToBestServices.
-    rescan_triggered_due_to_hidden_ssids_ = true;
-    NET_LOG(EVENT) << "Set of hidden SSIDs changed, re-triggering scan.";
-    network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
-    return;
-  }
-
-  connect_to_best_services_after_scan_ = false;
-  // Request ConnectToBestServices after processing any pending DBus calls.
-  base::ThreadTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(&AutoConnectHandler::CallShillConnectToBestServices,
-                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutoConnectHandler::ResolveRequestCompleted(
@@ -331,15 +278,12 @@ void AutoConnectHandler::CheckBestConnection() {
 
   request_best_connection_pending_ = false;
 
-  // Trigger a ConnectToBestNetwork request after the next scan completion.
-  if (connect_to_best_services_after_scan_)
-    return;
-  connect_to_best_services_after_scan_ = true;
-  rescan_triggered_due_to_hidden_ssids_ = false;
-  if (!network_state_handler_->GetScanningByType(
-          NetworkTypePattern::Primitive(shill::kTypeWifi))) {
-    network_state_handler_->RequestScan(NetworkTypePattern::WiFi());
-  }
+  // Request ScanAndConnectToBestServices after processing any pending DBus
+  // calls.
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&AutoConnectHandler::CallShillScanAndConnectToBestServices,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void AutoConnectHandler::DisconnectWiFiIfPolicyRequires() {
@@ -421,15 +365,26 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
     if (network->blocked_by_policy()) {
       // Disconnect blocked network.
       if (network->IsConnectingOrConnected())
-        DisconnectNetwork(network->path());
-      // Remove configuration if it's in profile and either is Cellular network
-      // or AllowOnlyPolicyWiFiToConnectIfAvailable is enable for WiFi network.
-      if (network->IsInProfile() && (is_cellular_type || !available_only))
+        DisconnectNetwork(network);
+      if (!network->IsInProfile())
+        continue;
+
+      // Remove configuration if it's in profile and it's either an eSIM
+      // Cellular network or WiFi network with
+      // AllowOnlyPolicyWiFiToConnectIfAvailable
+      const bool isESim = is_cellular_type && !network->eid().empty();
+      const bool isPSim = is_cellular_type && network->eid().empty();
+      if (isESim || (!is_cellular_type && !available_only)) {
         RemoveNetworkConfigurationForNetwork(network->path());
+      } else if (isPSim) {
+        // Only disable auto-connect for pSIM cellular networks.
+        DisableAutoconnectForNetwork(network->path(),
+                                     ::onc::network_config::kCellular);
+      }
     } else if (only_managed_autoconnect) {
       // Disconnect & disable auto-connect.
       if (network->IsConnectingOrConnected())
-        DisconnectNetwork(network->path());
+        DisconnectNetwork(network);
       if (network->IsInProfile())
         DisableAutoconnectForNetwork(
             network->path(), is_cellular_type ? ::onc::network_config::kCellular
@@ -438,12 +393,14 @@ void AutoConnectHandler::DisconnectAndRemoveConfigOrDisableAutoConnect(
   }
 }
 
-void AutoConnectHandler::DisconnectNetwork(const std::string& service_path) {
+void AutoConnectHandler::DisconnectNetwork(const NetworkState* network) {
   NET_LOG(EVENT) << "Disconnect forced by policy for: "
-                 << NetworkPathId(service_path);
+                 << NetworkPathId(network->path());
   network_connection_handler_->DisconnectNetwork(
-      service_path, base::DoNothing(),
-      base::BindOnce(&DisconnectErrorCallback, service_path));
+      network->path(),
+      base::BindOnce(&RecordDisconnectByPolicyResult, network,
+                     /*success=*/true),
+      base::BindOnce(&DisconnectErrorCallback, network));
 }
 
 void AutoConnectHandler::RemoveNetworkConfigurationForNetwork(
@@ -460,51 +417,34 @@ void AutoConnectHandler::DisableAutoconnectForNetwork(
     const std::string& network_type) {
   NET_LOG(EVENT) << "Disable auto-connect forced by policy: "
                  << NetworkPathId(service_path);
-  base::DictionaryValue properties;
+  base::Value properties(base::Value::Type::DICTIONARY);
 
-  std::string autoconenct_path;
+  std::string autoconnect_path;
   if (network_type == ::onc::network_config::kWiFi) {
-    autoconenct_path = base::StrCat(
+    autoconnect_path = base::StrCat(
         {::onc::network_config::kWiFi, ".", ::onc::wifi::kAutoConnect});
   } else if (network_type == ::onc::network_config::kCellular) {
-    autoconenct_path = base::StrCat(
+    autoconnect_path = base::StrCat(
         {::onc::network_config::kCellular, ".", ::onc::cellular::kAutoConnect});
   } else {
     NOTREACHED();
   }
-  properties.SetBoolPath(autoconenct_path, false);
+  properties.SetBoolPath(autoconnect_path, false);
   managed_configuration_handler_->SetProperties(
       service_path, properties, base::DoNothing(),
       base::BindOnce(&SetPropertiesErrorCallback));
 }
 
-void AutoConnectHandler::CallShillConnectToBestServices() {
-  NET_LOG(EVENT) << "ConnectToBestServices ["
+void AutoConnectHandler::CallShillScanAndConnectToBestServices() {
+  NET_LOG(EVENT) << "ScanAndConnectToBestServices ["
                  << AutoConnectReasonsToString(auto_connect_reasons_) << "]";
 
-  ShillManagerClient::Get()->ConnectToBestServices(
+  ShillManagerClient::Get()->ScanAndConnectToBestServices(
       base::BindOnce(&AutoConnectHandler::NotifyAutoConnectInitiated,
                      weak_ptr_factory_.GetWeakPtr(), auto_connect_reasons_),
       base::BindOnce(&network_handler::ShillErrorCallbackFunction,
                      "ConnectToBestServices Failed", "",
                      network_handler::ErrorCallback()));
-}
-
-std::set<std::string> AutoConnectHandler::GetConfiguredHiddenHexSsids() {
-  std::set<std::string> hidden_hex_ssids;
-
-  NetworkStateHandler::NetworkStateList networks;
-  network_state_handler_->GetNetworkListByType(
-      NetworkTypePattern::WiFi(), /*configured_only=*/true,
-      /*visible_only=*/false, /*limit=*/0, &networks);
-  for (const NetworkState* network : networks) {
-    // Also check 'connectable' to only return networks that are fully
-    // configured, i.e. contain all configuration details to be able to connect.
-    if (network->hidden_ssid() && network->connectable()) {
-      hidden_hex_ssids.insert(network->GetHexSsid());
-    }
-  }
-  return hidden_hex_ssids;
 }
 
 }  // namespace chromeos

@@ -27,6 +27,12 @@ void FakeFrame::GetNavigationController(
 
 void FakeFrame::SetNavigationEventListener(
     fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener) {
+  SetNavigationEventListener2(std::move(listener), /*flags=*/{});
+}
+
+void FakeFrame::SetNavigationEventListener2(
+    fidl::InterfaceHandle<fuchsia::web::NavigationEventListener> listener,
+    fuchsia::web::NavigationEventListenerFlags flags) {
   listener_.Bind(std::move(listener));
   if (on_set_listener_callback_)
     std::move(on_set_listener_callback_).Run();

@@ -8,7 +8,7 @@
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/chromoting_session.h"
 #include "remoting/protocol/connection_to_host.h"
@@ -165,7 +165,7 @@ class JniClient : public ChromotingSession::Delegate {
   base::WeakPtr<JniClient> GetWeakPtr();
 
  private:
-  ChromotingClientRuntime* runtime_;
+  raw_ptr<ChromotingClientRuntime> runtime_;
 
   // Reference to the Java client object.
   base::android::ScopedJavaGlobalRef<jobject> java_client_;

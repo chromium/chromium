@@ -22,6 +22,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGN
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_INITIALIZED;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_INCOGNITO_DESCRIPTION_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_LENS_BUTTON_VISIBLE;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_TITLE_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_TAB_CAROUSEL_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.IS_VOICE_RECOGNITION_BUTTON_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.LENS_BUTTON_CLICK_LISTENER;
@@ -30,6 +31,7 @@ import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.MV_TILES_VISIBLE;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TAB_SWITCHER_TITLE_TOP_MARGIN;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TASKS_SURFACE_BODY_TOP_MARGIN;
+import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.TOP_TOOLBAR_PLACEHOLDER_HEIGHT;
 import static org.chromium.chrome.browser.tasks.TasksSurfaceProperties.VOICE_SEARCH_BUTTON_CLICK_LISTENER;
 
 import android.graphics.drawable.ColorDrawable;
@@ -37,6 +39,7 @@ import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 
 import androidx.test.filters.SmallTest;
 
@@ -54,17 +57,17 @@ import org.chromium.components.browser_ui.styles.ChromeColors;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
 /** Tests for {@link TasksViewBinder}. */
 @RunWith(ChromeJUnit4ClassRunner.class)
-public class TasksViewBinderTest extends DummyUiActivityTestCase {
+public class TasksViewBinderTest extends BlankUiTestActivityTestCase {
+    private final AtomicBoolean mViewClicked = new AtomicBoolean();
+    private final View.OnClickListener mViewOnClickListener = (v) -> mViewClicked.set(true);
     private TasksView mTasksView;
     private PropertyModel mTasksViewPropertyModel;
-    private AtomicBoolean mViewClicked = new AtomicBoolean();
-    private View.OnClickListener mViewOnClickListener = (v) -> mViewClicked.set(true);
     @Mock
     private IncognitoCookieControlsManager mCookieControlsManager;
 
@@ -94,10 +97,19 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
     public void testSetTabCarouselMode() {
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, true);
         assertTrue(isViewVisible(R.id.carousel_tab_switcher_container));
-        assertTrue(isViewVisible(R.id.tab_switcher_title));
 
         mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_VISIBLE, false);
         assertFalse(isViewVisible(R.id.carousel_tab_switcher_container));
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetTabCarouselTitle() {
+        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, true);
+        assertTrue(isViewVisible(R.id.tab_switcher_title));
+
+        mTasksViewPropertyModel.set(IS_TAB_CAROUSEL_TITLE_VISIBLE, false);
         assertFalse(isViewVisible(R.id.tab_switcher_title));
     }
 
@@ -296,5 +308,18 @@ public class TasksViewBinderTest extends DummyUiActivityTestCase {
         mTasksViewPropertyModel.set(TAB_SWITCHER_TITLE_TOP_MARGIN, 16);
 
         assertEquals(16, params.topMargin);
+    }
+
+    @Test
+    @UiThreadTest
+    @SmallTest
+    public void testSetTopToolbarLayoutHeight() {
+        ViewGroup.LayoutParams params =
+                mTasksView.findViewById(R.id.top_toolbar_placeholder).getLayoutParams();
+        assertEquals(LayoutParams.WRAP_CONTENT, params.height);
+
+        mTasksViewPropertyModel.set(TOP_TOOLBAR_PLACEHOLDER_HEIGHT, 16);
+
+        assertEquals(16, params.height);
     }
 }

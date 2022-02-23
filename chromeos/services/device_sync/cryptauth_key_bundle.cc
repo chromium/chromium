@@ -96,7 +96,7 @@ absl::optional<CryptAuthKeyBundle> CryptAuthKeyBundle::FromDictionary(
     return absl::nullopt;
 
   bool active_key_exists = false;
-  for (const base::Value& key_dict : keys->GetList()) {
+  for (const base::Value& key_dict : keys->GetListDeprecated()) {
     absl::optional<CryptAuthKey> key = CryptAuthKey::FromDictionary(key_dict);
     if (!key)
       return absl::nullopt;

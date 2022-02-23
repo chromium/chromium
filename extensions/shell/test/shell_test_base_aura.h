@@ -7,8 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
-
 #include "extensions/browser/extensions_test.h"
 #include "ui/gfx/geometry/rect.h"
 

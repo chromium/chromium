@@ -5,6 +5,7 @@
 #include "net/log/net_log.h"
 
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/waitable_event.h"
 #include "base/test/task_environment.h"
 #include "base/threading/simple_thread.h"
@@ -260,12 +261,12 @@ class NetLogTestThread : public base::SimpleThread {
   virtual void RunTestThread() = 0;
 
  protected:
-  NetLog* net_log_;
+  raw_ptr<NetLog> net_log_;
 
  private:
   // Only triggered once all threads have been created, to make it less likely
   // each thread completes before the next one starts.
-  base::WaitableEvent* start_event_;
+  raw_ptr<base::WaitableEvent> start_event_;
 };
 
 // A thread that adds a bunch of events to the NetLog.

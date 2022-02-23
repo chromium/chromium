@@ -5,10 +5,12 @@
 import SwiftUI
 
 /// A view that displays a list of actions in the overflow menu.
+@available(iOS 15, *)
 struct OverflowMenuActionList: View {
-  enum Offsets {
-    // List inset is 20, UX requires 16, hence offset by -4 left and right.
-    static let horizontalOffset: CGFloat = -4
+
+  enum Constants {
+    // The minimum row height for any row in the list.
+    static let minimumRowHeight: CGFloat = 48
   }
 
   /// The list of action groups for this view.
@@ -20,7 +22,10 @@ struct OverflowMenuActionList: View {
         OverflowMenuActionSection(actionGroup: actionGroup)
       }
     }
+    .accessibilityIdentifier(kPopupMenuToolsMenuActionListId)
     .listStyle(InsetGroupedListStyle())
-    .padding([.leading, .trailing], Offsets.horizontalOffset)
+    // Allow sections to have very small headers controlling section spacing.
+    .environment(\.defaultMinListHeaderHeight, 0)
+    .environment(\.defaultMinListRowHeight, Constants.minimumRowHeight)
   }
 }

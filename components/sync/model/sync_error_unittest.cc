@@ -133,7 +133,7 @@ TEST_F(SyncErrorTest, ToString) {
   base::Location location = FROM_HERE;
   std::string msg = "test";
   ModelType type = PREFERENCES;
-  std::string expected = std::string(ModelTypeToString(type)) +
+  std::string expected = std::string(ModelTypeToDebugString(type)) +
                          " datatype error was encountered: " + msg;
   LOG(INFO) << "Expect " << expected;
   SyncError error(location, SyncError::DATATYPE_ERROR, msg, type);

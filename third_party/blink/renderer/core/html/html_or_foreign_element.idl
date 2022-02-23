@@ -11,6 +11,10 @@ interface mixin HTMLOrForeignElement {
 
   [CEReactions, Reflect] attribute boolean autofocus;
   [CEReactions] attribute long tabIndex;
+
+  // https://github.com/MicrosoftEdge/MSEdgeExplainers/blob/main/Focusgroup/explainer.md
+  [CEReactions, Reflect, RuntimeEnabled=Focusgroup] attribute DOMString focusgroup;
+
   void focus(optional FocusOptions options = {});
   void blur();
 };

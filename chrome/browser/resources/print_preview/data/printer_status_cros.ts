@@ -1,7 +1,7 @@
 // Copyright 2020 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-import {assertNotReached} from 'chrome://resources/js/assert.m.js';
+import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
 
 /**
  *  These values must be kept in sync with the Reason enum in
@@ -133,22 +133,20 @@ export function computePrinterState(
 }
 
 export function getPrinterStatusIcon(
-    printerStatusReason: PrinterStatusReason|null,
-    isEnterprisePrinter: boolean): string {
+    printerStatusReason: PrinterStatusReason|null, isEnterprisePrinter: boolean,
+    prefersDarkColorScheme: boolean): string {
+  const printerTypePrefix = isEnterprisePrinter ?
+      'print-preview:business-printer-status-' :
+      'print-preview:printer-status-';
+  const darkModeSuffix = prefersDarkColorScheme ? '-dark' : '';
   switch (computePrinterState(printerStatusReason)) {
     case PrinterState.GOOD:
-      return isEnterprisePrinter ?
-          'print-preview:business-printer-status-green' :
-          'print-preview:printer-status-green';
+      return `${printerTypePrefix}green${darkModeSuffix}`;
     case PrinterState.ERROR:
-      return isEnterprisePrinter ? 'print-preview:business-printer-status-red' :
-                                   'print-preview:printer-status-red';
+      return `${printerTypePrefix}red${darkModeSuffix}`;
     case PrinterState.UNKNOWN:
-      return isEnterprisePrinter ?
-          'print-preview:business-printer-status-grey' :
-          'print-preview:printer-status-grey';
+      return `${printerTypePrefix}grey${darkModeSuffix}`;
     default:
       assertNotReached();
-      return '';
   }
 }

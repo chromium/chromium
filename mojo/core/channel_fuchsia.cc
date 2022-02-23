@@ -11,8 +11,10 @@
 #include <zircon/processargs.h>
 #include <zircon/status.h>
 #include <zircon/syscalls.h>
+
 #include <algorithm>
 #include <memory>
+#include <tuple>
 
 #include "base/bind.h"
 #include "base/containers/circular_deque.h"
@@ -20,7 +22,6 @@
 #include "base/files/scoped_file.h"
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/synchronization/lock.h"
@@ -252,7 +253,7 @@ class ChannelFuchsia : public Channel,
 
     read_watch_.reset();
     if (leak_handle_)
-      ignore_result(handle_.release());
+      std::ignore = handle_.release();
     handle_.reset();
 
     // May destroy the |this| if it was the last reference.

@@ -8,6 +8,7 @@
 
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_split.h"
@@ -25,7 +26,7 @@
 
 namespace {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char16_t kDot = '.';
 
 // Build a path from the first |num_components| elements in |path_elements|.
@@ -119,7 +120,7 @@ void SplitHost(const GURL& url,
 
   // Get sub domain.
   const size_t domain_start_index = url_host->find(*url_domain);
-  std::u16string kWwwPrefix = u"www.";
+  constexpr base::StringPiece16 kWwwPrefix = u"www.";
   if (domain_start_index != std::u16string::npos)
     *url_subdomain = url_host->substr(0, domain_start_index);
   if ((*url_subdomain == kWwwPrefix || url_subdomain->empty() ||
@@ -127,7 +128,7 @@ void SplitHost(const GURL& url,
     url_subdomain->clear();
   }
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 bool ShouldShowScheme(base::StringPiece scheme,
                       const url_formatter::SchemeDisplay scheme_display) {
@@ -159,7 +160,7 @@ std::u16string HostForDisplay(base::StringPiece host_in_puny) {
 
 namespace url_formatter {
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 // TODO(pkasting): http://crbug.com/77883 This whole function gets
 // kerning/ligatures/etc. issues potentially wrong by assuming that the width of
@@ -217,7 +218,7 @@ std::u16string ElideUrl(const GURL& url,
   // domain is now C: - this is a nice hack for eliding to work pleasantly.
   if (url.SchemeIsFile()) {
     // Split the path string using ":"
-    const std::u16string kColon(1, ':');
+    constexpr base::StringPiece16 kColon(u":", 1);
     std::vector<std::u16string> file_path_split = base::SplitString(
         url_path, kColon, base::TRIM_WHITESPACE, base::SPLIT_WANT_ALL);
     if (file_path_split.size() > 1) {  // File is of type "file:///C:/.."
@@ -225,7 +226,8 @@ std::u16string ElideUrl(const GURL& url,
       url_domain.clear();
       url_subdomain.clear();
 
-      url_host = url_domain = file_path_split.at(0).substr(1) + kColon;
+      url_host = url_domain =
+          base::StrCat({file_path_split.at(0).substr(1), kColon});
       url_path_query_etc = url_path = file_path_split.at(1);
     }
   }
@@ -358,31 +360,29 @@ std::u16string ElideHost(const GURL& url,
                         gfx::ELIDE_HEAD);
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 std::u16string FormatUrlForSecurityDisplay(const GURL& url,
                                            const SchemeDisplay scheme_display) {
   if (!url.is_valid() || url.is_empty() || !url.IsStandard())
     return url_formatter::FormatUrl(url);
 
-  const std::u16string colon(u":");
-  const std::u16string scheme_separator(
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator));
+  constexpr base::StringPiece16 colon(u":");
 
   if (url.SchemeIsFile()) {
-    return base::ASCIIToUTF16(url::kFileScheme) + scheme_separator +
-           base::UTF8ToUTF16(url.path());
+    return base::StrCat({url::kFileScheme16, url::kStandardSchemeSeparator16,
+                         base::UTF8ToUTF16(url.path())});
   }
 
   if (url.SchemeIsFileSystem()) {
     const GURL* inner_url = url.inner_url();
     if (inner_url->SchemeIsFile()) {
-      return base::ASCIIToUTF16(url::kFileSystemScheme) + colon +
-             FormatUrlForSecurityDisplay(*inner_url) +
-             base::UTF8ToUTF16(url.path());
+      return base::StrCat({url::kFileSystemScheme16, colon,
+                           FormatUrlForSecurityDisplay(*inner_url),
+                           base::UTF8ToUTF16(url.path())});
     }
-    return base::ASCIIToUTF16(url::kFileSystemScheme) + colon +
-           FormatUrlForSecurityDisplay(*inner_url);
+    return base::StrCat({url::kFileSystemScheme16, colon,
+                         FormatUrlForSecurityDisplay(*inner_url)});
   }
 
   const GURL origin = url.DeprecatedGetOriginAsURL();
@@ -390,15 +390,17 @@ std::u16string FormatUrlForSecurityDisplay(const GURL& url,
   base::StringPiece host = origin.host_piece();
 
   std::u16string result;
-  if (ShouldShowScheme(scheme, scheme_display))
-    result = base::UTF8ToUTF16(scheme) + scheme_separator;
+  if (ShouldShowScheme(scheme, scheme_display)) {
+    result = base::StrCat(
+        {base::UTF8ToUTF16(scheme), url::kStandardSchemeSeparator16});
+  }
   result += HostForDisplay(host);
 
   const int port = origin.IntPort();
   const int default_port = url::DefaultPortForScheme(
       scheme.data(), static_cast<int>(scheme.length()));
   if (port != url::PORT_UNSPECIFIED && port != default_port)
-    result += colon + base::UTF8ToUTF16(origin.port_piece());
+    result += base::StrCat({colon, base::UTF8ToUTF16(origin.port_piece())});
 
   return result;
 }
@@ -411,20 +413,20 @@ std::u16string FormatOriginForSecurityDisplay(
   if (scheme.empty() && host.empty())
     return std::u16string();
 
-  const std::u16string colon(u":");
-  const std::u16string scheme_separator(
-      base::ASCIIToUTF16(url::kStandardSchemeSeparator));
+  constexpr base::StringPiece16 colon(u":");
 
   std::u16string result;
-  if (ShouldShowScheme(scheme, scheme_display))
-    result = base::UTF8ToUTF16(scheme) + scheme_separator;
+  if (ShouldShowScheme(scheme, scheme_display)) {
+    result = base::StrCat(
+        {base::UTF8ToUTF16(scheme), url::kStandardSchemeSeparator16});
+  }
   result += HostForDisplay(host);
 
   int port = static_cast<int>(origin.port());
   const int default_port = url::DefaultPortForScheme(
       scheme.data(), static_cast<int>(scheme.length()));
   if (port != 0 && port != default_port)
-    result += colon + base::NumberToString16(origin.port());
+    result += base::StrCat({colon, base::NumberToString16(origin.port())});
 
   return result;
 }

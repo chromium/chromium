@@ -9,7 +9,7 @@
 
 #include "base/check.h"
 #include "base/component_export.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "gpu/vulkan/vulkan_fence_helper.h"
 
 namespace gpu {
@@ -96,8 +96,8 @@ class COMPONENT_EXPORT(VULKAN) VulkanCommandBuffer {
   const bool primary_;
   bool recording_ = false;
   RecordType record_type_ = RECORD_TYPE_EMPTY;
-  VulkanDeviceQueue* device_queue_;
-  VulkanCommandPool* command_pool_;
+  raw_ptr<VulkanDeviceQueue> device_queue_;
+  raw_ptr<VulkanCommandPool> command_pool_;
   VkCommandBuffer command_buffer_ = VK_NULL_HANDLE;
   VulkanFenceHelper::FenceHandle submission_fence_;
 };

@@ -12,7 +12,6 @@ import android.webkit.MimeTypeMap;
 
 import androidx.annotation.Nullable;
 
-import org.chromium.base.ContextUtils;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.chrome.browser.profiles.OTRProfileID;
 import org.chromium.components.download.DownloadCollectionBridge;
@@ -70,8 +69,7 @@ public class DuplicateDownloadClickableSpan extends ClickableSpan {
                 DownloadUtils.openDownload(
                         mFilePath, mMimeType, null, mOTRProfileID, null, null, mSource);
             } else {
-                DownloadManagerService.openDownloadsPage(
-                        ContextUtils.getApplicationContext(), mOTRProfileID, mSource);
+                DownloadManagerService.openDownloadsPage(mOTRProfileID, mSource);
             }
         }
     }

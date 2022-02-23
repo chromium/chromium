@@ -73,7 +73,7 @@ class CONTENT_EXPORT SignedExchangeDevToolsProxy {
   void OnSignedExchangeReceived(
       const absl::optional<SignedExchangeEnvelope>& envelope,
       const scoped_refptr<net::X509Certificate>& certificate,
-      const net::SSLInfo* ssl_info);
+      const absl::optional<net::SSLInfo>& ssl_info);
 
  private:
   const GURL outer_request_url_;

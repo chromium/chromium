@@ -13,9 +13,9 @@
 #include "base/memory/ptr_util.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
-#include "base/strings/string_number_conversions.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
+#include "chrome/browser/ash/policy/enrollment/private_membership/psm_rlwe_id_provider.h"
 #include "chrome/browser/ash/policy/server_backed_state/server_backed_device_state.h"
 #include "chrome/common/chrome_content_client.h"
 #include "chrome/common/pref_names.h"
@@ -61,7 +61,7 @@ int NextPowerOf2(int64_t value) {
 }
 
 // Sets or clears a value in a dictionary.
-void UpdateDict(base::DictionaryValue* dict,
+void UpdateDict(base::Value* dict,
                 const char* pref_path,
                 bool set_or_clear,
                 std::unique_ptr<base::Value> value) {
@@ -135,18 +135,6 @@ std::string ConvertLicenseType(
 
 }  // namespace
 
-psm_rlwe::RlwePlaintextId ConstructDeviceRlweId(
-    const std::string& device_serial_number,
-    const std::string& device_rlz_brand_code) {
-  psm_rlwe::RlwePlaintextId rlwe_id;
-
-  std::string rlz_brand_code_hex = base::HexEncode(
-      device_rlz_brand_code.data(), device_rlz_brand_code.size());
-
-  rlwe_id.set_sensitive_id(rlz_brand_code_hex + "/" + device_serial_number);
-  return rlwe_id;
-}
-
 class AutoEnrollmentClientImpl::DeviceIdentifierProviderFRE {
  public:
   explicit DeviceIdentifierProviderFRE(
@@ -218,22 +206,25 @@ class PsmHelper {
   // The `psm_result` represents the final result of PSM protocol.
   using CompletionCallback = base::OnceCallback<void(PsmResult psm_result)>;
 
-  // The PsmHelper doesn't take ownership of |device_management_service| and
-  // |local_state|. Also, both must not be nullptr. The
-  // |device_management_service| and |local_state| must outlive PsmHelper.
+  // The PsmHelper doesn't take ownership of |device_management_service|,
+  // |local_state|, |psm_rlwe_client_factory| and |psm_rlwe_id_provider|.
+  // All of them must not be nullptr. Also, |device_management_service|,
+  // and |local_state| must outlive PsmHelper.
   PsmHelper(DeviceManagementService* device_management_service,
             scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
             PrefService* local_state,
-            psm_rlwe::RlwePlaintextId psm_rlwe_id,
-            PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory)
+            PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
+            PsmRlweIdProvider* psm_rlwe_id_provider)
       : random_device_id_(base::GenerateGUID()),
         url_loader_factory_(url_loader_factory),
         device_management_service_(device_management_service),
-        local_state_(local_state),
-        psm_rlwe_id_(std::move(psm_rlwe_id)) {
+        local_state_(local_state) {
     CHECK(device_management_service);
     CHECK(psm_rlwe_client_factory);
+    CHECK(psm_rlwe_id_provider);
     DCHECK(local_state_);
+
+    psm_rlwe_id_ = psm_rlwe_id_provider->ConstructRlweId();
 
     // Create PSM client for |psm_rlwe_id_| with use case as CROS_DEVICE_STATE.
     std::vector<psm_rlwe::RlwePlaintextId> psm_ids = {psm_rlwe_id_};
@@ -300,11 +291,6 @@ class PsmHelper {
         base::BindOnce(&PsmHelper::StoreErrorAndStop, base::Unretained(this),
                        PsmResult::kTimeout));
     SendPsmRlweOprfRequest();
-  }
-
-  // Sets the |psm_rlwe_id_| for testing.
-  void SetRlweIdForTesting(psm_rlwe::RlwePlaintextId psm_rlwe_id) {
-    psm_rlwe_id_ = std::move(psm_rlwe_id);
   }
 
   // Tries to load the result of a previous execution of the PSM protocol from
@@ -849,19 +835,18 @@ AutoEnrollmentClientImpl::FactoryImpl::CreateForInitialEnrollment(
     const std::string& device_brand_code,
     int power_initial,
     int power_limit,
-    PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory) {
+    PrivateMembershipRlweClient::Factory* psm_rlwe_client_factory,
+    PsmRlweIdProvider* psm_rlwe_id_provider) {
   return base::WrapUnique(new AutoEnrollmentClientImpl(
       progress_callback, device_management_service, local_state,
       url_loader_factory,
       /*device_identifier_provider_fre=*/nullptr,
       std::make_unique<StateDownloadMessageProcessorInitialEnrollment>(
           device_serial_number, device_brand_code),
-      power_initial, power_limit,
-      kUMASuffixInitialEnrollment,
-      std::make_unique<PsmHelper>(
-          device_management_service, url_loader_factory, local_state,
-          ConstructDeviceRlweId(device_serial_number, device_brand_code),
-          psm_rlwe_client_factory)));
+      power_initial, power_limit, kUMASuffixInitialEnrollment,
+      std::make_unique<PsmHelper>(device_management_service, url_loader_factory,
+                                  local_state, psm_rlwe_client_factory,
+                                  psm_rlwe_id_provider)));
 }
 
 AutoEnrollmentClientImpl::~AutoEnrollmentClientImpl() {
@@ -1086,14 +1071,6 @@ void AutoEnrollmentClientImpl::HandlePsmCompletion(PsmResult psm_result) {
   }
 }
 
-void AutoEnrollmentClientImpl::SetPsmRlweIdForTesting(
-    const psm_rlwe::RlwePlaintextId& psm_rlwe_id) {
-  if (!psm_helper_)
-    return;
-
-  psm_helper_->SetRlweIdForTesting(std::move(psm_rlwe_id));
-}
-
 void AutoEnrollmentClientImpl::ReportProgress(AutoEnrollmentState state) {
   state_ = state;
   if (progress_callback_.is_null()) {
@@ -1159,7 +1136,10 @@ void AutoEnrollmentClientImpl::SendBucketDownloadRequest() {
   // one where the hash bucket is actually downloaded.
   time_start_bucket_download_ = base::TimeTicks::Now();
 
-  VLOG(1) << "Request bucket #" << remainder;
+  // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+  // in the logs.
+  LOG(WARNING) << "Request bucket #" << remainder;
+
   std::unique_ptr<DMServerJobConfiguration> config = std::make_unique<
       DMServerJobConfiguration>(
       device_management_service_,
@@ -1288,7 +1268,11 @@ bool AutoEnrollmentClientImpl::OnBucketDownloadRequestCompletion(
                              has_server_state_.value());
     local_state_->SetInteger(prefs::kAutoEnrollmentPowerLimit, power_limit_);
     local_state_->CommitPendingWrite();
-    VLOG(1) << "Received has_state=" << has_server_state_.value();
+
+    // TODO(crbug.com/1271134): Logging as "WARNING" to make sure it's preserved
+    // in the logs.
+    LOG(WARNING) << "Received has_state=" << has_server_state_.value();
+
     progress = true;
     // Report timing if hash dance finished successfully and if the caller is
     // still interested in the result.

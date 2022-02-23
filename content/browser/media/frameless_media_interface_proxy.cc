@@ -4,9 +4,11 @@
 
 #include "content/browser/media/frameless_media_interface_proxy.h"
 
+#include <tuple>
+
 #include "base/bind.h"
 #include "base/logging.h"
-#include "base/macros.h"
+#include "build/build_config.h"
 #include "content/public/browser/media_service.h"
 #include "media/base/cdm_context.h"
 #include "media/mojo/mojom/media_service.mojom.h"
@@ -49,6 +51,15 @@ void FramelessMediaInterfaceProxy::CreateVideoDecoder(
     factory->CreateVideoDecoder(std::move(receiver));
 }
 
+void FramelessMediaInterfaceProxy::CreateAudioEncoder(
+    mojo::PendingReceiver<media::mojom::AudioEncoder> receiver) {
+  DVLOG(2) << __func__;
+  DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  InterfaceFactory* factory = GetMediaInterfaceFactory();
+  if (factory)
+    factory->CreateAudioEncoder(std::move(receiver));
+}
+
 void FramelessMediaInterfaceProxy::CreateDefaultRenderer(
     const std::string& audio_device_id,
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
@@ -59,7 +70,7 @@ void FramelessMediaInterfaceProxy::CreateCastRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver) {}
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FramelessMediaInterfaceProxy::CreateFlingingRenderer(
     const std::string& audio_device_id,
     mojo::PendingRemote<media::mojom::FlingingRendererClientExtension>
@@ -72,9 +83,9 @@ void FramelessMediaInterfaceProxy::CreateMediaPlayerRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaPlayerRendererExtension>
         renderer_extension_receiver) {}
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Unimplemented method as this requires CDM and media::Renderer services with
 // frame context.
 void FramelessMediaInterfaceProxy::CreateMediaFoundationRenderer(
@@ -82,10 +93,9 @@ void FramelessMediaInterfaceProxy::CreateMediaFoundationRenderer(
     mojo::PendingReceiver<media::mojom::Renderer> receiver,
     mojo::PendingReceiver<media::mojom::MediaFoundationRendererExtension>
         renderer_extension_receiver) {}
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-void FramelessMediaInterfaceProxy::CreateCdm(const std::string& key_system,
-                                             const media::CdmConfig& cdm_config,
+void FramelessMediaInterfaceProxy::CreateCdm(const media::CdmConfig& cdm_config,
                                              CreateCdmCallback callback) {
   std::move(callback).Run(mojo::NullRemote(), nullptr, "CDM not supported");
 }
@@ -106,7 +116,7 @@ void FramelessMediaInterfaceProxy::ConnectToMediaService() {
   DCHECK(!interface_factory_remote_);
 
   mojo::PendingRemote<media::mojom::FrameInterfaceFactory> interfaces;
-  ignore_result(interfaces.InitWithNewPipeAndPassReceiver());
+  std::ignore = interfaces.InitWithNewPipeAndPassReceiver();
 
   GetMediaService().CreateInterfaceFactory(
       interface_factory_remote_.BindNewPipeAndPassReceiver(),

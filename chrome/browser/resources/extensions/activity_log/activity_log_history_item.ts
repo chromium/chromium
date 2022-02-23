@@ -29,7 +29,7 @@ export type PageUrlItem = {
   count: number,
 };
 
-class ActivityLogHistoryItemElement extends PolymerElement {
+export class ActivityLogHistoryItemElement extends PolymerElement {
   static get is() {
     return 'activity-log-history-item';
   }
@@ -97,6 +97,12 @@ class ActivityLogHistoryItemElement extends PolymerElement {
    */
   private shouldShowPageUrlCount_(): boolean {
     return this.data.countsByUrl.size > 1;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'activity-log-history-item': ActivityLogHistoryItemElement;
   }
 }
 

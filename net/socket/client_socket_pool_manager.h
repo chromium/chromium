@@ -33,9 +33,7 @@ class ProxyServer;
 
 struct SSLConfig;
 
-// This should rather be a simple constant but Windows shared libs doesn't
-// really offer much flexiblity in exporting contants.
-enum DefaultMaxValues { kDefaultMaxSocketsPerProxyServer = 32 };
+constexpr int kDefaultMaxSocketsPerProxyServer = 32;
 
 class NET_EXPORT_PRIVATE ClientSocketPoolManager {
  public:

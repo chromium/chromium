@@ -9,7 +9,10 @@ import {SettingsBluetoothPairingDeviceSelectionPageElement} from 'chrome://resou
 import {DeviceItemState} from 'chrome://resources/cr_components/chromeos/bluetooth/bluetooth_types.js';
 import {setBluetoothConfigForTesting} from 'chrome://resources/cr_components/chromeos/bluetooth/cros_bluetooth_config.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
 import {assertEquals, assertFalse, assertTrue} from '../../../chai_assert.js';
+import {waitAfterNextRender} from '../../../test_util.js';
+
 import {createDefaultBluetoothDevice, FakeBluetoothConfig} from './fake_bluetooth_config.js';
 import {FakeBluetoothDiscoveryDelegate} from './fake_bluetooth_discovery_delegate.js';
 
@@ -36,6 +39,7 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     deviceSelectionPage =
         /** @type {?SettingsBluetoothPairingDeviceSelectionPageElement} */ (
             document.createElement('bluetooth-pairing-device-selection-page'));
+    deviceSelectionPage.isBluetoothEnabled = true;
     document.body.appendChild(deviceSelectionPage);
     flush();
 
@@ -65,6 +69,9 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     const getDeviceListItems = () =>
         deviceSelectionPage.shadowRoot.querySelectorAll(
             'bluetooth-pairing-device-item');
+    const getBasePage = () =>
+        deviceSelectionPage.shadowRoot.querySelector('bluetooth-base-page');
+    assertTrue(getBasePage().showScanProgress);
 
     const learnMoreLink =
         deviceSelectionPage.shadowRoot.querySelector('localized-link');
@@ -116,5 +123,87 @@ suite('CrComponentsBluetoothPairingDeviceSelectionPageTest', function() {
     await flushAsync();
     assertEquals(
         getDeviceListItems()[0].deviceItemState, DeviceItemState.PAIRING);
+
+    // Simulate device is pairing and is turned off.
+    // Also covers case where device pairing succeeds, device list would
+    // be empty but |devicePendingPairing| will still have a value.
+    // this is because |devicePendingPairing| is not reset when pairing
+    // succeeds.
+    bluetoothConfig.resetDiscoveredDeviceList();
+    deviceSelectionPage.devicePendingPairing = device.deviceProperties;
+    await flushAsync();
+    assertFalse(!!getDeviceList());
+    assertEquals(
+        deviceSelectionPage.i18n('bluetoothAvailableDevices'),
+        getDeviceListTitle().textContent.trim());
+
+    // since device is turned off device pairing fails and devicePendingPairing
+    // becomes null.
+    deviceSelectionPage.devicePendingPairing = null;
+    await flushAsync();
+    assertFalse(!!getDeviceList());
+    assertEquals(
+        deviceSelectionPage.i18n('bluetoothNoAvailableDevices'),
+        getDeviceListTitle().textContent.trim());
+
+    // Disable Bluetooth.
+    deviceSelectionPage.isBluetoothEnabled = false;
+    await flushAsync();
+
+    // Scanning progress should be hidden and the 'Bluetooth disabled' message
+    // shown.
+    assertFalse(getBasePage().showScanProgress);
+    assertFalse(!!getDeviceList());
+    assertEquals(
+        deviceSelectionPage.i18n('bluetoothDisabled'),
+        getDeviceListTitle().textContent.trim());
+  });
+
+  test('Last selected item is focused', async function() {
+    const getDeviceList = () =>
+        deviceSelectionPage.shadowRoot.querySelector('iron-list');
+    const getDeviceListItems = () =>
+        deviceSelectionPage.shadowRoot.querySelectorAll(
+            'bluetooth-pairing-device-item');
+
+    const device1 = createDefaultBluetoothDevice(
+        'deviceId1',
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+    const deviceId2 = 'deviceId2';
+    const device2 = createDefaultBluetoothDevice(
+        deviceId2,
+        /*publicName=*/ 'BeatsX',
+        /*connectionState=*/
+        chromeos.bluetoothConfig.mojom.DeviceConnectionState.kConnected,
+        /*opt_nickname=*/ 'device1',
+        /*opt_audioCapability=*/
+        mojom.AudioOutputCapability.kCapableOfAudioOutput,
+        /*opt_deviceType=*/ mojom.DeviceType.kMouse);
+    bluetoothConfig.appendToDiscoveredDeviceList(
+        [device1.deviceProperties, device2.deviceProperties]);
+
+    await flushAsync();
+
+    assertTrue(!!getDeviceList());
+    assertEquals(getDeviceList().items.length, 2);
+
+    // Simulate a device being selected for pairing, then returning back to the
+    // selection page.
+    deviceSelectionPage.devicePendingPairing = device2.deviceProperties;
+    deviceSelectionPage.devicePendingPairing = null;
+
+    // Focus the last selected item. This should cause focus to be on the second
+    // device.
+    deviceSelectionPage.attemptFocusLastSelectedItem();
+    await waitAfterNextRender(getDeviceList());
+
+    assertEquals(
+        getDeviceListItems()[1], deviceSelectionPage.shadowRoot.activeElement);
   });
 });

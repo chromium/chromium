@@ -129,6 +129,12 @@ class StateBitmap final {
   //   void(uintptr_t object_start)
   template <typename Callback>
   inline void IterateUnmarkedQuarantined(size_t epoch, Callback) const;
+  // The callback is of type
+  //   void(uintptr_t object_start)
+  // The function is similar as above, but it also frees (clears) the iterated
+  // bits.
+  template <typename Callback>
+  inline void IterateUnmarkedQuarantinedAndFree(size_t epoch, Callback);
 
   inline void Clear();
 
@@ -180,8 +186,11 @@ class StateBitmap final {
     FilterUnmarkedQuarantine is_unmarked;
   };
 
-  template <typename Filter, typename CallbackForwarder, typename Callback>
-  inline void IterateImpl(size_t epoch, Callback) const;
+  template <typename Filter,
+            typename CallbackForwarder,
+            typename Callback,
+            bool Clear>
+  inline void IterateImpl(size_t epoch, Callback);
 
   ALWAYS_INLINE CellType LoadCell(size_t cell_index) const;
   ALWAYS_INLINE static constexpr std::pair<size_t, size_t>
@@ -201,8 +210,7 @@ ALWAYS_INLINE void
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Allocate(
     uintptr_t address) {
   PA_SCAN_DCHECK(IsFreed(address));
-  size_t cell_index, object_bit;
-  std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
+  auto [cell_index, object_bit] = AllocationIndexAndBit(address);
   const CellType mask = static_cast<CellType>(State::kAlloced) << object_bit;
   auto& cell = AsAtomicCell(cell_index);
   cell.fetch_or(mask, std::memory_order_relaxed);
@@ -221,8 +229,7 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Quarantine(
                 "kQuarantined1 must be inverted kQuarantined2");
   const State quarantine_state =
       epoch & 0b1 ? State::kQuarantined1 : State::kQuarantined2;
-  size_t cell_index, object_bit;
-  std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
+  auto [cell_index, object_bit] = AllocationIndexAndBit(address);
   const CellType mask =
       ~(static_cast<CellType>(quarantine_state) << object_bit);
   auto& cell = AsAtomicCell(cell_index);
@@ -240,8 +247,7 @@ ALWAYS_INLINE bool StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
                 "kQuarantined1 must be inverted kQuarantined2");
   const State quarantine_state_old =
       epoch & 0b1 ? State::kQuarantined2 : State::kQuarantined1;
-  size_t cell_index, object_bit;
-  std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
+  auto [cell_index, object_bit] = AllocationIndexAndBit(address);
   const CellType clear_mask =
       ~(static_cast<CellType>(State::kAlloced) << object_bit);
   const CellType set_mask_old = static_cast<CellType>(quarantine_state_old)
@@ -280,8 +286,7 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::Free(
   static_assert((~static_cast<CellType>(State::kAlloced) & kStateMask) ==
                     (static_cast<CellType>(State::kFreed) & kStateMask),
                 "kFreed must be inverted kAlloced");
-  size_t cell_index, object_bit;
-  std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
+  auto [cell_index, object_bit] = AllocationIndexAndBit(address);
   const CellType mask = ~(static_cast<CellType>(State::kAlloced) << object_bit);
   auto& cell = AsAtomicCell(cell_index);
   cell.fetch_and(mask, std::memory_order_relaxed);
@@ -334,8 +339,7 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
 unsigned StateBitmap<PageSize, PageAlignment, AllocationAlignment>::GetBits(
     uintptr_t address) const {
-  size_t cell_index, object_bit;
-  std::tie(cell_index, object_bit) = AllocationIndexAndBit(address);
+  auto [cell_index, object_bit] = AllocationIndexAndBit(address);
   return (LoadCell(cell_index) >> object_bit) & kStateMask;
 }
 
@@ -381,11 +385,14 @@ ALWAYS_INLINE void StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
-template <typename Filter, typename CallbackForwarder, typename Callback>
+template <typename Filter,
+          typename CallbackForwarder,
+          typename Callback,
+          bool Clear>
 inline void
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateImpl(
     size_t epoch,
-    Callback callback) const {
+    Callback callback) {
   // The bitmap (|this|) is allocated inside the page with |kPageAlignment|.
   Filter filter{epoch};
   CallbackForwarder callback_forwarder{epoch};
@@ -408,7 +415,15 @@ StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateImpl(
       const uintptr_t object_address =
           base +
           (object_number * kAllocationAlignment / kBitsNeededForAllocation);
+
       callback_forwarder(callback, object_address, bits);
+
+      if (Clear) {
+        // Clear the current bits.
+        AsAtomicCell(cell_index)
+            .fetch_and(clear_value_mask, std::memory_order_relaxed);
+      }
+
       // Clear current object bit in temporary value to advance iteration.
       value &= clear_value_mask;
     }
@@ -420,8 +435,9 @@ template <typename Callback>
 inline void
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateAllocated(
     Callback callback) const {
-  IterateImpl<FilterAllocated, SimpleCallbackForwarder, Callback>(
-      0, std::move(callback));
+  const_cast<StateBitmap*>(this)
+      ->IterateImpl<FilterAllocated, SimpleCallbackForwarder, Callback, false>(
+          0, std::move(callback));
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
@@ -429,8 +445,9 @@ template <typename Callback, decltype(std::declval<Callback>()(0), 0)>
 inline void
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateQuarantined(
     Callback callback) const {
-  IterateImpl<FilterQuarantine, SimpleCallbackForwarder, Callback>(
-      0, std::move(callback));
+  const_cast<StateBitmap*>(this)
+      ->IterateImpl<FilterQuarantine, SimpleCallbackForwarder, Callback, false>(
+          0, std::move(callback));
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
@@ -439,16 +456,26 @@ inline void
 StateBitmap<PageSize, PageAlignment, AllocationAlignment>::IterateQuarantined(
     size_t epoch,
     Callback callback) const {
-  IterateImpl<FilterQuarantine, QuarantineCallbackForwarder, Callback>(
-      epoch, std::move(callback));
+  const_cast<StateBitmap*>(this)
+      ->IterateImpl<FilterQuarantine, QuarantineCallbackForwarder, Callback,
+                    false>(epoch, std::move(callback));
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
 template <typename Callback>
 inline void StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
     IterateUnmarkedQuarantined(size_t epoch, Callback callback) const {
-  IterateImpl<FilterUnmarkedQuarantine, SimpleCallbackForwarder, Callback>(
-      epoch, std::move(callback));
+  const_cast<StateBitmap*>(this)
+      ->IterateImpl<FilterUnmarkedQuarantine, SimpleCallbackForwarder, Callback,
+                    false>(epoch, std::move(callback));
+}
+
+template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>
+template <typename Callback>
+inline void StateBitmap<PageSize, PageAlignment, AllocationAlignment>::
+    IterateUnmarkedQuarantinedAndFree(size_t epoch, Callback callback) {
+  IterateImpl<FilterUnmarkedQuarantine, SimpleCallbackForwarder, Callback,
+              true>(epoch, std::move(callback));
 }
 
 template <size_t PageSize, size_t PageAlignment, size_t AllocationAlignment>

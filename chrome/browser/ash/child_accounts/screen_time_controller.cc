@@ -76,8 +76,8 @@ ScreenTimeController::ScreenTimeController(content::BrowserContext* context)
       clock_(base::DefaultClock::GetInstance()),
       next_state_timer_(std::make_unique<base::OneShotTimer>()),
       usage_time_limit_warning_timer_(std::make_unique<base::OneShotTimer>()),
-      last_policy_(pref_service_->GetDictionary(prefs::kUsageTimeLimit)
-                       ->CreateDeepCopy()),
+      last_policy_(
+          pref_service_->GetDictionary(prefs::kUsageTimeLimit)->Clone()),
       time_limit_notifier_(context) {
   session_manager::SessionManager::Get()->AddObserver(this);
   UsageTimeStateNotifier::GetInstance()->AddObserver(this);
@@ -147,9 +147,9 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
   absl::optional<usage_time_limit::State> last_state = GetLastStateFromPref();
-  const base::DictionaryValue* time_limit =
+  const base::Value* time_limit =
       pref_service_->GetDictionary(prefs::kUsageTimeLimit);
-  const base::DictionaryValue* local_override =
+  const base::Value* local_override =
       pref_service_->GetDictionary(prefs::kTimeLimitLocalOverride);
 
   // TODO(agawronska): Usage timestamp should be passed instead of second |now|.
@@ -182,9 +182,9 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
   }
 
   // Trigger policy update notifications.
-  DCHECK(last_policy_);
+  DCHECK(last_policy_.is_dict());
   auto updated_policy_types =
-      usage_time_limit::UpdatedPolicyTypes(*last_policy_, *time_limit);
+      usage_time_limit::UpdatedPolicyTypes(last_policy_, *time_limit);
   for (const auto& policy_type : updated_policy_types) {
     absl::optional<base::Time> lock_time;
     if (policy_type == usage_time_limit::PolicyType::kOverride)
@@ -196,7 +196,7 @@ void ScreenTimeController::CheckTimeLimit(const std::string& source) {
     time_limit_notifier_.ShowPolicyUpdateNotification(notification_type.value(),
                                                       lock_time);
   }
-  last_policy_ = time_limit->CreateDeepCopy();
+  last_policy_ = time_limit->Clone();
 
   // TODO(agawronska): We are creating UsageTimeLimitProcessor second time in
   // this method. Could expected reset time be returned as a part of the state?
@@ -362,7 +362,7 @@ void ScreenTimeController::SaveCurrentStateToPref(
 
 absl::optional<usage_time_limit::State>
 ScreenTimeController::GetLastStateFromPref() {
-  const base::DictionaryValue* last_state =
+  const base::Value* last_state =
       pref_service_->GetDictionary(prefs::kScreenTimeLastState);
   usage_time_limit::State result;
   if (last_state->DictEmpty())
@@ -444,9 +444,9 @@ void ScreenTimeController::UsageTimeLimitWarning() {
   base::Time now = clock_->Now();
   const icu::TimeZone& time_zone =
       system::TimezoneSettings::GetInstance()->GetTimezone();
-  const base::DictionaryValue* time_limit =
+  const base::Value* time_limit =
       pref_service_->GetDictionary(prefs::kUsageTimeLimit);
-  const base::DictionaryValue* local_override =
+  const base::Value* local_override =
       pref_service_->GetDictionary(prefs::kTimeLimitLocalOverride);
 
   absl::optional<base::TimeDelta> remaining_usage =

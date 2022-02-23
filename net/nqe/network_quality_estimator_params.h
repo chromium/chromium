@@ -8,7 +8,6 @@
 #include <map>
 #include <string>
 
-#include "base/macros.h"
 #include "base/sequence_checker.h"
 #include "net/base/net_export.h"
 #include "net/base/network_change_notifier.h"

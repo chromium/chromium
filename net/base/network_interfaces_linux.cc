@@ -6,9 +6,11 @@
 
 #include <memory>
 
-#if !defined(OS_ANDROID)
+#include "build/build_config.h"
+
+#if !BUILDFLAG(IS_ANDROID)
 #include <linux/ethtool.h>
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 #include <linux/if.h>
 #include <linux/sockios.h>
 #include <linux/wireless.h>
@@ -30,8 +32,9 @@
 #include "net/base/network_interfaces_posix.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/build_info.h"
+#include "base/strings/string_piece.h"
 #include "net/android/network_library.h"
 #include "net/base/network_interfaces_getifaddrs.h"
 #endif
@@ -52,9 +55,9 @@ bool TryConvertNativeToNetIPAttributes(int native_attributes,
   // and shouldn't be used by the application layer until DAD process
   // is completed.
   if (native_attributes & (
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
                               IFA_F_OPTIMISTIC | IFA_F_DADFAILED |
-#endif  // !OS_ANDROID
+#endif  // !BUILDFLAG(IS_ANDROID)
                               IFA_F_TENTATIVE)) {
     return false;
   }
@@ -88,7 +91,7 @@ NetworkChangeNotifier::ConnectionType GetInterfaceConnectionType(
   if (ioctl(s.get(), SIOCGIWNAME, &pwrq) != -1)
     return NetworkChangeNotifier::CONNECTION_WIFI;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Test ethtool for CONNECTION_ETHERNET
   struct ethtool_cmd ecmd = {};
   ecmd.cmd = ETHTOOL_GSET;
@@ -97,7 +100,7 @@ NetworkChangeNotifier::ConnectionType GetInterfaceConnectionType(
   strncpy(ifr.ifr_name, ifname.c_str(), IFNAMSIZ - 1);
   if (ioctl(s.get(), SIOCETHTOOL, &ifr) != -1)
     return NetworkChangeNotifier::CONNECTION_ETHERNET;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   return NetworkChangeNotifier::CONNECTION_UNKNOWN;
 }
@@ -214,13 +217,22 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
   if (networks == NULL)
     return false;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On Android 11 RTM_GETLINK (used by AddressTrackerLinux) no longer works as
   // per https://developer.android.com/preview/privacy/mac-address so instead
   // use getifaddrs() which is supported since Android N.
-  if (base::android::BuildInfo::GetInstance()->sdk_int() >=
-      base::android::SDK_VERSION_NOUGAT) {
-    bool ret = internal::GetNetworkListUsingGetifaddrs(networks, policy);
+  base::android::BuildInfo* build_info =
+      base::android::BuildInfo::GetInstance();
+  if (build_info->sdk_int() >= base::android::SDK_VERSION_NOUGAT) {
+    // Some Samsung devices with MediaTek processors are with
+    // a buggy getifaddrs() implementation,
+    // so use a Chromium's own implementation to workaround.
+    // See https://crbug.com/1240237 for more context.
+    bool use_alternative_getifaddrs =
+        base::StringPiece(build_info->brand()) == "samsung" &&
+        base::StartsWith(build_info->hardware(), "mt");
+    bool ret = internal::GetNetworkListUsingGetifaddrs(
+        networks, policy, use_alternative_getifaddrs);
     // Use GetInterfaceConnectionType() to sharpen up interface types.
     for (NetworkInterface& network : *networks)
       network.type = internal::GetInterfaceConnectionType(network.name);
@@ -238,7 +250,7 @@ bool GetNetworkList(NetworkInterfaceList* networks, int policy) {
 
 std::string GetWifiSSID() {
 // On Android, obtain the SSID using the Android-specific APIs.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return android::GetWifiSSID();
 #else
   NetworkInterfaceList networks;

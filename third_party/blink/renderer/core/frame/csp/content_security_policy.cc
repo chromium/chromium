@@ -28,6 +28,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/containers/contains.h"
 #include "base/debug/dump_without_crashing.h"
 #include "services/network/public/cpp/web_sandbox_flags.h"
 #include "services/network/public/mojom/web_sandbox_flags.mojom-blink.h"
@@ -57,7 +58,7 @@
 #include "third_party/blink/renderer/core/inspector/inspector_audits_issue.h"
 #include "third_party/blink/renderer/core/securitypolicyviolation_disposition_names.h"
 #include "third_party/blink/renderer/platform/bindings/dom_wrapper_world.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/json/json_values.h"
 #include "third_party/blink/renderer/platform/loader/fetch/integrity_metadata.h"
@@ -246,7 +247,7 @@ void ContentSecurityPolicy::ReportUseCounters(
     // 2.  Asserts `base-uri 'none'` or `base-uri 'self'`.
     // 3.  Avoids URL-based matching, in favor of hashes and nonces.
     //
-    // https://chromium.googlesource.com/chromium/src/+/master/docs/security/web-mitigation-metrics.md
+    // https://chromium.googlesource.com/chromium/src/+/main/docs/security/web-mitigation-metrics.md
     // has more detail.
     if (CSPDirectiveListIsObjectRestrictionReasonable(*policy)) {
       Count(policy->header->type == ContentSecurityPolicyType::kEnforce
@@ -529,6 +530,7 @@ static absl::optional<CSPDirectiveName> GetDirectiveTypeFromRequestContextType(
     case mojom::blink::RequestContextType::VIDEO:
       return CSPDirectiveName::MediaSrc;
 
+    case mojom::blink::RequestContextType::ATTRIBUTION_SRC:
     case mojom::blink::RequestContextType::BEACON:
     case mojom::blink::RequestContextType::EVENT_SOURCE:
     case mojom::blink::RequestContextType::FETCH:
@@ -814,13 +816,19 @@ void ContentSecurityPolicy::UpgradeInsecureRequests() {
       mojom::blink::InsecureRequestPolicy::kUpgradeInsecureRequests;
 }
 
+// https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
 static String StripURLForUseInReport(const SecurityOrigin* security_origin,
                                      const KURL& url,
                                      RedirectStatus redirect_status,
                                      CSPDirectiveName effective_type) {
   if (!url.IsValid())
     return String();
-  if (!url.IsHierarchical() || url.ProtocolIs("file"))
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 1. If url's scheme is not "`https`", "'http'", "`wss`" or "`ws`" then
+  // >    return url's scheme.
+  static const char* const allow_list[] = {"http", "https", "ws", "wss"};
+  if (!base::Contains(allow_list, url.Protocol()))
     return url.Protocol();
 
   // Until we're more careful about the way we deal with navigations in frames
@@ -830,16 +838,24 @@ static String StripURLForUseInReport(const SecurityOrigin* security_origin,
       security_origin->CanRequest(url) ||
       (redirect_status == RedirectStatus::kNoRedirect &&
        effective_type != CSPDirectiveName::FrameSrc &&
-       effective_type != CSPDirectiveName::ObjectSrc);
+       effective_type != CSPDirectiveName::ObjectSrc &&
+       effective_type != CSPDirectiveName::FencedFrameSrc);
 
-  if (can_safely_expose_url) {
-    // 'KURL::strippedForUseAsReferrer()' dumps 'String()' for non-webby URLs.
-    // It's better for developers if we return the origin of those URLs rather
-    // than nothing.
-    if (url.ProtocolIsInHTTPFamily())
-      return url.StrippedForUseAsReferrer();
-  }
-  return SecurityOrigin::Create(url)->ToString();
+  if (!can_safely_expose_url)
+    return SecurityOrigin::Create(url)->ToString();
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 2. Set url’s fragment to the empty string.
+  // > 3. Set url’s username to the empty string.
+  // > 4. Set url’s password to the empty string.
+  KURL stripped_url = url;
+  stripped_url.RemoveFragmentIdentifier();
+  stripped_url.SetUser(String());
+  stripped_url.SetPass(String());
+
+  // https://www.w3.org/TR/CSP3/#strip-url-for-use-in-reports
+  // > 5. Return the result of executing the URL serializer on url.
+  return stripped_url.GetString();
 }
 
 namespace {
@@ -1000,14 +1016,13 @@ void ContentSecurityPolicy::ReportViolation(
     absl::optional<base::UnguessableToken> issue_id) {
   DCHECK(violation_type == kURLViolation || blocked_url.IsEmpty());
 
-  // TODO(lukasza): Support sending reports from OOPIFs -
-  // https://crbug.com/611232 (or move CSP child-src and frame-src checks to the
-  // browser process - see https://crbug.com/376522).
+  // TODO(crbug.com/1279745): Remove/clarify what this block is about.
   if (!delegate_ && !context_frame) {
     DCHECK(effective_type == CSPDirectiveName::ChildSrc ||
            effective_type == CSPDirectiveName::FrameSrc ||
            effective_type == CSPDirectiveName::TrustedTypes ||
-           effective_type == CSPDirectiveName::RequireTrustedTypesFor);
+           effective_type == CSPDirectiveName::RequireTrustedTypesFor ||
+           effective_type == CSPDirectiveName::FencedFrameSrc);
     return;
   }
   DCHECK(
@@ -1244,6 +1259,8 @@ const char* ContentSecurityPolicy::GetDirectiveName(CSPDirectiveName type) {
       return "connect-src";
     case CSPDirectiveName::DefaultSrc:
       return "default-src";
+    case CSPDirectiveName::FencedFrameSrc:
+      return "fenced-frame-src";
     case CSPDirectiveName::FontSrc:
       return "font-src";
     case CSPDirectiveName::FormAction:
@@ -1313,6 +1330,8 @@ CSPDirectiveName ContentSecurityPolicy::GetDirectiveType(const String& name) {
     return CSPDirectiveName::ConnectSrc;
   if (name == "default-src")
     return CSPDirectiveName::DefaultSrc;
+  if (name == "fenced-frame-src")
+    return CSPDirectiveName::FencedFrameSrc;
   if (name == "font-src")
     return CSPDirectiveName::FontSrc;
   if (name == "form-action")

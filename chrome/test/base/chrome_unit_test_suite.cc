@@ -14,7 +14,6 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/profiles/profile_shortcut_manager.h"
 #include "chrome/browser/ui/webui/chrome_web_ui_controller_factory.h"
 #include "chrome/browser/update_client/chrome_update_query_params_delegate.h"
@@ -43,6 +42,7 @@
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "ash/constants/ash_paths.h"
 #include "chrome/browser/ash/arc/arc_util.h"
+#include "crypto/nss_util_internal.h"
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -97,10 +97,6 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
   }
 
   void OnTestEnd(const testing::TestInfo& test_info) override {
-    // To ensure that NetworkConnectionTracker doesn't complain in unit_tests
-    // about outstanding listeners.
-    data_use_measurement::ChromeDataUseMeasurement::DeleteInstance();
-
     browser_content_client_.reset();
     utility_content_client_.reset();
     content_client_.reset();
@@ -114,6 +110,7 @@ class ChromeUnitTestSuiteInitializer : public testing::EmptyTestEventListener {
            "AXPlatformNode::ResetAxModeForTesting() at the end of your test.";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     arc::ClearArcAllowedCheckForTesting();
+    crypto::ResetTokenManagerForTesting();
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   }
 
@@ -173,14 +170,14 @@ void ChromeUnitTestSuite::InitializeProviders() {
   ui::RegisterPathProvider();
   component_updater::RegisterPathProvider(chrome::DIR_COMPONENTS,
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-                                          chromeos::DIR_PREINSTALLED_COMPONENTS,
+                                          ash::DIR_PREINSTALLED_COMPONENTS,
 #else
                                           chrome::DIR_INTERNAL_PLUGINS,
 #endif
                                           chrome::DIR_USER_DATA);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  chromeos::RegisterPathProvider();
+  ash::RegisterPathProvider();
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_CHROMEOS_LACROS)

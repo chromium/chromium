@@ -4,9 +4,13 @@
 
 #include <memory>
 
-#include "base/bind.h"
+#include "ash/components/arc/mojom/app.mojom.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_app_instance.h"
 #include "base/command_line.h"
 #include "base/run_loop.h"
+#include "base/test/bind.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/arc_util.h"
@@ -20,10 +24,6 @@
 #include "chrome/browser/ui/views/apps/app_dialog/app_block_dialog_view.h"
 #include "chrome/browser/ui/views/apps/app_dialog/app_pause_dialog_view.h"
 #include "chrome/test/base/in_process_browser_test.h"
-#include "components/arc/mojom/app.mojom.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_app_instance.h"
 #include "content/public/test/browser_test.h"
 
 class AppDialogViewBrowserTest : public DialogBrowserTest {
@@ -70,9 +70,7 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
 
   const std::string& app_id() const { return app_id_; }
 
-  apps::AppServiceProxyChromeOs* app_service_proxy() {
-    return app_service_proxy_;
-  }
+  apps::AppServiceProxy* app_service_proxy() { return app_service_proxy_; }
 
   bool IsAppPaused() {
     app_service_proxy()->FlushMojoCallsForTesting();
@@ -86,12 +84,11 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
   }
 
   void ShowUi(const std::string& name) override {
-    arc::mojom::AppInfo app;
-    app.name = "Fake App 0";
-    app.package_name = "fake.package.0";
-    app.activity = "fake.app.0.activity";
-    app.sticky = false;
-    app_instance_->SendRefreshAppList(std::vector<arc::mojom::AppInfo>(1, app));
+    std::vector<arc::mojom::AppInfoPtr> apps;
+    apps.emplace_back(arc::mojom::AppInfo::New("Fake App 0", "fake.package.0",
+                                               "fake.app.0.activity",
+                                               false /* sticky */));
+    app_instance_->SendRefreshAppList(apps);
     base::RunLoop().RunUntilIdle();
 
     EXPECT_EQ(1u, arc_app_list_pref_->GetAppIds().size());
@@ -102,13 +99,13 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
     ASSERT_TRUE(app_service_proxy_);
 
     base::RunLoop run_loop;
-    app_id_ = arc_app_list_pref_->GetAppId(app.package_name, app.activity);
+    app_id_ =
+        arc_app_list_pref_->GetAppId(apps[0]->package_name, apps[0]->activity);
     if (name == "block") {
-      app.suspended = true;
+      apps[0]->suspended = true;
       app_service_proxy_->SetDialogCreatedCallbackForTesting(
           run_loop.QuitClosure());
-      app_instance_->SendRefreshAppList(
-          std::vector<arc::mojom::AppInfo>(1, app));
+      app_instance_->SendRefreshAppList(apps);
       app_service_proxy_->FlushMojoCallsForTesting();
       app_service_proxy_->Launch(
           app_id_, ui::EventFlags::EF_NONE,
@@ -147,7 +144,7 @@ class AppDialogViewBrowserTest : public DialogBrowserTest {
 
  private:
   std::string app_id_;
-  apps::AppServiceProxyChromeOs* app_service_proxy_ = nullptr;
+  apps::AppServiceProxy* app_service_proxy_ = nullptr;
   ArcAppListPrefs* arc_app_list_pref_ = nullptr;
   std::unique_ptr<arc::FakeAppInstance> app_instance_;
 };

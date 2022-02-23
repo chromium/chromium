@@ -5,6 +5,7 @@
 #include "ui/gfx/animation/keyframe/animation_curve.h"
 
 #include "base/check.h"
+#include "ui/gfx/geometry/transform_operations.h"
 
 namespace gfx {
 

@@ -380,7 +380,8 @@ class WprProxySimulatorTestRunner(test_runner.SimulatorTestRunner):
     # We route all network adapters through the proxy, since it is easier than
     # determining which network adapter is being used currently.
     network_services = subprocess.check_output(
-        ['networksetup', '-listallnetworkservices']).strip().split('\n')
+        ['networksetup',
+         '-listallnetworkservices']).decode('utf-8').strip().split('\n')
     if len(network_services) > 1:
       # We ignore the first line as it is a description of the command's output.
       network_services = network_services[1:]

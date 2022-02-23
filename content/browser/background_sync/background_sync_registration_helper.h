@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/browser/background_sync/background_sync_status.h"
 #include "content/public/browser/background_sync_registration.h"
@@ -64,7 +65,7 @@ class BackgroundSyncRegistrationHelper {
 
  private:
   // |background_sync_context_| (indirectly) owns |this|.
-  BackgroundSyncContextImpl* const background_sync_context_;
+  const raw_ptr<BackgroundSyncContextImpl> background_sync_context_;
   base::WeakPtrFactory<BackgroundSyncRegistrationHelper> weak_ptr_factory_{
       this};
 };

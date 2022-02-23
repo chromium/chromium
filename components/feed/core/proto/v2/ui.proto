@@ -37,6 +37,27 @@ message StreamUpdate {
   // Time of the last full server fetch. Populated only after the stream data is
   // loaded. Not updated on NextPage requests.
   int64 fetch_time_ms = 3;
+  // Logging parameters to be associated with updated_slices.
+  LoggingParameters logging_parameters = 4;
+}
+
+message LoggingParameters {
+  // Either email or session_id should be set to enable activity logging.
+
+  // The session ID is for signed out users.
+  string session_id = 1;
+  string email = 2;
+
+  // A client ID used for reliability logging.
+  string client_instance_id = 3;
+
+  // Whether attention / interaction logging is enabled.
+  bool logging_enabled = 4;
+  // Whether view actions may be recorded.
+  bool view_actions_enabled = 5;
+  // The EventID of the first page response. Must be present for attention
+  // logging.
+  bytes root_event_id = 6;
 }
 
 // A horizontal slice of UI to be presented in the vertical-scrolling feed.

@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
+#include "build/build_config.h"
 #include "mojo/core/embedder/embedder.h"
 #include "ui/base/clipboard/clipboard.h"
 #include "ui/base/resource/resource_bundle.h"
@@ -24,7 +25,7 @@
 #if BUILDFLAG(ENABLE_DESKTOP_AURA)
 #include "ui/views/widget/desktop_aura/desktop_native_widget_aura.h"
 #endif
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
 #include "ui/views/widget/native_widget_mac.h"
 #endif
 
@@ -134,7 +135,7 @@ void ViewsTestBase::SimulateNativeDestroy(Widget* widget) {
   test_helper_->SimulateNativeDestroy(widget);
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 int ViewsTestBase::GetSystemReservedHeightAtTopOfScreen() {
   return 0;
 }
@@ -147,7 +148,7 @@ gfx::NativeWindow ViewsTestBase::GetContext() {
 NativeWidget* ViewsTestBase::CreateNativeWidgetForTest(
     const Widget::InitParams& init_params,
     internal::NativeWidgetDelegate* delegate) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return new test::TestPlatformNativeWidget<NativeWidgetMac>(delegate, false,
                                                              nullptr);
 #elif defined(USE_AURA)

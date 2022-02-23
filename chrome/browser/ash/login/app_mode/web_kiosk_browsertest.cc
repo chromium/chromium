@@ -26,7 +26,7 @@
 #include "chrome/browser/ui/webui/chromeos/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/chromeos/login/signin_screen_handler.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom-forward.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "components/account_id/account_id.h"
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/browser_test.h"
@@ -88,7 +88,7 @@ class WebKioskTest : public OobeBaseTest {
   }
 
   void MakeAppAlreadyInstalled() {
-    auto info = std::make_unique<WebApplicationInfo>();
+    auto info = std::make_unique<WebAppInstallInfo>();
     info->start_url = GURL(kAppLaunchUrl);
     info->title = kAppTitle;
     WebKioskAppManager::Get()->UpdateAppByAccountId(account_id(),

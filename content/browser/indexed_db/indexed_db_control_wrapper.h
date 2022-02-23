@@ -18,8 +18,7 @@ class StorageKey;
 namespace content {
 
 // All functions should be called on the UI thread.
-class CONTENT_EXPORT IndexedDBControlWrapper
-    : public storage::mojom::IndexedDBControl {
+class IndexedDBControlWrapper : public storage::mojom::IndexedDBControl {
  public:
   explicit IndexedDBControlWrapper(
       const base::FilePath& data_path,

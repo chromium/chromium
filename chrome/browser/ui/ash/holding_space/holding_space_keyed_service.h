@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "ash/public/cpp/holding_space/holding_space_image.h"
+#include "ash/public/cpp/holding_space/holding_space_metrics.h"
 #include "ash/public/cpp/holding_space/holding_space_model.h"
 #include "ash/public/cpp/holding_space/holding_space_progress.h"
 #include "base/scoped_observation.h"
@@ -147,14 +148,19 @@ class HoldingSpaceKeyedService : public crosapi::mojom::HoldingSpaceService,
   std::unique_ptr<HoldingSpaceModel::ScopedItemUpdate> UpdateItem(
       const std::string& id);
 
+  // Removes all holding space items directly from the model.
+  void RemoveAll();
+
   // Attempts to cancel/pause/resume the specified holding space `item`.
   void CancelItem(const HoldingSpaceItem* item);
   void PauseItem(const HoldingSpaceItem* item);
   void ResumeItem(const HoldingSpaceItem* item);
 
-  // Attempts to mark the specified holding space `item` to be opened when
-  // complete, returning whether or not the attempt was successful.
-  bool OpenItemWhenComplete(const HoldingSpaceItem* item);
+  // Attempts to mark the specified holding space `item` to open when complete.
+  // Returns `absl::nullopt` on success or the reason if the attempt was not
+  // successful.
+  absl::optional<holding_space_metrics::ItemFailureToLaunchReason>
+  OpenItemWhenComplete(const HoldingSpaceItem* item);
 
   // Returns the `profile_` associated with this service.
   Profile* profile() { return profile_; }

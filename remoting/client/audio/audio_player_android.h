@@ -8,7 +8,6 @@
 #include <SLES/OpenSLES.h>
 #include <SLES/OpenSLES_Android.h>
 
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "remoting/client/audio/audio_player.h"
 

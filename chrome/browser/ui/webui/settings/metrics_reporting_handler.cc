@@ -16,7 +16,6 @@
 #include "chrome/browser/metrics/chrome_metrics_service_accessor.h"
 #include "chrome/browser/metrics/metrics_reporting_state.h"
 #include "components/metrics/metrics_pref_names.h"
-#include "components/policy/policy_constants.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/web_ui.h"
 
@@ -31,11 +30,11 @@ MetricsReportingHandler::MetricsReportingHandler() {}
 MetricsReportingHandler::~MetricsReportingHandler() {}
 
 void MetricsReportingHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getMetricsReporting",
       base::BindRepeating(&MetricsReportingHandler::HandleGetMetricsReporting,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setMetricsReportingEnabled",
       base::BindRepeating(
           &MetricsReportingHandler::HandleSetMetricsReportingEnabled,
@@ -49,34 +48,25 @@ void MetricsReportingHandler::OnJavascriptAllowed() {
       g_browser_process->local_state(),
       base::BindRepeating(&MetricsReportingHandler::OnPrefChanged,
                           base::Unretained(this)));
-
-  policy_registrar_ = std::make_unique<policy::PolicyChangeRegistrar>(
-      g_browser_process->policy_service(),
-      policy::PolicyNamespace(policy::POLICY_DOMAIN_CHROME, std::string()));
-  policy_registrar_->Observe(
-      policy::key::kMetricsReportingEnabled,
-      base::BindRepeating(&MetricsReportingHandler::OnPolicyChanged,
-                          base::Unretained(this)));
 }
 
 void MetricsReportingHandler::OnJavascriptDisallowed() {
   pref_member_.reset();
-  policy_registrar_.reset();
 }
 
 void MetricsReportingHandler::HandleGetMetricsReporting(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
-  const base::Value* callback_id;
-  CHECK(args->Get(0, &callback_id));
-  ResolveJavascriptCallback(*callback_id, *CreateMetricsReportingDict());
+  CHECK_GT(args.size(), 0u);
+  const base::Value& callback_id = args[0];
+  ResolveJavascriptCallback(callback_id, *CreateMetricsReportingDict());
 }
 
 std::unique_ptr<base::DictionaryValue>
     MetricsReportingHandler::CreateMetricsReportingDict() {
   std::unique_ptr<base::DictionaryValue> dict(
       std::make_unique<base::DictionaryValue>());
-  dict->SetBoolean(
+  dict->SetBoolKey(
       "enabled",
       ChromeMetricsServiceAccessor::IsMetricsAndCrashReportingEnabled());
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -87,15 +77,15 @@ std::unique_ptr<base::DictionaryValue>
   bool managed = lacros_chrome_service &&
                  lacros_chrome_service->init_params()->ash_metrics_managed ==
                      crosapi::mojom::MetricsReportingManaged::kManaged;
-  dict->SetBoolean("managed", managed);
+  dict->SetBoolKey("managed", managed);
 #else
-  dict->SetBoolean("managed", IsMetricsReportingPolicyManaged());
+  dict->SetBoolKey("managed", IsMetricsReportingPolicyManaged());
 #endif
   return dict;
 }
 
 void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   if (IsMetricsReportingPolicyManaged()) {
     NOTREACHED();
     // NOTE: ChangeMetricsReportingState() already checks whether metrics
@@ -106,9 +96,9 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
     return;
   }
 
-  bool enabled;
-  CHECK(args->GetBoolean(0, &enabled));
-  ChangeMetricsReportingState(enabled);
+  bool enabled = args[0].GetBool();
+  ChangeMetricsReportingState(
+      enabled, ChangeMetricsReportingStateCalledFrom::kUiSettings);
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // To match the pre-Lacros settings UX, the metrics reporting toggle in Lacros
@@ -133,11 +123,6 @@ void MetricsReportingHandler::HandleSetMetricsReportingEnabled(
   metrics_reporting_remote_->SetMetricsReportingEnabled(enabled,
                                                         base::DoNothing());
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
-}
-
-void MetricsReportingHandler::OnPolicyChanged(const base::Value* previous,
-                                              const base::Value* current) {
-  SendMetricsReportingChange();
 }
 
 void MetricsReportingHandler::OnPrefChanged(const std::string& pref_name) {

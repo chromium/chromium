@@ -20,7 +20,6 @@
 #import "ios/chrome/browser/overlays/public/web_content_area/java_script_dialog_overlay.h"
 #include "ios/chrome/browser/overlays/test/fake_overlay_presentation_context.h"
 #import "ios/chrome/browser/ui/commands/command_dispatcher.h"
-#include "ios/chrome/browser/web_state_list/fake_web_state_list_delegate.h"
 #include "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #include "ios/chrome/test/ios_chrome_scoped_testing_chrome_browser_state_manager.h"
@@ -49,8 +48,7 @@ void InsertWebState(Browser* browser) {
 // Test fixture for testing BreadcrumbManagerBrowserAgent class.
 class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
  protected:
-  BreadcrumbManagerBrowserAgentTest()
-      : web_state_list_(&web_state_list_delegate_) {
+  BreadcrumbManagerBrowserAgentTest() {
     TestChromeBrowserState::Builder test_cbs_builder;
     browser_state_ = test_cbs_builder.Build();
 
@@ -59,23 +57,22 @@ class BreadcrumbManagerBrowserAgentTest : public PlatformTest {
             BreadcrumbManagerKeyedServiceFactory::GetForBrowserState(
                 browser_state_.get()));
 
-    browser_ =
-        std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list_);
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
     OverlayPresenter::FromBrowser(browser_.get(),
                                   OverlayModality::kWebContentArea)
         ->SetPresentationContext(&presentation_context_);
   }
 
+  ~BreadcrumbManagerBrowserAgentTest() override { browser_.reset(); }
+
   web::WebTaskEnvironment task_env_{
       web::WebTaskEnvironment::Options::DEFAULT,
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  FakeWebStateListDelegate web_state_list_delegate_;
-  WebStateList web_state_list_;
+  std::unique_ptr<Browser> browser_;
   breadcrumbs::BreadcrumbManagerKeyedService* breadcrumb_service_;
   FakeOverlayPresentationContext presentation_context_;
-  std::unique_ptr<Browser> browser_;
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for
@@ -102,9 +99,8 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, MultipleBrowsers) {
   InsertWebState(browser_.get());
 
   // Create and setup second Browser.
-  WebStateList web_state_list2(&web_state_list_delegate_);
   std::unique_ptr<Browser> browser2 =
-      std::make_unique<TestBrowser>(browser_state_.get(), &web_state_list2);
+      std::make_unique<TestBrowser>(browser_state_.get());
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser2.get());
 
   // Insert WebState into |browser2|.
@@ -138,10 +134,11 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   // Insert multiple WebStates.
-  web_state_list_.PerformBatchOperation(base::BindOnce(^(WebStateList* list) {
-    InsertWebState(browser_.get());
-    InsertWebState(browser_.get());
-  }));
+  browser_->GetWebStateList()->PerformBatchOperation(
+      base::BindOnce(^(WebStateList* list) {
+        InsertWebState(browser_.get());
+        InsertWebState(browser_.get());
+      }));
 
   std::list<std::string> events = breadcrumb_service_->GetEvents(0);
   ASSERT_EQ(1ul, events.size());
@@ -149,7 +146,8 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, BatchOperations) {
       << events.front();
 
   // Close multiple WebStates.
-  web_state_list_.PerformBatchOperation(base::BindOnce(^(WebStateList* list) {
+  browser_->GetWebStateList()->PerformBatchOperation(base::BindOnce(^(
+      WebStateList* list) {
     list->CloseWebStateAt(
         /*index=*/0, WebStateList::ClosingFlags::CLOSE_NO_FLAGS);
     list->CloseWebStateAt(
@@ -169,11 +167,12 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptAlertOverlay) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state_list_.GetWebStateAt(0), OverlayModality::kWebContentArea);
+      browser_->GetWebStateList()->GetWebStateAt(0),
+      OverlayModality::kWebContentArea);
   queue->AddRequest(OverlayRequest::CreateWithConfig<
                     java_script_dialog_overlays::JavaScriptDialogRequest>(
-      web::JAVASCRIPT_DIALOG_TYPE_ALERT, web_state_list_.GetWebStateAt(0),
-      GURL::EmptyGURL(),
+      web::JAVASCRIPT_DIALOG_TYPE_ALERT,
+      browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
       /*is_main_frame=*/true, @"message",
       /*default_text_field_value=*/nil));
   queue->CancelAllRequests();
@@ -194,11 +193,12 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptConfirmOverlay) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state_list_.GetWebStateAt(0), OverlayModality::kWebContentArea);
+      browser_->GetWebStateList()->GetWebStateAt(0),
+      OverlayModality::kWebContentArea);
   queue->AddRequest(OverlayRequest::CreateWithConfig<
                     java_script_dialog_overlays::JavaScriptDialogRequest>(
-      web::JAVASCRIPT_DIALOG_TYPE_CONFIRM, web_state_list_.GetWebStateAt(0),
-      GURL::EmptyGURL(),
+      web::JAVASCRIPT_DIALOG_TYPE_CONFIRM,
+      browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
       /*is_main_frame=*/true, @"message",
       /*default_text_field_value=*/nil));
   queue->CancelAllRequests();
@@ -219,11 +219,12 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, JavaScriptPromptOverlay) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state_list_.GetWebStateAt(0), OverlayModality::kWebContentArea);
+      browser_->GetWebStateList()->GetWebStateAt(0),
+      OverlayModality::kWebContentArea);
   queue->AddRequest(OverlayRequest::CreateWithConfig<
                     java_script_dialog_overlays::JavaScriptDialogRequest>(
-      web::JAVASCRIPT_DIALOG_TYPE_PROMPT, web_state_list_.GetWebStateAt(0),
-      GURL::EmptyGURL(),
+      web::JAVASCRIPT_DIALOG_TYPE_PROMPT,
+      browser_->GetWebStateList()->GetWebStateAt(0), GURL::EmptyGURL(),
       /*is_main_frame=*/true, @"message",
       /*default_text_field_value=*/nil));
   queue->CancelAllRequests();
@@ -244,7 +245,8 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, HttpAuthOverlay) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state_list_.GetWebStateAt(0), OverlayModality::kWebContentArea);
+      browser_->GetWebStateList()->GetWebStateAt(0),
+      OverlayModality::kWebContentArea);
   queue->AddRequest(
       OverlayRequest::CreateWithConfig<HTTPAuthOverlayRequestConfig>(
           GURL::EmptyGURL(), "message", "default text"));
@@ -266,7 +268,8 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AppLaunchOverlay) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state_list_.GetWebStateAt(0), OverlayModality::kWebContentArea);
+      browser_->GetWebStateList()->GetWebStateAt(0),
+      OverlayModality::kWebContentArea);
   queue->AddRequest(OverlayRequest::CreateWithConfig<
                     app_launcher_overlays::AppLaunchConfirmationRequest>(
       /*is_repeated_request=*/false));
@@ -288,7 +291,8 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AlertOverlay) {
   BreadcrumbManagerBrowserAgent::CreateForBrowser(browser_.get());
 
   OverlayRequestQueue* queue = OverlayRequestQueue::FromWebState(
-      web_state_list_.GetWebStateAt(0), OverlayModality::kWebContentArea);
+      browser_->GetWebStateList()->GetWebStateAt(0),
+      OverlayModality::kWebContentArea);
   // ConfirmDownloadReplacingRequest logged as generic alert.
   queue->AddRequest(
       OverlayRequest::CreateWithConfig<ConfirmDownloadReplacingRequest>());
@@ -310,7 +314,7 @@ TEST_F(BreadcrumbManagerBrowserAgentTest, AlertOverlay) {
   EXPECT_NE(std::string::npos, events.back().find("Insert active Tab"))
       << events.back();
 
-  web_state_list_.ActivateWebStateAt(0);
+  browser_->GetWebStateList()->ActivateWebStateAt(0);
   events = breadcrumb_service_->GetEvents(0);
   ASSERT_EQ(4ul, events.size());
   auto activation = std::next(events.begin(), 2);

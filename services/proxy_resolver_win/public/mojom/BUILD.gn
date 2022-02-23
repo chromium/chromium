@@ -14,6 +14,10 @@ mojom("mojom") {
   ]
   public_deps = [ "//sandbox/policy/mojom" ]
 
+  export_class_attribute_blink = "BLINK_PLATFORM_EXPORT"
+  export_define_blink = "BLINK_PLATFORM_IMPLEMENTATION=1"
+  export_header_blink = "third_party/blink/public/platform/web_common.h"
+
   cpp_typemaps = [
     {
       types = [

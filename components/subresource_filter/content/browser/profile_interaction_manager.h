@@ -5,10 +5,15 @@
 #ifndef COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 #define COMPONENTS_SUBRESOURCE_FILTER_CONTENT_BROWSER_PROFILE_INTERACTION_MANAGER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "build/build_config.h"
 #include "components/subresource_filter/content/browser/subresource_filter_safe_browsing_activation_throttle.h"
 #include "components/subresource_filter/core/common/activation_decision.h"
 #include "components/subresource_filter/core/mojom/subresource_filter.mojom.h"
+
+#if BUILDFLAG(IS_ANDROID)
+#include "components/subresource_filter/content/browser/ads_blocked_message_delegate.h"
+#endif
 
 namespace content {
 class Page;
@@ -57,6 +62,12 @@ class ProfileInteractionManager
       mojom::ActivationLevel initial_activation_level,
       ActivationDecision* decision) override;
 
+#if BUILDFLAG(IS_ANDROID)
+  AdsBlockedMessageDelegate* ads_blocked_message_delegate_for_testing() {
+    return ads_blocked_message_delegate_;
+  }
+#endif
+
  private:
   content::WebContents* GetWebContents();
 
@@ -64,12 +75,16 @@ class ProfileInteractionManager
   // ContentSubresourceFilterThrottleManager is associated with. This will be
   // nullptr initially until the main frame navigation commits and a Page is
   // created, at which point the throttle manager will set this member.
-  content::Page* page_ = nullptr;
+  raw_ptr<content::Page> page_ = nullptr;
 
   // Unowned and must outlive this object.
-  SubresourceFilterProfileContext* profile_context_ = nullptr;
+  raw_ptr<SubresourceFilterProfileContext> profile_context_ = nullptr;
 
   bool ads_violation_triggered_for_last_committed_navigation_ = false;
+
+#if BUILDFLAG(IS_ANDROID)
+  raw_ptr<AdsBlockedMessageDelegate> ads_blocked_message_delegate_;
+#endif
 };
 
 }  // namespace subresource_filter

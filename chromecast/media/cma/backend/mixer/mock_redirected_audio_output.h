@@ -11,7 +11,6 @@
 #include <utility>
 #include <vector>
 
-#include "base/macros.h"
 #include "chromecast/media/audio/mixer_service/redirected_audio_connection.h"
 #include "chromecast/public/volume_control.h"
 #include "testing/gmock/include/gmock/gmock.h"

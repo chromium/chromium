@@ -89,6 +89,7 @@ class ConnectionToClient {
   // Start video stream that sends screen content from |desktop_capturer| to the
   // client.
   virtual std::unique_ptr<VideoStream> StartVideoStream(
+      const std::string& stream_name,
       std::unique_ptr<webrtc::DesktopCapturer> desktop_capturer) = 0;
 
   // Starts an audio stream. Returns nullptr if audio is not supported by the

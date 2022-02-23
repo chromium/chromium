@@ -12,6 +12,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -222,7 +223,7 @@ class OmniboxViewViews
   // steady-state elisions).  |gesture| is the user gesture causing unelision.
   bool UnapplySteadyStateElisions(UnelisionGesture gesture);
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   void AnnounceFriendlySuggestionText();
 #endif
 
@@ -341,7 +342,7 @@ class OmniboxViewViews
   bool ime_composing_before_change_ = false;
 
   // |location_bar_view_| can be NULL in tests.
-  LocationBarView* location_bar_view_;
+  raw_ptr<LocationBarView> location_bar_view_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // True if the IME candidate window is open. When this is true, we want to
@@ -413,7 +414,8 @@ class OmniboxViewViews
       scoped_template_url_service_observation_{this};
 
   // Send tab to self submenu & share submenu - only one of these is populated
-  // at a time.
+  // at a time. These are tied to a WebContents, they are created when the user
+  // opens the menu and destroyed when the tab changes.
   std::unique_ptr<share::ShareSubmenuModel> share_submenu_model_;
   std::unique_ptr<send_tab_to_self::SendTabToSelfSubMenuModel>
       send_tab_to_self_sub_menu_model_;

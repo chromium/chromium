@@ -8,6 +8,8 @@
 
 #include "base/bind.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
+#include "base/observer_list.h"
 #include "chrome/browser/new_tab_page/one_google_bar/one_google_bar_loader.h"
 #include "components/signin/public/identity_manager/identity_manager.h"
 
@@ -32,7 +34,7 @@ class OneGoogleBarService::SigninObserver
     callback_.Run();
   }
 
-  signin::IdentityManager* const identity_manager_;
+  const raw_ptr<signin::IdentityManager> identity_manager_;
   SigninStatusChangedCallback callback_;
 };
 

@@ -13,13 +13,6 @@
         android:background="?attr/tabGridBackground"
         android:layout_margin="?attr/tabGridMargin"
         android:visibility="gone"/>
-    <org.chromium.ui.widget.ChromeImageView
-        android:id="@+id/selected_view_below_lollipop"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:background="@drawable/selected_tab_background"
-        android:layout_margin="6dp"
-        android:visibility="gone"/>
     <FrameLayout
         android:id="@+id/content_view"
         android:layout_width="match_parent"
@@ -64,6 +57,7 @@
                 android:background="@drawable/price_card_scrim"
                 android:layout_width="match_parent"
                 android:layout_height="56dp"
+                android:layout_marginStart="4dp"
                 android:visibility="gone"/>
             <!-- TODO(crbug/1198288): Make decision on duplication of PriceCardView code.-->
             <org.chromium.chrome.browser.tasks.tab_management.StoreHoursCardView
@@ -78,7 +72,7 @@
                 style="@style/HorizontalDivider"
                 android:layout_below="@id/tab_title"
                 android:visibility="?attr/tabGridDividerVisible"
-                android:background="@color/divider_line_bg_color"/>
+                android:background="@macro/divider_line_bg_color"/>
             <org.chromium.ui.widget.ButtonCompat
                 android:id="@+id/create_group_button"
                 android:layout_width="wrap_content"
@@ -90,7 +84,7 @@
                 android:text="@string/tabswitcher_create_group"
                 android:visibility="gone"
                 style="@style/FilledButton"/>
-            <org.chromium.ui.widget.ChipView
+            <org.chromium.components.browser_ui.widget.chips.ChipView
                 android:id="@+id/page_info_button"
                 android:gravity="center"
                 android:layout_height="wrap_content"
@@ -106,7 +100,7 @@
             android:id="@+id/action_button"
             android:scaleType="center"
             android:layout_gravity="end"
-            android:tint="?attr/default_icon_color"
+            android:tint="@macro/default_icon_color"
             style="?attr/tabGridActionButtonStyle"/>
     </FrameLayout>
 </merge>

@@ -42,6 +42,15 @@ std::string ApiApprovalStateToString(ApiApprovalState state) {
   }
 }
 
+std::string OsIntegrationStateToString(OsIntegrationState state) {
+  switch (state) {
+    case OsIntegrationState::kEnabled:
+      return "kEnabled";
+    case OsIntegrationState::kDisabled:
+      return "kDisabled";
+  }
+}
+
 }  // namespace
 
 WebApp::WebApp(const AppId& app_id)
@@ -82,9 +91,13 @@ bool WebApp::HasAnySources() const {
 }
 
 bool WebApp::HasOnlySource(Source::Type source) const {
-  Sources specified_sources;
+  WebAppSources specified_sources;
   specified_sources[source] = true;
-  return HasAnySpecifiedSourcesAndNoOtherSources(specified_sources);
+  return HasAnySpecifiedSourcesAndNoOtherSources(sources_, specified_sources);
+}
+
+WebAppSources WebApp::GetSources() const {
+  return sources_;
 }
 
 bool WebApp::IsSynced() const {
@@ -112,18 +125,7 @@ bool WebApp::IsSubAppInstalledApp() const {
 }
 
 bool WebApp::CanUserUninstallWebApp() const {
-  Sources specified_sources;
-  specified_sources[Source::kDefault] = true;
-  specified_sources[Source::kSync] = true;
-  specified_sources[Source::kWebAppStore] = true;
-  return HasAnySpecifiedSourcesAndNoOtherSources(specified_sources);
-}
-
-bool WebApp::HasAnySpecifiedSourcesAndNoOtherSources(
-    Sources specified_sources) const {
-  bool has_any_specified_sources = (sources_ & specified_sources).any();
-  bool has_no_other_sources = (sources_ & ~specified_sources).none();
-  return has_any_specified_sources && has_no_other_sources;
+  return web_app::CanUserUninstallWebApp(sources_);
 }
 
 bool WebApp::WasInstalledByUser() const {
@@ -195,7 +197,7 @@ void WebApp::SetUserDisplayMode(DisplayMode user_display_mode) {
     case DisplayMode::kFullscreen:
     case DisplayMode::kWindowControlsOverlay:
       NOTREACHED();
-      FALLTHROUGH;
+      [[fallthrough]];
     case DisplayMode::kStandalone:
       user_display_mode_ = DisplayMode::kStandalone;
       break;
@@ -264,6 +266,10 @@ void WebApp::SetFileHandlerApprovalState(ApiApprovalState approval_state) {
   file_handler_approval_state_ = approval_state;
 }
 
+void WebApp::SetFileHandlerOsIntegrationState(OsIntegrationState state) {
+  file_handler_os_integration_state_ = state;
+}
+
 void WebApp::SetShareTarget(absl::optional<apps::ShareTarget> share_target) {
   share_target_ = std::move(share_target);
 }
@@ -299,8 +305,7 @@ void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
 }
 
 void WebApp::SetShortcutsMenuItemInfos(
-    std::vector<WebApplicationShortcutsMenuItemInfo>
-        shortcuts_menu_item_infos) {
+    std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos) {
   shortcuts_menu_item_infos_ = std::move(shortcuts_menu_item_infos);
 }
 
@@ -329,12 +334,20 @@ void WebApp::SetRunOnOsLoginMode(RunOnOsLoginMode mode) {
   run_on_os_login_mode_ = mode;
 }
 
+void WebApp::SetRunOnOsLoginOsIntegrationState(RunOnOsLoginMode state) {
+  run_on_os_login_os_integration_state_ = state;
+}
+
 void WebApp::SetSyncFallbackData(SyncFallbackData sync_fallback_data) {
   sync_fallback_data_ = std::move(sync_fallback_data);
 }
 
 void WebApp::SetCaptureLinks(blink::mojom::CaptureLinks capture_links) {
   capture_links_ = capture_links;
+}
+
+void WebApp::SetHandleLinks(blink::mojom::HandleLinks handle_links) {
+  handle_links_ = handle_links;
 }
 
 void WebApp::SetLaunchQueryParams(
@@ -348,10 +361,6 @@ void WebApp::SetManifestUrl(const GURL& manifest_url) {
 
 void WebApp::SetManifestId(const absl::optional<std::string>& manifest_id) {
   manifest_id_ = manifest_id;
-}
-
-void WebApp::SetFileHandlerPermissionBlocked(bool permission_blocked) {
-  file_handler_permission_blocked_ = permission_blocked;
 }
 
 void WebApp::SetWindowControlsOverlayEnabled(bool enabled) {
@@ -368,6 +377,16 @@ void WebApp::SetLaunchHandler(absl::optional<LaunchHandler> launch_handler) {
 
 void WebApp::SetParentAppId(const absl::optional<AppId>& parent_app_id) {
   parent_app_id_ = parent_app_id;
+}
+
+void WebApp::SetPermissionsPolicy(
+    std::vector<PermissionsPolicyDeclaration> permissions_policy) {
+  permissions_policy_ = std::move(permissions_policy);
+}
+
+void WebApp::SetInstallSourceForMetrics(
+    absl::optional<webapps::WebappInstallSource> install_source) {
+  install_source_for_metrics_ = install_source;
 }
 
 WebApp::ClientData::ClientData() = default;
@@ -452,17 +471,21 @@ bool WebApp::operator==(const WebApp& other) const {
         app.install_time_,
         app.manifest_update_time_,
         app.run_on_os_login_mode_,
+        app.run_on_os_login_os_integration_state_,
         app.sync_fallback_data_,
         app.capture_links_,
+        app.handle_links_,
         app.manifest_url_,
         app.manifest_id_,
         app.client_data_.system_web_app_data,
-        app.file_handler_permission_blocked_,
         app.file_handler_approval_state_,
+        app.file_handler_os_integration_state_,
         app.window_controls_overlay_enabled_,
         app.is_storage_isolated_,
         app.launch_handler_,
-        app.parent_app_id_
+        app.parent_app_id_,
+        app.permissions_policy_,
+        app.install_source_for_metrics_
         // clang-format on
     );
   };
@@ -526,6 +549,8 @@ base::Value WebApp::AsDebugValue() const {
 
   root.SetStringKey("capture_links", ConvertToString(capture_links_));
 
+  root.SetStringKey("handle_links", ConvertToString(handle_links_));
+
   root.SetKey("chromeos_data",
               chromeos_data_ ? chromeos_data_->AsDebugValue() : base::Value());
 
@@ -561,15 +586,23 @@ base::Value WebApp::AsDebugValue() const {
     downloaded_shortcuts_menu_icons_sizes.Append(std::move(entry));
   }
 
-  root.SetBoolKey("file_handler_permission_blocked",
-                  file_handler_permission_blocked_);
-
   root.SetStringKey("file_handler_approval_state",
                     ApiApprovalStateToString(file_handler_approval_state_));
+
+  root.SetStringKey(
+      "file_handler_os_integration_state",
+      OsIntegrationStateToString(file_handler_os_integration_state_));
 
   root.SetKey("file_handlers", ConvertDebugValueList(file_handlers_));
 
   root.SetKey("manifest_icons", ConvertDebugValueList(manifest_icons_));
+
+  if (install_source_for_metrics_) {
+    root.SetIntKey("install_source_for_metrics",
+                   static_cast<int>(*install_source_for_metrics_));
+  } else {
+    root.SetStringKey("install_source_for_metrics", "not set");
+  }
 
   root.SetStringKey("install_time", ConvertToString(install_time_));
 
@@ -615,10 +648,29 @@ base::Value WebApp::AsDebugValue() const {
   root.SetStringKey("parent_app_id",
                     parent_app_id_ ? *parent_app_id_ : AppId());
 
+  if (!permissions_policy_.empty()) {
+    base::Value& policy_list = *root.SetKey(
+        "permissions_policy", base::Value(base::Value::Type::LIST));
+    for (const auto& decl : permissions_policy_) {
+      base::Value json_decl(base::Value::Type::DICTIONARY);
+      json_decl.SetStringKey("feature", decl.feature);
+      base::Value& allowlist_json =
+          *json_decl.SetKey("allowlist", base::Value(base::Value::Type::LIST));
+      for (const std::string& origin : decl.allowlist)
+        allowlist_json.Append(origin);
+      policy_list.Append(std::move(json_decl));
+    }
+  }
+
   root.SetKey("protocol_handlers", ConvertDebugValueList(protocol_handlers_));
 
   root.SetStringKey("run_on_os_login_mode",
                     RunOnOsLoginModeToString(run_on_os_login_mode_));
+  root.SetStringKey(
+      "run_on_os_login_os_integration_state",
+      run_on_os_login_os_integration_state_
+          ? RunOnOsLoginModeToString(*run_on_os_login_os_integration_state_)
+          : "not set");
 
   root.SetStringKey("scope", ConvertToString(scope_));
 

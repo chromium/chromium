@@ -41,12 +41,12 @@
 #include "components/dom_distiller/core/url_constants.h"
 #include "components/embedder_support/origin_trials/origin_trial_policy_impl.h"
 #include "components/services/heap_profiling/public/cpp/profiling_client.h"
+#include "components/strings/grit/components_strings.h"
 #include "content/public/common/cdm_info.h"
 #include "content/public/common/content_constants.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "extensions/buildflags/buildflags.h"
-#include "extensions/common/constants.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_util.h"
 #include "media/media_buildflags.h"
@@ -61,13 +61,17 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "url/url_constants.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include <fcntl.h>
 #include "sandbox/linux/services/credentials.h"
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
+#endif
+
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+#include "extensions/common/constants.h"
 #endif
 
 #if BUILDFLAG(ENABLE_NACL)
@@ -88,7 +92,7 @@
 #include "chrome/common/media/cdm_host_file_path.h"
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/common/media/chrome_media_drm_bridge_client.h"
 #endif
 
@@ -264,9 +268,12 @@ void ChromeContentClient::AddContentDecryptionModules(
 // Example standard schemes: https://, chrome-extension://, chrome://, file://
 // Example nonstandard schemes: mailto:, data:, javascript:, about:
 static const char* const kChromeStandardURLSchemes[] = {
-    extensions::kExtensionScheme, chrome::kChromeNativeScheme,
-    chrome::kChromeSearchScheme,  dom_distiller::kDomDistillerScheme,
-#if defined(OS_ANDROID)
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+    extensions::kExtensionScheme,
+#endif
+    chrome::kChromeNativeScheme,        chrome::kChromeSearchScheme,
+    dom_distiller::kDomDistillerScheme,
+#if BUILDFLAG(IS_ANDROID)
     content::kAndroidAppScheme,
 #endif
 };
@@ -275,23 +282,29 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   for (auto* standard_scheme : kChromeStandardURLSchemes)
     schemes->standard_schemes.push_back(standard_scheme);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   schemes->referrer_schemes.push_back(content::kAndroidAppScheme);
 #endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   schemes->extension_schemes.push_back(extensions::kExtensionScheme);
+#endif
 
+#if BUILDFLAG(ENABLE_EXTENSIONS)
   schemes->savable_schemes.push_back(extensions::kExtensionScheme);
+#endif
   schemes->savable_schemes.push_back(chrome::kChromeSearchScheme);
   schemes->savable_schemes.push_back(dom_distiller::kDomDistillerScheme);
 
   // chrome-search: resources shouldn't trigger insecure content warnings.
   schemes->secure_schemes.push_back(chrome::kChromeSearchScheme);
 
-  // Treat as secure because communication with them is entirely in the browser,
-  // so there is no danger of manipulation or eavesdropping on communication
-  // with them by third parties.
+#if BUILDFLAG(ENABLE_EXTENSIONS)
+  // Treat extensions as secure because communication with them is entirely in
+  // the browser, so there is no danger of manipulation or eavesdropping on
+  // communication with them by third parties.
   schemes->secure_schemes.push_back(extensions::kExtensionScheme);
+#endif
 
   // chrome-native: is a scheme used for placeholder navigations that allow
   // UIs to be drawn with platform native widgets instead of HTML.  These pages
@@ -302,6 +315,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   schemes->service_worker_schemes.push_back(extensions::kExtensionScheme);
+  schemes->service_worker_schemes.push_back(url::kFileScheme);
 
   // As far as Blink is concerned, they should be allowed to receive CORS
   // requests. At the Extensions layer, requests will actually be blocked unless
@@ -316,7 +330,7 @@ void ChromeContentClient::AddAdditionalSchemes(Schemes* schemes) {
   schemes->local_schemes.push_back(content::kExternalFileScheme);
 #endif
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   schemes->local_schemes.push_back(url::kContentScheme);
 #endif
 }
@@ -349,7 +363,7 @@ gfx::Image& ChromeContentClient::GetNativeImageNamed(int resource_id) {
       resource_id);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 base::FilePath ChromeContentClient::GetChildProcessPath(
     int child_flags,
     const base::FilePath& helpers_path) {
@@ -364,7 +378,7 @@ base::FilePath ChromeContentClient::GetChildProcessPath(
   NOTREACHED() << "Unsupported child process flags!";
   return {};
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 std::string ChromeContentClient::GetProcessTypeNameInEnglish(int type) {
 #if BUILDFLAG(ENABLE_NACL)
@@ -391,11 +405,11 @@ blink::OriginTrialPolicy* ChromeContentClient::GetOriginTrialPolicy() {
   return origin_trial_policy_.get();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 media::MediaDrmBridgeClient* ChromeContentClient::GetMediaDrmBridgeClient() {
   return new ChromeMediaDrmBridgeClient();
 }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void ChromeContentClient::ExposeInterfacesToBrowser(
     scoped_refptr<base::SequencedTaskRunner> io_task_runner,

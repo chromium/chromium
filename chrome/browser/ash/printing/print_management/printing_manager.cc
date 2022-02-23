@@ -6,10 +6,10 @@
 
 #include "base/bind.h"
 #include "base/containers/contains.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
 #include "chrome/browser/ash/printing/print_management/print_job_info_mojom_conversions.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
@@ -22,15 +22,14 @@ namespace ash {
 namespace printing {
 namespace print_management {
 
-using ::chromeos::CupsPrintJob;
-using ::chromeos::printing::proto::PrintJobInfo;
 using ::history::DeletionInfo;
 using ::history::HistoryService;
+using proto::PrintJobInfo;
 
 PrintingManager::PrintingManager(
     PrintJobHistoryService* print_job_history_service,
     HistoryService* history_service,
-    chromeos::CupsPrintJobManager* cups_print_job_manager,
+    CupsPrintJobManager* cups_print_job_manager,
     PrefService* pref_service)
     : print_job_history_service_(print_job_history_service),
       history_service_(history_service),

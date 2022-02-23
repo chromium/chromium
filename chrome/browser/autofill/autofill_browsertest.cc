@@ -6,10 +6,11 @@
 
 #include <memory>
 #include <string>
+#include <tuple>
 
 #include "base/command_line.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/rand_util.h"
 #include "base/run_loop.h"
@@ -110,7 +111,7 @@ class WindowedPersonalDataManagerObserver : public PersonalDataManagerObserver {
  private:
   bool alerted_;
   bool has_run_message_loop_;
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
 };
 
 // Upon construction, and in response to ReadyToCommitNavigation, installs a
@@ -871,9 +872,9 @@ IN_PROC_BROWSER_TEST_F(PrerenderAutofillTest, DeferWhilePrerendering) {
 
   int host_id = prerender_helper().AddPrerender(prerender_url);
   auto* rfh = prerender_helper().GetPrerenderedMainFrameHost(host_id);
-  ignore_result(
+  std::ignore =
       content::ExecJs(rfh, "document.querySelector('#NAME_FIRST').focus();",
-                      content::EXECUTE_SCRIPT_NO_USER_GESTURE));
+                      content::EXECUTE_SCRIPT_NO_USER_GESTURE);
 
   // Since the initial prerender page load has finished at this point and we
   // have issued our programmatic focus, we need to check that the expectations

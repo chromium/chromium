@@ -100,7 +100,10 @@ bool ChrootToSafeEmptyDir() {
   // TODO(crbug.com/1247458) Broken in MSan builds after LLVM f1bb30a4956f.
   clone_flags |= CLONE_VM | CLONE_VFORK | CLONE_SETTLS;
 
-  char tls_buf[PTHREAD_STACK_MIN] = {0};
+  // PTHREAD_STACK_MIN can be dynamic in glibc2.34+, so it is not possible to
+  // zeroify tls_buf assigning { 0 }
+  char tls_buf[PTHREAD_STACK_MIN];
+  memset(tls_buf, 0, PTHREAD_STACK_MIN);
   tls = tls_buf;
 #endif
 

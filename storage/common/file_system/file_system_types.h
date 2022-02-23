@@ -122,7 +122,10 @@ enum FileSystemType {
   // Indicates an SmbFs filesystem which provides access to SMB file shares.
   kFileSystemTypeSmbFs,
 
-  kFileSystemTypeLast = kFileSystemTypeSmbFs,
+  // Indicates a FUSE filesystem which provides access to virtual files.
+  kFileSystemTypeFuseBox,
+
+  kFileSystemTypeLast = kFileSystemTypeFuseBox,
 
   // --------------------------------------------------------------------
   // Marks the end of internal type enum. (This is not the actual fs type)

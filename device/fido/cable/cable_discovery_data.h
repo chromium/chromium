@@ -6,7 +6,11 @@
 #define DEVICE_FIDO_CABLE_CABLE_DISCOVERY_DATA_H_
 
 #include <stdint.h>
+
 #include <array>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "base/component_export.h"
 #include "base/containers/span.h"
@@ -15,10 +19,17 @@
 #include "device/fido/fido_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/icu/source/common/unicode/uversion.h"
 
 namespace cbor {
 class Value;
 }
+
+// third_party/icu/source/common/unicode/uversion.h will set namespace icu.
+namespace U_ICU_NAMESPACE {
+class Collator;
+class Locale;
+}  // namespace U_ICU_NAMESPACE
 
 namespace device {
 
@@ -66,12 +77,12 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) CableDiscoveryData {
   CableDiscoveryData& operator=(const CableDiscoveryData& other);
   bool operator==(const CableDiscoveryData& other) const;
 
-  // MatchV1 returns true if |candidate_eid| matches this caBLE discovery
+  // MatchV1 returns true if `candidate_eid` matches this caBLE discovery
   // instance, which must be version one.
   bool MatchV1(const CableEidArray& candidate_eid) const;
 
   // version indicates whether v1 or v2 data is contained in this object.
-  // |INVALID| is not a valid version but is set as the default to catch any
+  // `INVALID` is not a valid version but is set as the default to catch any
   // cases where the version hasn't been set explicitly.
   Version version = Version::INVALID;
 
@@ -92,14 +103,31 @@ namespace cablev2 {
 // Pairing represents information previously received from a caBLEv2
 // authenticator that enables future interactions to skip scanning a QR code.
 struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
+  // NameComparator is a less-than operation for sorting `Pairing` by name.
+  // See `CompareByName`.
+  class COMPONENT_EXPORT(DEVICE_FIDO) NameComparator {
+   public:
+    explicit NameComparator(const icu::Locale* locale);
+    NameComparator(NameComparator&&);
+    NameComparator(const NameComparator&) = delete;
+    NameComparator& operator=(const NameComparator&) = delete;
+    ~NameComparator();
+
+    bool operator()(const std::unique_ptr<Pairing>&,
+                    const std::unique_ptr<Pairing>&);
+
+   private:
+    std::unique_ptr<icu::Collator> collator_;
+  };
+
   Pairing();
   ~Pairing();
   Pairing(const Pairing&) = delete;
   Pairing& operator=(const Pairing&) = delete;
 
-  // Parse builds a |Pairing| from an authenticator message. The signature
-  // within the structure is validated by using |local_identity_seed| and
-  // |handshake_hash|.
+  // Parse builds a `Pairing` from an authenticator message. The signature
+  // within the structure is validated by using `local_identity_seed` and
+  // `handshake_hash`.
   static absl::optional<std::unique_ptr<Pairing>> Parse(
       const cbor::Value& cbor,
       tunnelserver::KnownDomainID domain,
@@ -112,6 +140,7 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
                                                const std::unique_ptr<Pairing>&);
   static bool CompareByPublicKey(const std::unique_ptr<Pairing>&,
                                  const std::unique_ptr<Pairing>&);
+  static NameComparator CompareByName(const icu::Locale* locale);
   static bool EqualPublicKeys(const std::unique_ptr<Pairing>&,
                               const std::unique_ptr<Pairing>&);
 
@@ -135,13 +164,18 @@ struct COMPONENT_EXPORT(DEVICE_FIDO) Pairing {
   std::string name;
   // last_updated is populated for pairings learned from Sync.
   base::Time last_updated;
-  // channel_priority is populated for pairing learned from Sync. It contains
-  // a higher number for less stable release channels (i.e. Canary is high,
-  // development builds are highest).
+  // from_sync_deviceinfo is true iff this `Pairing` was derived from a
+  // DeviceInfo record in Sync, rather than from scanning a QR code. (Note that
+  // the results of QR scanning may also be distributed via Sync, but that
+  // wouldn't cause this value to be true.)
+  bool from_sync_deviceinfo = false;
+  // channel_priority is populated when `from_sync_deviceinfo` is true. It
+  // contains a higher number for less stable release channels (i.e. Canary is
+  // high, development builds are highest).
   int channel_priority = 0;
 };
 
-// A PairingEvent is either a new |Pairing|, learnt from a device, or else the
+// A PairingEvent is either a new `Pairing`, learnt from a device, or else the
 // index of a pairing has been discovered to be invalid.
 using PairingEvent = absl::variant<std::unique_ptr<Pairing>, size_t>;
 

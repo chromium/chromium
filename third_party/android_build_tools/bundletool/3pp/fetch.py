@@ -8,14 +8,15 @@ from __future__ import print_function
 import argparse
 import json
 import os
-import urllib
+
+from six.moves import urllib
 
 _RELEASES_URL = 'https://api.github.com/repos/google/bundletool/releases/latest'
 _RELEASE_URL = 'https://api.github.com/repos/google/bundletool/releases/tags/{}'
 
 
 def fetch_json(url):
-    return json.loads(urllib.urlopen(url).read())
+    return json.load(urllib.request.urlopen(url))
 
 
 def do_latest():

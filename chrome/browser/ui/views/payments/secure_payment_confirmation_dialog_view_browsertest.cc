@@ -4,6 +4,8 @@
 
 #include "base/test/metrics/histogram_tester.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "chrome/browser/ui/views/payments/secure_payment_confirmation_dialog_view.h"
 #include "chrome/browser/ui/views/payments/test_secure_payment_confirmation_payment_request_delegate.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -32,13 +34,32 @@ const SkBitmap CreateInstrumentIcon(SkColor color) {
 }  // namespace
 
 class SecurePaymentConfirmationDialogViewTest
-    : public InProcessBrowserTest,
+    : public DialogBrowserTest,
       public SecurePaymentConfirmationDialogView::ObserverForTest {
  public:
   enum DialogEvent : int {
     DIALOG_OPENED,
     DIALOG_CLOSED,
   };
+
+  // UiBrowserTest:
+  void ShowUi(const std::string& name) override {
+    content::WebContents* web_contents = GetActiveWebContents();
+    CreateModel();
+
+    test_delegate_ =
+        std::make_unique<TestSecurePaymentConfirmationPaymentRequestDelegate>(
+            web_contents->GetMainFrame(), model_.GetWeakPtr(), GetWeakPtr());
+
+    // TODO(crbug.com/1175327): Ideally, we'd expect the browser window to be
+    // active here and could check that |IsBrowserWindowActivate()| returned
+    // true, but on wayland, windows cannot be activated as they are on other
+    // platforms.
+    EXPECT_EQ(browser()->window()->IsActive(),
+              test_delegate_->IsBrowserWindowActive());
+
+    test_delegate_->ShowDialog(nullptr);
+  }
 
   content::WebContents* GetActiveWebContents() {
     return browser()->tab_strip_model()->GetActiveWebContents();
@@ -375,6 +396,11 @@ IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
   ResetEventWaiter(DialogEvent::DIALOG_CLOSED);
   GetActiveWebContents()->Close();
   event_waiter_->Wait();
+}
+
+IN_PROC_BROWSER_TEST_F(SecurePaymentConfirmationDialogViewTest,
+                       InvokeUi_default) {
+  ShowAndVerifyUi();
 }
 
 }  // namespace payments

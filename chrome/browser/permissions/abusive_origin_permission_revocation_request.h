@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_PERMISSIONS_ABUSIVE_ORIGIN_PERMISSION_REVOCATION_REQUEST_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/permissions/crowd_deny_preload_data.h"
 #include "chrome/browser/permissions/crowd_deny_safe_browsing_request.h"
@@ -65,7 +66,7 @@ class AbusiveOriginPermissionRevocationRequest {
   void NotifyCallback(Outcome outcome);
 
   absl::optional<CrowdDenySafeBrowsingRequest> safe_browsing_request_;
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   const GURL origin_;
   OutcomeCallback callback_;
   // The time when the Crowd Deny request starts.

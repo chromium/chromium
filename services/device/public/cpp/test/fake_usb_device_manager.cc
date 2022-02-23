@@ -10,6 +10,7 @@
 
 #include "base/containers/contains.h"
 #include "base/threading/thread_task_runner_handle.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"
 #include "services/device/public/cpp/test/fake_usb_device.h"
@@ -70,7 +71,7 @@ void FakeUsbDeviceManager::GetSecurityKeyDevice(
                    std::move(device_receiver), std::move(device_client));
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FakeUsbDeviceManager::RefreshDeviceInfo(
     const std::string& guid,
     RefreshDeviceInfoCallback callback) {

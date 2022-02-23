@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {AuthenticationType, BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, LockType, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, NumberPadPresence, PhysicalLayout, PowerRoutineResult, RoamingState, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js';
+import {AuthenticationType, BatteryChargeStatus, BatteryHealth, BatteryInfo, BatteryState, ConnectionType, CpuUsage, ExternalPowerSource, KeyboardInfo, LockType, MechanicalLayout, MemoryUsage, Network, NetworkGuidInfo, NetworkState, NetworkType, NumberPadPresence, PhysicalLayout, PowerRoutineResult, RoamingState, RoutineType, SecurityType, StandardRoutineResult, SystemInfo, TopRowKey, TouchDeviceInfo, TouchDeviceType, WiFiStateProperties} from './diagnostics_types.js';
 import {stringToMojoString16} from './mojo_utils.js';
 
 /** @type {!Array<!BatteryChargeStatus>} */
@@ -628,7 +628,14 @@ export const fakeKeyboards = [
     name: 'AT Translated Set 2 keyboard',
     physicalLayout: PhysicalLayout.kChromeOS,
     mechanicalLayout: MechanicalLayout.kAnsi,
+    regionCode: 'jp',
     hasAssistantKey: true,
+    topRowKeys: [
+      TopRowKey.kBack, TopRowKey.kForward, TopRowKey.kRefresh,
+      TopRowKey.kFullscreen, TopRowKey.kOverview,
+      TopRowKey.kScreenBrightnessDown, TopRowKey.kScreenBrightnessUp,
+      TopRowKey.kVolumeMute, TopRowKey.kVolumeDown, TopRowKey.kVolumeUp
+    ],
     numberPadPresent: NumberPadPresence.kPresent,
   },
 ];

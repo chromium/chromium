@@ -23,14 +23,11 @@ import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantChoiceL
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataDelegate;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantCollectUserDataModel;
-import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantDateTime;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantLoginChoice;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantTermsAndConditionsState;
+import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantUserDataEventType;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpander;
 import org.chromium.chrome.browser.autofill_assistant.user_data.AssistantVerticalExpanderAccordion;
-import org.chromium.chrome.browser.payments.AutofillAddress;
-import org.chromium.chrome.browser.payments.AutofillContact;
-import org.chromium.chrome.browser.payments.AutofillPaymentInstrument;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.HashMap;
@@ -49,14 +46,14 @@ public class AutofillAssistantCollectUserDataTestHelper {
     static class ViewHolder {
         final AssistantVerticalExpanderAccordion mAccordion;
         final AssistantVerticalExpander mContactSection;
+        final AssistantVerticalExpander mPhoneNumberSection;
         final AssistantVerticalExpander mPaymentSection;
         final AssistantVerticalExpander mShippingSection;
         final AssistantVerticalExpander mLoginsSection;
-        final LinearLayout mDateRangeStartSection;
-        final LinearLayout mDateRangeEndSection;
         final LinearLayout mTermsSection;
         final TextView mInfoSection;
         final AssistantChoiceList mContactList;
+        final AssistantChoiceList mPhoneNumberList;
         final AssistantChoiceList mPaymentMethodList;
         final AssistantChoiceList mShippingAddressList;
         final AssistantChoiceList mLoginList;
@@ -67,16 +64,14 @@ public class AutofillAssistantCollectUserDataTestHelper {
                     AssistantTagsForTesting.COLLECT_USER_DATA_ACCORDION_TAG);
             mContactSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_CONTACT_DETAILS_SECTION_TAG);
+            mPhoneNumberSection = coordinator.getView().findViewWithTag(
+                    AssistantTagsForTesting.COLLECT_USER_DATA_PHONE_NUMBER_SECTION_TAG);
             mPaymentSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_PAYMENT_METHOD_SECTION_TAG);
             mShippingSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_SHIPPING_ADDRESS_SECTION_TAG);
             mLoginsSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_LOGIN_SECTION_TAG);
-            mDateRangeStartSection = coordinator.getView().findViewWithTag(
-                    AssistantTagsForTesting.COLLECT_USER_DATA_DATE_RANGE_START_TAG);
-            mDateRangeEndSection = coordinator.getView().findViewWithTag(
-                    AssistantTagsForTesting.COLLECT_USER_DATA_DATE_RANGE_END_TAG);
             mTermsSection = coordinator.getView().findViewWithTag(
                     AssistantTagsForTesting.COLLECT_USER_DATA_RADIO_TERMS_SECTION_TAG);
             mInfoSection = coordinator.getView().findViewWithTag(
@@ -85,6 +80,9 @@ public class AutofillAssistantCollectUserDataTestHelper {
             mContactList = (AssistantChoiceList) (findViewsWithTag(
                     mContactSection, COLLECT_USER_DATA_CHOICE_LIST)
                                                           .get(0));
+            mPhoneNumberList = (AssistantChoiceList) (findViewsWithTag(
+                    mPhoneNumberSection, COLLECT_USER_DATA_CHOICE_LIST)
+                                                              .get(0));
             mPaymentMethodList = (AssistantChoiceList) (findViewsWithTag(
                     mPaymentSection, COLLECT_USER_DATA_CHOICE_LIST)
                                                                 .get(0));
@@ -103,18 +101,11 @@ public class AutofillAssistantCollectUserDataTestHelper {
      *  should be able to get the currently selected items by asking the model.
      */
     static class MockDelegate implements AssistantCollectUserDataDelegate {
-        AutofillContact mContact;
-        AutofillAddress mAddress;
-        AutofillPaymentInstrument mPaymentMethod;
+        AssistantAutofillProfile mContact;
+        AssistantAutofillProfile mPhoneNumber;
+        AssistantAutofillProfile mShippingAddress;
+        AssistantPaymentInstrument mPaymentInstrument;
         AssistantLoginChoice mLoginChoice;
-        @Nullable
-        AssistantDateTime mDateRangeStartDate;
-        @Nullable
-        AssistantDateTime mDateRangeEndDate;
-        @Nullable
-        Integer mDateRangeStartTimeSlot;
-        @Nullable
-        Integer mDateRangeEndTimeSlot;
 
         @AssistantTermsAndConditionsState
         int mTermsStatus;
@@ -123,21 +114,30 @@ public class AutofillAssistantCollectUserDataTestHelper {
         Map<String, AssistantValue> mAdditionalValues = new HashMap<>();
 
         @Override
-        public void onContactInfoChanged(
-                @Nullable AssistantCollectUserDataModel.ContactModel contactModel) {
+        public void onContactInfoChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
+                @AssistantUserDataEventType int eventType) {
             mContact = contactModel == null ? null : contactModel.mOption;
         }
 
         @Override
-        public void onShippingAddressChanged(
-                @Nullable AssistantCollectUserDataModel.AddressModel addressModel) {
-            mAddress = addressModel == null ? null : addressModel.mOption;
+        public void onPhoneNumberChanged(@Nullable AssistantOptionModel.ContactModel contactModel,
+                @AssistantUserDataEventType int eventType) {
+            mPhoneNumber = contactModel == null ? null : contactModel.mOption;
         }
 
         @Override
-        public void onPaymentMethodChanged(@Nullable AssistantCollectUserDataModel
-                                                   .PaymentInstrumentModel paymentInstrumentModel) {
-            mPaymentMethod = paymentInstrumentModel == null ? null : paymentInstrumentModel.mOption;
+        public void onShippingAddressChanged(
+                @Nullable AssistantOptionModel.AddressModel addressModel,
+                @AssistantUserDataEventType int eventType) {
+            mShippingAddress = addressModel == null ? null : addressModel.mOption;
+        }
+
+        @Override
+        public void onPaymentMethodChanged(
+                @Nullable AssistantOptionModel.PaymentInstrumentModel paymentInstrumentModel,
+                @AssistantUserDataEventType int eventType) {
+            mPaymentInstrument =
+                    paymentInstrumentModel == null ? null : paymentInstrumentModel.mOption;
         }
 
         @Override
@@ -147,33 +147,14 @@ public class AutofillAssistantCollectUserDataTestHelper {
 
         @Override
         public void onLoginChoiceChanged(
-                @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel) {
+                @Nullable AssistantCollectUserDataModel.LoginChoiceModel loginChoiceModel,
+                @AssistantUserDataEventType int eventType) {
             mLoginChoice = loginChoiceModel == null ? null : loginChoiceModel.mOption;
         }
 
         @Override
         public void onTextLinkClicked(int link) {
             mLastLinkClicked = link;
-        }
-
-        @Override
-        public void onDateTimeRangeStartDateChanged(@Nullable AssistantDateTime date) {
-            mDateRangeStartDate = date;
-        }
-
-        @Override
-        public void onDateTimeRangeStartTimeSlotChanged(@Nullable Integer index) {
-            mDateRangeStartTimeSlot = index;
-        }
-
-        @Override
-        public void onDateTimeRangeEndDateChanged(@Nullable AssistantDateTime date) {
-            mDateRangeEndDate = date;
-        }
-
-        @Override
-        public void onDateTimeRangeEndTimeSlotChanged(@Nullable Integer index) {
-            mDateRangeEndTimeSlot = index;
         }
 
         @Override
@@ -265,8 +246,8 @@ public class AutofillAssistantCollectUserDataTestHelper {
         return new PersonalDataManager.AutofillProfile(/* guid= */ "", "https://www.example.com",
                 /* honorificPrefix= */ "", fullName, "Acme Inc.", "123 Main", "California",
                 "Los Angeles",
-                /* dependentLocality= */ "", postcode, /* sortingCode= */ "", "UZ", "555 123-4567",
-                email, /* languageCode= */ "");
+                /* dependentLocality= */ "", postcode, /* sortingCode= */ "", "UZ",
+                /* phoneNumber= */ "", email, /* languageCode= */ "");
     }
 
     /**

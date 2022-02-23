@@ -8,7 +8,6 @@
 #include <stdint.h>
 
 #include "base/check.h"
-#include "base/macros.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
 #include "ui/gfx/geometry/size.h"

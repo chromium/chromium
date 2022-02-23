@@ -70,13 +70,14 @@ const char kValueRequestUploadPolicyValidationReport[] =
     "policy_validation_report";
 const char kValueRequestPublicSamlUser[] = "public_saml_user_request";
 const char kValueRequestCertProvisioningRequest[] = "client_cert_provisioning";
+const char kValueRequestChromeProfileReport[] = "chrome_profile_report";
 
 const char kChromeDevicePolicyType[] = "google/chromeos/device";
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 const char kChromeUserPolicyType[] = "google/chromeos/user";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 const char kChromeUserPolicyType[] = "google/android/user";
-#elif defined(OS_IOS)
+#elif BUILDFLAG(IS_IOS)
 const char kChromeUserPolicyType[] = "google/ios/user";
 #else
 const char kChromeUserPolicyType[] = "google/chrome/user";

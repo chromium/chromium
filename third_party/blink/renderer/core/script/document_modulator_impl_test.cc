@@ -26,7 +26,7 @@ class DocumentModulatorImplTest : public PageTestBase {
 };
 
 void DocumentModulatorImplTest::SetUp() {
-  PageTestBase::SetUp(IntSize(500, 500));
+  PageTestBase::SetUp(gfx::Size(500, 500));
   ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
   modulator_ = Modulator::From(script_state);
 }

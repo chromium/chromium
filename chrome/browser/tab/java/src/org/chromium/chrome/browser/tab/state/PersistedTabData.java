@@ -8,7 +8,6 @@ import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
-import org.chromium.base.FeatureList;
 import org.chromium.base.Log;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.TraceEvent;
@@ -18,7 +17,6 @@ import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.task.PostTask;
-import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
 
@@ -43,8 +41,6 @@ public abstract class PersistedTabData implements UserData {
     private static final Map<String, List<Callback>> sCachedCallbacks = new HashMap<>();
     private static final long NEEDS_UPDATE_DISABLED = Long.MAX_VALUE;
     private static final long LAST_UPDATE_UNKNOWN = 0;
-    private static final String ENABLE_PERSISTED_TAB_DATA_MAINTENANCE =
-            "enable_persisted_tab_data_maintenance";
     private static Set<Class<? extends PersistedTabData>> sSupportedMaintenanceClasses =
             new HashSet<>();
     protected final Tab mTab;
@@ -259,8 +255,8 @@ public abstract class PersistedTabData implements UserData {
     @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
     protected void save() {
         if (mIsTabSaveEnabledSupplier != null && mIsTabSaveEnabledSupplier.get()) {
-            mPersistedTabDataStorage.save(mTab.getId(), mPersistedTabDataId,
-                    getOomAndMetricsWrapper(getSerializeSupplier()));
+            mPersistedTabDataStorage.save(
+                    mTab.getId(), mPersistedTabDataId, getOomAndMetricsWrapper());
         }
     }
 
@@ -270,13 +266,17 @@ public abstract class PersistedTabData implements UserData {
     abstract Supplier<ByteBuffer> getSerializeSupplier();
 
     @VisibleForTesting
-    protected Supplier<ByteBuffer> getOomAndMetricsWrapper(Supplier<ByteBuffer> serializeSupplier) {
+    protected Supplier<ByteBuffer> getOomAndMetricsWrapper() {
+        final Supplier<ByteBuffer> supplier = getSerializeSupplierWithOomSoftFallback();
         return () -> {
+            if (supplier == null) return null;
             ByteBuffer res;
             try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Serialize")) {
-                res = serializeSupplier.get();
+                res = supplier.get();
             } catch (OutOfMemoryError oe) {
-                Log.e(TAG, "Out of memory error when attempting to save PersistedTabData");
+                Log.e(TAG,
+                        "Out of memory error when attempting to save PersistedTabData. Details: "
+                                + oe.getMessage());
                 res = null;
             }
             // TODO(crbug.com/1162293) convert to enum histogram and differentiate null/not null/out
@@ -287,6 +287,17 @@ public abstract class PersistedTabData implements UserData {
         };
     }
 
+    private Supplier<ByteBuffer> getSerializeSupplierWithOomSoftFallback() {
+        try {
+            return getSerializeSupplier();
+        } catch (OutOfMemoryError oe) {
+            Log.e(TAG,
+                    "Out of memory error when attempting to save PersistedTabData "
+                            + oe.getMessage());
+        }
+        return null;
+    }
+
     /**
      * Deserialize serialized {@link PersistedTabData} and
      * assign to fields in {@link PersistedTabData}
@@ -294,7 +305,8 @@ public abstract class PersistedTabData implements UserData {
      */
     abstract boolean deserialize(@Nullable ByteBuffer bytes);
 
-    protected void deserializeAndLog(@Nullable ByteBuffer bytes) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PROTECTED)
+    public void deserializeAndLog(@Nullable ByteBuffer bytes) {
         boolean success;
         try (TraceEvent e = TraceEvent.scoped("PersistedTabData.Deserialize")) {
             success = deserialize(bytes);
@@ -404,24 +416,12 @@ public abstract class PersistedTabData implements UserData {
      */
     public static void performStorageMaintenance(List<Integer> liveTabIds) {
         ThreadUtils.assertOnUiThread();
-        if (!isPersistedTabDataStorageMaintenanceEnabled()) {
-            return;
-        }
         for (Class<? extends PersistedTabData> clazz : sSupportedMaintenanceClasses) {
             PersistedTabDataConfiguration config = PersistedTabDataConfiguration.get(
                     clazz, false /** Maintenance is only supported for regular Tabs */);
             PersistedTabDataStorage storage = config.getStorage();
             storage.performMaintenance(liveTabIds, config.getId());
         }
-    }
-
-    private static boolean isPersistedTabDataStorageMaintenanceEnabled() {
-        if (FeatureList.isInitialized()) {
-            return ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                    ChromeFeatureList.COMMERCE_PRICE_TRACKING,
-                    ENABLE_PERSISTED_TAB_DATA_MAINTENANCE, false);
-        }
-        return false;
     }
 
     @VisibleForTesting

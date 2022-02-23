@@ -1,41 +1,29 @@
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../js-test-resources/js-test.js"></script>
+<!DOCTYPE html>
+<script src="/resources/testdriver.js"></script>
+<script src="/resources/testdriver-vendor.js"></script>
 <script src="../../forms-test-resources/picker-common.js"></script>
+
 <style>
-@font-face {
-    font-family: 'TestFont';
-    src: url(slow-ahem-loading.cgi);
-}
-option {
-    font-family: TestFont;
-}
+  @font-face {
+      font-family: 'TestFont';
+      src: url(slow-ahem-loading.cgi);
+  }
+  option {
+      font-family: TestFont;
+  }
 </style>
-<select id="menu">
-    <option>foo</option>
-    <option>bar</option>
-</select>
-<p id="description"></p>
-<div id="console"></div>
+  
 <script>
-description('Test that fonts loaded after a popup menu is opened triggers a style recalc.');
-
-document.fonts.ready.then(onFontsReady);
-
-openPicker(menu, function() {}, function () {
-    // Note that we don't need to call finishJSTest() here because the font
-    // promise will still be resolved.
-    testFailed('picker didn\'t open')
-});
-
-function onFontsReady() {
-    finishJSTest();
-}
+  // Test that fonts loaded after a popup menu is opened triggers a style recalc.
+  let fontsReady = new Promise(resolve => document.fonts.ready.then(resolve));
+  window.onload = () => {
+    openPickerAppearanceOnly(document.querySelector('select'), () => {
+      return fontsReady;
+    });
+  };
 </script>
-</head>
-<body>
-</body>
-</html>
+
+<select>
+  <option>foo</option>
+  <option>bar</option>
+</select>

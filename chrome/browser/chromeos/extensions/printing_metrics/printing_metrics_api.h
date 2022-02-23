@@ -7,7 +7,7 @@
 
 #include <vector>
 
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "extensions/browser/extension_function.h"
 #include "extensions/browser/extension_function_histogram_value.h"
 
@@ -21,9 +21,9 @@ class PrintingMetricsGetPrintJobsFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnPrintJobsRetrieved(bool success,
-                            std::vector<chromeos::printing::proto::PrintJobInfo>
-                                print_job_info_protos);
+  void OnPrintJobsRetrieved(
+      bool success,
+      std::vector<ash::printing::proto::PrintJobInfo> print_job_info_protos);
   DECLARE_EXTENSION_FUNCTION("printingMetrics.getPrintJobs",
                              PRINTINGMETRICS_GETPRINTJOBS)
 };

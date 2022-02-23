@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/containers/adapters.h"
 #include "base/trace_event/trace_event.h"
 #include "chrome/browser/predictors/predictors_features.h"
 #include "chrome/browser/predictors/resource_prefetch_predictor.h"
@@ -52,7 +53,7 @@ PreresolveJob::PreresolveJob(const GURL& url,
       network_isolation_key(std::move(network_isolation_key)),
       info(info) {
   DCHECK_GE(num_sockets, 0);
-  DCHECK(!network_isolation_key.IsEmpty());
+  DCHECK(!this->network_isolation_key.IsEmpty());
 }
 
 PreresolveJob::PreresolveJob(PreconnectRequest preconnect_request,
@@ -122,11 +123,11 @@ void PreconnectManager::StartPreresolveHosts(
     const net::NetworkIsolationKey& network_isolation_key) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   // Push jobs in front of the queue due to higher priority.
-  for (auto it = hostnames.rbegin(); it != hostnames.rend(); ++it) {
-    PreresolveJobId job_id =
-        preresolve_jobs_.Add(std::make_unique<PreresolveJob>(
-            GURL("http://" + *it), 0, kAllowCredentialsOnPreconnectByDefault,
-            network_isolation_key, nullptr));
+  for (const std::string& hostname : base::Reversed(hostnames)) {
+    PreresolveJobId job_id = preresolve_jobs_.Add(
+        std::make_unique<PreresolveJob>(GURL("http://" + hostname), 0,
+                                        kAllowCredentialsOnPreconnectByDefault,
+                                        network_isolation_key, nullptr));
     queued_jobs_.push_front(job_id);
   }
 

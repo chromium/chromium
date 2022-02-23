@@ -47,7 +47,9 @@ TEST(SystemSnapshotLinux, Basic) {
 
   uint64_t current_hz, max_hz;
   system.CPUFrequency(&current_hz, &max_hz);
-  EXPECT_GE(max_hz, current_hz);
+  // For short-term loads, modern CPUs can boost single-core frequency beyond
+  // the advertised base clock. Let's assume this is no more than a factor 2.
+  EXPECT_GE(max_hz * 2, current_hz);
 
   int major, minor, bugfix;
   std::string build;
@@ -63,11 +65,11 @@ TEST(SystemSnapshotLinux, Basic) {
   system.CPURevision();
   system.NXEnabled();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(system.MachineDescription().empty());
 #else
   system.MachineDescription();
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if defined(ARCH_CPU_X86_FAMILY)
   system.CPUX86Signature();

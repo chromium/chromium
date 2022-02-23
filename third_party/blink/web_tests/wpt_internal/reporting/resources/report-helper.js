@@ -3,7 +3,7 @@ function wait(ms) {
 }
 
 async function pollReports(endpoint, id, min_count) {
-  const res = await fetch(`${endpoint}?reportID=${id}${min_count ? `&min_count=${min_count}` : ''}`, {cache: 'no-store'});
+  const res = await fetch(`${endpoint}?reportID=${id}${min_count ? `&min_count=${min_count}` : ''}`, { cache: 'no-store' });
   const reports = [];
   if (res.status === 200) {
     for (const report of await res.json()) {
@@ -14,7 +14,7 @@ async function pollReports(endpoint, id, min_count) {
 }
 
 async function pollCookies(endpoint, id) {
-  const res = await fetch(`${endpoint}?reportID=${id}&op=retrieve_cookies`, {cache: 'no-store'});
+  const res = await fetch(`${endpoint}?reportID=${id}&op=retrieve_cookies`, { cache: 'no-store' });
   const dict = await res.json();
   if (dict.reportCookies == 'None')
     return {};
@@ -22,11 +22,11 @@ async function pollCookies(endpoint, id) {
 }
 
 async function pollNumResults(endpoint, id) {
-  const res = await fetch(`${endpoint}?reportID=${id}&op=retrieve_count`, {cache: 'no-store'});
+  const res = await fetch(`${endpoint}?reportID=${id}&op=retrieve_count`, { cache: 'no-store' });
   const dict = await res.json();
   if (dict.report_count == 'None')
     return 0;
-  return JSON.parse(dict.report_count);
+  return dict.report_count;
 }
 
 function checkReportExists(reports, type, url) {

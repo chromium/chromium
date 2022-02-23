@@ -42,7 +42,8 @@ export class FocusGrid {
     this.lastFocused_ = null;
   }
 
-  /** @override */
+  // override
+  // Note: Not using @override because it breaks TypeScript.
   onFocus(row, e) {
     if (this.ignoreFocusChange_) {
       this.ignoreFocusChange_ = false;
@@ -55,7 +56,7 @@ export class FocusGrid {
     });
   }
 
-  /** @override */
+  // override
   onKeydown(row, e) {
     const rowIndex = this.rows.indexOf(row);
     assert(rowIndex >= 0);
@@ -86,7 +87,7 @@ export class FocusGrid {
     return false;
   }
 
-  /** @override */
+  // override
   getCustomEquivalent(sampleElement) {
     return null;
   }

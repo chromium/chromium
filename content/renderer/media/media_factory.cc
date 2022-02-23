@@ -19,7 +19,6 @@
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "build/chromecast_buildflags.h"
-#include "build/os_buildflags.h"
 #include "cc/trees/layer_tree_settings.h"
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_switches.h"
@@ -46,30 +45,27 @@
 #include "media/renderers/default_renderer_factory.h"
 #include "media/video/gpu_video_accelerator_factories.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/device/public/mojom/battery_monitor.mojom.h"
 #include "services/service_manager/public/cpp/connect.h"
 #include "services/viz/public/cpp/gpu/context_provider_command_buffer.h"
 #include "third_party/blink/public/common/browser_interface_broker_proxy.h"
 #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
 #include "third_party/blink/public/platform/media/key_system_config_selector.h"
-#include "third_party/blink/public/platform/media/power_status_helper.h"
 #include "third_party/blink/public/platform/media/remote_playback_client_wrapper_impl.h"
 #include "third_party/blink/public/platform/media/resource_fetch_context.h"
 #include "third_party/blink/public/platform/media/url_index.h"
 #include "third_party/blink/public/platform/media/video_frame_compositor.h"
 #include "third_party/blink/public/platform/media/web_encrypted_media_client_impl.h"
-#include "third_party/blink/public/platform/media/web_media_player_impl.h"
-#include "third_party/blink/public/platform/media/web_media_player_params.h"
+#include "third_party/blink/public/platform/media/web_media_player_builder.h"
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/platform/web_surface_layer_bridge.h"
 #include "third_party/blink/public/platform/web_video_frame_submitter.h"
 #include "third_party/blink/public/web/blink.h"
-#include "third_party/blink/public/web/modules/media/audio/web_audio_device_factory.h"
+#include "third_party/blink/public/web/modules/media/audio/audio_device_factory.h"
 #include "third_party/blink/public/web/modules/mediastream/webmediaplayer_ms.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "url/origin.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/common/features.h"
 #include "content/renderer/media/android/flinging_renderer_client_factory.h"
 #include "content/renderer/media/android/media_player_renderer_client_factory.h"
@@ -83,7 +79,7 @@
 #include "content/renderer/media/cast_renderer_client_factory.h"
 #endif
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "media/fuchsia/cdm/client/fuchsia_cdm_util.h"
 #elif BUILDFLAG(ENABLE_MOJO_CDM)
 #include "media/mojo/clients/mojo_cdm_factory.h"  // nogncheck
@@ -91,7 +87,7 @@
 #include "media/cdm/default_cdm_factory.h"
 #endif
 
-#if defined(OS_FUCHSIA) && BUILDFLAG(ENABLE_MOJO_CDM)
+#if BUILDFLAG(IS_FUCHSIA) && BUILDFLAG(ENABLE_MOJO_CDM)
 #error "MojoCdm should be disabled for Fuchsia."
 #endif
 
@@ -108,8 +104,8 @@
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
 // Enable libcast streaming receiver.
 #include "components/cast_streaming/public/cast_streaming_url.h"  // nogncheck
-#include "media/cast/receiver/cast_streaming_renderer_controller_proxy.h"  // nogncheck
-#include "media/cast/receiver/cast_streaming_renderer_factory.h"  // nogncheck
+#include "components/cast_streaming/renderer/public/playback_command_forwarding_renderer_factory.h"  // nogncheck
+#include "components/cast_streaming/renderer/public/renderer_controller_proxy.h"  // nogncheck
 #endif
 
 #if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
@@ -254,7 +250,7 @@ std::unique_ptr<media::DefaultRendererFactory> CreateDefaultRendererFactory(
     media::DecoderFactory* decoder_factory,
     content::RenderThreadImpl* render_thread,
     content::RenderFrameImpl* render_frame) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto default_factory = std::make_unique<media::DefaultRendererFactory>(
       media_log, decoder_factory,
       base::BindRepeating(&content::RenderThreadImpl::GetGpuFactories,
@@ -277,7 +273,7 @@ enum class MediaPlayerType {
 // Helper function returning whether SurfaceLayer should be enabled.
 blink::WebMediaPlayer::SurfaceLayerMode GetSurfaceLayerMode(
     MediaPlayerType type) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!::features::UseSurfaceLayerForVideo())
     return blink::WebMediaPlayer::SurfaceLayerMode::kNever;
 #endif
@@ -378,32 +374,6 @@ void MediaFactory::SetupMojo() {
   DCHECK(interface_broker_);
 }
 
-#if defined(OS_ANDROID)
-// Returns true if the MediaPlayerRenderer should be used for playback, false
-// if the default renderer should be used instead.
-//
-// Note that HLS and MP4 detection are pre-redirect and path-based. It is
-// possible to load such a URL and find different content.
-bool UseMediaPlayerRenderer(const GURL& url) {
-  // Always use the default renderer for playing blob URLs.
-  if (url.SchemeIsBlob())
-    return false;
-
-  // Don't use the default renderer if the container likely contains a codec we
-  // can't decode in software and platform decoders are not available.
-  if (!media::HasPlatformDecoderSupport()) {
-    // Assume that "mp4" means H264. Without platform decoder support we cannot
-    // play it with the default renderer so use MediaPlayerRenderer.
-    // http://crbug.com/642988.
-    if (base::ToLowerASCII(url.spec()).find("mp4") != std::string::npos)
-      return true;
-  }
-
-  // Otherwise, use the default renderer.
-  return false;
-}
-#endif  // defined(OS_ANDROID)
-
 blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     const blink::WebMediaPlayerSource& source,
     blink::WebMediaPlayerClient* client,
@@ -446,7 +416,7 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     return nullptr;
 
   scoped_refptr<media::SwitchableAudioRendererSink> audio_renderer_sink =
-      blink::WebAudioDeviceFactory::NewSwitchableAudioRendererSink(
+      blink::AudioDeviceFactory::NewSwitchableAudioRendererSink(
           blink::WebAudioDeviceSourceType::kMediaElement,
           render_frame_->GetWebFrame()->GetLocalFrameToken(),
           media::AudioSinkParameters(/*session_id=*/base::UnguessableToken(),
@@ -455,10 +425,10 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   const blink::web_pref::WebPreferences webkit_preferences =
       render_frame_->GetBlinkPreferences();
   bool embedded_media_experience_enabled = false;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   embedded_media_experience_enabled =
       webkit_preferences.embedded_media_experience_enabled;
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
   // When memory pressure based garbage collection is enabled for MSE, the
   // |enable_instant_source_buffer_gc| flag controls whether the GC is done
@@ -506,26 +476,6 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
   interface_broker_->GetInterface(
       metrics_provider.InitWithNewPipeAndPassReceiver());
 
-  std::unique_ptr<blink::PowerStatusHelper> power_status_helper;
-  if (base::FeatureList::IsEnabled(media::kMediaPowerExperiment)) {
-    // The battery monitor is only available through the blink provider.
-    // TODO(liberato): Should we expose this via |remote_interfaces_|?
-    scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
-        remote_interfaces =
-            blink::Platform::Current()->GetBrowserInterfaceBroker();
-    auto battery_monitor_cb = base::BindRepeating(
-        [](scoped_refptr<blink::ThreadSafeBrowserInterfaceBrokerProxy>
-               remote_interfaces) {
-          mojo::PendingRemote<device::mojom::BatteryMonitor> battery_monitor;
-          remote_interfaces->GetInterface(
-              battery_monitor.InitWithNewPipeAndPassReceiver());
-          return battery_monitor;
-        },
-        remote_interfaces);
-    power_status_helper = std::make_unique<blink::PowerStatusHelper>(
-        std::move(battery_monitor_cb));
-  }
-
   scoped_refptr<base::SingleThreadTaskRunner>
       video_frame_compositor_task_runner;
   const auto surface_layer_mode = GetSurfaceLayerMode(MediaPlayerType::kNormal);
@@ -543,15 +493,24 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
     return nullptr;
   }
 
-  auto params = std::make_unique<blink::WebMediaPlayerParams>(
+  auto vfc = std::make_unique<blink::VideoFrameCompositor>(
+      video_frame_compositor_task_runner, std::move(submitter));
+
+  std::unique_ptr<media::Demuxer> demuxer_override =
+      GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
+                                                            media_task_runner);
+
+  return blink::WebMediaPlayerBuilder::Build(
+      web_frame, client, encrypted_client, delegate,
+      std::move(factory_selector), url_index_.get(), std::move(vfc),
       std::move(media_log),
       base::BindRepeating(&RenderFrameImpl::DeferMediaLoad,
                           base::Unretained(render_frame_),
                           delegate->has_played_media()),
-      audio_renderer_sink, media_task_runner,
+      std::move(audio_renderer_sink), std::move(media_task_runner),
       render_thread->GetWorkerTaskRunner(),
       render_thread->compositor_task_runner(),
-      video_frame_compositor_task_runner,
+      std::move(video_frame_compositor_task_runner),
       base::BindRepeating(&v8::Isolate::AdjustAmountOfExternalAllocatedMemory,
                           base::Unretained(blink::MainThreadIsolate())),
       initial_cdm, request_routing_token_cb_, media_observer,
@@ -568,19 +527,8 @@ blink::WebMediaPlayer* MediaFactory::CreateMediaPlayer(
           .is_background_video_playback_enabled,
       render_frame_->GetRenderFrameMediaPlaybackOptions()
           .is_background_video_track_optimization_supported,
-      GetContentClient()->renderer()->OverrideDemuxerForUrl(render_frame_, url,
-                                                            media_task_runner),
-      std::move(power_status_helper));
-
-  auto vfc = std::make_unique<blink::VideoFrameCompositor>(
-      params->video_frame_compositor_task_runner(), std::move(submitter));
-
-  auto* media_player = new blink::WebMediaPlayerImpl(
-      web_frame, client, encrypted_client, delegate,
-      std::move(factory_selector), url_index_.get(), std::move(vfc),
-      std::move(params));
-
-  return media_player;
+      std::move(demuxer_override),
+      blink::Platform::Current()->GetBrowserInterfaceBroker());
 }
 
 blink::WebEncryptedMediaClient* MediaFactory::EncryptedMediaClient() {
@@ -611,7 +559,6 @@ MediaFactory::CreateRendererFactorySelector(
 
   auto factory_selector = std::make_unique<media::RendererFactorySelector>();
   bool is_base_renderer_factory_set = false;
-  bool use_media_player_renderer = false;
 
   auto factory = GetContentClient()->renderer()->GetBaseRendererFactory(
       render_frame_, media_log, decoder_factory,
@@ -623,14 +570,10 @@ MediaFactory::CreateRendererFactorySelector(
                                      std::move(factory));
   }
 
-#if defined(OS_ANDROID)
-  use_media_player_renderer = UseMediaPlayerRenderer(url);
-#endif  // defined(OS_ANDROID)
-
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   DCHECK(interface_broker_);
 
-  // MediaPlayerRendererClientFactory setup.
+  // MediaPlayerRendererClientFactory setup. It is used for HLS playback.
   auto media_player_factory =
       std::make_unique<MediaPlayerRendererClientFactory>(
           render_thread->compositor_task_runner(), CreateMojoRendererFactory(),
@@ -640,16 +583,10 @@ MediaFactory::CreateRendererFactorySelector(
               render_thread->GetStreamTexureFactory(),
               render_frame_->GetTaskRunner(blink::TaskType::kInternalMedia)));
 
-  if (!is_base_renderer_factory_set && use_media_player_renderer) {
-    factory_selector->AddBaseFactory(RendererType::kMediaPlayer,
-                                     std::move(media_player_factory));
-    is_base_renderer_factory_set = true;
-  } else {
-    // Always give |factory_selector| a MediaPlayerRendererClient factory. WMPI
-    // might fallback to it if the final redirected URL is an HLS url.
-    factory_selector->AddFactory(RendererType::kMediaPlayer,
-                                 std::move(media_player_factory));
-  }
+  // Always give |factory_selector| a MediaPlayerRendererClient factory. WMPI
+  // might fallback to it if the final redirected URL is an HLS url.
+  factory_selector->AddFactory(RendererType::kMediaPlayer,
+                               std::move(media_player_factory));
 
   // FlingingRendererClientFactory (FRCF) setup.
   auto flinging_factory = std::make_unique<FlingingRendererClientFactory>(
@@ -668,10 +605,9 @@ MediaFactory::CreateRendererFactorySelector(
                           base::Unretained(flinging_factory.get()));
   factory_selector->AddConditionalFactory(
       RendererType::kFlinging, std::move(flinging_factory), is_flinging_cb);
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_MOJO_RENDERER)
-  DCHECK(!use_media_player_renderer);
   if (!is_base_renderer_factory_set &&
       renderer_media_playback_options.is_mojo_renderer_enabled()) {
     is_base_renderer_factory_set = true;
@@ -692,7 +628,7 @@ MediaFactory::CreateRendererFactorySelector(
 #endif  // BUILDFLAG(ENABLE_MOJO_RENDERER)
 
 #if BUILDFLAG(ENABLE_CAST_AUDIO_RENDERER)
-  DCHECK(!is_base_renderer_factory_set && !use_media_player_renderer);
+  DCHECK(!is_base_renderer_factory_set);
   is_base_renderer_factory_set = true;
   factory_selector->AddBaseFactory(
       RendererType::kCast,
@@ -753,6 +689,7 @@ MediaFactory::CreateRendererFactorySelector(
       // already a base factory type set. Instead manually set the new base
       // factory type with SetBaseRendererType.
       factory_selector->SetBaseRendererType(RendererType::kMediaFoundation);
+      is_base_renderer_factory_set = true;
     }
   }
 #endif  // BUILDFLAG(IS_WIN)
@@ -785,7 +722,6 @@ MediaFactory::CreateRendererFactorySelector(
 #if BUILDFLAG(ENABLE_CAST_STREAMING_RENDERER)
   if (cast_streaming::IsCastStreamingMediaSourceUrl(url)) {
     DCHECK(!is_base_renderer_factory_set);
-    DCHECK(!use_media_player_renderer);
     is_base_renderer_factory_set = true;
 #if BUILDFLAG(ENABLE_CAST_RENDERER)
     auto default_factory_cast_streaming =
@@ -801,12 +737,12 @@ MediaFactory::CreateRendererFactorySelector(
 #endif  // BUILDFLAG(ENABLE_CAST_RENDERER)
 
     auto* renderer_controller_proxy =
-        media::cast::CastStreamingRendererControllerProxy::GetInstance();
+        cast_streaming::RendererControllerProxy::GetInstance();
     DCHECK(renderer_controller_proxy);
-    auto cast_streaming_renderer_factory =
-        std::make_unique<media::cast::CastStreamingRendererFactory>(
-            std::move(default_factory_cast_streaming),
-            renderer_controller_proxy->GetReceiver(render_frame_));
+    auto cast_streaming_renderer_factory = std::make_unique<
+        cast_streaming::PlaybackCommandForwardingRendererFactory>(
+        std::move(default_factory_cast_streaming),
+        renderer_controller_proxy->GetReceiver(render_frame_));
     factory_selector->AddBaseFactory(
         RendererType::kCastStreaming,
         std::move(cast_streaming_renderer_factory));
@@ -818,7 +754,6 @@ MediaFactory::CreateRendererFactorySelector(
     // TODO(crbug.com/1265448): These sorts of checks shouldn't be necessary if
     // this method were significantly refactored to split things up by
     // Android/non-Android/Cast/etc...
-    DCHECK(!use_media_player_renderer);
     is_base_renderer_factory_set = true;
     auto default_factory = CreateDefaultRendererFactory(
         media_log, decoder_factory, render_thread, render_frame_);
@@ -928,7 +863,7 @@ media::CdmFactory* MediaFactory::GetCdmFactory() {
   if (cdm_factory_)
     return cdm_factory_.get();
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   DCHECK(interface_broker_);
   cdm_factory_ = media::CreateFuchsiaCdmFactory(interface_broker_);
 #elif BUILDFLAG(ENABLE_MOJO_CDM)

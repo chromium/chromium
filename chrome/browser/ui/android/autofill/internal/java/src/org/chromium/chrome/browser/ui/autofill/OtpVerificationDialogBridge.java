@@ -5,8 +5,10 @@
 package org.chromium.chrome.browser.ui.autofill;
 
 import android.content.Context;
+import android.os.Build.VERSION_CODES;
 
 import androidx.annotation.Nullable;
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
@@ -15,21 +17,39 @@ import org.chromium.ui.base.WindowAndroid;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 
 /**
- * JNI glue for the {@link OtpVerificationDialog}. This allows the native code to show/dismiss the
- * OTP verification dialog and also show an error message when OTP verification fails.
+ * JNI glue for the {@link OtpVerificationDialogView}. This allows the native code to show/dismiss
+ * the OTP verification dialog and also show an error message when OTP verification fails.
  */
 @JNINamespace("autofill")
-public class OtpVerificationDialogBridge implements OtpVerificationDialog.Listener {
+class OtpVerificationDialogBridge implements OtpVerificationDialogCoordinator.Delegate {
     private final long mNativeOtpVerificationDialogView;
-    private final Context mContext;
-    private final ModalDialogManager mModalDialogManager;
-    private OtpVerificationDialog mOtpVerificationDialog;
+    private OtpVerificationDialogCoordinator mDialogCoordinator;
 
-    public OtpVerificationDialogBridge(long nativeOtpVerificationDialogView, Context context,
+    OtpVerificationDialogBridge(long nativeOtpVerificationDialogView, Context context,
             ModalDialogManager modalDialogManager) {
         this.mNativeOtpVerificationDialogView = nativeOtpVerificationDialogView;
-        this.mModalDialogManager = modalDialogManager;
-        this.mContext = context;
+        mDialogCoordinator =
+                OtpVerificationDialogCoordinator.create(context, modalDialogManager, this);
+    }
+
+    /**
+     * Create an instance of the {@link OtpVerificationDialogBridge} that can be used by the native
+     * code to call different actions on.
+     *
+     * @param nativeOtpVerificationDialogView The pointer to the native object.
+     * @param windowAndroid The current {@link WindowAndroid} object.
+     */
+    @CalledByNative
+    @Nullable
+    static OtpVerificationDialogBridge create(
+            long nativeOtpVerificationDialogView, WindowAndroid windowAndroid) {
+        Context context = windowAndroid.getActivity().get();
+        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
+        if (context == null || modalDialogManager == null) {
+            return null;
+        }
+        return new OtpVerificationDialogBridge(
+                nativeOtpVerificationDialogView, context, modalDialogManager);
     }
 
     @Override
@@ -48,36 +68,15 @@ public class OtpVerificationDialogBridge implements OtpVerificationDialog.Listen
     }
 
     /**
-     * Create an instance of the {@link OtpVerificationDialogBridge} that can be used by the native
-     * code to call different actions on.
-     *
-     * @param nativeOtpVerificationDialogView The pointer to the native object.
-     * @param windowAndroid The current {@link WindowAndroid} object.
-     * @return
-     */
-    @CalledByNative
-    @Nullable
-    public static OtpVerificationDialogBridge create(
-            long nativeOtpVerificationDialogView, WindowAndroid windowAndroid) {
-        Context context = windowAndroid.getActivity().get();
-        ModalDialogManager modalDialogManager = windowAndroid.getModalDialogManager();
-        if (context == null || modalDialogManager == null) {
-            return null;
-        }
-        return new OtpVerificationDialogBridge(
-                nativeOtpVerificationDialogView, context, modalDialogManager);
-    }
-
-    /**
      * Show the OTP verification dialog to allow the user to input an OTP.
      *
      * @param otpLength The expected length of the OTP. This is used for showing a hint in the input
      *         field as well as some basic error handling.
      */
+    @RequiresApi(api = VERSION_CODES.N)
     @CalledByNative
-    public void showDialog(int otpLength) {
-        mOtpVerificationDialog = new OtpVerificationDialog(mContext, this, mModalDialogManager);
-        mOtpVerificationDialog.show(otpLength);
+    void showDialog(int otpLength) {
+        mDialogCoordinator.show(otpLength);
     }
 
     /**
@@ -85,22 +84,23 @@ public class OtpVerificationDialogBridge implements OtpVerificationDialog.Listen
      *
      * @param errorMessage The error message to be displayed below the OTP input field.
      */
+    @RequiresApi(api = VERSION_CODES.N)
     @CalledByNative
-    public void showOtpErrorMessage(String errorMessage) {
-        mOtpVerificationDialog.showOtpErrorMessage(errorMessage);
+    void showOtpErrorMessage(String errorMessage) {
+        mDialogCoordinator.showOtpErrorMessage(errorMessage);
     }
 
     /**
      * Dismiss the dialog if it is already showing.
      */
     @CalledByNative
-    public void dismissDialog() {
-        mOtpVerificationDialog.dismissDialog();
+    void dismissDialog() {
+        mDialogCoordinator.dismissDialog();
     }
 
     @CalledByNative
-    public void showConfirmationAndDismissDialog(String confirmationMessage) {
-        mOtpVerificationDialog.showConfirmationAndDismissDialog(confirmationMessage);
+    void showConfirmationAndDismissDialog(String confirmationMessage) {
+        mDialogCoordinator.showConfirmationAndDismissDialog(confirmationMessage);
     }
 
     @NativeMethods

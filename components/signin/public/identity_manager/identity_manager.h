@@ -27,7 +27,7 @@
 #include "components/signin/public/identity_manager/ubertoken_fetcher.h"
 #include "google_apis/gaia/oauth2_access_token_manager.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/containers/flat_map.h"
 #include "base/time/time.h"
@@ -180,34 +180,35 @@ class IdentityManager : public KeyedService,
   bool HasPrimaryAccount(ConsentLevel consent_level) const;
 
   // Creates an AccessTokenFetcher given the passed-in information.
-  std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
-      const CoreAccountId& account_id,
-      const std::string& oauth_consumer_name,
-      const ScopeSet& scopes,
-      AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
+  CreateAccessTokenFetcherForAccount(const CoreAccountId& account_id,
+                                     const std::string& oauth_consumer_name,
+                                     const ScopeSet& scopes,
+                                     AccessTokenFetcher::TokenCallback callback,
+                                     AccessTokenFetcher::Mode mode);
 
   // Creates an AccessTokenFetcher given the passed-in information, allowing
   // to specify a custom |url_loader_factory| as well.
-  std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForAccount(
+  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
+  CreateAccessTokenFetcherForAccount(
       const CoreAccountId& account_id,
       const std::string& oauth_consumer_name,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       const ScopeSet& scopes,
       AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode) WARN_UNUSED_RESULT;
+      AccessTokenFetcher::Mode mode);
 
   // Creates an AccessTokenFetcher given the passed-in information, allowing to
   // specify custom |client_id| and |client_secret| to identify the OAuth client
   // app.
-  std::unique_ptr<AccessTokenFetcher> CreateAccessTokenFetcherForClient(
-      const CoreAccountId& account_id,
-      const std::string& client_id,
-      const std::string& client_secret,
-      const std::string& oauth_consumer_name,
-      const ScopeSet& scopes,
-      AccessTokenFetcher::TokenCallback callback,
-      AccessTokenFetcher::Mode mode) WARN_UNUSED_RESULT;
+  [[nodiscard]] std::unique_ptr<AccessTokenFetcher>
+  CreateAccessTokenFetcherForClient(const CoreAccountId& account_id,
+                                    const std::string& client_id,
+                                    const std::string& client_secret,
+                                    const std::string& oauth_consumer_name,
+                                    const ScopeSet& scopes,
+                                    AccessTokenFetcher::TokenCallback callback,
+                                    AccessTokenFetcher::Mode mode);
 
   // If an entry exists in the cache of access tokens corresponding to the
   // given information, removes that entry; in this case, the next access token
@@ -434,7 +435,7 @@ class IdentityManager : public KeyedService,
     return account_consistency_;
   }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Returns a pointer to the AccountTrackerService Java instance associated
   // with this object.
   // TODO(https://crbug.com/934688): Eliminate this method once
@@ -711,7 +712,7 @@ class IdentityManager : public KeyedService,
   AccountConsistencyMethod account_consistency_ =
       AccountConsistencyMethod::kDisabled;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Java-side IdentityManager object.
   base::android::ScopedJavaGlobalRef<jobject> java_identity_manager_;
 

@@ -17,7 +17,7 @@ class MockKeyRotationCommand : public KeyRotationCommand {
   ~MockKeyRotationCommand() override;
 
   // KeyRotationCommand:
-  MOCK_METHOD(bool, Trigger, (const Params&), (override));
+  MOCK_METHOD(void, Trigger, (const Params&, Callback), (override));
 };
 
 }  // namespace test

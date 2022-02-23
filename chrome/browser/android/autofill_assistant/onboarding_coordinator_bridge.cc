@@ -8,7 +8,6 @@
 #include "base/containers/flat_map.h"
 #include "chrome/android/features/autofill_assistant/jni_headers/BaseOnboardingCoordinator_jni.h"
 #include "chrome/browser/android/autofill_assistant/onboarding_fetcher_factory.h"
-#include "chrome/browser/profiles/profile_manager.h"
 #include "components/autofill_assistant/browser/autofill_assistant_onboarding_fetcher.h"
 
 namespace autofill_assistant {
@@ -38,6 +37,7 @@ void JNI_BaseOnboardingCoordinator_FetchOnboardingDefinition(
     const base::android::JavaParamRef<jobject>& jonboarding_coordinator,
     const base::android::JavaParamRef<jstring>& jintent,
     const base::android::JavaParamRef<jstring>& jlocale,
+    jlong browser_context_ptr,
     jint timeout_ms) {
   if (!jonboarding_coordinator || !jintent || !jlocale || !timeout_ms) {
     Java_BaseOnboardingCoordinator_updateAndShowView(env,
@@ -46,7 +46,8 @@ void JNI_BaseOnboardingCoordinator_FetchOnboardingDefinition(
   }
 
   OnboardingFetcherFactory::GetInstance()
-      ->GetForBrowserContext(ProfileManager::GetLastUsedProfile())
+      ->GetForBrowserContext(static_cast<content::BrowserContext*>(
+          reinterpret_cast<void*>(browser_context_ptr)))
       ->FetchOnboardingDefinition(
           base::android::ConvertJavaStringToUTF8(env, jintent),
           base::android::ConvertJavaStringToUTF8(env, jlocale),

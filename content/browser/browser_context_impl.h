@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -16,6 +17,7 @@
 
 namespace media {
 class VideoDecodePerfHistory;
+class WebrtcVideoPerfHistory;
 namespace learning {
 class LearningSession;
 class LearningSessionImpl;
@@ -34,18 +36,19 @@ class BrowsingDataRemoverImpl;
 class DownloadManager;
 class StoragePartitionImplMap;
 class PermissionController;
+class BrowserContextImpl;
 
-// //content-internal parts of BrowserContext.
+// content-internal parts of BrowserContext.
 //
-// TODO(https://crbug.com/1179776): Evolve the Impl class into a
-// full BrowserContextImpl.
-class BrowserContext::Impl {
+// TODO(https://crbug.com/1179776): Make BrowserContextImpl to implement
+// BrowserContext, instead of being a member.
+class BrowserContextImpl {
  public:
-  explicit Impl(BrowserContext* self);
-  ~Impl();
+  static BrowserContextImpl* From(BrowserContext* self);
+  ~BrowserContextImpl();
 
-  Impl(const Impl&) = delete;
-  Impl& operator=(const Impl&) = delete;
+  BrowserContextImpl(const BrowserContextImpl&) = delete;
+  BrowserContextImpl& operator=(const BrowserContextImpl&) = delete;
 
   const std::string& UniqueId() const { return unique_id_; }
 
@@ -78,15 +81,30 @@ class BrowserContext::Impl {
 
   media::VideoDecodePerfHistory* GetVideoDecodePerfHistory();
 
+  // Gets media service for storing/retrieving WebRTC encoding and decoding
+  // performance stats. Exposed here rather than StoragePartition because all
+  // SiteInstances should have similar performance and stats are not exposed to
+  // the web directly, so privacy is not compromised.
+  media::WebrtcVideoPerfHistory* GetWebrtcVideoPerfHistory();
+
   BackgroundSyncScheduler* background_sync_scheduler() {
     return background_sync_scheduler_.get();
   }
 
  private:
-  // TODO(https://crbug.com/1179776): Remove the `self_` field.  In the future
-  // BrowserContext::Impl should become BrowserContextImpl that inherits from
-  // BrowserContext, making the `self_` member obsolete.
-  BrowserContext* self_;
+  // Creates the media service for storing/retrieving WebRTC encoding and
+  // decoding performance stats.  Exposed here rather than StoragePartition
+  // because all SiteInstances should have similar performance and stats are not
+  // exposed to the web directly, so privacy is not compromised.
+  std::unique_ptr<media::WebrtcVideoPerfHistory> CreateWebrtcVideoPerfHistory();
+
+  // BrowserContextImpl is owned and build from BrowserContext constructor.
+  // TODO(https://crbug.com/1179776): Invert the dependency. Make BrowserContext
+  // a pure interface and BrowserContextImpl implements it. Remove the `self_`
+  // field and 'friend' declaration.
+  friend BrowserContext;
+  explicit BrowserContextImpl(BrowserContext* self);
+  raw_ptr<BrowserContext> self_;
 
   const std::string unique_id_ = base::UnguessableToken::Create().ToString();
   bool will_be_destroyed_soon_ = false;
@@ -101,6 +119,7 @@ class BrowserContext::Impl {
 
   std::unique_ptr<media::learning::LearningSessionImpl> learning_session_;
   std::unique_ptr<media::VideoDecodePerfHistory> video_decode_perf_history_;
+  std::unique_ptr<media::WebrtcVideoPerfHistory> webrtc_video_perf_history_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   scoped_refptr<storage::ExternalMountPoints> external_mount_points_;

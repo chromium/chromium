@@ -1,0 +1,6 @@
+Name: shlex
+URL: https://crates.io/crates/shlex
+Description: Split a string into shell words, like Python's shlex.
+Version: 1.1.0
+Security Critical: no
+License: Apache 2.0

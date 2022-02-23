@@ -7,6 +7,8 @@
  */
 
 /**
+ * Note: This method is deprecated. Use the equvalent method in assert_ts.ts
+ * instead.
  * Verify |condition| is truthy and return |condition| if so.
  * @template T
  * @param {T} condition A condition to check for truthiness.  Note that this
@@ -39,6 +41,8 @@
 }
 
 /**
+ * Note: This method is deprecated. Use the equvalent method in assert_ts.ts
+ * instead.
  * Call this from places in the code that should never be reached.
  *
  * For example, handling all the values of enum with a switch() like this:

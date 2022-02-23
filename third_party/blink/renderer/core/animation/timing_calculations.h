@@ -107,7 +107,7 @@ static inline AnimationTimeDelta MultiplyZeroAlwaysGivesZero(
   return x.is_zero() || y == 0 ? AnimationTimeDelta() : (x * y);
 }
 
-// https://drafts.csswg.org/web-animations-1/#animation-effect-phases-and-states
+// https://w3.org/TR/web-animations-1/#animation-effect-phases-and-states
 static inline Timing::Phase CalculatePhase(
     const Timing::NormalizedTiming& normalized,
     absl::optional<AnimationTimeDelta> local_time,
@@ -148,7 +148,7 @@ static inline Timing::Phase CalculatePhase(
   return Timing::kPhaseActive;
 }
 
-// https://drafts.csswg.org/web-animations/#calculating-the-active-time
+// https://w3.org/TR/web-animations-1/#calculating-the-active-time
 static inline absl::optional<AnimationTimeDelta> CalculateActiveTime(
     const Timing::NormalizedTiming& normalized,
     Timing::FillMode fill_mode,
@@ -188,7 +188,7 @@ static inline absl::optional<AnimationTimeDelta> CalculateActiveTime(
 
 // Calculates the overall progress, which describes the number of iterations
 // that have completed (including partial iterations).
-// https://drafts.csswg.org/web-animations/#calculating-the-overall-progress
+// https://w3.org/TR/web-animations-1/#calculating-the-overall-progress
 static inline absl::optional<double> CalculateOverallProgress(
     Timing::Phase phase,
     absl::optional<AnimationTimeDelta> active_time,
@@ -216,7 +216,7 @@ static inline absl::optional<double> CalculateOverallProgress(
 // through the current iteration that ignores transformations to the time
 // introduced by the playback direction or timing functions applied to the
 // effect.
-// https://drafts.csswg.org/web-animations/#calculating-the-simple-iteration-progress
+// https://w3.org/TR/web-animations-1/#calculating-the-simple-iteration-progress
 static inline absl::optional<double> CalculateSimpleIterationProgress(
     Timing::Phase phase,
     absl::optional<double> overall_progress,
@@ -256,7 +256,7 @@ static inline absl::optional<double> CalculateSimpleIterationProgress(
   return simple_iteration_progress;
 }
 
-// https://drafts.csswg.org/web-animations/#calculating-the-current-iteration
+// https://w3.org/TR/web-animations-1/#calculating-the-current-iteration
 static inline absl::optional<double> CalculateCurrentIteration(
     Timing::Phase phase,
     absl::optional<AnimationTimeDelta> active_time,
@@ -290,7 +290,7 @@ static inline absl::optional<double> CalculateCurrentIteration(
   return floor(overall_progress.value());
 }
 
-// https://drafts.csswg.org/web-animations/#calculating-the-directed-progress
+// https://w3.org/TR/web-animations-1/#calculating-the-directed-progress
 static inline bool IsCurrentDirectionForwards(
     absl::optional<double> current_iteration,
     Timing::PlaybackDirection direction) {
@@ -316,7 +316,7 @@ static inline bool IsCurrentDirectionForwards(
   }
 }
 
-// https://drafts.csswg.org/web-animations/#calculating-the-directed-progress
+// https://w3.org/TR/web-animations-1/#calculating-the-directed-progress
 static inline absl::optional<double> CalculateDirectedProgress(
     absl::optional<double> simple_iteration_progress,
     absl::optional<double> current_iteration,
@@ -335,7 +335,7 @@ static inline absl::optional<double> CalculateDirectedProgress(
                                        : 1 - simple_iteration_progress.value();
 }
 
-// https://drafts.csswg.org/web-animations/#calculating-the-transformed-progress
+// https://w3.org/TR/web-animations-1/#calculating-the-transformed-progress
 static inline absl::optional<double> CalculateTransformedProgress(
     Timing::Phase phase,
     absl::optional<double> directed_progress,
@@ -402,7 +402,7 @@ static inline absl::optional<AnimationTimeDelta> CalculateOffsetActiveTime(
 // that the section linked below is non-normative); it is used for calculating
 // the time until the next iteration to optimize scheduling.
 //
-// [0] https://drafts.csswg.org/web-animations-1/#iteration-time-space
+// [0] https://w3.org/TR/web-animations-1/#iteration-time-space
 static inline absl::optional<AnimationTimeDelta> CalculateIterationTime(
     AnimationTimeDelta iteration_duration,
     AnimationTimeDelta active_duration,
@@ -437,7 +437,7 @@ static inline absl::optional<AnimationTimeDelta> CalculateIterationTime(
       fmod(offset_active_time->InSecondsF(), iteration_duration.InSecondsF()));
 
   // This implements step 3 of
-  // https://drafts.csswg.org/web-animations/#calculating-the-simple-iteration-progress
+  // https://w3.org/TR/web-animations-1/#calculating-the-simple-iteration-progress
   if (iteration_time.is_zero() && phase == Timing::kPhaseAfter &&
       !active_duration.is_zero() && !offset_active_time.value().is_zero())
     return absl::make_optional(iteration_duration);

@@ -5,6 +5,7 @@
 #include "components/viz/service/display/draw_polygon.h"
 
 #include <stddef.h>
+#include <cmath>
 #include <utility>
 #include <vector>
 
@@ -120,7 +121,7 @@ void DrawPolygon::ConstructNormal() {
   normal_ = new_normal;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 //
 // Allows the unittest to invoke this for the more general constructor.
 //
@@ -219,12 +220,10 @@ void DrawPolygon::SplitPolygon(std::unique_ptr<DrawPolygon> polygon,
 
   // Handle non-splitting cases.
   if (!pos_count && !neg_count) {
-    double dot = gfx::DotProduct(normal_, polygon->normal_);
-    if ((dot >= 0.0f && polygon->order_index_ >= order_index_) ||
-        (dot <= 0.0f && polygon->order_index_ <= order_index_)) {
-      *back = std::move(polygon);
-    } else {
+    if (polygon->order_index_ >= order_index_) {
       *front = std::move(polygon);
+    } else {
+      *back = std::move(polygon);
     }
     *is_coplanar = true;
     return;
@@ -270,18 +269,28 @@ void DrawPolygon::SplitPolygon(std::unique_ptr<DrawPolygon> polygon,
   // Compute the intersection points. N.B.: If the "pre" vertex is on
   // the thick plane, then the intersection will be at the same point, because
   // we set vertex_distance to 0 in this case.
+  //
+  // Consistently use the vertex distances rather than taking dot
+  // products with the normal, because there may be some amount of
+  // accumulated floating point error in the coplanarity of the points.
+  // The vertex distances are what we used to separate front from back,
+  // so using them guarantees a nonzero denominator.
   PointInterpolate(
       polygon->points_[pre_front_begin], polygon->points_[front_begin],
-      -vertex_distance[pre_front_begin] /
-          gfx::DotProduct(normal_, polygon->points_[front_begin] -
-                                       polygon->points_[pre_front_begin]),
+      vertex_distance[pre_front_begin] /
+          (vertex_distance[pre_front_begin] - vertex_distance[front_begin]),
       &pre_pos_intersection);
+  DCHECK(std::isfinite(pre_pos_intersection.x()));
+  DCHECK(std::isfinite(pre_pos_intersection.y()));
+  DCHECK(std::isfinite(pre_pos_intersection.z()));
   PointInterpolate(
       polygon->points_[pre_back_begin], polygon->points_[back_begin],
-      -vertex_distance[pre_back_begin] /
-          gfx::DotProduct(normal_, polygon->points_[back_begin] -
-                                       polygon->points_[pre_back_begin]),
+      vertex_distance[pre_back_begin] /
+          (vertex_distance[pre_back_begin] - vertex_distance[back_begin]),
       &pre_neg_intersection);
+  DCHECK(std::isfinite(pre_neg_intersection.x()));
+  DCHECK(std::isfinite(pre_neg_intersection.y()));
+  DCHECK(std::isfinite(pre_neg_intersection.z()));
 
   // Build the front and back polygons.
   std::vector<gfx::Point3F> out_points;

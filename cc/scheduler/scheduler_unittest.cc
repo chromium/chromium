@@ -15,6 +15,7 @@
 #include "base/bind.h"
 #include "base/check_op.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/run_loop.h"
@@ -180,7 +181,8 @@ class FakeSchedulerClient : public SchedulerClient,
 
     if (swap_will_happen_if_draw_happens_) {
       last_begin_frame_ack_ = scheduler_->CurrentBeginFrameAckForActiveTree();
-      scheduler_->DidSubmitCompositorFrame(0, EventMetricsSet(),
+      scheduler_->DidSubmitCompositorFrame(0, base::TimeTicks::Now(),
+                                           EventMetricsSet(),
                                            /*has_missing_content=*/false);
 
       if (automatic_ack_)
@@ -294,7 +296,7 @@ class FakeSchedulerClient : public SchedulerClient,
   viz::BeginFrameAck last_begin_frame_ack_;
   base::TimeTicks posted_begin_impl_frame_deadline_;
   std::vector<const char*> actions_;
-  TestScheduler* scheduler_ = nullptr;
+  raw_ptr<TestScheduler> scheduler_ = nullptr;
   base::TimeDelta frame_interval_;
   absl::optional<FrameSkippedReason> last_frame_skipped_reason_;
 };
@@ -594,7 +596,7 @@ class SchedulerTest : public testing::Test {
   std::unique_ptr<FakeSchedulerClient> client_;
   PowerModeArbiter power_mode_arbiter_;
   std::unique_ptr<TestScheduler> scheduler_;
-  FakeCompositorTimingHistory* fake_compositor_timing_history_;
+  raw_ptr<FakeCompositorTimingHistory> fake_compositor_timing_history_;
   DroppedFrameCounter dropped_counter;
   std::unique_ptr<CompositorFrameReportingController> reporting_controller;
 };

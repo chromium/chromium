@@ -26,14 +26,14 @@ const char kDisableAllCapabilities[] = "disable-all-capabilities";
 }
 
 int main(int argc, char** argv) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Silence death test thread warnings on Linux. We can afford to run our death
   // tests a little more slowly (< 10 ms per death test on a Z620).
   // On android, we need to run in the default mode, as the threadsafe mode
   // relies on execve which is not available.
   testing::GTEST_FLAG(death_test_style) = "threadsafe";
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // On android, the test framework has a signal handler that will print a
   // [ CRASH ] line when the application crashes. This breaks death test has the
   // test runner will consider the death of the child process a test failure.

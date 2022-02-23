@@ -67,16 +67,22 @@ class TestBrowserService : public crosapi::mojom::BrowserService {
     NOTIMPLEMENTED();
   }
 
-  void NewWindow(bool incognito, NewWindowCallback callback) override {}
+  void NewWindow(bool incognito,
+                 bool should_trigger_session_restore,
+                 NewWindowCallback callback) override {}
   void NewWindowForDetachingTab(
       const std::u16string& tab_id,
       const std::u16string& group_id,
       NewWindowForDetachingTabCallback closure) override {}
   void NewFullscreenWindow(const GURL& url,
                            NewFullscreenWindowCallback callback) override {}
+  void NewGuestWindow(NewGuestWindowCallback callback) override {}
   void NewTab(NewTabCallback callback) override {}
-  void OpenUrl(const GURL& url, OpenUrlCallback callback) override {}
+  void OpenUrl(const GURL& url,
+               crosapi::mojom::OpenUrlParamsPtr params,
+               OpenUrlCallback callback) override {}
   void RestoreTab(RestoreTabCallback callback) override {}
+  void HandleTabScrubbing(float x_offset) override {}
   void GetFeedbackData(GetFeedbackDataCallback callback) override {}
   void GetHistograms(GetHistogramsCallback callback) override {}
   void GetActiveTabUrl(GetActiveTabUrlCallback callback) override {}
@@ -93,7 +99,7 @@ class TestBrowserServiceHostObserver : public BrowserServiceHostObserver {
   // |num_calls| times.
   TestBrowserServiceHostObserver(size_t num_calls, base::OnceClosure callback)
       : remaining_num_calls_(num_calls), callback_(std::move(callback)) {
-    DCHECK_GT(num_calls, 0);
+    DCHECK_GT(num_calls, 0u);
   }
 
   void OnBrowserServiceConnected(CrosapiId id,
@@ -191,8 +197,7 @@ TEST_F(TestMojoConnectionManagerTest, ConnectMultipleClients) {
   TestingProfile* profile =
       testing_profile_manager.CreateTestingProfile(account.GetUserEmail());
   profile->set_profile_name(account.GetUserEmail());
-  chromeos::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user,
-                                                                    profile);
+  ash::ProfileHelper::Get()->SetUserToProfileMappingForTesting(user, profile);
 
   auto crosapi_manager = std::make_unique<CrosapiManager>();
 

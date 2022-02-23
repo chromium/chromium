@@ -23,7 +23,7 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <histogram name="DigitalGoods.CrossSite" enum="Boolean"
-    expires_after="2022-03-29">
+    expires_after="2022-07-17">
   <owner>glenrob@chromium.org</owner>
   <owner>dominickn@chromium.org</owner>
   <owner>rouslan@chromium.org</owner>
@@ -37,7 +37,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.CheckoutFunnel"
-    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2022-05-08">
+    enum="PaymentRequestCheckoutFunnelSteps" expires_after="2022-07-11">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -50,14 +50,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.CheckoutFunnel.Aborted"
-    enum="PaymentRequestAbortReason" expires_after="2021-12-31">
+    enum="PaymentRequestAbortReason" expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>The reason that lead to an abort of the Payment Request.</summary>
 </histogram>
 
 <histogram name="PaymentRequest.CheckoutFunnel.NoShow"
-    enum="PaymentRequestNoShowReason" expires_after="2021-12-31">
+    enum="PaymentRequestNoShowReason" expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -65,8 +65,41 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="PaymentRequest.EventResponse.CanMakePayment" enum="Boolean"
+    expires_after="2022-07-24">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    A payment handler's response to the &quot;canmakepayment&quot; event in its
+    service worker. The event is fired when &quot;new PaymentRequest()&quot; is
+    called in JavaScript, but only for URL-based payment methods, only for
+    already installed payment handlers, and only when not in private browsing
+    mode. The response from &quot;canmakepayment&quot; is expected to be
+    &quot;true&quot; in the majority of cases. The value of &quot;false&quot;
+    could be either the payment handler refusing to make payments or an internal
+    error, which should both be rare.
+  </summary>
+</histogram>
+
+<histogram name="PaymentRequest.EventResponse.IsReadyToPay" enum="Boolean"
+    expires_after="2022-07-24">
+  <owner>rouslan@chromium.org</owner>
+  <owner>web-payments-team@google.com</owner>
+  <summary>
+    An Android payment app's response to an IS_READY_TO_PAY intent. The intent
+    is sent when &quot;new PaymentRequest()&quot; is called in JavaScript, but
+    only for URL-based payment methods, only for apps that expose the
+    IS_READY_TO_PAY intent to Chrome, only when Chrome is able to connect to the
+    service at this intent filter, and only when not in private browsing mode.
+    The response from IS_READY_TO_PAY is expected to be &quot;true&quot; in the
+    majority of cases. The value of &quot;false&quot; could be either the
+    payment app refusing to make payments or an internal error, which should
+    both be rare.
+  </summary>
+</histogram>
+
 <histogram name="PaymentRequest.Events" units="bitfield value"
-    expires_after="2022-04-10">
+    expires_after="2022-08-14">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -76,7 +109,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.Events2" units="bitfield value"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -86,7 +119,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.JourneyLoggerHasRecorded" enum="Boolean"
-    expires_after="2022-04-17">
+    expires_after="2022-08-21">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -95,7 +128,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.JourneyLoggerHasRecordedMultipleTimes"
-    enum="Boolean" expires_after="2021-12-31">
+    enum="Boolean" expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -104,7 +137,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.MissingContactFields"
-    enum="PaymentRequestMissingContactFields" expires_after="2022-04-24">
+    enum="PaymentRequestMissingContactFields" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -117,7 +150,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.MissingPaymentFields"
-    enum="PaymentRequestMissingPaymentFields" expires_after="2022-04-24">
+    enum="PaymentRequestMissingPaymentFields" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -130,7 +163,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.MissingShippingFields"
-    enum="PaymentRequestMissingShippingFields" expires_after="2022-04-24">
+    enum="PaymentRequestMissingShippingFields" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -143,7 +176,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.NumberOfSuggestionsShown" units="units"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -152,7 +185,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.PaymentHandlerInstallSuccess"
-    enum="BooleanSuccess" expires_after="2022-04-24">
+    enum="BooleanSuccess" expires_after="2022-06-26">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -162,7 +195,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.RefetchIconForInstalledApp" enum="Boolean"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -174,7 +207,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.AuthenticationDialogResult"
     enum="SecurePaymentConfirmationAuthenticationDialogResult"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -189,7 +222,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogResult"
     enum="SecurePaymentConfirmationEnrollDialogResult"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -205,7 +238,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollDialogShown"
     enum="SecurePaymentConfirmationEnrollDialogShown"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -220,7 +253,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.EnrollSystemPromptResult"
     enum="SecurePaymentConfirmationEnrollSystemPromptResult"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -235,7 +268,7 @@ chromium-metrics-reviews@google.com.
 <histogram
     name="PaymentRequest.SecurePaymentConfirmation.Funnel.SystemPromptResult"
     enum="SecurePaymentConfirmationSystemPromptResult"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -248,7 +281,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram
     name="PaymentRequest.SecurePaymentConfirmationCredentialIdSizeInBytes"
-    units="bytes" expires_after="2021-12-31">
+    units="bytes" expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -258,14 +291,14 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.ServiceWorkerStatusCodeTimeout" enum="Boolean"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>True when a service worker times out 5 mins after request.</summary>
 </histogram>
 
 <histogram name="PaymentRequest.TimeToCheckout.Completed" units="ms"
-    expires_after="2022-05-08">
+    expires_after="2022-07-11">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -274,7 +307,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.TimeToCheckout.Completed.Shown" units="ms"
-    expires_after="2021-12-31">
+    expires_after="2022-11-22">
 <!-- Name completed by histogram_suffixes name="PaymentRequestCompletedInstrument" -->
 
   <owner>rouslan@chromium.org</owner>
@@ -286,7 +319,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.TimeToCheckout.Completed.SkippedShow"
-    units="ms" expires_after="2022-05-08">
+    units="ms" expires_after="2022-07-11">
 <!-- Name completed by histogram_suffixes name="PaymentRequestCompletedInstrument" -->
 
   <owner>rouslan@chromium.org</owner>
@@ -308,7 +341,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.TimeToCheckout.UserAborted" units="ms"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
 <!-- Name completed by histogram_suffixes name="PaymentRequestPaymentSheetShowStatus" -->
 
   <owner>rouslan@chromium.org</owner>
@@ -320,7 +353,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.TransactionAmount.Completed"
-    enum="PaymentRequestTransactionSize" expires_after="2022-05-08">
+    enum="PaymentRequestTransactionSize" expires_after="2022-07-11">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>
@@ -330,7 +363,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="PaymentRequest.TransactionAmount.Triggered"
-    enum="PaymentRequestTransactionSize" expires_after="2022-05-08">
+    enum="PaymentRequestTransactionSize" expires_after="2022-07-11">
   <owner>rouslan@chromium.org</owner>
   <owner>web-payments-team@google.com</owner>
   <summary>

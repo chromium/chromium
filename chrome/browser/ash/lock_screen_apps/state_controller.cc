@@ -13,6 +13,7 @@
 #include "base/base64.h"
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/feature_list.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/path_service.h"
 #include "base/time/default_tick_clock.h"
@@ -30,7 +31,9 @@
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
+#include "content/public/browser/lock_screen_storage.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/common/content_features.h"
 #include "crypto/symmetric_key.h"
 #include "extensions/browser/api/lock_screen_data/lock_screen_item_storage.h"
 #include "extensions/browser/app_window/app_delegate.h"
@@ -135,7 +138,7 @@ void StateController::Initialize() {
 
 void StateController::SetPrimaryProfile(Profile* profile) {
   const user_manager::User* user =
-      chromeos::ProfileHelper::Get()->GetUserByProfile(profile);
+      ash::ProfileHelper::Get()->GetUserByProfile(profile);
   if (!user || !user->HasGaiaAccount()) {
     if (!ready_callback_.is_null())
       std::move(ready_callback_).Run();
@@ -149,6 +152,14 @@ void StateController::SetPrimaryProfile(Profile* profile) {
   }
 
   InitializeWithCryptoKey(profile, key);
+  if (base::FeatureList::IsEnabled(features::kWebLockScreenApi)) {
+    base::FilePath base_path;
+    base::PathService::Get(chrome::DIR_USER_DATA, &base_path);
+    base_path = base_path.AppendASCII("web_lock_screen_api_data");
+    base_path =
+        base_path.Append(ash::ProfileHelper::GetUserIdHashFromProfile(profile));
+    content::LockScreenStorage::GetInstance()->Init(profile, base_path);
+  }
 }
 
 void StateController::Shutdown() {

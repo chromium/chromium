@@ -78,15 +78,15 @@ class CertNodeBuilder {
 };
 
 CertNodeBuilder::CertNodeBuilder(base::StringPiece label) {
-  node_.SetString("label", label);
+  node_.SetStringKey("label", label);
 }
 
 CertNodeBuilder::CertNodeBuilder(int label_id)
     : CertNodeBuilder(l10n_util::GetStringUTF8(label_id)) {}
 
 CertNodeBuilder& CertNodeBuilder::Payload(base::StringPiece payload) {
-  DCHECK(!node_.HasKey("payload.val"));
-  node_.SetString("payload.val", payload);
+  DCHECK(!node_.FindPath("payload.val"));
+  node_.SetStringPath("payload.val", payload);
   return *this;
 }
 
@@ -105,7 +105,7 @@ CertNodeBuilder& CertNodeBuilder::ChildIfNotNull(
 
 std::unique_ptr<base::DictionaryValue> CertNodeBuilder::Build() {
   DCHECK(!built_);
-  if (!children_.GetList().empty()) {
+  if (!children_.GetListDeprecated().empty()) {
     node_.SetKey("children", std::move(children_));
   }
   built_ = true;
@@ -203,35 +203,35 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
   base::DictionaryValue cert_info;
   CERTCertificate* cert_hnd = nss_certs_.front().get();
 
-  // Certificate usage.
-  std::vector<std::string> usages;
-  x509_certificate_model::GetUsageStrings(cert_hnd, &usages);
-  cert_info.SetString("general.usages", base::JoinString(usages, "\n"));
-
   // Standard certificate details.
   const std::string alternative_text =
       l10n_util::GetStringUTF8(IDS_CERT_INFO_FIELD_NOT_PRESENT);
-  cert_info.SetString(
+  cert_info.SetStringPath(
       "general.title",
       l10n_util::GetStringFUTF8(
           IDS_CERT_INFO_DIALOG_TITLE,
           base::UTF8ToUTF16(x509_certificate_model::GetTitle(cert_hnd))));
 
   // Issued to information.
-  cert_info.SetString("general.issued-cn",
+  cert_info.SetStringPath(
+      "general.issued-cn",
       x509_certificate_model::GetSubjectCommonName(cert_hnd, alternative_text));
-  cert_info.SetString("general.issued-o",
+  cert_info.SetStringPath(
+      "general.issued-o",
       x509_certificate_model::GetSubjectOrgName(cert_hnd, alternative_text));
-  cert_info.SetString("general.issued-ou",
-      x509_certificate_model::GetSubjectOrgUnitName(cert_hnd,
-                                                    alternative_text));
+  cert_info.SetStringPath("general.issued-ou",
+                          x509_certificate_model::GetSubjectOrgUnitName(
+                              cert_hnd, alternative_text));
 
   // Issuer information.
-  cert_info.SetString("general.issuer-cn",
+  cert_info.SetStringPath(
+      "general.issuer-cn",
       x509_certificate_model::GetIssuerCommonName(cert_hnd, alternative_text));
-  cert_info.SetString("general.issuer-o",
+  cert_info.SetStringPath(
+      "general.issuer-o",
       x509_certificate_model::GetIssuerOrgName(cert_hnd, alternative_text));
-  cert_info.SetString("general.issuer-ou",
+  cert_info.SetStringPath(
+      "general.issuer-ou",
       x509_certificate_model::GetIssuerOrgUnitName(cert_hnd, alternative_text));
 
   // Validity period.
@@ -246,13 +246,13 @@ std::string CertificateViewerDialog::GetDialogArgs() const {
     issued_str = alternative_text;
     expires_str = alternative_text;
   }
-  cert_info.SetString("general.issue-date", issued_str);
-  cert_info.SetString("general.expiry-date", expires_str);
+  cert_info.SetStringPath("general.issue-date", issued_str);
+  cert_info.SetStringPath("general.expiry-date", expires_str);
 
-  cert_info.SetString("general.sha256",
-      x509_certificate_model::HashCertSHA256(cert_hnd));
-  cert_info.SetString("general.sha1",
-      x509_certificate_model::HashCertSHA1(cert_hnd));
+  cert_info.SetStringPath("general.sha256",
+                          x509_certificate_model::HashCertSHA256(cert_hnd));
+  cert_info.SetStringPath("general.sha1",
+                          x509_certificate_model::HashCertSHA1(cert_hnd));
 
   // Certificate hierarchy is constructed from bottom up.
   base::Value children;
@@ -322,7 +322,7 @@ void CertificateViewerDialogHandler::RegisterMessages() {
 
 void CertificateViewerDialogHandler::HandleExportCertificate(
     const base::ListValue* args) {
-  int cert_index = GetCertificateIndex(args->GetList()[0].GetInt());
+  int cert_index = GetCertificateIndex(args->GetListDeprecated()[0].GetInt());
   if (cert_index < 0)
     return;
 
@@ -337,8 +337,8 @@ void CertificateViewerDialogHandler::HandleExportCertificate(
 void CertificateViewerDialogHandler::HandleRequestCertificateFields(
     const base::ListValue* args) {
   AllowJavascript();
-  const base::Value& callback_id = args->GetList()[0];
-  int cert_index = GetCertificateIndex(args->GetList()[1].GetInt());
+  const base::Value& callback_id = args->GetListDeprecated()[0];
+  int cert_index = GetCertificateIndex(args->GetListDeprecated()[1].GetInt());
   if (cert_index < 0)
     return;
 

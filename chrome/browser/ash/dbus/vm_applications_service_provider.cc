@@ -106,8 +106,9 @@ void VmApplicationsServiceProvider::UpdateApplicationList(
   }
 
   Profile* profile = ProfileManager::GetPrimaryUserProfile();
-  guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile)
-      ->UpdateApplicationList(request);
+  auto* registry_service =
+      guest_os::GuestOsRegistryServiceFactory::GetForProfile(profile);
+  registry_service->UpdateApplicationList(request);
 
   std::move(response_sender).Run(dbus::Response::FromMethodCall(method_call));
 }
@@ -261,7 +262,7 @@ void VmApplicationsServiceProvider::ParseSelectFileDialogFileTypes(
     std::string extensions = item;
     // Description after ':'.
     std::string desc;
-    int pos = item.find(':');
+    size_t pos = item.find(':');
     if (pos != std::string::npos) {
       extensions = item.substr(0, pos);
       desc = item.substr(pos + 1);

@@ -8,11 +8,11 @@
 
 #include <vector>
 
+#include "ash/components/cryptohome/userdataauth_util.h"
 #include "base/bind.h"
 #include "base/logging.h"
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_key_manager.h"
 #include "chromeos/components/multidevice/logging/logging.h"
-#include "chromeos/cryptohome/userdataauth_util.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/userdataauth/userdataauth_client.h"
 #include "components/account_id/account_id.h"

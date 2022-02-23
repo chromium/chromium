@@ -68,5 +68,11 @@ export class HistorySearchedLabelElement extends PolymerElement {
   }
 }
 
+declare global {
+  interface HTMLElementTagNameMap {
+    'history-searched-label': HistorySearchedLabelElement;
+  }
+}
+
 customElements.define(
     HistorySearchedLabelElement.is, HistorySearchedLabelElement);

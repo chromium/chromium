@@ -13,13 +13,18 @@
 #include "ash/system/bluetooth/bluetooth_device_list_controller.h"
 #include "ash/system/bluetooth/fake_bluetooth_detailed_view.h"
 #include "ash/system/bluetooth/fake_bluetooth_device_list_controller.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
+#include "ash/system/unified/unified_system_tray_controller.h"
 #include "ash/test/ash_test_base.h"
+#include "ash/test/ash_test_helper.h"
 #include "base/check.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
 #include "base/test/scoped_feature_list.h"
 #include "chromeos/services/bluetooth_config/fake_adapter_state_controller.h"
 #include "chromeos/services/bluetooth_config/fake_device_cache.h"
+#include "chromeos/services/bluetooth_config/fake_device_operation_handler.h"
 #include "chromeos/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/bluetooth_config/scoped_bluetooth_config_test_helper.h"
 #include "mojo/public/cpp/bindings/clone_traits.h"
@@ -32,6 +37,9 @@ namespace {
 const char kDeviceId[] = "/device/id";
 
 using chromeos::bluetooth_config::AdapterStateController;
+using chromeos::bluetooth_config::FakeDeviceOperationHandler;
+using chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper;
+using chromeos::bluetooth_config::mojom::AudioOutputCapability;
 using chromeos::bluetooth_config::mojom::BluetoothDeviceProperties;
 using chromeos::bluetooth_config::mojom::BluetoothSystemState;
 using chromeos::bluetooth_config::mojom::DeviceConnectionState;
@@ -101,9 +109,11 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
 
     feature_list_.InitAndEnableFeature(features::kBluetoothRevamp);
 
+    GetPrimaryUnifiedSystemTray()->ShowBubble();
+
     bluetooth_detailed_view_controller_ =
         std::make_unique<BluetoothDetailedViewController>(
-            /*tray_controller=*/nullptr);
+            GetPrimaryUnifiedSystemTray()->bubble()->controller_for_test());
 
     BluetoothDetailedView::Factory::SetFactoryForTesting(
         &bluetooth_detailed_view_factory_);
@@ -131,7 +141,8 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
   std::unique_ptr<views::View> detailed_view_;
 
   BluetoothSystemState GetBluetoothAdapterState() {
-    return scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
+    return bluetooth_config_test_helper()
+        ->fake_adapter_state_controller()
         ->GetAdapterState();
   }
 
@@ -146,13 +157,14 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
 
   void SetPairedDevices(
       std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices) {
-    scoped_bluetooth_config_test_helper_.fake_device_cache()->SetPairedDevices(
+    bluetooth_config_test_helper()->fake_device_cache()->SetPairedDevices(
         std::move(paired_devices));
     base::RunLoop().RunUntilIdle();
   }
 
   void SetBluetoothAdapterState(BluetoothSystemState system_state) {
-    scoped_bluetooth_config_test_helper_.fake_adapter_state_controller()
+    bluetooth_config_test_helper()
+        ->fake_adapter_state_controller()
         ->SetSystemState(system_state);
     base::RunLoop().RunUntilIdle();
   }
@@ -170,10 +182,16 @@ class BluetoothDetailedViewControllerTest : public AshTestBase {
         .bluetooth_device_list_controller();
   }
 
+  FakeDeviceOperationHandler* fake_device_operation_handler() {
+    return bluetooth_config_test_helper()->fake_device_operation_handler();
+  }
+
  private:
+  ScopedBluetoothConfigTestHelper* bluetooth_config_test_helper() {
+    return ash_test_helper()->bluetooth_config_test_helper();
+  }
+
   base::test::ScopedFeatureList feature_list_;
-  chromeos::bluetooth_config::ScopedBluetoothConfigTestHelper
-      scoped_bluetooth_config_test_helper_;
   std::unique_ptr<BluetoothDetailedViewController>
       bluetooth_detailed_view_controller_;
   FakeBluetoothDetailedViewFactory bluetooth_detailed_view_factory_;
@@ -231,7 +249,46 @@ TEST_F(BluetoothDetailedViewControllerTest,
 }
 
 TEST_F(BluetoothDetailedViewControllerTest,
-       OnDeviceListItemSelectedOpensBluetoothSettings) {
+       OnDeviceListAudioCapableItemSelected) {
+  PairedBluetoothDevicePropertiesPtr selected_device =
+      CreatePairedDevice(DeviceConnectionState::kNotConnected);
+  selected_device->device_properties->id = kDeviceId;
+  selected_device->device_properties->audio_capability =
+      AudioOutputCapability::kCapableOfAudioOutput;
+
+  std::vector<PairedBluetoothDevicePropertiesPtr> paired_devices;
+  paired_devices.push_back(mojo::Clone(selected_device));
+  SetPairedDevices(std::move(paired_devices));
+
+  EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_TRUE(
+      GetSystemTrayClient()->last_bluetooth_settings_device_id().empty());
+  EXPECT_EQ(0u, fake_device_operation_handler()->perform_connect_call_count());
+
+  bluetooth_detailed_view_delegate()->OnDeviceListItemSelected(selected_device);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(0, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_TRUE(
+      GetSystemTrayClient()->last_bluetooth_settings_device_id().empty());
+  EXPECT_EQ(1u, fake_device_operation_handler()->perform_connect_call_count());
+  EXPECT_STREQ(kDeviceId, fake_device_operation_handler()
+                              ->last_perform_connect_device_id()
+                              .c_str());
+
+  selected_device->device_properties->connection_state =
+      DeviceConnectionState::kConnected;
+  bluetooth_detailed_view_delegate()->OnDeviceListItemSelected(selected_device);
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_EQ(1, GetSystemTrayClient()->show_bluetooth_settings_count());
+  EXPECT_STREQ(
+      kDeviceId,
+      GetSystemTrayClient()->last_bluetooth_settings_device_id().c_str());
+}
+
+TEST_F(BluetoothDetailedViewControllerTest,
+       OnDeviceListNonAudioCapableItemSelected) {
   PairedBluetoothDevicePropertiesPtr selected_device =
       CreatePairedDevice(DeviceConnectionState::kNotConnected);
   selected_device->device_properties->id = kDeviceId;
@@ -246,6 +303,7 @@ TEST_F(BluetoothDetailedViewControllerTest,
   EXPECT_STREQ(
       kDeviceId,
       GetSystemTrayClient()->last_bluetooth_settings_device_id().c_str());
+  EXPECT_EQ(0u, fake_device_operation_handler()->perform_connect_call_count());
 }
 
 TEST_F(BluetoothDetailedViewControllerTest,

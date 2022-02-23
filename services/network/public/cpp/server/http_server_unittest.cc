@@ -27,9 +27,12 @@
 #include "net/base/net_errors.h"
 #include "net/base/test_completion_callback.h"
 #include "net/http/http_response_headers.h"
+#include "net/http/http_util.h"
 #include "net/log/net_log_source.h"
 #include "net/test/gtest_util.h"
 #include "net/traffic_annotation/network_traffic_annotation_test_helper.h"
+#include "net/url_request/url_request_context.h"
+#include "net/url_request/url_request_context_builder.h"
 #include "net/url_request/url_request_test_util.h"
 #include "net/websockets/websocket_frame.h"
 #include "services/network/public/cpp/server/http_connection.h"
@@ -44,7 +47,10 @@ namespace {
 
 class TestHttpClient {
  public:
-  TestHttpClient() : factory_(nullptr, &url_request_context_) {}
+  TestHttpClient()
+      : url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        factory_(nullptr, url_request_context_.get()) {}
 
   int ConnectAndWait(const net::IPEndPoint& address) {
     net::AddressList addresses(address);
@@ -145,7 +151,7 @@ class TestHttpClient {
     return body_size >= headers->GetContentLength();
   }
 
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   network::SocketFactory factory_;
   scoped_refptr<net::IOBufferWithSize> read_buffer_;
   scoped_refptr<net::DrainableIOBuffer> write_buffer_;
@@ -168,7 +174,9 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
       : task_environment_(base::test::TaskEnvironment::MainThreadType::IO),
         quit_after_request_count_(0),
         quit_on_close_connection_(-1),
-        factory_(nullptr, &url_request_context_) {}
+        url_request_context_(
+            net::CreateTestURLRequestContextBuilder()->Build()),
+        factory_(nullptr, url_request_context_.get()) {}
 
   void SetUp() override {
     int net_error = net::ERR_FAILED;
@@ -301,7 +309,7 @@ class HttpServerTest : public testing::Test, public HttpServer::Delegate {
   std::unique_ptr<base::RunLoop> quit_on_create_loop_;
   int quit_on_close_connection_;
 
-  net::TestURLRequestContext url_request_context_;
+  std::unique_ptr<net::URLRequestContext> url_request_context_;
   SocketFactory factory_;
   mojo::PendingRemote<mojom::TCPServerSocket> server_socket_;
 };

@@ -70,8 +70,8 @@ bool FilterOperations::CanInterpolateWith(const FilterOperations& other) const {
   return true;
 }
 
-FloatRect FilterOperations::MapRect(const FloatRect& rect) const {
-  auto accumulate_mapped_rect = [](const FloatRect& rect,
+gfx::RectF FilterOperations::MapRect(const gfx::RectF& rect) const {
+  auto accumulate_mapped_rect = [](const gfx::RectF& rect,
                                    const Member<FilterOperation>& op) {
     return op->MapRect(rect);
   };
@@ -94,20 +94,20 @@ bool FilterOperations::HasFilterThatMovesPixels() const {
 bool FilterOperations::HasReferenceFilter() const {
   return std::any_of(
       operations_.begin(), operations_.end(), [](const auto& operation) {
-        return operation->GetType() == FilterOperation::REFERENCE;
+        return operation->GetType() == FilterOperation::kReference;
       });
 }
 
 void FilterOperations::AddClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
-    if (operation->GetType() == FilterOperation::REFERENCE)
+    if (operation->GetType() == FilterOperation::kReference)
       To<ReferenceFilterOperation>(*operation).AddClient(client);
   }
 }
 
 void FilterOperations::RemoveClient(SVGResourceClient& client) const {
   for (FilterOperation* operation : operations_) {
-    if (operation->GetType() == FilterOperation::REFERENCE)
+    if (operation->GetType() == FilterOperation::kReference)
       To<ReferenceFilterOperation>(*operation).RemoveClient(client);
   }
 }

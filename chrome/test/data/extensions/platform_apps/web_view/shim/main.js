@@ -3373,6 +3373,17 @@ function testWebRequestBlockedNavigation() {
   document.body.appendChild(webview);
 }
 
+function testBlankWebview() {
+  var webview = new WebView();
+  webview.src = "about:blank";
+  document.body.appendChild(webview);
+  webview.addEventListener('loadstop', function() {
+    // This lets the browser know that it can start sending down input events
+    // for the remainder of the test.
+    embedder.test.succeed();
+  });
+}
+
 embedder.test.testList = {
   'testAllowTransparencyAttribute': testAllowTransparencyAttribute,
   'testAutosizeHeight': testAutosizeHeight,
@@ -3381,6 +3392,7 @@ embedder.test.testList = {
   'testAutosizeRemoveAttributes': testAutosizeRemoveAttributes,
   'testAutosizeWithPartialAttributes': testAutosizeWithPartialAttributes,
   'testAPIMethodExistence': testAPIMethodExistence,
+  'testBlankWebview': testBlankWebview,
   'testCustomElementCallbacksInaccessible':
       testCustomElementCallbacksInaccessible,
   'testChromeExtensionURL': testChromeExtensionURL,

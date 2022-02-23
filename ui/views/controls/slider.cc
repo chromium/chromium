@@ -76,7 +76,7 @@ float GetNearestAllowedValue(const base::flat_set<float>& allowed_values,
 Slider::Slider(SliderListener* listener) : listener_(listener) {
   highlight_animation_.SetSlideDuration(base::Milliseconds(150));
   SetFlipCanvasOnPaintForRTLUI(true);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
 #else
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -417,7 +417,7 @@ void Slider::OnGestureEvent(ui::GestureEvent* event) {
     case ui::ET_GESTURE_TAP_DOWN:
       OnSliderDragStarted();
       PrepareForMove(event->location().x());
-      FALLTHROUGH;
+      [[fallthrough]];
     case ui::ET_GESTURE_SCROLL_BEGIN:
     case ui::ET_GESTURE_SCROLL_UPDATE:
       MoveButtonTo(event->location());

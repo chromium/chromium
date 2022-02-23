@@ -162,7 +162,7 @@ std::string GetNotificationIdFor(const std::string& app_name,
 }
 
 bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
-  if (app_id.app_type() != apps::mojom::AppType::kExtension &&
+  if (app_id.app_type() != apps::mojom::AppType::kChromeApp &&
       app_id.app_type() != apps::mojom::AppType::kWeb) {
     return false;
   }
@@ -174,9 +174,10 @@ bool IsAppOpenedInChrome(const AppId& app_id, Profile* profile) {
   if (!extension)
     return false;
 
-  extensions::LaunchContainer launch_container = extensions::GetLaunchContainer(
-      extensions::ExtensionPrefs::Get(profile), extension);
-  return launch_container == extensions::LaunchContainer::kLaunchContainerTab;
+  apps::mojom::LaunchContainer launch_container =
+      extensions::GetLaunchContainer(extensions::ExtensionPrefs::Get(profile),
+                                     extension);
+  return launch_container == apps::mojom::LaunchContainer::kLaunchContainerTab;
 }
 
 }  // namespace
@@ -402,7 +403,7 @@ void AppTimeController::TimeLimitsAllowlistPolicyUpdated(
     const std::string& pref_name) {
   DCHECK_EQ(pref_name, prefs::kPerAppTimeLimitsAllowlistPolicy);
 
-  const base::DictionaryValue* policy = pref_registrar_->prefs()->GetDictionary(
+  const base::Value* policy = pref_registrar_->prefs()->GetDictionary(
       prefs::kPerAppTimeLimitsAllowlistPolicy);
 
   // Figure out a way to avoid cloning

@@ -5,9 +5,9 @@
 #include "mojo/public/cpp/bindings/lib/buffer.h"
 
 #include <cstring>
+#include <tuple>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "base/notreached.h"
 #include "base/numerics/safe_math.h"
 #include "mojo/public/c/system/message_pipe.h"
@@ -102,7 +102,7 @@ bool Buffer::AttachHandles(std::vector<ScopedHandle>* handles) {
 
   size_ = new_size;
   for (auto& handle : *handles)
-    ignore_result(handle.release());
+    std::ignore = handle.release();
   handles->clear();
   return true;
 }

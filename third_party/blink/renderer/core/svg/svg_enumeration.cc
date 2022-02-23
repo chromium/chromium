@@ -30,6 +30,7 @@
 
 #include "third_party/blink/renderer/core/svg/svg_enumeration.h"
 
+#include "base/notreached.h"
 #include "third_party/blink/renderer/core/svg/svg_enumeration_map.h"
 
 namespace blink {

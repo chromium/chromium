@@ -32,7 +32,7 @@ const char kPendingProfileInstallHistogram[] =
 
 class TestUserManager : public user_manager::FakeUserManager {
  public:
-  TestUserManager(bool is_guest) : is_guest_(is_guest) {
+  explicit TestUserManager(bool is_guest) : is_guest_(is_guest) {
     user_manager::UserManager::SetInstance(this);
   }
   ~TestUserManager() override = default;
@@ -148,7 +148,7 @@ class ESimProfileTest : public ESimTestBase {
         network_connection_handler()
             ->connect_calls()
             .back()
-            .InvokeErrorCallback("fake_error_name", /*error_data=*/nullptr);
+            .InvokeErrorCallback("fake_error_name");
       } else {
         network_connection_handler()
             ->connect_calls()

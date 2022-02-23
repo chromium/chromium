@@ -16,7 +16,15 @@
  *   id="lockScreenPasswordPrompt"
  * </settings-lock-screen-password-prompt-dialog>
  */
+import '../../controls/password_prompt_dialog.js';
+
+import {LockScreenProgress, recordLockScreenProgress} from '//resources/cr_components/chromeos/quick_unlock/lock_screen_constants.m.js';
+import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+
+import {LockScreenUnlockType, LockStateBehavior, LockStateBehaviorImpl} from './lock_state_behavior.m.js';
+
 Polymer({
+  _template: html`{__html_template__}`,
   is: 'settings-lock-screen-password-prompt-dialog',
 
   behaviors: [
@@ -34,14 +42,14 @@ Polymer({
     writeUma_: {
       type: Object,
       value() {
-        return settings.recordLockScreenProgress;
+        return recordLockScreenProgress;
       }
     },
   },
 
   /** @override */
   attached() {
-    this.writeUma_(settings.LockScreenProgress.START_SCREEN_LOCK);
+    this.writeUma_(LockScreenProgress.START_SCREEN_LOCK);
   },
 
   /**
@@ -50,7 +58,7 @@ Polymer({
    */
   onTokenObtained_(e) {
     // The user successfully authenticated.
-    this.writeUma_(settings.LockScreenProgress.ENTER_PASSWORD_CORRECTLY);
+    this.writeUma_(LockScreenProgress.ENTER_PASSWORD_CORRECTLY);
     this.fire('auth-token-obtained', e.detail);
   },
 

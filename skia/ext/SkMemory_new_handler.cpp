@@ -5,14 +5,15 @@
 #include <stddef.h>
 #include <stdlib.h>
 
+#include <tuple>
+
 #include "base/debug/alias.h"
-#include "base/macros.h"
 #include "base/process/memory.h"
 #include "build/build_config.h"
 #include "third_party/skia/include/core/SkTypes.h"
 #include "third_party/skia/include/private/SkMalloc.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -78,16 +79,16 @@ static void* malloc_nothrow(size_t size) {
   // TODO(b.kelemen): we should always use UncheckedMalloc but currently it
   // doesn't work as intended everywhere.
   void* result;
-#if  defined(OS_IOS)
-    result = malloc(size);
+#if BUILDFLAG(IS_IOS)
+  result = malloc(size);
 #else
-    // It's the responsibility of the caller to check the return value.
-    ignore_result(base::UncheckedMalloc(size, &result));
+  // It's the responsibility of the caller to check the return value.
+  std::ignore = base::UncheckedMalloc(size, &result);
 #endif
-    if (result) {
-        prevent_overcommit(0x47, size, result);
-    }
-    return result;
+  if (result) {
+    prevent_overcommit(0x47, size, result);
+  }
+  return result;
 }
 
 static void* calloc_throw(size_t size) {
@@ -98,16 +99,16 @@ static void* calloc_nothrow(size_t size) {
   // TODO(b.kelemen): we should always use UncheckedCalloc but currently it
   // doesn't work as intended everywhere.
   void* result;
-#if  defined(OS_IOS)
-    result = calloc(1, size);
+#if BUILDFLAG(IS_IOS)
+  result = calloc(1, size);
 #else
-    // It's the responsibility of the caller to check the return value.
-    ignore_result(base::UncheckedCalloc(size, 1, &result));
+  // It's the responsibility of the caller to check the return value.
+  std::ignore = base::UncheckedCalloc(size, 1, &result);
 #endif
-    if (result) {
-        prevent_overcommit(0, size, result);
-    }
-    return result;
+  if (result) {
+    prevent_overcommit(0, size, result);
+  }
+  return result;
 }
 
 void* sk_malloc_flags(size_t size, unsigned flags) {

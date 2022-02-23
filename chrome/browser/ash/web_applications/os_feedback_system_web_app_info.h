@@ -13,14 +13,14 @@
 #include "ui/gfx/geometry/rect.h"
 
 class Browser;
-struct WebApplicationInfo;
+struct WebAppInstallInfo;
 
 class OSFeedbackAppDelegate : public web_app::SystemWebAppDelegate {
  public:
   explicit OSFeedbackAppDelegate(Profile* profile);
 
   // web_app::SystemWebAppDelegate overrides:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool IsAppEnabled() const override;
   bool ShouldAllowScriptsToCloseWindows() const override;
   bool ShouldCaptureNavigations() const override;
@@ -29,8 +29,8 @@ class OSFeedbackAppDelegate : public web_app::SystemWebAppDelegate {
   gfx::Rect GetDefaultBounds(Browser*) const override;
 };
 
-// Returns a WebApplicationInfo used to install the app.
-std::unique_ptr<WebApplicationInfo> CreateWebAppInfoForOSFeedbackSystemWebApp();
+// Returns a WebAppInstallInfo used to install the app.
+std::unique_ptr<WebAppInstallInfo> CreateWebAppInfoForOSFeedbackSystemWebApp();
 
 // Returns the default bounds.
 gfx::Rect GetDefaultBoundsForOSFeedbackApp(Browser*);

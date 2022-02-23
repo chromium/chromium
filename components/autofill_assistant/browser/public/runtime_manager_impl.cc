@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/autofill_assistant/browser/public/runtime_manager_impl.h"
+#include "base/observer_list.h"
 
 namespace autofill_assistant {
 
@@ -14,9 +15,8 @@ RuntimeManagerImpl* RuntimeManagerImpl::GetForWebContents(
   return RuntimeManagerImpl::FromWebContents(contents);
 }
 
-RuntimeManagerImpl::RuntimeManagerImpl(content::WebContents* web_contents) {}
-
-RuntimeManagerImpl::RuntimeManagerImpl() = default;
+RuntimeManagerImpl::RuntimeManagerImpl(content::WebContents* web_contents)
+    : content::WebContentsUserData<RuntimeManagerImpl>(*web_contents) {}
 
 RuntimeManagerImpl::~RuntimeManagerImpl() = default;
 
@@ -41,7 +41,7 @@ void RuntimeManagerImpl::SetUIState(UIState state) {
   }
 }
 
-base::WeakPtr<RuntimeManagerImpl> RuntimeManagerImpl::GetWeakPtr() {
+base::WeakPtr<RuntimeManager> RuntimeManagerImpl::GetWeakPtr() {
   return weak_ptr_factory_.GetWeakPtr();
 }
 

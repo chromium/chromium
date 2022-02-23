@@ -134,9 +134,9 @@ std::ostream& operator<<(std::ostream& os, const LocaleTestData& test) {
 }
 class LocaleTestDataFixture : public testing::TestWithParam<LocaleTestData> {};
 
-INSTANTIATE_TEST_CASE_P(LayoutLocaleTest,
-                        LocaleTestDataFixture,
-                        testing::ValuesIn(locale_test_data));
+INSTANTIATE_TEST_SUITE_P(LayoutLocaleTest,
+                         LocaleTestDataFixture,
+                         testing::ValuesIn(locale_test_data));
 
 TEST_P(LocaleTestDataFixture, Script) {
   const auto& test = GetParam();

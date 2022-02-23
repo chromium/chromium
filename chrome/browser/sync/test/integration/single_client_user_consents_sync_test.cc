@@ -4,6 +4,7 @@
 
 #include <stdint.h>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/consent_auditor/consent_auditor_factory.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
@@ -12,7 +13,6 @@
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
 #include "components/consent_auditor/consent_auditor.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/protocol/user_consent_specifics.pb.h"
 #include "content/public/test/browser_test.h"
 
@@ -78,7 +78,7 @@ class UserConsentEqualityChecker : public SingleClientStatusChangeChecker {
   }
 
  private:
-  FakeServer* fake_server_;
+  raw_ptr<FakeServer> fake_server_;
   // TODO(markusheintz): User a string with the serialized proto instead of an
   // int. The requires creating better expectations with a proper creation
   // time.

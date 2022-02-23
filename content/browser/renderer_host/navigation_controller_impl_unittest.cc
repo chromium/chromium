@@ -59,7 +59,6 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/public/common/frame/frame_policy.h"
-#include "third_party/blink/public/common/loader/previews_state.h"
 #include "third_party/blink/public/common/page_state/page_state.h"
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/frame/frame_owner_properties.mojom.h"
@@ -260,13 +259,6 @@ class NavigationControllerTest : public RenderViewHostImplTestHarness,
     return navigation_request->common_params().url;
   }
 
-  blink::PreviewsState GetLastNavigationPreviewsState() {
-    NavigationRequest* navigation_request =
-        contents()->GetPrimaryFrameTree().root()->navigation_request();
-    CHECK(navigation_request);
-    return navigation_request->common_params().previews_state;
-  }
-
   TestRenderFrameHost* GetNavigatingRenderFrameHost() {
     return AreAllSitesIsolatedForTesting()
                ? contents()->GetSpeculativePrimaryMainFrame()
@@ -365,11 +357,19 @@ TEST_F(NavigationControllerTest, Defaults) {
   NavigationControllerImpl& controller = controller_impl();
 
   EXPECT_FALSE(controller.GetPendingEntry());
-  EXPECT_FALSE(controller.GetVisibleEntry());
-  EXPECT_FALSE(controller.GetLastCommittedEntry());
+  EXPECT_TRUE(!controller.GetVisibleEntry() ||
+              controller.GetVisibleEntry()->IsInitialEntry());
+  EXPECT_TRUE(!controller.GetLastCommittedEntry() ||
+              controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_EQ(controller.GetLastCommittedEntryIndex(), -1);
-  EXPECT_EQ(controller.GetEntryCount(), 0);
+
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
+    EXPECT_EQ(controller.GetEntryCount(), 1);
+  } else {
+    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), -1);
+    EXPECT_EQ(controller.GetEntryCount(), 0);
+  }
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
 }
@@ -459,10 +459,18 @@ TEST_F(NavigationControllerTest, LoadURL) {
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
   // The load should now be pending.
-  EXPECT_EQ(controller.GetEntryCount(), 0);
-  EXPECT_EQ(controller.GetLastCommittedEntryIndex(), -1);
-  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_FALSE(controller.GetLastCommittedEntry());
+
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_EQ(controller.GetEntryCount(), 1);
+    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
+    EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
+    EXPECT_TRUE(controller.GetLastCommittedEntry());
+  } else {
+    EXPECT_EQ(controller.GetEntryCount(), 0);
+    EXPECT_EQ(controller.GetLastCommittedEntryIndex(), -1);
+    EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
+    EXPECT_FALSE(controller.GetLastCommittedEntry());
+  }
   ASSERT_TRUE(controller.GetPendingEntry());
   EXPECT_EQ(controller.GetPendingEntry(), controller.GetVisibleEntry());
   EXPECT_FALSE(controller.CanGoBack());
@@ -486,9 +494,9 @@ TEST_F(NavigationControllerTest, LoadURL) {
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
   EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_TRUE(controller.GetLastCommittedEntry());
+  EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_FALSE(controller.GetPendingEntry());
-  ASSERT_TRUE(controller.GetVisibleEntry());
+  ASSERT_FALSE(controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
   EXPECT_EQ(0, controller.GetLastCommittedEntry()
@@ -512,7 +520,7 @@ TEST_F(NavigationControllerTest, LoadURL) {
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
   EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_TRUE(controller.GetLastCommittedEntry());
+  EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
   ASSERT_TRUE(controller.GetPendingEntry());
   EXPECT_EQ(controller.GetPendingEntry(), controller.GetVisibleEntry());
   // TODO(darin): maybe this should really be true?
@@ -531,9 +539,9 @@ TEST_F(NavigationControllerTest, LoadURL) {
   EXPECT_EQ(controller.GetEntryCount(), 2);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 1);
   EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
-  EXPECT_TRUE(controller.GetLastCommittedEntry());
+  EXPECT_FALSE(controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_FALSE(controller.GetPendingEntry());
-  ASSERT_TRUE(controller.GetVisibleEntry());
+  ASSERT_FALSE(controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_TRUE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
 
@@ -597,7 +605,7 @@ void CheckNavigationEntryMatchLoadParams(
   if (!load_params.virtual_url_for_data_url.is_empty()) {
     EXPECT_EQ(load_params.virtual_url_for_data_url, entry->GetVirtualURL());
   }
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(load_params.data_url_as_string, entry->GetDataURLAsString());
 #endif
   if (NavigationController::UA_OVERRIDE_INHERIT !=
@@ -687,7 +695,7 @@ TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data) {
   CheckNavigationEntryMatchLoadParams(load_url_params, entry);
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 TEST_F(NavigationControllerTest, LoadURLWithExtraParams_Data_Android) {
   NavigationControllerImpl& controller = controller_impl();
   GURL url("data:,");
@@ -997,7 +1005,7 @@ TEST_F(NavigationControllerTest, LoadURL_BackPreemptsPending) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // First make some history.
   const GURL kExistingURL1("http://foo/eh");
@@ -1062,7 +1070,8 @@ TEST_F(NavigationControllerTest, LoadURL_IgnorePreemptsPending) {
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   EXPECT_TRUE(controller.GetPendingEntry());
-  EXPECT_EQ(-1, controller.GetLastCommittedEntryIndex());
+  EXPECT_TRUE(!controller.GetLastCommittedEntry() ||
+              controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_EQ(1, delegate->navigation_state_change_count());
 
   // Certain rare cases can make a direct DidCommitProvisionalLoad call without
@@ -1073,8 +1082,15 @@ TEST_F(NavigationControllerTest, LoadURL_IgnorePreemptsPending) {
   // change, so that we do not keep displaying kNewURL.
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   EXPECT_FALSE(controller.GetPendingEntry());
-  EXPECT_EQ(-1, controller.GetLastCommittedEntryIndex());
-  EXPECT_EQ(2, delegate->navigation_state_change_count());
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    // The pending entry deletion and commit of the new NavigationEntry both
+    // counts as "navigation state change".
+    EXPECT_EQ(0, controller.GetLastCommittedEntryIndex());
+    EXPECT_EQ(3, delegate->navigation_state_change_count());
+  } else {
+    EXPECT_EQ(-1, controller.GetLastCommittedEntryIndex());
+    EXPECT_EQ(2, delegate->navigation_state_change_count());
+  }
 
   contents()->SetDelegate(nullptr);
 }
@@ -1101,7 +1117,8 @@ TEST_F(NavigationControllerTest, LoadURL_AbortDoesntCancelPending) {
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_EQ(kNewURL, controller.GetPendingEntry()->GetURL());
-  EXPECT_EQ(-1, controller.GetLastCommittedEntryIndex());
+  EXPECT_TRUE(!controller.GetLastCommittedEntry() ||
+              controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_EQ(1, delegate->navigation_state_change_count());
 
   // It may abort before committing, if it's a download or due to a stop or
@@ -1113,7 +1130,8 @@ TEST_F(NavigationControllerTest, LoadURL_AbortDoesntCancelPending) {
   EXPECT_EQ(-1, controller.GetPendingEntryIndex());
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_EQ(kNewURL, controller.GetPendingEntry()->GetURL());
-  EXPECT_EQ(-1, controller.GetLastCommittedEntryIndex());
+  EXPECT_TRUE(!controller.GetLastCommittedEntry() ||
+              controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_EQ(2, delegate->navigation_state_change_count());
   NavigationEntry* pending_entry = controller.GetPendingEntry();
 
@@ -1123,7 +1141,8 @@ TEST_F(NavigationControllerTest, LoadURL_AbortDoesntCancelPending) {
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_EQ(kNewURL, controller.GetPendingEntry()->GetURL());
   EXPECT_EQ(pending_entry, controller.GetPendingEntry());
-  EXPECT_EQ(-1, controller.GetLastCommittedEntryIndex());
+  EXPECT_TRUE(!controller.GetLastCommittedEntry() ||
+              controller.GetLastCommittedEntry()->IsInitialEntry());
 
   contents()->SetDelegate(nullptr);
 }
@@ -1278,9 +1297,11 @@ TEST_F(NavigationControllerTest, Reload_GeneratesNewPage) {
 // without ending up in the "we have a wrong process for the URL" branch in
 // NavigationControllerImpl::ReloadInternal.
 TEST_F(NavigationControllerTest, ReloadWithGuest) {
-  const GURL kGuestSiteUrl("my-guest-scheme://someapp/somepath");
+  const StoragePartitionConfig kGuestPartitionConfig =
+      StoragePartitionConfig::Create(browser_context(), "someapp",
+                                     "somepartition", /*in_memory=*/false);
   scoped_refptr<SiteInstance> guest_instance =
-      SiteInstance::CreateForGuest(browser_context(), kGuestSiteUrl);
+      SiteInstance::CreateForGuest(browser_context(), kGuestPartitionConfig);
   std::unique_ptr<TestWebContents> guest_web_contents(
       TestWebContents::Create(browser_context(), guest_instance));
   NavigationControllerImpl& controller = guest_web_contents->GetController();
@@ -1440,7 +1461,7 @@ TEST_F(NavigationControllerTest, RedirectsAreNotResetByCommit) {
 
 // Tests that webkit preferences are updated when user agent override changes.
 // Fails on linux-bfcache-rel: crbug.com/1244109
-#if defined(OS_LINUX)
+#if BUILDFLAG(IS_LINUX)
 #define MAYBE_GoBackWithUserAgentOverrideChange DISABLED_GoBackWithUserAgentOverrideChange
 #else
 #define MAYBE_GoBackWithUserAgentOverrideChange GoBackWithUserAgentOverrideChange
@@ -1552,7 +1573,7 @@ TEST_F(NavigationControllerTest, Back_GeneratesNewPage) {
   // The test assumes the previous page gets deleted after navigation. Disable
   // back/forward cache to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   const GURL url1("http://foo/1");
   const GURL url2("http://foo/2");
@@ -1779,7 +1800,7 @@ TEST_F(NavigationControllerTest, ImmediateRedirect) {
   EXPECT_EQ(1U, navigation_entry_committed_counter_);
   navigation_entry_committed_counter_ = 0;
 
-  EXPECT_EQ(NAVIGATION_TYPE_NEW_ENTRY, observer.navigation_type());
+  EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_NEW_ENTRY, observer.navigation_type());
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
   EXPECT_TRUE(controller.GetLastCommittedEntry());
@@ -1831,7 +1852,8 @@ TEST_F(NavigationControllerTest,
   // ... and now the renderer sends a commit for the first navigation.
   LoadCommittedDetailsObserver observer(contents());
   navigation1->Commit();
-  EXPECT_EQ(NAVIGATION_TYPE_EXISTING_ENTRY, observer.navigation_type());
+  EXPECT_EQ(NAVIGATION_TYPE_MAIN_FRAME_EXISTING_ENTRY,
+            observer.navigation_type());
 }
 
 // Tests navigation via link click within a subframe. A new navigation entry
@@ -2252,8 +2274,9 @@ TEST_F(NavigationControllerTest, SameDocument_Replace) {
   EXPECT_EQ(1, controller.GetEntryCount());
 }
 
-TEST_F(NavigationControllerTest, PushStateWithoutPreviousEntry) {
-  ASSERT_FALSE(controller_impl().GetLastCommittedEntry());
+TEST_F(NavigationControllerTest, PushStateWithOnlyInitialEntry) {
+  ASSERT_TRUE(!controller_impl().GetLastCommittedEntry() ||
+              controller_impl().GetLastCommittedEntry()->IsInitialEntry());
   GURL url("http://foo");
   auto params = mojom::DidCommitProvisionalLoadParams::New();
   params->did_create_new_entry = true;
@@ -2668,7 +2691,8 @@ TEST_F(NavigationControllerTest, ShowRendererURLInNewTabUntilModified) {
   // we must revert to showing about:blank to avoid a URL spoof.
   main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
-  EXPECT_FALSE(controller.GetVisibleEntry());
+  EXPECT_TRUE(!controller.GetVisibleEntry() ||
+              controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
 }
 
@@ -2712,7 +2736,8 @@ TEST_F(NavigationControllerTest, ShowBrowserURLAfterFailUntilModified) {
   // we must revert to showing about:blank to avoid a URL spoof.
   main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
-  EXPECT_FALSE(controller.GetVisibleEntry());
+  EXPECT_TRUE(!controller.GetVisibleEntry() ||
+              controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_FALSE(controller.GetPendingEntry());
 }
 
@@ -2750,7 +2775,8 @@ TEST_F(NavigationControllerTest, ShowRendererURLAfterFailUntilModified) {
   // we must revert to showing about:blank to avoid a URL spoof.
   main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
-  EXPECT_FALSE(controller.GetVisibleEntry());
+  EXPECT_TRUE(!controller.GetVisibleEntry() ||
+              controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_EQ(url, controller.GetPendingEntry()->GetURL());
 }
 
@@ -2790,7 +2816,8 @@ TEST_F(NavigationControllerTest, ShowRendererURLAfterCancelUntilModified) {
   // show this page anymore.
   main_test_rfh()->DidAccessInitialMainDocument();
   EXPECT_TRUE(contents()->HasAccessedInitialDocument());
-  EXPECT_FALSE(controller.GetVisibleEntry());
+  EXPECT_TRUE(!controller.GetVisibleEntry() ||
+              controller.GetVisibleEntry()->IsInitialEntry());
   EXPECT_FALSE(controller.GetPendingEntry());
 }
 
@@ -2955,11 +2982,12 @@ TEST_F(NavigationControllerTest, LazyReload) {
       ui::PAGE_TRANSITION_RELOAD));
 }
 
-// Test requesting and triggering a lazy reload without any committed entry nor
-// pending entry.
-TEST_F(NavigationControllerTest, LazyReloadWithoutCommittedEntry) {
+// Test requesting and triggering a lazy reload when there's only the initial
+// entry.
+TEST_F(NavigationControllerTest, LazyReloadWithOnlyInitialEntry) {
   NavigationControllerImpl& controller = controller_impl();
-  ASSERT_EQ(-1, controller.GetLastCommittedEntryIndex());
+  ASSERT_TRUE(!controller.GetLastCommittedEntry() ||
+              controller.GetLastCommittedEntry()->IsInitialEntry());
   EXPECT_FALSE(controller.NeedsReload());
   controller.SetNeedsReload();
   EXPECT_TRUE(controller.NeedsReload());
@@ -2969,9 +2997,9 @@ TEST_F(NavigationControllerTest, LazyReloadWithoutCommittedEntry) {
   ASSERT_FALSE(controller.NeedsReload());
 }
 
-// Test requesting and triggering a lazy reload without any committed entry and
-// only a pending entry.
-TEST_F(NavigationControllerTest, LazyReloadWithOnlyPendingEntry) {
+// Test requesting and triggering a lazy reload when there's only the initial
+// entry and a pending entry.
+TEST_F(NavigationControllerTest, LazyReloadWithOnlyInitialAndPendingEntry) {
   NavigationControllerImpl& controller = controller_impl();
   const GURL url("http://foo");
   controller.LoadURL(url, Referrer(), ui::PAGE_TRANSITION_TYPED, std::string());
@@ -3074,7 +3102,18 @@ TEST_F(NavigationControllerTest, CopyStateFrom) {
   std::unique_ptr<TestWebContents> other_contents(
       static_cast<TestWebContents*>(CreateTestWebContents().release()));
   NavigationControllerImpl& other_controller = other_contents->GetController();
-  other_controller.CopyStateFrom(&controller, true);
+
+  // Before copying state, the new FrameTree's root is marked as "on the
+  // initial empty document".
+  EXPECT_TRUE(
+      other_controller.frame_tree().root()->is_on_initial_empty_document());
+
+  other_controller.CopyStateFrom(&controller, /*needs_reload=*/true);
+
+  // After copying state, the new FrameTree's root is still marked as "on the
+  // initial empty document".
+  EXPECT_TRUE(
+      other_controller.frame_tree().root()->is_on_initial_empty_document());
 
   // other_controller should now contain 2 urls.
   ASSERT_EQ(2, other_controller.GetEntryCount());
@@ -4023,7 +4062,7 @@ TEST_F(NavigationControllerTest, StaleNavigationsResurrected) {
   // navigation to page C not prune the entry to B. Disable back/forward cache
   // to ensure that it doesn't get preserved in the cache.
   DisableBackForwardCacheForTesting(RenderViewHostTestHarness::web_contents(),
-                                    BackForwardCache::TEST_ASSUMES_NO_CACHING);
+                                    BackForwardCache::TEST_REQUIRES_NO_CACHING);
 
   // Start on page A.
   const GURL url_a("http://foo.com/a");
@@ -4272,10 +4311,10 @@ TEST_F(NavigationControllerTest, NoURLRewriteForSubframes) {
 }
 
 // Test that if an empty WebContents is navigated via frame proxy with
-// replacement, the NavigationRequest does not specify replacement, since there
-// is no entry to replace.
+// replacement, the NavigationRequest does specifies replacement, to replace the
+// initial entry.
 TEST_F(NavigationControllerTest,
-       NavigateFromFrameProxyWithReplacementWithoutEntries) {
+       NavigateFromFrameProxyWithReplacementWithOnlyInitialEntry) {
   const GURL main_url("http://foo1");
   const GURL other_contents_url("http://foo2");
   NavigationSimulator::NavigateAndCommitFromBrowser(contents(), main_url);
@@ -4290,8 +4329,14 @@ TEST_F(NavigationControllerTest,
   FrameTreeNode* node = other_contents_impl->GetPrimaryFrameTree().root();
   RenderFrameHostImpl* frame = node->current_frame_host();
 
-  // The newly created contents has no entries.
-  EXPECT_EQ(0, other_controller.GetEntryCount());
+  // The newly created contents has 1 entry, the initial entry. (Or no entries
+  // if InitialNavigationEntry is disabled).
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    EXPECT_EQ(1, other_controller.GetEntryCount());
+    EXPECT_TRUE(other_controller.GetLastCommittedEntry()->IsInitialEntry());
+  } else {
+    EXPECT_EQ(0, other_controller.GetEntryCount());
+  }
 
   // Simulate the main WebContents navigating the new WebContents with
   // replacement.
@@ -4307,9 +4352,14 @@ TEST_F(NavigationControllerTest,
   NavigationRequest* request = node->navigation_request();
   ASSERT_TRUE(request);
 
-  // Since the new WebContents had no entries, the request is not done with
-  // replacement.
-  EXPECT_FALSE(request->common_params().should_replace_current_entry);
+  if (blink::features::IsInitialNavigationEntryEnabled()) {
+    // The request was done with replacement.
+    EXPECT_TRUE(request->common_params().should_replace_current_entry);
+  } else {
+    // Since the new WebContents had no entries, the request is not done with
+    // replacement.
+    EXPECT_FALSE(request->common_params().should_replace_current_entry);
+  }
 }
 
 // Tests that calling RemoveForwareEntries() clears all forward entries

@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "ash/ash_export.h"
+#include "ash/drag_drop/drag_drop_capture_delegate.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ui/gfx/geometry/point.h"
 
@@ -17,18 +18,18 @@ class Window;
 
 namespace ui {
 class OSExchangeData;
+class PresentationTimeRecorder;
 }
 
 namespace ash {
 
-class PresentationTimeRecorder;
 class SplitViewDragIndicators;
 class TabletModeBrowserWindowDragSessionWindowsHider;
 
 // Provides special handling for Chrome tab drags on behalf of
 // DragDropController. This must be created at the beginning of a tab drag and
 // destroyed at the end.
-class ASH_EXPORT TabDragDropDelegate {
+class ASH_EXPORT TabDragDropDelegate : public DragDropCaptureDelegate {
  public:
   // Determines whether |drag_data| indicates a tab drag from a WebUI tab strip
   // (or simply returns false if the integration is disabled).
@@ -85,7 +86,7 @@ class ASH_EXPORT TabDragDropDelegate {
 
   // Presentation time recorder for tab dragging in tablet mode with webui
   // tab strip enable.
-  std::unique_ptr<PresentationTimeRecorder> tab_dragging_recorder_;
+  std::unique_ptr<ui::PresentationTimeRecorder> tab_dragging_recorder_;
 };
 
 }  // namespace ash

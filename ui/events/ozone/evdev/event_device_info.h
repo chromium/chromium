@@ -149,6 +149,9 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   // Determine whether there's a touchpad on this device.
   bool HasTouchpad() const;
 
+  // Determine whether there's a haptic touchpad on this device.
+  bool HasHapticTouchpad() const;
+
   // Determine whether there's a tablet on this device.
   bool HasTablet() const;
 
@@ -233,6 +236,6 @@ class COMPONENT_EXPORT(EVDEV) EventDeviceInfo {
   InputDeviceType device_type_ = InputDeviceType::INPUT_DEVICE_UNKNOWN;
 };
 
-}  // namspace ui
+}  // namespace ui
 
 #endif  // UI_EVENTS_OZONE_EVDEV_EVENT_DEVICE_INFO_H_

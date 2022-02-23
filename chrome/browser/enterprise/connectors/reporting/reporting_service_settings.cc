@@ -9,7 +9,6 @@
 #include "chrome/browser/enterprise/connectors/service_provider_config.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
-#include "components/policy/core/browser/url_util.h"
 
 namespace enterprise_connectors {
 
@@ -58,7 +57,7 @@ ReportingServiceSettings::ReportingServiceSettings(
       settings_value.FindListKey(kKeyEnabledEventNames);
   if (enabled_event_name_list_value) {
     for (const base::Value& enabled_event_name_value :
-         enabled_event_name_list_value->GetList()) {
+         enabled_event_name_list_value->GetListDeprecated()) {
       if (enabled_event_name_value.is_string())
         enabled_event_names_.insert(enabled_event_name_value.GetString());
       else
@@ -76,6 +75,26 @@ ReportingServiceSettings::ReportingServiceSettings(
       enabled_event_names_.insert(event_name);
     }
   }
+
+  const base::Value* enabled_opt_in_events_value =
+      settings_value.FindListKey(kKeyEnabledOptInEvents);
+  if (enabled_opt_in_events_value) {
+    for (const base::Value& event :
+         enabled_opt_in_events_value->GetListDeprecated()) {
+      DCHECK(event.is_dict());
+      const std::string* name = event.FindStringKey(kKeyOptInEventName);
+      const base::Value* url_patterns_value =
+          event.FindListKey(kKeyOptInEventUrlPatterns);
+
+      DCHECK(url_patterns_value->is_list());
+      for (const base::Value& url_pattern :
+           url_patterns_value->GetListDeprecated()) {
+        DCHECK(url_pattern.is_string());
+
+        enabled_opt_in_events_[*name].push_back(url_pattern.GetString());
+      }
+    }
+  }
 }
 
 absl::optional<ReportingSettings>
@@ -91,6 +110,10 @@ ReportingServiceSettings::GetReportingSettings() const {
 
   settings.enabled_event_names.insert(enabled_event_names_.begin(),
                                       enabled_event_names_.end());
+
+  settings.enabled_opt_in_events.insert(enabled_opt_in_events_.begin(),
+                                        enabled_opt_in_events_.end());
+
   return settings;
 }
 

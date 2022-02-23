@@ -44,11 +44,13 @@ def compile_src(out_dir):
     ])
 
 
-def compile_src_for_node(out_dir):
-    # First, clean the output directory so deleted files are pruned from old builds.
-    shutil.rmtree(out_dir)
+def compile_src_for_node(out_dir, additional_args=None, clean=True):
+    additional_args = additional_args or []
+    if clean:
+        # First, clean the output directory so deleted files are pruned from old builds.
+        shutil.rmtree(out_dir)
 
-    run_tsc_ignore_errors([
+    args = [
         '--project',
         os.path.join(webgpu_cts_dir, 'src', 'node.tsconfig.json'),
         '--outDir',
@@ -63,7 +65,10 @@ def compile_src_for_node(out_dir):
         'false',
         '--target',
         'ES6',
-    ])
+    ]
+    args.extend(additional_args)
+
+    run_tsc_ignore_errors(args)
 
 
 if __name__ == '__main__':

@@ -2,13 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <tuple>
+
 #include "base/containers/contains.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/tabs/tab_enums.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/tabs/tab_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
@@ -237,7 +239,7 @@ IN_PROC_BROWSER_TEST_F(PortalRecentlyAudibleBrowserTest,
   // Ideally this would never briefly flicker to false, but it can because the
   // hystersis here applies at the WebContents level, not the tab level, and
   // portals swaps WebContents. So if it does change to false, ignore that...
-  ignore_result(ActiveTabChangesTo(TabAlertState::AUDIO_PLAYING, false));
+  std::ignore = ActiveTabChangesTo(TabAlertState::AUDIO_PLAYING, false);
 
   // ...for it will shortly become true again.
   EXPECT_TRUE(ActiveTabChangesTo(TabAlertState::AUDIO_PLAYING, true));

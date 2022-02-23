@@ -32,7 +32,7 @@ class WebLayerInternalsUI : public ui::MojoWebUIController,
 
  private:
   // weblayer_internals::mojom::PageHandler:
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void GetRemoteDebuggingEnabled(
       GetRemoteDebuggingEnabledCallback callback) override;
   void SetRemoteDebuggingEnabled(bool enabled) override;

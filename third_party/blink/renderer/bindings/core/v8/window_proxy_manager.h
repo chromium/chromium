@@ -11,7 +11,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/remote_window_proxy.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/remote_frame.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -43,6 +43,11 @@ class WindowProxyManager : public GarbageCollected<WindowProxyManager> {
   WindowProxy* GetWindowProxy(DOMWrapperWorld& world) {
     WindowProxy* window_proxy = WindowProxyMaybeUninitialized(world);
     window_proxy->InitializeIfNeeded();
+    return window_proxy;
+  }
+
+  WindowProxy* GetWindowProxyMaybeUninitialized(DOMWrapperWorld& world) {
+    WindowProxy* window_proxy = WindowProxyMaybeUninitialized(world);
     return window_proxy;
   }
 

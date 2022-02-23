@@ -72,14 +72,14 @@ base::FilePath GetReferenceFilesDir() {
 base::FilePath GetToolForPlatform(const std::string& tool_name) {
   base::FilePath tools_dir =
       GetReferenceFilesDir().Append(FILE_PATH_LITERAL("tools"));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return tools_dir
       .Append(FILE_PATH_LITERAL("win"))
       .AppendASCII(tool_name)
       .AddExtension(FILE_PATH_LITERAL("exe"));
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   return tools_dir.Append(FILE_PATH_LITERAL("mac")).AppendASCII(tool_name);
-#elif defined(OS_LINUX) || defined(OS_CHROMEOS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return tools_dir.Append(FILE_PATH_LITERAL("linux")).AppendASCII(tool_name);
 #else
   CHECK(false) << "Can't retrieve tool " << tool_name << " on this platform.";

@@ -12,12 +12,14 @@
 #include <vector>
 
 #include "base/allocator/allocator_shim.h"
+#include "base/allocator/allocator_shim_default_dispatch_to_partition_alloc.h"
 #include "base/allocator/buildflags.h"
 #include "base/allocator/partition_allocator/partition_alloc_config.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/compiler_specific.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/synchronization/condition_variable.h"
 #include "base/task/common/checked_lock.h"
@@ -265,7 +267,7 @@ class ThreadPoolWorkerTest : public testing::TestWithParam<int> {
       return expect_did_run_task_;
     }
 
-    ThreadPoolWorkerTest* outer_;
+    raw_ptr<ThreadPoolWorkerTest> outer_;
 
     // Synchronizes access to |expect_did_run_task_|.
     mutable CheckedLock expect_did_run_task_lock_;
@@ -509,7 +511,7 @@ class ControllableCleanupDelegate : public WorkerThreadDefaultDelegate {
 
  private:
   scoped_refptr<Sequence> work_sequence_;
-  TaskTracker* const task_tracker_;
+  const raw_ptr<TaskTracker> task_tracker_;
   scoped_refptr<Controls> controls_;
 };
 
@@ -668,7 +670,7 @@ class CallJoinFromDifferentThread : public SimpleThread {
   void WaitForRunToStart() { run_started_event_.Wait(); }
 
  private:
-  WorkerThread* const worker_to_join_;
+  const raw_ptr<WorkerThread> worker_to_join_;
   TestWaitableEvent run_started_event_;
 };
 
@@ -814,7 +816,7 @@ class VerifyCallsToObserverDelegate : public WorkerThreadDefaultDelegate {
   }
 
  private:
-  test::MockWorkerThreadObserver* const observer_;
+  const raw_ptr<test::MockWorkerThreadObserver> observer_;
 };
 
 }  // namespace
@@ -879,8 +881,8 @@ class WorkerThreadThreadCacheDelegate : public WorkerThreadDefaultDelegate {
 
 TEST(ThreadPoolWorkerThreadCachePurgeTest, Purge) {
   // Make sure the thread cache is enabled in the main partition.
-  allocator::ConfigurePartitions(allocator::EnableBrp(false),
-                                 allocator::ForceSplitPartitions(false));
+  base::internal::PartitionAllocMalloc::Allocator()
+      ->EnableThreadCacheIfSupported();
 
   TaskTracker task_tracker;
   auto delegate = std::make_unique<WorkerThreadThreadCacheDelegate>();

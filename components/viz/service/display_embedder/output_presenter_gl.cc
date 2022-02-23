@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/feature_list.h"
+#include "base/notreached.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
@@ -25,7 +26,7 @@
 #include "ui/gl/gl_fence.h"
 #include "ui/gl/gl_surface.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "ui/gl/gl_surface_egl_surface_control.h"
 #endif
 
@@ -163,7 +164,7 @@ std::unique_ptr<OutputPresenterGL> OutputPresenterGL::Create(
     SkiaOutputSurfaceDependency* deps,
     gpu::SharedImageFactory* factory,
     gpu::SharedImageRepresentationFactory* representation_factory) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (deps->GetGpuFeatureInfo()
           .status_values[gpu::GPU_FEATURE_TYPE_ANDROID_SURFACE_CONTROL] !=
       gpu::kGpuFeatureStatusEnabled) {
@@ -325,6 +326,10 @@ void OutputPresenterGL::PostSubBuffer(
     const gfx::Rect& rect,
     SwapCompletionCallback completion_callback,
     BufferPresentedCallback presentation_callback) {
+#if BUILDFLAG(IS_MAC)
+  gl_surface_->SetCALayerErrorCode(ca_layer_error_code_);
+#endif
+
   if (supports_async_swap_) {
     gl_surface_->PostSubBufferAsync(
         rect.x(), rect.y(), rect.width(), rect.height(),
@@ -357,33 +362,32 @@ void OutputPresenterGL::SchedulePrimaryPlane(
   gl_surface_->ScheduleOverlayPlane(
       gl_image, std::move(fence),
       gfx::OverlayPlaneData(
-          kPlaneZOrder, plane.transform, ToNearestRect(plane.display_rect),
-          plane.uv_rect, plane.enable_blending, gfx::Rect(plane.resource_size),
+          kPlaneZOrder, plane.transform, plane.display_rect, plane.uv_rect,
+          plane.enable_blending,
+          plane.damage_rect.value_or(gfx::Rect(plane.resource_size)),
           plane.opacity, plane.priority_hint, plane.rounded_corners,
           presenter_image->color_space(),
           /*hdr_metadata=*/absl::nullopt));
 }
 
-void OutputPresenterGL::ScheduleBackground(Image* image) {
-  auto* presenter_image = static_cast<PresenterImageGL*>(image);
-  // Background is not seen by user, and is created before buffer queue buffers.
-  // So fence is not needed.
-  auto* gl_image = presenter_image->GetGLImage(nullptr);
-
-  // Background is also z-order 0.
-  constexpr int kPlaneZOrder = INT32_MIN;
-  // Background always uses the full texture.
-  constexpr gfx::RectF kUVRect(0.f, 0.f, 1.0f, 1.0f);
-  gl_surface_->ScheduleOverlayPlane(
-      gl_image, /*gpu_fence=*/nullptr,
-      gfx::OverlayPlaneData(kPlaneZOrder, gfx::OVERLAY_TRANSFORM_NONE,
-                            gfx::Rect(),
-                            /*crop_rect=*/kUVRect,
-                            /*enable_blend=*/false, /*damage_rect=*/gfx::Rect(),
-                            /*opacity=*/1.0f, gfx::OverlayPriorityHint::kNone,
-                            /*rounded_corners=*/gfx::RRectF(),
-                            /*color_space=*/presenter_image->color_space(),
-                            /*hdr_metadata=*/absl::nullopt));
+void OutputPresenterGL::ScheduleOneOverlay(const OverlayCandidate& overlay,
+                                           ScopedOverlayAccess* access) {
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+  auto* gl_image = access ? access->gl_image() : nullptr;
+  if (gl_image || overlay.solid_color.has_value()) {
+    DCHECK(!overlay.gpu_fence_id);
+    gl_surface_->ScheduleOverlayPlane(
+        gl_image, access ? TakeGpuFence(access->TakeAcquireFences()) : nullptr,
+        gfx::OverlayPlaneData(
+            overlay.plane_z_order, overlay.transform, overlay.display_rect,
+            overlay.uv_rect, !overlay.is_opaque,
+            ToEnclosingRect(overlay.damage_rect), overlay.opacity,
+            overlay.priority_hint, overlay.rounded_corners, overlay.color_space,
+            overlay.hdr_metadata, overlay.solid_color));
+  }
+#else   //  BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
+  NOTREACHED();
+#endif  //  BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
 }
 
 void OutputPresenterGL::CommitOverlayPlanes(
@@ -403,7 +407,7 @@ void OutputPresenterGL::ScheduleOverlays(
     SkiaOutputSurface::OverlayList overlays,
     std::vector<ScopedOverlayAccess*> accesses) {
   DCHECK_EQ(overlays.size(), accesses.size());
-#if defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
   // Note while reading through this for-loop that |overlay| has different
   // types on different platforms. On Android and Ozone it is an
   // OverlayCandidate, on Windows it is a DCLayerOverlay, and on macOS it is
@@ -411,7 +415,7 @@ void OutputPresenterGL::ScheduleOverlays(
   for (size_t i = 0; i < overlays.size(); ++i) {
     const auto& overlay = overlays[i];
     auto* gl_image = accesses[i] ? accesses[i]->gl_image() : nullptr;
-#if defined(OS_ANDROID) || defined(USE_OZONE)
+#if BUILDFLAG(IS_ANDROID) || defined(USE_OZONE)
     // TODO(msisov): Once shared image factory allows creating a non backed
     // images and ScheduleOverlayPlane does not rely on GLImage, remove the if
     // condition that checks if this is a solid color overlay plane.
@@ -428,13 +432,13 @@ void OutputPresenterGL::ScheduleOverlays(
           accesses[i] ? TakeGpuFence(accesses[i]->TakeAcquireFences())
                       : nullptr,
           gfx::OverlayPlaneData(
-              overlay.plane_z_order, overlay.transform,
-              ToNearestRect(overlay.display_rect), overlay.uv_rect,
-              !overlay.is_opaque, ToEnclosingRect(overlay.damage_rect),
-              overlay.opacity, overlay.priority_hint, overlay.rounded_corners,
+              overlay.plane_z_order, overlay.transform, overlay.display_rect,
+              overlay.uv_rect, !overlay.is_opaque,
+              ToEnclosingRect(overlay.damage_rect), overlay.opacity,
+              overlay.priority_hint, overlay.rounded_corners,
               overlay.color_space, overlay.hdr_metadata, overlay.solid_color));
     }
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
     // For RenderPassDrawQuad the ddl is not nullptr, and the opacity is applied
     // when the ddl is recorded, so the content already is with opacity applied.
     float opacity = overlay.ddl ? 1.0 : overlay.shared_state->opacity;
@@ -449,7 +453,14 @@ void OutputPresenterGL::ScheduleOverlays(
         overlay.protected_video_type));
 #endif
   }
-#endif  //  defined(OS_ANDROID) || defined(OS_APPLE) || defined(USE_OZONE)
+#endif  //  BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_APPLE) || defined(USE_OZONE)
 }
+
+#if BUILDFLAG(IS_MAC)
+void OutputPresenterGL::SetCALayerErrorCode(
+    gfx::CALayerResult ca_layer_error_code) {
+  ca_layer_error_code_ = ca_layer_error_code;
+}
+#endif
 
 }  // namespace viz

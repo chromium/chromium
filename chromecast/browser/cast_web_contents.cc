@@ -16,12 +16,17 @@ CastWebContents::CastWebContents() = default;
 
 CastWebContents::~CastWebContents() = default;
 
-void CastWebContents::BindReceiver(
+void CastWebContents::BindOwnerReceiver(
     mojo::PendingReceiver<mojom::CastWebContents> receiver) {
-  DCHECK(!receiver_.is_bound());
-  receiver_.Bind(std::move(receiver));
-  receiver_.set_disconnect_handler(
+  DCHECK(!owner_receiver_.is_bound());
+  owner_receiver_.Bind(std::move(receiver));
+  owner_receiver_.set_disconnect_handler(
       base::BindOnce(&CastWebContents::OnDisconnect, base::Unretained(this)));
+}
+
+void CastWebContents::BindSharedReceiver(
+    mojo::PendingReceiver<mojom::CastWebContents> receiver) {
+  shared_receivers_.Add(this, std::move(receiver));
 }
 
 void CastWebContents::AddObserver(

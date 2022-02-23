@@ -5,7 +5,10 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_
 #define CHROME_BROWSER_UI_WEBUI_CHROMEOS_IN_SESSION_PASSWORD_CHANGE_LOCK_SCREEN_NETWORK_DIALOG_H_
 
+#include "base/callback_forward.h"
 #include "chrome/browser/ui/webui/chromeos/in_session_password_change/base_lock_dialog.h"
+
+class Profile;
 
 namespace chromeos {
 

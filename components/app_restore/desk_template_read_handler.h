@@ -60,10 +60,6 @@ class COMPONENT_EXPORT(APP_RESTORE) DeskTemplateReadHandler
   // chrome app with `app_id`.
   void SetNextRestoreWindowIdForChromeApp(const std::string& app_id);
 
-  // Generates the ARC session id (1,000,000,001 - INT_MAX) for restored ARC
-  // apps.
-  int32_t GetArcSessionId();
-
   // Sets `arc_session_id` for `window_id`. `arc session id` is assigned when
   // ARC apps are restored.
   void SetArcSessionIdForWindowId(int32_t arc_session_id, int32_t window_id);

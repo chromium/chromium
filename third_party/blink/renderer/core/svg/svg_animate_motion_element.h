@@ -64,9 +64,9 @@ class SVGAnimateMotionElement final : public SVGAnimationElement {
 
   // Note: we do not support percentage values for to/from coords as the spec
   // implies we should (opera doesn't either)
-  FloatPoint from_point_;
-  FloatPoint to_point_;
-  FloatPoint to_point_at_end_of_duration_;
+  gfx::PointF from_point_;
+  gfx::PointF to_point_;
+  gfx::PointF to_point_at_end_of_duration_;
 
   Path path_;
   Path animation_path_;

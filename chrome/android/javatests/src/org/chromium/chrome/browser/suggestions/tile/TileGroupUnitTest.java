@@ -43,6 +43,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
+import org.chromium.base.test.util.FlakyTest;
 import org.chromium.chrome.browser.native_page.ContextMenuManager;
 import org.chromium.chrome.browser.offlinepages.OfflinePageBridge;
 import org.chromium.chrome.browser.suggestions.ImageFetcher;
@@ -114,6 +115,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @FlakyTest(message = "https://crbug.com/1292469")
     public void testInitialiseWithTileList() {
         mMostVisitedSites.setTileSuggestions(URLS);
 
@@ -334,6 +336,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @FlakyTest(message = "Test is flaky, see crbug.com/1286755")
     public void testRenderTileViewReplacing() {
         SuggestionsUiDelegate uiDelegate = mSuggestionsUiDelegate;
         when(uiDelegate.getImageFetcher()).thenReturn(mMockImageFetcher);
@@ -406,6 +409,7 @@ public class TileGroupUnitTest {
     @Test
     @UiThreadTest
     @SmallTest
+    @FlakyTest(message = "Test is flaky, see crbug.com/1288425")
     public void testIconLoadingWhenTileNotRegistered() {
         TileGroup tileGroup = initialiseTileGroup();
         Tile tile = new Tile(createSiteSuggestion("title", URLS[0]), 0);

@@ -9,6 +9,7 @@
 #include <memory>
 
 #include "base/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "media/base/media_export.h"
 #include "media/base/media_log.h"
@@ -201,7 +202,7 @@ class MEDIA_EXPORT FrameProcessor {
   const UpdateDurationCB update_duration_cb_;
 
   // MediaLog for reporting messages and properties to debug content and engine.
-  MediaLog* media_log_;
+  raw_ptr<MediaLog> media_log_;
 
   // Callback for reporting problematic conditions that are not necessarily
   // errors.

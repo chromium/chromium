@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/i18n/case_conversion.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -40,7 +41,7 @@ namespace {
 
 // Used to populate the URLDatabase.
 struct TestURLData {
-  const TemplateURL* search_provider;
+  raw_ptr<const TemplateURL> search_provider;
   std::string search_terms;
   std::string additional_query_params;
   int age_in_seconds;
@@ -82,7 +83,7 @@ class LocalHistoryZeroSuggestProviderTest
     provider_ = base::WrapRefCounted(
         LocalHistoryZeroSuggestProvider::Create(client_.get(), this));
 
-#if defined(OS_IOS)  // Only needed for iOS.
+#if BUILDFLAG(IS_IOS)  // Only needed for iOS.
     scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
     scoped_feature_list_->InitAndEnableFeature(
         omnibox::kLocalHistoryZeroSuggest);
@@ -297,7 +298,7 @@ TEST_F(LocalHistoryZeroSuggestProviderTest, FeatureFlags) {
   // on Desktop and Android NTP.
   scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
   StartProviderAndWaitUntilDone();
-#if !defined(OS_IOS)  // Enabled by default on Desktop and Android NTP.
+#if !BUILDFLAG(IS_IOS)  // Enabled by default on Desktop and Android NTP.
   ExpectMatches({{"hello world", kLocalHistoryZPSUnauthenticatedRelevance}});
 #else
   ExpectMatches({});

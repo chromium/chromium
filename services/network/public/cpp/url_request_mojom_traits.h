@@ -210,12 +210,6 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
       const network::ResourceRequest& request) {
     return request.priority;
   }
-  static bool should_reset_appcache(const network::ResourceRequest& request) {
-    return request.should_reset_appcache;
-  }
-  static bool is_external_request(const network::ResourceRequest& request) {
-    return request.is_external_request;
-  }
   static network::mojom::CorsPreflightPolicy cors_preflight_policy(
       const network::ResourceRequest& request) {
     return request.cors_preflight_policy;

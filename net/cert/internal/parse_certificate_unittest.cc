@@ -6,6 +6,7 @@
 
 #include "base/strings/stringprintf.h"
 #include "net/cert/internal/cert_errors.h"
+#include "net/cert/internal/general_names.h"
 #include "net/cert/internal/parsed_certificate.h"
 #include "net/cert/internal/test_helpers.h"
 #include "net/der/input.h"
@@ -409,6 +410,236 @@ TEST(ParseKeyUsageTest, Empty) {
   ASSERT_FALSE(ParseKeyUsage(der::Input(der), &key_usage));
 }
 
+TEST(ParseAuthorityInfoAccess, BasicTests) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     # ocsp with directoryName
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.1 }
+  //     [4] {
+  //       SEQUENCE {
+  //         SET {
+  //           SEQUENCE {
+  //             # commonName
+  //             OBJECT_IDENTIFIER { 2.5.4.3 }
+  //             PrintableString { "ocsp" }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   SEQUENCE {
+  //     # caIssuers with directoryName
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.2 }
+  //     [4] {
+  //       SEQUENCE {
+  //         SET {
+  //           SEQUENCE {
+  //             # commonName
+  //             OBJECT_IDENTIFIER { 2.5.4.3 }
+  //             PrintableString { "ca issuer" }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  //   SEQUENCE {
+  //     # non-standard method with URI
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.3 }
+  //     [6 PRIMITIVE] { "http://nonstandard.example.com" }
+  //   }
+  //   SEQUENCE {
+  //     # ocsp with URI
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.1 }
+  //     [6 PRIMITIVE] { "http://ocsp.example.com" }
+  //   }
+  //   SEQUENCE {
+  //     # caIssuers with URI
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.2 }
+  //     [6 PRIMITIVE] { "http://www.example.com/issuer.crt" }
+  //   }
+  // }
+  const uint8_t der[] = {
+      0x30, 0x81, 0xc3, 0x30, 0x1d, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05,
+      0x07, 0x30, 0x01, 0xa4, 0x11, 0x30, 0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06,
+      0x03, 0x55, 0x04, 0x03, 0x13, 0x04, 0x6f, 0x63, 0x73, 0x70, 0x30, 0x22,
+      0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x02, 0xa4, 0x16,
+      0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13,
+      0x09, 0x63, 0x61, 0x20, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x30, 0x2a,
+      0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x03, 0x86, 0x1e,
+      0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x6e, 0x6f, 0x6e, 0x73, 0x74,
+      0x61, 0x6e, 0x64, 0x61, 0x72, 0x64, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70,
+      0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x30, 0x23, 0x06, 0x08, 0x2b, 0x06,
+      0x01, 0x05, 0x05, 0x07, 0x30, 0x01, 0x86, 0x17, 0x68, 0x74, 0x74, 0x70,
+      0x3a, 0x2f, 0x2f, 0x6f, 0x63, 0x73, 0x70, 0x2e, 0x65, 0x78, 0x61, 0x6d,
+      0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x30, 0x2d, 0x06, 0x08, 0x2b,
+      0x06, 0x01, 0x05, 0x05, 0x07, 0x30, 0x02, 0x86, 0x21, 0x68, 0x74, 0x74,
+      0x70, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77, 0x2e, 0x65, 0x78, 0x61, 0x6d,
+      0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d, 0x2f, 0x69, 0x73, 0x73, 0x75,
+      0x65, 0x72, 0x2e, 0x63, 0x72, 0x74};
+
+  std::vector<AuthorityInfoAccessDescription> access_descriptions;
+  ASSERT_TRUE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
+  ASSERT_EQ(5u, access_descriptions.size());
+  {
+    const auto& desc = access_descriptions[0];
+    EXPECT_EQ(der::Input(kAdOcspOid), desc.access_method_oid);
+    const uint8_t location_der[] = {0xa4, 0x11, 0x30, 0x0f, 0x31, 0x0d, 0x30,
+                                    0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13,
+                                    0x04, 0x6f, 0x63, 0x73, 0x70};
+    EXPECT_EQ(der::Input(location_der), desc.access_location);
+  }
+  {
+    const auto& desc = access_descriptions[1];
+    EXPECT_EQ(der::Input(kAdCaIssuersOid), desc.access_method_oid);
+    const uint8_t location_der[] = {
+        0xa4, 0x16, 0x30, 0x14, 0x31, 0x12, 0x30, 0x10, 0x06, 0x03, 0x55, 0x04,
+        0x03, 0x13, 0x09, 0x63, 0x61, 0x20, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72};
+    EXPECT_EQ(der::Input(location_der), desc.access_location);
+  }
+  {
+    const auto& desc = access_descriptions[2];
+    const uint8_t method_oid[] = {0x2b, 0x06, 0x01, 0x05,
+                                  0x05, 0x07, 0x30, 0x03};
+    EXPECT_EQ(der::Input(method_oid), desc.access_method_oid);
+    const uint8_t location_der[] = {
+        0x86, 0x1e, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x6e, 0x6f,
+        0x6e, 0x73, 0x74, 0x61, 0x6e, 0x64, 0x61, 0x72, 0x64, 0x2e, 0x65,
+        0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d};
+    EXPECT_EQ(der::Input(location_der), desc.access_location);
+  }
+  {
+    const auto& desc = access_descriptions[3];
+    EXPECT_EQ(der::Input(kAdOcspOid), desc.access_method_oid);
+    const uint8_t location_der[] = {0x86, 0x17, 0x68, 0x74, 0x74, 0x70, 0x3a,
+                                    0x2f, 0x2f, 0x6f, 0x63, 0x73, 0x70, 0x2e,
+                                    0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65,
+                                    0x2e, 0x63, 0x6f, 0x6d};
+    EXPECT_EQ(der::Input(location_der), desc.access_location);
+  }
+  {
+    const auto& desc = access_descriptions[4];
+    EXPECT_EQ(der::Input(kAdCaIssuersOid), desc.access_method_oid);
+    const uint8_t location_der[] = {
+        0x86, 0x21, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x77, 0x77, 0x77,
+        0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e, 0x63, 0x6f, 0x6d,
+        0x2f, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72, 0x2e, 0x63, 0x72, 0x74};
+    EXPECT_EQ(der::Input(location_der), desc.access_location);
+  }
+
+  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  ASSERT_TRUE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
+                                           &ocsp_uris));
+  ASSERT_EQ(1u, ca_issuers_uris.size());
+  EXPECT_EQ("http://www.example.com/issuer.crt", ca_issuers_uris.front());
+  ASSERT_EQ(1u, ocsp_uris.size());
+  EXPECT_EQ("http://ocsp.example.com", ocsp_uris.front());
+}
+
+TEST(ParseAuthorityInfoAccess, NoOcspOrCaIssuersURIs) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     # non-standard method with directoryName
+  //     OBJECT_IDENTIFIER { 1.2.3 }
+  //     [4] {
+  //       SEQUENCE {
+  //         SET {
+  //           SEQUENCE {
+  //             # commonName
+  //             OBJECT_IDENTIFIER { 2.5.4.3 }
+  //             PrintableString { "foo" }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  const uint8_t der[] = {0x30, 0x18, 0x30, 0x16, 0x06, 0x02, 0x2a, 0x03, 0xa4,
+                         0x10, 0x30, 0x0e, 0x31, 0x0c, 0x30, 0x0a, 0x06, 0x03,
+                         0x55, 0x04, 0x03, 0x13, 0x03, 0x66, 0x6f, 0x6f};
+
+  std::vector<AuthorityInfoAccessDescription> access_descriptions;
+  ASSERT_TRUE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
+  ASSERT_EQ(1u, access_descriptions.size());
+  const auto& desc = access_descriptions[0];
+  const uint8_t method_oid[] = {0x2a, 0x03};
+  EXPECT_EQ(der::Input(method_oid), desc.access_method_oid);
+  const uint8_t location_der[] = {0xa4, 0x10, 0x30, 0x0e, 0x31, 0x0c,
+                                  0x30, 0x0a, 0x06, 0x03, 0x55, 0x04,
+                                  0x03, 0x13, 0x03, 0x66, 0x6f, 0x6f};
+  EXPECT_EQ(der::Input(location_der), desc.access_location);
+
+  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  // ParseAuthorityInfoAccessURIs should still return success since it was a
+  // valid AuthorityInfoAccess extension, even though it did not contain any
+  // elements we care about, and both output vectors should be empty.
+  ASSERT_TRUE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
+                                           &ocsp_uris));
+  EXPECT_EQ(0u, ca_issuers_uris.size());
+  EXPECT_EQ(0u, ocsp_uris.size());
+}
+
+TEST(ParseAuthorityInfoAccess, IncompleteAccessDescription) {
+  // SEQUENCE {
+  //   # first entry is ok
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.1 }
+  //     [6 PRIMITIVE] { "http://ocsp.example.com" }
+  //   }
+  //   # second is missing accessLocation field
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.2 }
+  //   }
+  // }
+  const uint8_t der[] = {0x30, 0x31, 0x30, 0x23, 0x06, 0x08, 0x2b, 0x06, 0x01,
+                         0x05, 0x05, 0x07, 0x30, 0x01, 0x86, 0x17, 0x68, 0x74,
+                         0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x6f, 0x63, 0x73, 0x70,
+                         0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e,
+                         0x63, 0x6f, 0x6d, 0x30, 0x0a, 0x06, 0x08, 0x2b, 0x06,
+                         0x01, 0x05, 0x05, 0x07, 0x30, 0x02};
+
+  std::vector<AuthorityInfoAccessDescription> access_descriptions;
+  EXPECT_FALSE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
+
+  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  EXPECT_FALSE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
+                                            &ocsp_uris));
+}
+
+TEST(ParseAuthorityInfoAccess, ExtraDataInAccessDescription) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     OBJECT_IDENTIFIER { 1.3.6.1.5.5.7.48.1 }
+  //     [6 PRIMITIVE] { "http://ocsp.example.com" }
+  //     # invalid, AccessDescription only has 2 fields
+  //     PrintableString { "henlo" }
+  //   }
+  // }
+  const uint8_t der[] = {
+      0x30, 0x2c, 0x30, 0x2a, 0x06, 0x08, 0x2b, 0x06, 0x01, 0x05, 0x05, 0x07,
+      0x30, 0x01, 0x86, 0x17, 0x68, 0x74, 0x74, 0x70, 0x3a, 0x2f, 0x2f, 0x6f,
+      0x63, 0x73, 0x70, 0x2e, 0x65, 0x78, 0x61, 0x6d, 0x70, 0x6c, 0x65, 0x2e,
+      0x63, 0x6f, 0x6d, 0x13, 0x05, 0x68, 0x65, 0x6e, 0x6c, 0x6f};
+
+  std::vector<AuthorityInfoAccessDescription> access_descriptions;
+  EXPECT_FALSE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
+
+  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  EXPECT_FALSE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
+                                            &ocsp_uris));
+}
+
+TEST(ParseAuthorityInfoAccess, EmptySequence) {
+  // SEQUENCE { }
+  const uint8_t der[] = {0x30, 0x00};
+
+  std::vector<AuthorityInfoAccessDescription> access_descriptions;
+  EXPECT_FALSE(ParseAuthorityInfoAccess(der::Input(der), &access_descriptions));
+
+  std::vector<base::StringPiece> ca_issuers_uris, ocsp_uris;
+  EXPECT_FALSE(ParseAuthorityInfoAccessURIs(der::Input(der), &ca_issuers_uris,
+                                            &ocsp_uris));
+}
+
 // Test fixture for testing ParseCrlDistributionPoints.
 //
 // Test data is encoded in certificate files. This fixture is responsible for
@@ -437,7 +668,7 @@ class ParseCrlDistributionPointsTest : public ::testing::Test {
     if (!cert)
       return false;
 
-    auto it = cert->extensions().find(CrlDistributionPointsOid());
+    auto it = cert->extensions().find(der::Input(kCrlDistributionPointsOid));
     if (it == cert->extensions().end())
       return false;
 
@@ -463,9 +694,18 @@ TEST_F(ParseCrlDistributionPointsTest, OneUriNoIssuer) {
 
   ASSERT_EQ(1u, dps.size());
   const ParsedDistributionPoint& dp1 = dps.front();
-  EXPECT_FALSE(dp1.has_crl_issuer);
-  ASSERT_EQ(1u, dp1.uris.size());
-  EXPECT_EQ(dp1.uris.front(), std::string("http://www.example.com/foo.crl"));
+
+  ASSERT_TRUE(dp1.distribution_point_fullname);
+  const GeneralNames& fullname = *dp1.distribution_point_fullname;
+  EXPECT_EQ(GENERAL_NAME_UNIFORM_RESOURCE_IDENTIFIER,
+            fullname.present_name_types);
+  ASSERT_EQ(1u, fullname.uniform_resource_identifiers.size());
+  EXPECT_EQ(fullname.uniform_resource_identifiers.front(),
+            std::string("http://www.example.com/foo.crl"));
+
+  EXPECT_FALSE(dp1.distribution_point_name_relative_to_crl_issuer);
+  EXPECT_FALSE(dp1.reasons);
+  EXPECT_FALSE(dp1.crl_issuer);
 }
 
 TEST_F(ParseCrlDistributionPointsTest, ThreeUrisNoIssuer) {
@@ -474,11 +714,22 @@ TEST_F(ParseCrlDistributionPointsTest, ThreeUrisNoIssuer) {
 
   ASSERT_EQ(1u, dps.size());
   const ParsedDistributionPoint& dp1 = dps.front();
-  EXPECT_FALSE(dp1.has_crl_issuer);
-  ASSERT_EQ(3u, dp1.uris.size());
-  EXPECT_EQ(dp1.uris[0], std::string("http://www.example.com/foo1.crl"));
-  EXPECT_EQ(dp1.uris[1], std::string("http://www.example.com/blah.crl"));
-  EXPECT_EQ(dp1.uris[2], std::string("not-even-a-url"));
+
+  ASSERT_TRUE(dp1.distribution_point_fullname);
+  const GeneralNames& fullname = *dp1.distribution_point_fullname;
+  EXPECT_EQ(GENERAL_NAME_UNIFORM_RESOURCE_IDENTIFIER,
+            fullname.present_name_types);
+  ASSERT_EQ(3u, fullname.uniform_resource_identifiers.size());
+  EXPECT_EQ(fullname.uniform_resource_identifiers[0],
+            std::string("http://www.example.com/foo1.crl"));
+  EXPECT_EQ(fullname.uniform_resource_identifiers[1],
+            std::string("http://www.example.com/blah.crl"));
+  EXPECT_EQ(fullname.uniform_resource_identifiers[2],
+            std::string("not-even-a-url"));
+
+  EXPECT_FALSE(dp1.distribution_point_name_relative_to_crl_issuer);
+  EXPECT_FALSE(dp1.reasons);
+  EXPECT_FALSE(dp1.crl_issuer);
 }
 
 TEST_F(ParseCrlDistributionPointsTest, CrlIssuerAsDirname) {
@@ -487,10 +738,42 @@ TEST_F(ParseCrlDistributionPointsTest, CrlIssuerAsDirname) {
 
   ASSERT_EQ(1u, dps.size());
   const ParsedDistributionPoint& dp1 = dps.front();
-  EXPECT_TRUE(dp1.has_crl_issuer);
-  // TODO(eroman): This has directory names under the fullName which are not
-  // being parsed or reflected here.
-  ASSERT_EQ(0u, dp1.uris.size());
+  ASSERT_TRUE(dp1.distribution_point_fullname);
+  const GeneralNames& fullname = *dp1.distribution_point_fullname;
+  EXPECT_EQ(GENERAL_NAME_DIRECTORY_NAME, fullname.present_name_types);
+  // Generated by `ascii2der | xxd -i` from the Name value in
+  // crldp_issuer_as_dirname.pem.
+  const uint8_t kExpectedName[] = {
+      0x31, 0x0b, 0x30, 0x09, 0x06, 0x03, 0x55, 0x04, 0x06, 0x13, 0x02, 0x55,
+      0x53, 0x31, 0x1f, 0x30, 0x1d, 0x06, 0x03, 0x55, 0x04, 0x0a, 0x13, 0x16,
+      0x54, 0x65, 0x73, 0x74, 0x20, 0x43, 0x65, 0x72, 0x74, 0x69, 0x66, 0x69,
+      0x63, 0x61, 0x74, 0x65, 0x73, 0x20, 0x32, 0x30, 0x31, 0x31, 0x31, 0x22,
+      0x30, 0x20, 0x06, 0x03, 0x55, 0x04, 0x0b, 0x13, 0x19, 0x69, 0x6e, 0x64,
+      0x69, 0x72, 0x65, 0x63, 0x74, 0x43, 0x52, 0x4c, 0x20, 0x43, 0x41, 0x33,
+      0x20, 0x63, 0x52, 0x4c, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72, 0x31, 0x29,
+      0x30, 0x27, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13, 0x20, 0x69, 0x6e, 0x64,
+      0x69, 0x72, 0x65, 0x63, 0x74, 0x20, 0x43, 0x52, 0x4c, 0x20, 0x66, 0x6f,
+      0x72, 0x20, 0x69, 0x6e, 0x64, 0x69, 0x72, 0x65, 0x63, 0x74, 0x43, 0x52,
+      0x4c, 0x20, 0x43, 0x41, 0x33};
+  ASSERT_EQ(1u, fullname.directory_names.size());
+  EXPECT_EQ(der::Input(kExpectedName), fullname.directory_names[0]);
+
+  EXPECT_FALSE(dp1.distribution_point_name_relative_to_crl_issuer);
+  EXPECT_FALSE(dp1.reasons);
+
+  ASSERT_TRUE(dp1.crl_issuer);
+  // Generated by `ascii2der | xxd -i` from the cRLIssuer value in
+  // crldp_issuer_as_dirname.pem.
+  const uint8_t kExpectedCrlIssuer[] = {
+      0xa4, 0x54, 0x30, 0x52, 0x31, 0x0b, 0x30, 0x09, 0x06, 0x03, 0x55,
+      0x04, 0x06, 0x13, 0x02, 0x55, 0x53, 0x31, 0x1f, 0x30, 0x1d, 0x06,
+      0x03, 0x55, 0x04, 0x0a, 0x13, 0x16, 0x54, 0x65, 0x73, 0x74, 0x20,
+      0x43, 0x65, 0x72, 0x74, 0x69, 0x66, 0x69, 0x63, 0x61, 0x74, 0x65,
+      0x73, 0x20, 0x32, 0x30, 0x31, 0x31, 0x31, 0x22, 0x30, 0x20, 0x06,
+      0x03, 0x55, 0x04, 0x0b, 0x13, 0x19, 0x69, 0x6e, 0x64, 0x69, 0x72,
+      0x65, 0x63, 0x74, 0x43, 0x52, 0x4c, 0x20, 0x43, 0x41, 0x33, 0x20,
+      0x63, 0x52, 0x4c, 0x49, 0x73, 0x73, 0x75, 0x65, 0x72};
+  EXPECT_EQ(der::Input(kExpectedCrlIssuer), dp1.crl_issuer);
 }
 
 TEST_F(ParseCrlDistributionPointsTest, FullnameAsDirname) {
@@ -499,10 +782,206 @@ TEST_F(ParseCrlDistributionPointsTest, FullnameAsDirname) {
 
   ASSERT_EQ(1u, dps.size());
   const ParsedDistributionPoint& dp1 = dps.front();
-  EXPECT_FALSE(dp1.has_crl_issuer);
-  // TODO(eroman): This has 1 directory name under the fullName which is not
-  // being reflected here.
-  ASSERT_EQ(0u, dp1.uris.size());
+
+  ASSERT_TRUE(dp1.distribution_point_fullname);
+  const GeneralNames& fullname = *dp1.distribution_point_fullname;
+  EXPECT_EQ(GENERAL_NAME_DIRECTORY_NAME, fullname.present_name_types);
+  // Generated by `ascii2der | xxd -i` from the Name value in
+  // crldp_full_name_as_dirname.pem.
+  const uint8_t kExpectedName[] = {
+      0x31, 0x0b, 0x30, 0x09, 0x06, 0x03, 0x55, 0x04, 0x06, 0x13, 0x02, 0x55,
+      0x53, 0x31, 0x1f, 0x30, 0x1d, 0x06, 0x03, 0x55, 0x04, 0x0a, 0x13, 0x16,
+      0x54, 0x65, 0x73, 0x74, 0x20, 0x43, 0x65, 0x72, 0x74, 0x69, 0x66, 0x69,
+      0x63, 0x61, 0x74, 0x65, 0x73, 0x20, 0x32, 0x30, 0x31, 0x31, 0x31, 0x45,
+      0x30, 0x43, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13, 0x3c, 0x53, 0x65, 0x6c,
+      0x66, 0x2d, 0x49, 0x73, 0x73, 0x75, 0x65, 0x64, 0x20, 0x43, 0x65, 0x72,
+      0x74, 0x20, 0x44, 0x50, 0x20, 0x66, 0x6f, 0x72, 0x20, 0x42, 0x61, 0x73,
+      0x69, 0x63, 0x20, 0x53, 0x65, 0x6c, 0x66, 0x2d, 0x49, 0x73, 0x73, 0x75,
+      0x65, 0x64, 0x20, 0x43, 0x52, 0x4c, 0x20, 0x53, 0x69, 0x67, 0x6e, 0x69,
+      0x6e, 0x67, 0x20, 0x4b, 0x65, 0x79, 0x20, 0x43, 0x41};
+  ASSERT_EQ(1u, fullname.directory_names.size());
+  EXPECT_EQ(der::Input(kExpectedName), fullname.directory_names[0]);
+
+  EXPECT_FALSE(dp1.distribution_point_name_relative_to_crl_issuer);
+  EXPECT_FALSE(dp1.reasons);
+  EXPECT_FALSE(dp1.crl_issuer);
+}
+
+TEST_F(ParseCrlDistributionPointsTest, RelativeNameAndReasonsAndMultipleDPs) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     # distributionPoint
+  //     [0] {
+  //       # nameRelativeToCRLIssuer
+  //       [1] {
+  //         SET {
+  //           SEQUENCE {
+  //             # commonName
+  //             OBJECT_IDENTIFIER { 2.5.4.3 }
+  //             PrintableString { "CRL1" }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     # reasons
+  //     [1 PRIMITIVE] { b`011` }
+  //   }
+  //   SEQUENCE {
+  //     # distributionPoint
+  //     [0] {
+  //       # fullName
+  //       [0] {
+  //         [4] {
+  //           SEQUENCE {
+  //             SET {
+  //               SEQUENCE {
+  //                 # commonName
+  //                 OBJECT_IDENTIFIER { 2.5.4.3 }
+  //                 PrintableString { "CRL2" }
+  //               }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //     # reasons
+  //     [1 PRIMITIVE] { b`100111111` }
+  //   }
+  // }
+  const uint8_t kInputDer[] = {
+      0x30, 0x37, 0x30, 0x17, 0xa0, 0x11, 0xa1, 0x0f, 0x31, 0x0d, 0x30, 0x0b,
+      0x06, 0x03, 0x55, 0x04, 0x03, 0x13, 0x04, 0x43, 0x52, 0x4c, 0x31, 0x81,
+      0x02, 0x05, 0x60, 0x30, 0x1c, 0xa0, 0x15, 0xa0, 0x13, 0xa4, 0x11, 0x30,
+      0x0f, 0x31, 0x0d, 0x30, 0x0b, 0x06, 0x03, 0x55, 0x04, 0x03, 0x13, 0x04,
+      0x43, 0x52, 0x4c, 0x32, 0x81, 0x03, 0x07, 0x9f, 0x80};
+
+  std::vector<ParsedDistributionPoint> dps;
+  ASSERT_TRUE(ParseCrlDistributionPoints(der::Input(kInputDer), &dps));
+  ASSERT_EQ(2u, dps.size());
+  {
+    const ParsedDistributionPoint& dp = dps[0];
+    EXPECT_FALSE(dp.distribution_point_fullname);
+
+    ASSERT_TRUE(dp.distribution_point_name_relative_to_crl_issuer);
+    // SET {
+    //   SEQUENCE {
+    //     # commonName
+    //     OBJECT_IDENTIFIER { 2.5.4.3 }
+    //     PrintableString { "CRL1" }
+    //   }
+    // }
+    const uint8_t kExpectedRDN[] = {0x31, 0x0d, 0x30, 0x0b, 0x06,
+                                    0x03, 0x55, 0x04, 0x03, 0x13,
+                                    0x04, 0x43, 0x52, 0x4c, 0x31};
+    EXPECT_EQ(der::Input(kExpectedRDN),
+              *dp.distribution_point_name_relative_to_crl_issuer);
+
+    ASSERT_TRUE(dp.reasons);
+    const uint8_t kExpectedReasons[] = {0x05, 0x60};
+    EXPECT_EQ(der::Input(kExpectedReasons), *dp.reasons);
+
+    EXPECT_FALSE(dp.crl_issuer);
+  }
+  {
+    const ParsedDistributionPoint& dp = dps[1];
+    ASSERT_TRUE(dp.distribution_point_fullname);
+    const GeneralNames& fullname = *dp.distribution_point_fullname;
+    EXPECT_EQ(GENERAL_NAME_DIRECTORY_NAME, fullname.present_name_types);
+    // SET {
+    //   SEQUENCE {
+    //     # commonName
+    //     OBJECT_IDENTIFIER { 2.5.4.3 }
+    //     PrintableString { "CRL2" }
+    //   }
+    // }
+    const uint8_t kExpectedName[] = {0x31, 0x0d, 0x30, 0x0b, 0x06,
+                                     0x03, 0x55, 0x04, 0x03, 0x13,
+                                     0x04, 0x43, 0x52, 0x4c, 0x32};
+    ASSERT_EQ(1u, fullname.directory_names.size());
+    EXPECT_EQ(der::Input(kExpectedName), fullname.directory_names[0]);
+
+    EXPECT_FALSE(dp.distribution_point_name_relative_to_crl_issuer);
+
+    ASSERT_TRUE(dp.reasons);
+    const uint8_t kExpectedReasons[] = {0x07, 0x9f, 0x80};
+    EXPECT_EQ(der::Input(kExpectedReasons), *dp.reasons);
+
+    EXPECT_FALSE(dp.crl_issuer);
+  }
+}
+
+TEST_F(ParseCrlDistributionPointsTest, NoDistributionPointName) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     # cRLIssuer
+  //     [2] {
+  //       [4] {
+  //         SEQUENCE {
+  //           SET {
+  //             SEQUENCE {
+  //               # organizationUnitName
+  //               OBJECT_IDENTIFIER { 2.5.4.11 }
+  //               PrintableString { "crl issuer" }
+  //             }
+  //           }
+  //         }
+  //       }
+  //     }
+  //   }
+  // }
+  const uint8_t kInputDer[] = {0x30, 0x1d, 0x30, 0x1b, 0xa2, 0x19, 0xa4, 0x17,
+                               0x30, 0x15, 0x31, 0x13, 0x30, 0x11, 0x06, 0x03,
+                               0x55, 0x04, 0x0b, 0x13, 0x0a, 0x63, 0x72, 0x6c,
+                               0x20, 0x69, 0x73, 0x73, 0x75, 0x65, 0x72};
+
+  std::vector<ParsedDistributionPoint> dps;
+  ASSERT_TRUE(ParseCrlDistributionPoints(der::Input(kInputDer), &dps));
+  ASSERT_EQ(1u, dps.size());
+  const ParsedDistributionPoint& dp = dps[0];
+  EXPECT_FALSE(dp.distribution_point_fullname);
+
+  EXPECT_FALSE(dp.distribution_point_name_relative_to_crl_issuer);
+
+  EXPECT_FALSE(dp.reasons);
+
+  ASSERT_TRUE(dp.crl_issuer);
+  const uint8_t kExpectedDer[] = {0xa4, 0x17, 0x30, 0x15, 0x31, 0x13, 0x30,
+                                  0x11, 0x06, 0x03, 0x55, 0x04, 0x0b, 0x13,
+                                  0x0a, 0x63, 0x72, 0x6c, 0x20, 0x69, 0x73,
+                                  0x73, 0x75, 0x65, 0x72};
+  EXPECT_EQ(der::Input(kExpectedDer), *dp.crl_issuer);
+}
+
+TEST_F(ParseCrlDistributionPointsTest, OnlyReasons) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //     # reasons
+  //     [1 PRIMITIVE] { b`011` }
+  //   }
+  // }
+  const uint8_t kInputDer[] = {0x30, 0x06, 0x30, 0x04, 0x81, 0x02, 0x05, 0x60};
+
+  std::vector<ParsedDistributionPoint> dps;
+  EXPECT_FALSE(ParseCrlDistributionPoints(der::Input(kInputDer), &dps));
+}
+
+TEST_F(ParseCrlDistributionPointsTest, EmptyDistributionPoint) {
+  // SEQUENCE {
+  //   SEQUENCE {
+  //   }
+  // }
+  const uint8_t kInputDer[] = {0x30, 0x02, 0x30, 0x00};
+
+  std::vector<ParsedDistributionPoint> dps;
+  EXPECT_FALSE(ParseCrlDistributionPoints(der::Input(kInputDer), &dps));
+}
+
+TEST_F(ParseCrlDistributionPointsTest, EmptyDistributionPoints) {
+  // SEQUENCE { }
+  const uint8_t kInputDer[] = {0x30, 0x00};
+
+  std::vector<ParsedDistributionPoint> dps;
+  EXPECT_FALSE(ParseCrlDistributionPoints(der::Input(kInputDer), &dps));
 }
 
 bool ParseAuthorityKeyIdentifierTestData(

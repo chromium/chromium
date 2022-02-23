@@ -111,3 +111,10 @@ imageset("infobar_profile_icon") {
     "infobar_profile_icon.imageset/infobar_profile_icon@3x.png",
   ]
 }
+
+symbolset("infobar_permissions_camera") {
+  sources = [
+    "infobar_permissions_camera.symbolset/Contents.json",
+    "infobar_permissions_camera.symbolset/infobar_permissions_camera.svg",
+  ]
+}

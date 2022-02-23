@@ -15,6 +15,7 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/metrics/persistent_memory_allocator.h"
+#include "base/threading/platform_thread.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -86,7 +87,8 @@ class StabilityReportExtractorThreadTrackerTest : public testing::Test {
     std::unique_ptr<MemoryMappedFile> mmfile(new MemoryMappedFile());
     bool success = mmfile->Initialize(
         File(debug_file_path_, File::FLAG_CREATE | File::FLAG_READ |
-                                   File::FLAG_WRITE | File::FLAG_SHARE_DELETE),
+                                   File::FLAG_WRITE |
+                                   File::FLAG_WIN_SHARE_DELETE),
         {0, static_cast<int64_t>(kFileSize)},
         MemoryMappedFile::READ_WRITE_EXTEND);
     if (!success || !mmfile->IsValid())
@@ -129,9 +131,9 @@ class StabilityReportExtractorThreadTrackerTest : public testing::Test {
     ASSERT_EQ(1, process_state.threads_size());
     const ThreadState& thread_state = process_state.threads(0);
     EXPECT_EQ(base::PlatformThread::GetName(), thread_state.thread_name());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     EXPECT_EQ(base::PlatformThread::CurrentId(), thread_state.thread_id());
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
     EXPECT_EQ(base::PlatformThread::CurrentHandle().platform_handle(),
               thread_state.thread_id());
 #endif

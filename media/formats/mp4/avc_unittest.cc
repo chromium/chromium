@@ -62,12 +62,14 @@ static std::string NALUTypeToString(int type) {
       return "EOStr";
     case H264NALU::kFiller:
       return "FILL";
-    case H264NALU::kReserved14:
-      return "R14";
+    case H264NALU::kPrefix:
+      return "Prefix";
+    case H264NALU::kSubsetSPS:
+      return "SubsetSPS";
+    case H264NALU::kDPS:
+      return "DPS";
 
     case H264NALU::kUnspecified:
-    case H264NALU::kReserved15:
-    case H264NALU::kReserved16:
     case H264NALU::kReserved17:
     case H264NALU::kReserved18:
     case H264NALU::kCodedSliceAux:
@@ -271,7 +273,7 @@ TEST_F(AVCConversionTest, ConvertConfigToAnnexB) {
 // Verify that we can round trip string -> Annex B -> string.
 TEST_F(AVCConversionTest, StringConversionFunctions) {
   std::string str =
-      "AUD SPS SPSExt SPS PPS SEI SEI R14 I P FILL EOSeq EOStr";
+      "AUD SPS SPSExt SPS PPS SEI SEI Prefix I P FILL EOSeq EOStr";
   std::vector<uint8_t> buf;
   std::vector<SubsampleEntry> subsamples;
   AvcStringToAnnexB(str, &buf, &subsamples);
@@ -302,9 +304,9 @@ TEST_F(AVCConversionTest, ValidAnnexBConstructs) {
       {"P P P P", false},
       {"AUD SPS PPS P", false},
       {"SEI SEI I", true},
-      {"SEI SEI R14 I", true},
+      {"SEI SEI Prefix I", true},
       {"SPS SPSExt SPS PPS I P", true},
-      {"R14 SEI I", true},
+      {"Prefix SEI I", true},
       {"AUD,I", true},
       {"AUD,SEI I", true},
       {"AUD,SEI,SPS,PPS,I", true},
@@ -355,7 +357,7 @@ TEST_F(AVCConversionTest, InvalidAnnexBConstructs) {
       // conformance failure, so the non-conformant frame is reported as a
       // keyframe.
       {"I EOStr EOSeq", true},  // EOSeq must come before EOStr.
-      {"I R14", true},          // Reserved14-18 must come before first VCL.
+      {"I Prefix", true},       // Reserved14-18 must come before first VCL.
       {"I SEI", true},          // SEI must come before first VCL.
 
       // For this case, P slice is first VCL and is detected before conformance

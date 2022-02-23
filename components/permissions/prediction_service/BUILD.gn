@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//components/optimization_guide/features.gni")
 import("//third_party/protobuf/proto_library.gni")
 
 proto_library("prediction_service_messages_proto") {
@@ -10,21 +11,41 @@ proto_library("prediction_service_messages_proto") {
 
 source_set("prediction_service") {
   sources = [
+    "prediction_common.cc",
+    "prediction_common.h",
     "prediction_request_features.h",
     "prediction_service.cc",
     "prediction_service.h",
     "prediction_service_base.h",
-    "prediction_service_common.cc",
-    "prediction_service_common.h",
   ]
   deps = [
     "//build:chromeos_buildflags",
     "//components/keyed_service/content",
     "//components/permissions:permissions_common",
+    "//content/public/browser",
     "//services/network/public/cpp:cpp",
     "//third_party/protobuf:protobuf_lite",
   ]
-  public_deps = [ ":prediction_service_messages_proto" ]
+  public_deps = [
+    ":prediction_service_messages_proto",
+    "//components/optimization_guide/core",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+  ]
+
+  if (build_with_tflite_lib) {
+    sources += [
+      "prediction_model_executor.cc",
+      "prediction_model_executor.h",
+      "prediction_model_handler.cc",
+      "prediction_model_handler.h",
+    ]
+
+    deps += [
+      "//third_party/tflite:tflite_public_headers",
+      "//third_party/tflite_support",
+      "//third_party/tflite_support:tflite_support_proto",
+    ]
+  }
 }
 
 source_set("unit_tests") {

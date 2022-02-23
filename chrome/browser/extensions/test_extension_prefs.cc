@@ -145,8 +145,13 @@ scoped_refptr<Extension> TestExtensionPrefs::AddExtension(
 scoped_refptr<Extension> TestExtensionPrefs::AddApp(const std::string& name) {
   base::DictionaryValue dictionary;
   AddDefaultManifestKeys(name, &dictionary);
-  dictionary.SetString(manifest_keys::kApp, "true");
+  dictionary.SetStringPath(manifest_keys::kApp, "true");
+
+  // TODO(crbug.com/949461): Should use SetStringPath() here, but we currently
+  // depend on the special SetString() behavior that overwrites a previous key
+  // with a new path ("app" or "app.launch" vs "app.launch.web_url").
   dictionary.SetString(manifest_keys::kLaunchWebURL, "http://example.com");
+
   return AddExtensionWithManifest(dictionary, ManifestLocation::kInternal);
 }
 
@@ -219,9 +224,9 @@ ChromeAppSorting* TestExtensionPrefs::app_sorting() {
 void TestExtensionPrefs::AddDefaultManifestKeys(const std::string& name,
                                                 base::DictionaryValue* dict) {
   DCHECK(dict);
-  dict->SetString(manifest_keys::kName, name);
-  dict->SetString(manifest_keys::kVersion, "0.1");
-  dict->SetInteger(manifest_keys::kManifestVersion, 2);
+  dict->SetStringPath(manifest_keys::kName, name);
+  dict->SetStringPath(manifest_keys::kVersion, "0.1");
+  dict->SetIntPath(manifest_keys::kManifestVersion, 2);
 }
 
 }  // namespace extensions

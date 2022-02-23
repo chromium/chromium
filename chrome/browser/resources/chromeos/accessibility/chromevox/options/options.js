@@ -332,10 +332,15 @@ OptionsPage = class {
         if (table.dots !== dots) {
           continue;
         }
-        items.push({id: table.id, name: BrailleTable.getDisplayName(table)});
+        const displayName = BrailleTable.getDisplayName(table);
+
+        // Ignore tables that don't have a display name.
+        if (displayName) {
+          items.push({id: table.id, name: displayName});
+        }
       }
       items.sort(function(a, b) {
-        return a.name.localeCompare(b.name);
+        return a.id.localeCompare(b.id);
       });
       for (let i = 0, item; item = items[i]; ++i) {
         const elem = document.createElement('option');

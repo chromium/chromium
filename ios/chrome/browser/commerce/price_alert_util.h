@@ -18,4 +18,9 @@ BOOL IsPriceAlertsEligible(web::BrowserState* browser_state);
 // Returns true if the flag controlling price alerts is enabled.
 BOOL IsPriceAlertsEnabled();
 
+// Returns true if the flag controlling price alerts is enabled and
+// the user opt out is enabled. This enables us to experiment with
+// different experiences.
+BOOL IsPriceAlertsWithOptOutEnabled();
+
 #endif  // IOS_CHROME_BROWSER_COMMERCE_PRICE_ALERT_UTIL_H_

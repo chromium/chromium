@@ -21,17 +21,36 @@ class MEDIA_EXPORT VideoBitrateAllocation {
   static constexpr size_t kMaxSpatialLayers = 5;
   static constexpr size_t kMaxTemporalLayers = 4;
 
-  VideoBitrateAllocation();
+  VideoBitrateAllocation() = default;
   ~VideoBitrateAllocation() = default;
 
-  // Returns if this bitrate can't be set (sum exceeds int max value).
-  bool SetBitrate(size_t spatial_index, size_t temporal_index, int bitrate_bps);
+  // Returns if this bitrate can't be set (sum exceeds uint32_t max value). Do
+  // not use an integer or uint64_t version of this. If you have a signed or
+  // 64-bit value you want to use as input, you must explicitly convert to
+  // uint32_t before calling. This is intended to prevent implicit and unsafe
+  // type conversion.
+  bool SetBitrate(size_t spatial_index,
+                  size_t temporal_index,
+                  uint32_t bitrate_bps);
+
+  // Deleted variants: you must SAFELY convert to uint32_t before calling.
+  // See base/numerics/safe_conversions.h for functions to safely convert
+  // between types.
+  bool SetBitrate(size_t spatial_index,
+                  size_t temporal_index,
+                  int32_t bitrate_bps) = delete;
+  bool SetBitrate(size_t spatial_index,
+                  size_t temporal_index,
+                  int64_t bitrate_bps) = delete;
+  bool SetBitrate(size_t spatial_index,
+                  size_t temporal_index,
+                  uint64_t bitrate_bps) = delete;
 
   // Returns the bitrate for specified spatial/temporal index, or 0 if not set.
-  int GetBitrateBps(size_t spatial_index, size_t temporal_index) const;
+  uint32_t GetBitrateBps(size_t spatial_index, size_t temporal_index) const;
 
   // Sum of all bitrates.
-  int32_t GetSumBps() const;
+  uint32_t GetSumBps() const;
 
   std::string ToString() const;
 
@@ -41,8 +60,9 @@ class MEDIA_EXPORT VideoBitrateAllocation {
   }
 
  private:
-  int sum_;  // Cached sum of all elements of |bitrates_|, for performance.
-  int bitrates_[kMaxSpatialLayers][kMaxTemporalLayers];
+  // Cached sum of all elements of |bitrates_|, for performance.
+  uint32_t sum_ = 0u;
+  uint32_t bitrates_[kMaxSpatialLayers][kMaxTemporalLayers] = {};
 };
 
 }  // namespace media

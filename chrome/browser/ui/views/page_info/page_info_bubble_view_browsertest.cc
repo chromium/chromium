@@ -4,10 +4,12 @@
 
 #include "chrome/browser/ui/views/page_info/page_info_bubble_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "build/build_config.h"
+#include "chrome/browser/certificate_viewer.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service_factory.h"
 #include "chrome/browser/safe_browsing/chrome_password_protection_service.h"
@@ -31,10 +33,11 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/content_settings/core/common/content_settings_types.h"
-#include "components/page_info/about_this_site_validation.h"
-#include "components/page_info/features.h"
+#include "components/optimization_guide/core/optimization_guide_switches.h"
+#include "components/page_info/core/about_this_site_validation.h"
+#include "components/page_info/core/features.h"
+#include "components/page_info/core/proto/about_this_site_metadata.pb.h"
 #include "components/page_info/page_info.h"
-#include "components/page_info/proto/about_this_site_metadata.pb.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/safe_browsing/content/browser/password_protection/password_protection_test_util.h"
 #include "components/strings/grit/components_strings.h"
@@ -65,7 +68,8 @@
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/test/widget_test.h"
 
-using ProtoValidation = page_info::about_this_site_validation::ProtoValidation;
+using AboutThisSiteStatus =
+    page_info::about_this_site_validation::AboutThisSiteStatus;
 
 namespace {
 
@@ -174,6 +178,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
       const PageInfoBubbleViewBrowserTest& test) = delete;
 
   void SetUp() override {
+    MockCertificateViewerForTesting();
     ASSERT_TRUE(embedded_test_server()->Start());
     InProcessBrowserTest::SetUp();
   }
@@ -279,7 +284,7 @@ class PageInfoBubbleViewBrowserTest : public InProcessBrowserTest {
     EXPECT_CALL(*mock_sentiment_service_, PageInfoClosed);
   }
 
-  MockTrustSafetySentimentService* mock_sentiment_service_;
+  raw_ptr<MockTrustSafetySentimentService> mock_sentiment_service_;
 
  private:
   std::vector<PageInfoViewFactory::PageInfoViewID> expected_identifiers_;
@@ -296,8 +301,8 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewBrowserTest,
                        StopShowingBubbleWhenWebContentsDestroyed) {
   // Open a new tab so the whole browser does not close once we close
   // the tab via WebContents::Close() below.
-  AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
-                ui::PAGE_TRANSITION_TYPED);
+  ASSERT_TRUE(AddTabAtIndex(0, GURL("data:text/html,<p>puppies!</p>"),
+                            ui::PAGE_TRANSITION_TYPED));
   OpenPageInfoBubble(browser());
   EXPECT_EQ(PageInfoBubbleView::BUBBLE_PAGE_INFO,
             PageInfoBubbleView::GetShownBubbleType());
@@ -759,6 +764,11 @@ class PageInfoBubbleViewAboutThisSiteBrowserTest : public InProcessBrowserTest {
     host_resolver()->AddRule("*", "127.0.0.1");
   }
 
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    cmd->AppendSwitch(optimization_guide::switches::
+                          kDisableCheckingUserPermissionsForTesting);
+  }
+
  protected:
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
 
@@ -790,7 +800,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
-      static_cast<int>(ProtoValidation::kValid));
+      static_cast<int>(AboutThisSiteStatus::kValid));
 
   page_info->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
@@ -830,7 +840,7 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
   ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
   ukm_recorder.ExpectEntryMetric(
       entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
-      static_cast<int>(ProtoValidation::kIncompleteDescription));
+      static_cast<int>(AboutThisSiteStatus::kMissingDescriptionName));
 
   page_info->GetWidget()->CloseWithReason(
       views::Widget::ClosedReason::kEscKeyPressed);
@@ -872,4 +882,39 @@ IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteBrowserTest,
                               0);
   histograms.ExpectTotalCount(
       "Security.PageInfo.TimeOpen.AboutThisSiteNotShown", 1);
+}
+
+// Test that no info is shown and "kUnknown" is logged when hints fetching is
+// disabled.
+class PageInfoBubbleViewAboutThisSiteDisabledBrowserTest
+    : public PageInfoBubbleViewAboutThisSiteBrowserTest {
+  void SetUpCommandLine(base::CommandLine* cmd) override {
+    // Don't set the flag to enable hints fetching.
+  }
+};
+
+IN_PROC_BROWSER_TEST_F(PageInfoBubbleViewAboutThisSiteDisabledBrowserTest,
+                       AboutThisSiteWithoutOptin) {
+  ukm::TestAutoSetUkmRecorder ukm_recorder;
+
+  auto url = https_server_.GetURL("a.test", "/title1.html");
+  AddHintForTesting(browser(), url, CreateValidSiteInfo());
+
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+  OpenPageInfoBubble(browser());
+
+  auto* page_info = PageInfoBubbleView::GetPageInfoBubbleForTesting();
+  EXPECT_TRUE(page_info->GetViewByID(
+      PageInfoViewFactory::
+          VIEW_ID_PAGE_INFO_LINK_OR_BUTTON_SECURITY_INFORMATION));
+  EXPECT_FALSE(page_info->GetViewByID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON));
+
+  auto entries = ukm_recorder.GetEntriesByName(
+      ukm::builders::AboutThisSiteStatus::kEntryName);
+  EXPECT_EQ(1u, entries.size());
+  ukm_recorder.ExpectEntrySourceHasUrl(entries[0], url);
+  ukm_recorder.ExpectEntryMetric(
+      entries[0], ukm::builders::AboutThisSiteStatus::kStatusName,
+      static_cast<int>(AboutThisSiteStatus::kUnknown));
 }

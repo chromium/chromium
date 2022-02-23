@@ -173,7 +173,7 @@ std::unique_ptr<DomDistillerService> CreateDomDistillerService(
 void AddComponentsTestResources() {
   base::FilePath pak_file;
   base::FilePath pak_dir;
-  base::PathService::Get(base::DIR_MODULE, &pak_dir);
+  base::PathService::Get(base::DIR_ASSETS, &pak_dir);
   pak_file =
       pak_dir.Append(FILE_PATH_LITERAL("components_tests_resources.pak"));
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(

@@ -86,7 +86,7 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   // Handles the JavaScript response. If the URL of the iframe is returned,
   // triggers a navigation to it. Stop distillation of the page there as the new
   // load will trigger a new distillation.
-  bool HandleGoogleCachedAMPPageJavaScriptResult(id result, id error);
+  void OnHandleGoogleCachedAMPPageResult(const base::Value* value, bool error);
 
   // Work around the fact that articles from wikipedia has the major part of the
   // article hidden.
@@ -95,6 +95,10 @@ class ReadingListDistillerPage : public dom_distiller::DistillerPageIOS {
   // HandleWikipediaPage sets the style of collapsable parts of article to
   // visible.
   void HandleWikipediaPage();
+  // OnHandleWikipediaPageResult is called asynchronously with the
+  // result of the javascript evaluation started in
+  // HandleWikipediaPage.
+  void OnHandleWikipediaPageResult(const base::Value* value);
 
   // Continue the distillation on the page that is currently loaded in
   // |CurrentWebState()|.

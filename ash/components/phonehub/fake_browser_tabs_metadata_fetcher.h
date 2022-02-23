@@ -7,7 +7,7 @@
 
 #include "ash/components/phonehub/browser_tabs_metadata_fetcher.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
@@ -33,6 +33,6 @@ class FakeBrowserTabsMetadataFetcher : public BrowserTabsMetadataFetcher {
 };
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash
 
 #endif  // ASH_COMPONENTS_PHONEHUB_FAKE_BROWSER_TABS_METADATA_FETCHER_H_

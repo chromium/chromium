@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_H_
 #define CHROME_BROWSER_UI_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_H_
 
-#include "base/compiler_specific.h"
+#include "base/memory/weak_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 
 class PasswordGenerationPopupController;
@@ -16,7 +16,7 @@ class PasswordGenerationPopupView {
   // Display the popup. Returns |true| if popup is shown, |false| otherwise.
   // Warning: both the controller and view could be destroyed, when the function
   // returns |false|, and they must not be used after that.
-  virtual bool Show() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool Show() = 0;
 
   // This will cause the popup to be deleted.
   virtual void Hide() = 0;
@@ -32,7 +32,7 @@ class PasswordGenerationPopupView {
   // Returns |true| in case of success popup redraw, |false| otherwise.
   // Warning: both the controller and view could be destroyed, when the function
   // returns |false|, and they must not be used after that.
-  virtual bool UpdateBoundsAndRedrawPopup() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual bool UpdateBoundsAndRedrawPopup() = 0;
 
   // Called when the password selection state has changed.
   virtual void PasswordSelectionUpdated() = 0;
@@ -40,7 +40,7 @@ class PasswordGenerationPopupView {
   // Note that PasswordGenerationPopupView owns itself, and will only be deleted
   // when Hide() is called.
   static PasswordGenerationPopupView* Create(
-      PasswordGenerationPopupController* controller);
+      base::WeakPtr<PasswordGenerationPopupController> controller);
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_H_

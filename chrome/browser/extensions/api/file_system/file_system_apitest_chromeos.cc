@@ -153,9 +153,9 @@ class FileSystemApiTestForDrive : public PlatformAppBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -304,9 +304,9 @@ class FileSystemApiTestForRequestFileSystem : public PlatformAppBrowserTest {
   drive::DriveIntegrationService* CreateDriveIntegrationService(
       Profile* profile) {
     // Ignore signin and lock screen apps profile.
-    if (profile->GetPath() == chromeos::ProfileHelper::GetSigninProfileDir() ||
+    if (profile->GetPath() == ash::ProfileHelper::GetSigninProfileDir() ||
         profile->GetPath() ==
-            chromeos::ProfileHelper::GetLockScreenAppProfilePath()) {
+            ash::ProfileHelper::GetLockScreenAppProfilePath()) {
       return nullptr;
     }
 
@@ -516,7 +516,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        AllowlistedComponent) {
   ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
   ASSERT_TRUE(RunExtensionTest(
-      "api_test/file_system/request_file_system_whitelisted_component",
+      "api_test/file_system/request_file_system_allowed_component",
       {.launch_as_platform_app = true}, {.load_as_component = true}))
       << message_;
 }
@@ -525,7 +525,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        NotAllowlistedComponent) {
   ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_OK);
   ASSERT_TRUE(RunExtensionTest(
-      "api_test/file_system/request_file_system_not_whitelisted_component",
+      "api_test/file_system/request_file_system_not_allowed_component",
       {.launch_as_platform_app = true}, {.load_as_component = true}))
       << message_;
 }
@@ -564,7 +564,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemApiTestForRequestFileSystem,
                        AllowlistedExtensionForDownloads) {
   ScopedSkipRequestFileSystemDialog dialog_skipper(ui::DIALOG_BUTTON_CANCEL);
   ASSERT_TRUE(RunExtensionTest(
-      "api_test/file_system/request_downloads_whitelisted_extension",
+      "api_test/file_system/request_downloads_allowed_extension",
       {.launch_as_platform_app = true}))
       << message_;
 }

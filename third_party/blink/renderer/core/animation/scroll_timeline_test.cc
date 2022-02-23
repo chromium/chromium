@@ -19,6 +19,7 @@
 #include "third_party/blink/renderer/core/testing/core_unit_test_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 
 namespace blink {
 
@@ -104,7 +105,7 @@ class TestScrollTimeline : public ScrollTimeline {
                          CreateScrollOffsets())
       : ScrollTimeline(document,
                        source,
-                       ScrollTimeline::Vertical,
+                       ScrollTimeline::kVertical,
                        std::move(scroll_offsets)),
         next_service_scheduled_(false) {}
 
@@ -357,7 +358,7 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullSource) {
   Element* scroll_source = nullptr;
   Persistent<ScrollTimeline> scroll_timeline =
       MakeGarbageCollected<ScrollTimeline>(&GetDocument(), scroll_source,
-                                           ScrollTimeline::Block,
+                                           ScrollTimeline::kBlock,
                                            CreateScrollOffsets());
 
   // Sanity checks.

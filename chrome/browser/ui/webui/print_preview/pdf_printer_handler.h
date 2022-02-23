@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/chromeos_buildflags.h"
@@ -80,7 +81,7 @@ class PdfPrinterHandler : public PrinterHandler,
                           bool prompt_user);
 
   // The print preview web contents. Protected so unit tests can access it.
-  content::WebContents* const preview_web_contents_;
+  const raw_ptr<content::WebContents> preview_web_contents_;
 
   // The underlying dialog object. Protected so unit tests can access it.
   scoped_refptr<ui::SelectFileDialog> select_file_dialog_;
@@ -101,8 +102,8 @@ class PdfPrinterHandler : public PrinterHandler,
   // Return save location as the Drive mount or fetch from Download Preferences.
   base::FilePath GetSaveLocation() const;
 
-  Profile* const profile_;
-  PrintPreviewStickySettings* const sticky_settings_;
+  const raw_ptr<Profile> profile_;
+  const raw_ptr<PrintPreviewStickySettings> sticky_settings_;
 
   // Holds the path to the print to pdf request. It is empty if no such request
   // exists.

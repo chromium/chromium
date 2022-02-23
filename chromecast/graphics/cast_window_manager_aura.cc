@@ -32,7 +32,7 @@
 #include "ui/touch_selection/touch_selection_menu_runner.h"
 #include "ui/wm/core/default_screen_position_client.h"
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
 #include "ui/platform_window/fuchsia/initialize_presenter_api_view.h"
 #endif
 
@@ -188,7 +188,7 @@ void CastWindowManagerAura::Setup() {
   gfx::Rect host_bounds = GetPrimaryDisplayHostBounds();
   ui::PlatformWindowInitProperties properties(host_bounds);
 
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // When using Scenic Ozone platform we need to supply a view_token to the
   // window. This is not necessary when using the headless ozone platform.
   if (ui::OzonePlatform::GetInstance()

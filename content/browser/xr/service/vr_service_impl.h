@@ -10,10 +10,12 @@
 #include <set>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/types/pass_key.h"
 #include "build/build_config.h"
 #include "content/browser/xr/metrics/session_metrics_helper.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/permission_type.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "device/vr/public/mojom/isolated_xr_service.mojom-forward.h"
 #include "device/vr/public/mojom/vr_service.mojom.h"
@@ -146,6 +148,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
 
   void OnPermissionResults(
       SessionRequestData request,
+      const std::vector<content::PermissionType>& permissions,
       const std::vector<blink::mojom::PermissionStatus>& permission_statuses);
 
   void EnsureRuntimeInstalled(SessionRequestData request,
@@ -169,7 +172,7 @@ class CONTENT_EXPORT VRServiceImpl : public device::mojom::VRService,
   scoped_refptr<XRRuntimeManagerImpl> runtime_manager_;
   mojo::RemoteSet<device::mojom::XRSessionClient> session_clients_;
   mojo::Remote<device::mojom::VRServiceClient> service_client_;
-  content::RenderFrameHost* render_frame_host_;
+  raw_ptr<content::RenderFrameHost> render_frame_host_;
   mojo::SelfOwnedReceiverRef<device::mojom::VRService> receiver_;
   mojo::RemoteSet<device::mojom::XRSessionController> magic_window_controllers_;
   device::mojom::XRVisibilityState visibility_state_ =

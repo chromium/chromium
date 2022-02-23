@@ -9,6 +9,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "net/base/completion_once_callback.h"
 #include "net/base/proxy_server.h"
 #include "net/http/proxy_client_socket.h"
@@ -22,7 +23,7 @@ namespace net {
 class HttpAuthController;
 class ProxyDelegate;
 
-// QuicProxyClientSocket provides a socket interface to an underlying
+// QuicProxyClientSocket tunnels a stream socket over an underlying
 // QuicChromiumClientStream. Bytes written to/read from a QuicProxyClientSocket
 // are sent/received via STREAM frames in the underlying QUIC stream.
 class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
@@ -50,8 +51,6 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   const HttpResponseInfo* GetConnectResponseInfo() const override;
   const scoped_refptr<HttpAuthController>& GetAuthController() const override;
   int RestartWithAuth(CompletionOnceCallback callback) override;
-  bool IsUsingSpdy() const override;
-  NextProto GetProxyNegotiatedProtocol() const override;
   void SetStreamPriority(RequestPriority priority) override;
 
   // StreamSocket implementation.
@@ -124,7 +123,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   // Stores the callback for Read().
   CompletionOnceCallback read_callback_;
   // Stores the read buffer pointer for Read().
-  IOBuffer* read_buf_;
+  raw_ptr<IOBuffer> read_buf_;
   // Stores the callback for Write().
   CompletionOnceCallback write_callback_;
   // Stores the write buffer length for Write().
@@ -144,7 +143,7 @@ class NET_EXPORT_PRIVATE QuicProxyClientSocket : public ProxyClientSocket {
   const ProxyServer proxy_server_;
 
   // This delegate must outlive this proxy client socket.
-  ProxyDelegate* const proxy_delegate_;
+  const raw_ptr<ProxyDelegate> proxy_delegate_;
 
   std::string user_agent_;
 

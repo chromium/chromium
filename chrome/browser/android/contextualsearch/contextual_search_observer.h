@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_OBSERVER_H_
 #define CHROME_BROWSER_ANDROID_CONTEXTUALSEARCH_CONTEXTUAL_SEARCH_OBSERVER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
 
@@ -48,7 +49,7 @@ class ContextualSearchObserver
     api_handler_ = handler;
   }
 
-  ContextualSearchJsApiHandler* api_handler_;
+  raw_ptr<ContextualSearchJsApiHandler> api_handler_;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

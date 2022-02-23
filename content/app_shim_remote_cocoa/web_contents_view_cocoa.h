@@ -7,6 +7,7 @@
 
 #include "base/mac/scoped_nsobject.h"
 #include "content/common/content_export.h"
+#include "content/common/web_contents_ns_view_bridge.mojom.h"
 #import "ui/base/cocoa/base_view.h"
 #import "ui/base/cocoa/views_hostable.h"
 
@@ -69,8 +70,14 @@ CONTENT_EXPORT
                         image:(NSImage*)image
                        offset:(NSPoint)offset;
 - (void)clearViewsHostableView;
-- (void)updateWebContentsVisibility;
+- (void)updateWebContentsVisibility:
+    (remote_cocoa::mojom::Visibility)visibilityState;
 - (void)viewDidBecomeFirstResponder:(NSNotification*)notification;
+@end
+
+@interface NSWindow (WebContentsViewCocoa)
+// Returns all the WebContentsViewCocoas in the window.
+- (NSArray<WebContentsViewCocoa*>*)webContentsViewCocoa;
 @end
 
 #endif  // CONTENT_APP_SHIM_REMOTE_COCOA_WEB_CONTENTS_VIEW_COCOA_H_

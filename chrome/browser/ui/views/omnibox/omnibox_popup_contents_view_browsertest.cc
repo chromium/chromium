@@ -296,26 +296,9 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, ThemeIntegration) {
   EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
 }
 
-class OmniboxPopupContentsViewInIncognitoTest
-    : public OmniboxPopupContentsViewTest,
-      public testing::WithParamInterface<bool> {
- public:
-  OmniboxPopupContentsViewInIncognitoTest() {
-    feature_list_.InitWithFeatureState(
-        features::kIncognitoBrandConsistencyForDesktop, GetParam());
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(OmniboxPopupContentsViewInIncognitoWithFeatureFlagTest,
-                         OmniboxPopupContentsViewInIncognitoTest,
-                         testing::Bool());
-
 // Integration test for omnibox popup theming in Incognito.
-IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewInIncognitoTest,
-                       ThemeIntegration) {
+IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
+                       ThemeIntegrationInIncognito) {
   ThemeService* theme_service =
       ThemeServiceFactory::GetForProfile(browser()->profile());
   UseDefaultTheme();
@@ -324,7 +307,6 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewInIncognitoTest,
   const SkColor selection_color_dark = GetSelectedColor(browser());
 
   SetUseDarkColor(false);
-  const SkColor selection_color_light = GetSelectedColor(browser());
 
   // Install a theme (in both browsers, since it's the same profile).
   extensions::ChromeTestExtensionLoader loader(browser()->profile());
@@ -339,23 +321,18 @@ IN_PROC_BROWSER_TEST_P(OmniboxPopupContentsViewInIncognitoTest,
   // Check unthemed incognito windows.
   Browser* incognito_browser = CreateIncognitoBrowser();
 
-  if (GetParam() /*Incognito brand consistency enabled*/) {
-    EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
-  } else {
-    // The previous theme installation should make it light.
-    EXPECT_EQ(selection_color_light, GetSelectedColor(incognito_browser));
-  }
-
+  EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
   // Switch to the default theme without installing a custom theme. E.g. this is
   // what gets used on KDE or when switching to the "classic" theme in settings.
   UseDefaultTheme();
 
-  // Check incognito again. It should now use a dark theme, even on Linux.
+  // Check incognito again. It should continue to use a dark theme, even on
+  // Linux.
   EXPECT_EQ(selection_color_dark, GetSelectedColor(incognito_browser));
 }
 
 // TODO(tapted): https://crbug.com/905508 Fix and enable on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ClickOmnibox DISABLED_ClickOmnibox
 #else
 #define MAYBE_ClickOmnibox ClickOmnibox
@@ -416,7 +393,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest, MAYBE_ClickOmnibox) {
 // it contains) changes when it receives focus, and matches the popup background
 // color.
 // Flaky on Linux and Windows. See https://crbug.com/1120701
-#if defined(OS_LINUX) || defined(OS_WIN)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_WIN)
 #define MAYBE_PopupMatchesLocationBarBackground \
   DISABLED_PopupMatchesLocationBarBackground
 #else
@@ -459,7 +436,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 }
 
 // Flaky on Mac: https://crbug.com/1140153.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EmitAccessibilityEvents DISABLED_EmitAccessibilityEvents
 #else
 #define MAYBE_EmitAccessibilityEvents EmitAccessibilityEvents
@@ -535,7 +512,7 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupContentsViewTest,
 }
 
 // Flaky on Mac: https://crbug.com/1146627.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_EmitAccessibilityEventsOnButtonFocusHint DISABLED_EmitAccessibilityEventsOnButtonFocusHint
 #else
 #define MAYBE_EmitAccessibilityEventsOnButtonFocusHint EmitAccessibilityEventsOnButtonFocusHint

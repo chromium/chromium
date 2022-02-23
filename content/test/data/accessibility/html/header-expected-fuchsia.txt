@@ -1,0 +1,6 @@
+UNKNOWN focusable has_input_focus
+++UNKNOWN hidden
+++++UNKNOWN hidden
+++++++HEADER
+++++++++STATIC_TEXT label='Chromium Browser'
+++++++++++UNKNOWN label='Chromium Browser'

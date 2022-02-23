@@ -127,6 +127,16 @@ Polymer({
   },
 
   /** @private */
+  onDisableActiveESimProfileClick_() {
+    this.browserProxy_.disableActiveESimProfile();
+  },
+
+  /** @private */
+  onResetEuiccClick_() {
+    this.browserProxy_.resetEuicc();
+  },
+
+  /** @private */
   showAddNewWifi_() {
     this.browserProxy_.showAddNewWifi();
   },

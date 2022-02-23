@@ -129,19 +129,6 @@ TEST_F(DemoResourcesTest, LoadResourcesOnline) {
   EXPECT_TRUE(demo_resources.loaded());
 }
 
-TEST_F(DemoResourcesTest, LoadResourcesOffline) {
-  DemoResources demo_resources(DemoSession::DemoModeConfig::kOffline);
-  demo_resources.EnsureLoaded(base::DoNothing());
-
-  EXPECT_FALSE(demo_resources.loaded());
-  EXPECT_FALSE(
-      cros_component_manager_->HasPendingInstall(kOfflineResourcesComponent));
-
-  demo_resources.SetPreinstalledOfflineResourcesLoadedForTesting(
-      base::FilePath(kTestDemoModeResourcesMountPoint));
-  EXPECT_TRUE(demo_resources.loaded());
-}
-
 TEST_F(DemoResourcesTest, EnsureLoadedRepeatedlyOnline) {
   DemoResources demo_resources(DemoSession::DemoModeConfig::kOnline);
 

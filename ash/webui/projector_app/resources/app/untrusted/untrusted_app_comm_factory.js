@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {PostMessageAPIClient} from 'chrome-untrusted://projector/js/post_message_api_client.m.js';
-import {RequestHandler} from 'chrome-untrusted://projector/js/post_message_api_request_handler.m.js';
+import {PostMessageAPIClient} from '//resources/js/post_message_api_client.m.js';
+import {RequestHandler} from '//resources/js/post_message_api_request_handler.m.js';
 
 import {ProjectorError} from '../../communication/message_types.js';
 
@@ -36,11 +36,11 @@ const CLIENT_DELEGATE = {
 
   /**
    * Checks whether the SWA can trigger a new Projector session.
-   * @return {Promise<boolean>}
+   * @return {!Promise<!projectorApp.NewScreencastPreconditionState>}
    */
-  canStartProjectorSession() {
+  getNewScreencastPreconditionState() {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'canStartProjectorSession', []);
+        'getNewScreencastPreconditionState', []);
   },
 
   /**
@@ -101,15 +101,6 @@ const CLIENT_DELEGATE = {
   },
 
   /**
-   * Return true if the "new screencast" button should be shown to the user.
-   * @return {!Promise<boolean>}
-   */
-  shouldShowNewScreencastButton() {
-    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
-        'shouldShowNewScreencastButton', []);
-  },
-
-  /**
    * Returns true if the device supports on device speech recognition.
    * @return {!Promise<boolean>}
    */
@@ -153,6 +144,15 @@ const CLIENT_DELEGATE = {
     return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
         'setUserPref', [userPref, value]);
   },
+
+  /**
+   * Triggers the opening of the Chrome feedback dialog.
+   * @return {!Promise}
+   */
+  openFeedbackDialog() {
+    return AppUntrustedCommFactory.getPostMessageAPIClient().callApiFn(
+        'openFeedbackDialog', []);
+  },
 };
 
 /**
@@ -168,14 +168,14 @@ export class UntrustedAppRequestHandler extends RequestHandler {
     super(null, TARGET_URL, TARGET_URL);
     this.targetWindow_ = parentWindow;
 
-    this.registerMethod('onNewScreencastPreconditionChanged', (canStart) => {
-      if (canStart.length !== 1 || typeof canStart[0] !== 'boolean') {
+    this.registerMethod('onNewScreencastPreconditionChanged', (args) => {
+      if (args.length !== 1) {
         console.error(
-            'Invalid argument to onNewScreencastPreconditionChanged', canStart);
+            'Invalid argument to onNewScreencastPreconditionChanged', args);
         return;
       }
 
-      getAppElement().onNewScreencastPreconditionChanged(canStart[0]);
+      getAppElement().onNewScreencastPreconditionChanged(args[0]);
     });
     this.registerMethod('onSodaInstallProgressUpdated', (args) => {
       if (args.length !== 1 || isNaN(args[0])) {
@@ -183,6 +183,9 @@ export class UntrustedAppRequestHandler extends RequestHandler {
       }
 
       getAppElement().onSodaInstallProgressUpdated(args[0]);
+    });
+    this.registerMethod('onSodaInstalled', (args) => {
+      getAppElement().onSodaInstalled();
     });
     this.registerMethod('onSodaInstallError', (args) => {
       getAppElement().onSodaInstallError();

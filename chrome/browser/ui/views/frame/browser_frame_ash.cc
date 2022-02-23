@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chromeos/ui/base/window_state_type.h"
 #include "components/app_restore/app_restore_utils.h"
-#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
@@ -137,17 +136,15 @@ void BrowserFrameAsh::GetWindowPlacement(
     // Widget/NativeWidgetAura the window is a normal window, so get the restore
     // bounds directly from the ash window state.
     bool used_window_state_restore_bounds = false;
-    if (full_restore::features::IsFullRestoreEnabled()) {
-      auto* window_state = ash::WindowState::Get(window);
-      if (window_state->IsSnapped() && window_state->HasRestoreBounds()) {
-        // Additionally, if the window is closed, and not from logging out we
-        // want to use the regular restore bounds, otherwise the next time the
-        // user opens a window it will be in a different place than closed,
-        // since session restore does not restore ash snapped state.
-        if (browser_shutdown::IsTryingToQuit() || !GetWidget()->IsClosed()) {
-          used_window_state_restore_bounds = true;
-          *bounds = window_state->GetRestoreBoundsInScreen();
-        }
+    auto* window_state = ash::WindowState::Get(window);
+    if (window_state->IsSnapped() && window_state->HasRestoreBounds()) {
+      // Additionally, if the window is closed, and not from logging out we
+      // want to use the regular restore bounds, otherwise the next time the
+      // user opens a window it will be in a different place than closed,
+      // since session restore does not restore ash snapped state.
+      if (browser_shutdown::IsTryingToQuit() || !GetWidget()->IsClosed()) {
+        used_window_state_restore_bounds = true;
+        *bounds = window_state->GetRestoreBoundsInScreen();
       }
     }
 

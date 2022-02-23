@@ -3,6 +3,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+from __future__ import print_function
+
 import argparse
 import os
 import sys
@@ -21,7 +23,8 @@ from core.tbmv3 import trace_processor
 if __name__ == '__main__':
   parser = argparse.ArgumentParser()
   parser.add_argument(
-      '--platform', help='linux/linux_arm/linux_arm64/mac/win', required=True)
+      '--platform', help='linux/linux_arm/linux_arm64/mac/mac_arm64/win',
+      required=True)
   parser.add_argument(
       '--path', metavar='PATH', help='Switch to using a trace processor version'
       ' stored by this cloud path.')
@@ -39,11 +42,11 @@ if __name__ == '__main__':
                        '--print-latest or --print-current.')
 
   if args.print_latest:
-    print binary_deps_manager.GetLatestPath(
-        trace_processor.TP_BINARY_NAME, args.platform)
+    print(binary_deps_manager.GetLatestPath(
+        trace_processor.TP_BINARY_NAME, args.platform))
   elif args.print_current:
-    print binary_deps_manager.GetCurrentPath(
-        trace_processor.TP_BINARY_NAME, args.platform)
+    print(binary_deps_manager.GetCurrentPath(
+        trace_processor.TP_BINARY_NAME, args.platform))
   else:
     binary_deps_manager.SwitchBinaryToNewPath(
         trace_processor.TP_BINARY_NAME, args.platform, args.path)

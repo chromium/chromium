@@ -7,7 +7,6 @@
 #include "build/build_config.h"
 #include "third_party/blink/renderer/bindings/core/v8/sanitize_script_errors.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_controller.h"
-#include "third_party/blink/renderer/bindings/core/v8/script_source_code.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_gc_controller.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_intersection_observer_init.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_union_document_element.h"
@@ -26,6 +25,7 @@
 #include "third_party/blink/renderer/core/testing/sim/sim_compositor.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_request.h"
 #include "third_party/blink/renderer/core/testing/sim/sim_test.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 
@@ -115,7 +115,6 @@ TEST_F(IntersectionObserverTest, NotificationSentWhenRootRemoved) {
 }
 
 TEST_F(IntersectionObserverTest, DocumentRootClips) {
-  ScopedIntersectionObserverDocumentScrollingElementRootForTest scope(true);
   WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
   SimRequest main_resource("https://example.com/", "text/html");
   SimRequest iframe_resource("https://example.com/iframe.html", "text/html");
@@ -773,9 +772,9 @@ TEST_F(IntersectionObserverTest, RootMarginDevicePixelRatio) {
   EXPECT_EQ(observer_delegate->CallCount(), 1);
   EXPECT_EQ(observer_delegate->EntryCount(), 1);
   EXPECT_FALSE(observer_delegate->LastEntry()->isIntersecting());
-  EXPECT_EQ(PixelSnappedIntRect(
+  EXPECT_EQ(ToPixelSnappedRect(
                 observer_delegate->LastEntry()->GetGeometry().RootRect()),
-            IntRect(0, 31, 800, 600 - 31));
+            gfx::Rect(0, 31, 800, 600 - 31));
 }
 
 TEST_F(IntersectionObserverTest, CachedRectsTest) {
@@ -786,7 +785,7 @@ TEST_F(IntersectionObserverTest, CachedRectsTest) {
     <style>
     body { margin: 0; }
     .spacer { height: 1000px; }
-    .scroller { overflow-y: scroll; height: 100px; }
+    .scroller { overflow-y: scroll; height: 100px; position: relative; }
     </style>
     <div id='root' class='scroller'>
       <div id='target1-container'>

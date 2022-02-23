@@ -9,16 +9,15 @@
 #include "ash/public/cpp/shell_window_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
-#include "base/bind.h"
 #include "base/memory/ptr_util.h"
 #include "ui/aura/window.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/layer.h"
+#include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/gfx/animation/throb_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/strings/grit/ui_strings.h"
-#include "ui/views/animation/animation_builder.h"
 #include "ui/views/background.h"
 #include "ui/views/bubble/bubble_border.h"
 #include "ui/views/controls/label.h"
@@ -103,6 +102,18 @@ gfx::Size GetSizeForString(const std::u16string& text,
   int height = 0, width = 0;
   gfx::Canvas::SizeStringInt(text, font_list, &width, &height, 0, 0);
   return gfx::Size(width, height);
+}
+
+void AnimateLayerToPosition(views::View* view,
+                            base::TimeDelta duration,
+                            gfx::Point end_position,
+                            float opacity = 1.f) {
+  ui::ScopedLayerAnimationSettings slide_settings(view->layer()->GetAnimator());
+  slide_settings.SetPreemptionStrategy(
+      ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET);
+  slide_settings.SetTransitionDuration(duration);
+  view->SetBoundsRect(gfx::Rect(end_position, view->size()));
+  view->layer()->SetOpacity(opacity);
 }
 
 }  // namespace
@@ -513,6 +524,7 @@ void TouchCalibratorView::InitViewContents() {
   touch_point_view_->SetVisible(false);
   touch_point_view_->SetPaintToLayer();
   touch_point_view_->layer()->SetFillsBoundsOpaquely(false);
+  touch_point_view_->layer()->GetAnimator()->AddObserver(this);
   touch_point_view_->SetBackground(
       views::CreateSolidBackground(SK_ColorTRANSPARENT));
 
@@ -581,6 +593,7 @@ void TouchCalibratorView::InitViewContents() {
   completion_message_view_->SetVisible(false);
   completion_message_view_->SetPaintToLayer();
   completion_message_view_->layer()->SetFillsBoundsOpaquely(false);
+  completion_message_view_->layer()->GetAnimator()->AddObserver(this);
   completion_message_view_->SetBackground(
       views::CreateSolidBackground(SK_ColorTRANSPARENT));
 }
@@ -638,6 +651,38 @@ void TouchCalibratorView::AnimationEnded(const gfx::Animation* animation) {
       break;
   }
 }
+
+void TouchCalibratorView::OnLayerAnimationStarted(
+    ui::LayerAnimationSequence* sequence) {}
+
+void TouchCalibratorView::OnLayerAnimationEnded(
+    ui::LayerAnimationSequence* sequence) {
+  switch (state_) {
+    case ANIMATING_1_TO_2:
+      state_ = DISPLAY_POINT_2;
+      tap_label_->SetVisible(true);
+      break;
+    case ANIMATING_2_TO_3:
+      state_ = DISPLAY_POINT_3;
+      break;
+    case ANIMATING_3_TO_4:
+      state_ = DISPLAY_POINT_4;
+      break;
+    case ANIMATING_FINAL_MESSAGE:
+      state_ = CALIBRATION_COMPLETE;
+      break;
+    default:
+      break;
+  }
+}
+
+void TouchCalibratorView::OnLayerAnimationAborted(
+    ui::LayerAnimationSequence* sequence) {
+  OnLayerAnimationEnded(sequence);
+}
+
+void TouchCalibratorView::OnLayerAnimationScheduled(
+    ui::LayerAnimationSequence* sequence) {}
 
 void TouchCalibratorView::AdvanceToNextState() {
   // Stop any previous animations and skip them to the end.
@@ -763,45 +808,6 @@ void TouchCalibratorView::SkipCurrentAnimation() {
       touch_point_view_->layer()->GetAnimator()->is_animating()) {
     touch_point_view_->layer()->GetAnimator()->StopAnimating();
   }
-}
-
-void TouchCalibratorView::OnStateAnimationEnded() {
-  switch (state_) {
-    case ANIMATING_1_TO_2:
-      state_ = DISPLAY_POINT_2;
-      tap_label_->SetVisible(true);
-      break;
-    case ANIMATING_2_TO_3:
-      state_ = DISPLAY_POINT_3;
-      break;
-    case ANIMATING_3_TO_4:
-      state_ = DISPLAY_POINT_4;
-      break;
-    case ANIMATING_FINAL_MESSAGE:
-      state_ = CALIBRATION_COMPLETE;
-      break;
-    default:
-      break;
-  }
-}
-
-void TouchCalibratorView::AnimateLayerToPosition(views::View* view,
-                                                 base::TimeDelta duration,
-                                                 gfx::Point end_position,
-                                                 float opacity) {
-  views::AnimationBuilder()
-      .SetPreemptionStrategy(
-          ui::LayerAnimator::IMMEDIATELY_ANIMATE_TO_NEW_TARGET)
-      // base::Unretained is safe here since the lifetime of the animated views
-      // is tied to the TouchCalibratorView itself.
-      .OnEnded(base::BindOnce(&TouchCalibratorView::OnStateAnimationEnded,
-                              base::Unretained(this)))
-      .OnAborted(base::BindOnce(&TouchCalibratorView::OnStateAnimationEnded,
-                                base::Unretained(this)))
-      .Once()
-      .SetDuration(duration)
-      .SetBounds(view, gfx::Rect(end_position, view->size()))
-      .SetOpacity(view, opacity);
 }
 
 }  // namespace ash

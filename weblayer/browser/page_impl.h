@@ -9,7 +9,7 @@
 #include "content/public/browser/page_user_data.h"
 #include "weblayer/public/page.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -22,7 +22,7 @@ class PageImpl : public Page, public content::PageUserData<PageImpl> {
 
   ~PageImpl() override;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void SetJavaPage(JNIEnv* env,
                    const base::android::JavaParamRef<jobject>& java_page);
 
@@ -34,7 +34,7 @@ class PageImpl : public Page, public content::PageUserData<PageImpl> {
   friend class content::PageUserData<PageImpl>;
   PAGE_USER_DATA_KEY_DECL();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaGlobalRef<jobject> java_page_;
 #endif
 };

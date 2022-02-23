@@ -9,6 +9,7 @@
 #include <string>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "base/task/sequenced_task_runner.h"
@@ -95,7 +96,7 @@ class PasswordManagerExporter {
   void Cleanup();
 
   // The source of the password list which will be exported.
-  CredentialProviderInterface* const credential_provider_interface_;
+  const raw_ptr<CredentialProviderInterface> credential_provider_interface_;
 
   // Callback to the UI.
   ProgressCallback on_progress_;

@@ -7,6 +7,7 @@
 
 #include "base/containers/flat_set.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
@@ -92,7 +93,7 @@ class ScreenCaptureNotificationBlocker
 
   // The |notification_display_service_| owns a NotificationDisplayQueue which
   // owns |this| so a raw pointer is safe here.
-  NotificationDisplayService* notification_display_service_;
+  raw_ptr<NotificationDisplayService> notification_display_service_;
 
   base::ScopedObservation<MediaStreamCaptureIndicator,
                           MediaStreamCaptureIndicator::Observer>

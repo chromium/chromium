@@ -186,17 +186,17 @@
     <div id="leftTitleSpacer"></div>
     <div id="title">
       <div id="titleText" hidden="[[showTitleNavigation_]]">
-        [[i18n('customizeThisPage')]]
+        $i18n{customizeThisPage}
       </div>
       <div id="titleNavigation" hidden="[[!showTitleNavigation_]]">
         <cr-icon-button id="backButton" class="icon-arrow-back"
-            on-click="onBackClick_" title="[[i18n('backButton')]]">
+            on-click="onBackClick_" title="$i18n{backButton}">
         </cr-icon-button>
         <div id="collectionTitle">[[selectedCollection_.label]]</div>
         <cr-toggle id="refreshToggle" checked="[[isRefreshToggleChecked_]]"
             on-change="onBackgroundDailyRefreshToggleChange_">
         </cr-toggle>
-        [[i18n('refreshDaily')]]
+        $i18n{refreshDaily}
       </div>
     </div>
   </div>
@@ -209,21 +209,21 @@
             on-keydown="onMenuItemKeyDown_" fallback-selection="backgrounds">
           <div class="menu-item" page-name="backgrounds" tabindex="0">
             <div id="backgroundsIcon" class="menu-item-icon"></div>
-            [[i18n('backgroundsMenuItem')]]
+            $i18n{backgroundsMenuItem}
           </div>
           <div class="menu-item" page-name="shortcuts" tabindex="0"
               hidden$="[[!shortcutsEnabled_]]">
             <div id="shortcutsIcon" class="menu-item-icon"></div>
-            [[i18n('shortcutsMenuItem')]]
+            $i18n{shortcutsMenuItem}
           </div>
           <div class="menu-item" page-name="modules" tabindex="0"
               hidden$="[[!modulesEnabled_]]">
             <div id="modulesIcon" class="menu-item-icon"></div>
-            [[i18n('modulesMenuItem')]]
+            $i18n{modulesMenuItem}
           </div>
           <div class="menu-item" page-name="themes" tabindex="0">
             <div id="themesIcon" class="menu-item-icon"></div>
-            [[i18n('themesMenuItem')]]
+            $i18n{themesMenuItem}
           </div>
         </iron-selector>
       </div>
@@ -247,10 +247,10 @@
   </div>
   <div slot="button-container">
     <cr-button class="cancel-button" on-click="onCancelClick_">
-      [[i18n('cancelButton')]]
+      $i18n{cancelButton}
     </cr-button>
     <cr-button class="action-button" on-click="onDoneClick_">
-      [[i18n('doneButton')]]
+      $i18n{doneButton}
     </cr-button>
   </div>
 </cr-dialog>

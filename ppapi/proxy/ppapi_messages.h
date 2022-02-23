@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/sync_socket.h"
+#include "build/build_config.h"
 
 #ifdef WIN32
 // base/sync_socket.h will define MemoryBarrier (a Win32 macro) that
@@ -627,13 +628,13 @@ IPC_SYNC_MESSAGE_CONTROL1_1(PpapiMsg_SupportsInterface,
                             std::string /* interface_name */,
                             bool /* result */)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // Network state notification from the browser for implementing
 // PPP_NetworkState_Dev.
 IPC_MESSAGE_CONTROL1(PpapiMsg_SetNetworkState,
                      bool /* online */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // PPB_Audio.
 
@@ -857,13 +858,13 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPPTextInput_RequestSurroundingText,
                    PP_Instance /* instance */,
                    uint32_t /* desired_number_of_characters */)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // PPP_Instance_Private.
 IPC_SYNC_MESSAGE_ROUTED1_1(PpapiMsg_PPPInstancePrivate_GetInstanceObject,
                            PP_Instance /* instance */,
                            ppapi::proxy::SerializedVar /* result */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // This message is sent from the renderer to the PNaCl compiler process
 // (NaCl untrusted code -- a nexe).  This implements the init_callback()
@@ -1188,7 +1189,7 @@ IPC_SYNC_MESSAGE_ROUTED3_1(PpapiHostMsg_PPBVar_CreateObjectDeprecated,
                            int64_t /* object_data */,
                            ppapi::proxy::SerializedVar /* result */)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 // PPB_Buffer.
 IPC_SYNC_MESSAGE_ROUTED2_2(
     PpapiHostMsg_PPBBuffer_Create,
@@ -1197,7 +1198,7 @@ IPC_SYNC_MESSAGE_ROUTED2_2(
     ppapi::HostResource /* result_resource */,
     ppapi::proxy::SerializedHandle /* result_shm_handle */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // PPB_Testing.
 IPC_SYNC_MESSAGE_ROUTED3_1(
@@ -1216,7 +1217,7 @@ IPC_SYNC_MESSAGE_ROUTED1_0(
     PpapiHostMsg_PPBTesting_SetMinimumArrayBufferSizeForShmem,
     uint32_t /* threshold */)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // PPB_VideoDecoder_Dev.
 // (Messages from plugin to renderer.)
@@ -1271,7 +1272,7 @@ IPC_MESSAGE_ROUTED2(PpapiMsg_PPPVideoDecoder_PictureReady,
 IPC_MESSAGE_ROUTED2(PpapiMsg_PPPVideoDecoder_NotifyError,
                     ppapi::HostResource /* video_decoder */,
                     PP_VideoDecodeError_Dev /* error */)
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 //-----------------------------------------------------------------------------
 // Resource call/reply messages.
@@ -1989,7 +1990,7 @@ IPC_MESSAGE_CONTROL1(PpapiPluginMsg_VideoEncoder_NotifyError,
                      int32_t /* error */)
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_VideoEncoder_Close)
 
-#if !defined(OS_NACL) && !defined(NACL_WIN64)
+#if !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 // Audio input.
 IPC_MESSAGE_CONTROL0(PpapiHostMsg_AudioInput_Create)
@@ -2049,11 +2050,6 @@ IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFontFile_GetFontTable,
                      uint32_t /* table */)
 IPC_MESSAGE_CONTROL1(PpapiPluginMsg_FlashFontFile_GetFontTableReply,
                      std::string /* output */)
-
-// Flash fullscreen.
-IPC_MESSAGE_CONTROL0(PpapiHostMsg_FlashFullscreen_Create)
-IPC_MESSAGE_CONTROL1(PpapiHostMsg_FlashFullscreen_SetFullscreen,
-                     bool /* fullscreen */)
 
 // PDF ------------------------------------------------------------------------
 
@@ -2171,6 +2167,6 @@ IPC_MESSAGE_CONTROL1(PpapiPluginMsg_VideoCapture_OnError,
 IPC_MESSAGE_CONTROL1(PpapiPluginMsg_VideoCapture_OnBufferReady,
                      uint32_t /* buffer */)
 
-#endif  // !defined(OS_NACL) && !defined(NACL_WIN64)
+#endif  // !BUILDFLAG(IS_NACL) && !defined(NACL_WIN64)
 
 #endif  // PPAPI_PROXY_PPAPI_MESSAGES_H_

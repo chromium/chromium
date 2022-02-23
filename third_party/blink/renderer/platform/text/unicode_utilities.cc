@@ -86,7 +86,7 @@ static bool IsNonLatin1Separator(UChar32 character) {
 
 bool IsSeparator(UChar32 character) {
   // clang-format off
-  static const bool kLatin1SeparatorTable[256] = {
+  static constexpr int kLatin1SeparatorTable[256] = {
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0,
       // space ! " # $ % & ' ( ) * + , - . /
@@ -112,7 +112,7 @@ bool IsSeparator(UChar32 character) {
   };
   // clang-format on
   if (character < 256)
-    return kLatin1SeparatorTable[character];
+    return static_cast<bool>(kLatin1SeparatorTable[character]);
 
   return IsNonLatin1Separator(character);
 }

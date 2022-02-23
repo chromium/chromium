@@ -6,6 +6,7 @@
 
 #include "base/logging.h"
 #include "base/metrics/histogram_macros.h"
+#include "build/build_config.h"
 
 namespace video_capture {
 namespace uma {
@@ -57,7 +58,7 @@ void LogDurationUntilReconnectAfterCapture(base::TimeDelta duration) {
   DVLOG(4) << "Logged DurationUntilReconnectAfterCapture";
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 void LogMacbookRetryGetDeviceInfosEvent(MacbookRetryGetDeviceInfosEvent event) {
   UMA_HISTOGRAM_ENUMERATION(
       "Media.VideoCapture.MacBook.RetryGetDeviceInfosEvent", event,

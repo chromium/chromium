@@ -334,10 +334,10 @@ public class NavigationController {
         }
 
         @Override
-        public void loadStateChanged(boolean isLoading, boolean toDifferentDocument) {
+        public void loadStateChanged(boolean isLoading, boolean shouldShowLoadingUi) {
             StrictModeWorkaround.apply();
             for (NavigationCallback callback : mCallbacks) {
-                callback.onLoadStateChanged(isLoading, toDifferentDocument);
+                callback.onLoadStateChanged(isLoading, shouldShowLoadingUi);
             }
         }
 

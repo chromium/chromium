@@ -45,6 +45,8 @@ class SideSearchTabContentsHelper
     // delegates that they should close the feature when something exceptional
     // has happened.
     virtual void SidePanelAvailabilityChanged(bool should_close) = 0;
+
+    virtual void OpenSidePanel() = 0;
   };
 
   ~SideSearchTabContentsHelper() override;
@@ -91,9 +93,7 @@ class SideSearchTabContentsHelper
     return side_panel_contents_.get();
   }
 
-  const absl::optional<GURL>& last_search_url_for_testing() {
-    return last_search_url_;
-  }
+  const absl::optional<GURL>& last_search_url() { return last_search_url_; }
 
  private:
   friend class content::WebContentsUserData<SideSearchTabContentsHelper>;
@@ -102,13 +102,13 @@ class SideSearchTabContentsHelper
   // Gets the helper for the side contents.
   SideSearchSideContentsHelper* GetSideContentsHelper();
 
-  // Navigates `side_panel_contents_` to the tab's `last_search_url_` if needed.
-  // Should only be called when `side_contents_active_`.
-  void UpdateSideContentsNavigation();
-
   // Creates the `side_panel_contents_` associated with this helper's tab
   // contents.
   void CreateSidePanelContents();
+
+  // Navigates `side_panel_contents_` to the tab's `last_search_url_` if needed.
+  // Should only be called when `side_contents_active_`.
+  void UpdateSideContentsNavigation();
 
   // Makes a HEAD request for the side search Google SRP to test for the page's
   // availability and sets `is_side_panel_srp_available_` accordingly.

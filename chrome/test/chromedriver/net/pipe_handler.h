@@ -7,7 +7,7 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "chrome/test/chromedriver/net/websocket.h"
 
@@ -35,7 +35,7 @@ class PipeHandler {
   void Read();
   void Close();
 
-  WebSocketListener* listener_;
+  raw_ptr<WebSocketListener> listener_;
   int write_fd_;
   int read_fd_;
 

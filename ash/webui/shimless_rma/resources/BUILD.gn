@@ -2,11 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
 
 preprocessed_dir = "preprocessed"
 preprocessed_gen_manifest = "preprocessed_gen_manifest.json"
@@ -16,8 +19,10 @@ polymer_element_files = [
   "base_page.js",
   "calibration_component_chip.js",
   "icons.js",
+  "critical_error_page.js",
   "onboarding_choose_destination_page.js",
   "onboarding_choose_wp_disable_method_page.js",
+  "onboarding_choose_wipe_device_page.js",
   "onboarding_enter_rsu_wp_disable_code_page.js",
   "onboarding_landing_page.js",
   "onboarding_network_page.js",
@@ -25,7 +30,7 @@ polymer_element_files = [
   "onboarding_update_page.js",
   "onboarding_wait_for_manual_wp_disable_page.js",
   "onboarding_wp_disable_complete_page.js",
-  "reimaging_calibration_page.js",
+  "reimaging_calibration_failed_page.js",
   "reimaging_calibration_run_page.js",
   "reimaging_calibration_setup_page.js",
   "reimaging_device_information_page.js",
@@ -33,6 +38,7 @@ polymer_element_files = [
   "reimaging_provisioning_page.js",
   "repair_component_chip.js",
   "shimless_rma.js",
+  "shimless_rma_fonts_css.js",
   "shimless_rma_shared_css.js",
   "splash_screen.js",
   "wrapup_finalize_page.js",
@@ -49,6 +55,10 @@ generate_grd("build_grd") {
     "fake_shimless_rma_service.js",
     "index.html",
     "mojo_interface_provider.js",
+    "illustrations/downloading.svg",
+    "illustrations/insert_usb.svg",
+    "illustrations/repair_start.svg",
+    "illustrations/update_os.svg",
     "png/diagnostics_app_icon_192.png",
     "shimless_rma_types.js",
   ]
@@ -72,9 +82,11 @@ js_type_check("closure_compile_module") {
   deps = [
     ":base_page",
     ":calibration_component_chip",
+    ":critical_error_page",
     ":fake_shimless_rma_service",
     ":mojo_interface_provider",
     ":onboarding_choose_destination_page",
+    ":onboarding_choose_wipe_device_page",
     ":onboarding_choose_wp_disable_method_page",
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
@@ -83,7 +95,7 @@ js_type_check("closure_compile_module") {
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
-    ":reimaging_calibration_page",
+    ":reimaging_calibration_failed_page",
     ":reimaging_calibration_run_page",
     ":reimaging_calibration_setup_page",
     ":reimaging_device_information_page",
@@ -102,8 +114,10 @@ js_type_check("closure_compile_module") {
 
 js_library("shimless_rma") {
   deps = [
+    ":critical_error_page",
     ":mojo_interface_provider",
     ":onboarding_choose_destination_page",
+    ":onboarding_choose_wipe_device_page",
     ":onboarding_choose_wp_disable_method_page",
     ":onboarding_enter_rsu_wp_disable_code_page",
     ":onboarding_landing_page",
@@ -118,7 +132,7 @@ js_library("shimless_rma") {
     ":onboarding_update_page",
     ":onboarding_wait_for_manual_wp_disable_page",
     ":onboarding_wp_disable_complete_page",
-    ":reimaging_calibration_page",
+    ":reimaging_calibration_failed_page",
     ":reimaging_calibration_run_page",
     ":reimaging_calibration_setup_page",
     ":reimaging_device_information_page",
@@ -138,6 +152,16 @@ js_library("shimless_rma") {
 js_library("base_page") {
   deps = [
     "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+  ]
+}
+
+js_library("critical_error_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
+    "//ui/webui/resources/js:i18n_behavior.m",
   ]
 }
 
@@ -183,6 +207,15 @@ js_library("onboarding_choose_destination_page") {
     "//ui/webui/resources/cr_elements/cr_radio_button:cr_radio_button.m",
     "//ui/webui/resources/cr_elements/cr_radio_group:cr_radio_group.m",
     "//ui/webui/resources/js:i18n_behavior.m",
+  ]
+}
+
+js_library("onboarding_choose_wipe_device_page") {
+  deps = [
+    ":base_page",
+    ":mojo_interface_provider",
+    ":shimless_rma_types",
+    "//third_party/polymer/v3_0/components-chromium/polymer:polymer_bundled",
   ]
 }
 
@@ -277,7 +310,7 @@ js_library("onboarding_wp_disable_complete_page") {
   ]
 }
 
-js_library("reimaging_calibration_page") {
+js_library("reimaging_calibration_failed_page") {
   deps = [
     ":base_page",
     ":calibration_component_chip",

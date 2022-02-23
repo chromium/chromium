@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "third_party/blink/public/mojom/webauthn/authenticator.mojom-shared.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_promise_resolver.h"
 #include "third_party/blink/renderer/core/dom/dom_exception.h"
@@ -27,24 +28,32 @@ void OnIsUserVerifyingComplete(
     bool available) {
   scoped_resolver->Release()->Resolve(available);
 }
+
+absl::optional<std::string> AuthenticatorAttachmentToString(
+    mojom::blink::AuthenticatorAttachment authenticator_attachment) {
+  switch (authenticator_attachment) {
+    case mojom::blink::AuthenticatorAttachment::PLATFORM:
+      return "platform";
+    case mojom::blink::AuthenticatorAttachment::CROSS_PLATFORM:
+      return "cross-platform";
+    case mojom::blink::AuthenticatorAttachment::NO_PREFERENCE:
+      return absl::nullopt;
+  }
+}
 }  // namespace
 
 PublicKeyCredential::PublicKeyCredential(
     const String& id,
     DOMArrayBuffer* raw_id,
     AuthenticatorResponse* response,
-    bool has_transport,
-    mojom::AuthenticatorTransport transport,
+    mojom::blink::AuthenticatorAttachment authenticator_attachment,
     const AuthenticationExtensionsClientOutputs* extension_outputs,
     const String& type)
     : Credential(id, type.IsEmpty() ? kPublicKeyCredentialType : type),
       raw_id_(raw_id),
       response_(response),
       authenticator_attachment_(
-          has_transport ? (transport == mojom::AuthenticatorTransport::INTERNAL
-                               ? absl::make_optional("platform")
-                               : absl::make_optional("cross-platform"))
-                        : absl::nullopt),
+          AuthenticatorAttachmentToString(authenticator_attachment)),
       extension_outputs_(extension_outputs) {}
 
 ScriptPromise

@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Хангул Ахнматае</translation>
 <translation id="1155759005174418845">Каталанча</translation>
 <translation id="1168100932582989117">Google ысым серверлери</translation>
+<translation id="1171082344678443012">XZ менен кысылган архив</translation>
 <translation id="1172970565351728681">Болжол менен <ph name="REMAINING_TIME" /> калды</translation>
 <translation id="1173894706177603556">Атын өзгөртүү</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Телефондун батареясы <ph name="BATTERY_STATUS" />%, Чоо-жайы</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">Бул файл Linux менен бөлүшүлүп жатат</translation>
 <translation id="1864756863218646478">Бир да файл табылган жок.</translation>
 <translation id="1884013283844450420"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, Туташуу</translation>
+<translation id="1914901738028575085">CloudReady 2.0 түзмөгү</translation>
 <translation id="1920670151694390848">Малайаламча (транслитерация)</translation>
 <translation id="1920798810075583923">Дарбыз</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> форматталды</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">Дискти форматтасаңыз, анда сакталган бардык маалыматтар өчүрүлөт. Бул аракетти артка кайтаруу мүмкүн эмес.</translation>
 <translation id="2025955442973426285">Тигринче</translation>
 <translation id="2028997212275086731">RAR архиви</translation>
+<translation id="2036414735548252477">LZMA менен кысылган tar архиви</translation>
 <translation id="2037845485764049925">Орусча</translation>
 <translation id="2044023416777079300">Модем катталган эмес</translation>
 <translation id="2046702855113914483">Рамён</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> менен бөлүшүү</translation>
 <translation id="3083975830683400843">Chromebit түзмөктөрү</translation>
 <translation id="3085752524577180175">SOCKS хосту</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
 <translation id="3113153474486991170">Бул жерден "<ph name="PATH" />" ачылган жок. Ачуу үчүн "Менин файлдарыма" көчүрүңүз.</translation>
 <translation id="3113592018909187986">1 жолу аракет кыла аласыз. Жаңы PIN код коймоюнча бул тармакты колдоно албайсыз.</translation>
 <translation id="3124404833828281817">Кыялданып жаткан адам</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">Англисче (АКШ) жана жеке компьютерлер үчүн эл аралык баскычтоп</translation>
 <translation id="3567221313191587603">Файлды тандап, оффлайнда колдонууга уруксат берүү үчүн <ph name="OFFLINE_CHECKBOX_NAME" /> кутучасын белгилеңиз.</translation>
 <translation id="357479282490346887">Литвача</translation>
+<translation id="3587482841069643663">Баары</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> оффлайн режиминде жеткиликсиз</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Французча (Канада)</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">Баарынын камдык көчүрмөсү сакталды!</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак,<ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, Администраторуңуз башкарат, Чоо-жайы</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> нерсе жылдырылды.</translation>
-<translation id="3645531960514756307">Папканы бошотуу</translation>
 <translation id="3685122418104378273">Мобилдик дайындар колдонулуп жатканда, Google Drive шайкештештирүүсү демейки шартта өчүрүлөт.</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> аракети жокко чыгарылат.</translation>
 <translation id="3690128548376345212">Тармак (<ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />), <ph name="NETWORK_NAME" />, жандырылган эмес, <ph name="CONNECTION_STATUS" />, сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, чоо-жайы</translation>
 <translation id="3691184985318546178">Сингалча</translation>
 <translation id="3726463242007121105">Бул түзмөктүн файл тутуму колдоого алынбагандыктан, ал ачылбайт.</translation>
 <translation id="3727148787322499904">Бул жөндөө өзгөтүлсө, бөлүшүлгөн тармактардын баарына таасирин тийгизет</translation>
+<translation id="3737576078404241332">Капталдагы тактадан өчүрүү</translation>
 <translation id="3741243925913727067">Медиа түзмөгүңүздөгү сүрөттөр менен видеолордун камдык көчүрмөлөрүн Google Drive'га сактаңыз.</translation>
 <translation id="3749289110408117711">Файлдын аталышы</translation>
 <translation id="3780536599611287598">Файлдарды "<ph name="FOLDER_NAME" />" папкасына жылдырууга уруксатыңыз жок.</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">Ботаник</translation>
 <translation id="4326192123064055915">Кофе</translation>
 <translation id="4336032328163998280">Көчүрүү аракети аткарылбай калды. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Капталдагы тактага кошуу</translation>
 <translation id="4348495354623233847">Сорани (арабча баскычтоп)</translation>
 <translation id="4363958938297989186">Орусча (фонетикалык баскычтоп)</translation>
 <translation id="4364327530094270451">Коон</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> байт</translation>
 <translation id="4880214202172289027">Үн слайдери</translation>
 <translation id="4881695831933465202">Ачуу</translation>
+<translation id="4886199584824489598">Bzip2 менен кысылган архив</translation>
 <translation id="4900532980794411603">Parallels Desktop менен бөлүшүү</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Туташуу</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" /> камдык көчүрмөсүн сактай берсеңиз болот</translation>
@@ -583,6 +590,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> тармагы, туташкан жок</translation>
 <translation id="6074825444536523002">Google формасы</translation>
 <translation id="6079871810119356840">Венгерче жана Qwerty баскычтобу</translation>
+<translation id="6082256976217156453">LZMA менен кысылган архив</translation>
 <translation id="6096979789310008754">Изделген текст өчүрүлүп, бардык файлдар жана папкалар көрсөтүлүүдө.</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> <ph name="FOLDER_NAME" /> папкасына жылдырылууда</translation>
 <translation id="6129953537138746214">Боштук</translation>
@@ -678,6 +686,7 @@
 <translation id="6935521024859866267">Астын-үстү</translation>
 <translation id="6943836128787782965">HTTP кыйрап калды</translation>
 <translation id="6949408524333579394">Сербче (транслитерация)</translation>
+<translation id="6954309393500027528">Бул файлды чаптоо аракети администраторуңуз тарабынан бөгөттөлгөн</translation>
 <translation id="6960565108681981554">Жандырылган эмес. Байланыш операторуңузга кайрылыңыз.</translation>
 <translation id="696203921837389374">Мобилдик дайындар аркылуу шайкештештирүүнү иштетүү</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -838,6 +847,7 @@
 <translation id="8297012244086013755">Хангул 3 топтому (Shift жок)</translation>
 <translation id="8299269255470343364">Жапончо</translation>
 <translation id="8300849813060516376">OTASP кыйрады</translation>
+<translation id="8308481408797647857">XZ менен кысылган tar архиви</translation>
 <translation id="8312871300878166382">Папкага чаптоо</translation>
 <translation id="8329978297633540474">Жөнөкөй текст</translation>
 <translation id="8335587457941836791">Текчеден бошотуу</translation>
@@ -874,6 +884,7 @@
 <translation id="8551494947769799688">Латвияча</translation>
 <translation id="8560515948038859357">Кантончо</translation>
 <translation id="8561206103590473338">Пил</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, Сигналдын күчү <ph name="SIGNAL_STRENGTH" />%, Администраторуңуз бөгөттөп койгон, Чоо-жайы</translation>
 <translation id="8569764466147087991">Ачыла турган файлды тандаңыз</translation>
 <translation id="8577897833047451336">Хорватча</translation>
 <translation id="8578308463707544055">Индонезияча</translation>
@@ -891,6 +902,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681"><ph name="ENTRY_NAME" /> тандалды.</translation>
 <translation id="872537912056138402">Хорватча</translation>
+<translation id="873847021056608403">CloudReady 2.0 түзмөктөрү</translation>
 <translation id="8743164338060742337"><ph name="NETWORK_COUNT" /> ичинен <ph name="NETWORK_INDEX" />-тармак, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" /> cигналдын күчү <ph name="SIGNAL_STRENGTH" />%, администраторуңуз башкарат, туташуу</translation>
 <translation id="8750438273876807512">Текчедеги файлдарды ыкчам ачуу үчүн файлды коё бербей басып туруп, <ph name="ICON" /> сүрөтчөсүн таптап, "Текчеге кадоону" тандаңыз.</translation>
 <translation id="8787254343425541995">Бөлүшүлгөн тармактардын проксилерине уруксат берүү</translation>
@@ -926,7 +938,6 @@
 <translation id="9110990317705400362">Серептөө аракетиңиздин коопсуздугун чыңдоо үчүн болгон аракетибизди жумшап жатабыз. Буга чейин серепчиңизге кеңейтүү кошууну вебсайттар сунуштап турушчу. Ал эми Google Chrome'дун эң акыркы версияларында керектүү кеңейтүүлөрдү Кеңейтүүлөр бетинен кошуп, орното турганыңызды Chrome'го өзүңүз ачык билдиресиз. <ph name="BEGIN_LINK" />Көбүрөөк билүү<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Кулпуну ачуу</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Папканы кадап коюу</translation>
 <translation id="9130775360844693113">"<ph name="DESTINATION_NAME" />" жалпы дискинин колдонуучулары бул файлдарды колдоно алышат.</translation>
 <translation id="9131598836763251128">Бир же бир нече файл тандаңыз</translation>
 <translation id="9133055936679483811">Кысылбай калды. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +958,7 @@
 <translation id="943972244133411984">Өзгөрткөн:</translation>
 <translation id="945522503751344254">Пикириңизди билдириңиз</translation>
 <translation id="947144732524271678"><ph name="FROM_ENTRY_NAME" />–<ph name="TO_ENTRY_NAME" /> ортосундагы <ph name="ENTRY_COUNT" /> пункт тандалды.</translation>
+<translation id="961973045258256291">Gzip менен кысылган архив</translation>
 <translation id="965477715979482472">Англисче (Түштүк Африка)</translation>
 <translation id="981121421437150478">Офлайн</translation>
 <translation id="988685240266037636">"<ph name="FILE_NAME" />" деген аталыштагы файл мурунтан эле бар. Аны алмаштыргыңыз келеби?</translation>

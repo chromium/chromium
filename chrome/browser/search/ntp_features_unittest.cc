@@ -6,9 +6,12 @@
 
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ntp_features {
+
+using testing::ElementsAre;
 
 TEST(NTPFeaturesTest, ModulesLoadTimeout) {
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -26,6 +29,21 @@ TEST(NTPFeaturesTest, ModulesLoadTimeout) {
       {{kModules, {{kNtpModulesLoadTimeoutMillisecondsParam, "j"}}}}, {});
   timeout = GetModulesLoadTimeout();
   EXPECT_EQ(3, timeout.InSeconds());
+}
+
+TEST(NTPFeaturesTest, ModulesOrder) {
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  // Can process list.
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kModules, {{kNtpModulesOrderParam, "foo,bar"}}}}, {});
+  EXPECT_THAT(GetModulesOrder(), ElementsAre("foo", "bar"));
+
+  // Can process empty param.
+  scoped_feature_list_.Reset();
+  scoped_feature_list_.InitWithFeaturesAndParameters(
+      {{kModules, {{kNtpModulesOrderParam, ""}}}}, {});
+  EXPECT_TRUE(GetModulesOrder().empty());
 }
 
 }  // namespace ntp_features

@@ -17,6 +17,7 @@
 #include "base/location.h"
 #include "base/memory/ptr_util.h"
 #include "base/numerics/safe_conversions.h"
+#include "base/observer_list.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/sys_byteorder.h"
 #include "base/task/single_thread_task_runner.h"
@@ -447,7 +448,7 @@ int CastSocketImpl::DoSslConnectComplete(int result) {
           logger_);
     }
     auth_delegate_ = new AuthTransportDelegate(this);
-    transport_->SetReadDelegate(base::WrapUnique(auth_delegate_));
+    transport_->SetReadDelegate(base::WrapUnique(auth_delegate_.get()));
     SetConnectState(ConnectionState::AUTH_CHALLENGE_SEND);
   } else if (result == net::ERR_CONNECTION_TIMED_OUT) {
     SetConnectState(ConnectionState::FINISHED);

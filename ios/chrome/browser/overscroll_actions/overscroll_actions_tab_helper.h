@@ -5,7 +5,6 @@
 #ifndef IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_OVERSCROLL_ACTIONS_TAB_HELPER_H_
 #define IOS_CHROME_BROWSER_OVERSCROLL_ACTIONS_OVERSCROLL_ACTIONS_TAB_HELPER_H_
 
-#include "base/macros.h"
 #include "base/scoped_observation.h"
 #import "ios/chrome/browser/ui/overscroll_actions/overscroll_actions_controller.h"
 #include "ios/web/public/web_state.h"

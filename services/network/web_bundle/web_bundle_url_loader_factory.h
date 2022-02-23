@@ -8,9 +8,11 @@
 #include <vector>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/web_package/mojom/web_bundle_parser.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
+#include "services/network/public/cpp/corb/corb_api.h"
 #include "services/network/public/cpp/cross_origin_embedder_policy.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/devtools_observer.mojom.h"
@@ -112,13 +114,14 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) WebBundleURLLoaderFactory {
   mojo::Remote<mojom::DevToolsObserver> devtools_observer_;
   absl::optional<std::string> devtools_request_id_;
   const CrossOriginEmbedderPolicy cross_origin_embedder_policy_;
-  mojom::CrossOriginEmbedderPolicyReporter* coep_reporter_;
+  raw_ptr<mojom::CrossOriginEmbedderPolicyReporter> coep_reporter_;
   std::unique_ptr<BundleDataSource> source_;
   mojo::Remote<web_package::mojom::WebBundleParser> parser_;
   web_package::mojom::BundleMetadataPtr metadata_;
   absl::optional<SubresourceWebBundleLoadResult> load_result_;
   bool data_completed_ = false;
   std::vector<base::WeakPtr<URLLoader>> pending_loaders_;
+  corb::PerFactoryState corb_state_;
   base::WeakPtrFactory<WebBundleURLLoaderFactory> weak_ptr_factory_{this};
 };
 

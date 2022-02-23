@@ -21,9 +21,13 @@ using base::android::ScopedJavaLocalRef;
 
 namespace media {
 
-ScreenCaptureMachineAndroid::ScreenCaptureMachineAndroid() {}
+ScreenCaptureMachineAndroid::ScreenCaptureMachineAndroid() = default;
 
-ScreenCaptureMachineAndroid::~ScreenCaptureMachineAndroid() {}
+ScreenCaptureMachineAndroid::~ScreenCaptureMachineAndroid() {
+  if (j_capture_.obj() != nullptr) {
+    Java_ScreenCapture_onNativeDestroyed(AttachCurrentThread(), j_capture_);
+  }
+}
 
 // static
 ScopedJavaLocalRef<jobject>

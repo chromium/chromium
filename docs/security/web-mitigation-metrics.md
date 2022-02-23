@@ -127,9 +127,18 @@ openers. Pages can choose to restrict this relation to same-origin pages with
 similar COOP value, same-origin unless they are opening popups or put no
 restriction by default.
 
-* Explicit values of "same-origin" and "same-origin-allow-popups" are tracked
-  via `kCrossOriginOpenerPolicySameOrigin` and
-  `kCrossOriginOpenerPolicySameOriginAllowPopups` respectively.
+* Usage of COOP is tracked via:
+  - `kCrossOriginOpenerPolicySameOrigin`
+  - `kCrossOriginOpenerPolicySameOriginAllowPopups`
+  * `kCoopAndCoepIsolated`
+They correspond respectively to the values: "same-origin",
+"same-origin-allow-popups" and "same-origin" used conjointly with COEP.
+
+* Usage of COOP in report-only mode is tracked symmetrically via:
+  - `kCrossOriginOpenerPolicySameOriginReportOnly`
+  - `kCrossOriginOpenerPolicySameOriginAllowPopupsReportOnly`
+  * `kCoopAndCoepIsolatedReportOnly`
+
 * We track how often same-origin documents are present in two pages with
   different COOP values via `kSameOriginDocumentsWithDifferentCOOPStatus`. We
   might restrict synchronous access between those in order to allow COOP
@@ -140,8 +149,13 @@ restriction by default.
 subresources to only those that have explicitly opted in via
 [Cross-Origin-Resource-Policy].
 
-* COEP is simply "require-corp" or nothing and we track uses of the feature via
-  `kCrossOriginEmbedderPolicyRequireCorp`.
+* Usage of COEP is tracked via:
+  - `kCrossOriginEmbedderPolicyCredentialless`
+  - `kCrossOriginEmbedderPolicyRequireCorp`.
+
+* Usage of COEP in report-only mode is tracked symmetrically via:
+  - `kCrossOriginEmbedderPolicyCredentiallessReportOnly`
+  - `kCrossOriginEmbedderPolicyRequireCorpReportOnly`.
 
 * Usage of COEP in SharedWorker is tracked via:
   - `kCoepNoneSharedWorker`,
@@ -176,3 +190,15 @@ platform.
   `kSanitizerAPIFromFragment` tell us what kind of input people are using.
 
 [sanitizer]: https://wicg.github.io/sanitizer-api/
+
+## Private Network Access
+
+[Private Network Access][pna] helps to prevent the user agent from
+inadvertently enabling attacks on devices running on a user's local intranet,
+or services running on the user's machine directly.
+
+* Use of PNA in workers tracked via:
+  - `kPrivateNetworkAccessFetchesWorkerScript`
+  - `kPrivateNetworkAccessWithWorker`
+
+[pna]: https://wicg.github.io/private-network-access/

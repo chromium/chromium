@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "services/network/public/mojom/web_sandbox_flags.mojom-shared.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/common/common_export.h"
 #include "third_party/blink/public/common/permissions_policy/permissions_policy_features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom-forward.h"
@@ -180,6 +181,11 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   static std::unique_ptr<PermissionsPolicy> CopyStateFrom(
       const PermissionsPolicy*);
 
+  // Creates a PermissionsPolicy for a fenced frame. All permissions are
+  // disabled in fenced frames.
+  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+      const url::Origin& origin);
+
   bool IsFeatureEnabled(mojom::PermissionsPolicyFeature feature) const;
 
   // Returns whether or not the given feature is enabled by this policy for a
@@ -197,9 +203,21 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   const Allowlist GetAllowlistForFeature(
       mojom::PermissionsPolicyFeature feature) const;
 
+  // Returns the allowlist of a given feature if it already exists. Doesn't
+  // build a default allow list based on the policy if not.
+  absl::optional<const Allowlist> GetAllowlistForFeatureIfExists(
+      mojom::PermissionsPolicyFeature feature) const;
+
   // Sets the declared policy from the parsed Permissions-Policy HTTP header.
   // Unrecognized features will be ignored.
   void SetHeaderPolicy(const ParsedPermissionsPolicy& parsed_header);
+
+  // Used to update a client hint header policy set via the accept-ch meta tag.
+  // It will fail if header policies not for client hints are included in
+  // `parsed_header` or if allowlists_ has already been used for a check.
+  // TODO(crbug.com/1278127): Replace w/ generic HTML policy modification.
+  void OverwriteHeaderPolicyForClientHints(
+      const ParsedPermissionsPolicy& parsed_header);
 
   // Returns the current state of permissions policies for |origin_|. This
   // includes the |inherited_policies_| as well as the header policies.
@@ -224,6 +242,10 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
       const url::Origin& origin,
       const PermissionsPolicyFeatureList& features);
 
+  static std::unique_ptr<PermissionsPolicy> CreateForFencedFrame(
+      const url::Origin& origin,
+      const PermissionsPolicyFeatureList& features);
+
   bool InheritedValueForFeature(
       const PermissionsPolicy* parent_policy,
       std::pair<mojom::PermissionsPolicyFeature,
@@ -240,6 +262,9 @@ class BLINK_COMMON_EXPORT PermissionsPolicy {
   // Map of feature names to declared allowlists. Any feature which is missing
   // from this map should use the inherited policy.
   std::map<mojom::PermissionsPolicyFeature, Allowlist> allowlists_;
+
+  // Set this to true if `allowlists_` have already been checked.
+  mutable bool allowlists_checked_;
 
   // Records whether or not each feature was enabled for this frame by its
   // parent frame.

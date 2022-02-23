@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/base_export.h"
 #include "base/callback.h"
 #include "base/native_library.h"
 #include "base/profiler/frame.h"
@@ -92,6 +93,34 @@ class UnwindScenario {
 
   const SetupFunction setup_function_;
 };
+
+class TestModule : public ModuleCache::Module {
+ public:
+  explicit TestModule(uintptr_t base_address = 0,
+                      size_t size = 0,
+                      bool is_native = true)
+      : base_address_(base_address), size_(size), is_native_(is_native) {}
+
+  uintptr_t GetBaseAddress() const override;
+  std::string GetId() const override;
+  FilePath GetDebugBasename() const override;
+  size_t GetSize() const override;
+  bool IsNative() const override;
+
+  void set_id(const std::string& id) { id_ = id; }
+  void set_debug_basename(const FilePath& basename) {
+    debug_basename_ = basename;
+  }
+
+ private:
+  const uintptr_t base_address_;
+  const size_t size_;
+  const bool is_native_;
+  std::string id_;
+  FilePath debug_basename_;
+};
+
+bool operator==(const Frame& a, const Frame& b);
 
 // UnwindScenario setup function that calls into |wait_for_sample| without doing
 // any special unwinding setup, to exercise the "normal" unwind scenario.

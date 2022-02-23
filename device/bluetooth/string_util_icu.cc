@@ -6,7 +6,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/singleton.h"
 #include "base/strings/string_util.h"
 #include "third_party/icu/source/common/unicode/uniset.h"

@@ -4,22 +4,31 @@
 
 #include "net/dns/dns_client.h"
 
+#include <memory>
+#include <string>
 #include <utility>
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/rand_util.h"
+#include "base/ranges/algorithm.h"
 #include "base/values.h"
+#include "net/base/address_list.h"
 #include "net/dns/address_sorter.h"
 #include "net/dns/dns_session.h"
 #include "net/dns/dns_socket_allocator.h"
 #include "net/dns/dns_transaction.h"
 #include "net/dns/dns_util.h"
+#include "net/dns/public/dns_over_https_config.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "net/dns/resolve_context.h"
 #include "net/log/net_log.h"
 #include "net/log/net_log_event_type.h"
 #include "net/socket/client_socket_factory.h"
+#include "net/third_party/uri_template/uri_template.h"
+#include "url/gurl.h"
+#include "url/scheme_host_port.h"
 
 namespace net {
 
@@ -44,7 +53,7 @@ bool IsEqual(const absl::optional<DnsConfig>& c1, const DnsConfig* c2) {
 }
 
 void UpdateConfigForDohUpgrade(DnsConfig* config) {
-  bool has_doh_servers = !config->dns_over_https_servers.empty();
+  bool has_doh_servers = !config->doh_config.servers().empty();
   // Do not attempt upgrade when there are already DoH servers specified or
   // when there are aspects of the system DNS config that are unhandled.
   if (!config->unhandled_options && config->allow_dns_over_https_upgrade &&
@@ -53,9 +62,11 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
     // If we're in strict mode on Android, only attempt to upgrade the
     // specified DoT hostname.
     if (!config->dns_over_tls_hostname.empty()) {
-      config->dns_over_https_servers = GetDohUpgradeServersFromDotHostname(
-          config->dns_over_tls_hostname, config->disabled_upgrade_providers);
-      has_doh_servers = !config->dns_over_https_servers.empty();
+      config->doh_config =
+          DnsOverHttpsConfig(GetDohUpgradeServersFromDotHostname(
+              config->dns_over_tls_hostname,
+              config->disabled_upgrade_providers));
+      has_doh_servers = !config->doh_config.servers().empty();
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.DotUpgradeSucceeded",
                             has_doh_servers);
     } else {
@@ -69,9 +80,10 @@ void UpdateConfigForDohUpgrade(DnsConfig* config) {
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.HasPublicInsecureNameserver",
                             !all_local);
 
-      config->dns_over_https_servers = GetDohUpgradeServersFromNameservers(
-          config->nameservers, config->disabled_upgrade_providers);
-      has_doh_servers = !config->dns_over_https_servers.empty();
+      config->doh_config =
+          DnsOverHttpsConfig(GetDohUpgradeServersFromNameservers(
+              config->nameservers, config->disabled_upgrade_providers));
+      has_doh_servers = !config->doh_config.servers().empty();
       UMA_HISTOGRAM_BOOLEAN("Net.DNS.UpgradeConfig.InsecureUpgradeSucceeded",
                             has_doh_servers);
     }
@@ -99,7 +111,7 @@ class DnsClientImpl : public DnsClient {
 
   bool CanUseSecureDnsTransactions() const override {
     const DnsConfig* config = GetEffectiveConfig();
-    return config && config->dns_over_https_servers.size() > 0;
+    return config && !config->doh_config.servers().empty();
   }
 
   bool CanUseInsecureDnsTransactions() const override {
@@ -177,6 +189,26 @@ class DnsClientImpl : public DnsClient {
       return nullptr;
 
     return &config->hosts;
+  }
+
+  absl::optional<AddressList> GetPresetAddrs(
+      const url::SchemeHostPort& endpoint) const override {
+    DCHECK(endpoint.IsValid());
+    if (!session_)
+      return absl::nullopt;
+    const auto& servers = session_->config().doh_config.servers();
+    auto it = base::ranges::find_if(servers, [&](const auto& server) {
+      std::string uri;
+      bool valid = uri_template::Expand(server.server_template(), {}, &uri);
+      // Server templates are validated before being allowed into the config.
+      DCHECK(valid);
+      GURL gurl(uri);
+      return url::SchemeHostPort(gurl) == endpoint;
+    });
+    if (it == servers.end())
+      return absl::nullopt;
+    // TODO(crbug.com/1200908): Read preset IPs from the server config.
+    return absl::nullopt;
   }
 
   DnsTransactionFactory* GetTransactionFactory() override {
@@ -280,9 +312,9 @@ class DnsClientImpl : public DnsClient {
   std::unique_ptr<AddressSorter> address_sorter_ =
       AddressSorter::CreateAddressSorter();
 
-  NetLog* net_log_;
+  raw_ptr<NetLog> net_log_;
 
-  ClientSocketFactory* socket_factory_;
+  raw_ptr<ClientSocketFactory> socket_factory_;
   const RandIntCallback rand_int_callback_;
 };
 

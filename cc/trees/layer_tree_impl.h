@@ -14,6 +14,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
 #include "cc/base/synced_property.h"
 #include "cc/input/browser_controls_offset_manager.h"
@@ -104,7 +105,7 @@ class CC_EXPORT LayerTreeImpl {
   // layer to consider it as jittering.
   enum : int { kFixedPointHitsThreshold = 3 };
   LayerTreeImpl(
-      LayerTreeHostImpl* host_impl,
+      LayerTreeHostImpl& host_impl,
       scoped_refptr<SyncedScale> page_scale_factor,
       scoped_refptr<SyncedBrowserControls> top_controls_shown_ratio,
       scoped_refptr<SyncedBrowserControls> bottom_controls_shown_ratio,
@@ -162,7 +163,7 @@ class CC_EXPORT LayerTreeImpl {
           decoding_mode_map);
   int GetMSAASampleCountForRaster(
       const scoped_refptr<DisplayItemList>& display_list);
-  gfx::ColorSpace GetRasterColorSpace(
+  TargetColorParams GetTargetColorParams(
       gfx::ContentColorUsage content_color_usage) const;
 
   // Tree specific methods exposed to layer-impl tree.
@@ -189,7 +190,13 @@ class CC_EXPORT LayerTreeImpl {
   OwnedLayerImplList DetachLayers();
   OwnedLayerImplList DetachLayersKeepingRootLayerForTesting();
 
-  void SetPropertyTrees(PropertyTrees* property_trees);
+  void SetPropertyTrees(const PropertyTrees& property_trees,
+                        PropertyTreesChangeState& change_state,
+                        bool preserve_change_tracking);
+
+  void SetPropertyTrees(PropertyTrees& property_trees,
+                        bool preserve_change_tracking = false);
+
   PropertyTrees* property_trees() {
     // TODO(pdr): We should enable this DCHECK because it will catch uses of
     // stale property trees, but it currently fails too many existing tests.
@@ -198,6 +205,11 @@ class CC_EXPORT LayerTreeImpl {
   }
   const PropertyTrees* property_trees() const { return &property_trees_; }
 
+  void PullPropertiesFrom(CommitState& commit_state,
+                          const ThreadUnsafeCommitState& unsafe_state);
+  void PullPropertyTreesFrom(CommitState& commit_state,
+                             const ThreadUnsafeCommitState& unsafe_state);
+  void PullLayerTreePropertiesFrom(CommitState& commit_state);
   void PushPropertyTreesTo(LayerTreeImpl* tree_impl);
   void PushPropertiesTo(LayerTreeImpl* tree_impl);
   void PushSurfaceRangesTo(LayerTreeImpl* tree_impl);
@@ -281,8 +293,8 @@ class CC_EXPORT LayerTreeImpl {
     hud_layer_ = layer_impl;
   }
 
-  gfx::Vector2dF TotalScrollOffset() const;
-  gfx::Vector2dF TotalMaxScrollOffset() const;
+  gfx::PointF TotalScrollOffset() const;
+  gfx::PointF TotalMaxScrollOffset() const;
 
   void AddPresentationCallbacks(
       std::vector<PresentationTimeCallbackBuffer::MainCallback> callbacks);
@@ -386,12 +398,6 @@ class CC_EXPORT LayerTreeImpl {
   bool TakeNewLocalSurfaceIdRequest();
   bool new_local_surface_id_request_for_testing() const {
     return new_local_surface_id_request_;
-  }
-
-  void SetVisualPropertiesUpdateDuration(
-      base::TimeDelta visual_properties_update_duration);
-  base::TimeDelta visual_properties_update_duration() const {
-    return visual_properties_update_duration_;
   }
 
   void SetDeviceViewportRect(const gfx::Rect& device_viewport_rect);
@@ -805,10 +811,10 @@ class CC_EXPORT LayerTreeImpl {
       const gfx::PointF& screen_space_point,
       const Functor& func);
 
-  LayerTreeHostImpl* host_impl_;
+  raw_ptr<LayerTreeHostImpl> host_impl_;
   int source_frame_number_;
   int is_first_frame_after_commit_tracker_;
-  HeadsUpDisplayLayerImpl* hud_layer_;
+  raw_ptr<HeadsUpDisplayLayerImpl> hud_layer_;
   PropertyTrees property_trees_;
   SkColor background_color_;
 
@@ -829,7 +835,6 @@ class CC_EXPORT LayerTreeImpl {
 
   viz::LocalSurfaceId local_surface_id_from_parent_;
   bool new_local_surface_id_request_ = false;
-  base::TimeDelta visual_properties_update_duration_;
   // Contains the physical rect of the device viewport, to be used in
   // determining what needs to be drawn.
   bool device_viewport_rect_changed_ = false;

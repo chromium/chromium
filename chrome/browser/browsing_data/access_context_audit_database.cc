@@ -4,9 +4,10 @@
 
 #include "chrome/browser/browsing_data/access_context_audit_database.h"
 
+#include <tuple>
+
 #include "base/files/file_util.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/rand_util.h"
 #include "components/browsing_data/core/features.h"
@@ -43,7 +44,7 @@ void DatabaseErrorCallback(sql::Database* db,
     // or hardware issues, not coding errors at the client level, so displaying
     // the error would probably lead to confusion.  The ignored call signals the
     // test-expectation framework that the error was handled.
-    ignore_result(sql::Database::IsExpectedSqliteError(extended_error));
+    std::ignore = sql::Database::IsExpectedSqliteError(extended_error);
     return;
   }
 

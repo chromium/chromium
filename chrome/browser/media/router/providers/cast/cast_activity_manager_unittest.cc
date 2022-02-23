@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/test/bind.h"
@@ -178,9 +179,6 @@ class CastActivityManagerTest : public testing::Test,
         }));
 
     RunUntilIdle();
-
-    // Make sure we get route updates.
-    manager_->AddRouteQuery(route_query_);
   }
 
   void TearDown() override {
@@ -276,7 +274,7 @@ class CastActivityManagerTest : public testing::Test,
                                 const std::string& client_id = kClientId) {
     app_activity_callback_ =
         base::BindLambdaForTesting([this](MockAppActivity* activity) {
-          // TODO(jrw): Check parameters.
+          // TODO(crbug.com/1291744): Check parameters.
           EXPECT_CALL(*activity, AddClient);
           EXPECT_CALL(*activity, SendMessageToClient).Times(2);
           EXPECT_CALL(*activity, OnSessionSet).WillOnce([this]() {
@@ -345,7 +343,7 @@ class CastActivityManagerTest : public testing::Test,
     if (times == 0) {
       EXPECT_CALL(message_handler_, StopSession).Times(0);
     } else {
-      // TODO(jrw): Check other parameters
+      // TODO(crbug.com/1291744): Check other parameters
       EXPECT_CALL(message_handler_, StopSession(kChannelId, _, _, _))
           .Times(times);
     }
@@ -444,9 +442,8 @@ class CastActivityManagerTest : public testing::Test,
   // optionally be saved in the variable pointed to by |route_ptr|.
   void ExpectSingleRouteUpdate() {
     updated_route_ = absl::nullopt;
-    EXPECT_CALL(mock_router_,
-                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
-                                ElementsAre(_), route_query_, IsEmpty()))
+    EXPECT_CALL(mock_router_, OnRoutesUpdated(mojom::MediaRouteProviderId::CAST,
+                                              ElementsAre(_)))
         .WillOnce(WithArg<1>(
             [this](const auto& routes) { updated_route_ = routes[0]; }));
   }
@@ -455,8 +452,7 @@ class CastActivityManagerTest : public testing::Test,
   void ExpectEmptyRouteUpdate() {
     updated_route_ = absl::nullopt;
     EXPECT_CALL(mock_router_,
-                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, IsEmpty(),
-                                route_query_, IsEmpty()))
+                OnRoutesUpdated(mojom::MediaRouteProviderId::CAST, IsEmpty()))
         .Times(1);
   }
 
@@ -495,8 +491,8 @@ class CastActivityManagerTest : public testing::Test,
   MockCastAppDiscoveryService app_discovery_service_;
   std::unique_ptr<CastActivityManager> manager_;
   std::unique_ptr<CastSessionTracker> session_tracker_;
-  MockAppActivity* app_activity_ = nullptr;
-  MockMirroringActivity* mirroring_activity_ = nullptr;
+  raw_ptr<MockAppActivity> app_activity_ = nullptr;
+  raw_ptr<MockMirroringActivity> mirroring_activity_ = nullptr;
   MockAppActivityCallback app_activity_callback_ = base::DoNothing();
   MockMirroringActivityCallback mirroring_activity_callback_ =
       base::DoNothing();
@@ -618,7 +614,7 @@ TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionOnSink) {
   // Use LaunchSessionParsed() instead of LaunchSession() here because
   // LaunchSessionParsed() is called asynchronously and will fail the test.
   manager_->LaunchSessionParsed(
-      // TODO(jrw): Verify that presentation ID is used correctly.
+      // TODO(crbug.com/1291744): Verify that presentation ID is used correctly.
       *source, sink_, kPresentationId2, origin_, kTabId2, /*incognito*/
       false,
       base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
@@ -642,6 +638,23 @@ TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionOnSink) {
 TEST_F(CastActivityManagerTest, LaunchSessionTerminatesExistingSessionFromTab) {
   LaunchAppSession();
   ExpectAppActivityStoppedTimes(1);
+
+  // Launch a new session from the same tab on a different sink.
+  auto source = CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId2));
+  // Use LaunchSessionParsed() instead of LaunchSession() here because
+  // LaunchSessionParsed() is called asynchronously and will fail the test.
+  manager_->LaunchSessionParsed(
+      *source, sink2_, kPresentationId2, origin_, kTabId, /*incognito*/
+      false,
+      base::BindOnce(&CastActivityManagerTest::ExpectLaunchSessionSuccess,
+                     base::Unretained(this)),
+      data_decoder::DataDecoder::ValueOrError());
+}
+
+TEST_F(CastActivityManagerTest, LaunchSessionTerminatesPendingLaunchFromTab) {
+  CallLaunchSessionFailure();
+  // Stop session message not sent because session has not launched yet.
+  ExpectAppActivityStoppedTimes(0);
 
   // Launch a new session from the same tab on a different sink.
   auto source = CastMediaSource::FromMediaSourceId(MakeSourceId(kAppId2));

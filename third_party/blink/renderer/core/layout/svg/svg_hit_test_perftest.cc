@@ -109,7 +109,7 @@ TEST_F(SvgHitTestPerfTest, IntersectsClipPath) {
 
   PhysicalOffset document_point =
       event_handling_util::ContentPointFromRootFrame(GetDocument().GetFrame(),
-                                                     FloatPoint(1, 1));
+                                                     gfx::PointF(1, 1));
 
   TransformedHitTestLocation local_location(
       HitTestLocation(document_point), container->LocalToSVGParentTransform());

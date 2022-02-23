@@ -115,6 +115,9 @@ void CrasAudioHandler::AudioObserver::OnOutputStarted() {}
 
 void CrasAudioHandler::AudioObserver::OnOutputStopped() {}
 
+void CrasAudioHandler::AudioObserver::OnSurveyTriggered(
+    const AudioSurveyData& /*survey_specific_data */) {}
+
 // static
 void CrasAudioHandler::Initialize(
     mojo::PendingRemote<media_session::mojom::MediaControllerManager>
@@ -266,20 +269,10 @@ void CrasAudioHandler::MediaSessionInfoChanged(
   if (!session_info)
     return;
 
-  std::string state;
-
-  switch (session_info->state) {
-    case media_session::mojom::MediaSessionInfo::SessionState::kActive:
-    case media_session::mojom::MediaSessionInfo::SessionState::kDucking:
-      state = "playing";
-      break;
-    case media_session::mojom::MediaSessionInfo::SessionState::kSuspended:
-      state = "paused";
-      break;
-    case media_session::mojom::MediaSessionInfo::SessionState::kInactive:
-      state = "stopped";
-      break;
-  }
+  std::string state = session_info->playback_state ==
+                              media_session::mojom::MediaPlaybackState::kPlaying
+                          ? "playing"
+                          : "paused";
 
   CrasAudioClient::Get()->SetPlayerPlaybackStatus(state);
 }
@@ -468,19 +461,20 @@ void CrasAudioHandler::RequestNoiseCancellationSupported(
     OnNoiseCancellationSupportedCallback callback) {
   CrasAudioClient::Get()->GetNoiseCancellationSupported(
       base::BindOnce(&CrasAudioHandler::HandleGetNoiseCancellationSupported,
-                     weak_ptr_factory_.GetWeakPtr()));
-
-  std::move(callback).Run();
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
 }
 
 void CrasAudioHandler::HandleGetNoiseCancellationSupported(
+    OnNoiseCancellationSupportedCallback callback,
     absl::optional<bool> noise_cancellation_supported) {
   if (!noise_cancellation_supported.has_value()) {
     LOG(ERROR)
         << "cras_audio_handler: Failed to retrieve noise cancellation support";
-    return;
+  } else {
+    noise_cancellation_supported_ = noise_cancellation_supported.value();
   }
-  noise_cancellation_supported_ = noise_cancellation_supported.value();
+
+  std::move(callback).Run();
 }
 
 void CrasAudioHandler::SetKeyboardMicActive(bool active) {
@@ -945,6 +939,12 @@ void CrasAudioHandler::NumberOfInputStreamsWithPermissionChanged(
   HandleGetNumberOfInputStreamsWithPermission(num_input_streams);
   for (auto& observer : observers_)
     observer.OnNumberOfInputStreamsWithPermissionChanged();
+}
+
+void CrasAudioHandler::SurveyTriggered(
+    const base::flat_map<std::string, std::string>& survey_specific_data) {
+  for (auto& observer : observers_)
+    observer.OnSurveyTriggered(survey_specific_data);
 }
 
 void CrasAudioHandler::ResendBluetoothBattery() {
@@ -1707,8 +1707,7 @@ void CrasAudioHandler::HandleGetNodes(absl::optional<AudioNodeList> node_list) {
   UpdateDevicesAndSwitchActive(node_list.value());
 
   // Always set the input noise cancellation state on NodesChange event.
-  if (features::IsInputNoiseCancellationUiEnabled() &&
-      noise_cancellation_supported()) {
+  if (noise_cancellation_supported()) {
     const AudioDevice* internal_mic =
         GetDeviceByType(AudioDeviceType::kInternalMic);
     if (internal_mic) {

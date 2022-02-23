@@ -107,7 +107,7 @@ bool SenderRtcpSession::IncomingRtcpPacket(const uint8_t* data, size_t length) {
   }
 
   // Parse this packet.
-  base::BigEndianReader reader(reinterpret_cast<const char*>(data), length);
+  base::BigEndianReader reader(data, length);
   if (parser_.Parse(&reader)) {
     if (parser_.has_picture_loss_indicator())
       rtcp_observer_->OnReceivedPli();

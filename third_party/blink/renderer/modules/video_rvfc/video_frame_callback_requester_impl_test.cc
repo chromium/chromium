@@ -38,20 +38,11 @@ class MockWebMediaPlayer : public EmptyWebMediaPlayer {
                std::unique_ptr<VideoFramePresentationMetadata>());
 };
 
-class MockFunction : public ScriptFunction {
+class MockFunction : public ScriptFunction::Callable {
  public:
-  static testing::StrictMock<MockFunction>* Create(ScriptState* script_state) {
-    return MakeGarbageCollected<testing::StrictMock<MockFunction>>(
-        script_state);
-  }
+  MockFunction() = default;
 
-  v8::Local<v8::Function> Bind() { return BindToV8Function(); }
-
-  MOCK_METHOD1(Call, ScriptValue(ScriptValue));
-
- protected:
-  explicit MockFunction(ScriptState* script_state)
-      : ScriptFunction(script_state) {}
+  MOCK_METHOD2(Call, ScriptValue(ScriptState*, ScriptValue));
 };
 
 // Helper class to wrap a VideoFramePresentationData, which can't have a copy
@@ -220,8 +211,11 @@ class VideoFrameCallbackRequesterImplTest
         now);
   }
 
-  V8VideoFrameRequestCallback* GetCallback(MockFunction* function) {
-    return V8VideoFrameRequestCallback::Create(function->Bind());
+  V8VideoFrameRequestCallback* GetCallback(ScriptState* script_state,
+                                           MockFunction* function) {
+    return V8VideoFrameRequestCallback::Create(
+        MakeGarbageCollected<ScriptFunction>(script_state, function)
+            ->V8Function());
   }
 
   void RegisterCallbackDirectly(
@@ -251,16 +245,17 @@ class VideoFrameCallbackRequesterImplNullMediaPlayerTest
 TEST_F(VideoFrameCallbackRequesterImplTest, VerifyRequestVideoFrameCallback) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queuing up a video.rVFC call should propagate to the WebMediaPlayer.
   EXPECT_CALL(*media_player(), RequestVideoFrameCallback()).Times(1);
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
 
   testing::Mock::VerifyAndClear(media_player());
 
   // Callbacks should not be run immediately when a frame is presented.
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
   SimulateFramePresented();
 
   testing::Mock::VerifyAndClear(function);
@@ -269,7 +264,7 @@ TEST_F(VideoFrameCallbackRequesterImplTest, VerifyRequestVideoFrameCallback) {
   auto metadata = std::make_unique<VideoFramePresentationMetadata>();
   metadata->presented_frames = 1;
 
-  EXPECT_CALL(*function, Call(_)).Times(1);
+  EXPECT_CALL(*function, Call(_, _)).Times(1);
   EXPECT_CALL(*media_player(), GetVideoFramePresentationMetadata())
       .WillOnce(Return(ByMove(std::move(metadata))));
   SimulateVideoFrameCallback(base::TimeTicks::Now());
@@ -281,14 +276,14 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
        VerifyCancelVideoFrameCallback_BeforePresentedFrame) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queue and cancel a request before a frame is presented.
-  int callback_id =
-      vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  int callback_id = vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
   vfc_requester().cancelVideoFrameCallback(callback_id);
 
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
   SimulateFramePresented();
   SimulateVideoFrameCallback(base::TimeTicks::Now());
 
@@ -299,15 +294,15 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
        VerifyCancelVideoFrameCallback_AfterPresentedFrame) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queue a request.
-  int callback_id =
-      vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  int callback_id = vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
   SimulateFramePresented();
 
   // The callback should be scheduled for execution, but not yet run.
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
   vfc_requester().cancelVideoFrameCallback(callback_id);
   SimulateVideoFrameCallback(base::TimeTicks::Now());
 
@@ -318,14 +313,15 @@ TEST_F(VideoFrameCallbackRequesterImplTest,
        VerifyClearedMediaPlayerCancelsPendingExecution) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
   // Queue a request.
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
   SimulateFramePresented();
 
   // The callback should be scheduled for execution, but not yet run.
-  EXPECT_CALL(*function, Call(_)).Times(0);
+  EXPECT_CALL(*function, Call(_, _)).Times(0);
 
   // Simulate the HTMLVideoElement getting changing its WebMediaPlayer.
   vfc_requester().OnWebMediaPlayerCleared();
@@ -374,8 +370,9 @@ TEST_F(VideoFrameCallbackRequesterImplTest, OnXrFrameData) {
 
   testing::Mock::VerifyAndClear(media_player());
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  auto* function = MakeGarbageCollected<MockFunction>();
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
 
   // Immersive frames should trigger video frame updates when there are pending
   // callbacks.
@@ -389,9 +386,10 @@ TEST_F(VideoFrameCallbackRequesterImplTest, OnXrFrameData) {
 TEST_F(VideoFrameCallbackRequesterImplNullMediaPlayerTest, VerifyNoCrash) {
   V8TestingScope scope;
 
-  auto* function = MockFunction::Create(scope.GetScriptState());
+  auto* function = MakeGarbageCollected<MockFunction>();
 
-  vfc_requester().requestVideoFrameCallback(GetCallback(function));
+  vfc_requester().requestVideoFrameCallback(
+      GetCallback(scope.GetScriptState(), function));
 
   SimulateFramePresented();
   SimulateVideoFrameCallback(base::TimeTicks::Now());

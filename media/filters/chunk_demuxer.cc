@@ -1323,7 +1323,7 @@ ChunkDemuxer::~ChunkDemuxer() {
 void ChunkDemuxer::ReportError_Locked(PipelineStatus error) {
   DVLOG(1) << "ReportError_Locked(" << error << ")";
   lock_.AssertAcquired();
-  DCHECK_NE(error, PIPELINE_OK);
+  DCHECK(error != PIPELINE_OK);
 
   ChangeState_Locked(PARSE_ERROR);
 

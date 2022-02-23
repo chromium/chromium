@@ -30,6 +30,7 @@ chromevox_modules = [
   "../common/instance_checker.js",
   "../common/string_util.js",
   "../common/tree_walker.js",
+  "background/auto_scroll_handler.js",
   "background/automation_object_constructor_installer.js",
   "background/base_automation_handler.js",
   "background/braille_background.js",
@@ -194,10 +195,10 @@ run_jsbundler("chromevox_copied_files") {
     "images/chromevox-19.png",
     "images/chromevox-48.png",
     "images/chromevox.svg",
-    "images/close-19.png",
-    "images/close-hover-19.png",
-    "images/options-19.png",
-    "images/options-hover-19.png",
+    "images/close-36.png",
+    "images/close-hover-36.png",
+    "images/options-36.png",
+    "images/options-hover-36.png",
     "images/triangle-6.png",
     "injected/api.js",
     "learn_mode/kbexplorer.html",
@@ -421,6 +422,7 @@ if (is_chromeos_ash) {
   js2gtest("chromevox_extension_js_tests") {
     test_type = "extension"
     sources = [
+      "background/auto_scroll_handler_test.js",
       "background/background_test.js",
       "background/braille_command_data_test.js",
       "background/color_test.js",

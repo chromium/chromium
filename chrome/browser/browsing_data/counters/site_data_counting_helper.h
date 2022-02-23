@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browsing_data/browsing_data_media_license_helper.h"
 #include "components/content_settings/core/common/content_settings_types.h"
 #include "net/cookies/canonical_cookie.h"
@@ -52,12 +53,12 @@ class SiteDataCountingHelper {
   void GetQuotaBucketsCallback(const std::set<storage::BucketLocator>& buckets,
                                blink::mojom::StorageType type);
   void SitesWithMediaLicensesCallback(
-      const std::list<BrowsingDataMediaLicenseHelper::MediaLicenseInfo>&
-          media_license_info_list);
+      const std::list<content::StorageUsageInfo>&
+          media_license_usage_info_list);
 
   void Done(const std::vector<GURL>& origins);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::Time begin_;
   base::Time end_;
   base::OnceCallback<void(int)> completion_callback_;

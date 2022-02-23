@@ -5,7 +5,7 @@
 (async function() {
   TestRunner.addResult(`Test CPU profiles are recorded for OOPIFs.\n`);
 
-  await TestRunner.loadModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
+  await TestRunner.loadLegacyModule('timeline'); await TestRunner.loadTestModule('performance_test_runner');
   await TestRunner.showPanel('timeline');
 
   await PerformanceTestRunner.startTimeline();

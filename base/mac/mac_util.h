@@ -14,10 +14,10 @@
 #include "base/base_export.h"
 
 namespace base {
-
 class FilePath;
+}
 
-namespace mac {
+namespace base::mac {
 
 // Returns an sRGB color space.  The return value is a static value; do not
 // release it!
@@ -30,13 +30,6 @@ BASE_EXPORT CGColorSpaceRef GetGenericRGBColorSpace();
 // Returns the color space being used by the main display.  The return value
 // is a static value; do not release it!
 BASE_EXPORT CGColorSpaceRef GetSystemColorSpace();
-
-// Returns true if the file at |file_path| is excluded from Time Machine
-// backups.
-BASE_EXPORT bool GetFileBackupExclusion(const FilePath& file_path);
-
-// Excludes the file given by |file_path| from Time Machine backups.
-BASE_EXPORT bool SetFileBackupExclusion(const FilePath& file_path);
 
 // Checks if the current application is set as a Login Item, so it will launch
 // on Login. If a non-NULL pointer to is_hidden is passed, the Login Item also
@@ -221,7 +214,6 @@ BASE_EXPORT std::string GetOSDisplayName();
 // Returns the serial number of the macOS device.
 BASE_EXPORT std::string GetPlatformSerialNumber();
 
-}  // namespace mac
-}  // namespace base
+}  // namespace base::mac
 
 #endif  // BASE_MAC_MAC_UTIL_H_

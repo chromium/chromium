@@ -62,9 +62,6 @@
   virtualTimeBase = virtualTimeTicksBase;
 
   lastGrantedChunk = 500;
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending',
-      budget: lastGrantedChunk, waitForNavigation: true});
 
   // Animates opacity of a blue 100px square on red blackground over 4
   // seconds (1.0 -> 0 -> 1.0 four times). Logs events to console.
@@ -82,8 +79,11 @@
   //   4500 ms:  1.0 opacity  -> blue background.
   //
   // The animation will start with the first BeginFrame after load.
-  dp.Page.navigate(
+  await dp.Page.navigate(
       {url: testRunner.url('/resources/compositor-css-animation.html')});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending',
+    budget: lastGrantedChunk});
 
   function logScreenShotInfo(pngBase64) {
     const image = new Image();

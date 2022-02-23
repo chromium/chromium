@@ -142,7 +142,7 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
                  ->CreateNativePixmapFromHandle(
                      surface_handle, size, format,
                      std::move(handle.native_pixmap_handle));
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     if (!pixmap) {
       DCHECK_EQ(surface_handle, gpu::kNullSurfaceHandle);
       pixmap = base::WrapRefCounted(new gfx::NativePixmapDmaBuf(
@@ -176,7 +176,10 @@ GpuMemoryBufferFactoryNativePixmap::CreateImageForGpuMemoryBuffer(
 }
 
 bool GpuMemoryBufferFactoryNativePixmap::SupportsCreateAnonymousImage() const {
-  return true;
+  // Platforms may not support native pixmaps.
+  return ui::OzonePlatform::GetInstance()
+      ->GetPlatformRuntimeProperties()
+      .supports_native_pixmaps;
 }
 
 scoped_refptr<gl::GLImage>

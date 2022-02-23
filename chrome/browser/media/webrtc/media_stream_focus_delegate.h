@@ -7,11 +7,10 @@
 
 #include "build/build_config.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #error "Unsupported on Android."
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
-#include "base/compiler_specific.h"
 #include "base/time/time.h"
 #include "chrome/browser/bad_message.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
@@ -55,13 +54,13 @@ class MediaStreamFocusDelegate : public TabStripModelObserver {
   // If |false|, the call was found to be invalid, the capturer's render
   // process was killed off, and execution of the focus-delegate logic
   // should not proceed.
-  bool UpdateUMA(bool focus,
-                 bool is_from_microtask,
-                 bool is_from_timer) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool UpdateUMA(bool focus,
+                               bool is_from_microtask,
+                               bool is_from_timer);
 
   // Kills off capturer render-process.
   // Returns |false| to make UpdateUMA()'s code a bit nicer.
-  bool BadMessage(bad_message::BadMessageReason reason) WARN_UNUSED_RESULT;
+  [[nodiscard]] bool BadMessage(bad_message::BadMessageReason reason);
 
   // UMA-related.
   const base::TimeTicks capture_start_time_;

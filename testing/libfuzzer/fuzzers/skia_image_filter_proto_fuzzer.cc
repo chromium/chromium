@@ -39,8 +39,7 @@ struct Environment {
 };
 
 DEFINE_PROTO_FUZZER(const Input& input) {
-  static Environment environment = Environment();
-  ALLOW_UNUSED_LOCAL(environment);
+  [[maybe_unused]] static Environment environment = Environment();
 
   static Converter converter = Converter();
   std::string ipc_filter_message = converter.Convert(input);

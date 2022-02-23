@@ -122,12 +122,6 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   if (sysno == __NR_getrusage) {
     return RestrictGetrusage();
   }
-
-  if (sysno == __NR_sigaltstack) {
-    // Required for better stack overflow detection in ASan. Disallowed in
-    // non-ASan builds.
-    return Allow();
-  }
 #endif  // defined(ADDRESS_SANITIZER) || defined(THREAD_SANITIZER) ||
         // defined(MEMORY_SANITIZER)
 
@@ -156,13 +150,7 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
     return Allow();
   }
 
-#if defined(OS_ANDROID)
-  // Needed for thread creation.
-  if (sysno == __NR_sigaltstack)
-    return Allow();
-#endif
-
-#if defined(__NR_rseq) && !defined(OS_ANDROID)
+#if defined(__NR_rseq) && !BUILDFLAG(IS_ANDROID)
   // See https://crbug.com/1104160. Rseq can only be disabled right before an
   // execve, because glibc registers it with the kernel and so far it's unclear
   // whether shared libraries (which, during initialization, may observe that
@@ -191,6 +179,13 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
   // clone3 takes a pointer argument which we cannot examine, so return ENOSYS
   // to force the libc to use clone. See https://crbug.com/1213452.
   if (sysno == __NR_clone3) {
+    return Error(ENOSYS);
+  }
+
+  // pidfd_open provides a file descriptor that refers to a process, meant to
+  // replace the pid as the method of identifying processes. For now there is no
+  // reason to support this, so just pretend pidfd_open doesn't exist.
+  if (sysno == __NR_pidfd_open) {
     return Error(ENOSYS);
   }
 
@@ -357,6 +352,14 @@ ResultExpr EvaluateSyscallImpl(int fs_denied_errno,
         .Else(CrashSIGSYS());
   }
 #endif
+
+  // https://crbug.com/644759
+  // https://chromium-review.googlesource.com/c/crashpad/crashpad/+/3278691
+  if (sysno == __NR_rt_tgsigqueueinfo) {
+    const Arg<pid_t> tgid(0);
+    return If(tgid == current_pid, Allow())
+           .Else(Error(EPERM));
+  }
 
   if (IsBaselinePolicyWatched(sysno)) {
     // Previously unseen syscalls. TODO(jln): some of these should

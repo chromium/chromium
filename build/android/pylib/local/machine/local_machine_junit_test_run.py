@@ -2,24 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-
-import collections
 import json
 import logging
 import multiprocessing
 import os
-import select
 import subprocess
 import sys
+import tempfile
+import time
 import zipfile
 
 from six.moves import range  # pylint: disable=redefined-builtin
+from devil.utils import cmd_helper
+from py_utils import tempfile_ext
 from pylib import constants
 from pylib.base import base_test_result
 from pylib.base import test_run
 from pylib.constants import host_paths
 from pylib.results import json_results
-from py_utils import tempfile_ext
 
 
 # These Test classes are used for running tests and are excluded in the test
@@ -42,16 +42,16 @@ _EXCLUDED_SUITES = {
 # and 6 sec with 2 or more shards.
 _MIN_CLASSES_PER_SHARD = 8
 
+# Running the largest test suite with a single shard takes about 22 minutes.
+_SHARD_TIMEOUT = 30 * 60
+
 
 class LocalMachineJunitTestRun(test_run.TestRun):
-  def __init__(self, env, test_instance):
-    super(LocalMachineJunitTestRun, self).__init__(env, test_instance)
-
-  #override
+  # override
   def TestPackage(self):
     return self._test_instance.suite
 
-  #override
+  # override
   def SetUp(self):
     pass
 
@@ -115,7 +115,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
     return jvm_args
 
-  #override
+  # override
   def RunTests(self, results):
     wrapper_path = os.path.join(constants.GetOutDirectory(), 'bin', 'helper',
                                 self._test_instance.suite)
@@ -152,13 +152,29 @@ class LocalMachineJunitTestRun(test_run.TestRun):
 
       AddPropertiesJar(cmd_list, temp_dir, self._test_instance.resource_apk)
 
-      procs = [
-          subprocess.Popen(cmd,
-                           stdout=subprocess.PIPE,
-                           stderr=subprocess.STDOUT,
-                           universal_newlines=True) for cmd in cmd_list
-      ]
-      PrintProcessesStdout(procs)
+      procs = []
+      temp_files = []
+      for index, cmd in enumerate(cmd_list):
+        # First process prints to stdout, the rest write to files.
+        if index == 0:
+          sys.stdout.write('\nShard 0 output:\n')
+          procs.append(
+              cmd_helper.Popen(
+                  cmd,
+                  stdout=sys.stdout,
+                  stderr=subprocess.STDOUT,
+              ))
+        else:
+          temp_file = tempfile.TemporaryFile()
+          temp_files.append(temp_file)
+          procs.append(
+              cmd_helper.Popen(
+                  cmd,
+                  stdout=temp_file,
+                  stderr=temp_file,
+              ))
+
+      PrintProcessesStdout(procs, temp_files)
 
       results_list = []
       try:
@@ -170,15 +186,15 @@ class LocalMachineJunitTestRun(test_run.TestRun):
         # In the case of a failure in the JUnit or Robolectric test runner
         # the output json file may never be written.
         results_list = [
-          base_test_result.BaseTestResult(
-              'Test Runner Failure', base_test_result.ResultType.UNKNOWN)
+            base_test_result.BaseTestResult('Test Runner Failure',
+                                            base_test_result.ResultType.UNKNOWN)
         ]
 
       test_run_results = base_test_result.TestRunResults()
       test_run_results.AddResults(results_list)
       results.append(test_run_results)
 
-  #override
+  # override
   def TearDown(self):
     pass
 
@@ -237,40 +253,57 @@ def GroupTestsForShard(num_of_shards, test_classes):
   return test_dict
 
 
-def PrintProcessesStdout(procs):
-  """Prints the stdout of all the processes.
+def PrintProcessesStdout(procs, temp_files):
+  """Prints the files that the processes wrote stdout to.
 
-  Buffers the stdout of the processes and prints it when finished.
+  Waits for processes to finish, then writes the files to stdout.
 
   Args:
     procs: A list of subprocesses.
+    temp_files: A list of temporaryFile objects.
 
   Returns: N/A
+
+  Raises:
+    TimeoutError: If timeout is exceeded.
   """
-  streams = [p.stdout for p in procs]
-  outputs = collections.defaultdict(list)
-  first_fd = streams[0].fileno()
+  # Wait for processes to finish running.
+  timeout_time = time.time() + _SHARD_TIMEOUT
+  timed_out = False
+  processes_running = True
 
-  while streams:
-    rstreams, _, _ = select.select(streams, [], [])
-    for stream in rstreams:
-      line = stream.readline()
-      if line:
-        # Print out just one output so user can see work being done rather
-        # than waiting for it all at the end.
-        if stream.fileno() == first_fd:
-          sys.stdout.write(line)
-        else:
-          outputs[stream.fileno()].append(line)
-      else:
-        streams.remove(stream)  # End of stream.
+  # TODO(1286824): Move to p.wait(timeout) once running fully on py3.
+  while processes_running:
+    if all(p.poll() is not None for p in procs):
+      processes_running = False
+    else:
+      time.sleep(.25)
 
-  for p in procs:
-    sys.stdout.write(''.join(outputs[p.stdout.fileno()]))
+    if time.time() > timeout_time:
+      timed_out = True
+      break
+
+  # Print out files in order.
+  for i, f in enumerate(temp_files):
+    f.seek(0)
+    # Add one to index to account for first shard (which outputs to stdout).
+    sys.stdout.write('\nShard %d output:\n' % (i + 1))
+    sys.stdout.write(f.read().decode('utf-8'))
+    f.close()
+
+  if timed_out:
+    for i, p in enumerate(procs):
+      if p.poll() is None:
+        p.kill()
+        sys.stdout.write('Index of timed out shard: %d\n' % i)
+
+    sys.stdout.write('Output in shards may be cutoff due to timeout.\n\n')
+    raise cmd_helper.TimeoutError('Junit shards timed out.')
 
 
 def _GetTestClasses(file_path):
-  test_jar_paths = subprocess.check_output([file_path, '--print-classpath'])
+  test_jar_paths = subprocess.check_output([file_path,
+                                            '--print-classpath']).decode()
   test_jar_paths = test_jar_paths.split(':')
 
   test_classes = []

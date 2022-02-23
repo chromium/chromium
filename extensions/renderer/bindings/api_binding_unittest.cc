@@ -4,12 +4,14 @@
 
 #include "extensions/renderer/bindings/api_binding.h"
 
+#include <tuple>
+
 #include "base/auto_reset.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "base/strings/stringprintf.h"
+#include "base/test/bind.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -24,6 +26,7 @@
 #include "extensions/renderer/bindings/api_signature.h"
 #include "extensions/renderer/bindings/api_type_reference_map.h"
 #include "extensions/renderer/bindings/binding_access_checker.h"
+#include "extensions/renderer/bindings/exception_handler.h"
 #include "extensions/renderer/bindings/test_interaction_provider.h"
 #include "extensions/renderer/bindings/test_js_runner.h"
 #include "gin/arguments.h"
@@ -160,17 +163,36 @@ class APIBindingUnittest : public APIBindingTest {
     last_request_ = std::move(request);
   }
 
+  using GetParentCallback = base::RepeatingCallback<v8::Local<v8::Object>()>;
+  v8::Local<v8::Object> GetParent(v8::Local<v8::Context> context,
+                                  v8::Local<v8::Object>* secondary_parent) {
+    DCHECK(!get_last_error_parent_.is_null())
+        << "You must have get_last_error_parent_ set if a test is dealing with"
+           "lastError being set";
+    return get_last_error_parent_.Run();
+  }
+
+  void AddConsoleError(v8::Local<v8::Context> context,
+                       const std::string& error) {
+    console_errors_.push_back(error);
+  }
+
  protected:
   APIBindingUnittest()
       : type_refs_(APITypeReferenceMap::InitializeTypeCallback()) {}
   void SetUp() override {
     APIBindingTest::SetUp();
     interaction_provider_ = std::make_unique<TestInteractionProvider>();
+    binding::AddConsoleError add_console_error(base::BindRepeating(
+        &APIBindingUnittest::AddConsoleError, base::Unretained(this)));
+    exception_handler_ = std::make_unique<ExceptionHandler>(add_console_error);
     request_handler_ = std::make_unique<APIRequestHandler>(
         base::BindRepeating(&APIBindingUnittest::OnFunctionCall,
                             base::Unretained(this)),
-        APILastError(APILastError::GetParent(), binding::AddConsoleError()),
-        nullptr, interaction_provider_.get());
+        APILastError(base::BindRepeating(&APIBindingUnittest::GetParent,
+                                         base::Unretained(this)),
+                     add_console_error),
+        exception_handler_.get(), interaction_provider_.get());
   }
 
   void TearDown() override {
@@ -238,10 +260,17 @@ class APIBindingUnittest : public APIBindingTest {
         availability_flag);
   }
 
+  void SetLastErrorParentCallback(GetParentCallback get_parent) {
+    get_last_error_parent_ = std::move(get_parent);
+  }
+
+  void ClearConsoleErrors() { console_errors_.clear(); }
+
   void InitializeJSHooks(
       const char* register_hook,
       v8::Local<v8::Value> additional_arg = v8::Local<v8::Value>()) {
-    auto hooks = std::make_unique<APIBindingHooks>(kBindingName);
+    auto hooks =
+        std::make_unique<APIBindingHooks>(kBindingName, request_handler());
 
     v8::HandleScope handle_scope(isolate());
     v8::Local<v8::Context> context = MainContext();
@@ -263,7 +292,8 @@ class APIBindingUnittest : public APIBindingTest {
 
   void InitializeBinding() {
     if (!binding_hooks_)
-      binding_hooks_ = std::make_unique<APIBindingHooks>(kBindingName);
+      binding_hooks_ =
+          std::make_unique<APIBindingHooks>(kBindingName, request_handler());
     if (binding_hooks_delegate_)
       binding_hooks_->SetDelegate(std::move(binding_hooks_delegate_));
     if (!on_silent_request_)
@@ -328,6 +358,9 @@ class APIBindingUnittest : public APIBindingTest {
     return last_request_.get();
   }
   void reset_last_request() { last_request_.reset(); }
+  const std::vector<std::string>& console_errors() const {
+    return console_errors_;
+  }
   APIBinding* binding() { return binding_.get(); }
   APIEventHandler* event_handler() { return event_handler_.get(); }
   APIRequestHandler* request_handler() { return request_handler_.get(); }
@@ -343,9 +376,12 @@ class APIBindingUnittest : public APIBindingTest {
                                const std::string& expected_error);
 
   std::unique_ptr<APIRequestHandler::Request> last_request_;
+  std::vector<std::string> console_errors_;
+  GetParentCallback get_last_error_parent_;
   std::unique_ptr<APIBinding> binding_;
   std::unique_ptr<APIEventHandler> event_handler_;
   std::unique_ptr<TestInteractionProvider> interaction_provider_;
+  std::unique_ptr<ExceptionHandler> exception_handler_;
   std::unique_ptr<APIRequestHandler> request_handler_;
   std::unique_ptr<BindingAccessChecker> access_checker_;
   APITypeReferenceMap type_refs_;
@@ -732,7 +768,7 @@ TEST_F(APIBindingUnittest, TestProperties) {
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
   EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,
                                                      "notLinuxOrLacros"));
-#elif defined(OS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
   EXPECT_EQ("\"linux\"",
             GetStringPropertyFromObject(binding_object, context, "linuxOnly"));
   EXPECT_EQ("undefined", GetStringPropertyFromObject(binding_object, context,
@@ -1184,6 +1220,127 @@ TEST_F(APIBindingUnittest, TestThrowingFromCustomJSHook) {
   RunFunctionAndExpectError(function, context, v8::Undefined(isolate()),
                             base::size(args), args,
                             "Uncaught Error: Custom Hook Error");
+}
+
+// Tests that JS setHandleRequestHooks can use the failure callback to return a
+// failure result for an API.
+TEST_F(APIBindingUnittest, TestHandleRequestFailureCallback) {
+  bool context_allows_promises = true;
+  SetPromiseAvailabilityFlag(&context_allows_promises);
+
+  // Register a hook for supportsPromises that calls the failure callback when
+  // the API is called with the integer 6.
+  const char kRegisterHook[] = R"(
+      (function(hooks) {
+        function handler(firstArg, callback, failureCallback) {
+          if (firstArg == 6)
+            failureCallback('This is the error');
+          else
+            callback(firstArg);
+        };
+        hooks.setHandleRequest('supportsPromises', handler);
+        hooks.setHandleRequest('callbackOptional', handler);
+      }))";
+
+  InitializeJSHooks(kRegisterHook);
+  SetFunctions(kFunctionsWithPromiseSignatures);
+  InitializeBinding();
+
+  v8::HandleScope handle_scope(isolate());
+  v8::Local<v8::Context> context = MainContext();
+  v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
+
+  v8::Local<v8::Object> last_error_parent = v8::Object::New(isolate());
+  auto get_last_error_parent = [&last_error_parent]() {
+    return last_error_parent;
+  };
+  SetLastErrorParentCallback(base::BindLambdaForTesting(get_last_error_parent));
+
+  {
+    // Calling supportsPromises normally should resolve as expected with no
+    // error.
+    v8::Local<v8::Function> function = FunctionFromString(
+        context, "(function(obj) { return obj.supportsPromises(42); })");
+    v8::Local<v8::Value> args[] = {binding_object};
+
+    v8::Local<v8::Value> result = RunFunction(
+        function, context, v8::Undefined(isolate()), base::size(args), args);
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kFulfilled, promise->State());
+    EXPECT_EQ(R"(42)", V8ToString(promise->Result(), context));
+  }
+
+  {
+    // Calling supportsPromises to trigger the failureCallback should result in
+    // the promise being rejected.
+    v8::Local<v8::Function> function = FunctionFromString(
+        context, "(function(obj) { return obj.supportsPromises(6); })");
+    v8::Local<v8::Value> args[] = {binding_object};
+
+    v8::Local<v8::Value> result = RunFunction(
+        function, context, v8::Undefined(isolate()), base::size(args), args);
+    v8::Local<v8::Promise> promise;
+    ASSERT_TRUE(GetValueAs(result, &promise));
+    EXPECT_EQ(v8::Promise::kRejected, promise->State());
+    ASSERT_TRUE(promise->Result()->IsObject());
+    EXPECT_EQ(R"("This is the error")",
+              GetStringPropertyFromObject(promise->Result().As<v8::Object>(),
+                                          context, "message"));
+  }
+
+  {
+    // Calling supportsPromises with a callback and triggering the
+    // failureCallback should call the callback with lastError set.
+    const char kFunctionCall[] =
+        R"((function(obj, lastErrorParent) {
+             return obj.supportsPromises(6, (arg) => {
+               this.sentToCallback = arg;
+               // LastError is only set for the duration of the callback, so set
+               // it to a global we retrieve and can check later.
+               this.lastError = lastErrorParent.lastError;
+             });
+           }))";
+    v8::Local<v8::Function> function =
+        FunctionFromString(context, kFunctionCall);
+    v8::Local<v8::Value> args[] = {binding_object, last_error_parent};
+
+    RunFunction(function, context, v8::Undefined(isolate()), base::size(args),
+                args);
+
+    // In the case of errors, callbacks are not passed any arguments.
+    EXPECT_TRUE(
+        GetPropertyFromObject(context->Global(), context, "sentToCallabck")
+            ->IsUndefined());
+    v8::Local<v8::Object> last_error;
+    ASSERT_TRUE(GetPropertyFromObjectAs(context->Global(), context, "lastError",
+                                        &last_error));
+    EXPECT_EQ(R"("This is the error")",
+              GetStringPropertyFromObject(last_error, context, "message"));
+  }
+
+  // Set the context to not support promises for the following test cases.
+  context_allows_promises = false;
+  {
+    // Calling callbackOptional without a callback and triggering the
+    // failureCallback in a context that does not support promises should result
+    // in a console error about an unchecked last error.
+    const char kFunctionCall[] =
+        R"((function(obj) {
+             return obj.callbackOptional(6);
+           }))";
+    v8::Local<v8::Function> function =
+        FunctionFromString(context, kFunctionCall);
+    v8::Local<v8::Value> args[] = {binding_object, last_error_parent};
+
+    RunFunction(function, context, v8::Undefined(isolate()), base::size(args),
+                args);
+    ASSERT_EQ(1u, console_errors().size());
+    EXPECT_THAT(console_errors()[0],
+                "Unchecked runtime.lastError: This is the error");
+    // Clear the console errors in case any other test case uses them.
+    ClearConsoleErrors();
+  }
 }
 
 // Tests that JS custom hooks correctly handle the context being invalidated.
@@ -1656,8 +1813,8 @@ TEST_F(APIBindingUnittest, TestSendingRequestsAndSilentRequestsWithHooks) {
     v8::Local<v8::Value> args[] = {binding_object};
     v8::TryCatch try_catch(context->GetIsolate());
     // The throwException call will throw an exception; ignore it.
-    ignore_result(call->Call(context, v8::Undefined(context->GetIsolate()),
-                             base::size(args), args));
+    std::ignore = call->Call(context, v8::Undefined(context->GetIsolate()),
+                             base::size(args), args);
   };
 
   call_api_method("modifyArgs", "");
@@ -1977,8 +2134,7 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
   const char kRegisterHook[] = R"(
       (function(hooks) {
         hooks.setCustomCallback('supportsPromises',
-                                (name, request, callback, response) => {
-          this.methodName = name;
+                                (callback, response) => {
           this.response = response;
           this.resolveCallback = callback;
           if (response == 'resolveNow')
@@ -2012,9 +2168,6 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
                                        std::string());
     // The promise should still be unfulfilled until the callback is invoked.
     EXPECT_EQ(v8::Promise::kPending, promise->State());
-    EXPECT_EQ(
-        R"("test.supportsPromises")",
-        GetStringPropertyFromObject(context->Global(), context, "methodName"));
     v8::Local<v8::Function> resolve_callback;
     ASSERT_TRUE(GetPropertyFromObjectAs(context->Global(), context,
                                         "resolveCallback", &resolve_callback));

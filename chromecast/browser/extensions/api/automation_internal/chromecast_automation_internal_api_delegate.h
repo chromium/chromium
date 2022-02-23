@@ -5,7 +5,6 @@
 #ifndef CHROMECAST_BROWSER_EXTENSIONS_API_AUTOMATION_INTERNAL_CHROMECAST_AUTOMATION_INTERNAL_API_DELEGATE_H_
 #define CHROMECAST_BROWSER_EXTENSIONS_API_AUTOMATION_INTERNAL_CHROMECAST_AUTOMATION_INTERNAL_API_DELEGATE_H_
 
-#include "base/macros.h"
 #include "extensions/browser/api/automation_internal/automation_internal_api_delegate.h"
 
 namespace extensions {

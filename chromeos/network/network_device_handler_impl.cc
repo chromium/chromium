@@ -68,10 +68,8 @@ void GetPropertiesCallback(const std::string& device_path,
 void InvokeErrorCallback(const std::string& device_path,
                          network_handler::ErrorCallback error_callback,
                          const std::string& error_name) {
-  std::string error_msg = "Device Error: " + error_name;
-  NET_LOG(ERROR) << error_msg << ": " << device_path;
-  network_handler::RunErrorCallback(std::move(error_callback), device_path,
-                                    error_name, error_msg);
+  NET_LOG(ERROR) << "Device Error: " << error_name << ": " << device_path;
+  network_handler::RunErrorCallback(std::move(error_callback), error_name);
 }
 
 void HandleShillCallFailure(const std::string& device_path,
@@ -140,8 +138,7 @@ void NetworkDeviceHandlerImpl::SetDeviceProperty(
   const char* const blocked_properties[] = {
       // Must only be changed by policy/owner through
       // NetworkConfigurationUpdater.
-      shill::kCellularPolicyAllowRoamingProperty,
-      shill::kCellularAllowRoamingProperty};
+      shill::kCellularPolicyAllowRoamingProperty};
 
   for (size_t i = 0; i < base::size(blocked_properties); ++i) {
     if (property_name == blocked_properties[i]) {
@@ -236,10 +233,8 @@ void NetworkDeviceHandlerImpl::ChangePin(
                      device_path, std::move(error_callback)));
 }
 
-void NetworkDeviceHandlerImpl::SetCellularAllowRoaming(
-    const bool allow_roaming,
+void NetworkDeviceHandlerImpl::SetCellularPolicyAllowRoaming(
     const bool policy_allow_roaming) {
-  cellular_allow_roaming_ = allow_roaming;
   cellular_policy_allow_roaming_ = policy_allow_roaming;
   ApplyCellularAllowRoamingToShill();
 }

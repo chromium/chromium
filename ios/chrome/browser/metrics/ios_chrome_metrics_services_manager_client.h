@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "base/threading/thread_checker.h"
 #include "components/metrics_services_manager/metrics_services_manager_client.h"
 

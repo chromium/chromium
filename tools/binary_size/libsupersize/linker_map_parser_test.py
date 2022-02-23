@@ -34,16 +34,14 @@ def _CompareWithGolden(name=None):
   return real_decorator
 
 
-def _ReadMapFile(map_file):
-  ret = []
-  with open(map_file, 'r') as f:
+def _ReadMapFile(path):
+  with open(path, 'r') as f:
     for line in f:
       # Strip blank lines and comments.
       stripped_line = line.lstrip()
       if not stripped_line or stripped_line.startswith('#'):
         continue
-      ret.append(line)
-  return ret
+      yield line
 
 
 def _RenderSectionSizesAndRawSymbols(section_sizes, raw_symbols):
@@ -63,18 +61,14 @@ class LinkerMapParserTest(unittest.TestCase):
 
   @_CompareWithGolden()
   def test_Parser(self):
-    map_file = _ReadMapFile(_TEST_MAP_PATH)
-    linker_name = linker_map_parser.DetectLinkerNameFromMapFile(iter(map_file))
-    section_sizes, raw_symbols, _ = (
-        linker_map_parser.MapFileParser().Parse(linker_name, iter(map_file)))
+    lines = _ReadMapFile(_TEST_MAP_PATH)
+    section_sizes, raw_symbols, _ = linker_map_parser.ParseLines(lines)
     return _RenderSectionSizesAndRawSymbols(section_sizes, raw_symbols)
 
   @_CompareWithGolden()
   def test_ParserCfi(self):
-    map_file = _ReadMapFile(_TEST_CFI_MAP_PATH)
-    linker_name = linker_map_parser.DetectLinkerNameFromMapFile(iter(map_file))
-    section_sizes, raw_symbols, _ = (
-        linker_map_parser.MapFileParser().Parse(linker_name, iter(map_file)))
+    lines = _ReadMapFile(_TEST_CFI_MAP_PATH)
+    section_sizes, raw_symbols, _ = linker_map_parser.ParseLines(lines)
     return _RenderSectionSizesAndRawSymbols(section_sizes, raw_symbols)
 
   def test_ParseArmAnnotations(self):
@@ -108,10 +102,9 @@ class LinkerMapParserTest(unittest.TestCase):
   @_CompareWithGolden()
   def test_Tokenize(self):
     ret = []
-    map_file = _ReadMapFile(_TEST_MAP_PATH)
-    linker_name = linker_map_parser.DetectLinkerNameFromMapFile(iter(map_file))
-    parser = linker_map_parser.MapFileParserLld(linker_name)
-    tokenizer = parser.Tokenize(iter(map_file))
+    lines = _ReadMapFile(_TEST_MAP_PATH)
+    parser = linker_map_parser.MapFileParserLld('lld-lto_v1')
+    tokenizer = parser.Tokenize(lines)
     for (_, address, size, level, span, tok) in tokenizer:
       ret.append('%8X %8X (%d) %s %s' % (address, size, level, '-' * 8 if
                                          span is None else '%8X' % span, tok))

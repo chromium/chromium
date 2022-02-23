@@ -24,14 +24,12 @@ constexpr SkColor kSkipAdButtonBackgroundColor = gfx::kGoogleGrey700;
 
 }  // namespace
 
-namespace views {
-
 SkipAdLabelButton::SkipAdLabelButton(PressedCallback callback)
-    : LabelButton(std::move(callback),
-                  l10n_util::GetStringUTF16(
-                      IDS_PICTURE_IN_PICTURE_SKIP_AD_CONTROL_TEXT)) {
-  SetBackground(
-      CreateBackgroundFromPainter(Painter::CreateRoundRectWith1PxBorderPainter(
+    : views::LabelButton(std::move(callback),
+                         l10n_util::GetStringUTF16(
+                             IDS_PICTURE_IN_PICTURE_SKIP_AD_CONTROL_TEXT)) {
+  SetBackground(CreateBackgroundFromPainter(
+      views::Painter::CreateRoundRectWith1PxBorderPainter(
           kSkipAdButtonBackgroundColor, kSkipAdButtonBorderColor, 1.f)));
   SetHorizontalAlignment(gfx::ALIGN_CENTER);
   SetEnabledTextColors(kSkipAdButtonTextColor);
@@ -45,7 +43,7 @@ SkipAdLabelButton::SkipAdLabelButton(PressedCallback callback)
 }
 
 void SkipAdLabelButton::SetPosition(const gfx::Size& size) {
-  LabelButton::SetPosition(gfx::Point(
+  views::LabelButton::SetPosition(gfx::Point(
       size.width() - kSkipAdButtonWidth + 1 /* border offset */,
       size.height() - kSkipAdButtonHeight - kSkipAdButtonMarginBottom));
 }
@@ -53,12 +51,10 @@ void SkipAdLabelButton::SetPosition(const gfx::Size& size) {
 void SkipAdLabelButton::SetVisible(bool visible) {
   // We need to do more than the usual visibility change because otherwise the
   // overlay window cannot be dragged when grabbing within the label area.
-  LabelButton::SetVisible(visible);
+  views::LabelButton::SetVisible(visible);
   SetSize(visible ? gfx::Size(kSkipAdButtonWidth, kSkipAdButtonHeight)
                   : gfx::Size());
 }
 
 BEGIN_METADATA(SkipAdLabelButton, views::LabelButton)
 END_METADATA
-
-}  // namespace views

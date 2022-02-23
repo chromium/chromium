@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_AUTOFILL_CORE_BROWSER_UI_LABEL_FORMATTER_UTILS_H_
 #define COMPONENTS_AUTOFILL_CORE_BROWSER_UI_LABEL_FORMATTER_UTILS_H_
 
-#include <list>
 #include <string>
 #include <vector>
 

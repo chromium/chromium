@@ -397,25 +397,11 @@ TEST_F(UmaPageLoadMetricsObserverTest, FailedProvisionalLoad) {
   tester()->histogram_tester().ExpectTotalCount(internal::kHistogramLoad, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramFirstImagePaint, 0);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramFailedProvisionalLoad, 1);
 
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageTimingForegroundDuration, 0);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageTimingForegroundDurationNoCommit, 1);
-}
-
-TEST_F(UmaPageLoadMetricsObserverTest, FailedBackgroundProvisionalLoad) {
-  // Test that failed provisional event does not get logged in the
-  // histogram if it happened in the background
-  GURL url(kDefaultTestUrl);
-  web_contents()->WasHidden();
-  content::NavigationSimulator::NavigateAndFailFromDocument(
-      url, net::ERR_TIMED_OUT, main_rfh());
-
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramFailedProvisionalLoad, 0);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, Reload) {
@@ -687,12 +673,6 @@ TEST_F(UmaPageLoadMetricsObserverTest, BytesAndResourcesCounted) {
       internal::kHistogramPageLoadCacheBytes, 1);
   tester()->histogram_tester().ExpectTotalCount(
       internal::kHistogramPageLoadNetworkBytesIncludingHeaders, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramTotalCompletedResources, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramNetworkCompletedResources, 1);
-  tester()->histogram_tester().ExpectTotalCount(
-      internal::kHistogramCacheCompletedResources, 1);
 }
 
 TEST_F(UmaPageLoadMetricsObserverTest, CpuUsageCounted) {
@@ -1180,32 +1160,7 @@ TEST_F(UmaPageLoadMetricsObserverTest,
   TestAllFramesLCP(990, LargestContentTextOrImage::kText);
 }
 
-TEST_F(UmaPageLoadMetricsObserverTest,
-       NormalizedResponsivenessMetricsWithoutSendingAllLatencies) {
-  page_load_metrics::mojom::InputTiming input_timing;
-  input_timing.num_interactions = 3;
-  input_timing.max_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(21));
-  input_timing.total_event_durations =
-      UserInteractionLatencies::NewWorstInteractionLatency(
-          base::Milliseconds(56));
-  NavigateAndCommit(GURL(kDefaultTestUrl));
-  tester()->SimulateInputTimingUpdate(input_timing);
-  // Navigate again to force histogram recording.
-  NavigateAndCommit(GURL(kDefaultTestUrl2));
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::kHistogramWorstUserInteractionLatencyMaxEventDuration),
-      testing::ElementsAre(base::Bucket(21, 1)));
-  EXPECT_THAT(
-      tester()->histogram_tester().GetAllSamples(
-          internal::kHistogramWorstUserInteractionLatencyTotalEventDuration),
-      testing::ElementsAre(base::Bucket(50, 1)));
-}
-
-TEST_F(UmaPageLoadMetricsObserverTest,
-       NormalizedResponsivenessMetricsWithSendingAllLatencies) {
+TEST_F(UmaPageLoadMetricsObserverTest, NormalizedResponsivenessMetrics) {
   // Flip the flag.
   base::test::ScopedFeatureList feature_list;
   feature_list.InitAndEnableFeature(

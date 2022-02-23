@@ -6,7 +6,6 @@
 
 #include <utility>
 
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/extensions_test.h"

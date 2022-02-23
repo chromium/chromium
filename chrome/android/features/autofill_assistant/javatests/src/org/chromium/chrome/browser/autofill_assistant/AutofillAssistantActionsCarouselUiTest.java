@@ -17,7 +17,9 @@ import static org.hamcrest.CoreMatchers.is;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.allOf;
 
+import android.content.Context;
 import android.support.test.InstrumentationRegistry;
+import android.view.ContextThemeWrapper;
 import android.widget.LinearLayout;
 
 import androidx.test.filters.MediumTest;
@@ -28,6 +30,7 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.chrome.R;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantActionsCarouselCoordinator;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantCarouselModel;
 import org.chromium.chrome.browser.autofill_assistant.carousel.AssistantChip;
@@ -50,19 +53,20 @@ public class AutofillAssistantActionsCarouselUiTest {
     @Rule
     public CustomTabActivityTestRule mTestRule = new CustomTabActivityTestRule();
 
+    Context mTargetContext = new ContextThemeWrapper(
+            InstrumentationRegistry.getTargetContext(), R.style.Theme_Chromium_Activity);
+
     /** Creates a coordinator for use in UI tests, and adds it to the global view hierarchy. */
     private AssistantActionsCarouselCoordinator createCoordinator(AssistantCarouselModel model)
             throws Exception {
         AssistantActionsCarouselCoordinator coordinator = TestThreadUtils.runOnUiThreadBlocking(
-                ()
-                        -> new AssistantActionsCarouselCoordinator(
-                                InstrumentationRegistry.getTargetContext(), model));
+                () -> new AssistantActionsCarouselCoordinator(mTargetContext, model));
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             // Note: apparently, we need an intermediate container for this coordinator's view,
             // otherwise the view will be invisible.
             // @TODO(crbug.com/806868) figure out why this is the case.
-            LinearLayout container = new LinearLayout(InstrumentationRegistry.getTargetContext());
+            LinearLayout container = new LinearLayout(mTargetContext);
             container.addView(coordinator.getView());
             AutofillAssistantUiTestUtil.attachToCoordinator(mTestRule.getActivity(), container);
         });
@@ -72,8 +76,8 @@ public class AutofillAssistantActionsCarouselUiTest {
 
     @Before
     public void setUp() {
-        mTestRule.startCustomTabActivityWithIntent(CustomTabsTestUtils.createMinimalCustomTabIntent(
-                InstrumentationRegistry.getTargetContext(), "about:blank"));
+        mTestRule.startCustomTabActivityWithIntent(
+                CustomTabsTestUtils.createMinimalCustomTabIntent(mTargetContext, "about:blank"));
     }
 
     /** Tests assumptions about the initial state of the carousel. */

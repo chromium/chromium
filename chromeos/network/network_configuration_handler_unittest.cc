@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/json/json_writer.h"
 #include "base/location.h"
 #include "base/run_loop.h"
 #include "base/strings/string_piece.h"
@@ -59,23 +58,11 @@ void CopyServiceResult(bool* called,
   *guid_out = guid;
 }
 
-std::string PrettyJson(const base::DictionaryValue& value) {
-  std::string pretty;
-  base::JSONWriter::WriteWithOptions(
-      value, base::JSONWriter::OPTIONS_PRETTY_PRINT, &pretty);
-  return pretty;
+void ErrorCallback(const std::string& error_name) {
+  ADD_FAILURE() << "Unexpected error: " << error_name;
 }
 
-void ErrorCallback(const std::string& error_name,
-                   std::unique_ptr<base::DictionaryValue> error_data) {
-  ADD_FAILURE() << "Unexpected error: " << error_name
-                << " with associated data: \n"
-                << PrettyJson(*error_data);
-}
-
-void RecordError(std::string* error_name_ptr,
-                 const std::string& error_name,
-                 std::unique_ptr<base::DictionaryValue> error_data) {
+void RecordError(std::string* error_name_ptr, const std::string& error_name) {
   *error_name_ptr = error_name;
 }
 
@@ -240,7 +227,7 @@ class NetworkConfigurationHandlerTest : public testing::Test {
 
   void CreateTestConfiguration(const std::string& service_path,
                                const std::string& type) {
-    base::DictionaryValue properties;
+    base::Value properties(base::Value::Type::DICTIONARY);
     shill_property_util::SetSSID(service_path, &properties);
     properties.SetKey(shill::kNameProperty, base::Value(service_path));
     properties.SetKey(shill::kGuidProperty, base::Value(service_path));
@@ -366,7 +353,7 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties) {
 
   bool success = false;
   std::string service_path;
-  base::DictionaryValue result;
+  base::Value result(base::Value::Type::DICTIONARY);
   network_configuration_handler_->GetShillProperties(
       kServicePath,
       base::BindOnce(&CopyProperties, &success, &service_path, &result));
@@ -395,7 +382,7 @@ TEST_F(NetworkConfigurationHandlerTest, GetProperties_TetherNetwork) {
 
   bool success = false;
   std::string service_path;
-  base::DictionaryValue result;
+  base::Value result(base::Value::Type::DICTIONARY);
   network_configuration_handler_->GetShillProperties(
       // Tether networks use service path and GUID interchangeably.
       kTetherGuid,
@@ -434,8 +421,8 @@ TEST_F(NetworkConfigurationHandlerTest, SetProperties) {
       kServicePath, std::string() /* guid */, std::string() /* name */,
       shill::kTypeWifi, std::string() /* state */, true /* visible */);
 
-  base::DictionaryValue value;
-  value.SetString(shill::kSSIDProperty, kNetworkName);
+  base::Value value(base::Value::Type::DICTIONARY);
+  value.SetStringKey(shill::kSSIDProperty, kNetworkName);
   network_configuration_handler_->SetShillProperties(
       kServicePath, value, base::DoNothing(), base::BindOnce(&ErrorCallback));
   base::RunLoop().RunUntilIdle();
@@ -490,11 +477,11 @@ TEST_F(NetworkConfigurationHandlerTest, CreateConfiguration) {
   constexpr char kGuid[] = "/service/2";
   constexpr char kNetworkName[] = "MyNetwork";
 
-  base::DictionaryValue value;
+  base::Value value(base::Value::Type::DICTIONARY);
   shill_property_util::SetSSID(kNetworkName, &value);
-  value.SetString(shill::kTypeProperty, "wifi");
-  value.SetString(shill::kProfileProperty, "profile path");
-  value.SetString(shill::kGuidProperty, kGuid);
+  value.SetStringKey(shill::kTypeProperty, "wifi");
+  value.SetStringKey(shill::kProfileProperty, "profile path");
+  value.SetStringKey(shill::kGuidProperty, kGuid);
 
   bool success = false;
   std::string service_path;
@@ -623,7 +610,7 @@ TEST_F(NetworkConfigurationHandlerTest, StubSetAndClearProperties) {
   const std::string test_passphrase("test_passphrase");
 
   // Set Properties
-  base::DictionaryValue properties_to_set;
+  base::Value properties_to_set(base::Value::Type::DICTIONARY);
   properties_to_set.SetKey(shill::kCheckPortalProperty,
                            base::Value(test_check_portal));
   properties_to_set.SetKey(shill::kPassphraseProperty,
@@ -674,7 +661,7 @@ TEST_F(NetworkConfigurationHandlerTest, StubGetNameFromWifiHex) {
   std::string expected_name = "This is HEX SSID!";
 
   // Set Properties
-  base::DictionaryValue properties_to_set;
+  base::Value properties_to_set(base::Value::Type::DICTIONARY);
   properties_to_set.SetKey(shill::kWifiHexSsid, base::Value(wifi_hex));
   network_configuration_handler_->SetShillProperties(
       service_path, properties_to_set, base::DoNothing(),
@@ -774,7 +761,7 @@ TEST_F(NetworkConfigurationHandlerTest, NetworkConfigurationObserver_Updated) {
   EXPECT_FALSE(
       network_configuration_observer->HasUpdatedConfiguration(service_path));
 
-  base::DictionaryValue properties;
+  base::Value properties(base::Value::Type::DICTIONARY);
   properties.SetKey(shill::kSecurityProperty, base::Value(shill::kSecurityPsk));
   properties.SetKey(shill::kPassphraseProperty, base::Value("secret"));
 

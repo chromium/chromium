@@ -5,15 +5,15 @@
 #ifndef COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_EXECUTOR_H_
 #define COMPONENTS_OPTIMIZATION_GUIDE_CORE_BERT_MODEL_EXECUTOR_H_
 
-#include "components/optimization_guide/core/model_executor.h"
+#include "components/optimization_guide/core/tflite_model_executor.h"
 #include "third_party/tflite_support/src/tensorflow_lite_support/cc/task/core/category.h"
 
 namespace optimization_guide {
 
 // A full implementation of a ModelExecutor that executes BERT models.
 class BertModelExecutor
-    : public ModelExecutor<std::vector<tflite::task::core::Category>,
-                           const std::string&> {
+    : public TFLiteModelExecutor<std::vector<tflite::task::core::Category>,
+                                 const std::string&> {
  public:
   explicit BertModelExecutor(proto::OptimizationTarget optimization_target);
   ~BertModelExecutor() override;
@@ -25,9 +25,11 @@ class BertModelExecutor
   // ModelExecutor:
   absl::optional<std::vector<tflite::task::core::Category>> Execute(
       ModelExecutionTask* execution_task,
+      ExecutionStatus* out_status,
       const std::string& input) override;
   std::unique_ptr<ModelExecutionTask> BuildModelExecutionTask(
-      base::MemoryMappedFile* model_file) override;
+      base::MemoryMappedFile* model_file,
+      ExecutionStatus* out_status) override;
 
  private:
   const proto::OptimizationTarget optimization_target_;

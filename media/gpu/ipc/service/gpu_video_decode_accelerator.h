@@ -14,6 +14,7 @@
 #include "base/callback.h"
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/service/texture_manager.h"
 #include "gpu/config/gpu_info.h"
@@ -59,7 +60,7 @@ class GpuVideoDecodeAccelerator
       const gpu::GpuDriverBugWorkarounds& workarounds);
 
   // VideoDecodeAccelerator::Client implementation.
-  void NotifyInitializationComplete(Status status) override;
+  void NotifyInitializationComplete(DecoderStatus status) override;
   void ProvidePictureBuffers(uint32_t requested_num_of_buffers,
                              VideoPixelFormat format,
                              uint32_t textures_per_buffer,
@@ -113,7 +114,7 @@ class GpuVideoDecodeAccelerator
   // Unowned pointer to the underlying gpu::CommandBufferStub.  |this| is
   // registered as a DestuctionObserver of |stub_| and will self-delete when
   // |stub_| is destroyed.
-  gpu::CommandBufferStub* const stub_;
+  const raw_ptr<gpu::CommandBufferStub> stub_;
 
   // The underlying VideoDecodeAccelerator.
   std::unique_ptr<VideoDecodeAccelerator> video_decode_accelerator_;

@@ -12,7 +12,6 @@
 #include "base/trace_event/trace_event.h"
 #include "content/child/child_thread_impl.h"
 #include "content/child/scoped_child_process_reference.h"
-#include "content/common/service_worker/service_worker_utils.h"
 #include "content/public/common/content_client.h"
 #include "content/renderer/service_worker/service_worker_context_client.h"
 #include "content/renderer/worker/fetch_client_settings_object_helpers.h"

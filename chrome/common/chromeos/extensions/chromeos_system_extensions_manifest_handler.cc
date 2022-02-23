@@ -32,7 +32,8 @@ bool VerifyExternallyConnectableDefinition(extensions::Extension* extension) {
       !externally_connectable->FindKey("matches"))
     return false;
 
-  auto matches_list = externally_connectable->FindKey("matches")->GetList();
+  auto matches_list =
+      externally_connectable->FindKey("matches")->GetListDeprecated();
   if (matches_list.size() != 1)
     return false;
 

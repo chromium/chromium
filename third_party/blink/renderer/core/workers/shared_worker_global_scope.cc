@@ -58,7 +58,7 @@ SharedWorkerGlobalScope::SharedWorkerGlobalScope(
     SharedWorkerThread* thread,
     base::TimeTicks time_origin,
     const SharedWorkerToken& token)
-    : WorkerGlobalScope(std::move(creation_params), thread, time_origin),
+    : WorkerGlobalScope(std::move(creation_params), thread, time_origin, false),
       token_(token) {}
 
 SharedWorkerGlobalScope::~SharedWorkerGlobalScope() = default;

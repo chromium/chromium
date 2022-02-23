@@ -5,7 +5,6 @@
 #include "components/password_manager/core/browser/ui/post_save_compromised_helper.h"
 
 #include "base/barrier_closure.h"
-#include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "components/password_manager/core/browser/password_store_interface.h"
 #include "components/password_manager/core/common/password_manager_features.h"
@@ -62,13 +61,13 @@ void PostSaveCompromisedHelper::AnalyzeLeakedCredentials(
           &PostSaveCompromisedHelper::AnalyzeLeakedCredentialsInternal,
           base::Unretained(this)));
 
-  profile_store->GetAutofillableLogins(this);
+  profile_store->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
   if (account_store)
-    account_store->GetAutofillableLogins(this);
+    account_store->GetAutofillableLogins(weak_ptr_factory_.GetWeakPtr());
 }
 
 void PostSaveCompromisedHelper::OnGetPasswordStoreResults(
-    std::vector<std::unique_ptr<password_manager::PasswordForm>> results) {
+    std::vector<std::unique_ptr<PasswordForm>> results) {
   base::ranges::move(results, std::back_inserter(passwords_));
   forms_received_.Run();
 }

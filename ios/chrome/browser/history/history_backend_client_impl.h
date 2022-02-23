@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/history/core/browser/history_backend_client.h"
 

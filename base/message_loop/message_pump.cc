@@ -9,8 +9,9 @@
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/message_loop/message_pump_for_ui.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/message_loop/message_pump_mac.h"
 #endif
 
@@ -46,9 +47,9 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
     case MessagePumpType::UI:
       if (message_pump_for_ui_factory_)
         return message_pump_for_ui_factory_();
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
       return MessagePumpMac::Create();
-#elif defined(OS_NACL) || defined(OS_AIX)
+#elif BUILDFLAG(IS_NACL) || BUILDFLAG(IS_AIX)
       // Currently NaCl and AIX don't have a UI MessagePump.
       // TODO(abarth): Figure out if we need this.
       NOTREACHED();
@@ -60,30 +61,30 @@ std::unique_ptr<MessagePump> MessagePump::Create(MessagePumpType type) {
     case MessagePumpType::IO:
       return std::make_unique<MessagePumpForIO>();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     case MessagePumpType::JAVA:
       return std::make_unique<MessagePumpForUI>();
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     case MessagePumpType::NS_RUNLOOP:
       return std::make_unique<MessagePumpNSRunLoop>();
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     case MessagePumpType::UI_WITH_WM_QUIT_SUPPORT: {
       auto pump = std::make_unique<MessagePumpForUI>();
       pump->EnableWmQuit();
       return pump;
     }
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
     case MessagePumpType::CUSTOM:
       NOTREACHED();
       return nullptr;
 
     case MessagePumpType::DEFAULT:
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
       // On iOS, a native runloop is always required to pump system work.
       return std::make_unique<MessagePumpCFRunLoop>();
 #else

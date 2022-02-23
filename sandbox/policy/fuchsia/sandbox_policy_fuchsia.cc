@@ -9,6 +9,7 @@
 #include <zircon/processargs.h>
 #include <zircon/syscalls/policy.h>
 
+#include <fuchsia/buildinfo/cpp/fidl.h>
 #include <fuchsia/camera3/cpp/fidl.h>
 #include <fuchsia/fonts/cpp/fidl.h>
 #include <fuchsia/intl/cpp/fidl.h>
@@ -66,6 +67,30 @@ struct SandboxConfig {
   uint32_t features;
 };
 
+// Services that are passed to all processes.
+// Prevent incorrect indentation due to the preprocessor lines within `({...})`:
+// clang-format off
+constexpr auto kMinimalServices = base::make_span((const char* const[]){
+    // TODO(crbug.com/1286960): Remove this and/or intl below if an alternative
+    // solution does not require access to the service in all processes.
+    fuchsia::buildinfo::Provider::Name_,
+
+// DebugData service is needed only for profiling.
+#if BUILDFLAG(CLANG_PROFILING)
+    "fuchsia.debugdata.DebugData",
+#endif
+
+    fuchsia::intl::PropertyProvider::Name_,
+    fuchsia::logger::LogSink::Name_,
+});
+// clang-format on
+
+// For processes that only get kMinimalServices and no other capabilities.
+constexpr SandboxConfig kMinimalConfig = {
+    base::span<const char* const>(),
+    0,
+};
+
 constexpr SandboxConfig kGpuConfig = {
     base::make_span((const char* const[]){
         // TODO(crbug.com/1224707): Use the fuchsia.scheduler API instead.
@@ -109,10 +134,9 @@ constexpr SandboxConfig kVideoCaptureConfig = {
     0,
 };
 
-// No-access-to-anything.
-constexpr SandboxConfig kEmptySandboxConfig = {
+constexpr SandboxConfig kServiceWithJitConfig = {
     base::span<const char* const>(),
-    0,
+    kAmbientMarkVmoAsExecutable,
 };
 
 const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
@@ -127,6 +151,8 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
       return &kRendererConfig;
     case sandbox::mojom::Sandbox::kVideoCapture:
       return &kVideoCaptureConfig;
+    case sandbox::mojom::Sandbox::kServiceWithJit:
+      return &kServiceWithJitConfig;
     // Remaining types receive no-access-to-anything.
     case sandbox::mojom::Sandbox::kAudio:
     case sandbox::mojom::Sandbox::kCdm:
@@ -134,18 +160,9 @@ const SandboxConfig* GetConfigForSandboxType(sandbox::mojom::Sandbox type) {
     case sandbox::mojom::Sandbox::kService:
     case sandbox::mojom::Sandbox::kSpeechRecognition:
     case sandbox::mojom::Sandbox::kUtility:
-      return &kEmptySandboxConfig;
+      return &kMinimalConfig;
   }
 }
-
-// Services that are passed to all processes.
-constexpr auto kDefaultServices = base::make_span((const char* const[]) {
-// DebugData service is needed only for profiling.
-#if BUILDFLAG(CLANG_PROFILING)
-  "fuchsia.debugdata.DebugData",
-#endif
-      fuchsia::intl::PropertyProvider::Name_, fuchsia::logger::LogSink::Name_
-});
 
 }  // namespace
 
@@ -165,7 +182,7 @@ SandboxPolicyFuchsia::SandboxPolicyFuchsia(sandbox::mojom::Sandbox type) {
     service_directory_task_runner_ = base::ThreadTaskRunnerHandle::Get();
     service_directory_ = std::make_unique<base::FilteredServiceDirectory>(
         base::ComponentContextForProcess()->svc().get());
-    for (const char* service_name : kDefaultServices) {
+    for (const char* service_name : kMinimalServices) {
       zx_status_t status = service_directory_->AddService(service_name);
       ZX_CHECK(status == ZX_OK, status)
           << "AddService(" << service_name << ") failed";
@@ -263,8 +280,8 @@ void SandboxPolicyFuchsia::UpdateLaunchOptionsForSandbox(
   ZX_CHECK(status == ZX_OK, status) << "zx_job_create";
   options->job_handle = job_.get();
 
-  // Only allow ambient VMO mark-as-executable capability to be granted
-  // to processes that which need to JIT (i.e. do not run V8/WASM).
+  // Only allow the ambient VMO mark-as-executable capability to be granted
+  // to processes that need to JIT (i.e. run V8/WASM).
   zx_policy_basic_v2_t ambient_mark_vmo_exec{
       ZX_POL_AMBIENT_MARK_VMO_EXEC,
 

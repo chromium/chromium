@@ -8,7 +8,6 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
 #include "ios/web/public/init/network_context_owner.h"

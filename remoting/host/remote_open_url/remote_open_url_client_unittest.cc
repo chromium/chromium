@@ -8,14 +8,16 @@
 
 #include "base/callback_forward.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/mock_callback.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/platform/named_platform_channel.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_server.h"
-#include "remoting/host/mojo_ipc/mojo_ipc_test_util.h"
+#include "remoting/host/host_mock_objects.h"
 #include "remoting/host/mojom/remote_url_opener.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -34,7 +36,6 @@ constexpr base::TimeDelta kTestRequestTimeout = base::Milliseconds(500);
 
 class MockRemoteOpenUrlClientDelegate : public RemoteOpenUrlClient::Delegate {
  public:
-  MOCK_METHOD(bool, IsInRemoteDesktopSession, (), (override));
   MOCK_METHOD(void, OpenUrlOnFallbackBrowser, (const GURL& url), (override));
   MOCK_METHOD(void, ShowOpenUrlError, (const GURL& url), (override));
 };
@@ -55,39 +56,43 @@ class RemoteOpenUrlClientTest : public testing::Test {
   ~RemoteOpenUrlClientTest() override;
 
  protected:
-  std::unique_ptr<MojoIpcServer<mojom::RemoteUrlOpener>> StartServer();
+  void BindMockRemoteUrlOpener();
 
-  // The delegate is owned by |client_| so |client_| must outlive the last use
-  // of |delegate_|.
-  MockRemoteOpenUrlClientDelegate* delegate_;
+  // These raw pointer objects are owned by |client_| so |client_| must outlive
+  // the last use of them.
+  raw_ptr<MockRemoteOpenUrlClientDelegate> delegate_;
+  raw_ptr<MockChromotingHostServicesProvider> api_provider_;
+
   std::unique_ptr<RemoteOpenUrlClient> client_;
+  MockChromotingSessionServices mock_api_;
   MockRemoteUrlOpener remote_url_opener_;
+  mojo::Receiver<mojom::RemoteUrlOpener> remote_url_opener_receiver_{
+      &remote_url_opener_};
 
  private:
-  mojo::NamedPlatformChannel::ServerName test_server_name_ =
-      test::GenerateRandomServerName();
-  base::test::TaskEnvironment task_environment_;
+  base::test::TaskEnvironment task_environment_{
+      base::test::TaskEnvironment::MainThreadType::IO};
 };
 
 RemoteOpenUrlClientTest::RemoteOpenUrlClientTest() {
   auto delegate = std::make_unique<MockRemoteOpenUrlClientDelegate>();
   delegate_ = delegate.get();
+  auto api_provider = std::make_unique<MockChromotingHostServicesProvider>();
+  api_provider_ = api_provider.get();
   client_ = base::WrapUnique(new RemoteOpenUrlClient(
-      std::move(delegate), test_server_name_, kTestRequestTimeout));
+      std::move(delegate), std::move(api_provider), kTestRequestTimeout));
 }
 
 RemoteOpenUrlClientTest::~RemoteOpenUrlClientTest() = default;
 
-std::unique_ptr<MojoIpcServer<mojom::RemoteUrlOpener>>
-RemoteOpenUrlClientTest::StartServer() {
-  auto server = std::make_unique<MojoIpcServer<mojom::RemoteUrlOpener>>(
-      test_server_name_, &remote_url_opener_);
-  base::RunLoop wait_for_invitation_sent_run_loop;
-  server->set_on_invitation_sent_callback_for_testing(
-      wait_for_invitation_sent_run_loop.QuitClosure());
-  server->StartServer();
-  wait_for_invitation_sent_run_loop.Run();
-  return server;
+void RemoteOpenUrlClientTest::BindMockRemoteUrlOpener() {
+  EXPECT_CALL(*api_provider_, GetSessionServices())
+      .WillRepeatedly(Return(&mock_api_));
+  EXPECT_CALL(mock_api_, BindRemoteUrlOpener(_))
+      .WillRepeatedly(
+          [this](mojo::PendingReceiver<mojom::RemoteUrlOpener> receiver) {
+            remote_url_opener_receiver_.Bind(std::move(receiver));
+          });
 }
 
 TEST_F(RemoteOpenUrlClientTest, OpenFallbackBrowserWithNoUrl) {
@@ -114,8 +119,9 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrlWithUnsupportedScheme_FallsBack) {
   client_->OpenUrl(GURL("ftp://unsupported.com/"), done.Get());
 }
 
-TEST_F(RemoteOpenUrlClientTest, OpenWhenNotInRemoteDesktopSession_FallsBack) {
-  EXPECT_CALL(*delegate_, IsInRemoteDesktopSession()).WillOnce(Return(false));
+TEST_F(RemoteOpenUrlClientTest,
+       OpenWhenHostServicesApiIsNotProvided_FallsBack) {
+  EXPECT_CALL(*api_provider_, GetSessionServices()).WillOnce(Return(nullptr));
   EXPECT_CALL(*delegate_, OpenUrlOnFallbackBrowser(GURL("http://google.com/")))
       .Times(1);
   base::MockCallback<base::OnceClosure> done;
@@ -124,20 +130,23 @@ TEST_F(RemoteOpenUrlClientTest, OpenWhenNotInRemoteDesktopSession_FallsBack) {
   client_->OpenUrl(GURL("http://google.com/"), done.Get());
 }
 
-TEST_F(RemoteOpenUrlClientTest, OpenWhenServerIsNotRunning_FallsBack) {
-  EXPECT_CALL(*delegate_, IsInRemoteDesktopSession()).WillOnce(Return(true));
+TEST_F(RemoteOpenUrlClientTest, OpenUrlThenReceiverClosed_FallsBack) {
+  BindMockRemoteUrlOpener();
+
+  base::RunLoop run_loop;
   EXPECT_CALL(*delegate_, OpenUrlOnFallbackBrowser(GURL("http://google.com/")))
-      .Times(1);
+      .WillOnce(base::test::RunOnceClosure(run_loop.QuitClosure()));
   base::MockCallback<base::OnceClosure> done;
   EXPECT_CALL(done, Run()).Times(1);
 
   client_->OpenUrl(GURL("http://google.com/"), done.Get());
+  remote_url_opener_receiver_.reset();
+  run_loop.Run();
 }
 
 TEST_F(RemoteOpenUrlClientTest, OpenUrl_Success) {
-  auto server = StartServer();
+  BindMockRemoteUrlOpener();
 
-  EXPECT_CALL(*delegate_, IsInRemoteDesktopSession()).WillOnce(Return(true));
   EXPECT_CALL(remote_url_opener_, OpenUrl(GURL("http://google.com/"), _))
       .WillOnce(base::test::RunOnceCallback<1>(mojom::OpenUrlResult::SUCCESS));
 
@@ -151,9 +160,8 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrl_Success) {
 }
 
 TEST_F(RemoteOpenUrlClientTest, OpenUrl_Failure) {
-  auto server = StartServer();
+  BindMockRemoteUrlOpener();
 
-  EXPECT_CALL(*delegate_, IsInRemoteDesktopSession()).WillOnce(Return(true));
   EXPECT_CALL(remote_url_opener_, OpenUrl(GURL("http://google.com/"), _))
       .WillOnce(base::test::RunOnceCallback<1>(mojom::OpenUrlResult::FAILURE));
   EXPECT_CALL(*delegate_, ShowOpenUrlError(GURL("http://google.com/")))
@@ -169,9 +177,8 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrl_Failure) {
 }
 
 TEST_F(RemoteOpenUrlClientTest, OpenUrl_LocalFallback) {
-  auto server = StartServer();
+  BindMockRemoteUrlOpener();
 
-  EXPECT_CALL(*delegate_, IsInRemoteDesktopSession()).WillOnce(Return(true));
   EXPECT_CALL(remote_url_opener_, OpenUrl(GURL("http://google.com/"), _))
       .WillOnce(
           base::test::RunOnceCallback<1>(mojom::OpenUrlResult::LOCAL_FALLBACK));
@@ -188,9 +195,8 @@ TEST_F(RemoteOpenUrlClientTest, OpenUrl_LocalFallback) {
 }
 
 TEST_F(RemoteOpenUrlClientTest, OpenUrlTimeout_LocalFallback) {
-  auto server = StartServer();
+  BindMockRemoteUrlOpener();
 
-  EXPECT_CALL(*delegate_, IsInRemoteDesktopSession()).WillOnce(Return(true));
   mojom::RemoteUrlOpener::OpenUrlCallback captured_callback;
   EXPECT_CALL(remote_url_opener_, OpenUrl(GURL("http://google.com/"), _))
       .WillOnce([&](const GURL& url,

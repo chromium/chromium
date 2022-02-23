@@ -5,8 +5,6 @@
 #ifndef IOS_WEB_VIEW_INTERNAL_WEB_VIEW_WEB_MAIN_PARTS_H_
 #define IOS_WEB_VIEW_INTERNAL_WEB_VIEW_WEB_MAIN_PARTS_H_
 
-
-#include "base/macros.h"
 #include "base/metrics/field_trial.h"
 #include "ios/web/public/init/web_main_parts.h"
 

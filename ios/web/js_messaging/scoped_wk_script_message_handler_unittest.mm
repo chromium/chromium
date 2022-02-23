@@ -7,7 +7,10 @@
 #import "base/bind.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
+#import "ios/web/public/test/web_state_test_util.h"
 #import "ios/web/public/test/web_test_with_web_state.h"
+#import "ios/web/test/js_test_util_internal.h"
+#import "ios/web/web_state/ui/crw_web_controller.h"
 #import "ios/web/web_state/ui/wk_web_view_configuration_provider.h"
 #import "testing/gtest_mac.h"
 
@@ -135,8 +138,10 @@ TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageReceivedIsolatedWorld) {
 
     ASSERT_TRUE(LoadHtml("<p>"));
 
-    id result = ExecuteJavaScript(WKContentWorld.defaultClientWorld,
-                                  GetPostMessageScript());
+    WKWebView* web_view =
+        [web::test::GetWebController(web_state()) ensureWebViewCreated];
+    id result = web::test::ExecuteJavaScript(
+        web_view, WKContentWorld.defaultClientWorld, GetPostMessageScript());
     ASSERT_TRUE([result isKindOfClass:[NSNumber class]]);
     ASSERT_TRUE([result boolValue]);
   }
@@ -170,8 +175,10 @@ TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageCrossWorldPageContent) {
 
     ASSERT_TRUE(LoadHtml("<p>"));
 
-    id result = ExecuteJavaScript(WKContentWorld.defaultClientWorld,
-                                  GetPostMessageScript());
+    WKWebView* web_view =
+        [web::test::GetWebController(web_state()) ensureWebViewCreated];
+    id result = web::test::ExecuteJavaScript(
+        web_view, WKContentWorld.defaultClientWorld, GetPostMessageScript());
     // JavaScript exception should be thrown and false value returned if script
     // message handler was not registered.
     ASSERT_FALSE([result boolValue]);
@@ -200,8 +207,10 @@ TEST_F(ScopedWKScriptMessageHandlerTest, ScriptMessageCrossWorldIsolated) {
 
     ASSERT_TRUE(LoadHtml("<p>"));
 
-    id result =
-        ExecuteJavaScript(WKContentWorld.pageWorld, GetPostMessageScript());
+    WKWebView* web_view =
+        [web::test::GetWebController(web_state()) ensureWebViewCreated];
+    id result = web::test::ExecuteJavaScript(web_view, WKContentWorld.pageWorld,
+                                             GetPostMessageScript());
     // JavaScript exception should be thrown and false value returned if script
     // message handler was not registered.
     ASSERT_FALSE([result boolValue]);

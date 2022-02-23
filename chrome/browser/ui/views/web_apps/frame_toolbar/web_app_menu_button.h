@@ -7,7 +7,9 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
+#include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/views/frame/app_menu_button.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "third_party/skia/include/core/SkColor.h"
@@ -31,6 +33,9 @@ class WebAppMenuButton : public AppMenuButton {
   void SetColor(SkColor color);
   SkColor GetColor() const;
 
+  // Sets the icon.
+  void set_icon(const gfx::VectorIcon& icon) { icon_ = &icon; }
+
   // Fades the menu button highlight on and off.
   void StartHighlightAnimation();
 
@@ -43,9 +48,10 @@ class WebAppMenuButton : public AppMenuButton {
   void FadeHighlightOff();
 
   // The containing browser view.
-  BrowserView* browser_view_;
+  raw_ptr<BrowserView> browser_view_;
 
   SkColor color_ = gfx::kPlaceholderColor;
+  raw_ptr<const gfx::VectorIcon> icon_ = &kBrowserToolsIcon;
 
   base::OneShotTimer highlight_off_timer_;
 };

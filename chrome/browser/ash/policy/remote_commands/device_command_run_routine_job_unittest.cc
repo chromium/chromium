@@ -187,7 +187,7 @@ void DeviceCommandRunRoutineJobTest::InitializeJob(
       GenerateCommandProto(unique_id, base::TimeTicks::Now() - issued_time,
                            idleness_cutoff, terminate_upon_input, routine,
                            std::move(params)),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(unique_id, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::NOT_STARTED, job->status());
@@ -224,7 +224,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, InvalidRoutineEnumInCommandPayload) {
                            base::Seconds(30),
                            /*terminate_upon_input=*/false, kInvalidRoutineEnum,
                            std::move(params_dict)),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
@@ -240,7 +240,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingRoutine) {
                            base::Seconds(30),
                            /*terminate_upon_input=*/false,
                            /*routine=*/absl::nullopt, std::move(params_dict)),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());
@@ -258,7 +258,7 @@ TEST_F(DeviceCommandRunRoutineJobTest, CommandPayloadMissingParamDict) {
                            base::Seconds(30),
                            /*terminate_upon_input=*/false, kValidRoutineEnum,
                            /*params=*/absl::nullopt),
-      nullptr));
+      em::SignedData()));
 
   EXPECT_EQ(kUniqueID, job->unique_id());
   EXPECT_EQ(RemoteCommandJob::INVALID, job->status());

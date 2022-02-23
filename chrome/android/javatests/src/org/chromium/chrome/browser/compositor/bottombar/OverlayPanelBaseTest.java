@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.compositor.bottombar;
 
 import android.app.Activity;
 import android.content.Context;
-import android.support.test.InstrumentationRegistry;
 import android.view.ViewGroup;
 
 import androidx.annotation.Nullable;
@@ -38,8 +37,7 @@ import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.WindowAndroid;
-import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 
 /**
  * Tests logic in the OverlayPanelBase.
@@ -57,10 +55,8 @@ public class OverlayPanelBaseTest {
     private static final int MOCK_TOOLBAR_HEIGHT = 100;
 
     @ClassRule
-    public static DisableAnimationsTestRule disableAnimationsRule = new DisableAnimationsTestRule();
-    @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> activityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> activityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule();
@@ -153,11 +149,9 @@ public class OverlayPanelBaseTest {
             mWindowAndroid = new ActivityWindowAndroid(mActivity, /* listenToActivityState= */ true,
                     IntentRequestTracker.createFromActivity(mActivity));
             OverlayPanelManager panelManager = new OverlayPanelManager();
-            mExpandPanel = new MockOverlayPanel(InstrumentationRegistry.getTargetContext(),
-                    mLayoutManager, panelManager, mBrowserControlsStateProvider, mWindowAndroid,
-                    mCompositorViewHolder, mTab);
-            mNoExpandPanel = new NoExpandMockOverlayPanel(
-                    InstrumentationRegistry.getTargetContext(), mLayoutManager, panelManager,
+            mExpandPanel = new MockOverlayPanel(mActivity, mLayoutManager, panelManager,
+                    mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
+            mNoExpandPanel = new NoExpandMockOverlayPanel(mActivity, mLayoutManager, panelManager,
                     mBrowserControlsStateProvider, mWindowAndroid, mCompositorViewHolder, mTab);
         });
     }

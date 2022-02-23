@@ -79,6 +79,7 @@ class ChromeKeyboardControllerClientTestHelper::FakeKeyboardController
     return ash::KeyRepeatSettings{true, base::Milliseconds(1000),
                                   base::Milliseconds(1000)};
   }
+  bool AreTopRowKeysFunctionKeys() override { return false; }
 
  private:
   keyboard::KeyboardConfig keyboard_config_;

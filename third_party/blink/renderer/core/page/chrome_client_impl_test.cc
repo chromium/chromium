@@ -180,7 +180,9 @@ class FakeColorChooserClient : public GarbageCollected<FakeColorChooserClient>,
   void DidChooseColor(const Color& color) override {}
   void DidEndChooser() override {}
   Element& OwnerElement() const override { return *owner_element_; }
-  IntRect ElementRectRelativeToViewport() const override { return IntRect(); }
+  gfx::Rect ElementRectRelativeToViewport() const override {
+    return gfx::Rect();
+  }
   Color CurrentColor() override { return Color(); }
   bool ShouldShowSuggestions() const override { return false; }
   Vector<mojom::blink::ColorSuggestionPtr> Suggestions() const override {

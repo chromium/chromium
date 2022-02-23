@@ -40,6 +40,8 @@ const char* ConnectorPref(AnalysisConnector connector) {
       return kOnFileDownloadedPref;
     case AnalysisConnector::FILE_ATTACHED:
       return kOnFileAttachedPref;
+    case AnalysisConnector::PRINT:
+      return kOnPrintPref;
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED() << "Using unspecified analysis connector";
       return "";
@@ -68,6 +70,8 @@ const char* ConnectorScopePref(AnalysisConnector connector) {
       return kOnFileDownloadedScopePref;
     case AnalysisConnector::FILE_ATTACHED:
       return kOnFileAttachedScopePref;
+    case AnalysisConnector::PRINT:
+      return kOnPrintScopePref;
     case AnalysisConnector::ANALYSIS_CONNECTOR_UNSPECIFIED:
       NOTREACHED() << "Using unspecified analysis connector";
       return "";

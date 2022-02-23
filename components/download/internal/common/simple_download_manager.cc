@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "components/download/public/common/simple_download_manager.h"
+#include "base/observer_list.h"
 
 namespace download {
 

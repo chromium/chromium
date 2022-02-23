@@ -8,6 +8,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/clipboard/data_object.h"
 #include "third_party/blink/renderer/core/dom/document.h"
+#include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/fileapi/file_list.h"
 #include "third_party/blink/renderer/core/frame/frame_test_helpers.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
@@ -19,8 +20,9 @@
 #include "third_party/blink/renderer/core/loader/empty_clients.h"
 #include "third_party/blink/renderer/core/page/drag_data.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
+#include "third_party/blink/renderer/core/testing/null_execution_context.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/date_math.h"
 
 namespace blink {
@@ -51,7 +53,9 @@ TEST(FileInputTypeTest, createFileList) {
   files.push_back(CreateFileChooserFileInfoFileSystem(
       url, base::Time::FromJsTime(1.0 * kMsPerDay + 3), 64));
 
-  FileList* list = FileInputType::CreateFileList(files, base::FilePath());
+  auto* execution_context = MakeGarbageCollected<NullExecutionContext>();
+  FileList* list = FileInputType::CreateFileList(*execution_context, files,
+                                                 base::FilePath());
   ASSERT_TRUE(list);
   ASSERT_EQ(2u, list->length());
 
@@ -64,6 +68,7 @@ TEST(FileInputTypeTest, createFileList) {
   EXPECT_EQ(url, list->item(1)->FileSystemURL());
   EXPECT_EQ(64u, list->item(1)->size());
   EXPECT_EQ(1.0 * kMsPerDay + 3, list->item(1)->lastModified());
+  execution_context->NotifyContextDestroyed();
 }
 
 TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
@@ -73,8 +78,8 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
   InputType* file_input = MakeGarbageCollected<FileInputType>(*input);
 
   DataObject* native_file_raw_drag_data = DataObject::Create();
-  const DragData native_file_drag_data(native_file_raw_drag_data, FloatPoint(),
-                                       FloatPoint(), kDragOperationCopy);
+  const DragData native_file_drag_data(native_file_raw_drag_data, gfx::PointF(),
+                                       gfx::PointF(), kDragOperationCopy);
   native_file_drag_data.PlatformData()->Add(
       MakeGarbageCollected<File>("/native/path"));
   native_file_drag_data.PlatformData()->SetFilesystemId("fileSystemId");
@@ -85,13 +90,13 @@ TEST(FileInputTypeTest, ignoreDroppedNonNativeFiles) {
 
   DataObject* non_native_file_raw_drag_data = DataObject::Create();
   const DragData non_native_file_drag_data(non_native_file_raw_drag_data,
-                                           FloatPoint(), FloatPoint(),
+                                           gfx::PointF(), gfx::PointF(),
                                            kDragOperationCopy);
   FileMetadata metadata;
   metadata.length = 1234;
   const KURL url("filesystem:http://example.com/isolated/hash/non-native-file");
-  non_native_file_drag_data.PlatformData()->Add(
-      File::CreateForFileSystemFile(url, metadata, File::kIsUserVisible));
+  non_native_file_drag_data.PlatformData()->Add(File::CreateForFileSystemFile(
+      url, metadata, File::kIsUserVisible, BlobDataHandle::Create()));
   non_native_file_drag_data.PlatformData()->SetFilesystemId("fileSystemId");
   file_input->ReceiveDroppedFiles(&non_native_file_drag_data);
   // Dropping non-native files should not change the existing files.
@@ -136,7 +141,7 @@ TEST(FileInputTypeTest, setFilesFromPaths) {
 TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
   auto* chrome_client = MakeGarbageCollected<WebKitDirectoryChromeClient>();
   auto page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(), chrome_client);
+      std::make_unique<DummyPageHolder>(gfx::Size(), chrome_client);
   Document& doc = page_holder->GetDocument();
 
   doc.body()->setInnerHTML("<input type=file webkitdirectory>");
@@ -145,7 +150,7 @@ TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
   base::RunLoop run_loop;
   MockFileChooser chooser(doc.GetFrame()->GetBrowserInterfaceBroker(),
                           run_loop.QuitClosure());
-  DragData drag_data(DataObject::Create(), FloatPoint(), FloatPoint(),
+  DragData drag_data(DataObject::Create(), gfx::PointF(), gfx::PointF(),
                      kDragOperationCopy);
   drag_data.PlatformData()->Add(MakeGarbageCollected<File>("/foo/bar"));
   input.ReceiveDroppedFiles(&drag_data);
@@ -159,7 +164,7 @@ TEST(FileInputTypeTest, DropTouchesNoPopupOpeningObserver) {
 
 TEST(FileInputTypeTest, BeforePseudoCrash) {
   std::unique_ptr<DummyPageHolder> page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(800, 600));
+      std::make_unique<DummyPageHolder>(gfx::Size(800, 600));
   Document& doc = page_holder->GetDocument();
   doc.documentElement()->setInnerHTML(R"HTML(
 <style>

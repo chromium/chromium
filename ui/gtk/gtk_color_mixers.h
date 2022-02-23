@@ -13,8 +13,8 @@ class ColorProvider;
 
 namespace gtk {
 
-void AddGtkNativeCoreColorMixer(ui::ColorProvider* provider,
-                                const ui::ColorProviderManager::Key& key);
+void AddGtkNativeColorMixer(ui::ColorProvider* provider,
+                            const ui::ColorProviderManager::Key& key);
 
 }  // namespace gtk
 

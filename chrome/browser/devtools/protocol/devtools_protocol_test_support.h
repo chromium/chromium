@@ -15,6 +15,8 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "content/public/browser/devtools_agent_host_client.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+#include "url/origin.h"
 
 class DevToolsProtocolTestBase : public InProcessBrowserTest,
                                  public content::DevToolsAgentHostClient {
@@ -25,6 +27,8 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   void SetAllowUnsafeOperations(bool allow) {
     allow_unsafe_operations_ = allow;
   }
+
+  absl::optional<url::Origin> GetNavigationInitiatorOrigin() override;
 
  protected:
   using NotificationMatcher = base::RepeatingCallback<bool(const base::Value&)>;
@@ -67,6 +71,7 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   // DevToolsAgentHostClient interface
   void AgentHostClosed(content::DevToolsAgentHost* agent_host) override;
   bool AllowUnsafeOperations() override;
+  bool MaySendInputEventsToBrowser() override;
 
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
   int last_sent_id_ = 0;
@@ -80,6 +85,8 @@ class DevToolsProtocolTestBase : public InProcessBrowserTest,
   NotificationMatcher waiting_for_notification_matcher_;
   base::Value waiting_for_notification_params_;
   bool allow_unsafe_operations_ = true;
+  bool may_send_input_event_to_browser_ = true;
+  absl::optional<url::Origin> navigation_initiator_origin_;
 };
 
 #endif  // CHROME_BROWSER_DEVTOOLS_PROTOCOL_DEVTOOLS_PROTOCOL_TEST_SUPPORT_H_

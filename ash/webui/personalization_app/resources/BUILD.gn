@@ -2,11 +2,14 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//third_party/closure_compiler/compile_js.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_js.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+
+assert(is_chromeos_ash)
 
 preprocess_folder = "preprocessed"
 
@@ -16,47 +19,93 @@ preprocess_folder = "preprocessed"
 # `static_resource_files` are non-js files, e.g. image, html, css
 static_js_files = [
   "common/constants.ts",
-  "common/icons.ts",
-  "common/iframe_api.js",
-  "common/styles.ts",
-  "common/utils.js",
+  "common/utils.ts",
 
-  "trusted/mojo_interface_provider.js",
-  "trusted/personalization_actions.js",
-  "trusted/personalization_app.js",
-  "trusted/personalization_controller.js",
-  "trusted/personalization_message_handler.js",
-  "trusted/personalization_reducers.js",
-  "trusted/personalization_store.js",
-  "trusted/personalization_test_api.js",
-  "trusted/styles.js",
-  "trusted/utils.js",
+  "trusted/ambient/ambient_actions.ts",
+  "trusted/ambient/ambient_controller.ts",
+  "trusted/ambient/ambient_interface_provider.ts",
+  "trusted/ambient/ambient_observer.ts",
+  "trusted/ambient/ambient_reducers.ts",
+  "trusted/ambient/ambient_state.ts",
+  "trusted/iframe_api.ts",
+  "trusted/personalization_actions.ts",
+  "trusted/personalization_app.ts",
+  "trusted/personalization_reducers.ts",
+  "trusted/personalization_state.ts",
+  "trusted/personalization_store.ts",
+  "trusted/personalization_test_api.ts",
+  "trusted/theme/theme_actions.ts",
+  "trusted/theme/theme_controller.ts",
+  "trusted/theme/theme_interface_provider.ts",
+  "trusted/theme/theme_observer.ts",
+  "trusted/theme/theme_reducers.ts",
+  "trusted/theme/theme_state.ts",
+  "trusted/user/user_actions.ts",
+  "trusted/user/user_controller.ts",
+  "trusted/user/user_image_observer.ts",
+  "trusted/user/user_interface_provider.ts",
+  "trusted/user/user_reducers.ts",
+  "trusted/user/user_state.ts",
+  "trusted/user/webcam_utils_proxy.ts",
+  "trusted/utils.ts",
+  "trusted/wallpaper/wallpaper_actions.ts",
+  "trusted/wallpaper/untrusted_message_handler.ts",
+  "trusted/wallpaper/wallpaper_controller.ts",
+  "trusted/wallpaper/wallpaper_interface_provider.ts",
+  "trusted/wallpaper/wallpaper_observer.ts",
+  "trusted/wallpaper/wallpaper_reducers.ts",
+  "trusted/wallpaper/wallpaper_state.ts",
+  "trusted/wallpaper/index.ts",
 
-  "untrusted/setup.js",
-  "untrusted/styles.ts",
+  "untrusted/iframe_api.ts",
+  "untrusted/setup.ts",
 ]
 
 polymer_js_files = [
-  "trusted/google_photos_element.js",
-  "trusted/local_images_element.js",
-  "trusted/personalization_grid_item_element.js",
-  "trusted/personalization_router_element.js",
-  "trusted/personalization_toast_element.js",
-  "trusted/wallpaper_breadcrumb_element.js",
-  "trusted/wallpaper_collections_element.js",
-  "trusted/wallpaper_error_element.js",
-  "trusted/wallpaper_fullscreen_element.js",
-  "trusted/wallpaper_images_element.js",
-  "trusted/wallpaper_selected_element.js",
+  "common/icons.ts",
+  "common/styles.ts",
 
-  "untrusted/collections_grid.js",
-  "untrusted/images_grid.js",
+  "trusted/ambient/ambient_preview_element.ts",
+  "trusted/ambient/ambient_subpage_element.ts",
+  "trusted/ambient/ambient_weather_element.ts",
+  "trusted/ambient/toggle_row_element.ts",
+  "trusted/ambient/topic_source_item_element.ts",
+  "trusted/ambient/topic_source_list_element.ts",
+  "trusted/personalization_main_element.ts",
+  "trusted/personalization_router_element.ts",
+  "trusted/personalization_theme_element.ts",
+  "trusted/personalization_toast_element.ts",
+  "trusted/personalization_breadcrumb_element.ts",
+  "trusted/user/avatar_camera_element.ts",
+  "trusted/user/avatar_list_element.ts",
+  "trusted/user/user_preview_element.ts",
+  "trusted/user/user_subpage_element.ts",
+  "trusted/wallpaper/google_photos_albums_element.ts",
+  "trusted/wallpaper/google_photos_collection_element.ts",
+  "trusted/wallpaper/google_photos_photos_by_album_id_element.ts",
+  "trusted/wallpaper/google_photos_photos_element.ts",
+  "trusted/wallpaper/google_photos_zero_state_element.ts",
+  "trusted/wallpaper/local_images_element.ts",
+  "trusted/wallpaper/styles.ts",
+  "trusted/wallpaper/wallpaper_collections_element.ts",
+  "trusted/wallpaper/wallpaper_error_element.ts",
+  "trusted/wallpaper/wallpaper_fullscreen_element.ts",
+  "trusted/wallpaper/wallpaper_grid_item_element.ts",
+  "trusted/wallpaper/wallpaper_images_element.ts",
+  "trusted/wallpaper/wallpaper_preview_element.ts",
+  "trusted/wallpaper/wallpaper_selected_element.ts",
+  "trusted/wallpaper/wallpaper_subpage_element.ts",
+
+  "untrusted/collections_grid.ts",
+  "untrusted/images_grid.ts",
+  "untrusted/styles.ts",
 ]
 
 static_resource_files = [
   "icon_192.png",
 
   "common/base.css",
+  "common/google_photos.svg",
   "common/no_images.svg",
 
   "trusted/index.html",
@@ -77,13 +126,10 @@ preprocess_if_expr("preprocess") {
 }
 
 preprocess_if_expr("preprocess_generated") {
-  deps = [
-    ":web_components",
-    "untrusted:shared_vars_css_module",
-  ]
+  deps = [ ":web_components" ]
   in_folder = target_gen_dir
   out_folder = "$target_gen_dir/$preprocess_folder"
-  in_files = polymer_js_files + [ "untrusted/untrusted_shared_vars_css.js" ]
+  in_files = polymer_js_files
 }
 
 copy("copy_mojo_to_trusted") {
@@ -94,14 +140,13 @@ copy("copy_mojo_to_trusted") {
 }
 
 ts_library("build_ts") {
+  composite = true
   root_dir = "$target_gen_dir/$preprocess_folder"
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
 
-  in_files = static_js_files + polymer_js_files + [
-               "trusted/personalization_app.mojom-webui.js",
-               "untrusted/untrusted_shared_vars_css.js",
-             ]
+  in_files = static_js_files + polymer_js_files +
+             [ "trusted/personalization_app.mojom-webui.js" ]
 
   deps = [
     "//third_party/polymer/v3_0:library",
@@ -109,12 +154,11 @@ ts_library("build_ts") {
     "//ui/webui/resources/mojo:library",
   ]
 
-  definitions = []
-
   extra_deps = [
     ":copy_mojo_to_trusted",
     ":preprocess",
     ":preprocess_generated",
+    "//ui/webui/resources:generate_definitions",
   ]
 }
 

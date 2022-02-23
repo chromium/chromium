@@ -8,7 +8,6 @@
 #include <list>
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome.h"
 

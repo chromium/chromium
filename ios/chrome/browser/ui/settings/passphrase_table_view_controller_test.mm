@@ -78,9 +78,7 @@ void PassphraseTableViewControllerTest::SetUp() {
           &AuthenticationServiceFake::CreateAuthenticationService));
   test_cbs_builder.SetPrefService(CreatePrefService());
   chrome_browser_state_ = test_cbs_builder.Build();
-  WebStateList* web_state_list = nullptr;
-  browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get(),
-                                           web_state_list);
+  browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
   app_state_ = [[AppState alloc] initWithBrowserLauncher:nil
                                       startupInformation:nil
                                      applicationDelegate:nil];
@@ -108,7 +106,7 @@ void PassphraseTableViewControllerTest::SetUp() {
   AuthenticationService* auth_service =
       AuthenticationServiceFactory::GetForBrowserState(
           chrome_browser_state_.get());
-  auth_service->SignIn(account_manager_service->GetDefaultIdentity());
+  auth_service->SignIn(account_manager_service->GetDefaultIdentity(), nil);
 }
 
 void PassphraseTableViewControllerTest::SetUpNavigationController(

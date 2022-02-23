@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_SVG_PROPERTIES_SVG_LISTABLE_PROPERTY_H_
 
 #include "third_party/blink/renderer/core/svg/properties/svg_property.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 

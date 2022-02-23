@@ -13,7 +13,7 @@ namespace {
 
 constexpr int g_tag = 0;
 
-}  // namesapce
+}  // namespace
 
 WebSocketHandshakeRequestInfoImpl::WebSocketHandshakeRequestInfoImpl(
     int child_id,

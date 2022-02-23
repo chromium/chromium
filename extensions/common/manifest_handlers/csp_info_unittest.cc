@@ -163,6 +163,11 @@ TEST_F(CSPInfoUnitTest, CSPDictionary_ExtensionPages) {
                    errors::kInvalidCSPInsecureValueError,
                    keys::kContentSecurityPolicy_ExtensionPagesPath,
                    "'wasm-eval'", "worker-src")),
+      Testcase("csp_dictionary_with_unsafe_wasm.json",
+               ErrorUtils::FormatErrorMessage(
+                   errors::kInvalidCSPInsecureValueError,
+                   keys::kContentSecurityPolicy_ExtensionPagesPath,
+                   "'wasm-unsafe-eval'", "worker-src")),
   };
   RunTestcases(testcases, base::size(testcases), EXPECT_TYPE_ERROR);
 }
@@ -180,6 +185,8 @@ TEST_F(CSPInfoUnitTest, AllowWasmInMV3) {
   } cases[] = {
       {"csp_dictionary_with_wasm.json",
        "worker-src 'self' 'wasm-eval'; default-src 'self'"},
+      {"csp_dictionary_with_unsafe_wasm.json",
+       "worker-src 'self' 'wasm-unsafe-eval'; default-src 'self'"},
       {"csp_dictionary_empty_v3.json", kDefaultSecureCSPWithWasmAllowed},
       {"csp_dictionary_valid_1.json", "default-src 'none'"},
       {"csp_omitted_mv2.json", kDefaultExtensionPagesCSP}};

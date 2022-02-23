@@ -27,16 +27,6 @@
       "use_goma": true
     }
   },
-  "linux-rel-swarming-staging": {
-    "gn_args": {
-      "dcheck_always_on": false,
-      "ffmpeg_branding": "Chrome",
-      "is_component_build": false,
-      "is_debug": false,
-      "proprietary_codecs": true,
-      "use_goma": true
-    }
-  },
   "linux-ssd-rel-swarming": {
     "gn_args": {
       "dcheck_always_on": false,
@@ -80,7 +70,7 @@
       "use_goma": true
     }
   },
-  "win-rel-swarming-staging": {
+  "win11-rel-swarming": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",

@@ -7,18 +7,21 @@
 #include <memory>
 
 #include "base/feature_list.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/bindings/core/v8/source_location.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_binding_for_core.h"
 #include "third_party/blink/renderer/core/core_probe_sink.h"
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
+#include "third_party/blink/renderer/core/inspector/thread_debugger.h"
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_initiator_type_names.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_request.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
+#include "v8/include/v8-inspector.h"
 #include "v8/include/v8.h"
 
 namespace blink {
@@ -52,6 +55,11 @@ namespace features {
 const base::Feature kAsyncStackAdTagging{"AsyncStackAdTagging",
                                          base::FEATURE_ENABLED_BY_DEFAULT};
 }  // namespace features
+
+AdTracker::AdScriptIdentifier::AdScriptIdentifier(
+    const v8_inspector::V8DebuggerId& context_id,
+    int id)
+    : context_id(context_id), id(id) {}
 
 // static
 AdTracker* AdTracker::FromExecutionContext(
@@ -119,7 +127,22 @@ ExecutionContext* AdTracker::GetCurrentExecutionContext() {
   return context.IsEmpty() ? nullptr : ToExecutionContext(context);
 }
 
+v8_inspector::V8DebuggerId GetDebuggerIdForContext(
+    const v8::Local<v8::Context>& v8_context) {
+  if (v8_context.IsEmpty()) {
+    return v8_inspector::V8DebuggerId();
+  }
+  int contextId = v8_inspector::V8ContextInfo::executionContextId(v8_context);
+  ThreadDebugger* thread_debugger =
+      ThreadDebugger::From(v8_context->GetIsolate());
+  DCHECK(thread_debugger);
+  v8_inspector::V8Inspector* inspector = thread_debugger->GetV8Inspector();
+  DCHECK(inspector);
+  return inspector->uniqueDebuggerId(contextId);
+}
+
 void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
+                                  const v8::Local<v8::Context>& v8_context,
                                   const String& script_url,
                                   int script_id) {
   bool is_ad = false;
@@ -146,8 +169,14 @@ void AdTracker::WillExecuteScript(ExecutionContext* execution_context,
     is_ad = IsKnownAdScript(execution_context, script_url);
 
   stack_frame_is_ad_.push_back(is_ad);
-  if (is_ad)
+  if (is_ad) {
+    if (num_ads_in_stack_ == 0) {
+      // Stash the first ad script on the stack.
+      bottom_most_ad_script_ =
+          AdScriptIdentifier(GetDebuggerIdForContext(v8_context), script_id);
+    }
     num_ads_in_stack_ += 1;
+  }
 }
 
 void AdTracker::DidExecuteScript() {
@@ -156,10 +185,14 @@ void AdTracker::DidExecuteScript() {
     num_ads_in_stack_ -= 1;
   }
   stack_frame_is_ad_.pop_back();
+
+  if (num_ads_in_stack_ == 0)
+    bottom_most_ad_script_.reset();
 }
 
 void AdTracker::Will(const probe::ExecuteScript& probe) {
-  WillExecuteScript(probe.context, probe.script_url, probe.script_id);
+  WillExecuteScript(probe.context, probe.v8_context, probe.script_url,
+                    probe.script_id);
 }
 
 void AdTracker::Did(const probe::ExecuteScript& probe) {
@@ -183,7 +216,8 @@ void AdTracker::Will(const probe::CallFunction& probe) {
     if (!resource_name_string.IsEmpty())
       script_url = ToCoreString(resource_name_string.ToLocalChecked());
   }
-  WillExecuteScript(probe.context, script_url, probe.function->ScriptId());
+  WillExecuteScript(probe.context, probe.v8_context, script_url,
+                    probe.function->ScriptId());
 }
 
 void AdTracker::Did(const probe::CallFunction& probe) {
@@ -228,35 +262,43 @@ bool AdTracker::CalculateIfAdSubresource(
   return known_ad;
 }
 
-void AdTracker::DidCreateAsyncTask(probe::AsyncTaskId* task) {
-  DCHECK(task);
+void AdTracker::DidCreateAsyncTask(probe::AsyncTaskContext* task_context) {
+  DCHECK(task_context);
   if (!async_stack_enabled_)
     return;
 
   if (IsAdScriptInStack(StackType::kBottomAndTop))
-    task->SetAdTask();
+    task_context->SetAdTask();
 }
 
-void AdTracker::DidStartAsyncTask(probe::AsyncTaskId* task) {
-  DCHECK(task);
+void AdTracker::DidStartAsyncTask(probe::AsyncTaskContext* task_context) {
+  DCHECK(task_context);
   if (!async_stack_enabled_)
     return;
 
-  if (task->IsAdTask())
+  if (task_context->IsAdTask())
     running_ad_async_tasks_ += 1;
 }
 
-void AdTracker::DidFinishAsyncTask(probe::AsyncTaskId* task) {
-  DCHECK(task);
+void AdTracker::DidFinishAsyncTask(probe::AsyncTaskContext* task_context) {
+  DCHECK(task_context);
   if (!async_stack_enabled_)
     return;
 
-  if (task->IsAdTask())
+  if (task_context->IsAdTask())
     running_ad_async_tasks_ -= 1;
 }
 
-bool AdTracker::IsAdScriptInStack(StackType stack_type) {
-  if (num_ads_in_stack_ > 0 || running_ad_async_tasks_ > 0)
+bool AdTracker::IsAdScriptInStack(
+    StackType stack_type,
+    absl::optional<AdScriptIdentifier>* out_ad_script) {
+  if (num_ads_in_stack_ > 0) {
+    if (out_ad_script)
+      *out_ad_script = bottom_most_ad_script_;
+    return true;
+  }
+
+  if (running_ad_async_tasks_ > 0)
     return true;
 
   ExecutionContext* execution_context = GetCurrentExecutionContext();

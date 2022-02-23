@@ -7,6 +7,7 @@
 #include <algorithm>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
@@ -49,7 +50,7 @@ constexpr int kVerticalPaddingBottom = 5;
 bool CanUseTranslucentTooltipWidget() {
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || defined(OS_WIN)
+#if (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)) || BUILDFLAG(IS_WIN)
   return false;
 #else
   return true;
@@ -180,7 +181,7 @@ class TooltipAura::TooltipWidget : public Widget {
   }
 
  private:
-  TooltipView* tooltip_view_ = nullptr;
+  raw_ptr<TooltipView> tooltip_view_ = nullptr;
 };
 
 gfx::RenderText* TooltipAura::GetRenderTextForTest() {

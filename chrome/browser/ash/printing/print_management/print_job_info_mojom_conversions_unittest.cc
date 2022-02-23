@@ -9,8 +9,8 @@
 #include "ash/webui/print_management/mojom/printing_manager.mojom.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
-#include "chrome/browser/chromeos/printing/cups_print_job.h"
-#include "chrome/browser/chromeos/printing/history/print_job_info.pb.h"
+#include "chrome/browser/ash/printing/cups_print_job.h"
+#include "chrome/browser/ash/printing/history/print_job_info.pb.h"
 #include "chrome/browser/chromeos/printing/printer_error_codes.h"
 #include "chrome/browser/printing/print_job.h"
 #include "chromeos/printing/printer_configuration.h"
@@ -19,7 +19,7 @@
 namespace ash {
 namespace {
 
-namespace proto = ::chromeos::printing::proto;
+namespace proto = printing::proto;
 namespace mojom = printing::printing_manager::mojom;
 
 constexpr char kName[] = "name";
@@ -56,17 +56,17 @@ proto::PrintJobInfo CreatePrintJobInfoProto() {
   return print_job_info;
 }
 
-std::unique_ptr<chromeos::CupsPrintJob> CreateCupsPrintJob() {
+std::unique_ptr<CupsPrintJob> CreateCupsPrintJob() {
   chromeos::Printer printer;
   printer.set_display_name(kName);
   printer.SetUri(kUri);
   printer.set_id(kPrinterId);
 
-  auto cups_print_job = std::make_unique<chromeos::CupsPrintJob>(
+  auto cups_print_job = std::make_unique<CupsPrintJob>(
       printer, /*job_id=*/0, kTitle, kPagesNumber,
       ::printing::PrintJob::Source::PRINT_PREVIEW, kId, proto::PrintSettings());
   cups_print_job->set_printed_page_number(kPrintedPageNumber);
-  cups_print_job->set_state(chromeos::CupsPrintJob::State::STATE_STARTED);
+  cups_print_job->set_state(CupsPrintJob::State::STATE_STARTED);
   return cups_print_job;
 }
 

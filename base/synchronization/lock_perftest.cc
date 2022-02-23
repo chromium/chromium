@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
@@ -53,8 +54,8 @@ class Spin : public PlatformThread::Delegate {
   void Stop() { should_stop_ = true; }
 
  private:
-  Lock* lock_;
-  uint32_t* data_ GUARDED_BY(lock_);
+  raw_ptr<Lock> lock_;
+  raw_ptr<uint32_t> data_ GUARDED_BY(lock_);
   std::atomic<bool> should_stop_;
 };
 
@@ -62,7 +63,7 @@ class Spin : public PlatformThread::Delegate {
 
 TEST(LockPerfTest, Simple) {
   LapTimer timer(kWarmupRuns, kTimeLimit, kTimeCheckInterval);
-  uint32_t data = 0;
+  [[maybe_unused]] uint32_t data = 0;
 
   Lock lock;
 
@@ -73,7 +74,6 @@ TEST(LockPerfTest, Simple) {
     timer.NextLap();
   } while (!timer.HasTimeLimitExpired());
 
-  ALLOW_UNUSED_LOCAL(data);
   auto reporter = SetUpReporter(kStoryBaseline);
   reporter.AddResult(kMetricLockUnlockThroughput, timer.LapsPerSecond());
 }

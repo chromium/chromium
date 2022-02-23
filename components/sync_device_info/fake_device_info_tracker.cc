@@ -4,11 +4,11 @@
 
 #include "components/sync_device_info/fake_device_info_tracker.h"
 
-#include <algorithm>
 #include <map>
 
 #include "base/check.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "components/sync/protocol/sync_enums.pb.h"
 #include "components/sync_device_info/device_info.h"
 
@@ -99,7 +99,7 @@ void FakeDeviceInfoTracker::Add(const DeviceInfo* device) {
 void FakeDeviceInfoTracker::Replace(const DeviceInfo* old_device,
                                     const DeviceInfo* new_device) {
   std::vector<const DeviceInfo*>::iterator it =
-      std::find(devices_.begin(), devices_.end(), old_device);
+      base::ranges::find(devices_, old_device);
   DCHECK(devices_.end() != it) << "Tracker doesn't contain device";
   *it = new_device;
   for (auto& observer : observers_)

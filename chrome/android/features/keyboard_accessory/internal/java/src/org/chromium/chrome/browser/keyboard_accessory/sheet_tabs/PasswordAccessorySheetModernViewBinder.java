@@ -19,8 +19,8 @@ import org.chromium.chrome.browser.keyboard_accessory.data.UserInfoField;
 import org.chromium.chrome.browser.keyboard_accessory.helper.FaviconHelper;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabModel.AccessorySheetDataPiece;
 import org.chromium.chrome.browser.keyboard_accessory.sheet_tabs.AccessorySheetTabViewBinder.ElementViewHolder;
+import org.chromium.components.browser_ui.widget.chips.ChipView;
 import org.chromium.ui.modelutil.ListModel;
-import org.chromium.ui.widget.ChipView;
 
 /**
  * This stateless class provides methods to bind a {@link ListModel<AccessorySheetDataPiece>}

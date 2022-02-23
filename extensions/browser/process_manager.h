@@ -15,7 +15,7 @@
 
 #include "base/callback.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
@@ -24,6 +24,7 @@
 #include "content/public/browser/devtools_agent_host_observer.h"
 #include "content/public/browser/render_process_host.h"
 #include "content/public/browser/render_process_host_observer.h"
+#include "content/public/browser/service_worker_external_request_timeout_type.h"
 #include "extensions/browser/activity.h"
 #include "extensions/browser/event_page_tracker.h"
 #include "extensions/browser/extension_host_observer.h"
@@ -161,8 +162,10 @@ class ProcessManager : public KeyedService,
   // worker with id |worker_id|.
   // The increment method returns the guid that needs to be passed to the
   // decrement method.
+  // |timeout_type| is the SW's timeout behavior.
   std::string IncrementServiceWorkerKeepaliveCount(
       const WorkerId& worker_id,
+      content::ServiceWorkerExternalRequestTimeoutType timeout_type,
       Activity::Type activity_type,
       const std::string& extra_data);
   // Decrements the ref-count of the specified worker with |worker_id| that
@@ -261,7 +264,7 @@ class ProcessManager : public KeyedService,
                  ExtensionRegistry* registry);
 
   // Not owned. Also used by IncognitoProcessManager.
-  ExtensionRegistry* extension_registry_;
+  raw_ptr<ExtensionRegistry> extension_registry_;
 
  private:
   friend class ProcessManagerFactory;
@@ -354,7 +357,7 @@ class ProcessManager : public KeyedService,
   scoped_refptr<content::SiteInstance> site_instance_;
 
   // The browser context associated with the |site_instance_|.
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 
   // Contains all active extension-related RenderFrameHost instances for all
   // extensions. We also keep a cache of the host's view type, because that

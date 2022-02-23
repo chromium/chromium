@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangulski način Ahnmatae</translation>
 <translation id="1155759005174418845">katalonščina</translation>
 <translation id="1168100932582989117">Googlovi imenski strežniki</translation>
+<translation id="1171082344678443012">Stisnjeni arhiv XZ</translation>
 <translation id="1172970565351728681">Preostali čas: približno <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Preimenuj</translation>
 <translation id="1173916544412572294">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, stanje baterije telefona je <ph name="BATTERY_STATUS" /> %, podrobnosti</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Če formatirate pogon, se izbrišejo vsi podatki, shranjeni na njem. Tega dejanja ni mogoče razveljaviti.</translation>
 <translation id="2025955442973426285">tigrinja</translation>
 <translation id="2028997212275086731">Arhiv RAR</translation>
+<translation id="2036414735548252477">Stisnjeni arhiv tar LZMA</translation>
 <translation id="2037845485764049925">ruščina</translation>
 <translation id="2044023416777079300">Modem ni registriran</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Skupna raba z: <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Naprave Chromebit</translation>
 <translation id="3085752524577180175">Gostitelj SOCKS</translation>
+<translation id="3104793765551262433">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, blokiral skrbnik, podrobnosti</translation>
 <translation id="3113153474486991170">Poti »<ph name="PATH" />« ni bilo mogoče odpreti s te lokacije. Kopirajte v »Moje datoteke«, če želite odpreti.</translation>
 <translation id="3113592018909187986">Imate še 1 poskus. Dokler ne nastavite nove kode PIN, ne bo mogoče uporabljati tega omrežja.</translation>
 <translation id="3124404833828281817">Oseba, ki sanjari</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">angleščina (ZDA) z mednarodno računalniško tipkovnico</translation>
 <translation id="3567221313191587603">Izberite datoteko in preklopite <ph name="OFFLINE_CHECKBOX_NAME" /> v vklopljen položaj, če želite za datoteke omogočiti dostop brez povezave.</translation>
 <translation id="357479282490346887">litovščina</translation>
+<translation id="3587482841069643663">Vse</translation>
 <translation id="3592251141500063301">Datoteke <ph name="FILE_NAME" /> ni bilo mogoče omogočiti za dostop brez povezave.</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" />, <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">kanadska francoščina</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Vse je varnostno kopirano!</translation>
 <translation id="3634507049637220048">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, upravlja ga vaš skrbnik, podrobnosti</translation>
 <translation id="3645233063072417428">Toliko elementov je bilo premaknjenih: <ph name="NUMBER_OF_ITEMS" />.</translation>
-<translation id="3645531960514756307">Odpni mapo</translation>
 <translation id="3685122418104378273">Sinhronizacija z Googlom Drive je ob uporabi prenosa podatkov v mobilnih omrežjih privzeto onemogočena.</translation>
 <translation id="3689865792480713551">Prekliči: <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212"><ph name="NETWORK_INDEX" />. omrežje od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, neaktivirano, <ph name="CONNECTION_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, podrobnosti</translation>
 <translation id="3691184985318546178">singalščina</translation>
 <translation id="3726463242007121105">Naprave ni mogoče odpreti, ker njen datotečni sistem ni podprt.</translation>
 <translation id="3727148787322499904">Sprememba te nastavitve vpliva na vsa omrežja v skupni rabi</translation>
+<translation id="3737576078404241332">Odstrani iz stranske vrstice</translation>
 <translation id="3741243925913727067">Varnostno kopiranje fotografij in videoposnetkov iz predstavnostne naprave v Google Drive.</translation>
 <translation id="3749289110408117711">Ime datoteke</translation>
 <translation id="3780536599611287598">Nimate dovoljenja za premikanje datotek v mapo »<ph name="FOLDER_NAME" />«.</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Botanist</translation>
 <translation id="4326192123064055915">Kava</translation>
 <translation id="4336032328163998280">Kopiranje ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Dodaj v stransko vrstico</translation>
 <translation id="4348495354623233847">soranska kurdščina s tipkovnico na arabski osnovi</translation>
 <translation id="4363958938297989186">ruščina s fonetično tipkovnico</translation>
 <translation id="4364327530094270451">Melona</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> B</translation>
 <translation id="4880214202172289027">Drsnik za glasnost</translation>
 <translation id="4881695831933465202">Odpri</translation>
+<translation id="4886199584824489598">Stisnjeni arhiv Bzip2</translation>
 <translation id="4900532980794411603">Deljenje s programom Parallels Desktop</translation>
 <translation id="4902546322522096650">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, moč signala je <ph name="SIGNAL_STRENGTH" /> %, vzpostavitev povezave</translation>
 <translation id="4905417359854579806">Pripravljeno za varnostno kopiranje: <ph name="FILE_COUNT" /></translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013">Omrežje <ph name="NETWORK_TYPE" />, povezava ni vzpostavljena</translation>
 <translation id="6074825444536523002">Googlov obrazec</translation>
 <translation id="6079871810119356840">madžarščina s tipkovnico Qwerty</translation>
+<translation id="6082256976217156453">Stisnjeni arhiv LZMA</translation>
 <translation id="6096979789310008754">Besedilo iskanja je izbrisano, prikaz vseh datotek in map.</translation>
 <translation id="610101264611565198">Premikanje datoteke <ph name="FILE_NAME" /> v mapo <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Presledek</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">Obrnjeno</translation>
 <translation id="6943836128787782965">Ukaz HTTP get ni uspel</translation>
 <translation id="6949408524333579394">srbščina (transkripcija)</translation>
+<translation id="6954309393500027528">Lepljenje te datoteke je blokiral skrbnik.</translation>
 <translation id="6960565108681981554">Ni aktivirano. Obrnite se na operaterja.</translation>
 <translation id="696203921837389374">Omogoči sinhronizacijo prek prenosa podatkov v mobilnih omrežjih</translation>
 <translation id="6965382102122355670">V redu</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">Trodelni hangulski način (brez tipk Shift)</translation>
 <translation id="8299269255470343364">japonščina</translation>
 <translation id="8300849813060516376">Storitev OTASP ni uspela</translation>
+<translation id="8308481408797647857">Stisnjeni arhiv tar XZ</translation>
 <translation id="8312871300878166382">Prilepi v mapo</translation>
 <translation id="8329978297633540474">Golo besedilo</translation>
 <translation id="8335587457941836791">Odpenjanje s police</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">latvijščina</translation>
 <translation id="8560515948038859357">kantonščina</translation>
 <translation id="8561206103590473338">Slon</translation>
+<translation id="8566466896628108558">Omrežje <ph name="NETWORK_INDEX" /> od <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, moč signala <ph name="SIGNAL_STRENGTH" /> %, blokiral skrbnik, podrobnosti</translation>
 <translation id="8569764466147087991">Izberite datoteko, ki jo želite odpreti</translation>
 <translation id="8577897833047451336">hrvaščina</translation>
 <translation id="8578308463707544055">indonezijščina</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Stalno si prizadevamo zagotoviti, da bi bilo brskanje varnejše. Prej vas je lahko vsako spletno mesto pozvalo, da dodate razširitev v brskalnik. V zadnjih različicah Google Chroma pa morate Chromu izrecno povedati, da želite te razširitve namestiti, tako da jih dodate na strani »Razširitve«. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Odkleni</translation>
 <translation id="912419004897138677">Kodek</translation>
-<translation id="9129931661813833980">Pripni mapo</translation>
 <translation id="9130775360844693113">Člani skupine »<ph name="DESTINATION_NAME" />« bodo imeli dostop do teh elementov.</translation>
 <translation id="9131598836763251128">Izberite eno ali več datotek</translation>
 <translation id="9133055936679483811">Ustvarjanje datoteke zip ni uspelo. <ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">Spremenil(-a):</translation>
 <translation id="945522503751344254">Pošiljanje povratnih informacij</translation>
 <translation id="947144732524271678">Izbran je nabor vnosov (<ph name="ENTRY_COUNT" />) od <ph name="FROM_ENTRY_NAME" /> do <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Stisnjeni arhiv Gzip</translation>
 <translation id="965477715979482472">angleščina (Južna Afrika)</translation>
 <translation id="981121421437150478">Brez povezave</translation>
 <translation id="988685240266037636">Datoteka z imenom »<ph name="FILE_NAME" />« že obstaja. Ali jo želite zamenjati?</translation>

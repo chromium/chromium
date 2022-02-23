@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -29,9 +30,13 @@ class ScrollView;
 // |extension| in the member variables in this class and all AppInfoPanel
 // classes.
 class AppInfoDialog : public views::View,
-                      public extensions::ExtensionRegistryObserver {
+                      public extensions::ExtensionRegistryObserver,
+                      public base::SupportsWeakPtr<AppInfoDialog> {
  public:
   METADATA_HEADER(AppInfoDialog);
+
+  static base::WeakPtr<AppInfoDialog>& GetLastDialogForTesting();
+
   AppInfoDialog(Profile* profile, const extensions::Extension* app);
   AppInfoDialog(const AppInfoDialog&) = delete;
   AppInfoDialog& operator=(const AppInfoDialog&) = delete;
@@ -49,20 +54,23 @@ class AppInfoDialog : public views::View,
   void StopObservingExtensionRegistry();
 
   // Overridden from extensions::ExtensionRegistryObserver:
+  void OnExtensionUnloaded(content::BrowserContext* browser_context,
+                           const extensions::Extension* extension,
+                           extensions::UnloadedExtensionReason reason) override;
   void OnExtensionUninstalled(content::BrowserContext* browser_context,
                               const extensions::Extension* extension,
                               extensions::UninstallReason reason) override;
   void OnShutdown(extensions::ExtensionRegistry* registry) override;
 
   // UI elements of the dialog.
-  views::View* dialog_header_ = nullptr;
-  views::ScrollView* dialog_body_ = nullptr;
-  views::View* dialog_footer_ = nullptr;
-  views::View* arc_app_info_links_ = nullptr;
+  raw_ptr<views::View> dialog_header_ = nullptr;
+  raw_ptr<views::ScrollView> dialog_body_ = nullptr;
+  raw_ptr<views::View> dialog_footer_ = nullptr;
+  raw_ptr<views::View> arc_app_info_links_ = nullptr;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::string app_id_;
-  extensions::ExtensionRegistry* extension_registry_ = nullptr;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_ = nullptr;
 };
 
 BEGIN_VIEW_BUILDER(/* no export */, AppInfoDialog, views::View)

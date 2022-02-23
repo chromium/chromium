@@ -26,7 +26,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
@@ -49,7 +49,7 @@ void PassRiskData(base::OnceCallback<void(const std::string&)> callback,
   std::move(callback).Run(risk_data);
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Returns the containing window for the given |web_contents|. The containing
 // window might be a browser window for a Chrome tab, or it might be an app
 // window for a platform app.
@@ -76,13 +76,23 @@ void LoadRiskData(uint64_t obfuscated_gaia_id,
   // useful anyway (given that we're also including the bounds of the web
   // contents).
   gfx::Rect window_bounds;
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   window_bounds = GetBaseWindowForWebContents(web_contents)->GetBounds();
 #endif
 
-  const PrefService* user_prefs =
+  const raw_ptr<PrefService> user_prefs =
       Profile::FromBrowserContext(web_contents->GetBrowserContext())
           ->GetPrefs();
+
+  LoadRiskDataHelper(obfuscated_gaia_id, user_prefs, std::move(callback),
+                     web_contents, window_bounds);
+}
+
+void LoadRiskDataHelper(uint64_t obfuscated_gaia_id,
+                        const raw_ptr<PrefService> user_prefs,
+                        base::OnceCallback<void(const std::string&)> callback,
+                        const raw_ptr<content::WebContents> web_contents,
+                        gfx::Rect window_bounds) {
   std::string charset = user_prefs->GetString(::prefs::kDefaultCharset);
   std::string accept_languages =
       user_prefs->GetString(::language::prefs::kAcceptLanguages);

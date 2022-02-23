@@ -20,6 +20,7 @@ class GURL;
 
 namespace url {
 struct CanonHostInfo;
+class SchemeHostPort;
 }
 
 namespace net {
@@ -56,6 +57,10 @@ NET_EXPORT GURL AppendOrReplaceQueryParameter(const GURL& url,
                                               const std::string& value);
 
 // Iterates over the key-value pairs in the query portion of |url|.
+// NOTE: QueryIterator stores reference to |url| and creates base::StringPiece
+// instances which refer to the data inside |url| query. Therefore |url| must
+// outlive QueryIterator and all base::StringPiece objects returned from GetKey
+// and GetValue methods.
 class NET_EXPORT QueryIterator {
  public:
   explicit QueryIterator(const GURL& url);
@@ -63,8 +68,8 @@ class NET_EXPORT QueryIterator {
   QueryIterator& operator=(const QueryIterator&) = delete;
   ~QueryIterator();
 
-  std::string GetKey() const;
-  std::string GetValue() const;
+  base::StringPiece GetKey() const;
+  base::StringPiece GetValue() const;
   const std::string& GetUnescapedValue();
 
   bool IsAtEnd() const;
@@ -106,6 +111,10 @@ NET_EXPORT std::string GetHostAndPort(const GURL& url);
 // Returns a host[:port] string for the given URL, where the port is omitted
 // if it is the default for the URL's scheme.
 NET_EXPORT std::string GetHostAndOptionalPort(const GURL& url);
+
+// Just like above, but takes a SchemeHostPort.
+NET_EXPORT std::string GetHostAndOptionalPort(
+    const url::SchemeHostPort& scheme_host_port);
 
 // Returns the hostname by trimming the ending dot, if one exists.
 NET_EXPORT std::string TrimEndingDot(base::StringPiece host);

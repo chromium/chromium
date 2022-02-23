@@ -10,6 +10,7 @@
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/extensions/error_console/error_console_factory.h"
 #include "chrome/common/pref_names.h"
@@ -192,7 +193,7 @@ void ErrorConsole::Enable() {
   // also create an ExtensionPrefs object.
   prefs_ = ExtensionPrefs::Get(profile_);
 
-  profile_observations_.AddObservation(profile_);
+  profile_observations_.AddObservation(profile_.get());
   if (profile_->HasPrimaryOTRProfile())
     profile_observations_.AddObservation(
         profile_->GetPrimaryOTRProfile(/*create_if_needed=*/true));

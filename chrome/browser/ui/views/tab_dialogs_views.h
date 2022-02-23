@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_TAB_DIALOGS_VIEWS_H_
 #define CHROME_BROWSER_UI_VIEWS_TAB_DIALOGS_VIEWS_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 
 // Views implementation of TabDialogs interface.
@@ -26,16 +27,11 @@ class TabDialogsViews : public TabDialogs {
   void HideHungRendererDialog(
       content::RenderWidgetHost* render_widget_host) override;
   bool IsShowingHungRendererDialog() override;
-  void ShowProfileSigninConfirmation(
-      Browser* browser,
-      const std::string& username,
-      bool prompt_for_new_profile,
-      std::unique_ptr<ui::ProfileSigninConfirmationDelegate> delegate) override;
   void ShowManagePasswordsBubble(bool user_action) override;
   void HideManagePasswordsBubble() override;
 
  private:
-  content::WebContents* web_contents_;  // Weak. Owns this.
+  raw_ptr<content::WebContents> web_contents_;  // Weak. Owns this.
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_TAB_DIALOGS_VIEWS_H_

@@ -32,7 +32,7 @@ namespace vr {
 namespace {
 static constexpr base::TimeDelta kPermissionPromptTimeout = base::Seconds(5);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Some runtimes on Windows have quite lengthy lengthy startup animations that
 // may cause indicators/permissions to not be visible during the normal timeout.
 static constexpr base::TimeDelta kFirstWindowsPermissionPromptTimeout =
@@ -40,7 +40,7 @@ static constexpr base::TimeDelta kFirstWindowsPermissionPromptTimeout =
 #endif
 
 base::TimeDelta GetPermissionPromptTimeout(bool first_time) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (first_time)
     return kFirstWindowsPermissionPromptTimeout;
 #endif
@@ -153,7 +153,7 @@ VRUiHostImpl::~VRUiHostImpl() {
   // destroyed, it means the corresponding device has been removed from
   // XRRuntimeManager, and the BrowserXRRuntime has been destroyed.
   if (web_contents_)
-    SetWebXRWebContents(nullptr);
+    WebXRWebContentsChanged(nullptr);
 }
 
 bool IsValidInfo(device::mojom::VRDisplayInfoPtr& info) {
@@ -168,7 +168,7 @@ bool IsValidInfo(device::mojom::VRDisplayInfoPtr& info) {
                         &device::mojom::XRView::eye);
 }
 
-void VRUiHostImpl::SetWebXRWebContents(content::WebContents* contents) {
+void VRUiHostImpl::WebXRWebContentsChanged(content::WebContents* contents) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 
   if (!IsValidInfo(info_)) {
@@ -237,7 +237,7 @@ void VRUiHostImpl::SetWebXRWebContents(content::WebContents* contents) {
   }
 }
 
-void VRUiHostImpl::SetFramesThrottled(bool throttled) {
+void VRUiHostImpl::WebXRFramesThrottledChanged(bool throttled) {
   frames_throttled_ = throttled;
 
   if (!ui_rendering_thread_) {
@@ -248,7 +248,7 @@ void VRUiHostImpl::SetFramesThrottled(bool throttled) {
   ui_rendering_thread_->SetFramesThrottled(frames_throttled_);
 }
 
-void VRUiHostImpl::SetVRDisplayInfo(
+void VRUiHostImpl::VRDisplayInfoChanged(
     device::mojom::VRDisplayInfoPtr display_info) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   // On Windows this is getting logged every frame, so set to 3.
@@ -359,27 +359,27 @@ void VRUiHostImpl::InitCapturingStates() {
   permissions::PermissionManager* permission_manager =
       PermissionManagerFactory::GetForProfile(
           Profile::FromBrowserContext(web_contents_->GetBrowserContext()));
-  const GURL& origin = web_contents_->GetLastCommittedURL();
-  content::RenderFrameHost* rfh = web_contents_->GetMainFrame();
   potential_capturing_.audio_capture_enabled =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::MEDIASTREAM_MIC,
-                                        rfh, origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::MEDIASTREAM_MIC,
+              web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.video_capture_enabled =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::MEDIASTREAM_CAMERA,
-                                        rfh, origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::MEDIASTREAM_CAMERA,
+              web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.location_access_enabled =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::GEOLOCATION, rfh,
-                                        origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::GEOLOCATION, web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
   potential_capturing_.midi_connected =
       permission_manager
-          ->GetPermissionStatusForFrame(ContentSettingsType::MIDI_SYSEX, rfh,
-                                        origin)
+          ->GetPermissionStatusForCurrentDocument(
+              ContentSettingsType::MIDI_SYSEX, web_contents_->GetMainFrame())
           .content_setting == CONTENT_SETTING_ALLOW;
 
   indicators_shown_start_time_ = base::Time::Now();

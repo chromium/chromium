@@ -31,10 +31,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CONTROLLER_DEV_TOOLS_FRONTEND_IMPL_H_
 #define THIRD_PARTY_BLINK_RENDERER_CONTROLLER_DEV_TOOLS_FRONTEND_IMPL_H_
 
-#include "base/macros.h"
 #include "third_party/blink/public/mojom/devtools/devtools_frontend.mojom-blink.h"
 #include "third_party/blink/renderer/core/inspector/inspector_frontend_client.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_associated_remote.h"
 #include "third_party/blink/renderer/platform/supplementable.h"

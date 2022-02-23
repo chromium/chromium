@@ -60,20 +60,19 @@ bool SessionsSyncBridgeHasTabWithURL(int browser_index, const GURL& url) {
 
   int nav_index;
   sessions::SerializedNavigationEntry nav;
-  for (auto it = local_session->windows.begin();
-       it != local_session->windows.end(); ++it) {
-    if (it->second->wrapped_window.tabs.empty()) {
+  for (const auto& [window_id, window] : local_session->windows) {
+    if (window->wrapped_window.tabs.empty()) {
       DVLOG(1) << "Empty tabs vector";
       continue;
     }
-    for (auto tab_it = it->second->wrapped_window.tabs.begin();
-         tab_it != it->second->wrapped_window.tabs.end(); ++tab_it) {
-      if ((*tab_it)->navigations.empty()) {
+    for (const std::unique_ptr<sessions::SessionTab>& tab :
+         window->wrapped_window.tabs) {
+      if (tab->navigations.empty()) {
         DVLOG(1) << "Empty navigations vector";
         continue;
       }
-      nav_index = (*tab_it)->current_navigation_index;
-      nav = (*tab_it)->navigations[nav_index];
+      nav_index = tab->current_navigation_index;
+      nav = tab->navigations[nav_index];
       if (nav.virtual_url() == url) {
         DVLOG(1) << "Found tab with url " << url.spec();
         DVLOG(1) << "Timestamp is " << nav.timestamp().ToInternalValue();
@@ -119,10 +118,10 @@ bool OpenTabAtIndex(int browser_index, int tab_index, const GURL& url) {
 
 bool OpenMultipleTabs(int browser_index, const std::vector<GURL>& urls) {
   Browser* browser = test()->GetBrowser(browser_index);
-  for (auto it = urls.begin(); it != urls.end(); ++it) {
-    DVLOG(1) << "Opening tab: " << it->spec() << " using browser "
+  for (const GURL& url : urls) {
+    DVLOG(1) << "Opening tab: " << url.spec() << " using browser "
              << browser_index << ".";
-    ShowSingletonTab(browser, *it);
+    ShowSingletonTab(browser, url);
   }
   return WaitForTabsToLoad(browser_index, urls);
 }
@@ -205,7 +204,7 @@ bool ExecJs(int browser_index, int tab_index, const std::string& script) {
 
 bool WaitForTabsToLoad(int browser_index, const std::vector<GURL>& urls) {
   int tab_index = 0;
-  for (const auto& url : urls) {
+  for (const GURL& url : urls) {
     content::WebContents* web_contents = test()
                                              ->GetBrowser(browser_index)
                                              ->tab_strip_model()
@@ -253,9 +252,8 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
   if (!GetLocalSession(browser_index, &local_session)) {
     return false;
   }
-  for (auto w = local_session->windows.begin();
-       w != local_session->windows.end(); ++w) {
-    const sessions::SessionWindow& window = w->second->wrapped_window;
+  for (const auto& [window_id, synced_window] : local_session->windows) {
+    const sessions::SessionWindow& window = synced_window->wrapped_window;
     std::unique_ptr<sync_sessions::SyncedSessionWindow> new_window =
         std::make_unique<sync_sessions::SyncedSessionWindow>();
     new_window->wrapped_window.window_id =
@@ -269,7 +267,7 @@ bool GetLocalWindows(int browser_index, ScopedWindowMap* local_windows) {
                 new_tab->navigations.begin());
       new_window->wrapped_window.tabs.push_back(std::move(new_tab));
     }
-    auto id = new_window->wrapped_window.window_id;
+    SessionID id = new_window->wrapped_window.window_id;
     (*local_windows)[id] = std::move(new_window);
   }
 
@@ -362,22 +360,24 @@ bool WindowsMatch(const ScopedWindowMap& win1, const ScopedWindowMap& win2) {
                << ", win2 size: " << win2.size();
     return false;
   }
-  for (auto i = win1.begin(); i != win1.end(); ++i) {
-    auto j = win2.find(i->first);
-    if (j == win2.end()) {
+  for (const auto& [guid, window1] : win1) {
+    auto iter = win2.find(guid);
+    if (iter == win2.end()) {
       LOG(ERROR) << "Session doesn't match";
       return false;
     }
-    if (i->second->wrapped_window.tabs.size() !=
-        j->second->wrapped_window.tabs.size()) {
+
+    const sync_sessions::SyncedSessionWindow* window2 = iter->second.get();
+    if (window1->wrapped_window.tabs.size() !=
+        window2->wrapped_window.tabs.size()) {
       LOG(ERROR) << "Tab size doesn't match, tab1 size: "
-                 << i->second->wrapped_window.tabs.size()
-                 << ", tab2 size: " << j->second->wrapped_window.tabs.size();
+                 << window1->wrapped_window.tabs.size()
+                 << ", tab2 size: " << window2->wrapped_window.tabs.size();
       return false;
     }
-    for (size_t t = 0; t < i->second->wrapped_window.tabs.size(); ++t) {
-      client0_tab = i->second->wrapped_window.tabs[t].get();
-      client1_tab = j->second->wrapped_window.tabs[t].get();
+    for (size_t t = 0; t < window1->wrapped_window.tabs.size(); ++t) {
+      client0_tab = window1->wrapped_window.tabs[t].get();
+      client1_tab = window2->wrapped_window.tabs[t].get();
       if (client0_tab->navigations.size() != client1_tab->navigations.size()) {
         return false;
       }

@@ -9,8 +9,11 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
+#include "chrome/browser/image_fetcher/image_decoder_impl.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/image_fetcher/core/image_fetcher.h"
+#include "components/image_fetcher/core/image_fetcher_impl.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/service_process_host.h"
@@ -42,6 +45,20 @@ signin::IdentityManager* QuickPairBrowserDelegateImpl::GetIdentityManager() {
   return IdentityManagerFactory::GetForProfile(profile);
 }
 
+std::unique_ptr<image_fetcher::ImageFetcher>
+QuickPairBrowserDelegateImpl::GetImageFetcher() {
+  scoped_refptr<network::SharedURLLoaderFactory> shared_url_loader_factory =
+      GetURLLoaderFactory();
+  if (!shared_url_loader_factory) {
+    QP_LOG(WARNING)
+        << "No URL loader factory to provide an image fetcher instance.";
+    return nullptr;
+  }
+
+  return std::make_unique<image_fetcher::ImageFetcherImpl>(
+      std::make_unique<ImageDecoderImpl>(), shared_url_loader_factory);
+}
+
 PrefService* QuickPairBrowserDelegateImpl::GetActivePrefService() {
   Profile* profile = GetActiveProfile();
   if (!profile) {
@@ -60,16 +77,14 @@ void QuickPairBrowserDelegateImpl::RequestService(
 }
 
 Profile* QuickPairBrowserDelegateImpl::GetActiveProfile() {
-  if (!user_manager::UserManager::Get()->IsUserLoggedIn()) {
-    NOTREACHED();
+  if (!user_manager::UserManager::Get()->IsUserLoggedIn())
     return nullptr;
-  }
 
   user_manager::User* active_user =
       user_manager::UserManager::Get()->GetActiveUser();
   DCHECK(active_user);
 
-  return chromeos::ProfileHelper::Get()->GetProfileByUser(active_user);
+  return ProfileHelper::Get()->GetProfileByUser(active_user);
 }
 
 }  // namespace quick_pair

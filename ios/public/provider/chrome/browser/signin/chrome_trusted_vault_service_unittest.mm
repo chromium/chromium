@@ -43,6 +43,9 @@ class TestChromeTrustedVaultService : public ChromeTrustedVaultService {
                         void (^callback)(BOOL success,
                                          NSError* error)) override {}
   void CancelDialog(BOOL animated, void (^callback)(void)) override {}
+  void ClearLocalDataForIdentity(ChromeIdentity* chrome_identity,
+                                 void (^callback)(BOOL success,
+                                                  NSError* error)) override {}
 };
 
 class MockObserver : public syncer::TrustedVaultClient::Observer {

@@ -28,13 +28,13 @@ sync_pb::PasswordSpecificsData_PasswordIssues PasswordIssuesMapToProto(
     const base::flat_map<InsecureType, InsecurityMetadata>&
         form_password_issues) {
   sync_pb::PasswordSpecificsData::PasswordIssues password_issues;
-  for (const auto& form_issue : form_password_issues) {
+  for (const auto& [insecure_type, insecure_metadata] : form_password_issues) {
     sync_pb::PasswordSpecificsData::PasswordIssues::PasswordIssue issue;
     issue.set_date_first_detection_microseconds(
-        form_issue.second.create_time.ToDeltaSinceWindowsEpoch()
+        insecure_metadata.create_time.ToDeltaSinceWindowsEpoch()
             .InMicroseconds());
-    issue.set_is_muted(form_issue.second.is_muted.value());
-    switch (form_issue.first) {
+    issue.set_is_muted(insecure_metadata.is_muted.value());
+    switch (insecure_type) {
       case InsecureType::kLeaked:
         DCHECK(!password_issues.has_leaked_password_issue());
         *password_issues.mutable_leaked_password_issue() = std::move(issue);

@@ -8,7 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
 #include "base/threading/platform_thread.h"
@@ -136,7 +136,7 @@ class GamepadProviderTest : public testing::Test, public GamepadTestHelper {
   std::unique_ptr<GamepadProvider> provider_;
 
   // Pointer owned by the provider.
-  MockGamepadDataFetcher* mock_data_fetcher_;
+  raw_ptr<MockGamepadDataFetcher> mock_data_fetcher_;
 
   TestChangeClient change_client_;
 };

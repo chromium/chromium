@@ -15,10 +15,17 @@
 #include "base/task/task_runner_util.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "base/threading/thread_task_runner_handle.h"
+#include "base/timer/elapsed_timer.h"
 #include "components/history/core/browser/history_types.h"
 #include "components/history_clusters/core/content_annotations_cluster_processor.h"
 #include "components/history_clusters/core/content_visibility_cluster_finalizer.h"
+#include "components/history_clusters/core/features.h"
+#include "components/history_clusters/core/history_clusters_util.h"
+#include "components/history_clusters/core/keyword_cluster_finalizer.h"
+#include "components/history_clusters/core/noisy_cluster_finalizer.h"
 #include "components/history_clusters/core/on_device_clustering_features.h"
+#include "components/history_clusters/core/on_device_clustering_util.h"
 #include "components/history_clusters/core/ranking_cluster_finalizer.h"
 #include "components/history_clusters/core/similar_visit_deduper_cluster_finalizer.h"
 #include "components/history_clusters/core/single_visit_cluster_finalizer.h"
@@ -26,59 +33,79 @@
 #include "components/optimization_guide/core/batch_entity_metadata_task.h"
 #include "components/optimization_guide/core/entity_metadata_provider.h"
 #include "components/search_engines/template_url_service.h"
+#include "components/site_engagement/core/site_engagement_score_provider.h"
 
 namespace history_clusters {
 
 namespace {
 
-// Returns the normalized URL for the user's default search
-// provider if the URL for the visit is a Search URL. Otherwise, returns the
-// visit's original URL.
-GURL GetNormalizedURLForVisit(const history::AnnotatedVisit& visit,
-                              const TemplateURLService* template_url_service) {
+// Returns the normalized URL and the search terms for the search provider if
+// the URL for the visit is a Search URL. Otherwise, returns nullopt.
+absl::optional<std::pair<GURL, std::u16string>> GetSearchMetadataForVisit(
+    const history::AnnotatedVisit& visit,
+    const TemplateURLService* template_url_service) {
   if (!template_url_service)
-    return visit.url_row.url();
+    return absl::nullopt;
 
-  const TemplateURL* default_search_provider =
-      template_url_service->GetDefaultSearchProvider();
+  const TemplateURL* template_url =
+      template_url_service->GetTemplateURLForHost(visit.url_row.url().host());
   const SearchTermsData& search_terms_data =
       template_url_service->search_terms_data();
 
   std::u16string search_terms;
   bool is_valid_search_url =
-      default_search_provider &&
-      default_search_provider->ExtractSearchTermsFromURL(
+      template_url &&
+      template_url->ExtractSearchTermsFromURL(
           visit.url_row.url(), search_terms_data, &search_terms) &&
       !search_terms.empty();
   if (!is_valid_search_url)
-    return visit.url_row.url();
+    return absl::nullopt;
 
   const std::u16string& normalized_search_query =
       base::i18n::ToLower(base::CollapseWhitespace(search_terms, false));
   TemplateURLRef::SearchTermsArgs search_terms_args(normalized_search_query);
-  const TemplateURLRef& search_url_ref = default_search_provider->url_ref();
+  const TemplateURLRef& search_url_ref = template_url->url_ref();
   if (!search_url_ref.SupportsReplacement(search_terms_data))
-    return visit.url_row.url();
+    return absl::nullopt;
 
-  return GURL(
-      search_url_ref.ReplaceSearchTerms(search_terms_args, search_terms_data));
+  return std::make_pair(
+      GURL(search_url_ref.ReplaceSearchTerms(search_terms_args,
+                                             search_terms_data)),
+      base::i18n::ToLower(base::CollapseWhitespace(search_terms, false)));
+}
+
+void RecordBatchUpdateProcessingTime(base::TimeDelta time_delta) {
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.ProcessBatchOfVisits.ThreadTime", time_delta);
 }
 
 }  // namespace
 
 OnDeviceClusteringBackend::OnDeviceClusteringBackend(
     TemplateURLService* template_url_service,
-    optimization_guide::EntityMetadataProvider* entity_metadata_provider)
+    optimization_guide::EntityMetadataProvider* entity_metadata_provider,
+    site_engagement::SiteEngagementScoreProvider* engagement_score_provider)
     : template_url_service_(template_url_service),
       entity_metadata_provider_(entity_metadata_provider),
-      background_task_runner_(base::ThreadPool::CreateSequencedTaskRunner(
-          {base::MayBlock(), base::TaskPriority::USER_VISIBLE})) {}
+      engagement_score_provider_(engagement_score_provider),
+      high_priority_background_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::USER_VISIBLE})),
+      low_priority_background_task_runner_(
+          base::ThreadPool::CreateSequencedTaskRunner(
+              {base::MayBlock(), base::TaskPriority::BEST_EFFORT})),
+      engagement_score_cache_last_refresh_timestamp_(base::TimeTicks::Now()),
+      engagement_score_cache_(
+          GetFieldTrialParamByFeatureAsInt(features::kUseEngagementScoreCache,
+                                           "engagement_score_cache_size",
+                                           100)) {}
 
 OnDeviceClusteringBackend::~OnDeviceClusteringBackend() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 }
 
 void OnDeviceClusteringBackend::GetClusters(
+    ClusteringRequestSource clustering_request_source,
     ClustersCallback callback,
     const std::vector<history::AnnotatedVisit>& visits) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
@@ -91,12 +118,14 @@ void OnDeviceClusteringBackend::GetClusters(
   // Just start clustering without getting entity metadata if we don't have a
   // provider to translate the entities.
   if (!entity_metadata_provider_) {
-    OnBatchEntityMetadataRetrieved(/*completed_task=*/nullptr, visits,
-                                   /*entity_metadata_start=*/absl::nullopt,
-                                   std::move(callback),
-                                   /*entity_metadata_map=*/{});
+    OnBatchEntityMetadataRetrieved(
+        clustering_request_source, /*completed_task=*/nullptr, visits,
+        /*entity_metadata_start=*/absl::nullopt, std::move(callback),
+        /*entity_metadata_map=*/{});
     return;
   }
+
+  base::ElapsedThreadTimer entity_id_gathering_timer;
 
   // Figure out what entity IDs we need to fetch metadata for.
   base::flat_set<std::string> entity_ids;
@@ -107,13 +136,17 @@ void OnDeviceClusteringBackend::GetClusters(
     }
   }
 
+  base::UmaHistogramTimes(
+      "History.Clusters.Backend.EntityIdGathering.ThreadTime",
+      entity_id_gathering_timer.Elapsed());
+
   // Don't bother with getting entity metadata if there's nothing to get
   // metadata for.
   if (entity_ids.empty()) {
-    OnBatchEntityMetadataRetrieved(/*completed_task=*/nullptr, visits,
-                                   /*entity_metadata_start=*/absl::nullopt,
-                                   std::move(callback),
-                                   /*entity_metadata_map=*/{});
+    OnBatchEntityMetadataRetrieved(
+        clustering_request_source, /*completed_task=*/nullptr, visits,
+        /*entity_metadata_start=*/absl::nullopt, std::move(callback),
+        /*entity_metadata_map=*/{});
     return;
   }
 
@@ -127,13 +160,15 @@ void OnDeviceClusteringBackend::GetClusters(
   auto* batch_entity_metadata_task_ptr = batch_entity_metadata_task.get();
   in_flight_batch_entity_metadata_tasks_.insert(
       std::move(batch_entity_metadata_task));
-  batch_entity_metadata_task_ptr->Execute(base::BindOnce(
-      &OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved,
-      weak_ptr_factory_.GetWeakPtr(), batch_entity_metadata_task_ptr, visits,
-      base::TimeTicks::Now(), std::move(callback)));
+  batch_entity_metadata_task_ptr->Execute(
+      base::BindOnce(&OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved,
+                     weak_ptr_factory_.GetWeakPtr(), clustering_request_source,
+                     batch_entity_metadata_task_ptr, visits,
+                     base::TimeTicks::Now(), std::move(callback)));
 }
 
 void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
+    ClusteringRequestSource clustering_request_source,
     optimization_guide::BatchEntityMetadataTask* completed_task,
     const std::vector<history::AnnotatedVisit>& annotated_visits,
     absl::optional<base::TimeTicks> entity_metadata_start,
@@ -143,17 +178,113 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   if (entity_metadata_start) {
-    base::UmaHistogramTimes("History.Clusters.Backend.BatchEntityLookupLatency",
-                            *entity_metadata_start - base::TimeTicks::Now());
+    base::UmaHistogramTimes(
+        "History.Clusters.Backend.BatchEntityLookupLatency2",
+        base::TimeTicks::Now() - *entity_metadata_start);
   }
-  // Rewrite the visits based on the mapping and normalize URLs here.
+
+  if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache) &&
+      base::TimeTicks::Now() >
+          engagement_score_cache_last_refresh_timestamp_ +
+              base::Minutes(GetFieldTrialParamByFeatureAsInt(
+                  features::kUseEngagementScoreCache,
+                  "engagement_score_cache_refresh_duration_minutes", 120))) {
+    engagement_score_cache_.Clear();
+    engagement_score_cache_last_refresh_timestamp_ = base::TimeTicks::Now();
+  }
+
   std::vector<history::ClusterVisit> cluster_visits;
   cluster_visits.reserve(annotated_visits.size());
-  for (const auto& visit : annotated_visits) {
+
+  ProcessBatchOfVisits(clustering_request_source,
+                       /*num_batches_processed_so_far=*/0,
+                       /*index_to_process=*/0, std::move(cluster_visits),
+                       completed_task, annotated_visits, entity_metadata_start,
+                       std::move(callback), entity_metadata_map);
+}
+
+void OnDeviceClusteringBackend::ProcessBatchOfVisits(
+    ClusteringRequestSource clustering_request_source,
+    size_t num_batches_processed_so_far,
+    size_t index_to_process,
+    std::vector<history::ClusterVisit> cluster_visits,
+    optimization_guide::BatchEntityMetadataTask* completed_task,
+    const std::vector<history::AnnotatedVisit>& annotated_visits,
+    absl::optional<base::TimeTicks> entity_metadata_start,
+    ClustersCallback callback,
+    const base::flat_map<std::string, optimization_guide::EntityMetadata>&
+        entity_metadata_map) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::ElapsedThreadTimer process_batch_timer;
+
+  // Entries in |annotated_visits| that have index greater than or equal to
+  // |index_stop_batch_processing| should not be processed in this task loop.
+  size_t index_stop_batch_processing =
+      index_to_process + features::GetClusteringTasksBatchSize();
+
+  // Process all entries in one go in certain cases. e.g., if
+  // |clustering_request_source| is user blocking.
+  if (!base::FeatureList::IsEnabled(
+          features::kSplitClusteringTasksToSmallerBatches) ||
+      clustering_request_source == ClusteringRequestSource::kJourneysPage ||
+      annotated_visits.size() <= 1) {
+    index_stop_batch_processing = annotated_visits.size();
+  }
+
+  // Avoid overflows.
+  index_stop_batch_processing =
+      std::min(index_stop_batch_processing, annotated_visits.size());
+
+  base::UmaHistogramCounts1000(
+      "History.Clusters.Backend.ProcessBatchOfVisits.BatchSize",
+      index_stop_batch_processing - index_to_process);
+
+  while (index_to_process < index_stop_batch_processing) {
+    const auto& visit = annotated_visits[index_to_process];
+    ++index_to_process;
     history::ClusterVisit cluster_visit;
     cluster_visit.annotated_visit = visit;
-    cluster_visit.normalized_url =
-        GetNormalizedURLForVisit(visit, template_url_service_);
+    const std::string& visit_host = visit.url_row.url().host();
+
+    if (visit.content_annotations.search_normalized_url.is_empty()) {
+      // TODO(crbug/1296394): Remove this logic once most clients have a Stable
+      // release of persisted search metadata.
+      absl::optional<std::pair<GURL, std::u16string>> maybe_search_metadata =
+          GetSearchMetadataForVisit(visit, template_url_service_);
+      if (maybe_search_metadata) {
+        cluster_visit.normalized_url = maybe_search_metadata->first;
+        cluster_visit.url_for_deduping = cluster_visit.normalized_url;
+        cluster_visit.search_terms = maybe_search_metadata->second;
+      } else {
+        cluster_visit.normalized_url = visit.url_row.url();
+        cluster_visit.url_for_deduping =
+            ComputeURLForDeduping(cluster_visit.normalized_url);
+      }
+    } else {
+      cluster_visit.normalized_url =
+          visit.content_annotations.search_normalized_url;
+      // Search visits just use the `normalized_url` for deduping.
+      cluster_visit.url_for_deduping = cluster_visit.normalized_url;
+      cluster_visit.search_terms = visit.content_annotations.search_terms;
+    }
+
+    if (engagement_score_provider_) {
+      if (base::FeatureList::IsEnabled(features::kUseEngagementScoreCache)) {
+        auto it = engagement_score_cache_.Peek(visit_host);
+        if (it != engagement_score_cache_.end()) {
+          cluster_visit.engagement_score = it->second;
+        } else {
+          float score =
+              engagement_score_provider_->GetScore(visit.url_row.url());
+          engagement_score_cache_.Put(visit_host, score);
+          cluster_visit.engagement_score = score;
+        }
+      } else {
+        cluster_visit.engagement_score =
+            engagement_score_provider_->GetScore(visit.url_row.url());
+      }
+    }
 
     // Rewrite the entities for the visit, but only if it is possible that we
     // had additional metadata for it.
@@ -201,6 +332,37 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
     cluster_visits.push_back(cluster_visit);
   }
 
+  if (index_to_process >= annotated_visits.size()) {
+    RecordBatchUpdateProcessingTime(process_batch_timer.Elapsed());
+    OnAllVisitsFinishedProcessing(
+        clustering_request_source, num_batches_processed_so_far + 1,
+        completed_task, cluster_visits, std::move(callback));
+    return;
+  }
+
+  RecordBatchUpdateProcessingTime(process_batch_timer.Elapsed());
+  base::ThreadTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE,
+      base::BindOnce(&OnDeviceClusteringBackend::ProcessBatchOfVisits,
+                     weak_ptr_factory_.GetWeakPtr(), clustering_request_source,
+                     num_batches_processed_so_far + 1, index_to_process,
+                     std::move(cluster_visits), completed_task,
+                     annotated_visits, entity_metadata_start,
+                     std::move(callback), entity_metadata_map));
+}
+
+void OnDeviceClusteringBackend::OnAllVisitsFinishedProcessing(
+    ClusteringRequestSource clustering_request_source,
+    size_t num_batches_processed,
+    optimization_guide::BatchEntityMetadataTask* completed_task,
+    const std::vector<history::ClusterVisit>& cluster_visits,
+    ClustersCallback callback) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  base::UmaHistogramCounts100(
+      "History.Clusters.Backend.NumBatchesProcessedForVisits",
+      num_batches_processed);
+
   // Mark the task as completed, which will destruct |entity_metadata_map|.
   if (completed_task) {
     auto it = in_flight_batch_entity_metadata_tasks_.find(completed_task);
@@ -210,18 +372,37 @@ void OnDeviceClusteringBackend::OnBatchEntityMetadataRetrieved(
 
   // Post the actual clustering work onto the thread pool, then reply on the
   // calling sequence. This is to prevent UI jank.
-  background_task_runner_->PostTaskAndReplyWithResult(
+  if (base::FeatureList::IsEnabled(
+          features::kSplitClusteringTasksToSmallerBatches) &&
+      clustering_request_source ==
+          ClusteringRequestSource::kKeywordCacheGeneration) {
+    low_priority_background_task_runner_->PostTaskAndReplyWithResult(
+        FROM_HERE,
+        base::BindOnce(
+            &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
+            engagement_score_provider_ != nullptr, cluster_visits),
+        std::move(callback));
+    return;
+  }
+
+  DCHECK(clustering_request_source == ClusteringRequestSource::kJourneysPage ||
+         clustering_request_source ==
+             ClusteringRequestSource::kKeywordCacheGeneration);
+
+  high_priority_background_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
       base::BindOnce(
           &OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread,
-          base::Unretained(this), cluster_visits),
+          engagement_score_provider_ != nullptr, cluster_visits),
       std::move(callback));
 }
 
+// static
 std::vector<history::Cluster>
 OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
+    bool engagement_score_provider_is_valid,
     const std::vector<history::ClusterVisit>& visits) {
-  DCHECK(background_task_runner_->RunsTasksInCurrentSequence());
+  base::ElapsedThreadTimer cluster_visits_timer;
 
   // TODO(crbug.com/1260145): All of these objects are "stateless" between
   // requests for clusters. If there needs to be shared state, the entire
@@ -255,6 +436,12 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     cluster_finalizers.push_back(
         std::make_unique<SingleVisitClusterFinalizer>());
   }
+  // Add feature to turn on/off site engagement score filter.
+  if (engagement_score_provider_is_valid &&
+      features::ShouldFilterNoisyClusters()) {
+    cluster_finalizers.push_back(std::make_unique<NoisyClusterFinalizer>());
+  }
+  cluster_finalizers.push_back(std::make_unique<KeywordClusterFinalizer>());
 
   // Group visits into clusters.
   std::vector<history::Cluster> clusters =
@@ -277,6 +464,10 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
     keyword_sizes.emplace_back(cluster.keywords.size());
   }
 
+  // It's a bit strange that this is essentially a `ClusterProcessor` but has
+  // to operate after the finalizers.
+  SortClusters(&clusters);
+
   if (!visits_in_clusters.empty()) {
     // We check for empty to ensure the below code doesn't crash, but
     // realistically this vector should never be empty.
@@ -297,6 +488,9 @@ OnDeviceClusteringBackend::ClusterVisitsOnBackgroundThread(
         "History.Clusters.Backend.NumKeywordsPerCluster.Max",
         *std::max_element(keyword_sizes.begin(), keyword_sizes.end()));
   }
+
+  base::UmaHistogramTimes("History.Clusters.Backend.ComputeClusters.ThreadTime",
+                          cluster_visits_timer.Elapsed());
 
   return clusters;
 }

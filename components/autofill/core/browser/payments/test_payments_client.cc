@@ -10,12 +10,11 @@
 #include "base/json/json_reader.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/values.h"
+#include "components/autofill/core/browser/autofill_client.h"
 #include "components/autofill/core/browser/personal_data_manager.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 
-namespace autofill {
-
-namespace payments {
+namespace autofill::payments {
 
 namespace {
 // Base64 encoding of "This is a test challenge".
@@ -34,7 +33,7 @@ TestPaymentsClient::TestPaymentsClient(
   unmask_details_.unmask_auth_method = AutofillClient::UnmaskAuthMethod::kCvc;
 }
 
-TestPaymentsClient::~TestPaymentsClient() {}
+TestPaymentsClient::~TestPaymentsClient() = default;
 
 void TestPaymentsClient::GetUnmaskDetails(
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
@@ -62,11 +61,13 @@ void TestPaymentsClient::GetUploadDetails(
                             std::unique_ptr<base::Value>,
                             std::vector<std::pair<int, int>>)> callback,
     const int billable_service_number,
+    const int64_t billing_customer_number,
     PaymentsClient::UploadCardSource upload_card_source) {
   upload_details_addresses_ = addresses;
   detected_values_ = detected_values;
   active_experiments_ = active_experiments;
   billable_service_number_ = billable_service_number;
+  billing_customer_number_ = billing_customer_number;
   upload_card_source_ = upload_card_source;
   std::move(callback).Run(
       app_locale == "en-US"
@@ -79,11 +80,12 @@ void TestPaymentsClient::GetUploadDetails(
 void TestPaymentsClient::UploadCard(
     const payments::PaymentsClient::UploadRequestDetails& request_details,
     base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
-                            const std::string&)> callback) {
+                            const PaymentsClient::UploadCardResponseDetails&)>
+        callback) {
   upload_card_addresses_ = request_details.profiles;
   active_experiments_ = request_details.active_experiments;
   std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
-                          server_id_);
+                          upload_card_response_details_);
 }
 
 void TestPaymentsClient::MigrateCards(
@@ -108,6 +110,24 @@ void TestPaymentsClient::SelectChallengeOption(
   }
   std::move(callback).Run(AutofillClient::PaymentsRpcResult::kSuccess,
                           "context_token from SelectChallengeOption");
+}
+
+void TestPaymentsClient::GetVirtualCardEnrollmentDetails(
+    const GetDetailsForEnrollmentRequestDetails& request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult,
+                            const payments::PaymentsClient::
+                                GetDetailsForEnrollmentResponseDetails&)>
+        callback) {
+  get_details_for_enrollment_request_details_ = std::move(request_details);
+}
+
+void TestPaymentsClient::UpdateVirtualCardEnrollment(
+    const TestPaymentsClient::UpdateVirtualCardEnrollmentRequestDetails&
+        request_details,
+    base::OnceCallback<void(AutofillClient::PaymentsRpcResult)> callback) {
+  update_virtual_card_enrollment_request_details_ = std::move(request_details);
+  std::move(callback).Run(update_virtual_card_enrollment_result_.value_or(
+      AutofillClient::PaymentsRpcResult::kSuccess));
 }
 
 void TestPaymentsClient::ShouldReturnUnmaskDetailsImmediately(
@@ -161,8 +181,10 @@ void TestPaymentsClient::AddFidoEligibleCard(std::string server_id,
       ->Append(std::move(key_info));
 }
 
-void TestPaymentsClient::SetServerIdForCardUpload(std::string server_id) {
-  server_id_ = server_id;
+void TestPaymentsClient::SetUploadCardResponseDetailsForUploadCard(
+    const PaymentsClient::UploadCardResponseDetails&
+        upload_card_response_details) {
+  upload_card_response_details_ = upload_card_response_details;
 }
 
 void TestPaymentsClient::SetSaveResultForCardsMigration(
@@ -180,6 +202,12 @@ void TestPaymentsClient::SetUseInvalidLegalMessageInGetUploadDetails(
   use_invalid_legal_message_ = use_invalid_legal_message;
 }
 
+void TestPaymentsClient::SetUseLegalMessageWithMultipleLinesInGetUploadDetails(
+    bool use_legal_message_with_multiple_lines) {
+  use_legal_message_with_multiple_lines_ =
+      use_legal_message_with_multiple_lines;
+}
+
 std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
   if (use_invalid_legal_message_) {
     // Legal message is invalid because it's missing the url.
@@ -192,6 +220,38 @@ std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
                                          "     } ]"
                                          "  } ]"
                                          "}"));
+  } else if (use_legal_message_with_multiple_lines_) {
+    return std::unique_ptr<base::Value>(base::JSONReader::ReadDeprecated(
+        "{"
+        "  \"line\": ["
+        "    {"
+        "      \"template\": \"The legal documents are: {0} and {1}.\","
+        "      \"template_parameter\": ["
+        "        {"
+        "          \"display_text\": \"Terms of Service\","
+        "          \"url\": \"http://www.example.com/tos\""
+        "        },"
+        "        {"
+        "          \"display_text\": \"Privacy Policy\","
+        "          \"url\": \"http://www.example.com/pp\""
+        "        }"
+        "      ]"
+        "    },"
+        "    {"
+        "      \"template\": \"The legal documents are: {0} and {1}.\","
+        "      \"template_parameter\": ["
+        "        {"
+        "          \"display_text\": \"Terms of Service\","
+        "          \"url\": \"http://www.example.com/tos\""
+        "        },"
+        "        {"
+        "          \"display_text\": \"Privacy Policy\","
+        "          \"url\": \"http://www.example.com/pp\""
+        "        }"
+        "      ]"
+        "    }"
+        "  ]"
+        "}"));
   } else {
     return std::unique_ptr<base::Value>(base::JSONReader::ReadDeprecated(
         "{"
@@ -209,5 +269,4 @@ std::unique_ptr<base::Value> TestPaymentsClient::LegalMessage() {
   }
 }
 
-}  // namespace payments
-}  // namespace autofill
+}  // namespace autofill::payments

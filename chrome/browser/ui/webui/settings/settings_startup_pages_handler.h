@@ -10,10 +10,6 @@
 #include "components/prefs/pref_change_registrar.h"
 #include "ui/base/models/table_model_observer.h"
 
-namespace base {
-class ListValue;
-}
-
 namespace content {
 class WebUI;
 }
@@ -44,19 +40,19 @@ class StartupPagesHandler : public SettingsPageUIHandler,
 
  private:
   // Adds a startup page with the given URL after the given index.
-  void HandleAddStartupPage(const base::ListValue* args);
+  void HandleAddStartupPage(base::Value::ConstListView args);
 
   // Changes the startup page at the given index to the given URL.
-  void HandleEditStartupPage(const base::ListValue* args);
+  void HandleEditStartupPage(base::Value::ConstListView args);
 
   // Informs the code that the JS page has loaded.
-  void HandleOnStartupPrefsPageLoad(const base::ListValue* args);
+  void HandleOnStartupPrefsPageLoad(base::Value::ConstListView args);
 
   // Removes the startup page at the given index.
-  void HandleRemoveStartupPage(const base::ListValue* args);
+  void HandleRemoveStartupPage(base::Value::ConstListView args);
 
   // Sets the startup page set to the current pages.
-  void HandleSetStartupPagesToCurrentPages(const base::ListValue* args);
+  void HandleSetStartupPagesToCurrentPages(base::Value::ConstListView args);
 
   // Stores the current state of the startup page preferences.
   void SaveStartupPagesPref();

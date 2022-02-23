@@ -6,15 +6,20 @@
 
 #include <stddef.h>
 #include <stdint.h>
+#include <xkbcommon/xkbcommon-names.h>
+
+#include <tuple>
 
 #include "base/cxx17_backports.h"
-#include "base/macros.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/event_constants.h"
 #include "ui/events/keycodes/dom/dom_code.h"
 #include "ui/events/keycodes/dom/dom_key.h"
 #include "ui/events/keycodes/keyboard_code_conversion.h"
 #include "ui/events/ozone/layout/scoped_keyboard_layout_engine.h"
+
+extern "C" __attribute__((weak)) decltype(
+    xkb_keymap_key_get_mods_for_level) xkb_keymap_key_get_mods_for_level;
 
 namespace ui {
 
@@ -99,8 +104,8 @@ class VkTestXkbKeyboardLayoutEngine : public XkbKeyboardLayoutEngine {
     if (key_code == VKEY_UNKNOWN) {
       DomKey dummy_dom_key;
       // If this fails, key_code remains VKEY_UNKNOWN.
-      ignore_result(DomCodeToUsLayoutDomKey(dom_code, EF_NONE, &dummy_dom_key,
-                                             &key_code));
+      std::ignore =
+          DomCodeToUsLayoutDomKey(dom_code, EF_NONE, &dummy_dom_key, &key_code);
     }
     return key_code;
   }
@@ -825,6 +830,11 @@ TEST_F(XkbLayoutEngineVkTest, KeyboardCodeForNonPrintable) {
       {{DomCode::LAUNCH_CONTROL_PANEL, EF_NONE}, VKEY_SETTINGS},
       {{DomCode::PRIVACY_SCREEN_TOGGLE, EF_NONE}, VKEY_PRIVACY_SCREEN_TOGGLE},
       {{DomCode::MICROPHONE_MUTE_TOGGLE, EF_NONE}, VKEY_MICROPHONE_MUTE_TOGGLE},
+      {{DomCode::EMOJI_PICKER, EF_NONE}, VKEY_EMOJI_PICKER},
+      {{DomCode::DICTATE, EF_NONE}, VKEY_DICTATE},
+      // Verify the AC Application keys.
+      {{DomCode::NEW, EF_NONE}, VKEY_NEW},
+      {{DomCode::CLOSE, EF_NONE}, VKEY_CLOSE},
       // Verify that number pad digits produce located VKEY codes.
       {{DomCode::NUMPAD0, EF_NONE, XKB_KEY_KP_0, '0'}, VKEY_NUMPAD0},
       {{DomCode::NUMPAD9, EF_NONE, XKB_KEY_KP_9, '9'}, VKEY_NUMPAD9},
@@ -932,20 +942,39 @@ TEST_F(XkbLayoutEngineVkTest, GetDomCodeByKeysym) {
                                                std::strlen(layout.get()));
   }
 
+  constexpr uint32_t kShiftMask = 1;
   constexpr struct {
     uint32_t keysym;
+    uint32_t modifiers;
     DomCode dom_code;
   } kTestCases[] = {
-      {65307, ui::DomCode::ESCAPE}, {65288, ui::DomCode::BACKSPACE},
-      {65293, ui::DomCode::ENTER},  {65289, ui::DomCode::TAB},
-      {65056, ui::DomCode::TAB},  // SHIFT+TAB.
-      {65289, ui::DomCode::TAB},  // CTRL+TAB.
+      {65307, 0, ui::DomCode::ESCAPE},       {65288, 0, ui::DomCode::BACKSPACE},
+      {65293, 0, ui::DomCode::ENTER},        {65289, 0, ui::DomCode::TAB},
+      {65056, kShiftMask, ui::DomCode::TAB},
   };
 
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(test_case.keysym);
-    EXPECT_EQ(test_case.dom_code,
-              layout_engine_->GetDomCodeByKeysym(test_case.keysym));
+    EXPECT_EQ(test_case.dom_code, layout_engine_->GetDomCodeByKeysym(
+                                      test_case.keysym, test_case.modifiers));
+  }
+
+  // Test conflict keysym case. We use '<' as a testing sample.
+  constexpr uint32_t kLessThanCode = 60;
+  if (xkb_keymap_key_get_mods_for_level) {
+    // If there's no modifier, on pc101 us layout, intl_backslash is expected.
+    EXPECT_EQ(ui::DomCode::INTL_BACKSLASH,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, 0));
+    // If there's shift modifier, comma key is expected.
+    EXPECT_EQ(ui::DomCode::COMMA,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, kShiftMask));
+  } else {
+    // If xkb_keymap_key_get_mods_for_level is unavailable, fallback to older
+    // implementation, which ignores modifiers.
+    EXPECT_EQ(ui::DomCode::COMMA,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, 0));
+    EXPECT_EQ(ui::DomCode::COMMA,
+              layout_engine_->GetDomCodeByKeysym(kLessThanCode, kShiftMask));
   }
 }
 

@@ -74,9 +74,8 @@ sk_sp<SkSurface> ExternalVkImageSkiaRepresentation::BeginWriteAccess(
     backing_impl()->context_state()->CacheSkSurface(this, surface);
   }
 
-  int count = surface->getCanvas()->save();
+  [[maybe_unused]] int count = surface->getCanvas()->save();
   DCHECK_EQ(count, 1);
-  ALLOW_UNUSED_LOCAL(count);
 
   access_mode_ = kWrite;
 

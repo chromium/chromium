@@ -7,6 +7,7 @@
 
 #include "third_party/blink/public/mojom/input/focus_type.mojom-blink-forward.h"
 #include "third_party/blink/renderer/core/frame/remote_frame_client.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 class WebRemoteFrameImpl;

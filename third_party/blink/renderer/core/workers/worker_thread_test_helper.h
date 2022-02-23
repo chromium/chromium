@@ -29,7 +29,7 @@
 #include "third_party/blink/renderer/core/workers/worker_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worker_reporting_proxy.h"
 #include "third_party/blink/renderer/core/workers/worker_thread.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/network/content_security_policy_parsers.h"
 #include "third_party/blink/renderer/platform/scheduler/public/post_cross_thread_task.h"
 #include "third_party/blink/renderer/platform/weborigin/kurl.h"
@@ -49,7 +49,8 @@ class FakeWorkerGlobalScope : public WorkerGlobalScope {
       WorkerThread* thread)
       : WorkerGlobalScope(std::move(creation_params),
                           thread,
-                          base::TimeTicks::Now()) {
+                          base::TimeTicks::Now(),
+                          false) {
     ReadyToRunWorkerScript();
   }
 
@@ -146,7 +147,8 @@ class WorkerThreadForTest : public WorkerThread {
         false /* starter_secure_context */,
         CalculateHttpsState(security_origin), worker_clients,
         nullptr /* content_settings_client */,
-        network::mojom::IPAddressSpace::kLocal, nullptr,
+        network::mojom::IPAddressSpace::kLocal,
+        nullptr /* inherited_trial_features */,
         base::UnguessableToken::Create(),
         std::make_unique<WorkerSettings>(std::make_unique<Settings>().get()),
         mojom::blink::V8CacheOptions::kDefault,

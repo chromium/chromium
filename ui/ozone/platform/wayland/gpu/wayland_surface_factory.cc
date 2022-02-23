@@ -92,7 +92,7 @@ scoped_refptr<gl::GLSurface> GLOzoneEGLWayland::CreateSurfacelessViewGLSurface(
   } else {
 #if defined(WAYLAND_GBM)
   // If there is a gbm device available, use surfaceless gl surface.
-  if (!buffer_manager_->gbm_device())
+  if (!buffer_manager_->GetGbmDevice())
     return nullptr;
   return gl::InitializeGLSurface(
       new GbmSurfacelessWayland(buffer_manager_, window));
@@ -151,8 +151,6 @@ WaylandSurfaceFactory::GetAllowedGLImplementations() {
     impls.emplace_back(
         gl::GLImplementationParts(gl::kGLImplementationEGLGLES2));
     impls.emplace_back(
-        gl::GLImplementationParts(gl::kGLImplementationSwiftShaderGL));
-    impls.emplace_back(
         gl::GLImplementationParts(gl::ANGLEImplementation::kSwiftShader));
   }
   return impls;
@@ -162,7 +160,6 @@ GLOzone* WaylandSurfaceFactory::GetGLOzone(
     const gl::GLImplementationParts& implementation) {
   switch (implementation.gl) {
     case gl::kGLImplementationEGLGLES2:
-    case gl::kGLImplementationSwiftShaderGL:
     case gl::kGLImplementationEGLANGLE:
       return egl_implementation_.get();
     default:
@@ -231,6 +228,18 @@ WaylandSurfaceFactory::CreateNativePixmapFromHandle(
 #else
   return nullptr;
 #endif
+}
+
+bool WaylandSurfaceFactory::SupportsNativePixmaps() const {
+  bool supports_native_pixmaps = false;
+#if defined(WAYLAND_GBM)
+  supports_native_pixmaps = buffer_manager_->GetGbmDevice() != nullptr;
+#endif
+  // Native pixmaps are not supported with swiftshader.
+  if (gl::IsSoftwareGLImplementation(gl::GetGLImplementationParts())) {
+    supports_native_pixmaps = false;
+  }
+  return supports_native_pixmaps;
 }
 
 }  // namespace ui

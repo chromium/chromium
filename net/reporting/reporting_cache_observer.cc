@@ -14,7 +14,8 @@ void ReportingCacheObserver::OnReportUpdated(const ReportingReport* report) {}
 
 void ReportingCacheObserver::OnClientsUpdated() {}
 
-void ReportingCacheObserver::OnEndpointsUpdated() {}
+void ReportingCacheObserver::OnEndpointsUpdatedForOrigin(
+    const std::vector<ReportingEndpoint>& endpoints) {}
 
 ReportingCacheObserver::ReportingCacheObserver() = default;
 

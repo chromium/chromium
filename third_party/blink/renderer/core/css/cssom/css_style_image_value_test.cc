@@ -13,11 +13,11 @@ namespace {
 
 class FakeCSSStyleImageValue : public CSSStyleImageValue {
  public:
-  FakeCSSStyleImageValue(bool cache_pending, IntSize size)
+  FakeCSSStyleImageValue(bool cache_pending, gfx::Size size)
       : cache_pending_(cache_pending), size_(size) {}
 
   // CSSStyleImageValue
-  absl::optional<IntSize> IntrinsicSize() const final {
+  absl::optional<gfx::Size> IntrinsicSize() const final {
     if (cache_pending_)
       return absl::nullopt;
     return size_;
@@ -26,7 +26,7 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
   // CanvasImageSource
   scoped_refptr<Image> GetSourceImageForCanvas(
       SourceImageStatus*,
-      const FloatSize&,
+      const gfx::SizeF&,
       const AlphaDisposition alpha_disposition = kPremultiplyAlpha) final {
     // Only cover premultiply alpha cases.
     DCHECK_EQ(alpha_disposition, kPremultiplyAlpha);
@@ -45,13 +45,13 @@ class FakeCSSStyleImageValue : public CSSStyleImageValue {
 
  private:
   bool cache_pending_;
-  IntSize size_;
+  gfx::Size size_;
 };
 
 }  // namespace
 
 TEST(CSSStyleImageValueTest, PendingCache) {
-  FakeCSSStyleImageValue style_image_value(true, IntSize(100, 100));
+  FakeCSSStyleImageValue style_image_value(true, gfx::Size(100, 100));
   bool is_null = false;
   EXPECT_EQ(style_image_value.intrinsicWidth(is_null), 0);
   EXPECT_EQ(style_image_value.intrinsicHeight(is_null), 0);
@@ -60,7 +60,7 @@ TEST(CSSStyleImageValueTest, PendingCache) {
 }
 
 TEST(CSSStyleImageValueTest, ValidLoadedImage) {
-  FakeCSSStyleImageValue style_image_value(false, IntSize(480, 120));
+  FakeCSSStyleImageValue style_image_value(false, gfx::Size(480, 120));
   bool is_null = false;
   EXPECT_EQ(style_image_value.intrinsicWidth(is_null), 480);
   EXPECT_EQ(style_image_value.intrinsicHeight(is_null), 120);

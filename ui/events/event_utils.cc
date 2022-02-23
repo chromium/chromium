@@ -11,11 +11,12 @@
 #include "base/check.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
+#include "build/build_config.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 
 #include "ui/events/win/events_win_utils.h"
@@ -113,7 +114,7 @@ void ComputeEventLatencyOS(EventType type,
   // after M92 (which introduced Event.Latency.OS2.*) has been replaced in the
   // stable channel.
   switch (type) {
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // On Mac, ET_SCROLL and ET_MOUSEWHEEL represent the same class of events.
     case ET_SCROLL:
 #endif
@@ -168,7 +169,7 @@ void ComputeEventLatencyOS(EventType type,
   }
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 void ComputeEventLatencyOSFromTOUCHINPUT(EventType event_type,
                                          TOUCHINPUT touch_input,
@@ -199,7 +200,7 @@ void ComputeEventLatencyOSFromPOINTER_INFO(EventType event_type,
   ComputeEventLatencyOS(event_type, time_stamp, current_time);
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void ConvertEventLocationToTargetWindowLocation(
     const gfx::Point& target_window_origin,
@@ -253,6 +254,7 @@ base::StringPiece EventTypeName(EventType type) {
     CASE_TYPE(ET_GESTURE_PINCH_BEGIN);
     CASE_TYPE(ET_GESTURE_PINCH_END);
     CASE_TYPE(ET_GESTURE_PINCH_UPDATE);
+    CASE_TYPE(ET_GESTURE_SHORT_PRESS);
     CASE_TYPE(ET_GESTURE_LONG_PRESS);
     CASE_TYPE(ET_GESTURE_LONG_TAP);
     CASE_TYPE(ET_GESTURE_SWIPE);

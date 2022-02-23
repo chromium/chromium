@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/common/pref_names.h"
@@ -109,14 +110,14 @@ class ProfileInfoHandlerTest : public testing::Test {
   std::unique_ptr<user_manager::ScopedUserManager> user_manager_enabler_;
 #endif
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   std::unique_ptr<TestProfileInfoHandler> handler_;
 };
 
 TEST_F(ProfileInfoHandlerTest, GetProfileInfo) {
   base::Value list_args(base::Value::Type::LIST);
   list_args.Append("get-profile-info-callback-id");
-  handler()->HandleGetProfileInfo(&base::Value::AsListValue(list_args));
+  handler()->HandleGetProfileInfo(list_args.GetListDeprecated());
 
   EXPECT_EQ(1U, web_ui()->call_data().size());
 

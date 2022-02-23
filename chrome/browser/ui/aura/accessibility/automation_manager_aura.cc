@@ -413,6 +413,5 @@ void AutomationManagerAura::OnSerializeFailure(ax::mojom::Event event_type,
 
   LOG(ERROR) << "Unable to serialize accessibility event!\n"
              << "Event type: " << event_type << "\n"
-             << "Error: " << error_string << "\n"
-             << "Update: " << update.ToString();
+             << "Error: " << error_string;
 }

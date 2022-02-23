@@ -13,7 +13,6 @@
 
 #include "base/component_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/numerics/checked_math.h"
 #include "components/services/storage/public/mojom/blob_storage_context.mojom.h"

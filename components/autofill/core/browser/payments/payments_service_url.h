@@ -24,6 +24,10 @@ GURL GetBaseSecureUrl();
 GURL GetManageInstrumentsUrl();
 GURL GetManageAddressesUrl();
 
+// Returns the support URL for users to learn more about virtual cards during
+// the virtual card enrollment bubble.
+GURL GetVirtualCardEnrollmentSupportUrl();
+
 }  // namespace payments
 }  // namespace autofill
 

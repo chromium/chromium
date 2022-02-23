@@ -108,9 +108,6 @@
     <item type="id" name="ntp_feed_header_menu_item_learn" />
     <item type="id" name="ntp_feed_header_menu_item_toggle_switch" />
 
-    <!-- Enhanced Protection Promo -->
-    <item type="id" name="enhanced_protection_promo" />
-
     <!-- Custom Tabs -->
     <item type="id" name="view_id_tag_key" />
 </resources>

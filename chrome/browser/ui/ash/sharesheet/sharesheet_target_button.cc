@@ -14,6 +14,7 @@
 #include "chrome/browser/ui/ash/sharesheet/sharesheet_constants.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_styles.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/font_list.h"
 #include "ui/gfx/image/image_skia_operations.h"
@@ -24,11 +25,6 @@
 namespace {
 
 // Sizes are in px.
-
-// kButtonWidth = 76px width + 2*8px for padding on left and right
-constexpr int kButtonWidth = 92;
-// kButtonHeight = 88px height + 2*8px for padding on top and bottom.
-constexpr int kButtonHeight = 104;
 // kButtonTextMaxWidth is button max width without padding.
 constexpr int kButtonTextMaxWidth = 76;
 constexpr int kButtonMaxLines = 2;
@@ -51,7 +47,11 @@ std::unique_ptr<views::ImageView> CreateImageView(
         *vector_icon, sharesheet::kIconSize / 2, icon_color);
     gfx::ImageSkia circle_icon =
         gfx::ImageSkiaOperations::CreateImageWithCircleBackground(
-            sharesheet::kIconSize / 2, color_provider->GetBackgroundColor(),
+            sharesheet::kIconSize / 2,
+            cros_styles::ResolveColor(
+                cros_styles::ColorName::kBgColorElevation1,
+                color_provider->IsDarkModeEnabled(),
+                /*use_debug_colors=*/false),
             icon);
 
     // TODO(crbug.com/1184414): Replace hard-coded values when shadow styles
@@ -110,7 +110,10 @@ SharesheetTargetButton::SharesheetTargetButton(
 
   auto* label = label_view->AddChildView(std::make_unique<views::Label>(
       display_name, CONTEXT_SHARESHEET_BUBBLE_BODY, STYLE_SHARESHEET));
-  label->SetEnabledColor(kPrimaryTextColor);
+  ScopedLightModeAsDefault scoped_light_mode_as_default;
+  auto secondary_text_color = AshColorProvider::Get()->GetContentLayerColor(
+      AshColorProvider::ContentLayerType::kTextColorSecondary);
+  label->SetEnabledColor(secondary_text_color);
   SetLabelProperties(label);
 
   std::u16string accessible_name = display_name;
@@ -120,7 +123,7 @@ SharesheetTargetButton::SharesheetTargetButton(
         label_view->AddChildView(std::make_unique<views::Label>(
             secondary_display_name, CONTEXT_SHARESHEET_BUBBLE_BODY_SECONDARY,
             STYLE_SHARESHEET));
-    secondary_label->SetEnabledColor(kSecondaryTextColor);
+    secondary_label->SetEnabledColor(secondary_text_color);
     SetLabelProperties(secondary_label);
     accessible_name =
         base::StrCat({display_name, u" ", secondary_display_name});
@@ -137,7 +140,6 @@ SharesheetTargetButton::SharesheetTargetButton(
 }
 
 void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
-  label->SetLineHeight(kPrimaryTextLineHeight);
   label->SetMultiLine(true);
   label->SetMaximumWidth(kButtonTextMaxWidth);
   label->SetBackgroundColor(SK_ColorTRANSPARENT);
@@ -145,11 +147,6 @@ void SharesheetTargetButton::SetLabelProperties(views::Label* label) {
   label->SetTooltipText(label->GetText());
   label->SetAutoColorReadabilityEnabled(false);
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
-}
-
-// Button is 76px width x 88px height + 8px padding along all sides.
-gfx::Size SharesheetTargetButton::CalculatePreferredSize() const {
-  return gfx::Size(kButtonWidth, kButtonHeight);
 }
 
 BEGIN_METADATA(SharesheetTargetButton, views::Button)

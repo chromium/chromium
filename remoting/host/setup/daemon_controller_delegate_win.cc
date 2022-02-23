@@ -6,13 +6,14 @@
 
 #include <stddef.h>
 
+#include <tuple>
+
 #include "base/cxx17_backports.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/values.h"
@@ -85,7 +86,7 @@ bool ReadConfig(const base::FilePath& filename,
     return false;
   }
 
-  ignore_result(value.release());
+  std::ignore = value.release();
   config_out->reset(dictionary);
   return true;
 }

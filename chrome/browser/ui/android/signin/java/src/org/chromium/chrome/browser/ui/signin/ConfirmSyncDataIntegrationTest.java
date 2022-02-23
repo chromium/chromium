@@ -44,7 +44,7 @@ import org.chromium.components.browser_ui.modaldialog.AppModalPresenter;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManager.ModalDialogType;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 
 /**
  * This class regroups the integration tests for {@link ConfirmSyncDataStateMachine}.
@@ -59,7 +59,7 @@ import org.chromium.ui.test.util.DummyUiActivityTestCase;
 @RunWith(ChromeJUnit4ClassRunner.class)
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE})
 @Batch(ConfirmSyncDataIntegrationTest.CONFIRM_SYNC_DATA_BATCH_NAME)
-public class ConfirmSyncDataIntegrationTest extends DummyUiActivityTestCase {
+public class ConfirmSyncDataIntegrationTest extends BlankUiTestActivityTestCase {
     public static final String CONFIRM_SYNC_DATA_BATCH_NAME = "confirm_sync_data";
 
     private static final String OLD_ACCOUNT_NAME = "test.account.old@gmail.com";

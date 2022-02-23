@@ -5,10 +5,13 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_WEB_APP_TAB_HELPER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "base/unguessable_token.h"
 #include "chrome/browser/web_applications/app_registrar_observer.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
+#include "chrome/browser/web_applications/web_app_install_manager_observer.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -24,7 +27,7 @@ class WebAppProvider;
 // Per-tab web app helper. Allows to associate a tab (web page) with a web app.
 class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
                         public content::WebContentsObserver,
-                        public AppRegistrarObserver {
+                        public WebAppInstallManagerObserver {
  public:
   static void CreateForWebContents(content::WebContents* contents);
 
@@ -38,12 +41,14 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   const base::UnguessableToken& GetAudioFocusGroupIdForTesting() const;
   bool HasLoadedNonAboutBlankPage() const;
 
+  bool acting_as_app() const { return acting_as_app_; }
+  void set_acting_as_app(bool acting_as_app) { acting_as_app_ = acting_as_app; }
+
   // content::WebContentsObserver:
   void ReadyToCommitNavigation(
       content::NavigationHandle* navigation_handle) override;
   void DidFinishNavigation(
       content::NavigationHandle* navigation_handle) override;
-  void DOMContentLoaded(content::RenderFrameHost* render_frame_host) override;
   void DidCloneToNewWebContents(
       content::WebContents* old_web_contents,
       content::WebContents* new_web_contents) override;
@@ -55,11 +60,10 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // Returns whether the associated web contents belongs to an app window.
   bool IsInAppWindow() const;
 
-  // AppRegistrarObserver:
+  // WebAppInstallManagerObserver:
   void OnWebAppInstalled(const AppId& installed_app_id) override;
   void OnWebAppWillBeUninstalled(const AppId& uninstalled_app_id) override;
-  void OnAppRegistrarShutdown() override;
-  void OnAppRegistrarDestroyed() override;
+  void OnWebAppInstallManagerDestroyed() override;
 
   void ResetAppId();
 
@@ -78,6 +82,13 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
   // WebApp associated with this tab. Empty string if no app associated.
   AppId app_id_;
 
+  // True when the associated `WebContents` is acting as an app. Specifically,
+  // this should only be true if `app_id_` is non empty, and the WebContents was
+  // created in response to an app launch, or in some other corner cases such as
+  // when an app is first installed and reparented from tab to window. It should
+  // be false if a user types the app's URL into a normal browser window.
+  bool acting_as_app_ = false;
+
   // Indicates if the current page is an error page (e.g. the page failed to
   // load). We store this because it isn't accessible off a |WebContents| or a
   // |RenderFrameHost|.
@@ -89,9 +100,9 @@ class WebAppTabHelper : public content::WebContentsUserData<WebAppTabHelper>,
 
   bool has_loaded_non_about_blank_page_ = false;
 
-  base::ScopedObservation<WebAppRegistrar, AppRegistrarObserver> observation_{
-      this};
-  WebAppProvider* provider_ = nullptr;
+  base::ScopedObservation<WebAppInstallManager, WebAppInstallManagerObserver>
+      observation_{this};
+  raw_ptr<WebAppProvider> provider_ = nullptr;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

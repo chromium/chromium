@@ -13,6 +13,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/feature_list.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/address_normalizer.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
@@ -404,7 +405,7 @@ void PaymentRequestState::OnPaymentAppWindowClosed() {
 void PaymentRequestState::RecordUseStats() {
   if (ShouldShowShippingSection()) {
     DCHECK(selected_shipping_profile_);
-    personal_data_manager_->RecordUseOf(selected_shipping_profile_);
+    personal_data_manager_->RecordUseOf(selected_shipping_profile_.get());
   }
 
   if (ShouldShowContactSection()) {
@@ -414,7 +415,7 @@ void PaymentRequestState::RecordUseStats() {
     // should only be updated once.
     if (!ShouldShowShippingSection() || (selected_shipping_profile_->guid() !=
                                          selected_contact_profile_->guid())) {
-      personal_data_manager_->RecordUseOf(selected_contact_profile_);
+      personal_data_manager_->RecordUseOf(selected_contact_profile_.get());
     }
   }
 

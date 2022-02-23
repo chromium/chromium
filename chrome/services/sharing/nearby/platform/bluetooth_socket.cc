@@ -56,15 +56,29 @@ OutputStream& BluetoothSocket::GetOutputStream() {
 }
 
 Exception BluetoothSocket::Close() {
-  if (socket_) {
-    socket_->Disconnect();
-    socket_.reset();
-  }
+  CloseMojoSocketIfNecessary();
+
   return bidirectional_stream_.Close();
 }
 
 api::BluetoothDevice* BluetoothSocket::GetRemoteDevice() {
   return &remote_device_ref_;
+}
+
+void BluetoothSocket::CloseMojoSocketIfNecessary() {
+  base::AutoLock lock(lock_);
+
+  if (!socket_)
+    return;
+
+  // TODO(https://crbug.com/1270499): Remove CHECKs when crash fix is verified.
+  // If not for the lock--or if thread safety is violated in some unexpected
+  // way--these CHECKs would be triggered when Close() is called simultaneously
+  // from multiple threads.
+  CHECK(socket_);
+  socket_->Disconnect();
+  CHECK(socket_);
+  socket_.reset();
 }
 
 }  // namespace chrome

@@ -29,7 +29,7 @@ void TestAuthenticationRequester::OnCVCAuthenticationComplete(
   }
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool TestAuthenticationRequester::ShouldOfferFidoAuth() const {
   return false;
 }
@@ -40,7 +40,7 @@ bool TestAuthenticationRequester::UserOptedInToFidoFromSettingsPageOnMobile()
 }
 #endif
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 void TestAuthenticationRequester::OnFIDOAuthenticationComplete(
     const CreditCardFIDOAuthenticator::FidoAuthenticationResponse& response) {
   did_succeed_ = response.did_succeed;

@@ -5,10 +5,12 @@
 #include "components/url_formatter/url_formatter.h"
 
 #include <algorithm>
+#include <ostream>
 #include <utility>
 #include <vector>
 
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
@@ -22,6 +24,8 @@
 #include "third_party/icu/source/common/unicode/utypes.h"
 #include "url/gurl.h"
 #include "url/third_party/mozilla/url_parse.h"
+#include "url/url_constants.h"
+#include "url/url_util.h"
 
 namespace url_formatter {
 
@@ -53,8 +57,8 @@ ComponentResult IDNToUnicodeOneComponent(
 
 class AppendComponentTransform {
  public:
-  AppendComponentTransform() {}
-  virtual ~AppendComponentTransform() {}
+  AppendComponentTransform() = default;
+  virtual ~AppendComponentTransform() = default;
 
   virtual std::u16string Execute(
       const std::string& component_text,
@@ -142,9 +146,11 @@ void AppendFormattedComponent(const std::string& spec,
 
     // Shift all the adjustments made for this component so the offsets are
     // valid for the original string and add them to |adjustments|.
-    for (auto comp_iter = component_transform_adjustments.begin();
-         comp_iter != component_transform_adjustments.end(); ++comp_iter)
-      comp_iter->original_offset += original_component_begin;
+    for (auto& component_transform_adjustment :
+         component_transform_adjustments) {
+      component_transform_adjustment.original_offset +=
+          original_component_begin;
+    }
     if (adjustments) {
       adjustments->insert(adjustments->end(),
                           component_transform_adjustments.begin(),
@@ -386,7 +392,7 @@ struct UIDNAWrapper {
                           << "https://crbug.com/778929.";
   }
 
-  UIDNA* value;
+  raw_ptr<UIDNA> value;
 };
 
 base::LazyInstance<UIDNAWrapper>::Leaky g_uidna = LAZY_INSTANCE_INITIALIZER;
@@ -460,6 +466,29 @@ ComponentResult IDNToUnicodeOneComponent(
   return result;
 }
 
+// Returns true iff URL-parsing `spec` would reveal that it has the
+// "view-source" scheme, and that parsing the spec minus that scheme also has
+// the "view-source" scheme.
+bool HasTwoViewSourceSchemes(base::StringPiece spec) {
+  static constexpr char kViewSource[] = "view-source";
+  url::Component scheme;
+  if (!url::FindAndCompareScheme(spec.data(),
+                                 base::checked_cast<int>(spec.size()),
+                                 kViewSource, &scheme)) {
+    return false;
+  }
+  // Consume the scheme.
+  spec.remove_prefix(scheme.begin + scheme.len);
+  // Consume the trailing colon. If it's not there, then `spec` didn't really
+  // have the first view-source scheme.
+  if (spec.empty() || spec[0] != ':')
+    return false;
+  spec.remove_prefix(1);
+
+  return url::FindAndCompareScheme(
+      spec.data(), base::checked_cast<int>(spec.size()), kViewSource, &scheme);
+}
+
 }  // namespace
 
 const FormatUrlType kFormatUrlOmitNothing = 0;
@@ -522,16 +551,14 @@ std::u16string FormatUrlWithAdjustments(
   else
     *new_parsed = url::Parsed();
 
-  // Special handling for view-source:.  Don't use content::kViewSourceScheme
-  // because this library shouldn't depend on chrome.
-  const char kViewSource[] = "view-source";
-  // Reject "view-source:view-source:..." to avoid deep recursion.
-  const char kViewSourceTwice[] = "view-source:view-source:";
+  // Special handling for view-source:. Don't use content::kViewSourceScheme
+  // because this library shouldn't depend on chrome. Reject repeated
+  // view-source schemes to avoid recursion.
+  static constexpr base::StringPiece kViewSource = "view-source";
   if (url.SchemeIs(kViewSource) &&
-      !base::StartsWith(url.possibly_invalid_spec(), kViewSourceTwice,
-                        base::CompareCase::INSENSITIVE_ASCII)) {
-    return FormatViewSourceUrl(url, format_types, unescape_rules,
-                               new_parsed, prefix_end, adjustments);
+      !HasTwoViewSourceSchemes(url.possibly_invalid_spec())) {
+    return FormatViewSourceUrl(url, format_types, unescape_rules, new_parsed,
+                               prefix_end, adjustments);
   }
 
   // We handle both valid and invalid URLs (this will give us the spec
@@ -672,7 +699,7 @@ std::u16string FormatUrlWithAdjustments(
         url.SchemeIs(url::kMailToScheme)
             ? new_parsed->scheme.len + 1   // +1 for :.
             : new_parsed->scheme.len + 3;  // +3 for ://.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Because there's an additional leading slash after the scheme for local
     // files on Windows, we should remove it for URL display when eliding
     // the scheme by offsetting by an additional character.

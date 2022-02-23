@@ -20,10 +20,10 @@
 #include "chrome/common/chrome_paths.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/components/disks/disk.h"
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"  // nogncheck
 #include "chromeos/dbus/image_burner/fake_image_burner_client.h"
-#include "chromeos/disks/disk.h"
 #endif
 
 namespace extensions {
@@ -255,13 +255,13 @@ void ImageWriterTestUtils::SetUp(bool is_browser_test) {
   }
 
   FakeDiskMountManager* disk_manager = new FakeDiskMountManager();
-  chromeos::disks::DiskMountManager::InitializeForTesting(disk_manager);
+  ash::disks::DiskMountManager::InitializeForTesting(disk_manager);
 
   // Adds a disk entry for test_device_path_ with the same device and file path.
   disk_manager->CreateDiskEntryForMountDevice(
-      chromeos::disks::DiskMountManager::MountPointInfo(
+      ash::disks::DiskMountManager::MountPointInfo(
           test_device_path_.value(), "/dummy/mount",
-          chromeos::MOUNT_TYPE_DEVICE, chromeos::disks::MOUNT_CONDITION_NONE),
+          chromeos::MOUNT_TYPE_DEVICE, ash::disks::MOUNT_CONDITION_NONE),
       "device_id", "device_label", "Vendor", "Product",
       chromeos::DEVICE_TYPE_USB, kTestFileSize, true, true, true, false,
       kTestFileSystemType);
@@ -279,7 +279,7 @@ void ImageWriterTestUtils::TearDown() {
     chromeos::ConciergeClient::Shutdown();
     chromeos::DBusThreadManager::Shutdown();
   }
-  chromeos::disks::DiskMountManager::Shutdown();
+  ash::disks::DiskMountManager::Shutdown();
 #else
   ImageWriterUtilityClient::SetFactoryForTesting(nullptr);
 #endif

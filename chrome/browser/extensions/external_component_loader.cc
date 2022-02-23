@@ -17,7 +17,7 @@
 #include "extensions/common/feature_switch.h"
 #include "extensions/common/manifest.h"
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/policy/profile_policy_connector.h"
 #endif
 
@@ -34,7 +34,7 @@ void ExternalComponentLoader::StartLoading() {
   AddExternalExtension(extension_misc::kInAppPaymentsSupportAppId, prefs.get());
 #endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   {
     // Only load the Assessment Assistant if the current session is managed.
     if (profile_->GetProfilePolicyConnector()->IsManaged()) {
@@ -53,8 +53,8 @@ void ExternalComponentLoader::AddExternalExtension(
   if (!IsComponentExtensionAllowlisted(extension_id))
     return;
 
-  prefs->SetString(extension_id + ".external_update_url",
-                   extension_urls::GetWebstoreUpdateUrl().spec());
+  prefs->SetStringPath(extension_id + ".external_update_url",
+                       extension_urls::GetWebstoreUpdateUrl().spec());
 }
 
 }  // namespace extensions

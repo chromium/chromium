@@ -6,14 +6,15 @@
 
 #include <utility>
 
+#include "ash/components/cryptohome/cryptohome_parameters.h"
 #include "ash/constants/ash_paths.h"
 #include "base/bind.h"
 #include "base/files/file_path.h"
+#include "base/files/file_util.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
-#include "chrome/browser/ash/login/test/local_policy_test_server_mixin.h"
+#include "chrome/browser/ash/login/test/embedded_policy_test_server_mixin.h"
 #include "chrome/common/chrome_paths.h"
-#include "chromeos/cryptohome/cryptohome_parameters.h"
 #include "chromeos/dbus/constants/dbus_paths.h"
 #include "chromeos/dbus/cryptohome/rpc.pb.h"
 #include "chromeos/dbus/session_manager/fake_session_manager_client.h"
@@ -29,10 +30,10 @@ UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
 
 UserPolicyMixin::UserPolicyMixin(InProcessBrowserTestMixinHost* mixin_host,
                                  const AccountId& account_id,
-                                 LocalPolicyTestServerMixin* policy_server)
+                                 EmbeddedPolicyTestServerMixin* policy_server)
     : InProcessBrowserTestMixin(mixin_host),
       account_id_(account_id),
-      policy_server_(policy_server) {}
+      embedded_policy_server_(policy_server) {}
 
 UserPolicyMixin::~UserPolicyMixin() = default;
 
@@ -65,7 +66,7 @@ void UserPolicyMixin::SetUpUserKeysFile(const std::string& user_key_bits) {
   CHECK(base::PathService::Get(chrome::DIR_USER_DATA, &user_data_dir));
 
   base::ScopedAllowBlockingForTesting allow_io;
-  chromeos::RegisterStubPathOverrides(user_data_dir);
+  RegisterStubPathOverrides(user_data_dir);
   chromeos::dbus_paths::RegisterStubPathOverrides(user_data_dir);
 
   base::FilePath user_keys_dir;
@@ -103,9 +104,9 @@ void UserPolicyMixin::SetUpPolicy() {
       cryptohome::CreateAccountIdentifierFromAccountId(account_id_);
   FakeSessionManagerClient::Get()->set_user_policy(cryptohome_id, policy_blob);
 
-  if (policy_server_) {
-    policy_server_->UpdateUserPolicy(user_policy_builder_.payload(),
-                                     account_id_.GetUserEmail());
+  if (embedded_policy_server_) {
+    embedded_policy_server_->UpdateUserPolicy(user_policy_builder_.payload(),
+                                              account_id_.GetUserEmail());
   }
 }
 

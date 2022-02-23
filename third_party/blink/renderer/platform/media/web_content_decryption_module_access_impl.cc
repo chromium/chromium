@@ -17,7 +17,6 @@ namespace blink {
 // The caller owns the created cdm (passed back using |result|).
 static void CreateCdm(
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client,
-    const WebString& key_system,
     const WebSecurityOrigin& security_origin,
     const media::CdmConfig& cdm_config,
     std::unique_ptr<WebContentDecryptionModuleResult> result) {
@@ -30,7 +29,7 @@ static void CreateCdm(
     return;
   }
 
-  client->CreateCdm(key_system, security_origin, cdm_config, std::move(result));
+  client->CreateCdm(security_origin, cdm_config, std::move(result));
 }
 
 // static
@@ -42,23 +41,20 @@ WebContentDecryptionModuleAccessImpl::From(
 
 std::unique_ptr<WebContentDecryptionModuleAccessImpl>
 WebContentDecryptionModuleAccessImpl::Create(
-    const WebString& key_system,
     const WebSecurityOrigin& security_origin,
     const WebMediaKeySystemConfiguration& configuration,
     const media::CdmConfig& cdm_config,
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client) {
   return std::make_unique<WebContentDecryptionModuleAccessImpl>(
-      key_system, security_origin, configuration, cdm_config, client);
+      security_origin, configuration, cdm_config, client);
 }
 
 WebContentDecryptionModuleAccessImpl::WebContentDecryptionModuleAccessImpl(
-    const WebString& key_system,
     const WebSecurityOrigin& security_origin,
     const WebMediaKeySystemConfiguration& configuration,
     const media::CdmConfig& cdm_config,
     const base::WeakPtr<WebEncryptedMediaClientImpl>& client)
-    : key_system_(key_system),
-      security_origin_(security_origin),
+    : security_origin_(security_origin),
       configuration_(configuration),
       cdm_config_(cdm_config),
       client_(client) {}
@@ -67,7 +63,7 @@ WebContentDecryptionModuleAccessImpl::~WebContentDecryptionModuleAccessImpl() =
     default;
 
 WebString WebContentDecryptionModuleAccessImpl::GetKeySystem() {
-  return key_system_;
+  return WebString::FromUTF8(cdm_config_.key_system);
 }
 
 WebMediaKeySystemConfiguration
@@ -84,10 +80,9 @@ void WebContentDecryptionModuleAccessImpl::CreateContentDecryptionModule(
   // gets garbage-collected.
   std::unique_ptr<WebContentDecryptionModuleResult> result_copy(
       new WebContentDecryptionModuleResult(result));
-  task_runner->PostTask(
-      FROM_HERE,
-      base::BindOnce(&CreateCdm, client_, key_system_, security_origin_,
-                     cdm_config_, std::move(result_copy)));
+  task_runner->PostTask(FROM_HERE,
+                        base::BindOnce(&CreateCdm, client_, security_origin_,
+                                       cdm_config_, std::move(result_copy)));
 }
 
 bool WebContentDecryptionModuleAccessImpl::UseHardwareSecureCodecs() const {

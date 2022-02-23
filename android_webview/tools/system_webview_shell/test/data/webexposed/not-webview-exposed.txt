@@ -65,14 +65,17 @@ interface HTMLMediaElement : HTMLElement
 # permissions API (crbug.com/490120), presentation API (crbug.com/521319),
 # share API (crbug.com/765923), custom scheme handlers (crbug.com/589502),
 # media session API (crbug.com/925997), Web Serial API (crbug.com/1164036),
-# WebXr API (crbug.com/1012899), and WebHID API (crbug.com/1164125) are not
-# supported in webview.
+# WebXr API (crbug.com/1012899), WebHID API (crbug.com/1164125), Web
+# Bluetooth API (crbug.com/1100993), and WebUSB API (crbug.com/933055) are
+# not supported in webview.
 interface Navigator
+    getter bluetooth                   # crbug.com/1100993
     getter hid                         # crbug.com/1164125
     getter mediaSession                # crbug.com/925997
     getter permissions                 # crbug.com/490120
     getter presentation                # crbug.com/521319
     getter serial                      # crbug.com/1164036
+    getter usb                         # crbug.com/1012899
     getter xr                          # crbug.com/1012899
     method registerProtocolHandler     # crbug.com/589502
     method unregisterProtocolHandler   # crbug.com/589502
@@ -209,6 +212,35 @@ interface HIDDevice : EventTarget
 interface HIDInputReportEvent : Event
 interface HIDConnectionEvent : Event
 interface HID : EventTarget
+
+# Window Controls Overlay API is not implemented on Android.
+interface WindowControlsOverlay : EventTarget
+interface WindowControlsOverlayGeometryChangeEvent : Event
+
+# Web Bluetooth is not implemented on WebView. crbug.com/1100993
+interface Bluetooth : EventTarget
+interface BluetoothCharacteristicProperties
+interface BluetoothDevice : EventTarget
+interface BluetoothRemoteGATTCharacteristic : EventTarget
+interface BluetoothRemoteGATTDescriptor
+interface BluetoothRemoteGATTServer
+interface BluetoothRemoteGATTService
+interface BluetoothUUID
+
+# WebUSB is not implemented on WebView. crbug.com/933055
+interface USB : EventTarget
+interface USBConnectionEvent : Event
+interface USBDevice
+interface USBInTransferResult
+interface USBOutTransferResult
+interface USBIsochronousInTransferPacket
+interface USBIsochronousInTransferResult
+interface USBIsochronousOutTransferPacket
+interface USBIsochronousOutTransferResult
+interface USBConfiguration
+interface USBInterface
+interface USBAlternateInterface
+interface USBEndpoint
 
 [GLOBAL OBJECT]
     method openDatabase

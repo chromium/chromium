@@ -69,13 +69,15 @@ struct ScanSource {
   string name;
   // The page sizes supported by this source.
   array<PageSize> page_sizes;
+  // The color modes supported by this source.
+  array<ColorMode> color_modes;
+  // The resolutions supported by this source.
+  array<uint32> resolutions;
 };
 
 // The capabilities a scanner supports.
 struct ScannerCapabilities {
   array<ScanSource> sources;
-  array<ColorMode> color_modes;
-  array<uint32> resolutions;
 };
 
 // Settings used to perform a scan.

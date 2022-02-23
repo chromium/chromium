@@ -11,6 +11,7 @@
 
 #include "base/containers/contains.h"
 #include "base/lazy_instance.h"
+#include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/content/renderer/form_autofill_util.h"
@@ -221,13 +222,13 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   // Check for password fields that are not contained inside forms.
   auto password_inputs = document.QuerySelectorAll("input[type=\"password\"]");
   for (unsigned i = 0; i < password_inputs.size(); ++i) {
-    const WebInputElement* input_element =
-        ToWebInputElement(&password_inputs[i]);
-    if (!input_element || input_element->IsNull())
+    const WebInputElement input_element =
+        password_inputs[i].DynamicTo<WebInputElement>();
+    if (input_element.IsNull())
       continue;
     if (TrackElementByRendererIdIfUntracked(
             password_inputs[i],
-            FieldRendererId(input_element->UniqueRendererFormControlId()),
+            FieldRendererId(input_element.UniqueRendererFormControlId()),
             skip_control_ids, &nodes_for_id))
       continue;
     // Any password fields inside <form> elements will have been skipped,
@@ -241,15 +242,16 @@ std::vector<FormInputCollection> ExtractFormsForAnalysis(
   // inside forms.
   std::string selector = "input:not([type])";
   for (const char* text_type : kTypeTextAttributes)
-    selector += ", input[type=\"" + std::string(text_type) + "\"]";
+    base::StrAppend(&selector, {", input[type=\"", text_type, "\"]"});
   auto text_inputs = document.QuerySelectorAll(WebString::FromUTF8(selector));
   for (const WebElement& text_input : text_inputs) {
-    const WebInputElement* input_element = ToWebInputElement(&text_input);
-    if (!input_element || input_element->IsNull())
+    const WebInputElement input_element =
+        text_input.DynamicTo<WebInputElement>();
+    if (input_element.IsNull())
       continue;
     TrackElementByRendererIdIfUntracked(
         text_input,
-        FieldRendererId(input_element->UniqueRendererFormControlId()),
+        FieldRendererId(input_element.UniqueRendererFormControlId()),
         skip_control_ids, &nodes_for_id);
   }
   // Warn against elements sharing an id attribute. Duplicate id attributes both
@@ -331,7 +333,7 @@ void GuessAutocompleteAttributesForPasswordFields(
   switch (password_count) {
     case 3:
       (*autocomplete_suggestions)[password_inputs[0]] = "current-password";
-      FALLTHROUGH;  // To match the last two password fields.
+      [[fallthrough]];  // To match the last two password fields.
     case 2:
       (*autocomplete_suggestions)[password_inputs[password_count - 2]] =
           "new-password";

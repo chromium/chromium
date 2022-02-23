@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "components/viz/test/test_gpu_service_holder.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
 #include "gpu/command_buffer/client/webgpu_implementation.h"
@@ -12,6 +13,11 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "gpu/command_buffer/tests/gl_manager.h"
+#include "ui/gl/gl_context.h"
+#endif
 
 namespace gpu {
 namespace {
@@ -41,13 +47,82 @@ void ToMockUncapturedErrorCallback(WGPUErrorType type,
   mock_device_error_callback->Call(type, message, userdata);
 }
 
+struct WebGPUMailboxTestParams : WebGPUTest::Options {
+  viz::ResourceFormat format;
+};
+
+std::ostream& operator<<(std::ostream& os,
+                         const WebGPUMailboxTestParams& options) {
+  switch (options.format) {
+    case viz::ResourceFormat::RGBA_8888:
+      os << "RGBA_8888";
+      break;
+    case viz::ResourceFormat::BGRA_8888:
+      os << "BGRA_8888";
+      break;
+    default:
+      NOTREACHED();
+  }
+  if (options.enable_unsafe_webgpu) {
+    os << "_UnsafeWebGPU";
+  }
+  if (options.force_fallback_adapter) {
+    os << "_FallbackAdapter";
+  }
+  return os;
+}
+
 }  // namespace
 
-class WebGPUMailboxTest : public WebGPUTest {
+class WebGPUMailboxTest
+    : public WebGPUTest,
+      public testing::WithParamInterface<WebGPUMailboxTestParams> {
+ public:
+  static std::vector<WebGPUMailboxTestParams> TestParams() {
+    WebGPUMailboxTestParams options = {};
+
+    WebGPUMailboxTestParams fallback_options = {};
+    fallback_options.force_fallback_adapter = true;
+    // Unsafe WebGPU currently required for SwiftShader fallback.
+    fallback_options.enable_unsafe_webgpu = true;
+
+    std::vector<WebGPUMailboxTestParams> params;
+
+    for (viz::ResourceFormat format : {
+// TODO(crbug.com/1241369): Handle additional formats.
+#if !BUILDFLAG(IS_MAC)
+           viz::ResourceFormat::RGBA_8888,
+#endif  // !BUILDFLAG(IS_MAC)
+               viz::ResourceFormat::BGRA_8888,
+         }) {
+      WebGPUMailboxTestParams o = options;
+      o.format = format;
+      params.push_back(o);
+
+      o = fallback_options;
+      o.format = format;
+      params.push_back(o);
+    }
+    return params;
+  }
+
  protected:
   void SetUp() override {
+#if BUILDFLAG(IS_MAC)
+    // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
+    // This must be checked before WebGPUTest::Initialize otherwise context
+    // switched is locked and we cannot temporarily have this GLContext.
+    GLManager gl_manager;
+    gl_manager.Initialize(GLManager::Options());
+    std::string renderer(gl_manager.context()->GetGLRenderer());
+    if (renderer.find("Apple M1") != std::string::npos)
+      mac_m1_ = true;
+    gl_manager.Destroy();
+#endif
+
     WebGPUTest::SetUp();
-    Initialize(WebGPUTest::Options());
+    Initialize(GetParam());
+
     mock_buffer_map_callback =
         std::make_unique<testing::StrictMock<MockBufferMapCallback>>();
     mock_device_error_callback =
@@ -86,9 +161,47 @@ class WebGPUMailboxTest : public WebGPUTest {
                                ComputeNumEntries(sizeof(cmd) + data_size),
                                &entries_processed);
   }
+
+  void InitializeTextureColor(wgpu::Device device,
+                              const Mailbox& mailbox,
+                              wgpu::Color clearColor) {
+    gpu::webgpu::ReservedTexture reservation =
+        webgpu()->ReserveTexture(device.Get());
+
+    webgpu()->AssociateMailbox(
+        reservation.deviceId, reservation.deviceGeneration, reservation.id,
+        reservation.generation, WGPUTextureUsage_RenderAttachment,
+        webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox));
+    wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+    // Clear the texture using a render pass.
+    wgpu::RenderPassColorAttachment color_desc = {};
+    color_desc.view = texture.CreateView();
+    color_desc.loadOp = wgpu::LoadOp::Clear;
+    color_desc.storeOp = wgpu::StoreOp::Store;
+    color_desc.clearColor = clearColor;
+
+    wgpu::RenderPassDescriptor render_pass_desc = {};
+    render_pass_desc.colorAttachmentCount = 1;
+    render_pass_desc.colorAttachments = &color_desc;
+
+    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&render_pass_desc);
+    pass.EndPass();
+    wgpu::CommandBuffer commands = encoder.Finish();
+
+    wgpu::Queue queue = device.GetQueue();
+    queue.Submit(1, &commands);
+
+    webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+  }
+
+#if BUILDFLAG(IS_MAC)
+  bool mac_m1_ = false;
+#endif
 };
 
-TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
+TEST_P(WebGPUMailboxTest, AssociateMailboxCmd) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -101,7 +214,7 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
 
@@ -210,7 +323,7 @@ TEST_F(WebGPUMailboxTest, AssociateMailboxCmd) {
   GetGpuServiceHolder()->gpu_thread_task_runner()->RunsTasksInCurrentSequence();
 }
 
-TEST_F(WebGPUMailboxTest, DissociateMailboxCmd) {
+TEST_P(WebGPUMailboxTest, DissociateMailboxCmd) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -223,7 +336,7 @@ TEST_F(WebGPUMailboxTest, DissociateMailboxCmd) {
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
 
@@ -281,7 +394,7 @@ TEST_F(WebGPUMailboxTest, DissociateMailboxCmd) {
 // For simplicity of the test the image is shared between a Dawn device and
 // itself: we render to it using the Dawn device, then re-associate it to a
 // Dawn texture and read back the values that were written.
-TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
+TEST_P(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -294,7 +407,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
   // Create the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -303,38 +416,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
   wgpu::Device device = GetNewDevice();
 
   // Part 1: Write to the texture using Dawn
-  {
-    // Register the shared image as a Dawn texture in the wire.
-    gpu::webgpu::ReservedTexture reservation =
-        webgpu()->ReserveTexture(device.Get());
-
-    webgpu()->AssociateMailbox(
-        reservation.deviceId, reservation.deviceGeneration, reservation.id,
-        reservation.generation, WGPUTextureUsage_RenderAttachment,
-        webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&mailbox));
-    wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
-
-    // Clear the texture using a render pass.
-    wgpu::RenderPassColorAttachment color_desc = {};
-    color_desc.view = texture.CreateView();
-    color_desc.loadOp = wgpu::LoadOp::Clear;
-    color_desc.storeOp = wgpu::StoreOp::Store;
-    color_desc.clearColor = {0, 255, 0, 255};
-
-    wgpu::RenderPassDescriptor render_pass_desc = {};
-    render_pass_desc.colorAttachmentCount = 1;
-    render_pass_desc.colorAttachments = &color_desc;
-
-    wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
-    wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&render_pass_desc);
-    pass.EndPass();
-    wgpu::CommandBuffer commands = encoder.Finish();
-
-    wgpu::Queue queue = device.GetQueue();
-    queue.Submit(1, &commands);
-
-    webgpu()->DissociateMailbox(reservation.id, reservation.generation);
-  }
+  InitializeTextureColor(device, mailbox, {0.0, 0.0, 1.0, 1.0});
 
   // Part 2: Read back the texture using Dawn
   {
@@ -345,7 +427,7 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
     webgpu()->AssociateMailbox(
         reservation.deviceId, reservation.deviceGeneration, reservation.id,
         reservation.generation, WGPUTextureUsage_CopySrc,
-        webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&mailbox));
+        webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox));
     wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
 
     // Copy the texture in a mappable buffer.
@@ -384,13 +466,197 @@ TEST_F(WebGPUMailboxTest, WriteToMailboxThenReadFromIt) {
 
     WaitForCompletion(device);
 
-    const void* data = readback_buffer.GetConstMappedRange(0, 4);
-    EXPECT_EQ(0xFF00FF00, *static_cast<const uint32_t*>(data));
+    const void* data = readback_buffer.GetConstMappedRange();
+    switch (GetParam().format) {
+      case viz::ResourceFormat::RGBA_8888:
+        EXPECT_EQ(0xFFFF0000u, *static_cast<const uint32_t*>(data));
+        break;
+      case viz::ResourceFormat::BGRA_8888:
+        EXPECT_EQ(0xFF0000FFu, *static_cast<const uint32_t*>(data));
+        break;
+      default:
+        NOTREACHED();
+    }
   }
 }
 
+// Test that an uninitialized shared image is lazily cleared by Dawn when it is
+// read.
+TEST_P(WebGPUMailboxTest, ReadUninitializedSharedImage) {
+  if (!WebGPUSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+    return;
+  }
+  if (!WebGPUSharedImageSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+
+  // Create the shared image.
+  SharedImageInterface* sii = GetSharedImageInterface();
+  Mailbox mailbox = sii->CreateSharedImage(
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
+      kNullSurfaceHandle);
+  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
+  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
+
+  wgpu::Device device = GetNewDevice();
+
+  // Set the texture contents to non-zero so we can test a lazy clear occurs.
+  InitializeTextureColor(device, mailbox, {1.0, 0, 0, 1.0});
+
+  // Register the shared image as a Dawn texture in the wire.
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu()->ReserveTexture(device.Get());
+
+  // Associate the mailbox. Using WEBGPU_MAILBOX_DISCARD will set the contents
+  // to uncleared.
+  webgpu()->AssociateMailbox(reservation.deviceId, reservation.deviceGeneration,
+                             reservation.id, reservation.generation,
+                             WGPUTextureUsage_CopySrc,
+                             webgpu::WEBGPU_MAILBOX_DISCARD,
+                             reinterpret_cast<const GLbyte*>(&mailbox));
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  // Copy the texture in a mappable buffer.
+  wgpu::BufferDescriptor buffer_desc;
+  buffer_desc.size = 4;
+  buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
+  wgpu::Buffer readback_buffer = device.CreateBuffer(&buffer_desc);
+
+  wgpu::ImageCopyTexture copy_src = {};
+  copy_src.texture = texture;
+  copy_src.mipLevel = 0;
+  copy_src.origin = {0, 0, 0};
+
+  wgpu::ImageCopyBuffer copy_dst = {};
+  copy_dst.buffer = readback_buffer;
+  copy_dst.layout.offset = 0;
+  copy_dst.layout.bytesPerRow = 256;
+
+  wgpu::Extent3D copy_size = {1, 1, 1};
+
+  wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+  encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
+  wgpu::CommandBuffer commands = encoder.Finish();
+
+  wgpu::Queue queue = device.GetQueue();
+  queue.Submit(1, &commands);
+
+  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+
+  // Map the buffer and assert the pixel is the correct value.
+  readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4, ToMockBufferMapCallback,
+                           nullptr);
+  EXPECT_CALL(*mock_buffer_map_callback,
+              Call(WGPUBufferMapAsyncStatus_Success, nullptr))
+      .Times(1);
+
+  WaitForCompletion(device);
+
+  const void* data = readback_buffer.GetConstMappedRange(0, 4);
+  // Contents should be black because the texture was lazily cleared.
+  EXPECT_EQ(0x00000000u, *static_cast<const uint32_t*>(data));
+}
+
+// Test that an uninitialized shared image is lazily cleared by Dawn when it is
+// read.
+TEST_P(WebGPUMailboxTest, ReadWritableUninitializedSharedImage) {
+  if (!WebGPUSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPU isn't supported";
+    return;
+  }
+  if (!WebGPUSharedImageSupported()) {
+    LOG(ERROR) << "Test skipped because WebGPUSharedImage isn't supported";
+    return;
+  }
+
+  // Create the shared image.
+  SharedImageInterface* sii = GetSharedImageInterface();
+  Mailbox mailbox = sii->CreateSharedImage(
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
+      kNullSurfaceHandle);
+  SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
+  webgpu()->WaitSyncTokenCHROMIUM(mailbox_produced_token.GetConstData());
+
+  wgpu::Device device = GetNewDevice();
+
+  // Set the texture contents to non-zero so we can test a lazy clear occurs.
+  InitializeTextureColor(device, mailbox, {1.0, 0, 0, 1.0});
+
+  // Register the shared image as a Dawn texture in the wire.
+  gpu::webgpu::ReservedTexture reservation =
+      webgpu()->ReserveTexture(device.Get());
+
+  // Associate the mailbox. Using WEBGPU_MAILBOX_DISCARD will set the contents
+  // to uncleared.
+  webgpu()->AssociateMailbox(
+      reservation.deviceId, reservation.deviceGeneration, reservation.id,
+      reservation.generation,
+      WGPUTextureUsage_CopySrc | WGPUTextureUsage_RenderAttachment,
+      webgpu::WEBGPU_MAILBOX_DISCARD,
+      reinterpret_cast<const GLbyte*>(&mailbox));
+  wgpu::Texture texture = wgpu::Texture::Acquire(reservation.texture);
+
+  // Read the texture using a render pass. Load+Store the contents.
+  // Uninitialized contents should not be loaded.
+  wgpu::RenderPassColorAttachment color_desc = {};
+  color_desc.view = texture.CreateView();
+  color_desc.loadOp = wgpu::LoadOp::Load;
+  color_desc.storeOp = wgpu::StoreOp::Store;
+
+  wgpu::RenderPassDescriptor render_pass_desc = {};
+  render_pass_desc.colorAttachmentCount = 1;
+  render_pass_desc.colorAttachments = &color_desc;
+
+  wgpu::CommandEncoder encoder = device.CreateCommandEncoder();
+  wgpu::RenderPassEncoder pass = encoder.BeginRenderPass(&render_pass_desc);
+  pass.EndPass();
+
+  // Copy the texture in a mappable buffer.
+  wgpu::BufferDescriptor buffer_desc;
+  buffer_desc.size = 4;
+  buffer_desc.usage = wgpu::BufferUsage::MapRead | wgpu::BufferUsage::CopyDst;
+  wgpu::Buffer readback_buffer = device.CreateBuffer(&buffer_desc);
+
+  wgpu::ImageCopyTexture copy_src = {};
+  copy_src.texture = texture;
+  copy_src.mipLevel = 0;
+  copy_src.origin = {0, 0, 0};
+
+  wgpu::ImageCopyBuffer copy_dst = {};
+  copy_dst.buffer = readback_buffer;
+  copy_dst.layout.offset = 0;
+  copy_dst.layout.bytesPerRow = 256;
+
+  wgpu::Extent3D copy_size = {1, 1, 1};
+
+  encoder.CopyTextureToBuffer(&copy_src, &copy_dst, &copy_size);
+  wgpu::CommandBuffer commands = encoder.Finish();
+
+  wgpu::Queue queue = device.GetQueue();
+  queue.Submit(1, &commands);
+
+  webgpu()->DissociateMailbox(reservation.id, reservation.generation);
+
+  // Map the buffer and assert the pixel is the correct value.
+  readback_buffer.MapAsync(wgpu::MapMode::Read, 0, 4, ToMockBufferMapCallback,
+                           nullptr);
+  EXPECT_CALL(*mock_buffer_map_callback,
+              Call(WGPUBufferMapAsyncStatus_Success, nullptr))
+      .Times(1);
+
+  WaitForCompletion(device);
+
+  const void* data = readback_buffer.GetConstMappedRange(0, 4);
+  // Contents should be black because the texture was lazily cleared.
+  EXPECT_EQ(0x00000000u, *static_cast<const uint32_t*>(data));
+}
+
 // Tests that using a shared image aftr it is dissociated produces an error.
-TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
+TEST_P(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -403,7 +669,7 @@ TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   // Create a the shared image
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox = sii->CreateSharedImage(
-      viz::ResourceFormat::BGRA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
   SyncToken mailbox_produced_token = sii->GenVerifiedSyncToken();
@@ -422,13 +688,22 @@ TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
   webgpu()->AssociateMailbox(
       reservation.deviceId, reservation.deviceGeneration, reservation.id,
       reservation.generation, WGPUTextureUsage_CopySrc,
-      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&mailbox));
+      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox));
   webgpu()->DissociateMailbox(reservation.id, reservation.generation);
 
   wgpu::TextureDescriptor dst_desc = {};
   dst_desc.size = {1, 1};
   dst_desc.usage = wgpu::TextureUsage::CopyDst;
-  dst_desc.format = wgpu::TextureFormat::BGRA8Unorm;
+  switch (GetParam().format) {
+    case viz::ResourceFormat::RGBA_8888:
+      dst_desc.format = wgpu::TextureFormat::RGBA8Unorm;
+      break;
+    case viz::ResourceFormat::BGRA_8888:
+      dst_desc.format = wgpu::TextureFormat::BGRA8Unorm;
+      break;
+    default:
+      NOTREACHED();
+  }
 
   wgpu::ImageCopyTexture src_image = {};
   src_image.texture = texture;
@@ -471,7 +746,7 @@ TEST_F(WebGPUMailboxTest, ErrorWhenUsingTextureAfterDissociate) {
 // the move-assignment operator to be called. In this case the defaulted
 // move-assignment would first move `representation` then `access`. Causing
 // incorrect member destruction order for the move-to object.
-TEST_F(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
+TEST_P(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -484,11 +759,11 @@ TEST_F(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
   // Create a the shared images.
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox_a = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
   Mailbox mailbox_b = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
 
@@ -501,14 +776,14 @@ TEST_F(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
   webgpu()->AssociateMailbox(
       reservation_a.deviceId, reservation_a.deviceGeneration, reservation_a.id,
       reservation_a.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&mailbox_a));
+      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox_a));
 
   gpu::webgpu::ReservedTexture reservation_b =
       webgpu()->ReserveTexture(device.Get());
   webgpu()->AssociateMailbox(
       reservation_b.deviceId, reservation_b.deviceGeneration, reservation_b.id,
       reservation_b.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&mailbox_b));
+      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox_b));
 
   // Dissociate both mailboxes in the same order.
   webgpu()->DissociateMailbox(reservation_a.id, reservation_a.generation);
@@ -522,7 +797,7 @@ TEST_F(WebGPUMailboxTest, UseA_UseB_DestroyA_DestroyB) {
 // images was stored globally instead of per-device. This meant that of two
 // devices tried to create shared images with the same (id, generation) (which
 // is possible because they can be on different Dawn wires) they would conflict.
-TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
+TEST_P(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
   if (!WebGPUSupported()) {
     LOG(ERROR) << "Test skipped because WebGPU isn't supported";
     return;
@@ -532,15 +807,21 @@ TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
     return;
   }
 
+#if BUILDFLAG(IS_MAC)
+  // Crashing on Mac M1. Currently missing stack trace. crbug.com/1271926
+  if (mac_m1_)
+    return;
+#endif
+
   // Create a the shared images.
   SharedImageInterface* sii = GetSharedImageInterface();
   Mailbox mailbox_a = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
 
   Mailbox mailbox_b = sii->CreateSharedImage(
-      viz::ResourceFormat::RGBA_8888, {1, 1}, gfx::ColorSpace::CreateSRGB(),
+      GetParam().format, {1, 1}, gfx::ColorSpace::CreateSRGB(),
       kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, SHARED_IMAGE_USAGE_WEBGPU,
       kNullSurfaceHandle);
 
@@ -554,14 +835,14 @@ TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
   webgpu()->AssociateMailbox(
       reservation_a.deviceId, reservation_a.deviceGeneration, reservation_a.id,
       reservation_a.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&mailbox_a));
+      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox_a));
 
   gpu::webgpu::ReservedTexture reservation_b =
       webgpu()->ReserveTexture(device_b.Get());
   webgpu()->AssociateMailbox(
       reservation_b.deviceId, reservation_b.deviceGeneration, reservation_b.id,
       reservation_b.generation, WGPUTextureUsage_RenderAttachment,
-      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<GLbyte*>(&mailbox_b));
+      webgpu::WEBGPU_MAILBOX_NONE, reinterpret_cast<const GLbyte*>(&mailbox_b));
 
   // Dissociate both mailboxes in the same order.
   webgpu()->DissociateMailbox(reservation_a.id, reservation_a.generation);
@@ -570,5 +851,10 @@ TEST_F(WebGPUMailboxTest, AssociateOnTwoDevicesAtTheSameTime) {
   // Send all the previous commands to the WebGPU decoder.
   webgpu()->FlushCommands();
 }
+
+INSTANTIATE_TEST_SUITE_P(,
+                         WebGPUMailboxTest,
+                         ::testing::ValuesIn(WebGPUMailboxTest::TestParams()),
+                         ::testing::PrintToStringParamName());
 
 }  // namespace gpu

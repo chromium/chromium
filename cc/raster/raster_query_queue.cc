@@ -19,10 +19,8 @@ RasterQuery::RasterQuery() = default;
 RasterQuery::~RasterQuery() = default;
 
 RasterQueryQueue::RasterQueryQueue(
-    viz::RasterContextProvider* const worker_context_provider,
-    bool oop_rasterization_enabled)
-    : worker_context_provider_(worker_context_provider),
-      oop_rasterization_enabled_(oop_rasterization_enabled) {}
+    viz::RasterContextProvider* const worker_context_provider)
+    : worker_context_provider_(worker_context_provider) {}
 
 RasterQueryQueue::~RasterQueryQueue() = default;
 
@@ -123,17 +121,10 @@ bool RasterQueryQueue::CheckRasterFinishedQueries() {
       }
     }
 
-    if (oop_rasterization_enabled_) {
-      UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(
-          base::StringPrintf("Renderer4.%s.RasterTaskTotalDuration.Oop",
-                             client_name),
-          raster_duration);
-    } else {
-      UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(
-          base::StringPrintf("Renderer4.%s.RasterTaskTotalDuration.Gpu",
-                             client_name),
-          raster_duration);
-    }
+    UMA_HISTOGRAM_RASTER_TIME_CUSTOM_MICROSECONDS(
+        base::StringPrintf("Renderer4.%s.RasterTaskTotalDuration.Oop",
+                           client_name),
+        raster_duration);
 
     it = pending_raster_queries_.erase(it);
   }

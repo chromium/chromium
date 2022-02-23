@@ -4,6 +4,8 @@
 
 #include "base/files/file_path.h"
 
+#include "build/build_config.h"
+
 // file_path.h is a widely included header and its size has significant impact
 // on build time. Try not to raise this limit unless necessary. See
 // https://chromium.googlesource.com/chromium/src/+/HEAD/docs/wmax_tokens.md
@@ -17,6 +19,7 @@
 #include "base/check_op.h"
 #include "base/files/safe_base_name.h"
 #include "base/pickle.h"
+#include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
@@ -25,15 +28,15 @@
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/scoped_cftyperef.h"
 #include "base/third_party/icu/icu_utf.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include "base/win/win_util.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include <CoreFoundation/CoreFoundation.h>
 #endif
 
@@ -44,8 +47,8 @@ using StringPieceType = FilePath::StringPieceType;
 
 namespace {
 
-const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2", "z",
-                                                      "bz"};
+const char* const kCommonDoubleExtensionSuffixes[] = {"gz", "xz", "bz2",
+                                                      "z",  "bz", "lzma"};
 const char* const kCommonDoubleExtensions[] = { "user.js" };
 
 const FilePath::CharType kStringTerminator = FILE_PATH_LITERAL('\0');
@@ -227,15 +230,11 @@ bool FilePath::IsSeparator(CharType character) {
   return false;
 }
 
-void FilePath::GetComponents(std::vector<StringType>* components) const {
-  DCHECK(components);
-  if (!components)
-    return;
-  components->clear();
-  if (value().empty())
-    return;
-
+std::vector<FilePath::StringType> FilePath::GetComponents() const {
   std::vector<StringType> ret_val;
+  if (value().empty())
+    return ret_val;
+
   FilePath current = *this;
   FilePath base;
 
@@ -255,11 +254,11 @@ void FilePath::GetComponents(std::vector<StringType>* components) const {
   // Capture drive letter, if any.
   FilePath dir = current.DirName();
   StringType::size_type letter = FindDriveLetter(dir.value());
-  if (letter != StringType::npos) {
-    ret_val.push_back(StringType(dir.value(), 0, letter + 1));
-  }
+  if (letter != StringType::npos)
+    ret_val.emplace_back(dir.value(), 0, letter + 1);
 
-  *components = std::vector<StringType>(ret_val.rbegin(), ret_val.rend());
+  ranges::reverse(ret_val);
+  return ret_val;
 }
 
 bool FilePath::IsParent(const FilePath& child) const {
@@ -268,10 +267,8 @@ bool FilePath::IsParent(const FilePath& child) const {
 
 bool FilePath::AppendRelativePath(const FilePath& child,
                                   FilePath* path) const {
-  std::vector<StringType> parent_components;
-  std::vector<StringType> child_components;
-  GetComponents(&parent_components);
-  child.GetComponents(&child_components);
+  std::vector<StringType> parent_components = GetComponents();
+  std::vector<StringType> child_components = child.GetComponents();
 
   if (parent_components.empty() ||
       parent_components.size() >= child_components.size())
@@ -437,9 +434,9 @@ FilePath FilePath::InsertBeforeExtension(StringPieceType suffix) const {
 FilePath FilePath::InsertBeforeExtensionASCII(StringPiece suffix)
     const {
   DCHECK(IsStringASCII(suffix));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return InsertBeforeExtension(UTF8ToWide(suffix));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return InsertBeforeExtension(suffix);
 #endif
 }
@@ -464,9 +461,9 @@ FilePath FilePath::AddExtension(StringPieceType extension) const {
 
 FilePath FilePath::AddExtensionASCII(StringPiece extension) const {
   DCHECK(IsStringASCII(extension));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return AddExtension(UTF8ToWide(extension));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return AddExtension(extension);
 #endif
 }
@@ -497,6 +494,17 @@ bool FilePath::MatchesExtension(StringPieceType extension) const {
     return false;
 
   return FilePath::CompareEqualIgnoreCase(extension, current_extension);
+}
+
+bool FilePath::MatchesFinalExtension(StringPieceType extension) const {
+  DCHECK(extension.empty() || extension[0] == kExtensionSeparator);
+
+  StringType current_final_extension = FinalExtension();
+
+  if (current_final_extension.length() != extension.length())
+    return false;
+
+  return FilePath::CompareEqualIgnoreCase(extension, current_final_extension);
 }
 
 FilePath FilePath::Append(StringPieceType component) const {
@@ -553,9 +561,9 @@ FilePath FilePath::Append(const SafeBaseName& component) const {
 
 FilePath FilePath::AppendASCII(StringPiece component) const {
   DCHECK(base::IsStringASCII(component));
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   return Append(UTF8ToWide(component));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   return Append(component);
 #endif
 }
@@ -601,9 +609,7 @@ bool FilePath::ReferencesParent() const {
     return false;
   }
 
-  std::vector<StringType> components;
-  GetComponents(&components);
-
+  std::vector<StringType> components = GetComponents();
   std::vector<StringType>::const_iterator it = components.begin();
   for (; it != components.end(); ++it) {
     const StringType& component = *it;
@@ -620,7 +626,7 @@ bool FilePath::ReferencesParent() const {
   return false;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 std::u16string FilePath::LossyDisplayName() const {
   return AsString16(path_);
@@ -654,7 +660,7 @@ FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
   return FilePath(AsWStringPiece(utf16));
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // See file_path.h for a discussion of the encoding of paths on POSIX
 // platforms.  These encoding conversion functions are not quite correct.
@@ -709,12 +715,12 @@ FilePath FilePath::FromUTF16Unsafe(StringPiece16 utf16) {
 #endif
 }
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 void FilePath::WriteToPickle(Pickle* pickle) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   pickle->WriteString16(AsStringPiece16(path_));
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   pickle->WriteString(path_);
 #else
 #error Unsupported platform
@@ -722,12 +728,12 @@ void FilePath::WriteToPickle(Pickle* pickle) const {
 }
 
 bool FilePath::ReadFromPickle(PickleIterator* iter) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::u16string path;
   if (!iter->ReadString16(&path))
     return false;
   path_ = UTF16ToWide(path);
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
   if (!iter->ReadString(&path_))
     return false;
 #else
@@ -740,7 +746,7 @@ bool FilePath::ReadFromPickle(PickleIterator* iter) {
   return true;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Windows specific implementation of file string comparisons.
 
 int FilePath::CompareIgnoreCase(StringPieceType string1,
@@ -774,7 +780,7 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
   return 0;
 }
 
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 // Mac OS X specific implementation of file string comparisons.
 
 // cf. http://developer.apple.com/mac/library/technotes/tn/tn1150.html#UnicodeSubtleties
@@ -1334,7 +1340,7 @@ int FilePath::CompareIgnoreCase(StringPieceType string1,
   return HFSFastUnicodeCompare(hfs1, hfs2);
 }
 
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 
 // Generic Posix system comparisons.
 int FilePath::CompareIgnoreCase(StringPieceType string1,
@@ -1395,7 +1401,7 @@ FilePath FilePath::NormalizePathSeparatorsTo(CharType separator) const {
 #endif
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool FilePath::IsContentUri() const {
   return StartsWith(path_, "content://", base::CompareCase::INSENSITIVE_ASCII);
 }

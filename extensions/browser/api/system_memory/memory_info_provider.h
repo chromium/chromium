@@ -6,7 +6,6 @@
 #define EXTENSIONS_BROWSER_API_SYSTEM_MEMORY_MEMORY_INFO_PROVIDER_H_
 
 #include "base/lazy_instance.h"
-#include "base/macros.h"
 #include "extensions/browser/api/system_info/system_info_provider.h"
 #include "extensions/common/api/system_memory.h"
 

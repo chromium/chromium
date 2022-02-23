@@ -10,6 +10,7 @@
 #include <string>
 #include <vector>
 
+#include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "base/token.h"
@@ -79,6 +80,9 @@ class SESSIONS_EXPORT TabRestoreService : public KeyedService {
     // be nullptr or 0 in cases where a timestamp isn't available at entry
     // creation.
     base::Time timestamp;
+
+    // Used for storing arbitrary key/value pairs.
+    std::map<std::string, std::string> extra_data;
 
     // Estimates memory usage. By default returns 0.
     virtual size_t EstimateMemoryUsage() const;

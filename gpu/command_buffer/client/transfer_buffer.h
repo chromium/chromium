@@ -12,7 +12,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/containers/circular_deque.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/unguessable_token.h"
 #include "gpu/command_buffer/client/ring_buffer.h"
 #include "gpu/command_buffer/common/buffer.h"
@@ -130,7 +130,7 @@ class GPU_EXPORT TransferBuffer : public TransferBufferInterface {
   // previously freed.
   unsigned int GetPreviousRingBufferUsedBytes();
 
-  CommandBufferHelper* helper_;
+  raw_ptr<CommandBufferHelper> helper_;
   std::unique_ptr<RingBuffer> ring_buffer_;
   base::circular_deque<std::unique_ptr<RingBuffer>> previous_ring_buffers_;
 
@@ -165,7 +165,7 @@ class GPU_EXPORT TransferBuffer : public TransferBufferInterface {
   int32_t buffer_id_;
 
   // address of result area
-  void* result_buffer_;
+  raw_ptr<void> result_buffer_;
 
   // offset to result area
   uint32_t result_shm_offset_;
@@ -299,8 +299,8 @@ class ScopedResultPtr {
   explicit operator bool() { return result_; }
 
  private:
-  T* result_;
-  TransferBufferInterface* transfer_buffer_;
+  raw_ptr<T> result_;
+  raw_ptr<TransferBufferInterface> transfer_buffer_;
 };
 
 }  // namespace gpu

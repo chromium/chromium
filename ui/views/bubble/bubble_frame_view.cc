@@ -86,10 +86,10 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       footnote_margins_(content_margins_),
       title_icon_(new views::ImageView()),
       default_title_(CreateDefaultTitleLabel(std::u16string()).release()) {
-  AddChildView(title_icon_);
+  AddChildView(title_icon_.get());
 
   default_title_->SetVisible(false);
-  AddChildView(default_title_);
+  AddChildView(default_title_.get());
 
   auto close = CreateCloseButton(base::BindRepeating(
       [](BubbleFrameView* view, const ui::Event& event) {
@@ -100,7 +100,7 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       },
       this));
   close->SetVisible(false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // Windows will automatically create a tooltip for the close button based on
   // the HTCLOSE result from NonClientHitTest().
   close->SetTooltipText(std::u16string());
@@ -117,7 +117,7 @@ BubbleFrameView::BubbleFrameView(const gfx::Insets& title_margins,
       },
       this));
   minimize->SetVisible(false);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   minimize->SetTooltipText(std::u16string());
   minimize->SetAccessibleName(
       l10n_util::GetStringUTF16(IDS_APP_ACCNAME_MINIMIZE));
@@ -358,14 +358,14 @@ gfx::Size BubbleFrameView::GetMinimumSize() const {
 }
 
 gfx::Size BubbleFrameView::GetMaximumSize() const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   // On Windows, this causes problems, so do not set a maximum size (it doesn't
   // take the drop shadow area into account, resulting in a too-small window;
   // see http://crbug.com/506206). This isn't necessary on Windows anyway, since
   // the OS doesn't give the user controls to resize a bubble.
   return gfx::Size();
 #else
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Allow BubbleFrameView dialogs to be resizable on Mac.
   if (GetWidget()->widget_delegate()->CanResize()) {
     gfx::Size client_size = GetWidget()->client_view()->GetMaximumSize();
@@ -373,7 +373,7 @@ gfx::Size BubbleFrameView::GetMaximumSize() const {
       return client_size;
     return GetWindowBoundsForClientBounds(gfx::Rect(client_size)).size();
   }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
   // Non-dialog bubbles should be non-resizable, so its max size is its
   // preferred size.
   return GetPreferredSize();

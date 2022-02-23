@@ -487,7 +487,7 @@ TEST_F(MediaSessionImplTest, ResumeUI_WithAction) {
   observer.WaitForExpectedActions(default_actions());
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 
 TEST_F(MediaSessionImplTest, WebContentsDestroyed_ReleasesFocus) {
   std::unique_ptr<WebContents> web_contents(CreateTestWebContents());
@@ -583,7 +583,7 @@ TEST_F(MediaSessionImplTest, WebContentsDestroyed_StopsDucking) {
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 
 TEST_F(MediaSessionImplTest, TabFocusDoesNotCauseAudioFocus) {
   MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
@@ -601,7 +601,7 @@ TEST_F(MediaSessionImplTest, TabFocusDoesNotCauseAudioFocus) {
   EXPECT_EQ(1, delegate->request_audio_focus_count());
 }
 
-#else  // defined(OS_MAC)
+#else  // BUILDFLAG(IS_MAC)
 
 TEST_F(MediaSessionImplTest, RequestAudioFocus_OnFocus_Active) {
   MockAudioFocusDelegate* delegate = new MockAudioFocusDelegate();
@@ -652,9 +652,9 @@ TEST_F(MediaSessionImplTest, RequestAudioFocus_OnFocus_Suspended) {
   EXPECT_EQ(1, delegate->request_audio_focus_count());
 }
 
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 TEST_F(MediaSessionImplTest, SourceId_SameBrowserContext) {
   auto other_contents = TestWebContents::Create(browser_context(), nullptr);

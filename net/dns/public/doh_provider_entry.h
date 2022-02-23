@@ -11,6 +11,7 @@
 
 #include "net/base/ip_address.h"
 #include "net/base/net_export.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -63,7 +64,7 @@ struct NET_EXPORT DohProviderEntry {
   absl::optional<DohProviderIdForHistogram> provider_id_for_histogram;
   std::set<IPAddress> ip_addresses;
   std::set<std::string> dns_over_tls_hostnames;
-  std::string dns_over_https_template;
+  DnsOverHttpsServerConfig doh_server_config;
   std::string ui_name;
   std::string privacy_policy;
   bool display_globally;

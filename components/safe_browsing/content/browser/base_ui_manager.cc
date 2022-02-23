@@ -11,7 +11,6 @@
 #include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/memory/ptr_util.h"
-#include "base/supports_user_data.h"
 #include "components/safe_browsing/content/browser/base_blocking_page.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/security_interstitials/content/security_interstitial_tab_helper.h"
@@ -21,6 +20,7 @@
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/browser/web_contents_user_data.h"
 
 using content::BrowserThread;
 using content::NavigationEntry;
@@ -30,18 +30,15 @@ using safe_browsing::SBThreatType;
 
 namespace {
 
-const void* const kAllowlistKey = &kAllowlistKey;
-
 // A AllowlistUrlSet holds the set of URLs that have been allowlisted
 // for a specific WebContents, along with pending entries that are still
 // undecided. Each URL is associated with the first SBThreatType that
 // was seen for that URL. The URLs in this set should come from
 // GetAllowlistUrl() or GetMainFrameAllowlistUrlForResource() (in
 // SafeBrowsingUIManager)
-class AllowlistUrlSet : public base::SupportsUserData::Data {
+class AllowlistUrlSet : public content::WebContentsUserData<AllowlistUrlSet> {
  public:
-  AllowlistUrlSet() {}
-
+  ~AllowlistUrlSet() override = default;
   AllowlistUrlSet(const AllowlistUrlSet&) = delete;
   AllowlistUrlSet& operator=(const AllowlistUrlSet&) = delete;
 
@@ -82,18 +79,25 @@ class AllowlistUrlSet : public base::SupportsUserData::Data {
     pending_[url] = {threat_type, 1};
   }
 
- protected:
+ private:
+  friend class content::WebContentsUserData<AllowlistUrlSet>;
+  WEB_CONTENTS_USER_DATA_KEY_DECL();
+
+  explicit AllowlistUrlSet(content::WebContents* web_contents)
+      : content::WebContentsUserData<AllowlistUrlSet>(*web_contents) {}
+
   // Method to remove all the instances of a website in the pending list
   // disregarding the count. Used when adding a site to the permanent list.
   void RemoveAllPending(const GURL& url) { pending_.erase(url); }
 
- private:
   std::map<GURL, SBThreatType> map_;
   // Keep a count of how many times a site has been added to the pending list
   // in order to solve a problem where upon reloading an interstitial, a site
   // would be re-added to and removed from the allowlist in the wrong order.
   std::map<GURL, std::pair<SBThreatType, int>> pending_;
 };
+
+WEB_CONTENTS_USER_DATA_KEY_IMPL(AllowlistUrlSet);
 
 // Returns the URL that should be used in a AllowlistUrlSet for the
 // resource loaded from |url| on a navigation |entry|.
@@ -108,23 +112,13 @@ GURL GetAllowlistUrl(const GURL& url,
   return url.GetWithEmptyPath();
 }
 
-AllowlistUrlSet* GetOrCreateAllowlist(WebContents* web_contents) {
-  AllowlistUrlSet* site_list =
-      static_cast<AllowlistUrlSet*>(web_contents->GetUserData(kAllowlistKey));
-  if (!site_list) {
-    site_list = new AllowlistUrlSet;
-    web_contents->SetUserData(kAllowlistKey, base::WrapUnique(site_list));
-  }
-  return site_list;
-}
-
 }  // namespace
 
 namespace safe_browsing {
 
-BaseUIManager::BaseUIManager() {}
+BaseUIManager::BaseUIManager() = default;
 
-BaseUIManager::~BaseUIManager() {}
+BaseUIManager::~BaseUIManager() = default;
 
 bool BaseUIManager::IsAllowlisted(const UnsafeResource& resource) {
   NavigationEntry* entry = nullptr;
@@ -159,8 +153,7 @@ bool BaseUIManager::IsUrlAllowlistedOrPendingForWebContents(
   if (lookup_url.is_empty())
     return false;
 
-  AllowlistUrlSet* site_list =
-      static_cast<AllowlistUrlSet*>(web_contents->GetUserData(kAllowlistKey));
+  AllowlistUrlSet* site_list = AllowlistUrlSet::FromWebContents(web_contents);
   if (!site_list)
     return false;
 
@@ -335,7 +328,7 @@ void BaseUIManager::DisplayBlockingPage(const UnsafeResource& resource) {
 }
 
 void BaseUIManager::EnsureAllowlistCreated(WebContents* web_contents) {
-  GetOrCreateAllowlist(web_contents);
+  AllowlistUrlSet::CreateForWebContents(web_contents);
 }
 
 void BaseUIManager::CreateAndSendHitReport(const UnsafeResource& resource) {}
@@ -384,7 +377,8 @@ void BaseUIManager::AddToAllowlistUrlSet(const GURL& allowlist_url,
   if (!web_contents)
     return;
 
-  AllowlistUrlSet* site_list = GetOrCreateAllowlist(web_contents);
+  AllowlistUrlSet::CreateForWebContents(web_contents);
+  AllowlistUrlSet* site_list = AllowlistUrlSet::FromWebContents(web_contents);
 
   if (allowlist_url.is_empty())
     return;
@@ -445,8 +439,7 @@ void BaseUIManager::RemoveAllowlistUrlSet(const GURL& allowlist_url,
   // here. By this point, a "Back" navigation could have already been
   // committed, so the page loading |resource| might be gone and
   // |web_contents_getter| may no longer be valid.
-  AllowlistUrlSet* site_list =
-      static_cast<AllowlistUrlSet*>(web_contents->GetUserData(kAllowlistKey));
+  AllowlistUrlSet* site_list = AllowlistUrlSet::FromWebContents(web_contents);
 
   if (allowlist_url.is_empty())
     return;
@@ -478,13 +471,10 @@ void BaseUIManager::RemoveAllowlistUrlSet(const GURL& allowlist_url,
 // static
 GURL BaseUIManager::GetMainFrameAllowlistUrlForResource(
     const security_interstitials::UnsafeResource& resource) {
-  if (resource.is_subresource) {
-    NavigationEntry* entry = GetNavigationEntryForResource(resource);
-    if (!entry)
-      return GURL();
-    return entry->GetURL().GetWithEmptyPath();
-  }
-  return resource.url.GetWithEmptyPath();
+  return GetAllowlistUrl(resource.url, resource.is_subresource,
+                         resource.is_subresource
+                             ? GetNavigationEntryForResource(resource)
+                             : nullptr);
 }
 
 }  // namespace safe_browsing

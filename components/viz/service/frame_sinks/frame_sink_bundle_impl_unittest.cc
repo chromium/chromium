@@ -9,6 +9,7 @@
 
 #include "base/bind.h"
 #include "base/json/values_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/bind.h"
@@ -120,12 +121,12 @@ struct TestFrameSink {
   TestFrameSink(
       FrameSinkManagerImpl& manager,
       const FrameSinkId& id,
-      const absl::optional<FrameSinkId>& parent_id,
+      const FrameSinkId& parent_id,
       const absl::optional<FrameSinkBundleId>& bundle_id = absl::nullopt)
       : manager_(manager), id_(id) {
     manager_.RegisterFrameSinkId(id, /*report_activation=*/true);
-    if (parent_id) {
-      manager_.RegisterFrameSinkHierarchy(*parent_id, id);
+    if (parent_id.is_valid()) {
+      manager_.RegisterFrameSinkHierarchy(parent_id, id);
     }
     manager_.CreateCompositorFrameSink(
         id, bundle_id, frame_sink.BindNewPipeAndPassReceiver(),
@@ -211,9 +212,9 @@ class TestBundleClient : public mojom::FrameSinkBundleClient {
   }
 
   absl::optional<base::RunLoop> wait_loop_;
-  std::vector<mojom::BundledReturnedResourcesPtr>* acks_;
-  std::vector<mojom::BeginFrameInfoPtr>* begin_frames_;
-  std::vector<mojom::BundledReturnedResourcesPtr>* reclaimed_resources_;
+  raw_ptr<std::vector<mojom::BundledReturnedResourcesPtr>> acks_;
+  raw_ptr<std::vector<mojom::BeginFrameInfoPtr>> begin_frames_;
+  raw_ptr<std::vector<mojom::BundledReturnedResourcesPtr>> reclaimed_resources_;
 };
 
 class FrameSinkBundleImplTest : public testing::Test {

@@ -27,6 +27,7 @@
 #include "ui/ozone/platform/wayland/test/test_subcompositor.h"
 #include "ui/ozone/platform/wayland/test/test_surface_augmenter.h"
 #include "ui/ozone/platform/wayland/test/test_viewporter.h"
+#include "ui/ozone/platform/wayland/test/test_wp_pointer_gestures.h"
 #include "ui/ozone/platform/wayland/test/test_zcr_text_input_extension.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_linux_explicit_synchronization.h"
 #include "ui/ozone/platform/wayland/test/test_zwp_text_input_manager.h"
@@ -83,6 +84,8 @@ class TestWaylandServerThread : public base::Thread,
 
   // Initializes and returns WpPresentation.
   MockWpPresentation* EnsureWpPresentation();
+  // Initializes and returns SurfaceAugmenter.
+  TestSurfaceAugmenter* EnsureSurfaceAugmenter();
 
   template <typename T>
   T* GetObject(uint32_t id) {
@@ -121,9 +124,13 @@ class TestWaylandServerThread : public base::Thread,
     return primary_selection_device_manager_.get();
   }
 
+  TestWpPointerGestures& wp_pointer_gestures() { return wp_pointer_gestures_; }
+
   void set_output_delegate(OutputDelegate* delegate) {
     output_delegate_ = delegate;
   }
+
+  wl_client* client() const { return client_; }
 
  private:
   void SetupOutputs();
@@ -160,6 +167,7 @@ class TestWaylandServerThread : public base::Thread,
   TestZwpLinuxExplicitSynchronizationV1 zwp_linux_explicit_synchronization_v1_;
   MockZwpLinuxDmabufV1 zwp_linux_dmabuf_v1_;
   MockWpPresentation wp_presentation_;
+  TestWpPointerGestures wp_pointer_gestures_;
   std::unique_ptr<TestSelectionDeviceManager> primary_selection_device_manager_;
 
   std::vector<std::unique_ptr<GlobalObject>> globals_;

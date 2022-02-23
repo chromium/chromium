@@ -37,7 +37,7 @@ const base::Value* FindFirstRegionWithAnyName(
   if (!found_regions)
     return nullptr;
 
-  for (const base::Value& cur : found_regions->GetList()) {
+  for (const base::Value& cur : found_regions->GetListDeprecated()) {
     const base::Value* found_name =
         cur.FindKeyOfType("mf", base::Value::Type::STRING);
     if (!found_name)
@@ -51,7 +51,7 @@ const base::Value* FindFirstRegionWithAnyName(
 
 // Looks up a given string id from the string table. Returns -1 if not found.
 int GetIdFromStringTable(const base::Value* strings, const char* text) {
-  for (const auto& string : strings->GetList()) {
+  for (const auto& string : strings->GetListDeprecated()) {
     const base::Value* string_id =
         string.FindKeyOfType("id", base::Value::Type::INTEGER);
     const base::Value* string_text =
@@ -66,7 +66,7 @@ int GetIdFromStringTable(const base::Value* strings, const char* text) {
 // Looks up a given string from the string table. Returns empty string if not
 // found.
 std::string GetStringFromStringTable(const base::Value* strings, int sid) {
-  for (const auto& string : strings->GetList()) {
+  for (const auto& string : strings->GetListDeprecated()) {
     const base::Value* string_id =
         string.FindKeyOfType("id", base::Value::Type::INTEGER);
     if (string_id->GetInt() == sid) {
@@ -81,7 +81,7 @@ std::string GetStringFromStringTable(const base::Value* strings, int sid) {
 }
 
 int GetNodeWithNameID(const base::Value* nodes, int sid) {
-  for (const auto& node : nodes->GetList()) {
+  for (const auto& node : nodes->GetListDeprecated()) {
     const base::Value* node_id =
         node.FindKeyOfType("id", base::Value::Type::INTEGER);
     const base::Value* node_name_sid =
@@ -95,7 +95,7 @@ int GetNodeWithNameID(const base::Value* nodes, int sid) {
 
 int GetOffsetForBacktraceID(const base::Value* nodes, int id) {
   int offset = 0;
-  for (const auto& node : nodes->GetList()) {
+  for (const auto& node : nodes->GetListDeprecated()) {
     if (node.GetInt() == id)
       return offset;
     offset++;
@@ -104,7 +104,7 @@ int GetOffsetForBacktraceID(const base::Value* nodes, int id) {
 }
 
 bool IsBacktraceInList(const base::Value* backtraces, int id, int parent) {
-  for (const auto& backtrace : backtraces->GetList()) {
+  for (const auto& backtrace : backtraces->GetListDeprecated()) {
     const base::Value* backtrace_id =
         backtrace.FindKeyOfType("id", base::Value::Type::INTEGER);
     if (backtrace_id == nullptr)
@@ -192,7 +192,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
   ASSERT_TRUE(strings);
 
   // Validate the strings table.
-  EXPECT_EQ(5u, strings->GetList().size());
+  EXPECT_EQ(5u, strings->GetListDeprecated().size());
   int sid_unknown = GetIdFromStringTable(strings, "[unknown]");
   int sid_1234 = GetIdFromStringTable(strings, "pc:1234");
   int sid_5678 = GetIdFromStringTable(strings, "pc:5678");
@@ -210,7 +210,7 @@ TEST(ProfilingJsonExporterTest, Simple) {
   //   [1] => address: 5678  parent: 0
   //   [2] => address: 9012  parent: 0
   //   [3] => address: 9013  parent: 2
-  EXPECT_EQ(4u, nodes->GetList().size());
+  EXPECT_EQ(4u, nodes->GetListDeprecated().size());
   int id0 = GetNodeWithNameID(nodes, sid_1234);
   int id1 = GetNodeWithNameID(nodes, sid_5678);
   int id2 = GetNodeWithNameID(nodes, sid_9012);
@@ -241,9 +241,9 @@ TEST(ProfilingJsonExporterTest, Simple) {
 
   // Counts should be a list of two items, a 1 and a 2. The two matching 20-byte
   // allocations should be coalesced to produce the 2.
-  EXPECT_EQ(2u, counts->GetList().size());
-  EXPECT_EQ(2u, types->GetList().size());
-  EXPECT_EQ(2u, sizes->GetList().size());
+  EXPECT_EQ(2u, counts->GetListDeprecated().size());
+  EXPECT_EQ(2u, types->GetListDeprecated().size());
+  EXPECT_EQ(2u, sizes->GetListDeprecated().size());
 
   int node1 = GetOffsetForBacktraceID(backtraces, id1);
   int node3 = GetOffsetForBacktraceID(backtraces, id3);
@@ -251,16 +251,16 @@ TEST(ProfilingJsonExporterTest, Simple) {
   EXPECT_NE(-1, node3);
 
   // Validate node allocated with |stack1|.
-  EXPECT_EQ(2, counts->GetList()[node1].GetInt());
-  EXPECT_EQ(0, types->GetList()[node1].GetInt());
-  EXPECT_EQ(40, sizes->GetList()[node1].GetInt());
-  EXPECT_EQ(id1, backtraces->GetList()[node1].GetInt());
+  EXPECT_EQ(2, counts->GetListDeprecated()[node1].GetInt());
+  EXPECT_EQ(0, types->GetListDeprecated()[node1].GetInt());
+  EXPECT_EQ(40, sizes->GetListDeprecated()[node1].GetInt());
+  EXPECT_EQ(id1, backtraces->GetListDeprecated()[node1].GetInt());
 
   // Validate node allocated with |stack2|.
-  EXPECT_EQ(2, counts->GetList()[node3].GetInt());
-  EXPECT_EQ(0, types->GetList()[node3].GetInt());
-  EXPECT_EQ(44, sizes->GetList()[node3].GetInt());
-  EXPECT_EQ(id3, backtraces->GetList()[node3].GetInt());
+  EXPECT_EQ(2, counts->GetListDeprecated()[node3].GetInt());
+  EXPECT_EQ(0, types->GetListDeprecated()[node3].GetInt());
+  EXPECT_EQ(44, sizes->GetListDeprecated()[node3].GetInt());
+  EXPECT_EQ(id3, backtraces->GetListDeprecated()[node3].GetInt());
 
   // Validate that the partition alloc one got through.
   counts = heaps_v2->FindPath({"allocators", "partition_alloc", "counts"});
@@ -274,9 +274,9 @@ TEST(ProfilingJsonExporterTest, Simple) {
   ASSERT_TRUE(backtraces);
 
   // There should just be one entry for the partition_alloc allocation.
-  EXPECT_EQ(1u, counts->GetList().size());
-  EXPECT_EQ(1u, types->GetList().size());
-  EXPECT_EQ(1u, sizes->GetList().size());
+  EXPECT_EQ(1u, counts->GetListDeprecated().size());
+  EXPECT_EQ(1u, types->GetListDeprecated().size());
+  EXPECT_EQ(1u, sizes->GetListDeprecated().size());
 }
 
 // GetProcessMemoryMaps iterates through every memory region, making allocations
@@ -354,8 +354,8 @@ TEST(ProfilingJsonExporterTest, Context) {
       heaps_v2->FindPath({"allocators", "partition_alloc", "types"});
   ASSERT_TRUE(types);
 
-  const auto& counts_list = counts->GetList();
-  const auto& types_list = types->GetList();
+  const auto& counts_list = counts->GetListDeprecated();
+  const auto& types_list = types->GetListDeprecated();
 
   // There should be three allocations, two coalesced ones, one with unique
   // context, and one with no context.
@@ -369,7 +369,7 @@ TEST(ProfilingJsonExporterTest, Context) {
 
   // Reconstruct the map from type id to string.
   std::map<int, std::string> type_to_string;
-  for (const auto& type : types_map->GetList()) {
+  for (const auto& type : types_map->GetListDeprecated()) {
     const base::Value* id =
         type.FindKeyOfType("id", base::Value::Type::INTEGER);
     ASSERT_TRUE(id);
@@ -447,8 +447,8 @@ TEST(ProfilingJsonExporterTest, LargeAllocation) {
   const base::Value* malloc =
       parsed_json.value->FindPath({"heaps_v2", "allocators", "malloc"});
   const base::Value* malloc_sizes = malloc->FindKey("sizes");
-  EXPECT_EQ(1u, malloc_sizes->GetList().size());
-  EXPECT_EQ(0x9876543210ul, malloc_sizes->GetList()[0].GetDouble());
+  EXPECT_EQ(1u, malloc_sizes->GetListDeprecated().size());
+  EXPECT_EQ(0x9876543210ul, malloc_sizes->GetListDeprecated()[0].GetDouble());
 }
 #endif
 

@@ -234,8 +234,8 @@ bool ProcessProxy::LaunchProcess(const base::CommandLine& cmdline,
   options.fds_to_remap.push_back(std::make_pair(slave_fd, STDERR_FILENO));
   // Do not set NO_NEW_PRIVS on processes if the system is in dev-mode. This
   // permits sudo in the crosh shell when in developer mode.
-  options.allow_new_privs = base::CommandLine::ForCurrentProcess()->
-      HasSwitch(chromeos::switches::kSystemInDevMode);
+  options.allow_new_privs = base::CommandLine::ForCurrentProcess()->HasSwitch(
+      chromeos::switches::kSystemInDevMode);
   options.ctrl_terminal_fd = slave_fd;
   // TODO(vapier): Ideally we'd just use the env settings from hterm itself.
   // We can't let the user inject any env var they want, but we should be able

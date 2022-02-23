@@ -83,6 +83,9 @@
     <output filename="values-zh-rHK/android_chrome_start_surface_strings.xml" lang="zh-HK" type="android" />
     <output filename="values-zh-rTW/android_chrome_start_surface_strings.xml" lang="zh-TW" type="android" />
     <output filename="values-zu/android_chrome_start_surface_strings.xml" lang="zu" type="android" />
+    <!-- Pseudolocales -->
+    <output filename="values-ar-rXB/android_chrome_start_surface_strings.xml" lang="ar-XB" type="android" />
+    <output filename="values-en-rXA/android_chrome_start_surface_strings.xml" lang="en-XA" type="android" />
   </outputs>
   <translations>
     <file path="translations/android_chrome_start_surface_strings_af.xtb" lang="af" />

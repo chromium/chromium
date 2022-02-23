@@ -12,7 +12,7 @@
 #include <vector>
 
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
 #include "extensions/browser/api/messaging/message_port.h"
@@ -81,18 +81,20 @@ class ExtensionMessagePort : public MessagePort {
   bool HasFrame(content::RenderFrameHost* rfh) const override;
   bool IsValidPort() override;
   void RevalidatePort() override;
-  void DispatchOnConnect(const std::string& channel_name,
-                         std::unique_ptr<base::DictionaryValue> source_tab,
-                         int source_frame_id,
-                         int guest_process_id,
-                         int guest_render_frame_routing_id,
-                         const MessagingEndpoint& source_endpoint,
-                         const std::string& target_extension_id,
-                         const GURL& source_url,
-                         absl::optional<url::Origin> source_origin) override;
+  void DispatchOnConnect(
+      const std::string& channel_name,
+      std::unique_ptr<base::DictionaryValue> source_tab,
+      int source_frame_id,
+      const ExtensionApiFrameIdMap::DocumentId& source_document_id,
+      int guest_process_id,
+      int guest_render_frame_routing_id,
+      const MessagingEndpoint& source_endpoint,
+      const std::string& target_extension_id,
+      const GURL& source_url,
+      absl::optional<url::Origin> source_origin) override;
   void DispatchOnDisconnect(const std::string& error_message) override;
   void DispatchOnMessage(const Message& message) override;
-  void IncrementLazyKeepaliveCount() override;
+  void IncrementLazyKeepaliveCount(bool is_for_native_message_connect) override;
   void DecrementLazyKeepaliveCount() override;
   void OpenPort(int process_id, const PortContext& port_context) override;
   void ClosePort(int process_id, int routing_id, int worker_thread_id) override;
@@ -134,6 +136,7 @@ class ExtensionMessagePort : public MessagePort {
       const std::string& channel_name,
       const base::DictionaryValue* source_tab,
       int source_frame_id,
+      const ExtensionApiFrameIdMap::DocumentId& source_document_id,
       int guest_process_id,
       int guest_render_frame_routing_id,
       const MessagingEndpoint& source_endpoint,
@@ -151,7 +154,7 @@ class ExtensionMessagePort : public MessagePort {
 
   const PortId port_id_;
   std::string extension_id_;
-  content::BrowserContext* browser_context_ = nullptr;
+  raw_ptr<content::BrowserContext> browser_context_ = nullptr;
 
   // Whether this port corresponds to *all* extension contexts. Should only be
   // true for a receiver port.
@@ -176,7 +179,7 @@ class ExtensionMessagePort : public MessagePort {
   bool did_create_port_ = false;
 
   // Used in IncrementLazyKeepaliveCount
-  ExtensionHost* background_host_ptr_ = nullptr;
+  raw_ptr<ExtensionHost> background_host_ptr_ = nullptr;
   std::unique_ptr<FrameTracker> frame_tracker_;
 };
 

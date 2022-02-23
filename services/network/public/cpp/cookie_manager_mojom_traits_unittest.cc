@@ -10,7 +10,9 @@
 #include "mojo/public/cpp/base/time_mojom_traits.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "net/cookies/cookie_constants.h"
+#include "net/cookies/same_party_context.h"
 #include "services/network/public/cpp/cookie_manager_mojom_traits.h"
+#include "services/network/public/mojom/cookie_manager.mojom-shared.h"
 #include "services/network/public/mojom/cookie_manager.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -297,6 +299,25 @@ TEST(CookieManagerTraitsTest,
   }
 }
 
+TEST(CookieManagerTraitsTest, Roundtrips_ContextRedirectTypeBug1221316) {
+  for (auto type : {net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kUnset,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kNoRedirect,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kCrossSiteRedirect,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kPartialSameSiteRedirect,
+                    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+                        ContextRedirectTypeBug1221316::kAllSameSiteRedirect}) {
+    net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+        ContextRedirectTypeBug1221316 roundtrip;
+    ASSERT_TRUE(mojo::test::SerializeAndDeserialize<
+                mojom::ContextRedirectTypeBug1221316>(type, roundtrip));
+    EXPECT_EQ(type, roundtrip);
+  }
+}
+
 TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
   net::CookieOptions::SameSiteCookieContext::ContextMetadata metadata,
       roundtrip;
@@ -307,9 +328,13 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContextMetadata) {
           metadata, roundtrip));
   EXPECT_EQ(metadata, roundtrip);
 
+  // Arbitrary values.
   metadata.cross_site_redirect_downgrade =
       net::CookieOptions::SameSiteCookieContext::ContextMetadata::
           ContextDowngradeType::kStrictToLax;
+  metadata.redirect_type_bug_1221316 =
+      net::CookieOptions::SameSiteCookieContext::ContextMetadata::
+          ContextRedirectTypeBug1221316::kPartialSameSiteRedirect;
   ASSERT_TRUE(
       mojo::test::SerializeAndDeserialize<mojom::CookieSameSiteContextMetadata>(
           metadata, roundtrip));
@@ -328,9 +353,13 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookieSameSiteContext) {
   ContextMetadata metadata1;
   metadata1.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kStrictToLax;
+  metadata1.redirect_type_bug_1221316 =
+      ContextMetadata::ContextRedirectTypeBug1221316::kCrossSiteRedirect;
   ContextMetadata metadata2;
   metadata2.cross_site_redirect_downgrade =
       ContextMetadata::ContextDowngradeType::kLaxToCross;
+  metadata2.redirect_type_bug_1221316 =
+      ContextMetadata::ContextRedirectTypeBug1221316::kNoRedirect;
 
   const ContextMetadata metadatas[]{ContextMetadata(), metadata1, metadata2};
 
@@ -397,27 +426,25 @@ TEST(CookieManagerTraitsTest, Roundtrips_PartitionKey) {
   EXPECT_TRUE(copied.PartitionKey()->from_script());
 }
 
-TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeychain) {
+TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeyCollection) {
   {
-    net::CookiePartitionKeychain original;
-    net::CookiePartitionKeychain copied;
+    net::CookiePartitionKeyCollection original;
+    net::CookiePartitionKeyCollection copied;
 
-    EXPECT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
-            original, copied));
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+                mojom::CookiePartitionKeyCollection>(original, copied));
     EXPECT_FALSE(copied.ContainsAllKeys());
     EXPECT_EQ(0u, copied.PartitionKeys().size());
   }
 
   {
-    net::CookiePartitionKeychain original(
+    net::CookiePartitionKeyCollection original(
         net::CookiePartitionKey::FromURLForTesting(
             GURL("https://www.example.com")));
-    net::CookiePartitionKeychain copied;
+    net::CookiePartitionKeyCollection copied;
 
-    EXPECT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
-            original, copied));
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+                mojom::CookiePartitionKeyCollection>(original, copied));
     EXPECT_FALSE(copied.ContainsAllKeys());
     EXPECT_THAT(copied.PartitionKeys(),
                 testing::UnorderedElementsAre(
@@ -426,15 +453,14 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeychain) {
   }
 
   {
-    net::CookiePartitionKeychain original({
+    net::CookiePartitionKeyCollection original({
         net::CookiePartitionKey::FromURLForTesting(GURL("https://a.foo.com")),
         net::CookiePartitionKey::FromURLForTesting(GURL("https://b.bar.com")),
     });
-    net::CookiePartitionKeychain copied;
+    net::CookiePartitionKeyCollection copied;
 
-    EXPECT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
-            original, copied));
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+                mojom::CookiePartitionKeyCollection>(original, copied));
     EXPECT_FALSE(copied.ContainsAllKeys());
     EXPECT_THAT(copied.PartitionKeys(),
                 testing::UnorderedElementsAre(
@@ -445,14 +471,41 @@ TEST(CookieManagerTraitsTest, Roundtrips_CookiePartitionKeychain) {
   }
 
   {
-    net::CookiePartitionKeychain original =
-        net::CookiePartitionKeychain::ContainsAll();
-    net::CookiePartitionKeychain copied;
+    net::CookiePartitionKeyCollection original =
+        net::CookiePartitionKeyCollection::ContainsAll();
+    net::CookiePartitionKeyCollection copied;
 
-    EXPECT_TRUE(
-        mojo::test::SerializeAndDeserialize<mojom::CookiePartitionKeychain>(
-            original, copied));
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<
+                mojom::CookiePartitionKeyCollection>(original, copied));
     EXPECT_TRUE(copied.ContainsAllKeys());
+  }
+}
+
+TEST(CookieManagerTraitsTest, RoundTrips_SamePartyContext) {
+  {
+    net::SamePartyContext same_party(net::SamePartyContext::Type::kSameParty);
+    net::SamePartyContext copy;
+
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
+        same_party, copy));
+    EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kSameParty);
+    EXPECT_EQ(copy.ancestors_for_metrics_only(),
+              net::SamePartyContext::Type::kSameParty);
+    EXPECT_EQ(copy.top_resource_for_metrics_only(),
+              net::SamePartyContext::Type::kSameParty);
+  }
+
+  {
+    net::SamePartyContext cross_party(net::SamePartyContext::Type::kCrossParty);
+    net::SamePartyContext copy;
+
+    EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::SamePartyContext>(
+        cross_party, copy));
+    EXPECT_EQ(copy.context_type(), net::SamePartyContext::Type::kCrossParty);
+    EXPECT_EQ(copy.ancestors_for_metrics_only(),
+              net::SamePartyContext::Type::kCrossParty);
+    EXPECT_EQ(copy.top_resource_for_metrics_only(),
+              net::SamePartyContext::Type::kCrossParty);
   }
 }
 

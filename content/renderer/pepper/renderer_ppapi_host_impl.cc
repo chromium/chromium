@@ -33,9 +33,9 @@
 #include "ui/gfx/geometry/point.h"
 
 namespace content {
+
 // static
-CONTENT_EXPORT RendererPpapiHost* RendererPpapiHost::GetForPPInstance(
-    PP_Instance instance) {
+RendererPpapiHost* RendererPpapiHost::GetForPPInstance(PP_Instance instance) {
   return RendererPpapiHostImpl::GetForPPInstance(instance);
 }
 

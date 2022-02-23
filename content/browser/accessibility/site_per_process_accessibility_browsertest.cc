@@ -36,7 +36,7 @@
 #include "url/url_constants.h"
 
 // These tests time out on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_SitePerProcessAccessibilityBrowserTest \
   DISABLED_SitePerProcessAccessibilityBrowserTest
 #else
@@ -45,7 +45,7 @@
 #endif
 // "All/DISABLED_SitePerProcessAccessibilityBrowserTest" does not work. We need
 // "DISABLED_All/...". TODO(https://crbug.com/1096416) delete when fixed.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_All DISABLED_All
 #else
 #define MAYBE_All All

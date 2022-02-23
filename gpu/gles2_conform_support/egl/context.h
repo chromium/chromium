@@ -8,7 +8,7 @@
 #include <memory>
 
 #include <EGL/egl.h>
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "gpu/command_buffer/client/gles2_cmd_helper.h"
 #include "gpu/command_buffer/client/gpu_control.h"
@@ -112,8 +112,8 @@ class Context : public base::RefCountedThreadSafe<Context>,
 
   static gpu::GpuFeatureInfo platform_gpu_feature_info_;
 
-  Display* display_;
-  const Config* config_;
+  raw_ptr<Display> display_;
+  raw_ptr<const Config> config_;
   bool is_current_in_some_thread_;
   bool is_destroyed_;
   const gpu::GpuDriverBugWorkarounds gpu_driver_bug_workarounds_;

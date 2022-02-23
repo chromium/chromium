@@ -49,11 +49,8 @@ class FindInPageInteractiveTest : public InProcessBrowserTest {
 
 }  // namespace
 
-// Specifying a prototype so that we can add the WARN_UNUSED_RESULT attribute.
-bool FocusedOnPage(WebContents* web_contents, std::string* result)
-    WARN_UNUSED_RESULT;
-
-bool FocusedOnPage(WebContents* web_contents, std::string* result) {
+[[nodiscard]] bool FocusedOnPage(WebContents* web_contents,
+                                 std::string* result) {
   return content::ExecuteScriptAndExtractString(
       web_contents,
       "window.domAutomationController.send(getFocusedElement());",

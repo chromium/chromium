@@ -25,8 +25,10 @@ test("ash_webui_unittests") {
     "//ash/webui/diagnostics_ui/backend:unit_tests",
     "//ash/webui/diagnostics_ui/mojom:unit_tests",
     "//ash/webui/eche_app_ui:unit_tests",
+    "//ash/webui/eche_app_ui/mojom:unit_tests",
     "//ash/webui/file_manager:unit_tests",
     "//ash/webui/help_app_ui:unit_tests",
+    "//ash/webui/os_feedback_ui/backend:unit_tests",
     "//ash/webui/projector_app:unit_tests",
     "//ash/webui/scanning:unit_tests",
     "//ash/webui/shimless_rma/backend:unit_tests",
@@ -46,10 +48,6 @@ test("ash_webui_unittests") {
     deps += [ "//ash/webui/camera_app_ui:unit_tests" ]
   }
 
-  if (!is_official_build) {
-    deps += [ "//ash/webui/telemetry_extension_ui:unit_tests" ]
-  }
-
   data_deps = [
     "//chromeos/strings:chromeos_test_strings",
     "//ui/resources:ui_test_pak_data",
@@ -61,7 +59,6 @@ test("ash_webui_unittests") {
 group("closure_compile") {
   testonly = true
   deps = [
-    "//ash/webui/camera_app_ui:closure_compile",
     "//ash/webui/connectivity_diagnostics:closure_compile",
     "//ash/webui/diagnostics_ui:closure_compile",
     "//ash/webui/eche_app_ui:closure_compile",
@@ -70,6 +67,7 @@ group("closure_compile") {
     "//ash/webui/firmware_update_ui:closure_compile",
     "//ash/webui/help_app_ui:closure_compile",
     "//ash/webui/media_app_ui:closure_compile",
+    "//ash/webui/multidevice_debug/resources:closure_compile",
     "//ash/webui/os_feedback_ui:closure_compile",
     "//ash/webui/print_management:closure_compile",
     "//ash/webui/projector_app/resources:closure_compile",
@@ -80,10 +78,6 @@ group("closure_compile") {
   ]
 
   if (!is_official_build) {
-    deps += [
-      "//ash/webui/demo_mode_app_ui:closure_compile",
-      "//ash/webui/sample_system_web_app_ui:closure_compile",
-      "//ash/webui/telemetry_extension_ui:closure_compile",
-    ]
+    deps += [ "//ash/webui/demo_mode_app_ui:closure_compile" ]
   }
 }

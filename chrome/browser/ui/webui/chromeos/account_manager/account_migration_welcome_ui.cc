@@ -60,8 +60,8 @@ class MigrationMessageHandler : public content::WebUIMessageHandler {
   void HandleReauthenticateAccount(const base::ListValue* args) {
     AllowJavascript();
 
-    CHECK(!args->GetList().empty());
-    const std::string& account_email = args->GetList()[0].GetString();
+    CHECK(!args->GetListDeprecated().empty());
+    const std::string& account_email = args->GetListDeprecated()[0].GetString();
 
     Profile* profile = Profile::FromWebUI(web_ui());
     ::GetAccountManagerFacade(profile->GetPath().value())

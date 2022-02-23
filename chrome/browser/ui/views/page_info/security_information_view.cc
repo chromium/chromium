@@ -54,6 +54,14 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
       views::style::CONTEXT_DIALOG_BODY_TEXT);
   security_summary_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_SUMMARY_LABEL);
+  // The label defaults to a single line, which would force the dialog wider;
+  // instead give it a width that's the minimum we want it to have.  Then the
+  // TableLayout will stretch it back out into any additional space available.
+  const int min_label_width =
+      PageInfoViewFactory::kMinBubbleWidth - side_margin * 2 -
+      PageInfoViewFactory::GetConnectionSecureIcon().Size().width() -
+      icon_label_spacing;
+  security_summary_label_->SizeToFit(min_label_width);
 
   auto start_secondary_row = [=]() {
     layout->AddRows(1, views::TableLayout::kFixedSize);
@@ -66,13 +74,7 @@ SecurityInformationView::SecurityInformationView(int side_margin) {
   security_details_label_->SetID(
       PageInfoViewFactory::VIEW_ID_PAGE_INFO_SECURITY_DETAILS_LABEL);
   security_details_label_->SetDefaultTextStyle(views::style::STYLE_SECONDARY);
-  // The label defaults to a single line, which would force the dialog wider;
-  // instead give it a width that's the minimum we want it to have.  Then the
-  // TableLayout will stretch it back out into any additional space available.
-  security_details_label_->SizeToFit(
-      PageInfoViewFactory::kMinBubbleWidth - side_margin * 2 -
-      PageInfoViewFactory::GetConnectionSecureIcon().Size().width() -
-      icon_label_spacing);
+  security_details_label_->SizeToFit(min_label_width);
 
   start_secondary_row();
   reset_decisions_label_container_ =
@@ -222,7 +224,7 @@ void SecurityInformationView::AddPasswordReuseButtons(
   layout->set_main_axis_alignment(views::BoxLayout::MainAxisAlignment::kStart);
   password_reuse_button_container_->SetLayoutManager(std::move(layout));
 
-#if defined(OS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS_ASH)
   if (change_password_button) {
     password_reuse_button_container_->AddChildView(
         std::move(change_password_button));

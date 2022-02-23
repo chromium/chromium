@@ -307,11 +307,11 @@ TEST_F(PageTimingMetricsSenderTest, SendPageRenderData) {
 
   metrics_sender_->DidObserveLayoutShift(0.5, false);
   metrics_sender_->DidObserveLayoutShift(0.5, false);
-  metrics_sender_->DidObserveLayoutNg(3, 2, 10, 4, 9, 11);
-  metrics_sender_->DidObserveLayoutNg(2, 0, 7, 5, 13, 15);
+  metrics_sender_->DidObserveLayoutNg(3, 2, 10, 4);
+  metrics_sender_->DidObserveLayoutNg(2, 0, 7, 5);
   metrics_sender_->DidObserveLayoutShift(0.5, true);
 
-  mojom::FrameRenderDataUpdate render_data(1.5, 1.0, 5, 2, 17, 9, 21, 26, {});
+  mojom::FrameRenderDataUpdate render_data(1.5, 1.0, 5, 2, 17, 9, {});
   validator_.UpdateExpectFrameRenderDataUpdate(render_data);
 
   metrics_sender_->mock_timer()->Fire();

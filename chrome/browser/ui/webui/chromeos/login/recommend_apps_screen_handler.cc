@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/chromeos/login/recommend_apps_screen_handler.h"
 
+#include "ash/components/arc/arc_prefs.h"
 #include "ash/constants/ash_features.h"
 #include "base/metrics/histogram_macros.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
@@ -13,7 +14,6 @@
 #include "chrome/browser/ui/app_list/arc/arc_fast_app_reinstall_starter.h"
 #include "chrome/grit/component_extension_resources.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/arc/arc_prefs.h"
 #include "components/login/localized_values_builder.h"
 #include "ui/base/resource/resource_bundle.h"
 
@@ -121,7 +121,8 @@ void RecommendAppsScreenHandler::Show() {
 void RecommendAppsScreenHandler::Hide() {}
 
 void RecommendAppsScreenHandler::OnLoadSuccess(const base::Value& app_list) {
-  recommended_app_count_ = static_cast<int>(app_list.GetList().size());
+  recommended_app_count_ =
+      static_cast<int>(app_list.GetListDeprecated().size());
   LoadAppListInUI(app_list);
 }
 
@@ -141,10 +142,14 @@ void RecommendAppsScreenHandler::LoadAppListInUI(const base::Value& app_list) {
   RecordUmaScreenState(RecommendAppsScreenState::SHOW);
   const ui::ResourceBundle& resource_bundle =
       ui::ResourceBundle::GetSharedInstance();
+  // TODO(crbug.com/1261902): Clean-up old implementation once feature is
+  // launched.
   std::string app_list_webview = resource_bundle.LoadDataResourceString(
-      IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML);
-  CallJS("login.RecommendAppsScreen.setWebview", app_list_webview);
-  CallJS("login.RecommendAppsScreen.loadAppList", app_list);
+      features::IsOobeNewRecommendAppsEnabled()
+          ? IDR_ARC_SUPPORT_RECOMMEND_APP_LIST_VIEW_HTML
+          : IDR_ARC_SUPPORT_RECOMMEND_APP_OLD_LIST_VIEW_HTML);
+  CallJS("login.RecommendAppsOldScreen.setWebview", app_list_webview);
+  CallJS("login.RecommendAppsOldScreen.loadAppList", app_list);
 }
 
 void RecommendAppsScreenHandler::OnUserSkip() {
@@ -164,7 +169,7 @@ void RecommendAppsScreenHandler::HandleSkip() {
 
 void RecommendAppsScreenHandler::HandleInstall(const base::ListValue* args) {
   if (recommended_app_count_ != 0) {
-    int selected_app_count = static_cast<int>(args->GetList().size());
+    int selected_app_count = static_cast<int>(args->GetListDeprecated().size());
     int selected_recommended_percentage =
         100 * selected_app_count / recommended_app_count_;
     RecordUmaUserSelectionAppCount(selected_app_count);
@@ -173,7 +178,7 @@ void RecommendAppsScreenHandler::HandleInstall(const base::ListValue* args) {
 
   // If the user does not select any apps, we should skip the app downloading
   // screen.
-  if (args->GetList().empty()) {
+  if (args->GetListDeprecated().empty()) {
     RecordUmaScreenAction(RecommendAppsScreenAction::SELECTED_NONE);
     HandleSkip();
     return;

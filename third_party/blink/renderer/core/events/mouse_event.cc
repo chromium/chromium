@@ -31,6 +31,8 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
+#include "third_party/blink/renderer/core/html/html_frame_element_base.h"
+#include "third_party/blink/renderer/core/html/media/html_media_element.h"
 #include "third_party/blink/renderer/core/input/input_device_capabilities.h"
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
@@ -48,19 +50,21 @@ namespace blink {
 
 namespace {
 
-DoubleSize ContentsScrollOffset(AbstractView* abstract_view) {
+DoublePoint ClientToPageLocation(const DoublePoint& client_location,
+                                 AbstractView* abstract_view) {
   auto* local_dom_window = DynamicTo<LocalDOMWindow>(abstract_view);
   if (!local_dom_window)
-    return DoubleSize();
+    return client_location;
   LocalFrame* frame = local_dom_window->GetFrame();
   if (!frame)
-    return DoubleSize();
+    return client_location;
   ScrollableArea* scrollable_area = frame->View()->LayoutViewport();
   if (!scrollable_area)
-    return DoubleSize();
+    return client_location;
   float scale_factor = frame->PageZoomFactor();
-  return DoubleSize(scrollable_area->ScrollOffsetInt().width() / scale_factor,
-                    scrollable_area->ScrollOffsetInt().height() / scale_factor);
+  gfx::Vector2d scroll_offset = scrollable_area->ScrollOffsetInt();
+  return DoublePoint(client_location.X() + scroll_offset.x() / scale_factor,
+                     client_location.Y() + scroll_offset.y() / scale_factor);
 }
 
 float PageZoomFactor(const UIEvent* event) {
@@ -162,7 +166,7 @@ void MouseEvent::InitCoordinates(const double client_x, const double client_y) {
   // Set up initial values for coordinates.
   // Correct values are computed lazily, see computeRelativePosition.
   client_location_ = DoublePoint(client_x, client_y);
-  page_location_ = client_location_ + ContentsScrollOffset(view());
+  page_location_ = ClientToPageLocation(client_location_, view());
 
   layer_location_ = page_location_;
   offset_location_ = page_location_;
@@ -175,12 +179,12 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
     const WebPointerProperties& web_pointer_properties,
     const LocalDOMWindow* dom_window,
     MouseEventInit* initializer) {
-  FloatPoint client_point;
-  FloatPoint screen_point(web_pointer_properties.PositionInScreen());
+  gfx::PointF client_point;
+  gfx::PointF screen_point = web_pointer_properties.PositionInScreen();
   float scale_factor = 1.0f;
   if (dom_window && dom_window->GetFrame() && dom_window->GetFrame()->View()) {
     LocalFrame* frame = dom_window->GetFrame();
-    FloatPoint root_frame_point(web_pointer_properties.PositionInWidget());
+    gfx::PointF root_frame_point = web_pointer_properties.PositionInWidget();
     if (Page* p = frame->GetPage()) {
       if (p->GetPointerLockController().GetElement() &&
           !p->GetPointerLockController().LockPending()) {
@@ -188,10 +192,10 @@ void MouseEvent::SetCoordinatesFromWebPointerProperties(
                                                              &screen_point);
       }
     }
-    FloatPoint frame_point =
+    gfx::PointF frame_point =
         frame->View()->ConvertFromRootFrame(root_frame_point);
     scale_factor = 1.0f / frame->PageZoomFactor();
-    client_point = frame_point.ScaledBy(scale_factor);
+    client_point = gfx::ScalePoint(frame_point, scale_factor);
   }
 
   initializer->setScreenX(screen_point.x());
@@ -439,8 +443,8 @@ void MouseEvent::ComputeRelativePosition() {
 
   // Adjust offsetLocation to be relative to the target's padding box.
   if (const LayoutObject* layout_object = FindTargetLayoutObject(target_node)) {
-    FloatPoint local_pos = layout_object->AbsoluteToLocalFloatPoint(
-        FloatPoint(AbsoluteLocation()));
+    gfx::PointF local_pos =
+        layout_object->AbsoluteToLocalPoint(gfx::PointF(AbsoluteLocation()));
 
     if (layout_object->IsInline()) {
       UseCounter::Count(
@@ -479,8 +483,8 @@ void MouseEvent::ComputeRelativePosition() {
 
     PhysicalOffset physical_offset;
     layer->ConvertToLayerCoords(nullptr, physical_offset);
-    layer_location_ -= DoubleSize(physical_offset.left.ToDouble(),
-                                  physical_offset.top.ToDouble());
+    layer_location_.Move(-physical_offset.left.ToDouble(),
+                         -physical_offset.top.ToDouble());
 
     if (inverse_zoom_factor != 1.0f)
       layer_location_.Scale(inverse_zoom_factor, inverse_zoom_factor);
@@ -489,9 +493,31 @@ void MouseEvent::ComputeRelativePosition() {
   has_cached_relative_position_ = true;
 }
 
+void MouseEvent::RecordLayerXYMetrics() {
+  Node* node = target() ? target()->ToNode() : nullptr;
+  if (!node)
+    return;
+  // Using the target for these metrics is a heuristic for measuring the impact
+  // of https://crrev.com/370604#c57. The heuristic will be accurate for canvas
+  // elements which do not have children, but will undercount the impact on
+  // child elements (e.g., descendants of frames).
+  if (IsA<HTMLMediaElement>(node)) {
+    UseCounter::Count(node->GetDocument(), WebFeature::kLayerXYWithMediaTarget);
+  } else if (IsA<HTMLCanvasElement>(node)) {
+    UseCounter::Count(node->GetDocument(),
+                      WebFeature::kLayerXYWithCanvasTarget);
+  } else if (IsA<HTMLFrameElementBase>(node)) {
+    UseCounter::Count(node->GetDocument(), WebFeature::kLayerXYWithFrameTarget);
+  } else if (IsA<SVGElement>(node)) {
+    UseCounter::Count(node->GetDocument(), WebFeature::kLayerXYWithSVGTarget);
+  }
+}
+
 int MouseEvent::layerX() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
+
+  RecordLayerXYMetrics();
 
   return ClampTo<int, double>(std::floor(layer_location_.X()));
 }
@@ -499,6 +525,8 @@ int MouseEvent::layerX() {
 int MouseEvent::layerY() {
   if (!has_cached_relative_position_)
     ComputeRelativePosition();
+
+  RecordLayerXYMetrics();
 
   return ClampTo<int, double>(std::floor(layer_location_.Y()));
 }

@@ -28,9 +28,22 @@ Full steps to add a new third party library or update existing libraries:
 1. Update `build.gradle` with the new dependency or the new versions.
 
 2. Run `fetch_all.py` to update your current workspace with the changes. This
-   will update, among other things, your top-level DEPS file.
+   will update, among other things, your top-level DEPS file. If this is a new
+   library, you can skip directly to step 5 since the next step is not going to
+   work for you.
 
-3. `git add` all the 3pp related changes and create a CL for review. Keep the
+3. Run `gclient sync` to make sure that cipd has access to the versions you are
+   trying to roll. This might fail with a cipd error failing to resolve a tag.
+
+4. If the previous step works, upload your cl and you are done, if not continue
+   with the steps.
+
+5. Add a `overrideLatest` property override to your package in
+   `ChromiumDepGraph.groovy` in the `PROPERTY_OVERRIDES` map, set it to `true`.
+
+6. Run `fetch_all.py` again.
+
+7. `git add` all the 3pp related changes and create a CL for review. Keep the
    `3pp/`, `.gradle`, `OWNERS`, `.groovy` changes in the CL and revert the other
    files. The other files should be committed in a follow up CL. Example git commands:
    * `git add third_party/android_deps{*.gradle,*.groovy,*3pp*,*OWNERS,*README.md}`
@@ -38,20 +51,24 @@ Full steps to add a new third party library or update existing libraries:
    * `git restore third_party/android_deps DEPS`
    * `git clean -id`
 
-4. Land the first CL in step 3 and wait for the corresponding 3pp packager to
-   create the new CIPD packages. The 3pp packager runs every 6 hours. You can
-   see the latest runs [here][3pp_bot]. See
+8. Land the first CL in the previous step and wait for the corresponding 3pp
+   packager to create the new CIPD packages. The 3pp packager runs every 6
+   hours.  You can see the latest runs [here][3pp_bot]. See
    [`//docs/cipd_and_3pp.md`][cipd_and_3pp_doc] for how it works. Anyone on the
    Clank build core team and any trooper can trigger the bot on demand for you.
 
-5. If your follow up CL takes more than a day please revert the original CL.
+9. If your follow up CL takes more than a day please revert the original CL.
    Once the bot uploads to cipd there is no need to keep the modified 3pp files.
    The bot runs 4 times a day. When you are ready to land the follow up CL, you
    can land everything together since the cipd packages have already been
    uploaded.
 
-6. Run `fetch_all.py` again. There should not be any 3pp related changes. Create
-   a commit.
+10. Remove your `overrideLatest` property override entry in
+    `ChromiumDepGraph.groovy` so that the 3pp bot goes back to downloading and
+    storing the latest versions of your package so that it is available when you
+    next try to roll.
+
+11. Run `fetch_all.py` again. Create a CL with the changes and land it.
 
    If the CL is doing more than upgrading existing packages or adding packages
    from the same source and license (e.g. gms) follow

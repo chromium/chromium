@@ -21,12 +21,13 @@
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
 #include "components/prefs/pref_service.h"
+#include "ui/aura/cursor/cursors_aura.h"
 #include "ui/aura/env.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_delegate.h"
 #include "ui/aura/window_event_dispatcher.h"
-#include "ui/base/cursor/cursors_aura.h"
 #include "ui/base/hit_test.h"
+#include "ui/base/layout.h"
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/compositor/paint_recorder.h"
 #include "ui/display/display.h"
@@ -247,6 +248,14 @@ void CursorWindowController::SetDisplay(const display::Display& display) {
   UpdateCursorImage();
 }
 
+void CursorWindowController::OnDockedMagnifierResizingStateChanged(
+    bool is_active) {
+  const int container_id = is_active ? kShellWindowId_DockedMagnifierContainer
+                                     : kShellWindowId_MouseCursorContainer;
+  SetContainer(
+      RootWindowController::ForWindow(container_)->GetContainer(container_id));
+}
+
 void CursorWindowController::UpdateLocation() {
   if (!cursor_window_)
     return;
@@ -274,6 +283,10 @@ void CursorWindowController::SetCursorSize(ui::CursorSize cursor_size) {
 void CursorWindowController::SetVisibility(bool visible) {
   visible_ = visible;
   UpdateCursorVisibility();
+}
+
+const aura::Window* CursorWindowController::GetContainerForTest() const {
+  return container_;
 }
 
 void CursorWindowController::SetContainer(aura::Window* container) {
@@ -343,8 +356,8 @@ void CursorWindowController::UpdateCursorImage() {
     hot_point_in_physical_pixels = cursor_.custom_hotspot();
   } else {
     int resource_id;
-    if (!ui::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
-                              &resource_id, &hot_point_in_physical_pixels)) {
+    if (!aura::GetCursorDataFor(cursor_size_, cursor_.type(), cursor_scale,
+                                &resource_id, &hot_point_in_physical_pixels)) {
       return;
     }
     image =

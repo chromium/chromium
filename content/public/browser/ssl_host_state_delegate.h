@@ -6,10 +6,10 @@
 #define CONTENT_PUBLIC_BROWSER_SSL_HOST_STATE_DELEGATE_H_
 
 #include <memory>
+#include <string>
 
 #include "base/callback_forward.h"
 #include "base/memory/ref_counted.h"
-#include "content/common/content_export.h"
 #include "net/cert/x509_certificate.h"
 
 namespace content {

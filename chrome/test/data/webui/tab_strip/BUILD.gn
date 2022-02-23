@@ -1,130 +1,45 @@
-# Copyright 2019 The Chromium Authors. All rights reserved.
+# Copyright 2021 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
-import("//third_party/closure_compiler/compile_js.gni")
+import("//tools/typescript/ts_library.gni")
+import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 
-js_type_check("closure_compile") {
-  is_polymer3 = true
-  closure_flags = default_closure_args + mojom_js_args + [
-                    "browser_resolver_prefix_replacements=\"chrome://tab-strip.top-chrome/=./\"",
-                    "js_module_root=" +
-                        rebase_path("//chrome/browser/resources/tab_strip",
-                                    root_build_dir),
-                    "js_module_root=" +
-                        rebase_path("//chrome/test/data/webui", root_build_dir),
-                    "js_module_root=" +
-                        rebase_path("$root_gen_dir/chrome/test/data/webui",
-                                    root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tab_strip",
-                            root_build_dir),
-                    "js_module_root=" + rebase_path(
-                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/tabs",
-                            root_build_dir),
-                  ]
-  deps = [
-    ":alert_indicator_test",
-    ":alert_indicators_test",
-    ":drag_manager_test",
-    ":tab_group_test",
+assert(enable_webui_tab_strip)
 
-    # Disable JS type check tab_list_test for simplicity, we will lose this
-    # coverage when convert to typescript anyways.
-    # ":tab_list_test",
-    ":tab_swiper_test",
-    ":tab_test",
-    ":test_tabs_api_proxy",
-  ]
+generate_grd("build_grdp") {
+  grd_prefix = "webui_tab_strip"
+  out_grd = "$target_gen_dir/resources.grdp"
+
+  deps = [ ":build_ts" ]
+  manifest_files = [ "$target_gen_dir/tsconfig.manifest" ]
+  resource_path_prefix = "tab_strip"
 }
 
-js_library("test_tabs_api_proxy") {
-  deps = [
-    "..:test_browser_proxy",
-    "//chrome/browser/resources/tab_strip:tabs_api_proxy",
-    "//chrome/browser/ui/webui/tab_strip:mojo_bindings_js_library_for_compile",
+ts_library("build_ts") {
+  root_dir = "./"
+  out_dir = "$target_gen_dir/tsc"
+  tsconfig_base = "tsconfig_base.json"
+  path_mappings = [
+    "chrome://tab-strip.top-chrome/*|" +
+        rebase_path("$root_gen_dir/chrome/browser/resources/tab_strip/tsc/*",
+                    target_gen_dir),
+    "chrome://webui-test/*|" +
+        rebase_path("$root_gen_dir/chrome/test/data/webui/tsc/*",
+                    target_gen_dir),
   ]
-}
-
-js_library("alert_indicator_test") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_strip:alert_indicator",
-    "//chrome/browser/ui/webui/tabs:mojo_bindings_webui_js",
+  in_files = [
+    "alert_indicators_test.ts",
+    "alert_indicator_test.ts",
+    "drag_manager_test.ts",
+    "tab_group_test.ts",
+    "tab_list_test.ts",
+    "tab_swiper_test.ts",
+    "tab_test.ts",
+    "test_tabs_api_proxy.ts",
   ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("alert_indicators_test") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_strip:alert_indicator",
-    "//chrome/browser/resources/tab_strip:alert_indicators",
-    "//chrome/browser/resources/tab_strip:tabs_api_proxy",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("drag_manager_test") {
-  deps = [
-    ":test_tabs_api_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_strip:drag_manager",
-    "//chrome/browser/resources/tab_strip:tab",
-    "//chrome/browser/resources/tab_strip:tab_group",
-    "//chrome/browser/resources/tab_strip:tabs_api_proxy",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("tab_group_test") {
-  deps = [
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_strip:tab",
-    "//chrome/browser/resources/tab_strip:tab_group",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("tab_list_test") {
-  deps = [
-    ":test_tabs_api_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/tab_strip:tab",
-    "//chrome/browser/resources/tab_strip:tab_group",
-    "//chrome/browser/resources/tab_strip:tab_list",
-    "//chrome/browser/resources/tab_strip:tabs_api_proxy",
-    "//ui/webui/resources/js:cr.m",
-    "//ui/webui/resources/js:load_time_data.m",
-    "//ui/webui/resources/js/cr/ui:focus_outline_manager.m",
-  ]
-  externs_list = [
-    "$externs_path/mocha-2.5.js",
-    "$externs_path/pending.js",
-  ]
-}
-
-js_library("tab_swiper_test") {
-  deps = [
-    ":test_tabs_api_proxy",
-    "..:chai_assert",
-    "..:test_util",
-    "//chrome/browser/resources/tab_strip:tab_swiper",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
-}
-
-js_library("tab_test") {
-  deps = [
-    ":test_tabs_api_proxy",
-    "..:chai_assert",
-    "//chrome/browser/resources/tab_strip:tab",
-    "//chrome/browser/resources/tab_strip:tabs_api_proxy",
-    "//ui/webui/resources/js:icon",
-    "//ui/webui/resources/js:load_time_data.m",
-  ]
-  externs_list = [ "$externs_path/mocha-2.5.js" ]
+  definitions = [ "//tools/typescript/definitions/tabs.d.ts" ]
+  deps = [ "//chrome/browser/resources/tab_strip:build_ts" ]
+  extra_deps = [ "..:generate_definitions" ]
 }

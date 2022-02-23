@@ -21,11 +21,11 @@
   }
 </style>
 <ntp-module-header icon-src="modules/recipes_v2/icons/recipes_logo.svg">
-  [[task.title]]
+  $i18n{modulesRecipeTasksSentence}
 </ntp-module-header>
 <div id="moduleContent">
   <div id="recipes">
-    <template is="dom-repeat" id="recipesRepeat" items="[[task.taskItems]]">
+    <template is="dom-repeat" id="recipesRepeat" items="[[recipes]]">
       <a class="recipe-item">
         <img is="cr-auto-img" auto-src="[[item.imageUrl.url]]"
             draggable="false">

@@ -18,7 +18,7 @@ CanvasRenderingContext2D.drawImage().
       let ctx = cnv.getContext('2d');
       let source = await createFrameSource(source_type, cnv.width, cnv.height);
       if (!source) {
-        TEST.log('Skipping unsupported source: ' + source_type);
+        TEST.skip('Unsupported source: ' + source_type);
         return;
       }
 
@@ -33,6 +33,7 @@ CanvasRenderingContext2D.drawImage().
               TEST.log("Skip render result validation");
             break;
           }
+          case 'arraybuffer':
           case 'offscreen':
           case 'capture': {
             checkFourColorsFrame(ctx, cnv.width, cnv.height, 5);
@@ -49,6 +50,7 @@ CanvasRenderingContext2D.drawImage().
         frame.close();
         await waitForNextFrame();
       }
+      source.close();
     }
   </script>
 </head>

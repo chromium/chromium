@@ -66,7 +66,7 @@ bool StatementHasMatchingRelationship(const base::Value& statement,
   if (!relations)
     return false;
 
-  for (const auto& relation : relations->GetList()) {
+  for (const auto& relation : relations->GetListDeprecated()) {
     if (relation.is_string() && relation.GetString() == target_relation)
       return true;
   }
@@ -93,7 +93,7 @@ bool StatementHasMatchingFingerprint(const base::Value& statement,
   if (!fingerprints)
     return false;
 
-  for (const auto& fingerprint : fingerprints->GetList()) {
+  for (const auto& fingerprint : fingerprints->GetListDeprecated()) {
     if (fingerprint.is_string() &&
         fingerprint.GetString() == target_fingerprint) {
       return true;
@@ -194,7 +194,7 @@ void DigitalAssetLinksHandler::OnJSONParseResult(
   // We only output individual statement failures if none match.
   std::vector<std::string> failures;
 
-  for (const auto& statement : statement_list.GetList()) {
+  for (const auto& statement : statement_list.GetListDeprecated()) {
     if (!statement.is_dict()) {
       failures.push_back("Statement is not a dictionary.");
       continue;

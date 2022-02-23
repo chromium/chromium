@@ -25,6 +25,7 @@ class ChromeMediaAppUIDelegate : public ash::MediaAppUIDelegate {
 
   // MediaAppUIDelegate:
   absl::optional<std::string> OpenFeedbackDialog() override;
+  void ToggleBrowserFullscreenMode() override;
 
  private:
   content::WebUI* web_ui_;  // Owns |this|.

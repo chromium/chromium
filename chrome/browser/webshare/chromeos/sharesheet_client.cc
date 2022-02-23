@@ -15,43 +15,68 @@
 #include "base/strings/string_piece.h"
 #include "base/strings/stringprintf.h"
 #include "base/time/time.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/app_service/intent_util.h"
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/sharesheet/sharesheet_metrics.h"
-#include "chrome/browser/sharesheet/sharesheet_service.h"
-#include "chrome/browser/sharesheet/sharesheet_service_factory.h"
 #include "chrome/browser/visibility_timer_tab_helper.h"
 #include "chrome/browser/webshare/prepare_directory_task.h"
+#include "chrome/browser/webshare/prepare_subdirectory_task.h"
 #include "chrome/browser/webshare/share_service_impl.h"
 #include "chrome/browser/webshare/store_files_task.h"
+#include "chrome/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/web_contents.h"
 #include "net/base/filename_util.h"
 
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chrome/browser/ui/lacros/window_utility.h"
+#include "chromeos/crosapi/mojom/app_service_types.mojom.h"
+#include "chromeos/crosapi/mojom/sharesheet.mojom.h"
+#include "chromeos/crosapi/mojom/sharesheet_mojom_traits.h"
+#include "chromeos/lacros/lacros_service.h"
+#else
+#include "chrome/browser/sharesheet/sharesheet_service.h"
+#include "chrome/browser/sharesheet/sharesheet_service_factory.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
 using content::BrowserThread;
 using content::WebContents;
 
 namespace {
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr base::FilePath::CharType kWebShareDirname[] =
     FILE_PATH_LITERAL(".WebShare");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-// We don't use |supplied_name| as it may contain special characters, and it may
-// not be unique. The suffix has been checked by
+constexpr char kDefaultShareName[] = "share";
+
+// Note that the suffix of |suggested_name| has been checked by
 // ShareServiceImpl::IsDangerousFilename().
-base::FilePath GenerateFileName(const base::FilePath& directory,
-                                const std::string& supplied_name) {
+base::FilePath GenerateFileName(content::WebContents* web_contents,
+                                const base::FilePath& directory,
+                                const std::string& suggested_name) {
   static unsigned counter = 0;
 
   ++counter;
+  std::string dirname = base::StringPrintf("share%u", counter);
 
-  size_t suffix_pos = supplied_name.find_last_of('.');
-  std::string filename = base::StringPrintf("share%u%s", counter,
-                                            supplied_name.c_str() + suffix_pos);
-  return directory.Append(filename);
+  Profile* profile =
+      Profile::FromBrowserContext(web_contents->GetBrowserContext());
+  std::string referrer_charset =
+      profile->GetPrefs()->GetString(prefs::kDefaultCharset);
+
+  base::FilePath filename = net::GenerateFileName(
+      web_contents->GetLastCommittedURL(),
+      /*content_disposition=*/std::string(), referrer_charset, suggested_name,
+      /*mime_type=*/std::string(), kDefaultShareName);
+
+  return directory.Append(dirname).Append(filename);
 }
 
 blink::mojom::ShareError SharesheetResultToShareError(
@@ -64,6 +89,17 @@ blink::mojom::ShareError SharesheetResultToShareError(
     case sharesheet::SharesheetResult::kErrorWindowClosed:
       return blink::mojom::ShareError::CANCELED;
   }
+}
+
+// Deletes immediate parent directories of specified |file_paths|, after waiting
+// |delay|.
+void ScheduleSharedFileDirectoryDeletion(std::vector<base::FilePath> file_paths,
+                                         base::TimeDelta delay) {
+  for (size_t i = 0; i < file_paths.size(); ++i)
+    file_paths[i] = file_paths[i].DirName();
+
+  webshare::PrepareDirectoryTask::ScheduleSharedFileDeletion(
+      std::move(file_paths), delay);
 }
 
 }  // namespace
@@ -119,10 +155,14 @@ void SharesheetClient::Share(
   }
 
   current_share_ = CurrentShare();
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   current_share_->files = std::move(files);
   current_share_->directory =
-      file_manager::util::GetMyFilesFolderForProfile(profile).Append(
+      file_manager::util::GetShareCacheFilePath(profile).Append(
           kWebShareDirname);
+#else
+  // TODO(crbug.com/1225825): Support file sharing from Lacros.
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   if (share_url.is_valid()) {
     if (text.empty())
       current_share_->text = share_url.spec();
@@ -143,6 +183,15 @@ void SharesheetClient::Share(
                        weak_ptr_factory_.GetWeakPtr()));
     return;
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // Previously, shared files were stored in MyFiles/.WebShare. We remove this
+  // obsolete directory.
+  PrepareDirectoryTask::ScheduleSharedFileDeletion(
+      {file_manager::util::GetMyFilesFolderForProfile(profile).Append(
+          kWebShareDirname)},
+      /*delay=*/base::TimeDelta());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   current_share_->prepare_directory_task =
       std::make_unique<PrepareDirectoryTask>(
@@ -171,9 +220,28 @@ void SharesheetClient::OnPrepareDirectory(blink::mojom::ShareError error) {
 
   for (const auto& file : current_share_->files) {
     current_share_->content_types.push_back(file->blob->content_type);
-    current_share_->file_paths.push_back(
-        GenerateFileName(current_share_->directory, file->name));
+    current_share_->file_paths.push_back(GenerateFileName(
+        web_contents(), current_share_->directory, file->name));
     current_share_->file_sizes.push_back(file->blob->size);
+  }
+
+  current_share_->prepare_subdirectory_task =
+      std::make_unique<PrepareSubDirectoryTask>(
+          current_share_->file_paths,
+          base::BindOnce(&SharesheetClient::OnPrepareSubdirectory,
+                         weak_ptr_factory_.GetWeakPtr()));
+  current_share_->prepare_subdirectory_task->Start();
+}
+
+void SharesheetClient::OnPrepareSubdirectory(blink::mojom::ShareError error) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  if (!current_share_.has_value())
+    return;
+
+  if (!web_contents() || error != blink::mojom::ShareError::OK) {
+    std::move(current_share_->callback).Run(error);
+    current_share_ = absl::nullopt;
+    return;
   }
 
   std::unique_ptr<StoreFilesTask> store_files_task =
@@ -194,8 +262,8 @@ void SharesheetClient::OnStoreFiles(blink::mojom::ShareError error) {
 
   if (!web_contents() || error != blink::mojom::ShareError::OK) {
     std::move(current_share_->callback).Run(error);
-    PrepareDirectoryTask::ScheduleSharedFileDeletion(
-        std::move(current_share_->file_paths), base::Minutes(0));
+    ScheduleSharedFileDirectoryDeletion(std::move(current_share_->file_paths),
+                                        base::Minutes(0));
     current_share_ = absl::nullopt;
     return;
   }
@@ -212,7 +280,7 @@ void SharesheetClient::OnShowSharesheet(sharesheet::SharesheetResult result) {
     return;
 
   std::move(current_share_->callback).Run(SharesheetResultToShareError(result));
-  PrepareDirectoryTask::ScheduleSharedFileDeletion(
+  ScheduleSharedFileDirectoryDeletion(
       std::move(current_share_->file_paths),
       PrepareDirectoryTask::kSharedFileLifetime);
   current_share_ = absl::nullopt;
@@ -234,9 +302,23 @@ void SharesheetClient::ShowSharesheet(
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   DCHECK(profile);
 
-  sharesheet::SharesheetService* const sharesheet_service =
-      sharesheet::SharesheetServiceFactory::GetForProfile(profile);
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+  // TODO(crbug.com/1225825): Support file sharing from Lacros.
+  apps::mojom::IntentPtr intent =
+      apps_util::CreateShareIntentFromText(text, title);
 
+  auto* const service = chromeos::LacrosService::Get();
+  if (!service || !service->IsAvailable<crosapi::mojom::Sharesheet>()) {
+    std::move(delivered_callback).Run(sharesheet::SharesheetResult::kCancel);
+    return;
+  }
+  service->GetRemote<crosapi::mojom::Sharesheet>()->ShowBubble(
+      lacros_window_utility::GetRootWindowUniqueId(
+          web_contents->GetTopLevelNativeWindow()),
+      sharesheet::LaunchSource::kWebShare,
+      apps_util::ConvertAppServiceToCrosapiIntent(intent, profile),
+      std::move(delivered_callback));
+#else
   apps::mojom::IntentPtr intent =
       file_paths.empty() ? apps_util::CreateShareIntentFromText(text, title)
                          : apps_util::CreateShareIntentFromFiles(
@@ -247,10 +329,13 @@ void SharesheetClient::ShowSharesheet(
       (*intent->files)[index]->file_size = file_sizes[index];
     }
   }
-  sharesheet_service->ShowBubble(
-      web_contents, std::move(intent),
-      sharesheet::SharesheetMetrics::LaunchSource::kWebShare,
-      std::move(delivered_callback));
+
+  sharesheet::SharesheetService* const sharesheet_service =
+      sharesheet::SharesheetServiceFactory::GetForProfile(profile);
+  sharesheet_service->ShowBubble(web_contents, std::move(intent),
+                                 sharesheet::LaunchSource::kWebShare,
+                                 std::move(delivered_callback));
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
 SharesheetClient::SharesheetCallback&

@@ -224,6 +224,11 @@ Polymer({
   },
 
   /** @private */
+  onResetCameraRollOnboardingUiDismissedButtonClick_() {
+    this.browserProxy_.resetCameraRollOnboardingUiDismissed();
+  },
+
+  /** @private */
   onShouldShowOnboardingFlowChanged_() {
     if (!this.shouldEnableFakePhoneHubManager_) {
       return;

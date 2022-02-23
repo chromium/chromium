@@ -434,7 +434,7 @@ class SigninProfileExtensionsPolicyCorruptCacheTest
 
   base::FilePath GetCachedCrxFilePath() const {
     const base::FilePath cache_file_path =
-        base::PathService::CheckedGet(chromeos::DIR_SIGNIN_PROFILE_EXTENSIONS);
+        base::PathService::CheckedGet(ash::DIR_SIGNIN_PROFILE_EXTENSIONS);
     const std::string file_name =
         base::StringPrintf("%s-%s.crx", installed_extension_id_.c_str(),
                            installed_extension_version_.GetString().c_str());

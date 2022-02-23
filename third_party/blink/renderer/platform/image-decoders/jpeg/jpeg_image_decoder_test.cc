@@ -60,7 +60,7 @@ std::unique_ptr<ImageDecoder> CreateJPEGDecoder() {
 
 void Downsample(size_t max_decoded_bytes,
                 const char* image_file_path,
-                const IntSize& expected_size) {
+                const gfx::Size& expected_size) {
   scoped_refptr<SharedBuffer> data = ReadFile(image_file_path);
   ASSERT_TRUE(data);
 
@@ -76,8 +76,8 @@ void Downsample(size_t max_decoded_bytes,
 
 void ReadYUV(size_t max_decoded_bytes,
              const char* image_file_path,
-             const IntSize& expected_y_size,
-             const IntSize& expected_uv_size,
+             const gfx::Size& expected_y_size,
+             const gfx::Size& expected_uv_size,
              const bool expect_decoding_failure = false) {
   scoped_refptr<SharedBuffer> data = ReadFile(image_file_path);
   ASSERT_TRUE(data);
@@ -89,11 +89,11 @@ void ReadYUV(size_t max_decoded_bytes,
   ASSERT_TRUE(decoder->IsSizeAvailable());
   ASSERT_TRUE(decoder->CanDecodeToYUV());
 
-  IntSize size = decoder->DecodedSize();
+  gfx::Size size = decoder->DecodedSize();
 
-  IntSize y_size = decoder->DecodedYUVSize(cc::YUVIndex::kY);
-  IntSize u_size = decoder->DecodedYUVSize(cc::YUVIndex::kU);
-  IntSize v_size = decoder->DecodedYUVSize(cc::YUVIndex::kV);
+  gfx::Size y_size = decoder->DecodedYUVSize(cc::YUVIndex::kY);
+  gfx::Size u_size = decoder->DecodedYUVSize(cc::YUVIndex::kU);
+  gfx::Size v_size = decoder->DecodedYUVSize(cc::YUVIndex::kV);
 
   EXPECT_EQ(size, y_size);
   EXPECT_EQ(u_size, v_size);
@@ -141,25 +141,25 @@ TEST(JPEGImageDecoderTest, downsampleImageSizeMultipleOf8) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";  // 256x256
 
   // 1/8 downsample.
-  Downsample(40 * 40 * 4, jpeg_file, IntSize(32, 32));
+  Downsample(40 * 40 * 4, jpeg_file, gfx::Size(32, 32));
 
   // 2/8 downsample.
-  Downsample(70 * 70 * 4, jpeg_file, IntSize(64, 64));
+  Downsample(70 * 70 * 4, jpeg_file, gfx::Size(64, 64));
 
   // 3/8 downsample.
-  Downsample(100 * 100 * 4, jpeg_file, IntSize(96, 96));
+  Downsample(100 * 100 * 4, jpeg_file, gfx::Size(96, 96));
 
   // 4/8 downsample.
-  Downsample(130 * 130 * 4, jpeg_file, IntSize(128, 128));
+  Downsample(130 * 130 * 4, jpeg_file, gfx::Size(128, 128));
 
   // 5/8 downsample.
-  Downsample(170 * 170 * 4, jpeg_file, IntSize(160, 160));
+  Downsample(170 * 170 * 4, jpeg_file, gfx::Size(160, 160));
 
   // 6/8 downsample.
-  Downsample(200 * 200 * 4, jpeg_file, IntSize(192, 192));
+  Downsample(200 * 200 * 4, jpeg_file, gfx::Size(192, 192));
 
   // 7/8 downsample.
-  Downsample(230 * 230 * 4, jpeg_file, IntSize(224, 224));
+  Downsample(230 * 230 * 4, jpeg_file, gfx::Size(224, 224));
 }
 
 // Tests that JPEG decoder can downsample image whose width and height are not
@@ -168,48 +168,49 @@ TEST(JPEGImageDecoderTest, downsampleImageSizeNotMultipleOf8) {
   const char* jpeg_file = "/images/resources/icc-v2-gbr.jpg";  // 275x207
 
   // 1/8 downsample.
-  Downsample(40 * 40 * 4, jpeg_file, IntSize(35, 26));
+  Downsample(40 * 40 * 4, jpeg_file, gfx::Size(35, 26));
 
   // 2/8 downsample.
-  Downsample(70 * 70 * 4, jpeg_file, IntSize(69, 52));
+  Downsample(70 * 70 * 4, jpeg_file, gfx::Size(69, 52));
 
   // 3/8 downsample.
-  Downsample(100 * 100 * 4, jpeg_file, IntSize(104, 78));
+  Downsample(100 * 100 * 4, jpeg_file, gfx::Size(104, 78));
 
   // 4/8 downsample.
-  Downsample(130 * 130 * 4, jpeg_file, IntSize(138, 104));
+  Downsample(130 * 130 * 4, jpeg_file, gfx::Size(138, 104));
 
   // 5/8 downsample.
-  Downsample(170 * 170 * 4, jpeg_file, IntSize(172, 130));
+  Downsample(170 * 170 * 4, jpeg_file, gfx::Size(172, 130));
 
   // 6/8 downsample.
-  Downsample(200 * 200 * 4, jpeg_file, IntSize(207, 156));
+  Downsample(200 * 200 * 4, jpeg_file, gfx::Size(207, 156));
 
   // 7/8 downsample.
-  Downsample(230 * 230 * 4, jpeg_file, IntSize(241, 182));
+  Downsample(230 * 230 * 4, jpeg_file, gfx::Size(241, 182));
 }
 
 // Tests that upsampling is not allowed.
 TEST(JPEGImageDecoderTest, upsample) {
   const char* jpeg_file = "/images/resources/gracehopper.jpg";  // 256x256
-  Downsample(kLargeEnoughSize, jpeg_file, IntSize(256, 256));
+  Downsample(kLargeEnoughSize, jpeg_file, gfx::Size(256, 256));
 }
 
 TEST(JPEGImageDecoderTest, yuv) {
   // This image is 256x256 with YUV 4:2:0
   const char* jpeg_file = "/images/resources/gracehopper.jpg";
-  ReadYUV(kLargeEnoughSize, jpeg_file, IntSize(256, 256), IntSize(128, 128));
+  ReadYUV(kLargeEnoughSize, jpeg_file, gfx::Size(256, 256),
+          gfx::Size(128, 128));
 
   // Each plane is in its own scan.
   const char* jpeg_file_non_interleaved =
       "/images/resources/cs-uma-ycbcr-420-non-interleaved.jpg";  // 64x64
-  ReadYUV(kLargeEnoughSize, jpeg_file_non_interleaved, IntSize(64, 64),
-          IntSize(32, 32));
+  ReadYUV(kLargeEnoughSize, jpeg_file_non_interleaved, gfx::Size(64, 64),
+          gfx::Size(32, 32));
 
   const char* jpeg_file_image_size_not_multiple_of8 =
       "/images/resources/cropped_mandrill.jpg";  // 439x154
   ReadYUV(kLargeEnoughSize, jpeg_file_image_size_not_multiple_of8,
-          IntSize(439, 154), IntSize(220, 77));
+          gfx::Size(439, 154), gfx::Size(220, 77));
 
   // Make sure we revert to RGBA decoding when we're about to downscale,
   // which can occur on memory-constrained android devices.
@@ -227,7 +228,8 @@ TEST(JPEGImageDecoderTest, yuv) {
 // failure but also results in displayable YUV data.
 TEST(JPEGImageDecoderTest, missingEoi) {
   const char* jpeg_file = "/images/resources/missing-eoi.jpg";  // 1599x899
-  ReadYUV((1599 * 899 * 4), jpeg_file, IntSize(1599, 899), IntSize(800, 450),
+  ReadYUV((1599 * 899 * 4), jpeg_file, gfx::Size(1599, 899),
+          gfx::Size(800, 450),
           /*expect_decoding_failure=*/true);
 }
 
@@ -431,13 +433,14 @@ struct ColorSpaceTestParam {
   bool expected_success = false;
   BitmapImageMetrics::JpegColorSpace expected_color_space;
   bool expect_yuv_decoding = false;
-  IntSize expected_uv_size;
+  gfx::Size expected_uv_size;
 };
 
 void PrintTo(const ColorSpaceTestParam& param, std::ostream* os) {
   *os << "{\"" << param.file << "\", " << param.expected_success << ","
       << static_cast<int>(param.expected_color_space) << ","
-      << param.expected_uv_size << "," << param.expect_yuv_decoding << "}";
+      << param.expected_uv_size.ToString() << "," << param.expect_yuv_decoding
+      << "}";
 }
 
 class ColorSpaceTest : public ::testing::TestWithParam<ColorSpaceTestParam> {};
@@ -475,7 +478,7 @@ TEST_P(ColorSpaceTest, YuvDecode) {
 
   if (GetParam().expect_yuv_decoding) {
     const auto jpeg_file = ("/images/resources/" + GetParam().file);
-    ReadYUV(kLargeEnoughSize, jpeg_file.c_str(), IntSize(64, 64),
+    ReadYUV(kLargeEnoughSize, jpeg_file.c_str(), gfx::Size(64, 64),
             GetParam().expected_uv_size,
             /*expect_decoding_failure=*/false);
   }
@@ -496,8 +499,8 @@ TEST_P(ColorSpaceTest, RgbDecode) {
     std::unique_ptr<ImageDecoder> decoder = CreateJPEGDecoder(kLargeEnoughSize);
     decoder->SetData(data.get(), true);
 
-    IntSize size = decoder->DecodedSize();
-    EXPECT_EQ(IntSize(64, 64), size);
+    gfx::Size size = decoder->DecodedSize();
+    EXPECT_EQ(gfx::Size(64, 64), size);
     ASSERT_FALSE(decoder->CanDecodeToYUV());
 
     const ImageFrame* frame = decoder->DecodeFrameBufferAtIndex(0);
@@ -533,24 +536,24 @@ const ColorSpaceTest::ParamType kColorSpaceTestParams[] = {
     {"cs-uma-ycbcr-411.jpg", true,
      BitmapImageMetrics::JpegColorSpace::kYCbCr411, false},
     {"cs-uma-ycbcr-420.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, IntSize(32, 32)},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, gfx::Size(32, 32)},
     // Each component is in a separate scan. Should not make a difference.
     {"cs-uma-ycbcr-420-non-interleaved.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, IntSize(32, 32)},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, gfx::Size(32, 32)},
     // 3 components/both JFIF and Adobe markers, so we expect libjpeg_turbo to
     // guess YCbCr.
     {"cs-uma-ycbcr-420-both-jfif-adobe.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, IntSize(32, 32)},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr420, true, gfx::Size(32, 32)},
     {"cs-uma-ycbcr-422.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr422, true, IntSize(32, 64)},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr422, true, gfx::Size(32, 64)},
     {"cs-uma-ycbcr-440.jpg", true,
      BitmapImageMetrics::JpegColorSpace::kYCbCr440, false},
     {"cs-uma-ycbcr-444.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, IntSize(64, 64)},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, gfx::Size(64, 64)},
     // Contains RGB data but uses a bad Adobe color transform, so libjpeg_turbo
     // will guess YCbCr.
     {"cs-uma-rgb-unknown-transform.jpg", true,
-     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, IntSize(64, 64)},
+     BitmapImageMetrics::JpegColorSpace::kYCbCr444, true, gfx::Size(64, 64)},
     {"cs-uma-ycbcr-other.jpg", true,
      BitmapImageMetrics::JpegColorSpace::kYCbCrOther, false},
     // Contains only 2 components. We expect the decode to fail and not produce

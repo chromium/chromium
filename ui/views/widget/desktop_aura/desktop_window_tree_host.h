@@ -146,6 +146,7 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   virtual void ClearNativeFocus() = 0;
 
+  virtual bool IsMoveLoopSupported() const;
   virtual Widget::MoveLoopResult RunMoveLoop(
       const gfx::Vector2d& drag_offset,
       Widget::MoveLoopSource source,
@@ -205,6 +206,8 @@ class VIEWS_EXPORT DesktopWindowTreeHost {
 
   // Updates window shape by clipping the canvas before paint starts.
   virtual void UpdateWindowShapeIfNeeded(const ui::PaintContext& context);
+
+  virtual DesktopNativeCursorManager* GetSingletonDesktopNativeCursorManager();
 };
 
 }  // namespace views

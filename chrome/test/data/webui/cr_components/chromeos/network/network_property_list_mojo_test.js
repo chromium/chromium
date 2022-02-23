@@ -5,6 +5,7 @@
 // clang-format off
 // #import 'chrome://os-settings/strings.m.js';
 // #import 'chrome://resources/cr_components/chromeos/network/network_property_list_mojo.m.js';
+// #import {FAKE_CREDENTIAL} from 'chrome://resources/cr_components/chromeos/network/onc_mojo.m.js';
 
 // #import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 // clang-format on
@@ -146,5 +147,19 @@ suite('NetworkPropertyListMojoTest', function() {
     propertyList.disabled = true;
 
     assertTrue(input.disabled);
+  });
+
+  test('Fake credential placeholder', async () => {
+    await simulatePropertyChange(FAKE_CREDENTIAL);
+    const propertyValues = Array.from(
+        propertyList.shadowRoot.querySelectorAll('.cr-secondary-text'));
+    assertTrue(propertyValues.some(
+        element => element.textContent.trim() === FAKE_CREDENTIAL));
+    propertyValues.forEach(element => {
+      const textSecurity =
+          getComputedStyle(element).getPropertyValue('-webkit-text-security');
+      const textValue = element.textContent.trim();
+      assertTrue(textSecurity === 'disc' || textValue !== FAKE_CREDENTIAL);
+    });
   });
 });

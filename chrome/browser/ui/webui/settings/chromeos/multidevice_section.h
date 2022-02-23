@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_SECTION_H_
 #define CHROME_BROWSER_UI_WEBUI_SETTINGS_CHROMEOS_MULTIDEVICE_SECTION_H_
 
+// TODO(https://crbug.com/1164001): move to forward declaration.
+#include "ash/components/phonehub/phone_hub_manager.h"
+#include "ash/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
 #include "ash/webui/eche_app_ui/eche_app_manager.h"
 #include "base/values.h"
 #include "chrome/browser/ui/webui/settings/chromeos/os_settings_section.h"
 // TODO(https://crbug.com/1164001): move to forward declaration.
 #include "chrome/browser/ash/android_sms/android_sms_service.h"
-#include "chromeos/services/multidevice_setup/public/cpp/multidevice_setup_client.h"
+#include "chrome/browser/ui/webui/nearby_share/public/mojom/nearby_share_settings.mojom.h"
 #include "components/prefs/pref_change_registrar.h"
 
 class PrefService;
@@ -20,11 +23,6 @@ class WebUIDataSource;
 }  // namespace content
 
 namespace chromeos {
-
-namespace phonehub {
-class PhoneHubManager;
-}  // namespace phonehub
-
 namespace settings {
 
 class SearchTagRegistry;
@@ -34,7 +32,8 @@ class SearchTagRegistry;
 // allowed and whether the user has opted into the suite of features.
 class MultiDeviceSection
     : public OsSettingsSection,
-      public multidevice_setup::MultiDeviceSetupClient::Observer {
+      public multidevice_setup::MultiDeviceSetupClient::Observer,
+      public nearby_share::mojom::NearbyShareSettingsObserver {
  public:
   MultiDeviceSection(
       Profile* profile,
@@ -69,6 +68,23 @@ class MultiDeviceSection
   void OnNearbySharingEnabledChanged();
 
   bool IsFeatureSupported(multidevice_setup::mojom::Feature feature);
+  void RefreshNearbyBackgroundScanningShareSearchConcepts();
+
+  // nearby_share::mojom::NearbyShareSettingsObserver:
+  void OnEnabledChanged(bool enabled) override;
+  void OnFastInitiationNotificationStateChanged(
+      nearby_share::mojom::FastInitiationNotificationState state) override;
+  void OnIsFastInitiationHardwareSupportedChanged(bool is_supported) override;
+  void OnDeviceNameChanged(const std::string& device_name) override {}
+  void OnDataUsageChanged(nearby_share::mojom::DataUsage data_usage) override {}
+  void OnVisibilityChanged(
+      nearby_share::mojom::Visibility visibility) override {}
+  void OnAllowedContactsChanged(
+      const std::vector<std::string>& allowed_contacts) override {}
+  void OnIsOnboardingCompleteChanged(bool is_complete) override {}
+
+  mojo::Receiver<nearby_share::mojom::NearbyShareSettingsObserver>
+      settings_receiver_{this};
 
   multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client_;
   phonehub::PhoneHubManager* phone_hub_manager_;

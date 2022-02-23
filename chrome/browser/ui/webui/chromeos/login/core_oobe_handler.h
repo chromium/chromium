@@ -36,25 +36,11 @@ namespace chromeos {
 
 class CoreOobeView {
  public:
-  // Enum that specifies how inner padding of OOBE dialog should be calculated.
-  enum class DialogPaddingMode {
-    // Oobe dialog is displayed full screen, padding will be calculated
-    // via css depending on media size.
-    MODE_AUTO,
-    // Oobe dialog have enough free space around and should use wide padding.
-    MODE_WIDE,
-    // Oobe dialog is positioned in limited space and should use narrow padding.
-    MODE_NARROW,
-  };
-
   virtual ~CoreOobeView() = default;
 
-  virtual void ResetSignInUI(bool force_online) = 0;
   virtual void ReloadContent(const base::DictionaryValue& dictionary) = 0;
   virtual void SetVirtualKeyboardShown(bool shown) = 0;
-  virtual void SetClientAreaSize(int width, int height) = 0;
   virtual void SetShelfHeight(int height) = 0;
-  virtual void SetDialogPaddingMode(DialogPaddingMode mode) = 0;
   virtual void UpdateKeyboardState() = 0;
   virtual void FocusReturned(bool reverse) = 0;
   virtual void SetOrientation(bool is_horizontal) = 0;
@@ -102,10 +88,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   // Show or hide OOBE UI.
   void ShowOobeUI(bool show);
 
-  bool show_oobe_ui() const {
-    return show_oobe_ui_;
-  }
-
   // If `reboot_on_shutdown` is true, the reboot button becomes visible
   // and the shutdown button is hidden. Vice versa if `reboot_on_shutdown` is
   // false.
@@ -119,12 +101,9 @@ class CoreOobeHandler : public BaseWebUIHandler,
 
  private:
   // CoreOobeView implementation:
-  void ResetSignInUI(bool force_online) override;
   void ReloadContent(const base::DictionaryValue& dictionary) override;
   void SetVirtualKeyboardShown(bool displayed) override;
-  void SetClientAreaSize(int width, int height) override;
   void SetShelfHeight(int height) override;
-  void SetDialogPaddingMode(CoreOobeView::DialogPaddingMode mode) override;
   void FocusReturned(bool reverse) override;
   void SetOrientation(bool is_horizontal) override;
   void SetDialogSize(int width, int height) override;
@@ -141,7 +120,6 @@ class CoreOobeHandler : public BaseWebUIHandler,
   void OnOobeConfigurationChanged() override;
 
   // Handlers for JS WebUI messages.
-  void HandleHideOobeDialog();
   void HandleEnableShelfButtons(bool enable);
   void HandleInitialized();
   void HandleUpdateCurrentScreen(const std::string& screen);

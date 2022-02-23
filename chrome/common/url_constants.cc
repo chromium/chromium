@@ -5,9 +5,9 @@
 #include "chrome/common/url_constants.h"
 
 #include "build/branding_buildflags.h"
-#include "chrome/common/webui_url_constants.h"
-
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/common/webui_url_constants.h"
 
 namespace chrome {
 
@@ -103,11 +103,11 @@ const char kChromiumProjectURL[] = "https://www.chromium.org/";
 const char kCloudPrintCertificateErrorLearnMoreURL[] =
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "https://support.google.com/chromebook?p=cloudprint_error_troubleshoot";
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
     "https://support.google.com/cloudprint?p=cloudprint_error_offline_mac";
-#elif defined(OS_WIN)
-        "https://support.google.com/"
-        "cloudprint?p=cloudprint_error_offline_windows";
+#elif BUILDFLAG(IS_WIN)
+    "https://support.google.com/"
+    "cloudprint?p=cloudprint_error_offline_windows";
 #else
         "https://support.google.com/"
         "cloudprint?p=cloudprint_error_offline_linux";
@@ -156,6 +156,10 @@ const char kFlashDeprecationLearnMoreURL[] =
 
 const char kGoogleAccountActivityControlsURL[] =
     "https://myaccount.google.com/activitycontrols/search";
+
+const char kGoogleAccountActivityControlsURLInPrivacyGuide[] =
+    "https://myaccount.google.com/activitycontrols/"
+    "search&utm_source=chrome&utm_medium=privacy-guide";
 
 const char kGoogleAccountLanguagesURL[] =
     "https://myaccount.google.com/language";
@@ -282,11 +286,14 @@ const char kSyncGoogleDashboardURL[] =
 const char kSyncLearnMoreURL[] =
     "https://support.google.com/chrome/?p=settings_sign_in";
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kSyncTrustedVaultOptInURL[] =
     "https://passwords.google.com/encryption/enroll?"
     "utm_source=chrome&utm_medium=desktop&utm_campaign=encryption_enroll";
 #endif
+
+const char kSyncTrustedVaultLearnMoreURL[] =
+    "https://support.google.com/accounts?p=settings_password_ode";
 
 const char kUpgradeHelpCenterBaseURL[] =
     "https://support.google.com/installer/?product="
@@ -298,12 +305,12 @@ const char kWhoIsMyAdministratorHelpURL[] =
 const char kCwsEnhancedSafeBrowsingLearnMoreURL[] =
     "https://support.google.com/chrome?p=cws_enhanced_safe_browsing";
 
-#if BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#if BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 const char kEnhancedPlaybackNotificationLearnMoreURL[] =
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     "https://support.google.com/chromebook/?p=enhanced_playback";
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
 // Keep in sync with chrome/browser/ui/android/strings/android_chrome_strings.grd
     "https://support.google.com/chrome/?p=mobile_protected_content";
 #endif
@@ -314,6 +321,9 @@ const char kAccountManagerLearnMoreURL[] =
 
 const char kAccountRecoveryURL[] =
     "https://accounts.google.com/signin/recovery";
+
+const char kAddNewUserURL[] =
+    "https://www.google.com/chromebook/howto/add-another-account";
 
 const char kAndroidAppsLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=playapps";
@@ -328,9 +338,10 @@ const char kArcPrivacyPolicyURLPath[] = "arc/privacy_policy";
 
 const char kArcTermsURLPath[] = "arc/terms";
 
-// TODO(crbug.com/1248270): Use real link to Bluetooth pairing learn more.
+// TODO(crbug.com/1010321): Remove 'm100' prefix from link once Bluetooth Revamp
+// has shipped.
 const char kBluetoothPairingLearnMoreUrl[] =
-    "https://support.google.com/chromebook/?p=bluetooth_pairing";
+    "https://support.google.com/chromebook?p=bluetooth_revamp_m100";
 
 const char kChromeAccessibilityHelpURL[] =
     "https://support.google.com/chromebook/topic/6323347";
@@ -374,20 +385,11 @@ const char kAutoUpdatePolicyURL[] =
 const char kGoogleNameserversLearnMoreURL[] =
     "https://developers.google.com/speed/public-dns";
 
-const char kGsuiteTermsEducationPrivacyURL[] =
-    "https://gsuite.google.com/terms/education_privacy.html";
-
 const char kInstantTetheringLearnMoreURL[] =
     "https://support.google.com/chromebook?p=instant_tethering";
 
 const char kKerberosAccountsLearnMoreURL[] =
     "https://support.google.com/chromebook/?p=kerberos_accounts";
-
-const char kMultiDeviceLearnMoreURL[] =
-    "https://support.google.com/chromebook/?p=multi_device";
-
-const char kAndroidMessagesLearnMoreURL[] =
-    "https://support.google.com/chromebook/?p=multi_device_messages";
 
 const char kLanguageSettingsLearnMoreUrl[] =
     "https://support.google.com/chromebook/answer/1059490";
@@ -400,9 +402,6 @@ const char kLearnMoreEnterpriseURL[] =
 
 const char kLinuxAppsLearnMoreURL[] =
     "https://support.google.com/chromebook?p=chromebook_linuxapps";
-
-const char kLinuxExportImportHelpURL[] =
-    "https://support.google.com/chromebook?p=linux_backup_restore";
 
 const char kNaturalScrollHelpURL[] =
     "https://support.google.com/chromebook/?p=simple_scrolling";
@@ -453,7 +452,7 @@ extern const char kFingerprintLearnMoreURL[] =
 
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 const char kChromeEnterpriseSignInLearnMoreURL[] =
     "https://support.google.com/chromebook/answer/1331549";
 
@@ -461,7 +460,7 @@ const char kMac10_10_ObsoleteURL[] =
     "https://support.google.com/chrome/?p=unsupported_mac";
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 const char kChromeCleanerLearnMoreURL[] =
     "https://support.google.com/chrome/?p=chrome_cleanup_tool";
 

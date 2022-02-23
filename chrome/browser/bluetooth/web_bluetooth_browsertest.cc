@@ -7,6 +7,7 @@
 
 #include "base/callback.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/field_trial.h"
 #include "base/run_loop.h"
 #include "base/strings/utf_string_conversions.h"
@@ -30,11 +31,13 @@
 #include "content/public/common/content_client.h"
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
+#include "content/public/test/bluetooth_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_base.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "content/public/test/test_utils.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "device/bluetooth/bluetooth_adapter.h"
 #include "device/bluetooth/bluetooth_adapter_factory.h"
@@ -503,10 +506,10 @@ class WebBluetoothTest : public InProcessBrowserTest {
       global_values_;
   scoped_refptr<FakeBluetoothAdapter> adapter_;
   TestContentBrowserClient browser_client_;
-  content::ContentBrowserClient* old_browser_client_ = nullptr;
-  FakeBluetoothGattCharacteristic* characteristic_ = nullptr;
+  raw_ptr<content::ContentBrowserClient> old_browser_client_ = nullptr;
+  raw_ptr<FakeBluetoothGattCharacteristic> characteristic_ = nullptr;
 
-  content::WebContents* web_contents_ = nullptr;
+  raw_ptr<content::WebContents> web_contents_ = nullptr;
   std::unique_ptr<content::URLLoaderInterceptor> url_loader_interceptor_;
 };
 
@@ -516,7 +519,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
   adapter_->SetIsPresent(false);
   std::string result;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_,
+      web_contents_.get(),
       "navigator.bluetooth.requestDevice({filters: [{services: [0x180d]}]})"
       "  .catch(e => domAutomationController.send(e.toString()));",
       &result));
@@ -538,7 +541,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, WebBluetoothAfterCrash) {
   // Use Web Bluetooth again.
   std::string result_after_crash;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_,
+      web_contents_.get(),
       "navigator.bluetooth.requestDevice({filters: [{services: [0x180d]}]})"
       "  .catch(e => domAutomationController.send(e.toString()));",
       &result_after_crash));
@@ -560,7 +563,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, KillSwitchShouldBlock) {
 
   std::string rejection;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_,
+      web_contents_.get(),
       "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]})"
       "  .then(() => { domAutomationController.send('Success'); },"
       "        reason => {"
@@ -597,7 +600,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, BlocklistShouldBlock) {
 
   std::string rejection;
   EXPECT_TRUE(content::ExecuteScriptAndExtractString(
-      web_contents_,
+      web_contents_.get(),
       "navigator.bluetooth.requestDevice({filters: [{services: [0xed5f25a4]}]})"
       "  .then(() => { domAutomationController.send('Success'); },"
       "        reason => {"
@@ -617,7 +620,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NavigateWithChooserCrossOrigin) {
   auto waiter = test::ChooserBubbleUiWaiter::Create();
 
   EXPECT_TRUE(content::ExecJs(
-      web_contents_,
+      web_contents_.get(),
       "navigator.bluetooth.requestDevice({filters: [{name: 'Hello'}]})",
       content::EXECUTE_SCRIPT_NO_RESOLVE_PROMISES));
 
@@ -626,7 +629,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NavigateWithChooserCrossOrigin) {
   waiter->WaitForChange();
   EXPECT_TRUE(waiter->has_shown());
 
-  EXPECT_TRUE(content::ExecJs(web_contents_,
+  EXPECT_TRUE(content::ExecJs(web_contents_.get(),
                               "document.location.href = 'https://google.com'"));
 
   observer.Wait();
@@ -666,7 +669,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
   characteristic_->DeferReadUntilNotificationStart();
   SetDeviceToSelect(kDeviceAddress);
 
-  auto js_values = content::EvalJs(web_contents_, R"((async () => {
+  auto js_values = content::EvalJs(web_contents_.get(), R"((async () => {
       const kHeartRateMeasurementUUID = '00001234-0000-1000-8000-00805f9b34fb';
       const device = await navigator.bluetooth.requestDevice(
           {filters: [{name: 'Test Device', services: ['heart_rate']}]});
@@ -691,8 +694,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeRead) {
       return Promise.all([readPromise, notifyPromise]);
     })())");
 
-  const base::ListValue promise_values = js_values.ExtractList();
-  EXPECT_EQ(2U, promise_values.GetList().size());
+  const base::Value promise_values = js_values.ExtractList();
+  EXPECT_EQ(2U, promise_values.GetListDeprecated().size());
   EXPECT_EQ(content::ListValueOf(1, 1), js_values);
 }
 
@@ -702,7 +705,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTest, NotificationStartValueChangeNotify) {
   characteristic_->EmitChangeNotificationAtNotificationStart();
   SetDeviceToSelect(kDeviceAddress);
 
-  EXPECT_EQ(1, content::EvalJs(web_contents_, R"((async () => {
+  EXPECT_EQ(1, content::EvalJs(web_contents_.get(), R"((async () => {
       const kHeartRateMeasurementUUID = '00001234-0000-1000-8000-00805f9b34fb';
       const device = await navigator.bluetooth.requestDevice(
           {filters: [{name: 'Test Device', services: ['heart_rate']}]});
@@ -739,6 +742,17 @@ class WebBluetoothTestWithNewPermissionsBackendEnabled
   WebBluetoothTestWithNewPermissionsBackendEnabled& operator=(
       const WebBluetoothTestWithNewPermissionsBackendEnabled&) = delete;
 
+  void SetUp() override {
+    // Called to prevent flakiness that may arise from changes in the window
+    // visibility. WebBluetoothServiceImpl may clear up its WatchAdvertisement
+    // client lists before being able to simulate the device advertisement when
+    // the window visibility changes or lose focus, resulting in timeouts from
+    // promises that never resolve. This function prevents this clean up from
+    // happening.
+    content::IgnoreBluetoothVisibilityRequirementsForTesting();
+    WebBluetoothTest::SetUp();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
 };
@@ -751,7 +765,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // Grant permission for the device with address |kDeviceAddress| and store its
   // WebBluetoothDeviceId in localStorage to retrieve it after the browser
   // restarts.
-  auto request_device_result = content::EvalJs(web_contents_, R"((async() => {
+  auto request_device_result =
+      content::EvalJs(web_contents_.get(), R"((async() => {
           try {
             let device = await navigator.bluetooth.requestDevice({
               filters: [{name: 'Test Device'}]});
@@ -774,7 +789,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // previously granted Bluetooth devices, so use requestDevice here.
   // TODO(https://crbug.com/577953): Once there is an API that can return the
   // permitted Web Bluetooth devices, use that API instead.
-  auto request_device_result = content::EvalJs(web_contents_, R"((async() => {
+  auto request_device_result =
+      content::EvalJs(web_contents_.get(), R"((async() => {
           try {
             let device = await navigator.bluetooth.requestDevice({
               filters: [{name: 'Test Device'}]});
@@ -786,7 +802,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   const std::string& granted_id = request_device_result.ExtractString();
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(granted_id));
 
-  auto local_storage_get_item_result = content::EvalJs(web_contents_, R"(
+  auto local_storage_get_item_result = content::EvalJs(web_contents_.get(), R"(
         (async() => {
           return localStorage.getItem('requestDeviceId');
         })())");
@@ -800,13 +816,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // The request to scan should be automatically accepted. Store the detected
   // device's WebBluetoothDeviceId in localStorage to retrieve it after the
   // browser restarts.
-  ASSERT_TRUE(content::ExecJs(web_contents_, R"(
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "requestLEScanPromise"));
 
-  ASSERT_TRUE(content::ExecJs(web_contents_, R"(
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), R"(
         var advertisementreceivedPromise = new Promise(resolve => {
           navigator.bluetooth.addEventListener('advertisementreceived',
               event => {
@@ -819,7 +835,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   SimulateDeviceAdvertisement(kDeviceAddress);
 
   auto advertisementreceived_promise_result =
-      content::EvalJs(web_contents_, "advertisementreceivedPromise ");
+      content::EvalJs(web_contents_.get(), "advertisementreceivedPromise ");
   const std::string& scan_id =
       advertisementreceived_promise_result.ExtractString();
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(scan_id));
@@ -829,13 +845,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        WebBluetoothScanningIdsNotPersistent) {
   // The request to scan should be automatically accepted. Store the detected
   // assigned to the scanned device against the one that was stored previously.
-  ASSERT_TRUE(content::ExecJs(web_contents_, R"(
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "requestLEScanPromise"));
 
-  ASSERT_TRUE(content::ExecJs(web_contents_, R"(
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), R"(
         var advertisementreceivedPromise = new Promise(resolve => {
           navigator.bluetooth.addEventListener('advertisementreceived',
               event => {
@@ -847,13 +863,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   SimulateDeviceAdvertisement(kDeviceAddress);
 
   auto advertisementreceived_promise_result =
-      content::EvalJs(web_contents_, "advertisementreceivedPromise ");
+      content::EvalJs(web_contents_.get(), "advertisementreceivedPromise ");
   const std::string& scan_id =
       advertisementreceived_promise_result.ExtractString();
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(scan_id));
 
-  auto local_storage_get_item_result =
-      content::EvalJs(web_contents_, "localStorage.getItem('requestLEScanId')");
+  auto local_storage_get_item_result = content::EvalJs(
+      web_contents_.get(), "localStorage.getItem('requestLEScanId')");
   const std::string& prev_scan_id =
       local_storage_get_item_result.ExtractString();
   EXPECT_NE(scan_id, prev_scan_id);
@@ -867,7 +883,8 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // Grant permission for the device with address |kDeviceAddress| and store its
   // WebBluetoothDeviceId in localStorage to retrieve it after the browser
   // restarts.
-  auto request_device_result = content::EvalJs(web_contents_, R"((async() => {
+  auto request_device_result =
+      content::EvalJs(web_contents_.get(), R"((async() => {
           try {
             let device = await navigator.bluetooth.requestDevice({
               filters: [{name: 'Test Device'}]});
@@ -885,13 +902,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                        WebBluetoothIdsUsedInWebBluetoothScanning) {
   // The request to scan should be automatically accepted. Store the detected
   // assigned to the scanned device against the one that was stored previously.
-  ASSERT_TRUE(content::ExecJs(web_contents_, R"(
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), R"(
       var requestLEScanPromise = navigator.bluetooth.requestLEScan({
         acceptAllAdvertisements: true});
   )"));
-  ASSERT_TRUE(content::ExecJs(web_contents_, "requestLEScanPromise"));
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), "requestLEScanPromise"));
 
-  ASSERT_TRUE(content::ExecJs(web_contents_, R"(
+  ASSERT_TRUE(content::ExecJs(web_contents_.get(), R"(
         var advertisementreceivedPromise = new Promise(resolve => {
           navigator.bluetooth.addEventListener('advertisementreceived',
               event => {
@@ -903,13 +920,13 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   SimulateDeviceAdvertisement(kDeviceAddress);
 
   auto advertisementreceived_promise_result =
-      content::EvalJs(web_contents_, "advertisementreceivedPromise ");
+      content::EvalJs(web_contents_.get(), "advertisementreceivedPromise ");
   const std::string& scan_id =
       advertisementreceived_promise_result.ExtractString();
   EXPECT_TRUE(blink::WebBluetoothDeviceId::IsValid(scan_id));
 
-  auto local_storage_get_item_result =
-      content::EvalJs(web_contents_, "localStorage.getItem('requestDeviceId')");
+  auto local_storage_get_item_result = content::EvalJs(
+      web_contents_.get(), "localStorage.getItem('requestDeviceId')");
   const std::string& granted_id = local_storage_get_item_result.ExtractString();
   EXPECT_EQ(scan_id, granted_id);
 }
@@ -923,7 +940,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // WebBluetoothDeviceId in localStorage to retrieve it after the browser
   // restarts.
   EXPECT_EQ(kHeartRateUUIDString,
-            content::EvalJs(web_contents_, R"((async() => {
+            content::EvalJs(web_contents_.get(), R"((async() => {
           try {
             let device = await navigator.bluetooth.requestDevice({
               filters: [{name: 'Test Device', services: ['heart_rate']}]});
@@ -948,7 +965,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   // TODO(https://crbug.com/577953): Once there is an API that can return the
   // permitted Web Bluetooth devices, use that API instead.
   EXPECT_EQ(kHeartRateUUIDString,
-            content::EvalJs(web_contents_, R"((async() => {
+            content::EvalJs(web_contents_.get(), R"((async() => {
           try {
             let device = await navigator.bluetooth.requestDevice({
               filters: [{name: 'Test Device'}]});
@@ -967,7 +984,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   SetDeviceToSelect(kDeviceAddress);
 
   // Connect to heart rate device and ensure the GATT service is connected.
-  EXPECT_EQ(kHeartRateUUIDString, content::EvalJs(web_contents_, R"(
+  EXPECT_EQ(kHeartRateUUIDString, content::EvalJs(web_contents_.get(), R"(
     var gatt;
     var gattserverdisconnectedPromise;
 
@@ -999,11 +1016,11 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   context->RevokeObjectPermission(origin, objects.at(0)->value);
 
   // Wait for gattserverdisconnect event.
-  EXPECT_EQ("event fired",
-            content::EvalJs(web_contents_, "gattserverdisconnectedPromise "));
+  EXPECT_EQ("event fired", content::EvalJs(web_contents_.get(),
+                                           "gattserverdisconnectedPromise "));
 
   // Ensure the service is disconnected.
-  EXPECT_THAT(content::EvalJs(web_contents_, R"((async() => {
+  EXPECT_THAT(content::EvalJs(web_contents_.get(), R"((async() => {
       try {
         let service = await gatt.getPrimaryService('heart_rate');
         return service.uuid;
@@ -1023,7 +1040,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
 
   // Request device and watch for advertisements. Record the last seen
   // advertisement's name.
-  EXPECT_EQ("", content::EvalJs(web_contents_, R"(
+  EXPECT_EQ("", content::EvalJs(web_contents_.get(), R"(
     var events_seen = "";
     var first_device_promise;
     (async() => {
@@ -1057,7 +1074,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   AddFakeDevice(kDeviceAddress2);
   SetDeviceToSelect(kDeviceAddress2);
 
-  EXPECT_EQ("", content::EvalJs(web_contents_, R"(
+  EXPECT_EQ("", content::EvalJs(web_contents_.get(), R"(
     var second_device_promise;
     (async() => {
       try {
@@ -1085,7 +1102,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
   adapter_->SimulateDeviceAdvertisementReceived(kDeviceAddress,
                                                 "advertisement_name1");
   EXPECT_EQ("advertisement_name1|",
-            content::EvalJs(web_contents_, "first_device_promise"));
+            content::EvalJs(web_contents_.get(), "first_device_promise"));
 
   // Revoke the permission.
   context->RevokeObjectPermission(origin, first_object_key);
@@ -1102,7 +1119,7 @@ IN_PROC_BROWSER_TEST_F(WebBluetoothTestWithNewPermissionsBackendEnabled,
                                                 "advertisement_name2");
 
   EXPECT_EQ("advertisement_name1|second_device_advertisement_name2",
-            content::EvalJs(web_contents_, "second_device_promise"));
+            content::EvalJs(web_contents_.get(), "second_device_promise"));
 }
 
 class WebBluetoothTestWithNewPermissionsBackendEnabledInPrerendering
@@ -1239,10 +1256,16 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(observer.num_is_connected_to_bluetooth_device_changed(), 1);
   EXPECT_FALSE(observer.last_is_connected_to_bluetooth_device().has_value());
 
+  content::RenderFrameDeletedObserver rfh_observer(
+      GetWebContents()->GetMainFrame());
+
   // Navigates the primary page to the URL.
   prerender_helper()->NavigatePrimaryPage(prerender_url);
   // The page should be activated from the prerendering.
   EXPECT_TRUE(host_observer.was_activated());
+
+  // Wait until the previous RFH to be disposed of.
+  rfh_observer.WaitUntilDeleted();
 
   // During prerendering activation, the connection from the previous
   // RenderFrameHost to Web Bluetooth is closed, while the connection attempt

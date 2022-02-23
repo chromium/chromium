@@ -39,9 +39,9 @@ SyncSessionDurationsMetricsRecorder::SyncSessionDurationsMetricsRecorder(
     : sync_service_(sync_service), identity_manager_(identity_manager) {
   // |sync_service| can be null if sync is disabled by a command line flag.
   if (sync_service_) {
-    sync_observation_.Observe(sync_service_);
+    sync_observation_.Observe(sync_service_.get());
   }
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(identity_manager_.get());
 
   // Since this is created after the profile itself is created, we need to
   // handle the initial state.
@@ -224,7 +224,7 @@ void SyncSessionDurationsMetricsRecorder::LogSigninDuration(
     case FeatureState::UNKNOWN:
       // Since the feature wasn't working for the user if we didn't know its
       // state, log the status as off.
-      FALLTHROUGH;
+      [[fallthrough]];
     case FeatureState::OFF:
       LogDuration("Session.TotalDuration.WithoutAccount", session_length);
       break;
@@ -246,7 +246,7 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
       break;
     case GetFeatureStates(FeatureState::ON, FeatureState::UNKNOWN):
       // Sync engine not initialized yet, default to it being off.
-      FALLTHROUGH;
+      [[fallthrough]];
     case GetFeatureStates(FeatureState::ON, FeatureState::OFF):
       LogDuration("Session.TotalDuration.NotOptedInToSyncWithAccount",
                   session_length);
@@ -257,7 +257,7 @@ void SyncSessionDurationsMetricsRecorder::LogSyncAndAccountDuration(
       break;
     case GetFeatureStates(FeatureState::OFF, FeatureState::UNKNOWN):
       // Sync engine not initialized yet, default to it being off.
-      FALLTHROUGH;
+      [[fallthrough]];
     case GetFeatureStates(FeatureState::OFF, FeatureState::OFF):
       LogDuration("Session.TotalDuration.NotOptedInToSyncWithoutAccount",
                   session_length);

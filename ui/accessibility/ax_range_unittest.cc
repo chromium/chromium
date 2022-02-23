@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -97,7 +98,7 @@ class TestAXRangeScreenRectDelegate : public AXRangeRectDelegate {
   }
 
  private:
-  TestAXTreeManager* const tree_manager_;
+  const raw_ptr<TestAXTreeManager> tree_manager_;
 };
 
 class AXRangeTest : public ::testing::Test, public TestAXTreeManager {
@@ -858,9 +859,13 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange forward_range(start->Clone(), end->Clone());
-  EXPECT_EQ(ALL_TEXT, forward_range.GetText());
+  EXPECT_EQ(ALL_TEXT, forward_range.GetText(
+                          AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                          AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange backward_range(std::move(end), std::move(start));
-  EXPECT_EQ(ALL_TEXT, backward_range.GetText());
+  EXPECT_EQ(ALL_TEXT, backward_range.GetText(
+                          AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                          AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // Button
   start = AXNodePosition::CreateTextPosition(
@@ -872,9 +877,13 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange button_range(start->Clone(), end->Clone());
-  EXPECT_EQ(BUTTON, button_range.GetText());
+  EXPECT_EQ(BUTTON, button_range.GetText(
+                        AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                        AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange button_range_backward(std::move(end), std::move(start));
-  EXPECT_EQ(BUTTON, button_range_backward.GetText());
+  EXPECT_EQ(BUTTON, button_range_backward.GetText(
+                        AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                        AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // text_field_
   start = AXNodePosition::CreateTextPosition(
@@ -886,9 +895,15 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
   ASSERT_TRUE(start->IsTextPosition());
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange text_field_range(start->Clone(), end->Clone());
-  EXPECT_EQ(TEXT_FIELD, text_field_range.GetText());
+  EXPECT_EQ(TEXT_FIELD,
+            text_field_range.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange text_field_range_backward(std::move(end), std::move(start));
-  EXPECT_EQ(TEXT_FIELD, text_field_range_backward.GetText());
+  EXPECT_EQ(TEXT_FIELD,
+            text_field_range_backward.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // static_text1_
   start = AXNodePosition::CreateTextPosition(
@@ -900,10 +915,14 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange static_text1_range(start->Clone(), end->Clone());
-  EXPECT_EQ(LINE_1, static_text1_range.GetText());
+  EXPECT_EQ(LINE_1, static_text1_range.GetText(
+                        AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                        AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange static_text1_range_backward(std::move(end),
                                                 std::move(start));
-  EXPECT_EQ(LINE_1, static_text1_range_backward.GetText());
+  EXPECT_EQ(LINE_1, static_text1_range_backward.GetText(
+                        AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                        AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // static_text2_
   start = AXNodePosition::CreateTextPosition(
@@ -915,10 +934,14 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange static_text2_range(start->Clone(), end->Clone());
-  EXPECT_EQ(LINE_2, static_text2_range.GetText());
+  EXPECT_EQ(LINE_2, static_text2_range.GetText(
+                        AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                        AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange static_text2_range_backward(std::move(end),
                                                 std::move(start));
-  EXPECT_EQ(LINE_2, static_text2_range_backward.GetText());
+  EXPECT_EQ(LINE_2, static_text2_range_backward.GetText(
+                        AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                        AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // static_text1_ to static_text2_
   std::u16string text_between_text1_start_and_text2_end =
@@ -933,11 +956,15 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange static_text_range(start->Clone(), end->Clone());
   EXPECT_EQ(text_between_text1_start_and_text2_end,
-            static_text_range.GetText());
+            static_text_range.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange static_text_range_backward(std::move(end),
                                                std::move(start));
   EXPECT_EQ(text_between_text1_start_and_text2_end,
-            static_text_range_backward.GetText());
+            static_text_range_backward.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // root_ to static_text2_'s end
   std::u16string text_up_to_text2_end =
@@ -949,11 +976,16 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange root_to_static2_text_range(start->Clone(), end->Clone());
-  EXPECT_EQ(text_up_to_text2_end, root_to_static2_text_range.GetText());
+  EXPECT_EQ(text_up_to_text2_end,
+            root_to_static2_text_range.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange root_to_static2_text_range_backward(std::move(end),
                                                         std::move(start));
   EXPECT_EQ(text_up_to_text2_end,
-            root_to_static2_text_range_backward.GetText());
+            root_to_static2_text_range_backward.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // root_ to static_text2_'s start
   std::u16string text_up_to_text2_start =
@@ -963,11 +995,16 @@ TEST_F(AXRangeTest, GetTextWithWholeObjects) {
   end = AXNodePosition::CreateTreePosition(GetTreeID(), static_text2_.id,
                                            0 /* child_index */);
   TestPositionRange root_to_static2_tree_range(start->Clone(), end->Clone());
-  EXPECT_EQ(text_up_to_text2_start, root_to_static2_tree_range.GetText());
+  EXPECT_EQ(text_up_to_text2_start,
+            root_to_static2_tree_range.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange root_to_static2_tree_range_backward(std::move(end),
                                                         std::move(start));
   EXPECT_EQ(text_up_to_text2_start,
-            root_to_static2_tree_range_backward.GetText());
+            root_to_static2_tree_range_backward.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
 }
 
 TEST_F(AXRangeTest, GetTextWithTextOffsets) {
@@ -983,9 +1020,13 @@ TEST_F(AXRangeTest, GetTextWithTextOffsets) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange forward_range(start->Clone(), end->Clone());
-  EXPECT_EQ(most_text, forward_range.GetText());
+  EXPECT_EQ(most_text, forward_range.GetText(
+                           AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                           AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange backward_range(std::move(end), std::move(start));
-  EXPECT_EQ(most_text, backward_range.GetText());
+  EXPECT_EQ(most_text, backward_range.GetText(
+                           AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                           AXEmbeddedObjectBehavior::kSuppressCharacter));
 
   // root_ to static_text2_'s start with offsets
   std::u16string text_up_to_text2_tree_start =
@@ -997,11 +1038,16 @@ TEST_F(AXRangeTest, GetTextWithTextOffsets) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange root_to_static2_tree_range(start->Clone(), end->Clone());
-  EXPECT_EQ(text_up_to_text2_tree_start, root_to_static2_tree_range.GetText());
+  EXPECT_EQ(text_up_to_text2_tree_start,
+            root_to_static2_tree_range.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
   TestPositionRange root_to_static2_tree_range_backward(std::move(end),
                                                         std::move(start));
   EXPECT_EQ(text_up_to_text2_tree_start,
-            root_to_static2_tree_range_backward.GetText());
+            root_to_static2_tree_range_backward.GetText(
+                AXTextConcatenationBehavior::kWithoutParagraphBreaks,
+                AXEmbeddedObjectBehavior::kSuppressCharacter));
 }
 
 TEST_F(AXRangeTest, GetTextWithEmptyRanges) {
@@ -1062,6 +1108,15 @@ TEST_F(AXRangeTest, GetTextWithEmptyRanges) {
 }
 
 TEST_F(AXRangeTest, GetTextAddingNewlineBetweenParagraphs) {
+  // There are three newlines between the button and the text field. The first
+  // two are emitted because there are two empty checkboxes following the button
+  // on the same line, i.e. two checkboxes without any text contents. Each empty
+  // object forms a paragraph boundary, so that such an object will be easily
+  // discernible by a screen reader user. The third newline is caused by the
+  // fact that the text field is on the next line.
+  const std::u16string button_end_to_line1_start =
+      NEWLINE.substr().append(NEWLINE).append(NEWLINE);
+
   TestPositionInstance button_start = AXNodePosition::CreateTextPosition(
       GetTreeID(), button_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
@@ -1099,29 +1154,38 @@ TEST_F(AXRangeTest, GetTextAddingNewlineBetweenParagraphs) {
     TestPositionRange backward_test_range(std::move(range_end),
                                           std::move(range_start));
     size_t appended_newlines_count = 0;
-    EXPECT_EQ(expected_text, forward_test_range.GetText(
-                                 AXTextConcatenationBehavior::kAsInnerText, -1,
-                                 false, &appended_newlines_count));
+    EXPECT_EQ(expected_text,
+              forward_test_range.GetText(
+                  AXTextConcatenationBehavior::kWithParagraphBreaks,
+                  g_ax_embedded_object_behavior, -1, false,
+                  &appended_newlines_count));
     EXPECT_EQ(expected_appended_newlines_count, appended_newlines_count);
-    EXPECT_EQ(expected_text, backward_test_range.GetText(
-                                 AXTextConcatenationBehavior::kAsInnerText, -1,
-                                 false, &appended_newlines_count));
+    EXPECT_EQ(expected_text,
+              backward_test_range.GetText(
+                  AXTextConcatenationBehavior::kWithParagraphBreaks,
+                  g_ax_embedded_object_behavior, -1, false,
+                  &appended_newlines_count));
     EXPECT_EQ(expected_appended_newlines_count, appended_newlines_count);
   };
 
   std::u16string button_start_to_line1_end =
-      BUTTON.substr().append(NEWLINE).append(LINE_1);
+      BUTTON.substr().append(button_end_to_line1_start).append(LINE_1);
   TestGetTextForRange(button_start->Clone(), line1_end->Clone(),
-                      button_start_to_line1_end, 1);
-  std::u16string button_start_to_line1_start = BUTTON.substr().append(NEWLINE);
+                      button_start_to_line1_end,
+                      /* expected_appended_newlines_count */ 3);
+  std::u16string button_start_to_line1_start =
+      BUTTON.substr().append(button_end_to_line1_start);
   TestGetTextForRange(button_start->Clone(), line1_start->Clone(),
-                      button_start_to_line1_start, 1);
-  std::u16string button_end_to_line1_end = NEWLINE.substr().append(LINE_1);
+                      button_start_to_line1_start,
+                      /* expected_appended_newlines_count */ 3);
+  std::u16string button_end_to_line1_end =
+      button_end_to_line1_start.substr().append(LINE_1);
   TestGetTextForRange(button_end->Clone(), line1_end->Clone(),
-                      button_end_to_line1_end, 1);
-  std::u16string button_end_to_line1_start = NEWLINE;
+                      button_end_to_line1_end,
+                      /* expected_appended_newlines_count */ 3);
   TestGetTextForRange(button_end->Clone(), line1_start->Clone(),
-                      button_end_to_line1_start, 1);
+                      button_end_to_line1_start,
+                      /* expected_appended_newlines_count */ 3);
 
   std::u16string line2_start_to_after_line_end =
       LINE_2.substr().append(NEWLINE).append(AFTER_LINE);
@@ -1139,15 +1203,18 @@ TEST_F(AXRangeTest, GetTextAddingNewlineBetweenParagraphs) {
   TestGetTextForRange(line2_end->Clone(), after_line_start->Clone(),
                       line2_end_to_after_line_start, 0);
 
-  std::u16string all_text =
-      BUTTON.substr().append(NEWLINE).append(TEXT_FIELD).append(AFTER_LINE);
+  std::u16string all_text = BUTTON.substr()
+                                .append(button_end_to_line1_start)
+                                .append(TEXT_FIELD)
+                                .append(AFTER_LINE);
   TestPositionInstance start = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_.id, 0 /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
   TestPositionInstance end = AXNodePosition::CreateTextPosition(
       GetTreeID(), root_.id, ALL_TEXT.length() /* text_offset */,
       ax::mojom::TextAffinity::kDownstream);
-  TestGetTextForRange(std::move(start), std::move(end), all_text, 1);
+  TestGetTextForRange(std::move(start), std::move(end), all_text,
+                      /* expected_appended_newlines_count */ 3);
 }
 
 TEST_F(AXRangeTest, GetTextWithMaxCount) {
@@ -1159,16 +1226,22 @@ TEST_F(AXRangeTest, GetTextWithMaxCount) {
       ax::mojom::TextAffinity::kDownstream);
 
   TestPositionRange test_range(line1_start->Clone(), line2_end->Clone());
-  EXPECT_EQ(LINE_1.substr(0, 2),
-            test_range.GetText(AXTextConcatenationBehavior::kAsInnerText, 2));
+  EXPECT_EQ(
+      LINE_1.substr(0, 2),
+      test_range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
+                         g_ax_embedded_object_behavior, 2));
 
   // Test the case where an appended newline falls right at max_count.
-  EXPECT_EQ(LINE_1.substr().append(NEWLINE),
-            test_range.GetText(AXTextConcatenationBehavior::kAsInnerText, 7));
+  EXPECT_EQ(
+      LINE_1.substr().append(NEWLINE),
+      test_range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
+                         g_ax_embedded_object_behavior, 7));
 
   // Test passing -1 for max_count.
-  EXPECT_EQ(LINE_1.substr().append(NEWLINE).append(LINE_2),
-            test_range.GetText(AXTextConcatenationBehavior::kAsInnerText, -1));
+  EXPECT_EQ(
+      LINE_1.substr().append(NEWLINE).append(LINE_2),
+      test_range.GetText(AXTextConcatenationBehavior::kWithParagraphBreaks,
+                         g_ax_embedded_object_behavior, -1));
 }
 
 TEST_F(AXRangeTest, GetTextWithList) {
@@ -1302,11 +1375,11 @@ TEST_F(AXRangeTest, GetTextWithList) {
       ax::mojom::TextAffinity::kDownstream);
   ASSERT_TRUE(end->IsTextPosition());
   TestPositionRange forward_range(start->Clone(), end->Clone());
-  EXPECT_EQ(kAllText,
-            forward_range.GetText(AXTextConcatenationBehavior::kAsInnerText));
+  EXPECT_EQ(kAllText, forward_range.GetText(
+                          AXTextConcatenationBehavior::kWithParagraphBreaks));
   TestPositionRange backward_range(std::move(end), std::move(start));
-  EXPECT_EQ(kAllText,
-            backward_range.GetText(AXTextConcatenationBehavior::kAsInnerText));
+  EXPECT_EQ(kAllText, backward_range.GetText(
+                          AXTextConcatenationBehavior::kWithParagraphBreaks));
 }
 
 TEST_F(AXRangeTest, GetRects) {

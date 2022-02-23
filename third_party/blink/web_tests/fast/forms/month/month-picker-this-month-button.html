@@ -3,6 +3,8 @@
 <head>
 <script src="../../../resources/testharness.js"></script>
 <script src="../../../resources/testharnessreport.js"></script>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
 <script src="../resources/common.js"></script>
 <script src="../resources/picker-common.js"></script>
 <script src="../calendar-picker/resources/calendar-picker-common.js"></script>
@@ -15,7 +17,7 @@
 
 promise_test(() => {
   let monthElement = document.getElementById('month0');
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     clickThisMonthButton();
 
@@ -32,7 +34,7 @@ promise_test(() => {
 
 promise_test(() => {
   let monthElement = document.getElementById('month1');
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     eventSender.keyDown('Tab'); // Tab over to the 'Clear' button
     eventSender.keyDown('Tab'); // Tab over to the 'This month' button
@@ -51,7 +53,7 @@ promise_test(() => {
 
 promise_test(() => {
   let monthElement = document.getElementById('month2');
-  return openPickerWithPromise(monthElement)
+  return openPicker(monthElement)
   .then(() => {
     clickThisMonthButton();
 

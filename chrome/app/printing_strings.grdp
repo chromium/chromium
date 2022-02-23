@@ -292,7 +292,7 @@
     <message name="IDS_PRINT_PREVIEW_MANAGED_SETTINGS_TEXT" desc="Text shown when hovering over the enterprise managed icon in the header">
       These settings are enforced by your administrator
     </message>
-    <if expr="chromeos or lacros">
+    <if expr="chromeos_ash or chromeos_lacros">
       <message name="IDS_PRINT_PREVIEW_PRINT_TO_GOOGLE_DRIVE"
                desc="Option shown on printer drop-down list for saving previewed document to Google Drive.">
         Save to Google Drive
@@ -391,20 +391,4 @@
   <message name="IDS_PRINT_SPOOL_FAILED_ERROR_TEXT" desc="Text in a messagebox when printing fails because of printer issues.">
     Something went wrong when trying to print.  Please check your printer and try again.
   </message>
-
-  <!-- Cloud Print proxy strings -->
-  <if expr="not is_android">
-    <message name="IDS_CLOUD_PRINT_REGISTER_PRINTER_FAILED" desc="Status message to be sent to the server when we failed to retrieve information about a printer to register.">
-      An error occurred while retrieving printer capabilities for printer <ph name="PRINTER_NAME">$1<ex>HP Laserjet 7900</ex></ph>. This printer could not be registered with <ph name="CLOUD_PRINT_NAME">$2<ex>Google Cloud Print</ex></ph>.
-    </message>
-    <message name="IDS_CLOUD_PRINT_ZOMBIE_PRINTER" desc="Status message to be sent to the server when we get a notification for a printer that we can't find locally.">
-      Received a notification for an unknown printer.
-    </message>
-    <message name="IDS_CLOUD_PRINT_ENUM_FAILED" desc="Status message to be sent to the Cloud Print server when enumerating printers failed.">
-      There was a problem listing printers. Some of your printers may not have registered successfully with <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph>.
-    </message>
-    <message name="IDS_SERVICE_CRASH_RECOVERY_CONTENT" desc="Text content telling the user the service process has crashed.">
-      The <ph name="CLOUD_PRINT_NAME">$1<ex>Google Cloud Print</ex></ph> connector process has crashed. Restart?
-    </message>
-  </if>
 </grit-part>

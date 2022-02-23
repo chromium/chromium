@@ -13,6 +13,7 @@ import("//build/util/lastchange.gni")
 import("//build/util/process_version.gni")
 import("//build/util/version.gni")
 import("//components/nacl/features.gni")
+import("//components/optimization_guide/features.gni")
 import("//third_party/angle/gni/angle.gni")
 import("//third_party/widevine/cdm/widevine.gni")
 import("//ui/gl/features.gni")
@@ -77,6 +78,11 @@ if (enable_swiftshader) {
     "$root_out_dir/swiftshader_libGLESv2.so",
     "$root_out_dir/libvk_swiftshader.so",
   ]
+}
+
+if (build_with_internal_optimization_guide) {
+  packaging_files_shlibs +=
+      [ "$root_out_dir/liboptimization_guide_internal.so" ]
 }
 
 packaging_files_binaries = packaging_files_executables + packaging_files_shlibs
@@ -178,9 +184,69 @@ action("merge_rpm_dependencies") {
 
 strip_binary("strip_chrome_binary") {
   binary_input = "$root_out_dir/chrome"
-  symbol_output = "$root_out_dir/chrome.debug"
-  stripped_binary_output = "$root_out_dir/chrome.stripped"
   deps = [ "//chrome" ]
+}
+
+strip_binary("strip_chrome_crashpad_handler") {
+  binary_input = "$root_out_dir/chrome_crashpad_handler"
+  deps = [ "//components/crash/core/app:chrome_crashpad_handler" ]
+}
+
+strip_binary("strip_chrome_sandbox") {
+  binary_input = "$root_out_dir/chrome_sandbox"
+  deps = [ "//sandbox/linux:chrome_sandbox" ]
+}
+
+strip_binary("strip_libEGL_shlib") {
+  binary_input = "$root_out_dir/libEGL.so"
+  deps = [ "//third_party/angle:libEGL" ]
+}
+
+strip_binary("strip_libGLESv2_shlib") {
+  binary_input = "$root_out_dir/libGLESv2.so"
+  deps = [ "//third_party/angle:libGLESv2" ]
+}
+
+strip_binary("strip_libvulkan_shlib") {
+  binary_input = "$root_out_dir/libvulkan.so.1"
+  deps = [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+}
+
+strip_binary("strip_swiftshader_libEGL_shlib") {
+  binary_input = "$root_out_dir/swiftshader/libEGL.so"
+  deps = [ "//third_party/swiftshader/src/OpenGL/libEGL:swiftshader_libEGL" ]
+}
+
+strip_binary("strip_swiftshader_libGLESv2_shlib") {
+  binary_input = "$root_out_dir/swiftshader/libGLESv2.so"
+  deps =
+      [ "//third_party/swiftshader/src/OpenGL/libGLESv2:swiftshader_libGLESv2" ]
+}
+
+strip_binary("strip_libvk_swiftshader.shlib") {
+  binary_input = "$root_out_dir/libvk_swiftshader.so"
+  deps = [ "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan" ]
+}
+
+if (enable_nacl) {
+  strip_binary("strip_nacl_helper") {
+    binary_input = "$root_out_dir/nacl_helper"
+    deps = [ "//components/nacl/loader:nacl_helper" ]
+  }
+
+  strip_binary("strip_nacl_helper_bootstrap") {
+    binary_input = "$root_out_dir/nacl_helper_bootstrap"
+    deps = [ "//native_client/src/trusted/service_runtime/linux:bootstrap" ]
+  }
+}
+
+if (build_with_internal_optimization_guide) {
+  strip_binary("strip_optimization_guide") {
+    binary_input = "$root_out_dir/liboptimization_guide_internal.so"
+    deps = [
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
+  }
 }
 
 # This target builds all "normal" Linux installers.  You must set
@@ -252,33 +318,33 @@ copy("theme_files") {
   visibility = [ ":*" ]
   sources = [
     "$branding_dir/BRANDING",
+    "$branding_dir/linux/product_logo_128.png",
+    "$branding_dir/linux/product_logo_24.png",
+    "$branding_dir/linux/product_logo_256.png",
     "$branding_dir/linux/product_logo_32.xpm",
-    "$branding_dir/product_logo_128.png",
-    "$branding_dir/product_logo_24.png",
-    "$branding_dir/product_logo_256.png",
-    "$branding_dir/product_logo_48.png",
-    "$branding_dir/product_logo_64.png",
-    "$branding_dir_100/product_logo_16.png",
-    "$branding_dir_100/product_logo_32.png",
+    "$branding_dir/linux/product_logo_48.png",
+    "$branding_dir/linux/product_logo_64.png",
+    "$branding_dir_100/linux/product_logo_16.png",
+    "$branding_dir_100/linux/product_logo_32.png",
   ]
   if (is_chrome_branded) {
     sources += [
+      "$branding_dir/linux/product_logo_128_beta.png",
+      "$branding_dir/linux/product_logo_128_dev.png",
+      "$branding_dir/linux/product_logo_24_beta.png",
+      "$branding_dir/linux/product_logo_24_dev.png",
+      "$branding_dir/linux/product_logo_256_beta.png",
+      "$branding_dir/linux/product_logo_256_dev.png",
       "$branding_dir/linux/product_logo_32_beta.xpm",
       "$branding_dir/linux/product_logo_32_dev.xpm",
-      "$branding_dir/product_logo_128_beta.png",
-      "$branding_dir/product_logo_128_dev.png",
-      "$branding_dir/product_logo_24_beta.png",
-      "$branding_dir/product_logo_24_dev.png",
-      "$branding_dir/product_logo_256_beta.png",
-      "$branding_dir/product_logo_256_dev.png",
-      "$branding_dir/product_logo_48_beta.png",
-      "$branding_dir/product_logo_48_dev.png",
-      "$branding_dir/product_logo_64_beta.png",
-      "$branding_dir/product_logo_64_dev.png",
-      "$branding_dir_100/product_logo_16_beta.png",
-      "$branding_dir_100/product_logo_16_dev.png",
-      "$branding_dir_100/product_logo_32_beta.png",
-      "$branding_dir_100/product_logo_32_dev.png",
+      "$branding_dir/linux/product_logo_48_beta.png",
+      "$branding_dir/linux/product_logo_48_dev.png",
+      "$branding_dir/linux/product_logo_64_beta.png",
+      "$branding_dir/linux/product_logo_64_dev.png",
+      "$branding_dir_100/linux/product_logo_16_beta.png",
+      "$branding_dir_100/linux/product_logo_16_dev.png",
+      "$branding_dir_100/linux/product_logo_32_beta.png",
+      "$branding_dir_100/linux/product_logo_32_dev.png",
     ]
   }
   outputs = [ "$root_out_dir/installer/theme/{{source_file_part}}" ]
@@ -318,6 +384,8 @@ group("installer_deps") {
     ":deb_packaging_files",
     ":save_build_info",
     ":strip_chrome_binary",
+    ":strip_chrome_crashpad_handler",
+    ":strip_chrome_sandbox",
     ":theme_files",
     "//chrome",
     "//chrome:packed_resources",
@@ -327,6 +395,8 @@ group("installer_deps") {
   ]
   if (enable_nacl) {
     public_deps += [
+      ":strip_nacl_helper",
+      ":strip_nacl_helper_bootstrap",
       "//components/nacl/loader:nacl_helper",
 
       # These are data_deps of nacl_helper, but that is not enough,
@@ -340,15 +410,23 @@ group("installer_deps") {
   }
   if (use_egl) {
     public_deps += [
+      ":strip_libEGL_shlib",
+      ":strip_libGLESv2_shlib",
       "//third_party/angle:libEGL",
       "//third_party/angle:libGLESv2",
     ]
     if (angle_shared_libvulkan && !is_chromeos) {
-      public_deps += [ "//third_party/vulkan-deps/vulkan-loader/src:libvulkan" ]
+      public_deps += [
+        ":strip_libvulkan_shlib",
+        "//third_party/vulkan-deps/vulkan-loader/src:libvulkan",
+      ]
     }
   }
   if (enable_swiftshader) {
     public_deps += [
+      ":strip_libvk_swiftshader.shlib",
+      ":strip_swiftshader_libEGL_shlib",
+      ":strip_swiftshader_libGLESv2_shlib",
       ":swiftshader_libs",
       "//third_party/swiftshader/src/Vulkan:icd_file",
       "//third_party/swiftshader/src/Vulkan:swiftshader_libvulkan",
@@ -356,6 +434,12 @@ group("installer_deps") {
   }
   if (!is_chromeos_ash) {
     public_deps += [ ":rpm_packaging_files" ]
+  }
+  if (build_with_internal_optimization_guide) {
+    public_deps += [
+      ":strip_optimization_guide",
+      "//components/optimization_guide/internal:optimization_guide_internal",
+    ]
   }
 }
 

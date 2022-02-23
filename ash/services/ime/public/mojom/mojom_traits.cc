@@ -10,15 +10,15 @@ namespace mojo {
 namespace {
 
 using CompletionCandidateDataView =
-    chromeos::ime::mojom::CompletionCandidateDataView;
-using SuggestionMode = chromeos::ime::mojom::SuggestionMode;
-using SuggestionType = chromeos::ime::mojom::SuggestionType;
+    ash::ime::mojom::CompletionCandidateDataView;
+using SuggestionMode = ash::ime::mojom::SuggestionMode;
+using SuggestionType = ash::ime::mojom::SuggestionType;
 using SuggestionCandidateDataView =
-    chromeos::ime::mojom::SuggestionCandidateDataView;
-using TextCompletionCandidate = chromeos::ime::TextCompletionCandidate;
-using TextSuggestionMode = chromeos::ime::TextSuggestionMode;
-using TextSuggestionType = chromeos::ime::TextSuggestionType;
-using TextSuggestion = chromeos::ime::TextSuggestion;
+    ash::ime::mojom::SuggestionCandidateDataView;
+using TextCompletionCandidate = ash::ime::TextCompletionCandidate;
+using TextSuggestionMode = ash::ime::TextSuggestionMode;
+using TextSuggestionType = ash::ime::TextSuggestionType;
+using TextSuggestion = ash::ime::TextSuggestion;
 
 }  // namespace
 

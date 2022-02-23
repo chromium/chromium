@@ -6,6 +6,7 @@
 #define CHROME_BROWSER_UI_VIEWS_SAFE_BROWSING_TAILORED_SECURITY_UNCONSENTED_MODAL_H_
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace content {
@@ -18,8 +19,6 @@ namespace safe_browsing {
 
 // A tab modal dialog that is shown when the user's tailored security bit
 // changes and the user isn't consented to sync.
-//
-// TODO(crbug/1257622): Add profile icon as seen in mocks.
 class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
  public:
   METADATA_HEADER(TailoredSecurityUnconsentedModal);
@@ -39,7 +38,10 @@ class TailoredSecurityUnconsentedModal : public views::DialogDelegateView {
   bool ShouldShowCloseButton() const override;
 
  private:
-  content::WebContents* web_contents_;
+  // views::DialogDelegateView:
+  void AddedToWidget() override;
+
+  raw_ptr<content::WebContents> web_contents_;
 };
 
 }  // namespace safe_browsing

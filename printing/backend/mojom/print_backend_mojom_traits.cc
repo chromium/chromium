@@ -7,7 +7,7 @@
 #include <map>
 
 #include "base/logging.h"
-#include "build/chromeos_buildflags.h"
+#include "build/build_config.h"
 #include "ui/gfx/geometry/mojom/geometry.mojom-shared.h"
 #include "ui/gfx/geometry/mojom/geometry_mojom_traits.h"
 
@@ -39,7 +39,7 @@ struct less<::printing::PrinterSemanticCapsAndDefaults::Paper> {
   }
 };
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 template <>
 struct less<::printing::AdvancedCapability> {
   bool operator()(const ::printing::AdvancedCapability& lhs,
@@ -49,7 +49,7 @@ struct less<::printing::AdvancedCapability> {
     return lhs.display_name < rhs.display_name;
   }
 };
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace std
 
@@ -115,7 +115,7 @@ bool StructTraits<printing::mojom::PaperDataView,
          data.ReadVendorId(&out->vendor_id) && data.ReadSizeUm(&out->size_um);
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 // static
 printing::mojom::AdvancedCapabilityType
 EnumTraits<printing::mojom::AdvancedCapabilityType,
@@ -177,7 +177,7 @@ bool StructTraits<printing::mojom::AdvancedCapabilityDataView,
          data.ReadDefaultValue(&out->default_value) &&
          data.ReadValues(&out->values);
 }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 // static
 bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
@@ -201,11 +201,11 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   out->pin_supported = data.pin_supported();
   if (!data.ReadAdvancedCapabilities(&out->advanced_capabilities))
     return false;
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   // Extra validity checks.
 
@@ -229,7 +229,7 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     return false;
   }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   DuplicateChecker<printing::AdvancedCapability>
       advanced_capabilities_dup_checker;
   if (advanced_capabilities_dup_checker.HasDuplicates(
@@ -237,7 +237,7 @@ bool StructTraits<printing::mojom::PrinterSemanticCapsAndDefaultsDataView,
     DLOG(ERROR) << "Duplicate advanced_capabilities detected.";
     return false;
   }
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
   return true;
 }

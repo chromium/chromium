@@ -26,7 +26,7 @@ GetSortedMetadataWithoutFavicons(const sync_sessions::SyncedSession* session) {
     for (const std::unique_ptr<sessions::SessionTab>& tab : window.tabs) {
       int selected_index = tab->normalized_navigation_index();
 
-      if (selected_index + 1 > tab->navigations.size() ||
+      if (selected_index + 1 > static_cast<int>(tab->navigations.size()) ||
           tab->navigations.empty()) {
         continue;
       }

@@ -4,7 +4,6 @@
 
 #include "services/device/wake_lock/power_save_blocker/power_save_blocker.h"
 
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 
 namespace device {

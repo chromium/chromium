@@ -7,6 +7,7 @@
 
 #include <memory>
 
+#include "base/memory/raw_ptr.h"
 #include "base/threading/thread.h"
 #include "components/viz/service/viz_service_export.h"
 #include "gpu/command_buffer/service/memory_tracking.h"
@@ -15,6 +16,9 @@
 
 namespace gpu {
 class GpuChannelManager;
+class VulkanImplementation;
+class VulkanDeviceQueue;
+class VulkanContextProvider;
 }  // namespace gpu
 
 namespace viz {
@@ -25,6 +29,8 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
  public:
   static std::unique_ptr<CompositorGpuThread> Create(
       gpu::GpuChannelManager* gpu_channel_manager,
+      gpu::VulkanImplementation* vulkan_implementation,
+      gpu::VulkanDeviceQueue* device_queue,
       bool enable_watchdog);
 
   // Disallow copy and assign.
@@ -35,6 +41,10 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
 
   scoped_refptr<gpu::SharedContextState> shared_context_state() const {
     return shared_context_state_;
+  }
+
+  VulkanContextProvider* vulkan_context_provider() const {
+    return vulkan_context_provider_.get();
   }
 
   // base::Thread implementation.
@@ -52,14 +62,18 @@ class VIZ_SERVICE_EXPORT CompositorGpuThread
   void OnForegrounded();
 
  private:
-  CompositorGpuThread(gpu::GpuChannelManager* gpu_channel_manager,
-                      bool enable_watchdog);
+  CompositorGpuThread(
+      gpu::GpuChannelManager* gpu_channel_manager,
+      scoped_refptr<VulkanContextProvider> vulkan_context_provider,
+      bool enable_watchdog);
 
   bool Initialize();
 
-  gpu::GpuChannelManager* gpu_channel_manager_;
+  raw_ptr<gpu::GpuChannelManager> gpu_channel_manager_;
   const bool enable_watchdog_;
   bool init_succeded_ = false;
+
+  scoped_refptr<VulkanContextProvider> vulkan_context_provider_;
 
   // WatchdogThread to monitor CompositorGpuThread. Ensure that the members
   // which needs to be monitored by |watchdog_thread_| should be destroyed

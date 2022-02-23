@@ -21,6 +21,14 @@ namespace wayland {
 
 namespace {
 
+// Implements a PointerConstraintDelegate in terms of the zwp_locked_pointer
+// Wayland protocol.
+//
+// Lifetime note: The underlying Wayland protocol gives control over this
+// object's lifetime to the client. However, it's possible that its
+// dependencies could be destroyed prior to the client destroying it.
+// At this point we consider the object "defunct" and its |surface_| member
+// to be potentially dangling. |pointer_| is correctly nulled when appropriate.
 class WaylandPointerConstraintDelegate : public PointerConstraintDelegate {
  public:
   WaylandPointerConstraintDelegate(wl_resource* constraint_resource,
@@ -30,43 +38,56 @@ class WaylandPointerConstraintDelegate : public PointerConstraintDelegate {
                                    uint32_t lifetime)
       : constraint_resource_(constraint_resource),
         pointer_(pointer),
-        surface_(surface) {
-    if (pointer->ConstrainPointer(this))
-      EnableConstraint();
-    else
-      pointer_ = nullptr;
+        surface_(surface),
+        is_persistent_(lifetime ==
+                       ZWP_POINTER_CONSTRAINTS_V1_LIFETIME_PERSISTENT) {
+    pointer->ConstrainPointer(this);
   }
 
   ~WaylandPointerConstraintDelegate() override {
-    if (pointer_)
-      pointer_->UnconstrainPointer();
+    if (pointer_) {
+      pointer_->OnPointerConstraintDelegateDestroying(this);
+      pointer_ = nullptr;
+    }
   }
 
-  void OnConstraintBroken() override {
-    DisableConstraint();
-    pointer_ = nullptr;
+  // PointerConstraintDelegate::
+  void OnConstraintActivated() override { SendLocked(); }
+  void OnAlreadyConstrained() override {
+    wl_resource_post_error(
+        constraint_resource_,
+        ZWP_POINTER_CONSTRAINTS_V1_ERROR_ALREADY_CONSTRAINED,
+        "A pointer constraint was already requested for this wl_pointer "
+        "on this wl_surface.");
   }
-
+  void OnConstraintBroken() override { SendUnlocked(); }
+  bool IsPersistent() override { return is_persistent_; }
   Surface* GetConstrainedSurface() override { return surface_; }
+  void OnDefunct() override { pointer_ = nullptr; }
 
  private:
-  void EnableConstraint() {
+  // Inform the client of the state of the lock.
+  void SendLocked() {
+    VLOG(1) << "send_locked(" << constraint_resource_ << ")";
     zwp_locked_pointer_v1_send_locked(constraint_resource_);
   }
 
-  void DisableConstraint() {
+  void SendUnlocked() {
+    VLOG(1) << "send_unlocked(" << constraint_resource_ << ")";
     zwp_locked_pointer_v1_send_unlocked(constraint_resource_);
   }
 
-  wl_resource* constraint_resource_;
+  wl_resource* const constraint_resource_;
   Pointer* pointer_;
-  Surface* surface_;
+  Surface* const surface_;
+  bool is_persistent_;
 };
 
 ////////////////////////////////////////////////////////////////////////////////
 // zwp_locked_pointer
 
 void locked_pointer_destroy(wl_client* client, wl_resource* resource) {
+  VLOG(1) << "locked_pointer_destroy(" << client << ", " << resource << ")";
   wl_resource_destroy(resource);
 }
 
@@ -110,6 +131,8 @@ const struct zwp_confined_pointer_v1_interface confined_pointer_implementation =
 // zwp_pointer_constraints
 
 void pointer_constraints_destroy(wl_client* client, wl_resource* resource) {
+  VLOG(1) << "pointer_constraints_destroy(" << client << ", " << resource
+          << ")";
   wl_resource_destroy(resource);
 }
 
@@ -124,6 +147,13 @@ void pointer_constraints_lock_pointer(wl_client* client,
   Pointer* pointer = GetUserDataAs<Pointer>(pointer_resource);
   SkRegion* region =
       region_resource ? GetUserDataAs<SkRegion>(region_resource) : nullptr;
+
+  VLOG(1) << "lock_pointer(" << client << ", " << resource << "; Surface "
+          << surface << " @ window '"
+          << (surface && surface->window() ? surface->window()->GetTitle()
+                                           : base::EmptyString16())
+          << "', "
+          << "Pointer " << pointer << ")";
 
   wl_resource* locked_pointer_resource =
       wl_resource_create(client, &zwp_locked_pointer_v1_interface, 1, id);
@@ -143,8 +173,8 @@ void pointer_constraints_confine_pointer(wl_client* client,
   // Confined pointer is not currently supported.
   wl_resource* confined_pointer_resource =
       wl_resource_create(client, &zwp_confined_pointer_v1_interface, 1, id);
-  SetImplementation<WaylandPointerConstraintDelegate>(
-      confined_pointer_resource, &confined_pointer_implementation, nullptr);
+  SetImplementation<int>(confined_pointer_resource,
+                         &confined_pointer_implementation, nullptr);
 }
 
 const struct zwp_pointer_constraints_v1_interface

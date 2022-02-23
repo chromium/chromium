@@ -13,12 +13,16 @@ import '../settings_shared_css.js';
 
 import {assert} from '//resources/js/assert.m.js';
 import {WebUIListenerMixin} from '//resources/js/web_ui_listener_mixin.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
+// <if expr="chromeos_ash or chromeos_lacros">
 import {loadTimeData} from '../i18n_setup.js';
+// </if>
+
 import {Route, Router} from '../router.js';
 
 import {StatusAction, SyncBrowserProxy, SyncBrowserProxyImpl, SyncPrefs, syncPrefsIndividualDataTypes, SyncStatus} from './sync_browser_proxy.js';
+import {getTemplate} from './sync_controls.html.js';
 
 /**
  * Names of the radio buttons which allow the user to choose their data sync
@@ -36,13 +40,14 @@ enum RadioButtonNames {
 
 const SettingsSyncControlsElementBase = WebUIListenerMixin(PolymerElement);
 
-class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
+export class SettingsSyncControlsElement extends
+    SettingsSyncControlsElementBase {
   static get is() {
     return 'settings-sync-controls';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -100,7 +105,7 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
   }
 
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   private shouldShowLacrosSideBySideWarning_(): boolean {
     return loadTimeData.getBoolean('shouldShowLacrosSideBySideWarning');
   }
@@ -217,6 +222,12 @@ class SettingsSyncControlsElement extends SettingsSyncControlsElementBase {
         this.syncStatus.statusAction !== StatusAction.ENTER_PASSPHRASE &&
         this.syncStatus.statusAction !==
         StatusAction.RETRIEVE_TRUSTED_VAULT_KEYS;
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-sync-controls': SettingsSyncControlsElement;
   }
 }
 

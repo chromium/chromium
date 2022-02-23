@@ -4,12 +4,14 @@
 
 #include <algorithm>
 
+#include "base/memory/raw_ptr.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/ui/extensions/extension_install_ui_default.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
 #include "content/public/test/browser_test.h"
+#include "extensions/common/api/extension_action/action_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/manifest.h"
 #include "extensions/common/manifest_constants.h"
@@ -33,10 +35,9 @@ class ExtensionInstalledBubbleViewsBrowserTest
     extensions::ExtensionBuilder builder(type);
 
     if (type == "BrowserAction") {
-      builder.SetAction(
-          extensions::ExtensionBuilder::ActionType::BROWSER_ACTION);
+      builder.SetAction(extensions::ActionInfo::TYPE_BROWSER);
     } else if (type == "PageAction") {
-      builder.SetAction(extensions::ExtensionBuilder::ActionType::PAGE_ACTION);
+      builder.SetAction(extensions::ActionInfo::TYPE_PAGE);
     }
 
     if (type == "SignInPromo" || type == "NoAction") {
@@ -47,7 +48,8 @@ class ExtensionInstalledBubbleViewsBrowserTest
 
     if (type == "Omnibox") {
       auto extra_keys = std::make_unique<base::DictionaryValue>();
-      extra_keys->SetString(extensions::manifest_keys::kOmniboxKeyword, "foo");
+      extra_keys->SetStringPath(extensions::manifest_keys::kOmniboxKeyword,
+                                "foo");
       builder.MergeManifest(std::move(extra_keys));
     }
 
@@ -56,7 +58,7 @@ class ExtensionInstalledBubbleViewsBrowserTest
     return extension;
   }
 
-  views::Widget* bubble_widget_;
+  raw_ptr<views::Widget> bubble_widget_;
 };
 
 void ExtensionInstalledBubbleViewsBrowserTest::ShowUi(const std::string& name) {

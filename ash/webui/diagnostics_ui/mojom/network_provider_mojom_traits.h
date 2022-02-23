@@ -10,10 +10,9 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 
 namespace mojo {
-namespace {
+
 namespace diagnostics_mojom = ::ash::diagnostics::mojom;
 namespace network_config_mojom = ::chromeos::network_config::mojom;
-}  // namespace
 
 template <>
 struct EnumTraits<diagnostics_mojom::SecurityType,

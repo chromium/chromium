@@ -6,7 +6,7 @@
 
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_list.h"
-#include "chrome/browser/ui/views/accessibility/non_accessible_image_view.h"
+#include "chrome/browser/ui/views/accessibility/theme_tracking_non_accessible_image_view.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/grit/generated_resources.h"
@@ -87,9 +87,13 @@ IncognitoClearBrowsingDataDialog::IncognitoClearBrowsingDataDialog(
       views::DISTANCE_BUBBLE_PREFERRED_WIDTH));
 
   // Header art
-  auto header_view = std::make_unique<NonAccessibleImageView>();
-  header_view_ = header_view.get();
-  AddChildView(std::move(header_view));
+  ui::ResourceBundle& bundle = ui::ResourceBundle::GetSharedInstance();
+  auto image_view = std::make_unique<ThemeTrackingNonAccessibleImageView>(
+      *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT),
+      *bundle.GetImageSkiaNamed(IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK),
+      base::BindRepeating(&views::BubbleDialogDelegate::GetBackgroundColor,
+                          base::Unretained(this)));
+  AddChildView(std::move(image_view));
 
   // Set bubble regarding to the type.
   if (type == kHistoryDisclaimerBubble)
@@ -183,19 +187,6 @@ void IncognitoClearBrowsingDataDialog::OnCloseWindowsButtonClicked() {
 
 void IncognitoClearBrowsingDataDialog::OnCancelButtonClicked() {
   CloseDialog();
-}
-
-void IncognitoClearBrowsingDataDialog::OnThemeChanged() {
-  BubbleDialogDelegateView::OnThemeChanged();
-  header_view_->SetImage(GetHeaderArt());
-}
-
-gfx::ImageSkia* IncognitoClearBrowsingDataDialog::GetHeaderArt() {
-  bool is_dark =
-      color_utils::IsDark(GetBubbleFrameView()->GetBackgroundColor());
-  return ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
-      is_dark ? IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_DARK
-              : IDR_INCOGNITO_DATA_NOT_SAVED_HEADER_LIGHT);
 }
 
 BEGIN_METADATA(IncognitoClearBrowsingDataDialog,

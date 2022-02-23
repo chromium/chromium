@@ -64,7 +64,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
     bool checked;
 
     unsigned int modified;
-    std::vector<MenuItem> children;
   };
 
   enum ImeMenuFeature {
@@ -205,7 +204,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
     // Returns the input method descriptor from the given input method id
     // string.
-    // If the given input method id is invalid, returns NULL.
+    // If the given input method id is invalid, returns nullptr.
     virtual const InputMethodDescriptor* GetInputMethodFromId(
         const std::string& input_method_id) const = 0;
 
@@ -277,16 +276,22 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
   // Gets the global instance of InputMethodManager. Initialize() must be called
   // first.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager* Get();
 
   // Sets the global instance. |instance| will be owned by the internal pointer
   // and deleted by Shutdown().
   // TODO(nona): Instanciate InputMethodManagerImpl inside of this function once
   //             crbug.com/164375 is fixed.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Initialize(
       InputMethodManager* instance);
 
   // Destroy the global instance.
+  // TODO(crbug/1279743): This is a stateful global. Make it into true global
+  // singleton first, then use dependency injection instead in the next step.
   static COMPONENT_EXPORT(UI_BASE_IME_ASH) void Shutdown();
 
   // Adds an observer to receive notifications of input method related
@@ -305,8 +310,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) InputMethodManager {
 
   // Connects a receiver to the InputEngineManager instance.
   virtual void ConnectInputEngineManager(
-      mojo::PendingReceiver<chromeos::ime::mojom::InputEngineManager>
-          receiver) = 0;
+      mojo::PendingReceiver<ime::mojom::InputEngineManager> receiver) = 0;
 
   virtual bool IsISOLevel5ShiftUsedByCurrentInputMethod() const = 0;
 

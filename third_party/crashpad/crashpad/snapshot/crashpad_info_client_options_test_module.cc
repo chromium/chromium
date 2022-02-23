@@ -15,12 +15,12 @@
 #include "build/build_config.h"
 #include "client/crashpad_info.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #define EXPORT __attribute__((visibility("default")))
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include <windows.h>
 #define EXPORT __declspec(dllexport)
-#endif  // OS_POSIX
+#endif  // BUILDFLAG(IS_POSIX)
 
 extern "C" {
 
@@ -40,8 +40,8 @@ EXPORT crashpad::CrashpadInfo* TestModule_GetCrashpadInfo() {
 
 }  // extern "C"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 BOOL WINAPI DllMain(HINSTANCE hinstance, DWORD reason, LPVOID reserved) {
   return TRUE;
 }
-#endif  // OS_WIN
+#endif  // BUILDFLAG(IS_WIN)

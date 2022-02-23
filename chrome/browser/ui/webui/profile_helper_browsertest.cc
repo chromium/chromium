@@ -5,6 +5,7 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
@@ -72,7 +73,7 @@ class ExpectBrowserActivationForProfile : public BrowserListObserver {
   }
 
  private:
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   base::RunLoop loop_;
 };
 
@@ -97,7 +98,7 @@ class BrowserAddedObserver : public BrowserListObserver {
   }
 
  private:
-  Browser* browser_;
+  raw_ptr<Browser> browser_;
   base::RunLoop run_loop_;
 };
 
@@ -111,7 +112,7 @@ class ProfileHelperTest : public InProcessBrowserTest {
   void SetUp() override {
     // Shortcut deletion delays tests shutdown on Win-7 and results in time out.
     // See crbug.com/1073451.
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     AppShortcutManager::SuppressShortcutsForTesting();
 #endif
     InProcessBrowserTest::SetUp();
@@ -148,7 +149,7 @@ IN_PROC_BROWSER_TEST_F(ProfileHelperTest, OpenNewWindowForProfile) {
 // the same issue as BrowserWindowCocoa::Activate(), and execute call
 // BrowserList::SetLastActive() directly. Not sure if it is a bug or desired
 // behaviour.
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   // Switch to original browser. Only LastActive should change.
   activation_observer =
       std::make_unique<ExpectBrowserActivationForProfile>(original_profile);
@@ -280,7 +281,7 @@ IN_PROC_BROWSER_TEST_P(ProfileHelperTestWithDestroyProfile,
   }
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
                          ProfileHelperTestWithDestroyProfile,
                          testing::Values(false));
@@ -288,4 +289,4 @@ INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
 INSTANTIATE_TEST_SUITE_P(DestroyProfileOnBrowserClose,
                          ProfileHelperTestWithDestroyProfile,
                          testing::Bool());
-#endif  // defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_CHROMEOS)

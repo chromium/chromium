@@ -26,8 +26,8 @@
 #include "remoting/protocol/session_plugin.h"
 #include "remoting/protocol/transport.h"
 #include "remoting/signaling/iq_sender.h"
+#include "remoting/signaling/xmpp_constants.h"
 #include "third_party/libjingle_xmpp/xmllite/xmlelement.h"
-#include "third_party/libjingle_xmpp/xmpp/constants.h"
 #include "third_party/webrtc/api/candidate.h"
 
 using jingle_xmpp::XmlElement;
@@ -349,7 +349,7 @@ void JingleSession::SendTransportInfo(
   AddPluginAttachments(message.get());
 
   std::unique_ptr<jingle_xmpp::XmlElement> stanza = message->ToXml();
-  stanza->AddAttr(jingle_xmpp::QN_ID, GetNextOutgoingId());
+  stanza->AddAttr(kQNameId, GetNextOutgoingId());
 
   auto request = session_manager_->iq_sender()->SendIq(
       std::move(stanza), base::BindOnce(&JingleSession::OnTransportInfoResponse,
@@ -429,7 +429,7 @@ void JingleSession::SendMessage(std::unique_ptr<JingleMessage> message) {
     AddPluginAttachments(message.get());
   }
   std::unique_ptr<jingle_xmpp::XmlElement> stanza = message->ToXml();
-  stanza->AddAttr(jingle_xmpp::QN_ID, GetNextOutgoingId());
+  stanza->AddAttr(kQNameId, GetNextOutgoingId());
 
   auto request = session_manager_->iq_sender()->SendIq(
       std::move(stanza),

@@ -6,6 +6,7 @@
 #define UI_EVENTS_OZONE_EVDEV_TOUCH_FILTER_NEURAL_STYLUS_PALM_DETECTION_FILTER_MODEL_H_
 
 #include <cstdint>
+#include <unordered_set>
 #include <vector>
 
 #include "base/component_export.h"
@@ -36,6 +37,9 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // Maximum sample count.
   uint32_t max_sample_count = 0;
 
+  // Minimum count of samples for a stroke to be considered as a neighbor.
+  uint32_t neighbor_min_sample_count = 0;
+
   uint32_t max_sequence_start_count_for_inference = 0;
 
   bool include_sequence_count_in_strokes = false;
@@ -53,6 +57,11 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   // on them if the heuristic would have marked the touch as a palm at that
   // point.
   bool heuristic_delay_start_if_palm = false;
+
+  // Similar to `heuristic_delay_start_if_palm`, but uses NN model to do the
+  // early check. NN early check happens on strokes with certain sample_counts
+  // defined in `early_stage_sample_counts`.
+  bool nn_delay_start_if_palm = false;
 
   // Maximum blank time within a session, in milliseconds.
   // Two tracking_ids are considered in one session if they overlap with each
@@ -72,6 +81,12 @@ struct COMPONENT_EXPORT(EVDEV) NeuralStylusPalmDetectionFilterModelConfig {
   //
   // R = 0.5 * r^3 + 1.3 * r^2 - 0.2 * r + 1
   std::vector<float> radius_polynomial_resize;
+
+  float output_threshold = 0.0f;
+
+  // If a stroke has these numbers of samples, run an early stage detection to
+  // check if it's spurious and mark it held if so.
+  std::unordered_set<uint32_t> early_stage_sample_counts;
 };
 
 // An abstract model utilized by NueralStylusPalmDetectionFilter.

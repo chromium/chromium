@@ -19,14 +19,9 @@ group("extensions") {
     ":ppapi_tests_extensions_popup($newlib)",
     ":ppapi_tests_extensions_socket_permissions($newlib)",
   ]
-  if ((target_cpu == "x86" || target_cpu == "x64") && (is_linux || is_chromeos) &&
-      enable_nacl_nonsfi) {
-    nonsfi = "//build/toolchain/nacl:newlib_pnacl_nonsfi"
-    data_deps += [ ":ppapi_tests_extensions_packaged_app($nonsfi)" ]
-  }
 }
 
-if (is_nacl && !is_nacl_nonsfi) {
+if (is_nacl) {
   nacl_test_data("ppapi_tests_extensions_background_keepalive") {
     sources = [ "background_keepalive/background.cc" ]
     deps = [ "//ppapi/cpp" ]
@@ -116,10 +111,12 @@ if (is_nacl && !is_nacl_nonsfi) {
 if (is_nacl) {
   nacl_test_data("ppapi_tests_extensions_packaged_app") {
     sources = [ "packaged_app/test_packaged_app.cc" ]
-    deps = [
-      "//ipc:message_support",
-      "//ppapi/cpp",
-    ]
+    deps = [ "//ppapi/cpp" ]
+
+    # This is built with an old nacl toolchain, so it shouldn't pull in
+    # any of chrome's "actual" code.
+    assert_no_deps = [ "//base" ]
+
     destination_dir = "test_data/ppapi/tests/extensions/packaged_app"
     test_files = [
       "packaged_app/controller.js",
@@ -130,9 +127,10 @@ if (is_nacl) {
       "packaged_app/test_file2.txt",
     ]
     nmfflags = [
-      # Add 129 "files" entries to make sure that open_resource can handle
+      # Add 16 "files" entries to make sure that open_resource can handle
       # more files than IPC::MessageAttachmentSet::kMaxDescriptorsPerMessage
-      # which is currently 128.
+      # which is currently 7 (also 16 is a large-but-reasonable number of
+      # possible DSOs for an app to have)
       "-xtest_file0:test_file.txt",
       "-xtest_file1:test_file2.txt",
       "-xtest_file2:test_file.txt",
@@ -150,118 +148,6 @@ if (is_nacl) {
       "-xtest_file14:test_file.txt",
       "-xtest_file15:test_file2.txt",
       "-xtest_file16:test_file.txt",
-      "-xtest_file17:test_file2.txt",
-      "-xtest_file18:test_file.txt",
-      "-xtest_file19:test_file2.txt",
-      "-xtest_file20:test_file.txt",
-      "-xtest_file21:test_file2.txt",
-      "-xtest_file22:test_file.txt",
-      "-xtest_file23:test_file2.txt",
-      "-xtest_file24:test_file.txt",
-      "-xtest_file25:test_file2.txt",
-      "-xtest_file26:test_file.txt",
-      "-xtest_file27:test_file2.txt",
-      "-xtest_file28:test_file.txt",
-      "-xtest_file29:test_file2.txt",
-      "-xtest_file30:test_file.txt",
-      "-xtest_file31:test_file2.txt",
-      "-xtest_file32:test_file.txt",
-      "-xtest_file33:test_file2.txt",
-      "-xtest_file34:test_file.txt",
-      "-xtest_file35:test_file2.txt",
-      "-xtest_file36:test_file.txt",
-      "-xtest_file37:test_file2.txt",
-      "-xtest_file38:test_file.txt",
-      "-xtest_file39:test_file2.txt",
-      "-xtest_file40:test_file.txt",
-      "-xtest_file41:test_file2.txt",
-      "-xtest_file42:test_file.txt",
-      "-xtest_file43:test_file2.txt",
-      "-xtest_file44:test_file.txt",
-      "-xtest_file45:test_file2.txt",
-      "-xtest_file46:test_file.txt",
-      "-xtest_file47:test_file2.txt",
-      "-xtest_file48:test_file.txt",
-      "-xtest_file49:test_file2.txt",
-      "-xtest_file50:test_file.txt",
-      "-xtest_file51:test_file2.txt",
-      "-xtest_file52:test_file.txt",
-      "-xtest_file53:test_file2.txt",
-      "-xtest_file54:test_file.txt",
-      "-xtest_file55:test_file2.txt",
-      "-xtest_file56:test_file.txt",
-      "-xtest_file57:test_file2.txt",
-      "-xtest_file58:test_file.txt",
-      "-xtest_file59:test_file2.txt",
-      "-xtest_file60:test_file.txt",
-      "-xtest_file61:test_file2.txt",
-      "-xtest_file62:test_file.txt",
-      "-xtest_file63:test_file2.txt",
-      "-xtest_file64:test_file.txt",
-      "-xtest_file65:test_file2.txt",
-      "-xtest_file66:test_file.txt",
-      "-xtest_file67:test_file2.txt",
-      "-xtest_file68:test_file.txt",
-      "-xtest_file69:test_file2.txt",
-      "-xtest_file70:test_file.txt",
-      "-xtest_file71:test_file2.txt",
-      "-xtest_file72:test_file.txt",
-      "-xtest_file73:test_file2.txt",
-      "-xtest_file74:test_file.txt",
-      "-xtest_file75:test_file2.txt",
-      "-xtest_file76:test_file.txt",
-      "-xtest_file77:test_file2.txt",
-      "-xtest_file78:test_file.txt",
-      "-xtest_file79:test_file2.txt",
-      "-xtest_file80:test_file.txt",
-      "-xtest_file81:test_file2.txt",
-      "-xtest_file82:test_file.txt",
-      "-xtest_file83:test_file2.txt",
-      "-xtest_file84:test_file.txt",
-      "-xtest_file85:test_file2.txt",
-      "-xtest_file86:test_file.txt",
-      "-xtest_file87:test_file2.txt",
-      "-xtest_file88:test_file.txt",
-      "-xtest_file89:test_file2.txt",
-      "-xtest_file90:test_file.txt",
-      "-xtest_file91:test_file2.txt",
-      "-xtest_file92:test_file.txt",
-      "-xtest_file93:test_file2.txt",
-      "-xtest_file94:test_file.txt",
-      "-xtest_file95:test_file2.txt",
-      "-xtest_file96:test_file.txt",
-      "-xtest_file97:test_file2.txt",
-      "-xtest_file98:test_file.txt",
-      "-xtest_file99:test_file2.txt",
-      "-xtest_file100:test_file.txt",
-      "-xtest_file101:test_file2.txt",
-      "-xtest_file102:test_file.txt",
-      "-xtest_file103:test_file2.txt",
-      "-xtest_file104:test_file.txt",
-      "-xtest_file105:test_file2.txt",
-      "-xtest_file106:test_file.txt",
-      "-xtest_file107:test_file2.txt",
-      "-xtest_file108:test_file.txt",
-      "-xtest_file109:test_file2.txt",
-      "-xtest_file110:test_file.txt",
-      "-xtest_file111:test_file2.txt",
-      "-xtest_file112:test_file.txt",
-      "-xtest_file113:test_file2.txt",
-      "-xtest_file114:test_file.txt",
-      "-xtest_file115:test_file2.txt",
-      "-xtest_file116:test_file.txt",
-      "-xtest_file117:test_file2.txt",
-      "-xtest_file118:test_file.txt",
-      "-xtest_file119:test_file2.txt",
-      "-xtest_file120:test_file.txt",
-      "-xtest_file121:test_file2.txt",
-      "-xtest_file122:test_file.txt",
-      "-xtest_file123:test_file2.txt",
-      "-xtest_file124:test_file.txt",
-      "-xtest_file125:test_file2.txt",
-      "-xtest_file126:test_file.txt",
-      "-xtest_file127:test_file2.txt",
-      "-xtest_file128:test_file.txt",
     ]
   }
 }

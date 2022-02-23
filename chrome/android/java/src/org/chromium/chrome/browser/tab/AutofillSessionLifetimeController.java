@@ -4,9 +4,10 @@
 
 package org.chromium.chrome.browser.tab;
 
-import android.annotation.TargetApi;
 import android.app.Activity;
 import android.os.Build;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.compat.ApiHelperForO;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -44,9 +45,8 @@ public class AutofillSessionLifetimeController implements DestroyObserver {
     private Activity mActivity;
     private final ActivityTabProvider.ActivityTabTabObserver mActivityTabObserver;
 
-    @TargetApi(Build.VERSION_CODES.O)
-    public AutofillSessionLifetimeController(
-            Activity activity,
+    @RequiresApi(Build.VERSION_CODES.O)
+    public AutofillSessionLifetimeController(Activity activity,
             ActivityLifecycleDispatcher lifecycleDispatcher,
             ActivityTabProvider activityTabProvider) {
         mActivity = activity;

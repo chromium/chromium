@@ -58,7 +58,7 @@ class H264EncoderFixture : public ::testing::Test {
             ConvertToBaseRepeatingCallback(
                 CrossThreadBindRepeating(&H264EncoderFixture::OnEncodedVideo,
                                          CrossThreadUnretained(this))),
-            VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::H264,
+            VideoTrackRecorder::CodecProfile(VideoTrackRecorder::CodecId::kH264,
                                              profile_,
                                              level_),
             bitrate_,

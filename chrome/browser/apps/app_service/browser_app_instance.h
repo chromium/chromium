@@ -35,7 +35,9 @@ struct BrowserAppInstance {
                      aura::Window* window,
                      std::string title,
                      bool is_browser_active,
-                     bool is_web_contents_active);
+                     bool is_web_contents_active,
+                     uint32_t browser_session_id,
+                     uint32_t restored_browser_session_id);
   BrowserAppInstance(BrowserAppInstanceUpdate update, aura::Window* window);
   ~BrowserAppInstance();
   BrowserAppInstance(const BrowserAppInstance&) = delete;
@@ -45,7 +47,9 @@ struct BrowserAppInstance {
   bool MaybeUpdate(aura::Window* window,
                    std::string title,
                    bool is_browser_active,
-                   bool is_web_contents_active);
+                   bool is_web_contents_active,
+                   uint32_t browser_session_id,
+                   uint32_t restored_browser_session_id);
 
   BrowserAppInstanceUpdate ToUpdate() const;
 
@@ -60,13 +64,19 @@ struct BrowserAppInstance {
   aura::Window* window;
   std::string title;
   bool is_browser_active;
+  // If a tab is active in the browser's tab strip. Only applicable to instances
+  // with type kAppTab. Always set to true for app instances of type kAppWindow.
   bool is_web_contents_active;
+  uint32_t browser_session_id;
+  uint32_t restored_browser_session_id;
 };
 
 // An instance representing a single Chrome browser window.
 struct BrowserWindowInstance {
   BrowserWindowInstance(base::UnguessableToken id,
                         aura::Window* window,
+                        uint32_t browser_session_id,
+                        uint32_t restored_browser_session_id,
                         bool is_active);
   BrowserWindowInstance(BrowserWindowInstanceUpdate update,
                         aura::Window* window);
@@ -85,6 +95,8 @@ struct BrowserWindowInstance {
   // Immutable attributes.
   const base::UnguessableToken id;
   aura::Window* const window;
+  uint32_t browser_session_id;
+  uint32_t restored_browser_session_id;
 
   // Mutable attributes.
   bool is_active;

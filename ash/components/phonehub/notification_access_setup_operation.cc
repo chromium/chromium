@@ -10,7 +10,7 @@
 #include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 namespace {
 
@@ -100,4 +100,4 @@ std::ostream& operator<<(std::ostream& stream,
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

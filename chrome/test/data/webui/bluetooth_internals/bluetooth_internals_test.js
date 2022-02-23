@@ -2,9 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import 'chrome://test/mojo_webui_test_support.js';
+
 import {adapterBroker, devices, initializeViews, pageManager, sidebarObj} from 'chrome://bluetooth-internals/bluetooth_internals.js';
+import {BluetoothInternalsHandler} from 'chrome://bluetooth-internals/bluetooth_internals.mojom-webui.js';
 import {connectedDevices} from 'chrome://bluetooth-internals/device_broker.js';
 import {Snackbar} from 'chrome://bluetooth-internals/snackbar.js';
+import {UUID} from 'chrome://bluetooth-internals/uuid.mojom-webui.js';
 import {ValueControl, ValueDataType} from 'chrome://bluetooth-internals/value_control.js';
 import {assert} from 'chrome://resources/js/assert.m.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.m.js';
@@ -22,8 +26,8 @@ suite('bluetooth_internals', function() {
   const EXPECTED_DEVICES = 2;
 
   suiteSetup(async function() {
-    let internalsHandlerInterceptor = new MojoInterfaceInterceptor(
-        mojom.BluetoothInternalsHandler.$interfaceName);
+    let internalsHandlerInterceptor =
+        new MojoInterfaceInterceptor(BluetoothInternalsHandler.$interfaceName);
     internalsHandlerInterceptor.oninterfacerequest = (e) => {
       internalsHandler = new TestBluetoothInternalsHandler(e.handle);
 
@@ -125,7 +129,7 @@ suite('bluetooth_internals', function() {
 
   /**
    * Format in a user readable way service UUIDs.
-   * @param ?Array<bluetooth.mojom.UUID> uuids
+   * @param ?Array<UUID> uuids
    * @return {string}
    */
   function formatServiceUuids(serviceUuids) {

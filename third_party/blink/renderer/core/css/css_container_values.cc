@@ -12,11 +12,12 @@ namespace blink {
 
 CSSContainerValues::CSSContainerValues(Document& document,
                                        const ComputedStyle& style,
-                                       double width,
-                                       double height)
+                                       absl::optional<double> width,
+                                       absl::optional<double> height)
     : MediaValuesDynamic(document.GetFrame()),
       width_(width),
       height_(height),
+      writing_mode_(style.GetWritingMode()),
       font_sizes_(&style, document.documentElement()->GetComputedStyle()) {}
 
 float CSSContainerValues::EmSize() const {

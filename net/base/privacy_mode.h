@@ -16,6 +16,9 @@ enum PrivacyMode {
   // Due to http://crbug.com/775438, PRIVACY_MODE_ENABLED still sends client
   // certs. This mode ensures that the request is sent without client certs.
   PRIVACY_MODE_ENABLED_WITHOUT_CLIENT_CERTS = 2,
+
+  // Privacy mode is enabled but partitioned HTTP cookies are still allowed.
+  PRIVACY_MODE_ENABLED_PARTITIONED_STATE_ALLOWED = 3,
 };
 
 const char* PrivacyModeToDebugString(PrivacyMode privacy_mode);

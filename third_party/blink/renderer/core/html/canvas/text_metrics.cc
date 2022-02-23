@@ -78,7 +78,7 @@ void TextMetrics::Update(const Font& font,
   // x direction
   // Run bidi algorithm on the given text. Step 5 of:
   // https://html.spec.whatwg.org/multipage/canvas.html#text-preparation-algorithm
-  FloatRect glyph_bounds;
+  gfx::RectF glyph_bounds;
   String text16 = text;
   text16.Ensure16Bit();
   NGBidiParagraph bidi;
@@ -93,7 +93,7 @@ void TextMetrics::Update(const Font& font,
         TextRun::kAllowTrailingExpansion | TextRun::kForbidLeadingExpansion,
         run.Direction(), /* directional_override */ false);
     text_run.SetNormalizeSpace(true);
-    FloatRect run_glyph_bounds;
+    gfx::RectF run_glyph_bounds;
     float run_width = font.Width(text_run, nullptr, &run_glyph_bounds);
 
     // Accumulate the position and the glyph bounding box.

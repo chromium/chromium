@@ -84,6 +84,14 @@ void Shadow::SetRoundedCornerRadius(int rounded_corner_radius) {
   UpdateLayerBounds();
 }
 
+void Shadow::SetShadowStyle(gfx::ShadowStyle style) {
+  if (style_ == style)
+    return;
+
+  style_ = style;
+  RecreateShadowLayer();
+}
+
 void Shadow::OnImplicitAnimationsCompleted() {
   std::unique_ptr<ui::Layer> to_be_deleted = fading_layer_owner_.ReleaseLayer();
   // The size needed for layer() may be smaller now that |fading_layer()| is
@@ -134,8 +142,8 @@ void Shadow::UpdateLayerBounds() {
   const int size_adjusted_elevation =
       std::min((smaller_dimension - 2 * rounded_corner_radius_) / 4,
                static_cast<int>(desired_elevation_));
-  const auto& details =
-      gfx::ShadowDetails::Get(size_adjusted_elevation, rounded_corner_radius_);
+  const auto& details = gfx::ShadowDetails::Get(size_adjusted_elevation,
+                                                rounded_corner_radius_, style_);
   gfx::Insets blur_region = gfx::ShadowValue::GetBlurRegion(details.values) +
                             gfx::Insets(rounded_corner_radius_);
   // Update |shadow_layer()| if details changed and it has been updated in

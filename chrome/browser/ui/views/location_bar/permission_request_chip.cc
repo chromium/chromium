@@ -101,7 +101,8 @@ PermissionRequestChip::PermissionRequestChip(
            GetPermissionMessage(delegate), should_bubble_start_open,
            base::FeatureList::IsEnabled(
                permissions::features::kPermissionChipIsProminentStyle),
-           OmniboxChipButton::Theme::kBlue, /*should_expand=*/true}),
+           OmniboxChipButton::Theme::kNormalVisibility,
+           /*should_expand=*/true}),
       browser_(browser) {
   chip_shown_time_ = base::TimeTicks::Now();
   VerifyCameraAndMicRequest(delegate);
@@ -120,18 +121,6 @@ views::View* PermissionRequestChip::CreateBubble() {
   RecordChipButtonPressed();
 
   return prompt_bubble;
-}
-
-void PermissionRequestChip::Collapse(bool allow_restart) {
-  PermissionChip::Collapse(allow_restart);
-  if (!IsBubbleShowing()) {
-    ShowBlockedIcon();
-  }
-}
-
-void PermissionRequestChip::OnPromptBubbleDismissed() {
-  PermissionChip::OnPromptBubbleDismissed();
-  ShowBlockedIcon();
 }
 
 void PermissionRequestChip::RecordChipButtonPressed() {

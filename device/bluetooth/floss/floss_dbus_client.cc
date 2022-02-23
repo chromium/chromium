@@ -7,13 +7,22 @@
 
 #include "base/logging.h"
 #include "dbus/message.h"
+#include "device/bluetooth/floss/floss_adapter_client.h"
 
 namespace floss {
+
+// All Floss D-Bus methods return immediately, so the timeout can be very short.
+int kDBusTimeoutMs = 2000;
 
 namespace {
 
 template <typename T>
 bool ReadReturnFromResponse(dbus::MessageReader* reader, T* value);
+
+template <>
+bool ReadReturnFromResponse(dbus::MessageReader* reader, bool* value) {
+  return reader->PopBool(value);
+}
 
 template <>
 bool ReadReturnFromResponse(dbus::MessageReader* reader, uint8_t* value) {
@@ -30,10 +39,37 @@ bool ReadReturnFromResponse(dbus::MessageReader* reader, std::string* value) {
   return reader->PopString(value);
 }
 
+template <>
+bool ReadReturnFromResponse(dbus::MessageReader* reader, FlossDeviceId* value) {
+  return FlossAdapterClient::ParseFlossDeviceId(reader, value);
+}
+
+// Specialization for vector of anything.
+template <typename T>
+bool ReadReturnFromResponse(dbus::MessageReader* reader,
+                            std::vector<typename T::value_type>* value) {
+  using ElemType = typename T::value_type;
+
+  dbus::MessageReader subreader(nullptr);
+  if (!reader->PopArray(&subreader))
+    return false;
+
+  while (subreader.HasMoreData()) {
+    ElemType element;
+    if (!ReadReturnFromResponse<ElemType>(&subreader, &element))
+      return false;
+
+    value->push_back(element);
+  }
+
+  return true;
+}
+
 }  // namespace
 
 // TODO(b/189499077) - Expose via floss package
 const char kAdapterService[] = "org.chromium.bluetooth";
+const char kManagerService[] = "org.chromium.bluetooth.Manager";
 const char kAdapterInterface[] = "org.chromium.bluetooth.Bluetooth";
 const char kManagerInterface[] = "org.chromium.bluetooth.Manager";
 const char kManagerObject[] = "/org/chromium/bluetooth/Manager";
@@ -44,12 +80,17 @@ const char kGetAddress[] = "GetAddress";
 const char kStartDiscovery[] = "StartDiscovery";
 const char kCancelDiscovery[] = "CancelDiscovery";
 const char kCreateBond[] = "CreateBond";
+const char kCancelBondProcess[] = "CancelBondProcess";
+const char kRemoveBond[] = "RemoveBond";
 const char kGetConnectionState[] = "GetConnectionState";
+const char kGetBondState[] = "GetBondState";
 const char kConnectAllEnabledProfiles[] = "ConnectAllEnabledProfiles";
 const char kRegisterCallback[] = "RegisterCallback";
 const char kRegisterConnectionCallback[] = "RegisterConnectionCallback";
 const char kSetPairingConfirmation[] = "SetPairingConfirmation";
+const char kSetPin[] = "SetPin";
 const char kSetPasskey[] = "SetPasskey";
+const char kGetBondedDevices[] = "GetBondedDevices";
 
 // TODO(abps) - Rename this to AdapterCallback in platform and here
 const char kCallbackInterface[] = "org.chromium.bluetooth.BluetoothCallback";
@@ -168,6 +209,11 @@ void FlossDBusClient::DefaultResponseWithCallback(
 }
 
 template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<bool> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<uint8_t> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
@@ -179,6 +225,11 @@ template void FlossDBusClient::DefaultResponseWithCallback(
 
 template void FlossDBusClient::DefaultResponseWithCallback(
     ResponseCallback<std::string> callback,
+    dbus::Response* response,
+    dbus::ErrorResponse* error_response);
+
+template void FlossDBusClient::DefaultResponseWithCallback(
+    ResponseCallback<std::vector<FlossDeviceId>> callback,
     dbus::Response* response,
     dbus::ErrorResponse* error_response);
 

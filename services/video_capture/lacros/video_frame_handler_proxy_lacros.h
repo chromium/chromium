@@ -32,6 +32,11 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
       delete;
   ~VideoFrameHandlerProxyLacros() override;
 
+  // crosapi::mojom::VideoFrameHandler implementation that others may need to
+  // call.
+  void OnError(media::VideoCaptureError error) override;
+  void OnLog(const std::string& message) override;
+
  private:
   class AccessPermissionProxyMap;
   class VideoFrameAccessHandlerProxy;
@@ -43,9 +48,8 @@ class VideoFrameHandlerProxyLacros : public crosapi::mojom::VideoFrameHandler {
                             std::vector<crosapi::mojom::ReadyFrameInBufferPtr>
                                 scaled_buffers) override;
   void OnBufferRetired(int buffer_id) override;
-  void OnError(media::VideoCaptureError error) override;
   void OnFrameDropped(media::VideoCaptureFrameDropReason reason) override;
-  void OnLog(const std::string& message) override;
+  void OnFrameWithEmptyRegionCapture() override;
   void OnStarted() override;
   void OnStartedUsingGpuDecode() override;
   void OnStopped() override;

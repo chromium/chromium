@@ -65,42 +65,37 @@ class CORE_EXPORT CSSSelectorList {
   USING_FAST_MALLOC(CSSSelectorList);
 
  public:
-  CSSSelectorList() : selector_array_(nullptr) {}
+  CSSSelectorList() = default;
 
-  CSSSelectorList(CSSSelectorList&& o) : selector_array_(o.selector_array_) {
-    o.selector_array_ = nullptr;
-  }
+  CSSSelectorList(CSSSelectorList&& o)
+      : selector_array_(std::move(o.selector_array_)) {}
 
   CSSSelectorList& operator=(CSSSelectorList&& o) {
     DCHECK(this != &o);
-    DeleteSelectorsIfNeeded();
-    selector_array_ = o.selector_array_;
-    o.selector_array_ = nullptr;
+    selector_array_ = std::move(o.selector_array_);
     return *this;
   }
 
-  ~CSSSelectorList() { DeleteSelectorsIfNeeded(); }
+  ~CSSSelectorList() = default;
 
   static CSSSelectorList AdoptSelectorVector(
       Vector<std::unique_ptr<CSSParserSelector>>& selector_vector);
   CSSSelectorList Copy() const;
 
   bool IsValid() const { return !!selector_array_; }
-  const CSSSelector* First() const { return selector_array_; }
+  const CSSSelector* First() const { return &selector_array_[0]; }
   const CSSSelector* FirstForCSSOM() const;
   static const CSSSelector* Next(const CSSSelector&);
   static const CSSSelector* NextInFullList(const CSSSelector&);
 
   // The CSS selector represents a single sequence of simple selectors.
-  bool HasOneSelector() const {
-    return selector_array_ && !Next(*selector_array_);
-  }
+  bool HasOneSelector() const { return selector_array_ && !Next(*First()); }
   const CSSSelector& SelectorAt(wtf_size_t index) const {
     return selector_array_[index];
   }
 
   wtf_size_t SelectorIndex(const CSSSelector& selector) const {
-    return static_cast<wtf_size_t>(&selector - selector_array_);
+    return static_cast<wtf_size_t>(&selector - &selector_array_[0]);
   }
 
   wtf_size_t IndexOfNextSelectorAfter(wtf_size_t index) const {
@@ -118,19 +113,13 @@ class CORE_EXPORT CSSSelectorList {
   unsigned ComputeLength() const;
 
  private:
-  void DeleteSelectorsIfNeeded() {
-    if (selector_array_)
-      DeleteSelectors();
-  }
-  void DeleteSelectors();
-
   CSSSelectorList(const CSSSelectorList&) = delete;
   CSSSelectorList& operator=(const CSSSelectorList&) = delete;
 
   // End of a multipart selector is indicated by is_last_in_tag_history_ bit in
   // the last item. End of the array is indicated by is_last_in_selector_list_
   // bit in the last item.
-  CSSSelector* selector_array_;
+  std::unique_ptr<CSSSelector[]> selector_array_;
 };
 
 inline const CSSSelector* CSSSelectorList::Next(const CSSSelector& current) {

@@ -31,6 +31,7 @@ void ExternalBeginFrameSourceMojo::IssueExternalBeginFrame(
     bool force,
     base::OnceCallback<void(const BeginFrameAck&)> callback) {
   DCHECK(!pending_frame_callback_) << "Got overlapping IssueExternalBeginFrame";
+  DCHECK(pending_frame_sinks_.empty());
   original_source_id_ = args.frame_id.source_id;
 
   OnBeginFrame(args);
@@ -76,6 +77,12 @@ void ExternalBeginFrameSourceMojo::MaybeProduceFrameCallback() {
     return;
   if (!pending_frame_callback_)
     return;
+
+  if (pending_ack_) {
+    DispatchFrameCallback(*pending_ack_);
+    pending_ack_.reset();
+    return;
+  }
   // If there aren't pending surfaces and the root frame is not missing,
   // the display scheduler is likely to produce proper frame, so let it do
   // its work. Otherwise, fire the pending frame callback early.
@@ -84,29 +91,37 @@ void ExternalBeginFrameSourceMojo::MaybeProduceFrameCallback() {
     return;
   }
 
-  frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
-
   // All frame sinks are done with frame, yet the root frame is still missing,
   // the display won't draw, so resolve callback now.
   BeginFrameAck nak(last_begin_frame_args_.frame_id.source_id,
                     last_begin_frame_args_.frame_id.sequence_number,
                     /*has_damage=*/false);
+  DispatchFrameCallback(nak);
+}
+
+void ExternalBeginFrameSourceMojo::DispatchFrameCallback(
+    const BeginFrameAck& ack) {
+  // If there are pending copy output requests that have not been fulfilled,
+  // cancel them, as they won't be served till the next frame. This prevents
+  // the client for waiting for them indefinitely.
+  frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
   // Prevent missing begin frames from being sent to sinks that came late,
   // as this may result in two overlapping frames being sent, which is not
   // supported with full pipeline mode.
   last_begin_frame_args_ = BeginFrameArgs();
-  std::move(pending_frame_callback_).Run(nak);
+  std::move(pending_frame_callback_).Run(ack);
 }
 
 void ExternalBeginFrameSourceMojo::OnDisplayDidFinishFrame(
     const BeginFrameAck& ack) {
   if (!pending_frame_callback_)
     return;
-  std::move(pending_frame_callback_).Run(ack);
-  // If there are pending copy output requests that have not been fulfilled,
-  // cancel them, as they won't be served till the next frame. This prevents
-  // the client for waiting for them indefinitely.
-  frame_sink_manager_->DiscardPendingCopyOfOutputRequests(this);
+  if (!pending_frame_sinks_.empty()) {
+    DCHECK(!pending_ack_);
+    pending_ack_ = ack;
+    return;
+  }
+  DispatchFrameCallback(ack);
 }
 
 void ExternalBeginFrameSourceMojo::OnDisplayDestroyed() {

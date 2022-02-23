@@ -8,6 +8,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <set>
 #include <utility>
 #include <vector>
 
@@ -16,8 +17,8 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/format_macros.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -190,7 +191,7 @@ class DeleteCacheCompletionCallback : public TestCompletionCallbackBase {
     SetResult(result);
   }
 
-  MockHttpCache* cache_;
+  raw_ptr<MockHttpCache> cache_;
 };
 
 //-----------------------------------------------------------------------------
@@ -702,7 +703,7 @@ class FakeWebSocketHandshakeStreamCreateHelper
   }
   std::unique_ptr<WebSocketHandshakeStreamBase> CreateHttp2Stream(
       base::WeakPtr<SpdySession> session,
-      std::vector<std::string> dns_aliases) override {
+      std::set<std::string> dns_aliases) override {
     NOTREACHED();
     return nullptr;
   }
@@ -1485,7 +1486,6 @@ TEST_F(HttpCacheTest, SimpleGET_NetworkAccessed_Cache) {
                                      &response_info);
 
   EXPECT_EQ(1, cache.network_layer()->transaction_count());
-  EXPECT_FALSE(response_info.server_data_unavailable);
   EXPECT_FALSE(response_info.network_accessed);
   EXPECT_EQ(CacheEntryStatus::ENTRY_USED, response_info.cache_entry_status);
 }

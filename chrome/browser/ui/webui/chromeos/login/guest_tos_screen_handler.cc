@@ -36,7 +36,7 @@ void GuestTosScreenHandler::DeclareLocalizedValues(
   builder->Add("guestTosUsageOptin", IDS_GUEST_TOS_USAGE_OPT_IN);
   builder->Add("guestTosUsageOptInLearnMore",
                IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE);
-  builder->Add("guestTosLearnMore", IDS_GUEST_TOS_LEARN_MORE);
+  builder->Add("guestTosLearnMore", IDS_GUEST_TOS_USAGE_OPT_IN_LEARN_MORE_LINK);
   builder->Add("guestTosOk", IDS_GUEST_TOS_OK);
   builder->Add("guestTosLoading", IDS_GUEST_TOS_LOADING);
 }
@@ -58,8 +58,8 @@ void GuestTosScreenHandler::Show(const std::string& google_eula_url,
   }
 
   base::DictionaryValue data;
-  data.SetString("googleEulaUrl", google_eula_url);
-  data.SetString("crosEulaUrl", cros_eula_url);
+  data.SetStringKey("googleEulaUrl", google_eula_url);
+  data.SetStringKey("crosEulaUrl", cros_eula_url);
   ShowScreenWithData(kScreenId, &data);
 }
 

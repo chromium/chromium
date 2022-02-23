@@ -4,6 +4,7 @@
 
 #include "chrome/browser/policy/cbcm_invalidations_initializer.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service.h"
 #include "chrome/browser/device_identity/device_oauth2_token_service_factory.h"
@@ -96,7 +97,7 @@ class CBCMInvalidationsInitializer::MachineLevelDeviceAccountInitializerHelper
   }
 
   std::string service_account_email_;
-  policy::CloudPolicyClient* policy_client_;
+  raw_ptr<policy::CloudPolicyClient> policy_client_;
   std::unique_ptr<DeviceAccountInitializer> device_account_initializer_;
   Callback callback_;
   scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;

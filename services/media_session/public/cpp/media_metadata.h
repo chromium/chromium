@@ -12,13 +12,13 @@
 #include "build/build_config.h"
 #include "url/gurl.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 
 #include <jni.h>
 
 #include "base/android/scoped_java_ref.h"
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 namespace media_session {
 
@@ -33,7 +33,7 @@ struct COMPONENT_EXPORT(MEDIA_SESSION_BASE_CPP) MediaMetadata {
   bool operator==(const MediaMetadata& other) const;
   bool operator!=(const MediaMetadata& other) const;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Creates a Java MediaMetadata instance and returns the JNI ref.
   base::android::ScopedJavaLocalRef<jobject> CreateJavaObject(
       JNIEnv* env) const;

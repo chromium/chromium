@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/observer_list.h"
 
 class BrowserView;
@@ -102,8 +101,8 @@ class ImmersiveModeController {
   // according to |animate_reveal|.
   // The caller takes ownership of the returned lock.
   // This is currently only supported on Ash.
-  virtual ImmersiveRevealedLock* GetRevealedLock(
-      AnimateReveal animate_reveal) WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual ImmersiveRevealedLock* GetRevealedLock(
+      AnimateReveal animate_reveal) = 0;
 
   // Called by the find bar to indicate that its visible bounds have changed.
   // |new_visible_bounds_in_screen| should be empty if the find bar is not

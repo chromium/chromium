@@ -276,7 +276,8 @@ void ParseUpdateManifest(const std::string& xml,
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback);
   data_decoder::DataDecoder::ParseXmlIsolated(
-      xml, base::BindOnce(&ParseXmlDone, std::move(callback)));
+      xml, data_decoder::mojom::XmlParser::WhitespaceBehavior::kIgnore,
+      base::BindOnce(&ParseXmlDone, std::move(callback)));
 }
 
 }  // namespace extensions

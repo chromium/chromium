@@ -9,7 +9,6 @@
 
 #include <memory>
 
-#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/notification_utils.h"
 #include "base/bind.h"
 #include "base/feature_list.h"
@@ -20,8 +19,8 @@
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"
 #include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/app/vector_icons/vector_icons.h"
-#include "chrome/browser/ash/note_taking_helper.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/download_crx_util.h"
@@ -64,6 +63,13 @@
 #include "ui/gfx/image/image.h"
 #include "ui/message_center/public/cpp/message_center_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "ash/constants/ash_features.h"
+#include "chrome/browser/ash/note_taking_helper.h"
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+#include "chromeos/lacros/lacros_service.h"
+#endif
 
 using base::UserMetricsAction;
 using offline_items_collection::FailState;
@@ -204,6 +210,53 @@ void RecordButtonClickAction(DownloadCommands::Command command) {
 bool IsExtensionDownload(DownloadUIModel* item) {
   return item->download() &&
          download_crx_util::IsExtensionDownload(*item->download());
+}
+
+bool IsHoldingSpaceIncognitoProfileIntegrationEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return true;
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service) {
+    auto* init_params = lacros_service->init_params();
+    return init_params &&
+           init_params->is_holding_space_incognito_profile_integration_enabled;
+  }
+  return false;
+#else
+  return false;
+#endif
+}
+
+bool IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  return ash::features::
+      IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
+#elif BUILDFLAG(IS_CHROMEOS_LACROS)
+  auto* lacros_service = chromeos::LacrosService::Get();
+  if (lacros_service) {
+    auto* init_params = lacros_service->init_params();
+    return init_params &&
+           init_params
+               ->is_holding_space_in_progress_downloads_notification_suppression_enabled;
+  }
+  return false;
+#else
+  return false;
+#endif
+}
+
+bool IsNotificationEligibleForSuppression(const DownloadUIModel* item) {
+  // Only notifications for in-progress downloads are eligible for suppression.
+  if (item->GetState() != download::DownloadItem::IN_PROGRESS)
+    return false;
+  // Notifications associated with dangerous or mixed content downloads are not
+  // eligible for suppression as they likely contain important information.
+  if (item->IsDangerous() || item->IsMixedContent())
+    return false;
+  // Otherwise notifications are assumed to be informational only and are
+  // therefore eligible for suppression.
+  return true;
 }
 
 }  // namespace
@@ -453,18 +506,14 @@ void DownloadItemNotification::UpdateNotificationData(bool display,
   const bool was_suppressed = suppressed_;
 
   // When holding space in-progress downloads notification suppression is
-  // enabled, download in-progress notifications should be suppressed so long as
-  // they do not `force_pop_up`, such as is done in the case of dangerous or
-  // mixed content downloads. Note that download notifications associated with
-  // an incognito profile are only suppressed if holding space incognito profile
-  // integration is also enabled.
+  // enabled, eligible download notifications should be suppressed. Note that
+  // download notifications associated with an incognito profile are only
+  // suppressed if holding space incognito profile integration is also enabled.
   if (!item_->profile()->IsIncognitoProfile() ||
-      ash::features::IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
+      IsHoldingSpaceIncognitoProfileIntegrationEnabled()) {
     suppressed_ =
-        display && !force_pop_up &&
-        ash::features::
-            IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled() &&
-        item_->GetState() == download::DownloadItem::IN_PROGRESS;
+        display && IsNotificationEligibleForSuppression(item_.get()) &&
+        IsHoldingSpaceInProgressDownloadsNotificationSuppressionEnabled();
   } else {
     suppressed_ = false;
   }
@@ -745,8 +794,11 @@ DownloadItemNotification::GetExtraActions() const {
       actions->push_back(DownloadCommands::SHOW_IN_FOLDER);
       if (!notification_->image().IsEmpty()) {
         actions->push_back(DownloadCommands::COPY_TO_CLIPBOARD);
+// TODO(crbug.com/1267466): Support NoteTakingHelper in Lacros.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
         if (ash::NoteTakingHelper::Get()->IsAppAvailable(profile()))
           actions->push_back(DownloadCommands::ANNOTATE);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
       }
       break;
     case download::DownloadItem::MAX_DOWNLOAD_STATE:
@@ -1051,7 +1103,7 @@ std::u16string DownloadItemNotification::GetSubStatusString() const {
         DCHECK(!interrupt_text.empty());
         return interrupt_text;
       }
-      FALLTHROUGH;  // Same as download::DownloadItem::CANCELLED.
+      [[fallthrough]];  // Same as download::DownloadItem::CANCELLED.
     }
     case download::DownloadItem::CANCELLED:
       // "Cancelled"

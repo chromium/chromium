@@ -51,7 +51,7 @@ class CWVDownloadTaskTest : public PlatformTest {
   CWVDownloadTask* cwv_task_ = nil;
 
   // Waits until fake_internal_task_->Start() is called.
-  bool WaitUntilTaskStarts() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WaitUntilTaskStarts() {
     return WaitUntilConditionOrTimeout(kWaitForFileOperationTimeout, ^{
       task_environment_.RunUntilIdle();
       return fake_internal_task_->GetState() ==

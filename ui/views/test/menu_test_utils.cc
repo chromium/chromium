@@ -10,7 +10,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/views/controls/menu/menu_controller.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/views/controls/menu/menu_closure_animation_mac.h"
 #endif
 
@@ -39,16 +39,6 @@ void TestMenuDelegate::ExecuteCommand(int id) {
 void TestMenuDelegate::OnMenuClosed(MenuItemView* menu) {
   on_menu_closed_called_count_++;
   on_menu_closed_menu_ = menu;
-}
-
-ui::mojom::DragOperation TestMenuDelegate::OnPerformDrop(
-    MenuItemView* menu,
-    DropPosition position,
-    const ui::DropTargetEvent& event) {
-  auto drop_cb = GetDropCallback(menu, position, event);
-  ui::mojom::DragOperation output_drag_op = ui::mojom::DragOperation::kNone;
-  std::move(drop_cb).Run(event, output_drag_op);
-  return output_drag_op;
 }
 
 views::View::DropCallback TestMenuDelegate::GetDropCallback(
@@ -96,13 +86,13 @@ void MenuControllerTestApi::SetShowing(bool showing) {
 }
 
 void DisableMenuClosureAnimations() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   MenuClosureAnimationMac::DisableAnimationsForTesting();
 #endif
 }
 
 void WaitForMenuClosureAnimation() {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // TODO(https://crbug.com/982815): Replace this with Quit+Run.
   base::RunLoop().RunUntilIdle();
 #endif

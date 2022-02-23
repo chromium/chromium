@@ -11,6 +11,7 @@
 
 #include "base/bind.h"
 #include "base/guid.h"
+#include "base/memory/raw_ptr.h"
 #include "base/values.h"
 #include "chrome/test/base/testing_profile.h"
 #include "components/browsing_data/core/browsing_data_utils.h"
@@ -41,9 +42,7 @@ class HostedAppsCounterTest : public testing::Test {
   // Adding and removing apps and extensions. ----------------------------------
 
   std::string AddExtension() {
-    return AddItem(
-        base::GenerateGUID(),
-        std::unique_ptr<base::DictionaryValue>());
+    return AddItem(base::GenerateGUID(), /*app_manifest=*/nullptr);
   }
 
   std::string AddPackagedApp() {
@@ -141,7 +140,7 @@ class HostedAppsCounterTest : public testing::Test {
  private:
   content::BrowserTaskEnvironment task_environment_;
   std::unique_ptr<TestingProfile> profile_;
-  extensions::ExtensionRegistry* extension_registry_;
+  raw_ptr<extensions::ExtensionRegistry> extension_registry_;
 
   bool finished_;
   browsing_data::BrowsingDataCounter::ResultInt num_apps_;

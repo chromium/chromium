@@ -61,7 +61,7 @@ ProtocolHandler::ProtocolHandler() = default;
 bool ProtocolHandler::IsValidDict(const base::DictionaryValue* value) {
   // Note that "title" parameter is ignored.
   // The |last_modified| field is optional as it was introduced in M68.
-  return value->HasKey("protocol") && value->HasKey("url");
+  return value->FindKey("protocol") && value->FindKey("url");
 }
 
 bool ProtocolHandler::IsValid() const {
@@ -105,23 +105,26 @@ ProtocolHandler ProtocolHandler::CreateProtocolHandler(
   base::Time time;
   blink::ProtocolHandlerSecurityLevel security_level =
       blink::ProtocolHandlerSecurityLevel::kStrict;
-  value->GetString("protocol", &protocol);
-  value->GetString("url", &url);
+  if (const std::string* protocol_in = value->FindStringKey("protocol"))
+    protocol = *protocol_in;
+  if (const std::string* url_in = value->FindStringKey("url"))
+    url = *url_in;
   absl::optional<base::Time> time_value =
       base::ValueToTime(value->FindKey("last_modified"));
   // Treat invalid times as the default value.
   if (time_value)
     time = *time_value;
   absl::optional<int> security_level_value =
-      value->FindIntPath("security_level");
+      value->FindIntKey("security_level");
   if (security_level_value) {
     security_level =
         blink::ProtocolHandlerSecurityLevelFrom(*security_level_value);
   }
 
-  if (value->HasKey("app_id")) {
+  if (const base::Value* app_id_val = value->FindKey("app_id")) {
     std::string app_id;
-    value->GetString("app_id", &app_id);
+    if (app_id_val->is_string())
+      app_id = app_id_val->GetString();
     return ProtocolHandler(protocol, GURL(url), app_id, time, security_level);
   }
 

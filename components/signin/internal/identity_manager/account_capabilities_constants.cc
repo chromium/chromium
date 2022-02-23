@@ -4,6 +4,9 @@
 
 #include "components/signin/internal/identity_manager/account_capabilities_constants.h"
 
+const char kIsSubjectToParentalControlsCapabilityName[] =
+    "accountcapabilities/guydolldmfya";
+
 const char kCanOfferExtendedChromeSyncPromosCapabilityName[] =
     "accountcapabilities/gi2tklldmfya";
 

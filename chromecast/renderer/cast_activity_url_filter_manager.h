@@ -9,7 +9,6 @@
 #include <string>
 
 #include "base/containers/flat_map.h"
-#include "base/macros.h"
 #include "chromecast/common/activity_url_filter.h"
 #include "chromecast/common/mojom/activity_url_filter.mojom.h"
 #include "content/public/renderer/render_frame_observer.h"

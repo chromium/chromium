@@ -11,7 +11,6 @@
 
 #include "base/bind.h"
 #include "base/callback_helpers.h"
-#include "base/macros.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/system/sys_info.h"
 #include "base/values.h"
@@ -81,7 +80,7 @@ class CrashesDOMHandler : public web::WebUIIOSMessageHandler {
   void OnUploadListAvailable();
 
   // Asynchronously fetches the list of crashes. Called from JS.
-  void HandleRequestCrashes(const base::ListValue* args);
+  void HandleRequestCrashes(base::Value::ConstListView args);
 
   // Asynchronously requests a user triggered upload. Called from JS.
   void HandleRequestSingleCrashUpload(base::Value::ConstListView args);
@@ -106,7 +105,7 @@ CrashesDOMHandler::~CrashesDOMHandler() {
 void CrashesDOMHandler::RegisterMessages() {
   upload_list_->Load(base::BindOnce(&CrashesDOMHandler::OnUploadListAvailable,
                                     base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       crash_reporter::kCrashesUIRequestCrashList,
       base::BindRepeating(&CrashesDOMHandler::HandleRequestCrashes,
                           base::Unretained(this)));
@@ -116,7 +115,7 @@ void CrashesDOMHandler::RegisterMessages() {
                           base::Unretained(this)));
 }
 
-void CrashesDOMHandler::HandleRequestCrashes(const base::ListValue* args) {
+void CrashesDOMHandler::HandleRequestCrashes(base::Value::ConstListView args) {
   if (first_load_) {
     first_load_ = false;
     if (list_available_)

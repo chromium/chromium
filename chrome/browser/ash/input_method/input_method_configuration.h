@@ -12,22 +12,17 @@
 namespace ash {
 namespace input_method {
 
-// Initializes the InputMethodManager. Must be called before any calls to
-// GetInstance(). We explicitly initialize and shut down the global instance,
-// rather than making it a Singleton, to ensure clean startup and shutdown.
 void Initialize();
 
-// Similar to Initialize(), but can inject an alternative
-// InputMethodManager such as MockInputMethodManager for testing.
-// The injected object will be owned by the internal pointer and deleted
-// by Shutdown().
+// Similar to Initialize(), but can inject an alternative InputMethodManager
+// such as MockInputMethodManager for testing. The injected object will be
+// owned by the internal pointer and deleted by Shutdown().
 // TODO(nona): Remove this and use InputMethodManager::Initialize instead.
 void InitializeForTesting(InputMethodManager* mock_manager);
 
 // Disables the IME extension loading (e.g. for browser tests).
 void DisableExtensionLoading();
 
-// Destroys the global InputMethodManager instance.
 void Shutdown();
 
 }  // namespace input_method

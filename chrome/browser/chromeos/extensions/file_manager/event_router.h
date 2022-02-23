@@ -12,9 +12,10 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/disks/disk_mount_manager.h"
 #include "ash/components/settings/timezone_settings.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/file_manager/file_watcher.h"
@@ -28,9 +29,7 @@
 #include "chrome/browser/chromeos/extensions/file_manager/drivefs_event_router.h"
 #include "chrome/browser/chromeos/extensions/file_manager/system_notification_manager.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
-#include "chromeos/disks/disk_mount_manager.h"
 #include "components/arc/intent_helper/arc_intent_helper_observer.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "extensions/browser/extension_registry_observer.h"
 #include "services/network/public/cpp/network_connection_tracker.h"
@@ -139,8 +138,8 @@ class EventRouter
   void TimezoneChanged(const icu::TimeZone& timezone) override;
 
   // VolumeManagerObserver overrides.
-  void OnDiskAdded(const chromeos::disks::Disk& disk, bool mounting) override;
-  void OnDiskRemoved(const chromeos::disks::Disk& disk) override;
+  void OnDiskAdded(const ash::disks::Disk& disk, bool mounting) override;
+  void OnDiskRemoved(const ash::disks::Disk& disk) override;
   void OnDeviceAdded(const std::string& device_path) override;
   void OnDeviceRemoved(const std::string& device_path) override;
   void OnVolumeMounted(chromeos::MountError error_code,

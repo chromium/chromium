@@ -33,7 +33,7 @@ void SecureOriginPolicyHandler::ApplyPolicySettings(const PolicyMap& policies,
     return;
 
   std::string pref_string;
-  for (const auto& list_entry : value->GetList()) {
+  for (const auto& list_entry : value->GetListDeprecated()) {
     if (!pref_string.empty())
       pref_string.append(",");
     pref_string.append(list_entry.GetString());

@@ -6,13 +6,13 @@ package org.chromium.weblayer.test;
 
 import static org.chromium.weblayer.R.id.weblayer_media_session_notification;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Build;
 import android.service.notification.StatusBarNotification;
 
+import androidx.annotation.RequiresApi;
 import androidx.test.filters.MediumTest;
 
 import org.hamcrest.Matchers;
@@ -55,7 +55,7 @@ public final class MediaSessionTest {
      * Retrieves the active media session notification, or null if none exists.
      * {@link NotificationManager#getActiveNotifications()} is only available from M.
      */
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private Notification getMediaSessionNotification() {
         StatusBarNotification notifications[] =
                 ((NotificationManager) mActivity.getApplicationContext().getSystemService(

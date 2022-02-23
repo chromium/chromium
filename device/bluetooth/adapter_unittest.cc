@@ -247,7 +247,7 @@ TEST_F(AdapterTest, TestConnectToServiceInsecurely_KnownDevice_Error) {
   run_loop.Run();
 }
 
-#if defined(OS_CHROMEOS) || defined(OS_LINUX)
+#if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
 TEST_F(
     AdapterTest,
     TestConnectToServiceInsecurely_UnknownDevice_Success_ServicesAlreadyResolved) {
@@ -459,7 +459,7 @@ TEST_F(AdapterTest, TestCreateRfcommServiceInsecurely_Success) {
   run_loop.Run();
 }
 
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
 TEST_F(AdapterTest, TestMetricsOnShutdown_NoPendingConnects) {
   base::HistogramTester histogram_tester;
   adapter_.reset();

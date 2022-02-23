@@ -9,9 +9,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
+#include "components/history_clusters/core/features.h"
 #include "components/history_clusters/core/history_clusters_prefs.h"
 #include "components/history_clusters/core/history_clusters_service.h"
-#include "components/history_clusters/core/memories_features.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
 #include "components/omnibox/browser/autocomplete_result.h"
 #include "components/prefs/pref_service.h"
@@ -66,7 +66,7 @@ void AttachHistoryClustersActions(
     history_clusters::HistoryClustersService* service,
     PrefService* prefs,
     AutocompleteResult& result) {
-#if defined(OS_ANDROID) || defined(OS_IOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Compile out this method for Mobile, which doesn't omnibox actions yet.
   // This is to prevent binary size increase for no reason.
   return;
@@ -75,7 +75,7 @@ void AttachHistoryClustersActions(
     return;
 
   // Both features must be enabled to ever attach the action chip.
-  if (!base::FeatureList::IsEnabled(history_clusters::kJourneys) ||
+  if (!service->IsJourneysEnabled() ||
       !base::FeatureList::IsEnabled(history_clusters::kOmniboxAction)) {
     return;
   }

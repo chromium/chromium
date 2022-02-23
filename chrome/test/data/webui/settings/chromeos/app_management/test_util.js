@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 // clang-format off
-// #import {BrowserProxy, FakePageHandler} from 'chrome://os-settings/chromeos/os_settings.js';
+// #import {BrowserProxy, FakePageHandler, AppManagementComponentBrowserProxy} from 'chrome://os-settings/chromeos/os_settings.js';
 // #import {TestAppManagementStore} from './test_store.m.js';
 // clang-format on
 
@@ -28,6 +28,9 @@
       browserProxy.callbackRouter.$.bindNewPipeAndPassRemote());
   browserProxy.handler = fakeHandler.getRemote();
 
+  const componentBrowserProxy =
+      AppManagementComponentBrowserProxy.getInstance();
+  componentBrowserProxy.handler = fakeHandler;
   return fakeHandler;
 }
 
@@ -92,7 +95,7 @@ async function navigateTo(route) {
  */
 /* #export */ function getPermissionToggleByType(view, permissionType) {
   return getPermissionItemByType(view, permissionType)
-      .$$('app-management-toggle-row');
+      .shadowRoot.querySelector('app-management-toggle-row');
 }
 
 /**
@@ -101,7 +104,8 @@ async function navigateTo(route) {
  * @return {Element}
  */
 /* #export */ function getPermissionCrToggleByType(view, permissionType) {
-  return getPermissionToggleByType(view, permissionType).$$('cr-toggle');
+  return getPermissionToggleByType(view, permissionType)
+      .shadowRoot.querySelector('cr-toggle');
 }
 
 /**

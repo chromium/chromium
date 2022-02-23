@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/macros.h"
 #include "chromecast/graphics/cast_window_manager.h"
 
 namespace chromecast {

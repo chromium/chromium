@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_COLLECTOR_H_
 #define COMPONENTS_PERFORMANCE_MANAGER_PUBLIC_METRICS_METRICS_COLLECTOR_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/performance_manager/public/graph/frame_node.h"
@@ -100,7 +101,7 @@ class MetricsCollector : public FrameNode::ObserverDefaultImpl,
   void ResetMetricsReportRecord(const PageNode* page_nod);
 
   // The graph to which this object belongs.
-  Graph* graph_ = nullptr;
+  raw_ptr<Graph> graph_ = nullptr;
 };
 
 }  // namespace performance_manager

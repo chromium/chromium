@@ -9,6 +9,7 @@
 #include "base/files/file.h"
 #include "base/files/file_util.h"
 #include "base/task/thread_pool.h"
+#include "build/chromeos_buildflags.h"
 #include "chrome/browser/platform_util_internal.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"

@@ -37,6 +37,7 @@ class InputDeviceSettingsImplOzone : public InputDeviceSettings {
   void UpdateTouchpadSettings(const TouchpadSettings& settings) override;
   void SetTouchpadSensitivity(int value) override;
   void SetTouchpadScrollSensitivity(int value) override;
+  void HapticTouchpadExists(DeviceExistsCallback callback) override;
   void SetTouchpadHapticFeedback(bool enabled) override;
   void SetTouchpadHapticClickSensitivity(int value) override;
   void SetTapToClick(bool enabled) override;
@@ -102,6 +103,12 @@ void InputDeviceSettingsImplOzone::SetTouchpadScrollSensitivity(int value) {
   DCHECK_LE(value, static_cast<int>(PointerSensitivity::kHighest));
   current_touchpad_settings_.SetScrollSensitivity(value);
   input_controller()->SetTouchpadScrollSensitivity(value);
+}
+
+void InputDeviceSettingsImplOzone::HapticTouchpadExists(
+    DeviceExistsCallback callback) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  std::move(callback).Run(input_controller()->HasHapticTouchpad());
 }
 
 void InputDeviceSettingsImplOzone::SetTouchpadHapticFeedback(bool enabled) {

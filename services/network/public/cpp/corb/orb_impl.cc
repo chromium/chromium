@@ -4,55 +4,95 @@
 
 #include "services/network/public/cpp/corb/orb_impl.h"
 
+#include "base/containers/contains.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/string_util.h"
+#include "net/base/mime_sniffer.h"
+#include "net/http/http_util.h"
 #include "net/url_request/url_request.h"
 #include "services/network/public/cpp/corb/corb_impl.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 
-namespace network {
-namespace corb {
+using Decision = network::corb::ResponseAnalyzer::Decision;
+
+namespace network::corb {
 
 namespace {
 
-// This corresponds to "opaque-blocklisted-never-sniffed MIME type" in ORB spec.
-bool IsOpaqueBlocklistedNeverSniffedMimeType(base::StringPiece mime_type) {
-  return CrossOriginReadBlocking::GetCanonicalMimeType(mime_type) ==
-         CrossOriginReadBlocking::MimeType::kNeverSniffed;
+bool IsNonSniffableImageMimeType(base::StringPiece mime_type) {
+  // TODO(lukasza): Once full Javascript sniffing is implemented, we may start
+  // to undesirably block future (=unsniffable) image formats.  We should
+  // explicitly recognize MIME types of such image formats below.  See also
+  // https://github.com/annevk/orb/issues/3#issuecomment-974334651
+
+  // This function returns true for image formats that are not recognized by
+  // net::SniffMimeTypeFromLocalData.  This helps to allow such images.
+  return base::LowerCaseEqualsASCII(mime_type, "image/svg+xml");
 }
 
-// ORB spec says that "An opaque-safelisted MIME type" is a JavaScript MIME type
-// or a MIME type whose essence is "text/css" or "image/svg+xml".
-bool IsOpaqueSafelistedMimeType(base::StringPiece mime_type) {
-  // Based on the spec: Is it a MIME type whose essence is "text/css" or
-  // "image/svg+xml"?
-  if (base::LowerCaseEqualsASCII(mime_type, "image/svg+xml") ||
-      base::LowerCaseEqualsASCII(mime_type, "text/css")) {
+bool IsAudioOrVideoMimeType(base::StringPiece mime_type) {
+  // TODO(lukasza): Restrict this to only known, non-sniffable audio/video types
+  // (hopefully we can reach agreement on this approach + document this in ORB
+  // spec).  See also https://github.com/annevk/orb/issues/3.  Notes:
+  // - In the long-term (once Javascript sniffing is implemented) this will
+  //   prevent non-webby images (e.g. image/vnd.adobe.photoshop) from being
+  //   unnecessarily allowed by ORB.
+  // - In the short-term this shouldn't matter for security of 200 responses
+  //   (with only HTML/XML/JSON sniffing current implementation wouldn't block
+  //   such non-webby images anyway).
+  // - The current implementation reduces risk of blocking range requests for
+  //   non-sniffable types.
+  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
+  if (base::StartsWith(mime_type, "audio/", kCaseInsensitive) ||
+      base::StartsWith(mime_type, "video/", kCaseInsensitive)) {
     return true;
   }
 
-  // Based on the spec: Is it a JavaScript MIME type?
-  if (CrossOriginReadBlocking::IsJavascriptMimeType(mime_type))
+  // Special-casing "application/ogg" here is a minor departure from the spec
+  // when IsAudioOrVideoMimeType is called from IsOpaqueSafelistedMimeType.
+  // OTOH, covering "application/ogg" here helps helps implement step 7 from ORB
+  // (sniffing audio/video in the OpaqueResponseBlockingAnalyzer::Sniff method
+  // below) because net::SniffMimeTypeFromLocalData may return
+  // "application/ogg".
+  if (base::LowerCaseEqualsASCII(mime_type, "application/ogg"))
     return true;
 
-  // https://github.com/annevk/orb/issues/20 tracks explicitly covering DASH
-  // mime type in the ORB algorithm.
+  // TODO(lukasza): Address this departure from the spec (which doesn't
+  // explicitly mention DASH and other MIME types here).  The current
+  // implementation enforces strict MIME types for DASH/HLS resources - if this
+  // can ship without too much of web-compatibility issues, then we should
+  // modify ORB spec to match this implementation.  If there is too much
+  // web-compatibility risk, then ORB might need to fully parse DASH/HLS
+  // manifests.
   if (base::LowerCaseEqualsASCII(mime_type, "application/dash+xml"))
+    return true;
+  if (base::LowerCaseEqualsASCII(mime_type, "application/vnd.apple.mpegurl"))
+    return true;
+  if (base::LowerCaseEqualsASCII(mime_type, "text/vtt"))
     return true;
 
   return false;
 }
 
-// Return true for multimedia MIME types that
-// 1) are not explicitly covered by ORB (e.g. that do not begin with "audio/",
-//    "image/", "video/" and that are not covered by
-//    IsOpaqueSafelistedMimeType).
-// 2) would be recognized by sniffing from steps 6 or 7 of ORB:
-//      step 6. If the image type pattern matching algorithm ...
-//      step 7. If the audio or video type pattern matching algorithm ...
-bool IsSniffableMultimediaType(base::StringPiece mime_type) {
-  if (base::LowerCaseEqualsASCII(mime_type, "application/ogg"))
+// ORB spec says that "An opaque-safelisted MIME type" is a JavaScript MIME type
+// or a MIME type whose essence is "text/css" or "image/svg+xml".
+bool IsOpaqueSafelistedMimeType(base::StringPiece mime_type) {
+  // Based on the spec: Is it a MIME type whose essence is text/css [...] ?
+  if (base::LowerCaseEqualsASCII(mime_type, "text/css"))
+    return true;
+
+  // Based on the spec: Is it a MIME type whose essence is [...] image/svg+xml?
+  if (IsNonSniffableImageMimeType(mime_type))
+    return true;
+  // TODO(lukasza): Departure from the spec - see the comment in
+  // IsAudioOrVideoMimeType for more details.
+  if (IsAudioOrVideoMimeType(mime_type))
+    return true;
+
+  // Based on the spec: Is it a JavaScript MIME type?
+  if (CrossOriginReadBlocking::IsJavascriptMimeType(mime_type))
     return true;
 
   return false;
@@ -74,6 +114,29 @@ bool IsHttpStatus(const mojom::URLResponseHead& response,
 
   int code = response.headers->response_code();
   return code == expected_status_code;
+}
+
+bool IsRangeResponseWithMiddleOfResource(
+    const mojom::URLResponseHead& response) {
+  if (!response.headers)
+    return false;
+
+  if (!IsHttpStatus(response, 206))
+    return false;
+
+  std::string range;
+  if (!response.headers->GetNormalizedHeader("content-range", &range))
+    return false;
+
+  int64_t first_byte_position = -1;
+  int64_t last_byte_position = -1;
+  int64_t instance_length = -1;
+  if (!net::HttpUtil::ParseContentRangeHeaderFor206(
+          range, &first_byte_position, &last_byte_position, &instance_length)) {
+    return false;
+  }
+
+  return first_byte_position > 0;
 }
 
 bool IsOpaqueResponse(const absl::optional<url::Origin>& request_initiator,
@@ -115,108 +178,249 @@ bool IsOpaqueResponse(const absl::optional<url::Origin>& request_initiator,
   return true;
 }
 
-ResponseHeadersHeuristicForUma CalculateResponseHeadersHeuristicForUma(
-    const GURL& request_url,
-    const absl::optional<url::Origin>& request_initiator,
-    mojom::RequestMode request_mode,
-    const mojom::URLResponseHead& response) {
-  // Exclude responses that ORB doesn't apply to.
-  if (!IsOpaqueResponse(request_initiator, request_mode, response))
-    return ResponseHeadersHeuristicForUma::kNonOpaqueResponse;
-  DCHECK(request_initiator.has_value());
-
-  // Same-origin requests are allowed (the spec doesn't explicitly deal with
-  // this).
-  url::Origin target_origin = url::Origin::Create(request_url);
-  if (request_initiator->IsSameOriginWith(target_origin))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-
-  // Presence of an "X-Content-Type-Options: nosniff" header means that ORB will
-  // reach a final decision in step 8, before reaching Javascript parsing in
-  // step 12:
-  //     step 8. If nosniff is true, then return false.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  if (CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(response))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-
-  // If a mime type is missing then ORB will reach a final decision in step 10,
-  // before reaching Javascript parsing in step 12:
-  //     step 10. If mimeType is failure, then return true.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  std::string mime_type;
-  if (!response.headers || !response.headers->GetMimeType(&mime_type))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-
-  // Specific MIME types might make ORB reach a final decision before reaching
-  // Javascript parsing step:
-  //     step 3.i. If mimeType is an opaque-safelisted MIME type, then return
-  //               true.
-  //     step 3.ii. If mimeType is an opaque-blocklisted-never-sniffed MIME
-  //                type, then return false.
-  //     ...
-  //     step 11. If mimeType's essence starts with "audio/", "image/", or
-  //              "video/", then return false.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  if (IsOpaqueBlocklistedNeverSniffedMimeType(mime_type) ||
-      IsOpaqueSafelistedMimeType(mime_type) ||
-      IsSniffableMultimediaType(mime_type)) {
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
-  }
-  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
-  if (base::StartsWith(mime_type, "audio/", kCaseInsensitive) ||
-      base::StartsWith(mime_type, "image/", kCaseInsensitive) ||
-      base::StartsWith(mime_type, "video/", kCaseInsensitive)) {
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
+bool IsSensitiveHtmlXmlOrJson(base::StringPiece data,
+                              base::StringPiece mime_type) {
+  if (CrossOriginReadBlocking::SniffForHTML(data) ==
+      CrossOriginReadBlocking::SniffingResult::kYes) {
+    return true;
   }
 
-  // If the http response indicates an error, or a 206 response, then ORB will
-  // reach a final decision before reaching Javascript parsing in step 12:
-  //     step 9. If response's status is not an ok status, then return false.
-  //     ...
-  //     step 12. If response's body parses as JavaScript ...
-  if (!IsOkayHttpStatus(response) || IsHttpStatus(response, 206))
-    return ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders;
+  // Some multimedia formats (e.g. image/svg+xml or application/dash+xml) may
+  // be XML-based - these need to be excluded from XML sniffing.
+  bool is_multimedia_mime_type = IsNonSniffableImageMimeType(mime_type) ||
+                                 IsAudioOrVideoMimeType(mime_type);
+  bool is_xml_based_multimedia_mime_type =
+      is_multimedia_mime_type &&
+      base::EndsWith(mime_type, "+xml", base::CompareCase::INSENSITIVE_ASCII);
+  if (!is_xml_based_multimedia_mime_type &&
+      CrossOriginReadBlocking::SniffForXML(data) ==
+          CrossOriginReadBlocking::SniffingResult::kYes) {
+    return true;
+  }
 
-  // Otherwise we need to parse the response body as Javascript.
-  return ResponseHeadersHeuristicForUma::kRequiresJavascriptParsing;
+  // Check for JSON and JS parser breakers.
+  if (CrossOriginReadBlocking::SniffForFetchOnlyResource(data) ==
+      CrossOriginReadBlocking::SniffingResult::kYes) {
+    return true;
+  }
+
+  return false;
 }
 
 }  // namespace
 
-void LogUmaForOpaqueResponseBlocking(
+OpaqueResponseBlockingAnalyzer::OpaqueResponseBlockingAnalyzer(
+    PerFactoryState& state)
+    : per_factory_state_(&state) {}
+
+OpaqueResponseBlockingAnalyzer::~OpaqueResponseBlockingAnalyzer() {
+  // TODO(https://crbug.com/1178928): Add UMA tracking the size of ORB state
+  // from `per_factory_state_`.
+}
+
+Decision OpaqueResponseBlockingAnalyzer::Init(
     const GURL& request_url,
     const absl::optional<url::Origin>& request_initiator,
     mojom::RequestMode request_mode,
-    mojom::RequestDestination request_destination,
-    const mojom::URLResponseHead& response) {
-  ResponseHeadersHeuristicForUma response_headers_decision =
-      CalculateResponseHeadersHeuristicForUma(request_url, request_initiator,
-                                              request_mode, response);
-  base::UmaHistogramEnumeration(
-      "SiteIsolation.ORB.ResponseHeadersHeuristic.Decision",
-      response_headers_decision);
+    const network::mojom::URLResponseHead& response) {
+  // Exclude responses that ORB doesn't apply to.
+  if (!IsOpaqueResponse(request_initiator, request_mode, response))
+    return Decision::kAllow;
+  DCHECK(request_initiator.has_value());
 
-  switch (response_headers_decision) {
-    case ResponseHeadersHeuristicForUma::kNonOpaqueResponse:
-      break;
+  // Same-origin requests are allowed (the ORB spec doesn't explicitly deal with
+  // this, because it assumes that the Fetch spec has already determined that
+  // the request is cross-origin, before handing off to ORB).
+  if (request_initiator->IsSameOriginWith(request_url))
+    return Decision::kAllow;
 
-    case ResponseHeadersHeuristicForUma::kProcessedBasedOnHeaders:
-      base::UmaHistogramEnumeration(
-          "SiteIsolation.ORB.ResponseHeadersHeuristic.ProcessedBasedOnHeaders",
-          request_destination);
-      break;
+  // Remember request properties that will be needed later.
+  is_http_status_okay_ = IsOkayHttpStatus(response);
+  if (response.content_length == 0)
+    is_empty_response_ = true;
+  if (response.headers && response.headers->response_code() == 204)
+    is_empty_response_ = true;
+  // TODO(lukasza): Consider tweaking how `final_request_url_` is used to
+  // properly handle interactions between redirects and range requests.  For
+  // example, ORB might sniff an initial a.com/a1 -> a.com/a2 redirect as media
+  // which should allow future range requests to the "same" resource.  But what
+  // if in the future something like load-balancing kicks-in and a.com/a1 ->
+  // a.com/a3 redirect happens instead?  This might require remembering that not
+  // just a2, but also a1 is safe.  Similar considerations (checking all
+  // consecutive, same-origin redirect hops) apply both to the initial request
+  // (deciding which URLs from the redirect chain to store as validated as
+  // media) and to the subsequent range requests (deciding which URLs from the
+  // chain to validate against the ones in the store of validated URLs).
+  final_request_url_ = request_url;
 
-    case ResponseHeadersHeuristicForUma::kRequiresJavascriptParsing:
-      base::UmaHistogramEnumeration(
-          "SiteIsolation.ORB.ResponseHeadersHeuristic."
-          "RequiresJavascriptParsing",
-          request_destination);
-      break;
+  // 1. Let mimeType be the result of extracting a MIME type from response's
+  //    header list.
+  if (response.headers)
+    response.headers->GetMimeType(&mime_type_);
+
+  // 2. Let nosniff be the result of determining nosniff given response's header
+  //    list.
+  is_no_sniff_header_present_ =
+      CrossOriginReadBlocking::CorbResponseAnalyzer::HasNoSniff(response);
+
+  // 3. If mimeType is not failure, then:
+  if (!mime_type_.empty()) {
+    // Step 3.i. is moved/postponed into HandleEndOfSniffableResponseBody.  See
+    // a comment in that method for more details.
+
+    // ii. If mimeType is an opaque-blocklisted-never-sniffed MIME type, then
+    //     return false.
+    // iv. If nosniff is true and mimeType is an opaque-blocklisted MIME type or
+    //     its essence is "text/plain", then return false.
+    //
+    // Step iii. is missing - this is departure from how full ORB handles 206
+    // responses labeled as html/json/xml.  This seems okay given that we
+    // tighten our implementation of step 4 below (handling of range requests).
+    switch (CrossOriginReadBlocking::GetCanonicalMimeType(mime_type_)) {
+      case CrossOriginReadBlocking::MimeType::kNeverSniffed:
+        return Decision::kBlock;  // Step ii.
+
+      case CrossOriginReadBlocking::MimeType::kHtml:
+      case CrossOriginReadBlocking::MimeType::kJson:
+      case CrossOriginReadBlocking::MimeType::kPlain:
+      case CrossOriginReadBlocking::MimeType::kXml:
+        if (is_no_sniff_header_present_)
+          return Decision::kBlock;  // Step iv.
+        break;
+
+      case CrossOriginReadBlocking::MimeType::kOthers:
+      case CrossOriginReadBlocking::MimeType::kInvalidMimeType:
+        break;
+    }
   }
+
+  // 4. If request's no-cors media request state is "subsequent", then return
+  //    true.
+  //
+  // TODO(lukasza): Departure from the spec:
+  // Diff from the (blocking) step 3.iii.:
+  // - Moved slightly later
+  // - No extra conditions like "and mimeType is an opaque-blocklisted MIME
+  //   type" (e.g. html, xml, or json).
+  // Diff from the (allowing) step 4.:
+  // - Only applying this step to IsRangeResponseWithMiddleOfResource cases
+  if (IsRangeResponseWithMiddleOfResource(response)) {
+    if (IsAllowedAudioVideoRequest(request_url)) {
+      return Decision::kAllow;
+    } else {
+      return Decision::kBlock;
+    }
+  }
+
+  // 5. Wait for 1024 bytes of response or end-of-file, whichever comes first
+  //    and let bytes be those bytes.
+  return Decision::kSniffMore;
 }
 
-}  // namespace corb
-}  // namespace network
+Decision OpaqueResponseBlockingAnalyzer::Sniff(base::StringPiece data) {
+  std::string sniffed_mime_type;
+  net::SniffMimeTypeFromLocalData(data, &sniffed_mime_type);
+
+  // 7. If the audio or video type pattern matching algorithm given bytes does
+  //    not return undefined, then:
+  //
+  // TODO(lukasza): Inspecting `mime_type_` (in addition to `sniffed_mime_type`)
+  // is a departure from the spec.  For more details please see *all* 3 of the
+  // TODO comments in the IsAudioOrVideoMimeType function.
+  if (IsAudioOrVideoMimeType(sniffed_mime_type) ||
+      IsAudioOrVideoMimeType(mime_type_)) {
+    // i. Append (request's opaque media identifier, request's current URL) to
+    //    the user agent's opaque-safelisted requesters set.
+    StoreAllowedAudioVideoRequest(final_request_url_);
+
+    // ii. Return true.
+    return Decision::kAllow;
+  }
+
+  // Spec-divergence: no step 8:
+  // 8. If requests's no-cors media request state is not "N/A", then return
+  //    false.
+  // This implementation doesn't know if the request came from a media element
+  // or not.  Making the decision based on earlier sniffing should be okay.
+
+  // 9. If the image type pattern matching algorithm given bytes does not
+  //    return undefined, then return true.
+  constexpr auto kCaseInsensitive = base::CompareCase::INSENSITIVE_ASCII;
+  if (base::StartsWith(sniffed_mime_type, "image/", kCaseInsensitive))
+    return Decision::kAllow;
+
+  // TODO(lukasza): Departure from the spec.  This avoids having to sniff
+  // Javascript in the full response as described in the "Gradual CORB -> ORB
+  // transition" doc at
+  // https://docs.google.com/document/d/1qUbE2ySi6av3arUEw5DNdFJIKKBbWGRGsXz_ew3S7HQ/edit?usp=sharing
+  // Diff: This is a new sniffing step for the 1st 1024 bytes.
+  // Diff: This doesn't sniff for JavaScript, but for non-Html/Xml/Json.
+  bool is_surely_not_javascript = IsSensitiveHtmlXmlOrJson(data, mime_type_);
+  if (is_surely_not_javascript)
+    return Decision::kBlock;
+
+  return Decision::kSniffMore;
+}
+
+Decision OpaqueResponseBlockingAnalyzer::HandleEndOfSniffableResponseBody() {
+  // 3.i. If mimeType is an opaque-safelisted MIME type, then return true.
+  //
+  // For parity with CORB, we tweak the ORB algorithm, so that it always
+  // sniffs the response body for JSON-or-JS-parser-breakers.  Whether ORB
+  // spec can adopt this behavior is being discussed in
+  // https://github.com/annevk/orb/issues/30.  This means that step 3.i.
+  // from ORB is postponed until HandleEndOfSniffableResponseBody here.
+  //
+  // TODO(lukasza): Resolve this difference from the ORB spec.
+  // TODO(lukasza): Consider other early-allow mechanisms (e.g. CORP - see
+  // https://github.com/annevk/orb/issues/30#issuecomment-971373842).
+  if (IsOpaqueSafelistedMimeType(mime_type_))
+    return Decision::kAllow;
+
+  // TODO(lukasza): Implement the following steps from ORB spec:
+  // 10. If nosniff is true, then return false.
+  // 11. If response's status is not an ok status, then return false.
+  // (Skipping these steps minimizes the risk of shipping the initial ORB
+  // implementation.)
+
+  // 12. If mimeType is failure, then return true.
+  //
+  // TODO(lukasza): This is not fully accurate - it doesn't capture all the
+  // possible failure modes of
+  // https://fetch.spec.whatwg.org/#concept-header-extract-mime-type
+  if (mime_type_.empty())
+    return Decision::kAllow;
+
+  // TODO(lukasza): Departure from the spec discussed in
+  // https://github.com/annevk/orb/issues/3.
+  // Diff: Removing step 13:
+  //     13. If mimeType's essence starts with "audio/", "image/", or "video/",
+  //          then return false.
+
+  // TODO(lukasza): Departure from the spec, because the current implementation
+  // avoids full Javascript parsing as described in the "Gradual CORB -> ORB
+  // transition" doc at
+  // https://docs.google.com/document/d/1qUbE2ySi6av3arUEw5DNdFJIKKBbWGRGsXz_ew3S7HQ/edit?usp=sharing
+  // Diff: Skipping/ignoring step 15:
+  //     15. If response's body parses as JavaScript and does not parse as JSON,
+  //         then return true.
+  // Diff: Changing step 16 to fail open (e.g. return true / kAllow):
+  //     16. Return false.
+  return Decision::kAllow;
+}
+
+bool OpaqueResponseBlockingAnalyzer::ShouldReportBlockedResponse() const {
+  return !is_empty_response_ && is_http_status_okay_;
+}
+
+void OpaqueResponseBlockingAnalyzer::StoreAllowedAudioVideoRequest(
+    const GURL& media_url) {
+  per_factory_state_->insert(media_url);
+}
+
+bool OpaqueResponseBlockingAnalyzer::IsAllowedAudioVideoRequest(
+    const GURL& media_url) {
+  return base::Contains(*per_factory_state_, media_url);
+}
+
+}  // namespace network::corb

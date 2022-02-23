@@ -22,8 +22,6 @@
 namespace floss {
 
 namespace {
-const char kFlossObjectManagerServiceName[] = "org.chromium.bluetooth.Manager";
-
 FlossDBusManager* g_floss_dbus_manager = nullptr;
 FlossDBusThreadManager* g_floss_dbus_thread_manager = nullptr;
 }  // namespace
@@ -50,9 +48,9 @@ FlossDBusManager::FlossDBusManager(dbus::Bus* bus, bool use_stubs) : bus_(bus) {
   // Sets up callbacks checking for object manager support. Object manager is
   // registered on the root object "/"
   GetSystemBus()
-      ->GetObjectProxy(kFlossObjectManagerServiceName, dbus::ObjectPath("/"))
+      ->GetObjectProxy(kManagerService, dbus::ObjectPath("/"))
       ->CallMethodWithErrorCallback(
-          &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+          &method_call, kDBusTimeoutMs,
           base::BindOnce(&FlossDBusManager::OnObjectManagerSupported,
                          weak_ptr_factory_.GetWeakPtr()),
           base::BindOnce(&FlossDBusManager::OnObjectManagerNotSupported,

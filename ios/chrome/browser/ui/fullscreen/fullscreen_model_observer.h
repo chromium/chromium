@@ -7,8 +7,6 @@
 
 #include <CoreGraphics/CoreGraphics.h>
 
-#include "base/macros.h"
-
 class FullscreenModel;
 
 // Interface for listening to FullscreenModel changes.

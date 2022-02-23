@@ -21,6 +21,7 @@
 <translation id="115443833402798225">хангул, ахматае</translation>
 <translation id="1155759005174418845">каталонска</translation>
 <translation id="1168100932582989117">Сервери за име на Google</translation>
+<translation id="1171082344678443012">Компримирана архива XZ</translation>
 <translation id="1172970565351728681">Преостануваат околу <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Преименувај</translation>
 <translation id="1173916544412572294">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, батерија на телефонот: <ph name="BATTERY_STATUS" /> %, детали</translation>
@@ -105,6 +106,7 @@
 <translation id="1853795129690976061">Папкава е споделена со Linux</translation>
 <translation id="1864756863218646478">Не може да се најде датотеката.</translation>
 <translation id="1884013283844450420">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, поврзи</translation>
+<translation id="1914901738028575085">Уред со CloudReady 2.0</translation>
 <translation id="1920670151694390848">транслитерација на малајалски</translation>
 <translation id="1920798810075583923">Лубеница</translation>
 <translation id="1924372192547904021"><ph name="DRIVE_NAME" /> е форматиран</translation>
@@ -119,6 +121,7 @@
 <translation id="2009067268969781306">Форматирањето на USB-дискот ќе ги избрише сите податоци складирани во него. Дејството не може да се врати.</translation>
 <translation id="2025955442973426285">тигрејски</translation>
 <translation id="2028997212275086731">РАР-архива</translation>
+<translation id="2036414735548252477">Компримирана tar-архива LZMA</translation>
 <translation id="2037845485764049925">руски</translation>
 <translation id="2044023416777079300">Модемот не е регистриран</translation>
 <translation id="2046702855113914483">Рамен</translation>
@@ -239,6 +242,7 @@
 <translation id="3078461028045006476">Споделете со <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">Уреди Chromebit</translation>
 <translation id="3085752524577180175">Хост на SOCKS</translation>
+<translation id="3104793765551262433">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
 <translation id="3113153474486991170">Не можеше да се отвори „<ph name="PATH" />“ од локацијава. Копирајте ја во „Мои датотеки“ за да ја отворите.</translation>
 <translation id="3113592018909187986">Имате уште 1 обид. Нема да може да ја користите мрежава додека не поставите нов PIN.</translation>
 <translation id="3124404833828281817">Замислен човек</translation>
@@ -296,6 +300,7 @@
 <translation id="3556731189587832921">англиски (САД) со меѓународна компјутерска тастатура</translation>
 <translation id="3567221313191587603">Изберете датотека и вклучете „<ph name="OFFLINE_CHECKBOX_NAME" />“ за да имате офлајн пристап до датотеките.</translation>
 <translation id="357479282490346887">литвански</translation>
+<translation id="3587482841069643663">Сите</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> не можеше да се направи да биде достапна офлајн</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">канадско француска</translation>
@@ -305,13 +310,13 @@
 <translation id="3620292326130836921">Сѐ е ископирано!</translation>
 <translation id="3634507049637220048">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, управувана од администраторот, детали</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> ставки се преместени.</translation>
-<translation id="3645531960514756307">Откачете ја папката</translation>
 <translation id="3685122418104378273">Кога се користи мобилен интернет, синхронизацијата со Google Drive стандардно е оневозможена.</translation>
 <translation id="3689865792480713551">Откажете <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Деактивирана, <ph name="CONNECTION_STATUS" />, Јачина на сигналот <ph name="SIGNAL_STRENGTH" /> %, Детали</translation>
 <translation id="3691184985318546178">синхалски</translation>
 <translation id="3726463242007121105">Уредот не може да се отвори затоа што не го поддржува системот со датотеки.</translation>
 <translation id="3727148787322499904">Менувањето на оваа поставка ќе влијае на сите споделени мрежи</translation>
+<translation id="3737576078404241332">Отстрани од странична лента</translation>
 <translation id="3741243925913727067">Направи резервна копија на фотографиите и видеата од преносливиот уред на Google Drive.</translation>
 <translation id="3749289110408117711">Име на датотека</translation>
 <translation id="3780536599611287598">Немате дозвола за преместување датотеки во „<ph name="FOLDER_NAME" />“.</translation>
@@ -372,6 +377,7 @@
 <translation id="4326142238881453352">Ботаничар</translation>
 <translation id="4326192123064055915">Кафе</translation>
 <translation id="4336032328163998280">Копирањето не успеа. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Додај во странична лента</translation>
 <translation id="4348495354623233847">сорани курдски со тастатура заснована на арапски</translation>
 <translation id="4363958938297989186">руски со фонетска тастатура</translation>
 <translation id="4364327530094270451">Диња</translation>
@@ -440,6 +446,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> бајти</translation>
 <translation id="4880214202172289027">Лизгач за јачина на звук</translation>
 <translation id="4881695831933465202">Отвори</translation>
+<translation id="4886199584824489598">Компримирана архива Bzip2</translation>
 <translation id="4900532980794411603">Сподели со Parallels Desktop</translation>
 <translation id="4902546322522096650">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, поврзи</translation>
 <translation id="4905417359854579806">Направете бекап на <ph name="FILE_COUNT" /></translation>
@@ -583,6 +590,7 @@
 <translation id="6055907707645252013">Мрежа со <ph name="NETWORK_TYPE" />, не е поврзана</translation>
 <translation id="6074825444536523002">Google формулар</translation>
 <translation id="6079871810119356840">унгарски со тастатура Qwerty</translation>
+<translation id="6082256976217156453">Компримирана архива LZMA</translation>
 <translation id="6096979789310008754">Текстот за пребарување е избришан, се прикажуваат сите датотеки и папки.</translation>
 <translation id="610101264611565198">Се преместува <ph name="FILE_NAME" /> во <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Празно место</translation>
@@ -678,6 +686,7 @@
 <translation id="6935521024859866267">Превртено</translation>
 <translation id="6943836128787782965">HTTP не успеа</translation>
 <translation id="6949408524333579394">транслитерација на српски</translation>
+<translation id="6954309393500027528">Администраторот блокирал лепење на датотекава</translation>
 <translation id="6960565108681981554">Не е активирана. Контактирајте со вашиот оператор.</translation>
 <translation id="696203921837389374">Овозможи синхронизација преку мобилен интернет</translation>
 <translation id="6965382102122355670">Во ред</translation>
@@ -838,6 +847,7 @@
 <translation id="8297012244086013755">хангул, 3-делна (без Shift)</translation>
 <translation id="8299269255470343364">јапонски</translation>
 <translation id="8300849813060516376">OTASP не успеа</translation>
+<translation id="8308481408797647857">Компримирана tar-архива XZ</translation>
 <translation id="8312871300878166382">Залепи во папка</translation>
 <translation id="8329978297633540474">Обичен текст</translation>
 <translation id="8335587457941836791">Откачи од полица</translation>
@@ -874,6 +884,7 @@
 <translation id="8551494947769799688">летонски</translation>
 <translation id="8560515948038859357">кантонски</translation>
 <translation id="8561206103590473338">Слон</translation>
+<translation id="8566466896628108558">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, блокирано од администраторот, детали</translation>
 <translation id="8569764466147087991">Избери датотека за отворање</translation>
 <translation id="8577897833047451336">хрватски</translation>
 <translation id="8578308463707544055">индонезиски</translation>
@@ -891,6 +902,7 @@
 <translation id="8714406895390098252">Велосипед</translation>
 <translation id="8719721339511222681">Избрано е <ph name="ENTRY_NAME" />.</translation>
 <translation id="872537912056138402">хрватска</translation>
+<translation id="873847021056608403">Уреди со CloudReady 2.0</translation>
 <translation id="8743164338060742337">Мрежа <ph name="NETWORK_INDEX" /> од <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="NETWORK_PROVIDER_NAME" />, јачина на сигналот: <ph name="SIGNAL_STRENGTH" /> %, управувана од администраторот, поврзи</translation>
 <translation id="8750438273876807512">Допрете и задржете датотека и допрете <ph name="ICON" />, па изберете „Прикачи на полицата“ за брз пристап до вашите датотеки во полицата.</translation>
 <translation id="8787254343425541995">Дозволи прокси за споделени мрежи</translation>
@@ -926,7 +938,6 @@
 <translation id="9110990317705400362">Ние постојано бараме начини да го направиме вашето прелистување побезбедно. Порано, која било веб-локација можеше да побара од вас да додадете наставка на прелистувачот. Во најновите верзии на Google Chrome, мора јасно да му кажете на Chrome дека сакате да ги инсталирате овие наставки со нивно додавање преку страницата Наставки. <ph name="BEGIN_LINK" />Дознајте повеќе<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Отклучи</translation>
 <translation id="912419004897138677">Кодек</translation>
-<translation id="9129931661813833980">Прикачи папка</translation>
 <translation id="9130775360844693113">Членовите на „<ph name="DESTINATION_NAME" />“ ќе добијат пристап до ставкиве.</translation>
 <translation id="9131598836763251128">Изберете една или повеќе датотеки</translation>
 <translation id="9133055936679483811">Пакувањето не успеа. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +958,7 @@
 <translation id="943972244133411984">Изменето од</translation>
 <translation id="945522503751344254">Испратете повратни информации</translation>
 <translation id="947144732524271678">Избравте опсег од <ph name="ENTRY_COUNT" /> записи од <ph name="FROM_ENTRY_NAME" /> до <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Компримирана архива Gzip</translation>
 <translation id="965477715979482472">англиски (Јужна Африка)</translation>
 <translation id="981121421437150478">Без мрежа</translation>
 <translation id="988685240266037636">Веќе постои датотека со име „<ph name="FILE_NAME" />“. Дали сакате да ја замените?</translation>

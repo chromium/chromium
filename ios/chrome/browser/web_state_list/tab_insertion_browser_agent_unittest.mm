@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/web_state_list/tab_insertion_browser_agent.h"
 
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/main/browser.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
@@ -22,7 +23,9 @@ const char kURL1[] = "https://www.some.url.com";
 
 class TabInsertionBrowserAgentTest : public PlatformTest {
  public:
-  TabInsertionBrowserAgentTest() : browser_(std::make_unique<TestBrowser>()) {
+  TabInsertionBrowserAgentTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
     TabInsertionBrowserAgent::CreateForBrowser(browser_.get());
     agent_ = TabInsertionBrowserAgent::FromBrowser(browser_.get());
   }
@@ -42,7 +45,8 @@ class TabInsertionBrowserAgentTest : public PlatformTest {
 
  protected:
   web::WebTaskEnvironment task_environment_;
-  std::unique_ptr<Browser> browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   TabInsertionBrowserAgent* agent_;
 };
 

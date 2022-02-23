@@ -101,7 +101,7 @@ EXPECTED_OUTPUT = [s + '\n' for s in EXPECTED_OUTPUT]
 class JavaDeobfuscateTest(unittest.TestCase):
 
   def __init__(self, *args, **kwargs):
-    super(JavaDeobfuscateTest, self).__init__(*args, **kwargs)
+    super().__init__(*args, **kwargs)
     self._map_file = None
 
   def setUp(self):

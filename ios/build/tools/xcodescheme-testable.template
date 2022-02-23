@@ -1,0 +1,10 @@
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "@{BLUEPRINT_IDENTIFIER}"
+               BuildableName = "@{BUILDABLE_NAME}"
+               BlueprintName = "@{BLUEPRINT_NAME}"
+               ReferencedContainer = "container:@{PROJECT_NAME}">
+            </BuildableReference>
+         </TestableReference>

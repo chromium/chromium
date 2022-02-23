@@ -15,6 +15,8 @@ import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.PostTask;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.content_public.browser.UiThreadTaskTraits;
+import org.chromium.net.ChromiumNetworkAdapter;
+import org.chromium.net.NetworkTrafficAnnotationTag;
 
 import java.io.IOException;
 import java.net.HttpURLConnection;
@@ -103,7 +105,9 @@ public final class ConnectivityChecker {
             @Override
             protected Integer doInBackground() {
                 try {
-                    HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                    HttpURLConnection conn =
+                            (HttpURLConnection) ChromiumNetworkAdapter.openConnection(
+                                    url, NetworkTrafficAnnotationTag.MISSING_TRAFFIC_ANNOTATION);
                     conn.setInstanceFollowRedirects(false);
                     conn.setRequestMethod("GET");
                     conn.setDoInput(false);

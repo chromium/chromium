@@ -19,6 +19,12 @@ namespace views {
 DEFINE_UI_CLASS_PROPERTY_KEY(bool, kSkipAccessibilityPaintChecks, false)
 
 void RunAccessibilityPaintChecks(View* view) {
+  // Note that none of these checks run if DCHECKs are off. Dead-code
+  // elimination should remove the following. This is done instead of #ifs to
+  // make sure that the code compiles regardless of DCHECK availability.
+  if (!DCHECK_IS_ON())
+    return;
+
   if (view->GetProperty(kSkipAccessibilityPaintChecks))
     return;
 
@@ -28,19 +34,19 @@ void RunAccessibilityPaintChecks(View* view) {
   if (!node_data.HasState(ax::mojom::State::kFocusable))
     return;
 
-// TODO(crbug.com/1218186): Enable these checks on ash. One of the current
+// TODO(crbug.com/1218186): Enable these DCHECKs on ash. One of the current
 // failures seem to be SearchResultPageView marking itself as ignored
 // (temporarily), which marks focusable children as ignored. One way of enabling
 // these here would be to turn `kSkipAccessibilityPaintChecks` into a cascading
 // property or introduce a cascading property specifically for the current
 // misbehavior in SearchResultPageView to be able to suppress that and enable
-// the CHECK elsewhere.
+// the DCHECK elsewhere.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-  CHECK(!node_data.HasState(ax::mojom::State::kIgnored))
+  DCHECK(!node_data.HasState(ax::mojom::State::kIgnored))
       << "View is focusable and should not be ignored.\n"
       << GetViewDebugInfo(view);
 
-  CHECK(!node_data.IsInvisible())
+  DCHECK(!node_data.IsInvisible())
       << "View is focusable and should not be invisible.\n"
       << GetViewDebugInfo(view);
 #endif  // !BUILDFLAG(IS_CHROMEOS_ASH)
@@ -64,11 +70,9 @@ void RunAccessibilityPaintChecks(View* view) {
     return;
   }
 
-  // Finally, a view is allowed to explicitly state that it has no name. Note
-  // that while this is a CHECK, calling code may decide to only run this if
-  // DCHECKs are enabled.
-  CHECK_EQ(node_data.GetNameFrom(),
-           ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
+  // Finally, a view is allowed to explicitly state that it has no name.
+  DCHECK_EQ(node_data.GetNameFrom(),
+            ax::mojom::NameFrom::kAttributeExplicitlyEmpty)
       << "View is focusable but has no accessible name or placeholder, and is "
          "not explicitly marked as empty.\n"
       << GetViewDebugInfo(view);

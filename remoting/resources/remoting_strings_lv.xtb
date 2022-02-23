@@ -26,7 +26,6 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="225614027745146050">Laipni lūdzam!</translation>
 <translation id="2320166752086256636">Paslēpt tastatūru</translation>
 <translation id="2329392777730037872">Neizdevās atvērt vietni <ph name="URL" /> klientā</translation>
-<translation id="2333212046079545895">Autortiesības: Google LLC (2021). Visas tiesības paturētas.</translation>
 <translation id="2359808026110333948">Turpināt</translation>
 <translation id="2366718077645204424">Nevar sasniegt saimniekdatoru. Iespējamais iemesls var būt tīkla konfigurācija, kuru izmantojat.</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> Pēdējo reizi redzēts tiešsaistē <ph name="RELATIVE_TIMESTAMP" />.</translation>
@@ -37,6 +36,7 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="2599300881200251572">Izmantojot šo pakalpojumu, tiek iespējota ienākošo savienojumu izveide no Chrome attālās darbvirsmas klientiem.</translation>
 <translation id="2647232381348739934">Chrome saites pakalpojums</translation>
 <translation id="2676780859508944670">Notiek apstrāde...</translation>
+<translation id="2692522824157224199">Autortiesības: Google LLC (2022). Visas tiesības paturētas.</translation>
 <translation id="2699970397166997657">Chrome saite</translation>
 <translation id="2758123043070977469">Autentificēšanas laikā radās problēma. Lūdzu, piesakieties vēlreiz.</translation>
 <translation id="2803375539583399270">Ievadiet PIN</translation>
@@ -73,10 +73,10 @@ Ja kastīte “<ph name="SERVICE_SCRIPT_NAME" />” jau ir atzīmēta, noņemiet
 <translation id="4257751272692708833">Produkta “<ph name="PRODUCT_NAME" />” URL pāradresēšanas rīks</translation>
 <translation id="4277736576214464567">Piekļuves kods nav derīgs. Lūdzu, mēģiniet vēlreiz.</translation>
 <translation id="4281844954008187215">Google pakalpojumu noteikumi</translation>
+<translation id="4372650392690220936">Autortiesības: Chromium autori (2022). Visas tiesības paturētas.</translation>
 <translation id="4405930547258349619">Galvenā bibliotēka</translation>
 <translation id="443560535555262820">Atvērt pieejamības preferences</translation>
 <translation id="4450893287417543264">Vairs nerādīt</translation>
-<translation id="4512952200932940229">Autortiesības: Chromium autori (2021). Visas tiesības paturētas.</translation>
 <translation id="4513946894732546136">Atsauksmes</translation>
 <translation id="4563926062592110512">Atvienotais klients: <ph name="CLIENT_USERNAME" />.</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> nav konfigurēts pareizi. Lūdzu, izvēlieties citu noklusējuma pārlūku un pēc tam atkal iespējojiet URL pāradresāciju.</translation>

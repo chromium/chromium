@@ -11,7 +11,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:background="@color/sheet_bg_color"
+    android:background="@drawable/sheet_background"
     android:orientation="vertical">
 
     <LinearLayout
@@ -61,7 +61,7 @@
             android:background="?attr/selectableItemBackgroundBorderless"
             android:contentDescription="@string/close"
             android:src="@drawable/btn_close"
-            app:tint="@color/default_icon_color"
+            app:tint="@macro/default_icon_color"
             android:visibility="gone"/>
     </LinearLayout>
 
@@ -90,7 +90,7 @@
                 android:minWidth="@dimen/min_touch_target_size"
                 android:minHeight="@dimen/min_touch_target_size"
                 android:src="@drawable/ic_arrow_back_white_24dp"
-                app:tint="@color/default_icon_color" />
+                app:tint="@macro/default_icon_color" />
 
             <TextView
                 android:id="@+id/page_info_subpage_title"

@@ -131,6 +131,10 @@ class TestNavigationObserver {
   // matched URL if set).
   int last_nav_entry_id() const { return last_nav_entry_id_; }
 
+  SiteInstance* last_source_site_instance() const {
+    return last_source_site_instance_.get();
+  }
+
  protected:
   // Register this TestNavigationObserver as an observer of the |web_contents|.
   void RegisterAsObserver(WebContents* web_contents);
@@ -266,6 +270,8 @@ class TestNavigationObserver {
 
   // The navigation entry ID of the last navigation.
   int last_nav_entry_id_ = 0;
+
+  scoped_refptr<SiteInstance> last_source_site_instance_;
 
   // The MessageLoopRunner used to spin the message loop.
   scoped_refptr<MessageLoopRunner> message_loop_runner_;

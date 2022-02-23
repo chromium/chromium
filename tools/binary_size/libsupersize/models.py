@@ -3,32 +3,7 @@
 # found in the LICENSE file.
 """Classes that comprise the data model for binary size analysis.
 
-The primary classes are Symbol, and SymbolGroup.
-
-Description of common properties:
-  * address: The start address of the symbol.
-        May be 0 (e.g. for .bss or for SymbolGroups).
-  * size: The number of bytes this symbol takes up, including padding that comes
-        before |address|.
-  * aliases: List of symbols that represent the same bytes. The |aliases| of
-        each symbol in this list points to the same list instance.
-  * num_aliases: The number of symbols with the same address (including self).
-  * pss: size / num_aliases.
-  * padding: The number of bytes of padding before |address| due to this symbol.
-  * padding_pss: padding / num_aliases.
-  * name: Names with templates and parameter list removed.
-        Never None, but will be '' for anonymous symbols.
-  * template_name: Name with parameter list removed (but templates left in).
-        Never None, but will be '' for anonymous symbols.
-  * full_name: Name with template and parameter list left in.
-        Never None, but will be '' for anonymous symbols.
-  * is_anonymous: True when the symbol exists in an anonymous namespace (which
-        are removed from both full_name and name during normalization).
-  * container: A (shared) Container instance.
-  * section_name: E.g. ".text", ".rodata", ".data.rel.local"
-  * section: The second character of |section_name|. E.g. "t", "r", "d".
-  * component: The team that owns this feature.
-        Never None, but will be '' when no component exists.
+See docs/data_model.md for an explanation of what fields do.
 """
 
 import collections
@@ -42,15 +17,8 @@ import match_util
 
 BUILD_CONFIG_GIT_REVISION = 'git_revision'
 BUILD_CONFIG_GN_ARGS = 'gn_args'
-BUILD_CONFIG_LINKER_NAME = 'linker_name'
-BUILD_CONFIG_TOOL_PREFIX = 'tool_prefix'  # Path relative to SRC_ROOT.
-
-BUILD_CONFIG_KEYS = (
-    BUILD_CONFIG_GIT_REVISION,
-    BUILD_CONFIG_GN_ARGS,
-    BUILD_CONFIG_LINKER_NAME,
-    BUILD_CONFIG_TOOL_PREFIX,
-)
+BUILD_CONFIG_TITLE = 'title'
+BUILD_CONFIG_URL = 'url'
 
 METADATA_APK_FILENAME = 'apk_file_name'  # Path relative to output_directory.
 METADATA_APK_SIZE = 'apk_size'  # File size of apk in bytes.
@@ -58,7 +26,8 @@ METADATA_APK_SPLIT_NAME = 'apk_split_name'  # Name of the split if applicable.
 METADATA_ZIPALIGN_OVERHEAD = 'zipalign_padding'  # Overhead from zipalign.
 METADATA_SIGNING_BLOCK_SIZE = 'apk_signature_block_size'  # Size in bytes.
 METADATA_MAP_FILENAME = 'map_file_name'  # Path relative to output_directory.
-METADATA_ELF_ARCHITECTURE = 'elf_arch'  # "Machine" field from readelf -h
+METADATA_ELF_ALGORITHM = 'elf_algorithm'  # linker_map / dwarf / sections.
+METADATA_ELF_ARCHITECTURE = 'elf_arch'  # "arm", "arm64", "x86", or "x64".
 METADATA_ELF_FILENAME = 'elf_file_name'  # Path relative to output_directory.
 METADATA_ELF_MTIME = 'elf_mtime'  # int timestamp in utc.
 METADATA_ELF_BUILD_ID = 'elf_build_id'
@@ -228,6 +197,13 @@ class BaseContainer:
     self.name = name
     self.short_name = None  # Assigned by AssignShortNames().
     self._classified_sections = None
+
+  def __str__(self):
+    return self.name
+
+  def __repr__(self):
+    return '{}(name={}, short_name={})'.format(self.__class__.__name__,
+                                               self.name, self.short_name)
 
   def ClassifySections(self):
     if self._classified_sections is None:
@@ -413,10 +389,7 @@ class DeltaSizeInfo(BaseSizeInfo):
 
 
 class BaseSymbol:
-  """Base class for Symbol and SymbolGroup.
-
-  Refer to module docs for field descriptions.
-  """
+  """Base class for Symbol and SymbolGroup."""
   __slots__ = ()
 
   @property
@@ -570,10 +543,7 @@ class BaseSymbol:
 
 
 class Symbol(BaseSymbol):
-  """Represents a single symbol within a binary.
-
-  Refer to module docs for field descriptions.
-  """
+  """Represents a single symbol within a binary."""
 
   __slots__ = (
       'address',
@@ -617,8 +587,8 @@ class Symbol(BaseSymbol):
     self.component = ''
 
   def __repr__(self):
-    if self.container and self.container.name:
-      container_str = '<{}>'.format(self.container.name)
+    if self.container_name:
+      container_str = '<{}>'.format(self.container_name)
     else:
       container_str = ''
     template = ('{}{}@{:x}(size_without_padding={},padding={},full_name={},'
@@ -1072,12 +1042,21 @@ class SymbolGroup(BaseSymbol):
       ret = ret.Inverted()
     return ret
 
+  def WhereInContainer(self, container):
+    """|container| can be name, short_name, or container instance."""
+    container = str(container)  # Allow int to be used for short names.
+    if isinstance(container, str):
+      if container.isdigit():
+        return self.Filter(lambda s: s.container_short_name == container)
+      return self.Filter(lambda s: s.container_name == container)
+    return self.Filter(lambda s: s.container == container)
+
   def WhereInSection(self, section, container=None):
     """|section| can be section_name ('.bss'), or section chars ('bdr')."""
     if section.startswith('.'):
       if container:
         short_name = container.short_name
-        ret = self.Filter(lambda s: (s.container.short_name == short_name and s.
+        ret = self.Filter(lambda s: (s.container_short_name == short_name and s.
                                      section_name == section))
       else:
         ret = self.Filter(lambda s: s.section_name == section)
@@ -1085,7 +1064,7 @@ class SymbolGroup(BaseSymbol):
     else:
       if container:
         short_name = container.short_name
-        ret = self.Filter(lambda s: (s.container.short_name == short_name and s.
+        ret = self.Filter(lambda s: (s.container_short_name == short_name and s.
                                      section in section))
       else:
         ret = self.Filter(lambda s: s.section in section)
@@ -1104,6 +1083,9 @@ class SymbolGroup(BaseSymbol):
   def WhereIsPak(self):
     return self.WhereInSection(
         ''.join(SECTION_NAME_TO_SECTION[s] for s in PAK_SECTIONS))
+
+  def WhereIsPlaceholder(self):
+    return self.Filter(lambda s: s.full_name.startswith('*'))
 
   def WhereIsTemplate(self):
     return self.Filter(lambda s: s.template_name is not s.name)

@@ -24,8 +24,8 @@ body {
 }
 
 #outer {
-  margin-left: auto;
-  margin-right: auto;
+  margin-inline-end: auto;
+  margin-inline-start: auto;
   margin-top: 10px;
   min-width: 800px;
   width: 60%;
@@ -51,19 +51,19 @@ body {
 
 #logo {
   float: right;
-  margin-left: 40px;
-  text-align: right;
+  margin-inline-start: 40px;
+  text-align: end;
   width: 180px;
 }
 
 #company {
   font-size: 0.7em;
-  text-align: right;
+  text-align: end;
 }
 
 #copyright {
   font-size: 0.7em;
-  text-align: right;
+  text-align: end;
 }
 
 #useragent {
@@ -73,13 +73,27 @@ body {
 .version {
   font-family: monospace;
   max-width: 430px;
-  padding-left: 5px;
+  padding-inline-start: 5px;
   vertical-align: bottom;
 }
 
 .version-wide {
   font-family: monospace;
   max-width: auto;
-  padding-left: 5px;
+  padding-inline-start: 5px;
   vertical-align: bottom;
+}
+
+#copy-to-clipboard {
+  -webkit-mask-image: url(chrome://resources/images/icon_copy_content.svg);
+  -webkit-mask-size: cover;
+  background: none;
+  background-color: var(--primary-color);
+  border: none;
+  display: inline-block;
+  height: 1em;
+  padding: 0;
+  position: relative;
+  top: .2em;
+  width: 1em;
 }

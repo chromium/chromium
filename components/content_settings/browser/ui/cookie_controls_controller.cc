@@ -9,6 +9,7 @@
 #include "base/bind.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
+#include "base/observer_list.h"
 #include "components/browsing_data/content/local_shared_objects_container.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/browser/ui/cookie_controls_view.h"
@@ -117,9 +118,8 @@ bool CookieControlsController::FirstPartyCookiesBlocked() {
 }
 
 int CookieControlsController::GetAllowedCookieCount() {
-  auto* pscs =
-      content_settings::PageSpecificContentSettings::GetForCurrentDocument(
-          tab_observer_->web_contents()->GetMainFrame());
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
   if (pscs) {
     return pscs->allowed_local_shared_objects().GetObjectCount();
   } else {
@@ -127,9 +127,8 @@ int CookieControlsController::GetAllowedCookieCount() {
   }
 }
 int CookieControlsController::GetBlockedCookieCount() {
-  auto* pscs =
-      content_settings::PageSpecificContentSettings::GetForCurrentDocument(
-          tab_observer_->web_contents()->GetMainFrame());
+  auto* pscs = content_settings::PageSpecificContentSettings::GetForPage(
+      tab_observer_->web_contents()->GetPrimaryPage());
   if (pscs) {
     return pscs->blocked_local_shared_objects().GetObjectCount();
   } else {

@@ -19,7 +19,9 @@ source_set("browser") {
 
   deps = [
     "//base",
+    "//components/keyed_service/core",
     "//components/prefs",
+    "//components/safe_browsing/core/browser:token_fetcher",
     "//components/safe_browsing/core/browser/db:database_manager",
     "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/browser/db:util",
@@ -153,6 +155,7 @@ source_set("safe_browsing_metrics_collector") {
     "//base",
     "//components/keyed_service/core",
     "//components/prefs",
+    "//components/safe_browsing/core/browser/db:hit_report",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
   ]
 }
@@ -166,6 +169,7 @@ source_set("safe_browsing_metrics_collector_unittest") {
     "//base/test:test_support",
     "//components/prefs",
     "//components/prefs:test_support",
+    "//components/safe_browsing/core/common",
     "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//testing/gtest",
   ]

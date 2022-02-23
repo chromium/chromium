@@ -5,7 +5,6 @@
 #ifndef COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 #define COMPONENTS_UPDATE_CLIENT_UPDATE_ENGINE_H_
 
-#include <list>
 #include <map>
 #include <memory>
 #include <string>
@@ -13,6 +12,7 @@
 
 #include "base/callback.h"
 #include "base/containers/queue.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/time.h"
@@ -131,9 +131,6 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   // True if the component is updated as a result of user interaction.
   bool is_foreground = false;
 
-  // True if the component updates are enabled in this context.
-  const bool enabled_component_updates;
-
   // Contains the ids of all CRXs in this context in the order specified
   // by the caller of |UpdateClient::Update| or |UpdateClient:Install|.
   const std::vector<std::string> ids;
@@ -181,7 +178,7 @@ struct UpdateContext : public base::RefCountedThreadSafe<UpdateContext> {
   const std::string session_id;
 
   // Persists data using the prefs service. Not owned by this class.
-  PersistedData* persisted_data = nullptr;
+  raw_ptr<PersistedData> persisted_data = nullptr;
 
  private:
   friend class base::RefCountedThreadSafe<UpdateContext>;

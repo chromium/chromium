@@ -57,7 +57,7 @@ class LayoutSVGHiddenContainer : public LayoutSVGContainer {
     NOT_DESTROYED();
     return gfx::RectF();
   }
-  void AbsoluteQuads(Vector<FloatQuad>&,
+  void AbsoluteQuads(Vector<gfx::QuadF>&,
                      MapCoordinatesFlags mode = 0) const final {
     NOT_DESTROYED();
   }

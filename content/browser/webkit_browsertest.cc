@@ -34,7 +34,8 @@ bool AbortOnEndInterceptor(URLLoaderInterceptor::RequestParams* params) {
   auto response = network::mojom::URLResponseHead::New();
   response->headers = info.headers;
   response->headers->GetMimeType(&response->mime_type);
-  params->client->OnReceiveResponse(std::move(response));
+  params->client->OnReceiveResponse(std::move(response),
+                                    mojo::ScopedDataPipeConsumerHandle());
 
   std::string body = "some data\r\n";
   uint32_t bytes_written = body.size();

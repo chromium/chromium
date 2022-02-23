@@ -40,14 +40,14 @@ FEDisplacementMap::FEDisplacementMap(Filter* filter,
       y_channel_selector_(y_channel_selector),
       scale_(scale) {}
 
-FloatRect FEDisplacementMap::MapEffect(const FloatRect& rect) const {
-  FloatRect result = rect;
-  result.OutsetX(GetFilter()->ApplyHorizontalScale(std::abs(scale_) / 2));
-  result.OutsetY(GetFilter()->ApplyVerticalScale(std::abs(scale_) / 2));
+gfx::RectF FEDisplacementMap::MapEffect(const gfx::RectF& rect) const {
+  gfx::RectF result = rect;
+  result.Outset(GetFilter()->ApplyHorizontalScale(std::abs(scale_) / 2),
+                GetFilter()->ApplyVerticalScale(std::abs(scale_) / 2));
   return result;
 }
 
-FloatRect FEDisplacementMap::MapInputs(const FloatRect& rect) const {
+gfx::RectF FEDisplacementMap::MapInputs(const gfx::RectF& rect) const {
   return InputEffect(0)->MapRect(rect);
 }
 

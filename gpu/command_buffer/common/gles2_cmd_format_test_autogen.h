@@ -4910,26 +4910,6 @@ TEST_F(GLES2FormatTest, LoseContextCHROMIUM) {
   CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
 }
 
-TEST_F(GLES2FormatTest, UnpremultiplyAndDitherCopyCHROMIUM) {
-  cmds::UnpremultiplyAndDitherCopyCHROMIUM& cmd =
-      *GetBufferAs<cmds::UnpremultiplyAndDitherCopyCHROMIUM>();
-  void* next_cmd =
-      cmd.Set(&cmd, static_cast<GLuint>(11), static_cast<GLuint>(12),
-              static_cast<GLint>(13), static_cast<GLint>(14),
-              static_cast<GLsizei>(15), static_cast<GLsizei>(16));
-  EXPECT_EQ(
-      static_cast<uint32_t>(cmds::UnpremultiplyAndDitherCopyCHROMIUM::kCmdId),
-      cmd.header.command);
-  EXPECT_EQ(sizeof(cmd), cmd.header.size * 4u);
-  EXPECT_EQ(static_cast<GLuint>(11), cmd.source_id);
-  EXPECT_EQ(static_cast<GLuint>(12), cmd.dest_id);
-  EXPECT_EQ(static_cast<GLint>(13), cmd.x);
-  EXPECT_EQ(static_cast<GLint>(14), cmd.y);
-  EXPECT_EQ(static_cast<GLsizei>(15), cmd.width);
-  EXPECT_EQ(static_cast<GLsizei>(16), cmd.height);
-  CheckBytesWrittenMatchesExpectedSize(next_cmd, sizeof(cmd));
-}
-
 TEST_F(GLES2FormatTest, DrawBuffersEXTImmediate) {
   const int kSomeBaseValueToTestWith = 51;
   static GLenum data[] = {

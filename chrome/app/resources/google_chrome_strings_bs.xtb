@@ -13,6 +13,7 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1142745911746664600">Nije moguće ažurirati Chrome</translation>
 <translation id="1154147086299354128">&amp;Otvori u Chromeu</translation>
 <translation id="1182414570724401860">Chrome preporučuje da ne preuzimate niti otvarate ovaj fajl</translation>
+<translation id="1201241595274620956">Uslovi za CloudReady 2.0</translation>
 <translation id="1278833599417554002">Ponovo pokrenite da ažurirate Chrome</translation>
 <translation id="1293325835983155583"><ph name="MANAGER" /> zahtijeva da prije korištenja uređaja pročitate i prihvatite sljedeće Uslove korištenja usluge. Ovi uslovi ne predstavljaju dodatak, izmjenu ili ograničenje uslova za Google Chrome OS.</translation>
 <translation id="1302523850133262269">Sačekajte dok Chrome instalira najnovija sistemska ažuriranja.</translation>
@@ -40,11 +41,15 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1786003790898721085">Provjerite jeste li prijavljeni u Chrome na svom uređaju <ph name="TARGET_DEVICE_NAME" /> i pokušajte poslati ponovo.</translation>
 <translation id="1812689907177901597">Isključivanjem ove opcije, možete se prijaviti na Googleove web lokacije poput Gmaila bez prijave u Chrome</translation>
+<translation id="1847459800604232346">Ponovno pokretanje operativnog sistema CloudReady 2.0</translation>
 <translation id="1860536484129686729">Chrome treba odobrenja za pristup vašoj kameri na ovoj web lokaciji</translation>
+<translation id="1865667134297225786">CloudReady 2.0 nije mogao sinhronizirati vaše podatke jer su detalji za prijavu na vaš račun zastarjeli.</translation>
 <translation id="1873233029667955273">Google Chrome nije vaš zadani preglednik</translation>
 <translation id="1874309113135274312">Google Chrome Beta (mDNS-In)</translation>
 <translation id="1877026089748256423">Chrome je zastario</translation>
+<translation id="1887927549935943139">CloudReady 2.0 nije mogao sinhronizirati vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="1919130412786645364">Omogući prijavu na Chrome</translation>
+<translation id="1938037793394697191">Google CloudReady 2.0</translation>
 <translation id="2018528049276128029">Svaki profil sadrži svoje Chrome informacije, poput oznaka, historije, lozinki i još mnogo toga</translation>
 <translation id="2063848847527508675">Chrome OS se mora ponovo pokrenuti da se ažuriranje primijeni.</translation>
 <translation id="2094919256425865063">Ipak želite napustiti Chrome?</translation>
@@ -52,18 +57,23 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2121284319307530122">Ponovo pokrenite da ažurirate &amp;Chrome</translation>
 <translation id="2123055963409958220">Pomozite nam da poboljšamo Chrome izvještavanjem o <ph name="BEGIN_LINK" />trenutnim postavkama<ph name="END_LINK" /></translation>
 <translation id="2151406531797534936">Ponovo pokrenite Chrome sada</translation>
-<translation id="2189289170880510015">Prilagodite neke od najvažnijih odabira privatnosti Chromea</translation>
+<translation id="2258103955319320201">Prijavite se, a zatim uključite sinhronizaciju da pristupite svojim stvarima s Chrome preglednika na svim svojim uređajima</translation>
 <translation id="2290014774651636340">Nedostaju ključevi za Google API. Neke funkcionalnosti Google Chromea će biti onemogućene.</translation>
 <translation id="2290095356545025170">Jeste li sigurni da želite deinstalirati Google Chrome?</translation>
+<translation id="2297776811548050971">CloudReady 2.0 je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, kao što je <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="2309047409763057870">Ovo je sekundarna instalacija Google Chromea, pa on ne može biti vaš zadani preglednik.</translation>
 <translation id="2345992953227471816">Chrome je otkrio da ove ekstenzije sadržavaju zlonamjerni softver:</translation>
 <translation id="2348335408836342058">Chromeu treba odobrenje za pristup vašoj kameri i mikrofonu na ovoj web lokaciji</translation>
 <translation id="234869673307233423">Chrome ne može provjeravati vaše lozinke. Pokušajte ponovo kasnije.</translation>
 <translation id="235650106824528204">Administrator radnog profila može ukloniti bilo koje podatke Chromea koji se generiraju tokom korištenja ovog profila (naprimjer kreiranje oznaka, historije, lozinki i drugih postavki). <ph name="LEARN_MORE" /></translation>
+<translation id="2359808026110333948">Nastavi</translation>
+<translation id="2371517829376452747">Ako se postavka ne prikazuje na ovoj stranici, pogledajte u <ph name="LINK_BEGIN" />
+        postavkama operativnog sistema CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="2429317896000329049">Google Chrome ne može sinhronizirati vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
 <translation id="2467438592969358367">Google Chrome želi izvesti vaše lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
 <translation id="2534507159460261402">Google Pay (kopirano u Chrome)</translation>
+<translation id="2563121210305478421">Ponovo pokrenuti Chrome?</translation>
 <translation id="2574930892358684005">Račun <ph name="EXISTING_USER" /> je već prijavljen na ovom Chrome profilu. Da vaše pregledanje ostane odvojeno, Chrome vam može kreirati vaš lični profil.</translation>
 <translation id="2580411288591421699">Nije moguće instalirati istu verziju Google Chromea koja je trenutno pokrenuta. Zatvorite Google Chrome i pokušajte ponovo.</translation>
 <translation id="2586406160782125153">Time će se izbrisati podaci o pregledavanju s uređaja. Da biste kasnije dohvatili svoje podatke, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
@@ -87,7 +97,9 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="2926676257163822632">Slabe lozinke je lako pogoditi. Dozvolite Chromeu da <ph name="BEGIN_LINK" />kreira i zapamti jake lozinke za vas<ph name="END_LINK" />.</translation>
 <translation id="2926952073016206995">Chromeu je za ovu web lokaciju potrebno odobrenje za kameru</translation>
 <translation id="2929907241665500097">Ažuriranje Chromea nije uspjelo. Nešto nije uredu. <ph name="BEGIN_LINK" />Ispravite probleme s ažuriranjem Chromea i neuspjela ažuriranja.<ph name="END_LINK" /></translation>
+<translation id="2954761547729364025">Ponovo pokrenite da ažurirate &amp;CloudReady 2.0</translation>
 <translation id="2969728957078202736"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chrome</translation>
+<translation id="303514781271618814">Chrome istražuje nove funkcije koje dozvoljavaju web lokacijama da pružaju isto iskustvo pregledanja korištenjem manje količine vaših podataka</translation>
 <translation id="3037838751736561277">Google Chrome radi u pozadinskom načinu rada.</translation>
 <translation id="3059710691562604940">Sigurno pregledanje je isključeno. Chrome preporučuje da ga uključite.</translation>
 <translation id="3065168410429928842">Chromeova kartica</translation>
@@ -98,6 +110,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3114643501466072395">Da provjerite jesu li vaše ostale lozinke zaštićene od narušavanja podataka i drugih sigurnosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chrome<ph name="END_LINK" />.</translation>
 <translation id="3140883423282498090">Promjene će stupiti na snagu kada sljedeći put pokrenete Google Chrome.</translation>
 <translation id="3149510190863420837">Chromeove aplikacije</translation>
+<translation id="3245429137663807393">Ako dijelite i izvještaje o korištenju Chromea, ti izvještaji uključuju URL-ove koje posjećujete</translation>
 <translation id="3360895254066713204">Pomoćnik za Chrome</translation>
 <translation id="3379938682270551431">{0,plural, =0{Chrome će se sada ponovo pokrenuti}=1{Chrome će se ponovo pokrenuti za 1 sekundu}one{Chrome će se ponovo pokrenuti za # sekundu}few{Chrome će se ponovo pokrenuti za # sekunde}other{Chrome će se ponovo pokrenuti za # sekundi}}</translation>
 <translation id="3395323229510056640">Potražite pomoć za Chrome OS</translation>
@@ -111,11 +124,11 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3533694711092285624">Nema sačuvanih lozinki. Chrome može provjeravati vaše lozinke kada ih sačuvate.</translation>
 <translation id="3541482654983822893">Chrome ne može provjeravati vaše lozinke. Pokušajte ponovo za 24 sata.</translation>
 <translation id="3576528680708590453">Vaš administrator sustava konfigurirao je Google Chrome da otvara zamjenski preglednik za pristup URL-u <ph name="TARGET_URL_HOSTNAME" />.</translation>
+<translation id="3582634744482121096">Nije obavezno: pomozite da se poboljšaju funkcije i performanse operativnog sistema CloudReady 2.0 automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
 <translation id="3582972582564653026">Sinhronizirajte i personalizirajte Chrome na svim uređajima</translation>
 <translation id="3596080736082218006">{COUNT,plural, =0{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja}=1{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Administrator traži da ponovo pokrenete Chrome radi primjene ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="3622797965165704966">Sada je lakše koristiti Chrome s vašim Google računom i na dijeljenim računarima.</translation>
 <translation id="3673813398384385993">Chrome je otkrio da ekstenzija "<ph name="EXTENSION_NAME" />" sadržava zlonamjerni softver</translation>
-<translation id="3678552270983184277">Zadane postavke odgovaraju većini korisnika, ali ih možete prilagoditi načinu na koji volite koristiti Chrome</translation>
 <translation id="3718181793972440140">Ovim će se izbrisati 1 stavka s ovog uređaja. Da preuzmete svoje podatke kasnije, prijavite se na Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="3735758079232443276">Ekstenzija "<ph name="EXTENSION_NAME" />" je promijenila stranicu koja se prikazuje kada pokrenete Chrome.</translation>
 <translation id="3779473566290487688">Da primate buduća ažuriranja za Google Chrome, trebat će vam OS X 10.11 ili novija verzija. Ovaj računar koristi OS X 10.10.</translation>
@@ -132,6 +145,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4149882025268051530">Aplikacija za instaliranje nije uspjela dekompresirati arhivu. Ponovo preuzmite Google Chrome.</translation>
 <translation id="4191857738314598978">{0,plural, =1{Ponovo pokrenite Chrome u roku od jednog dana}one{Ponovo pokrenite Chrome u roku od # dan}few{Ponovo pokrenite Chrome u roku od # dana}other{Ponovo pokrenite Chrome u roku od # dana}}</translation>
 <translation id="4205939740494406371">Chrome ne može provjeravati vaše lozinke. Pokušajte ponovo za 24 sata ili <ph name="BEGIN_LINK" />provjerite lozinke na Google računu<ph name="END_LINK" />.</translation>
+<translation id="4218613300505264589">Sistem CloudReady 2.0</translation>
 <translation id="4242034826641750751">Chromeu su za ovu web lokaciju potrebna odobrenja za kameru i mikrofon</translation>
 <translation id="424864128008805179">Odjaviti se iz Chromea?</translation>
 <translation id="4251615635259297716">Povezati podatke iz Chromea s ovim računom?</translation>
@@ -144,21 +158,24 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4343195214584226067">Ekstenzija <ph name="EXTENSION_NAME" /> je dodana u Chrome</translation>
 <translation id="4384570495110188418">Chrome ne može provjeravati vaše lozinke jer niste prijavljeni</translation>
 <translation id="4407807842708586359">Google Chrome OS</translation>
+<translation id="4427306783828095590">Poboljšana zaštita vas još bolje čuva od krađe identiteta i zlonamjernog softvera</translation>
 <translation id="4450664632294415862">Chrome – prijava na mrežu – <ph name="PAGE_TITLE" /></translation>
 <translation id="4458462641685292929">U toku je druga radnja na Google Chromeu. Pokušajte ponovo kasnije.</translation>
 <translation id="4480040274068703980">OS Chrome nije mogao sinkronizirati vaše podatke zbog pogreške prilikom prijave.</translation>
 <translation id="4521185804071812304">Nije obavezno: Pomozite nam da poboljšamo funkcije i performanse Chrome OS-a automatskim slanjem podataka o dijagnostici i korištenju Googleu.</translation>
+<translation id="4539063627668028557">verzija operativnog sistema CloudReady 2.0</translation>
 <translation id="4561051373932531560">Google Chrome vam omogućava da klikom na broj telefona na internetu uspostavite Skype poziv!</translation>
+<translation id="4562712242781620537">Sistem CloudReady 2.0</translation>
 <translation id="4567424176335768812">Prijavljeni ste kao <ph name="USER_EMAIL_ADDRESS" />. Sada možete pristupiti svojim oznakama, povijesti i drugim postavkama na svim uređajima na kojima se prijavljujete.</translation>
 <translation id="4571503333518166079">Otvori postavke obavijesti za Chrome</translation>
 <translation id="459622048091363950">Kada Chrome dobije pristup, web lokacije će od vas moći tražiti pristup.</translation>
 <translation id="4600710005438004015">Chrome se nije mogao ažurirati na najnoviju verziju, tako da nemate nove značajke i sigurnosne popravke.</translation>
 <translation id="4633000520311261472">Kako bi Chrome bio sigurniji, onemogućili smo neke ekstenzije koje nisu navedene u <ph name="IDS_EXTENSION_WEB_STORE_TITLE" /> i koje su možda dodane bez vašeg znanja.</translation>
-<translation id="4666328473657283332">Prijavite se da možete uključiti sinhronizaciju i pristupiti svojim Chrome stvarima na svim svojim uređajima.</translation>
 <translation id="4728575227883772061">Instalacija nije uspjela zbog neodređene greške. Ako je Google Chrome trenutno pokrenut, zatvorite ga i pokušajte ponovo.</translation>
 <translation id="4754614261631455953">Google Chrome Canary (mDNS-In)</translation>
 <translation id="4771048833395599659">Ovaj fajl može biti opasan pa ga je Chrome blokirao.</translation>
 <translation id="479167709087336770">Ova usluga koristi isti alat za provjeru pravopisa koji se koristi u Google Pretraživanju. Tekst koji pišete u pregledniku šalje se Googleu. Ovo ponašanje možete uvijek promijeniti u postavkama.</translation>
+<translation id="4873783916118289636">Pregledajte ključne kontrole privatnosti i sigurnosti na Chromeu</translation>
 <translation id="4891791193823137474">Neka Google Chrome radi u pozadini</translation>
 <translation id="4895437082222824641">Otvori link u novoj &amp;kartici Chromea</translation>
 <translation id="4953650215774548573">Postavi Google Chrome kao zadani preglednik</translation>
@@ -172,22 +189,21 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="5170938038195470297">Ne možete koristiti profil jer je s novije verzije Google Chromea.
 
 Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profila ili koristite noviju verziju Chromea.</translation>
-<translation id="5193136243808726294">Google Chrome OS ne može otvoriti ovu stranicu.</translation>
 <translation id="521447420733633466">Ako dijelite uređaj, prijatelji i porodica mogu odvojeno pregledati i postavljati Chrome na način koji njima odgovara</translation>
 <translation id="5251420635869119124">Gosti mogu koristiti Chrome, a da pritom ne ostave tragove o korištenju.</translation>
-<translation id="5251679006894510177">Još malo pa je ažurirano! Ponovo pokrenite Chrome da završite ažuriranje. Anonimni prozori se neće ponovo otvoriti.</translation>
+<translation id="5307623274346663914">CloudReady 2.0 treba ponovo pokrenuti da se primijeni ažuriranje.</translation>
 <translation id="5334487786912937552">Chromeu je potrebno odobrenje za pristup pohrani radi preuzimanja fajlova</translation>
 <translation id="5386244825306882791">Također kontrolira koja stranica će se prikazati kada pokrenete Chrome ili budete pretraživali iz višenamjenskog okvira.</translation>
 <translation id="5394833366792865639">Dijelite Chrome karticu</translation>
 <translation id="5430073640787465221">Datoteka vaših postavki oštećena je ili nevažeća. Google Chrome nema mogućnost oporavka vaših postavki.</translation>
 <translation id="556024056938947818">Google Chrome pokušava prikazati lozinke.</translation>
 <translation id="5566025111015594046">Google Chrome (mDNS-In)</translation>
-<translation id="5657226924540934362">Ako se postavka ne prikazuje na ovoj stranici, pogledajte u <ph name="LINK_BEGIN" />
-    postavkama preglednika Chrome OS<ph name="LINK_END" /></translation>
 <translation id="565744775970812598">Fajl <ph name="FILE_NAME" /> može biti opasan, pa ga je Chrome blokirao.</translation>
 <translation id="5678190148303298925">{COUNT,plural, =0{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja}=1{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Vaš administrator traži da ponovo pokrenete Chrome radi primjene ovog ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
+<translation id="5685161537284117504">CloudReady 2.0 je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="5686916850681061684">Prilagodite i kontrolirajte Google Chrome. Potrebna je vaša pažnja – kliknite za detalje.</translation>
 <translation id="5690427481109656848">Google LLC</translation>
+<translation id="5706272942857408234">CloudReady 2.0 nije sinhronizirao vaše podatke zbog greške prilikom prijave.</translation>
 <translation id="5715063361988620182">{SECONDS,plural, =1{Google Chrome će se ponovo pokrenuti za 1 sekundu.}one{Google Chrome će se ponovo pokrenuti za # sekundu.}few{Google Chrome će se ponovo pokrenuti za # sekunde.}other{Google Chrome će se ponovo pokrenuti za # sekundi.}}</translation>
 <translation id="5736850870166430177">Ako web lokacija pokuša ukrasti vašu lozinku ili kada preuzimate štetan fajl, Chrome može slati i URL-ove, uključujući dijelove sadržaja stranice, u Sigurno pregledanje</translation>
 <translation id="573759479754913123">O Chrome OS-u</translation>
@@ -202,6 +218,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="5941830788786076944">Postavite Google Chrome kao zadani preglednik</translation>
 <translation id="6070348360322141662">Za dodatnu sigurnost, Google Chrome će šifrirati vaše podatke</translation>
 <translation id="608006075545470555">Dodajte radni profil na ovaj preglednik</translation>
+<translation id="608496399798299674">CloudReady 2.0</translation>
 <translation id="6113794647360055231">Chrome je upravo postao još bolji</translation>
 <translation id="6145313976051292476">Otvaraj PDF dokumente u Chromeu</translation>
 <translation id="6169866489629082767"><ph name="PAGE_TITLE" /> - Google Chrome</translation>
@@ -219,16 +236,22 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="6679975945624592337">Neka Google Chrome radi u pozadini</translation>
 <translation id="6696915334902295848">Chromeu je za ovu web lokaciju potrebno odobrenje za mikrofon</translation>
 <translation id="6739177684496155661">Želite li nastaviti na novi Chrome profil?</translation>
+<translation id="6749459139769042303">Potražite pomoć za CloudReady 2.0</translation>
 <translation id="6750954913813541382">Za ispravak pravopisnih grešaka, Chrome šalje Googleu tekst koji napišete u pregledniku</translation>
 <translation id="677276454032249905">Ipak želite napustiti Chrome?</translation>
+<translation id="6814748008107187409">Ako se postavka ne prikazuje na ovoj stranici, pogledajte u <ph name="LINK_BEGIN" />
+        postavkama Chrome OS-a<ph name="LINK_END" /></translation>
 <translation id="683440813066116847">Ulazno pravilo da Google Chrome Canary dozvoli mDNS saobraćaj.</translation>
 <translation id="6881299373831449287">Ažuriranje Chromea</translation>
 <translation id="6885412569789873916">Aplikacije za Chrome Beta</translation>
+<translation id="6919064686744569862"><ph name="MANAGER" /> zahtijeva da prije korištenja uređaja pročitate i prihvatite sljedeće Uslove korištenja usluge. Ovi uslovi ne predstavljaju dodatak, izmjenu ili ograničenje Uslova za Google CloudReady 2.0.</translation>
 <translation id="6943584222992551122">Podaci pregledanja ove osobe će se izbrisati s uređaja. Da vratite podatke, prijavite se u Chrome kao <ph name="USER_EMAIL" />.</translation>
 <translation id="6967962315388095737">Ulazno pravilo da Google Chrome beta verzija dozvoli mDNS saobraćaj.</translation>
 <translation id="6989339256997917931">Google Chrome je ažuriran, ali ga niste koristili najmanje 30 dana.</translation>
+<translation id="700644001690392105">O operativnom sistemu CloudReady 2.0</translation>
 <translation id="7025800014283535195">Ovdje možete prebacivati između Chrome profila</translation>
 <translation id="7062128746136194023">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chrome. Dodavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
+<translation id="7085332316435785646">Odaberite želite li uključiti historiju Chromea da dodatno personalizirate iskustva na Googleovim uslugama</translation>
 <translation id="7088681679121566888">Chrome je ažuriran</translation>
 <translation id="7098166902387133879">Google Chrome koristi vaš mikrofon.</translation>
 <translation id="7106741999175697885">Upravitelj zadataka – Google Chrome</translation>
@@ -243,9 +266,11 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="7398801000654795464">Prijavljeni ste na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Ponovo upotrijebite isti račun za prijavu.</translation>
 <translation id="7408085963519505752">Uslovi korištenja Chrome OS-a</translation>
 <translation id="7419046106786626209">Chrome OS nije sinhronizirao vaše podatke jer sinhronizacija nije dostupna za vašu domenu.</translation>
+<translation id="7481213027396403996">Odaberite maksimalnu sigurnost koju nudi Chrome</translation>
 <translation id="7486227612705979895">Chrome će pristupiti Disku kako bi pružio prijedloge u traci za adresu.</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7573289029918943991">Da vidite je li vaš uređaj ažuriran, idite u <ph name="LINK_BEGIN" />Postavke Chrome OS-a<ph name="LINK_END" /></translation>
+<translation id="7580049017368059129">Da vidite je li uređaj ažuriran, idite u <ph name="LINK_BEGIN" />Postavke operativnog sistema CloudReady 2.0<ph name="LINK_END" /></translation>
 <translation id="7592736734348559088">Google Chrome nije mogao sinhronizirati vaše podatke jer su detalji za prijavu na vaš račun zastarjeli.</translation>
 <translation id="7626032353295482388">Dobro došli u Chrome</translation>
 <translation id="7629695634924605473">Chrome vas obavještava ako sigurnost vaših lozinki bude ugrožena</translation>
@@ -253,6 +278,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="7651907282515937834">Logotip Chrome Enterprise</translation>
 <translation id="7665553140559834626">Ponovo pokrenite da ažurirate &amp;Chrome OS</translation>
 <translation id="7747138024166251722">Aplikacija za instaliranje nije uspjela kreirati privremeni direktorij. Provjerite imate li slobodnog prostora na disku kao i odobrenje da instalirate softver.</translation>
+<translation id="7748512868279796735">Sljedeći računi su dostupni za ovaj Chrome profil</translation>
 <translation id="7761834446675418963">Kliknite svoje ime da otvorite Chrome i počnete pregledati.</translation>
 <translation id="7777080907402804672">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa. To možete isključiti u postavkama kad god želite.</translation>
 <translation id="7781002470561365167">Dostupna je nova verzija preglednika Google Chrome.</translation>
@@ -270,7 +296,6 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8008534537613507642">Ponovo instaliraj Chrome</translation>
 <translation id="8013993649590906847">Ako slika ne sadrži koristan opis, Chrome će ga pokušati pružiti. Slike se šalju Googleu radi kreiranja opisa.</translation>
 <translation id="8129812357326543296">O &amp;Google Chromeu</translation>
-<translation id="822971176939352383">Sljedeći računi nisu prijavljeni na Chrome profile. Ako želite koristiti račun na drugom profilu, prvo uklonite taj profil.</translation>
 <translation id="8255190535488645436">Google Chrome koristi vašu kameru i mikrofon.</translation>
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="828798499196665338">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
@@ -285,6 +310,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8550334526674375523">Ovaj radni profil je u potpunosti odvojen od vašeg ličnog profila.</translation>
 <translation id="8556340503434111824">Dostupna je nova verzija Google Chromea koji je brži nego ikad.</translation>
+<translation id="8571790202382503603">S Chrome profilima možete odvojiti sve svoje Chrome stvari. Tako ćete lakše razdvojiti posao i zabavu.</translation>
 <translation id="8614913330719544658">Google Chrome ne reagira. Ponovo pokrenuti sada?</translation>
 <translation id="861702415419836452">Chromeu je potrebno odobrenje da pristupi kameri radi kreiranja 3D mape vašeg okruženja</translation>
 <translation id="8625237574518804553">{0,plural, =1{Chrome će se ponovo pokrenuti za 1 minutu}one{Chrome će se ponovo pokrenuti za # minutu}few{Chrome će se ponovo pokrenuti za # minute}other{Chrome će se ponovo pokrenuti za # minuta}}</translation>
@@ -293,6 +319,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8669527147644353129">Google Chrome Helper</translation>
 <translation id="8679801911857917785">Također kontrolira koja stranica se prikazuje kada pokrenete Chrome.</translation>
 <translation id="8686817260976772516">S Chrome profilima možete odvojiti sve svoje Chrome stvari. Kreirajte profile za prijatelje i porodicu ili razdvojite posao i zabavu.</translation>
+<translation id="8712767363896337380">Još malo pa je ažurirano! Ponovo pokrenite Chrome da završite ažuriranje.</translation>
 <translation id="873133009373065397">Google Chrome ne može odrediti ili postaviti zadani preglednik</translation>
 <translation id="8823341990149967727">Chrome je zastario</translation>
 <translation id="8834965163890861871">Google Chrome pokušava urediti lozinke. Unesite Windows lozinku da ovo omogućite.</translation>
@@ -300,6 +327,7 @@ Moguće je da neke funkcije neće biti dostupne. Odredite drugi direktorij profi
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Pokušajte ponovo pokrenuti instalaciju kao administrator.</translation>
 <translation id="8914504000324227558">Ponovo pokreni Chrome</translation>
 <translation id="8922193594870374009">Da pošaljete broj s uređaja <ph name="ORIGIN" /> na svoj Android telefon, prijavite se u Chrome na oba uređaja.</translation>
+<translation id="8983720963221508955">Uključili ste poboljšano Sigurno pregledanje na svom računu. Sada ga omogućite za Chrome.</translation>
 <translation id="8986207147630327271">Dodajete radni profil na ovaj preglednik i dajte administratoru kontrolu samo nad radnim profilom.</translation>
 <translation id="8999208279178790196">{0,plural, =0{Dostupno je ažuriranje Chromea}=1{Dostupno je ažuriranje Chromea}one{Ažuriranje Chromea je dostupno # dan}few{Ažuriranje Chromea je dostupno # dana}other{Ažuriranje Chromea je dostupno # dana}}</translation>
 <translation id="9026991721384951619">Chrome OS nije mogao sinhronizirati vaše podatke jer su podaci o prijavi računa zastarjeli.</translation>

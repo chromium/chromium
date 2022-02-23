@@ -49,6 +49,7 @@ void PrefValueStore::PrefStoreKeeper::OnInitializationCompleted(
 PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
                                PrefStore* supervised_user_prefs,
                                PrefStore* extension_prefs,
+                               PrefStore* standalone_browser_prefs,
                                PrefStore* command_line_prefs,
                                PrefStore* user_prefs,
                                PrefStore* recommended_prefs,
@@ -61,6 +62,7 @@ PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
   InitPrefStore(MANAGED_STORE, managed_prefs);
   InitPrefStore(SUPERVISED_USER_STORE, supervised_user_prefs);
   InitPrefStore(EXTENSION_STORE, extension_prefs);
+  InitPrefStore(STANDALONE_BROWSER_STORE, standalone_browser_prefs);
   InitPrefStore(COMMAND_LINE_STORE, command_line_prefs);
   InitPrefStore(USER_STORE, user_prefs);
   InitPrefStore(RECOMMENDED_STORE, recommended_prefs);
@@ -69,8 +71,8 @@ PrefValueStore::PrefValueStore(PrefStore* managed_prefs,
   CheckInitializationCompleted();
   if (delegate_) {
     delegate_->Init(managed_prefs, supervised_user_prefs, extension_prefs,
-                    command_line_prefs, user_prefs, recommended_prefs,
-                    default_prefs, pref_notifier);
+                    standalone_browser_prefs, command_line_prefs, user_prefs,
+                    recommended_prefs, default_prefs, pref_notifier);
   }
 }
 
@@ -80,6 +82,7 @@ std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     PrefStore* managed_prefs,
     PrefStore* supervised_user_prefs,
     PrefStore* extension_prefs,
+    PrefStore* standalone_browser_prefs,
     PrefStore* command_line_prefs,
     PrefStore* user_prefs,
     PrefStore* recommended_prefs,
@@ -93,6 +96,8 @@ std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     supervised_user_prefs = GetPrefStore(SUPERVISED_USER_STORE);
   if (!extension_prefs)
     extension_prefs = GetPrefStore(EXTENSION_STORE);
+  if (!standalone_browser_prefs)
+    standalone_browser_prefs = GetPrefStore(STANDALONE_BROWSER_STORE);
   if (!command_line_prefs)
     command_line_prefs = GetPrefStore(COMMAND_LINE_STORE);
   if (!user_prefs)
@@ -103,9 +108,9 @@ std::unique_ptr<PrefValueStore> PrefValueStore::CloneAndSpecialize(
     default_prefs = GetPrefStore(DEFAULT_STORE);
 
   return std::make_unique<PrefValueStore>(
-      managed_prefs, supervised_user_prefs, extension_prefs, command_line_prefs,
-      user_prefs, recommended_prefs, default_prefs, pref_notifier,
-      std::move(delegate));
+      managed_prefs, supervised_user_prefs, extension_prefs,
+      standalone_browser_prefs, command_line_prefs, user_prefs,
+      recommended_prefs, default_prefs, pref_notifier, std::move(delegate));
 }
 
 bool PrefValueStore::GetValue(const std::string& name,

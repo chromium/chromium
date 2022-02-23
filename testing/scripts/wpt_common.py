@@ -14,13 +14,12 @@ import common
 
 BLINK_TOOLS_DIR = os.path.join(common.SRC_DIR, 'third_party', 'blink', 'tools')
 CATAPULT_DIR = os.path.join(common.SRC_DIR, 'third_party', 'catapult')
-LAYOUT_TEST_RESULTS_SUBDIR = 'layout-test-results'
 OUT_DIR = os.path.join(common.SRC_DIR, "out", "{}")
 DEFAULT_ISOLATED_SCRIPT_TEST_OUTPUT = os.path.join(OUT_DIR, "results.json")
 TYP_DIR = os.path.join(CATAPULT_DIR, 'third_party', 'typ')
 WEB_TESTS_DIR = os.path.normpath(
     os.path.join(BLINK_TOOLS_DIR, os.pardir, 'web_tests'))
-EXTERNAL_WPT_TESTS_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
+TESTS_ROOT_DIR = os.path.join(WEB_TESTS_DIR, 'external', 'wpt')
 
 if BLINK_TOOLS_DIR not in sys.path:
     sys.path.append(BLINK_TOOLS_DIR)
@@ -56,6 +55,10 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         self.wpt_output = None
         self.wptreport = None
         self.sink = ResultSinkReporter()
+        self.layout_test_results_subdir = 'layout-test-results'
+        default_wpt_binary = os.path.join(
+            common.SRC_DIR, "third_party", "wpt_tools", "wpt", "wpt")
+        self.wpt_binary = os.environ.get("WPT_BINARY") or default_wpt_binary
 
     def maybe_set_default_isolated_script_test_output(self):
         if self.options.isolated_script_test_output:
@@ -86,7 +89,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         # Move json results into layout-test-results directory
         results_dir = os.path.dirname(self.wpt_output)
         layout_test_results = os.path.join(results_dir,
-                                           LAYOUT_TEST_RESULTS_SUBDIR)
+                                           self.layout_test_results_subdir)
         if self.fs.exists(layout_test_results):
             self.fs.rmtree(layout_test_results)
         self.fs.maybe_make_directory(layout_test_results)
@@ -106,10 +109,38 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             os.path.join(layout_test_results, 'results.html'))
 
         if self.wptreport:
-            self.fs.copyfile(
-                self.wptreport,
-                os.path.join(layout_test_results,
-                             os.path.basename(self.wptreport)))
+            self._process_wpt_report(self.wptreport)
+
+    def get_wpt_revision(self):
+        path_to_version = os.path.join(WEB_TESTS_DIR, 'external', 'Version')
+        with open(path_to_version) as f:
+            for line in f.readlines():
+                if line.startswith("Version:"):
+                    rev = line[len("Version:"):].strip()
+                    return rev
+        return None
+
+    def _process_wpt_report(self, wptreport):
+        layout_test_results = os.path.join(os.path.dirname(self.wpt_output),
+                                           self.layout_test_results_subdir)
+        dst = os.path.join(layout_test_results,
+                           os.path.basename(wptreport))
+        with open(wptreport) as f_src, open(dst, "w") as f_dst:
+            data = json.load(f_src)
+            # update revision to use upstream revision
+            rev = self.get_wpt_revision()
+            if rev:
+                data["run_info"]["revision"] = rev
+            # dump the result to layout-test-results
+            json.dump(data, f_dst)
+
+        # upload the report to ResultDB
+        artifact = {
+            os.path.basename(wptreport): {
+                'filePath': dst
+            }
+        }
+        self.sink.report_invocation_level_artifacts(artifact)
 
     def process_wptrunner_output(self,
                                  full_results_json,
@@ -223,6 +254,9 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             if "artifacts" not in root_node:
                 return
 
+            root_node["artifacts"].pop("wpt_actual_status", None)
+            root_node["artifacts"].pop("wpt_subtest_failure", None)
+
             actual_metadata = root_node["artifacts"].pop(
                 "wpt_actual_metadata", None)
             if actual_metadata:
@@ -279,9 +313,10 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
               and an artifacts dictionary.
         """
 
-        artifacts = Artifacts(output_dir=self.wpt_output,
-                              host=self.sink.host,
-                              artifacts_base_dir=LAYOUT_TEST_RESULTS_SUBDIR)
+        artifacts = Artifacts(
+            output_dir=self.wpt_output,
+            host=self.sink.host,
+            artifacts_base_dir=self.layout_test_results_subdir)
 
         assert len(result_node['actual'].split()) == 1, (
             ('There should be only one result, however test %s has the '
@@ -309,7 +344,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
         test_path = test_name[:index] if index != -1 else test_name
 
         self.sink.report_individual_test_result(
-            test_name, result, LAYOUT_TEST_RESULTS_SUBDIR,
+            test_name, result, os.path.dirname(self.wpt_output),
             None, os.path.join(WEB_TESTS_DIR, test_path))
 
     def _maybe_write_expected_output(self, results_dir, test_name):
@@ -345,7 +380,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
             # .any.worker.html which are covered here).
             return "", ""
 
-        test_file_path = os.path.join(EXTERNAL_WPT_TESTS_DIR, test_file_subpath)
+        test_file_path = os.path.join(TESTS_ROOT_DIR, test_file_subpath)
         expected_ini_path = test_file_path + ".ini"
         if not self.fs.exists(expected_ini_path):
             return "", ""
@@ -409,7 +444,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
               to the |results_dir|.
         """
         log_artifact_sub_path = (
-            os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
+            os.path.join(self.layout_test_results_subdir,
                          self.port.output_filename(
                              test_name, suffix, extension))
         )
@@ -471,7 +506,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                 actual_image_bytes = image_bytes
 
             screenshot_sub_path = (
-                os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
+                os.path.join(self.layout_test_results_subdir,
                              self.port.output_filename(
                                  test_name, file_suffix, ".png"))
             )
@@ -489,7 +524,7 @@ class BaseWptScriptAdapter(common.BaseIsolatedScriptArgsAdapter):
                                                  actual_image_bytes)
         if diff_bytes and not error:
             diff_sub_path = (
-                os.path.join(LAYOUT_TEST_RESULTS_SUBDIR,
+                os.path.join(self.layout_test_results_subdir,
                              self.port.output_filename(
                                  test_name, test_failures.FILENAME_SUFFIX_DIFF,
                                  ".png")))

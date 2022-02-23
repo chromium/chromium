@@ -7,6 +7,7 @@
 #include <ostream>
 
 #import "base/notreached.h"
+#include "components/password_manager/core/common/password_manager_features.h"
 #import "ios/chrome/browser/ui/list_model/list_model.h"
 #import "ios/chrome/browser/ui/table_view/chrome_table_view_styler.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
@@ -78,6 +79,13 @@ const CGFloat kBadgeCornerRadius = 5.0;
         _title =
             l10n_util::GetNSString(IDS_IOS_READING_LIST_MESSAGES_MODAL_TITLE);
         break;
+      case BadgeType::kBadgeTypePermissionsCamera:
+        // Falls through.
+      case BadgeType::kBadgeTypePermissionsMicrophone:
+        _actionIdentifier = PopupMenuActionShowPermissionsOptions;
+        _title = l10n_util::GetNSString(
+            IDS_IOS_PERMISSIONS_INFOBAR_OVERFLOW_POPUP_TITLE);
+        break;
       case BadgeType::kBadgeTypeIncognito:
         NOTREACHED() << "A BadgePopupMenuItem should not be an Incognito badge";
         break;
@@ -98,10 +106,15 @@ const CGFloat kBadgeCornerRadius = 5.0;
   cell.titleLabel.text = self.title;
   cell.accessibilityTraits = UIAccessibilityTraitButton;
   UIImage* badgeImage;
+  NSString* imageName =
+      base::FeatureList::IsEnabled(
+          password_manager::features::kIOSEnablePasswordManagerBrandingUpdate)
+          ? @"password_key"
+          : @"legacy_password_key";
   switch (self.badgeType) {
     case BadgeType::kBadgeTypePasswordSave:
     case BadgeType::kBadgeTypePasswordUpdate:
-      badgeImage = [[UIImage imageNamed:@"password_key"]
+      badgeImage = [[UIImage imageNamed:imageName]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeSaveAddressProfile:
@@ -118,6 +131,14 @@ const CGFloat kBadgeCornerRadius = 5.0;
       break;
     case BadgeType::kBadgeTypeAddToReadingList:
       badgeImage = [[UIImage imageNamed:@"infobar_reading_list"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypePermissionsCamera:
+      badgeImage = [[UIImage imageNamed:@"infobar_permissions_camera"]
+          imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
+      break;
+    case BadgeType::kBadgeTypePermissionsMicrophone:
+      badgeImage = [[UIImage systemImageNamed:@"mic.fill"]
           imageWithRenderingMode:UIImageRenderingModeAlwaysTemplate];
       break;
     case BadgeType::kBadgeTypeIncognito:
@@ -198,6 +219,8 @@ const CGFloat kBadgeCornerRadius = 5.0;
     [self.contentView addSubview:_badgeView];
     [self.contentView addSubview:_trailingImageView];
 
+    // TODO(crbug.com/1293060): Maintain image aspect ratio once we move icon
+    // image file format to SVG from PNG.
     ApplyVisualConstraintsWithMetrics(
         @[
           @"H:|-(margin)-[badge]-(margin)-[text]-(margin)-[gear]-(margin)-|",

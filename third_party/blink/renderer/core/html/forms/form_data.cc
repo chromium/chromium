@@ -39,7 +39,7 @@
 #include "third_party/blink/renderer/core/html/forms/form_controller.h"
 #include "third_party/blink/renderer/core/html/forms/html_form_element.h"
 #include "third_party/blink/renderer/platform/bindings/script_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/network/form_data_encoder.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -52,7 +52,9 @@ namespace {
 
 class FormDataIterationSource final
     : public PairIterable<String,
-                          Member<V8FormDataEntryValue>>::IterationSource {
+                          IDLString,
+                          Member<V8FormDataEntryValue>,
+                          V8FormDataEntryValue>::IterationSource {
  public:
   FormDataIterationSource(FormData* form_data)
       : form_data_(form_data), current_(0) {}
@@ -77,8 +79,8 @@ class FormDataIterationSource final
 
   void Trace(Visitor* visitor) const override {
     visitor->Trace(form_data_);
-    PairIterable<String, Member<V8FormDataEntryValue>>::IterationSource::Trace(
-        visitor);
+    PairIterable<String, IDLString, Member<V8FormDataEntryValue>,
+                 V8FormDataEntryValue>::IterationSource::Trace(visitor);
   }
 
  private:
@@ -353,7 +355,10 @@ scoped_refptr<EncodedFormData> FormData::EncodeMultiPartFormData() {
   return form_data;
 }
 
-PairIterable<String, Member<V8FormDataEntryValue>>::IterationSource*
+PairIterable<String,
+             IDLString,
+             Member<V8FormDataEntryValue>,
+             V8FormDataEntryValue>::IterationSource*
 FormData::StartIteration(ScriptState*, ExceptionState&) {
   return MakeGarbageCollected<FormDataIterationSource>(this);
 }

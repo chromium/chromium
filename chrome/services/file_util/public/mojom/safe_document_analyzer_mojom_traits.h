@@ -14,7 +14,8 @@
 #include "mojo/public/cpp/bindings/enum_traits.h"
 #include "mojo/public/cpp/bindings/struct_traits.h"
 
-#if !BUILDFLAG(FULL_SAFE_BROWSING) || (!defined(OS_LINUX) && !defined(OS_WIN))
+#if !BUILDFLAG(FULL_SAFE_BROWSING) || \
+    (!BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_WIN))
 #error BUILDFLAG(FULL_SAFE_BROWSING) should be set and either OS_LINUX or OS_WIN defined.
 #endif
 

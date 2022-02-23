@@ -17,17 +17,14 @@
 
 // Returns YES if recording is active for metric service. Recording means
 // store locally.
-+ (BOOL)isMetricsRecordingEnabled WARN_UNUSED_RESULT;
++ (BOOL)isMetricsRecordingEnabled [[nodiscard]];
 
 // Returns YES if reporting is active for metric service. Reporting means
 // upload what has been stored locally.
-+ (BOOL)isMetricsReportingEnabled WARN_UNUSED_RESULT;
++ (BOOL)isMetricsReportingEnabled [[nodiscard]];
 
 // Allows turning on and off metrics reporting.
 + (void)setMetricsReportingEnabled:(BOOL)reportingEnabled;
-
-// Allows simulating turning the cellular network on/off.
-+ (void)setCellularNetworkEnabled:(BOOL)cellularNetworkEnabled;
 
 // YES if breakpad crash collection is enabled.
 + (BOOL)isBreakpadEnabled;

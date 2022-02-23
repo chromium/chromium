@@ -18,7 +18,7 @@
     align-items: center;
     border: 1px solid var(--google-grey-200);
     border-radius: 8px;
-    color: var(--google-grey-refresh-700);
+    color: var(--google-grey-700);
     display: inline-flex;
     flex-direction: row;
     margin-inline: auto;
@@ -36,7 +36,7 @@
   .icon-container {
     --icon-container-size: 28px;
     --icon-container-margin: 16px;
-    background-color: var(--google-grey-refresh-100);
+    background-color: var(--google-grey-100);
     border-radius: 50%;
     height: var(--icon-container-size);
     margin-inline: var(--icon-container-margin);
@@ -69,11 +69,11 @@
   @media (prefers-color-scheme: dark) {
     .info-box {
       border-color: var(--google-grey-600);
-      color: var(--google-grey-refresh-100);
+      color: var(--google-grey-100);
     }
 
     .icon-container {
-      background-color: var(--google-grey-refresh-700);
+      background-color: var(--google-grey-700);
     }
   }
 </style>
@@ -99,12 +99,11 @@
       disabled="[[loadSigninInProgess_]]">
     $i18n{signInButtonLabel}
   </cr-button>
-  <if expr="not lacros">
-    <cr-button id="notNowButton" on-click="onNotNowClick_"
-        disabled="[[loadSigninInProgess_]]">
-      $i18n{notNowButtonLabel}
-    </cr-button>
-  </if>
+  <cr-button id="notNowButton" on-click="onNotNowClick_"
+      hidden="[[!localProfileCreationFlowSupported_]]"
+      disabled="[[loadSigninInProgess_]]">
+    $i18n{notNowButtonLabel}
+  </cr-button>
 </div>
 
 <template is="dom-if" if="[[managedDeviceDisclaimer_]]">

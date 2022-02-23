@@ -27,11 +27,8 @@ source_set("assistant_client") {
     "external_services:grpc_services_observer",
     "//base",
     "//chromeos/assistant/internal",
-    "//chromeos/assistant/internal:buildflags",
+    "//chromeos/assistant/internal:libassistant_shared_headers",
     "//chromeos/services/assistant/public/cpp",
-    "//libassistant/shared/internal_api:assistant_manager_internal",
-    "//libassistant/shared/internal_api:fuchsia_api_helper",
-    "//libassistant/shared/public",
   ]
 }
 

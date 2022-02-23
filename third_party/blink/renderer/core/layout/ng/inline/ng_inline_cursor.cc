@@ -423,9 +423,9 @@ UBiDiLevel NGInlineCursorPosition::BidiLevel() const {
   }
 
   if (IsAtomicInline()) {
-    DCHECK(GetLayoutObject()->ContainingNGBlockFlow());
+    DCHECK(GetLayoutObject()->FragmentItemsContainer());
     const LayoutBlockFlow& block_flow =
-        *GetLayoutObject()->ContainingNGBlockFlow();
+        *GetLayoutObject()->FragmentItemsContainer();
     const auto& items =
         block_flow.GetNGInlineNodeData()->ItemsData(UsesFirstLineStyle()).items;
     const LayoutObject* const layout_object = GetLayoutObject();
@@ -501,7 +501,6 @@ PhysicalRect NGInlineCursor::CurrentLocalSelectionRectForText(
       Current().IsLineBreak() &&
       // This is for old compatible that old doesn't paint last br in a page.
       !IsLastBRInPage(*Current().GetLayoutObject())) {
-    DCHECK(!logical_rect.size.inline_size);
     logical_rect.size.inline_size =
         LayoutUnit(Current().Style().GetFont().SpaceWidth());
   }
@@ -1107,7 +1106,7 @@ void NGInlineCursor::MoveToLastNonPseudoLeaf() {
   for (NGInlineCursor cursor = *this; cursor; cursor.MoveToNext()) {
     if (cursor.Current()->IsBlockInInline()) {
       if (cursor.Current()->BlockInInline().NonPseudoNode())
-        *this = cursor;
+        last_leaf = cursor;
       continue;
     }
     if (!cursor.Current().GetLayoutObject()->NonPseudoNode())
@@ -1190,6 +1189,15 @@ void NGInlineCursor::MoveToNextLine() {
     return;
   }
   NOTREACHED();
+}
+
+void NGInlineCursor::MoveToNextLineIncludingFragmentainer() {
+  MoveToNextLine();
+  if (!Current() && max_fragment_index_ && CanMoveAcrossFragmentainer()) {
+    MoveToNextFragmentainer();
+    if (Current() && !Current().IsLineBox())
+      MoveToFirstLine();
+  }
 }
 
 void NGInlineCursor::MoveToPreviousInlineLeaf() {

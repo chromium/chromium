@@ -163,6 +163,8 @@ guestMessagePipe.registerHandler(Message.NOTIFY_CURRENT_FILE, message => {
   let genericType = notifyMsg.type ? notifyMsg.type.split('/')[0] : 'file';
   if (title.text === appTitle) {
     genericType = 'app';
+  } else if (notifyMsg.type === 'application/pdf') {
+    genericType = 'pdf';
   } else if (!['audio', 'image', 'video', 'file'].includes(genericType)) {
     genericType = 'file';
   }
@@ -177,6 +179,16 @@ guestMessagePipe.registerHandler(Message.OPEN_FEEDBACK_DIALOG, () => {
     response = {errorMessage: 'Null response received'};
   }
   return response;
+});
+
+guestMessagePipe.registerHandler(Message.TOGGLE_BROWSER_FULLSCREEN_MODE, () => {
+  mediaAppPageHandler.toggleBrowserFullscreenMode();
+});
+
+guestMessagePipe.registerHandler(Message.OPEN_IN_SANDBOXED_VIEWER, message => {
+  window.open(
+      `./viewpdfhost.html?${new URLSearchParams(message)}`, '_blank',
+      'popup=1');
 });
 
 guestMessagePipe.registerHandler(Message.OVERWRITE_FILE, async (message) => {

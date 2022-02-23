@@ -9,6 +9,7 @@
 #include "base/callback_helpers.h"
 #include "base/command_line.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/memory/weak_ptr.h"
 #include "base/run_loop.h"
@@ -62,7 +63,7 @@ class WebUIImplBrowserTest : public ContentBrowserTest {
 };
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 const char kLoadSharedWorkerScript[] = R"(
     new Promise((resolve) => {
       const sharedWorker = new SharedWorker($1);
@@ -72,7 +73,7 @@ const char kLoadSharedWorkerScript[] = R"(
       sharedWorker.port.postMessage('ping');
     });
   )";
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 const char kLoadDedicatedWorkerScript[] = R"(
     new Promise((resolve) => {
@@ -161,7 +162,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
     ASSERT_TRUE(NavigateToURL(web_contents(), GetWebUIURL(kChromeUIGpuHost)));
     test_handler_ = new TestWebUIMessageHandler();
     web_contents()->GetWebUI()->AddMessageHandler(
-        base::WrapUnique(test_handler_));
+        base::WrapUnique(test_handler_.get()));
   }
 
  protected:
@@ -186,7 +187,7 @@ class WebUIRequiringGestureBrowserTest : public ContentBrowserTest {
   base::SimpleTestTickClock clock_;
 
   // Owned by the WebUI associated with the WebContents.
-  TestWebUIMessageHandler* test_handler_ = nullptr;
+  raw_ptr<TestWebUIMessageHandler> test_handler_ = nullptr;
 };
 
 }  // namespace
@@ -642,7 +643,7 @@ class WebUIDedicatedWorkerTest : public WebUIWorkerTest,
 INSTANTIATE_TEST_SUITE_P(All, WebUIDedicatedWorkerTest, testing::Bool());
 
 // TODO(crbug.com/154571): Shared workers are not available on Android.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 // Verify that we can create SharedWorker with scheme "chrome://" under
 // WebUI page.
 IN_PROC_BROWSER_TEST_F(WebUIWorkerTest, CanCreateWebUISharedWorkerForWebUI) {
@@ -779,7 +780,7 @@ IN_PROC_BROWSER_TEST_F(WebUIWorkerTest,
   EXPECT_THAT(result.error, ::testing::StartsWith(expected_failure));
 }
 
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // Verify that we can create a Worker with scheme "chrome://" under WebUI page.
 IN_PROC_BROWSER_TEST_P(WebUIDedicatedWorkerTest,

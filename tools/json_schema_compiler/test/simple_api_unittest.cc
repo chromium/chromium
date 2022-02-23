@@ -212,12 +212,14 @@ TEST(JsonSchemaCompilerSimpleTest, OnTestTypeFiredCreate) {
 
     ASSERT_TRUE(expected->GetString("string", &some_test_type.string));
     ASSERT_TRUE(expected->GetInteger("integer", &some_test_type.integer));
-    ASSERT_TRUE(expected->GetBoolean("boolean", &some_test_type.boolean));
+    absl::optional<bool> boolean_value = expected->FindBoolKey("boolean");
+    ASSERT_TRUE(boolean_value);
+    some_test_type.boolean = *boolean_value;
 
     base::Value results(simple_api::OnTestTypeFired::Create(some_test_type));
     ASSERT_TRUE(results.is_list());
-    ASSERT_EQ(1u, results.GetList().size());
-    EXPECT_EQ(*expected, results.GetList()[0]);
+    ASSERT_EQ(1u, results.GetListDeprecated().size());
+    EXPECT_EQ(*expected, results.GetListDeprecated()[0]);
   }
 }
 

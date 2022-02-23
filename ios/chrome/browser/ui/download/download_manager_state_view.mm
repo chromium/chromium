@@ -7,6 +7,7 @@
 #import <QuartzCore/QuartzCore.h>
 
 #include "base/mac/foundation_util.h"
+#include "base/notreached.h"
 #include "ios/chrome/browser/ui/download/download_manager_animation_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -132,6 +133,9 @@ const CGFloat kInProgressScale = 0.65f;
       }
       break;
     }
+    case kDownloadManagerStateFailedNotResumable:
+      NOTREACHED();
+      break;
     case kDownloadManagerStateInProgress:
       if (CGPathEqualToPath(self.iconLayer.path, self.downloadPath.CGPath)) {
         // There should be no animation when changing from downloadPath to

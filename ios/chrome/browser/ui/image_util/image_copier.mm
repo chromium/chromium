@@ -44,7 +44,9 @@ enum class ContextMenuCopyImage {
   kAlertPopUp = 4,
   // Copy Image is canceled by user from the alert.
   kCanceled = 5,
-  kMaxValue = kCanceled,
+  // The URL of the image is copied.
+  kURLCopied = 6,
+  kMaxValue = kURLCopied,
 };
 // Time Period between "Copy Image" is clicked and "Copying..." alert is
 // launched.
@@ -107,16 +109,18 @@ const int kNoActiveCopy = 0;
       [weakSelf.alertCoordinator stop];
       weakSelf.activeID = kNoActiveCopy;
 
-      // Copy image url and data to pasteboard.
+      // Copy image data to pasteboard. Don't copy the URL otherwise some apps
+      // will paste the text and not the image. See crbug.com/1270239.
       NSMutableDictionary* item =
-          [NSMutableDictionary dictionaryWithCapacity:3];
-      [item setValue:urlStr forKey:(__bridge NSString*)kUTTypeText];
-      [item setValue:[NSURL URLWithString:urlStr]
-              forKey:(__bridge NSString*)kUTTypeURL];
+          [NSMutableDictionary dictionaryWithCapacity:1];
       NSString* uti = GetImageUTIFromData(data);
       if (uti) {
         [item setValue:data forKey:uti];
         [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kImageCopied];
+      } else {
+        [item setValue:[NSURL URLWithString:urlStr]
+                forKey:(__bridge NSString*)kUTTypeURL];
+        [weakSelf recordCopyImageUMA:ContextMenuCopyImage::kURLCopied];
       }
       UIPasteboard.generalPasteboard.items =
           [NSMutableArray arrayWithObject:item];

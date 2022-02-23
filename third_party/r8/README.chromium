@@ -30,6 +30,8 @@ Local Modifications:
     desugared version accesses the "dark greylisted"
     SynchronizedCollection.mutex field, which caused modal dialogs to appear on
     Android P instrumentation tests. https://crbug.com/1256614
+  * Removed references to ThreadLocalRandom to avoid streams APIs being pulled
+    in unnecessarily.  https://crbug.com/1280841
 * Added "java/src/org/chromium/build/CustomD8.java", custom_d8.jar, and BUILD.gn.
   * Used in "build/android/gyp/dex.py" to enable desugar dependencies.
 
@@ -55,8 +57,9 @@ cp out/Debug/obj/third_party/r8/custom_d8_java.javac.jar third_party/r8/custom_d
   * The bot autoruns every 6 hours. Ping a trooper or a clank build core dev to
     trigger it if you need it sooner:
     https://luci-scheduler.appspot.com/jobs/chromium/3pp-linux-amd64-packager
-  * The autoroller runs automatically when a new cipd instance is uploaded, see
-    its status here: https://autoroll.skia.org/r/r8-chromium
+  * The autoroller runs automatically when a new cipd instance is uploaded.
+    * Since r8 rolls affect downstream, the roller is only accessible to Googlers.
+    * See its status here: https://skia-autoroll.corp.goog/r/r8-chromium
 
 * If patching fails:
 git clone https://r8.googlesource.com/r8
@@ -89,7 +92,13 @@ java -cp third_party/r8/lib/r8.jar com.android.tools.r8.BackportedMethodList --m
 
 * Update instructions for desugar_jdk_libs.json:
 unzip -p third_party/android_deps/libs/com_android_tools_desugar_jdk_libs_configuration/*.jar META-INF/desugar/d8/desugar.json > third_party/r8/desugar_jdk_libs.json
-  * Remove all mentions of ConcurrentHashMap and TimeZone#getTimeZone and remove trailing commas.
+  * Remove all mentions of:
+    * ConcurrentHashMap
+    * TimeZone#getTimeZone
+    * Collections#synchronizedMap
+    * Collections#synchronizedSortedMap
+    * ThreadLocalRandom
+  * Don't forget to remove trailing commas where applicable.
   * Update //build/config/android/internal_rules.gni to point at the new .jar files:
     * desugar_jdk_libs-1.1.1.jar
     * desugar_jdk_libs_configuration-1.1.1.jar

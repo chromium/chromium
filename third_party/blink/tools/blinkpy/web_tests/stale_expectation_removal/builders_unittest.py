@@ -6,11 +6,13 @@
 import unittest
 
 from blinkpy.web_tests.stale_expectation_removal import builders
+from unexpected_passes_common import constants
+from unexpected_passes_common import data_types
 
 
 class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
     def setUp(self):
-        self.instance = builders.WebTestBuilders()
+        self.instance = builders.WebTestBuilders(False)
 
     def testMatch(self):
         """Tests that a match can be successfully found."""
@@ -45,6 +47,31 @@ class BuilderRunsTestOfInterestUnittest(unittest.TestCase):
         }
         self.assertFalse(
             self.instance._BuilderRunsTestOfInterest(test_map, None))
+
+
+class GetFakeCiBuildersUnittest(unittest.TestCase):
+    def testStringsConvertedToBuilderEntries(self):
+        """Tests that the easier-to-read strings get converted to BuilderEntry."""
+        instance = builders.WebTestBuilders(False)
+        fake_builders = instance.GetFakeCiBuilders()
+        ci_builder = data_types.BuilderEntry('linux-blink-rel-dummy',
+                                             constants.BuilderTypes.CI, False)
+        expected_try = set([
+            data_types.BuilderEntry('linux-blink-rel',
+                                    constants.BuilderTypes.TRY, False),
+            data_types.BuilderEntry('v8_linux_blink_rel',
+                                    constants.BuilderTypes.TRY, False)
+        ])
+        self.assertEqual(fake_builders[ci_builder], expected_try)
+
+
+class GetNonChromiumBuildersUnittest(unittest.TestCase):
+    def testStringsConvertedToBuilderEntries(self):
+        """Tests that the easier-to-read strings get converted to BuilderEntry."""
+        instance = builders.WebTestBuilders(False)
+        builder = data_types.BuilderEntry('ToTMacOfficial',
+                                          constants.BuilderTypes.CI, False)
+        self.assertIn(builder, instance.GetNonChromiumBuilders())
 
 
 if __name__ == '__main__':

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -162,7 +162,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
     // becomes stopped.
     void GenerateMoreAudio();
 
-    const base::TickClock* clock_;
+    raw_ptr<const base::TickClock> clock_;
 
     // Task runner that calls GenerateMoreAudio() to drive all the audio data
     // flows.
@@ -229,7 +229,7 @@ class LoopbackStream final : public media::mojom::AudioInputStream,
   mojo::Remote<media::mojom::AudioInputStreamObserver> observer_;
 
   // Used for identifying group members and snooping on their audio data flow.
-  LoopbackCoordinator* const coordinator_;
+  const raw_ptr<LoopbackCoordinator> coordinator_;
   const base::UnguessableToken group_id_;
 
   // The snoopers associated with each group member. This is not a flat_map

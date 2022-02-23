@@ -13,6 +13,7 @@
 #include "base/files/file_util.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
@@ -28,15 +29,14 @@
 #include "components/invalidation/public/invalidation_util.h"
 #include "components/invalidation/public/invalidator_state.h"
 #include "components/prefs/testing_pref_service.h"
+#include "components/sync/base/features.h"
 #include "components/sync/base/invalidation_helper.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/driver/active_devices_provider.h"
 #include "components/sync/driver/glue/sync_transport_data_prefs.h"
-#include "components/sync/driver/sync_driver_switches.h"
 #include "components/sync/engine/net/http_bridge.h"
 #include "components/sync/engine/sync_manager_factory.h"
 #include "components/sync/invalidations/mock_sync_invalidations_service.h"
-#include "components/sync/invalidations/switches.h"
 #include "components/sync/invalidations/sync_invalidations_service.h"
 #include "components/sync/protocol/sync_invalidations_payload.pb.h"
 #include "components/sync/test/engine/fake_sync_manager.h"
@@ -118,7 +118,7 @@ class FakeSyncManagerFactory : public SyncManagerFactory {
   ModelTypeSet initial_sync_ended_types_;
   ModelTypeSet progress_marker_types_;
   ModelTypeSet configure_fail_types_;
-  FakeSyncManager** fake_manager_;
+  raw_ptr<FakeSyncManager*> fake_manager_;
 };
 
 class MockInvalidationService : public invalidation::InvalidationService {
@@ -187,9 +187,10 @@ class SyncEngineImplTest : public testing::Test {
 
     ON_CALL(invalidator_, UpdateInterestedTopics)
         .WillByDefault(testing::Return(true));
-    auto sync_task_runner = base::ThreadPool::CreateSequencedTaskRunner(
-        {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
-         base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
+    scoped_refptr<base::SequencedTaskRunner> sync_task_runner =
+        base::ThreadPool::CreateSequencedTaskRunner(
+            {base::MayBlock(), base::TaskPriority::USER_VISIBLE,
+             base::TaskShutdownBehavior::BLOCK_SHUTDOWN});
     auto mock_active_devices_provider =
         std::make_unique<NiceMock<MockActiveDevicesProvider>>();
     ON_CALL(*mock_active_devices_provider.get(), CalculateInvalidationInfo)
@@ -200,7 +201,7 @@ class SyncEngineImplTest : public testing::Test {
         std::move(mock_active_devices_provider),
         std::make_unique<SyncTransportDataPrefs>(&pref_service_),
         temp_dir_.GetPath().Append(base::FilePath(kTestSyncDir)),
-        sync_task_runner, sync_transport_data_cleared_cb_.Get());
+        std::move(sync_task_runner), sync_transport_data_cleared_cb_.Get());
 
     fake_manager_factory_ = std::make_unique<FakeSyncManagerFactory>(
         &fake_manager_, network::TestNetworkConnectionTracker::GetInstance());
@@ -321,8 +322,8 @@ class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
  public:
   SyncEngineImplWithSyncInvalidationsTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
-                              switches::kUseSyncInvalidations},
+        /*enabled_features=*/{kSyncSendInterestedDataTypes,
+                              kUseSyncInvalidations},
         /*disabled_features=*/{});
   }
 
@@ -340,14 +341,19 @@ class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
  public:
   SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest() {
     override_features_.InitWithFeatures(
-        /*enabled_features=*/{switches::kSyncSendInterestedDataTypes,
-                              switches::kUseSyncInvalidations,
-                              switches::kUseSyncInvalidationsForWalletAndOffer},
+        /*enabled_features=*/{kSyncSendInterestedDataTypes,
+                              kUseSyncInvalidations,
+                              kUseSyncInvalidationsForWalletAndOffer},
         /*disabled_features=*/{});
+  }
+
+  SyncInvalidationsService* GetSyncInvalidationsService() override {
+    return &mock_sync_invalidations_service_;
   }
 
  protected:
   base::test::ScopedFeatureList override_features_;
+  NiceMock<MockSyncInvalidationsService> mock_sync_invalidations_service_;
 };
 
 // Test basic initialization with no initial types (first time initialization).
@@ -598,7 +604,7 @@ TEST_F(SyncEngineImplTest,
   ModelTypeSet invalidation_enabled_types(
       Difference(enabled_types_, CommitOnlyTypes()));
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // SESSIONS is a noisy data type whose invalidations aren't enabled by default
   // on Android.
   invalidation_enabled_types.Remove(SESSIONS);
@@ -671,10 +677,12 @@ TEST_F(SyncEngineImplWithSyncInvalidationsTest,
   InitializeBackend(/*expect_success=*/true);
 
   sync_pb::SyncInvalidationsPayload payload;
-  auto* bookmarks_invalidation = payload.add_data_type_invalidations();
+  sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
+      bookmarks_invalidation = payload.add_data_type_invalidations();
   bookmarks_invalidation->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(ModelType::BOOKMARKS));
-  auto* preferences_invalidation = payload.add_data_type_invalidations();
+  sync_pb::SyncInvalidationsPayload::DataTypeInvalidation*
+      preferences_invalidation = payload.add_data_type_invalidations();
   preferences_invalidation->set_data_type_id(
       GetSpecificsFieldNumberFromModelType(ModelType::PREFERENCES));
 
@@ -716,6 +724,13 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
 
   EXPECT_CALL(invalidator_, UpdateInterestedTopics).Times(0);
   ConfigureDataTypes();
+}
+
+TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+       ShouldEnableInvalidationsWhenInitialized) {
+  InitializeBackend(/*expect_success=*/true);
+  fake_manager_->WaitForSyncThread();
+  EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
 }
 
 TEST_F(SyncEngineImplTest, GenerateCacheGUID) {

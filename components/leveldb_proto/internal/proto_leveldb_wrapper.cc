@@ -427,7 +427,7 @@ void ProtoLevelDBWrapper::SetMetricsId(const std::string& id) {
 
 bool ProtoLevelDBWrapper::GetApproximateMemoryUse(uint64_t* approx_mem_use) {
   if (!db_)
-    return 0;
+    return false;
 
   return db_->GetApproximateMemoryUse(approx_mem_use);
 }

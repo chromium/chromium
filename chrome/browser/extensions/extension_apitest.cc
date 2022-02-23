@@ -69,13 +69,13 @@ void ExtensionApiTest::SetUpOnMainThread() {
   ExtensionBrowserTest::SetUpOnMainThread();
   DCHECK(!test_config_.get()) << "Previous test did not clear config state.";
   test_config_ = std::make_unique<base::DictionaryValue>();
-  test_config_->SetString(kTestDataDirectory,
-                          net::FilePathToFileURL(test_data_dir_).spec());
+  test_config_->SetStringPath(kTestDataDirectory,
+                              net::FilePathToFileURL(test_data_dir_).spec());
 
   if (embedded_test_server()->Started()) {
     // InitializeEmbeddedTestServer was called before |test_config_| was set.
     // Set the missing port key.
-    test_config_->SetInteger(kEmbeddedTestServerPort,
+    test_config_->SetIntPath(kEmbeddedTestServerPort,
                              embedded_test_server()->port());
   }
 
@@ -129,26 +129,32 @@ bool ExtensionApiTest::RunExtensionTest(const base::FilePath& extension_path,
     return false;
   }
 
-  // If there is a page_url to load, navigate it.
+  GURL url_to_open;
   if (run_options.page_url) {
-    GURL url(run_options.page_url);
-
+    url_to_open = GURL(run_options.page_url);
     // Note: We use is_valid() here in the expectation that the provided url
     // may lack a scheme & host and thus be a relative url within the loaded
     // extension.
-    if (!url.is_valid())
-      url = extension->GetResourceURL(run_options.page_url);
+    // TODO(https://crbug.com/1284691): Update callers passing relative paths
+    // for page URLs to instead use extension_url.
+    if (!url_to_open.is_valid())
+      url_to_open = extension->GetResourceURL(run_options.page_url);
+  } else if (run_options.extension_url) {
+    url_to_open = extension->GetResourceURL(run_options.extension_url);
+  }
 
-    OpenURL(url, run_options.open_in_incognito);
+  // If there is a page_url to load, navigate it.
+  if (!url_to_open.is_empty()) {
+    OpenURL(url_to_open, run_options.open_in_incognito);
   } else if (run_options.launch_as_platform_app) {
-    apps::AppLaunchParams params(extension->id(),
-                                 LaunchContainer::kLaunchContainerNone,
-                                 WindowOpenDisposition::NEW_WINDOW,
-                                 apps::mojom::LaunchSource::kFromTest);
+    apps::AppLaunchParams params(
+        extension->id(), apps::mojom::LaunchContainer::kLaunchContainerNone,
+        WindowOpenDisposition::NEW_WINDOW,
+        apps::mojom::LaunchSource::kFromTest);
     params.command_line = *base::CommandLine::ForCurrentProcess();
     apps::AppServiceProxyFactory::GetForProfile(browser()->profile())
         ->BrowserAppLauncher()
-        ->LaunchAppWithParams(std::move(params));
+        ->LaunchAppWithParamsForTesting(std::move(params));
   }
 
   if (!catcher.GetNextResult()) {
@@ -228,7 +234,7 @@ bool ExtensionApiTest::InitializeEmbeddedTestServer() {
   // access the test server and local file system.  Tests can see these values
   // using the extension API function chrome.test.getConfig().
   if (test_config_) {
-    test_config_->SetInteger(kEmbeddedTestServerPort,
+    test_config_->SetIntPath(kEmbeddedTestServerPort,
                              embedded_test_server()->port());
   }
   // else SetUpOnMainThread has not been called yet. Possibly because the
@@ -251,7 +257,7 @@ bool ExtensionApiTest::StartWebSocketServer(
   if (!websocket_server_->Start())
     return false;
 
-  test_config_->SetInteger(kTestWebSocketPort,
+  test_config_->SetIntPath(kTestWebSocketPort,
                            websocket_server_->host_port_pair().port());
 
   return true;
@@ -274,6 +280,14 @@ void ExtensionApiTest::SetUpCommandLine(base::CommandLine* command_line) {
   // tests to take more time to complete. Disable backgrounding so that the
   // tests don't time out.
   command_line->AppendSwitch(::switches::kDisableRendererBackgrounding);
+}
+
+void ExtensionApiTest::UseHttpsTestServer() {
+  https_test_server_ = std::make_unique<net::EmbeddedTestServer>(
+      net::EmbeddedTestServer::TYPE_HTTPS);
+  https_test_server_.get()->AddDefaultHandlers(GetChromeTestDataDir());
+  https_test_server_.get()->SetSSLConfig(
+      net::EmbeddedTestServer::CERT_TEST_NAMES);
 }
 
 }  // namespace extensions

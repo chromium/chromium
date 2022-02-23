@@ -12,11 +12,8 @@
 // Delegate for the ContentSuggestionsHeaderViewController.
 @protocol ContentSuggestionsHeaderViewControllerDelegate
 
-// Returns whether a context menu is visible.
-- (BOOL)isContextMenuVisible;
-
-// Returns whether the collection is scrolled to its top.
-- (BOOL)isScrolledToTop;
+// Returns whether the collection is scrolled to the omnibox.
+- (BOOL)isScrolledToMinimumHeight;
 
 // Register |imageUpdater| object as delegate to refresh UI when user account
 // avatar is changed.

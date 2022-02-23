@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/views/extensions/settings_overridden_dialog_view.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
@@ -56,7 +57,7 @@ class TestDialogController : public SettingsOverriddenDialogController {
   const ShowParams show_params_;
 
   // The result to populate. Must outlive this object.
-  absl::optional<DialogResult>* const dialog_result_out_;
+  const raw_ptr<absl::optional<DialogResult>> dialog_result_out_;
 };
 
 }  // namespace
@@ -268,7 +269,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
 
 // The chrome_settings_overrides API that allows extensions to override the
 // default search provider is only available on Windows and Mac.
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
                        InvokeUi_SearchOverriddenDialog_BackToGoogle) {
   ShowAndVerifyUi();
@@ -283,7 +284,7 @@ IN_PROC_BROWSER_TEST_F(SettingsOverriddenDialogViewBrowserTest,
                        InvokeUi_SearchOverriddenDialog_Generic) {
   ShowAndVerifyUi();
 }
-#endif  // defined(OS_WIN) || defined(OS_MAC)
+#endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Functional Browser Tests

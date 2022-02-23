@@ -1,0 +1,5 @@
+WebView focusable focused scrollable actions:[CLEAR_FOCUS, AX_FOCUS] bundle:[chromeRole="rootWebArea"]
+++View actions:[AX_FOCUS] bundle:[chromeRole="menu", roleDescription="menu"]
+++++MenuItem text:"Menu item 1" checkable clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItemRadio", roleDescription="radio button"]
+++++MenuItem text:"Menu item 2" checkable checked clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItemRadio", roleDescription="radio button"]
+++++MenuItem text:"Menu item 3" stateDescription:"Partially Checked" clickable actions:[CLICK, AX_FOCUS, NEXT, PREVIOUS] bundle:[chromeRole="menuItemRadio", roleDescription="radio button"]

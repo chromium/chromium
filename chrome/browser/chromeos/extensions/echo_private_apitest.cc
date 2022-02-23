@@ -98,7 +98,8 @@ class ExtensionEchoPrivateApiTest : public extensions::ExtensionApiTest {
   // Open and activates tab in the test browser. Returns the ID of the opened
   // tab.
   int OpenAndActivateTab() {
-    AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK);
+    EXPECT_TRUE(
+        AddTabAtIndex(0, GURL("about:blank"), ui::PAGE_TRANSITION_LINK));
     browser()->tab_strip_model()->ActivateTabAt(
         0, {TabStripModel::GestureType::kOther});
     return extensions::ExtensionTabUtil::GetTabId(

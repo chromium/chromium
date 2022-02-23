@@ -16,6 +16,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/json/json_reader.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -63,7 +64,7 @@ struct QueryNode {
   // Query URL.
   GURL url;
   // Value node with requests mapped with |url|.
-  const base::Value* node = nullptr;
+  raw_ptr<const base::Value> node = nullptr;
 };
 
 // Gets a hexadecimal representation of a string.
@@ -494,7 +495,7 @@ ServerCacheReplayer::Status PopulateCacheFromQueryNode(
     ServerCache* cache_to_fill) {
   bool fail_on_error = FailOnError(options);
   bool split_requests_by_form = SplitRequestsByForm(options);
-  for (const base::Value& request : query_node.node->GetList()) {
+  for (const base::Value& request : query_node.node->GetListDeprecated()) {
     // Get AutofillQueryContents from request.
     bool is_post_request = GetRequestTypeFromURL<ReadEnv>(query_node.url) ==
                            RequestType::kQueryProtoPOST;

@@ -27,7 +27,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_H_
 #define THIRD_PARTY_BLINK_RENDERER_MODULES_CANVAS_CANVAS2D_CANVAS_RENDERING_CONTEXT_2D_H_
 
-#include "base/macros.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_formatted_text.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_canvas_rendering_context_2d_settings.h"
 #include "third_party/blink/renderer/core/html/canvas/canvas_context_creation_attributes_core.h"
@@ -98,6 +97,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
     return static_cast<HTMLCanvasElement*>(Host());
   }
   V8RenderingContext* AsV8RenderingContext() final;
+  NoAllocDirectCallHost* AsNoAllocDirectCallHost() final;
 
   bool isContextLost() const override;
 
@@ -120,8 +120,8 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   String direction() const;
   void setDirection(const String&);
 
-  void setLetterSpacing(const double letter_spacing);
-  void setWordSpacing(const double word_spacing);
+  void setLetterSpacing(const String&);
+  void setWordSpacing(const String&);
   void setTextRendering(const String&);
 
   void setFontKerning(const String&);
@@ -191,7 +191,7 @@ class MODULES_EXPORT CanvasRenderingContext2D final
 
   void ValidateStateStackWithCanvas(const cc::PaintCanvas*) const final;
 
-  void FinalizeFrame() override;
+  void FinalizeFrame(bool printing = false) override;
 
   CanvasRenderingContextHost* GetCanvasRenderingContextHost() override;
   ExecutionContext* GetTopExecutionContext() const override;
@@ -213,10 +213,6 @@ class MODULES_EXPORT CanvasRenderingContext2D final
                                   ImageDataSettings*,
                                   ExceptionState&) final;
 
-  CanvasColorParams ColorParamsForTest() const {
-    return GetCanvas2DColorParams();
-  }
-
   IdentifiableToken IdentifiableTextToken() const override {
     return identifiability_study_helper_.GetToken();
   }
@@ -236,13 +232,11 @@ class MODULES_EXPORT CanvasRenderingContext2D final
   }
 
  protected:
-  // This reports CanvasColorParams to the CanvasRenderingContext interface.
   CanvasColorParams CanvasRenderingContextColorParams() const override {
     return color_params_;
   }
-  // This reports CanvasColorParams to the BaseRenderingContext2D interface.
-  CanvasColorParams GetCanvas2DColorParams() const override {
-    return color_params_;
+  PredefinedColorSpace GetDefaultImageDataColorSpace() const final {
+    return color_params_.ColorSpace();
   }
   bool WritePixels(const SkImageInfo& orig_info,
                    const void* pixels,

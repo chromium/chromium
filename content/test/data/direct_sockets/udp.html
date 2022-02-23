@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Direct Sockets UDP Test</title>
+  <script>
+    'use strict';
+
+    async function sendLoop(writer, requiredBytes) {
+      let bytesWritten = 0;
+      let chunkLength = 0;
+
+      while (bytesWritten < requiredBytes) {
+        chunkLength = Math.min(chunkLength + 1,
+                               requiredBytes - bytesWritten);
+        let chunk = new Uint8Array(chunkLength);
+        for (let index = 0; index < chunkLength; index++) {
+          chunk[index] = bytesWritten % 256;
+          bytesWritten++;
+        }
+        await writer.ready;
+        await writer.write({ data: chunk });
+      }
+      return 'send succeeded';
+    }
+
+    async function readLoop(reader, requiredBytes) {
+      let bytesRead = 0;
+      while (bytesRead < requiredBytes) {
+        const { value, done } = await reader.read();
+        if (done) {
+          return 'readLoop failed: stream closed prematurely.';
+        }
+
+        const { data } = value;
+        if (!data || data.length === 0) {
+          return 'readLoop failed: no data returned.';
+        }
+
+        for (let index = 0; index < data.length; index++) {
+          if (data[index] != bytesRead % 256) {
+            console.log(`Expected ${bytesRead % 256}, received ${data[index]}`);
+            return 'readLoop failed: bad data.';
+          }
+          bytesRead++;
+        }
+      }
+      return 'readLoop succeeded.';
+    }
+
+    async function sendUdp(options, requiredBytes) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+        return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
+      } catch (error) {
+        return ('sendUdp failed: ' + error);
+      }
+    }
+
+    async function closeUdp(options) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+        await udpSocket.close();
+        return 'closeUdp succeeded';
+      } catch (error) {
+        return ('closeUdp failed: ' + error);
+      }
+    }
+
+    async function sendUdpAfterClose(options, requiredBytes) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+        await udpSocket.close();
+        return await sendLoop(udpSocket.writable.getWriter(), requiredBytes);
+      } catch (error) {
+        return ('send failed: ' + error);
+      }
+    }
+
+    async function readUdpAfterSocketClose(options) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+        await udpSocket.close();
+        let { value, done } = await udpSocket.readable.getReader().read();
+        if (!done) {
+          return 'Stream is not closed!';
+        }
+        return 'readUdpAferSocketClose succeeded.';
+      } catch (error) {
+        return ('readUdpAfterSocketClose failed: ' + error);
+      }
+    }
+
+    async function readUdpAfterStreamClose(options) {
+      try {
+        let udpSocket = await navigator.openUDPSocket(options);
+
+        let reader = udpSocket.readable.getReader();
+        await reader.cancel();
+        let { value, done } = await reader.read();
+        if (!done) {
+          return 'Stream is not closed!';
+        }
+        return 'readUdpAferSocketClose succeeded.';
+      } catch (error) {
+        return ('readUdpAfterSocketClose failed: ' + error);
+      }
+    }
+
+  </script>
+</head>
+<body>
+  <h1>Direct Sockets UDP Test</h1>
+</body>
+</html>

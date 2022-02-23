@@ -14,14 +14,14 @@
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/test/web_app_test_observers.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
-#include "chrome/browser/web_applications/web_application_info.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_utils.h"
@@ -64,9 +64,6 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
 
     ASSERT_TRUE(SetupSync());
     ASSERT_TRUE(AllProfilesHaveSameWebAppIds());
-
-    os_hooks_suppress_ =
-        OsIntegrationManager::ScopedSuppressOsHooksForTesting();
   }
 
   const WebAppRegistrar& GetRegistrar(Profile* profile) {
@@ -88,14 +85,14 @@ class TwoClientWebAppsSyncTest : public WebAppsSyncTestBase {
   }
 
  private:
-  ScopedOsHooksSuppress os_hooks_suppress_;
+  OsIntegrationManager::ScopedSuppressForTesting os_hooks_suppress_;
 };
 
 IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Basic) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test name";
   info.description = u"Test description";
   info.start_url = GURL("http://www.chromium.org/path");
@@ -115,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, Minimal) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -132,7 +129,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, ThemeColor) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/");
   info.theme_color = SK_ColorBLUE;
@@ -153,7 +150,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, IsLocallyInstalled) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test name";
   info.start_url = GURL("http://www.chromium.org/");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -171,7 +168,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
   const WebAppRegistrar& registrar0 = GetRegistrar(GetProfile(0));
   const WebAppRegistrar& registrar1 = GetRegistrar(GetProfile(1));
 
-  WebApplicationInfo info_a;
+  WebAppInstallInfo info_a;
   info_a.title = u"Test name A";
   info_a.description = u"Description A";
   info_a.start_url = GURL("http://www.chromium.org/path/to/start_url");
@@ -191,7 +188,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
 
   // Reinstall same app in Profile 0 with a different metadata aside from the
   // name and start_url.
-  WebApplicationInfo info_b;
+  WebAppInstallInfo info_b;
   info_b.title = u"Test name B";
   info_b.description = u"Description B";
   info_b.start_url = GURL("http://www.chromium.org/path/to/start_url");
@@ -208,7 +205,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, AppFieldsChangeDoesNotSync) {
 
   // Install a separate app just to have something to await on to ensure the
   // sync has propagated to the other profile.
-  WebApplicationInfo infoC;
+  WebAppInstallInfo infoC;
   infoC.title = u"Different test name";
   infoC.start_url = GURL("http://www.notchromium.org/");
   AppId app_id_c = apps_helper::InstallWebApp(GetProfile(0), infoC);
@@ -280,7 +277,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingStartUrlFallback) {
   dest_install_observer.BeginListening();
 
   // Install app with name.
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test app";
   info.start_url =
       embedded_test_server()->GetURL("/web_apps/different_start_url.html");
@@ -310,7 +307,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingNameFallback) {
   dest_install_observer.BeginListening();
 
   // Install app with name.
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Correct App Name";
   info.start_url =
       embedded_test_server()->GetURL("/web_apps/bad_title_only.html");
@@ -337,7 +334,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncWithoutUsingNameFallback) {
   dest_install_observer.BeginListening();
 
   // Install app with name.
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Incorrect App Name";
   info.start_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   AppId app_id = apps_helper::InstallWebApp(GetProfile(0), info);
@@ -361,7 +358,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUsingIconUrlFallback) {
   dest_install_observer.BeginListening();
 
   // Install app with name.
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Blue icon";
   info.start_url = GURL("https://does-not-exist.org");
   info.theme_color = SK_ColorBLUE;
@@ -403,7 +400,7 @@ IN_PROC_BROWSER_TEST_F(TwoClientWebAppsSyncTest, SyncUserDisplayModeChange) {
   WebAppTestInstallObserver install_observer(GetProfile(1));
   install_observer.BeginListening();
 
-  WebApplicationInfo info;
+  WebAppInstallInfo info;
   info.title = u"Test name";
   info.description = u"Test description";
   info.start_url = GURL("http://www.chromium.org/path");

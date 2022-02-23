@@ -34,10 +34,9 @@ CustomLinksStore::~CustomLinksStore() = default;
 std::vector<CustomLinksManager::Link> CustomLinksStore::RetrieveLinks() {
   std::vector<CustomLinksManager::Link> links;
 
-  const base::ListValue* stored_links =
-      prefs_->GetList(prefs::kCustomLinksList);
+  const base::Value* stored_links = prefs_->GetList(prefs::kCustomLinksList);
 
-  for (const base::Value& link : stored_links->GetList()) {
+  for (const base::Value& link : stored_links->GetListDeprecated()) {
     const base::Value* url_value = link.FindKey(kDictionaryKeyUrl);
     const base::Value* title_value = link.FindKey(kDictionaryKeyTitle);
     const base::Value* mv_value = link.FindKey(kDictionaryKeyIsMostVisited);

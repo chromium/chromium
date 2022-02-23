@@ -7,7 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "ui/gfx/image/image.h"
 
-namespace chromeos {
+namespace ash {
 namespace phonehub {
 
 CameraRollItem::CameraRollItem(const proto::CameraRollItemMetadata& metadata,
@@ -34,4 +34,4 @@ bool CameraRollItem::operator!=(const CameraRollItem& other) const {
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

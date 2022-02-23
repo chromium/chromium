@@ -435,6 +435,16 @@ void JSChecker::ExpectElementContainsText(
   EXPECT_TRUE(std::string::npos != message.find(content));
 }
 
+void JSChecker::ExpectDialogOpen(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, true);
+}
+
+void JSChecker::ExpectDialogClosed(
+    std::initializer_list<base::StringPiece> element_ids) {
+  ExpectAttributeEQ("open", element_ids, false);
+}
+
 void JSChecker::ExpectElementValue(
     const std::string& value,
     std::initializer_list<base::StringPiece> element_ids) {
@@ -519,6 +529,12 @@ void JSChecker::SelectElementInPath(
                                      GetOobeElementPath(element_ids));
   base::ReplaceSubstringsAfterOffset(&js, 0, "$FieldValue", escaped_value);
   Evaluate(js);
+}
+
+bool JSChecker::IsVisible(
+    std::initializer_list<base::StringPiece> element_ids) {
+  bool is_hidden = GetBool(test::GetOobeElementPath(element_ids) + ".hidden");
+  return !is_hidden;
 }
 
 JSChecker OobeJS() {

@@ -41,8 +41,8 @@ enum class PrefetchProxyPrefetchStatus {
   kPrefetchNotEligibleSchemeIsNotHttps = 7,
 
   // The url was not eligible to be prefetched because its host was an IP
-  // address.
-  kPrefetchNotEligibleHostIsIPAddress = 8,
+  // address. [DEPRECATED]
+  // kPrefetchNotEligibleHostIsIPAddress = 8,
 
   // The url was not eligible to be prefetched because it uses a non-default
   // storage partition.
@@ -122,6 +122,11 @@ enum class PrefetchProxyPrefetchStatus {
   // The prefetch was redirected, but following redirects was disabled.
   // See crbug.com/1266876 for more details.
   kPrefetchFailedRedirectsDisabled = 35,
+
+  // The url was not eligible to be prefetched because its host was not unique
+  // (e.g., a non publicly routable IP address or a hostname which is not
+  // registry-controlled) but the prefetch was to be proxied.
+  kPrefetchNotEligibleHostIsNonUnique = 36,
 };
 
 #endif  // CHROME_BROWSER_PREFETCH_PREFETCH_PROXY_PREFETCH_PROXY_PREFETCH_STATUS_H_

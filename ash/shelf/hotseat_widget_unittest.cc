@@ -13,7 +13,6 @@
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
 #include "ash/public/cpp/assistant/controller/assistant_ui_controller.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/public/cpp/test/assistant_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shelf/drag_window_from_shelf_controller_test_api.h"
@@ -50,6 +49,7 @@
 #include "chromeos/services/assistant/public/cpp/assistant_service.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/aura/client/aura_constants.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/compositor/scoped_layer_animation_settings.h"
 #include "ui/events/gesture_detection/gesture_configuration.h"
@@ -113,7 +113,7 @@ class HotseatWidgetTest
 
   void TearDown() override {
     // Some tests may override this value, make sure it's reset.
-    PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+    ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
         false);
     ShelfLayoutManagerTestBase::TearDown();
   }
@@ -122,6 +122,9 @@ class HotseatWidgetTest
     return shelf_auto_hide_behavior_;
   }
   bool is_assistant_enabled() const { return is_assistant_enabled_; }
+  bool navigation_buttons_shown_in_tablet_mode() const {
+    return navigation_buttons_shown_in_tablet_mode_;
+  }
   AssistantTestApi* assistant_test_api() { return assistant_test_api_.get(); }
 
   void ShowShelfAndActivateAssistant() {
@@ -322,14 +325,15 @@ class HotseatTransitionAnimationObserver
   HotseatTransitionAnimator* hotseat_transition_animator_;
 };
 
-// Used to test the Hotseat, ScrollabeShelf, and DenseShelf features.
+// Used to test the Hotseat, ScrollableShelf, and DenseShelf features.
 INSTANTIATE_TEST_SUITE_P(
     All,
     HotseatWidgetTest,
-    testing::Combine(testing::Values(ShelfAutoHideBehavior::kNever,
-                                     ShelfAutoHideBehavior::kAlways),
-                     testing::Bool(),
-                     testing::Bool()));
+    testing::Combine(
+        testing::Values(ShelfAutoHideBehavior::kNever,
+                        ShelfAutoHideBehavior::kAlways),
+        /*is_assistant_enabled*/ testing::Bool(),
+        /*navigation_buttons_shown_in_tablet_mode*/ testing::Bool()));
 
 TEST_P(HotseatWidgetTest, LongPressHomeWithoutAppWindow) {
   GetPrimaryShelf()->SetAutoHideBehavior(shelf_auto_hide_behavior());
@@ -374,6 +378,10 @@ TEST_P(HotseatWidgetTest, LongPressHomeWithAppWindow) {
     // |ShowShelfAndActivateAssistant()| will bring up shelf so it will trigger
     // one hotseat state change.
     expected_state.push_back(HotseatState::kExtended);
+    // Launching the assistant from a shelf button on an autohidden shelf will
+    // hide the shelf at the end of the operation.
+    if (is_assistant_enabled() && navigation_buttons_shown_in_tablet_mode())
+      expected_state.push_back(HotseatState::kHidden);
   }
   watcher.CheckEqual(expected_state);
 }
@@ -445,6 +453,8 @@ TEST_P(HotseatWidgetTest, InAppShelfShowingContextMenu) {
 
   // Accelerate the generation of the long press event.
   ui::GestureConfiguration::GetInstance()->set_show_press_delay_in_ms(1);
+  ui::GestureConfiguration::GetInstance()->set_short_press_time(
+      base::Milliseconds(1));
   ui::GestureConfiguration::GetInstance()->set_long_press_time_in_ms(1);
 
   // Press the icon enough long time to generate the long press event.
@@ -2252,7 +2262,9 @@ TEST_P(HotseatWidgetTest, AnimationAfterDrag) {
 
 // Tests that hotseat bounds don't jump when the hotseat widget is translated
 // when a transitionj animation starts.
-TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
+// Flaky https://crbug.com/1292675
+TEST_P(HotseatWidgetTest,
+       DISABLED_InitialAnimationPositionWithNonIdentityTransform) {
   TabletModeControllerTestApi().EnterTabletMode();
   // Add an app to shelf - the app will be used to track the shelf view position
   // throughout the test.
@@ -2375,7 +2387,8 @@ TEST_P(HotseatWidgetTest, InitialAnimationPositionWithNonIdentityTransform) {
 }
 
 TEST_P(HotseatWidgetTest, PresentationTimeMetricDuringDrag) {
-  PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(true);
+  ui::PresentationTimeRecorder::SetReportPresentationTimeImmediatelyForTest(
+      true);
 
   std::unique_ptr<aura::Window> window =
       AshTestBase::CreateTestWindow(gfx::Rect(0, 0, 400, 400));

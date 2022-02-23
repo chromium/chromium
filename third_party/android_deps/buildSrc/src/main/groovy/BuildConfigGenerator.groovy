@@ -13,6 +13,8 @@ import org.gradle.api.tasks.TaskAction
 
 import java.nio.file.Path
 import java.nio.file.Paths
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.ConcurrentMap
 import java.util.concurrent.Executors
 import java.util.concurrent.ExecutorService
 import java.util.concurrent.Future
@@ -60,10 +62,6 @@ class BuildConfigGenerator extends DefaultTask {
         org_hamcrest_hamcrest_core: '//third_party/hamcrest:hamcrest_core_java',
         org_hamcrest_hamcrest_integration: '//third_party/hamcrest:hamcrest_integration_java',
         org_hamcrest_hamcrest_library: '//third_party/hamcrest:hamcrest_library_java',
-        // Remove androidx_window_window from being depended upon since we don't use it and it bloats binary size due to
-        // overly broad proguard keep rules. Perhaps when http://b/165268619 is fixed then we can allow it to be
-        // depended upon again.
-        androidx_window_window: EXCLUDE_THIS_LIB,
     ]
 
     /**
@@ -82,6 +80,7 @@ class BuildConfigGenerator extends DefaultTask {
       'androidx_constraintlayout',
       'androidx_documentfile',
       'androidx_legacy',
+      'androidx_localbroadcastmanager_localbroadcastmanager',
       'androidx_multidex_multidex',
       'androidx_print',
       'androidx_test',
@@ -97,6 +96,9 @@ class BuildConfigGenerator extends DefaultTask {
         # Use of this source code is governed by a BSD-style license that can be
         # found in the LICENSE file.
     '''.stripIndent()
+
+    // This cache allows us to download license files from the same URL at most once.
+    static final ConcurrentMap<String, String> URL_TO_STRING_CACHE = new ConcurrentHashMap<>()
 
     /**
      * Directory where the artifacts will be downloaded and where files will be generated.
@@ -265,14 +267,13 @@ class BuildConfigGenerator extends DefaultTask {
         }
     }
 
-    static String make3ppPb(ChromiumDepGraph.DependencyDescription dependency, String cipdBucket, String repoPath) {
+    static String make3ppPb(String cipdBucket, String repoPath) {
         String pkgPrefix = "${cipdBucket}/${repoPath}/${DOWNLOAD_DIRECTORY_NAME}"
 
         return COPYRIGHT_HEADER + '\n' + GEN_REMINDER + """
             create {
               source {
                 script { name: "fetch.py" }
-                patch_version: "${dependency.cipdSuffix}"
               }
             }
 
@@ -331,7 +332,9 @@ class BuildConfigGenerator extends DefaultTask {
     static void downloadFile(String id, String sourceUrl, File destinationFile) {
         destinationFile.withOutputStream { out ->
             try {
-                out << connectAndFollowRedirects(id, sourceUrl).inputStream
+                out << URL_TO_STRING_CACHE.computeIfAbsent(sourceUrl) { k ->
+                    connectAndFollowRedirects(id, k).inputStream.text
+                }
             } catch (Exception e) {
                 throw new RuntimeException("Failed to fetch license for $id url: $sourceUrl", e)
             }
@@ -366,7 +369,7 @@ class BuildConfigGenerator extends DefaultTask {
         List<Future> downloadTasks = []
         List<ChromiumDepGraph.DependencyDescription> mergeLicensesDeps = []
         graph.dependencies.values().each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTarget(dependency) != null) {
+            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
                 return
             }
 
@@ -375,7 +378,7 @@ class BuildConfigGenerator extends DefaultTask {
             dependencyForLogging.artifact = null
 
             logger.debug "Processing ${dependency.name}: \n${jsonDump(dependencyForLogging)}"
-            String depDir = computeDepDir(dependency)
+            String depDir = BuildConfigGenerator.computeDepDir(dependency)
             String absoluteDepDir = "${normalisedRepoPath}/${depDir}"
 
             dependencyDirectories.add(depDir)
@@ -400,7 +403,7 @@ class BuildConfigGenerator extends DefaultTask {
                 if (dependency.fileUrl) {
                     String absoluteDep3ppDir = "${absoluteDepDir}/3pp"
                     new File(absoluteDep3ppDir).mkdirs()
-                    new File("${absoluteDep3ppDir}/3pp.pb").write(make3ppPb(dependency, cipdBucket, repositoryPath))
+                    new File("${absoluteDep3ppDir}/3pp.pb").write(make3ppPb(cipdBucket, repositoryPath))
                     File fetchFile = new File("${absoluteDep3ppDir}/fetch.py")
                     fetchFile.write(make3ppFetch(fetchTemplate, dependency))
                     fetchFile.setExecutable(true, false)
@@ -446,22 +449,14 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         String targetName = translateTargetName(dependency.id) + '_java'
-        String javaGroupTarget = computeJavaGroupForwardingTarget(dependency)
-        if (javaGroupTarget != null) {
-            assert dependency.extension == 'jar' || dependency.extension == 'aar'
-            sb.append("""
-                java_group("${targetName}") {
-                  deps = [ "${javaGroupTarget}" ]
-                """.stripIndent())
-            if (dependency.testOnly) {
-                sb.append('  testonly = true\n')
-            }
-            sb.append('}\n\n')
-            return
-                }
+        List<String> javaDeps = computeJavaGroupForwardingTargets(dependency) ?: dependency.children
 
         String depsStr = ''
-        dependency.children?.each { childDep ->
+        javaDeps?.each { childDep ->
+            if (childDep.startsWith('//')) {
+                depsStr += "\"${childDep}\","
+                return
+            }
             ChromiumDepGraph.DependencyDescription dep = allDependencies[childDep]
             if (dep.exclude) {
                 return
@@ -508,9 +503,13 @@ class BuildConfigGenerator extends DefaultTask {
                   aar_path = "${libPath}/${dependency.fileName}"
                   info_path = "${libPath}/${dependency.id}.info"
             """.stripIndent())
+        } else if (dependency.extension == 'group') {
+            sb.append("""\
+                java_group("${targetName}") {
+            """.stripIndent())
         } else {
             throw new IllegalStateException('Dependency type should be JAR or AAR')
-                }
+        }
 
         sb.append(generateBuildTargetVisibilityDeclaration(dependency))
 
@@ -523,7 +522,7 @@ class BuildConfigGenerator extends DefaultTask {
         addSpecialTreatment(sb, dependency.id, dependency.extension)
 
         sb.append('}\n\n')
-                }
+    }
 
     String generateBuildTargetVisibilityDeclaration(ChromiumDepGraph.DependencyDescription dependency) {
         StringBuilder sb = new StringBuilder()
@@ -575,10 +574,14 @@ class BuildConfigGenerator extends DefaultTask {
     }
 
     /** If |dependency| should be a java_group(), returns target to forward to. Returns null otherwise. */
-    String computeJavaGroupForwardingTarget(ChromiumDepGraph.DependencyDescription dependency) {
+    List<String> computeJavaGroupForwardingTargets(ChromiumDepGraph.DependencyDescription dependency) {
         String targetName = translateTargetName(dependency.id) + '_java'
-        return repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName) ?
-               "//${AUTOROLLED_REPO_PATH}:${targetName}" : null
+        if (repositoryPath != AUTOROLLED_REPO_PATH && isTargetAutorolled(targetName)) {
+            return ["//${AUTOROLLED_REPO_PATH}:${targetName}"]
+        } else if (dependency.extension == 'group') {
+            return dependency.children
+        }
+        return []
     }
 
     private static String makeGnArray(String[] values) {
@@ -677,10 +680,7 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  # Only useful for very old SDKs.\n')
                 sb.append('  ignore_proguard_configs = true\n')
                 break
-            case 'android_arch_lifecycle_runtime':
-            case 'android_arch_lifecycle_viewmodel':
             case 'androidx_lifecycle_lifecycle_runtime':
-            case 'androidx_lifecycle_lifecycle_viewmodel':
                 sb.append('\n')
                 sb.append('  # https://crbug.com/887942#c1\n')
                 sb.append('  ignore_proguard_configs = true\n')
@@ -692,10 +692,23 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  ignore_proguard_configs = true\n')
                 break
             case 'com_google_android_material_material':
-                sb.append('\n')
-                sb.append('  # Reduce binary size. https:crbug.com/954584\n')
-                sb.append('  ignore_proguard_configs = true\n')
-                sb.append('  proguard_configs = ["material_design.flags"]\n')
+                sb.with {
+                    append('\n')
+                    append('  # Reduce binary size. https:crbug.com/954584\n')
+                    append('  ignore_proguard_configs = true\n')
+                    append('  proguard_configs = ["material_design.flags"]\n')
+                    append('\n')
+                    append('  # Ensure ConstraintsLayout is not included by unused layouts:\n')
+                    append('  # https://crbug.com/1292510\n')
+                    // Keep in sync with the copy in fetch_all.py.
+                    append('  resource_exclusion_globs = [\n')
+                    append('      "res/layout*/*calendar*",\n')
+                    append('      "res/layout*/*chip_input*",\n')
+                    append('      "res/layout*/*clock*",\n')
+                    append('      "res/layout*/*picker*",\n')
+                    append('      "res/layout*/*time*",\n')
+                    append('  ]\n')
+                }
                 break
             case 'com_android_support_support_annotations':
                 sb.append('  # https://crbug.com/989505\n')
@@ -803,6 +816,7 @@ class BuildConfigGenerator extends DefaultTask {
                 // chrome/android/java/proguard.flags instead.
                 sb.append('  ignore_proguard_configs = true\n')
                 break
+            case 'androidx_biometric_biometric':
             case 'com_google_android_gms_play_services_base':
                 sb.append('  bytecode_rewriter_target = "//build/android/bytecode:fragment_activity_replacer"\n')
                 break
@@ -1004,7 +1018,8 @@ class BuildConfigGenerator extends DefaultTask {
     private void validateDependencies(
             Collection<ChromiumDepGraph.DependencyDescription> dependencies) {
         dependencies.each { dependency ->
-            if (dependency.id.contains('androidx') && !dependency.fileName.contains('SNAPSHOT')) {
+            if (dependency.id.contains('androidx') &&
+                    dependency.fileName && !dependency.fileName.contains('SNAPSHOT')) {
                 boolean hasAllowedDep = ALLOWED_ANDROIDX_NON_SNAPSHOT_DEPS_PREFIXES.any {
                     allowedPrefix -> dependency.id.startsWith(allowedPrefix)
                 }
@@ -1036,7 +1051,7 @@ class BuildConfigGenerator extends DefaultTask {
         }
 
         depGraph.dependencies.values().sort(dependencyComparator).each { dependency ->
-            if (excludeDependency(dependency) || computeJavaGroupForwardingTarget(dependency)) {
+            if (excludeDependency(dependency) || computeJavaGroupForwardingTargets(dependency)) {
                 return
             }
             String depPath = "${DOWNLOAD_DIRECTORY_NAME}/${dependency.directoryName}"

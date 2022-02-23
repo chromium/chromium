@@ -11,14 +11,20 @@
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/weak_ptr.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/threading/sequenced_task_runner_handle.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/accessibility_state_utils.h"
+#include "chrome/browser/feature_engagement/tracker_factory.h"
 #include "chrome/browser/ui/autofill/autofill_popup_view.h"
 #include "components/autofill/content/browser/content_autofill_driver.h"
+#include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/autofill_popup_delegate.h"
 #include "components/autofill/core/browser/ui/popup_item_ids.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
+#include "components/autofill/core/common/autofill_features.h"
+#include "components/feature_engagement/public/tracker.h"
 #include "components/password_manager/content/browser/content_password_manager_driver.h"
 #include "components/strings/grit/components_strings.h"
 #include "content/public/browser/native_web_keyboard_event.h"
@@ -36,7 +42,7 @@
 #include "ui/gfx/text_utils.h"
 #include "ui/views/accessibility/view_accessibility.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/autofill/manual_filling_controller_impl.h"
 
 using FillingSource = ManualFillingController::FillingSource;
@@ -46,7 +52,7 @@ using base::WeakPtr;
 
 namespace autofill {
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 // static
 WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     WeakPtr<AutofillPopupControllerImpl> previous,
@@ -55,14 +61,19 @@ WeakPtr<AutofillPopupControllerImpl> AutofillPopupControllerImpl::GetOrCreate(
     gfx::NativeView container_view,
     const gfx::RectF& element_bounds,
     base::i18n::TextDirection text_direction) {
-  if (previous.get() && previous->delegate_.get() == delegate.get() &&
+  if (previous && previous->delegate_.get() == delegate.get() &&
       previous->container_view() == container_view) {
+    if (base::FeatureList::IsEnabled(
+            features::kAutofillDelayPopupControllerDeletion) &&
+        previous->self_deletion_weak_ptr_factory_.HasWeakPtrs()) {
+      previous->self_deletion_weak_ptr_factory_.InvalidateWeakPtrs();
+    }
     previous->SetElementBounds(element_bounds);
     previous->ClearState();
     return previous;
   }
 
-  if (previous.get())
+  if (previous)
     previous->Hide(PopupHidingReason::kViewDestroyed);
 
   AutofillPopupControllerImpl* controller = new AutofillPopupControllerImpl(
@@ -91,6 +102,15 @@ void AutofillPopupControllerImpl::Show(
     const std::vector<Suggestion>& suggestions,
     bool autoselect_first_suggestion,
     PopupType popup_type) {
+  // TODO(crbug.com/1277218): Remove when kAutofillDelayPopupControllerDeletion
+  // is launched.
+  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
+
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return;
+  }
+
   SetValues(suggestions);
 
   bool just_created = false;
@@ -107,9 +127,8 @@ void AutofillPopupControllerImpl::Show(
     just_created = true;
   }
 
-  WeakPtr<AutofillPopupControllerImpl> weak_this = GetWeakPtr();
   if (just_created) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     ManualFillingController::GetOrCreate(web_contents_)
         ->UpdateSourceAvailability(FillingSource::AUTOFILL,
                                    !suggestions.empty());
@@ -123,17 +142,21 @@ void AutofillPopupControllerImpl::Show(
     // event when suggestions changed.
     FireControlsChangedEvent(true);
 
-    if (autoselect_first_suggestion)
-      SetSelectedLine(0);
+    if (autoselect_first_suggestion) {
+      // TODO(crbug.com/1276850, crbug.com/1277218): Replace with
+      // SetSelectedLine().
+      SetSelectedLineHelper(0);
+    }
   } else {
     if (selected_line_ && *selected_line_ >= GetLineCount())
       selected_line_.reset();
 
     OnSuggestionsChanged();
-    // crbug.com/1200766. |this| can be destroyed synchronously at this point.
-    if (!weak_this)
-      return;
   }
+  // |this| can be destroyed synchronously at this point. See crbug.com/1200766
+  // and crbug.com/1276850 and crbug.com/1277218.
+  if (!weak_this)
+    return;
 
   absl::visit(
       [&](auto* driver) {
@@ -216,16 +239,20 @@ void AutofillPopupControllerImpl::Hide(PopupHidingReason reason) {
   }
   // For tests, keep open when hiding is due to external stimuli.
   if (keep_popup_open_for_testing_ &&
-      reason == PopupHidingReason::kWidgetChanged)
+      reason == PopupHidingReason::kWidgetChanged) {
     return;  // Don't close the popup because the browser window is resized.
+  }
+
   if (delegate_) {
     delegate_->ClearPreviewedForm();
     delegate_->OnPopupHidden();
     absl::visit([](auto* driver) { driver->UnsetKeyPressHandler(); },
                 GetDriver());
   }
-
+  AutofillMetrics::LogAutofillPopupHidingReason(reason);
   HideViewAndDie();
+  // No code below this line!
+  // |HideViewAndDie()| destroys |this|, so it should be the last line.
 }
 
 void AutofillPopupControllerImpl::ViewDestroyed() {
@@ -233,10 +260,16 @@ void AutofillPopupControllerImpl::ViewDestroyed() {
   view_ = nullptr;
 
   Hide(PopupHidingReason::kViewDestroyed);
+  // No code below this line!
+  // |Hide()| destroys |this|, so it should be the last line.
 }
 
 bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  bool has_shift_modifier =
+      (event.GetModifiers() & blink::WebInputEvent::kShiftKey);
+  bool has_non_shift_modifier =
+      (event.GetModifiers() & ~blink::WebInputEvent::kShiftKey);
   switch (event.windows_key_code) {
     case ui::VKEY_UP:
       SelectPreviousLine();
@@ -247,7 +280,10 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
     case ui::VKEY_PRIOR:  // Page up.
       // Set no line and then select the next line in case the first line is not
       // selectable.
-      SetSelectedLine(absl::nullopt);
+      // TODO(crbug.com/1276850,crbug.com/1277218): Replace with
+      // SetSelectedLine().
+      if (SetSelectedLineHelper(absl::nullopt) != SelfStatus::kAlive)
+        return true;
       SelectNextLine();
       return true;
     case ui::VKEY_NEXT:  // Page down.
@@ -257,14 +293,15 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
       Hide(PopupHidingReason::kUserAborted);
       return true;
     case ui::VKEY_DELETE:
-      return (event.GetModifiers() &
-              content::NativeWebKeyboardEvent::kShiftKey) &&
-             RemoveSelectedLine();
+      return has_shift_modifier && RemoveSelectedLine();
     case ui::VKEY_TAB:
-      // A tab press should cause the selected line to be accepted, but still
-      // return false so the tab key press propagates and changes the cursor
-      // location.
-      AcceptSelectedLine();
+      // We want TAB or Shift+TAB press to cause the selected line to be
+      // accepted, but still return false so the tab key press propagates and
+      // change the cursor location.
+      // We don't want to handle Mod+TAB for other modifiers because this may
+      // have other purposes (e.g., change the tab).
+      if (!has_non_shift_modifier)
+        AcceptSelectedLine();
       return false;
     case ui::VKEY_RETURN:
       return AcceptSelectedLine();
@@ -274,7 +311,7 @@ bool AutofillPopupControllerImpl::HandleKeyPressEvent(
 }
 
 void AutofillPopupControllerImpl::OnSuggestionsChanged() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Assume that suggestions are (still) available. If this is wrong, the method
   // |HideViewAndDie| will be called soon after and will hide all suggestions.
   ManualFillingController::GetOrCreate(web_contents_)
@@ -291,8 +328,13 @@ void AutofillPopupControllerImpl::SelectionCleared() {
 }
 
 void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return;
+  }
+
   const Suggestion& suggestion = suggestions_[index];
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   auto mf_controller = ManualFillingController::GetOrCreate(web_contents_);
   // Accepting a suggestion should hide all suggestions. To prevent them from
   // coming up in Multi-Window mode, mark the source as unavailable.
@@ -300,6 +342,14 @@ void AutofillPopupControllerImpl::AcceptSuggestion(int index) {
                                           /*has_suggestions=*/false);
   mf_controller->Hide();
 #endif
+
+  if (web_contents_ &&
+      suggestion.frontend_id == POPUP_ITEM_ID_VIRTUAL_CREDIT_CARD_ENTRY) {
+    feature_engagement::TrackerFactory::GetForBrowserContext(
+        web_contents_->GetBrowserContext())
+        ->NotifyEvent("autofill_virtual_card_suggestion_accepted");
+  }
+
   delegate_->DidAcceptSuggestion(suggestion.value, suggestion.frontend_id,
                                  suggestion.backend_id, index);
 }
@@ -369,6 +419,11 @@ bool AutofillPopupControllerImpl::GetRemovalConfirmationText(
 }
 
 bool AutofillPopupControllerImpl::RemoveSuggestion(int list_index) {
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return false;
+  }
+
   // This function might be called in a callback, so ensure the list index is
   // still in bounds. If not, terminate the removing and consider it failed.
   // TODO(crbug.com/1209792): Replace these checks with a stronger identifier.
@@ -404,8 +459,21 @@ PopupType AutofillPopupControllerImpl::GetPopupType() const {
 
 void AutofillPopupControllerImpl::SetSelectedLine(
     absl::optional<int> selected_line) {
+  SetSelectedLineHelper(selected_line);
+}
+
+// TODO(crbug.com/1276850,crbug.com/1277218): Remove function in favour of
+// SetSelectedLine().
+AutofillPopupControllerImpl::SelfStatus
+AutofillPopupControllerImpl::SetSelectedLineHelper(
+    absl::optional<int> selected_line) {
+  if (IsMouseLocked()) {
+    Hide(PopupHidingReason::kMouseLocked);
+    return SelfStatus::kDestroyed;
+  }
+
   if (selected_line_ == selected_line)
-    return;
+    return SelfStatus::kAlive;
 
   if (selected_line) {
     DCHECK_LT(*selected_line, GetLineCount());
@@ -419,10 +487,12 @@ void AutofillPopupControllerImpl::SetSelectedLine(
 
   if (selected_line_) {
     delegate_->DidSelectSuggestion(suggestions_[*selected_line_].value,
-                                   suggestions_[*selected_line_].frontend_id);
+                                   suggestions_[*selected_line_].frontend_id,
+                                   suggestions_[*selected_line_].backend_id);
   } else {
     delegate_->ClearPreviewedForm();
   }
+  return SelfStatus::kAlive;
 }
 
 void AutofillPopupControllerImpl::SelectNextLine() {
@@ -437,7 +507,8 @@ void AutofillPopupControllerImpl::SelectNextLine() {
   if (new_selected_line >= GetLineCount())
     new_selected_line = 0;
 
-  SetSelectedLine(new_selected_line);
+  // TODO(crbug.com/1276850,crbug.com/1277218): Replace with SetSelectedLine().
+  SetSelectedLineHelper(new_selected_line);
 }
 
 void AutofillPopupControllerImpl::SelectPreviousLine() {
@@ -452,7 +523,8 @@ void AutofillPopupControllerImpl::SelectPreviousLine() {
   if (new_selected_line < 0)
     new_selected_line = GetLineCount() - 1;
 
-  SetSelectedLine(new_selected_line);
+  // TODO(crbug.com/1276850,crbug.com/1277218): Replace with SetSelectedLine().
+  SetSelectedLineHelper(new_selected_line);
 }
 
 bool AutofillPopupControllerImpl::RemoveSelectedLine() {
@@ -513,7 +585,11 @@ void AutofillPopupControllerImpl::ClearState() {
 }
 
 void AutofillPopupControllerImpl::HideViewAndDie() {
-#if defined(OS_ANDROID)
+  // Invalidates in particular ChromeAutofillClient's WeakPtr to |this|, which
+  // prevents recursive calls triggered by `view_->Hide()` (crbug.com/1267047).
+  weak_ptr_factory_.InvalidateWeakPtrs();
+
+#if BUILDFLAG(IS_ANDROID)
   // Mark the popup-like filling sources as unavailable.
   // Note: We don't invoke ManualFillingController::Hide() here, as we might
   // switch between text input fields.
@@ -525,10 +601,33 @@ void AutofillPopupControllerImpl::HideViewAndDie() {
   if (view_) {
     // We need to fire the event while view is not deleted yet.
     FireControlsChangedEvent(false);
-    view_->Hide();
+    view_->Hide();  // Deletes |view_|.
+    view_ = nullptr;
   }
 
-  delete this;
+  if (!base::FeatureList::IsEnabled(
+          features::kAutofillDelayPopupControllerDeletion)) {
+    delete this;
+    return;
+  }
+
+  if (self_deletion_weak_ptr_factory_.HasWeakPtrs())
+    return;
+
+  base::SequencedTaskRunnerHandle::Get()->PostTask(
+      FROM_HERE, base::BindOnce(
+                     [](WeakPtr<AutofillPopupControllerImpl> weak_this) {
+                       if (weak_this)
+                         delete weak_this.get();
+                     },
+                     self_deletion_weak_ptr_factory_.GetWeakPtr()));
+}
+
+bool AutofillPopupControllerImpl::IsMouseLocked() const {
+  content::RenderFrameHost* rfh;
+  content::RenderWidgetHostView* rwhv;
+  return web_contents_ && (rfh = web_contents_->GetFocusedFrame()) &&
+         (rwhv = rfh->GetView()) && rwhv->IsMouseLocked();
 }
 
 absl::variant<ContentAutofillDriver*,

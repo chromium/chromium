@@ -29,11 +29,11 @@ public class PlayerFrameCoordinatorTest {
     public void testUserInputToggle() {
         PlayerFrameCoordinator rootCoordinator = new PlayerFrameCoordinator(
                 RuntimeEnvironment.systemContext, Mockito.mock(PlayerCompositorDelegate.class),
-                Mockito.mock(UnguessableToken.class), 100, 2000, 0, 0, true, null,
+                Mockito.mock(UnguessableToken.class), 100, 2000, 0, 0, 0f, true, null,
                 Mockito.mock(PlayerGestureListener.class), null, null, null, true);
         PlayerFrameCoordinator childCoordinator = new PlayerFrameCoordinator(
                 RuntimeEnvironment.systemContext, Mockito.mock(PlayerCompositorDelegate.class),
-                Mockito.mock(UnguessableToken.class), 100, 200, 0, 0, true, null,
+                Mockito.mock(UnguessableToken.class), 100, 200, 0, 0, 0f, true, null,
                 Mockito.mock(PlayerGestureListener.class), null, null, null, true);
         rootCoordinator.addSubFrame(childCoordinator, new Rect(10, 20, 35, 40));
 

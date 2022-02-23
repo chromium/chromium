@@ -8,7 +8,6 @@
 #include <string>
 #include <unordered_set>
 
-#include "base/macros.h"
 #include "content/public/browser/devtools_manager_delegate.h"
 
 namespace content {

@@ -9,8 +9,11 @@ import os
 
 
 class QualityCheckError(Exception):
-  def __init__(self, msg):
-    super().__init__('--check-data-quality assertion failed: ' + msg)
+  pass
+
+
+def _Divide(a, b):
+  return float(a) / b if b else 0
 
 
 def CheckDataQuality(size_info, track_string_literals):
@@ -18,7 +21,9 @@ def CheckDataQuality(size_info, track_string_literals):
   grouped = size_info.raw_symbols.GroupedByContainerAndSectionName()
   section_sizes = size_info.section_sizes
   logging.debug('computing')
+  errors = []
   for symbols in grouped:
+    segment_has_error = []  # List so can be mutated from nested function.
     container = symbols[0].container
     section_name = symbols[0].section_name
     segment_size = container.section_sizes[section_name]
@@ -63,47 +68,54 @@ def CheckDataQuality(size_info, track_string_literals):
       startup_count += int(bool(sym.flags & models.FLAG_STARTUP))
 
       if os.path.isabs(sym.source_path):
-        raise QualityCheckError('Abs path found in source_path: ' + repr(sym))
+        errors.append('Abs path found in source_path: ' + repr(sym))
       if os.path.isabs(sym.object_path):
-        raise QualityCheckError('Abs path found in object_path: ' + repr(sym))
+        errors.append('Abs path found in object_path: ' + repr(sym))
 
-    def raise_error(msg, *args):
-      header = ('Within section {} of container "{}", '
-                'which has {} symbols totalling {} bytes: ').format(
-                    section_name, container.name, len(symbols), segment_size)
-      raise QualityCheckError(header + msg.format(*args))
+    def report_error(msg, *args):
+      if not segment_has_error:
+        segment_has_error.append(True)
+        errors.append(('Error(s) found in container "{}", section "{}", '
+                       'which has {} symbols totalling {} bytes: ').format(
+                           container.name, section_name, len(symbols),
+                           segment_size))
+      full_msg = msg.format(*args)
+      errors.append('    ' + full_msg)
 
-    def raise_size_error(kind, size, limit_fraction):
-      raise_error(
+    def report_size_error(kind, size, limit_fraction):
+      report_error(
           'Abnormally high number of bytes attributed to {}: {:.0f} '
-          '({:.0%}, limit was {:.0%}).', kind, size, size / segment_size,
-          limit_fraction)
+          '({:.0%}, limit was {:.0%}).', kind, size,
+          _Divide(size, segment_size), limit_fraction)
 
     def check_size(kind, size, limit_fraction):
       limit = limit_fraction * segment_size
       if size > limit:
-        raise_size_error(kind, size, limit_fraction)
+        report_size_error(kind, size, limit_fraction)
 
     def check_some_exist(kind, count, limit=1):
       if count < limit:
-        raise_error(
+        report_error(
             'Expected at least {} {} to exist. '
             'Found only {} out of {} symbols.', limit, kind, count,
             len(symbols))
 
     if not isinstance(segment_size, int):
-      raise_error('Section size should be a whole number.')
+      report_error('Section size should be a whole number.')
+      continue
     if segment_size < 1:
-      raise_error('Section size should not greater than zero.')
+      report_error('Section size less than one.')
+      continue
     if round(actual_size) != segment_size:
-      raise_error('Sum of symbols sizes do not match section size. Sum={}',
-                  round(actual_size))
+      report_error('Sum of symbols sizes do not match section size. Sum={}',
+                   round(actual_size))
+      continue
 
     check_size('padding', actual_padding, (0.05 if is_other else 0.01))
 
     # One bad symbol can mess up small containers.
-    is_small_section = (len(symbols) < 10
-                        or segment_size / section_sizes[section_name] < .1)
+    is_small_section = (len(symbols) < 10 or
+                        _Divide(segment_size, section_sizes[section_name]) < .1)
     if not is_small_section:
       # Dex string tables show up as placeholders.
       check_size('placeholders', placeholder_size, (0.2 if is_dex else 0.01))
@@ -114,10 +126,10 @@ def CheckDataQuality(size_info, track_string_literals):
       check_size('symbols without component', no_component_size, 0.20)
 
       if track_string_literals and section_name == models.SECTION_RODATA:
-        if string_literal_size / segment_size < .05:
-          raise_error(
+        if _Divide(string_literal_size, segment_size) < .05:
+          report_error(
               'Expected more size from string literals. Found only {} ({:.1%})',
-              string_literal_size, string_literal_size / segment_size)
+              string_literal_size, _Divide(string_literal_size, segment_size))
 
       if is_native:
         check_some_exist('symbol aliases', alias_count)
@@ -127,9 +139,15 @@ def CheckDataQuality(size_info, track_string_literals):
         check_some_exist('symbols annotated by AFDO profile', unlikely_count)
         check_some_exist('static initializers', startup_count)
 
-
-def _Divide(a, b):
-  return float(a) / b if b else 0
+  if errors:
+    # Cap the number of log messages.
+    MAX_ERRORS = 40
+    logging.error('--check-data-quality Found %d errors:', len(errors))
+    for msg in errors[:MAX_ERRORS]:
+      logging.error('Failed: %s', msg)
+    if len(errors) > MAX_ERRORS:
+      logging.error('... and %d more.', len(errors) - MAX_ERRORS)
+    raise QualityCheckError()
 
 
 # TODO(agrieve): Have this utilize the stats collected by CheckDataQuality().
@@ -167,7 +185,7 @@ def _DescribeSizeInfoContainerCoverage(raw_symbols, container):
     syms = in_section.WhereHasComponent()
     yield '* {} have a component assigned. {}'.format(len(syms), size_msg(syms))
 
-    syms = in_section.WhereNameMatches(r'^\*')
+    syms = in_section.WhereIsPlaceholder()
     if syms:
       yield '* {} placeholders exist (symbols that start with **). {}'.format(
           len(syms), size_msg(syms))

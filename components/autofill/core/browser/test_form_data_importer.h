@@ -22,6 +22,7 @@ class TestFormDataImporter : public FormDataImporter {
       const std::string& app_locale,
       std::unique_ptr<LocalCardMigrationManager> local_card_migration_manager =
           nullptr);
+  ~TestFormDataImporter() override = default;
 };
 
 }  // namespace autofill

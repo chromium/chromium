@@ -8,11 +8,13 @@
 #include <utility>
 
 #include "base/bind.h"
+#include "base/callback.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager.h"
+#include "chrome/browser/ash/printing/cups_printers_manager.h"
 #include "chrome/browser/extensions/api/printing/print_job_controller.h"
 #include "chrome/browser/extensions/api/printing/printing_api_utils.h"
 #include "chrome/browser/printing/printing_service.h"
@@ -26,6 +28,7 @@
 #include "chromeos/printing/printer_configuration.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
+#include "content/public/browser/browser_thread.h"
 #include "extensions/browser/blob_reader.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/browser/image_loader.h"
@@ -58,6 +61,7 @@ constexpr char kPrinterUnavailable[] = "Printer is unavailable at the moment";
 constexpr char kUnsupportedTicket[] =
     "Ticket is unsupported on the given printer";
 constexpr char kInvalidData[] = "Invalid document";
+constexpr char kPrintingFailed[] = "Printing failed";
 
 constexpr int kIconSize = 64;
 
@@ -75,11 +79,11 @@ bool IsUserConfirmationRequired(content::BrowserContext* browser_context,
                                 const std::string& extension_id) {
   if (g_skip_confirmation_dialog_for_testing)
     return false;
-  const base::ListValue* list =
+  const base::Value* list =
       Profile::FromBrowserContext(browser_context)
           ->GetPrefs()
           ->GetList(prefs::kPrintingAPIExtensionsAllowlist);
-  return !base::Contains(list->GetList(), base::Value(extension_id));
+  return !base::Contains(list->GetListDeprecated(), base::Value(extension_id));
 }
 
 }  // namespace
@@ -94,7 +98,8 @@ PrintJobSubmitter::PrintJobSubmitter(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     int local_printer_version,
 #endif
-    crosapi::mojom::LocalPrinter* local_printer)
+    crosapi::mojom::LocalPrinter* local_printer,
+    SubmitJobCallback callback)
     : native_window_(native_window),
       browser_context_(browser_context),
       print_job_controller_(print_job_controller),
@@ -104,17 +109,32 @@ PrintJobSubmitter::PrintJobSubmitter(
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
       local_printer_version_(local_printer_version),
 #endif
-      local_printer_(local_printer) {
+      local_printer_(local_printer),
+      callback_(std::move(callback)) {
   DCHECK(extension);
   if (native_window)
     native_window_tracker_ = NativeWindowTracker::Create(native_window);
 }
 
-PrintJobSubmitter::~PrintJobSubmitter() = default;
-
-void PrintJobSubmitter::Start(SubmitJobCallback callback) {
+PrintJobSubmitter::~PrintJobSubmitter() {
   DCHECK(!callback_);
-  callback_ = std::move(callback);
+  if (print_job_)
+    print_job_->RemoveObserver(*this);
+}
+
+// static
+void PrintJobSubmitter::Run(std::unique_ptr<PrintJobSubmitter> submitter) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(submitter->callback_);
+  PrintJobSubmitter* ptr = submitter.get();
+  ptr->callback_ =
+      std::move(ptr->callback_)
+          .Then(base::BindOnce([](std::unique_ptr<PrintJobSubmitter>) {},
+                               std::move(submitter)));
+  ptr->Start();
+}
+
+void PrintJobSubmitter::Start() {
   if (!CheckContentType()) {
     FireErrorCallback(kUnsupportedContentType);
     return;
@@ -254,12 +274,16 @@ void PrintJobSubmitter::ShowPrintJobConfirmationDialog(
 }
 
 void PrintJobSubmitter::OnPrintJobConfirmationDialogClosed(bool accepted) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
+  DCHECK(callback_);
   // If the user hasn't accepted a print job or the extension is
   // unloaded/disabled by the time the dialog is closed, reject the request.
   if (!accepted || !ExtensionRegistry::Get(browser_context_)
                         ->enabled_extensions()
                         .Contains(extension_->id())) {
-    OnPrintJobRejected();
+    base::SequencedTaskRunnerHandle::Get()->PostTask(
+        FROM_HERE, base::BindOnce(std::move(callback_), absl::nullopt, nullptr,
+                                  nullptr, absl::nullopt));
     return;
   }
   StartPrintJob();
@@ -271,35 +295,29 @@ void PrintJobSubmitter::StartPrintJob() {
   auto metafile = std::make_unique<printing::MetafileSkia>();
   CHECK(metafile->InitFromData(
       flattened_pdf_mapping_.GetMemoryAsSpan<const uint8_t>()));
-  print_job_controller_->StartPrintJob(
-      extension_->id(), std::move(metafile), std::move(settings_),
-      base::BindOnce(&PrintJobSubmitter::OnPrintJobSubmitted,
-                     weak_ptr_factory_.GetWeakPtr()));
+  CHECK(!print_job_);
+  print_job_ = print_job_controller_->StartPrintJob(
+      extension_->id(), std::move(metafile), std::move(settings_));
+  print_job_->AddObserver(*this);
 }
 
-void PrintJobSubmitter::OnPrintJobRejected() {
+void PrintJobSubmitter::OnDocDone(int job_id,
+                                  printing::PrintedDocument* document) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE, base::BindOnce(std::move(callback_),
-                                api::printing::SUBMIT_JOB_STATUS_USER_REJECTED,
-                                nullptr, absl::nullopt));
+  std::move(callback_).Run(job_id, print_job_.get(), document, absl::nullopt);
 }
 
-void PrintJobSubmitter::OnPrintJobSubmitted(
-    std::unique_ptr<std::string> job_id) {
-  DCHECK(job_id);
-  DCHECK(callback_);
-  base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback_), api::printing::SUBMIT_JOB_STATUS_OK,
-                     std::move(job_id), absl::nullopt));
+void PrintJobSubmitter::OnFailed() {
+  FireErrorCallback(kPrintingFailed);
 }
 
 void PrintJobSubmitter::FireErrorCallback(const std::string& error) {
+  DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(callback_);
   base::SequencedTaskRunnerHandle::Get()->PostTask(
-      FROM_HERE,
-      base::BindOnce(std::move(callback_), absl::nullopt, nullptr, error));
+      FROM_HERE, base::BindOnce(std::move(callback_), absl::nullopt, nullptr,
+                                nullptr, error));
 }
 
 // static

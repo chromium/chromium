@@ -6,6 +6,7 @@
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_HEADER_VIEW_H_
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -112,14 +113,14 @@ class MESSAGE_CENTER_EXPORT NotificationHeaderView : public views::Button {
   base::OneShotTimer timestamp_update_timer_;
   absl::optional<base::Time> timestamp_;
 
-  views::ImageView* app_icon_view_ = nullptr;
-  views::Label* app_name_view_ = nullptr;
-  views::View* detail_views_ = nullptr;
-  views::Label* summary_text_divider_ = nullptr;
-  views::Label* summary_text_view_ = nullptr;
-  views::Label* timestamp_divider_ = nullptr;
-  views::Label* timestamp_view_ = nullptr;
-  views::ImageView* expand_button_ = nullptr;
+  raw_ptr<views::ImageView> app_icon_view_ = nullptr;
+  raw_ptr<views::Label> app_name_view_ = nullptr;
+  raw_ptr<views::View> detail_views_ = nullptr;
+  raw_ptr<views::Label> summary_text_divider_ = nullptr;
+  raw_ptr<views::Label> summary_text_view_ = nullptr;
+  raw_ptr<views::Label> timestamp_divider_ = nullptr;
+  raw_ptr<views::Label> timestamp_view_ = nullptr;
+  raw_ptr<views::ImageView> expand_button_ = nullptr;
 
   bool has_progress_ = false;
   bool is_expanded_ = false;

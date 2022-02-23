@@ -7,7 +7,6 @@
 
 #include <stdint.h>
 #include <string.h>
-#include "base/macros.h"
 #include "ipc/ipc_message.h"
 
 // Means for updating protected message fields.

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<title>Test of sandbox required flags</title>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+<script src="resources/utils.js"></script>
+<script src="/common/utils.js"></script>
+
+<body>
+
+<script>
+const run_in_fenced_frame = (func_name, description, is_nested) => {
+  promise_test(async test => {
+    const key = token();
+    const url = is_nested ?
+                'resources/sandboxed-features-looser-restriction.sub.html?' :
+                'resources/sandboxed-features-inner.sub.html?';
+    let params = new URLSearchParams();
+    params.set('key', key);
+    params.set('test_func', func_name);
+    const frame = document.createElement('fencedframe');
+    frame.src = 'resources/sandboxed-features-inner.sub.html?' +
+      params.toString();
+    test.add_cleanup(() => {
+      frame.remove();
+    });
+    document.body.appendChild(frame);
+    assert_equals(await nextValueFromServer(key), 'done');
+  }, description);
+};
+
+const run_sanboxed_feature_test = (func_name, description) => {
+  run_in_fenced_frame(func_name, description, false);
+  run_in_fenced_frame(func_name, description + '[looser sandboxed]', false);
+};
+
+run_sanboxed_feature_test('test_prompt',
+  'The fenced frame must fail to open a prompt.');
+
+run_sanboxed_feature_test('test_alert',
+  'The fenced frame must fail to open an alert dialog.');
+
+run_sanboxed_feature_test('test_confirm',
+  'The fenced frame must fail to open a confirm dialog.');
+
+run_sanboxed_feature_test('test_print',
+  'The fenced frame must fail to print the page.');
+
+run_sanboxed_feature_test('test_document_domain',
+  'The fenced frame must fail to change Document.domain.');
+
+run_sanboxed_feature_test('test_presentation_request',
+  'The fenced frame must fail to create a PresentationRequest.');
+
+run_sanboxed_feature_test('test_screen_orientation_lock',
+  'The fenced frame must fail to call screen.orientation.lock().');
+
+run_sanboxed_feature_test('test_pointer_lock',
+  'The fenced frame must fail to call requestPointerLock().');
+</script>
+
+</body>

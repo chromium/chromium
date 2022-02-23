@@ -8,6 +8,7 @@
 #include <set>
 #include <utility>
 
+#include "base/bind.h"
 #include "base/logging.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider_utils.h"
@@ -17,18 +18,22 @@ namespace ui {
 
 ColorProvider::ColorProvider() = default;
 
+ColorProvider::ColorProvider(ColorProvider&&) = default;
+
+ColorProvider& ColorProvider::operator=(ColorProvider&&) = default;
+
 ColorProvider::~ColorProvider() = default;
 
 ColorMixer& ColorProvider::AddMixer() {
   DCHECK(!color_map_);
 
-  mixers_.emplace_after(first_postprocessing_mixer_,
-                        GetLastNonPostprocessingMixer(),
-                        base::BindRepeating(
-                            [](const ColorProvider* provider) {
-                              return provider->GetLastNonPostprocessingMixer();
-                            },
-                            base::Unretained(this)));
+  mixers_.emplace_after(
+      first_postprocessing_mixer_,
+      base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
+                          GetLastNonPostprocessingMixer()),
+      base::BindRepeating(&ColorProvider::GetLastNonPostprocessingMixer,
+                          base::Unretained(this)));
+
   return *std::next(first_postprocessing_mixer_, 1);
 }
 
@@ -36,25 +41,22 @@ ColorMixer& ColorProvider::AddPostprocessingMixer() {
   DCHECK(!color_map_);
 
   if (first_postprocessing_mixer_ == mixers_.before_begin()) {
-    mixers_.emplace_front(
-        mixers_.empty() ? nullptr : &mixers_.front(),
-        base::BindRepeating(
-            [](const ColorProvider* provider) {
-              return provider->GetLastNonPostprocessingMixer();
-            },
-            base::Unretained(this)));
+    // The first postprocessing mixer points to the last regular mixer.
+    auto previous_mixer_getter = base::BindRepeating(
+        &ColorProvider::GetLastNonPostprocessingMixer, base::Unretained(this));
+    mixers_.emplace_front(previous_mixer_getter, previous_mixer_getter);
     first_postprocessing_mixer_ = mixers_.begin();
   } else {
-    mixers_.emplace_front(
-        &mixers_.front(),
+    // Other postprocessing mixers point to the next postprocessing mixer.
+    auto previous_mixer_getter =
         base::BindRepeating([](const ColorMixer* mixer) { return mixer; },
-                            base::Unretained(&mixers_.front())));
+                            base::Unretained(&mixers_.front()));
+    mixers_.emplace_front(previous_mixer_getter, previous_mixer_getter);
   }
   return mixers_.front();
 }
 
 SkColor ColorProvider::GetColor(ColorId id) const {
-  DCHECK_COLOR_ID_VALID(id);
   DCHECK(color_map_);
   auto i = color_map_->find(id);
   return i == color_map_->end() ? gfx::kPlaceholderColor : i->second;
@@ -83,7 +85,7 @@ void ColorProvider::GenerateColorMap() {
     color_map.insert({color_id, mixers_.front().GetResultColor(color_id)});
 
   // Construct the color_map_.
-  color_map_ = std::make_unique<ColorMap>(color_map.begin(), color_map.end());
+  color_map_ = ColorMap(color_map.begin(), color_map.end());
 
   // Clear away all associated mixers as these are no longer needed.
   mixers_.clear();

@@ -228,9 +228,9 @@ BitstreamConverter::AnalysisResult AVC::AnalyzeAnnexB(
             break;
 
           case H264NALU::kSEIMessage:
-          case H264NALU::kReserved14:
-          case H264NALU::kReserved15:
-          case H264NALU::kReserved16:
+          case H264NALU::kPrefix:
+          case H264NALU::kSubsetSPS:
+          case H264NALU::kDPS:
           case H264NALU::kReserved17:
           case H264NALU::kReserved18:
           case H264NALU::kPPS:

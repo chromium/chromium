@@ -10,7 +10,6 @@
 #include "ash/wm/desks/desk_mini_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/expanded_desks_bar_button.h"
-#include "ash/wm/desks/zero_state_button.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
 #include "base/containers/contains.h"
@@ -25,8 +24,6 @@ namespace ash {
 namespace {
 
 constexpr gfx::Transform kEndTransform;
-
-constexpr base::TimeDelta kBarBackgroundDuration = base::Milliseconds(200);
 
 constexpr base::TimeDelta kExistingMiniViewsAnimationDuration =
     base::Milliseconds(250);
@@ -120,16 +117,15 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
   RemovedMiniViewAnimation(DeskMiniView* removed_mini_view,
                            DesksBarView* bar_view,
                            const bool to_zero_state)
-      : removed_mini_view_(removed_mini_view),
-        bar_view_(bar_view),
-        to_zero_state_(to_zero_state) {
+      : removed_mini_view_(removed_mini_view) {
+    removed_mini_view_->set_is_animating_to_remove(true);
     ui::Layer* layer = removed_mini_view_->layer();
     ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
     InitScopedAnimationSettings(&settings, kRemovedMiniViewsFadeOutDuration);
     settings.AddObserver(this);
 
-    if (to_zero_state_) {
-      DCHECK(bar_view_);
+    if (to_zero_state) {
+      DCHECK(bar_view);
       layer->SetTransform(GetScaleTransformForView(
           removed_mini_view, bar_view->bounds().CenterPoint().x()));
     } else {
@@ -144,12 +140,6 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
   ~RemovedMiniViewAnimation() override {
     DCHECK(removed_mini_view_->parent());
     removed_mini_view_->parent()->RemoveChildViewT(removed_mini_view_);
-    if (to_zero_state_) {
-      DCHECK(bar_view_);
-      // Layout the desks bar to make sure the buttons visibilities and button's
-      // text can be updated correctly while going back to zero state.
-      bar_view_->Layout();
-    }
   }
 
   // ui::ImplicitAnimationObserver:
@@ -157,8 +147,69 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
 
  private:
   DeskMiniView* removed_mini_view_;
-  DesksBarView* bar_view_;
-  const bool to_zero_state_;
+};
+
+// A self-deleting object that performs bounds changes animation for the desks
+// bar while it switches between zero state and expanded state.
+// `is_bounds_animation_on_going_` will be used to help hold Layout calls during
+// the animation. Since Layout is expensive and will be called lots of times
+// during the bounds changes animation without doing this. The object itself
+// will be deleted when the animation is complete.
+class DesksBarBoundsAnimation : public ui::ImplicitAnimationObserver {
+ public:
+  DesksBarBoundsAnimation(DesksBarView* bar_view, bool to_zero_state)
+      : bar_view_(bar_view) {
+    auto* desks_widget = bar_view_->GetWidget();
+    const gfx::Rect current_widget_bounds =
+        desks_widget->GetWindowBoundsInScreen();
+    gfx::Rect target_widget_bounds = current_widget_bounds;
+
+    // When `to_zero_state` is false, desks bar is switching from zero to
+    // expanded state.
+    if (to_zero_state) {
+      target_widget_bounds.set_height(DesksBarView::kZeroStateBarHeight);
+      bar_view_->set_is_bounds_animation_on_going(true);
+    } else {
+      // While switching desks bar from zero state to expanded state, setting
+      // its bounds to its bounds at expanded state directly without animation,
+      // which will trigger Layout and make sure the contents of
+      // desks bar(e.g, desk mini view, new desk button) are at the correct
+      // positions before the animation. And set `is_bounds_animation_on_going_`
+      // to be true, which will help hold Layout until the animation is done.
+      // Then set the bounds of the desks bar back to its bounds at zero state
+      // to start the bounds change animation. See more details at
+      // `is_bounds_animation_on_going_`.
+      target_widget_bounds.set_height(bar_view_->GetExpandedBarHeight(
+          desks_widget->GetNativeWindow()->GetRootWindow()));
+      desks_widget->SetBounds(target_widget_bounds);
+      bar_view_->set_is_bounds_animation_on_going(true);
+      desks_widget->SetBounds(current_widget_bounds);
+    }
+
+    ui::ScopedLayerAnimationSettings settings{
+        desks_widget->GetLayer()->GetAnimator()};
+    InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
+    settings.AddObserver(this);
+    desks_widget->SetBounds(target_widget_bounds);
+  }
+
+  DesksBarBoundsAnimation(const DesksBarBoundsAnimation&) = delete;
+  DesksBarBoundsAnimation& operator=(const DesksBarBoundsAnimation&) = delete;
+
+  ~DesksBarBoundsAnimation() override {
+    DCHECK(bar_view_);
+    bar_view_->set_is_bounds_animation_on_going(false);
+    // Layout the desks bar to make sure the buttons visibility will be updated
+    // on desks bar state changes. Also make sure the button's text will be
+    // updated correctly while going back to zero state.
+    bar_view_->Layout();
+  }
+
+  // ui::ImplicitAnimationObserver:
+  void OnImplicitAnimationsCompleted() override { delete this; }
+
+ private:
+  DesksBarView* const bar_view_;
 };
 
 }  // namespace
@@ -166,22 +217,7 @@ class RemovedMiniViewAnimation : public ui::ImplicitAnimationObserver {
 void PerformNewDeskMiniViewAnimation(
     DesksBarView* bar_view,
     const std::vector<DeskMiniView*>& new_mini_views,
-    int shift_x,
-    bool first_time_mini_views) {
-  if (first_time_mini_views) {
-    ui::Layer* layer = bar_view->background_view()->layer();
-    ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-    InitScopedAnimationSettings(&settings, kBarBackgroundDuration);
-    layer->SetOpacity(1);
-
-    // Expect that that bar background is translated off the screen when it's
-    // the first time we're adding mini_views.
-    DCHECK(!layer->GetTargetTransform().IsIdentity());
-
-    layer->SetTransform(gfx::Transform());
-    PositionWindowsInOverview();
-  }
-
+    int shift_x) {
   gfx::Transform begin_transform;
   begin_transform.Translate(shift_x, 0);
 
@@ -248,11 +284,7 @@ void PerformRemoveDeskMiniViewAnimation(
 }
 
 void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {
-  ui::Layer* layer = bar_view->background_view()->layer();
-  ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-  InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
-  layer->SetTransform(kEndTransform);
-
+  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/false);
   const int bar_x_center = bar_view->bounds().CenterPoint().x();
   for (auto* mini_view : bar_view->mini_views())
     ScaleUpAndFadeInView(mini_view, bar_x_center);
@@ -263,7 +295,6 @@ void PerformZeroStateToExpandedStateMiniViewAnimation(DesksBarView* bar_view) {
           bar_view->expanded_state_desks_templates_button()) {
     ScaleUpAndFadeInView(expanded_state_desks_templates_button, bar_x_center);
   }
-
   PositionWindowsInOverview();
 }
 
@@ -272,7 +303,7 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
     std::vector<DeskMiniView*> removed_mini_views) {
   for (auto* mini_view : removed_mini_views)
     new RemovedMiniViewAnimation(mini_view, bar_view, /*to_zero_state=*/true);
-
+  new DesksBarBoundsAnimation(bar_view, /*to_zero_state=*/true);
   const gfx::Rect bounds = bar_view->bounds();
   ScaleDownAndFadeOutView(bar_view->expanded_state_new_desk_button(),
                           bounds.CenterPoint().x());
@@ -282,14 +313,6 @@ void PerformExpandedStateToZeroStateMiniViewAnimation(
                             bounds.CenterPoint().x());
   }
 
-  ui::Layer* layer = bar_view->background_view()->layer();
-  ui::ScopedLayerAnimationSettings settings{layer->GetAnimator()};
-  InitScopedAnimationSettings(&settings, kZeroStateAnimationDuration);
-
-  gfx::Transform transform;
-  transform.Translate(0,
-                      -(bounds.height() - DesksBarView::kZeroStateBarHeight));
-  layer->SetTransform(transform);
   PositionWindowsInOverview();
 }
 

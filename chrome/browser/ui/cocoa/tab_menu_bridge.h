@@ -9,6 +9,7 @@
 #include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/tabs/tab_strip_model_observer.h"
 
+@class NSMutableArray;
 @class NSMenuItem;
 @class TabMenuListener;
 class TabStripModel;
@@ -43,8 +44,8 @@ class TabMenuBridge : public TabStripModelObserver {
  private:
   FRIEND_TEST_ALL_PREFIXES(TabMenuBridgeTest, ClickingMenuActivatesTab);
 
-  // These methods are used to make batch changes to the menu.
-  void RemoveAllDynamicItems();
+  // These methods are used manage the dynamic menu items.
+  NSMutableArray* DynamicMenuItems();
   void AddDynamicItemsFromModel();
 
   // This method exists to be called back into from the Cocoa part of this

@@ -137,9 +137,9 @@ bool DeleteExecutablesWithoutMatchingDirectory(
 // that |path| isn't in use. It can however be deleted.
 base::File GetFileLock(const base::FilePath& path) {
   return base::File(path, base::File::FLAG_OPEN | base::File::FLAG_READ |
-                              base::File::FLAG_EXCLUSIVE_READ |
-                              base::File::FLAG_EXCLUSIVE_WRITE |
-                              base::File::FLAG_SHARE_DELETE);
+                              base::File::FLAG_WIN_EXCLUSIVE_READ |
+                              base::File::FLAG_WIN_EXCLUSIVE_WRITE |
+                              base::File::FLAG_WIN_SHARE_DELETE);
 }
 
 // Deletes |version_directory| and all executables in |version_executables| if

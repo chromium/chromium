@@ -18,6 +18,7 @@
 #include "base/guid.h"
 #include "base/i18n/case_conversion.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/observer_list.h"
 #include "base/strings/string_util.h"
 #include "base/task/post_task.h"
 #include "base/task/thread_pool.h"

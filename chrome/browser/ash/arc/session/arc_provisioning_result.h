@@ -7,8 +7,8 @@
 
 #include <ostream>
 
-#include "components/arc/mojom/auth.mojom.h"
-#include "components/arc/session/arc_stop_reason.h"
+#include "ash/components/arc/mojom/auth.mojom.h"
+#include "ash/components/arc/session/arc_stop_reason.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 

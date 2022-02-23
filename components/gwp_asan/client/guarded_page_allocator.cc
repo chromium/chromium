@@ -12,7 +12,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/logging.h"
 #include "base/memory/page_size.h"
-#include "base/no_destructor.h"
 #include "base/rand_util.h"
 #include "base/strings/stringprintf.h"
 #include "base/synchronization/lock.h"
@@ -22,11 +21,11 @@
 #include "components/gwp_asan/common/crash_key_name.h"
 #include "components/gwp_asan/common/pack_stack_trace.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/crash/core/app/crashpad.h"  // nogncheck
 #endif
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include <pthread.h>
 #endif
 
@@ -39,7 +38,7 @@ size_t GetStackTrace(void** trace, size_t count) {
   // TODO(vtsyrklevich): Investigate using trace_event::CFIBacktraceAndroid
   // on 32-bit Android for canary/dev (where we can dynamically load unwind
   // data.)
-#if defined(OS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(CAN_UNWIND_WITH_FRAME_POINTERS)
   // Android release builds ship without unwind tables so the normal method of
   // stack trace collection for base::debug::StackTrace doesn't work; however,
   // AArch64 builds ship with frame pointers so we can still collect stack
@@ -54,7 +53,7 @@ size_t GetStackTrace(void** trace, size_t count) {
 // Report a tid that matches what crashpad collects which may differ from what
 // base::PlatformThread::CurrentId() returns.
 uint64_t ReportTid() {
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   return base::PlatformThread::CurrentId();
 #else
   uint64_t tid = base::kInvalidThreadId;
@@ -188,7 +187,7 @@ void GuardedPageAllocator::Init(size_t max_alloced_pages,
       std::make_unique<AllocatorState::SlotMetadata[]>(state_.num_metadata);
   state_.metadata_addr = reinterpret_cast<uintptr_t>(metadata_.get());
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Explicitly allow memory ranges the crash_handler needs to read. This is
   // required for WebView because it has a stricter set of privacy constraints
   // on what it reads from the crashing process.
@@ -320,7 +319,7 @@ size_t GuardedPageAllocator::GetRequestedSize(const void* ptr) const {
   const uintptr_t addr = reinterpret_cast<uintptr_t>(ptr);
   AllocatorState::SlotIdx slot = state_.AddrToSlot(state_.GetPageAddr(addr));
   AllocatorState::MetadataIdx metadata_idx = slot_to_metadata_idx_[slot];
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   CHECK_LT(metadata_idx, state_.num_metadata);
   CHECK_EQ(addr, metadata_[metadata_idx].alloc_ptr);
 #else

@@ -9,6 +9,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/strings/stringprintf.h"
 #include "cc/paint/paint_record.h"
@@ -154,7 +155,7 @@ class GM2TabStyle : public TabStyleViews {
                                         float scale,
                                         int stroke_thickness);
 
-  const Tab* const tab_;
+  const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
   gfx::FontList normal_font_;
@@ -301,6 +302,11 @@ SkPath GM2TabStyle::GetPath(PathType path_type,
         radius - inset, radius - inset);
     path.addRRect(rrect);
   } else {
+    // Avoid mallocs at every new path verb by preallocating an
+    // empirically-determined amount of space in the verb and point buffers.
+    const int kMaxPathPoints = 20;
+    path.incReserve(kMaxPathPoints);
+
     // We will go clockwise from the lower left. We start in the overlap region,
     // preventing a gap between toolbar and tabstrip.
     // TODO(dfried): verify that the we actually want to start the stroke for
@@ -438,6 +444,10 @@ float GM2TabStyle::GetZValue() const {
     sort_value += 4.f;
   if (tab_->mouse_hovered())
     sort_value += 2.f;
+
+  DCHECK_GE(sort_value, 0.0f);
+  DCHECK_LE(sort_value, TabStyle::kMaximumZValue);
+
   return sort_value;
 }
 
@@ -588,8 +598,8 @@ float GM2TabStyle::GetSeparatorOpacity(bool for_layout, bool leading) const {
   const Tab* adjacent_tab =
       tab_->controller()->GetAdjacentTab(tab_, leading ? -1 : 1);
 
-  const Tab* left_tab = leading ? adjacent_tab : tab_;
-  const Tab* right_tab = leading ? tab_ : adjacent_tab;
+  const Tab* left_tab = leading ? adjacent_tab : tab_.get();
+  const Tab* right_tab = leading ? tab_.get() : adjacent_tab;
   const bool adjacent_to_header =
       right_tab && right_tab->group().has_value() &&
       (!left_tab || left_tab->group() != right_tab->group());
@@ -724,10 +734,11 @@ float GM2TabStyle::GetHoverOpacity() const {
   // that most tabs will fall on the low end of the opacity range, but very
   // narrow tabs will still stand out on the high end.
   const float range_start = static_cast<float>(GetStandardWidth());
-  const float range_end = static_cast<float>(GetMinimumInactiveWidth());
+  constexpr float kWidthForMaxHoverOpacity = 32.0f;
   const float value_in_range = static_cast<float>(tab_->width());
   const float t = base::clamp(
-      (value_in_range - range_start) / (range_end - range_start), 0.0f, 1.0f);
+      (value_in_range - range_start) / (kWidthForMaxHoverOpacity - range_start),
+      0.0f, 1.0f);
   return tab_->controller()->GetHoverOpacityForTab(t * t);
 }
 
@@ -954,7 +965,7 @@ gfx::RectF GM2TabStyle::ScaleAndAlignBounds(const gfx::Rect& bounds,
 
   // Convert back to full bounds.  It's OK that the outer corners of the curves
   // around the separator may not be snapped to the pixel grid as a result.
-  aligned_bounds.Inset(-layout_insets.Scale(scale));
+  aligned_bounds.Inset(-gfx::ScaleInsets(layout_insets, scale));
   return aligned_bounds;
 }
 

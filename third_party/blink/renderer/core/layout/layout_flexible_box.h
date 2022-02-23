@@ -32,6 +32,7 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_LAYOUT_LAYOUT_FLEXIBLE_BOX_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
+#include "third_party/blink/renderer/core/layout/geometry/flex_offset.h"
 #include "third_party/blink/renderer/core/layout/layout_block.h"
 #include "third_party/blink/renderer/core/layout/order_iterator.h"
 
@@ -163,14 +164,14 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
 
   LayoutUnit CrossAxisScrollbarExtent() const;
   LayoutUnit CrossAxisScrollbarExtentForChild(const LayoutBox& child) const;
-  LayoutPoint FlowAwareLocationForChild(const LayoutBox& child) const;
+  FlexOffset FlowAwareLocationForChild(const LayoutBox& child) const;
   bool UseChildAspectRatio(const LayoutBox& child) const;
   LayoutUnit ComputeMainSizeFromAspectRatioUsing(
       const LayoutBox& child,
       const Length& cross_size_length,
       LayoutUnit main_axis_border_and_padding,
       LayoutUnit cross_axis_border_and_padding) const;
-  void SetFlowAwareLocationForChild(LayoutBox& child, const LayoutPoint&);
+  void SetFlowAwareLocationForChild(LayoutBox& child, const FlexOffset&);
   LayoutUnit ComputeInnerFlexBaseSizeForChild(
       LayoutBox& child,
       LayoutUnit main_axis_border_and_padding,
@@ -222,7 +223,7 @@ class CORE_EXPORT LayoutFlexibleBox : public LayoutBlock {
   void LayoutLineItems(FlexLine*,
                        bool relayout_children,
                        SubtreeLayoutScope&,
-                       LayoutPoint** current_item_offset);
+                       FlexOffset** current_item_offset);
   void ApplyLineItemsPosition(FlexLine*);
   void LayoutColumnReverse(FlexItemVectorView&,
                            LayoutUnit cross_axis_offset,

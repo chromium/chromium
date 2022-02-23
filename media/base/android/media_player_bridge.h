@@ -14,6 +14,7 @@
 
 #include "base/android/scoped_java_ref.h"
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
@@ -276,7 +277,7 @@ class MEDIA_EXPORT MediaPlayerBridge {
   SimpleWatchTimer watch_timer_;
 
   // A reference to the owner of `this`.
-  Client* client_;
+  raw_ptr<Client> client_;
 
   // Listener object that listens to all the media player events.
   std::unique_ptr<MediaPlayerListener> listener_;

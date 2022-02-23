@@ -87,7 +87,7 @@ base::FilePath SaveDesktopSnapshot(const base::FilePath& output_dir) {
           exploded.second, exploded.millisecond))));
   base::File file(output_path, base::File::FLAG_CREATE |
                                    base::File::FLAG_WRITE |
-                                   base::File::FLAG_SHARE_DELETE |
+                                   base::File::FLAG_WIN_SHARE_DELETE |
                                    base::File::FLAG_CAN_DELETE_ON_CLOSE);
   if (!file.IsValid()) {
     if (file.error_details() == base::File::FILE_ERROR_EXISTS) {

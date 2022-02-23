@@ -5,6 +5,8 @@
 #ifndef COMPONENTS_EXO_SURFACE_OBSERVER_H_
 #define COMPONENTS_EXO_SURFACE_OBSERVER_H_
 
+#include <cstdint>
+
 namespace exo {
 class Surface;
 
@@ -33,6 +35,15 @@ class SurfaceObserver {
   // |state| is the index of the desk which the window moved to,
   // or -1 for a window assigned to all desks.
   virtual void OnDeskChanged(Surface* surface, int state) {}
+
+  // Called when the display of this surface has changed. Only called after
+  // successfully updating sub-surfaces.
+  virtual void OnDisplayChanged(Surface* surface,
+                                int64_t old_display,
+                                int64_t new_display) {}
+
+  // Starts or ends throttling.
+  virtual void ThrottleFrameRate(bool on) {}
 
  protected:
   virtual ~SurfaceObserver() {}

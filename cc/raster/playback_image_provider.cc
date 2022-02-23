@@ -21,10 +21,10 @@ void UnrefImageFromCache(DrawImage draw_image,
 
 PlaybackImageProvider::PlaybackImageProvider(
     ImageDecodeCache* cache,
-    const gfx::ColorSpace& target_color_space,
+    const TargetColorParams& target_color_params,
     absl::optional<Settings>&& settings)
     : cache_(cache),
-      target_color_space_(target_color_space),
+      target_color_params_(target_color_params),
       settings_(std::move(settings)) {
   DCHECK(cache_);
 }
@@ -57,7 +57,7 @@ ImageProvider::ScopedResult PlaybackImageProvider::GetRasterContent(
                            ? PaintImage::kDefaultFrameIndex
                            : it->second;
 
-  DrawImage adjusted_image(draw_image, 1.f, frame_index, target_color_space_);
+  DrawImage adjusted_image(draw_image, 1.f, frame_index, target_color_params_);
   if (!cache_->UseCacheForDrawImage(adjusted_image)) {
     if (settings_->raster_mode == RasterMode::kOop) {
       return ScopedResult(DecodedDrawImage(paint_image.GetMailbox(),

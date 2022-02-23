@@ -27,7 +27,7 @@
   }
 
   #helpOrProgress {
-    background-color: white;
+    background-color: var(--cros-bg-color);
     display: flex;
     /* Calculate a height that results in a Letter aspect ratio (1:1.2941). */
     height: calc(1.2941 * var(--left-panel-width));
@@ -66,7 +66,7 @@
   }
 
   .preview-item {
-    border: 1px solid var(--google-grey-300);
+    border: 1px solid var(--cros-separator-color);
     border-radius: 4px;
     width: calc(100% - var(--preview-border-width));
   }
@@ -92,16 +92,6 @@
     height: 4px;
     margin-top: 12px;
     width: 100%;
-  }
-
-  #scanProgressBar {
-    --paper-progress-active-color: var(--google-blue-600);
-    --paper-progress-container-color: var(--google-blue-200);
-  }
-
-  #cancelingProgressBar {
-    --paper-progress-active-color: var(--google-grey-refresh-500);
-    --paper-progress-container-color: var(--google-grey-200);
   }
 
   action-toolbar {
@@ -137,12 +127,16 @@
     z-index: 1;
   }
 </style>
+<iron-media-query query="(prefers-color-scheme: dark)"
+  query-matches="{{isDarkModeEnabled_}}">
+</iron-media-query>
 <div id="previewDiv" class="preview" aria-label="[[previewAriaLabel_]]"
     tabindex="0" on-scroll="onScannedImagesScroll_">
   <div id="helpOrProgress" class="preview-item" aria-hidden="true"
       hidden$="[[!showHelpOrProgress_]]">
     <div id="helpDiv" hidden$="[[!showHelperText_]]">
-      <img id="readyToScanImg" src="svg/ready_to_scan.svg"
+      <img id="readyToScanImg"
+          src$="[[getReadyToScanSvgSrc_(isDarkModeEnabled_)]]"
           alt="[[i18n('scanPreviewHelperText')]]">
       </img>
       <span id="helperText">

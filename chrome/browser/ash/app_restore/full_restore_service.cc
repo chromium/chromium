@@ -9,10 +9,15 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_util.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/apps/app_service/app_service_proxy.h"
+#include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
+#include "chrome/browser/apps/app_service/browser_app_instance_registry.h"
+#include "chrome/browser/ash/app_restore/app_restore_arc_task_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_app_launch_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_data_handler.h"
 #include "chrome/browser/ash/app_restore/full_restore_prefs.h"
 #include "chrome/browser/ash/app_restore/full_restore_service_factory.h"
+#include "chrome/browser/ash/app_restore/lacros_window_handler.h"
 #include "chrome/browser/ash/app_restore/new_user_restore_pref_handler.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/browser/chrome_notification_types.h"
@@ -21,9 +26,11 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
+#include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/account_id/account_id.h"
+#include "components/app_restore/features.h"
 #include "components/app_restore/full_restore_info.h"
 #include "components/app_restore/full_restore_save_handler.h"
 #include "components/app_restore/full_restore_utils.h"
@@ -48,6 +55,28 @@ const char kRestoreForCrashNotificationHistogramName[] =
     "Apps.RestoreForCrashNotification";
 const char kRestoreSettingHistogramName[] = "Apps.RestoreSetting";
 const char kRestoreInitSettingHistogramName[] = "Apps.RestoreInitSetting";
+
+bool MaybeCreateFullRestoreServiceForLacros() {
+  // Full restore for Lacros depends on BrowserAppInstanceRegistry to save and
+  // restore Lacros windows, so check the web apps crosapi flag to make sure
+  // BrowserAppInstanceRegistry is created.
+  if (!::full_restore::features::IsFullRestoreForLacrosEnabled() ||
+      !web_app::IsWebAppsCrosapiEnabled()) {
+    return false;
+  }
+
+  const user_manager::User* user =
+      user_manager::UserManager::Get()->GetPrimaryUser();
+  DCHECK(user);
+  Profile* profile = ProfileHelper::Get()->GetProfileByUser(user);
+  DCHECK(profile);
+
+  // Lacros can be launched at the very early stage during the system startup
+  // phase. So create FullRestoreService to construct LacrosWindowHandler to
+  // observe BrowserAppInstanceRegistry for Lacros windows before the first
+  // Lacros window is created, to avoid missing any Lacros windows.
+  return FullRestoreService::GetForProfile(profile);
+}
 
 // static
 FullRestoreService* FullRestoreService::GetForProfile(Profile* profile) {
@@ -95,6 +124,14 @@ FullRestoreService::FullRestoreService(Profile* profile)
       user_manager::UserManager::Get()->GetPrimaryUser()) {
     ::full_restore::FullRestoreSaveHandler::GetInstance()
         ->SetPrimaryProfilePath(profile_->GetPath());
+
+    auto* proxy = apps::AppServiceProxyFactory::GetForProfile(profile_);
+    if (proxy && proxy->BrowserAppInstanceRegistry() &&
+        ::full_restore::features::IsFullRestoreForLacrosEnabled()) {
+      lacros_window_handler_ =
+          std::make_unique<app_restore::LacrosWindowHandler>(
+              *proxy->BrowserAppInstanceRegistry());
+    }
 
     // In Multi-Profile mode, only set for the primary user. For other users,
     // active profile path is set when switch users.
@@ -270,6 +307,10 @@ void FullRestoreService::Observe(int type,
                                  const content::NotificationSource& source,
                                  const content::NotificationDetails& details) {
   DCHECK_EQ(chrome::NOTIFICATION_APP_TERMINATING, type);
+  if (auto* arc_task_handler =
+          app_restore::AppRestoreArcTaskHandler::GetForProfile(profile_)) {
+    arc_task_handler->Shutdown();
+  }
   app_launch_handler_.reset();
   ::full_restore::FullRestoreSaveHandler::GetInstance()->SetShutDown();
 

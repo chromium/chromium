@@ -4,6 +4,7 @@
 
 #include "net/base/backoff_entry.h"
 
+#include "base/containers/span.h"
 #include "base/logging.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/stringprintf.h"
@@ -139,7 +140,7 @@ TEST(BackoffEntrySerializerTest, SpecialCasesOfBackoffDuration) {
 
     // Check that the serialized backoff duration matches our expectation.
     const std::string& serialized_backoff_duration_string =
-        serialized.GetList()[2].GetString();
+        serialized.GetListDeprecated()[2].GetString();
     int64_t serialized_backoff_duration_us;
     EXPECT_TRUE(base::StringToInt64(serialized_backoff_duration_string,
                                     &serialized_backoff_duration_us));
@@ -172,7 +173,7 @@ TEST(BackoffEntrySerializerTest, SerializeFiniteReleaseTime) {
 
   // Reach into the serialization and check the string-formatted release time.
   const std::string& serialized_release_time =
-      serialized.GetList()[3].GetString();
+      serialized.GetListDeprecated()[3].GetString();
   EXPECT_EQ(serialized_release_time, "0");
 
   // Test that |DeserializeFromValue| notices this zero-valued release time and
@@ -198,6 +199,29 @@ TEST(BackoffEntrySerializerTest, SerializeNoFailures) {
   ASSERT_TRUE(deserialized.get());
   EXPECT_EQ(original.failure_count(), deserialized->failure_count());
   EXPECT_EQ(original.GetReleaseTime(), deserialized->GetReleaseTime());
+}
+
+// Test that deserialization fails instead of producing an entry with an
+// infinite release time. (Regression test for https://crbug.com/1293904)
+TEST(BackoffEntrySerializerTest, DeserializeNeverInfiniteReleaseTime) {
+  const base::Value kSerialized[] = {
+      base::Value(2),
+      base::Value(2),
+      base::Value("-9223372036854775807"),
+      base::Value("2"),
+  };
+  base::Value serialized(base::make_span(kSerialized));
+
+  TestTickClock original_ticks;
+  original_ticks.set_now(base::TimeTicks() + base::Microseconds(-1));
+
+  base::Time time_now =
+      base::Time::FromDeltaSinceWindowsEpoch(base::Microseconds(-1));
+
+  std::unique_ptr<BackoffEntry> entry =
+      BackoffEntrySerializer::DeserializeFromValue(serialized, &base_policy,
+                                                   &original_ticks, time_now);
+  ASSERT_FALSE(entry);
 }
 
 TEST(BackoffEntrySerializerTest, SerializeTimeOffsets) {

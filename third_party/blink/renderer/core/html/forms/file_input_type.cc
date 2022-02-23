@@ -24,6 +24,7 @@
 
 #include "third_party/blink/public/platform/file_path_conversion.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
+#include "third_party/blink/renderer/core/accessibility/ax_object_cache.h"
 #include "third_party/blink/renderer/core/dom/events/event.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/events/keyboard_event.h"
@@ -44,7 +45,7 @@
 #include "third_party/blink/renderer/core/probe/core_probes.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/file_metadata.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
@@ -267,7 +268,8 @@ void FileInputType::SetValue(const String&,
   UpdateView();
 }
 
-FileList* FileInputType::CreateFileList(const FileChooserFileInfoList& files,
+FileList* FileInputType::CreateFileList(ExecutionContext& context,
+                                        const FileChooserFileInfoList& files,
                                         const base::FilePath& base_dir) {
   auto* file_list(MakeGarbageCollected<FileList>());
   wtf_size_t size = files.size();
@@ -312,8 +314,8 @@ FileList* FileInputType::CreateFileList(const FileChooserFileInfoList& files,
           NullableTimeToOptionalTime(fs_info->modification_time);
       metadata.length = fs_info->length;
       metadata.type = FileMetadata::kTypeFile;
-      file_list->Append(File::CreateForFileSystemFile(fs_info->url, metadata,
-                                                      File::kIsUserVisible));
+      file_list->Append(File::CreateForFileSystemFile(
+          context, fs_info->url, metadata, File::kIsUserVisible));
     }
   }
   return file_list;
@@ -434,8 +436,10 @@ void FileInputType::FilesChosen(FileChooserFileInfoList files,
     }
     ++i;
   }
-  if (!will_be_destroyed_)
-    SetFilesAndDispatchEvents(CreateFileList(files, base_dir));
+  if (!will_be_destroyed_) {
+    SetFilesAndDispatchEvents(
+        CreateFileList(*GetElement().GetExecutionContext(), files, base_dir));
+  }
   if (HasConnectedFileChooser())
     DisconnectFileChooser();
 }

@@ -12,6 +12,7 @@
 #include "content/public/browser/context_menu_params.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents_user_data.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 
 namespace content {
 class WebContents;
@@ -28,6 +29,8 @@ class ContextMenuHelper
   void ShowContextMenu(content::RenderFrameHost& render_frame_host,
                        const content::ContextMenuParams& params);
 
+  void DismissContextMenu();
+
   void OnContextMenuClosed(JNIEnv* env,
                            const base::android::JavaParamRef<jobject>& obj);
 
@@ -42,7 +45,6 @@ class ContextMenuHelper
   GetChromeRenderFrame() const;
 
   base::android::ScopedJavaGlobalRef<jobject> java_obj_;
-  content::WebContents* web_contents_;
 
   content::ContextMenuParams context_menu_params_;
 

@@ -11,6 +11,7 @@
 #include "base/memory/weak_ptr.h"
 #include "gpu/ipc/service/command_buffer_stub.h"
 #include "gpu/ipc/service/image_transport_surface.h"
+#include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/presentation_feedback.h"
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_surface.h"
@@ -100,6 +101,8 @@ class ImageTransportSurfaceOverlayMacBase : public BaseClass,
   // ui::GpuSwitchingObserver implementation.
   void OnGpuSwitched(gl::GpuPreference active_gpu_heuristic) override;
 
+  void SetCALayerErrorCode(gfx::CALayerResult ca_layer_error_code) override;
+
  private:
   ~ImageTransportSurfaceOverlayMacBase() override;
 
@@ -118,6 +121,7 @@ class ImageTransportSurfaceOverlayMacBase : public BaseClass,
 
   gfx::Size pixel_size_;
   float scale_factor_;
+  gfx::CALayerResult ca_layer_error_code_ = gfx::kCALayerSuccess;
 
   std::vector<gl::GLSurface::CALayerInUseQuery> ca_layer_in_use_queries_;
 

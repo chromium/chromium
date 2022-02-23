@@ -17,10 +17,11 @@ import '../settings_shared_css.js';
 import {I18nMixin} from 'chrome://resources/js/i18n_mixin.js';
 import {html, microTask, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
-// <if expr="chromeos or lacros">
+// <if expr="chromeos_ash or chromeos_lacros">
 import {BlockingRequestManager} from './blocking_request_manager.js';
 // </if>
 import {PasswordManagerImpl, PasswordManagerProxy, PasswordsFileExportProgressListener} from './password_manager_proxy.js';
+import {getTemplate} from './passwords_export_dialog.html.js';
 
 
 /**
@@ -48,13 +49,14 @@ const progressBarBlockMs: number = 1000;
 
 const PasswordsExportDialogElementBase = I18nMixin(PolymerElement);
 
-class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
+export class PasswordsExportDialogElement extends
+    PasswordsExportDialogElementBase {
   static get is() {
     return 'passwords-export-dialog';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -66,7 +68,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
       showProgressDialog_: Boolean,
       showErrorDialog_: Boolean,
 
-      // <if expr="chromeos or lacros">
+      // <if expr="chromeos_ash or chromeos_lacros">
       tokenRequestManager: Object
       // </if>
     };
@@ -84,7 +86,7 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   private delayedCompletionToken_: number|null;
   private delayedProgress_: chrome.passwordsPrivate.PasswordExportProgress|null;
 
-  // <if expr="chromeos or lacros">
+  // <if expr="chromeos_ash or chromeos_lacros">
   tokenRequestManager: BlockingRequestManager;
   // </if>
 
@@ -204,10 +206,10 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   }
 
   private onExportTap_() {
-    // <if expr="chromeos or lacros">
+    // <if expr="chromeos_ash or chromeos_lacros">
     this.tokenRequestManager.request(() => this.exportPasswords_());
     // </if>
-    // <if expr="not (chromeos or lacros)">
+    // <if expr="not (chromeos_ash or chromeos_lacros)">
     this.exportPasswords_();
     // </if>
   }
@@ -274,6 +276,12 @@ class PasswordsExportDialogElement extends PasswordsExportDialogElementBase {
   private onCancelProgressButtonTap_() {
     this.passwordManager_.cancelExportPasswords();
     this.close();
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'passwords-export-dialog': PasswordsExportDialogElement;
   }
 }
 

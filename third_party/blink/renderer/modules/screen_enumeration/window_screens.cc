@@ -61,13 +61,13 @@ ScriptPromise WindowScreens::GetScreenDetails(ScriptState* script_state,
     return ScriptPromise();
   }
 
-  ExecutionContext* context = ExecutionContext::From(script_state);
-  DCHECK(context->IsSecureContext());  // [SecureContext] in IDL.
+  LocalDOMWindow* window = LocalDOMWindow::From(script_state);
+  DCHECK(window->IsSecureContext());  // [SecureContext] in IDL.
   if (!permission_service_.is_bound()) {
     // See https://bit.ly/2S0zRAS for task types.
     ConnectToPermissionService(
-        context, permission_service_.BindNewPipeAndPassReceiver(
-                     context->GetTaskRunner(TaskType::kMiscPlatformAPI)));
+        window, permission_service_.BindNewPipeAndPassReceiver(
+                    window->GetTaskRunner(TaskType::kMiscPlatformAPI)));
   }
 
   auto permission_descriptor = CreatePermissionDescriptor(

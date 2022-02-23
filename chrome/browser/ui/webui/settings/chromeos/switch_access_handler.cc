@@ -86,18 +86,18 @@ SwitchAccessHandler::~SwitchAccessHandler() {
 }
 
 void SwitchAccessHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "refreshAssignmentsFromPrefs",
       base::BindRepeating(
           &SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifySwitchAccessActionAssignmentPaneActive",
       base::BindRepeating(
           &SwitchAccessHandler::
               HandleNotifySwitchAccessActionAssignmentPaneActive,
           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "notifySwitchAccessActionAssignmentPaneInactive",
       base::BindRepeating(
           &SwitchAccessHandler::
@@ -155,13 +155,13 @@ void SwitchAccessHandler::OnKeyEvent(ui::KeyEvent* event) {
 }
 
 void SwitchAccessHandler::HandleRefreshAssignmentsFromPrefs(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
 }
 
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
   OnSwitchAccessAssignmentsUpdated();
   web_ui()->GetWebContents()->GetNativeView()->AddPreTargetHandler(this);
@@ -169,7 +169,7 @@ void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneActive(
 }
 
 void SwitchAccessHandler::HandleNotifySwitchAccessActionAssignmentPaneInactive(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   web_ui()->GetWebContents()->GetNativeView()->RemovePreTargetHandler(this);
   ash::AccessibilityController::Get()->SuspendSwitchAccessKeyHandling(false);
 }
@@ -193,7 +193,7 @@ void SwitchAccessHandler::OnSwitchAccessAssignmentsUpdated() {
         NOTREACHED();
         return;
       }
-      for (const base::Value& device_type : item.second.GetList()) {
+      for (const base::Value& device_type : item.second.GetListDeprecated()) {
         base::DictionaryValue key;
         key.SetStringPath("key", GetStringForKeyboardCode(
                                      static_cast<ui::KeyboardCode>(key_code)));

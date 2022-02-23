@@ -311,6 +311,7 @@ bool SetExceptionPort(const ExceptionHandlerDescription* description,
 }
 
 void Usage(const std::string& me) {
+  // clang-format off
   fprintf(stderr,
 "Usage: %s [OPTION]... [COMMAND [ARG]...]\n"
 "View and change Mach exception ports, and run COMMAND if supplied.\n"
@@ -343,6 +344,7 @@ void Usage(const std::string& me) {
 "The default DESCRIPTION is\n"
 "  target=task,mask=CRASH,behavior=DEFAULT|MACH,flavor=NONE,handler=NULL\n",
           me.c_str());
+  // clang-format on
   ToolSupport::UsageTail(me);
 }
 

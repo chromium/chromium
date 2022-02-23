@@ -16,7 +16,8 @@
 #include "base/test/task_environment.h"
 #include "components/prefs/testing_pref_service.h"
 #include "components/sync/base/hash_util.h"
-#include "components/sync/engine/entity_data.h"
+#include "components/sync/protocol/entity_data.h"
+#include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/session_specifics.pb.h"
 #include "components/sync/test/model/model_type_store_test_util.h"
 #include "components/sync/test/model/test_matchers.h"
@@ -101,9 +102,7 @@ std::map<std::string, EntityData> BatchToEntityDataMap(
     std::unique_ptr<DataBatch> batch) {
   std::map<std::string, EntityData> storage_key_to_data;
   while (batch && batch->HasNext()) {
-    auto batch_entry = batch->Next();
-    const std::string& storage_key = batch_entry.first;
-    std::unique_ptr<EntityData> entity_data = std::move(batch_entry.second);
+    auto [storage_key, entity_data] = batch->Next();
     EXPECT_THAT(entity_data, NotNull());
     if (entity_data) {
       storage_key_to_data.emplace(storage_key, std::move(*entity_data));

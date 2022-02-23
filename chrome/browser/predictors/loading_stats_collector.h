@@ -9,6 +9,7 @@
 #include <memory>
 #include <utility>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_util.h"
 #include "base/time/time.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -71,7 +72,7 @@ class LoadingStatsCollector {
   void CleanupAbandonedStats();
 
  private:
-  ResourcePrefetchPredictor* predictor_;
+  raw_ptr<ResourcePrefetchPredictor> predictor_;
   base::TimeDelta max_stats_age_;
   std::map<GURL, std::unique_ptr<PreconnectStats>> preconnect_stats_;
 };

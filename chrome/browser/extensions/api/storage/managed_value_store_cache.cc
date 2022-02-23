@@ -12,6 +12,7 @@
 #include "base/callback_helpers.h"
 #include "base/check_op.h"
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
 #include "base/scoped_observation.h"
@@ -101,11 +102,11 @@ class ManagedValueStoreCache::ExtensionTracker
       base::WeakPtr<ExtensionTracker> self);
   void Register(const policy::ComponentMap* components);
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   policy::PolicyDomain policy_domain_;
   base::ScopedObservation<ExtensionRegistry, ExtensionRegistryObserver>
       extension_registry_observation_{this};
-  policy::SchemaRegistry* schema_registry_;
+  raw_ptr<policy::SchemaRegistry> schema_registry_;
   base::WeakPtrFactory<ExtensionTracker> weak_factory_{this};
 };
 
@@ -176,7 +177,7 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemas(
 
 bool ManagedValueStoreCache::ExtensionTracker::UsesManagedStorage(
     const Extension* extension) const {
-  return extension->manifest()->HasPath(manifest_keys::kStorageManagedSchema);
+  return extension->manifest()->FindPath(manifest_keys::kStorageManagedSchema);
 }
 
 // static
@@ -187,9 +188,8 @@ void ManagedValueStoreCache::ExtensionTracker::LoadSchemasOnFileTaskRunner(
 
   for (ExtensionSet::const_iterator it = extensions->begin();
        it != extensions->end(); ++it) {
-    std::string schema_file;
-    if (!(*it)->manifest()->GetString(
-            manifest_keys::kStorageManagedSchema, &schema_file)) {
+    if (!(*it)->manifest()->FindStringPath(
+            manifest_keys::kStorageManagedSchema)) {
       // TODO(joaodasilva): Remove this. http://crbug.com/325349
       (*components)[(*it)->id()] = policy::Schema();
       continue;
@@ -326,7 +326,7 @@ void ManagedValueStoreCache::OnPolicyUpdated(const policy::PolicyNamespace& ns,
 // static
 policy::PolicyDomain ManagedValueStoreCache::GetPolicyDomain(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  return chromeos::ProfileHelper::IsSigninProfile(profile)
+  return ash::ProfileHelper::IsSigninProfile(profile)
              ? policy::POLICY_DOMAIN_SIGNIN_EXTENSIONS
              : policy::POLICY_DOMAIN_EXTENSIONS;
 #else

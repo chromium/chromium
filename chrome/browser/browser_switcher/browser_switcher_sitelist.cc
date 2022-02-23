@@ -73,14 +73,6 @@ const Rule* MatchUrlToList(const NoCopyUrl& url,
   return reason;
 }
 
-bool RulePriorityCompare(const Rule* a, const Rule* b) {
-  if (!a)
-    return true;
-  if (!b)
-    return false;
-  return a->priority() < b->priority();
-}
-
 // Rules that are just an "*" are the most simple: they just return true all the
 // time, regardless of ParsingMode.
 class WildcardRule : public Rule {
@@ -416,14 +408,18 @@ Decision BrowserSwitcherSitelistImpl::GetDecisionImpl(const GURL& url) const {
   }
 
   NoCopyUrl no_copy_url(url);
+  const RuleSet* rulesets[] = {&prefs_->GetRules(), &ieem_sitelist_,
+                               &external_sitelist_, &external_greylist_};
 
-  const Rule* reason_to_go = std::max(
-      {
-          MatchUrlToList(no_copy_url, prefs_->GetRules().sitelist, true),
-          MatchUrlToList(no_copy_url, ieem_sitelist_.sitelist, true),
-          MatchUrlToList(no_copy_url, external_sitelist_.sitelist, true),
-      },
-      RulePriorityCompare);
+  const Rule* reason_to_go = nullptr;
+  for (const RuleSet* rules : rulesets) {
+    const Rule* match = MatchUrlToList(no_copy_url, rules->sitelist,
+                                       /*contains_inverted_matches=*/true);
+    if (!match)
+      continue;
+    if (!reason_to_go || match->priority() > reason_to_go->priority())
+      reason_to_go = match;
+  }
 
   // If sitelists don't match, no need to check the greylists.
   if (!reason_to_go)
@@ -431,13 +427,15 @@ Decision BrowserSwitcherSitelistImpl::GetDecisionImpl(const GURL& url) const {
   if (reason_to_go->inverted())
     return {kStay, kSitelist, reason_to_go};
 
-  const Rule* reason_to_stay = std::max(
-      {
-          MatchUrlToList(no_copy_url, prefs_->GetRules().greylist, false),
-          MatchUrlToList(no_copy_url, ieem_sitelist_.greylist, false),
-          MatchUrlToList(no_copy_url, external_sitelist_.greylist, false),
-      },
-      RulePriorityCompare);
+  const Rule* reason_to_stay = nullptr;
+  for (const RuleSet* rules : rulesets) {
+    const Rule* match = MatchUrlToList(no_copy_url, rules->greylist,
+                                       /*contains_inverted_matches=*/false);
+    if (!match)
+      continue;
+    if (!reason_to_stay || match->priority() > reason_to_stay->priority())
+      reason_to_stay = match;
+  }
 
   if (reason_to_go->priority() <= 1 && reason_to_stay)
     return {kStay, kGreylist, reason_to_stay};
@@ -448,34 +446,26 @@ Decision BrowserSwitcherSitelistImpl::GetDecisionImpl(const GURL& url) const {
     return {kStay, kGreylist, reason_to_stay};
 }
 
-void BrowserSwitcherSitelistImpl::SetIeemSitelist(ParsedXml&& parsed_xml) {
-  DCHECK(!parsed_xml.error);
-
+void BrowserSwitcherSitelistImpl::SetIeemSitelist(RawRuleSet&& rules) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.IeemSitelistSize",
-                              parsed_xml.rules.size());
-
-  StoreRules(&ieem_sitelist_.sitelist, parsed_xml.rules);
-  original_ieem_sitelist_ = std::move(parsed_xml.rules);
+                              rules.sitelist.size());
+  StoreRules(ieem_sitelist_, rules);
+  original_ieem_sitelist_ = std::move(rules);
 }
 
-void BrowserSwitcherSitelistImpl::SetExternalSitelist(ParsedXml&& parsed_xml) {
-  DCHECK(!parsed_xml.error);
-
+void BrowserSwitcherSitelistImpl::SetExternalSitelist(RawRuleSet&& rules) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.ExternalSitelistSize",
-                              parsed_xml.rules.size());
-
-  StoreRules(&external_sitelist_.sitelist, parsed_xml.rules);
-  original_external_sitelist_ = std::move(parsed_xml.rules);
+                              rules.sitelist.size());
+  StoreRules(external_sitelist_, rules);
+  original_external_sitelist_ = std::move(rules);
 }
 
-void BrowserSwitcherSitelistImpl::SetExternalGreylist(ParsedXml&& parsed_xml) {
-  DCHECK(!parsed_xml.error);
-
+void BrowserSwitcherSitelistImpl::SetExternalGreylist(RawRuleSet&& rules) {
   UMA_HISTOGRAM_COUNTS_100000("BrowserSwitcher.ExternalGreylistSize",
-                              parsed_xml.rules.size());
-
-  StoreRules(&external_sitelist_.greylist, parsed_xml.rules);
-  original_external_greylist_ = std::move(parsed_xml.rules);
+                              rules.sitelist.size());
+  DCHECK(rules.sitelist.empty());
+  StoreRules(external_greylist_, rules);
+  original_external_greylist_ = std::move(rules);
 }
 
 const RuleSet* BrowserSwitcherSitelistImpl::GetIeemSitelist() const {
@@ -486,15 +476,24 @@ const RuleSet* BrowserSwitcherSitelistImpl::GetExternalSitelist() const {
   return &external_sitelist_;
 }
 
-void BrowserSwitcherSitelistImpl::StoreRules(
-    std::vector<std::unique_ptr<Rule>>* dst,
-    const std::vector<std::string>& src) {
-  dst->clear();
+const RuleSet* BrowserSwitcherSitelistImpl::GetExternalGreylist() const {
+  return &external_greylist_;
+}
+
+void BrowserSwitcherSitelistImpl::StoreRules(RuleSet& dst,
+                                             const RawRuleSet& src) {
+  dst.sitelist.clear();
+  dst.greylist.clear();
   ParsingMode parsing_mode = prefs_->GetParsingMode();
-  for (const std::string& original_rule : src) {
+  for (const std::string& original_rule : src.sitelist) {
     std::unique_ptr<Rule> rule = CanonicalizeRule(original_rule, parsing_mode);
     if (rule)
-      dst->push_back(std::move(rule));
+      dst.sitelist.push_back(std::move(rule));
+  }
+  for (const std::string& original_rule : src.greylist) {
+    std::unique_ptr<Rule> rule = CanonicalizeRule(original_rule, parsing_mode);
+    if (rule)
+      dst.greylist.push_back(std::move(rule));
   }
 }
 
@@ -504,9 +503,9 @@ void BrowserSwitcherSitelistImpl::OnPrefsChanged(
   auto it = base::ranges::find(changed_prefs, prefs::kParsingMode);
   if (it != changed_prefs.end()) {
     // ParsingMode changed, re-canonicalize rules.
-    StoreRules(&ieem_sitelist_.sitelist, original_ieem_sitelist_);
-    StoreRules(&external_sitelist_.sitelist, original_external_sitelist_);
-    StoreRules(&external_sitelist_.greylist, original_external_greylist_);
+    StoreRules(ieem_sitelist_, original_ieem_sitelist_);
+    StoreRules(external_sitelist_, original_external_sitelist_);
+    StoreRules(external_greylist_, original_external_greylist_);
   }
 }
 
@@ -515,7 +514,7 @@ bool BrowserSwitcherSitelistImpl::IsActive() const {
     return false;
 
   const RuleSet* rulesets[] = {&prefs_->GetRules(), &ieem_sitelist_,
-                               &external_sitelist_};
+                               &external_sitelist_, &external_greylist_};
   for (const RuleSet* rules : rulesets) {
     if (!rules->sitelist.empty() || !rules->greylist.empty())
       return true;

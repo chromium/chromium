@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/style/computed_style.h"
 
+#include "base/memory/values_equivalent.h"
 #include "build/build_config.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/css/css_font_selector.h"
@@ -34,7 +35,7 @@
 #include "third_party/blink/renderer/core/style/style_initial_data.h"
 #include "third_party/blink/renderer/core/testing/color_scheme_helper.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/testing/runtime_enabled_features_test_helpers.h"
 #include "third_party/blink/renderer/platform/transforms/scale_transform_operation.h"
 #include "ui/base/ui_base_features.h"
@@ -117,24 +118,15 @@ TEST_F(ComputedStyleTest, LayoutContainmentStackingContext) {
   EXPECT_FALSE(style->IsStackingContextWithoutContainment());
 }
 
-TEST_F(ComputedStyleTest, FirstPublicPseudoStyle) {
-  static_assert(kFirstPublicPseudoId == kPseudoIdFirstLine,
-                "Make sure we are testing the first public pseudo id");
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetHasPseudoElementStyle(kPseudoIdFirstLine);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdFirstLine));
-  EXPECT_TRUE(style->HasAnyPseudoElementStyles());
-}
-
-TEST_F(ComputedStyleTest, LastPublicPseudoElementStyle) {
-  static_assert(kFirstInternalPseudoId - 1 == kPseudoIdGrammarError,
-                "Make sure we are testing the last public pseudo id");
-
-  scoped_refptr<ComputedStyle> style = CreateComputedStyle();
-  style->SetHasPseudoElementStyle(kPseudoIdGrammarError);
-  EXPECT_TRUE(style->HasPseudoElementStyle(kPseudoIdGrammarError));
-  EXPECT_TRUE(style->HasAnyPseudoElementStyles());
+TEST_F(ComputedStyleTest, TrackedPseudoStyle) {
+  for (uint8_t pseudo_id_int = kFirstPublicPseudoId;
+       pseudo_id_int <= kLastTrackedPublicPseudoId; pseudo_id_int++) {
+    PseudoId pseudo_id = static_cast<PseudoId>(pseudo_id_int);
+    scoped_refptr<ComputedStyle> style = CreateComputedStyle();
+    style->SetHasPseudoElementStyle(pseudo_id);
+    EXPECT_TRUE(style->HasPseudoElementStyle(pseudo_id));
+    EXPECT_TRUE(style->HasAnyPseudoElementStyles());
+  }
 }
 
 TEST_F(ComputedStyleTest,
@@ -325,7 +317,7 @@ TEST_F(ComputedStyleTest, CursorList) {
   auto* other_image_value =
       MakeGarbageCollected<StyleGeneratedImage>(*gradient);
 
-  EXPECT_TRUE(DataEquivalent(image_value, other_image_value));
+  EXPECT_TRUE(base::ValuesEquivalent(image_value, other_image_value));
 
   style->AddCursor(image_value, false);
   other->AddCursor(other_image_value, false);
@@ -479,7 +471,7 @@ TEST_F(ComputedStyleTest, AnimationFlags) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
@@ -509,7 +501,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Values) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", false);
 
@@ -537,7 +529,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesEqual_Data) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
@@ -603,7 +595,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_FastPath) {
 }
 
 TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
-  auto dummy = std::make_unique<DummyPageHolder>(IntSize(0, 0));
+  auto dummy = std::make_unique<DummyPageHolder>(gfx::Size(0, 0));
   css_test_helpers::RegisterProperty(dummy->GetDocument(), "--x", "<length>",
                                      "0px", true);
 
@@ -666,7 +658,7 @@ TEST_F(ComputedStyleTest, CustomPropertiesInheritance_StyleRecalc) {
 
 TEST_F(ComputedStyleTest, ApplyColorSchemeLightOnDark) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -699,7 +691,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkColor) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -741,7 +733,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -779,7 +771,7 @@ TEST_F(ComputedStyleTest, ApplyInternalLightDarkBackgroundImage) {
 
 TEST_F(ComputedStyleTest, StrokeWidthZoomAndCalc) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -961,7 +953,7 @@ TEST_F(ComputedStyleTest, GetVariableNamesWithInitialData_Invalidation) {
 
 TEST_F(ComputedStyleTest, BorderWidthZoom) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1009,7 +1001,7 @@ TEST_F(ComputedStyleTest,
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1022,14 +1014,14 @@ TEST_F(ComputedStyleTest,
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
   style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecoration(TextDecoration::kUnderline);
+  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
   style->SetTextDecorationThickness(
       TextDecorationThickness(Length(5, Length::Type::kFixed)));
   style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
   style->SetTextUnderlinePosition(kTextUnderlinePositionUnder);
   state.SetStyle(style);
   StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
-  EXPECT_EQ(TextDecoration::kUnderline, style->TextDecorationsInEffect());
+  EXPECT_EQ(TextDecorationLine::kUnderline, style->TextDecorationsInEffect());
 
   scoped_refptr<ComputedStyle> other = ComputedStyle::Clone(*style);
   StyleDifference diff1;
@@ -1049,7 +1041,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   using css_test_helpers::ParseDeclarationBlock;
 
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1062,7 +1054,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
   // Set up the initial text decoration properties
   style->SetTextDecorationStyle(ETextDecorationStyle::kSolid);
   style->SetTextDecorationColor(StyleColor(CSSValueID::kGreen));
-  style->SetTextDecoration(TextDecoration::kUnderline);
+  style->SetTextDecorationLine(TextDecorationLine::kUnderline);
   style->SetTextDecorationThickness(
       TextDecorationThickness(Length(5, Length::Type::kFixed)));
   style->SetTextUnderlineOffset(Length(2, Length::Type::kFixed));
@@ -1081,7 +1073,7 @@ TEST_F(ComputedStyleTest, TextDecorationNotEqualRequiresRecomputeInkOverflow) {
 
   // Change decoration line
   other = ComputedStyle::Clone(*style);
-  other->SetTextDecoration(TextDecoration::kOverline);
+  other->SetTextDecorationLine(TextDecorationLine::kOverline);
   state.SetStyle(other);
   StyleAdjuster::AdjustComputedStyle(state, nullptr /* element */);
   StyleDifference diff_decoration_line;
@@ -1157,7 +1149,7 @@ TEST_F(ComputedStyleTest, ClonedStyleTransitionsAreIndependent) {
 
 TEST_F(ComputedStyleTest, ApplyInitialAnimationNameAndTransitionProperty) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
   scoped_refptr<const ComputedStyle> initial =
       document.GetStyleResolver().InitialStyleForElement();
@@ -1223,7 +1215,7 @@ TEST_F(ComputedStyleTest, SvgMiscStyleShouldCompareValue) {
 
 TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
   std::unique_ptr<DummyPageHolder> dummy_page_holder =
-      std::make_unique<DummyPageHolder>(IntSize(0, 0), nullptr);
+      std::make_unique<DummyPageHolder>(gfx::Size(0, 0), nullptr);
   Document& document = dummy_page_holder->GetDocument();
 
   auto* html = document.documentElement();
@@ -1299,6 +1291,8 @@ TEST_F(ComputedStyleTest, ShouldApplyAnyContainment) {
 #if DCHECK_IS_ON()
 
 TEST_F(ComputedStyleTest, DebugDiffFields) {
+  using DebugField = ComputedStyleBase::DebugField;
+
   scoped_refptr<ComputedStyle> style1 = CreateComputedStyle();
   scoped_refptr<ComputedStyle> style2 = CreateComputedStyle();
 
@@ -1309,7 +1303,9 @@ TEST_F(ComputedStyleTest, DebugDiffFields) {
   EXPECT_EQ(0u, style2->DebugDiffFields(*style2).size());
 
   EXPECT_EQ(1u, style1->DebugDiffFields(*style2).size());
-  EXPECT_EQ("width_", style1->DebugDiffFields(*style2)[0]);
+  EXPECT_EQ(DebugField::width_, style1->DebugDiffFields(*style2)[0]);
+  EXPECT_EQ("width_",
+            ComputedStyleBase::DebugFieldToString(DebugField::width_));
 }
 
 #endif  // #if DCHECK_IS_ON()

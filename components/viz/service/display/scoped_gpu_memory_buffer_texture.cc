@@ -44,9 +44,9 @@ ScopedGpuMemoryBufferTexture::ScopedGpuMemoryBufferTexture(
   gl->TexParameteri(target_, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
   gl->TexParameteri(target_, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
-  gl->TexStorage2DImageCHROMIUM(target_, TextureStorageFormat(format),
-                                GL_SCANOUT_CHROMIUM, size_.width(),
-                                size_.height());
+  gl->TexStorage2DImageCHROMIUM(
+      target_, TextureStorageFormat(format, caps.angle_rgbx_internal_format),
+      GL_SCANOUT_CHROMIUM, size_.width(), size_.height());
   if (color_space_.IsValid()) {
     gl->SetColorSpaceMetadataCHROMIUM(gl_id_, color_space_.AsGLColorSpace());
   }

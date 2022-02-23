@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SEND_TAB_TO_SELF_SEND_TAB_TO_SELF_TOOLBAR_ICON_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/send_tab_to_self/send_tab_to_self_toolbar_icon_controller_delegate.h"
 #include "components/send_tab_to_self/send_tab_to_self_entry.h"
 #include "ui/base/metadata/metadata_header_macros.h"
@@ -39,11 +40,11 @@ class SendTabToSelfToolbarIconView
   void LogNotificationDismissed();
 
  private:
-  const Browser* const browser_;
+  const raw_ptr<const Browser> browser_;
 
-  const BrowserView* browser_view_;
+  raw_ptr<const BrowserView> browser_view_;
 
-  const SendTabToSelfEntry* entry_;
+  raw_ptr<const SendTabToSelfEntry> entry_;
 };
 
 }  // namespace send_tab_to_self

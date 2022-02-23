@@ -36,7 +36,7 @@
 #include "weblayer/renderer/weblayer_render_frame_observer.h"
 #include "weblayer/renderer/weblayer_render_thread_observer.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/android_system_error_page/error_page_populator.h"
 #include "components/cdm/renderer/android_key_systems.h"
 #include "components/spellcheck/renderer/spellcheck.h"           // nogncheck
@@ -53,7 +53,7 @@ namespace weblayer {
 
 namespace {
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class SpellcheckInterfaceProvider
     : public service_manager::LocalInterfaceProvider {
  public:
@@ -75,7 +75,7 @@ class SpellcheckInterfaceProvider
         interface_name, std::move(interface_pipe)));
   }
 };
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 }  // namespace
 
@@ -83,7 +83,7 @@ ContentRendererClientImpl::ContentRendererClientImpl() = default;
 ContentRendererClientImpl::~ContentRendererClientImpl() = default;
 
 void ContentRendererClientImpl::RenderThreadStarted() {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (!spellcheck_) {
     local_interface_provider_ = std::make_unique<SpellcheckInterfaceProvider>();
     spellcheck_ = std::make_unique<SpellCheck>(local_interface_provider_.get());
@@ -144,7 +144,7 @@ void ContentRendererClientImpl::RenderFrameCreated(
           std::move(ad_resource_tracker));
   subresource_filter_agent->Initialize();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // |SpellCheckProvider| manages its own lifetime (and destroys itself when the
   // RenderFrame is destroyed).
   new SpellCheckProvider(render_frame, spellcheck_.get(),
@@ -194,12 +194,14 @@ void ContentRendererClientImpl::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,
     const std::string& http_method,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) {
   auto* error_page_helper = ErrorPageHelper::GetForFrame(render_frame);
   if (error_page_helper)
     error_page_helper->PrepareErrorPage();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // This does nothing if |error_html| is non-null (which happens if the
   // embedder injects an error page).
   android_system_error_page::PopulateErrorPageHtml(error, error_html);
@@ -213,18 +215,20 @@ ContentRendererClientImpl::CreateURLLoaderThrottleProvider(
       browser_interface_broker_.get(), provider_type);
 }
 
-void ContentRendererClientImpl::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
-#if defined(OS_ANDROID)
-  cdm::AddAndroidWidevine(key_systems);
-  cdm::AddAndroidPlatformKeySystems(key_systems);
+void ContentRendererClientImpl::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  media::KeySystemPropertiesVector key_systems;
+#if BUILDFLAG(IS_ANDROID)
+  cdm::AddAndroidWidevine(&key_systems);
+  cdm::AddAndroidPlatformKeySystems(&key_systems);
 #endif
+  std::move(cb).Run(std::move(key_systems));
 }
 
 void ContentRendererClientImpl::
     SetRuntimeFeaturesDefaultsBeforeBlinkInitialization() {
   blink::WebRuntimeFeatures::EnablePerformanceManagerInstrumentation(true);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Web Share is experimental by default, and explicitly enabled on Android
   // (for both Chrome and WebLayer).
   blink::WebRuntimeFeatures::EnableWebShare(true);

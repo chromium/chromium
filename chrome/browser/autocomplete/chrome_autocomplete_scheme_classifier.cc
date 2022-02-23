@@ -6,20 +6,21 @@
 
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
-#include "chrome/browser/custom_handlers/protocol_handler_registry.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/external_protocol/external_protocol_handler.h"
-#if defined(OS_ANDROID)
+#include "chrome/browser/profiles/profile.h"
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/profiles/profile_android.h"
 #endif
 #include "chrome/browser/profiles/profile_io_data.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/android/omnibox/jni_headers/ChromeAutocompleteSchemeClassifier_jni.h"
 #endif
+#include "components/custom_handlers/protocol_handler_registry.h"
 #include "content/public/common/url_constants.h"
 #include "url/url_util.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 static jlong
 JNI_ChromeAutocompleteSchemeClassifier_CreateAutocompleteClassifier(
     JNIEnv* env,
@@ -63,8 +64,9 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
 
   // Also check for schemes registered via registerProtocolHandler(), which
   // can be handled by web pages/apps.
-  ProtocolHandlerRegistry* registry = profile_ ?
-      ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_) : NULL;
+  custom_handlers::ProtocolHandlerRegistry* registry =
+      profile_ ? ProtocolHandlerRegistryFactory::GetForBrowserContext(profile_)
+               : NULL;
   if (registry && registry->IsHandledProtocol(scheme))
     return metrics::OmniboxInputType::URL;
 
@@ -87,7 +89,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
       return metrics::OmniboxInputType::QUERY;
 
     case ExternalProtocolHandler::UNKNOWN: {
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
       // Linux impl of GetApplicationNameForProtocol doesn't distinguish
       // between URL schemes with handers and those without. This will
       // make the default behaviour be search on Linux.
@@ -100,7 +102,7 @@ ChromeAutocompleteSchemeClassifier::GetInputTypeForScheme(
           shell_integration::GetApplicationNameForProtocol(url);
       return application_name.empty() ? metrics::OmniboxInputType::EMPTY
                                       : metrics::OmniboxInputType::URL;
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
     }
   }
   NOTREACHED();

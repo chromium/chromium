@@ -23,6 +23,7 @@ import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.chrome.browser.tab.MockTab;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tab.TabImpl;
@@ -47,6 +48,7 @@ public class PersistedTabDataTest {
     @SmallTest
     @UiThreadTest
     @Test
+    @DisabledTest(message = "https://crbug.com/1292239")
     public void testCacheCallbacks() throws InterruptedException {
         Tab tab = MockTab.createAndInitialize(1, false);
         tab.setIsTabSaveEnabled(true);
@@ -73,24 +75,21 @@ public class PersistedTabDataTest {
     @SmallTest
     @UiThreadTest
     @Test
-    public void testSerializeAndLogOutOfMemoryError() {
+    public void testSerializeAndLogOutOfMemoryError_Get() {
         Tab tab = MockTab.createAndInitialize(1, false);
-        OutOfMemoryMockPersistedTabData outOfMemoryMockPersistedTabData =
-                new OutOfMemoryMockPersistedTabData(tab);
-        Assert.assertNull(outOfMemoryMockPersistedTabData
-                                  .getOomAndMetricsWrapper(
-                                          outOfMemoryMockPersistedTabData.getSerializeSupplier())
-                                  .get());
+        OutOfMemoryMockPersistedTabDataGet outOfMemoryMockPersistedTabData =
+                new OutOfMemoryMockPersistedTabDataGet(tab);
+        Assert.assertNull(outOfMemoryMockPersistedTabData.getOomAndMetricsWrapper().get());
     }
 
     @SmallTest
     @UiThreadTest
-    @Test(expected = OutOfMemoryError.class)
-    public void testSerializeOutOfMemoryError() {
+    @Test
+    public void testSerializeAndLogOutOfMemoryError() {
         Tab tab = MockTab.createAndInitialize(1, false);
         OutOfMemoryMockPersistedTabData outOfMemoryMockPersistedTabData =
                 new OutOfMemoryMockPersistedTabData(tab);
-        outOfMemoryMockPersistedTabData.getSerializeSupplier().get();
+        Assert.assertNull(outOfMemoryMockPersistedTabData.getOomAndMetricsWrapper().get());
     }
 
     @SmallTest
@@ -142,15 +141,27 @@ public class PersistedTabDataTest {
         }
     }
 
+    static class OutOfMemoryMockPersistedTabDataGet extends MockPersistedTabData {
+        OutOfMemoryMockPersistedTabDataGet(Tab tab) {
+            super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
+        }
+        @Override
+        public Supplier<ByteBuffer> getSerializeSupplier() {
+            return () -> {
+                // OutOfMemoryError thrown on getSerializeSupplier.get();
+                throw new OutOfMemoryError("Out of memory error");
+            };
+        }
+    }
+
     static class OutOfMemoryMockPersistedTabData extends MockPersistedTabData {
         OutOfMemoryMockPersistedTabData(Tab tab) {
             super(tab, 0 /** unused in OutOfMemoryMockPersistedTabData */);
         }
         @Override
         public Supplier<ByteBuffer> getSerializeSupplier() {
-            return () -> {
-                throw new OutOfMemoryError("Out of memory error");
-            };
+            // OutOfMemoryError thrown on getSerializeSupplier
+            throw new OutOfMemoryError("Out of memory error");
         }
     }
 

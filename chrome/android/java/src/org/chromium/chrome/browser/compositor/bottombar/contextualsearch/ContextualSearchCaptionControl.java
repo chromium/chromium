@@ -5,12 +5,12 @@
 package org.chromium.chrome.browser.compositor.bottombar.contextualsearch;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelTextViewInflater;
 import org.chromium.chrome.browser.layouts.animation.CompositorAnimator;
@@ -50,6 +50,9 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      */
     private final boolean mShouldShowExpandedCaption;
 
+    /** The {@link ContextualSearchPanel} that this class belongs to. */
+    private final ContextualSearchPanel mPanel;
+
     /**
      * The caption visibility.
      */
@@ -79,12 +82,14 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      * @param shouldShowExpandedCaption Whether the "Open in new tab" caption should be shown
      *                                  when the panel is expanded.
      */
-    public ContextualSearchCaptionControl(OverlayPanel panel, Context context, ViewGroup container,
-            DynamicResourceLoader resourceLoader, boolean shouldShowExpandedCaption) {
+    public ContextualSearchCaptionControl(ContextualSearchPanel panel, Context context,
+            ViewGroup container, DynamicResourceLoader resourceLoader,
+            boolean shouldShowExpandedCaption) {
         super(panel, R.layout.contextual_search_caption_view, R.id.contextual_search_caption_view,
                 context, container, resourceLoader, R.dimen.contextual_search_end_padding,
                 R.dimen.contextual_search_padded_button_width);
         mShouldShowExpandedCaption = shouldShowExpandedCaption;
+        mPanel = panel;
     }
 
     /**
@@ -93,9 +98,6 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      *        e.g. a Quick Answer.
      */
     public void setCaption(String caption) {
-        // If the peeking caption has already been set return early rather than changing it.
-        if (mHasPeekingCaption) return;
-
         mPeekingCaptionText = sanitizeText(caption);
         mHasPeekingCaption = true;
 
@@ -117,10 +119,25 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      */
     @Override
     public void onUpdateFromPeekToExpand(float percentage) {
-        super.onUpdateFromPeekToExpand(percentage);
-        if (mHasPeekingCaption) {
-            if (mTransitionAnimator != null) mTransitionAnimator.cancel();
-            mAnimationPercentage = 1.f - percentage;
+        if (!mPanel.isDelayedIntelligenceActive()) {
+            super.onUpdateFromPeekToExpand(percentage);
+            if (mHasPeekingCaption) {
+                if (mTransitionAnimator != null) mTransitionAnimator.cancel();
+                mAnimationPercentage = 1.f - percentage;
+            }
+        }
+    }
+
+    /**
+     * Updates the caption when in transition between expanded and maximized states.
+     * @param percentage The percentage to the more opened state.
+     */
+    public void onUpdateFromExpandToMaximize(float percentage) {
+        if (mPanel.isDelayedIntelligenceActive()) {
+            if (mHasPeekingCaption) {
+                if (mTransitionAnimator != null) mTransitionAnimator.cancel();
+                mAnimationPercentage = 1.f - percentage;
+            }
         }
     }
 
@@ -168,6 +185,11 @@ public class ContextualSearchCaptionControl extends OverlayPanelTextViewInflater
      */
     public CharSequence getCaptionText() {
         return mCaption.getText();
+    }
+
+    /** Returns whether there's already a visible caption. */
+    boolean hasCaption() {
+        return getIsVisible() && !TextUtils.isEmpty(getCaptionText());
     }
 
     //========================================================================================

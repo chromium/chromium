@@ -30,9 +30,12 @@
 #include "third_party/blink/renderer/core/style/filter_operation.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+namespace gfx {
+class RectF;
+}
+
 namespace blink {
 
-class FloatRect;
 class SVGResourceClient;
 
 class CORE_EXPORT FilterOperations {
@@ -65,7 +68,7 @@ class CORE_EXPORT FilterOperations {
   // Maps "forward" to determine which pixels in a destination rect are
   // affected by pixels in the source rect.
   // See also FilterEffect::MapRect.
-  FloatRect MapRect(const FloatRect&) const;
+  gfx::RectF MapRect(const gfx::RectF&) const;
 
   bool HasFilterThatAffectsOpacity() const;
   bool HasFilterThatMovesPixels() const;

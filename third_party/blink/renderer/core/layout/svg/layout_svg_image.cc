@@ -120,8 +120,7 @@ gfx::SizeF LayoutSVGImage::CalculateObjectSize() const {
 
     RespectImageOrientationEnum respect_orientation =
         LayoutObject::ShouldRespectImageOrientation(this);
-    intrinsic_size =
-        ToGfxSizeF(cached_image->GetImage()->SizeAsFloat(respect_orientation));
+    intrinsic_size = cached_image->GetImage()->SizeAsFloat(respect_orientation);
     if (auto* svg_image = DynamicTo<SVGImage>(cached_image->GetImage())) {
       IntrinsicSizingInfo intrinsic_sizing_info;
       has_intrinsic_ratio &=
@@ -216,9 +215,9 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
     return false;
 
   const ComputedStyle& style = StyleRef();
-  PointerEventsHitRules hit_rules(PointerEventsHitRules::SVG_IMAGE_HITTESTING,
+  PointerEventsHitRules hit_rules(PointerEventsHitRules::kSvgImageHitTesting,
                                   result.GetHitTestRequest(),
-                                  style.PointerEvents());
+                                  style.UsedPointerEvents());
   if (hit_rules.require_visible && style.Visibility() != EVisibility::kVisible)
     return false;
 
@@ -232,7 +231,7 @@ bool LayoutSVGImage::NodeAtPoint(HitTestResult& result,
 
   if (hit_rules.can_hit_fill || hit_rules.can_hit_bounding_box) {
     if (local_location->Intersects(object_bounding_box_)) {
-      UpdateHitTestResult(result, PhysicalOffset::FromFloatPointRound(
+      UpdateHitTestResult(result, PhysicalOffset::FromPointFRound(
                                       local_location->TransformedPoint()));
       if (result.AddNodeToListBasedTestResult(GetElement(), *local_location) ==
           kStopHitTesting)

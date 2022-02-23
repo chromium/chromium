@@ -5,14 +5,17 @@
 #include "components/optimization_guide/content/browser/page_content_annotations_web_contents_observer.h"
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "components/google/core/common/google_switches.h"
 #include "components/history/core/browser/history_service.h"
 #include "components/optimization_guide/content/browser/page_content_annotations_service.h"
 #include "components/optimization_guide/content/browser/page_text_dump_result.h"
+#include "components/optimization_guide/content/browser/test_optimization_guide_decider.h"
 #include "components/optimization_guide/core/optimization_guide_features.h"
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
+#include "components/optimization_guide/proto/page_entities_metadata.pb.h"
 #include "components/search_engines/template_url_service.h"
 #include "content/public/test/mock_navigation_handle.h"
 #include "content/public/test/navigation_simulator.h"
@@ -20,6 +23,12 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace optimization_guide {
+
+namespace {
+
+using ::testing::UnorderedElementsAre;
+
+}  // namespace
 
 const TemplateURLService::Initializer kTemplateURLData[] = {
     {"default-engine.com", "http://default-engine.com/search?q={searchTerms}",
@@ -51,12 +60,16 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
   explicit FakePageContentAnnotationsService(
       OptimizationGuideModelProvider* optimization_guide_model_provider,
       history::HistoryService* history_service)
-      : PageContentAnnotationsService(optimization_guide_model_provider,
-                                      history_service) {}
+      : PageContentAnnotationsService("en-US",
+                                      optimization_guide_model_provider,
+                                      history_service,
+                                      nullptr,
+                                      base::FilePath(),
+                                      nullptr) {}
   ~FakePageContentAnnotationsService() override = default;
 
-  void Annotate(const HistoryVisit& visit, const std::string& text) override {
-    last_annotation_request_.emplace(std::make_pair(visit, text));
+  void Annotate(const HistoryVisit& visit) override {
+    last_annotation_request_.emplace(visit);
   }
 
   void ExtractRelatedSearches(const HistoryVisit& visit,
@@ -65,8 +78,7 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
         std::make_pair(visit, web_contents));
   }
 
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request()
-      const {
+  absl::optional<HistoryVisit> last_annotation_request() const {
     return last_annotation_request_;
   }
 
@@ -79,10 +91,98 @@ class FakePageContentAnnotationsService : public PageContentAnnotationsService {
     return last_related_searches_extraction_request_;
   }
 
+  void PersistRemotePageEntities(
+      const HistoryVisit& visit,
+      const std::vector<history::VisitContentModelAnnotations::Category>&
+          entities) override {
+    last_entities_persistence_request_.emplace(std::make_pair(visit, entities));
+  }
+
+  absl::optional<
+      std::pair<HistoryVisit,
+                std::vector<history::VisitContentModelAnnotations::Category>>>
+  last_entities_persistence_request() const {
+    return last_entities_persistence_request_;
+  }
+
+  void PersistSearchMetadata(const HistoryVisit& visit,
+                             const SearchMetadata& search_metadata) override {
+    last_search_metadata_ = search_metadata;
+  }
+
+  absl::optional<SearchMetadata> last_search_metadata_persisted() const {
+    return last_search_metadata_;
+  }
+
  private:
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request_;
+  absl::optional<HistoryVisit> last_annotation_request_;
   absl::optional<std::pair<HistoryVisit, content::WebContents*>>
       last_related_searches_extraction_request_;
+  absl::optional<
+      std::pair<HistoryVisit,
+                std::vector<history::VisitContentModelAnnotations::Category>>>
+      last_entities_persistence_request_;
+  absl::optional<SearchMetadata> last_search_metadata_;
+};
+
+class FakeOptimizationGuideDecider : public TestOptimizationGuideDecider {
+ public:
+  void RegisterOptimizationTypes(
+      const std::vector<proto::OptimizationType>& optimization_types) override {
+    registered_optimization_types_ = optimization_types;
+  }
+
+  std::vector<proto::OptimizationType> registered_optimization_types() {
+    return registered_optimization_types_;
+  }
+
+  void CanApplyOptimizationAsync(
+      content::NavigationHandle* navigation_handle,
+      proto::OptimizationType optimization_type,
+      OptimizationGuideDecisionCallback callback) override {
+    DCHECK(optimization_type == proto::PAGE_ENTITIES);
+
+    std::string url_spec = navigation_handle->GetURL().spec();
+    if (navigation_handle->GetURL() == GURL("http://hasentities.com/")) {
+      proto::PageEntitiesMetadata page_entities_metadata;
+      proto::Entity* entity = page_entities_metadata.add_entities();
+      entity->set_entity_id("entity1");
+      entity->set_score(50);
+
+      // The following entities should be skipped.
+      proto::Entity* entity2 = page_entities_metadata.add_entities();
+      entity2->set_score(50);
+      proto::Entity* entity3 = page_entities_metadata.add_entities();
+      entity3->set_entity_id("scoretoohigh");
+      entity3->set_score(105);
+      proto::Entity* entity4 = page_entities_metadata.add_entities();
+      entity4->set_entity_id("scoretoolow");
+      entity4->set_score(-1);
+
+      OptimizationMetadata metadata;
+      metadata.SetAnyMetadataForTesting(page_entities_metadata);
+      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      return;
+    }
+    if (navigation_handle->GetURL() == GURL("http://noentities.com/")) {
+      proto::PageEntitiesMetadata page_entities_metadata;
+      OptimizationMetadata metadata;
+      metadata.SetAnyMetadataForTesting(page_entities_metadata);
+      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      return;
+    }
+    if (navigation_handle->GetURL() == GURL("http://wrongmetadata.com/")) {
+      OptimizationMetadata metadata;
+      proto::Entity entity;
+      metadata.SetAnyMetadataForTesting(entity);
+      std::move(callback).Run(OptimizationGuideDecision::kTrue, metadata);
+      return;
+    }
+    std::move(callback).Run(OptimizationGuideDecision::kFalse, {});
+  }
+
+ private:
+  std::vector<proto::OptimizationType> registered_optimization_types_;
 };
 
 class PageContentAnnotationsWebContentsObserverTest
@@ -92,7 +192,8 @@ class PageContentAnnotationsWebContentsObserverTest
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
         features::kPageContentAnnotations,
         {{"extract_related_searches", "false"},
-         {"annotate_title_instead_of_page_content", "false"}});
+         {"annotate_title_instead_of_page_content", "false"},
+         {"fetch_remote_page_entities", "false"}});
   }
 
   void SetUp() override {
@@ -112,13 +213,16 @@ class PageContentAnnotationsWebContentsObserverTest
         kDefaultTemplateURLKeyword);
     template_url_service_->SetUserSelectedDefaultSearchProvider(template_url_);
 
+    optimization_guide_decider_ =
+        std::make_unique<FakeOptimizationGuideDecider>();
+
     page_text_observer_ = new TestPageTextObserver(web_contents());
     web_contents()->SetUserData(TestPageTextObserver::UserDataKey(),
-                                base::WrapUnique(page_text_observer_));
+                                base::WrapUnique(page_text_observer_.get()));
 
     PageContentAnnotationsWebContentsObserver::CreateForWebContents(
         web_contents(), page_content_annotations_service_.get(),
-        template_url_service_.get());
+        template_url_service_.get(), optimization_guide_decider_.get());
 
     // Overwrite Google base URL.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
@@ -130,6 +234,7 @@ class PageContentAnnotationsWebContentsObserverTest
     page_content_annotations_service_.reset();
     optimization_guide_model_provider_.reset();
     template_url_service_.reset();
+    optimization_guide_decider_.reset();
 
     content::RenderViewHostTestHarness::TearDown();
   }
@@ -144,6 +249,10 @@ class PageContentAnnotationsWebContentsObserverTest
   }
 
   TestPageTextObserver* page_text_observer() { return page_text_observer_; }
+
+  FakeOptimizationGuideDecider* optimization_guide_decider() {
+    return optimization_guide_decider_.get();
+  }
 
   std::unique_ptr<PageTextObserver::ConsumerTextDumpRequest>
   RequestTextDumpForUrl(const GURL& url, bool is_same_document = false) {
@@ -164,9 +273,15 @@ class PageContentAnnotationsWebContentsObserverTest
   std::unique_ptr<FakePageContentAnnotationsService>
       page_content_annotations_service_;
   std::unique_ptr<TemplateURLService> template_url_service_;
-  TemplateURL* template_url_;
-  TestPageTextObserver* page_text_observer_;
+  raw_ptr<TemplateURL> template_url_;
+  raw_ptr<TestPageTextObserver> page_text_observer_;
+  std::unique_ptr<FakeOptimizationGuideDecider> optimization_guide_decider_;
 };
+
+TEST_F(PageContentAnnotationsWebContentsObserverTest, DoesNotRegisterType) {
+  EXPECT_TRUE(
+      optimization_guide_decider()->registered_optimization_types().empty());
+}
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
        HooksIntoPageTextObserver) {
@@ -219,11 +334,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   result.AddFrameTextDumpResult(frame_result);
   std::move(request->callback).Run(std::move(result));
 
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url, GURL("http://test.com"));
-  EXPECT_EQ(last_annotation_request->second, "some text");
+  EXPECT_EQ(last_annotation_request->url, GURL("http://test.com"));
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "some text");
 
   service()->ClearLastAnnotationRequest();
 
@@ -252,11 +367,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
   navigation_simulator->CommitSameDocument();
 
   // The title should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url, url2);
-  EXPECT_EQ(last_annotation_request->second, "Title");
+  EXPECT_EQ(last_annotation_request->url, url2);
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -266,12 +381,19 @@ TEST_F(PageContentAnnotationsWebContentsObserverTest,
       web_contents(), GURL("http://default-engine.com/search?q=a"));
 
   // The search query should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   ASSERT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url,
+  EXPECT_EQ(last_annotation_request->url,
             GURL("http://default-engine.com/search?q=a"));
-  EXPECT_EQ(last_annotation_request->second, "a");
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "a");
+
+  absl::optional<SearchMetadata> last_search_metadata_persisted =
+      service()->last_search_metadata_persisted();
+  ASSERT_TRUE(last_search_metadata_persisted.has_value());
+  EXPECT_EQ(last_search_metadata_persisted->normalized_url,
+            GURL("http://default-engine.com/search?q=a"));
+  EXPECT_EQ(last_search_metadata_persisted->search_terms, u"a");
 }
 
 TEST_F(PageContentAnnotationsWebContentsObserverTest,
@@ -357,11 +479,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
   navigation_simulator->CommitSameDocument();
 
   // The title should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url, url2);
-  EXPECT_EQ(last_annotation_request->second, "Title");
+  EXPECT_EQ(last_annotation_request->url, url2);
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
 
   service()->ClearLastAnnotationRequest();
 
@@ -386,12 +508,11 @@ TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
                                       title);
 
   // The title should be what is requested to be annotated.
-  absl::optional<std::pair<HistoryVisit, std::string>> last_annotation_request =
+  absl::optional<HistoryVisit> last_annotation_request =
       service()->last_annotation_request();
   EXPECT_TRUE(last_annotation_request.has_value());
-  EXPECT_EQ(last_annotation_request->first.url,
-            GURL("http://www.foo.com/someurl"));
-  EXPECT_EQ(last_annotation_request->second, "Title");
+  EXPECT_EQ(last_annotation_request->url, GURL("http://www.foo.com/someurl"));
+  EXPECT_EQ(last_annotation_request->text_to_annotate, "Title");
 
   service()->ClearLastAnnotationRequest();
 
@@ -399,6 +520,72 @@ TEST_F(PageContentAnnotationsWebContentsObserverAnnotateTitleTest,
   web_contents()->UpdateTitleForEntry(controller().GetLastCommittedEntry(),
                                       u"newtitle");
   EXPECT_FALSE(service()->last_annotation_request());
+}
+
+class PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest
+    : public PageContentAnnotationsWebContentsObserverTest {
+ public:
+  PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest() {
+    scoped_feature_list_.InitAndEnableFeatureWithParameters(
+        features::kPageContentAnnotations,
+        {{"fetch_remote_page_entities", "true"}});
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+       RegistersTypeWhenFeatureEnabled) {
+  std::vector<proto::OptimizationType> registered_optimization_types =
+      optimization_guide_decider()->registered_optimization_types();
+  EXPECT_EQ(registered_optimization_types.size(), 1u);
+  EXPECT_EQ(registered_optimization_types[0], proto::PAGE_ENTITIES);
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+       DoesNotPersistIfServerHasNoData) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://www.nohints.com/"));
+
+  EXPECT_FALSE(service()->last_entities_persistence_request());
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+       DoesNotPersistIfNoEntities) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://noentities.com/"));
+
+  EXPECT_FALSE(service()->last_entities_persistence_request());
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+       DoesNotPersistIfServerReturnsWrongMetadata) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://wrongmetadata.com/"));
+
+  EXPECT_FALSE(service()->last_entities_persistence_request());
+}
+
+TEST_F(PageContentAnnotationsWebContentsObserverRemotePageEntitiesTest,
+       RequestsToPersistIfHasEntities) {
+  // Navigate.
+  content::NavigationSimulator::NavigateAndCommitFromBrowser(
+      web_contents(), GURL("http://hasentities.com/"));
+
+  absl::optional<
+      std::pair<HistoryVisit,
+                std::vector<history::VisitContentModelAnnotations::Category>>>
+      request = service()->last_entities_persistence_request();
+  ASSERT_TRUE(request);
+  EXPECT_EQ(request->first.url, GURL("http://hasentities.com/"));
+  EXPECT_THAT(
+      request->second,
+      UnorderedElementsAre(
+          history::VisitContentModelAnnotations::Category("entity1", 50)));
 }
 
 }  // namespace optimization_guide

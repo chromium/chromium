@@ -12,17 +12,10 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
 
-namespace chromeos {
+namespace ash {
 namespace switches {
 
 namespace {
-
-// Controls CrOS GaiaId migration for tests ("" is default).
-const char kTestCrosGaiaIdMigration[] = "test-cros-gaia-id-migration";
-
-// Value for kTestCrosGaiaIdMigration indicating that migration is started (i.e.
-// all stored user keys will be converted to GaiaId)
-const char kTestCrosGaiaIdMigrationStarted[] = "started";
 
 // Max and min number of seconds that must pass between showing user contextual
 // nudges when override switch is set.
@@ -273,9 +266,6 @@ const char kAuraLegacyPowerButton[] = "aura-legacy-power-button";
 //    data connections.
 const char kCellularFirst[] = "cellular-first";
 
-// Indicates that CloudReady UI in OOBE should be shown.
-const char kCloudReadyOobe[] = "cloud-ready-oobe";
-
 // Default large wallpaper to use for kids accounts (as path to trusted,
 // non-user-writable JPEG file).
 const char kChildWallpaperLarge[] = "child-wallpaper-large";
@@ -286,6 +276,10 @@ const char kChildWallpaperSmall[] = "child-wallpaper-small";
 
 // Forces CrOS region value.
 const char kCrosRegion[] = "cros-region";
+
+// Overrides the url for fetching a reauth request token for Cryptohome recovery
+// flow.
+const char kCryptohomeRecoveryReauthUrl[] = "cryptohome-recovery-reauth-url";
 
 // Controls if AuthSession API should be used when interacting with cryptohomed.
 const char kCryptohomeUseAuthSession[] = "cryptohome-use-authsession";
@@ -315,9 +309,8 @@ const char kDerelictDetectionTimeout[] = "derelict-detection-timeout";
 // Time in seconds before a derelict machines starts demo mode.
 const char kDerelictIdleTimeout[] = "derelict-idle-timeout";
 
-// Prevents any CPU restrictions being set on the ARC container. Only meant to
-// be used by tests as some tests may time out if the ARC container is
-// throttled.
+// Prevents any CPU restrictions being set on ARC[VM]. Only meant to be used by
+// tests as some tests may time out if the ARC container is throttled.
 const char kDisableArcCpuRestriction[] = "disable-arc-cpu-restriction";
 
 // Disables android user data wipe on opt out.
@@ -344,8 +337,17 @@ const char kDisableGaiaServices[] = "disable-gaia-services";
 const char kDisableHIDDetectionOnOOBEForTesting[] =
     "disable-hid-detection-on-oobe";
 
+// Disables the Lacros keep alive for testing.
+const char kDisableLacrosKeepAliveForTesting[] = "disable-lacros-keep-alive";
+
 // Avoid doing expensive animations upon login.
 const char kDisableLoginAnimations[] = "disable-login-animations";
+
+// If Lacros is set to the primary web browser, on session login, it is
+// automatically launched. This disables the feature, i.e., if this flag is
+// set, even if lacros is the primary web browser, it won't automatically
+// launch on session login. This is for testing purpose, specifically for Tast.
+const char kDisableLoginLacrosOpening[] = "disable-login-lacros-opening";
 
 // Disables requests for an enterprise machine certificate during attestation.
 const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
@@ -354,6 +356,10 @@ const char kDisableMachineCertRequest[] = "disable-machine-cert-request";
 // unexpected behavior during tests.
 const char kDisableOOBEChromeVoxHintTimerForTesting[] =
     "disable-oobe-chromevox-hint-timer-for-testing";
+
+// Disables network screen skip check which is based on ethernet connection.
+const char kDisableOOBENetworkScreenSkippingForTesting[] =
+    "disable-oobe-network-screen-skipping-for-testing";
 
 // Disables per-user timezone.
 const char kDisablePerUserTimezone[] = "disable-per-user-timezone";
@@ -380,6 +386,10 @@ const char kEnableArcVm[] = "enable-arcvm";
 
 // Enables ARCVM realtime VCPU feature.
 const char kEnableArcVmRtVcpu[] = "enable-arcvm-rt-vcpu";
+
+// Enables testing the selfie camera feature of Capture Mode using fake cameras.
+// Used only in tests and the emulator.
+const char kEnableCaptureModeFakeCameras[] = "enable-capture-mode-fake-cameras";
 
 // Enables the Cast Receiver.
 const char kEnableCastReceiver[] = "enable-cast-receiver";
@@ -422,7 +432,7 @@ const char kEnableOOBEChromeVoxHintForDevMode[] =
 // Enables OOBE testing API for tast tests.
 const char kEnableOobeTestAPI[] = "enable-oobe-test-api";
 
-// Enables configuring the OEM Device Requsition in the OOBE.
+// Enables configuring the OEM Device Requisition in the OOBE.
 const char kEnableRequisitionEdits[] = "enable-requisition-edits";
 
 // Enables tablet form factor.
@@ -466,6 +476,12 @@ const char kEnterpriseEnrollmentInitialModulus[] =
 // auto-enrollment client.
 const char kEnterpriseEnrollmentModulusLimit[] =
     "enterprise-enrollment-modulus-limit";
+
+// Disallow blocking developer mode through enterprise device policy:
+// - Fail enterprise enrollment if enrolling would block dev mode.
+// - Don't apply new device policy if it would block dev mode.
+// This is only usable on test builds.
+const char kDisallowPolicyBlockDevMode[] = "disallow-policy-block-dev-mode";
 
 // Write extension install events to chrome log for integration test.
 const char kExtensionInstallEventChromeLogForTests[] =
@@ -514,10 +530,9 @@ const char kForceDevToolsAvailable[] = "force-devtools-available";
 // Forces first-run UI to be shown for every login.
 const char kForceFirstRunUI[] = "force-first-run-ui";
 
-// Forces Hardware ID check (happens during OOBE) to fail. Should be used only
-// for testing.
-const char kForceHWIDCheckFailureForTest[] =
-    "force-hwid-check-failure-for-test";
+// Forces Hardware ID check (happens during OOBE) to fail or succeed. Possible
+// values: "failure" or "success". Should be used only for testing.
+const char kForceHWIDCheckResultForTest[] = "force-hwid-check-result-for-test";
 
 // Force enables the Happiness Tracking System for the device. This ignores
 // user profile check and time limits and shows the notification every time
@@ -545,11 +560,6 @@ const char kFormFactor[] = "form-factor";
 
 // Sets the throttle fps for compositor frame submission.
 const char kFrameThrottleFps[] = "frame-throttle-fps";
-
-// A reauth request token that will be passed in the Gaia embedded sign-in URL.
-// The token will be obtained by a client-server request in the future, but in
-// this temporary prototype we're configuring it manually.
-const char kGaiaReauthRequestToken[] = "gaia-reauth-request-token";
 
 // Indicates that the browser is in "browse without sign-in" (Guest session)
 // mode. Should completely disable extensions, sync and bookmarks.
@@ -636,6 +646,10 @@ const char kLacrosChromePath[] = "lacros-chrome-path";
 // 2. A terminal to start lacros-chrome with a debugger.
 const char kLacrosMojoSocketForTesting[] = "lacros-mojo-socket-for-testing";
 
+// Start Chrome in RMA mode. Launches RMA app automatically.
+// kRmaNotAllowed switch takes priority over this one.
+const char kLaunchRma[] = "launch-rma";
+
 // Enables Chrome-as-a-login-manager behavior.
 const char kLoginManager[] = "login-manager";
 
@@ -701,7 +715,7 @@ const char kOobeTimerInterval[] = "oobe-timer-interval";
 // Allows the timezone to be overridden on the marketing opt-in screen.
 const char kOobeTimezoneOverrideForTests[] = "oobe-timezone-override-for-tests";
 
-// Trigger sync engine initialziation timeout in OOBE for testing.
+// Trigger sync engine initialization timeout in OOBE for testing.
 const char kOobeTriggerSyncTimeoutForTests[] =
     "oobe-trigger-sync-timeout-for-tests";
 
@@ -720,8 +734,14 @@ const char kPublicAccountsSamlAclUrl[] = "public-accounts-saml-acl-url";
 // "/usr/share/chromeos-assets/regulatory_labels/".
 const char kRegulatoryLabelDir[] = "regulatory-label-dir";
 
+// Indicates that reven UI strings and features should be shown.
+const char kRevenBranding[] = "reven-branding";
+
 // The rlz ping delay (in seconds) that overwrites the default value.
 const char kRlzPingDelay[] = "rlz-ping-delay";
+
+// Start Chrome without opening RMA or checking the current RMA state.
+const char kRmaNotAllowed[] = "rma-not-allowed";
 
 // The switch added by session_manager daemon when chrome crashes 3 times or
 // more within the first 60 seconds on start.
@@ -768,6 +788,10 @@ const char kSupportsClamshellAutoRotation[] =
 
 // Hides all Message Center notification popups (toasts). Used for testing.
 const char kSuppressMessageCenterPopups[] = "suppress-message-center-popups";
+
+// Enables System Extensions Debug mode e.g Force enable System Extensions APIs
+// on all Service Workers.
+const char kSystemExtensionsDebug[] = "system-extensions-debug";
 
 // Specifies directory for the Telemetry System Web Extension.
 const char kTelemetryExtensionDirectory[] = "telemetry-extension-dir";
@@ -830,21 +854,17 @@ bool IsAuthSessionCryptohomeEnabled() {
       kCryptohomeUseAuthSession);
 }
 
-bool IsGaiaIdMigrationStarted() {
-  base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
-  if (!command_line->HasSwitch(kTestCrosGaiaIdMigration))
-    return false;
-
-  return command_line->GetSwitchValueASCII(kTestCrosGaiaIdMigration) ==
-         kTestCrosGaiaIdMigrationStarted;
-}
-
 bool IsCellularFirstDevice() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(kCellularFirst);
 }
 
-bool IsCloudReadyOobe() {
-  return base::CommandLine::ForCurrentProcess()->HasSwitch(kCloudReadyOobe);
+bool AreCaptureModeFakeCamerasEnabled() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kEnableCaptureModeFakeCameras);
+}
+
+bool IsRevenBranding() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(kRevenBranding);
 }
 
 bool IsSigninFrameClientCertsEnabled() {
@@ -909,6 +929,11 @@ bool IsOOBEChromeVoxHintTimerDisabledForTesting() {
       kDisableOOBEChromeVoxHintTimerForTesting);
 }
 
+bool IsOOBENetworkScreenSkippingDisabledForTesting() {
+  return base::CommandLine::ForCurrentProcess()->HasSwitch(
+      kDisableOOBENetworkScreenSkippingForTesting);
+}
+
 bool IsOOBEChromeVoxHintEnabledForDevMode() {
   return base::CommandLine::ForCurrentProcess()->HasSwitch(
       kEnableOOBEChromeVoxHintForDevMode);
@@ -954,4 +979,4 @@ bool ShouldClearFastInkBuffer() {
 }
 
 }  // namespace switches
-}  // namespace chromeos
+}  // namespace ash

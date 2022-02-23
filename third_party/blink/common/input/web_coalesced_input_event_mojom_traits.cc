@@ -157,6 +157,7 @@ bool StructTraits<blink::mojom::EventDataView,
           gesture_event->data.tap.width = gesture_data->contact_size->width();
           gesture_event->data.tap.height = gesture_data->contact_size->height();
           break;
+        case blink::WebInputEvent::Type::kGestureShortPress:
         case blink::WebInputEvent::Type::kGestureLongPress:
         case blink::WebInputEvent::Type::kGestureLongTap:
           gesture_event->data.long_press.width =
@@ -374,6 +375,13 @@ StructTraits<blink::mojom::EventDataView,
     return nullptr;
   const blink::WebKeyboardEvent* key_event =
       static_cast<const blink::WebKeyboardEvent*>(event->EventPointer());
+  // Assure char16_t[N] filds are null-terminated before converting
+  // them to std::u16string.
+  CHECK(std::find(std::begin(key_event->text), std::end(key_event->text), 0) <
+        std::end(key_event->text));
+  CHECK(std::find(std::begin(key_event->unmodified_text),
+                  std::end(key_event->unmodified_text),
+                  0) < std::end(key_event->unmodified_text));
   return blink::mojom::KeyData::New(
       key_event->dom_key, key_event->dom_code, key_event->windows_key_code,
       key_event->native_key_code, key_event->is_system_key,
@@ -454,6 +462,7 @@ StructTraits<blink::mojom::EventDataView,
           blink::mojom::TapData::New(gesture_event->data.tap.tap_count,
                                      gesture_event->data.tap.needs_wheel_event);
       break;
+    case blink::WebInputEvent::Type::kGestureShortPress:
     case blink::WebInputEvent::Type::kGestureLongPress:
     case blink::WebInputEvent::Type::kGestureLongTap:
       gesture_data->contact_size =

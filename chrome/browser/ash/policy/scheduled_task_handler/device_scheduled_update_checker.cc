@@ -14,6 +14,7 @@
 #include "ash/components/settings/timezone_settings.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/feature_list.h"
 #include "base/location.h"
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_executor_impl.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/scheduled_task_util.h"
 #include "chrome/browser/ash/policy/scheduled_task_handler/task_executor_with_retries.h"
+#include "chrome/common/chrome_features.h"
 
 namespace policy {
 
@@ -115,11 +117,17 @@ void DeviceScheduledUpdateChecker::TimezoneChanged(
 }
 
 void DeviceScheduledUpdateChecker::OnScheduledUpdateCheckDataChanged() {
-  // If the policy is removed then reset all state including any existing update
-  // checks.
+  // If the policy is removed or is not supported on the device, then reset all
+  // state including any existing update checks.
+  // The policy is not supported if device can not reliably schedule RTC wake
+  // in a required range. The specific feature used is one that describes a
+  // a known bug on some platforms, where setting rtc wake further than 24 hours
+  // away crashes the device. Alternative ways to fix it are too risky, since
+  // they may break a bigger proportion of the devices when pushed.
   const base::Value* value =
       cros_settings_->GetPref(ash::kDeviceScheduledUpdateCheck);
-  if (!value) {
+  if (!base::FeatureList::IsEnabled(::features::kSupportsRtcWakeOver24Hours) ||
+      !value) {
     ResetState();
     return;
   }

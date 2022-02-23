@@ -4,6 +4,9 @@
 
 #include "chrome/browser/web_applications/web_app_utils.h"
 
+#include <utility>
+
+#include "base/base64.h"
 #include "base/containers/contains.h"
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
@@ -11,21 +14,26 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
-#include "chrome/browser/web_applications/os_integration_manager.h"
+#include "chrome/browser/web_applications/os_integration/os_integration_manager.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registry_update.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/grit/components_resources.h"
 #include "components/site_engagement/content/site_engagement_service.h"
+#include "components/strings/grit/components_strings.h"
+#include "skia/ext/skia_utils_base.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/codec/png_codec.h"
 #include "url/gurl.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "ash/constants/ash_features.h"
 #include "base/feature_list.h"
+#include "chrome/browser/ash/crosapi/browser_util.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
 #include "chrome/common/chrome_features.h"
 #include "components/user_manager/user_manager.h"
@@ -39,6 +47,18 @@ bool g_enable_system_web_apps_in_lacros_for_testing = false;
 // main profile. This may be modified by SkipMainProfileCheckForTesting().
 bool g_skip_main_profile_check_for_testing = false;
 #endif
+
+GURL EncodeIconAsUrl(const SkBitmap& bitmap) {
+  std::vector<unsigned char> output;
+  gfx::PNGCodec::EncodeBGRASkBitmap(bitmap, false, &output);
+  std::string encoded;
+  base::Base64Encode(
+      base::StringPiece(reinterpret_cast<const char*>(output.data()),
+                        output.size()),
+      &encoded);
+  return GURL("data:image/png;base64," + encoded);
+}
+
 }  // namespace
 
 namespace web_app {
@@ -58,7 +78,7 @@ bool AreWebAppsEnabled(const Profile* profile) {
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // Web Apps should not be installed to the ChromeOS system profiles.
-  if (!chromeos::ProfileHelper::IsRegularProfile(original_profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(original_profile)) {
     return false;
   }
   // Disable Web Apps if running any kiosk app.
@@ -115,6 +135,64 @@ content::BrowserContext* GetBrowserContextForWebAppMetrics(
   return is_web_app_metrics_enabled ? original_profile : nullptr;
 }
 
+content::mojom::AlternativeErrorPageOverrideInfoPtr GetAppManifestInfo(
+    const GURL& url,
+    content::BrowserContext* browser_context) {
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  web_app::WebAppProvider* web_app_provider =
+      web_app::WebAppProvider::GetForWebApps(profile);
+  if (web_app_provider == nullptr) {
+    return nullptr;
+  }
+
+  web_app::WebAppRegistrar& web_app_registrar = web_app_provider->registrar();
+  const absl::optional<web_app::AppId> app_id =
+      web_app_registrar.FindAppWithUrlInScope(url);
+  if (!app_id.has_value()) {
+    return nullptr;
+  }
+
+  auto alternative_error_page_info =
+      content::mojom::AlternativeErrorPageOverrideInfo::New();
+  // TODO(crbug.com/1285128): Ensure sufficient contrast.
+  base::Value dict(base::Value::Type::DICTIONARY);
+  std::string theme_color = skia::SkColorToHexString(
+      web_app_registrar.GetAppThemeColor(*app_id).value_or(SK_ColorBLACK));
+  std::string background_color = skia::SkColorToHexString(
+      web_app_registrar.GetAppBackgroundColor(*app_id).value_or(SK_ColorWHITE));
+  dict.SetStringKey(default_offline::kThemeColor, theme_color);
+  dict.SetStringKey(default_offline::kBackgroundColor, background_color);
+  dict.SetStringKey(default_offline::kAppShortName,
+                    web_app_registrar.GetAppShortName(*app_id));
+  dict.SetStringKey(
+      default_offline::kMessage,
+      l10n_util::GetStringUTF16(IDS_ERRORPAGES_HEADING_INTERNET_DISCONNECTED));
+  SkBitmap bitmap = web_app_provider->icon_manager().GetFavicon(*app_id);
+  std::string icon_url = EncodeIconAsUrl(bitmap).spec();
+  dict.SetStringKey(default_offline::kIconUrl, icon_url);
+  absl::optional<SkColor> dark_mode_theme_color =
+      web_app_registrar.GetAppDarkModeThemeColor(*app_id);
+  if (dark_mode_theme_color) {
+    dict.SetStringKey(default_offline::kDarkModeThemeColor,
+                      skia::SkColorToHexString(dark_mode_theme_color.value()));
+  } else {
+    dict.SetStringKey(default_offline::kDarkModeThemeColor, theme_color);
+  }
+  absl::optional<SkColor> dark_mode_background_color =
+      web_app_registrar.GetAppDarkModeThemeColor(*app_id);
+  if (dark_mode_background_color) {
+    dict.SetStringKey(
+        default_offline::kDarkModeBackgroundColor,
+        skia::SkColorToHexString(dark_mode_background_color.value()));
+  } else {
+    dict.SetStringKey(default_offline::kDarkModeBackgroundColor,
+                      background_color);
+  }
+  alternative_error_page_info->alternative_error_page_params = std::move(dict);
+  alternative_error_page_info->resource_id = IDR_WEBAPP_DEFAULT_OFFLINE_HTML;
+  return alternative_error_page_info;
+}
+
 base::FilePath GetWebAppsRootDirectory(Profile* profile) {
   return profile->GetPath().Append(chrome::kWebAppDirname);
 }
@@ -142,13 +220,13 @@ base::FilePath GetWebAppsTempDirectory(
 
 std::string GetProfileCategoryForLogging(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  if (!chromeos::ProfileHelper::IsRegularProfile(profile)) {
+  if (!ash::ProfileHelper::IsRegularProfile(profile)) {
     return "SigninOrLockScreen";
   } else if (user_manager::UserManager::Get()->IsLoggedInAsAnyKioskApp()) {
     return "Kiosk";
-  } else if (chromeos::ProfileHelper::IsEphemeralUserProfile(profile)) {
+  } else if (ash::ProfileHelper::IsEphemeralUserProfile(profile)) {
     return "Ephemeral";
-  } else if (chromeos::ProfileHelper::IsPrimaryProfile(profile)) {
+  } else if (ash::ProfileHelper::IsPrimaryProfile(profile)) {
     return "Primary";
   } else {
     return "Other";
@@ -161,7 +239,7 @@ std::string GetProfileCategoryForLogging(Profile* profile) {
 }
 
 bool IsChromeOsDataMandatory() {
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   return true;
 #else
   return false;
@@ -207,69 +285,6 @@ bool AreNewFileHandlersASubsetOfOld(const apps::FileHandlers& old_handlers,
   return true;
 }
 
-bool AreFileHandlersAlreadyRegistered(Profile* profile,
-                                      const GURL& url,
-                                      const apps::FileHandlers& new_handlers) {
-  return AreNewFileHandlersASubsetOfOld(
-      GetFileHandlersForAllWebAppsWithOrigin(profile, url), new_handlers);
-}
-
-apps::FileHandlers GetFileHandlersForAllWebAppsWithOrigin(Profile* profile,
-                                                          const GURL& url) {
-  auto* provider = WebAppProvider::GetForLocalAppsUnchecked(profile);
-  if (!provider)
-    return {};
-
-  const WebAppRegistrar& registrar = provider->registrar();
-  std::vector<AppId> app_ids =
-      registrar.FindAppsInScope(url.DeprecatedGetOriginAsURL());
-  if (app_ids.empty())
-    return {};
-
-  apps::FileHandlers aggregated_handlers;
-  for (const AppId& app_id : app_ids) {
-    const apps::FileHandlers* handlers = registrar.GetAppFileHandlers(app_id);
-    aggregated_handlers.insert(aggregated_handlers.end(), handlers->begin(),
-                               handlers->end());
-  }
-
-  return aggregated_handlers;
-}
-
-std::u16string GetFileTypeAssociationsHandledByWebAppsForDisplay(
-    Profile* profile,
-    const GURL& url,
-    bool* found_multiple) {
-  const apps::FileHandlers file_handlers =
-      GetFileHandlersForAllWebAppsWithOrigin(profile, url);
-  std::vector<std::string> associations;
-#if defined(OS_LINUX)
-  std::set<std::string> mime_types_set =
-      apps::GetMimeTypesFromFileHandlers(file_handlers);
-  associations.reserve(mime_types_set.size());
-  associations.insert(associations.end(), mime_types_set.begin(),
-                      mime_types_set.end());
-#else   // !defined(OS_LINUX)
-  std::set<std::string> extensions_set =
-      apps::GetFileExtensionsFromFileHandlers(file_handlers);
-  associations.reserve(extensions_set.size());
-
-  // Convert file types from formats like ".txt" to "TXT".
-  std::transform(extensions_set.begin(), extensions_set.end(),
-                 std::back_inserter(associations),
-                 [](const std::string& extension) {
-                   return base::ToUpperASCII(extension.substr(1));
-                 });
-#endif  // defined(OS_LINUX)
-
-  if (found_multiple)
-    *found_multiple = associations.size() > 1;
-
-  return base::UTF8ToUTF16(base::JoinString(
-      associations,
-      l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
-}
-
 std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
     Profile* profile,
     const AppId& app_id,
@@ -281,40 +296,30 @@ std::u16string GetFileTypeAssociationsHandledByWebAppForDisplay(
   const apps::FileHandlers* file_handlers =
       provider->registrar().GetAppFileHandlers(app_id);
 
-  std::vector<std::string> associations;
-#if defined(OS_LINUX)
-  // TODO(estade): on Linux both the MIME type and extension must match. Should
-  // we just show the extensions like on other platforms?
-  std::set<std::string> mime_types_set =
-      apps::GetMimeTypesFromFileHandlers(*file_handlers);
-  associations.reserve(mime_types_set.size());
-  associations.insert(associations.end(), mime_types_set.begin(),
-                      mime_types_set.end());
-#else   // !defined(OS_LINUX)
   std::set<std::string> extensions_set =
       apps::GetFileExtensionsFromFileHandlers(*file_handlers);
-  associations.reserve(extensions_set.size());
+  std::vector<std::string> extensions_for_display;
+  extensions_for_display.reserve(extensions_set.size());
 
   // Convert file types from formats like ".txt" to "TXT".
   std::transform(extensions_set.begin(), extensions_set.end(),
-                 std::back_inserter(associations),
+                 std::back_inserter(extensions_for_display),
                  [](const std::string& extension) {
                    return base::ToUpperASCII(extension.substr(1));
                  });
-#endif  // defined(OS_LINUX)
 
   if (found_multiple)
-    *found_multiple = associations.size() > 1;
+    *found_multiple = extensions_for_display.size() > 1;
 
   return base::UTF8ToUTF16(base::JoinString(
-      associations,
+      extensions_for_display,
       l10n_util::GetStringUTF8(IDS_WEB_APP_FILE_HANDLING_LIST_SEPARATOR)));
 }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 bool IsWebAppsCrosapiEnabled() {
   return base::FeatureList::IsEnabled(features::kWebAppsCrosapi) ||
-         base::FeatureList::IsEnabled(chromeos::features::kLacrosPrimary);
+         crosapi::browser_util::IsLacrosPrimaryBrowser();
 }
 #endif
 
@@ -368,25 +373,93 @@ void PersistFileHandlersUserChoice(Profile* profile,
                                    const AppId& app_id,
                                    bool allowed,
                                    base::OnceClosure update_finished_callback) {
-  DCHECK(base::FeatureList::IsEnabled(
-      features::kDesktopPWAsFileHandlingSettingsGated));
   WebAppProvider* const provider = WebAppProvider::GetForWebApps(profile);
   DCHECK(provider);
+  provider->sync_bridge().SetAppFileHandlerApprovalState(
+      app_id,
+      allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
 
-  {
-    ScopedRegistryUpdate update(&provider->sync_bridge());
-    WebApp* app_to_update = update->UpdateApp(app_id);
-    app_to_update->SetFileHandlerApprovalState(
-        allowed ? ApiApprovalState::kAllowed : ApiApprovalState::kDisallowed);
-  }
+  UpdateFileHandlerOsIntegration(provider, app_id,
+                                 std::move(update_finished_callback));
+}
 
-  if (allowed) {
+void UpdateFileHandlerOsIntegration(
+    WebAppProvider* provider,
+    const AppId& app_id,
+    base::OnceClosure update_finished_callback) {
+  bool enabled =
+      provider->os_integration_manager().IsFileHandlingAPIAvailable(app_id) &&
+      !provider->registrar().IsAppFileHandlerPermissionBlocked(app_id);
+
+  if (enabled ==
+      provider->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id)) {
     std::move(update_finished_callback).Run();
-  } else {
-    provider->os_integration_manager().UpdateFileHandlers(
-        app_id, FileHandlerUpdateAction::kRemove,
-        std::move(update_finished_callback));
+    return;
   }
+
+  FileHandlerUpdateAction action = enabled ? FileHandlerUpdateAction::kUpdate
+                                           : FileHandlerUpdateAction::kRemove;
+
+#if BUILDFLAG(IS_MAC)
+  // On Mac, the file handlers are encoded in the app shortcut. First
+  // unregister the file handlers (verifying that it finishes synchronously),
+  // then update the shortcut.
+  Result unregister_file_handlers_result = Result::kError;
+  provider->os_integration_manager().UpdateFileHandlers(
+      app_id, action,
+      base::BindOnce([](Result* result_out,
+                        Result actual_result) { *result_out = actual_result; },
+                     &unregister_file_handlers_result));
+  DCHECK_EQ(Result::kOk, unregister_file_handlers_result);
+  provider->os_integration_manager().UpdateShortcuts(
+      app_id, /*old_name=*/{}, std::move(update_finished_callback));
+#else
+  provider->os_integration_manager().UpdateFileHandlers(
+      app_id, action,
+      base::BindOnce([](base::OnceClosure closure,
+                        Result ignored) { std::move(closure).Run(); },
+                     std::move(update_finished_callback)));
+#endif
+
+  DCHECK_EQ(
+      enabled,
+      provider->registrar().ExpectThatFileHandlersAreRegisteredWithOs(app_id));
+}
+
+bool HasAnySpecifiedSourcesAndNoOtherSources(WebAppSources sources,
+                                             WebAppSources specified_sources) {
+  bool has_any_specified_sources = (sources & specified_sources).any();
+  bool has_no_other_sources = (sources & ~specified_sources).none();
+  return has_any_specified_sources && has_no_other_sources;
+}
+
+bool CanUserUninstallWebApp(WebAppSources sources) {
+  WebAppSources specified_sources;
+  specified_sources[Source::kDefault] = true;
+  specified_sources[Source::kSync] = true;
+  specified_sources[Source::kWebAppStore] = true;
+  specified_sources[Source::kSubApp] = true;
+  return HasAnySpecifiedSourcesAndNoOtherSources(sources, specified_sources);
+}
+
+AppId GetAppIdFromAppSettingsUrl(const GURL& url) {
+  // App Settings page is served under chrome://app-settings/<app-id>.
+  // url.path() returns "/<app-id>" with a leading slash.
+  std::string path = url.path();
+  if (path.size() <= 1)
+    return AppId();
+  return path.substr(1);
+}
+
+bool HasAppSettingsPage(Profile* profile, const GURL& url) {
+  const AppId app_id = GetAppIdFromAppSettingsUrl(url);
+  if (app_id.empty())
+    return false;
+
+  WebAppProvider* provider = WebAppProvider::GetForWebApps(profile);
+  if (!provider)
+    return false;
+  return provider->registrar().IsLocallyInstalled(app_id);
 }
 
 }  // namespace web_app

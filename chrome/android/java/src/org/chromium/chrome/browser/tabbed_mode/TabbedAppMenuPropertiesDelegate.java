@@ -14,14 +14,12 @@ import org.chromium.chrome.browser.ActivityTabProvider;
 import org.chromium.chrome.browser.app.appmenu.AppMenuPropertiesDelegateImpl;
 import org.chromium.chrome.browser.bookmarks.BookmarkBridge;
 import org.chromium.chrome.browser.compositor.layouts.OverviewModeBehavior;
-import org.chromium.chrome.browser.datareduction.DataReductionMainMenuItem;
 import org.chromium.chrome.browser.enterprise.util.ManagedBrowserUtils;
 import org.chromium.chrome.browser.feed.FeedFeatures;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedFaviconFetcher;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedMainMenuItem;
 import org.chromium.chrome.browser.feed.webfeed.WebFeedSnackbarController;
 import org.chromium.chrome.browser.multiwindow.MultiWindowModeStateDispatcher;
-import org.chromium.chrome.browser.net.spdyproxy.DataReductionProxySettings;
 import org.chromium.chrome.browser.offlinepages.OfflinePageUtils;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.Tab;
@@ -61,11 +59,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
         mSnackbarManager = snackbarManager;
     }
 
-    private boolean shouldShowDataSaverMenuItem() {
-        return (mOverviewModeBehavior == null || !mOverviewModeBehavior.overviewVisible())
-                && DataReductionProxySettings.getInstance().shouldUseDataReductionMainMenuItem();
-    }
-
     private boolean shouldShowWebFeedMenuItem() {
         if (!FeedFeatures.isWebFeedUIEnabled()) {
             return false;
@@ -83,8 +76,6 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     public int getFooterResourceId() {
         if (shouldShowWebFeedMenuItem()) {
             return R.layout.web_feed_main_menu_item;
-        } else if (shouldShowDataSaverMenuItem()) {
-            return R.layout.data_reduction_main_menu_item;
         }
         return 0;
     }
@@ -105,19 +96,12 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     }
 
     @Override
-    public void onHeaderViewInflated(AppMenuHandler appMenuHandler, View view) {
-        if (view instanceof DataReductionMainMenuItem) {
-            view.findViewById(R.id.data_reduction_menu_divider).setVisibility(View.GONE);
-        }
-    }
+    public void onHeaderViewInflated(AppMenuHandler appMenuHandler, View view) {}
 
     @Override
     public boolean shouldShowFooter(int maxMenuHeight) {
         if (shouldShowWebFeedMenuItem()) {
             return true;
-        }
-        if (shouldShowDataSaverMenuItem()) {
-            return canShowDataReductionItem(maxMenuHeight);
         }
         return super.shouldShowFooter(maxMenuHeight);
     }
@@ -131,12 +115,5 @@ public class TabbedAppMenuPropertiesDelegate extends AppMenuPropertiesDelegateIm
     @Override
     public boolean shouldShowIconBeforeItem() {
         return true;
-    }
-
-    private boolean canShowDataReductionItem(int maxMenuHeight) {
-        // TODO(twellington): Account for whether a different footer or header is
-        // showing.
-        return maxMenuHeight >= mContext.getResources().getDimension(
-                       R.dimen.data_saver_menu_footer_min_show_height);
     }
 }

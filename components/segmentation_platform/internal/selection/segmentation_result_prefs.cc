@@ -24,7 +24,7 @@ void SegmentationResultPrefs::SaveSegmentationResultToPref(
     const std::string& result_key,
     const absl::optional<SelectedSegment>& selected_segment) {
   DictionaryPrefUpdate update(prefs_, kSegmentationResultPref);
-  base::DictionaryValue* dictionary = update.Get();
+  base::Value* dictionary = update.Get();
   if (!selected_segment.has_value()) {
     dictionary->RemoveKey(result_key);
     return;
@@ -41,7 +41,7 @@ void SegmentationResultPrefs::SaveSegmentationResultToPref(
 absl::optional<SelectedSegment>
 SegmentationResultPrefs::ReadSegmentationResultFromPref(
     const std::string& result_key) {
-  const base::DictionaryValue* dictionary =
+  const base::Value* dictionary =
       prefs_->GetDictionary(kSegmentationResultPref);
   DCHECK(dictionary);
 

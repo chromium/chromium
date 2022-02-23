@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/sharesheet/sharesheet_types.h"
+#include "chromeos/components/sharesheet/constants.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/mojom/webshare/webshare.mojom.h"
@@ -22,6 +23,7 @@ class WebContents;
 namespace webshare {
 
 class PrepareDirectoryTask;
+class PrepareSubDirectoryTask;
 
 // Chrome-OS implementation of navigator.share() sharing to
 // sharesheet::SharesheetService.
@@ -52,6 +54,8 @@ class SharesheetClient : public content::WebContentsObserver {
 
  private:
   void OnPrepareDirectory(blink::mojom::ShareError);
+
+  void OnPrepareSubdirectory(blink::mojom::ShareError);
 
   void OnStoreFiles(blink::mojom::ShareError);
 
@@ -88,6 +92,7 @@ class SharesheetClient : public content::WebContentsObserver {
     blink::mojom::ShareService::ShareCallback callback;
 
     std::unique_ptr<PrepareDirectoryTask> prepare_directory_task;
+    std::unique_ptr<PrepareSubDirectoryTask> prepare_subdirectory_task;
   };
 
   absl::optional<CurrentShare> current_share_;

@@ -163,7 +163,14 @@ class DnsRequest {
         data_provider_->ConsumeBool()
             ? net::HostResolver::ResolveHostParameters::CacheUsage::ALLOWED
             : net::HostResolver::ResolveHostParameters::CacheUsage::DISALLOWED;
-    parameters.include_canonical_name = data_provider_->ConsumeBool();
+
+    // `include_canonical_name` only allowed for address queries and only when
+    // the system resolver can be used.
+    if (net::IsAddressType(parameters.dns_query_type) &&
+        parameters.source != net::HostResolverSource::DNS &&
+        parameters.source != net::HostResolverSource::MULTICAST_DNS) {
+      parameters.include_canonical_name = data_provider_->ConsumeBool();
+    }
 
     if (!IsParameterCombinationAllowed(parameters)) {
       return net::ERR_FAILED;

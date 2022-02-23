@@ -15,13 +15,13 @@ ArcAppScopedPrefUpdate::ArcAppScopedPrefUpdate(PrefService* service,
 
 ArcAppScopedPrefUpdate::~ArcAppScopedPrefUpdate() = default;
 
-base::DictionaryValue* ArcAppScopedPrefUpdate::Get() {
-  base::DictionaryValue* dict = DictionaryPrefUpdate::Get();
+base::Value* ArcAppScopedPrefUpdate::Get() {
+  base::Value* dict = DictionaryPrefUpdate::Get();
   base::Value* dict_item =
       dict->FindKeyOfType(id_, base::Value::Type::DICTIONARY);
   if (!dict_item)
     dict_item = dict->SetKey(id_, base::Value(base::Value::Type::DICTIONARY));
-  return static_cast<base::DictionaryValue*>(dict_item);
+  return dict_item;
 }
 
 }  // namespace arc

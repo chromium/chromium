@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
@@ -340,10 +341,10 @@ class UpgradeDetector {
   void OnRelaunchPrefChanged();
 
   // A provider of Time to the detector.
-  const base::Clock* const clock_;
+  const raw_ptr<const base::Clock> clock_;
 
   // A provider of TimeTicks to the detectors' timers.
-  const base::TickClock* const tick_clock_;
+  const raw_ptr<const base::TickClock> tick_clock_;
 
   // Observes changes to the browser.relaunch_notification_period Local State
   // preference.

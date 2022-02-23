@@ -36,7 +36,9 @@
 #include "components/open_from_clipboard/clipboard_recent_content.h"
 #include "components/prefs/json_pref_store.h"
 #include "components/prefs/pref_service.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #include "components/translate/core/browser/translate_download_manager.h"
+#include "components/translate/core/browser/translate_metrics_logger_impl.h"
 #include "components/variations/field_trial_config/field_trial_util.h"
 #include "components/variations/service/variations_service.h"
 #include "components/variations/synthetic_trials_active_group_id_provider.h"
@@ -57,7 +59,10 @@
 #include "ios/chrome/browser/open_from_clipboard/create_clipboard_recent_content.h"
 #include "ios/chrome/browser/policy/browser_policy_connector_ios.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #include "ios/chrome/browser/safe_browsing/safe_browsing_service.h"
+#import "ios/chrome/browser/signin/signin_util.h"
+#include "ios/chrome/browser/translate/chrome_ios_translate_client.h"
 #include "ios/chrome/browser/translate/translate_service_ios.h"
 #include "ios/chrome/common/channel_info.h"
 #include "ios/web/public/thread/web_task_traits.h"
@@ -146,8 +151,9 @@ void IOSChromeMainParts::PreCreateMainMessageLoop() {
 void IOSChromeMainParts::PreCreateThreads() {
   // Create and start the stack sampling profiler if CANARY or DEV. The warning
   // below doesn't apply.
-  if (::GetChannel() == version_info::Channel::CANARY ||
-      ::GetChannel() == version_info::Channel::DEV) {
+  const version_info::Channel channel = ::GetChannel();
+  if (channel == version_info::Channel::CANARY ||
+      channel == version_info::Channel::DEV) {
     sampling_profiler_ = IOSThreadProfiler::CreateAndStartOnMainThread();
     IOSThreadProfiler::SetMainThreadTaskRunner(
         base::ThreadTaskRunnerHandle::Get());
@@ -179,6 +185,20 @@ void IOSChromeMainParts::PreCreateThreads() {
   static crash_reporter::CrashKeyString<4> key("first-run");
   if (FirstRun::IsChromeFirstRun())
     key.Set("yes");
+
+  // Compute device restore flag before IO is disallowed on UI thread, so the
+  // value is available from cache synchronously.
+  static crash_reporter::CrashKeyString<8> device_restore_key("device-restore");
+  switch (IsFirstSessionAfterDeviceRestore()) {
+    case signin::Tribool::kTrue:
+      device_restore_key.Set("yes");
+      break;
+    case signin::Tribool::kFalse:
+      break;
+    case signin::Tribool::kUnknown:
+      device_restore_key.Set("unknown");
+      break;
+  }
 
   // Convert freeform experimental settings into switches before initializing
   // local state, in case any of the settings affect policy.
@@ -223,7 +243,8 @@ void IOSChromeMainParts::PreCreateThreads() {
     if (malloc_intercepted) {
       // Start heap profiling as early as possible so it can start recording
       // memory allocations. Requires the allocator shim to be enabled.
-      heap_profiler_controller_ = std::make_unique<HeapProfilerController>();
+      heap_profiler_controller_ =
+          std::make_unique<HeapProfilerController>(channel);
       heap_profiler_controller_->Start();
     }
   }
@@ -314,6 +335,9 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
           language::prefs::kAcceptLanguages));
   language::LanguageUsageMetrics::RecordApplicationLanguage(
       application_context_->GetApplicationLocale());
+  translate::TranslateMetricsLoggerImpl::LogApplicationStartMetrics(
+      ChromeIOSTranslateClient::CreateTranslatePrefs(
+          last_used_browser_state->GetPrefs()));
 
   // Request new variations seed information from server.
   variations::VariationsService* variations_service =
@@ -337,8 +361,12 @@ void IOSChromeMainParts::PreMainMessageLoopRun() {
       application_context_->GetSafeBrowsingService();
   base::FilePath user_data_path;
   CHECK(base::PathService::Get(ios::DIR_USER_DATA, &user_data_path));
+  safe_browsing::SafeBrowsingMetricsCollector* safe_browsing_metrics_collector =
+      SafeBrowsingMetricsCollectorFactory::GetForBrowserState(
+          last_used_browser_state);
   safe_browsing_service->Initialize(last_used_browser_state->GetPrefs(),
-                                    user_data_path);
+                                    user_data_path,
+                                    safe_browsing_metrics_collector);
 
   // Set monitoring for some experimental flags.
   MonitorExperimentalSettingsChanges();

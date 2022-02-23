@@ -6,12 +6,12 @@
 
 #include <utility>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "ash/public/cpp/shell_window_ids.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ui/ash/ash_util.h"
 #include "chrome/browser/ui/views/touch_selection_menu_runner_chromeos.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/gfx/image/image_skia.h"

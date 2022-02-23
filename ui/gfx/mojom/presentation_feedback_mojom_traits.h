@@ -6,9 +6,15 @@
 #define UI_GFX_MOJOM_PRESENTATION_FEEDBACK_MOJOM_TRAITS_H_
 
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "mojo/public/cpp/base/time_mojom_traits.h"
+#include "ui/gfx/ca_layer_result.h"
 #include "ui/gfx/mojom/presentation_feedback.mojom-shared.h"
 #include "ui/gfx/presentation_feedback.h"
+
+#if BUILDFLAG(IS_MAC)
+#include "ui/gfx/mojom/ca_layer_result_mojom_traits.h"
+#endif
 
 namespace mojo {
 
@@ -47,6 +53,13 @@ struct StructTraits<gfx::mojom::PresentationFeedbackDataView,
     return input.writes_done_timestamp;
   }
 
+#if BUILDFLAG(IS_MAC)
+  static gfx::CALayerResult ca_layer_error_code(
+      const gfx::PresentationFeedback& input) {
+    return input.ca_layer_error_code;
+  }
+#endif
+
   static bool Read(gfx::mojom::PresentationFeedbackDataView data,
                    gfx::PresentationFeedback* out) {
     out->flags = data.flags();
@@ -55,6 +68,9 @@ struct StructTraits<gfx::mojom::PresentationFeedbackDataView,
            data.ReadAvailableTimestamp(&out->available_timestamp) &&
            data.ReadReadyTimestamp(&out->ready_timestamp) &&
            data.ReadLatchTimestamp(&out->latch_timestamp) &&
+#if BUILDFLAG(IS_MAC)
+           data.ReadCaLayerErrorCode(&out->ca_layer_error_code) &&
+#endif
            data.ReadWritesDoneTimestamp(&out->writes_done_timestamp);
   }
 };

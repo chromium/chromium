@@ -7,6 +7,7 @@
 #include <algorithm>
 
 #include "base/i18n/string_compare.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
@@ -118,13 +119,10 @@ TranslateUIDelegate::TranslateUIDelegate(
   std::vector<std::string> language_codes;
   TranslateDownloadManager::GetSupportedLanguages(
       prefs_->IsTranslateAllowedByPolicy(), &language_codes);
-  // Reserve additional space for unknown language option on Android if feature
-  // is enabled, and on Desktop always.
+  // Reserve additional space for unknown language option on all platforms
+  // except iOS.
   std::vector<std::string>::size_type languages_size = language_codes.size();
-#if defined(OS_ANDROID)
-  if (base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
-    languages_size += 1;
-#elif !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   languages_size += 1;
 #endif
   languages_.reserve(languages_size);
@@ -163,26 +161,14 @@ TranslateUIDelegate::TranslateUIDelegate(
         return lhs.first < rhs.first;
       });
 
-  // Add unknown language option to the front of the list on Android if feature
-  // is enabled, and on Desktop always.
-  bool add_unknown_language_option = true;
-#if defined(OS_IOS)
-  add_unknown_language_option = false;
-#elif defined(OS_ANDROID)
-  if (!base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption))
-    add_unknown_language_option = false;
+  // Add unknown language option to the front of the list on all platforms
+  // except iOS.
+#if !BUILDFLAG(IS_IOS)
+  std::u16string unknown_language_string =
+      l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE);
+  languages_.emplace_back(kUnknownLanguageCode, unknown_language_string);
+  std::rotate(languages_.rbegin(), languages_.rbegin() + 1, languages_.rend());
 #endif
-  if (add_unknown_language_option) {
-    //  Experiment in place to replace the "Unknown" string with "Detected
-    //  Language".
-    std::u16string unknown_language_string =
-        base::FeatureList::IsEnabled(language::kDetectedSourceLanguageOption)
-            ? l10n_util::GetStringUTF16(IDS_TRANSLATE_DETECTED_LANGUAGE)
-            : l10n_util::GetStringUTF16(IDS_TRANSLATE_UNKNOWN_SOURCE_LANGUAGE);
-    languages_.emplace_back(kUnknownLanguageCode, unknown_language_string);
-    std::rotate(languages_.rbegin(), languages_.rbegin() + 1,
-                languages_.rend());
-  }
 
   for (std::vector<LanguageNamePair>::const_iterator iter = languages_.begin();
        iter != languages_.end(); ++iter) {

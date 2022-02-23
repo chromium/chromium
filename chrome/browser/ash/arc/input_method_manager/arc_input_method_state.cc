@@ -6,11 +6,11 @@
 
 #include <algorithm>
 
+#include "ash/components/arc/mojom/input_method_manager.mojom.h"
 #include "ash/public/cpp/keyboard/keyboard_switches.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "base/command_line.h"
 #include "base/metrics/histogram_macros.h"
-#include "components/arc/mojom/input_method_manager.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "ui/base/ime/ash/extension_ime_util.h"

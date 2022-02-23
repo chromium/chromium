@@ -21,11 +21,11 @@
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
+#include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
+#include "chrome/browser/profiles/keep_alive/scoped_profile_keep_alive.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_impl.h"
-#include "chrome/browser/profiles/profile_keep_alive_types.h"
 #include "chrome/browser/profiles/profile_manager.h"
-#include "chrome/browser/profiles/scoped_profile_keep_alive.h"
 #include "chrome/browser/sessions/session_data_service.h"
 #include "chrome/browser/sessions/session_data_service_factory.h"
 #include "chrome/browser/sessions/session_restore_test_helper.h"
@@ -61,7 +61,7 @@
 #include "services/network/public/cpp/features.h"
 #include "services/network/test/test_utils.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #endif
 
@@ -473,7 +473,7 @@ IN_PROC_BROWSER_TEST_F(ContinueWhereILeftOffTest,
 }
 
 // Flaky on Mac: https://crbug.com/709504
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_SessionCookiesCloseAllBrowsers \
   DISABLED_SessionCookiesCloseAllBrowsers
 #else

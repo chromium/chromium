@@ -5,7 +5,9 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_CHROMEOS_SYSTEM_EXTENSIONS_WINDOW_MANAGEMENT_CROS_WINDOW_H_
 #define THIRD_PARTY_BLINK_RENDERER_EXTENSIONS_CHROMEOS_SYSTEM_EXTENSIONS_WINDOW_MANAGEMENT_CROS_WINDOW_H_
 
+#include "third_party/blink/public/mojom/chromeos/system_extensions/window_management/cros_window_management.mojom-blink.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
+#include "third_party/blink/renderer/platform/heap/member.h"
 
 namespace blink {
 class DOMPoint;
@@ -16,11 +18,11 @@ class CrosWindow : public ScriptWrappable {
   DEFINE_WRAPPERTYPEINFO();
 
  public:
-  CrosWindow(CrosWindowManagement* manager);
+  CrosWindow(CrosWindowManagement* manager, mojom::blink::CrosWindowPtr window);
 
   void Trace(Visitor*) const override;
 
-  size_t hash();
+  String id();
 
   String title();
   String appId();
@@ -40,7 +42,9 @@ class CrosWindow : public ScriptWrappable {
   bool close();
 
  private:
-  Member<CrosWindowManagement> manager_;
+  Member<CrosWindowManagement> window_management_;
+
+  mojom::blink::CrosWindowPtr window_;
 };
 
 }  // namespace blink

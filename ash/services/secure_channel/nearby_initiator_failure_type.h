@@ -1,0 +1,31 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef ASH_SERVICES_SECURE_CHANNEL_NEARBY_INITIATOR_FAILURE_TYPE_H_
+#define ASH_SERVICES_SECURE_CHANNEL_NEARBY_INITIATOR_FAILURE_TYPE_H_
+
+#include <ostream>
+
+namespace ash::secure_channel {
+
+enum class NearbyInitiatorFailureType {
+  // Bluetooth or WebRTC connection failed.
+  kConnectivityError,
+
+  // A connection was formed successfully, but there was an error
+  // authenticating the connection.
+  kAuthenticationError,
+};
+
+std::ostream& operator<<(std::ostream& stream,
+                         const NearbyInitiatorFailureType& failure_type);
+
+}  // namespace ash::secure_channel
+
+// TODO(https://crbug.com/1164001): remove after the migration is finished.
+namespace chromeos::secure_channel {
+using ::ash::secure_channel::NearbyInitiatorFailureType;
+}
+
+#endif  // ASH_SERVICES_SECURE_CHANNEL_NEARBY_INITIATOR_FAILURE_TYPE_H_

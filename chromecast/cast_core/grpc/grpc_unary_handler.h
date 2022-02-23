@@ -1,0 +1,124 @@
+// Copyright 2021 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef CHROMECAST_CAST_CORE_GRPC_GRPC_UNARY_HANDLER_H_
+#define CHROMECAST_CAST_CORE_GRPC_GRPC_UNARY_HANDLER_H_
+
+#include <grpcpp/grpcpp.h>
+
+#include "base/callback.h"
+#include "base/strings/stringprintf.h"
+#include "chromecast/cast_core/grpc/cancellable_reactor.h"
+#include "chromecast/cast_core/grpc/grpc_handler.h"
+#include "chromecast/cast_core/grpc/grpc_server_reactor.h"
+#include "chromecast/cast_core/grpc/grpc_status_or.h"
+#include "chromecast/cast_core/grpc/server_reactor_tracker.h"
+#include "chromecast/cast_core/grpc/trackable_reactor.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
+
+namespace cast {
+namespace utils {
+
+// A generic handler for unary, ie request/response, gRPC APIs. Can only be used
+// with rpc that have the following signature:
+//       rpc Foo(Request) returns (Response)
+//
+// - TService is the gRPC service type.
+// - TRequest is the service request type.
+// - TResponse is the service response type.
+// - MethodName is the rpc method as a string.
+//
+// This class is not thread-safe. Appropriate means have to be added by the
+// users to guarantee thread-safety (ie task runners, mutexes etc).
+template <typename TService,
+          typename TRequest,
+          typename TResponse,
+          const char* MethodName>
+class GrpcUnaryHandler final : public GrpcHandler {
+ public:
+  using ReactorBase = GrpcServerReactor<TRequest, TResponse>;
+
+  class Reactor : public ReactorBase {
+   public:
+    using ReactorBase::name;
+    using ReactorBase::Write;
+
+    using OnRequestCallback = base::RepeatingCallback<void(TRequest, Reactor*)>;
+
+    template <typename... TArgs>
+    explicit Reactor(OnRequestCallback on_request_callback, TArgs&&... args)
+        : ReactorBase(std::forward<TArgs>(args)...),
+          on_request_callback_(std::move(on_request_callback)) {
+      ReadRequest();
+    }
+
+   protected:
+    using ReactorBase::Finish;
+    using ReactorBase::ReadRequest;
+    using ReactorBase::StartRead;
+    using ReactorBase::StartWriteAndFinish;
+
+    // Implements GrpcServerReactor APIs.
+    void WriteResponse(const grpc::ByteBuffer* buffer) override {
+      DCHECK(buffer);
+      FinishWriting(buffer, grpc::Status::OK);
+    }
+
+    void FinishWriting(const grpc::ByteBuffer* buffer,
+                       const grpc::Status& status) override {
+      DCHECK((status.ok() && buffer) || !status.ok())
+          << "Either buffer must be set or status must flag an error";
+      DVLOG(1) << "Reactor is finished: " << name()
+               << ", status=" << GrpcStatusToString(status);
+      if (status.ok()) {
+        StartWriteAndFinish(buffer, grpc::WriteOptions(), grpc::Status::OK);
+      } else {
+        Finish(status);
+      }
+    }
+
+    void OnResponseDone(const grpc::Status& /*status*/) override {
+      LOG(FATAL)
+          << "Unary handler writes must finish the reactor at the same time";
+    }
+
+    void OnRequestDone(GrpcStatusOr<TRequest> request) override {
+      if (!request.ok()) {
+        Finish(request.status());
+        return;
+      }
+      on_request_callback_.Run(std::move(request).value(), this);
+    }
+
+    OnRequestCallback on_request_callback_;
+  };
+
+  using Response = TResponse;
+  using OnRequestCallback = typename Reactor::OnRequestCallback;
+
+  GrpcUnaryHandler(OnRequestCallback on_request_callback,
+                   ServerReactorTracker* server_reactor_tracker)
+      : GrpcHandler(server_reactor_tracker),
+        on_request_callback_(std::move(on_request_callback)) {}
+
+  static std::string rpc_name() {
+    return base::StringPrintf("/%s/%s", TService::service_full_name(),
+                              MethodName);
+  }
+
+ private:
+  // Implements GrpcHandler APIs.
+  grpc::ServerGenericBidiReactor* CreateReactor(
+      grpc::CallbackServerContext* context) override {
+    return new CancellableReactor<TrackableReactor<Reactor>>(
+        server_reactor_tracker(), on_request_callback_, rpc_name(), context);
+  }
+
+  OnRequestCallback on_request_callback_;
+};
+
+}  // namespace utils
+}  // namespace cast
+
+#endif  // CHROMECAST_CAST_CORE_GRPC_GRPC_UNARY_HANDLER_H_

@@ -10,7 +10,6 @@
 #include "ash/accelerometer/accelerometer_reader.h"
 #include "ash/accelerometer/accelerometer_types.h"
 #include "ash/constants/app_types.h"
-#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_switches.h"
 #include "ash/display/screen_orientation_controller.h"
 #include "ash/display/screen_orientation_controller_test_api.h"
@@ -26,7 +25,6 @@
 #include "ash/wm/window_util.h"
 #include "base/command_line.h"
 #include "base/numerics/math_constants.h"
-#include "base/test/scoped_feature_list.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/aura/window.h"
 #include "ui/compositor/layer_type.h"
@@ -36,7 +34,6 @@
 #include "ui/display/manager/managed_display_info.h"
 #include "ui/display/test/display_manager_test_api.h"
 #include "ui/events/event_constants.h"
-#include "ui/message_center/message_center.h"
 #include "ui/wm/core/window_util.h"
 #include "ui/wm/public/activation_client.h"
 
@@ -454,68 +451,6 @@ TEST_F(ScreenOrientationControllerTest, RotationLockPreventsRotation) {
   SetUserRotationLocked(false);
   TriggerLidUpdate(gravity);
   EXPECT_EQ(display::Display::ROTATE_90, GetCurrentInternalDisplayRotation());
-}
-
-// The ScreenLayoutObserver class that is responsible for adding/updating
-// MessageCenter notifications is only added to the SystemTray on ChromeOS.
-// Tests that the screen rotation notifications are suppressed when
-// triggered by the accelerometer.
-TEST_F(ScreenOrientationControllerTest, BlockRotationNotifications) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndDisableFeature(
-      features::kReduceDisplayNotifications);
-
-  EnableTabletMode(true);
-  Shell::Get()->screen_layout_observer()->set_show_notifications_for_testing(
-      true);
-  display::test::DisplayManagerTestApi(display_manager())
-      .SetFirstDisplayAsInternalDisplay();
-
-  message_center::MessageCenter* message_center =
-      message_center::MessageCenter::Get();
-
-  EXPECT_EQ(0u, message_center->NotificationCount());
-  EXPECT_FALSE(message_center->HasPopupNotifications());
-
-  // Make sure notifications are still displayed when
-  // adjusting the screen rotation directly when in tablet mode
-  ASSERT_NE(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  SetInternalDisplayRotation(display::Display::ROTATE_270);
-  SetSystemRotationLocked(false);
-  EXPECT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(1u, message_center->NotificationCount());
-  EXPECT_TRUE(message_center->HasPopupNotifications());
-
-  // Clear all notifications
-  message_center->RemoveAllNotifications(
-      false /* by_user */, message_center::MessageCenter::RemoveType::ALL);
-  EXPECT_EQ(0u, message_center->NotificationCount());
-  EXPECT_FALSE(message_center->HasPopupNotifications());
-
-  // Make sure notifications are blocked when adjusting the screen rotation
-  // via the accelerometer while in tablet mode
-  // Rotate the screen 90 degrees
-  ASSERT_EQ(display::Display::ROTATE_270, GetCurrentInternalDisplayRotation());
-  TriggerLidUpdate(gfx::Vector3dF(kMeanGravityFloat, 0.0f, 0.0f));
-  ASSERT_EQ(display::Display::ROTATE_90, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(0u, message_center->NotificationCount());
-  EXPECT_FALSE(message_center->HasPopupNotifications());
-
-  // Make sure notifications are still displayed when
-  // adjusting the screen rotation directly when not in tablet mode
-  EnableTabletMode(false);
-  // Reset the screen rotation.
-  SetInternalDisplayRotation(display::Display::ROTATE_0);
-  // Clear all notifications
-  message_center->RemoveAllNotifications(
-      false /* by_user */, message_center::MessageCenter::RemoveType::ALL);
-  ASSERT_NE(display::Display::ROTATE_180, GetCurrentInternalDisplayRotation());
-  ASSERT_EQ(0u, message_center->NotificationCount());
-  ASSERT_FALSE(message_center->HasPopupNotifications());
-  SetInternalDisplayRotation(display::Display::ROTATE_180);
-  EXPECT_EQ(display::Display::ROTATE_180, GetCurrentInternalDisplayRotation());
-  EXPECT_EQ(1u, message_center->NotificationCount());
-  EXPECT_TRUE(message_center->HasPopupNotifications());
 }
 
 // Tests that if a user has set a display rotation that it is restored upon

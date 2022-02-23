@@ -5,10 +5,12 @@
 #include "components/password_manager/core/browser/password_store_backend_migration_decorator.h"
 
 #include "base/bind.h"
+#include "base/task/sequenced_task_runner.h"
 #include "components/password_manager/core/browser/built_in_backend_to_android_backend_migrator.h"
 #include "components/password_manager/core/browser/field_info_table.h"
 #include "components/password_manager/core/browser/password_store_proxy_backend.h"
 #include "components/password_manager/core/common/password_manager_features.h"
+#include "components/password_manager/core/common/password_manager_pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/sync/model/proxy_model_type_controller_delegate.h"
 
@@ -26,34 +28,51 @@ PasswordStoreBackendMigrationDecorator::PasswordStoreBackendMigrationDecorator(
     std::unique_ptr<PasswordStoreBackend> built_in_backend,
     std::unique_ptr<PasswordStoreBackend> android_backend,
     PrefService* prefs,
-    base::RepeatingCallback<bool()> is_syncing_passwords_callback)
+    SyncDelegate* sync_delegate)
     : built_in_backend_(std::move(built_in_backend)),
       android_backend_(std::move(android_backend)),
       prefs_(prefs),
-      is_syncing_passwords_callback_(std::move(is_syncing_passwords_callback)) {
+      sync_delegate_(sync_delegate) {
   DCHECK(built_in_backend_);
   DCHECK(android_backend_);
   active_backend_ = std::make_unique<PasswordStoreProxyBackend>(
-      built_in_backend_.get(), android_backend_.get());
+      built_in_backend_.get(), android_backend_.get(), prefs_,
+      sync_delegate_.get());
 }
 
 PasswordStoreBackendMigrationDecorator::
     ~PasswordStoreBackendMigrationDecorator() = default;
 
-base::WeakPtr<PasswordStoreBackend>
-PasswordStoreBackendMigrationDecorator::GetWeakPtr() {
-  return weak_ptr_factory_.GetWeakPtr();
-}
-
 void PasswordStoreBackendMigrationDecorator::InitBackend(
     RemoteChangesReceived remote_form_changes_received,
     base::RepeatingClosure sync_enabled_or_disabled_cb,
     base::OnceCallback<void(bool)> completion) {
+  base::RepeatingClosure handle_sync_status_change = base::BindRepeating(
+      &PasswordStoreBackendMigrationDecorator::SyncStatusChanged,
+      weak_ptr_factory_.GetWeakPtr());
+
+  // |sync_enabled_or_disabled_cb| is called on a background sequence so it
+  // should be posted to the main sequence before invoking
+  // PasswordStoreBackendMigrationDecorator::SyncStatusChanged().
+  base::RepeatingClosure handle_sync_status_change_on_main_thread =
+      base::BindRepeating(
+          base::IgnoreResult(&base::SequencedTaskRunner::PostTask),
+          base::SequencedTaskRunnerHandle::Get(), FROM_HERE,
+          std::move(handle_sync_status_change));
+
+  // Inject nested callback to listen for sync status changes.
+  sync_enabled_or_disabled_cb =
+      std::move(handle_sync_status_change_on_main_thread)
+          .Then(std::move(sync_enabled_or_disabled_cb));
+
   active_backend_->InitBackend(std::move(remote_form_changes_received),
                                std::move(sync_enabled_or_disabled_cb),
                                std::move(completion));
   if (base::FeatureList::IsEnabled(
           features::kUnifiedPasswordManagerMigration)) {
+    migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
+        built_in_backend_.get(), android_backend_.get(), prefs_,
+        sync_delegate_.get());
     base::SequencedTaskRunnerHandle::Get()->PostDelayedTask(
         FROM_HERE,
         base::BindOnce(&PasswordStoreBackendMigrationDecorator::StartMigration,
@@ -84,12 +103,12 @@ void PasswordStoreBackendMigrationDecorator::Shutdown(
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAllLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   active_backend_->GetAllLoginsAsync(std::move(callback));
 }
 
 void PasswordStoreBackendMigrationDecorator::GetAutofillableLoginsAsync(
-    LoginsReply callback) {
+    LoginsOrErrorReply callback) {
   active_backend_->GetAutofillableLoginsAsync(std::move(callback));
 }
 
@@ -156,18 +175,39 @@ FieldInfoStore* PasswordStoreBackendMigrationDecorator::GetFieldInfoStore() {
 
 std::unique_ptr<syncer::ProxyModelTypeControllerDelegate>
 PasswordStoreBackendMigrationDecorator::CreateSyncControllerDelegate() {
-  return active_backend_->CreateSyncControllerDelegate();
+  if (base::FeatureList::IsEnabled(
+          features::kUnifiedPasswordManagerSyncUsingAndroidBackendOnly)) {
+    // The android backend (PasswordStoreAndroidBackend) creates a controller
+    // delegate that prevents sync from actually communicating with the sync
+    // server using the built in SyncEngine.
+    return android_backend_->CreateSyncControllerDelegate();
+  }
+
+  return built_in_backend_->CreateSyncControllerDelegate();
 }
 
-void PasswordStoreBackendMigrationDecorator::GetSyncStatus(
-    base::OnceCallback<void(bool)> callback) {
-  return active_backend_->GetSyncStatus(std::move(callback));
+void PasswordStoreBackendMigrationDecorator::ClearAllLocalPasswords() {
+  NOTIMPLEMENTED();
 }
 
 void PasswordStoreBackendMigrationDecorator::StartMigration() {
-  migrator_ = std::make_unique<BuiltInBackendToAndroidBackendMigrator>(
-      prefs_, is_syncing_passwords_callback_);
+  DCHECK(migrator_);
   migrator_->StartMigrationIfNecessary();
+}
+
+void PasswordStoreBackendMigrationDecorator::SyncStatusChanged() {
+  if (!base::FeatureList::IsEnabled(features::kUnifiedPasswordManagerMigration))
+    return;
+
+  if (sync_delegate_->IsSyncingPasswordsEnabled()) {
+    // Sync was enabled. Delete all the passwords from GMS Core local storage.
+    android_backend_->ClearAllLocalPasswords();
+  } else {
+    // Clear migration pref to force rerun of initial migration of passwords
+    // from Chrome to GMS Core local storage.
+    prefs_->SetInteger(prefs::kCurrentMigrationVersionToGoogleMobileServices,
+                       0);
+  }
 }
 
 }  // namespace password_manager

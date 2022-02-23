@@ -21,6 +21,7 @@
 <translation id="115443833402798225">Hangul Ahnmatae</translation>
 <translation id="1155759005174418845">Catalan</translation>
 <translation id="1168100932582989117">Server dei nomi Google</translation>
+<translation id="1171082344678443012">Archivio compresso con xz</translation>
 <translation id="1172970565351728681">Tempo rimanente: circa <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">Rinomina</translation>
 <translation id="1173916544412572294">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="PHONE_NAME" />, <ph name="CONNECTION_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, batteria del telefono <ph name="BATTERY_STATUS" />%, dettagli</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">Se formatti un'unità vengono eliminati tutti i dati in essa memorizzati. L'azione non può essere annullata.</translation>
 <translation id="2025955442973426285">Tigrino</translation>
 <translation id="2028997212275086731">Archivio RAR</translation>
+<translation id="2036414735548252477">Archivio tar compresso con LZMA</translation>
 <translation id="2037845485764049925">Russo</translation>
 <translation id="2044023416777079300">Modem non registrato</translation>
 <translation id="2046702855113914483">Ramen</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476">Condividi con l'estensione <ph name="EXTENSION_NAME" /></translation>
 <translation id="3083975830683400843">I Chromebit</translation>
 <translation id="3085752524577180175">Host SOCKS</translation>
+<translation id="3104793765551262433">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
 <translation id="3113153474486991170">Impossibile aprire "<ph name="PATH" />" da questa posizione. Copia l'elemento in "I miei file" per aprirlo.</translation>
 <translation id="3113592018909187986">Hai ancora 1 tentativo a disposizione. Non potrai utilizzare questa rete finché non configuri un nuovo PIN.</translation>
 <translation id="3124404833828281817">Persona che sogna a occhi aperti</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">Inglese (USA) con tastiera PC internazionale</translation>
 <translation id="3567221313191587603">Seleziona un file e attiva l'opzione <ph name="OFFLINE_CHECKBOX_NAME" /> per avere accesso offline ai tuoi file.</translation>
 <translation id="357479282490346887">Lituano</translation>
+<translation id="3587482841069643663">Tutti</translation>
 <translation id="3592251141500063301">Impossibile rendere disponibile offline il file <ph name="FILE_NAME" /></translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">Francese canadese</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">Backup di tutti i contenuti completato.</translation>
 <translation id="3634507049637220048">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="CONNECTION_STATUS" />, gestita dall'amministratore, dettagli</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> elementi spostati.</translation>
-<translation id="3645531960514756307">Sblocca cartella</translation>
 <translation id="3685122418104378273">La sincronizzazione con Google Drive è disattivata per impostazione predefinita quando vengono utilizzati i dati mobili.</translation>
 <translation id="3689865792480713551">Annulla <ph name="ACTIVITY_DESCRIPTION" />.</translation>
 <translation id="3690128548376345212">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, Non attivato, <ph name="CONNECTION_STATUS" />, Intensità del segnale <ph name="SIGNAL_STRENGTH" />%, Dettagli</translation>
 <translation id="3691184985318546178">Singalese</translation>
 <translation id="3726463242007121105">Impossibile aprire il dispositivo perché il suo filesystem non è supportato.</translation>
 <translation id="3727148787322499904">La modifica di questa impostazione avrà effetto su tutte le reti condivise</translation>
+<translation id="3737576078404241332">Rimuovi dalla barra laterale</translation>
 <translation id="3741243925913727067">Effettua il backup su Google Drive di foto e video memorizzati sul tuo dispositivo multimediale.</translation>
 <translation id="3749289110408117711">Nome file</translation>
 <translation id="3780536599611287598">Non hai l'autorizzazione per spostare questi file in "<ph name="FOLDER_NAME" />".</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">Botanico</translation>
 <translation id="4326192123064055915">Caffè</translation>
 <translation id="4336032328163998280">Operazione di copia non riuscita. <ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">Aggiungi alla barra laterale</translation>
 <translation id="4348495354623233847">Curdo sorani con tastiera basata su arabo</translation>
 <translation id="4363958938297989186">Russo con tastiera fonetica</translation>
 <translation id="4364327530094270451">Melone</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> byte</translation>
 <translation id="4880214202172289027">Dispositivo volume</translation>
 <translation id="4881695831933465202">Apri</translation>
+<translation id="4886199584824489598">Archivio compresso con bzip2</translation>
 <translation id="4900532980794411603">Condividi con Parallels Desktop</translation>
 <translation id="4902546322522096650">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensità del segnale <ph name="SIGNAL_STRENGTH" />%, connetti</translation>
 <translation id="4905417359854579806">Pronto per il backup di <ph name="FILE_COUNT" /></translation>
@@ -583,6 +589,7 @@
 <translation id="6055907707645252013">Rete <ph name="NETWORK_TYPE" />, non collegata</translation>
 <translation id="6074825444536523002">Modulo Google</translation>
 <translation id="6079871810119356840">Ungherese con tastiera Qwerty</translation>
+<translation id="6082256976217156453">Archivio compresso con LZMA</translation>
 <translation id="6096979789310008754">Testo di ricerca cancellato, sono visualizzati tutti i file e tutte le cartelle.</translation>
 <translation id="610101264611565198">Spostamento di <ph name="FILE_NAME" /> in <ph name="FOLDER_NAME" /></translation>
 <translation id="6129953537138746214">Spazio</translation>
@@ -678,6 +685,7 @@
 <translation id="6935521024859866267">Capovolta</translation>
 <translation id="6943836128787782965">Recupero HTTP non riuscito</translation>
 <translation id="6949408524333579394">Traslitterazione serbo</translation>
+<translation id="6954309393500027528">Non puoi incollare questo file perché questa azione è stata bloccata dall'amministratore</translation>
 <translation id="6960565108681981554">Non attiva. Contatta l'operatore.</translation>
 <translation id="696203921837389374">Attiva sincronizzazione tramite dati mobili</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -838,6 +846,7 @@
 <translation id="8297012244086013755">Hangul 3 Set (No Shift)</translation>
 <translation id="8299269255470343364">Giapponese</translation>
 <translation id="8300849813060516376">OTASP non riuscito</translation>
+<translation id="8308481408797647857">Archivio tar compresso con xz</translation>
 <translation id="8312871300878166382">Incolla nella cartella</translation>
 <translation id="8329978297633540474">Testo normale</translation>
 <translation id="8335587457941836791">Stacca dalla barra delle app</translation>
@@ -874,6 +883,7 @@
 <translation id="8551494947769799688">Lettone</translation>
 <translation id="8560515948038859357">Cantonese</translation>
 <translation id="8561206103590473338">Elefante</translation>
+<translation id="8566466896628108558">Rete <ph name="NETWORK_INDEX" /> di <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, <ph name="SECURITY_STATUS" />, intensità del segnale: <ph name="SIGNAL_STRENGTH" />%, bloccata dall'amministratore, dettagli</translation>
 <translation id="8569764466147087991">Seleziona un file da aprire</translation>
 <translation id="8577897833047451336">Croato</translation>
 <translation id="8578308463707544055">Indonesiano</translation>
@@ -926,7 +936,6 @@
 <translation id="9110990317705400362">Cerchiamo costantemente nuovi modi per rendere più sicura la navigazione. In passato, qualsiasi sito web poteva chiederti di aggiungere un'estensione nel browser. Nelle ultime versioni di Google Chrome, devi indicare esplicitamente a Chrome di voler installare le estensioni aggiungendole tramite la pagina Estensioni. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">Sblocca</translation>
 <translation id="912419004897138677">Codec</translation>
-<translation id="9129931661813833980">Blocca cartella</translation>
 <translation id="9130775360844693113">I membri di "<ph name="DESTINATION_NAME" />" avranno accesso a questi elementi.</translation>
 <translation id="9131598836763251128">Seleziona uno o più file</translation>
 <translation id="9133055936679483811">Compressione non riuscita. <ph name="ERROR_MESSAGE" /></translation>
@@ -947,6 +956,7 @@
 <translation id="943972244133411984">Modificato da</translation>
 <translation id="945522503751344254">Invia feedback</translation>
 <translation id="947144732524271678">È stato selezionato un intervallo di <ph name="ENTRY_COUNT" /> elementi da <ph name="FROM_ENTRY_NAME" /> a <ph name="TO_ENTRY_NAME" />.</translation>
+<translation id="961973045258256291">Archivio compresso con gzip</translation>
 <translation id="965477715979482472">Inglese (Sudafrica)</translation>
 <translation id="981121421437150478">Offline</translation>
 <translation id="988685240266037636">Esiste già un file chiamato "<ph name="FILE_NAME" />". Vuoi sostituirlo?</translation>

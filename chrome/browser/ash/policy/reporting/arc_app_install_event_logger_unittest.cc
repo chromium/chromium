@@ -6,6 +6,9 @@
 
 #include <stdint.h>
 
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/disks/disk_mount_manager.h"
+#include "ash/components/disks/mock_disk_mount_manager.h"
 #include "base/files/file_path.h"
 #include "base/json/json_writer.h"
 #include "base/time/time.h"
@@ -15,10 +18,7 @@
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chromeos/dbus/cros_disks/cros_disks_client.h"
-#include "chromeos/disks/disk_mount_manager.h"
-#include "chromeos/disks/mock_disk_mount_manager.h"
 #include "chromeos/network/network_handler_test_helper.h"
-#include "components/arc/arc_prefs.h"
 #include "components/policy/policy_constants.h"
 #include "components/policy/proto/device_management_backend.pb.h"
 #include "components/prefs/pref_service.h"
@@ -407,24 +407,24 @@ TEST_F(AppInstallEventLoggerTest, UpdatePolicy) {
   // Test that REQUIRED, PREINSTALLED and FORCE_INSTALLED are markers to include
   // app to the tracking. BLOCKED and AVAILABLE are excluded.
   auto package1 = std::make_unique<base::DictionaryValue>();
-  package1->SetString("installType", "REQUIRED");
-  package1->SetString("packageName", kPackageName);
+  package1->SetStringKey("installType", "REQUIRED");
+  package1->SetStringKey("packageName", kPackageName);
   list->Append(std::move(package1));
   auto package2 = std::make_unique<base::DictionaryValue>();
-  package2->SetString("installType", "PREINSTALLED");
-  package2->SetString("packageName", kPackageName2);
+  package2->SetStringKey("installType", "PREINSTALLED");
+  package2->SetStringKey("packageName", kPackageName2);
   list->Append(std::move(package2));
   auto package3 = std::make_unique<base::DictionaryValue>();
-  package3->SetString("installType", "FORCE_INSTALLED");
-  package3->SetString("packageName", kPackageName3);
+  package3->SetStringKey("installType", "FORCE_INSTALLED");
+  package3->SetStringKey("packageName", kPackageName3);
   list->Append(std::move(package3));
   auto package4 = std::make_unique<base::DictionaryValue>();
-  package4->SetString("installType", "BLOCKED");
-  package4->SetString("packageName", kPackageName4);
+  package4->SetStringKey("installType", "BLOCKED");
+  package4->SetStringKey("packageName", kPackageName4);
   list->Append(std::move(package4));
   auto package5 = std::make_unique<base::DictionaryValue>();
-  package5->SetString("installType", "AVAILABLE");
-  package5->SetString("packageName", kPackageName5);
+  package5->SetStringKey("installType", "AVAILABLE");
+  package5->SetStringKey("packageName", kPackageName5);
   list->Append(std::move(package5));
   arc_policy.SetList("applications", std::move(list));
 

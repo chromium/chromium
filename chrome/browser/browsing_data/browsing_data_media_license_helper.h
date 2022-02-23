@@ -11,11 +11,18 @@
 #include "base/callback.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
-#include "url/gurl.h"
+
+namespace content {
+struct StorageUsageInfo;
+}  // namespace content
 
 namespace storage {
 class FileSystemContext;
-}
+}  // namespace storage
+
+namespace url {
+class Origin;
+}  // namespace url
 
 // Defines an interface for classes that deal with aggregating and deleting
 // media licenses.
@@ -24,30 +31,13 @@ class FileSystemContext;
 // data when a client calls StartFetching from the UI thread, and will
 // notify the client via a supplied callback when the data is available.
 //
-// The client's callback is passed a list of MediaLicenseInfo objects
+// The client's callback is passed a list of StorageUsageInfo objects
 // containing usage information for each origin's media licenses.
 class BrowsingDataMediaLicenseHelper
     : public base::RefCountedThreadSafe<BrowsingDataMediaLicenseHelper> {
  public:
-  // Detailed information about a media license, including it's origin GURL
-  // and the amount of data (in bytes).
-  struct MediaLicenseInfo {
-    MediaLicenseInfo(const GURL& origin,
-                     int64_t size,
-                     base::Time last_modified_time);
-    MediaLicenseInfo(const MediaLicenseInfo& other);
-    ~MediaLicenseInfo();
-
-    // The origin for which the information is relevant.
-    GURL origin;
-    // Size (in bytes).
-    int64_t size;
-    // Last modified time.
-    base::Time last_modified_time;
-  };
-
   using FetchCallback =
-      base::OnceCallback<void(const std::list<MediaLicenseInfo>&)>;
+      base::OnceCallback<void(const std::list<content::StorageUsageInfo>&)>;
 
   // Creates a BrowsingDataMediaLicenseHelper instance for the media
   // licenses stored in |profile|'s user data directory. The
@@ -61,7 +51,7 @@ class BrowsingDataMediaLicenseHelper
 
   // Starts the process of fetching media license data, which will call
   // |callback| upon completion, passing it a constant list of
-  // MediaLicenseInfo objects. StartFetching must be called only in the UI
+  // StorageUsageInfo objects. StartFetching must be called only in the UI
   // thread; the provided Callback will likewise be executed asynchronously
   // on the UI thread. Obtaining the data will occur asynchronously on the
   // FILE thread.
@@ -70,7 +60,7 @@ class BrowsingDataMediaLicenseHelper
   // Deletes any media licenses associated with |origin| from the disk.
   // Deletion will occur asynchronously on the FILE thread, but this function
   // must be called only on the UI thread.
-  virtual void DeleteMediaLicenseOrigin(const GURL& origin) = 0;
+  virtual void DeleteMediaLicenseOrigin(const url::Origin& origin) = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<BrowsingDataMediaLicenseHelper>;

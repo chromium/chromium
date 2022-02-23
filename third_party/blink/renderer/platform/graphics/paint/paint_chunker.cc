@@ -133,7 +133,7 @@ bool PaintChunker::IncrementDisplayItemIndex(const DisplayItemClient& client,
     ProcessBackgroundColorCandidate(chunk.id, client, item_color, item_area);
   }
 
-  if (should_compute_contents_opaque_ && item.IsDrawing()) {
+  if (item.IsDrawing()) {
     const DrawingDisplayItem& drawing = To<DrawingDisplayItem>(item);
     chunk.rect_known_to_be_opaque = gfx::MaximumCoveredRect(
         chunk.rect_known_to_be_opaque, drawing.RectKnownToBeOpaque());
@@ -173,16 +173,6 @@ bool PaintChunker::AddHitTestDataToCurrentChunk(const PaintChunk::Id& id,
                                                 const gfx::Rect& rect,
                                                 TouchAction touch_action,
                                                 bool blocking_wheel) {
-  // In CompositeAfterPaint, we ensure a paint chunk for correct composited
-  // hit testing. In pre-CompositeAfterPaint, this is unnecessary, except that
-  // there is special touch action or blocking wheel event handler, and that we
-  // have a non-root effect so that PaintChunksToCcLayer will emit paint
-  // operations for filters.
-  if (!RuntimeEnabledFeatures::CompositeAfterPaintEnabled() &&
-      touch_action == TouchAction::kAuto && !blocking_wheel &&
-      &current_properties_.Effect() == &EffectPaintPropertyNode::Root())
-    return false;
-
   bool created_new_chunk = EnsureCurrentChunk(id, client);
   auto& chunk = chunks_->back();
   chunk.bounds.Union(rect);

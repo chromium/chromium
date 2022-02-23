@@ -14,10 +14,10 @@ namespace gles2 {
 
 // ReadbackBufferShadowTracker::Buffer
 
-ReadbackBufferShadowTracker::Buffer::Buffer(
-    GLuint buffer_id,
-    ReadbackBufferShadowTracker* tracker)
-    : buffer_id_(buffer_id), tracker_(tracker) {}
+ReadbackBufferShadowTracker::Buffer::Buffer(GLuint buffer_id,
+                                            MappedMemoryManager* mapped_memory,
+                                            GLES2CmdHelper* helper)
+    : buffer_id_(buffer_id), mapped_memory_(mapped_memory), helper_(helper) {}
 
 ReadbackBufferShadowTracker::Buffer::~Buffer() {
   Free();
@@ -29,7 +29,7 @@ uint32_t ReadbackBufferShadowTracker::Buffer::Alloc(int32_t* shm_id,
   *already_allocated = readback_shm_address_ != nullptr;
   if (!readback_shm_address_) {
     readback_shm_address_ =
-        tracker_->mapped_memory_->Alloc(size_, &shm_id_, &shm_offset_);
+        mapped_memory_->Alloc(size_, &shm_id_, &shm_offset_);
   }
   *shm_id = shm_id_;
   *shm_offset = shm_offset_;
@@ -38,8 +38,8 @@ uint32_t ReadbackBufferShadowTracker::Buffer::Alloc(int32_t* shm_id,
 
 void ReadbackBufferShadowTracker::Buffer::Free() {
   if (readback_shm_address_) {
-    tracker_->mapped_memory_->FreePendingToken(
-        readback_shm_address_, tracker_->helper_->InsertToken());
+    mapped_memory_->FreePendingToken(readback_shm_address_,
+                                     helper_->InsertToken());
   }
   readback_shm_address_ = nullptr;
 }
@@ -92,7 +92,7 @@ ReadbackBufferShadowTracker::GetOrCreateBuffer(GLuint id, GLuint size) {
   if (buffer) {
     buffer->Free();
   } else {
-    buffer = new Buffer(id, this);
+    buffer = new Buffer(id, mapped_memory_, helper_);
     buffers_.emplace(id, base::WrapUnique(buffer));
   }
   buffer->size_ = size;

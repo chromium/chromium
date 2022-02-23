@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/omnibox/omnibox_page_handler.h"
 #include "chrome/browser/ui/webui/version/version_handler.h"
@@ -23,7 +24,7 @@
 #include "services/network/public/mojom/content_security_policy.mojom.h"
 #include "ui/base/webui/web_ui_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/webui/omnibox/omnibox_popup_handler.h"
 #endif
 
@@ -45,7 +46,7 @@ OmniboxUI::OmniboxUI(content::WebUI* web_ui)
       base::make_span(kOmniboxResources, kOmniboxResourcesSize));
   source->SetDefaultResource(IDR_OMNIBOX_OMNIBOX_HTML);
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   if (base::FeatureList::IsEnabled(omnibox::kWebUIOmniboxPopup)) {
     popup_handler_ = std::make_unique<OmniboxPopupHandler>();
   }

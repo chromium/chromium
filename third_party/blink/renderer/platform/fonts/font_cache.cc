@@ -65,7 +65,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "ui/gfx/font_list.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "third_party/skia/include/ports/SkTypeface_win.h"
 #endif
 
@@ -81,35 +81,28 @@ const base::Feature kAsyncFontAccess{"AsyncFontAccess",
 
 const char kColorEmojiLocale[] = "und-Zsye";
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 extern const char kNotoColorEmojiCompat[] = "Noto Color Emoji Compat";
 #endif
 
 SkFontMgr* FontCache::static_font_manager_ = nullptr;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 float FontCache::device_scale_factor_ = 1.0;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 bool FontCache::antialiased_text_enabled_ = false;
 bool FontCache::lcd_text_enabled_ = false;
 bool FontCache::use_skia_font_fallback_ = false;
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
-FontCache* FontCache::GetFontCache(CreateIfNeeded create) {
-  return FontGlobalContext::GetFontCache(create);
+FontCache& FontCache::Get() {
+  return FontGlobalContext::GetFontCache();
 }
 
-FontCache::FontCache()
-    : no_size_in_key_(base::FeatureList::IsEnabled(kFontCacheNoSizeInKey)),
-      purge_prevent_count_(0),
-      font_manager_(sk_ref_sp(static_font_manager_)),
-      font_size_limit_(std::nextafter(
-          (static_cast<float>(std::numeric_limits<unsigned>::max()) - 2.f) /
-              static_cast<float>(blink::FontCacheKey::PrecisionMultiplier()),
-          0.f)) {
-#if defined(OS_WIN)
+FontCache::FontCache() : font_manager_(sk_ref_sp(static_font_manager_)) {
+#if BUILDFLAG(IS_WIN)
   if (!font_manager_) {
     // This code path is only for unit tests. This SkFontMgr does not work in
     // sandboxed environments, but injecting this initialization code to all
@@ -123,11 +116,11 @@ FontCache::FontCache()
 #endif
 }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
 FontPlatformData* FontCache::SystemFontPlatformData(
     const FontDescription& font_description) {
   const AtomicString& family = FontCache::SystemFontFamily();
-#if defined(OS_LINUX) || defined(OS_CHROMEOS) || defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
   if (family.IsEmpty() || family == font_family_names::kSystemUi)
     return nullptr;
 #else
@@ -149,28 +142,23 @@ FontPlatformData* FontCache::GetFontPlatformData(
     PlatformInit();
   }
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
   if (creation_params.CreationType() == kCreateFontByFamily &&
       creation_params.Family() == font_family_names::kSystemUi) {
     return SystemFontPlatformData(font_description);
   }
 #endif
 
-  float size = font_description.EffectiveFontSize();
-  size = std::min(size, font_size_limit_);
+  return font_platform_data_cache_.Add(this, font_description, creation_params,
+                                       alternate_font_name);
+}
 
-  unsigned rounded_size = size * FontCacheKey::PrecisionMultiplier();
-
-  // Assert that the computed hash map key rounded_size value does not hit
-  // the empty (max()) or deleted (max()-1) sentinel values of the hash map,
-  // compare UnsignedWithZeroKeyHashTraits() in hash_traits.h.
-  DCHECK_LT(rounded_size, std::numeric_limits<unsigned>::max() - 1);
-  // Assert that rounded_size was not reset to 0 due to an integer overflow,
-  // i.e. if size was non-zero, rounded_size can't be zero, but if size was 0,
-  // it may be 0.
-  DCHECK_EQ(!!size, !!rounded_size);
-
-  bool is_unique_match =
+FontPlatformData* FontCache::FontPlatformDataCache::Add(
+    FontCache* font_cache,
+    const FontDescription& font_description,
+    const FontFaceCreationParams& creation_params,
+    AlternateFontName alternate_font_name) {
+  const bool is_unique_match =
       alternate_font_name == AlternateFontName::kLocalUniqueFace;
   FontCacheKey key =
       font_description.CacheKey(creation_params, is_unique_match);
@@ -182,62 +170,73 @@ FontPlatformData* FontCache::GetFontPlatformData(
     key.ClearFontSize();
   }
 
+  const float size =
+      std::min(font_description.EffectiveFontSize(), font_size_limit_);
+
+  const unsigned rounded_size = size * FontCacheKey::PrecisionMultiplier();
+
+  // Assert that the computed hash map key rounded_size value does not hit
+  // the empty (max()) or deleted (max()-1) sentinel values of the hash map,
+  // compare UnsignedWithZeroKeyHashTraits() in hash_traits.h.
+  DCHECK_LT(rounded_size, std::numeric_limits<unsigned>::max() - 1);
+
+  // Assert that rounded_size was not reset to 0 due to an integer overflow,
+  // i.e. if size was non-zero, rounded_size can't be zero, but if size was 0,
+  // it may be 0.
+  DCHECK_EQ(!!size, !!rounded_size);
+
   // Remove the font size from the cache key, and handle the font size
   // separately in the inner HashMap. So that different size of FontPlatformData
   // can share underlying SkTypeface.
-  FontPlatformData* result;
-  bool found_result;
-
   {
     // addResult's scope must end before we recurse for alternate family names
     // below, to avoid triggering its dtor hash-changed asserts.
-    SizedFontPlatformDataSet* sized_fonts =
-        &font_platform_data_cache_.insert(key, SizedFontPlatformDataSet())
-             .stored_value->value;
-    bool was_empty = sized_fonts->IsEmpty();
+    SizedFontPlatformDataSet* const sized_fonts = GetOrNewEntry(key);
+    const bool was_empty = sized_fonts->IsEmpty();
 
     // Take a different size instance of the same font before adding an entry to
     // |sizedFont|.
-    FontPlatformData* another_size =
+    FontPlatformData* const another_size =
         was_empty ? nullptr : sized_fonts->begin()->value.get();
-    auto add_result = sized_fonts->insert(rounded_size, nullptr);
+    const auto add_result = sized_fonts->insert(rounded_size, nullptr);
     std::unique_ptr<FontPlatformData>* found = &add_result.stored_value->value;
-    if (add_result.is_new_entry) {
-      if (was_empty) {
-        *found = CreateFontPlatformData(font_description, creation_params, size,
-                                        alternate_font_name);
-      } else if (another_size) {
-        *found = ScaleFontPlatformData(*another_size, font_description,
-                                       creation_params, size);
-      }
+    if (!add_result.is_new_entry)
+      return found->get();
+    if (was_empty) {
+      *found = font_cache->CreateFontPlatformData(
+          font_description, creation_params, size, alternate_font_name);
+    } else if (another_size) {
+      *found = font_cache->ScaleFontPlatformData(
+          *another_size, font_description, creation_params, size);
     }
-
-    result = found->get();
-    found_result = result || !add_result.is_new_entry;
+    if (auto* result = found->get())
+      return result;
   }
 
-  if (!found_result &&
-      alternate_font_name == AlternateFontName::kAllowAlternate &&
-      creation_params.CreationType() == kCreateFontByFamily) {
-    // We were unable to find a font. We have a small set of fonts that we alias
-    // to other names, e.g., Arial/Helvetica, Courier/Courier New, etc. Try
-    // looking up the font under the aliased name.
-    const AtomicString& alternate_name =
-        AlternateFamilyName(creation_params.Family());
-    if (!alternate_name.IsEmpty()) {
-      FontFaceCreationParams create_by_alternate_family(alternate_name);
-      result = GetFontPlatformData(font_description, create_by_alternate_family,
-                                   AlternateFontName::kNoAlternate);
-    }
-    if (result) {
-      // Cache the result under the old name.
-      auto* adding =
-          &font_platform_data_cache_.insert(key, SizedFontPlatformDataSet())
-               .stored_value->value;
-      adding->Set(rounded_size, std::make_unique<FontPlatformData>(*result));
-    }
-  }
+  if (alternate_font_name != AlternateFontName::kAllowAlternate ||
+      creation_params.CreationType() != kCreateFontByFamily)
+    return nullptr;
 
+  // We were unable to find a font. We have a small set of fonts that we alias
+  // to other names, e.g., Arial/Helvetica, Courier/Courier New, etc. Try
+  // looking up the font under the aliased name.
+  const AtomicString& alternate_name =
+      AlternateFamilyName(creation_params.Family());
+  if (alternate_name.IsEmpty())
+    return nullptr;
+
+  FontFaceCreationParams create_by_alternate_family(alternate_name);
+  FontPlatformData* const result =
+      Add(font_cache, font_description, create_by_alternate_family,
+          AlternateFontName::kNoAlternate);
+  if (!result)
+    return nullptr;
+
+  // "accessibility/font-changed.html" reaches here.
+
+  // Cache the result under the old name.
+  GetOrNewEntry(key)->Set(rounded_size,
+                          std::make_unique<FontPlatformData>(*result));
   return result;
 }
 
@@ -248,7 +247,7 @@ std::unique_ptr<FontPlatformData> FontCache::ScaleFontPlatformData(
     float font_size) {
   TRACE_EVENT0("fonts,ui", "FontCache::ScaleFontPlatformData");
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   return CreateFontPlatformData(font_description, creation_params, font_size);
 #else
   return std::make_unique<FontPlatformData>(font_platform_data, font_size);
@@ -276,7 +275,7 @@ void FontCache::SetFontManager(sk_sp<SkFontMgr> font_manager) {
 
 void FontCache::AcceptLanguagesChanged(const String& accept_languages) {
   LayoutLocale::AcceptLanguagesChanged(accept_languages);
-  GetFontCache()->InvalidateShapeCache();
+  Get().InvalidateShapeCache();
 }
 
 scoped_refptr<SimpleFontData> FontCache::GetFontData(
@@ -372,21 +371,26 @@ void FontCache::ReleaseFontData(const SimpleFontData* font_data) {
 
 void FontCache::PurgePlatformFontDataCache() {
   TRACE_EVENT0("fonts,ui", "FontCache::PurgePlatformFontDataCache");
+  font_platform_data_cache_.Purge(font_data_cache_);
+}
+
+void FontCache::FontPlatformDataCache::Purge(
+    const FontDataCache& font_data_cache) {
   Vector<FontCacheKey> keys_to_remove;
-  keys_to_remove.ReserveInitialCapacity(font_platform_data_cache_.size());
-  for (auto& sized_fonts : font_platform_data_cache_) {
+  keys_to_remove.ReserveInitialCapacity(map_.size());
+  for (auto& sized_fonts : map_) {
     Vector<unsigned> sizes_to_remove;
     sizes_to_remove.ReserveInitialCapacity(sized_fonts.value.size());
     for (const auto& platform_data : sized_fonts.value) {
       if (platform_data.value &&
-          !font_data_cache_.Contains(platform_data.value.get()))
+          !font_data_cache.Contains(platform_data.value.get()))
         sizes_to_remove.push_back(platform_data.key);
     }
     sized_fonts.value.RemoveAll(sizes_to_remove);
     if (sized_fonts.value.IsEmpty())
       keys_to_remove.push_back(sized_fonts.key);
   }
-  font_platform_data_cache_.RemoveAll(keys_to_remove);
+  map_.RemoveAll(keys_to_remove);
 }
 
 void FontCache::PurgeFallbackListShaperCache() {
@@ -429,7 +433,7 @@ uint16_t FontCache::Generation() {
 
 void FontCache::Invalidate() {
   TRACE_EVENT0("fonts,ui", "FontCache::Invalidate");
-  font_platform_data_cache_.clear();
+  font_platform_data_cache_.Clear();
   generation_++;
 
   if (font_cache_clients_) {
@@ -441,20 +445,17 @@ void FontCache::Invalidate() {
 }
 
 void FontCache::CrashWithFontInfo(const FontDescription* font_description) {
-  FontCache* font_cache = nullptr;
   SkFontMgr* font_mgr = nullptr;
   int num_families = std::numeric_limits<int>::min();
   bool is_test_font_mgr = false;
-  if (FontGlobalContext::Get(kDoNotCreate)) {
-    font_cache = FontCache::GetFontCache();
-    if (font_cache) {
-#if defined(OS_WIN)
-      is_test_font_mgr = font_cache->is_test_font_mgr_;
+  if (FontGlobalContext::TryGet()) {
+    FontCache& font_cache = FontGlobalContext::GetFontCache();
+#if BUILDFLAG(IS_WIN)
+    is_test_font_mgr = font_cache.is_test_font_mgr_;
 #endif
-      font_mgr = font_cache->font_manager_.get();
-      if (font_mgr)
-        num_families = font_mgr->countFamilies();
-    }
+    font_mgr = font_cache.font_manager_.get();
+    if (font_mgr)
+      num_families = font_mgr->countFamilies();
   }
 
   // In production, these 3 font managers must match.
@@ -478,9 +479,7 @@ void FontCache::DumpFontPlatformDataCache(
   DCHECK(IsMainThread());
   base::trace_event::MemoryAllocatorDump* dump =
       memory_dump->CreateAllocatorDump("font_caches/font_platform_data_cache");
-  size_t font_platform_data_objects_size =
-      font_platform_data_cache_.size() * sizeof(FontPlatformData);
-  dump->AddScalar("size", "bytes", font_platform_data_objects_size);
+  dump->AddScalar("size", "bytes", font_platform_data_cache_.ByteSize());
   memory_dump->AddSuballocation(dump->guid(),
                                 WTF::Partitions::kAllocatedObjectPoolName);
 }
@@ -504,7 +503,7 @@ void FontCache::DumpShapeResultCache(
 sk_sp<SkTypeface> FontCache::CreateTypefaceFromUniqueName(
     const FontFaceCreationParams& creation_params) {
   FontUniqueNameLookup* unique_name_lookup =
-      FontGlobalContext::Get()->GetFontUniqueNameLookup();
+      FontGlobalContext::Get().GetFontUniqueNameLookup();
   DCHECK(unique_name_lookup);
   sk_sp<SkTypeface> uniquely_identified_font =
       unique_name_lookup->MatchUniqueName(creation_params.Family());
@@ -542,6 +541,28 @@ FontFallbackMap& FontCache::GetFontFallbackMap() {
     AddClient(font_fallback_map_);
   }
   return *font_fallback_map_;
+}
+
+FontCache::FontPlatformDataCache::FontPlatformDataCache()
+    : font_size_limit_(std::nextafter(
+          (static_cast<float>(std::numeric_limits<unsigned>::max()) - 2.f) /
+              static_cast<float>(blink::FontCacheKey::PrecisionMultiplier()),
+          0.f)),
+      no_size_in_key_(base::FeatureList::IsEnabled(kFontCacheNoSizeInKey)) {}
+
+FontCache::FontPlatformDataCache::~FontPlatformDataCache() = default;
+
+FontCache::FontPlatformDataCache::SizedFontPlatformDataSet*
+FontCache::FontPlatformDataCache::GetOrNewEntry(FontCacheKey key) {
+  return &map_.insert(key, SizedFontPlatformDataSet()).stored_value->value;
+}
+
+size_t FontCache::FontPlatformDataCache::ByteSize() const {
+  return map_.size() * sizeof(*this);
+}
+
+void FontCache::FontPlatformDataCache::Clear() {
+  map_.clear();
 }
 
 }  // namespace blink

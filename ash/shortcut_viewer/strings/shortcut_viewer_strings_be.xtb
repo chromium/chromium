@@ -17,6 +17,7 @@
 <translation id="1516966594427080024">Адкрыць новае акно ў рэжыме інкогніта</translation>
 <translation id="152892567002884378">Павялічыць гучнасць</translation>
 <translation id="1560480564179555003"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="ALT" /><ph name="SEPARATOR2" /><ph name="L" />, затым <ph name="ESC" /></translation>
+<translation id="1586324912145647027">Перайсці да аднаго з працоўных сталоў (1-8)</translation>
 <translation id="1652741121070700329">Перайсці ў пачатак папярэдняга слова</translation>
 <translation id="1679841710523778799">Павялічыць яркасць</translation>
 <translation id="168356808214100546">Націсніце і ўтрымлівайце <ph name="ALT" /> і націскайце <ph name="TAB" />, пакуль не пяройдзеце да патрэбнага акна, затым адпусціце клавішы.</translation>
@@ -129,6 +130,7 @@
 <translation id="5563050856984839829">Націснуць <ph name="CTRL" /> <ph name="SEPARATOR" /> <ph name="SHIFT" /> і перайсці па спасылцы</translation>
 <translation id="561814908794220892">Адкрыць вэб-старонку ў новай укладцы</translation>
 <translation id="5620219513321115856">Перамясціць актыўнае акно на стол справа</translation>
+<translation id="5699366815052349604">Прызначыць актыўнае акно для ўсіх працоўных сталоў</translation>
 <translation id="5710621673935162997"><ph name="CTRL" /><ph name="SEPARATOR1" /><ph name="L" /> або <ph name="ALT" /><ph name="SEPARATOR2" /><ph name="D" /></translation>
 <translation id="5757111373163288447">Адкрыць спасылку ў новай укладцы</translation>
 <translation id="5757474750054631686">Паменшыць яркасць клавіятуры (для клавіятур з падсветкай)</translation>
@@ -204,6 +206,7 @@
 <translation id="8644639153978066712">Паказваць схаваныя файлы ў праграме "Файлы"</translation>
 <translation id="8717459106217102612">Вылучыць папярэдняе слова або літару</translation>
 <translation id="8727232706774971183">Паглядзець апавяшчэнні</translation>
+<translation id="8855548128280178372"><ph name="SHIFT" /><ph name="SEPARATOR1" /><ph name="SEARCH" /><ph name="SEPARATOR2" /> 1…8</translation>
 <translation id="8855885154700222542">Клавіша поўнаэкраннага рэжыму</translation>
 <translation id="8881584919399569791">Перамясціць актыўнае акно на стол злева</translation>
 <translation id="88986195241502842">Page Down</translation>

@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/prefetch/search_prefetch/search_prefetch_url_loader.h"
@@ -55,7 +56,8 @@ class BackForwardSearchPrefetchURLLoader
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
-  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head) override;
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body) override;
   void OnReceiveRedirect(const net::RedirectInfo& redirect_info,
                          network::mojom::URLResponseHeadPtr head) override;
   void OnUploadProgress(int64_t current_position,
@@ -104,7 +106,7 @@ class BackForwardSearchPrefetchURLLoader
   // fallback occurs.
   bool paused_ = false;
 
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   net::NetworkTrafficAnnotationTag network_traffic_annotation_;
 

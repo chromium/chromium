@@ -11,6 +11,7 @@
 
 #include "base/callback_forward.h"
 #include "base/containers/circular_deque.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "components/policy/core/common/cloud/cloud_policy_constants.h"
 #include "components/policy/core/common/cloud/policy_invalidation_scope.h"
@@ -66,19 +67,18 @@ class POLICY_EXPORT RemoteCommandsService
     kDeviceGetDiagnosticRoutineUpdate = 17,
     kBrowserClearBrowsingData = 18,
     kDeviceResetEuicc = 19,
+    kBrowserRotateAttestationCredential = 20,
     // Used by UMA histograms. Shall refer to the last enumeration.
-    kMaxValue = kDeviceResetEuicc
+    kMaxValue = kBrowserRotateAttestationCredential
   };
 
   // Returns the metric name to report received commands.
   static const char* GetMetricNameReceivedRemoteCommand(
-      PolicyInvalidationScope scope,
-      bool is_command_signed);
+      PolicyInvalidationScope scope);
   // Returns the metric name to report status of executed commands.
   static std::string GetMetricNameExecutedRemoteCommand(
       PolicyInvalidationScope scope,
-      enterprise_management::RemoteCommand_Type command_type,
-      bool is_command_signed);
+      enterprise_management::RemoteCommand_Type command_type);
 
   RemoteCommandsService(std::unique_ptr<RemoteCommandsFactory> factory,
                         CloudPolicyClient* client,
@@ -106,6 +106,8 @@ class POLICY_EXPORT RemoteCommandsService
   void SetClocksForTesting(const base::Clock* clock,
                            const base::TickClock* tick_clock);
 
+  // Sets a callback that will be invoked the next time we receive a response
+  // from the server.
   virtual void SetOnCommandAckedCallback(base::OnceClosure callback);
 
  private:
@@ -119,7 +121,7 @@ class POLICY_EXPORT RemoteCommandsService
   void VerifyAndEnqueueSignedCommand(
       const enterprise_management::SignedData& signed_command);
   void EnqueueCommand(const enterprise_management::RemoteCommand& command,
-                      const enterprise_management::SignedData* signed_command);
+                      const enterprise_management::SignedData& signed_command);
 
   // RemoteCommandsQueue::Observer:
   void OnJobStarted(RemoteCommandJob* command) override;
@@ -128,12 +130,10 @@ class POLICY_EXPORT RemoteCommandsService
   // Callback to handle commands we get from the server.
   void OnRemoteCommandsFetched(
       DeviceManagementStatus status,
-      const std::vector<enterprise_management::RemoteCommand>& commands,
       const std::vector<enterprise_management::SignedData>& signed_commands);
 
   // Records UMA metric of received remote command.
-  void RecordReceivedRemoteCommand(MetricReceivedRemoteCommand metric,
-                                   bool is_command_signed) const;
+  void RecordReceivedRemoteCommand(MetricReceivedRemoteCommand metric) const;
   // Records UMA metric of executed remote command.
   void RecordExecutedRemoteCommand(const RemoteCommandJob& command) const;
 
@@ -165,8 +165,8 @@ class POLICY_EXPORT RemoteCommandsService
 
   RemoteCommandsQueue queue_;
   std::unique_ptr<RemoteCommandsFactory> factory_;
-  CloudPolicyClient* const client_;
-  CloudPolicyStore* const store_;
+  const raw_ptr<CloudPolicyClient> client_;
+  const raw_ptr<CloudPolicyStore> store_;
 
   // Callback which gets called after the last command got ACK'd to the server
   // as executed.

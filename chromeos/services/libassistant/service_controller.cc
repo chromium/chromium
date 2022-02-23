@@ -8,14 +8,16 @@
 
 #include "base/bind.h"
 #include "base/check.h"
+#include "build/buildflag.h"
+#include "chromeos/assistant/internal/buildflags.h"
 #include "chromeos/assistant/internal/internal_util.h"
+#include "chromeos/assistant/internal/libassistant/shared_headers.h"
 #include "chromeos/services/assistant/public/cpp/features.h"
 #include "chromeos/services/libassistant/chromium_api_delegate.h"
 #include "chromeos/services/libassistant/grpc/assistant_client.h"
 #include "chromeos/services/libassistant/libassistant_factory.h"
 #include "chromeos/services/libassistant/settings_controller.h"
 #include "chromeos/services/libassistant/util.h"
-#include "libassistant/shared/internal_api/assistant_manager_internal.h"
 #include "services/network/public/cpp/cross_thread_pending_shared_url_loader_factory.h"
 #include "services/network/public/cpp/wrapper_shared_url_loader_factory.h"
 
@@ -267,16 +269,6 @@ AssistantClient* ServiceController::assistant_client() {
   return assistant_client_.get();
 }
 
-assistant_client::AssistantManager* ServiceController::assistant_manager() {
-  return assistant_client_ ? assistant_client_->assistant_manager() : nullptr;
-}
-
-assistant_client::AssistantManagerInternal*
-ServiceController::assistant_manager_internal() {
-  return assistant_client_ ? assistant_client_->assistant_manager_internal()
-                           : nullptr;
-}
-
 void ServiceController::OnAllServicesReady() {
   DVLOG(1) << "Libassistant services are ready.";
 
@@ -311,7 +303,9 @@ void ServiceController::CreateAndRegisterChromiumApiDelegate(
     mojo::PendingRemote<network::mojom::URLLoaderFactory>
         url_loader_factory_remote) {
   CreateChromiumApiDelegate(std::move(url_loader_factory_remote));
+#if !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
   assistant_client_->SetChromeOSApiDelegate(chromium_api_delegate_.get());
+#endif  // !BUILDFLAG(IS_PREBUILT_LIBASSISTANT)
 }
 
 void ServiceController::CreateChromiumApiDelegate(

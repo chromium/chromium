@@ -34,7 +34,7 @@ def blink_class_name(idl_definition):
         return "V8{}".format(idl_definition.identifier)
     elif isinstance(idl_definition, web_idl.ObservableArray):
         return "V8ObservableArray{}".format(
-            idl_definition.idl_type.element_type.
+            idl_definition.element_type.
             type_name_with_extended_attribute_key_values)
     elif isinstance(idl_definition, web_idl.Union):
         # Technically this name is not guaranteed to be unique because
@@ -221,6 +221,7 @@ def blink_type_info(idl_type):
                         ref_fmt="{}&",
                         const_ref_fmt="const {}&",
                         has_null_value=True,
+                        is_move_effective=True,
                         clear_member_var_fmt="{} = String()")
 
     if real_type.is_array_buffer:
@@ -295,8 +296,7 @@ def blink_type_info(idl_type):
             # a value type (is_gc_type=False, has_null_value=False) rather than
             # a reference type (is_gc_type=True, has_null_value=True) by
             # default.
-            typename = "HeapVector<AddMemberIfNeeded<{}>>".format(
-                element_type.member_t)
+            typename = "HeapVector<{}>".format(element_type.member_t)
             return TypeInfo(typename,
                             ref_fmt="{}&",
                             const_ref_fmt="const {}&",
@@ -332,9 +332,8 @@ def blink_type_info(idl_type):
             # a value type (is_gc_type=False, has_null_value=False) rather than
             # a reference type (is_gc_type=True, has_null_value=True) by
             # default.
-            typename = (
-                "HeapVector<std::pair<{}, AddMemberIfNeeded<{}>>>".format(
-                    key_type.value_t, value_type.member_t))
+            typename = ("HeapVector<std::pair<{}, {}>>".format(
+                key_type.member_t, value_type.member_t))
             return TypeInfo(typename,
                             ref_fmt="{}&",
                             const_ref_fmt="const {}&",

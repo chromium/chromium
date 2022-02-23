@@ -5,6 +5,7 @@
 #ifndef CONTENT_BROWSER_WEB_PACKAGE_WEB_BUNDLE_INTERCEPTOR_FOR_NETWORK_H_
 #define CONTENT_BROWSER_WEB_PACKAGE_WEB_BUNDLE_INTERCEPTOR_FOR_NETWORK_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
 #include "content/browser/loader/navigation_loader_interceptor.h"
@@ -76,7 +77,7 @@ class WebBundleInterceptorForNetwork final
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
   WebBundleDoneCallback done_callback_;
-  BrowserContext* browser_context_;
+  raw_ptr<BrowserContext> browser_context_;
   const int frame_tree_node_id_;
   scoped_refptr<WebBundleReader> reader_;
   GURL primary_url_;

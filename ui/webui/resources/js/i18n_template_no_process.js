@@ -33,8 +33,10 @@ let ProcessingRoot;
  * load_time_data.js. It should replace i18n_template.js eventually.
  */
 
+// #import {loadTimeData} from './load_time_data.m.js';
+
 // eslint-disable-next-line no-var
-var i18nTemplate = (function() {
+/* #export */ var i18nTemplate = (function() {
   /**
    * This provides the handlers for the templating engine. The key is used as
    * the attribute name and the value is the function that gets called for every

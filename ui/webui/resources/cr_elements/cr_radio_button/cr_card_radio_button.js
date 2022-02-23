@@ -13,4 +13,6 @@ Polymer({
   behaviors: [
     CrRadioButtonBehavior,
   ],
+
+  onFocus_() {},
 });

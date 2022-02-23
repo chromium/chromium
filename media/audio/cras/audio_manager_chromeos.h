@@ -62,7 +62,6 @@ class MEDIA_EXPORT AudioManagerChromeOS : public AudioManagerCrasBase {
   // capabilities tailored for the system,
   static AudioParameters GetStreamParametersForSystem(
       int user_buffer_size,
-      bool has_keyboard,
       const AudioManagerChromeOS::SystemAudioProcessingInfo& system_apm_info);
 
  protected:

@@ -7,13 +7,14 @@
 
 #include "base/memory/scoped_refptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "third_party/blink/renderer/core/animation/animation_effect.h"
 #include "third_party/blink/renderer/core/animation/effect_model.h"
 #include "third_party/blink/renderer/core/animation/property_handle.h"
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/animation/timing_function.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
+#include "third_party/blink/renderer/platform/wtf/hash_set.h"
 
 namespace blink {
 
@@ -39,7 +40,7 @@ class V8ObjectBuilder;
 //     underlying value. If this is 'auto', the keyframe effect composite
 //     operation is used instead.
 //
-// For spec details, refer to: https://drafts.csswg.org/web-animations/#keyframe
+// For spec details, refer to: https://w3.org/TR/web-animations-1/#keyframe
 //
 // Implementation-wise the base Keyframe class captures the offset, composite
 // operation, and timing function. It is left to subclasses to define and store

@@ -16,8 +16,8 @@ import zip_util
 def _FindZipAlign():
   # SDK does not exist on presubmit CQ bot.
   candidates = glob.glob(
-    path_util.FromToolsSrcRootRelative(
-        'third_party/android_sdk/public/build-tools/*/zipalign'))
+      path_util.FromToolsSrcRoot(
+          'third_party/android_sdk/public/build-tools/*/zipalign'))
   # Any version will do.
   return candidates[0] if candidates else None
 

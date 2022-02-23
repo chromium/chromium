@@ -75,7 +75,7 @@ class WebKioskAppLauncher : public KioskAppLauncher,
 
   // Callback method triggered after web application and its icon are obtained
   // from `WebKioskAppManager`.
-  void OnAppDataObtained(std::unique_ptr<WebApplicationInfo> app_info);
+  void OnAppDataObtained(std::unique_ptr<WebAppInstallInfo> app_info);
 
   // Callback method triggered after the lacros-chrome window is created.
   void OnLacrosWindowCreated(crosapi::mojom::CreationResult result);

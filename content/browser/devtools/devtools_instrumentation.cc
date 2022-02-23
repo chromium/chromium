@@ -161,6 +161,102 @@ std::unique_ptr<protocol::Audits::InspectorIssue> BuildTWAQualityIssue(
   return issue;
 }
 
+std::string FederatedAuthRequestResultToProtocol(
+    blink::mojom::FederatedAuthRequestResult result) {
+  using blink::mojom::FederatedAuthRequestResult;
+  namespace FederatedAuthRequestIssueReasonEnum =
+      protocol::Audits::FederatedAuthRequestIssueReasonEnum;
+  switch (result) {
+    case FederatedAuthRequestResult::kApprovalDeclined: {
+      return FederatedAuthRequestIssueReasonEnum::ApprovalDeclined;
+    }
+    case FederatedAuthRequestResult::kErrorTooManyRequests: {
+      return FederatedAuthRequestIssueReasonEnum::TooManyRequests;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingManifestHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestHttpNotFound;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingManifestNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestNoResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingManifestInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ManifestInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingClientMetadataHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::ClientMetadataHttpNotFound;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingClientMetadataNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ClientMetadataNoResponse;
+    }
+    case FederatedAuthRequestResult::
+        kErrorFetchingClientMetadataInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::ClientMetadataInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingSignin: {
+      return FederatedAuthRequestIssueReasonEnum::ErrorFetchingSignin;
+    }
+    case FederatedAuthRequestResult::kErrorInvalidSigninResponse: {
+      return FederatedAuthRequestIssueReasonEnum::InvalidSigninResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingAccountsHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::AccountsHttpNotFound;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingAccountsNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::AccountsNoResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingAccountsInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::AccountsInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenHttpNotFound: {
+      return FederatedAuthRequestIssueReasonEnum::IdTokenHttpNotFound;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenNoResponse: {
+      return FederatedAuthRequestIssueReasonEnum::IdTokenNoResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidResponse: {
+      return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidResponse;
+    }
+    case FederatedAuthRequestResult::kErrorFetchingIdTokenInvalidRequest: {
+      return FederatedAuthRequestIssueReasonEnum::IdTokenInvalidRequest;
+    }
+    case FederatedAuthRequestResult::kErrorCanceled: {
+      return FederatedAuthRequestIssueReasonEnum::Canceled;
+    }
+    case FederatedAuthRequestResult::kError: {
+      return FederatedAuthRequestIssueReasonEnum::ErrorIdToken;
+    }
+    case FederatedAuthRequestResult::kSuccess: {
+      DCHECK(false);
+      return "";
+    }
+  }
+}
+
+std::unique_ptr<protocol::Audits::InspectorIssue>
+BuildFederatedAuthRequestIssue(
+    const blink::mojom::FederatedAuthRequestIssueDetailsPtr& issue_details) {
+  protocol::String type_string =
+      FederatedAuthRequestResultToProtocol(issue_details->status);
+
+  auto federated_auth_request_details =
+      protocol::Audits::FederatedAuthRequestIssueDetails::Create()
+          .SetFederatedAuthRequestIssueReason(type_string)
+          .Build();
+
+  auto protocol_issue_details =
+      protocol::Audits::InspectorIssueDetails::Create()
+          .SetFederatedAuthRequestIssueDetails(
+              std::move(federated_auth_request_details))
+          .Build();
+
+  auto issue = protocol::Audits::InspectorIssue::Create()
+                   .SetCode(protocol::Audits::InspectorIssueCodeEnum::
+                                FederatedAuthRequestIssue)
+                   .SetDetails(std::move(protocol_issue_details))
+                   .Build();
+  return issue;
+}
+
 }  // namespace
 
 void OnResetNavigationRequest(NavigationRequest* navigation_request) {
@@ -194,11 +290,12 @@ void OnNavigationResponseReceived(const NavigationRequest& nav_request,
 
 void BackForwardCacheNotUsed(
     const NavigationRequest* nav_request,
-    const BackForwardCacheCanStoreDocumentResult* result) {
+    const BackForwardCacheCanStoreDocumentResult* result,
+    const BackForwardCacheCanStoreTreeResult* tree_result) {
   DCHECK(nav_request);
   FrameTreeNode* ftn = nav_request->frame_tree_node();
   DispatchToAgents(ftn, &protocol::PageHandler::BackForwardCacheNotUsed,
-                   nav_request, result);
+                   nav_request, result, tree_result);
 }
 
 namespace {
@@ -490,11 +587,13 @@ void ThrottleWorkerMainScriptFetch(
   WorkerDevToolsAgentHost* agent_host =
       WorkerDevToolsManager::GetInstance().GetDevToolsHostFromToken(
           devtools_worker_token);
-  DCHECK(agent_host);
+  if (!agent_host)
+    return;
 
   RenderFrameHostImpl* rfh =
       RenderFrameHostImpl::FromID(ancestor_render_frame_host_id);
-  DCHECK(rfh);
+  if (!rfh)
+    return;
 
   FrameTreeNode* ftn = rfh->frame_tree_node();
   DispatchToAgents(ftn, &protocol::TargetHandler::AddWorkerThrottle, agent_host,
@@ -800,7 +899,7 @@ void OnNavigationRequestWillBeSent(
   // agent may navigate all of its subframes currently.
   for (RenderFrameHostImpl* rfh =
            navigation_request.frame_tree_node()->current_frame_host();
-       rfh; rfh = rfh->GetParent()) {
+       rfh; rfh = rfh->GetParentOrOuterDocument()) {
     // Only check frames that qualify as DevTools targets, i.e. (local)? roots.
     if (!RenderFrameDevToolsAgentHost::ShouldCreateDevToolsForHost(rfh))
       continue;
@@ -888,6 +987,17 @@ void PortalDetached(RenderFrameHostImpl* render_frame_host_impl) {
 
 void PortalActivated(RenderFrameHostImpl* render_frame_host_impl) {
   UpdatePortals(render_frame_host_impl);
+}
+
+void FencedFrameCreated(
+    base::SafeRef<RenderFrameHostImpl> owner_render_frame_host,
+    FencedFrame* fenced_frame) {
+  auto* agent_host = static_cast<RenderFrameDevToolsAgentHost*>(
+      RenderFrameDevToolsAgentHost::GetFor(
+          owner_render_frame_host->frame_tree_node()));
+  if (!agent_host)
+    return;
+  agent_host->DidCreateFencedFrame(fenced_frame);
 }
 
 void WillStartDragging(FrameTreeNode* main_frame_tree_node,
@@ -1163,20 +1273,18 @@ void ReportBrowserInitiatedIssue(RenderFrameHostImpl* frame,
 void BuildAndReportBrowserInitiatedIssue(
     RenderFrameHostImpl* frame,
     blink::mojom::InspectorIssueInfoPtr info) {
-  // This method does not support other types for now.
-  CHECK(info && info->details &&
-        (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue &&
-             info->details->heavy_ad_issue_details ||
-         info->code ==
-                 blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue &&
-             info->details->twa_issue_details));
-
   std::unique_ptr<protocol::Audits::InspectorIssue> issue;
   if (info->code ==
       blink::mojom::InspectorIssueCode::kTrustedWebActivityIssue) {
     issue = BuildTWAQualityIssue(info->details->twa_issue_details);
-  } else {
+  } else if (info->code == blink::mojom::InspectorIssueCode::kHeavyAdIssue) {
     issue = BuildHeavyAdIssue(info->details->heavy_ad_issue_details);
+  } else if (info->code ==
+             blink::mojom::InspectorIssueCode::kFederatedAuthRequestIssue) {
+    issue = BuildFederatedAuthRequestIssue(
+        info->details->federated_auth_request_details);
+  } else {
+    NOTREACHED() << "Unsupported type of browser-initiated issue";
   }
   ReportBrowserInitiatedIssue(frame, issue.get());
 }
@@ -1231,6 +1339,34 @@ void OnServiceWorkerMainScriptFetchingFailed(
   DispatchToAgents(ftn, &protocol::LogHandler::EntryAdded, entry.get());
 }
 
+void OnServiceWorkerMainScriptRequestWillBeSent(
+    const GlobalRenderFrameHostId& requesting_frame_id,
+    const base::UnguessableToken& token,
+    const network::ResourceRequest& request) {
+  // Currently, `requesting_frame_id` is invalid when payment apps and
+  // extensions register a service worker. See the callers of
+  // ServiceWorkerContextWrapper::RegisterServiceWorker().
+  if (!requesting_frame_id)
+    return;
+
+  RenderFrameHostImpl* requesting_frame =
+      RenderFrameHostImpl::FromID(requesting_frame_id);
+  if (!requesting_frame)
+    return;
+
+  FrameTreeNode* ftn = requesting_frame->frame_tree_node();
+  DCHECK(ftn);
+
+  auto timestamp = base::TimeTicks::Now();
+  network::mojom::URLRequestDevToolsInfoPtr request_info =
+      network::ExtractDevToolsInfo(request);
+  DispatchToAgents(
+      ftn, &protocol::NetworkHandler::RequestSent, token.ToString(),
+      /*loader_id=*/"", request.headers, *request_info,
+      protocol::Network::Initiator::TypeEnum::Other, ftn->current_url(),
+      /*initiator_devtools_request_id=*/"", timestamp);
+}
+
 void OnWorkerMainScriptLoadingFailed(
     const GURL& url,
     const base::UnguessableToken& worker_token,
@@ -1270,7 +1406,7 @@ void OnWorkerMainScriptRequestWillBeSent(
   DispatchToAgents(
       ftn, &protocol::NetworkHandler::RequestSent, worker_token.ToString(),
       /*loader_id=*/"", request.headers, *request_info,
-      protocol::Network::Initiator::TypeEnum::Script, ftn->current_url(),
+      protocol::Network::Initiator::TypeEnum::Other, ftn->current_url(),
       /*initiator_devtools_request_id*/ "", timestamp);
 }
 

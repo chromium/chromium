@@ -6,6 +6,7 @@
 
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/app/vector_icons/vector_icons.h"
+#include "chrome/browser/ash/input_method/ui/colors.h"
 #include "chrome/browser/ash/input_method/ui/suggestion_details.h"
 #include "chrome/grit/generated_resources.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -40,7 +41,8 @@ std::unique_ptr<views::Label> CreateIndexLabel() {
   index_label->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
                                          kIndexFontSize,
                                          gfx::Font::Weight::MEDIUM));
-  index_label->SetEnabledColor(kSuggestionColor);
+  index_label->SetEnabledColor(
+      ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary));
   index_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   index_label->SetBorder(
       views::CreateEmptyBorder(gfx::Insets(kPadding / 2, 0)));
@@ -71,7 +73,8 @@ std::unique_ptr<views::ImageView> CreateDownIcon() {
 
 std::unique_ptr<views::Label> CreateEnterLabel() {
   auto label = std::make_unique<views::Label>();
-  label->SetEnabledColor(kSuggestionColor);
+  label->SetEnabledColor(
+      ResolveSemanticColor(cros_styles::ColorName::kTextColorSecondary));
   label->SetText(l10n_util::GetStringUTF16(IDS_SUGGESTION_ENTER_KEY));
   label->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
                                    kAnnotationFontSize,
@@ -83,7 +86,8 @@ std::unique_ptr<views::Label> CreateEnterLabel() {
 
 std::unique_ptr<views::Label> CreateTabLabel() {
   auto label = std::make_unique<views::Label>();
-  label->SetEnabledColor(kSuggestionColor);
+  label->SetEnabledColor(
+      ResolveSemanticColor(cros_styles::ColorName::kTextColorPrimary));
   label->SetText(l10n_util::GetStringUTF16(IDS_SUGGESTION_TAB_KEY));
   label->SetFontList(gfx::FontList({kFontStyle}, gfx::Font::NORMAL,
                                    kAnnotationFontSize,
@@ -170,7 +174,7 @@ std::unique_ptr<views::View> SuggestionView::CreateTabAnnotationLabel() {
 }
 
 void SuggestionView::SetView(const SuggestionDetails& details) {
-  SetSuggestionText(details.text, details.confirmed_length, details.text_color);
+  SetSuggestionText(details.text, details.confirmed_length);
   suggestion_width_ = suggestion_label_->GetPreferredSize().width();
   down_and_enter_annotation_label_->SetVisible(details.show_accept_annotation);
   tab_annotation_label_->SetVisible(details.show_quick_accept_annotation);
@@ -188,8 +192,7 @@ void SuggestionView::SetViewWithIndex(const std::u16string& index,
 }
 
 void SuggestionView::SetSuggestionText(const std::u16string& text,
-                                       const size_t confirmed_length,
-                                       SkColor text_color) {
+                                       const size_t confirmed_length) {
   // SetText clears the existing style only if the text to set is different from
   // the previous one.
   suggestion_label_->SetText(base::EmptyString16());
@@ -200,14 +203,16 @@ void SuggestionView::SetSuggestionText(const std::u16string& text,
   if (confirmed_length != 0) {
     views::StyledLabel::RangeStyleInfo confirmed_style;
     confirmed_style.custom_font = kSuggestionFont;
-    confirmed_style.override_color = kConfirmedTextColor;
+    confirmed_style.override_color =
+        ResolveSemanticColor(cros_styles::ColorName::kTextColorPrimary);
     suggestion_label_->AddStyleRange(gfx::Range(0, confirmed_length),
                                      confirmed_style);
   }
 
   views::StyledLabel::RangeStyleInfo suggestion_style;
   suggestion_style.custom_font = kSuggestionFont;
-  suggestion_style.override_color = text_color;
+  suggestion_style.override_color =
+      ResolveSemanticColor(cros_styles::ColorName::kTextColorDisabled);
   suggestion_label_->AddStyleRange(gfx::Range(confirmed_length, text.length()),
                                    suggestion_style);
 
@@ -225,7 +230,8 @@ void SuggestionView::SetHighlighted(bool highlighted) {
   if (highlighted) {
     NotifyAccessibilityEvent(ax::mojom::Event::kSelection, false);
     // TODO(crbug/1099044): Use System Color for button highlight.
-    SetBackground(views::CreateSolidBackground(kButtonHighlightColor));
+    SetBackground(views::CreateSolidBackground(
+        ResolveSemanticColor(kButtonHighlightColor)));
   } else {
     SetBackground(nullptr);
   }

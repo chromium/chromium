@@ -131,9 +131,20 @@ const SIMPLE_TEST_QUERIES = {
     return 'opened and updated';
   },
   openFilesWithFilePicker: async (data, resultData) => {
-    const existingFile = assertLastReceivedFileList().item(0) || null;
+    /**
+     * @typedef {{
+     *   acceptTypeKeys: !Array<string>,
+     *   explicitToken: (number|undefined)
+     * }}
+     */
+    let Args;
+    const args = /** @type {Args} */ (data.simpleArgs);
+    let existingFile = assertLastReceivedFileList().item(0) || null;
+    if (args.explicitToken) {
+      existingFile = {token: args.explicitToken};
+    }
     await assertLastReceivedFileList().openFilesWithFilePicker(
-        data.simpleArgs, existingFile);
+        args.acceptTypeKeys, existingFile);
     return 'openFilesWithFilePicker resolved';
   },
 };

@@ -48,8 +48,8 @@ void ActiveDirectoryPasswordChangeScreenHandler::Show(
     const std::string& username,
     int error) {
   base::DictionaryValue data;
-  data.SetString(kUsernameKey, username);
-  data.SetInteger(kErrorKey, error);
+  data.SetStringKey(kUsernameKey, username);
+  data.SetIntKey(kErrorKey, error);
   ShowScreenWithData(kScreenId, &data);
 }
 

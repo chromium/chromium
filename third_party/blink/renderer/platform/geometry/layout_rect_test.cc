@@ -83,103 +83,55 @@ TEST(LayoutRectTest, IntersectsInclusively) {
   EXPECT_FALSE(b.IntersectsInclusively(a));
 }
 
-TEST(LayoutRectTest, EnclosingIntRect) {
+TEST(LayoutRectTest, ToEnclosingRect) {
   LayoutUnit small;
   small.SetRawValue(1);
   LayoutRect small_dimensions_rect(LayoutUnit(42.5f), LayoutUnit(84.5f), small,
                                    small);
-  EXPECT_EQ(IntRect(42, 84, 1, 1), EnclosingIntRect(small_dimensions_rect));
+  EXPECT_EQ(gfx::Rect(42, 84, 1, 1), ToEnclosingRect(small_dimensions_rect));
 
-  LayoutRect integral_rect(IntRect(100, 150, 200, 350));
-  EXPECT_EQ(IntRect(100, 150, 200, 350), EnclosingIntRect(integral_rect));
+  LayoutRect integral_rect(gfx::Rect(100, 150, 200, 350));
+  EXPECT_EQ(gfx::Rect(100, 150, 200, 350), ToEnclosingRect(integral_rect));
 
   LayoutRect fractional_pos_rect(LayoutUnit(100.6f), LayoutUnit(150.8f),
                                  LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(100, 150, 201, 351), EnclosingIntRect(fractional_pos_rect));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_pos_rect));
 
   LayoutRect fractional_dimensions_rect(LayoutUnit(100), LayoutUnit(150),
                                         LayoutUnit(200.6f), LayoutUnit(350.4f));
-  EXPECT_EQ(IntRect(100, 150, 201, 351),
-            EnclosingIntRect(fractional_dimensions_rect));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_dimensions_rect));
 
   LayoutRect fractional_both_rect1(LayoutUnit(100.6f), LayoutUnit(150.8f),
                                    LayoutUnit(200.4f), LayoutUnit(350.2f));
-  EXPECT_EQ(IntRect(100, 150, 201, 351),
-            EnclosingIntRect(fractional_both_rect1));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_both_rect1));
 
   LayoutRect fractional_both_rect2(LayoutUnit(100.5f), LayoutUnit(150.7f),
                                    LayoutUnit(200.3f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(100, 150, 201, 351),
-            EnclosingIntRect(fractional_both_rect2));
+  EXPECT_EQ(gfx::Rect(100, 150, 201, 351),
+            ToEnclosingRect(fractional_both_rect2));
 
   LayoutRect fractional_both_rect3(LayoutUnit(100.3f), LayoutUnit(150.2f),
                                    LayoutUnit(200.8f), LayoutUnit(350.9f));
-  EXPECT_EQ(IntRect(100, 150, 202, 352),
-            EnclosingIntRect(fractional_both_rect3));
+  EXPECT_EQ(gfx::Rect(100, 150, 202, 352),
+            ToEnclosingRect(fractional_both_rect3));
 
   LayoutRect fractional_negpos_rect1(LayoutUnit(-100.4f), LayoutUnit(-150.8f),
                                      LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(-101, -151, 201, 351),
-            EnclosingIntRect(fractional_negpos_rect1));
+  EXPECT_EQ(gfx::Rect(-101, -151, 201, 351),
+            ToEnclosingRect(fractional_negpos_rect1));
 
   LayoutRect fractional_negpos_rect2(LayoutUnit(-100.5f), LayoutUnit(-150.7f),
                                      LayoutUnit(199.4f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-101, -151, 200, 351),
-            EnclosingIntRect(fractional_negpos_rect2));
+  EXPECT_EQ(gfx::Rect(-101, -151, 200, 351),
+            ToEnclosingRect(fractional_negpos_rect2));
 
   LayoutRect fractional_negpos_rect3(LayoutUnit(-100.3f), LayoutUnit(-150.2f),
                                      LayoutUnit(199.6f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-101, -151, 201, 352),
-            EnclosingIntRect(fractional_negpos_rect3));
-}
-
-TEST(LayoutRectTest, EnclosedIntRect) {
-  LayoutUnit small;
-  small.SetRawValue(1);
-  LayoutRect small_dimensions_rect(LayoutUnit(42.5f), LayoutUnit(84.5f), small,
-                                   small);
-
-  LayoutRect integral_rect(IntRect(100, 150, 200, 350));
-  EXPECT_EQ(IntRect(100, 150, 200, 350), EnclosedIntRect(integral_rect));
-
-  LayoutRect fractional_pos_rect(LayoutUnit(100.6f), LayoutUnit(150.8f),
-                                 LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(101, 151, 199, 349), EnclosedIntRect(fractional_pos_rect));
-
-  LayoutRect fractional_dimensions_rect(LayoutUnit(100), LayoutUnit(150),
-                                        LayoutUnit(200.6f), LayoutUnit(350.4f));
-  EXPECT_EQ(IntRect(100, 150, 200, 350),
-            EnclosedIntRect(fractional_dimensions_rect));
-
-  LayoutRect fractional_both_rect1(LayoutUnit(100.6f), LayoutUnit(150.8f),
-                                   LayoutUnit(200.4f), LayoutUnit(350.2f));
-  EXPECT_EQ(IntRect(101, 151, 199, 349),
-            EnclosedIntRect(fractional_both_rect1));
-
-  LayoutRect fractional_both_rect2(LayoutUnit(100.5f), LayoutUnit(150.7f),
-                                   LayoutUnit(200.3f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(101, 151, 199, 349),
-            EnclosedIntRect(fractional_both_rect2));
-
-  LayoutRect fractional_both_rect3(LayoutUnit(100.3f), LayoutUnit(150.2f),
-                                   LayoutUnit(200.6f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(101, 151, 199, 349),
-            EnclosedIntRect(fractional_both_rect3));
-
-  LayoutRect fractional_negpos_rect1(LayoutUnit(-100.4f), LayoutUnit(-150.8f),
-                                     LayoutUnit(200), LayoutUnit(350));
-  EXPECT_EQ(IntRect(-100, -150, 199, 349),
-            EnclosedIntRect(fractional_negpos_rect1));
-
-  LayoutRect fractional_negpos_rect2(LayoutUnit(-100.5f), LayoutUnit(-150.7f),
-                                     LayoutUnit(199.4f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-100, -150, 198, 349),
-            EnclosedIntRect(fractional_negpos_rect2));
-
-  LayoutRect fractional_negpos_rect3(LayoutUnit(-100.3f), LayoutUnit(-150.2f),
-                                     LayoutUnit(199.6f), LayoutUnit(350.3f));
-  EXPECT_EQ(IntRect(-100, -150, 199, 350),
-            EnclosedIntRect(fractional_negpos_rect3));
+  EXPECT_EQ(gfx::Rect(-101, -151, 201, 352),
+            ToEnclosingRect(fractional_negpos_rect3));
 }
 
 TEST(LayoutRectTest, EdgesOnPixelBoundaries) {
@@ -235,52 +187,55 @@ TEST(LayoutRectTest, ExpandEdgesToPixelBoundaries) {
   LayoutRect small_dimensions_rect(LayoutUnit(42.5f), LayoutUnit(84.5f), small,
                                    small);
   small_dimensions_rect.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(42, 84, 1, 1)), small_dimensions_rect);
+  EXPECT_EQ(LayoutRect(gfx::Rect(42, 84, 1, 1)), small_dimensions_rect);
 
-  LayoutRect integral_rect(IntRect(100, 150, 200, 350));
+  LayoutRect integral_rect(gfx::Rect(100, 150, 200, 350));
   integral_rect.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(100, 150, 200, 350)), integral_rect);
+  EXPECT_EQ(LayoutRect(gfx::Rect(100, 150, 200, 350)), integral_rect);
 
   LayoutRect fractional_pos_rect(LayoutUnit(100.6f), LayoutUnit(150.8f),
                                  LayoutUnit(200), LayoutUnit(350));
   fractional_pos_rect.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)), fractional_pos_rect);
+  EXPECT_EQ(LayoutRect(gfx::Rect(100, 150, 201, 351)), fractional_pos_rect);
 
   LayoutRect fractional_dimensions_rect(LayoutUnit(100), LayoutUnit(150),
                                         LayoutUnit(200.6f), LayoutUnit(350.4f));
   fractional_dimensions_rect.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)),
+  EXPECT_EQ(LayoutRect(gfx::Rect(100, 150, 201, 351)),
             fractional_dimensions_rect);
 
   LayoutRect fractional_both_rect1(LayoutUnit(100.6f), LayoutUnit(150.8f),
                                    LayoutUnit(200.4f), LayoutUnit(350.2f));
   fractional_both_rect1.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)), fractional_both_rect1);
+  EXPECT_EQ(LayoutRect(gfx::Rect(100, 150, 201, 351)), fractional_both_rect1);
 
   LayoutRect fractional_both_rect2(LayoutUnit(100.5f), LayoutUnit(150.7f),
                                    LayoutUnit(200.3f), LayoutUnit(350.3f));
   fractional_both_rect2.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(100, 150, 201, 351)), fractional_both_rect2);
+  EXPECT_EQ(LayoutRect(gfx::Rect(100, 150, 201, 351)), fractional_both_rect2);
 
   LayoutRect fractional_both_rect3(LayoutUnit(100.3f), LayoutUnit(150.2f),
                                    LayoutUnit(200.8f), LayoutUnit(350.9f));
   fractional_both_rect3.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(100, 150, 202, 352)), fractional_both_rect3);
+  EXPECT_EQ(LayoutRect(gfx::Rect(100, 150, 202, 352)), fractional_both_rect3);
 
   LayoutRect fractional_negpos_rect1(LayoutUnit(-100.4f), LayoutUnit(-150.8f),
                                      LayoutUnit(200), LayoutUnit(350));
   fractional_negpos_rect1.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(-101, -151, 201, 351)), fractional_negpos_rect1);
+  EXPECT_EQ(LayoutRect(gfx::Rect(-101, -151, 201, 351)),
+            fractional_negpos_rect1);
 
   LayoutRect fractional_negpos_rect2(LayoutUnit(-100.5f), LayoutUnit(-150.7f),
                                      LayoutUnit(199.4f), LayoutUnit(350.3f));
   fractional_negpos_rect2.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(-101, -151, 200, 351)), fractional_negpos_rect2);
+  EXPECT_EQ(LayoutRect(gfx::Rect(-101, -151, 200, 351)),
+            fractional_negpos_rect2);
 
   LayoutRect fractional_negpos_rect3(LayoutUnit(-100.3f), LayoutUnit(-150.2f),
                                      LayoutUnit(199.6f), LayoutUnit(350.3f));
   fractional_negpos_rect3.ExpandEdgesToPixelBoundaries();
-  EXPECT_EQ(LayoutRect(IntRect(-101, -151, 201, 352)), fractional_negpos_rect3);
+  EXPECT_EQ(LayoutRect(gfx::Rect(-101, -151, 201, 352)),
+            fractional_negpos_rect3);
 }
 
 struct LayoutRectUniteTestData {

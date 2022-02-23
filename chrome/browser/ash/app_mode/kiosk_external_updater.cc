@@ -221,9 +221,8 @@ void KioskExternalUpdater::ProcessParsedManifest(
           IDS_KIOSK_EXTERNAL_UPDATE_IN_PROGRESS));
 
   external_update_path_ = external_update_dir;
-  for (base::DictionaryValue::Iterator it(*parsed_manifest); !it.IsAtEnd();
-       it.Advance()) {
-    std::string app_id = it.key();
+  for (auto manifest : parsed_manifest->DictItems()) {
+    std::string app_id = manifest.first;
     std::string cached_version_str;
     base::FilePath cached_crx;
     if (!KioskAppManager::Get()->GetCachedCrx(
@@ -233,21 +232,24 @@ void KioskExternalUpdater::ProcessParsedManifest(
     }
 
     const base::DictionaryValue* extension = nullptr;
-    if (!it.value().GetAsDictionary(&extension)) {
-      LOG(ERROR) << "Found bad entry in manifest type " << it.value().type();
+    if (!manifest.second.GetAsDictionary(&extension)) {
+      LOG(ERROR) << "Found bad entry in manifest type "
+                 << manifest.second.type();
       continue;
     }
 
-    std::string external_crx_str;
-    if (!extension->GetString(kExternalCrx, &external_crx_str)) {
+    const std::string* external_crx_str =
+        extension->FindStringKey(kExternalCrx);
+    if (!external_crx_str) {
       LOG(ERROR) << "Can't find external crx in manifest " << app_id;
       continue;
     }
 
-    std::string external_version_str;
-    if (extension->GetString(kExternalVersion, &external_version_str)) {
-      if (!ShouldUpdateForHigherVersion(
-              cached_version_str, external_version_str, false)) {
+    const std::string* external_version_str =
+        extension->FindStringKey(kExternalVersion);
+    if (external_version_str) {
+      if (!ShouldUpdateForHigherVersion(cached_version_str,
+                                        *external_version_str, false)) {
         LOG(WARNING) << "External app " << app_id
                      << " is at the same or lower version comparing to "
                      << " the existing one.";
@@ -263,7 +265,7 @@ void KioskExternalUpdater::ProcessParsedManifest(
       NOTREACHED();
     }
     update.external_crx = extensions::CRXFileInfo(
-        external_update_path_.AppendASCII(external_crx_str),
+        external_update_path_.AppendASCII(*external_crx_str),
         extensions::GetExternalVerifierFormat());
     update.external_crx.extension_id = app_id;
     update.update_status = UpdateStatus::kPending;

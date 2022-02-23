@@ -48,7 +48,7 @@
 #include "third_party/blink/renderer/core/layout/layout_vtt_cue.h"
 #include "third_party/blink/renderer/platform/bindings/exception_messages.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/text/bidi_resolver.h"
@@ -171,7 +171,7 @@ void VTTCueBox::ApplyCSSProperties(
   SetInlineStyleProperty(CSSPropertyID::kWebkitWritingMode,
                          display_parameters.writing_mode);
 
-  const FloatPoint& position = display_parameters.position;
+  const gfx::PointF& position = display_parameters.position;
 
   // the 'top' property must be set to top,
   SetInlineStyleProperty(CSSPropertyID::kTop, position.y(),

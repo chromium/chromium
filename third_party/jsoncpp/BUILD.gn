@@ -11,7 +11,7 @@ config("jsoncpp_config") {
   # declaration flag.
   # This temporary flag allowing clients to update to the new version, and then
   # update to the new StreamWriter and CharReader classes.
-  if (!is_win || is_clang) {
+  if (!is_win || (is_clang && !is_ios)) {
     cflags_cc = [ "-Wno-deprecated-declarations" ]
   }
 }

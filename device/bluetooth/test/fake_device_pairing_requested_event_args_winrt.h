@@ -9,7 +9,6 @@
 #include <wrl/client.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
 #include "device/bluetooth/test/fake_device_information_custom_pairing_winrt.h"
 
 namespace device {

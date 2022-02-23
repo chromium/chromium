@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "content/web_test/browser/web_test_control_host.h"
+#include "base/memory/raw_ptr.h"
 
 #include <stddef.h>
 #include <string.h>
@@ -102,7 +103,7 @@
 #include "ui/shell_dialogs/select_file_policy.h"
 #include "url/url_constants.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -128,8 +129,7 @@ std::string DumpFrameState(const blink::ExplodedFrameState& frame_state,
   std::string url = web_test_string_util::NormalizeWebTestURL(
       base::UTF16ToUTF8(frame_state.url_string.value_or(std::u16string())));
   result.append(url);
-  DCHECK(frame_state.target);
-  if (!frame_state.target->empty()) {
+  if (frame_state.target && !frame_state.target->empty()) {
     std::string unique_name = base::UTF16ToUTF8(*frame_state.target);
     result.append(" (in frame \"");
     result.append(
@@ -250,7 +250,6 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
   prefs->dom_paste_enabled = true;
   prefs->javascript_can_access_clipboard = true;
   prefs->xslt_enabled = true;
-  prefs->application_cache_enabled = true;
   prefs->tabs_to_links = false;
   prefs->hyperlink_auditing_enabled = false;
   prefs->allow_running_insecure_content = false;
@@ -274,14 +273,14 @@ void ApplyWebTestDefaultPreferences(blink::web_pref::WebPreferences* prefs) {
       command_line.HasSwitch(switches::kForcePresentationReceiverForTesting);
   prefs->translate_service_available = true;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   prefs->editing_behavior = blink::mojom::EditingBehavior::kEditingMacBehavior;
 #else
   prefs->editing_behavior =
       blink::mojom::EditingBehavior::kEditingWindowsBehavior;
 #endif
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   prefs->cursive_font_family_map[blink::web_pref::kCommonScript] =
       u"Apple Chancery";
   prefs->fantasy_font_family_map[blink::web_pref::kCommonScript] = u"Papyrus";
@@ -476,7 +475,7 @@ class WebTestControlHost::WebTestWindowObserver : WebContentsObserver {
     web_test_control_->HandleNewRenderFrameHost(render_frame_host);
   }
 
-  WebTestControlHost* const web_test_control_;
+  const raw_ptr<WebTestControlHost> web_test_control_;
 };
 
 // WebTestControlHost -------------------------------------------------------
@@ -545,7 +544,7 @@ bool WebTestControlHost::PrepareForWebTest(const TestInfo& test_info) {
     printer_->set_capture_text_only(false);
   printer_->reset();
 
-  accumulated_web_test_runtime_flags_changes_.Clear();
+  accumulated_web_test_runtime_flags_changes_.DictClear();
   web_test_runtime_flags_.Reset();
   main_window_render_view_hosts_.clear();
   main_window_render_process_hosts_.clear();
@@ -795,7 +794,7 @@ void WebTestControlHost::InitiateCaptureDump(
   if (!renderer_dump_result_->layout) {
     DCHECK_EQ(0, waiting_for_layout_dumps_);
 
-    main_window_->web_contents()->ForEachRenderFrameHost(
+    main_window_->web_contents()->GetMainFrame()->ForEachRenderFrameHost(
         base::BindLambdaForTesting([&](RenderFrameHost* render_frame_host) {
           if (!render_frame_host->IsRenderFrameLive())
             return;
@@ -843,10 +842,10 @@ void WebTestControlHost::TestFinishedInSecondaryRenderer() {
 void WebTestControlHost::EnqueueSurfaceCopyRequest() {
   // Under fuzzing, the renderer may close the |main_window_| while we're
   // capturing test results, as demonstrated by https://crbug.com/1098835.
-  // We must handle this bad behaviour, and we just end the test without
-  // recording any results.
+  // We must handle this bad behaviour.
   if (!main_window_) {
-    OnTestFinished();
+    // DiscardMainWindow has already called OnTestFinished().
+    CHECK_EQ(test_phase_, CLEAN_UP);
     return;
   }
 
@@ -1134,13 +1133,20 @@ void WebTestControlHost::DiscardMainWindow() {
   // Shell windows, to avoid using the potentially-bad pointer.
   CloseAllWindows();
 
-  // Then we immediately end the current test instead of timing out. This is
-  // like ReportResults() except we report only messages added to the
-  // |printer_| and no other test results.
-  printer_->StartStateDump();
-  printer_->PrintTextHeader();
-  printer_->PrintTextFooter();
-  OnTestFinished();
+  if (test_phase_ == DURING_TEST) {
+    // Then we immediately end the current test instead of timing out. This is
+    // like ReportResults() except we report only messages added to the
+    // |printer_| and no other test results.
+    printer_->StartStateDump();
+    printer_->PrintTextHeader();
+    printer_->PrintTextFooter();
+    OnTestFinished();
+  } else {
+    // Given that main_window_ is null, this is (at the time of writing)
+    // equivalent to calling Shell::QuitMainMessageLoopForTesting(), but it
+    // seems cleaner to call it.
+    PrepareRendererForNextWebTest();
+  }
 }
 
 void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
@@ -1216,6 +1222,8 @@ void WebTestControlHost::HandleNewRenderFrameHost(RenderFrameHost* frame) {
 }
 
 void WebTestControlHost::OnTestFinished() {
+  CHECK_EQ(test_phase_, DURING_TEST);
+
   test_phase_ = CLEAN_UP;
   if (!printer_->output_finished())
     printer_->PrintImageFooter();
@@ -1223,9 +1231,9 @@ void WebTestControlHost::OnTestFinished() {
     main_window_->web_contents()->ExitFullscreen(/*will_cause_resize=*/false);
   devtools_bindings_.reset();
   devtools_protocol_test_bindings_.reset();
-  accumulated_web_test_runtime_flags_changes_.Clear();
+  accumulated_web_test_runtime_flags_changes_.DictClear();
   web_test_runtime_flags_.Reset();
-  work_queue_states_.Clear();
+  work_queue_states_.DictClear();
 
   ShellBrowserContext* browser_context =
       ShellContentBrowserClient::Get()->browser_context();
@@ -1786,6 +1794,21 @@ void WebTestControlHost::PrepareRendererForNextWebTest() {
   // odds of transitionning from one test to another with no side effects.
   // Consider removing it to understand what happens without.
   web_contents->Stop();
+
+  // Disable back/forward cache before the current test page navigates away so
+  // that the test page does not remain in the back/forward cache after the
+  // test.
+  BackForwardCache::DisableForRenderFrameHost(
+      web_contents->GetMainFrame(),
+      BackForwardCache::DisabledReason(
+          {BackForwardCache::DisabledSource::kTesting, 0,
+           "disabled for web_test not to cache the test page after the test "
+           "ends."}));
+
+  // Flush all the back/forward cache to avoid side effects in the next test.
+  for (auto* shell : Shell::windows()) {
+    shell->web_contents()->GetController().GetBackForwardCache().Flush();
+  }
 
   // Navigate to about:blank in between two consecutive web tests.
   //

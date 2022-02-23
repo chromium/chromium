@@ -7,8 +7,6 @@
 #include <memory>
 
 #include "gpu/command_buffer/service/mailbox_manager.h"
-#include "media/base/status_codes.h"
-#include "media/base/win/hresult_status_helper.h"
 #include "media/gpu/windows/d3d11_com_defs.h"
 #include "ui/gl/hdr_metadata_helper_win.h"
 
@@ -52,9 +50,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   HRESULT hr = video_processor_->CreateVideoProcessorOutputView(
       output_texture_.Get(), &output_view_desc, &output_view);
   if (!SUCCEEDED(hr)) {
-    return D3D11Status(
-               D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(
+        hr, D3D11Status::Codes::kCreateVideoProcessorOutputViewFailed);
   }
 
   D3D11_VIDEO_PROCESSOR_INPUT_VIEW_DESC input_view_desc = {0};
@@ -65,8 +62,8 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   hr = video_processor_->CreateVideoProcessorInputView(
       texture_.Get(), &input_view_desc, &input_view);
   if (!SUCCEEDED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kCreateVideoProcessorInputViewFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(
+        hr, D3D11Status::Codes::kCreateVideoProcessorInputViewFailed);
   }
 
   D3D11_VIDEO_PROCESSOR_STREAM streams = {0};
@@ -83,7 +80,20 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
   if (!previous_input_color_space_ ||
       *previous_input_color_space_ != input_color_space) {
     previous_input_color_space_ = input_color_space;
-    video_processor_->SetStreamColorSpace(input_color_space);
+
+    // The VideoProcessor doesn't support tone mapping of HLG content, so treat
+    // treat it as gamma 2.2 since HLG is designed to look okay that way.
+    auto adjusted_color_space = input_color_space;
+    if (!video_processor_->supports_tone_mapping() &&
+        input_color_space.GetTransferID() == gfx::ColorSpace::TransferID::HLG &&
+        !copy_color_space.IsHDR()) {
+      adjusted_color_space = gfx::ColorSpace(
+          input_color_space.GetPrimaryID(),
+          gfx::ColorSpace::TransferID::GAMMA22, input_color_space.GetMatrixID(),
+          input_color_space.GetRangeID());
+    }
+
+    video_processor_->SetStreamColorSpace(adjusted_color_space);
     video_processor_->SetOutputColorSpace(copy_color_space);
   }
 
@@ -92,8 +102,7 @@ D3D11Status CopyingTexture2DWrapper::ProcessTexture(
                                            1,  // stream_count
                                            &streams);
   if (!SUCCEEDED(hr)) {
-    return D3D11Status(D3D11Status::Codes::kVideoProcessorBltFailed)
-        .AddCause(HresultToStatus(hr));
+    return HresultToStatus(hr, D3D11Status::Codes::kVideoProcessorBltFailed);
   }
 
   return output_texture_wrapper_->ProcessTexture(copy_color_space, mailbox_dest,

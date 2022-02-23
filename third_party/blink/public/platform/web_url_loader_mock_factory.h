@@ -65,8 +65,7 @@ class WebURLLoaderMockFactory {
   // Causes all pending asynchronous requests to be served. When this method
   // returns all the pending requests have been processed.
   // Note: this may not work as expected if more requests could be made
-  // asynchronously from different threads (e.g. when HTML parser thread
-  // is being involved).
+  // asynchronously from different threads.
   // DO NOT USE THIS for Frame loading; always use methods defined in
   // frame_test_helpers instead.
   virtual void ServeAsynchronousRequests() = 0;

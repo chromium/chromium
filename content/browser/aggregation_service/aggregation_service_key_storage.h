@@ -7,15 +7,11 @@
 
 #include <vector>
 
-#include "content/common/content_export.h"
+class GURL;
 
 namespace base {
 class Time;
 }  // namespace base
-
-namespace url {
-class Origin;
-}  // namespace url
 
 namespace content {
 
@@ -24,20 +20,19 @@ struct PublicKeyset;
 
 // This class provides an interface for persisting helper server public keys
 // and performing queries on it.
-class CONTENT_EXPORT AggregationServiceKeyStorage {
+class AggregationServiceKeyStorage {
  public:
   virtual ~AggregationServiceKeyStorage() = default;
 
-  // Returns the public keys for `origin` that are currently valid. The returned
+  // Returns the public keys for `url` that are currently valid. The returned
   // value should not be stored for future operations as it may expire soon.
-  virtual std::vector<PublicKey> GetPublicKeys(const url::Origin& origin) = 0;
+  virtual std::vector<PublicKey> GetPublicKeys(const GURL& url) = 0;
 
-  // Sets the public keys for `origin`.
-  virtual void SetPublicKeys(const url::Origin& origin,
-                             const PublicKeyset& keyset) = 0;
+  // Sets the public keys for `url`.
+  virtual void SetPublicKeys(const GURL& url, const PublicKeyset& keyset) = 0;
 
-  // Clears the stored public keys for `origin`.
-  virtual void ClearPublicKeys(const url::Origin& origin) = 0;
+  // Clears the stored public keys for `url`.
+  virtual void ClearPublicKeys(const GURL& url) = 0;
 
   // Clears the stored public keys that were fetched between `delete_begin` and
   // `delete_end` time (inclusive). Null times are treated as unbounded lower or

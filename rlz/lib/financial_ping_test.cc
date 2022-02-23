@@ -33,7 +33,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "rlz/win/lib/machine_deal.h"
 #else
 #include "base/time/time.h"
@@ -82,7 +82,7 @@ TEST_F(FinancialPingTest, FormRequest) {
   std::string brand_string = rlz_lib::SupplementaryBranding::GetBrand();
   const char* brand = brand_string.empty() ? "GGLA" : brand_string.c_str();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   EXPECT_TRUE(rlz_lib::MachineDealCode::Set("dcc_value"));
 #define DCC_PARAM "&dcc=dcc_value"
 #else

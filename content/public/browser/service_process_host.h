@@ -10,19 +10,23 @@
 #include <utility>
 #include <vector>
 
-#include "base/callback.h"
 #include "base/command_line.h"
 #include "base/observer_list_types.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
+#include "build/chromecast_buildflags.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/service_process_info.h"
 #include "mojo/public/cpp/bindings/generic_pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
-#include "mojo/public/cpp/system/message_pipe.h"
 #include "sandbox/policy/mojom/sandbox.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+
+#if BUILDFLAG(IS_CHROMECAST)
+#include "base/callback.h"
+#include "mojo/public/cpp/system/message_pipe.h"
+#endif
 
 namespace content {
 
@@ -162,6 +166,7 @@ class CONTENT_EXPORT ServiceProcessHost {
                      sandbox::mojom::Sandbox sandbox);
 };
 
+#if BUILDFLAG(IS_CHROMECAST)
 // DEPRECATED. DO NOT USE THIS. This is a helper for any remaining service
 // launching code which uses an older code path to launch services in a utility
 // process. All new code must use ServiceProcessHost instead of this API.
@@ -171,6 +176,7 @@ void CONTENT_EXPORT LaunchUtilityProcessServiceDeprecated(
     sandbox::mojom::Sandbox sandbox_type,
     mojo::ScopedMessagePipeHandle service_pipe,
     base::OnceCallback<void(base::ProcessId)> callback);
+#endif
 
 }  // namespace content
 

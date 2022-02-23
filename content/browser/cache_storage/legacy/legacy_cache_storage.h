@@ -12,6 +12,7 @@
 #include "base/files/file_path.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/memory_pressure_listener.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "build/build_config.h"
@@ -23,10 +24,11 @@
 #include "content/browser/cache_storage/cache_storage_manager.h"
 #include "content/browser/cache_storage/cache_storage_scheduler_types.h"
 #include "content/browser/cache_storage/legacy/legacy_cache_storage_cache.h"
+#include "content/common/content_export.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/application_status_listener.h"
 #endif
 
@@ -280,7 +282,7 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
 
   void FlushIndexIfDirty();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void OnApplicationStateChange(base::android::ApplicationState state);
 #endif
 
@@ -327,12 +329,12 @@ class CONTENT_EXPORT LegacyCacheStorage : public CacheStorage,
 
   // The manager that owns this cache storage. Only set to null by
   // RemoveManager() when this cache storage is being deleted.
-  LegacyCacheStorageManager* cache_storage_manager_;
+  raw_ptr<LegacyCacheStorageManager> cache_storage_manager_;
 
   base::CancelableOnceClosure index_write_task_;
   size_t handle_ref_count_ = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   std::unique_ptr<base::android::ApplicationStatusListener>
       app_status_listener_;
 #endif

@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/application_delegate/metrics_mediator.h"
 
+#include <mach/mach.h>
 #include <sys/sysctl.h>
 
 #include "base/bind.h"
@@ -19,6 +20,7 @@
 #include "components/metrics/metrics_service.h"
 #include "components/prefs/pref_service.h"
 #import "components/previous_session_info/previous_session_info.h"
+#import "components/signin/public/identity_manager/tribool.h"
 #include "components/ukm/ios/ukm_reporting_ios_util.h"
 #import "ios/chrome/app/application_delegate/metric_kit_subscriber.h"
 #import "ios/chrome/app/application_delegate/startup_information.h"
@@ -28,9 +30,10 @@
 #include "ios/chrome/browser/crash_report/crash_helper.h"
 #include "ios/chrome/browser/main/browser.h"
 #include "ios/chrome/browser/metrics/first_user_action_recorder.h"
-#import "ios/chrome/browser/net/connection_type_observer_bridge.h"
 #include "ios/chrome/browser/pref_names.h"
+#import "ios/chrome/browser/signin/signin_util.h"
 #include "ios/chrome/browser/system_flags.h"
+#import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_utils.h"
 #import "ios/chrome/browser/ui/main/browser_interface_provider.h"
 #import "ios/chrome/browser/ui/main/connection_information.h"
@@ -76,6 +79,26 @@ const metrics_mediator::HistogramNameCountPair kHistogramsFromExtension[] = {
         @"IOS.CredentialExtension.NewCredentialUsername",
         static_cast<int>(CPENewCredentialUsername::kMaxValue) + 1,
     }};
+
+// Enum values for Startup.IOSColdStartType histogram.
+// Entries should not be renumbered and numeric values should never be reused.
+enum class ColdStartType : int {
+  // Regular cold start.
+  kRegular = 0,
+  // Cold start with FRE.
+  kFirstRun = 1,
+  // Cold start after a device restore.
+  kAfterDeviceRestore = 2,
+  // Cold start after a Chrome upgrade.
+  kAfterChromeUpgrade = 3,
+  // Cold start after a device restore and Chrome upgrade.
+  kAfterDeviceRestoreAndChromeUpgrade = 4,
+  // Unknown device restore.
+  kUnknownDeviceRestore = 5,
+  // Unknown device restore and Chrome upgrade.
+  kUnknownDeviceRestoreAndChromeUpgrade = 6,
+  kMaxValue = kUnknownDeviceRestoreAndChromeUpgrade,
+};
 
 // Returns time delta since app launch as retrieved from kernel info about
 // the current process.
@@ -176,6 +199,8 @@ void DumpEnvironment(id<StartupInformation> startup_information) {
 
 namespace metrics_mediator {
 NSString* const kAppEnteredBackgroundDateKey = @"kAppEnteredBackgroundDate";
+NSString* const kAppDidFinishLaunchingConsecutiveCallsKey =
+    @"kAppDidFinishLaunchingConsecutiveCallsKey";
 
 void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
   using base::SysNSStringToUTF8;
@@ -247,36 +272,16 @@ void RecordWidgetUsage(base::span<const HistogramNameCountPair> histograms) {
 }  // namespace metrics_mediator
 
 using metrics_mediator::kAppEnteredBackgroundDateKey;
+using metrics_mediator::kAppDidFinishLaunchingConsecutiveCallsKey;
 
-@interface MetricsMediator ()<CRConnectionTypeObserverBridge> {
-  // Whether or not the crash reports present at startup have been processed to
-  // determine if the last app lifetime ended in an OOM crash.
-  BOOL _hasProcessedCrashReportsPresentAtStartup;
-
-  // Observer for the connection type.  Contains a valid object only if the
-  // metrics setting is set to wifi-only.
-  std::unique_ptr<ConnectionTypeObserverBridge> _connectionTypeObserverBridge;
-}
-
-// Starts or stops metrics recording and/or uploading.
-- (void)setMetricsEnabled:(BOOL)enabled withUploading:(BOOL)allowUploading;
+@interface MetricsMediator ()
+// Starts or stops metrics recording.
+- (void)setMetricsEnabled:(BOOL)enabled;
 // Sets variables needed by the app_group application to collect UMA data.
 // Process the pending logs produced by extensions.
 // Called on start (cold and warm) and UMA settings change to update the
 // collecting settings in extensions.
 - (void)setAppGroupMetricsEnabled:(BOOL)enabled;
-// Processes crash reports present at startup.
-- (void)processCrashReportsPresentAtStartup;
-// Starts or stops crash recording and/or uploading.
-- (void)setBreakpadEnabled:(BOOL)enabled withUploading:(BOOL)allowUploading;
-// Starts or stops watching for wwan events.
-- (void)setWatchWWANEnabled:(BOOL)enabled;
-// Enable/disable transmission of accumulated logs and crash reports (dumps).
-- (void)setReporting:(BOOL)enableReporting;
-// Enable/Disable uploading crash reports.
-- (void)setBreakpadUploadingEnabled:(BOOL)enableUploading;
-// Returns YES if the metrics are enabled and the reporting is wifi-only.
-- (BOOL)isMetricsReportingEnabledWifiOnly;
 // Update metrics prefs on a permission (opt-in/out) change. When opting out,
 // this clears various client ids. When opting in, this resets saving crash
 // prefs, so as not to trigger upload of various stale data.
@@ -290,6 +295,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 + (void)recordNumNTPTabAtStartup:(int)numTabs;
 // Logs the number of NTP tabs with UMAHistogramCount100 and allows testing.
 + (void)recordNumNTPTabAtResume:(int)numTabs;
+// Logs the number of live NTP tabs with UMAHistogramCount100 and allows
+// testing.
++ (void)recordNumLiveNTPTabAtResume:(int)numTabs;
 
 @end
 
@@ -316,6 +324,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   NSUserDefaults* defaults = [NSUserDefaults standardUserDefaults];
   int consecutiveLoads = [defaults integerForKey:kLoadTimePreferenceKey];
   [defaults removeObjectForKey:kLoadTimePreferenceKey];
+  int consecutiveDidFinishLaunching =
+      [defaults integerForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
+  [defaults removeObjectForKey:kAppDidFinishLaunchingConsecutiveCallsKey];
 
   base::UmaHistogramTimes("Startup.ColdStartFromProcessCreationTimeV2",
                           processStartToNowTime);
@@ -330,6 +341,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
                           processStartToNowTime - sceneConnectionToNowTime);
   base::UmaHistogramCounts100("Startup.ConsecutiveLoadsWithoutLaunch",
                               consecutiveLoads);
+  base::UmaHistogramCounts100(
+      "Startup.ConsecutiveDidFinishLaunchingWithoutLaunch",
+      consecutiveDidFinishLaunching);
 
   if ([connectionInformation startupParameters]) {
     base::UmaHistogramTimes("Startup.ColdStartWithExternalURLTime",
@@ -356,6 +370,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
 
   int numTabs = 0;
   int numNTPTabs = 0;
+  int numLiveNTPTabs = 0;
   for (SceneState* scene in scenes) {
     if (!scene.interfaceProvider) {
       // The scene might not yet be initiated.
@@ -372,6 +387,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
         numNTPTabs++;
       }
     }
+    BrowserViewController* bvc = scene.interfaceProvider.mainInterface.bvc;
+    numLiveNTPTabs += [bvc liveNTPCount];
   }
 
   if (startupInformation.isColdStart) {
@@ -380,6 +397,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   } else {
     [self recordNumTabAtResume:numTabs];
     [self recordNumNTPTabAtResume:numNTPTabs];
+    // Only log at resume since there are likely no live NTPs on startup.
+    [self recordNumLiveNTPTabAtResume:numLiveNTPTabs];
   }
 
   if (UIAccessibilityIsVoiceOverRunning()) {
@@ -429,16 +448,42 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
     [[NSUserDefaults standardUserDefaults]
         removeObjectForKey:kAppEnteredBackgroundDateKey];
   }
+  if (!startupInformation.isColdStart) {
+    return;
+  }
+  signin::Tribool device_restore = IsFirstSessionAfterDeviceRestore();
+  ColdStartType sessionType;
+  if (startupInformation.isFirstRun) {
+    sessionType = ColdStartType::kFirstRun;
+  } else {
+    bool afterUpgrade =
+        [PreviousSessionInfo sharedInstance].isFirstSessionAfterUpgrade;
+    switch (device_restore) {
+      case signin::Tribool::kUnknown:
+        sessionType = afterUpgrade
+                          ? ColdStartType::kUnknownDeviceRestoreAndChromeUpgrade
+                          : ColdStartType::kUnknownDeviceRestore;
+        break;
+      case signin::Tribool::kTrue:
+        sessionType = afterUpgrade
+                          ? ColdStartType::kAfterDeviceRestoreAndChromeUpgrade
+                          : ColdStartType::kAfterDeviceRestore;
+        break;
+      case signin::Tribool::kFalse:
+        sessionType = afterUpgrade ? ColdStartType::kAfterChromeUpgrade
+                                   : ColdStartType::kRegular;
+        break;
+    }
+  }
+  base::UmaHistogramEnumeration("Startup.IOSColdStartType", sessionType);
 }
 
 - (void)updateMetricsStateBasedOnPrefsUserTriggered:(BOOL)isUserTriggered {
   BOOL optIn = [self areMetricsEnabled];
-  BOOL allowUploading = [self isUploadingEnabled];
   if (isUserTriggered)
     [self updateMetricsPrefsOnPermissionChange:optIn];
-  [self setMetricsEnabled:optIn withUploading:allowUploading];
-  [self setBreakpadEnabled:optIn withUploading:allowUploading];
-  [self setWatchWWANEnabled:optIn];
+  [self setMetricsEnabled:optIn];
+  crash_helper::SetEnabled(optIn);
   [self setAppGroupMetricsEnabled:optIn];
   [[MetricKitSubscriber sharedInstance] setEnabled:optIn];
 }
@@ -457,13 +502,9 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   return optIn;
 }
 
-- (BOOL)isUploadingEnabled {
-  return [self areMetricsEnabled];
-}
-
 #pragma mark - Internal methods.
 
-- (void)setMetricsEnabled:(BOOL)enabled withUploading:(BOOL)allowUploading {
+- (void)setMetricsEnabled:(BOOL)enabled {
   metrics::MetricsService* metrics =
       GetApplicationContext()->GetMetricsService();
   DCHECK(metrics);
@@ -473,10 +514,7 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
     if (!metrics->recording_active())
       metrics->Start();
 
-    if (allowUploading)
-      metrics->EnableReporting();
-    else
-      metrics->DisableReporting();
+    metrics->EnableReporting();
   } else {
     if (metrics->recording_active())
       metrics->Stop();
@@ -501,43 +539,6 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
     app_group::main_app::DisableMetrics();
   }
   metrics_mediator::RecordWidgetUsage(kHistogramsFromExtension);
-}
-
-- (void)processCrashReportsPresentAtStartup {
-  _hasProcessedCrashReportsPresentAtStartup = YES;
-}
-
-- (void)setBreakpadEnabled:(BOOL)enabled withUploading:(BOOL)allowUploading {
-  crash_helper::SetUserEnabledUploading(enabled);
-  if (enabled) {
-    crash_helper::SetEnabled(true);
-
-    // Do some processing of the crash reports present at startup. Note that
-    // this processing must be done before uploading is enabled because once
-    // uploading starts the number of crash reports present will begin to
-    // decrease as they are uploaded. The ordering is ensured here because both
-    // the crash report processing and the upload enabling are handled by
-    // posting blocks to a single |dispath_queue_t| in BreakpadController.
-    if (!_hasProcessedCrashReportsPresentAtStartup && allowUploading) {
-      [self processCrashReportsPresentAtStartup];
-    }
-    [self setBreakpadUploadingEnabled:(![[PreviousSessionInfo sharedInstance]
-                                           isFirstSessionAfterUpgrade] &&
-                                       allowUploading)];
-  } else {
-    crash_helper::SetEnabled(false);
-  }
-}
-
-- (void)setWatchWWANEnabled:(BOOL)enabled {
-  if (!enabled) {
-    _connectionTypeObserverBridge.reset();
-    return;
-  }
-
-  if (!_connectionTypeObserverBridge) {
-    _connectionTypeObserverBridge.reset(new ConnectionTypeObserverBridge(self));
-  }
 }
 
 - (void)updateMetricsPrefsOnPermissionChange:(BOOL)enabled {
@@ -566,14 +567,6 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   }
 }
 
-+ (void)disableReporting {
-  crash_helper::SetUploadingEnabled(false);
-  metrics::MetricsService* metrics =
-      GetApplicationContext()->GetMetricsService();
-  DCHECK(metrics);
-  metrics->DisableReporting();
-}
-
 + (void)applicationDidEnterBackground:(NSInteger)memoryWarningCount {
   base::RecordAction(base::UserMetricsAction("MobileEnteredBackground"));
   base::UmaHistogramCounts100("MemoryWarning.OccurrencesPerSession",
@@ -588,30 +581,6 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
     mach_vm_size_t footprint_mb = task_info_data.phys_footprint / 1024 / 1024;
     base::UmaHistogramMemoryLargeMB(
         "Memory.Browser.MemoryFootprint.OnBackground", footprint_mb);
-  }
-}
-
-#pragma mark - CRConnectionTypeObserverBridge implementation
-
-- (void)connectionTypeChanged:(net::NetworkChangeNotifier::ConnectionType)type {
-  BOOL wwanEnabled = net::NetworkChangeNotifier::IsConnectionCellular(type);
-  // Currently the MainController only cares about WWAN state for the metrics
-  // reporting preference.  If it's disabled, or the wifi-only preference is
-  // not set, we don't care.  In fact, we should not even be getting this call.
-  DCHECK([self isMetricsReportingEnabledWifiOnly]);
-  // |wwanEnabled| is true if a cellular connection such as EDGE or GPRS is
-  // used. Otherwise, either there is no connection available, or another link
-  // (such as WiFi) is used.
-  if (wwanEnabled) {
-    // If WWAN mode is on, wifi-only prefs should be disabled.
-    // For the crash reporter, we still want to record the crashes.
-    [self setBreakpadUploadingEnabled:NO];
-    [self setReporting:NO];
-  } else if ([self areMetricsEnabled]) {
-    // Double-check that the metrics reporting preference is enabled.
-    if (![[PreviousSessionInfo sharedInstance] isFirstSessionAfterUpgrade])
-      [self setBreakpadUploadingEnabled:YES];
-    [self setReporting:YES];
   }
 }
 
@@ -633,21 +602,8 @@ using metrics_mediator::kAppEnteredBackgroundDateKey;
   base::UmaHistogramCounts100("Tabs.NTPCountAtResume", numTabs);
 }
 
-- (void)setBreakpadUploadingEnabled:(BOOL)enableUploading {
-  crash_helper::SetUploadingEnabled(enableUploading);
-}
-
-- (void)setReporting:(BOOL)enableReporting {
-  if (enableReporting) {
-    GetApplicationContext()->GetMetricsService()->EnableReporting();
-  } else {
-    GetApplicationContext()->GetMetricsService()->DisableReporting();
-  }
-}
-
-- (BOOL)isMetricsReportingEnabledWifiOnly {
-  return GetApplicationContext()->GetLocalState()->GetBoolean(
-      metrics::prefs::kMetricsReportingEnabled);
++ (void)recordNumLiveNTPTabAtResume:(int)numTabs {
+  base::UmaHistogramCounts100("Tabs.LiveNTPCountAtResume", numTabs);
 }
 
 @end

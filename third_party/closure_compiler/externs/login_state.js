@@ -33,6 +33,7 @@ chrome.loginState.SessionState = {
   IN_LOGIN_SCREEN: 'IN_LOGIN_SCREEN',
   IN_SESSION: 'IN_SESSION',
   IN_LOCK_SCREEN: 'IN_LOCK_SCREEN',
+  IN_RMA_SCREEN: 'IN_RMA_SCREEN',
 };
 
 /**

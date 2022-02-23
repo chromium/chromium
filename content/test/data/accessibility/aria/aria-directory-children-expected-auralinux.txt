@@ -1,0 +1,21 @@
+[document web] tag:#document
+++[list] tag:div
+++++[list item] tag:div
+++++++[static] name='an item in the directory'
+++++[list item] tag:div
+++++++[static] name='an item in the directory'
+++[list] tag:ul
+++++[list item] tag:li
+++++++[static] name='an item in the directory, no explicit role'
+++++[list item] tag:li
+++++++[static] name='an item in the directory with role=listitem'
+++[list] tag:ol
+++++[list item] tag:li
+++++++[static] name='an item in the directory, no explicit role'
+++++[list item] tag:li
+++++++[static] name='an item in the directory with role=listitem'
+++[list] tag:menu
+++++[list item] tag:li
+++++++[static] name='an item in the directory, no explicit role'
+++++[list item] tag:li
+++++++[static] name='an item in the directory with role=listitem'

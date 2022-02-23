@@ -9,9 +9,9 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "components/onc/onc_constants.h"
 
 namespace base {
-class DictionaryValue;
 class Value;
 }
 
@@ -53,13 +53,19 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(const base::Value& value);
 // |shill_dictionary|. If parsing fails or the field doesn't exist, returns
 // NULL.
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
-    const base::DictionaryValue& shill_dictionary);
+    const base::Value& shill_dictionary);
 
 // Sets the UIData property in |shill_dictionary| to the serialization of
 // |ui_data|. Sets the ONCSource property in |shill_dictionary|,
 // derived from |ui_data|.
 void SetUIDataAndSource(const NetworkUIData& ui_data,
-                        base::DictionaryValue* shill_dictionary);
+                        base::Value* shill_dictionary);
+
+// Sets the RandomMACPolicy property in |shill_dictionary|.
+// This is only a temporary logic, until UI is present.
+COMPONENT_EXPORT(CHROMEOS_NETWORK)
+void SetRandomMACPolicy(::onc::ONCSource onc_source,
+                        base::Value* shill_dictionary);
 
 // Copy configuration properties required by Shill to identify a network in the
 // format that Shill expects on writes.
@@ -92,5 +98,13 @@ bool IsLoggableShillProperty(const std::string& key);
 }  // namespace shill_property_util
 
 }  // namespace chromeos
+
+// TODO(https://crbug.com/1164001): remove when this file is moved to ash.
+namespace ash {
+namespace shill_property_util {
+using ::chromeos::shill_property_util::GetSSIDFromProperties;
+using ::chromeos::shill_property_util::SetSSID;
+}  // namespace shill_property_util
+}  // namespace ash
 
 #endif  // CHROMEOS_NETWORK_SHILL_PROPERTY_UTIL_H_

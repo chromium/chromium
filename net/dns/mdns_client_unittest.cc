@@ -8,8 +8,8 @@
 
 #include "base/bind.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
@@ -1353,8 +1353,8 @@ class MDnsConnectionTest : public TestWithTaskEnvironment {
   void SetUp() override {
     socket_ipv4_ = new MockMDnsDatagramServerSocket(ADDRESS_FAMILY_IPV4);
     socket_ipv6_ = new MockMDnsDatagramServerSocket(ADDRESS_FAMILY_IPV6);
-    factory_.PushSocket(base::WrapUnique(socket_ipv6_));
-    factory_.PushSocket(base::WrapUnique(socket_ipv4_));
+    factory_.PushSocket(base::WrapUnique(socket_ipv6_.get()));
+    factory_.PushSocket(base::WrapUnique(socket_ipv4_.get()));
     sample_packet_ = MakeString(kSamplePacket1, sizeof(kSamplePacket1));
     sample_buffer_ = base::MakeRefCounted<StringIOBuffer>(sample_packet_);
   }
@@ -1363,8 +1363,8 @@ class MDnsConnectionTest : public TestWithTaskEnvironment {
 
   StrictMock<MockMDnsConnectionDelegate> delegate_;
 
-  MockMDnsDatagramServerSocket* socket_ipv4_;
-  MockMDnsDatagramServerSocket* socket_ipv6_;
+  raw_ptr<MockMDnsDatagramServerSocket> socket_ipv4_;
+  raw_ptr<MockMDnsDatagramServerSocket> socket_ipv6_;
   SimpleMockSocketFactory factory_;
   MDnsConnection connection_;
   TestCompletionCallback callback_;
@@ -1377,8 +1377,8 @@ TEST_F(MDnsConnectionTest, ReceiveSynchronous) {
   EXPECT_CALL(*socket_ipv4_, RecvFrom(_, _, _, _))
       .WillOnce(Return(ERR_IO_PENDING));
   EXPECT_CALL(*socket_ipv6_, RecvFrom(_, _, _, _))
-      .WillOnce(
-          Invoke(socket_ipv6_, &MockMDnsDatagramServerSocket::HandleRecvNow))
+      .WillOnce(Invoke(socket_ipv6_.get(),
+                       &MockMDnsDatagramServerSocket::HandleRecvNow))
       .WillOnce(Return(ERR_IO_PENDING));
 
   EXPECT_CALL(delegate_, HandlePacketInternal(sample_packet_));
@@ -1392,8 +1392,8 @@ TEST_F(MDnsConnectionTest, ReceiveAsynchronous) {
       .WillOnce(Return(ERR_IO_PENDING));
   EXPECT_CALL(*socket_ipv6_, RecvFrom(_, _, _, _))
       .Times(2)
-      .WillOnce(
-          Invoke(socket_ipv6_, &MockMDnsDatagramServerSocket::HandleRecvLater))
+      .WillOnce(Invoke(socket_ipv6_.get(),
+                       &MockMDnsDatagramServerSocket::HandleRecvLater))
       .WillOnce(Return(ERR_IO_PENDING));
 
   ASSERT_THAT(InitConnection(), test::IsOk());

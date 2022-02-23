@@ -14,7 +14,9 @@
 #include "base/logging.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "base/values.h"
-#include "chrome/browser/ash/child_accounts/secondary_account_consent_logger.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability.h"
+#include "chrome/browser/ash/account_manager/account_apps_availability_factory.h"
+#include "chrome/browser/ash/crosapi/browser_manager.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/profiles/profile.h"
@@ -39,6 +41,10 @@
 #include "google_apis/gaia/gaia_auth_util.h"
 #include "google_apis/gaia/gaia_urls.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "third_party/skia/include/core/SkBitmap.h"
+#include "ui/base/resource/resource_bundle.h"
+#include "ui/base/webui/web_ui_util.h"
+#include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 
 namespace chromeos {
 namespace {
@@ -47,6 +53,13 @@ using ::account_manager::AccountManager;
 
 constexpr char kCrosAddAccountFlow[] = "crosAddAccount";
 constexpr char kCrosAddAccountEduFlow[] = "crosAddAccountEdu";
+
+// Keep the values in sync with `Account` struct in
+// chrome/browser/resources/inline_login/inline_login_browser_proxy.js
+constexpr char kAccountKeyId[] = "id";
+constexpr char kAccountKeyEmail[] = "email";
+constexpr char kAccountKeyFullName[] = "fullName";
+constexpr char kAccountKeyImage[] = "image";
 
 std::string AnonymizeAccountEmail(const std::string& email) {
   std::string result;
@@ -84,87 +97,41 @@ std::string GetInlineLoginFlowName(Profile* profile, const std::string* email) {
   return kCrosAddAccountEduFlow;
 }
 
-// A version of SigninHelper for child users. After obtaining OAuth token it
-// logs the parental consent with provided parent id and rapt. After successful
-// consent logging populates Chrome OS AccountManager with the token.
-class ChildSigninHelper : public SigninHelper {
- public:
-  ChildSigninHelper(
-      account_manager::AccountManager* account_manager,
-      crosapi::AccountManagerMojoService* account_manager_mojo_service,
-      const base::RepeatingClosure& close_dialog_closure,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const std::string& gaia_id,
-      const std::string& email,
-      const std::string& auth_code,
-      const std::string& signin_scoped_device_id,
-      signin::IdentityManager* identity_manager,
-      PrefService* pref_service,
-      const std::string& parent_obfuscated_gaia_id,
-      const std::string& re_auth_proof_token)
-      : SigninHelper(account_manager,
-                     account_manager_mojo_service,
-                     close_dialog_closure,
-                     url_loader_factory,
-                     gaia_id,
-                     email,
-                     auth_code,
-                     signin_scoped_device_id),
-        identity_manager_(identity_manager),
-        pref_service_(pref_service),
-        parent_obfuscated_gaia_id_(parent_obfuscated_gaia_id),
-        re_auth_proof_token_(re_auth_proof_token) {}
-  ChildSigninHelper(const ChildSigninHelper&) = delete;
-  ChildSigninHelper& operator=(const ChildSigninHelper&) = delete;
-  ~ChildSigninHelper() override = default;
+const SkBitmap& GetDefaultAccountIcon() {
+  gfx::ImageSkia default_icon =
+      *ui::ResourceBundle::GetSharedInstance().GetImageSkiaNamed(
+          IDR_LOGIN_DEFAULT_USER);
+  return default_icon.GetRepresentation(1.0f).GetBitmap();
+}
 
- protected:
-  // GaiaAuthConsumer overrides.
-  void OnClientOAuthSuccess(const ClientOAuthResult& result) override {
-    // Log parental consent for secondary account addition. In case of success,
-    // refresh token from |result| will be added to Account Manager in
-    // |OnConsentLogged|.
-    DCHECK(!secondary_account_consent_logger_);
-    secondary_account_consent_logger_ =
-        std::make_unique<SecondaryAccountConsentLogger>(
-            identity_manager_, GetUrlLoaderFactory(), pref_service_, GetEmail(),
-            parent_obfuscated_gaia_id_, re_auth_proof_token_,
-            base::BindOnce(&ChildSigninHelper::OnConsentLogged,
-                           weak_ptr_factory_.GetWeakPtr(),
-                           result.refresh_token));
-    secondary_account_consent_logger_->StartLogging();
-  }
+base::Value GaiaAccountToValue(const ::account_manager::Account& account,
+                               const AccountInfo& account_info) {
+  DCHECK_EQ(account.key.account_type(), account_manager::AccountType::kGaia);
+  DCHECK(!account_info.IsEmpty());
 
-  void OnConsentLogged(const std::string& refresh_token,
-                       SecondaryAccountConsentLogger::Result result) {
-    secondary_account_consent_logger_.reset();
-    if (result == SecondaryAccountConsentLogger::Result::kSuccess) {
-      // The EDU account has been added/re-authenticated. Mark migration to
-      // ARC++ as completed.
-      pref_service_->SetBoolean(::prefs::kEduCoexistenceArcMigrationCompleted,
-                                true);
+  base::Value dict(base::Value::Type::DICTIONARY);
+  dict.SetKey(kAccountKeyId, base::Value(account.key.id()));
+  dict.SetKey(kAccountKeyEmail, base::Value(account.raw_email));
+  dict.SetKey(kAccountKeyFullName, base::Value(account_info.full_name));
+  dict.SetKey(kAccountKeyImage,
+              base::Value(webui::GetBitmapDataUrl(
+                  account_info.account_image.IsEmpty()
+                      ? GetDefaultAccountIcon()
+                      : account_info.account_image.AsBitmap())));
 
-      UpsertAccount(refresh_token);
-    } else {
-      LOG(ERROR) << "Could not log parent consent, the result was: "
-                 << static_cast<int>(result);
-      // TODO(anastasiian): send error to UI?
-    }
+  return dict;
+}
 
-    CloseDialogAndExit();
-  }
-
- private:
-  // Unowned pointer to identity manager.
-  signin::IdentityManager* const identity_manager_;
-  // Unowned pointer to pref service.
-  PrefService* const pref_service_;
-  const std::string parent_obfuscated_gaia_id_;
-  const std::string re_auth_proof_token_;
-  std::unique_ptr<SecondaryAccountConsentLogger>
-      secondary_account_consent_logger_;
-  base::WeakPtrFactory<ChildSigninHelper> weak_ptr_factory_{this};
-};
+::account_manager::Account ValueToGaiaAccount(const base::Value& value) {
+  DCHECK(value.is_dict());
+  const std::string* id = value.FindStringKey(kAccountKeyId);
+  DCHECK(id);
+  const std::string* email = value.FindStringKey(kAccountKeyEmail);
+  DCHECK(email);
+  return ::account_manager::Account{
+      ::account_manager::AccountKey{*id, account_manager::AccountType::kGaia},
+      *email};
+}
 
 class EduCoexistenceChildSigninHelper : public SigninHelper {
  public:
@@ -172,6 +139,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
       account_manager::AccountManager* account_manager,
       crosapi::AccountManagerMojoService* account_manager_mojo_service,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      std::unique_ptr<SigninHelper::ArcHelper> arc_helper,
       const std::string& gaia_id,
       const std::string& email,
       const std::string& auth_code,
@@ -184,6 +152,7 @@ class EduCoexistenceChildSigninHelper : public SigninHelper {
                      // dialog. Therefore, passing a void callback.
                      base::DoNothing(),
                      url_loader_factory,
+                     std::move(arc_helper),
                      gaia_id,
                      email,
                      auth_code,
@@ -271,10 +240,25 @@ void InlineLoginHandlerChromeOS::RegisterMessages() {
       "getAccounts",
       base::BindRepeating(&InlineLoginHandlerChromeOS::GetAccountsInSession,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "getAccountsNotAvailableInArc",
+      base::BindRepeating(
+          &InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc,
+          base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "makeAvailableInArc",
+      base::BindRepeating(
+          &InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog,
+          base::Unretained(this)));
   web_ui()->RegisterDeprecatedMessageCallback(
       "skipWelcomePage",
       base::BindRepeating(&InlineLoginHandlerChromeOS::HandleSkipWelcomePage,
                           base::Unretained(this)));
+  web_ui()->RegisterMessageCallback(
+      "openGuestWindow",
+      base::BindRepeating(
+          &InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog,
+          base::Unretained(this)));
 }
 
 void InlineLoginHandlerChromeOS::SetExtraInitParams(
@@ -292,35 +276,62 @@ void InlineLoginHandlerChromeOS::SetExtraInitParams(
   params.SetKey("flow", base::Value(GetInlineLoginFlowName(
                             Profile::FromWebUI(web_ui()),
                             params.FindStringKey("email"))));
-  params.SetBoolean("dontResizeNonEmbeddedPages", true);
-  params.SetBoolean("enableGaiaActionButtons", true);
+  params.SetBoolKey("dontResizeNonEmbeddedPages", true);
+  params.SetBoolKey("enableGaiaActionButtons", true);
 
   // For in-session login flows, request Gaia to ignore third party SAML IdP SSO
   // redirection policies (and redirect to SAML IdPs by default), otherwise some
   // managed users will not be able to login to Chrome OS at all. Please check
   // https://crbug.com/984525 and https://crbug.com/984525#c20 for more context.
-  params.SetBoolean("ignoreCrOSIdpSetting", true);
+  params.SetBoolKey("ignoreCrOSIdpSetting", true);
 }
 
-void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
-                                               const std::string& password,
-                                               const std::string& gaia_id,
-                                               const std::string& auth_code,
-                                               bool skip_for_now,
-                                               bool trusted,
-                                               bool trusted_found,
-                                               bool choose_what_to_sync,
-                                               base::Value edu_login_params) {
-  CHECK(!auth_code.empty());
-  CHECK(!gaia_id.empty());
-  CHECK(!email.empty());
+void InlineLoginHandlerChromeOS::CompleteLogin(
+    const CompleteLoginParams& params) {
+  CHECK(!params.auth_code.empty());
+  CHECK(!params.gaia_id.empty());
+  CHECK(!params.email.empty());
 
-  // TODO(sinhak): Do not depend on Profile unnecessarily.
+  if (ash::AccountAppsAvailability::IsArcAccountRestrictionsEnabled()) {
+    ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
+        ->GetAccounts(base::BindOnce(
+            &InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin,
+            weak_factory_.GetWeakPtr(), params));
+    return;
+  }
+
+  CreateSigninHelper(params, /*arc_helper=*/nullptr);
+}
+
+void InlineLoginHandlerChromeOS::HandleDialogClose(
+    const base::ListValue* args) {
+  close_dialog_closure_.Run();
+}
+
+void InlineLoginHandlerChromeOS::OnGetAccountsToCompleteLogin(
+    const CompleteLoginParams& params,
+    const std::vector<::account_manager::Account>& accounts) {
+  bool is_new_account = !base::Contains(
+      accounts, params.gaia_id,
+      [](const account_manager::Account& account) { return account.key.id(); });
+  bool is_available_in_arc = params.is_available_in_arc;
+  Profile* profile = Profile::FromWebUI(web_ui());
+  if (profile->IsChild())
+    is_available_in_arc = true;
+
+  std::unique_ptr<SigninHelper::ArcHelper> arc_helper =
+      std::make_unique<SigninHelper::ArcHelper>(
+          is_available_in_arc, /*is_account_addition=*/is_new_account,
+          ash::AccountAppsAvailabilityFactory::GetForProfile(
+              Profile::FromWebUI(web_ui())));
+  CreateSigninHelper(params, std::move(arc_helper));
+}
+
+void InlineLoginHandlerChromeOS::CreateSigninHelper(
+    const CompleteLoginParams& params,
+    std::unique_ptr<SigninHelper::ArcHelper> arc_helper) {
   Profile* profile = Profile::FromWebUI(web_ui());
 
-  // TODO(sinhak): Do not depend on Profile unnecessarily. When multiprofile on
-  // Chrome OS is released, get rid of |AccountManagerFactory| and get
-  // AccountManager directly from |g_browser_process|.
   auto* account_manager = g_browser_process->platform_part()
                               ->GetAccountManagerFactory()
                               ->GetAccountManager(profile->GetPath().value());
@@ -338,11 +349,13 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
 
   // Child user added a secondary account.
   if (profile->IsChild() &&
-      !gaia::AreEmailsSame(primary_account_email, email)) {
+      !gaia::AreEmailsSame(primary_account_email, params.email)) {
     new EduCoexistenceChildSigninHelper(
         account_manager, account_manager_mojo_service,
-        profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-        GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id),
+        profile->GetURLLoaderFactory(), std::move(arc_helper), params.gaia_id,
+        params.email, params.auth_code,
+        GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
+                           params.gaia_id),
         profile->GetPrefs(), web_ui());
 
     return;
@@ -351,13 +364,10 @@ void InlineLoginHandlerChromeOS::CompleteLogin(const std::string& email,
   // SigninHelper deletes itself after its work is done.
   new SigninHelper(
       account_manager, account_manager_mojo_service, close_dialog_closure_,
-      profile->GetURLLoaderFactory(), gaia_id, email, auth_code,
-      GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile), gaia_id));
-}
-
-void InlineLoginHandlerChromeOS::HandleDialogClose(
-    const base::ListValue* args) {
-  close_dialog_closure_.Run();
+      profile->GetURLLoaderFactory(), std::move(arc_helper), params.gaia_id,
+      params.email, params.auth_code,
+      GetAccountDeviceId(GetSigninScopedDeviceIdForProfile(profile),
+                         params.gaia_id));
 }
 
 void InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog(
@@ -368,7 +378,7 @@ void InlineLoginHandlerChromeOS::ShowIncognitoAndCloseDialog(
 
 void InlineLoginHandlerChromeOS::GetAccountsInSession(
     const base::ListValue* args) {
-  const std::string& callback_id = args->GetList()[0].GetString();
+  const std::string& callback_id = args->GetListDeprecated()[0].GetString();
   const Profile* profile = Profile::FromWebUI(web_ui());
   ::GetAccountManagerFacade(profile->GetPath().value())
       ->GetAccounts(base::BindOnce(&InlineLoginHandlerChromeOS::OnGetAccounts,
@@ -393,13 +403,74 @@ void InlineLoginHandlerChromeOS::OnGetAccounts(
                             std::move(account_emails));
 }
 
+void InlineLoginHandlerChromeOS::GetAccountsNotAvailableInArc(
+    base::Value::ConstListView args) {
+  CHECK_EQ(1u, args.size());
+  const std::string& callback_id = args[0].GetString();
+  ::GetAccountManagerFacade(Profile::FromWebUI(web_ui())->GetPath().value())
+      ->GetAccounts(base::BindOnce(
+          &InlineLoginHandlerChromeOS::ContinueGetAccountsNotAvailableInArc,
+          weak_factory_.GetWeakPtr(), callback_id));
+}
+
+void InlineLoginHandlerChromeOS::ContinueGetAccountsNotAvailableInArc(
+    const std::string& callback_id,
+    const std::vector<::account_manager::Account>& accounts) {
+  ash::AccountAppsAvailabilityFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()))
+      ->GetAccountsAvailableInArc(base::BindOnce(
+          &InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc,
+          weak_factory_.GetWeakPtr(), callback_id, accounts));
+}
+
+void InlineLoginHandlerChromeOS::FinishGetAccountsNotAvailableInArc(
+    const std::string& callback_id,
+    const std::vector<::account_manager::Account>& accounts,
+    const base::flat_set<account_manager::Account>& arc_accounts) {
+  base::Value result(base::Value::Type::LIST);
+  auto* identity_manager =
+      IdentityManagerFactory::GetForProfile(Profile::FromWebUI(web_ui()));
+  for (const auto& account : accounts) {
+    if (account.key.account_type() != account_manager::AccountType::kGaia)
+      continue;
+
+    if (!arc_accounts.contains(account)) {
+      AccountInfo maybe_account_info =
+          identity_manager->FindExtendedAccountInfoByGaiaId(account.key.id());
+      if (maybe_account_info.IsEmpty())
+        continue;
+
+      result.Append(GaiaAccountToValue(account, maybe_account_info));
+    }
+  }
+  ResolveJavascriptCallback(base::Value(callback_id), std::move(result));
+}
+
+void InlineLoginHandlerChromeOS::MakeAvailableInArcAndCloseDialog(
+    base::Value::ConstListView args) {
+  CHECK_EQ(1u, args.size());
+  const base::Value& dictionary = args[0];
+  CHECK(dictionary.is_dict());
+  ash::AccountAppsAvailabilityFactory::GetForProfile(
+      Profile::FromWebUI(web_ui()))
+      ->SetIsAccountAvailableInArc(ValueToGaiaAccount(dictionary),
+                                   /*is_available=*/true);
+  close_dialog_closure_.Run();
+}
+
 void InlineLoginHandlerChromeOS::HandleSkipWelcomePage(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK(!list.empty());
   const bool skip = list[0].GetBool();
   Profile::FromWebUI(web_ui())->GetPrefs()->SetBoolean(
       chromeos::prefs::kShouldSkipInlineLoginWelcomePage, skip);
+}
+
+void InlineLoginHandlerChromeOS::OpenGuestWindowAndCloseDialog(
+    base::Value::ConstListView args) {
+  crosapi::BrowserManager::Get()->NewGuestWindow();
+  close_dialog_closure_.Run();
 }
 
 }  // namespace chromeos

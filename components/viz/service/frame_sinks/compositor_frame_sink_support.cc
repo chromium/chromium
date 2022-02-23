@@ -24,6 +24,7 @@
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/resources/bitmap_allocation.h"
 #include "components/viz/common/surfaces/surface_info.h"
+#include "components/viz/common/surfaces/video_capture_target.h"
 #include "components/viz/service/display/display.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/frame_sinks/frame_sink_bundle_impl.h"
@@ -152,7 +153,7 @@ void CompositorFrameSinkSupport::SetBeginFrameSource(
     added_frame_observer_ = false;
   }
 
-  auto* old_source = begin_frame_source_;
+  auto* old_source = begin_frame_source_.get();
   begin_frame_source_ = begin_frame_source;
 
   FrameSinkBundleImpl* bundle = nullptr;
@@ -202,7 +203,7 @@ void CompositorFrameSinkSupport::OnSurfaceActivated(Surface* surface) {
   if (!transition_directives.empty()) {
     bool started_animation =
         surface_animation_manager_.ProcessTransitionDirectives(
-            transition_directives, surface->GetSurfaceSavedFrameStorage());
+            transition_directives, surface);
 
     // If we started an animation, then we must need a begin frame for the code
     // below to work properly.
@@ -294,6 +295,7 @@ void CompositorFrameSinkSupport::OnSurfaceAggregatedDamage(
                                     damage_rect, expected_display_time);
   }
 
+  current_capture_bounds_ = frame.metadata.capture_bounds;
   for (CapturableFrameSink::Client* client : capture_clients_) {
     client->OnFrameDamaged(frame_size_in_pixels, damage_rect,
                            expected_display_time, frame.metadata);
@@ -302,6 +304,11 @@ void CompositorFrameSinkSupport::OnSurfaceAggregatedDamage(
 
 bool CompositorFrameSinkSupport::IsVideoCaptureStarted() {
   return number_clients_capturing_ > 0;
+}
+
+base::flat_set<base::PlatformThreadId>
+CompositorFrameSinkSupport::GetThreadIds() {
+  return thread_ids_;
 }
 
 void CompositorFrameSinkSupport::OnSurfaceDestroyed(Surface* surface) {
@@ -430,6 +437,15 @@ void CompositorFrameSinkSupport::InitializeCompositorFrameSinkType(
     return;
   }
   frame_sink_type_ = type;
+}
+
+void CompositorFrameSinkSupport::SetThreadIds(
+    bool from_untrusted_client,
+    base::flat_set<base::PlatformThreadId> unverified_thread_ids) {
+  if (!from_untrusted_client ||
+      frame_sink_manager_->VerifySandboxedThreadIds(unverified_thread_ids)) {
+    thread_ids_ = unverified_thread_ids;
+  }
 }
 
 base::TimeDelta CompositorFrameSinkSupport::GetPreferredFrameInterval(
@@ -944,10 +960,19 @@ void CompositorFrameSinkSupport::OnClientCaptureStopped() {
 }
 
 gfx::Rect CompositorFrameSinkSupport::GetCopyOutputRequestRegion(
-    const CapturableFrameSink::RegionSpecifier& specifier) const {
-  if (!last_activated_surface_id_.is_valid()) {
+    const VideoCaptureSubTarget& sub_target) const {
+  // We will either have a subtree ID or a region capture crop_id, but not both.
+  if (absl::holds_alternative<RegionCaptureCropId>(sub_target)) {
+    const auto it = current_capture_bounds_.bounds().find(
+        absl::get<RegionCaptureCropId>(sub_target));
+    if (it != current_capture_bounds_.bounds().end()) {
+      return it->second;
+    }
     return {};
   }
+
+  if (!last_activated_surface_id_.is_valid())
+    return {};
 
   Surface* current_surface =
       surface_manager_->GetSurfaceForId(last_activated_surface_id_);
@@ -956,22 +981,17 @@ gfx::Rect CompositorFrameSinkSupport::GetCopyOutputRequestRegion(
     return {};
   }
 
-  // We will either have a subtree ID or a region capture crop_id, but not both.
-  if (absl::holds_alternative<RegionCaptureCropId>(specifier)) {
-    return GetCaptureBounds(absl::get<RegionCaptureCropId>(specifier));
-  }
-
   // We can exit early if there is no subtree, otherwise we need to
   // intersect the bounds.
   const CompositorFrame& frame = current_surface->GetActiveFrame();
-  if (!absl::holds_alternative<SubtreeCaptureId>(specifier)) {
+  if (!absl::holds_alternative<SubtreeCaptureId>(sub_target)) {
     return gfx::Rect(frame.size_in_pixels());
   }
 
   // Now we know we don't have a crop_id and we do have a subtree ID.
   for (const auto& render_pass : frame.render_pass_list) {
     if (render_pass->subtree_capture_id ==
-        absl::get<SubtreeCaptureId>(specifier)) {
+        absl::get<SubtreeCaptureId>(sub_target)) {
       return render_pass->subtree_size.IsEmpty()
                  ? render_pass->output_rect
                  : gfx::Rect(render_pass->subtree_size);
@@ -1039,27 +1059,6 @@ int64_t CompositorFrameSinkSupport::ComputeTraceId() {
   uint64_t client = (frame_sink_id_.client_id() & 0xffff);
   uint64_t sink = (frame_sink_id_.sink_id() & 0xffff);
   return (client << 48) | (sink << 32) | trace_sequence_;
-}
-
-gfx::Rect CompositorFrameSinkSupport::GetCaptureBounds(
-    const RegionCaptureCropId& crop_id) const {
-  DCHECK(!crop_id.is_zero());
-  // We don't know what frame contains the bounds associated with |crop_id|,
-  // so we do have to iterate through each surface.
-  for (const SurfaceId& id : surface_manager_->GetCreatedSurfaceIds()) {
-    Surface* surface = surface_manager_->GetSurfaceForId(id);
-    if (!surface->HasActiveFrame()) {
-      continue;
-    }
-
-    const RegionCaptureBounds& bounds =
-        surface->GetActiveFrameMetadata().capture_bounds;
-    const auto it = bounds.bounds().find(crop_id);
-    if (it != bounds.bounds().end()) {
-      return it->second;
-    }
-  }
-  return {};
 }
 
 bool CompositorFrameSinkSupport::ShouldSendBeginFrame(
@@ -1173,6 +1172,11 @@ bool CompositorFrameSinkSupport::IsEvicted(
              last_evicted_local_surface_id_.embed_token() &&
          local_surface_id.parent_sequence_number() <=
              last_evicted_local_surface_id_.parent_sequence_number();
+}
+
+SurfaceAnimationManager*
+CompositorFrameSinkSupport::GetSurfaceAnimationManagerForTesting() {
+  return &surface_animation_manager_;
 }
 
 void CompositorFrameSinkSupport::DestroySelf() {

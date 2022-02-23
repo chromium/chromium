@@ -7,12 +7,14 @@
 #include <string>
 
 #include "base/logging.h"
+#include "base/no_destructor.h"
+#include "build/build_config.h"
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/security_state/content/content_utils.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "weblayer/browser/java/jni/WebappsHelper_jni.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/guid.h"
@@ -64,7 +66,7 @@ webapps::AppBannerManager* WebLayerWebappsClient::GetAppBannerManager(
   return nullptr;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 bool WebLayerWebappsClient::IsInstallationInProgress(
     content::WebContents* web_contents,
     const GURL& manifest_url) {

@@ -52,7 +52,7 @@ void CookieControlsHandler::OnJavascriptDisallowed() {
 
 void CookieControlsHandler::HandleCookieControlsToggleChanged(
     const base::ListValue* args) {
-  const auto& list = args->GetList();
+  const auto& list = args->GetListDeprecated();
   CHECK(!list.empty());
   const bool checked = list[0].GetBool();
   service_->HandleCookieControlsToggleChanged(checked);
@@ -92,6 +92,6 @@ void CookieControlsHandler::SendCookieControlsUIChanges() {
   dict.SetBoolKey("checked", service_->GetToggleCheckedValue());
   dict.SetStringKey(
       "icon", GetEnforcementIcon(service_->GetCookieControlsEnforcement()));
-  dict.SetString("cookieSettingsUrl", chrome::kChromeUICookieSettingsURL);
+  dict.SetStringKey("cookieSettingsUrl", chrome::kChromeUICookieSettingsURL);
   FireWebUIListener("cookie-controls-changed", dict);
 }

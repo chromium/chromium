@@ -33,7 +33,7 @@ class HttpAuthTest : public WebTestWithWebState {
     ASSERT_TRUE(server_.Start());
   }
   // Waits until WebStateDelegate::OnAuthRequired callback is called.
-  bool WaitForOnAuthRequiredCallback() WARN_UNUSED_RESULT {
+  [[nodiscard]] bool WaitForOnAuthRequiredCallback() {
     delegate_.ClearLastAuthenticationRequest();
     return WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^bool {
       return delegate_.last_authentication_request();

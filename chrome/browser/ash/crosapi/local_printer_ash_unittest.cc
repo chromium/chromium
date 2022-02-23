@@ -18,10 +18,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "chrome/browser/ash/crosapi/test_local_printer_ash.h"
+#include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
+#include "chrome/browser/ash/printing/test_cups_printers_manager.h"
+#include "chrome/browser/ash/printing/test_printer_configurer.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/chromeos/printing/cups_printers_manager_factory.h"
-#include "chrome/browser/chromeos/printing/test_cups_printers_manager.h"
-#include "chrome/browser/chromeos/printing/test_printer_configurer.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/printing/printer_capabilities.h"
@@ -54,12 +54,12 @@
 #include "base/notreached.h"
 #endif
 
-using chromeos::CupsPrintersManager;
-using chromeos::Printer;
-using chromeos::PrinterClass;
-using chromeos::PrinterConfigurer;
-using chromeos::PrinterSetupCallback;
-using chromeos::PrinterSetupResult;
+using ::ash::CupsPrintersManager;
+using ::ash::PrinterSetupCallback;
+using ::ash::PrinterSetupResult;
+using ::chromeos::Printer;
+using ::chromeos::PrinterClass;
+using ::chromeos::PrinterConfigurer;
 
 namespace printing {
 
@@ -173,7 +173,7 @@ class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
   TestLocalPrinterAshWithPrinterConfigurer(
       Profile* profile,
       scoped_refptr<chromeos::PpdProvider> ppd_provider,
-      chromeos::TestCupsPrintersManager* manager)
+      ash::TestCupsPrintersManager* manager)
       : TestLocalPrinterAsh(profile, ppd_provider), manager_(manager) {}
   TestLocalPrinterAshWithPrinterConfigurer(
       const TestLocalPrinterAshWithPrinterConfigurer&) = delete;
@@ -182,12 +182,12 @@ class TestLocalPrinterAshWithPrinterConfigurer : public TestLocalPrinterAsh {
   ~TestLocalPrinterAshWithPrinterConfigurer() override = default;
 
  private:
-  std::unique_ptr<chromeos::PrinterConfigurer> CreatePrinterConfigurer(
+  std::unique_ptr<ash::PrinterConfigurer> CreatePrinterConfigurer(
       Profile* profile) override {
-    return std::make_unique<chromeos::TestPrinterConfigurer>(manager_);
+    return std::make_unique<ash::TestPrinterConfigurer>(manager_);
   }
 
-  chromeos::TestCupsPrintersManager* manager_;
+  ash::TestCupsPrintersManager* manager_;
 };
 
 // Base testing class for `LocalPrinterAsh`.  Contains the base
@@ -229,7 +229,7 @@ class LocalPrinterAshTestBase : public testing::Test {
   }
 
   void SetUp() override {
-    chromeos::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
+    ash::ProfileHelper::Get()->SetProfileToUserMappingForTesting(&user_);
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     // Choose between running with local test runner or via a service.
@@ -239,16 +239,15 @@ class LocalPrinterAshTestBase : public testing::Test {
 
     sandboxed_test_backend_ = base::MakeRefCounted<TestPrintBackend>();
     ppd_provider_ = base::MakeRefCounted<FakePpdProvider>();
-    chromeos::CupsPrintersManagerFactory::GetInstance()
-        ->SetTestingFactoryAndUse(
-            &profile_,
-            base::BindLambdaForTesting([this](content::BrowserContext* context)
-                                           -> std::unique_ptr<KeyedService> {
-              auto printers_manager =
-                  std::make_unique<chromeos::TestCupsPrintersManager>();
-              printers_manager_ = printers_manager.get();
-              return printers_manager;
-            }));
+    ash::CupsPrintersManagerFactory::GetInstance()->SetTestingFactoryAndUse(
+        &profile_,
+        base::BindLambdaForTesting([this](content::BrowserContext* context)
+                                       -> std::unique_ptr<KeyedService> {
+          auto printers_manager =
+              std::make_unique<ash::TestCupsPrintersManager>();
+          printers_manager_ = printers_manager.get();
+          return printers_manager;
+        }));
     local_printer_ash_ =
         std::make_unique<TestLocalPrinterAshWithPrinterConfigurer>(
             &profile_, ppd_provider_, printers_manager_);
@@ -282,7 +281,7 @@ class LocalPrinterAshTestBase : public testing::Test {
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
     PrintBackendServiceManager::ResetForTesting();
 #endif
-    chromeos::ProfileHelper::Get()->RemoveUserFromListForTesting(
+    ash::ProfileHelper::Get()->RemoveUserFromListForTesting(
         user_.GetAccountId());
   }
 
@@ -332,7 +331,7 @@ class LocalPrinterAshTestBase : public testing::Test {
 
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
-  chromeos::TestCupsPrintersManager& printers_manager() {
+  ash::TestCupsPrintersManager& printers_manager() {
     DCHECK(printers_manager_);
     return *printers_manager_;
   }
@@ -349,7 +348,7 @@ class LocalPrinterAshTestBase : public testing::Test {
   TestingProfile profile_;
   scoped_refptr<TestPrintBackend> sandboxed_test_backend_;
   scoped_refptr<TestPrintBackend> unsandboxed_test_backend_;
-  chromeos::TestCupsPrintersManager* printers_manager_;
+  ash::TestCupsPrintersManager* printers_manager_;
   scoped_refptr<FakePpdProvider> ppd_provider_;
   std::unique_ptr<crosapi::LocalPrinterAsh> local_printer_ash_;
 
@@ -783,7 +782,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_MaxSheetsAllowed) {
       [&](crosapi::mojom::PoliciesPtr data) { policies = std::move(data); })));
 
   EXPECT_TRUE(policies->max_sheets_allowed_has_value);
-  EXPECT_EQ(5, policies->max_sheets_allowed);
+  EXPECT_EQ(5u, policies->max_sheets_allowed);
 }
 
 // Zero sheets allowed is a valid policy.
@@ -797,7 +796,7 @@ TEST_F(LocalPrinterAshTest, GetPolicies_ZeroSheetsAllowed) {
 
   ASSERT_TRUE(policies);
   EXPECT_TRUE(policies->max_sheets_allowed_has_value);
-  EXPECT_EQ(0, policies->max_sheets_allowed);
+  EXPECT_EQ(0u, policies->max_sheets_allowed);
 }
 
 // Negative sheets allowed is not a valid policy.
@@ -940,11 +939,11 @@ TEST_F(LocalPrinterAshTest, GetUsernamePerPolicy_Denied) {
 }
 
 TEST(LocalPrinterAsh, ConfigToMojom) {
-  chromeos::PrintServersConfig config;
+  ash::PrintServersConfig config;
   config.fetching_mode = crosapi::mojom::PrintServersConfig::
       ServerPrintersFetchingMode::kSingleServerOnly;
   config.print_servers.push_back(
-      chromeos::PrintServer("id", GURL("http://localhost"), "name"));
+      ash::PrintServer("id", GURL("http://localhost"), "name"));
   crosapi::mojom::PrintServersConfigPtr mojom =
       crosapi::LocalPrinterAsh::ConfigToMojom(config);
   ASSERT_TRUE(mojom);

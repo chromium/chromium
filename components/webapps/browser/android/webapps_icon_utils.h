@@ -53,6 +53,11 @@ class WebappsIconUtils {
                                                    const GURL& url,
                                                    bool* is_generated);
 
+  // Generate an adaptive icon for given maskable icon bitmap.
+  static SkBitmap GenerateAdaptiveIconBitmap(const SkBitmap& icon);
+
+  static int GetIdealIconCornerRadiusPxForPromptUI();
+
   static void SetIdealShortcutSizeForTesting(int size);
 };
 

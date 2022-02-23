@@ -30,8 +30,8 @@ class ProfilePickerWebContentsHost
       content::WebContents* contents,
       const GURL& url,
       base::OnceClosure navigation_finished_closure = base::OnceClosure()) = 0;
-  // Like ShowScreen() but uses the system WebContents.
-  virtual void ShowScreenInSystemContents(
+  // Like ShowScreen() but uses the picker WebContents.
+  virtual void ShowScreenInPickerContents(
       const GURL& url,
       base::OnceClosure navigation_finished_closure = base::OnceClosure()) = 0;
 

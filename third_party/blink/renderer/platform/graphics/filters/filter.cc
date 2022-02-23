@@ -32,15 +32,15 @@
 
 #include "third_party/blink/renderer/platform/graphics/filters/filter_effect.h"
 #include "third_party/blink/renderer/platform/graphics/filters/source_graphic.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 
 namespace blink {
 
 Filter::Filter(float scale)
-    : Filter(FloatRect(), FloatRect(), scale, kUserSpace) {}
+    : Filter(gfx::RectF(), gfx::RectF(), scale, kUserSpace) {}
 
-Filter::Filter(const FloatRect& reference_box,
-               const FloatRect& filter_region,
+Filter::Filter(const gfx::RectF& reference_box,
+               const gfx::RectF& filter_region,
                float scale,
                UnitScaling unit_scaling)
     : reference_box_(reference_box),
@@ -54,16 +54,12 @@ void Filter::Trace(Visitor* visitor) const {
   visitor->Trace(last_effect_);
 }
 
-FloatRect Filter::MapLocalRectToAbsoluteRect(const FloatRect& rect) const {
-  FloatRect result(rect);
-  result.Scale(scale_);
-  return result;
+gfx::RectF Filter::MapLocalRectToAbsoluteRect(const gfx::RectF& rect) const {
+  return gfx::ScaleRect(rect, scale_);
 }
 
-FloatRect Filter::MapAbsoluteRectToLocalRect(const FloatRect& rect) const {
-  FloatRect result(rect);
-  result.Scale(1.0f / scale_);
-  return result;
+gfx::RectF Filter::MapAbsoluteRectToLocalRect(const gfx::RectF& rect) const {
+  return gfx::ScaleRect(rect, 1.0f / scale_);
 }
 
 float Filter::ApplyHorizontalScale(float value) const {
@@ -78,14 +74,17 @@ float Filter::ApplyVerticalScale(float value) const {
   return scale_ * value;
 }
 
-FloatPoint3D Filter::Resolve3dPoint(FloatPoint3D point) const {
+gfx::Point3F Filter::Resolve3dPoint(gfx::Point3F point) const {
   if (unit_scaling_ == kBoundingBox) {
-    point = FloatPoint3D(
+    point = gfx::Point3F(
         point.x() * ReferenceBox().width() + ReferenceBox().x(),
         point.y() * ReferenceBox().height() + ReferenceBox().y(),
-        point.z() * sqrtf(ReferenceBox().size().DiagonalLengthSquared() / 2));
+        point.z() * sqrtf(gfx::Vector2dF(ReferenceBox().size().width(),
+                                         ReferenceBox().size().height())
+                              .LengthSquared() /
+                          2));
   }
-  return scale_ * point;
+  return gfx::ScalePoint(point, scale_);
 }
 
 void Filter::SetLastEffect(FilterEffect* effect) {

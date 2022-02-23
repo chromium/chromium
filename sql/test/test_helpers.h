@@ -10,7 +10,6 @@
 
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/files/file_path.h"
 
 // Collection of test-only convenience functions.
@@ -38,7 +37,7 @@ namespace test {
 // CorruptSizeInHeaderWithLock().
 //
 // Returns false if any error occurs accessing the file.
-bool CorruptSizeInHeader(const base::FilePath& db_path) WARN_UNUSED_RESULT;
+[[nodiscard]] bool CorruptSizeInHeader(const base::FilePath& db_path);
 
 // Common implementation of CorruptSizeInHeader() which operates on loaded
 // memory. Shared between CorruptSizeInHeader() and the the mojo proxy testing
@@ -48,8 +47,7 @@ void CorruptSizeInHeaderMemory(unsigned char* header, int64_t db_size);
 // Call CorruptSizeInHeader() while holding a SQLite-compatible lock
 // on the database.  This can be used to corrupt a database which is
 // already open elsewhere.  Blocks until a write lock can be acquired.
-bool CorruptSizeInHeaderWithLock(
-    const base::FilePath& db_path) WARN_UNUSED_RESULT;
+[[nodiscard]] bool CorruptSizeInHeaderWithLock(const base::FilePath& db_path);
 
 // Frequently corruption is a result of failure to atomically update
 // pages in different structures.  For instance, if an index update
@@ -67,20 +65,19 @@ bool CorruptSizeInHeaderWithLock(
 // TODO(shess): It would be very helpful to allow a parameter to the
 // sql statement.  Perhaps a version with a string parameter would be
 // sufficient, given affinity rules?
-bool CorruptTableOrIndex(const base::FilePath& db_path,
-                         const char* tree_name,
-                         const char* update_sql) WARN_UNUSED_RESULT;
+[[nodiscard]] bool CorruptTableOrIndex(const base::FilePath& db_path,
+                                       const char* tree_name,
+                                       const char* update_sql);
 
 // Return the number of tables in sqlite_schema.
-size_t CountSQLTables(sql::Database* db) WARN_UNUSED_RESULT;
+[[nodiscard]] size_t CountSQLTables(sql::Database* db);
 
 // Return the number of indices in sqlite_schema.
-size_t CountSQLIndices(sql::Database* db) WARN_UNUSED_RESULT;
+[[nodiscard]] size_t CountSQLIndices(sql::Database* db);
 
 // Returns the number of columns in the named table.  0 indicates an
 // error (probably no such table).
-size_t CountTableColumns(sql::Database* db,
-                         const char* table) WARN_UNUSED_RESULT;
+[[nodiscard]] size_t CountTableColumns(sql::Database* db, const char* table);
 
 // Sets |*count| to the number of rows in |table|.  Returns false in
 // case of error, such as the table not existing.
@@ -90,13 +87,13 @@ bool CountTableRows(sql::Database* db, const char* table, size_t* count);
 // at |sql_path|.  Returns false if |db_path| already exists, or if
 // sql_path does not exist or cannot be read, or if there is an error
 // executing the statements.
-bool CreateDatabaseFromSQL(const base::FilePath& db_path,
-                           const base::FilePath& sql_path) WARN_UNUSED_RESULT;
+[[nodiscard]] bool CreateDatabaseFromSQL(const base::FilePath& db_path,
+                                         const base::FilePath& sql_path);
 
 // Return the results of running "PRAGMA integrity_check" on |db|.
 // TODO(shess): sql::Database::IntegrityCheck() is basically the
 // same, but not as convenient for testing.  Maybe combine.
-std::string IntegrityCheck(sql::Database* db) WARN_UNUSED_RESULT;
+[[nodiscard]] std::string IntegrityCheck(sql::Database* db);
 
 // ExecuteWithResult() executes |sql| and returns the first column of the first
 // row as a string.  The empty string is returned for no rows.  This makes it
@@ -135,10 +132,10 @@ struct ColumnInfo {
   //
   // This is a static method rather than a function so it can be listed in the
   // InternalApiToken access control list.
-  static ColumnInfo Create(sql::Database* db,
-                           const std::string& db_name,
-                           const std::string& table_name,
-                           const std::string& column_name) WARN_UNUSED_RESULT;
+  [[nodiscard]] static ColumnInfo Create(sql::Database* db,
+                                         const std::string& db_name,
+                                         const std::string& table_name,
+                                         const std::string& column_name);
 
   // The native data type. Example: "INTEGER".
   std::string data_type;

@@ -8,8 +8,8 @@
 #include <memory>
 #include <unordered_map>
 
-#include "third_party/nearby/src/cpp/core/payload.h"
-#include "third_party/nearby/src/cpp/platform/base/byte_array.h"
+#include "third_party/nearby/src/connections/payload.h"
+#include "third_party/nearby/src/internal/platform/byte_array.h"
 
 namespace location {
 namespace nearby {

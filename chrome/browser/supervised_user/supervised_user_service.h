@@ -13,6 +13,7 @@
 
 #include "base/callback.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/observer_list.h"
 #include "base/scoped_observation.h"
 #include "build/build_config.h"
@@ -34,9 +35,9 @@
 #include "extensions/browser/management_policy.h"
 #endif
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/ui/browser_list_observer.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 class PrefService;
 class Profile;
@@ -59,9 +60,9 @@ namespace user_prefs {
 class PrefRegistrySyncable;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 class Browser;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 // This class handles all the information related to a given supervised profile
 // (e.g. the default URL filtering behavior, or manual allowlist/denylist
@@ -72,7 +73,7 @@ class SupervisedUserService : public KeyedService,
                               public extensions::ManagementPolicy::Provider,
 #endif
                               public syncer::SyncTypePreferenceProvider,
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
                               public BrowserListObserver,
 #endif
                               public SupervisedUserURLFilter::Observer {
@@ -169,8 +170,8 @@ class SupervisedUserService : public KeyedService,
 
   static std::string GetEduCoexistenceLoginUrl();
 
-  // Returns true if the user is a type of Family Link Child account,
-  // but will not return true for a Legacy Supervised user (or non child users).
+  // Returns true if the user is a type of Family Link supervised account, this
+  // includes Unicorn, Geller, and Griffin accounts.
   bool IsChild() const;
 
   bool IsSupervisedUserExtensionInstallEnabled() const;
@@ -188,22 +189,22 @@ class SupervisedUserService : public KeyedService,
   // SyncTypePreferenceProvider implementation:
   bool IsCustomPassphraseAllowed() const override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // BrowserListObserver implementation:
   void OnBrowserSetLastActive(Browser* browser) override;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // SupervisedUserURLFilter::Observer implementation:
   void OnSiteListUpdated() override;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool signout_required_after_supervision_enabled() {
     return signout_required_after_supervision_enabled_;
   }
   void set_signout_required_after_supervision_enabled() {
     signout_required_after_supervision_enabled_ = true;
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
   // Updates the set of approved extensions to add approval for |extension|.
@@ -366,11 +367,11 @@ class SupervisedUserService : public KeyedService,
   void UpdateManualURLs();
 
   // Owns us via the KeyedService mechanism.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
 
   bool active_;
 
-  Delegate* delegate_;
+  raw_ptr<Delegate> delegate_;
 
   PrefChangeRegistrar pref_change_registrar_;
 
@@ -408,7 +409,7 @@ class SupervisedUserService : public KeyedService,
 
   base::ObserverList<SupervisedUserServiceObserver>::Unchecked observer_list_;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   bool signout_required_after_supervision_enabled_ = false;
 #endif
 

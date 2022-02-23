@@ -74,7 +74,7 @@ const std::vector<GenerateUniqueFilenameTestCase>& UniqueFilenameCases() {
 }
 
 // Crashing on Windows, see http://crbug.com/79365
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_TestGenerateUniqueFilename DISABLED_TestGenerateUniqueFilename
 #else
 #define MAYBE_TestGenerateUniqueFilename TestGenerateUniqueFilename

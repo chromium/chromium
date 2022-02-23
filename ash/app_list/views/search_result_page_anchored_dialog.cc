@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/constants/ash_features.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/geometry/point.h"
 #include "ui/gfx/geometry/rect.h"
@@ -27,41 +28,57 @@ constexpr int kDialogVerticalMargin = 32;
 }  // namespace
 
 SearchResultPageAnchoredDialog::SearchResultPageAnchoredDialog(
-    std::unique_ptr<views::DialogDelegateView> dialog,
+    std::unique_ptr<views::WidgetDelegate> dialog,
     views::View* host_view,
     base::OnceClosure callback)
     : host_view_(host_view), callback_(std::move(callback)) {
   DCHECK(!dialog->GetWidget());
 
   views::Widget* const parent = host_view_->GetWidget();
+
+  widget_ = new views::Widget();
+  views::Widget::InitParams params;
+  // Pre-productivity launcher uses DialogDelegateView for the dialog, while the
+  // productivity launcher expects a frameless widget.
+  if (features::IsProductivityLauncherEnabled()) {
+    params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+    params.layer_type = ui::LAYER_NOT_DRAWN;
+    params.parent = parent->GetNativeWindow();
+    params.delegate = dialog.release();
+  } else {
+    params = views::DialogDelegateView::GetDialogWidgetInitParams(
+        dialog.release(), parent->GetNativeWindow(), parent->GetNativeWindow(),
+        gfx::Rect());
+  }
+  widget_->Init(std::move(params));
+
   // The |dialog| ownership is passed to the window hierarchy.
-  widget_ = views::DialogDelegate::CreateDialogWidget(
-      dialog.release(), nullptr, parent->GetNativeWindow());
   widget_observations_.AddObservation(widget_);
   widget_observations_.AddObservation(parent);
+
+  host_view_->AddObserver(this);
 }
 
 SearchResultPageAnchoredDialog::~SearchResultPageAnchoredDialog() {
+  host_view_->RemoveObserver(this);
   widget_observations_.RemoveAllObservations();
   if (widget_)
     widget_->Close();
 }
 
-void SearchResultPageAnchoredDialog::UpdateBounds(
-    const gfx::Rect& anchor_bounds) {
+void SearchResultPageAnchoredDialog::UpdateBounds() {
   if (!widget_)
     return;
 
-  anchor_bounds_ = anchor_bounds;
-
-  gfx::Point anchor_point_in_screen = anchor_bounds.CenterPoint();
+  gfx::Point anchor_point_in_screen(host_view_->width() / 2, 0);
   views::View::ConvertPointToScreen(host_view_, &anchor_point_in_screen);
 
-  // Calculate dialog offset from the anchor view center so the dialog frame
-  // (ignoring borders) respects kDialogVerticalMargin.
-  const int vertical_offset =
-      kDialogVerticalMargin - anchor_bounds.height() / 2 -
-      widget_->non_client_view()->frame_view()->GetInsets().top();
+  const int offset_for_frame_insets =
+      widget_->non_client_view() && widget_->non_client_view()->frame_view()
+          ? widget_->non_client_view()->frame_view()->GetInsets().top()
+          : 0;
+  const int vertical_offset = kDialogVerticalMargin - offset_for_frame_insets;
+
   gfx::Size dialog_size = widget_->GetContentsView()->GetPreferredSize();
   widget_->SetBounds(
       gfx::Rect(gfx::Point(anchor_point_in_screen.x() - dialog_size.width() / 2,
@@ -71,7 +88,7 @@ void SearchResultPageAnchoredDialog::UpdateBounds(
 
 float SearchResultPageAnchoredDialog::AdjustVerticalTransformOffset(
     float default_offset) {
-  // In addition to the search box offset (in host view coordinates), the
+  // In addition to the host view (in host view coordinates), the
   // widget has to consider the parent (app list view) widget transform to
   // correctly follow the anchor view animation.
   const float parent_offset =
@@ -94,7 +111,13 @@ void SearchResultPageAnchoredDialog::OnWidgetBoundsChanged(
   // app list layout, and thus the anchor bounds in the host view coordinates
   // may not change).
   if (widget == host_view_->GetWidget())
-    UpdateBounds(anchor_bounds_);
+    UpdateBounds();
+}
+
+void SearchResultPageAnchoredDialog::OnViewBoundsChanged(
+    views::View* observed_view) {
+  DCHECK_EQ(host_view_, observed_view);
+  UpdateBounds();
 }
 
 }  // namespace ash

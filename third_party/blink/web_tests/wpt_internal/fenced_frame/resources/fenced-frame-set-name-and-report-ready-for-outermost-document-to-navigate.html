@@ -9,7 +9,7 @@
 -->
 <body>
 <script>
-  const ready_for_navigation_key = KEYS["ready_for_navigation"];
+  const [ready_for_navigation_key] = parseKeylist();
   window.name = "target_frame";
   writeValueToServer(ready_for_navigation_key, "READY");
 </script>

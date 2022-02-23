@@ -9,6 +9,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/gtest_util.h"
 #include "build/build_config.h"
@@ -68,7 +69,7 @@ class TestAXEventObserver : public AXEventObserver {
   }
 
  private:
-  AXAuraObjCache* cache_;
+  raw_ptr<AXAuraObjCache> cache_;
 };
 
 }  // namespace
@@ -125,9 +126,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
 
     label_ = new Label();
     label_->SetID(DEFAULT_VIEW_ID);
-    button_->AddChildView(label_);
+    button_->AddChildView(label_.get());
 
-    widget_->GetRootView()->AddChildView(button_);
+    widget_->GetRootView()->AddChildView(button_.get());
     widget_->Show();
   }
 
@@ -202,9 +203,9 @@ class ViewAXPlatformNodeDelegateTest : public ViewsTestBase {
   const int DEFAULT_VIEW_ID = 0;
   const int NON_DEFAULT_VIEW_ID = 1;
 
-  Widget* widget_ = nullptr;
-  Button* button_ = nullptr;
-  Label* label_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
+  raw_ptr<Button> button_ = nullptr;
+  raw_ptr<Label> label_ = nullptr;
   ui::testing::ScopedAxModeSetter ax_mode_setter_;
 };
 
@@ -242,7 +243,7 @@ class ViewAXPlatformNodeDelegateTableTest
 
  private:
   std::unique_ptr<TestTableModel> model_;
-  TableView* table_ = nullptr;  // Owned by parent.
+  raw_ptr<TableView> table_ = nullptr;  // Owned by parent.
 };
 
 class ViewAXPlatformNodeDelegateMenuTest
@@ -300,9 +301,9 @@ class ViewAXPlatformNodeDelegateMenuTest
 
  private:
   // Owned by runner_.
-  views::TestMenuItemView* menu_ = nullptr;
+  raw_ptr<views::TestMenuItemView> menu_ = nullptr;
 
-  SubmenuView* submenu_ = nullptr;
+  raw_ptr<SubmenuView> submenu_ = nullptr;
   std::unique_ptr<TestMenuDelegate> menu_delegate_;
   std::unique_ptr<MenuRunner> runner_;
   std::unique_ptr<Widget> owner_;
@@ -884,13 +885,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
   EXPECT_EQ(submenu_item->GetData().GetHasPopup(), ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(submenu_item->GetPosInSet(), 2);
   EXPECT_EQ(submenu_item->GetSetSize(), 7);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kSubMenu as a submenu rather than an item.
   EXPECT_EQ(submenu_item->GetChildCount(), 1);
 #else
   EXPECT_EQ(submenu_item->GetChildCount(), 0);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   EXPECT_EQ(submenu_item->GetIndexInParent(), 1);
 
   // MenuItemView::Type::kActionableSubMenu
@@ -907,13 +908,13 @@ TEST_F(ViewAXPlatformNodeDelegateMenuTest, MenuTest) {
             ax::mojom::HasPopup::kMenu);
   EXPECT_EQ(actionable_submenu_item->GetPosInSet(), 3);
   EXPECT_EQ(actionable_submenu_item->GetSetSize(), 7);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // A virtual child with role menu is exposed so that VoiceOver treats a
   // MenuItemView of type kActionableSubMenu as a submenu rather than an item.
   EXPECT_EQ(actionable_submenu_item->GetChildCount(), 1);
 #else
   EXPECT_EQ(actionable_submenu_item->GetChildCount(), 0);
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   EXPECT_EQ(actionable_submenu_item->GetIndexInParent(), 2);
 
   // MenuItemView::Type::kCheckbox

@@ -305,6 +305,9 @@
     },
     "22": {
         "benchmarks": {
+            "blink_perf.webcodecs": {
+                "abridged": false
+            },
             "system_health.memory_mobile": {
                 "begin": 47,
                 "end": 63,

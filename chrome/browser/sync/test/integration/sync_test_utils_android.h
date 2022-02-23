@@ -29,10 +29,6 @@ void SetUpAuthForTesting();
 // chrome/browser/metrics/metrics_service_user_demographics_browsertest.cc.
 void TearDownAuthForTesting();
 
-// Sets up AndroidSyncSettings with a mock SyncContentResolver and with
-// Android's master sync setting enabled.
-void SetUpAndroidSyncSettingsForTesting();
-
 }  // namespace sync_test_utils_android
 
 #endif  // CHROME_BROWSER_SYNC_TEST_INTEGRATION_SYNC_TEST_UTILS_ANDROID_H_

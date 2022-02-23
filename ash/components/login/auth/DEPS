@@ -1,0 +1,28 @@
+noparent = True
+
+include_rules = [
+  "+ash/components/cryptohome",
+  "+ash/constants",
+  "+base",
+  "+crypto",
+  "+components/account_id",
+  "+components/password_manager/core/browser/password_hash_data.h",
+  "+components/user_manager",
+  "+base/component_export.h",
+  "+chromeos/dbus",
+  "+chromeos/metrics",
+  "+chromeos/login/login_state",
+  "+chromeos/tpm",
+  "+components/account_id",
+  "+components/device_event_log",
+  "+components/password_manager",
+  "+components/prefs",
+  "+components/user_manager",
+  "+google_apis",
+  "+net",
+  "+testing",
+  "+third_party/abseil-cpp/absl",
+  "+third_party/boringssl/src/include",
+  "+third_party/cros_system_api",
+  "+url",
+]

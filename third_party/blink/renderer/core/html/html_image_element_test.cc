@@ -20,7 +20,7 @@ class HTMLImageElementTest : public PageTestBase {
   static constexpr int kViewportHeight = 600;
 
   void SetUp() override {
-    PageTestBase::SetUp(IntSize(kViewportWidth, kViewportHeight));
+    PageTestBase::SetUp(gfx::Size(kViewportWidth, kViewportHeight));
   }
 };
 

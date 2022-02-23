@@ -34,27 +34,25 @@ namespace extensions {
 void GetExtensionBasicInfo(const Extension* extension,
                            bool enabled,
                            base::DictionaryValue* info) {
-  info->SetString(kInfoIdKey, extension->id());
-  info->SetString(kInfoNameKey, extension->name());
-  info->SetBoolean(kEnabledKey, enabled);
-  info->SetBoolean(kKioskEnabledKey,
-                   KioskModeInfo::IsKioskEnabled(extension));
-  info->SetBoolean(kKioskOnlyKey,
-                   KioskModeInfo::IsKioskOnly(extension));
-  info->SetBoolean(kOfflineEnabledKey,
+  info->SetStringKey(kInfoIdKey, extension->id());
+  info->SetStringKey(kInfoNameKey, extension->name());
+  info->SetBoolKey(kEnabledKey, enabled);
+  info->SetBoolKey(kKioskEnabledKey, KioskModeInfo::IsKioskEnabled(extension));
+  info->SetBoolKey(kKioskOnlyKey, KioskModeInfo::IsKioskOnly(extension));
+  info->SetBoolKey(kOfflineEnabledKey,
                    OfflineEnabledInfo::IsOfflineEnabled(extension));
-  info->SetString(kInfoVersionKey, extension->GetVersionForDisplay());
-  info->SetString(kDescriptionKey, extension->description());
-  info->SetString(
+  info->SetStringKey(kInfoVersionKey, extension->GetVersionForDisplay());
+  info->SetStringKey(kDescriptionKey, extension->description());
+  info->SetStringKey(
       kOptionsUrlKey,
       OptionsPageInfo::GetOptionsPage(extension).possibly_invalid_spec());
-  info->SetString(
+  info->SetStringKey(
       kHomepageUrlKey,
       ManifestURL::GetHomepageURL(extension).possibly_invalid_spec());
-  info->SetString(
+  info->SetStringKey(
       kDetailsUrlKey,
       ManifestURL::GetDetailsURL(extension).possibly_invalid_spec());
-  info->SetBoolean(kPackagedAppKey, extension->is_platform_app());
+  info->SetBoolKey(kPackagedAppKey, extension->is_platform_app());
 }
 
 }  // namespace extensions

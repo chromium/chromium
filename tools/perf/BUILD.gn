@@ -52,6 +52,7 @@ group("perf_without_chrome") {
 
   data = [
     "//tools/perf/",
+    "//.vpython3",
 
     # Field trial config
     "//tools/variations/",

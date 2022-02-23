@@ -25,10 +25,12 @@ class SocketPerformanceWatcherFactory;
 ClientSocketPoolManagerImpl::ClientSocketPoolManagerImpl(
     const CommonConnectJobParams& common_connect_job_params,
     const CommonConnectJobParams& websocket_common_connect_job_params,
-    HttpNetworkSession::SocketPoolType pool_type)
+    HttpNetworkSession::SocketPoolType pool_type,
+    bool cleanup_on_ip_address_change)
     : common_connect_job_params_(common_connect_job_params),
       websocket_common_connect_job_params_(websocket_common_connect_job_params),
-      pool_type_(pool_type) {
+      pool_type_(pool_type),
+      cleanup_on_ip_address_change_(cleanup_on_ip_address_change) {
   // |websocket_endpoint_lock_manager| must only be set for websocket
   // connections.
   DCHECK(!common_connect_job_params_.websocket_endpoint_lock_manager);
@@ -84,7 +86,7 @@ ClientSocketPool* ClientSocketPoolManagerImpl::GetSocketPool(
         sockets_per_proxy_server, sockets_per_group,
         unused_idle_socket_timeout(pool_type_), proxy_server,
         pool_type_ == HttpNetworkSession::WEBSOCKET_SOCKET_POOL,
-        &common_connect_job_params_);
+        &common_connect_job_params_, cleanup_on_ip_address_change_);
   }
 
   std::pair<SocketPoolMap::iterator, bool> ret =

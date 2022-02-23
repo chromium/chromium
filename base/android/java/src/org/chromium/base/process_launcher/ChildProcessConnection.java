@@ -26,8 +26,6 @@ import org.chromium.base.TraceEvent;
 import org.chromium.base.memory.MemoryPressureCallback;
 import org.chromium.base.metrics.RecordHistogram;
 
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.util.List;
 import java.util.concurrent.Executor;
 
@@ -719,33 +717,16 @@ public class ChildProcessConnection {
         return true;
     }
 
-    // NOTE: Keep values in sync with OnServiceConnectedTimedOutResult in enums.xml.
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TimeoutResult {
-        int ALREADY_CONNECTED = 0;
-        int NOT_NEEDED = 1;
-        int FALLBACK = 2;
-        int NUM_ENTRIES = 3;
-    }
-
     private void checkBindTimeOut() {
         assert isRunningOnLauncherThread();
         assert mFallbackServiceName != null;
-        final String histogramName =
-                "Android.ChildProcessLauncher.OnServiceConnectedTimedOutResult";
         if (mDidOnServiceConnected || mServiceDisconnected) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    histogramName, TimeoutResult.ALREADY_CONNECTED, TimeoutResult.NUM_ENTRIES);
             return;
         }
         if (mUnbound) {
-            RecordHistogram.recordEnumeratedHistogram(
-                    histogramName, TimeoutResult.NOT_NEEDED, TimeoutResult.NUM_ENTRIES);
             return;
         }
 
-        RecordHistogram.recordEnumeratedHistogram(
-                histogramName, TimeoutResult.FALLBACK, TimeoutResult.NUM_ENTRIES);
         Log.w(TAG, "Fallback to " + mFallbackServiceName);
         sFallbackEnabled = true;
         boolean isStrongBindingBound = mStrongBinding.isBound();
@@ -786,14 +767,15 @@ public class ChildProcessConnection {
 
     public void updateGroupImportance(int group, int importanceInGroup) {
         assert isRunningOnLauncherThread();
-        if (!isConnected()) return;
         assert !mUnbound;
         assert mWaivedBinding.isBound();
         assert group != 0 || importanceInGroup == 0;
         if (mGroup != group || mImportanceInGroup != importanceInGroup) {
             mGroup = group;
             mImportanceInGroup = importanceInGroup;
-            mWaivedBinding.updateGroupImportance(group, importanceInGroup);
+            if (isConnected()) {
+                mWaivedBinding.updateGroupImportance(group, importanceInGroup);
+            }
         }
     }
 

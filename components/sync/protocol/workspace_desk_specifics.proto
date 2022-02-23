@@ -69,6 +69,7 @@ message WorkspaceDeskSpecifics {
       BrowserAppWindow browser_app_window = 1;
       ChromeApp chrome_app = 2;
       ProgressiveWebApp progress_web_app = 3;
+      ArcApp arc_app = 4;
     }
   }
 
@@ -102,6 +103,26 @@ message WorkspaceDeskSpecifics {
     optional string app_id = 1;
     // App window title.
     optional string title = 2;
+  }
+
+  // An Arc App window.
+  message ArcApp {
+    // The Arc App's ID.
+    optional string app_id = 1;
+
+    // Arc window information.  This maps
+    // to ArcExtraInfo in a WindowInfo struct.
+    optional WindowSize minimum_size = 2;
+    optional WindowSize maximum_size = 3;
+    optional string title = 4;
+    optional WindowBound bounds_in_root = 5;
+
+    // maps to gfx::Size.  Width of the window, including the frame,
+    // in pixels.
+    message WindowSize {
+      optional int32 width = 1;
+      optional int32 height = 2;
+    }
   }
 
   message WindowBound {

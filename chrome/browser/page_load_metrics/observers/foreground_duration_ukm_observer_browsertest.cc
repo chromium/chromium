@@ -101,8 +101,8 @@ IN_PROC_BROWSER_TEST_F(ForegroundDurationUKMObserverBrowserTest, TabSwitching) {
 
   TabStripModel* tab_strip_model = browser()->tab_strip_model();
   EXPECT_EQ(2, tab_strip_model->count());
-  EXPECT_EQ(url1, tab_strip_model->GetWebContentsAt(0)->GetURL());
-  EXPECT_EQ(url2, tab_strip_model->GetWebContentsAt(1)->GetURL());
+  EXPECT_EQ(url1, tab_strip_model->GetWebContentsAt(0)->GetLastCommittedURL());
+  EXPECT_EQ(url2, tab_strip_model->GetWebContentsAt(1)->GetLastCommittedURL());
 
   tab_strip_model->ActivateTabAt(0, {TabStripModel::GestureType::kOther});
   tab_strip_model->ActivateTabAt(1, {TabStripModel::GestureType::kOther});

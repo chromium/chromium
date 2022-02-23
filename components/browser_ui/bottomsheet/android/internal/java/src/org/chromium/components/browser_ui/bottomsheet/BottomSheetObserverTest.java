@@ -29,7 +29,7 @@ import org.chromium.base.test.util.Restriction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
 import org.chromium.components.browser_ui.widget.scrim.ScrimCoordinator;
 import org.chromium.ui.KeyboardVisibilityDelegate;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.concurrent.TimeoutException;
@@ -98,8 +98,8 @@ public class BottomSheetObserverTest {
     }
 
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> mTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> mTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
     private TestSheetObserver mObserver;
     private TestBottomSheetContent mSheetContent;
     private BottomSheetController mBottomSheetController;

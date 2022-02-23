@@ -54,6 +54,9 @@ class NearbyShareSettings : public nearby_share::mojom::NearbyShareSettings,
   bool GetEnabled() const;
   nearby_share::mojom::FastInitiationNotificationState
   GetFastInitiationNotificationState() const;
+  bool is_fast_initiation_hardware_supported() {
+    return is_fast_initiation_hardware_supported_;
+  }
   void SetIsFastInitiationHardwareSupported(bool is_supported);
   std::string GetDeviceName() const;
   nearby_share::mojom::DataUsage GetDataUsage() const;

@@ -142,7 +142,8 @@ class GPURenderPassEncoder : public DawnObject<WGPURenderPassEncoder>,
     GetProcs().renderPassEncoderWriteTimestamp(
         GetHandle(), querySet->GetHandle(), queryIndex);
   }
-  void endPass() { GetProcs().renderPassEncoderEndPass(GetHandle()); }
+  void end() { GetProcs().renderPassEncoderEnd(GetHandle()); }
+  void endPass();
 };
 
 }  // namespace blink

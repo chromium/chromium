@@ -14,10 +14,6 @@ namespace sandbox {
 
 namespace {
 
-using CreateProcessWFunction = decltype(&::CreateProcessW);
-
-using CreateProcessAFunction = decltype(&::CreateProcessA);
-
 using CreateThreadFunction = decltype(&::CreateThread);
 
 using GetUserDefaultLCIDFunction = decltype(&::GetUserDefaultLCID);
@@ -56,33 +52,6 @@ TargetNtOpenProcessTokenEx(NtOpenProcessTokenExFunction orig_OpenProcessTokenEx,
                            ACCESS_MASK desired_access,
                            ULONG handle_attributes,
                            PHANDLE token);
-
-// Interception of CreateProcessW and A in kernel32.dll.
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessW(CreateProcessWFunction orig_CreateProcessW,
-                     LPCWSTR application_name,
-                     LPWSTR command_line,
-                     LPSECURITY_ATTRIBUTES process_attributes,
-                     LPSECURITY_ATTRIBUTES thread_attributes,
-                     BOOL inherit_handles,
-                     DWORD flags,
-                     LPVOID environment,
-                     LPCWSTR current_directory,
-                     LPSTARTUPINFOW startup_info,
-                     LPPROCESS_INFORMATION process_information);
-
-SANDBOX_INTERCEPT BOOL WINAPI
-TargetCreateProcessA(CreateProcessAFunction orig_CreateProcessA,
-                     LPCSTR application_name,
-                     LPSTR command_line,
-                     LPSECURITY_ATTRIBUTES process_attributes,
-                     LPSECURITY_ATTRIBUTES thread_attributes,
-                     BOOL inherit_handles,
-                     DWORD flags,
-                     LPVOID environment,
-                     LPCSTR current_directory,
-                     LPSTARTUPINFOA startup_info,
-                     LPPROCESS_INFORMATION process_information);
 
 // Interception of CreateThread in kernel32.dll.
 SANDBOX_INTERCEPT HANDLE WINAPI

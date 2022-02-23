@@ -29,7 +29,10 @@ PermissionIDSet MockManifestPermission::GetPermissions() const {
 }
 
 bool MockManifestPermission::FromValue(const base::Value* value) {
-  return value && value->GetAsString(&value_);
+  if (!value || !value->is_string())
+    return false;
+  value_ = value->GetString();
+  return true;
 }
 
 std::unique_ptr<base::Value> MockManifestPermission::ToValue() const {

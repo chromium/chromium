@@ -15,31 +15,31 @@
 
 #include "base/base_export.h"
 #include "base/files/file_path.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "base/strings/string_util.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #include <tlhelp32.h>
-#elif defined(OS_APPLE) || defined(OS_OPENBSD)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_OPENBSD)
 #include <sys/sysctl.h>
-#elif defined(OS_FREEBSD)
+#elif BUILDFLAG(IS_FREEBSD)
 #include <sys/user.h>
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 #include <dirent.h>
 #endif
 
 namespace base {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 struct ProcessEntry : public PROCESSENTRY32 {
   ProcessId pid() const { return th32ProcessID; }
   ProcessId parent_pid() const { return th32ParentProcessID; }
   const wchar_t* exe_file() const { return szExeFile; }
 };
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
 struct BASE_EXPORT ProcessEntry {
   ProcessEntry();
   ProcessEntry(const ProcessEntry& other);
@@ -59,7 +59,7 @@ struct BASE_EXPORT ProcessEntry {
   std::string exe_file_;
   std::vector<std::string> cmd_line_args_;
 };
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Used to filter processes by process ID.
 class ProcessFilter {
@@ -111,17 +111,17 @@ class BASE_EXPORT ProcessIterator {
   // use with Process32First/Process32Next.
   void InitProcessEntry(ProcessEntry* entry);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   HANDLE snapshot_;
   bool started_iteration_;
-#elif defined(OS_APPLE) || defined(OS_BSD)
+#elif BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_BSD)
   std::vector<kinfo_proc> kinfo_procs_;
   size_t index_of_kinfo_proc_;
-#elif defined(OS_POSIX) || defined(OS_FUCHSIA)
-  DIR* procfs_dir_;
+#elif BUILDFLAG(IS_POSIX) || BUILDFLAG(IS_FUCHSIA)
+  raw_ptr<DIR> procfs_dir_;
 #endif
   ProcessEntry entry_;
-  const ProcessFilter* filter_;
+  raw_ptr<const ProcessFilter> filter_;
 };
 
 // This class provides a way to iterate through the list of processes

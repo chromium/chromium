@@ -50,6 +50,7 @@
 #include "third_party/blink/renderer/platform/wtf/cross_thread_functional.h"
 #include "third_party/blink/renderer/platform/wtf/text/line_ending.h"
 #include "third_party/blink/renderer/platform/wtf/text/text_encoding.h"
+#include "third_party/blink/renderer/platform/wtf/thread_specific.h"
 #include "third_party/blink/renderer/platform/wtf/uuid.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
@@ -366,7 +367,7 @@ BlobDataHandle::BlobDataHandle(
 BlobDataHandle::~BlobDataHandle() = default;
 
 mojo::PendingRemote<mojom::blink::Blob> BlobDataHandle::CloneBlobRemote() {
-  MutexLocker locker(blob_remote_mutex_);
+  base::AutoLock locker(blob_remote_lock_);
   if (!blob_remote_.is_valid())
     return mojo::NullRemote();
   mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
@@ -378,7 +379,7 @@ mojo::PendingRemote<mojom::blink::Blob> BlobDataHandle::CloneBlobRemote() {
 
 void BlobDataHandle::CloneBlobRemote(
     mojo::PendingReceiver<mojom::blink::Blob> receiver) {
-  MutexLocker locker(blob_remote_mutex_);
+  base::AutoLock locker(blob_remote_lock_);
   if (!blob_remote_.is_valid())
     return;
   mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
@@ -388,7 +389,7 @@ void BlobDataHandle::CloneBlobRemote(
 
 mojo::PendingRemote<network::mojom::blink::DataPipeGetter>
 BlobDataHandle::AsDataPipeGetter() {
-  MutexLocker locker(blob_remote_mutex_);
+  base::AutoLock locker(blob_remote_lock_);
   if (!blob_remote_.is_valid())
     return mojo::NullRemote();
   mojo::PendingRemote<network::mojom::blink::DataPipeGetter> result;
@@ -401,7 +402,7 @@ BlobDataHandle::AsDataPipeGetter() {
 void BlobDataHandle::ReadAll(
     mojo::ScopedDataPipeProducerHandle pipe,
     mojo::PendingRemote<mojom::blink::BlobReaderClient> client) {
-  MutexLocker locker(blob_remote_mutex_);
+  base::AutoLock locker(blob_remote_lock_);
   mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
   blob->ReadAll(std::move(pipe), std::move(client));
   blob_remote_ = blob.Unbind();
@@ -412,7 +413,7 @@ void BlobDataHandle::ReadRange(
     uint64_t length,
     mojo::ScopedDataPipeProducerHandle pipe,
     mojo::PendingRemote<mojom::blink::BlobReaderClient> client) {
-  MutexLocker locker(blob_remote_mutex_);
+  base::AutoLock locker(blob_remote_lock_);
   mojo::Remote<mojom::blink::Blob> blob(std::move(blob_remote_));
   blob->ReadRange(offset, length, std::move(pipe), std::move(client));
   blob_remote_ = blob.Unbind();
@@ -422,7 +423,7 @@ bool BlobDataHandle::CaptureSnapshot(
     uint64_t* snapshot_size,
     absl::optional<base::Time>* snapshot_modification_time) {
   // This method operates on a cloned blob remote; this lets us avoid holding
-  // the |blob_remote_mutex_| locked during the duration of the (synchronous)
+  // the |blob_remote_lock_| locked during the duration of the (synchronous)
   // CaptureSnapshot call.
   mojo::Remote<mojom::blink::Blob> remote(CloneBlobRemote());
   return remote->CaptureSnapshot(snapshot_size, snapshot_modification_time);

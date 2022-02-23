@@ -10,16 +10,18 @@
 #include <atlconv.h>
 #include <process.h>
 
-#include <set>
 #include <string>
 
 #include "base/base64.h"
+#include "base/containers/contains.h"
 #include "base/containers/span.h"
 #include "base/json/json_reader.h"
 #include "base/json/json_writer.h"
+#include "base/memory/ptr_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/synchronization/lock.h"
 #include "base/time/time.h"
 #include "chrome/credential_provider/gaiacp/logging.h"
 
@@ -32,7 +34,7 @@ constexpr char kHttpErrorCodeKeyNameInResponse[] = "code";
 const char kErrorKeyInRequestResult[] = "error";
 
 // The HTTP response codes for which the request is re-tried on failure.
-const std::set<int> kRetryableHttpErrorCodes = {
+constexpr int kRetryableHttpErrorCodes[] = {
     503,  // Service Unavailable
     504   // Gateway Timeout
 };
@@ -76,21 +78,20 @@ class HttpServiceRequest {
     // or the thread finishes.
     unsigned wait_thread_id;
     uintptr_t wait_thread = ::_beginthreadex(
-        nullptr, 0, &HttpServiceRequest::FetchResultFromHttpService,
-        reinterpret_cast<void*>(this), 0, &wait_thread_id);
+        nullptr, 0, &HttpServiceRequest::FetchResultFromHttpService, this, 0,
+        &wait_thread_id);
 
     HRESULT hr = S_OK;
-    if (wait_thread == 0) {
+    if (wait_thread == 0)
       return result;
-    } else {
-      // Hold the handle in the scoped handle so that it can be immediately
-      // closed when the wait is complete allowing the thread to finish
-      // completely if needed.
-      base::win::ScopedHandle thread_handle(
-          reinterpret_cast<HANDLE>(wait_thread));
-      hr = ::WaitForSingleObject(thread_handle.Get(),
-                                 request_timeout.InMilliseconds());
-    }
+
+    // Hold the handle in the scoped handle so that it can be immediately
+    // closed when the wait is complete allowing the thread to finish
+    // completely if needed.
+    base::win::ScopedHandle thread_handle(
+        reinterpret_cast<HANDLE>(wait_thread));
+    hr = ::WaitForSingleObject(thread_handle.Get(),
+                               request_timeout.InMilliseconds());
 
     // The race condition starts here. It is possible that between the expiry of
     // the timeout in the call for WaitForSingleObject and the call to
@@ -109,7 +110,8 @@ class HttpServiceRequest {
 
     result = base::JSONReader::Read(
         base::StringPiece(response_.data(), response_.size()),
-        base::JSON_ALLOW_TRAILING_COMMAS);
+        base::JSON_PARSE_CHROMIUM_EXTENSIONS |
+            base::JSON_ALLOW_TRAILING_COMMAS);
     if (!result || !result->is_dict()) {
       LOGFN(ERROR) << "Failed to read json result from server response";
       result.reset();
@@ -163,9 +165,8 @@ class HttpServiceRequest {
   // as finished processing when it is done.
   static unsigned __stdcall FetchResultFromHttpService(void* param) {
     DCHECK(param);
-    HttpServiceRequest* requester =
-        reinterpret_cast<HttpServiceRequest*>(param);
 
+    auto* requester = reinterpret_cast<HttpServiceRequest*>(param);
     HRESULT hr = requester->fetcher_->Fetch(&requester->response_);
     if (FAILED(hr))
       LOGFN(ERROR) << "fetcher.Fetch hr=" << credential_provider::putHR(hr);
@@ -217,7 +218,7 @@ HttpServiceRequest* HttpServiceRequest::Create(
     url_fetcher->SetHttpRequestTimeout(request_timeout.InMilliseconds());
   }
 
-  return (new HttpServiceRequest(std::move(url_fetcher)));
+  return new HttpServiceRequest(std::move(url_fetcher));
 }
 
 }  // namespace
@@ -235,7 +236,7 @@ WinHttpUrlFetcher::GetCreatorFunctionStorage() {
 std::unique_ptr<WinHttpUrlFetcher> WinHttpUrlFetcher::Create(const GURL& url) {
   return !GetCreatorFunctionStorage()->is_null()
              ? GetCreatorFunctionStorage()->Run(url)
-             : std::unique_ptr<WinHttpUrlFetcher>(new WinHttpUrlFetcher(url));
+             : base::WrapUnique(new WinHttpUrlFetcher(url));
 }
 
 // static
@@ -257,7 +258,7 @@ WinHttpUrlFetcher::WinHttpUrlFetcher(const GURL& url)
   session_.Set(session);
 }
 
-WinHttpUrlFetcher::WinHttpUrlFetcher() {}
+WinHttpUrlFetcher::WinHttpUrlFetcher() = default;
 
 WinHttpUrlFetcher::~WinHttpUrlFetcher() {
   // Closing the session handle closes all derived handles too.
@@ -390,7 +391,7 @@ HRESULT WinHttpUrlFetcher::Fetch(std::vector<char>* response) {
   // buffer than 256k.
   constexpr size_t kMaxResponseSize = 256 * 1024 * 1024;
   // Read the response.
-  std::unique_ptr<char> buffer(new char[length]);
+  auto buffer = std::make_unique<char[]>(length);
   DWORD actual = 0;
   do {
     if (!::WinHttpReadData(request_.Get(), buffer.get(), length, &actual)) {
@@ -425,7 +426,6 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
     unsigned int request_retries,
     absl::optional<base::Value>* request_result) {
   DCHECK(request_result);
-  HRESULT hr = S_OK;
 
   std::string request_body;
   if (request_dict.is_dict()) {
@@ -438,40 +438,32 @@ HRESULT WinHttpUrlFetcher::BuildRequestAndFetchResultFromHttpService(
   for (unsigned int try_count = 0; try_count <= request_retries; ++try_count) {
     HttpServiceRequest* request = HttpServiceRequest::Create(
         request_url, access_token, headers, request_body, request_timeout);
-
     if (!request)
       return E_FAIL;
 
     auto extracted_param =
         request->WaitForResponseFromHttpService(request_timeout);
-
-    if (!extracted_param) {
-      hr = E_FAIL;
+    if (!extracted_param)
       continue;
-    }
+
     *request_result = std::move(extracted_param);
-
-    base::Value* error_detail =
+    const base::Value* error_detail =
         (*request_result)->FindDictKey(kErrorKeyInRequestResult);
-    if (error_detail) {
-      hr = E_FAIL;
-      LOGFN(ERROR) << "error: " << *error_detail;
+    if (!error_detail)
+      return S_OK;
 
-      // If error code is known, retry only on retryable server errors.
-      absl::optional<int> error_code =
-          error_detail->FindIntKey(kHttpErrorCodeKeyNameInResponse);
-      if (error_code.has_value() &&
-          kRetryableHttpErrorCodes.find(error_code.value()) ==
-              kRetryableHttpErrorCodes.end())
-        break;
+    LOGFN(ERROR) << "error: " << *error_detail;
 
-      continue;
+    // If error code is known, retry only on retryable server errors.
+    absl::optional<int> error_code =
+        error_detail->FindIntKey(kHttpErrorCodeKeyNameInResponse);
+    if (error_code.has_value() &&
+        !base::Contains(kRetryableHttpErrorCodes, error_code.value())) {
+      return E_FAIL;
     }
-
-    hr = S_OK;
-    break;
   }
 
-  return hr;
+  return E_FAIL;
 }
+
 }  // namespace credential_provider

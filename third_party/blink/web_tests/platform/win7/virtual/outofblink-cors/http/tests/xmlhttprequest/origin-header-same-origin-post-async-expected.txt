@@ -1,4 +1,0 @@
-PASS: Cross-domain access allowed.
-HTTP_ORIGIN: http://127.0.0.1:8000
-
-

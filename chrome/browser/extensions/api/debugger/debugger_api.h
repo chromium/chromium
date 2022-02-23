@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/common/extensions/api/debugger.h"
 #include "content/public/browser/devtools_agent_host.h"
 #include "extensions/browser/extension_function.h"
@@ -18,10 +19,6 @@
 using extensions::api::debugger::Debuggee;
 
 // Base debugger function.
-
-namespace base {
-class DictionaryValue;
-}
 
 namespace extensions {
 class ExtensionDevToolsClientHost;
@@ -39,7 +36,7 @@ class DebuggerFunction : public ExtensionFunction {
 
   Debuggee debuggee_;
   scoped_refptr<content::DevToolsAgentHost> agent_host_;
-  ExtensionDevToolsClientHost* client_host_;
+  raw_ptr<ExtensionDevToolsClientHost> client_host_;
 };
 
 // Implements the debugger.attach() extension function.
@@ -76,7 +73,7 @@ class DebuggerSendCommandFunction : public DebuggerFunction {
   DECLARE_EXTENSION_FUNCTION("debugger.sendCommand", DEBUGGER_SENDCOMMAND)
 
   DebuggerSendCommandFunction();
-  void SendResponseBody(base::DictionaryValue* result);
+  void SendResponseBody(base::Value result);
   void SendDetachedError();
 
  protected:

@@ -2,6 +2,7 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="it">
 <translation id="102360288709523007">Aiutaci a migliorare Chromium inviando a Google statistiche sull'utilizzo e report sugli arresti anomali.</translation>
+<translation id="1047130070405668746">Seleziona Chromium</translation>
 <translation id="1185134272377778587">Informazioni su Chromium</translation>
 <translation id="1257458525759135959">Per salvare le immagini, tocca Impostazioni e consenti a Chromium di aggiungere le tue foto</translation>
 <translation id="1289216811211435351">Passa a Chromium</translation>
@@ -13,10 +14,12 @@
 <translation id="1531155317299575425">Vengono mostrate richieste di accesso a Chromium.</translation>
 <translation id="1584569488888892906">Chromium è semplice, sicuro e più veloce che mai</translation>
 <translation id="1617663976202781617">Dati dalla Sincronizzazione Chromium</translation>
+<translation id="1722370509450468186">La password verrà salvata nel tuo Account (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dati di Chromium cancellati</translation>
 <translation id="1838412507805038478">Chromium ha verificato che il certificato del sito web è stato emesso da <ph name="ISSUER" />.</translation>
 <translation id="1843424232666537147">Chromium offre funzioni che consentono di gestire i dati Internet e la velocità di caricamento delle pagine web.
 <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
+<translation id="1867772173333403444">4. Seleziona Chromium</translation>
 <translation id="2006345422933397527">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Verifica la tua connessione a Internet.</translation>
 <translation id="2054703085270098503">Resta al sicuro con Chromium</translation>
 <translation id="2168108852149185974">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Disinstalla:</translation>
@@ -40,7 +43,7 @@
 <translation id="3472200483164753384">Non supportata su Chromium Canary</translation>
 <translation id="3639997914391704523">Chromium può controllare le tue password quando accedi con il tuo Account Google.</translation>
 <translation id="3805899903892079518">Chromium non ha accesso alle tue foto o ai tuoi video. Attiva l'accesso in Impostazioni iOS &gt; Privacy &gt; Foto.</translation>
-<translation id="3946918322491238254">Puoi trovare ancora tutti i tuoi preferiti, la cronologia, le password e altre impostazioni su questo dispositivo. Le eventuali modifiche apportate non verranno sincronizzate con il tuo account.</translation>
+<translation id="4043291146360695975">Le password vengono salvate in Gestore delle password solo su questo dispositivo.</translation>
 <translation id="4099085513035183040">Non supportata su Chromium beta</translation>
 <translation id="4555020257205549924">Quando questa funzione è attiva, Chromium si offre di tradurre le pagine scritte in altre lingue utilizzando Google Traduttore. <ph name="BEGIN_LINK" />Ulteriori informazioni<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
@@ -73,17 +76,20 @@
 <translation id="6424492062988593837">Chromium è stato migliorato. È disponibile una nuova versione.</translation>
 <translation id="6752854822223394465">La tua organizzazione sta configurando Chromium…</translation>
 <translation id="6820823224820483452">Chromium non ha potuto controllare tutte le password. Riprova domani.</translation>
+<translation id="7006920032187763988">Puoi utilizzare le password salvate con Gestore delle password in altre app sull'iPad.</translation>
 <translation id="7018284295775193585">Impossibile aggiornare Chromium</translation>
 <translation id="7045244423563602563">Personalizza Chromium</translation>
 <translation id="7099326575020694068">Chromium non può utilizzare la videocamera in modalità Visualizzazione divisa</translation>
 <translation id="7108914401277488191">Aumenta la tua produttività con Chromium</translation>
 <translation id="7118091470949186573">Ora puoi usare Chromium ogni volta che tocchi link in messaggi, documenti e altre app.</translation>
+<translation id="7175400662502680481">La tua password è stata compromessa nell'ambito di una violazione dei dati. Gestore delle password consiglia di cambiarla subito.</translation>
 <translation id="7208566199746267865">Chromium ti fa risparmiare tempo portando i tuoi account sul Web. Puoi aggiungere o rimuovere account nelle impostazioni.</translation>
 <translation id="725427773388857052">Chromium può contribuire a proteggerti da violazioni dei dati, siti web non sicuri e non solo.</translation>
 <translation id="7269362888766543920">Alcuni componenti aggiuntivi provocano l'arresto anomalo di Chromium. Prova a disinstallarli.</translation>
 <translation id="7313655110045230863">Per impostare Chromium come browser predefinito, apri le Impostazioni. Tocca App browser predefinita, quindi seleziona Chromium.</translation>
 <translation id="7337881442233988129">Chromium</translation>
 <translation id="7357211569052832586">I dati selezionati sono stati rimossi da Chromium e dai dispositivi sincronizzati. Il tuo Account Google potrebbe avere altre forme di cronologia di navigazione, ad esempio ricerche e attività, di altri servizi Google alla pagina history.google.com.</translation>
+<translation id="7395825497086981028">La tua password verrà salvata in Gestore delle password per <ph name="EMAIL" />.</translation>
 <translation id="7400689562045506105">Utilizza Chromium ovunque</translation>
 <translation id="766897673682622022">La tua password è stata compromessa a causa di una violazione dei dati. Chromium consiglia di cambiare subito la password.</translation>
 <translation id="7674213385180944843">Apri impostazioni &gt; Privacy &gt; Fotocamera &gt; Chromium e attiva la fotocamera.</translation>
@@ -98,11 +104,13 @@
 <translation id="8073677936375100957">Eliminare i dati di Chromium dal dispositivo?</translation>
 <translation id="8175055321229419309">Suggerimento. <ph name="BEGIN_LINK" />Sposta Chromium nel dock<ph name="END_LINK" /></translation>
 <translation id="8240981428553046115">Chromium non ha potuto verificare la disponibilità di aggiornamenti. Riprova più tardi.</translation>
+<translation id="858114650497379505">Puoi utilizzare le password salvate con Gestore delle password in altre app sull'iPhone.</translation>
 <translation id="8586442755830160949">Copyright <ph name="YEAR" /> The Chromium Authors. Tutti i diritti riservati.</translation>
 <translation id="8663480472502753423">Mantieni Chromium aggiornato</translation>
 <translation id="8776843108004031667">Questo account e gli eventuali dati non salvati verranno rimossi da Chromium.</translation>
 <translation id="894437814105052438">Se esci, Chromium non sincronizzerà gli eventuali nuovi dati con il tuo Account Google. I dati sincronizzati in precedenza rimangono memorizzati nell'account.</translation>
 <translation id="9022552996538154597">Accedi a Chromium</translation>
+<translation id="9059693977935746710">Non dovrai ricordare questa password perché verrà salvata in Gestore delle password per <ph name="EMAIL" /></translation>
 <translation id="9089354809943900324">Chromium non è aggiornato</translation>
 <translation id="9110075932708282655">Usa Chromium per impostazione predefinita</translation>
 <translation id="921174536258924340">Chromium non ha potuto controllare tutte le password. Riprova domani oppure <ph name="BEGIN_LINK" />controlla le password nel tuo Account Google<ph name="END_LINK" />.</translation>

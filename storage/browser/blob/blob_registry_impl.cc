@@ -9,6 +9,7 @@
 #include "base/barrier_closure.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "storage/browser/blob/blob_builder_from_stream.h"
 #include "storage/browser/blob/blob_data_builder.h"
 #include "storage/browser/blob/blob_impl.h"
@@ -178,7 +179,7 @@ class BlobRegistryImpl::BlobUnderConstruction {
 #endif
 
   // BlobRegistryImpl we belong to.
-  BlobRegistryImpl* blob_registry_;
+  raw_ptr<BlobRegistryImpl> blob_registry_;
 
   // UUID of the blob being built.
   std::string uuid_;
@@ -644,9 +645,11 @@ void BlobRegistryImpl::URLStoreForOrigin(
     mojo::PendingAssociatedReceiver<blink::mojom::BlobURLStore> receiver) {
   Delegate* delegate = receivers_.current_context().get();
   DCHECK(delegate);
-  if (!origin.opaque() && !delegate->CanCommitURL(origin.GetURL())) {
+  if (!origin.opaque() && !delegate->CanAccessDataForOrigin(origin)) {
     mojo::ReportBadMessage(
-        "Non committable origin passed to BlobRegistryImpl::URLStoreForOrigin");
+        "Cannot access data for origin passed to "
+        "BlobRegistryImpl::URLStoreForOrigin");
+    return;
   }
   auto self_owned_associated_receiver = mojo::MakeSelfOwnedAssociatedReceiver(
       std::make_unique<BlobURLStoreImpl>(origin, url_registry_),

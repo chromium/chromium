@@ -12,21 +12,15 @@ namespace blink {
 class LayoutNGTableInterface;
 class LayoutNGTableSectionInterface;
 class LayoutNGTableRowInterface;
-class LayoutTableCell;
-class Length;
 
 // Abstract class defining table cell methods.
 // Used for Legacy/NG interoperability.
 class LayoutNGTableCellInterface {
  public:
-  virtual const LayoutTableCell* ToLayoutTableCell() const = 0;
   virtual const LayoutObject* ToLayoutObject() const = 0;
   virtual LayoutObject* ToMutableLayoutObject() = 0;
   virtual LayoutNGTableInterface* TableInterface() const = 0;
   virtual void ColSpanOrRowSpanChanged() = 0;
-  virtual Length StyleOrColLogicalWidth() const = 0;
-  virtual int IntrinsicPaddingBefore() const = 0;
-  virtual int IntrinsicPaddingAfter() const = 0;
   virtual unsigned RowIndex() const = 0;
   virtual unsigned ResolvedRowSpan() const = 0;
   virtual unsigned AbsoluteColumnIndex() const = 0;

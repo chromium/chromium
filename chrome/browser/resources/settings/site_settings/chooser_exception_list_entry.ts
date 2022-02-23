@@ -14,17 +14,24 @@ import 'chrome://resources/polymer/v3_0/iron-list/iron-list.js';
 import '../settings_shared_css.js';
 import './site_list_entry.js';
 
-import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {getTemplate} from './chooser_exception_list_entry.html.js';
 
 import {ChooserException} from './site_settings_prefs_browser_proxy.js';
 
-class ChooserExceptionListEntryElement extends PolymerElement {
+export interface ChooserExceptionListEntryElement {
+  $: {
+    listContainer: HTMLElement,
+  };
+}
+
+export class ChooserExceptionListEntryElement extends PolymerElement {
   static get is() {
     return 'chooser-exception-list-entry';
   }
 
   static get template() {
-    return html`{__html_template__}`;
+    return getTemplate();
   }
 
   static get properties() {
@@ -40,6 +47,12 @@ class ChooserExceptionListEntryElement extends PolymerElement {
 
   exception: ChooserException;
   private lastFocused_: HTMLElement|null;
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'chooser-exception-list-entry': ChooserExceptionListEntryElement;
+  }
 }
 
 customElements.define(

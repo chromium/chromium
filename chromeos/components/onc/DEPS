@@ -1,0 +1,12 @@
+noparent = True
+
+include_rules = [
+  "+base",
+  "+components/crx_file",
+  "+components/device_event_log",
+  "+components/onc",
+  "+crypto",
+  "+net",
+  "+testing",
+  "+third_party/abseil-cpp/absl",
+]

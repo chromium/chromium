@@ -5,6 +5,7 @@
 #include "content/public/test/mock_render_process_host.h"
 
 #include <algorithm>
+#include <tuple>
 #include <utility>
 #include <vector>
 
@@ -12,12 +13,14 @@
 #include "base/callback_helpers.h"
 #include "base/lazy_instance.h"
 #include "base/location.h"
-#include "base/macros.h"
+#include "base/no_destructor.h"
 #include "base/process/process_handle.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/browser/child_process_security_policy_impl.h"
+#include "content/browser/process_lock.h"
 #include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
 #include "content/browser/renderer_host/render_widget_host_impl.h"
@@ -329,7 +332,7 @@ bool MockRenderProcessHost::HasPriorityOverride() {
 
 void MockRenderProcessHost::ClearPriorityOverride() {}
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 ChildProcessImportance MockRenderProcessHost::GetEffectiveImportance() {
   NOTIMPLEMENTED();
   return ChildProcessImportance::NORMAL;
@@ -454,8 +457,8 @@ mojom::Renderer* MockRenderProcessHost::GetRendererInterface() {
   if (!renderer_interface_) {
     renderer_interface_ =
         std::make_unique<mojo::AssociatedRemote<mojom::Renderer>>();
-    ignore_result(
-        renderer_interface_->BindNewEndpointAndPassDedicatedReceiver());
+    std::ignore =
+        renderer_interface_->BindNewEndpointAndPassDedicatedReceiver();
   }
   return renderer_interface_->get();
 }
@@ -499,10 +502,12 @@ void MockRenderProcessHost::SetProcessLock(
     is_renderer_locked_to_site_ = true;
 }
 
+ProcessLock MockRenderProcessHost::GetProcessLock() {
+  return ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
+}
+
 bool MockRenderProcessHost::IsProcessLockedToSiteForTesting() {
-  ProcessLock lock =
-      ChildProcessSecurityPolicyImpl::GetInstance()->GetProcessLock(GetID());
-  return lock.is_locked_to_site();
+  return GetProcessLock().is_locked_to_site();
 }
 
 void MockRenderProcessHost::BindCacheStorage(
@@ -536,6 +541,9 @@ void MockRenderProcessHost::WriteIntoTrace(
     perfetto::TracedProto<perfetto::protos::pbzero::RenderProcessHost> proto) {
   proto->set_id(GetID());
 }
+
+void MockRenderProcessHost::EnableBlinkRuntimeFeatures(
+    const std::vector<std::string>& features) {}
 
 void MockRenderProcessHost::FilterURL(bool empty_allowed, GURL* url) {
   RenderProcessHostImpl::FilterURL(this, empty_allowed, url);

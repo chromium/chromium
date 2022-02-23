@@ -26,7 +26,7 @@
         android:layout_height="match_parent"
         android:gravity="center_vertical"
         android:importantForAccessibility="no"
-        android:tint="?attr/default_icon_color_secondary"
+        android:tint="@macro/default_icon_color_secondary"
         android:visibility="gone" />
 
 

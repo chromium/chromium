@@ -19,11 +19,11 @@
 #include "build/build_config.h"
 #include "remoting/base/auto_thread_task_runner.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include "base/files/file_descriptor_watcher_posix.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/scoped_com_initializer.h"
 #endif
 
@@ -31,7 +31,7 @@ namespace remoting {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 std::unique_ptr<base::win::ScopedCOMInitializer> CreateComInitializer(
     AutoThread::ComInitType type) {
   std::unique_ptr<base::win::ScopedCOMInitializer> initializer;
@@ -83,7 +83,7 @@ scoped_refptr<AutoThreadTaskRunner> AutoThread::Create(
   return CreateWithType(name, joiner, base::MessagePumpType::DEFAULT);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // static
 scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithLoopAndComInitTypes(
     const char* name,
@@ -102,7 +102,7 @@ scoped_refptr<AutoThreadTaskRunner> AutoThread::CreateWithLoopAndComInitTypes(
 
 AutoThread::AutoThread(const char* name)
     : startup_data_(nullptr),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       com_init_type_(COM_INIT_NONE),
 #endif
       thread_(),
@@ -113,7 +113,7 @@ AutoThread::AutoThread(const char* name)
 
 AutoThread::AutoThread(const char* name, AutoThreadTaskRunner* joiner)
     : startup_data_(nullptr),
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       com_init_type_(COM_INIT_NONE),
 #endif
       thread_(),
@@ -137,7 +137,7 @@ AutoThread::~AutoThread() {
 scoped_refptr<AutoThreadTaskRunner> AutoThread::StartWithType(
     base::MessagePumpType type) {
   DCHECK(thread_.is_null());
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   DCHECK(com_init_type_ != COM_INIT_STA || type == base::MessagePumpType::UI);
 #endif
 
@@ -166,7 +166,7 @@ scoped_refptr<AutoThreadTaskRunner> AutoThread::StartWithType(
   return startup_data.task_runner;
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void AutoThread::SetComInitType(ComInitType com_init_type) {
   DCHECK_EQ(com_init_type_, COM_INIT_NONE);
   com_init_type_ = com_init_type;
@@ -213,14 +213,14 @@ void AutoThread::ThreadMain() {
   // startup_data_ can't be touched anymore since the starting thread is now
   // unlocked.
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
   // Allow threads running a MessageLoopForIO to use FileDescriptorWatcher.
   std::unique_ptr<base::FileDescriptorWatcher> file_descriptor_watcher;
   if (single_thread_task_executor.type() == base::MessagePumpType::IO) {
     file_descriptor_watcher = std::make_unique<base::FileDescriptorWatcher>(
         single_thread_task_executor.task_runner());
   }
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
   // Initialize COM on the thread, if requested.
   std::unique_ptr<base::win::ScopedCOMInitializer> com_initializer(
       CreateComInitializer(com_init_type_));

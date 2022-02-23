@@ -71,7 +71,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped" enum="UkmDataDroppedReason"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -81,7 +81,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Dropped.ByEntryHash" enum="UkmEventNameHash"
-    expires_after="2022-04-17">
+    expires_after="2022-08-21">
   <owner>jwd@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -93,7 +93,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.Recorded.ByEntryHash" enum="UkmEventNameHash"
-    expires_after="2022-03-13">
+    expires_after="2022-07-17">
   <owner>yrsun@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -105,7 +105,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Entries.SerializedCount2" units="entries"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>Number of serialized UKM entries when storing a UKM log.</summary>
@@ -136,7 +136,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.IOSLog.OnSuccess" units="records"
-    expires_after="2022-03-20">
+    expires_after="2022-05-22">
   <owner>rkaplow@chromium.org</owner>
   <summary>
     Number of times when UKM.LogSize.OnSuccess was recorded on iOS. Recorded
@@ -152,7 +152,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2022-04-24">
+<histogram name="UKM.LogSize.OnSuccess" units="KB" expires_after="2022-06-26">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -175,7 +175,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.LogUpload.ResponseOrErrorCode"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-05-01">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2022-07-03">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -214,6 +214,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="UKM.PrunedSources.{Type}" units="sources"
+    expires_after="2022-07-01">
+  <owner>rkaplow@chromium.org</owner>
+  <owner>src/base/metrics/OWNERS</owner>
+  <summary>
+    Number of sources pruned after the operation of {Type} type.
+  </summary>
+  <token key="Type">
+    <variant name="AppExpNumAppId"
+        summary="APP_ID only when not in seen/unseen experiment"/>
+    <variant name="AppExpNumNonAppId" summary="All non-APP_ID"/>
+    <variant name="NoExp" summary="Total pruned without experimentation"/>
+    <variant name="NumAppId"
+        summary="APP_ID only under seen/unseen experiment"/>
+    <variant name="NumSeen" summary="Seen only"/>
+    <variant name="NumUnseen" summary="Unseen only"/>
+  </token>
+</histogram>
+
 <histogram name="UKM.ReportSize.NonUkmPercentage" units="%"
     expires_after="2022-07-01">
   <owner>yrsun@chromium.org</owner>
@@ -236,7 +255,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Sources.Dropped" enum="UkmDataDroppedReason"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -246,7 +265,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Sources.KeptSourcesCount" units="sources"
-    expires_after="2022-04-24">
+    expires_after="2022-06-26">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -285,7 +304,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.Sources.UnsentSourcesCount" units="sources"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -295,7 +314,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.UnsentLogs.DroppedSize" units="bytes"
-    expires_after="2022-05-08">
+    expires_after="2022-07-11">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>
@@ -305,7 +324,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="UKM.UnsentLogs.NumDropped" units="units"
-    expires_after="2022-05-01">
+    expires_after="2022-07-03">
   <owner>rkaplow@chromium.org</owner>
   <owner>ukm-team@google.com</owner>
   <summary>

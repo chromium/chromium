@@ -18,9 +18,14 @@ public class StartSurfaceUserData implements UserData {
     private boolean mFocusOnOmnibox;
     private boolean mCreatedAsNtp;
     private boolean mOpenedFromStart;
-
+    private String mLastVisitedTabAtStartupUrl;
     // Saves the Feeds instance state.
     private String mFeedsInstanceState;
+    /**
+     * Tracks whether the last visited Tab is restored at startup but not showing due to the
+     * overview page is showing at the startup.
+     */
+    private boolean mUnusedTabRestoredAtStartup;
 
     /**
      * Static class that implements the initialization-on-demand holder idiom.
@@ -153,5 +158,21 @@ public class StartSurfaceUserData implements UserData {
     @Nullable
     protected String restoreFeedInstanceState() {
         return mFeedsInstanceState;
+    }
+
+    /**
+     * Sets whether an unused Tab is restored at startup due to an overview page is showing at the
+     * startup.
+     */
+    public void setUnusedTabRestoredAtStartup(boolean overviewShownAtStartup) {
+        mUnusedTabRestoredAtStartup = overviewShownAtStartup;
+    }
+
+    /**
+     * Gets whether an unused Tab is restored at startup due to an overview page is showing at the
+     * startup.
+     */
+    public boolean getUnusedTabRestoredAtStartup() {
+        return mUnusedTabRestoredAtStartup;
     }
 }

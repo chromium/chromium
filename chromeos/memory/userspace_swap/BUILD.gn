@@ -23,10 +23,7 @@ mojom("mojom") {
 }
 
 component("userspace_swap") {
-  configs += [
-    ":chromeos_implementation",
-    "//build/config/linux/nss:system_nss_no_ssl_config",
-  ]
+  configs += [ ":chromeos_implementation" ]
   deps = [
     ":mojom",
     "//base",
@@ -56,7 +53,6 @@ component("userspace_swap") {
 
 source_set("unit_tests") {
   testonly = true
-  configs += [ "//build/config/linux/nss:system_nss_no_ssl_config" ]
   deps = [
     ":mojom",
     ":userspace_swap",

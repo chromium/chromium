@@ -32,9 +32,9 @@ scoped_refptr<const extensions::Extension> CreateExtensionFromValues(
     ManifestLocation location,
     base::DictionaryValue* values,
     int flags) {
-  values->SetString(extensions::manifest_keys::kName, "test");
-  values->SetString(extensions::manifest_keys::kVersion, "0.1");
-  values->SetInteger(extensions::manifest_keys::kManifestVersion, 2);
+  values->SetStringKey(extensions::manifest_keys::kName, "test");
+  values->SetStringKey(extensions::manifest_keys::kVersion, "0.1");
+  values->SetIntKey(extensions::manifest_keys::kManifestVersion, 2);
   std::string error;
   return extensions::Extension::Create(base::FilePath(),
                                        location,
@@ -77,7 +77,7 @@ scoped_refptr<const extensions::Extension> CreatePlatformAppWithExtraValues(
     ManifestLocation location,
     int flags) {
   base::DictionaryValue values;
-  values.SetString("app.background.page", "background.html");
+  values.SetStringPath("app.background.page", "background.html");
   values.MergeDictionary(extra_values);
   return CreateExtensionFromValues(std::string(), location, &values, flags);
 }
@@ -181,8 +181,9 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // Verify that a platform app with all safe manifest entries can be installed.
   {
     base::DictionaryValue values;
-    values.SetString(extensions::manifest_keys::kDescription, "something");
-    values.SetString(extensions::manifest_keys::kShortName, "something else");
+    values.SetStringKey(extensions::manifest_keys::kDescription, "something");
+    values.SetStringKey(extensions::manifest_keys::kShortName,
+                        "something else");
     base::ListValue permissions;
     permissions.Append("alarms");
     permissions.Append("background");
@@ -207,7 +208,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // installed.
   {
     base::DictionaryValue values;
-    values.SetString("not_whitelisted", "something");
+    values.SetStringKey("not_whitelisted", "something");
     extension = CreatePlatformAppWithExtraValues(
         &values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
@@ -239,7 +240,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // cannot be installed.
   {
     base::DictionaryValue values;
-    values.SetString("app.not_whitelisted2", "something2");
+    values.SetStringPath("app.not_whitelisted2", "something2");
     extension = CreatePlatformAppWithExtraValues(
         &values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
@@ -254,7 +255,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // installed.
   {
     base::DictionaryValue values;
-    values.SetString("app.content_security_policy", "something2");
+    values.SetStringPath("app.content_security_policy", "something2");
     extension = CreatePlatformAppWithExtraValues(
         &values, ManifestLocation::kExternalPolicy,
         extensions::Extension::NO_FLAGS);
@@ -271,7 +272,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     base::DictionaryValue values;
     values.SetKey(extensions::manifest_keys::kApp, base::DictionaryValue());
     values.SetPath(extensions::manifest_keys::kWebURLs, base::ListValue());
-    values.SetString("app.content_security_policy", "something2");
+    values.SetStringPath("app.content_security_policy", "something2");
     extension = CreateExtensionFromValues(
         std::string(), ManifestLocation::kExternalPolicy, &values,
         extensions::Extension::NO_FLAGS);
@@ -287,7 +288,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   {
     base::DictionaryValue values;
     values.SetKey("theme", base::DictionaryValue());
-    values.SetString("app.content_security_policy", "something2");
+    values.SetStringPath("app.content_security_policy", "something2");
     extension = CreateExtensionFromValues(
         std::string(), ManifestLocation::kExternalPolicy, &values,
         extensions::Extension::NO_FLAGS);
@@ -363,7 +364,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     matches.Append("https://example.com/*");
     base::DictionaryValue values;
     values.SetPath("url_handlers.example_com.matches", std::move(matches));
-    values.SetString("url_handlers.example_com.title", "example title");
+    values.SetStringPath("url_handlers.example_com.title", "example title");
 
     extension = CreatePlatformAppWithExtraValues(
         &values, ManifestLocation::kExternalPolicy,
@@ -382,7 +383,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
     matches.Append("https://example.com/*");
     base::DictionaryValue values;
     values.SetPath("url_handlers.example_com.matches", std::move(matches));
-    values.SetString("url_handlers.example_com.title", "example title");
+    values.SetStringPath("url_handlers.example_com.title", "example title");
 
     extension = CreatePlatformAppWithExtraValues(
         &values, ManifestLocation::kExternalPolicy,
@@ -543,7 +544,7 @@ TEST(DeviceLocalAccountManagementPolicyProviderTest, PublicSession) {
   // have an "app" manifest entry.
   {
     base::DictionaryValue values;
-    values.SetString("app.launch.local_path", "something");
+    values.SetStringPath("app.launch.local_path", "something");
     extension = CreateExtensionFromValues(
         std::string(), ManifestLocation::kExternalPolicy, &values,
         extensions::Extension::NO_FLAGS);

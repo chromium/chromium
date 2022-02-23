@@ -50,9 +50,6 @@ struct ParsedHeaders {
   // be disabled (if updating client hint preference is valid in this context).
   array<WebClientHintsType>? accept_ch;
 
-  // Parsed Accept-CH-Lifetime value, if any. Zero if missing or on parse error.
-  mojo_base.mojom.TimeDelta accept_ch_lifetime;
-
   // The parsed Critical-CH response header.
   //
   // Should be parsed in the same way (i.e. same tokens and grammar) as the

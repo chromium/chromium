@@ -133,7 +133,8 @@ template <class T>
 ABSL_INTERNAL_CONSTEXPR_CLZ inline
     typename std::enable_if<std::is_unsigned<T>::value, T>::type
     bit_width(T x) noexcept {
-  return std::numeric_limits<T>::digits - countl_zero(x);
+  return std::numeric_limits<T>::digits -
+         static_cast<unsigned int>(countl_zero(x));
 }
 
 // Returns: If x == 0, 0; otherwise the maximal value y such that

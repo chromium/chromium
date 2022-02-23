@@ -8,6 +8,7 @@
 #include <string>
 #include <utility>
 
+#include "base/strings/string_piece.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "chrome/browser/browser_process.h"
@@ -82,6 +83,10 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
     ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
         "FollowingFeedFollowCount",
         internal::GetFollowingFeedFollowCountGroupName(follow_count));
+  }
+  void RegisterFeedUserSettingsFieldTrial(base::StringPiece group) override {
+    ChromeMetricsServiceAccessor::RegisterSyntheticFieldTrial(
+        "FeedUserSettings", group);
   }
 };
 

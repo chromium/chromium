@@ -11,6 +11,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace network {
+class SimpleURLLoaderThrottle;
 namespace mojom {
 class URLLoaderFactory;
 }  // namespace mojom
@@ -70,6 +71,7 @@ class MockURLLoader : public ::network::SimpleURLLoader {
   MOCK_METHOD1(SetURLLoaderFactoryOptions, void(uint32_t options));
   MOCK_METHOD1(SetRequestID, void(int32_t request_id));
   MOCK_METHOD1(SetTimeoutDuration, void(base::TimeDelta timeout_duration));
+  MOCK_METHOD0(SetAllowBatching, void());
   MOCK_CONST_METHOD0(NetError, int());
   MOCK_CONST_METHOD0(ResponseInfo, const ::network::mojom::URLResponseHead*());
   MOCK_CONST_METHOD0(CompletionStatus,
@@ -78,6 +80,7 @@ class MockURLLoader : public ::network::SimpleURLLoader {
   MOCK_CONST_METHOD0(LoadedFromCache, bool());
   MOCK_CONST_METHOD0(GetContentSize, int64_t());
   MOCK_CONST_METHOD0(GetNumRetries, int());
+  MOCK_METHOD0(GetThrottleForTesting, ::network::SimpleURLLoaderThrottle*());
 };
 
 }  // namespace autofill_assistant

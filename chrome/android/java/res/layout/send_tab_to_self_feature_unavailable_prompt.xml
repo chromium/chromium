@@ -7,6 +7,7 @@
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/send_tab_to_self_feature_unavailable_prompt"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:minHeight="@dimen/min_touch_target_size"
@@ -44,14 +45,4 @@
     android:ellipsize="end"
     android:textAppearance="@style/TextAppearance.TextLarge.Secondary"
     android:text="@string/sharing_hub_sync_disabled_text"/>
-
-  <org.chromium.ui.widget.ButtonCompat
-    android:id="@+id/chrome_settings"
-    android:layout_height="wrap_content"
-    android:layout_width="wrap_content"
-    android:layout_gravity="center"
-    android:layout_marginTop="16dp"
-    android:text="@string/sharing_chrome_settings"
-    android:visibility="gone"
-    style="@style/FilledButton"/>
 </LinearLayout>

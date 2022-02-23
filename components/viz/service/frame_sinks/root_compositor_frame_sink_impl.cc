@@ -8,8 +8,10 @@
 #include <utility>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/containers/flat_set.h"
 #include "base/memory/ptr_util.h"
+#include "base/memory/raw_ptr.h"
+#include "base/threading/platform_thread.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
@@ -24,11 +26,46 @@
 #include "components/viz/service/frame_sinks/gpu_vsync_begin_frame_source.h"
 #include "components/viz/service/hit_test/hit_test_aggregator.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "components/viz/service/frame_sinks/external_begin_frame_source_android.h"
 #endif
 
 namespace viz {
+
+class RootCompositorFrameSinkImpl::StandaloneBeginFrameObserver
+    : public BeginFrameObserverBase {
+ public:
+  StandaloneBeginFrameObserver(
+      mojo::PendingRemote<mojom::BeginFrameObserver> observer,
+      BeginFrameSource* begin_frame_source)
+      : remote_observer_(std::move(observer)),
+        begin_frame_source_(begin_frame_source) {
+    remote_observer_.set_disconnect_handler(base::BindOnce(
+        &StandaloneBeginFrameObserver::StopObserving, base::Unretained(this)));
+    begin_frame_source_->AddObserver(this);
+  }
+
+  ~StandaloneBeginFrameObserver() override { StopObserving(); }
+
+  bool OnBeginFrameDerivedImpl(const BeginFrameArgs& args) override {
+    remote_observer_->OnStandaloneBeginFrame(args);
+    return true;
+  }
+
+  void OnBeginFrameSourcePausedChanged(bool paused) override {}
+  bool IsRoot() const override { return true; }
+
+ private:
+  void StopObserving() {
+    if (!begin_frame_source_)
+      return;
+    begin_frame_source_->RemoveObserver(this);
+    begin_frame_source_ = nullptr;
+  }
+
+  mojo::Remote<mojom::BeginFrameObserver> remote_observer_;
+  base::raw_ptr<BeginFrameSource> begin_frame_source_;
+};
 
 // static
 std::unique_ptr<RootCompositorFrameSinkImpl>
@@ -39,7 +76,7 @@ RootCompositorFrameSinkImpl::Create(
     uint32_t restart_id,
     bool run_all_compositor_stages_before_draw,
     const DebugRendererSettings* debug_settings,
-    gfx::RenderingPipeline* gpu_pipeline) {
+    HintSessionFactory* hint_session_factory) {
   // First create an output surface.
   mojo::Remote<mojom::DisplayClient> display_client(
       std::move(params->display_client));
@@ -60,7 +97,7 @@ RootCompositorFrameSinkImpl::Create(
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // For X11, we need notify client about swap completion after resizing, so the
   // client can use it for synchronize with X11 WM.
   output_surface->SetNeedsSwapSizeNotifications(true);
@@ -72,7 +109,7 @@ RootCompositorFrameSinkImpl::Create(
   std::unique_ptr<SyntheticBeginFrameSource> synthetic_begin_frame_source;
   ExternalBeginFrameSourceMojo* external_begin_frame_source_mojo = nullptr;
   bool hw_support_for_multiple_refresh_rates = false;
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   bool wants_vsync_updates = false;
 #endif
 
@@ -86,11 +123,12 @@ RootCompositorFrameSinkImpl::Create(
     external_begin_frame_source =
         std::move(owned_external_begin_frame_source_mojo);
   } else {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     hw_support_for_multiple_refresh_rates = true;
     external_begin_frame_source =
-        std::make_unique<ExternalBeginFrameSourceAndroid>(restart_id,
-                                                          params->refresh_rate);
+        std::make_unique<ExternalBeginFrameSourceAndroid>(
+            restart_id, params->refresh_rate,
+            /*requires_align_with_java=*/false);
 #else
     if (params->disable_frame_rate_limit) {
       synthetic_begin_frame_source =
@@ -98,14 +136,14 @@ RootCompositorFrameSinkImpl::Create(
               std::make_unique<DelayBasedTimeSource>(
                   base::ThreadTaskRunnerHandle::Get().get()));
     } else if (output_surface->capabilities().supports_gpu_vsync) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
       hw_support_for_multiple_refresh_rates =
           output_surface->capabilities().supports_dc_layers &&
           params->set_present_duration_allowed;
 #endif
       // Vsync updates are required to update the FrameRateDecider with
       // supported refresh rates.
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
       wants_vsync_updates = params->use_preferred_interval_for_video;
 #endif
       external_begin_frame_source = std::make_unique<GpuVSyncBeginFrameSource>(
@@ -117,7 +155,7 @@ RootCompositorFrameSinkImpl::Create(
                   base::ThreadTaskRunnerHandle::Get().get()),
               restart_id);
     }
-#endif  // OS_ANDROID
+#endif  // BUILDFLAG(IS_ANDROID)
   }
 
   BeginFrameSource* begin_frame_source = synthetic_begin_frame_source.get();
@@ -128,15 +166,12 @@ RootCompositorFrameSinkImpl::Create(
   auto task_runner = base::ThreadTaskRunnerHandle::Get();
 
   const auto& capabilities = output_surface->capabilities();
-  int max_frames_pending = capabilities.max_frames_pending;
-  DCHECK_GT(max_frames_pending, 0);
-
+  DCHECK_GT(capabilities.pending_swap_params.max_pending_swaps, 0);
   auto scheduler = std::make_unique<DisplayScheduler>(
-      begin_frame_source, task_runner.get(), max_frames_pending,
-      capabilities.max_frames_pending_120hz,
-      run_all_compositor_stages_before_draw, gpu_pipeline);
+      begin_frame_source, task_runner.get(), capabilities.pending_swap_params,
+      hint_session_factory, run_all_compositor_stages_before_draw);
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   auto* output_surface_ptr = output_surface.get();
 #endif
   gpu::SharedImageInterface* sii = nullptr;
@@ -171,7 +206,7 @@ RootCompositorFrameSinkImpl::Create(
       hw_support_for_multiple_refresh_rates,
       params->renderer_settings.apply_simple_frame_rate_throttling));
 
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // On Mac vsync parameter updates come from the browser process. We don't need
   // to provide a callback to the OutputSurface since it should never use it.
   if (wants_vsync_updates || impl->synthetic_begin_frame_source_) {
@@ -211,7 +246,7 @@ void RootCompositorFrameSinkImpl::SetDisplayVisible(bool visible) {
   display_->SetVisible(visible);
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void RootCompositorFrameSinkImpl::DisableSwapUntilResize(
     DisableSwapUntilResizeCallback callback) {
   display_->DisableSwapUntilResize(std::move(callback));
@@ -225,7 +260,7 @@ void RootCompositorFrameSinkImpl::Resize(const gfx::Size& size) {
 
 void RootCompositorFrameSinkImpl::SetDisplayColorMatrix(
     const gfx::Transform& color_matrix) {
-  display_->SetColorMatrix(color_matrix.matrix());
+  display_->SetColorMatrix(color_matrix.GetMatrixAsSkM44());
 }
 
 void RootCompositorFrameSinkImpl::SetDisplayColorSpaces(
@@ -322,7 +357,7 @@ void RootCompositorFrameSinkImpl::ForceImmediateDrawAndSwapIfPossible() {
   display_->ForceImmediateDrawAndSwapIfPossible();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void RootCompositorFrameSinkImpl::SetVSyncPaused(bool paused) {
   if (external_begin_frame_source_)
     external_begin_frame_source_->OnSetBeginFrameSourcePaused(paused);
@@ -354,7 +389,7 @@ void RootCompositorFrameSinkImpl::SetSwapCompletionCallbackEnabled(
   enable_swap_competion_callback_ = enable;
 }
 
-#endif  // defined(OS_ANDROID)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
     mojo::PendingRemote<mojom::VSyncParameterObserver> observer) {
@@ -365,6 +400,13 @@ void RootCompositorFrameSinkImpl::AddVSyncParameterObserver(
 void RootCompositorFrameSinkImpl::SetDelegatedInkPointRenderer(
     mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer> receiver) {
   display_->InitDelegatedInkPointRendererReceiver(std::move(receiver));
+}
+
+void RootCompositorFrameSinkImpl::SetStandaloneBeginFrameObserver(
+    mojo::PendingRemote<mojom::BeginFrameObserver> observer) {
+  standalone_begin_frame_observer_ =
+      std::make_unique<StandaloneBeginFrameObserver>(std::move(observer),
+                                                     begin_frame_source());
 }
 
 void RootCompositorFrameSinkImpl::SetNeedsBeginFrame(bool needs_begin_frame) {
@@ -437,6 +479,14 @@ void RootCompositorFrameSinkImpl::InitializeCompositorFrameSinkType(
   support_->InitializeCompositorFrameSinkType(type);
 }
 
+#if BUILDFLAG(IS_ANDROID)
+void RootCompositorFrameSinkImpl::SetThreadIds(
+    const std::vector<int32_t>& thread_ids) {
+  support_->SetThreadIds(/*from_untrusted_client=*/false,
+                         base::MakeFlatSet<base::PlatformThreadId>(thread_ids));
+}
+#endif
+
 RootCompositorFrameSinkImpl::RootCompositorFrameSinkImpl(
     FrameSinkManagerImpl* frame_sink_manager,
     const FrameSinkId& frame_sink_id,
@@ -492,8 +542,7 @@ void RootCompositorFrameSinkImpl::DisplayWillDrawAndSwap(
     bool will_draw_and_swap,
     AggregatedRenderPassList* render_passes) {
   DCHECK(support_->GetHitTestAggregator());
-  support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId(),
-                                              render_passes);
+  support_->GetHitTestAggregator()->Aggregate(display_->CurrentSurfaceId());
 }
 
 base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {
@@ -502,38 +551,39 @@ base::ScopedClosureRunner RootCompositorFrameSinkImpl::GetCacheBackBufferCb() {
 
 void RootCompositorFrameSinkImpl::DisplayDidReceiveCALayerParams(
     const gfx::CALayerParams& ca_layer_params) {
-#if defined(OS_APPLE)
+  if (last_ca_layer_params_ == ca_layer_params)
+    return;
+#if BUILDFLAG(IS_APPLE)
   // If |ca_layer_params| should have content only when there exists a client
   // to send it to.
   DCHECK(ca_layer_params.is_empty || display_client_);
+  last_ca_layer_params_ = ca_layer_params;
   if (display_client_)
     display_client_->OnDisplayReceivedCALayerParams(ca_layer_params);
 #else
   NOTREACHED();
-  ALLOW_UNUSED_LOCAL(display_client_);
 #endif
 }
 
 void RootCompositorFrameSinkImpl::DisplayDidCompleteSwapWithSize(
     const gfx::Size& pixel_size) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (display_client_ && enable_swap_competion_callback_)
     display_client_->DidCompleteSwapWithSize(pixel_size);
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   if (display_client_ && pixel_size != last_swap_pixel_size_) {
     last_swap_pixel_size_ = pixel_size;
     display_client_->DidCompleteSwapWithNewSize(last_swap_pixel_size_);
   }
 #else
   NOTREACHED();
-  ALLOW_UNUSED_LOCAL(display_client_);
 #endif
 }
 
 void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (display_client_)
     display_client_->SetWideColorEnabled(enabled);
 #endif
@@ -541,7 +591,7 @@ void RootCompositorFrameSinkImpl::SetWideColorEnabled(bool enabled) {
 
 void RootCompositorFrameSinkImpl::SetPreferredFrameInterval(
     base::TimeDelta interval) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   float refresh_rate =
       interval.InSecondsF() == 0 ? 0 : (1 / interval.InSecondsF());
   if (display_client_)

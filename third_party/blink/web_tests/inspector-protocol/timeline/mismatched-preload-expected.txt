@@ -1,0 +1,5 @@
+Tests reporting of mismatched preloads in traces.
+Recording started
+Tracing complete
+empty.js: 7
+

@@ -9,8 +9,8 @@ Text Task APIs.
 
 You will need:
 
-* a TFLite bert based question answerer model from model maker.
-(e.g. [mobilebert][1] or [albert][2] available on TensorFlow Hub).
+*   a TFLite bert based question answerer model from model maker. (e.g.
+    [mobilebert][1] or [albert][2] available on TensorFlow Hub).
 
 #### Usage
 
@@ -19,7 +19,7 @@ In the console, run:
 ```bash
 # Download the model:
 curl \
- -L 'https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1?lite-format=tflite' \
+ -L 'https://tfhub.dev/tensorflow/lite-model/mobilebert/1/metadata/1?lite-format=tflite' \
  -o /tmp/mobilebert.tflite
 
 # Run the classification tool:
@@ -40,6 +40,7 @@ includes territory belonging to nine nations."
 In the console, you should get:
 
 ```
+Time cost to answer the input question on CPU: 783 ms
 answer[0]:  'South America.'
 logit: 1.84847, start_index: 39, end_index: 40
 answer[1]:  'most of the Amazon basin of South America.'
@@ -58,10 +59,8 @@ logit: -0.774266, start_index: 37, end_index: 40
 
 You will need:
 
-* a TFLite text classification model with certain format.
-(e.g. [movie_review_model][3], a model to classify movie reviews), you'll need
-to configure the input tensor and out tensor for the API, see the [doc][4] for 
-details.
+*   a TFLite text classification model with certain format. (e.g.
+    [movie_review_model][3], a model to classify movie reviews).
 
 #### Usage
 
@@ -77,9 +76,7 @@ curl \
 bazel run -c opt \
  tensorflow_lite_support/examples/task/text/desktop:nl_classifier_demo -- \
  --model_path=/tmp/movie_review.tflite \
- --text="What a waste of my time." \
- --input_tensor_name="input_text" \
- --output_score_tensor_name="probability"
+ --text="What a waste of my time."
 ```
 
 #### Results
@@ -87,6 +84,7 @@ bazel run -c opt \
 In the console, you should get:
 
 ```
+Time cost to classify the input text on CPU: 0.088 ms
 category[0]: 'Negative' : '0.81313'
 category[1]: 'Positive' : '0.18687'
 ```
@@ -99,7 +97,8 @@ TODO(b/163086702): Update the links to models with metadata attached.
 
 You will need:
 
-* a Bert based TFLite text classification model from model maker. (e.g. [movie_review_model][5] available on TensorFlow Hub).
+*   a Bert based TFLite text classification model from model maker. (e.g.
+    [movie_review_model][5] available on TensorFlow Hub).
 
 #### Usage
 
@@ -123,8 +122,44 @@ bazel run -c opt \
 In the console, you should get:
 
 ```
+Time cost to classify the input text on CPU: 491 ms
 category[0]: 'negative' : '0.00006'
 category[1]: 'positive' : '0.99994'
+```
+
+## UniversalSentenceEncoderQA
+
+#### Prerequisites
+
+You will need:
+
+*   a universal sentence encoder QA model from [TensorFlow Hub][6].
+
+#### Usage
+
+In the console, run:
+
+```bash
+# Download the model:
+curl \
+ -L 'https://tfhub.dev/google/lite-model/universal-sentence-encoder-qa-ondevice/1?lite-format=tflite' \
+ -o /tmp/universal_sentence_encoder_qa_with_metadata.tflite
+
+# Run UniversalSentenceEncoderQA model:
+bazel run -c opt \
+ tensorflow_lite_support/examples/task/text/desktop:universal_sentence_encoder_qa_demo -- \
+ --model_path=/tmp/universal_sentence_encoder_qa_with_metadata.tflite
+```
+
+#### Results
+
+In the console, you should get:
+
+```
+How are you feeling today?
+I'm not feeling very well., , 14.9595
+He looks good., , 8.80944
+Paris is the capital of France., , 5.63753
 ```
 
 [1]: https://tfhub.dev/tensorflow/lite-model/mobilebert/1/default/1
@@ -132,3 +167,4 @@ category[1]: 'positive' : '0.99994'
 [3]: https://www.tensorflow.org/lite/models/text_classification/overview
 [4]: https://github.com/tensorflow/tflite-support/blob/fe8b69002f5416900285dc69e2baa078c91bd994/tensorflow_lite_support/cc/task/text/nlclassifier/nl_classifier.h#L55
 [5]: http://bert/nl/classifier/model
+[6]: https://tfhub.dev/google/lite-model/universal-sentence-encoder-qa-ondevice/1

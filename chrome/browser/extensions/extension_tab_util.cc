@@ -18,7 +18,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/extensions/api/tab_groups/tab_groups_util.h"
-#include "chrome/browser/extensions/api/tabs/tabs_api.h"
 #include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/browser_extension_window_controller.h"
 #include "chrome/browser/extensions/chrome_extension_function_details.h"
@@ -68,32 +67,6 @@ using extensions::mojom::APIPermissionID;
 namespace extensions {
 
 namespace {
-
-// |error_message| can optionally be passed in and will be set with an
-// appropriate message if the window cannot be found by id.
-Browser* GetBrowserInProfileWithId(Profile* profile,
-                                   const int window_id,
-                                   bool match_incognito_profile,
-                                   std::string* error_message) {
-  Profile* incognito_profile =
-      match_incognito_profile
-          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
-          : nullptr;
-  for (auto* browser : *BrowserList::GetInstance()) {
-    if ((browser->profile() == profile ||
-         browser->profile() == incognito_profile) &&
-        ExtensionTabUtil::GetWindowId(browser) == window_id &&
-        browser->window()) {
-      return browser;
-    }
-  }
-
-  if (error_message)
-    *error_message = ErrorUtils::FormatErrorMessage(
-        tabs_constants::kWindowNotFoundError, base::NumberToString(window_id));
-
-  return nullptr;
-}
 
 Browser* CreateBrowser(Profile* profile, bool user_gesture) {
   if (Browser::GetCreationStatusForProfile(profile) !=
@@ -372,6 +345,32 @@ Browser* ExtensionTabUtil::GetBrowserFromWindowID(
   }
 }
 
+Browser* ExtensionTabUtil::GetBrowserInProfileWithId(
+    Profile* profile,
+    int window_id,
+    bool also_match_incognito_profile,
+    std::string* error_message) {
+  Profile* incognito_profile =
+      also_match_incognito_profile
+          ? profile->GetPrimaryOTRProfile(/*create_if_needed=*/false)
+          : nullptr;
+  for (auto* browser : *BrowserList::GetInstance()) {
+    if ((browser->profile() == profile ||
+         browser->profile() == incognito_profile) &&
+        ExtensionTabUtil::GetWindowId(browser) == window_id &&
+        browser->window()) {
+      return browser;
+    }
+  }
+
+  if (error_message) {
+    *error_message = ErrorUtils::FormatErrorMessage(
+        tabs_constants::kWindowNotFoundError, base::NumberToString(window_id));
+  }
+
+  return nullptr;
+}
+
 int ExtensionTabUtil::GetWindowId(const Browser* browser) {
   return browser->session_id().id();
 }
@@ -523,14 +522,14 @@ ExtensionTabUtil::CreateWindowValueForExtension(
     Feature::Context context) {
   auto result = std::make_unique<base::DictionaryValue>();
 
-  result->SetInteger(tabs_constants::kIdKey, browser.session_id().id());
-  result->SetString(tabs_constants::kWindowTypeKey,
-                    GetBrowserWindowTypeText(browser));
+  result->SetIntKey(tabs_constants::kIdKey, browser.session_id().id());
+  result->SetStringKey(tabs_constants::kWindowTypeKey,
+                       GetBrowserWindowTypeText(browser));
   ui::BaseWindow* window = browser.window();
-  result->SetBoolean(tabs_constants::kFocusedKey, window->IsActive());
+  result->SetBoolKey(tabs_constants::kFocusedKey, window->IsActive());
   const Profile* profile = browser.profile();
-  result->SetBoolean(tabs_constants::kIncognitoKey, profile->IsOffTheRecord());
-  result->SetBoolean(
+  result->SetBoolKey(tabs_constants::kIncognitoKey, profile->IsOffTheRecord());
+  result->SetBoolKey(
       tabs_constants::kAlwaysOnTopKey,
       window->GetZOrderLevel() == ui::ZOrderLevel::kFloatingWindow);
 
@@ -546,17 +545,17 @@ ExtensionTabUtil::CreateWindowValueForExtension(
   } else {
     window_state = tabs_constants::kShowStateValueNormal;
   }
-  result->SetString(tabs_constants::kShowStateKey, window_state);
+  result->SetStringKey(tabs_constants::kShowStateKey, window_state);
 
   gfx::Rect bounds;
   if (window->IsMinimized())
     bounds = window->GetRestoredBounds();
   else
     bounds = window->GetBounds();
-  result->SetInteger(tabs_constants::kLeftKey, bounds.x());
-  result->SetInteger(tabs_constants::kTopKey, bounds.y());
-  result->SetInteger(tabs_constants::kWidthKey, bounds.width());
-  result->SetInteger(tabs_constants::kHeightKey, bounds.height());
+  result->SetIntKey(tabs_constants::kLeftKey, bounds.x());
+  result->SetIntKey(tabs_constants::kTopKey, bounds.y());
+  result->SetIntKey(tabs_constants::kWidthKey, bounds.width());
+  result->SetIntKey(tabs_constants::kHeightKey, bounds.height());
 
   if (populate_tab_behavior == kPopulateTabs)
     result->SetKey(tabs_constants::kTabsKey,
@@ -575,6 +574,7 @@ std::unique_ptr<api::tabs::MutedInfo> ExtensionTabUtil::CreateMutedInfo(
   switch (chrome::GetTabAudioMutedReason(contents)) {
     case TabMutedReason::NONE:
       break;
+    case TabMutedReason::AUDIO_INDICATOR:
     case TabMutedReason::CONTENT_SETTING:
     case TabMutedReason::CONTENT_SETTING_CHROME:
       info->reason = api::tabs::MUTED_INFO_REASON_USER;
@@ -838,6 +838,12 @@ bool ExtensionTabUtil::PrepareURLForNavigation(const std::string& url_string,
       *error = tabs_constants::kCannotNavigateToDevtools;
       return false;
     }
+  }
+
+  // Don't let the extension navigate directly to chrome-untrusted scheme pages.
+  if (url.SchemeIs(content::kChromeUIUntrustedScheme)) {
+    *error = tabs_constants::kCannotNavigateToChromeUntrusted;
+    return false;
   }
 
   return_url->Swap(&url);

@@ -12,13 +12,8 @@
 #include "components/version_info/version_info.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
-#if (defined(OS_WIN) && defined(ARCH_CPU_X86_64)) || \
-    (defined(OS_MAC) && defined(ARCH_CPU_X86_64)) || \
-    (defined(OS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
+#if (BUILDFLAG(IS_WIN) && defined(ARCH_CPU_X86_64)) || BUILDFLAG(IS_MAC) || \
+    (BUILDFLAG(IS_ANDROID) && BUILDFLAG(ENABLE_ARM_CFI_TABLE))
 #define THREAD_PROFILER_SUPPORTED_ON_PLATFORM true
 #else
 #define THREAD_PROFILER_SUPPORTED_ON_PLATFORM false
@@ -74,7 +69,7 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
   EXPECT_FALSE(config()->IsSupported(absl::nullopt));
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
   EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::DEV));
@@ -83,24 +78,13 @@ TEST_F(ThreadProfilerPlatformConfigurationTest, IsSupported) {
 
   EXPECT_FALSE(config()->IsSupported(absl::nullopt));
 #else
-#if defined(OS_MAC)
-  // Sampling profiler does not work on macOS 11.0 yet:
-  // https://crbug.com/1101399
-  const bool on_canary = base::mac::IsAtMostOS10_15();
-  const bool on_dev = base::mac::IsAtMostOS10_15();
-  const bool on_default = base::mac::IsAtMostOS10_15();
-#else
-  const bool on_canary = true;
-  const bool on_dev = true;
-  const bool on_default = true;
-#endif
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::UNKNOWN));
-  EXPECT_EQ(on_canary, config()->IsSupported(version_info::Channel::CANARY));
-  EXPECT_EQ(on_dev, config()->IsSupported(version_info::Channel::DEV));
+  EXPECT_TRUE(config()->IsSupported(version_info::Channel::CANARY));
+  EXPECT_TRUE(config()->IsSupported(version_info::Channel::DEV));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::BETA));
   EXPECT_FALSE(config()->IsSupported(version_info::Channel::STABLE));
 
-  EXPECT_EQ(on_default, config()->IsSupported(absl::nullopt));
+  EXPECT_TRUE(config()->IsSupported(absl::nullopt));
 #endif
 }
 
@@ -108,7 +92,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetRuntimeModuleState) {
   using RuntimeModuleState =
       ThreadProfilerPlatformConfiguration::RuntimeModuleState;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(RuntimeModuleState::kModuleNotAvailable,
             config()->GetRuntimeModuleState(version_info::Channel::UNKNOWN));
   EXPECT_EQ(RuntimeModuleState::kModuleAbsentButAvailable,
@@ -143,7 +127,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetEnableRates) {
   using RelativePopulations =
       ThreadProfilerPlatformConfiguration::RelativePopulations;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ((RelativePopulations{0, 50}),
             config()->GetEnableRates(version_info::Channel::CANARY));
   // Note: death tests aren't supported on Android. Otherwise this test would
@@ -164,7 +148,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              GetChildProcessEnableFraction) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_EQ(0.0, config()->GetChildProcessEnableFraction(
                      metrics::CallStackProfileParams::Process::kGpu));
   EXPECT_EQ(0.4, config()->GetChildProcessEnableFraction(
@@ -193,7 +177,7 @@ MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
 
 MAYBE_PLATFORM_CONFIG_TEST_F(ThreadProfilerPlatformConfigurationTest,
                              IsEnabledForThread) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   EXPECT_FALSE(config()->IsEnabledForThread(
       metrics::CallStackProfileParams::Process::kBrowser,
       metrics::CallStackProfileParams::Thread::kMain));

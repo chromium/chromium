@@ -120,14 +120,14 @@ asm(// We need to be able to tell the kernel exactly where we made a
     ".cfi_endproc\n"
     "9:.size SyscallAsm, 9b-SyscallAsm\n"
 #elif defined(__arm__)
-    // Throughout this file, we use the same mode (ARM vs. thumb)
-    // that the C++ compiler uses. This means, when transfering control
-    // from C++ to assembly code, we do not need to switch modes (e.g.
-    // by using the "bx" instruction). It also means that our assembly
-    // code should not be invoked directly from code that lives in
-    // other compilation units, as we don't bother implementing thumb
-    // interworking. That's OK, as we don't make any of the assembly
-    // symbols public. They are all local to this file.
+      // Throughout this file, we use the same mode (ARM vs. thumb)
+      // that the C++ compiler uses. This means, when transferring control
+      // from C++ to assembly code, we do not need to switch modes (e.g.
+      // by using the "bx" instruction). It also means that our assembly
+      // code should not be invoked directly from code that lives in
+      // other compilation units, as we don't bother implementing thumb
+      // interworking. That's OK, as we don't make any of the assembly
+      // symbols public. They are all local to this file.
     ".text\n"
     ".align 2\n"
     ".type SyscallAsm, %function\n"
@@ -137,12 +137,10 @@ asm(// We need to be able to tell the kernel exactly where we made a
     ".arm\n"
 #endif
     "SyscallAsm:\n"
-#if !defined(__native_client_nonsfi__)
+
     // .fnstart and .fnend pseudo operations creates unwind table.
-    // It also creates a reference to the symbol __aeabi_unwind_cpp_pr0, which
-    // is not provided by PNaCl toolchain. Disable it.
     ".fnstart\n"
-#endif
+
     "@ args = 0, pretend = 0, frame = 8\n"
     "@ frame_needed = 1, uses_anonymous_args = 0\n"
 #if defined(__thumb__)
@@ -185,11 +183,9 @@ asm(// We need to be able to tell the kernel exactly where we made a
 #else
     "2:ldmfd sp!, {fp, pc}\n"
 #endif
-#if !defined(__native_client_nonsfi__)
-    // Do not use .fnstart and .fnend for PNaCl toolchain. See above comment,
-    // for more details.
+
     ".fnend\n"
-#endif
+
     "9:.size SyscallAsm, 9b-SyscallAsm\n"
 #elif (defined(ARCH_CPU_MIPS_FAMILY) && defined(ARCH_CPU_32_BITS))
     ".text\n"

@@ -14,12 +14,15 @@
 #include "base/fuchsia/fuchsia_logging.h"
 #include "base/path_service.h"
 #include "base/threading/thread_restrictions.h"
+#include "components/client_hints/browser/in_memory_client_hints_controller_delegate.h"
+#include "components/embedder_support/user_agent_utils.h"
 #include "components/keyed_service/content/browser_context_dependency_manager.h"
 #include "components/keyed_service/core/simple_key_map.h"
 #include "components/profile_metrics/browser_profile_type.h"
 #include "components/site_isolation/site_isolation_policy.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
+#include "content/public/browser/client_hints_controller_delegate.h"
 #include "content/public/browser/resource_context.h"
 #include "fuchsia/engine/browser/web_engine_net_log_observer.h"
 #include "fuchsia/engine/switches.h"
@@ -58,15 +61,19 @@ class WebEngineBrowserContext::ResourceContext
 
 // static
 std::unique_ptr<WebEngineBrowserContext>
-WebEngineBrowserContext::CreatePersistent(base::FilePath data_directory) {
-  return base::WrapUnique(
-      new WebEngineBrowserContext(std::move(data_directory)));
+WebEngineBrowserContext::CreatePersistent(
+    base::FilePath data_directory,
+    network::NetworkQualityTracker* network_quality_tracker) {
+  return base::WrapUnique(new WebEngineBrowserContext(std::move(data_directory),
+                                                      network_quality_tracker));
 }
 
 // static
 std::unique_ptr<WebEngineBrowserContext>
-WebEngineBrowserContext::CreateIncognito() {
-  return base::WrapUnique(new WebEngineBrowserContext({}));
+WebEngineBrowserContext::CreateIncognito(
+    network::NetworkQualityTracker* network_quality_tracker) {
+  return base::WrapUnique(
+      new WebEngineBrowserContext({}, network_quality_tracker));
 }
 
 WebEngineBrowserContext::~WebEngineBrowserContext() {
@@ -144,7 +151,7 @@ WebEngineBrowserContext::GetPermissionControllerDelegate() {
 
 content::ClientHintsControllerDelegate*
 WebEngineBrowserContext::GetClientHintsControllerDelegate() {
-  return nullptr;
+  return &client_hints_delegate_;
 }
 
 content::BackgroundFetchDelegate*
@@ -177,11 +184,28 @@ WebEngineBrowserContext::CreateVideoDecodePerfHistory() {
       media::learning::FeatureProviderFactoryCB());
 }
 
-WebEngineBrowserContext::WebEngineBrowserContext(base::FilePath data_directory)
+base::RepeatingCallback<bool(const GURL&)> IsJavaScriptAllowedCallback() {
+  // WebEngine does not provide a way to disable JavaScript.
+  return base::BindRepeating([](const GURL&) { return true; });
+}
+
+base::RepeatingCallback<bool(const GURL&)>
+AreThirdPartyCookiesBlockedCallback() {
+  // WebEngine does not provide a way to block third-party cookies.
+  return base::BindRepeating([](const GURL&) { return false; });
+}
+
+WebEngineBrowserContext::WebEngineBrowserContext(
+    base::FilePath data_directory,
+    network::NetworkQualityTracker* network_quality_tracker)
     : data_dir_path_(std::move(data_directory)),
       net_log_observer_(CreateNetLogObserver()),
       simple_factory_key_(GetPath(), IsOffTheRecord()),
-      resource_context_(std::make_unique<ResourceContext>()) {
+      resource_context_(std::make_unique<ResourceContext>()),
+      client_hints_delegate_(network_quality_tracker,
+                             IsJavaScriptAllowedCallback(),
+                             AreThirdPartyCookiesBlockedCallback(),
+                             embedder_support::GetUserAgentMetadata()) {
   SimpleKeyMap::GetInstance()->Associate(this, &simple_factory_key_);
 
   profile_metrics::SetBrowserProfileType(

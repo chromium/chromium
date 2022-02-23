@@ -28,7 +28,7 @@ namespace {
 MediaRoute CreateRoute(const std::string& route_id,
                        const std::string& source_id = "source_id") {
   media_router::MediaRoute route(route_id, media_router::MediaSource(source_id),
-                                 "sink_id", "description", true, true);
+                                 "sink_id", "description", true);
   route.set_controller_type(media_router::RouteControllerType::kGeneric);
   return route;
 }
@@ -60,33 +60,18 @@ class CastMediaNotificationProducerTest : public testing::Test {
   NiceMock<MockClosure> items_changed_callback_;
 };
 
-// TODO(b/185139027): Remove this class once
-// |media_router::kGlobalMediaControlsCastStartStop| is enabled by default.
-class CastMediaNotificationProducerCastStartStopTest
-    : public CastMediaNotificationProducerTest {
- public:
-  void SetUp() override {
-    feature_list_.InitAndEnableFeature(
-        media_router::kGlobalMediaControlsCastStartStop);
-    CastMediaNotificationProducerTest::SetUp();
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
 TEST_F(CastMediaNotificationProducerTest, AddAndRemoveRoute) {
   const std::string route_id = "route-id-1";
   MediaRoute route = CreateRoute(route_id);
 
   EXPECT_CALL(items_changed_callback_, Run());
-  notification_producer_->OnRoutesUpdated({route}, {});
+  notification_producer_->OnRoutesUpdated({route});
   testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
   EXPECT_NE(nullptr, notification_producer_->GetMediaItem(route_id));
 
   EXPECT_CALL(items_changed_callback_, Run());
-  notification_producer_->OnRoutesUpdated({}, {});
+  notification_producer_->OnRoutesUpdated({});
   testing::Mock::VerifyAndClearExpectations(&items_changed_callback_);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
@@ -95,7 +80,7 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
   const std::string route_id = "route-id-1";
   MediaRoute route = CreateRoute(route_id);
 
-  notification_producer_->OnRoutesUpdated({route}, {});
+  notification_producer_->OnRoutesUpdated({route});
   auto* item = static_cast<CastMediaNotificationItem*>(
       notification_producer_->GetMediaItem(route_id).get());
   NiceMock<media_message_center::test::MockMediaNotificationView> view;
@@ -112,20 +97,7 @@ TEST_F(CastMediaNotificationProducerTest, UpdateRoute) {
         EXPECT_EQ(base::UTF8ToUTF16(new_description + separator + new_sink),
                   metadata.source_title);
       });
-  notification_producer_->OnRoutesUpdated({route}, {});
-}
-
-TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
-  // These routes should not have notification items created for them.
-  MediaRoute non_display_route = CreateRoute("route-1");
-  non_display_route.set_for_display(false);
-  MediaRoute no_controller_route = CreateRoute("route-2");
-  no_controller_route.set_controller_type(RouteControllerType::kNone);
-  MediaRoute multizone_member_route = CreateRoute("route-3", "cast:705D30C6");
-
-  notification_producer_->OnRoutesUpdated(
-      {non_display_route, no_controller_route, multizone_member_route}, {});
-  EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
+  notification_producer_->OnRoutesUpdated({route});
 }
 
 TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
@@ -133,31 +105,40 @@ TEST_F(CastMediaNotificationProducerTest, DismissNotification) {
   const std::string route_id2 = "route-id-2";
   MediaRoute route1 = CreateRoute(route_id1);
   MediaRoute route2 = CreateRoute(route_id2);
-  notification_producer_->OnRoutesUpdated({route1}, {});
+  notification_producer_->OnRoutesUpdated({route1});
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 
   notification_producer_->OnMediaItemUIDismissed(route_id1);
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 
   // Adding another route should not bring back the dismissed notification.
-  notification_producer_->OnRoutesUpdated({route1, route2}, {});
+  notification_producer_->OnRoutesUpdated({route1, route2});
   EXPECT_EQ(1u, notification_producer_->GetActiveItemCount());
 }
 
-TEST_F(CastMediaNotificationProducerCastStartStopTest,
-       RoutesWithoutNotifications) {
+// The GlobalMediaControlsCastStartStop flag is disabled on ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
   // These routes should not have notification items created for them.
-  MediaRoute non_display_route = CreateRoute("route-1");
-  non_display_route.set_for_display(false);
+  MediaRoute no_controller_route = CreateRoute("route-1");
+  no_controller_route.set_controller_type(RouteControllerType::kNone);
+  MediaRoute multizone_member_route = CreateRoute("route-2", "cast:705D30C6");
+
+  notification_producer_->OnRoutesUpdated(
+      {no_controller_route, multizone_member_route});
+  EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
+}
+#else
+TEST_F(CastMediaNotificationProducerTest, RoutesWithoutNotifications) {
+  // These routes should not have notification items created for them.
   MediaRoute mirroring_route =
-      CreateRoute("route-2", "urn:x-org.chromium.media:source:tab:*");
-  MediaRoute multizone_member_route = CreateRoute("route-3", "cast:705D30C6");
-  MediaRoute connecting_route = CreateRoute("route-4");
+      CreateRoute("route-1", "urn:x-org.chromium.media:source:tab:*");
+  MediaRoute multizone_member_route = CreateRoute("route-2", "cast:705D30C6");
+  MediaRoute connecting_route = CreateRoute("route-3");
   connecting_route.set_is_connecting(true);
 
   notification_producer_->OnRoutesUpdated(
-      {non_display_route, mirroring_route, multizone_member_route,
-       connecting_route},
-      {});
+      {mirroring_route, multizone_member_route, connecting_route});
   EXPECT_EQ(0u, notification_producer_->GetActiveItemCount());
 }
+#endif  // BUILDFLAG(IS_CHROMEOS)

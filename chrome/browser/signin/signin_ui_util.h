@@ -17,7 +17,7 @@
 #include "components/signin/public/base/signin_metrics.h"
 
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
-#include "chrome/browser/ui/webui/signin/dice_turn_sync_on_helper.h"
+#include "chrome/browser/ui/webui/signin/turn_sync_on_helper.h"
 #endif
 
 struct AccountInfo;
@@ -55,16 +55,32 @@ void ShowReauthForPrimaryAccountWithAuthError(
     Browser* browser,
     signin_metrics::AccessPoint access_point);
 
-#if BUILDFLAG(IS_CHROMEOS_LACROS)
+// Delegates to an existing sign-in tab if one exists. If not, a new sign-in tab
+// is created.
+void ShowExtensionSigninPrompt(Profile* profile,
+                               bool enable_sync,
+                               const std::string& email_hint);
+
 namespace internal {
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
 // Same as `ShowReauthForPrimaryAccountWithAuthError` but with a getter function
 // for AccountManagerFacade so that it can be unit tested.
 void ShowReauthForPrimaryAccountWithAuthErrorLacros(
     Browser* browser,
     signin_metrics::AccessPoint access_point,
     account_manager::AccountManagerFacade* account_manager_facade);
-}  // namespace internal
+#endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
+
+#if !BUILDFLAG(IS_CHROMEOS_ASH)
+void ShowExtensionSigninPrompt(
+    Profile* profile,
+#if BUILDFLAG(IS_CHROMEOS_LACROS)
+    account_manager::AccountManagerFacade* account_manager_facade,
 #endif
+    bool enable_sync,
+    const std::string& email_hint);
+#endif
+}  // namespace internal
 
 // This function is used to enable sync for a given account:
 // * This function does nothing if the user is already signed in to Chrome.
@@ -117,7 +133,7 @@ std::string GetAllowedDomain(std::string signin_pattern);
 #if BUILDFLAG(ENABLE_DICE_SUPPORT)
 namespace internal {
 // Same as |EnableSyncFromPromo| but with a callback that creates a
-// DiceTurnSyncOnHelper so that it can be unit tested.
+// TurnSyncOnHelper so that it can be unit tested.
 void EnableSyncFromPromo(
     Browser* browser,
     const AccountInfo& account,
@@ -130,8 +146,8 @@ void EnableSyncFromPromo(
              signin_metrics::PromoAction signin_promo_action,
              signin_metrics::Reason signin_reason,
              const CoreAccountId& account_id,
-             DiceTurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
-        create_dice_turn_sync_on_helper_callback);
+             TurnSyncOnHelper::SigninAbortedMode signin_aborted_mode)>
+        create_turn_sync_on_helper_callback);
 }  // namespace internal
 #endif
 

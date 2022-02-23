@@ -8,6 +8,14 @@ import {$} from 'chrome://resources/js/util.m.js';
 
 /**
  * @typedef {{
+ *   name: string,
+ *   enabled: boolean,
+ * }}
+ */
+let SandboxFeature;
+
+/**
+ * @typedef {{
  *   processId: number,
  *   processType: string,
  *   name: string,
@@ -28,10 +36,11 @@ let RendererHostProcess;
  * This may have additional fields displayed in the JSON output.
  * See //sandbox/win/src/sandbox_constants.cc for keys in policy.
  * @typedef {{
- *   processIds: !Array<number>,
+ *   processId: number,
  *   lockdownLevel: string,
  *   desiredIntegrityLevel: string,
- *   platformMitigations: string
+ *   platformMitigations: string,
+ *   componentFilters: string
  * }}
  */
 let PolicyDiagnostic;
@@ -40,7 +49,8 @@ let PolicyDiagnostic;
  * @typedef {{
  *   browser: !Array<!BrowserHostProcess>,
  *   renderer: !Array<!RendererHostProcess>,
- *   policies: !Array<!PolicyDiagnostic>
+ *   policies: !Array<!PolicyDiagnostic>,
+ *   features: !Array<!SandboxFeature>
  * }}
  */
 let SandboxDiagnostics;
@@ -361,6 +371,20 @@ function makeTextEntry(textContent) {
 }
 
 /**
+ * Makes a <td> containing formatted component filter flags.
+ * @param {PolicyDiagnostic} policy
+ * @return {Node}
+ */
+function makeComponentFilterEntry(policy) {
+  const fixed = document.createElement('div');
+  fixed.classList.add('mitigations');
+  fixed.innerText = policy.componentFilters;
+  const col = document.createElement('td');
+  col.appendChild(fixed);
+  return col;
+}
+
+/**
  * Makes an expandable <td> containing arg as textContent.
  * @param {string} mainEntry is always shown
  * @param {Object} expandable
@@ -471,13 +495,13 @@ function addRowForProcess(pid, type, name, sandbox, policy) {
       pid, type, name, sandbox, policy.lockdownLevel,
       policy.desiredIntegrityLevel
     ].map(makeTextEntry);
-    // Clickable mitigations item.
     entries.push(makeMitigationEntry(policy.platformMitigations));
+    entries.push(makeComponentFilterEntry(policy));
     entries.push(makeLowboxAcEntry(policy));
     addRow(entries);
   } else {
-    addRow(
-        [pid, type, name, 'Not Sandboxed', '', '', '', ''].map(makeTextEntry));
+    addRow([pid, type, name, 'Not Sandboxed', '', '', '', '', ''].map(
+        makeTextEntry));
   }
 }
 
@@ -487,15 +511,13 @@ function onGetSandboxDiagnostics(results) {
   /** @type {!Map<number,!PolicyDiagnostic>} */
   const policies = new Map();
   for (const policy of results.policies) {
-    // At present only one process per TargetPolicy object.
-    const pid = policy.processIds[0];
-    policies.set(pid, policy);
+    policies.set(policy.processId, policy);
   }
 
   // Titles.
   addRow([
     'Process', 'Type', 'Name', 'Sandbox', 'Lockdown', 'Integrity',
-    'Mitigations', 'Lowbox/AppContainer'
+    'Mitigations', 'Component Filter', 'Lowbox/AppContainer'
   ].map(makeTextEntry));
 
   // Browser Processes.
@@ -514,6 +536,7 @@ function onGetSandboxDiagnostics(results) {
 
   // Raw Diagnostics.
   $('raw-info').textContent =
+      'features: ' + JSON.stringify(results.features, null, 2) + '\n' +
       'policies: ' + JSON.stringify(results.policies, null, 2);
 }
 

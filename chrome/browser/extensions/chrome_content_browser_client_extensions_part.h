@@ -7,7 +7,6 @@
 
 #include <memory>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "chrome/browser/chrome_content_browser_client_parts.h"
 #include "components/download/public/common/quarantine_connection.h"
@@ -67,15 +66,11 @@ class ChromeContentBrowserClientExtensionsPart
   static bool DoesSiteRequireDedicatedProcess(
       content::BrowserContext* browser_context,
       const GURL& effective_site_url);
-  static bool ShouldLockProcessToSite(content::BrowserContext* browser_context,
-                                      const GURL& effective_site_url);
   static bool CanCommitURL(content::RenderProcessHost* process_host,
                            const GURL& url);
   static bool IsSuitableHost(Profile* profile,
                              content::RenderProcessHost* process_host,
                              const GURL& site_url);
-  static bool ShouldTryToUseExistingProcessHost(Profile* profile,
-                                                const GURL& url);
   static size_t GetProcessCountToIgnoreForLimit();
   static bool ShouldSubframesTryToReuseExistingProcess(
       content::RenderFrameHost* main_frame);

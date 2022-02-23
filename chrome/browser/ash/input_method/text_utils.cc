@@ -24,12 +24,12 @@ bool IsSentenceEndCharacter(char16_t c) {
           c == u'!' || c == u'…');
 }
 
-bool EndsInSpecialPeriodWord(const std::u16string& text, int pos) {
-  int idx = pos;
-  while (idx >= 0 && pos - idx <= kSpecialWordMaxLength && text[idx] != u' ' &&
-         text[idx] != u'(')
+bool EndsInSpecialPeriodWord(const std::u16string& text, uint32_t pos) {
+  uint32_t idx = pos;
+  while (idx <= pos && pos - idx <= kSpecialWordMaxLength &&
+         text[idx] != u' ' && text[idx] != u'(')
     idx--;
-  if (idx < 0 || pos - idx > kSpecialWordMaxLength)
+  if (idx > pos || pos - idx > kSpecialWordMaxLength)
     return false;
   std::u16string last_word = text.substr(idx + 1, pos - idx);
   return (last_word == u"c.f." || last_word == u"cf." || last_word == u"e.g." ||
@@ -58,14 +58,14 @@ bool IsEmoticonMouth(char16_t c) {
   return (c == u')' || c == u'(' || c == u'\\' || c == u'|' || c == u'/');
 }
 
-bool EndsInEmoticon(const std::u16string& text, int pos) {
+bool EndsInEmoticon(const std::u16string& text, uint32_t pos) {
   return ((pos >= 1 && IsEmoticonEyes(text[pos - 1]) &&
            IsEmoticonMouth(text[pos])) ||
           (pos >= 2 && IsEmoticonEyes(text[pos - 2]) &&
            IsEmoticonNose(text[pos - 1]) && IsEmoticonMouth(text[pos])));
 }
 
-bool IsSentenceEnd(const std::u16string& text, int pos) {
+bool IsSentenceEnd(const std::u16string& text, uint32_t pos) {
   if (pos < text.size() - 1 && (text[pos + 1] == '\n' || text[pos + 1] == '\r'))
     return true;
 
@@ -106,11 +106,11 @@ bool Sentence::operator!=(const Sentence& other) const {
   return !(*this == other);
 }
 
-int FindLastSentenceEnd(const std::u16string& text, int pos) {
-  if (pos <= 0 || pos > text.size())
+uint32_t FindLastSentenceEnd(const std::u16string& text, uint32_t pos) {
+  if (pos == 0 || pos > text.size())
     return kUndefined;
 
-  for (int i = pos - 1; i >= 0 && pos - i <= kMaxSearchRange; i--) {
+  for (size_t i = pos - 1; i > 0 && pos - i <= kMaxSearchRange; i--) {
     if (IsSentenceEnd(text, i)) {
       return i;
     }
@@ -118,11 +118,11 @@ int FindLastSentenceEnd(const std::u16string& text, int pos) {
   return kUndefined;
 }
 
-int FindNextSentenceEnd(const std::u16string& text, int pos) {
-  if (pos < 0 || pos >= text.size())
+uint32_t FindNextSentenceEnd(const std::u16string& text, uint32_t pos) {
+  if (pos >= text.size())
     return kUndefined;
 
-  for (int i = pos; i < text.size() && i - pos <= kMaxSearchRange; i++) {
+  for (size_t i = pos; i < text.size() && i - pos <= kMaxSearchRange; i++) {
     if (IsSentenceEnd(text, i)) {
       return i;
     }
@@ -130,16 +130,18 @@ int FindNextSentenceEnd(const std::u16string& text, int pos) {
   return kUndefined;
 }
 
-Sentence FindLastSentence(const std::u16string& text, int pos) {
+Sentence FindLastSentence(const std::u16string& text, uint32_t pos) {
+  if (pos > text.size())
+    return Sentence();
   if (pos > 0 &&
       (pos == text.size() || text[pos] == '\n' || text[pos] == '\r')) {
     pos--;
   }
-  int end = FindLastSentenceEnd(text, pos);
+  uint32_t end = FindLastSentenceEnd(text, pos);
   if (end == kUndefined) {
     return Sentence();
   }
-  int start = FindLastSentenceEnd(text, end);
+  uint32_t start = FindLastSentenceEnd(text, end);
   if (start == kUndefined) {
     start = 0;
   } else {
@@ -152,19 +154,21 @@ Sentence FindLastSentence(const std::u16string& text, int pos) {
                   text.substr(start, end - start + 1));
 }
 
-Sentence FindCurrentSentence(const std::u16string& text, int pos) {
+Sentence FindCurrentSentence(const std::u16string& text, uint32_t pos) {
+  if (pos > text.size())
+    return Sentence();
   if (pos > 0 &&
       (pos == text.size() || text[pos] == '\n' || text[pos] == '\r')) {
     pos--;
   }
-  int start = FindLastSentenceEnd(text, pos);
+  uint32_t start = FindLastSentenceEnd(text, pos);
   if (start == kUndefined) {
     start = 0;
   } else {
     start = start + kGapBetweenSentenceEndAndNextStart;
   }
 
-  int end = FindNextSentenceEnd(text, pos);
+  uint32_t end = FindNextSentenceEnd(text, pos);
   if (end == kUndefined) {
     end = text.length() - 1;
   }

@@ -28,6 +28,7 @@
 #include "ui/base/webui/web_ui_util.h"
 #include "ui/chromeos/resources/grit/ui_chromeos_resources.h"
 #include "ui/gfx/image/image_skia.h"
+#include "ui/gfx/image/image_skia_rep.h"
 
 namespace chromeos {
 namespace settings {
@@ -199,24 +200,24 @@ KerberosAccountsHandler::KerberosAccountsHandler(
 }
 
 void KerberosAccountsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getKerberosAccounts",
       base::BindRepeating(&KerberosAccountsHandler::HandleGetKerberosAccounts,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "addKerberosAccount",
       base::BindRepeating(&KerberosAccountsHandler::HandleAddKerberosAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "removeKerberosAccount",
       base::BindRepeating(&KerberosAccountsHandler::HandleRemoveKerberosAccount,
                           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "validateKerberosConfig",
       base::BindRepeating(
           &KerberosAccountsHandler::HandleValidateKerberosConfig,
           weak_factory_.GetWeakPtr()));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "setAsActiveKerberosAccount",
       base::BindRepeating(
           &KerberosAccountsHandler::HandleSetAsActiveKerberosAccount,
@@ -224,11 +225,11 @@ void KerberosAccountsHandler::RegisterMessages() {
 }
 
 void KerberosAccountsHandler::HandleGetKerberosAccounts(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& callback_id = args[0].GetString();
 
   if (!kerberos_credentials_manager_->IsKerberosEnabled()) {
     ResolveJavascriptCallback(base::Value(callback_id), base::Value());
@@ -267,16 +268,16 @@ void KerberosAccountsHandler::OnListAccounts(
         tgt_validity < base::Days(1) ? -1 : 0, tgt_validity);
 
     base::DictionaryValue account_dict;
-    account_dict.SetString("principalName", account.principal_name());
-    account_dict.SetString("config", account.krb5conf());
-    account_dict.SetBoolean("isSignedIn", account.tgt_validity_seconds() > 0);
-    account_dict.SetString("validForDuration", valid_for_duration);
-    account_dict.SetBoolean("isActive",
+    account_dict.SetStringKey("principalName", account.principal_name());
+    account_dict.SetStringKey("config", account.krb5conf());
+    account_dict.SetBoolKey("isSignedIn", account.tgt_validity_seconds() > 0);
+    account_dict.SetStringKey("validForDuration", valid_for_duration);
+    account_dict.SetBoolKey("isActive",
                             account.principal_name() == active_principal);
-    account_dict.SetBoolean("isManaged", account.is_managed());
-    account_dict.SetBoolean("passwordWasRemembered",
+    account_dict.SetBoolKey("isManaged", account.is_managed());
+    account_dict.SetBoolKey("passwordWasRemembered",
                             account.password_was_remembered());
-    account_dict.SetString("pic", ticket_icon);
+    account_dict.SetStringKey("pic", ticket_icon);
     accounts.Append(std::move(account_dict));
   }
 
@@ -284,20 +285,20 @@ void KerberosAccountsHandler::OnListAccounts(
 }
 
 void KerberosAccountsHandler::HandleAddKerberosAccount(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
   // TODO(https://crbug.com/961246):
   //   - Prevent account changes when Kerberos is disabled.
   //   - Remove all accounts when Kerberos is disabled.
 
-  CHECK_EQ(6U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
-  const std::string& principal_name = args->GetList()[1].GetString();
-  const std::string& password = args->GetList()[2].GetString();
-  const bool remember_password = args->GetList()[3].GetBool();
-  const std::string& config = args->GetList()[4].GetString();
-  const bool allow_existing = args->GetList()[5].GetBool();
+  CHECK_EQ(6U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& principal_name = args[1].GetString();
+  const std::string& password = args[2].GetString();
+  const bool remember_password = args[3].GetBool();
+  const std::string& config = args[4].GetString();
+  const bool allow_existing = args[5].GetBool();
 
   if (!kerberos_credentials_manager_->IsKerberosEnabled()) {
     ResolveJavascriptCallback(base::Value(callback_id),
@@ -320,12 +321,12 @@ void KerberosAccountsHandler::OnAddAccountAndAuthenticate(
 }
 
 void KerberosAccountsHandler::HandleRemoveKerberosAccount(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
-  const std::string& principal_name = args->GetList()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& principal_name = args[1].GetString();
 
   if (!kerberos_credentials_manager_->IsKerberosEnabled()) {
     ResolveJavascriptCallback(base::Value(callback_id),
@@ -345,12 +346,12 @@ void KerberosAccountsHandler::OnRemoveAccount(const std::string& callback_id,
 }
 
 void KerberosAccountsHandler::HandleValidateKerberosConfig(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(2U, args->GetList().size());
-  const std::string& callback_id = args->GetList()[0].GetString();
-  const std::string& krb5conf = args->GetList()[1].GetString();
+  CHECK_EQ(2U, args.size());
+  const std::string& callback_id = args[0].GetString();
+  const std::string& krb5conf = args[1].GetString();
 
   if (!kerberos_credentials_manager_->IsKerberosEnabled()) {
     ResolveJavascriptCallback(base::Value(callback_id),
@@ -380,11 +381,11 @@ void KerberosAccountsHandler::OnValidateConfig(
 }
 
 void KerberosAccountsHandler::HandleSetAsActiveKerberosAccount(
-    const base::ListValue* args) {
+    base::Value::ConstListView args) {
   AllowJavascript();
 
-  CHECK_EQ(1U, args->GetList().size());
-  const std::string& principal_name = args->GetList()[0].GetString();
+  CHECK_EQ(1U, args.size());
+  const std::string& principal_name = args[0].GetString();
 
   kerberos_credentials_manager_->SetActiveAccount(principal_name);
 }

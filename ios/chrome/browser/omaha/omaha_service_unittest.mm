@@ -12,6 +12,7 @@
 #include "base/cxx17_backports.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
+#import "base/test/ios/wait_util.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/version_info/version_info.h"
@@ -701,6 +702,7 @@ TEST_F(OmahaServiceTest, PersistStatesTest) {
   base::Time now = base::Time::Now();
   OmahaService service(false);
   service.StartInternal();
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
   service.set_upgrade_recommended_callback(base::BindRepeating(
       &OmahaServiceTest::OnNeedUpdate, base::Unretained(this)));
@@ -710,9 +712,11 @@ TEST_F(OmahaServiceTest, PersistStatesTest) {
   service.current_ping_time_ = now + base::Seconds(3);
   service.last_sent_version_ = base::Version(version_string);
   service.PersistStates();
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
   OmahaService service2(false);
   service2.StartInternal();
+  base::test::ios::SpinRunLoopWithMinDelay(base::Milliseconds(1));
 
   EXPECT_EQ(service.number_of_tries_, 5);
   EXPECT_EQ(service2.last_sent_time_, now - base::Seconds(1));

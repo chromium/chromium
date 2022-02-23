@@ -417,8 +417,12 @@ void FidoTunnelDevice::OnTunnelData(
             return;
           }
 
+          FIDO_LOG(DEBUG) << "Linking information processed from caBLE device";
           std::move(info->pairing_callback).Run(std::move(*maybe_pairing));
         }
+      } else {
+        FIDO_LOG(DEBUG)
+            << "Linking information was not received from caBLE device";
       }
 
       FIDO_LOG(DEBUG) << GetId() << ": established";

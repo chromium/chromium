@@ -1285,7 +1285,9 @@ class MockSmsPrerenderingWebContentsDelegate : public WebContentsDelegate {
                     const std::string&,
                     base::OnceCallback<void()> on_confirm,
                     base::OnceCallback<void()> on_cancel));
-  bool IsPrerender2Supported() override { return true; }
+  bool IsPrerender2Supported(WebContents& web_contents) override {
+    return true;
+  }
 };
 
 class SmsPrerenderingBrowserTest : public SmsBrowserTest {

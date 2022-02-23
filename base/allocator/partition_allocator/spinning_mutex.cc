@@ -7,11 +7,11 @@
 #include "base/allocator/partition_allocator/partition_alloc_check.h"
 #include "build/build_config.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <pthread.h>
 #endif
 
@@ -25,30 +25,26 @@
 #if !defined(PA_HAS_FAST_MUTEX)
 #include "base/threading/platform_thread.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sched.h>
 
-#define YIELD_THREAD sched_yield()
+#define PA_YIELD_THREAD sched_yield()
 
 #else  // Other OS
 
 #warning "Thread yield not supported on this OS."
-#define YIELD_THREAD ((void)0)
+#define PA_YIELD_THREAD ((void)0)
 #endif
 
 #endif  // !defined(PA_HAS_FAST_MUTEX)
 
-namespace base {
-namespace internal {
+namespace partition_alloc::internal {
 
 void SpinningMutex::Reinit() {
-#if !defined(OS_APPLE)
+#if !BUILDFLAG(IS_APPLE)
   // On most platforms, no need to re-init the lock, can just unlock it.
   Release();
 #else
-  // On macOS, os_unfair_lock cannot be unlocked from a thread which didn't lock
-  // it, otherwise an assertion is triggered inside its implementation.
-#if !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wunguarded-availability"
 
@@ -59,10 +55,8 @@ void SpinningMutex::Reinit() {
 
 #pragma clang diagnostic pop
 
-#endif  // !defined(PA_NO_OS_UNFAIR_LOCK_CRBUG_1267256)
-
   Release();
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 }
 
 #if defined(PA_HAS_FAST_MUTEX)
@@ -119,20 +113,20 @@ void SpinningMutex::LockSlow() {
   }
 }
 
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 
 void SpinningMutex::LockSlow() {
   ::AcquireSRWLockExclusive(reinterpret_cast<PSRWLOCK>(&lock_));
 }
 
-#elif defined(OS_POSIX)
+#elif BUILDFLAG(IS_POSIX)
 
 void SpinningMutex::LockSlow() {
   int retval = pthread_mutex_lock(&lock_);
   PA_DCHECK(retval == 0);
 }
 
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 
 void SpinningMutex::LockSlow() {
   sync_mutex_lock(&lock_);
@@ -146,19 +140,18 @@ void SpinningMutex::LockSlowSpinLock() {
   int yield_thread_count = 0;
   do {
     if (yield_thread_count < 10) {
-      YIELD_THREAD;
+      PA_YIELD_THREAD;
       yield_thread_count++;
     } else {
       // At this point, it's likely that the lock is held by a lower priority
       // thread that is unavailable to finish its work because of higher
       // priority threads spinning here. Sleeping should ensure that they make
       // progress.
-      PlatformThread::Sleep(Milliseconds(1));
+      base::PlatformThread::Sleep(base::Milliseconds(1));
     }
   } while (!TrySpinLock());
 }
 
 #endif  // defined(PA_HAS_FAST_MUTEX)
 
-}  // namespace internal
-}  // namespace base
+}  // namespace partition_alloc::internal

@@ -40,7 +40,7 @@ dependencies {
     // Note about the configuration names: they are defined in buildSrc/ChromiumPlugin
 
     // Replacement for com.android.support:design
-    compile 'com.google.android.material:material:1.5.0-alpha05'
+    compile 'com.google.android.material:material:1.6.0-alpha01'
 
     compile 'com.google.android.play:core:1.10.0'
 
@@ -101,7 +101,7 @@ dependencies {
     compile 'com.google.firebase:firebase-messaging:21.0.1'
     compile 'com.google.guava:failureaccess:1.0.1'
     compile 'com.google.j2objc:j2objc-annotations:1.1'
-    compile 'com.google.protobuf:protobuf-javalite:3.13.0'
+    compile 'com.google.protobuf:protobuf-javalite:3.19.3'
     compile 'javax.annotation:javax.annotation-api:1.3.2'
     compile 'javax.annotation:jsr250-api:1.0'
     compile 'javax.inject:javax.inject:1'
@@ -109,8 +109,8 @@ dependencies {
     // Used by R8 to desugar library functions.
     // See instructions in //third_party/r8/README.chromium for how to
     // update desugar_jdk_libs.json (needed when changing this version).
-    compile 'com.android.tools:desugar_jdk_libs:1.1.1'
-    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.1'
+    compile 'com.android.tools:desugar_jdk_libs:1.1.5'
+    compile 'com.android.tools:desugar_jdk_libs_configuration:1.1.5'
 
     // Needed by androidx.
     String kotlinxVersion = '1.5.0'
@@ -160,7 +160,7 @@ dependencies {
     // this list of targets is carefully curated for the use of the resources
     // shrinker. If these are needed for something other than the resources
     // shrinker, use buildCompile instead.
-    String androidToolsVersion = '30.0.0-alpha10'
+    String androidToolsVersion = '30.2.0-beta01'
     buildCompileNoDeps "com.android.tools:sdk-common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools:common:${androidToolsVersion}"
     buildCompileNoDeps "com.android.tools.layoutlib:layoutlib-api:${androidToolsVersion}"

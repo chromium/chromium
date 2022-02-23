@@ -19,7 +19,7 @@ To run md_browser:
 
 1. cd to the top of your chromium checkout
 
-2. run `python tools/md_browser/md_browser.py`
+2. run `python3 tools/md_browser/md_browser.py`
 
 3. There is no step three.
 

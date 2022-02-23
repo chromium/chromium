@@ -4,6 +4,7 @@
 
 #include "chrome/browser/resource_coordinator/lifecycle_unit_base.h"
 
+#include "base/observer_list.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_observer.h"
 #include "chrome/browser/resource_coordinator/lifecycle_unit_source_base.h"
 #include "chrome/browser/resource_coordinator/time.h"

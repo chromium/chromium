@@ -14,10 +14,8 @@
 #include "base/android/jni_android.h"
 #include "base/android/jni_string.h"
 #include "base/feature_list.h"
-#include "base/files/file_path.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/persistent_histogram_allocator.h"
-#include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/metrics/metrics_service.h"
@@ -83,13 +81,6 @@ AwMetricsServiceClient::AwMetricsServiceClient(
 
 AwMetricsServiceClient::~AwMetricsServiceClient() = default;
 
-void AwMetricsServiceClient::Initialize(PrefService* pref_service) {
-  // Pass an empty file path since the path is for the Extended Variations Safe
-  // Mode experiment and Android WebView is excluded from this experiment.
-  AndroidMetricsServiceClient::Initialize(/*user_data_dir=*/base::FilePath(),
-                                          pref_service);
-}
-
 int32_t AwMetricsServiceClient::GetProduct() {
   return metrics::ChromeUserMetricsExtension::ANDROID_WEBVIEW;
 }
@@ -103,6 +94,25 @@ int AwMetricsServiceClient::GetSampleRatePerMille() const {
     return kStableSampledInRatePerMille;
   }
   return kBetaDevCanarySampledInRatePerMille;
+}
+
+std::string AwMetricsServiceClient::GetAppPackageNameIfLoggable() {
+  if (!base::FeatureList::IsEnabled(
+          android_webview::features::kWebViewAppsPackageNamesAllowlist)) {
+    // Revert to the default implementation.
+    return ::metrics::AndroidMetricsServiceClient::
+        GetAppPackageNameIfLoggable();
+  }
+  AndroidMetricsServiceClient::InstallerPackageType installer_type =
+      GetInstallerPackageType();
+  // Always record the app package name of system apps even if it's not in the
+  // allowlist.
+  if (installer_type == InstallerPackageType::SYSTEM_APP ||
+      (installer_type == InstallerPackageType::GOOGLE_PLAY_STORE &&
+       ShouldRecordPackageName())) {
+    return GetAppPackageName();
+  }
+  return std::string();
 }
 
 bool AwMetricsServiceClient::ShouldRecordPackageName() {

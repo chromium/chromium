@@ -39,6 +39,7 @@ struct WebPrintPresetOptions;
 
 namespace gfx {
 class PointF;
+class Vector2d;
 }  // namespace gfx
 
 namespace chrome_pdf {
@@ -287,21 +288,25 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // aren't painted by the PDF engine).
   void CalculateBackgroundParts();
 
-  // Updates the scroll position. `scroll_offset` is in CSS pixels relative to
-  // the scroll origin (which depends on the UI direction).
-  void UpdateScroll(const gfx::Vector2dF& scroll_offset);
+  // Updates the scroll position, which is in CSS pixels relative to the
+  // top-left corner.
+  void UpdateScroll(const gfx::PointF& scroll_position);
 
   // Computes document width/height in device pixels, based on current zoom and
   // device scale
   int GetDocumentPixelWidth() const;
   int GetDocumentPixelHeight() const;
 
+  // Common `pdf::mojom::PdfListener` implementations.
+  void SetCaretPosition(const gfx::PointF& position);
+  void MoveRangeSelectionExtent(const gfx::PointF& extent);
+  void SetSelectionBounds(const gfx::PointF& base, const gfx::PointF& extent);
+
   // Sets the text input type for this plugin based on `in_focus`.
   virtual void SetFormTextFieldInFocus(bool in_focus) = 0;
 
   // Sets the accessibility information about the PDF document in the renderer.
-  virtual void SetAccessibilityDocInfo(
-      const AccessibilityDocInfo& doc_info) = 0;
+  virtual void SetAccessibilityDocInfo(AccessibilityDocInfo doc_info) = 0;
 
   // Sets the accessibility information about the given `page_index` in the
   // renderer.
@@ -323,7 +328,7 @@ class PdfViewPluginBase : public PDFEngine::Client,
   // Sets the accessibility information about the current viewport in the
   // renderer.
   virtual void SetAccessibilityViewportInfo(
-      const AccessibilityViewportInfo& viewport_info) = 0;
+      AccessibilityViewportInfo viewport_info) = 0;
 
   // Find handlers.
   bool StartFind(const std::string& text, bool case_sensitive);
@@ -404,7 +409,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void set_document_size(const gfx::Size& size) { document_size_ = size; }
 
+  // TODO(crbug.com/1288847): Don't provide direct access to the origin of
+  // `plugin_rect_`, as this exposes the unintuitive "paint offset."
   const gfx::Rect& plugin_rect() const { return plugin_rect_; }
+
+  // Gets the frame-relative offset of the plugin in device pixels.
+  virtual gfx::Vector2d plugin_offset_in_frame() const;
 
   // Sets the new zoom scale.
   void SetZoom(double scale);
@@ -424,6 +434,12 @@ class PdfViewPluginBase : public PDFEngine::Client,
   static base::Value::DictStorage DictFromRect(const gfx::Rect& rect);
 
  private:
+  // Converts a scroll offset (which is relative to a UI direction-dependent
+  // scroll origin) to a scroll position (which is always relative to the
+  // top-left corner).
+  gfx::PointF GetScrollPositionFromOffset(
+      const gfx::Vector2dF& scroll_offset) const;
+
   // Message handlers.
   void HandleDisplayAnnotationsMessage(const base::Value& message);
   void HandleGetNamedDestinationMessage(const base::Value& message);
@@ -483,15 +499,18 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   void ResetRecentlySentFindUpdate(int32_t /*unused_but_required*/);
 
+  // Records metrics about the attachment types.
+  void RecordAttachmentTypes();
+
   // Records metrics about the document metadata.
   void RecordDocumentMetrics();
 
-  // Adds a sample to an enumerated histogram and filter out print preview
+  // Adds a sample to an enumerated histogram and filters out print preview
   // usage.
   template <typename T>
   void HistogramEnumeration(const char* name, T sample);
 
-  // Adds a sample to a custom counts histogram and filter out print preview
+  // Adds a sample to a custom counts histogram and filters out print preview
   // usage.
   void HistogramCustomCounts(const char* name,
                              int32_t sample,
@@ -526,6 +545,9 @@ class PdfViewPluginBase : public PDFEngine::Client,
 
   // Called after a preview page has loaded or failed to load.
   void LoadNextPreviewPage();
+
+  // Converts `frame_coordinates` to PDF coordinates.
+  gfx::Point FrameToPdfCoordinates(const gfx::PointF& frame_coordinates) const;
 
   std::unique_ptr<PDFiumEngine> engine_;
   PaintManager paint_manager_{this};

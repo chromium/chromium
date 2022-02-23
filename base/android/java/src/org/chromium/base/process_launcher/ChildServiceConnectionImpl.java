@@ -70,8 +70,14 @@ import java.util.concurrent.Executor;
 
     @Override
     public void updateGroupImportance(int group, int importanceInGroup) {
+        // ChildProcessConnection checks there is a real connection to the service before calling
+        // this, and this `isBound` check should in theory be unnecessary. However this is still
+        // tripped on some devices where another service connection bound successfully but this
+        // service connection failed in `bindServiceConnection`. Such a case is not expected OS
+        // behavior and is not handled. However, avoid crashing in `updateServiceGroup` by doing
+        // this check here.
         if (!isBound()) {
-            throw new IllegalStateException();
+            return;
         }
         if (BindService.supportVariableConnections()) {
             try {

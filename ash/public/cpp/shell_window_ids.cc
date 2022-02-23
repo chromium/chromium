@@ -46,6 +46,10 @@ constexpr std::array<int, 5> kPostDesksActivatableContainersIds = {
 
 }  // namespace
 
+bool ShouldCloseAppListForFocusInContainer(int id) {
+  return !base::Contains(kContainersThatWontHideAppListOnFocus, id);
+}
+
 std::vector<int> GetActivatableShellWindowIds() {
   std::vector<int> ids(kPreDesksActivatableContainersIds.begin(),
                        kPreDesksActivatableContainersIds.end());

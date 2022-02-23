@@ -5,6 +5,8 @@
 package org.chromium.chrome.browser.survey;
 
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.verifyNoMoreInteractions;
@@ -67,6 +69,7 @@ import org.chromium.components.messages.DismissReason;
 import org.chromium.components.messages.MessageBannerProperties;
 import org.chromium.components.messages.MessageDispatcher;
 import org.chromium.components.messages.MessageIdentifier;
+import org.chromium.components.messages.MessageScopeType;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.ui.modelutil.PropertyModel;
 
@@ -210,6 +213,7 @@ public class ChromeSurveyControllerFlowTest {
     @After
     public void tearDown() {
         ChromeSurveyController.forceIsUMAEnabledForTesting(false);
+        ChromeSurveyController.resetMessageShownForTesting();
         ShadowChromeFeatureList.sParamValues.clear();
         ShadowChromeFeatureList.sEnableSurvey = false;
         ShadowChromeFeatureList.sEnableMessages = false;
@@ -592,6 +596,32 @@ public class ChromeSurveyControllerFlowTest {
     }
 
     @Test
+    public void testMessages_EnqueuedMessageDismissedOnExpiredSurvey() throws Exception {
+        presentMessages();
+
+        // Simulate survey expiration after the message is enqueued.
+        mTestSurveyController.isSurveyExpired = true;
+
+        PropertyModel messageModel = mMessagePropertyCaptor.getValue();
+        boolean shouldShow =
+                messageModel.get(MessageBannerProperties.ON_STARTED_SHOWING).getAsBoolean();
+        Assert.assertFalse(
+                "The enqueued message should not be shown if the survey has expired.", shouldShow);
+        verify(mMessageDispatcher).dismissMessage(messageModel, DismissReason.DISMISSED_BY_FEATURE);
+    }
+
+    @Test
+    public void testMessages_MessageShownOnce() {
+        presentMessages();
+        Assert.assertTrue("Message should be shown.", ChromeSurveyController.isMessageShown());
+        verify(mMessageDispatcher).enqueueMessage(any(), any(), anyInt(), anyBoolean());
+
+        // Simulate survey download that triggers invocation of #showSurveyPrompt.
+        mTestSurveyController.onDownloadSuccessRunnable.run();
+        verifyNoMoreInteractions(mMessageDispatcher);
+    }
+
+    @Test
     public void testMessages_Dismiss_PrimaryAction() {
         presentMessages();
         PropertyModel messageModel = mMessagePropertyCaptor.getValue();
@@ -758,7 +788,8 @@ public class ChromeSurveyControllerFlowTest {
 
     private void assertSurveyMessagesEnqueued() {
         verify(mMessageDispatcher)
-                .enqueueWindowScopedMessage(mMessagePropertyCaptor.capture(), eq(false));
+                .enqueueMessage(mMessagePropertyCaptor.capture(), eq(mMockWebContent),
+                        eq(MessageScopeType.NAVIGATION), eq(false));
         Assert.assertNotNull("Message captor is null.", mMessagePropertyCaptor.getValue());
     }
 

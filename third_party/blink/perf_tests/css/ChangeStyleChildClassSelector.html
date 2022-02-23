@@ -19,7 +19,7 @@
         PerfTestRunner.measureTime({
             description: "Measures the performance of a child class selector.",
             run: function() {
-                var rule = applyCSSRule(".a > .b { color: red; }");
+                var rule = applyCSSRule(".a > .b { cursor: crosshair; }");
                 forceStyleRecalc(document.body);
                 rule.remove();
                 forceStyleRecalc(document.body);

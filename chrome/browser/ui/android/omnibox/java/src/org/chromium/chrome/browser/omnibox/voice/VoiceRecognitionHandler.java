@@ -44,8 +44,8 @@ import org.chromium.content_public.browser.NavigationHandle;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.WebContentsObserver;
-import org.chromium.ui.base.PermissionCallback;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.permissions.PermissionCallback;
 import org.chromium.url.GURL;
 
 import java.util.ArrayList;
@@ -841,9 +841,10 @@ public class VoiceRecognitionHandler {
         // Check if the consent prompt needs to be shown.
         if (assistantVoiceSearchService.needsEnabledCheck()) {
             mDelegate.clearOmniboxFocus();
-            AssistantVoiceSearchConsentUi.show(windowAndroid,
+            AssistantVoiceSearchConsentController.show(windowAndroid,
                     SharedPreferencesManager.getInstance(), mLaunchAssistanceSettingsAction,
-                    BottomSheetControllerProvider.from(windowAndroid), (useAssistant) -> {
+                    BottomSheetControllerProvider.from(windowAndroid),
+                    windowAndroid.getModalDialogManager(), (useAssistant) -> {
                         // Notify the service about the consent completion.
                         assistantVoiceSearchService.onAssistantConsentDialogComplete(useAssistant);
 

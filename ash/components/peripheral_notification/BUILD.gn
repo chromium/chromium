@@ -1,0 +1,41 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash, "Non-ChromeOS builds cannot depend on //ash")
+
+component("peripheral_notification") {
+  defines = [ "IS_ASH_PERIPHERAL_NOTIFICATION_IMPL" ]
+
+  deps = [
+    "//ash/constants/",
+    "//base",
+    "//chromeos/dbus/pciguard",
+    "//chromeos/dbus/typecd",
+    "//services/device/public/mojom:usb",
+  ]
+
+  sources = [
+    "peripheral_notification_manager.cc",
+    "peripheral_notification_manager.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "peripheral_notification_manager_unittest.cc" ]
+
+  deps = [
+    ":peripheral_notification",
+    "//ash:test_support",
+    "//base/test:test_support",
+    "//chromeos/dbus/pciguard",
+    "//chromeos/dbus/typecd",
+    "//services/device/public/cpp:test_support",
+    "//skia",
+    "//testing/gtest",
+  ]
+}

@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.toolbar.top;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.AdditionalMatchers.not;
 import static org.mockito.ArgumentMatchers.eq;
@@ -26,7 +25,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IDENTITY_DISC_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.INCOGNITO_SWITCHER_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.IS_VISIBLE;
-import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IMAGE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.LOGO_IS_VISIBLE;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_AT_START;
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.NEW_TAB_VIEW_IS_VISIBLE;
@@ -35,7 +33,6 @@ import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarPropert
 import static org.chromium.chrome.browser.toolbar.top.StartSurfaceToolbarProperties.TRANSLATION_Y;
 
 import android.content.res.Resources;
-import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.view.View;
 
@@ -49,6 +46,7 @@ import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.Callback;
 import org.chromium.base.supplier.ObservableSupplierImpl;
@@ -58,7 +56,6 @@ import org.chromium.chrome.browser.feature_engagement.TrackerFactory;
 import org.chromium.chrome.browser.identity_disc.IdentityDiscController;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactory;
-import org.chromium.chrome.browser.search_engines.TemplateUrlServiceFactoryJni;
 import org.chromium.chrome.browser.tab.Tab;
 import org.chromium.chrome.browser.tabmodel.IncognitoTabModelObserver;
 import org.chromium.chrome.browser.tabmodel.TabModel;
@@ -73,11 +70,13 @@ import org.chromium.chrome.browser.util.ChromeAccessibilityUtil;
 import org.chromium.chrome.features.start_surface.StartSurfaceState;
 import org.chromium.components.feature_engagement.EventConstants;
 import org.chromium.components.feature_engagement.Tracker;
+import org.chromium.components.search_engines.TemplateUrlService;
 import org.chromium.ui.modelutil.PropertyModel;
 
 /** Tests for {@link StartSurfaceToolbarMediator}. */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class StartSurfaceToolbarMediatorUnitTest {
     private PropertyModel mPropertyModel;
     private StartSurfaceToolbarMediator mMediator;
@@ -85,6 +84,8 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public JniMocker mJniMocker = new JniMocker();
     @Mock
     private TabModelSelector mTabModelSelector;
+    @Mock
+    private TabModel mIncognitoTabModel;
     @Mock
     Runnable mDismissedCallback;
     @Mock
@@ -95,8 +96,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
     private Resources mMockResources;
     @Mock
     private Drawable mDrawable;
-    @Mock
-    private Bitmap mBitmap;
     @Mock
     Drawable.ConstantState mMockConstantState;
     @Mock
@@ -116,7 +115,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @Mock
     Tracker mTracker;
     @Mock
-    private TemplateUrlServiceFactory.Natives mTemplateUrlServiceFactory;
+    private TemplateUrlService mTemplateUrlService;
     @Captor
     private ArgumentCaptor<TabModelSelectorObserver> mTabModelSelectorObserver;
     @Captor
@@ -166,11 +165,14 @@ public class StartSurfaceToolbarMediatorUnitTest {
         doReturn(mMockConstantState).when(mDrawable).getConstantState();
         doReturn(mDrawable).when(mMockConstantState).newDrawable();
 
-        mJniMocker.mock(TemplateUrlServiceFactoryJni.TEST_HOOKS, mTemplateUrlServiceFactory);
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        TemplateUrlServiceFactory.setInstanceForTesting(mTemplateUrlService);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
 
         doReturn(false).when(mTabModelSelector).isIncognitoSelected();
+        doReturn(mIncognitoTabModel).when(mTabModelSelector).getModel(true);
+        doReturn(mMockIncognitoTab).when(mIncognitoTabModel).getTabAt(0);
         doReturn(false).when(mMockIncognitoTab).isClosing();
+        doReturn(0).when(mIncognitoTabModel).getCount();
     }
 
     @After
@@ -182,8 +184,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public void testShowAndHideHomePage() {
         createMediator(false);
 
-        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        doReturn(0).when(mIncognitoTabModel).getCount();
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -194,7 +195,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertTrue(mPropertyModel.get(IS_VISIBLE));
 
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        mMediator.onLogoImageAvailable(mBitmap, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -204,7 +204,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(IS_VISIBLE));
 
-        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
+        doReturn(1).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -220,7 +220,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
     public void testShowAndHideTabSwitcher() {
         createMediator(false);
 
-        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
+        doReturn(0).when(mIncognitoTabModel).getCount();
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -243,7 +243,7 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mMediator.updateIdentityDisc(mButtonData);
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
 
-        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
+        doReturn(1).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
@@ -262,7 +262,6 @@ public class StartSurfaceToolbarMediatorUnitTest {
         mButtonData.setCanShow(true);
         mMediator.updateIdentityDisc(mButtonData);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
-        mMediator.onLogoImageAvailable(mBitmap, null);
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
         assertTrue(mPropertyModel.get(IDENTITY_DISC_IS_VISIBLE));
         assertFalse(mPropertyModel.get(IDENTITY_DISC_AT_START));
@@ -290,22 +289,38 @@ public class StartSurfaceToolbarMediatorUnitTest {
     }
 
     @Test
-    public void testHidingIncognitoSwitchWithoutIncognitoTabs() {
+    public void testHidingIncognitoToggleWithoutIncognitoTabs() {
         createMediator(true);
 
-        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
+        doReturn(0).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
-        assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
 
-        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
+        doReturn(1).when(mIncognitoTabModel).getCount();
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+        assertTrue(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_IS_VISIBLE));
         assertTrue(mPropertyModel.get(NEW_TAB_VIEW_AT_START));
         assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
+    }
+
+    @Test
+    public void testIncognitoTabModelObserverUpdatesIncognitoToggle() {
+        createMediator(true);
+        mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_TABSWITCHER, true);
+
+        doReturn(0).when(mIncognitoTabModel).getCount();
+        mIncognitoTabModelObserver.getValue().didBecomeEmpty();
+        assertFalse(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
+        assertTrue(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
+
+        doReturn(1).when(mIncognitoTabModel).getCount();
+        mIncognitoTabModelObserver.getValue().wasFirstTabCreated();
         assertTrue(mPropertyModel.get(INCOGNITO_SWITCHER_VISIBLE));
+        assertFalse(mPropertyModel.get(NEW_TAB_VIEW_TEXT_IS_VISIBLE));
     }
 
     @Test
@@ -323,21 +338,18 @@ public class StartSurfaceToolbarMediatorUnitTest {
     @Test
     public void enableDisableSearchEngineHaveLogo() {
         createMediator(false);
-
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
         mMediator.onStartSurfaceStateChanged(StartSurfaceState.SHOWN_HOMEPAGE, true);
 
         // If default search engine doesn't have logo, logo shouldn't be visible.
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
-        mMediator.onLogoImageAvailable(null, null);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(false);
+        mMediator.onDefaultSearchEngineChanged();
         assertFalse(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertNull(mPropertyModel.get(LOGO_IMAGE));
 
         // If default search engine has logo, logo should be visible.
-        when(mTemplateUrlServiceFactory.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
-        mMediator.onLogoImageAvailable(mBitmap, null);
+        when(mTemplateUrlService.doesDefaultSearchEngineHaveLogo()).thenReturn(true);
+        mMediator.onDefaultSearchEngineChanged();
         assertTrue(mPropertyModel.get(LOGO_IS_VISIBLE));
-        assertEquals(mBitmap, mPropertyModel.get(LOGO_IMAGE));
     }
 
     @Test
@@ -555,7 +567,10 @@ public class StartSurfaceToolbarMediatorUnitTest {
                 mHomepageEnabledSupplier, mStartSurfaceAsHomepageSupplier,
                 new ObservableSupplierImpl<>(), null, shouldShowTabSwitcherButtonOnHomepage,
                 isTabGroupsAndroidContinuationEnabled, mUserEducationHelper,
-                () -> false, /* isAnimationEnabled = */ false);
+                ()
+                        -> false,
+                /* isAnimationEnabled = */ false, /*profileSupplier=*/null,
+                /*logoClickedCallback=*/null);
 
         mMediator.setStartSurfaceHomeButtonIPHControllerForTesting(
                 mStartSurfaceHomeButtonIPHController);

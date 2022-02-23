@@ -10,10 +10,12 @@
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_collection_controlling.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_supporting.h"
 
+@class BubblePresenter;
 @class ContentSuggestionsHeaderViewController;
 @class ContentSuggestionsViewController;
-@class DiscoverFeedMetricsRecorder;
+@class FeedMetricsRecorder;
 @class DiscoverFeedWrapperViewController;
+@class FeedHeaderViewController;
 @protocol NewTabPageContentDelegate;
 @protocol OverscrollActionsControllerDelegate;
 @class ViewRevealingVerticalPanHandler;
@@ -55,12 +57,21 @@
 @property(nonatomic, strong)
     UICollectionViewController* contentSuggestionsViewController;
 
-// Discover Feed metrics recorder.
-@property(nonatomic, strong)
-    DiscoverFeedMetricsRecorder* discoverFeedMetricsRecorder;
+// Feed metrics recorder.
+@property(nonatomic, strong) FeedMetricsRecorder* feedMetricsRecorder;
 
 // Whether or not the feed is visible.
 @property(nonatomic, assign, getter=isFeedVisible) BOOL feedVisible;
+
+// The view controller representing the NTP feed header.
+@property(nonatomic, assign) FeedHeaderViewController* feedHeaderViewController;
+
+// Bubble presenter for displaying IPH bubbles relating to the NTP.
+@property(nonatomic, strong) BubblePresenter* bubblePresenter;
+
+// Whether or not this NTP has fully appeared for the first time yet. This value
+// remains YES if viewDidAppear has been called.
+@property(nonatomic, assign) BOOL viewDidAppear;
 
 // Initializes the new tab page view controller.
 - (instancetype)init NS_DESIGNATED_INITIALIZER;
@@ -83,20 +94,27 @@
 // omnibox back to initial state.
 - (void)setContentOffsetToTop;
 
-// Updates the ContentSuggestionsViewController and its header for the current
-// layout.
-// TODO(crbug.com/1170995): Remove once ContentSuggestions can be added as part
-// of a header.
-- (void)updateContentSuggestionForCurrentLayout;
-
-// Returns the current height of the content suggestions content.
-- (CGFloat)contentSuggestionsContentHeight;
+// Lays out content above feed and adjusts content suggestions.
+- (void)updateNTPLayout;
 
 // Scrolls up the collection view enough to focus the omnibox.
 - (void)focusFakebox;
 
 // Returns whether the NTP is scrolled to the top or not.
 - (BOOL)isNTPScrolledToTop;
+
+// Returns the height of the content above the feed. The views above the feed
+// (like the content suggestions) are added through a content inset in the feed
+// collection view, so this property is used to track the total height of those
+// additional views.
+- (CGFloat)heightAboveFeed;
+
+// Lays out and re-configures the NTP content after changing the containing
+// collection view, such as when changing feeds.
+- (void)layoutContentInParentCollectionView;
+
+// Resets hierarchy of views and view controllers.
+- (void)resetViewHierarchy;
 
 @end
 

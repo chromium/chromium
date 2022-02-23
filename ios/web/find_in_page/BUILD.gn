@@ -57,6 +57,7 @@ source_set("find_in_page_unittests") {
     "//ios/web/public/find_in_page",
     "//ios/web/public/js_messaging",
     "//ios/web/public/test",
+    "//ios/web/public/test:test_fixture",
     "//ios/web/public/test/fakes",
     "//ios/web/test/fakes",
     "//ios/web/web_state/ui:wk_web_view_configuration_provider_header",

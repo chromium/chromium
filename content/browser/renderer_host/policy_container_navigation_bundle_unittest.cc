@@ -46,7 +46,8 @@ std::unique_ptr<PolicyContainerPolicies> MakeTestPolicies() {
       network::mojom::ReferrerPolicy::kAlways,
       network::mojom::IPAddressSpace::kPublic,
       /*is_web_secure_context=*/true, std::move(csp_list),
-      network::CrossOriginOpenerPolicy());
+      network::CrossOriginOpenerPolicy(), network::CrossOriginEmbedderPolicy(),
+      network::mojom::WebSandboxFlags::kNone);
 }
 
 // Shorthand.
@@ -139,7 +140,7 @@ TEST_F(PolicyContainerNavigationBundleTest, SetCrossOriginOpenerPolicy) {
 // and are equal to the policies of the bundle's policy container host.
 TEST_F(PolicyContainerNavigationBundleTest, DefaultFinalPolicies) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
-  bundle.ComputePolicies(GURL());
+  bundle.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone);
 
   PolicyContainerPolicies expected_policies;
   EXPECT_EQ(bundle.FinalPolicies(), expected_policies);
@@ -159,7 +160,8 @@ TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesNormalUrl) {
   bundle.AddContentSecurityPolicy(MakeTestCSP());
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
       bundle.DeliveredPoliciesForTesting().Clone();
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -172,7 +174,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
       bundle.DeliveredPoliciesForTesting().Clone();
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -186,7 +189,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
   bundle.AddContentSecurityPolicy(MakeTestCSP());
   std::unique_ptr<PolicyContainerPolicies> delivered_policies =
       bundle.DeliveredPoliciesForTesting().Clone();
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -195,7 +199,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
 TEST_F(PolicyContainerNavigationBundleTest, DefaultFinalPoliciesForErrorPage) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
 
   // Error pages commit with default policies, mostly ignoring the delivered
   // policies and the document's URL.
@@ -208,7 +212,7 @@ TEST_F(PolicyContainerNavigationBundleTest, ErrorPageIPAddressSpace) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
 
   bundle.SetIPAddressSpace(network::mojom::IPAddressSpace::kPublic);
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
 
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPublic;
@@ -225,10 +229,11 @@ TEST_F(PolicyContainerNavigationBundleTest,
   PolicyContainerPolicies expected_policies;
   expected_policies.ip_address_space = network::mojom::IPAddressSpace::kPrivate;
 
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_EQ(bundle.FinalPolicies(), expected_policies);
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
   EXPECT_EQ(bundle.FinalPolicies(), expected_policies);
 }
 
@@ -238,10 +243,11 @@ TEST_F(PolicyContainerNavigationBundleTest,
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
   bundle.AddContentSecurityPolicy(network::mojom::ContentSecurityPolicy::New());
 
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.FinalPolicies().content_security_policies, SizeIs(1));
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.FinalPolicies().content_security_policies, SizeIs(0));
 }
 
@@ -288,14 +294,14 @@ TEST_F(PolicyContainerNavigationBundleTest,
   // Force implicit conversion from LocalFrameToken to UnguessableToken.
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }
 
 // Verifies that when the URL of the document to commit is `blob:.*`, the
-// bundle's final policies are copied from the initiator, with the exception of
-// cross-origin-opener-policy.
+// bundle's final policies are copied from the initiator.
 TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesBlobWithInitiator) {
   std::unique_ptr<PolicyContainerPolicies> initiator_policies =
       MakeTestPolicies();
@@ -306,15 +312,9 @@ TEST_F(PolicyContainerNavigationBundleTest, FinalPoliciesBlobWithInitiator) {
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
 
-  // Set a delivered cross-origin-opener-policy.
-  network::CrossOriginOpenerPolicy coop;
-  coop.value = network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin;
-  bundle.SetCrossOriginOpenerPolicy(coop);
-
   bundle.ComputePolicies(
-      GURL("blob:https://example.com/016ece86-b7f9-4b07-88c2-a0e36b7f1dd6"));
-
-  initiator_policies->cross_origin_opener_policy = coop;
+      GURL("blob:https://example.com/016ece86-b7f9-4b07-88c2-a0e36b7f1dd6"),
+      false, network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }
@@ -337,7 +337,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
   // Add some CSP.
   network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
   bundle.AddContentSecurityPolicy(test_csp.Clone());
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   // Append the CPS to the `initiator_policies` just for testing equality
   // later.
@@ -375,7 +376,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
   parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
-  bundle.ComputePolicies(AboutSrcdocUrl());
+  bundle.ComputePolicies(AboutSrcdocUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *parent_policies);
 }
@@ -392,7 +394,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_TRUE(delivered_policies->is_web_secure_context);
 
-  bundle.ComputePolicies(GURL());
+  bundle.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -409,7 +411,7 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_FALSE(delivered_policies->is_web_secure_context);
 
-  bundle.ComputePolicies(GURL());
+  bundle.ComputePolicies(GURL(), false, network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -428,7 +430,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
 
   bundle.SetIsOriginPotentiallyTrustworthy(true);
 
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_FALSE(bundle.FinalPolicies().is_web_secure_context);
 }
@@ -451,7 +454,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_FALSE(delivered_policies->is_web_secure_context);
 
-  bundle.ComputePolicies(GURL("http://foo.test"));
+  bundle.ComputePolicies(GURL("http://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -474,7 +478,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
       bundle.DeliveredPoliciesForTesting().Clone();
   EXPECT_TRUE(delivered_policies->is_web_secure_context);
 
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *delivered_policies);
 }
@@ -494,7 +499,8 @@ TEST_F(PolicyContainerNavigationBundleTest,
   // Add some CSP.
   network::mojom::ContentSecurityPolicyPtr test_csp = MakeTestCSP();
   bundle.AddContentSecurityPolicy(test_csp.Clone());
-  bundle.ComputePolicies(AboutSrcdocUrl());
+  bundle.ComputePolicies(AboutSrcdocUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   // Append the CPS to the `parent_policies` just for testing equality
   // later.
@@ -506,20 +512,21 @@ TEST_F(PolicyContainerNavigationBundleTest,
 TEST_F(PolicyContainerNavigationBundleTest, ComputePoliciesTwiceDCHECK) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
   GURL url("https://foo.test");
-  bundle.ComputePolicies(url);
-  EXPECT_DCHECK_DEATH(bundle.ComputePolicies(url));
+  bundle.ComputePolicies(url, false, network::mojom::WebSandboxFlags::kNone);
+  EXPECT_DCHECK_DEATH(bundle.ComputePolicies(
+      url, false, network::mojom::WebSandboxFlags::kNone));
 }
 
-// Calling ComputePolicies() followed by ComputePoliciesForError() is
-// supported.
+// Calling ComputePolicies() followed by ComputePoliciesForError() is supported.
 TEST_F(PolicyContainerNavigationBundleTest, ComputePoliciesThenError) {
   PolicyContainerNavigationBundle bundle(nullptr, nullptr, nullptr);
-  bundle.ComputePolicies(GURL("https://foo.test"));
-  bundle.ComputePoliciesForError();
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
 }
 
-// After ComputePolicies() or ComputePoliciesForError(), the initiator
-// policies are still accessible.
+// After ComputePolicies() or ComputePoliciesForError(), the initiator policies
+// are still accessible.
 TEST_F(PolicyContainerNavigationBundleTest,
        AccessInitiatorAfterComputingPolicies) {
   std::unique_ptr<PolicyContainerPolicies> initiator_policies =
@@ -532,11 +539,12 @@ TEST_F(PolicyContainerNavigationBundleTest,
   EXPECT_THAT(bundle.InitiatorPolicies(),
               Pointee(Eq(ByRef(*initiator_policies))));
 
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.InitiatorPolicies(),
               Pointee(Eq(ByRef(*initiator_policies))));
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.InitiatorPolicies(),
               Pointee(Eq(ByRef(*initiator_policies))));
 }
@@ -552,10 +560,11 @@ TEST_F(PolicyContainerNavigationBundleTest,
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
   EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
 
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
 
-  bundle.ComputePoliciesForError();
+  bundle.ComputePoliciesForError(false, network::mojom::WebSandboxFlags::kNone);
   EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
 }
 
@@ -569,12 +578,14 @@ TEST_F(PolicyContainerNavigationBundleTest,
   parent->SetPolicyContainerHost(NewHost(parent_policies->Clone()));
 
   PolicyContainerNavigationBundle bundle(parent, nullptr, nullptr);
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
 
   bundle.ResetForCrossDocumentRestart();
   EXPECT_THAT(bundle.ParentPolicies(), Pointee(Eq(ByRef(*parent_policies))));
-  bundle.ComputePolicies(AboutSrcdocUrl());
+  bundle.ComputePolicies(AboutSrcdocUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *parent_policies);
 }
@@ -593,13 +604,15 @@ TEST_F(PolicyContainerNavigationBundleTest,
   const blink::LocalFrameToken& token = initiator->GetFrameToken();
   PolicyContainerNavigationBundle bundle(nullptr, &token, nullptr);
 
-  bundle.ComputePolicies(GURL("https://foo.test"));
+  bundle.ComputePolicies(GURL("https://foo.test"), false,
+                         network::mojom::WebSandboxFlags::kNone);
   EXPECT_EQ(bundle.FinalPolicies(), PolicyContainerPolicies());
 
   bundle.ResetForCrossDocumentRestart();
   EXPECT_THAT(bundle.InitiatorPolicies(),
               Pointee(Eq(ByRef(*initiator_policies))));
-  bundle.ComputePolicies(AboutBlankUrl());
+  bundle.ComputePolicies(AboutBlankUrl(), false,
+                         network::mojom::WebSandboxFlags::kNone);
 
   EXPECT_EQ(bundle.FinalPolicies(), *initiator_policies);
 }

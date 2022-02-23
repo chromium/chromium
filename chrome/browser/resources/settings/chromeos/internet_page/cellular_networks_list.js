@@ -11,6 +11,7 @@ import '//resources/cr_components/chromeos/cellular_setup/cellular_eid_dialog.m.
 import '//resources/cr_elements/cr_icon_button/cr_icon_button.m.js';
 import '//resources/cr_elements/cr_icons_css.m.js';
 import '//resources/polymer/v3_0/iron-flex-layout/iron-flex-layout-classes.js';
+import '//resources/cr_elements/policy/cr_policy_indicator.m.js';
 import '//resources/cr_elements/shared_style_css.m.js';
 import '//resources/cr_elements/shared_vars_css.m.js';
 import '../os_settings_icons_css.m.js';
@@ -31,7 +32,7 @@ import {WebUIListenerBehavior} from '//resources/js/web_ui_listener_behavior.m.j
 import {afterNextRender, flush, html, Polymer, TemplateInstanceBase, Templatizer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultiDeviceBrowserProxy, MultiDeviceBrowserProxyImpl} from '../multidevice_page/multidevice_browser_proxy.m.js';
-import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubNotificationAccessStatus, SmartLockSignInEnabledState} from '../multidevice_page/multidevice_constants.m.js';
+import {MultiDeviceFeature, MultiDeviceFeatureState, MultiDevicePageContentData, MultiDeviceSettingsMode, PhoneHubNotificationAccessProhibitedReason, PhoneHubNotificationAccessStatus, SmartLockSignInEnabledState} from '../multidevice_page/multidevice_constants.m.js';
 
 Polymer({
   _template: html`{__html_template__}`,
@@ -209,6 +210,15 @@ Polymer({
       computed: 'computeIsDeviceInhibited_(cellularDeviceState,' +
           'cellularDeviceState.inhibitReason)',
     },
+
+    /** @private {boolean} */
+    isESimPolicyEnabled_: {
+      type: Boolean,
+      value() {
+        return loadTimeData.valueExists('esimPolicyEnabled') &&
+            loadTimeData.getBoolean('esimPolicyEnabled');
+      }
+    },
   },
 
   listeners: {
@@ -222,7 +232,7 @@ Polymer({
   created() {
     this.networkConfig_ =
         MojoInterfaceProviderImpl.getInstance().getMojoServiceRemote();
-    this.fetchESimPendingProfileList_();
+    this.fetchEuiccAndESimPendingProfileList_();
   },
 
   /** @override */
@@ -248,7 +258,7 @@ Polymer({
    * ESimManagerListenerBehavior override
    */
   onAvailableEuiccListChanged() {
-    this.fetchESimPendingProfileList_();
+    this.fetchEuiccAndESimPendingProfileList_();
   },
 
   /**
@@ -272,12 +282,21 @@ Polymer({
   },
 
   /** @private */
-  fetchESimPendingProfileList_() {
+  fetchEuiccAndESimPendingProfileList_() {
     getEuicc().then(euicc => {
       if (!euicc) {
         return;
       }
       this.euicc_ = euicc;
+
+      // Restricting managed cellular network should not show pending eSIM
+      // profiles.
+      if (this.isESimPolicyEnabled_ && this.globalPolicy &&
+          this.globalPolicy.allowOnlyPolicyCellularNetworks) {
+        this.eSimPendingProfileItems_ = [];
+        return;
+      }
+
       this.fetchESimPendingProfileListForEuicc_(euicc);
     });
   },
@@ -491,16 +510,45 @@ Polymer({
 
   /**
    * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
+   * @return {boolean}
+   * @private
+   */
+  shouldShowAddESimButton_(cellularDeviceState) {
+    assert(!!this.euicc_);
+    return this.deviceIsEnabled_(cellularDeviceState);
+  },
+
+  /**
+   * Return true if the add cellular button should be disabled.
+   * @param {!OncMojo.DeviceStateProperties|undefined} cellularDeviceState
    * @param {!chromeos.networkConfig.mojom.GlobalPolicy} globalPolicy
    * @return {boolean}
    * @private
    */
-  showAddESimButton_(cellularDeviceState, globalPolicy) {
-    assert(!!this.euicc_);
+  isAddESimButtonDisabled_(cellularDeviceState, globalPolicy) {
+    if (this.isDeviceInhibited_) {
+      return true;
+    }
     if (!this.deviceIsEnabled_(cellularDeviceState)) {
+      return true;
+    }
+    if (!this.isESimPolicyEnabled_ || !globalPolicy) {
       return false;
     }
-    return globalPolicy && !globalPolicy.allowOnlyPolicyCellularNetworks;
+    return globalPolicy.allowOnlyPolicyCellularNetworks;
+  },
+
+  /**
+   * Return true if the policy indicator that next to the add cellular button
+   * should be shown. This policy icon indicates the reason of disabling the
+   * add cellular button.
+   * @param {!chromeos.networkConfig.mojom.GlobalPolicy} globalPolicy
+   * @return {boolean}
+   * @private
+   */
+  shouldShowAddESimPolicyIcon_(globalPolicy) {
+    return this.isESimPolicyEnabled_ && globalPolicy &&
+        globalPolicy.allowOnlyPolicyCellularNetworks;
   },
 
   /**
@@ -564,10 +612,45 @@ Polymer({
       case mojom.kRefreshingProfileList:
         return this.i18n('cellularNetworRefreshingProfileListProfile');
       case mojom.kResettingEuiccMemory:
-        // TODO(crbug.com/1231305) Fix string when finalized.
-        return this.i18n('cellularNetworkRemovingProfile');
+        return this.i18n('cellularNetworkResettingESim');
     }
 
     return '';
+  },
+
+  /**
+   * Return true if the "No available eSIM profiles" subtext message or
+   * download eSIM profile link should be shown in eSIM section. This message
+   * should not be shown when adding new eSIM profiles.
+   * @return {boolean}
+   * @private
+   */
+  shouldShowNoESimMessageOrDownloadLink_(
+      inhibitReason, eSimNetworks, eSimPendingProfiles) {
+    const mojom = chromeos.networkConfig.mojom.InhibitReason;
+    if (inhibitReason === mojom.kInstallingProfile) {
+      return false;
+    }
+
+    return !this.shouldShowNetworkSublist_(eSimNetworks, eSimPendingProfiles);
+  },
+
+  /**
+   * Return true if the "No available eSIM profiles" subtext message should be
+   * shown in eSIM section. This message should not be shown when the download
+   * eSIM profile link is shown.
+   * @return {boolean}
+   * @private
+   */
+  shouldShowNoESimSubtextMessage_() {
+    if (!this.isESimPolicyEnabled_) {
+      return false;
+    }
+    if (this.globalPolicy &&
+        this.globalPolicy.allowOnlyPolicyCellularNetworks) {
+      return true;
+    }
+
+    return false;
   },
 });

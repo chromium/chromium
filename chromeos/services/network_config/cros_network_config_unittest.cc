@@ -13,9 +13,9 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/dbus/shill/fake_shill_device_client.h"
 #include "chromeos/login/login_state/login_state.h"
-#include "chromeos/network/cellular_esim_profile_handler_impl.h"
 #include "chromeos/network/cellular_inhibitor.h"
 #include "chromeos/network/cellular_metrics_logger.h"
 #include "chromeos/network/fake_stub_cellular_networks_provider.h"
@@ -30,11 +30,9 @@
 #include "chromeos/network/network_profile_handler.h"
 #include "chromeos/network/network_state_handler.h"
 #include "chromeos/network/network_type_pattern.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "chromeos/network/prohibited_technologies_handler.h"
 #include "chromeos/network/proxy/ui_proxy_config_service.h"
 #include "chromeos/network/system_token_cert_db_storage.h"
-#include "chromeos/network/test_cellular_esim_profile_handler.h"
 #include "chromeos/services/network_config/public/cpp/cros_network_config_test_observer.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom-shared.h"
 #include "components/onc/onc_constants.h"
@@ -84,10 +82,10 @@ void CompareTrafficCounters(
     const base::Value* expected_traffic_counters,
     enum ComparisonType comparison_type) {
   EXPECT_EQ(actual_traffic_counters.size(),
-            expected_traffic_counters->GetList().size());
+            expected_traffic_counters->GetListDeprecated().size());
   for (size_t i = 0; i < actual_traffic_counters.size(); i++) {
     auto& actual_tc = actual_traffic_counters[i];
-    auto& expected_tc = expected_traffic_counters->GetList()[i];
+    auto& expected_tc = expected_traffic_counters->GetListDeprecated()[i];
     EXPECT_EQ(actual_tc->source,
               CrosNetworkConfig::GetTrafficCounterEnumForTesting(
                   expected_tc.FindKey("source")->GetString()));
@@ -117,15 +115,11 @@ class CrosNetworkConfigTest : public testing::Test {
     helper_->AddDefaultProfiles();
     helper_->ResetDevicesAndServices();
 
+    helper_->RegisterPrefs(user_prefs_.registry(), local_state_.registry());
     PrefProxyConfigTrackerImpl::RegisterProfilePrefs(user_prefs_.registry());
     PrefProxyConfigTrackerImpl::RegisterPrefs(local_state_.registry());
-    ::onc::RegisterProfilePrefs(user_prefs_.registry());
-    ::onc::RegisterPrefs(local_state_.registry());
-    NetworkMetadataStore::RegisterPrefs(user_prefs_.registry());
-    NetworkMetadataStore::RegisterPrefs(local_state_.registry());
-    CellularESimProfileHandlerImpl::RegisterLocalStatePrefs(
-        local_state_.registry());
-    NetworkHandler::Get()->InitializePrefServices(&user_prefs_, &local_state_);
+
+    helper_->InitializePrefs(&user_prefs_, &local_state_);
 
     NetworkHandler* network_handler = NetworkHandler::Get();
     cros_network_config_ = std::make_unique<CrosNetworkConfig>(
@@ -610,6 +604,20 @@ class CrosNetworkConfigTest : public testing::Test {
     base::RunLoop().RunUntilIdle();
   }
 
+  std::vector<std::string> GetSupportedVpnTypes() {
+    std::vector<std::string> result;
+    base::RunLoop run_loop;
+    cros_network_config()->GetSupportedVpnTypes(base::BindOnce(
+        [](std::vector<std::string>& result, base::OnceClosure quit_closure,
+           const std::vector<std::string>& return_value) {
+          result = std::move(return_value);
+          std::move(quit_closure).Run();
+        },
+        std::ref(result), run_loop.QuitClosure()));
+    run_loop.Run();
+    return result;
+  }
+
   bool ContainsVpnDeviceState(
       std::vector<mojom::DeviceStatePropertiesPtr> devices) {
     for (auto& device : devices) {
@@ -656,6 +664,47 @@ class CrosNetworkConfigTest : public testing::Test {
     run_loop.Run();
   }
 
+  void SetTrafficCountersAutoResetAndCompare(const std::string& guid,
+                                             bool auto_reset,
+                                             mojom::UInt32ValuePtr day,
+                                             bool expected_success,
+                                             base::Value* expected_auto_reset,
+                                             base::Value* expected_reset_day) {
+    base::RunLoop run_loop;
+    cros_network_config()->SetTrafficCountersAutoReset(
+        guid, auto_reset, day ? std::move(day) : nullptr,
+        base::BindOnce(
+            [](const std::string* const guid, bool* expected_success,
+               base::Value* expected_auto_reset,
+               base::Value* expected_reset_day,
+               NetworkMetadataStore* network_metadata_store,
+               base::OnceClosure quit_closure, bool success) {
+              EXPECT_EQ(*expected_success, success);
+              const base::Value* actual_auto_reset =
+                  network_metadata_store->GetEnableTrafficCountersAutoReset(
+                      *guid);
+              const base::Value* actual_reset_day =
+                  network_metadata_store->GetDayOfTrafficCountersAutoReset(
+                      *guid);
+              if (expected_auto_reset) {
+                EXPECT_TRUE(actual_auto_reset);
+                EXPECT_EQ(*expected_auto_reset, *actual_auto_reset);
+              } else {
+                EXPECT_EQ(actual_auto_reset, nullptr);
+              }
+              if (expected_reset_day) {
+                EXPECT_TRUE(actual_reset_day);
+                EXPECT_EQ(*expected_reset_day, *actual_reset_day);
+              } else {
+                EXPECT_EQ(actual_reset_day, nullptr);
+              }
+              std::move(quit_closure).Run();
+            },
+            &guid, &expected_success, expected_auto_reset, expected_reset_day,
+            network_metadata_store(), run_loop.QuitClosure()));
+    run_loop.Run();
+  }
+
   NetworkHandlerTestHelper* helper() { return helper_.get(); }
   CrosNetworkConfigTestObserver* observer() { return observer_.get(); }
   CrosNetworkConfig* cros_network_config() {
@@ -666,6 +715,9 @@ class CrosNetworkConfigTest : public testing::Test {
   }
   NetworkCertificateHandler* network_certificate_handler() {
     return NetworkHandler::Get()->network_certificate_handler();
+  }
+  NetworkMetadataStore* network_metadata_store() {
+    return NetworkHandler::Get()->network_metadata_store();
   }
   std::string wifi1_path() { return wifi1_path_; }
   std::string vpn_path() { return vpn_path_; }
@@ -987,12 +1039,28 @@ TEST_F(CrosNetworkConfigTest, GetDeviceStateListNoVpnServicesAndVpnProhibited) {
 // translated as strings and not enum values (See ManagedProperties definition
 // in cros_network_config.mojom for details).
 TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
+  SetTrafficCountersAutoResetAndCompare("eth_guid", /*auto_reset=*/true,
+                                        /*day=*/mojom::UInt32Value::New(32),
+                                        /*expected_success=*/false,
+                                        /*expected_auto_reset=*/nullptr,
+                                        /*expected_reset_day=*/nullptr);
   mojom::ManagedPropertiesPtr properties = GetManagedProperties("eth_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("eth_guid", properties->guid);
   EXPECT_EQ(mojom::NetworkType::kEthernet, properties->type);
   EXPECT_EQ(mojom::ConnectionStateType::kOnline, properties->connection_state);
+  ASSERT_TRUE(properties->traffic_counter_properties);
+  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_EQ(static_cast<uint32_t>(1),
+            properties->traffic_counter_properties->user_specified_reset_day);
+  EXPECT_FALSE(properties->traffic_counter_properties->last_reset_time);
 
+  base::Value expected_auto_reset(true);
+  base::Value expected_reset_day(2);
+  SetTrafficCountersAutoResetAndCompare(
+      "wifi1_guid", /*auto_reset=*/true,
+      /*day=*/mojom::UInt32Value::New(2),
+      /*expected_success=*/true, &expected_auto_reset, &expected_reset_day);
   properties = GetManagedProperties("wifi1_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi1_guid", properties->guid);
@@ -1004,11 +1072,21 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(50, properties->type_properties->get_wifi()->signal_strength);
   EXPECT_EQ(mojom::OncSource::kNone, properties->source);
   EXPECT_EQ(false, properties->type_properties->get_wifi()->is_syncable);
-  ASSERT_TRUE(properties->traffic_counter_reset_time);
+  ASSERT_TRUE(properties->traffic_counter_properties &&
+              properties->traffic_counter_properties->last_reset_time);
   EXPECT_EQ(123456789987654,
-            properties->traffic_counter_reset_time->ToDeltaSinceWindowsEpoch()
+            properties->traffic_counter_properties->last_reset_time
+                ->ToDeltaSinceWindowsEpoch()
                 .InMilliseconds());
+  EXPECT_EQ(true, properties->traffic_counter_properties->auto_reset);
+  EXPECT_EQ(static_cast<uint32_t>(2),
+            properties->traffic_counter_properties->user_specified_reset_day);
 
+  SetTrafficCountersAutoResetAndCompare("wifi2_guid", /*auto_reset=*/true,
+                                        /*day=*/nullptr,
+                                        /*expected_success=*/false,
+                                        /*expected_auto_reset=*/nullptr,
+                                        /*expected_reset_day=*/nullptr);
   properties = GetManagedProperties("wifi2_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi2_guid", properties->guid);
@@ -1023,7 +1101,15 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
   EXPECT_EQ(100, wifi->signal_strength);
   EXPECT_EQ(mojom::OncSource::kUserPolicy, properties->source);
   EXPECT_EQ(false, properties->type_properties->get_wifi()->is_syncable);
+  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_EQ(static_cast<uint32_t>(1),
+            properties->traffic_counter_properties->user_specified_reset_day);
 
+  SetTrafficCountersAutoResetAndCompare("wifi3_guid", /*auto_reset=*/false,
+                                        /*day=*/mojom::UInt32Value::New(2),
+                                        /*expected_success=*/false,
+                                        /*expected_auto_reset=*/nullptr,
+                                        /*expected_reset_day=*/nullptr);
   properties = GetManagedProperties("wifi3_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi3_guid", properties->guid);
@@ -1032,7 +1118,16 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
             properties->connection_state);
   EXPECT_EQ(mojom::OncSource::kDevice, properties->source);
   EXPECT_EQ(false, properties->type_properties->get_wifi()->is_syncable);
+  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_EQ(static_cast<uint32_t>(1),
+            properties->traffic_counter_properties->user_specified_reset_day);
 
+  expected_auto_reset = base::Value(false);
+  expected_reset_day = base::Value();
+  SetTrafficCountersAutoResetAndCompare(
+      "wifi4_guid", /*auto_reset=*/false,
+      /*day=*/nullptr,
+      /*expected_success=*/true, &expected_auto_reset, &expected_reset_day);
   properties = GetManagedProperties("wifi4_guid");
   ASSERT_TRUE(properties);
   EXPECT_EQ("wifi4_guid", properties->guid);
@@ -1041,6 +1136,9 @@ TEST_F(CrosNetworkConfigTest, GetManagedProperties) {
             properties->connection_state);
   EXPECT_EQ(mojom::OncSource::kUser, properties->source);
   EXPECT_EQ(true, properties->type_properties->get_wifi()->is_syncable);
+  EXPECT_EQ(false, properties->traffic_counter_properties->auto_reset);
+  EXPECT_EQ(static_cast<uint32_t>(1),
+            properties->traffic_counter_properties->user_specified_reset_day);
 
   properties = GetManagedProperties("cellular_guid");
   ASSERT_TRUE(properties);
@@ -1338,9 +1436,7 @@ TEST_F(CrosNetworkConfigTest, AllowRoaming) {
   const char* kGUID = "cellular_guid";
   mojom::ManagedPropertiesPtr properties = GetManagedProperties(kGUID);
 
-  ASSERT_TRUE(properties->type_properties->get_cellular()->allow_roaming);
-  ASSERT_FALSE(
-      properties->type_properties->get_cellular()->allow_roaming->active_value);
+  ASSERT_FALSE(properties->type_properties->get_cellular()->allow_roaming);
 
   auto config = mojom::ConfigProperties::New();
   auto cellular_config = mojom::CellularConfigProperties::New();
@@ -2010,7 +2106,7 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithIntegerType) {
   traffic_counters.Append(std::move(user_dict));
 
   ASSERT_TRUE(traffic_counters.is_list());
-  ASSERT_EQ(traffic_counters.GetList().size(), (size_t)2);
+  ASSERT_EQ(traffic_counters.GetListDeprecated().size(), (size_t)2);
   helper()->service_test()->SetFakeTrafficCounters(traffic_counters.Clone());
 
   RequestTrafficCountersAndCompareTrafficCounters(
@@ -2033,11 +2129,63 @@ TEST_F(CrosNetworkConfigTest, RequestTrafficCountersWithDoubleType) {
   traffic_counters.Append(std::move(user_dict));
 
   ASSERT_TRUE(traffic_counters.is_list());
-  ASSERT_EQ(traffic_counters.GetList().size(), (size_t)2);
+  ASSERT_EQ(traffic_counters.GetListDeprecated().size(), (size_t)2);
   helper()->service_test()->SetFakeTrafficCounters(traffic_counters.Clone());
 
   RequestTrafficCountersAndCompareTrafficCounters(
       "wifi1_guid", traffic_counters.Clone(), ComparisonType::DOUBLE);
+}
+
+TEST_F(CrosNetworkConfigTest, GetSupportedVpnTypes) {
+  std::vector<std::string> result = GetSupportedVpnTypes();
+  ASSERT_EQ(result.size(), 0u);
+
+  helper()->manager_test()->SetManagerProperty(
+      shill::kSupportedVPNTypesProperty, base::Value("l2tpipsec,openvpn"));
+  result = GetSupportedVpnTypes();
+  ASSERT_EQ(result.size(), 2u);
+
+  helper()->manager_test()->SetShouldReturnNullProperties(true);
+  result = GetSupportedVpnTypes();
+  ASSERT_EQ(result.size(), 0u);
+  helper()->manager_test()->SetShouldReturnNullProperties(false);
+}
+
+TEST_F(CrosNetworkConfigTest, SetAutoReset) {
+  SetTrafficCountersAutoResetAndCompare("wifi1_guid", /*auto_reset=*/true,
+                                        /*day=*/mojom::UInt32Value::New(32),
+                                        /*expected_success=*/false,
+                                        /*expected_auto_reset=*/nullptr,
+                                        /*expected_reset_day=*/nullptr);
+  base::Value expected_auto_reset(true);
+  base::Value expected_reset_day(2);
+  SetTrafficCountersAutoResetAndCompare(
+      "wifi1_guid", /*auto_reset=*/true,
+      /*day=*/mojom::UInt32Value::New(2),
+      /*expected_success=*/true, &expected_auto_reset, &expected_reset_day);
+  // Auto reset prefs remains unchanged from last successful call.
+  SetTrafficCountersAutoResetAndCompare(
+      "wifi1_guid", /*auto_reset=*/true,
+      /*day=*/mojom::UInt32Value::New(0),
+      /*expected_success=*/false, &expected_auto_reset, &expected_reset_day);
+  expected_auto_reset = base::Value(false);
+  expected_reset_day = base::Value();
+  SetTrafficCountersAutoResetAndCompare(
+      "wifi1_guid", /*auto_reset=*/false,
+      /*day=*/nullptr,
+      /*expected_success=*/true,
+      /*expected_auto_reset=*/&expected_auto_reset,
+      /*expected_reset_day=*/&expected_reset_day);
+  // Auto reset prefs remains unchanged from last successful call.
+  SetTrafficCountersAutoResetAndCompare(
+      "wifi1_guid", /*auto_reset=*/false,
+      /*day=*/mojom::UInt32Value::New(10),
+      /*expected_success=*/false, &expected_auto_reset, &expected_reset_day);
+  // Auto reset prefs remains unchanged from last successful call.
+  SetTrafficCountersAutoResetAndCompare(
+      "wifi1_guid", /*auto_reset=*/true,
+      /*day=*/nullptr,
+      /*expected_success=*/false, &expected_auto_reset, &expected_reset_day);
 }
 
 }  // namespace network_config

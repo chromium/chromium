@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
 #define CHROME_BROWSER_ASH_ARC_USB_ARC_USB_HOST_BRIDGE_DELEGATE_H_
 
-#include "components/arc/usb/usb_host_bridge.h"
+#include "ash/components/arc/usb/usb_host_bridge.h"
 
 namespace arc {
 

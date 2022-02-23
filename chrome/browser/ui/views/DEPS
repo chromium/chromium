@@ -8,12 +8,19 @@ include_rules = [
 ]
 
 specific_include_rules = {
+  "authenticator_qr_sheet_view\.*": [
+    "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
+    "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+  ],
   "chrome_views_delegate_chromeos\.cc": [
     "+ash/shell.h",
   ],
   "qrcode_generator\.*": [
     "+chrome/services/qrcode_generator/public/cpp/qrcode_generator_service.h",
     "+chrome/services/qrcode_generator/public/mojom/qrcode_generator.mojom.h",
+  ],
+  "save_card_bubble_views_browsertest\.cc": [
+    "+ash/services/multidevice_setup/public/cpp/prefs.h",
   ],
   "screen_capture_notification_ui_views\.cc": [
     "+ash/shell.h",
@@ -24,6 +31,10 @@ specific_include_rules = {
   ],
   ".*test.*": [
    "!ash",
+   "+ash/components/arc/mojom",
+   "+ash/components/arc/intent_helper",
+   "+ash/components/arc/session",
+   "+ash/components/arc/test",
    "+ash/constants",
    "+ash/public",
   ],

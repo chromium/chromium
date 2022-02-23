@@ -14,15 +14,24 @@
 #include "base/location.h"
 #include "base/strings/string_piece.h"
 #include "base/values.h"
+#include "media/base/crc_16.h"
 #include "media/base/media_export.h"
 #include "media/base/media_serializers_base.h"
-#include "media/base/status_codes.h"
 
 // Mojo namespaces for serialization friend declarations.
 namespace mojo {
 template <typename T, typename U>
 struct StructTraits;
 }  // namespace mojo
+
+#define POST_STATUS_AND_RETURN_ON_FAILURE(eval_to_status, cb, ret) \
+  do {                                                             \
+    const auto EVALUATED = (eval_to_status);                       \
+    if (!EVALUATED.is_ok()) {                                      \
+      cb.Run(std::move(EVALUATED));                                \
+      return ret;                                                  \
+    }                                                              \
+  } while (0)
 
 namespace media {
 
@@ -36,12 +45,29 @@ using StatusCodeType = uint16_t;
 // This is the type that TypedStatusTraits::Group should be.
 using StatusGroupType = base::StringPiece;
 
+// This is the type that a status will get serialized into for UKM purposes.
+using UKMPackedType = uint64_t;
+
 namespace internal {
+
+union UKMPackHelper {
+  struct bits {
+    uint16_t group;
+    StatusCodeType code;
+    uint32_t extra_data;
+  } __attribute__((packed)) bits;
+  UKMPackedType packed;
+
+  static_assert(sizeof(bits) == sizeof(packed));
+};
 
 struct MEDIA_EXPORT StatusData {
   StatusData();
   StatusData(const StatusData&);
-  StatusData(StatusGroupType group, StatusCodeType code, std::string message);
+  StatusData(StatusGroupType group,
+             StatusCodeType code,
+             std::string message,
+             UKMPackedType root_cause);
   ~StatusData();
   StatusData& operator=(const StatusData&);
 
@@ -61,43 +87,112 @@ struct MEDIA_EXPORT StatusData {
   // Stack frames
   std::vector<base::Value> frames;
 
-  // Causes
-  std::vector<StatusData> causes;
+  // Store a root cause. Helpful for debugging, as it can end up containing
+  // the chain of causes.
+  std::unique_ptr<StatusData> cause;
 
   // Data attached to the error
   base::Value data;
+
+  // The root-cause status, as packed for UKM.
+  UKMPackedType packed_root_cause = 0;
 };
 
 // Helper class to allow traits with no default enum.
 template <typename T>
 struct StatusTraitsHelper {
-  // If T defines DefaultEnumValue(), then return it.  Otherwise, return an
+  // If T defines DefaultEnumValue(), then return it. Otherwise, return an
   // empty optional.
   static constexpr absl::optional<typename T::Codes> DefaultEnumValue() {
     return DefaultEnumValueImpl(0);
+  }
+
+  // If T defined PackExtraData(), then evaluate it. Otherwise, return a default
+  // value. |PackExtraData| is an optional method that can operate on the
+  // internal status data in order to pack it into a 32-bit entry for UKM.
+  static constexpr uint32_t PackExtraData(const StatusData& info) {
+    return DefaultPackExtraData(info, 0);
   }
 
  private:
   // Call with an (ignored) int, which will choose the first one if it isn't
   // removed by SFINAE, else will use the varargs one below.
   template <typename X = T>
-  static constexpr typename std::enable_if<
-      std::is_pointer<decltype(&X::DefaultEnumValue)>::value,
-      absl::optional<typename T::Codes>>::type
+  static constexpr typename std::enable_if_t<
+      std::is_pointer_v<decltype(&X::DefaultEnumValue)>,
+      absl::optional<typename T::Codes>>
   DefaultEnumValueImpl(int) {
     // Make sure the signature is correct, just for sanity.
     static_assert(
         std::is_same<decltype(T::DefaultEnumValue), typename T::Codes()>::value,
-        "TypedStatus Traits::DefaultEnumValue() must return Traits::Codes.");
+        "TypedStatus::Traits::DefaultEnumValue() must return Traits::Codes.");
     return T::DefaultEnumValue();
   }
 
   static constexpr absl::optional<typename T::Codes> DefaultEnumValueImpl(...) {
     return {};
   }
+
+  template <typename X = T>
+  static constexpr
+      typename std::enable_if_t<std::is_pointer_v<decltype(&X::PackExtraData)>,
+                                uint32_t>
+      DefaultPackExtraData(const StatusData& info, int) {
+    static_assert(
+        std::is_same_v<decltype(T::PackExtraData(info)), uint32_t>,
+        "Traits::PackExtraData(const StatusData&) must return uint32_t");
+    return T::PackExtraData(info);
+  }
+
+  static constexpr int DefaultPackExtraData(const StatusData&, ...) {
+    return 0;
+  }
 };
 
+template <typename, typename>
+struct OkStatusDetectorHelper {
+  constexpr static bool has_ok = false;
+};
+
+// Matches <T,T> if T::kOk exists.
+template <typename T>
+struct OkStatusDetectorHelper<T, decltype(T::kOk)> {
+  constexpr static bool has_ok = true;
+};
+
+// Does T have a T::kOk?
+template <typename T>
+constexpr bool DoesHaveOkCode = OkStatusDetectorHelper<T, T>::has_ok;
+
+// Implicitly converts to `kOk` TypedStatus, for any traits.  Also converts to
+// the enum code 'kOk', for any enum that has a 'kOk'.
+struct OkStatusImplicitConstructionHelper {
+  template <typename T>
+  operator T() const {
+    return T::kOk;
+  }
+};
+
+// For gtest, so it can print this.  Otherwise, it tries to convert to an
+// integer for printing.  That'd be okay, except our implicit cast matches the
+// attempt to convert to long long, and tries to get `T::kOk` for `long long`.
+MEDIA_EXPORT std::ostream& operator<<(
+    std::ostream& stream,
+    const OkStatusImplicitConstructionHelper&);
+
 }  // namespace internal
+
+// Constant names for serialized TypedStatus<T>.
+struct MEDIA_EXPORT StatusConstants {
+  static const char kCodeKey[];
+  static const char kGroupKey[];
+  static const char kMsgKey[];
+  static const char kStackKey[];
+  static const char kDataKey[];
+  static const char kCauseKey[];
+  static const char kFileKey[];
+  static const char kLineKey[];
+};
 
 // See media/base/status.md for details and instructions for using TypedStatus.
 template <typename T>
@@ -107,6 +202,23 @@ class MEDIA_EXPORT TypedStatus {
   static_assert(std::is_same<decltype(T::Group), StatusGroupType()>::value,
                 "TypedStatus Traits::Group() must return StatusGroupType.");
 
+  // Check that, if there is both `kOk` and a default value, that the default
+  // value is `kOk`.
+  constexpr static bool verify_default_okayness() {
+    // Fancy new (c++17) thing: remember that 'if constexpr' short-circuits at
+    // compile-time, so the later clauses don't have to be compilable if the
+    // the earlier ones match.  Specifically, it's okay to reference `kOk` even
+    // if `T::Codes` doesn't have `kOk`, since we check for it first.
+    if constexpr (!internal::DoesHaveOkCode<typename T::Codes>)
+      return true;
+    else if constexpr (!internal::StatusTraitsHelper<T>::DefaultEnumValue())
+      return true;
+    else
+      return T::DefaultEnumValue() == T::Codes::kOk;
+  }
+  static_assert(verify_default_okayness(),
+                "If kOk is defined, then either no default, or default==kOk");
+
  public:
   // Convenience aliases to allow, e.g., MyStatusType::Codes::kGreatDisturbance.
   using Traits = T;
@@ -114,6 +226,10 @@ class MEDIA_EXPORT TypedStatus {
 
   // default constructor to please the Mojo Gods.
   TypedStatus() = default;
+
+  // For TypedStatus(OkStatus())
+  TypedStatus(const internal::OkStatusImplicitConstructionHelper&)
+      : TypedStatus(Codes::kOk) {}
 
   // Constructor to create a new TypedStatus from a numeric code & message.
   // These are immutable; if you'd like to change them, then you likely should
@@ -131,7 +247,7 @@ class MEDIA_EXPORT TypedStatus {
     }
     data_ = std::make_unique<internal::StatusData>(
         Traits::Group(), static_cast<StatusCodeType>(code),
-        std::string(message));
+        std::string(message), 0);
     data_->AddLocation(location);
   }
 
@@ -146,8 +262,15 @@ class MEDIA_EXPORT TypedStatus {
     return *this;
   }
 
-  // DEPRECATED: check code() == ok value.
-  bool is_ok() const { return !data_; }
+  // If `Codes` has a `kOk` value, then check return true if we're `kOk`.  If
+  // there is no `kOk`, or if we're some other value, then return false.
+  bool is_ok() const {
+    if constexpr (internal::DoesHaveOkCode<Codes>) {
+      return code() == Codes::kOk;
+    } else {
+      return false;
+    }
+  }
 
   Codes code() const {
     if (!data_)
@@ -156,7 +279,7 @@ class MEDIA_EXPORT TypedStatus {
   }
 
   const std::string group() const {
-    return data_ ? data_->group : Traits::Group();
+    return data_ ? data_->group : std::string(Traits::Group());
   }
 
   const std::string& message() const {
@@ -199,8 +322,7 @@ class MEDIA_EXPORT TypedStatus {
   // Add |cause| as the error that triggered this one.
   template <typename AnyTraitsType>
   TypedStatus<T>&& AddCause(TypedStatus<AnyTraitsType>&& cause) && {
-    DCHECK(data_ && cause.data_);
-    data_->causes.push_back(*cause.data_);
+    AddCause(std::move(cause));
     return std::move(*this);
   }
 
@@ -208,12 +330,34 @@ class MEDIA_EXPORT TypedStatus {
   template <typename AnyTraitsType>
   void AddCause(TypedStatus<AnyTraitsType>&& cause) & {
     DCHECK(data_ && cause.data_);
-    data_->causes.push_back(*cause.data_);
+    // The |cause| status is about to lose it's type forever. If it has no
+    // causes, it might be sourced as the "root cause" status when sending to
+    // UKM later, so it must be pre-emptively packed.
+    if (!cause.data_->cause) {
+      // If |cause| has no cause, then it shouldn't have |packed_root_cause|
+      // either.
+      DCHECK_EQ(cause.data_->packed_root_cause, 0lu);
+      data_->packed_root_cause = cause.PackForUkm();
+    } else {
+      // If |cause| has a cause, it should have taken that causes's root-cause
+      // when it was added as a cause. Since we're adding |cause| as our cause
+      // now, we should steal |cause|'s root cause to be out root cause.
+      DCHECK_NE(cause.data_->packed_root_cause, 0lu);
+      data_->packed_root_cause = cause.data_->packed_root_cause;
+    }
+    data_->cause = std::move(cause.data_);
   }
 
-  inline bool operator==(T code) const { return code == this->code(); }
+  template <typename UKMBuilder>
+  void ToUKM(UKMBuilder& builder) const {
+    builder.SetStatus(PackForUkm());
+    if (data_)
+      builder.SetRootCause(data_->packed_root_cause);
+  }
 
-  inline bool operator!=(T code) const { return code != this->code(); }
+  inline bool operator==(Codes code) const { return code == this->code(); }
+
+  inline bool operator!=(Codes code) const { return code != this->code(); }
 
   inline bool operator==(const TypedStatus<T>& other) const {
     return other.code() == code();
@@ -225,21 +369,29 @@ class MEDIA_EXPORT TypedStatus {
 
   template <typename OtherType>
   class Or {
+   private:
+    template <typename X>
+    struct OrTypeUnwrapper {
+      using type = Or<X>;
+    };
+    template <typename X>
+    struct OrTypeUnwrapper<Or<X>> {
+      using type = Or<X>;
+    };
+
    public:
+    using ErrorType = TypedStatus;
+
     ~Or() = default;
 
     // Implicit constructors allow returning |OtherType| or |TypedStatus|
     // directly.
     Or(TypedStatus<T>&& error) : error_(std::move(error)) {
-      // |T| must either not have a default code, or not be default
-      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
-             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() !=
-                 code());
+      // `error_` must not be `kOk`, if there is such a value.
+      DCHECK(!error_->is_ok());
     }
     Or(const TypedStatus<T>& error) : error_(error) {
-      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
-             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() !=
-                 code());
+      DCHECK(!error_->is_ok());
     }
 
     Or(OtherType&& value) : value_(std::move(value)) {}
@@ -247,8 +399,7 @@ class MEDIA_EXPORT TypedStatus {
     Or(typename T::Codes code,
        const base::Location& location = base::Location::Current())
         : error_(TypedStatus<T>(code, "", location)) {
-      DCHECK(!internal::StatusTraitsHelper<Traits>::DefaultEnumValue() ||
-             *internal::StatusTraitsHelper<Traits>::DefaultEnumValue() != code);
+      DCHECK(!error_->is_ok());
     }
 
     // Move- and copy- construction and assignment are okay.
@@ -260,12 +411,19 @@ class MEDIA_EXPORT TypedStatus {
     bool has_value() const { return value_.has_value(); }
     bool has_error() const { return error_.has_value(); }
 
+    // If we have an error, verify that `code` matches.  If we have a value,
+    // then this should match if an only if `code` is `kOk`.  If there is no
+    // `kOk`, then it does not match even if we have a value.
     inline bool operator==(typename T::Codes code) const {
-      return code == this->code();
+      if constexpr (internal::DoesHaveOkCode<typename T::Codes>) {
+        return code == this->code();
+      } else {
+        return error_ ? code == error_->code() : false;
+      }
     }
 
     inline bool operator!=(typename T::Codes code) const {
-      return code != this->code();
+      return !(*this == code);
     }
 
     // Return the error, if we have one.
@@ -289,11 +447,53 @@ class MEDIA_EXPORT TypedStatus {
     typename T::Codes code() const {
       DCHECK(error_ || value_);
       // It is invalid to call |code()| on an |Or| with a value that
-      // is specialized in a TypedStatus with no DefaultEnumValue.
-      DCHECK(error_ ||
-             internal::StatusTraitsHelper<Traits>::DefaultEnumValue());
-      return error_ ? error_->code()
-                    : *internal::StatusTraitsHelper<Traits>::DefaultEnumValue();
+      // is specialized in a TypedStatus with no `kOk`.  Instead, you should
+      // explicitly call has_error() / error().code().
+      static_assert(internal::DoesHaveOkCode<typename T::Codes>,
+                    "Cannot call Or::code() if there is no kOk code.");
+      // TODO: should this DCHECK(error_) if we don't have kOk?  It's not as
+      // strong as the static_assert, but maybe we want to allow this for types
+      // that don't have `kOk`.
+      return error_ ? error_->code() : T::Codes::kOk;
+    }
+
+    template <typename FnType,
+              typename ReturnType =
+                  decltype(std::declval<FnType>()(std::declval<OtherType>())),
+              typename OrReturn = typename OrTypeUnwrapper<ReturnType>::type>
+    OrReturn MapValue(FnType&& lambda) && {
+      CHECK(error_ || value_);
+      if (has_error()) {
+        auto error = std::move(*error_);
+        error_.reset();
+        return error;
+      }
+      CHECK(value_);
+      auto value = std::move(std::get<0>(*value_));
+      value_.reset();
+      return lambda(std::move(value));
+    }
+
+    template <typename FnType,
+              typename ReturnType =
+                  decltype(std::declval<FnType>()(std::declval<OtherType>())),
+              typename ConvertTo = typename ReturnType::ErrorType>
+    ReturnType MapValue(
+        FnType&& lambda,
+        typename ConvertTo::Codes on_error,
+        base::StringPiece message = "",
+        base::Location location = base::Location::Current()) && {
+      CHECK(error_ || value_);
+      if (has_error()) {
+        auto error = std::move(*error_);
+        error_.reset();
+        return ConvertTo(on_error, message, location)
+            .AddCause(std::move(error));
+      }
+      CHECK(value_);
+      auto value = std::move(std::get<0>(*value_));
+      value_.reset();
+      return lambda(std::move(value));
     }
 
    private:
@@ -318,8 +518,16 @@ class MEDIA_EXPORT TypedStatus {
   template <typename StatusEnum>
   friend class TypedStatus;
 
-  void SetInternalData(std::unique_ptr<internal::StatusData> data) {
-    data_ = std::move(data);
+  UKMPackedType PackForUkm() const {
+    internal::UKMPackHelper result;
+    result.bits.group = crc16(Traits::Group().data());
+    result.bits.code = static_cast<StatusCodeType>(code());
+    if (data_) {
+      result.bits.extra_data =
+          internal::StatusTraitsHelper<Traits>::PackExtraData(*data_);
+    }
+
+    return result.packed;
   }
 };
 
@@ -333,22 +541,10 @@ inline bool operator!=(typename T::Codes code, const TypedStatus<T>& status) {
   return status != code;
 }
 
-// Define TypedStatus<StatusCode> as Status in the media namespace for
-// backwards compatibility. Also define StatusOr as Status::Or for the
-// same reason.
-struct GeneralStatusTraits {
-  using Codes = StatusCode;
-  static constexpr StatusGroupType Group() { return "GeneralStatusCode"; }
-  static constexpr StatusCode DefaultEnumValue() { return StatusCode::kOk; }
-};
-using Status = TypedStatus<GeneralStatusTraits>;
-template <typename T>
-using StatusOr = Status::Or<T>;
-
 // Convenience function to return |kOk|.
 // OK won't have a message, trace, or data associated with them, and DCHECK
 // if they are added.
-MEDIA_EXPORT Status OkStatus();
+MEDIA_EXPORT internal::OkStatusImplicitConstructionHelper OkStatus();
 
 }  // namespace media
 

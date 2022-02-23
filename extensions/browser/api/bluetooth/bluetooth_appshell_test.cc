@@ -8,7 +8,7 @@
 using BluetoothShellApiTest = extensions::ShellApiTest;
 
 // TODO(crbug.com/1165955): this test flakes on Mac ASAN
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_ApiSanityCheck DISABLED_ApiSanityCheck
 #else
 #define MAYBE_ApiSanityCheck ApiSanityCheck

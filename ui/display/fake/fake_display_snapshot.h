@@ -11,6 +11,7 @@
 #include <string>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "ui/display/fake/fake_display_export.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/display/types/display_mode.h"
@@ -109,8 +110,8 @@ class FAKE_DISPLAY_EXPORT FakeDisplaySnapshot : public DisplaySnapshot {
     int64_t product_code_ = DisplaySnapshot::kInvalidProductCode;
     gfx::Size maximum_cursor_size_ = gfx::Size(64, 64);
     DisplayModeList modes_;
-    const DisplayMode* current_mode_ = nullptr;
-    const DisplayMode* native_mode_ = nullptr;
+    raw_ptr<const DisplayMode> current_mode_ = nullptr;
+    raw_ptr<const DisplayMode> native_mode_ = nullptr;
     gfx::ColorSpace color_space_;
     uint32_t bits_per_channel_ = 8u;
     gfx::HDRStaticMetadata hdr_static_metadata_;

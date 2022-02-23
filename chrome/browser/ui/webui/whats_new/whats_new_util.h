@@ -5,15 +5,11 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_
 #define CHROME_BROWSER_UI_WEBUI_WHATS_NEW_WHATS_NEW_UTIL_H_
 
-#include <memory>
-
 #include "base/callback.h"
+#include "url/gurl.h"
 
+class Browser;
 class PrefService;
-
-namespace network {
-class SimpleURLLoader;
-}
 
 namespace whats_new {
 extern const char kChromeWhatsNewURL[];
@@ -27,10 +23,9 @@ enum class LoadEvent {
   kLoadFailAndShowError = 2,
   kLoadFailAndFallbackToNtp = 3,
   kLoadFailAndCloseTab = 4,
-  kMaxValue = kLoadFailAndCloseTab,
+  kLoadFailAndDoNotShow = 5,
+  kMaxValue = kLoadFailAndDoNotShow,
 };
-
-void LogLoadEvent(LoadEvent event);
 
 // Disables loading remote content for tests, because this can lead to a
 // redirect if it fails. Most tests don't expect redirects to occur.
@@ -40,37 +35,32 @@ void DisableRemoteContentForTests();
 // DisableRemoteContentForTests().
 bool IsRemoteContentDisabled();
 
-// Whether the What's New page should be shown, based on |local_state|.
+// Returns true if the user has not yet seen the What's New page for the
+// current major milestone. When returning true, sets the pref in |local_state|
+// to indicate that What's New should not try to display again for the current
+// major milestone.
+// Note that this does not guarantee that the page will always show (for
+// example, onboarding tabs override What's New, or remote content can fail to
+// load, which will result in the tab not opening). However, What's New should
+// only display automatically on the first relaunch after updating to a new
+// major milestone, and it is preferable to only attempt to show the page once
+// and possibly miss some users instead of repeatedly triggering a network
+// request at startup and/or showing the same What's New page many times for a
+// given user.
 bool ShouldShowForState(PrefService* local_state);
 
-// Sets the last What's New version in |local_state| to the current version.
-void SetLastVersion(PrefService* local_state);
+// Gets the server side URL for the What's New page for the current version of
+// Chrome. If |may_redirect| is true, return a server URL that will redirect to
+// the closest milestone page. Otherwise, return the direct URL of the current
+// version, which may return 404 if there is no page for this milestone.
+GURL GetServerURL(bool may_redirect);
 
-// Get the URL for the What's New page for |version|.
-std::string GetURLForVersion(int version);
+// Return the startup URL for the WebUI page.
+GURL GetWebUIStartupURL();
 
-typedef base::OnceCallback<void(bool is_auto,
-                                bool success,
-                                bool page_not_found,
-                                std::unique_ptr<std::string> body)>
-    OnFetchResultCallback;
-
-class WhatsNewFetcher {
- public:
-  WhatsNewFetcher(int version, bool is_auto, OnFetchResultCallback on_result);
-  WhatsNewFetcher(const WhatsNewFetcher&) = delete;
-  WhatsNewFetcher& operator=(const WhatsNewFetcher&) = delete;
-
-  ~WhatsNewFetcher();
-
- private:
-  // Called with the result.
-  void OnResponseLoaded(std::unique_ptr<std::string> body);
-
-  bool is_auto_;
-  OnFetchResultCallback callback_;
-  std::unique_ptr<network::SimpleURLLoader> simple_loader_;
-};
+// Starts fetching the What's New page and will open the page in |browser| if
+// it exists.
+void StartWhatsNewFetch(Browser* browser);
 
 }  // namespace whats_new
 

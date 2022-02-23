@@ -38,6 +38,7 @@ import io
 import subprocess
 import re
 import platform
+import tempfile
 
 RUSTC_VERSION_LINE = re.compile(r"(\w+): (.*)")
 
@@ -63,47 +64,101 @@ def host_triple(rustc_path):
 
 RUSTC_CFG_LINE = re.compile("cargo:rustc-cfg=(.*)")
 
-parser = argparse.ArgumentParser(description='Run Rust build script.')
-parser.add_argument('--build-script', required=True, help='build script to run')
-parser.add_argument('--output',
-                    required=True,
-                    help='where to write output rustc flags')
-parser.add_argument('--target', help='rust target triple')
-parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
-parser.add_argument('--out-dir', required=True, help='target out dir')
 
-args = parser.parse_args()
+def main():
+  parser = argparse.ArgumentParser(description='Run Rust build script.')
+  parser.add_argument('--build-script',
+                      required=True,
+                      help='build script to run')
+  parser.add_argument('--output',
+                      required=True,
+                      help='where to write output rustc flags')
+  parser.add_argument('--target', help='rust target triple')
+  parser.add_argument('--features', help='features', nargs='+')
+  parser.add_argument('--env', help='environment variable', nargs='+')
+  parser.add_argument('--rust-prefix', required=True, help='rust path prefix')
+  parser.add_argument('--generated-files', nargs='+', help='any generated file')
+  parser.add_argument('--out-dir', required=True, help='target out dir')
+  parser.add_argument('--src-dir', required=True, help='target source dir')
 
-rustc_path = os.path.join(args.rust_prefix, rustc_name())
-env = os.environ.copy()
-env.clear()  # try to avoid build scripts depending on other things
-env["RUSTC"] = rustc_path
-env["OUT_DIR"] = args.out_dir
-env["HOST"] = host_triple(rustc_path)
-if args.target is None:
-  env["TARGET"] = env["HOST"]
-else:
-  env["TARGET"] = args.target
-# In the future we shoul, set all the variables listed here:
-# https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts
+  args = parser.parse_args()
 
-# In the future, we could consider isolating this build script
-# into a chroot jail or similar on some platforms, but ultimately
-# we are always going to be reliant on code review to ensure the
-# build script is deterministic and trustworthy, so this would
-# really just be a backup to humans.
-proc = subprocess.run([args.build_script],
-                      env=env,
-                      text=True,
-                      capture_output=True)
+  rustc_path = os.path.join(args.rust_prefix, rustc_name())
 
-flags = ""
-for line in proc.stdout.split("\n"):
-  m = RUSTC_CFG_LINE.match(line.rstrip())
-  if m:
-    flags = "%s--cfg\n%s\n" % (flags, m.group(1))
+  # We give the build script an OUT_DIR of a temporary directory,
+  # and copy out only any files which gn directives say that it
+  # should generate. Mostly this is to ensure we can atomically
+  # create those files, but it also serves to avoid side-effects
+  # from the build script.
+  # In the future, we could consider isolating this build script
+  # into a chroot jail or similar on some platforms, but ultimately
+  # we are always going to be reliant on code review to ensure the
+  # build script is deterministic and trustworthy, so this would
+  # really just be a backup to humans.
+  with tempfile.TemporaryDirectory() as tempdir:
+    env = {}  # try to avoid build scripts depending on other things
+    env["RUSTC"] = os.path.abspath(rustc_path)
+    env["OUT_DIR"] = tempdir
+    env["CARGO_MANIFEST_DIR"] = os.path.abspath(args.src_dir)
+    env["HOST"] = host_triple(rustc_path)
+    if args.target is None:
+      env["TARGET"] = env["HOST"]
+    else:
+      env["TARGET"] = args.target
+    target_components = env["TARGET"].split("-")
+    env["CARGO_CFG_TARGET_ARCH"] = target_components[0]
+    if args.features:
+      for f in args.features:
+        feature_name = f.upper().replace("-", "_")
+        env["CARGO_FEATURE_%s" % feature_name] = "1"
+    if args.env:
+      for e in args.env:
+        (k, v) = e.split("=")
+        env[k] = v
+    # Pass through a couple which are useful for diagnostics
+    if os.environ.get("RUST_BACKTRACE"):
+      env["RUST_BACKTRACE"] = os.environ.get("RUST_BACKTRACE")
+    if os.environ.get("RUST_LOG"):
+      env["RUST_LOG"] = os.environ.get("RUST_LOG")
 
-# AtomicOutput will ensure we only write to the file on disk if what we give to
-# write() is different than what's currently on disk.
-with build_utils.AtomicOutput(args.output) as output:
-  output.write(flags.encode("utf-8"))
+    # In the future we should, set all the variables listed here:
+    # https://doc.rust-lang.org/cargo/reference/environment-variables.html#environment-variables-cargo-sets-for-build-scripts
+
+    proc = subprocess.run([os.path.abspath(args.build_script)],
+                          env=env,
+                          cwd=args.src_dir,
+                          encoding='utf8',
+                          capture_output=True)
+
+    if proc.stderr.rstrip():
+      print(proc.stderr.rstrip(), file=sys.stderr)
+    proc.check_returncode()
+
+    flags = ""
+    for line in proc.stdout.split("\n"):
+      m = RUSTC_CFG_LINE.match(line.rstrip())
+      if m:
+        flags = "%s--cfg\n%s\n" % (flags, m.group(1))
+
+    # AtomicOutput will ensure we only write to the file on disk if what we
+    # give to write() is different than what's currently on disk.
+    with build_utils.AtomicOutput(args.output) as output:
+      output.write(flags.encode("utf-8"))
+
+    # Copy any generated code out of the temporary directory,
+    # atomically.
+    if args.generated_files:
+      for generated_file in args.generated_files:
+        in_path = os.path.join(tempdir, generated_file)
+        out_path = os.path.join(args.out_dir, generated_file)
+        out_dir = os.path.dirname(out_path)
+        if not os.path.exists(out_dir):
+          os.makedirs(out_dir)
+        with open(in_path, 'rb') as input:
+          with build_utils.AtomicOutput(out_path) as output:
+            content = input.read()
+            output.write(content)
+
+
+if __name__ == '__main__':
+  sys.exit(main())

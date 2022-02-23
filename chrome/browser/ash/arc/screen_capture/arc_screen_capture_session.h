@@ -9,7 +9,7 @@
 #include <queue>
 #include <string>
 
-#include "components/arc/mojom/screen_capture.mojom.h"
+#include "ash/components/arc/mojom/screen_capture.mojom.h"
 #include "components/viz/common/gpu/context_lost_observer.h"
 #include "gpu/command_buffer/client/gl_helper.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
@@ -56,7 +56,13 @@ class ArcScreenCaptureSession : public mojom::ScreenCaptureSession,
   ArcScreenCaptureSession& operator=(const ArcScreenCaptureSession&) = delete;
 
   // Implements mojo::ScreenCaptureSession interface.
+  void SetOutputBufferDeprecated(
+      mojo::ScopedHandle graphics_buffer,
+      uint32_t stride,
+      SetOutputBufferDeprecatedCallback callback) override;
   void SetOutputBuffer(mojo::ScopedHandle graphics_buffer,
+                       gfx::BufferFormat buffer_format,
+                       uint64_t buffer_format_modifier,
                        uint32_t stride,
                        SetOutputBufferCallback callback) override;
 

@@ -66,7 +66,7 @@ PasswordForm PendingCredentialsForNewCredentials(
 // Helper to get the platform specific identifier by which autofill and password
 // manager refer to a field. See http://crbug.com/896594
 std::u16string GetPlatformSpecificIdentifier(const FormFieldData& field) {
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   return field.unique_id;
 #else
   return field.name;
@@ -767,10 +767,10 @@ void PasswordSaveManagerImpl::UploadVotesAndMetrics(
 // It's not possible to edit username in a save/update prompt on Android.
 // TODO(crbug.com/959776): Get rid of this method, by passing
 // |pending_credentials_| directly to MaybeSendSingleUsernameVote.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   votes_uploader_->CalculateUsernamePromptEditState(
       /*saved_username=*/pending_credentials_.username_value);
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   if (IsNewLogin()) {
     metrics_util::LogNewlySavedPasswordIsGenerated(

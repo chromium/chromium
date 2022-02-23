@@ -13,10 +13,13 @@
 #include "ui/views/controls/progress_bar.h"
 #include "ui/views/view.h"
 
+namespace ui {
+class ImageModel;
+}  // namespace ui
+
 namespace views {
 class Button;
 class ImageView;
-class ImageSkia;
 class Label;
 class ProgressBar;
 }  // namespace views
@@ -35,7 +38,7 @@ class ASH_EXPORT PhoneHubInterstitialView : public PhoneHubContentView {
   PhoneHubInterstitialView& operator=(const PhoneHubInterstitialView&) = delete;
   ~PhoneHubInterstitialView() override;
 
-  void SetImage(const gfx::ImageSkia& image);
+  void SetImage(const ui::ImageModel& image_model);
   void SetTitle(const std::u16string& title);
   void SetDescription(const std::u16string& desc);
   void AddButton(std::unique_ptr<views::Button> button);

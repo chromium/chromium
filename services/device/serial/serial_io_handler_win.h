@@ -8,7 +8,7 @@
 #include <memory>
 #include <string>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/message_loop/message_pump_for_io.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -62,7 +62,7 @@ class SerialIoHandlerWin : public SerialIoHandler,
 
   // The helper lives on the UI thread and holds a weak reference back to the
   // handler that owns it.
-  UiThreadHelper* helper_ = nullptr;
+  raw_ptr<UiThreadHelper> helper_ = nullptr;
   base::WeakPtrFactory<SerialIoHandlerWin> weak_factory_{this};
 };
 

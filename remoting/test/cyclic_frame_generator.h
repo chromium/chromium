@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/default_tick_clock.h"
 #include "remoting/protocol/input_event_timestamps.h"
@@ -83,7 +84,7 @@ class CyclicFrameGenerator : public protocol::InputEventTimestampsSource {
   friend class base::RefCountedThreadSafe<CyclicFrameGenerator>;
 
   std::vector<std::unique_ptr<webrtc::DesktopFrame>> reference_frames_;
-  const base::TickClock* clock_;
+  raw_ptr<const base::TickClock> clock_;
   webrtc::DesktopSize screen_size_;
 
   // By default switch between reference frames every 2 seconds.

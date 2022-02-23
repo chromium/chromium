@@ -100,10 +100,23 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
 
   // Examine the presence of HDR.
   bool enable_hdr = false;
+  float hdr_max_lum_relative = 1.f;
   if (@available(macOS 10.15, *)) {
-    if ([screen maximumPotentialExtendedDynamicRangeColorComponentValue] >
-        1.0) {
+    // It can be the case that `max_potential_edr_value` > 1, but
+    // `max_edr_value` == 1. This happens, e.g, when an HDR capable Macbook Pro
+    // display is set to maximum brightness. This can create the confusing
+    // appearance that the display is rapidly fluctuating between being HDR
+    // capable and HDR incapable. To avoid this confusion, set a minimum value
+    // to report when `max_potential_edr_value` > 1.
+    constexpr float kMinMaxEdrValueForHDR = 1.0625;
+
+    const float max_potential_edr_value =
+        [screen maximumPotentialExtendedDynamicRangeColorComponentValue];
+    const float max_edr_value =
+        [screen maximumExtendedDynamicRangeColorComponentValue];
+    if (max_potential_edr_value > 1.f) {
       enable_hdr = true;
+      hdr_max_lum_relative = std::max(kMinMaxEdrValueForHDR, max_edr_value);
     }
   }
 
@@ -138,6 +151,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
             gfx::ContentColorUsage::kHDR, needs_alpha,
             gfx::ColorSpace::CreateExtendedSRGB(), gfx::BufferFormat::RGBA_F16);
       }
+      display_color_spaces.SetHDRMaxLuminanceRelative(hdr_max_lum_relative);
     }
     display.set_color_spaces(display_color_spaces);
   }

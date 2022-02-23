@@ -84,7 +84,7 @@ class WebGPUSwapBufferProviderForTests : public WebGPUSwapBufferProvider {
         client_(client) {}
   ~WebGPUSwapBufferProviderForTests() override { *alive_ = false; }
 
-  WGPUTexture GetNewTexture(const IntSize& size) {
+  WGPUTexture GetNewTexture(const gfx::Size& size) {
     client_->texture = WebGPUSwapBufferProvider::GetNewTexture(size);
     return client_->texture;
   }
@@ -130,7 +130,7 @@ class WebGPUSwapBufferProviderTest : public testing::Test {
 
 TEST_F(WebGPUSwapBufferProviderTest,
        VerifyDestructionCompleteAfterAllResourceReleased) {
-  const IntSize kSize(10, 10);
+  const gfx::Size kSize(10, 10);
 
   viz::TransferableResource resource1;
   gpu::webgpu::ReservedTexture reservation1 = {
@@ -191,7 +191,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
   // Produce one resource of size kSize.
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
   EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
                                                      &release_callback));
   EXPECT_EQ(kSize, resource.size);
@@ -200,7 +200,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
   // Produce one resource of size kOtherSize.
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kOtherSize));
+  provider_->GetNewTexture(kOtherSize);
   EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
                                                      &release_callback));
   EXPECT_EQ(kOtherSize, resource.size);
@@ -209,7 +209,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyResizingProperlyAffectsResources) {
   // Produce one resource of size kSize again.
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
   EXPECT_TRUE(provider_->PrepareTransferableResource(nullptr, &resource,
                                                      &release_callback));
   EXPECT_EQ(kSize, resource.size);
@@ -228,7 +228,7 @@ TEST_F(WebGPUSwapBufferProviderTest, VerifyInsertAndWaitSyncTokenCorrectly) {
   // the shared image
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
   EXPECT_EQ(sii_->MostRecentGeneratedToken(),
             webgpu_->most_recent_waited_token);
 
@@ -266,7 +266,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
   viz::ReleaseCallback release_callback_0;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -277,7 +277,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
   viz::ReleaseCallback release_callback_1;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -288,7 +288,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
   viz::ReleaseCallback release_callback_2;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -304,7 +304,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
   // Produce two swap buffers
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+  provider_->GetNewTexture(kSize);
 
   EXPECT_FALSE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -314,7 +314,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBuffers) {
 
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(static_cast<IntSize>(kSize));
+  provider_->GetNewTexture(kSize);
 
   EXPECT_FALSE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -339,7 +339,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
   viz::ReleaseCallback release_callback_1;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -350,7 +350,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
   viz::ReleaseCallback release_callback_2;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kSize));
+  provider_->GetNewTexture(kSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -363,12 +363,12 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
   std::move(release_callback_2).Run(gpu::SyncToken(), false /* lostResource */);
 
   // Create swap buffers again with different size.
-  const IntSize kOtherSize(20, 20);
+  const gfx::Size kOtherSize(20, 20);
 
   viz::ReleaseCallback release_callback_3;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kOtherSize));
+  provider_->GetNewTexture(kOtherSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -379,7 +379,7 @@ TEST_F(WebGPUSwapBufferProviderTest, ReuseSwapBufferResize) {
   viz::ReleaseCallback release_callback_4;
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(kOtherSize));
+  provider_->GetNewTexture(kOtherSize);
 
   EXPECT_TRUE(
       shared_images.insert(provider_->GetCurrentMailboxForTesting()).second);
@@ -399,7 +399,7 @@ TEST_F(WebGPUSwapBufferProviderTest,
 
   EXPECT_CALL(*webgpu_, ReserveTexture(fake_device_))
       .WillOnce(Return(reservation));
-  provider_->GetNewTexture(IntSize(10, 10));
+  provider_->GetNewTexture(gfx::Size(10, 10));
 
   dawn_control_client_->Destroy();
 

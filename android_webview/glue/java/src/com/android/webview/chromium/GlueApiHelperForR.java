@@ -4,9 +4,10 @@
 
 package com.android.webview.chromium;
 
-import android.annotation.TargetApi;
 import android.os.Build;
 import android.webkit.PacProcessor;
+
+import androidx.annotation.RequiresApi;
 
 import org.chromium.base.annotations.VerifiesOnR;
 
@@ -18,7 +19,7 @@ import org.chromium.base.annotations.VerifiesOnR;
  * specific to glue layer.
  */
 @VerifiesOnR
-@TargetApi(Build.VERSION_CODES.R)
+@RequiresApi(Build.VERSION_CODES.R)
 public final class GlueApiHelperForR {
     private GlueApiHelperForR() {}
 

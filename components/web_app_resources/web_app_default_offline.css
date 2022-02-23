@@ -1,0 +1,31 @@
+/* Copyright 2022 The Chromium Authors. All rights reserved.
+ * Use of this source code is governed by a BSD-style license that can be
+ * found in the LICENSE file. */
+
+@media (prefers-color-scheme: light) {
+  body {
+    background-color: var(--customized-background-color);
+  }
+  h2 {
+    color: var(--theme-color);
+  }
+ }
+
+@media (prefers-color-scheme: dark) {
+  body {
+    background-color: var(--dark-mode-background-color);
+  }
+  h2 {
+    color: var(--dark-mode-theme-color);
+  }
+}
+
+h2 {
+  height: 200px;
+  left: 50%;
+  margin-inline-start: -200px;
+  margin-top: -100px;
+  position: fixed;
+  top: 50%;
+  width: 400px;
+}

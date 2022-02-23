@@ -6,6 +6,7 @@
 #ifndef UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 #define UI_MESSAGE_CENTER_VIEWS_NOTIFICATION_CONTROL_BUTTONS_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/message_center/message_center_export.h"
 #include "ui/message_center/views/message_view.h"
@@ -63,11 +64,11 @@ class MESSAGE_CENTER_EXPORT NotificationControlButtonsView
   // |background_color_| ensuring readability.
   SkColor DetermineButtonIconColor() const;
 
-  MessageView* message_view_;
+  raw_ptr<MessageView> message_view_;
 
-  PaddedButton* close_button_ = nullptr;
-  PaddedButton* settings_button_ = nullptr;
-  PaddedButton* snooze_button_ = nullptr;
+  raw_ptr<PaddedButton> close_button_ = nullptr;
+  raw_ptr<PaddedButton> settings_button_ = nullptr;
+  raw_ptr<PaddedButton> snooze_button_ = nullptr;
 
   // The color used for the close, settings, and snooze icons.
   SkColor icon_color_;

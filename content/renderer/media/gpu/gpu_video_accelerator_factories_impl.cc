@@ -82,7 +82,8 @@ GpuVideoAcceleratorFactoriesImpl::Create(
     const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
     bool enable_video_gpu_memory_buffers,
     bool enable_media_stream_gpu_memory_buffers,
-    bool enable_video_accelerator,
+    bool enable_video_decode_accelerator,
+    bool enable_video_encode_accelerator,
     mojo::PendingRemote<media::mojom::InterfaceFactory>
         interface_factory_remote,
     mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
@@ -92,8 +93,9 @@ GpuVideoAcceleratorFactoriesImpl::Create(
   return base::WrapUnique(new GpuVideoAcceleratorFactoriesImpl(
       std::move(gpu_channel_host), main_thread_task_runner, task_runner,
       context_provider, enable_video_gpu_memory_buffers,
-      enable_media_stream_gpu_memory_buffers, enable_video_accelerator,
-      std::move(interface_factory_remote), std::move(vea_provider_remote)));
+      enable_media_stream_gpu_memory_buffers, enable_video_decode_accelerator,
+      enable_video_encode_accelerator, std::move(interface_factory_remote),
+      std::move(vea_provider_remote)));
 }
 
 GpuVideoAcceleratorFactoriesImpl::GpuVideoAcceleratorFactoriesImpl(
@@ -103,7 +105,8 @@ GpuVideoAcceleratorFactoriesImpl::GpuVideoAcceleratorFactoriesImpl(
     const scoped_refptr<viz::ContextProviderCommandBuffer>& context_provider,
     bool enable_video_gpu_memory_buffers,
     bool enable_media_stream_gpu_memory_buffers,
-    bool enable_video_accelerator,
+    bool enable_video_decode_accelerator,
+    bool enable_video_encode_accelerator,
     mojo::PendingRemote<media::mojom::InterfaceFactory>
         interface_factory_remote,
     mojo::PendingRemote<media::mojom::VideoEncodeAcceleratorProvider>
@@ -115,7 +118,8 @@ GpuVideoAcceleratorFactoriesImpl::GpuVideoAcceleratorFactoriesImpl(
       enable_video_gpu_memory_buffers_(enable_video_gpu_memory_buffers),
       enable_media_stream_gpu_memory_buffers_(
           enable_media_stream_gpu_memory_buffers),
-      video_accelerator_enabled_(enable_video_accelerator),
+      video_decode_accelerator_enabled_(enable_video_decode_accelerator),
+      video_encode_accelerator_enabled_(enable_video_encode_accelerator),
       gpu_memory_buffer_manager_(
           RenderThreadImpl::current()->GetGpuMemoryBufferManager()) {
   DCHECK(main_thread_task_runner_);
@@ -157,7 +161,7 @@ void GpuVideoAcceleratorFactoriesImpl::BindOnTaskRunner(
       base::BindOnce(&GpuVideoAcceleratorFactoriesImpl::OnChannelTokenReady,
                      base::Unretained(this)));
 
-  if (video_accelerator_enabled_) {
+  if (video_encode_accelerator_enabled_) {
     {
       // TODO(crbug.com/709631): This should be removed.
       base::AutoLock lock(supported_profiles_lock_);
@@ -280,8 +284,11 @@ void GpuVideoAcceleratorFactoriesImpl::DestroyContext() {
       ContextProviderPhase::CONTEXT_PROVIDER_RELEASED);
 }
 
-bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoAcceleratorEnabled() {
-  return video_accelerator_enabled_;
+bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoDecodeAcceleratorEnabled() {
+  return video_decode_accelerator_enabled_;
+}
+bool GpuVideoAcceleratorFactoriesImpl::IsGpuVideoEncodeAcceleratorEnabled() {
+  return video_encode_accelerator_enabled_;
 }
 
 void GpuVideoAcceleratorFactoriesImpl::GetChannelToken(
@@ -350,7 +357,7 @@ std::unique_ptr<media::VideoDecoder>
 GpuVideoAcceleratorFactoriesImpl::CreateVideoDecoder(
     media::MediaLog* media_log,
     media::RequestOverlayInfoCB request_overlay_info_cb) {
-  DCHECK(video_accelerator_enabled_);
+  DCHECK(video_decode_accelerator_enabled_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(interface_factory_.is_bound());
 
@@ -371,7 +378,7 @@ GpuVideoAcceleratorFactoriesImpl::CreateVideoDecoder(
 
 std::unique_ptr<media::VideoEncodeAccelerator>
 GpuVideoAcceleratorFactoriesImpl::CreateVideoEncodeAccelerator() {
-  DCHECK(video_accelerator_enabled_);
+  DCHECK(video_encode_accelerator_enabled_);
   DCHECK(task_runner_->RunsTasksInCurrentSequence());
   DCHECK(vea_provider_.is_bound());
   if (CheckContextLost())
@@ -395,10 +402,7 @@ GpuVideoAcceleratorFactoriesImpl::CreateVideoEncodeAccelerator() {
     return nullptr;
 
   return std::unique_ptr<media::VideoEncodeAccelerator>(
-      new media::MojoVideoEncodeAccelerator(
-          std::move(vea),
-          supported_vea_profiles_.value_or(
-              media::VideoEncodeAccelerator::SupportedProfiles())));
+      new media::MojoVideoEncodeAccelerator(std::move(vea)));
 }
 
 std::unique_ptr<gfx::GpuMemoryBuffer>
@@ -445,7 +449,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
     if (capabilities.image_ycbcr_p010 && bit_depth == 10)
       return media::GpuVideoAcceleratorFactories::OutputFormat::P010;
 
-#if !defined(OS_MAC)
+#if !BUILDFLAG(IS_MAC)
     // If high bit depth rendering is enabled, bail here, otherwise try and use
     // XR30 storage, and if not and we support RG textures, use those, albeit at
     // a reduced bit depth of 8 bits per component.
@@ -455,7 +459,7 @@ GpuVideoAcceleratorFactoriesImpl::VideoFrameOutputFormat(
       return media::GpuVideoAcceleratorFactories::OutputFormat::UNDEFINED;
 #endif
 
-#if !defined(OS_WIN)
+#if !BUILDFLAG(IS_WIN)
     // TODO(mcasas): enable Win https://crbug.com/803451.
     // TODO(mcasas): remove the |bit_depth| check when libyuv supports more than
     // just x010ToAR30 conversions, https://crbug.com/libyuv/751.

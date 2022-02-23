@@ -50,7 +50,7 @@ class WebappsClient {
   virtual AppBannerManager* GetAppBannerManager(
       content::WebContents* web_contents) = 0;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   virtual bool IsInstallationInProgress(content::WebContents* web_contents,
                                         const GURL& manifest_url) = 0;
 

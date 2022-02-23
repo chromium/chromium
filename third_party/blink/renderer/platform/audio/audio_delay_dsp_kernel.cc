@@ -158,16 +158,18 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
     double desired_delay_frames = delay_time * sample_rate;
 
     double read_position = w_index + buffer_length - desired_delay_frames;
-    if (read_position >= buffer_length)
+    if (read_position >= buffer_length) {
       read_position -= buffer_length;
+    }
 
     // Linearly interpolate in-between delay times.
     int read_index1 = static_cast<int>(read_position);
     DCHECK_GE(read_index1, 0);
     DCHECK_LT(read_index1, buffer_length);
     int read_index2 = read_index1 + 1;
-    if (read_index2 >= buffer_length)
+    if (read_index2 >= buffer_length) {
       read_index2 -= buffer_length;
+    }
     DCHECK_GE(read_index2, 0);
     DCHECK_LT(read_index2, buffer_length);
 
@@ -177,8 +179,9 @@ int AudioDelayDSPKernel::ProcessARateScalar(unsigned start,
     float sample2 = buffer[read_index2];
 
     ++w_index;
-    if (w_index >= buffer_length)
+    if (w_index >= buffer_length) {
       w_index -= buffer_length;
+    }
 
     destination[i] = sample1 + interpolation_factor * (sample2 - sample1);
   }
@@ -251,8 +254,9 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   int w_index = write_index_;
   double read_position = w_index + buffer_length - desired_delay_frames;
 
-  if (read_position >= buffer_length)
+  if (read_position >= buffer_length) {
     read_position -= buffer_length;
+  }
 
   // Linearly interpolate in-between delay times.  |read_index1| and
   // |read_index2| are the indices of the frames to be used for
@@ -273,8 +277,9 @@ void AudioDelayDSPKernel::ProcessKRate(const float* source,
   CopyToCircularBuffer(buffer, write_index_, buffer_length, source,
                        frames_to_process);
   w_index += frames_to_process;
-  if (w_index >= buffer_length)
+  if (w_index >= buffer_length) {
     w_index -= buffer_length;
+  }
   write_index_ = w_index;
 
   // Now copy out the samples from the buffer, starting at the read pointer,

@@ -32,7 +32,7 @@
 #include "third_party/blink/renderer/core/workers/worklet_global_scope.h"
 #include "third_party/blink/renderer/core/workers/worklet_global_scope_test_helper.h"
 #include "third_party/blink/renderer/core/workers/worklet_module_responses_map.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/loader/fetch/fetch_client_settings_object_snapshot.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/testing/fetch_testing_platform_support.h"
@@ -163,7 +163,7 @@ class ModuleScriptLoaderTest : public PageTestBase {
 };
 
 void ModuleScriptLoaderTest::SetUp() {
-  PageTestBase::SetUp(IntSize(500, 500));
+  PageTestBase::SetUp(gfx::Size(500, 500));
 }
 
 ModuleScriptLoaderTest::ModuleScriptLoaderTest()
@@ -210,9 +210,9 @@ void ModuleScriptLoaderTest::InitializeForWorklet() {
       network::mojom::ReferrerPolicy::kDefault, security_origin_.get(),
       true /* is_secure_context */, HttpsState::kModern,
       nullptr /* worker_clients */, nullptr /* content_settings_client */,
-      network::mojom::IPAddressSpace::kLocal, nullptr /* origin_trial_token */,
-      base::UnguessableToken::Create(), nullptr /* worker_settings */,
-      mojom::blink::V8CacheOptions::kDefault,
+      network::mojom::IPAddressSpace::kLocal,
+      nullptr /* inherited_trial_features */, base::UnguessableToken::Create(),
+      nullptr /* worker_settings */, mojom::blink::V8CacheOptions::kDefault,
       MakeGarbageCollected<WorkletModuleResponsesMap>(),
       mojo::NullRemote() /* browser_interface_broker */,
       mojo::NullRemote() /* code_cache_host_interface */,

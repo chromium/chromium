@@ -58,7 +58,7 @@ using RealTypes =
     std::conditional<absl::numeric_internal::IsDoubleDouble(),
                      ::testing::Types<float, double>,
                      ::testing::Types<float, double, long double>>::type;
-TYPED_TEST_CASE(ExponentialDistributionTypedTest, RealTypes);
+TYPED_TEST_SUITE(ExponentialDistributionTypedTest, RealTypes);
 
 TYPED_TEST(ExponentialDistributionTypedTest, SerializeTest) {
   using param_type =
@@ -343,8 +343,8 @@ std::string ParamName(const ::testing::TestParamInfo<Param>& info) {
   return absl::StrReplaceAll(name, {{"+", "_"}, {"-", "_"}, {".", "_"}});
 }
 
-INSTANTIATE_TEST_CASE_P(All, ExponentialDistributionTests,
-                        ::testing::ValuesIn(GenParams()), ParamName);
+INSTANTIATE_TEST_SUITE_P(All, ExponentialDistributionTests,
+                         ::testing::ValuesIn(GenParams()), ParamName);
 
 // NOTE: absl::exponential_distribution is not guaranteed to be stable.
 TEST(ExponentialDistributionTest, StabilityTest) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "build/build_config.h"
 #include "content/browser/accessibility/browser_accessibility.h"
 #include "content/browser/accessibility/browser_accessibility_state_impl.h"
 #include "content/browser/renderer_host/render_view_host_impl.h"
@@ -116,7 +117,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
                        FullAccessibilityHasInlineTextBoxes) {
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // we should do it with accessibility flags instead. http://crbug.com/672205
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(shell()->web_contents(),
@@ -133,14 +134,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
   BrowserAccessibility* inline_text = text->InternalGetChild(0);
   ASSERT_NE(nullptr, inline_text);
   EXPECT_EQ(ax::mojom::Role::kInlineTextBox, inline_text->GetRole());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
                        MinimalAccessibilityModeHasNoInlineTextBoxes) {
   // TODO(dmazzoni): On Android we use an ifdef to disable inline text boxes,
   // we should do it with accessibility flags instead. http://crbug.com/672205
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   EXPECT_TRUE(NavigateToURL(shell(), GURL(url::kAboutBlankURL)));
 
   AccessibilityNotificationWaiter waiter(
@@ -155,7 +156,7 @@ IN_PROC_BROWSER_TEST_F(AccessibilityModeTest,
       FindNode(ax::mojom::Role::kStaticText, "Para");
   ASSERT_NE(nullptr, text);
   EXPECT_EQ(0U, text->InternalChildCount());
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 IN_PROC_BROWSER_TEST_F(AccessibilityModeTest, AddScreenReaderModeFlag) {

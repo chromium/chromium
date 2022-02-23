@@ -17,16 +17,14 @@
   let virtualTimeBase = 0;
   let totalElapsedTime = 0;
   let frameTimeTicks = 0;
-  let lastGrantedChunk = 0;
+  let lastGrantedChunk = 1000;
 
   await dp.Emulation.setVirtualTimePolicy({policy: 'pause'});
-  lastGrantedChunk = 1000;
-  await dp.Emulation.setVirtualTimePolicy({
-      policy: 'pauseIfNetworkFetchesPending',
-      budget: lastGrantedChunk, waitForNavigation: true});
-
-  dp.Page.navigate(
+  await dp.Page.navigate(
       {url: testRunner.url('/resources/compositor-basic-raf.html')});
+  dp.Emulation.setVirtualTimePolicy({
+    policy: 'pauseIfNetworkFetchesPending',
+    budget: lastGrantedChunk});
 
   // Renderer wants the very first frame to be fully updated.
   await AdvanceTime();

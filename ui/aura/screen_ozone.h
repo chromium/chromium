@@ -47,7 +47,7 @@ class AURA_EXPORT ScreenOzone : public display::Screen {
   display::Display GetDisplayMatching(
       const gfx::Rect& match_rect) const override;
   display::Display GetPrimaryDisplay() const override;
-  void SetScreenSaverSuspended(bool suspend) override;
+  bool SetScreenSaverSuspended(bool suspend) override;
   bool IsScreenSaverActive() const override;
   base::TimeDelta CalculateIdleTime() const override;
   void AddObserver(display::DisplayObserver* observer) override;

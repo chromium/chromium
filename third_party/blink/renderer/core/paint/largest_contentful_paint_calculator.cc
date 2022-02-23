@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/core/paint/largest_contentful_paint_calculator.h"
 
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/identifiers_factory.h"
 #include "third_party/blink/renderer/core/paint/image_element_timing.h"
@@ -57,7 +58,16 @@ void LargestContentfulPaintCalculator::UpdateLargestContentfulImage(
   if (!cached_image || !image_node)
     return;
 
-  largest_reported_size_ = largest_image->first_size;
+  uint64_t size = largest_image->first_size;
+  double bpp = largest_image->EntropyForLCP();
+
+  if (base::FeatureList::IsEnabled(features::kExcludeLowEntropyImagesFromLCP)) {
+    if (bpp < features::kMinimumEntropyForLCP.Get()) {
+      return;
+    }
+  }
+  largest_image_bpp_ = bpp;
+  largest_reported_size_ = size;
   const KURL& url = cached_image->Url();
   bool expose_paint_time_to_api =
       url.ProtocolIsData() || cached_image->GetResponse().TimingAllowPassed();

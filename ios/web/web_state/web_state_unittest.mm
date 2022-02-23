@@ -91,9 +91,8 @@ TEST_F(WebStateTest, ScriptExecution) {
   });
 
   ASSERT_TRUE(execution_result);
-  std::string string_result;
-  execution_result->GetAsString(&string_result);
-  EXPECT_EQ("bar", string_result);
+  ASSERT_TRUE(execution_result->is_string());
+  EXPECT_EQ("bar", execution_result->GetString());
 }
 
 // Tests that executing user JavaScript registers user interaction.
@@ -476,6 +475,7 @@ TEST_F(WebStateTest, RestoreLargeSession) {
   // Restore the session.
   WebState::CreateParams params(GetBrowserState());
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.itemStorages = item_storages;
   session_storage.userAgentType = UserAgentType::MOBILE;
   auto web_state = WebState::CreateWithStorageSession(params, session_storage);
@@ -591,6 +591,7 @@ TEST_F(WebStateTest, CallStopDuringSessionRestore) {
   // Restore the session.
   WebState::CreateParams params(GetBrowserState());
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.itemStorages = item_storages;
   session_storage.userAgentType = UserAgentType::MOBILE;
   auto web_state = WebState::CreateWithStorageSession(params, session_storage);
@@ -640,6 +641,7 @@ TEST_F(WebStateTest, CallLoadURLWithParamsDuringSessionRestore) {
   // Restore the session.
   WebState::CreateParams params(GetBrowserState());
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.itemStorages = item_storages;
   session_storage.userAgentType = UserAgentType::MOBILE;
   auto web_state = WebState::CreateWithStorageSession(params, session_storage);
@@ -695,6 +697,7 @@ TEST_F(WebStateTest, CallReloadDuringSessionRestore) {
   // Restore the session.
   WebState::CreateParams params(GetBrowserState());
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.itemStorages = item_storages;
   session_storage.userAgentType = UserAgentType::MOBILE;
   auto web_state = WebState::CreateWithStorageSession(params, session_storage);
@@ -745,6 +748,7 @@ TEST_F(WebStateTest, RestorePageTitles) {
   // Restore the session.
   WebState::CreateParams params(GetBrowserState());
   CRWSessionStorage* session_storage = [[CRWSessionStorage alloc] init];
+  session_storage.stableIdentifier = [[NSUUID UUID] UUIDString];
   session_storage.itemStorages = item_storages;
   session_storage.userAgentType = UserAgentType::MOBILE;
   auto web_state = WebState::CreateWithStorageSession(params, session_storage);

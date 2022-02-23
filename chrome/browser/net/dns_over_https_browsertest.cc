@@ -13,6 +13,8 @@
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/test_navigation_observer.h"
+#include "net/dns/public/dns_over_https_config.h"
+#include "net/dns/public/dns_over_https_server_config.h"
 #include "net/dns/public/doh_provider_entry.h"
 #include "net/dns/public/secure_dns_mode.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -21,25 +23,29 @@
 namespace {
 
 struct DohParameter {
-  DohParameter(std::string provider, std::string template_uri, bool valid)
+  DohParameter(std::string provider,
+               net::DnsOverHttpsServerConfig server,
+               bool valid)
       : doh_provider(std::move(provider)),
-        doh_template(std::move(template_uri)),
+        server_config(std::move(server)),
         is_valid(valid) {}
 
   std::string doh_provider;
-  std::string doh_template;
+  net::DnsOverHttpsServerConfig server_config;
   bool is_valid;
 };
 
 std::vector<DohParameter> GetDohServerTestCases() {
   std::vector<DohParameter> doh_test_cases;
   for (const auto* entry : net::DohProviderEntry::GetList()) {
-    doh_test_cases.emplace_back(entry->provider, entry->dns_over_https_template,
+    doh_test_cases.emplace_back(entry->provider, entry->doh_server_config,
                                 true);
   }
   // Negative test-case
-  doh_test_cases.emplace_back("NegativeTestExampleCom",
-                              "https://www.example.com", false);
+  doh_test_cases.emplace_back(
+      "NegativeTestExampleCom",
+      *net::DnsOverHttpsServerConfig::FromString("https://www.example.com"),
+      false);
   return doh_test_cases;
 }
 
@@ -57,7 +63,9 @@ class DohBrowserTest : public InProcessBrowserTest,
     scoped_feature_list_.InitWithFeaturesAndParameters(
         {// {features::kNetworkServiceInProcess, {}}, // Turn on for debugging
          {features::kDnsOverHttps,
-          {{"Fallback", "false"}, {"Templates", GetParam().doh_template}}}},
+          {{"Fallback", "false"},
+           {"Templates",
+            net::DnsOverHttpsConfig({GetParam().server_config}).ToString()}}}},
         {});
   }
 

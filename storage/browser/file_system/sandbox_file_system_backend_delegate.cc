@@ -15,7 +15,6 @@
 #include "base/command_line.h"
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/task/task_runner_util.h"
 #include "base/time/time.h"
@@ -341,9 +340,10 @@ SandboxFileSystemBackendDelegate::DeleteStorageKeyDataOnFileTaskRunner(
   bool result = obfuscated_file_util()->DeleteDirectoryForStorageKeyAndType(
       storage_key, GetTypeString(type));
   if (result && proxy && usage) {
-    proxy->NotifyStorageModified(QuotaClientType::kFileSystem, storage_key,
-                                 FileSystemTypeToQuotaStorageType(type), -usage,
-                                 base::Time::Now());
+    proxy->NotifyStorageModified(
+        QuotaClientType::kFileSystem, storage_key,
+        FileSystemTypeToQuotaStorageType(type), -usage, base::Time::Now(),
+        base::SequencedTaskRunnerHandle::Get(), base::DoNothing());
   }
 
   if (result)
@@ -381,23 +381,6 @@ SandboxFileSystemBackendDelegate::GetStorageKeysForTypeOnFileTaskRunner(
       break;
     default:
       break;
-  }
-  return storage_keys;
-}
-
-std::vector<blink::StorageKey>
-SandboxFileSystemBackendDelegate::GetStorageKeysForHostOnFileTaskRunner(
-    FileSystemType type,
-    const std::string& host) {
-  DCHECK(file_task_runner_->RunsTasksInCurrentSequence());
-  std::vector<blink::StorageKey> storage_keys;
-  std::unique_ptr<StorageKeyEnumerator> enumerator(
-      CreateStorageKeyEnumerator());
-  absl::optional<blink::StorageKey> storage_key;
-  while ((storage_key = enumerator->Next()).has_value()) {
-    if (host == storage_key->origin().host() &&
-        enumerator->HasFileSystemType(type))
-      storage_keys.push_back(std::move(storage_key).value());
   }
   return storage_keys;
 }

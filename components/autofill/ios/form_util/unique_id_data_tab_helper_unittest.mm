@@ -13,15 +13,15 @@
 #error "This file requires ARC support."
 #endif
 
-// Test fixture for TabIdTabHelper class.
+// Test fixture for UniqueIDDataTabHelper class.
 class UniqueIDDataTabHelperTest : public PlatformTest {
  protected:
   web::FakeWebState first_web_state_;
   web::FakeWebState second_web_state_;
 };
 
-// Tests that a tab ID is returned for a WebState, and tab ID's are different
-// for different WebStates if they were once set differently.
+// Tests that a renderer ID is returned for a WebState, and rendered ID's are
+// different for different WebStates if they were once set differently.
 TEST_F(UniqueIDDataTabHelperTest, UniqueIdentifiers) {
   UniqueIDDataTabHelper::CreateForWebState(&first_web_state_);
   UniqueIDDataTabHelper::CreateForWebState(&second_web_state_);
@@ -51,7 +51,7 @@ TEST_F(UniqueIDDataTabHelperTest, UniqueIdentifiers) {
   EXPECT_NE(first_available_unique_id, second_available_unique_id);
 }
 
-// Tests that a tab ID is stable across successive calls.
+// Tests that a renderer ID is stable across successive calls.
 TEST_F(UniqueIDDataTabHelperTest, StableAcrossCalls) {
   UniqueIDDataTabHelper::CreateForWebState(&first_web_state_);
   UniqueIDDataTabHelper* tab_helper =

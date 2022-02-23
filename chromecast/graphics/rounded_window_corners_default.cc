@@ -4,8 +4,6 @@
 
 #include "chromecast/graphics/rounded_window_corners.h"
 
-#include "base/macros.h"
-
 namespace chromecast {
 
 namespace {

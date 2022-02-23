@@ -104,10 +104,7 @@ void ManifestVerifier::Verify(
       }
 
       // Same origin payment methods are always allowed.
-      url::Origin app_origin =
-          url::Origin::Create(app.second->scope.DeprecatedGetOriginAsURL());
-      if (url::Origin::Create(method_manifest_url.DeprecatedGetOriginAsURL())
-              .IsSameOriginWith(app_origin)) {
+      if (url::IsSameOriginWith(app.second->scope, method_manifest_url)) {
         verified_method_names.emplace_back(method);
         app.second->has_explicitly_verified_methods = true;
         continue;

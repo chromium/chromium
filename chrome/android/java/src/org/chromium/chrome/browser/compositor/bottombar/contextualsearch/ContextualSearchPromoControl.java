@@ -14,9 +14,9 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
 import org.chromium.chrome.R;
+import org.chromium.chrome.browser.ChromeSemanticColorUtils;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanel;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelAnimation;
 import org.chromium.chrome.browser.compositor.bottombar.OverlayPanelInflater;
@@ -94,8 +94,8 @@ public class ContextualSearchPromoControl extends OverlayPanelInflater {
                 R.id.contextual_search_promo, context, container, resourceLoader);
 
         mDpToPx = context.getResources().getDisplayMetrics().density;
-        mBackgroundColor = ApiCompatibilityUtils.getColor(
-                context.getResources(), R.color.contextual_search_promo_background_color);
+        mBackgroundColor =
+                ChromeSemanticColorUtils.getContextualSearchPromoBackgroundColor(context);
 
         mHost = host;
     }

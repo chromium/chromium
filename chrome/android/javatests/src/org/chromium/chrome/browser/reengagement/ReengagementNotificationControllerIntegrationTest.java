@@ -10,7 +10,6 @@ import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 
-import android.annotation.TargetApi;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.content.Context;
@@ -20,6 +19,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.test.InstrumentationRegistry;
 import android.text.TextUtils;
 
+import androidx.annotation.RequiresApi;
 import androidx.annotation.StringRes;
 import androidx.test.filters.MediumTest;
 import androidx.test.filters.SmallTest;
@@ -315,7 +315,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         Assert.assertFalse(hasNotifications());
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static boolean findNotification(@StringRes int title, @StringRes int description) {
         Context context = InstrumentationRegistry.getTargetContext();
         StatusBarNotification[] notifications =
@@ -339,7 +339,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         return false;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static boolean hasNotifications() {
         Context context = InstrumentationRegistry.getTargetContext();
         StatusBarNotification[] notifications =
@@ -356,7 +356,7 @@ public class ReengagementNotificationControllerIntegrationTest {
         return false;
     }
 
-    @TargetApi(Build.VERSION_CODES.M)
+    @RequiresApi(Build.VERSION_CODES.M)
     private static void closeReengagementNotifications() {
         if (!hasNotifications()) return;
 

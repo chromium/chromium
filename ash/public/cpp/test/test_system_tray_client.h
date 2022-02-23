@@ -31,6 +31,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowDateSettings() override;
   void ShowSetTimeDialog() override;
   void ShowDisplaySettings() override;
+  void ShowDarkModeSettings() override;
+  void ShowStorageSettings() override;
   void ShowPowerSettings() override;
   void ShowChromeSlow() override;
   void ShowIMESettings() override;
@@ -38,14 +40,12 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowTetherNetworkSettings() override;
   void ShowWifiSyncSettings() override;
   void ShowAboutChromeOS() override;
-  void ShowHelp() override;
   void ShowAccessibilityHelp() override;
   void ShowAccessibilitySettings() override;
   void ShowGestureEducationHelp() override;
   void ShowPaletteHelp() override;
   void ShowPaletteSettings() override;
   void ShowPrivacyAndSecuritySettings() override;
-  void ShowPublicAccountInfo() override;
   void ShowEnterpriseInfo() override;
   void ShowNetworkConfigure(const std::string& network_id) override;
   void ShowNetworkCreate(const std::string& type) override;
@@ -55,8 +55,13 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   void ShowArcVpnCreate(const std::string& app_id) override;
   void ShowNetworkSettings(const std::string& network_id) override;
   void ShowMultiDeviceSetup() override;
+  void ShowFirmwareUpdate() override;
   void RequestRestartForUpdate() override;
   void SetLocaleAndExit(const std::string& locale_iso_code) override;
+  void ShowAccessCodeCastingDialog() override;
+  void ShowCalendarEvent(const absl::optional<GURL>& event_url,
+                         bool& opened_pwa,
+                         GURL& final_event_url) override;
 
   int show_bluetooth_settings_count() const {
     return show_bluetooth_settings_count_;
@@ -86,6 +91,8 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
     return show_sim_unlock_settings_count_;
   }
 
+  int show_firmware_update_count() const { return show_firmware_update_count_; }
+
   const std::string& last_bluetooth_settings_device_id() const {
     return last_bluetooth_settings_device_id_;
   }
@@ -98,6 +105,7 @@ class ASH_PUBLIC_EXPORT TestSystemTrayClient : public SystemTrayClient {
   int show_os_settings_privacy_and_security_count_ = 0;
   int show_wifi_sync_settings_count_ = 0;
   int show_sim_unlock_settings_count_ = 0;
+  int show_firmware_update_count_ = 0;
   std::string last_bluetooth_settings_device_id_;
 };
 

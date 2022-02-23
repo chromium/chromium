@@ -11,13 +11,13 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/no_destructor.h"
 #include "base/process/kill.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/values.h"
 #include "build/build_config.h"
+#include "content/common/content_export.h"
 #include "content/public/browser/gpu_data_manager.h"
 #include "content/public/common/three_d_api_types.h"
 #include "gpu/config/device_perf_info.h"
@@ -107,7 +107,7 @@ class CONTENT_EXPORT GpuDataManagerImpl : public GpuDataManager,
   void UpdateGpuInfo(
       const gpu::GPUInfo& gpu_info,
       const absl::optional<gpu::GPUInfo>& gpu_info_for_hardware_gpu);
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   void UpdateDxDiagNode(const gpu::DxDiagNode& dx_diagnostics);
   void UpdateDx12Info(uint32_t d3d12_feature_level);
   void UpdateVulkanInfo(uint32_t vulkan_version);

@@ -9,6 +9,7 @@ import android.text.style.ClickableSpan;
 import android.view.View;
 import android.widget.TextView;
 
+import androidx.test.espresso.Espresso;
 import androidx.test.filters.LargeTest;
 
 import org.junit.After;
@@ -21,6 +22,7 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.base.test.util.CriteriaHelper;
+import org.chromium.base.test.util.Restriction;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.MockSafeBrowsingApiHandler;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -52,6 +54,7 @@ import org.chromium.net.test.EmbeddedTestServerRule;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogProperties;
 import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.test.util.UiRestriction;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -197,48 +200,20 @@ public final class SubresourceFilterTest {
 
     @Test
     @LargeTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_PHONE)
     @EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
-    public void resourceFilteredClickLearnMore_MessagesUI() throws Exception {
-        String url = mTestServer.getURL(PAGE_WITH_JPG);
-        Assert.assertFalse(
-                loadPageWithBlockableContentAndTestIfBlocked(url, METADATA_FOR_ENFORCEMENT));
+    public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnPhoneOnBackPress()
+            throws Exception {
+        testResourceFilteredClickLearnMore_MessagesUIFlow();
+    }
 
-        CallbackHelper tabCreatedCallback = new CallbackHelper();
-        TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
-        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(new TabModelObserver() {
-            @Override
-            public void didAddTab(
-                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
-                if (tab.getUrl().getSpec().equals(LEARN_MORE_PAGE)) {
-                    tabCreatedCallback.notifyCalled();
-                }
-            }
-        }));
-
-        // Check that the Ads Blocked message is showing and get the active message.
-        PropertyModel message = verifyAndGetAdsBlockedMessage();
-
-        int currentTabCreatedCallbackCount = tabCreatedCallback.getCallCount();
-
-        // Trigger the Ads Blocked dialog and simulate the "Learn more" link click.
-        createAdsBlockedDialog(message);
-        View dialogView = ((TabModalPresenter) mActivityTestRule.getActivity()
-                                   .getModalDialogManager()
-                                   .getCurrentPresenterForTest())
-                                  .getDialogContainerForTest();
-        TextView messageView = dialogView.findViewById(R.id.message);
-        Spanned spannedMessage = (Spanned) messageView.getText();
-        ClickableSpan[] spans =
-                spannedMessage.getSpans(0, spannedMessage.length(), ClickableSpan.class);
-        Assert.assertEquals(
-                "Ads Blocked dialog message text must have only 1 ClickableSpan.", 1, spans.length);
-        TestThreadUtils.runOnUiThreadBlocking(() -> spans[0].onClick(messageView));
-
-        // Wait for the tab to be added with the correct URL. Note, do not wait for this URL to be
-        // loaded since it is not controlled by the test instrumentation. Just waiting for the
-        // navigation to start should be OK though.
-        tabCreatedCallback.waitForCallback(
-                "Never received tab created event", currentTabCreatedCallbackCount);
+    @Test
+    @LargeTest
+    @Restriction(UiRestriction.RESTRICTION_TYPE_TABLET)
+    @EnableFeatures(ChromeFeatureList.MESSAGES_FOR_ANDROID_ADS_BLOCKED)
+    public void resourceFilteredClickLearnMore_MessagesUI_ReshowDialogOnTabletOnBackPress()
+            throws Exception {
+        testResourceFilteredClickLearnMore_MessagesUIFlow();
     }
 
     @Test
@@ -296,6 +271,59 @@ public final class SubresourceFilterTest {
         // Check that the infobar is not showing.
         List<InfoBar> infoBars = mActivityTestRule.getInfoBars();
         CriteriaHelper.pollUiThread(() -> infoBars.isEmpty());
+    }
+
+    private void testResourceFilteredClickLearnMore_MessagesUIFlow()
+            throws TimeoutException, ExecutionException, InterruptedException {
+        String url = mTestServer.getURL(PAGE_WITH_JPG);
+        Assert.assertFalse(
+                loadPageWithBlockableContentAndTestIfBlocked(url, METADATA_FOR_ENFORCEMENT));
+
+        CallbackHelper tabCreatedCallback = new CallbackHelper();
+        TabModel tabModel = mActivityTestRule.getActivity().getTabModelSelector().getCurrentModel();
+        TestThreadUtils.runOnUiThreadBlocking(() -> tabModel.addObserver(new TabModelObserver() {
+            @Override
+            public void didAddTab(
+                    Tab tab, @TabLaunchType int type, @TabCreationState int creationState) {
+                if (tab.getUrl().getSpec().equals(LEARN_MORE_PAGE)) {
+                    tabCreatedCallback.notifyCalled();
+                }
+            }
+        }));
+
+        // Check that the Ads Blocked message is showing and get the active message.
+        PropertyModel message = verifyAndGetAdsBlockedMessage();
+
+        int currentTabCreatedCallbackCount = tabCreatedCallback.getCallCount();
+
+        // Trigger the Ads Blocked dialog and simulate the "Learn more" link click.
+        createAdsBlockedDialog(message);
+        View dialogView = ((TabModalPresenter) mActivityTestRule.getActivity()
+                                   .getModalDialogManager()
+                                   .getCurrentPresenterForTest())
+                                  .getDialogContainerForTest();
+        TextView messageView = dialogView.findViewById(R.id.message);
+        Spanned spannedMessage = (Spanned) messageView.getText();
+        ClickableSpan[] spans =
+                spannedMessage.getSpans(0, spannedMessage.length(), ClickableSpan.class);
+        Assert.assertEquals(
+                "Ads Blocked dialog message text must have only 1 ClickableSpan.", 1, spans.length);
+        TestThreadUtils.runOnUiThreadBlocking(() -> spans[0].onClick(messageView));
+
+        // Wait for the tab to be added with the correct URL. Note, do not wait for this URL to be
+        // loaded since it is not controlled by the test instrumentation. Just waiting for the
+        // navigation to start should be OK though.
+        tabCreatedCallback.waitForCallback(
+                "Never received tab created event", currentTabCreatedCallbackCount);
+
+        // Press the back button to go to the original tab where the dialog was shown.
+        Espresso.pressBack();
+
+        CriteriaHelper.pollUiThread(() -> {
+            // Verify that the dialog is re-shown on the original tab.
+            return mActivityTestRule.getActivity().getModalDialogManager().getCurrentDialogForTest()
+                    != null;
+        }, "The dialog should be re-shown on navigation to the original tab.");
     }
 
     private boolean loadPageWithBlockableContentAndTestIfBlocked(String url, String metadata)

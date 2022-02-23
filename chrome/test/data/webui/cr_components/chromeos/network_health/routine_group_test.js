@@ -26,8 +26,8 @@ function createRoutines() {
       resultMsg: 'Passed',
       group: 0,
       type: 0,
-      result:
-          createResult(ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem),
+      result: createResult(
+          chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem),
       ariaDescription: '',
     },
     {
@@ -36,8 +36,8 @@ function createRoutines() {
       resultMsg: 'Passed',
       group: 0,
       type: 1,
-      result:
-          createResult(ash.networkDiagnostics.mojom.RoutineVerdict.kNoProblem),
+      result: createResult(
+          chromeos.networkDiagnostics.mojom.RoutineVerdict.kNoProblem),
       ariaDescription: '',
     }
   ];
@@ -158,7 +158,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
     let routines = createRoutines();
     routines[0].resultMsg = 'Failed';
     routines[0].result =
-        createResult(ash.networkDiagnostics.mojom.RoutineVerdict.kProblem);
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem);
     setRoutines(routines);
     checkResult(Icons.TEST_FAILED);
     clickRoutineGroup();
@@ -171,7 +171,7 @@ suite('RoutineGroupTest', function routineGroupTest() {
     let routines = createRoutines();
     routines[0].resultMsg = 'Not Run';
     routines[0].result =
-        createResult(ash.networkDiagnostics.mojom.RoutineVerdict.kNotRun);
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun);
     setRoutines(routines);
     checkResult(Icons.TEST_NOT_RUN);
     clickRoutineGroup();
@@ -184,10 +184,10 @@ suite('RoutineGroupTest', function routineGroupTest() {
     let routines = createRoutines();
     routines[0].resultMsg = 'Not Run';
     routines[0].result =
-        createResult(ash.networkDiagnostics.mojom.RoutineVerdict.kNotRun);
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kNotRun);
     routines[1].resultMsg = 'Failed';
     routines[1].result =
-        createResult(ash.networkDiagnostics.mojom.RoutineVerdict.kProblem);
+        createResult(chromeos.networkDiagnostics.mojom.RoutineVerdict.kProblem);
     setRoutines(routines);
     checkResult(Icons.TEST_FAILED);
     clickRoutineGroup();

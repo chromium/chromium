@@ -8,11 +8,12 @@
 #include "base/i18n/rtl.h"
 #import "ios/chrome/common/constants.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
+#import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/promo_style/constants.h"
-#import "ios/chrome/common/ui/promo_style/highlighted_button.h"
 #import "ios/chrome/common/ui/util/button_util.h"
 #include "ios/chrome/common/ui/util/device_util.h"
 #include "ios/chrome/common/ui/util/dynamic_type_util.h"
+#include "ios/chrome/common/ui/util/image_util.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -27,7 +28,7 @@ constexpr CGFloat kActionsBottomMargin = 10;
 constexpr CGFloat kTallBannerMultiplier = 0.35;
 constexpr CGFloat kDefaultBannerMultiplier = 0.25;
 constexpr CGFloat kContentWidthMultiplier = 0.65;
-constexpr CGFloat kContentMaxWidth = 327;
+constexpr CGFloat kContentOptimalWidth = 327;
 constexpr CGFloat kMoreArrowMargin = 4;
 constexpr CGFloat kPreviousContentVisibleOnScroll = 0.15;
 constexpr CGFloat kSeparatorHeight = 1;
@@ -42,7 +43,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 // UIView that wraps the scrollable content.
 @property(nonatomic, strong) UIView* scrollContentView;
 @property(nonatomic, strong) UILabel* subtitleLabel;
-@property(nonatomic, strong) HighlightedButton* primaryActionButton;
+@property(nonatomic, strong) HighlightButton* primaryActionButton;
 @property(nonatomic, strong) UIButton* secondaryActionButton;
 @property(nonatomic, strong) UIButton* tertiaryActionButton;
 
@@ -55,6 +56,14 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 // layout reflects the latest updates.
 @property(nonatomic, assign) BOOL canUpdateViewsOnScroll;
 
+// Redefinition to allow write. The property should only be read when
+// -hasTopSpecificContentView returns YES to not create the view when reading
+// it. The view should only be lazily instanciated when read externally.
+@property(nonatomic, strong, readwrite) UIView* topSpecificContentView;
+
+// Whether the image is currently being calculated; used to prevent infinite
+// recursions caused by |viewDidLayoutSubviews|.
+@property(nonatomic, assign) BOOL calculatingImageSize;
 @end
 
 @implementation PromoStyleViewController
@@ -83,6 +92,9 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   self.scrollContentView.translatesAutoresizingMaskIntoConstraints = NO;
   [self.scrollContentView addSubview:self.imageView];
   [self.scrollContentView addSubview:self.titleLabel];
+  if ([self hasTopSpecificContentView]) {
+    [self.scrollContentView addSubview:self.topSpecificContentView];
+  }
   [self.scrollContentView addSubview:self.subtitleLabel];
   [self.view addLayoutGuide:subtitleMarginLayoutGuide];
   [self.scrollContentView addSubview:self.specificContentView];
@@ -124,6 +136,25 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
       (self.secondaryActionString || self.tertiaryActionString)
           ? 0
           : kActionsBottomMargin;
+
+  NSLayoutConstraint* subtitleLabelTopConstraint = [self.subtitleLabel.topAnchor
+      constraintEqualToAnchor:self.titleLabel.bottomAnchor
+                     constant:kDefaultMargin];
+  if ([self hasTopSpecificContentView]) {
+    // When set, put the |topSpecificContentView| view between the title and
+    // subtitle labels.
+    [NSLayoutConstraint activateConstraints:@[
+      [self.topSpecificContentView.topAnchor
+          constraintEqualToAnchor:self.titleLabel.bottomAnchor],
+      [self.topSpecificContentView.centerXAnchor
+          constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
+      [self.topSpecificContentView.widthAnchor
+          constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor],
+    ]];
+    subtitleLabelTopConstraint = [self.subtitleLabel.topAnchor
+        constraintEqualToAnchor:self.topSpecificContentView.bottomAnchor];
+  }
+  subtitleLabelTopConstraint.active = YES;
 
   [NSLayoutConstraint activateConstraints:@[
     // Content width layout guide constraints. Constrain the width to both at
@@ -194,9 +225,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
     [self.titleLabel.widthAnchor
         constraintLessThanOrEqualToAnchor:self.scrollContentView.widthAnchor
                                  constant:-2 * kTitleHorizontalMargin],
-    [self.subtitleLabel.topAnchor
-        constraintEqualToAnchor:self.titleLabel.bottomAnchor
-                       constant:kDefaultMargin],
     [self.subtitleLabel.centerXAnchor
         constraintEqualToAnchor:self.scrollContentView.centerXAnchor],
     [self.subtitleLabel.widthAnchor
@@ -234,10 +262,15 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
                                  constant:-extraBottomMargin],
   ]];
 
-  // Also constrain the width layout guide to a maximum constant, but at a lower
-  // priority so that it only applies in compact screens.
+  // This constraint is added to enforce that the content width should be as
+  // close to the optimal width as possible, within the range already activated
+  // for "widthLayoutGuide.widthAnchor" previously, with a higher priority.
+  // In this case, the content width in iPad and iPhone landscape mode should be
+  // the safe layout width multiplied by kContentWidthMultiplier, while the
+  // content width for a iPhone portrait mode should be kContentOptimalWidth.
   NSLayoutConstraint* contentLayoutGuideWidthConstraint =
-      [widthLayoutGuide.widthAnchor constraintEqualToConstant:kContentMaxWidth];
+      [widthLayoutGuide.widthAnchor
+          constraintEqualToConstant:kContentOptimalWidth];
   contentLayoutGuideWidthConstraint.priority = UILayoutPriorityRequired - 1;
   contentLayoutGuideWidthConstraint.active = YES;
 
@@ -270,12 +303,6 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
 
-  // Rescale image here as on iPad the view height isn't correctly set during
-  // -viewDidLoad.
-  self.imageView.image = [self scaleSourceImage:self.bannerImage
-                                   currentImage:self.imageView.image
-                                         toSize:[self computeBannerImageSize]];
-
   // Reset |didReachBottom| to make sure that its value is correctly updated
   // to reflect the scrolling state when the view reappears and is refreshed
   // (e.g., when getting back from a full screen view that was hidding this
@@ -305,6 +332,22 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
       [self setReadMoreText];
     }
   });
+}
+
+- (void)viewDidLayoutSubviews {
+  [super viewDidLayoutSubviews];
+
+  // Prevents potential recursive calls to |viewDidLayoutSubviews|.
+  if (self.calculatingImageSize) {
+    return;
+  }
+  // Rescale image here as on iPad the view height isn't correctly set before
+  // subviews are laid out.
+  self.calculatingImageSize = YES;
+  self.imageView.image = [self scaleSourceImage:self.bannerImage
+                                   currentImage:self.imageView.image
+                                         toSize:[self computeBannerImageSize]];
+  self.calculatingImageSize = NO;
 }
 
 - (void)viewWillTransitionToSize:(CGSize)size
@@ -397,12 +440,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   if (CGSizeEqualToSize(newSize, currentImage.size)) {
     return currentImage;
   }
-
-  UIGraphicsBeginImageContextWithOptions(newSize, NO, 0.0);
-  [sourceImage drawInRect:CGRectMake(0, 0, newSize.width, newSize.height)];
-  UIImage* newImage = UIGraphicsGetImageFromCurrentImageContext();
-  UIGraphicsEndImageContext();
-  return newImage;
+  return ResizeImage(sourceImage, newSize, ProjectionMode::kAspectFit);
 }
 
 // Determines which font text style to use depending on the device size, the
@@ -473,9 +511,17 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   return _specificContentView;
 }
 
+- (UIView*)topSpecificContentView {
+  if (!_topSpecificContentView) {
+    _topSpecificContentView = [[UIView alloc] init];
+    _topSpecificContentView.translatesAutoresizingMaskIntoConstraints = NO;
+  }
+  return _topSpecificContentView;
+}
+
 - (UIButton*)primaryActionButton {
   if (!_primaryActionButton) {
-    _primaryActionButton = [[HighlightedButton alloc] initWithFrame:CGRectZero];
+    _primaryActionButton = [[HighlightButton alloc] initWithFrame:CGRectZero];
     _primaryActionButton.contentEdgeInsets =
         UIEdgeInsetsMake(kButtonVerticalInsets, 0, kButtonVerticalInsets, 0);
     [_primaryActionButton setBackgroundColor:[UIColor colorNamed:kBlueColor]];
@@ -601,7 +647,7 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
   return _tertiaryActionButton;
 }
 
-// Helper to create the learn more button
+// Helper to create the learn more button.
 - (UIButton*)learnMoreButton {
   if (!_learnMoreButton) {
     DCHECK(self.shouldShowLearnMoreButton);
@@ -729,6 +775,11 @@ constexpr CGFloat kLearnMoreButtonSide = 40;
 - (bool)isRegularXRegularSizeClass:(UITraitCollection*)traitCollection {
   return traitCollection.verticalSizeClass == UIUserInterfaceSizeClassRegular &&
          traitCollection.horizontalSizeClass == UIUserInterfaceSizeClassRegular;
+}
+
+// Returns YES if |_topSpecificContentView| is instantiated.
+- (BOOL)hasTopSpecificContentView {
+  return _topSpecificContentView != nil;
 }
 
 #pragma mark - UIScrollViewDelegate

@@ -5,7 +5,7 @@
 
 """update_api.py - Update committed Cronet API."""
 
-from __future__ import print_function
+
 
 import argparse
 import filecmp

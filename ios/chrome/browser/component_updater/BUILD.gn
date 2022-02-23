@@ -3,9 +3,10 @@
 # found in the LICENSE file.
 
 source_set("component_updater") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
-    "ios_component_updater_configurator.cc",
     "ios_component_updater_configurator.h",
+    "ios_component_updater_configurator.mm",
   ]
   deps = [
     "//base",
@@ -18,7 +19,6 @@ source_set("component_updater") {
     "//components/update_client:common_impl",
     "//ios/chrome/browser",
     "//ios/chrome/common",
-    "//ios/public/provider/chrome/browser/app_distribution:app_distribution_api",
     "//ios/web",
   ]
 }

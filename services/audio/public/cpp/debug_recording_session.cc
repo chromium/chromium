@@ -17,7 +17,7 @@ namespace audio {
 
 namespace {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define NumberToStringType base::NumberToWString
 #else
 #define NumberToStringType base::NumberToString

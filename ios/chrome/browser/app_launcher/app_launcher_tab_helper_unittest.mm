@@ -7,7 +7,6 @@
 #include <memory>
 
 #include "base/bind.h"
-#include "base/compiler_specific.h"
 #include "base/files/scoped_temp_dir.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
@@ -25,7 +24,6 @@
 #include "ios/chrome/browser/policy_url_blocking/policy_url_blocking_service.h"
 #include "ios/chrome/browser/reading_list/reading_list_model_factory.h"
 #import "ios/chrome/browser/u2f/u2f_tab_helper.h"
-#import "ios/chrome/browser/web/tab_id_tab_helper.h"
 #import "ios/web/common/features.h"
 #import "ios/web/public/test/fakes/fake_navigation_manager.h"
 #import "ios/web/public/test/fakes/fake_web_state.h"
@@ -116,13 +114,13 @@ class AppLauncherTabHelperTest : public PlatformTest {
     tab_helper_->SetDelegate(&delegate_);
   }
 
-  bool TestShouldAllowRequest(NSString* url_string,
-                              bool target_frame_is_main,
-                              bool target_frame_is_cross_origin,
-                              bool has_user_gesture,
-                              ui::PageTransition transition_type =
-                                  ui::PageTransition::PAGE_TRANSITION_LINK)
-      WARN_UNUSED_RESULT {
+  [[nodiscard]] bool TestShouldAllowRequest(
+      NSString* url_string,
+      bool target_frame_is_main,
+      bool target_frame_is_cross_origin,
+      bool has_user_gesture,
+      ui::PageTransition transition_type =
+          ui::PageTransition::PAGE_TRANSITION_LINK) {
     NSURL* url = [NSURL URLWithString:url_string];
     const web::WebStatePolicyDecider::RequestInfo request_info(
         transition_type, target_frame_is_main, target_frame_is_cross_origin,
@@ -150,7 +148,6 @@ class AppLauncherTabHelperTest : public PlatformTest {
     ReadingListModelFactory::GetInstance()->SetTestingFactoryAndUse(
         chrome_browser_state_.get(),
         base::BindRepeating(&BuildReadingListModel));
-    TabIdTabHelper::CreateForWebState(&web_state_);
     is_reading_list_initialized_ = true;
   }
 
@@ -433,8 +430,6 @@ TEST_F(AppLauncherTabHelperTest, MAYBE_TelUrls) {
 #define MAYBE_U2FUrls DISABLED_U2FUrls
 #endif
 TEST_F(AppLauncherTabHelperTest, MAYBE_U2FUrls) {
-  // Add required tab helpers for the U2F check.
-  TabIdTabHelper::CreateForWebState(&web_state_);
   std::unique_ptr<web::NavigationItem> item = web::NavigationItem::Create();
 
   // "u2f-x-callback" scheme should only be created by the browser. External
@@ -600,11 +595,6 @@ class BlockedUrlPolicyAppLauncherTabHelperTest
 
 // Tests that URLs to blocked domains do not open native apps.
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS},
-      /*disabled_features=*/{});
-
   NSString* url_string = @"itms-apps://itunes.apple.com/us/app/appname/id123";
   EXPECT_FALSE(TestShouldAllowRequest(url_string, /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,
@@ -621,11 +611,6 @@ TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, BlockedUrl) {
 #define MAYBE_AllowedUrl DISABLED_AllowedUrl
 #endif
 TEST_F(BlockedUrlPolicyAppLauncherTabHelperTest, MAYBE_AllowedUrl) {
-  base::test::ScopedFeatureList scoped_features;
-  scoped_features.InitWithFeatures(
-      /*enabled_features=*/{kURLBlocklistIOS},
-      /*disabled_features=*/{});
-
   EXPECT_FALSE(TestShouldAllowRequest(@"valid://1234",
                                       /*target_frame_is_main=*/true,
                                       /*target_frame_is_cross_origin=*/false,

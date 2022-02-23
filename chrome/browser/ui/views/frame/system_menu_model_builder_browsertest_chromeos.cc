@@ -18,8 +18,8 @@
 #include "content/public/test/browser_test.h"
 #include "ui/base/models/menu_model.h"
 
+using ::ash::ProfileHelper;
 using chrome::SettingsWindowManager;
-using chromeos::ProfileHelper;
 using user_manager::UserManager;
 
 namespace {

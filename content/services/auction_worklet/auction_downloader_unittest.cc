@@ -59,10 +59,12 @@ class AuctionDownloaderTest : public testing::Test {
 
  protected:
   void DownloadCompleteCallback(std::unique_ptr<std::string> body,
+                                scoped_refptr<net::HttpResponseHeaders> headers,
                                 absl::optional<std::string> error) {
     DCHECK(!body_);
     DCHECK(run_loop_);
     body_ = std::move(body);
+    headers_ = std::move(headers);
     error_ = std::move(error);
     EXPECT_EQ(error_.has_value(), !body_);
     run_loop_->Quit();
@@ -77,6 +79,7 @@ class AuctionDownloaderTest : public testing::Test {
 
   std::unique_ptr<base::RunLoop> run_loop_;
   std::unique_ptr<std::string> body_;
+  scoped_refptr<net::HttpResponseHeaders> headers_;
   absl::optional<std::string> error_;
 
   network::TestURLLoaderFactory url_loader_factory_;
@@ -102,6 +105,17 @@ TEST_F(AuctionDownloaderTest, HttpError) {
   EXPECT_FALSE(RunRequest());
   EXPECT_EQ(
       "Failed to load https://url.test/script.js HTTP status = 404 Not Found.",
+      last_error_msg());
+}
+
+TEST_F(AuctionDownloaderTest, Timeout) {
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, kAllowFledgeHeader,
+              net::HTTP_REQUEST_TIMEOUT);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Failed to load https://url.test/script.js HTTP status = 408 Request "
+      "Timeout.",
       last_error_msg());
 }
 
@@ -161,6 +175,47 @@ TEST_F(AuctionDownloaderTest, AllowFledge) {
       "Rejecting load of https://url.test/script.js due to lack of "
       "X-Allow-FLEDGE: true.",
       last_error_msg());
+}
+
+TEST_F(AuctionDownloaderTest, PassesHeaders) {
+  std::string allow_fledge_string;
+  std::string data_version_string;
+
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody, "X-Allow-FLEDGE: true");
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_FALSE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+
+  mime_type_ = AuctionDownloader::MimeType::kJson;
+  AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 10u);
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+  EXPECT_EQ("10", data_version_string);
+
+  AddVersionedJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody, 5u);
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
+  EXPECT_EQ("5", data_version_string);
+
+  AddJsonResponse(&url_loader_factory_, url_, kAsciiResponseBody);
+  EXPECT_TRUE(RunRequest()) << last_error_msg();
+  EXPECT_TRUE(
+      headers_->GetNormalizedHeader("X-Allow-FLEDGE", &allow_fledge_string));
+  EXPECT_EQ("true", allow_fledge_string);
+  EXPECT_FALSE(
+      headers_->GetNormalizedHeader("Data-Version", &data_version_string));
 }
 
 // Redirect responses are treated as failures.
@@ -271,6 +326,70 @@ TEST_F(AuctionDownloaderTest, MimeType) {
   std::unique_ptr<std::string> body = RunRequest();
   ASSERT_TRUE(body);
   EXPECT_EQ(kAsciiResponseBody, *body);
+}
+
+TEST_F(AuctionDownloaderTest, MimeTypeWasm) {
+  mime_type_ = AuctionDownloader::MimeType::kWebAssembly;
+
+  // WASM request, Javascript response type.
+  AddResponse(&url_loader_factory_, url_, kJavascriptMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // WASM request, no response type.
+  AddResponse(&url_loader_factory_, url_, /*mime_type=*/absl::nullopt,
+              /*charset=*/absl::nullopt, kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // WASM request, JSON response type.
+  AddResponse(&url_loader_factory_, url_, kJsonMimeType, kUtf8Charset,
+              kAsciiResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // WASM request, WASM response type.
+  AddResponse(&url_loader_factory_, url_, kWasmMimeType,
+              /*charset=*/absl::nullopt, kNonUtf8ResponseBody);
+  std::unique_ptr<std::string> body = RunRequest();
+  ASSERT_TRUE(body);
+  EXPECT_EQ(kNonUtf8ResponseBody, *body);
+
+  // Mimetypes are case insensitive.
+  AddResponse(&url_loader_factory_, url_, "Application/WasM",
+              /*charset=*/absl::nullopt, kNonUtf8ResponseBody);
+  body = RunRequest();
+  ASSERT_TRUE(body);
+  EXPECT_EQ(kNonUtf8ResponseBody, *body);
+
+  // No charset should be used (it's a binary format, after all).
+  AddResponse(&url_loader_factory_, url_, kWasmMimeType,
+              /*charset=*/kUtf8Charset, kUtf8ResponseBody);
+  body = RunRequest();
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
+
+  // Even an empty parameter list is to be rejected.
+  AddResponse(&url_loader_factory_, url_, "application/wasm;",
+              /*charset=*/absl::nullopt, kNonUtf8ResponseBody);
+  EXPECT_FALSE(RunRequest());
+  EXPECT_EQ(
+      "Rejecting load of https://url.test/script.js due to unexpected MIME "
+      "type.",
+      last_error_msg());
 }
 
 // Test all Javscript and JSON MIME type strings.

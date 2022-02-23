@@ -18,8 +18,9 @@ class ProjectorSystemWebAppDelegate : public web_app::SystemWebAppDelegate {
   ~ProjectorSystemWebAppDelegate() override;
 
   // web_app::SystemWebAppDelegate:
-  std::unique_ptr<WebApplicationInfo> GetWebAppInfo() const override;
+  std::unique_ptr<WebAppInstallInfo> GetWebAppInfo() const override;
   bool ShouldCaptureNavigations() const override;
+  gfx::Size GetMinimumWindowSize() const override;
   bool IsAppEnabled() const override;
 };
 

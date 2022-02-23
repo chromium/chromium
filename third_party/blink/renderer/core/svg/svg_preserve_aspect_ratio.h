@@ -32,7 +32,6 @@ class SizeF;
 namespace blink {
 
 class AffineTransform;
-class FloatRect;
 class SVGPreserveAspectRatioTearOff;
 
 class SVGPreserveAspectRatio final
@@ -77,7 +76,7 @@ class SVGPreserveAspectRatio final
   }
   SVGMeetOrSliceType MeetOrSlice() const { return meet_or_slice_; }
 
-  void TransformRect(FloatRect& dest_rect, FloatRect& src_rect) const;
+  void TransformRect(gfx::RectF& dest_rect, gfx::RectF& src_rect) const;
 
   AffineTransform ComputeTransform(const gfx::RectF& view_box,
                                    const gfx::SizeF& viewport_size) const;

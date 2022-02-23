@@ -57,7 +57,8 @@ class PLATFORM_EXPORT SkewTransformOperation final : public TransformOperation {
     return angle_x_ == s->angle_x_ && angle_y_ == s->angle_y_;
   }
 
-  void Apply(TransformationMatrix& transform, const FloatSize&) const override {
+  void Apply(TransformationMatrix& transform,
+             const gfx::SizeF&) const override {
     transform.Skew(angle_x_, angle_y_);
   }
 

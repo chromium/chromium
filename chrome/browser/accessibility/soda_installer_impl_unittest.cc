@@ -4,6 +4,7 @@
 
 #include "chrome/browser/accessibility/soda_installer_impl.h"
 
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "base/values.h"
@@ -17,6 +18,9 @@
 namespace {
 const speech::LanguageCode kEnglishLocale = speech::LanguageCode::kEnUs;
 const base::TimeDelta kSodaUninstallTime = base::Days(30);
+
+constexpr char kSodaEnglishLanguageInstallationResult[] =
+    "SodaInstaller.Language.en-US.InstallationResult";
 }  // namespace
 
 namespace speech {
@@ -96,9 +100,21 @@ class SodaInstallerImplTest : public testing::Test {
 };
 
 TEST_F(SodaInstallerImplTest, IsSodaInstalled) {
+  base::HistogramTester histogram_tester;
+
   ASSERT_FALSE(IsSodaInstalled());
   Init();
   ASSERT_TRUE(IsSodaInstalled());
+
+  // SODA binary and english language installation never failed.
+  histogram_tester.ExpectBucketCount(kSodaBinaryInstallationResult, 0, 0);
+  histogram_tester.ExpectBucketCount(kSodaEnglishLanguageInstallationResult, 0,
+                                     0);
+
+  // SODA binary and english language installation succeeded once.
+  histogram_tester.ExpectBucketCount(kSodaBinaryInstallationResult, 1, 1);
+  histogram_tester.ExpectBucketCount(kSodaEnglishLanguageInstallationResult, 1,
+                                     1);
 }
 
 TEST_F(SodaInstallerImplTest, IsDownloading) {

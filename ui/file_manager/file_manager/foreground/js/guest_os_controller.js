@@ -1,0 +1,47 @@
+// Copyright 2020 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+import {listMountableGuests} from '../../common/js/api.js';
+import {GuestOsPlaceholder} from '../../common/js/files_app_entry_types.js';
+import {util} from '../../common/js/util.js';
+
+import {DirectoryModel} from './directory_model.js';
+import {NavigationModelFakeItem, NavigationModelItemType} from './navigation_list_model.js';
+import {DirectoryTree} from './ui/directory_tree.js';
+
+/**
+ * GuestOsController handles the foreground UI relating to Guest OSs.
+ */
+export class GuestOsController {
+  /**
+   * @param {!DirectoryModel} directoryModel DirectoryModel.
+   * @param {!DirectoryTree} directoryTree DirectoryTree.
+   */
+  constructor(directoryModel, directoryTree) {
+    if (!util.isGuestOsEnabled()) {
+      console.error('Created a guest os controller when it\'s not enabled');
+    }
+    /** @private @const */
+    this.directoryModel_ = directoryModel;
+
+    /** @private @const */
+    this.directoryTree_ = directoryTree;
+  }
+
+  /**
+   * Refresh the Guest OS files items by fetching an updated list of guests,
+   * adding them to the directory tree and triggering a redraw.
+   */
+  async refresh() {
+    const guests = await listMountableGuests();
+    this.directoryTree_.dataModel.guestOsPlaceholders = guests.map(guest => {
+      return new NavigationModelFakeItem(
+          guest.displayName, NavigationModelItemType.GUEST_OS,
+          new GuestOsPlaceholder(guest.displayName, guest.id));
+    });
+
+    // Redraw the tree to ensure any newly added/removed roots are updated.
+    this.directoryTree_.redraw(false);
+  }
+}

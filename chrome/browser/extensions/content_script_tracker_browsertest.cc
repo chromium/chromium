@@ -435,8 +435,7 @@ IN_PROC_BROWSER_TEST_F(
       {
         "name": "ContentScriptTrackerBrowserTest - Declarative",
         "version": "1.0",
-        "manifest_version": 2,
-        "permissions": [ "tabs", "<all_urls>" ],
+        "manifest_version": 3,
         "content_scripts": [{
           "all_frames": true,
           "match_about_blank": true,

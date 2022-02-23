@@ -174,6 +174,15 @@ public class TemplateUrlService {
     }
 
     /**
+     * @return Whether or not the default search engine has a logo image to show
+     *    on NTP or start surface.
+     */
+    public boolean doesDefaultSearchEngineHaveLogo() {
+        return TemplateUrlServiceJni.get().doesDefaultSearchEngineHaveLogo(
+                mNativeTemplateUrlServiceAndroid, TemplateUrlService.this);
+    }
+
+    /**
      * @return Whether the default configured search engine is for a Google property.
      */
     public boolean isDefaultSearchEngineGoogle() {
@@ -366,7 +375,7 @@ public class TemplateUrlService {
     }
 
     @NativeMethods
-    interface Natives {
+    public interface Natives {
         void load(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
         boolean isLoaded(long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
         void setUserSelectedDefaultSearchProvider(long nativeTemplateUrlServiceAndroid,
@@ -376,6 +385,8 @@ public class TemplateUrlService {
         boolean isSearchResultsPageFromDefaultSearchProvider(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller, GURL url);
         boolean isSearchByImageAvailable(
+                long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
+        boolean doesDefaultSearchEngineHaveLogo(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);
         boolean isDefaultSearchEngineGoogle(
                 long nativeTemplateUrlServiceAndroid, TemplateUrlService caller);

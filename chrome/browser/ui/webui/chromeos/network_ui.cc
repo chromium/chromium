@@ -10,8 +10,6 @@
 
 #include "ash/public/cpp/esim_manager.h"
 #include "ash/public/cpp/network_config_service.h"
-#include "ash/services/network_health/public/mojom/network_diagnostics.mojom.h"
-#include "ash/services/network_health/public/mojom/network_health.mojom.h"
 #include "ash/webui/network_ui/network_diagnostics_resource_provider.h"
 #include "ash/webui/network_ui/network_health_resource_provider.h"
 #include "ash/webui/network_ui/traffic_counters_resource_provider.h"
@@ -33,17 +31,24 @@
 #include "chrome/grit/generated_resources.h"
 #include "chrome/grit/network_ui_resources.h"
 #include "chrome/grit/network_ui_resources_map.h"
+#include "chromeos/network/cellular_esim_profile_handler.h"
 #include "chromeos/network/cellular_esim_profile_handler_impl.h"
+#include "chromeos/network/cellular_esim_uninstall_handler.h"
+#include "chromeos/network/cellular_utils.h"
 #include "chromeos/network/device_state.h"
+#include "chromeos/network/managed_network_configuration_handler.h"
 #include "chromeos/network/network_configuration_handler.h"
 #include "chromeos/network/network_device_handler.h"
 #include "chromeos/network/network_state.h"
 #include "chromeos/network/network_state_handler.h"
-#include "chromeos/network/onc/onc_utils.h"
+#include "chromeos/network/onc/network_onc_utils.h"
 #include "chromeos/services/cellular_setup/public/mojom/esim_manager.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_diagnostics.mojom.h"
+#include "chromeos/services/network_health/public/mojom/network_health.mojom.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "components/device_event_log/device_event_log.h"
+#include "components/user_manager/user_manager.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui.h"
@@ -59,11 +64,13 @@ namespace chromeos {
 namespace {
 
 constexpr char kAddNetwork[] = "addNetwork";
+constexpr char kDisableESimProfile[] = "disableActiveESimProfile";
 constexpr char kGetNetworkProperties[] = "getShillNetworkProperties";
 constexpr char kGetDeviceProperties[] = "getShillDeviceProperties";
 constexpr char kGetEthernetEAP[] = "getShillEthernetEAP";
 constexpr char kOpenCellularActivationUi[] = "openCellularActivationUi";
 constexpr char kResetESimCache[] = "resetESimCache";
+constexpr char kResetEuicc[] = "resetEuicc";
 constexpr char kShowNetworkDetails[] = "showNetworkDetails";
 constexpr char kShowNetworkConfig[] = "showNetworkConfig";
 constexpr char kShowAddNewWifiNetworkDialog[] = "showAddNewWifi";
@@ -103,13 +110,66 @@ void SetDeviceProperties(base::Value* dictionary) {
     dictionary->SetKey(shill::kDeviceProperty, std::move(device_dictionary));
 }
 
+bool IsGuestModeActive() {
+  return user_manager::UserManager::Get()->IsLoggedInAsGuest() ||
+         user_manager::UserManager::Get()->IsLoggedInAsPublicAccount();
+}
+
+// Get the euicc path for reset euicc operation. Return absl::nullopt if the
+// reset euicc is not allowed, i.e: the user is in guest mode, admin enables
+// restrict cellular network policy or a managed eSIM profile already installed.
+absl::optional<dbus::ObjectPath> GetEuiccResetPath() {
+  if (IsGuestModeActive()) {
+    NET_LOG(ERROR) << "Couldn't reset EUICC in guest mode.";
+    return absl::nullopt;
+  }
+  absl::optional<dbus::ObjectPath> euicc_path = chromeos::GetCurrentEuiccPath();
+  if (!euicc_path) {
+    NET_LOG(ERROR) << "No current EUICC. Unable to reset EUICC";
+    return absl::nullopt;
+  }
+  const ManagedNetworkConfigurationHandler*
+      managed_network_configuration_handler =
+          NetworkHandler::Get()->managed_network_configuration_handler();
+  if (!managed_network_configuration_handler)
+    return absl::nullopt;
+  if (managed_network_configuration_handler
+          ->AllowOnlyPolicyCellularNetworks()) {
+    NET_LOG(ERROR)
+        << "Couldn't reset EUICC if admin restricts cellular networks.";
+    return absl::nullopt;
+  }
+  NetworkStateHandler* network_state_handler =
+      NetworkHandler::Get()->network_state_handler();
+  if (!network_state_handler)
+    return absl::nullopt;
+  NetworkStateHandler::NetworkStateList state_list;
+  network_state_handler->GetNetworkListByType(NetworkTypePattern::Cellular(),
+                                              /*configured_only=*/false,
+                                              /*visible_only=*/false,
+                                              /*limit=*/0, &state_list);
+
+  HermesEuiccClient::Properties* euicc_properties =
+      HermesEuiccClient::Get()->GetProperties(*euicc_path);
+  const std::string& eid = euicc_properties->eid().value();
+  for (const NetworkState* network : state_list) {
+    if (network->eid() == eid && network->IsManagedByPolicy()) {
+      NET_LOG(ERROR)
+          << "Couldn't reset EUICC if a managed eSIM profile is installed.";
+      return absl::nullopt;
+    }
+  }
+
+  return euicc_path;
+}
+
 class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
  public:
   NetworkDiagnosticsMessageHandler() = default;
   ~NetworkDiagnosticsMessageHandler() override = default;
 
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         "OpenFeedbackDialog",
         base::BindRepeating(
             &NetworkDiagnosticsMessageHandler::OpenFeedbackDialog,
@@ -117,7 +177,7 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
   }
 
  private:
-  void OpenFeedbackDialog(const base::ListValue* value) {
+  void OpenFeedbackDialog(base::Value::ConstListView value) {
     chrome::ShowFeedbackPage(nullptr, chrome::kFeedbackSourceNetworkHealthPage,
                              "" /*description_template*/,
                              "" /*description_template_placeholder*/,
@@ -126,6 +186,8 @@ class NetworkDiagnosticsMessageHandler : public content::WebUIMessageHandler {
 };
 
 }  // namespace
+
+namespace network_ui {
 
 class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
  public:
@@ -139,50 +201,59 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
 
   // WebUIMessageHandler implementation.
   void RegisterMessages() override {
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kAddNetwork,
         base::BindRepeating(&NetworkConfigMessageHandler::AddNetwork,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetNetworkProperties,
         base::BindRepeating(
             &NetworkConfigMessageHandler::GetShillNetworkProperties,
             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetDeviceProperties,
         base::BindRepeating(
             &NetworkConfigMessageHandler::GetShillDeviceProperties,
             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetEthernetEAP,
         base::BindRepeating(&NetworkConfigMessageHandler::GetShillEthernetEAP,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kOpenCellularActivationUi,
         base::BindRepeating(
             &NetworkConfigMessageHandler::OpenCellularActivationUi,
             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kResetESimCache,
         base::BindRepeating(&NetworkConfigMessageHandler::ResetESimCache,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
+        kDisableESimProfile,
+        base::BindRepeating(
+            &NetworkConfigMessageHandler::DisableActiveESimProfile,
+            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
+        kResetEuicc,
+        base::BindRepeating(&NetworkConfigMessageHandler::ResetEuicc,
+                            base::Unretained(this)));
+    web_ui()->RegisterMessageCallback(
         kShowNetworkDetails,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkDetails,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kShowNetworkConfig,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowNetworkConfig,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kShowAddNewWifiNetworkDialog,
         base::BindRepeating(&NetworkConfigMessageHandler::ShowAddNewWifi,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kGetHostname,
         base::BindRepeating(&NetworkConfigMessageHandler::GetHostname,
                             base::Unretained(this)));
-    web_ui()->RegisterDeprecatedMessageCallback(
+    web_ui()->RegisterMessageCallback(
         kSetHostname,
         base::BindRepeating(&NetworkConfigMessageHandler::SetHostname,
                             base::Unretained(this)));
@@ -194,10 +265,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     ResolveJavascriptCallback(base::Value(callback_id), response);
   }
 
-  void GetShillNetworkProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
-    std::string guid = arg_list->GetList()[1].GetString();
+  void GetShillNetworkProperties(base::Value::ConstListView arg_list) {
+    CHECK_EQ(2u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+    std::string guid = arg_list[1].GetString();
 
     std::string service_path;
     if (!GetServicePathFromGuid(guid, &service_path)) {
@@ -229,10 +300,10 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, return_arg_list);
   }
 
-  void GetShillDeviceProperties(const base::ListValue* arg_list) {
-    CHECK_EQ(2u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
-    std::string type = arg_list->GetList()[1].GetString();
+  void GetShillDeviceProperties(base::Value::ConstListView arg_list) {
+    CHECK_EQ(2u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
+    std::string type = arg_list[1].GetString();
 
     const DeviceState* device =
         NetworkHandler::Get()->network_state_handler()->GetDeviceStateByType(
@@ -248,9 +319,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
                        weak_ptr_factory_.GetWeakPtr(), callback_id, type));
   }
 
-  void GetShillEthernetEAP(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
+  void GetShillEthernetEAP(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
 
     NetworkStateHandler::NetworkStateList list;
     NetworkHandler::Get()->network_state_handler()->GetNetworkListByType(
@@ -272,9 +343,9 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, response);
   }
 
-  void OpenCellularActivationUi(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
+  void OpenCellularActivationUi(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
 
     const NetworkState* cellular_network =
         NetworkHandler::Get()->network_state_handler()->FirstNetworkByType(
@@ -288,7 +359,7 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, response);
   }
 
-  void ResetESimCache(const base::ListValue* arg_list) {
+  void ResetESimCache(base::Value::ConstListView arg_list) {
     CellularESimProfileHandler* handler =
         NetworkHandler::Get()->cellular_esim_profile_handler();
     if (!handler)
@@ -299,21 +370,53 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     handler_impl->ResetESimProfileCache();
   }
 
-  void ShowNetworkDetails(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid = arg_list->GetList()[0].GetString();
+  void DisableActiveESimProfile(base::Value::ConstListView arg_list) {
+    CellularESimProfileHandler* handler =
+        NetworkHandler::Get()->cellular_esim_profile_handler();
+    if (!handler)
+      return;
+
+    CellularESimProfileHandlerImpl* handler_impl =
+        static_cast<CellularESimProfileHandlerImpl*>(handler);
+    handler_impl->DisableActiveESimProfile();
+  }
+
+  void ResetEuicc(base::Value::ConstListView arg_list) {
+    absl::optional<dbus::ObjectPath> euicc_path = GetEuiccResetPath();
+    if (!euicc_path)
+      return;
+
+    CellularESimUninstallHandler* handler =
+        NetworkHandler::Get()->cellular_esim_uninstall_handler();
+    if (!handler)
+      return;
+    NET_LOG(EVENT) << "Executing reset EUICC on " << euicc_path->value();
+    handler->ResetEuiccMemory(
+        *euicc_path, base::BindOnce(&NetworkConfigMessageHandler::OnEuiccReset,
+                                    base::Unretained(this)));
+  }
+
+  void OnEuiccReset(bool success) {
+    if (!success) {
+      NET_LOG(ERROR) << "Error occurred when resetting EUICC.";
+    }
+  }
+
+  void ShowNetworkDetails(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string guid = arg_list[0].GetString();
 
     InternetDetailDialog::ShowDialog(guid);
   }
 
-  void ShowNetworkConfig(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string guid = arg_list->GetList()[0].GetString();
+  void ShowNetworkConfig(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string guid = arg_list[0].GetString();
 
     InternetConfigDialog::ShowDialogForNetworkId(guid);
   }
 
-  void ShowAddNewWifi(const base::ListValue* arg_list) {
+  void ShowAddNewWifi(base::Value::ConstListView arg_list) {
     InternetConfigDialog::ShowDialogForNetworkType(::onc::network_type::kWiFi);
   }
 
@@ -335,17 +438,17 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, return_arg_list);
   }
 
-  void GetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string callback_id = arg_list->GetList()[0].GetString();
+  void GetHostname(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string callback_id = arg_list[0].GetString();
     std::string hostname =
         NetworkHandler::Get()->network_state_handler()->hostname();
     Respond(callback_id, base::Value(hostname));
   }
 
-  void SetHostname(const base::ListValue* arg_list) {
-    CHECK_EQ(1u, arg_list->GetList().size());
-    std::string hostname = arg_list->GetList()[0].GetString();
+  void SetHostname(base::Value::ConstListView arg_list) {
+    CHECK_EQ(1u, arg_list.size());
+    std::string hostname = arg_list[0].GetString();
     NET_LOG(USER) << "SET HOSTNAME: " << hostname;
     NetworkHandler::Get()->network_state_handler()->SetHostname(hostname);
   }
@@ -374,174 +477,189 @@ class NetworkConfigMessageHandler : public content::WebUIMessageHandler {
     Respond(callback_id, return_arg_list);
   }
 
-  void AddNetwork(const base::ListValue* args) {
-    DCHECK(!args->GetList().empty());
-    std::string onc_type = args->GetList()[0].GetString();
+  void AddNetwork(base::Value::ConstListView args) {
+    DCHECK(!args.empty());
+    std::string onc_type = args[0].GetString();
     InternetConfigDialog::ShowDialogForNetworkType(onc_type);
   }
 
   base::WeakPtrFactory<NetworkConfigMessageHandler> weak_ptr_factory_{this};
 };
 
+}  // namespace network_ui
+
 // static
 void NetworkUI::GetLocalizedStrings(base::DictionaryValue* localized_strings) {
-  localized_strings->SetString("titleText",
-                               l10n_util::GetStringUTF16(IDS_NETWORK_UI_TITLE));
+  localized_strings->SetStringKey(
+      "titleText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TITLE));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "generalTab", l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_GENERAL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkHealthTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_HEALTH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkStateTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_STATE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkSelectTab",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_TAB_NETWORK_SELECT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "autoRefreshText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_AUTO_REFRESH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "deviceLogLinkText", l10n_util::GetStringUTF16(IDS_DEVICE_LOG_LINK_TEXT));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkRefreshText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_REFRESH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "clickToExpandText", l10n_util::GetStringUTF16(IDS_NETWORK_UI_EXPAND));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "propertyFormatText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_PROPERTY_FORMAT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "normalFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_NORMAL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "managedFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_MANAGED));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "stateFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_STATE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "shillFormatOption",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FORMAT_SHILL));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "dhcpHostnameLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_DHCP_HOSTNAME));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "globalPolicyLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_GLOBAL_POLICY));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkListsLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LISTS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkHealthLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_HEALTH));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkDiagnosticsLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_DIAGNOSTICS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "visibleNetworksLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_VISIBLE_NETWORKS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "favoriteNetworksLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_FAVORITE_NETWORKS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "ethernetEapNetworkLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ETHERNET_EAP));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "devicesLabel", l10n_util::GetStringUTF16(IDS_NETWORK_UI_DEVICES));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "cellularActivationLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NO_CELLULAR_ACTIVATION_LABEL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "cellularActivationButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_OPEN_CELLULAR_ACTIVATION_BUTTON_TEXT));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "noCellularErrorText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NO_CELLULAR_ERROR_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "resetESimCacheLabel",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "resetESimCacheButtonText",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_RESET_ESIM_PROFILES_BUTTON_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
+      "disableESimProfilesLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_DISABLE_ESIM_PROFILES_LABEL));
+  localized_strings->SetStringKey(
+      "disableActiveESimProfileButtonText",
+      l10n_util::GetStringUTF16(
+          IDS_NETWORK_UI_DISABLE_ACTIVE_ESIM_PROFILE_BUTTON_TEXT));
+
+  localized_strings->SetStringKey(
+      "resetEuiccLabel",
+      l10n_util::GetStringUTF16(IDS_NETWORK_UI_RESET_EUICC_LABEL));
+
+  localized_strings->SetStringKey(
       "addNewWifiLabel",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ADD_NEW_WIFI_LABEL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "addNewWifiButtonText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_ADD_NEW_WIFI_BUTTON_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "importOncButtonText",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_IMPORT_ONC_BUTTON_TEXT));
 
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "addWiFiListItemName",
       l10n_util::GetStringUTF16(IDS_NETWORK_ADD_WI_FI_LIST_ITEM_NAME));
 
   // Network logs
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDescription",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DESCRIPTION));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsSystemLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_SYSTEM_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsFilterPii",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_FILTER_PII));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsPolicies",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_POLICIES));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebugLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUG_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsChromeLogs",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_CHROME_LOGS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsStoreButton",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_STORE_BUTTON));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsStatus",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_STATUS));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingTitle",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_TITLE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingDescription",
       l10n_util::GetStringUTF16(
           IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_DESCRIPTION));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingNone",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_NONE));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "networkLogsDebuggingUnknown",
       l10n_util::GetStringUTF16(IDS_NETWORK_UI_NETWORK_LOGS_DEBUGGING_UNKNOWN));
 
   // Network Diagnostics
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "NetworkDiagnosticsRunAll",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_RUN_ALL));
-  localized_strings->SetString(
+  localized_strings->SetStringKey(
       "NetworkDiagnosticsSendFeedback",
       l10n_util::GetStringUTF16(IDS_NETWORK_DIAGNOSTICS_SEND_FEEDBACK));
 }
 
 NetworkUI::NetworkUI(content::WebUI* web_ui)
     : ui::MojoWebUIController(web_ui, /*enable_chrome_send=*/true) {
-  web_ui->AddMessageHandler(std::make_unique<NetworkConfigMessageHandler>());
+  web_ui->AddMessageHandler(
+      std::make_unique<network_ui::NetworkConfigMessageHandler>());
   web_ui->AddMessageHandler(std::make_unique<OncImportMessageHandler>());
   web_ui->AddMessageHandler(std::make_unique<NetworkLogsMessageHandler>());
   web_ui->AddMessageHandler(
@@ -584,17 +702,17 @@ void NetworkUI::BindInterface(
 }
 
 void NetworkUI::BindInterface(
-    mojo::PendingReceiver<ash::network_health::mojom::NetworkHealthService>
+    mojo::PendingReceiver<network_health::mojom::NetworkHealthService>
         receiver) {
-  ash::network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
+  network_health::NetworkHealthService::GetInstance()->BindHealthReceiver(
       std::move(receiver));
 }
 
 void NetworkUI::BindInterface(
     mojo::PendingReceiver<
-        ash::network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
-  ash::network_health::NetworkHealthService::GetInstance()
-      ->BindDiagnosticsReceiver(std::move(receiver));
+        network_diagnostics::mojom::NetworkDiagnosticsRoutines> receiver) {
+  network_health::NetworkHealthService::GetInstance()->BindDiagnosticsReceiver(
+      std::move(receiver));
 }
 
 void NetworkUI::BindInterface(

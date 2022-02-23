@@ -185,13 +185,6 @@ class CrostiniExportImport : public KeyedService,
              base::FilePath path,
              CrostiniManager::CrostiniResultCallback callback);
 
-  // DEPRECATED crostini::ExportContainerProgressObserver implementation.
-  // TODO(juwa): delete this once the new version of tremplin has shipped.
-  void OnExportContainerProgress(const ContainerId& container_id,
-                                 crostini::ExportContainerProgressStatus status,
-                                 int progress_percent,
-                                 uint64_t progress_speed) override;
-
   // crostini::ExportContainerProgressObserver implementation.
   void OnExportContainerProgress(const ContainerId& container_id,
                                  const StreamingExportStatus& status) override;

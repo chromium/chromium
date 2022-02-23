@@ -27,10 +27,6 @@ public class ShareSheetLinkToggleCoordinator {
         int COUNT = 2;
     }
 
-    // SHARING_HUB_LINK_TOGGLE params
-    static final String IMAGE_ENABLED_BY_DEFAULT = "image_enabled";
-    static final String SCREENSHOT_ENABLED_BY_DEFAULT = "screenshot_enabled";
-
     private final LinkToTextCoordinator mLinkToTextCoordinator;
 
     private ShareParams mShareParams;
@@ -65,8 +61,7 @@ public class ShareSheetLinkToggleCoordinator {
                 && chromeShareExtras.getDetailedContentType()
                         == DetailedContentType.HIGHLIGHTED_TEXT;
         mShouldEnableGenericToggle =
-                ChromeFeatureList.isEnabled(ChromeFeatureList.SHARING_HUB_LINK_TOGGLE)
-                && mChromeShareExtras.getDetailedContentType() != DetailedContentType.NOT_SPECIFIED
+                mChromeShareExtras.getDetailedContentType() != DetailedContentType.NOT_SPECIFIED
                 && mUrl != null && !mUrl.isEmpty();
     }
 
@@ -101,20 +96,8 @@ public class ShareSheetLinkToggleCoordinator {
 
     boolean shouldEnableToggleByDefault() {
         int detailedContentType = mChromeShareExtras.getDetailedContentType();
-        if (detailedContentType == DetailedContentType.IMAGE
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SHARING_HUB_LINK_TOGGLE, IMAGE_ENABLED_BY_DEFAULT,
-                        false)) {
-            return true;
-        } else if (detailedContentType == DetailedContentType.SCREENSHOT
-                && ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
-                        ChromeFeatureList.SHARING_HUB_LINK_TOGGLE, SCREENSHOT_ENABLED_BY_DEFAULT,
-                        false)) {
-            return true;
-        } else if (detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT
-                || detailedContentType == DetailedContentType.WEB_NOTES) {
-            return true;
-        }
-        return false;
+        return detailedContentType == DetailedContentType.HIGHLIGHTED_TEXT
+                || detailedContentType == DetailedContentType.WEB_NOTES
+                || detailedContentType == DetailedContentType.LIGHTWEIGHT_REACTION;
     }
 }

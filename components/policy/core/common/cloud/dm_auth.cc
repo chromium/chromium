@@ -20,11 +20,6 @@ DMAuth DMAuth::FromDMToken(const std::string& dm_token) {
 }
 
 // static
-DMAuth DMAuth::FromGaiaToken(const std::string& gaia_token) {
-  return DMAuth(gaia_token, DMAuthTokenType::kGaia);
-}
-
-// static
 DMAuth DMAuth::FromOAuthToken(const std::string& oauth_token) {
   return DMAuth(oauth_token, DMAuthTokenType::kOauth);
 }

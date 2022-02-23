@@ -31,14 +31,13 @@
 
 #include "third_party/blink/renderer/platform/audio/audio_array.h"
 #include "third_party/blink/renderer/platform/audio/audio_source_provider.h"
-#include "third_party/blink/renderer/platform/platform_export.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
 
 // SincResampler is a high-quality sample-rate converter.
 
-class PLATFORM_EXPORT SincResampler {
+class SincResampler {
   USING_FAST_MALLOC(SincResampler);
 
  public:
@@ -46,9 +45,9 @@ class PLATFORM_EXPORT SincResampler {
   // kernelSize can be adjusted for quality (higher is better)
   // numberOfKernelOffsets is used for interpolation and is the number of
   // sub-sample kernel shifts.
-  SincResampler(double scale_factor,
-                unsigned kernel_size = 32,
-                unsigned number_of_kernel_offsets = 32);
+  explicit SincResampler(double scale_factor,
+                         unsigned kernel_size = 32,
+                         unsigned number_of_kernel_offsets = 32);
 
   SincResampler(const SincResampler&) = delete;
   SincResampler& operator=(const SincResampler&) = delete;

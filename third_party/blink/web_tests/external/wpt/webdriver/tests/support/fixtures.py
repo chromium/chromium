@@ -31,6 +31,15 @@ def pytest_configure(config):
     )
 
 
+def pytest_sessionfinish(session, exitstatus):
+    # Cleanup at the end of a test run
+    global _current_session
+
+    if _current_session is not None:
+        _current_session.end()
+        _current_session = None
+
+
 @pytest.fixture
 def capabilities():
     """Default capabilities to use for a new WebDriver session."""
@@ -59,23 +68,38 @@ def http(configuration):
     return HTTPRequest(configuration["host"], configuration["port"])
 
 
-@pytest.fixture
-def server_config():
-    with open(os.environ.get("WD_SERVER_CONFIG_FILE"), "r") as f:
+@pytest.fixture(scope="session")
+def full_configuration():
+    """Get test configuration information. Keys are:
+
+    host - WebDriver server host.
+    port -  WebDriver server port.
+    capabilites - Capabilites passed when creating the WebDriver session
+    webdriver - Dict with keys `binary`: path to webdriver binary, and
+                `args`: Additional command line arguments passed to the webdriver
+                binary. This doesn't include all the required arguments e.g. the
+                port.
+    wptserve - Configuration of the wptserve servers."""
+
+    with open(os.environ.get("WDSPEC_CONFIG_FILE"), "r") as f:
         return json.load(f)
 
 
 @pytest.fixture(scope="session")
-def configuration():
-    host = os.environ.get("WD_HOST", defaults.DRIVER_HOST)
-    port = int(os.environ.get("WD_PORT", str(defaults.DRIVER_PORT)))
-    capabilities = json.loads(os.environ.get("WD_CAPABILITIES", "{}"))
+def server_config(full_configuration):
+    return full_configuration["wptserve"]
 
-    return {
-        "host": host,
-        "port": port,
-        "capabilities": capabilities
-    }
+
+@pytest.fixture(scope="session")
+def configuration(full_configuration):
+    """Configuation minus server config.
+
+    This makes logging easier to read."""
+
+    config = full_configuration.copy()
+    del config["wptserve"]
+
+    return config
 
 
 async def reset_current_session_if_necessary(caps):

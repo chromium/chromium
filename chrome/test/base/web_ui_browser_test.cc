@@ -13,6 +13,7 @@
 #include "base/containers/contains.h"
 #include "base/files/file_util.h"
 #include "base/lazy_instance.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted_memory.h"
 #include "base/path_service.h"
 #include "base/strings/strcat.h"
@@ -96,7 +97,7 @@ class WebUIJsInjectionReadyObserver : public content::WebContentsObserver {
   }
 
  private:
-  BaseWebUIBrowserTest* const browser_test_;
+  const raw_ptr<BaseWebUIBrowserTest> browser_test_;
   std::string preload_test_fixture_;
   std::string preload_test_name_;
 };
@@ -115,7 +116,7 @@ class WebUITestMessageHandler : public content::WebUIMessageHandler,
     // To ensure this gets done, do this before ASSERT* calls.
     RunQuitClosure();
 
-    const auto& list = test_result->GetList();
+    const auto& list = test_result->GetListDeprecated();
     ASSERT_FALSE(list.empty());
     const bool test_succeeded = list[0].is_bool() && list[0].GetBool();
     std::string message;
@@ -395,11 +396,11 @@ class PrintContentBrowserClient : public ChromeContentBrowserClient {
     return nullptr;
   }
 
-  BaseWebUIBrowserTest* const browser_test_;
+  const raw_ptr<BaseWebUIBrowserTest> browser_test_;
   std::unique_ptr<WebUIJsInjectionReadyObserver> observer_;
   std::string preload_test_fixture_;
   std::string preload_test_name_;
-  content::WebContents* preview_dialog_ = nullptr;
+  raw_ptr<content::WebContents> preview_dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 #endif
@@ -505,7 +506,7 @@ void BaseWebUIBrowserTest::SetUpOnMainThread() {
   JavaScriptBrowserTest::SetUpOnMainThread();
 
   base::FilePath pak_path;
-  ASSERT_TRUE(base::PathService::Get(base::DIR_MODULE, &pak_path));
+  ASSERT_TRUE(base::PathService::Get(base::DIR_ASSETS, &pak_path));
   pak_path = pak_path.AppendASCII("browser_tests.pak");
   ui::ResourceBundle::GetSharedInstance().AddDataPackFromPath(
       pak_path, ui::kScaleFactorNone);

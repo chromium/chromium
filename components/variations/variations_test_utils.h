@@ -11,6 +11,7 @@
 #include "base/containers/span.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/field_trial.h"
+#include "components/variations/field_trial_config/fieldtrial_testing_config.h"
 #include "components/variations/variations_associated_data.h"
 
 class PrefService;
@@ -64,9 +65,15 @@ extern const SignedSeedPrefKeys kSafeSeedPrefKeys;
 // The pref keys used to store regular signed variations seed data.
 extern const SignedSeedPrefKeys kRegularSeedPrefKeys;
 
+// Mock field trial testing config.
+extern const FieldTrialTestingConfig kTestingConfig;
+
 // Disables the use of the field trial testing config to exercise
 // VariationsFieldTrialCreator::CreateTrialsFromSeed().
 void DisableTestingConfig();
+
+// Enables the use of the field trial testing config.
+void EnableTestingConfig();
 
 // Decodes the variations header and extracts the variation ids.
 bool ExtractVariationIds(const std::string& variations,
@@ -96,6 +103,10 @@ void WriteSeedData(PrefService* local_state,
 // Returns true if all of the study_names listed in |seed_data| exist in the
 // (global) field trial list.
 bool FieldTrialListHasAllStudiesFrom(const SignedSeedData& seed_data);
+
+// Resets variations. Ensures that maps can be cleared between tests since they
+// are stored as process singleton.
+void ResetVariations();
 
 }  // namespace variations
 

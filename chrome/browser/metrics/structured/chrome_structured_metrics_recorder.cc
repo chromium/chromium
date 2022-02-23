@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include "base/feature_list.h"
+#include "base/no_destructor.h"
 #include "build/chromeos_buildflags.h"
 #include "components/metrics/structured/histogram_util.h"
 #include "components/metrics/structured/structured_metrics_features.h"
@@ -80,13 +81,9 @@ void ChromeStructuredMetricsRecorder::Initialize() {
     auto* lacros_recorder =
         static_cast<LacrosStructuredMetricsRecorder*>(delegate_.get());
 
-    const bool is_current_ui_thread_set = base::CurrentUIThread::IsSet();
-    LogClientInitializationSuccessful(is_current_ui_thread_set);
-
     // Ensure that the sequence is the ui thread.
-    DCHECK(is_current_ui_thread_set);
+    DCHECK(base::CurrentUIThread::IsSet());
     lacros_recorder->SetSequence(base::SequencedTaskRunnerHandle::Get());
-    LogClientInitializationSuccessful(true);
     LogInitializationInStructuredMetrics(
         StructuredMetricsPlatform::kLacrosChrome);
   } else {

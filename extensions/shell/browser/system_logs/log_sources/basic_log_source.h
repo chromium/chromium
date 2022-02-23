@@ -5,7 +5,7 @@
 #ifndef EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_LOG_SOURCES_BASIC_LOG_SOURCE_H_
 #define EXTENSIONS_SHELL_BROWSER_SYSTEM_LOGS_LOG_SOURCES_BASIC_LOG_SOURCE_H_
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "components/feedback/system_logs/system_logs_source.h"
 
 namespace content {
@@ -31,7 +31,7 @@ class BasicLogSource : public SystemLogsSource {
   void PopulateVersionStrings(SystemLogsResponse* response);
   void PopulateExtensionInfoLogs(SystemLogsResponse* response);
 
-  content::BrowserContext* browser_context_;
+  raw_ptr<content::BrowserContext> browser_context_;
 };
 
 }  // namespace system_logs

@@ -11,7 +11,7 @@
 #include <vector>
 
 #include "base/callback.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "device/fido/auth_token_requester.h"
 #include "device/fido/authenticator_get_assertion_response.h"
@@ -151,7 +151,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) GetAssertionRequestHandler
   // that was tapped by the user while requesting a pinUvAuthToken from
   // connected authenticators. The object is owned by the underlying discovery
   // object and this pointer is cleared if it's removed during processing.
-  FidoAuthenticator* selected_authenticator_for_pin_uv_auth_token_ = nullptr;
+  raw_ptr<FidoAuthenticator> selected_authenticator_for_pin_uv_auth_token_ =
+      nullptr;
 
   // responses_ holds the set of responses while they are incrementally read
   // from the device. Only used when more than one response is returned.

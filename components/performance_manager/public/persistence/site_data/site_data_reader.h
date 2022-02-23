@@ -22,28 +22,39 @@ class SiteDataImpl;
 
 class SiteDataReader {
  public:
-  SiteDataReader(const SiteDataReader&) = delete;
-  SiteDataReader& operator=(const SiteDataReader&) = delete;
-
-  ~SiteDataReader();
+  SiteDataReader();
+  virtual ~SiteDataReader();
 
   // Accessors for the site characteristics usage.
-  performance_manager::SiteFeatureUsage UpdatesFaviconInBackground() const;
-  performance_manager::SiteFeatureUsage UpdatesTitleInBackground() const;
-  performance_manager::SiteFeatureUsage UsesAudioInBackground() const;
+  virtual SiteFeatureUsage UpdatesFaviconInBackground() const = 0;
+  virtual SiteFeatureUsage UpdatesTitleInBackground() const = 0;
+  virtual SiteFeatureUsage UsesAudioInBackground() const = 0;
 
   // Returns true if this reader is fully initialized and serving the most
   // authoritative data. This can initially return false as the backing store is
   // loaded asynchronously.
-  bool DataLoaded() const;
+  virtual bool DataLoaded() const = 0;
 
   // Registers a callback that will be invoked when the data backing this object
   // has been loaded. Note that if "DataLoaded" is true at the time this is
   // called it may immediately invoke the callback. The callback will not be
   // invoked after this object has been destroyed.
-  void RegisterDataLoadedCallback(base::OnceClosure&& callback);
+  virtual void RegisterDataLoadedCallback(base::OnceClosure&& callback) = 0;
+};
 
-  const internal::SiteDataImpl* impl_for_testing() const { return impl_.get(); }
+class SiteDataReaderImpl : public SiteDataReader {
+ public:
+  SiteDataReaderImpl(const SiteDataReaderImpl&) = delete;
+  SiteDataReaderImpl& operator=(const SiteDataReaderImpl&) = delete;
+
+  ~SiteDataReaderImpl() override;
+
+  // SiteDataReader:
+  SiteFeatureUsage UpdatesFaviconInBackground() const override;
+  SiteFeatureUsage UpdatesTitleInBackground() const override;
+  SiteFeatureUsage UsesAudioInBackground() const override;
+  bool DataLoaded() const override;
+  void RegisterDataLoadedCallback(base::OnceClosure&& callback) override;
 
  private:
   friend class SiteDataCacheImpl;
@@ -57,7 +68,7 @@ class SiteDataReader {
 
   // Private constructor, these objects are meant to be created by a site data
   // store.
-  explicit SiteDataReader(scoped_refptr<internal::SiteDataImpl> impl);
+  explicit SiteDataReaderImpl(scoped_refptr<internal::SiteDataImpl> impl);
 
   // Runs the provided closure. This is used as a wrapper so that callbacks
   // registered with the |impl_| by this reader are invalidated when the
@@ -68,7 +79,7 @@ class SiteDataReader {
   const scoped_refptr<internal::SiteDataImpl> impl_;
 
   // Used for invalidating callbacks.
-  base::WeakPtrFactory<SiteDataReader> weak_factory_{this};
+  base::WeakPtrFactory<SiteDataReaderImpl> weak_factory_{this};
 };
 
 }  // namespace performance_manager

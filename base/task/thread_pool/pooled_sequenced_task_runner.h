@@ -8,6 +8,7 @@
 #include "base/base_export.h"
 #include "base/callback_forward.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool/pooled_task_runner_delegate.h"
 #include "base/task/thread_pool/sequence.h"
@@ -34,6 +35,12 @@ class BASE_EXPORT PooledSequencedTaskRunner
                        OnceClosure closure,
                        TimeDelta delay) override;
 
+  bool PostDelayedTaskAt(subtle::PostDelayedTaskPassKey,
+                         const Location& from_here,
+                         OnceClosure closure,
+                         TimeTicks delayed_run_time,
+                         subtle::DelayPolicy delay_policy) override;
+
   bool PostNonNestableDelayedTask(const Location& from_here,
                                   OnceClosure closure,
                                   TimeDelta delay) override;
@@ -45,7 +52,7 @@ class BASE_EXPORT PooledSequencedTaskRunner
  private:
   ~PooledSequencedTaskRunner() override;
 
-  PooledTaskRunnerDelegate* const pooled_task_runner_delegate_;
+  const raw_ptr<PooledTaskRunnerDelegate> pooled_task_runner_delegate_;
 
   // Sequence for all Tasks posted through this TaskRunner.
   const scoped_refptr<Sequence> sequence_;

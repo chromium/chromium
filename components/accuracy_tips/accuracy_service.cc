@@ -12,6 +12,7 @@
 #include "base/containers/contains.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_functions.h"
+#include "base/observer_list.h"
 #include "base/time/time.h"
 #include "base/values.h"
 #include "components/accuracy_tips/accuracy_tip_interaction.h"
@@ -45,6 +46,8 @@ const std::string GetHistogramSuffix(AccuracyTipInteraction interaction) {
       return "Closed";
     case AccuracyTipInteraction::kIgnore:
       return "Ignore";
+    case AccuracyTipInteraction::kPermissionRequested:
+      return "PermissionRequested";
     case AccuracyTipInteraction::kDisabledByExperiment:
       NOTREACHED();  // We don't need specific histograms for this.
       return "";
@@ -113,7 +116,7 @@ void AccuracyService::CheckAccuracyStatus(const GURL& url,
       pref_service_->Get(GetPreviousInteractionsPrefName(disable_ui_));
   const base::Value opt_out_value(
       static_cast<int>(AccuracyTipInteraction::kOptOut));
-  if (base::Contains(last_interactions->GetList(), opt_out_value)) {
+  if (base::Contains(last_interactions->GetListDeprecated(), opt_out_value)) {
     return std::move(callback).Run(AccuracyTipStatus::kOptOut);
   }
 
@@ -160,7 +163,7 @@ void AccuracyService::MaybeShowAccuracyTip(content::WebContents* web_contents) {
 
   bool show_opt_out =
       pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
-          ->GetList()
+          ->GetListDeprecated()
           .size() >= static_cast<size_t>(features::kNumIgnorePrompts.Get());
 
   url_for_last_shown_tip_ = web_contents->GetLastCommittedURL();
@@ -180,7 +183,8 @@ void AccuracyService::MaybeShowSurvey() {
   if (CanShowSurvey()) {
     auto* interactions_list =
         pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_));
-    const int last_interaction = interactions_list->GetList().back().GetInt();
+    const int last_interaction =
+        interactions_list->GetListDeprecated().back().GetInt();
     const bool ukm_enabled = pref_service_->GetBoolean(
         unified_consent::prefs::kUrlKeyedAnonymizedDataCollectionEnabled);
     std::string url_parameter_for_hats =
@@ -240,7 +244,7 @@ void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
   base::UmaHistogramEnumeration("Privacy.AccuracyTip.AccuracyTipInteraction",
                                 interaction);
   base::UmaHistogramCounts100("Privacy.AccuracyTip.NumDialogsShown",
-                              interaction_list->GetList().size());
+                              interaction_list->GetListDeprecated().size());
   ukm::builders::AccuracyTipDialog ukm_builder(ukm_source_id);
   ukm_builder.SetInteraction(static_cast<int>(interaction));
 
@@ -253,7 +257,7 @@ void AccuracyService::OnAccuracyTipClosed(base::TimeTicks time_opened,
 
     const std::string suffix = GetHistogramSuffix(interaction);
     base::UmaHistogramCounts100("Privacy.AccuracyTip.NumDialogsShown." + suffix,
-                                interaction_list->GetList().size());
+                                interaction_list->GetListDeprecated().size());
     base::UmaHistogramMediumTimes(
         "Privacy.AccuracyTip.AccuracyTipTimeOpen." + suffix, time_open);
   }
@@ -285,7 +289,7 @@ bool AccuracyService::CanShowSurvey() {
 
   int interactions_count =
       pref_service_->GetList(GetPreviousInteractionsPrefName(disable_ui_))
-          ->GetList()
+          ->GetListDeprecated()
           .size();
   return interactions_count >= features::kMinPromptCountRequiredForSurvey.Get();
 }

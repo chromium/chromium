@@ -42,7 +42,6 @@
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/policy/core/browser/url_util.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
@@ -52,7 +51,7 @@
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/themes/theme_service.h"
 #include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
@@ -408,14 +407,14 @@ void SupervisedUserService::SetActive(bool active) {
   active_ = active;
 
   if (!delegate_ || !delegate_->SetActive(active_)) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     DCHECK(!active_);
 #endif
   }
 
   // Now activate/deactivate anything not handled by the delegate yet.
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Re-set the default theme to turn the SU theme on/off.
   ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile_);
   if (theme_service->UsingDefaultTheme() || theme_service->UsingSystemTheme())
@@ -475,7 +474,7 @@ void SupervisedUserService::SetActive(bool active) {
     RefreshApprovedExtensionsFromPrefs();
 #endif  // BUILDFLAG(ENABLE_EXTENSIONS)
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(bauerb): Get rid of the platform-specific #ifdef here.
     // http://crbug.com/313377
     BrowserList::AddObserver(this);
@@ -498,7 +497,7 @@ void SupervisedUserService::SetActive(bool active) {
     for (SupervisedUserServiceObserver& observer : observer_list_)
       observer.OnURLFilterChanged();
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     // TODO(bauerb): Get rid of the platform-specific #ifdef here.
     // http://crbug.com/313377
     BrowserList::RemoveObserver(this);
@@ -724,7 +723,7 @@ void SupervisedUserService::UpdateDenylist() {
 }
 
 void SupervisedUserService::UpdateManualHosts() {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualHosts);
   std::map<std::string, bool> host_map;
   for (auto it : dict->DictItems()) {
@@ -743,7 +742,7 @@ void SupervisedUserService::UpdateManualHosts() {
 }
 
 void SupervisedUserService::UpdateManualURLs() {
-  const base::DictionaryValue* dict =
+  const base::Value* dict =
       profile_->GetPrefs()->GetDictionary(prefs::kSupervisedUserManualURLs);
   std::map<GURL, bool> url_map;
   for (auto it : dict->DictItems()) {
@@ -793,8 +792,8 @@ SupervisedUserService::ExtensionState SupervisedUserService::GetExtensionState(
   // management; in particular we don't want to override the force-install list.
   if (extensions::Manifest::IsComponentLocation(extension.location()) ||
       extensions::Manifest::IsPolicyLocation(extension.location()) ||
-      extension.is_theme() || extension.from_bookmark() ||
-      extension.is_shared_module() || was_installed_by_default) {
+      extension.is_theme() || extension.is_shared_module() ||
+      was_installed_by_default) {
     return ExtensionState::ALLOWED;
   }
 
@@ -945,7 +944,7 @@ void SupervisedUserService::UpdateApprovedExtension(
   PrefService* pref_service = GetPrefService();
   DictionaryPrefUpdate update(pref_service,
                               prefs::kSupervisedUserApprovedExtensions);
-  base::DictionaryValue* approved_extensions = update.Get();
+  base::Value* approved_extensions = update.Get();
   DCHECK(approved_extensions)
       << "kSupervisedUserApprovedExtensions pref not found";
   bool success = false;
@@ -981,7 +980,7 @@ void SupervisedUserService::RefreshApprovedExtensionsFromPrefs() {
   // version information stored in the values is unnecessary. It is only there
   // for backwards compatibility. Remove the version information once sufficient
   // users have migrated away from M83.
-  const base::DictionaryValue* dict = profile_->GetPrefs()->GetDictionary(
+  const base::Value* dict = profile_->GetPrefs()->GetDictionary(
       prefs::kSupervisedUserApprovedExtensions);
   for (auto it : dict->DictItems()) {
     approved_extensions_set_.insert(it.first);
@@ -1015,7 +1014,7 @@ bool SupervisedUserService::IsCustomPassphraseAllowed() const {
   return !active_;
 }
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {
   bool profile_became_active = profile_->IsSameOrParent(browser->profile());
   if (!is_profile_active_ && profile_became_active)
@@ -1025,7 +1024,7 @@ void SupervisedUserService::OnBrowserSetLastActive(Browser* browser) {
 
   is_profile_active_ = profile_became_active;
 }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 void SupervisedUserService::OnSiteListUpdated() {
   for (SupervisedUserServiceObserver& observer : observer_list_)

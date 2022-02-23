@@ -20,7 +20,7 @@ struct TemplateURLData;
 
 // Deserializes a TemplateURLData from |dict|.
 std::unique_ptr<TemplateURLData> TemplateURLDataFromDictionary(
-    const base::DictionaryValue& dict);
+    const base::Value& dict);
 
 // Serializes a TemplateURLData to |dict|.
 std::unique_ptr<base::DictionaryValue> TemplateURLDataToDictionary(

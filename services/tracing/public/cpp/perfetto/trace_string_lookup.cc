@@ -81,7 +81,7 @@ constexpr ProcessType kProcessTypes[] = {
      ChromeProcessDescriptor::PROCESS_SERVICE_QRCODEGENERATOR},
     {"Service: chrome.mojom.ProfileImport",
      ChromeProcessDescriptor::PROCESS_SERVICE_PROFILEIMPORT},
-    {"Service: chromeos.ime.mojom.ImeService",
+    {"Service: ash.ime.mojom.ImeService",
      ChromeProcessDescriptor::PROCESS_SERVICE_IME},
     {"Service: recording.mojom.RecordingService",
      ChromeProcessDescriptor::PROCESS_SERVICE_RECORDING},
@@ -148,6 +148,7 @@ constexpr ThreadType kThreadTypes[] = {
     {"NetworkConfigWatcher",
      ChromeThreadDescriptor::THREAD_NETWORKCONFIGWATCHER},
     {"wasapi_render_thread", ChromeThreadDescriptor::THREAD_WASAPI_RENDER},
+    {"LoaderLockSampler", ChromeThreadDescriptor::THREAD_LOADER_LOCK_SAMPLER},
 };
 
 ChromeProcessDescriptor::ProcessType GetProcessType(const std::string& name) {

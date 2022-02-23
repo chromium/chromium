@@ -4,13 +4,15 @@
 
 #include "ash/components/phonehub/notification_manager.h"
 
-#include "chromeos/components/multidevice/logging/logging.h"
-
 #include <sstream>
 
-namespace chromeos {
+#include "chromeos/components/multidevice/logging/logging.h"
+
+namespace ash {
 namespace phonehub {
+
 namespace {
+
 std::string GetIdStream(const base::flat_set<int64_t>& notification_ids) {
   std::ostringstream output(std::ostringstream::ate);
   for (const auto& id : notification_ids) {
@@ -18,6 +20,7 @@ std::string GetIdStream(const base::flat_set<int64_t>& notification_ids) {
   }
   return output.str();
 }
+
 }  // namespace
 
 NotificationManager::NotificationManager() = default;
@@ -121,4 +124,4 @@ const Notification* NotificationManager::GetNotification(
 }
 
 }  // namespace phonehub
-}  // namespace chromeos
+}  // namespace ash

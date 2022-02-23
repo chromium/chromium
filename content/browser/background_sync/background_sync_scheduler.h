@@ -63,7 +63,7 @@ class CONTENT_EXPORT BackgroundSyncScheduler
   void RunDelayedTaskAndPruneInfoMap(blink::mojom::BackgroundSyncType sync_type,
                                      StoragePartitionImpl* storage_partition,
                                      base::OnceClosure delayed_task);
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   void ScheduleOrCancelBrowserWakeupForSyncType(
       blink::mojom::BackgroundSyncType sync_type,
       StoragePartitionImpl* storage_partition);

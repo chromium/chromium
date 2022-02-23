@@ -175,6 +175,9 @@ export class AboutPageBrowserProxy {
   /** Opens the OS help page. */
   openOsHelpPage() {}
 
+  /** Opens the firmware updates page. */
+  openFirmwareUpdatesPage() {}
+
   /**
    * Checks for available update and applies if it exists.
    */
@@ -269,6 +272,11 @@ export class AboutPageBrowserProxyImpl {
   /** @override */
   openOsHelpPage() {
     chrome.send('openOsHelpPage');
+  }
+
+  /** @override */
+  openFirmwareUpdatesPage() {
+    chrome.send('openFirmwareUpdatesPage');
   }
 
   /** @override */

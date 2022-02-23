@@ -139,6 +139,8 @@ class CanonOutputT {
     return true;
   }
 
+  // `buffer_` is not a raw_ptr<...> for performance reasons (based on analysis
+  // of sampling profiler data).
   T* buffer_;
   int buffer_len_;
 

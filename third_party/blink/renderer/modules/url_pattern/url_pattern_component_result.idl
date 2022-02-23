@@ -5,5 +5,8 @@
 // https://wicg.github.io/urlpattern/
 dictionary URLPatternComponentResult {
   USVString input;
-  record<USVString, USVString> groups;
+
+  // TODO(crbug.com/1293259): Use `(USVString or undefined)` instead of `any`
+  //                          when supported by the webidl compiler.
+  record<USVString, any> groups;
 };

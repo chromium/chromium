@@ -60,7 +60,7 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   // Retrieve the interface through which to create shared images.
   virtual gpu::SharedImageStub* GetSharedImageStub() = 0;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   virtual gpu::DXGISharedHandleManager* GetDXGISharedHandleManager() = 0;
 #endif
 

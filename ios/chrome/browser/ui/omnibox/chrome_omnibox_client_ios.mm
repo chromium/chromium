@@ -136,6 +136,7 @@ void ChromeOmniboxClientIOS::OnFocusChanged(OmniboxFocusState state,
 void ChromeOmniboxClientIOS::OnResultChanged(
     const AutocompleteResult& result,
     bool default_match_changed,
+    bool should_prerender,
     const BitmapFetchedCallback& on_bitmap_fetched) {
   if (result.empty()) {
     return;

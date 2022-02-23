@@ -66,7 +66,7 @@ void WebAppMenuButton::SetColor(SkColor color) {
     return;
   color_ = color;
   SetImageModel(views::Button::STATE_NORMAL,
-                ui::ImageModel::FromVectorIcon(kBrowserToolsIcon, color));
+                ui::ImageModel::FromVectorIcon(*icon_, color));
   OnPropertyChanged(&color_, views::kPropertyEffectsNone);
 }
 

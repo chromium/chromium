@@ -5,12 +5,14 @@
 #import "ios/chrome/credential_provider_extension/ui/credential_list_view_controller.h"
 
 #include "base/mac/foundation_util.h"
+#include "base/numerics/safe_conversions.h"
 #include "ios/chrome/common/app_group/app_group_metrics.h"
 #import "ios/chrome/common/credential_provider/credential.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/elements/highlight_button.h"
 #import "ios/chrome/common/ui/util/pointer_interaction_util.h"
 #import "ios/chrome/credential_provider_extension/metrics_util.h"
+#import "ios/chrome/credential_provider_extension/ui/credential_list_global_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/credential_list_header_view.h"
 #import "ios/chrome/credential_provider_extension/ui/feature_flags.h"
 
@@ -25,15 +27,12 @@ NSString* kHeaderIdentifier = @"clvcHeader";
 NSString* kCredentialCellIdentifier = @"clvcCredentialCell";
 NSString* kNewPasswordCellIdentifier = @"clvcNewPasswordCell";
 
-const CGFloat kHeaderHeight = 70;
 const CGFloat kNewCredentialHeaderHeight = 35;
 // Add extra space to offset the top of the table view from the search bar.
 const CGFloat kTableViewTopSpace = 8;
 
 UIColor* BackgroundColor() {
-  return IsPasswordCreationEnabled()
-             ? [UIColor colorNamed:kGroupedPrimaryBackgroundColor]
-             : [UIColor colorNamed:kBackgroundColor];
+  return [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
 }
 }
 
@@ -76,24 +75,26 @@ UIColor* BackgroundColor() {
 @synthesize delegate;
 
 - (instancetype)init {
-  UITableViewStyle style = IsPasswordCreationEnabled()
-                               ? UITableViewStyleInsetGrouped
-                               : UITableViewStylePlain;
+  UITableViewStyle style = UITableViewStyleInsetGrouped;
   self = [super initWithStyle:style];
   return self;
 }
 
 - (void)viewDidLoad {
   [super viewDidLoad];
-  self.title =
-      NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_TITLE",
-                        @"AutoFill Chrome Password");
-  self.view.backgroundColor = BackgroundColor();
-  if (IsPasswordCreationEnabled()) {
-    self.navigationItem.leftBarButtonItem = [self navigationCancelButton];
+
+  if (IsPasswordManagerBrandingUpdateEnable()) {
+    self.title = NSLocalizedString(
+        @"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_BRANDED_TITLE",
+        @"Google Password Manager");
   } else {
-    self.navigationItem.rightBarButtonItem = [self navigationCancelButton];
+    self.title =
+        NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_CREDENTIAL_LIST_TITLE",
+                          @"AutoFill Chrome Password");
   }
+
+  self.view.backgroundColor = BackgroundColor();
+  self.navigationItem.leftBarButtonItem = [self navigationCancelButton];
 
   self.searchController =
       [[UISearchController alloc] initWithSearchResultsController:nil];
@@ -105,29 +106,21 @@ UIColor* BackgroundColor() {
   // hidden under the accessories.
   self.tableView.tableFooterView =
       [[UIView alloc] initWithFrame:self.searchController.searchBar.frame];
-  if (IsPasswordCreationEnabled()) {
-    self.tableView.contentInset = UIEdgeInsetsMake(kTableViewTopSpace, 0, 0, 0);
-  }
+  self.tableView.contentInset = UIEdgeInsetsMake(kTableViewTopSpace, 0, 0, 0);
   self.navigationItem.searchController = self.searchController;
   self.navigationItem.hidesSearchBarWhenScrolling = NO;
 
-  if (IsPasswordCreationEnabled()) {
-    UINavigationBarAppearance* appearance =
-        [[UINavigationBarAppearance alloc] init];
-    [appearance configureWithDefaultBackground];
-    appearance.backgroundColor = BackgroundColor();
-    if (@available(iOS 15, *)) {
-      self.navigationItem.scrollEdgeAppearance = appearance;
-    } else {
-      // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
-      // titles, so it can't be used. Instead, the navigation bar will always be
-      // the same style.
-      self.navigationItem.standardAppearance = appearance;
-    }
+  UINavigationBarAppearance* appearance =
+      [[UINavigationBarAppearance alloc] init];
+  [appearance configureWithDefaultBackground];
+  appearance.backgroundColor = BackgroundColor();
+  if (@available(iOS 15, *)) {
+    self.navigationItem.scrollEdgeAppearance = appearance;
   } else {
-    self.navigationController.navigationBar.barTintColor = BackgroundColor();
-    self.navigationController.navigationBar.shadowImage =
-        [[UIImage alloc] init];
+    // On iOS 14, scrollEdgeAppearance only affects navigation bars with large
+    // titles, so it can't be used. Instead, the navigation bar will always be
+    // the same style.
+    self.navigationItem.standardAppearance = appearance;
   }
   self.navigationController.navigationBar.tintColor =
       [UIColor colorNamed:kBlueColor];
@@ -141,6 +134,9 @@ UIColor* BackgroundColor() {
       forHeaderFooterViewReuseIdentifier:kHeaderIdentifier];
   [self.tableView registerClass:[CredentialListHeaderView class]
       forHeaderFooterViewReuseIdentifier:CredentialListHeaderView.reuseID];
+  [self.tableView registerClass:[CredentialListGlobalHeaderView class]
+      forHeaderFooterViewReuseIdentifier:CredentialListGlobalHeaderView
+                                             .reuseID];
 }
 
 #pragma mark - CredentialListConsumer
@@ -230,34 +226,27 @@ UIColor* BackgroundColor() {
 
 - (UIView*)tableView:(UITableView*)tableView
     viewForHeaderInSection:(NSInteger)section {
-  if (IsPasswordCreationEnabled()) {
-    CredentialListHeaderView* view = [self.tableView
-        dequeueReusableHeaderFooterViewWithIdentifier:CredentialListHeaderView
-                                                          .reuseID];
-    view.headerTextLabel.text = [self titleForHeaderInSection:section];
-    view.contentView.backgroundColor = BackgroundColor();
-    return view;
-  } else {
-    UITableViewHeaderFooterView* view = [self.tableView
-        dequeueReusableHeaderFooterViewWithIdentifier:kHeaderIdentifier];
-    UIFontTextStyle textStyle = UIFontTextStyleCaption1;
-    view.textLabel.text = [self titleForHeaderInSection:section];
-    view.textLabel.font = [UIFont preferredFontForTextStyle:textStyle];
-    view.contentView.backgroundColor = BackgroundColor();
-    return view;
+  if ([self isGlobalHeaderSection:section]) {
+    return [self.tableView dequeueReusableHeaderFooterViewWithIdentifier:
+                               CredentialListGlobalHeaderView.reuseID];
   }
+  CredentialListHeaderView* view = [self.tableView
+      dequeueReusableHeaderFooterViewWithIdentifier:CredentialListHeaderView
+                                                        .reuseID];
+  view.headerTextLabel.text = [self titleForHeaderInSection:section];
+  view.contentView.backgroundColor = BackgroundColor();
+  return view;
 }
 
 - (CGFloat)tableView:(UITableView*)tableView
     heightForHeaderInSection:(NSInteger)section {
-  if (IsPasswordCreationEnabled() &&
-      [self isSuggestedPasswordSection:section]) {
+  if ([self isGlobalHeaderSection:section]) {
+    return UITableViewAutomaticDimension;
+  }
+  if ([self isSuggestedPasswordSection:section]) {
     return 0;
   }
-  if (IsPasswordCreationEnabled()) {
-    return kNewCredentialHeaderHeight;
-  }
-  return kHeaderHeight;
+  return kNewCredentialHeaderHeight;
 }
 
 - (void)tableView:(UITableView*)tableView
@@ -269,6 +258,9 @@ UIColor* BackgroundColor() {
   }
   UpdateUMACountForKey(app_group::kCredentialExtensionPasswordUseCount);
   id<Credential> credential = [self credentialForIndexPath:indexPath];
+  if (!credential) {
+    return;
+  }
   [self.delegate userSelectedCredential:credential];
 }
 
@@ -334,6 +326,9 @@ UIColor* BackgroundColor() {
                                                          toView:self.tableView];
   NSIndexPath* indexPath = [self.tableView indexPathForRowAtPoint:hitPoint];
   id<Credential> credential = [self credentialForIndexPath:indexPath];
+  if (!credential) {
+    return;
+  }
   [self.delegate showDetailsForCredential:credential];
 }
 
@@ -364,11 +359,25 @@ UIColor* BackgroundColor() {
   }
 }
 
+// Returns YES if given section is for global header.
+- (BOOL)isGlobalHeaderSection:(int)section {
+  return section == 0 && IsPasswordManagerBrandingUpdateEnable() &&
+         ![self isEmptyTable];
+}
+
 // Returns the credential at the passed index.
 - (id<Credential>)credentialForIndexPath:(NSIndexPath*)indexPath {
   if ([self isSuggestedPasswordSection:indexPath.section]) {
+    if (indexPath.row >=
+        base::checked_cast<NSInteger>(self.suggestedPasswords.count)) {
+      return nil;
+    }
     return self.suggestedPasswords[indexPath.row];
   } else {
+    if (indexPath.row >=
+        base::checked_cast<NSInteger>(self.allPasswords.count)) {
+      return nil;
+    }
     return self.allPasswords[indexPath.row];
   }
 }
@@ -392,18 +401,7 @@ UIColor* BackgroundColor() {
     return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_NO_SEARCH_RESULTS",
                              @"No search results found");
   } else if ([self isSuggestedPasswordSection:section]) {
-    if (IsPasswordCreationEnabled()) {
-      return nil;
-    }
-    if (self.suggestedPasswords.count > 1) {
-      return NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORDS",
-          @"Suggested Passwords");
-    } else {
-      return NSLocalizedString(
-          @"IDS_IOS_CREDENTIAL_PROVIDER_SUGGESTED_PASSWORD",
-          @"Suggested Password");
-    }
+    return nil;
   } else {
     return NSLocalizedString(@"IDS_IOS_CREDENTIAL_PROVIDER_ALL_PASSWORDS",
                              @"All Passwords");

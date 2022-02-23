@@ -11,6 +11,7 @@
 
 #include "base/cxx17_backports.h"
 #include "base/memory/ref_counted.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/no_destructor.h"
 #include "base/sequence_checker.h"
@@ -30,17 +31,17 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "net/base/network_change_notifier_win.h"
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 #include "net/base/network_change_notifier_linux.h"
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
 #include "net/base/network_change_notifier_mac.h"
-#elif BUILDFLAG(IS_CHROMEOS_ASH) || defined(OS_ANDROID)
+#elif BUILDFLAG(IS_CHROMEOS_ASH) || BUILDFLAG(IS_ANDROID)
 #include "net/base/network_change_notifier_posix.h"
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
 #include "net/base/network_change_notifier_fuchsia.h"
 #endif
 
@@ -209,6 +210,9 @@ class NetworkChangeNotifier::ObserverList {
             new base::ObserverListThreadSafe<
                 NetworkChangeNotifier::ConnectionCostObserver>(
                 base::ObserverListPolicy::EXISTING_ONLY)),
+        default_network_active_observer_list_(
+            new base::ObserverListThreadSafe<DefaultNetworkActiveObserver>(
+                base::ObserverListPolicy::EXISTING_ONLY)),
         connection_cost_observers_added_(false) {}
 
   ObserverList(const ObserverList&) = delete;
@@ -236,6 +240,9 @@ class NetworkChangeNotifier::ObserverList {
   const scoped_refptr<base::ObserverListThreadSafe<
       NetworkChangeNotifier::ConnectionCostObserver>>
       connection_cost_observer_list_;
+  const scoped_refptr<
+      base::ObserverListThreadSafe<DefaultNetworkActiveObserver>>
+      default_network_active_observer_list_;
 
   // Indicates if connection cost observer was added before
   // network_change_notifier was initialized, if so ConnectionCostObserverAdded
@@ -292,12 +299,12 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
   if (g_network_change_notifier_factory)
     return g_network_change_notifier_factory->CreateInstance();
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   std::unique_ptr<NetworkChangeNotifierWin> network_change_notifier =
       std::make_unique<NetworkChangeNotifierWin>();
   network_change_notifier->WatchForAddressChange();
   return network_change_notifier;
-#elif defined(OS_ANDROID)
+#elif BUILDFLAG(IS_ANDROID)
   // Fallback to use NetworkChangeNotifierPosix if NetworkChangeNotifierFactory
   // is not set. Currently used for tests and when running network
   // service in a separate process.
@@ -306,12 +313,12 @@ std::unique_ptr<NetworkChangeNotifier> NetworkChangeNotifier::CreateIfNeeded(
 #elif BUILDFLAG(IS_CHROMEOS_ASH)
   return std::make_unique<NetworkChangeNotifierPosix>(initial_type,
                                                       initial_subtype);
-#elif defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   return std::make_unique<NetworkChangeNotifierLinux>(
       std::unordered_set<std::string>());
-#elif defined(OS_APPLE)
+#elif BUILDFLAG(IS_APPLE)
   return std::make_unique<NetworkChangeNotifierMac>();
-#elif defined(OS_FUCHSIA)
+#elif BUILDFLAG(IS_FUCHSIA)
   return std::make_unique<NetworkChangeNotifierFuchsia>(
       /*require_wlan=*/false);
 #else
@@ -480,6 +487,14 @@ NetworkChangeNotifier::GetSystemDnsConfigNotifier() {
 }
 
 // static
+bool NetworkChangeNotifier::IsDefaultNetworkActive() {
+  if (g_network_change_notifier)
+    return g_network_change_notifier->IsDefaultNetworkActiveInternal();
+  // Assume true as a "default" to avoid batching indefinitely.
+  return true;
+}
+
+// static
 const char* NetworkChangeNotifier::ConnectionTypeToString(
     ConnectionType type) {
   static const char* const kConnectionTypeNames[] = {
@@ -497,7 +512,7 @@ const char* NetworkChangeNotifier::ConnectionTypeToString(
   return kConnectionTypeNames[type];
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 // static
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTracker() {
@@ -548,11 +563,11 @@ NetworkChangeNotifier::ConnectionTypeFromInterfaceList(
   bool first = true;
   ConnectionType result = CONNECTION_NONE;
   for (size_t i = 0; i < interfaces.size(); ++i) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     if (interfaces[i].friendly_name == "Teredo Tunneling Pseudo-Interface")
       continue;
 #endif
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
     // Ignore link-local addresses as they aren't globally routable.
     // Mac assigns these to disconnected interfaces like tunnel interfaces
     // ("utun"), airdrop interfaces ("awdl"), and ethernet ports ("en").
@@ -617,6 +632,11 @@ NetworkChangeNotifier::ConnectionCostObserver::ConnectionCostObserver() =
 NetworkChangeNotifier::ConnectionCostObserver::~ConnectionCostObserver() =
     default;
 
+NetworkChangeNotifier::DefaultNetworkActiveObserver::
+    DefaultNetworkActiveObserver() = default;
+NetworkChangeNotifier::DefaultNetworkActiveObserver::
+    ~DefaultNetworkActiveObserver() = default;
+
 void NetworkChangeNotifier::AddIPAddressObserver(IPAddressObserver* observer) {
   DCHECK(!observer->observer_list_);
   observer->observer_list_ = GetObserverList().ip_address_observer_list_;
@@ -667,6 +687,22 @@ void NetworkChangeNotifier::AddConnectionCostObserver(
   base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
   if (g_network_change_notifier) {
     g_network_change_notifier->ConnectionCostObserverAdded();
+  }
+}
+
+void NetworkChangeNotifier::AddDefaultNetworkActiveObserver(
+    DefaultNetworkActiveObserver* observer) {
+  DCHECK(!observer->observer_list_);
+  observer->observer_list_ =
+      GetObserverList().default_network_active_observer_list_;
+  observer->observer_list_->AddObserver(observer);
+  base::AutoLock auto_lock(NetworkChangeNotifierCreationLock());
+  // Currently we lose DefaultNetworkActiveObserverAdded notifications for
+  // observers added prior to NCN creation. This should be a non-issue as
+  // currently only Cronet listens to this and its observers are always added
+  // after NCN creation.
+  if (g_network_change_notifier) {
+    g_network_change_notifier->DefaultNetworkActiveObserverAdded();
   }
 }
 
@@ -724,6 +760,15 @@ void NetworkChangeNotifier::RemoveConnectionCostObserver(
   }
 }
 
+void NetworkChangeNotifier::RemoveDefaultNetworkActiveObserver(
+    DefaultNetworkActiveObserver* observer) {
+  if (observer->observer_list_) {
+    observer->observer_list_->RemoveObserver(observer);
+    observer->observer_list_.reset();
+    g_network_change_notifier->DefaultNetworkActiveObserverRemoved();
+  }
+}
+
 void NetworkChangeNotifier::TriggerNonSystemDnsChange() {
   NetworkChangeNotifier::NotifyObserversOfDNSChange();
 }
@@ -772,6 +817,12 @@ void NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeForTests(
 }
 
 // static
+void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActiveForTests() {
+  if (g_network_change_notifier)
+    g_network_change_notifier->NotifyObserversOfDefaultNetworkActiveImpl();
+}
+
+// static
 void NetworkChangeNotifier::SetTestNotificationsOnly(bool test_only) {
   DCHECK(!g_network_change_notifier);
   NetworkChangeNotifier::test_notifications_only_ = test_only;
@@ -805,7 +856,7 @@ NetworkChangeNotifier::NetworkChangeNotifier(
   }
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 const internal::AddressTrackerLinux*
 NetworkChangeNotifier::GetAddressTrackerInternal() const {
   return NULL;
@@ -864,6 +915,10 @@ SystemDnsConfigChangeNotifier*
 NetworkChangeNotifier::GetCurrentSystemDnsConfigNotifier() {
   DCHECK(system_dns_config_notifier_);
   return system_dns_config_notifier_;
+}
+
+bool NetworkChangeNotifier::IsDefaultNetworkActiveInternal() {
+  return true;
 }
 
 // static
@@ -926,8 +981,19 @@ void NetworkChangeNotifier::NotifyObserversOfSpecificNetworkChange(
 void NetworkChangeNotifier::NotifyObserversOfConnectionCostChange() {
   if (g_network_change_notifier &&
       !NetworkChangeNotifier::test_notifications_only_) {
+    NetworkChangeNotifier::ConnectionCost connection_cost = GetConnectionCost();
+    base::UmaHistogramEnumeration("Net.NetworkChangeNotifier.GetConnectionCost",
+                                  connection_cost, CONNECTION_COST_LAST);
     g_network_change_notifier->NotifyObserversOfConnectionCostChangeImpl(
-        GetConnectionCost());
+        connection_cost);
+  }
+}
+
+// static
+void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActive() {
+  if (g_network_change_notifier &&
+      !NetworkChangeNotifier::test_notifications_only_) {
+    g_network_change_notifier->NotifyObserversOfDefaultNetworkActiveImpl();
   }
 }
 
@@ -998,6 +1064,11 @@ void NetworkChangeNotifier::NotifyObserversOfConnectionCostChangeImpl(
     ConnectionCost cost) {
   GetObserverList().connection_cost_observer_list_->Notify(
       FROM_HERE, &ConnectionCostObserver::OnConnectionCostChanged, cost);
+}
+
+void NetworkChangeNotifier::NotifyObserversOfDefaultNetworkActiveImpl() {
+  GetObserverList().default_network_active_observer_list_->Notify(
+      FROM_HERE, &DefaultNetworkActiveObserver::OnDefaultNetworkActive);
 }
 
 NetworkChangeNotifier::DisableForTest::DisableForTest()

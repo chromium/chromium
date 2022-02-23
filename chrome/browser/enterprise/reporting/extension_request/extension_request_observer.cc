@@ -65,7 +65,7 @@ void ExtensionRequestObserver::OnExtensionManagementSettingsChanged() {
 
 void ExtensionRequestObserver::OnPendingListChanged() {
   if (report_trigger_)
-    report_trigger_.Run(profile_);
+    report_trigger_.Run(profile_.get());
 
   // The pending list is updated when user confirm the notification and requests
   // are removed from the list. There is no need to show new notification at
@@ -96,7 +96,7 @@ void ExtensionRequestObserver::ShowAllNotifications() {
 
 void ExtensionRequestObserver::ShowNotification(
     ExtensionRequestNotification::NotifyType type) {
-  const base::DictionaryValue* pending_requests =
+  const base::Value* pending_requests =
       profile_->GetPrefs()->GetDictionary(prefs::kCloudExtensionRequestIds);
 
   if (!pending_requests)

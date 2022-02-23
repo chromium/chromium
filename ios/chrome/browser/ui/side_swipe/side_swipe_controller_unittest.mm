@@ -10,7 +10,6 @@
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/main/test_browser.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
-#import "ios/chrome/browser/web_state_list/web_state_list_delegate.h"
 #import "ios/chrome/browser/web_state_list/web_state_opener.h"
 #import "ios/chrome/test/scoped_key_window.h"
 #import "ios/web/common/crw_web_view_content_view.h"
@@ -39,11 +38,6 @@
 
 namespace {
 
-class TestWebStateListDelegate : public WebStateListDelegate {
-  void WillAddWebState(web::WebState* web_state) override {}
-  void WebStateDetached(web::WebState* web_state) override {}
-};
-
 class SideSwipeControllerTest : public PlatformTest {
  public:
   SideSwipeControllerTest()
@@ -63,17 +57,12 @@ class SideSwipeControllerTest : public PlatformTest {
     [[[web_view_proxy_mock stub] andReturn:scroll_view_proxy] scrollViewProxy];
     original_web_state->SetWebViewProxy(web_view_proxy_mock);
 
-    web_state_list_ = std::make_unique<WebStateList>(&web_state_list_delegate_);
-    web_state_list_->InsertWebState(0, std::move(original_web_state),
-                                    WebStateList::INSERT_NO_FLAGS,
-                                    WebStateOpener());
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
 
-
-    TestChromeBrowserState::Builder builder;
-    browser_state_ = builder.Build();
-    // Create the object to test.
-    browser_ = std::make_unique<TestBrowser>(browser_state_.get(),
-                                             web_state_list_.get());
+    browser_->GetWebStateList()->InsertWebState(
+        0, std::move(original_web_state), WebStateList::INSERT_NO_FLAGS,
+        WebStateOpener());
 
     side_swipe_controller_ =
         [[SideSwipeController alloc] initWithBrowser:browser_.get()];
@@ -85,8 +74,6 @@ class SideSwipeControllerTest : public PlatformTest {
 
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
-  TestWebStateListDelegate web_state_list_delegate_;
-  std::unique_ptr<WebStateList> web_state_list_;
   std::unique_ptr<Browser> browser_;
   UIView* view_;
   SideSwipeController* side_swipe_controller_;
@@ -188,9 +175,9 @@ TEST_F(SideSwipeControllerTest, ObserversTriggerStateUpdate) {
   item->SetURL(GURL(kChromeUINewTabURL));
   // Insert the WebState and make sure it's active. This should trigger
   // didChangeActiveWebState and update edge navigation state.
-  web_state_list_->InsertWebState(1, std::move(fake_web_state),
-                                  WebStateList::INSERT_ACTIVATE,
-                                  WebStateOpener());
+  browser_->GetWebStateList()->InsertWebState(1, std::move(fake_web_state),
+                                              WebStateList::INSERT_ACTIVATE,
+                                              WebStateOpener());
   EXPECT_TRUE(side_swipe_controller_.leadingEdgeNavigationEnabled);
   EXPECT_TRUE(side_swipe_controller_.trailingEdgeNavigationEnabled);
 

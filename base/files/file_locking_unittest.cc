@@ -285,7 +285,7 @@ TEST_F(FileLockingTest, UnlockOnExitShared) {
 
 // Test that killing the process releases the lock.  This should cover crashing.
 // Flaky on Android (http://crbug.com/747518)
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #define MAYBE_UnlockOnTerminate DISABLED_UnlockOnTerminate
 #else
 #define MAYBE_UnlockOnTerminate UnlockOnTerminate

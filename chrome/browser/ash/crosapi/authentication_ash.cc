@@ -6,13 +6,13 @@
 
 #include <utility>
 
+#include "ash/components/login/auth/extended_authenticator.h"
 #include "base/check.h"
 #include "chrome/browser/extensions/api/passwords_private/passwords_private_utils_chromeos.h"
 #include "chrome/browser/extensions/api/quick_unlock_private/quick_unlock_private_ash_utils.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/common/extensions/api/quick_unlock_private.h"
-#include "chromeos/login/auth/extended_authenticator.h"
 #include "content/public/browser/browser_thread.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -36,8 +36,8 @@ void AuthenticationAsh::CreateQuickUnlockPrivateTokenInfo(
       base::MakeRefCounted<extensions::QuickUnlockPrivateGetAuthTokenHelper>(
           ProfileManager::GetActiveUserProfile());
   // |extended_authenticator| is kept alive by |on_result_callback| binding.
-  scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator =
-      chromeos::ExtendedAuthenticator::Create(helper.get());
+  scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator =
+      ash::ExtendedAuthenticator::Create(helper.get());
   auto on_result_callback = base::BindOnce(
       &AuthenticationAsh::OnCreateQuickUnlockPrivateTokenInfoResults,
       weak_factory_.GetWeakPtr(), std::move(callback), extended_authenticator);
@@ -57,7 +57,7 @@ void AuthenticationAsh::IsOsReauthAllowedForActiveUserProfile(
 
 void AuthenticationAsh::OnCreateQuickUnlockPrivateTokenInfoResults(
     CreateQuickUnlockPrivateTokenInfoCallback callback,
-    scoped_refptr<chromeos::ExtendedAuthenticator> extended_authenticator,
+    scoped_refptr<ash::ExtendedAuthenticator> extended_authenticator,
     bool success,
     std::unique_ptr<TokenInfo> token_info,
     const std::string& error_message) {

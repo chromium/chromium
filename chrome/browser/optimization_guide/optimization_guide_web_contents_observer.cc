@@ -37,7 +37,7 @@ bool IsValidOptimizationGuideNavigation(
     // Not a NSP navigation if there is no NSP manager.
     return true;
   }
-  return !(no_state_prefetch_manager->IsWebContentsPrerendering(
+  return !(no_state_prefetch_manager->IsWebContentsPrefetching(
       navigation_handle->GetWebContents()));
 }
 
@@ -45,7 +45,9 @@ bool IsValidOptimizationGuideNavigation(
 
 OptimizationGuideWebContentsObserver::OptimizationGuideWebContentsObserver(
     content::WebContents* web_contents)
-    : content::WebContentsObserver(web_contents) {
+    : content::WebContentsObserver(web_contents),
+      content::WebContentsUserData<OptimizationGuideWebContentsObserver>(
+          *web_contents) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
 
   optimization_guide_keyed_service_ =

@@ -1,0 +1,46 @@
+// Copyright 2022 The Chromium Authors. All rights reserved.
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module blink.mojom;
+
+import "mojo/public/mojom/base/time.mojom";
+import "url/mojom/origin.mojom";
+
+struct AttributionDebugKey {
+  uint64 value;
+};
+
+struct AttributionSourceData {
+  // Target site where this source will be triggered.
+  //
+  // For sources associated with a navigation, the destination site must be
+  // same-site with the final committed url of the navigation. If they are not
+  // same-site, this source will be ignored by the browser.
+  url.mojom.Origin destination;
+
+  // Origin that will receive all attribution reports associated with this source.
+  url.mojom.Origin reporting_origin;
+
+  // Data that will be sent in attribution reports to identify this source.
+  uint64 source_event_id;
+
+  // Specifies how long this source is eligible for attribution
+  mojo_base.mojom.TimeDelta? expiry;
+
+  // Priority for this source.
+  int64 priority = 0;
+
+  // A key that is propagated through the Attribution Reporting API for
+  // debugging purposes.
+  AttributionDebugKey? debug_key;
+};
+
+// Browser-process interface responsible for processing attribution
+// configurations registered by the renderer. These configurations may be sent
+// out of the normal frame lifecycle, e.g. after the frame is destroyed.
+interface AttributionDataHost {
+  // Called when data from the renderer is available for a given attributionsrc
+  // request.
+  SourceDataAvailable(AttributionSourceData data);
+};

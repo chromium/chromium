@@ -56,8 +56,8 @@ public class AppIndexingUtilTest {
         doReturn("My neat website").when(mTab).getTitle();
         doReturn(0L).when(mUtil).getElapsedTime();
         doAnswer(invocation -> {
-            DocumentMetadata.GetEntitiesResponse callback =
-                    (DocumentMetadata.GetEntitiesResponse) invocation.getArguments()[0];
+            DocumentMetadata.GetEntities_Response callback =
+                    (DocumentMetadata.GetEntities_Response) invocation.getArguments()[0];
             WebPage webpage = new WebPage();
             webpage.url = createUrl(JUnitTestGURLs.EXAMPLE_URL);
             webpage.title = "My neat website";
@@ -65,7 +65,7 @@ public class AppIndexingUtilTest {
             return null;
         })
                 .when(mDocumentMetadata)
-                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+                .getEntities(any(DocumentMetadata.GetEntities_Response.class));
     }
 
     @Test
@@ -80,14 +80,14 @@ public class AppIndexingUtilTest {
     @Test
     public void testExtractDocumentMetadata_NoCacheHit() {
         mUtil.extractDocumentMetadata(mTab);
-        verify(mDocumentMetadata).getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+        verify(mDocumentMetadata).getEntities(any(DocumentMetadata.GetEntities_Response.class));
         verify(mReporter).reportWebPage(any(WebPage.class));
     }
 
     @Test
     public void testExtractDocumentMetadata_CacheHit() {
         mUtil.extractDocumentMetadata(mTab);
-        verify(mDocumentMetadata).getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+        verify(mDocumentMetadata).getEntities(any(DocumentMetadata.GetEntities_Response.class));
         verify(mDocumentMetadata).close();
         verify(mReporter).reportWebPage(any(WebPage.class));
 
@@ -104,25 +104,25 @@ public class AppIndexingUtilTest {
         doReturn(60 * 60 * 1000L + 1).when(mUtil).getElapsedTime();
         mUtil.extractDocumentMetadata(mTab);
         verify(mDocumentMetadata, times(2))
-                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+                .getEntities(any(DocumentMetadata.GetEntities_Response.class));
     }
 
     @Test
     public void testExtractDocumentMetadata_CacheHit_NoEntity() {
         doAnswer(invocation -> {
-            DocumentMetadata.GetEntitiesResponse callback =
-                    (DocumentMetadata.GetEntitiesResponse) invocation.getArguments()[0];
+            DocumentMetadata.GetEntities_Response callback =
+                    (DocumentMetadata.GetEntities_Response) invocation.getArguments()[0];
             callback.call(null);
             return null;
         })
                 .when(mDocumentMetadata)
-                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+                .getEntities(any(DocumentMetadata.GetEntities_Response.class));
         mUtil.extractDocumentMetadata(mTab);
 
         doReturn(1L).when(mUtil).getElapsedTime();
         mUtil.extractDocumentMetadata(mTab);
         verify(mDocumentMetadata, times(1))
-                .getEntities(any(DocumentMetadata.GetEntitiesResponse.class));
+                .getEntities(any(DocumentMetadata.GetEntities_Response.class));
         verifyNoMoreInteractions(mReporter);
     }
 

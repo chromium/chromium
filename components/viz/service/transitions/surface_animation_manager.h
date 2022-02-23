@@ -18,6 +18,7 @@
 #include "components/viz/common/resources/resource_id.h"
 #include "components/viz/service/display/shared_bitmap_manager.h"
 #include "components/viz/service/surfaces/surface_saved_frame.h"
+#include "components/viz/service/surfaces/surface_saved_frame_storage.h"
 #include "components/viz/service/transitions/transferable_resource_tracker.h"
 #include "components/viz/service/viz_service_export.h"
 #include "ui/gfx/animation/keyframe/animation_curve.h"
@@ -28,7 +29,6 @@ namespace viz {
 
 class Surface;
 class CompositorFrame;
-class SurfaceSavedFrameStorage;
 struct ReturnedResource;
 struct TransferableResource;
 
@@ -58,7 +58,7 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // normally not do so in the middle of the animation.
   bool ProcessTransitionDirectives(
       const std::vector<CompositorFrameTransitionDirective>& directives,
-      SurfaceSavedFrameStorage* storage);
+      Surface* active_surface);
 
   // Returns true if this manager needs to observe begin frames to advance
   // animations.
@@ -82,10 +82,14 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
   // necessary.
   void ReplaceSharedElementResources(Surface* surface);
 
+  SurfaceSavedFrameStorage* GetSurfaceSavedFrameStorageForTesting();
+
  private:
   friend class SurfaceAnimationManagerTest;
   FRIEND_TEST_ALL_PREFIXES(SurfaceAnimationManagerTest, CustomRootConfig);
   FRIEND_TEST_ALL_PREFIXES(SurfaceAnimationManagerTest, CustomSharedConfig);
+
+  class StorageWithSurface;
 
   struct RenderPassDrawData {
     RenderPassDrawData();
@@ -104,17 +108,15 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
 
   // Helpers to process specific directives.
   bool ProcessSaveDirective(const CompositorFrameTransitionDirective& directive,
-                            SurfaceSavedFrameStorage* storage);
+                            StorageWithSurface& storage);
   // Returns true if the animation has started.
   bool ProcessAnimateDirective(
       const CompositorFrameTransitionDirective& directive,
-      SurfaceSavedFrameStorage* storage);
+      StorageWithSurface& storage);
   bool ProcessAnimateRendererDirective(
       const CompositorFrameTransitionDirective& directive,
-      SurfaceSavedFrameStorage* storage);
-  bool ProcessReleaseDirective(
-      const CompositorFrameTransitionDirective& directive,
-      SurfaceSavedFrameStorage* storage);
+      StorageWithSurface& storage);
+  bool ProcessReleaseDirective();
 
   // Finishes the animation and advance state to kLastFrame if it's time to do
   // so. This call is only valid if state is kAnimating.
@@ -280,6 +282,10 @@ class VIZ_SERVICE_EXPORT SurfaceAnimationManager {
     float combined_opacity_ = 1.0f;
     gfx::TransformOperations combined_transform_;
   };
+
+  // This is responsible for keeping track of the saved frame, accumulating copy
+  // output results.
+  SurfaceSavedFrameStorage surface_saved_frame_storage_;
 
   // This is the root animation state.
   RootAnimationState root_animation_;

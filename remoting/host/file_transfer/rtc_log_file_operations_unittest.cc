@@ -4,6 +4,7 @@
 
 #include "remoting/host/file_transfer/rtc_log_file_operations.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/task_environment.h"
 #include "remoting/protocol/fake_connection_to_client.h"
 #include "remoting/protocol/session.h"
@@ -31,7 +32,7 @@ class FakeConnectionWithRtcLog : public protocol::FakeConnectionToClient {
   void set_event_log(protocol::WebrtcEventLogData* log) { event_log_ = log; }
 
  private:
-  protocol::WebrtcEventLogData* event_log_;
+  raw_ptr<protocol::WebrtcEventLogData> event_log_;
 };
 
 }  // namespace

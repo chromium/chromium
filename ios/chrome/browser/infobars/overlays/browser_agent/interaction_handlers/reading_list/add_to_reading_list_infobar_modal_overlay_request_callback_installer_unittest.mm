@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/reading_list/add_to_reading_list_infobar_modal_overlay_request_callback_installer.h"
 
 #include "base/test/task_environment.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/infobars/infobar_ios.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
 #import "ios/chrome/browser/infobars/overlays/browser_agent/interaction_handlers/test/mock_ios_add_to_reading_list_infobar_delegate.h"
@@ -31,10 +32,15 @@
 class ReadingListInfobarModalOverlayRequestCallbackInstallerTest
     : public PlatformTest {
  public:
-  ReadingListInfobarModalOverlayRequestCallbackInstallerTest()
-      : test_browser_(std::make_unique<TestBrowser>()),
-        mock_handler_(test_browser_.get()),
-        installer_(&mock_handler_) {
+  ReadingListInfobarModalOverlayRequestCallbackInstallerTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    mock_handler_ =
+        std::make_unique<MockReadingListInfobarModalInteractionHandler>(
+            browser_.get());
+    installer_ = std::make_unique<
+        reading_list_infobar_overlay::ModalRequestCallbackInstaller>(
+        mock_handler_.get());
     // Create the infobar and add it to the WebState's manager.
     web_state_.SetNavigationManager(
         std::make_unique<web::FakeNavigationManager>());
@@ -54,7 +60,7 @@ class ReadingListInfobarModalOverlayRequestCallbackInstallerTest
     request_ = added_request.get();
     queue()->AddRequest(std::move(added_request));
     // Install the callbacks on the added request.
-    installer_.InstallCallbacks(request_);
+    installer_->InstallCallbacks(request_);
   }
 
   void TearDown() override {
@@ -72,19 +78,21 @@ class ReadingListInfobarModalOverlayRequestCallbackInstallerTest
 
  protected:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<TestBrowser> test_browser_;
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   web::FakeWebState web_state_;
   std::unique_ptr<FakeReadingListModel> fake_reading_list_model_;
   InfoBarIOS* infobar_ = nullptr;
   OverlayRequest* request_ = nullptr;
-  MockReadingListInfobarModalInteractionHandler mock_handler_;
-  reading_list_infobar_overlay::ModalRequestCallbackInstaller installer_;
+  std::unique_ptr<MockReadingListInfobarModalInteractionHandler> mock_handler_;
+  std::unique_ptr<reading_list_infobar_overlay::ModalRequestCallbackInstaller>
+      installer_;
 };
 
 // Tests that dispatching the NeverAsk Overlay response calls the NeverAsk()
 // InteractionHandler method.
 TEST_F(ReadingListInfobarModalOverlayRequestCallbackInstallerTest, NeverAsk) {
-  EXPECT_CALL(mock_handler_, NeverAsk(infobar_));
+  EXPECT_CALL(*mock_handler_, NeverAsk(infobar_));
   request_->GetCallbackManager()->DispatchResponse(
       OverlayResponse::CreateWithInfo<
           reading_list_infobar_modal_responses::NeverAsk>());
@@ -94,7 +102,7 @@ TEST_F(ReadingListInfobarModalOverlayRequestCallbackInstallerTest, NeverAsk) {
 // calls the PerformMainAction() InteractionHandler method.
 TEST_F(ReadingListInfobarModalOverlayRequestCallbackInstallerTest,
        PerformMainAction) {
-  EXPECT_CALL(mock_handler_, PerformMainAction(infobar_));
+  EXPECT_CALL(*mock_handler_, PerformMainAction(infobar_));
   request_->GetCallbackManager()->DispatchResponse(
       OverlayResponse::CreateWithInfo<InfobarModalMainActionResponse>());
 }

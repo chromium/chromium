@@ -12,7 +12,6 @@
 #include "base/android/jni_array.h"
 #include "base/android/jni_string.h"
 #include "base/bind.h"
-#include "base/macros.h"
 #include "base/threading/sequenced_task_runner_handle.h"
 #include "remoting/android/jni_headers/DirectoryService_jni.h"
 #include "remoting/base/oauth_token_getter.h"

@@ -31,7 +31,7 @@ const base::FeatureParam<std::string> kPersistentHistogramsStorage{
 
 // Creating a "spare" file for persistent metrics involves a lot of I/O and
 // isn't important so delay the operation for a while after startup.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 // Android needs the spare file and also launches faster.
 constexpr bool kSpareFileRequired = true;
 constexpr int kSpareFileCreateDelaySeconds = 10;
@@ -43,7 +43,7 @@ constexpr bool kSpareFileRequired = false;
 constexpr int kSpareFileCreateDelaySeconds = 90;
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 
 // Windows sometimes creates files of the form MyFile.pma~RF71cb1793.TMP
 // when trying to rename a file to something that exists but is in-use, and
@@ -81,7 +81,7 @@ void DeleteOldWindowsTempFiles(const base::FilePath& dir) {
 // spending time on clean-up efforts.
 constexpr base::TimeDelta kDeleteOldWindowsTempFilesDelay = base::Minutes(2);
 
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 
 // Create persistent/shared memory and allow histograms to be stored in
 // it. Memory that is not actually used won't be physically mapped by the
@@ -222,14 +222,14 @@ void InstantiatePersistentHistogramsImpl(const base::FilePath& metrics_dir,
   // Create tracking histograms for the allocator and record storage file.
   allocator->CreateTrackingHistograms(kBrowserMetricsName);
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   base::ThreadPool::PostDelayedTask(
       FROM_HERE,
       {base::MayBlock(), base::TaskPriority::LOWEST,
        base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN},
       base::BindOnce(&DeleteOldWindowsTempFiles, std::move(metrics_dir)),
       kDeleteOldWindowsTempFilesDelay);
-#endif  // defined(OS_WIN)
+#endif  // BUILDFLAG(IS_WIN)
 }
 
 }  // namespace
@@ -251,7 +251,7 @@ void InstantiatePersistentHistograms(const base::FilePath& metrics_dir) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   // Linux kernel 4.4.0.* shows a huge number of SIGBUS crashes with persistent
   // histograms enabled using a mapped file.  Change this to use local memory.
   // https://bugs.chromium.org/p/chromium/issues/detail?id=753741

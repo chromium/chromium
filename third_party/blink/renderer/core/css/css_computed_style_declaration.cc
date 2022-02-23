@@ -25,6 +25,7 @@
 #include "third_party/blink/renderer/core/css/css_computed_style_declaration.h"
 
 #include "base/cxx17_backports.h"
+#include "base/memory/values_equivalent.h"
 #include "third_party/blink/renderer/core/css/computed_style_css_value_mapping.h"
 #include "third_party/blink/renderer/core/css/css_identifier_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -46,7 +47,7 @@
 #include "third_party/blink/renderer/core/layout/layout_object.h"
 #include "third_party/blink/renderer/core/style/computed_style.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -361,7 +362,7 @@ bool CSSComputedStyleDeclaration::CssPropertyMatches(
     }
   }
   const CSSValue* value = GetPropertyCSSValue(property_id);
-  return DataEquivalent(value, &property_value);
+  return base::ValuesEquivalent(value, &property_value);
 }
 
 MutableCSSPropertyValueSet* CSSComputedStyleDeclaration::CopyProperties()

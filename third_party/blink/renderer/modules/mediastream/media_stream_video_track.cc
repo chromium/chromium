@@ -10,7 +10,6 @@
 #include "base/bind.h"
 #include "base/containers/contains.h"
 #include "base/location.h"
-#include "base/macros.h"
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "media/base/bind_to_current_loop.h"
@@ -694,7 +693,6 @@ void MediaStreamVideoTrack::GetSettings(
   if (format) {
     if (frame_rate_ == 0.0)
       settings.frame_rate = format->frame_rate;
-    settings.video_kind = GetVideoKindForFormat(*format);
   } else {
     // Format is only set for local tracks. For other tracks, use the frame rate
     // reported through settings callback SetSizeAndComputedFrameRate().

@@ -1,0 +1,73 @@
+# Copyright 2021 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+static_library("custom_handlers") {
+  sources = [
+    "pref_names.cc",
+    "pref_names.h",
+    "protocol_handler_registry.cc",
+    "protocol_handler_registry.h",
+    "protocol_handler_throttle.cc",
+    "protocol_handler_throttle.h",
+  ]
+
+  deps = [
+    "//build:chromeos_buildflags",
+    "//components/keyed_service/core",
+    "//components/pref_registry",
+    "//components/prefs",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+    "//services/network/public/cpp:cpp_base",
+    "//third_party/blink/public/common:headers",
+  ]
+
+  if (!is_android) {
+    sources += [
+      "register_protocol_handler_permission_request.cc",
+      "register_protocol_handler_permission_request.h",
+    ]
+
+    deps += [
+      "//components/permissions",
+      "//components/strings",
+      "//ui/base",
+    ]
+  }
+}
+
+source_set("test_support") {
+  testonly = true
+  sources = [
+    "test_protocol_handler_registry_delegate.cc",
+    "test_protocol_handler_registry_delegate.h",
+  ]
+  deps = [
+    ":custom_handlers",
+    "//base",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+
+  sources = [ "protocol_handler_registry_unittest.cc" ]
+
+  deps = [
+    ":custom_handlers",
+    ":test_support",
+    "//base/test:test_support",
+    "//components/pref_registry",
+    "//components/sync_preferences",
+    "//components/sync_preferences:test_support",
+    "//components/user_prefs",
+    "//content/public/browser",
+    "//content/public/common",
+    "//content/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+    "//third_party/blink/public/common:headers",
+  ]
+}

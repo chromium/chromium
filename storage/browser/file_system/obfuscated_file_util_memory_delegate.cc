@@ -27,7 +27,7 @@ namespace {
 // Note that quota assignment is the same for on-disk filesystem and the
 // assigned quota is not guaranteed to be allocatable later.
 bool IsMemoryAvailable(int64_t required_memory) {
-#if defined(OS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA)
   // This function is not implemented on FUCHSIA, yet. (crbug.com/986608)
   return true;
 #else
@@ -85,9 +85,9 @@ struct ObfuscatedFileUtilMemoryDelegate::DecomposedPath {
 
 ObfuscatedFileUtilMemoryDelegate::ObfuscatedFileUtilMemoryDelegate(
     const base::FilePath& file_system_directory)
-    : root_(std::make_unique<Entry>(Entry::kDirectory)) {
+    : root_(std::make_unique<Entry>(Entry::kDirectory)),
+      root_path_components_(file_system_directory.GetComponents()) {
   DETACH_FROM_SEQUENCE(sequence_checker_);
-  file_system_directory.GetComponents(&root_path_components_);
 }
 
 ObfuscatedFileUtilMemoryDelegate::~ObfuscatedFileUtilMemoryDelegate() {
@@ -98,8 +98,7 @@ absl::optional<ObfuscatedFileUtilMemoryDelegate::DecomposedPath>
 ObfuscatedFileUtilMemoryDelegate::ParsePath(const base::FilePath& path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DecomposedPath dp;
-
-  path.GetComponents(&dp.components);
+  dp.components = path.GetComponents();
 
   // Ensure |path| is under |root_|.
   if (dp.components.size() < root_path_components_.size())
@@ -378,7 +377,7 @@ base::File::Error ObfuscatedFileUtilMemoryDelegate::CopyOrMoveFile(
     if (dest_dp->entry->type != src_dp->entry->type)
       return base::File::FILE_ERROR_INVALID_OPERATION;
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
     // Overwriting an empty directory with another directory isn't
     // supported natively on Windows.
     // To keep the behavior indistinguishable from on-disk operation,
@@ -549,7 +548,7 @@ int ObfuscatedFileUtilMemoryDelegate::WriteFile(
 // See crbug.com/1043914 for more context.
 // |MaxDirectMapped| function is not implemented on FUCHSIA, yet.
 // (crbug.com/986608)
-#if !defined(OS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA)
     if (last_position >= base::MaxDirectMapped() / 2) {
       // TODO(https://crbug.com/1043914): Allocated memory is rounded up to
       // 100MB blocks to reduce memory allocation delays. Switch to a more

@@ -54,9 +54,10 @@ bool ContentCapabilitiesHandler::Parse(Extension* extension,
                                        std::u16string* error) {
   std::unique_ptr<ContentCapabilitiesInfo> info(new ContentCapabilitiesInfo);
 
-  const base::Value* value = NULL;
-  if (!extension->manifest()->Get(keys::kContentCapabilities, &value)) {
-    *error = base::ASCIIToUTF16(errors::kInvalidContentCapabilities);
+  const base::Value* value =
+      extension->manifest()->FindPath(keys::kContentCapabilities);
+  if (value == nullptr) {
+    *error = errors::kInvalidContentCapabilities;
     return false;
   }
 

@@ -31,13 +31,13 @@ TtsHandler::~TtsHandler() {
   RemoveTtsControllerDelegates();
 }
 
-void TtsHandler::HandleGetAllTtsVoiceData(const base::ListValue* args) {
+void TtsHandler::HandleGetAllTtsVoiceData(base::Value::ConstListView args) {
   OnVoicesChanged();
 }
 
-void TtsHandler::HandleGetTtsExtensions(const base::ListValue* args) {
+void TtsHandler::HandleGetTtsExtensions(base::Value::ConstListView args) {
   // Ensure the built in tts engine is loaded to be able to respond to messages.
-  WakeTtsEngine(nullptr);
+  WakeTtsEngine(base::Value::ConstListView());
 
   base::ListValue responses;
   Profile* profile = Profile::FromWebUI(web_ui());
@@ -59,12 +59,11 @@ void TtsHandler::HandleGetTtsExtensions(const base::ListValue* args) {
       continue;
     }
     base::DictionaryValue response;
-    response.SetString("name", extension->name());
-    response.SetString("extensionId", extension_id);
+    response.SetStringKey("name", extension->name());
+    response.SetStringKey("extensionId", extension_id);
     if (extensions::OptionsPageInfo::HasOptionsPage(extension)) {
-      response.SetString(
+      response.SetStringKey(
           "optionsPage",
-
           extensions::OptionsPageInfo::GetOptionsPage(extension).spec());
     }
     responses.Append(std::move(response));
@@ -86,28 +85,28 @@ void TtsHandler::OnVoicesChanged() {
     std::string language_code;
     if (voice.lang.empty()) {
       language_code = "noLanguageCode";
-      response.SetString(
+      response.SetStringKey(
           "displayLanguage",
           l10n_util::GetStringUTF8(IDS_TEXT_TO_SPEECH_SETTINGS_NO_LANGUAGE));
     } else {
       language_code = l10n_util::GetLanguage(voice.lang);
-      response.SetString(
+      response.SetStringKey(
           "displayLanguage",
           l10n_util::GetDisplayNameForLocale(
               language_code, g_browser_process->GetApplicationLocale(), true));
     }
-    response.SetString("name", voice.name);
-    response.SetString("languageCode", language_code);
-    response.SetString("fullLanguageCode", voice.lang);
-    response.SetInteger("languageScore", language_score);
-    response.SetString("extensionId", voice.engine_id);
+    response.SetStringKey("name", voice.name);
+    response.SetStringKey("languageCode", language_code);
+    response.SetStringKey("fullLanguageCode", voice.lang);
+    response.SetIntKey("languageScore", language_score);
+    response.SetStringKey("extensionId", voice.engine_id);
     responses.Append(std::move(response));
   }
   AllowJavascript();
   FireWebUIListener("all-voice-data-updated", responses);
 
   // Also refresh the TTS extensions in case they have changed.
-  HandleGetTtsExtensions(nullptr);
+  HandleGetTtsExtensions(base::Value::ConstListView());
 }
 
 void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
@@ -123,10 +122,10 @@ void TtsHandler::OnTtsEvent(content::TtsUtterance* utterance,
   }
 }
 
-void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
-  DCHECK_EQ(2U, args->GetList().size());
-  const std::string& text = args->GetList()[0].GetString();
-  const std::string& voice_id = args->GetList()[1].GetString();
+void TtsHandler::HandlePreviewTtsVoice(base::Value::ConstListView args) {
+  DCHECK_EQ(2U, args.size());
+  const std::string& text = args[0].GetString();
+  const std::string& voice_id = args[1].GetString();
 
   if (text.empty() || voice_id.empty())
     return;
@@ -135,8 +134,10 @@ void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
       base::DictionaryValue::From(base::JSONReader::ReadDeprecated(voice_id));
   std::string name;
   std::string extension_id;
-  json->GetString("name", &name);
-  json->GetString("extension", &extension_id);
+  if (const std::string* ptr = json->FindStringKey("name"))
+    name = *ptr;
+  if (const std::string* ptr = json->FindStringKey("extension"))
+    extension_id = *ptr;
 
   std::unique_ptr<content::TtsUtterance> utterance =
       content::TtsUtterance::Create(web_ui()->GetWebContents());
@@ -154,18 +155,18 @@ void TtsHandler::HandlePreviewTtsVoice(const base::ListValue* args) {
 }
 
 void TtsHandler::RegisterMessages() {
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getAllTtsVoiceData",
       base::BindRepeating(&TtsHandler::HandleGetAllTtsVoiceData,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "getTtsExtensions",
       base::BindRepeating(&TtsHandler::HandleGetTtsExtensions,
                           base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "previewTtsVoice", base::BindRepeating(&TtsHandler::HandlePreviewTtsVoice,
                                              base::Unretained(this)));
-  web_ui()->RegisterDeprecatedMessageCallback(
+  web_ui()->RegisterMessageCallback(
       "wakeTtsEngine",
       base::BindRepeating(&TtsHandler::WakeTtsEngine, base::Unretained(this)));
 }
@@ -190,7 +191,7 @@ int TtsHandler::GetVoiceLangMatchScore(const content::VoiceData* voice,
              : 0;
 }
 
-void TtsHandler::WakeTtsEngine(const base::ListValue* args) {
+void TtsHandler::WakeTtsEngine(base::Value::ConstListView args) {
   Profile* profile = Profile::FromWebUI(web_ui());
   TtsExtensionEngine::GetInstance()->LoadBuiltInTtsEngine(profile);
   extensions::ProcessManager::Get(profile)->WakeEventPage(

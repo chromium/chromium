@@ -89,6 +89,28 @@
         background-image:
             url(chrome://os-settings/images/notification_access_finished.svg);
       }
+
+      @media(prefers-color-scheme: dark) {
+        :host([has-not-started-setup-attempt_]) #illustration {
+          background-image: url(
+            chrome://os-settings/images/notification_access_setup_dark.svg);
+        }
+
+        :host([is-setup-attempt-in-progress_]) #illustration {
+          background-image: url(
+            chrome://os-settings/images/notification_access_connecting_dark.svg);
+        }
+
+        :host([did-setup-attempt-fail_]) #illustration {
+          background-image: url(
+            chrome://os-settings/images/notification_access_error_dark.svg);
+        }
+
+        :host([has-completed-setup-successfully_]) #illustration {
+          background-image: url(
+            chrome://os-settings/images/notification_access_finished_dark.svg);
+        }
+      }
     </style>
     <cr-dialog id="dialog" close-text="$i18n{close}">
       <div id="dialogTitle" slot="title">

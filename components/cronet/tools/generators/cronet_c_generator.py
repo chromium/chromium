@@ -6,10 +6,14 @@
 
 import os
 
+# This is called from cronet_bindings_generator.py which does some magic to add
+# libraries to the lookup path which pylint does not
+# pylint: disable=import-error
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
 import mojom.generate.pack as pack
 from mojom.generate.template_expander import UseJinja
+# pylint: enable=import-error
 
 
 _kind_to_cpp_type = {
@@ -271,7 +275,7 @@ class Generator(generator.Generator):
                 for typename in
                 self.module.structs + all_enums + self.module.unions)
     headers = set()
-    for typename, typemap in self.typemap.iteritems():
+    for typename, typemap in self.typemap.items():
       if typename in types:
         headers.update(typemap.get("public_headers", []))
     return sorted(headers)

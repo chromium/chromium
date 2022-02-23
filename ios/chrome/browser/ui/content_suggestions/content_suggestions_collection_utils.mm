@@ -6,7 +6,6 @@
 
 #include "base/i18n/rtl.h"
 #include "components/strings/grit/components_strings.h"
-#import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_most_visited_cell.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
 #import "ios/chrome/browser/ui/location_bar/location_bar_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -60,9 +59,6 @@ const CGFloat kGoogleSearchDoodleShrunkHeight = 68;
 // Height for the shrunk logo frame.
 // TODO(crbug.com/1170491): clean up post-launch.
 const CGFloat kGoogleSearchLogoShrunkHeight = 36;
-
-// Height for the doodle frame when Google is not the default search engine.
-const CGFloat kNonGoogleSearchDoodleHeight = 60;
 }
 
 namespace content_suggestions {
@@ -74,8 +70,9 @@ const CGFloat kReturnToRecentTabSectionBottomMargin = 25;
 CGFloat doodleHeight(BOOL logoIsShowing,
                      BOOL doodleIsShowing,
                      UITraitCollection* traitCollection) {
+  // For users with non-Google default search engine, there is no doodle.
   if (!IsRegularXRegularSizeClass(traitCollection) && !logoIsShowing) {
-    return kNonGoogleSearchDoodleHeight;
+    return 0;
   }
 
   if (ShouldShrinkLogoForStartSurface() && logoIsShowing) {

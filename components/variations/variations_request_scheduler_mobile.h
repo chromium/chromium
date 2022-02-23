@@ -8,6 +8,7 @@
 #include "base/bind.h"
 #include "base/component_export.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "components/variations/variations_request_scheduler.h"
 
@@ -46,7 +47,7 @@ class COMPONENT_EXPORT(VARIATIONS) VariationsRequestSchedulerMobile
                            OnAppEnterForegroundOnStartup);
 
   // The local state instance that provides the last fetch time.
-  PrefService* local_state_;
+  raw_ptr<PrefService> local_state_;
 
   // Timer used for triggering a delayed fetch for ScheduleFetch().
   base::OneShotTimer schedule_fetch_timer_;

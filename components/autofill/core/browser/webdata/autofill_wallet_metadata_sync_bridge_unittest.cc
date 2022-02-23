@@ -32,10 +32,10 @@
 #include "components/os_crypt/os_crypt_mocker.h"
 #include "components/sync/base/client_tag_hash.h"
 #include "components/sync/engine/data_type_activation_response.h"
-#include "components/sync/engine/entity_data.h"
 #include "components/sync/model/client_tag_based_model_type_processor.h"
 #include "components/sync/model/data_batch.h"
 #include "components/sync/protocol/autofill_specifics.pb.h"
+#include "components/sync/protocol/entity_data.h"
 #include "components/sync/protocol/entity_metadata.pb.h"
 #include "components/sync/protocol/entity_specifics.pb.h"
 #include "components/sync/protocol/model_type_state.pb.h"
@@ -451,10 +451,8 @@ class AutofillWalletMetadataSyncBridgeTest : public testing::Test {
     AutofillTable* table = AutofillTable::FromWebDatabase(&db_);
     syncer::MetadataBatch batch;
     if (table->GetAllSyncMetadata(syncer::AUTOFILL_WALLET_METADATA, &batch)) {
-      for (const std::pair<const std::string,
-                           std::unique_ptr<sync_pb::EntityMetadata>>& entry :
-           batch.GetAllMetadata()) {
-        storage_keys.push_back(entry.first);
+      for (const auto& [storage_key, metadata] : batch.GetAllMetadata()) {
+        storage_keys.push_back(storage_key);
       }
     }
     return storage_keys;

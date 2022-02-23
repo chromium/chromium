@@ -113,7 +113,8 @@ def CheckDuplicateConfigs(errs, config_pool, mixin_pool, grouping,
       if isinstance(config, dict):
         # Ignore for now
         continue
-      elif config.startswith('//'):
+
+      if config.startswith('//'):
         args = config
       else:
         flattened_config = flatten_config(config_pool, mixin_pool, config)

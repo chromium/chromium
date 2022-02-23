@@ -34,6 +34,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.task.PostTask;
@@ -48,6 +49,7 @@ import java.util.concurrent.Callable;
  */
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(manifest = Config.NONE)
+@LooperMode(LooperMode.Mode.LEGACY)
 public class ThreadedInputConnectionTest {
     @Mock
     ImeAdapterImpl mImeAdapter;

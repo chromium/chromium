@@ -10,33 +10,33 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.os.Bundle;
-import android.text.SpannableString;
-import android.text.method.LinkMovementMethod;
+import android.os.Handler;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.accessibility.AccessibilityEvent;
 import android.widget.FrameLayout;
 
+import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
+import androidx.annotation.StringRes;
 import androidx.annotation.VisibleForTesting;
 import androidx.fragment.app.Fragment;
 
-import org.chromium.base.Callback;
 import org.chromium.chrome.R;
-import org.chromium.chrome.browser.customtabs.CustomTabActivity;
+import org.chromium.chrome.browser.enterprise.util.EnterpriseInfo;
 import org.chromium.chrome.browser.firstrun.FirstRunFragment;
+import org.chromium.chrome.browser.firstrun.FirstRunUtils;
 import org.chromium.chrome.browser.firstrun.MobileFreProgress;
+import org.chromium.chrome.browser.firstrun.SkipTosDialogPolicyListener;
+import org.chromium.chrome.browser.privacy.settings.PrivacyPreferencesManagerImpl;
 import org.chromium.chrome.browser.ui.signin.SigninUtils;
 import org.chromium.chrome.browser.ui.signin.fre.FreUMADialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunCoordinator;
+import org.chromium.chrome.browser.ui.signin.fre.SigninFirstRunView;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.ui.base.LocalizationUtils;
 import org.chromium.ui.modaldialog.ModalDialogManager;
 import org.chromium.ui.modaldialog.ModalDialogManagerHolder;
-import org.chromium.ui.text.NoUnderlineClickableSpan;
-import org.chromium.ui.text.SpanApplier;
-import org.chromium.ui.widget.TextViewWithClickableSpans;
 
 /**
  * This fragment handles the sign-in without sync consent during the FRE.
@@ -50,7 +50,9 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     // Used as a view holder for the current orientation of the device.
     private FrameLayout mFragmentView;
     private ModalDialogManager mModalDialogManager;
+    private SkipTosDialogPolicyListener mSkipTosDialogPolicyListener;
     private @Nullable SigninFirstRunCoordinator mSigninFirstRunCoordinator;
+    private boolean mExitFirstRunCalled;
     private boolean mNativeInitialized;
     private boolean mAllowCrashUpload;
 
@@ -61,6 +63,13 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         super.onAttach(context);
         getPageDelegate().getPolicyLoadListener().onAvailable(
                 hasPolicies -> notifyCoordinatorWhenNativeAndPolicyAreLoaded());
+        if (getPageDelegate().isLaunchedFromCct()) {
+            mSkipTosDialogPolicyListener = new SkipTosDialogPolicyListener(
+                    getPageDelegate().getPolicyLoadListener(), EnterpriseInfo.getInstance(), null);
+            mSkipTosDialogPolicyListener.onAvailable((Boolean skipTos) -> {
+                if (skipTos) exitFirstRun();
+            });
+        }
         mModalDialogManager = ((ModalDialogManagerHolder) getActivity()).getModalDialogManager();
     }
 
@@ -68,6 +77,10 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     public void onDetach() {
         super.onDetach();
         mFragmentView = null;
+        if (mSkipTosDialogPolicyListener != null) {
+            mSkipTosDialogPolicyListener.destroy();
+            mSkipTosDialogPolicyListener = null;
+        }
     }
 
     @Override
@@ -83,7 +96,7 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     @Override
     public View onCreateView(
             LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        mAllowCrashUpload = true;
+        mAllowCrashUpload = false;
         mFragmentView = new FrameLayout(getActivity());
         mFragmentView.addView(inflateFragmentView(inflater, getResources().getConfiguration()));
 
@@ -91,9 +104,20 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mSigninFirstRunCoordinator.destroy();
+    public void onDestroyView() {
+        super.onDestroyView();
+        setSigninFirstRunCoordinator(null);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
+                && data != null) {
+            String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
+            if (addedAccountName != null) {
+                mSigninFirstRunCoordinator.onAccountSelected(addedAccountName);
+            }
+        }
     }
 
     /** Implements {@link FirstRunFragment}. */
@@ -132,25 +156,32 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void recordFreProgressHistogram(@MobileFreProgress int state) {
-        getPageDelegate().recordFreProgressHistogram(state);
-    }
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode == ADD_ACCOUNT_REQUEST_CODE && resultCode == Activity.RESULT_OK
-                && data != null) {
-            String addedAccountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
-            if (addedAccountName != null) {
-                mSigninFirstRunCoordinator.onAccountSelected(addedAccountName);
-            }
-        }
+    public void acceptTermsOfService() {
+        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
     }
 
     /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
     @Override
-    public void acceptTermsOfService() {
-        getPageDelegate().acceptTermsOfService(mAllowCrashUpload);
+    public void advanceToNextPage() {
+        getPageDelegate().advanceToNextPage();
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public void recordFreProgressHistogram(@MobileFreProgress int state) {
+        getPageDelegate().recordFreProgressHistogram(state);
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public void showInfoPage(@StringRes int url) {
+        getPageDelegate().showInfoPage(url);
+    }
+
+    /** Implements {@link SigninFirstRunCoordinator.Delegate}. */
+    @Override
+    public void openUmaDialog() {
+        new FreUMADialogCoordinator(requireContext(), mModalDialogManager, this, mAllowCrashUpload);
     }
 
     /** Implements {@link FreUMADialogCoordinator.Listener} */
@@ -159,46 +190,54 @@ public class SigninFirstRunFragment extends Fragment implements FirstRunFragment
         mAllowCrashUpload = allowCrashUpload;
     }
 
+    @MainThread
+    private void exitFirstRun() {
+        // Make sure this function is called at most once.
+        if (!mExitFirstRunCalled) {
+            mExitFirstRunCalled = true;
+            new Handler().postDelayed(() -> {
+                getPageDelegate().acceptTermsOfService(false);
+                getPageDelegate().exitFirstRun();
+            }, FirstRunUtils.getSkipTosExitDelayMs());
+        }
+    }
+
+    /**
+     * Destroys the old coordinator if needed and sets {@link #mSigninFirstRunCoordinator}.
+     * @param coordinator the new coordinator instance (may be null).
+     */
+    private void setSigninFirstRunCoordinator(@Nullable SigninFirstRunCoordinator coordinator) {
+        if (mSigninFirstRunCoordinator != null) {
+            mSigninFirstRunCoordinator.destroy();
+        }
+        mSigninFirstRunCoordinator = coordinator;
+    }
+
     private void notifyCoordinatorWhenNativeAndPolicyAreLoaded() {
+        // This may happen when the native initialized supplier in FirstRunActivity calls back after
+        // the fragment has been detached from the activity. See https://crbug.com/1294998.
+        if (getPageDelegate() == null) return;
+
         if (mSigninFirstRunCoordinator != null && mNativeInitialized
                 && getPageDelegate().getPolicyLoadListener().get() != null) {
             mSigninFirstRunCoordinator.onNativeAndPolicyLoaded(
                     getPageDelegate().getPolicyLoadListener().get());
+            mAllowCrashUpload = !mSigninFirstRunCoordinator.isMetricsReportingDisabledByPolicy();
         }
     }
 
     private View inflateFragmentView(LayoutInflater inflater, Configuration configuration) {
-        final View view =
-                inflater.inflate(configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
-                                ? R.layout.signin_first_run_landscape_view
-                                : R.layout.signin_first_run_portrait_view,
-                        null, false);
-        mSigninFirstRunCoordinator =
-                new SigninFirstRunCoordinator(requireContext(), view, mModalDialogManager, this);
+        // Since the landscape view has two panes the minimum screenWidth to show it is set to
+        // 600dp per android guideline.
+        final SigninFirstRunView view = (SigninFirstRunView) inflater.inflate(
+                configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
+                                && configuration.screenWidthDp >= 600
+                        ? R.layout.signin_first_run_landscape_view
+                        : R.layout.signin_first_run_portrait_view,
+                null, false);
+        setSigninFirstRunCoordinator(new SigninFirstRunCoordinator(requireContext(), view,
+                mModalDialogManager, this, PrivacyPreferencesManagerImpl.getInstance()));
         notifyCoordinatorWhenNativeAndPolicyAreLoaded();
-        setUpFooter(view.findViewById(R.id.signin_fre_footer));
         return view;
-    }
-
-    private void setUpFooter(TextViewWithClickableSpans footerView) {
-        final Callback<View> onTermsOfServiceSpanClickListener = view -> {
-            CustomTabActivity.showInfoPage(requireContext(),
-                    LocalizationUtils.substituteLocalePlaceholder(
-                            getString(R.string.google_terms_of_service_url)));
-        };
-        final Callback<View> onUmaDialogSpanClickListener = view -> {
-            new FreUMADialogCoordinator(
-                    requireContext(), mModalDialogManager, this, mAllowCrashUpload);
-        };
-        final NoUnderlineClickableSpan clickableTermsOfServiceSpan =
-                new NoUnderlineClickableSpan(getResources(), onTermsOfServiceSpanClickListener);
-        final NoUnderlineClickableSpan clickableUMADialogSpan =
-                new NoUnderlineClickableSpan(getResources(), onUmaDialogSpanClickListener);
-        final SpannableString footerString = SpanApplier.applySpans(
-                getString(R.string.signin_fre_footer),
-                new SpanApplier.SpanInfo("<LINK1>", "</LINK1>", clickableTermsOfServiceSpan),
-                new SpanApplier.SpanInfo("<LINK2>", "</LINK2>", clickableUMADialogSpan));
-        footerView.setText(footerString);
-        footerView.setMovementMethod(LinkMovementMethod.getInstance());
     }
 }

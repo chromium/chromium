@@ -48,8 +48,7 @@ class CONTENT_EXPORT ClientHintsControllerDelegate {
 
   virtual void PersistClientHints(
       const url::Origin& primary_origin,
-      const std::vector<network::mojom::WebClientHintsType>& client_hints,
-      base::TimeDelta expiration_duration) = 0;
+      const std::vector<network::mojom::WebClientHintsType>& client_hints) = 0;
 
   // Optionally implemented by implementations used in tests. Clears all hints
   // that would have been returned by GetAllowedClientHintsFromSource(),

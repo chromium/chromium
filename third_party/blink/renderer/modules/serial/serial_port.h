@@ -13,8 +13,8 @@
 #include "third_party/blink/renderer/bindings/core/v8/script_promise.h"
 #include "third_party/blink/renderer/core/dom/events/event_target.h"
 #include "third_party/blink/renderer/platform/bindings/script_wrappable.h"
-#include "third_party/blink/renderer/platform/heap/handle.h"
-#include "third_party/blink/renderer/platform/heap/heap_allocator.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_vector.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_receiver.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_remote.h"
 #include "third_party/blink/renderer/platform/mojo/heap_mojo_wrapper_mode.h"
@@ -119,6 +119,9 @@ class SerialPort final : public EventTargetWithInlineData,
   // Indicates that the port is being closed and so the streams should not be
   // reopened on demand.
   bool closing_ = false;
+
+  // The port was opened with { flowControl: "hardware" }.
+  bool hardware_flow_control_ = false;
 
   // Resolver for the Promise returned by open().
   Member<ScriptPromiseResolver> open_resolver_;

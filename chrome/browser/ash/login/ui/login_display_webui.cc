@@ -41,23 +41,8 @@ LoginDisplayWebUI::~LoginDisplayWebUI() {
 
 LoginDisplayWebUI::LoginDisplayWebUI() = default;
 
-void LoginDisplayWebUI::ClearAndEnablePassword() {
-  if (webui_handler_)
-    webui_handler_->ClearAndEnablePassword();
-}
-
 void LoginDisplayWebUI::Init(const user_manager::UserList& users,
-                             bool show_guest,
-                             bool show_users,
-                             bool allow_new_user) {
-  // Testing that the delegate has been set.
-  DCHECK(delegate_);
-
-  OobeUI* oobe_ui = LoginDisplayHost::default_host()->GetOobeUI();
-  const std::string display_type = oobe_ui->display_type();
-  allow_new_user_changed_ = (allow_new_user_ != allow_new_user);
-  allow_new_user_ = allow_new_user;
-
+                             bool show_guest) {
   ui::UserActivityDetector* activity_detector = ui::UserActivityDetector::Get();
   if (activity_detector && !activity_detector->HasObserver(this))
     activity_detector->AddObserver(this);
@@ -69,30 +54,10 @@ void LoginDisplayWebUI::Init(const user_manager::UserList& users,
 
 // ---- Not yet classified methods
 
-void LoginDisplayWebUI::OnPreferencesChanged() {
-  if (webui_handler_)
-    webui_handler_->OnPreferencesChanged();
-}
-
 void LoginDisplayWebUI::SetUIEnabled(bool is_enabled) {
-  // TODO(nkostylev): Cleanup this condition,
-  // see http://crbug.com/157885 and http://crbug.com/158255.
-  // Allow this call only before user sign in or at lock screen.
-  // If this call is made after new user signs in but login screen is still
-  // around that would trigger a sign in extension refresh.
-  if (is_enabled && (!user_manager::UserManager::Get()->IsUserLoggedIn() ||
-                     ScreenLocker::default_screen_locker())) {
-    ClearAndEnablePassword();
-  }
-
   LoginDisplayHost* host = LoginDisplayHost::default_host();
   if (host && host->GetWebUILoginView())
     host->GetWebUILoginView()->SetUIEnabled(is_enabled);
-}
-
-void LoginDisplayWebUI::ShowAllowlistCheckFailedError() {
-  if (webui_handler_)
-    webui_handler_->ShowAllowlistCheckFailedError();
 }
 
 void LoginDisplayWebUI::Login(const UserContext& user_context,
@@ -100,11 +65,6 @@ void LoginDisplayWebUI::Login(const UserContext& user_context,
   DCHECK(delegate_);
   if (delegate_)
     delegate_->Login(user_context, specifics);
-}
-
-void LoginDisplayWebUI::OnSigninScreenReady() {
-  if (delegate_)
-    delegate_->OnSigninScreenReady();
 }
 
 void LoginDisplayWebUI::ShowEnterpriseEnrollmentScreen() {
@@ -115,19 +75,6 @@ void LoginDisplayWebUI::ShowEnterpriseEnrollmentScreen() {
 void LoginDisplayWebUI::ShowKioskAutolaunchScreen() {
   if (delegate_)
     delegate_->OnStartKioskAutolaunchScreen();
-}
-
-void LoginDisplayWebUI::ShowWrongHWIDScreen() {
-  LoginDisplayHost::default_host()->StartWizard(WrongHWIDScreenView::kScreenId);
-}
-
-void LoginDisplayWebUI::SetWebUIHandler(
-    LoginDisplayWebUIHandler* webui_handler) {
-  webui_handler_ = webui_handler;
-}
-
-bool LoginDisplayWebUI::AllowNewUserChanged() const {
-  return allow_new_user_changed_;
 }
 
 bool LoginDisplayWebUI::IsSigninInProgress() const {

@@ -41,6 +41,7 @@ class PrefRegistrySimple;
 
 namespace ash {
 
+class AmbientAnimationStaticResources;
 class AmbientBackendController;
 class AmbientContainerView;
 class AmbientPhotoController;
@@ -85,7 +86,7 @@ class ASH_EXPORT AmbientController
 
   // fingerprint::mojom::FingerprintObserver:
   void OnAuthScanDone(
-      device::mojom::ScanResult scan_result,
+      const device::mojom::FingerprintMessagePtr msg,
       const base::flat_map<std::string, std::vector<std::string>>& matches)
       override;
   void OnSessionFailed() override {}
@@ -156,6 +157,7 @@ class ASH_EXPORT AmbientController
 
   void StartRefreshingImages();
   void StopRefreshingImages();
+  AmbientPhotoConfig CreatePhotoConfigForCurrentTheme();
 
   // Invoked when the auto-show timer in |InactivityMonitor| gets fired after
   // device being inactive for a specific amount of time.
@@ -230,6 +232,14 @@ class ASH_EXPORT AmbientController
   // Set to the off value in |ScreenIdleState| when ScreenIdleState() is
   // called. Used to prevent Ambient mode starting after screen is off.
   bool is_screen_off_ = false;
+
+  // Transient location to hold an animation's static resources while the
+  // model is being buffered with an initial set of topics. Once the animation
+  // is ready to be rendered, this gets transferred to an AmbientAnimationView.
+  //
+  // Null if the slideshow theme is active.
+  std::unique_ptr<AmbientAnimationStaticResources>
+      pending_animation_static_resources_;
 
   base::WeakPtrFactory<AmbientController> weak_ptr_factory_{this};
 };

@@ -8,17 +8,17 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/disks/disk.h"
 #include "base/run_loop.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/ash/file_manager/volume_manager.h"
-#include "chromeos/disks/disk.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_manager {
 namespace {
 
 namespace file_manager_private = extensions::api::file_manager_private;
-using chromeos::disks::Disk;
+using ::ash::disks::Disk;
 
 const char kTestDevicePath[] = "/device/test";
 

@@ -12,6 +12,7 @@
 
 #include "net/base/ip_endpoint.h"
 #include "net/base/net_export.h"
+#include "net/dns/public/scoped_res_state.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace net {
@@ -22,10 +23,8 @@ class NET_EXPORT ResolvReader {
  public:
   virtual ~ResolvReader() = default;
 
-  // Null on failure. If not null, result must be cleaned up through a call
-  // to `CloseResState()`.
-  virtual std::unique_ptr<struct __res_state> GetResState();
-  virtual void CloseResState(struct __res_state* res);
+  // Null on failure.
+  virtual std::unique_ptr<ScopedResState> GetResState();
 };
 
 // Returns configured DNS servers or nullopt on failure.

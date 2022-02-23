@@ -38,9 +38,8 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromStringWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@"test"));
   EXPECT_TRUE(value);
   EXPECT_EQ(base::Value::Type::STRING, value->type());
-  std::string converted_result;
-  value->GetAsString(&converted_result);
-  EXPECT_EQ("test", converted_result);
+  ASSERT_TRUE(value->is_string());
+  EXPECT_EQ("test", value->GetString());
 }
 
 // Tests that ValueResultFromWKResult converts inetger to Value::Type::DOUBLE.
@@ -64,11 +63,9 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromDoubleWKResult) {
 // Tests that ValueResultFromWKResult converts bool to Value::Type::BOOLEAN.
 TEST_F(WebViewJsUtilsTest, ValueResultFromBoolWKResult) {
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(@YES));
-  EXPECT_TRUE(value);
-  EXPECT_EQ(base::Value::Type::BOOLEAN, value->type());
-  bool converted_result = false;
-  value->GetAsBoolean(&converted_result);
-  EXPECT_TRUE(converted_result);
+  ASSERT_TRUE(value);
+  ASSERT_TRUE(value->is_bool());
+  EXPECT_TRUE(value->GetBool());
 }
 
 // Tests that ValueResultFromWKResult converts null to Value::Type::NONE.
@@ -110,7 +107,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWKResult) {
 
   std::unique_ptr<base::Value> value(web::ValueResultFromWKResult(test_array));
   ASSERT_TRUE(value->is_list());
-  base::Value::ConstListView list = value->GetList();
+  base::Value::ConstListView list = value->GetListDeprecated();
 
   size_t list_size = 3;
   ASSERT_EQ(list_size, list.size());
@@ -184,7 +181,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
   absl::optional<base::Value::ConstListView> inner_list;
 
   ASSERT_TRUE(value->is_list());
-  current_list = value->GetList();
+  current_list = value->GetListDeprecated();
 
   for (int current_depth = 0; current_depth <= kMaximumParsingRecursionDepth;
        current_depth++) {
@@ -192,7 +189,7 @@ TEST_F(WebViewJsUtilsTest, ValueResultFromArrayWithDepthCheckWKResult) {
 
     inner_list = absl::nullopt;
     if (!current_list.value().empty() && current_list.value()[0].is_list())
-      inner_list = current_list.value()[0].GetList();
+      inner_list = current_list.value()[0].GetListDeprecated();
     current_list = inner_list;
   }
   EXPECT_FALSE(current_list.has_value());

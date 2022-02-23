@@ -44,8 +44,8 @@ import org.chromium.ui.base.ActivityWindowAndroid;
 import org.chromium.ui.base.IntentRequestTracker;
 import org.chromium.ui.base.PhotoPickerListener;
 import org.chromium.ui.base.WindowAndroid;
+import org.chromium.ui.test.util.BlankUiTestActivityTestCase;
 import org.chromium.ui.test.util.DisableAnimationsTestRule;
-import org.chromium.ui.test.util.DummyUiActivityTestCase;
 import org.chromium.ui.test.util.RenderTestRule;
 
 import java.io.File;
@@ -58,7 +58,7 @@ import java.util.concurrent.TimeUnit;
  * Tests for the PhotoPickerDialog class.
  */
 @RunWith(BaseJUnit4ClassRunner.class)
-public class PhotoPickerDialogTest extends DummyUiActivityTestCase
+public class PhotoPickerDialogTest extends BlankUiTestActivityTestCase
         implements PhotoPickerListener, SelectionObserver<PickerBitmap>,
                    DecoderServiceHost.DecoderStatusCallback,
                    PickerVideoPlayer.VideoPlaybackStatusCallback, AnimationListener {
@@ -529,6 +529,7 @@ public class PhotoPickerDialogTest extends DummyUiActivityTestCase
     @DisableAnimationsTestRule.EnsureAnimationsOn
     @MinAndroidSdkLevel(Build.VERSION_CODES.O) // Video is only supported on O+.
     @DisableIf.Build(supported_abis_includes = "x86", message = "https://crbug.com/1092104")
+    @DisableIf.Build(supported_abis_includes = "x86_64", message = "https://crbug.com/1092104")
     public void testVideoPlayerAnimations() throws Throwable {
         PickerVideoPlayer.setShortAnimationTimesForTesting(true);
 

@@ -87,6 +87,8 @@ class COMPONENT_EXPORT(UI_BASE_IME_ASH) IMEInputContextHandlerInterface {
   // Returns true if there is any composition text.
   virtual bool HasCompositionText() = 0;
 
+  virtual std::u16string GetCompositionText() = 0;
+
   // Returns the ukm::SourceId that identifies the currently focused client.
   virtual ukm::SourceId GetClientSourceForMetrics() = 0;
 };

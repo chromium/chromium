@@ -15,7 +15,7 @@
 
 <dom-module id="assistant-related-info">
 <template>
-  <style include="oobe-dialog-host-styles">
+  <style include="oobe-dialog-host-styles assistant-common-styles">
     #content-container .content {
       padding-bottom: 16px;
     }
@@ -41,7 +41,6 @@
       --oobe-adaptive-dialog-content-top-padding: 0;
     }
   </style>
-  <link rel="stylesheet" href="assistant_shared_styles.css">
   <oobe-adaptive-dialog id="relatedInfoDialog" role="dialog" hide-shadow
       aria-label$=
           "[[getDialogTitle_(locale, skipActivityControl_, childName_)]]">

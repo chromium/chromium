@@ -72,12 +72,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // subtree may need to update.
     bool blocking_wheel_event_handler_changed = false;
 
-    // This is set to true once we see tree_builder_context->clip_changed is
-    // true. It will be propagated to descendant contexts even if we don't
-    // create tree_builder_context. Used only when CullRectUpdate is not
-    // enabled.
-    bool clip_changed = false;
-
     // True if we're fragment-traversing an object whose fragment wasn't found
     // and walked when walking the layout object tree. This may happen for
     // out-of-flow positioned and floated fragments inside block fragmentation,
@@ -85,9 +79,10 @@ class CORE_EXPORT PrePaintTreeWalk final {
     // fragmentainer even if the OOF / float is there.
     bool is_inside_orphaned_object = false;
 
-    const LayoutBoxModelObject* paint_invalidation_container = nullptr;
-    const LayoutBoxModelObject*
-        paint_invalidation_container_for_stacked_contents = nullptr;
+    // True if we're visiting the parent for the first time, i.e. when we're in
+    // the first fragmentainer where the parent occurs (or if we're not
+    // fragmented at all).
+    bool is_parent_first_for_node = true;
 
     ContainingFragment current_fragmentainer;
     ContainingFragment absolute_positioned_container;
@@ -190,10 +185,10 @@ class CORE_EXPORT PrePaintTreeWalk final {
 
   void WalkFragmentationContextRootChildren(const LayoutObject&,
                                             const NGPhysicalBoxFragment&,
-                                            PrePaintTreeWalkContext&);
+                                            const PrePaintTreeWalkContext&);
   void WalkLayoutObjectChildren(const LayoutObject&,
                                 const NGPhysicalBoxFragment*,
-                                PrePaintTreeWalkContext&);
+                                const PrePaintTreeWalkContext&);
   void WalkChildren(const LayoutObject&,
                     const NGPhysicalBoxFragment*,
                     PrePaintTreeWalkContext&,
@@ -220,11 +215,6 @@ class CORE_EXPORT PrePaintTreeWalk final {
                                        PrePaintTreeWalkContext&);
   void InvalidatePaintForHitTesting(const LayoutObject&,
                                     PrePaintTreeWalkContext&);
-
-  void UpdatePaintInvalidationContainer(const LayoutObject& object,
-                                        const PaintLayer* painting_layer,
-                                        PrePaintTreeWalkContext& context,
-                                        bool is_ng_painting);
 
   PaintInvalidator paint_invalidator_;
 

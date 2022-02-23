@@ -2,8 +2,8 @@
 <!DOCTYPE translationbundle>
 <translationbundle lang="cs">
 <translation id="1096883626080133124">S Google Chrome toho stihnete víc – je jednoduchý, bezpečný a rychlejší než kdy dřív</translation>
+<translation id="1143896152279775643">Heslo bude uloženo do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="1282031177488366470">Pomozte zlepšit funkce a výkon Chromu</translation>
-<translation id="1314663809820920746">Všechny záložky, historii, hesla a další nastavení na tomto zařízení nadále uvidíte. Pokud provedete nějaké změny, do účtu Google se synchronizovat nebudou.</translation>
 <translation id="1479202195792305274">Když se přihlásíte k účtu Google, může vám Chrome kontrolovat hesla</translation>
 <translation id="1493827051843127077">Nastavte si Chrome jako výchozí prohlížeč a karty, hesla a platební údaje se budou synchronizovat na všechna vaše zařízení</translation>
 <translation id="1504372625950710826">Chrome nemůže vyhledat dostupné aktualizace. Zkuste zkontrolovat připojení k internetu.</translation>
@@ -16,6 +16,7 @@
 <translation id="2147651015520127414">Chrome ověřil, že certifikát tohoto webu byl vydán vydavatelem <ph name="ISSUER" />.</translation>
 <translation id="2199719347983604670">Data ze synchronizace Chromu</translation>
 <translation id="2313070403598893276">Prohlížeč Google Chrome je jednoduchý, bezpečný a rychlejší než kdy dřív</translation>
+<translation id="2339201583852607431">Heslo bude uloženo do vašeho účtu Google (<ph name="EMAIL" />).</translation>
 <translation id="2342919707875585281">Chrome sdílí vaši polohu s weby, u kterých to povolíte.</translation>
 <translation id="2347208864470321755">Pokud je tato funkce zapnutá, bude Chrome nabízet překlad stránek v jiných jazycích pomocí Překladače Google. <ph name="BEGIN_LINK" />Další informace<ph name="END_LINK" /></translation>
 <translation id="2427791862912929107">Chrome obsahuje funkce, které pomáhají spravovat přenosy dat z internetu a umožňují zrychlit načítání webových stránek.
@@ -24,6 +25,7 @@
 <translation id="2574249610672786438">Chcete-li mít své karty k dispozici všude, kde používáte Chrome, na všech zařízeních se přihlaste</translation>
 <translation id="2576431527583832481">Chrome je opět o něco lepší. K dispozici je nová verze.</translation>
 <translation id="257708665678654955">Chcete, aby Google Chrome příště pro stránky v jazyce <ph name="LANGUAGE_NAME" /> z tohoto webu nabízel překlad?</translation>
+<translation id="2671426118752779020">Hesla, která jste si uložili do Správce hesel Google, můžete používat v jiných aplikacích na svém iPhonu.</translation>
 <translation id="2695886661449553974">Chrome nemůže vyhledat dostupné aktualizace. Zkuste to znovu později.</translation>
 <translation id="2732745070297234559">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra.</translation>
 <translation id="2869959624320573933">Přihlaste se do Chromu</translation>
@@ -54,8 +56,10 @@
 <translation id="4698415050768537821">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to znovu zítra, případně <ph name="BEGIN_LINK" />hesla zkontrolujte v účtu Google<ph name="END_LINK" />.</translation>
 <translation id="484033449593719797">V beta verzi prohlížeče Chrome není podporováno</translation>
 <translation id="5030102366287574140">Chrome vás pomáhá chránit před porušeními zabezpečení údajů, nebezpečnými weby a dalšími hrozbami.</translation>
+<translation id="5119391094379141756">Vyberte Chrome.</translation>
 <translation id="5162467219239570114">Chrome je zastaralý. Pokud v obchodě <ph name="BEGIN_LINK" />App Store<ph name="END_LINK" /> není k dispozici žádná aktualizace, je možné, že vaše zařízení již nové verze Chromu nepodporuje.</translation>
 <translation id="5389212809648216794">Google Chrome nemůže použít fotoaparát, protože jej právě používá jiná aplikace</translation>
+<translation id="5460571915754665838">4. Vyberte Chrome.</translation>
 <translation id="5639704535586432836">Otevřete Nastavení &gt; Soukromí &gt; Fotoaparát &gt; Google Chrome a zapněte fotoaparát.</translation>
 <translation id="5642200033778930880">Google Chrome nemůže používat fotoaparát v režimu Split View</translation>
 <translation id="5690427481109656848">Google LLC</translation>
@@ -67,11 +71,13 @@
 <translation id="6063091872902370735">Povolit přihlášení do Chromu</translation>
 <translation id="6181930887571472871">Přepnout na Chrome</translation>
 <translation id="6238746320622508509">Nechat Chrome zamykat anonymní karty.</translation>
+<translation id="6387994324662817823">Hesla se ukládají do Správce hesel Google pouze na tomto zařízení.</translation>
 <translation id="6427126399757991875">Vaše organizace nastavuje Chrome…</translation>
 <translation id="6600954340915313787">Zkopírováno do Chromu</translation>
 <translation id="6634107063912726160">Když se odhlásíte, Chrome do vašeho účtu Google nebude synchronizovat žádná nová data. Dříve synchronizovaná data v účtu zůstanou.</translation>
 <translation id="6648150602980899529">Přihlašujete se pomocí účtu spravovaného doménou <ph name="DOMAIN" /> a poskytujete jeho správci kontrolu nad svými daty prohlížeče Chrome. Vaše data budou trvale přidružena k tomuto účtu. Odhlášením z Chromu svá data smažete z tohoto zařízení, ve vašem účtu Google však uložena zůstanou.</translation>
 <translation id="6676840375528380067">Vymazat z tohoto zařízení data prohlížeče Chrome?</translation>
+<translation id="6709398533399187136">Vaše heslo bylo vyzrazeno při porušení zabezpečení údajů. Správce hesel Google doporučuje ihned ho změnit.</translation>
 <translation id="6822673484890854830">Chromu se nepodařilo zkontrolovat všechna hesla. Zkuste to později.</translation>
 <translation id="6964931465519938134">Nyní můžete Chrome použít pokaždé, když klepnete na odkazy ve zprávách, dokumentech a ostatních aplikacích.</translation>
 <translation id="7059914902409643750">Přizpůsobte si Chrome</translation>
@@ -80,6 +86,7 @@
 <translation id="7165736900384873061">Začněte používat čtečku QR kódů prohlížeče Google Chrome</translation>
 <translation id="7172660552945675509">Tip: <ph name="BEGIN_LINK" />Přesuňte si Chrome do doku<ph name="END_LINK" /></translation>
 <translation id="7173660919484573146">Chrome pomocí funkce Face ID ověřuje přístup k heslům.</translation>
+<translation id="72119412072970160">Hesla, která jste si uložili do Správce hesel Google, můžete používat v jiných aplikacích na svém iPadu.</translation>
 <translation id="7261678641327190792">Chrome nemůže zkontrolovat hesla</translation>
 <translation id="7272930098487145294">Pokud chcete ukládat obrázky, klepněte na Nastavení a povolte Chromu přidávat obrázky do vašich fotek</translation>
 <translation id="7275945473750112644">Váš účet spravuje doména <ph name="HOSTED_DOMAIN" />, proto budou data prohlížeče Chrome z tohoto zařízení vymazána</translation>
@@ -107,5 +114,6 @@
 <translation id="8540666473246803645">Google Chrome</translation>
 <translation id="8736550665979974340">S prohlížečem Google Chrome budete v bezpečí</translation>
 <translation id="8772179140489533211">Zobrazuje výzvy k přihlášení do Chromu.</translation>
+<translation id="8788269841521769222">Toto heslo si nebudete muset pamatovat. Uloží se do Správce hesel Google pro účet <ph name="EMAIL" />.</translation>
 <translation id="9112744793181547300">Nastavit Chrome jako výchozí prohlížeč?</translation>
 </translationbundle>

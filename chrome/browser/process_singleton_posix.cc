@@ -88,6 +88,7 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/process_singleton_internal.h"
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/process_singleton_lock_posix.h"
 #include "chrome/grit/chromium_strings.h"
@@ -97,12 +98,12 @@
 #include "net/base/network_interfaces.h"
 #include "ui/base/l10n/l10n_util.h"
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 #include "chrome/browser/ui/process_singleton_dialog_linux.h"
 #endif
 
 #if defined(TOOLKIT_VIEWS) && \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
 #include "ui/views/linux_ui/linux_ui.h"
 #endif
 
@@ -110,7 +111,7 @@ using content::BrowserThread;
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // In order to allow longer paths for the singleton socket's filesystem node,
 // provide an "oversized" sockaddr_un-equivalent with a larger sun_path member.
 // sockaddr_un in the SDK has sun_path[104], which is too confined for the
@@ -250,7 +251,7 @@ bool SetupSockAddr(const std::string& path,
                    SockaddrUn* addr,
                    socklen_t* socklen) {
   addr->sun_family = AF_UNIX;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Allow the use of the entire length of sun_path, without reservation for a
   // NUL terminator. The socklen parameter to bind and connect encodes the
   // length of the sockaddr structure, and xnu does not require sun_path to be
@@ -356,11 +357,11 @@ bool DisplayProfileInUseError(const base::FilePath& lock_path,
   if (g_disable_prompt)
     return g_user_opted_unlock_in_use_profile;
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   std::u16string relaunch_button_text =
       l10n_util::GetStringUTF16(IDS_PROFILE_IN_USE_LINUX_RELAUNCH);
   return ShowProcessSingletonDialog(error, relaunch_button_text);
-#elif defined(OS_MAC)
+#elif BUILDFLAG(IS_MAC)
   // On Mac, always usurp the lock.
   return true;
 #endif
@@ -466,7 +467,7 @@ bool ConnectSocket(ScopedSocket* socket,
   }
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 bool ReplaceOldSingletonLock(const base::FilePath& symlink_content,
                              const base::FilePath& lock_path) {
   // Try taking an flock(2) on the file. Failure means the lock is taken so we
@@ -499,21 +500,7 @@ bool ReplaceOldSingletonLock(const base::FilePath& symlink_content,
 
   return SymlinkPath(symlink_content, lock_path);
 }
-#endif  // defined(OS_MAC)
-
-void SendRemoteProcessInteractionResultHistogram(
-    ProcessSingleton::RemoteProcessInteractionResult result) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Chrome.ProcessSingleton.RemoteProcessInteractionResult", result,
-      ProcessSingleton::REMOTE_PROCESS_INTERACTION_RESULT_COUNT);
-}
-
-void SendRemoteHungProcessTerminateReasonHistogram(
-    ProcessSingleton::RemoteHungProcessTerminateReason reason) {
-  UMA_HISTOGRAM_ENUMERATION(
-      "Chrome.ProcessSingleton.RemoteHungProcessTerminateReason", reason,
-      ProcessSingleton::REMOTE_HUNG_PROCESS_TERMINATE_REASON_COUNT);
-}
+#endif  // BUILDFLAG(IS_MAC)
 
 }  // namespace
 
@@ -811,7 +798,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
   for (int retries = 0; retries <= retry_attempts; ++retries) {
     // Try to connect to the socket.
     if (ConnectSocket(&socket, socket_path_, cookie_path_)) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       // On Mac, we want the open process' pid in case there are
       // Apple Events to forward. See crbug.com/777863.
       std::string hostname;
@@ -834,7 +821,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     if (hostname.empty()) {
       // Invalid lockfile.
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(INVALID_LOCK_FILE);
+      internal::SendRemoteProcessInteractionResultHistogram(INVALID_LOCK_FILE);
       return PROCESS_NONE;
     }
 
@@ -843,7 +830,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
       // the profile, try to continue; otherwise quit.
       if (DisplayProfileInUseError(lock_path_, hostname, pid)) {
         UnlinkPath(lock_path_);
-        SendRemoteProcessInteractionResultHistogram(PROFILE_UNLOCKED);
+        internal::SendRemoteProcessInteractionResultHistogram(PROFILE_UNLOCKED);
         return PROCESS_NONE;
       }
       return PROFILE_IN_USE;
@@ -852,7 +839,7 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     if (!IsChromeProcess(pid)) {
       // Orphaned lockfile (no process with pid, or non-chrome process.)
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(ORPHANED_LOCK_FILE);
+      internal::SendRemoteProcessInteractionResultHistogram(ORPHANED_LOCK_FILE);
       return PROCESS_NONE;
     }
 
@@ -860,7 +847,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
       // Orphaned lockfile (pid is part of same chrome instance we are, even
       // though we haven't tried to create a lockfile yet).
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(SAME_BROWSER_INSTANCE);
+      internal::SendRemoteProcessInteractionResultHistogram(
+          SAME_BROWSER_INSTANCE);
       return PROCESS_NONE;
     }
 
@@ -868,14 +856,15 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
       // Retries failed.  Kill the unresponsive chrome process and continue.
       if (!kill_unresponsive || !KillProcessByLockPath(false))
         return PROFILE_IN_USE;
-      SendRemoteHungProcessTerminateReasonHistogram(NOTIFY_ATTEMPTS_EXCEEDED);
+      internal::SendRemoteHungProcessTerminateReasonHistogram(
+          NOTIFY_ATTEMPTS_EXCEEDED);
       return PROCESS_NONE;
     }
 
     base::PlatformThread::Sleep(sleep_interval);
   }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (pid > 0 && WaitForAndForwardOpenURLEvent(pid)) {
     return PROCESS_NOTIFIED;
   }
@@ -908,7 +897,8 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
     // Try to kill the other process, because it might have been dead.
     if (!kill_unresponsive || !KillProcessByLockPath(true))
       return PROFILE_IN_USE;
-    SendRemoteHungProcessTerminateReasonHistogram(SOCKET_WRITE_FAILED);
+    internal::SendRemoteHungProcessTerminateReasonHistogram(
+        SOCKET_WRITE_FAILED);
     return PROCESS_NONE;
   }
 
@@ -924,18 +914,19 @@ ProcessSingleton::NotifyResult ProcessSingleton::NotifyOtherProcessWithTimeout(
   if (len <= 0) {
     if (!kill_unresponsive || !KillProcessByLockPath(true))
       return PROFILE_IN_USE;
-    SendRemoteHungProcessTerminateReasonHistogram(SOCKET_READ_FAILED);
+    internal::SendRemoteHungProcessTerminateReasonHistogram(SOCKET_READ_FAILED);
     return PROCESS_NONE;
   }
 
   buf[len] = '\0';
   if (strncmp(buf, kShutdownToken, base::size(kShutdownToken) - 1) == 0) {
     // The other process is shutting down, it's safe to start a new process.
-    SendRemoteProcessInteractionResultHistogram(REMOTE_PROCESS_SHUTTING_DOWN);
+    internal::SendRemoteProcessInteractionResultHistogram(
+        REMOTE_PROCESS_SHUTTING_DOWN);
     return PROCESS_NONE;
   } else if (strncmp(buf, kACKToken, base::size(kACKToken) - 1) == 0) {
 #if defined(TOOLKIT_VIEWS) && \
-    (defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+    (BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
     // Likely NULL in unit tests.
     views::LinuxUI* linux_ui = views::LinuxUI::instance();
     if (linux_ui)
@@ -1040,7 +1031,7 @@ bool ProcessSingleton::Create() {
   if (!SymlinkPath(symlink_content, lock_path_)) {
     // TODO(jackhou): Remove this case once this code is stable on Mac.
     // http://crbug.com/367612
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     // On Mac, an existing non-symlink lock file means the lock could be held by
     // the old process singleton code. If we can successfully replace the lock,
     // continue as normal.
@@ -1141,14 +1132,15 @@ bool ProcessSingleton::KillProcessByLockPath(bool is_connected_to_socket) {
     bool res = DisplayProfileInUseError(lock_path_, hostname, pid);
     if (res) {
       UnlinkPath(lock_path_);
-      SendRemoteProcessInteractionResultHistogram(PROFILE_UNLOCKED_BEFORE_KILL);
+      internal::SendRemoteProcessInteractionResultHistogram(
+          PROFILE_UNLOCKED_BEFORE_KILL);
     }
     return res;
   }
   UnlinkPath(lock_path_);
 
   if (IsSameChromeInstance(pid)) {
-    SendRemoteProcessInteractionResultHistogram(
+    internal::SendRemoteProcessInteractionResultHistogram(
         SAME_BROWSER_INSTANCE_BEFORE_KILL);
     return true;
   }
@@ -1158,7 +1150,7 @@ bool ProcessSingleton::KillProcessByLockPath(bool is_connected_to_socket) {
     return true;
   }
 
-  SendRemoteProcessInteractionResultHistogram(FAILED_TO_EXTRACT_PID);
+  internal::SendRemoteProcessInteractionResultHistogram(FAILED_TO_EXTRACT_PID);
 
   LOG(ERROR) << "Failed to extract pid from path: " << lock_path_.value();
   return true;
@@ -1190,5 +1182,5 @@ void ProcessSingleton::KillProcess(int pid) {
         break;
     }
   }
-  SendRemoteProcessInteractionResultHistogram(action);
+  internal::SendRemoteProcessInteractionResultHistogram(action);
 }

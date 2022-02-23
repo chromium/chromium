@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "base/command_line.h"
+#include "components/viz/common/frame_sinks/copy_output_request.h"
 #include "content/browser/android/synchronous_compositor_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "content/public/browser/android/synchronous_compositor.h"
@@ -43,8 +44,8 @@ class TestSynchronousCompositorClient : public SynchronousCompositorClient {
     compositor_map_.erase(id);
   }
   void UpdateRootLayerState(SynchronousCompositor* compositor,
-                            const gfx::Vector2dF& total_scroll_offset,
-                            const gfx::Vector2dF& max_scroll_offset,
+                            const gfx::PointF& total_scroll_offset,
+                            const gfx::PointF& max_scroll_offset,
                             const gfx::SizeF& scrollable_size,
                             float page_scale_factor,
                             float min_page_scale_factor,

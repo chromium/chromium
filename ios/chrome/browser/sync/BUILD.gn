@@ -9,8 +9,8 @@ source_set("sync") {
     # ios/chrome/browser/consent_auditor, when it does not depend on
     # UserEventService anymore. Currently this is not possible due to a
     # BUILD.gn depedency.
-    "consent_auditor_factory.cc",
     "consent_auditor_factory.h",
+    "consent_auditor_factory.mm",
     "device_info_sync_service_factory.h",
     "device_info_sync_service_factory.mm",
     "ios_chrome_sync_client.h",
@@ -31,8 +31,8 @@ source_set("sync") {
     "sync_invalidations_service_factory.mm",
     "sync_observer_bridge.h",
     "sync_observer_bridge.mm",
-    "sync_service_factory.cc",
     "sync_service_factory.h",
+    "sync_service_factory.mm",
     "sync_setup_service.cc",
     "sync_setup_service.h",
     "sync_setup_service_factory.cc",
@@ -144,6 +144,7 @@ source_set("unit_tests") {
     "//ios/chrome/browser",
     "//ios/chrome/browser/browser_state:test_support",
     "//ios/chrome/browser/favicon",
+    "//ios/chrome/browser/history",
     "//ios/web/public/test",
     "//testing/gtest",
     "//ui/base",

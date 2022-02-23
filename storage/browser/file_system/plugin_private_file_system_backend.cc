@@ -114,7 +114,7 @@ PluginPrivateFileSystemBackend::PluginPrivateFileSystemBackend(
       std::make_unique<ObfuscatedFileUtil>(
           std::move(special_storage_policy), base_path_, env_override,
           base::BindRepeating(&FileSystemIDToPluginMap::GetPluginIDForURL,
-                              base::Owned(plugin_map_)),
+                              base::Owned(plugin_map_.get())),
           std::set<std::string>(), nullptr,
           file_system_options.is_incognito()));
 }
@@ -271,23 +271,6 @@ PluginPrivateFileSystemBackend::GetStorageKeysForTypeOnFileTaskRunner(
   absl::optional<blink::StorageKey> storage_key;
   while ((storage_key = enumerator->Next()).has_value())
     storage_keys.push_back(std::move(storage_key).value());
-  return storage_keys;
-}
-
-std::vector<blink::StorageKey>
-PluginPrivateFileSystemBackend::GetStorageKeysForHostOnFileTaskRunner(
-    FileSystemType type,
-    const std::string& host) {
-  if (!CanHandleType(type))
-    return std::vector<blink::StorageKey>();
-  std::unique_ptr<ObfuscatedFileUtil::AbstractStorageKeyEnumerator> enumerator(
-      obfuscated_file_util()->CreateStorageKeyEnumerator());
-  std::vector<blink::StorageKey> storage_keys;
-  absl::optional<blink::StorageKey> storage_key;
-  while ((storage_key = enumerator->Next()).has_value()) {
-    if (host == storage_key->origin().host())
-      storage_keys.push_back(std::move(storage_key).value());
-  }
   return storage_keys;
 }
 

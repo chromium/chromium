@@ -21,3 +21,10 @@ source_set("chromium_signin_resources") {
   ]
   frameworks = [ "UIKit.framework" ]
 }
+
+source_set("chromium_signin_sso") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [ "chromium_signin_sso.mm" ]
+  deps = [ "//ios/public/provider/chrome/browser/signin:signin_sso_api" ]
+  frameworks = [ "Foundation.framework" ]
+}

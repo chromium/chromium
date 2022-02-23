@@ -7,6 +7,15 @@ import("//tools/grit/grit_rule.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
 
 js_type_check("closure_compile") {
+  closure_flags = default_closure_args + mojom_js_args + [
+                    "js_module_root=" + rebase_path(".", root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/device/bluetooth/public/mojom/",
+                            root_build_dir),
+                    "js_module_root=" + rebase_path(
+                            "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/bluetooth_internals/",
+                            root_build_dir),
+                  ]
   deps = [
     ":adapter_broker",
     ":adapter_page",
@@ -41,7 +50,7 @@ js_library("bluetooth_internals") {
     ":page_manager",
     ":sidebar",
     ":snackbar",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js:util.m",
   ]
@@ -49,7 +58,8 @@ js_library("bluetooth_internals") {
 
 js_library("adapter_broker") {
   deps = [
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_webui_js",
+    "//device/bluetooth/public/mojom:deprecated_experimental_interfaces_webui_js",
     "//ui/webui/resources/js/cr:event_target.m",
   ]
 }
@@ -79,7 +89,7 @@ js_library("characteristic_list") {
 js_library("debug_log_page") {
   deps = [
     ":page",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:util.m",
   ]
 }
@@ -100,13 +110,13 @@ js_library("descriptor_list") {
 js_library("device_broker") {
   deps = [
     ":adapter_broker",
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_webui_js",
   ]
 }
 
 js_library("device_collection") {
   deps = [
-    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_js_library_for_compile",
+    "//chrome/browser/ui/webui/bluetooth_internals:mojo_bindings_webui_js",
     "//ui/webui/resources/js:assert.m",
     "//ui/webui/resources/js/cr/ui:array_data_model.m",
   ]
@@ -219,22 +229,22 @@ generate_grd("build_public_mojo_grdp") {
   grd_prefix = bluetooth_grd_prefix
   out_grd = public_mojo_grdp_file
   input_files = [
-    "adapter.mojom-lite.js",
-    "uuid.mojom-lite.js",
-    "device.mojom-lite.js",
+    "adapter.mojom-webui.js",
+    "uuid.mojom-webui.js",
+    "device.mojom-webui.js",
   ]
   input_files_base_dir =
-      rebase_path("$root_gen_dir/device/bluetooth/public/mojom/",
+      rebase_path("$root_gen_dir/mojom-webui/device/bluetooth/public/mojom/",
                   root_build_dir)
 }
 
 generate_grd("build_internal_mojo_grdp") {
   grd_prefix = bluetooth_grd_prefix
   out_grd = internals_mojo_grdp_file
-  input_files = [ "bluetooth_internals.mojom-lite.js" ]
-  input_files_base_dir =
-      rebase_path("$root_gen_dir/chrome/browser/ui/webui/bluetooth_internals/",
-                  root_build_dir)
+  input_files = [ "bluetooth_internals.mojom-webui.js" ]
+  input_files_base_dir = rebase_path(
+          "$root_gen_dir/mojom-webui/chrome/browser/ui/webui/bluetooth_internals/",
+          root_build_dir)
 }
 
 generate_grd("build_grd") {

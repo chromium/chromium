@@ -7,6 +7,7 @@
 
 #include <vector>
 
+#include "base/component_export.h"
 #include "components/services/app_service/public/mojom/types.mojom.h"
 #include "ui/gfx/image/image_skia.h"
 
@@ -22,6 +23,7 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   IconKey& operator=(IconKey&&) = default;
 
   bool operator==(const IconKey& other) const;
+  bool operator!=(const IconKey& other) const;
 
   ~IconKey();
 
@@ -45,20 +47,22 @@ struct COMPONENT_EXPORT(ICON_TYPES) IconKey {
   // For example, if an app is disabled for some reason (so that its icon is
   // grayed out), this would result in a different timeline even though the
   // app's version is unchanged.
-  uint64_t timeline;
+  uint64_t timeline = 0;
 
   // If non-zero (or equivalently, not equal to kInvalidResourceId), the
   // compressed icon is compiled into the Chromium binary as a statically
   // available, int-keyed resource.
-  int32_t resource_id;
+  int32_t resource_id = kInvalidResourceId;
 
   // A bitmask of icon post-processing effects, such as desaturation to gray
   // and rounding the corners.
-  uint32_t icon_effects;
+  uint32_t icon_effects = 0;
 
   // When adding new fields, also update the IconLoader::Key type in
   // components/services/app_service/public/cpp/icon_loader.*
 };
+
+using IconKeyPtr = std::unique_ptr<IconKey>;
 
 enum class IconType {
   // Sentinel value used in error cases.

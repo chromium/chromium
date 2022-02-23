@@ -9,6 +9,8 @@
 #include <set>
 
 #include "base/callback_list.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 
 // Android has no BrowserList or TabStripModel, so we exclude code that refers
 // to those two things. For non-android platforms, this code is used to
@@ -63,11 +65,11 @@ class SyncSessionsWebContentsRouter : public LocalSessionEventRouter,
 
  private:
   syncer::SyncableService::StartSyncFlare flare_;
-  LocalSessionEventHandler* handler_ = nullptr;
+  raw_ptr<LocalSessionEventHandler> handler_ = nullptr;
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   std::unique_ptr<BrowserListRouterHelper> browser_list_helper_;
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 };
 
 }  // namespace sync_sessions

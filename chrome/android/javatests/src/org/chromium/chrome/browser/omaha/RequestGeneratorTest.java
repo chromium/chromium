@@ -9,19 +9,22 @@ import static org.mockito.ArgumentMatchers.anyInt;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 
-import android.accounts.Account;
 import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 
 import androidx.test.filters.SmallTest;
 
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
 import org.chromium.base.test.util.AdvancedMockContext;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.CachedFeatureFlags;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.uid.SettingsSecureBasedIdentificationGenerator;
 import org.chromium.chrome.browser.uid.UniqueIdentificationGenerator;
@@ -42,6 +45,17 @@ public class RequestGeneratorTest {
 
     @Rule
     public final AccountManagerTestRule mAccountManagerTestRule = new AccountManagerTestRule();
+
+    @Before
+    public void setUp() {
+        CachedFeatureFlags.resetFlagsForTesting();
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, true);
+    }
+
+    @After
+    public void tearDown() {
+        CachedFeatureFlags.resetFlagsForTesting();
+    }
 
     @Test
     @SmallTest
@@ -122,11 +136,33 @@ public class RequestGeneratorTest {
         createAndCheckXML(DeviceType.TABLET, false);
     }
 
+    @Test
+    @SmallTest
+    @Feature({"Omaha"})
+    public void testXMLCreationWithUID() {
+        CachedFeatureFlags.setForTesting(ChromeFeatureList.ANONYMOUS_UPDATE_CHECKS, false);
+        IdentityServicesProvider.setInstanceForTests(mock(IdentityServicesProvider.class));
+        when(IdentityServicesProvider.get().getIdentityManager(any()))
+                .thenReturn(mock(IdentityManager.class));
+        when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount(anyInt()))
+                .thenReturn(true);
+        MockRequestGenerator generator = new MockRequestGenerator(
+                new AdvancedMockContext(InstrumentationRegistry.getTargetContext()),
+                DeviceType.TABLET);
+        String xml = null;
+        try {
+            xml = generator.generateXML(
+                    "", "", 0, 0, new RequestData(false, 0, "", INSTALL_SOURCE));
+        } catch (RequestFailureException e) {
+            Assert.fail("XML generation failed.");
+        }
+        checkForAttributeAndValue(xml, "request", "userid", "{" + generator.getDeviceID() + "}");
+    }
+
     /**
      * Checks that the XML is being created properly.
      */
-    private RequestGenerator createAndCheckXML(
-            DeviceType deviceType, boolean sendInstallEvent, Account... accounts) {
+    private RequestGenerator createAndCheckXML(DeviceType deviceType, boolean sendInstallEvent) {
         Context targetContext = InstrumentationRegistry.getTargetContext();
         AdvancedMockContext context = new AdvancedMockContext(targetContext);
 
@@ -135,10 +171,6 @@ public class RequestGeneratorTest {
                 .thenReturn(mock(IdentityManager.class));
         when(IdentityServicesProvider.get().getIdentityManager(any()).hasPrimaryAccount(anyInt()))
                 .thenReturn(true);
-
-        for (Account account : accounts) {
-            mAccountManagerTestRule.addAccount(account);
-        }
 
         String sessionId = "random_session_id";
         String requestId = "random_request_id";
@@ -184,8 +216,6 @@ public class RequestGeneratorTest {
             Assert.assertTrue("Update check and install event are mutually exclusive",
                     checkForTag(xml, "updatecheck"));
         }
-
-        checkForAttributeAndValue(xml, "request", "userid", "{" + generator.getDeviceID() + "}");
 
         return generator;
     }

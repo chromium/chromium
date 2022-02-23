@@ -1,0 +1,67 @@
+<!-- Ongoing compositor-animation that has no updates, running at the
+     same time as a janky main-thread animation. -->
+
+
+<style>
+@keyframes sideways {
+  0%   { transform: translateX(0px) }
+  30%  { transform: translateX(80px) }
+  70%  { transform: translateX(80px) }
+  100% { transform: translateX(0px) }
+}
+
+#div, #comp {
+  width: 100px;
+  height: 100px;
+  background-color: red;
+}
+
+</style>
+
+<button id='button'>Start</button>
+
+<div id='div'></div>
+<hr>
+<div id='comp'></div>
+
+<script>
+
+let x = 0;
+let startTime = undefined;
+
+function animationtick() {
+  div.style.transform = `translateX(${x}px)`;
+  ++x;
+  if (x > 200) {
+    x = 0;
+  }
+}
+
+function stopAnimation() {
+  comp.style.animation = '';
+}
+
+function janktick() {
+  animationtick();
+
+  if ((new Date() - startTime) > 5000) {
+    stopAnimation();
+    return;
+  }
+
+  const b = new Date();
+  while ((new Date() - b) < 100) {}
+
+  requestAnimationFrame(janktick);
+}
+
+function startAnimation() {
+  startTime = new Date();
+  requestAnimationFrame(janktick);
+  comp.style.animation = 'sideways 1s infinite';
+}
+
+button.onclick = startAnimation;
+window.onkeypress = startAnimation;
+
+</script>

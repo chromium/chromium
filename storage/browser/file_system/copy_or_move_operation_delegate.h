@@ -11,7 +11,6 @@
 #include <memory>
 
 #include "base/component_export.h"
-#include "base/macros.h"
 #include "base/memory/ref_counted.h"
 #include "base/time/time.h"
 #include "storage/browser/file_system/recursive_operation_delegate.h"
@@ -28,7 +27,8 @@ class FileStreamWriter;
 enum class FlushPolicy;
 
 // A delegate class for recursive copy or move operations.
-class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
+class COMPONENT_EXPORT(STORAGE_BROWSER) CopyOrMoveOperationDelegate
+    : public RecursiveOperationDelegate {
  public:
   class CopyOrMoveImpl;
   using CopyOrMoveProgressCallback =
@@ -112,6 +112,11 @@ class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
                         StatusCallback callback) override;
   void PostProcessDirectory(const FileSystemURL& url,
                             StatusCallback callback) override;
+  // Force a given source URL to produce an error for a copy or a
+  // cross-filesystem move.
+  void SetErrorUrlForTest(const FileSystemURL& url) {
+    error_url_for_test_ = url;
+  }
 
  protected:
   void OnCancel() override;
@@ -153,6 +158,7 @@ class CopyOrMoveOperationDelegate : public RecursiveOperationDelegate {
   const ErrorBehavior error_behavior_;
   const CopyOrMoveProgressCallback progress_callback_;
   StatusCallback callback_;
+  FileSystemURL error_url_for_test_;
 
   std::map<CopyOrMoveImpl*, std::unique_ptr<CopyOrMoveImpl>> running_copy_set_;
   base::WeakPtrFactory<CopyOrMoveOperationDelegate> weak_factory_{this};

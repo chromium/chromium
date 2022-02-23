@@ -10,6 +10,7 @@
 #include "content/browser/attribution_reporting/attribution_host.h"
 #include "content/public/android/content_jni_headers/NavigationHandle_jni.h"
 #include "content/public/browser/navigation_handle.h"
+#include "net/http/http_response_headers.h"
 #include "third_party/blink/public/common/navigation/impression.h"
 #include "third_party/blink/public/common/navigation/impression_mojom_traits.h"
 #include "third_party/blink/public/mojom/conversions/conversions.mojom.h"
@@ -43,13 +44,22 @@ NavigationHandleProxy::NavigationHandleProxy(
   java_navigation_handle_ = Java_NavigationHandle_Constructor(
       env, reinterpret_cast<jlong>(this),
       url::GURLAndroid::FromNativeGURL(env, cpp_navigation_handle_->GetURL()),
+      url::GURLAndroid::FromNativeGURL(
+          env, cpp_navigation_handle_->GetReferrer().url),
+      url::GURLAndroid::FromNativeGURL(
+          env, cpp_navigation_handle_->GetBaseURLForDataURL()),
       cpp_navigation_handle_->IsInPrimaryMainFrame(),
       cpp_navigation_handle_->IsSameDocument(),
       cpp_navigation_handle_->IsRendererInitiated(),
       cpp_navigation_handle_->GetInitiatorOrigin()
           ? cpp_navigation_handle_->GetInitiatorOrigin()->CreateJavaObject()
           : nullptr,
-      impression_byte_buffer);
+      impression_byte_buffer, cpp_navigation_handle_->GetPageTransition(),
+      cpp_navigation_handle_->IsPost(),
+      cpp_navigation_handle_->HasUserGesture(),
+      cpp_navigation_handle_->WasServerRedirect(),
+      cpp_navigation_handle_->IsExternalProtocol(),
+      cpp_navigation_handle_->GetNavigationId());
 }
 
 void NavigationHandleProxy::DidRedirect() {
@@ -90,9 +100,7 @@ void NavigationHandleProxy::DidFinish() {
       cpp_navigation_handle_->IsErrorPage(),
       cpp_navigation_handle_->HasCommitted(), is_fragment_navigation,
       cpp_navigation_handle_->IsDownload(), is_valid_search_form_url,
-      cpp_navigation_handle_->HasCommitted()
-          ? cpp_navigation_handle_->GetPageTransition()
-          : -1,
+      cpp_navigation_handle_->GetPageTransition(),
       cpp_navigation_handle_->GetNetErrorCode(),
       // TODO(shaktisahu): Change default status to -1 after fixing
       // crbug/690041.

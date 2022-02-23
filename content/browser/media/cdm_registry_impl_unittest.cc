@@ -19,6 +19,7 @@
 #include "content/public/common/cdm_info.h"
 #include "media/base/video_codecs.h"
 #include "media/cdm/cdm_capability.h"
+#include "media/cdm/cdm_type.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -33,12 +34,11 @@ using CdmSessionType = media::CdmSessionType;
 
 const char kTestCdmName[] = "Test CDM";
 const char kAlternateCdmName[] = "Alternate CDM";
-const base::Token kTestCdmGuid{1234, 5678};
+const media::CdmType kTestCdmType{base::Token{1234, 5678}, "file_system_id"};
 const char kTestPath[] = "/aa/bb";
 const char kVersion1[] = "1.1.1.1";
 const char kVersion2[] = "1.1.1.2";
 const char kTestKeySystem[] = "com.example.somesystem";
-const char kTestFileSystemId[] = "file_system_id";
 
 // Helper function to convert a VideoCodecMap to a list of VideoCodec values
 // so that they can be compared. VideoCodecProfiles are ignored.
@@ -90,9 +90,8 @@ class CdmRegistryImplTest : public testing::Test {
     return CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
                    GetTestCdmCapability(),
                    /*supports_sub_key_systems=*/true, kTestCdmName,
-                   kTestCdmGuid, base::Version(kVersion1),
-                   base::FilePath::FromUTF8Unsafe(kTestPath),
-                   kTestFileSystemId);
+                   kTestCdmType, base::Version(kVersion1),
+                   base::FilePath::FromUTF8Unsafe(kTestPath));
   }
 
   void Register(CdmInfo cdm_info) {
@@ -102,7 +101,7 @@ class CdmRegistryImplTest : public testing::Test {
   void RegisterForLazyInitialization() {
     // Register a CdmInfo without CdmCapability to allow lazy initialization.
     Register(CdmInfo(kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure,
-                     absl::nullopt));
+                     absl::nullopt, kTestCdmType));
     auto cdm_info = cdm_registry_.GetCdmInfo(
         kTestKeySystem, CdmInfo::Robustness::kSoftwareSecure);
     ASSERT_TRUE(cdm_info);
@@ -117,10 +116,10 @@ class CdmRegistryImplTest : public testing::Test {
     return false;
   }
 
-  std::vector<std::string> GetVersions(const base::Token& guid) {
+  std::vector<std::string> GetVersions(const media::CdmType& cdm_type) {
     std::vector<std::string> versions;
     for (const auto& cdm : cdm_registry_.GetRegisteredCdms()) {
-      if (cdm.guid == guid)
+      if (cdm.type.id == cdm_type.id)
         versions.push_back(cdm.version.GetString());
     }
     return versions;
@@ -139,7 +138,7 @@ TEST_F(CdmRegistryImplTest, Register) {
   EXPECT_EQ(kTestCdmName, cdm.name);
   EXPECT_EQ(kVersion1, cdm.version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
-  EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
+  EXPECT_EQ(kTestCdmType, cdm.type);
   EXPECT_AUDIO_CODECS(AudioCodec::kVorbis);
   EXPECT_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
@@ -183,7 +182,7 @@ TEST_F(CdmRegistryImplTest, NewVersionInsertedLast) {
   cdm_info.version = base::Version(kVersion2);
   Register(cdm_info);
 
-  const std::vector<std::string> versions = GetVersions(kTestCdmGuid);
+  const std::vector<std::string> versions = GetVersions(kTestCdmType);
   EXPECT_EQ(2u, versions.size());
   EXPECT_EQ(kVersion1, versions[0]);
   EXPECT_EQ(kVersion2, versions[1]);
@@ -222,7 +221,7 @@ TEST_F(CdmRegistryImplTest, GetCdmInfo_Success) {
   EXPECT_EQ(kTestCdmName, cdm.name);
   EXPECT_EQ(kVersion1, cdm.version.GetString());
   EXPECT_EQ(kTestPath, cdm.path.MaybeAsASCII());
-  EXPECT_EQ(kTestFileSystemId, cdm.file_system_id);
+  EXPECT_EQ(kTestCdmType, cdm.type);
   EXPECT_VIDEO_CODECS(VideoCodec::kVP8, VideoCodec::kVP9);
   EXPECT_ENCRYPTION_SCHEMES(EncryptionScheme::kCenc);
   EXPECT_SESSION_TYPES(CdmSessionType::kTemporary,

@@ -276,8 +276,8 @@ FuchsiaCdmManager::FuchsiaCdmManager(
   // CDM data directories that are in active use, the |storage_task_runner_| is
   // sequenced, thereby ensuring cleanup completes before any CDM activities
   // start.
-  if (cdm_data_quota_bytes)
-    ApplyCdmStorageQuota(cdm_data_path_, *cdm_data_quota_bytes);
+  if (cdm_data_quota_bytes_)
+    ApplyCdmStorageQuota(cdm_data_path_, *cdm_data_quota_bytes_);
 }
 
 FuchsiaCdmManager::~FuchsiaCdmManager() = default;

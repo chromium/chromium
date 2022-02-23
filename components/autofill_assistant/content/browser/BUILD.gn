@@ -23,3 +23,16 @@ static_library("browser") {
     "//mojo/public/cpp/bindings",
   ]
 }
+
+source_set("unit_tests") {
+  testonly = true
+  sources = [ "content_autofill_assistant_driver_unittest.cc" ]
+
+  deps = [
+    ":browser",
+    "//base",
+    "//base/test:test_support",
+    "//content/public/browser",
+    "//content/test:test_support",
+  ]
+}

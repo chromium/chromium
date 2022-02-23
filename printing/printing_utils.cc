@@ -4,27 +4,36 @@
 
 #include "printing/printing_utils.h"
 
-#include <unicode/ulocdata.h>
-
 #include <algorithm>
-#include <cmath>
 #include <string>
 
 #include "base/logging.h"
-#include "base/strings/string_piece.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
-#include "printing/units.h"
+#include "build/build_config.h"
+#include "build/chromeos_buildflags.h"
 #include "third_party/icu/source/common/unicode/uchar.h"
-#include "ui/gfx/geometry/size.h"
 #include "ui/gfx/text_elider.h"
+
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+#include <unicode/ulocdata.h>
+
+#include <cmath>
+
+#include "base/strings/string_piece.h"
+#include "printing/units.h"
+#include "ui/gfx/geometry/size.h"
+#endif
 
 namespace printing {
 
 namespace {
 
 constexpr size_t kMaxDocumentTitleLength = 80;
+
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 constexpr gfx::Size kIsoA4Microns = gfx::Size(210000, 297000);
+#endif
 
 }  // namespace
 
@@ -75,6 +84,7 @@ std::u16string FormatDocumentTitleWithOwner(const std::u16string& owner,
                                                kMaxDocumentTitleLength);
 }
 
+#if defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
 gfx::Size GetDefaultPaperSizeFromLocaleMicrons(base::StringPiece locale) {
   if (locale.empty())
     return kIsoA4Microns;
@@ -105,5 +115,23 @@ bool SizesEqualWithinEpsilon(const gfx::Size& lhs,
   return std::abs(lhs.width() - rhs.width()) <= epsilon &&
          std::abs(lhs.height() - rhs.height()) <= epsilon;
 }
+#endif  // defined(USE_CUPS) && !BUILDFLAG(IS_CHROMEOS_ASH)
+
+#if BUILDFLAG(IS_WIN)
+gfx::Rect GetCenteredPageContentRect(const gfx::Size& paper_size,
+                                     const gfx::Size& page_size,
+                                     const gfx::Rect& page_content_rect) {
+  gfx::Rect content_rect = page_content_rect;
+  if (paper_size.width() > page_size.width()) {
+    int diff = paper_size.width() - page_size.width();
+    content_rect.set_x(content_rect.x() + diff / 2);
+  }
+  if (paper_size.height() > page_size.height()) {
+    int diff = paper_size.height() - page_size.height();
+    content_rect.set_y(content_rect.y() + diff / 2);
+  }
+  return content_rect;
+}
+#endif  // BUILDFLAG(IS_WIN)
 
 }  // namespace printing

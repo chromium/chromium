@@ -6,12 +6,12 @@
 
 #include <memory>
 
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/fake_arc_session.h"
 #include "base/threading/platform_thread.h"
 #include "chrome/browser/speech/tts_chromeos.h"
 #include "chrome/test/base/testing_profile.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/fake_arc_session.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "content/public/browser/tts_controller.h"
 #include "content/public/test/browser_task_environment.h"

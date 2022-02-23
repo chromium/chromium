@@ -1,25 +1,44 @@
 <style include="cr-shared-style">
-  :host([is-low-battery_]) #batteryContainer {
-    --iron-icon-fill-color: var(--cros-icon-color-alert);
-    color: var(--cros-text-color-alert);
-  }
-
-  :host(:not([is-low-battery_])) #batteryContainer {
-    --iron-icon-fill-color: var(--cros-icon-color-secondary);
-    color: var(--cros-text-color-secondary);
-  }
-
-  #batteryIcon {
-    --iron-icon-height: 16px;
-    --iron-icon-width: 16px;
-    margin-inline-end: -2px;
-    padding-bottom: 2px;
-  }
 </style>
-<div id="batteryContainer">
-  <iron-icon id="batteryIcon" icon="[[getBatteryIcon_(device)]]">
-  </iron-icon>
-  <span id="batteryPercentage">
-    [[getBatteryPercentageString_(device)]]
-  </span>
-</div>
+<template is="dom-if" if="[[!showMultipleBatteries_]]" restamp>
+  <bluetooth-battery-icon-percentage
+      id="defaultBattery"
+      device="[[device]]"
+      battery-type="[[BatteryType.DEFAULT]]"
+      is-type-labeled>
+  </bluetooth-battery-icon-percentage>
+</template>
+
+<template is="dom-if" if="[[showMultipleBatteries_]]" restamp>
+  <div>
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.LEFT_BUD)]]" restamp>
+      <bluetooth-battery-icon-percentage
+          id="leftBudBattery"
+          device="[[device]]"
+          battery-type="[[BatteryType.LEFT_BUD]]"
+          is-type-labeled>
+      </bluetooth-battery-icon-percentage>
+    </template>
+
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.CASE)]]" restamp>
+      <bluetooth-battery-icon-percentage
+          id="caseBattery"
+          device="[[device]]"
+          battery-type="[[BatteryType.CASE]]"
+          is-type-labeled>
+      </bluetooth-battery-icon-percentage>
+    </template>
+
+    <template is="dom-if"
+        if="[[shouldShowBattery_(device, BatteryType.RIGHT_BUD)]]" restamp>
+      <bluetooth-battery-icon-percentage
+          id="rightBudBattery"
+          device="[[device]]"
+          battery-type="[[BatteryType.RIGHT_BUD]]"
+          is-type-labeled>
+      </bluetooth-battery-icon-percentage>
+    </template>
+  </div>
+</template>

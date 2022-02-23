@@ -54,8 +54,9 @@ bool SystemWebAppDelegate::ShouldShowNewWindowMenuOption() const {
   return false;
 }
 
-bool SystemWebAppDelegate::ShouldIncludeLaunchDirectory() const {
-  return false;
+base::FilePath SystemWebAppDelegate::GetLaunchDirectory(
+    const apps::AppLaunchParams& params) const {
+  return base::FilePath();
 }
 
 std::vector<int> SystemWebAppDelegate::GetAdditionalSearchTerms() const {
@@ -94,6 +95,10 @@ bool SystemWebAppDelegate::ShouldAllowScriptsToCloseWindows() const {
   return false;
 }
 
+bool SystemWebAppDelegate::ShouldHandleFileOpenIntents() const {
+  return ShouldShowInLauncher();
+}
+
 absl::optional<SystemAppBackgroundTaskInfo> SystemWebAppDelegate::GetTimerInfo()
     const {
   return absl::nullopt;
@@ -127,5 +132,19 @@ bool SystemWebAppDelegate::HasTitlebarTerminalSelectNewTabButton() const {
   return false;
 }
 #endif
+
+bool SystemWebAppDelegate::IsUrlInSystemAppScope(const GURL& url) const {
+  return false;
+}
+
+bool SystemWebAppDelegate::PreferManifestBackgroundColor() const {
+  return false;
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+bool SystemWebAppDelegate::ShouldAnimateThemeChanges() const {
+  return false;
+}
+#endif  // BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace web_app

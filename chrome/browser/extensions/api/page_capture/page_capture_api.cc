@@ -91,17 +91,6 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   params_ = SaveAsMHTML::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params_.get());
 
-  // Add a reference, extending the lifespan of this extension function until
-  // the response has been received by the renderer. This function generates a
-  // blob which contains a reference scoped to this object. In order for the
-  // blob to remain alive, we have to stick around until a reference has
-  // been obtained by the renderer. The response ack is the signal that the
-  // renderer has it's reference, so we can release ours.
-  // TODO(crbug.com/1050887): Potential memory leak here.
-  AddRef();  // Balanced in OnMessageReceived()
-  if (is_from_service_worker())
-    AddWorkerResponseTarget();
-
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // In Public Sessions, extensions (and apps) are force-installed by admin
   // policy so the user does not get a chance to review the permissions for
@@ -109,18 +98,19 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   // standpoint, so when an extension uses the PageCapture API for the first
   // time, we show the user a dialog where they can choose whether to allow
   // the extension access to the API.
+  // TODO(https://crbug.com/1269409): This bypasses the CanCaptureCurrentPage()
+  // check below, which means we don't check certain restrictions.
   if (profiles::ArePublicSessionRestrictionsEnabled()) {
     WebContents* web_contents = GetWebContents();
     if (!web_contents) {
       return RespondNow(Error(kTabClosedError));
     }
-    // This Unretained is safe because this object is Released() in
-    // OnMessageReceived which gets called at some point after callback is run.
+
     permission_helper::HandlePermissionRequest(
         *extension(), {mojom::APIPermissionID::kPageCapture}, web_contents,
         base::BindOnce(
             &PageCaptureSaveAsMHTMLFunction::ResolvePermissionRequest,
-            base::Unretained(this)),
+            this),  // Callback increments refcount.
         permission_helper::PromptFactory());
     return RespondLater();
   }
@@ -130,10 +120,11 @@ ExtensionFunction::ResponseAction PageCaptureSaveAsMHTMLFunction::Run() {
   if (!CanCaptureCurrentPage(&error)) {
     return RespondNow(Error(std::move(error)));
   }
+
   base::ThreadPool::PostTask(
       FROM_HERE, kCreateTemporaryFileTaskTraits,
       base::BindOnce(&PageCaptureSaveAsMHTMLFunction::CreateTemporaryFile,
-                     this));
+                     this));  // Callback increments refcount.
   return RespondLater();
 }
 
@@ -284,10 +275,7 @@ void PageCaptureSaveAsMHTMLFunction::MHTMLGenerated(int64_t mhtml_file_size) {
 
 void PageCaptureSaveAsMHTMLFunction::ReturnFailure(const std::string& error) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-
   Respond(Error(error));
-
-  // Must not Release() here, OnMessageReceived will call it eventually.
 }
 
 void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
@@ -302,14 +290,23 @@ void PageCaptureSaveAsMHTMLFunction::ReturnSuccess(int64_t file_size) {
   ChildProcessSecurityPolicy::GetInstance()->GrantReadFile(source_process_id(),
                                                            mhtml_path_);
 
-  std::unique_ptr<base::DictionaryValue> dict(new base::DictionaryValue());
-  dict->SetString("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
-  dict->SetInteger("mhtmlFileLength", file_size);
-  Respond(OneArgument(base::Value::FromUniquePtrValue(std::move(dict))));
+  base::Value response(base::Value::Type::DICTIONARY);
+  response.SetStringKey("mhtmlFilePath", mhtml_path_.AsUTF8Unsafe());
+  response.SetIntKey("mhtmlFileLength", file_size);
+  response.SetIntKey("requestId", request_id());
 
-  // Note that we'll wait for a response ack message received in
-  // OnMessageReceived before we call Release() (to prevent the blob file from
-  // being deleted).
+  // Add a reference, extending the lifespan of this extension function until
+  // the response has been received by the renderer. This function generates a
+  // blob which contains a reference scoped to this object. In order for the
+  // blob to remain alive, we have to stick around until a reference has
+  // been obtained by the renderer. The response ack is the signal that the
+  // renderer has it's reference, so we can release ours.
+  // TODO(crbug.com/1050887): Potential memory leak here.
+  AddRef();  // Balanced in either OnMessageReceived()
+  if (is_from_service_worker())
+    AddWorkerResponseTarget();
+
+  Respond(OneArgument(std::move(response)));
 }
 
 WebContents* PageCaptureSaveAsMHTMLFunction::GetWebContents() {

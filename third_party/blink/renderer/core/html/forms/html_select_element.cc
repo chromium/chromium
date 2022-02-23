@@ -67,7 +67,7 @@
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/spatial_navigation.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
 #include "third_party/blink/renderer/platform/text/platform_locale.h"
 #include "ui/base/ui_base_features.h"
@@ -168,7 +168,7 @@ bool HTMLSelectElement::ValueMissing() const {
 
   int first_selection_index = selectedIndex();
 
-  // If a non-placeholer label option is selected (firstSelectionIndex > 0),
+  // If a non-placeholder label option is selected (firstSelectionIndex > 0),
   // it's not value-missing.
   return first_selection_index < 0 ||
          (!first_selection_index && HasPlaceholderLabelOption());
@@ -1029,6 +1029,7 @@ void HTMLSelectElement::ResetImpl() {
   ResetToDefaultSelection();
   select_type_->UpdateTextStyleAndContent();
   SetNeedsValidityCheck();
+  HTMLFormControlElementWithState::ResetImpl();
 }
 
 bool HTMLSelectElement::PopupIsVisible() const {
@@ -1157,8 +1158,7 @@ void HTMLSelectElement::SelectOptionByAccessKey(HTMLOptionElement* option) {
 
 unsigned HTMLSelectElement::length() const {
   unsigned options = 0;
-  for (auto* const option : GetOptionList()) {
-    ALLOW_UNUSED_LOCAL(option);
+  for ([[maybe_unused]] auto* const option : GetOptionList()) {
     ++options;
   }
   return options;

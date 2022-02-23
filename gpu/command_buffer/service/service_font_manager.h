@@ -6,12 +6,13 @@
 #define GPU_COMMAND_BUFFER_SERVICE_SERVICE_FONT_MANAGER_H_
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/synchronization/lock.h"
 #include "base/threading/thread.h"
 #include "gpu/command_buffer/common/discardable_handle.h"
 #include "gpu/gpu_gles2_export.h"
-#include "third_party/skia/src/core/SkRemoteGlyphCache.h"
+#include "third_party/skia/include/private/chromium/SkChromeRemoteGlyphCache.h"
 
 namespace gpu {
 class Buffer;
@@ -51,7 +52,7 @@ class GPU_GLES2_EXPORT ServiceFontManager
 
   base::Lock lock_;
 
-  Client* client_;
+  raw_ptr<Client> client_;
   const base::PlatformThreadId client_thread_id_;
   std::unique_ptr<SkStrikeClient> strike_client_;
   base::flat_map<SkDiscardableHandleId, ServiceDiscardableHandle>

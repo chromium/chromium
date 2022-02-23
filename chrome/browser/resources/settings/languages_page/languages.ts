@@ -13,9 +13,8 @@
 import '../prefs/prefs.js';
 
 import {assert} from '//resources/js/assert.m.js';
-import {loadTimeData} from '//resources/js/load_time_data.m.js';
 import {PromiseResolver} from '//resources/js/promise_resolver.m.js';
-import {html, PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {PrefsMixin} from '../prefs/prefs_mixin.js';
 import {CrSettingsPrefs} from '../prefs/prefs_types.js';
@@ -968,6 +967,12 @@ class SettingsLanguagesElement extends SettingsLanguagesElementBase implements
    */
   retryDownloadDictionary(languageCode: string) {
     this.languageSettingsPrivate_.retryDownloadDictionary(languageCode);
+  }
+}
+
+declare global {
+  interface HTMLElementTagNameMap {
+    'settings-languages': SettingsLanguagesElement;
   }
 }
 

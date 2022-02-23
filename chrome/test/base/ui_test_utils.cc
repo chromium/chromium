@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/test/base/ui_test_utils.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 
 #include <stddef.h>
@@ -78,7 +79,7 @@
 #include "third_party/blink/public/common/chrome_debug_urls.h"
 #include "ui/gfx/geometry/rect.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -165,7 +166,7 @@ class AppModalDialogWaiter : public javascript_dialogs::AppModalDialogObserver {
   }
 
  private:
-  javascript_dialogs::AppModalDialogController* dialog_ = nullptr;
+  raw_ptr<javascript_dialogs::AppModalDialogController> dialog_ = nullptr;
   scoped_refptr<content::MessageLoopRunner> message_loop_runner_;
 };
 
@@ -365,11 +366,10 @@ bool GetRelativeBuildDirectory(base::FilePath* build_dir) {
     return false;
 
   size_t match, exe_size, src_size;
-  std::vector<base::FilePath::StringType> src_parts, exe_parts;
 
   // Determine point at which src and exe diverge.
-  exe_dir.GetComponents(&exe_parts);
-  src_dir.GetComponents(&src_parts);
+  auto exe_parts = exe_dir.GetComponents();
+  auto src_parts = src_dir.GetComponents();
   exe_size = exe_parts.size();
   src_size = src_parts.size();
   for (match = 0; match < exe_size && match < src_size; ++match) {
@@ -500,7 +500,7 @@ void GetCookies(const GURL& url,
     net::CookieList cookie_list;
     storage_partition->GetCookieManagerForBrowserProcess()->GetCookieList(
         url, net::CookieOptions::MakeAllInclusive(),
-        net::CookiePartitionKeychain(),
+        net::CookiePartitionKeyCollection(),
         base::BindOnce(GetCookieCallback, loop.QuitClosure(), &cookie_list));
     loop.Run();
 
@@ -560,7 +560,7 @@ class WaitHistoryLoadedObserver : public history::HistoryServiceObserver {
 
  private:
   // weak
-  content::MessageLoopRunner* runner_;
+  raw_ptr<content::MessageLoopRunner> runner_;
 };
 
 WaitHistoryLoadedObserver::WaitHistoryLoadedObserver(

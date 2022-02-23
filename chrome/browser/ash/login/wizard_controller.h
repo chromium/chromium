@@ -1,4 +1,4 @@
-// Copyright (c) 2012 The Chromium Authors. All rights reserved.
+// Copyright 2012 The Chromium Authors. All rights reserved.
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -9,15 +9,16 @@
 #include <memory>
 #include <string>
 
-#include "base/compiler_specific.h"
 #include "base/gtest_prod_util.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/scoped_observation.h"
 #include "base/time/time.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/enrollment/auto_enrollment_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
+#include "chrome/browser/ash/login/oobe_screen.h"
 #include "chrome/browser/ash/login/screen_manager.h"
 #include "chrome/browser/ash/login/screens/active_directory_login_screen.h"
 #include "chrome/browser/ash/login/screens/arc_terms_of_service_screen.h"
@@ -35,6 +36,7 @@
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
 #include "chrome/browser/ash/login/screens/gesture_navigation_screen.h"
 #include "chrome/browser/ash/login/screens/guest_tos_screen.h"
+#include "chrome/browser/ash/login/screens/hardware_data_collection_screen.h"
 #include "chrome/browser/ash/login/screens/hid_detection_screen.h"
 #include "chrome/browser/ash/login/screens/kiosk_autolaunch_screen.h"
 #include "chrome/browser/ash/login/screens/locale_switch_screen.h"
@@ -47,14 +49,17 @@
 #include "chrome/browser/ash/login/screens/packaged_license_screen.h"
 #include "chrome/browser/ash/login/screens/parental_handoff_screen.h"
 #include "chrome/browser/ash/login/screens/pin_setup_screen.h"
+#include "chrome/browser/ash/login/screens/quick_start_screen.h"
 #include "chrome/browser/ash/login/screens/recommend_apps_screen.h"
 #include "chrome/browser/ash/login/screens/signin_fatal_error_screen.h"
+#include "chrome/browser/ash/login/screens/smart_privacy_protection_screen.h"
 #include "chrome/browser/ash/login/screens/sync_consent_screen.h"
 #include "chrome/browser/ash/login/screens/terms_of_service_screen.h"
 #include "chrome/browser/ash/login/screens/update_screen.h"
 #include "chrome/browser/ash/login/screens/user_creation_screen.h"
 #include "chrome/browser/ash/login/screens/welcome_screen.h"
 #include "chrome/browser/ash/policy/enrollment/enrollment_config.h"
+#include "chrome/browser/ui/webui/chromeos/login/oobe_ui.h"
 #include "components/account_id/account_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -76,7 +81,7 @@ class NetworkStateHelper;
 
 // Class that manages control flow between wizard screens. Wizard controller
 // interacts with screen controllers to move the user between screens.
-class WizardController {
+class WizardController : public OobeUI::Observer {
  public:
   class ScreenObserver : public base::CheckedObserver {
    public:
@@ -95,7 +100,7 @@ class WizardController {
   WizardController(const WizardController&) = delete;
   WizardController& operator=(const WizardController&) = delete;
 
-  ~WizardController();
+  ~WizardController() override;
 
   // Returns the default wizard controller if it has been created. This is a
   // helper for LoginDisplayHost::default_host()->GetWizardController();
@@ -106,7 +111,9 @@ class WizardController {
   static bool skip_post_login_screens() { return skip_post_login_screens_; }
 
   // Whether to skip any prompts that may be normally shown during enrollment.
-  static bool skip_enrollment_prompts() { return skip_enrollment_prompts_; }
+  static bool skip_enrollment_prompts_for_testing() {
+    return skip_enrollment_prompts_for_testing_;
+  }
 
   // Sets delays to zero. MUST be used only for tests.
   static void SetZeroDelays();
@@ -121,9 +128,9 @@ class WizardController {
   // Skips any enrollment prompts that may be normally shown.
   static void SkipEnrollmentPromptsForTesting();
 
-  // Returns true if OOBE is operating under the
-  // Zero-Touch Hands-Off Enrollment Flow.
-  static bool UsingHandsOffEnrollment();
+  // Returns true if OOBE is operating under the Zero-Touch Hands-Off
+  // Enrollment flow.
+  static bool IsZeroTouchHandsOffOobeFlow();
 
   bool is_initialized() { return is_initialized_; }
 
@@ -230,12 +237,17 @@ class WizardController {
   void AddObserver(ScreenObserver* obs);
   void RemoveObserver(ScreenObserver* obs);
 
+  // OobeUI::Observer
+  void OnCurrentScreenChanged(OobeScreenId, OobeScreenId) override {}
+  void OnDestroyingOobeUI() override;
+
  private:
   // Create BaseScreen instances. These are owned by `screen_manager_`.
   std::vector<std::unique_ptr<BaseScreen>> CreateScreens();
 
   // Show specific screen.
   void ShowWelcomeScreen();
+  void ShowQuickStartScreen();
   void ShowNetworkScreen();
   void ShowEulaScreen();
   void ShowEnrollmentScreen();
@@ -296,6 +308,7 @@ class WizardController {
   void OnWrongHWIDScreenExit();
   void OnHidDetectionScreenExit(HIDDetectionScreen::Result result);
   void OnWelcomeScreenExit(WelcomeScreen::Result result);
+  void OnQuickStartScreenExit(QuickStartScreen::Result result);
   void OnNetworkScreenExit(NetworkScreen::Result result);
   bool ShowEulaOrArcTosAfterNetworkScreen();
   void OnEulaScreenExit(EulaScreen::Result result);
@@ -345,6 +358,9 @@ class WizardController {
   void OnConsolidatedConsentScreenExit(
       ConsolidatedConsentScreen::Result result);
   void OnGuestTosScreenExit(GuestTosScreen::Result result);
+  void OnHWDataCollectionScreenExit(HWDataCollectionScreen::Result result);
+  void OnSmartPrivacyProtectionScreenExit(
+      SmartPrivacyProtectionScreen::Result result);
 
   // Callback invoked once it has been determined whether the device is disabled
   // or not.
@@ -438,7 +454,7 @@ class WizardController {
   // (registration, Terms of Service, user image selection).
   static bool skip_post_login_screens_;
 
-  static bool skip_enrollment_prompts_;
+  static bool skip_enrollment_prompts_for_testing_;
 
   // Screen that's currently active.
   BaseScreen* current_screen_ = nullptr;
@@ -508,6 +524,8 @@ class WizardController {
   base::OnceClosure on_timezone_resolved_for_testing_;
 
   bool is_initialized_ = false;
+
+  base::ScopedObservation<OobeUI, OobeUI::Observer> oobe_ui_observation_{this};
 
   base::ObserverList<ScreenObserver> screen_observers_;
 

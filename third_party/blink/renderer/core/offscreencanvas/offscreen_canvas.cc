@@ -32,6 +32,7 @@
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/workers/dedicated_worker_global_scope.h"
 #include "third_party/blink/renderer/platform/bindings/microtask.h"
+#include "third_party/blink/renderer/platform/bindings/no_alloc_direct_call_host.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_dispatcher.h"
 #include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
 #include "third_party/blink/renderer/platform/graphics/gpu/shared_gpu_context.h"
@@ -39,6 +40,7 @@
 #include "third_party/blink/renderer/platform/graphics/skia/skia_utils.h"
 #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
 #include "third_party/blink/renderer/platform/graphics/unaccelerated_static_bitmap_image.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
 #include "third_party/blink/renderer/platform/instrumentation/histogram.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -48,7 +50,8 @@
 
 namespace blink {
 
-OffscreenCanvas::OffscreenCanvas(ExecutionContext* context, const IntSize& size)
+OffscreenCanvas::OffscreenCanvas(ExecutionContext* context,
+                                 const gfx::Size& size)
     : CanvasRenderingContextHost(
           CanvasRenderingContextHost::HostType::kOffscreenCanvasHost),
       execution_context_(context),
@@ -83,7 +86,7 @@ OffscreenCanvas* OffscreenCanvas::Create(ExecutionContext* context,
                                          unsigned height) {
   UMA_HISTOGRAM_BOOLEAN("Blink.OffscreenCanvas.NewOffscreenCanvas", true);
   return MakeGarbageCollected<OffscreenCanvas>(
-      context, IntSize(ClampTo<int>(width), ClampTo<int>(height)));
+      context, gfx::Size(ClampTo<int>(width), ClampTo<int>(height)));
 }
 
 OffscreenCanvas::~OffscreenCanvas() {
@@ -108,6 +111,7 @@ void OffscreenCanvas::Commit(scoped_refptr<CanvasResource> canvas_resource,
 
 void OffscreenCanvas::Dispose() {
   // We need to drop frame dispatcher, to prevent mojo calls from completing.
+  disposing_ = true;
   frame_dispatcher_ = nullptr;
   DiscardResourceProvider();
 
@@ -145,18 +149,18 @@ void OffscreenCanvas::SetPlaceholderCanvasId(DOMNodeId canvas_id) {
 }
 
 void OffscreenCanvas::setWidth(unsigned width) {
-  IntSize new_size = size_;
+  gfx::Size new_size = size_;
   new_size.set_width(ClampTo<int>(width));
   SetSize(new_size);
 }
 
 void OffscreenCanvas::setHeight(unsigned height) {
-  IntSize new_size = size_;
+  gfx::Size new_size = size_;
   new_size.set_height(ClampTo<int>(height));
   SetSize(new_size);
 }
 
-void OffscreenCanvas::SetSize(const IntSize& size) {
+void OffscreenCanvas::SetSize(const gfx::Size& size) {
   // Setting size of a canvas also resets it.
   if (size == size_) {
     if (context_ && context_->IsRenderingContext2D()) {
@@ -240,7 +244,7 @@ void OffscreenCanvas::RecordIdentifiabilityMetric(
 
 scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
     SourceImageStatus* status,
-    const FloatSize& size,
+    const gfx::SizeF& size,
     const AlphaDisposition alpha_disposition) {
   if (!context_) {
     *status = kInvalidSourceImageStatus;
@@ -265,13 +269,13 @@ scoped_refptr<Image> OffscreenCanvas::GetSourceImageForCanvas(
   return GetImageWithAlphaDisposition(std::move(image), alpha_disposition);
 }
 
-IntSize OffscreenCanvas::BitmapSourceSize() const {
+gfx::Size OffscreenCanvas::BitmapSourceSize() const {
   return size_;
 }
 
 ScriptPromise OffscreenCanvas::CreateImageBitmap(
     ScriptState* script_state,
-    absl::optional<IntRect> crop_rect,
+    absl::optional<gfx::Rect> crop_rect,
     const ImageBitmapOptions* options,
     ExceptionState& exception_state) {
   if (context_)
@@ -301,13 +305,8 @@ CanvasRenderingContext* OffscreenCanvas::GetCanvasRenderingContext(
     return nullptr;
 
   if (auto* window = DynamicTo<LocalDOMWindow>(GetExecutionContext())) {
-    if (attributes.color_space != kSRGBCanvasColorSpaceName ||
-        attributes.pixel_format != kUint8CanvasPixelFormatName) {
+    if (attributes.color_space != PredefinedColorSpace::kSRGB)
       UseCounter::Count(window->document(), WebFeature::kCanvasUseColorSpace);
-    }
-
-    if (RuntimeEnabledFeatures::NewCanvas2DAPIEnabled(GetTopExecutionContext()))
-      UseCounter::Count(window->document(), WebFeature::kNewCanvas2DAPI);
   }
 
   CanvasRenderingContextFactory* factory =
@@ -397,7 +396,7 @@ CanvasResourceProvider* OffscreenCanvas::GetOrCreateResourceProvider() {
     return ResourceProvider();
 
   std::unique_ptr<CanvasResourceProvider> provider;
-  IntSize surface_size(width(), height());
+  gfx::Size surface_size(width(), height());
   const bool can_use_gpu =
       SharedGpuContext::IsGpuCompositingEnabled() &&
       (IsWebGL() || IsWebGPU() ||
@@ -558,9 +557,39 @@ void OffscreenCanvas::UpdateMemoryUsage() {
   int32_t new_memory_usage =
       memory_usage_checked.ValueOrDefault(std::numeric_limits<int32_t>::max());
 
-  v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
-      new_memory_usage - memory_usage_);
-  memory_usage_ = new_memory_usage;
+  // If the the rendering context supports NoAllocDirectCall, we must use a
+  // deferrable action to update v8's externally allocated memory to avoid
+  // triggering garbage collection while inside a FastAPICall scope.
+  // TODO(junov): We assume that it is impossible to be inside a FastAPICall
+  // from a host interface other than the rendering context.  This assumption
+  // may need to be revisited in the future depending on how the usage of
+  // [NoAllocDirectCall] evolves.
+  intptr_t delta_bytes = new_memory_usage - memory_usage_;
+  if (delta_bytes) {
+    NoAllocDirectCallHost* nadc_host =
+        context_ ? context_->AsNoAllocDirectCallHost() : nullptr;
+    if (nadc_host) {
+      nadc_host->PostDeferrableAction(WTF::Bind(
+          [](intptr_t delta_bytes) {
+            v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+                delta_bytes);
+          },
+          delta_bytes));
+    } else {
+      // Here we check "IsAllocationAllowed", but it is actually garbage
+      // collection that is not allowed, and allocations can trigger GC.
+      // AdjustAmountOfExternalAllocatedMemory is not an allocation but it
+      // can trigger GC, So we use "IsAllocationAllowed" as a proxy for
+      // "is GC allowed". When garbage collection is already in progress,
+      // allocations are not allowed, but calling
+      // AdjustAmountOfExternalAllocatedMemory is safe, hence the
+      // 'diposing_' condition in the DCHECK below.
+      DCHECK(ThreadState::Current()->IsAllocationAllowed() || disposing_);
+      v8::Isolate::GetCurrent()->AdjustAmountOfExternalAllocatedMemory(
+          delta_bytes);
+    }
+    memory_usage_ = new_memory_usage;
+  }
 }
 
 size_t OffscreenCanvas::GetMemoryUsage() const {

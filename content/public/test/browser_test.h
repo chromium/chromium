@@ -15,7 +15,6 @@
 #error Can't reliably terminate hanging event tests without OOP test runner.
 #endif
 
-#include "base/compiler_specific.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 #define IN_PROC_BROWSER_TEST_(                                               \

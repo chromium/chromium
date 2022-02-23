@@ -9,7 +9,7 @@
 #include <string>
 
 #include "base/callback.h"
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -85,6 +85,10 @@ class UserPolicySigninServiceBase : public KeyedService,
       const std::string& client_id,
       scoped_refptr<network::SharedURLLoaderFactory> profile_url_loader_factory,
       PolicyFetchCallback callback);
+
+  void set_profile_can_be_managed_for_testing(bool can_be_managed) {
+    profile_can_be_managed_for_testing_ = can_be_managed;
+  }
 
   // signin::IdentityManager::Observer implementation:
   void OnPrimaryAccountChanged(
@@ -162,19 +166,20 @@ class UserPolicySigninServiceBase : public KeyedService,
 
  private:
   // Parent profile for this service.
-  Profile* profile_;
+  raw_ptr<Profile> profile_;
   // Weak pointer to the UserCloudPolicyManager and IdentityManager this service
   // is associated with.
-  UserCloudPolicyManager* policy_manager_;
-  signin::IdentityManager* identity_manager_;
+  raw_ptr<UserCloudPolicyManager> policy_manager_;
+  raw_ptr<signin::IdentityManager> identity_manager_;
 
   content::NotificationRegistrar registrar_;
 
-  PrefService* local_state_;
-  DeviceManagementService* device_management_service_;
+  raw_ptr<PrefService> local_state_;
+  raw_ptr<DeviceManagementService> device_management_service_;
   scoped_refptr<network::SharedURLLoaderFactory> system_url_loader_factory_;
 
   signin::ConsentLevel consent_level_;
+  bool profile_can_be_managed_for_testing_ = false;
   base::WeakPtrFactory<UserPolicySigninServiceBase> weak_factory_{this};
 };
 

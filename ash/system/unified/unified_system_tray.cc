@@ -7,7 +7,6 @@
 #include "ash/accessibility/accessibility_controller_impl.h"
 #include "ash/constants/ash_features.h"
 #include "ash/focus_cycler.h"
-#include "ash/public/cpp/presentation_time_recorder.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shelf/shelf.h"
 #include "ash/shell.h"
@@ -22,6 +21,7 @@
 #include "ash/system/network/network_tray_view.h"
 #include "ash/system/power/tray_power.h"
 #include "ash/system/privacy_screen/privacy_screen_toast_controller.h"
+#include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/time_tray_item_view.h"
 #include "ash/system/time/time_view.h"
 #include "ash/system/tray/system_tray_notifier.h"
@@ -38,14 +38,17 @@
 #include "ash/system/unified/unified_system_tray_bubble.h"
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
+#include "base/memory/scoped_refptr.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/compositor/presentation_time_recorder.h"
 #include "ui/display/display.h"
 #include "ui/display/screen.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/notification_view_controller.h"
+#include "ui/views/controls/image_view.h"
 
 namespace ash {
 
@@ -146,7 +149,7 @@ void UnifiedSystemTray::UiDelegate::HideMessageCenter() {}
 UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
     : TrayBackgroundView(shelf),
       ui_delegate_(std::make_unique<UiDelegate>(this)),
-      model_(std::make_unique<UnifiedSystemTrayModel>(shelf)),
+      model_(base::MakeRefCounted<UnifiedSystemTrayModel>(shelf)),
       slider_bubble_controller_(
           std::make_unique<UnifiedSliderBubbleController>(this)),
       privacy_screen_toast_controller_(
@@ -165,7 +168,7 @@ UnifiedSystemTray::UnifiedSystemTray(Shelf* shelf)
       mic_view_(
           new CameraMicTrayItemView(shelf, CameraMicTrayItemView::Type::kMic)) {
   time_view_ = new tray::TimeTrayItemView(
-      shelf, model(),
+      shelf, model_,
       base::BindRepeating(&UnifiedSystemTray::OnTimeViewActionPerformed,
                           weak_factory_.GetWeakPtr()));
   tray_container()->SetMargin(
@@ -464,7 +467,10 @@ void UnifiedSystemTray::OnTimeViewActionPerformed(const ui::Event& event) {
     CloseBubble();
   } else {
     ShowBubble();
-    bubble_->ShowCalendarView();
+
+    bubble_->ShowCalendarView(
+        calendar_metrics::CalendarViewShowSource::kTimeView,
+        calendar_metrics::GetEventType(event));
   }
 }
 
@@ -533,6 +539,9 @@ std::u16string UnifiedSystemTray::GetAccessibleNameForTray() {
                        : base::EmptyString16());
   status.push_back(camera_view_->GetVisible()
                        ? camera_view_->GetAccessibleNameString()
+                       : base::EmptyString16());
+  status.push_back(managed_device_view_->GetVisible()
+                       ? managed_device_view_->image_view()->GetTooltipText()
                        : base::EmptyString16());
   status.push_back(notification_icons_controller_->GetAccessibleNameString());
   status.push_back(ime_mode_view_->GetVisible()

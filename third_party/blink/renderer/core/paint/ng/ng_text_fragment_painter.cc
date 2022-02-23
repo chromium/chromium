@@ -4,7 +4,6 @@
 
 #include "third_party/blink/renderer/core/paint/ng/ng_text_fragment_painter.h"
 
-#include "cc/input/layer_selection_bound.h"
 #include "third_party/blink/renderer/core/editing/editor.h"
 #include "third_party/blink/renderer/core/editing/frame_selection.h"
 #include "third_party/blink/renderer/core/editing/markers/composition_marker.h"
@@ -230,7 +229,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
     DCHECK_NE(text_item.Type(), NGFragmentItem::kSvgText);
     PhysicalRect ink_overflow = text_item.SelfInkOverflow();
     ink_overflow.Move(physical_box.offset);
-    visual_rect = ToGfxRect(EnclosingIntRect(ink_overflow));
+    visual_rect = ToEnclosingRect(ink_overflow);
   }
 
   // Ensure the selection bounds are recorded on the paint chunk regardless of
@@ -299,13 +298,10 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   // Set our font.
-  const Font& font = UNLIKELY(svg_inline_text)
-                         ? svg_inline_text->ScaledFont()
-                         : UNLIKELY(text_combine)
-                               ? text_combine->UsesCompressedFont()
-                                     ? text_combine->CompressedFont()
-                                     : style.GetFont()
-                               : style.GetFont();
+  const Font& font =
+      UNLIKELY(text_combine && text_combine->UsesCompressedFont())
+          ? text_combine->CompressedFont()
+          : text_item.ScaledFont();
   const SimpleFontData* font_data = font.PrimaryFont();
   DCHECK(font_data);
 
@@ -320,9 +316,8 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
           ? text_combine->AdjustTextTopForPaint(physical_box.offset.top)
           : physical_box.offset.top + ascent);
 
-  NGTextPainter text_painter(context, font, fragment_paint_info,
-                             IntRect(visual_rect), text_origin, physical_box,
-                             is_horizontal);
+  NGTextPainter text_painter(context, font, fragment_paint_info, visual_rect,
+                             text_origin, physical_box, is_horizontal);
   NGHighlightPainter highlight_painter(
       text_painter, paint_info, cursor_, *cursor_.CurrentItem(),
       physical_box.offset, style, selection, is_printing);
@@ -371,8 +366,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
 
     // We need to use physical coordinates when invalidating.
     if (paint_marker_backgrounds && recorder) {
-      recorder->UniteVisualRect(
-          ToGfxRect(EnclosingIntRect(physical_selection)));
+      recorder->UniteVisualRect(ToEnclosingRect(physical_selection));
     }
   }
 
@@ -395,7 +389,7 @@ void NGTextFragmentPainter::Paint(const PaintInfo& paint_info,
   }
 
   AutoDarkMode auto_dark_mode(
-      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kText));
+      PaintAutoDarkMode(style, DarkModeFilter::ElementRole::kForeground));
 
   const unsigned length = fragment_paint_info.to - fragment_paint_info.from;
   const unsigned start_offset = fragment_paint_info.from;

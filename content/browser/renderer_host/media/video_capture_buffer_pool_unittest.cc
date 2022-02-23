@@ -25,7 +25,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "ui/gfx/mac/io_surface.h"
 #endif
 
@@ -280,13 +280,13 @@ TEST_P(VideoCaptureBufferPoolTest, BufferPool) {
   buffer4.reset();
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 namespace {
 
 gfx::GpuMemoryBufferHandle CreateIOSurfaceHandle() {
   gfx::GpuMemoryBufferHandle result;
   result.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
-  result.id.id = -1;
+  result.id = gfx::GpuMemoryBufferHandle::kInvalidId;
   result.io_surface.reset(
       gfx::CreateIOSurface(gfx::Size(100, 100), gfx::BufferFormat::BGRA_8888));
   return result;

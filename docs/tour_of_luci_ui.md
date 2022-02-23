@@ -368,7 +368,7 @@ hear it and incorporate it into our ongoing UI improvements.
 Use the **feedback button** on a LUCI page.
 
 For **feature requests or bugs**, please file a crbug using the following
-[template](https://bugs.chromium.org/p/chromium/issues/entry?labels=LUCI-M0-Backlog&summary=[LUCI-Feedback-UI]%20Enter%20an%20one-line%20summary&components=Infra>Platform>Milo&cc=efoo@chromium.org,estaab@chromium.org,nodir@chromium.org&description=Please%20use%20this%20to%20template%20to%20file%20a%20feature%20request%20into%20LUCI%20backlog.%20%20%0A%0AReminder%20to%20include%20the%20following%3A%0A-%20Description%0A-%20Priority%0A-%20Why%20this%20feature%20is%20needed).
+[template](https://bugs.chromium.org/p/chromium/issues/entry?summary=[LUCI-Feedback-UI]%20Enter%20an%20one-line%20summary&components=Infra>LUCI>UserInterface>BuildUI&description=Please%20use%20this%20to%20template%20to%20file%20a%20feature%20request%20into%20LUCI%20backlog.%20%20%0A%0AReminder%20to%20include%20the%20following%3A%0A-%20Description%0A-%20Priority%0A-%20Why%20this%20feature%20is%20needed).
 
 To **share your feedback**, please fill out this [short
 survey](https://goo.gl/forms/YPO6XCQ3q47r00iw2).

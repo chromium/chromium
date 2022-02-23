@@ -16,6 +16,7 @@
 #include "base/strings/string_split.h"
 #include "base/strings/string_util.h"
 #include "base/threading/sequenced_task_runner_handle.h"
+#include "build/build_config.h"
 #include "components/password_manager/core/browser/password_manager_metrics_util.h"
 #include "components/password_manager/core/browser/password_reuse_detector.h"
 #include "components/safe_browsing/core/browser/db/database_manager.h"
@@ -141,7 +142,12 @@ bool PasswordProtectionServiceBase::CanSendPing(
     ReusedPasswordAccountType password_type) {
   return IsPingingEnabled(trigger_type, password_type) &&
          !IsURLAllowlistedForPasswordEntry(main_frame_url) &&
-         !IsInExcludedCountry();
+         !IsInExcludedCountry() &&
+         // Although we can't get the reputation of the main frame URL for
+         // password reuse on about:blank, the referrer chain still provides
+         // enough useful information that we should send the ping.
+         (main_frame_url == GURL("about:blank") ||
+          CanGetReputationOfURL(main_frame_url));
 }
 
 bool PasswordProtectionServiceBase::
@@ -195,7 +201,7 @@ void PasswordProtectionServiceBase::RequestFinished(
     }
   }
 
-  MaybeHandleDeferredNavigations(request);
+  ResumeDeferredNavigationsIfNeeded(request);
 
   // If the request is canceled, the PasswordProtectionServiceBase is already
   // partially destroyed, and we won't be able to log accurate metrics.
@@ -208,7 +214,7 @@ void PasswordProtectionServiceBase::RequestFinished(
     MaybeRecordSecuritySensitiveEvent(metrics_collector_, verdict);
 
 // Disabled on Android, because enterprise reporting extension is not supported.
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
     MaybeReportPasswordReuseDetected(
         request, request->username(), request->password_type(),
         verdict == LoginReputationClientResponse::PHISHING);
@@ -415,7 +421,7 @@ bool PasswordProtectionServiceBase::IsSupportedPasswordTypeForModalWarning(
 
 // Currently password reuse warnings are only supported for saved passwords
 // and GAIA passwords on Android.
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   return IsSyncingGMAILPasswordWithSignedInProtectionEnabled(password_type);
 #else
   if (password_type.account_type() ==

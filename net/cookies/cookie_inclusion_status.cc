@@ -4,6 +4,9 @@
 
 #include "net/cookies/cookie_inclusion_status.h"
 
+#include <initializer_list>
+#include <utility>
+
 #include "base/strings/strcat.h"
 #include "url/gurl.h"
 

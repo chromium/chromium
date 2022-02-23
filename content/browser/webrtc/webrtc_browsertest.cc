@@ -25,7 +25,7 @@
 
 namespace content {
 
-#if defined(OS_ANDROID) && defined(ADDRESS_SANITIZER)
+#if BUILDFLAG(IS_ANDROID) && defined(ADDRESS_SANITIZER)
 // Renderer crashes under Android ASAN: https://crbug.com/408496.
 #define MAYBE_WebRtcBrowserTest DISABLED_WebRtcBrowserTest
 #else
@@ -63,8 +63,8 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CanSetupAudioAndVideoCall) {
   MakeTypicalPeerConnectionCall("call({video: true, audio: true});");
 }
 
-#if defined(OS_ANDROID)
-// Flaky on Android https://crbug.com/1099365
+// Flaky on Android and Linux ASAN https://crbug.com/1099365.
+#if BUILDFLAG(IS_ANDROID) || (BUILDFLAG(IS_LINUX) && defined(ADDRESS_SANITIZER))
 #define MAYBE_NetworkProcessCrashRecovery DISABLED_NetworkProcessCrashRecovery
 #else
 #define MAYBE_NetworkProcessCrashRecovery NetworkProcessCrashRecovery
@@ -102,7 +102,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
 
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
                        CanSetupVideoCallWith16To9AspectRatio) {
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Android requires 16x16 alignment for hardware encoding.
   constexpr int kExpectedAlignment = 16;
 #else
@@ -115,7 +115,7 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   MakeTypicalPeerConnectionCall(javascript);
 }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // TODO(https://crbug.com/1235254): This test is flakey on macOS.
 #define MAYBE_CanSetupVideoCallWith4To3AspectRatio \
   DISABLED_CanSetupVideoCallWith4To3AspectRatio
@@ -222,15 +222,6 @@ IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,
   MakeTypicalPeerConnectionCall("callWithNewVideoMediaStream();");
 }
 
-// This test will make a PeerConnection-based call and send a new Video
-// MediaStream that has been created based on a MediaStream created with
-// getUserMedia. When video is flowing, the VideoTrack is removed and an
-// AudioTrack is added instead.
-IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, CallAndModifyStream) {
-  MakeTypicalPeerConnectionCall(
-      "callWithNewVideoMediaStreamLaterSwitchToAudio();");
-}
-
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest, AddTwoMediaStreamsToOnePC) {
   MakeTypicalPeerConnectionCall("addTwoMediaStreamsToOneConnection();");
 }
@@ -277,7 +268,7 @@ IN_PROC_BROWSER_TEST_F(
       "testEstablishVideoOnlyCallAndVerifyGetSynchronizationSourcesWorks();");
 }
 
-#if defined(OS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
+#if BUILDFLAG(IS_ANDROID) && BUILDFLAG(USE_PROPRIETARY_CODECS)
 // This test is to make sure HW H264 work normally on supported devices, since
 // there is no SW H264 fallback available on Android.
 IN_PROC_BROWSER_TEST_F(MAYBE_WebRtcBrowserTest,

@@ -9,7 +9,8 @@
 #include <string>
 #include <vector>
 
-#include "base/compiler_specific.h"
+#include "base/memory/raw_ptr.h"
+#include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "components/sync/base/user_selectable_type.h"
 #include "components/sync/driver/sync_service_impl.h"
@@ -59,7 +60,7 @@ class SyncServiceImplHarness {
   // Signs out of the primary account. ChromeOS doesn't have the concept of
   // sign-out, so this only exists on other platforms.
   void SignOutPrimaryAccount();
-#endif  // !OS_CHROMEOS
+#endif
 
   // Enters/exits the "Sync paused" state, which in real life happens if a
   // syncing user signs out of the content area.
@@ -203,10 +204,10 @@ class SyncServiceImplHarness {
   bool IsSyncEnabledByUser() const;
 
   // Profile associated with this sync client.
-  Profile* const profile_;
+  const raw_ptr<Profile> profile_;
 
   // SyncServiceImpl object associated with |profile_|.
-  syncer::SyncServiceImpl* const service_;
+  const raw_ptr<syncer::SyncServiceImpl> service_;
 
   // Prevents Sync from running until configuration is complete.
   std::unique_ptr<syncer::SyncSetupInProgressHandle> sync_blocker_;

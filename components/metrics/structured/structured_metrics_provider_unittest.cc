@@ -667,6 +667,24 @@ TEST_F(StructuredMetricsProviderTest, ExternalMetricsAreReported) {
   EXPECT_EQ(GetSessionData().events_size(), 3);
 }
 
+TEST_F(StructuredMetricsProviderTest,
+       ExternalMetricsDroppedWhenRecordingDisabled) {
+  const base::FilePath events_dir(TempDirPath().Append("events"));
+  base::CreateDirectory(events_dir);
+
+  const auto proto = MakeExternalEventProto({111, 222, 333});
+  ASSERT_TRUE(
+      base::WriteFile(events_dir.Append("event"), proto.SerializeAsString()));
+
+  provider_ = std::make_unique<StructuredMetricsProvider>();
+  OnProfileAdded(TempDirPath());
+  OnRecordingDisabled();
+  SetExternalMetricsDirForTest(events_dir);
+  task_environment_.AdvanceClock(base::Hours(10));
+  Wait();
+  EXPECT_EQ(GetSessionData().events_size(), 0);
+}
+
 // Test that events reported at various stages before and during initialization
 // are ignored (and don't cause a crash).
 TEST_F(StructuredMetricsProviderTest, EventsNotRecordedBeforeInitialization) {

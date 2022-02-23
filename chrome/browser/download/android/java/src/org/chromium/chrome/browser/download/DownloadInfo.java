@@ -19,20 +19,24 @@ import org.chromium.components.offline_items_collection.OfflineItemSchedule;
 import org.chromium.components.offline_items_collection.OfflineItemState;
 import org.chromium.components.offline_items_collection.OfflineItemVisuals;
 import org.chromium.components.offline_items_collection.PendingState;
+import org.chromium.url.GURL;
 
 /**
  * Class representing the state of a single download.
  */
 public final class DownloadInfo {
-    private final String mUrl;
+    private final GURL mUrl;
     private final String mUserAgent;
     private final String mMimeType;
     private final String mCookie;
     private final String mFileName;
     private final String mDescription;
     private final String mFilePath;
+
+    // TODO(https://crbug.com/1278805): Migrate mReferrer and mOriginalUrl to GURL
     private final String mReferrer;
     private final String mOriginalUrl;
+
     private final long mBytesReceived;
     private final long mBytesTotalSize;
     private final String mDownloadGuid;
@@ -105,7 +109,7 @@ public final class DownloadInfo {
         mSchedule = builder.mSchedule;
     }
 
-    public String getUrl() {
+    public GURL getUrl() {
         return mUrl;
     }
 
@@ -318,7 +322,7 @@ public final class DownloadInfo {
      * Helper class for building the DownloadInfo object.
      */
     public static class Builder {
-        private String mUrl;
+        private GURL mUrl;
         private String mUserAgent;
         private String mMimeType;
         private String mCookie;
@@ -355,7 +359,7 @@ public final class DownloadInfo {
         private boolean mShouldPromoteOrigin;
         private OfflineItemSchedule mSchedule;
 
-        public Builder setUrl(String url) {
+        public Builder setUrl(GURL url) {
             mUrl = url;
             return this;
         }
@@ -569,12 +573,12 @@ public final class DownloadInfo {
 
     @CalledByNative
     private static DownloadInfo createDownloadInfo(String downloadGuid, String fileName,
-            String filePath, String url, String mimeType, long bytesReceived, long bytesTotalSize,
+            String filePath, GURL url, String mimeType, long bytesReceived, long bytesTotalSize,
             OTRProfileID otrProfileId, int state, int percentCompleted, boolean isPaused,
             boolean hasUserGesture, boolean isResumable, boolean isParallelDownload,
             String originalUrl, String referrerUrl, long timeRemainingInMs, long lastAccessTime,
             boolean isDangerous, @FailState int failState, OfflineItemSchedule schedule) {
-        String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url, fileName);
+        String remappedMimeType = MimeUtils.remapGenericMimeType(mimeType, url.getSpec(), fileName);
 
         Progress progress = new Progress(bytesReceived,
                 percentCompleted == -1 ? null : bytesTotalSize, OfflineItemProgressUnit.BYTES);

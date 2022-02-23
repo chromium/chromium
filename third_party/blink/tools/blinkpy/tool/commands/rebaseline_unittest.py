@@ -303,7 +303,8 @@ class TestRebaseline(BaseTestCase):
                     'optimize': True,
                     'verbose': True,
                     'results_directory': None,
-                    'flag_specific': None
+                    'flag_specific': None,
+                    'resultDB': None
                 }, **kwargs))
 
     def test_rebaseline_test_passes_on_all_builders(self):
@@ -565,7 +566,8 @@ class TestRebaselineUpdatesExpectationsFiles(BaseTestCase):
             'optimize': False,
             'verbose': True,
             'results_directory': None,
-            'flag_specific': None
+            'flag_specific': None,
+            'resultDB': None
         })
 
     # In the following test cases, we use a mock rebaseline-test-internal to
@@ -922,7 +924,8 @@ class TestRebaselineExecute(BaseTestCase):
             'builders': None,
             'suffixes': 'png,txt',
             'verbose': True,
-            'flag_specific': None
+            'flag_specific': None,
+            'resultDB': None
         })
 
     def test_rebaseline(self):

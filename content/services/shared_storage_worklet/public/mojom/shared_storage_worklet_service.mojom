@@ -4,6 +4,7 @@
 
 module shared_storage_worklet.mojom;
 
+import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "services/network/public/mojom/url_loader_factory.mojom";
 import "url/mojom/origin.mojom";
@@ -13,8 +14,8 @@ import "url/mojom/url.mojom";
 // would unify the handling for different type of iterators, such as for
 // sharedStorage.keys() and for sharedStorage.entries().
 struct SharedStorageKeyAndOrValue {
-  string key;
-  string value;
+  mojo_base.mojom.String16 key;
+  mojo_base.mojom.String16 value;
 };
 
 // Used by the SharedStorageWorkletServiceClient receiver (i.e. the worklet
@@ -36,16 +37,19 @@ interface SharedStorageWorkletServiceClient {
  // Handle sharedStorage.set(): set `key`’s entry to `value`. If
   // `ignoreIfPresent` is true, the entry is not updated if `key` already
   // exists.
-  SharedStorageSet(string key, string value, bool ignore_if_present)
+  SharedStorageSet(mojo_base.mojom.String16 key,
+                   mojo_base.mojom.String16 value,
+                   bool ignore_if_present)
     => (bool success, string error_message);
 
   // Handle sharedStorage.append(): append `value` to the entry for `key`.
   // Equivalent to "set" if the `key` is not present.
-  SharedStorageAppend(string key, string value)
+  SharedStorageAppend(mojo_base.mojom.String16 key,
+                      mojo_base.mojom.String16 value)
     => (bool success, string error_message);
 
   // Handle sharedStorage.delete(): delete the entry at the given `key`.
-  SharedStorageDelete(string key)
+  SharedStorageDelete(mojo_base.mojom.String16 key)
     => (bool success, string error_message);
 
   // Handle sharedStorage.clear(): delete all entries.
@@ -54,8 +58,8 @@ interface SharedStorageWorkletServiceClient {
 
   // Handle sharedStorage.get(): get the entry at `key`, or an empty string if
   // `key` is not present.
-  SharedStorageGet(string key)
-    => (bool success, string error_message, string value);
+  SharedStorageGet(mojo_base.mojom.String16 key)
+    => (bool success, string error_message, mojo_base.mojom.String16 value);
 
   // Returns (potentially in batches) the keys of the shared storage.
   SharedStorageKeys(pending_remote<SharedStorageEntriesListener> listener);
@@ -93,7 +97,7 @@ interface SharedStorageWorkletService {
   // `name`. The size limit on `urls` should be checked at the Mojo boundary.
   // When the operation succeeds, the return value `index` will be set to the
   // uint32 value that the promise resolves to; otherwise it will be set to 0.
-  RunURLSelectionOperation(string name, array<string> urls,
+  RunURLSelectionOperation(string name, array<url.mojom.Url> urls,
                            array<uint8> serialized_data)
     => (bool success, string error_message, uint32 index);
 

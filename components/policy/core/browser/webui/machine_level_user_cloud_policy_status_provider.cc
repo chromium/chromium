@@ -35,7 +35,7 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
     base::DictionaryValue* dict) {
   CloudPolicyRefreshScheduler* refresh_scheduler = core_->refresh_scheduler();
 
-  dict->SetString(
+  dict->SetStringKey(
       "refreshInterval",
       ui::TimeFormat::Simple(
           ui::TimeFormat::FORMAT_DURATION, ui::TimeFormat::LENGTH_SHORT,
@@ -43,38 +43,39 @@ void MachineLevelUserCloudPolicyStatusProvider::GetStatus(
               refresh_scheduler
                   ? refresh_scheduler->GetActualRefreshDelay()
                   : CloudPolicyRefreshScheduler::kDefaultRefreshDelayMs)));
-  dict->SetBoolean(
+  dict->SetBoolKey(
       "policiesPushAvailable",
       refresh_scheduler ? refresh_scheduler->invalidations_available() : false);
 
   if (!context_->enrollmentToken.empty())
-    dict->SetString("enrollmentToken", context_->enrollmentToken);
+    dict->SetStringKey("enrollmentToken", context_->enrollmentToken);
 
   if (!context_->deviceId.empty())
-    dict->SetString("deviceId", context_->deviceId);
+    dict->SetStringKey("deviceId", context_->deviceId);
 
   CloudPolicyStore* store = core_->store();
   if (store) {
     std::u16string status = GetPolicyStatusFromStore(store, core_->client());
 
-    dict->SetString("status", status);
+    dict->SetStringKey("status", status);
 
     const enterprise_management::PolicyData* policy = store->policy();
     if (policy) {
-      dict->SetString("timeSinceLastRefresh",
-                      GetTimeSinceLastRefreshString(
-                          refresh_scheduler ? refresh_scheduler->last_refresh()
+      dict->SetStringKey(
+          "timeSinceLastRefresh",
+          GetTimeSinceLastRefreshString(refresh_scheduler
+                                            ? refresh_scheduler->last_refresh()
                                             : base::Time()));
-      dict->SetString("domain", gaia::ExtractDomainName(policy->username()));
+      dict->SetStringKey("domain", gaia::ExtractDomainName(policy->username()));
     }
   }
-  dict->SetString("machine", GetMachineName());
+  dict->SetStringKey("machine", GetMachineName());
 
   if (!context_->lastCloudReportSent.is_null()) {
-    dict->SetString("lastCloudReportSentTimestamp",
-                    base::TimeFormatShortDateAndTimeWithTimeZone(
-                        context_->lastCloudReportSent));
-    dict->SetString(
+    dict->SetStringKey("lastCloudReportSentTimestamp",
+                       base::TimeFormatShortDateAndTimeWithTimeZone(
+                           context_->lastCloudReportSent));
+    dict->SetStringKey(
         "timeSinceLastCloudReportSent",
         GetTimeSinceLastRefreshString(context_->lastCloudReportSent));
   }

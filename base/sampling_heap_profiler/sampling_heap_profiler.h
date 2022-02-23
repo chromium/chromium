@@ -11,12 +11,16 @@
 #include <vector>
 
 #include "base/base_export.h"
-#include "base/macros.h"
 #include "base/no_destructor.h"
 #include "base/sampling_heap_profiler/poisson_allocation_sampler.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
 #include "base/threading/thread_id_name_manager.h"
+#include "build/build_config.h"
+
+namespace heap_profiling {
+class HeapProfilerControllerTest;
+}
 
 namespace base {
 
@@ -65,7 +69,7 @@ class BASE_EXPORT SamplingHeapProfiler
   void Stop();
 
   // Sets sampling interval in bytes.
-  void SetSamplingInterval(size_t sampling_interval);
+  void SetSamplingInterval(size_t sampling_interval_bytes);
 
   // Enables recording thread name that made the sampled allocation.
   void SetRecordThreadNames(bool value);
@@ -86,9 +90,7 @@ class BASE_EXPORT SamplingHeapProfiler
   // Captures up to |max_entries| stack frames using the buffer pointed by
   // |frames|. Puts the number of captured frames into the |count| output
   // parameters. Returns the pointer to the topmost frame.
-  static void** CaptureStackTrace(void** frames,
-                                  size_t max_entries,
-                                  size_t* count);
+  void** CaptureStackTrace(void** frames, size_t max_entries, size_t* count);
 
   static void Init();
   static SamplingHeapProfiler* Get();
@@ -114,6 +116,12 @@ class BASE_EXPORT SamplingHeapProfiler
   void CaptureNativeStack(const char* context, Sample* sample);
   const char* RecordString(const char* string) EXCLUSIVE_LOCKS_REQUIRED(mutex_);
 
+  // Delete all samples recorded, to ensure the profiler is in a consistent
+  // state at the beginning of a test. This should only be called within the
+  // scope of a PoissonAllocationSampler::ScopedMuteHookedSamplesForTesting so
+  // that new hooked samples don't arrive while it's running.
+  void ClearSamplesForTesting();
+
   // Mutex to access |samples_| and |strings_|.
   Lock mutex_;
 
@@ -136,6 +144,12 @@ class BASE_EXPORT SamplingHeapProfiler
   // Whether it should record thread names.
   std::atomic<bool> record_thread_names_{false};
 
+#if BUILDFLAG(IS_ANDROID)
+  // Whether to use CFI unwinder or default unwinder.
+  std::atomic<bool> use_default_unwinder_{false};
+#endif
+
+  friend class heap_profiling::HeapProfilerControllerTest;
   friend class NoDestructor<SamplingHeapProfiler>;
   friend class SamplingHeapProfilerTest;
 };

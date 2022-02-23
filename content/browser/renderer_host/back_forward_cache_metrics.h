@@ -24,6 +24,7 @@ class Origin;
 
 namespace content {
 class BackForwardCacheCanStoreDocumentResult;
+class BackForwardCacheCanStoreTreeResult;
 class NavigationEntryImpl;
 class NavigationRequest;
 class RenderFrameHostImpl;
@@ -42,7 +43,7 @@ class BackForwardCacheMetrics
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
   enum class NotRestoredReason : uint8_t {
     kMinValue = 0,
-    kNotMainFrame = 0,
+    kNotPrimaryMainFrame = 0,
     // BackForwardCache is disabled due to low memory device, base::Feature or
     // command line. Note that the more specific NotRestoredReasons
     // kBackForwardCacheDisabledByLowMemory and
@@ -93,7 +94,7 @@ class BackForwardCacheMetrics
     kNetworkRequestTimeout = 39,
     kNetworkExceedsBufferLimit = 40,
     kNavigationCancelledWhileRestoring = 41,
-    kBackForwardCacheDisabledForPrerender = 42,
+    // 42: kBackForwardCacheDisabledForPrerender was removed and merged into 0.
     kUserAgentOverrideDiffers = 43,
     // 44: kNetworkRequestDatapipeDrainedAsDatapipe was removed now that
     // ScriptStreamer is supported.
@@ -219,6 +220,13 @@ class BackForwardCacheMetrics
   void MarkNotRestoredWithReason(
       const BackForwardCacheCanStoreDocumentResult& can_store);
 
+  // TODO: Take BackForwardCacheCanStoreDocumentResultWithTree as an argument
+  // instead of using BackForwardCacheCanStoreDocumentResult and
+  // BackForwardCacheCanStoreTreeResult as arguments.
+  void FinalizeNotRestoredReasons(
+      const BackForwardCacheCanStoreDocumentResult& can_store_flat,
+      std::unique_ptr<BackForwardCacheCanStoreTreeResult> can_store_tree);
+
   // Exported for testing.
   // The DisabledReason's source and id combined to give a unique uint64.
   CONTENT_EXPORT static uint64_t MetricValue(BackForwardCache::DisabledReason);
@@ -285,7 +293,11 @@ class BackForwardCacheMetrics
   absl::optional<base::TimeTicks> started_navigation_timestamp_;
   absl::optional<base::TimeTicks> navigated_away_from_main_document_timestamp_;
 
+  // TODO: Store BackForwardCacheCanStoreDocumentResultWithTree instead of
+  // storing unique_ptr of BackForwardCacheCanStoreDocumentResult and
+  // BackForwardCacheCanStoreTreeResult respectively.
   std::unique_ptr<BackForwardCacheCanStoreDocumentResult> page_store_result_;
+  std::unique_ptr<BackForwardCacheCanStoreTreeResult> page_store_tree_result_;
 
   // This value is updated only for navigations which are not same-document and
   // main-frame navigations.

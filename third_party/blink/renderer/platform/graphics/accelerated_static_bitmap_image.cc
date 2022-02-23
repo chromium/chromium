@@ -56,12 +56,14 @@ AcceleratedStaticBitmapImage::CreateFromCanvasMailbox(
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
     scoped_refptr<base::SingleThreadTaskRunner> context_task_runner,
-    viz::ReleaseCallback release_callback) {
+    viz::ReleaseCallback release_callback,
+    bool supports_display_compositing) {
   return base::AdoptRef(new AcceleratedStaticBitmapImage(
       mailbox, sync_token, shared_image_texture_id, sk_image_info,
-      texture_target, is_origin_top_left, ImageOrientationEnum::kDefault,
-      std::move(context_provider_wrapper), context_thread_ref,
-      std::move(context_task_runner), std::move(release_callback)));
+      texture_target, is_origin_top_left, supports_display_compositing,
+      ImageOrientationEnum::kDefault, std::move(context_provider_wrapper),
+      context_thread_ref, std::move(context_task_runner),
+      std::move(release_callback)));
 }
 
 AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
@@ -71,6 +73,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
     const SkImageInfo& sk_image_info,
     GLenum texture_target,
     bool is_origin_top_left,
+    bool supports_display_compositing,
     const ImageOrientation& orientation,
     base::WeakPtr<WebGraphicsContext3DProviderWrapper> context_provider_wrapper,
     base::PlatformThreadRef context_thread_ref,
@@ -81,6 +84,7 @@ AcceleratedStaticBitmapImage::AcceleratedStaticBitmapImage(
       sk_image_info_(sk_image_info),
       texture_target_(texture_target),
       is_origin_top_left_(is_origin_top_left),
+      supports_display_compositing_(supports_display_compositing),
       context_provider_wrapper_(std::move(context_provider_wrapper)),
       mailbox_ref_(
           base::MakeRefCounted<MailboxRef>(sync_token,
@@ -99,8 +103,8 @@ AcceleratedStaticBitmapImage::~AcceleratedStaticBitmapImage() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 }
 
-IntSize AcceleratedStaticBitmapImage::SizeInternal() const {
-  return IntSize(sk_image_info_.width(), sk_image_info_.height());
+gfx::Size AcceleratedStaticBitmapImage::SizeInternal() const {
+  return gfx::Size(sk_image_info_.width(), sk_image_info_.height());
 }
 
 scoped_refptr<StaticBitmapImage>
@@ -118,7 +122,7 @@ bool AcceleratedStaticBitmapImage::CopyToTexture(
     bool unpack_premultiply_alpha,
     bool unpack_flip_y,
     const gfx::Point& dest_point,
-    const IntRect& source_sub_rectangle) {
+    const gfx::Rect& source_sub_rectangle) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   if (!IsValid())
     return false;
@@ -209,8 +213,8 @@ PaintImage AcceleratedStaticBitmapImage::PaintImageForCurrentFrame() {
 
 void AcceleratedStaticBitmapImage::Draw(cc::PaintCanvas* canvas,
                                         const cc::PaintFlags& flags,
-                                        const FloatRect& dst_rect,
-                                        const FloatRect& src_rect,
+                                        const gfx::RectF& dst_rect,
+                                        const gfx::RectF& src_rect,
                                         const ImageDrawOptions& draw_options) {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
   auto paint_image = PaintImageForCurrentFrame();
@@ -271,9 +275,10 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
       context_provider_wrapper->ContextProvider()->RasterInterface();
   shared_ri->WaitSyncTokenCHROMIUM(mailbox_ref_->sync_token().GetConstData());
 
-  if (context_provider_wrapper->ContextProvider()
-          ->GetCapabilities()
-          .supports_oop_raster) {
+  const auto& capabilities =
+      context_provider_wrapper->ContextProvider()->GetCapabilities();
+
+  if (capabilities.supports_oop_raster) {
     DCHECK_EQ(shared_image_texture_id, 0u);
     skia_context_provider_wrapper_ = context_provider_wrapper;
     texture_backing_ = sk_make_sp<MailboxTextureBacking>(
@@ -304,7 +309,8 @@ void AcceleratedStaticBitmapImage::InitializeTextureBacking(
   texture_info.fTarget = texture_target_;
   texture_info.fID = shared_context_texture_id;
   texture_info.fFormat = viz::TextureStorageFormat(
-      viz::SkColorTypeToResourceFormat(sk_image_info_.colorType()));
+      viz::SkColorTypeToResourceFormat(sk_image_info_.colorType()),
+      capabilities.angle_rgbx_internal_format);
   GrBackendTexture backend_texture(sk_image_info_.width(),
                                    sk_image_info_.height(), GrMipMapped::kNo,
                                    texture_info);

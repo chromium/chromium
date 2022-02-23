@@ -25,7 +25,6 @@
 #include "chrome/browser/ash/accessibility/magnification_manager.h"
 #include "chrome/browser/ash/arc/accessibility/arc_accessibility_helper_bridge.h"
 #include "chrome/browser/ash/profiles/profile_helper.h"
-#include "chrome/browser/extensions/api/tabs/tabs_constants.h"
 #include "chrome/browser/extensions/extension_service.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
 #include "chrome/browser/profiles/profile.h"
@@ -63,6 +62,41 @@ namespace {
 namespace accessibility_private = ::extensions::api::accessibility_private;
 using ::ash::AccessibilityManager;
 
+ash::DictationBubbleHintType ConvertDictationHintType(
+    accessibility_private::DictationBubbleHintType hint_type) {
+  switch (hint_type) {
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_TRYSAYING:
+      return ash::DictationBubbleHintType::kTrySaying;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_TYPE:
+      return ash::DictationBubbleHintType::kType;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_DELETE:
+      return ash::DictationBubbleHintType::kDelete;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_SELECTALL:
+      return ash::DictationBubbleHintType::kSelectAll;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_UNDO:
+      return ash::DictationBubbleHintType::kUndo;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_HELP:
+      return ash::DictationBubbleHintType::kHelp;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_UNSELECT:
+      return ash::DictationBubbleHintType::kUnselect;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_COPY:
+      return ash::DictationBubbleHintType::kCopy;
+    case accessibility_private::DictationBubbleHintType::
+        DICTATION_BUBBLE_HINT_TYPE_NONE:
+      NOTREACHED();
+      return ash::DictationBubbleHintType::kTrySaying;
+      ;
+  }
+}
+
 }  // namespace
 
 ExtensionFunction::ResponseAction
@@ -87,7 +121,7 @@ AccessibilityPrivateOpenSettingsSubpageFunction::Run() {
   // TODO(chrome-a11y-core): we can't open a settings page when you're on the
   // signin profile, but maybe we should notify the user and explain why?
   Profile* profile = AccessibilityManager::Get()->profile();
-  if (!chromeos::ProfileHelper::IsSigninProfile(profile) &&
+  if (!ash::ProfileHelper::IsSigninProfile(profile) &&
       chromeos::settings::IsOSSettingsSubPage(params->subpage)) {
     chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
         profile, params->subpage);
@@ -253,9 +287,30 @@ AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::Run() {
     EXTENSION_FUNCTION_VALIDATE(args().size() >= 1);
     EXTENSION_FUNCTION_VALIDATE(args()[0].is_bool());
     bool enabled = args()[0].GetBool();
-    bridge->SetNativeChromeVoxArcSupport(enabled);
+    bridge->SetNativeChromeVoxArcSupport(
+        enabled,
+        base::BindOnce(
+            &AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::
+                OnResponse,
+            this));
+    return did_respond() ? AlreadyResponded() : RespondLater();
   }
-  return RespondNow(NoArguments());
+  return RespondNow(ArgumentList(
+      extensions::api::accessibility_private::
+          SetNativeChromeVoxArcSupportForCurrentApp::Results::Create(
+              extensions::api::accessibility_private::
+                  SetNativeChromeVoxResponse::
+                      SET_NATIVE_CHROME_VOX_RESPONSE_FAILURE)));
+}
+
+void AccessibilityPrivateSetNativeChromeVoxArcSupportForCurrentAppFunction::
+    OnResponse(
+        extensions::api::accessibility_private::SetNativeChromeVoxResponse
+            response) {
+  Respond(ArgumentList(
+      extensions::api::accessibility_private::
+          SetNativeChromeVoxArcSupportForCurrentApp::Results::Create(
+              response)));
 }
 
 ExtensionFunction::ResponseAction
@@ -644,6 +699,10 @@ AccessibilityPrivateIsFeatureEnabledFunction::Run() {
           ::features::IsExperimentalAccessibilityDictationCommandsEnabled();
       break;
     case accessibility_private::AccessibilityFeature::
+        ACCESSIBILITY_FEATURE_DICTATIONHINTS:
+      enabled = ::features::IsExperimentalAccessibilityDictationHintsEnabled();
+      break;
+    case accessibility_private::AccessibilityFeature::
         ACCESSIBILITY_FEATURE_NONE:
       return RespondNow(Error("Unrecognized feature"));
   }
@@ -744,4 +803,64 @@ AccessibilityPrivateGetLocalizedDomKeyStringForKeyCodeFunction::Run() {
   }
 
   return RespondNow(OneArgument(base::Value(std::string())));
+}
+
+ExtensionFunction::ResponseAction
+AccessibilityPrivateUpdateDictationBubbleFunction::Run() {
+  if (!::features::IsExperimentalAccessibilityDictationCommandsEnabled())
+    return RespondNow(Error("Dictation commands feature is disabled."));
+
+  std::unique_ptr<accessibility_private::UpdateDictationBubble::Params> params(
+      accessibility_private::UpdateDictationBubble::Params::Create(args()));
+  EXTENSION_FUNCTION_VALIDATE(params);
+  accessibility_private::DictationBubbleProperties& properties =
+      params->properties;
+
+  // Extract the icon type.
+  ash::DictationBubbleIconType icon = ash::DictationBubbleIconType::kHidden;
+  switch (properties.icon) {
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_HIDDEN:
+      icon = ash::DictationBubbleIconType::kHidden;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_STANDBY:
+      icon = ash::DictationBubbleIconType::kStandby;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_MACROSUCCESS:
+      icon = ash::DictationBubbleIconType::kMacroSuccess;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_MACROFAIL:
+      icon = ash::DictationBubbleIconType::kMacroFail;
+      break;
+    case accessibility_private::DictationBubbleIconType::
+        DICTATION_BUBBLE_ICON_TYPE_NONE:
+      NOTREACHED();
+      break;
+  }
+
+  // Extract text.
+  absl::optional<std::u16string> text;
+  if (properties.text)
+    text = base::UTF8ToUTF16(*properties.text);
+
+  // Extract hints.
+  absl::optional<std::vector<ash::DictationBubbleHintType>> hints;
+  if (properties.hints) {
+    std::vector<ash::DictationBubbleHintType> converted_hints;
+    for (size_t i = 0; i < (*properties.hints).size(); ++i) {
+      converted_hints.push_back(
+          ConvertDictationHintType((*properties.hints)[i]));
+    }
+    hints = converted_hints;
+  }
+
+  if (hints.has_value() && hints.value().size() > 5)
+    return RespondNow(Error("Should not provide more than five hints."));
+
+  ash::AccessibilityController::Get()->UpdateDictationBubble(properties.visible,
+                                                             icon, text, hints);
+  return RespondNow(NoArguments());
 }

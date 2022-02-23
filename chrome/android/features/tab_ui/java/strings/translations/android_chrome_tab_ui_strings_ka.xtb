@@ -6,6 +6,9 @@
 <translation id="125153950246128346">შეეხეთ სხვა ჩანართის სანახავად</translation>
 <translation id="1302104331113804646">ფასებისთვის თვალის მიდევნების პარამეტრები</translation>
 <translation id="1378979118429748177">შეიტყვეთ ფასების დაწევის შესახებ</translation>
+<translation id="1403228085774130835">თქვენი დახურული ჩანართების პოვნა შეგიძლიათ Chrome-ის მთავარი მენიუს სექციაში „ბოლოდროინდელი ჩანართები“</translation>
+<translation id="1455506303394048917">ამ ინკოგნიტო ჩანართებში თქვენი აქტივობა ამ მოწყობილობიდან წაიშლება</translation>
+<translation id="1499635324672558517">დაიხუროს ყველა ინკოგნიტო ჩანართი?</translation>
 <translation id="1657719826150349398">ჩანართის ქვემოთ გადატანა</translation>
 <translation id="1869137256605757565">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> ჩანართი}other{<ph name="TABS_COUNT_MANY" /> ჩანართი}}</translation>
 <translation id="2118649612461486615">მაღაზიის ინფორმაცია</translation>
@@ -40,9 +43,11 @@
 <translation id="4648718555153979859">თქვენი ჩანართები აქ დაჯგუფებულია</translation>
 <translation id="4788280460033928884">{REVIEWS,plural, =1{(<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა)}other{(<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა)}}</translation>
 <translation id="4850886885716139402">გადახედვა</translation>
+<translation id="4870911314065352661">გსურთ, ყველა ჩანართი დაიხუროს?</translation>
 <translation id="492284538114688557">აღმოჩენილია ფასის დაწევა</translation>
 <translation id="5007392906805964215">გადახედვა</translation>
 <translation id="5073204694187207510">სრულეკრანიანი ბადის დამალვა</translation>
+<translation id="5076161749301278626">გსურთ, ნახოთ მიმოხილვები მაღაზიიდან?</translation>
 <translation id="5082793167783849073">სწრაფად შეადარეთ გვერდები დაჯგუფების მეშვეობით. დასაწყებად ხანგრძლივად შეეხეთ ბმულს.</translation>
 <translation id="5490235265819901748">ჩანართების ჯგუფი გაფართოვდა</translation>
 <translation id="5533021382642990449">მოგვიანებით ჩვენება</translation>
@@ -69,6 +74,7 @@
 <translation id="7326879924029668159">იხილეთ დაბრუნების წესები და სხვა ინფორმაცია</translation>
 <translation id="7352298686197644113">იხილეთ, რომელ ერთეულს აქვს უფრო დაბალი ფასი თქვენს გახსნილ ჩანართებში</translation>
 <translation id="753732157349120914">ჩანართების გადამრთველი</translation>
+<translation id="7545727119051420814">{REVIEWS,plural, =1{<ph name="REVIEWS_COUNT_ONE" /> მიმოხილვა Google-იდან}other{<ph name="REVIEWS_COUNT_MANY" /> მიმოხილვა Google-იდან}}</translation>
 <translation id="7559245342362162951">ჯგუფის ჩანართების სრულეკრანიან ბადეში ჩვენება</translation>
 <translation id="7792771145871471484">შემოთავაზებების გადახედვა.</translation>
 <translation id="7838146321400849846">{TABS_COUNT,plural, =1{<ph name="TABS_COUNT_ONE" /> არჩეული ჩანართის დაჯგუფება}other{<ph name="TABS_COUNT_MANY" /> არჩეული ჩანართის დაჯგუფება}}</translation>

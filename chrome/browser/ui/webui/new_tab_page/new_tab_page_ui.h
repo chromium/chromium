@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_
 #define CHROME_BROWSER_UI_WEBUI_NEW_TAB_PAGE_NEW_TAB_PAGE_UI_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/cart/chrome_cart.mojom.h"
 #include "chrome/browser/new_tab_page/modules/drive/drive.mojom.h"
 #include "chrome/browser/new_tab_page/modules/photos/photos.mojom.h"
@@ -214,9 +215,9 @@ class NewTabPageUI
   std::unique_ptr<FooHandler> foo_handler_;
 #endif
   std::unique_ptr<CartHandler> cart_handler_;
-  Profile* profile_;
-  ThemeService* theme_service_;
-  NtpCustomBackgroundService* ntp_custom_background_service_;
+  raw_ptr<Profile> profile_;
+  raw_ptr<ThemeService> theme_service_;
+  raw_ptr<NtpCustomBackgroundService> ntp_custom_background_service_;
   base::ScopedObservation<ui::NativeTheme, ui::NativeThemeObserver>
       native_theme_observation_{this};
   base::ScopedObservation<ThemeService, ThemeServiceObserver>
@@ -224,7 +225,7 @@ class NewTabPageUI
   base::ScopedObservation<NtpCustomBackgroundService,
                           NtpCustomBackgroundServiceObserver>
       ntp_custom_background_service_observation_{this};
-  content::WebContents* web_contents_;
+  raw_ptr<content::WebContents> web_contents_;
   // Time the NTP started loading. Used for logging the WebUI NTP's load
   // performance.
   base::Time navigation_start_time_;

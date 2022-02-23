@@ -9,7 +9,7 @@
 
 #include "base/callback.h"
 #include "base/callback_forward.h"
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
@@ -81,8 +81,8 @@ class Http1Connection : public HttpConnection, public HttpResponseDelegate {
                           int rv);
 
   std::unique_ptr<StreamSocket> socket_;
-  EmbeddedTestServerConnectionListener* connection_listener_;
-  EmbeddedTestServer* server_delegate_;
+  raw_ptr<EmbeddedTestServerConnectionListener> connection_listener_;
+  raw_ptr<EmbeddedTestServer> server_delegate_;
   HttpRequestParser request_parser_;
   scoped_refptr<IOBufferWithSize> read_buf_;
   std::vector<std::unique_ptr<HttpResponse>> responses_;

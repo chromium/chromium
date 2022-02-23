@@ -8,7 +8,6 @@
 #include <cstdint>
 #include <memory>
 
-#include "base/macros.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/threading/sequence_bound.h"
 #include "chromecast/public/media/decoder_config.h"

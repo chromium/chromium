@@ -100,7 +100,7 @@ TEST_F(BorealisAppUninstallerTest, BorealisAppUninstallsBorealis) {
           [](base::OnceCallback<void(BorealisUninstallResult)> callback) {
             std::move(callback).Run(BorealisUninstallResult::kSuccess);
           }));
-  uninstaller.Uninstall(kBorealisAppId, callback_check.BindOnce());
+  uninstaller.Uninstall(kInstallerAppId, callback_check.BindOnce());
 }
 
 TEST_F(BorealisAppUninstallerTest, BorealisMainAppUninstallsBorealis) {
@@ -113,7 +113,7 @@ TEST_F(BorealisAppUninstallerTest, BorealisMainAppUninstallsBorealis) {
           [](base::OnceCallback<void(BorealisUninstallResult)> callback) {
             std::move(callback).Run(BorealisUninstallResult::kSuccess);
           }));
-  uninstaller.Uninstall(kBorealisMainAppId, callback_check.BindOnce());
+  uninstaller.Uninstall(kClientAppId, callback_check.BindOnce());
 }
 
 TEST_F(BorealisAppUninstallerTest, NonExistentAppFails) {

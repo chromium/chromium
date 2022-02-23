@@ -108,7 +108,7 @@ test("chrome_cleaner_unittests") {
 
 group("shipped_binaries") {
   # This group is used for network annotation check test.
-  visibility += [ "//.:shipped_binaries" ]
+  visibility += [ "//.:traffic_annotation_auditor_dependencies" ]
 
   deps = [
     "//chrome/chrome_cleaner/executables:chrome_cleanup_tool",

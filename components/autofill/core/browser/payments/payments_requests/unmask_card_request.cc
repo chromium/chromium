@@ -86,9 +86,21 @@ std::string UnmaskCardRequest::GetRequestContentType() {
 }
 
 std::string UnmaskCardRequest::GetRequestContent() {
+  // Either non-legacy instrument id or legacy server id must be provided.
+  DCHECK(!request_details_.card.server_id().empty() ||
+         request_details_.card.instrument_id() != 0);
   base::Value request_dict(base::Value::Type::DICTIONARY);
-  request_dict.SetKey("credit_card_id",
-                      base::Value(request_details_.card.server_id()));
+  if (!request_details_.card.server_id().empty()) {
+    request_dict.SetKey("credit_card_id",
+                        base::Value(request_details_.card.server_id()));
+  }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillEnableUnmaskCardRequestSetInstrumentId) &&
+      request_details_.card.instrument_id() != 0) {
+    request_dict.SetKey("instrument_id",
+                        base::Value(base::NumberToString(
+                            request_details_.card.instrument_id())));
+  }
   if (base::FeatureList::IsEnabled(
           features::kAutofillAlwaysReturnCloudTokenizedCard)) {
     // See b/140727361.
@@ -214,7 +226,7 @@ void UnmaskCardRequest::ParseResponse(const base::Value& response) {
   if (challenge_option_list) {
     std::vector<CardUnmaskChallengeOption> card_unmask_challenge_options;
     for (const base::Value& challenge_option :
-         challenge_option_list->GetList()) {
+         challenge_option_list->GetListDeprecated()) {
       CardUnmaskChallengeOption parsed_challenge_option =
           ParseCardUnmaskChallengeOption(challenge_option);
       // Only return successfully parsed challenge option.

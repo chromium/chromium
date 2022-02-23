@@ -29,7 +29,7 @@
 #include "ui/gfx/image/image.h"
 #include "url/gurl.h"
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
 #include "components/webauthn/core/browser/internal_authenticator.h"
 #endif
 
@@ -59,10 +59,12 @@ namespace autofill {
 
 class AddressNormalizer;
 class AutofillAblationStudy;
+struct AutofillOfferData;
 class AutofillProfile;
 class AutocompleteHistoryManager;
 class AutofillOfferManager;
 class AutofillPopupDelegate;
+struct CardUnmaskChallengeOption;
 class CardUnmaskDelegate;
 class CreditCard;
 enum class CreditCardFetchResult;
@@ -75,11 +77,11 @@ enum class OtpUnmaskResult;
 class PersonalDataManager;
 class SingleFieldFormFillRouter;
 class StrikeDatabase;
+struct Suggestion;
+struct VirtualCardEnrollmentFields;
+class VirtualCardEnrollmentManager;
 enum class WebauthnDialogCallbackType;
 enum class WebauthnDialogState;
-struct AutofillOfferData;
-struct CardUnmaskChallengeOption;
-struct Suggestion;
 
 namespace payments {
 class PaymentsClient;
@@ -223,11 +225,17 @@ class AutofillClient : public RiskDataLoader {
       return *this;
     }
 
+    SaveCreditCardOptions& with_has_multiple_legal_lines(bool b = true) {
+      has_multiple_legal_lines = b;
+      return *this;
+    }
+
     bool from_dynamic_change_form = false;
     bool has_non_focusable_field = false;
     bool should_request_name_from_user = false;
     bool should_request_expiration_date_from_user = false;
     bool show_prompt = false;
+    bool has_multiple_legal_lines = false;
   };
 
   // Used for options of save (and update) address profile prompt.
@@ -369,7 +377,7 @@ class AutofillClient : public RiskDataLoader {
   // Returns the profile type of the session.
   virtual profile_metrics::BrowserProfileType GetProfileType() const;
 
-#if !defined(OS_IOS)
+#if !BUILDFLAG(IS_IOS)
   // Creates the appropriate implementation of InternalAuthenticator. May be
   // null for platforms that don't support this, in which case standard CVC
   // authentication will be used instead.
@@ -411,7 +419,20 @@ class AutofillClient : public RiskDataLoader {
   // and we can move on to the next portion of this flow.
   virtual void DismissUnmaskAuthenticatorSelectionDialog(bool server_success);
 
-#if !defined(OS_ANDROID) && !defined(OS_IOS)
+  // Returns a pointer to a VirtualCardEnrollmentManager that is owned by
+  // AutofillClient. VirtualCardEnrollmentManager is used for virtual card
+  // enroll and unenroll related flows. This function may return a nullptr on
+  // some platforms.
+  virtual raw_ptr<VirtualCardEnrollmentManager>
+  GetVirtualCardEnrollmentManager();
+
+  // Shows a dialog for the user to enroll in a virtual card.
+  virtual void ShowVirtualCardEnrollDialog(
+      const raw_ptr<VirtualCardEnrollmentFields> virtual_card_enrollment_fields,
+      base::OnceClosure accept_virtual_card_callback,
+      base::OnceClosure decline_virtual_card_callback);
+
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Returns the list of allowed merchants and BIN ranges for virtual cards.
   virtual std::vector<std::string> GetAllowedMerchantsForVirtualCards() = 0;
   virtual std::vector<std::string> GetAllowedBinRangesForVirtualCards() = 0;
@@ -480,7 +501,7 @@ class AutofillClient : public RiskDataLoader {
       const std::vector<CreditCard*>& candidates,
       base::OnceCallback<void(const std::string&)> callback) = 0;
 
-#else  // defined(OS_ANDROID) || defined(OS_IOS)
+#else  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
   // Display the cardholder name fix flow prompt and run the |callback| if
   // the card should be uploaded to payments with updated name from the user.
   virtual void ConfirmAccountNameFixFlow(
@@ -587,12 +608,14 @@ class AutofillClient : public RiskDataLoader {
   // TODO(crbug.com/1093057): Rename all the "domain" in this flow to origin.
   //                          The server is passing down full origin of the
   //                          urls. "Domain" is no longer accurate.
-  // Will show a bubble or infobar indicating that the current web domain has an
-  // eligible offer or reward if no other notification bubble is currently
-  // visible. See bubble controller for details. The bubble is sticky over a set
-  // of domains given in the offer.
-  virtual void ShowOfferNotificationIfApplicable(
-      const AutofillOfferData* offer);
+  // Notifies the client to update the offer notification when the |offer| is
+  // available. |notification_has_been_shown| indicates whether this
+  // notification has been shown since profile start-up.
+  virtual void UpdateOfferNotification(const AutofillOfferData* offer,
+                                       bool notification_has_been_shown);
+
+  // Dismiss any visible offer notification on the current tab.
+  virtual void DismissOfferNotification();
 
   // Called when the virtual card has been fetched successfully.
   // |masked_card_identifier_string| is the network + last four digits of
@@ -621,6 +644,9 @@ class AutofillClient : public RiskDataLoader {
 
   // Whether the Autocomplete feature of Autofill should be enabled.
   virtual bool IsAutocompleteEnabled() = 0;
+
+  // Returns whether password management is enabled as per the user preferences.
+  virtual bool IsPasswordManagerEnabled() = 0;
 
   // Pass the form structures to the password manager to choose correct username
   // and to the password generation manager to detect account creation forms.
@@ -652,7 +678,7 @@ class AutofillClient : public RiskDataLoader {
 
   virtual const AutofillAblationStudy& GetAblationStudy() const;
 
-#if defined(OS_IOS)
+#if BUILDFLAG(IS_IOS)
   // Checks whether the current query is the most recent one.
   virtual bool IsQueryIDRelevant(int query_id) = 0;
 #endif

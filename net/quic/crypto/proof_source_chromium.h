@@ -10,7 +10,6 @@
 
 #include "base/compiler_specific.h"
 #include "base/files/file_util.h"
-#include "base/macros.h"
 #include "crypto/rsa_private_key.h"
 #include "net/base/net_export.h"
 #include "net/cert/x509_certificate.h"

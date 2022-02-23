@@ -110,6 +110,17 @@ void PasswordReuseDetector::OnLoginsChanged(
   }
 }
 
+void PasswordReuseDetector::OnLoginsRetained(
+    const std::vector<PasswordForm>& retained_passwords) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  passwords_with_matching_reused_credentials_.clear();
+  // |retained_passwords| contains also blacklisted entities, but since they
+  // don't have password value they will be skipped inside AddPassword().
+  for (const auto& form : retained_passwords)
+    AddPassword(form);
+}
+
 void PasswordReuseDetector::ClearCachedAccountStorePasswords() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   for (auto& key_value : passwords_with_matching_reused_credentials_) {

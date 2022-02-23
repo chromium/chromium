@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/check.h"
 #include "base/containers/flat_map.h"
 #include "base/files/file_path.h"
 #include "base/json/json_file_value_serializer.h"
@@ -24,12 +25,13 @@
 #include "chrome/updater/updater_scope.h"
 #include "chrome/updater/updater_version.h"
 #include "chrome/updater/util.h"
+#include "components/crx_file/crx_verifier.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/foundation_util.h"
-#elif defined(OS_WIN)
+#elif BUILDFLAG(IS_WIN)
 #include "base/path_service.h"
 #endif
 
@@ -67,7 +69,7 @@ std::vector<GURL> ExternalConstantsOverrider::UpdateURL() const {
     case base::Value::Type::STRING:
       return {GURL(update_url_value.GetString())};
     case base::Value::Type::LIST:
-      return GURLVectorFromStringList(update_url_value.GetList());
+      return GURLVectorFromStringList(update_url_value.GetListDeprecated());
     default:
       LOG(FATAL) << "Unexpected type of override[" << kDevOverrideKeyUrl
                  << "]: " << base::Value::GetTypeName(update_url_value.type());
@@ -116,6 +118,20 @@ int ExternalConstantsOverrider::ServerKeepAliveSeconds() const {
   return server_keep_alive_seconds_value.GetInt();
 }
 
+crx_file::VerifierFormat ExternalConstantsOverrider::CrxVerifierFormat() const {
+  if (!override_values_.contains(kDevOverrideKeyCrxVerifierFormat)) {
+    return next_provider_->CrxVerifierFormat();
+  }
+
+  const base::Value& crx_format_verifier_value =
+      override_values_.at(kDevOverrideKeyCrxVerifierFormat);
+  CHECK(crx_format_verifier_value.is_int())
+      << "Unexpected type of override[" << kDevOverrideKeyCrxVerifierFormat
+      << "]: " << base::Value::GetTypeName(crx_format_verifier_value.type());
+  return static_cast<crx_file::VerifierFormat>(
+      crx_format_verifier_value.GetInt());
+}
+
 // static
 scoped_refptr<ExternalConstantsOverrider>
 ExternalConstantsOverrider::FromDefaultJSONFile(
@@ -147,7 +163,7 @@ ExternalConstantsOverrider::FromDefaultJSONFile(
   }
 
   return base::MakeRefCounted<ExternalConstantsOverrider>(
-      std::move(*parsed_value).TakeDict(), next_provider);
+      std::move(*parsed_value).TakeDictDeprecated(), next_provider);
 }
 
 // Declared in external_constants.h. This implementation of the function is

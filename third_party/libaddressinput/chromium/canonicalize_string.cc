@@ -7,7 +7,6 @@
 #include <stdint.h>
 
 #include "base/check_op.h"
-#include "base/macros.h"
 #include "third_party/icu/source/common/unicode/errorcode.h"
 #include "third_party/icu/source/common/unicode/locid.h"
 #include "third_party/icu/source/common/unicode/unistr.h"

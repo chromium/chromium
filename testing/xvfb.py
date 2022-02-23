@@ -1,4 +1,4 @@
-#!/usr/bin/env vpython
+#!/usr/bin/env vpython3
 # Copyright (c) 2012 The Chromium Authors. All rights reserved.
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
@@ -11,7 +11,6 @@ from __future__ import print_function
 import copy
 import os
 import os.path
-import psutil
 import random
 import re
 import signal
@@ -19,7 +18,11 @@ import subprocess
 import sys
 import threading
 import time
+
+import psutil
+
 import test_env
+
 
 class _XvfbProcessError(Exception):
   """Exception raised when Xvfb cannot start."""
@@ -141,9 +144,12 @@ def run_executable(
 
 def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
   openbox_proc = None
+  openbox_ready = MutableBoolean()
+  def set_openbox_ready(*_):
+    openbox_ready.setvalue(True)
+
   xcompmgr_proc = None
   xvfb_proc = None
-  xwmstartupcheck_proc = None
   xvfb_ready = MutableBoolean()
   def set_xvfb_ready(*_):
     xvfb_ready.setvalue(True)
@@ -202,34 +208,26 @@ def _run_with_xvfb(cmd, env, stdoutfile, use_openbox, use_xcompmgr):
     dbus_pid = launch_dbus(env)
 
     if use_openbox:
-      # This is not ideal, but x11_unittests require that (other X11 tests have
-      # a race with the openbox as well, but they take more time to initialize.
-      # And thus, they do no time out compate to the x11_unittests that are
-      # quick enough to start up before openbox is ready.
-      # TODO(dpranke): remove this nasty hack once the test() template is
-      # reworked.
-      wait_for_openbox = False
-      wait_openbox_program = './xwmstartupcheck'
-      if not os.path.isfile(wait_openbox_program):
-        wait_for_openbox = False
-      # Creates a dummy window that waits for a ReparentNotify event that is
-      # sent whenever Openbox WM starts. Must be started before the OpenBox WM
-      # so that it does not miss the event. This helper program is located in
-      # the current build directory. The program terminates automatically after
-      # 30 seconds of waiting for the event.
-      if wait_for_openbox:
-        xwmstartupcheck_proc = subprocess.Popen(
-            wait_openbox_program, stderr=subprocess.STDOUT, env=env)
+      # Openbox will send a SIGUSR1 signal to the current process notifying the
+      # script it has started up.
+      current_proc_id = os.getpid()
 
+      # The CMD that is passed via the --startup flag.
+      openbox_startup_cmd = 'kill --signal SIGUSR1 %s' % str(current_proc_id)
+      # Setup the signal handlers before starting the openbox instance.
+      signal.signal(signal.SIGUSR1, signal.SIG_IGN)
+      signal.signal(signal.SIGUSR1, set_openbox_ready)
       openbox_proc = subprocess.Popen(
-          ['openbox', '--sm-disable'], stderr=subprocess.STDOUT, env=env)
+          ['openbox', '--sm-disable', '--startup',
+           openbox_startup_cmd], stderr=subprocess.STDOUT, env=env)
 
-      # Wait until execution is done. Does not block if the process has already
-      # been terminated. In that case, it's safe to read the return value.
-      if wait_for_openbox:
-        xwmstartupcheck_proc.wait()
-        if xwmstartupcheck_proc.returncode != 0:
-          raise _XvfbProcessError('Failed to get OpenBox up.')
+      for _ in range(10):
+        time.sleep(.1)  # gives Openbox time to start or fail.
+        if openbox_ready.getvalue() or openbox_proc.poll() is not None:
+          break  # openbox sent ready signal, or failed and stopped.
+
+      if openbox_proc.poll() is not None:
+        raise _XvfbProcessError('Failed to start OpenBox.')
 
     if use_xcompmgr:
       xcompmgr_proc = subprocess.Popen(

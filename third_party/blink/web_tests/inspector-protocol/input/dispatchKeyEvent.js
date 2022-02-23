@@ -80,5 +80,13 @@
   }));
 
   testRunner.log(await session.evaluate(`window.logs.join('\\n')`));
+
+  testRunner.log('Expect error for invalid text or unmodifiedText:')
+  dumpError(await dp.Input.dispatchKeyEvent({
+    type: 'char',
+    text: 'oops',
+    unmodifiedText: 'SNAP'
+  }));
+
   testRunner.completeTest();
 })

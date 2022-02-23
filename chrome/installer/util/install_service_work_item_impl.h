@@ -56,7 +56,9 @@ class InstallServiceWorkItemImpl {
 
   InstallServiceWorkItemImpl(const std::wstring& service_name,
                              const std::wstring& display_name,
+                             uint32_t start_type,
                              const base::CommandLine& service_cmd_line,
+                             const base::CommandLine& com_service_cmd_line_args,
                              const std::wstring& registry_path,
                              const std::vector<GUID>& clsids,
                              const std::vector<GUID>& iids);
@@ -181,8 +183,16 @@ class InstallServiceWorkItemImpl {
   // The service name displayed to the user.
   const std::wstring display_name_;
 
+  // The service start options. This parameter is typically SERVICE_AUTO_START
+  // or SERVICE_DEMAND_START.
+  const uint32_t start_type_;
+
   // The desired service command line.
   const base::CommandLine service_cmd_line_;
+
+  // The SCM will pass any switches specified in `com_service_cmd_line_args_` to
+  // ServiceMain() during COM activation.
+  const base::CommandLine com_service_cmd_line_args_;
 
   // The path under HKEY_LOCAL_MACHINE where the service persists information,
   // such as a versioned service name. For legacy reasons, this path is mapped

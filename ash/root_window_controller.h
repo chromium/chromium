@@ -249,9 +249,6 @@ class ASH_EXPORT RootWindowController {
 
   AccessibilityPanelLayoutManager* GetAccessibilityPanelLayoutManager() const;
 
-  // Initializes the shelf for this root window and notifies observers.
-  void InitializeShelf();
-
   // Creates the containers (aura::Windows) used by the shell.
   void CreateContainers();
 
@@ -294,10 +291,6 @@ class ASH_EXPORT RootWindowController {
   // of the RootWindowController so that it is safe for observers to be added
   // to it during construction of the shelf widget and status tray.
   std::unique_ptr<Shelf> shelf_;
-
-  // TODO(jamescook): Eliminate this. It is left over from legacy shelf code and
-  // doesn't mean anything in particular.
-  bool shelf_initialized_ = false;
 
   std::unique_ptr<SystemWallpaperController> system_wallpaper_;
 

@@ -8,10 +8,14 @@
 #include <utility>
 
 #include "base/hash/hash.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
+#include "base/strings/string_util.h"
 #include "base/strings/stringprintf.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/grit/generated_resources.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "components/search/ntp_features.h"
@@ -22,10 +26,12 @@
 #include "google_apis/gaia/gaia_constants.h"
 #include "net/base/load_flags.h"
 #include "services/network/public/cpp/resource_request.h"
+#include "ui/base/l10n/l10n_util.h"
 
 namespace {
 // Maximum accepted size of an API response. 1MB.
 constexpr int kMaxResponseSize = 1024 * 1024;
+const int kMaxPersonalizedMessageLength = 20;
 const char server_url[] =
     "https://photosfirstparty-pa.googleapis.com/v1/ntp/memories:read";
 constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
@@ -84,9 +90,17 @@ const char PhotosService::kOptInAcknowledgedPrefName[] =
     "NewTabPage.Photos.OptInAcknowledged";
 const char PhotosService::kLastMemoryOpenTimePrefName[] =
     "NewTabPage.Photos.LastMemoryOpenTime";
+const char PhotosService::kSoftOptOutCountPrefName[] =
+    "NewTabPage.Photos.SoftOptOutCount";
+const char PhotosService::kLastSoftOptedOutTimePrefName[] =
+    "NewTabPage.Photos.LastSoftOptedoutTime";
 
 // static
 const base::TimeDelta PhotosService::kDismissDuration = base::Days(1);
+const base::TimeDelta PhotosService::kSoftOptOutDuration = base::Days(2);
+const int PhotosService::kMaxSoftOptOuts = 1;
+const char kRecentHighlightsTitle[] = "recent highlights";
+const char kNYearsAgoSubstring[] = "years ago";
 
 PhotosService::PhotosService(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
@@ -107,6 +121,8 @@ void PhotosService::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterTimePref(kLastDismissedTimePrefName, base::Time());
   registry->RegisterBooleanPref(kOptInAcknowledgedPrefName, false);
   registry->RegisterTimePref(kLastMemoryOpenTimePrefName, base::Time());
+  registry->RegisterTimePref(kLastSoftOptedOutTimePrefName, base::Time());
+  registry->RegisterIntegerPref(kSoftOptOutCountPrefName, 0);
 }
 
 void PhotosService::OnPrimaryAccountChanged(
@@ -126,10 +142,12 @@ void PhotosService::GetMemories(GetMemoriesCallback callback) {
     return;
   }
 
-  // Bail if module is still dismissed.
-  if (!pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
-      base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
-          kDismissDuration) {
+  // Bail if module is still dismissed or user soft opted out.
+  if (IsModuleSoftOptedOut() ||
+      (!base::FeatureList::IsEnabled(ntp_features::kNtpModulesRedesigned) &&
+       !pref_service_->GetTime(kLastDismissedTimePrefName).is_null() &&
+       base::Time::Now() - pref_service_->GetTime(kLastDismissedTimePrefName) <
+           kDismissDuration)) {
     for (auto& callback : callbacks_) {
       std::move(callback).Run(std::vector<photos::mojom::MemoryPtr>());
     }
@@ -176,10 +194,38 @@ void PhotosService::DismissModule() {
 
 void PhotosService::RestoreModule() {
   pref_service_->SetTime(kLastDismissedTimePrefName, base::Time());
+  if (base::FeatureList::IsEnabled(ntp_features::kNtpPhotosModuleSoftOptOut)) {
+    pref_service_->SetTime(kLastSoftOptedOutTimePrefName, base::Time());
+    pref_service_->SetInteger(
+        kSoftOptOutCountPrefName,
+        pref_service_->GetInteger(kSoftOptOutCountPrefName) - 1);
+  }
+}
+
+bool PhotosService::IsModuleSoftOptedOut() {
+  return base::FeatureList::IsEnabled(
+             ntp_features::kNtpPhotosModuleSoftOptOut) &&
+         !pref_service_->GetTime(kLastSoftOptedOutTimePrefName).is_null() &&
+         base::Time::Now() -
+                 pref_service_->GetTime(kLastSoftOptedOutTimePrefName) <
+             kSoftOptOutDuration;
 }
 
 bool PhotosService::ShouldShowOptInScreen() {
   return !pref_service_->GetBoolean(kOptInAcknowledgedPrefName);
+}
+
+bool PhotosService::ShouldShowSoftOptOutButton() {
+  return base::FeatureList::IsEnabled(
+             ntp_features::kNtpPhotosModuleSoftOptOut) &&
+         pref_service_->GetInteger(kSoftOptOutCountPrefName) < kMaxSoftOptOuts;
+}
+
+void PhotosService::SoftOptOut() {
+  pref_service_->SetTime(kLastSoftOptedOutTimePrefName, base::Time::Now());
+  pref_service_->SetInteger(
+      kSoftOptOutCountPrefName,
+      pref_service_->GetInteger(kSoftOptOutCountPrefName) + 1);
 }
 
 void PhotosService::OnUserOptIn(bool accept) {
@@ -188,6 +234,81 @@ void PhotosService::OnUserOptIn(bool accept) {
 
 void PhotosService::OnMemoryOpen() {
   pref_service_->SetTime(kLastMemoryOpenTimePrefName, base::Time::Now());
+}
+
+std::string PhotosService::GetOptInTitleText(
+    std::vector<photos::mojom::MemoryPtr> memories) {
+  std::string customTitleChoiceString = base::GetFieldTrialParamValueByFeature(
+      ntp_features::kNtpPhotosModuleCustomizedOptInTitle,
+      ntp_features::kNtpPhotosModuleOptInTitleParam);
+  int customTitle = -1;
+
+  if (customTitleChoiceString != "") {
+    base::StringToInt(customTitleChoiceString, &customTitle);
+  }
+
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInRHTitle)) {
+    return l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_PHOTOS_MEMORIES_RH_WELCOME_TITLE);
+  }
+
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInFavoritesTitle)) {
+    return l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_PHOTOS_MEMORIES_FAVORITE_PEOPLE_WELCOME_TITLE);
+  }
+
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInpersonalizedTitle)) {
+    return ConstructPersonalizedString(std::move(memories));
+  }
+
+  if (customTitle == static_cast<int>(OptInCardTitle::kOptInTripsTitle)) {
+    return l10n_util::GetStringUTF8(
+        IDS_NTP_MODULES_PHOTOS_MEMORIES_TRIPS_WELCOME_TITLE);
+  }
+
+  return l10n_util::GetStringUTF8(
+      IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE);
+}
+
+std::string PhotosService::ConstructPersonalizedString(
+    std::vector<photos::mojom::MemoryPtr> memories) {
+  std::string personalizedTitle;
+  bool recentHighlightsPresent = false;
+  for (photos::mojom::MemoryPtr& memory : memories) {
+    // TODO(crbug/1297769): Fetch memory type from BE to filter RH and NYA
+    // memories. Ignore the recent highlights memory but mark
+    // recentHighlightsPresent to true.
+    if (base::EqualsCaseInsensitiveASCII(memory->title,
+                                         kRecentHighlightsTitle)) {
+      recentHighlightsPresent = true;
+      continue;
+    }
+
+    // Memory is a suitable candidate if the memory is not "N Years Ago" memory
+    // and its length is < 20.
+    // TODO(crbug/1297769): Fetch memory type from BE to filter RH and NYA
+    // memories.
+    if (!base::EndsWith(memory->title, kNYearsAgoSubstring,
+                        base::CompareCase::INSENSITIVE_ASCII) &&
+        memory->title.length() <= kMaxPersonalizedMessageLength) {
+      personalizedTitle = memory->title;
+      break;
+    }
+  }
+
+  // If no suitable memory is found return default title or title emphasizing
+  // recent highlights depending on the presence of Recent Highlights memory.
+  if (personalizedTitle.empty()) {
+    return recentHighlightsPresent
+               ? l10n_util::GetStringUTF8(
+                     IDS_NTP_MODULES_PHOTOS_MEMORIES_RH_WELCOME_TITLE)
+               : l10n_util::GetStringUTF8(
+                     IDS_NTP_MODULES_PHOTOS_MEMORIES_WELCOME_TITLE);
+  }
+
+  return l10n_util::GetStringFUTF8(
+      IDS_NTP_MODULES_PHOTOS_MEMORIES_PERSONALIZED_WELCOME_TITLE_TEMPLATE,
+      base::ASCIIToUTF16(personalizedTitle));
 }
 
 void PhotosService::OnTokenReceived(GoogleServiceAuthError error,
@@ -299,8 +420,9 @@ void PhotosService::OnJsonParsed(
   std::vector<photos::mojom::MemoryPtr> memory_list;
 
   base::UmaHistogramCustomCounts("NewTabPage.Photos.DataResponseCount",
-                                 memories->GetList().size(), 0, 10, 11);
-  for (const auto& memory : memories->GetList()) {
+                                 memories->GetListDeprecated().size(), 0, 10,
+                                 11);
+  for (const auto& memory : memories->GetListDeprecated()) {
     auto* title = memory.FindStringPath("title.header");
     auto* memory_id = memory.FindStringPath("memoryMediaKey");
     auto* cover_id = memory.FindStringPath("coverMediaKey");
@@ -323,6 +445,7 @@ void PhotosService::OnJsonParsed(
 
     memory_list.push_back(std::move(mojo_memory));
   }
+
   for (auto& callback : callbacks_) {
     std::move(callback).Run(mojo::Clone(memory_list));
   }

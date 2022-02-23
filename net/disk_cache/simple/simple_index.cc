@@ -19,6 +19,7 @@
 #include "base/task/task_runner.h"
 #include "base/time/time.h"
 #include "base/trace_event/memory_usage_estimator.h"
+#include "build/build_config.h"
 #include "net/base/net_errors.h"
 #include "net/disk_cache/backend_cleanup_tracker.h"
 #include "net/disk_cache/simple/simple_entry_format.h"
@@ -28,7 +29,7 @@
 #include "net/disk_cache/simple/simple_synchronous_entry.h"
 #include "net/disk_cache/simple/simple_util.h"
 
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #include <sys/stat.h>
 #include <sys/time.h>
 #endif
@@ -202,7 +203,7 @@ SimpleIndex::~SimpleIndex() {
 void SimpleIndex::Initialize(base::Time cache_mtime) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   if (app_status_listener_) {
     app_status_listener_->SetCallback(base::BindRepeating(
         &SimpleIndex::OnApplicationStateChange, AsWeakPtr()));
@@ -594,7 +595,7 @@ void SimpleIndex::MergeInitializingSet(
   to_run_when_initialized_.clear();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void SimpleIndex::OnApplicationStateChange(
     base::android::ApplicationState state) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

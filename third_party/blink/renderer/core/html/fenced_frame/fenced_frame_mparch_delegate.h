@@ -26,6 +26,7 @@ class CORE_EXPORT FencedFrameMPArchDelegate
 
   void DidGetInserted() override;
   void Navigate(const KURL&) override;
+  void DidGetRemoved() override;
 
  private:
   mojo::AssociatedRemote<mojom::blink::FencedFrameOwnerHost> remote_;

@@ -152,13 +152,13 @@ Status ChromeImpl::NewWindow(const std::string& target_id,
   params.SetStringKey("url", "about:blank");
   params.SetBoolKey("newWindow", type == WindowType::kWindow);
   params.SetBoolKey("background", true);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   status = devtools_websocket_client_->SendCommandAndGetResult(
       "Target.createTarget", params, &result);
   if (status.IsError())
     return status;
 
-  const std::string* target_id_str = result->FindStringKey("targetId");
+  const std::string* target_id_str = result.FindStringKey("targetId");
   if (!target_id_str)
     return Status(kUnknownError, "no targetId from createTarget");
   *window_handle = *target_id_str;
@@ -173,13 +173,13 @@ Status ChromeImpl::GetWindow(const std::string& target_id, Window* window) {
 
   base::DictionaryValue params;
   params.SetStringKey("targetId", target_id);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   status = devtools_websocket_client_->SendCommandAndGetResult(
       "Browser.getWindowForTarget", params, &result);
   if (status.IsError())
     return status;
 
-  return ParseWindow(std::move(result), window);
+  return ParseWindow(result, window);
 }
 
 Status ChromeImpl::GetWindowRect(const std::string& target_id,
@@ -272,13 +272,13 @@ Status ChromeImpl::GetWindowBounds(int window_id, Window* window) {
 
   base::DictionaryValue params;
   params.SetIntKey("windowId", window_id);
-  std::unique_ptr<base::DictionaryValue> result;
+  base::Value result;
   status = devtools_websocket_client_->SendCommandAndGetResult(
       "Browser.getWindowBounds", params, &result);
   if (status.IsError())
     return status;
 
-  return ParseWindowBounds(std::move(result), window);
+  return ParseWindowBounds(result, window);
 }
 
 Status ChromeImpl::SetWindowBounds(
@@ -426,9 +426,8 @@ Status ChromeImpl::SetWindowBounds(
   return MakeFailedStatus(*desired_state, window->state);
 }
 
-Status ChromeImpl::ParseWindow(std::unique_ptr<base::DictionaryValue> params,
-                               Window* window) {
-  absl::optional<int> id = params->FindIntKey("windowId");
+Status ChromeImpl::ParseWindow(const base::Value& params, Window* window) {
+  absl::optional<int> id = params.FindIntKey("windowId");
   if (!id)
     return Status(kUnknownError, "no window id in response");
   window->id = *id;
@@ -436,10 +435,9 @@ Status ChromeImpl::ParseWindow(std::unique_ptr<base::DictionaryValue> params,
   return ParseWindowBounds(std::move(params), window);
 }
 
-Status ChromeImpl::ParseWindowBounds(
-    std::unique_ptr<base::DictionaryValue> params,
-    Window* window) {
-  const base::Value* value = params->FindKey("bounds");
+Status ChromeImpl::ParseWindowBounds(const base::Value& params,
+                                     Window* window) {
+  const base::Value* value = params.FindKey("bounds");
   if (!value || !value->is_dict())
     return Status(kUnknownError, "no window bounds in response");
 

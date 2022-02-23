@@ -38,13 +38,13 @@
 #include "net/filter/filter_source_stream.h"
 #include "net/http/bidirectional_stream_impl.h"
 #include "net/http/http_auth.h"
+#include "net/http/http_auth_controller.h"
 #include "net/http/http_auth_handler.h"
 #include "net/http/http_auth_handler_factory.h"
 #include "net/http/http_basic_stream.h"
 #include "net/http/http_chunked_decoder.h"
 #include "net/http/http_log_util.h"
 #include "net/http/http_network_session.h"
-#include "net/http/http_proxy_client_socket.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_request_info.h"
 #include "net/http/http_response_headers.h"
@@ -187,8 +187,6 @@ int HttpNetworkTransaction::Start(const HttpRequestInfo* request_info,
   request_reporting_upload_depth_ = request_->reporting_upload_depth;
   start_timeticks_ = base::TimeTicks::Now();
 #endif  // BUILDFLAG(ENABLE_REPORTING)
-
-  session_->GetSSLConfig(&server_ssl_config_, &proxy_ssl_config_);
 
   if (request_->load_flags & LOAD_DISABLE_CERT_NETWORK_FETCHES) {
     server_ssl_config_.disable_cert_verification_network_fetches = true;
@@ -1094,19 +1092,11 @@ int HttpNetworkTransaction::DoReadHeaders() {
 }
 
 int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
-  // We can get a certificate error or ERR_SSL_CLIENT_AUTH_CERT_NEEDED here
-  // due to SSL renegotiation.
-  if (IsCertificateError(result)) {
-    // We don't handle a certificate error during SSL renegotiation, so we
-    // have to return an error that's not in the certificate error range
-    // (-2xx).
-    //
-    // TODO(davidben): Remove this error. This is impossible now that server
-    // certificates are forbidden from changing in renegotiation.
-    LOG(ERROR) << "Got a server certificate with error " << result
-               << " during SSL renegotiation";
-    result = ERR_CERT_ERROR_IN_SSL_RENEGOTIATION;
-  } else if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
+  // We can get a ERR_SSL_CLIENT_AUTH_CERT_NEEDED here due to SSL renegotiation.
+  // Server certificate errors are impossible. Rather than reverify the new
+  // server certificate, BoringSSL forbids server certificates from changing.
+  DCHECK(!IsCertificateError(result));
+  if (result == ERR_SSL_CLIENT_AUTH_CERT_NEEDED) {
     DCHECK(stream_.get());
     DCHECK(IsSecureRequest());
     response_.cert_request_info = base::MakeRefCounted<SSLCertRequestInfo>();

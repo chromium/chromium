@@ -13,7 +13,8 @@
 #include "third_party/blink/renderer/core/loader/document_loader.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/testing/dummy_page_holder.h"
-#include "third_party/blink/renderer/platform/heap/heap.h"
+#include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+#include "third_party/blink/renderer/platform/heap/thread_state.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
 namespace blink {
@@ -108,7 +109,7 @@ TEST_F(CSSLazyParsingTest, ShouldConsiderForMatchingRulesSimple) {
 // document from the StyleSheetContents without changing the UseCounter. This
 // test ensures that the new UseCounter is used when doing new parsing work.
 TEST_F(CSSLazyParsingTest, ChangeDocuments) {
-  auto dummy_holder = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_holder = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Page::InsertOrdinaryPageForTesting(&dummy_holder->GetPage());
 
   auto* context = MakeGarbageCollected<CSSParserContext>(
@@ -147,7 +148,7 @@ TEST_F(CSSLazyParsingTest, ChangeDocuments) {
   // Ensure no stack references to oilpan objects.
   ThreadState::Current()->CollectAllGarbageForTesting();
 
-  auto dummy_holder2 = std::make_unique<DummyPageHolder>(IntSize(500, 500));
+  auto dummy_holder2 = std::make_unique<DummyPageHolder>(gfx::Size(500, 500));
   Page::InsertOrdinaryPageForTesting(&dummy_holder2->GetPage());
   auto* sheet2 = MakeGarbageCollected<CSSStyleSheet>(
       cached_contents_, dummy_holder2->GetDocument());

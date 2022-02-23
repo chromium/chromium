@@ -10,7 +10,8 @@ namespace ash {
 namespace network_diagnostics {
 
 NetworkDiagnosticsRoutine::NetworkDiagnosticsRoutine() {
-  result_.verdict = mojom::RoutineVerdict::kNotRun;
+  result_.verdict =
+      chromeos::network_diagnostics::mojom::RoutineVerdict::kNotRun;
 }
 
 NetworkDiagnosticsRoutine::~NetworkDiagnosticsRoutine() = default;

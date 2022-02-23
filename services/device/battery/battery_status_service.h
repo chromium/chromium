@@ -8,7 +8,6 @@
 #include <memory>
 
 #include "base/callback_list.h"
-#include "base/macros.h"
 #include "services/device/public/mojom/battery_status.mojom.h"
 
 namespace base {

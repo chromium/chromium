@@ -96,6 +96,10 @@ class DownloadDatabase {
   // table.
   bool MigrateDownloadSiteInstanceUrl();
 
+  // Returns true if able to add the embedder_download_data column to the
+  // download table.
+  bool MigrateEmbedderDownloadData();
+
   // Returns true if able to add last_access_time column to the download table.
   bool MigrateDownloadLastAccessTime();
 

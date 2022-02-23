@@ -30,7 +30,6 @@
 #include "components/visitedlink/renderer/visitedlink_reader.h"
 #include "content/public/child/child_thread.h"
 #include "content/public/common/url_constants.h"
-#include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "content/public/renderer/render_view.h"
@@ -175,6 +174,8 @@ void AwContentRendererClient::PrepareErrorPage(
     content::RenderFrame* render_frame,
     const blink::WebURLError& error,
     const std::string& http_method,
+    content::mojom::AlternativeErrorPageOverrideInfoPtr
+        alternative_error_page_info,
     std::string* error_html) {
   AwSafeBrowsingErrorPageControllerDelegateImpl::Get(render_frame)
       ->PrepareForErrorPage();
@@ -198,9 +199,11 @@ void AwContentRendererClient::RunScriptsAtDocumentStart(
   communication->RunScriptsAtDocumentStart();
 }
 
-void AwContentRendererClient::AddSupportedKeySystems(
-    std::vector<std::unique_ptr<::media::KeySystemProperties>>* key_systems) {
-  AwAddKeySystems(key_systems);
+void AwContentRendererClient::GetSupportedKeySystems(
+    media::GetSupportedKeySystemsCB cb) {
+  media::KeySystemPropertiesVector key_systems;
+  AwAddKeySystems(&key_systems);
+  std::move(cb).Run(std::move(key_systems));
 }
 
 std::unique_ptr<blink::WebSocketHandshakeThrottleProvider>

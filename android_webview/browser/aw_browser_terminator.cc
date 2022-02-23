@@ -44,8 +44,10 @@ enum class RenderProcessGoneResult {
   kJavaException = 0,
   kCrashNotHandled = 1,
   kKillNotHandled = 2,
-  kAllWebViewsHandled = 3,
-  kMaxValue = kAllWebViewsHandled,
+  // kAllWebViewsHandled = 3, // Deprecated: use kCrashHandled/kKillHandled
+  kCrashHandled = 4,
+  kKillHandled = 5,
+  kMaxValue = kKillHandled,
 };
 
 void GetJavaWebContentsForRenderProcess(
@@ -121,8 +123,13 @@ void OnRenderProcessGone(
     }
   }
   // If we reached this point, it means the crash was handled for all WebViews.
-  base::UmaHistogramEnumeration(kRenderProcessGoneHistogramName,
-                                RenderProcessGoneResult::kAllWebViewsHandled);
+  if (crashed) {
+    base::UmaHistogramEnumeration(kRenderProcessGoneHistogramName,
+                                  RenderProcessGoneResult::kCrashHandled);
+  } else {
+    base::UmaHistogramEnumeration(kRenderProcessGoneHistogramName,
+                                  RenderProcessGoneResult::kKillHandled);
+  }
 
   // By this point we have moved the minidump to the crash directory, so it can
   // now be copied and uploaded.

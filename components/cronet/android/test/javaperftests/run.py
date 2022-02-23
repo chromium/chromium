@@ -47,7 +47,7 @@ import shutil
 import sys
 import tempfile
 import time
-import urllib
+import six.moves.urllib_parse # pylint: disable=import-error
 
 REPOSITORY_ROOT = os.path.abspath(os.path.join(
     os.path.dirname(__file__), '..', '..', '..', '..', '..'))
@@ -67,7 +67,7 @@ import lighttpd_server
 from pylib import constants
 from telemetry import android
 from telemetry import benchmark
-from telemetry import story
+from telemetry import story as story_module
 from telemetry.web_perf import timeline_based_measurement
 # pylint: enable=wrong-import-position
 
@@ -87,7 +87,7 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
     self._device = device
     config = perf_test_utils.GetConfig(device)
     device.RemovePath(config['DONE_FILE'], force=True)
-    self.url ='http://dummy/?'+urllib.urlencode(config)
+    self.url ='http://dummy/?' + six.moves.urllib_parse.urlencode(config)
     start_intent = intent.Intent(
         package=perf_test_utils.APP_PACKAGE,
         activity=perf_test_utils.APP_ACTIVITY,
@@ -111,7 +111,7 @@ class CronetPerfTestAndroidStory(android.AndroidStory):
       time.sleep(1.0)
 
 
-class CronetPerfTestStorySet(story.StorySet):
+class CronetPerfTestStorySet(story_module.StorySet):
 
   def __init__(self, device):
     super(CronetPerfTestStorySet, self).__init__()
@@ -150,7 +150,7 @@ class CronetPerfTestMeasurement(
 class CronetPerfTestBenchmark(benchmark.Benchmark):
   # Benchmark implementation spawning off Cronet perf test measurement and
   # StorySet.
-  SUPPORTED_PLATFORMS = [story.expectations.ALL_ANDROID]
+  SUPPORTED_PLATFORMS = [story_module.expectations.ALL_ANDROID]
 
   def __init__(self, max_failures=None):
     super(CronetPerfTestBenchmark, self).__init__(max_failures)

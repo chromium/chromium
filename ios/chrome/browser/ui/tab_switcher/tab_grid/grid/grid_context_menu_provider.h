@@ -7,14 +7,17 @@
 
 #import <UIKit/UIKit.h>
 
+#import "ios/chrome/browser/ui/menu/menu_histograms.h"
+
 @class GridCell;
 
 // Protocol for instances that will provide menus to the Grid view.
 @protocol GridContextMenuProvider
 
 // Returns a context menu configuration instance for the given |gridCell|.
-- (UIContextMenuConfiguration*)contextMenuConfigurationForGridCell:
-    (GridCell*)gridCell;
+- (UIContextMenuConfiguration*)
+    contextMenuConfigurationForGridCell:(GridCell*)gridCell
+                           menuScenario:(MenuScenario)scenario;
 
 @end
 

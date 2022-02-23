@@ -349,7 +349,7 @@ bool GURL::SchemeIs(base::StringPiece lower_ascii_scheme) const {
   DCHECK(base::IsStringASCII(lower_ascii_scheme));
   DCHECK(base::ToLowerASCII(lower_ascii_scheme) == lower_ascii_scheme);
 
-  if (parsed_.scheme.len <= 0)
+  if (!has_scheme())
     return lower_ascii_scheme.empty();
   return scheme_piece() == lower_ascii_scheme;
 }
@@ -363,7 +363,7 @@ bool GURL::SchemeIsWSOrWSS() const {
 }
 
 bool GURL::SchemeIsCryptographic() const {
-  if (parsed_.scheme.len <= 0)
+  if (!has_scheme())
     return false;
   return SchemeIsCryptographic(scheme_piece());
 }
@@ -374,6 +374,13 @@ bool GURL::SchemeIsCryptographic(base::StringPiece lower_ascii_scheme) {
 
   return lower_ascii_scheme == url::kHttpsScheme ||
          lower_ascii_scheme == url::kWssScheme;
+}
+
+bool GURL::SchemeIsLocal() const {
+  // The `filesystem:` scheme is not in the Fetch spec, but Chromium still
+  // supports it in large part. It should be treated as a local scheme too.
+  return SchemeIs(url::kAboutScheme) || SchemeIs(url::kBlobScheme) ||
+         SchemeIs(url::kDataScheme) || SchemeIs(url::kFileSystemScheme);
 }
 
 int GURL::IntPort() const {
@@ -546,3 +553,15 @@ bool operator!=(const GURL& x, const base::StringPiece& spec) {
 bool operator!=(const base::StringPiece& spec, const GURL& x) {
   return !(x == spec);
 }
+
+namespace url::debug {
+
+ScopedUrlCrashKey::ScopedUrlCrashKey(base::debug::CrashKeyString* crash_key,
+                                     const GURL& url)
+    : scoped_string_value_(
+          crash_key,
+          url.is_empty() ? "<empty url>" : url.possibly_invalid_spec()) {}
+
+ScopedUrlCrashKey::~ScopedUrlCrashKey() = default;
+
+}  // namespace url::debug

@@ -35,7 +35,7 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         return media::stable::mojom::ColorSpacePrimaryID::kSMPTEST428_1;
       case gfx::ColorSpace::PrimaryID::SMPTEST431_2:
         return media::stable::mojom::ColorSpacePrimaryID::kSMPTEST431_2;
-      case gfx::ColorSpace::PrimaryID::SMPTEST432_1:
+      case gfx::ColorSpace::PrimaryID::P3:
         return media::stable::mojom::ColorSpacePrimaryID::kSMPTEST432_1;
       case gfx::ColorSpace::PrimaryID::XYZ_D50:
         return media::stable::mojom::ColorSpacePrimaryID::kXYZ_D50;
@@ -89,7 +89,7 @@ struct EnumTraits<media::stable::mojom::ColorSpacePrimaryID,
         *output = gfx::ColorSpace::PrimaryID::SMPTEST431_2;
         return true;
       case media::stable::mojom::ColorSpacePrimaryID::kSMPTEST432_1:
-        *output = gfx::ColorSpace::PrimaryID::SMPTEST432_1;
+        *output = gfx::ColorSpace::PrimaryID::P3;
         return true;
       case media::stable::mojom::ColorSpacePrimaryID::kXYZ_D50:
         *output = gfx::ColorSpace::PrimaryID::XYZ_D50;
@@ -147,19 +147,19 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         return media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_4;
       case gfx::ColorSpace::TransferID::BT1361_ECG:
         return media::stable::mojom::ColorSpaceTransferID::kBT1361_ECG;
-      case gfx::ColorSpace::TransferID::IEC61966_2_1:
+      case gfx::ColorSpace::TransferID::SRGB:
         return media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1;
       case gfx::ColorSpace::TransferID::BT2020_10:
         return media::stable::mojom::ColorSpaceTransferID::kBT2020_10;
       case gfx::ColorSpace::TransferID::BT2020_12:
         return media::stable::mojom::ColorSpaceTransferID::kBT2020_12;
-      case gfx::ColorSpace::TransferID::SMPTEST2084:
+      case gfx::ColorSpace::TransferID::PQ:
         return media::stable::mojom::ColorSpaceTransferID::kSMPTEST2084;
       case gfx::ColorSpace::TransferID::SMPTEST428_1:
         return media::stable::mojom::ColorSpaceTransferID::kSMPTEST428_1;
-      case gfx::ColorSpace::TransferID::ARIB_STD_B67:
+      case gfx::ColorSpace::TransferID::HLG:
         return media::stable::mojom::ColorSpaceTransferID::kARIB_STD_B67;
-      case gfx::ColorSpace::TransferID::IEC61966_2_1_HDR:
+      case gfx::ColorSpace::TransferID::SRGB_HDR:
         return media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1_HDR;
       case gfx::ColorSpace::TransferID::LINEAR_HDR:
         return media::stable::mojom::ColorSpaceTransferID::kLinearHDR;
@@ -223,7 +223,7 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         *output = gfx::ColorSpace::TransferID::BT1361_ECG;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1:
-        *output = gfx::ColorSpace::TransferID::IEC61966_2_1;
+        *output = gfx::ColorSpace::TransferID::SRGB;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kBT2020_10:
         *output = gfx::ColorSpace::TransferID::BT2020_10;
@@ -232,16 +232,16 @@ struct EnumTraits<media::stable::mojom::ColorSpaceTransferID,
         *output = gfx::ColorSpace::TransferID::BT2020_12;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kSMPTEST2084:
-        *output = gfx::ColorSpace::TransferID::SMPTEST2084;
+        *output = gfx::ColorSpace::TransferID::PQ;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kSMPTEST428_1:
         *output = gfx::ColorSpace::TransferID::SMPTEST428_1;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kARIB_STD_B67:
-        *output = gfx::ColorSpace::TransferID::ARIB_STD_B67;
+        *output = gfx::ColorSpace::TransferID::HLG;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kIEC61966_2_1_HDR:
-        *output = gfx::ColorSpace::TransferID::IEC61966_2_1_HDR;
+        *output = gfx::ColorSpace::TransferID::SRGB_HDR;
         return true;
       case media::stable::mojom::ColorSpaceTransferID::kLinearHDR:
         *output = gfx::ColorSpace::TransferID::LINEAR_HDR;
@@ -512,15 +512,108 @@ struct StructTraits<media::stable::mojom::HDRMetadataDataView,
 };
 
 template <>
-struct StructTraits<media::stable::mojom::NativePixmapHandleDataView,
-                    gfx::NativePixmapHandle> {
-  static std::vector<gfx::NativePixmapPlane>& planes(
-      gfx::NativePixmapHandle& pixmap_handle);
+struct EnumTraits<media::stable::mojom::MediaLogRecord_Type,
+                  media::MediaLogRecord::Type> {
+  static media::stable::mojom::MediaLogRecord_Type ToMojom(
+      media::MediaLogRecord::Type input) {
+    switch (input) {
+      case media::MediaLogRecord::Type::kMessage:
+        return media::stable::mojom::MediaLogRecord_Type::kMessage;
+      case media::MediaLogRecord::Type::kMediaPropertyChange:
+        return media::stable::mojom::MediaLogRecord_Type::kMediaPropertyChange;
+      case media::MediaLogRecord::Type::kMediaEventTriggered:
+        return media::stable::mojom::MediaLogRecord_Type::kMediaEventTriggered;
+      case media::MediaLogRecord::Type::kMediaStatus:
+        return media::stable::mojom::MediaLogRecord_Type::kMediaStatus;
+    }
 
-  static uint64_t modifier(const gfx::NativePixmapHandle& pixmap_handle);
+    NOTREACHED();
+    return media::stable::mojom::MediaLogRecord_Type::kMessage;
+  }
 
-  static bool Read(media::stable::mojom::NativePixmapHandleDataView data,
-                   gfx::NativePixmapHandle* out);
+  // Returning false results in deserialization failure and causes the
+  // message pipe receiving it to be disconnected.
+  static bool FromMojom(media::stable::mojom::MediaLogRecord_Type input,
+                        media::MediaLogRecord::Type* output) {
+    switch (input) {
+      case media::stable::mojom::MediaLogRecord_Type::kMessage:
+        *output = media::MediaLogRecord::Type::kMessage;
+        return true;
+      case media::stable::mojom::MediaLogRecord_Type::kMediaPropertyChange:
+        *output = media::MediaLogRecord::Type::kMediaPropertyChange;
+        return true;
+      case media::stable::mojom::MediaLogRecord_Type::kMediaEventTriggered:
+        *output = media::MediaLogRecord::Type::kMediaEventTriggered;
+        return true;
+      case media::stable::mojom::MediaLogRecord_Type::kMediaStatus:
+        *output = media::MediaLogRecord::Type::kMediaStatus;
+        return true;
+    }
+
+    NOTREACHED();
+    return false;
+  }
+};
+
+template <>
+struct StructTraits<media::stable::mojom::MediaLogRecordDataView,
+                    media::MediaLogRecord> {
+  static int32_t id(const media::MediaLogRecord& input);
+
+  static media::MediaLogRecord::Type type(const media::MediaLogRecord& input);
+
+  static const base::Value& params(const media::MediaLogRecord& input);
+
+  static base::TimeTicks time(const media::MediaLogRecord& input);
+
+  static bool Read(media::stable::mojom::MediaLogRecordDataView input,
+                   media::MediaLogRecord* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::NativeGpuMemoryBufferHandleDataView,
+                    gfx::GpuMemoryBufferHandle> {
+  static const gfx::GpuMemoryBufferId& id(
+      const gfx::GpuMemoryBufferHandle& input);
+
+  static gfx::NativePixmapHandle platform_handle(
+      gfx::GpuMemoryBufferHandle& input);
+
+  static bool Read(
+      media::stable::mojom::NativeGpuMemoryBufferHandleDataView data,
+      gfx::GpuMemoryBufferHandle* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::StatusDataDataView,
+                    media::internal::StatusData> {
+  static media::stable::mojom::StatusCode code(
+      const media::internal::StatusData& input);
+
+  static std::string group(const media::internal::StatusData& input);
+
+  static std::string message(const media::internal::StatusData& input);
+
+  static base::span<const base::Value> frames(
+      const media::internal::StatusData& input);
+
+  static absl::optional<media::internal::StatusData> cause(
+      const media::internal::StatusData& input);
+
+  static base::Value data(const media::internal::StatusData& input);
+
+  static bool Read(media::stable::mojom::StatusDataDataView data,
+                   media::internal::StatusData* output);
+};
+
+template <>
+struct StructTraits<media::stable::mojom::StatusDataView,
+                    media::DecoderStatus> {
+  static absl::optional<media::internal::StatusData> internal(
+      const media::DecoderStatus& input);
+
+  static bool Read(media::stable::mojom::StatusDataView data,
+                   media::DecoderStatus* output);
 };
 
 template <>
@@ -901,6 +994,48 @@ struct EnumTraits<media::stable::mojom::VideoDecoderType,
     NOTREACHED();
     return false;
   }
+};
+
+template <>
+struct StructTraits<media::stable::mojom::VideoFrameDataView,
+                    scoped_refptr<media::VideoFrame>> {
+  static bool IsNull(const scoped_refptr<media::VideoFrame>& input) {
+    return !input;
+  }
+
+  static void SetToNull(scoped_refptr<media::VideoFrame>* input) {
+    *input = nullptr;
+  }
+
+  static media::VideoPixelFormat format(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const gfx::Size& coded_size(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const gfx::Rect& visible_rect(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const gfx::Size& natural_size(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static base::TimeDelta timestamp(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static gfx::ColorSpace color_space(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const absl::optional<gfx::HDRMetadata>& hdr_metadata(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static media::stable::mojom::VideoFrameDataPtr data(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static const media::VideoFrameMetadata& metadata(
+      const scoped_refptr<media::VideoFrame>& input);
+
+  static bool Read(media::stable::mojom::VideoFrameDataView input,
+                   scoped_refptr<media::VideoFrame>* output);
 };
 
 template <>

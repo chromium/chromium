@@ -6,6 +6,9 @@
 
 #include <stddef.h>
 
+#include "ash/components/arc/mojom/intent_helper.mojom.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
 #include "base/bind.h"
 #include "chrome/browser/ash/arc/fileapi/arc_select_files_util.h"
 #include "chrome/browser/ash/file_manager/file_tasks_notifier.h"
@@ -15,9 +18,6 @@
 #include "chrome/browser/ui/views/select_file_dialog_extension.h"
 #include "chrome/common/extensions/api/file_manager_private.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
-#include "components/arc/mojom/intent_helper.mojom.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
 #include "content/public/browser/browser_thread.h"
 #include "net/base/mime_util.h"
 #include "ui/shell_dialogs/selected_file_info.h"

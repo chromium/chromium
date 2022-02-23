@@ -28,7 +28,8 @@ class FakePictureLayerImpl : public PictureLayerImpl {
         new FakePictureLayerImpl(tree_impl, id, raster_source));
   }
 
-  std::unique_ptr<LayerImpl> CreateLayerImpl(LayerTreeImpl* tree_impl) override;
+  std::unique_ptr<LayerImpl> CreateLayerImpl(
+      LayerTreeImpl* tree_impl) const override;
   void PushPropertiesTo(LayerImpl* layer_impl) override;
   void AppendQuads(viz::CompositorRenderPass* render_pass,
                    AppendQuadsData* append_quads_data) override;
@@ -74,6 +75,8 @@ class FakePictureLayerImpl : public PictureLayerImpl {
   PictureLayerTiling* HighResTiling() const;
   PictureLayerTiling* LowResTiling() const;
   size_t num_tilings() const { return tilings_->num_tilings(); }
+
+  size_t GetNumberOfTilesWithResources() const;
 
   PictureLayerTilingSet* tilings() { return tilings_.get(); }
   RasterSource* raster_source() { return raster_source_.get(); }

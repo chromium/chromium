@@ -58,20 +58,8 @@ ContentSuggestionsSectionInformation* MostVisitedSectionInformation() {
   return EmptySectionInfo(ContentSuggestionsSectionMostVisited);
 }
 
-ContentSuggestionsSectionInformation* DiscoverSectionInformation(
-    BOOL isGoogleDefaultSearchProvider) {
-  ContentSuggestionsSectionInformation* sectionInfo =
-      [[ContentSuggestionsSectionInformation alloc]
-          initWithSectionID:ContentSuggestionsSectionDiscover];
-  sectionInfo.footerTitle = nil;
-  sectionInfo.showIfEmpty = YES;
-  sectionInfo.layout = ContentSuggestionsSectionLayoutCustom;
-  sectionInfo.title =
-      isGoogleDefaultSearchProvider
-          ? l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE)
-          : l10n_util::GetNSString(IDS_IOS_DISCOVER_FEED_TITLE_NON_DSE);
-
-  return sectionInfo;
+ContentSuggestionsSectionInformation* SingleCellSectionInformation() {
+  return EmptySectionInfo(ContentSuggestionsSectionSingleCell);
 }
 
 ContentSuggestionsMostVisitedItem* ConvertNTPTile(
@@ -91,20 +79,6 @@ ContentSuggestionsMostVisitedItem* ConvertNTPTile(
   suggestion.suggestionIdentifier.sectionInfo = sectionInfo;
 
   return suggestion;
-}
-
-content_suggestions::StatusCode ConvertStatusCode(ntp_snippets::Status status) {
-  switch (status.code) {
-    case ntp_snippets::StatusCode::SUCCESS:
-      return content_suggestions::StatusCodeSuccess;
-    case ntp_snippets::StatusCode::TEMPORARY_ERROR:
-      return content_suggestions::StatusCodeError;
-    case ntp_snippets::StatusCode::PERMANENT_ERROR:
-      return content_suggestions::StatusCodePermanentError;
-    case ntp_snippets::StatusCode::STATUS_CODE_COUNT:
-      NOTREACHED();
-      return content_suggestions::StatusCodeError;
-  }
 }
 
 ContentSuggestionsMostVisitedActionItem* BookmarkActionItem() {

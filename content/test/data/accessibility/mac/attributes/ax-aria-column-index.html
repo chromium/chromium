@@ -1,0 +1,21 @@
+<!--
+@SCRIPT:
+  tableCellAuto.accessibilityAttributeNames.has(AXARIAColumnIndex)
+  tableCellAuto.accessibilityAttributeValue(AXARIAColumnIndex)
+  tableCell.accessibilityAttributeNames.has(AXARIAColumnIndex)
+  tableCell.accessibilityAttributeValue(AXARIAColumnIndex)
+  div.accessibilityAttributeNames.has(AXARIAColumnIndex)
+  div.accessibilityAttributeValue(AXARIAColumnIndex)
+-->
+<!DOCTYPE html>
+<div role="table">
+  <div role="row">
+    <span id="tableCellAuto" role="cell">column 1</span>
+  </div>
+</div>
+<div role="table">
+  <div role="row">
+    <span id="tableCell" role="cell" aria-colindex="2">column 2</span>
+  </div>
+</div>
+<div id="div" aria-colindex="3" ></div>

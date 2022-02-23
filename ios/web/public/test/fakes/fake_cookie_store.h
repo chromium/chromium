@@ -23,14 +23,16 @@ class FakeCookieStore : public net::CookieStore {
   // Methods below have not been implemented in this fake. Implement them when
   // necessary.
 
-  void SetCanonicalCookieAsync(std::unique_ptr<net::CanonicalCookie> cookie,
-                               const GURL& source_url,
-                               const net::CookieOptions& options,
-                               SetCookiesCallback callback) override;
+  void SetCanonicalCookieAsync(
+      std::unique_ptr<net::CanonicalCookie> cookie,
+      const GURL& source_url,
+      const net::CookieOptions& options,
+      SetCookiesCallback callback,
+      const net::CookieAccessResult* cookie_access_result = nullptr) override;
   void GetCookieListWithOptionsAsync(
       const GURL& url,
       const net::CookieOptions& options,
-      const net::CookiePartitionKeychain& cookie_partition_keychain,
+      const net::CookiePartitionKeyCollection& cookie_partition_key_collection,
       GetCookieListCallback callback) override;
   void DeleteCanonicalCookieAsync(const net::CanonicalCookie& cookie,
                                   DeleteCallback callback) override;

@@ -4,7 +4,6 @@
 
 #include "components/download/public/common/url_download_handler_factory.h"
 
-#include "base/no_destructor.h"
 #include "base/synchronization/lock.h"
 #include "components/download/internal/common/resource_downloader.h"
 #include "components/download/public/common/download_item.h"
@@ -29,8 +28,8 @@ UrlDownloadHandlerFactory::Create(
   return UrlDownloadHandler::UniqueUrlDownloadHandlerPtr(
       download::ResourceDownloader::BeginDownload(
           delegate, std::move(params), std::move(request),
-          std::move(url_loader_factory), url_security_policy, GURL(), GURL(),
-          GURL(), true, true, std::move(wake_lock_provider),
+          std::move(url_loader_factory), url_security_policy, std::string(),
+          GURL(), GURL(), true, true, std::move(wake_lock_provider),
           false /* is_background_mode */, task_runner)
           .release(),
       base::OnTaskRunnerDeleter(base::ThreadTaskRunnerHandle::Get()));

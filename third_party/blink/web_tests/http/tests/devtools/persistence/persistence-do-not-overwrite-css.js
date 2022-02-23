@@ -26,7 +26,7 @@
           .then(onCSSContent);
 
       function onCSSContent({ content, error, isEncoded }) {
-        fs = new BindingsTestRunner.TestFileSystem('file:///var/www');
+        fs = new BindingsTestRunner.TestFileSystem('/var/www');
         BindingsTestRunner.addFiles(fs, {
           'simple.css': {content: content},
         });

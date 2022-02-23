@@ -34,8 +34,11 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
       const base::FilePath& video_metadata_path,
       ValidatorType validator_type,
       const DecoderImplementation implementation,
+      bool linear_output,
       const base::FilePath& output_folder = base::FilePath(),
-      const FrameOutputConfig& frame_output_config = FrameOutputConfig());
+      const FrameOutputConfig& frame_output_config = FrameOutputConfig(),
+      const std::vector<base::Feature>& enabled_features = {},
+      const std::vector<base::Feature>& disabled_features = {});
   ~VideoPlayerTestEnvironment() override;
 
   // Get the video the tests will be ran on.
@@ -46,6 +49,8 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
   ValidatorType GetValidatorType() const;
   // Return which implementation is used.
   DecoderImplementation GetDecoderImplementation() const;
+  // Returns whether the final output of the decoder should be linear buffers.
+  bool ShouldOutputLinearBuffers() const;
 
   // Get the frame output mode.
   FrameOutputMode GetFrameOutputMode() const;
@@ -63,15 +68,20 @@ class VideoPlayerTestEnvironment : public VideoTestEnvironment {
   gpu::GpuMemoryBufferFactory* GetGpuMemoryBufferFactory() const;
 
  private:
-  VideoPlayerTestEnvironment(std::unique_ptr<media::test::Video> video,
-                             ValidatorType validator_type,
-                             const DecoderImplementation implementation,
-                             const base::FilePath& output_folder,
-                             const FrameOutputConfig& frame_output_config);
+  VideoPlayerTestEnvironment(
+      std::unique_ptr<media::test::Video> video,
+      ValidatorType validator_type,
+      const DecoderImplementation implementation,
+      bool linear_output,
+      const base::FilePath& output_folder,
+      const FrameOutputConfig& frame_output_config,
+      const std::vector<base::Feature>& enabled_features,
+      const std::vector<base::Feature>& disabled_features);
 
   const std::unique_ptr<media::test::Video> video_;
   const ValidatorType validator_type_;
   const DecoderImplementation implementation_;
+  const bool linear_output_;
 
   const FrameOutputConfig frame_output_config_;
   const base::FilePath output_folder_;

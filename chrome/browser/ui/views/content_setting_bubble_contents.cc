@@ -8,6 +8,7 @@
 #include <utility>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
@@ -23,7 +24,6 @@
 #include "components/vector_icons/vector_icons.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
-#include "ui/base/cursor/cursor.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -51,7 +51,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/table_layout.h"
-#include "ui/views/native_cursor.h"
 
 namespace {
 
@@ -220,7 +219,7 @@ class ContentSettingBubbleContents::ListItemContainer : public views::View {
   Row AddNewRowToLayout(NewRow row);
   void UpdateScrollHeight(const Row& row);
 
-  ContentSettingBubbleContents* parent_;
+  raw_ptr<ContentSettingBubbleContents> parent_;
 
   // Our controls representing list items, so we can add or remove
   // these dynamically. Each pair represents one list item.
@@ -311,7 +310,7 @@ void ContentSettingBubbleContents::ListItemContainer::ResetLayout() {
       .AddPaddingColumn(views::TableLayout::kFixedSize,
                         ChromeLayoutProvider::Get()->GetDistanceMetric(
                             views::DISTANCE_RELATED_CONTROL_HORIZONTAL))
-      .AddColumn(views::LayoutAlignment::kStart,
+      .AddColumn(views::LayoutAlignment::kStretch,
                  views::LayoutAlignment::kStretch, 1.0,
                  views::TableLayout::ColumnSize::kUsePreferred, 0, 0);
   auto* scroll_view = views::ScrollView::GetScrollViewForContents(this);
@@ -659,15 +658,7 @@ void ContentSettingBubbleContents::CustomLinkClicked() {
   GetWidget()->Close();
 }
 
-void ContentSettingBubbleContents::DidFinishNavigation(
-    content::NavigationHandle* navigation_handle) {
-  // TODO(https://crbug.com/1218946): With MPArch there may be multiple main
-  // frames. This caller was converted automatically to the primary main frame
-  // to preserve its semantics. Follow up to confirm correctness.
-  if (!navigation_handle->IsInPrimaryMainFrame() ||
-      !navigation_handle->HasCommitted())
-    return;
-
+void ContentSettingBubbleContents::PrimaryPageChanged(content::Page& page) {
   // Content settings are based on the main frame, so if it switches then
   // close up shop.
   GetWidget()->Close();

@@ -13,7 +13,6 @@
 #include "base/synchronization/waitable_event.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
-#include "build/os_buildflags.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
 #include "gpu/command_buffer/client/raster_interface.h"
 #include "gpu/command_buffer/client/shared_image_interface.h"
@@ -106,6 +105,43 @@ class Context : public media::RenderableGpuMemoryBufferVideoFramePool::Context {
 
 }  // namespace
 
+WebRtcVideoFrameAdapter::VectorBufferPool::VectorBufferPool()
+    : tick_clock_(base::DefaultTickClock::GetInstance()) {}
+
+std::unique_ptr<std::vector<uint8_t>>
+WebRtcVideoFrameAdapter::VectorBufferPool::Allocate() {
+  base::AutoLock autolock(buffer_lock_);
+  if (!free_buffers_.empty()) {
+    auto buffer = std::move(free_buffers_.back().buffer);
+    free_buffers_.pop_back();
+    return buffer;
+  }
+
+  return std::make_unique<std::vector<uint8_t>>();
+}
+
+void WebRtcVideoFrameAdapter::VectorBufferPool::Return(
+    std::unique_ptr<std::vector<uint8_t>> buffer) {
+  base::AutoLock autolock(buffer_lock_);
+  const base::TimeTicks now = tick_clock_->NowTicks();
+  free_buffers_.push_back({now, std::move(buffer)});
+
+  // After this loop, |stale_index| is pointing to the first non-stale buffer.
+  // Such an index must exist because |buffer| is never stale.
+  constexpr base::TimeDelta kStaleBufferLimit = base::Seconds(10);
+  for (size_t stale_index = 0; stale_index < free_buffers_.size();
+       ++stale_index) {
+    if (now - free_buffers_[stale_index].last_use_time < kStaleBufferLimit) {
+      DCHECK_LT(stale_index, free_buffers_.size());
+      if (stale_index > 0) {
+        free_buffers_.erase(free_buffers_.begin(),
+                            free_buffers_.begin() + stale_index);
+      }
+      break;
+    }
+  }
+}
+
 scoped_refptr<media::VideoFrame>
 WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
     media::VideoPixelFormat format,
@@ -117,15 +153,14 @@ WebRtcVideoFrameAdapter::SharedResources::CreateFrame(
                            timestamp);
 }
 
-scoped_refptr<media::VideoFrame>
-WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryFrame(
-    media::VideoPixelFormat format,
-    const gfx::Size& coded_size,
-    const gfx::Rect& visible_rect,
-    const gfx::Size& natural_size,
-    base::TimeDelta timestamp) {
-  return pool_for_tmp_frames_.CreateFrame(format, coded_size, visible_rect,
-                                          natural_size, timestamp);
+std::unique_ptr<std::vector<uint8_t>>
+WebRtcVideoFrameAdapter::SharedResources::CreateTemporaryVectorBuffer() {
+  return pool_for_tmp_vectors_.Allocate();
+}
+
+void WebRtcVideoFrameAdapter::SharedResources::ReleaseTemporaryVectorBuffer(
+    std::unique_ptr<std::vector<uint8_t>> buffer) {
+  pool_for_tmp_vectors_.Return(std::move(buffer));
 }
 
 scoped_refptr<viz::RasterContextProvider>
@@ -169,10 +204,17 @@ const base::Feature kWebRTCGpuMemoryBufferReadback {
 #endif
 };
 
-bool CanUseGpuMemoryBufferReadback(media::VideoPixelFormat format) {
-  // GMB readback only works with NV12, so only opaque buffers can be used.
-  return (format == media::PIXEL_FORMAT_XBGR ||
-          format == media::PIXEL_FORMAT_XRGB) &&
+bool CanUseGpuMemoryBufferReadback(
+    media::VideoPixelFormat format,
+    media::GpuVideoAcceleratorFactories* gpu_factories) {
+  // Since ConvertToWebRtcVideoFrameBuffer will always produce an opaque frame
+  // (unless the input is already I420A), we allow using GMB readback from
+  // ABGR/ARGB to NV12.
+  return gpu_factories &&
+         (format == media::PIXEL_FORMAT_XBGR ||
+          format == media::PIXEL_FORMAT_XRGB ||
+          format == media::PIXEL_FORMAT_ABGR ||
+          format == media::PIXEL_FORMAT_ARGB) &&
          base::FeatureList::IsEnabled(kWebRTCGpuMemoryBufferReadback);
 }
 
@@ -189,7 +231,7 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
   viz::RasterContextProvider::ScopedRasterContextLock scoped_context(
       raster_context_provider.get());
 
-  if (CanUseGpuMemoryBufferReadback(source_frame->format())) {
+  if (CanUseGpuMemoryBufferReadback(source_frame->format(), gpu_factories_)) {
     if (!accelerated_frame_pool_) {
       accelerated_frame_pool_ =
           media::RenderableGpuMemoryBufferVideoFramePool::Create(
@@ -205,7 +247,8 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     // Expose the color space and pixel format that is backing
     // `image->GetMailboxHolder()`, or, alternatively, expose an accelerated
     // SkImage.
-    auto format = source_frame->format() == media::PIXEL_FORMAT_XBGR
+    auto format = (source_frame->format() == media::PIXEL_FORMAT_XBGR ||
+                   source_frame->format() == media::PIXEL_FORMAT_ABGR)
                       ? viz::ResourceFormat::RGBA_8888
                       : viz::ResourceFormat::BGRA_8888;
 
@@ -228,6 +271,22 @@ WebRtcVideoFrameAdapter::SharedResources::ConstructVideoFrameFromTexture(
     if (!copy_succeeded) {
       return nullptr;
     }
+
+    // CopyRGBATextureToVideoFrame() operates on mailboxes and not frames, so we
+    // must manually copy over properties relevant to the encoder.
+    // TODO(https://crbug.com/1272852): Consider bailing out of this path if
+    // visible_rect or natural_size is much smaller than coded_size, or copying
+    // only the necessary part.
+    if (dst_frame->visible_rect() != source_frame->visible_rect() ||
+        dst_frame->natural_size() != source_frame->natural_size()) {
+      const auto format = dst_frame->format();
+      dst_frame = media::VideoFrame::WrapVideoFrame(
+          std::move(dst_frame), format, source_frame->visible_rect(),
+          source_frame->natural_size());
+      DCHECK(dst_frame);
+    }
+    dst_frame->set_timestamp(source_frame->timestamp());
+    dst_frame->set_metadata(source_frame->metadata());
 
     // TODO(crbug.com/1224279): We should remove this wait by internalizing
     // it into VideoFrame::Map().
@@ -348,9 +407,11 @@ WebRtcVideoFrameAdapter::ScaledBuffer::CropAndScale(int offset_x,
                                                     int crop_height,
                                                     int scaled_width,
                                                     int scaled_height) {
-  return new rtc::RefCountedObject<ScaledBuffer>(
-      parent_, size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
-                                  scaled_width, scaled_height));
+  return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+      new rtc::RefCountedObject<ScaledBuffer>(
+          parent_,
+          size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
+                             scaled_width, scaled_height)));
 }
 
 WebRtcVideoFrameAdapter::WebRtcVideoFrameAdapter(
@@ -429,9 +490,11 @@ WebRtcVideoFrameAdapter::CropAndScale(int offset_x,
                                       int crop_height,
                                       int scaled_width,
                                       int scaled_height) {
-  return new rtc::RefCountedObject<ScaledBuffer>(
-      this, full_size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
-                                    scaled_width, scaled_height));
+  return rtc::scoped_refptr<webrtc::VideoFrameBuffer>(
+      new rtc::RefCountedObject<ScaledBuffer>(
+          this,
+          full_size_.CropAndScale(offset_x, offset_y, crop_width, crop_height,
+                                  scaled_width, scaled_height)));
 }
 
 rtc::scoped_refptr<webrtc::VideoFrameBuffer>

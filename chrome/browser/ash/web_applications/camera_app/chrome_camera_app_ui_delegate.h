@@ -49,6 +49,8 @@ class ChromeCameraAppUIDelegate : public ash::CameraAppUIDelegate {
     // SystemWebDialogDelegate
     ui::ModalType GetDialogModalType() const override;
     bool CanMaximizeDialog() const override;
+    ui::WebDialogDelegate::FrameKind GetWebDialogFrameKind() const override;
+    void AdjustWidgetInitParams(views::Widget::InitParams* params) override;
 
     // ui::WebDialogDelegate
     void GetDialogSize(gfx::Size* size) const override;

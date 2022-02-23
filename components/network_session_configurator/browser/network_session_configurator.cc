@@ -27,15 +27,15 @@
 #include "net/base/host_mapping_rules.h"
 #include "net/http/http_network_session.h"
 #include "net/http/http_stream_factory.h"
-#include "net/quic/platform/impl/quic_flags_impl.h"
 #include "net/quic/quic_context.h"
 #include "net/spdy/spdy_session.h"
 #include "net/spdy/spdy_session_pool.h"
+#include "net/third_party/quiche/overrides/quiche_platform_impl/quic_flags_impl.h"
 #include "net/third_party/quiche/src/quic/core/quic_packets.h"
 #include "net/third_party/quiche/src/quic/core/quic_tag.h"
 #include "net/third_party/quiche/src/spdy/core/spdy_protocol.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "base/mac/mac_util.h"
 #endif
 
@@ -121,13 +121,15 @@ void ConfigureHttp2Params(const base::CommandLine& command_line,
     return;
   }
 
-  // After parsing initial settings, optionally add a setting with reserved
-  // identifier to "grease" settings, see
-  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
   params->http2_settings = GetHttp2Settings(http2_trial_params);
-  if (command_line.HasSwitch(switches::kHttp2GreaseSettings) ||
-      GetVariationParam(http2_trial_params, "http2_grease_settings") ==
-          "true") {
+
+  // Enable/disable greasing SETTINGS, see
+  // https://tools.ietf.org/html/draft-bishop-httpbis-grease-00.
+  if (command_line.HasSwitch(switches::kDisableHttp2GreaseSettings)) {
+    params->enable_http2_settings_grease = false;
+  } else if (command_line.HasSwitch(switches::kEnableHttp2GreaseSettings) ||
+             GetVariationParam(http2_trial_params, "http2_grease_settings") ==
+                 "true") {
     params->enable_http2_settings_grease = true;
   }
 
@@ -757,7 +759,7 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
 }
 
 net::URLRequestContextBuilder::HttpCacheParams::Type ChooseCacheType() {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   const std::string experiment_name =
       base::FieldTrialList::FindFullName("SimpleCacheTrial");
   if (base::StartsWith(experiment_name, "Disable",
@@ -771,18 +773,18 @@ net::URLRequestContextBuilder::HttpCacheParams::Type ChooseCacheType() {
   // muddles the experiment data, but as this was written to be considered for
   // backport, having it behave differently than in stable would be a bigger
   // problem.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (base::mac::IsAtLeastOS10_14())
     return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   if (base::StartsWith(experiment_name, "ExperimentYes",
                        base::CompareCase::INSENSITIVE_ASCII)) {
     return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
   }
-#endif  // #if !defined(OS_ANDROID)
+#endif  // #if !BUILDFLAG(IS_ANDROID)
 
-#if defined(OS_ANDROID) || defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   return net::URLRequestContextBuilder::HttpCacheParams::DISK_SIMPLE;
 #else
   return net::URLRequestContextBuilder::HttpCacheParams::DISK_BLOCKFILE;

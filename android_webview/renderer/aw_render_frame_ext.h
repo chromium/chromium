@@ -6,7 +6,6 @@
 #define ANDROID_WEBVIEW_RENDERER_AW_RENDER_FRAME_EXT_H_
 
 #include "android_webview/common/mojom/frame.mojom.h"
-#include "base/macros.h"
 #include "content/public/renderer/render_frame_observer.h"
 #include "mojo/public/cpp/bindings/associated_receiver.h"
 #include "mojo/public/cpp/bindings/associated_remote.h"

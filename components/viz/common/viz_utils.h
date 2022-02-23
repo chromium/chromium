@@ -20,7 +20,7 @@ namespace viz {
 
 VIZ_COMMON_EXPORT bool PreferRGB565ResourcesForDisplay();
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 VIZ_COMMON_EXPORT bool AlwaysUseWideColorGamut();
 #endif
 

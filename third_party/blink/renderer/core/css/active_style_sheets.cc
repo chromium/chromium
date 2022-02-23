@@ -154,12 +154,31 @@ bool HasSizeDependentMediaQueries(
   return false;
 }
 
+bool HasDynamicViewportDependentMediaQueries(
+    const ActiveStyleSheetVector& active_style_sheets) {
+  for (const auto& active_sheet : active_style_sheets) {
+    if (active_sheet.first->HasDynamicViewportDependentMediaQueries())
+      return true;
+    StyleSheetContents* contents = active_sheet.first->Contents();
+    if (!contents->HasRuleSet())
+      continue;
+    if (contents->GetRuleSet()
+            .Features()
+            .HasDynamicViewportDependentMediaQueries()) {
+      return true;
+    }
+  }
+  return false;
+}
+
 }  // namespace
 
 bool AffectedByMediaValueChange(const ActiveStyleSheetVector& active_sheets,
                                 MediaValueChange change) {
   if (change == MediaValueChange::kSize)
     return HasSizeDependentMediaQueries(active_sheets);
+  if (change == MediaValueChange::kDynamicViewport)
+    return HasDynamicViewportDependentMediaQueries(active_sheets);
 
   DCHECK(change == MediaValueChange::kOther);
   return HasMediaQueries(active_sheets);

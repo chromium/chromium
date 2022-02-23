@@ -5,20 +5,40 @@
 #import "ios/chrome/browser/ui/toolbar/toolbar_mediator.h"
 
 #include "base/memory/ptr_util.h"
+#include "base/metrics/user_metrics.h"
+#include "base/metrics/user_metrics_action.h"
 #include "base/strings/sys_string_conversions.h"
+#include "components/open_from_clipboard/clipboard_recent_content.h"
+#include "components/search_engines/template_url_service.h"
 #include "ios/chrome/browser/chrome_url_constants.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter.h"
 #import "ios/chrome/browser/overlays/public/overlay_presenter_observer_bridge.h"
 #include "ios/chrome/browser/policy/policy_features.h"
+#import "ios/chrome/browser/policy/policy_util.h"
+#include "ios/chrome/browser/search_engines/search_engines_util.h"
+#import "ios/chrome/browser/ui/commands/application_commands.h"
+#import "ios/chrome/browser/ui/commands/browser_commands.h"
+#import "ios/chrome/browser/ui/commands/load_query_commands.h"
+#import "ios/chrome/browser/ui/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/ntp/ntp_util.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
+#import "ios/chrome/browser/ui/ui_feature_flags.h"
+#import "ios/chrome/browser/url_loading/image_search_param_generator.h"
+#import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/chrome/browser/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/web_state_list/web_state_list_observer_bridge.h"
+#include "ios/chrome/grit/ios_strings.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
+#include "ios/web/public/favicon/favicon_status.h"
+#import "ios/web/public/navigation/navigation_item.h"
 #import "ios/web/public/navigation/navigation_manager.h"
 #import "ios/web/public/web_client.h"
 #import "ios/web/public/web_state.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#include "ui/base/l10n/l10n_util.h"
+#include "ui/gfx/image/image.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -158,6 +178,27 @@
   self.webState = newWebState;
 }
 
+#pragma mark - AdaptiveToolbarMenusProvider
+
+- (UIMenu*)menuForButtonOfType:(AdaptiveToolbarButtonType)buttonType {
+  switch (buttonType) {
+    case AdaptiveToolbarButtonTypeBack:
+      return [self menuForNavigationItems:self.webState->GetNavigationManager()
+                                              ->GetBackwardItems()];
+
+    case AdaptiveToolbarButtonTypeForward:
+      return [self menuForNavigationItems:self.webState->GetNavigationManager()
+                                              ->GetForwardItems()];
+
+    case AdaptiveToolbarButtonTypeNewTab:
+      return [self menuForNewTabButton];
+
+    case AdaptiveToolbarButtonTypeTabGrid:
+      return [self menuForTabGridButton];
+  }
+  return nil;
+}
+
 #pragma mark - Setters
 
 - (void)setIncognito:(BOOL)incognito {
@@ -284,6 +325,128 @@
 - (void)overlayPresenter:(OverlayPresenter*)presenter
     didHideOverlayForRequest:(OverlayRequest*)request {
   self.webContentAreaShowingOverlay = NO;
+}
+
+#pragma mark - Private
+
+// Returns a menu for the |navigationItems|.
+- (UIMenu*)menuForNavigationItems:
+    (const std::vector<web::NavigationItem*>)navigationItems {
+  NSMutableArray<UIMenuElement*>* actions = [NSMutableArray array];
+  for (web::NavigationItem* navigationItem : navigationItems) {
+    NSString* title;
+    UIImage* image;
+    if ([self shouldUseIncognitoNTPResourcesForURL:navigationItem
+                                                       ->GetVirtualURL()]) {
+      title = l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_INCOGNITO_TAB);
+      image = [UIImage imageNamed:@"incognito_badge"];
+    } else {
+      title = base::SysUTF16ToNSString(navigationItem->GetTitleForDisplay());
+      const gfx::Image& gfxImage = navigationItem->GetFaviconStatus().image;
+      if (!gfxImage.IsEmpty()) {
+        image = gfxImage.ToUIImage();
+      } else {
+        image = [UIImage imageNamed:@"default_favicon"];
+      }
+    }
+
+    __weak __typeof(self) weakSelf = self;
+    UIAction* action =
+        [UIAction actionWithTitle:title
+                            image:image
+                       identifier:nil
+                          handler:^(UIAction* action) {
+                            [weakSelf navigateToPageForItem:navigationItem];
+                          }];
+    [actions addObject:action];
+  }
+  return [UIMenu menuWithTitle:@"" children:actions];
+}
+
+// Returns YES if incognito NTP title and image should be used for back/forward
+// item associated with |URL|.
+- (BOOL)shouldUseIncognitoNTPResourcesForURL:(const GURL&)URL {
+  return URL.DeprecatedGetOriginAsURL() == kChromeUINewTabURL &&
+         self.isIncognito &&
+         base::FeatureList::IsEnabled(kUpdateHistoryEntryPointsInIncognito);
+}
+
+// Returns the menu for the new tab button.
+- (UIMenu*)menuForNewTabButton {
+  UIAction* QRCodeSearch = [self.actionFactory actionToShowQRScanner];
+  UIAction* voiceSearch = [self.actionFactory actionToStartVoiceSearch];
+  UIAction* newSearch = [self.actionFactory actionToStartNewSearch];
+  UIAction* newIncognitoSearch =
+      [self.actionFactory actionToStartNewIncognitoSearch];
+
+  NSArray* staticActions =
+      @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
+
+  UIMenuElement* clipboardAction = [self menuElementForPasteboard];
+
+  if (clipboardAction) {
+    UIMenu* staticMenu = [UIMenu menuWithTitle:@""
+                                         image:nil
+                                    identifier:nil
+                                       options:UIMenuOptionsDisplayInline
+                                      children:staticActions];
+
+    return [UIMenu menuWithTitle:@"" children:@[ staticMenu, clipboardAction ]];
+  }
+  return [UIMenu menuWithTitle:@"" children:staticActions];
+}
+
+// Returns the menu for the TabGrid button.
+- (UIMenu*)menuForTabGridButton {
+  UIAction* openNewTab = [self.actionFactory actionToOpenNewTab];
+
+  UIAction* openNewIncognitoTab =
+      [self.actionFactory actionToOpenNewIncognitoTab];
+
+  UIMenu* newTabActions =
+      [UIMenu menuWithTitle:@""
+                      image:nil
+                 identifier:nil
+                    options:UIMenuOptionsDisplayInline
+                   children:@[ openNewTab, openNewIncognitoTab ]];
+
+  UIAction* closeTab = [self.actionFactory actionToCloseCurrentTab];
+
+  return [UIMenu menuWithTitle:@"" children:@[ newTabActions, closeTab ]];
+}
+
+// Returns the UIMenuElement for the content of the pasteboard. Can return nil.
+- (UIMenuElement*)menuElementForPasteboard {
+  absl::optional<std::set<ClipboardContentType>> clipboardContentType =
+      ClipboardRecentContent::GetInstance()->GetCachedClipboardContentTypes();
+
+  if (clipboardContentType.has_value()) {
+    std::set<ClipboardContentType> clipboardContentTypeValues =
+        clipboardContentType.value();
+
+    if (search_engines::SupportsSearchByImage(self.templateURLService) &&
+        clipboardContentTypeValues.find(ClipboardContentType::Image) !=
+            clipboardContentTypeValues.end()) {
+      return [self.actionFactory actionToSearchCopiedImage];
+    } else if (clipboardContentTypeValues.find(ClipboardContentType::URL) !=
+               clipboardContentTypeValues.end()) {
+      return [self.actionFactory actionToSearchCopiedURL];
+    } else if (clipboardContentTypeValues.find(ClipboardContentType::Text) !=
+               clipboardContentTypeValues.end()) {
+      return [self.actionFactory actionToSearchCopiedText];
+    }
+  }
+  return nil;
+}
+
+// Navigates to the page associated with |item|.
+- (void)navigateToPageForItem:(web::NavigationItem*)item {
+  if (!self.webState)
+    return;
+
+  int index = self.webState->GetNavigationManager()->GetIndexOfItem(item);
+  DCHECK_NE(index, -1);
+  self.webState->GetNavigationManager()->GoToIndex(index);
 }
 
 @end

@@ -9,6 +9,7 @@
 #include <memory>
 #include <set>
 
+#include "ash/constants/ash_features.h"
 #include "base/i18n/encoding_detection.h"
 #include "base/i18n/icu_string_conversions.h"
 #include "base/notreached.h"
@@ -16,9 +17,10 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversion_utils.h"
 #include "base/values.h"
+#include "chromeos/components/onc/onc_utils.h"
 #include "chromeos/network/network_event_log.h"
+#include "chromeos/network/network_type_pattern.h"
 #include "chromeos/network/network_ui_data.h"
-#include "chromeos/network/onc/onc_utils.h"
 #include "third_party/cros_system_api/dbus/service_constants.h"
 
 namespace chromeos {
@@ -32,8 +34,8 @@ std::string ValidateUTF8(const std::string& str) {
   std::string result;
   for (int32_t index = 0; index < static_cast<int32_t>(str.size()); ++index) {
     uint32_t code_point_out;
-    bool is_unicode_char = base::ReadUnicodeCharacter(
-        str.c_str(), str.size(), &index, &code_point_out);
+    bool is_unicode_char = base::ReadUnicodeCharacter(str.c_str(), str.size(),
+                                                      &index, &code_point_out);
     const uint32_t kFirstNonControlChar = 0x20;
     if (is_unicode_char && (code_point_out >= kFirstNonControlChar)) {
       base::WriteUnicodeCharacter(code_point_out, &result);
@@ -203,7 +205,7 @@ std::unique_ptr<NetworkUIData> GetUIDataFromValue(
 }
 
 std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
-    const base::DictionaryValue& shill_dictionary) {
+    const base::Value& shill_dictionary) {
   const base::Value* ui_data_value =
       shill_dictionary.FindKey(shill::kUIDataProperty);
   if (!ui_data_value) {
@@ -216,8 +218,47 @@ std::unique_ptr<NetworkUIData> GetUIDataFromProperties(
   return ui_data;
 }
 
+void SetRandomMACPolicy(::onc::ONCSource onc_source,
+                        base::Value* shill_dictionary) {
+  std::string* service_type =
+      shill_dictionary->FindStringKey(shill::kTypeProperty);
+  DCHECK(service_type);
+  if (*service_type != shill::kTypeWifi) {
+    // For non-wifi types we don't set MAC policy at all.
+    return;
+  }
+
+  // If the feature flag is not enabled, we set each MAC Address Policy
+  // to Hardware (non-randomized).
+  if (!base::FeatureList::IsEnabled(
+          chromeos::features::kWifiConnectMacAddressRandomization)) {
+    shill_dictionary->SetKey(shill::kWifiRandomMACPolicy,
+                             base::Value(shill::kWifiRandomMacPolicyHardware));
+    return;
+  }
+
+  // For enterprise policies we also set MAC Address Policy
+  // to Hardware (non-randomized).
+  if (onc_source == ::onc::ONCSource::ONC_SOURCE_DEVICE_POLICY ||
+      onc_source == ::onc::ONCSource::ONC_SOURCE_USER_POLICY ||
+      // User Import is not policy per se, but we use it to have some means
+      // to force Hardware address by user in experimental mode.
+      onc_source == ::onc::ONCSource::ONC_SOURCE_USER_IMPORT) {
+    shill_dictionary->SetKey(shill::kWifiRandomMACPolicy,
+                             base::Value(shill::kWifiRandomMacPolicyHardware));
+    return;
+  }
+
+  // In all other cases, set the MAC Address Policy
+  // to Persistant-Random (Randomized per SSID, but persistent
+  // once randomized).
+  shill_dictionary->SetKey(
+      shill::kWifiRandomMACPolicy,
+      base::Value(shill::kWifiRandomMacPolicyPersistentRandom));
+}
+
 void SetUIDataAndSource(const NetworkUIData& ui_data,
-                        base::DictionaryValue* shill_dictionary) {
+                        base::Value* shill_dictionary) {
   shill_dictionary->SetKey(shill::kUIDataProperty,
                            base::Value(ui_data.GetAsJson()));
   std::string source;
@@ -257,16 +298,15 @@ bool CopyIdentifyingProperties(const base::Value& service_properties,
   success &= !type.empty();
   dest->SetKey(shill::kTypeProperty, base::Value(type));
   if (type == shill::kTypeWifi) {
-    success &=
-        CopyStringFromDictionary(
-            service_properties, shill::kSecurityClassProperty, dest);
+    success &= CopyStringFromDictionary(service_properties,
+                                        shill::kSecurityClassProperty, dest);
     success &=
         CopyStringFromDictionary(service_properties, shill::kWifiHexSsid, dest);
-    success &= CopyStringFromDictionary(
-        service_properties, shill::kModeProperty, dest);
+    success &= CopyStringFromDictionary(service_properties,
+                                        shill::kModeProperty, dest);
   } else if (type == shill::kTypeVPN) {
-    success &= CopyStringFromDictionary(
-        service_properties, shill::kNameProperty, dest);
+    success &= CopyStringFromDictionary(service_properties,
+                                        shill::kNameProperty, dest);
 
     // VPN Provider values are read from the "Provider" dictionary, but written
     // with the keys "Provider.Type" and "Provider.Host".
@@ -323,12 +363,11 @@ bool DoIdentifyingPropertiesMatch(const base::Value& new_properties,
                                   const base::Value& old_properties) {
   base::Value new_identifying(base::Value::Type::DICTIONARY);
   if (!CopyIdentifyingProperties(
-          new_properties,
-          false /* properties were not read from Shill */,
+          new_properties, false /* properties were not read from Shill */,
           &new_identifying)) {
     return false;
   }
-  base::DictionaryValue old_identifying;
+  base::Value old_identifying(base::Value::Type::DICTIONARY);
   if (!CopyIdentifyingProperties(old_properties,
                                  true /* properties were read from Shill */,
                                  &old_identifying)) {

@@ -65,7 +65,7 @@ public final class FirstRunSignInProcessor {
             return;
         }
         final String accountName = getFirstRunFlowSignInAccountName();
-        if (!FirstRunUtils.canAllowSync() || !signinManager.isSignInAllowed()
+        if (!FirstRunUtils.canAllowSync() || !signinManager.isSyncOptInAllowed()
                 || TextUtils.isEmpty(accountName)) {
             setFirstRunFlowSignInComplete(true);
             return;
@@ -190,7 +190,7 @@ public final class FirstRunSignInProcessor {
     public static void updateSigninManagerFirstRunCheckDone() {
         SigninManager manager = IdentityServicesProvider.get().getSigninManager(
                 Profile.getLastUsedRegularProfile());
-        if (manager.isSignInAllowed()) return;
+        if (manager.isSyncOptInAllowed()) return;
         if (!FirstRunStatus.getFirstRunFlowComplete()) return;
         if (!getFirstRunFlowSignInComplete()) return;
         manager.onFirstRunCheckDone();

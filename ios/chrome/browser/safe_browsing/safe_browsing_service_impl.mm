@@ -13,12 +13,14 @@
 #include "components/prefs/pref_service.h"
 #include "components/safe_browsing/core/browser/db/v4_local_database_manager.h"
 #include "components/safe_browsing/core/browser/realtime/url_lookup_service.h"
+#include "components/safe_browsing/core/browser/safe_browsing_metrics_collector.h"
 #include "components/safe_browsing/core/browser/safe_browsing_url_checker_impl.h"
 #include "components/safe_browsing/core/browser/url_checker_delegate.h"
 #include "components/safe_browsing/core/common/safebrowsing_constants.h"
 #import "ios/chrome/browser/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/net/cookie_util.h"
 #import "ios/chrome/browser/safe_browsing/real_time_url_lookup_service_factory.h"
+#import "ios/chrome/browser/safe_browsing/safe_browsing_metrics_collector_factory.h"
 #import "ios/chrome/browser/safe_browsing/url_checker_delegate_impl.h"
 #import "ios/net/cookies/system_cookie_store.h"
 #import "ios/web/common/user_agent.h"
@@ -41,8 +43,11 @@ SafeBrowsingServiceImpl::SafeBrowsingServiceImpl() = default;
 
 SafeBrowsingServiceImpl::~SafeBrowsingServiceImpl() = default;
 
-void SafeBrowsingServiceImpl::Initialize(PrefService* prefs,
-                                         const base::FilePath& user_data_path) {
+void SafeBrowsingServiceImpl::Initialize(
+    PrefService* prefs,
+    const base::FilePath& user_data_path,
+    safe_browsing::SafeBrowsingMetricsCollector*
+        safe_browsing_metrics_collector) {
   DCHECK_CURRENTLY_ON(web::WebThread::UI);
 
   if (io_thread_enabler_) {
@@ -94,6 +99,8 @@ void SafeBrowsingServiceImpl::Initialize(PrefService* prefs,
       safe_browsing::kSafeBrowsingEnabledHistogramName,
       pref_change_registrar_->prefs()->GetBoolean(prefs::kSafeBrowsingEnabled));
   UpdateSafeBrowsingEnabledState();
+  if (safe_browsing_metrics_collector)
+    safe_browsing_metrics_collector->StartLogging();
 }
 
 void SafeBrowsingServiceImpl::ShutDown() {
@@ -115,10 +122,12 @@ SafeBrowsingServiceImpl::CreateUrlChecker(
           ChromeBrowserState::FromBrowserState(web_state->GetBrowserState()));
   bool can_perform_full_url_lookup =
       url_lookup_service && url_lookup_service->CanPerformFullURLLookup();
+  bool can_realtime_check_subresource_url =
+      url_lookup_service && url_lookup_service->CanCheckSubresourceURL();
   return std::make_unique<safe_browsing::SafeBrowsingUrlCheckerImpl>(
       request_destination, url_checker_delegate_,
       web_state->CreateDefaultGetter(), can_perform_full_url_lookup,
-      /*can_rt_check_subresource_url=*/false,
+      can_realtime_check_subresource_url,
       base::CreateSingleThreadTaskRunner({web::WebThread::UI}),
       url_lookup_service ? url_lookup_service->GetWeakPtr() : nullptr);
 }

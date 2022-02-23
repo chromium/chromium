@@ -467,7 +467,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
   auto timestamp = base::Milliseconds(1);
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
   const uint64_t modifier = 0x001234567890abcdULL;
 #else
   const uint64_t modifier = gfx::NativePixmapHandle::kNoModifier;
@@ -503,7 +503,7 @@ TEST(VideoFrame, WrapExternalGpuMemoryBuffer) {
   EXPECT_EQ(frame->mailbox_holder(1).mailbox, mailbox_holders[1].mailbox);
 }
 
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST(VideoFrame, WrapExternalDmabufs) {
   gfx::Size coded_size = gfx::Size(256, 256);
   gfx::Rect visible_rect(coded_size);
@@ -789,6 +789,7 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   partial_metadata.reference_time = kTempTicks;
   partial_metadata.processing_time = kTempDelta;
   partial_metadata.allow_overlay = false;
+  partial_metadata.texture_origin_is_top_left = false;
 
   // Merging partial metadata into full metadata partially override it.
   full_metadata.MergeMetadataFrom(partial_metadata);
@@ -797,6 +798,7 @@ TEST(VideoFrameMetadata, PartialMergeMetadata) {
   EXPECT_EQ(partial_metadata.reference_time, kTempTicks);
   EXPECT_EQ(partial_metadata.processing_time, kTempDelta);
   EXPECT_EQ(partial_metadata.allow_overlay, false);
+  EXPECT_EQ(partial_metadata.texture_origin_is_top_left, false);
 }
 
 }  // namespace media

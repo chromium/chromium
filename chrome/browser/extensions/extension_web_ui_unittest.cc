@@ -8,6 +8,7 @@
 
 #include "base/bind.h"
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -69,7 +70,7 @@ class ExtensionWebUITest : public testing::Test {
   }
 
   std::unique_ptr<TestingProfile> profile_;
-  ExtensionService* extension_service_;
+  raw_ptr<ExtensionService> extension_service_;
   content::BrowserTaskEnvironment task_environment_;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -184,7 +185,7 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
   {
     // Add multiple entries for the same extension.
     DictionaryPrefUpdate update(prefs, ExtensionWebUI::kExtensionURLOverrides);
-    base::DictionaryValue* all_overrides = update.Get();
+    base::Value* all_overrides = update.Get();
     base::Value newtab_list(base::Value::Type::LIST);
     {
       base::Value newtab(base::Value::Type::DICTIONARY);
@@ -211,14 +212,14 @@ TEST_F(ExtensionWebUITest, TestRemovingDuplicateEntriesForHosts) {
 
   // Duplicates should be removed (in response to ExtensionSystem::ready()).
   // Only a single entry should remain.
-  const base::DictionaryValue* overrides =
+  const base::Value* overrides =
       prefs->GetDictionary(ExtensionWebUI::kExtensionURLOverrides);
   ASSERT_TRUE(overrides);
   const base::Value* newtab_overrides =
       overrides->FindKeyOfType("newtab", base::Value::Type::LIST);
   ASSERT_TRUE(newtab_overrides);
-  ASSERT_EQ(1u, newtab_overrides->GetList().size());
-  const base::Value& override_dict = newtab_overrides->GetList()[0];
+  ASSERT_EQ(1u, newtab_overrides->GetListDeprecated().size());
+  const base::Value& override_dict = newtab_overrides->GetListDeprecated()[0];
   EXPECT_EQ(newtab_url.spec(), override_dict.FindKey("entry")->GetString());
   EXPECT_TRUE(override_dict.FindKey("active")->GetBool());
 }

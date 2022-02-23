@@ -145,9 +145,7 @@ void SharedWorkerServiceImpl::ConnectToWorker(
   if (!GetContentClient()->browser()->AllowSharedWorker(
           info->url, render_frame_host->ComputeSiteForCookies(),
           main_frame->GetLastCommittedOrigin(), info->options->name,
-          storage_key,
-          WebContentsImpl::FromRenderFrameHostID(client_render_frame_host_id)
-              ->GetBrowserContext(),
+          storage_key, render_frame_host->GetBrowserContext(),
           client_render_frame_host_id.child_id,
           client_render_frame_host_id.frame_routing_id)) {
     ScriptLoadFailed(std::move(client), /*error_message=*/"");
@@ -280,8 +278,6 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
 
   StoragePartitionImpl* partition =
       static_cast<StoragePartitionImpl*>(creator.GetStoragePartition());
-  bool is_guest =
-      !partition->site_for_guest_service_worker_or_shared_worker().is_empty();
 
   // Use the `creator`'s SiteInstance by default, but if that SiteInstance is
   // cross-origin-isolated, create a new non-isolated SiteInstance for the
@@ -293,18 +289,13 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
   // account.
   scoped_refptr<SiteInstanceImpl> site_instance = creator.GetSiteInstance();
   if (site_instance->IsCrossOriginIsolated()) {
-    if (is_guest) {
-      site_instance = SiteInstanceImpl::CreateForGuest(
-          partition->browser_context(),
-          partition->site_for_guest_service_worker_or_shared_worker());
-    } else {
-      site_instance = SiteInstanceImpl::CreateForUrlInfo(
-          partition->browser_context(),
-          UrlInfo(UrlInfoInit(instance.url())
-                      .WithStoragePartitionConfig(partition->GetConfig())
-                      .WithWebExposedIsolationInfo(
-                          WebExposedIsolationInfo::CreateNonIsolated())));
-    }
+    site_instance = SiteInstanceImpl::CreateForUrlInfo(
+        partition->browser_context(),
+        UrlInfo(UrlInfoInit(instance.url())
+                    .WithStoragePartitionConfig(partition->GetConfig())
+                    .WithWebExposedIsolationInfo(
+                        WebExposedIsolationInfo::CreateNonIsolated())),
+        partition->is_guest());
   }
 
   RenderProcessHost* worker_process_host = site_instance->GetProcess();
@@ -324,7 +315,7 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
       worker_hosts_.insert(std::make_unique<SharedWorkerHost>(
           this, instance, std::move(site_instance),
           std::move(content_security_policies),
-          creator.cross_origin_embedder_policy()));
+          creator.BuildClientSecurityState()));
   DCHECK(insertion_result.second);
   SharedWorkerHost* host = insertion_result.first->get();
 
@@ -373,7 +364,8 @@ SharedWorkerHost* SharedWorkerServiceImpl::CreateWorker(
           host->instance().storage_key().nonce().has_value()
               ? &host->instance().storage_key().nonce().value()
               : nullptr),
-      credentials_mode, std::move(outside_fetch_client_settings_object),
+      creator.BuildClientSecurityState(), credentials_mode,
+      std::move(outside_fetch_client_settings_object),
       network::mojom::RequestDestination::kSharedWorker,
       service_worker_context_, service_worker_handle_raw,
       std::move(blob_url_loader_factory), url_loader_factory_override_,
@@ -395,7 +387,6 @@ void SharedWorkerServiceImpl::StartWorker(
     const blink::MessagePortChannel& message_port,
     blink::mojom::FetchClientSettingsObjectPtr
         outside_fetch_client_settings_object,
-    bool did_fetch_worker_script,
     std::unique_ptr<blink::PendingURLLoaderFactoryBundle>
         subresource_loader_factories,
     blink::mojom::WorkerMainScriptLoadParamsPtr main_script_load_params,
@@ -413,7 +404,7 @@ void SharedWorkerServiceImpl::StartWorker(
 
   // If the script fetcher failed to load the shared worker's main script,
   // terminate the worker.
-  if (!did_fetch_worker_script) {
+  if (!main_script_load_params) {
     DestroyHost(host.get());
     return;
   }
@@ -442,7 +433,7 @@ void SharedWorkerServiceImpl::StartWorker(
               std::move(subresource_loader_factories), std::move(controller),
               std::move(controller_service_worker_object_host),
               std::move(outside_fetch_client_settings_object),
-              final_response_url);
+              final_response_url, GetContentClient()->browser());
   for (Observer& observer : observers_)
     observer.OnFinalResponseURLDetermined(host->token(), final_response_url);
 }

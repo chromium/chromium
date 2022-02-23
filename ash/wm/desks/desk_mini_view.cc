@@ -10,13 +10,14 @@
 #include "ash/shell.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_provider.h"
-#include "ash/style/button_style.h"
+#include "ash/style/close_button.h"
 #include "ash/wm/desks/desk.h"
 #include "ash/wm/desks/desk_name_view.h"
 #include "ash/wm/desks/desk_preview_view.h"
 #include "ash/wm/desks/desks_bar_view.h"
 #include "ash/wm/desks/desks_controller.h"
 #include "ash/wm/desks/desks_restore_util.h"
+#include "ash/wm/desks/desks_textfield.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_highlight_controller.h"
@@ -249,7 +250,7 @@ void DeskMiniView::OnDeskNameChanged(const std::u16string& new_name) {
   if (is_desk_name_being_modified_)
     return;
 
-  desk_name_view_->SetTextAndElideIfNeeded(new_name);
+  desk_name_view_->SetText(new_name);
   desk_name_view_->SetAccessibleName(new_name);
   desk_preview_->SetAccessibleName(new_name);
 
@@ -308,24 +309,14 @@ void DeskMiniView::ContentsChanged(views::Textfield* sender,
   if (!desk_)
     return;
 
-  // Avoid copying new_contents if we don't need to trim it below.
-  const std::u16string* new_text = &new_contents;
-
   // To avoid potential security and memory issues, we don't allow desk names to
   // have an unbounded length. Therefore we trim if needed at kMaxLength UTF-16
   // boundary. Note that we don't care about code point boundaries in this case.
-  std::u16string trimmed_new_contents;
-  if (new_contents.size() > DeskNameView::kMaxLength) {
-    trimmed_new_contents = new_contents;
-    trimmed_new_contents.resize(DeskNameView::kMaxLength);
-    new_text = &trimmed_new_contents;
+  if (new_contents.size() > DesksTextfield::kMaxLength) {
+    std::u16string trimmed_new_contents = new_contents;
+    trimmed_new_contents.resize(DesksTextfield::kMaxLength);
     desk_name_view_->SetText(trimmed_new_contents);
   }
-
-  desk_->SetName(
-      base::CollapseWhitespace(*new_text,
-                               /*trim_sequences_with_line_breaks=*/false),
-      /*set_by_user=*/true);
 
   Layout();
 }
@@ -336,7 +327,8 @@ bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
   DCHECK(is_desk_name_being_modified_);
 
   // Pressing enter or escape should blur the focus away from DeskNameView so
-  // that editing the desk's name ends.
+  // that editing the desk's name ends. Pressing tab should do the same, but is
+  // handled in OverviewSession.
   if (key_event.type() != ui::ET_KEY_PRESSED)
     return false;
 
@@ -345,12 +337,14 @@ bool DeskMiniView::HandleKeyEvent(views::Textfield* sender,
     return false;
   }
 
+  // If the escape key was pressed, `should_commit_name_changes_` is set to
+  // false so that OnViewBlurred knows that it should not change the name of
+  // `desk_`.
+  if (key_event.key_code() == ui::VKEY_ESCAPE)
+    should_commit_name_changes_ = false;
+
   DeskNameView::CommitChanges(GetWidget());
 
-  Shell::Get()
-      ->accessibility_controller()
-      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
-          IDS_ASH_DESKS_DESK_NAME_COMMIT, desk_->name()));
   return true;
 }
 
@@ -390,6 +384,10 @@ bool DeskMiniView::HandleMouseEvent(views::Textfield* sender,
 void DeskMiniView::OnViewFocused(views::View* observed_view) {
   DCHECK_EQ(observed_view, desk_name_view_);
   is_desk_name_being_modified_ = true;
+
+  // Assume we should commit the name change unless HandleKeyEvent detects the
+  // user pressed the escape key.
+  should_commit_name_changes_ = true;
   desk_name_view_->UpdateViewAppearance();
 
   // Set the unelided desk name so that the full name shows up for the user to
@@ -410,9 +408,24 @@ void DeskMiniView::OnViewFocused(views::View* observed_view) {
 
 void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   DCHECK_EQ(observed_view, desk_name_view_);
-  is_desk_name_being_modified_ = false;
   defer_select_all_ = false;
   desk_name_view_->UpdateViewAppearance();
+
+  // If `should_commit_name_changes_` is true, then the view was blurred from
+  // the user pressing a key other than escape. In that case we should set the
+  // name of `desk_` to the new name contained in `desk_name_view_`. Order here
+  // matters, because Desk::SetName calls OnDeskNameChanged on each of its
+  // observers, and DeskMiniView::OnDeskNameChanged will only set the text in
+  // `desk_name_view_` to the name contained in `desk_` when
+  // `is_desk_name_being_modified_` is set to false. So, to avoid performing the
+  // operations in OnDeskNameChanged twice, we need to call SetName before
+  // setting `is_desk_name_being_modified_` to false.
+  if (should_commit_name_changes_) {
+    desk_->SetName(
+        base::CollapseWhitespace(desk_name_view_->GetText(),
+                                 /*trim_sequences_with_line_breaks=*/false),
+        /*set_by_user=*/true);
+  }
 
   // When committing the name, do not allow an empty desk name. Revert back to
   // the default name if the desk is not being removed.
@@ -422,11 +435,19 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
   // default one for this position, should we revert it (i.e. consider it
   // `set_by_user = false`?
   if (!desk_->is_desk_being_removed() && desk_->name().empty()) {
+    // DeskController::RevertDeskNameToDefault calls Desk::SetName, so we should
+    // call this before we set `is_desk_name_being_modified_` to false for the
+    // same reason that we call Desk::SetName before.
     DesksController::Get()->RevertDeskNameToDefault(desk_);
-    return;
   }
 
+  is_desk_name_being_modified_ = false;
   OnDeskNameChanged(desk_->name());
+
+  Shell::Get()
+      ->accessibility_controller()
+      ->TriggerAccessibilityAlertWithMessage(l10n_util::GetStringFUTF8(
+          IDS_ASH_DESKS_DESK_NAME_COMMIT, desk_->name()));
 
   // Only when the new desk name has been committed is when we can update the
   // desks restore prefs.
@@ -436,7 +457,11 @@ void DeskMiniView::OnViewBlurred(views::View* observed_view) {
 bool DeskMiniView::IsPointOnMiniView(const gfx::Point& screen_location) const {
   gfx::Point point_in_view = screen_location;
   ConvertPointFromScreen(this, &point_in_view);
-  return HitTestPoint(point_in_view);
+  // `this` doesn't have access to its widget until it's added to the view's
+  // hierarchy, however this function could be triggered during the constructor
+  // of `DeskMiniView` when it's not added to the view's hierarchy yet. Thus we
+  // need to check whether the widget if accessible here.
+  return GetWidget() && HitTestPoint(point_in_view);
 }
 
 void DeskMiniView::OnCloseButtonPressed() {
@@ -462,9 +487,16 @@ void DeskMiniView::LayoutDeskNameView(const gfx::Rect& preview_bounds) {
   const gfx::Size desk_name_view_size = desk_name_view_->GetPreferredSize();
   // Desk preview's width is supposed to be larger than kMinDeskNameViewWidth,
   // but it might be not the truth for tests with extreme abnormal size of
-  // display.
-  const int min_width = std::min(preview_bounds.width(), kMinDeskNameViewWidth);
-  const int max_width = std::max(preview_bounds.width(), kMinDeskNameViewWidth);
+  // display. The preview uses a border to display focus and the name view uses
+  // a focus ring (which does not inset the view), so subtract the focus ring
+  // from the size calculations so that the focus UI is aligned.
+  views::FocusRing* focus_ring = views::FocusRing::Get(desk_name_view_);
+  const int focus_ring_length =
+      focus_ring->halo_thickness() - focus_ring->halo_inset();
+  const int min_width = std::min(preview_bounds.width() - focus_ring_length,
+                                 kMinDeskNameViewWidth);
+  const int max_width = std::max(preview_bounds.width() - focus_ring_length,
+                                 kMinDeskNameViewWidth);
   const int text_width =
       base::clamp(desk_name_view_size.width(), min_width, max_width);
   const int desk_name_view_x =

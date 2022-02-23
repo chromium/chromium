@@ -5,10 +5,8 @@
 #include "chrome/browser/apps/app_service/file_utils.h"
 
 #include "base/files/file_path.h"
-#include "base/files/file_util.h"
 #include "chrome/browser/ash/file_manager/app_id.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
-#include "net/base/filename_util.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 #include "url/gurl.h"
@@ -63,16 +61,6 @@ GURL GetFileSystemUrl(Profile* profile, const base::FilePath& file_path) {
     return file_url;
   }
   return GURL();
-}
-
-std::vector<GURL> GetFileUrls(const std::vector<base::FilePath>& file_paths) {
-  std::vector<GURL> file_urls;
-  for (auto& file_path : file_paths) {
-    GURL file_url =
-        net::FilePathToFileURL(base::MakeAbsoluteFilePath(file_path));
-    file_urls.push_back(file_url);
-  }
-  return file_urls;
 }
 
 }  // namespace apps

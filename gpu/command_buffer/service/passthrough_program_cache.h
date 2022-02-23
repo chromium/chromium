@@ -7,7 +7,6 @@
 
 #include <mutex>
 #include "base/containers/lru_cache.h"
-#include "base/macros.h"
 #include "gpu/command_buffer/service/decoder_context.h"
 #include "gpu/command_buffer/service/program_cache.h"
 #include "ui/gl/gl_bindings.h"
@@ -81,6 +80,9 @@ class GPU_GLES2_EXPORT PassthroughProgramCache : public ProgramCache {
 
    private:
     Value program_blob_;
+
+    // TODO(bartekn): Change this into raw_ptr<...>, after investigating an
+    // earlier crash report most likely caused by a use-after-move.
     PassthroughProgramCache* program_cache_;
   };
 

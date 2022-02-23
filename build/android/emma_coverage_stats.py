@@ -38,7 +38,7 @@ LineCoverage = collections.namedtuple(
     ['lineno', 'source', 'covered_status', 'fractional_line_coverage'])
 
 
-class _EmmaHtmlParser(object):
+class _EmmaHtmlParser:
   """Encapsulates HTML file parsing operations.
 
   This class contains all operations related to parsing HTML files that were
@@ -214,7 +214,7 @@ class _EmmaHtmlParser(object):
       return root.findall(xpath_selector)
 
 
-class _EmmaCoverageStats(object):
+class _EmmaCoverageStats:
   """Computes code coverage stats for Java code using the coverage tool EMMA.
 
   This class provides an API that allows users to capture absolute code coverage
@@ -399,9 +399,8 @@ class _EmmaCoverageStats(object):
     """
     if os.path.splitext(file_path)[1] == '.java' and os.path.exists(file_path):
       return True
-    else:
-      logging.info('Skipping file %s, cannot compute code coverage.', file_path)
-      return False
+    logging.info('Skipping file %s, cannot compute code coverage.', file_path)
+    return False
 
   @staticmethod
   def GetPackageNameFromFile(file_path):
@@ -421,8 +420,7 @@ class _EmmaCoverageStats(object):
         package = package_match.group(_EmmaCoverageStats.RE_PACKAGE_MATCH_GROUP)
         file_name = os.path.basename(file_path)
         return '%s.%s' % (package, file_name)
-      else:
-        return None
+      return None
 
 
 def GenerateCoverageReport(line_coverage_file, out_file_path, coverage_dir):

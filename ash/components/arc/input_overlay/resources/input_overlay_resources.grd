@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+     NOTE: if you are adding resources here, you should probably also edit:
+     ash/components/arc/input_overlay/resources/input_overlay_resources_util.cc
+-->
+<grit base_dir="." latest_public_release="0" current_release="1">
+  <outputs>
+    <output filename="grit/input_overlay_resources.h" type="rc_header" >
+      <emit emit_type='prepend'></emit>
+    </output>
+    <output filename="input_overlay_resources.pak" type="data_package" />
+  </outputs>
+
+  <release seq="1">
+    <includes>
+       <include name="IDR_IO_ORG_CHROMIUM_ARC_TESTAPP_INPUTOVERLAY" file="org.chromium.arc.testapp.inputoverlay.json" type="BINDATA" />
+       <include name="IDR_IO_COM_BLACKPANTHER_NINJAARASHI2" file="com.blackpanther.ninjaarashi2.json" type="BINDATA" />
+       <include name="IDR_IO_COM_HABBY_ARCHERO" file="com.habby.archero.json" type="BINDATA" />
+       <include name="IDR_IO_COM_DTS_FREEFIRETH" file="com.dts.freefireth.json" type="BINDATA" />
+    </includes>
+  </release>
+</grit>

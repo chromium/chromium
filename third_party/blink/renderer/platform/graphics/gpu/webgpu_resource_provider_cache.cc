@@ -6,6 +6,8 @@
 
 #include "base/metrics/histogram_functions.h"
 #include "base/time/time.h"
+#include "third_party/blink/renderer/platform/graphics/canvas_resource_provider.h"
+#include "third_party/blink/renderer/platform/wtf/functional.h"
 
 namespace blink {
 
@@ -116,6 +118,19 @@ void WebGPURecyclableResourceCache::OnDestroyRecyclableResource(
 
   StartResourceCleanUpTimer();
 }
+
+WebGPURecyclableResourceCache::Resource::Resource(
+    std::unique_ptr<CanvasResourceProvider> resource_provider,
+    unsigned int timer_id,
+    int resource_size)
+    : resource_provider_(std::move(resource_provider)),
+      timer_id_(timer_id),
+      resource_size_(resource_size) {}
+
+WebGPURecyclableResourceCache::Resource::Resource(Resource&& that) noexcept =
+    default;
+
+WebGPURecyclableResourceCache::Resource::~Resource() = default;
 
 std::unique_ptr<CanvasResourceProvider>
 WebGPURecyclableResourceCache::AcquireCachedProvider(

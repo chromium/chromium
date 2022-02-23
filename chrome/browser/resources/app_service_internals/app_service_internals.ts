@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/mojo/mojo/public/js/mojo_bindings_lite.js';
-
 import {html, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {AppInfo, AppServiceInternalsPageHandler, PreferredAppInfo} from './app_service_internals.mojom-webui.js';
@@ -64,6 +62,32 @@ export class AppServiceInternalsElement extends PolymerElement {
     }
 
     selected.scrollIntoView();
+  }
+
+  save_() {
+    const fileParts = [];
+    fileParts.push('App List\n');
+    fileParts.push('========\n\n');
+    for (const app of this.appList_) {
+      fileParts.push(app.name + '\n');
+      fileParts.push('-----\n');
+      fileParts.push(app.debugInfo + '\n');
+    }
+
+    fileParts.push('Preferred Apps\n');
+    fileParts.push('==============\n\n');
+    for (const preferredApp of this.preferredAppList_) {
+      fileParts.push(preferredApp.name + '\n');
+      fileParts.push('-----\n');
+      fileParts.push(preferredApp.preferredFilters + '\n');
+    }
+
+    const file = new Blob(fileParts);
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(file);
+    a.download = 'app-service-internals.txt';
+    a.click();
+    URL.revokeObjectURL(a.href);
   }
 }
 

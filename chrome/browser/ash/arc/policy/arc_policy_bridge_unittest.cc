@@ -8,6 +8,14 @@
 #include <string>
 #include <utility>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/enterprise/arc_data_snapshotd_manager.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_session_runner.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/fake_policy_instance.h"
 #include "base/bind.h"
 #include "base/callback_helpers.h"
 #include "base/json/json_reader.h"
@@ -22,6 +30,7 @@
 #include "chrome/browser/ash/arc/test/test_arc_session_manager.h"
 #include "chrome/browser/ash/login/users/fake_chrome_user_manager.h"
 #include "chrome/browser/policy/developer_tools_policy_handler.h"
+#include "chrome/browser/signin/identity_test_environment_profile_adaptor.h"
 #include "chrome/browser/supervised_user/supervised_user_constants.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -29,14 +38,7 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/upstart/fake_upstart_client.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/enterprise/arc_data_snapshotd_manager.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_session_runner.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_arc_session.h"
-#include "components/arc/test/fake_policy_instance.h"
+#include "chromeos/system/fake_statistics_provider.h"
 #include "components/keyed_service/content/browser_context_keyed_service_factory.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "components/policy/core/common/mock_policy_service.h"
@@ -45,6 +47,7 @@
 #include "components/policy/core/common/policy_types.h"
 #include "components/policy/core/common/remote_commands/remote_commands_queue.h"
 #include "components/policy/policy_constants.h"
+#include "components/signin/public/identity_manager/identity_test_environment.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "content/public/test/browser_task_environment.h"
@@ -220,6 +223,11 @@ class ArcPolicyBridgeTestBase {
   ArcPolicyBridgeTestBase& operator=(const ArcPolicyBridgeTestBase&) = delete;
 
   void DoSetUp(bool is_affiliated) {
+    // Set up fake StatisticsProvider.
+    chromeos::system::StatisticsProvider::SetTestProvider(
+        &statistics_provider_);
+
+    // Set up ArcBridgeService.
     bridge_service_ = std::make_unique<ArcBridgeService>();
     EXPECT_CALL(policy_service_,
                 GetPolicies(policy::PolicyNamespace(
@@ -231,7 +239,7 @@ class ArcPolicyBridgeTestBase {
                 RemoveObserver(policy::POLICY_DOMAIN_CHROME, _))
         .Times(1);
 
-    // Setting up user profile for ReportCompliance() tests.
+    // Set up user profile for ReportCompliance() tests.
     auto* const fake_user_manager = new ash::FakeChromeUserManager();
     user_manager_enabler_ = std::make_unique<user_manager::ScopedUserManager>(
         base::WrapUnique(fake_user_manager));
@@ -242,8 +250,16 @@ class ArcPolicyBridgeTestBase {
     testing_profile_manager_ = std::make_unique<TestingProfileManager>(
         TestingBrowserProcess::GetGlobal());
     ASSERT_TRUE(testing_profile_manager_->SetUp());
-    profile_ = testing_profile_manager_->CreateTestingProfile(kTestUserEmail);
+    profile_ = testing_profile_manager_->CreateTestingProfile(
+        kTestUserEmail, IdentityTestEnvironmentProfileAdaptor::
+                            GetIdentityTestEnvironmentFactories());
     ASSERT_TRUE(profile_);
+
+    auto identity_test_env_profile_adaptor =
+        std::make_unique<IdentityTestEnvironmentProfileAdaptor>(profile_);
+    identity_test_env_profile_adaptor->identity_test_env()
+        ->MakePrimaryAccountAvailable(kTestUserEmail,
+                                      signin::ConsentLevel::kSignin);
 
     cert_store_service_ = GetCertStoreService();
 
@@ -298,8 +314,7 @@ class ArcPolicyBridgeTestBase {
           base::JSONReader::ReadDeprecated(
               policy_bridge()->get_arc_policy_compliance_report());
       ASSERT_TRUE(saved_compliance_report_value);
-      EXPECT_TRUE(
-          compliance_report_value->Equals(saved_compliance_report_value.get()));
+      EXPECT_EQ(*compliance_report_value, *saved_compliance_report_value);
     } else {
       EXPECT_TRUE(policy_bridge()->get_arc_policy_compliance_report().empty());
     }
@@ -325,6 +340,7 @@ class ArcPolicyBridgeTestBase {
   TestingProfile* profile() { return profile_; }
   ArcBridgeService* bridge_service() { return bridge_service_.get(); }
   CertStoreService* cert_store_service() { return cert_store_service_; }
+  chromeos::system::FakeStatisticsProvider statistics_provider_;
 
  private:
   content::BrowserTaskEnvironment task_environment_;
@@ -504,8 +520,8 @@ TEST_F(ArcPolicyBridgeTest, ExternalStorageDisabledTest) {
 
 TEST_F(ArcPolicyBridgeTest, WallpaperImageSetTest) {
   base::DictionaryValue dict;
-  dict.SetString("url", "https://example.com/wallpaper.jpg");
-  dict.SetString("hash", "somehash");
+  dict.SetStringKey("url", "https://example.com/wallpaper.jpg");
+  dict.SetStringKey("hash", "somehash");
   policy_map().Set(policy::key::kWallpaperImage, policy::POLICY_LEVEL_MANDATORY,
                    policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
                    dict.Clone(), nullptr);
@@ -589,6 +605,31 @@ TEST_F(ArcPolicyBridgeTest, DeveloperToolsPolicyDisallowedTest) {
   GetPoliciesAndVerifyResult(
       "{\"apkCacheEnabled\":true,\"debuggingFeaturesDisabled\":true,\"guid\":"
       "\"" +
+      instance_guid() + "\"}");
+}
+
+TEST_F(ArcPolicyBridgeTest, ManagedConfigurationVariablesTest) {
+  policy_map().Set(policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,
+                   policy::POLICY_SCOPE_USER, policy::POLICY_SOURCE_CLOUD,
+                   base::Value("{\"applications\":"
+                               "[{\"packageName\":\"de.blinkt.openvpn\","
+                               "\"installType\":\"REQUIRED\","
+                               "\"managedConfiguration\":"
+                               "{\"email\":\"${USER_EMAIL}\","
+                               "\"other_attribute\":\"untouched\"}"
+                               "}],"
+                               "\"defaultPermissionPolicy\":\"GRANT\"}"),
+                   nullptr);
+  GetPoliciesAndVerifyResult(
+      "{\"apkCacheEnabled\":true,\"applications\":"
+      "[{\"installType\":\"REQUIRED\","
+      "\"managedConfiguration\":"
+      "{\"email\":\"user@gmail.com\","
+      "\"other_attribute\":\"untouched\"},"
+      "\"packageName\":\"de.blinkt.openvpn\""
+      "}],"
+      "\"defaultPermissionPolicy\":\"GRANT\","
+      "\"guid\":\"" +
       instance_guid() + "\"}");
 }
 
@@ -684,7 +725,7 @@ TEST_F(ArcPolicyBridgeTest, VpnConfigAllowedTest) {
 
 TEST_F(ArcPolicyBridgeTest, ManualChildUserPoliciesSet) {
   // Mark profile as supervised user.
-  profile()->SetSupervisedUserId(::supervised_users::kChildAccountSUID);
+  profile()->SetIsSupervisedProfile();
   EXPECT_TRUE(profile()->IsChild());
 
   policy_map().Set(policy::key::kArcPolicy, policy::POLICY_LEVEL_MANDATORY,

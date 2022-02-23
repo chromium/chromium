@@ -211,6 +211,10 @@ using chromeos::WindowStateType;
 // because layout can change due to orientation lock state or accelerometer.
 constexpr int kConfigureDelayAfterLayoutSwitchMs = 300;
 
+constexpr int kRemoteShellSeatObserverPriority = 0;
+static_assert(Seat::IsValidObserverPriority(kRemoteShellSeatObserverPriority),
+              "kRemoteShellSeatObserverPriority is not in the valid range.");
+
 // Convert to 8.24 fixed format.
 int32_t To8_24Fixed(double value) {
   constexpr int kDecimalBits = 24;
@@ -425,7 +429,8 @@ WaylandRemoteShell::WaylandRemoteShell(
       display_(display),
       remote_shell_resource_(remote_shell_resource),
       output_provider_(output_provider),
-      use_default_scale_cancellation_(use_default_scale_cancellation_default) {
+      use_default_scale_cancellation_(use_default_scale_cancellation_default),
+      seat_(display->seat()) {
   WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
   helper->AddTabletModeObserver(this);
   helper->AddFrameThrottlingObserver();
@@ -448,18 +453,19 @@ WaylandRemoteShell::WaylandRemoteShell(
   }
 
   SendDisplayMetrics();
-  // In v2 this event was moved to zaura shell
-  if (event_mapping_.send_activated) {
-    display->seat()->SetFocusChangedCallback(
-        base::BindRepeating(&WaylandRemoteShell::FocusedSurfaceChanged,
-                            weak_ptr_factory_.GetWeakPtr()));
-  }
+
+  // The activation event has been moved to aura_shell, but the
+  // desktop_focus_state event is still in remote_shell, which needs to be
+  // called before the activation event.
+  display->seat()->AddObserver(this, kRemoteShellSeatObserverPriority);
 }
 
 WaylandRemoteShell::~WaylandRemoteShell() {
   WMHelperChromeOS* helper = WMHelperChromeOS::GetInstance();
   helper->RemoveTabletModeObserver(this);
   helper->RemoveFrameThrottlingObserver();
+  if (seat_)
+    seat_->RemoveObserver(this);
 }
 
 std::unique_ptr<ClientControlledShellSurface>
@@ -522,6 +528,15 @@ void WaylandRemoteShell::OnDisplayRemoved(const display::Display& old_display) {
   ScheduleSendDisplayMetrics(0);
 }
 
+void WaylandRemoteShell::OnDisplayTabletStateChanged(
+    display::TabletState state) {
+  const bool layout_change_started =
+      state == display::TabletState::kEnteringTabletMode ||
+      state == display::TabletState::kExitingTabletMode;
+  if (layout_change_started)
+    ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
+}
+
 void WaylandRemoteShell::OnDisplayMetricsChanged(
     const display::Display& display,
     uint32_t changed_metrics) {
@@ -541,14 +556,12 @@ void WaylandRemoteShell::OnTabletModeStarted() {
   if (wl_resource_get_version(remote_shell_resource_) >=
       event_mapping_.layout_mode_since_version)
     event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
-  ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
 }
 void WaylandRemoteShell::OnTabletModeEnding() {
   layout_mode_ = ZCR_REMOTE_SHELL_V1_LAYOUT_MODE_WINDOWED;
   if (wl_resource_get_version(remote_shell_resource_) >=
       event_mapping_.layout_mode_since_version)
     event_mapping_.send_layout_mode(remote_shell_resource_, layout_mode_);
-  ScheduleSendDisplayMetrics(kConfigureDelayAfterLayoutSwitchMs);
 }
 void WaylandRemoteShell::OnTabletModeEnded() {}
 
@@ -670,11 +683,20 @@ void WaylandRemoteShell::SendDisplayMetrics() {
     wl_client_flush(client);
 }
 
+void WaylandRemoteShell::OnSurfaceFocused(Surface* gained_focus,
+                                          Surface* lost_focus,
+                                          bool has_focused_client) {
+  FocusedSurfaceChanged(gained_focus, lost_focus, has_focused_client);
+}
+
 void WaylandRemoteShell::FocusedSurfaceChanged(Surface* gained_active_surface,
                                                Surface* lost_active_surface,
                                                bool has_focused_client) {
-  if (gained_active_surface == lost_active_surface)
+  if (gained_active_surface == lost_active_surface &&
+      last_has_focused_client_ == has_focused_client) {
     return;
+  }
+  last_has_focused_client_ = has_focused_client;
 
   wl_resource* gained_active_surface_resource =
       gained_active_surface ? GetSurfaceResource(gained_active_surface)
@@ -751,33 +773,15 @@ void WaylandRemoteShell::OnRemoteSurfaceBoundsChanged(
     }
   }
 
-  if (wl_resource_get_version(resource) >=
-      event_mapping_.send_bounds_changed_since_version) {
-    if (needs_send_display_metrics_) {
-      // We store only the latest bounds for each |resource|.
-      pending_bounds_changes_.insert_or_assign(
-          std::move(resource),
-          BoundsChangeData(display_id, bounds_in_display, reason));
-      return;
-    }
-    SendBoundsChanged(resource, display_id, bounds_in_display, reason);
-  } else {
-    gfx::Rect bounds_in_screen = gfx::Rect(bounds_in_display);
-    display::Display display;
-    display::Screen::GetScreen()->GetDisplayWithDisplayId(display_id, &display);
-    // The display ID should be valid.
-    DCHECK(display.is_valid());
-    if (display.is_valid())
-      bounds_in_screen.Offset(display.bounds().OffsetFromOrigin());
-    else
-      LOG(ERROR) << "Invalid Display in send_bounds_changed:" << display_id;
-
-    event_mapping_.send_bounds_changed(
-        resource, static_cast<uint32_t>(display_id >> 32),
-        static_cast<uint32_t>(display_id), bounds_in_screen.x(),
-        bounds_in_screen.y(), bounds_in_screen.width(),
-        bounds_in_screen.height(), reason);
+  if (needs_send_display_metrics_) {
+    // We store only the latest bounds for each |resource|.
+    pending_bounds_changes_.insert_or_assign(
+        std::move(resource),
+        BoundsChangeData(display_id, bounds_in_display, reason));
+    return;
   }
+  SendBoundsChanged(resource, display_id, bounds_in_display, reason);
+
   wl_client_flush(wl_resource_get_client(resource));
 }
 

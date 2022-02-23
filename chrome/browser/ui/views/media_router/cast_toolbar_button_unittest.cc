@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 
 #include "base/bind.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
 #include "chrome/browser/themes/theme_properties.h"
@@ -47,17 +48,12 @@ std::unique_ptr<KeyedService> BuildUIService(content::BrowserContext* context) {
 
 MediaRoute CreateLocalDisplayRoute() {
   return MediaRoute("routeId1", MediaSource("source1"), "sinkId1",
-                    "description", true, true);
+                    "description", true);
 }
 
 MediaRoute CreateNonLocalDisplayRoute() {
   return MediaRoute("routeId2", MediaSource("source2"), "sinkId2",
-                    "description", false, true);
-}
-
-MediaRoute CreateLocalNonDisplayRoute() {
-  return MediaRoute("routeId3", MediaSource("source3"), "sinkId3",
-                    "description", true, false);
+                    "description", false);
 }
 
 class MockContextMenuObserver : public MediaRouterContextualMenu::Observer {
@@ -136,7 +132,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   std::unique_ptr<BrowserWindow> window_;
   std::unique_ptr<Browser> browser_;
   std::unique_ptr<views::Widget> widget_;
-  CastToolbarButton* button_ = nullptr;  // owned by |widget_|.
+  raw_ptr<CastToolbarButton> button_ = nullptr;  // owned by |widget_|.
   MockContextMenuObserver context_menu_observer_;
   std::unique_ptr<TestingProfile> profile_;
   std::unique_ptr<LoggerImpl> logger_;
@@ -149,7 +145,7 @@ class CastToolbarButtonTest : public ChromeViewsTestBase {
   const std::vector<MediaRoute> local_display_route_list_ = {
       CreateLocalDisplayRoute()};
   const std::vector<MediaRoute> non_local_display_route_list_ = {
-      CreateNonLocalDisplayRoute(), CreateLocalNonDisplayRoute()};
+      CreateNonLocalDisplayRoute()};
 };
 
 TEST_F(CastToolbarButtonTest, ShowAndHideButton) {
@@ -186,15 +182,15 @@ TEST_F(CastToolbarButtonTest, UpdateRoutes) {
   button_->UpdateIcon();
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 
-  button_->OnRoutesUpdated(local_display_route_list_, {});
+  button_->OnRoutesUpdated(local_display_route_list_);
   EXPECT_TRUE(gfx::test::AreImagesEqual(active_icon_, GetIcon()));
 
   // The idle icon should be shown when we only have non-local and/or
   // non-display routes.
-  button_->OnRoutesUpdated(non_local_display_route_list_, {});
+  button_->OnRoutesUpdated(non_local_display_route_list_);
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 
-  button_->OnRoutesUpdated({}, {});
+  button_->OnRoutesUpdated({});
   EXPECT_TRUE(gfx::test::AreImagesEqual(idle_icon_, GetIcon()));
 }
 

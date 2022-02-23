@@ -5,7 +5,7 @@
 #include "base/ios/ios_util.h"
 #include "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
-#include "components/sync/invalidations/switches.h"
+#include "components/sync/base/features.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
@@ -69,8 +69,8 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self isRunningTest:@selector(testSyncInvalidationsEnabled)]) {
-    config.features_enabled.push_back(switches::kSyncSendInterestedDataTypes);
-    config.features_enabled.push_back(switches::kUseSyncInvalidations);
+    config.features_enabled.push_back(syncer::kSyncSendInterestedDataTypes);
+    config.features_enabled.push_back(syncer::kUseSyncInvalidations);
   }
   return config;
 }
@@ -81,7 +81,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [BookmarkEarlGrey addBookmarkWithTitle:@"foo" URL:@"https://www.foo.com"];
 
   // Sign in to sync, after a bookmark has been added.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -92,7 +92,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Tests that a bookmark added on the client is uploaded to the Sync server.
 - (void)testSyncUploadBookmark {
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -104,13 +104,14 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Tests that a bookmark injected in the FakeServer is synced down to the
 // client.
-- (void)testSyncDownloadBookmark {
+// Flaky test. See crbug.com/1275849.
+- (void)DISABLED_testSyncDownloadBookmark {
   [BookmarkEarlGrey verifyBookmarksWithTitle:@"hoo" expectedCount:0];
   const GURL URL = web::test::HttpServer::MakeUrl("http://www.hoo.com");
   [ChromeEarlGrey addFakeSyncServerBookmarkWithURL:URL title:"hoo"];
 
   // Sign in to sync, after a bookmark has been injected in the sync server.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
@@ -121,7 +122,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 // TODO(crbug.com/1222348): Test is regularly failing.
 - (void)DISABLED_testSyncCheckSameCacheGuid_SyncRestarted {
   // Sign in the fake identity.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
@@ -142,7 +143,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 // signs back in with the same account.
 - (void)testSyncCheckDifferentCacheGuid_SignOutAndSignIn {
   // Sign in a fake identity, and store the initial sync guid.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
@@ -166,7 +167,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 // TODO(crbug.com/1222348): Test is regularly failing.
 - (void)DISABLED_testSyncCheckSameCacheGuid_SyncRestartedAfterSignOutAndSignIn {
   // Sign in a fake idenitty.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
   [ChromeEarlGrey waitForSyncInitialized:YES syncTimeout:kSyncOperationTimeout];
@@ -205,7 +206,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   }];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -218,7 +219,8 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Test that update to autofill profile injected in FakeServer gets synced to
 // client.
-- (void)testSyncUpdateAutofillProfile {
+// Flaky test. See crbug.com/1276654.
+- (void)DISABLED_testSyncUpdateAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   const std::string kUpdatedFullName = "Roger Rabbit";
@@ -233,7 +235,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   }];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -265,7 +267,8 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 // Test that autofill profile deleted from FakeServer gets deleted from client
 // as well.
-- (void)testSyncDeleteAutofillProfile {
+// Flaky test. See crbug.com/1276413.
+- (void)DISABLED_testSyncDeleteAutofillProfile {
   const std::string kGuid = "2340E83B-5BEE-4560-8F95-5914EF7F539E";
   const std::string kFullName = "Peter Pan";
   GREYAssertFalse([ChromeEarlGrey isAutofillProfilePresentWithGUID:kGuid
@@ -278,7 +281,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   }];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -318,7 +321,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [ChromeEarlGrey loadURL:URL2];
 
   // Sign in to sync, after opening two tabs.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -345,7 +348,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -372,7 +375,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [ChromeEarlGrey addFakeSyncServerTypedURL:mockURL];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -398,7 +401,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [ChromeEarlGrey addFakeSyncServerTypedURL:mockURL];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -432,7 +435,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
   [ChromeEarlGrey addHistoryServiceTypedURL:mockURL];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -474,7 +477,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
                    originator_client_item_id:"1"];
 
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 
@@ -486,7 +489,7 @@ void AssertNumberOfEntities(int entity_count, syncer::ModelType entity_type) {
 
 - (void)testSyncInvalidationsEnabled {
   // Sign in to sync.
-  FakeChromeIdentity* fakeIdentity = [SigninEarlGrey fakeIdentity1];
+  FakeChromeIdentity* fakeIdentity = [FakeChromeIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
 

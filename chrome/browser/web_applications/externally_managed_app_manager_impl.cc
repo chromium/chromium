@@ -15,12 +15,13 @@
 #include "base/threading/thread_task_runner_handle.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/externally_managed_app_registration_task.h"
-#include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_finalizer.h"
+#include "chrome/browser/web_applications/web_app_install_manager.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/common/chrome_features.h"
+#include "components/webapps/browser/install_result_code.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/url_constants.h"
 
@@ -115,8 +116,8 @@ std::unique_ptr<ExternallyManagedAppInstallTask>
 ExternallyManagedAppManagerImpl::CreateInstallationTask(
     ExternalInstallOptions install_options) {
   return std::make_unique<ExternallyManagedAppInstallTask>(
-      profile_, url_loader_.get(), registrar(), os_integration_manager(),
-      ui_manager(), finalizer(), install_manager(), std::move(install_options));
+      profile_, url_loader_.get(), registrar(), ui_manager(), finalizer(),
+      install_manager(), std::move(install_options));
 }
 
 std::unique_ptr<ExternallyManagedAppRegistrationTaskBase>
@@ -195,8 +196,9 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
       // Otherwise no need to do anything.
       std::move(front->callback)
           .Run(install_options.install_url,
-               {.code = InstallResultCode::kSuccessAlreadyInstalled,
-                .did_uninstall_and_replace = false});
+               ExternallyManagedAppManager::InstallResult(
+                   webapps::InstallResultCode::kSuccessAlreadyInstalled,
+                   app_id));
       continue;
     }
 
@@ -207,8 +209,8 @@ void ExternallyManagedAppManagerImpl::MaybeStartNext() {
         !install_options.override_previous_user_uninstall) {
       std::move(front->callback)
           .Run(install_options.install_url,
-               {.code = InstallResultCode::kPreviouslyUninstalled,
-                .did_uninstall_and_replace = false});
+               ExternallyManagedAppManager::InstallResult(
+                   webapps::InstallResultCode::kPreviouslyUninstalled, app_id));
       continue;
     }
 
@@ -266,9 +268,8 @@ void ExternallyManagedAppManagerImpl::CreateWebContentsIfNecessary() {
 }
 
 void ExternallyManagedAppManagerImpl::OnInstalled(
-    absl::optional<AppId> app_id,
     ExternallyManagedAppManager::InstallResult result) {
-  if (app_id && IsSuccess(result.code)) {
+  if (result.app_id && IsSuccess(result.code)) {
     MaybeEnqueueServiceWorkerRegistration(
         current_install_->task->install_options());
   }

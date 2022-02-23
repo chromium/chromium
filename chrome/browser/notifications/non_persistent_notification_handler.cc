@@ -14,13 +14,13 @@
 #include "components/permissions/permission_util.h"
 #include "content/public/browser/notification_event_dispatcher.h"
 
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/ui/browser_navigator.h"
 #include "chrome/browser/ui/browser_navigator_params.h"
 #include "ui/base/page_transition_types.h"
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
 NonPersistentNotificationHandler::NonPersistentNotificationHandler() = default;
 NonPersistentNotificationHandler::~NonPersistentNotificationHandler() = default;
@@ -70,7 +70,7 @@ void NonPersistentNotificationHandler::DidDispatchClickEvent(
     const std::string& notification_id,
     base::OnceClosure completed_closure,
     bool success) {
-#if !defined(OS_ANDROID)
+#if !BUILDFLAG(IS_ANDROID)
   // Non-persistent notifications are able to outlive the document that created
   // them. In such cases the JavaScript event handler might not be available
   // when the notification is interacted with. Launch a new tab for the
@@ -87,7 +87,7 @@ void NonPersistentNotificationHandler::DidDispatchClickEvent(
     PlatformNotificationServiceFactory::GetForProfile(profile)
         ->CloseNotification(notification_id);
   }
-#endif  // !defined(OS_ANDROID)
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   std::move(completed_closure).Run();
 }

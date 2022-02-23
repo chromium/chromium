@@ -109,7 +109,7 @@ void TransformOperation::Bake() {
       break;
     case TransformOperation::TRANSFORM_OPERATION_PERSPECTIVE: {
       Transform m;
-      m.matrix().set(3, 2, perspective_m43);
+      m.matrix().setRC(3, 2, perspective_m43);
       matrix.PreconcatTransform(m);
       break;
     }

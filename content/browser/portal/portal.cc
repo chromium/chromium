@@ -186,10 +186,8 @@ RenderFrameProxyHost* Portal::CreateProxyAndAttachPortal() {
     }
   }
 
-  FrameTreeNode* frame_tree_node =
-      portal_contents_->GetMainFrame()->frame_tree_node();
   RenderFrameProxyHost* proxy_host =
-      frame_tree_node->render_manager()->GetProxyToOuterDelegate();
+      portal_contents_->GetMainFrame()->GetProxyToOuterDelegate();
   proxy_host->SetRenderFrameProxyCreated(true);
   portal_contents_->ReattachToOuterWebContentsFrame();
 
@@ -209,14 +207,18 @@ void Portal::Close() {
   is_closing_ = true;
   receiver_.reset();
 
-  // If the contents is unowned, it would need to be properly detached from the
-  // WebContentsTreeNode before it can be cleanly closed. Otherwise a race is
-  // possible.
+  // If the contents is attached to its outer `WebContents`, and therefore not
+  // owned by `portal_contents_`, we can destroy ourself right now.
   if (!portal_contents_.OwnsContents()) {
     DestroySelf();  // Deletes this.
     return;
   }
 
+  // Otherwise if the portal contents is not attached to an outer `WebContents`,
+  // we have to manage the destruction process ourself. We start by calling
+  // `WebContentsImpl::ClosePage()`, which will go through the proper unload
+  // handler dance, and eventually come back and call `Portal::CloseContents()`,
+  // which for orphaned contents, will finally invoke `DestroySelf()`.
   portal_contents_->ClosePage();
 }
 
@@ -257,7 +259,7 @@ void Portal::Navigate(const GURL& url,
   const blink::LocalFrameToken frame_token =
       owner_render_frame_host_->GetFrameToken();
   portal_root->navigator().NavigateFromFrameProxy(
-      portal_frame, url, &frame_token,
+      portal_frame, out_validated_url, &frame_token,
       owner_render_frame_host_->GetProcess()->GetID(),
       owner_render_frame_host_->GetLastCommittedOrigin(),
       owner_render_frame_host_->GetSiteInstance(),
@@ -406,7 +408,7 @@ void Portal::WebContentsDestroyed() {
 }
 
 void Portal::LoadingStateChanged(WebContents* source,
-                                 bool to_different_document) {
+                                 bool should_show_loading_ui) {
   DCHECK_EQ(source, portal_contents_.get());
   if (!source->IsLoading())
     client_->DispatchLoadEvent();
@@ -492,7 +494,8 @@ std::pair<bool, blink::mojom::PortalActivateResult> Portal::CanActivate() {
 
   // If no navigation has yet committed in the portal, it cannot be activated as
   // this would lead to an empty tab contents (without even an about:blank).
-  if (portal_controller.GetLastCommittedEntryIndex() < 0) {
+  if (!portal_controller.GetLastCommittedEntry() ||
+      portal_controller.GetLastCommittedEntry()->IsInitialEntry()) {
     return std::make_pair(
         false,
         blink::mojom::PortalActivateResult::kRejectedDueToPortalNotReady);

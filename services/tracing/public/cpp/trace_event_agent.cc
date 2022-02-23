@@ -24,7 +24,7 @@
 #include "services/tracing/public/cpp/trace_event_args_allowlist.h"
 #include "services/tracing/public/cpp/tracing_features.h"
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "services/tracing/public/cpp/stack_sampling/reached_code_data_source_android.h"
 #endif
 
@@ -53,7 +53,7 @@ TraceEventAgent::TraceEventAgent() {
   PerfettoTracedProcess::Get()->AddDataSource(
       TraceEventDataSource::GetInstance());
   TracingSamplerProfiler::RegisterDataSource();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   PerfettoTracedProcess::Get()->AddDataSource(ReachedCodeDataSource::Get());
 #endif
 }

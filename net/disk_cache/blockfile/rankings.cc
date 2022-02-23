@@ -9,7 +9,7 @@
 #include <limits>
 #include <memory>
 
-#include "base/macros.h"
+#include "base/memory/raw_ptr.h"
 #include "base/process/process.h"
 #include "build/build_config.h"
 #include "net/base/net_export.h"
@@ -20,7 +20,7 @@
 #include "net/disk_cache/blockfile/histogram_macros.h"
 #include "net/disk_cache/blockfile/stress_support.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include <windows.h>
 #endif
 
@@ -61,7 +61,7 @@ class Transaction {
 
   ~Transaction();
  private:
-  volatile disk_cache::LruData* data_;
+  raw_ptr<volatile disk_cache::LruData> data_;
 };
 
 Transaction::Transaction(volatile disk_cache::LruData* data,
@@ -91,7 +91,7 @@ enum CrashLocation {
 // builds, according to the value of g_rankings_crash. This used by
 // crash_cache.exe to generate unit-test files.
 void GenerateCrash(CrashLocation location) {
-#if !defined(NDEBUG) && !defined(OS_IOS)
+#if !defined(NDEBUG) && !BUILDFLAG(IS_IOS)
   if (disk_cache::NO_CRASH == disk_cache::g_rankings_crash)
     return;
   switch (location) {

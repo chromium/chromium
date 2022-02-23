@@ -6,6 +6,8 @@
 #include <Carbon/Carbon.h>
 #include <stddef.h>
 
+#include <initializer_list>
+
 #include "chrome/browser/global_keyboard_shortcuts_mac.h"
 
 #include "base/check_op.h"
@@ -17,20 +19,37 @@
 
 namespace {
 
-int CommandForKeys(bool command_key,
-                   bool shift_key,
-                   bool cntrl_key,
-                   bool opt_key,
-                   int vkey_code) {
+enum class CommandKeyState : bool {
+  kUp,
+  kDown,
+};
+enum class ShiftKeyState : bool {
+  kUp,
+  kDown,
+};
+enum class OptionKeyState : bool {
+  kUp,
+  kDown,
+};
+enum class ControlKeyState : bool {
+  kUp,
+  kDown,
+};
+
+int CommandForKeys(int vkey_code,
+                   CommandKeyState command,
+                   ShiftKeyState shift = ShiftKeyState::kUp,
+                   OptionKeyState option = OptionKeyState::kUp,
+                   ControlKeyState control = ControlKeyState::kUp) {
   NSUInteger modifierFlags = 0;
-  if (command_key)
+  if (command == CommandKeyState::kDown)
     modifierFlags |= NSCommandKeyMask;
-  if (shift_key)
+  if (shift == ShiftKeyState::kDown)
     modifierFlags |= NSShiftKeyMask;
-  if (cntrl_key)
-    modifierFlags |= NSControlKeyMask;
-  if (opt_key)
+  if (option == OptionKeyState::kDown)
     modifierFlags |= NSAlternateKeyMask;
+  if (control == ControlKeyState::kDown)
+    modifierFlags |= NSControlKeyMask;
 
   switch (vkey_code) {
     case kVK_UpArrow:
@@ -72,19 +91,34 @@ int CommandForKeys(bool command_key,
 
 TEST(GlobalKeyboardShortcuts, BasicFunctionality) {
   // Test that an invalid shortcut translates into an invalid command id.
-  EXPECT_EQ(-1, CommandForKeys(false, false, false, false, 0));
+  const int kInvalidCommandId = -1;
+  const int no_key_code = 0;
+  EXPECT_EQ(
+      kInvalidCommandId,
+      CommandForKeys(no_key_code, CommandKeyState::kUp, ShiftKeyState::kUp,
+                     OptionKeyState::kUp, ControlKeyState::kUp));
 
   // Check that all known keyboard shortcuts return valid results.
   for (const auto& shortcut : GetShortcutsNotPresentInMainMenu()) {
-    int cmd_num = CommandForKeys(shortcut.command_key, shortcut.shift_key,
-                                 shortcut.cntrl_key, shortcut.opt_key,
-                                 shortcut.vkey_code);
+    CommandKeyState command =
+        shortcut.command_key ? CommandKeyState::kDown : CommandKeyState::kUp;
+    ShiftKeyState shift =
+        shortcut.shift_key ? ShiftKeyState::kDown : ShiftKeyState::kUp;
+    OptionKeyState option =
+        shortcut.opt_key ? OptionKeyState::kDown : OptionKeyState::kUp;
+    ControlKeyState control =
+        shortcut.cntrl_key ? ControlKeyState::kDown : ControlKeyState::kUp;
+
+    int cmd_num =
+        CommandForKeys(shortcut.vkey_code, command, shift, option, control);
     EXPECT_EQ(cmd_num, shortcut.chrome_command);
   }
   // Test that switching tabs triggers off keycodes and not characters (visible
   // with the Italian keyboard layout).
-  EXPECT_EQ(IDC_SELECT_TAB_0,
-            CommandForKeys(true, false, false, false, kVK_ANSI_1));
+  EXPECT_EQ(
+      IDC_SELECT_TAB_0,
+      CommandForKeys(kVK_ANSI_1, CommandKeyState::kDown, ShiftKeyState::kUp,
+                     OptionKeyState::kUp, ControlKeyState::kUp));
 }
 
 TEST(GlobalKeyboardShortcuts, KeypadNumberKeysMatch) {
@@ -108,19 +142,18 @@ TEST(GlobalKeyboardShortcuts, KeypadNumberKeysMatch) {
 
   // We only consider unshifted keys. A shifted numpad key gives a different
   // keyEquivalent than a shifted number key.
-  int shift = 0;
+  const ShiftKeyState shift = ShiftKeyState::kUp;
   for (unsigned int i = 0; i < base::size(equivalents); ++i) {
-    for (int command = 0; command <= 1; ++command) {
-      for (int control = 0; control <= 1; ++control) {
-        for (int option = 0; option <= 1; ++option) {
-          EXPECT_EQ(CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keycode),
-                    CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keypad_keycode));
-          EXPECT_EQ(CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keycode),
-                    CommandForKeys(command, shift, control, option,
-                                   equivalents[i].keypad_keycode));
+    for (CommandKeyState command :
+         {CommandKeyState::kUp, CommandKeyState::kDown}) {
+      for (OptionKeyState option :
+           {OptionKeyState::kUp, OptionKeyState::kDown}) {
+        for (ControlKeyState control :
+             {ControlKeyState::kUp, ControlKeyState::kDown}) {
+          EXPECT_EQ(CommandForKeys(equivalents[i].keycode, command, shift,
+                                   option, control),
+                    CommandForKeys(equivalents[i].keypad_keycode, command,
+                                   shift, option, control));
         }
       }
     }

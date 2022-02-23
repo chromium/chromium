@@ -14,7 +14,7 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "build/build_config.h"
-#include "media/base/decode_status.h"
+#include "media/base/decoder_status.h"
 #include "media/base/status.h"
 #include "media/base/supported_video_decoder_config.h"
 #include "media/base/video_codecs.h"
@@ -57,7 +57,7 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
  public:
   // Minimum resolution that we'll consider "not low resolution" for the purpose
   // of falling back to software.
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   // Effectively opt-out CrOS, since it may cause tests to fail (b/179724180).
   static constexpr int32_t kMinResolution = 2 * 2;
 #else
@@ -123,9 +123,9 @@ class PLATFORM_EXPORT RTCVideoDecoderAdapter : public webrtc::VideoDecoder {
   void InitializeOnMediaThread(const media::VideoDecoderConfig& config,
                                InitCB init_cb);
   static void OnInitializeDone(base::OnceCallback<void(bool)> cb,
-                               media::Status status);
+                               media::DecoderStatus status);
   void DecodeOnMediaThread();
-  void OnDecodeDone(media::Status status);
+  void OnDecodeDone(media::DecoderStatus status);
   void OnOutput(scoped_refptr<media::VideoFrame> frame);
 
   bool ShouldReinitializeForSettingHDRColorSpace(

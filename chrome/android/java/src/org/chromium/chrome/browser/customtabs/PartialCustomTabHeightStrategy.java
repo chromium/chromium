@@ -28,6 +28,10 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Px;
 import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MotionEventCompat;
+import androidx.core.view.ViewCompat;
+import androidx.core.view.WindowCompat;
+import androidx.core.view.WindowInsetsCompat;
+import androidx.core.view.WindowInsetsControllerCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.MathUtils;
@@ -97,12 +101,14 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
     /* package */ class PartialCustomTabHandleStrategy
             extends GestureDetector.SimpleOnGestureListener
             implements CustomTabToolbar.HandleStrategy {
+        private static final int CLOSE_DISTANCE = 300;
         private GestureDetector mGestureDetector;
         private float mLastPosY;
         private float mLastDownPosY;
         private float mMostRecentYDistance;
         private float mInitialY;
         private boolean mSeenFirstMoveOrDown;
+        private Runnable mCloseHandler;
 
         public PartialCustomTabHandleStrategy(Context context) {
             mGestureDetector = new GestureDetector(context, this, ThreadUtils.getUiThreadHandler());
@@ -153,6 +159,10 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                         if (y - mLastPosY != 0) {
                             mMostRecentYDistance = y - mLastPosY;
                         }
+                        if (mStatus == HeightStatus.INITIAL_HEIGHT
+                                && y - mInitialY > CLOSE_DISTANCE) {
+                            mCloseHandler.run();
+                        }
                     }
                     mLastPosY = y;
                     return true;
@@ -169,6 +179,11 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
                 default:
                     return true;
             }
+        }
+
+        @Override
+        public void setCloseClickHandler(Runnable handler) {
+            mCloseHandler = handler;
         }
 
         @Override
@@ -330,7 +345,16 @@ public class PartialCustomTabHeightStrategy extends CustomTabHeightStrategy
         mActivity.getWindow().setAttributes(attributes);
 
         View decorView = mActivity.getWindow().getDecorView();
-        decorView.setSystemUiVisibility(View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION);
+        // Workaround for sometimes we get a null WindowInsetsControllerCompat.
+        decorView.getRootView().setLayoutParams(attributes);
+        // Hide the navigation bar to reduce flickering at the bottom. Because FLAG_LAYOUT_NO_LIMITS
+        // flag we used in onMoveStart() will make the navigation bar background color to be
+        // transparent, so there is a transient stage.
+        WindowCompat.setDecorFitsSystemWindows(mActivity.getWindow(), true);
+        WindowInsetsControllerCompat controller = ViewCompat.getWindowInsetsController(decorView);
+        controller.hide(WindowInsetsCompat.Type.navigationBars());
+        controller.setSystemBarsBehavior(
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE);
     }
 
     private void updateWindowHeight(@Px int y) {

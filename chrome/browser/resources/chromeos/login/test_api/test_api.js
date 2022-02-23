@@ -2,6 +2,13 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+// clang-format off
+// #import {afterNextRender, Polymer} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+// #import {$} from 'chrome://resources/js/util.m.js';
+// #import {loadTimeData} from 'chrome://resources/js/load_time_data.m.js';
+// #import {assert} from 'chrome://resources/js/assert.m.js';
+// clang-format on
+
 /**
  * @fileoverview Common testing utils methods used for OOBE tast tests.
  */
@@ -129,6 +136,10 @@ class HIDDetectionScreenTester extends ScreenElementApi {
     return keyboardTickIcon.isVisible();
   }
 
+  getNextButtonName() {
+    return loadTimeData.getString('hidDetectionContinue');
+  }
+
   canClickNext() {
     return this.nextButton.isEnabled();
   }
@@ -156,6 +167,11 @@ class NetworkScreenTester extends ScreenElementApi {
     super('network-selection');
     this.nextButton = new PolymerElementApi(this, '#nextButton');
   }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipNetworkFirstShow');
+  }
 }
 
 class EulaScreenTester extends ScreenElementApi {
@@ -178,6 +194,10 @@ class EulaScreenTester extends ScreenElementApi {
   isReadyForTesting() {
     return this.isVisible() && this.eulaStep.isVisible() &&
         this.nextButton.isVisible();
+  }
+
+  getNextButtonName() {
+    return loadTimeData.getString('oobeEulaAcceptAndContinueButtonText');
   }
 }
 
@@ -384,6 +404,7 @@ class OobeApiProvider {
       ConfirmSamlPasswordScreen: new ConfirmSamlPasswordScreenTester(),
       PinSetupScreen: new PinSetupScreenTester(),
       EnterpriseEnrollmentScreen: new EnterpriseEnrollmentScreenTester(),
+      GuestTosScreen: new GuestTosScreenTester(),
     };
 
     this.loginWithPin = function(username, pin) {
@@ -397,6 +418,33 @@ class OobeApiProvider {
     this.skipPostLoginScreens = function() {
       chrome.send('OobeTestApi.skipPostLoginScreens');
     };
+
+    this.loginAsGuest = function() {
+      chrome.send('OobeTestApi.loginAsGuest');
+    };
+  }
+}
+
+class GuestTosScreenTester extends ScreenElementApi {
+  constructor() {
+    super('guest-tos');
+    this.loadedStep = new PolymerElementApi(this, '#loaded');
+    this.nextButton = new PolymerElementApi(this, '#acceptButton');
+  }
+
+  /** @override */
+  shouldSkip() {
+    return loadTimeData.getBoolean('testapi_shouldSkipGuestTos');
+  }
+
+  /** @return {boolean} */
+  isReadyForTesting() {
+    return this.isVisible() && this.loadedStep.isVisible();
+  }
+
+  /** @return {string} */
+  getNextButtonName() {
+    return loadTimeData.getString('guestTosAccept');
   }
 }
 

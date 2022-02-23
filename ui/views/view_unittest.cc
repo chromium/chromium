@@ -13,6 +13,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 
 #include "base/containers/contains.h"
 #include "base/rand_util.h"
@@ -270,7 +271,7 @@ class TestView : public View {
   std::map<ui::Accelerator, int> accelerator_count_map_;
 
   // Native theme.
-  const ui::NativeTheme* native_theme_ = nullptr;
+  raw_ptr<const ui::NativeTheme> native_theme_ = nullptr;
 
   // Accessibility events
   ax::mojom::Event last_a11y_event_;
@@ -562,7 +563,7 @@ class ScopedTestPaintWidget {
   Widget* operator->() { return widget_; }
 
  private:
-  Widget* widget_;
+  raw_ptr<Widget> widget_;
 };
 
 }  // namespace
@@ -2201,7 +2202,7 @@ class TestViewWidget {
     params.bounds = gfx::Rect(0, 0, 100, 100);
     widget_.Init(std::move(params));
     View* root = widget_.GetRootView();
-    root->AddChildView(view_);
+    root->AddChildView(view_.get());
     if (show_after_init)
       widget_.Show();
 
@@ -2215,7 +2216,7 @@ class TestViewWidget {
   Widget* widget() { return &widget_; }
 
  private:
-  TestView* view_;
+  raw_ptr<TestView> view_;
   Widget widget_;
 };
 
@@ -2289,7 +2290,7 @@ TEST_F(ViewTest, HandleAccelerator) {
 // TODO(themblsha): Bring this up on non-Mac platforms. It currently fails
 // because TestView::AcceleratorPressed() is not called. See
 // http://crbug.com/667757.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Test that BridgedContentView correctly handles Accelerator key events when
 // subject to OS event dispatch.
 TEST_F(ViewTest, ActivateAcceleratorOnMac) {
@@ -2332,11 +2333,11 @@ TEST_F(ViewTest, ActivateAcceleratorOnMac) {
                              key_down_accelerator.modifiers());
   EXPECT_EQ(view->accelerator_count_map_[key_down_accelerator], 1);
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 // TODO(crbug.com/667757): these tests were initially commented out when getting
 // aura to run. Figure out if still valuable and either nuke or fix.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 TEST_F(ViewTest, ActivateAccelerator) {
   ui::Accelerator return_accelerator(ui::VKEY_RETURN, ui::EF_NONE);
   TestViewWidget test_widget(CreateParams(Widget::InitParams::TYPE_POPUP),
@@ -2418,7 +2419,7 @@ TEST_F(ViewTest, ViewInHiddenWidgetWithAccelerator) {
   EXPECT_FALSE(focus_manager->ProcessAccelerator(return_accelerator));
   EXPECT_EQ(1, view->accelerator_count_map_[return_accelerator]);
 }
-#endif  // OS_MAC
+#endif  // BUILDFLAG(IS_MAC)
 
 ////////////////////////////////////////////////////////////////////////////////
 // Native view hierachy
@@ -2449,7 +2450,7 @@ class ToplevelWidgetObserverView : public View {
   Widget* toplevel() { return toplevel_; }
 
  private:
-  Widget* toplevel_ = nullptr;
+  raw_ptr<Widget> toplevel_ = nullptr;
 };
 
 // Test that
@@ -2549,7 +2550,7 @@ TEST_F(ViewTest, TransformPaint) {
   // Rotate |v1| counter-clockwise.
   gfx::Transform transform;
   RotateCounterclockwise(&transform);
-  transform.matrix().set(1, 3, 500.0);
+  transform.matrix().setRC(1, 3, 500.0);
   v1->SetTransform(transform);
 
   // |v2| now occupies (100, 200) to (200, 400) in |root|.
@@ -2583,7 +2584,7 @@ TEST_F(ViewTest, TransformEvent) {
   // Rotate |v1| counter-clockwise.
   gfx::Transform transform(v1->GetTransform());
   RotateCounterclockwise(&transform);
-  transform.matrix().set(1, 3, 500.0);
+  transform.matrix().setRC(1, 3, 500.0);
   v1->SetTransform(transform);
 
   // |v2| now occupies (100, 200) to (200, 400) in |root|.
@@ -2606,7 +2607,7 @@ TEST_F(ViewTest, TransformEvent) {
   // Now rotate |v2| inside |v1| clockwise.
   transform = v2->GetTransform();
   RotateClockwise(&transform);
-  transform.matrix().set(0, 3, 100.f);
+  transform.matrix().setRC(0, 3, 100.f);
   v2->SetTransform(transform);
 
   // Now, |v2| occupies (100, 100) to (200, 300) in |v1|, and (100, 300) to
@@ -2636,13 +2637,13 @@ TEST_F(ViewTest, TransformEvent) {
   // Rotate |v3| clockwise with respect to |v2|.
   transform = v1->GetTransform();
   RotateClockwise(&transform);
-  transform.matrix().set(0, 3, 30.f);
+  transform.matrix().setRC(0, 3, 30.f);
   v3->SetTransform(transform);
 
   // Scale |v2| with respect to |v1| along both axis.
   transform = v2->GetTransform();
-  transform.matrix().set(0, 0, 0.8f);
-  transform.matrix().set(1, 1, 0.5f);
+  transform.matrix().setRC(0, 0, 0.8f);
+  transform.matrix().setRC(1, 1, 0.5f);
   v2->SetTransform(transform);
 
   // |v3| occupies (108, 105) to (132, 115) in |root|.
@@ -2673,7 +2674,7 @@ TEST_F(ViewTest, TransformEvent) {
   // Rotate |v3| clockwise with respect to |v2|, and scale it along both axis.
   transform = v3->GetTransform();
   RotateClockwise(&transform);
-  transform.matrix().set(0, 3, 30.f);
+  transform.matrix().setRC(0, 3, 30.f);
   // Rotation sets some scaling transformation. Using SetScale would overwrite
   // that and pollute the rotation. So combine the scaling with the existing
   // transforamtion.
@@ -2684,8 +2685,8 @@ TEST_F(ViewTest, TransformEvent) {
 
   // Translate |v2| with respect to |v1|.
   transform = v2->GetTransform();
-  transform.matrix().set(0, 3, 10.f);
-  transform.matrix().set(1, 3, 10.f);
+  transform.matrix().setRC(0, 3, 10.f);
+  transform.matrix().setRC(1, 3, 10.f);
   v2->SetTransform(transform);
 
   // |v3| now occupies (120, 120) to (144, 130) in |root|.
@@ -2726,7 +2727,7 @@ TEST_F(ViewTest, TransformVisibleBound) {
   // Rotate |child| counter-clockwise
   gfx::Transform transform;
   RotateCounterclockwise(&transform);
-  transform.matrix().set(1, 3, 50.f);
+  transform.matrix().setRC(1, 3, 50.f);
   child->SetTransform(transform);
   EXPECT_EQ(gfx::Rect(40, 0, 10, 50), child->GetVisibleBounds());
 
@@ -3135,7 +3136,7 @@ TEST_F(ViewTest, ConvertRectWithTransform) {
   // Rotate |v2|
   gfx::Transform t2;
   RotateCounterclockwise(&t2);
-  t2.matrix().set(1, 3, 100.f);
+  t2.matrix().setRC(1, 3, 100.f);
   v2->SetTransform(t2);
 
   // |v2| now occupies (30, 30) to (230, 130) in |widget|
@@ -3885,7 +3886,7 @@ class TestingLayerViewObserver : public ViewObserver {
   }
 
   gfx::Rect last_layer_bounds_;
-  View* view_;
+  raw_ptr<View> view_;
 };
 
 }  // namespace
@@ -3927,7 +3928,7 @@ class ViewLayerTest : public ViewsTestBase {
   void SchedulePaintOnParent(View* view) { view->SchedulePaintOnParent(); }
 
  private:
-  Widget* widget_ = nullptr;
+  raw_ptr<Widget> widget_ = nullptr;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 
@@ -4232,13 +4233,13 @@ TEST_F(ViewLayerTest, ToggleVisibilityWithTransform) {
   gfx::Transform transform;
   transform.Scale(2.0, 2.0);
   view->SetTransform(transform);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
 
   view->SetVisible(false);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
 
   view->SetVisible(true);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
 }
 
 // Verifies a transform persists after removing/adding a view with a transform.
@@ -4247,17 +4248,17 @@ TEST_F(ViewLayerTest, ResetTransformOnLayerAfterAdd) {
   gfx::Transform transform;
   transform.Scale(2.0, 2.0);
   view->SetTransform(transform);
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
   ASSERT_TRUE(view->layer() != nullptr);
-  EXPECT_EQ(2.0f, view->layer()->transform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->layer()->transform().matrix().rc(0, 0));
 
   View* parent = view->parent();
   parent->RemoveChildView(view);
   parent->AddChildView(view);
 
-  EXPECT_EQ(2.0f, view->GetTransform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->GetTransform().matrix().rc(0, 0));
   ASSERT_TRUE(view->layer() != nullptr);
-  EXPECT_EQ(2.0f, view->layer()->transform().matrix().get(0, 0));
+  EXPECT_EQ(2.0f, view->layer()->transform().matrix().rc(0, 0));
 }
 
 // Makes sure that layer visibility is correct after toggling View visibility.
@@ -5140,7 +5141,7 @@ class TestEventHandler : public ui::EventHandler {
     had_mouse_event_ = true;
   }
 
-  TestView* view_;
+  raw_ptr<TestView> view_;
   bool had_mouse_event_;
 };
 
@@ -5194,7 +5195,7 @@ class WidgetWithCustomTheme : public Widget {
   const ui::NativeTheme* GetNativeTheme() const override { return theme_; }
 
  private:
-  ui::NativeTheme* theme_;
+  raw_ptr<ui::NativeTheme> theme_;
 };
 
 // See comment above test for details.
@@ -5708,14 +5709,14 @@ class ViewObserverTest : public ViewTest, public ViewObserver {
   int child_view_added_times_ = 0;
   int child_view_removed_times_ = 0;
 
-  View* child_view_added_parent_ = nullptr;
-  View* child_view_added_ = nullptr;
-  View* child_view_removed_ = nullptr;
-  View* child_view_removed_parent_ = nullptr;
-  View* view_visibility_changed_ = nullptr;
-  View* view_visibility_changed_starting_ = nullptr;
-  View* view_bounds_changed_ = nullptr;
-  View* view_reordered_ = nullptr;
+  raw_ptr<View> child_view_added_parent_ = nullptr;
+  raw_ptr<View> child_view_added_ = nullptr;
+  raw_ptr<View> child_view_removed_ = nullptr;
+  raw_ptr<View> child_view_removed_parent_ = nullptr;
+  raw_ptr<View> view_visibility_changed_ = nullptr;
+  raw_ptr<View> view_visibility_changed_starting_ = nullptr;
+  raw_ptr<View> view_bounds_changed_ = nullptr;
+  raw_ptr<View> view_reordered_ = nullptr;
 };
 
 TEST_F(ViewObserverTest, ViewParentChanged) {

@@ -106,6 +106,8 @@ ClientSideDetectionService::~ClientSideDetectionService() {
 
 void ClientSideDetectionService::Shutdown() {
   url_loader_factory_.reset();
+  delegate_.reset();
+  enabled_ = false;
 }
 
 void ClientSideDetectionService::OnPrefsUpdated() {
@@ -178,13 +180,19 @@ void ClientSideDetectionService::RemoveClientSideDetectionHost(
 
 void ClientSideDetectionService::OnURLLoaderComplete(
     network::SimpleURLLoader* url_loader,
+    base::Time start_time,
     std::unique_ptr<std::string> response_body) {
+  base::UmaHistogramTimes("SBClientPhishing.NetworkRequestDuration",
+                          base::Time::Now() - start_time);
+
   std::string data;
   if (response_body)
     data = std::move(*response_body.get());
   int response_code = 0;
   if (url_loader->ResponseInfo() && url_loader->ResponseInfo()->headers)
     response_code = url_loader->ResponseInfo()->headers->response_code();
+  RecordHttpResponseOrErrorCode("SBClientPhishing.NetworkResult",
+                                url_loader->NetError(), response_code);
 
   DCHECK(base::Contains(client_phishing_reports_, url_loader));
   HandlePhishingVerdict(url_loader, url_loader->GetFinalURL(),
@@ -267,7 +275,7 @@ void ClientSideDetectionService::StartClientReportPhishingRequest(
   loader->DownloadToStringOfUnboundedSizeUntilCrashAndDie(
       url_loader_factory_.get(),
       base::BindOnce(&ClientSideDetectionService::OnURLLoaderComplete,
-                     base::Unretained(this), loader.get()));
+                     base::Unretained(this), loader.get(), base::Time::Now()));
 
   // Remember which callback and URL correspond to the current fetcher object.
   std::unique_ptr<ClientPhishingReportInfo> info(new ClientPhishingReportInfo);
@@ -410,7 +418,7 @@ void ClientSideDetectionService::LoadPhishingReportTimesFromPrefs() {
   for (const base::Value& timestamp :
        delegate_->GetPrefs()
            ->GetList(prefs::kSafeBrowsingCsdPingTimestamps)
-           ->GetList()) {
+           ->GetListDeprecated()) {
     phishing_report_times_.push_back(
         base::Time::FromDoubleT(timestamp.GetDouble()));
   }

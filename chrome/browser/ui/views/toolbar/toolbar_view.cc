@@ -40,8 +40,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/view_ids.h"
 #include "chrome/browser/ui/views/bookmarks/bookmark_bubble_view.h"
+#include "chrome/browser/ui/views/download/bubble/download_toolbar_button_view.h"
 #include "chrome/browser/ui/views/extensions/extension_popup.h"
-#include "chrome/browser/ui/views/extensions/extensions_side_panel_controller.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
@@ -49,6 +49,7 @@
 #include "chrome/browser/ui/views/frame/top_container_background.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_contextual_menu.h"
 #include "chrome/browser/ui/views/global_media_controls/media_toolbar_button_view.h"
+#include "chrome/browser/ui/views/location_bar/intent_chip_button.h"
 #include "chrome/browser/ui/views/location_bar/star_view.h"
 #include "chrome/browser/ui/views/media_router/cast_toolbar_button.h"
 #include "chrome/browser/ui/views/page_action/page_action_icon_container.h"
@@ -62,8 +63,8 @@
 #include "chrome/browser/ui/views/toolbar/chrome_labs_button.h"
 #include "chrome/browser/ui/views/toolbar/chrome_labs_utils.h"
 #include "chrome/browser/ui/views/toolbar/home_button.h"
-#include "chrome/browser/ui/views/toolbar/read_later_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/reload_button.h"
+#include "chrome/browser/ui/views/toolbar/side_panel_toolbar_button.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_account_icon_container_view.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_button.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
@@ -77,6 +78,7 @@
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/reading_list/features/reading_list_switches.h"
+#include "components/safe_browsing/core/common/features.h"
 #include "components/send_tab_to_self/features.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/strings/grit/components_strings.h"
@@ -104,11 +106,11 @@
 #include "ui/views/widget/widget.h"
 #include "ui/views/window/non_client_view.h"
 
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
 #include "chrome/browser/recovery/recovery_install_global_error_factory.h"
 #endif
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "chrome/browser/ui/views/critical_notification_bubble_view.h"
 #endif
 
@@ -264,11 +266,15 @@ void ToolbarView::Init() {
         browser_view_, MediaToolbarButtonContextualMenu::Create(browser_));
   }
 
+  std::unique_ptr<DownloadToolbarButtonView> download_button;
+  if (base::FeatureList::IsEnabled(safe_browsing::kDownloadBubble)) {
+    download_button =
+        std::make_unique<DownloadToolbarButtonView>(browser_view_);
+  }
+
   std::unique_ptr<send_tab_to_self::SendTabToSelfToolbarIconView>
       send_tab_to_self_button;
-  if ((base::FeatureList::IsEnabled(send_tab_to_self::kSendTabToSelfV2) ||
-       share::AreUpcomingSharingFeaturesEnabled()) &&
-      !browser_->profile()->IsOffTheRecord()) {
+  if (!browser_->profile()->IsOffTheRecord()) {
     send_tab_to_self_button =
         std::make_unique<send_tab_to_self::SendTabToSelfToolbarIconView>(
             browser_view_);
@@ -293,18 +299,13 @@ void ToolbarView::Init() {
         std::make_unique<ToolbarAccountIconContainerView>(browser_view_);
   }
 
-  std::unique_ptr<ReadLaterToolbarButton> read_later_button;
+  std::unique_ptr<SidePanelToolbarButton> side_panel_button;
   if (browser_view_->right_aligned_side_panel() &&
       reading_list::switches::IsReadingListEnabled()) {
-    read_later_button = std::make_unique<ReadLaterToolbarButton>(browser_);
+    side_panel_button = std::make_unique<SidePanelToolbarButton>(browser_);
   }
 
   // Always add children in order from left to right, for accessibility.
-  if (browser_view_->extensions_side_panel_controller()) {
-    left_side_panel_button_ =
-        AddChildView(browser_view_->extensions_side_panel_controller()
-                         ->CreateToolbarButton());
-  }
   back_ = AddChildView(std::move(back));
   forward_ = AddChildView(std::move(forward));
   reload_ = AddChildView(std::move(reload));
@@ -351,11 +352,14 @@ void ToolbarView::Init() {
   if (media_button)
     media_button_ = AddChildView(std::move(media_button));
 
+  if (download_button)
+    download_button_ = AddChildView(std::move(download_button));
+
   if (send_tab_to_self_button)
     send_tab_to_self_button_ = AddChildView(std::move(send_tab_to_self_button));
 
-  if (read_later_button)
-    read_later_button_ = AddChildView(std::move(read_later_button));
+  if (side_panel_button)
+    side_panel_button_ = AddChildView(std::move(side_panel_button));
 
   if (toolbar_account_icon_container) {
     toolbar_account_icon_container_ =
@@ -383,7 +387,7 @@ void ToolbarView::Init() {
   // Start global error services now so we set the icon on the menu correctly.
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   SigninGlobalErrorFactory::GetForProfile(browser_->profile());
-#if defined(OS_WIN) || defined(OS_MAC)
+#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
   RecoveryInstallGlobalErrorFactory::GetForProfile(browser_->profile());
 #endif
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
@@ -495,19 +499,27 @@ void ToolbarView::ShowIntentPickerBubble(
     std::vector<IntentPickerBubbleView::AppInfo> app_info,
     bool show_stay_in_chrome,
     bool show_remember_selection,
-    PageActionIconType icon_type,
+    IntentPickerBubbleView::BubbleType bubble_type,
     const absl::optional<url::Origin>& initiating_origin,
     IntentPickerResponse callback) {
-  PageActionIconView* const intent_picker_view =
-      GetPageActionIconView(icon_type);
-  if (!intent_picker_view)
+  views::Button* highlighted_button = nullptr;
+  if (bubble_type == IntentPickerBubbleView::BubbleType::kClickToCall) {
+    highlighted_button =
+        GetPageActionIconView(PageActionIconType::kClickToCall);
+  } else if (base::FeatureList::IsEnabled(features::kLinkCapturingUiUpdate)) {
+    highlighted_button = GetIntentChipButton();
+  } else {
+    highlighted_button =
+        GetPageActionIconView(PageActionIconType::kIntentPicker);
+  }
+
+  if (!highlighted_button)
     return;
 
   IntentPickerBubbleView::ShowBubble(
-      location_bar(), intent_picker_view, icon_type, GetWebContents(),
+      location_bar(), highlighted_button, bubble_type, GetWebContents(),
       std::move(app_info), show_stay_in_chrome, show_remember_selection,
       initiating_origin, std::move(callback));
-  intent_picker_view->Update();
 }
 
 void ToolbarView::ShowBookmarkBubble(
@@ -885,8 +897,8 @@ void ToolbarView::ZoomChangedForActiveTab(bool can_show_bubble) {
       can_show_bubble);
 }
 
-ReadLaterToolbarButton* ToolbarView::GetSidePanelButton() {
-  return read_later_button_;
+SidePanelToolbarButton* ToolbarView::GetSidePanelButton() {
+  return side_panel_button_;
 }
 
 AvatarToolbarButton* ToolbarView::GetAvatarToolbarButton() {
@@ -907,6 +919,10 @@ ToolbarButton* ToolbarView::GetBackButton() {
 
 ReloadButton* ToolbarView::GetReloadButton() {
   return reload_;
+}
+
+IntentChipButton* ToolbarView::GetIntentChipButton() {
+  return location_bar()->intent_chip();
 }
 
 BrowserRootView::DropIndex ToolbarView::GetDropIndex(
@@ -937,7 +953,7 @@ void ToolbarView::LoadImages() {
 }
 
 void ToolbarView::ShowCriticalNotification() {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   views::BubbleDialogDelegateView::CreateBubble(
       new CriticalNotificationBubbleView(app_menu_button_))
       ->Show();

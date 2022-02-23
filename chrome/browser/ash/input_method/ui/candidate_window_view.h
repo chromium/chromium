@@ -111,24 +111,6 @@ class UI_CHROMEOS_EXPORT CandidateWindowView
   gfx::Size previous_shortcut_column_size_;
   gfx::Size previous_candidate_column_size_;
   gfx::Size previous_annotation_column_size_;
-
-  // The last cursor bounds.
-  gfx::Rect cursor_bounds_;
-
-  // The last composition head bounds.
-  gfx::Rect composition_head_bounds_;
-
-  // True if the candidate window should be shown with aligning with composition
-  // text as opposed to the cursor.
-  bool should_show_at_composition_head_;
-
-  // True if the candidate window should be shown on the upper side of
-  // composition text.
-  bool should_show_upper_side_;
-
-  // True if the candidate window was open.  This is used to determine when to
-  // send OnCandidateWindowOpened and OnCandidateWindowClosed events.
-  bool was_candidate_window_open_;
 };
 
 BEGIN_VIEW_BUILDER(UI_CHROMEOS_EXPORT,

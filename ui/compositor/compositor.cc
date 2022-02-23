@@ -62,7 +62,7 @@
 #include "ui/gfx/switches.h"
 #include "ui/gl/gl_switches.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "mojo/public/cpp/bindings/sync_call_restrictions.h"
 #endif
 
@@ -116,6 +116,15 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.use_occlusion_for_tile_prioritization = true;
   settings.main_frame_before_activation_enabled = false;
 
+  settings.release_tile_resources_for_hidden_layers =
+      base::FeatureList::IsEnabled(
+          features::kUiCompositorReleaseTileResourcesForHiddenLayers);
+
+  if (base::FeatureList::IsEnabled(features::kUiCompositorRequiredTilesOnly)) {
+    settings.memory_policy.priority_cutoff_when_visible =
+        gpu::MemoryAllocation::CUTOFF_ALLOW_REQUIRED_ONLY;
+  }
+
   // Disable edge anti-aliasing in order to increase support for HW overlays.
   settings.enable_edge_anti_aliasing = false;
 
@@ -166,19 +175,21 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
   settings.initial_debug_state.SetRecordRenderingStats(
       command_line->HasSwitch(cc::switches::kEnableGpuBenchmarking));
 
-  settings.use_zero_copy = IsUIZeroCopyEnabled();
+  settings.use_zero_copy = IsUIZeroCopyEnabled() && !features::IsUsingRawDraw();
 
   settings.use_layer_lists =
       command_line->HasSwitch(cc::switches::kUIEnableLayerLists);
 
   // UI compositor always uses partial raster if not using zero-copy. Zero copy
   // doesn't currently support partial raster.
-  settings.use_partial_raster = !settings.use_zero_copy;
+  // RawDraw doesn't support partial raster.
+  settings.use_partial_raster =
+      !(settings.use_zero_copy || features::IsUsingRawDraw());
 
   settings.use_rgba_4444 =
       command_line->HasSwitch(switches::kUIEnableRGBA4444Textures);
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   // Using CoreAnimation to composite requires using GpuMemoryBuffers, which
   // require zero copy.
   settings.resource_settings.use_gpu_memory_buffer_resources =
@@ -189,10 +200,16 @@ Compositor::Compositor(const viz::FrameSinkId& frame_sink_id,
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
   // Rasterized tiles must be overlay candidates to be forwarded.
   // This is very similar to the line above for Apple.
-  if (features::IsDelegatedCompositingEnabled()) {
-    settings.resource_settings.use_gpu_memory_buffer_resources = true;
-  }
+  settings.resource_settings.use_gpu_memory_buffer_resources =
+      features::IsDelegatedCompositingEnabled();
 #endif
+
+  // Set use_gpu_memory_buffer_resources to false to disable delegated
+  // compositing, if RawDraw is enabled.
+  if (settings.resource_settings.use_gpu_memory_buffer_resources &&
+      features::IsUsingRawDraw()) {
+    settings.resource_settings.use_gpu_memory_buffer_resources = false;
+  }
 
   settings.memory_policy.bytes_limit_when_visible = 512 * 1024 * 1024;
 
@@ -383,11 +400,23 @@ void Compositor::SetRootLayer(Layer* root_layer) {
     root_layer_->SetCompositor(this, root_web_layer_);
 }
 
+void Compositor::DisableAnimations() {
+  DCHECK(animations_are_enabled_);
+  animations_are_enabled_ = false;
+  root_layer_->ResetCompositorForAnimatorsInTree(this);
+}
+
+void Compositor::EnableAnimations() {
+  DCHECK(!animations_are_enabled_);
+  animations_are_enabled_ = true;
+  root_layer_->SetCompositorForAnimatorsInTree(this);
+}
+
 cc::AnimationTimeline* Compositor::GetAnimationTimeline() const {
   return animation_timeline_.get();
 }
 
-void Compositor::SetDisplayColorMatrix(const skia::Matrix44& matrix) {
+void Compositor::SetDisplayColorMatrix(const SkM44& matrix) {
   display_color_matrix_ = matrix;
   if (display_private_)
     display_private_->SetDisplayColorMatrix(gfx::Transform(matrix));
@@ -408,7 +437,7 @@ void Compositor::ScheduleRedrawRect(const gfx::Rect& damage_rect) {
   host_->SetNeedsCommit();
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void Compositor::SetShouldDisableSwapUntilResize(bool should) {
   should_disable_swap_until_resize_ = should;
 }
@@ -513,13 +542,13 @@ bool Compositor::IsVisible() {
 // scroll_input_handler_ so that we don't have to keep a pointer to the
 // cc::InputHandler in this class.
 bool Compositor::ScrollLayerTo(cc::ElementId element_id,
-                               const gfx::Vector2dF& offset) {
+                               const gfx::PointF& offset) {
   return input_handler_weak_ &&
          input_handler_weak_->ScrollLayerTo(element_id, offset);
 }
 
 bool Compositor::GetScrollOffsetForLayer(cc::ElementId element_id,
-                                         gfx::Vector2dF* offset) const {
+                                         gfx::PointF* offset) const {
   return input_handler_weak_ &&
          input_handler_weak_->GetScrollOffsetForLayer(element_id, offset);
 }
@@ -831,7 +860,7 @@ void Compositor::OnResume() {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
 void Compositor::OnCompleteSwapWithNewSize(const gfx::Size& size) {
   for (auto& observer : observer_list_)
     observer.OnCompositingCompleteSwapWithNewSize(this, size);

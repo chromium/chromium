@@ -10,13 +10,12 @@
 #include "base/bind.h"
 #include "base/location.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/task_environment.h"
 #include "base/threading/thread_task_runner_handle.h"
 #include "build/build_config.h"
-#include "jingle/glue/thread_wrapper.h"
+#include "components/webrtc/thread_wrapper.h"
 #include "net/url_request/url_request_context_getter.h"
 #include "remoting/base/url_request.h"
 #include "remoting/protocol/chromium_port_allocator_factory.h"
@@ -87,7 +86,7 @@ class TestTransportEventHandler : public IceTransport::EventHandler {
 class IceTransportTest : public testing::Test {
  public:
   IceTransportTest() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
     network_settings_ =
         NetworkSettings(NetworkSettings::NAT_TRAVERSAL_OUTGOING);
   }
@@ -118,7 +117,7 @@ class IceTransportTest : public testing::Test {
   }
 
   void InitializeConnection() {
-    jingle_glue::JingleThreadWrapper::EnsureForCurrentMessageLoop();
+    webrtc::ThreadWrapper::EnsureForCurrentMessageLoop();
 
     host_transport_ = std::make_unique<IceTransport>(
         new TransportContext(std::make_unique<ChromiumPortAllocatorFactory>(),
@@ -214,7 +213,7 @@ class IceTransportTest : public testing::Test {
 };
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_DataStream DISABLED_DataStream
 #else
 #define MAYBE_DataStream DataStream
@@ -238,7 +237,7 @@ TEST_F(IceTransportTest, MAYBE_DataStream) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_MuxDataStream DISABLED_MuxDataStream
 #else
 #define MAYBE_MuxDataStream MuxDataStream
@@ -262,7 +261,7 @@ TEST_F(IceTransportTest, MAYBE_MuxDataStream) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_FailedChannelAuth DISABLED_FailedChannelAuth
 #else
 #define MAYBE_FailedChannelAuth FailedChannelAuth
@@ -342,7 +341,7 @@ TEST_F(IceTransportTest, TestCancelChannelCreation) {
 }
 
 // crbug.com/1224862: Tests are flaky on Mac.
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #define MAYBE_TestDelayedSignaling DISABLED_TestDelayedSignaling
 #else
 #define MAYBE_TestDelayedSignaling TestDelayedSignaling

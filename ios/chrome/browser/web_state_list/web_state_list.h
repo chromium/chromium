@@ -11,7 +11,6 @@
 #include "base/auto_reset.h"
 #include "base/callback_forward.h"
 #include "base/compiler_specific.h"
-#include "base/macros.h"
 #include "base/observer_list.h"
 #include "base/sequence_checker.h"
 #include "url/gurl.h"
@@ -282,7 +281,7 @@ class WebStateList {
   std::unique_ptr<WebStateListOrderController> order_controller_;
 
   // List of observers notified of changes to the model.
-  base::ObserverList<WebStateListObserver, true>::Unchecked observers_;
+  base::ObserverList<WebStateListObserver, true> observers_;
 
   // Index of the currently active WebState, kInvalidIndex if no such WebState.
   int active_index_ = kInvalidIndex;

@@ -235,7 +235,8 @@ void SignedExchangeCertFetcher::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {}
 
 void SignedExchangeCertFetcher::OnReceiveResponse(
-    network::mojom::URLResponseHeadPtr head) {
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("loading"),
                "SignedExchangeCertFetcher::OnReceiveResponse");
   if (devtools_proxy_) {
@@ -284,6 +285,8 @@ void SignedExchangeCertFetcher::OnReceiveResponse(
 
   UMA_HISTOGRAM_BOOLEAN("SignedExchange.CertificateFetch.CacheHit",
                         head->was_fetched_via_cache);
+  if (body)
+    OnStartLoadingResponseBody(std::move(body));
 }
 
 void SignedExchangeCertFetcher::OnReceiveRedirect(

@@ -245,10 +245,9 @@ bool V4L2VideoDecoderDelegateVP8Legacy::SubmitDecode(
 
 bool V4L2VideoDecoderDelegateVP8Legacy::OutputPicture(
     scoped_refptr<VP8Picture> pic) {
-  // TODO(crbug.com/647725): Insert correct color space.
   surface_handler_->SurfaceReady(VP8PictureToV4L2DecodeSurface(pic.get()),
                                  pic->bitstream_id(), pic->visible_rect(),
-                                 VideoColorSpace());
+                                 pic->get_colorspace());
   return true;
 }
 

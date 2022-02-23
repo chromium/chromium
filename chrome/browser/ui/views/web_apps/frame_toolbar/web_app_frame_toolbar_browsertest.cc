@@ -3,8 +3,8 @@
 // found in the LICENSE file.
 
 #include <cmath>
+#include <tuple>
 
-#include "base/macros.h"
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
@@ -34,7 +34,7 @@
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
 #include "chrome/browser/ui/web_applications/web_app_menu_model.h"
 #include "chrome/browser/web_applications/web_app_constants.h"
-#include "chrome/browser/web_applications/web_application_info.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -46,6 +46,7 @@
 #include "content/public/common/page_zoom.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
+#include "content/public/test/fenced_frame_test_util.h"
 #include "content/public/test/test_utils.h"
 #include "content/public/test/theme_change_waiter.h"
 #include "extensions/test/test_extension_dir.h"
@@ -61,7 +62,7 @@
 
 namespace {
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 // Keep in sync with browser_non_client_frame_view_mac.mm
 constexpr double kTitlePaddingWidthFraction = 0.1;
 #endif
@@ -171,8 +172,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   const int original_left_container_width = toolbar_left_container->width();
   EXPECT_GT(original_left_container_width, 0);
 
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-                        !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) ||                                   \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS))
   const int original_window_title_width = window_title->width();
   EXPECT_GT(original_window_title_width, 0);
 #endif
@@ -196,8 +198,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_TRUE(toolbar_left_container->GetVisible());
   EXPECT_EQ(toolbar_left_container->width(), original_left_container_width);
 
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-                        !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) ||                                   \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS))
   EXPECT_GT(window_title->width(), 0);
   EXPECT_LT(window_title->width(), original_window_title_width);
 #endif
@@ -222,8 +225,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, SpaceConstrained) {
   EXPECT_FALSE(toolbar_left_container->GetVisible());
 
   // The window title should be clipped to 0 width.
-#if defined(OS_WIN) || (defined(OS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
-                        !BUILDFLAG(IS_CHROMEOS_LACROS))
+#if BUILDFLAG(IS_WIN) ||                                   \
+    (BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_CHROMEOS_ASH) && \
+     !BUILDFLAG(IS_CHROMEOS_LACROS))
   EXPECT_EQ(window_title->width(), 0);
 #endif
 
@@ -244,7 +248,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, ThemeChange) {
 
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if !(defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
+#if !(BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS))
   // Avoid dependence on Linux GTK+ Themes appearance setting.
 
   ToolbarButtonProvider* const toolbar_button_provider =
@@ -312,7 +316,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest, TitleHover) {
       window_title->CalculatePreferredSize().width() * 3 / 4;
   int narrow_frame_width =
       helper()->frame_view()->width() - original_title_gap + narrow_title_gap;
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Increase frame width to allow for title padding.
   narrow_frame_width = base::checked_cast<int>(
       std::ceil(narrow_frame_width / (1 - 2 * kTitlePaddingWidthFraction)));
@@ -448,7 +452,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     std::vector<blink::mojom::DisplayMode> display_overrides;
     display_overrides.emplace_back(
         web_app::DisplayMode::kWindowControlsOverlay);
-    auto web_app_info = std::make_unique<WebApplicationInfo>();
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
     web_app_info->start_url = start_url;
     web_app_info->scope = start_url.GetWithoutFilename();
     web_app_info->title = u"A window-controls-overlay app";
@@ -465,7 +469,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     helper()->SetupGeometryChangeCallback(web_contents);
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     helper()->browser_view()->ToggleWindowControlsOverlayEnabled();
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
   bool GetWindowControlOverlayVisibility() {
@@ -490,16 +494,16 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
                 ->app_browser()
                 ->tab_strip_model()
                 ->GetActiveWebContents()));
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
   gfx::Rect GetWindowControlOverlayBoundingClientRect() {
     const std::string kRectValueList =
         "var rect = "
-        "[navigator.windowControlsOverlay.getBoundingClientRect().x, "
-        "navigator.windowControlsOverlay.getBoundingClientRect().y, "
-        "navigator.windowControlsOverlay.getBoundingClientRect().width, "
-        "navigator.windowControlsOverlay.getBoundingClientRect().height];";
+        "[navigator.windowControlsOverlay.getTitlebarAreaRect().x, "
+        "navigator.windowControlsOverlay.getTitlebarAreaRect().y, "
+        "navigator.windowControlsOverlay.getTitlebarAreaRect().width, "
+        "navigator.windowControlsOverlay.getTitlebarAreaRect().height];";
     return helper()->GetXYWidthHeightRect(
         helper()->browser_view()->GetActiveWebContents(), kRectValueList,
         "rect");
@@ -532,7 +536,7 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
     helper()->SetupGeometryChangeCallback(web_contents);
     content::TitleWatcher title_watcher(web_contents, u"ongeometrychange");
     helper()->browser_view()->GetWidget()->SetBounds(new_bounds);
-    ignore_result(title_watcher.WaitAndGetTitle());
+    std::ignore = title_watcher.WaitAndGetTitle();
   }
 
   gfx::Rect GetWindowControlOverlayBoundingClientRectFromEvent() {
@@ -544,6 +548,9 @@ class WebAppFrameToolbarBrowserTest_WindowControlsOverlay
         helper()->browser_view()->GetActiveWebContents(), kRectValueList,
         "rect");
   }
+
+ protected:
+  content::test::FencedFrameTestHelper fenced_frame_helper_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -561,7 +568,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   gfx::Rect bounds = GetWindowControlOverlayBoundingClientRect();
   EXPECT_TRUE(GetWindowControlOverlayVisibility());
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   EXPECT_NE(0, bounds.x());
   EXPECT_EQ(0, bounds.y());
 #else
@@ -682,17 +689,17 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       "titlebarAreaWidthRectInt, "
       "titlebarAreaHeightRectInt];";
 
-  base::ListValue rect_values = helper()->GetXYWidthHeightListValue(
-      helper()->browser_view()->GetActiveWebContents(), kRectListString,
-      "rect");
-  auto initial_rect_list = rect_values.GetList();
+  base::Value::ListStorage initial_rect_list =
+      helper()->GetXYWidthHeightListValue(
+          helper()->browser_view()->GetActiveWebContents(), kRectListString,
+          "rect");
 
   const int initial_x_value = initial_rect_list[0].GetInt();
   const int initial_y_value = initial_rect_list[1].GetInt();
   const int initial_width_value = initial_rect_list[2].GetInt();
   const int initial_height_value = initial_rect_list[3].GetInt();
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // Window controls are on the opposite side on Mac.
   EXPECT_NE(0, initial_x_value);
 #else
@@ -710,10 +717,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kCSSTitlebarRect));
 
-  base::ListValue updated_rect_values = helper()->GetXYWidthHeightListValue(
-      helper()->browser_view()->GetActiveWebContents(), kRectListString,
-      "rect");
-  auto updated_rect_list = updated_rect_values.GetList();
+  base::Value::ListStorage updated_rect_list =
+      helper()->GetXYWidthHeightListValue(
+          helper()->browser_view()->GetActiveWebContents(), kRectListString,
+          "rect");
 
   // Changing the window dimensions should only change the overlay width. The
   // overlay height should remain the same.
@@ -739,10 +746,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       "titlebarAreaWidthRectInt, "
       "titlebarAreaHeightRectInt];";
 
-  base::ListValue rect_values = helper()->GetXYWidthHeightListValue(
-      helper()->browser_view()->GetActiveWebContents(), kRectListString,
-      "rect");
-  auto initial_rect_list = rect_values.GetList();
+  base::Value::ListStorage initial_rect_list =
+      helper()->GetXYWidthHeightListValue(
+          helper()->browser_view()->GetActiveWebContents(), kRectListString,
+          "rect");
 
   const int initial_x_value = initial_rect_list[0].GetInt();
   const int initial_y_value = initial_rect_list[1].GetInt();
@@ -762,10 +769,10 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   EXPECT_TRUE(ExecuteScript(web_contents->GetMainFrame(), kCSSTitlebarRect));
 
-  base::ListValue updated_rect_values = helper()->GetXYWidthHeightListValue(
-      helper()->browser_view()->GetActiveWebContents(), kRectListString,
-      "rect");
-  auto updated_rect_list = updated_rect_values.GetList();
+  base::Value::ListStorage updated_rect_list =
+      helper()->GetXYWidthHeightListValue(
+          helper()->browser_view()->GetActiveWebContents(), kRectListString,
+          "rect");
 
   // Changing the window dimensions should only change the overlay width. The
   // overlay height should remain the same.
@@ -776,8 +783,9 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
+// TODO(https://crbug.com/1277860): Flaky.
 IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
-                       WindowControlsOverlayDraggableRegions) {
+                       DISABLED_WindowControlsOverlayDraggableRegions) {
   InstallAndLaunchWebApp();
   ToggleWindowControlsOverlayAndWait();
 
@@ -799,7 +807,7 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
 
   // Validate that a point marked "app-region: no-drag" within a draggable
   // region is not draggable.
-  gfx::Point non_draggable_point(105, 105);
+  gfx::Point non_draggable_point(106, 106);
   views::View::ConvertPointToTarget(
       helper()->browser_view()->contents_web_view(), frame_view,
       &non_draggable_point);
@@ -816,6 +824,15 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
   EXPECT_NE(frame_view->NonClientHitTest(kBorderPoint), HTCAPTION);
   EXPECT_TRUE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
       helper()->browser_view()->GetWidget()->GetNativeView(), kBorderPoint));
+
+  // Validate that draggable region does not clear after history.replaceState is
+  // invoked.
+  std::string kHistoryReplaceState =
+      "history.replaceState({ test: 'test' }, null);";
+  EXPECT_TRUE(ExecuteScript(helper()->browser_view()->GetActiveWebContents(),
+                            kHistoryReplaceState));
+  EXPECT_FALSE(helper()->browser_view()->ShouldDescendIntoChildForEventHandling(
+      helper()->browser_view()->GetWidget()->GetNativeView(), draggable_point));
 
   // Validate that the draggable region is reset on navigation and the point is
   // no longer draggable.
@@ -939,4 +956,30 @@ IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
       ->ToggleWindowControlsOverlayEnabled();
   web_app::LaunchWebAppBrowserAndWait(browser()->profile(), app_id);
   // If there's no crash, the test has passed.
+}
+
+IN_PROC_BROWSER_TEST_F(WebAppFrameToolbarBrowserTest_WindowControlsOverlay,
+                       DraggableRegionNotResetByFencedFrameNavigation) {
+  InstallAndLaunchWebApp();
+  ToggleWindowControlsOverlayAndWait();
+
+  BrowserView* browser_view = helper()->browser_view();
+  views::NonClientFrameView* frame_view =
+      browser_view->GetWidget()->non_client_view()->frame_view();
+
+  gfx::Point draggable_point(100, 100);
+  views::View::ConvertPointToTarget(browser_view->contents_web_view(),
+                                    frame_view, &draggable_point);
+
+  // Create a fenced frame and ensure that draggable region doesn't clear after
+  // the fenced frame navigation.
+  const GURL fenced_frame_url =
+      embedded_test_server()->GetURL("/fenced_frames/title1.html");
+  content::RenderFrameHost* fenced_frame_rfh =
+      fenced_frame_helper_.CreateFencedFrame(
+          browser_view->GetActiveWebContents()->GetMainFrame(),
+          fenced_frame_url);
+  ASSERT_NE(nullptr, fenced_frame_rfh);
+  EXPECT_FALSE(browser_view->ShouldDescendIntoChildForEventHandling(
+      browser_view->GetWidget()->GetNativeView(), draggable_point));
 }

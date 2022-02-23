@@ -112,6 +112,80 @@ public class AwNetworkConfigurationTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Network"})
+    public void testRequestedWithHeaderMainFrameAppPackageName() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mAwContents.getSettings().setRequestedWithHeaderMode(
+                org.chromium.android_webview.AwSettings.REQUESTED_WITH_APP_PACKAGE_NAME);
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
+            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
+                    mAwContents, mContentsClient);
+            final String packageName = InstrumentationRegistry.getInstrumentation()
+                                               .getTargetContext()
+                                               .getPackageName();
+            Assert.assertEquals(
+                    "X-Requested-With header should be the app package name if specified",
+                    packageName, xRequestedWith);
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    public void testRequestedWithHeaderMainFrameNoHeader() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mAwContents.getSettings().setRequestedWithHeaderMode(
+                org.chromium.android_webview.AwSettings.REQUESTED_WITH_NO_HEADER);
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
+            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
+                    mAwContents, mContentsClient);
+            // Server responds with "None" when there's no header
+            final String expectNoHeader = "None";
+            Assert.assertEquals("X-Requested-With header should not be set if specified",
+                    expectNoHeader, xRequestedWith);
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
+    public void testRequestedWithHeaderMainFrameStringConstant() throws Throwable {
+        mTestServer = EmbeddedTestServer.createAndStartServer(
+                InstrumentationRegistry.getInstrumentation().getContext());
+        mAwContents.getSettings().setRequestedWithHeaderMode(
+                org.chromium.android_webview.AwSettings.REQUESTED_WITH_CONSTANT_WEBVIEW);
+        try {
+            final String echoHeaderUrl = mTestServer.getURL("/echoheader?X-Requested-With");
+            mActivityTestRule.loadUrlSync(
+                    mAwContents, mContentsClient.getOnPageFinishedHelper(), echoHeaderUrl);
+            AwActivityTestRule.enableJavaScriptOnUiThread(mAwContents);
+            final String xRequestedWith = mActivityTestRule.getJavaScriptResultBodyTextContent(
+                    mAwContents, mContentsClient);
+            final String expectedHeaderValue = "WebView";
+            Assert.assertEquals(
+                    "X-Requested-With header should be the a constant string if specified",
+                    expectedHeaderValue, xRequestedWith);
+        } finally {
+            mTestServer.stopAndDestroyServer();
+        }
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"AndroidWebView", "Network"})
     public void testRequestedWithHeaderSubResource() throws Throwable {
         mTestServer = EmbeddedTestServer.createAndStartServer(
                 InstrumentationRegistry.getInstrumentation().getContext());

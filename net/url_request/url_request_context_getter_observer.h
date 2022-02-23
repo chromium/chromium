@@ -5,7 +5,6 @@
 #ifndef NET_URL_REQUEST_URL_REQUEST_CONTEXT_GETTER_OBSERVER_H_
 #define NET_URL_REQUEST_URL_REQUEST_CONTEXT_GETTER_OBSERVER_H_
 
-#include "base/macros.h"
 #include "net/base/net_export.h"
 
 namespace net {

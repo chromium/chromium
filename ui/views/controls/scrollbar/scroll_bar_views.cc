@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/events/keycodes/keyboard_codes.h"
@@ -42,7 +43,7 @@ class ScrollBarThumb : public BaseScrollBarThumb {
   ui::NativeTheme::Part GetNativeThemePart() const;
   ui::NativeTheme::State GetNativeThemeState() const;
 
-  ScrollBar* scroll_bar_;
+  raw_ptr<ScrollBar> scroll_bar_;
 };
 
 ScrollBarThumb::ScrollBarThumb(ScrollBar* scroll_bar)
@@ -61,13 +62,14 @@ void ScrollBarThumb::OnPaint(gfx::Canvas* canvas) {
   const gfx::Rect local_bounds(GetLocalBounds());
   const ui::NativeTheme::State theme_state = GetNativeThemeState();
   const ui::NativeTheme::ExtraParams extra_params(GetNativeThemeParams());
-  GetNativeTheme()->Paint(canvas->sk_canvas(), GetNativeThemePart(),
-                          theme_state, local_bounds, extra_params);
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(),
+                          GetNativeThemePart(), theme_state, local_bounds,
+                          extra_params);
   const ui::NativeTheme::Part gripper_part =
       scroll_bar_->IsHorizontal() ? ui::NativeTheme::kScrollbarHorizontalGripper
                                   : ui::NativeTheme::kScrollbarVerticalGripper;
-  GetNativeTheme()->Paint(canvas->sk_canvas(), gripper_part, theme_state,
-                          local_bounds, extra_params);
+  GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), gripper_part,
+                          theme_state, local_bounds, extra_params);
 }
 
 void ScrollBarThumb::OnThemeChanged() {
@@ -182,8 +184,8 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   else
     upper_bounds.set_height(thumb->y() - upper_bounds.y());
   if (!upper_bounds.IsEmpty()) {
-    GetNativeTheme()->Paint(canvas->sk_canvas(), part_, state_, upper_bounds,
-                            params_);
+    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
+                            state_, upper_bounds, params_);
   }
 
   params_.scrollbar_track.is_upper = false;
@@ -192,8 +194,8 @@ void ScrollBarViews::OnPaint(gfx::Canvas* canvas) {
   else
     bounds.Inset(0, thumb->bounds().bottom() - bounds.y(), 0, 0);
   if (!bounds.IsEmpty()) {
-    GetNativeTheme()->Paint(canvas->sk_canvas(), part_, state_, bounds,
-                            params_);
+    GetNativeTheme()->Paint(canvas->sk_canvas(), GetColorProvider(), part_,
+                            state_, bounds, params_);
   }
 }
 

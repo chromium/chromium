@@ -1,30 +1,34 @@
-load("@build_bazel_rules_android//android:rules.bzl", "android_library")
+load("@org_tensorflow//tensorflow/lite/core/shims:cc_library_with_tflite.bzl", "android_library_with_tflite")
 load("@org_tensorflow//tensorflow/lite/java:aar_with_jni.bzl", "aar_with_jni")
-load("@org_tensorflow//tensorflow/java:build_defs.bzl", "JAVACOPTS")
 
 package(
-    default_visibility = ["//tensorflow_lite_support:users"],
+    default_visibility = ["//visibility:public"],
     licenses = ["notice"],  # Apache 2.0
 )
 
 exports_files(["AndroidManifest.xml"])
 
-android_library(
+android_library_with_tflite(
     name = "task_library_text",
     srcs = [
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/text/nlclassifier:nl_classifier_src",
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/text/qa:bert_question_answerer_src",
     ],
-    javacopts = JAVACOPTS,
+    javacopts = ["-source 7 -target 7"],
     manifest = "AndroidManifest.xml",
+    tflite_exports = [
+        "//tensorflow_lite_support/java/src/native/task/text:task_text_native",
+    ],
     visibility = ["//visibility:public"],
+    # LINT.IfChange(dep)
     deps = [
         "//tensorflow_lite_support/java:tensorflowlite_support_java",
         "//tensorflow_lite_support/java/src/java/org/tensorflow/lite/task/core:base_task_api",
-        "//tensorflow_lite_support/java/src/native/task/text:task_text_native",
         "@com_google_auto_value",
-        "@org_tensorflow//tensorflow/lite/java:tensorflowlite_java",
+        "@maven//:androidx_annotation_annotation",
+        "@org_tensorflow//tensorflow/lite/java:tensorflowlite_java_stable",
     ],
+    # LINT.ThenChange(<INTERNAL>/release/build_task_pom.sh:dep)
 )
 
 # AAR target for OSS release.
@@ -34,4 +38,10 @@ android_library(
 aar_with_jni(
     name = "task-library-text",
     android_library = ":task_library_text",
+    headers = [
+        "//tensorflow_lite_support/c/task/text:bert_nl_classifier.h",
+        "//tensorflow_lite_support/c/task/text:nl_classifier.h",
+        "//tensorflow_lite_support/c/task/text:nl_classifier_common.h",
+        "//tensorflow_lite_support/c/task/text:bert_question_answerer.h",
+    ],
 )

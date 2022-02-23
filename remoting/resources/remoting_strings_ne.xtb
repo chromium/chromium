@@ -26,7 +26,6 @@
 <translation id="225614027745146050">स्वागत छ</translation>
 <translation id="2320166752086256636">किबोर्ड लुकाउनुहोस्</translation>
 <translation id="2329392777730037872">क्लाइन्टमा <ph name="URL" /> खोल्न सकिएन।</translation>
-<translation id="2333212046079545895">कपिराइट २०२१ Google LLC। सर्वाधिकार सुरक्षित।</translation>
 <translation id="2359808026110333948">जारी राख्नुहोस्</translation>
 <translation id="2366718077645204424">होस्टसम्म पुग्न असफल। यसको कारण तपाइँले प्रयोग गरिरहनुभएको सञ्जालको विन्यास हुन सक्छ।</translation>
 <translation id="2370754117186920852"><ph name="OPTIONAL_OFFLINE_REASON" /> अन्तिम पटक अनलाइन देखिएको <ph name="RELATIVE_TIMESTAMP" />।</translation>
@@ -37,6 +36,7 @@
 <translation id="2599300881200251572">यस सेवाले Chrome दूर डेस्कटप ग्राहकहरूबाट आउने जडानहरू सक्षम गर्छ।</translation>
 <translation id="2647232381348739934">क्रोमोटिङ सेवा</translation>
 <translation id="2676780859508944670">काम गर्दै...</translation>
+<translation id="2692522824157224199">प्रतिलिपि अधिकार २०२२ Google LLC। सर्वाधिकार सुरक्षित।</translation>
 <translation id="2699970397166997657">Chromeोटिङ</translation>
 <translation id="2758123043070977469">प्रमाणीकरण गर्दा एउटा समस्या भयो, कृपया फेरि लग इन गर्नुहोस्।</translation>
 <translation id="2803375539583399270">PIN प्रविष्टि गर्नुहोस्</translation>
@@ -73,10 +73,10 @@
 <translation id="4257751272692708833"><ph name="PRODUCT_NAME" /> को URL फर्वार्डर</translation>
 <translation id="4277736576214464567">पहुँच कोड अवैध छ। कृपया पुन: प्रयास गर्नुहोस्।</translation>
 <translation id="4281844954008187215">सेवाका सर्तहरू</translation>
+<translation id="4372650392690220936">कपिराइट २०२२ The Chromium Authors। सर्वाधिकार सुरक्षित।</translation>
 <translation id="4405930547258349619">कोर पुस्तकालय</translation>
 <translation id="443560535555262820">पहुँचसम्बन्धी प्राथमिकताहरू खोल्नुहोस्</translation>
 <translation id="4450893287417543264">फेरि नदेखाउनुहोस्</translation>
-<translation id="4512952200932940229">कपिराइट २०२१ The Chromium Authors। सर्वाधिकार सुरक्षित।</translation>
 <translation id="4513946894732546136">पृष्ठपोषण</translation>
 <translation id="4563926062592110512">ग्राहक विच्छेदन: <ph name="CLIENT_USERNAME" />।</translation>
 <translation id="4618411825115957973"><ph name="URL_FORWARDER_NAME" /> सही तरिकाले कन्फिगर गरिएको छैन। कृपया कुनै अर्को डिफल्ट वेब ब्राउजर छनौट गर्नुहोस् र URL फर्वार्डिङ अन गर्नुहोस्।</translation>

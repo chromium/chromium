@@ -7,6 +7,7 @@
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_task_runner_handle.h"
@@ -272,7 +273,7 @@ class EventRouterAddListenerWaiter : public EventRouter::Observer {
   }
 
  private:
-  EventRouter* const event_router_;
+  const raw_ptr<EventRouter> event_router_;
   base::RunLoop loop_runner_;
 };
 
@@ -505,7 +506,7 @@ IN_PROC_BROWSER_TEST_F(TtsApiTest, RegisterEngine) {
 #endif  // !BUILDFLAG(IS_CHROMEOS_LACROS)
 
 // https://crbug.com/709115 tracks test flakiness.
-#if defined(OS_POSIX)
+#if BUILDFLAG(IS_POSIX)
 #define MAYBE_EngineError DISABLED_EngineError
 #else
 #define MAYBE_EngineError EngineError

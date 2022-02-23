@@ -20,9 +20,16 @@ All/ParameterizedArcTermsOfServiceScreenTest.*
 All/PendingUpdateScreenTest.*
 All/PublicSessionOobeTest.*
 All/PublicSessionWithTermsOfServiceOobeTest.*
+All/SAMLDeviceAttestationEnrolledTest.*
+All/SAMLDeviceAttestationTest.*
+All/SAMLEnrollmentTest.*
 All/SAMLPasswordAttributesTest.*
+All/SAMLPolicyTest.*
+All/SamlTestWithFeatures.*
+All/SmartPrivacyProtectionScreenTest.*
 All/SshWarningTest.*
 All/SyncConsentPolicyDisabledTest.*
+All/SyncConsentTestWithModesParams.*
 All/SyncConsentTestWithParams.*
 All/WebviewCloseViewLoginTest.*
 All/WebviewLoginWithIframeTest.*
@@ -49,7 +56,10 @@ DemoSetupArcSupportedTest.*
 DemoSetupArcUnsupportedTest.*
 DemoSetupFRETest.*
 DemoSetupProgressStepsTest.*
+DemoSetupRegionCodeNotExistTest.*
 DemoSetupTestBase.*
+DemoSetupVariantCountryCodeRegionTest.*
+DemoSetupVirtualSetRegionCodeTest.*
 DeviceDisablingBeforeLoginHostCreated.*
 DeviceDisablingTest.*
 DeviceIDTest.*
@@ -92,7 +102,7 @@ LoginUIShelfVisibilityTest.*
 MarketingOptInDefaultContries/MarketingOptInScreenTest.*
 MarketingOptInDoubleOptInCountriesContries/MarketingOptInScreenTest.*
 MarketingOptInExtendedContries/MarketingOptInScreenTest.*
-MarketingOptInScreenTestDisabled.*
+MarketingOptInExtendedCountries/MarketingTestCountryCodes.*
 NetworkErrorScreenTest.*
 NoOobeTestApiTest.*
 OAuth2Test.*
@@ -128,10 +138,6 @@ ResetTestWithTpmFirmwareUpdatePowerwash.*
 ResetTestWithTpmFirmwareUpdatePreserve.*
 ResetTestWithTpmFirmwareUpdateRequested.*
 RestoreOnStartupTestChromeOS.*
-SAMLDeviceAttestationTest.*
-SAMLEnrollmentTest.*
-SAMLPolicyTest.*
-SamlTest.*
 SecurityTokenSamlTest.*
 SigninToUserProfileSwitchTest.*
 SiteIsolationFlagHandlingTest.*
@@ -156,6 +162,7 @@ WebviewChildLoginTest.*
 WebviewClientCertsLoginTest.*
 WebviewClientCertsLoginTestBase.*
 WebviewClientCertsTokenLoadingLoginTest.*
+WebviewDeviceOwnedLoginTest.*
 WebviewLoginTest.*
 WebviewProxyAuthLoginTest.*
 WelcomeScreenBrowserTest.*

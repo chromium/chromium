@@ -206,7 +206,7 @@ bool GetCommonNameFromSubject(const net::der::Input& subject_tlv,
 
   for (const net::RelativeDistinguishedName& rdn : rdn_sequence) {
     for (const auto& atv : rdn) {
-      if (atv.type == net::TypeCommonNameOid()) {
+      if (atv.type == net::der::Input(net::kTypeCommonNameOid)) {
         return atv.ValueAsString(common_name);
       }
     }
@@ -252,7 +252,7 @@ void DetermineDeviceCertificatePolicy(
 // Checks properties on the target certificate.
 //
 //   * The Key Usage must include Digital Signature
-WARN_UNUSED_RESULT bool CheckTargetCertificate(
+[[nodiscard]] bool CheckTargetCertificate(
     const net::ParsedCertificate* cert,
     std::unique_ptr<CertVerificationContext>* context) {
   // Get the Key Usage extension.
@@ -370,7 +370,8 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   net::CertPathBuilder path_builder(
       target_cert.get(), trust_store, &path_builder_delegate, verification_time,
       net::KeyPurpose::CLIENT_AUTH, net::InitialExplicitPolicy::kFalse,
-      {net::AnyPolicy()}, net::InitialPolicyMappingInhibit::kFalse,
+      {net::der::Input(net::kAnyPolicyOid)},
+      net::InitialPolicyMappingInhibit::kFalse,
       net::InitialAnyPolicyInhibit::kFalse);
   path_builder.AddCertIssuerSource(&intermediate_cert_issuer_source);
   net::CertPathBuilder::Result result = path_builder.Run();

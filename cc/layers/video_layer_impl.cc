@@ -12,6 +12,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/memory/ptr_util.h"
+#include "cc/base/features.h"
 #include "cc/layers/video_frame_provider_client_impl.h"
 #include "cc/trees/layer_tree_frame_sink.h"
 #include "cc/trees/layer_tree_impl.h"
@@ -32,8 +33,9 @@ std::unique_ptr<VideoLayerImpl> VideoLayerImpl::Create(
     LayerTreeImpl* tree_impl,
     int id,
     VideoFrameProvider* provider,
-    media::VideoTransformation video_transform) {
-  DCHECK(tree_impl->task_runner_provider()->IsMainThreadBlocked());
+    const media::VideoTransformation& video_transform) {
+  DCHECK(tree_impl->task_runner_provider()->IsMainThreadBlocked() ||
+         base::FeatureList::IsEnabled(features::kNonBlockingCommit));
   DCHECK(tree_impl->task_runner_provider()->IsImplThread());
 
   scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl =
@@ -48,7 +50,7 @@ VideoLayerImpl::VideoLayerImpl(
     LayerTreeImpl* tree_impl,
     int id,
     scoped_refptr<VideoFrameProviderClientImpl> provider_client_impl,
-    media::VideoTransformation video_transform)
+    const media::VideoTransformation& video_transform)
     : LayerImpl(tree_impl, id),
       provider_client_impl_(std::move(provider_client_impl)),
       video_transform_(video_transform) {
@@ -62,14 +64,15 @@ VideoLayerImpl::~VideoLayerImpl() {
     // on the VideoFrameProviderClientImpl, but we stop when the first
     // LayerImpl (the one on the pending tree) is destroyed since we know
     // the main thread is blocked for this commit.
+    DCHECK(layer_tree_impl()->task_runner_provider()->IsMainThreadBlocked() ||
+           base::FeatureList::IsEnabled(features::kNonBlockingCommit));
     DCHECK(layer_tree_impl()->task_runner_provider()->IsImplThread());
-    DCHECK(layer_tree_impl()->task_runner_provider()->IsMainThreadBlocked());
     provider_client_impl_->Stop();
   }
 }
 
 std::unique_ptr<LayerImpl> VideoLayerImpl::CreateLayerImpl(
-    LayerTreeImpl* tree_impl) {
+    LayerTreeImpl* tree_impl) const {
   return base::WrapUnique(new VideoLayerImpl(
       tree_impl, id(), provider_client_impl_, video_transform_));
 }

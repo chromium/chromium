@@ -83,6 +83,8 @@ public class LibraryLoader {
     // The singleton instance of LibraryLoader. Never null (not final for tests).
     private static LibraryLoader sInstance = new LibraryLoader();
 
+    private static boolean sBrowserStartupBlockedForTesting;
+
     // One-way switch becomes true when the libraries are initialized (by calling
     // LibraryLoaderJni.get().libraryLoaded, which forwards to LibraryLoaded(...) in
     // library_loader_hooks.cc). Note that this member should remain a one-way switch, since it
@@ -163,25 +165,10 @@ public class LibraryLoader {
         int CHILD_WITHOUT_ZYGOTE = 2;
     }
 
-    // Used to override ALLOW_CHROMIUM_LINKER_IN_ZYGOTE outside Local/Dev/Canary.
-    private static boolean sChannelAllowsLinkerInZygote = true;
-
-    /**
-     * Disallow attempts to share RELRO between the App Zygote and the other processes. Must be
-     * called in both the zygote and the browser process because it affects the communication
-     * protocol on both sides. Must be called early to avoid data races - before the LibraryLoader
-     * starts being called from different threads.
-     */
-    public static void setDisallowChromiumLinkerInZygote() {
-        sChannelAllowsLinkerInZygote = false;
-    }
-
     // Returns true when sharing RELRO between the browser process and the app zygote should *not*
-    // be attempted. In other words, returns true iff the zygote is not allowed to load the library
-    // with the Chromium linker.
+    // be attempted.
     public static boolean mainProcessIntendsToProvideRelroFd() {
-        return !ALLOW_CHROMIUM_LINKER_IN_ZYGOTE || Build.VERSION.SDK_INT <= Build.VERSION_CODES.R
-                || !sChannelAllowsLinkerInZygote;
+        return !ALLOW_CHROMIUM_LINKER_IN_ZYGOTE || Build.VERSION.SDK_INT <= Build.VERSION_CODES.R;
     }
 
     /**
@@ -575,7 +562,7 @@ public class LibraryLoader {
         synchronized (mLock) {
             if (mLinker == null) {
                 mLinker = mUseModernLinker ? new ModernLinker() : new LegacyLinker();
-                Log.i(TAG, "Using linker: %s", mLinker.getClass().getName());
+                Log.i(TAG, mUseModernLinker ? "Using ModernLinker" : "Using LegacyLinker");
             }
             return mLinker;
         }
@@ -1001,6 +988,9 @@ public class LibraryLoader {
             throw new ProcessInitException(LoaderErrors.FAILED_TO_REGISTER_JNI);
         }
 
+        // The "Successfully loaded native library" string is used by
+        // tools/android/build_speed/benchmark.py. Please update that script if this log message is
+        // changed.
         Log.i(TAG, "Successfully loaded native library");
         UmaRecorderHolder.onLibraryLoaded();
 
@@ -1053,6 +1043,14 @@ public class LibraryLoader {
     public void setLibrariesLoadedForNativeTests() {
         mLoadState = LoadState.LOADED;
         mInitialized = true;
+    }
+
+    public static void setBrowserProcessStartupBlockedForTesting() {
+        sBrowserStartupBlockedForTesting = true;
+    }
+
+    public static boolean isBrowserProcessStartupBlockedForTesting() {
+        return sBrowserStartupBlockedForTesting;
     }
 
     // The native methods below are defined in library_loader_hooks.cc.

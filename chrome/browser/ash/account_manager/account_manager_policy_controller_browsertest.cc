@@ -6,6 +6,7 @@
 #include "base/files/scoped_temp_dir.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller.h"
 #include "chrome/browser/ash/account_manager/account_manager_policy_controller_factory.h"
 #include "chrome/browser/ash/account_manager/child_account_type_changed_user_data.h"
@@ -90,11 +91,16 @@ class AccountManagerPolicyControllerTest : public InProcessBrowserTest {
   }
 
   void TearDownOnMainThread() override {
-    ProfileHelper::Get()->RemoveUserFromListForTesting(primary_account_id_);
+    GetFakeUserManager()->RemoveUserFromList(primary_account_id_);
     identity_test_environment_adaptor_.reset();
     profile_.reset();
     base::RunLoop().RunUntilIdle();
     scoped_user_manager_.reset();
+  }
+
+  ash::FakeChromeUserManager* GetFakeUserManager() const {
+    return static_cast<ash::FakeChromeUserManager*>(
+        user_manager::UserManager::Get());
   }
 
   std::vector<::account_manager::Account> GetAccountManagerAccounts() {

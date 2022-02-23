@@ -14,6 +14,7 @@
 #include "base/test/task_environment.h"
 #include "components/infobars/core/confirm_infobar_delegate.h"
 #include "components/infobars/core/infobar.h"
+#include "ios/chrome/browser/browser_state/test_chrome_browser_state.h"
 #include "ios/chrome/browser/download/download_test_util.h"
 #import "ios/chrome/browser/download/pass_kit_tab_helper.h"
 #include "ios/chrome/browser/infobars/infobar_manager_impl.h"
@@ -38,17 +39,18 @@ using base::test::ios::kWaitForUIElementTimeout;
 // Test fixture for PassKitCoordinator class.
 class PassKitCoordinatorTest : public PlatformTest {
  protected:
-  PassKitCoordinatorTest()
-      : base_view_controller_([[UIViewController alloc] init]),
-        browser_(std::make_unique<TestBrowser>()),
-        coordinator_([[PassKitCoordinator alloc]
-            initWithBaseViewController:base_view_controller_
-                               browser:browser_.get()]),
-        web_state_(std::make_unique<web::FakeWebState>()),
-        delegate_([[FakePassKitTabHelperDelegate alloc]
-            initWithWebState:web_state_.get()]),
-        test_navigation_manager_(
-            std::make_unique<web::FakeNavigationManager>()) {
+  PassKitCoordinatorTest() {
+    browser_state_ = TestChromeBrowserState::Builder().Build();
+    browser_ = std::make_unique<TestBrowser>(browser_state_.get());
+    base_view_controller_ = [[UIViewController alloc] init];
+    coordinator_ = [[PassKitCoordinator alloc]
+        initWithBaseViewController:base_view_controller_
+                           browser:browser_.get()];
+    web_state_ = std::make_unique<web::FakeWebState>();
+    delegate_ = [[FakePassKitTabHelperDelegate alloc]
+        initWithWebState:web_state_.get()];
+    test_navigation_manager_ = std::make_unique<web::FakeNavigationManager>();
+
     PassKitTabHelper::CreateForWebState(web_state_.get(), delegate_);
     InfoBarManagerImpl::CreateForWebState(web_state_.get());
     web_state_->SetNavigationManager(std::move(test_navigation_manager_));
@@ -60,9 +62,9 @@ class PassKitCoordinatorTest : public PlatformTest {
   }
 
   base::test::TaskEnvironment task_environment_;
-
+  std::unique_ptr<TestChromeBrowserState> browser_state_;
+  std::unique_ptr<TestBrowser> browser_;
   UIViewController* base_view_controller_;
-  std::unique_ptr<Browser> browser_;
   PassKitCoordinator* coordinator_;
   std::unique_ptr<web::FakeWebState> web_state_;
   FakePassKitTabHelperDelegate* delegate_;

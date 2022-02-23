@@ -4,6 +4,7 @@
 
 #include "content/public/test/find_test_utils.h"
 
+#include "build/build_config.h"
 #include "content/browser/find_request_manager.h"
 #include "content/browser/web_contents/web_contents_impl.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -70,7 +71,7 @@ const std::vector<FindResults>& FindTestWebContentsDelegate::GetReplyRecord() {
   return reply_record_;
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FindTestWebContentsDelegate::WaitForMatchRects() {
   WaitFor(MATCH_RECTS);
 }
@@ -136,7 +137,7 @@ void FindTestWebContentsDelegate::StopWaiting() {
   message_loop_runner_->Quit();
 }
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 void FindTestWebContentsDelegate::FindMatchRectsReply(
     WebContents* web_contents,
     int version,

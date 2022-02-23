@@ -11,6 +11,7 @@
 #include <vector>
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -50,9 +51,9 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // all the from NativeIOManager to facilitate testing.
   explicit NativeIOHost(const blink::StorageKey& storage_key,
                         base::FilePath root_path,
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
                         bool allow_set_length_ipc,
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
                         NativeIOManager* manager);
 
   NativeIOHost(const NativeIOHost&) = delete;
@@ -144,13 +145,13 @@ class NativeIOHost : public blink::mojom::NativeIOHost {
   // The directory holding all the files for this storage key.
   const base::FilePath root_path_;
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   const bool allow_set_length_ipc_;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
 
   // Raw pointer use is safe because NativeIOManager owns this NativeIOHost, and
   // therefore is guaranteed to outlive it.
-  NativeIOManager* const manager_ GUARDED_BY_CONTEXT(sequence_checker_);
+  const raw_ptr<NativeIOManager> manager_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Schedules all operations involving file I/O done by this NativeIOHost.
   const scoped_refptr<base::TaskRunner> file_task_runner_;

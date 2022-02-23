@@ -8,10 +8,11 @@ import 'chrome://resources/cr_elements/cr_button/cr_button.m.js';
 import 'chrome://resources/cr_elements/cr_input/cr_input.m.js';
 import './shared_style.js';
 
+import {WebUIListenerBehavior} from 'chrome://resources/js/web_ui_listener_behavior.m.js';
 import {html, Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {MultidevicePhoneHubBrowserProxy} from './multidevice_phonehub_browser_proxy.js';
-import {CameraRollManager, FileType} from './types.js';
+import {CameraRollManager, DownloadResult, FileType} from './types.js';
 
 /**
  * Maps a FileType to its title label in the dropdown.
@@ -22,12 +23,51 @@ const fileTypeToStringMap = new Map([
   [FileType.VIDEO, 'Video'],
 ]);
 
+/**
+ * Maps a DownloadResult to its title label in the dropdown.
+ * @type {!Map<DownloadResult, String>}
+ */
+const downloadResultToStringMap = new Map([
+  [DownloadResult.SUCCESS, 'Download Success'],
+  [DownloadResult.ERROR_GENERIC, 'Generic Error'],
+  [DownloadResult.ERROR_STORAGE, 'Storage Error'],
+  [DownloadResult.ERROR_NETWORK, 'Network Error'],
+]);
+
 Polymer({
   is: 'camera-roll-manager-form',
 
   _template: html`{__html_template__}`,
 
+  behaviors: [
+    WebUIListenerBehavior,
+  ],
+
   properties: {
+    /** @private */
+    isCameraRollEnabled_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    isFileAccessGranted_: {
+      type: Boolean,
+      value: true,
+    },
+
+    /** @private */
+    isOnboardingDismissed_: {
+      type: Boolean,
+      value: false,
+    },
+
+    /** @private */
+    isLoadingViewShown_: {
+      type: Boolean,
+      value: false,
+    },
+
     /** @private */
     numberOfThumbnails_: {
       type: Number,
@@ -51,6 +91,26 @@ Polymer({
       },
       readonly: true,
     },
+
+    /** @private{DownloadResult} */
+    downloadResult_: {
+      type: Number,
+      value: DownloadResult.SUCCESS,
+    },
+
+    /** @private */
+    downloadResultList_: {
+      type: Array,
+      value: () => {
+        return [
+          DownloadResult.SUCCESS,
+          DownloadResult.ERROR_GENERIC,
+          DownloadResult.ERROR_STORAGE,
+          DownloadResult.ERROR_NETWORK,
+        ];
+      },
+      readonly: true,
+    },
   },
 
   /** @private {?MultidevicePhoneHubBrowserProxy}*/
@@ -59,6 +119,23 @@ Polymer({
   /** @override */
   created() {
     this.browserProxy_ = MultidevicePhoneHubBrowserProxy.getInstance();
+  },
+
+  /** @override */
+  attached() {
+    this.addWebUIListener(
+        'camera-roll-ui-view-state-updated',
+        this.onCameraRollViewUiStateUpdated_.bind(this));
+  },
+
+  /**
+   * @param {!CameraRollManager} cameraRollManager
+   * @private
+   */
+  onCameraRollViewUiStateUpdated_(cameraRollManager) {
+    this.isCameraRollEnabled_ = cameraRollManager.isCameraRollEnabled;
+    this.isOnboardingDismissed_ = cameraRollManager.isOnboardingDismissed;
+    this.isLoadingViewShown_ = cameraRollManager.isLoadingViewShown;
   },
 
   /** @private */
@@ -94,11 +171,32 @@ Polymer({
   },
 
   /** @private */
+  onDownloadResultSelected_() {
+    const select = /** @type {!HTMLSelectElement} */
+        (this.$$('#downloadResultList'));
+    this.downloadResult_ = this.downloadResultList_[select.selectedIndex];
+  },
+
+  /**
+   * @param {DownloadResult} downloadResult
+   * @return {String}
+   * @private
+   */
+  getDownloadResultName_(downloadResult) {
+    return downloadResultToStringMap.get(downloadResult);
+  },
+
+  /** @private */
   setFakeCameraRollManager_() {
     const cameraRollManager = {
+      isCameraRollEnabled: this.isCameraRollEnabled_,
+      isOnboardingDismissed: this.isOnboardingDismissed_,
+      isFileAccessGranted: this.isFileAccessGranted_,
+      isLoadingViewShown: this.isLoadingViewShown_,
       numberOfThumbnails: this.numberOfThumbnails_,
       fileType: this.fileType_,
+      downloadResult: this.downloadResult_,
     };
-    this.browserProxy_.setCameraRoll(cameraRollManager);
+    this.browserProxy_.setFakeCameraRoll(cameraRollManager);
   },
 });

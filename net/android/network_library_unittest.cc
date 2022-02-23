@@ -8,7 +8,13 @@
 #include <vector>
 
 #include "base/android/build_info.h"
+#include "base/test/task_environment.h"
+#include "net/android/network_change_notifier_factory_android.h"
 #include "net/base/ip_endpoint.h"
+#include "net/base/net_errors.h"
+#include "net/log/net_log_source.h"
+#include "net/socket/tcp_socket.h"
+#include "net/socket/udp_socket.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace net {
@@ -45,6 +51,70 @@ TEST(NetworkLibraryTest, GetDnsSearchDomains) {
 
   for (std::string suffix : search_suffixes) {
     EXPECT_FALSE(suffix.empty());
+  }
+}
+
+TEST(NetworkLibraryTest, BindToNetwork) {
+  base::test::TaskEnvironment task_environment;
+
+  NetworkChangeNotifierFactoryAndroid ncn_factory;
+  NetworkChangeNotifier::DisableForTest ncn_disable_for_test;
+  std::unique_ptr<NetworkChangeNotifier> ncn(ncn_factory.CreateInstance());
+  TCPSocket socket_tcp_ipv4(nullptr, nullptr, NetLogSource());
+  ASSERT_EQ(OK, socket_tcp_ipv4.Open(ADDRESS_FAMILY_IPV4));
+  TCPSocket socket_tcp_ipv6(nullptr, nullptr, NetLogSource());
+  ASSERT_EQ(OK, socket_tcp_ipv6.Open(ADDRESS_FAMILY_IPV6));
+  UDPSocket socket_udp_ipv4(DatagramSocket::DEFAULT_BIND, nullptr,
+                            NetLogSource());
+  ASSERT_EQ(OK, socket_udp_ipv4.Open(ADDRESS_FAMILY_IPV4));
+  UDPSocket socket_udp_ipv6(DatagramSocket::DEFAULT_BIND, nullptr,
+                            NetLogSource());
+  ASSERT_EQ(OK, socket_udp_ipv6.Open(ADDRESS_FAMILY_IPV6));
+  std::array sockets{socket_tcp_ipv4.SocketDescriptorForTesting(),
+                     socket_tcp_ipv6.SocketDescriptorForTesting(),
+                     socket_udp_ipv4.SocketDescriptorForTesting(),
+                     socket_udp_ipv6.SocketDescriptorForTesting()};
+
+  for (SocketDescriptor socket : sockets) {
+    if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+        base::android::SDK_VERSION_LOLLIPOP) {
+      EXPECT_TRUE(NetworkChangeNotifier::AreNetworkHandlesSupported());
+      // Test successful binding.
+      NetworkChangeNotifier::NetworkHandle existing_network_handle =
+          NetworkChangeNotifier::GetDefaultNetwork();
+      if (existing_network_handle !=
+          NetworkChangeNotifier::kInvalidNetworkHandle) {
+        EXPECT_EQ(OK, BindToNetwork(socket, existing_network_handle));
+      }
+      // Test invalid binding.
+      EXPECT_EQ(
+          ERR_INVALID_ARGUMENT,
+          BindToNetwork(socket, NetworkChangeNotifier::kInvalidNetworkHandle));
+    }
+
+    // Attempt to bind to a not existing NetworkHandle.
+    constexpr NetworkChangeNotifier::NetworkHandle wrong_network_handle = 65536;
+    int rv = BindToNetwork(socket, wrong_network_handle);
+    if (base::android::BuildInfo::GetInstance()->sdk_int() <
+        base::android::SDK_VERSION_LOLLIPOP) {
+      EXPECT_EQ(ERR_NOT_IMPLEMENTED, rv);
+    } else if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+                   base::android::SDK_VERSION_LOLLIPOP &&
+               base::android::BuildInfo::GetInstance()->sdk_int() <
+                   base::android::SDK_VERSION_MARSHMALLOW) {
+      // On Lollipop, we assume if the user has a NetworkHandle that they must
+      // have gotten it from a legitimate source, so if binding to the network
+      // fails it's assumed to be because the network went away so
+      // ERR_NETWORK_CHANGED is returned. In this test the network never existed
+      // anyhow. ConnectivityService.MAX_NET_ID is 65535, so 65536 won't be
+      // used.
+      EXPECT_EQ(ERR_NETWORK_CHANGED, rv);
+    } else if (base::android::BuildInfo::GetInstance()->sdk_int() >=
+               base::android::SDK_VERSION_MARSHMALLOW) {
+      // On Marshmallow and newer releases, the NetworkHandle is munged by
+      // Network.getNetworkHandle() and 65536 isn't munged so it's rejected.
+      EXPECT_EQ(ERR_INVALID_ARGUMENT, rv);
+    }
   }
 }
 

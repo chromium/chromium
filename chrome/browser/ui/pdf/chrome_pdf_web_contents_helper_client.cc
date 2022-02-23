@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/pdf/chrome_pdf_web_contents_helper_client.h"
 
 #include "chrome/browser/download/download_stats.h"
+#include "chrome/browser/pdf/pdf_frame_util.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/common/content_restriction.h"
 #include "extensions/browser/guest_view/mime_handler_view/mime_handler_view_guest.h"
@@ -38,6 +39,14 @@ content::WebContents* GetWebContentsToUse(
 ChromePDFWebContentsHelperClient::ChromePDFWebContentsHelperClient() = default;
 
 ChromePDFWebContentsHelperClient::~ChromePDFWebContentsHelperClient() = default;
+
+content::RenderFrameHost* ChromePDFWebContentsHelperClient::FindPdfFrame(
+    content::WebContents* contents) {
+  content::RenderFrameHost* main_frame = contents->GetMainFrame();
+  content::RenderFrameHost* pdf_frame =
+      pdf_frame_util::FindPdfChildFrame(main_frame);
+  return pdf_frame ? pdf_frame : main_frame;
+}
 
 void ChromePDFWebContentsHelperClient::UpdateContentRestrictions(
     content::WebContents* contents,

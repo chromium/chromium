@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 #define CHROME_BROWSER_UI_VIEWS_LOCATION_BAR_PERMISSION_CHIP_H_
 
+#include "base/memory/raw_ptr.h"
 #include "base/timer/timer.h"
 #include "chrome/browser/ui/views/location_bar/omnibox_chip_button.h"
 #include "components/permissions/permission_prompt.h"
@@ -17,7 +18,8 @@
 class BubbleOwnerDelegate {
  public:
   virtual bool IsBubbleShowing() const = 0;
-  virtual void RecordOnMousePressed() = 0;
+  virtual bool IsAnimating() const = 0;
+  virtual void RestartTimersOnMouseHover() = 0;
 };
 
 // A class for an interface for chip view that is shown in the location bar to
@@ -55,7 +57,6 @@ class PermissionChip : public views::AccessiblePaneView,
   bool is_fully_collapsed() const { return chip_button_->is_fully_collapsed(); }
 
   // views::View:
-  void OnMouseEntered(const ui::MouseEvent& event) override;
   void AddedToWidget() override;
   void VisibilityChanged(views::View* starting_from, bool is_visible) override;
 
@@ -64,6 +65,8 @@ class PermissionChip : public views::AccessiblePaneView,
 
   // BubbleOwnerDelegate:
   bool IsBubbleShowing() const override;
+  bool IsAnimating() const override;
+  void RestartTimersOnMouseHover() override;
 
   views::Widget* GetPromptBubbleWidgetForTesting();
 
@@ -75,9 +78,22 @@ class PermissionChip : public views::AccessiblePaneView,
   bool should_expand_for_testing() { return should_expand_; }
   OmniboxChipButton* get_chip_button_for_testing() { return chip_button_; }
 
+  void stop_animation_for_test() {
+    chip_button_->animation_for_testing()->Stop();
+    ExpandAnimationEnded();
+  }
+
+  bool is_collapse_timer_running_for_testing() {
+    return collapse_timer_.IsRunning();
+  }
+
+  bool is_dismiss_timer_running_for_testing() {
+    return dismiss_timer_.IsRunning();
+  }
+
  protected:
   // Returns a newly-created permission prompt bubble.
-  virtual views::View* CreateBubble() WARN_UNUSED_RESULT = 0;
+  [[nodiscard]] virtual views::View* CreateBubble() = 0;
 
   permissions::PermissionPrompt::Delegate* delegate() const {
     return delegate_;
@@ -90,24 +106,23 @@ class PermissionChip : public views::AccessiblePaneView,
 
   virtual void OnPromptBubbleDismissed();
 
-  virtual bool ShouldCloseBubbleOnLostFocus() const;
-
  private:
-  // BubbleOwnerDelegate:
-  void RecordOnMousePressed() override;
-
   void Show(bool always_open_bubble);
   void ExpandAnimationEnded();
   void ChipButtonPressed();
-  void RestartTimersOnInteraction();
   void StartCollapseTimer();
   void StartDismissTimer();
   void Finalize();
 
+  void ResetTimers() {
+    collapse_timer_.AbandonAndStop();
+    dismiss_timer_.AbandonAndStop();
+  }
+
   void AnimateCollapse();
   void AnimateExpand();
 
-  permissions::PermissionPrompt::Delegate* const delegate_;
+  const raw_ptr<permissions::PermissionPrompt::Delegate> delegate_;
 
   // ViewTracker used to track the prompt bubble.
   views::ViewTracker prompt_bubble_tracker_;
@@ -120,7 +135,7 @@ class PermissionChip : public views::AccessiblePaneView,
   base::OneShotTimer dismiss_timer_;
 
   // The button that displays the icon and text.
-  OmniboxChipButton* chip_button_ = nullptr;
+  raw_ptr<OmniboxChipButton> chip_button_ = nullptr;
 
   bool should_start_open_ = false;
   bool should_expand_ = true;

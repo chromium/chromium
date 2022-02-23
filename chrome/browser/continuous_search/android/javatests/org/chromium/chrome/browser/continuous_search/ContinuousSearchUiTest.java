@@ -35,6 +35,7 @@ import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.browser_controls.BrowserControlsStateProvider;
 import org.chromium.chrome.browser.continuous_search.ContinuousSearchContainerCoordinator.VisibilitySettings;
@@ -45,7 +46,7 @@ import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.components.url_formatter.UrlFormatter;
 import org.chromium.components.url_formatter.UrlFormatterJni;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
-import org.chromium.ui.test.util.DummyUiActivity;
+import org.chromium.ui.test.util.BlankUiTestActivity;
 import org.chromium.url.GURL;
 import org.chromium.url.JUnitTestGURLs;
 
@@ -60,8 +61,8 @@ import java.util.concurrent.TimeoutException;
 @Batch(Batch.UNIT_TESTS)
 public class ContinuousSearchUiTest {
     @ClassRule
-    public static BaseActivityTestRule<DummyUiActivity> sActivityTestRule =
-            new BaseActivityTestRule<>(DummyUiActivity.class);
+    public static BaseActivityTestRule<BlankUiTestActivity> sActivityTestRule =
+            new BaseActivityTestRule<>(BlankUiTestActivity.class);
 
     private static Activity sActivity;
 
@@ -134,6 +135,7 @@ public class ContinuousSearchUiTest {
      */
     @Test
     @SmallTest
+    @DisabledTest(message = "https://crbug.com/1293647")
     public void testScrollToSelected() throws TimeoutException {
         GURL srpUrl = JUnitTestGURLs.getGURL(JUnitTestGURLs.SEARCH_URL);
         GURL result1Url = JUnitTestGURLs.getGURL(JUnitTestGURLs.RED_1);

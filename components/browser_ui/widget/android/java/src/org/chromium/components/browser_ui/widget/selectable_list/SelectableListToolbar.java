@@ -37,6 +37,7 @@ import androidx.core.graphics.drawable.DrawableCompat;
 import androidx.core.view.ViewCompat;
 
 import org.chromium.base.ApiCompatibilityUtils;
+import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.NumberRollView;
 import org.chromium.components.browser_ui.widget.R;
 import org.chromium.components.browser_ui.widget.TintedDrawable;
@@ -188,8 +189,7 @@ public class SelectableListToolbar<E>
         mModernToolbarSearchIconOffsetPx = getResources().getDimensionPixelSize(
                 R.dimen.selectable_list_search_icon_end_padding);
 
-        mNormalBackgroundColor =
-                ApiCompatibilityUtils.getColor(getResources(), R.color.default_bg_color);
+        mNormalBackgroundColor = SemanticColorUtils.getDefaultBgColor(getContext());
         setBackgroundColor(mNormalBackgroundColor);
 
         mIconColorList = AppCompatResources.getColorStateList(

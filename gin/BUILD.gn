@@ -175,7 +175,10 @@ test("gin_unittests") {
     "//v8:external_startup_data",
   ]
 
-  data_deps = [ "//tools/v8_context_snapshot:v8_context_snapshot" ]
+  data_deps = [
+    "//testing/buildbot/filters:gin_unittests_filters",
+    "//tools/v8_context_snapshot:v8_context_snapshot",
+  ]
   data = []
 
   # gin_shell is not an Android app.
@@ -192,6 +195,7 @@ test("gin_unittests") {
   }
 
   if (is_fuchsia) {
+    use_cfv2 = false
     additional_manifest_fragments = [
       # TODO(crbug.com/1185811): Figure out why jit_capabilities is needed.
       "//build/config/fuchsia/test/jit_capabilities.test-cmx",

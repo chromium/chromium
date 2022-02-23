@@ -36,6 +36,7 @@ import org.mockito.quality.Strictness;
 import org.robolectric.RuntimeEnvironment;
 import org.robolectric.android.util.concurrent.RoboExecutorService;
 import org.robolectric.annotation.Config;
+import org.robolectric.annotation.LooperMode;
 import org.robolectric.shadows.ShadowAccountManager;
 import org.robolectric.shadows.ShadowUserManager;
 
@@ -59,6 +60,7 @@ import java.util.List;
 @RunWith(BaseRobolectricTestRunner.class)
 @Config(shadows = {CustomShadowAsyncTask.class, ShadowUserManager.class,
                 ShadowAccountManager.class})
+@LooperMode(LooperMode.Mode.LEGACY)
 public class AccountManagerFacadeImplTest {
     private static final String TEST_TOKEN_SCOPE = "test-token-scope";
 
@@ -257,37 +259,13 @@ public class AccountManagerFacadeImplTest {
     }
 
     @Test
-    public void testCheckChildAccountForRegularChild() {
-        final Account account = setFeaturesForAccount(
-                "uca@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_CHILD_ACCOUNT_KEY);
-
-        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
-
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
-    }
-
-    @Test
-    public void testCheckChildAccountForUSMChild() {
+    public void testCheckChildAccount() {
         final Account account = setFeaturesForAccount(
                 "usm@gmail.com", AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY);
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.USM_CHILD, account);
-    }
-
-    @Test
-    public void testCheckChildAccountForRegularUSMChild() {
-        final Account account = setFeaturesForAccount("usm_uca@gmail.com",
-                AccountManagerFacadeImpl.FEATURE_IS_USM_ACCOUNT_KEY,
-                AccountManagerFacadeImpl.FEATURE_IS_CHILD_ACCOUNT_KEY);
-
-        mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
-
-        verify(mChildAccountStatusListenerMock)
-                .onStatusReady(ChildAccountStatus.REGULAR_CHILD, account);
+        verify(mChildAccountStatusListenerMock).onStatusReady(true, account);
     }
 
     @Test
@@ -296,7 +274,7 @@ public class AccountManagerFacadeImplTest {
 
         mFacadeWithSystemDelegate.checkChildAccountStatus(account, mChildAccountStatusListenerMock);
 
-        verify(mChildAccountStatusListenerMock).onStatusReady(ChildAccountStatus.NOT_CHILD, null);
+        verify(mChildAccountStatusListenerMock).onStatusReady(false, null);
     }
 
     @Test

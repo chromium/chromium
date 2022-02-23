@@ -229,6 +229,7 @@ public class UpdateMenuItemHelper {
                             R.string.accessibility_toolbar_btn_menu_update;
                     mMenuUiState.buttonState.darkBadgeIcon = R.drawable.badge_update_dark;
                     mMenuUiState.buttonState.lightBadgeIcon = R.drawable.badge_update_light;
+                    mMenuUiState.buttonState.adaptiveBadgeIcon = R.drawable.badge_update;
                 }
 
                 mMenuUiState.itemState = new MenuItemState();
@@ -258,6 +259,7 @@ public class UpdateMenuItemHelper {
                     mMenuUiState.buttonState.darkBadgeIcon =
                             R.drawable.ic_error_grey800_24dp_filled;
                     mMenuUiState.buttonState.lightBadgeIcon = R.drawable.ic_error_white_24dp_filled;
+                    mMenuUiState.buttonState.adaptiveBadgeIcon = R.drawable.ic_error_24dp_filled;
                 }
 
                 mMenuUiState.itemState = new MenuItemState();

@@ -57,12 +57,6 @@ VirtualKeyboardController::VirtualKeyboardController()
   UpdateDevices();
 
   // Set callback to show the emoji panel
-  if (!base::FeatureList::IsEnabled(
-          chromeos::features::kImeSystemEmojiPicker)) {
-    ui::SetShowEmojiKeyboardCallback(base::BindRepeating(
-        &VirtualKeyboardController::ForceShowKeyboardWithKeyset,
-        base::Unretained(this), input_method::ImeKeyset::kEmoji));
-  }
   ui::SetTabletModeShowEmojiKeyboardCallback(base::BindRepeating(
       &VirtualKeyboardController::ForceShowKeyboardWithKeyset,
       base::Unretained(this), input_method::ImeKeyset::kEmoji));

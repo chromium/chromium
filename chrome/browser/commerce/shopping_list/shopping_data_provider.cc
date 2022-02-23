@@ -37,6 +37,7 @@ ShoppingDataProvider::ShoppingDataProvider(
     content::WebContents* content,
     optimization_guide::OptimizationGuideDecider* optimization_guide)
     : content::WebContentsObserver(content),
+      content::WebContentsUserData<ShoppingDataProvider>(*content),
       run_javascript_on_load_(false),
       optimization_guide_(optimization_guide),
       weak_ptr_factory_(this) {
@@ -129,8 +130,19 @@ void ShoppingDataProvider::OnOptimizationGuideDecision(
 }
 
 void ShoppingDataProvider::OnJavascriptExecutionCompleted(base::Value result) {
+  data_decoder::JsonSanitizer::Sanitize(
+      result.GetString(),
+      base::BindOnce(&ShoppingDataProvider::OnJsonSanitizationCompleted,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void ShoppingDataProvider::OnJsonSanitizationCompleted(
+    data_decoder::JsonSanitizer::Result result) {
+  if (!result.value.has_value())
+    return;
+
   absl::optional<base::Value> json_root =
-      base::JSONReader::Read(result.GetString());
+      base::JSONReader::Read(result.value.value());
 
   if (!json_root.has_value())
     return;
@@ -228,6 +240,9 @@ void PopulateShoppingSpecifics(
 
   if (data.has_image_url())
     shopping_specifics->set_image_url(data.image_url());
+
+  if (data.has_offer_id())
+    shopping_specifics->set_offer_id(data.offer_id());
 
   if (data.has_product_cluster_id())
     shopping_specifics->set_product_cluster_id(data.product_cluster_id());

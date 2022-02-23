@@ -7,18 +7,33 @@
 #include <stdint.h>
 #include <string.h>
 
+#include <map>
+#include <tuple>
 #include <utility>
 #include <vector>
 
 #include "base/containers/flat_set.h"
 #include "base/guid.h"
 #include "base/logging.h"
-#include "base/macros.h"
 #include "base/memory/ptr_util.h"
 #include "base/pickle.h"
 #include "base/token.h"
+#include "base/values.h"
 #include "components/sessions/core/base_session_service_commands.h"
 #include "components/tab_groups/tab_group_color.h"
+
+namespace {
+
+bool ReadSessionIdFromPickle(base::PickleIterator* iterator, SessionID* id) {
+  SessionID::id_type value;
+  if (!iterator->ReadInt(&value)) {
+    return false;
+  }
+  *id = SessionID::FromSerializedValue(value);
+  return true;
+}
+
+}  // namespace
 
 namespace sessions {
 
@@ -70,6 +85,8 @@ static const SessionCommand::id_type kCommandSetTabData = 30;
 static const SessionCommand::id_type kCommandSetWindowUserTitle = 31;
 static const SessionCommand::id_type kCommandSetWindowVisibleOnAllWorkspaces =
     32;
+static const SessionCommand::id_type kCommandAddTabExtraData = 33;
+static const SessionCommand::id_type kCommandAddWindowExtraData = 34;
 // ID 255 is used by CommandStorageBackend.
 
 namespace {
@@ -663,7 +680,7 @@ bool CreateTabsAndWindows(
         // The |is_collapsed| boolean was added in M88 to save the collapsed
         // state, so previous versions may not have this stored.
         bool is_collapsed = false;
-        ignore_result(!iter.ReadBool(&is_collapsed));
+        std::ignore = iter.ReadBool(&is_collapsed);
         group->visual_data =
             tab_groups::TabGroupVisualData(title, color_int, is_collapsed);
         break;
@@ -836,6 +853,40 @@ bool CreateTabsAndWindows(
 
         GetTab(SessionID::FromSerializedValue(tab_id), tabs)->data =
             std::move(tab_data);
+        break;
+      }
+
+      case kCommandAddTabExtraData: {
+        std::unique_ptr<base::Pickle> pickle(command->PayloadAsPickle());
+        base::PickleIterator it(*pickle);
+
+        SessionID tab_id = SessionID::InvalidValue();
+        std::string key;
+        std::string data;
+        if (!ReadSessionIdFromPickle(&it, &tab_id) || !it.ReadString(&key) ||
+            !it.ReadString(&data)) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return true;
+        }
+
+        GetTab(tab_id, tabs)->extra_data[key] = std::move(data);
+        break;
+      }
+
+      case kCommandAddWindowExtraData: {
+        std::unique_ptr<base::Pickle> pickle(command->PayloadAsPickle());
+        base::PickleIterator it(*pickle);
+
+        SessionID window_id = SessionID::InvalidValue();
+        std::string key;
+        std::string data;
+        if (!ReadSessionIdFromPickle(&it, &window_id) || !it.ReadString(&key) ||
+            !it.ReadString(&data)) {
+          DVLOG(1) << "Failed reading command " << command->id();
+          return true;
+        }
+
+        GetWindow(window_id, windows)->extra_data[key] = std::move(data);
         break;
       }
 
@@ -1094,6 +1145,34 @@ std::unique_ptr<SessionCommand> CreateSetTabDataCommand(
     pickle.WriteString(kv.second);
   }
   return std::make_unique<SessionCommand>(kCommandSetTabData, pickle);
+}
+
+std::unique_ptr<SessionCommand> CreateAddExtraDataCommand(
+    SessionCommand::id_type command,
+    const SessionID& session_id,
+    const std::string& key,
+    const std::string& data) {
+  base::Pickle pickle;
+  pickle.WriteInt(session_id.id());
+  pickle.WriteString(key);
+  pickle.WriteString(data);
+
+  return std::make_unique<SessionCommand>(command, pickle);
+}
+
+std::unique_ptr<SessionCommand> CreateAddTabExtraDataCommand(
+    const SessionID& tab_id,
+    const std::string& key,
+    const std::string& data) {
+  return CreateAddExtraDataCommand(kCommandAddTabExtraData, tab_id, key, data);
+}
+
+std::unique_ptr<SessionCommand> CreateAddWindowExtraDataCommand(
+    const SessionID& window_id,
+    const std::string& key,
+    const std::string& data) {
+  return CreateAddExtraDataCommand(kCommandAddWindowExtraData, window_id, key,
+                                   data);
 }
 
 bool ReplacePendingCommand(CommandStorageManager* command_storage_manager,

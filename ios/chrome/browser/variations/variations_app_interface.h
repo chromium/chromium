@@ -22,6 +22,10 @@
 // Sets a test safe seed and signature pair.
 + (void)setTestSafeSeedAndSignature;
 
+// Sets a regular (i.e., non-safe) seed and signature pair which cause a crash
+// on startup.
++ (void)setCrashingRegularSeedAndSignature;
+
 // Returns the value of the variations crash streak pref.
 + (int)crashStreak;
 

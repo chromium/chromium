@@ -8,6 +8,7 @@
 #include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/task/post_task.h"
@@ -32,6 +33,9 @@
 namespace {
 
 constexpr int kDefaultRealTimeUrlLookupReferrerLength = 2;
+
+// Probability for sending protego requests for urls on the allowlist
+const float kProbabilityForSendingSampledRequests = 0.01;
 
 }  // namespace
 
@@ -106,7 +110,7 @@ void RealTimeUrlLookupService::OnGetAccessToken(
                             !access_token.empty());
   SendRequest(url, last_committed_url, is_mainframe, access_token,
               std::move(request_callback), std::move(response_callback),
-              std::move(callback_task_runner));
+              std::move(callback_task_runner), /* is_sampled_report */ false);
 }
 
 void RealTimeUrlLookupService::OnResponseUnauthorized(
@@ -127,10 +131,6 @@ bool RealTimeUrlLookupService::CanPerformFullURLLookupWithToken() const {
       variations_);
 }
 
-bool RealTimeUrlLookupService::CanAttachReferrerChain() const {
-  return true;
-}
-
 int RealTimeUrlLookupService::GetReferrerUserGestureLimit() const {
   return kDefaultRealTimeUrlLookupReferrerLength;
 }
@@ -147,6 +147,14 @@ bool RealTimeUrlLookupService::CanCheckSafeBrowsingDb() const {
   // Always return true, because consumer real time URL check only works when
   // safe browsing is enabled.
   return true;
+}
+
+bool RealTimeUrlLookupService::CanSendRTSampleRequest() const {
+  return IsExtendedReportingEnabled(*pref_service_) &&
+         base::FeatureList::IsEnabled(
+             safe_browsing::kSendSampledPingsForProtegoAllowlistDomains) &&
+         (bypass_protego_probability_for_tests_ ||
+          base::RandDouble() <= kProbabilityForSendingSampledRequests);
 }
 
 void RealTimeUrlLookupService::Shutdown() {

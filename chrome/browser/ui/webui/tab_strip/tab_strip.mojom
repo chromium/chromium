@@ -30,8 +30,12 @@ struct Tab {
   // Whether the tab is crashed.
   bool crashed;
 
-  // The URL of the favicon in data scheme.
+  // The URL of the favicon in data scheme for a tab.
   url.mojom.Url? favicon_url;
+
+  // The URL of the favicon in data scheme for an active tab. Allows custom
+  // favicon theming for certain chrome:// URLs.
+  url.mojom.Url? active_favicon_url;
 
   // The group identifier of the tab.
   string? group_id;
@@ -136,6 +140,9 @@ interface PageHandler {
 
   // Report time spent between getTabs() and tabs are created.
   ReportTabCreationDuration(uint32 tab_count, uint32 duration_ms);
+
+  // Switch to a specific tab.
+  ActivateTab(int32 tab_id);
 };
 
 // WebUI-side handler for requests from the browser.
@@ -190,4 +197,7 @@ interface Page {
 
   // Called when a context menu is requested to show.
   ShowContextMenu();
+
+  // Called when the browser theme changed.
+  ThemeChanged();
 };

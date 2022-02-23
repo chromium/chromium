@@ -26,10 +26,10 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
 
   // ChromeBrowserProvider:
   ChromeTrustedVaultService* GetChromeTrustedVaultService() override;
-  UITextField* CreateStyledTextField() const override NS_RETURNS_RETAINED;
   TestUserFeedbackProvider* GetUserFeedbackProvider() const override;
   MailtoHandlerProvider* GetMailtoHandlerProvider() const override;
   DiscoverFeedProvider* GetDiscoverFeedProvider() const override;
+  FollowProvider* GetFollowProvider() const override;
 
  private:
   // ChromeBrowserProvider:
@@ -39,6 +39,7 @@ class TestChromeBrowserProvider : public ChromeBrowserProvider {
   std::unique_ptr<TestUserFeedbackProvider> user_feedback_provider_;
   std::unique_ptr<MailtoHandlerProvider> mailto_handler_provider_;
   std::unique_ptr<DiscoverFeedProvider> discover_feed_provider_;
+  std::unique_ptr<FollowProvider> follow_provider_;
 };
 
 }  // namespace ios

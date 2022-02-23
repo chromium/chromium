@@ -8,8 +8,8 @@
 #include <memory>
 #include <set>
 
-#include "base/containers/small_map.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/memory/weak_ptr.h"
 #include "base/sequence_checker.h"
@@ -39,6 +39,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                                  public DiscoveryNetworkMonitor::Observer,
                                  public MediaSinkServiceBase::Observer {
  public:
+  using ChannelOpenedCallback = base::OnceCallback<void(bool)>;
   using SinkSource = CastDeviceCountMetrics::SinkSource;
 
   // The max number of cast channel open failure for a DIAL-discovered sink
@@ -100,6 +101,24 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   void BindLogger(mojo::PendingRemote<mojom::Logger> pending_remote);
 
+  // Opens cast channel. This method will not open a channel if there is already
+  // a pending request for |ip_endpoint|, or if a channel for |ip_endpoint|
+  // already exists.
+  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |backoff_entry|: backoff entry passed to |OnChannelOpened| callback.
+  // |callback|: Callback that keeps track of the channel opening status.
+  virtual void OpenChannel(const MediaSinkInternal& cast_sink,
+                           std::unique_ptr<net::BackoffEntry> backoff_entry,
+                           SinkSource sink_source,
+                           ChannelOpenedCallback callback);
+
+  // Check to see if the given cast sink exists the sinks_.
+  bool HasSink(const MediaSink::Id& sink_id);
+
+  // Closes the Cast Channel to the sink, and removes the sink from the sink
+  // service.
+  virtual void DisconnectAndRemoveSink(const MediaSinkInternal& sink);
+
  private:
   friend class CastMediaSinkServiceImplTest;
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
@@ -159,6 +178,11 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
                            TestFailureOnChannelErrorRetry);
   FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
                            OpenChannelNewIPSameSink);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest, TestHasSink);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
+                           TestDisconnectAndRemoveSink);
+  FRIEND_TEST_ALL_PREFIXES(CastMediaSinkServiceImplTest,
+                           TestAccessCodeSinkNotAddedToNetworkCache);
 
   // Holds parameters controlling Cast channel retry strategy.
   struct RetryParams {
@@ -223,55 +247,61 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   cast_channel::CastSocketOpenParams CreateCastSocketOpenParams(
       const MediaSinkInternal& sink);
 
-  // Opens cast channel. This method will not open a channel if there is already
-  // a pending request for |ip_endpoint|, or if a channel for |ip_endpoint|
-  // already exists.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
-  // |backoff_entry|: backoff entry passed to |OnChannelOpened| callback.
-  void OpenChannel(const MediaSinkInternal& cast_sink,
-                   std::unique_ptr<net::BackoffEntry> backoff_entry,
-                   SinkSource sink_source);
-
   // Invoked when opening cast channel on IO thread completes.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
+  // access code sink.
   // |backoff_entry|: backoff entry passed to |OnChannelErrorMayRetry| callback
   // if open channel fails.
   // |start_time|: time at which corresponding |OpenChannel| was called.
   // |socket|: raw pointer of newly created cast channel. Does not take
   // ownership of |socket|.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelOpened(const MediaSinkInternal& cast_sink,
                        std::unique_ptr<net::BackoffEntry> backoff_entry,
                        SinkSource sink_source,
                        base::Time start_time,
+                       ChannelOpenedCallback callback,
                        cast_channel::CastSocket* socket);
 
   // Invoked by |OnChannelOpened| if opening cast channel failed. It will retry
   // opening channel in a delay specified by |backoff_entry| if current failure
   // count is less than max retry attempts. Or invoke |OnChannelError| if retry
   // is not allowed.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
+  // access code sink.
   // |backoff_entry|: backoff entry holds failure count and calculates back-off
   // for next retry.
   // |error_state|: error encountered when opending cast channel.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelErrorMayRetry(MediaSinkInternal cast_sink,
                               std::unique_ptr<net::BackoffEntry> backoff_entry,
                               cast_channel::ChannelError error_state,
-                              SinkSource sink_source);
+                              SinkSource sink_source,
+                              ChannelOpenedCallback callback);
 
   // Invoked when opening cast channel succeeds.
-  // |cast_sink|: Cast sink created from mDNS service description or DIAL sink.
+  // |cast_sink|: Cast sink created from mDNS service description, DIAL sink, or
+  // access code sink.
   // |socket|: raw pointer of newly created cast channel. Does not take
   // ownership of |socket|.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelOpenSucceeded(MediaSinkInternal cast_sink,
                               cast_channel::CastSocket* socket,
-                              SinkSource sink_source);
+                              SinkSource sink_source,
+                              ChannelOpenedCallback callback);
 
   // Invoked when opening cast channel fails after all retry
   // attempts.
   // |ip_endpoint|: ip endpoint of cast channel failing to connect to.
   // |sink|: The sink for which channel open failed.
+  // |callback|: Callback passed from OpenChannel that keeps track of the
+  // channel opening status.
   void OnChannelOpenFailed(const net::IPEndPoint& ip_endpoint,
-                           const MediaSinkInternal& sink);
+                           const MediaSinkInternal& sink,
+                           ChannelOpenedCallback callback);
 
   // Returns whether the given DIAL-discovered |sink| is probably a non-Cast
   // device. This is heuristically determined by two things: |sink| has been
@@ -296,11 +326,11 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // Raw pointer of leaky singleton CastSocketService, which manages adding and
   // removing Cast channels.
-  cast_channel::CastSocketService* const cast_socket_service_;
+  const raw_ptr<cast_channel::CastSocketService> cast_socket_service_;
 
   // Raw pointer to DiscoveryNetworkMonitor, which is a global leaky singleton
   // and manages network change notifications.
-  DiscoveryNetworkMonitor* const network_monitor_;
+  const raw_ptr<DiscoveryNetworkMonitor> network_monitor_;
 
   std::string current_network_id_ = DiscoveryNetworkMonitor::kNetworkIdUnknown;
 
@@ -332,7 +362,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
 
   // Non-owned pointer to DIAL MediaSinkService. Observed by |this| for dual
   // discovery.  May be nullptr if the DIAL Media Route Provider is disabled.
-  MediaSinkServiceBase* const dial_media_sink_service_;
+  const raw_ptr<MediaSinkServiceBase> dial_media_sink_service_;
 
   // Mojo Remote to the logger owned by the Media Router. The Remote is not
   // bound until |BindLogger()| is called. Always check if |logger_.is_bound()|
@@ -343,7 +373,7 @@ class CastMediaSinkServiceImpl : public MediaSinkServiceBase,
   // same SequencedTaskRunner as the one used by |cast_socket_service_|.
   scoped_refptr<base::SequencedTaskRunner> task_runner_;
 
-  base::Clock* clock_;
+  raw_ptr<base::Clock> clock_;
 
   SEQUENCE_CHECKER(sequence_checker_);
   base::WeakPtrFactory<CastMediaSinkServiceImpl> weak_ptr_factory_{this};

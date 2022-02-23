@@ -1,0 +1,33 @@
+[package]
+name = "either"
+version = "1.6.1"
+authors = ["bluss"]
+
+license = "MIT/Apache-2.0"
+repository = "https://github.com/bluss/either"
+documentation = "https://docs.rs/either/1/"
+readme = "README-crates.io.md"
+
+description = """
+The enum `Either` with variants `Left` and `Right` is a general purpose sum type with two cases.
+"""
+
+keywords = ["data-structure", "no_std"]
+categories = ["data-structures", "no-std"]
+
+[dependencies]
+serde = { version = "1.0", optional = true, features = ["derive"] }
+
+[features]
+default = ["use_std"]
+use_std = []
+
+[dev-dependencies]
+serde_json = "1.0.0"
+
+[package.metadata.release]
+no-dev-version = true
+tag-name = "{{version}}"
+
+[package.metadata.docs.rs]
+features = ["serde"]

@@ -9,10 +9,10 @@ namespace feed {
 RefreshResponseData WireResponseTranslator::TranslateWireResponse(
     feedwire::Response response,
     StreamModelUpdateRequest::Source source,
-    bool was_signed_in_request,
+    const AccountInfo& account_info,
     base::Time current_time) const {
   return ::feed::TranslateWireResponse(std::move(response), source,
-                                       was_signed_in_request, current_time);
+                                       account_info, current_time);
 }
 
 }  // namespace feed

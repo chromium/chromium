@@ -6,7 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/notreached.h"
-#include "remoting/host/host_exit_codes.h"
+#include "remoting/host/base/host_exit_codes.h"
 
 namespace {
 

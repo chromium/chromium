@@ -7,6 +7,7 @@
 #include <memory>
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/trace_event/traced_value.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/perfetto/include/perfetto/protozero/scattered_heap_buffer.h"
@@ -65,7 +66,7 @@ class ProtoInputStream : public google::protobuf::io::ZeroCopyInputStream {
   }
 
  private:
-  const protozero::ScatteredHeapBuffer* buffer_;
+  raw_ptr<const protozero::ScatteredHeapBuffer> buffer_;
   size_t slices_read_ = 0;
   bool has_backed_up_ = false;
 };

@@ -8,8 +8,6 @@
 #include <string>
 
 #include "ash/constants/ash_features.h"
-#include "ash/grit/ash_diagnostics_app_resources.h"
-#include "ash/grit/ash_diagnostics_app_resources_map.h"
 #include "ash/webui/common/backend/plural_string_handler.h"
 #include "ash/webui/diagnostics_ui/backend/diagnostics_manager.h"
 #include "ash/webui/diagnostics_ui/backend/histogram_util.h"
@@ -23,6 +21,8 @@
 #include "ash/webui/diagnostics_ui/mojom/network_health_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/mojom/system_data_provider.mojom.h"
 #include "ash/webui/diagnostics_ui/url_constants.h"
+#include "ash/webui/grit/ash_diagnostics_app_resources.h"
+#include "ash/webui/grit/ash_diagnostics_app_resources_map.h"
 #include "base/containers/span.h"
 #include "base/files/file_path.h"
 #include "base/logging.h"
@@ -60,8 +60,9 @@ diagnostics::metrics::NavigationView GetInitialView(const GURL url) {
 
   // Note: Valid query strings map to strings in the GetUrlForPage located in
   // chrome/browser/ui/webui/chromeos/diagnostics_dialog.cc.
-  const base::StringPiece query =
-      base::TrimString(url.query(), " \t", base::TRIM_ALL);
+  const std::string& original_query = url.query();  // must outlive |query|.
+  const base::StringPiece& query =
+      base::TrimString(original_query, " \t", base::TRIM_ALL);
 
   if (base::EqualsCaseInsensitiveASCII(query, "system")) {
     return diagnostics::metrics::NavigationView::kSystem;
@@ -390,7 +391,7 @@ DiagnosticsDialogUI::DiagnosticsDialogUI(
   auto session_log_handler = std::make_unique<diagnostics::SessionLogHandler>(
       select_file_policy_creator, holding_space_client, log_directory_path);
   diagnostics_manager_ = std::make_unique<diagnostics::DiagnosticsManager>(
-      session_log_handler.get());
+      session_log_handler.get(), web_ui);
   web_ui->AddMessageHandler(std::move(session_log_handler));
 
   AddDiagnosticsStrings(html_source.get());

@@ -20,7 +20,6 @@
 #include "components/safe_browsing/content/renderer/phishing_classifier/phishing_classifier.h"
 #include "components/safe_browsing/content/renderer/phishing_classifier/protobuf_scorer.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
-#include "content/public/renderer/document_state.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_thread.h"
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
@@ -30,7 +29,6 @@
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
 
-using content::DocumentState;
 using content::RenderThread;
 
 namespace safe_browsing {
@@ -48,8 +46,8 @@ std::set<PhishingClassifierDelegate*>& PhishingClassifierDelegates() {
   return *s;
 }
 
-base::LazyInstance<std::unique_ptr<const safe_browsing::Scorer>>::
-    DestructorAtExit g_phishing_scorer = LAZY_INSTANCE_INITIALIZER;
+base::LazyInstance<std::unique_ptr<safe_browsing::Scorer>>::DestructorAtExit
+    g_phishing_scorer = LAZY_INSTANCE_INITIALIZER;
 
 }  // namespace
 
@@ -123,7 +121,7 @@ PhishingClassifierDelegate* PhishingClassifierDelegate::Create(
 }
 
 void PhishingClassifierDelegate::SetPhishingScorer(
-    const safe_browsing::Scorer* scorer) {
+    safe_browsing::Scorer* scorer) {
   if (is_classifying_) {
     // If there is a classification going on right now it means we're
     // actually replacing an existing scorer with a new model.  In

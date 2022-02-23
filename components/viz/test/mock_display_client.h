@@ -29,14 +29,14 @@ class MockDisplayClient : public mojom::DisplayClient {
   mojo::PendingRemote<mojom::DisplayClient> BindRemote();
 
   // mojom::DisplayClient implementation.
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   MOCK_METHOD1(OnDisplayReceivedCALayerParams, void(const gfx::CALayerParams&));
 #endif
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   MOCK_METHOD1(CreateLayeredWindowUpdater,
                void(mojo::PendingReceiver<mojom::LayeredWindowUpdater>));
 #endif
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD1(DidCompleteSwapWithSize, void(const gfx::Size&));
   MOCK_METHOD1(OnContextCreationResult, void(gpu::ContextResult));
   MOCK_METHOD1(SetWideColorEnabled, void(bool enabled));
@@ -44,7 +44,7 @@ class MockDisplayClient : public mojom::DisplayClient {
 #endif
 // TODO(crbug.com/1052397): Revisit the macro expression once build flag switch
 // of lacros-chrome is complete.
-#if defined(OS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS_LACROS)
   MOCK_METHOD1(DidCompleteSwapWithNewSize, void(const gfx::Size&));
 #endif
 

@@ -10,6 +10,7 @@
 #include "ash/system/message_center/message_center_controller.h"
 #include "ash/test/ash_test_base.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "components/account_id/account_id.h"
 #include "ui/message_center/message_center.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -24,7 +25,8 @@ const char kNotifierSystemPriority[] = "ash.some-high-priority-component";
 
 class InactiveUserNotificationBlockerTest
     : public NoSessionAshTestBase,
-      public message_center::NotificationBlocker::Observer {
+      public message_center::NotificationBlocker::Observer,
+      public testing::WithParamInterface<bool> {
  public:
   InactiveUserNotificationBlockerTest() = default;
 
@@ -37,6 +39,10 @@ class InactiveUserNotificationBlockerTest
 
   // AshTestBase overrides:
   void SetUp() override {
+    scoped_feature_list_ = std::make_unique<base::test::ScopedFeatureList>();
+    scoped_feature_list_->InitWithFeatureState(features::kNotificationsRefresh,
+                                               IsNotificationsRefreshEnabled());
+
     AshTestBase::SetUp();
 
     blocker_ = ShellTestApi()
@@ -44,6 +50,8 @@ class InactiveUserNotificationBlockerTest
                    ->inactive_user_notification_blocker_for_testing();
     blocker_->AddObserver(this);
   }
+
+  bool IsNotificationsRefreshEnabled() const { return GetParam(); }
 
   void TearDown() override {
     blocker_->RemoveObserver(this);
@@ -110,9 +118,14 @@ class InactiveUserNotificationBlockerTest
  private:
   int state_changed_count_ = 0;
   InactiveUserNotificationBlocker* blocker_ = nullptr;
+  std::unique_ptr<base::test::ScopedFeatureList> scoped_feature_list_;
 };
 
-TEST_F(InactiveUserNotificationBlockerTest, Basic) {
+INSTANTIATE_TEST_SUITE_P(All,
+                         InactiveUserNotificationBlockerTest,
+                         testing::Bool() /* IsNotificationsRefreshEnabled() */);
+
+TEST_P(InactiveUserNotificationBlockerTest, Basic) {
   message_center::NotifierId notifier_id(
       message_center::NotifierType::APPLICATION, "test-app");
   // System priority notifiers should always show regardless of fullscreen

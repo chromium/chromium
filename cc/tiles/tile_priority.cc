@@ -60,6 +60,17 @@ std::string TileMemoryLimitPolicyToString(TileMemoryLimitPolicy policy) {
   }
 }
 
+bool IsTileMemoryLimitPolicyMoreRestictive(TileMemoryLimitPolicy policy1,
+                                           TileMemoryLimitPolicy policy2) {
+  static_assert(
+      ALLOW_NOTHING < ALLOW_ABSOLUTE_MINIMUM &&
+          ALLOW_ABSOLUTE_MINIMUM < ALLOW_PREPAINT_ONLY &&
+          ALLOW_PREPAINT_ONLY < ALLOW_ANYTHING,
+      "TileMemoryLimitPolicy must be ordered from most restrictive to least "
+      "restrictive");
+  return policy1 < policy2;
+}
+
 std::string TreePriorityToString(TreePriority prio) {
   switch (prio) {
   case SAME_PRIORITY_FOR_BOTH_TREES:

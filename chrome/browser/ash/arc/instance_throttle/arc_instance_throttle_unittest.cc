@@ -8,6 +8,16 @@
 #include <string>
 #include <vector>
 
+#include "ash/components/arc/arc_features.h"
+#include "ash/components/arc/arc_prefs.h"
+#include "ash/components/arc/mojom/power.mojom.h"
+#include "ash/components/arc/power/arc_power_bridge.h"
+#include "ash/components/arc/session/arc_bridge_service.h"
+#include "ash/components/arc/session/arc_service_manager.h"
+#include "ash/components/arc/test/arc_util_test_support.h"
+#include "ash/components/arc/test/connection_holder_util.h"
+#include "ash/components/arc/test/fake_arc_session.h"
+#include "ash/components/arc/test/fake_power_instance.h"
 #include "base/bind.h"
 #include "base/command_line.h"
 #include "chrome/browser/ash/arc/boot_phase_monitor/arc_boot_phase_monitor_bridge.h"
@@ -18,16 +28,6 @@
 #include "chromeos/dbus/concierge/concierge_client.h"
 #include "chromeos/dbus/dbus_thread_manager.h"
 #include "chromeos/dbus/power/power_manager_client.h"
-#include "components/arc/arc_features.h"
-#include "components/arc/arc_prefs.h"
-#include "components/arc/mojom/power.mojom.h"
-#include "components/arc/power/arc_power_bridge.h"
-#include "components/arc/session/arc_bridge_service.h"
-#include "components/arc/session/arc_service_manager.h"
-#include "components/arc/test/arc_util_test_support.h"
-#include "components/arc/test/connection_holder_util.h"
-#include "components/arc/test/fake_arc_session.h"
-#include "components/arc/test/fake_power_instance.h"
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "content/public/test/browser_task_environment.h"
 #include "services/device/public/cpp/test/test_wake_lock_provider.h"
@@ -65,6 +65,13 @@ class ArcInstanceThrottleTest : public testing::Test {
             testing_profile_.get());
     arc_instance_throttle_->set_delegate_for_testing(
         std::make_unique<TestDelegateImpl>(this));
+
+    // Make sure the next SetActive() call calls into TestDelegateImpl. This
+    // is necessary because ArcInstanceThrottle's constructor may initialize the
+    // variable (and call the default delegate for production) before doing
+    // set_delegate_for_testing(). If that happens, SetActive() might not call
+    // the test delegate as expected.
+    arc_instance_throttle_->reset_should_throttle_for_testing();
   }
 
   void TearDown() override {
@@ -106,6 +113,12 @@ class ArcInstanceThrottleTest : public testing::Test {
 
   ArcInstanceThrottle* arc_instance_throttle() {
     return arc_instance_throttle_;
+  }
+
+  ash::ThrottleObserver* GetThrottleObserver() {
+    const auto& observers = arc_instance_throttle()->observers_for_testing();
+    DCHECK(!observers.empty());
+    return observers[0].get();
   }
 
   FakePowerInstance* power_instance() { return power_instance_.get(); }
@@ -161,24 +174,20 @@ TEST_F(ArcInstanceThrottleTest, TestConstructDestruct) {}
 // Tests that ArcInstanceThrottle adjusts ARC CPU restriction
 // when ThrottleInstance is called.
 TEST_F(ArcInstanceThrottleTest, TestThrottleInstance) {
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::LOW);
+  GetThrottleObserver()->SetActive(false);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, disable_cpu_restriction_counter());
 
-  // ArcInstanceThrottle level is already LOW, expect no change
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::LOW);
+  // ArcInstanceThrottle is already inactive, expect no change.
+  GetThrottleObserver()->SetActive(false);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(0U, disable_cpu_restriction_counter());
 
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::CRITICAL);
+  GetThrottleObserver()->SetActive(true);
   EXPECT_EQ(1U, enable_cpu_restriction_counter());
   EXPECT_EQ(1U, disable_cpu_restriction_counter());
 
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::LOW);
+  GetThrottleObserver()->SetActive(false);
   EXPECT_EQ(2U, enable_cpu_restriction_counter());
   EXPECT_EQ(1U, disable_cpu_restriction_counter());
 }
@@ -192,14 +201,12 @@ TEST_F(ArcInstanceThrottleTest, TestPowerNotificationEnabledByDefault) {
   EXPECT_EQ(mojom::CpuRestrictionState::CPU_RESTRICTION_BACKGROUND,
             power_instance()->last_cpu_restriction_state());
 
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::CRITICAL);
+  GetThrottleObserver()->SetActive(true);
   EXPECT_EQ(2, power_instance()->cpu_restriction_state_count());
   EXPECT_EQ(mojom::CpuRestrictionState::CPU_RESTRICTION_FOREGROUND,
             power_instance()->last_cpu_restriction_state());
 
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::LOW);
+  GetThrottleObserver()->SetActive(false);
   EXPECT_EQ(3, power_instance()->cpu_restriction_state_count());
   EXPECT_EQ(mojom::CpuRestrictionState::CPU_RESTRICTION_BACKGROUND,
             power_instance()->last_cpu_restriction_state());
@@ -213,10 +220,8 @@ TEST_F(ArcInstanceThrottleTest, TestPowerNotificationDisabled) {
   // Set power instance and it should be automatically notified once connection
   // is made.
   CreatePowerInstance();
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::CRITICAL);
-  arc_instance_throttle()->set_level_for_testing(
-      ash::ThrottleObserver::PriorityLevel::LOW);
+  GetThrottleObserver()->SetActive(true);
+  GetThrottleObserver()->SetActive(false);
   EXPECT_EQ(0, power_instance()->cpu_restriction_state_count());
 }
 

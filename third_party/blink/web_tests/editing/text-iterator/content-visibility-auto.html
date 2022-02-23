@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<link rel=author href="mailto:jarhar@chromium.org">
+
+<div id=spacer style="height: 4000px">spacer</div>
+<div id=locked style="content-visibility:auto">
+  <div style="height: 2000px"></div>
+  <div>target</div>
+</div>
+
+<script>
+// Make sure the displaylock is working first.
+if (document.body.offsetHeight >= 6000) {
+  spacer.remove();
+  locked.remove();
+  const div = document.createElement('div');
+  div.textContent =
+    'FAIL: document.body.offsetHeight: ' + document.body.offsetHeight;
+  document.body.insertAdjacentElement('afterbegin', div);
+} else {
+  testRunner.findString('target', []);
+}
+</script>

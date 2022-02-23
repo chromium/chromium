@@ -113,14 +113,12 @@ template <typename ScriptId>
 bool OnLoadScriptInjectorHost<ScriptId>::IsUrlMatchedByOriginList(
     const GURL& url,
     const std::vector<url::Origin>& allowed_origins) {
-  url::Origin url_origin = url::Origin::Create(url);
-
   for (const url::Origin& allowed_origin : allowed_origins) {
     if (allowed_origin == kMatchAllOrigins)
       return true;
 
     DCHECK(!allowed_origin.opaque());
-    if (url_origin.IsSameOriginWith(allowed_origin))
+    if (allowed_origin.IsSameOriginWith(url))
       return true;
   }
 

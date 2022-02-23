@@ -13,7 +13,7 @@ android_library("java") {
     "//base:base_java",
     "//chrome/browser/android/crypto:java",
     "//chrome/browser/tab:java",
-    "//chrome/browser/version:java",
+    "//components/version_info/android:version_constants_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_core_core_java",
   ]

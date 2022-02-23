@@ -15,9 +15,9 @@
 #include "components/autofill_assistant/browser/actions/action.h"
 #include "components/autofill_assistant/browser/batch_element_checker.h"
 #include "components/autofill_assistant/browser/chip.h"
-#include "components/autofill_assistant/browser/element_precondition.h"
 #include "components/autofill_assistant/browser/user_action.h"
 #include "components/autofill_assistant/browser/web/element.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace autofill_assistant {
 
@@ -47,11 +47,13 @@ class PromptAction : public Action {
       size_t choice_index,
       const ClientStatus& status,
       const std::vector<std::string>& ignored_payloads,
+      const std::vector<std::string>& ignored_tags,
       const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void UpdateUserActions();
   void OnAutoSelectCondition(
       const ClientStatus& status,
       const std::vector<std::string>& payloads,
+      const std::vector<std::string>& tags,
       const base::flat_map<std::string, DomObjectFrameStack>& ignored_elements);
   void OnElementChecksDone(
       base::OnceCallback<void(const ClientStatus&)> wait_for_dom_callback);
@@ -65,7 +67,7 @@ class PromptAction : public Action {
 
   // preconditions_[i] contains the element preconditions for
   // proto.prompt.choice[i].
-  std::vector<std::unique_ptr<ElementPrecondition>> preconditions_;
+  std::vector<ElementConditionProto> preconditions_;
 
   // precondition_results_[i] contains the last result reported by
   // preconditions_[i].
@@ -85,7 +87,7 @@ class PromptAction : public Action {
 
   // The action ends once this precondition matches. The payload points
   // to the specific choice that matched.
-  std::unique_ptr<ElementPrecondition> auto_select_;
+  absl::optional<ElementConditionProto> auto_select_;
 
   // If >= 0, contains the index of the Choice to auto-select. Set based or the
   // payload reported by |auto_select_|.

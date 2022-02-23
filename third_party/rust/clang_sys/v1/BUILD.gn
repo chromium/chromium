@@ -1,0 +1,45 @@
+# Copyright 2022 The Chromium Authors. All rights reserved.
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/rust/cargo_crate.gni")
+
+cargo_crate("lib") {
+  crate_name = "clang_sys"
+  epoch = "1"
+  crate_type = "rlib"
+
+  # Only for usage from third-party crates. Add the crate to
+  # third_party.toml to use it from first-party code.
+  visibility = [ "//third_party/rust/*" ]
+  crate_root = "crate/src/lib.rs"
+
+  # Unit tests skipped. Generate with --with-tests to include them.
+  skip_unit_tests = true
+  sources = [ "crate/src/lib.rs" ]
+  edition = "2015"
+  deps = [
+    "//third_party/rust/glob/v0_3:lib",
+    "//third_party/rust/libc/v0_2:lib",
+    "//third_party/rust/libloading/v0_7:lib",
+  ]
+  features = [
+    "clang_3_5",
+    "clang_3_6",
+    "clang_3_7",
+    "clang_3_8",
+    "clang_3_9",
+    "clang_4_0",
+    "clang_5_0",
+    "clang_6_0",
+    "libloading",
+    "runtime",
+  ]
+  build_root = "crate/build.rs"
+  build_sources = [ "crate/build.rs" ]
+  build_deps = [ "//third_party/rust/glob/v0_3:lib" ]
+  build_script_outputs = [
+    "common.rs",
+    "dynamic.rs",
+  ]
+}

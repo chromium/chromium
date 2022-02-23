@@ -159,7 +159,7 @@ TEST_F(FakeVideoCaptureDeviceTest, BuffersGetRetiredWhenDeviceIsStopped) {
 
 // This requires the linux platform, where shared regions are backed by a file
 // descriptor.
-#if defined(OS_LINUX) || defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 TEST_F(FakeVideoCaptureDeviceTest,
        ReceiveFramesViaFileDescriptorHandlesForSharedMemory) {
   base::RunLoop wait_loop;
@@ -229,6 +229,6 @@ TEST_F(FakeVideoCaptureDeviceTest,
   wait_loop.Run();
   EXPECT_FALSE(found_unexpected_all_zero_frame);
 }
-#endif  // defined(OS_LINUX) || defined(OS_CHROMEOS)
+#endif  // BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
 
 }  // namespace video_capture

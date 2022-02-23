@@ -16,10 +16,7 @@
 namespace blink {
 
 LayoutNGFlexibleBox::LayoutNGFlexibleBox(Element* element)
-    : LayoutNGMixin<LayoutBlock>(element) {
-  if (element)
-    GetDocument().IncLayoutFlexboxCounterNG();
-}
+    : LayoutNGMixin<LayoutBlock>(element) {}
 
 bool LayoutNGFlexibleBox::HasTopOverflow() const {
   if (IsHorizontalWritingMode())
@@ -104,7 +101,7 @@ DevtoolsFlexInfo LayoutNGFlexibleBox::LayoutForDevtools() {
   NGLayoutAlgorithmParams params(node, fragment_geometry, constraint_space);
   DevtoolsFlexInfo flex_info;
   NGFlexLayoutAlgorithm flex_algorithm(params, &flex_info);
-  auto new_result = flex_algorithm.Layout();
+  [[maybe_unused]] auto* new_result = flex_algorithm.Layout();
 
 #if DCHECK_IS_ON()
   MinMaxSizes new_min_max_sizes = IntrinsicLogicalWidths();

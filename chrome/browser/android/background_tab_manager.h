@@ -8,6 +8,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/memory/raw_ptr.h"
 #include "base/memory/singleton.h"
 #include "content/public/browser/web_contents_observer.h"
 
@@ -42,7 +43,7 @@ class WebContentsDestroyedObserver : public content::WebContentsObserver {
   void WebContentsDestroyed() override;
 
  private:
-  BackgroundTabManager* owner_;
+  raw_ptr<BackgroundTabManager> owner_;
 };
 
 // BackgroundTabManager is responsible for storing state for the current
@@ -88,8 +89,8 @@ class BackgroundTabManager {
  private:
   friend struct base::DefaultSingletonTraits<BackgroundTabManager>;
 
-  content::WebContents* web_contents_;
-  Profile* profile_;
+  raw_ptr<content::WebContents> web_contents_;
+  raw_ptr<Profile> profile_;
   std::vector<history::HistoryAddPageArgs> cached_history_;
   std::unique_ptr<WebContentsDestroyedObserver> web_contents_observer_;
 };

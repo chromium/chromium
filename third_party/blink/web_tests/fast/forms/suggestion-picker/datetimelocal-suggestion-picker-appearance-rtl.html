@@ -1,48 +1,35 @@
 <!DOCTYPE html>
-<html>
-<head>
-<script>
-window.enablePixelTesting = true;
-</script>
-<script src="../../../resources/js-test.js"></script>
-<script src="../../forms/resources/picker-common.js"></script>
-<script src="resources/suggestion-picker-common.js"></script>
-</head>
+<script src="../../../resources/testdriver.js"></script>
+<script src="../../../resources/testdriver-vendor.js"></script>
+<script src="../resources/picker-common.js"></script>
+
 <body style="background-color: #eeffff; padding: 0 50px;" dir="rtl">
-<input type=datetime-local id=datetime-local value="2012-12-31T23:59" list="suggestions" style="width: 250px;">
+<input type=datetime-local value="2012-12-31T23:59" list="suggestions" style="width: 250px;">
 <datalist id=suggestions>
-    <option label="Today">2012-11-22T12:00</option>
-    <option label="Tomorrow">2012-11-23T12:00</option>
-    <option>2012-11-22T01:03</option>
-    <option>2012-11-22T01:04</option>
-    <option>2012-11-22T01:05</option>
-    <option>2012-11-22T01:06</option>
-    <option>2012-11-22T01:07</option>
-    <option>2012-11-22T01:08</option>
-    <option>2012-11-22T01:09</option>
-    <option>2012-11-22T01:10</option>
-    <option>2012-11-22T01:11</option>
-    <option>2012-11-22T01:12</option>
-    <option>2012-11-22T01:13</option>
-    <option>2012-11-22T01:14</option>
-    <option>2012-11-22T01:15</option>
-    <option>2012-11-22T01:16</option>
-    <option>2012-11-22T01:17</option>
-    <option>2012-11-22T01:18</option>
-    <option>2012-11-22T01:19</option>
+  <option label="Today">2012-11-22T12:00</option>
+  <option label="Tomorrow">2012-11-23T12:00</option>
+  <option>2012-11-22T01:03</option>
+  <option>2012-11-22T01:04</option>
+  <option>2012-11-22T01:05</option>
+  <option>2012-11-22T01:06</option>
+  <option>2012-11-22T01:07</option>
+  <option>2012-11-22T01:08</option>
+  <option>2012-11-22T01:09</option>
+  <option>2012-11-22T01:10</option>
+  <option>2012-11-22T01:11</option>
+  <option>2012-11-22T01:12</option>
+  <option>2012-11-22T01:13</option>
+  <option>2012-11-22T01:14</option>
+  <option>2012-11-22T01:15</option>
+  <option>2012-11-22T01:16</option>
+  <option>2012-11-22T01:17</option>
+  <option>2012-11-22T01:18</option>
+  <option>2012-11-22T01:19</option>
 </datalist>
-
-<p id="description" style="opacity: 0"></p>
-<div id="console" style="opacity: 0"></div>
-
+  
 <script>
-openPickerAppearanceOnly(document.getElementById('datetime-local'), finishTest);
-
-function finishTest() {
-    popupWindow.focus();
+  window.onload = openPickerAppearanceOnly(document.querySelector('input'),() => {
+    internals.pagePopupWindow.focus();
     eventSender.keyDown('ArrowDown');
-    finishJSTest();
-}
+  });
 </script>
-</body>
-</html>

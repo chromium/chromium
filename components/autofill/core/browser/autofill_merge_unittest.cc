@@ -32,7 +32,7 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
 #include "base/mac/foundation_util.h"
 #endif
 
@@ -92,9 +92,9 @@ const std::vector<base::FilePath> GetTestFiles() {
   }
   std::sort(files.begin(), files.end());
 
-#if defined(OS_APPLE)
+#if BUILDFLAG(IS_APPLE)
   base::mac::ClearAmIBundledCache();
-#endif  // defined(OS_APPLE)
+#endif  // BUILDFLAG(IS_APPLE)
 
   return files;
 }
@@ -227,6 +227,7 @@ AutofillMergeTest::~AutofillMergeTest() = default;
 
 void AutofillMergeTest::SetUp() {
   test::DisableSystemServices(nullptr);
+  personal_data_.set_auto_accept_address_imports_for_testing(true);
   form_data_importer_ = std::make_unique<FormDataImporter>(
       &autofill_client_,
       /*payments::PaymentsClient=*/nullptr, &personal_data_, "en");

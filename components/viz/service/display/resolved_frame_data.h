@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "base/containers/flat_map.h"
+#include "base/memory/raw_ptr.h"
 #include "components/viz/common/quads/aggregated_render_pass.h"
 #include "components/viz/common/quads/compositor_render_pass.h"
 #include "components/viz/common/quads/draw_quad.h"
@@ -40,7 +41,7 @@ struct VIZ_SERVICE_EXPORT FixedPassData {
   FixedPassData& operator=(FixedPassData&& other);
   ~FixedPassData();
 
-  CompositorRenderPass* render_pass = nullptr;
+  raw_ptr<CompositorRenderPass> render_pass = nullptr;
   // DrawQuads in |render_pass| that can contribute additional damage (eg.
   // surface and render passes) that need to be visited during the prewalk phase
   // of aggregation. Stored in front-to-back order like in |render_pass|.
@@ -83,6 +84,12 @@ struct VIZ_SERVICE_EXPORT AggregationPassData {
   // True if there is accumulated damage from contributing render pass or
   // surface quads.
   bool has_damage_from_contributing_content = false;
+
+  // Indicates that the render pass is embedded from the root surface root
+  // render pass and will contribute pixels to framebuffer. Render passes this
+  // is false for may still be drawn but they won't contribute pixels to
+  // framebuffer.
+  bool will_draw = false;
 };
 
 // Data associated with a CompositorRenderPass in a resolved frame. Has fixed
@@ -167,6 +174,10 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
   // All functions after this point are accessors for the resolved frame and
   // should only be called if is_valid() returns true.
 
+  // Returns true if the root render pass is embedded from the the root surface
+  // root render pass.
+  bool WillDraw() const;
+
   // RenderPassData accessors.
   ResolvedPassData& GetRenderPassDataById(
       CompositorRenderPassId render_pass_id);
@@ -193,7 +204,7 @@ class VIZ_SERVICE_EXPORT ResolvedFrameData {
 
  private:
   const SurfaceId surface_id_;
-  Surface* const surface_;
+  const raw_ptr<Surface> surface_;
 
   // Data associated with CompositorFrame with |frame_index_|.
   bool valid_ = false;

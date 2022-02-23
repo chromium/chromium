@@ -22,7 +22,7 @@
 #include "ui/gl/scoped_binders.h"
 #include "ui/gl/trace_util.h"
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
 #include "gpu/command_buffer/service/shared_image_backing_factory_iosurface.h"
 #endif
 
@@ -253,7 +253,7 @@ bool SharedImageRepresentationSkiaImpl::SupportsMultipleConcurrentReadAccess() {
 
 void SharedImageRepresentationSkiaImpl::CheckContext() {
 #if DCHECK_IS_ON()
-  if (context_)
+  if (!context_state_->context_lost() && context_)
     DCHECK(gl::GLContext::GetCurrent() == context_);
 #endif
 }
@@ -530,12 +530,12 @@ SharedImageBackingGLImage::ProduceGLTexturePassthrough(
 std::unique_ptr<SharedImageRepresentationOverlay>
 SharedImageBackingGLImage::ProduceOverlay(SharedImageManager* manager,
                                           MemoryTypeTracker* tracker) {
-#if defined(OS_MAC) || defined(USE_OZONE) || defined(OS_WIN)
+#if BUILDFLAG(IS_MAC) || defined(USE_OZONE) || BUILDFLAG(IS_WIN)
   return std::make_unique<SharedImageRepresentationOverlayImpl>(
       manager, this, tracker, image_);
-#else   // !(defined(OS_MAC) || defined(USE_OZONE) || defined(OS_WIN))
+#else   // !(BUILDFLAG(IS_MAC) || defined(USE_OZONE) || BUILDFLAG(IS_WIN))
   return SharedImageBacking::ProduceOverlay(manager, tracker);
-#endif  // defined(OS_MAC) || defined(USE_OZONE) || defined(OS_WIN)
+#endif  // BUILDFLAG(IS_MAC) || defined(USE_OZONE) || BUILDFLAG(IS_WIN)
 }
 
 std::unique_ptr<SharedImageRepresentationDawn>
@@ -543,12 +543,12 @@ SharedImageBackingGLImage::ProduceDawn(SharedImageManager* manager,
                                        MemoryTypeTracker* tracker,
                                        WGPUDevice device,
                                        WGPUBackendType backend_type) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   auto result = SharedImageBackingFactoryIOSurface::ProduceDawn(
       manager, this, tracker, device, image_);
   if (result)
     return result;
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   if (!factory()) {
     DLOG(ERROR) << "No SharedImageFactory to create a dawn representation.";
     return nullptr;
@@ -573,7 +573,7 @@ SharedImageBackingGLImage::ProduceSkia(
 
   if (!cached_promise_texture_) {
     if (context_state->GrContextIsMetal()) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
       cached_promise_texture_ =
           SharedImageBackingFactoryIOSurface::ProduceSkiaPromiseTextureMetal(
               this, context_state, image_);
@@ -704,7 +704,7 @@ bool SharedImageBackingGLImage::
 
 void SharedImageBackingGLImage::SharedImageRepresentationGLTextureEndAccess(
     bool readonly) {
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   // If this image could potentially be shared with Metal via WebGPU, then flush
   // the GL context to ensure Metal will see it.
   if (usage() & SHARED_IMAGE_USAGE_WEBGPU) {
@@ -809,7 +809,7 @@ void SharedImageBackingGLImage::InitializePixels(GLenum format,
                                                  GLenum type,
                                                  const uint8_t* data) {
   DCHECK_EQ(image_->ShouldBindOrCopy(), gl::GLImage::BIND);
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
   if (SharedImageBackingFactoryIOSurface::InitializePixels(this, image_, data))
     return;
 #else

@@ -49,6 +49,7 @@ static_library("test_support") {
     "//mojo/core/embedder",
     "//net",
     "//remoting/base",
+    "//remoting/base:logging",
     "//remoting/client",
     "//remoting/client/audio",
     "//remoting/codec:decoder",
@@ -61,8 +62,9 @@ static_library("test_support") {
   ]
 
   deps = [
+    "//components/webrtc:net_address_utils",
+    "//components/webrtc:thread_wrapper",
     "//google_apis",
-    "//jingle:webrtc_glue",
     "//remoting/base:authorization",
     "//remoting/base:test_support",
     "//services/network:network_service",
@@ -104,6 +106,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
         "//mojo/core/embedder",
         "//remoting/base",
         "//remoting/base:authorization",
+        "//remoting/base:logging",
         "//remoting/host",
         "//remoting/host:resources",
         "//remoting/host/it2me:common",
@@ -171,7 +174,7 @@ if (enable_remoting_host && !is_android && !is_chromeos_ash &&
 
     deps = [
       "//base",
-      "//remoting/host:base",
+      "//remoting/host/base",
     ]
   }
 }
@@ -189,6 +192,7 @@ executable("ftl_services_playground") {
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/proto/ftl/v1:ftl_messages",
     "//remoting/signaling",
     "//services/network:network_service",
@@ -205,10 +209,11 @@ executable("ftl_signaling_playground") {
   ]
   deps = [
     ":test_support",
-    "//jingle:webrtc_glue",
+    "//components/webrtc:thread_wrapper",
     "//mojo/core/embedder",
     "//remoting/base",
     "//remoting/base:authorization",
+    "//remoting/base:logging",
     "//remoting/signaling",
     "//services/network:network_service",
   ]

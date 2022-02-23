@@ -31,11 +31,13 @@ public interface ProcessScopeDependencyProvider {
     }
 
     /** Returns the account name of the signed-in user, or the empty string. */
+    @Deprecated
     default String getAccountName() {
         return "";
     }
 
     /** Returns the client instance id for this chrome. */
+    @Deprecated
     default String getClientInstanceId() {
         return "";
     }
@@ -130,7 +132,7 @@ public interface ProcessScopeDependencyProvider {
      * Stores a view FeedAction for eventual upload. 'data' is a serialized FeedAction protobuf
      * message.
      */
-    default void processViewAction(byte[] data) {}
+    default void processViewAction(byte[] data, LoggingParameters loggingParameters) {}
 
     /**
      * Reports whether the visibility log upload was successful.

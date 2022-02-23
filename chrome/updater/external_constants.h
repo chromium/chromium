@@ -12,6 +12,10 @@
 
 class GURL;
 
+namespace crx_file {
+enum class VerifierFormat;
+}
+
 namespace updater {
 
 // Several constants controlling the program's behavior can come from stateful
@@ -34,6 +38,9 @@ class ExternalConstants : public base::RefCountedThreadSafe<ExternalConstants> {
 
   // Minimum number of of seconds the server needs to stay alive.
   virtual int ServerKeepAliveSeconds() const = 0;
+
+  // CRX format verification requirements.
+  virtual crx_file::VerifierFormat CrxVerifierFormat() const = 0;
 
  protected:
   friend class base::RefCountedThreadSafe<ExternalConstants>;

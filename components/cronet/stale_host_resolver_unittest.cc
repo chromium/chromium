@@ -11,6 +11,7 @@
 #include "base/bind.h"
 #include "base/check.h"
 #include "base/cxx17_backports.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -343,7 +344,7 @@ class StaleHostResolverTest : public testing::Test {
   int resolve_error() const { return resolve_error_; }
   const net::AddressList& resolve_addresses() const {
     DCHECK(resolve_complete_);
-    return request_->GetAddressResults().value();
+    return *request_->GetAddressResults();
   }
 
  private:
@@ -355,7 +356,7 @@ class StaleHostResolverTest : public testing::Test {
 
   scoped_refptr<MockHostResolverProc> mock_proc_;
 
-  net::HostResolver* resolver_;
+  raw_ptr<net::HostResolver> resolver_;
   StaleHostResolver::StaleOptions options_;
   std::unique_ptr<StaleHostResolver> stale_resolver_;
 
@@ -548,7 +549,7 @@ TEST_F(StaleHostResolverTest, ReturnStaleCacheSync) {
 
 // Disallow other networks cases fail under Fuchsia (crbug.com/816143).
 // Flaky on Win buildbots. See crbug.com/836106
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #define MAYBE_StaleUsability DISABLED_StaleUsability
 #else
 #define MAYBE_StaleUsability StaleUsability
@@ -660,45 +661,46 @@ TEST_F(StaleHostResolverTest, MAYBE_StaleUsability) {
 }
 
 TEST_F(StaleHostResolverTest, CreatedByContext) {
-  URLRequestContextConfig config(
-      // Enable QUIC.
-      true,
-      // QUIC User Agent ID.
-      "Default QUIC User Agent ID",
-      // Enable SPDY.
-      true,
-      // Enable Brotli.
-      false,
-      // Type of http cache.
-      URLRequestContextConfig::HttpCacheType::DISK,
-      // Max size of http cache in bytes.
-      1024000,
-      // Disable caching for HTTP responses. Other information may be stored in
-      // the cache.
-      false,
-      // Storage path for http cache and cookie storage.
-      "/data/data/org.chromium.net/app_cronet_test/test_storage",
-      // Accept-Language request header field.
-      "foreign-language",
-      // User-Agent request header field.
-      "fake agent",
-      // JSON encoded experimental options.
-      "{\"AsyncDNS\":{\"enable\":false},"
-      "\"StaleDNS\":{\"enable\":true,"
-      "\"delay_ms\":0,"
-      "\"max_expired_time_ms\":0,"
-      "\"max_stale_uses\":0}}",
-      // MockCertVerifier to use for testing purposes.
-      std::unique_ptr<net::CertVerifier>(),
-      // Enable network quality estimator.
-      false,
-      // Enable Public Key Pinning bypass for local trust anchors.
-      true,
-      // Optional network thread priority.
-      absl::optional<double>());
+  std::unique_ptr<URLRequestContextConfig> config =
+      URLRequestContextConfig::CreateURLRequestContextConfig(
+          // Enable QUIC.
+          true,
+          // QUIC User Agent ID.
+          "Default QUIC User Agent ID",
+          // Enable SPDY.
+          true,
+          // Enable Brotli.
+          false,
+          // Type of http cache.
+          URLRequestContextConfig::HttpCacheType::DISK,
+          // Max size of http cache in bytes.
+          1024000,
+          // Disable caching for HTTP responses. Other information may be stored
+          // in the cache.
+          false,
+          // Storage path for http cache and cookie storage.
+          "/data/data/org.chromium.net/app_cronet_test/test_storage",
+          // Accept-Language request header field.
+          "foreign-language",
+          // User-Agent request header field.
+          "fake agent",
+          // JSON encoded experimental options.
+          "{\"AsyncDNS\":{\"enable\":false},"
+          "\"StaleDNS\":{\"enable\":true,"
+          "\"delay_ms\":0,"
+          "\"max_expired_time_ms\":0,"
+          "\"max_stale_uses\":0}}",
+          // MockCertVerifier to use for testing purposes.
+          std::unique_ptr<net::CertVerifier>(),
+          // Enable network quality estimator.
+          false,
+          // Enable Public Key Pinning bypass for local trust anchors.
+          true,
+          // Optional network thread priority.
+          absl::optional<double>());
 
   net::URLRequestContextBuilder builder;
-  config.ConfigureURLRequestContextBuilder(&builder);
+  config->ConfigureURLRequestContextBuilder(&builder);
   // Set a ProxyConfigService to avoid DCHECK failure when building.
   builder.set_proxy_config_service(
       std::make_unique<net::ProxyConfigServiceFixed>(

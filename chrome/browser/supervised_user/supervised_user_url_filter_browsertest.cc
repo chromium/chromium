@@ -391,7 +391,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, HistoryVisitRecorded) {
 
   GoBackAndWaitForNavigation(tab);
 
-  EXPECT_EQ(allowed_url.spec(), tab->GetURL().spec());
+  EXPECT_EQ(allowed_url.spec(), tab->GetLastCommittedURL().spec());
   EXPECT_EQ(SupervisedUserURLFilter::ALLOW,
             filter->GetFilteringBehaviorForURL(allowed_url.GetWithEmptyPath()));
   EXPECT_EQ(SupervisedUserURLFilter::BLOCK,
@@ -524,7 +524,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserURLFilterTest, BlockThenUnblock) {
   content::TestNavigationObserver unblock_observer(web_contents);
   unblock_observer.Wait();
 
-  ASSERT_EQ(test_url, web_contents->GetURL());
+  ASSERT_EQ(test_url, web_contents->GetLastCommittedURL());
 
   EXPECT_FALSE(ShownPageIsInterstitial(browser()));
 }
@@ -557,7 +557,7 @@ IN_PROC_BROWSER_TEST_F(SupervisedUserBlockModeTest, Unblock) {
             filter->GetFilteringBehaviorForURL(test_url.GetWithEmptyPath()));
 
   observer.Wait();
-  EXPECT_EQ(test_url, web_contents->GetURL());
+  EXPECT_EQ(test_url, web_contents->GetLastCommittedURL());
 }
 
 class MockSupervisedUserURLFilterObserver

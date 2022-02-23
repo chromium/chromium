@@ -8,8 +8,6 @@
 #include <windows.devices.bluetooth.advertisement.h>
 #include <wrl/implements.h>
 
-#include "base/macros.h"
-
 namespace device {
 
 class FakeBluetoothLEAdvertisementPublisherStatusChangedEventArgsWinrt

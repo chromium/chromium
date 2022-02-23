@@ -18,7 +18,8 @@
   top: 0;
 }
 
-.review-image {
+.review-image,
+.review-video {
   max-height: 100%;
   max-width: 100%;
 }
@@ -28,22 +29,22 @@
   max-width: unset;
 }
 
-.review-views .button-groups {
+.review-views .button-group {
   align-items: center;
   bottom: 0;
   display: flex;
   flex-direction: row-reverse;
-  justify-content: space-between;
-  left: calc(var(--left-line) * 2);
+  flex-wrap: wrap;
   position: absolute;
-  right: calc(var(--right-line) * 2);
   top: calc(100% - calc(var(--bottom-line) * 2));
 }
 
-.review-views .button-group {
-  display: flex;
-  flex-direction: row-reverse;
-  flex-wrap: wrap;
+.review-views .positive.button-group {
+  right: calc(var(--right-line) * 2);
+}
+
+.review-views .negative.button-group {
+  left: calc(var(--left-line) * 2);
 }
 
 .review-views .button-group button {
@@ -64,4 +65,25 @@
   line-height: normal;
   margin-inline-end: 5px;
   vertical-align: middle;
+}
+
+.review-views .review-intent-button-group {
+  bottom: calc(var(--bottom-line) - 36px);
+  display: flex;
+  flex-direction: column;
+}
+
+.review-views .review-intent-button-group>button {
+  height: 72px;
+  margin-bottom: 2px;
+  margin-top: 2px;
+  width: 72px;
+}
+
+.review-views .review-intent-button-group button[i18n-label=confirm_review_button] {
+  background-image: url(/images/camera_intent_result_confirm.svg);
+}
+
+.review-views .review-intent-button-group button[i18n-label=cancel_review_button] {
+  background-image: url(/images/camera_intent_result_cancel.svg);
 }

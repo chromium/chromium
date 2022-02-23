@@ -18,7 +18,7 @@
 #include "ui/accessibility/platform/inspect/ax_inspect_scenario.h"
 #include "ui/base/buildflags.h"
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 #include "base/win/windows_version.h"
 #endif
 #if BUILDFLAG(USE_ATK)
@@ -105,7 +105,7 @@ const TypeInfo kTypeInfos[] = {
             "@UIA-WIN-",
             FILE_PATH_LITERAL("-uia-win"),
             [](base::CommandLine* command_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
               command_line->AppendSwitch(
                   ::switches::kEnableExperimentalUIAutomation);
 #endif
@@ -118,7 +118,7 @@ const TypeInfo kTypeInfos[] = {
             "@WIN-",
             FILE_PATH_LITERAL("-win"),
             [](base::CommandLine* command_line) {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
               command_line->RemoveSwitch(
                   ::switches::kEnableExperimentalUIAutomation);
 #endif
@@ -136,6 +136,15 @@ const TypeInfo::Mapping* TypeMapping(const std::string& type) {
   CHECK(mapping) << "Unknown dump accessibility type " << type;
   return mapping;
 }
+
+#if BUILDFLAG(USE_ATK)
+bool is_atk_version_supported() {
+  // Trusty is an older platform, based on the older ATK 2.10 version. Disable
+  // accessibility testing on it as it requires significant maintenance effort.
+  return atk_get_major_version() > 2 ||
+         (atk_get_major_version() == 2 && atk_get_minor_version() > 10);
+}
+#endif
 
 }  // namespace
 
@@ -211,34 +220,39 @@ DumpAccessibilityTestHelper::ParseScenario(
 
 // static
 std::vector<ui::AXApiType::Type> DumpAccessibilityTestHelper::TreeTestPasses() {
-  return
-#if !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
-      {ui::AXApiType::kBlink};
-#elif defined(OS_WIN)
-      {ui::AXApiType::kBlink, ui::AXApiType::kWinIA2, ui::AXApiType::kWinUIA};
-#elif defined(OS_MAC)
-      {ui::AXApiType::kBlink, ui::AXApiType::kMac};
-#elif defined(OS_ANDROID)
-      {ui::AXApiType::kAndroid};
-#elif defined(OS_FUCHSIA)
-      {ui::AXApiType::kFuchsia};
-#else  // linux
-      {ui::AXApiType::kBlink, ui::AXApiType::kLinux};
+#if BUILDFLAG(USE_ATK)
+  if (is_atk_version_supported())
+    return {ui::AXApiType::kBlink, ui::AXApiType::kLinux};
+  return {ui::AXApiType::kBlink};
+#elif !BUILDFLAG(HAS_PLATFORM_ACCESSIBILITY_SUPPORT)
+  return {ui::AXApiType::kBlink};
+#elif BUILDFLAG(IS_WIN)
+  return {ui::AXApiType::kBlink, ui::AXApiType::kWinIA2,
+          ui::AXApiType::kWinUIA};
+#elif BUILDFLAG(IS_MAC)
+  return {ui::AXApiType::kBlink, ui::AXApiType::kMac};
+#elif BUILDFLAG(IS_ANDROID)
+  return {ui::AXApiType::kAndroid};
+#elif BUILDFLAG(IS_FUCHSIA)
+  return {ui::AXApiType::kFuchsia};
+#else  // fallback
+  return {ui::AXApiType::kBlink};
 #endif
 }
 
 // static
 std::vector<ui::AXApiType::Type>
 DumpAccessibilityTestHelper::EventTestPasses() {
-  return
-#if defined(OS_WIN)
-      {ui::AXApiType::kWinIA2, ui::AXApiType::kWinUIA};
-#elif defined(OS_MAC)
-      {ui::AXApiType::kMac};
-#elif BUILDFLAG(USE_ATK)
-      {ui::AXApiType::kLinux};
+#if BUILDFLAG(USE_ATK)
+  if (is_atk_version_supported())
+    return {ui::AXApiType::kLinux};
+  return {};
+#elif BUILDFLAG(IS_WIN)
+  return {ui::AXApiType::kWinIA2, ui::AXApiType::kWinUIA};
+#elif BUILDFLAG(IS_MAC)
+  return {ui::AXApiType::kMac};
 #else
-      {};
+  return {};
 #endif
 }
 
@@ -321,7 +335,7 @@ bool DumpAccessibilityTestHelper::ValidateAgainstExpectation(
         base::JoinString(actual_lines, "\n") + "\n";
     CHECK(base::WriteFile(expected_file, actual_contents_for_output));
     LOG(INFO) << "Wrote expectations to: " << expected_file.LossyDisplayName();
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
     LOG(INFO) << "Generated expectations written to file on test device.";
     LOG(INFO) << "To fetch, run: adb pull " << expected_file.LossyDisplayName();
 #endif
@@ -348,7 +362,7 @@ FilePath::StringType DumpAccessibilityTestHelper::GetExpectedFileSuffix(
 FilePath::StringType
 DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
     const base::FilePath::StringType& expectations_qualifier) const {
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
   if (expectation_type_ == "uia" &&
       base::win::GetVersion() == base::win::Version::WIN7) {
     FilePath::StringType suffix;
@@ -360,16 +374,11 @@ DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
 #if BUILDFLAG(USE_ATK)
   if (expectation_type_ == "linux") {
     FilePath::StringType version_name;
-    switch (atk_get_minor_version()) {
-      case 10:
-        version_name = FILE_PATH_LITERAL("trusty");
-        break;
-      case 18:
-        version_name = FILE_PATH_LITERAL("xenial");
-        break;
-      default:
-        return FILE_PATH_LITERAL("");
-    }
+    if (atk_get_major_version() == 2 && atk_get_minor_version() == 18)
+      version_name = FILE_PATH_LITERAL("xenial");
+
+    if (version_name.empty())
+      return FILE_PATH_LITERAL("");
 
     FilePath::StringType suffix;
     if (!expectations_qualifier.empty())
@@ -378,7 +387,7 @@ DumpAccessibilityTestHelper::GetVersionSpecificExpectedFileSuffix(
            FILE_PATH_LITERAL(".txt");
   }
 #endif
-#if defined(OS_CHROMEOS)
+#if BUILDFLAG(IS_CHROMEOS)
   if (expectation_type_ == "blink") {
     FilePath::StringType suffix;
     if (!expectations_qualifier.empty())

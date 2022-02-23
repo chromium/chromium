@@ -38,12 +38,12 @@ generate_grd("build_grdp") {
     "select.png",
     "throbber_medium.svg",
     "throbber_small.svg",
+    "throbber_small_dark.svg",
     "dark/icon_search.svg",
   ]
 
   if (!is_android && !is_ios) {
     input_files += [
-      "200-logo_googleg.png",
       "arrow_down.svg",
       "arrow_right.svg",
       "business.svg",
@@ -65,5 +65,11 @@ generate_grd("build_grdp") {
       "icon_visibility.svg",
     ]
   }
+
+  if (is_chromeos) {
+    input_files += [ "os_flags_app_icon.svg" ]
+    input_files += [ "os_system_app_icon.svg" ]
+  }
+
   resource_path_prefix = "images"
 }

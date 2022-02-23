@@ -6,6 +6,7 @@
 
 #import "base/mac/foundation_util.h"
 #import "ios/web/public/web_state.h"
+#import "ios/web/session/crw_session_user_data.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -17,8 +18,6 @@ namespace {
 // WebState's user data.
 const void* const kSerializableUserDataManagerKey =
     &kSerializableUserDataManagerKey;
-// The key under which SerializableUserDataImpl's data is encoded.
-NSString* const kSerializedUserDataKey = @"serializedUserData";
 
 // Wrapper class used to associate SerializableUserDataManagerImpls with its
 // associated WebState.
@@ -61,36 +60,6 @@ class SerializableUserDataManagerWrapper : public base::SupportsUserData::Data {
 }  // namespace
 
 // static
-std::unique_ptr<SerializableUserData> SerializableUserData::Create() {
-  return std::make_unique<SerializableUserDataImpl>();
-}
-
-SerializableUserDataImpl::SerializableUserDataImpl() : data_(@{}) {}
-
-SerializableUserDataImpl::~SerializableUserDataImpl() {}
-
-SerializableUserDataImpl::SerializableUserDataImpl(
-    NSDictionary<NSString*, id<NSCoding>>* data)
-    : data_([data copy]) {
-  DCHECK(data_);
-}
-
-void SerializableUserDataImpl::Encode(NSCoder* coder) {
-  [coder encodeObject:data_ forKey:kSerializedUserDataKey];
-}
-
-void SerializableUserDataImpl::Decode(NSCoder* coder) {
-  data_ = [[coder decodeObjectForKey:kSerializedUserDataKey] mutableCopy];
-  if (!data_) {
-    // Ensure that there is always a dictionary even if there was no data
-    // loaded from the coder (this can happen during unit testing or when
-    // loading really old session).
-    data_ = [NSMutableDictionary dictionary];
-  }
-  DCHECK(data_);
-}
-
-// static
 SerializableUserDataManager* SerializableUserDataManager::FromWebState(
     WebState* web_state) {
   DCHECK(web_state);
@@ -107,7 +76,7 @@ const SerializableUserDataManager* SerializableUserDataManager::FromWebState(
 }
 
 SerializableUserDataManagerImpl::SerializableUserDataManagerImpl()
-    : data_([[NSMutableDictionary alloc] init]) {}
+    : data_([[CRWSessionUserData alloc] init]) {}
 
 SerializableUserDataManagerImpl::~SerializableUserDataManagerImpl() {}
 
@@ -123,18 +92,17 @@ id<NSCoding> SerializableUserDataManagerImpl::GetValueForSerializationKey(
   return [data_ objectForKey:key];
 }
 
-std::unique_ptr<SerializableUserData>
-SerializableUserDataManagerImpl::CreateSerializableUserData() const {
-  return std::make_unique<SerializableUserDataImpl>(data_);
+CRWSessionUserData* SerializableUserDataManagerImpl::GetUserDataForSession()
+    const {
+  return data_;
 }
 
-void SerializableUserDataManagerImpl::AddSerializableUserData(
-    SerializableUserData* data) {
+void SerializableUserDataManagerImpl::SetUserDataFromSession(
+    CRWSessionUserData* data) {
   if (data) {
-    SerializableUserDataImpl* data_impl =
-        static_cast<SerializableUserDataImpl*>(data);
-    data_ = [data_impl->data() mutableCopy];
-    DCHECK(data_);
+    data_ = data;
+  } else {
+    data = [[CRWSessionUserData alloc] init];
   }
 }
 

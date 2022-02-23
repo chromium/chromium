@@ -9,7 +9,7 @@
 
 namespace content {
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 // Called in the browser process to ensure the system is set up correctly before
 // running web tests.
 bool WebTestBrowserCheckLayoutSystemDeps();

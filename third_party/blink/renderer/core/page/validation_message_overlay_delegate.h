@@ -7,6 +7,7 @@
 
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/frame/frame_overlay.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/text/text_direction.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
@@ -40,26 +41,27 @@ class CORE_EXPORT ValidationMessageOverlayDelegate
   // FrameOverlay::Delegate implementation.
   void PaintFrameOverlay(const FrameOverlay&,
                          GraphicsContext&,
-                         const IntSize& view_size) const override;
+                         const gfx::Size& view_size) const override;
   void ServiceScriptedAnimations(base::TimeTicks) override;
 
   void StartToHide();
   bool IsHiding() const;
 
+  void UpdateFrameViewState(const FrameOverlay&);
+
   Page* GetPageForTesting() const { return page_; }
 
  private:
   LocalFrameView& FrameView() const;
-  void UpdateFrameViewState(const FrameOverlay&, const IntSize& view_size);
   void WriteDocument(SharedBuffer*);
   Element& GetElementById(const AtomicString&) const;
-  void AdjustBubblePosition(const IntRect& view_rect);
+  void AdjustBubblePosition(const gfx::Rect& view_rect);
 
   // An internal Page and a ChromeClient for it.
   Persistent<Page> page_;
   Persistent<ChromeClient> chrome_client_;
 
-  IntSize bubble_size_;
+  gfx::Size bubble_size_;
 
   // A page which triggered this validation message.
   Persistent<Page> main_page_;

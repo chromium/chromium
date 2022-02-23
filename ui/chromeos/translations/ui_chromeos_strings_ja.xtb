@@ -21,6 +21,7 @@
 <translation id="115443833402798225">ハングル（Ahnmatae 式）</translation>
 <translation id="1155759005174418845">カタロニア語</translation>
 <translation id="1168100932582989117">Google ネーム サーバー</translation>
+<translation id="1171082344678443012">XZ で圧縮されたアーカイブ</translation>
 <translation id="1172970565351728681">残り約 <ph name="REMAINING_TIME" /></translation>
 <translation id="1173894706177603556">名前を変更</translation>
 <translation id="1173916544412572294"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="PHONE_NAME" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、電池残量 <ph name="BATTERY_STATUS" />%、詳細</translation>
@@ -119,6 +120,7 @@
 <translation id="2009067268969781306">ドライブをフォーマットすると、そのドライブに保存されているすべてのデータが削除されます。この操作は元に戻せません。</translation>
 <translation id="2025955442973426285">チグリヤナ語</translation>
 <translation id="2028997212275086731">RAR アーカイブ</translation>
+<translation id="2036414735548252477">LZMA で圧縮された tar アーカイブ</translation>
 <translation id="2037845485764049925">ロシア語</translation>
 <translation id="2044023416777079300">モデムが登録されていません</translation>
 <translation id="2046702855113914483">ラーメン</translation>
@@ -239,6 +241,7 @@
 <translation id="3078461028045006476"><ph name="EXTENSION_NAME" /> と共有</translation>
 <translation id="3083975830683400843">Chromebit</translation>
 <translation id="3085752524577180175">SOCKS ホスト</translation>
+<translation id="3104793765551262433"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、<ph name="CONNECTION_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
 <translation id="3113153474486991170">この場所から「<ph name="PATH" />」を開くことができません。[マイファイル] にコピーして開いてください。</translation>
 <translation id="3113592018909187986">入力できるのはあと 1 回です。新しい PIN を設定するまでこのネットワークは使用できません。</translation>
 <translation id="3124404833828281817">空想にふけっている人</translation>
@@ -296,6 +299,7 @@
 <translation id="3556731189587832921">英語（アメリカ）（インターナショナル PC）キーボード</translation>
 <translation id="3567221313191587603">ファイルにオフラインでアクセスするには、ファイルを選択し、[<ph name="OFFLINE_CHECKBOX_NAME" />] をオンに切り替えます。</translation>
 <translation id="357479282490346887">リトアニア語</translation>
+<translation id="3587482841069643663">すべて</translation>
 <translation id="3592251141500063301"><ph name="FILE_NAME" /> をオフラインで使用するよう設定できませんでした</translation>
 <translation id="3601151620448429694"><ph name="NETWORK_NAME" /> · <ph name="CARRIER_NAME" /></translation>
 <translation id="3603385196401704894">フランス語（カナダ）</translation>
@@ -305,13 +309,13 @@
 <translation id="3620292326130836921">すべてバックアップ済みです。</translation>
 <translation id="3634507049637220048"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="CONNECTION_STATUS" />、管理者によって管理、詳細</translation>
 <translation id="3645233063072417428"><ph name="NUMBER_OF_ITEMS" /> 件のアイテムを移動しました。</translation>
-<translation id="3645531960514756307">フォルダの固定を解除</translation>
 <translation id="3685122418104378273">Google ドライブの同期は既定で無効になっています（モバイルデータを使用する場合）。</translation>
 <translation id="3689865792480713551"><ph name="ACTIVITY_DESCRIPTION" /> をキャンセルします。</translation>
 <translation id="3690128548376345212">ネットワーク <ph name="NETWORK_INDEX" />/<ph name="NETWORK_COUNT" />、<ph name="NETWORK_NAME" />、未有効化、<ph name="CONNECTION_STATUS" />、電波強度 <ph name="SIGNAL_STRENGTH" />%、詳細</translation>
 <translation id="3691184985318546178">シンハラ語</translation>
 <translation id="3726463242007121105">ファイルシステムがサポートされていないため、このデバイスを開くことはできません。</translation>
 <translation id="3727148787322499904">この設定を変更すると、共有しているすべてのネットワークに影響します</translation>
+<translation id="3737576078404241332">サイドバーから削除</translation>
 <translation id="3741243925913727067">メディア デバイスの写真や動画を Google ドライブにバックアップします。</translation>
 <translation id="3749289110408117711">ファイル名</translation>
 <translation id="3780536599611287598">ファイルを「<ph name="FOLDER_NAME" />」に移動する権限がありません。</translation>
@@ -372,6 +376,7 @@
 <translation id="4326142238881453352">植物学者</translation>
 <translation id="4326192123064055915">コーヒー</translation>
 <translation id="4336032328163998280">コピーできませんでした。<ph name="ERROR_MESSAGE" /></translation>
+<translation id="4340491671558548972">サイドバーに追加</translation>
 <translation id="4348495354623233847">ソラニークルド語（アラビア語ベース）キーボード</translation>
 <translation id="4363958938297989186">ロシア語（表音）キーボード</translation>
 <translation id="4364327530094270451">メロン</translation>
@@ -440,6 +445,7 @@
 <translation id="4873265419374180291"><ph name="NUMBER_OF_BYTES" /> バイト</translation>
 <translation id="4880214202172289027">音量スライダー</translation>
 <translation id="4881695831933465202">開く</translation>
+<translation id="4886199584824489598">Bzip2 で圧縮されたアーカイブ</translation>
 <translation id="4900532980794411603">Parallels Desktop と共有</translation>
 <translation id="4902546322522096650"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、接続</translation>
 <translation id="4905417359854579806"><ph name="FILE_COUNT" />をバックアップできます</translation>
@@ -584,6 +590,7 @@
 <translation id="6055907707645252013"><ph name="NETWORK_TYPE" /> ネットワーク、未接続</translation>
 <translation id="6074825444536523002">Google フォーム</translation>
 <translation id="6079871810119356840">ハンガリー語（QWERTY）キーボード</translation>
+<translation id="6082256976217156453">LZMA で圧縮されたアーカイブ</translation>
 <translation id="6096979789310008754">検索語句を削除しました。すべてのファイルとフォルダを表示しています。</translation>
 <translation id="610101264611565198"><ph name="FILE_NAME" /> を <ph name="FOLDER_NAME" /> に移動しています</translation>
 <translation id="6129953537138746214">Space</translation>
@@ -679,6 +686,7 @@
 <translation id="6935521024859866267">逆さま</translation>
 <translation id="6943836128787782965">HTTP を取得できませんでした</translation>
 <translation id="6949408524333579394">セルビア語（文字変換）</translation>
+<translation id="6954309393500027528">この場所への貼り付けは管理者によってブロックされています</translation>
 <translation id="6960565108681981554">無効です。ご利用の携帯通信会社にお問い合わせください。</translation>
 <translation id="696203921837389374">モバイルデータとの同期を有効にする</translation>
 <translation id="6965382102122355670">OK</translation>
@@ -839,6 +847,7 @@
 <translation id="8297012244086013755">ハングル（3 ボル式、Shift なし）</translation>
 <translation id="8299269255470343364">日本語</translation>
 <translation id="8300849813060516376">OTASP に失敗しました</translation>
+<translation id="8308481408797647857">XZ で圧縮された tar アーカイブ</translation>
 <translation id="8312871300878166382">フォルダに貼り付け</translation>
 <translation id="8329978297633540474">テキスト</translation>
 <translation id="8335587457941836791">シェルフの固定解除</translation>
@@ -875,6 +884,7 @@
 <translation id="8551494947769799688">ラトビア語</translation>
 <translation id="8560515948038859357">広東語</translation>
 <translation id="8561206103590473338">ゾウ</translation>
+<translation id="8566466896628108558"><ph name="NETWORK_INDEX" /> 番目のネットワーク（全 <ph name="NETWORK_COUNT" /> 件）、<ph name="NETWORK_NAME" />、<ph name="SECURITY_STATUS" />、信号強度 <ph name="SIGNAL_STRENGTH" />%、管理者によってブロック、詳細</translation>
 <translation id="8569764466147087991">ファイルを選択して開く</translation>
 <translation id="8577897833047451336">クロアチア語</translation>
 <translation id="8578308463707544055">インドネシア語</translation>
@@ -927,7 +937,6 @@
 <translation id="9110990317705400362">Google では、より安全にウェブを閲覧できる方法を常に追求しています。以前は、どのウェブサイトでも、ブラウザに拡張機能を追加するように指示することができました。Google Chrome の最新バージョンでは、ユーザーのインストールの意思をより明確に確認するため、拡張機能の追加は拡張機能ページで行うこととなりました。<ph name="BEGIN_LINK" />詳細<ph name="END_LINK" /></translation>
 <translation id="9111102763498581341">ロック解除</translation>
 <translation id="912419004897138677">コーデック</translation>
-<translation id="9129931661813833980">フォルダを固定</translation>
 <translation id="9130775360844693113">「<ph name="DESTINATION_NAME" />」のメンバーがこれらのアイテムにアクセスできるようになります。</translation>
 <translation id="9131598836763251128">1 つ以上のファイルを選択</translation>
 <translation id="9133055936679483811">圧縮できませんでした。<ph name="ERROR_MESSAGE" /></translation>
@@ -948,6 +957,7 @@
 <translation id="943972244133411984">更新者</translation>
 <translation id="945522503751344254">フィードバックを送信</translation>
 <translation id="947144732524271678"><ph name="ENTRY_COUNT" /> 項目を選択しました。範囲の先頭は <ph name="FROM_ENTRY_NAME" />、末尾は <ph name="TO_ENTRY_NAME" /> です。</translation>
+<translation id="961973045258256291">Gzip で圧縮されたアーカイブ</translation>
 <translation id="965477715979482472">英語（南アフリカ）</translation>
 <translation id="981121421437150478">オフライン</translation>
 <translation id="988685240266037636">「<ph name="FILE_NAME" />」という名前のファイルはすでに存在します。置き換えますか？</translation>

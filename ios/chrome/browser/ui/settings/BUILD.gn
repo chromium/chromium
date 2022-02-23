@@ -17,6 +17,7 @@ source_set("settings_root") {
     ":settings_root_constants",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/browser_state",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/ui:feature_flags",
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/settings/cells",
@@ -47,14 +48,6 @@ source_set("settings") {
   sources = [
     "about_chrome_table_view_controller.h",
     "about_chrome_table_view_controller.mm",
-    "bandwidth_management_table_view_controller.h",
-    "bandwidth_management_table_view_controller.mm",
-    "block_popups_table_view_controller.h",
-    "block_popups_table_view_controller.mm",
-    "content_settings_table_view_controller.h",
-    "content_settings_table_view_controller.mm",
-    "dataplan_usage_table_view_controller.h",
-    "dataplan_usage_table_view_controller.mm",
     "import_data_table_view_controller.h",
     "import_data_table_view_controller.mm",
     "search_engine_table_view_controller.h",
@@ -75,6 +68,8 @@ source_set("settings") {
     "resources:app_icon_placeholder",
     "resources:encryption_error",
     "resources:enterprise_icon",
+    "resources:legacy_settings_passwords",
+    "resources:round_settings_unsafe_state",
     "resources:settings_about_chrome",
     "resources:settings_accounts_add_account",
     "resources:settings_addresses",
@@ -113,6 +108,7 @@ source_set("settings") {
     "//components/keyed_service/core",
     "//components/password_manager/core/browser",
     "//components/password_manager/core/common",
+    "//components/password_manager/core/common:features",
     "//components/prefs",
     "//components/prefs/ios",
     "//components/resources",
@@ -136,6 +132,7 @@ source_set("settings") {
     "//ios/chrome/browser/history",
     "//ios/chrome/browser/mailto:feature_flags",
     "//ios/chrome/browser/main",
+    "//ios/chrome/browser/net:crurl",
     "//ios/chrome/browser/passwords",
     "//ios/chrome/browser/prerender:prerender_pref",
     "//ios/chrome/browser/search_engines",
@@ -154,18 +151,20 @@ source_set("settings") {
     "//ios/chrome/browser/ui/commands",
     "//ios/chrome/browser/ui/content_suggestions:feature_flags",
     "//ios/chrome/browser/ui/content_suggestions/cells",
-    "//ios/chrome/browser/ui/content_suggestions/cells:cells_ui",
     "//ios/chrome/browser/ui/coordinators:chrome_coordinators",
     "//ios/chrome/browser/ui/elements:elements_internal",
     "//ios/chrome/browser/ui/icons",
     "//ios/chrome/browser/ui/keyboard",
     "//ios/chrome/browser/ui/list_model",
     "//ios/chrome/browser/ui/ntp:feature_flags",
+    "//ios/chrome/browser/ui/resources:legacy_password_key",
     "//ios/chrome/browser/ui/resources:password_key",
     "//ios/chrome/browser/ui/settings/autofill",
+    "//ios/chrome/browser/ui/settings/bandwidth",
     "//ios/chrome/browser/ui/settings/cells",
     "//ios/chrome/browser/ui/settings/cells:public",
     "//ios/chrome/browser/ui/settings/clear_browsing_data",
+    "//ios/chrome/browser/ui/settings/content_settings",
     "//ios/chrome/browser/ui/settings/default_browser",
     "//ios/chrome/browser/ui/settings/default_browser/resources:default_browser_world",
     "//ios/chrome/browser/ui/settings/elements:enterprise_info_popover_view_controller",
@@ -193,6 +192,7 @@ source_set("settings") {
     "//ios/chrome/common/ui/colors",
     "//ios/chrome/common/ui/favicon",
     "//ios/chrome/common/ui/util",
+    "//ios/chrome/common/ui/util:image_util",
     "//ios/public/provider/chrome/browser",
     "//ios/public/provider/chrome/browser/mailto",
     "//ios/public/provider/chrome/browser/signin",
@@ -258,6 +258,7 @@ source_set("test_support") {
     "//ios/chrome/browser/ui/main:scene_state_header",
     "//ios/chrome/browser/ui/settings/password",
     "//ios/chrome/browser/ui/table_view:test_support",
+    "//ios/chrome/test:test_support",
     "//ios/chrome/test/app:test_support",
     "//ios/public/provider/chrome/browser/signin:test_support",
     "//ios/web/public/test",
@@ -270,10 +271,6 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "about_chrome_table_view_controller_unittest.mm",
-    "bandwidth_management_table_view_controller_unittest.mm",
-    "block_popups_table_view_controller_unittest.mm",
-    "content_settings_table_view_controller_unittest.mm",
-    "dataplan_usage_table_view_controller_unittest.mm",
     "import_data_table_view_controller_unittest.mm",
     "search_engine_table_view_controller_unittest.mm",
     "settings_navigation_controller_unittest.mm",
@@ -360,8 +357,6 @@ source_set("eg_app_support+eg2") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "block_popups_app_interface.h",
-    "block_popups_app_interface.mm",
     "settings_app_interface.h",
     "settings_app_interface.mm",
     "signin_settings_app_interface.h",
@@ -389,8 +384,6 @@ source_set("eg_test_support+eg2") {
   configs += [ "//build/config/compiler:enable_arc" ]
   testonly = true
   sources = [
-    "block_popups_app_interface.h",
-    "block_popups_app_interface_stub.mm",
     "settings_app_interface.h",
     "settings_app_interface_stub.mm",
     "signin_settings_app_interface.h",
@@ -410,7 +403,6 @@ source_set("eg2_tests") {
   ]
   testonly = true
   sources = [
-    "block_popups_egtest.mm",
     "search_engine_settings_egtest.mm",
     "settings_accessibility_egtest.mm",
     "settings_egtest.mm",

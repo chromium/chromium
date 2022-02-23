@@ -13,7 +13,6 @@
 
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
-#include "base/macros.h"
 #include "base/memory/weak_ptr.h"
 #include "chromecast/media/audio/mixer_service/redirected_audio_connection.h"
 #include "chromecast/net/io_buffer_pool.h"

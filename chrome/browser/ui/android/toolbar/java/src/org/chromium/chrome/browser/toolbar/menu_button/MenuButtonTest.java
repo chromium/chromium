@@ -35,6 +35,7 @@ import org.robolectric.shadows.ShadowDrawable;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.chrome.browser.toolbar.R;
+import org.chromium.chrome.browser.ui.theme.BrandedColorScheme;
 
 /**
  * Unit tests for MenuButton.
@@ -64,6 +65,7 @@ public class MenuButtonTest {
                 R.string.accessibility_toolbar_btn_menu_update;
         mMenuUiState.buttonState.darkBadgeIcon = R.drawable.badge_update_dark;
         mMenuUiState.buttonState.lightBadgeIcon = R.drawable.badge_update_light;
+        mMenuUiState.buttonState.adaptiveBadgeIcon = R.drawable.badge_update;
         mMenuButton.setStateSupplier(() -> mMenuUiState.buttonState);
     }
 
@@ -94,7 +96,7 @@ public class MenuButtonTest {
         assertEquals(drawnDrawable.getCreatedFromResId(), darkDrawable.getCreatedFromResId());
         assertNotEquals(drawnDrawable.getCreatedFromResId(), lightDrawable.getCreatedFromResId());
 
-        mMenuButton.onTintChanged(mColorStateList, true);
+        mMenuButton.onTintChanged(mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
         drawnDrawable = shadowOf(mMenuButton.getTabSwitcherAnimationDrawable());
         assertEquals(drawnDrawable.getCreatedFromResId(), lightDrawable.getCreatedFromResId());
         assertNotEquals(drawnDrawable.getCreatedFromResId(), darkDrawable.getCreatedFromResId());
@@ -114,7 +116,7 @@ public class MenuButtonTest {
     @Test
     public void testDrawTabSwitcherAnimationOverlay_correctBoundsAfterThemeChange() {
         mMenuButton.removeAppMenuUpdateBadge(false);
-        mMenuButton.onTintChanged(mColorStateList, true);
+        mMenuButton.onTintChanged(mColorStateList, BrandedColorScheme.DARK_BRANDED_THEME);
 
         // Run a manual layout pass so that mMenuButton's children get assigned sizes.
         mMenuButton.measure(MeasureSpec.UNSPECIFIED, MeasureSpec.UNSPECIFIED);

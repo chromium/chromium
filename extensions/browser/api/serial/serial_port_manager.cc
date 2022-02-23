@@ -154,8 +154,8 @@ void SerialPortManager::DispatchReceiveEvent(const ReceiveParams& params,
 void SerialPortManager::DispatchEvent(
     const ReceiveParams& params,
     std::unique_ptr<extensions::Event> event) {
-  content::BrowserContext* context =
-      reinterpret_cast<content::BrowserContext*>(params.browser_context_id);
+  content::BrowserContext* context = reinterpret_cast<content::BrowserContext*>(
+      params.browser_context_id.get());
   if (!extensions::ExtensionsBrowserClient::Get()->IsValidContext(context))
     return;
 
@@ -198,7 +198,7 @@ void SerialPortManager::OnGotDevicesToGetPort(
       return;
     }
 
-#if defined(OS_MAC)
+#if BUILDFLAG(IS_MAC)
     if (device->alternate_path &&
         device->alternate_path->AsUTF8Unsafe() == path) {
       port_manager_->OpenPort(device->token, /*use_alternate_path=*/true,
@@ -207,7 +207,7 @@ void SerialPortManager::OnGotDevicesToGetPort(
                               std::move(callback));
       return;
     }
-#endif  // defined(OS_MAC)
+#endif  // BUILDFLAG(IS_MAC)
   }
 }
 

@@ -17,6 +17,7 @@
 #include "base/callback.h"
 #include "base/callback_list.h"
 #include "base/gtest_prod_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
 #include "base/time/default_clock.h"
@@ -32,7 +33,7 @@
 #include "components/sync/model/syncable_service.h"
 #include "components/sync/protocol/search_engine_specifics.pb.h"
 #include "components/webdata/common/web_data_service_consumer.h"
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 #include "base/android/scoped_java_ref.h"
 #endif
 
@@ -41,7 +42,7 @@ class PrefService;
 class TemplateURLServiceClient;
 class TemplateURLServiceObserver;
 struct TemplateURLData;
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
 class TemplateUrlServiceAndroid;
 #endif
 
@@ -138,7 +139,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Register Profile preferences in |registry|.
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   base::android::ScopedJavaLocalRef<jobject> GetJavaObject();
 #endif
 
@@ -703,7 +704,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   bool MatchesDefaultSearchProvider(TemplateURL* turl) const;
 
   // ---------- Browser state related members ---------------------------------
-  PrefService* prefs_ = nullptr;
+  raw_ptr<PrefService> prefs_ = nullptr;
 
   std::unique_ptr<SearchTermsData> search_terms_data_ =
       std::make_unique<SearchTermsData>();
@@ -758,7 +759,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   // Essentially all direct usages of this variable need to first check that
   // |loading_| is true, and should call GetDefaultSearchProvider() instead.
   // Example of a regression due to this mistake: https://crbug.com/1164024.
-  TemplateURL* default_search_provider_ = nullptr;
+  raw_ptr<TemplateURL> default_search_provider_ = nullptr;
 
   // A temporary location for the DSE until Web Data has been loaded and it can
   // be merged into |template_urls_|.
@@ -829,7 +830,7 @@ class TemplateURLService : public WebDataServiceConsumer,
   std::string current_token_;
   base::TimeTicks token_expiration_time_;
 
-#if defined(OS_ANDROID)
+#if BUILDFLAG(IS_ANDROID)
   // Manage and fetch the java object that wraps this TemplateURLService on
   // android.
   std::unique_ptr<TemplateUrlServiceAndroid> template_url_service_android_;

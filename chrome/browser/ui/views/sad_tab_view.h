@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_SAD_TAB_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_SAD_TAB_VIEW_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/sad_tab.h"
 #include "ui/views/view.h"
 
@@ -60,11 +61,11 @@ class SadTabView : public SadTab, public views::View {
   void AttachToWebView();
 
   bool painted_ = false;
-  views::Label* message_;
+  raw_ptr<views::Label> message_;
   std::vector<views::Label*> bullet_labels_;
-  views::MdTextButton* action_button_;
-  views::Label* title_;
-  views::WebView* owner_ = nullptr;
+  raw_ptr<views::MdTextButton> action_button_;
+  raw_ptr<views::Label> title_;
+  raw_ptr<views::WebView> owner_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SAD_TAB_VIEW_H__

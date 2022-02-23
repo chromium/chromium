@@ -26,9 +26,9 @@ void CheckApproximatelyEqual(const gfx::RoundedCornersF& lhs,
 
 // Runs a RunLoop until the next frame is presented with an optional timeout.
 // Returns true if a frame is presented. Otherwise, returns false.
-bool WaitForNextFrameToBePresented(
+[[nodiscard]] bool WaitForNextFrameToBePresented(
     ui::Compositor* compositor,
-    absl::optional<base::TimeDelta> timeout = absl::nullopt) WARN_UNUSED_RESULT;
+    absl::optional<base::TimeDelta> timeout = absl::nullopt);
 
 }  // namespace ui
 

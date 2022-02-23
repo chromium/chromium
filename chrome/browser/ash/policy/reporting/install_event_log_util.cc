@@ -60,8 +60,8 @@ constexpr char kFetchTries[] = "fetchTries";
 // Calculates hash for the given |event| and |context|, and stores the hash in
 // |hash|. Returns true if |event| and |context| are json serializable and
 // |hash| is not nullptr, otherwise return false.
-bool GetHash(const base::Value& event,
-             const base::Value& context,
+bool GetHash(const base::Value::Dict& event,
+             const base::Value::Dict& context,
              std::string* hash) {
   if (hash == nullptr)
     return false;
@@ -102,12 +102,12 @@ std::string GetSerialNumber() {
       ->GetEnterpriseMachineID();
 }
 
-base::Value ConvertExtensionProtoToValue(
+base::Value::List ConvertExtensionProtoToValue(
     const em::ExtensionInstallReportRequest* extension_install_report_request,
-    const base::Value& context) {
+    const base::Value::Dict& context) {
   DCHECK(extension_install_report_request);
 
-  base::Value event_list(base::Value::Type::LIST);
+  base::Value::List event_list;
   std::set<extensions::ExtensionId> seen_ids;
 
   for (const em::ExtensionInstallReport& extension_install_report :
@@ -115,13 +115,12 @@ base::Value ConvertExtensionProtoToValue(
     for (const em::ExtensionInstallReportLogEvent&
              extension_install_report_log_event :
          extension_install_report.logs()) {
-      base::Value wrapper;
-      wrapper = ConvertExtensionEventToValue(
+      base::Value::Dict wrapper = ConvertExtensionEventToValue(
           extension_install_report.has_extension_id()
               ? extension_install_report.extension_id()
               : "",
           extension_install_report_log_event, context);
-      auto* id = wrapper.FindStringKey(kEventId);
+      auto* id = wrapper.FindString(kEventId);
       if (id) {
         if (seen_ids.find(*id) != seen_ids.end()) {
           LOG(WARNING) << "Skipping duplicate event (" << *id
@@ -137,153 +136,143 @@ base::Value ConvertExtensionProtoToValue(
   return event_list;
 }
 
-base::Value ConvertExtensionEventToValue(
+base::Value::Dict ConvertExtensionEventToValue(
     const extensions::ExtensionId& extension_id,
     const em::ExtensionInstallReportLogEvent&
         extension_install_report_log_event,
-    const base::Value& context) {
-  base::Value event(base::Value::Type::DICTIONARY);
+    const base::Value::Dict& context) {
+  base::Value::Dict event;
   if (!extension_id.empty())
-    event.SetStringKey(kExtensionId, extension_id);
+    event.Set(kExtensionId, extension_id);
 
   if (extension_install_report_log_event.has_event_type()) {
-    event.SetIntKey(kEventType,
-                    extension_install_report_log_event.event_type());
+    event.Set(kEventType, extension_install_report_log_event.event_type());
   }
 
   if (extension_install_report_log_event.has_stateful_total()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    std::ostringstream str;
-    str << extension_install_report_log_event.stateful_total();
-    event.SetStringKey(kStatefulTotal, str.str());
+    event.Set(kStatefulTotal,
+              base::NumberToString(
+                  extension_install_report_log_event.stateful_total()));
   }
 
   if (extension_install_report_log_event.has_stateful_free()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    std::ostringstream str;
-    str << extension_install_report_log_event.stateful_free();
-    event.SetStringKey(kStatefulFree, str.str());
+    event.Set(kStatefulFree,
+              base::NumberToString(
+                  extension_install_report_log_event.stateful_free()));
   }
 
   if (extension_install_report_log_event.has_online())
-    event.SetBoolKey(kOnline, extension_install_report_log_event.online());
+    event.Set(kOnline, extension_install_report_log_event.online());
 
   if (extension_install_report_log_event.has_session_state_change_type()) {
-    event.SetIntKey(
-        kSessionStateChangeType,
-        extension_install_report_log_event.session_state_change_type());
+    event.Set(kSessionStateChangeType,
+              extension_install_report_log_event.session_state_change_type());
   }
 
   if (extension_install_report_log_event.has_downloading_stage()) {
-    event.SetIntKey(kDownloadingStage,
-                    extension_install_report_log_event.downloading_stage());
+    event.Set(kDownloadingStage,
+              extension_install_report_log_event.downloading_stage());
   }
 
-  event.SetStringKey(kSerialNumber, GetSerialNumber());
+  event.Set(kSerialNumber, GetSerialNumber());
 
   if (extension_install_report_log_event.has_failure_reason()) {
-    event.SetIntKey(kFailureReason,
-                    extension_install_report_log_event.failure_reason());
+    event.Set(kFailureReason,
+              extension_install_report_log_event.failure_reason());
   }
 
   if (extension_install_report_log_event.has_user_type()) {
-    event.SetIntKey(kUserType, extension_install_report_log_event.user_type());
+    event.Set(kUserType, extension_install_report_log_event.user_type());
     DCHECK(extension_install_report_log_event.has_is_new_user());
-    event.SetBoolKey(kIsNewUser,
-                     extension_install_report_log_event.is_new_user());
+    event.Set(kIsNewUser, extension_install_report_log_event.is_new_user());
   }
 
   if (extension_install_report_log_event.has_installation_stage()) {
-    event.SetIntKey(kInstallationStage,
-                    extension_install_report_log_event.installation_stage());
+    event.Set(kInstallationStage,
+              extension_install_report_log_event.installation_stage());
   }
 
   if (extension_install_report_log_event.has_extension_type()) {
-    event.SetIntKey(kExtensionType,
-                    extension_install_report_log_event.extension_type());
+    event.Set(kExtensionType,
+              extension_install_report_log_event.extension_type());
   }
 
   if (extension_install_report_log_event.has_is_misconfiguration_failure()) {
-    event.SetBoolKey(
-        kIsMisconfigurationFailure,
-        extension_install_report_log_event.is_misconfiguration_failure());
+    event.Set(kIsMisconfigurationFailure,
+              extension_install_report_log_event.is_misconfiguration_failure());
   }
 
   if (extension_install_report_log_event.has_install_creation_stage()) {
-    event.SetIntKey(
-        kInstallCreationStage,
-        extension_install_report_log_event.install_creation_stage());
+    event.Set(kInstallCreationStage,
+              extension_install_report_log_event.install_creation_stage());
   }
 
   if (extension_install_report_log_event.has_download_cache_status()) {
-    event.SetIntKey(kDownloadCacheStatus,
-                    extension_install_report_log_event.download_cache_status());
+    event.Set(kDownloadCacheStatus,
+              extension_install_report_log_event.download_cache_status());
   }
 
   if (extension_install_report_log_event.has_unpacker_failure_reason()) {
-    event.SetIntKey(
-        kUnpackerFailureReason,
-        extension_install_report_log_event.unpacker_failure_reason());
+    event.Set(kUnpackerFailureReason,
+              extension_install_report_log_event.unpacker_failure_reason());
   }
 
   if (extension_install_report_log_event.has_manifest_invalid_error()) {
-    event.SetIntKey(
-        kManifestInvalidError,
-        extension_install_report_log_event.manifest_invalid_error());
+    event.Set(kManifestInvalidError,
+              extension_install_report_log_event.manifest_invalid_error());
   }
 
   if (extension_install_report_log_event.has_fetch_error_code()) {
-    event.SetIntKey(kFetchErrorCode,
-                    extension_install_report_log_event.fetch_error_code());
+    event.Set(kFetchErrorCode,
+              extension_install_report_log_event.fetch_error_code());
   }
 
   if (extension_install_report_log_event.has_fetch_tries()) {
-    event.SetIntKey(kFetchTries,
-                    extension_install_report_log_event.fetch_tries());
+    event.Set(kFetchTries, extension_install_report_log_event.fetch_tries());
   }
 
   if (extension_install_report_log_event.has_crx_install_error_detail()) {
-    event.SetIntKey(
-        kCrxInstallErrorDetail,
-        extension_install_report_log_event.crx_install_error_detail());
+    event.Set(kCrxInstallErrorDetail,
+              extension_install_report_log_event.crx_install_error_detail());
   }
 
-  base::Value wrapper(base::Value::Type::DICTIONARY);
-  wrapper.SetKey(kExtensionInstallEvent, std::move(event));
+  base::Value::Dict wrapper;
+  wrapper.Set(kExtensionInstallEvent, std::move(event));
 
   if (extension_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format
     base::Time timestamp =
         base::Time::UnixEpoch() +
         base::Microseconds(extension_install_report_log_event.timestamp());
-    wrapper.SetStringKey(kTime, GetTimeString(timestamp));
+    wrapper.Set(kTime, GetTimeString(timestamp));
   }
 
   std::string event_id;
   if (GetHash(wrapper, context, &event_id)) {
-    wrapper.SetStringKey(kEventId, event_id);
+    wrapper.Set(kEventId, event_id);
   }
 
   return wrapper;
 }
 
-base::Value ConvertArcAppProtoToValue(
+base::Value::List ConvertArcAppProtoToValue(
     const em::AppInstallReportRequest* app_install_report_request,
-    const base::Value& context) {
+    const base::Value::Dict& context) {
   DCHECK(app_install_report_request);
 
-  base::Value event_list(base::Value::Type::LIST);
+  base::Value::List event_list;
   std::set<std::string> seen_ids;
 
   for (const em::AppInstallReport& app_install_report :
        app_install_report_request->app_install_reports()) {
     for (const em::AppInstallReportLogEvent& app_install_report_log_event :
          app_install_report.logs()) {
-      base::Value wrapper;
-      wrapper = ConvertArcAppEventToValue(
+      base::Value::Dict wrapper = ConvertArcAppEventToValue(
           app_install_report.has_package() ? app_install_report.package() : "",
           app_install_report_log_event, context);
-      auto* id = wrapper.FindStringKey(kEventId);
+      auto* id = wrapper.FindString(kEventId);
       if (id) {
         if (seen_ids.find(*id) != seen_ids.end()) {
           LOG(WARNING) << "Skipping duplicate event (" << *id
@@ -299,69 +288,67 @@ base::Value ConvertArcAppProtoToValue(
   return event_list;
 }
 
-base::Value ConvertArcAppEventToValue(
+base::Value::Dict ConvertArcAppEventToValue(
     const std::string& package,
     const em::AppInstallReportLogEvent& app_install_report_log_event,
-    const base::Value& context) {
-  base::Value event(base::Value::Type::DICTIONARY);
+    const base::Value::Dict& context) {
+  base::Value::Dict event;
 
   if (!package.empty())
-    event.SetStringKey(kAppPackage, package);
+    event.Set(kAppPackage, package);
 
   if (app_install_report_log_event.has_event_type()) {
-    event.SetIntKey(kEventType, app_install_report_log_event.event_type());
+    event.Set(kEventType, app_install_report_log_event.event_type());
   }
 
   if (app_install_report_log_event.has_stateful_total()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    std::ostringstream str;
-    str << app_install_report_log_event.stateful_total();
-    event.SetStringKey(kStatefulTotal, str.str());
+    event.Set(
+        kStatefulTotal,
+        base::NumberToString(app_install_report_log_event.stateful_total()));
   }
 
   if (app_install_report_log_event.has_stateful_free()) {
     // 64-bit ints aren't supported by JSON - must be stored as strings
-    std::ostringstream str;
-    str << app_install_report_log_event.stateful_free();
-    event.SetStringKey(kStatefulFree, str.str());
+    event.Set(kStatefulFree, base::NumberToString(
+                                 app_install_report_log_event.stateful_free()));
   }
 
   if (app_install_report_log_event.has_clouddps_response()) {
-    event.SetIntKey(kCloudDpsResponse,
-                    app_install_report_log_event.clouddps_response());
+    event.Set(kCloudDpsResponse,
+              app_install_report_log_event.clouddps_response());
   }
 
   if (app_install_report_log_event.has_online())
-    event.SetBoolKey(kOnline, app_install_report_log_event.online());
+    event.Set(kOnline, app_install_report_log_event.online());
 
   if (app_install_report_log_event.has_session_state_change_type()) {
-    event.SetIntKey(kSessionStateChangeType,
-                    app_install_report_log_event.session_state_change_type());
+    event.Set(kSessionStateChangeType,
+              app_install_report_log_event.session_state_change_type());
   }
 
   if (app_install_report_log_event.has_android_id()) {
     // 64-bit ints aren't supporetd by JSON - must be stored as strings
-    std::ostringstream str;
-    str << app_install_report_log_event.android_id();
-    event.SetStringKey(kAndroidId, str.str());
+    event.Set(kAndroidId,
+              base::NumberToString(app_install_report_log_event.android_id()));
   }
 
-  event.SetStringKey(kSerialNumber, GetSerialNumber());
+  event.Set(kSerialNumber, GetSerialNumber());
 
-  base::Value wrapper(base::Value::Type::DICTIONARY);
-  wrapper.SetKey(kAndroidAppInstallEvent, std::move(event));
+  base::Value::Dict wrapper;
+  wrapper.Set(kAndroidAppInstallEvent, std::move(event));
 
   if (app_install_report_log_event.has_timestamp()) {
     // Format the current time (UTC) in RFC3339 format
     base::Time timestamp =
         base::Time::UnixEpoch() +
         base::Microseconds(app_install_report_log_event.timestamp());
-    wrapper.SetStringKey(kTime, GetTimeString(timestamp));
+    wrapper.Set(kTime, GetTimeString(timestamp));
   }
 
   std::string event_id;
   if (GetHash(wrapper, context, &event_id)) {
-    wrapper.SetStringKey(kEventId, event_id);
+    wrapper.Set(kEventId, event_id);
   }
 
   return wrapper;

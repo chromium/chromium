@@ -12,11 +12,13 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/power_monitor/power_monitor.h"
 #include "base/power_monitor/power_monitor_source.h"
+#include "base/synchronization/waitable_event.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/service/debugger/viz_debugger.h"
+#include "components/viz/service/performance_hint/hint_session.h"
 #include "gpu/command_buffer/common/activity_flags.h"
 #include "gpu/config/gpu_finch_features.h"
 #include "gpu/ipc/service/gpu_init.h"
@@ -25,7 +27,6 @@
 #include "services/metrics/public/cpp/delegating_ukm_recorder.h"
 #include "services/metrics/public/cpp/mojo_ukm_recorder.h"
 #include "skia/ext/legacy_display_globals.h"
-#include "ui/gfx/rendering_pipeline.h"
 
 namespace {
 
@@ -88,15 +89,6 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
         viz_compositor_thread_runner_->task_runner());
   }
 
-  if (features::IsAdpfEnabled()) {
-    gpu_pipeline_ = gfx::RenderingPipeline::CreateGpu();
-    gpu_pipeline_->AddSequenceManagerThread(
-        viz_compositor_thread_runner_->thread_id(),
-        viz_compositor_thread_runner_->task_runner());
-    gpu_pipeline_->AddSequenceManagerThread(
-        base::PlatformThread::CurrentId(), base::ThreadTaskRunnerHandle::Get());
-  }
-
   if (!gpu_init_->gpu_info().in_process_gpu && dependencies_.ukm_recorder) {
     // NOTE: If the GPU is running in the browser process, we can use the
     // browser's UKMRecorder.
@@ -111,6 +103,38 @@ VizMainImpl::VizMainImpl(Delegate* delegate,
       gpu_init_->gpu_feature_info_for_hardware_gpu(),
       gpu_init_->gpu_extra_info(), gpu_init_->vulkan_implementation(),
       base::BindOnce(&VizMainImpl::ExitProcess, base::Unretained(this)));
+
+  {
+    // Gather the thread IDs of display GPU, and IO for performance hint.
+    // These are the viz threads that are on the critical path of all frames.
+    base::flat_set<base::PlatformThreadId> gpu_process_thread_ids;
+
+    CompositorGpuThread* compositor_gpu_thread =
+        gpu_service_->compositor_gpu_thread();
+    gpu_process_thread_ids.insert(compositor_gpu_thread
+                                      ? compositor_gpu_thread->GetThreadId()
+                                      : base::PlatformThread::CurrentId());
+
+    base::WaitableEvent event;
+    base::PlatformThreadId io_thread_id = base::kInvalidThreadId;
+    io_task_runner()->PostTask(
+        FROM_HERE, base::BindOnce(
+                       [](base::PlatformThreadId* io_thread_id,
+                          base::WaitableEvent* event) {
+                         *io_thread_id = base::PlatformThread::CurrentId();
+                         event->Signal();
+                       },
+                       &io_thread_id, &event));
+    event.Wait();
+    gpu_process_thread_ids.insert(io_thread_id);
+
+    base::RepeatingClosure wake_up_closure;
+    if (viz_compositor_thread_runner_->CreateHintSessionFactory(
+            std::move(gpu_process_thread_ids), &wake_up_closure)) {
+      gpu_service_->SetWakeUpGpuClosure(std::move(wake_up_closure));
+    }
+  }
+
   VizDebugger::GetInstance();
 }
 
@@ -198,7 +222,7 @@ void VizMainImpl::CreateGpuService(
     delegate_->OnGpuServiceConnection(gpu_service_.get());
 }
 
-#if defined(OS_WIN)
+#if BUILDFLAG(IS_WIN)
 void VizMainImpl::CreateInfoCollectionGpuService(
     mojo::PendingReceiver<mojom::InfoCollectionGpuService> pending_receiver) {
   DCHECK(gpu_thread_task_runner_->BelongsToCurrentThread());
@@ -209,6 +233,13 @@ void VizMainImpl::CreateInfoCollectionGpuService(
       gpu_thread_task_runner_, io_task_runner(),
       gpu_init_->device_perf_info().value(), gpu_init_->gpu_info().active_gpu(),
       std::move(pending_receiver));
+}
+#endif
+
+#if BUILDFLAG(IS_ANDROID)
+void VizMainImpl::SetHostProcessId(int32_t pid) {
+  if (gpu_service_)
+    gpu_service_->SetHostProcessId(pid);
 }
 #endif
 
@@ -257,8 +288,7 @@ void VizMainImpl::CreateFrameSinkManagerInternal(
       gpu_service_->gpu_channel_manager()->program_cache());
 
   viz_compositor_thread_runner_->CreateFrameSinkManager(
-      std::move(params), task_executor_.get(), gpu_service_.get(),
-      gpu_pipeline_.get());
+      std::move(params), task_executor_.get(), gpu_service_.get());
 }
 
 #if BUILDFLAG(USE_VIZ_DEBUGGER)

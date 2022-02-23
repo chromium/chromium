@@ -44,6 +44,13 @@ enum DeviceStateType {
   kUnavailable,
 };
 
+// The IP configuration type.
+[Stable, Extensible]
+enum IPConfigType {
+  kIPv4,
+  kIPv6,
+};
+
 // The network technology type. NOTE: 'All' and 'Wireless' are only used by
 // FilterType for requesting groups of networks.
 [Stable, Extensible]

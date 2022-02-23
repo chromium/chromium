@@ -20,6 +20,7 @@ source_set("safe_sites_navigation_throttle") {
     "//components/policy/core/browser",
     "//components/safe_search_api",
     "//components/safe_search_api:safe_search_client",
+    "//components/url_matcher",
     "//content/public/browser",
     "//net",
   ]
